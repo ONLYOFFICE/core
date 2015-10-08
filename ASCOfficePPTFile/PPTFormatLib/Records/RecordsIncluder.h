@@ -17,11 +17,9 @@
 #include "Drawing/DrawingGroup.h"
 #include "Drawing/DrawingRecord.h"
 #include "Drawing/GroupShape.h"
-#include "Drawing/GroupShapeContainer.h"
 #include "Drawing/Shape.h"
 #include "Drawing/ShapeProperties.h"
 #include "Drawing/TextBox.h"
-#include "Drawing/ShapeContainer.h"
 #include "Drawing/RegGroupItems.h"
 #include "Drawing/DrawingContainer.h"
 

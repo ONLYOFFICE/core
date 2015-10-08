@@ -7,9 +7,10 @@ namespace NSPresentationEditor
 {
 	const long g_ThemeTextStylesCount	= 4;
 
-	class CTheme : public IBase
+	class CTheme
 	{
 	public:
+		std::map<std::wstring, LONG>	m_mapGeomToLayout;
 		std::vector<CColor>				m_arColorScheme;
 		std::vector<CFont>				m_arFonts;
 		std::vector<CBrush>				m_arBrushes;
@@ -30,11 +31,14 @@ namespace NSPresentationEditor
 		
 		std::vector<std::vector<CColor>>m_arExtraColorScheme;
 
+		long m_lOriginalWidth;
+		long m_lOriginalHeight;
 //------------------------------------------------------------------------------------
 		CTheme() : m_arColorScheme(), m_arFonts(), m_arBrushes(),
 			m_arPens(), m_arEffects(), m_arLayouts()
 		{
 			m_sThemeName = L"Default";
+			m_lOriginalWidth = m_lOriginalHeight = 0;
 		}
 
 		CTheme(const CTheme& oSrc)
@@ -51,6 +55,15 @@ namespace NSPresentationEditor
 			m_arEffects			=	oSrc.m_arEffects;
 			
 			m_sThemeName		=	oSrc.m_sThemeName;
+
+			m_lOriginalWidth	=	oSrc.m_lOriginalWidth ;
+			m_lOriginalHeight	=	oSrc.m_lOriginalHeight;
+
+
+			for (int i = 0; i < oSrc.m_arExtraColorScheme.size(); ++i)
+			{
+				m_arExtraColorScheme.push_back(oSrc.m_arExtraColorScheme[i]);
+			}
 
 			for (int i = 0; i < g_ThemeTextStylesCount; ++i)
 				m_pStyles[i] = oSrc.m_pStyles[i];
@@ -108,6 +121,10 @@ namespace NSPresentationEditor
 			}
 
 			m_arElements.clear();
+
+			m_lOriginalWidth = m_lOriginalHeight = 0;
+
+			m_sThemeName = L"Default";
 		}
 
 		~CTheme()
@@ -115,12 +132,6 @@ namespace NSPresentationEditor
 		}
 
 	public:
-		virtual void ReadFromXml(XmlUtils::CXmlNode& oNode);
-		virtual void WriteToXml(XmlUtils::CXmlWriter& oWriter)
-		{
-		}
-
-		CString ToXmlEditor(const CMetricInfo& oInfo);
 
 		NSPresentationEditor::CColor GetColor(const LONG& lIndexScheme)
 		{

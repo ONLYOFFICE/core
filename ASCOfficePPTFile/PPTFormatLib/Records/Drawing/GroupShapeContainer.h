@@ -1,4 +1,6 @@
 #pragma once
+
+#include <vector>
 #include "ShapeContainer.h"
 
 class CRecordGroupShapeContainer : public CRecordsContainer
@@ -32,7 +34,7 @@ public:
 
 		// вот... а теперь нужно взять и узнать перерасчет системы координат
 		std::vector<CRecordShapeContainer*> oArrayShapes;
-		this->GetRecordsByType(&oArrayShapes, false, false);
+		GetRecordsByType(&oArrayShapes, false, false);
 
 		int nIndexBreak = -1;
 		for (int nIndex = 0; nIndex < oArrayShapes.size(); ++nIndex)

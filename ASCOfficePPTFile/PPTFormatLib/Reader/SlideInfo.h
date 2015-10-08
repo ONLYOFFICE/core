@@ -48,12 +48,12 @@ public:
 class CSlideInfo
 {
 public:
-	std::vector<CTextFullSettings>			m_arTextPlaceHolders;
-	std::map<LONG, CElementInfo>		m_mapElements;
-	//std::unordered_map<LONG, CElementInfo>	m_mapElements;
-    std::vector<bool>*						m_parEmptyPictures;
-
-	nullable_base<NSPresentationEditor::CTextStyles> m_pStyles[9];
+	std::vector<CTextFullSettings>						m_arTextPlaceHolders;
+	std::map<LONG, CElementInfo>						m_mapElements;
+	//std::unordered_map<LONG, CElementInfo>			m_mapElements;
+    std::vector<bool>*									m_parEmptyPictures;
+	std::map<int, std::wstring>*						m_mapFilePictures;
+	nullable_base<NSPresentationEditor::CTextStyles>	m_pStyles[9];
 
 public:
 	CSlideInfo()
@@ -71,22 +71,28 @@ public:
 	{
 		m_arTextPlaceHolders = oSrc.m_arTextPlaceHolders;
 
-		m_parEmptyPictures = oSrc.m_parEmptyPictures;
-		
+		m_parEmptyPictures	= oSrc.m_parEmptyPictures;
+		m_mapFilePictures	= oSrc.m_mapFilePictures;
+	
 		for (int i = 0; i < 9; ++i)
 		{
 			m_pStyles[i] = oSrc.m_pStyles[i];
 		}
 
-		//m_mapElements.clear();
-		//for (std::map<LONG, CElementInfo>::const_iterator it = oSrc.m_mapElements.begin(); it != oSrc.m_mapElements.end(); ++it)
-		//{
-		//	m_mapElements.insert(std::pair<LONG, CElementInfo>(it->first,it->second));
-		//}
-
 		m_mapElements = oSrc.m_mapElements;
 
 		return *this;
+	}
+
+	std::wstring GetFileNamePicture(DWORD lIndex)
+	{
+		std::map<int, std::wstring>::iterator pic = m_mapFilePictures->find(lIndex);
+
+		if (pic != m_mapFilePictures->end())
+		{
+			return pic->second;
+		}
+		return _T("");
 	}
 
 	DWORD GetIndexPicture(DWORD lIndex)

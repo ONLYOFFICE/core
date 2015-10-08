@@ -5,6 +5,7 @@ class CRecordShape : public CUnknownRecord
 {
 public:
 	UINT m_nID;
+	UINT m_nShapeID;
 	
 	bool m_bGroup;  
 	bool m_bChild;
@@ -54,6 +55,8 @@ public:
 		{
 			StreamUtils::StreamSkip(lSize, pStream);
 		}
+
+		m_nShapeID = m_oHeader.RecInstance;
 	}
 	virtual CString ToString()
 	{

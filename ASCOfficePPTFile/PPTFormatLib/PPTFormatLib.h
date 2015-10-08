@@ -30,7 +30,6 @@ private:
 	void* m_pReader;
 
 	std::vector<CString> m_arUserSources;
-	CString	m_strEditorXml;
 
     std::wstring m_strTempDirectory;
 	

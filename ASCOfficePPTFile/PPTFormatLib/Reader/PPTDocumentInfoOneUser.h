@@ -17,21 +17,20 @@ public:
 	CRecordDocument						m_oDocument;
 
 	//todooo при переходе на C++11 использовать НУЖНЫЙ здесь unsorted_map - m_arr .. Order уберутся
-	
-	std::map<DWORD, CRecordSlide*>		m_mapSlides;
-	std::map<DWORD, CRecordSlide*>		m_mapMasters;
-	std::map<DWORD, CRecordSlide*>		m_mapNotes;
 
-	std::vector<DWORD>					m_arrSlidesOrder;
-	std::vector<DWORD>					m_arrMastersOrder;
-	std::vector<DWORD>					m_arrNotesOrder;
+	std::map<DWORD, CRecordSlide*>				m_mapSlides;
+	std::map<DWORD, CRecordSlide*>				m_mapMasters;
+	std::map<DWORD, CRecordSlide*>				m_mapNotes;
+
+	std::vector<DWORD>							m_arrSlidesOrder;
+	std::vector<DWORD>							m_arrMastersOrder;
+	std::vector<DWORD>							m_arrNotesOrder;
 
 	// перевод id мастера в индекс темы/шаблона
-	std::map<DWORD, LONG>				m_mapMasterToTheme;
-	std::map<DWORD, LONG>				m_mapMasterToLayout;
+	std::map<DWORD, LONG>						m_mapMasterToTheme;
 
 	// original id -> natural id
-	std::map<DWORD, DWORD>				m_mapMasterOriginalIds;
+	std::map<DWORD, DWORD>						m_mapMasterOriginalIds;
 
 	// это как бы ППТ-шная обертка над слайдом
 	std::vector<CSlideInfo>						m_arSlideWrapper;
@@ -39,32 +38,30 @@ public:
 
 	// эти параметры - одни на весь документ. 
 	// чтобы поддержать нашу схему (пптх) - копируем их в темы
-	std::vector<CFont>					m_arrFonts;
-	NSPresentationEditor::CTextStyles	m_oDefaultTextStyle;
+	std::vector<CRecordBlipStoreContainer*>			m_arrBlipStore;
+	std::vector<CFont>								m_arrFonts;
+	NSPresentationEditor::CTextStyles				m_oDefaultTextStyle;
 
 	// чтобы загружать неизмененные элементы от других юзеров (предыдущих)
-	CPPTDocumentInfo*					m_pDocumentInfo;
-	size_t								m_lIndexThisUser;
+	CPPTDocumentInfo*								m_pDocumentInfo;
+	size_t											m_lIndexThisUser;
 
 	// Animations structures
 	std::map <DWORD, Animations::CSlideTimeLine*>	m_mapAnimations;
 
-	double								m_nWriteSlideTimeOffset;
-	double								m_nWriteSlideTime;
+	double											m_nWriteSlideTimeOffset;
+	double											m_nWriteSlideTime;
 
-	std::map<DWORD, CSlideShowSlideInfoAtom> m_mapTransitions;
+	std::map<DWORD, CSlideShowSlideInfoAtom>		m_mapTransitions;
 
 	// номера "пустых" картинок - в эти пути не будем сохранять
-    std::vector<bool>					m_arEmptyPictures;
-    bool								m_bIsSetupEmpty;
+    std::vector<bool>						m_arEmptyPictures;
+    bool									m_bIsSetupEmpty;
 
-	CString								m_strFileDirectory;
+	CString									m_strFileDirectory;
 
 	// вся инфа о ex - файлах
 	CExMedia							m_oExMedia;
-
-	// DEBUG information
-	CString								m_strXmlInfo;
 
 	std::vector<CColor>					m_oSchemeColors;
 
@@ -86,8 +83,6 @@ public:
 	
 	void LoadNoMainMaster	(DWORD dwMasterID, const LONG& lOriginWidth, const LONG& lOriginHeight);
 	void LoadMainMaster		(DWORD dwMasterID, const LONG& lOriginWidth, const LONG& lOriginHeight);
-
-	void UpdateXMLInfo();
 
 	void LoadSlideFromPrevUsers	(DWORD dwSlideID);
 	void LoadMasterFromPrevUsers(DWORD dwSlideID);
@@ -170,16 +165,19 @@ public:
 		oScheme  = oArrayMem;
 	}
 
-	CString ConvertLayoutType(INT nGeom, BYTE* pPlaceholders)
+	
+	std::wstring ConvertLayoutType(INT nGeom, BYTE* pPlaceholders)
 	{
 		switch (nGeom)
 		{
-		case 0x00:
-		case 0x02:
+		case 0x00:	//SL_TitleSlide
+		case 0x02:	//SL_MasterTitle
 			return _T("title");
-		case 0x01:
+		case 0x01:	// SL_TitleBody
 			{
-				NSOfficePPT::PlaceholderEnum phbody = (NSOfficePPT::PlaceholderEnum)pPlaceholders[0];
+				int ind = 0;
+				if (pPlaceholders[0] == 13 && pPlaceholders[1] != 0) ind++;
+				NSOfficePPT::PlaceholderEnum phbody = (NSOfficePPT::PlaceholderEnum)pPlaceholders[ind];
 				switch (phbody)
 				{
 				case NSOfficePPT::MasterTitle:
@@ -195,9 +193,9 @@ public:
 				}
 				return _T("obj");
 			}
-		case 0x07:
+		case 0x07:	//SL_TitleOnly
 			return _T("titleOnly");
-		case 0x08:
+		case 0x08:	//SL_TwoColumns
 			{
 				NSOfficePPT::PlaceholderEnum leftType  = (NSOfficePPT::PlaceholderEnum)pPlaceholders[1];
                 NSOfficePPT::PlaceholderEnum rightType = (NSOfficePPT::PlaceholderEnum)pPlaceholders[2];
@@ -236,7 +234,7 @@ public:
                 }
                 return _T("twoObj");
 			}
-		case 0x09:
+		case 0x09:	//SL_TwoRows
 			{
 				NSOfficePPT::PlaceholderEnum topType	= (NSOfficePPT::PlaceholderEnum)pPlaceholders[1];
                 NSOfficePPT::PlaceholderEnum bottomType = (NSOfficePPT::PlaceholderEnum)pPlaceholders[2];
@@ -247,7 +245,7 @@ public:
                 }
                 return _T("objOverTx");
 			}
-		case 0x0A:
+		case 0x0A:	//SL_ColumnTwoRows
 			{
 				NSOfficePPT::PlaceholderEnum leftType	= (NSOfficePPT::PlaceholderEnum)pPlaceholders[1];
 
@@ -257,7 +255,7 @@ public:
                 }
                 return _T("txAndTwoObj");
 			}
-		case 0x0B:
+		case 0x0B:	//SL_TwoRowsColumn
 			{
 				NSOfficePPT::PlaceholderEnum rightType = (NSOfficePPT::PlaceholderEnum)pPlaceholders[2];
 
@@ -267,22 +265,24 @@ public:
                 }
                 return _T("twoObjAndTx");
 			}
-		case 0x0D:
+		case 0x0D:	//SL_TwoColumnsRow
 			return _T("twoObjOverTx");
-		case 0x0F:
+		case 0x0E://SL_FourObjects
+			return _T("fourObj");		
+		case 0x0F:	//SL_BigObject
 			return _T("objOnly");
-		case 0x10:
+		case 0x10:	//SL_Blank
 			return _T("blank");
-		case 0x0E:
-			return _T("fourObj");
-		case 0x11:
+		case 0x11:	//SL_VerticalTitleBody
 			return _T("vertTitleAndTx");
-		case 0x12:
+		case 0x12:	//SL_VerticalTwoRows
 			return _T("vertTx");
 		}
-		return _T("obj");
+		return _T("blank");
 	}
 
 	void AddAnimation		(DWORD dwSlideID, double Width, double Height, IElement* pElement);
 	void AddAudioTransition (DWORD dwSlideID, CTransition* pTransition, const std::wstring& strFilePath);
+
+	LONG AddNewLayout(NSPresentationEditor::CTheme* pTheme, SSlideLayoutAtom* layoutRecord, std::vector<CTextFullSettings> & text, bool addShapes = true);
 };

@@ -267,7 +267,7 @@ namespace NSPresentationEditor
 
 			pColor->m_lSchemeIndex = -1;
 
-			if (bSchemeIndex)
+			if (bSchemeIndex || bSysIndex)
 			{
 				pColor->m_lSchemeIndex = R;
 				CorrectColorPPT(pColor->m_lSchemeIndex);

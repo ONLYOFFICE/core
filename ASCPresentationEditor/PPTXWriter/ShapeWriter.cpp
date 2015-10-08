@@ -1,12 +1,18 @@
 #include "ShapeWriter.h"
+#include "../../ASCOfficeXlsFile2/source/XlsXlsxConverter/ShapeType.h"
+
+const double EMU_MM = 36000;
 
 NSPresentationEditor::CShapeWriter::CShapeWriter()
 {
 	m_pRels			= NULL;
 	m_lNextShapeID	= 1000;
 
-	m_bIsWriteGeom = true;
-
+	m_bIsWriteGeom	= true;
+	
+	m_bWordArt		= false;
+	m_bTextBox		= false;
+	
 //////////////////////////////////////////////////////////////////////
 	m_dDpiX = 96.0;
 	m_dDpiY	= 96.0;
@@ -26,12 +32,653 @@ NSPresentationEditor::CShapeWriter::CShapeWriter()
 	m_pImageElement = NULL;
 	m_pShapeElement = NULL;
 }
+CString	NSPresentationEditor::CShapeWriter::ConvertLine()
+{
+	if (m_pShapeElement->m_bLine == false) return _T("");
+
+	NSPresentationEditor::CStringWriter line_writer;
+
+	CPen* pPen = &m_pShapeElement->m_oShape.m_oPen;
+	
+	CString strLine = _T("");
+	strLine.Format(_T("<a:ln w=\"%d\">"), (int)(pPen->Size * 36000));
+	line_writer.WriteString(strLine);
+
+	if (m_bWordArt)
+	{
+		line_writer.WriteString(std::wstring(L"<a:noFill/>"));
+	}
+	else
+	{
+		line_writer.WriteString(std::wstring(L"<a:solidFill>"));
+			line_writer.WriteString(ConvertColor(pPen->Color, pPen->Alpha));
+		line_writer.WriteString(std::wstring(L"</a:solidFill>"));
+	}
+
+	line_writer.WriteString(std::wstring(L"<a:round/><a:headEnd/><a:tailEnd/></a:ln>"));
+
+	return line_writer.GetData();
+}
+CString	NSPresentationEditor::CShapeWriter::ConvertBrush(CBrush & brush)
+{
+	NSPresentationEditor::CStringWriter brush_writer;
+	
+	if (brush.Type == c_BrushTypeTexture)
+	{
+		CString strRid = m_pRels->WriteImage(brush.TexturePath);
+
+		brush_writer.WriteString(std::wstring(L"<a:blipFill dpi=\"0\" rotWithShape=\"1\"><a:blip r:embed=\"") + string2std_string(strRid) + _T("\"/><a:srcRect/>"));
+			
+		if (	brush.TextureMode == c_BrushTextureModeTile)
+			brush_writer.WriteString(std::wstring(L"<a:tile/>"));
+		else
+			brush_writer.WriteString(std::wstring(L"<a:stretch><a:fillRect/></a:stretch>"));
+
+		brush_writer.WriteString(std::wstring(L"</a:blipFill>"));
+	}
+	else if (	brush.Type == c_BrushTypeNoFill) 
+	{
+		brush_writer.WriteString(std::wstring(L"<a:noFill/>"));
+	}
+	else if (	brush.Type == c_BrushTypePathGradient1	||
+				brush.Type == c_BrushTypePathGradient2	||
+				brush.Type == c_BrushTypeCenter			||
+				brush.Type == c_BrushTypeHorizontal		||
+				brush.Type == c_BrushTypeVertical		) 
+	{
+		brush_writer.WriteString(std::wstring(L"<a:gradFill>"));
+			brush_writer.WriteString(std::wstring(L"<a:gsLst><a:gs pos=\"0\">"));
+				brush_writer.WriteString(ConvertColor(brush.Color1, brush.Alpha1));
+			brush_writer.WriteString(std::wstring(L"</a:gs><a:gs pos=\"100000\">"));
+				brush_writer.WriteString(ConvertColor(brush.Color2, brush.Alpha2));
+			brush_writer.WriteString(std::wstring(L"</a:gs></a:gsLst><a:lin ang=\"5400000\" scaled=\"1\"/>"));
+		brush_writer.WriteString(std::wstring(L"</a:gradFill>"));
+	}
+	else if(brush.Type == c_BrushTypePattern)
+	{//типов нету в ппт - вместо них шаблон-картинка
+		brush_writer.WriteString(std::wstring(L"<a:pattFill prst=\"pct80\">"));
+			brush_writer.WriteString(std::wstring(L"<a:fgClr>"));
+				brush_writer.WriteString(ConvertColor(brush.Color1, brush.Alpha1));
+			brush_writer.WriteString(std::wstring(L"</a:fgClr>"));
+			brush_writer.WriteString(std::wstring(L"<a:bgClr>"));
+				brush_writer.WriteString(ConvertColor(brush.Color2, brush.Alpha2));
+			brush_writer.WriteString(std::wstring(L"</a:bgClr>"));
+		brush_writer.WriteString(std::wstring(L"</a:pattFill>"));
+	}
+	else
+	{
+		brush_writer.WriteString(std::wstring(L"<a:solidFill>"));
+			brush_writer.WriteString(ConvertColor(brush.Color1, brush.Alpha1));
+		brush_writer.WriteString(std::wstring(L"</a:solidFill>"));
+	}
+	return brush_writer.GetData();
+}
+
+CString	NSPresentationEditor::CShapeWriter::ConvertShadow()
+{
+	if (m_pShapeElement->m_oShape.m_oShadow.Visible == false) return _T("");
+
+
+	double dist = sqrt(m_pShapeElement->m_oShape.m_oShadow.DistanceY * m_pShapeElement->m_oShape.m_oShadow.DistanceY  + 
+				m_pShapeElement->m_oShape.m_oShadow.DistanceX * m_pShapeElement->m_oShape.m_oShadow.DistanceX);
+
+
+	double dir = 180 * atan(m_pShapeElement->m_oShape.m_oShadow.DistanceX / m_pShapeElement->m_oShape.m_oShadow.DistanceY) / 3.1415926;
+
+	if (dir < 0) dir += 360;
+
+	CString strDir = _T("");
+	strDir.Format(_T("  dir=\"%d\""), (int)(dir * 60000));
+
+	CString strDist = _T("");
+	strDist.Format(_T("  dist=\"%d\""), (int)(dist * 36000));
+
+	NSPresentationEditor::CStringWriter shadow_writer;
+	
+	shadow_writer.WriteString(std::wstring(L"<a:effectLst>"));	
+	shadow_writer.WriteString(std::wstring(L"<a:outerShdw"));
+		shadow_writer.WriteString(std::wstring(L" rotWithShape=\"0\" algn=\"ctr\""));
+		shadow_writer.WriteString(strDir);
+		shadow_writer.WriteString(strDist);
+	shadow_writer.WriteString(std::wstring(L">"));
+
+	shadow_writer.WriteString(ConvertColor(m_pShapeElement->m_oShape.m_oShadow.Color,m_pShapeElement->m_oShape.m_oShadow.Alpha));
+	shadow_writer.WriteString(std::wstring(L"</a:outerShdw>"));
+	shadow_writer.WriteString(std::wstring(L"</a:effectLst>"));
+	return shadow_writer.GetData();
+}
+
+CString  NSPresentationEditor::CShapeWriter::ConvertColor(CColor & color, long alpha)
+{
+	NSPresentationEditor::CStringWriter color_writer;
+	if (color.m_lSchemeIndex == -1)
+	{
+		if (255 == alpha)
+		{
+			CString str = _T("");
+			str.Format(_T("<a:srgbClr val=\"%06X\"/>"), color.GetLONG_RGB());
+			color_writer.WriteString(str);
+		}
+		else
+		{
+			CString str = _T("");
+			str.Format(_T("<a:srgbClr val=\"%06X\"><a:alpha val=\"%d\"/></a:srgbClr>"), color.GetLONG_RGB(), (int)(alpha * 100000 / 255));
+			color_writer.WriteString(str);
+		}
+	}
+	else
+	{
+		if (255 == alpha)
+		{
+            CString str = _T("<a:schemeClr val=\"") + CStylesWriter::GetColorInScheme(color.m_lSchemeIndex) + _T("\"/>");
+			color_writer.WriteString(str);
+		}
+		else
+		{
+            CString strAlpha; strAlpha.Format(_T("%d"), (int)(alpha * 100000 / 255));
+
+            CString str = _T("<a:schemeClr val=\"") + CStylesWriter::GetColorInScheme(color.m_lSchemeIndex) + _T("\"><a:alpha val=\"") + strAlpha + _T("\"/></a:schemeClr>");
+
+			color_writer.WriteString(str);
+		}
+	}
+	return color_writer.GetData();
+}
+void NSPresentationEditor::CShapeWriter::WriteImageInfo()
+{
+	m_oWriter.WriteString(std::wstring(L"<p:nvPicPr>"));
+
+	CString strShapeID;
+	strShapeID.Format(_T("%d"),	m_lNextShapeID);			
+	
+	m_oWriter.WriteString(std::wstring(L"<p:cNvPr id=\"") +string2std_string(strShapeID) + L"\"" );
+	
+	if (m_pImageElement->m_sName.empty()) m_pImageElement->m_sName = std::wstring(L"Image ") +  string2std_string(strShapeID);
+	
+	m_oWriter.WriteString(std::wstring(L" name=\""));
+		m_oWriter.WriteStringXML(m_pImageElement->m_sName);
+	m_oWriter.WriteString(std::wstring(L"\""));
+	
+	if (!m_pImageElement->m_sDescription.empty())
+	{
+		m_oWriter.WriteString(std::wstring(L" descr=\""));
+			m_oWriter.WriteStringXML(m_pImageElement->m_sDescription);
+		m_oWriter.WriteString(std::wstring(L"\""));
+	}
+
+	m_oWriter.WriteString(std::wstring(L"></p:cNvPr><p:cNvPicPr><a:spLocks noGrp=\"1\" noChangeAspect=\"1\"/></p:cNvPicPr>"));
+
+	++m_lNextShapeID;
+
+	if (-1 != m_pImageElement->m_lPlaceholderType)
+	{
+		if (15 == m_pImageElement->m_lPlaceholderType)
+			m_pImageElement->m_lPlaceholderID = -1;
+		if (0 == m_pImageElement->m_lPlaceholderType)
+			m_pImageElement->m_lPlaceholderID = 1;
+
+		if (-1 == m_pImageElement->m_lPlaceholderID)
+		{
+            m_oWriter.WriteString(std::wstring(L"<p:nvPr><p:ph type=\"") + GetPhType(m_pImageElement->m_lPlaceholderType) +_T("\"/></p:nvPr>"));
+		}
+		else
+		{
+            CString strIdx; strIdx.Format(_T("%d"), m_pImageElement->m_lPlaceholderID);
+            m_oWriter.WriteString(std::wstring(L"<p:nvPr><p:ph type=\"") + GetPhType(m_pImageElement->m_lPlaceholderType) + _T("\" idx=\"") + string2std_string(strIdx) + _T("\"/></p:nvPr>"));
+
+		}
+	}
+	else
+	{
+		m_oWriter.WriteString(std::wstring(L"<p:nvPr/>"));
+	}
+	
+	CString str2 = _T("</p:nvPicPr>");
+	m_oWriter.WriteString(str2);
+}
+
+void NSPresentationEditor::CShapeWriter::WriteShapeInfo()
+{
+	m_oWriter.WriteString(std::wstring(L"<p:nvSpPr>"));
+
+	CString strShapeID = _T("");
+
+	if (m_pShapeElement->m_lID < 0) 
+		m_pShapeElement->m_lID = m_lNextShapeID;
+
+	strShapeID.Format(L"%d", m_pShapeElement->m_lID);
+
+	m_oWriter.WriteString(std::wstring(L"<p:cNvPr id=\"") + string2std_string(strShapeID) + L"\"");
+
+	if (m_pShapeElement->m_sName.empty()) m_pShapeElement->m_sName = std::wstring(L"Shape ") +  string2std_string(strShapeID);
+
+	m_oWriter.WriteString(std::wstring(L" name=\""));
+		m_oWriter.WriteStringXML(m_pShapeElement->m_sName);
+	m_oWriter.WriteString(std::wstring(L"\""));
+
+	if (!m_pShapeElement->m_sDescription.empty())
+	{
+		m_oWriter.WriteString(std::wstring(L" descr=\""));
+			m_oWriter.WriteStringXML(m_pShapeElement->m_sDescription);
+		m_oWriter.WriteString(std::wstring(L"\""));
+	}
+	m_oWriter.WriteString(std::wstring(L">"));
+	if (!m_pShapeElement->m_sHyperlink.empty())
+	{
+		std::wstring rId = (m_pRels->WriteHyperlink(m_pShapeElement->m_sHyperlink)).GetBuffer();
+
+		m_oWriter.WriteString(std::wstring(L"<a:hlinkClick"));
+			m_oWriter.WriteString(std::wstring(L" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""));					
+			m_oWriter.WriteString(std::wstring(L" r:id=\"" + rId ));
+		m_oWriter.WriteString(std::wstring(L"\"></a:hlinkClick>"));
+	}		
+	m_oWriter.WriteString(std::wstring(L"</p:cNvPr>"));
+	
+	m_oWriter.WriteString(std::wstring(L"<p:cNvSpPr"));
+		if (m_bTextBox)
+			m_oWriter.WriteString(std::wstring(L" txBox=\"1\""));
+	m_oWriter.WriteString(std::wstring(L"><a:spLocks noGrp=\"1\" noChangeArrowheads=\"1\"/>"));
+	m_oWriter.WriteString(std::wstring(L"</p:cNvSpPr>"));
+
+	++m_lNextShapeID;
+
+	if (-1 != m_pShapeElement->m_lPlaceholderType)
+	{
+		if (15 == m_pShapeElement->m_lPlaceholderType)
+			m_pShapeElement->m_lPlaceholderID = -1;
+		if (0 == m_pShapeElement->m_lPlaceholderType)
+			m_pShapeElement->m_lPlaceholderID = 1;
+
+		if (-1 == m_pShapeElement->m_lPlaceholderID)
+		{
+            m_oWriter.WriteString(std::wstring(L"<p:nvPr><p:ph type=\"") + GetPhType(m_pShapeElement->m_lPlaceholderType) + _T("\""));
+			 if (5 == m_pShapeElement->m_lPlaceholderType)
+				 m_oWriter.WriteString(std::wstring(L" size=\"half\""));
+			 if (12 == m_pShapeElement->m_lPlaceholderType)
+				 m_oWriter.WriteString(std::wstring(L" size=\"quarter\""));
+			 //else
+				// m_oWriter.WriteString(std::wstring(L" size=\"half\""));
+			
+			m_oWriter.WriteString(std::wstring(L"/></p:nvPr>"));
+		}
+		else
+		{
+            CString strIdx; strIdx.Format(_T("%d"), m_pShapeElement->m_lPlaceholderID);
+			 m_oWriter.WriteString(std::wstring(L"<p:nvPr><p:ph type=\"") + GetPhType(m_pShapeElement->m_lPlaceholderType) + _T("\" idx=\"") + string2std_string(strIdx) + _T("\""));
+			 if (5 == m_pShapeElement->m_lPlaceholderType)
+				 m_oWriter.WriteString(std::wstring(L" size=\"half\""));
+			 if (12 == m_pShapeElement->m_lPlaceholderType)
+				 m_oWriter.WriteString(std::wstring(L" size=\"quarter\""));
+			 //else
+				// m_oWriter.WriteString(std::wstring(L" size=\"half\""));
+				 
+			m_oWriter.WriteString(std::wstring(L"/></p:nvPr>"));
+		}
+	}
+	else
+	{
+		m_oWriter.WriteString(std::wstring(L"<p:nvPr/>"));
+	}
+	
+	CString str2 = _T("</p:nvSpPr>");
+	m_oWriter.WriteString(str2);
+}
+void NSPresentationEditor::CShapeWriter::WriteTextInfo()
+{
+	size_t nCount = m_pShapeElement->m_oShape.m_oText.m_arParagraphs.size();
+	if (/*0 == nCount || */(0x00 == (m_pShapeElement->m_oShape.m_lDrawType & c_ShapeDrawType_Text)))
+		return;
+
+	m_oWriter.WriteString(std::wstring(L"<p:txBody>"));
+
+	m_oWriter.WriteString(std::wstring(L"<a:bodyPr" ));
+
+  //		int __l = (int)((m_oBounds.left		+ m_oTextRect.left)	* EMU_MM);
+		//int __t = (int)((m_oBounds.top		+ m_oTextRect.top)	* EMU_MM);
+		//int __r = (int)((m_oBounds.right	- m_oTextRect.right)* EMU_MM);
+		//int __b = (int)((m_oBounds.bottom	- m_oTextRect.bottom)* EMU_MM);
+
+		//if (true)
+		//{
+		//	CString str;
+		//	str.Format(L" lIns=\"%d\" tIns=\"%d\" rIns=\"%d\" bIns=\"%d\"",__l, __t, __r, __b);
+		//	m_oWriter.WriteString(str);
+		//}
+		//else
+			m_oWriter.WriteString(std::wstring(L" lIns=\"0\" tIns=\"0\" rIns=\"0\" bIns=\"0\""));
+
+		if (m_pShapeElement->m_oShape.m_oText.m_oAttributes.m_nTextAlignVertical == 0 )			
+			m_oWriter.WriteString(" anchor=\"t\"");
+		else if (m_pShapeElement->m_oShape.m_oText.m_oAttributes.m_nTextAlignVertical == 2 )	
+			m_oWriter.WriteString(" anchor=\"b\"");
+		else if (m_pShapeElement->m_oShape.m_oText.m_oAttributes.m_nTextAlignVertical == 1 )					
+			m_oWriter.WriteString(" anchor=\"ctr\"");
+		m_oWriter.WriteString(std::wstring(L">"));
+
+		if (m_bWordArt)
+		{
+			std::wstring prstTxWarp = oox::Spt2WordArtShapeType((oox::MSOSPT)m_pShapeElement->m_lShapeType);				
+			m_oWriter.WriteString(std::wstring(L"<a:prstTxWarp"));
+				m_oWriter.WriteString(std::wstring(L" prst=\"") + prstTxWarp + _T("\">"));
+				m_oWriter.WriteString(std::wstring(L"<a:avLst/>"));//модификаторы
+			m_oWriter.WriteString(std::wstring(L"</a:prstTxWarp>"));
+		}
+	m_oWriter.WriteString(std::wstring(L"</a:bodyPr>"));
+	
+	if (0 == nCount)
+	{
+		m_oWriter.WriteString(std::wstring(L"<a:lstStyle/><a:p><a:endParaRPr dirty=\"0\"/></a:p></p:txBody>"));
+		return;
+	}
+	m_oWriter.WriteString(std::wstring(L"<a:lstStyle>"));
+
+	CStylesWriter::ConvertStyles(m_pShapeElement->m_oShape.m_oText.m_oStyles, m_oMetricInfo, m_oWriter);
+
+	m_oWriter.WriteString(std::wstring(L"</a:lstStyle>"));
+
+	for (size_t nIndexPar = 0; nIndexPar < nCount; ++nIndexPar)
+	{
+		NSPresentationEditor::CParagraph* pParagraph = &m_pShapeElement->m_oShape.m_oText.m_arParagraphs[nIndexPar];
+
+		CString _str1 = _T("");
+		_str1.Format(_T("<a:p><a:pPr lvl=\"%d\""), pParagraph->m_lTextLevel);
+		m_oWriter.WriteString(_str1);
+
+		NSPresentationEditor::CTextPFRun* pPF = &pParagraph->m_oPFRun;
+
+		if (pPF->fontAlign.is_init())
+		{
+			CString strProp = CStylesWriter::GetFontAlign(pPF->fontAlign.get());
+			m_oWriter.WriteString(std::wstring(L" fontAlgn=\"") + string2std_string(strProp) + _T("\""));
+		}
+		if (pPF->leftMargin.is_init())
+		{
+			CString strProp = _T("");
+			strProp.Format(_T(" marL=\"%d\""), pPF->leftMargin.get());
+			m_oWriter.WriteString(strProp);
+			if (pPF->indent.is_init() == false)
+				pPF->indent = (LONG)0;
+
+		}
+		if (pPF->indent.is_init())
+		{
+			CString strProp = _T("");
+			strProp.Format(_T(" indent=\"%d\""), pPF->indent.get());
+			m_oWriter.WriteString(strProp);
+		}
+		if (pPF->textAlignment.is_init())
+		{
+			CString strProp = CStylesWriter::GetTextAlign(pPF->textAlignment.get());
+			m_oWriter.WriteString(std::wstring(L" algn=\"") + string2std_string(strProp) + _T("\""));
+		}
+		if (pPF->defaultTabSize.is_init())
+		{
+			CString strProp = _T("");
+			strProp.Format(_T(" defTabSz=\"%d\""), pPF->defaultTabSize.get());
+			m_oWriter.WriteString(strProp);
+		}
+		CString _str2 = _T(">");
+		m_oWriter.WriteString(_str2);
+
+		double dKoef1 = 3.52777778;
+		if (pPF->lineSpacing.is_init())
+		{
+			LONG val = pPF->lineSpacing.get();
+			if (val > 0)
+			{
+				CString str = _T("");
+				str.Format(_T("<a:lnSpc><a:spcPts val=\"%d\"/></a:lnSpc>"), (int)(val / dKoef1 * 100));
+				m_oWriter.WriteString(str);
+			}
+			else
+			{
+				CString str = _T("");
+				str.Format(_T("<a:lnSpc><a:spcPct val=\"%d\"/></a:lnSpc>"), -val * 1000);
+				m_oWriter.WriteString(str);
+			}
+		}
+		if (pPF->spaceAfter.is_init())
+		{
+			LONG val = pPF->spaceAfter.get();
+			if (val > 0)
+			{
+				CString str = _T("");
+				str.Format(_T("<a:spcAft><a:spcPts val=\"%d\"/></a:spcAft>"), (int)(val / dKoef1  * 100));
+				m_oWriter.WriteString(str);
+			}
+			else if (val < 0)
+			{
+				CString str = _T("");
+				str.Format(_T("<a:spcAft><a:spcPct val=\"%d\"/></a:spcAft>"), -val * 1000);
+				m_oWriter.WriteString(str);
+			}
+		}
+		if (pPF->spaceBefore.is_init())
+		{
+			LONG val = pPF->spaceBefore.get();
+			if (val > 0)
+			{
+				CString str = _T("");
+				str.Format(_T("<a:spcBef><a:spcPts val=\"%d\"/></a:spcBef>"), (int)(val / dKoef1  * 100));
+				m_oWriter.WriteString(str);
+			}
+			else if (val < 0)
+			{
+				CString str = _T("");
+				str.Format(_T("<a:spcBef><a:spcPct val=\"%d\"/></a:spcBef>"), -val * 1000);
+				m_oWriter.WriteString(str);
+			}
+		}
+
+		if (pPF->hasBullet.is_init())
+		{
+			if (pPF->hasBullet.get())
+			{
+				wchar_t bu = 0x2022;
+				m_oWriter.WriteString(std::wstring(L"<a:buChar char=\""));
+				if (pPF->bulletChar.is_init())
+				{
+					bu = pPF->bulletChar.get();
+				}
+                m_oWriter.WriteString(std::wstring(&bu, 1));
+                m_oWriter.WriteString(std::wstring(L"\"/>"));
+			}
+			else
+			{
+				m_oWriter.WriteString(std::wstring(L"<a:buNone/>"));
+			}
+		}
+
+		m_oWriter.WriteString(std::wstring(L"</a:pPr>"));
+
+		std::wstring typeRun = L"a:r";
+
+		//if (m_pShapeElement->m_lPlaceholderType == 12)
+		//{
+		//	m_oWriter.WriteString(std::wstring(L"<a:fld id=\"{D038279B-FC19-497E-A7D1-5ADD9CAF016F}\" type=\"slidenum\">"));
+		//	m_oWriter.WriteString(std::wstring(L"<a:rPr/><a:t>Л#Ы</a:t></a:fld>"));
+		//}
+		//else
+
+		size_t nCountSpans = pParagraph->m_arSpans.size();
+		for (size_t nSpan = 0; nSpan < nCountSpans; ++nSpan)
+		{
+			if (TRUE)
+			{
+				if ((nSpan == (nCountSpans - 1)) && (_T("\n") == pParagraph->m_arSpans[nSpan].m_strText))
+				{
+					NSPresentationEditor::CTextCFRun* pCF = &pParagraph->m_arSpans[nSpan].m_oRun;
+					if (pCF->Size.is_init())
+					{
+						CString strProp = _T("");
+						strProp.Format(_T("<a:endParaRPr lang=\"en-US\" sz=\"%d\"/>"), (int)(100 * pCF->Size.get()));
+						m_oWriter.WriteString(strProp);
+					}
+					else
+					{
+						m_oWriter.WriteString(std::wstring(L"<a:endParaRPr lang=\"en-US\"/>"));
+					}
+					continue;
+				}
+			}
+
+			if (pParagraph->m_arSpans[nSpan].m_strText.IsEmpty()) continue;
+
+			NSPresentationEditor::CTextCFRun* pCF = &pParagraph->m_arSpans[nSpan].m_oRun;
+
+			bool bIsBr = false;
+			
+			if (pParagraph->m_arSpans[nSpan].m_strText.GetLength() >0) 
+			{
+				if(_T("\n") == pParagraph->m_arSpans[nSpan].m_strText)	bIsBr=true;
+			}
+			
+			if (bIsBr)
+			{
+				CString strRun1 = _T("<a:br><a:rPr");
+				m_oWriter.WriteString(strRun1);
+			}
+			else
+			{
+				if (m_pShapeElement->m_lPlaceholderType == 12)//todooo + date
+				{
+					m_oWriter.WriteString(std::wstring(L"<a:fld id=\"{D038279B-FC19-497E-A7D1-5ADD9CAF016F}\" type=\"slidenum\"><a:rPr"));
+				}
+				else
+				{						
+					m_oWriter.WriteString(std::wstring(L"<a:r><a:rPr"));
+				}
+			}					
+			
+			if (pCF->Size.is_init())
+			{
+				CString strProp = _T("");
+				strProp.Format(_T(" sz=\"%d\""), (int)(100 * pCF->Size.get()));
+				m_oWriter.WriteString(strProp);
+			}				
+			if (pCF->FontBold.is_init())
+			{
+				if (pCF->FontBold.get())
+					m_oWriter.WriteString(std::wstring(L" b=\"1\""));
+				else
+					m_oWriter.WriteString(std::wstring(L" b=\"0\""));
+			}
+			if (pCF->FontItalic.is_init())
+			{
+				if (pCF->FontItalic.get())
+					m_oWriter.WriteString(std::wstring(L" i=\"1\""));
+				else
+					m_oWriter.WriteString(std::wstring(L" i=\"0\""));
+			}
+			m_oWriter.WriteString(std::wstring(L">"));
+
+			if (m_bWordArt)
+			{
+				m_oWriter.WriteString(ConvertBrush(m_pShapeElement->m_oShape.m_oBrush));
+			}
+			else
+			{
+				if (pCF->Color.is_init())
+				{
+					if (pCF->Color->m_lSchemeIndex != -1)
+					{
+						CString strProp = _T("<a:solidFill><a:schemeClr val=\"") + CStylesWriter::GetColorInScheme(pCF->Color->m_lSchemeIndex) + _T("\"/></a:solidFill>");
+						m_oWriter.WriteString(strProp);
+					}
+					else
+					{
+						CString strColor = _T("");
+						strColor.Format(_T("%06x"), pCF->Color->GetLONG_RGB());
+
+						CString strProp = _T("<a:solidFill><a:srgbClr val=\"") + strColor + _T("\"/></a:solidFill>");
+						m_oWriter.WriteString(strProp);
+					}
+				}
+			}
+
+			if (pCF->Typeface.is_init())
+			{
+				if (0 == pCF->Typeface.get())
+				{
+					CString strProp = _T("<a:latin typeface=\"+mj-lt\"/>");
+					m_oWriter.WriteString(strProp);
+				}
+				else
+				{
+					CString strProp = _T("<a:latin typeface=\"+mn-lt\"/>");
+					m_oWriter.WriteString(strProp);
+				}
+			}
+			else if (pCF->FontProperties.is_init())
+			{
+				m_oWriter.WriteString(std::wstring(L"<a:latin typeface=\"") + pCF->FontProperties->strFontName + _T("\"/>"));
+			}
+
+			m_oWriter.WriteString(std::wstring(L"</a:rPr>"));
+
+			if (!bIsBr)
+			{
+				CString strT1 = _T("<a:t>");
+				m_oWriter.WriteString(strT1);
+
+				CString strT = pParagraph->m_arSpans[nSpan].m_strText;
+				NSPresentationEditor::CorrectXmlString(strT);
+				m_oWriter.WriteString(strT);
+
+				CString strT2 = _T("</a:t>");
+				m_oWriter.WriteString(strT2);
+
+				if (m_pShapeElement->m_lPlaceholderType == 12)
+					m_oWriter.WriteString(std::wstring(L"</a:fld>"));
+				else
+					m_oWriter.WriteString(std::wstring(L"</a:r>"));
+
+			}
+			else
+			{
+				m_oWriter.WriteString(std::wstring(L"</a:br>"));
+			}
+		}
+
+		CString strEndPar = _T("</a:p>");
+		m_oWriter.WriteString(strEndPar);
+	}
+
+	CString str5 = _T("</p:txBody>");
+	m_oWriter.WriteString(str5);
+}
 
 CString NSPresentationEditor::CShapeWriter::ConvertShape()
 {
 	if (m_pImageElement) return ConvertImage();
 
 	if (m_pShapeElement == NULL) return _T("");
+
+	bool bPath		= false;
+
+	std::wstring prstTxWarp;
+	std::wstring prstGeom	= oox::Spt2ShapeType((oox::MSOSPT)m_pShapeElement->m_lShapeType);
+
+	if (prstGeom.empty())
+	{
+		prstTxWarp = oox::Spt2WordArtShapeType((oox::MSOSPT)m_pShapeElement->m_lShapeType);
+		if (prstTxWarp.empty() == false)
+		{
+			m_bWordArt = true;
+			m_bTextBox = true;
+			prstGeom = L"rect";
+			m_oBrush.Type = c_BrushTypeNoFill;
+		}
+		else bPath = true;
+	}
+	else
+	{
+		if (oox::msosptTextBox == (oox::MSOSPT)m_pShapeElement->m_lShapeType)	
+			m_bTextBox = true;
+
+		if (m_pShapeElement->m_oShape.m_pShape->m_arAdjustments.size() > 0)
+			bPath = true;
+	}
 
 	m_oWriter.WriteString(std::wstring(L"<p:sp>"));
 
@@ -51,45 +698,58 @@ CString NSPresentationEditor::CShapeWriter::ConvertShape()
 
 	if (m_bIsWriteGeom)
 	{
-		CString strPosition = _T("");
-		if (0 == m_pShapeElement->m_dRotate)
+		CString str;
+		
+		m_oWriter.WriteString(std::wstring(L"<a:xfrm"));	
+			if (0 != m_pShapeElement->m_dRotate)
+			{
+				str.Format(L" rot=\"%d\"", (int)(m_pShapeElement->m_dRotate * 60000));
+				m_oWriter.WriteString(str);
+			}
+			if (m_pShapeElement->m_bFlipH)
+			{
+				m_oWriter.WriteString(std::wstring(L" flipH=\"1\""));
+			}
+			if (m_pShapeElement->m_bFlipV)
+			{
+				m_oWriter.WriteString(std::wstring(L" flipV=\"1\""));
+			}
+		m_oWriter.WriteString(std::wstring(L">"));
+
+		if (m_pShapeElement->m_rcBoundsOriginal.left >= 0 && m_pShapeElement->m_rcBoundsOriginal.top >=0 )
 		{
-			strPosition.Format(_T("<a:xfrm><a:off x=\"%d\" y=\"%d\"/><a:ext cx=\"%d\" cy=\"%d\"/></a:xfrm>"), 
-				(size_t) m_pShapeElement->m_rcBoundsOriginal.left,
-				(size_t) m_pShapeElement->m_rcBoundsOriginal.top,
-				(size_t)(m_pShapeElement->m_rcBoundsOriginal.right - m_pShapeElement->m_rcBoundsOriginal.left),
-				(size_t)(m_pShapeElement->m_rcBoundsOriginal.bottom - m_pShapeElement->m_rcBoundsOriginal.top));
+				str.Format(_T("<a:off x=\"%d\" y=\"%d\"/>"), (int)m_pShapeElement->m_rcBoundsOriginal.left,	(int)m_pShapeElement->m_rcBoundsOriginal.top);				
+				m_oWriter.WriteString(str);
 		}
-		else
+
+		if (m_pShapeElement->m_rcBoundsOriginal.right - m_pShapeElement->m_rcBoundsOriginal.left > 0 || 
+			m_pShapeElement->m_rcBoundsOriginal.bottom - m_pShapeElement->m_rcBoundsOriginal.top >0 )
 		{
-			strPosition.Format(_T("<a:xfrm rot=\"%d\" flipH=\"%d\" flipV=\"%d\"><a:off x=\"%d\" y=\"%d\"/><a:ext cx=\"%d\" cy=\"%d\"/></a:xfrm>"),
-				(int)(m_pShapeElement->m_dRotate * 60000), m_pShapeElement->m_bFlipH ? 1 : 0, m_pShapeElement->m_bFlipV ? 1 : 0,
-				(int) m_pShapeElement->m_rcBoundsOriginal.left,
-				(int) m_pShapeElement->m_rcBoundsOriginal.top,
-				(int)(m_pShapeElement->m_rcBoundsOriginal.right - m_pShapeElement->m_rcBoundsOriginal.left),
-				(int)(m_pShapeElement->m_rcBoundsOriginal.bottom - m_pShapeElement->m_rcBoundsOriginal.top));
+			str.Format(_T("<a:ext cx=\"%d\" cy=\"%d\"/>"), (int)(m_pShapeElement->m_rcBoundsOriginal.right - m_pShapeElement->m_rcBoundsOriginal.left),
+														   (int)(m_pShapeElement->m_rcBoundsOriginal.bottom - m_pShapeElement->m_rcBoundsOriginal.top));
+			m_oWriter.WriteString(str);
 		}
-		m_oWriter.WriteString(strPosition);
+		m_oWriter.WriteString(std::wstring(L"</a:xfrm>"));
 	}
 
 	if (m_pShapeElement->m_oShape.m_lDrawType & c_ShapeDrawType_Graphic)
 	{
 		m_pShapeElement->m_oShape.ToRenderer(dynamic_cast<IRenderer*>(this), oInfo, m_oMetricInfo, 0.0, 1.0);
 	}
-
-	if (m_oWriterVML.GetCurSize() >= 10)
+	
+	if (bPath && m_oWriterVML.GetCurSize() >= 10)
 	{
-		if (_T("") == m_pShapeElement->m_oShape.m_strPPTXShape)
+		if (m_pShapeElement->m_oShape.m_strPPTXShape.IsEmpty())
 		{
 			m_oWriter.WriteString(std::wstring(L"<a:custGeom>"));
 
             double dW = (std::max)(m_oBounds.GetWidth(), 0.1);
             double dH = (std::max)(m_oBounds.GetHeight(), 0.1);
 
-			int __l = (int)((m_oTextRect.left	 - m_oBounds.left)	* 100000 / dW);
-			int __t = (int)((m_oTextRect.top	 - m_oBounds.top)	* 100000 / dH);
-			int __r = (int)((m_oTextRect.right	 - m_oBounds.left)	* 100000 / dW);
-			int __b = (int)((m_oTextRect.bottom - m_oBounds.top)	* 100000 / dH);
+			int __l = (int)((m_oTextRect.left	- m_oBounds.left)	* 100000 / dW);
+			int __t = (int)((m_oTextRect.top	- m_oBounds.top)	* 100000 / dH);
+			int __r = (int)((m_oTextRect.right	- m_oBounds.left)	* 100000 / dW);
+			int __b = (int)((m_oTextRect.bottom	- m_oBounds.top)	* 100000 / dH);
 
 			size_t __nCount = m_pShapeElement->m_oShape.m_oText.m_arParagraphs.size();
 			if (0 == __nCount || (0x00 == (m_pShapeElement->m_oShape.m_lDrawType & c_ShapeDrawType_Text)))
@@ -100,7 +760,8 @@ CString NSPresentationEditor::CShapeWriter::ConvertShape()
 			{
 				CString strGuides = _T("");
 				strGuides.Format(_T("<a:gdLst><a:gd name=\"_l\" fmla=\"*/ w %d 100000\"/><a:gd name=\"_t\" fmla=\"*/ h %d 100000\"/>\
-									<a:gd name=\"_r\" fmla=\"*/ w %d 100000\"/><a:gd name=\"_b\" fmla=\"*/ h %d 100000\"/></a:gdLst>"), __l, __t, __r, __b);
+									<a:gd name=\"_r\" fmla=\"*/ w %d 100000\"/><a:gd name=\"_b\" fmla=\"*/ h %d 100000\"/></a:gdLst>"),
+									__l, __t, __r, __b);
 				m_oWriter.WriteString(strGuides);
 
 				m_oWriter.WriteString(std::wstring(L"<a:rect l=\"_l\" t=\"_t\" r=\"_r\" b=\"_b\"/>"));
@@ -115,91 +776,34 @@ CString NSPresentationEditor::CShapeWriter::ConvertShape()
 		{
 			m_oWriter.WriteString(m_pShapeElement->m_oShape.m_strPPTXShape);
 		}
-	}/*else
-		m_oWriter.WriteString(std::wstring(L"<a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom>"));*/
-
-	CBrush* pBrush = &m_pShapeElement->m_oShape.m_oBrush;
-	
-	if (pBrush->Type == c_BrushTypeTexture)
-	{
-		CString strRid = m_pRels->WriteImage(pBrush->TexturePath);
-
-		m_oWriter.WriteString(std::wstring(L"<a:blipFill dpi=\"0\" rotWithShape=\"1\"><a:blip r:embed=\"") + string2std_string(strRid) + 
-			_T("\"/><a:srcRect/><a:stretch><a:fillRect/></a:stretch></a:blipFill>"));
-	}
-	else if (pBrush->Type == c_BrushTypeNoFill) 
-	{
-		m_oWriter.WriteString(std::wstring(L"<a:noFill/>"));
-	}
-	else if (pBrush->Color1.m_lSchemeIndex == -1)
-	{
-		if (255 == pBrush->Alpha1)
-		{
-			CString str = _T("");
-			str.Format(_T("<a:solidFill><a:srgbClr val=\"%06x\"/></a:solidFill>"), pBrush->Color1.GetLONG_RGB());
-			m_oWriter.WriteString(str);
-		}
-		else
-		{
-			CString str = _T("");
-			str.Format(_T("<a:solidFill><a:srgbClr val=\"%06x\"><a:alpha val=\"%d\"/></a:srgbClr></a:solidFill>"), pBrush->Color1.GetLONG_RGB(), (int)(pBrush->Alpha1 * 100000 / 255));
-			m_oWriter.WriteString(str);
-		}
 	}
 	else
 	{
-		if (255 == pBrush->Alpha1)
-		{
-            CString str = _T("<a:solidFill><a:schemeClr val=\"") + CStylesWriter::GetColorInScheme(pBrush->Color1.m_lSchemeIndex) + _T("\"/></a:solidFill>");
-			m_oWriter.WriteString(str);
-		}
-		else
-		{
-            CString strAlpha; strAlpha.Format(_T("%d"), (int)(pBrush->Alpha1 * 100000 / 255));
+		if (prstGeom.empty()) prstGeom = L"rect";
 
-            CString str = _T("<a:solidFill><a:schemeClr val=\"") + CStylesWriter::GetColorInScheme(pBrush->Color1.m_lSchemeIndex) + _T("\"><a:alpha val=\"") + strAlpha + _T("\"/></a:schemeClr></a:solidFill>");
-
-			m_oWriter.WriteString(str);
+		m_oWriter.WriteString(std::wstring(L"<a:prstGeom"));
+		{
+			m_oWriter.WriteString(std::wstring(L" prst=\"") + prstGeom + std::wstring(L"\">"));
+			if (!m_bWordArt)	
+			{
+				m_oWriter.WriteString(std::wstring(L"<a:avLst/>"));
+				//todooo сделать конвертацию доп параметров !!
+				//for (int i = 0; i < m_pShapeElement->m_oShape.m_pShape->m_arAdjustments.size(); i++)
+				//{
+				//	CString str;
+				//	str.Format(L"<a:gd name=\"adj%d\" fmla=\"val %d\"/>", i+1, m_pShapeElement->m_oShape.m_pShape->m_arAdjustments[i]);
+				//	m_oWriter.WriteString(str);
+				//}
+				//m_oWriter.WriteString(std::wstring(L"</a:avLst>"));
+			}
 		}
+		m_oWriter.WriteString(std::wstring(L"</a:prstGeom>"));
 	}
-	//m_oWriter.WriteString(std::wstring(L"<a:effectLst/>"));
 
-	CPen* pPen = &m_pShapeElement->m_oShape.m_oPen;
-	CString strLine = _T("");
-	strLine.Format(_T("<a:ln w=\"%d\">"), (int)(pPen->Size * 36000));
-	m_oWriter.WriteString(strLine);
+	m_oWriter.WriteString(ConvertBrush(m_oBrush));
 
-	if (pPen->Color.m_lSchemeIndex == -1)
-	{
-		if (255 == pPen->Alpha)
-		{
-			CString str = _T("");
-			str.Format(_T("<a:solidFill><a:srgbClr val=\"%06x\"/></a:solidFill>"), pPen->Color.GetLONG_RGB());
-			m_oWriter.WriteString(str);
-		}
-		else
-		{
-			CString str = _T("");
-			str.Format(_T("<a:solidFill><a:srgbClr val=\"%06x\"><a:alpha val=\"%d\"/></a:srgbClr></a:solidFill>"), pPen->Color.GetLONG_RGB(), (int)(pPen->Alpha * 100000 / 255));
-			m_oWriter.WriteString(str);
-		}
-	}
-	else
-	{
-		if (255 == pPen->Alpha)
-		{
-            CString str = _T("<a:solidFill><a:schemeClr val=\"") + CStylesWriter::GetColorInScheme(pPen->Color.m_lSchemeIndex) + _T("\"/></a:solidFill>");
-			m_oWriter.WriteString(str);
-		}
-		else
-		{
-            CString strAlpha; strAlpha.Format(_T("%d"), (int)(pPen->Alpha * 100000 / 255));
-
-            CString str = _T("<a:solidFill><a:schemeClr val=\"") + CStylesWriter::GetColorInScheme(pPen->Color.m_lSchemeIndex) + _T("\"><a:alpha val=\"") + strAlpha + _T("\"/></a:schemeClr></a:solidFill>");
-			m_oWriter.WriteString(str);
-		}
-	}
-	m_oWriter.WriteString(std::wstring(L"<a:round/><a:headEnd/><a:tailEnd/></a:ln>"));
+	m_oWriter.WriteString(ConvertLine());
+	m_oWriter.WriteString(ConvertShadow());
 
 	m_oWriter.WriteString(std::wstring(L"</p:spPr>"));			
 
@@ -213,6 +817,8 @@ CString NSPresentationEditor::CShapeWriter::ConvertShape()
 
 CString NSPresentationEditor::CShapeWriter::ConvertImage()
 {
+	if (m_pImageElement->m_bImagePresent == false) return _T("");
+	
 	m_oWriter.WriteString(std::wstring(L"<p:pic>"));
 
 	WriteImageInfo();
@@ -251,7 +857,7 @@ CString NSPresentationEditor::CShapeWriter::ConvertImage()
 		
 		if (m_pImageElement->m_bTile)
 		{
-			m_oWriter.WriteString(std::wstring(L"<a:tile><a:fillRect/></a:tile>"));
+			m_oWriter.WriteString(std::wstring(L"<a:tile/>"));
 		}
 		else if (m_pImageElement->m_bStretch)
 		{
@@ -264,66 +870,41 @@ CString NSPresentationEditor::CShapeWriter::ConvertImage()
 
 	if (m_bIsWriteGeom)
 	{
-		CString strPosition = _T("");
-		if (0 == m_pImageElement->m_dRotate)
+		CString str;
+		
+		m_oWriter.WriteString(std::wstring(L"<a:xfrm"));	
+			if (0 != m_pImageElement->m_dRotate)
+			{
+				str.Format(L" rot=\"%d\"", m_pImageElement->m_dRotate * 60000);
+				m_oWriter.WriteString(str);
+			}
+			if (m_pImageElement->m_bFlipH)
+			{
+				m_oWriter.WriteString(std::wstring(L" flipH=\"1\""));
+			}
+			if (m_pImageElement->m_bFlipV)
+			{
+				m_oWriter.WriteString(std::wstring(L" flipV=\"1\""));
+			}
+		m_oWriter.WriteString(std::wstring(L">"));
+
+		if (m_pImageElement->m_rcBoundsOriginal.left >= 0 && m_pImageElement->m_rcBoundsOriginal.top >=0 )
 		{
-			strPosition.Format(_T("<a:xfrm><a:off x=\"%d\" y=\"%d\"/><a:ext cx=\"%d\" cy=\"%d\"/></a:xfrm>"), 
-				(size_t) m_pImageElement->m_rcBoundsOriginal.left,
-				(size_t) m_pImageElement->m_rcBoundsOriginal.top,
-				(size_t)(m_pImageElement->m_rcBoundsOriginal.right - m_pImageElement->m_rcBoundsOriginal.left),
-				(size_t)(m_pImageElement->m_rcBoundsOriginal.bottom - m_pImageElement->m_rcBoundsOriginal.top));
+				str.Format(_T("<a:off x=\"%d\" y=\"%d\"/>"), (int)m_pImageElement->m_rcBoundsOriginal.left,	(int)m_pImageElement->m_rcBoundsOriginal.top);				
+				m_oWriter.WriteString(str);
 		}
-		else
+
+		if (m_pImageElement->m_rcBoundsOriginal.right - m_pImageElement->m_rcBoundsOriginal.left > 0 && 
+			m_pImageElement->m_rcBoundsOriginal.bottom - m_pImageElement->m_rcBoundsOriginal.top >0 )
 		{
-			strPosition.Format(_T("<a:xfrm rot=\"%d\" flipH=\"%d\" flipV=\"%d\"><a:off x=\"%d\" y=\"%d\"/><a:ext cx=\"%d\" cy=\"%d\"/></a:xfrm>"),
-				(int)(m_pImageElement->m_dRotate * 60000), m_pImageElement->m_bFlipH ? 1 : 0, m_pImageElement->m_bFlipV ? 1 : 0,
-				(int) m_pImageElement->m_rcBoundsOriginal.left,
-				(int) m_pImageElement->m_rcBoundsOriginal.top,
-				(int)(m_pImageElement->m_rcBoundsOriginal.right - m_pImageElement->m_rcBoundsOriginal.left),
-				(int)(m_pImageElement->m_rcBoundsOriginal.bottom - m_pImageElement->m_rcBoundsOriginal.top));
+			str.Format(_T("<a:ext cx=\"%d\" cy=\"%d\"/>"), (int)(m_pImageElement->m_rcBoundsOriginal.right - m_pImageElement->m_rcBoundsOriginal.left),
+														   (int)(m_pImageElement->m_rcBoundsOriginal.bottom - m_pImageElement->m_rcBoundsOriginal.top));
+			m_oWriter.WriteString(str);
 		}
-		m_oWriter.WriteString(strPosition);
+		m_oWriter.WriteString(std::wstring(L"</a:xfrm>"));
 	}
 	m_oWriter.WriteString(std::wstring(L"<a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom>"));
 	m_oWriter.WriteString(std::wstring(L"<a:noFill/>"));
-
-
-	//CPen* pPen = &m_pImageElement->m_oShape.m_oPen;
-	//CString strLine = _T("");
-	//strLine.Format(_T("<a:ln w=\"%d\">"), (int)(pPen->Size * 36000));
-	//m_oWriter.WriteString(strLine);
-
-	//if (pPen->Color.m_lSchemeIndex == -1)
-	//{
-	//	if (255 == pPen->Alpha)
-	//	{
-	//		CString str = _T("");
-	//		str.Format(_T("<a:solidFill><a:srgbClr val=\"%06x\"/></a:solidFill>"), pPen->Color.GetLONG_RGB());
-	//		m_oWriter.WriteString(str);
-	//	}
-	//	else
-	//	{
-	//		CString str = _T("");
-	//		str.Format(_T("<a:solidFill><a:srgbClr val=\"%06x\"><a:alpha val=\"%d\"/></a:srgbClr></a:solidFill>"), pPen->Color.GetLONG_RGB(), (int)(pPen->Alpha * 100000 / 255));
-	//		m_oWriter.WriteString(str);
-	//	}
-	//}
-	//else
-	//{
-	//	if (255 == pPen->Alpha)
-	//	{
-	//           CString str = _T("<a:solidFill><a:schemeClr val=\"") + CStylesWriter::GetColorInScheme(pPen->Color.m_lSchemeIndex) + _T("\"/></a:solidFill>");
-	//		m_oWriter.WriteString(str);
-	//	}
-	//	else
-	//	{
-	//           CString strAlpha; strAlpha.Format(_T("%d"), (int)(pPen->Alpha * 100000 / 255));
-
-	//           CString str = _T("<a:solidFill><a:schemeClr val=\"") + CStylesWriter::GetColorInScheme(pPen->Color.m_lSchemeIndex) + _T("\"><a:alpha val=\"") + strAlpha + _T("\"/></a:schemeClr></a:solidFill>");
-	//		m_oWriter.WriteString(str);
-	//	}
-	//}
-	//m_oWriter.WriteString(std::wstring(L"<a:round/><a:headEnd/><a:tailEnd/></a:ln>"));
 
 	m_oWriter.WriteString(std::wstring(L"</p:spPr>"));			
 

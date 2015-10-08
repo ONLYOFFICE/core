@@ -8,18 +8,13 @@
 class CProperty
 {
 public:
-	NSOfficeDrawing::PropertyId m_ePID;
-
-	bool m_bIsBlip;
-	bool m_bComplex;
-
-	// само значение
-	DWORD m_lValue;
-
+	NSOfficeDrawing::PropertyId		m_ePID;
+	bool							m_bIsBlip;
+	bool							m_bComplex;
+	DWORD							m_lValue;
+	BYTE*							m_pOptions;
 	// чтобы не плодить классы - это value, когда m_bComplex == true
-	BYTE* m_pOptions;
-
-        bool m_bIsTruncated;
+	bool							m_bIsTruncated;
 
 public:
 	CProperty()
@@ -30,7 +25,7 @@ public:
 		m_lValue = 0;
 		m_pOptions = NULL;
 
-                m_bIsTruncated = false;
+		m_bIsTruncated = false;
 	}
 	~CProperty()
 	{
@@ -54,27 +49,27 @@ public:
 	{
 		if (m_bComplex && 0 != m_lValue)
 		{
-			if (NSOfficeDrawing::dgmConstrainBounds == m_ePID ||
-				NSOfficeDrawing::fillShadeColors == m_ePID ||
-				NSOfficeDrawing::lineDashStyle == m_ePID ||
-				NSOfficeDrawing::pAdjustHandles == m_ePID ||
-				NSOfficeDrawing::pConnectionSites == m_ePID ||
-				NSOfficeDrawing::pConnectionSitesDir == m_ePID ||
-				NSOfficeDrawing::pInscribe == m_ePID ||
-				NSOfficeDrawing::pSegmentInfo == m_ePID ||
-				NSOfficeDrawing::pVertices == m_ePID ||
-				NSOfficeDrawing::pGuides == m_ePID ||
-				NSOfficeDrawing::pWrapPolygonVertices == m_ePID ||
-				NSOfficeDrawing::pRelationTbl == m_ePID ||
-				NSOfficeDrawing::tableRowProperties == m_ePID ||
-				NSOfficeDrawing::lineLeftDashStyle == m_ePID ||
-				NSOfficeDrawing::lineTopDashStyle == m_ePID ||
-				NSOfficeDrawing::lineRightDashStyle == m_ePID ||
-				NSOfficeDrawing::lineBottomDashStyle == m_ePID)
+			if (NSOfficeDrawing::dgmConstrainBounds		== m_ePID ||
+				NSOfficeDrawing::fillShadeColors		== m_ePID ||
+				NSOfficeDrawing::lineDashStyle			== m_ePID ||
+				NSOfficeDrawing::pAdjustHandles			== m_ePID ||
+				NSOfficeDrawing::pConnectionSites		== m_ePID ||
+				NSOfficeDrawing::pConnectionSitesDir	== m_ePID ||
+				NSOfficeDrawing::pInscribe				== m_ePID ||
+				NSOfficeDrawing::pSegmentInfo			== m_ePID ||
+				NSOfficeDrawing::pVertices				== m_ePID ||
+				NSOfficeDrawing::pGuides				== m_ePID ||
+				NSOfficeDrawing::pWrapPolygonVertices	== m_ePID ||
+				NSOfficeDrawing::pRelationTbl			== m_ePID ||
+				NSOfficeDrawing::tableRowProperties		== m_ePID ||
+				NSOfficeDrawing::lineLeftDashStyle		== m_ePID ||
+				NSOfficeDrawing::lineTopDashStyle		== m_ePID ||
+				NSOfficeDrawing::lineRightDashStyle		== m_ePID ||
+				NSOfficeDrawing::lineBottomDashStyle	== m_ePID)
 			{
-				WORD nElems = StreamUtils::ReadWORD(pStream);
-				WORD nElemsAlloc = StreamUtils::ReadWORD(pStream);
-				WORD nElemSize = StreamUtils::ReadWORD(pStream);
+				WORD nElems			= StreamUtils::ReadWORD(pStream);
+				WORD nElemsAlloc	= StreamUtils::ReadWORD(pStream);
+				WORD nElemSize		= StreamUtils::ReadWORD(pStream);
 
 				if (0xFFF0 == nElemSize)
 				{
@@ -86,7 +81,7 @@ public:
 
 				if (m_lValue != (dwSize + 6))
 				{
-                                        bool b = false;
+                   bool b = false;
 				}
 
 				m_lValue = dwSize;

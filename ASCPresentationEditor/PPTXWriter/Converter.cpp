@@ -158,6 +158,7 @@ void NSPresentationEditor::CPPTXWriter::WriteContentTypes()
 {
 	CString strContentTypes = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\
 <Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">\
+<Default Extension=\"bmp\" ContentType=\"image/bmp\" />\
 <Default Extension=\"png\" ContentType=\"image/png\" />\
 <Default Extension=\"jpeg\" ContentType=\"image/jpeg\" />\
 <Default Extension=\"wmf\" ContentType=\"image/x-wmf\" />\
@@ -165,6 +166,7 @@ void NSPresentationEditor::CPPTXWriter::WriteContentTypes()
 <Default Extension=\"xml\" ContentType=\"application/xml\" />\
 <Default Extension=\"gif\" ContentType=\"image/gif\"/>\
 <Default Extension=\"emf\" ContentType=\"image/x-emf\"/>\
+<Default Extension=\"bin\" ContentType=\"application/vnd.openxmlformats-officedocument.oleObject\" />\
 <Default Extension=\"jpg\" ContentType=\"application/octet-stream\"/>");
 
 	strContentTypes += _T("<Override PartName=\"/ppt/presentation.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.presentation.main+xml\" />\
@@ -478,19 +480,19 @@ void NSPresentationEditor::CPPTXWriter::WriteThemes()
 		NSPresentationEditor::CStringWriter oStringWriter;
 
 		oStringWriter.WriteString(std::wstring(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?><a:theme xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" name=\""));
-		oStringWriter.WriteString(pTheme->m_sThemeName);
+		oStringWriter.WriteStringXML(pTheme->m_sThemeName);
 		oStringWriter.WriteString(std::wstring(L"\"><a:themeElements>"));
 	
 		WriteColorScheme(oStringWriter, L"Default", pTheme->m_arColorScheme);
 
 		oStringWriter.WriteString(std::wstring(L"<a:fontScheme name=\"default\"><a:majorFont><a:latin typeface=\""));
-		oStringWriter.WriteString(pTheme->m_arFonts[0].Name);
+		oStringWriter.WriteStringXML(pTheme->m_arFonts[0].Name);
 		oStringWriter.WriteString(std::wstring(L"\"/><a:ea typeface=\"\"/><a:cs typeface=\"\"/></a:majorFont>"));
 
 		oStringWriter.WriteString(std::wstring(L"<a:minorFont><a:latin typeface=\""));
 		
 		if (pTheme->m_arFonts.size() >1 )	oStringWriter.WriteString(pTheme->m_arFonts[1].Name);
-		else oStringWriter.WriteString(pTheme->m_arFonts[0].Name);
+		else oStringWriter.WriteStringXML(pTheme->m_arFonts[0].Name);
 
 		oStringWriter.WriteString(std::wstring(L"\"/><a:ea typeface=\"\"/><a:cs typeface=\"\"/></a:minorFont>"));
 		oStringWriter.WriteString(std::wstring(L"</a:fontScheme>"));
@@ -620,14 +622,23 @@ void NSPresentationEditor::CPPTXWriter::WriteThemes()
 
 void NSPresentationEditor::CPPTXWriter::WriteColorScheme(CStringWriter& oStringWriter, const std::wstring & name, const std::vector<CColor> & colors, bool extra)
 {
-	if (colors.size() < 1) return;
+	if (colors.size() < 1)
+	{
+		oStringWriter.WriteString(std::wstring(L"<a:clrScheme name=\"Default\"><a:dk1><a:sysClr val=\"windowText\" lastClr=\"000000\"/>\
+		</a:dk1><a:lt1><a:sysClr val=\"window\" lastClr=\"FFFFFF\"/></a:lt1><a:dk2><a:srgbClr val=\"1F497D\"/></a:dk2><a:lt2>\
+		<a:srgbClr val=\"EEECE1\"/></a:lt2><a:accent1><a:srgbClr val=\"4F81BD\"/></a:accent1><a:accent2><a:srgbClr val=\"C0504D\"/>\
+		</a:accent2><a:accent3><a:srgbClr val=\"9BBB59\"/></a:accent3><a:accent4><a:srgbClr val=\"8064A2\"/></a:accent4><a:accent5>\
+		<a:srgbClr val=\"4BACC6\"/></a:accent5><a:accent6><a:srgbClr val=\"F79646\"/></a:accent6><a:hlink><a:srgbClr val=\"0000FF\"/>\
+		</a:hlink><a:folHlink><a:srgbClr val=\"800080\"/></a:folHlink></a:clrScheme>"));
+		return;
+	}
 
 	if (extra)
 		oStringWriter.WriteString(std::wstring(L"<a:extraClrScheme>"));
 
 	oStringWriter.WriteString(std::wstring(L"<a:clrScheme name=\""));
 	
-	oStringWriter.WriteString(name);
+	oStringWriter.WriteStringXML(name);
 	oStringWriter.WriteString(std::wstring(L"\">"));
 	CString strVal;
 	
@@ -679,57 +690,36 @@ accent2=\"accent2\" accent3=\"accent3\" accent4=\"accent4\" accent5=\"accent5\" 
 void NSPresentationEditor::CPPTXWriter::WriteBackground(CStringWriter& oWriter, CRelsGenerator& oRels, CBrush& oBackground)
 {
 	oWriter.WriteString(std::wstring(L"<p:bg><p:bgPr>"));
-	if (oBackground.Type == c_BrushTypeTexture)
+
+	//if (oBackground.Type == c_BrushTypeTexture)
+	//{
+	//	CString strRid = oRels.WriteImage(oBackground.TexturePath);
+
+	//	oWriter.WriteString(std::wstring(L"<a:blipFill dpi=\"0\" rotWithShape=\"0\"><a:blip r:embed=\""));
+	//	oWriter.WriteString(strRid + _T("\">"));
+
+	//	if (oBackground.TextureAlpha != 255)
+	//	{
+	//		CString strAlpha;
+	//		strAlpha.Format(L"%d", (int)(oBackground.TextureAlpha * 100000. / 255));
+	//		oWriter.WriteString(std::wstring(L"<a:alphaModFix amt=\"") + string2std_string(strAlpha) + L"\"/>");
+	//	}
+
+	//	oWriter.WriteString(std::wstring(L"</a:blip><a:srcRect/>"));
+
+	//	if (oBackground.TextureMode == 1)
+	//		oWriter.WriteString(std::wstring(L"<a:tile algn=\"tl\"/>"));
+	//	else
+	//		oWriter.WriteString(std::wstring(L"<a:stretch><a:fillRect/></a:stretch>"));
+	//	
+	//	oWriter.WriteString(std::wstring(L"</a:blipFill><a:effectLst/>"));
+	//
+	//	oWriter.WriteString(std::wstring(L"</p:bgPr></p:bg>"));
+	//	return;
+	//}
+	//else
 	{
-		CString strRid = oRels.WriteImage(oBackground.TexturePath);
-
-		oWriter.WriteString(std::wstring(L"<a:blipFill dpi=\"0\" rotWithShape=\"0\"><a:blip r:embed=\""));
-		oWriter.WriteString(strRid + _T("\">"));
-
-		if (oBackground.TextureAlpha != 255)
-		{
-			CString strAlpha;
-			strAlpha.Format(L"%d", (int)(oBackground.TextureAlpha * 100000. / 255));
-			oWriter.WriteString(std::wstring(L"<a:alphaModFix amt=\"") + string2std_string(strAlpha) + L"\"/>");
-		}
-
-		oWriter.WriteString(std::wstring(L"</a:blip><a:srcRect/>"));
-
-		if (oBackground.TextureMode == 1)
-			oWriter.WriteString(std::wstring(L"<a:tile algn=\"tl\"/>"));
-		else
-			oWriter.WriteString(std::wstring(L"<a:stretch><a:fillRect/></a:stretch>"));
-		
-		oWriter.WriteString(std::wstring(L"</a:blipFill><a:effectLst/>"));
-	
-		oWriter.WriteString(std::wstring(L"</p:bgPr></p:bg>"));
-		return;
-	}
-	if (oBackground.Color1.m_lSchemeIndex == -1)
-	{
-		CString strColor;
-		strColor.Format(L"%06x", oBackground.Color1.GetLONG_RGB());
-		
-		oWriter.WriteString(std::wstring(L"<a:solidFill><a:srgbClr val=\"") + string2std_string(strColor) + _T("\">"));
-		if (oBackground.Alpha1 != 255)
-		{
-			CString strAlpha;
-			strAlpha.Format(L"%d", (int)(oBackground.Alpha1 * 100000. / 255));
-			oWriter.WriteString(std::wstring(L"<a:alpha val=\"") + string2std_string(strAlpha) + _T("\"/>"));
-		}
-		oWriter.WriteString(std::wstring(L"</a:srgbClr></a:solidFill>"));
-	}
-	else
-	{
-        oWriter.WriteString(std::wstring(L"<a:solidFill><a:schemeClr val=\""));
-		oWriter.WriteString(CStylesWriter::GetColorInScheme(oBackground.Color1.m_lSchemeIndex) + _T("\"/>"));			
-		if (oBackground.Alpha1 != 255)
-		{
-			CString strAlpha;
-			strAlpha.Format(L"%d", (int)(oBackground.Alpha1 * 100000 / 255));
-			oWriter.WriteString(std::wstring(L"<a:alpha val=\"") + string2std_string(strAlpha) + _T("\"/>"));
-		}
-		oWriter.WriteString(std::wstring(L"</a:solidFill>"));
+		oWriter.WriteString(m_pShapeWriter->ConvertBrush(oBackground));
 	}
 	oWriter.WriteString(std::wstring(L"</p:bgPr></p:bg>"));
 }
@@ -751,7 +741,7 @@ void NSPresentationEditor::CPPTXWriter::WriteElement(CStringWriter& oWriter, CRe
 		pShapeElem->m_oMetric = m_pDocument->m_oInfo;
 		pShapeElem->NormalizeCoordsByMetric();
 
-		pShapeElem->m_oShape.m_oText.RecalcParagraphs(pShapeElem->m_pTheme);
+		pShapeElem->m_oShape.m_oText.RecalcParagraphsPPT(pShapeElem->m_pTheme);
 		pShapeElem->m_oShape.m_oText.NormalizeCoordsByMetric(m_pDocument->m_oInfo);
 
 		m_pShapeWriter->SetShape(pShapeElem);
@@ -796,15 +786,12 @@ void NSPresentationEditor::CPPTXWriter::WriteLayout(CLayout& oLayout, int nIndex
 	CRelsGenerator oRels(&m_oManager);
 	oRels.StartLayout(nIndexTheme);
 
-    CString str1 = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
+	oWriter.WriteString(std::wstring(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"));
 
-    str1 += _T("<p:sldLayout xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\"");
-    str1 += _T(" type=\"") + oLayout.m_strLayoutType + _T("\"");
-    str1 += _T(" showMasterSp=\"");
-    str1 += (oLayout.m_bShowMasterShapes ? _T("0") : _T("1"));
-    str1 +=  + _T("\" preserve=\"1\"><p:cSld>");
-
-    oWriter.WriteString(str1);
+    oWriter.WriteString(std::wstring(L"<p:sldLayout xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\""));
+    oWriter.WriteString(std::wstring(L" type=\"") + oLayout.m_strLayoutType + _T("\""));
+    oWriter.WriteString(std::wstring(L" showMasterSp=\"") + (oLayout.m_bShowMasterShapes ? _T("1") : _T("0")));
+    oWriter.WriteString(std::wstring(L"\" preserve=\"1\"><p:cSld>"));
 
 	if (oLayout.m_bIsBackground)
 	{

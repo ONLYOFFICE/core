@@ -919,6 +919,10 @@
 			Name="PresentationEditor"
 			>
 			<File
+				RelativePath="..\..\..\ASCPresentationEditor\OfficeDrawing\Attributes.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\ASCPresentationEditor\PPTXWriter\Converter.cpp"
 				>
 			</File>
@@ -963,6 +967,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\ASCPresentationEditor\OfficeDrawing\Shapes\Shape.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\ASCPresentationEditor\PPTXWriter\ShapeWriter.cpp"
 				>
 			</File>
@@ -972,6 +980,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\ASCPresentationEditor\OfficeDrawing\Slide.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\ASCPresentationEditor\OfficeDrawing\Structures.h"
 				>
 			</File>
 			<File
@@ -1036,6 +1048,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\ASCPresentationEditor\OfficeDrawing\Theme.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\ASCPresentationEditor\OfficeDrawing\XmlWriter.h"
 				>
 			</File>
 		</Filter>

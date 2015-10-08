@@ -1,17 +1,14 @@
 #pragma once
-#include "Base.h"
 #include "Element.h"
 
 namespace NSPresentationEditor
 {
-	class CLayout : public IBase
+	class CLayout
 	{
 	public:
 		std::vector<IElement*>	m_arElements;
 		std::vector<CColor>		m_arColorScheme;
 
-		std::map<LONG, LONG>	m_mapPlaceholders;
-		
 		bool					m_bUseThemeColorScheme;
 
 		// "настоящие"(в логической системе координат), чтобы масштабировать
@@ -28,7 +25,7 @@ namespace NSPresentationEditor
 		CMetricInfo m_oInfo;
 
 		bool					m_bShowMasterShapes;
-		CString					m_strLayoutType;
+		std::wstring			m_strLayoutType;
 
 	public:
 		CLayout() 
@@ -157,13 +154,8 @@ namespace NSPresentationEditor
 			return lFound;
 		}
 
-		CString ToXmlEditor(NSPresentationEditor::CTheme* pTheme, const NSPresentationEditor::CMetricInfo& oInfo);
-
 	public:
-		virtual void ReadFromXml(XmlUtils::CXmlNode& oNode);
-		virtual void WriteToXml(XmlUtils::CXmlWriter& oWriter)
-		{
-		}
+
 
 		NSPresentationEditor::CColor GetColor(const LONG& lIndexScheme)
 		{

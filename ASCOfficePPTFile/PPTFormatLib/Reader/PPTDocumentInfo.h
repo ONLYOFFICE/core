@@ -5,10 +5,10 @@
 class CPPTDocumentInfo
 {
 public:
-	CCurrentUser m_oCurrentUser;
-	std::vector<CPPTUserInfo*> m_arUsers;
-
-	CString m_strFileDirectory;
+	CCurrentUser					m_oCurrentUser;
+	std::vector<CPPTUserInfo*>		m_arUsers;
+	CString							m_strFileDirectory;
+	std::map<int, std::wstring>		m_mapStoreImageFile;
 
 public:
 
@@ -54,9 +54,10 @@ public:
 			oHeader.ReadFromStream(pStream);
 			oUserAtom.ReadFromStream(oHeader, pStream);
 
-			CPPTUserInfo* pInfo = new CPPTUserInfo();
-			pInfo->m_strFileDirectory = m_strFileDirectory;
-            bool bRes = pInfo->ReadFromStream(&oUserAtom, pStream, strFolderMem);
+			CPPTUserInfo* pInfo			= new CPPTUserInfo();
+			pInfo->m_strFileDirectory	= m_strFileDirectory;
+           
+			bool bRes = pInfo->ReadFromStream(&oUserAtom, pStream, strFolderMem);
 
 			offsetToEdit = pInfo->m_oUser.m_nOffsetLastEdit;
 			
@@ -74,46 +75,22 @@ public:
 			pInfo = NULL;
 		}
 
-		// посмотреть, где выставлены blip. если не выставлено - то можно поменять
-		
-		LONG lCount = m_arUsers.size();
-		if (1 < lCount)
+		// для поиска правильных индексов картинок - накатим на активного пользователя все остальные возможные каартинки
+		for (size_t i = 1; i < m_arUsers.size(); ++i)
 		{
-			m_arUsers[0]->m_arEmptyPictures = m_arUsers[lCount - 1]->m_arEmptyPictures;
+			for (long j = 0 ; j < m_arUsers[i]->m_arEmptyPictures.size(); j++)
+			{
+				if (m_arUsers[i]->m_arEmptyPictures[j] == false && j < m_arUsers[0]->m_arEmptyPictures.size())
+					m_arUsers[0]->m_arEmptyPictures[j] = false;
+			}
 		}
+
 
 		// теперь нужно у всех сделать FromDocument...
 		for (size_t i = 0; i < m_arUsers.size(); ++i)
 		{
 			m_arUsers[i]->FromDocument();
 		}
-
-    #if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
-			SaveXmlInfo();
-    #endif
-	}
-
-	void SaveXmlInfo()
-	{
-		if (!PPT_DUMP_LOG)
-			return;
-		
-		XmlUtils::CXmlWriter oWriter;
-
-		oWriter.WriteNodeBegin(_T("PPTInfo"));
-
-		oWriter.WriteString(m_oCurrentUser.ToString());
-
-		for (size_t nIndex = 0; nIndex < m_arUsers.size(); ++nIndex)
-		{
-			oWriter.WriteString(m_arUsers[nIndex]->m_strXmlInfo);
-		}
-
-		oWriter.WriteNodeEnd(_T("PPTInfo"));
-
-		//CDirectory::SaveToFile(_T("C:\\PPTInfo.xml"), oWriter.GetXmlString());
-
-		oWriter.SaveToFile(_T("C:\\PPTInfo.xml"), TRUE);
 	}
 
 	LONG GetCountPicturesUsed(size_t nUser)

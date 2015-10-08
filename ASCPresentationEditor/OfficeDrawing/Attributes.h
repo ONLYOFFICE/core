@@ -11,7 +11,7 @@
 #include "Effects.h"
 #include "../../Common/DocxFormat/Source/XML/xmlutils.h"
 #include "../../Common/ASCUtils.h"
-#include "XmlWriter.h"
+#include "./XmlWriter.h"
 
 
 
@@ -27,7 +27,9 @@ namespace NSPresentationEditor
 		{
 			eftNone		= 0,
 			eftVideo	= 1,
-			eftAudio	= 2
+			eftAudio	= 2,
+			eftHyperlink= 3,
+			eftObject	= 4
 		};
 	public:
 		DWORD			m_dwID;		
@@ -78,6 +80,7 @@ namespace NSPresentationEditor
 		std::vector<CExFilesInfo> m_arVideos;
 		std::vector<CExFilesInfo> m_arImages;
 		std::vector<CExFilesInfo> m_arAudios;
+		std::vector<CExFilesInfo> m_arHyperlinks;
 
 		std::vector<CExFilesInfo> m_arAudioCollection;
 
@@ -116,7 +119,19 @@ namespace NSPresentationEditor
 
 			return *this;
 		}
+		CExFilesInfo* LockHyperlink(DWORD dwID)
+		{
+			size_t nCount = m_arHyperlinks.size();
+			for (size_t i = 0; i < nCount; ++i)
+			{
+				if (dwID == m_arHyperlinks[i].m_dwID)
+				{
+					return &m_arHyperlinks[i];
+				}
+			}
 
+			return NULL;
+		}
 		CExFilesInfo* LockVideo(DWORD dwID)
 		{
 			size_t nCount = m_arVideos.size();
@@ -174,6 +189,12 @@ namespace NSPresentationEditor
 		{
 			CExFilesInfo* pInfo = NULL;
 
+			pInfo = LockHyperlink(dwID);
+			if (NULL != pInfo)
+			{
+				eType = CExFilesInfo::eftHyperlink;
+				return pInfo;
+			}
 			pInfo = LockVideo(dwID);
 			if (NULL != pInfo)
 			{
@@ -313,6 +334,21 @@ namespace NSPresentationEditor
 
 			m_lSchemeIndex = -1;
 		}
+		void SetRGB(BYTE r, BYTE g, BYTE b)
+		{
+			R = r;
+			G = g;
+			B = b;
+
+			m_lSchemeIndex = -1;
+		}
+		void SetR(BYTE r){	R = r;	}
+		void SetG(BYTE g){	G = g;	}
+		void SetB(BYTE b){	B = b;	}
+
+		BYTE GetR(){ return R;	}
+		BYTE GetG(){ return G;	}
+		BYTE GetB(){ return B;	}
 
 		friend bool operator==(const CColor& color1, const CColor& color2)
 		{
@@ -428,6 +464,7 @@ namespace NSPresentationEditor
 		LONG Align;
 		double MiterLimit;
 		
+		CColor Color2;	//backLine	
 	public:
 	
 		void GetDashPattern(double* arrDashPattern, long& nCount) const
@@ -473,7 +510,7 @@ namespace NSPresentationEditor
 			Alpha = dNewAlpha;
 		}
 
-                bool IsEqual(CPen* pPen)
+		bool IsEqual(CPen* pPen)
 		{
 			if (NULL == pPen)
                                 return false;
@@ -512,7 +549,6 @@ namespace NSPresentationEditor
 		}
 		void SetDefaultParams()
 		{
-			Color = 0;
 			Alpha = 255;
 			Size  = 0.26458;
 
@@ -524,9 +560,12 @@ namespace NSPresentationEditor
 			DashPattern = NULL;
 			Count       = 0;
 
-			DashOffset = 0;
-            Align = Gdiplus::PenAlignmentCenter;
-			MiterLimit = 0.5;
+			Color.SetRGB	(0x00, 0x00, 0x00);
+			Color2.SetRGB	(0xff, 0xff, 0xff);
+
+			DashOffset	= 0;
+            Align		= Gdiplus::PenAlignmentCenter;
+			MiterLimit	= 0.5;
 		}
 
 		
@@ -542,14 +581,15 @@ namespace NSPresentationEditor
 		}
 		CPen& operator=(const CPen& other)
 		{
-			Color = other.Color;
-			Alpha = other.Alpha;
-			Size  = other.Size;
+			Color	= other.Color;
+			Color2	= other.Color2;
+			Alpha	= other.Alpha;
+			Size	= other.Size;
 
-			DashStyle = other.DashStyle;
-			LineStartCap = other.LineStartCap;
-			LineEndCap = other.LineEndCap;
-			LineJoin = other.LineJoin;
+			DashStyle		= other.DashStyle;
+			LineStartCap	= other.LineStartCap;
+			LineEndCap		= other.LineEndCap;
+			LineJoin		= other.LineJoin;
 
 			RELEASEARRAYOBJECTS(DashPattern);
 			Count = other.Count;
@@ -603,7 +643,7 @@ namespace NSPresentationEditor
         }
 		inline CString ToXmlWriter(NSPresentationEditor::CXmlWriter* pWriter)
 		{
-                        pWriter->WriteNodeBegin(_T("pen"), true);
+			pWriter->WriteNodeBegin(_T("pen"), true);
 			pWriter->WriteAttributeString(_T("color"), Color.ToString());
 			pWriter->WriteAttributeLONG(_T("alpha"), Alpha);
 			pWriter->WriteAttributeDouble(_T("size"), Size);
@@ -612,8 +652,8 @@ namespace NSPresentationEditor
 			pWriter->WriteAttributeDouble(_T("line-start-cap"), (LONG)LineStartCap);
 			pWriter->WriteAttributeDouble(_T("line-end-cap"), (LONG)LineEndCap);
 			pWriter->WriteAttributeDouble(_T("line-join"), (LONG)LineJoin);
-                        pWriter->WriteNodeEnd(_T("pen"), true);
-            
+			pWriter->WriteNodeEnd(_T("pen"), true);
+
             return CString(_T(""));
 		}
 	};
@@ -630,11 +670,11 @@ namespace NSPresentationEditor
 		long Alpha1;
 		long Alpha2;
 		
-		std::wstring TexturePath;
-		long TextureAlpha;
-		long TextureMode;
+		std::wstring	TexturePath;
+		long			TextureAlpha;
+		long			TextureMode;
 		
-		bool	Rectable;
+		bool			Rectable;
 		Gdiplus::RectF	Rect;
 
 		double LinearAngle;
@@ -1023,12 +1063,12 @@ namespace NSPresentationEditor
 
 		void SetDefaultParams()
 		{
-                        Visible   = false;
-			DistanceX = 15;
-			DistanceY = 15;
+			Visible   = false;
+			DistanceX = 0.1;
+			DistanceY = 0.1;
 			BlurSize  = 0;
 			Color     = 0;
-			Alpha     = 120;
+			Alpha     = 255;
 		}
 		
 	public:

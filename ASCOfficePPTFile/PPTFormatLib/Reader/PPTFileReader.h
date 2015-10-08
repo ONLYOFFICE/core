@@ -70,21 +70,13 @@ public:
 
 	void ReadPersistDirectory()
 	{
+        bool bRes = SavePictures();	
 		// нужно вызывать РОВНО один раз...
-		m_oDocumentInfo.ReadFromStream(&m_oCurrentUser, GetDocStream(), (CStringW)m_strMemoryForder);
+		m_oDocumentInfo.ReadFromStream(&m_oCurrentUser, GetDocStream(), m_strMemoryForder);
 	}
 
 	void ReadSlideList()
 	{
-		// этот метод читает картинки.
-		// сначала нужно заполнить m_arLoadImageFlags
-		//std::vector<CRecordBlipStoreEntry*> oArrayBSE;
-		//m_oDocumentInfo.m_arUsers[0]->m_oDocument.GetRecordsByType(&oArrayBSE, true, false);
-
-		// читаем картинки...
-        bool bRes = SavePictures();
-		
-
 		if (m_oDocumentInfo.m_arUsers.size() > 0)
 		{
 
@@ -95,11 +87,6 @@ public:
 
 			DWORD offset = pPair->second;
 			StreamUtils::StreamSeek((long)offset, GetDocStream());
-		}
-
-		if (PPT_DUMP_LOG)
-		{
-			ParseForSlideLists();
 		}
 	}
 
@@ -152,36 +139,6 @@ protected:
 		return m_pPictureStream; 
  	}
 
-
-	DWORD ParseForSlideLists()
-	{
-		POLE::Stream *pStm = GetDocStream(); 
- 
-		SRecordHeader oHeader; 
-		//DWORD nRd = 0; 
-
-		XmlUtils::CXmlWriter oWriter;
-		oWriter.WriteNodeBegin(_T("PPTFile"));
-
-		while (TRUE)
-		{
-			/////////////////////////////////////////////
-			
-			// здесь создаем xml
-
-            if ( oHeader.ReadFromStream(pStm) == false )
-				break;
-
-			oHeader.ToXmlWriter(&oWriter, pStm);
-		}
-
-		oWriter.WriteNodeEnd(_T("PPTFile"));
-
-		CDirectory::SaveToFile(_T("C:\\PPT.xml"), oWriter.GetXmlString());
-		//oWriter.SaveToFile(_T("C:\\PPT.xml"));
-		return 0;
-	}
-	
     bool SavePictures()
 	{
 		POLE::Stream* pStream = GetPictureStream();
@@ -199,16 +156,9 @@ protected:
 
 		while (TRUE)
 		{
-			/*if (m_lImagesCount < m_oDocumentInfo.m_arEmptyPictures.GetCount())
-			{
-				if (m_oDocumentInfo.m_arEmptyPictures[m_lImagesCount])
-				{
-					++m_lImagesCount;
-					continue;
-				}
-			}*/
-			
 			CMetaFileBuffer oMetaFile;
+
+			CString sExt = L".jpg";
 			
             if (oHeader.ReadFromStream(pStream) == false )
 			{
@@ -234,7 +184,8 @@ protected:
 					StreamUtils::StreamSkip(lOffset, pStream);
 					lOffset += 34;
 
-					oMetaFile.m_bIsValid = TRUE;
+					oMetaFile.m_bIsValid	= TRUE;
+					oMetaFile.m_sExtension	= L".emf";
 					
 					CMetaHeader oMetaHeader;
 					oMetaHeader.FromStream(pStream);
@@ -276,7 +227,8 @@ protected:
 
 					lOffset += 34;
 
-					oMetaFile.m_bIsValid = TRUE;
+					oMetaFile.m_bIsValid	= TRUE;
+					oMetaFile.m_sExtension	= L".wmf";
 					
 					CMetaHeader oMetaHeader;
 					oMetaHeader.FromStream(pStream);
@@ -315,7 +267,8 @@ protected:
 					StreamUtils::StreamSkip(lOffset, pStream);
 					lOffset += 34;
 
-					oMetaFile.m_bIsValid = TRUE;
+					oMetaFile.m_bIsValid	= TRUE;
+					oMetaFile.m_sExtension	= L".wmf";
 					
 					CMetaHeader oMetaHeader;
 					oMetaHeader.FromStream(pStream);
@@ -352,6 +305,8 @@ protected:
 						lOffset = 33;
 					}
 					StreamUtils::StreamSkip(lOffset, pStream);
+					
+					sExt = _T(".jpg");
 					break;
 				}
 				case RECORD_TYPE_ESCHER_BLIP_PNG:
@@ -365,6 +320,8 @@ protected:
 						lOffset = 33;
 					}
 					StreamUtils::StreamSkip(lOffset, pStream);
+	
+					sExt = _T(".png");
 					break;
 				}
 				case RECORD_TYPE_ESCHER_BLIP_DIB:
@@ -378,6 +335,8 @@ protected:
 						lOffset = 33;
 					}
 					StreamUtils::StreamSkip(lOffset, pStream);
+				
+					sExt = _T(".bmp");
 					break;
 				}
 				case RECORD_TYPE_ESCHER_BLIP_TIFF:
@@ -391,6 +350,8 @@ protected:
 						lOffset = 33;
 					}
 					StreamUtils::StreamSkip(lOffset, pStream);
+					
+					sExt = _T(".tif");
 					break;
 				}
 				default:
@@ -401,50 +362,52 @@ protected:
 
 				if (oMetaFile.m_bIsValid)
 				{
-					CString strFile = CDirectory::ToString(++m_lImagesCount) + _T(".jpg");
+					CString strFile = CString(L"Image ") + CDirectory::ToString(++m_lImagesCount) + oMetaFile.m_sExtension;
 
                     CFile fileMeta;
-                    HRESULT hr = fileMeta.CreateFile((CString)m_strMemoryForder + FILE_SEPARATOR_STR + strFile);
+                    HRESULT hr = fileMeta.CreateFile(m_strMemoryForder + FILE_SEPARATOR_STR + strFile);
 				
                     if (hr == S_OK)
 					{
                         oMetaFile.ToFile(&fileMeta);
                         fileMeta.CloseFile();
                     }
+					m_oDocumentInfo.m_mapStoreImageFile[m_lImagesCount] = string2std_string(strFile);
 					continue;
 				}
 				
 				BYTE* pImage = new BYTE[oHeader.RecLen - lOffset]; 
-				//StreamUtils::StreamSkip(lOffset, pStream);
 
 				pStream->read(pImage, oHeader.RecLen - lOffset); 
 
-				CString strFile = CDirectory::ToString(++m_lImagesCount) + _T(".jpg");
+				CString strFile = CString(L"Image ") + CDirectory::ToString(++m_lImagesCount) + sExt;
 				
-                CFile fileJpeg;
-                HRESULT hr = fileJpeg.CreateFile((CString)m_strMemoryForder+ FILE_SEPARATOR_STR +  strFile);
+                CFile fileImage;
+                HRESULT hr = fileImage.CreateFile(m_strMemoryForder+ FILE_SEPARATOR_STR +  strFile);
                 if (hr == S_OK)
 				{
 					if (RECORD_TYPE_ESCHER_BLIP_DIB == oHeader.RecType)
 					{
 						WORD vtType = 0x4D42;
-                        fileJpeg.WriteFile((void*)&vtType, 2);
+                        fileImage.WriteFile((void*)&vtType, 2);
 						DWORD dwLen = oHeader.RecLen - lOffset;
-                        fileJpeg.WriteFile((void*)&dwLen, 4);
+                        fileImage.WriteFile((void*)&dwLen, 4);
 						DWORD dwRes = 0;
-                        fileJpeg.WriteFile((void*)&dwRes, 4);
+                        fileImage.WriteFile((void*)&dwRes, 4);
 						DWORD dwOffset = 2;
-                        fileJpeg.WriteFile((void*)&dwOffset, 4);
+                        fileImage.WriteFile((void*)&dwOffset, 4);
 					}
-                    fileJpeg.WriteFile((void*)pImage, oHeader.RecLen - lOffset);
-                    fileJpeg.CloseFile();
+                    fileImage.WriteFile((void*)pImage, oHeader.RecLen - lOffset);
+                    fileImage.CloseFile();
 				}
+				m_oDocumentInfo.m_mapStoreImageFile[m_lImagesCount] = string2std_string(strFile);
 
 				delete[] pImage;
 			}
 			else
 			{
 				// этого быть не должно...
+				m_lImagesCount++;
 				continue;
 			}
 		}
@@ -466,6 +429,5 @@ public:
     std::vector<bool>			m_arLoadImageFlags;
 	DWORD						m_lImagesCount;
 
-public:
-	CPPTDocumentInfo m_oDocumentInfo;
+	CPPTDocumentInfo			m_oDocumentInfo;
 };

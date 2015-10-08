@@ -10,11 +10,12 @@ namespace NSPresentationEditor
 	{
 	private:
 		std::map<std::wstring, std::wstring>	m_mapImages;
+
 		LONG									m_lIndexNextImage;
 		std::wstring							m_strDstMedia;
 
 	public:
-		CImageManager() : m_mapImages(), m_lIndexNextImage(0)
+		CImageManager() : m_lIndexNextImage(0)
 		{
 		}
 		~CImageManager()
@@ -95,13 +96,14 @@ namespace NSPresentationEditor
 	class CRelsGenerator
 	{
 	private:
-		NSPresentationEditor::CStringWriter m_oWriter;
-		int									m_lNextRelsID;
-		std::map<std::wstring, int>			m_mapImages;
-		CImageManager*						m_pManager;
+		NSPresentationEditor::CStringWriter		m_oWriter;
+		int										m_lNextRelsID;
+		std::map<std::wstring, int>				m_mapImages;
+		CImageManager*							m_pManager;
+		std::map<std::wstring, std::wstring>	m_mapHyperlinks;
 
 	public:
-		CRelsGenerator(CImageManager* pManager) : m_oWriter(), m_lNextRelsID(1), m_mapImages()
+		CRelsGenerator(CImageManager* pManager) : m_oWriter(), m_lNextRelsID(1)
 		{
 			m_pManager = pManager;
 		}
@@ -113,6 +115,7 @@ namespace NSPresentationEditor
 			m_oWriter.ClearNoAttack();
 			m_lNextRelsID = 1;
 			m_mapImages.clear();
+			m_mapHyperlinks.clear();
 		}
 
 		AVSINLINE void StartMaster(int nIndexTheme, int nStartLayoutIndex, int nCountLayouts)
@@ -219,7 +222,28 @@ namespace NSPresentationEditor
 			oFile.WriteStringUTF8(strMem);
 			oFile.CloseFile();
 		}
+		AVSINLINE CString WriteHyperlink(const std::wstring& strHyperlink)
+		{
+			std::map<std::wstring, std::wstring>::iterator pPair = m_mapHyperlinks.find(strHyperlink);
 
+			if (m_mapHyperlinks.end() != pPair)
+			{
+				CString strRid = _T("");
+				strRid.Format(_T("rId%d"), pPair->second);
+				return strRid;
+			}
+			m_mapHyperlinks[strHyperlink] = m_lNextRelsID;
+
+			CString strRid = _T("");
+			strRid.Format(_T("rId%d"), m_lNextRelsID++);
+
+			std::wstring strRels = _T("<Relationship Id=\"") ;
+
+            strRels += string2std_string(strRid) + _T("\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink\" Target=\"");
+            strRels += strHyperlink + _T("\"/>");
+
+			m_oWriter.WriteString(strRels);
+		}
 		AVSINLINE CString WriteImage(const std::wstring& strImagePath)
 		{
 			std::wstring strImage = m_pManager->GenerateImage(strImagePath);

@@ -41,6 +41,9 @@ linux-g++:!contains(QMAKE_HOST.arch, x86_64):{
 
 ################################################
 
+DEFINES += UNICODECONVERTER_USE_DYNAMIC_LIBRARY
+LIBS += -L$$DESTDIR -lUnicodeConverter
+
 ############# dynamic dependencies #############
 shared {
     DEFINES += HTMLFILE_USE_DYNAMIC_LIBRARY

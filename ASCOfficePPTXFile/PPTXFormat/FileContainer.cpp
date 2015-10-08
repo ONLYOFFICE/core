@@ -88,8 +88,9 @@ namespace PPTX
 						pContainer->read(normPath, map, Event);
 						m_bCancelled = pContainer->m_bCancelled;
 					}
-
-                    if (res || m_bCancelled)
+                    //todo детально разобраться и вернуть проверку res.(до перехода на cross platform все было хорошо)
+                    //на презентация с hyperlink выходим при достижении 100%. Проценты считаются от количества обработанных файлов, а hyperlink не файл(Ligninger_og_uligheder.pptx)
+                    if (m_bCancelled)
                     {
                         m_bCancelled = true;
                         break;

@@ -41,11 +41,11 @@ CONFIG(debug, debug|release) {
 ICU_BUILDS_PLATFORM = win32
 }
 
-linux-g++:contains(QMAKE_HOST.arch, x86_64):{
+linux-g++ | linux-g++-64 | linux-g++-32:contains(QMAKE_HOST.arch, x86_64):{
     DESTDIR = $$DESTINATION_SDK_PATH/linux_64
     ICU_BUILDS_PLATFORM = linux64
 }
-linux-g++:!contains(QMAKE_HOST.arch, x86_64):{
+linux-g++ | linux-g++-64 | linux-g++-32:!contains(QMAKE_HOST.arch, x86_64):{
     DESTDIR = $$DESTINATION_SDK_PATH/linux_32
     ICU_BUILDS_PLATFORM = linux32
 }

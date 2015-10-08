@@ -68,8 +68,6 @@ HRESULT COfficePPTFile::LoadFromFile(std::wstring sSrcFileName, std::wstring sDs
 		m_Status = NULLMODE;
 		return S_FALSE;
 	}
-	m_strEditorXml = _T("");
-
 	if (0 < ((CPPTFileReader*)m_pReader)->m_oDocumentInfo.m_arUsers.size())
 	{
 		NSPresentationEditor::CPPTXWriter	oPPTXWriter;
@@ -88,19 +86,6 @@ HRESULT COfficePPTFile::GetAdditionalParam (CString sParamName, VARIANT* ParamVa
 	if (NULL == ParamValue)
 		return S_FALSE;
 
-	if (_T("EditorXml") == sParamName)
-	{		
-#if defined(_WIN32) || defined (_WIN64)
-		if (m_strEditorXml.IsEmpty())
-		{
-			m_strEditorXml = ((CPPTFileReader*)m_pReader)->m_oDocumentInfo.m_arUsers[0]->ToXmlEditor2();
-		}
-
-        ParamValue->bstrVal = m_strEditorXml.AllocSysString();
-#else
-        ParamValue->bstrVal = m_strEditorXml;
-#endif
-	}
 	return S_OK;
 }
 

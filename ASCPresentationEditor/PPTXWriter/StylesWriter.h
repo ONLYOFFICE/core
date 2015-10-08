@@ -135,6 +135,9 @@ public:
 			CString strProp = _T("");
 			strProp.Format(_T(" marL=\"%d\""), pPF->leftMargin.get());
 			oWriter.WriteString(strProp);
+
+			if (pPF->indent.is_init() == false)
+				pPF->indent = (LONG)0;
 		}
 		if (pPF->indent.is_init())
 		{
@@ -142,11 +145,11 @@ public:
 			strProp.Format(_T(" indent=\"%d\""), pPF->indent.get());
 			oWriter.WriteString(strProp);
 		}
-		if (pPF->textAlignment.is_init())
-		{
-			CString strProp = GetTextAlign(pPF->textAlignment.get());
-			oWriter.WriteString(std::wstring(L" algn=\"") + string2std_string(strProp) + _T("\""));
-		}
+		//if (pPF->textAlignment.is_init())
+		//{
+		//	CString strProp = GetTextAlign(pPF->textAlignment.get());
+		//	oWriter.WriteString(std::wstring(L" algn=\"") + string2std_string(strProp) + _T("\""));
+		//}
 		if (pPF->defaultTabSize.is_init())
 		{
 			CString strProp = _T("");
@@ -183,7 +186,7 @@ public:
 			if (val > 0)
 			{
 				CString str = _T("");
-				str.Format(_T("<a:lnSpc><a:spcPts val=\"%d\"/></a:lnSpc>"), (int)(val / dKoef1));
+				str.Format(_T("<a:lnSpc><a:spcPts val=\"%d\"/></a:lnSpc>"), (int)(val / dKoef1 * 100));
 				oWriter.WriteString(str);
 			}
 			else
@@ -199,10 +202,10 @@ public:
 			if (val > 0)
 			{
 				CString str = _T("");
-				str.Format(_T("<a:spcAft><a:spcPts val=\"%d\"/></a:spcAft>"), (int)(val / dKoef1));
+				str.Format(_T("<a:spcAft><a:spcPts val=\"%d\"/></a:spcAft>"), (int)(val / dKoef1 * 100));
 				oWriter.WriteString(str);
 			}
-			else
+			else if (val < 0)
 			{
 				CString str = _T("");
 				str.Format(_T("<a:spcAft><a:spcPct val=\"%d\"/></a:spcAft>"), -val * 1000);
@@ -215,10 +218,10 @@ public:
 			if (val > 0)
 			{
 				CString str = _T("");
-				str.Format(_T("<a:spcBef><a:spcPts val=\"%d\"/></a:spcBef>"), (int)(val / dKoef1));
+				str.Format(_T("<a:spcBef><a:spcPts val=\"%d\"/></a:spcBef>"), (int)(val / dKoef1 * 100));
 				oWriter.WriteString(str);
 			}
-			else
+			else if (val < 0)
 			{
 				CString str = _T("");
 				str.Format(_T("<a:spcBef><a:spcPct val=\"%d\"/></a:spcBef>"), -val * 1000);

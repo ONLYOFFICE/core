@@ -19,7 +19,7 @@ namespace NSPresentationEditor
 	class CLayout;
 	class CSlide;
 
-	class IElement : public IBase
+	class IElement
 	{
 	public:
 		ElementType			m_etType;
@@ -38,6 +38,7 @@ namespace NSPresentationEditor
 
 		LONG				m_lPlaceholderID;
 		LONG				m_lPlaceholderType;
+		bool				m_bPlaceholderSet;
 
 		// метрика
 		CMetricInfo			m_oMetric;
@@ -45,6 +46,8 @@ namespace NSPresentationEditor
 		double				m_dRotate;			// угол поворота в градусах
 		bool				m_bFlipH;			// симметричное отражение относительно горизонтальной оси
 		bool				m_bFlipV;			// симметричное отражение относительно вертикальной оси
+
+		bool				m_bLine;
 
 		bool				m_bIsBackground;	
 		bool				m_bHaveAnchor;	
@@ -59,6 +62,8 @@ namespace NSPresentationEditor
 
 		std::wstring		m_sName;
 		std::wstring		m_sDescription;
+
+		std::wstring		m_sHyperlink;
 
 	protected:
 		ULONG m_lCountRef;
@@ -96,6 +101,7 @@ namespace NSPresentationEditor
 
 			m_lPlaceholderID			= -1;
 			m_lPlaceholderType			= -1;
+			m_bPlaceholderSet			= false;
 
 			m_etType					= etPicture;
 			
@@ -115,6 +121,7 @@ namespace NSPresentationEditor
 			m_dRotate					= 0.0;
 			m_bFlipH					= false;
 			m_bFlipV					= false;
+			m_bLine						= false;
 
 			m_lCountRef					= 1;
 
@@ -172,6 +179,7 @@ namespace NSPresentationEditor
 
 			pDublicate->m_lPlaceholderID			= m_lPlaceholderID;
 			pDublicate->m_lPlaceholderType			= m_lPlaceholderType;
+			pDublicate->m_bPlaceholderSet			= m_bPlaceholderSet;
 
 			pDublicate->m_oMetric					= m_oMetric;
 			pDublicate->m_oProperties				= m_oProperties;
@@ -179,6 +187,7 @@ namespace NSPresentationEditor
 			pDublicate->m_dRotate					= m_dRotate;
 			pDublicate->m_bFlipH					= m_bFlipH;
 			pDublicate->m_bFlipV					= m_bFlipV;
+			pDublicate->m_bLine						= m_bLine;
 
 			pDublicate->m_pTheme					= m_pTheme;
 			pDublicate->m_pLayout					= m_pLayout;
@@ -199,9 +208,6 @@ namespace NSPresentationEditor
 
 		virtual void SetupProperty(CSlide* pSlide, CTheme* pTheme, CLayout* pLayout, CElementProperty* pProperty)	= 0;
 		virtual IElement* CreateDublicate()																			= 0;
-
-		virtual CString ToXmlVideoSource()	= 0;
-		virtual CString ToXmlEditor()		= 0;
 
 		virtual CString SerializeToXml()
 		{

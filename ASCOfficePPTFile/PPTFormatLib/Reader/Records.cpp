@@ -148,13 +148,14 @@ IRecord* CreateByType(SRecordHeader oHeader)
 	//CREATE_BY_TYPE(RECORD_TYPE_FONT_EMBEDDEDDATA			, CRecordFontEmbedDataBlob)
 	//CREATE_BY_TYPE(RECORD_TYPE_METAFILE					, CRecordMetafileBlob)
 	CREATE_BY_TYPE(RECORD_TYPE_CSTRING						, CRecordCString)
-	//CREATE_BY_TYPE(RECORD_TYPE_EXOLEOBJ_ATOM				, CRecordExOleObjAtom)
-	//CREATE_BY_TYPE(RECORD_TYPE_EXEMBEDATOM				, CRecordExOleEmbedAtom)
+	CREATE_BY_TYPE(RECORD_TYPE_EXOLEOBJ_ATOM				, CRecordExOleObjAtom)
+	CREATE_BY_TYPE(RECORD_TYPE_EXEMBEDATOM					, CRecordExOleEmbedAtom)
 	//CREATE_BY_TYPE(RECORD_TYPE_BOOKMARK_ENTITY_ATOM		, CRecordBookmarkEntityAtom)
 	//CREATE_BY_TYPE(RECORD_TYPE_EXLINK_ATOM				, CRecordExOleLinkAtom)
 	
 	//CREATE_BY_TYPE(RECORD_TYPE_SRKINSOKU_ATOM				, CRecordKinsokuAtom)
-	//CREATE_BY_TYPE(RECORD_TYPE_EXHYPERLINK_ATOM			, CRecordExHyperlinkAtom)
+	CREATE_BY_TYPE(RECORD_TYPE_EXHYPERLINK					, CRecordExHyperlinkContainer)
+	CREATE_BY_TYPE(RECORD_TYPE_EXHYPERLINK_ATOM				, CRecordExHyperlinkAtom)
 	//CREATE_BY_TYPE(RECORD_TYPE_UNKNOWN					, CRecordSlideNumberMCAtom)
 	CREATE_BY_TYPE(RECORD_TYPE_HEADERSFOOTERS_ATOM			, CRecordHeadersFootersAtom)
 	//CREATE_BY_TYPE(RECORD_TYPE_UNKNOWN					, CRecordMouseTextInteractiveInfoAtom)
@@ -222,10 +223,10 @@ IRecord* CreateByType(SRecordHeader oHeader)
 			pRecord = new CUnknownRecord();
 		}
 	}
-#ifdef _DEBUG
-		wchar_t str[1024]={};
-		swprintf(str, L"%s record type: %xd\n" , GetRecordName((DWORD)oHeader.RecType).GetBuffer(), oHeader.RecType);
-		std::wcout << str;
-#endif
+//#ifdef _DEBUG
+		//wchar_t str[1024]={};
+		//swprintf(str, L"%s record type: %xd\n" , GetRecordName((DWORD)oHeader.RecType).GetBuffer(), oHeader.RecType);
+		//std::wcout << str;
+//#endif
 	return pRecord;
 }

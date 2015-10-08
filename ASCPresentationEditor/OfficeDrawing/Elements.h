@@ -342,15 +342,6 @@ namespace NSPresentationEditor
 		{
 		}
 
-		virtual CString ToXmlVideoSource()
-		{
-			return SaveToXML();
-		}
-		virtual CString ToXmlEditor()
-		{
-			return SaveToXML();
-		}
-
 		inline CString GetVideoStream ()
 		{
 			int lIndex = m_strFileName.find(L"file:///");
@@ -447,6 +438,9 @@ namespace NSPresentationEditor
 		bool			m_bStretch;
 		bool			m_bTile;
 
+		bool			m_bOLE;
+		bool			m_bImagePresent;
+
 	public:
 		CImageElement() : IElement()
 		{
@@ -465,6 +459,8 @@ namespace NSPresentationEditor
 
 			m_bStretch				= true;
 			m_bTile					= false;
+			m_bOLE					= false;
+			m_bImagePresent			= false;
 
 		}
 
@@ -551,93 +547,15 @@ namespace NSPresentationEditor
 
 			pImageElement->m_bStretch				= m_bStretch;
 			pImageElement->m_bTile					= m_bTile;
+			pImageElement->m_bImagePresent			= m_bImagePresent;
+			pImageElement->m_bOLE					= m_bOLE;
+
 			return (IElement*)pImageElement;
 		}
 
 		virtual void SetupProperty(CSlide* pSlide, CTheme* pTheme, CLayout* pLayout, CElementProperty* pProperty)
 		{
 		}
-
-		virtual CString ToXmlVideoSource()
-		{
-			return SaveToXML();
-		}
-		virtual CString ToXmlEditor()
-		{
-#ifdef BUILD_CONFIG_OPENSOURCE_VERSION
-			return _T("");
-#else
-			CString strPPTXShape = _T("");
-			
-			//NSBaseShape::ClassType eShapeType = NSBaseShape::unknown;
-			//if (m_oShape.m_pShape != NULL)
-			//	eShapeType = m_oShape.m_pShape->GetClassType();
-
-#ifdef ENABLE_PPT_TO_PPTX_CONVERT
-			strPPTXShape = ConvertPPTShapeToPPTX();
-#endif
-
-			NSHtmlRenderer::CASCSVGRenderer* pSVG = new NSHtmlRenderer::CASCSVGRenderer();
-			//todo FontManager
-
-			pSVG->put_Width(m_oMetric.m_lMillimetresHor);
-			pSVG->put_Height(m_oMetric.m_lMillimetresVer);
-			
-			pSVG->CreateOfficeFile(L"", 0);
-
-			pSVG->DrawImageFromFile(m_strFileName, m_rcBounds.left, m_rcBounds.top, m_rcBounds.right - m_rcBounds.left, m_rcBounds.bottom - m_rcBounds.top, 255);
-
-			pSVG->CloseFile(0);
-
-			std::wstring bsResult;
-			pSVG->get_Data(&bsResult);
-
-			CString strXml = CString(bsResult.c_str());
-			RELEASEOBJECT(pSVG);
-
-			int nIndexStart = strXml.Find((TCHAR)'>');
-			int nIndexEnd	= strXml.ReverseFind((TCHAR)'<');
-
-			if ((-1 != nIndexStart) && (nIndexEnd > nIndexStart))
-			{
-				strXml = strXml.Mid(nIndexStart + 1, nIndexEnd - nIndexStart - 1);
-			}
-			//nIndexStart = strXml.Find((TCHAR)'>');
-			//nIndexEnd	= strXml.ReverseFind((TCHAR)'<');
-
-			//if ((-1 != nIndexStart) && (nIndexEnd > nIndexStart))
-			//{
-			//	strXml = strXml.Mid(nIndexStart + 1, nIndexEnd - nIndexStart - 1);
-			//}
-
-			double _dLeft	= m_rcBounds.left * 96 / 25.4;
-			double _dTop	= m_rcBounds.top  * 96 / 25.4;
-			double _dWidth	= (m_rcBounds.right - m_rcBounds.left) * 96 / 25.4;
-			double _dHeight	= (m_rcBounds.bottom - m_rcBounds.top) * 96 / 25.4;
-
-			CString strTxPath = std_string2string(m_strFileName);
-			
-			if (_T("") != strTxPath)
-				CorrectXmlString(strTxPath);
-			if (_T("") != strPPTXShape)
-				CorrectXmlString(strPPTXShape);
-
-			CString strElement = _T("");
-            strElement.Format(_T("<shape type='75' background='%d' changeable='%d' left='%d' top='%d' width='%d' height='%d'"),
-                (int)(m_bIsBackground ? 1 : 0), (int)(m_bIsChangeable ? 1 : 0), (LONG)_dLeft, (LONG)_dTop, (LONG)_dWidth, (LONG)_dHeight);
-
-            strElement +=  _T(" txpath=\"") + strTxPath + _T("\"");
-			
-			if (strPPTXShape.GetLength() >0)
-				strElement += _T(" pptx_shape=\"") + strPPTXShape + _T("\"");
-
-			strElement += _T(">");
-			strXml = strElement + strXml + _T("</shape>");
-
-			return strXml;
-#endif
-		}
-
 		
 #ifdef ENABLE_PPT_TO_PPTX_CONVERT
 
@@ -1013,165 +931,6 @@ namespace NSPresentationEditor
 			default:
 				break;
 			}
-		}
-
-		virtual CString ToXmlVideoSource()
-		{
-			return SaveToXML();
-		}
-
-		virtual CString ToXmlEditor()
-		{
-#ifdef BUILD_CONFIG_OPENSOURCE_VERSION
-			return _T("");
-#else
-			
-			NSBaseShape::ClassType eShapeType = NSBaseShape::unknown;
-			if (m_oShape.m_pShape != NULL)
-				eShapeType = m_oShape.m_pShape->GetClassType();
-
-			CString strPPTXShape = _T("");
-		
-			CGeomShapeInfo oInfo;
-			oInfo.SetBounds(m_rcBounds);
-
-			oInfo.m_dRotate = m_dRotate;
-			oInfo.m_bFlipH	= m_bFlipH;
-			oInfo.m_bFlipV	= m_bFlipV;
-
-			oInfo.m_lOriginalWidth	= (LONG)m_rcBoundsOriginal.GetWidth();
-			oInfo.m_lOriginalHeight	= (LONG)m_rcBoundsOriginal.GetHeight();
-
-			if ((0 == m_oShape.m_oPen.Alpha) && (0 == m_oShape.m_oBrush.Alpha1) && (1000 == m_oShape.m_oBrush.Type))
-				m_oShape.m_lDrawType &= c_ShapeDrawType_Text;
-
-			CString strXml	= _T("");
-			if (m_oShape.m_lDrawType & c_ShapeDrawType_Graphic)
-			{
-				NSHtmlRenderer::CASCSVGRenderer* pSVG = new NSHtmlRenderer::CASCSVGRenderer();
-				//todo FontManager
-
-				pSVG->put_Width(m_oMetric.m_lMillimetresHor);
-				pSVG->put_Height(m_oMetric.m_lMillimetresVer);
-
-				pSVG->CreateOfficeFile(L"", 0);
-
-				//if (m_oShape.m_oPen.LineEndCap == 0x11 ||
-				//	m_oShape.m_oPen.LineEndCap == 0x14 ||
-				//	m_oShape.m_oPen.LineEndCap == 0x13 ||
-				//	m_oShape.m_oPen.LineEndCap == 0x12)
-				//{
-				//	ASCGraphics::IAVSMetafile* pMetafile = NULL;
-				//	CoCreateInstance(ASCGraphics::CLSID_CAVSMetafile, NULL, CLSCTX_ALL, ASCGraphics::IID_IAVSMetafile, (void**)&pMetafile);
-				//	m_oShape.ToRenderer((IASCRenderer*)pMetafile, oInfo, m_oMetric, m_dStartTime, m_dEndTime);
-				//	pMetafile->Draw2((IUnknown*)pSVG, 96.0, 96.0, NULL);
-				//	RELEASEINTERFACE(pMetafile);
-				//}
-				//else
-				{
-					m_oShape.ToRenderer((IRenderer*)pSVG, oInfo, m_oMetric, m_dStartTime, m_dEndTime);
-				}
-
-				pSVG->CloseFile(0);
-				
-				std::wstring bsResult;
-				pSVG->get_Data(&bsResult);
-
-				strXml = CString(bsResult.c_str());
-				RELEASEOBJECT(pSVG);
-
-				int nIndexStart = strXml.Find((TCHAR)'>');
-				int nIndexEnd	= strXml.ReverseFind((TCHAR)'<');
-
-				if ((-1 != nIndexStart) && (nIndexEnd > nIndexStart))
-				{
-					strXml = strXml.Mid(nIndexStart + 1, nIndexEnd - nIndexStart - 1);
-				}
-
-				double _dLeft	= m_rcBounds.left * 96 / 25.4;
-				double _dTop	= m_rcBounds.top  * 96 / 25.4;
-				double _dWidth	= (m_rcBounds.right - m_rcBounds.left) * 96 / 25.4;
-				double _dHeight	= (m_rcBounds.bottom - m_rcBounds.top) * 96 / 25.4;
-
-				CString strTxPath = _T("");
-				if (c_BrushTypeTexture == m_oShape.m_oBrush.Type)
-					strTxPath = std_string2string(m_oShape.m_oBrush.TexturePath);
-
-				CorrectXmlString(strTxPath);
-
-				CString strElement = _T("");
-
-                strElement.Format(_T("<shape background=\"%d\" changeable=\"%d\" left=\"%d\" top=\"%d\" width=\"%d\" height=\"%d\""),
-                    (int)(m_bIsBackground ? 1 : 0), (int)(m_bIsChangeable ? 1 : 0), (LONG)_dLeft, (LONG)_dTop, (LONG)_dWidth, (LONG)_dHeight);
-
-                strElement += _T(" txpath=\"") + strTxPath + _T("\"");
-
-#ifdef ENABLE_PPT_TO_PPTX_CONVERT
-				if (eShapeType == NSBaseShape::ppt)
-					strPPTXShape = ConvertPPTShapeToPPTX();
-#endif
-				if (strPPTXShape.GetLength() >0)
-				{
-					CorrectXmlString(strPPTXShape);
-					strElement += _T(" pptx_shape=\"") + strPPTXShape + _T("\"");
-				}
-
-				strElement += _T(">");
-				strXml = strElement + strXml + _T("</shape>");
-			}
-			else
-			{
-				double _dLeft	= m_rcBounds.left * 96 / 25.4;
-				double _dTop	= m_rcBounds.top  * 96 / 25.4;
-				double _dWidth	= (m_rcBounds.right - m_rcBounds.left) * 96 / 25.4;
-				double _dHeight	= (m_rcBounds.bottom - m_rcBounds.top) * 96 / 25.4;
-
-				int nL = (int)_dLeft;
-				int nT = (int)_dTop;
-				int nR = nL + (int)_dWidth;
-				int nB = nT + (int)_dHeight;
-
-				strXml.Format(_T("<g><path style=\"fill:none;stroke:none\" d=\"M %d,%d L %d,%d L %d,%d L %d,%d Z\"/></g>"), 
-					nL, nT, nR, nT, nR, nB, nL, nB);
-
-				CString strTxPath = _T("");
-				if (c_BrushTypeTexture == m_oShape.m_oBrush.Type)
-					strTxPath = std_string2string(m_oShape.m_oBrush.TexturePath);
-
-				CorrectXmlString(strTxPath);
-
-				CString strElement = _T("");
-                strElement.Format(_T("<shape background=\"%d\" changeable=\"%d\" left=\"%d\" top=\"%d\" width=\"%d\" height=\"%d\""),
-                    (int)(m_bIsBackground ? 1 : 0), (int)(m_bIsChangeable ? 1 : 0), (LONG)_dLeft, (LONG)_dTop, (LONG)_dWidth, (LONG)_dHeight );
-
-                strElement += _T(" txpath=\"") + strTxPath + _T("\"");
-
- #ifdef ENABLE_PPT_TO_PPTX_CONVERT
-				if (eShapeType == NSBaseShape::ppt)
-					strPPTXShape = ConvertPPTShapeToPPTX();
-#endif
-				if (strPPTXShape.GetLength() >0)
-				{
-					CorrectXmlString(strPPTXShape);
-					strElement += _T(" pptx_shape=\"") + strPPTXShape + _T("\"");
-				}
-
-				strElement += _T(">");
-
-				strXml = strElement + strXml + _T("</shape>");
-			}
-
-			if ((m_oShape.m_oText.IsEmptyText()) && (m_oShape.m_oBrush.Type == c_BrushTypeTexture))
-			{
-				return strXml;
-			}
-
-			CElemInfo oElemInfo;
-			oElemInfo.m_bIsBackground = m_bIsBackground;
-			oElemInfo.m_bIsChangeable = m_bIsChangeable;
-			oElemInfo.m_lID			  = m_lID;
-			return strXml + m_oShape.GetTextXHTML(oInfo, m_oMetric, m_dStartTime, m_dEndTime, oElemInfo, m_pTheme, m_pLayout);
-#endif
 		}
 
 #ifdef _PRESENTATION_WRITER_
@@ -1687,15 +1446,6 @@ namespace NSPresentationEditor
 
 		virtual void SetupProperty(CSlide* pSlide, CTheme* pTheme, CLayout* pLayout, CElementProperty* pProperty)
 		{
-		}
-
-		virtual CString ToXmlVideoSource()
-		{
-			return SaveToXML();
-		}
-		virtual CString ToXmlEditor()
-		{
-			return _T("");
 		}
 	};
 }

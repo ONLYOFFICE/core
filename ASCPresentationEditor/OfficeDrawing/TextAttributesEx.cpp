@@ -180,171 +180,8 @@ namespace NSPresentationEditor
 		return strText + strTimeLine + _T("</ImagePaint-DrawTextEx>");
 	}
 
-	CString CTextAttributesEx::ToHTML(CGeomShapeInfo& oInfo, CMetricInfo& pMetricInfo, double dStartTime, double dEndTime, const CElemInfo& oElemInfo, CTheme* pTheme, CLayout* pLayout)
+	void CTextAttributesEx::RecalcParagraphsPPT(CTheme* pTheme)
 	{
-		m_oBounds.left		= (LONG)oInfo.m_dLeft;
-		m_oBounds.top		= (LONG)oInfo.m_dTop;
-		m_oBounds.right		= (LONG)(oInfo.m_dLeft + oInfo.m_dWidth);
-		m_oBounds.bottom	= (LONG)(oInfo.m_dTop + oInfo.m_dHeight);
-
-		double dRight		= oInfo.m_dLeft + oInfo.m_dWidth;
-		double dLeft		= oInfo.m_dLeft;
-		//if (2 == m_lWrapMode)
-		//{
-		//	LONG lAlign = 0;
-		//	if (m_arPFs.size() > 0)
-		//		lAlign = m_arPFs[0].textAlignment;
-		//	else
-		//		lAlign = m_oAttributes.m_nTextAlignHorizontal;
-		//	
-		//	switch (lAlign)
-		//	{
-		//	case 1:
-		//		{
-		//			// center
-		//			dLeft	-= pMetricInfo.m_lMillimetresHor;
-		//			dRight	+= pMetricInfo.m_lMillimetresHor;
-		//			break;
-		//		}
-		//	default:
-		//		{
-		//			dRight	= pMetricInfo.m_lMillimetresHor;
-		//			break;
-		//		}
-		//	};
-		//}
-
-		CString strHTML = _T("");
-
-		LONG _lLeft		= (LONG)(dLeft * 96 / 25.4);
-		LONG _lWidth	= (LONG)((dRight - dLeft) * 96 / 25.4);
-		LONG _lTop		= (LONG)(oInfo.m_dTop * 96 / 25.4);
-		LONG _lHeight	= (LONG)(oInfo.m_dHeight * 96 / 25.4);
-
-		CString strText = _T("");
-		// add Text Param
-		strText.Format(_T("<text left='%d' top='%d' width='%d' height='%d' angle='%lf' background='%d' changeable='%d'>"), 
-			_lLeft, _lTop, _lWidth, _lHeight, oInfo.m_dRotate, (int)(oElemInfo.m_bIsBackground ? 1 : 0), (int)(oElemInfo.m_bIsChangeable ? 1 : 0));
-
-		strHTML += strText;
-		strHTML += _T("<body>");
-
-		RecalcParagraphs(pTheme);
-
-		#ifdef PPT_DEF
-		#ifndef PPTX_DEF
-			// теперь пробежимся и проставим все маргины и инденты
-			CorrectRuler();
-		#endif
-		#endif
-
-		size_t nCountPars = m_arParagraphs.size();
-		for (size_t i = 0; i < nCountPars; ++i)
-		{
-			CParagraph* pParagraph = &m_arParagraphs[i];
-			LONG lLevel = pParagraph->m_lTextLevel;
-			
-			CString strClass = _T("");
-			
-			CTextPFRun oPFRun;
-
-			bool bIsBullet = (pParagraph->m_oPFRun.hasBullet.is_init() && pParagraph->m_oPFRun.hasBullet.get()) ? true : false;
-
-			if (-1 != m_lTextType)
-			{
-				CString strClassTheme = _T("");
-				strClassTheme.Format(_T("s%d_lvl%d_pf"), m_lTextType, lLevel);
-				strClass += strClassTheme;
-			}
-			if (-1 != m_lPlaceholderType)
-			{
-				CString strPlaceholderStyle = _T("");
-				strPlaceholderStyle.Format(_T("t%d_lvl%d_pf"), m_lPlaceholderType, lLevel);
-
-				strClass += _T(" ");
-				strClass += strPlaceholderStyle;
-			}
-			if (m_oStyles.m_pLevels[lLevel].is_init())
-			{
-				oPFRun.ApplyAfter(m_oStyles.m_pLevels[lLevel]->m_oPFRun);
-			}
-			oPFRun.ApplyAfter(pParagraph->m_oPFRun);
-
-			// теперь спаны
-			size_t nSpans = pParagraph->m_arSpans.size();
-			CString strCFs = _T("");
-			for (size_t j = 0; j < nSpans; ++j)
-			{
-				CSpan* pSpan = &pParagraph->m_arSpans[j];
-				CString strClassCF = _T("");
-
-				CTextCFRun oCFRun;
-				if (-1 != m_lTextType)
-				{
-					CString strClassTheme = _T("");
-					strClassTheme.Format(_T("s%d_lvl%d_cf"), m_lTextType, lLevel);
-					strClassCF += strClassTheme;
-				}
-				if (-1 != m_lPlaceholderType)
-				{
-					LONG lCountThisType = 0;
-					if (NULL != pLayout)
-						lCountThisType = pLayout->GetCountPlaceholderWithType(m_lPlaceholderType);
-					
-					if (1 < lCountThisType)
-					{
-						CString strPlaceholderStyle = _T("");
-						strPlaceholderStyle.Format(_T("l_font%d t%d_lvl%d_id%d_cf"), m_lPlaceholderType, m_lPlaceholderType, lLevel, m_lPlaceholderID);
-
-						strClassCF += _T(" ");
-						strClassCF += strPlaceholderStyle;
-					}
-					else
-					{
-						CString strPlaceholderStyle = _T("");
-						strPlaceholderStyle.Format(_T("l_font%d t%d_lvl%d_cf"), m_lPlaceholderType, m_lPlaceholderType, lLevel);
-
-						strClassCF += _T(" ");
-						strClassCF += strPlaceholderStyle;
-					}
-				}
-				if (m_bIsSlideFontRef && -1 != m_lFontRef)
-				{
-					CString strClassRef = _T("");
-					strClassRef.Format(_T(" s_font%d"), oElemInfo.m_lID);
-					strClassCF += strClassRef;
-				}
-				if (m_oStyles.m_pLevels[lLevel].is_init())
-				{
-					oCFRun.ApplyAfter(m_oStyles.m_pLevels[lLevel]->m_oCFRun);
-				}
-				oCFRun.ApplyAfter(pSpan->m_oRun);
-
-				CString strRunText = pSpan->m_strText;
-				if (oCFRun.Cap.is_init())
-				{
-					if (1 == oCFRun.Cap.get())
-						strRunText.MakeUpper();
-					else if (2 == oCFRun.Cap.get())
-						strRunText.MakeLower();
-				}
-				NormalizeString(strRunText);
-
-				strCFs += oCFRun.ToXmlEditor(strClassCF, strRunText);
-			}
-
-			strHTML += oPFRun.ToXmlEditor(strClass, strCFs, oInfo);
-		}
-
-		strHTML += _T("</body>");
-		strHTML += _T("</text>");
-
-		return strHTML;
-	}
-
-	void CTextAttributesEx::RecalcParagraphs(CTheme* pTheme)
-	{
-	#ifdef PPT_FORMAT
 		for (LONG i = 0; i < (LONG)m_arParagraphs.size(); ++i)
 		{
 			bool bIsBreak = true;
@@ -458,12 +295,110 @@ namespace NSPresentationEditor
 			}
 		}
 
-		#endif
-
 		size_t nCount = m_arParagraphs.size();
 		for (size_t i = 0; i < nCount; ++i)
 		{
 			m_arParagraphs[i].CheckErrors();
 		}
 	}
+
+	void CTextAttributesEx::RecalcParagraphs(CTheme* pTheme)
+	{
+#ifdef PPT_FORMAT
+		RecalcParagraphsPPT(pTheme);
+#else
+		size_t nCount = m_arParagraphs.size();
+		for (size_t i = 0; i < nCount; ++i)
+		{
+			m_arParagraphs[i].CheckErrors();
+		}
+#endif
+	}
+	void CTextAttributesEx::NormalizeCoordsByMetric(const CMetricInfo & oMetric)
+	{
+		double dScaleX				= 625 * 2.54 ;//???? /2
+		//1/576 inch = 72/576 pt = 360000 *72 * 2.54 /(72*576) emu
+
+		size_t lCount = m_arParagraphs.size();
+		for (size_t i = 0; i < lCount; ++i)
+		{
+			CTextPFRun* pPar = &m_arParagraphs[i].m_oPFRun;
+
+			WORD lIndentLevel = (WORD)m_arParagraphs[i].m_lTextLevel;
+			switch (lIndentLevel)
+			{
+			case 0:
+			{
+				if (m_oRuler.LeftMargin1.is_init()) 
+					pPar->leftMargin = (LONG)m_oRuler.LeftMargin1.get();
+				if (m_oRuler.Indent1.is_init()) 
+					pPar->indent = (LONG)m_oRuler.Indent1.get();
+				
+				if (pPar->indent.is_init() && pPar->leftMargin.is_init())
+					pPar->indent.get() -= pPar->leftMargin.get();
+				break;
+			}
+			case 1:
+			{
+				if (m_oRuler.LeftMargin2.is_init()) 
+					pPar->leftMargin = (LONG)m_oRuler.LeftMargin2.get();
+				if (m_oRuler.Indent2.is_init()) 
+					pPar->indent  = (LONG)m_oRuler.Indent2.get();
+				
+				if (pPar->indent.is_init() && pPar->leftMargin.is_init())
+					pPar->indent.get() -= pPar->leftMargin.get();
+				break;
+			}
+			case 2:
+			{
+				if (m_oRuler.LeftMargin3.is_init()) 
+					pPar->leftMargin = (LONG)m_oRuler.LeftMargin3.get();
+				if (m_oRuler.Indent3.is_init()) 
+					pPar->indent  = (LONG)m_oRuler.Indent3.get();
+				
+				if (pPar->indent.is_init() && pPar->leftMargin.is_init())
+					pPar->indent.get() -= pPar->leftMargin.get();
+				break;
+			}
+			case 3:
+			{
+				if (m_oRuler.LeftMargin4.is_init()) 
+					pPar->leftMargin = (LONG)m_oRuler.LeftMargin4.get();
+				if (m_oRuler.Indent4.is_init()) 
+					pPar->indent  = (LONG)m_oRuler.Indent4.get();
+				
+				if (pPar->indent.is_init() && pPar->leftMargin.is_init())
+					pPar->indent.get() -= pPar->leftMargin.get();
+				break;
+			}
+			case 4:
+			{
+				if (m_oRuler.LeftMargin5.is_init()) 
+					pPar->leftMargin = (LONG)m_oRuler.LeftMargin5.get();
+				if (m_oRuler.Indent5.is_init()) 
+					pPar->indent  = (LONG)m_oRuler.Indent5.get();
+				
+				if (pPar->indent.is_init() && pPar->leftMargin.is_init())
+					pPar->indent.get() -= pPar->leftMargin.get();
+				break;
+			}
+			default:
+				break;
+			}
+
+			if (pPar->leftMargin.is_init())
+				pPar->leftMargin		= pPar->leftMargin.get()	* dScaleX;
+			if (pPar->indent.is_init())
+				pPar->indent			= pPar->indent.get()		* dScaleX;
+			if (pPar->lineSpacing.is_init())
+				pPar->lineSpacing		=- pPar->lineSpacing.get();
+			if (pPar->spaceAfter.is_init())
+				pPar->spaceAfter		= -pPar->spaceAfter.get()	;
+			if (pPar->spaceBefore.is_init())
+				pPar->spaceBefore		= -pPar->spaceBefore.get()	;
+			if (pPar->defaultTabSize.is_init())
+				pPar->defaultTabSize	= pPar->defaultTabSize.get()* dScaleX;
+		}
+	}
+
 }

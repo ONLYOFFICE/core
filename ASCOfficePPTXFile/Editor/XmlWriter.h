@@ -139,7 +139,24 @@ namespace NSBinPptxRW
 			s.Replace(_T("\""),	_T("&quot;"));
 			WriteString(s);
 		}
-
+		AVSINLINE void WriteStringXML(const std::wstring & wString)
+		{
+			std::wstring buffer;
+			buffer.reserve(wString.size());
+			for(size_t pos = 0; pos != wString.size(); ++pos)
+			{
+				switch(wString[pos])
+				{
+				case '&':  buffer.append(_T("&amp;"));      break;
+				case '\"': buffer.append(_T("&quot;"));     break;
+				case '\'': buffer.append(_T("&apos;"));     break;
+				case '<':  buffer.append(_T("&lt;"));       break;
+				case '>':  buffer.append(_T("&gt;"));       break;
+				default:   buffer.append(&wString[pos], 1);	break;
+				}
+			}
+			WriteString(buffer);
+		}
         AVSINLINE size_t GetCurSize()
 		{
 			return m_lSizeCur;

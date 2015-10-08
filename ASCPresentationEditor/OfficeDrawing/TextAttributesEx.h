@@ -29,8 +29,9 @@ namespace NSPresentationEditor
 		std::vector<CParagraph>	m_arParagraphs;
 
 		// параметры ВСЕГО текста (наверное тут их много будет потом)
-                bool	m_bVertical;
-                bool	m_bRightToLeft;
+        bool	m_bVertical;
+        bool	m_bRightToLeft;
+
 		LONG	m_lWrapMode; // 0 - square, default; 1 - none wrap
 
 		// для ппт. чтобы не менять счас ничего
@@ -107,7 +108,6 @@ namespace NSPresentationEditor
 		}
 
 		CString ToString(CGeomShapeInfo& oInfo, CMetricInfo& pMetricInfo, double dStartTime, double dEndTime, CTheme* pTheme, CLayout* pLayout);
-		CString ToHTML(CGeomShapeInfo& oInfo, CMetricInfo& pMetricInfo, double dStartTime, double dEndTime, const CElemInfo& oElemInfo, CTheme* pTheme, CLayout* pLayout);
 	public:
 
 		inline void NormalizeString(CString& strText)
@@ -124,94 +124,10 @@ namespace NSPresentationEditor
             //SysFreeString(bsText);
 		}
 
-		void RecalcParagraphs(CTheme* pTheme = NULL);
+		void RecalcParagraphs	(CTheme* pTheme = NULL);
+		void RecalcParagraphsPPT(CTheme* pTheme = NULL);
 		
-		void NormalizeCoordsByMetric(const CMetricInfo & oMetric)
-		{
-			double dScaleX				= (double)oMetric.m_lUnitsHor	/ oMetric.m_lMillimetresHor / 24.;
-			double dScaleY				= (double)oMetric.m_lUnitsVer	/ oMetric.m_lMillimetresVer / 24.;
-			
-			size_t lCount = m_arParagraphs.size();
-			for (size_t i = 0; i < lCount; ++i)
-			{
-				CTextPFRun* pPar = &m_arParagraphs[i].m_oPFRun;
-
-				WORD lIndentLevel = (WORD)m_arParagraphs[i].m_lTextLevel;
-				switch (lIndentLevel)
-				{
-				case 0:
-				{
-					if (m_oRuler.LeftMargin1.is_init()) 
-						pPar->leftMargin = (LONG)m_oRuler.LeftMargin1.get();
-					if (m_oRuler.Indent1.is_init()) 
-						pPar->indent = (LONG)m_oRuler.Indent1.get();
-					
-					if (pPar->indent.is_init() && pPar->leftMargin.get())
-						pPar->indent.get() -= pPar->leftMargin.get();
-					break;
-				}
-				case 1:
-				{
-					if (m_oRuler.LeftMargin2.is_init()) 
-						pPar->leftMargin = (LONG)m_oRuler.LeftMargin2.get();
-					if (m_oRuler.Indent2.is_init()) 
-						pPar->indent  = (LONG)m_oRuler.Indent2.get();
-					
-					if (pPar->indent.is_init() && pPar->leftMargin.get())
-						pPar->indent.get() -= pPar->leftMargin.get();
-					break;
-				}
-				case 2:
-				{
-					if (m_oRuler.LeftMargin3.is_init()) 
-						pPar->leftMargin = (LONG)m_oRuler.LeftMargin3.get();
-					if (m_oRuler.Indent3.is_init()) 
-						pPar->indent  = (LONG)m_oRuler.Indent3.get();
-					
-					if (pPar->indent.is_init() && pPar->leftMargin.get())
-						pPar->indent.get() -= pPar->leftMargin.get();
-					break;
-				}
-				case 3:
-				{
-					if (m_oRuler.LeftMargin4.is_init()) 
-						pPar->leftMargin = (LONG)m_oRuler.LeftMargin4.get();
-					if (m_oRuler.Indent4.is_init()) 
-						pPar->indent  = (LONG)m_oRuler.Indent4.get();
-					
-					if (pPar->indent.is_init() && pPar->leftMargin.get())
-						pPar->indent.get() -= pPar->leftMargin.get();
-					break;
-				}
-				case 4:
-				{
-					if (m_oRuler.LeftMargin5.is_init()) 
-						pPar->leftMargin = (LONG)m_oRuler.LeftMargin5.get();
-					if (m_oRuler.Indent5.is_init()) 
-						pPar->indent  = (LONG)m_oRuler.Indent5.get();
-					
-					if (pPar->indent.is_init() && pPar->leftMargin.get())
-						pPar->indent.get() -= pPar->leftMargin.get();
-					break;
-				}
-				default:
-					break;
-				}
-
-				if (pPar->leftMargin.is_init())
-					pPar->leftMargin		= pPar->leftMargin.get()	* dScaleX;
-				if (pPar->indent.is_init())
-					pPar->indent			= pPar->indent.get()		* dScaleX;
-				if (pPar->lineSpacing.is_init())
-					pPar->lineSpacing		=- pPar->lineSpacing.get();//	* dScaleY;
-				if (pPar->spaceAfter.is_init())
-					pPar->spaceAfter		= -pPar->spaceAfter.get()	;//* dScaleY;
-				if (pPar->spaceBefore.is_init())
-					pPar->spaceBefore		= -pPar->spaceBefore.get()	;//* dScaleY;
-				if (pPar->defaultTabSize.is_init())
-					pPar->defaultTabSize	= pPar->defaultTabSize.get()* dScaleX;
-			}
-		}
+		void NormalizeCoordsByMetric(const CMetricInfo & oMetric);
 
 		void CorrectRuler()
 		{

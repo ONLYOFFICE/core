@@ -1,5 +1,4 @@
 #pragma once
-#include "../../Reader/Records.h"
 #include "GroupShapeContainer.h"
 
 class CRecordDrawingContainer : public CRecordsContainer

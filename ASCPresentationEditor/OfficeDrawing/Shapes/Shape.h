@@ -38,6 +38,8 @@ public:
 	CBrush					m_oBrush;
 	CTextAttributesEx		m_oText;
 
+	CShadow					m_oShadow;
+
 	double					m_dWidthLogic;
 	double					m_dHeightLogic;
 
@@ -53,7 +55,7 @@ public:
 
 	CString					m_strPPTXShape;
 public:
-	CShape(NSBaseShape::ClassType ClassType, int ShapeType) : m_rcBounds()
+	CShape(NSBaseShape::ClassType ClassType, int ShapeType_) : m_rcBounds()
 	{
 		m_lDrawType			= c_ShapeDrawType_All;
 
@@ -79,15 +81,19 @@ public:
 		if (ClassType == NSBaseShape::pptx)
 		{
 			m_pShape = new CPPTXShape();
-			m_pShape->SetType(NSBaseShape::pptx, ShapeType);
+			m_pShape->SetType(NSBaseShape::pptx, ShapeType_);
 		}
 #endif
 
 #if defined(PPT_DEF)
 		if (ClassType == NSBaseShape::ppt)
 		{
-			m_pShape = new CPPTShape();
-			m_pShape->SetType(NSBaseShape::ppt, ShapeType);
+			m_pShape = CPPTShape::CreateByType((PPTShapes::ShapeType)ShapeType_ );
+			if (m_pShape == NULL)
+			{
+				m_pShape = new CPPTShape();
+				m_pShape->SetType(NSBaseShape::ppt, ShapeType_);
+			}
 
 			m_dTextMarginX		= 2.54;
 			m_dTextMarginY		= 1.27;
@@ -120,14 +126,7 @@ public:
 		GetTextRect(oGeomInfo);
 		return m_oText.ToString(oGeomInfo, pInfo, dStartTime, dEndTime, pTheme, pLayout);
 	}
-	virtual CString GetTextXHTML(CGeomShapeInfo& oGeomInfo, CMetricInfo& pInfo, double dStartTime, double dEndTime, const CElemInfo& oElemInfo, CTheme* pTheme, CLayout* pLayout)
-	{
-		//if (m_oText.IsEmptyText())
-		//	return _T("");
 
-		GetTextRect(oGeomInfo);
-		return m_oText.ToHTML(oGeomInfo, pInfo, dStartTime, dEndTime, oElemInfo, pTheme, pLayout);
-	}
 
 	virtual CString GetBrushXml()
 	{
@@ -237,13 +236,13 @@ public:
 			CPPTShape* pPPTShape = dynamic_cast<CPPTShape*>(m_pShape);
 			if (NULL != pPPTShape)
 			{
-				pPPTShape->CalcTextRectOffsets(dPercentLeft, dPercentTop, dPercentRight, dPercentBottom);
+				//pPPTShape->CalcTextRectOffsets(dPercentLeft, dPercentTop, dPercentRight, dPercentBottom);
 
-				dLeft	+= (dPercentLeft * dWidth);
-				dTop	+= (dPercentTop * dHeight);
+				//dLeft	+= (dPercentLeft * dWidth);
+				//dTop	+= (dPercentTop * dHeight);
 
-				dWidth	-= ((dPercentLeft + dPercentRight) * dWidth);
-				dHeight	-= ((dPercentTop + dPercentBottom) * dHeight);
+				//dWidth	-= ((dPercentLeft + dPercentRight) * dWidth);
+				//dHeight	-= ((dPercentTop + dPercentBottom) * dHeight);
 			}
 		}
 
@@ -324,6 +323,7 @@ public:
 		{
 			m_oPen.SetToRenderer(pRenderer);
 			m_oBrush.SetToRenderer(pRenderer);
+			//m_oShadow.SetToRenderer(pRenderer);
 
 			m_pShape->ToRenderer(pRenderer, oGeomInfo, dStartTime, dEndTime, m_oPen, m_oBrush, pInfo);
 		}
@@ -361,8 +361,8 @@ public:
 			m_pShape = new CPPTShape();
 
 			SetCoordSize(root);
-			SetPen(root);
-			SetBrush(root);
+			SetPen		(root);
+			SetBrush	(root);
 			
 			//return m_pShape->LoadFromXML(xml);
 			return ((CPPTShape*)m_pShape)->LoadFromXML(root);			
@@ -388,6 +388,7 @@ public:
 		Shape->m_oPen			= m_oPen;
 		Shape->m_oBrush			= m_oBrush;
 		Shape->m_oText			= m_oText;
+		Shape->m_oShadow		= m_oShadow;
 
 		Shape->m_dWidthLogic	= m_dWidthLogic;
 		Shape->m_dHeightLogic	= m_dHeightLogic;

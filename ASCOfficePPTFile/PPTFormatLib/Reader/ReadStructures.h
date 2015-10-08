@@ -269,34 +269,13 @@ public:
 		pHeader->Checksum			^= (pHeader->Reserved & 0x0000FFFFL);
 		pHeader->Checksum			^= ((pHeader->Reserved & 0xFFFF0000L) >> 16);
 	}
-//не используется
-//	static void DecompressDeflate(BYTE* pSrc, LONG lSrcSize, BYTE** ppDst, LONG& lDstSize)
-//	{
-//#if defined(_WIN32) || defined (_WIN64)
-//        CComPtr<IEncodingFilterFactory> pEFF;
-//		HRESULT hr = pEFF.CoCreateInstance(CLSID_StdEncodingFilterFac);
-//		CComPtr<IDataFilter> pDF;
-//		//accquire suitable filter
-//		if (!pEFF || FAILED(pEFF->GetDefaultFilter( L"deflate", L"text", &pDF)))
-//			return;
-
-//		//temporary out buffers
-//		BYTE* outBuff = new BYTE[200000];
-//		DWORD dwOutBuffSize = sizeof(outBuff);
-
-//		long dwRead = 0, dwWritten = 0;
-//		//encode chunk of data
-//		//hr = pDF->DoDecode(0, lSrcSize, pSrc, lDstSize, *ppDst, lSrcSize, &dwRead, &dwWritten, 0);
-//		hr = pDF->DoDecode(0, lSrcSize, pSrc, dwOutBuffSize, outBuff, lSrcSize, &dwRead, &dwWritten, 0);
-//#endif
-//	}
 };
 
 class CMetaFileBuffer
 {
 public:
-    bool m_bIsValid;
-
+    bool			m_bIsValid;
+	CString			m_sExtension;
 private:
 	BYTE* m_pMetaHeader;
 	BYTE* m_pMetaFile;

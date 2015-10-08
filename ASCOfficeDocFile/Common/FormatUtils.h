@@ -434,7 +434,8 @@ namespace ASCDocFormatUtils
 
                 if (conversionOK != eUnicodeConversionResult)
                 {
-                    delete [] pStrUtf32;
+                    delete [] pStrUtf32; pStrUtf32 = NULL;
+                    return false;
                 }
                 for (long i=0; i < size; i++)
                 {

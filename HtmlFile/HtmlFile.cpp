@@ -1088,6 +1088,7 @@ namespace NSMht
 
                     oBuilderA.ClearNoAttack();
                     bool bIs16 = (oInnerFile.m_sContentEncoding.find(Names::code_QuotedPrintable) != std::string::npos) ? true : false;
+                    bool bIsBase64 = (oInnerFile.m_sContentEncoding.find(Names::code_Base64) != std::string::npos) ? true : false;
 
                     while (i != content.end() && i->find(boundary) == std::string::npos)
                     {
@@ -1099,6 +1100,9 @@ namespace NSMht
                         {
                             oBuilderA.WriteString(*i++);
                         }
+
+                        if (!bIsBase64)
+                            oBuilderA.AddCharSafe('\n');
                     }
                     oInnerFile.m_sData = oBuilderA.GetData();
                     oInnerFile.CorrectType();
@@ -1163,6 +1167,7 @@ namespace NSMht
 
                     oBuilderA.ClearNoAttack();
                     bool bIs16 = (oInnerFile.m_sContentEncoding.find(Names::code_QuotedPrintable) != std::string::npos) ? true : false;
+                    bool bIsBase64 = (oInnerFile.m_sContentEncoding.find(Names::code_Base64) != std::string::npos) ? true : false;
 
                     while (i != content.end() && i->find(boundary) == std::string::npos)
                     {
@@ -1174,6 +1179,9 @@ namespace NSMht
                         {
                             oBuilderA.WriteString(*i++);
                         }
+
+                        if (!bIsBase64)
+                            oBuilderA.AddCharSafe('\n');
                     }
                     oInnerFile.m_sData = oBuilderA.GetData();
                     oInnerFile.CorrectType();

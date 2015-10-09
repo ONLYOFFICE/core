@@ -7,8 +7,8 @@ namespace NSHtmlRenderer
 {
 	CASCSVGWriter::CASCSVGWriter()
 	{
-		m_dDpiX = 96.0;
-		m_dDpiY	= 96.0;
+        m_dDpiX = 72;
+        m_dDpiY	= 72;
 
 		m_dWidth = 100;
 		m_dHeight = 100;
@@ -397,9 +397,17 @@ namespace NSHtmlRenderer
 	}
 	//-------- Функции для вывода текста --------------------------------------------------------
 	HRESULT CASCSVGWriter::CommandDrawTextCHAR(const LONG& c, const double& x, const double& y, const double& w, const double& h)
-	{
-		//todo new command
-		return S_OK;
+    {
+        if (m_bIsRaster)
+            return S_OK;
+
+        PathCommandEnd();
+        BeginCommand(c_nPathType);
+        PathCommandTextCHAR(c, x, y, w, h);
+        DrawPath(c_nWindingFillMode);
+        EndCommand(c_nPathType);
+        PathCommandEnd();
+        return S_OK;
 	}
 	HRESULT CASCSVGWriter::CommandDrawText(const std::wstring& bsText,const double& x,const double& y,const double& w, const double& h)
 	{
@@ -409,18 +417,26 @@ namespace NSHtmlRenderer
 		if (m_bIsRaster)
 			return S_OK;
 
-		PathCommandEnd();
-		BeginCommand(c_nPathType);
-		PathCommandText(bsText, x, y, w, h);
-		DrawPath(c_nWindingFillMode);
-		EndCommand(c_nPathType);
-		PathCommandEnd();
-		return S_OK;
+        PathCommandEnd();
+        BeginCommand(c_nPathType);
+        PathCommandText(bsText, x, y, w, h);
+        DrawPath(c_nWindingFillMode);
+        EndCommand(c_nPathType);
+        PathCommandEnd();
+        return S_OK;
 	}
 	HRESULT CASCSVGWriter::CommandDrawTextExCHAR(const LONG& c, const LONG& gid, const double& x, const double& y, const double& w, const double& h)
 	{
-		//todo new command
-		return S_OK;
+        if (m_bIsRaster)
+            return S_OK;
+
+        PathCommandEnd();
+        BeginCommand(c_nPathType);
+        PathCommandTextExCHAR(c, gid, x, y, w, h);
+        DrawPath(c_nWindingFillMode);
+        EndCommand(c_nPathType);
+        PathCommandEnd();
+        return S_OK;
 	}
 	HRESULT CASCSVGWriter::CommandDrawTextEx(const std::wstring& bsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& x, const double& y, const double& w, const double& h)
 	{
@@ -615,7 +631,6 @@ namespace NSHtmlRenderer
 
         _SetFont();
         m_pSimpleGraphicsConverter->PathCommandText2(&_c, NULL, 0, m_pFontManager, x, y, w, h);
-
         return S_OK;
 	}
 	HRESULT CASCSVGWriter::PathCommandText(const std::wstring& bsText, const double& fX, const double& fY, const double& fWidth, const double& fHeight)
@@ -623,8 +638,8 @@ namespace NSHtmlRenderer
 		if (m_bIsRaster)
 			return S_OK;
 
-		_SetFont();
-		m_pSimpleGraphicsConverter->PathCommandText(bsText, m_pFontManager, fX, fY, fWidth, fHeight, 0);
+        _SetFont();
+        m_pSimpleGraphicsConverter->PathCommandText(bsText, m_pFontManager, fX, fY, fWidth, fHeight, 0);
 		return S_OK;
 	}
 	HRESULT CASCSVGWriter::PathCommandTextExCHAR(const LONG& c, const LONG& gid, const double& x, const double& y, const double& w, const double& h)
@@ -638,7 +653,6 @@ namespace NSHtmlRenderer
         int _g = (int)gid;
 
         m_pSimpleGraphicsConverter->PathCommandText2(&_c, &_g, 1, m_pFontManager, x, y, w, h);
-
 		return S_OK;
 	}
 	HRESULT CASCSVGWriter::PathCommandTextEx(const std::wstring& sText, const unsigned int* pGids, const unsigned int nGidsCount, const double& x, const double& y, const double& w, const double& h)
@@ -647,8 +661,8 @@ namespace NSHtmlRenderer
 			return S_OK;
 
         _SetFont();
-        m_pSimpleGraphicsConverter->PathCommandText2(sText, (const int*)pGids, nGidsCount, m_pFontManager, x, y, w, h);
 
+        m_pSimpleGraphicsConverter->PathCommandText2(sText, (const int*)pGids, nGidsCount, m_pFontManager, x, y, w, h);
         return S_OK;
 	}
 	//-------- Функции для вывода изображений ---------------------------------------------------
@@ -769,8 +783,8 @@ namespace NSHtmlRenderer
 	}
 	HRESULT CASCSVGWriter::ReInit()
 	{
-		m_dDpiX = 96.0;
-		m_dDpiY	= 96.0;
+        m_dDpiX = 72.0;
+        m_dDpiY	= 72.0;
 
 		m_dWidth = 100;
 		m_dHeight = 100;
@@ -822,20 +836,6 @@ namespace NSHtmlRenderer
 		return S_OK;
 	}
 	// --------------------------------------------------------------------------------------------
-	void CASCSVGWriter::OnBaseMatrixUpdate(const double& dWidth, const double& dHeight)
-	{
-		m_pBaseTransform->Reset();
-
-		double dScaleX = m_dDpiX / NSHtmlRenderer::c_ag_Inch_to_MM;
-		double dScaleY = m_dDpiY / NSHtmlRenderer::c_ag_Inch_to_MM;
-
-		m_pBaseTransform->Scale(dScaleX, dScaleY, Aggplus::MatrixOrderAppend);
-
-		CalculateFullTransform();
-
-		double dWidthPix	= dScaleX * dWidth;
-		double dHeightPix	= dScaleY * dHeight;
-	}
 	void CASCSVGWriter::SetFontManager(CFontManager* pFontManager)
 	{
 		if(NULL != pFontManager)

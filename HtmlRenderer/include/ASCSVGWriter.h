@@ -154,7 +154,6 @@ namespace NSHtmlRenderer
 		HRESULT CommandString(const LONG& lType, const std::wstring& sCommand);
 	public:
 
-		void OnBaseMatrixUpdate(const double& dWidth, const double& dHeight);
 		void SetFontManager(CFontManager* pFontManager);
 
 	private:

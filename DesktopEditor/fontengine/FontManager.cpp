@@ -565,8 +565,8 @@ INT CFontManager::GetStringPath(ISimpleGraphicsPath* pInterface)
 		pPath->Reverse();
 		pPath->ToMM(m_pFont->m_unHorDpi, m_pFont->m_unVerDpi);
 
-		pPath->Offset((pCurGlyph->fX + m_oString.m_fX) * 25.4 / m_pFont->m_unHorDpi,
-                        (pCurGlyph->fY + m_oString.m_fY) * 25.4 / m_pFont->m_unVerDpi);
+		pPath->Offset(m_oString.m_fX + pCurGlyph->fX * 25.4 / m_pFont->m_unHorDpi,
+						m_oString.m_fY + pCurGlyph->fY + 25.4 / m_pFont->m_unVerDpi);
 
 		pOverallPath->Append(pPath);
 		delete pPath;

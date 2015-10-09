@@ -718,6 +718,7 @@ void NSPresentationEditor::CPPTXWriter::WriteBackground(CStringWriter& oWriter, 
 	//	return;
 	//}
 	//else
+	m_pShapeWriter->SetRelsGenerator(&oRels);
 	{
 		oWriter.WriteString(m_pShapeWriter->ConvertBrush(oBackground));
 	}

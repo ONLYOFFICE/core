@@ -74,41 +74,41 @@ namespace NSPresentationEditor
 
 		}
 
-		CSlide& operator=(const CSlide& oSrc)
-		{
-			Clear();
-			
-			size_t nCount = oSrc.m_arElements.size();
-			for (size_t nIndex = 0; nIndex < nCount; ++nIndex)
-			{
-				m_arElements.push_back(oSrc.m_arElements[nIndex]->CreateDublicate());
-			}
+		//CSlide& operator=(const CSlide& oSrc)
+		//{
+		//	Clear();
+		//	
+		//	size_t nCount = oSrc.m_arElements.size();
+		//	for (size_t nIndex = 0; nIndex < nCount; ++nIndex)
+		//	{
+		//		m_arElements.push_back(oSrc.m_arElements[nIndex]->CreateDublicate());
+		//	}
 
-			m_arColorScheme		= oSrc.m_arColorScheme;
+		//	m_arColorScheme		= oSrc.m_arColorScheme;
 
-			m_oSlideShow		= oSrc.m_oSlideShow;
+		//	m_oSlideShow		= oSrc.m_oSlideShow;
 
-			m_lThemeID			= oSrc.m_lThemeID;
-			m_lLayoutID			= oSrc.m_lLayoutID;
+		//	m_lThemeID			= oSrc.m_lThemeID;
+		//	m_lLayoutID			= oSrc.m_lLayoutID;
 
-			m_lWidth			= oSrc.m_lWidth;
-			m_lHeight			= oSrc.m_lHeight;
+		//	m_lWidth			= oSrc.m_lWidth;
+		//	m_lHeight			= oSrc.m_lHeight;
 
-			m_lOriginalWidth	= oSrc.m_lOriginalWidth;
-			m_lOriginalHeight	= oSrc.m_lOriginalHeight;
-			
-			m_dStartTime		= oSrc.m_dStartTime;
-			m_dEndTime			= oSrc.m_dEndTime;
-			m_dDuration			= oSrc.m_dDuration;
+		//	m_lOriginalWidth	= oSrc.m_lOriginalWidth;
+		//	m_lOriginalHeight	= oSrc.m_lOriginalHeight;
+		//	
+		//	m_dStartTime		= oSrc.m_dStartTime;
+		//	m_dEndTime			= oSrc.m_dEndTime;
+		//	m_dDuration			= oSrc.m_dDuration;
 
-			m_bIsBackground		= oSrc.m_bIsBackground;
-			m_oBackground		= oSrc.m_oBackground;
+		//	m_bIsBackground		= oSrc.m_bIsBackground;
+		//	m_oBackground		= oSrc.m_oBackground;
 
-			m_bShowMasterShapes = oSrc.m_bShowMasterShapes;
+		//	m_bShowMasterShapes = oSrc.m_bShowMasterShapes;
 
-			m_strComment		= oSrc.m_strComment;
-			return *this;
-		}
+		//	m_strComment		= oSrc.m_strComment;
+		//	return *this;
+		//}
 
 		CSlide(const CSlide& oSrc)
 		{
@@ -241,118 +241,6 @@ namespace NSPresentationEditor
 
 		virtual void ReadFromXml(XmlUtils::CXmlNode& oNode)
 		{
-#ifdef _PRESENTATION_WRITER_
-			m_bUseLayoutColorScheme = true;
-			//colors
-			m_arColorScheme.clear();
-			XmlUtils::CXmlNode oNodeColors;
-			if (oNode.GetNode(_T("Colors"), oNodeColors))
-			{
-				m_bUseLayoutColorScheme = false;
-
-                CStylesCSS  oStyles;
-                CString     strStyles = oNodeColors.GetText();
-
-                oStyles.LoadStyles(strStyles);
-
-				size_t nCount = oStyles.m_arStyles.size();
-				LONG lColor = 0;
-				for (size_t i = 0; i < nCount; i += 3)
-				{
-					CColor elem;
-					m_arColorScheme.push_back(elem);
-					oStyles.m_arStyles[i].LoadColor(m_arColorScheme[lColor]);
-					++lColor;
-				}
-			}
-
-			m_bIsBackground = false;
-			// background
-			XmlUtils::CXmlNode oNodeBackround;
-			if (oNode.GetNode(_T("Background"), oNodeBackround))
-			{
-				m_bIsBackground = true;
-				XmlUtils::CXmlNode oNodeMem;
-				if (oNodeBackround.GetNode(_T("shape"), oNodeMem))
-				{
-					CShapeElement oElem;
-					oElem.m_oMetric = m_oInfo;
-					oElem.LoadFromXmlNode2(oNodeMem);
-
-					m_oBackground = oElem.m_oShape.m_oBrush;
-				}				
-			}
-
-			// Elements
-			XmlUtils::CXmlNodes oNodes;
-			if (oNode.GetNodes(_T("Element"), oNodes))
-			{
-				int nCount = oNodes.GetCount();
-				for (int i = 0; i < nCount; ++i)
-				{
-					XmlUtils::CXmlNode oNodeMem;
-					oNodes.GetAt(i, oNodeMem);
-
-					CShapeElement* pShapeEl = new CShapeElement();
-					pShapeEl->m_oMetric = m_oInfo;
-					pShapeEl->LoadFromXmlNode(oNodeMem);
-
-					pShapeEl->m_lID					= oNodeMem.ReadAttributeInt(_T("id"), -1);
-					pShapeEl->m_lLayoutID			= oNodeMem.ReadAttributeInt(_T("layoutid"), -1);
-					pShapeEl->m_lPlaceholderID		= oNodeMem.ReadAttributeInt(_T("phid"), -1);
-					pShapeEl->m_lPlaceholderType	= oNodeMem.ReadAttributeInt(_T("phtype"), -1);
-
-					pShapeEl->m_oShape.m_oText.m_lPlaceholderType	= pShapeEl->m_lPlaceholderType;
-
-					pShapeEl->m_dRotate				= oNodeMem.ReadAttributeDouble(_T("angle"));
-					pShapeEl->m_bFlipH				= (1 == oNodeMem.ReadAttributeInt(_T("flipx")));
-					pShapeEl->m_bFlipV				= (1 == oNodeMem.ReadAttributeInt(_T("flipy")));
-
-					m_arElements.push_back(pShapeEl);
-				}
-			}
-
-			XmlUtils::CXmlNode oNodeFontRefs;
-			if (oNode.GetNode(_T("StylesFontRef"), oNodeFontRefs))
-			{
-                CStylesCSS  oCSS;
-                CString     strStyles = oNodeFontRefs.GetText();
-
-                oCSS.LoadStyles(strStyles);
-
-				size_t nCountS = oCSS.m_arStyles.size();
-				for (size_t i = 0; i < nCountS; ++i)
-				{
-					oCSS.m_arStyles[i].m_strClassName.Delete(0, 6);
-					LONG lElementID	= XmlUtils::GetInteger(oCSS.m_arStyles[i].m_strClassName);
-
-					std::map<CString, CString>::iterator pPair = oCSS.m_arStyles[i].m_mapSettings.find(_T("font-index"));
-					if (oCSS.m_arStyles[i].m_mapSettings.end() != pPair)
-					{
-						LONG lFontRef	= XmlUtils::GetInteger(pPair->second);
-
-						size_t nCountEl = m_arElements.size();
-						for (size_t j = 0; j < nCountEl; ++j)
-						{
-							if ((lElementID == m_arElements[j]->m_lID) && 
-								(etShape == m_arElements[j]->m_etType))
-							{
-								CShapeElement* pShapeElement = dynamic_cast<CShapeElement*>(m_arElements[j]);
-								if (NULL != pShapeElement)
-									pShapeElement->m_oShape.m_oText.m_lFontRef = lFontRef;
-							}
-						}
-					}
-
-				}
-			}
-
-			XmlUtils::CXmlNode oNodeComment;
-			if (oNode.GetNode(_T("Comment"), oNodeComment))
-			{
-				m_strComment = oNodeComment.GetTextExt();
-			}
-#endif
 		}
 		virtual void WriteToXml(XmlUtils::CXmlWriter& oWriter)
 		{

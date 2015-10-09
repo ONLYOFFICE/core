@@ -1473,7 +1473,6 @@ public:
 							pAudioElem->m_dStartTime	= pSlide->m_dStartTime;
 							pAudioElem->m_dEndTime		= pSlide->m_dEndTime;
 
-							pSlide->m_arElements.push_back(pAudioElem);
 						}
 						else
                         {

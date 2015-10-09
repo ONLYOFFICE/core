@@ -833,14 +833,14 @@ void NSPresentationEditor::CPPTXWriter::WriteSlide(int nIndexSlide)
 	CStringWriter oWriter;
 	CRelsGenerator oRels(&m_oManager);
 	
-	CSlide& oSlide = m_pDocument->m_arSlides[nIndexSlide];
+	CSlide* pSlide = m_pDocument->m_arSlides[nIndexSlide];
 	
-	if (0 == oSlide.m_lThemeID)
-		oRels.StartSlide(oSlide.m_lLayoutID, nIndexSlide);
+	if (0 == pSlide->m_lThemeID)
+		oRels.StartSlide(pSlide->m_lLayoutID, nIndexSlide);
 	else
 	{
-		int nLayout = oSlide.m_lLayoutID;
-		for (int i = 0; i < oSlide.m_lThemeID; ++i)
+		int nLayout = pSlide->m_lLayoutID;
+		for (int i = 0; i < pSlide->m_lThemeID; ++i)
 			nLayout += (int)m_pDocument->m_arThemes[i].m_arLayouts.size();
 
 		oRels.StartSlide(nLayout, nIndexSlide);
@@ -849,19 +849,19 @@ void NSPresentationEditor::CPPTXWriter::WriteSlide(int nIndexSlide)
 	CString str1 = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><p:sld xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\"><p:cSld>");
 	oWriter.WriteString(str1);
 
-	if (oSlide.m_bIsBackground)
+	if (pSlide->m_bIsBackground)
 	{
-		WriteBackground(oWriter, oRels, oSlide.m_oBackground);
+		WriteBackground(oWriter, oRels, pSlide->m_oBackground);
 	}
 
 	CString strElems = _T("<p:spTree><p:nvGrpSpPr><p:cNvPr id=\"1\" name=\"\"/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr><p:grpSpPr>\
 <a:xfrm><a:off x=\"0\" y=\"0\"/><a:ext cx=\"0\" cy=\"0\"/><a:chOff x=\"0\" y=\"0\"/><a:chExt cx=\"0\" cy=\"0\"/></a:xfrm></p:grpSpPr>");
 	oWriter.WriteString(strElems);
 
-	size_t nElements = oSlide.m_arElements.size();
+	size_t nElements = pSlide->m_arElements.size();
 	for (size_t nEl = 0; nEl < nElements; ++nEl)
 	{
-		WriteElement(oWriter, oRels,  oSlide.m_arElements[nEl], &m_pDocument->m_arThemes[oSlide.m_lThemeID].m_arLayouts[oSlide.m_lLayoutID]);
+		WriteElement(oWriter, oRels,  pSlide->m_arElements[nEl], &m_pDocument->m_arThemes[pSlide->m_lThemeID].m_arLayouts[pSlide->m_lLayoutID]);
 	}
 	oWriter.WriteString(std::wstring(L"</p:spTree></p:cSld>"));
 
@@ -892,7 +892,7 @@ void NSPresentationEditor::CPPTXWriter::WriteSlides()
 	size_t nCountSlides = m_pDocument->m_arSlides.size();
 	for (size_t nIndexS = 0; nIndexS < nCountSlides; ++nIndexS)
 	{
-		CRelsGenerator::StartNotes((int)nIndexS, m_strTempDirectory, m_pDocument->m_arSlides[nIndexS].m_strComment);
+		CRelsGenerator::StartNotes((int)nIndexS, m_strTempDirectory, m_pDocument->m_arSlides[nIndexS]->m_strComment);
 		WriteSlide((int)nIndexS);
 	}
 }

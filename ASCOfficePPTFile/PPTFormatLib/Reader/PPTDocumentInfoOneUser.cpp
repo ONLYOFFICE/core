@@ -303,6 +303,7 @@ void CPPTUserInfo::FromDocument()
 
 	double DurationSlide	=	PPT_DEFAULT_SLIDE_DURATION;
 
+	m_arSlides.reserve(m_arrSlidesOrder.size());
 	for (int i=0; i< m_arrSlidesOrder.size(); i++)
 	{
 		std::map<DWORD, CRecordSlide*>::iterator pPair = m_mapSlides.find(m_arrSlidesOrder[i]);
@@ -314,7 +315,7 @@ void CPPTUserInfo::FromDocument()
 
 		DurationSlide	=	PPT_DEFAULT_SLIDE_DURATION;
 
-		CSlide elm;
+		CSlide *elm = new CSlide();
 		m_arSlides.push_back(elm);
 		// тут его заполняем...
 
@@ -329,7 +330,7 @@ void CPPTUserInfo::FromDocument()
 			}
 		}
 
-		CSlide* pSlide = &m_arSlides.back();
+		CSlide* pSlide = m_arSlides.back();
 
 		pSlide->m_dStartTime		= 0.0;
 		pSlide->m_dEndTime			= DurationSlide;
@@ -341,7 +342,7 @@ void CPPTUserInfo::FromDocument()
 		pSlide->m_lWidth			= (LONG)(c_dMasterUnitsToMillimetreKoef * lOriginWidth);
 		pSlide->m_lHeight			= (LONG)(c_dMasterUnitsToMillimetreKoef * lOriginHeight);
 
-		LoadSlide ( pPair->first, &m_arSlides.back());
+		LoadSlide ( pPair->first, m_arSlides.back());
 	}
 
 	CalculateEditor(m_oInfo);

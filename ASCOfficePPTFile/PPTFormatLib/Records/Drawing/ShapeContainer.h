@@ -20,7 +20,7 @@
 #include "../../../../ASCPresentationEditor/OfficeDrawing/Shapes/BaseShape/PPTShape/ElementSettings.h"
 
 #include "../../../../DesktopEditor/raster/BgraFrame.h"
-#include "../../../../Common/DocxFormat/source/Base/Types_32.h"
+#include "../../../../Common/DocxFormat/Source/Base/Types_32.h"
 
 const double EMU_MM = 36000;
 
@@ -757,12 +757,12 @@ public:
 				unsigned short nElems;
 				
 				nElems = pProperty->m_lValue;
-				_INT32* compl = (_INT32*)pProperty->m_pOptions;
+                _INT32* pCompl = (_INT32*)pProperty->m_pOptions;
 				while(nElems--)
 				{
 					_a a1;
-					a1.color	= *compl; compl++;
-					a1.position = *compl; compl++;
+                    a1.color	= *pCompl; pCompl++;
+                    a1.position = *pCompl; pCompl++;
 					colors.push_back(a1);
 				}
 

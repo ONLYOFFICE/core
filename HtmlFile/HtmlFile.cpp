@@ -541,11 +541,22 @@ namespace NSMht
         const std::string xmlFileType                   = "text/xml";
         const std::string cssFileType                   = "text/css";
         const std::string imageFileType                 = "image/";
+        const std::string jsFileType                    = "application/x-javascript";
 
         const std::string code_7bit                     = "7bit";
         const std::string code_8bit                     = "8bit";
         const std::string code_QuotedPrintable          = "quoted-printable";
         const std::string code_Base64                   = "base64";
+    }
+
+    void string_replace(std::wstring& text, const std::wstring& replaceFrom, const std::wstring& replaceTo)
+    {
+        size_t posn = 0;
+        while (std::wstring::npos != (posn = text.find(replaceFrom, posn)))
+        {
+            text.replace(posn, replaceFrom.length(), replaceTo);
+            posn += replaceTo.length();
+        }
     }
 
     class CInnerFile
@@ -562,15 +573,15 @@ namespace NSMht
         std::wstring    m_sDstFilePath;
 
     public:
-        void Save(const std::map<std::wstring, std::wstring>& sMap)
+        void Save(const std::map<std::wstring, std::wstring>& sMap, NSUnicodeConverter::CUnicodeConverter* pUnicodeConverter)
         {
-            if (m_sContentType.find(Names::cssFileType) != std::wstring::npos ||
-                m_sContentType.find(Names::htmlFileType) != std::wstring::npos ||
-                m_sContentType.find(Names::xmlFileType) != std::wstring::npos)
-            {
-                std::wstring sUnicodeData;
-                std::string sDstEncoding = m_sEncoding;
+            bool bIsCSS = (m_sContentType.find(Names::cssFileType) != std::string::npos) ? true : false;
+            bool bIsHtml = (m_sContentType.find(Names::htmlFileType) != std::string::npos ||
+                    m_sContentType.find(Names::xmlFileType) != std::string::npos ||
+                    m_sContentType.find(Names::jsFileType) != std::string::npos) ? true : false;
 
+            if (bIsCSS || bIsHtml)
+            {
                 if (m_sContentEncoding.find(Names::code_Base64) != std::string::npos)
                 {
                     BYTE* pData = NULL;
@@ -594,12 +605,85 @@ namespace NSMht
                         sEnc = "latin1";
                     }
                 }
-                NSUnicodeConverter::CUnicodeConverter oConverter;
-                std::wstring sRes = oConverter.toUnicode(m_sData, sEnc.c_str());
 
-                // дальше конвертим обратно в нужную кодировку, меняя пути
-                // TODO:
-                NSFile::CFileBinary::SaveToFile(m_sDstFilePath, sRes, true);
+                std::wstring sRes = pUnicodeConverter->toUnicode(m_sData, sEnc.c_str());
+
+                // дальше конвертим обратно в нужную кодировку, меня пути
+                for (std::map<std::wstring, std::wstring>::const_iterator i = sMap.begin(); i != sMap.end(); i++)
+                {
+                    std::list<std::wstring> listReplace;
+                    listReplace.push_back(i->first);
+
+                    // корень
+                    if (true)
+                    {
+                        std::wstring::size_type pos = m_sContentLocation.find(L"//");
+                        std::wstring::size_type start = 0;
+                        if (pos != std::wstring::npos)
+                            start = pos + 3; // '///'
+
+                        pos = m_sContentLocation.find('/', start);
+                        if (pos != std::wstring::npos)
+                        {
+                            std::wstring sMain = m_sContentLocation.substr(0, pos);
+
+                            if (0 == i->first.find(sMain))
+                            {
+                                listReplace.push_back(i->first.substr(sMain.length()));
+                            }
+                        }
+                    }
+
+                    // и относительная
+                    if (true)
+                    {
+                        std::wstring::size_type pos = m_sContentLocation.rfind('/');
+                        if (pos != std::wstring::npos)
+                        {
+                            std::wstring sUrl = m_sContentLocation.substr(0, pos + 1);
+                            if (0 == i->first.find(sUrl))
+                            {
+                                std::wstring sCandidate = i->first.substr(sUrl.length());
+                                listReplace.push_back(sCandidate);
+                                listReplace.push_back(L"./" + sCandidate);
+                            }
+                        }
+                    }
+
+                    if (bIsHtml)
+                    {
+                        std::wstring sReplace = L"\"" + i->second + L"\"";
+                        for (std::list<std::wstring>::iterator i = listReplace.begin(); i != listReplace.end(); i++)
+                        {
+                            std::wstring sFind1 = L"\"" + *i + L"\"";
+                            std::wstring sFind2 = L"'" + *i + L"'";
+
+                            string_replace(sRes, sFind1, sReplace);
+                            string_replace(sRes, sFind2, sReplace);
+                        }
+                    }
+                    else
+                    {
+                        std::wstring sReplace = L"url(" + i->second + L")";
+                        for (std::list<std::wstring>::iterator i = listReplace.begin(); i != listReplace.end(); i++)
+                        {
+                            std::wstring sFind1 = L"url(" + *i + L")";
+                            std::wstring sFind2 = L"url('" + *i + L"')";
+                            std::wstring sFind3 = L"url(\"" + *i + L"\")";
+                            string_replace(sRes, sFind1, sReplace);
+                            string_replace(sRes, sFind2, sReplace);
+                            string_replace(sRes, sFind3, sReplace);
+                        }
+                    }
+                }
+
+                std::string sResA = pUnicodeConverter->fromUnicode(sRes, sEnc.c_str());
+                NSFile::CFileBinary oDstFile;
+                if (oDstFile.CreateFileW(m_sDstFilePath))
+                {
+                    oDstFile.WriteFile((BYTE*)sResA.c_str(), (DWORD)sResA.length());
+                }
+                oDstFile.CloseFile();
             }
             else
             {
@@ -630,9 +714,49 @@ namespace NSMht
                             sEnc = "latin1";
                         }
                     }
-                    NSUnicodeConverter::CUnicodeConverter oConverter;
-                    std::wstring sRes = oConverter.toUnicode(m_sData, sEnc.c_str());
+
+                    std::wstring sRes = pUnicodeConverter->toUnicode(m_sData, sEnc.c_str());
                     NSFile::CFileBinary::SaveToFile(m_sDstFilePath, sRes, true);
+                }
+            }
+        }
+
+        void CorrectType()
+        {
+            if (m_sContentType == "application/octet-stream")
+            {
+                std::string::size_type pos1 = m_sData.find("<HTML");
+                std::string::size_type pos2 = m_sData.find("<html");
+
+                if (pos1 != std::string::npos && pos1 < 100)
+                {
+                    m_sContentType = Names::htmlFileType;
+                    return;
+                }
+                else if (pos2 != std::string::npos && pos2 < 100)
+                {
+                    m_sContentType = Names::htmlFileType;
+                    return;
+                }
+
+                std::wstring::size_type posExt = m_sContentLocation.rfind('.');
+                if (posExt != std::wstring::npos)
+                {
+                    std::wstring sExt = m_sContentLocation.substr(posExt);
+                    posExt = sExt.find('?');
+                    if (std::wstring::npos != posExt)
+                        sExt = sExt.substr(0, posExt);
+
+                    if (sExt == L".js")
+                        m_sContentType = Names::jsFileType;
+                    else if (sExt == L".png")
+                        m_sContentType = "image/png";
+                    else if (sExt == L".jpg" || sExt == L".jpeg")
+                        m_sContentType = "image/jpg";
+                    else if (sExt == L".gif")
+                        m_sContentType = "image/gif";
+                    else if (sExt == L".css")
+                        m_sContentType = Names::cssFileType;
                 }
             }
         }
@@ -657,7 +781,7 @@ namespace NSMht
         {
             m_sFolder = NSFile::CFileBinary::CreateTempFileWithUniqueName(NSFile::CFileBinary::GetTempPath(), L"MHT");
 
-#if 1
+#if 0
             m_sFolder = L"D:\\test\\Document\\MHT";
 #endif
 
@@ -756,25 +880,31 @@ namespace NSMht
             {
                 nNumber++;
                 CInnerFile* pFile = i.operator ->();
-                std::wstring sFileExt = L".bin";
-                if (pFile->m_sContentType.find(Names::cssFileType) != std::wstring::npos)
+                std::wstring sFileExt = L".png"; // L".bin" - обычно это картинки. Так и будем сохранять
+                if (pFile->m_sContentType.find(Names::cssFileType) != std::string::npos)
                 {
                     sFileExt = L".css";
                 }
-                else if (pFile->m_sContentType.find(Names::imageFileType) != std::wstring::npos)
+                else if (pFile->m_sContentType.find(Names::imageFileType) != std::string::npos)
                 {
-                    if (pFile->m_sContentType.find("png") != std::wstring::npos)
+                    if (pFile->m_sContentType.find("png") != std::string::npos)
                         sFileExt = L".png";
+                    else if (pFile->m_sContentType.find("gif") != std::string::npos)
+                        sFileExt = L".gif";
                     else
                         sFileExt = L".jpg";
                 }
-                else if (pFile->m_sContentType.find("xml") != std::wstring::npos)
+                else if (pFile->m_sContentType.find("xml") != std::string::npos)
                 {
                     sFileExt = L".xml";
                 }
-                else if (pFile->m_sContentType.find("html") != std::wstring::npos)
+                else if (pFile->m_sContentType.find("html") != std::string::npos)
                 {
                     sFileExt = L".html";
+                }
+                else if (pFile->m_sContentType.find("javascript") != std::string::npos)
+                {
+                    sFileExt = L".js";
                 }
                 std::wstring sUrl = L"/" + std::to_wstring(nNumber) + sFileExt;
                 pFile->m_sDstFilePath = m_sFolder + sUrl;
@@ -783,11 +913,11 @@ namespace NSMht
 
             for (std::list<CInnerFile>::iterator i = m_arFiles.begin(); i != m_arFiles.end(); i++)
             {
-                i->Save(m_sUrlMap);
+                i->Save(m_sUrlMap, &m_oUnicodeConverter);
             }
 
             m_oFile.m_sDstFilePath = m_sFolder + L"/index.html";
-            m_oFile.Save(m_sUrlMap);
+            m_oFile.Save(m_sUrlMap, &m_oUnicodeConverter);
         }
 
         inline std::string GetLower(const std::string& sSrc)
@@ -933,7 +1063,18 @@ namespace NSMht
                             boundary = "--" + boundary;
                         }
                         //тип файла (image/, text/html, text/css)
-                        else if (CheckProperty(sLowerLine, sLowerLine, Names::contentType_str, oInnerFile.m_sContentType)) {}
+                        else if (CheckProperty(sLowerLine, sLowerLine, Names::contentType_str, oInnerFile.m_sContentType))
+                        {
+                            if (oInnerFile.m_sContentType.find(Names::htmlFileType) != std::string::npos)
+                            {
+                                if (sLowerLine.find(".gif") != std::string::npos)
+                                    oInnerFile.m_sContentType = "image/gif";
+                                else if (sLowerLine.find(".png") != std::string::npos)
+                                    oInnerFile.m_sContentType = "image/png";
+                                else if (sLowerLine.find(".jpg") != std::string::npos || sLowerLine.find(".jpeg") != std::string::npos)
+                                    oInnerFile.m_sContentType = "image/jpg";
+                            }
+                        }
                         //наименование файла
                         else if (CheckPropertyW(sLowerLine, *i, Names::contentLocation_str, oInnerFile.m_sContentLocation)) {}
                         else if (CheckPropertyW(sLowerLine, *i, Names::contentID_str, oInnerFile.m_sContentID)) {}
@@ -960,6 +1101,7 @@ namespace NSMht
                         }
                     }
                     oInnerFile.m_sData = oBuilderA.GetData();
+                    oInnerFile.CorrectType();
 
                     if (m_oFile.m_sData.empty() && oInnerFile.m_sContentType.find(Names::htmlFileType) != std::wstring::npos)
                     {
@@ -990,7 +1132,18 @@ namespace NSMht
                     {
                         std::string sLowerLine = GetLower(*i);
 
-                        if (CheckProperty(sLowerLine, sLowerLine, Names::contentType_str, oInnerFile.m_sContentType)) {}
+                        if (CheckProperty(sLowerLine, sLowerLine, Names::contentType_str, oInnerFile.m_sContentType))
+                        {
+                            if (oInnerFile.m_sContentType.find(Names::htmlFileType) != std::string::npos)
+                            {
+                                if (sLowerLine.find(".gif") != std::string::npos)
+                                    oInnerFile.m_sContentType = "image/gif";
+                                else if (sLowerLine.find(".png") != std::string::npos)
+                                    oInnerFile.m_sContentType = "image/png";
+                                else if (sLowerLine.find(".jpg") != std::string::npos || sLowerLine.find(".jpeg") != std::string::npos)
+                                    oInnerFile.m_sContentType = "image/jpg";
+                            }
+                        }
                         //наименование файла
                         else if (CheckPropertyW(sLowerLine, *i, Names::contentLocation_str, oInnerFile.m_sContentLocation)) {}
                         else if (CheckPropertyW(sLowerLine, *i, Names::contentID_str, oInnerFile.m_sContentID)) {}
@@ -1023,6 +1176,7 @@ namespace NSMht
                         }
                     }
                     oInnerFile.m_sData = oBuilderA.GetData();
+                    oInnerFile.CorrectType();
 
                     if (m_oFile.m_sData.empty() && oInnerFile.m_sContentType.find(Names::htmlFileType) != std::wstring::npos)
                     {

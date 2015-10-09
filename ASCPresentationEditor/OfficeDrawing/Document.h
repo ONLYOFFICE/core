@@ -8,10 +8,10 @@ namespace NSPresentationEditor
 	class CDocument
 	{
 	public:
-		std::vector<CTheme>	m_arThemes;
-		std::vector<CSlide>	m_arSlides;
+		std::vector<CTheme>		m_arThemes;
+		std::vector<CSlide*>	m_arSlides;
 
-		CMetricInfo			m_oInfo;
+		CMetricInfo				m_oInfo;
 
 	public:
 
@@ -42,7 +42,12 @@ namespace NSPresentationEditor
 		inline void Clear()
 		{
 			ClearThemes();
-			ClearSlides();
+			try
+			{
+				ClearSlides();
+			}catch(...)
+			{
+			}
 		}
 
 		// работа с темами
@@ -64,18 +69,15 @@ namespace NSPresentationEditor
 		// работа со слайдом
 		inline void ClearSlides()
 		{
+			for (int i = 0 ; i < m_arSlides.size(); i++)
+			{
+				RELEASEOBJECT(m_arSlides[i]);
+			}
 			m_arSlides.clear();
 		}
-		inline void AddSlide(const CSlide& oSlide)
+		inline void AddSlide(CSlide* oSlide)
 		{
 			m_arSlides.push_back(oSlide);
-		}
-		inline void UpdateSlide(size_t nIndex, const CSlide& oSlide)
-		{
-			if (nIndex >= m_arSlides.size())
-				return;
-
-			m_arSlides[nIndex] = oSlide;
 		}
 
 	public:
@@ -117,15 +119,15 @@ namespace NSPresentationEditor
 			size_t nCount = m_arSlides.size();
 			for (size_t nIndex = 0; nIndex < nCount; ++nIndex)
 			{
-				LONG lThemeID	= m_arSlides[nIndex].m_lThemeID;
+				LONG lThemeID	= m_arSlides[nIndex]->m_lThemeID;
 				
 				if ((0 > lThemeID) || (lThemeID >= (LONG)m_arThemes.size()))
 				{
-					m_arSlides[nIndex].Calculate(NULL);
+					m_arSlides[nIndex]->Calculate(NULL);
 					continue;
 				}
 
-				m_arSlides[nIndex].Calculate(&m_arThemes[lThemeID]);				
+				m_arSlides[nIndex]->Calculate(&m_arThemes[lThemeID]);				
 			}
 
 			// проставим стили темы всем элементам
@@ -160,7 +162,7 @@ namespace NSPresentationEditor
 			size_t nCount = m_arSlides.size();
 			for (size_t nIndex = 0; nIndex < nCount; ++nIndex)
 			{
-				m_arSlides[nIndex].ClearPreset();
+				m_arSlides[nIndex]->ClearPreset();
 			}
 		}
 
@@ -398,7 +400,7 @@ namespace NSPresentationEditor
 			double dAllDuration = 0;
 			if (lCount > 0)
 			{
-				dAllDuration = m_arSlides[lCount - 1].m_dEndTime;
+				dAllDuration = m_arSlides[lCount - 1]->m_dEndTime;
 			}
 
 			oAudioOverlay.m_dAllDuration = dAllDuration;
@@ -420,12 +422,12 @@ namespace NSPresentationEditor
 			int nCount = (int)m_arSlides.size();
 			for (int i = 0; i < nCount; ++i)
 			{
-				CSlide* pSlide = &m_arSlides[i];
+				CSlide* pSlide = m_arSlides[i];
 				
 				double dSlideDuration = 0;
 				if (pSlide->m_oSlideShow.m_dSlideDuration > 0)
 				{
-					dSlideDuration = m_arSlides[i].m_oSlideShow.m_dSlideDuration;
+					dSlideDuration = m_arSlides[i]->m_oSlideShow.m_dSlideDuration;
 				}
 				if (0 == dSlideDuration)
 				{
@@ -453,7 +455,7 @@ namespace NSPresentationEditor
 				Transition1 = pSlide->m_oSlideShow.m_oTransition.m_dSpeed;
 
 				if (i < (nCount - 1))
-					Transition2 = m_arSlides[i + 1].m_oSlideShow.m_oTransition.m_dSpeed;
+					Transition2 = m_arSlides[i + 1]->m_oSlideShow.m_oTransition.m_dSpeed;
 				
 				Duration = pSlide->m_dDuration;
 
@@ -463,7 +465,7 @@ namespace NSPresentationEditor
 				}
 				else
 				{
-					pSlide->m_dStartTime = m_arSlides[i-1].m_dStartTime + m_arSlides[i-1].m_dDuration;
+					pSlide->m_dStartTime = m_arSlides[i-1]->m_dStartTime + m_arSlides[i-1]->m_dDuration;
 				}
 				
 				pSlide->m_dDuration	= Transition1 + Duration + Transition2;
@@ -473,11 +475,11 @@ namespace NSPresentationEditor
 
 		void CalculateSlideElements(int nIndex, CAudioOverlay& oAudioOverlay)
 		{
-			double dStartTime	= m_arSlides[nIndex].m_dStartTime;
-			double dEndTime		= m_arSlides[nIndex].m_dEndTime;
-			double dDuration	= m_arSlides[nIndex].m_dDuration;
+			double dStartTime	= m_arSlides[nIndex]->m_dStartTime;
+			double dEndTime		= m_arSlides[nIndex]->m_dEndTime;
+			double dDuration	= m_arSlides[nIndex]->m_dDuration;
 			
-			CSlide* pSlide = &m_arSlides[nIndex];
+			CSlide* pSlide = m_arSlides[nIndex];
 			
 			size_t nCountElems = pSlide->m_arElements.size();
 			for (size_t i = 0; i < nCountElems; ++i)
@@ -636,7 +638,7 @@ namespace NSPresentationEditor
 			size_t nCountSlides = m_arSlides.size();
 			for (size_t i = 0; i < nCountSlides; ++i)
 			{
-				CSlide* pSlide = &m_arSlides[i];
+				CSlide* pSlide = m_arSlides[i];
 
 				pSlide->m_lOriginalWidth	= m_oInfo.m_lUnitsHor;
 				pSlide->m_lOriginalHeight	= m_oInfo.m_lUnitsVer;

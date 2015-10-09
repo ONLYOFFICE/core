@@ -2410,6 +2410,7 @@ namespace Animations
 	{
 		virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
 		{
+			m_oHeader = oHeader;
 #if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
 			assert ( IsCorrect () );
 #endif

@@ -1377,11 +1377,13 @@ namespace MathEquation
 						beg.Insert(0,0x27E8); end.Insert(0, 0x007C);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::BegChr, beg);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::EndChr, end);
+						WriteItemValLong(BinDocxRW::c_oSer_OMathBottomNodesType::Column, 1);
 						break;
 					case angbrwithsepRight:	// | >
 						beg.Insert(0,0x007C); end.Insert(0, 0x27E9);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::BegChr, beg);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::EndChr, end);
+						WriteItemValLong(BinDocxRW::c_oSer_OMathBottomNodesType::Column, 1);
 						break;
 				}				
 				WriteItemEnd(nCurPos1);

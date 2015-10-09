@@ -188,14 +188,15 @@ namespace NSPresentationEditor
 			LONG lCountCFs = (LONG)m_arParagraphs[i].m_arSpans.size();
 			for (LONG j = 0; j < lCountCFs; ++j)
 			{
-				CString s = m_arParagraphs[i].m_arSpans[j].m_strText;
-				LONG lFound = m_arParagraphs[i].m_arSpans[j].m_strText.Find((TCHAR)13);
+				CString s		= m_arParagraphs[i].m_arSpans[j].m_strText;
+				int s_size		= s.GetLength();
+				int lFoundEnter = m_arParagraphs[i].m_arSpans[j].m_strText.Find((TCHAR)13);
                 //lFound = -1; //todooo разобраться как и что нужно делить и нужно ли ваще. проверить что с памятью
 				
-				if (lFound >= 0 && s.GetLength() > 1)//todooo если в s тока интер 
+				if( (lFoundEnter >= 0 && s_size > 1) && lFoundEnter < s_size -1 )//todooo если в s тока интер 
 				{
 					bool bIsBreakAttack = false;
-					if (bIsBreak && (0 == lFound))
+					if (bIsBreak && (0 == lFoundEnter))
 						bIsBreakAttack = true;
 
 					if (bIsBreakAttack)
@@ -217,15 +218,15 @@ namespace NSPresentationEditor
 					}
 					
 					LONG lCountTx = m_arParagraphs[i].m_arSpans[j].m_strText.GetLength();
-					m_arParagraphs[i].m_arSpans[j].m_strText.Delete(lFound, lCountTx - lFound);
+					m_arParagraphs[i].m_arSpans[j].m_strText.Delete(lFoundEnter, lCountTx - lFoundEnter);
 
 					if (j > 0)
 						oNewPar.m_arSpans.erase(oNewPar.m_arSpans.begin(), oNewPar.m_arSpans.begin() + j);
 
-					if (lFound == (lCountTx - 1))
+					if (lFoundEnter == (lCountTx - 1))
 						oNewPar.m_arSpans.erase(oNewPar.m_arSpans.begin(), oNewPar.m_arSpans.begin() + 1);
 					else
-						oNewPar.m_arSpans[0].m_strText.Delete(0, lFound + 1);
+						oNewPar.m_arSpans[0].m_strText.Delete(0, lFoundEnter + 1);
 
 					if (0 != oNewPar.m_arSpans.size())
 						m_arParagraphs.insert(m_arParagraphs.begin() +i + 1, oNewPar);	

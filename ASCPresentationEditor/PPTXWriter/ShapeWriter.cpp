@@ -424,14 +424,16 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 		if (pPF->lineSpacing.is_init())
 		{
 			LONG val = pPF->lineSpacing.get();
-			if (val > 0)
+			//1/1024 master unit or 1/589824 inch.
+			//1 inch = 576 master unit -> 1 master unit = 0.125 pt
+			if (val > 0)//The absolute value specifies spacing in master units.
 			{
 				CString str = _T("");
-				str.Format(_T("<a:lnSpc><a:spcPts val=\"%d\"/></a:lnSpc>"), (int)(val / dKoef1 * 100));
+				str.Format(_T("<a:lnSpc><a:spcPts val=\"%d\"/></a:lnSpc>"), (int)(val* 0.125 * 100/*/ dKoef1*/));
 				m_oWriter.WriteString(str);
 			}
 			else
-			{
+			{//0 to 13200, inclusive - The value specifies spacing as a percentage of the text line height.
 				CString str = _T("");
 				str.Format(_T("<a:lnSpc><a:spcPct val=\"%d\"/></a:lnSpc>"), -val * 1000);
 				m_oWriter.WriteString(str);
@@ -443,7 +445,7 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 			if (val > 0)
 			{
 				CString str = _T("");
-				str.Format(_T("<a:spcAft><a:spcPts val=\"%d\"/></a:spcAft>"), (int)(val / dKoef1  * 100));
+				str.Format(_T("<a:spcAft><a:spcPts val=\"%d\"/></a:spcAft>"), (int)(val * 0.125 * 100/*/ dKoef1*/));
 				m_oWriter.WriteString(str);
 			}
 			else if (val < 0)
@@ -459,7 +461,7 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 			if (val > 0)
 			{
 				CString str = _T("");
-				str.Format(_T("<a:spcBef><a:spcPts val=\"%d\"/></a:spcBef>"), (int)(val / dKoef1  * 100));
+				str.Format(_T("<a:spcBef><a:spcPts val=\"%d\"/></a:spcBef>"), (int)(val * 0.125 * 100/*/ dKoef1*/));
 				m_oWriter.WriteString(str);
 			}
 			else if (val < 0)

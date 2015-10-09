@@ -186,7 +186,7 @@ public:
 			if (val > 0)
 			{
 				CString str = _T("");
-				str.Format(_T("<a:lnSpc><a:spcPts val=\"%d\"/></a:lnSpc>"), (int)(val / dKoef1 * 100));
+				str.Format(_T("<a:lnSpc><a:spcPts val=\"%d\"/></a:lnSpc>"), (int)(val * 0.125 * 100/*/ dKoef1*/));
 				oWriter.WriteString(str);
 			}
 			else
@@ -202,7 +202,7 @@ public:
 			if (val > 0)
 			{
 				CString str = _T("");
-				str.Format(_T("<a:spcAft><a:spcPts val=\"%d\"/></a:spcAft>"), (int)(val / dKoef1 * 100));
+				str.Format(_T("<a:spcAft><a:spcPts val=\"%d\"/></a:spcAft>"), (int)(val * 0.125 * 100/*/ dKoef1*/));
 				oWriter.WriteString(str);
 			}
 			else if (val < 0)
@@ -218,7 +218,7 @@ public:
 			if (val > 0)
 			{
 				CString str = _T("");
-				str.Format(_T("<a:spcBef><a:spcPts val=\"%d\"/></a:spcBef>"), (int)(val / dKoef1 * 100));
+				str.Format(_T("<a:spcBef><a:spcPts val=\"%d\"/></a:spcBef>"), (int)(val * 0.125 * 100/*/ dKoef1*/));
 				oWriter.WriteString(str);
 			}
 			else if (val < 0)

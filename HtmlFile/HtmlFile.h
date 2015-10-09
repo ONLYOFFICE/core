@@ -25,6 +25,7 @@ public:
 
     int Convert(const std::vector<std::wstring>& arFiles, const std::wstring& sDstfolder, const std::wstring& sPathInternal = L"");
     int ConvertEpub(const std::wstring& sFolder, std::wstring& sMetaInfo, const std::wstring& sDstfolder, const std::wstring& sPathInternal = L"");
+    int ConvertMht(const std::wstring& sFile, const std::wstring& sDstfolder, const std::wstring& sPathInternal = L"");
 };
 
 #endif // _HTMLFILE_HTMLFILE_H_

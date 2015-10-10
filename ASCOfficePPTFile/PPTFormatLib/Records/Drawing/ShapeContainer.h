@@ -1366,7 +1366,7 @@ public:
 		PPTShapes::ShapeType eType = (PPTShapes::ShapeType)oArrayShape[0]->m_oHeader.RecInstance;
 		ElementType			elType = GetTypeElem((NSOfficeDrawing::SPT)oArrayShape[0]->m_oHeader.RecInstance); 
 
-		LONG lMasterID = -1;
+		int lMasterID = -1;
 
 		IElement * pElementLayout = NULL;
 		
@@ -1539,8 +1539,8 @@ public:
 		GetRecordsByType(&oArrayPlaceHolder, true, true);
 		if (0 < oArrayPlaceHolder.size())
 		{
-			pElem->m_lPlaceholderID		= (LONG)(oArrayPlaceHolder[0]->m_nPosition);
-			pElem->m_lPlaceholderType	= (LONG)(oArrayPlaceHolder[0]->m_nPlacementID);
+			pElem->m_lPlaceholderID		= (int)(oArrayPlaceHolder[0]->m_nPosition);
+			pElem->m_lPlaceholderType	= (int)(oArrayPlaceHolder[0]->m_nPlacementID);
 
 			if (0 == pElem->m_lPlaceholderType)
 				pElem->m_lPlaceholderID = 1;
@@ -1732,12 +1732,12 @@ public:
 			double dAngle = pShapeElem->m_dRotate;
 			if (0 <= dAngle)
 			{
-				LONG lCount = (LONG)dAngle / 360;
+				int lCount = (int)dAngle / 360;
 				dAngle -= (lCount * 360.0);
 			}
 			else
 			{
-				LONG lCount = (LONG)dAngle / 360;
+				int lCount = (int)dAngle / 360;
 				dAngle += ((-lCount + 1) * 360.0);
 			}
 			if (((dAngle > 45) && (dAngle < 135)) || ((dAngle > 225) && (dAngle < 315)))
@@ -1796,19 +1796,19 @@ public:
 			return;
 
 		// здесь переводим координаты, чтобы они не зависили от группы
-		LONG lWidthClient = m_pGroupClientAnchor->right - m_pGroupClientAnchor->left;
-		LONG lHeightClient = m_pGroupClientAnchor->bottom - m_pGroupClientAnchor->top;
-		LONG lWidthGroup = m_pGroupBounds->right - m_pGroupBounds->left;
-		LONG lHeightGroup = m_pGroupBounds->bottom - m_pGroupBounds->top;
+		long lWidthClient	= m_pGroupClientAnchor->right	- m_pGroupClientAnchor->left;
+		long lHeightClient	= m_pGroupClientAnchor->bottom	- m_pGroupClientAnchor->top;
+		long lWidthGroup	= m_pGroupBounds->right			- m_pGroupBounds->left;
+		long lHeightGroup	= m_pGroupBounds->bottom		- m_pGroupBounds->top;
 
 		double dScaleX = (double)(lWidthClient) / (lWidthGroup);
 		double dScaleY = (double)(lHeightClient) / (lHeightGroup);
 
-		rcChildAnchor.left = m_pGroupClientAnchor->left + (LONG)(dScaleX * (rcChildAnchor.left - m_pGroupBounds->left));
-		rcChildAnchor.right = m_pGroupClientAnchor->left + (LONG)(dScaleX * (rcChildAnchor.right - m_pGroupBounds->left));
+		rcChildAnchor.left	= m_pGroupClientAnchor->left	+ (long)(dScaleX * (rcChildAnchor.left	- m_pGroupBounds->left));
+		rcChildAnchor.right = m_pGroupClientAnchor->left	+ (long)(dScaleX * (rcChildAnchor.right - m_pGroupBounds->left));
 
-		rcChildAnchor.top = m_pGroupClientAnchor->top + (LONG)(dScaleY * (rcChildAnchor.top - m_pGroupBounds->top));
-		rcChildAnchor.bottom = m_pGroupClientAnchor->top + (LONG)(dScaleY * (rcChildAnchor.bottom - m_pGroupBounds->top));
+		rcChildAnchor.top	= m_pGroupClientAnchor->top		+ (long)(dScaleY * (rcChildAnchor.top	- m_pGroupBounds->top));
+		rcChildAnchor.bottom = m_pGroupClientAnchor->top	+ (long)(dScaleY * (rcChildAnchor.bottom - m_pGroupBounds->top));
 	}
 
 	NSPresentationEditor::ElementType GetTypeElem(SPT eType)
@@ -1887,8 +1887,8 @@ protected:
 		// выставим тип мастера
 		if (NULL != pSlide)
 		{
-			LONG ph_type	= pShape->m_lPlaceholderType;
-			LONG ph_pos		= pShape->m_lPlaceholderID;
+			int ph_type		= pShape->m_lPlaceholderType;
+			int ph_pos		= pShape->m_lPlaceholderID;
 
 			pTextSettings->m_lPlaceholderType = ph_type;
 
@@ -1921,8 +1921,8 @@ protected:
 
 		//  persist ----------------------------------------------------------------------
 		std::vector<CTextFullSettings>* pArrayPlaseHolders	= &pSlideWrapper->m_arTextPlaceHolders;
-		LONG lCountPersistObjects							= (LONG)pArrayPlaseHolders->size();
-		LONG lPersistIndex									= oElemInfo.m_lPersistIndex;
+		int lCountPersistObjects							= pArrayPlaseHolders->size();
+		int lPersistIndex									= oElemInfo.m_lPersistIndex;
 
 		if ((lPersistIndex >= 0) && (lPersistIndex < lCountPersistObjects))
 		{
@@ -2282,25 +2282,25 @@ protected:
 		std::vector<CTextRange>* pRanges					= &pShape->m_oActions.m_arRanges;
 		CTextAttributesEx* pTextAttributes					= &pShape->m_oShape.m_oText;
 
-		LONG lCountHyper	= (LONG)pRanges->size();
+		int lCountHyper	= pRanges->size();
 
 		if (0 == lCountHyper)
 			return;
 
 		size_t nCountPars = pTextAttributes->m_arParagraphs.size();
-		for (LONG nIndexRange = 0; nIndexRange < lCountHyper; ++nIndexRange)
+		for (int nIndexRange = 0; nIndexRange < lCountHyper; ++nIndexRange)
 		{
-			LONG lStart = (*pRanges)[nIndexRange].m_lStart;
-			LONG lEnd	= (*pRanges)[nIndexRange].m_lEnd;
+			int lStart = (*pRanges)[nIndexRange].m_lStart;
+			int lEnd	= (*pRanges)[nIndexRange].m_lEnd;
 
-			LONG lCurrentStart = 0;
+			int lCurrentStart = 0;
 			for (size_t nIndexPar = 0; nIndexPar < nCountPars; ++nIndexPar)
 			{
 				CParagraph* pParagraph = &pTextAttributes->m_arParagraphs[nIndexPar];
 
 				for (size_t nIndexSpan = 0; nIndexSpan < pParagraph->m_arSpans.size(); ++nIndexSpan)
 				{
-					LONG lCurrentEnd = lCurrentStart + pParagraph->m_arSpans[nIndexSpan].m_strText.GetLength() - 1;
+					int lCurrentEnd = lCurrentStart + pParagraph->m_arSpans[nIndexSpan].m_strText.GetLength() - 1;
 
 					if (lCurrentStart > lEnd || lCurrentEnd < lStart)
 					{
@@ -2308,8 +2308,8 @@ protected:
 						continue;
 					}
 
-                    LONG lStart_	= (std::max)(lStart, lCurrentStart);
-                    LONG lEnd_		= (std::min)(lEnd, lCurrentEnd);
+                    int lStart_	= (std::max)(lStart, lCurrentStart);
+                    int lEnd_	= (std::min)(lEnd, lCurrentEnd);
 
 					CSpan oRunProp = pParagraph->m_arSpans[nIndexSpan];
 

@@ -93,9 +93,9 @@ public:
 		}
 	}
 
-	LONG GetCountPicturesUsed(size_t nUser)
+	int GetCountPicturesUsed(size_t nUser)
 	{
-		LONG lRes = 0;
+		int lRes = 0;
 		for (size_t i = 0; i < m_arUsers[nUser]->m_arEmptyPictures.size(); ++i)
 		{
 			if (!m_arUsers[nUser]->m_arEmptyPictures[i])

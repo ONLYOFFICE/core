@@ -557,11 +557,11 @@ void CPPTUserInfo::LoadSlide(DWORD dwSlideID, CSlide* pSlide)
 	}
 }
 
-LONG CPPTUserInfo::AddNewLayout(NSPresentationEditor::CTheme* pTheme, SSlideLayoutAtom* layoutRecord, std::vector<CTextFullSettings> & text, bool addShapes)
+int CPPTUserInfo::AddNewLayout(NSPresentationEditor::CTheme* pTheme, SSlideLayoutAtom* layoutRecord, std::vector<CTextFullSettings> & text, bool addShapes)
 {
 	if (pTheme == NULL) return -1;
 
-	LONG ind = pTheme->m_arLayouts.size();
+	int ind = pTheme->m_arLayouts.size();
 		
 	CLayout layout;
 	pTheme->m_arLayouts.push_back(layout);

@@ -1,4 +1,5 @@
 #pragma once
+#include "../../../../../Common/DocxFormat/Source/Base/Types_32.h"
 
 namespace NSOfficeDrawing
 {
@@ -32,14 +33,14 @@ namespace NSOfficeDrawing
 		}
 
 	public:
-		LONG ReadLONG()
+		LONG ReadLONG() // int32 подразумевается
 		{
 			DWORD lOldOrigin = m_lOrigin;
 			m_lOrigin += 4;
 
 			BINARY_READER_CHECK_OUT_RANGE(m_lOrigin, m_lCount)
 
-			return *(LONG*)(m_pBuffer + lOldOrigin);
+			return *(_INT32*)(m_pBuffer + lOldOrigin);
 		}
 		DWORD ReadDWORD()
 		{
@@ -66,7 +67,7 @@ namespace NSOfficeDrawing
 
 			BINARY_READER_CHECK_OUT_RANGE(m_lOrigin, m_lCount)
 
-			return *(SHORT*)(m_pBuffer + lOldOrigin);
+			return *(short*)(m_pBuffer + lOldOrigin);
 		}
 		double ReadDOUBLE()
 		{

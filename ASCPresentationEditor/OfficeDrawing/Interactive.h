@@ -10,8 +10,8 @@ namespace NSPresentationEditor
 	class CTextRange
 	{
 	public:
-		LONG m_lStart;
-		LONG m_lEnd;
+		int m_lStart;
+		int m_lEnd;
 	
 	public:
 		CTextRange()

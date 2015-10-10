@@ -33,11 +33,11 @@ namespace NSPresentationEditor
 		CAnimationInfo		m_oAnimations;
 		CEffects			m_oEffects;
 
-		LONG				m_lID;
-		LONG				m_lLayoutID;
+		int					m_lID;
+		int					m_lLayoutID;
 
-		LONG				m_lPlaceholderID;
-		LONG				m_lPlaceholderType;
+		int					m_lPlaceholderID;
+		int					m_lPlaceholderType;
 		bool				m_bPlaceholderSet;
 
 		// метрика

@@ -182,32 +182,44 @@ namespace NSPresentationEditor
 
 	void CTextAttributesEx::RecalcParagraphsPPT(CTheme* pTheme)
 	{
-		for (LONG i = 0; i < (LONG)m_arParagraphs.size(); ++i)
+		for (int i = 0; i < m_arParagraphs.size(); ++i)
 		{
-			bool bIsBreak = true;
-			LONG lCountCFs = (LONG)m_arParagraphs[i].m_arSpans.size();
-			for (LONG j = 0; j < lCountCFs; ++j)
+			for (int j = 0; j < m_arParagraphs[i].m_arSpans.size(); ++j)
+			{
+				if (m_arParagraphs[i].m_arSpans[j].m_strText.GetLength() > 2)
+				{
+					//if (m_arParagraphs[i].m_arSpans[j].m_strText[0] == (TCHAR)13)
+					//	m_arParagraphs[i].m_arSpans[j].m_strText = m_arParagraphs[i].m_arSpans[j].m_strText.Mid(1);
+					if (m_arParagraphs[i].m_arSpans[j].m_strText[m_arParagraphs[i].m_arSpans[j].m_strText.GetLength() -1] == (TCHAR)13)
+						m_arParagraphs[i].m_arSpans[j].m_strText = m_arParagraphs[i].m_arSpans[j].m_strText.Mid(0, m_arParagraphs[i].m_arSpans[j].m_strText.GetLength() -1);
+				}
+			}
+		}
+		for (int i = 0; i < m_arParagraphs.size(); ++i)
+		{
+			bool bIsBreak	= true;
+			int lCountCFs	= m_arParagraphs[i].m_arSpans.size();
+			for (int j = 0; j < lCountCFs; ++j)
 			{
 				CString s		= m_arParagraphs[i].m_arSpans[j].m_strText;
 				int s_size		= s.GetLength();
 				int lFoundEnter = m_arParagraphs[i].m_arSpans[j].m_strText.Find((TCHAR)13);
-                //lFound = -1; //todooo разобраться как и что нужно делить и нужно ли ваще. проверить что с памятью
-				
-				if( (lFoundEnter >= 0 && s_size > 1) && lFoundEnter < s_size -1 )//todooo если в s тока интер 
+
+				if( lFoundEnter >= 0 && s_size > 1)
 				{
-					bool bIsBreakAttack = false;
-					if (bIsBreak && (0 == lFoundEnter))
-						bIsBreakAttack = true;
+					//bool bIsBreakAttack = false;
+					//if (bIsBreak && (0 == lFoundEnter))
+					//	bIsBreakAttack = true;
 
-					if (bIsBreakAttack)
-					{
-						CParagraph oParBreak = m_arParagraphs[i];
-						oParBreak.m_arSpans.clear();
-						oParBreak.m_arSpans.push_back(m_arParagraphs[i].m_arSpans[j]);
-						oParBreak.m_arSpans[0].m_strText = _T("  ");
-					}
+					//if (bIsBreakAttack)
+					//{
+					//	CParagraph oParBreak = m_arParagraphs[i];
+					//	oParBreak.m_arSpans.clear();
+					//	oParBreak.m_arSpans.push_back(m_arParagraphs[i].m_arSpans[j]);
+					//	oParBreak.m_arSpans[0].m_strText = _T("  ");
+					//}
 
-					bIsBreak = true;
+					//bIsBreak = true;
 
 					// разбиваем параграф
 					CParagraph oNewPar = m_arParagraphs[i];

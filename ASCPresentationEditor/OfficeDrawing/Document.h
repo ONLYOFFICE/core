@@ -119,7 +119,7 @@ namespace NSPresentationEditor
 			size_t nCount = m_arSlides.size();
 			for (size_t nIndex = 0; nIndex < nCount; ++nIndex)
 			{
-				LONG lThemeID	= m_arSlides[nIndex]->m_lThemeID;
+				int lThemeID	= m_arSlides[nIndex]->m_lThemeID;
 				
 				if ((0 > lThemeID) || (lThemeID >= (LONG)m_arThemes.size()))
 				{
@@ -171,7 +171,7 @@ namespace NSPresentationEditor
 			CString Source	=	CString ( _T("") );
 
 			int EffectID	=	1;
-			LONG lEffectDirection = oSlide.m_oSlideShow.m_oTransition.m_nEffectDirection;
+			int lEffectDirection = oSlide.m_oSlideShow.m_oTransition.m_nEffectDirection;
 
 			switch ( oSlide.m_oSlideShow.m_oTransition.m_nEffectType )
 			{
@@ -395,7 +395,7 @@ namespace NSPresentationEditor
 		{
 			CaclulateSlideTimes();
 
-			LONG lCount = (LONG)m_arSlides.size();
+			int lCount = (LONG)m_arSlides.size();
 
 			double dAllDuration = 0;
 			if (lCount > 0)
@@ -591,8 +591,8 @@ namespace NSPresentationEditor
 						CShapeElement* pShape = dynamic_cast<CShapeElement*>(pElement);
 						if (!pLayout->m_bUseThemeColorScheme && NULL != pShape)
 						{
-							LONG lPhType = pElement->m_lPlaceholderType;
-							LONG lIndex = 0;
+							int lPhType = pElement->m_lPlaceholderType;
+							int lIndex = 0;
 							if (15 == lPhType)
 								lIndex = 1;
 							else if (0 == lPhType)

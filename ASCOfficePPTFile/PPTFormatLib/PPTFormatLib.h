@@ -25,7 +25,7 @@ public:
 
 private:
 
-	LONG m_Status;
+	int m_Status;
 
 	void* m_pReader;
 

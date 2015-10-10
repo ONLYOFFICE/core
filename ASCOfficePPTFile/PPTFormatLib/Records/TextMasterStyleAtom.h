@@ -26,7 +26,7 @@ public:
 
 		bool bIsLevelsPresent = (0x05 <= m_oHeader.RecInstance);
 		
-		LONG lLevels = StreamUtils::ReadWORD(pStream);
+		int lLevels = StreamUtils::ReadWORD(pStream);
 		if (0 < lLevels)
 			LoadLevel(0, pStream, bIsLevelsPresent);
 		if (1 < lLevels)

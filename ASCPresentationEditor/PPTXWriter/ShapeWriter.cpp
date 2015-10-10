@@ -289,7 +289,7 @@ void NSPresentationEditor::CShapeWriter::WriteShapeInfo()
 		if (0 == m_pShapeElement->m_lPlaceholderType)
 			m_pShapeElement->m_lPlaceholderID = 1;
 
-		if (-1 == m_pShapeElement->m_lPlaceholderID)
+		if ( m_pShapeElement->m_lPlaceholderID < 0)
 		{
             m_oWriter.WriteString(std::wstring(L"<p:nvPr><p:ph type=\"") + GetPhType(m_pShapeElement->m_lPlaceholderType) + _T("\""));
 			 if (5 == m_pShapeElement->m_lPlaceholderType)

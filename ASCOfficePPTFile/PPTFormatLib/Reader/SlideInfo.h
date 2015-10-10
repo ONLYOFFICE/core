@@ -4,14 +4,14 @@
 class CElementInfo
 {
 public:
-	LONG		m_lOffsetTextStyle;
-	LONG		m_lOffsetTextProp;
+	int		m_lOffsetTextStyle;
+	int		m_lOffsetTextProp;
 	POLE::Stream*	m_pStream;
 
-	LONG		m_lPersistIndex;
+	int		m_lPersistIndex;
 
-	LONG		m_lMasterTextType;
-	LONG		m_lMasterPlaceholderType;
+	int		m_lMasterTextType;
+	int		m_lMasterPlaceholderType;
 
 public:
 	CElementInfo()
@@ -100,7 +100,7 @@ public:
 		if (NULL == m_parEmptyPictures)
 			return lIndex;
 		
-		LONG lResult = 0;
+		int lResult = 0;
 		DWORD nCount = m_parEmptyPictures->size();
 
 		if (lIndex > nCount)

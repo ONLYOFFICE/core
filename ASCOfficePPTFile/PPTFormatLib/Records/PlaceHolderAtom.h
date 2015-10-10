@@ -4,7 +4,7 @@
 class CRecordPlaceHolderAtom : public CUnknownRecord
 {
 public:
-	LONG m_nPosition;
+	int	 m_nPosition;
 	BYTE m_nPlacementID;
 	BYTE m_nSize;
 

@@ -18,8 +18,8 @@ namespace NSPresentationEditor
 		LONG	m_lTextMasterType; // only ppt property
 	public:
 		DWORD	m_lTextType;
-		LONG	m_lPlaceholderType;
-		LONG	m_lPlaceholderID;
+		int		m_lPlaceholderType;
+		int		m_lPlaceholderID;
 
 		// граница
         Aggplus::RECT m_oBounds;
@@ -32,7 +32,7 @@ namespace NSPresentationEditor
         bool	m_bVertical;
         bool	m_bRightToLeft;
 
-		LONG	m_lWrapMode; // 0 - square, default; 1 - none wrap
+		int		m_lWrapMode; // 0 - square, default; 1 - none wrap
 
 		// для ппт. чтобы не менять счас ничего
 		CTextRuler				m_oRuler;
@@ -42,7 +42,7 @@ namespace NSPresentationEditor
 
 		// из пптх
 		bool					m_bIsSlideFontRef;
-		LONG					m_lFontRef;
+		int						m_lFontRef;
 		
 	public:
 		CTextAttributesEx() :

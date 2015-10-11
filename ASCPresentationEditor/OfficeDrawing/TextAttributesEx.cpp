@@ -182,9 +182,24 @@ namespace NSPresentationEditor
 
 	void CTextAttributesEx::RecalcParagraphsPPT(CTheme* pTheme)
 	{
+		//for (int i = 0; i < m_arParagraphs.size(); ++i)
+		//{
+		//	for (int j = 0; j < m_arParagraphs[i].m_arSpans.size(); ++j)
+		//	{
+		//		if (m_arParagraphs[i].m_arSpans[j].m_strText.GetLength() > 2)
+		//		{
+		//			//if (m_arParagraphs[i].m_arSpans[j].m_strText[0] == (TCHAR)13)
+		//			//	m_arParagraphs[i].m_arSpans[j].m_strText = m_arParagraphs[i].m_arSpans[j].m_strText.Mid(1);
+		//			if (m_arParagraphs[i].m_arSpans[j].m_strText[m_arParagraphs[i].m_arSpans[j].m_strText.GetLength() -1] == (TCHAR)13)
+		//				m_arParagraphs[i].m_arSpans[j].m_strText = m_arParagraphs[i].m_arSpans[j].m_strText.Mid(0, m_arParagraphs[i].m_arSpans[j].m_strText.GetLength() -1);
+		//		}
+		//	}
+		//}
 		for (int i = 0; i < m_arParagraphs.size(); ++i)
 		{
-			for (int j = 0; j < m_arParagraphs[i].m_arSpans.size(); ++j)
+			bool bIsBreak	= true;
+			int lCountCFs	= m_arParagraphs[i].m_arSpans.size();
+			for (int j = 0; j < lCountCFs; ++j)
 			{
 				if (m_arParagraphs[i].m_arSpans[j].m_strText.GetLength() > 2)
 				{
@@ -193,14 +208,7 @@ namespace NSPresentationEditor
 					if (m_arParagraphs[i].m_arSpans[j].m_strText[m_arParagraphs[i].m_arSpans[j].m_strText.GetLength() -1] == (TCHAR)13)
 						m_arParagraphs[i].m_arSpans[j].m_strText = m_arParagraphs[i].m_arSpans[j].m_strText.Mid(0, m_arParagraphs[i].m_arSpans[j].m_strText.GetLength() -1);
 				}
-			}
-		}
-		for (int i = 0; i < m_arParagraphs.size(); ++i)
-		{
-			bool bIsBreak	= true;
-			int lCountCFs	= m_arParagraphs[i].m_arSpans.size();
-			for (int j = 0; j < lCountCFs; ++j)
-			{
+
 				CString s		= m_arParagraphs[i].m_arSpans[j].m_strText;
 				int s_size		= s.GetLength();
 				int lFoundEnter = m_arParagraphs[i].m_arSpans[j].m_strText.Find((TCHAR)13);

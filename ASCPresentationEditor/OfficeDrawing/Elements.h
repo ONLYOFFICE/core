@@ -569,19 +569,7 @@ namespace NSPresentationEditor
 			return ConvertPPTtoPPTX(/*pPPTShape,*/ pParamCoef, bIsNamespace);			
 		}
 
-#ifndef OPTIMIZE_COMPILE_CONVERT_PPT_TO_PPTX
 
-		CString ConvertPPTtoPPTX(/*CPPTShape* pPPTShape, */const NSGuidesVML::CFormParam& pCoef, bool bIsNamespace = false)
-		{
-
-			if (bIsNamespace)
-			{
-				return _T("<a:prstGeom xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" prst=\"rect\"><a:avLst/></a:prstGeom>");
-			}
-			return _T("<a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom>");
-
-		}
-#else
 		CString ConvertPPTtoPPTX(/*CPPTShape* pPPTShape, */const NSGuidesVML::CFormParam& pCoef, bool bIsNamespace = false)
 		{
 			if (bIsNamespace)
@@ -595,7 +583,6 @@ namespace NSPresentationEditor
 			strXmlPPTX += _T("</a:custGeom>");
 			return strXmlPPTX;
 		}
-#endif
 
 #endif
 		AVSINLINE std::wstring DownloadImage(const std::wstring& strFile)
@@ -1121,6 +1108,10 @@ namespace NSPresentationEditor
 				strXmlPPTX += _T("<a:pathLst>");
 				strXmlPPTX += pFormulaConverter.m_oPathRes.GetXmlString();
 				strXmlPPTX += _T("</a:pathLst>");					
+			}
+			else
+			{
+				return _T("<a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom>");
 			}
 
 			strXmlPPTX += _T("</a:custGeom>");

@@ -1665,13 +1665,14 @@ public:
 			CString strText = _T("");
 			// теперь сам текст...
 			std::vector<CRecordTextBytesAtom*> oArrayTextBytes;
-			this->GetRecordsByType(&oArrayTextBytes, true, true);
+			GetRecordsByType(&oArrayTextBytes, true, true);
 			if (0 < oArrayTextBytes.size())
 			{
-				strText = (CStringW)(oArrayTextBytes[0]->m_strText);
+				strText = oArrayTextBytes[0]->m_strText;
 			}
+			
 			std::vector<CRecordTextCharsAtom*> oArrayTextChars;
-			this->GetRecordsByType(&oArrayTextChars, true, true);
+			GetRecordsByType(&oArrayTextChars, true, true);
 
 			if (0 < oArrayTextChars.size())
 			{

@@ -1084,14 +1084,14 @@ namespace NSPresentationEditor
 		}
 		AVSINLINE void CheckErrors()
 		{
-			if (IsEmpty())
-			{
-                m_oPFRun.hasBullet = false;
-			}
+			//if (IsEmpty())
+			//{
+   //             m_oPFRun.hasBullet = false;
+			//}
 			size_t nCountS = m_arSpans.size();
 			for (size_t i = 0; i < nCountS; ++i)
 			{
-				m_arSpans[i].m_strText.Replace((TCHAR)(11), (TCHAR)('\n'));
+				m_arSpans[i].m_strText.Replace((TCHAR)(11), (TCHAR)(13));
 			}
 		}
 		AVSINLINE bool IsEmpty()
@@ -1104,7 +1104,7 @@ namespace NSPresentationEditor
 				if (nLen > 1)
 					return false;
 
-				if ((nLen == 1) && ((_T(" ") != m_arSpans[i].m_strText) && (_T("\n") != m_arSpans[i].m_strText)))
+				if ((nLen == 1) && ((TCHAR)(13) != m_arSpans[i].m_strText[0]))
 					return false;
 			}
 			return true;

@@ -528,19 +528,19 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 
 			NSPresentationEditor::CTextCFRun* pCF = &pParagraph->m_arSpans[nSpan].m_oRun;
 
-			bool bIsBr = false;
-			
-			if (pParagraph->m_arSpans[nSpan].m_strText.GetLength() >0) 
+			bool bIsBr  = false;
+			if ((pParagraph->m_arSpans[nSpan].m_strText.GetLength() == 1) && ( pParagraph->m_arSpans[nSpan].m_strText[0] == (TCHAR)13 ))
 			{
-				if(_T("\n") == pParagraph->m_arSpans[nSpan].m_strText)	bIsBr=true;
+				bIsBr=true;
+				//continue;	
 			}
 			
-			if (bIsBr)
-			{
-				CString strRun1 = _T("<a:br><a:rPr");
-				m_oWriter.WriteString(strRun1);
-			}
-			else
+			if (bIsBr) continue;
+			//{
+			//	CString strRun1 = _T("<a:br><a:rPr");
+			//	m_oWriter.WriteString(strRun1);
+			//}
+			//else
 			{
 				if (m_pShapeElement->m_lPlaceholderType == 12)//todooo + date
 				{
@@ -629,17 +629,17 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 
 				CString strT2 = _T("</a:t>");
 				m_oWriter.WriteString(strT2);
-
-				if (m_pShapeElement->m_lPlaceholderType == 12)
-					m_oWriter.WriteString(std::wstring(L"</a:fld>"));
-				else
-					m_oWriter.WriteString(std::wstring(L"</a:r>"));
-
 			}
+			if (m_pShapeElement->m_lPlaceholderType == 12)
+				m_oWriter.WriteString(std::wstring(L"</a:fld>"));
 			else
-			{
-				m_oWriter.WriteString(std::wstring(L"</a:br>"));
-			}
+				m_oWriter.WriteString(std::wstring(L"</a:r>"));
+
+			//}
+			//else
+			//{
+			//	m_oWriter.WriteString(std::wstring(L"</a:br>"));
+			//}
 		}
 
 		CString strEndPar = _T("</a:p>");
@@ -738,7 +738,7 @@ CString NSPresentationEditor::CShapeWriter::ConvertShape()
 	{
 		m_pShapeElement->m_oShape.ToRenderer(dynamic_cast<IRenderer*>(this), oInfo, m_oMetricInfo, 0.0, 1.0);
 	}
-	
+#if 0	
 	if (bPath && m_oWriterVML.GetCurSize() >= 10)
 	{
 		if (m_pShapeElement->m_oShape.m_strPPTXShape.IsEmpty())
@@ -801,6 +801,9 @@ CString NSPresentationEditor::CShapeWriter::ConvertShape()
 		}
 		m_oWriter.WriteString(std::wstring(L"</a:prstGeom>"));
 	}
+#else
+	m_oWriter.WriteString(m_pShapeElement->ConvertPPTShapeToPPTX());
+#endif
 
 	m_oWriter.WriteString(ConvertBrush(m_oBrush));
 

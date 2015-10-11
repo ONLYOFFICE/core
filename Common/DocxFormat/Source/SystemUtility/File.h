@@ -5,6 +5,7 @@
 
 #include "../../../3dParty/pole/pole.h"
 #include "../Base/unicode_util.h"
+#include "../Base/Types_32.h"
 
 //по аналогии с /DesktopEditor/common/File.h только для CString
 
@@ -338,11 +339,11 @@ namespace StreamUtils
 	}
 	static SHORT ReadSHORT(POLE::Stream* pStream)
 	{
-		return (SHORT)ReadWORD(pStream);
+        return (short)ReadWORD(pStream);
 	}
 	static LONG ReadLONG(POLE::Stream* pStream)
 	{
-		return (LONG)ReadDWORD(pStream);
+        return (_INT32)ReadDWORD(pStream);
 	}
 	
 	static FLOAT ReadFLOAT( POLE::Stream* pStream)

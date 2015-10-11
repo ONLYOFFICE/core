@@ -325,7 +325,7 @@ namespace NSPresentationEditor
 
 	void CTextAttributesEx::RecalcParagraphs(CTheme* pTheme)
 	{
-#ifdef PPT_FORMAT
+#ifdef PPT_DEF
 		RecalcParagraphsPPT(pTheme);
 #else
 		size_t nCount = m_arParagraphs.size();

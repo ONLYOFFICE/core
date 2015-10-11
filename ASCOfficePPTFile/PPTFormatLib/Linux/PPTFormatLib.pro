@@ -46,7 +46,6 @@ DEFINES +=  UNICODE \
         PPTX_DEF \
         PPT_DEF \
         ENABLE_PPT_TO_PPTX_CONVERT \
-        PPT_FORMAT \
         _USE_LIBXML2_READER_ \
         LIBXML_READER_ENABLED \
         USE_LITE_READER \

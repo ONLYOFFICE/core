@@ -284,7 +284,7 @@ namespace MathEquation
 									int nCurPos = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::SPre);
 									int nCurPos1 = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::SPrePr);
 									CString str;
-									str.Insert(0, 0x2035);
+									str.Insert(0, 0x0060);
 									WriteItemEnd(nCurPos1);
 
 									nCurPos1 = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::Sup);

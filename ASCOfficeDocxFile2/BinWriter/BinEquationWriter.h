@@ -20,10 +20,12 @@ namespace MathEquation
 			LONG nTextSize;
 			bool bAccent;
 			MEMBELTYPE eType;
+			BYTE eStyle;
 
 		public:
 			EquationRun()
 			{
+				eStyle = NULL;
 			}
 			void AddChar(CString sChar, TMathFont* pNewFont, LONG lSize)
 			{
@@ -192,13 +194,22 @@ namespace MathEquation
 				}
 				return;
 			}
+			void WriteMRPR(EquationRun oRun)
+			{
+
+				int nCurPos = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::MRPr);
+				WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::Sty, oRun.eStyle);
+				WriteItemEnd(nCurPos);
+				return;
+			}
 
 			void WriteRunContent(EquationRun oRun, bool bIsOpen)
 			{
 				TMathFont* pCurFont = oRun.pFont;
 				int nCurPos = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::MRun);
 				WriteRPR(oRun.pFont, oRun.nTextSize, bIsOpen);
-
+				if (oRun.eStyle)
+					WriteMRPR(oRun);
 				int nCurPos1 = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::MText);
 				m_oStream.WriteBYTE(BinDocxRW::c_oSer_OMathBottomNodesValType::Val);
 				m_oStream.WriteBYTE(BinDocxRW::c_oSerPropLenType::Variable);
@@ -421,7 +432,11 @@ namespace MathEquation
 						}
 					}
 					else
-						str.Insert(0,uChar);
+					{
+						if (uChar > 0x0390 && uChar < 0x03AA) //Greek Capital Letter
+							oRun.eStyle = SimpleTypes::stylePlain;
+						str.Insert(0, uChar);
+					}
 					
 					oRun.AddChar(str, pFont, nTextSize);
 					oRManager.Add(oRun);

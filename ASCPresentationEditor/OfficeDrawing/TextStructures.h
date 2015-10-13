@@ -1088,11 +1088,11 @@ namespace NSPresentationEditor
 			//{
    //             m_oPFRun.hasBullet = false;
 			//}
-			//size_t nCountS = m_arSpans.size();
-			//for (size_t i = 0; i < nCountS; ++i)
-			//{
-			//	m_arSpans[i].m_strText.Replace((TCHAR)(11), (TCHAR)(13));
-			//}
+			size_t nCountS = m_arSpans.size();
+			for (size_t i = 0; i < nCountS; ++i)
+			{
+				m_arSpans[i].m_strText.Replace((TCHAR)(11), (TCHAR)(13));
+			}
 		}
 		AVSINLINE bool IsEmpty()
 		{

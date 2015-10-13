@@ -434,8 +434,12 @@ namespace MathEquation
 					else
 					{
 						if ((uChar > 0x0390 && uChar < 0x03AA) //Greek Capital Letter
-							|| (uChar == 0x2207 )) //Nabla
+							|| (uChar == 0x2207)) //Nabla
 							oRun.eStyle = SimpleTypes::stylePlain;
+						else if (uChar == 0x03C6)
+							uChar = 0x03D5;
+						else if (uChar == 0x03D5)
+							uChar = 0x03C6;
 						str.Insert(0, uChar);
 					}
 					

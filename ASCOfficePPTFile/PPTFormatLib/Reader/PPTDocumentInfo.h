@@ -80,7 +80,7 @@ public:
 		{
 			for (long j = 0 ; j < m_arUsers[i]->m_arEmptyPictures.size(); j++)
 			{
-				if (m_arUsers[i]->m_arEmptyPictures[j] == false && j < m_arUsers[0]->m_arEmptyPictures.size())
+				if (m_arUsers[i]->m_arEmptyPictures[j] == false && j < m_arUsers[0]->m_arEmptyPictures.size() && m_arUsers[0]->m_arEmptyPictures[j] == true)
 					m_arUsers[0]->m_arEmptyPictures[j] = false;
 			}
 		}

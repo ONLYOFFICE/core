@@ -169,7 +169,7 @@ public:
 					bu = pPF->bulletChar.get();
 				}
 				oWriter.WriteString(std::wstring(L"<a:buChar char=\""));
-				oWriter.WriteString(std::wstring(&bu, 1));
+				oWriter.WriteStringXML(std::wstring(&bu, 1));
 				oWriter.WriteString(std::wstring(L"\"/>"));
 			}
 			else

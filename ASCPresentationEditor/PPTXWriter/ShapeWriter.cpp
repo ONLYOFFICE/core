@@ -482,7 +482,7 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 				{
 					bu = pPF->bulletChar.get();
 				}
-                m_oWriter.WriteString(std::wstring(&bu, 1));
+                m_oWriter.WriteStringXML(std::wstring(&bu, 1));
                 m_oWriter.WriteString(std::wstring(L"\"/>"));
 			}
 			else
@@ -529,18 +529,22 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 			NSPresentationEditor::CTextCFRun* pCF = &pParagraph->m_arSpans[nSpan].m_oRun;
 
 			bool bIsBr  = false;
-			if ((pParagraph->m_arSpans[nSpan].m_strText.GetLength() == 1) && ( pParagraph->m_arSpans[nSpan].m_strText[0] == (TCHAR)13 ))
+			int span_sz = pParagraph->m_arSpans[nSpan].m_strText.GetLength() ;
+			if ((span_sz==1 && ( pParagraph->m_arSpans[nSpan].m_strText[0] == (TCHAR)13 )) ||
+				((span_sz==2 && ( pParagraph->m_arSpans[nSpan].m_strText[0] == (TCHAR)13 ) && ( pParagraph->m_arSpans[nSpan].m_strText[1] == (TCHAR)13 ))))
 			{
 				bIsBr=true;
-				//continue;	
 			}
 			
-			if (bIsBr) continue;
-			//{
-			//	CString strRun1 = _T("<a:br><a:rPr");
-			//	m_oWriter.WriteString(strRun1);
-			//}
-			//else
+			if (bIsBr)
+			{
+				//if (pParagraph->m_arSpans.size() < 2) 
+					continue;
+
+				CString strRun1 = _T("<a:br><a:rPr");
+				m_oWriter.WriteString(strRun1);
+			}
+			else
 			{
 				if (m_pShapeElement->m_lPlaceholderType == 12)//todooo + date
 				{
@@ -629,17 +633,16 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 
 				CString strT2 = _T("</a:t>");
 				m_oWriter.WriteString(strT2);
+				
+				if (m_pShapeElement->m_lPlaceholderType == 12)
+					m_oWriter.WriteString(std::wstring(L"</a:fld>"));
+				else
+					m_oWriter.WriteString(std::wstring(L"</a:r>"));
 			}
-			if (m_pShapeElement->m_lPlaceholderType == 12)
-				m_oWriter.WriteString(std::wstring(L"</a:fld>"));
 			else
-				m_oWriter.WriteString(std::wstring(L"</a:r>"));
-
-			//}
-			//else
-			//{
-			//	m_oWriter.WriteString(std::wstring(L"</a:br>"));
-			//}
+			{
+				m_oWriter.WriteString(std::wstring(L"</a:br>"));
+			}
 		}
 
 		CString strEndPar = _T("</a:p>");
@@ -718,17 +721,14 @@ CString NSPresentationEditor::CShapeWriter::ConvertShape()
 			}
 		m_oWriter.WriteString(std::wstring(L">"));
 
-		if (m_pShapeElement->m_rcBoundsOriginal.left >= 0 && m_pShapeElement->m_rcBoundsOriginal.top >=0 )
-		{
-				str.Format(_T("<a:off x=\"%d\" y=\"%d\"/>"), (int)m_pShapeElement->m_rcBoundsOriginal.left,	(int)m_pShapeElement->m_rcBoundsOriginal.top);				
-				m_oWriter.WriteString(str);
-		}
+		str.Format(_T("<a:off x=\"%d\" y=\"%d\"/>"), (int)m_pShapeElement->m_rcBoundsOriginal.left,	(int)m_pShapeElement->m_rcBoundsOriginal.top);				
+		m_oWriter.WriteString(str);
 
-		if (m_pShapeElement->m_rcBoundsOriginal.right - m_pShapeElement->m_rcBoundsOriginal.left > 0 || 
-			m_pShapeElement->m_rcBoundsOriginal.bottom - m_pShapeElement->m_rcBoundsOriginal.top >0 )
+		int width	= m_pShapeElement->m_rcBoundsOriginal.right - m_pShapeElement->m_rcBoundsOriginal.left;
+		int height	= m_pShapeElement->m_rcBoundsOriginal.bottom - m_pShapeElement->m_rcBoundsOriginal.top;
+		if ( width > 0 || height > 0 )
 		{
-			str.Format(_T("<a:ext cx=\"%d\" cy=\"%d\"/>"), (int)(m_pShapeElement->m_rcBoundsOriginal.right - m_pShapeElement->m_rcBoundsOriginal.left),
-														   (int)(m_pShapeElement->m_rcBoundsOriginal.bottom - m_pShapeElement->m_rcBoundsOriginal.top));
+			str.Format(_T("<a:ext cx=\"%d\" cy=\"%d\"/>"), width, height);
 			m_oWriter.WriteString(str);
 		}
 		m_oWriter.WriteString(std::wstring(L"</a:xfrm>"));
@@ -893,17 +893,14 @@ CString NSPresentationEditor::CShapeWriter::ConvertImage()
 			}
 		m_oWriter.WriteString(std::wstring(L">"));
 
-		if (m_pImageElement->m_rcBoundsOriginal.left >= 0 && m_pImageElement->m_rcBoundsOriginal.top >=0 )
-		{
-				str.Format(_T("<a:off x=\"%d\" y=\"%d\"/>"), (int)m_pImageElement->m_rcBoundsOriginal.left,	(int)m_pImageElement->m_rcBoundsOriginal.top);				
-				m_oWriter.WriteString(str);
-		}
+		str.Format(_T("<a:off x=\"%d\" y=\"%d\"/>"), (int)m_pImageElement->m_rcBoundsOriginal.left,	(int)m_pImageElement->m_rcBoundsOriginal.top);				
+		m_oWriter.WriteString(str);
 
-		if (m_pImageElement->m_rcBoundsOriginal.right - m_pImageElement->m_rcBoundsOriginal.left > 0 && 
-			m_pImageElement->m_rcBoundsOriginal.bottom - m_pImageElement->m_rcBoundsOriginal.top >0 )
+		int width	= m_pImageElement->m_rcBoundsOriginal.right - m_pImageElement->m_rcBoundsOriginal.left;
+		int height	= m_pImageElement->m_rcBoundsOriginal.bottom - m_pImageElement->m_rcBoundsOriginal.top;
+		if ( width > 0 || height > 0 )
 		{
-			str.Format(_T("<a:ext cx=\"%d\" cy=\"%d\"/>"), (int)(m_pImageElement->m_rcBoundsOriginal.right - m_pImageElement->m_rcBoundsOriginal.left),
-														   (int)(m_pImageElement->m_rcBoundsOriginal.bottom - m_pImageElement->m_rcBoundsOriginal.top));
+			str.Format(_T("<a:ext cx=\"%d\" cy=\"%d\"/>"), width, height);
 			m_oWriter.WriteString(str);
 		}
 		m_oWriter.WriteString(std::wstring(L"</a:xfrm>"));

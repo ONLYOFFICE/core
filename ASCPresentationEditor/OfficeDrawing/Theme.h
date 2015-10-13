@@ -10,7 +10,9 @@ namespace NSPresentationEditor
 	class CTheme
 	{
 	public:
-		std::map<std::wstring, LONG>	m_mapGeomToLayout;
+		std::map<std::wstring, LONG>	m_mapGeomToLayout;// типовые шаблоны
+		std::map<DWORD, LONG>			m_mapTitleLayout; // заголовочные шаблоны
+		
 		std::vector<CColor>				m_arColorScheme;
 		std::vector<CFont>				m_arFonts;
 		std::vector<CBrush>				m_arBrushes;
@@ -68,10 +70,12 @@ namespace NSPresentationEditor
 			for (int i = 0; i < g_ThemeTextStylesCount; ++i)
 				m_pStyles[i] = oSrc.m_pStyles[i];
 
-			m_arLayouts = oSrc.m_arLayouts;
-
-			m_bIsBackground = oSrc.m_bIsBackground;
-			m_oBackground	= oSrc.m_oBackground;
+			m_arLayouts			= oSrc.m_arLayouts;
+			m_mapTitleLayout	= oSrc.m_mapTitleLayout;
+			m_mapGeomToLayout	= oSrc.m_mapGeomToLayout;
+	
+			m_bIsBackground		= oSrc.m_bIsBackground;
+			m_oBackground		= oSrc.m_oBackground;
 
 			// теперь сделаем копию всех элементов layout'ов
 			size_t nCount = m_arLayouts.size();

@@ -254,7 +254,6 @@ bool CPPTUserInfo::ReadFromStream(CRecordUserEditAtom* pUser, POLE::Stream* pStr
 	//FromDocument();
 	// FromDocument - должен вызываться после того, как загрузятся все (!!!) юзеры
 
-	// теперь смотрим на пустые картинки
 	// теперь заполним пустые картинки
 	//std::vector<CRecordBlipStoreContainer*> oArray;
 	m_oDocument.GetRecordsByType(&m_arrBlipStore, true, true);
@@ -457,21 +456,30 @@ void CPPTUserInfo::LoadSlide(DWORD dwSlideID, CSlide* pSlide)
 
 	std::wstring strLayoutType = ConvertLayoutType(oArraySlideAtoms[0]->m_oLayout.m_nGeom, oArraySlideAtoms[0]->m_oLayout.m_pPlaceHolderID);
 
-	std::map<std::wstring, LONG>::iterator pPairLayout = pTheme->m_mapGeomToLayout.find(strLayoutType);
+	std::map<DWORD, LONG>::iterator		pPairLayoutTitle	= pTheme->m_mapTitleLayout.find(oArraySlideAtoms[0]->m_nMasterIDRef);
 
-	if (pPairLayout == pTheme->m_mapGeomToLayout.end())
+	if (pPairLayoutTitle != pTheme->m_mapTitleLayout.end())
 	{
-		pSlide->m_lLayoutID = AddNewLayout(pTheme, &oArraySlideAtoms[0]->m_oLayout, pRecordSlide->m_oPersist.m_arTextAttrs);
+		//основан на заголовочном шаблоне
+		pSlide->m_lLayoutID = pPairLayoutTitle->second;
 		pLayout				= &pTheme->m_arLayouts[pSlide->m_lLayoutID];
-		
-		pLayout->m_bShowMasterShapes	= true;
 	}
 	else
 	{
-		pSlide->m_lLayoutID = pPairLayout->second;
-		pLayout				= &pTheme->m_arLayouts[pPairLayout->second];
+		//основан на типовом шаблоне
+		std::map<std::wstring, LONG>::iterator	pPairLayoutGeom	= pTheme->m_mapGeomToLayout.find(strLayoutType);
+		if (pPairLayoutGeom == pTheme->m_mapGeomToLayout.end())
+		{
+			pSlide->m_lLayoutID = AddNewLayout(pTheme, &oArraySlideAtoms[0]->m_oLayout, pRecordSlide->m_oPersist.m_arTextAttrs);
+			pLayout				= &pTheme->m_arLayouts[pSlide->m_lLayoutID];
+			pLayout->m_bShowMasterShapes	= true;
+		}
+		else
+		{
+			pSlide->m_lLayoutID = pPairLayoutGeom->second;
+			pLayout				= &pTheme->m_arLayouts[pSlide->m_lLayoutID];
+		}
 	}
-
 
 	std::vector<NSPresentationEditor::CColor>* pArrayColorScheme = &pTheme->m_arColorScheme;
 	if (!pLayout->m_bUseThemeColorScheme)
@@ -612,16 +620,13 @@ void CPPTUserInfo::LoadMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, co
 	LoadMasterFromPrevUsers(dwMasterID);
 	std::map<DWORD, CRecordSlide*>::iterator pPairMaster = m_mapMasters.find(dwMasterID);
 
-	if (m_mapMasters.end() == pPairMaster)
+	if (m_mapMasters.end() == pPairMaster)//??? не может быть 
 		return;
 
 	CRecordSlide* pMaster = pPairMaster->second;
 
-    if (pMaster == NULL)
-	{
-		//m_mapMasters.erase(pPairMaster);
-        return; //todooo 20080720.ppt
-	}
+    if (pMaster == NULL)//??? не может быть 
+        return; 
 
 	std::vector<CRecordSlideAtom*> oArraySlideAtoms;
 	pMaster->GetRecordsByType(&oArraySlideAtoms, true);
@@ -898,16 +903,13 @@ void CPPTUserInfo::LoadNoMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, 
 	CLayout* pLayout = NULL;
 	std::map<std::wstring, LONG>::iterator pPair1 = pTheme->m_mapGeomToLayout.find(strLayoutType);
 
-	if (pPair1 == pTheme->m_mapGeomToLayout.end())
+	//тут по сути ВСЕГДА разные шаблоны  заголовков !!!	//if (pPair1 == pTheme->m_mapGeomToLayout.end())
 	{
-		//не найден шаблон - новый !!
 		int lLayoutID	= AddNewLayout(pTheme, &oArraySlideAtoms[0]->m_oLayout, pCurMaster->m_oPersist.m_arTextAttrs, false);
 		pLayout			= &pTheme->m_arLayouts[lLayoutID];
 		pLayout->m_bShowMasterShapes	=	false;
-	}
-	else
-	{
-		pLayout			= &pTheme->m_arLayouts[pPair1->second];
+
+		pTheme->m_mapTitleLayout[dwMasterID] = lLayoutID;
 	}
 
 
@@ -995,7 +997,6 @@ void CPPTUserInfo::LoadSlideFromPrevUsers(DWORD dwSlideID)
 
 	size_t lUsersCount = m_pDocumentInfo->m_arUsers.size();
 		
-	//for (size_t lIndexUser = lUsersCount - 1; lIndexUser > m_lIndexThisUser ; lIndexUser--)
 	for (size_t lIndexUser = m_lIndexThisUser + 1; lIndexUser < lUsersCount; ++lIndexUser)
 	{
 		std::map<DWORD, CRecordSlide*>::iterator pPair = m_pDocumentInfo->m_arUsers[lIndexUser]->m_mapSlides.find(dwSlideID);
@@ -1032,7 +1033,6 @@ void CPPTUserInfo::LoadMasterFromPrevUsers(DWORD dwMasterID)
 	size_t lUsersCount = m_pDocumentInfo->m_arUsers.size();
 	
 	for (size_t lIndexUser = m_lIndexThisUser + 1; lIndexUser < lUsersCount; ++lIndexUser)
-	//for (size_t lIndexUser = lUsersCount - 1; lIndexUser > m_lIndexThisUser; lIndexUser--)
 	{
 		std::map<DWORD, CRecordSlide*>::iterator pPair = m_pDocumentInfo->m_arUsers[lIndexUser]->m_mapMasters.find(dwMasterID);
 

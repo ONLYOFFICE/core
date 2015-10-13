@@ -149,10 +149,6 @@ namespace NSPresentationEditor
 			strInfoPars += oPFRun.ToString(lCountParMem);
 		}
 
-		// вот здесь нужно разрулить пререход на новую строку	
-		sText.Replace((WCHAR)(11), '\n');
-		//sText.Replace((WCHAR)(13), '\n');
-
 		// теперь разберемся с хмл
 		NormalizeString(sText);
 		
@@ -182,53 +178,21 @@ namespace NSPresentationEditor
 
 	void CTextAttributesEx::RecalcParagraphsPPT(CTheme* pTheme)
 	{
-		//for (int i = 0; i < m_arParagraphs.size(); ++i)
-		//{
-		//	for (int j = 0; j < m_arParagraphs[i].m_arSpans.size(); ++j)
-		//	{
-		//		if (m_arParagraphs[i].m_arSpans[j].m_strText.GetLength() > 2)
-		//		{
-		//			//if (m_arParagraphs[i].m_arSpans[j].m_strText[0] == (TCHAR)13)
-		//			//	m_arParagraphs[i].m_arSpans[j].m_strText = m_arParagraphs[i].m_arSpans[j].m_strText.Mid(1);
-		//			if (m_arParagraphs[i].m_arSpans[j].m_strText[m_arParagraphs[i].m_arSpans[j].m_strText.GetLength() -1] == (TCHAR)13)
-		//				m_arParagraphs[i].m_arSpans[j].m_strText = m_arParagraphs[i].m_arSpans[j].m_strText.Mid(0, m_arParagraphs[i].m_arSpans[j].m_strText.GetLength() -1);
-		//		}
-		//	}
-		//}
 		for (int i = 0; i < m_arParagraphs.size(); ++i)
 		{
 			bool bIsBreak	= true;
 			int lCountCFs	= m_arParagraphs[i].m_arSpans.size();
 			for (int j = 0; j < lCountCFs; ++j)
 			{
-				if (m_arParagraphs[i].m_arSpans[j].m_strText.GetLength() > 2)
-				{
-					//if (m_arParagraphs[i].m_arSpans[j].m_strText[0] == (TCHAR)13)
-					//	m_arParagraphs[i].m_arSpans[j].m_strText = m_arParagraphs[i].m_arSpans[j].m_strText.Mid(1);
-					if (m_arParagraphs[i].m_arSpans[j].m_strText[m_arParagraphs[i].m_arSpans[j].m_strText.GetLength() -1] == (TCHAR)13)
-						m_arParagraphs[i].m_arSpans[j].m_strText = m_arParagraphs[i].m_arSpans[j].m_strText.Mid(0, m_arParagraphs[i].m_arSpans[j].m_strText.GetLength() -1);
-				}
-
 				CString s		= m_arParagraphs[i].m_arSpans[j].m_strText;
 				int s_size		= s.GetLength();
-				int lFoundEnter = m_arParagraphs[i].m_arSpans[j].m_strText.Find((TCHAR)13);
+				int lFound1 = m_arParagraphs[i].m_arSpans[j].m_strText.Find((TCHAR)13);
+				int lFound2 = m_arParagraphs[i].m_arSpans[j].m_strText.Find((TCHAR)11);
 
-				if( lFoundEnter >= 0 && s_size > 1)
-				{
-					//bool bIsBreakAttack = false;
-					//if (bIsBreak && (0 == lFoundEnter))
-					//	bIsBreakAttack = true;
+				int lFoundEnter = (lFound1>=0 && lFound2>=0) ? (std::min)(lFound1, lFound2) : (lFound1>=0 ? lFound1 : (lFound2>=0 ? lFound2 : -1));
 
-					//if (bIsBreakAttack)
-					//{
-					//	CParagraph oParBreak = m_arParagraphs[i];
-					//	oParBreak.m_arSpans.clear();
-					//	oParBreak.m_arSpans.push_back(m_arParagraphs[i].m_arSpans[j]);
-					//	oParBreak.m_arSpans[0].m_strText = _T("  ");
-					//}
-
-					//bIsBreak = true;
-
+				if( lFoundEnter >= 0 && (s_size > 1 || (s_size == 1 && m_arParagraphs[i].m_arSpans.size() > 1)))
+				{//"поделенный" параграф имеет единичный span - ваще то все равно остается возможность ошибки
 					// разбиваем параграф
 					CParagraph oNewPar = m_arParagraphs[i];
 

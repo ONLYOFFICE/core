@@ -74,33 +74,11 @@ public:
 
 			pInfo = NULL;
 		}
-
-		// дл€ поиска правильных индексов картинок - накатим на активного пользовател€ все остальные возможные каартинки
-		for (size_t i = 1; i < m_arUsers.size(); ++i)
+		// теперь нужно у всех сделать FromDocument...или только дл€ ѕќ—Ћ≈ƒЌ≈√ќ пользовател€ ??? (остальные то  не нужны)
+		//for (int i = 0; i < m_arUsers.size(); ++i)
+		if (m_arUsers.size() > 0)
 		{
-			for (long j = 0 ; j < m_arUsers[i]->m_arEmptyPictures.size(); j++)
-			{
-				if (m_arUsers[i]->m_arEmptyPictures[j] == false && j < m_arUsers[0]->m_arEmptyPictures.size() && m_arUsers[0]->m_arEmptyPictures[j] == true)
-					m_arUsers[0]->m_arEmptyPictures[j] = false;
-			}
+			m_arUsers[0]->FromDocument();
 		}
-
-
-		// теперь нужно у всех сделать FromDocument...
-		for (size_t i = 0; i < m_arUsers.size(); ++i)
-		{
-			m_arUsers[i]->FromDocument();
-		}
-	}
-
-	int GetCountPicturesUsed(size_t nUser)
-	{
-		int lRes = 0;
-		for (size_t i = 0; i < m_arUsers[nUser]->m_arEmptyPictures.size(); ++i)
-		{
-			if (!m_arUsers[nUser]->m_arEmptyPictures[i])
-				++lRes;
-		}
-		return lRes;
 	}
 };

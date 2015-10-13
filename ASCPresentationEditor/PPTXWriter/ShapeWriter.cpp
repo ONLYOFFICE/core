@@ -116,8 +116,8 @@ CString	NSPresentationEditor::CShapeWriter::ConvertBrush(CBrush & brush)
 
 CString	NSPresentationEditor::CShapeWriter::ConvertShadow()
 {
-	if (m_pShapeElement->m_oShape.m_oShadow.Visible == false) return _T("");
-
+	if (m_pShapeElement->m_oShape.m_oShadow.Visible == false)		return _T("");
+	if (abs(m_pShapeElement->m_oShape.m_oShadow.DistanceY) < 0.001)	return _T("");
 
 	double dist = sqrt(m_pShapeElement->m_oShape.m_oShadow.DistanceY * m_pShapeElement->m_oShape.m_oShadow.DistanceY  + 
 				m_pShapeElement->m_oShape.m_oShadow.DistanceX * m_pShapeElement->m_oShape.m_oShadow.DistanceX);

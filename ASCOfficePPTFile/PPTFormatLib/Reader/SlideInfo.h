@@ -50,8 +50,7 @@ class CSlideInfo
 public:
 	std::vector<CTextFullSettings>						m_arTextPlaceHolders;
 	std::map<LONG, CElementInfo>						m_mapElements;
-	//std::unordered_map<LONG, CElementInfo>			m_mapElements;
-    std::vector<bool>*									m_parEmptyPictures;
+    std::vector<int>*									m_parEmptyPictures;
 	std::map<int, std::wstring>*						m_mapFilePictures;
 	nullable_base<NSPresentationEditor::CTextStyles>	m_pStyles[9];
 
@@ -95,22 +94,19 @@ public:
 		return _T("");
 	}
 
-	DWORD GetIndexPicture(DWORD lIndex)
+	int GetIndexPicture(int lIndex)
 	{
 		if (NULL == m_parEmptyPictures)
-			return lIndex;
+			return -1;
 		
-		int lResult = 0;
-		DWORD nCount = m_parEmptyPictures->size();
+		//int lResult = 0;
+		//int nCount = m_parEmptyPictures->size();
 
-		if (lIndex > nCount)
-			return lIndex;
-
-        for (DWORD nIndex = 0; nIndex < (std::min)(lIndex, nCount); ++nIndex)
-		{
-			if ((*m_parEmptyPictures)[nIndex])
-				++lResult;
-		}
-		return lIndex - lResult;
+  //      for (int nIndex = 0; nIndex < (std::min)(lIndex, nCount); ++nIndex)
+		//{
+		//	if ((*m_parEmptyPictures)[nIndex] < 0)
+		//		++lResult;
+		//}
+		return m_parEmptyPictures->at(lIndex - 1);
 	}
 };

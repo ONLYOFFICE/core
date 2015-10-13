@@ -3,6 +3,7 @@
 
 class CRecordBlipStoreEntry : public CUnknownRecord
 {
+public:
 	NSOfficeDrawing::BlipType m_btWin32;
 	NSOfficeDrawing::BlipType m_btMacOS;
 	
@@ -17,8 +18,6 @@ class CRecordBlipStoreEntry : public CUnknownRecord
 
 	BYTE m_nUnused2;
 	BYTE m_nUnused3;
-
-public:
 	
 	CRecordBlipStoreEntry()
 	{

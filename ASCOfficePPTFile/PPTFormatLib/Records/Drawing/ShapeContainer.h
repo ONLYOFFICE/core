@@ -414,9 +414,12 @@ public:
 		{
 		case Pib:
 			{
-				DWORD dwIndex				= pInfo->GetIndexPicture(pProperty->m_lValue);
-				pElement->m_strFileName		= pElement->m_strFileName + pInfo->GetFileNamePicture(dwIndex);
-				pElement->m_bImagePresent	= true;
+				int dwOffset = pInfo->GetIndexPicture(pProperty->m_lValue);
+				if (dwOffset >=0)
+				{
+					pElement->m_strFileName		= pElement->m_strFileName + pInfo->GetFileNamePicture(dwOffset);
+					pElement->m_bImagePresent	= true;
+				}
 			}break;
 		case pictureId://OLE identifier of the picture.
 			{
@@ -613,7 +616,7 @@ public:
 			}break;
 		case NSOfficeDrawing::fillBlip:
 			{
-				DWORD dwIndex = pInfo->GetIndexPicture(pProperty->m_lValue);
+				int dwOffset = pInfo->GetIndexPicture(pProperty->m_lValue);
 
                 int nIndex	= pParentShape->m_oBrush.TexturePath.rfind(FILE_SEPARATOR_CHAR);
 				int nLen	= pParentShape->m_oBrush.TexturePath.length() - 1;
@@ -623,7 +626,7 @@ public:
 				}
 
 				//pElemProps->SetAt(CElementProperty::epBrushTxPath, pParentShape->m_oBrush.TexturePath + strVal + L".jpg");
-				pParentShape->m_oBrush.TexturePath = pParentShape->m_oBrush.TexturePath + pInfo->GetFileNamePicture(dwIndex);
+				pParentShape->m_oBrush.TexturePath = pParentShape->m_oBrush.TexturePath + pInfo->GetFileNamePicture(dwOffset);
 
 				if (pParentShape->m_oBrush.Type == c_BrushTypePattern)
 				{

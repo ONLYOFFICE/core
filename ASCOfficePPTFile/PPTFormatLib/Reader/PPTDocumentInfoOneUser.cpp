@@ -16,7 +16,7 @@ CPPTUserInfo::CPPTUserInfo() :	CDocument(),
 								m_mapMasters(),
 								m_mapNotes(),
 								m_mapSlides(),
-								m_arEmptyPictures()
+								m_arOffsetPictures()
 {
 	m_pDocumentInfo = NULL;
 	m_lIndexThisUser = -1;
@@ -69,7 +69,7 @@ void CPPTUserInfo::Clear()
 
 	m_mapAnimations.clear();
 	m_mapTransitions.clear ();
-	m_arEmptyPictures.clear();
+	m_arOffsetPictures.clear();
 }
 
 bool CPPTUserInfo::ReadFromStream(CRecordUserEditAtom* pUser, POLE::Stream* pStream, CStringW strFolderMem)
@@ -260,7 +260,7 @@ bool CPPTUserInfo::ReadFromStream(CRecordUserEditAtom* pUser, POLE::Stream* pStr
 	if (0 < m_arrBlipStore.size())
 	{
 		m_bIsSetupEmpty = TRUE;
-		m_arrBlipStore[0]->SetUpEmptyInfos(&m_arEmptyPictures);
+		m_arrBlipStore[0]->SetUpPicturesInfos(&m_arOffsetPictures);
 	}
 
 	return TRUE;
@@ -355,6 +355,7 @@ void CPPTUserInfo::LoadSlide(DWORD dwSlideID, CSlide* pSlide)
 	if (pPairSlide == m_mapSlides.end()) return;
 	
 	CRecordSlide* pRecordSlide = pPairSlide->second;
+
 	
 	if (NULL == pRecordSlide) return;
 
@@ -421,7 +422,9 @@ void CPPTUserInfo::LoadSlide(DWORD dwSlideID, CSlide* pSlide)
 	
 	CSlideInfo* pSlideWrapper = &m_arSlideWrapper.back();
 
-	pSlideWrapper->m_parEmptyPictures	= &m_arEmptyPictures;
+	int indexUser						= pRecordSlide->m_IndexUser;
+
+	pSlideWrapper->m_parEmptyPictures	= &m_pDocumentInfo->m_arUsers[indexUser]->m_arOffsetPictures;
 	pSlideWrapper->m_mapFilePictures	= &m_pDocumentInfo->m_mapStoreImageFile;
 
 	// вот, грузим placeholder
@@ -618,6 +621,7 @@ void CPPTUserInfo::LoadMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, co
 	}
 
 	LoadMasterFromPrevUsers(dwMasterID);
+
 	std::map<DWORD, CRecordSlide*>::iterator pPairMaster = m_mapMasters.find(dwMasterID);
 
 	if (m_mapMasters.end() == pPairMaster)//??? не может быть 
@@ -730,12 +734,14 @@ void CPPTUserInfo::LoadMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, co
 	// вот, грузим placeholder
 
 	std::map<DWORD, CRecordSlide*>::iterator pPairMaster1 = m_mapMasters.find(dwMasterID);
+
+	int indexUser = 0;
 	if (pPairMaster1 != m_mapMasters.end())
 	{
+		indexUser = pPairMaster1->second->m_IndexUser;
 		pMasterWrapper->m_arTextPlaceHolders = pPairMaster1->second->m_oPersist.m_arTextAttrs;
 	}
-	
-	pMasterWrapper->m_parEmptyPictures	= &m_arEmptyPictures;
+	pMasterWrapper->m_parEmptyPictures	= &m_pDocumentInfo->m_arUsers[indexUser]->m_arOffsetPictures;
 	pMasterWrapper->m_mapFilePictures	= &m_pDocumentInfo->m_mapStoreImageFile;
 
 	// читаем настройки текстовых стилей -----------------------------------------------
@@ -873,7 +879,7 @@ void CPPTUserInfo::LoadNoMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, 
 	// проверяем, если это MainMaster - то его грузим как мастер
 	if (0 == dwID)
 	{
-		// он уже загружен!!!
+		// он уже загружен как тема !!!
 		return;
 	}
 
@@ -885,7 +891,8 @@ void CPPTUserInfo::LoadNoMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, 
 
 	// вот, грузим placeholder
 	pMasterWrapper->m_arTextPlaceHolders	= pCurMaster->m_oPersist.m_arTextAttrs;	
-	pMasterWrapper->m_parEmptyPictures		= &m_arEmptyPictures;
+	
+	pMasterWrapper->m_parEmptyPictures		= &m_pDocumentInfo->m_arUsers[pCurMaster->m_IndexUser]->m_arOffsetPictures;
 	pMasterWrapper->m_mapFilePictures		= &m_pDocumentInfo->m_mapStoreImageFile;
 
 	std::map<DWORD, LONG>::iterator pPairTheme = m_mapMasterToTheme.find(dwID);
@@ -1007,6 +1014,9 @@ void CPPTUserInfo::LoadSlideFromPrevUsers(DWORD dwSlideID)
 		if (NULL != pSlideCur)
 		{
 			pSlideCur->AddRef();
+
+			pSlideCur->m_IndexUser = lIndexUser;
+
 			if (pPairSlide != m_mapSlides.end())
 			{
 				pPairSlide->second = pSlideCur;
@@ -1032,7 +1042,7 @@ void CPPTUserInfo::LoadMasterFromPrevUsers(DWORD dwMasterID)
 
 	size_t lUsersCount = m_pDocumentInfo->m_arUsers.size();
 	
-	for (size_t lIndexUser = m_lIndexThisUser + 1; lIndexUser < lUsersCount; ++lIndexUser)
+	for (int lIndexUser = m_lIndexThisUser + 1; lIndexUser < lUsersCount; ++lIndexUser)
 	{
 		std::map<DWORD, CRecordSlide*>::iterator pPair = m_pDocumentInfo->m_arUsers[lIndexUser]->m_mapMasters.find(dwMasterID);
 
@@ -1043,6 +1053,9 @@ void CPPTUserInfo::LoadMasterFromPrevUsers(DWORD dwMasterID)
 		if (NULL != pSlideCur)
 		{
 			pSlideCur->AddRef();
+
+			//для каждого пользователя СВОИ активные картинки !!!
+			pSlideCur->m_IndexUser = lIndexUser;
 
 			if (pPairMaster != m_mapMasters.end())
 			{

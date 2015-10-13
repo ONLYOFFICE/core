@@ -51,6 +51,15 @@ namespace NSEditorApi
 	{													\
 		m_n##memberName = newVal;						\
 	}
+#define LINK_PROPERTY_UINT(memberName)					\
+    inline unsigned int get_##memberName()						\
+    {													\
+        return m_n##memberName;							\
+    }													\
+    inline void put_##memberName(const unsigned int& newVal)		\
+    {													\
+        m_n##memberName = newVal;						\
+    }
 
 #define LINK_PROPERTY_DOUBLE(memberName)				\
 	inline double get_##memberName()					\

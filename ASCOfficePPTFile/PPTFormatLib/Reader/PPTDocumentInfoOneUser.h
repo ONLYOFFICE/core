@@ -12,29 +12,29 @@ using namespace NSPresentationEditor;
 class CPPTUserInfo : public CDocument
 {
 public:
-	CUserEdit							m_oUser;
-	std::map<DWORD, DWORD>				m_mapOffsetInPIDs;
-	CRecordDocument						m_oDocument;
+	CUserEdit										m_oUser;
+	std::map<DWORD, DWORD>							m_mapOffsetInPIDs;
+	CRecordDocument									m_oDocument;
 
 	//todooo при переходе на C++11 использовать НУЖНЫЙ здесь unsorted_map - m_arr .. Order уберутся
 
-	std::map<DWORD, CRecordSlide*>				m_mapSlides;
-	std::map<DWORD, CRecordSlide*>				m_mapMasters;
-	std::map<DWORD, CRecordSlide*>				m_mapNotes;
+	std::map<DWORD, CRecordSlide*>					m_mapSlides;
+	std::map<DWORD, CRecordSlide*>					m_mapMasters;
+	std::map<DWORD, CRecordSlide*>					m_mapNotes;
 
-	std::vector<DWORD>							m_arrSlidesOrder;
-	std::vector<DWORD>							m_arrMastersOrder;
-	std::vector<DWORD>							m_arrNotesOrder;
+	std::vector<DWORD>								m_arrSlidesOrder;
+	std::vector<DWORD>								m_arrMastersOrder;
+	std::vector<DWORD>								m_arrNotesOrder;
 
 	// перевод id мастера в индекс темы/шаблона
-	std::map<DWORD, LONG>						m_mapMasterToTheme;
+	std::map<DWORD, LONG>							m_mapMasterToTheme;
 
 	// original id -> natural id
-	std::map<DWORD, DWORD>						m_mapMasterOriginalIds;
+	std::map<DWORD, DWORD>							m_mapMasterOriginalIds;
 
 	// это как бы ППТ-шная обертка над слайдом
-	std::vector<CSlideInfo>						m_arSlideWrapper;
-	std::vector<CSlideInfo>						m_arMasterWrapper;
+	std::vector<CSlideInfo>							m_arSlideWrapper;
+	std::vector<CSlideInfo>							m_arMasterWrapper;
 
 	// эти параметры - одни на весь документ. 
 	// чтобы поддержать нашу схему (пптх) - копируем их в темы
@@ -44,7 +44,7 @@ public:
 
 	// чтобы загружать неизмененные элементы от других юзеров (предыдущих)
 	CPPTDocumentInfo*								m_pDocumentInfo;
-	size_t											m_lIndexThisUser;
+	int												m_lIndexThisUser;
 
 	// Animations structures
 	std::map <DWORD, Animations::CSlideTimeLine*>	m_mapAnimations;
@@ -55,10 +55,10 @@ public:
 	std::map<DWORD, CSlideShowSlideInfoAtom>		m_mapTransitions;
 
 	// номера "пустых" картинок - в эти пути не будем сохранять
-    std::vector<bool>						m_arEmptyPictures;
-    bool									m_bIsSetupEmpty;
+    std::vector<int>								m_arOffsetPictures;
+    bool											m_bIsSetupEmpty;
 
-	CString									m_strFileDirectory;
+	CString											m_strFileDirectory;
 
 	// вся инфа о ex - файлах
 	CExMedia							m_oExMedia;

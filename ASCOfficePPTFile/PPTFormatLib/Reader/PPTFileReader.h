@@ -165,9 +165,11 @@ protected:
 				break;
 			}
 
+			int pos = pStream->tell();
+
 			if ((oHeader.RecVersion != PSFLAG_CONTAINER) && ((oHeader.RecVersion & 0x0F) != 0x0F))
 			{
-				long lOffset = 0;
+				int lOffset = 0;
 
 				switch (oHeader.RecType)
 				{
@@ -400,7 +402,7 @@ protected:
                     fileImage.WriteFile((void*)pImage, oHeader.RecLen - lOffset);
                     fileImage.CloseFile();
 				}
-				m_oDocumentInfo.m_mapStoreImageFile[m_lImagesCount] = string2std_string(strFile);
+				m_oDocumentInfo.m_mapStoreImageFile[pos-8/*m_lImagesCount*/] = string2std_string(strFile);
 
 				delete[] pImage;
 			}

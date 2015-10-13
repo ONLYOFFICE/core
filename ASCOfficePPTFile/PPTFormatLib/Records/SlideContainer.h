@@ -7,14 +7,15 @@
 class CRecordSlide : public CRecordsContainer
 {
 public:
-	SSlidePersist m_oPersist;
+	SSlidePersist			m_oPersist;
 	SlideProgTagsContainer*	m_pSlideProgTagsContainer;
 
 	bool					m_bExistsTransition;
 	
 	CSlideShowSlideInfoAtom	m_oSlideShowSlideInfoAtom;
 
-	int m_Index;
+	int						m_Index;
+	int						m_IndexUser;
 	
 private:
 	DWORD m_lCountReferences;
@@ -28,6 +29,7 @@ public:
 		m_lCountReferences			=	0;
 
 		m_Index						=	-1;
+		m_IndexUser					=	0;
 
 		AddRef();
 	}

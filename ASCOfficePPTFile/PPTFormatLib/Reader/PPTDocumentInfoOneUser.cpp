@@ -706,11 +706,20 @@ void CPPTUserInfo::LoadMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, co
 	int nColorCount = oArrayColors.size();
 	for (int i = 0; i < nColorCount; ++i)
 	{
-		if (0x01 == oArrayColors[i]->m_oHeader.RecInstance && m_oSchemeColors.size() < 1)
+		if (0x01 == oArrayColors[i]->m_oHeader.RecInstance)
 		{
-			oArrayColors[i]->ToArray(&pTheme->m_arColorScheme);
-			oArrayColors[i]->ToArray(&m_oSchemeColors);
+			if ( m_oSchemeColors.empty())	
+			{
+				oArrayColors[i]->ToArray(&m_oSchemeColors);
+				CorrectColorScheme(m_oSchemeColors);//??
+			}
+			if ( pTheme->m_arColorScheme.empty())
+			{
+				oArrayColors[i]->ToArray(&pTheme->m_arColorScheme);
+				CorrectColorScheme(pTheme->m_arColorScheme);
+			}
 		}
+
 		if (0x06 == oArrayColors[i]->m_oHeader.RecInstance)
 		{
 			std::vector<CColor> extra;
@@ -720,14 +729,10 @@ void CPPTUserInfo::LoadMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, co
 			pTheme->m_arExtraColorScheme.push_back(extra);
 		}
 	}
-
-
-	CorrectColorScheme(pTheme->m_arColorScheme);
 	if (pTheme->m_arColorScheme.empty() && !pTheme->m_arExtraColorScheme.empty())
 	{
 		pTheme->m_arColorScheme = pTheme->m_arExtraColorScheme[0];
 	}
-	//CorrectColorScheme(m_oSchemeColors);//??
 
 	// ---------------------------------------------------------------------------------
 

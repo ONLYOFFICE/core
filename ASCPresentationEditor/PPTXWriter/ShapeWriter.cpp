@@ -432,8 +432,9 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 				str.Format(_T("<a:lnSpc><a:spcPts val=\"%d\"/></a:lnSpc>"), (int)(val* 0.125 * 100/*/ dKoef1*/));
 				m_oWriter.WriteString(str);
 			}
-			else
+			else if (val < 0 && val > -13200)
 			{//0 to 13200, inclusive - The value specifies spacing as a percentage of the text line height.
+
 				CString str = _T("");
 				str.Format(_T("<a:lnSpc><a:spcPct val=\"%d\"/></a:lnSpc>"), -val * 1000);
 				m_oWriter.WriteString(str);
@@ -448,7 +449,7 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 				str.Format(_T("<a:spcAft><a:spcPts val=\"%d\"/></a:spcAft>"), (int)(val * 0.125 * 100/*/ dKoef1*/));
 				m_oWriter.WriteString(str);
 			}
-			else if (val < 0)
+			else if (val < 0 && val > -13200)
 			{
 				CString str = _T("");
 				str.Format(_T("<a:spcAft><a:spcPct val=\"%d\"/></a:spcAft>"), -val * 1000);
@@ -464,7 +465,7 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 				str.Format(_T("<a:spcBef><a:spcPts val=\"%d\"/></a:spcBef>"), (int)(val * 0.125 * 100/*/ dKoef1*/));
 				m_oWriter.WriteString(str);
 			}
-			else if (val < 0)
+			else if (val < 0 && val > -13200)
 			{
 				CString str = _T("");
 				str.Format(_T("<a:spcBef><a:spcPct val=\"%d\"/></a:spcBef>"), -val * 1000);
@@ -802,7 +803,15 @@ CString NSPresentationEditor::CShapeWriter::ConvertShape()
 		m_oWriter.WriteString(std::wstring(L"</a:prstGeom>"));
 	}
 #else
-	m_oWriter.WriteString(m_pShapeElement->ConvertPPTShapeToPPTX());
+	if (prstTxWarp.empty())
+	{
+		m_oWriter.WriteString(m_pShapeElement->ConvertPPTShapeToPPTX());
+	}
+	else
+	{
+		//word art
+		m_oWriter.WriteString(std::wstring(L"<a:prstGeom prst=\"rect\"/>"));
+	}
 #endif
 
 	m_oWriter.WriteString(ConvertBrush(m_oBrush));

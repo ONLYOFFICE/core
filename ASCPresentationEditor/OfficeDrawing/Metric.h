@@ -8,8 +8,8 @@
 
 namespace NSPresentationEditor
 {
-	const double c_dMasterUnitsToInchKoef = 1.0 / 576;
-	const double c_dInchToMillimetreKoef  = 25.4;
+	const double c_dMasterUnitsToInchKoef		= 1.0 / 576;
+	const double c_dInchToMillimetreKoef		= 25.4;
 	const double c_dMasterUnitsToMillimetreKoef = c_dMasterUnitsToInchKoef * c_dInchToMillimetreKoef;
 
 	class CMetricInfo

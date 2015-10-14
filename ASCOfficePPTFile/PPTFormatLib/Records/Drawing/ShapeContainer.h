@@ -1610,8 +1610,8 @@ public:
 				else
 				{
 					// не понятно...			
-					pElem->m_rcBoundsOriginal.left		= -1;
-					pElem->m_rcBoundsOriginal.top		= -1;
+					pElem->m_rcBoundsOriginal.left		= 0;
+					pElem->m_rcBoundsOriginal.top		= 0;
 					pElem->m_rcBoundsOriginal.right		= 0;
 					pElem->m_rcBoundsOriginal.bottom	= 0;
 				}
@@ -1803,23 +1803,31 @@ public:
 
 	void RecalcGroupShapeAnchor(CDoubleRect& rcChildAnchor)
 	{
+
 		if ((NULL == m_pGroupBounds) || (NULL == m_pGroupClientAnchor))
+		{
+			rcChildAnchor.left		= 0;///= dScaleX;
+			rcChildAnchor.top		= 0;//= dScaleY;
+			rcChildAnchor.bottom	= 0;//= dScaleY;
+			rcChildAnchor.right 	= 0;//= dScaleX;
 			return;
+		}
 
 		// здесь переводим координаты, чтобы они не зависили от группы
 		long lWidthClient	= m_pGroupClientAnchor->right	- m_pGroupClientAnchor->left;
 		long lHeightClient	= m_pGroupClientAnchor->bottom	- m_pGroupClientAnchor->top;
+		
 		long lWidthGroup	= m_pGroupBounds->right			- m_pGroupBounds->left;
 		long lHeightGroup	= m_pGroupBounds->bottom		- m_pGroupBounds->top;
 
 		double dScaleX = (double)(lWidthClient) / (lWidthGroup);
 		double dScaleY = (double)(lHeightClient) / (lHeightGroup);
+		
+		rcChildAnchor.left		= m_pGroupClientAnchor->left	+ (long)(dScaleX * (rcChildAnchor.left	- m_pGroupBounds->left));
+		rcChildAnchor.right		= m_pGroupClientAnchor->left	+ (long)(dScaleX * (rcChildAnchor.right - m_pGroupBounds->left));
 
-		rcChildAnchor.left	= m_pGroupClientAnchor->left	+ (long)(dScaleX * (rcChildAnchor.left	- m_pGroupBounds->left));
-		rcChildAnchor.right = m_pGroupClientAnchor->left	+ (long)(dScaleX * (rcChildAnchor.right - m_pGroupBounds->left));
-
-		rcChildAnchor.top	= m_pGroupClientAnchor->top		+ (long)(dScaleY * (rcChildAnchor.top	- m_pGroupBounds->top));
-		rcChildAnchor.bottom = m_pGroupClientAnchor->top	+ (long)(dScaleY * (rcChildAnchor.bottom - m_pGroupBounds->top));
+		rcChildAnchor.top		= m_pGroupClientAnchor->top		+ (long)(dScaleY * (rcChildAnchor.top	- m_pGroupBounds->top));
+		rcChildAnchor.bottom	= m_pGroupClientAnchor->top		+ (long)(dScaleY * (rcChildAnchor.bottom - m_pGroupBounds->top));
 	}
 
 	NSPresentationEditor::ElementType GetTypeElem(SPT eType)

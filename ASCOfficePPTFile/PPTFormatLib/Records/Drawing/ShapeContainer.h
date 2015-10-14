@@ -616,18 +616,25 @@ public:
 			}break;
 		case NSOfficeDrawing::fillBlip:
 			{
-				int dwOffset = pInfo->GetIndexPicture(pProperty->m_lValue);
-
-                int nIndex	= pParentShape->m_oBrush.TexturePath.rfind(FILE_SEPARATOR_CHAR);
+				int dwOffset = 0 ;
+					
+				if (pProperty->m_bComplex)
+				{
+					//inline 
+					dwOffset = -1;
+				}
+				else
+				{
+					dwOffset = pInfo->GetIndexPicture(pProperty->m_lValue);
+				}
 				int nLen	= pParentShape->m_oBrush.TexturePath.length() - 1;
+				int nIndex	= pParentShape->m_oBrush.TexturePath.rfind(FILE_SEPARATOR_CHAR);
 				if (nLen != nIndex)
 				{
 					pParentShape->m_oBrush.TexturePath.erase(nIndex + 1, nLen - nIndex);
-				}
-
-				//pElemProps->SetAt(CElementProperty::epBrushTxPath, pParentShape->m_oBrush.TexturePath + strVal + L".jpg");
+				}				
+				
 				pParentShape->m_oBrush.TexturePath = pParentShape->m_oBrush.TexturePath + pInfo->GetFileNamePicture(dwOffset);
-
 				if (pParentShape->m_oBrush.Type == c_BrushTypePattern)
 				{
 					int rgbColor1 = 0;

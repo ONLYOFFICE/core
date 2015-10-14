@@ -1,4 +1,7 @@
 #pragma once
+
+#include "../../../ASCOfficePPTFile/PPTFormatLib/Records/Drawing/ArtBlip.h"
+
 #include "../../../../../Common/DocxFormat/Source/SystemUtility/File.h"
 #include "Enums.h"
 
@@ -47,7 +50,7 @@ public:
 
 	void ComplexFromStream(POLE::Stream* pStream)
 	{
-		if (m_bComplex && 0 != m_lValue)
+		if (m_bComplex && m_lValue > 0)
 		{
 			if (NSOfficeDrawing::dgmConstrainBounds		== m_ePID ||
 				NSOfficeDrawing::fillShadeColors		== m_ePID ||
@@ -86,20 +89,49 @@ public:
 
 				m_lValue = dwSize;
 			}
-			
-			if (0 == m_lValue)
-			{
-				return;
-			}
 
-			RELEASEARRAYOBJECTS(m_pOptions);
-			m_pOptions = new BYTE[m_lValue];
-
-			ULONG lReadBytes = 0;
-			lReadBytes = pStream->read(m_pOptions, m_lValue);
-			if (lReadBytes != m_lValue)
+			switch( m_ePID )
 			{
-				return;
+			case NSOfficeDrawing::fillBlip:
+				{
+					SRecordHeader oHeader;
+					if (oHeader.ReadFromStream(pStream) == false )
+					{
+						return;
+					}
+					switch (oHeader.RecType)
+					{
+						case RECORD_TYPE_ESCHER_BLIP_EMF:
+						case RECORD_TYPE_ESCHER_BLIP_WMF:
+						case RECORD_TYPE_ESCHER_BLIP_PICT:
+						case RECORD_TYPE_ESCHER_BLIP_JPEG:
+						case RECORD_TYPE_ESCHER_BLIP_PNG:
+						case RECORD_TYPE_ESCHER_BLIP_DIB:
+						case RECORD_TYPE_ESCHER_BLIP_TIFF:
+						{
+							CRecordOfficeArtBlip art_blip;
+							art_blip.ReadFromStream(oHeader, pStream);
+						}
+					}
+
+				}break;
+			default:
+				{
+					if (0 == m_lValue)
+					{
+						return;
+					}				
+					
+					RELEASEARRAYOBJECTS(m_pOptions);
+					m_pOptions = new BYTE[m_lValue];
+
+					ULONG lReadBytes = 0;
+					lReadBytes = pStream->read(m_pOptions, m_lValue);
+					if (lReadBytes != m_lValue)
+					{
+						return;
+					}
+				}
 			}
 		}
 	}

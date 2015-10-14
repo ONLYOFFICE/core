@@ -842,7 +842,11 @@
 				Name="Drawing"
 				>
 				<File
-					RelativePath="..\Records\Drawing\BitmapBlip.h"
+					RelativePath="..\Records\Drawing\ArtBlip.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Records\Drawing\ArtBlip.h"
 					>
 				</File>
 				<File
@@ -952,6 +956,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\ASCPresentationEditor\OfficeDrawing\Elements.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\ASCPresentationEditor\OfficeDrawing\Shapes\BaseShape\PPTShape\ElementSettings.h"
 				>
 			</File>
 			<File

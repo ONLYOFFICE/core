@@ -10,7 +10,6 @@
 
 // drawing records
 #include "Drawing/ChildAnchor.h"
-#include "Drawing/BitmapBlip.h"
 #include "Drawing/BlipStoreContainer.h"
 #include "Drawing/BlipStoreEntry.h"
 #include "Drawing/ClientAnchor.h"

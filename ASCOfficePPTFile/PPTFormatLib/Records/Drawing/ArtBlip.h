@@ -1,5 +1,33 @@
 #pragma once
+
 #include "../../Reader/Records.h"
+
+class CPPTDocumentInfo;
+
+
+class CRecordOfficeArtBlip  : public CUnknownRecord
+{
+public:
+	CPPTDocumentInfo *	m_oDocumentInfo;
+	std::wstring		m_sFileName;
+
+	CString				m_strMemoryForder;
+
+	CRecordOfficeArtBlip()
+	{
+		m_oDocumentInfo = NULL;
+	}
+
+	~CRecordOfficeArtBlip()
+	{
+	}
+
+	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream);
+	virtual CString ToString()
+	{
+		return CUnknownRecord::ToString();
+	}
+};
 
 class CRecordBitmapBlip : public CUnknownRecord
 {

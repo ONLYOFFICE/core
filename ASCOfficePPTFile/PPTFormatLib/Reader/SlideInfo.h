@@ -98,15 +98,20 @@ public:
 	{
 		if (NULL == m_parEmptyPictures)
 			return -1;
-		
-		//int lResult = 0;
-		//int nCount = m_parEmptyPictures->size();
+		if ( m_parEmptyPictures->size() < 1 )
+			return -1;
 
-  //      for (int nIndex = 0; nIndex < (std::min)(lIndex, nCount); ++nIndex)
-		//{
-		//	if ((*m_parEmptyPictures)[nIndex] < 0)
-		//		++lResult;
-		//}
-		return m_parEmptyPictures->at(lIndex - 1);
+		lIndex -= 1;
+
+		if (lIndex < 0) lIndex = 0;
+		
+		if(lIndex >= 0 && lIndex < m_parEmptyPictures->size())
+		{
+			return m_parEmptyPictures->at(lIndex);
+		}
+		else
+		{
+			return m_parEmptyPictures->at(0);//???
+		}
 	}
 };

@@ -61,9 +61,9 @@ public:
 	CString											m_strFileDirectory;
 
 	// вся инфа о ex - файлах
-	CExMedia							m_oExMedia;
+	CExMedia										m_oExMedia;
 
-	std::vector<CColor>					m_oSchemeColors;
+	std::vector<CColor>								m_oSchemeColors;
 
 public:
 

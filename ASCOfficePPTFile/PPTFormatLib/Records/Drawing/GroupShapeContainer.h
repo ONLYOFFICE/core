@@ -42,7 +42,7 @@ public:
 			std::vector<CRecordGroupShape*> oArrayGroupShapes;
 			oArrayShapes[nIndex]->GetRecordsByType(&oArrayGroupShapes, false, true);
 
-			if (0 != oArrayGroupShapes.size())
+			if ( oArrayGroupShapes.size() > 0 )
 			{
 				m_rcGroupBounds.left	= oArrayGroupShapes[0]->m_oBounds.left;
 				m_rcGroupBounds.top		= oArrayGroupShapes[0]->m_oBounds.top;
@@ -52,7 +52,7 @@ public:
 				std::vector<CRecordClientAnchor*> oArrayClients;
 				oArrayShapes[nIndex]->GetRecordsByType(&oArrayClients, false, true);
 
-				if (0 != oArrayClients.size())
+				if ( oArrayClients.size() > 0)
 				{
 					m_rcGroupClientAnchor.left		= (LONG)oArrayClients[0]->m_oBounds.Left;
 					m_rcGroupClientAnchor.top		= (LONG)oArrayClients[0]->m_oBounds.Top;
@@ -64,7 +64,7 @@ public:
 					std::vector<CRecordChildAnchor*> oArrayChilds;
 					oArrayShapes[nIndex]->GetRecordsByType(&oArrayChilds, false, true);
 					
-					if (0 != oArrayChilds.size())
+					if ( oArrayChilds.size() > 0)
 					{
 						m_rcGroupClientAnchor.left		= (LONG)oArrayChilds[0]->m_oBounds.left;
 						m_rcGroupClientAnchor.top		= (LONG)oArrayChilds[0]->m_oBounds.top;
@@ -78,9 +78,9 @@ public:
 			}
 		}
 
-		LONG lW1 = m_rcGroupBounds.right - m_rcGroupBounds.left;
-		LONG lH1 = m_rcGroupBounds.bottom - m_rcGroupBounds.top;
-		LONG lW2 = m_rcGroupClientAnchor.right - m_rcGroupClientAnchor.left;
+		LONG lW1 = m_rcGroupBounds.right		- m_rcGroupBounds.left;
+		LONG lH1 = m_rcGroupBounds.bottom		- m_rcGroupBounds.top;
+		LONG lW2 = m_rcGroupClientAnchor.right	- m_rcGroupClientAnchor.left;
 		LONG lH2 = m_rcGroupClientAnchor.bottom - m_rcGroupClientAnchor.top;
 
         bool bIsRecalc = ((lW1 > 0) && (lH1 > 0) && (lW2 > 0) && (lH2 > 0));
@@ -90,8 +90,8 @@ public:
 			{
 				if (nIndex != nIndexBreak)
 				{
-					oArrayShapes[nIndex]->m_pGroupBounds = &m_rcGroupBounds;
-					oArrayShapes[nIndex]->m_pGroupClientAnchor = &m_rcGroupClientAnchor;
+					oArrayShapes[nIndex]->m_pGroupBounds		= &m_rcGroupBounds;
+					oArrayShapes[nIndex]->m_pGroupClientAnchor	= &m_rcGroupClientAnchor;
 				}
 			}
 		}

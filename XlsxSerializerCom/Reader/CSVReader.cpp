@@ -117,10 +117,23 @@ namespace CSVReader
 			BYTE* pFileData = new BYTE[oFile.GetFileSize()];
 			oFile.ReadFile(pFileData, oFile.GetFileSize(), nFileSize);
 			oFile.CloseFile();
+			//skip bom
+			DWORD nInputBufferSize = nFileSize;
+			BYTE* pInputBuffer = pFileData;
+			if (nInputBufferSize >= 3 && 0xef == pInputBuffer[0] && 0xbb == pInputBuffer[1] && 0xbf == pInputBuffer[2])
+			{
+				nInputBufferSize -= 3;
+				pInputBuffer += 3;
+			}
+			else if (nInputBufferSize >= 2 && ((0xfe == pInputBuffer[0] && 0xff == pInputBuffer[1]) || (0xff == pInputBuffer[0] && 0xfe == pInputBuffer[1])))
+			{
+				nInputBufferSize -= 2;
+				pInputBuffer += 2;
+			}
 
             const NSUnicodeConverter::EncodindId& oEncodindId = NSUnicodeConverter::Encodings[nCodePage];
             NSUnicodeConverter::CUnicodeConverter oUnicodeConverter;
-            std::wstring sFileDataW = oUnicodeConverter.toUnicode((const char*)pFileData, nFileSize, oEncodindId.Name);
+            std::wstring sFileDataW = oUnicodeConverter.toUnicode((const char*)pInputBuffer, nInputBufferSize, oEncodindId.Name);
             INT nSize = sFileDataW.length();
             const WCHAR *pTemp =sFileDataW.c_str();
 

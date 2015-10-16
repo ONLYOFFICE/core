@@ -16,23 +16,30 @@ int main(int argc, char *argv[])
     CApplicationFonts oFonts;
     oFonts.Initialize();
 
-#if 0
+#if 1
 
     NSHtmlRenderer::CASCSVGWriter oWriterSVG;
     oWriterSVG.SetFontManager(oFonts.GenerateFontManager());
 
     MetaFile::CMetaFile oMetafile(&oFonts);
 
-    oMetafile.LoadFromFile(L"D:\\2\\ppt\\media\\image4.wmf");
+    //oMetafile.LoadFromFile(L"D:\\2\\ppt\\media\\image4.wmf");
+    oMetafile.LoadFromFile(L"/home/oleg/activex/1/image2.wmf");
 
     double x = 0, y = 0, w = 0, h = 0;
     oMetafile.GetBounds(&x, &y, &w, &h);
 
-    oWriterSVG.put_Width(100000);
-    oWriterSVG.put_Height(100000);
-    oMetafile.DrawOnRenderer(&oWriterSVG, 0, 0, 100000, 100000);
+    double _max = (w >= h) ? w : h;
+    double dKoef = 100000.0 / _max;
 
-    oWriterSVG.SaveFile(L"D:\\oleg.svg");
+    int WW = (int)(dKoef * w + 0.5);
+    int HH = (int)(dKoef * h + 0.5);
+
+    oWriterSVG.put_Width(WW);
+    oWriterSVG.put_Height(HH);
+    oMetafile.DrawOnRenderer(&oWriterSVG, 0, 0, WW, HH);
+
+    oWriterSVG.SaveFile(L"/home/oleg/activex/1/oleg.svg");
 
     return 0;
 
@@ -54,6 +61,13 @@ int main(int argc, char *argv[])
     //std::wstring sFile = L"/home/oleg/activex/bankomats.xps";
     std::wstring sDst = L"/home/oleg/activex/1";
 #endif    
+
+#if 1
+    CPdfRenderer oPdfW(&oFonts);
+    oPdfW.SetTempFolder(sDst);
+    oPdfW.OnlineWordToPdf(L"D:\\test\\123.txt", L"D:\\test\\123.pdf");
+    return 0;
+#endif
 
 #if 0
     PdfReader::CPdfReader oReader(&oFonts);

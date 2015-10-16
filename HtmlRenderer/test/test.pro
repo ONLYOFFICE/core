@@ -52,7 +52,7 @@ linux-g++:!contains(QMAKE_HOST.arch, x86_64):{
 }
 
 LIBS += -L$$DESTINATION_SDK_PATH -lgraphics
-LIBS += -L$$DESTINATION_SDK_PATH -lASCOfficeUtilsLib
+LIBS += -L$$DESTINATION_SDK_PATH -lOfficeUtils
 LIBS += -L$$DESTINATION_SDK_PATH -lHtmlRenderer
 LIBS += -L$$DESTINATION_SDK_PATH -lPdfReader
 LIBS += -L$$DESTINATION_SDK_PATH -lDjVuFile
@@ -64,6 +64,10 @@ LIBS += -lgdi32 \
         -ladvapi32 \
         -luser32 \
         -lshell32
+}
+
+linux-g++ | linux-g++-64 | linux-g++-32 {
+    LIBS += -lz
 }
 
 SOURCES += main.cpp \

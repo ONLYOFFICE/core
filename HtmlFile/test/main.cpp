@@ -98,7 +98,8 @@ int main(int argc, char *argv[])
 #ifdef WIN32
     std::wstring sPath = NSFile::GetProcessDirectory() + L"/../../Internal/windows/Release/";
 
-    std::wstring sSrc = L"D:\\37898EB";
+    //std::wstring sSrc = L"D:\\activex\\1\\1";
+    std::wstring sSrc = L"\\\\192.168.3.208\\allusers\\Files\\HTML\\AllHTML\\embed.html";
     std::wstring sDstFolder = L"D:/test/Document";
 #else
     std::wstring sPath = NSFile::GetProcessDirectory() + L"/../../Internal/linux/Release/";
@@ -109,8 +110,18 @@ int main(int argc, char *argv[])
 
 #if 1
     CHtmlFile oFile;
+    int nResult = oFile.ConvertMht(L"\\\\192.168.3.208\\allusers\\Files\\MHT\\AllMHT\\ORACLE-BASE - Oracle Database 10g Release 2 (10_2_0_1) Installation On Red Hat Enterprise Linux 5 (RHEL5).mht", sDstFolder, sPath);
+    //int nResult = oFile.ConvertMht(L"\\\\KIRILLOV8\\_Office\\MHT\\Problem_20091016_1927.mht", sDstFolder, sPath);
+    return 0;
+#endif
+
+#if 0
+    CHtmlFile oFile;
     std::wstring sMetaInfo;
-    int nResult = oFile.ConvertEpub(sSrc, sMetaInfo, sDstFolder, sPath);
+    //int nResult = oFile.ConvertEpub(sSrc, sMetaInfo, sDstFolder, sPath);
+    std::vector<std::wstring> arFiles;
+    arFiles.push_back(sSrc);
+    int nResult = oFile.Convert(arFiles, sDstFolder, sPath);
     nResult;
 #else
 

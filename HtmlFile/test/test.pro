@@ -12,6 +12,7 @@ CONFIG   += console
 CONFIG   -= app_bundle
 
 DEFINES += HTMLFILE_USE_DYNAMIC_LIBRARY
+DEFINES += UNICODECONVERTER_USE_DYNAMIC_LIBRARY
 
 CONFIG(debug, debug|release) {
     DESTDIR = $$PWD/Debug
@@ -49,6 +50,7 @@ linux-g++:!contains(QMAKE_HOST.arch, x86_64):{
 }
 
 LIBS += -L$$DESTINATION_SDK_PATH -lHtmlFile
+LIBS += -L$$DESTINATION_SDK_PATH -lUnicodeConverter
 LIBS += -L$$DESTINATION_SDK_PATH -lgraphics
 
 win32 {

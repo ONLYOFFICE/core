@@ -5,6 +5,7 @@
                           // на самом деле charset не учитывается
 
 #include "FontManager.h"
+#include <vector>
 
 class CFontSelectFormat
 {
@@ -142,10 +143,33 @@ private:
 	std::wstring		m_sDirectory;
 	LONG			    m_lDefIndex;	// Номер стандартного шрифта (-1, если не задан)
 
+    // вспомогогательные данные для подбора "похожих шрифтов"
+    std::map<std::wstring, int> m_mapNamesToIndex;
+    std::vector<std::vector<std::wstring>> m_listLikes;
+
 public:
 	CFontList()
 	{
 		m_lDefIndex = -1;
+
+        // 0
+        m_mapNamesToIndex.insert(std::pair<std::wstring, int>(L"Cambria Math", 0));
+        m_mapNamesToIndex.insert(std::pair<std::wstring, int>(L"Asana Math", 0));
+        m_mapNamesToIndex.insert(std::pair<std::wstring, int>(L"XITS Math", 0));
+        m_mapNamesToIndex.insert(std::pair<std::wstring, int>(L"Latin Modern", 0));
+
+        std::vector<std::wstring> ar0;
+        ar0.push_back(L"Cambria Math");
+        ar0.push_back(L"Asana Math");
+        ar0.push_back(L"XITS Math");
+        ar0.push_back(L"Latin Modern");
+        m_listLikes.push_back(ar0);
+
+        // 1
+        m_mapNamesToIndex.insert(std::pair<std::wstring, int>(L"Symbol", 1));
+        std::vector<std::wstring> ar1;
+        ar1.push_back(L"OpenSymbol");
+        m_listLikes.push_back(ar1);
 	}
 	~CFontList()
 	{
@@ -163,7 +187,7 @@ private:
 	int GetCharsetPenalty(ULONG ulCandRanges[6], unsigned char unReqCharset);
 	int GetSigPenalty(ULONG ulCandRanges[6], ULONG ulReqRanges[6], double dRangeWeight = 1, double dRangeWeightSuferflouous = 0);
     int GetFixedPitchPenalty(INT bCandFixed, INT bReqFixed);
-	int GetFaceNamePenalty(std::wstring sCandName, std::wstring sReqName);
+    int GetFaceNamePenalty(std::wstring sCandName, std::wstring sReqName, std::vector<std::wstring>* pArrayLikes = NULL);
 	int GetFamilyUnlikelyPenalty(SHORT nCandFamilyClass, SHORT nReqFamilyClass);
 	int GetFamilyUnlikelyPenalty(int nCandFamilyClass, std::wstring sReqFamilyClass);
 	int GetWidthPenalty(USHORT usCandWidth, USHORT usReqWidth);

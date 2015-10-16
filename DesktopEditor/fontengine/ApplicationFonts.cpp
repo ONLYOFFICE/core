@@ -882,7 +882,7 @@ int CFontList::GetFixedPitchPenalty(INT bCandFixed, INT bReqFixed)
 
 	return nPenalty;
 }
-int CFontList::GetFaceNamePenalty(std::wstring sCandName, std::wstring sReqName)
+int CFontList::GetFaceNamePenalty(std::wstring sCandName, std::wstring sReqName, std::vector<std::wstring>* pArrayLikes)
 {
 	// На MSDN написано, что если имена не совпадают, то вес 10000.
 	// Мы будем сравнивать сколько совпало символов у запрашиваемого
@@ -908,6 +908,15 @@ int CFontList::GetFaceNamePenalty(std::wstring sCandName, std::wstring sReqName)
 		return 0;
 	else if ( std::wstring::npos != sReqName.find( sCandName ) || std::wstring::npos != sCandName.find( sReqName ) )
 		return 1000;
+
+	if (NULL != pArrayLikes)
+	{
+		for (std::vector<std::wstring>::iterator iter = pArrayLikes->begin(); iter != pArrayLikes->end(); iter++)
+		{
+			if (sCandName == *iter)
+				return 2000;
+		}
+	}
 
 	return 10000;
 }
@@ -1132,6 +1141,16 @@ CFontInfo* CFontList::GetByParams(CFontSelectFormat& oSelect, bool bIsDictionary
 
 	int nDefPenalty = 2147483647;
 
+	std::vector<std::wstring>* pArrayLikes = NULL;
+	if (oSelect.wsName != NULL)
+	{
+		std::map<std::wstring, int>::iterator iterLikeIndex = m_mapNamesToIndex.find(*oSelect.wsName);
+		if (iterLikeIndex != m_mapNamesToIndex.end())
+		{
+			pArrayLikes = &m_listLikes[iterLikeIndex->second];
+		}
+	}
+
 	for ( int nIndex = 0; nIndex < nFontsCount; ++nIndex )
 	{
 		int nCurPenalty = 0;
@@ -1169,12 +1188,13 @@ CFontInfo* CFontList::GetByParams(CFontSelectFormat& oSelect, bool bIsDictionary
 
 		if ( oSelect.wsName != NULL && oSelect.wsAltName != NULL )
 		{
-			nCurPenalty += min( GetFaceNamePenalty( pInfo->m_wsFontName, *oSelect.wsName ), GetFaceNamePenalty( pInfo->m_wsFontName, *oSelect.wsAltName ) );
+			nCurPenalty += min( GetFaceNamePenalty( pInfo->m_wsFontName, *oSelect.wsName, pArrayLikes ),
+								GetFaceNamePenalty( pInfo->m_wsFontName, *oSelect.wsAltName, pArrayLikes ) );
 		}
 		else if ( oSelect.wsName != NULL )
-			nCurPenalty += GetFaceNamePenalty( pInfo->m_wsFontName, *oSelect.wsName );
+			nCurPenalty += GetFaceNamePenalty( pInfo->m_wsFontName, *oSelect.wsName, pArrayLikes );
 		else if ( oSelect.wsAltName != NULL )
-			nCurPenalty += GetFaceNamePenalty( pInfo->m_wsFontName, *oSelect.wsAltName );
+			nCurPenalty += GetFaceNamePenalty( pInfo->m_wsFontName, *oSelect.wsAltName, pArrayLikes );
 
 		if ( NULL != oSelect.usWidth )
 			nCurPenalty += GetWidthPenalty( pInfo->m_usWidth, *oSelect.usWidth );

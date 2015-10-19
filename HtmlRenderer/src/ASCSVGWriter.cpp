@@ -401,12 +401,14 @@ namespace NSHtmlRenderer
         if (m_bIsRaster)
             return S_OK;
 
+        m_bIsTextPath = true;
         PathCommandEnd();
         BeginCommand(c_nPathType);
         PathCommandTextCHAR(c, x, y, w, h);
         DrawPath(c_nWindingFillMode);
         EndCommand(c_nPathType);
         PathCommandEnd();
+        m_bIsTextPath = false;
         return S_OK;
 	}
 	HRESULT CASCSVGWriter::CommandDrawText(const std::wstring& bsText,const double& x,const double& y,const double& w, const double& h)
@@ -417,12 +419,14 @@ namespace NSHtmlRenderer
 		if (m_bIsRaster)
 			return S_OK;
 
+        m_bIsTextPath = true;
         PathCommandEnd();
         BeginCommand(c_nPathType);
         PathCommandText(bsText, x, y, w, h);
         DrawPath(c_nWindingFillMode);
         EndCommand(c_nPathType);
         PathCommandEnd();
+        m_bIsTextPath = false;
         return S_OK;
 	}
 	HRESULT CASCSVGWriter::CommandDrawTextExCHAR(const LONG& c, const LONG& gid, const double& x, const double& y, const double& w, const double& h)
@@ -430,12 +434,14 @@ namespace NSHtmlRenderer
         if (m_bIsRaster)
             return S_OK;
 
+        m_bIsTextPath = true;
         PathCommandEnd();
         BeginCommand(c_nPathType);
         PathCommandTextExCHAR(c, gid, x, y, w, h);
         DrawPath(c_nWindingFillMode);
         EndCommand(c_nPathType);
         PathCommandEnd();
+        m_bIsTextPath = false;
         return S_OK;
 	}
 	HRESULT CASCSVGWriter::CommandDrawTextEx(const std::wstring& bsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& x, const double& y, const double& w, const double& h)
@@ -443,12 +449,14 @@ namespace NSHtmlRenderer
 		if (m_bIsRaster)
 			return S_OK;
 
+        m_bIsTextPath = true;
 		PathCommandEnd();
 		BeginCommand(c_nPathType);
 		PathCommandTextEx(bsUnicodeText, pGids,nGidsCount , x, y, w, h);
 		DrawPath(c_nWindingFillMode);
 		EndCommand(c_nPathType);
 		PathCommandEnd();
+        m_bIsTextPath = false;
 		return S_OK;	
 	}
 	//-------- Маркеры для команд ---------------------------------------------------------------
@@ -918,13 +926,29 @@ namespace NSHtmlRenderer
 			m_pFontManager->SetCharSpacing(dPix);
 		}
 
-        if (m_pFont->Path.empty())
+		double dSizeFont =  m_pFont->Size;
+		m_dTextScale = 1.0;
+		bool bIsTransform = false;
+		if (dSizeFont > 1000)
 		{
-			m_pFontManager->LoadFontByName(m_pFont->Name, (float)m_pFont->Size, m_pFont->GetStyle(), m_dDpiX, m_dDpiY);
+			bIsTransform = true;
+			m_dTextScale = dSizeFont / 1000;
+			dSizeFont = 1000;
+		}
+
+		if (m_pFont->Path.empty())
+		{
+			m_pFontManager->LoadFontByName(m_pFont->Name, (float)dSizeFont, m_pFont->GetStyle(), m_dDpiX, m_dDpiY);
 		}
 		else
 		{
-			m_pFontManager->LoadFontFromFile(m_pFont->Path, (float)m_pFont->Size, m_dDpiX, m_dDpiY, 0);
+			m_pFontManager->LoadFontFromFile(m_pFont->Path, (float)dSizeFont, m_dDpiX, m_dDpiY, 0);
+		}
+
+		if (bIsTransform && NULL != m_pFontManager->m_pFont)
+		{
+			m_pFontManager->m_pFont->SetFontMatrix(m_dTextScale, 0, 0, m_dTextScale, 0, 0);
+			m_pFontManager->m_pFont->CheckTextMatrix();
 		}
 
 		*m_pInstalledFont = *m_pFont;

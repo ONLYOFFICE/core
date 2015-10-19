@@ -785,6 +785,10 @@ namespace NSMht
             m_sFolder = L"D:\\test\\Document\\MHT";
 #endif
 
+            // под линуксом предыдущая функция создает файл!!!
+            if (NSFile::CFileBinary::Exists(m_sFolder))
+                NSFile::CFileBinary::Remove(m_sFolder);
+
             NSDirectory::CreateDirectory(m_sFolder);
 
             m_sEncoding = "latin1";

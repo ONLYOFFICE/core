@@ -110,7 +110,7 @@ int main(int argc, char *argv[])
 
 #if 1
     CHtmlFile oFile;
-    int nResult = oFile.ConvertMht(L"\\\\192.168.3.208\\allusers\\Files\\MHT\\AllMHT\\ORACLE-BASE - Oracle Database 10g Release 2 (10_2_0_1) Installation On Red Hat Enterprise Linux 5 (RHEL5).mht", sDstFolder, sPath);
+    int nResult = oFile.ConvertMht(L"/home/oleg/activex/1/Яндекс.mht", sDstFolder, sPath);
     //int nResult = oFile.ConvertMht(L"\\\\KIRILLOV8\\_Office\\MHT\\Problem_20091016_1927.mht", sDstFolder, sPath);
     return 0;
 #endif

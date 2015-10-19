@@ -187,6 +187,9 @@ namespace NSHtmlRenderer
 		NSStructures::CFont*			m_pInstalledFont;
 
 		bool m_bIsRaster;
+
+        double                          m_dTextScale;
+        bool                            m_bIsTextPath;
 		//todo
 		//IASCWinFonts*					m_pFonts;
 

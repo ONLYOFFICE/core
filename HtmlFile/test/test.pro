@@ -53,6 +53,14 @@ LIBS += -L$$DESTINATION_SDK_PATH -lHtmlFile
 LIBS += -L$$DESTINATION_SDK_PATH -lUnicodeConverter
 LIBS += -L$$DESTINATION_SDK_PATH -lgraphics
 
+linux-g++ | linux-g++-64 | linux-g++-32 {
+    QMAKE_LFLAGS += -Wl,--rpath=./
+
+    LIBS        += $$PWD/../../UnicodeConverter/icubuilds/linux64/usr/local/lib/libicuuc.so.55
+    LIBS        += $$PWD/../../UnicodeConverter/icubuilds/linux64/usr/local/lib/libicudata.so.55
+    message(linux)
+}
+
 win32 {
 LIBS += -ladvapi32 \
         -luser32 \

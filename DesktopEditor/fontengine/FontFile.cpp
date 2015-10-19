@@ -986,7 +986,9 @@ INT CFontFile::GetString(CGlyphString& oString)
                 oString.SetBBox(nIndex, 0, 0, 0, 0);
                 oString.SetState (nIndex, glyphstateMiss);
 
-                fPenX += (float)(oSizes.fAdvanceX + m_dCharSpacing);
+				double dAdvanceW = m_arrdFontMatrix[0] * oSizes.fAdvanceX;
+				fPenX += (float)(dAdvanceW + m_dCharSpacing);
+
                 unPrevGID = 0;
 
                 continue;
@@ -1025,7 +1027,9 @@ INT CFontFile::GetString(CGlyphString& oString)
 
 			oString.GetAt(nIndex)->oMetrics = oSizes.oMetrics;
             oString.SetBBox(nIndex, oSizes.oBBox.fMinX, oSizes.oBBox.fMaxY, oSizes.oBBox.fMaxX, oSizes.oBBox.fMinY);
-            fPenX += (float)(oSizes.fAdvanceX + m_dCharSpacing);
+
+            double dAdvanceW = m_arrdFontMatrix[0] * oSizes.fAdvanceX;
+            fPenX += (float)(dAdvanceW + m_dCharSpacing);
 
             if (m_bNeedDoBold)
             {
@@ -1272,7 +1276,9 @@ INT CFontFile::GetString2(CGlyphString& oString)
                 oString.SetBBox(nIndex, 0, 0, 0, 0);
                 oString.SetState (nIndex, glyphstateMiss);
 
-                fPenX += (float)(oSizes.fAdvanceX + m_dCharSpacing);
+				double dAdvanceW = m_arrdFontMatrix[0] * oSizes.fAdvanceX;
+				fPenX += (float)(dAdvanceW + m_dCharSpacing);
+                
                 unPrevGID = 0;
 
                 continue;
@@ -1311,8 +1317,10 @@ INT CFontFile::GetString2(CGlyphString& oString)
 
 			oString.GetAt(nIndex)->oMetrics = oSizes.oMetrics;
             oString.SetBBox(nIndex, oSizes.oBBox.fMinX, oSizes.oBBox.fMaxY, oSizes.oBBox.fMaxX, oSizes.oBBox.fMinY);
-            fPenX += (float)(oSizes.fAdvanceX + m_dCharSpacing);
-
+			
+			double dAdvanceW = m_arrdFontMatrix[0] * oSizes.fAdvanceX;
+            fPenX += (float)(dAdvanceW + m_dCharSpacing);
+            
             if (m_bNeedDoBold)
             {
                 // Когда текст делаем жирным сами, то мы увеличиваем расстояние на 1 пиксель в ширину (независимо от DPI и размера текста всегда 1 пиксель)
@@ -1570,7 +1578,8 @@ INT CFontFile::GetString2C(CGlyphString& oString)
             pCurGlyph->fY = (float)(oString.m_arrCTM[5] + fX * oString.m_arrCTM[1] + fY * oString.m_arrCTM[3] - oString.m_fY);
         }
 
-	fPenX += (float)(m_oCacheSizes[charSymbolObj].fAdvanceX + m_dCharSpacing);
+	double dAdvanceW = m_arrdFontMatrix[0] * m_oCacheSizes[charSymbolObj].fAdvanceX;
+	fPenX += (float)(dAdvanceW + m_dCharSpacing);
     if (m_bNeedDoBold)
     {
         // Когда текст делаем жирным сами, то мы увеличиваем расстояние на 1 пиксель в ширину (независимо от DPI и размера текста всегда 1 пиксель)

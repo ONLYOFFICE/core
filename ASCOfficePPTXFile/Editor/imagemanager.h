@@ -305,7 +305,7 @@ namespace NSShapeImageGen
 
 #endif
 
-                return GenerateImageID_2(strDownload, strFile1, (std::max)(1.0, width), (std::max)(1.0, height));
+                return GenerateImageID(strDownload, strFile1, pOle, (std::max)(1.0, width), (std::max)(1.0, height));
 
 
 			}
@@ -318,8 +318,8 @@ namespace NSShapeImageGen
 			oFile.CloseFile();
 
 			if (-1 == width && -1 == height)
-				return GenerateImageID(strFile, pOle, width, height);
-            return GenerateImageID(strFile, pOle, (std::max)(1.0, width), (std::max)(1.0, height));
+				return GenerateImageID(strFile, CString(L""), pOle, width, height);
+            return GenerateImageID(strFile, CString(L""), pOle, (std::max)(1.0, width), (std::max)(1.0, height));
 		}
 		void SetFontManager(CFontManager* pFontManager)
 		{
@@ -481,9 +481,11 @@ namespace NSShapeImageGen
 			return oInfo;
 		}
 
-		CImageInfo GenerateImageID(const CString& strFileName, COleInfo* pOle, double dWidth, double dHeight)
+		CImageInfo GenerateImageID(const CString& strFileName, const CString & strUrl, COleInfo* pOle, double dWidth, double dHeight)
 		{
 			CString sMapKey = strFileName;
+			if(!strUrl.IsEmpty())
+				sMapKey = strUrl;
 			if(NULL != pOle)
 				sMapKey += pOle->m_sFilename;
 			CImageInfo oInfo;
@@ -496,7 +498,7 @@ namespace NSShapeImageGen
 			{
 				++m_lNextIDImage;
 				oInfo.m_lID = m_lNextIDImage;
-#ifdef BUILD_CONFIG_FULL_VERSION
+
 				LONG lImageType = m_oImageExt.GetImageType(strFileName);
 				bool bVector = (1 == lImageType || 2 == lImageType);
 				bool bOle = NULL != pOle;
@@ -522,69 +524,58 @@ namespace NSShapeImageGen
 					OOX::CPath pathSaveItem = strSaveDir + oInfo.GetPath2();
 					CDirectory::CopyFile(strFileName, pathSaveItem.GetPath(), NULL, NULL);
 
-                    double dKoef = 100 * 96 / 25.4;
-					bool bIsSuccess = m_oImageExt.Convert(strFileName, LONG(dWidth * dKoef), LONG(dHeight * dKoef), strSaveItemWE + _T(".svg"));
-					if (bIsSuccess)
-					{//svg
-						oInfo.m_eType = itSVG;
-
-						m_mapImagesFile.insert(std::pair<CString,CImageInfo>(sMapKey, oInfo));
-						m_listImages.push_back(oInfo);
-						return oInfo;
-					}
-					else
+					::MetaFile::CMetaFile oMetafile(m_pFontManager->m_pApplication);
+					if (oMetafile.LoadFromFile(strFileName))
 					{
-						::MetaFile::CMetaFile metaFileRaster(m_pFontManager->m_pApplication);
+						double x = 0, y = 0, w = 0, h = 0;
+						oMetafile.GetBounds(&x, &y, &w, &h);
 
-						if (metaFileRaster.LoadFromFile(strFileName))
+						double _max = (w >= h) ? w : h;
+						double dKoef = 100000.0 / _max;
+
+						int WW = (int)(dKoef * w + 0.5);
+						int HH = (int)(dKoef * h + 0.5);
+
+						NSHtmlRenderer::CASCSVGWriter oWriterSVG;
+						oWriterSVG.SetFontManager(m_pFontManager);
+						oWriterSVG.put_Width(WW);
+						oWriterSVG.put_Height(HH);
+						oMetafile.DrawOnRenderer(&oWriterSVG, 0, 0, WW, HH);
+
+						bool bIsRaster = true;
+						oWriterSVG.IsRaster(&bIsRaster);
+						if(bIsRaster)
 						{
 							//случай растрового wmf/emf
+							//-1 == lHeight имеет спецальное значение(берет размеры из файла)
+							if(lWidth <= 0)
+								lWidth = -1;
+							if(lHeight <= 0)
+								lHeight = -1;
 							CString strSaveItem = strSaveItemWE + _T(".png");
-                            if(lWidth <= 0)
-                                lWidth = -1;
-                            if(lHeight <= 0)
-                                lHeight = -1;
-                            //-1 == lHeight имеет спецальное значение(берет размеры из файла)
-							metaFileRaster.ConvertToRaster(strSaveItem, 4 /*CXIMAGE_FORMAT_PNG*/,  lWidth, lHeight);
-							
-							bIsSuccess = NSFile::CFileBinary::Exists(string2std_string(strSaveItem));
+							oMetafile.ConvertToRaster(strSaveItem, 4 /*CXIMAGE_FORMAT_PNG*/,  lWidth, lHeight);
 
+							bool bIsSuccess = NSFile::CFileBinary::Exists(string2std_string(strSaveItem));
 							if (bIsSuccess)
-							{					
+							{
 								oInfo.m_eType = itPNG;
 
 								m_mapImagesFile.insert(std::pair<CString,CImageInfo>(sMapKey, oInfo));
 								m_listImages.push_back(oInfo);
 								return oInfo;
 							}
-						}		
-					}
-					if (bIsSuccess == false)
-					{
-						CApplicationFonts *pAppFonts = (NULL != m_pFontManager) ? m_pFontManager->m_pApplication : NULL;
-						NSHtmlRenderer::CASCImage oImage(pAppFonts);
-
-						oImage.LoadFromFile(std::wstring(strFileName.GetString()));
-
-						Aggplus::CImage* pImage = oImage.get_BitmapImage();
-						if(NULL != pImage)
+						}
+						else
 						{
-							CBgraFrame oBgraFrame;
-							oBgraFrame.put_Width(pImage->GetWidth());
-							oBgraFrame.put_Height(pImage->GetHeight());
-							oBgraFrame.put_Stride(pImage->GetStride());
-							oBgraFrame.put_Data(pImage->GetData());
-							SaveImage(oBgraFrame, oInfo, lWidth, lHeight);
-							//чтобы в деструкторе не удалялось
-							oBgraFrame.put_Data(NULL);
-							
+							oInfo.m_eType = itSVG;
+
+							oWriterSVG.SaveFile(strSaveItemWE + _T(".svg"));
 							m_mapImagesFile.insert(std::pair<CString,CImageInfo>(sMapKey, oInfo));
 							m_listImages.push_back(oInfo);
 							return oInfo;
 						}
 					}
 				}
-#endif
 
 				SaveImage(strFileName, oInfo, lWidth, lHeight);
 			
@@ -596,47 +587,6 @@ namespace NSShapeImageGen
 				oInfo = pPair->second;
 			}
 
-			return oInfo;
-		}
-
-		CImageInfo GenerateImageID_2(const CString & strFileName, const CString & strUrl, double dWidth, double dHeight)
-		{
-			CImageInfo oInfo;
-			LONG lWidth		= (LONG)(dWidth * 96 / 25.4);
-			LONG lHeight	= (LONG)(dHeight * 96 / 25.4);
-
-			++m_lNextIDImage;
-			oInfo.m_lID = m_lNextIDImage;
-#ifdef BUILD_CONFIG_FULL_VERSION
-			LONG lImageType = m_oImageExt.GetImageType(strFileName);
-			if (1 == lImageType || 2 == lImageType)
-			{
-				oInfo.m_eType = (1 == lImageType) ? itWMF : itEMF;
-				oInfo.SetNameModificator(oInfo.m_eType, false);
-
-				CString strSaveDir = m_strDstMedia + FILE_SEPARATOR_STR;
-				//copy source vector image
-				OOX::CPath pathSaveItem = strSaveDir + oInfo.GetPath2();
-				CDirectory::CopyFile(strFileName, pathSaveItem.GetPath(), NULL, NULL);
-
-				CString strSaveItem = strSaveDir + oInfo.GetPathWithoutExtension();
-
-				double dKoef = 100 * 96 / 25.4;
-				bool bIsSuccess = m_oImageExt.Convert(strFileName, LONG(dWidth * dKoef), LONG(dHeight * dKoef), strSaveItem + _T(".svg"));
-				if (bIsSuccess)
-				{//svg
-					oInfo.m_eType = itSVG;
-
-                    m_mapImagesFile.insert(std::pair<CString,CImageInfo>(strFileName, oInfo));
-					m_listImages.push_back(oInfo);
-					return oInfo;
-				}
-			}
-#endif
-			SaveImage(strFileName, oInfo, lWidth, lHeight);
-			m_mapImagesFile.insert(std::pair<CString,CImageInfo>(strUrl, oInfo));
-			m_listImages.push_back(oInfo);
-			
 			return oInfo;
 		}
 

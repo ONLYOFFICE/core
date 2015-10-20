@@ -145,7 +145,7 @@ private:
 
     // вспомогогательные данные для подбора "похожих шрифтов"
     std::map<std::wstring, int> m_mapNamesToIndex;
-    std::vector<std::vector<std::wstring>> m_listLikes;
+    std::vector<std::vector<std::wstring> > m_listLikes;
 
 public:
 	CFontList()

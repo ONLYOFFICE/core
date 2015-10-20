@@ -433,8 +433,10 @@ public :
                //http://curl.haxx.se/docs/sslcerts.html
                curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
 #endif
+               /* tell libcurl to follow redirection(default false) */
+               curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
                /* some servers don't like requests that are made without a user-agent field, so we provide one */
-               curl_easy_setopt(curl, CURLOPT_USERAGENT, "libcurl-agent/1.0");
+               curl_easy_setopt(curl, CURLOPT_USERAGENT, "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:38.0) Gecko/20100101 Firefox/38.0");
                res = curl_easy_perform(curl);
                /* always cleanup */
                curl_easy_cleanup(curl);

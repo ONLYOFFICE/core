@@ -124,7 +124,24 @@ public:
 		oWriter.WriteString(str1);
 
 		NSPresentationEditor::CTextPFRun* pPF = &oLevel.m_oPFRun;
+//------------------------------------------- normalize (a-la CTextAttributesEx)
+		double dScaleX				= 625 * 2.54 ;//???? /2
+		//1/576 inch = 72/576 pt = 360000 *72 * 2.54 /(72*576) emu
 
+		if (pPF->leftMargin.is_init())
+			pPF->leftMargin		= pPF->leftMargin.get()	* dScaleX;
+		if (pPF->indent.is_init())
+			pPF->indent			= pPF->indent.get()		* dScaleX;
+		if (pPF->lineSpacing.is_init())
+			pPF->lineSpacing	=- pPF->lineSpacing.get();
+		if (pPF->spaceAfter.is_init())
+			pPF->spaceAfter		= -pPF->spaceAfter.get()	;
+		if (pPF->spaceBefore.is_init())
+			pPF->spaceBefore	= -pPF->spaceBefore.get()	;
+		if (pPF->defaultTabSize.is_init())
+			pPF->defaultTabSize	= pPF->defaultTabSize.get()* dScaleX;
+
+//------------------------------------------------------------
 		if (pPF->fontAlign.is_init())
 		{
 			CString strProp = GetFontAlign(pPF->fontAlign.get());

@@ -326,7 +326,7 @@ void NSPresentationEditor::CShapeWriter::WriteShapeInfo()
 void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 {
 	size_t nCount = m_pShapeElement->m_oShape.m_oText.m_arParagraphs.size();
-	if (/*0 == nCount || */(0x00 == (m_pShapeElement->m_oShape.m_lDrawType & c_ShapeDrawType_Text)))
+	if (0x00 == (m_pShapeElement->m_oShape.m_lDrawType & c_ShapeDrawType_Text))
 		return;
 
 	m_oWriter.WriteString(std::wstring(L"<p:txBody>"));
@@ -660,8 +660,6 @@ CString NSPresentationEditor::CShapeWriter::ConvertShape()
 
 	if (m_pShapeElement == NULL) return _T("");
 
-	bool bPath		= false;
-
 	std::wstring prstTxWarp;
 	std::wstring prstGeom	= oox::Spt2ShapeType((oox::MSOSPT)m_pShapeElement->m_lShapeType);
 
@@ -675,15 +673,11 @@ CString NSPresentationEditor::CShapeWriter::ConvertShape()
 			prstGeom = L"rect";
 			m_oBrush.Type = c_BrushTypeNoFill;
 		}
-		else bPath = true;
 	}
 	else
 	{
 		if (oox::msosptTextBox == (oox::MSOSPT)m_pShapeElement->m_lShapeType)	
 			m_bTextBox = true;
-
-		if (m_pShapeElement->m_oShape.m_pShape->m_arAdjustments.size() > 0)
-			bPath = true;
 	}
 
 	m_oWriter.WriteString(std::wstring(L"<p:sp>"));
@@ -739,80 +733,33 @@ CString NSPresentationEditor::CShapeWriter::ConvertShape()
 	{
 		m_pShapeElement->m_oShape.ToRenderer(dynamic_cast<IRenderer*>(this), oInfo, m_oMetricInfo, 0.0, 1.0);
 	}
-#if 0	
-	if (bPath && m_oWriterVML.GetCurSize() >= 10)
+
+	if (prstTxWarp.empty())
 	{
-		if (m_pShapeElement->m_oShape.m_strPPTXShape.IsEmpty())
+		if (m_pShapeElement->m_bShapePreset)
 		{
-			m_oWriter.WriteString(std::wstring(L"<a:custGeom>"));
+			if (prstGeom.empty()) prstGeom = L"rect";
 
-            double dW = (std::max)(m_oBounds.GetWidth(), 0.1);
-            double dH = (std::max)(m_oBounds.GetHeight(), 0.1);
-
-			int __l = (int)((m_oTextRect.left	- m_oBounds.left)	* 100000 / dW);
-			int __t = (int)((m_oTextRect.top	- m_oBounds.top)	* 100000 / dH);
-			int __r = (int)((m_oTextRect.right	- m_oBounds.left)	* 100000 / dW);
-			int __b = (int)((m_oTextRect.bottom	- m_oBounds.top)	* 100000 / dH);
-
-			size_t __nCount = m_pShapeElement->m_oShape.m_oText.m_arParagraphs.size();
-			if (0 == __nCount || (0x00 == (m_pShapeElement->m_oShape.m_lDrawType & c_ShapeDrawType_Text)))
+			m_oWriter.WriteString(std::wstring(L"<a:prstGeom"));
 			{
-				m_oWriter.WriteString(std::wstring(L"<a:rect l=\"l\" t=\"t\" r=\"r\" b=\"b\"/>"));
+				m_oWriter.WriteString(std::wstring(L" prst=\"") + prstGeom + std::wstring(L"\">"));
+				if (!m_bWordArt)	
+				{
+					m_oWriter.WriteString(std::wstring(L"<a:avLst/>"));
+				}
 			}
-			else
-			{
-				CString strGuides = _T("");
-				strGuides.Format(_T("<a:gdLst><a:gd name=\"_l\" fmla=\"*/ w %d 100000\"/><a:gd name=\"_t\" fmla=\"*/ h %d 100000\"/>\
-									<a:gd name=\"_r\" fmla=\"*/ w %d 100000\"/><a:gd name=\"_b\" fmla=\"*/ h %d 100000\"/></a:gdLst>"),
-									__l, __t, __r, __b);
-				m_oWriter.WriteString(strGuides);
-
-				m_oWriter.WriteString(std::wstring(L"<a:rect l=\"_l\" t=\"_t\" r=\"_r\" b=\"_b\"/>"));
-			}
-			m_oWriter.WriteString(std::wstring(L"<a:pathLst>"));
-				m_oWriter.Write(m_oWriterVML);
-			m_oWriter.WriteString(std::wstring(L"</a:pathLst>"));
-
-			m_oWriter.WriteString(std::wstring(L"</a:custGeom>"));
+			m_oWriter.WriteString(std::wstring(L"</a:prstGeom>"));		
 		}
 		else
 		{
-			m_oWriter.WriteString(m_pShapeElement->m_oShape.m_strPPTXShape);
+			m_oWriter.WriteString(m_pShapeElement->ConvertPPTShapeToPPTX());
 		}
-	}
-	else
-	{
-		if (prstGeom.empty()) prstGeom = L"rect";
-
-		m_oWriter.WriteString(std::wstring(L"<a:prstGeom"));
-		{
-			m_oWriter.WriteString(std::wstring(L" prst=\"") + prstGeom + std::wstring(L"\">"));
-			if (!m_bWordArt)	
-			{
-				m_oWriter.WriteString(std::wstring(L"<a:avLst/>"));
-				//todooo сделать конвертацию доп параметров !!
-				//for (int i = 0; i < m_pShapeElement->m_oShape.m_pShape->m_arAdjustments.size(); i++)
-				//{
-				//	CString str;
-				//	str.Format(L"<a:gd name=\"adj%d\" fmla=\"val %d\"/>", i+1, m_pShapeElement->m_oShape.m_pShape->m_arAdjustments[i]);
-				//	m_oWriter.WriteString(str);
-				//}
-				//m_oWriter.WriteString(std::wstring(L"</a:avLst>"));
-			}
-		}
-		m_oWriter.WriteString(std::wstring(L"</a:prstGeom>"));
-	}
-#else
-	if (prstTxWarp.empty())
-	{
-		m_oWriter.WriteString(m_pShapeElement->ConvertPPTShapeToPPTX());
 	}
 	else
 	{
 		//word art
 		m_oWriter.WriteString(std::wstring(L"<a:prstGeom prst=\"rect\"/>"));
 	}
-#endif
 
 	m_oWriter.WriteString(ConvertBrush(m_oBrush));
 
@@ -848,7 +795,7 @@ CString NSPresentationEditor::CShapeWriter::ConvertImage()
 	oInfo.m_lOriginalHeight	= (LONG)m_pImageElement->m_rcBoundsOriginal.GetHeight();
 
 	m_oWriter.WriteString(std::wstring(L"<p:blipFill>"));
-		CString strRid = m_pRels->WriteImage(m_pImageElement->m_strFileName);
+		CString strRid = m_pRels->WriteImage(m_pImageElement->m_strImageFileName);
 
 		CString strWrite = _T("<a:blip r:embed=\"") + strRid + _T("\"/>");
 		

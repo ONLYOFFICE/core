@@ -255,7 +255,7 @@ namespace NSCustomVML
 
 	class CGuide
 	{
-	private:
+	public:
 		FormulaType m_eType;
 
 		BYTE m_param_type1;
@@ -269,7 +269,6 @@ namespace NSCustomVML
 		LONG m_lShapeWidth;
 		LONG m_lShapeHeight;
 
-	public:
 
 		CGuide()
 		{
@@ -406,25 +405,24 @@ namespace NSCustomVML
 	private:
 		RulesType m_ePath;
 
-        std::vector<Aggplus::POINT>	m_arVertices;
-		std::vector<CSegment> m_arSegments;
-		std::vector<CGuide>	m_arGuides;
-		std::vector<LONG>*	m_pAdjustValues;
+        std::vector<Aggplus::POINT>		m_arVertices;
+		std::vector<CSegment>			m_arSegments;
+		std::vector<CGuide>				m_arGuides;
+		std::vector<LONG>*				m_pAdjustValues;
 
-                bool m_bIsVerticesPresent;
-                bool m_bIsPathPresent;
+        bool m_bIsVerticesPresent;
+        bool m_bIsPathPresent;
 
 		CBrush	m_oBrush;
 		CPen	m_oPen;
 
 	public:
-		CCustomVML() : 
-			m_arVertices(), m_arSegments(), m_arGuides(), m_pAdjustValues(NULL)
+		CCustomVML() : m_arVertices(), m_arSegments(), m_arGuides(), m_pAdjustValues(NULL)
 		{
 			m_ePath = rtCurveTo/*rtLineTo*/;
 			
-                        m_bIsVerticesPresent	= false;
-                        m_bIsPathPresent		= false;
+            m_bIsVerticesPresent	= false;
+            m_bIsPathPresent		= false;
 		}
 		
 		CCustomVML(const CCustomVML& oSrc)
@@ -461,7 +459,7 @@ namespace NSCustomVML
 		}
 
 	public:
-                bool IsCustom()
+		bool IsCustom()
 		{
 			return (m_bIsVerticesPresent && m_bIsPathPresent);
 		}
@@ -486,7 +484,7 @@ namespace NSCustomVML
 
 			if (lCount > 0)
 			{
-                                m_bIsVerticesPresent = true;
+				m_bIsVerticesPresent = true;
 			}
 
 			for (WORD lIndex = 0; lIndex < lCount; ++lIndex)
@@ -494,8 +492,8 @@ namespace NSCustomVML
                 Aggplus::POINT oPoint;
 				if (pProperty->m_bIsTruncated)
 				{
-					oPoint.x = (LONG)oReader.ReadWORD();
-					oPoint.y = (LONG)oReader.ReadWORD();
+					oPoint.x = (short)oReader.ReadWORD();
+					oPoint.y = (short)oReader.ReadWORD();
 				}
 				else
 				{
@@ -505,13 +503,13 @@ namespace NSCustomVML
 
 				LONG lMinF = (LONG)0x80000000;
 				LONG lMaxF = (LONG)0x8000007F;
-				if (lMinF <= oPoint.x)
+				if (lMinF <= (DWORD)oPoint.x)
 				{
 					int nGuideIndex = (DWORD)oPoint.x - 0x80000000;	
 
 					bool b = false;
 				}
-				if (lMinF <= oPoint.y)
+				if (lMinF <= (DWORD)oPoint.y)
 				{
 					int nGuideIndex = (DWORD)oPoint.y - 0x80000000;					
 
@@ -617,14 +615,45 @@ namespace NSCustomVML
 
 			bool bBreak = false;
 
+			LONG lMinF = (LONG)0x80000000;
+			LONG lMaxF = (LONG)0x8000007F;
+
+			int nGuideIndex_x , nGuideIndex_y;
+
 			if (0 == m_arSegments.size())
 			{
 				strPath = GetRulerVML(m_ePath);
+				
 				for (size_t nIndex = 0; nIndex < m_arVertices.size(); ++nIndex)
 				{
+					nGuideIndex_x = nGuideIndex_y = -1;
+				
+					if (lMinF <= (DWORD)m_arVertices[nIndex].x)	nGuideIndex_x = (DWORD)m_arVertices[nIndex].x - 0x80000000;	
+					if (lMinF <= (DWORD)m_arVertices[nIndex].y)	nGuideIndex_y = (DWORD)m_arVertices[nIndex].y - 0x80000000;	
+
 					CString str = _T("");
-					str.Format(_T("%d,%d,"), m_arVertices[nIndex].x, m_arVertices[nIndex].y);
-					strPath += str;
+					if (nGuideIndex_x >= 0 ) 
+					{
+						//str.Format(_T("gd%d,"), nGuideIndex_x);
+						str.Format(_T("%d,"), m_arGuides[nGuideIndex_x].m_param_value1);
+						strPath += str;
+					}
+					else
+					{
+						str.Format(_T("%d,"), m_arVertices[nIndex].x);
+						strPath += str;
+					}
+					if (nGuideIndex_y >= 0)
+					{
+						//str.Format(_T("gd%d,"), nGuideIndex_y);
+						str.Format(_T("%d,"), m_arGuides[nGuideIndex_y].m_param_value1);
+						strPath += str;
+					}
+					else
+					{
+						str.Format(_T("%d,"), m_arVertices[nIndex].y);
+						strPath += str;
+					}
 				}
 				strPath.Delete(strPath.GetLength() - 1);
 			}
@@ -657,7 +686,7 @@ namespace NSCustomVML
 							}
 							else
 							{
-								m_oPen.Color	   = (DWORD)m_arVertices[nStart].x;	
+								m_oPen.Color	= (DWORD)m_arVertices[nStart].x;	
 							}
 						}
 						nEnd = nStart + m_arSegments[nS].m_nCount;
@@ -680,9 +709,34 @@ namespace NSCustomVML
 
 					for (size_t nV = nStart; nV < nEnd; ++nV)
 					{
+						nGuideIndex_x = nGuideIndex_y = -1;
+					
+						if (lMinF <= (DWORD)m_arVertices[nV].x)	nGuideIndex_x = (DWORD)m_arVertices[nV].x - 0x80000000;	
+						if (lMinF <= (DWORD)m_arVertices[nV].y)	nGuideIndex_y = (DWORD)m_arVertices[nV].y - 0x80000000;	
+
 						CString str = _T("");
-						str.Format(_T("%d,%d,"), m_arVertices[nV].x, m_arVertices[nV].y);
-						strPath += str;
+						if (nGuideIndex_x >= 0 )
+						{
+							//str.Format(_T("gd%d,"), nGuideIndex_x);
+							str.Format(_T("%d,"), m_arGuides[nGuideIndex_x].m_param_value1);
+							strPath += str;
+						}
+						else
+						{
+							str.Format(_T("%d,"), m_arVertices[nV].x);
+							strPath += str;
+						}
+						if (nGuideIndex_y >= 0)
+						{
+							//str.Format(_T("gd%d,"), nGuideIndex_y);//m_arGuides[nGuideIndex_y].m_param_value1);
+							str.Format(_T("%d,"), m_arGuides[nGuideIndex_y].m_param_value1);
+							strPath += str;
+						}
+						else
+						{
+							str.Format(_T("%d,"), m_arVertices[nV].y);
+							strPath += str;
+						}
 					}
 
 					if (nEnd != nStart)

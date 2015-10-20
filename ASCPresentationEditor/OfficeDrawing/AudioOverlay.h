@@ -98,7 +98,7 @@ namespace NSPresentationEditor
 			}
 			else
 			{
-				m_strFile			= pAudioElem->m_strFileName;
+				m_strFile			= pAudioElem->m_strAudioFileName;
 
 				m_dStartTime		= pAudioElem->m_dStartTime;
 				m_dEndTime			= pAudioElem->m_dEndTime;

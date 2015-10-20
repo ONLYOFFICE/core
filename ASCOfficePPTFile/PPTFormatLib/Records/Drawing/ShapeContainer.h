@@ -400,7 +400,7 @@ public:
 
 	inline void SetUpPropertyVideo(CVideoElement* pElement, CTheme* pTheme, CSlideInfo* pInfo, CSlide* pSlide, CProperty* pProperty)
 	{
-		SetUpProperty((IElement*)pElement, pTheme, pInfo, pSlide, pProperty);
+		SetUpPropertyImage((CImageElement*)pElement, pTheme, pInfo, pSlide, pProperty);
 	}
 	inline void SetUpPropertyAudio(CAudioElement* pElement, CTheme* pTheme, CSlideInfo* pInfo, CSlide* pSlide, CProperty* pProperty)
 	{
@@ -417,8 +417,8 @@ public:
 				int dwOffset = pInfo->GetIndexPicture(pProperty->m_lValue);
 				if (dwOffset >=0)
 				{
-					pElement->m_strFileName		= pElement->m_strFileName + pInfo->GetFileNamePicture(dwOffset);
-					pElement->m_bImagePresent	= true;
+					pElement->m_strImageFileName	+=  pInfo->GetFileNamePicture(dwOffset);
+					pElement->m_bImagePresent		= true;
 				}
 			}break;
 		case pictureId://OLE identifier of the picture.
@@ -1444,12 +1444,14 @@ public:
 					GetRecordsByType(&oArrayEx, true, true);
 
 					CExFilesInfo oInfo;
+					CExFilesInfo oInfoDefault;
 					// по умолчанию картинка (или оле объект)
 					CExFilesInfo::ExFilesType exType = CExFilesInfo::eftNone;
 					CExFilesInfo* pInfo = pMapIDs->Lock(0xFFFFFFFF, exType);
 					if (NULL != pInfo)
 					{
-						oInfo = *pInfo;
+						oInfo			= *pInfo;
+						oInfoDefault	= oInfo;
 					}
 
 					if (0 != oArrayEx.size())
@@ -1463,15 +1465,18 @@ public:
 
 					if (CExFilesInfo::eftVideo == exType)
 					{
-						CVideoElement* pVideoElem	= new CVideoElement();
-						pVideoElem->m_strFileName	= oInfo.m_strFilePath + FILE_SEPARATOR_STR;
+						CVideoElement* pVideoElem		= new CVideoElement();
+						
+						pVideoElem->m_strVideoFileName	= oInfo.m_strFilePath			+ FILE_SEPARATOR_STR;
+						pVideoElem->m_strImageFileName	= oInfoDefault.m_strFilePath	+ FILE_SEPARATOR_STR;
 
-						pElem = (IElement*)pVideoElem;
+						pElem							= (IElement*)pVideoElem;
 					}
 					else if (CExFilesInfo::eftAudio == exType)
 					{
 						CAudioElement* pAudioElem		= new CAudioElement();
-						pAudioElem->m_strFileName		= oInfo.m_strFilePath + FILE_SEPARATOR_STR;
+						
+						pAudioElem->m_strAudioFileName	= oInfo.m_strFilePath + FILE_SEPARATOR_STR;
 
 						pAudioElem->m_dClipStartTime	= oInfo.m_dStartTime;
 						pAudioElem->m_dClipEndTime		= oInfo.m_dEndTime;
@@ -1494,8 +1499,8 @@ public:
 					}
 					else 
 					{
-						CImageElement* pImageElem	= new CImageElement();
-						pImageElem->m_strFileName	= oInfo.m_strFilePath + FILE_SEPARATOR_STR;
+						CImageElement* pImageElem		= new CImageElement();
+						pImageElem->m_strImageFileName	= oInfo.m_strFilePath + FILE_SEPARATOR_STR;
 
 						pElem = (IElement*)pImageElem;
 					}
@@ -1505,6 +1510,11 @@ public:
 				{
 					// shape
 					CShapeElement* pShape = new CShapeElement(NSBaseShape::ppt, eType);
+					CPPTShape *ppt_shape = dynamic_cast<CPPTShape *>(pShape->m_oShape.m_pShape);
+					if ( (ppt_shape) && (OOXMLShapes::sptCustom == ppt_shape->m_eType))
+					{
+						pShape->m_bShapePreset = true;
+					}
                     if (true)//if (/*отключим пока кастом*/OOXMLShapes::sptCustom != pShape->m_oShape.m_eType)
 					{
 						CExFilesInfo::ExFilesType exType		= CExFilesInfo::eftNone;
@@ -2089,16 +2099,16 @@ protected:
 			}
 			else
 			{
-				pTextSettings->m_lTextType = 0;
+				//pTextSettings->m_lTextType = 0;
 
-				if (NSOfficePPT::Other != eTypeMaster)
-				{
-					if (0 <= nTextMasterType && nTextMasterType < 9)
-					{
-						if (pThemeWrapper->m_pStyles[nTextMasterType].is_init())
-							pTextSettings->m_oStyles = pThemeWrapper->m_pStyles[nTextMasterType].get();
-					}
-				}
+				//if (NSOfficePPT::Other != eTypeMaster)
+				//{
+				//	if (0 <= nTextMasterType && nTextMasterType < 9)
+				//	{
+				//		if (pThemeWrapper->m_pStyles[nTextMasterType].is_init())
+				//			pTextSettings->m_oStyles = pThemeWrapper->m_pStyles[nTextMasterType].get();
+				//	}
+				//}
 			}
 
 			// теперь смотрим все остальные стили (persist и own) - просто применяем их к m_oStyles
@@ -2179,15 +2189,15 @@ protected:
 						pTextSettings->m_oStyles.ApplyAfter(pThemeWrapper->m_pStyles[nIndexType].get());
 				}
 			}
-			if (eTypeOwn != NSOfficePPT::NoPresent && eTypeOwn != eTypePersist && eTypeOwn != eTypeMaster)
-			{
-				int nIndexType = (int)eTypeOwn;
-                if (0 <= nIndexType && nIndexType < 9 && pLayout)
-				{
-                    if (pThemeWrapper->m_pStyles[nIndexType].IsInit())
-						pTextSettings->m_oStyles.ApplyAfter(pThemeWrapper->m_pStyles[nIndexType].get());
-				}
-			}
+			//if (eTypeOwn != NSOfficePPT::NoPresent && eTypeOwn != eTypePersist && eTypeOwn != eTypeMaster)
+			//{ тут неверная подстановка стиля !!! пример Antarctida.ppt слайд 2
+			//	int nIndexType = (int)eTypeOwn;
+			//  if (0 <= nIndexType && nIndexType < 9 && pLayout)
+			//	{
+			//      if (pThemeWrapper->m_pStyles[nIndexType].IsInit())
+			//			pTextSettings->m_oStyles.ApplyAfter(pThemeWrapper->m_pStyles[nIndexType].get());
+			//	}
+			//}
 		}
 
 		if ((_T("") != strText) && 0 == pTextSettings->m_arParagraphs.size())
@@ -2212,31 +2222,22 @@ protected:
 			NSPresentationEditor::ConvertPPTTextToEditorStructure(oArrayPF, oArrayCF, strText, *pTextSettings);
 		}
 
-		NSPresentationEditor::CColor oColor;
-		if ((NULL != pSlide) && !pSlide->m_bUseLayoutColorScheme)
-		{
-			oColor = pSlide->GetColor(11);
-		}
-        else if ((NULL != pLayout) && (!pLayout->m_bUseThemeColorScheme))
-		{
-			oColor = pLayout->GetColor(11);
-		}
-		else if (NULL != pTheme)
-		{
-			oColor = pTheme->GetColor(11);
-		}
-		oColor.m_lSchemeIndex = 11;
-
 		if (pShape->m_oActions.m_bPresent)
 		{
+			//todooo разобраться нужно ли менять цвет на гиперлинк 
+			NSPresentationEditor::CColor oColor;
+			if ((NULL != pSlide) && !pSlide->m_bUseLayoutColorScheme)			oColor = pSlide->GetColor(11);
+			else if ((NULL != pLayout) && (!pLayout->m_bUseThemeColorScheme))	oColor = pLayout->GetColor(11);
+			else if (NULL != pTheme)											oColor = pTheme->GetColor(11);
+			oColor.m_lSchemeIndex = 11;
+
 			ApplyHyperlink(pShape, oColor);
 		}
 
 		CPPTShape* pPPTShape = dynamic_cast<CPPTShape*>(pShape->m_oShape.m_pShape);
 
-		if (NULL != pPPTShape)
+		if (NULL != pPPTShape)		// проверка на wordart
 		{
-			// теперь смотрим - что за фигура создана
 			switch (pPPTShape->m_eType)
 			{
 			case sptTextPlainText:    
@@ -2280,8 +2281,6 @@ protected:
 			case sptTextCanUp:   
 			case sptTextCanDown:
 				{
-					//pShape->m_oShape.m_oText.m_arParagraphs.clear();
-
 					pShape->m_oShape.m_oText.m_oAttributes.m_oTextBrush = pShape->m_oShape.m_oBrush;
 
 					pShape->m_oShape.m_oText.m_oAttributes.m_nTextAlignHorizontal	= 1;

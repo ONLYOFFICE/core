@@ -373,7 +373,7 @@ void CPPTUserInfo::LoadSlide(DWORD dwSlideID, CSlide* pSlide)
 		NSPresentationEditor::CExFilesInfo* pInfo	= m_oExMedia.LockAudioFromCollection(pAtom->m_nSoundRef);
 		if (NULL != pInfo)
 		{
-			pTransition->m_oAudio.m_strFileName = pInfo->m_strFilePath;
+			pTransition->m_oAudio.m_strAudioFileName = pInfo->m_strFilePath;
 		}
 
 		pTransition->m_bLoopSound		= pAtom->m_bLoopSound;
@@ -1330,7 +1330,46 @@ void CPPTUserInfo::AddAudioTransition (DWORD dwSlideID, CTransition* pTransition
 	CAudioElement* pAudio		=	new CAudioElement ();
 	if (pAudio)
 	{
-		pAudio->m_strFileName	=	strFilePath;				
+		pAudio->m_strAudioFileName	=	strFilePath;				
 	}
 	// ??? недоделка ???
 }
+
+void CPPTUserInfo::CreateDefaultStyle(NSPresentationEditor::CTextStyles& pStyle, NSPresentationEditor::CTheme* pTheme)
+{
+	for (int i = 0; i < 10; ++i)
+	{
+		if (!pStyle.m_pLevels[i].is_init())
+			pStyle.m_pLevels[i] = new NSPresentationEditor::CTextStyleLevel();
+
+		NSPresentationEditor::CTextPFRun* pPF = &pStyle.m_pLevels[i]->m_oPFRun;
+		NSPresentationEditor::CTextCFRun* pCF = &pStyle.m_pLevels[i]->m_oCFRun;
+
+		//pPF->textAlignment	= (WORD)0;
+		//pPF->leftMargin		= (LONG)0;
+		//pPF->indent			= (LONG)0;
+		//pPF->fontAlign		= (WORD)0;
+		pPF->wrapFlags		= (WORD)0x02;
+		pPF->textDirection	= (WORD)0;
+		
+		//pPF->defaultTabSize	= (LONG)0;
+		//pPF->lineSpacing		= (LONG)100;
+		//pPF->spaceBefore		= (LONG)0;
+		//pPF->spaceAfter		= (LONG)0;
+		
+        pCF->FontBold		= false;
+        pCF->FontItalic		= false;
+        pCF->FontUnderline	= false;
+        pCF->FontStrikeout	= false;
+
+		pCF->Size			= 18;
+		pCF->BaseLineOffset = (double)0;
+		pCF->Cap			= (WORD)0;
+
+		pCF->FontProperties = new NSPresentationEditor::CFontProperties();
+		pCF->FontProperties->SetFont(pTheme->m_arFonts[0]);
+
+		//pCF->Color			= new NSPresentationEditor::CColor();
+	}
+}
+

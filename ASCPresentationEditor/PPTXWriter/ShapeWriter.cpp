@@ -482,6 +482,7 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 		}
 		if (pPF->indent.is_init())
 		{
+			int ind = pPF->indent.get();
 			CString strProp = _T("");
 			strProp.Format(_T(" indent=\"%d\""), pPF->indent.get());
 			m_oWriter.WriteString(strProp);
@@ -814,7 +815,7 @@ CString NSPresentationEditor::CShapeWriter::ConvertShape()
 		m_pShapeElement->m_oShape.ToRenderer(dynamic_cast<IRenderer*>(this), oInfo, m_oMetricInfo, 0.0, 1.0);
 	}
 
-	if ((prstGeom.empty() == false || m_pShapeElement->m_bShapePreset) && prstTxWarp.empty())
+	if ((/*prstGeom.empty() == false || */m_pShapeElement->m_bShapePreset) && prstTxWarp.empty())
 	{
 		if (prstGeom.empty()) prstGeom = L"rect";
 		m_oWriter.WriteString(std::wstring(L"<a:prstGeom"));

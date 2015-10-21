@@ -581,21 +581,21 @@ namespace NSPresentationEditor
 	class CTextRuler
 	{
 	public:
-		NSCommon::nullable_base<SHORT>	DefaultTabSize;
+		NSCommon::nullable_base<LONG>	DefaultTabSize;
 		NSCommon::nullable_base<SHORT>	CLevels;
 		NSCommon::nullable_base<SHORT>	TabStops;
 
-		NSCommon::nullable_base<SHORT>	LeftMargin1;
-		NSCommon::nullable_base<SHORT>	LeftMargin2;
-		NSCommon::nullable_base<SHORT>	LeftMargin3;
-		NSCommon::nullable_base<SHORT>	LeftMargin4;
-		NSCommon::nullable_base<SHORT>	LeftMargin5;
+		NSCommon::nullable_base<LONG>	LeftMargin1;
+		NSCommon::nullable_base<LONG>	LeftMargin2;
+		NSCommon::nullable_base<LONG>	LeftMargin3;
+		NSCommon::nullable_base<LONG>	LeftMargin4;
+		NSCommon::nullable_base<LONG>	LeftMargin5;
 
-		NSCommon::nullable_base<SHORT>	Indent1;
-		NSCommon::nullable_base<SHORT>	Indent2;
-		NSCommon::nullable_base<SHORT>	Indent3;
-		NSCommon::nullable_base<SHORT>	Indent4;
-		NSCommon::nullable_base<SHORT>	Indent5;
+		NSCommon::nullable_base<LONG>	Indent1;
+		NSCommon::nullable_base<LONG>	Indent2;
+		NSCommon::nullable_base<LONG>	Indent3;
+		NSCommon::nullable_base<LONG>	Indent4;
+		NSCommon::nullable_base<LONG>	Indent5;
 
 		std::vector<DWORD> tabsStops;
 

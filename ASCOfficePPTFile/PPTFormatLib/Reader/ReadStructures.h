@@ -429,6 +429,9 @@ namespace NSStreamReader
 
 	static inline void Read(POLE::Stream* pStream, NSPresentationEditor::CTextRuler& oRun)
 	{
+		double dScaleX				= 625 * 2.54 ;
+		//1/576 inch = 72/576 pt = 360000 *72 * 2.54 /(72*576) emu
+
 		DWORD dwFlags = StreamUtils::ReadDWORD(pStream);
 		BYTE flag1 = (BYTE)(dwFlags);
 		BYTE flag2 = (BYTE)(dwFlags >> 8);
@@ -454,7 +457,7 @@ namespace NSStreamReader
 		if (bCLevels_)
 			oRun.CLevels = StreamUtils::ReadSHORT(pStream);
 		if (bDefaultTabSize_)
-			oRun.DefaultTabSize = StreamUtils::ReadSHORT(pStream);
+			oRun.DefaultTabSize = StreamUtils::ReadSHORT(pStream) * dScaleX;
 		
 		if (bTabStops_)
         {
@@ -463,34 +466,34 @@ namespace NSStreamReader
 
             for (int i = 0; i < (int)tabStopsCount; ++i)
             {
-				oRun.tabsStops.push_back(StreamUtils::ReadDWORD(pStream));
+				oRun.tabsStops.push_back(StreamUtils::ReadDWORD(pStream) * dScaleX);
             }
         }
 
 		if (bLeftMargin1_)
-			oRun.LeftMargin1 = StreamUtils::ReadSHORT(pStream);
+			oRun.LeftMargin1 = StreamUtils::ReadSHORT(pStream) * dScaleX;
 		if (bIndent1_)
-			oRun.Indent1 = StreamUtils::ReadSHORT(pStream);
+			oRun.Indent1 = StreamUtils::ReadSHORT(pStream) * dScaleX;
 
 		if (bLeftMargin2_)
-			oRun.LeftMargin2 = StreamUtils::ReadSHORT(pStream);
+			oRun.LeftMargin2 = StreamUtils::ReadSHORT(pStream) * dScaleX;
 		if (bIndent2_)
-			oRun.Indent2 = StreamUtils::ReadSHORT(pStream);
+			oRun.Indent2 = StreamUtils::ReadSHORT(pStream) * dScaleX;
 
 		if (bLeftMargin3_)
-			oRun.LeftMargin3 = StreamUtils::ReadSHORT(pStream);
+			oRun.LeftMargin3 = StreamUtils::ReadSHORT(pStream) * dScaleX;
 		if (bIndent3_)
-			oRun.Indent3 = StreamUtils::ReadSHORT(pStream);
+			oRun.Indent3 = StreamUtils::ReadSHORT(pStream) * dScaleX;
 
 		if (bLeftMargin4_)
-			oRun.LeftMargin4 = StreamUtils::ReadSHORT(pStream);
+			oRun.LeftMargin4 = StreamUtils::ReadSHORT(pStream) * dScaleX;
 		if (bIndent4_)
-			oRun.Indent4 = StreamUtils::ReadSHORT(pStream);
+			oRun.Indent4 = StreamUtils::ReadSHORT(pStream) * dScaleX;
 
 		if (bLeftMargin5_)
-			oRun.LeftMargin5 = StreamUtils::ReadSHORT(pStream);
+			oRun.LeftMargin5 = StreamUtils::ReadSHORT(pStream) * dScaleX;
 		if (bIndent5_)
-			oRun.Indent5 = StreamUtils::ReadSHORT(pStream);
+			oRun.Indent5 = StreamUtils::ReadSHORT(pStream) * dScaleX;
 	}
 }
 
@@ -522,6 +525,9 @@ public:
 public:
 	void LoadFromStream(POLE::Stream* pStream, bool bIsIndentation = true)
 	{
+		double dScaleX				= 625 * 2.54 ;
+		//1/576 inch = 72/576 pt = 360000 *72 * 2.54 /(72*576) emu
+
 		if (bIsIndentation)
 		{
 			m_lCount	= StreamUtils::ReadLONG(pStream);
@@ -617,29 +623,26 @@ public:
 			m_oRun.bulletColor = oColor;
 		}
 
-        if (true) // заглушка, чтобы буллеты были в цвет текста
-			m_oRun.bulletColor.reset();
-
 		if (textAlignment_)
 			m_oRun.textAlignment		= StreamUtils::ReadWORD(pStream);
 
 		if (lineSpacing_)
-			m_oRun.lineSpacing			= StreamUtils::ReadSHORT(pStream);
+			m_oRun.lineSpacing			= - StreamUtils::ReadSHORT(pStream);
 
 		if (spaceBefore_)
-			m_oRun.spaceBefore			= (LONG)StreamUtils::ReadSHORT(pStream);
+			m_oRun.spaceBefore			= - (LONG)StreamUtils::ReadSHORT(pStream);
 
 		if (spaceAfter_)
-			m_oRun.spaceAfter			= (LONG)StreamUtils::ReadSHORT(pStream);
+			m_oRun.spaceAfter			= - (LONG)StreamUtils::ReadSHORT(pStream);
 
 		if (leftMargin_)
-			m_oRun.leftMargin			= (LONG)StreamUtils::ReadSHORT(pStream);
+			m_oRun.leftMargin			= (LONG)StreamUtils::ReadSHORT(pStream) * dScaleX;
 
 		if (indent_)
-			m_oRun.indent				= (LONG)StreamUtils::ReadSHORT(pStream);
+			m_oRun.indent				= (LONG)StreamUtils::ReadSHORT(pStream) * dScaleX;
 
 		if (defaultTabSize_)
-			m_oRun.defaultTabSize		= (LONG)StreamUtils::ReadWORD(pStream);
+			m_oRun.defaultTabSize		= (LONG)StreamUtils::ReadWORD(pStream)  * dScaleX;
 
 		if (tabStops_)
 		{
@@ -651,7 +654,7 @@ public:
 
 			for (int i = 0; i < (int)tabStopsCount; ++i)
 			{
-				m_oRun.tabStops.push_back(StreamUtils::ReadDWORD(pStream));
+				m_oRun.tabStops.push_back(StreamUtils::ReadDWORD(pStream) * dScaleX );
 			}
 
 			if (0 < m_oRun.tabStops.size())

@@ -301,15 +301,13 @@ namespace NSPresentationEditor
 	}
 	void CTextAttributesEx::NormalizeCoordsByMetric(const CMetricInfo & oMetric)
 	{
-		double dScaleX				= 625 * 2.54 ;//???? /2
-		//1/576 inch = 72/576 pt = 360000 *72 * 2.54 /(72*576) emu
-
 		size_t lCount = m_arParagraphs.size();
 		for (size_t i = 0; i < lCount; ++i)
 		{
 			CTextPFRun* pPar = &m_arParagraphs[i].m_oPFRun;
 
 			WORD lIndentLevel = (WORD)m_arParagraphs[i].m_lTextLevel;
+
 			switch (lIndentLevel)
 			{
 			case 0:
@@ -320,7 +318,7 @@ namespace NSPresentationEditor
 					pPar->indent = (LONG)m_oRuler.Indent1.get();
 				
 				if (pPar->indent.is_init() && pPar->leftMargin.is_init())
-					pPar->indent.get() -= pPar->leftMargin.get();
+					pPar->indent = pPar->indent.get() - pPar->leftMargin.get();
 				break;
 			}
 			case 1:
@@ -331,7 +329,7 @@ namespace NSPresentationEditor
 					pPar->indent  = (LONG)m_oRuler.Indent2.get();
 				
 				if (pPar->indent.is_init() && pPar->leftMargin.is_init())
-					pPar->indent.get() -= pPar->leftMargin.get();
+					pPar->indent = pPar->indent.get() - pPar->leftMargin.get();
 				break;
 			}
 			case 2:
@@ -342,7 +340,7 @@ namespace NSPresentationEditor
 					pPar->indent  = (LONG)m_oRuler.Indent3.get();
 				
 				if (pPar->indent.is_init() && pPar->leftMargin.is_init())
-					pPar->indent.get() -= pPar->leftMargin.get();
+					pPar->indent = pPar->indent.get() - pPar->leftMargin.get();
 				break;
 			}
 			case 3:
@@ -353,7 +351,7 @@ namespace NSPresentationEditor
 					pPar->indent  = (LONG)m_oRuler.Indent4.get();
 				
 				if (pPar->indent.is_init() && pPar->leftMargin.is_init())
-					pPar->indent.get() -= pPar->leftMargin.get();
+					pPar->indent = pPar->indent.get() - pPar->leftMargin.get();
 				break;
 			}
 			case 4:
@@ -364,25 +362,12 @@ namespace NSPresentationEditor
 					pPar->indent  = (LONG)m_oRuler.Indent5.get();
 				
 				if (pPar->indent.is_init() && pPar->leftMargin.is_init())
-					pPar->indent.get() -= pPar->leftMargin.get();
+					pPar->indent = pPar->indent.get() - pPar->leftMargin.get();
 				break;
 			}
 			default:
 				break;
 			}
-
-			if (pPar->leftMargin.is_init())
-				pPar->leftMargin		= pPar->leftMargin.get()	* dScaleX;
-			if (pPar->indent.is_init())
-				pPar->indent			= pPar->indent.get()		* dScaleX;
-			if (pPar->lineSpacing.is_init())
-				pPar->lineSpacing		=- pPar->lineSpacing.get();
-			if (pPar->spaceAfter.is_init())
-				pPar->spaceAfter		= -pPar->spaceAfter.get()	;
-			if (pPar->spaceBefore.is_init())
-				pPar->spaceBefore		= -pPar->spaceBefore.get()	;
-			if (pPar->defaultTabSize.is_init())
-				pPar->defaultTabSize	= pPar->defaultTabSize.get()* dScaleX;
 		}
 	}
 

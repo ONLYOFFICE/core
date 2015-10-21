@@ -110,10 +110,10 @@ namespace NSPresentationEditor
 		}
 		CString ConvertShape	();
 		CString ConvertImage	();
-		CString ConvertLine		();
-		CString	ConvertShadow	();
-		CString	ConvertBrush	(CBrush & brush);
-		CString	ConvertColor	(CColor & color, long alpha);
+		CString ConvertLine		(CPen		& pen);
+		CString	ConvertShadow	(CShadow	& shadow);
+		CString	ConvertBrush	(CBrush		& brush);
+		CString	ConvertColor	(CColor		& color, long alpha);
 // тип рендерера-----------------------------------------------------------------------------
 	virtual HRESULT get_Type(LONG* lType)	;
 //-------- Функции для работы со страницей --------------------------------------------------

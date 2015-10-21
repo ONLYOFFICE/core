@@ -24,6 +24,9 @@
 
 const double EMU_MM = 36000;
 
+#define		FIXED_POINT(val) (double)((short)(val >> 16) + ((short)(val) / 65536.0));
+
+
 using namespace NSOfficeDrawing;
 using namespace NSPresentationEditor;
 
@@ -69,11 +72,10 @@ public:
 		}
 		return false;
 	}
-	CColor CorrectSysColor(int nColorCode, CShapeElement* pElement, CTheme* pTheme)
+	CColor CorrectSysColor(int nColorCode, IElement* pElement, CTheme* pTheme)
 	{
 		if (pElement == NULL) return CColor();
 
-		CShape* pShape = &pElement->m_oShape;
 		CColor  color;
 
 		unsigned short nParameter		= (unsigned short)(( nColorCode >> 16 ) & 0x00ff);  // the HiByte of nParameter is not zero, an exclusive AND is helping :o
@@ -84,20 +86,20 @@ public:
 
 		switch (nColorIndex)
 		{
-		case 0xF0:	color = pShape->m_oBrush.Color1;	break;
+		case 0xF0:	color = pElement->m_oBrush.Color1;	break;
 		case 0xF1:
 		{
-			if (pElement->m_bLine)	color = pShape->m_oPen.Color;
-			else					color = pShape->m_oBrush.Color1;
+			if (pElement->m_bLine)	color = pElement->m_oPen.Color;
+			else					color = pElement->m_oBrush.Color1;
 		}break;
-		case 0xF2:	color = pShape->m_oPen.Color;		break;
-		case 0xF3:	color = pShape->m_oShadow.Color;	break;
+		case 0xF2:	color = pElement->m_oPen.Color;		break;
+		case 0xF3:	color = pElement->m_oShadow.Color;	break;
 		case 0xF4:	break; ///this
-		case 0xF5:	color = pShape->m_oBrush.Color2;	break; 
+		case 0xF5:	color = pElement->m_oBrush.Color2;	break; 
 		case 0xF6:	break; //lineBackColor
 		case 0xF7:	//FillThenLine
 		case 0xF8:	//colorIndexMask
-			color = pShape->m_oBrush.Color1;	break;
+			color = pElement->m_oBrush.Color1;	break;
 		default:
 			//from table 
 			break;
@@ -111,7 +113,7 @@ public:
 		}
 
         //if ( nCProp && ( nPropColor & 0x10000000 ) == 0 )       // beware of looping recursive
-        //    color = CorrectSysColor( nPropColor, pShape);
+        //    color = CorrectSysColor( nPropColor, pElement);
 
         if( nAdditionalFlags & 0x80 )           // make color gray
         {
@@ -275,7 +277,6 @@ public:
 				for (long i = 0; i < lCount; ++i)
 				{
 					SetUpPropertyImage((CImageElement*)pElement, pTheme, pWrapper, pSlide, &pProperties->m_arProperties[i]);
-					//SetUpPropertyShape((CImageElement*)pElement, pTheme, pWrapper, pSlide, &pProperties->m_arProperties[i]);
 				}
 				break;
 			}
@@ -314,33 +315,28 @@ public:
 		}
 	}
 
-	inline bool SetUpProperty(IElement* pElement, CTheme* pTheme, CSlideInfo* pInfo, CSlide* pSlide, CProperty* pProperty)
+	inline void SetUpProperty(IElement* pElement, CTheme* pTheme, CSlideInfo* pInfo, CSlide* pSlide, CProperty* pProperty)
 	{
+		bool bIsFilled	= true;
+
 		switch (pProperty->m_ePID)
 		{
 		case wzName:
 			{
 				pElement->m_sName = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)pProperty->m_pOptions, pProperty->m_lValue /2 - 1); 
-				return true;
-			}
+			}break;
 		case wzDescription:
 			{
 				pElement->m_sDescription = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)pProperty->m_pOptions, pProperty->m_lValue /2 - 1); 
-				return true;
-			}
+			}break;
 		case hspMaster:
 			{
 				pElement->m_lLayoutID = (LONG)pProperty->m_lValue; 
-				return true;
-			}
+			}break;
 		case rotation:
 			{
-				short Integral	= (short)(pProperty->m_lValue >> 16);
-				short Fractional= (short)(pProperty->m_lValue);
-
-				pElement->m_dRotate = (double)(Integral + (Fractional / 65536.0));
-				return true;
-			}
+				pElement->m_dRotate = FIXED_POINT(pProperty->m_lValue);
+			}break;
 		case fFlipH:
 			{
 				BYTE flag1 = (BYTE)pProperty->m_lValue;
@@ -357,9 +353,7 @@ public:
 
 				if (bUseFlipV)
 					pElement->m_bFlipV = bFlipV;
-
-				return true;
-			}
+			}break;
 		case fNoLineDrawDash: //Line Style Boolean Properties
 			{
 				bool bNoLineDrawDash		= GETBIT(pProperty->m_lValue, 0);
@@ -382,20 +376,500 @@ public:
 
 				if (bUsefLine)
 					pElement->m_bLine = bLine;				
-
-				return true;
-			}
+			}break;
 		case lineStyle:
 		case lineDashStyle://from Complex
 			{
 				
 				pElement->m_bLine = true;	
-				return true;
+			}break;
+		case fillType:
+			{
+				DWORD dwType = pProperty->m_lValue;
+				switch(dwType)
+				{
+					case NSOfficeDrawing::fillPattern:
+					{
+						pElement->m_oBrush.Type = c_BrushTypePattern;
+						//texture + change black to color2, white to color1
+					}break;
+					case NSOfficeDrawing::fillTexture :
+					case NSOfficeDrawing::fillPicture :
+					{
+						pElement->m_oBrush.Type			= c_BrushTypeTexture;
+						pElement->m_oBrush.TextureMode	= (NSOfficeDrawing::fillPicture == dwType) ? c_BrushTextureModeStretch : c_BrushTextureModeTile;
+					}break;
+					case NSOfficeDrawing::fillShadeCenter://1 color
+					case NSOfficeDrawing::fillShadeShape:
+					{
+						pElement->m_oBrush.Type = c_BrushTypeCenter;
+					}break;//
+					case NSOfficeDrawing::fillShadeTitle://2 colors and more
+					case NSOfficeDrawing::fillShade : 
+					case NSOfficeDrawing::fillShadeScale: 
+					{
+						pElement->m_oBrush.Type = c_BrushTypePathGradient1;
+					}break;
+					case NSOfficeDrawing::fillBackground:
+					{
+						pElement->m_oBrush.Type = c_BrushTypeNoFill;
+					}break;				
+				}
+			}break;
+		case fillBlip:
+			{
+				int dwOffset = 0 ;
+					
+				if (pProperty->m_bComplex)
+				{
+					//inline 
+					dwOffset = -1;
+				}
+				else
+				{
+					dwOffset = pInfo->GetIndexPicture(pProperty->m_lValue);
+				}
+				int nLen	= pElement->m_oBrush.TexturePath.length() - 1;
+				int nIndex	= pElement->m_oBrush.TexturePath.rfind(FILE_SEPARATOR_CHAR);
+				if (nLen != nIndex)
+				{
+					pElement->m_oBrush.TexturePath.erase(nIndex + 1, nLen - nIndex);
+				}				
+				
+				pElement->m_oBrush.TexturePath = pElement->m_oBrush.TexturePath + pInfo->GetFileNamePicture(dwOffset);
+				if (pElement->m_oBrush.Type == c_BrushTypePattern)
+				{
+					int rgbColor1 = 0;
+					int rgbColor2 = 0xFFFFFF;
+
+					if (pElement->m_oBrush.Color1.m_lSchemeIndex == -1)
+					{
+						rgbColor1 = pElement->m_oBrush.Color1.GetLONG_RGB();
+					}
+					else
+					{
+						if ((pSlide) && (pSlide->m_arColorScheme.size() > 0))
+						{
+							rgbColor1 = pSlide->m_arColorScheme[pElement->m_oBrush.Color1.m_lSchemeIndex].GetLONG_RGB();
+						}
+						else if ((pTheme) && (pTheme->m_arColorScheme.size() > 0))
+						{
+							rgbColor1 = pTheme->m_arColorScheme[pElement->m_oBrush.Color1.m_lSchemeIndex].GetLONG_RGB();
+						}
+					}
+					if (pElement->m_oBrush.Color2.m_lSchemeIndex == -1)
+					{
+						rgbColor2 = pElement->m_oBrush.Color2.GetLONG_RGB();
+					}
+					else
+					{
+						if ((pSlide) && (pSlide->m_arColorScheme.size() > 0))
+						{
+							rgbColor2 = pSlide->m_arColorScheme[pElement->m_oBrush.Color2.m_lSchemeIndex].GetLONG_RGB();
+						}
+						else if ((pTheme) && (pTheme->m_arColorScheme.size() > 0))
+						{
+							rgbColor2 = pTheme->m_arColorScheme[pElement->m_oBrush.Color2.m_lSchemeIndex].GetLONG_RGB();
+						}
+					}
+					ChangeBlack2ColorImage(pElement->m_oBrush.TexturePath, rgbColor1, rgbColor2);
+					
+					pElement->m_oBrush.Type			= c_BrushTypeTexture;
+					pElement->m_oBrush.TextureMode	= c_BrushTextureModeTile;
+				}
+				break;
 			}
+		case fillColor:
+			{
+				SColorAtom oAtom;
+				oAtom.FromValue(pProperty->m_lValue);
+
+				if(oAtom.bSysIndex)
+					pElement->m_oBrush.Color1 = CorrectSysColor(pProperty->m_lValue, pElement, pTheme);
+				else
+					oAtom.ToColor(&pElement->m_oBrush.Color1);
+
+				if (pElement->m_oBrush.Type == c_BrushTypeNoFill )
+					pElement->m_oBrush.Type = c_BrushTypeSolid;
+
+				break;
+			}
+		case fillBackColor:
+			{
+				SColorAtom oAtom;
+				oAtom.FromValue(pProperty->m_lValue);				
+
+				if(oAtom.bSysIndex)
+					pElement->m_oBrush.Color2 = CorrectSysColor(pProperty->m_lValue, pElement, pTheme);
+				else
+					oAtom.ToColor(&pElement->m_oBrush.Color2);
+			}break;
+		case fillOpacity:
+			{
+                pElement->m_oBrush.Alpha1 = (BYTE)(std::min)(255, (int)CDirectory::NormFixedPoint(pProperty->m_lValue, 255));
+				break;
+			}
+		case fillBackOpacity:
+			{
+                pElement->m_oBrush.Alpha2 = (BYTE)(std::min)(255, (int)CDirectory::NormFixedPoint(pProperty->m_lValue, 255));
+				break;
+			}
+		case fillRectLeft:
+			{
+				pElement->m_oBrush.Rect.X	= pProperty->m_lValue;
+				pElement->m_oBrush.Rectable = true;
+			}break;
+		case fillRectRight:
+			{
+				pElement->m_oBrush.Rect.Width	= pProperty->m_lValue - pElement->m_oBrush.Rect.X;
+				pElement->m_oBrush.Rectable		= true;
+			}break;
+		case fillRectTop:
+			{
+				pElement->m_oBrush.Rect.Y	= pProperty->m_lValue;
+				pElement->m_oBrush.Rectable = true;
+			}break;
+		case fillRectBottom:
+			{
+				pElement->m_oBrush.Rect.Height	= pProperty->m_lValue - pElement->m_oBrush.Rect.Y;
+				pElement->m_oBrush.Rectable		= true;
+			}break;
+		case fillBackground:
+			{
+				//bIsFilled = false;
+				break;
+			}
+		case fillShadeType:
+			{
+				bool bShadeNone		= GETBIT(pProperty->m_lValue, 31);
+				bool bShadeGamma	= GETBIT(pProperty->m_lValue, 30);
+				bool bShadeSigma	= GETBIT(pProperty->m_lValue, 29);
+				bool bShadeBand		= GETBIT(pProperty->m_lValue, 28);
+				bool bShadeOneColor	= GETBIT(pProperty->m_lValue, 27);
+
+			}break;
+		case fillAngle:
+			{
+			}break;
+		case fillFocus://relative position of the last color in the shaded fill
+			{
+			}break;
+		case fillShadePreset:
+			{//value (int) from 0x00000088 through 0x0000009F or complex
+			}break;
+		case fillShadeColors:
+			{//array of colors
+				struct _a
+				{
+					_INT32	color;
+					_INT32 position;
+				};
+				std::vector<_a> colors;
+				
+				unsigned short nElems;
+				
+				nElems = pProperty->m_lValue;
+                _INT32* pCompl = (_INT32*)pProperty->m_pOptions;
+				while(nElems--)
+				{
+					_a a1;
+                    a1.color	= *pCompl; pCompl++;
+                    a1.position = *pCompl; pCompl++;
+					colors.push_back(a1);
+				}
+
+			}break;
+		case fNoFillHitTest:
+			{
+				BYTE flag1 = (BYTE)(pProperty->m_lValue);
+				BYTE flag2 = (BYTE)(pProperty->m_lValue >> 16);
+
+				bool bNoFillHitTest			= (0x01 == (0x01 & flag1));
+				bool bFillUseRect			= (0x02 == (0x02 & flag1));
+				bool bFillShape				= (0x04 == (0x04 & flag1));
+				bool bHitTestFill			= (0x08 == (0x08 & flag1));
+				bool bFilled				= (0x10 == (0x10 & flag1));
+				bool bUseShapeAnchor		= (0x20 == (0x20 & flag1));
+				bool bRecolorFillAsPictures = (0x40 == (0x40 & flag1));
+
+				bool bUsebNoFillHitTest			= (0x01 == (0x01 & flag2));
+				bool bUsebFillUseRect			= (0x02 == (0x02 & flag2));
+				bool bUsebFillShape				= (0x04 == (0x04 & flag2));
+				bool bUsebHitTestFill			= (0x08 == (0x08 & flag2));
+				bool bUsebFilled				= (0x10 == (0x10 & flag2));
+				bool bUsebUseShapeAnchor		= (0x20 == (0x20 & flag2));
+				bool bUsebRecolorFillAsPictures = (0x40 == (0x40 & flag2));
+
+				if (bUsebFilled)
+					bIsFilled = bFilled;
+
+				break;
+			}
+		case NSOfficeDrawing::fFillOK:
+			{
+				BYTE flag1 = (BYTE)(pProperty->m_lValue);
+				BYTE flag2 = (BYTE)(pProperty->m_lValue >> 8);
+				BYTE flag3 = (BYTE)(pProperty->m_lValue >> 16);
+				BYTE flag4 = (BYTE)(pProperty->m_lValue >> 24);
+
+				bool bFillOk					= (0x01 == (0x01 & flag1));
+				bool bFillShadeShapeOk			= (0x02 == (0x02 & flag1));
+				bool bGTextOk					= (0x04 == (0x04 & flag1));
+				bool bLineOk					= (0x08 == (0x08 & flag1));
+				bool b3DOk						= (0x10 == (0x10 & flag1));
+				bool bShadowOk					= (0x20 == (0x20 & flag1));
+
+				bool bUseFillOk					= (0x01 == (0x01 & flag3));
+				bool bUseFillShadeShapeOk		= (0x02 == (0x02 & flag3));
+				bool bUseGTextOk				= (0x04 == (0x04 & flag3));
+				bool bUseLineOk					= (0x08 == (0x08 & flag3));
+				bool bUse3DOk					= (0x10 == (0x10 & flag3));
+				bool bUseShadowOk				= (0x20 == (0x20 & flag3));
+
+				if (bUseLineOk)
+					pElement->m_bLine = bLineOk;//?? todooo проверить
+
+				if (bUseFillOk)
+					bIsFilled = bFillOk;
+
+				break;
+			}
+// line --------------------------------------------------------
+		case lineColor:
+			{
+				SColorAtom oAtom;
+				oAtom.FromValue(pProperty->m_lValue);
+				
+				if (oAtom.bSysIndex)
+					pElement->m_oPen.Color = CorrectSysColor(pProperty->m_lValue, pElement, pTheme);
+				else
+					oAtom.ToColor(&pElement->m_oPen.Color);
+				break;
+			}
+		case lineOpacity:
+			{
+                pElement->m_oPen.Alpha = (BYTE)(std::min)(255, (int)CDirectory::NormFixedPoint(pProperty->m_lValue, 255));
+				break;
+			}
+		case lineBackColor:
+			{
+				SColorAtom oAtom;
+				oAtom.FromValue(pProperty->m_lValue);
+				
+				if (oAtom.bSysIndex)
+					pElement->m_oPen.Color2 = CorrectSysColor(pProperty->m_lValue, pElement, pTheme);
+				else 
+					oAtom.ToColor(&pElement->m_oPen.Color2);
+
+			}break;
+		case lineWidth:
+			{
+				pElement->m_oPen.Size	= (double)pProperty->m_lValue / EMU_MM;
+				pElement->m_bLine		= true;
+				break;
+			}
+		case lineDashing:
+			{
+				BYTE nDashStyle = 0;
+				switch (pProperty->m_lValue)
+				{
+				case 0: 
+					{ 
+						nDashStyle = 0; // solid 						 
+					}break;
+				case 1: 
+				case 6:
+				case 7:
+					{ 
+						nDashStyle = 1; // dash 						
+					}break; 
+				case 2:
+				case 5:
+					{ 
+						nDashStyle = 2; // dot 						 
+					}break;
+				case 3:
+				case 8:
+				case 9:
+					{ 
+						nDashStyle = 3; // dashdot 						
+					}break; 
+				case 4:
+				case 10:
+					{ 
+						nDashStyle = 4;// dashdotdot 						
+					}break; 
+				default:
+						break; 
+				};
+				pElement->m_bLine				= true;
+				pElement->m_oPen.DashStyle	= nDashStyle;
+				break;
+			}
+		case lineJoinStyle:
+			{
+				BYTE nLineJoin = 2;
+				switch (pProperty->m_lValue)
+				{
+				case 0: 
+					{ 
+						nLineJoin = 1; // bevel 						 
+					}break;
+				case 1: 
+					{ 
+						nLineJoin = 1; // Miter 						 
+					}break;
+				case 2:
+					{ 
+						nLineJoin = 2; // round 						 
+					}break;	
+				default:
+						break; 
+				};
+
+				pElement->m_oPen.LineJoin = nLineJoin;
+				break;
+			}
+		case lineStartArrowhead:
+			{
+				BYTE nStartCap = 0;
+				switch (pProperty->m_lValue)
+				{
+				case 1: 
+				case 2:
+				case 5:
+					{ 
+						nStartCap = 0x14; 
+					}break;
+				case 3:
+				case 4:
+
+					{ 
+						nStartCap = 2; 
+					}break; 
+				default:
+						break; 
+				};
+
+				pElement->m_oPen.LineStartCap = nStartCap;
+
+				break;
+			}
+		case lineEndArrowhead:
+			{
+				BYTE nEndCap = 0;
+				switch (pProperty->m_lValue)
+				{
+				case 1: 
+				case 2:
+				case 5:
+					{ 
+						nEndCap = 0x14; 						
+					}break; 
+				case 3:
+				case 4:
+
+					{ 
+						nEndCap = 2; 
+					}break; 
+				default:
+					break; 
+				};
+
+				pElement->m_oPen.LineEndCap = nEndCap;
+				break;
+			}
+		case shadowType:
+			{
+				pElement->m_oShadow.Type = pProperty->m_lValue;
+
+			}break;
+		case shadowOriginX://in emu, relative from center shape
+			{
+				pElement->m_oShadow.OriginX = FIXED_POINT(pProperty->m_lValue);
+			}break;
+		case shadowOriginY:
+			{
+				pElement->m_oShadow.OriginY = FIXED_POINT(pProperty->m_lValue);
+			}break;
+		case shadowColor:
+			{
+				SColorAtom oAtom;
+				oAtom.FromValue(pProperty->m_lValue);
+
+				if (oAtom.bSysIndex)
+					pElement->m_oShadow.Color = CorrectSysColor(pProperty->m_lValue, pElement, pTheme);
+				else
+					oAtom.ToColor(&pElement->m_oShadow.Color);
+
+			}break;
+		case shadowWeight:
+			{
+			}break;
+		case shadowOpacity:
+			{
+                pElement->m_oShadow.Alpha = (BYTE)(std::min)(255, (int)CDirectory::NormFixedPoint(pProperty->m_lValue, 255));
+			}break;
+		case shadowHighlight:
+			{
+				//оттенок двойной тени
+			}break;
+		case shadowOffsetX:
+			{
+				pElement->m_oShadow.DistanceX = ((int)pProperty->m_lValue) / EMU_MM;
+			}break;
+		case shadowOffsetY:
+			{
+				pElement->m_oShadow.DistanceY = ((int)pProperty->m_lValue) / EMU_MM;
+			}break;
+		case shadowScaleXToX:
+			{
+				pElement->m_oShadow.ScaleXToX = FIXED_POINT(pProperty->m_lValue);
+			}break;
+		case shadowScaleYToX:
+			{
+				pElement->m_oShadow.ScaleYToX = FIXED_POINT(pProperty->m_lValue);
+			}break;
+		case shadowScaleXToY:
+			{
+				pElement->m_oShadow.ScaleXToY = FIXED_POINT(pProperty->m_lValue);
+			}break;
+		case shadowScaleYToY:
+			{
+				pElement->m_oShadow.ScaleYToY = FIXED_POINT(pProperty->m_lValue);
+			}break;
+		case shadowPerspectiveX:
+			{
+				pElement->m_oShadow.PerspectiveX = ((int)pProperty->m_lValue);// / EMU_MM;//FIXED_POINT(pProperty->m_lValue);
+			}break;
+		case shadowPerspectiveY:
+			{
+				pElement->m_oShadow.PerspectiveY = ((int)pProperty->m_lValue) ;// EMU_MM;//FIXED_POINT(pProperty->m_lValue);
+			}break;
+		case fshadowObscured:
+			{
+				bool fshadowObscured		= GETBIT(pProperty->m_lValue, 0);
+				bool fShadow				= GETBIT(pProperty->m_lValue, 1);
+				bool fUsefshadowObscured	= GETBIT(pProperty->m_lValue, 16);
+				bool fUsefShadow			= GETBIT(pProperty->m_lValue, 17);
+
+				if (fUsefShadow)
+					pElement->m_oShadow.Visible = fShadow;
+				
+				if (!fUsefShadow && fUsefshadowObscured)
+				{
+					//контурная
+					pElement->m_oShadow.Visible = fshadowObscured;
+				}
+			}break;
 		default:
 			break;
 		}
-		return false;
+
+		if (!bIsFilled)
+		{
+			pElement->m_oBrush.Type = c_BrushTypeNoFill;
+		}
 	}
 
 	inline void SetUpPropertyVideo(CVideoElement* pElement, CTheme* pTheme, CSlideInfo* pInfo, CSlide* pSlide, CProperty* pProperty)
@@ -427,7 +901,10 @@ public:
 			}break;
 		case pibName:
 			{
-				pElement->m_sName = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)pProperty->m_pOptions, pProperty->m_lValue /2-1); 
+				std::wstring image_name = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)pProperty->m_pOptions, pProperty->m_lValue /2-1);
+
+				// TextMining05.ppt, слайд 20  - некорректное имя ( - todooo потом подчистить его
+				//pElement->m_sName = image_name; 
 			}break;
 		case cropFromTop:
 			{
@@ -456,8 +933,7 @@ public:
 	}
 	inline void SetUpPropertyShape(CShapeElement* pElement, CTheme* pTheme, CSlideInfo* pInfo, CSlide* pSlide, CProperty* pProperty)
 	{
-		if (SetUpProperty((IElement*)pElement, pTheme, pInfo, pSlide, pProperty))
-			return;
+		SetUpProperty((IElement*)pElement, pTheme, pInfo, pSlide, pProperty);
 
 		CShape* pParentShape	= &pElement->m_oShape;
 		CPPTShape* pShape		= dynamic_cast<CPPTShape*>(pParentShape->m_pShape);
@@ -466,9 +942,6 @@ public:
 
 		if (NULL == pShape)
 			return;
-
-		bool bIsFilled	= true;
-		bool bIsDraw	= true;
 
 		switch (pProperty->m_ePID)
 		{
@@ -578,431 +1051,6 @@ public:
 				{
 					pShape->m_oCustomVML.LoadAdjusts(lIndexAdj, (LONG)pProperty->m_lValue);
 				}
-				break;
-			}
-
-		case NSOfficeDrawing::fillType:
-			{
-				DWORD dwType = pProperty->m_lValue;
-				switch(dwType)
-				{
-					case NSOfficeDrawing::fillPattern:
-					{
-						pParentShape->m_oBrush.Type = c_BrushTypePattern;
-						//texture + change black to color2, white to color1
-					}break;
-					case NSOfficeDrawing::fillTexture :
-					case NSOfficeDrawing::fillPicture :
-					{
-						pParentShape->m_oBrush.Type			= c_BrushTypeTexture;
-						pParentShape->m_oBrush.TextureMode	= (NSOfficeDrawing::fillPicture == dwType) ? c_BrushTextureModeStretch : c_BrushTextureModeTile;
-					}break;
-					case NSOfficeDrawing::fillShadeCenter://1 color
-					case NSOfficeDrawing::fillShadeShape:
-					{
-						pParentShape->m_oBrush.Type = c_BrushTypeCenter;
-					}break;//
-					case NSOfficeDrawing::fillShadeTitle://2 colors and more
-					case NSOfficeDrawing::fillShade : 
-					case NSOfficeDrawing::fillShadeScale: 
-					{
-						pParentShape->m_oBrush.Type = c_BrushTypePathGradient1;
-					}break;
-					case NSOfficeDrawing::fillBackground:
-					{
-						pParentShape->m_oBrush.Type = c_BrushTypeNoFill;
-					}break;				
-				}
-			}break;
-		case NSOfficeDrawing::fillBlip:
-			{
-				int dwOffset = 0 ;
-					
-				if (pProperty->m_bComplex)
-				{
-					//inline 
-					dwOffset = -1;
-				}
-				else
-				{
-					dwOffset = pInfo->GetIndexPicture(pProperty->m_lValue);
-				}
-				int nLen	= pParentShape->m_oBrush.TexturePath.length() - 1;
-				int nIndex	= pParentShape->m_oBrush.TexturePath.rfind(FILE_SEPARATOR_CHAR);
-				if (nLen != nIndex)
-				{
-					pParentShape->m_oBrush.TexturePath.erase(nIndex + 1, nLen - nIndex);
-				}				
-				
-				pParentShape->m_oBrush.TexturePath = pParentShape->m_oBrush.TexturePath + pInfo->GetFileNamePicture(dwOffset);
-				if (pParentShape->m_oBrush.Type == c_BrushTypePattern)
-				{
-					int rgbColor1 = 0;
-					int rgbColor2 = 0xFFFFFF;
-
-					if (pParentShape->m_oBrush.Color1.m_lSchemeIndex == -1)
-					{
-						rgbColor1 = pParentShape->m_oBrush.Color1.GetLONG_RGB();
-					}
-					else
-					{
-						if ((pSlide) && (pSlide->m_arColorScheme.size() > 0))
-						{
-							rgbColor1 = pSlide->m_arColorScheme[pParentShape->m_oBrush.Color1.m_lSchemeIndex].GetLONG_RGB();
-						}
-						else if ((pTheme) && (pTheme->m_arColorScheme.size() > 0))
-						{
-							rgbColor1 = pTheme->m_arColorScheme[pParentShape->m_oBrush.Color1.m_lSchemeIndex].GetLONG_RGB();
-						}
-					}
-					if (pParentShape->m_oBrush.Color2.m_lSchemeIndex == -1)
-					{
-						rgbColor2 = pParentShape->m_oBrush.Color2.GetLONG_RGB();
-					}
-					else
-					{
-						if ((pSlide) && (pSlide->m_arColorScheme.size() > 0))
-						{
-							rgbColor2 = pSlide->m_arColorScheme[pParentShape->m_oBrush.Color2.m_lSchemeIndex].GetLONG_RGB();
-						}
-						else if ((pTheme) && (pTheme->m_arColorScheme.size() > 0))
-						{
-							rgbColor2 = pTheme->m_arColorScheme[pParentShape->m_oBrush.Color2.m_lSchemeIndex].GetLONG_RGB();
-						}
-					}
-					ChangeBlack2ColorImage(pParentShape->m_oBrush.TexturePath, rgbColor1, rgbColor2);
-					
-					pParentShape->m_oBrush.Type			= c_BrushTypeTexture;
-					pParentShape->m_oBrush.TextureMode	= c_BrushTextureModeTile;
-				}
-				break;
-			}
-		case NSOfficeDrawing::fillColor:
-			{
-				SColorAtom oAtom;
-				oAtom.FromValue(pProperty->m_lValue);
-
-				if(oAtom.bSysIndex)
-					pParentShape->m_oBrush.Color1 = CorrectSysColor(pProperty->m_lValue, pElement, pTheme);
-				else
-					oAtom.ToColor(&pParentShape->m_oBrush.Color1);
-
-				if (pParentShape->m_oBrush.Type == c_BrushTypeNoFill )
-					pParentShape->m_oBrush.Type = c_BrushTypeSolid;
-
-				break;
-			}
-		case NSOfficeDrawing::fillBackColor:
-			{
-				SColorAtom oAtom;
-				oAtom.FromValue(pProperty->m_lValue);				
-
-				if(oAtom.bSysIndex)
-					pParentShape->m_oBrush.Color2 = CorrectSysColor(pProperty->m_lValue, pElement, pTheme);
-				else
-					oAtom.ToColor(&pParentShape->m_oBrush.Color2);
-			}break;
-		case NSOfficeDrawing::fillOpacity:
-			{
-                pParentShape->m_oBrush.Alpha1 = (BYTE)(std::min)(255, (int)CDirectory::NormFixedPoint(pProperty->m_lValue, 255));
-				break;
-			}
-		case NSOfficeDrawing::fillBackOpacity:
-			{
-                pParentShape->m_oBrush.Alpha2 = (BYTE)(std::min)(255, (int)CDirectory::NormFixedPoint(pProperty->m_lValue, 255));
-				break;
-			}
-		case NSOfficeDrawing::fillRectLeft:
-			{
-				pParentShape->m_oBrush.Rect.X	= pProperty->m_lValue;
-				pParentShape->m_oBrush.Rectable = true;
-			}break;
-		case NSOfficeDrawing::fillRectRight:
-			{
-				pParentShape->m_oBrush.Rect.Width	= pProperty->m_lValue - pParentShape->m_oBrush.Rect.X;
-				pParentShape->m_oBrush.Rectable		= true;
-			}break;
-		case NSOfficeDrawing::fillRectTop:
-			{
-				pParentShape->m_oBrush.Rect.Y	= pProperty->m_lValue;
-				pParentShape->m_oBrush.Rectable = true;
-			}break;
-		case NSOfficeDrawing::fillRectBottom:
-			{
-				pParentShape->m_oBrush.Rect.Height	= pProperty->m_lValue - pParentShape->m_oBrush.Rect.Y;
-				pParentShape->m_oBrush.Rectable		= true;
-			}break;
-		case NSOfficeDrawing::fillBackground:
-			{
-				//bIsFilled = false;
-				break;
-			}
-		case NSOfficeDrawing::fillShadeType:
-			{
-				bool bShadeNone		= GETBIT(pProperty->m_lValue, 31);
-				bool bShadeGamma	= GETBIT(pProperty->m_lValue, 30);
-				bool bShadeSigma	= GETBIT(pProperty->m_lValue, 29);
-				bool bShadeBand		= GETBIT(pProperty->m_lValue, 28);
-				bool bShadeOneColor	= GETBIT(pProperty->m_lValue, 27);
-
-			}break;
-		case NSOfficeDrawing::fillAngle:
-			{
-			}break;
-		case NSOfficeDrawing::fillFocus://relative position of the last color in the shaded fill
-			{
-			}break;
-		case NSOfficeDrawing::fillShadePreset:
-			{//value (int) from 0x00000088 through 0x0000009F or complex
-			}break;
-		case NSOfficeDrawing::fillShadeColors:
-			{//array of colors
-				struct _a
-				{
-					_INT32	color;
-					_INT32 position;
-				};
-				std::vector<_a> colors;
-				
-				unsigned short nElems;
-				
-				nElems = pProperty->m_lValue;
-                _INT32* pCompl = (_INT32*)pProperty->m_pOptions;
-				while(nElems--)
-				{
-					_a a1;
-                    a1.color	= *pCompl; pCompl++;
-                    a1.position = *pCompl; pCompl++;
-					colors.push_back(a1);
-				}
-
-			}break;
-		case NSOfficeDrawing::fNoFillHitTest:
-			{
-				BYTE flag1 = (BYTE)(pProperty->m_lValue);
-				BYTE flag2 = (BYTE)(pProperty->m_lValue >> 16);
-
-				bool bNoFillHitTest			= (0x01 == (0x01 & flag1));
-				bool bFillUseRect			= (0x02 == (0x02 & flag1));
-				bool bFillShape				= (0x04 == (0x04 & flag1));
-				bool bHitTestFill			= (0x08 == (0x08 & flag1));
-				bool bFilled				= (0x10 == (0x10 & flag1));
-				bool bUseShapeAnchor		= (0x20 == (0x20 & flag1));
-				bool bRecolorFillAsPictures = (0x40 == (0x40 & flag1));
-
-				bool bUsebNoFillHitTest			= (0x01 == (0x01 & flag2));
-				bool bUsebFillUseRect			= (0x02 == (0x02 & flag2));
-				bool bUsebFillShape				= (0x04 == (0x04 & flag2));
-				bool bUsebHitTestFill			= (0x08 == (0x08 & flag2));
-				bool bUsebFilled				= (0x10 == (0x10 & flag2));
-				bool bUsebUseShapeAnchor		= (0x20 == (0x20 & flag2));
-				bool bUsebRecolorFillAsPictures = (0x40 == (0x40 & flag2));
-
-				if (bUsebFilled)
-					bIsFilled = bFilled;
-
-				break;
-			}
-			// line --------------------------------------------------------
-		case NSOfficeDrawing::lineColor:
-			{
-				SColorAtom oAtom;
-				oAtom.FromValue(pProperty->m_lValue);
-				
-				if (oAtom.bSysIndex)
-					pParentShape->m_oPen.Color = CorrectSysColor(pProperty->m_lValue, pElement, pTheme);
-				else
-					oAtom.ToColor(&pParentShape->m_oPen.Color);
-				break;
-			}
-		case NSOfficeDrawing::lineOpacity:
-			{
-                pParentShape->m_oPen.Alpha = (BYTE)(std::min)(255, (int)CDirectory::NormFixedPoint(pProperty->m_lValue, 255));
-				break;
-			}
-		case NSOfficeDrawing::lineBackColor:
-			{
-				SColorAtom oAtom;
-				oAtom.FromValue(pProperty->m_lValue);
-				
-				if (oAtom.bSysIndex)
-					pParentShape->m_oPen.Color2 = CorrectSysColor(pProperty->m_lValue, pElement, pTheme);
-				else 
-					oAtom.ToColor(&pParentShape->m_oPen.Color2);
-
-			}break;
-		case NSOfficeDrawing::lineWidth:
-			{
-				pParentShape->m_oPen.Size	= (double)pProperty->m_lValue / EMU_MM;
-				pElement->m_bLine			= true;
-				//pElemProps->SetAt(CElementProperty::epPenWidth, pProperty->m_lValue);
-				break;
-			}
-		case NSOfficeDrawing::lineDashing:
-			{
-				BYTE nDashStyle = 0;
-				switch (pProperty->m_lValue)
-				{
-				case 0: 
-					{ 
-						nDashStyle = 0; 
-						break; 
-					}	// solid 
-				case 1: 
-				case 6:
-				case 7:
-					{ 
-						nDashStyle = 1; 
-						break; 
-					}	// dash 
-				case 2:
-				case 5:
-					{ 
-						nDashStyle = 2; 
-						break; 
-					}	// dot 
-				case 3:
-				case 8:
-				case 9:
-					{ 
-						nDashStyle = 3; 
-						break; 
-					}	// dashdot 
-				case 4:
-				case 10:
-					{ 
-						nDashStyle = 4;
-						break; 
-					}	// dashdotdot 
-				default:
-					{
-						break; 
-					}
-				};
-				//pElemProps->SetAt(CElementProperty::epLineDash, nDashStyle);
-				pElement->m_bLine				= true;
-				pParentShape->m_oPen.DashStyle	= nDashStyle;
-				break;
-			}
-		case NSOfficeDrawing::lineJoinStyle:
-			{
-				BYTE nLineJoin = 2;
-				switch (pProperty->m_lValue)
-				{
-				case 0: 
-					{ 
-						nLineJoin = 1; 
-						break; 
-					}	// bevel 
-				case 1: 
-					{ 
-						nLineJoin = 1; 
-						break; 
-					}	// Miter 
-				case 2:
-					{ 
-						nLineJoin = 2; 
-						break; 
-					}	// round 
-				default:
-					{
-						break; 
-					}
-				};
-
-				pParentShape->m_oPen.LineJoin = nLineJoin;
-				//pElemProps->SetAt(CElementProperty::epPenJoin, nLineJoin);
-				break;
-			}
-		case NSOfficeDrawing::lineStartArrowhead:
-			{
-				BYTE nStartCap = 0;
-				switch (pProperty->m_lValue)
-				{
-				case 1: 
-				case 2:
-				case 5:
-					{ 
-						nStartCap = 0x14; 
-						break; 
-					}
-				case 3:
-				case 4:
-
-					{ 
-						nStartCap = 2; 
-						break; 
-					}
-				default:
-					{
-						break; 
-					}
-				};
-
-				pParentShape->m_oPen.LineStartCap = nStartCap;
-				//pElemProps->SetAt(CElementProperty::epLineStartCap, nStartCap);
-
-				break;
-			}
-		case NSOfficeDrawing::lineEndArrowhead:
-			{
-				BYTE nEndCap = 0;
-				switch (pProperty->m_lValue)
-				{
-				case 1: 
-				case 2:
-				case 5:
-					{ 
-						nEndCap = 0x14; 
-						break; 
-					}
-				case 3:
-				case 4:
-
-					{ 
-						nEndCap = 2; 
-						break; 
-					}
-				default:
-					{
-						break; 
-					}
-				};
-
-				pParentShape->m_oPen.LineEndCap = nEndCap;
-				//pElemProps->SetAt(CElementProperty::epLineEndCap, nEndCap);
-				break;
-			}
-		case NSOfficeDrawing::fNoLineDrawDash:
-			{
-				BYTE flag1 = (BYTE)(pProperty->m_lValue);
-				BYTE flag2 = (BYTE)(pProperty->m_lValue >> 8);
-				BYTE flag3 = (BYTE)(pProperty->m_lValue >> 16);
-				BYTE flag4 = (BYTE)(pProperty->m_lValue >> 24);
-
-				bool bNoLineDrawDash			= (0x01 == (0x01 & flag1));
-				bool bLineFillShape				= (0x02 == (0x02 & flag1));
-				bool bHitTestLine				= (0x04 == (0x04 & flag1));
-				bool bLine						= (0x08 == (0x08 & flag1));
-				bool bArrowheadsOK				= (0x10 == (0x10 & flag1));
-				bool bInsertPenOK				= (0x20 == (0x20 & flag1));
-				bool bInsertPen					= (0x40 == (0x40 & flag1));
-
-				bool bLineOpaqueBackColor		= (0x02 == (0x02 & flag2));
-
-				bool bUsebNoLineDrawDash		= (0x01 == (0x01 & flag3));
-				bool bUsebLineFillShape			= (0x02 == (0x02 & flag3));
-				bool bUsebHitTestLine			= (0x04 == (0x04 & flag3));
-				bool bUsebLine					= (0x08 == (0x08 & flag3));
-				bool bUsebArrowheadsOK			= (0x10 == (0x10 & flag3));
-				bool bUsebInsertPenOK			= (0x20 == (0x20 & flag3));
-				bool bUsebInsertPen				= (0x40 == (0x40 & flag3));
-
-				bool bUsebLineOpaqueBackColor	= (0x02 == (0x02 & flag4));
-
-				if (bUsebLine)
-					bIsDraw = bLine;
-
 				break;
 			}
 			// text --------------------------------------------------------
@@ -1219,97 +1267,9 @@ public:
 				break;
 			}
 		// geometry shape
-		case NSOfficeDrawing::fFillOK:
-			{
-				BYTE flag1 = (BYTE)(pProperty->m_lValue);
-				BYTE flag2 = (BYTE)(pProperty->m_lValue >> 8);
-				BYTE flag3 = (BYTE)(pProperty->m_lValue >> 16);
-				BYTE flag4 = (BYTE)(pProperty->m_lValue >> 24);
 
-				bool bFillOk					= (0x01 == (0x01 & flag1));
-				bool bFillShadeShapeOk			= (0x02 == (0x02 & flag1));
-				bool bGTextOk					= (0x04 == (0x04 & flag1));
-				bool bLineOk					= (0x08 == (0x08 & flag1));
-				bool b3DOk						= (0x10 == (0x10 & flag1));
-				bool bShadowOk					= (0x20 == (0x20 & flag1));
-
-				bool bUseFillOk					= (0x01 == (0x01 & flag3));
-				bool bUseFillShadeShapeOk		= (0x02 == (0x02 & flag3));
-				bool bUseGTextOk				= (0x04 == (0x04 & flag3));
-				bool bUseLineOk					= (0x08 == (0x08 & flag3));
-				bool bUse3DOk					= (0x10 == (0x10 & flag3));
-				bool bUseShadowOk				= (0x20 == (0x20 & flag3));
-
-				if (bUseLineOk)
-					bIsDraw = bLineOk;
-
-				if (bUseFillOk)
-					bIsFilled = bFillOk;
-
-				break;
-			}
-		case NSOfficeDrawing::shadowType:
-			{
-				//pParentShape->m_oShadow.Visible = true;
-			}break;
-		case NSOfficeDrawing::shadowColor:
-			{
-				//pParentShape->m_oShadow.Visible = true;
-				SColorAtom oAtom;
-				oAtom.FromValue(pProperty->m_lValue);
-
-				if (oAtom.bSysIndex)
-					pParentShape->m_oShadow.Color = CorrectSysColor(pProperty->m_lValue, pElement, pTheme);
-				else
-					oAtom.ToColor(&pParentShape->m_oShadow.Color);
-
-				pParentShape->m_oShadow.Visible = true;
-			}break;
-		case NSOfficeDrawing::shadowOpacity:
-			{
-                pParentShape->m_oShadow.Alpha = (BYTE)(std::min)(255, (int)CDirectory::NormFixedPoint(pProperty->m_lValue, 255));
-			}break;
-		case NSOfficeDrawing::shadowHighlight:
-			{
-				//
-			}break;
-		case shadowOffsetX:
-			{
-				pParentShape->m_oShadow.DistanceX = ((int)pProperty->m_lValue) / EMU_MM;
-			}break;
-		case shadowOffsetY:
-			{
-				pParentShape->m_oShadow.DistanceY = ((int)pProperty->m_lValue) / EMU_MM;
-			}break;
-		case fshadowObscured:
-			{
-				bool fshadowObscured	= GETBIT(pProperty->m_lValue, 0);
-				bool fShadow			= GETBIT(pProperty->m_lValue, 1);
-				bool fUsefshadowObscured = GETBIT(pProperty->m_lValue, 16);
-				bool fUsefShadow		= GETBIT(pProperty->m_lValue, 17);
-
-				if (fUsefShadow)
-					pParentShape->m_oShadow.Visible = fShadow;
-				
-				if (fUsefShadow && fUsefshadowObscured)
-					pParentShape->m_oShadow.Visible = fshadowObscured;
-			}break;
 		default:
 			break;
-		}
-
-		if (!bIsDraw)
-		{
-			pParentShape->m_oPen.Alpha = 0;
-			//pElemProps->SetAt(CElementProperty::epStroked, (DWORD)0);
-		}
-
-		if (!bIsFilled)
-		{
-			pParentShape->m_oBrush.Type = c_BrushTypeNoFill;//(int)c_BrushTypeSolid;
-			/*pParentShape->m_oBrush.Alpha1 = 0;
-			pParentShape->m_oBrush.Alpha2 = 0;*/
-			//pElemProps->SetAt(CElementProperty::epFilled, (DWORD)0);
 		}
 	}
 };
@@ -1522,7 +1482,7 @@ public:
 
 						if (NULL != pTextureInfo)
 						{
-							pShape->m_oShape.m_oBrush.TexturePath = pTextureInfo->m_strFilePath + FILE_SEPARATOR_STR;
+							pShape->m_oBrush.TexturePath = pTextureInfo->m_strFilePath + FILE_SEPARATOR_STR;
 						}
 
 						pElem = (IElement*)pShape;
@@ -2281,7 +2241,7 @@ protected:
 			case sptTextCanUp:   
 			case sptTextCanDown:
 				{
-					pShape->m_oShape.m_oText.m_oAttributes.m_oTextBrush = pShape->m_oShape.m_oBrush;
+					pShape->m_oShape.m_oText.m_oAttributes.m_oTextBrush = pShape->m_oBrush;
 
 					pShape->m_oShape.m_oText.m_oAttributes.m_nTextAlignHorizontal	= 1;
 					pShape->m_oShape.m_oText.m_oAttributes.m_nTextAlignVertical		= 1;

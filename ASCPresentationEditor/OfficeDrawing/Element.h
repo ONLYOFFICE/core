@@ -33,6 +33,10 @@ namespace NSPresentationEditor
 		CAnimationInfo		m_oAnimations;
 		CEffects			m_oEffects;
 
+		CPen				m_oPen;
+		CBrush				m_oBrush;
+		CShadow				m_oShadow;
+
 		int					m_lID;
 		int					m_lLayoutID;
 
@@ -191,6 +195,10 @@ namespace NSPresentationEditor
 
 			pDublicate->m_pTheme					= m_pTheme;
 			pDublicate->m_pLayout					= m_pLayout;
+			
+			pDublicate->m_oPen						= m_oPen;
+			pDublicate->m_oBrush					= m_oBrush;
+			pDublicate->m_oShadow					= m_oShadow;
 		}
 
 	public:

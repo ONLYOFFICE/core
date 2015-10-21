@@ -603,9 +603,9 @@ namespace NSPresentationEditor
 
 			SetupTextProperties(pSlide, pTheme, pLayout);
 
-			CalculateColor(m_oShape.m_oPen.Color	, pSlide, pTheme, pLayout);
-			CalculateColor(m_oShape.m_oBrush.Color1	, pSlide, pTheme, pLayout);
-			CalculateColor(m_oShape.m_oBrush.Color2	, pSlide, pTheme, pLayout);
+			CalculateColor(m_oPen.Color		, pSlide, pTheme, pLayout);
+			CalculateColor(m_oBrush.Color1	, pSlide, pTheme, pLayout);
+			CalculateColor(m_oBrush.Color2	, pSlide, pTheme, pLayout);
 		}
 
 		virtual void SetupTextProperties(CSlide* pSlide, CTheme* pTheme, CLayout* pLayout);
@@ -649,89 +649,89 @@ namespace NSPresentationEditor
 				}
 			case CElementProperty::epBrushType:
 				{
-					m_oShape.m_oBrush.Type			= (LONG)pProperty->m_dwValue;
+					m_oBrush.Type			= (LONG)pProperty->m_dwValue;
 					break;
 				}
 			case CElementProperty::epBrushColor1:
 				{
-					m_oShape.m_oBrush.Color1.SetSBGR(pProperty->m_dwValue);
-					CalculateColor(m_oShape.m_oBrush.Color1, pSlide, pTheme, pLayout);
+					m_oBrush.Color1.SetSBGR(pProperty->m_dwValue);
+					CalculateColor(m_oBrush.Color1, pSlide, pTheme, pLayout);
 					break;
 				}
 			case CElementProperty::epBrushColor2:
 				{
-					m_oShape.m_oBrush.Color2.SetSBGR(pProperty->m_dwValue);
-					CalculateColor(m_oShape.m_oBrush.Color2, pSlide, pTheme, pLayout);
+					m_oBrush.Color2.SetSBGR(pProperty->m_dwValue);
+					CalculateColor(m_oBrush.Color2, pSlide, pTheme, pLayout);
 					break;
 				}
 			case CElementProperty::epBrushAlpha1:
 				{
-					m_oShape.m_oBrush.Alpha1 = (BYTE)pProperty->m_dwValue;
+					m_oBrush.Alpha1 = (BYTE)pProperty->m_dwValue;
 					break;
 				}
 			case CElementProperty::epBrushAlpha2:
 				{
-					m_oShape.m_oBrush.Alpha2 = (BYTE)pProperty->m_dwValue;
+					m_oBrush.Alpha2 = (BYTE)pProperty->m_dwValue;
 					break;
 				}
 			case CElementProperty::epBrushTxPath:
 				{
-					m_oShape.m_oBrush.TexturePath = pProperty->m_strAdvanced;
+					m_oBrush.TexturePath = pProperty->m_strAdvanced;
 					break;
 				}
 			case CElementProperty::epBrushTxMode:
 				{
-					m_oShape.m_oBrush.TextureMode	= (LONG)pProperty->m_dwValue;
+					m_oBrush.TextureMode	= (LONG)pProperty->m_dwValue;
 					break;
 				}
 			case CElementProperty::epFilled:
 				{
 					if (0 == pProperty->m_dwValue)
 					{
-						m_oShape.m_oBrush.Alpha1		= 0;
+						m_oBrush.Alpha1		= 0;
 					}
 					break;
 				}
 			case CElementProperty::epPenColor:
 				{
-					m_oShape.m_oPen.Color.SetSBGR(pProperty->m_dwValue);
-					CalculateColor(m_oShape.m_oPen.Color, pSlide, pTheme, pLayout);
+					m_oPen.Color.SetSBGR(pProperty->m_dwValue);
+					CalculateColor(m_oPen.Color, pSlide, pTheme, pLayout);
 					break;
 				}
 			case CElementProperty::epPenAlpha:
 				{
-					m_oShape.m_oPen.Alpha		= (BYTE)pProperty->m_dwValue;
+					m_oPen.Alpha		= (BYTE)pProperty->m_dwValue;
 					break;
 				}
 			case CElementProperty::epPenWidth:
 				{
-					m_oShape.m_oPen.Size		= (double)pProperty->m_dwValue / 0xFFFF;
+					m_oPen.Size		= (double)pProperty->m_dwValue / 0xFFFF;
 					break;
 				}
 			case CElementProperty::epPenJoin:
 				{
-					m_oShape.m_oPen.LineJoin	= (BYTE)pProperty->m_dwValue;
+					m_oPen.LineJoin	= (BYTE)pProperty->m_dwValue;
 					break;
 				}
 			case CElementProperty::epLineDash:
 				{
-					m_oShape.m_oPen.DashStyle	= (BYTE)pProperty->m_dwValue;
+					m_oPen.DashStyle	= (BYTE)pProperty->m_dwValue;
 					break;
 				}
 			case CElementProperty::epLineStartCap:
 				{
-					m_oShape.m_oPen.LineStartCap	= (BYTE)pProperty->m_dwValue;
+					m_oPen.LineStartCap	= (BYTE)pProperty->m_dwValue;
 					break;
 				}
 			case CElementProperty::epLineEndCap:
 				{
-					m_oShape.m_oPen.LineEndCap		= (BYTE)pProperty->m_dwValue;
+					m_oPen.LineEndCap		= (BYTE)pProperty->m_dwValue;
 					break;
 				}
 			case CElementProperty::epStroked:
 				{
 					if (0 == pProperty->m_dwValue)
-						m_oShape.m_oPen.Alpha = 0;
+						m_oPen.Alpha = 0;
 
 					break;
 				}

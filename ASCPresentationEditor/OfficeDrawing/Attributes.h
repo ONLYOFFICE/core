@@ -1052,23 +1052,52 @@ namespace NSPresentationEditor
 	{
 	public:
 	
-		bool Visible;
-		double DistanceX;
-		double DistanceY;
-		double BlurSize;
-		CColor Color;
-		long Alpha;
+		bool			Visible;
+
+		double			DistanceX;
+		double			DistanceY;
+		
+		double			OriginX;
+		double			OriginY;
+
+		double			BlurSize;
+		CColor			Color;
+		long			Alpha;
+
+		int				Type;
+
+		double			ScaleXToX;
+		double			ScaleXToY;
+		double			ScaleYToX;
+		double			ScaleYToY;
+
+		int				PerspectiveX;
+		int				PerspectiveY;
 	
 	public:
 
 		void SetDefaultParams()
 		{
-			Visible   = false;
-			DistanceX = 0.1;
-			DistanceY = 0.1;
-			BlurSize  = 0;
-			Color     = 0;
-			Alpha     = 255;
+			Visible		= false;
+			DistanceX	= 0.1;
+			DistanceY	= 0.1;
+			BlurSize	= 0;
+			Alpha		= 255;
+
+			OriginX		= 0;
+			OriginY		= 0;
+
+			Type		= -1;
+
+			ScaleXToX	 = 1.;
+			ScaleXToY	 = 1.;
+			ScaleYToX	 = 1.;
+			ScaleYToY	 = 1.;
+
+			PerspectiveX = 0;
+			PerspectiveY = 0;
+			
+			Color.SetRGB(0x80, 0x80, 0x80);
 		}
 		
 	public:
@@ -1079,23 +1108,45 @@ namespace NSPresentationEditor
 		}
 		CShadow( const CShadow& other )
 		{
-			Visible   = other.Visible;
-			DistanceX = other.DistanceX;
-			DistanceY = other.DistanceY;
-			BlurSize  = other.BlurSize;
-			Color     = other.Color;
-			Alpha     = other.Alpha;
-						
+			Visible		= other.Visible;
+			DistanceX	= other.DistanceX;
+			DistanceY	= other.DistanceY;
+			OriginX		= other.OriginX;
+			OriginY		= other.OriginY;
+			BlurSize	= other.BlurSize;
+			Color		= other.Color;
+			Alpha		= other.Alpha;
+
+			Type		= other.Type;
+
+			ScaleXToX	= other.ScaleXToX;
+			ScaleXToY	= other.ScaleXToY;
+			ScaleYToX	= other.ScaleYToX;
+			ScaleYToY	= other.ScaleYToY;
+
+			PerspectiveX= other.PerspectiveX;
+			PerspectiveY= other.PerspectiveY;
 		}
 		CShadow& operator=(const CShadow& other)
 		{
-			Visible   = other.Visible;
-			DistanceX = other.DistanceX;
-			DistanceY = other.DistanceY;
-			BlurSize  = other.BlurSize;
-			Color     = other.Color;
-			Alpha     = other.Alpha;
-
+			Visible		= other.Visible;
+			DistanceX	= other.DistanceX;
+			DistanceY	= other.DistanceY;
+			OriginX		= other.OriginX;
+			OriginY		= other.OriginY;
+			BlurSize	= other.BlurSize;
+			Color		= other.Color;
+			Alpha		= other.Alpha;
+			Type		= other.Type;
+		
+			PerspectiveX= other.PerspectiveX;
+			PerspectiveY= other.PerspectiveY;
+			
+			ScaleXToX	= other.ScaleXToX;
+			ScaleXToY	= other.ScaleXToY;
+			ScaleYToX	= other.ScaleYToX;
+			ScaleYToY	= other.ScaleYToY;	
+			
 			return *this;
 		}
 		virtual ~CShadow()

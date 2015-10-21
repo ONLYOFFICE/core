@@ -32,16 +32,12 @@ NSPresentationEditor::CShapeWriter::CShapeWriter()
 	m_pImageElement = NULL;
 	m_pShapeElement = NULL;
 }
-CString	NSPresentationEditor::CShapeWriter::ConvertLine()
+CString	NSPresentationEditor::CShapeWriter::ConvertLine(CPen & pen)
 {
-	if (m_pShapeElement->m_bLine == false) return _T("");
-
 	NSPresentationEditor::CStringWriter line_writer;
 
-	CPen* pPen = &m_pShapeElement->m_oShape.m_oPen;
-	
 	CString strLine = _T("");
-	strLine.Format(_T("<a:ln w=\"%d\">"), (int)(pPen->Size * 36000));
+	strLine.Format(_T("<a:ln w=\"%d\">"), (int)(pen.Size * 36000));
 	line_writer.WriteString(strLine);
 
 	if (m_bWordArt)
@@ -51,7 +47,7 @@ CString	NSPresentationEditor::CShapeWriter::ConvertLine()
 	else
 	{
 		line_writer.WriteString(std::wstring(L"<a:solidFill>"));
-			line_writer.WriteString(ConvertColor(pPen->Color, pPen->Alpha));
+			line_writer.WriteString(ConvertColor(pen.Color, pen.Alpha));
 		line_writer.WriteString(std::wstring(L"</a:solidFill>"));
 	}
 
@@ -114,36 +110,120 @@ CString	NSPresentationEditor::CShapeWriter::ConvertBrush(CBrush & brush)
 	return brush_writer.GetData();
 }
 
-CString	NSPresentationEditor::CShapeWriter::ConvertShadow()
+CString	NSPresentationEditor::CShapeWriter::ConvertShadow(CShadow	& shadow)
 {
-	if (m_pShapeElement->m_oShape.m_oShadow.Visible == false)		return _T("");
-	if (abs(m_pShapeElement->m_oShape.m_oShadow.DistanceY) < 0.001)	return _T("");
+	std::wstring	Preset;
+	bool			Inner = false;
 
-	double dist = sqrt(m_pShapeElement->m_oShape.m_oShadow.DistanceY * m_pShapeElement->m_oShape.m_oShadow.DistanceY  + 
-				m_pShapeElement->m_oShape.m_oShadow.DistanceX * m_pShapeElement->m_oShape.m_oShadow.DistanceX);
+	if (shadow.Visible == false)		return _T("");
 
+	double dist = sqrt(shadow.DistanceY * shadow.DistanceY  + shadow.DistanceX * shadow.DistanceX);
+	double dir	= 0;
+	
+	if (abs(shadow.DistanceY) > 0)
+	{
+		dir = 180 * atan(shadow.DistanceX / shadow.DistanceY) / 3.1415926;
 
-	double dir = 180 * atan(m_pShapeElement->m_oShape.m_oShadow.DistanceX / m_pShapeElement->m_oShape.m_oShadow.DistanceY) / 3.1415926;
+		if (dir < 0) dir += 180;
 
-	if (dir < 0) dir += 360;
+		if (shadow.DistanceX < 0 && shadow.DistanceY < 0) dir *= 10;
+	}
+
+	if (shadow.Type == 1) Preset = L"shdw13";
+
+	if (shadow.Type == 5)
+	{
+		if (shadow.DistanceX < 0 && shadow.DistanceY < 0)	Preset = L"shdw18";
+		else												Preset = L"shdw17";
+	}
+	if (shadow.Type == 2 && shadow.OriginX < 0) 
+	{
+		if (shadow.OriginX < -1.4)
+		{
+			if (shadow.ScaleYToY < 0)	Preset = L"shdw15";
+			else						Preset = L"shdw11";
+		}
+		else
+		{
+			if (shadow.ScaleYToY < 0)	Preset = L"shdw16";
+			else						Preset = L"shdw12";
+		}
+	}
 
 	CString strDir = _T("");
-	strDir.Format(_T("  dir=\"%d\""), (int)(dir * 60000));
-
 	CString strDist = _T("");
-	strDist.Format(_T("  dist=\"%d\""), (int)(dist * 36000));
 
+	if (shadow.DistanceY != 0 && shadow.DistanceX != 0)
+	{
+		if (shadow.DistanceY < 0 && shadow.DistanceX < 0) dir /=2;
+
+		strDir.Format(_T(" dir=\"%d\""), (int)(dir * 60000));
+		strDist.Format(_T(" dist=\"%d\""), (int)(dist * 36000));	
+	}
+
+	CString strSY = _T("");
+	if (shadow.ScaleYToY < 1 || shadow.ScaleYToY > 1)
+	{
+		if (shadow.ScaleYToX < 1)shadow.ScaleYToY = -shadow.ScaleYToY;
+
+		strSY.Format(_T(" sy=\"%d\""), (int)(shadow.ScaleYToY * 100000));	
+	}
+	CString strSX = _T("");
+	if (shadow.ScaleYToX < 1 || shadow.ScaleYToX > 1)
+	{
+		//strSX.Format(_T(" sx=\"%d\""), (int)(shadow.ScaleYToX * 100000));	
+		strSX.Format(_T(" kx=\"%d\""), (int)((shadow.ScaleYToX + 0.5) * 360000));	
+	}
 	NSPresentationEditor::CStringWriter shadow_writer;
 	
-	shadow_writer.WriteString(std::wstring(L"<a:effectLst>"));	
-	shadow_writer.WriteString(std::wstring(L"<a:outerShdw"));
-		shadow_writer.WriteString(std::wstring(L" rotWithShape=\"0\" algn=\"ctr\""));
-		shadow_writer.WriteString(strDir);
-		shadow_writer.WriteString(strDist);
-	shadow_writer.WriteString(std::wstring(L">"));
+	shadow_writer.WriteString(std::wstring(L"<a:effectLst>"));
 
-	shadow_writer.WriteString(ConvertColor(m_pShapeElement->m_oShape.m_oShadow.Color,m_pShapeElement->m_oShape.m_oShadow.Alpha));
-	shadow_writer.WriteString(std::wstring(L"</a:outerShdw>"));
+	if (!Preset.empty())
+	{
+		shadow_writer.WriteString(std::wstring(L"<a:prstShdw"));
+			shadow_writer.WriteString(std::wstring(L" prst=\"") + Preset + std::wstring(L"\""));
+			//shadow_writer.WriteString(std::wstring(L" rotWithShape=\"0\" algn=\"ctr\""));
+			shadow_writer.WriteString(strDir);
+			shadow_writer.WriteString(strDist);
+		shadow_writer.WriteString(std::wstring(L">"));
+
+		shadow_writer.WriteString(ConvertColor(shadow.Color,shadow.Alpha));
+		shadow_writer.WriteString(std::wstring(L"</a:prstShdw>"));
+	}
+	else if (Inner)
+	{
+		shadow_writer.WriteString(std::wstring(L"<a:innerShdw"));
+			shadow_writer.WriteString(std::wstring(L" rotWithShape=\"0\""));
+			if (strSX.IsEmpty() && strSY.IsEmpty())
+			{
+				shadow_writer.WriteString(std::wstring(L" algn=\"ctr\""));
+			}
+			shadow_writer.WriteString(strSX);
+			shadow_writer.WriteString(strSY);
+			shadow_writer.WriteString(strDir);
+			shadow_writer.WriteString(strDist);
+		shadow_writer.WriteString(std::wstring(L">"));
+
+		shadow_writer.WriteString(ConvertColor(shadow.Color,shadow.Alpha));
+		shadow_writer.WriteString(std::wstring(L"</a:innerShdw>"));
+	}
+	else
+	{
+		shadow_writer.WriteString(std::wstring(L"<a:outerShdw"));
+			shadow_writer.WriteString(std::wstring(L" rotWithShape=\"0\""));
+			if (strSX.IsEmpty() && strSY.IsEmpty())
+			{
+				shadow_writer.WriteString(std::wstring(L" algn=\"ctr\""));
+			}
+			shadow_writer.WriteString(strSX);
+			shadow_writer.WriteString(strSY);
+			shadow_writer.WriteString(strDir);
+			shadow_writer.WriteString(strDist);
+		shadow_writer.WriteString(std::wstring(L">"));
+
+		shadow_writer.WriteString(ConvertColor(shadow.Color,shadow.Alpha));
+		shadow_writer.WriteString(std::wstring(L"</a:outerShdw>"));
+	}
 	shadow_writer.WriteString(std::wstring(L"</a:effectLst>"));
 	return shadow_writer.GetData();
 }
@@ -581,7 +661,7 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 
 			if (m_bWordArt)
 			{
-				m_oWriter.WriteString(ConvertBrush(m_pShapeElement->m_oShape.m_oBrush));
+				m_oWriter.WriteString(ConvertBrush(m_pShapeElement->m_oBrush));
 			}
 			else
 			{
@@ -734,26 +814,22 @@ CString NSPresentationEditor::CShapeWriter::ConvertShape()
 		m_pShapeElement->m_oShape.ToRenderer(dynamic_cast<IRenderer*>(this), oInfo, m_oMetricInfo, 0.0, 1.0);
 	}
 
-	if (prstTxWarp.empty())
+	if ((prstGeom.empty() == false || m_pShapeElement->m_bShapePreset) && prstTxWarp.empty())
 	{
-		if (m_pShapeElement->m_bShapePreset)
+		if (prstGeom.empty()) prstGeom = L"rect";
+		m_oWriter.WriteString(std::wstring(L"<a:prstGeom"));
 		{
-			if (prstGeom.empty()) prstGeom = L"rect";
-
-			m_oWriter.WriteString(std::wstring(L"<a:prstGeom"));
+			m_oWriter.WriteString(std::wstring(L" prst=\"") + prstGeom + std::wstring(L"\">"));
+			if (!m_bWordArt)	
 			{
-				m_oWriter.WriteString(std::wstring(L" prst=\"") + prstGeom + std::wstring(L"\">"));
-				if (!m_bWordArt)	
-				{
-					m_oWriter.WriteString(std::wstring(L"<a:avLst/>"));
-				}
+				m_oWriter.WriteString(std::wstring(L"<a:avLst/>"));
 			}
-			m_oWriter.WriteString(std::wstring(L"</a:prstGeom>"));		
 		}
-		else
-		{
-			m_oWriter.WriteString(m_pShapeElement->ConvertPPTShapeToPPTX());
-		}
+		m_oWriter.WriteString(std::wstring(L"</a:prstGeom>"));	
+	}
+	else if (prstTxWarp.empty())
+	{
+		m_oWriter.WriteString(m_pShapeElement->ConvertPPTShapeToPPTX());
 	}
 	else
 	{
@@ -761,10 +837,13 @@ CString NSPresentationEditor::CShapeWriter::ConvertShape()
 		m_oWriter.WriteString(std::wstring(L"<a:prstGeom prst=\"rect\"/>"));
 	}
 
-	m_oWriter.WriteString(ConvertBrush(m_oBrush));
+	m_oWriter.WriteString(ConvertBrush(m_pShapeElement->m_oBrush));
 
-	m_oWriter.WriteString(ConvertLine());
-	m_oWriter.WriteString(ConvertShadow());
+	if (m_pShapeElement->m_bLine)
+	{
+		m_oWriter.WriteString(ConvertLine(m_pShapeElement->m_oPen));
+	}
+	m_oWriter.WriteString(ConvertShadow(m_pShapeElement->m_oShadow));
 
 	m_oWriter.WriteString(std::wstring(L"</p:spPr>"));			
 
@@ -862,7 +941,13 @@ CString NSPresentationEditor::CShapeWriter::ConvertImage()
 		m_oWriter.WriteString(std::wstring(L"</a:xfrm>"));
 	}
 	m_oWriter.WriteString(std::wstring(L"<a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom>"));
-	m_oWriter.WriteString(std::wstring(L"<a:noFill/>"));
+
+	m_oWriter.WriteString(ConvertBrush(m_pImageElement->m_oBrush));
+
+	if (m_pImageElement->m_bLine)
+	{
+		m_oWriter.WriteString(ConvertLine(m_pImageElement->m_oPen));
+	}
 
 	m_oWriter.WriteString(std::wstring(L"</p:spPr>"));			
 

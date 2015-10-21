@@ -615,8 +615,8 @@ namespace NSCustomVML
 
 			bool bBreak = false;
 
-			LONG lMinF = (LONG)0x80000000;
-			LONG lMaxF = (LONG)0x8000007F;
+			long lMinF = (_INT32)0x80000000;
+			long lMaxF = (_INT32)0x8000007F;
 
 			int nGuideIndex_x , nGuideIndex_y;
 
@@ -628,13 +628,12 @@ namespace NSCustomVML
 				{
 					nGuideIndex_x = nGuideIndex_y = -1;
 				
-					if (lMinF <= (DWORD)m_arVertices[nIndex].x)	nGuideIndex_x = (DWORD)m_arVertices[nIndex].x - 0x80000000;	
-					if (lMinF <= (DWORD)m_arVertices[nIndex].y)	nGuideIndex_y = (DWORD)m_arVertices[nIndex].y - 0x80000000;	
+					if (lMaxF > m_arVertices[nIndex].x )	nGuideIndex_x = (DWORD)m_arVertices[nIndex].x - (DWORD)lMinF;	
+					if (lMaxF > m_arVertices[nIndex].y )	nGuideIndex_y = (DWORD)m_arVertices[nIndex].y - (DWORD)lMinF;	
 
 					CString str = _T("");
 					if (nGuideIndex_x >= 0 ) 
 					{
-						//str.Format(_T("gd%d,"), nGuideIndex_x);
 						str.Format(_T("%d,"), m_arGuides[nGuideIndex_x].m_param_value1);
 						strPath += str;
 					}
@@ -645,7 +644,6 @@ namespace NSCustomVML
 					}
 					if (nGuideIndex_y >= 0)
 					{
-						//str.Format(_T("gd%d,"), nGuideIndex_y);
 						str.Format(_T("%d,"), m_arGuides[nGuideIndex_y].m_param_value1);
 						strPath += str;
 					}
@@ -711,13 +709,12 @@ namespace NSCustomVML
 					{
 						nGuideIndex_x = nGuideIndex_y = -1;
 					
-						if (lMinF <= (DWORD)m_arVertices[nV].x)	nGuideIndex_x = (DWORD)m_arVertices[nV].x - 0x80000000;	
-						if (lMinF <= (DWORD)m_arVertices[nV].y)	nGuideIndex_y = (DWORD)m_arVertices[nV].y - 0x80000000;	
+						if (lMaxF > m_arVertices[nV].x )	nGuideIndex_x = (DWORD)m_arVertices[nV].x - (DWORD)lMinF;	
+						if (lMaxF > m_arVertices[nV].y )	nGuideIndex_y = (DWORD)m_arVertices[nV].y - (DWORD)lMinF;	
 
 						CString str = _T("");
 						if (nGuideIndex_x >= 0 )
 						{
-							//str.Format(_T("gd%d,"), nGuideIndex_x);
 							str.Format(_T("%d,"), m_arGuides[nGuideIndex_x].m_param_value1);
 							strPath += str;
 						}
@@ -728,7 +725,6 @@ namespace NSCustomVML
 						}
 						if (nGuideIndex_y >= 0)
 						{
-							//str.Format(_T("gd%d,"), nGuideIndex_y);//m_arGuides[nGuideIndex_y].m_param_value1);
 							str.Format(_T("%d,"), m_arGuides[nGuideIndex_y].m_param_value1);
 							strPath += str;
 						}

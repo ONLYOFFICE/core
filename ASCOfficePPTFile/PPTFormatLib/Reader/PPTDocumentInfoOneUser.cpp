@@ -552,7 +552,7 @@ void CPPTUserInfo::LoadSlide(DWORD dwSlideID, CSlide* pSlide)
 					pShape->SetupProperties(pSlide, pTheme, pLayout);
 
 					pSlide->m_bIsBackground = true;
-					pSlide->m_oBackground	= pShape->m_oShape.m_oBrush;
+					pSlide->m_oBackground	= pShape->m_oBrush;
 				}
 				RELEASEOBJECT(pElem);
 				continue;			
@@ -812,7 +812,7 @@ void CPPTUserInfo::LoadMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, co
 					pShape->SetupProperties(NULL, pTheme, pLayout);
 
 					pTheme->m_bIsBackground = true;
-					pTheme->m_oBackground = pShape->m_oShape.m_oBrush;
+					pTheme->m_oBackground = pShape->m_oBrush;
 				}
 
 				RELEASEINTERFACE(pElem);
@@ -985,7 +985,7 @@ void CPPTUserInfo::LoadNoMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, 
 					pShape->SetupProperties(NULL, pTheme, pLayout);
 
 					pLayout->m_bIsBackground = true;
-					pLayout->m_oBackground	= pShape->m_oShape.m_oBrush;
+					pLayout->m_oBackground	= pShape->m_oBrush;
 				}
 				RELEASEINTERFACE(pElem);
 				continue;

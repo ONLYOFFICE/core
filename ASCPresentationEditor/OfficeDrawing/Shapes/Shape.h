@@ -34,11 +34,8 @@ public:
 	long					m_lLimoX;
 	long					m_lLimoY;
 
-	CPen					m_oPen;
-	CBrush					m_oBrush;
 	CTextAttributesEx		m_oText;
 
-	CShadow					m_oShadow;
 
 	double					m_dWidthLogic;
 	double					m_dHeightLogic;
@@ -128,17 +125,17 @@ public:
 	}
 
 
-	virtual CString GetBrushXml()
-	{
-		if (!m_pShape->m_bConcentricFill)
-			return _T("");
-		return m_oBrush.ToString();
-	}
+	//virtual CString GetBrushXml()
+	//{
+	//	if (!m_pShape->m_bConcentricFill)
+	//		return _T("");
+	//	return m_oBrush.ToString();
+	//}
 
-	virtual CString GetPenXml()
-	{
-		return m_oPen.ToString();
-	}
+	//virtual CString GetPenXml()
+	//{
+	//	return m_oPen.ToString();
+	//}
 
 	virtual void GetTextRect(CGeomShapeInfo& oInfo)
 	{
@@ -297,7 +294,9 @@ public:
 
 		m_pShape->m_oPath.SetCoordsize((LONG)m_dWidthLogic, (LONG)m_dHeightLogic);
 		
-		CString strDrawing = m_pShape->ToXML(oGeomInfo, pInfo, dStartTime, dEndTime, m_oBrush, m_oPen);
+		CBrush	brush; //копии с уровня выше нужны
+		CPen	pen;
+		CString strDrawing = m_pShape->ToXML(oGeomInfo, pInfo, dStartTime, dEndTime, brush, pen);
 		if (m_lDrawType & c_ShapeDrawType_Graphic)
 		{
 			strImageTransform += strDrawing;
@@ -321,11 +320,13 @@ public:
 		
 		if (m_lDrawType & c_ShapeDrawType_Graphic)
 		{
-			m_oPen.SetToRenderer(pRenderer);
-			m_oBrush.SetToRenderer(pRenderer);
+			//m_oPen.SetToRenderer(pRenderer);
+			//m_oBrush.SetToRenderer(pRenderer);
 			//m_oShadow.SetToRenderer(pRenderer);
+			CBrush	brush; //копии с уровня выше нужны
+			CPen	pen;
 
-			m_pShape->ToRenderer(pRenderer, oGeomInfo, dStartTime, dEndTime, m_oPen, m_oBrush, pInfo);
+			m_pShape->ToRenderer(pRenderer, oGeomInfo, dStartTime, dEndTime, pen, brush, pInfo);
 		}
 	}
 
@@ -377,23 +378,20 @@ public:
 		if(Shape == NULL)
 			return false;
 
-		Shape->m_dStartTime		= m_dStartTime;
-		Shape->m_dEndTime		= m_dEndTime;
+		Shape->m_dStartTime			= m_dStartTime;
+		Shape->m_dEndTime			= m_dEndTime;
 
-		Shape->m_rcBounds		= m_rcBounds;
+		Shape->m_rcBounds			= m_rcBounds;
 
-		Shape->m_lLimoX			= m_lLimoX;
-		Shape->m_lLimoY			= m_lLimoY;
+		Shape->m_lLimoX				= m_lLimoX;
+		Shape->m_lLimoY				= m_lLimoY;
 
-		Shape->m_oPen			= m_oPen;
-		Shape->m_oBrush			= m_oBrush;
-		Shape->m_oText			= m_oText;
-		Shape->m_oShadow		= m_oShadow;
+		Shape->m_oText				= m_oText;
 
-		Shape->m_dWidthLogic	= m_dWidthLogic;
-		Shape->m_dHeightLogic	= m_dHeightLogic;
+		Shape->m_dWidthLogic		= m_dWidthLogic;
+		Shape->m_dHeightLogic		= m_dHeightLogic;
 
-		Shape->m_lDrawType		= m_lDrawType;
+		Shape->m_lDrawType			= m_lDrawType;
 
 		Shape->m_dTextMarginX		= m_dTextMarginX;
 		Shape->m_dTextMarginY		= m_dTextMarginY;
@@ -412,21 +410,21 @@ public:
 		if (oNodePict.GetNode(_T("stroke"), oNodeTemplate))
 		{
 			CString strColor = oNodeTemplate.GetAttributeOrValue(_T("strokecolor"));
-			if (strColor != _T(""))
-				m_oPen.Color.FromString(strColor);
-			CString strSize = oNodeTemplate.GetAttributeOrValue(_T("strokeweight"));
-			if (strSize != _T(""))
-				m_oPen.Size = XmlUtils::GetDouble(strSize);
-			CString strStroke = oNodeTemplate.GetAttributeOrValue(_T("stroked"));
-			if (strStroke != _T(""))
-				m_oPen.Alpha = 0;
+			//if (strColor != _T(""))
+			//	m_oPen.Color.FromString(strColor);
+			//CString strSize = oNodeTemplate.GetAttributeOrValue(_T("strokeweight"));
+			//if (strSize != _T(""))
+			//	m_oPen.Size = XmlUtils::GetDouble(strSize);
+			//CString strStroke = oNodeTemplate.GetAttributeOrValue(_T("stroked"));
+			//if (strStroke != _T(""))
+			//	m_oPen.Alpha = 0;
 
 		}
 		if (oNodePict.GetNode(_T("v:stroke"), oNodeTemplate))
 		{
 			CString strColor = oNodeTemplate.GetAttributeOrValue(_T("dashstyle"));
-			if (strColor != _T(""))
-				m_oPen.DashStyle = XmlUtils::GetInteger(strColor);
+			//if (strColor != _T(""))
+			//	m_oPen.DashStyle = XmlUtils::GetInteger(strColor);
 		}		
 	}
 
@@ -436,8 +434,8 @@ public:
 		if (oNodePict.GetNode(_T("fillcolor"), oNodeTemplate))
 		{
 			CString strColor = oNodeTemplate.GetAttributeOrValue(_T("val"));
-			if (strColor != _T(""))
-				m_oBrush.Color1.FromString(strColor);				
+			//if (strColor != _T(""))
+			//	m_oBrush.Color1.FromString(strColor);				
 		}
 	}
 

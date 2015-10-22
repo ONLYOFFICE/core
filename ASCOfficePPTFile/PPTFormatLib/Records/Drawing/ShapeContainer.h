@@ -2181,6 +2181,7 @@ protected:
 			
 			NSPresentationEditor::ConvertPPTTextToEditorStructure(oArrayPF, oArrayCF, strText, *pTextSettings);
 		}
+		pShape->m_oShape.m_oText.RecalcParagraphsPPT(pTheme);
 
 		if (pShape->m_oActions.m_bPresent)
 		{

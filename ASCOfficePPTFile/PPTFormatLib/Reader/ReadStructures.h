@@ -816,15 +816,16 @@ namespace NSPresentationEditor
 
 		int nIndexLast = strText.GetLength();
 		int nIndexText = 0;
+		
 		for (int nIndexPF = 0; nIndexPF < nCountPFs; ++nIndexPF)
 		{
 			CParagraph elm;
 			oAttributes.m_arParagraphs.push_back(elm);
 			NSPresentationEditor::CParagraph* pPar = &oAttributes.m_arParagraphs[nIndexPF];
 
-			pPar->m_oPFRun = oArrayPF[nIndexPF].m_oRun;
-			pPar->m_lTextType = oAttributes.m_lTextType;
-			pPar->m_lTextLevel = oArrayPF[nIndexPF].m_lLevel;
+			pPar->m_oPFRun		= oArrayPF[nIndexPF].m_oRun;
+			pPar->m_lTextType	= oAttributes.m_lTextType;
+			pPar->m_lTextLevel	= oArrayPF[nIndexPF].m_lLevel;
 
 			int nCountInPF = oArrayPF[nIndexPF].m_lCount;
 

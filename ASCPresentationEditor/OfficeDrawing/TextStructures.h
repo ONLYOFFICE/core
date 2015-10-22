@@ -174,53 +174,34 @@ namespace NSPresentationEditor
 		
 		AVSINLINE void ApplyBefore(const CTextCFRun& oSrc)
 		{
-			if (!FontBold.is_init())
-				FontBold = oSrc.FontBold;
-			if (!FontItalic.is_init())
-				FontItalic = oSrc.FontItalic;
-			if (!FontUnderline.is_init())
-				FontUnderline = oSrc.FontUnderline;
-			if (!FontStrikeout.is_init())
-				FontStrikeout = oSrc.FontStrikeout;
-			if (!FontShadow.is_init())
-				FontShadow = oSrc.FontShadow;
+			if (!FontBold.is_init()) 				FontBold = oSrc.FontBold;
+			if (!FontItalic.is_init())				FontItalic = oSrc.FontItalic;
+			if (!FontUnderline.is_init())			FontUnderline = oSrc.FontUnderline;
+			if (!FontStrikeout.is_init())			FontStrikeout = oSrc.FontStrikeout;
+			if (!FontShadow.is_init())				FontShadow = oSrc.FontShadow;
 			
-			if (!Typeface.is_init())
-				Typeface = oSrc.Typeface;
-			if (!EAFontRef.is_init())
-				EAFontRef = oSrc.EAFontRef;
-			if (!AnsiFontRef.is_init())
-				AnsiFontRef = oSrc.AnsiFontRef;
-			if (!SymbolFontRef.is_init())
-				SymbolFontRef = oSrc.SymbolFontRef;
+			if (!Typeface.is_init())				Typeface = oSrc.Typeface;
+			if (!EAFontRef.is_init())				EAFontRef = oSrc.EAFontRef;
+			if (!AnsiFontRef.is_init())				AnsiFontRef = oSrc.AnsiFontRef;
+			if (!SymbolFontRef.is_init())			SymbolFontRef = oSrc.SymbolFontRef;
 
-			if (!BaseLineOffset.is_init())
-				BaseLineOffset = oSrc.BaseLineOffset;
+			if (!BaseLineOffset.is_init())			BaseLineOffset = oSrc.BaseLineOffset;
 
-			if (!Color.is_init())
-				Color = oSrc.Color;
+			if (!Color.is_init())					Color = oSrc.Color;
 
-			if (!Size.is_init())
-				Size = oSrc.Size;
+			if (!Size.is_init())					Size = oSrc.Size;
 
-			if (!Cap.is_init())
-				Cap = oSrc.Cap;
+			if (!Cap.is_init())						Cap = oSrc.Cap;
 
-			if (!FontProperties.is_init())
-				FontProperties = oSrc.FontProperties;
+			if (!FontProperties.is_init())			FontProperties = oSrc.FontProperties;
 		}
 		AVSINLINE void ApplyAfter(const CTextCFRun& oSrc)
 		{
-			if (oSrc.FontBold.is_init())
-				FontBold = oSrc.FontBold;
-			if (oSrc.FontItalic.is_init())
-				FontItalic = oSrc.FontItalic;
-			if (oSrc.FontUnderline.is_init())
-				FontUnderline = oSrc.FontUnderline;
-			if (oSrc.FontStrikeout.is_init())
-				FontStrikeout = oSrc.FontStrikeout;
-			if (oSrc.FontShadow.is_init())
-				FontShadow = oSrc.FontShadow;
+			if (oSrc.FontBold.is_init())			FontBold = oSrc.FontBold;
+			if (oSrc.FontItalic.is_init())			FontItalic = oSrc.FontItalic;
+			if (oSrc.FontUnderline.is_init())		FontUnderline = oSrc.FontUnderline;
+			if (oSrc.FontStrikeout.is_init())		FontStrikeout = oSrc.FontStrikeout;
+			if (oSrc.FontShadow.is_init())			FontShadow = oSrc.FontShadow;
 			
 			bool bTypefaceSetUp = false;
 			if (oSrc.Typeface.is_init())
@@ -228,24 +209,17 @@ namespace NSPresentationEditor
 				Typeface = oSrc.Typeface;
 				bTypefaceSetUp = true;
 			}
-			if (oSrc.EAFontRef.is_init())
-				EAFontRef = oSrc.EAFontRef;
-			if (oSrc.AnsiFontRef.is_init())
-				AnsiFontRef = oSrc.AnsiFontRef;
-			if (oSrc.SymbolFontRef.is_init())
-				SymbolFontRef = oSrc.SymbolFontRef;
+			if (oSrc.EAFontRef.is_init())			EAFontRef = oSrc.EAFontRef;
+			if (oSrc.AnsiFontRef.is_init())			AnsiFontRef = oSrc.AnsiFontRef;
+			if (oSrc.SymbolFontRef.is_init())		SymbolFontRef = oSrc.SymbolFontRef;
 
-			if (oSrc.BaseLineOffset.is_init())
-				BaseLineOffset = oSrc.BaseLineOffset;
+			if (oSrc.BaseLineOffset.is_init())		BaseLineOffset = oSrc.BaseLineOffset;
 
-			if (oSrc.Color.is_init())
-				Color = oSrc.Color;
+			if (oSrc.Color.is_init())				Color = oSrc.Color;
 
-			if (oSrc.Size.is_init())
-				Size = oSrc.Size;
+			if (oSrc.Size.is_init())				Size = oSrc.Size;
 
-			if (oSrc.Cap.is_init())
-				Cap = oSrc.Cap;
+			if (oSrc.Cap.is_init())					Cap = oSrc.Cap;
 
 			if (oSrc.FontProperties.is_init())
 			{
@@ -355,7 +329,7 @@ namespace NSPresentationEditor
 	{
 	public:
 
-                NSCommon::nullable_base<bool>		hasBullet;
+		NSCommon::nullable_base<bool>		hasBullet;
 
 		NSCommon::nullable_base<WORD>		bulletFontRef;
 		NSCommon::nullable_base<WORD>		bulletSize;
@@ -462,39 +436,24 @@ namespace NSPresentationEditor
 
 		void ApplyAfter(const CTextPFRun& oSrc)
 		{
-			if (oSrc.hasBullet.is_init())
-				hasBullet = oSrc.hasBullet;
+			if (oSrc.hasBullet.is_init())			hasBullet = oSrc.hasBullet;
 
-			if (oSrc.bulletFontRef.is_init())
-				bulletFontRef = oSrc.bulletFontRef;
-			if (oSrc.bulletSize.is_init())
-				bulletSize = oSrc.bulletSize;
-			if (oSrc.bulletChar.is_init())
-				bulletChar = oSrc.bulletChar;
-			if (oSrc.bulletColor.is_init())
-				bulletColor = oSrc.bulletColor;
+			if (oSrc.bulletFontRef.is_init())		bulletFontRef = oSrc.bulletFontRef;
+			if (oSrc.bulletSize.is_init())			bulletSize = oSrc.bulletSize;
+			if (oSrc.bulletChar.is_init())			bulletChar = oSrc.bulletChar;
+			if (oSrc.bulletColor.is_init())			bulletColor = oSrc.bulletColor;
 
-			if (oSrc.textAlignment.is_init())
-				textAlignment = oSrc.textAlignment;
-			if (oSrc.lineSpacing.is_init())
-				lineSpacing = oSrc.lineSpacing;
-			if (oSrc.spaceBefore.is_init())
-				spaceBefore = oSrc.spaceBefore;
-			if (oSrc.spaceAfter.is_init())
-				spaceAfter = oSrc.spaceAfter;
-			if (oSrc.leftMargin.is_init())
-				leftMargin = oSrc.leftMargin;
-			if (oSrc.indent.is_init())
-				indent = oSrc.indent;
-			if (oSrc.defaultTabSize.is_init())
-				defaultTabSize = oSrc.defaultTabSize;
+			if (oSrc.textAlignment.is_init())		textAlignment = oSrc.textAlignment;
+			if (oSrc.lineSpacing.is_init())			lineSpacing = oSrc.lineSpacing;
+			if (oSrc.spaceBefore.is_init())			spaceBefore = oSrc.spaceBefore;
+			if (oSrc.spaceAfter.is_init())			spaceAfter = oSrc.spaceAfter;
+			if (oSrc.leftMargin.is_init())			leftMargin = oSrc.leftMargin;
+			if (oSrc.indent.is_init())				indent = oSrc.indent;
+			if (oSrc.defaultTabSize.is_init())		defaultTabSize = oSrc.defaultTabSize;
 
-			if (oSrc.fontAlign.is_init())
-				fontAlign = oSrc.fontAlign;
-			if (oSrc.textDirection.is_init())
-				textDirection = oSrc.textDirection;
-			if (oSrc.wrapFlags.is_init())
-				wrapFlags = oSrc.wrapFlags;
+			if (oSrc.fontAlign.is_init())			fontAlign = oSrc.fontAlign;
+			if (oSrc.textDirection.is_init())		textDirection = oSrc.textDirection;
+			if (oSrc.wrapFlags.is_init())			wrapFlags = oSrc.wrapFlags;
 
 			if (0 != oSrc.tabStops.size())
 			{
@@ -640,32 +599,20 @@ namespace NSPresentationEditor
 
 		void ApplyBefore(const CTextRuler& oSrc)
 		{
-			if (!DefaultTabSize.is_init())
-				DefaultTabSize = oSrc.DefaultTabSize;
-			if (!CLevels.is_init())
-				CLevels = oSrc.CLevels;
+			if (!DefaultTabSize.is_init())			DefaultTabSize = oSrc.DefaultTabSize;
+			if (!CLevels.is_init())					CLevels = oSrc.CLevels;
 			
-			if (!LeftMargin1.is_init())
-				LeftMargin1 = oSrc.LeftMargin1;
-			if (!LeftMargin2.is_init())
-				LeftMargin2 = oSrc.LeftMargin2;
-			if (!LeftMargin3.is_init())
-				LeftMargin3 = oSrc.LeftMargin3;
-			if (!LeftMargin4.is_init())
-				LeftMargin4 = oSrc.LeftMargin4;
-			if (!LeftMargin5.is_init())
-				LeftMargin5 = oSrc.LeftMargin5;
+			if (!LeftMargin1.is_init())				LeftMargin1 = oSrc.LeftMargin1;
+			if (!LeftMargin2.is_init())				LeftMargin2 = oSrc.LeftMargin2;
+			if (!LeftMargin3.is_init())				LeftMargin3 = oSrc.LeftMargin3;
+			if (!LeftMargin4.is_init())				LeftMargin4 = oSrc.LeftMargin4;
+			if (!LeftMargin5.is_init())				LeftMargin5 = oSrc.LeftMargin5;
 
-			if (!Indent1.is_init())
-				Indent1 = oSrc.Indent1;
-			if (!Indent2.is_init())
-				Indent2 = oSrc.Indent2;
-			if (!Indent3.is_init())
-				Indent3 = oSrc.Indent3;
-			if (!Indent4.is_init())
-				Indent4 = oSrc.Indent4;
-			if (!Indent5.is_init())
-				Indent5 = oSrc.Indent5;
+			if (!Indent1.is_init())					Indent1 = oSrc.Indent1;
+			if (!Indent2.is_init())					Indent2 = oSrc.Indent2;
+			if (!Indent3.is_init())					Indent3 = oSrc.Indent3;
+			if (!Indent4.is_init())					Indent4 = oSrc.Indent4;
+			if (!Indent5.is_init())					Indent5 = oSrc.Indent5;
 
 			tabsStops.insert(tabsStops.end(), oSrc.tabsStops.begin(), oSrc.tabsStops.end());
 		}
@@ -743,7 +690,7 @@ namespace NSPresentationEditor
 	class CTextSIRun
 	{
 	public:
-                bool bIsExt;
+		bool bIsExt;
 		DWORD lCount;
 
 		bool bSpell;
@@ -769,7 +716,7 @@ namespace NSPresentationEditor
 
 		CTextSIRun()
 		{
-                        bIsExt = true;
+			bIsExt = true;
 			lCount  = 0;
 
 			bSpell = false;
@@ -1006,7 +953,9 @@ namespace NSPresentationEditor
 		CTextStyles()
 		{
 			for (int i = 0; i < 10; ++i)
+			{
 				m_pLevels[i] = NULL;
+			}
 		}
 		CTextStyles(const CTextStyles& oSrc)
 		{
@@ -1015,23 +964,30 @@ namespace NSPresentationEditor
 		CTextStyles& operator=(const CTextStyles& oSrc)
 		{
 			for (int i = 0; i < 10; ++i)
+			{
 				m_pLevels[i] = oSrc.m_pLevels[i];
-
+			}
 			return *this;
 		}
 		void SetStyles(CTextStyles* pStyles)
 		{
 			for (int i = 0; i < 10; ++i)
+			{
 				m_pLevels[i] = pStyles->m_pLevels[i];
+			}
 		}
 		void ApplyAfter(const CTextStyles& oSrc)
 		{
 			for (int i = 0; i < 10; ++i)
 			{
 				if (!m_pLevels[i].is_init())
+				{
 					m_pLevels[i] = oSrc.m_pLevels[i];
+				}
 				else if (oSrc.m_pLevels[i].is_init())
+				{
 					m_pLevels[i]->ApplyAfter(oSrc.m_pLevels[i].get());
+				}
 
 			}
 		}
@@ -1040,9 +996,13 @@ namespace NSPresentationEditor
 			for (int i = 0; i < 10; ++i)
 			{
 				if (!m_pLevels[i].is_init())
+				{
 					m_pLevels[i] = oSrc.m_pLevels[i];
+				}
 				else if (oSrc.m_pLevels[i].is_init())
+				{
 					m_pLevels[i]->ApplyBefore(oSrc.m_pLevels[i].get());
+				}
 
 			}
 		}

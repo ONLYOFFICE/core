@@ -76,7 +76,7 @@ namespace NSPresentationEditor
 
 			#ifdef PPT_DEF
 			#ifndef PPTX_DEF
-				CorrectRuler(&oPFRun, (WORD)lLevel);
+				ApplyRuler(&oPFRun, (WORD)lLevel);
 			#endif
 			#endif
 
@@ -285,6 +285,8 @@ namespace NSPresentationEditor
 		{
 			m_arParagraphs[i].CheckErrors();
 		}
+
+		ApplyRuler(pTheme);
 	}
 
 	void CTextAttributesEx::RecalcParagraphs(CTheme* pTheme)
@@ -299,13 +301,45 @@ namespace NSPresentationEditor
 		}
 #endif
 	}
-	void CTextAttributesEx::NormalizeCoordsByMetric(const CMetricInfo & oMetric)
+	void CTextAttributesEx::ApplyRuler(CTheme* pTheme)
 	{
+		if (m_oRuler.tabsStops.size() > 0 || m_oRuler.DefaultTabSize.is_init())//presentacio1.ppt слайд 2
+		{
+			for (long i = 0; i < 9 ;i++)
+			{
+				if (m_oStyles.m_pLevels[i].is_init() == false)
+				{
+					m_oStyles.m_pLevels[i] = pTheme->m_pStyles[0].m_pLevels[i];
+				}
+				if (m_oRuler.tabsStops.size() > 0)
+				{
+					m_oStyles.m_pLevels[i]->m_oPFRun.tabStops = m_oRuler.tabsStops;
+				}
+
+				if (m_oRuler.DefaultTabSize.is_init())
+				{
+					m_oStyles.m_pLevels[i]->m_oPFRun.defaultTabSize = m_oRuler.DefaultTabSize;
+				}	
+			}
+		}
+
 		size_t lCount = m_arParagraphs.size();
 		for (size_t i = 0; i < lCount; ++i)
 		{
 			CTextPFRun* pPar = &m_arParagraphs[i].m_oPFRun;
 
+			if (m_oRuler.tabsStops.size() > 0)
+			{
+				pPar->tabStops = m_oRuler.tabsStops;
+
+				if (pPar->defaultTabSize.is_init() == false)
+					pPar->defaultTabSize = m_oRuler.tabsStops[0];
+			}
+
+			if (m_oRuler.DefaultTabSize.is_init())
+			{
+				pPar->defaultTabSize = m_oRuler.DefaultTabSize;
+			}
 			WORD lIndentLevel = (WORD)m_arParagraphs[i].m_lTextLevel;
 
 			switch (lIndentLevel)

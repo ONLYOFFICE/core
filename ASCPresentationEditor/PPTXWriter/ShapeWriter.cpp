@@ -589,7 +589,7 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 		{
 			if (TRUE)
 			{
-				if ((nSpan == (nCountSpans - 1)) && (_T("\n") == pParagraph->m_arSpans[nSpan].m_strText))
+				if ((nSpan == (nCountSpans - 1)) && (_T("\n") == pParagraph->m_arSpans[nSpan].m_strText || pParagraph->m_arSpans[nSpan].m_strText.IsEmpty()) )
 				{
 					NSPresentationEditor::CTextCFRun* pCF = &pParagraph->m_arSpans[nSpan].m_oRun;
 					if (pCF->Size.is_init())
@@ -657,6 +657,14 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 					m_oWriter.WriteString(std::wstring(L" i=\"1\""));
 				else
 					m_oWriter.WriteString(std::wstring(L" i=\"0\""));
+			}
+
+			if (pCF->FontUnderline.is_init())
+			{
+				if (pCF->FontUnderline.get())
+					m_oWriter.WriteString(std::wstring(L" u=\"sng\""));
+				else
+					m_oWriter.WriteString(std::wstring(L" u=\"none\""));
 			}
 			m_oWriter.WriteString(std::wstring(L">"));
 

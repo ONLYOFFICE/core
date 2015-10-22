@@ -147,9 +147,7 @@ namespace NSShapeImageGen
 
 		LONG								m_lDstFormat;
 
-#ifdef BUILD_CONFIG_FULL_VERSION
 		NSWMFToImageConverter::CImageExt	m_oImageExt;
-#endif
 
 		CFontManager* m_pFontManager;
 	public:
@@ -323,10 +321,6 @@ namespace NSShapeImageGen
 		void SetFontManager(CFontManager* pFontManager)
 		{
 			m_pFontManager = pFontManager;
-
-#ifdef BUILD_CONFIG_FULL_VERSION
-			m_oImageExt.SetFontManager(pFontManager);
-#endif
 		}
 	protected:
 		inline void CopyFile(CString& strFileSrc, CString& strFileDst)

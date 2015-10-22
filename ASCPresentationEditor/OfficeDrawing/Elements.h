@@ -1,7 +1,6 @@
 #pragma once
 #include "Theme.h"
 #include "Shapes/Shape.h"
-#include "../../ASCHTMLRenderer/CASCSVGRenderer.h"
 
 #ifdef _SVG_CONVERT_TO_IMAGE_
 	#include "SVGTransformer.h"

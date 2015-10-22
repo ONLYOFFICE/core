@@ -134,7 +134,8 @@ SOURCES += pptxformatlib.cpp \
     ../../../../ASCPresentationEditor/OfficeDrawing/Layout.cpp \
     ../../../../ASCPresentationEditor/OfficeDrawing/TextAttributesEx.cpp \
     ../../../../ASCPresentationEditor/OfficeDrawing/Elements.cpp \
-    ../../../PPTXFormat/Logic/Controls.cpp
+    ../../../PPTXFormat/Logic/Controls.cpp \
+    ../../../../HtmlRenderer/src/ASCSVGWriter.cpp
 
 HEADERS += pptxformatlib.h \
 ../../../ASCOfficeDrawingConverter.h \
@@ -558,7 +559,8 @@ HEADERS += pptxformatlib.h \
     ../../../PPTXFormat/DocxFormat/Drawing/VmlDrawing.h \
     ../../../PPTXFormat/Logic/Controls.h \
     ../../../../Common/DocxFormat/Source/Base/Nullable.h \
-    ../../../../Common/DocxFormat/Source/XML/xmlutils.h
+    ../../../../Common/DocxFormat/Source/XML/xmlutils.h \
+    ../../../../HtmlRenderer/include/ASCSVGWriter.h
 unix {
     target.path = /usr/lib
     INSTALLS += target

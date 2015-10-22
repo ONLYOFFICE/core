@@ -217,7 +217,7 @@ HEADERS += \
     ../../../ASCPresentationEditor/OfficeDrawing/TextStructures.h \
     ../../../ASCPresentationEditor/OfficeDrawing/Theme.h \
     ../PPTFormatLib.h \
-    ../../../Common/3dParty/pole/pole.h
+    ../../../Common/3dParty/pole/pole.h \
 
 SOURCES += \
     ../Reader/PPTDocumentInfoOneUser.cpp \
@@ -235,4 +235,4 @@ SOURCES += \
     ../../../ASCPresentationEditor/OfficeDrawing/TextAttributesEx.cpp \
     ../../../ASCPresentationEditor/OfficeDrawing/Theme.cpp \
     ../PPTFormatLib.cpp \
-    ../../../Common/3dParty/pole/pole.cpp
+    ../../../Common/3dParty/pole/pole.cpp \

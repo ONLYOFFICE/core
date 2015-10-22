@@ -23,6 +23,7 @@ using namespace NSFontCutter;
 
 #include "../../Common/DocxFormat/Source/SystemUtility/File.h"
 #include "../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h"
+#include "../../HtmlRenderer/include/ASCSVGWriter.h"
 #include <list>
 
 namespace NSShapeImageGen

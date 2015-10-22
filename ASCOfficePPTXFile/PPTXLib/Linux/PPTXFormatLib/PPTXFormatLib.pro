@@ -65,6 +65,7 @@ win32 {
     DEFINES += \
         LIBXML_READER_ENABLED
 
+INCLUDEPATH += ../../../../ASCOfficeUtils/ZLIB/zlib-1.2.3
 INCLUDEPATH += ../../../../Common/DocxFormat/Source/XML/libxml2/XML/include
 }
 #################### WINDOWS #####################

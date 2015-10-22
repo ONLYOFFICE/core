@@ -329,29 +329,30 @@ namespace NSPresentationEditor
 	{
 	public:
 
-		NSCommon::nullable_base<bool>		hasBullet;
+		NSCommon::nullable_base<bool>				hasBullet;
 
-		NSCommon::nullable_base<WORD>		bulletFontRef;
-		NSCommon::nullable_base<WORD>		bulletSize;
-		NSCommon::nullable_base<WCHAR>		bulletChar;
-		NSCommon::nullable_base<CColor>		bulletColor;
+		NSCommon::nullable_base<WORD>				bulletFontRef;
+		NSCommon::nullable_base<WORD>				bulletSize;
+		NSCommon::nullable_base<WCHAR>				bulletChar;
+		NSCommon::nullable_base<CColor>				bulletColor;
+		NSCommon::nullable_base<CFontProperties>	bulletFontProperties;
 
-		NSCommon::nullable_base<WORD>		textAlignment;
-		NSCommon::nullable_base<LONG>		lineSpacing;
-		NSCommon::nullable_base<LONG>		spaceBefore;
-		NSCommon::nullable_base<LONG>		spaceAfter;
-		NSCommon::nullable_base<LONG>		leftMargin;
-		NSCommon::nullable_base<LONG>		indent;
-		NSCommon::nullable_base<LONG>		defaultTabSize;
+		NSCommon::nullable_base<WORD>				textAlignment;
+		NSCommon::nullable_base<LONG>				lineSpacing;
+		NSCommon::nullable_base<LONG>				spaceBefore;
+		NSCommon::nullable_base<LONG>				spaceAfter;
+		NSCommon::nullable_base<LONG>				leftMargin;
+		NSCommon::nullable_base<LONG>				indent;
+		NSCommon::nullable_base<LONG>				defaultTabSize;
+		
+		std::vector<DWORD>							tabStops;
 
-		std::vector<DWORD>					tabStops;
+		bool										bIsOneLine;
 
-		bool								bIsOneLine;
+		NSCommon::nullable_base<WORD>				fontAlign;
+		NSCommon::nullable_base<WORD>				textDirection;
 
-		NSCommon::nullable_base<WORD>		fontAlign;
-		NSCommon::nullable_base<WORD>		textDirection;
-
-		NSCommon::nullable_base<WORD>		wrapFlags;
+		NSCommon::nullable_base<WORD>				wrapFlags;
 
 		CTextPFRun() : hasBullet(), bulletFontRef(), bulletSize(), bulletChar(), bulletColor(),
 			textAlignment(), lineSpacing(), spaceBefore(), spaceAfter(), leftMargin(), indent(),
@@ -366,67 +367,54 @@ namespace NSPresentationEditor
 
 		CTextPFRun& operator =(const CTextPFRun& oSrc)
 		{
-			hasBullet		= oSrc.hasBullet;
+			hasBullet			= oSrc.hasBullet;
 
-			bulletFontRef	= oSrc.bulletFontRef;
-			bulletSize		= oSrc.bulletSize;
-			bulletChar		= oSrc.bulletChar;
-			bulletColor		= oSrc.bulletColor;
+			bulletFontRef		= oSrc.bulletFontRef;
+			bulletSize			= oSrc.bulletSize;
+			bulletChar			= oSrc.bulletChar;
+			bulletColor			= oSrc.bulletColor;
+			bulletFontProperties = oSrc.bulletFontProperties;
 
-			textAlignment	= oSrc.textAlignment;
-			lineSpacing		= oSrc.lineSpacing;
-			spaceBefore		= oSrc.spaceBefore;
-			spaceAfter		= oSrc.spaceAfter;
-			leftMargin		= oSrc.leftMargin;
-			indent			= oSrc.indent;
-			defaultTabSize	= oSrc.defaultTabSize;
+			textAlignment		= oSrc.textAlignment;
+			lineSpacing			= oSrc.lineSpacing;
+			spaceBefore			= oSrc.spaceBefore;
+			spaceAfter			= oSrc.spaceAfter;
+			leftMargin			= oSrc.leftMargin;
+			indent				= oSrc.indent;
+			defaultTabSize		= oSrc.defaultTabSize;
 
-			tabStops		= oSrc.tabStops;
+			tabStops			= oSrc.tabStops;
 
-			fontAlign		= oSrc.fontAlign;
-			textDirection	= oSrc.textDirection;
-			wrapFlags		= oSrc.wrapFlags;
+			fontAlign			= oSrc.fontAlign;
+			textDirection		= oSrc.textDirection;
+			wrapFlags			= oSrc.wrapFlags;
 
-			bIsOneLine		= oSrc.bIsOneLine;
+			bIsOneLine			= oSrc.bIsOneLine;
 
 			return *this;
 		}
 
 		void ApplyBefore(const CTextPFRun& oSrc)
 		{
-			if (!hasBullet.is_init())
-				hasBullet = oSrc.hasBullet;
+			if (!hasBullet.is_init())				hasBullet			= oSrc.hasBullet;
 
-			if (!bulletFontRef.is_init())
-				bulletFontRef = oSrc.bulletFontRef;
-			if (!bulletSize.is_init())
-				bulletSize = oSrc.bulletSize;
-			if (!bulletChar.is_init())
-				bulletChar = oSrc.bulletChar;
-			if (!bulletColor.is_init())
-				bulletColor = oSrc.bulletColor;
+			if (!bulletFontRef.is_init())			bulletFontRef		= oSrc.bulletFontRef;
+			if (!bulletSize.is_init())				bulletSize			= oSrc.bulletSize;
+			if (!bulletChar.is_init())				bulletChar			= oSrc.bulletChar;
+			if (!bulletColor.is_init())				bulletColor			= oSrc.bulletColor;
+			if (!bulletFontProperties.is_init())	bulletFontProperties = oSrc.bulletFontProperties;
 
-			if (!textAlignment.is_init())
-				textAlignment = oSrc.textAlignment;
-			if (!lineSpacing.is_init())
-				lineSpacing = oSrc.lineSpacing;
-			if (!spaceBefore.is_init())
-				spaceBefore = oSrc.spaceBefore;
-			if (!spaceAfter.is_init())
-				spaceAfter = oSrc.spaceAfter;
-			if (!leftMargin.is_init())
-				leftMargin = oSrc.leftMargin;
-			if (!indent.is_init())
-				indent = oSrc.indent;
-			if (!defaultTabSize.is_init())
-				defaultTabSize = oSrc.defaultTabSize;
+			if (!textAlignment.is_init())			textAlignment = oSrc.textAlignment;
+			if (!lineSpacing.is_init())				lineSpacing = oSrc.lineSpacing;
+			if (!spaceBefore.is_init())				spaceBefore = oSrc.spaceBefore;
+			if (!spaceAfter.is_init())				spaceAfter = oSrc.spaceAfter;
+			if (!leftMargin.is_init())				leftMargin = oSrc.leftMargin;
+			if (!indent.is_init())					indent = oSrc.indent;
+			if (!defaultTabSize.is_init())			defaultTabSize = oSrc.defaultTabSize;
 
-			if (!fontAlign.is_init())
-				fontAlign = oSrc.fontAlign;
-			if (!textDirection.is_init())
-				textDirection = oSrc.textDirection;
-			if (!wrapFlags.is_init())
-				wrapFlags = oSrc.wrapFlags;
+			if (!fontAlign.is_init())				fontAlign = oSrc.fontAlign;
+			if (!textDirection.is_init())			textDirection = oSrc.textDirection;
+			if (!wrapFlags.is_init())				wrapFlags = oSrc.wrapFlags;
 
 			if ((0 == tabStops.size()) && (0 != oSrc.tabStops.size()))
 			{
@@ -442,6 +430,7 @@ namespace NSPresentationEditor
 			if (oSrc.bulletSize.is_init())			bulletSize = oSrc.bulletSize;
 			if (oSrc.bulletChar.is_init())			bulletChar = oSrc.bulletChar;
 			if (oSrc.bulletColor.is_init())			bulletColor = oSrc.bulletColor;
+			if (oSrc.bulletFontProperties.is_init())bulletFontProperties = oSrc.bulletFontProperties;
 
 			if (oSrc.textAlignment.is_init())		textAlignment = oSrc.textAlignment;
 			if (oSrc.lineSpacing.is_init())			lineSpacing = oSrc.lineSpacing;

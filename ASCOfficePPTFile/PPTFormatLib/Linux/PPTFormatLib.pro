@@ -185,7 +185,6 @@ HEADERS += \
     ../Records/ViewInfoAtom.h \
     ../Records/ZoomViewInfoAtom.h \
     ../Records/Animations/AnimationTypes.h \
-    ../Records/Drawing/BitmapBlip.h \
     ../Records/Drawing/BlipStoreContainer.h \
     ../Records/Drawing/BlipStoreEntry.h \
     ../Records/Drawing/ChildAnchor.h \
@@ -200,6 +199,7 @@ HEADERS += \
     ../Records/Drawing/ShapeContainer.h \
     ../Records/Drawing/ShapeProperties.h \
     ../Records/Drawing/TextBox.h \
+    ../Records/Drawing/ArtBlip.h \
     ../../../ASCPresentationEditor/PPTXWriter/Converter.h \
     ../../../ASCPresentationEditor/PPTXWriter/CSS.h \
     ../../../ASCPresentationEditor/PPTXWriter/ImageManager.h \
@@ -224,6 +224,7 @@ SOURCES += \
     ../Reader/Records.cpp \
     ../Reader/SlidePersist.cpp \
     ../Records/Animations/AnimationTypes.cpp \
+    ../Records/Drawing/ArtBlip.cpp \
     ../../../ASCPresentationEditor/PPTXWriter/Converter.cpp \
     ../../../ASCPresentationEditor/PPTXWriter/ShapeWriter.cpp \
     ../../../ASCPresentationEditor/OfficeDrawing/Elements.cpp \

@@ -2050,7 +2050,9 @@ protected:
 							if (0 <= nTextMasterType && nTextMasterType < 9)
 							{
 								if (pThemeWrapper->m_pStyles[nTextMasterType].is_init())
+								{
 									pTextSettings->m_oStyles = pThemeWrapper->m_pStyles[nTextMasterType].get();
+								}
 							}
 						}
 						break;
@@ -2149,15 +2151,18 @@ protected:
 						pTextSettings->m_oStyles.ApplyAfter(pThemeWrapper->m_pStyles[nIndexType].get());
 				}
 			}
-			//if (eTypeOwn != NSOfficePPT::NoPresent && eTypeOwn != eTypePersist && eTypeOwn != eTypeMaster)
-			//{ тут неверная подстановка стиля !!! пример Antarctida.ppt слайд 2
-			//	int nIndexType = (int)eTypeOwn;
-			//  if (0 <= nIndexType && nIndexType < 9 && pLayout)
-			//	{
-			//      if (pThemeWrapper->m_pStyles[nIndexType].IsInit())
-			//			pTextSettings->m_oStyles.ApplyAfter(pThemeWrapper->m_pStyles[nIndexType].get());
-			//	}
-			//}
+			if (eTypeOwn != NSOfficePPT::NoPresent && eTypeOwn != NSOfficePPT::Other && eTypeOwn != eTypePersist && eTypeOwn != eTypeMaster)
+			{
+				int nIndexType = (int)eTypeOwn;
+				
+				if (0 <= nIndexType && nIndexType < 9 && pLayout)
+				{
+					if (pThemeWrapper->m_pStyles[nIndexType].IsInit())
+					{
+						pTextSettings->m_oStyles.ApplyAfter(pThemeWrapper->m_pStyles[nIndexType].get());
+					}
+				}
+			}
 		}
 
 		if ((_T("") != strText) && 0 == pTextSettings->m_arParagraphs.size())

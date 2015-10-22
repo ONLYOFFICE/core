@@ -532,7 +532,7 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 			}
 			else if (val < 0 && val > -13200)
 			{
-				CString str = _T("");
+				CString str;
 				str.Format(_T("<a:spcAft><a:spcPct val=\"%d\"/></a:spcAft>"), -val * 1000);
 				m_oWriter.WriteString(str);
 			}
@@ -548,7 +548,7 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 			}
 			else if (val < 0 && val > -13200)
 			{
-				CString str = _T("");
+				CString str;
 				str.Format(_T("<a:spcBef><a:spcPct val=\"%d\"/></a:spcBef>"), -val * 1000);
 				m_oWriter.WriteString(str);
 			}
@@ -556,8 +556,35 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 
 		if (pPF->hasBullet.is_init())
 		{
+
 			if (pPF->hasBullet.get())
 			{
+				if (pPF->bulletColor.is_init())
+				{
+					m_oWriter.WriteString(std::wstring(L"<a:buClr>"));
+						m_oWriter.WriteString(ConvertColor(pPF->bulletColor.get(), 255));
+					m_oWriter.WriteString(std::wstring(L"</a:buClr>"));
+				}	
+				if (pPF->bulletSize.is_init())
+				{
+					if (pPF->bulletSize.get() > 24 && pPF->bulletSize.get() < 401)
+					{
+						CString str;
+						str.Format(_T("<a:buSzPct val=\"%d\"/>"), pPF->bulletSize.get() * 1000 );
+						m_oWriter.WriteString(str);
+					}
+					if (pPF->bulletSize.get() < 0 && pPF->bulletSize.get() > -4001)
+					{
+						CString str;
+						str.Format(_T("<a:buSzPts val=\"%d\"/>"), - pPF->bulletSize.get() );
+						m_oWriter.WriteString(str);
+					}
+				}
+
+				if (pPF->bulletFontProperties.is_init())
+				{
+					m_oWriter.WriteString(std::wstring(L"<a:buFont typeface=\"") + pPF->bulletFontProperties->strFontName + _T("\"/>"));
+				}
 				wchar_t bu = 0x2022;
 				m_oWriter.WriteString(std::wstring(L"<a:buChar char=\""));
 				if (pPF->bulletChar.is_init())
@@ -582,7 +609,6 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 		//	m_oWriter.WriteString(std::wstring(L"<a:fld id=\"{D038279B-FC19-497E-A7D1-5ADD9CAF016F}\" type=\"slidenum\">"));
 		//	m_oWriter.WriteString(std::wstring(L"<a:rPr/><a:t>‹#›</a:t></a:fld>"));
 		//}
-		//else
 
 		size_t nCountSpans = pParagraph->m_arSpans.size();
 		for (size_t nSpan = 0; nSpan < nCountSpans; ++nSpan)

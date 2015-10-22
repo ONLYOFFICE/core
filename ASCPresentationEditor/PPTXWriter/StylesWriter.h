@@ -115,7 +115,7 @@ public:
 	static void ConvertStyleLevel(NSPresentationEditor::CTextStyleLevel& oLevel, NSPresentationEditor::CMetricInfo& oMetricInfo,
 		NSPresentationEditor::CStringWriter& oWriter, const int& nLevel)
 	{
-		CString str1 = _T("");
+		CString str1;
 		if (nLevel == 9)
 			str1 = _T("<a:defPPr");
 		else
@@ -132,7 +132,7 @@ public:
 		}
 		if (pPF->leftMargin.is_init())
 		{
-			CString strProp = _T("");
+			CString strProp;
 			strProp.Format(_T(" marL=\"%d\""), pPF->leftMargin.get());
 			oWriter.WriteString(strProp);
 
@@ -141,8 +141,7 @@ public:
 		}
 		if (pPF->indent.is_init())
 		{
-			int ind = pPF->indent.get();
-			CString strProp = _T("");
+			CString strProp;
 			strProp.Format(_T(" indent=\"%d\""), pPF->indent.get());
 			oWriter.WriteString(strProp);
 		}
@@ -153,12 +152,24 @@ public:
 		//}
 		if (pPF->defaultTabSize.is_init())
 		{
-			CString strProp = _T("");
+			CString strProp;
 			strProp.Format(_T(" defTabSz=\"%d\""), pPF->defaultTabSize.get());
 			oWriter.WriteString(strProp);
 		}
 		CString str2 = _T(">");
 		oWriter.WriteString(str2);
+
+		if (pPF->tabStops.size() > 0)
+		{
+			oWriter.WriteString(std::wstring(L"<a:tabLst>"));
+			for (int t = 0 ; t < pPF->tabStops.size(); t++)
+			{
+				CString strTab;
+				strTab.Format(L"<a:tab pos=\"%d\" algn=\"l\"/>", pPF->tabStops[t]) ;
+				oWriter.WriteString(strTab);
+			}
+			oWriter.WriteString(std::wstring(L"</a:tabLst>"));
+		}
 
 		if (pPF->hasBullet.is_init())
 		{

@@ -742,9 +742,6 @@ void NSPresentationEditor::CPPTXWriter::WriteElement(CStringWriter& oWriter, CRe
 		pShapeElem->m_oMetric = m_pDocument->m_oInfo;
 		pShapeElem->NormalizeCoordsByMetric();
 
-		pShapeElem->m_oShape.m_oText.RecalcParagraphsPPT(pShapeElem->m_pTheme);
-		pShapeElem->m_oShape.m_oText.NormalizeCoordsByMetric(m_pDocument->m_oInfo);
-
 		m_pShapeWriter->SetShape(pShapeElem);
 	}
 

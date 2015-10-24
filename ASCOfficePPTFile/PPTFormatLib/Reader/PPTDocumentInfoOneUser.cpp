@@ -288,6 +288,20 @@ void CPPTUserInfo::FromDocument()
 
 		if (0 != oStyles.size())
 			m_oDefaultTextStyle.SetStyles((NSPresentationEditor::CTextStyles*)oStyles[0]);		
+
+		std::vector<CRecordTextSIExceptionAtom*> oSI;
+		oArrayInfo[0]->GetRecordsByType(&oSI, false, false);
+
+		if (0 != oSI.size())
+		{
+			if (oSI[0]->m_oSIRun.bLang)
+				m_wLanguage = oSI[0]->m_oSIRun.Lang;
+
+			if (oSI[0]->m_oSIRun.bBidi)
+				m_bBidi = oSI[0]->m_oSIRun.Bidi;
+
+			m_oDefaultTextStyle.SetLanguage(m_wLanguage);
+		}
 	}
 
 	LONG lOriginWidth		=	oArrayDoc[0]->m_oSlideSize.X;
@@ -861,9 +875,9 @@ void CPPTUserInfo::LoadNoMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, 
 	if (0 == oArraySlideAtoms.size())
 		return;
 
-    bool bMasterColorScheme = false;//oArraySlideAtoms[0]->m_bMasterScheme;
-    bool bMasterBackGround	= false;//oArraySlideAtoms[0]->m_bMasterBackground;
-    bool bMasterObjects		= false;//oArraySlideAtoms[0]->m_bMasterObjects;
+    bool bMasterColorScheme = oArraySlideAtoms[0]->m_bMasterScheme;
+    bool bMasterBackGround	= oArraySlideAtoms[0]->m_bMasterBackground;
+    bool bMasterObjects		= oArraySlideAtoms[0]->m_bMasterObjects;
 
 	DWORD dwID = (DWORD)oArraySlideAtoms[0]->m_nMasterIDRef;
 
@@ -1345,31 +1359,18 @@ void CPPTUserInfo::CreateDefaultStyle(NSPresentationEditor::CTextStyles& pStyle,
 		NSPresentationEditor::CTextPFRun* pPF = &pStyle.m_pLevels[i]->m_oPFRun;
 		NSPresentationEditor::CTextCFRun* pCF = &pStyle.m_pLevels[i]->m_oCFRun;
 
-		//pPF->textAlignment	= (WORD)0;
-		//pPF->leftMargin		= (LONG)0;
-		//pPF->indent			= (LONG)0;
-		//pPF->fontAlign		= (WORD)0;
-		pPF->wrapFlags		= (WORD)0x02;
-		pPF->textDirection	= (WORD)0;
-		
-		//pPF->defaultTabSize	= (LONG)0;
-		//pPF->lineSpacing		= (LONG)100;
-		//pPF->spaceBefore		= (LONG)0;
-		//pPF->spaceAfter		= (LONG)0;
-		
+		pCF->Language		= m_wLanguage;
+//----------------------------------------	?????????	
         pCF->FontBold		= false;
         pCF->FontItalic		= false;
         pCF->FontUnderline	= false;
         pCF->FontStrikeout	= false;
 
 		pCF->Size			= 18;
-		pCF->BaseLineOffset = (double)0;
-		pCF->Cap			= (WORD)0;
-
+		pCF->BaseLineOffset = 0.;
+//-------------------------------------------
 		pCF->FontProperties = new NSPresentationEditor::CFontProperties();
 		pCF->FontProperties->SetFont(pTheme->m_arFonts[0]);
-
-		//pCF->Color			= new NSPresentationEditor::CColor();
 	}
 }
 

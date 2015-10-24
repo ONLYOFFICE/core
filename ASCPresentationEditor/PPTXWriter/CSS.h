@@ -909,7 +909,7 @@ public:
 			oSpan.m_oRun = oRun;
 			oSpan.m_strText = oNode.GetText();			
 
-			if (oSpan.m_strText.GetLength() > 0)
+			if (!oSpan.m_strText.empty())
 			{
 				CorrectXmlString2(oSpan.m_strText);
 			

@@ -58,34 +58,6 @@ public:
 	}
 	virtual CString ToString()
 	{
-		XmlUtils::CXmlWriter oWriter;
-		CString strName = GetRecordName((DWORD)m_oHeader.RecType);
-		
-		oWriter.WriteNodeBegin(strName, TRUE);
-		oWriter.WriteAttribute(_T("length"), CDirectory::ToString(m_oHeader.RecLen));
-		oWriter.WriteAttribute(_T("type"), CDirectory::ToString(m_oHeader.RecType));
-		oWriter.WriteAttribute(_T("instance"), CDirectory::ToString(m_oHeader.RecInstance));
-
-		oWriter.WriteNodeEnd(strName, TRUE, FALSE);
-		
-		oWriter.WriteString(m_oSlideSize.ToString());
-		oWriter.WriteString(m_oNotesSize.ToString());
-
-		oWriter.WriteString(m_oServerZoom.ToString());
-		
-		CDirectory::WriteValueToNode(_T("NotesMasterPersistIDRef"), (DWORD)m_nNotesMasterPersistIDRef, &oWriter);
-		CDirectory::WriteValueToNode(_T("HandoutMasterPersistIDRef"), (DWORD)m_nHandoutMasterPersistIDRef, &oWriter);
-		
-		CDirectory::WriteValueToNode(_T("FirstSlideNum"), (DWORD)m_nFirstSlideNum, &oWriter);
-		CDirectory::WriteValueToNode(_T("SlideSizeType"), (DWORD)m_nSlideSizeType, &oWriter);
-		
-		CDirectory::WriteValueToNode(_T("SaveWithFonts"), (DWORD)m_bSaveWithFonts, &oWriter);
-		CDirectory::WriteValueToNode(_T("OmitTitlePlace"), (DWORD)m_bOmitTitlePlace, &oWriter);
-		CDirectory::WriteValueToNode(_T("RightToLeft"), (DWORD)m_bRightToLeft, &oWriter);
-		CDirectory::WriteValueToNode(_T("ShowComments"), (DWORD)m_bShowComments, &oWriter);
-
-		oWriter.WriteNodeEnd(strName);
-
-		return oWriter.GetXmlString();
+		return L"";
 	}
 };

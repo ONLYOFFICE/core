@@ -7,6 +7,7 @@
     //#include "../../ASCOfficePPTXFile/PPTXFormat/Logic/rectdef.h"
     #include "../../DesktopEditor/graphics/aggplustypes.h"
 #endif
+
 namespace NSPresentationEditor
 {
 	class CTheme;
@@ -30,7 +31,6 @@ namespace NSPresentationEditor
 
 		// параметры ¬—≈√ќ текста (наверное тут их много будет потом)
         bool	m_bVertical;
-        bool	m_bRightToLeft;
 
 		int		m_lWrapMode; // 0 - square, default; 1 - none wrap
 
@@ -43,7 +43,7 @@ namespace NSPresentationEditor
 		// из пптх
 		bool					m_bIsSlideFontRef;
 		int						m_lFontRef;
-		
+
 	public:
 		CTextAttributesEx() :
 			m_oAttributes(),
@@ -65,7 +65,6 @@ namespace NSPresentationEditor
 			m_oBounds.bottom	= 50;
 
 			m_bVertical			= false;
-			m_bRightToLeft		= false;
 			m_lWrapMode			= 0;
 
 			m_lTextMasterType	= -1;
@@ -83,7 +82,6 @@ namespace NSPresentationEditor
 
 			m_oAttributes	= oSrc.m_oAttributes;
 			m_bVertical		= oSrc.m_bVertical;
-			m_bRightToLeft	= oSrc.m_bRightToLeft;
 			m_lWrapMode		= oSrc.m_lWrapMode;
 
 			m_arParagraphs.insert(m_arParagraphs.end(), oSrc.m_arParagraphs.begin(), oSrc.m_arParagraphs.end());
@@ -123,70 +121,7 @@ namespace NSPresentationEditor
 		void RecalcParagraphsPPT(CTheme* pTheme = NULL);
 		
 		void ApplyRuler			(CTheme* pTheme);
-		void ApplyRuler			(CTextPFRun* pPar, WORD lIndentLevel)
-		{
-			switch (lIndentLevel)
-			{
-			case 0:
-			{
-				if (m_oRuler.LeftMargin1.is_init()) 
-					pPar->leftMargin = (LONG)m_oRuler.LeftMargin1.get();
-				if (m_oRuler.Indent1.is_init()) 
-					pPar->indent = (LONG)m_oRuler.Indent1.get();
-				
-				if (pPar->indent.is_init() && pPar->leftMargin.get())
-					pPar->indent.get() -= pPar->leftMargin.get();
-				break;
-			}
-			case 1:
-			{
-				if (m_oRuler.LeftMargin2.is_init()) 
-					pPar->leftMargin = (LONG)m_oRuler.LeftMargin2.get();
-				if (m_oRuler.Indent2.is_init()) 
-					pPar->indent  = (LONG)m_oRuler.Indent2.get();
-				
-				if (pPar->indent.is_init() && pPar->leftMargin.get())
-					pPar->indent.get() -= pPar->leftMargin.get();
-				break;
-			}
-			case 2:
-			{
-				if (m_oRuler.LeftMargin3.is_init()) 
-					pPar->leftMargin = (LONG)m_oRuler.LeftMargin3.get();
-				if (m_oRuler.Indent3.is_init()) 
-					pPar->indent  = (LONG)m_oRuler.Indent3.get();
-				
-				if (pPar->indent.is_init() && pPar->leftMargin.get())
-					pPar->indent.get() -= pPar->leftMargin.get();
-				break;
-			}
-			case 3:
-			{
-				if (m_oRuler.LeftMargin4.is_init()) 
-					pPar->leftMargin = (LONG)m_oRuler.LeftMargin4.get();
-				if (m_oRuler.Indent4.is_init()) 
-					pPar->indent  = (LONG)m_oRuler.Indent4.get();
-				
-				if (pPar->indent.is_init() && pPar->leftMargin.get())
-					pPar->indent.get() -= pPar->leftMargin.get();
-				break;
-			}
-			case 4:
-			{
-				if (m_oRuler.LeftMargin5.is_init()) 
-					pPar->leftMargin = (LONG)m_oRuler.LeftMargin5.get();
-				if (m_oRuler.Indent5.is_init()) 
-					pPar->indent  = (LONG)m_oRuler.Indent5.get();
-				
-				if (pPar->indent.is_init() && pPar->leftMargin.get())
-					pPar->indent.get() -= pPar->leftMargin.get();
-				break;
-			}
-			default:
-				break;
-			};
-		}
-
+		void ApplyRuler			(CTextPFRun* pPar, WORD lIndentLevel);
 		bool IsEmptyText()
 		{
 			return (0 == m_arParagraphs.size()) ? true : false;

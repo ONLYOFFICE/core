@@ -97,12 +97,12 @@ public:
 					if (NULL != pChars)
 					{
 						m_arTextPlaceHolders[nCurrentSlide][nCurrentTextHeader].m_strText = pChars->m_strText;
-						lSymbolCount = (DWORD)pChars->m_strText.GetLength();
+						lSymbolCount = (DWORD)pChars->m_strText.length();
 					}
 					else if (NULL != pBytes)
 					{
-						m_arTextPlaceHolders[nCurrentSlide][nCurrentTextHeader].m_strText = (CStringW)pBytes->m_strText;
-						lSymbolCount = (DWORD)pBytes->m_strText.GetLength();
+						m_arTextPlaceHolders[nCurrentSlide][nCurrentTextHeader].m_strText = pBytes->m_strText;
+						lSymbolCount = (DWORD)pBytes->m_strText.length();
 					}					
 					
 					if (RECORD_TYPE_STYLE_TEXTPROP_ATOM == oRec.RecType)

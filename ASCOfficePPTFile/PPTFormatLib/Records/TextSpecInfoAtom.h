@@ -6,13 +6,11 @@ class CRecordTextSpecInfoAtom : public CUnknownRecord
 public:
 	// нужно еще хранить позицию в стриме, 
 	// указатель на начало
-	LONG m_lOffsetInStream;
-	DWORD m_lCount; 
+	LONG											m_lOffsetInStream;
+	DWORD											m_lCount; 
 
-private:
-	std::vector<NSPresentationEditor::CTextSIRun> m_arrSIs;
+	std::vector<NSPresentationEditor::CTextSIRun>	m_arrSIs;
 
-public:
 	
 	CRecordTextSpecInfoAtom()
 	{
@@ -27,8 +25,6 @@ public:
 
     void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
 	{
-		//return CUnknownRecord::ReadFromStream(oHeader, pStream);
-		
 		m_oHeader = oHeader;
 		StreamUtils::StreamPosition(m_lOffsetInStream, pStream);
 
@@ -58,8 +54,30 @@ public:
 		StreamUtils::StreamSeek(m_lOffsetInStream + m_oHeader.RecLen, pStream);
 	}
 
-    void ApplyProperties(CTextAttributesEx* pTextAttributes)
+    void ApplyProperties(CTextAttributesEx* pText)
 	{
+		if (m_arrSIs.size() < 1) return;
+
+		int pos_text = 0, pos_si = 0;
+		int ind = 0;
+		for (int i = 0; i < pText->m_arParagraphs.size(); i++)
+		{
+			if (ind > m_arrSIs.size()) break;
+			
+			for (int j = 0 ; j < pText->m_arParagraphs[i].m_arSpans.size(); j++)
+			{
+				if (pos_text + pText->m_arParagraphs[i].m_arSpans[j].m_strText.length() > pos_si + m_arrSIs[ind].lCount )
+				{
+					pos_si += m_arrSIs[ind].lCount;
+					ind++;
+				}
+				if (ind > m_arrSIs.size()) break;
+				if (m_arrSIs[ind].bLang)
+					pText->m_arParagraphs[i].m_arSpans[j].m_oRun.Language = m_arrSIs[ind].Lang;
+				pos_text += pText->m_arParagraphs[i].m_arSpans[j].m_strText.length() ;
+			}
+
+		}
 	}
 
 	virtual CString ToString()

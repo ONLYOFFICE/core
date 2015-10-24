@@ -18,8 +18,8 @@ public:
 	BYTE m_nMajorVersion;		// must be 0x03
 	BYTE m_nMinorVersion;		// must be 0x00
 
-    CStringA m_strANSIUserName;
-    CStringW m_strUNICODEUserName;
+	std::string		m_strANSIUserName;
+	std::wstring	m_strUNICODEUserName;
 
 	DWORD m_nRelVersion;  // 0x00000008 or 0x00000009
 
@@ -64,41 +64,16 @@ public:
 
 		StreamUtils::StreamSkip(2, pStream);
 
-		m_strANSIUserName = StreamUtils::ReadCStringA(pStream, m_nLenUserName);
+		m_strANSIUserName = StreamUtils::ReadStringA(pStream, m_nLenUserName);
 
 		m_nRelVersion = StreamUtils::ReadDWORD(pStream);
 
-        m_strUNICODEUserName = StreamUtils::ReadCStringW(pStream, m_nLenUserName );
+        m_strUNICODEUserName = StreamUtils::ReadStringW(pStream, m_nLenUserName );
 
 	}
 	virtual CString ToString()
 	{
-		XmlUtils::CXmlWriter oWriter;
-		CString strName = GetRecordName((DWORD)m_oHeader.RecType);
-		
-		oWriter.WriteNodeBegin(strName, TRUE);
-		oWriter.WriteAttribute(_T("length"), CDirectory::ToString(m_oHeader.RecLen));
-		oWriter.WriteAttribute(_T("type"), CDirectory::ToString(m_oHeader.RecType));
-		oWriter.WriteAttribute(_T("instance"), CDirectory::ToString(m_oHeader.RecInstance));
-
-		oWriter.WriteNodeEnd(strName, TRUE, FALSE);
-		
-		CDirectory::WriteValueToNode(_T("Size"), m_nSize, &oWriter);
-		CDirectory::WriteValueToNode(_T("Token"), m_nToken, &oWriter);
-		
-		CDirectory::WriteValueToNode(_T("OffsetToCurEdit"), m_nOffsetToCurEdit, &oWriter);
-
-        CString UserName = m_strANSIUserName;
-
-        if (UserName.GetLength() < 1)
-            UserName = m_strUNICODEUserName;
-
-        CDirectory::WriteValueToNode(_T("Name"), UserName, &oWriter);
-		CDirectory::WriteValueToNode(_T("RelVersion"), m_nRelVersion, &oWriter);
-
-		oWriter.WriteNodeEnd(strName);
-
-		return oWriter.GetXmlString();
+		return L"";
 	}
 
     bool IsSupported()

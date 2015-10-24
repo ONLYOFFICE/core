@@ -804,7 +804,7 @@ public:
 namespace NSPresentationEditor
 {
 	static void ConvertPPTTextToEditorStructure(std::vector<CTextPFRun_ppt>& oArrayPF, std::vector<CTextCFRun_ppt>& oArrayCF, 
-		CString& strText, NSPresentationEditor::CTextAttributesEx& oAttributes)
+		std::wstring& strText, NSPresentationEditor::CTextAttributesEx& oAttributes)
 	{
 		int nCountPFs = (int)oArrayPF.size();
 		int nCountCFs = (int)oArrayCF.size();
@@ -814,7 +814,7 @@ namespace NSPresentationEditor
 		int nCurrentCF = 0;
 		int nOffsetCF  = 0;
 
-		int nIndexLast = strText.GetLength();
+		int nIndexLast = strText.length();
 		int nIndexText = 0;
 		
 		for (int nIndexPF = 0; nIndexPF < nCountPFs; ++nIndexPF)
@@ -841,7 +841,7 @@ namespace NSPresentationEditor
 
 					NSPresentationEditor::CSpan oSpan;
 					oSpan.m_oRun	= oArrayCF[nCurrentCF].m_oRun;
-					oSpan.m_strText = strText.Mid(nIndexText, nCountInPF);
+					oSpan.m_strText = strText.substr(nIndexText, nCountInPF);
 
 					pPar->m_arSpans.push_back(oSpan);
 					
@@ -854,7 +854,7 @@ namespace NSPresentationEditor
 
 					NSPresentationEditor::CSpan oSpan;
 					oSpan.m_oRun	= oArrayCF[nCurrentCF].m_oRun;
-					oSpan.m_strText = strText.Mid(nIndexText, nCountAdd);
+					oSpan.m_strText = strText.substr(nIndexText, nCountAdd);
 
 					pPar->m_arSpans.push_back(oSpan);
 
@@ -868,7 +868,7 @@ namespace NSPresentationEditor
 
 					NSPresentationEditor::CSpan oSpan;
 					oSpan.m_oRun	= oArrayCF[nCurrentCF].m_oRun;
-					oSpan.m_strText = strText.Mid(nIndexText, nCountAdd);
+					oSpan.m_strText = strText.substr(nIndexText, nCountAdd);
 
 					pPar->m_arSpans.push_back(oSpan);
 

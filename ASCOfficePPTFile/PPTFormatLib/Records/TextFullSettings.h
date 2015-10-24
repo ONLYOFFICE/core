@@ -17,8 +17,8 @@ public:
 
 	std::vector<NSPresentationEditor::CTextRange> m_arRanges;
 
-	CStringW m_strText;
-	DWORD m_nTextType;
+	std::wstring	m_strText;
+	DWORD			m_nTextType;
 
 public:
 	CTextFullSettings() : m_arRanges()
@@ -28,7 +28,7 @@ public:
 		m_pTextRuler = NULL;
 
 		m_nTextType = 0xFFFFFFFF;
-		m_strText.Empty();
+		m_strText.clear();
 	}
 	CTextFullSettings(const CTextFullSettings& oSrc)
 	{
@@ -53,7 +53,7 @@ public:
 		m_pTextRuler = NULL;
 	}
 	
-    CString ApplyProperties(CTextAttributesEx* pTextAttributes)
+	std::wstring ApplyProperties(CTextAttributesEx* pTextAttributes)
 	{
 		if (NULL == pTextAttributes)
 			return m_strText;

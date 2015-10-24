@@ -19,7 +19,7 @@ public:
 	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
 	{
 		m_oHeader = oHeader;
-		m_strText = StreamUtils::ReadCStringW(pStream, m_oHeader.RecLen / 2);
+		m_strText = StreamUtils::ReadStringW(pStream, m_oHeader.RecLen / 2);
 	}
 	virtual CString ToString()
 	{

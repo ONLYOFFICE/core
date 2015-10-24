@@ -65,6 +65,9 @@ public:
 
 	std::vector<CColor>								m_oSchemeColors;
 
+	nullable<WORD>									m_wLanguage;	// язык пользователя (редактора)
+	nullable<bool>									m_bBidi;		// bi-direction
+
 public:
 
 	CPPTUserInfo();

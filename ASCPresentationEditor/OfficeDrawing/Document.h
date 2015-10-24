@@ -610,23 +610,24 @@ namespace NSPresentationEditor
 								if (pThemeStyles->m_pLevels[nIndexLevel]->m_oCFRun.Color->m_lSchemeIndex == -1)
 									continue;
 
-								LONG lIndexSchemeT = pThemeStyles->m_pLevels[nIndexLevel]->m_oCFRun.Color->m_lSchemeIndex;
+								if (pShape->m_oShape.m_oText.m_oStyles.m_pLevels[0].is_init())
+								{
+									if (pShape->m_oShape.m_oText.m_oStyles.m_pLevels[0]->m_oCFRun.Color.is_init())
+									{
 
-								if (!pShape->m_oShape.m_oText.m_oStyles.m_pLevels[0].is_init())
-									pShape->m_oShape.m_oText.m_oStyles.m_pLevels[0] = new CTextStyleLevel();
+										if (pShape->m_oShape.m_oText.m_oStyles.m_pLevels[0]->m_oCFRun.Color->m_lSchemeIndex != -1)
+											continue;
+								
+										LONG lIndexSchemeT = pThemeStyles->m_pLevels[nIndexLevel]->m_oCFRun.Color->m_lSchemeIndex;
 
-								if (!pShape->m_oShape.m_oText.m_oStyles.m_pLevels[0]->m_oCFRun.Color.is_init())
-									pShape->m_oShape.m_oText.m_oStyles.m_pLevels[0]->m_oCFRun.Color = new CColor();
-
-								if (pShape->m_oShape.m_oText.m_oStyles.m_pLevels[0]->m_oCFRun.Color->m_lSchemeIndex != -1)
-									continue;
-
-								pShape->m_oShape.m_oText.m_oStyles.m_pLevels[0]->m_oCFRun.Color->m_lSchemeIndex = lIndexSchemeT;
-								pShape->m_oShape.m_oText.m_oStyles.m_pLevels[0]->m_oCFRun.Color->R = pLayout->m_arColorScheme[lIndexSchemeT].R;
-								pShape->m_oShape.m_oText.m_oStyles.m_pLevels[0]->m_oCFRun.Color->G = pLayout->m_arColorScheme[lIndexSchemeT].G;
-								pShape->m_oShape.m_oText.m_oStyles.m_pLevels[0]->m_oCFRun.Color->B = pLayout->m_arColorScheme[lIndexSchemeT].B;
-
-								bIsPlaceholderSetUp = true;
+										pShape->m_oShape.m_oText.m_oStyles.m_pLevels[0]->m_oCFRun.Color->m_lSchemeIndex = -1;
+										pShape->m_oShape.m_oText.m_oStyles.m_pLevels[0]->m_oCFRun.Color->R = pLayout->m_arColorScheme[lIndexSchemeT].R;
+										pShape->m_oShape.m_oText.m_oStyles.m_pLevels[0]->m_oCFRun.Color->G = pLayout->m_arColorScheme[lIndexSchemeT].G;
+										pShape->m_oShape.m_oText.m_oStyles.m_pLevels[0]->m_oCFRun.Color->B = pLayout->m_arColorScheme[lIndexSchemeT].B;
+										
+										bIsPlaceholderSetUp = true;
+									}
+								}
 							}
 						}
 					
@@ -665,7 +666,6 @@ namespace NSPresentationEditor
 					pElement->m_pLayout = pLayout;
 
 					pElement->m_oMetric = m_oInfo;
-					//pElement->NormalizeCoords(dScaleX, dScaleY);
 
 					pElement->SetupProperties(pSlide, pTheme, pLayout);
 				}

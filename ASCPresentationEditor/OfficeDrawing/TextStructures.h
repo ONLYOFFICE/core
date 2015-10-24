@@ -132,6 +132,7 @@ namespace NSPresentationEditor
 		NSCommon::nullable_base<WORD>			Cap;				// 0 - none, 1 - TEXT, 2 - text
 
 		NSCommon::nullable_base<CFontProperties>	FontProperties;
+		NSCommon::nullable_base<WORD>			Language;
 
 	public:
 
@@ -166,6 +167,8 @@ namespace NSPresentationEditor
 
 			Cap				= oSrc.Cap;
 
+			Language		= oSrc.Language;
+
 			return *this;
 		}
 		~CTextCFRun()
@@ -194,6 +197,8 @@ namespace NSPresentationEditor
 			if (!Cap.is_init())						Cap = oSrc.Cap;
 
 			if (!FontProperties.is_init())			FontProperties = oSrc.FontProperties;
+
+			if (!Language.is_init())				Language = oSrc.Language;
 		}
 		AVSINLINE void ApplyAfter(const CTextCFRun& oSrc)
 		{
@@ -227,6 +232,8 @@ namespace NSPresentationEditor
 				if (!bTypefaceSetUp)
 					Typeface.reset();
 			}
+			if (oSrc.Language.is_init())
+				Language = oSrc.Language;
 		}
 
 		CString ToString(LONG lCount)
@@ -452,76 +459,7 @@ namespace NSPresentationEditor
 
 		CString ToString(LONG lCount)
 		{
-			XmlUtils::CXmlWriter oWriter;
-                        oWriter.WriteNodeBegin(_T("Paragraph"), true);
-			//oWriter.WriteAttribute(_T("type"), CDirectory::ToString(TextType));
-			//oWriter.WriteAttribute(_T("level"), CDirectory::ToString(Level));
-			oWriter.WriteAttribute(_T("count"), CDirectory::ToString(lCount));
-			oWriter.WriteAttribute(_T("oneline"), bIsOneLine ? _T("1") : _T("0"));
-			
-                        oWriter.WriteNodeEnd(_T("Paragraph"), true, false);
-			
-			CString strXml = _T("");
-                        if (hasBullet.is_init() && (true == hasBullet.get()))
-			{
-                strXml += (_T("<bulletflag>255</bulletflag>"));
-				
-				if (!bulletChar.is_init())
-				{
-                    CString temp = _T("<bulletchar>");
-                    temp += _T('\x2022');
-                    temp += _T("</bulletchar>");
-                    strXml += temp;
-				}
-			}
-			
-			if (bulletChar.is_init())
-            {
-                CString temp = _T("<bulletchar>");
-                temp +=  _T('\x2022');
-                temp += _T("</bulletchar>");
-                strXml += temp;
-			}
-			strXml += ToNode(bulletFontRef, _T("bulletfontref"));
-			strXml += ToNode(bulletSize, _T("bulletsize"));
-			strXml += ToNode(bulletColor, _T("bulletcolor"));
-
-			strXml += ToNode(textAlignment, _T("textalignment"));
-			strXml += ToNode(lineSpacing, _T("linespacing"));
-			strXml += ToNode(spaceBefore, _T("spacebefore"));
-			strXml += ToNode(spaceAfter, _T("spaceafter"));
-			strXml += ToNode(leftMargin, _T("leftmargin"));
-			strXml += ToNode(indent, _T("indent"));
-			strXml += ToNode(defaultTabSize, _T("defaulttabsize"));
-
-			strXml += ToNode(textDirection, _T("textdirectional"));
-			strXml += ToNode(fontAlign, _T("fontalign"));
-			
-			if (wrapFlags.is_init())
-			{
-				int lIsWord = 1; // characters
-				if (0x02 == (0x02 & wrapFlags.get()))
-				{
-					lIsWord = 0; // words
-				}
-				strXml += (_T("<wrapflags>") + XmlUtils::IntToString(lIsWord) + _T("</wrapflags>"));
-			}
-			
-			size_t nCount = tabStops.size();
-			if (0 < nCount)
-			{
-				strXml += _T("<tabstops>");
-				for (size_t i = 0; i < nCount; ++i)
-				{
-					strXml += (_T("<tabstop>") + XmlUtils::UIntToString((size_t)tabStops[i]) + _T("</tabstop>"));
-				}
-				strXml += _T("</tabstops>");
-			}
-
-			oWriter.WriteString(strXml);
-
-			oWriter.WriteNodeEnd(_T("Paragraph"));
-			return oWriter.GetXmlString();
+			return L"";
 		}
 
 	};
@@ -608,71 +546,7 @@ namespace NSPresentationEditor
 
 		CString ToString()
 		{
-			NSPresentationEditor::CXmlWriter oWriter;
-			oWriter.WriteNodeBegin(_T("TextRuler"));
-			
-			if (CLevels.is_init())
-			{
-				oWriter.WriteNodeValueDWORD(_T("CLevels"), (DWORD)CLevels.get());
-			}
-			if (DefaultTabSize.is_init())
-			{
-				oWriter.WriteNodeValueLONG(_T("DefaultTabSize"), (LONG)DefaultTabSize.get());
-			}
-			if (LeftMargin1.is_init())
-			{
-				oWriter.WriteNodeValueLONG(_T("LeftMargin1"), (LONG)LeftMargin1.get());
-			}
-			if (Indent1.is_init())
-			{
-				oWriter.WriteNodeValueLONG(_T("Indent1"), (LONG)Indent1.get());
-			}
-			if (LeftMargin2.is_init())
-			{
-				oWriter.WriteNodeValueLONG(_T("LeftMargin2"), (LONG)LeftMargin2.get());
-			}
-			if (Indent2.is_init())
-			{
-				oWriter.WriteNodeValueLONG(_T("Indent2"), (LONG)Indent2.get());
-			}
-			if (LeftMargin3.is_init())
-			{
-				oWriter.WriteNodeValueLONG(_T("LeftMargin3"), (LONG)LeftMargin3.get());
-			}
-			if (Indent3.is_init())
-			{
-				oWriter.WriteNodeValueLONG(_T("Indent3"), (LONG)Indent3.get());
-			}
-			if (LeftMargin4.is_init())
-			{
-				oWriter.WriteNodeValueLONG(_T("LeftMargin4"), (LONG)LeftMargin4.get());
-			}
-			if (Indent4.is_init())
-			{
-				oWriter.WriteNodeValueLONG(_T("Indent4"), (LONG)Indent4.get());
-			}
-			if (LeftMargin5.is_init())
-			{
-				oWriter.WriteNodeValueLONG(_T("LeftMargin5"), (LONG)LeftMargin5.get());
-			}
-			if (Indent5.is_init())
-			{
-				oWriter.WriteNodeValueLONG(_T("Indent5"), (LONG)Indent5.get());
-			}
-
-			size_t tabssize = tabsStops.size();
-			if (0 != tabssize)
-			{
-				oWriter.WriteNodeBegin(_T("TabStops"));
-				for (size_t i = 0; i < tabssize; ++i)
-				{
-					oWriter.WriteNodeValueDWORD(_T("tabStop"), tabsStops[i]);
-				}
-				oWriter.WriteNodeEnd(_T("TabStops"));
-			}
-
-			oWriter.WriteNodeEnd(_T("TextRuler"));
-			return oWriter.GetXmlString();
+			return L"";
 		}
 	};
 
@@ -804,43 +678,7 @@ namespace NSPresentationEditor
 
 		CString ToString()
 		{
-			NSPresentationEditor::CXmlWriter oWriter;
-			oWriter.WriteNodeBegin(_T("SIRun"));
-
-			if (bSpell)
-			{
-				oWriter.WriteNodeValueDWORD(_T("Spell"), (DWORD)Spell);
-			}
-			if (bLang)
-			{
-				oWriter.WriteNodeValueDWORD(_T("Lang"), (DWORD)Lang);
-			}
-			if (bAltLang)
-			{
-				oWriter.WriteNodeValueDWORD(_T("AltLang"), (DWORD)AltLang);
-			}
-			if (bBidi)
-			{
-				oWriter.WriteNodeValueDWORD(_T("Bidi"), (DWORD)Bidi);
-			}
-			if (bPp10ext)
-			{
-				oWriter.WriteNodeValueDWORD(_T("pp10runid"), (DWORD)pp10runid);
-				oWriter.WriteNodeValueBool(_T("bGramma"), bGramma);
-			}
-
-			if (bSmartTag)
-			{
-				oWriter.WriteNodeBegin(_T("SmartTags"));
-				for (size_t i = 0; i < arSmartTags.size(); ++i)
-				{
-					oWriter.WriteNodeValueDWORD(_T("tag"), arSmartTags[i]);
-				}
-				oWriter.WriteNodeEnd(_T("SmartTags"));
-			}
-
-			oWriter.WriteNodeEnd(_T("SIRun"));
-			return oWriter.GetXmlString();
+			return L"";
 		}
 	};
 
@@ -848,8 +686,8 @@ namespace NSPresentationEditor
 	class CSpan
 	{
 	public:
-		CTextCFRun	m_oRun;
-		CString		m_strText;
+		CTextCFRun			m_oRun;
+		std::wstring		m_strText;
 
 	public:
 		CSpan() : m_oRun(), m_strText(_T(""))
@@ -905,33 +743,34 @@ namespace NSPresentationEditor
 		}
 	};
 
-	class CTextFullInfo
-	{
-	public:
-		CTextPFRun m_oPF;
-		CTextCFRun m_oCF;
-		CTextRuler m_oRuler;
-		CTextSIRun m_oSI;
+	//нигде не применяется ???
+	//class CTextFullInfo
+	//{
+	//public:
+	//	CTextPFRun m_oPF;
+	//	CTextCFRun m_oCF;
+	//	CTextRuler m_oRuler;
+	//	CTextSIRun m_oSI;
 
-	public:
-		CTextFullInfo() : m_oPF(), m_oCF(), m_oRuler(), m_oSI()
-		{
-		}
+	//public:
+	//	CTextFullInfo() : m_oPF(), m_oCF(), m_oRuler(), m_oSI()
+	//	{
+	//	}
 
-		CTextFullInfo(const CTextFullInfo& oSrc)
-		{
-			*this = oSrc;
-		}
+	//	CTextFullInfo(const CTextFullInfo& oSrc)
+	//	{
+	//		*this = oSrc;
+	//	}
 
-		CTextFullInfo& operator=(const CTextFullInfo& oSrc)
-		{
-			m_oPF		= oSrc.m_oPF;
-			m_oCF		= oSrc.m_oCF;
-			m_oRuler	= oSrc.m_oRuler;
-			m_oSI		= oSrc.m_oSI;
-			return *this;
-		}
-	};
+	//	CTextFullInfo& operator=(const CTextFullInfo& oSrc)
+	//	{
+	//		m_oPF		= oSrc.m_oPF;
+	//		m_oCF		= oSrc.m_oCF;
+	//		m_oRuler	= oSrc.m_oRuler;
+	//		m_oSI		= oSrc.m_oSI;
+	//		return *this;
+	//	}
+	//};
 	
 	class CTextStyles
 	{
@@ -963,6 +802,18 @@ namespace NSPresentationEditor
 			for (int i = 0; i < 10; ++i)
 			{
 				m_pLevels[i] = pStyles->m_pLevels[i];
+			}
+		}
+		void SetLanguage(nullable<WORD> & language)
+		{
+			if (!language.is_init()) return;
+
+			for (int i = 0; i < 10; ++i)
+			{
+				if (m_pLevels[i].is_init())
+				{
+					m_pLevels[i]->m_oCFRun.Language = language;
+				}
 			}
 		}
 		void ApplyAfter(const CTextStyles& oSrc)
@@ -1040,7 +891,7 @@ namespace NSPresentationEditor
 			size_t nCountS = m_arSpans.size();
 			for (size_t i = 0; i < nCountS; ++i)
 			{
-				m_arSpans[i].m_strText.Replace((TCHAR)(11), (TCHAR)(13));
+				std::replace( m_arSpans[i].m_strText.begin(), m_arSpans[i].m_strText.end(), (TCHAR)(11), (TCHAR)(13)); 
 			}
 		}
 		AVSINLINE bool IsEmpty()
@@ -1048,7 +899,7 @@ namespace NSPresentationEditor
 			size_t nCountSpans = m_arSpans.size();
 			for (size_t i = 0; i < nCountSpans; ++i)
 			{
-				int nLen = m_arSpans[i].m_strText.GetLength();
+				int nLen = m_arSpans[i].m_strText.length();
 
 				if (nLen > 1)
 					return false;

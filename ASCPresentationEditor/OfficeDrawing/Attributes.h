@@ -13,13 +13,22 @@
 #include "../../Common/ASCUtils.h"
 #include "./XmlWriter.h"
 
-
-
 #include "../../DesktopEditor/graphics/IRenderer.h"
 #include "../../DesktopEditor/graphics/structures.h"
 
+
 namespace NSPresentationEditor
 {
+	static void ReplaceAll(std::wstring & str, const std::wstring& from, const std::wstring& to) 
+	{
+		size_t start_pos = 0;
+		while((start_pos = str.find(from, start_pos)) != std::wstring::npos) 
+		{
+			str.replace(start_pos, from.length(), to);
+			start_pos += to.length(); 
+		}
+	}
+
 	class CExFilesInfo
 	{
 	public:
@@ -212,7 +221,16 @@ namespace NSPresentationEditor
 		}
 	};
 
-	static void CorrectXmlString(CString& strText)
+#if defined(_WIN32) || defined(_WIN64)
+	static void CorrectXmlString2(CString & strText)
+	{
+		strText.Replace(L"&apos;",	L"'");
+		strText.Replace(L"&lt;",	L"<");
+		strText.Replace(L"&gt;",	L">");
+		strText.Replace(L"&quot;",	L"\"");
+		strText.Replace(L"&amp;",	L"&");
+	}
+	static void CorrectXmlString(CString & strText)
 	{
 		strText.Replace(L"&",	L"&amp;");
 		strText.Replace(L"'",	L"&apos;");
@@ -220,14 +238,22 @@ namespace NSPresentationEditor
 		strText.Replace(L">",	L"&gt;");
 		strText.Replace(L"\"",	L"&quot;");
 	}
-
-	static void CorrectXmlString2(CString& strText)
+#endif
+	static void CorrectXmlString2(std::wstring & strText)
 	{
-		strText.Replace(L"&apos;",	L"'");
-		strText.Replace(L"&lt;",	L"<");
-		strText.Replace(L"&gt;",	L">");
-		strText.Replace(L"&quot;",	L"\"");
-		strText.Replace(L"&amp;",	L"&");
+		ReplaceAll(strText, L"&apos;",	L"'");
+		ReplaceAll(strText, L"&lt;",	L"<");
+		ReplaceAll(strText, L"&gt;",	L">");
+		ReplaceAll(strText, L"&quot;",	L"\"");
+		ReplaceAll(strText, L"&amp;",	L"&");
+	}					
+	static void CorrectXmlString(std::wstring & strText)
+	{
+		ReplaceAll(strText, L"&",	L"&amp;");
+		ReplaceAll(strText, L"'",	L"&apos;");
+		ReplaceAll(strText, L"<",	L"&lt;");
+		ReplaceAll(strText, L">",	L"&gt;");
+		ReplaceAll(strText, L"\"",	L"&quot;");
 	}
 	static inline CString BoolToString(bool bValue)
 	{

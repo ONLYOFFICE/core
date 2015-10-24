@@ -354,35 +354,6 @@ public:
 				if (bUseFlipV)
 					pElement->m_bFlipV = bFlipV;
 			}break;
-		case fNoLineDrawDash: //Line Style Boolean Properties
-			{
-				bool bNoLineDrawDash		= GETBIT(pProperty->m_lValue, 0);
-				bool bLineFillShape			= GETBIT(pProperty->m_lValue, 1);
-				bool bHitTestLine			= GETBIT(pProperty->m_lValue, 2);
-				bool bLine					= GETBIT(pProperty->m_lValue, 3);
-				bool bArrowheadsOK			= GETBIT(pProperty->m_lValue, 4);
-				bool bInsetPenOK			= GETBIT(pProperty->m_lValue, 5);
-				bool bInsetPen				= GETBIT(pProperty->m_lValue, 6);
-				bool bLineOpaqueBackColor	= GETBIT(pProperty->m_lValue, 9);
-
-				bool bUsefNoLineDrawDash	= GETBIT(pProperty->m_lValue, 16);
-				bool bUsefLineFillShape		= GETBIT(pProperty->m_lValue, 17);
-				bool bUsefHitTestLine		= GETBIT(pProperty->m_lValue, 18);
-				bool bUsefLine				= GETBIT(pProperty->m_lValue, 19);
-				bool bUsefArrowheadsOK		= GETBIT(pProperty->m_lValue, 20);
-				bool bUsefInsetPenOK		= GETBIT(pProperty->m_lValue, 21);
-				bool bUsefInsetPen			= GETBIT(pProperty->m_lValue, 22);
-				bool bUsefLineOpaqueBackColor = GETBIT(pProperty->m_lValue, 25);
-
-				if (bUsefLine)
-					pElement->m_bLine = bLine;				
-			}break;
-		case lineStyle:
-		case lineDashStyle://from Complex
-			{
-				
-				pElement->m_bLine = true;	
-			}break;
 		case fillType:
 			{
 				DWORD dwType = pProperty->m_lValue;
@@ -635,6 +606,34 @@ public:
 				break;
 			}
 // line --------------------------------------------------------
+		case fNoLineDrawDash: //Line Style Boolean Properties
+			{
+				bool bNoLineDrawDash		= GETBIT(pProperty->m_lValue, 0);
+				bool bLineFillShape			= GETBIT(pProperty->m_lValue, 1);
+				bool bHitTestLine			= GETBIT(pProperty->m_lValue, 2);
+				bool bLine					= GETBIT(pProperty->m_lValue, 3);
+				bool bArrowheadsOK			= GETBIT(pProperty->m_lValue, 4);
+				bool bInsetPenOK			= GETBIT(pProperty->m_lValue, 5);
+				bool bInsetPen				= GETBIT(pProperty->m_lValue, 6);
+				bool bLineOpaqueBackColor	= GETBIT(pProperty->m_lValue, 9);
+
+				bool bUsefNoLineDrawDash	= GETBIT(pProperty->m_lValue, 16);
+				bool bUsefLineFillShape		= GETBIT(pProperty->m_lValue, 17);
+				bool bUsefHitTestLine		= GETBIT(pProperty->m_lValue, 18);
+				bool bUsefLine				= GETBIT(pProperty->m_lValue, 19);
+				bool bUsefArrowheadsOK		= GETBIT(pProperty->m_lValue, 20);
+				bool bUsefInsetPenOK		= GETBIT(pProperty->m_lValue, 21);
+				bool bUsefInsetPen			= GETBIT(pProperty->m_lValue, 22);
+				bool bUsefLineOpaqueBackColor = GETBIT(pProperty->m_lValue, 25);
+
+				if (bUsefLine)
+					pElement->m_bLine = bLine;				
+			}break;
+		case lineStyle:
+		case lineDashStyle://from Complex
+			{
+				pElement->m_bLine = true;	
+			}break;
 		case lineColor:
 			{
 				SColorAtom oAtom;
@@ -1000,36 +999,6 @@ public:
 				}
 				break;
 			}
-		case NSOfficeDrawing::dxTextLeft:
-			{
-				pParentShape->m_dTextMarginX = (double)pProperty->m_lValue / EMU_MM;
-				//pElemProps->SetAt(CElementProperty::epTextMarginLeft, pProperty->m_lValue);
-				break;
-			}
-		case NSOfficeDrawing::dxTextRight:
-			{
-				pParentShape->m_dTextMarginRight = (double)pProperty->m_lValue / EMU_MM;
-				//pElemProps->SetAt(CElementProperty::epTextMarginRight, pProperty->m_lValue);
-				break;
-			}
-		case NSOfficeDrawing::dyTextTop:
-			{
-				pParentShape->m_dTextMarginY = (double)pProperty->m_lValue / EMU_MM;
-				//pElemProps->SetAt(CElementProperty::epTextMarginTop, pProperty->m_lValue);
-				break;
-			}
-		case NSOfficeDrawing::dyTextBottom:
-			{
-				pParentShape->m_dTextMarginBottom = (double)pProperty->m_lValue / EMU_MM;
-				//pElemProps->SetAt(CElementProperty::epTextMarginBottom, pProperty->m_lValue);
-				break;
-			}
-		case NSOfficeDrawing::WrapText:
-			{
-				pParentShape->m_oText.m_lWrapMode = (LONG)pProperty->m_lValue;
-				//pElemProps->SetAt(CElementProperty::epTextWrap, pProperty->m_lValue);
-				break;
-			}
 		case NSOfficeDrawing::adjustValue:
 		case NSOfficeDrawing::adjust2Value:
 		case NSOfficeDrawing::adjust3Value:
@@ -1044,7 +1013,6 @@ public:
 				LONG lIndexAdj = pProperty->m_ePID - NSOfficeDrawing::adjustValue;
 				if (lIndexAdj >= 0 && lIndexAdj < pShape->m_arAdjustments.size())
 				{
-					//SetAdjustment(lIndexAdj, (LONG)pProperty->m_lValue);
 					pShape->m_oCustomVML.LoadAdjusts(lIndexAdj, (LONG)pProperty->m_lValue);
 				}
 				else
@@ -1053,7 +1021,32 @@ public:
 				}
 				break;
 			}
-			// text --------------------------------------------------------
+//--------------------------------------------------------------------------------------------------------------------
+		case lTxid:
+			{
+			}break;
+		case NSOfficeDrawing::dxTextLeft:
+			{
+				pParentShape->m_dTextMarginX = (double)pProperty->m_lValue / EMU_MM;
+				
+			}break;
+		case NSOfficeDrawing::dxTextRight:
+			{
+				pParentShape->m_dTextMarginRight = (double)pProperty->m_lValue / EMU_MM;
+			}break;
+		case NSOfficeDrawing::dyTextTop:
+			{
+				pParentShape->m_dTextMarginY = (double)pProperty->m_lValue / EMU_MM;
+			}break;
+		case NSOfficeDrawing::dyTextBottom:
+			{
+				pParentShape->m_dTextMarginBottom = (double)pProperty->m_lValue / EMU_MM;
+			}break;
+		case NSOfficeDrawing::WrapText:
+			{
+				pParentShape->m_oText.m_lWrapMode = (LONG)pProperty->m_lValue;
+				
+			}break;
 		case NSOfficeDrawing::gtextUNICODE://word art text
 			{
 				if (pProperty->m_bComplex && 0 < pProperty->m_lValue)
@@ -1068,24 +1061,20 @@ public:
 						p.m_arSpans.push_back(s);
 						pParentShape->m_oText.m_arParagraphs.push_back(p);
 					}
-				}
-				break;
-			}
-			// font --------------------------------------------------------
+				}				
+			}break;
 		case NSOfficeDrawing::gtextFont:
 			{
 				if (pProperty->m_bComplex && 0 < pProperty->m_lValue)
 				{
 					std::wstring str = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)pProperty->m_pOptions, pProperty->m_lValue/2-1);
 					pParentShape->m_oText.m_oAttributes.m_oFont.Name = std_string2string(str);
-					//pElemProps->SetAt(CElementProperty::epFontName, (CString)str);
 				}
 				break;
 			}
 		case NSOfficeDrawing::gtextSize:
 			{
 				pParentShape->m_oText.m_oAttributes.m_oFont.Size = (INT)((pProperty->m_lValue >> 16) & 0x0000FFFF);
-				//pElemProps->SetAt(CElementProperty::epFontSize, (DWORD)((pProperty->m_lValue >> 16) & 0x0000FFFF));
 				break;
 			}
 		case NSOfficeDrawing::anchorText:
@@ -1095,16 +1084,12 @@ public:
 				case NSOfficeDrawing::anchorTop:
 				case NSOfficeDrawing::anchorTopBaseline:
 					{
-						//m_oText.m_nTextAlignHorizontal = 0;
 						pParentShape->m_oText.m_oAttributes.m_nTextAlignVertical = 0;
-						//pElemProps->SetAt(CElementProperty::epFontVertAlign, (DWORD)0);
 						break;
 					}
 				case NSOfficeDrawing::anchorMiddle:
 					{
-						//m_oText.m_nTextAlignHorizontal = 0;
 						pParentShape->m_oText.m_oAttributes.m_nTextAlignVertical = 1;
-						//pElemProps->SetAt(CElementProperty::epFontVertAlign, (DWORD)1);
 						break;
 					}
 				case NSOfficeDrawing::anchorBottom:
@@ -1112,8 +1097,6 @@ public:
 					{
 						pParentShape->m_oText.m_oAttributes.m_nTextAlignHorizontal = 0;
 						pParentShape->m_oText.m_oAttributes.m_nTextAlignVertical = 2;
-						//pElemProps->SetAt(CElementProperty::epFontHorAlign, (DWORD)0);
-						//pElemProps->SetAt(CElementProperty::epFontVertAlign, (DWORD)2);
 						break;
 					}
 				case NSOfficeDrawing::anchorTopCentered:
@@ -1121,16 +1104,12 @@ public:
 					{
 						pParentShape->m_oText.m_oAttributes.m_nTextAlignHorizontal = 1;
 						pParentShape->m_oText.m_oAttributes.m_nTextAlignVertical = 0;
-						//pElemProps->SetAt(CElementProperty::epFontHorAlign, (DWORD)1);
-						//pElemProps->SetAt(CElementProperty::epFontVertAlign, (DWORD)0);
 						break;
 					}
 				case NSOfficeDrawing::anchorMiddleCentered:
 					{
 						pParentShape->m_oText.m_oAttributes.m_nTextAlignHorizontal = 1;
 						pParentShape->m_oText.m_oAttributes.m_nTextAlignVertical = 1;
-						//pElemProps->SetAt(CElementProperty::epFontHorAlign, (DWORD)1);
-						//pElemProps->SetAt(CElementProperty::epFontVertAlign, (DWORD)1);
 						break;
 					}
 				case NSOfficeDrawing::anchorBottomCentered:
@@ -1138,16 +1117,12 @@ public:
 					{
 						pParentShape->m_oText.m_oAttributes.m_nTextAlignHorizontal = 1;
 						pParentShape->m_oText.m_oAttributes.m_nTextAlignVertical = 2;
-						//pElemProps->SetAt(CElementProperty::epFontHorAlign, (DWORD)1);
-						//pElemProps->SetAt(CElementProperty::epFontVertAlign, (DWORD)2);
 						break;
 					}
 				default:
 					{
 						pParentShape->m_oText.m_oAttributes.m_nTextAlignHorizontal = 1;
 						pParentShape->m_oText.m_oAttributes.m_nTextAlignVertical = -1; // not set
-						//pElemProps->SetAt(CElementProperty::epFontHorAlign, (DWORD)1);
-						//pElemProps->SetAt(CElementProperty::epFontVertAlign, (DWORD)0);
 						break;
 					}
 				};
@@ -1160,25 +1135,21 @@ public:
 				case NSOfficeDrawing::alignTextLeft:
 					{
 						pParentShape->m_oText.m_oAttributes.m_nTextAlignHorizontal = 0;
-						//pElemProps->SetAt(CElementProperty::epFontHorAlign, (DWORD)0);
 						break;
 					}
 				case NSOfficeDrawing::alignTextCenter:
 					{
 						pParentShape->m_oText.m_oAttributes.m_nTextAlignHorizontal = 1;
-						//pElemProps->SetAt(CElementProperty::epFontHorAlign, (DWORD)1);
 						break;
 					}
 				case NSOfficeDrawing::alignTextRight:
 					{
 						pParentShape->m_oText.m_oAttributes.m_nTextAlignHorizontal = 2;
-						//pElemProps->SetAt(CElementProperty::epFontHorAlign, (DWORD)2);
 						break;
 					}
 				default:
 					{
 						pParentShape->m_oText.m_oAttributes.m_nTextAlignHorizontal = 1;
-						//pElemProps->SetAt(CElementProperty::epFontHorAlign, (DWORD)1);
 					}
 				};
 				break;
@@ -1211,7 +1182,6 @@ public:
 				if (bUseStrikethrought)
 				{
                     pParentShape->m_oText.m_oAttributes.m_oFont.Strikeout = (BYTE)bStrikethrought;
-					//pElemProps->SetAt(CElementProperty::epFontStrikeout, bStrikethrought);
 				}
 				if (bUseShadow)
 				{
@@ -1220,25 +1190,36 @@ public:
 				if (bUseUnderline)
 				{
                     pParentShape->m_oText.m_oAttributes.m_oFont.Underline = (BYTE)bUnderline;
-					//pElemProps->SetAt(CElementProperty::epFontUnderline, bUnderline);
 				}
 				if (bUseItalic)
 				{
                     pParentShape->m_oText.m_oAttributes.m_oFont.Italic = bItalic;
-					//pElemProps->SetAt(CElementProperty::epFontItalic, bItalic);
 				}
 				if (bUseBold)
 				{
                     pParentShape->m_oText.m_oAttributes.m_oFont.Bold = bBold;
-					//pElemProps->SetAt(CElementProperty::epFontBold, bBold);
 				}
-
 				if (bUseVertical)
 				{
                     pParentShape->m_oText.m_bVertical = (true == bVertical) ? true : false;
+				}				
+			}break;
+		case NSOfficeDrawing::cdirFont:
+			{
+				switch (pProperty->m_lValue)
+				{
+				case 1:	
+					pParentShape->m_oText.m_bVertical = true;		
+					break;
+				case 2: 
+					pParentShape->m_oText.m_oAttributes.m_dTextRotate = 180;	
+					break;
+				case 3: 
+					pParentShape->m_oText.m_bVertical = true;
+					pParentShape->m_oText.m_oAttributes.m_dTextRotate = 180;	
+					break;
 				}
-				break;
-			}
+			}break;
 		case NSOfficeDrawing::fFitTextToShape:
 			{
 				BYTE flag1 = (BYTE)(pProperty->m_lValue);
@@ -1263,10 +1244,8 @@ public:
 						pParentShape->m_dTextMarginY		= 2.54;
 						pParentShape->m_dTextMarginBottom	= 1.27;
 					}
-				}
-				break;
-			}
-		// geometry shape
+				}				
+			}break;
 
 		default:
 			break;
@@ -1642,7 +1621,7 @@ public:
 				oElementInfo.m_lPersistIndex = oArrayTextRefs[0]->m_nIndex;
 			}
 
-			CString strText = _T("");
+			std::wstring strText;
 			// теперь сам текст...
 			std::vector<CRecordTextBytesAtom*> oArrayTextBytes;
 			GetRecordsByType(&oArrayTextBytes, true, true);
@@ -1834,7 +1813,7 @@ public:
 
 protected:
 
-	void SetUpTextStyle(CString& strText, CTheme* pTheme, CLayout* pLayout, IElement* pElem, CSlideInfo* pThemeWrapper, CSlideInfo* pSlideWrapper, CSlide* pSlide = NULL)
+	void SetUpTextStyle(std::wstring& strText, CTheme* pTheme, CLayout* pLayout, IElement* pElem, CSlideInfo* pThemeWrapper, CSlideInfo* pSlideWrapper, CSlide* pSlide = NULL)
 	{
 		// сначала проверяем на shape
 		// затем применяем все настройки по-очереди
@@ -1931,55 +1910,32 @@ protected:
 		}
 		//  ------------------------------------------------------------------------------
 
-		//  own properties ---------------------------------------------------------------
-		if (NULL != oElemInfo.m_pStream)
+		if (NULL != oElemInfo.m_pStream && -1 != oElemInfo.m_lOffsetTextStyle)
 		{
-			// теперь нужно загрузить продвинутые настройки текста из стрима.
+			// теперь нужно загрузить стили текста из стрима.
 			LONG lPosition = 0; StreamUtils::StreamPosition(lPosition, oElemInfo.m_pStream);
 
-			if (-1 != oElemInfo.m_lOffsetTextStyle)
-			{
-				StreamUtils::StreamSeek(oElemInfo.m_lOffsetTextStyle - 8, oElemInfo.m_pStream);
+			StreamUtils::StreamSeek(oElemInfo.m_lOffsetTextStyle - 8, oElemInfo.m_pStream);
 
-				SRecordHeader oHeader;
-				oHeader.ReadFromStream(oElemInfo.m_pStream) ;	
+			SRecordHeader oHeader;
+			oHeader.ReadFromStream(oElemInfo.m_pStream) ;	
 
-				if (RECORD_TYPE_STYLE_TEXTPROP_ATOM == oHeader.RecType)
-				{			
-					CRecordStyleTextPropAtom* pStyle = new CRecordStyleTextPropAtom();
-					pStyle->m_lCount = strText.GetLength();
+			if (RECORD_TYPE_STYLE_TEXTPROP_ATOM == oHeader.RecType)
+			{			
+				CRecordStyleTextPropAtom* pStyle = new CRecordStyleTextPropAtom();
+				pStyle->m_lCount = strText.length();
 
-					pStyle->ReadFromStream(oHeader, oElemInfo.m_pStream);
+				pStyle->ReadFromStream(oHeader, oElemInfo.m_pStream);
 
-					NSPresentationEditor::ConvertPPTTextToEditorStructure(pStyle->m_arrPFs, pStyle->m_arrCFs, strText, pShape->m_oShape.m_oText);
+				NSPresentationEditor::ConvertPPTTextToEditorStructure(pStyle->m_arrPFs, pStyle->m_arrCFs, strText, pShape->m_oShape.m_oText);
 
-					bIsOwnPresentSettings = (0 < pStyle->m_lCount);
+				bIsOwnPresentSettings = (0 < pStyle->m_lCount);
 
-					RELEASEOBJECT(pStyle);
-				}
+				RELEASEOBJECT(pStyle);
 			}
-
-			if (-1 != oElemInfo.m_lOffsetTextProp)
-			{
-				StreamUtils::StreamSeek(oElemInfo.m_lOffsetTextProp - 8, oElemInfo.m_pStream);
-
-				SRecordHeader oHeader;
-				oHeader.ReadFromStream(oElemInfo.m_pStream) ;	
-
-				if (RECORD_TYPE_TEXTSPECINFO_ATOM == oHeader.RecType)
-				{			
-					CRecordTextSpecInfoAtom* pSpecInfo = new CRecordTextSpecInfoAtom();
-					pSpecInfo->m_lCount = strText.GetLength();
-
-					pSpecInfo->ReadFromStream(oHeader, oElemInfo.m_pStream);
-					pSpecInfo->ApplyProperties(&(pShape->m_oShape.m_oText));
-
-					RELEASEOBJECT(pSpecInfo);
-				}
-			}
-
 			StreamUtils::StreamSeek(lPosition, oElemInfo.m_pStream);
 		}
+
 		//  ------------------------------------------------------------------------------
 
 		// теперь выставляем все настройки текста (стили)
@@ -2172,7 +2128,7 @@ protected:
 			
 			CTextPFRun_ppt elm;
 			
-			elm.m_lCount = strText.GetLength();
+			elm.m_lCount = strText.length();
 			elm.m_lLevel = 0;
 			
 			oArrayPF.push_back(elm);
@@ -2185,6 +2141,29 @@ protected:
 			oArrayCF.push_back(elm1);
 			
 			NSPresentationEditor::ConvertPPTTextToEditorStructure(oArrayPF, oArrayCF, strText, *pTextSettings);
+		}
+	
+		if (NULL != oElemInfo.m_pStream && -1 != oElemInfo.m_lOffsetTextProp)
+		{
+			//языковые настройки текта
+			LONG lPosition = 0; StreamUtils::StreamPosition(lPosition, oElemInfo.m_pStream);
+
+			StreamUtils::StreamSeek(oElemInfo.m_lOffsetTextProp - 8, oElemInfo.m_pStream);
+
+			SRecordHeader oHeader;
+			oHeader.ReadFromStream(oElemInfo.m_pStream) ;	
+
+			if (RECORD_TYPE_TEXTSPECINFO_ATOM == oHeader.RecType)
+			{			
+				CRecordTextSpecInfoAtom* pSpecInfo = new CRecordTextSpecInfoAtom();
+				pSpecInfo->m_lCount = strText.length();
+
+				pSpecInfo->ReadFromStream(oHeader, oElemInfo.m_pStream);
+				pSpecInfo->ApplyProperties(&(pShape->m_oShape.m_oText));
+
+				RELEASEOBJECT(pSpecInfo);
+			}
+			StreamUtils::StreamSeek(lPosition, oElemInfo.m_pStream);
 		}
 		pShape->m_oShape.m_oText.RecalcParagraphsPPT(pTheme);
 
@@ -2284,7 +2263,7 @@ protected:
 
 				for (size_t nIndexSpan = 0; nIndexSpan < pParagraph->m_arSpans.size(); ++nIndexSpan)
 				{
-					int lCurrentEnd = lCurrentStart + pParagraph->m_arSpans[nIndexSpan].m_strText.GetLength() - 1;
+					int lCurrentEnd = lCurrentStart + pParagraph->m_arSpans[nIndexSpan].m_strText.length() - 1;
 
 					if (lCurrentStart > lEnd || lCurrentEnd < lStart)
 					{
@@ -2297,23 +2276,23 @@ protected:
 
 					CSpan oRunProp = pParagraph->m_arSpans[nIndexSpan];
 
-					CString strText = pParagraph->m_arSpans[nIndexSpan].m_strText;
+					std::wstring strText = pParagraph->m_arSpans[nIndexSpan].m_strText;
 					if (lStart_ > lCurrentStart)
 					{
 						pParagraph->m_arSpans.insert(pParagraph->m_arSpans.begin()  + nIndexSpan, oRunProp);
-						pParagraph->m_arSpans[nIndexSpan].m_strText = strText.Mid(0, lStart_ - lCurrentStart);
+						pParagraph->m_arSpans[nIndexSpan].m_strText = strText.substr(0, lStart_ - lCurrentStart);
 
 						++nIndexSpan;
 					}
 					pParagraph->m_arSpans[nIndexSpan].m_oRun.Color = oColor;
                     pParagraph->m_arSpans[nIndexSpan].m_oRun.FontUnderline = (bool)true;
-					pParagraph->m_arSpans[nIndexSpan].m_strText = strText.Mid(lStart_ - lCurrentStart, lEnd_ - lStart_ + 1);
+					pParagraph->m_arSpans[nIndexSpan].m_strText = strText.substr(lStart_ - lCurrentStart, lEnd_ - lStart_ + 1);
 					if (lEnd_ < lCurrentEnd)
 					{
 						pParagraph->m_arSpans.insert(pParagraph->m_arSpans.begin() + nIndexSpan + 1, oRunProp);
 						++nIndexSpan;
 
-						pParagraph->m_arSpans[nIndexSpan].m_strText = strText.Mid(lEnd_ - lCurrentStart + 1, lCurrentEnd - lEnd_);
+						pParagraph->m_arSpans[nIndexSpan].m_strText = strText.substr(lEnd_ - lCurrentStart + 1, lCurrentEnd - lEnd_);
 					}
 
 					lCurrentStart = lCurrentEnd + 1;

@@ -46,17 +46,16 @@ public:
 class CCurrentUser 
 { 
 public:
-	bool m_bIsEncrypt;  
-	DWORD m_nOffsetToCurrentEdit;
+	bool			m_bIsEncrypt;  
+	DWORD			m_nOffsetToCurrentEdit;
 
-	CStringW m_strName;
+	std::wstring	m_strName;
 
 public:
 	CCurrentUser()
 	{
-		m_bIsEncrypt = false;
-		m_nOffsetToCurrentEdit = 0;
-		m_strName = _T("");
+		m_bIsEncrypt			= false;
+		m_nOffsetToCurrentEdit	= 0;
 	}
 	~CCurrentUser()
 	{
@@ -72,15 +71,14 @@ public:
 
 	void FromAtom(CRecordCurrentUserAtom* pAtom)
 	{
-		m_bIsEncrypt = (NO_ENCRYPT == pAtom->m_nToken);
-		m_nOffsetToCurrentEdit = pAtom->m_nOffsetToCurEdit;
-		m_strName = pAtom->m_strUNICODEUserName;
+		m_bIsEncrypt			= (NO_ENCRYPT == pAtom->m_nToken);
+		m_nOffsetToCurrentEdit	= pAtom->m_nOffsetToCurEdit;
+		m_strName				= pAtom->m_strUNICODEUserName;
 	}
 
 	CString ToString()
 	{
-        CString str = _T("<CurrentUser Name='") + (CString)m_strName + _T("' />");
-		return str;
+        return L"";
 	}
 };
 

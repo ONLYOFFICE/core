@@ -355,7 +355,7 @@ namespace StreamUtils
 		return Value;
 	}
 
-	static CStringA ReadCStringA(POLE::Stream* pStream, LONG lLen)
+	static std::string ReadStringA(POLE::Stream* pStream, LONG lLen)
 	{
 		if (pStream == NULL) return ("");
 
@@ -366,12 +366,12 @@ namespace StreamUtils
 
 		pData[lLen] = 0;
 
-		CStringA str(pData);
+		std::string str(pData);
 
 		delete[] pData;
 		return str;
 	}
-	static CStringW ReadCStringW(POLE::Stream* pStream, LONG lLen)
+	static std::wstring ReadStringW(POLE::Stream* pStream, LONG lLen)
 	{
 		if (pStream == NULL) return _T("");
 	
@@ -401,13 +401,13 @@ namespace StreamUtils
 				delete [] pStrUtf32;
                 return _T("");
             }
-            CString res((wchar_t*)pStrUtf32, lLen);
+			std::wstring res((wchar_t*)pStrUtf32, lLen);
 			if (pStrUtf32) delete [] pStrUtf32;
             return res;
         }
 		else
 		{
-			CStringW str((wchar_t*)pData);
+			std::wstring str((wchar_t*)pData);
 			delete[] pData;
 			return str;
 		}

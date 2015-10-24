@@ -1,8 +1,250 @@
 #include "ShapeWriter.h"
+#include "StylesWriter.h"
+
 #include "../../ASCOfficeXlsFile2/source/XlsXlsxConverter/ShapeType.h"
+#include "../../Common/MS-LCID.h"
 
 const double EMU_MM = 36000;
 
+void CStylesWriter::ConvertStyleLevel(NSPresentationEditor::CTextStyleLevel& oLevel,	NSPresentationEditor::CMetricInfo& oMetricInfo,
+																		NSPresentationEditor::CStringWriter& oWriter, const int& nLevel)
+{//дублирование CTextPFRun и  CTextCFRun с ShapeWriter - todooo  - вынести отдельно
+	CString str1;
+	if (nLevel == 9)
+		str1 = _T("<a:defPPr");
+	else
+		str1.Format(_T("<a:lvl%dpPr"), nLevel + 1);
+
+	oWriter.WriteString(str1);
+
+	NSPresentationEditor::CTextPFRun* pPF = &oLevel.m_oPFRun;
+
+	if (pPF->textDirection.is_init())
+	{
+		if (pPF->textDirection.get() == 1)	oWriter.WriteString(std::wstring(L" rtl=\"1\""));
+		else								oWriter.WriteString(std::wstring(L" rtl=\"0\""));
+	}
+	if (pPF->fontAlign.is_init())
+	{
+		CString strProp = GetFontAlign(pPF->fontAlign.get());
+		oWriter.WriteString(std::wstring(L" fontAlgn=\"") + string2std_string(strProp) + _T("\""));
+	}
+	if (pPF->leftMargin.is_init())
+	{
+		CString strProp;
+		strProp.Format(_T(" marL=\"%d\""), pPF->leftMargin.get());
+		oWriter.WriteString(strProp);
+
+		if (pPF->indent.is_init() == false)
+			pPF->indent = (LONG)0;
+	}
+	if (pPF->indent.is_init())
+	{
+		CString strProp;
+		strProp.Format(_T(" indent=\"%d\""), pPF->indent.get());
+		oWriter.WriteString(strProp);
+	}
+	if (pPF->textAlignment.is_init())
+	{
+		CString strProp = GetTextAlign(pPF->textAlignment.get());
+		oWriter.WriteString(std::wstring(L" algn=\"") + string2std_string(strProp) + _T("\""));
+	}
+	if (pPF->defaultTabSize.is_init())
+	{
+		CString strProp;
+		strProp.Format(_T(" defTabSz=\"%d\""), pPF->defaultTabSize.get());
+		oWriter.WriteString(strProp);
+	}
+	CString str2 = _T(">");
+	oWriter.WriteString(str2);
+
+	if (pPF->tabStops.size() > 0)
+	{
+		oWriter.WriteString(std::wstring(L"<a:tabLst>"));
+		for (int t = 0 ; t < pPF->tabStops.size(); t++)
+		{
+			CString strTab;
+			strTab.Format(L"<a:tab pos=\"%d\" algn=\"l\"/>", pPF->tabStops[t]) ;
+			oWriter.WriteString(strTab);
+		}
+		oWriter.WriteString(std::wstring(L"</a:tabLst>"));
+	}
+
+	if (pPF->hasBullet.is_init())
+	{
+		if (pPF->hasBullet.get())
+		{
+			if (pPF->bulletColor.is_init())
+			{
+				oWriter.WriteString(std::wstring(L"<a:buClr>"));
+				oWriter.WriteString(NSPresentationEditor::CShapeWriter::ConvertColor(pPF->bulletColor.get(), 255));
+				oWriter.WriteString(std::wstring(L"</a:buClr>"));
+			}	
+			if (pPF->bulletSize.is_init())
+			{
+				if (pPF->bulletSize.get() > 24 && pPF->bulletSize.get() < 401)
+				{
+					CString str;
+					str.Format(_T("<a:buSzPct val=\"%d\"/>"), pPF->bulletSize.get() * 1000 );
+					oWriter.WriteString(str);
+				}
+				if (pPF->bulletSize.get() < 0 && pPF->bulletSize.get() > -4001)
+				{
+					CString str;
+					str.Format(_T("<a:buSzPts val=\"%d\"/>"), - pPF->bulletSize.get() );
+					oWriter.WriteString(str);
+				}
+			}
+
+			if (pPF->bulletFontProperties.is_init())
+			{
+				oWriter.WriteString(std::wstring(L"<a:buFont typeface=\"") + pPF->bulletFontProperties->strFontName + _T("\"/>"));
+			}
+			wchar_t bu = 0x2022;
+			if (pPF->bulletChar.is_init())
+			{
+				bu = pPF->bulletChar.get();
+			}
+			oWriter.WriteString(std::wstring(L"<a:buChar char=\""));
+			oWriter.WriteStringXML(std::wstring(&bu, 1));
+			oWriter.WriteString(std::wstring(L"\"/>"));
+		}
+		else
+		{
+			CString strB = _T("<a:buNone/>");
+			oWriter.WriteString(strB);
+		}
+	}
+
+	double dKoef1 = 3.52777778;
+	if (pPF->lineSpacing.is_init())
+	{
+		LONG val = pPF->lineSpacing.get();
+		if (val > 0)
+		{
+			CString str = _T("");
+			str.Format(_T("<a:lnSpc><a:spcPts val=\"%d\"/></a:lnSpc>"), (int)(val * 0.125 * 100/*/ dKoef1*/));
+			oWriter.WriteString(str);
+		}
+		else if (val < 0 && val > -13200)
+		{
+			CString str = _T("");
+			str.Format(_T("<a:lnSpc><a:spcPct val=\"%d\"/></a:lnSpc>"), -val * 1000);
+			oWriter.WriteString(str);
+		}
+	}
+	if (pPF->spaceAfter.is_init())
+	{
+		LONG val = pPF->spaceAfter.get();
+		if (val > 0)
+		{
+			CString str = _T("");
+			str.Format(_T("<a:spcAft><a:spcPts val=\"%d\"/></a:spcAft>"), (int)(val * 0.125 * 100/*/ dKoef1*/));
+			oWriter.WriteString(str);
+		}
+		else if (val < 0 && val > -13200)
+		{
+			CString str = _T("");
+			str.Format(_T("<a:spcAft><a:spcPct val=\"%d\"/></a:spcAft>"), -val * 1000);
+			oWriter.WriteString(str);
+		}
+	}
+	if (pPF->spaceBefore.is_init())
+	{
+		LONG val = pPF->spaceBefore.get();
+		if (val > 0)
+		{
+			CString str = _T("");
+			str.Format(_T("<a:spcBef><a:spcPts val=\"%d\"/></a:spcBef>"), (int)(val * 0.125 * 100/*/ dKoef1*/));
+			oWriter.WriteString(str);
+		}
+		else if (val < 0 && val > -13200)
+		{
+			CString str = _T("");
+			str.Format(_T("<a:spcBef><a:spcPct val=\"%d\"/></a:spcBef>"), -val * 1000);
+			oWriter.WriteString(str);
+		}
+	}
+
+	CString strCF1 = _T("<a:defRPr");
+	oWriter.WriteString(strCF1);
+
+	NSPresentationEditor::CTextCFRun* pCF = &oLevel.m_oCFRun;
+	
+	if (pCF->Size.is_init())
+	{
+		CString strProp = _T("");
+		strProp.Format(_T(" sz=\"%d\""), (int)(100 * pCF->Size.get()));
+		oWriter.WriteString(strProp);
+	}
+	if (pCF->FontBold.is_init())
+	{
+		if (pCF->FontBold.get())
+			oWriter.WriteString(std::wstring(L" b=\"1\""));
+		else
+			oWriter.WriteString(std::wstring(L" b=\"0\""));
+	}
+	if (pCF->FontItalic.is_init())
+	{
+		if (pCF->FontItalic.get())
+			oWriter.WriteString(std::wstring(L" i=\"1\""));
+		else
+			oWriter.WriteString(std::wstring(L" i=\"0\""));
+	}
+	if (pCF->Language.is_init())
+	{
+		std::wstring str_lang = msLCID2wstring(pCF->Language.get());
+
+		if (str_lang.length() > 0)
+			oWriter.WriteString(std::wstring(L" lang=\"") + str_lang + _T("\""));
+	}
+	oWriter.WriteString(std::wstring(L">"));
+
+	if (pCF->Color.is_init())
+	{
+		if (pCF->Color->m_lSchemeIndex != -1)
+		{
+			CString strProp = _T("<a:solidFill><a:schemeClr val=\"") + GetColorInScheme(pCF->Color->m_lSchemeIndex) + _T("\"/></a:solidFill>");
+			oWriter.WriteString(strProp);
+		}
+		else
+		{
+			CString strColor = _T("");
+			strColor.Format(_T("%06x"), pCF->Color->GetLONG_RGB());
+
+			CString strProp = _T("<a:solidFill><a:srgbClr val=\"") + strColor + _T("\"/></a:solidFill>");
+			oWriter.WriteString(strProp);
+		}
+	}
+
+	if ((pCF->FontProperties.is_init()) && (!pCF->FontProperties->strFontName.empty()))
+	{
+		oWriter.WriteString(std::wstring(L"<a:latin typeface=\"") + pCF->FontProperties->strFontName + _T("\"/>"));
+	}
+	else if (pCF->Typeface.is_init())
+	{
+		if (0 == pCF->Typeface.get())
+		{
+			CString strProp = _T("<a:latin typeface=\"+mj-lt\"/>");
+			oWriter.WriteString(strProp);
+		}
+		else
+		{
+			CString strProp = _T("<a:latin typeface=\"+mn-lt\"/>");
+			oWriter.WriteString(strProp);
+		}
+	}
+	CString strCF2 = _T("</a:defRPr>");
+	oWriter.WriteString(strCF2);		
+
+	CString str3 = _T("");
+	if (nLevel == 9)
+		str3 = _T("</a:defPPr>");
+	else
+		str3.Format(_T("</a:lvl%dpPr>"), nLevel + 1);
+
+	oWriter.WriteString(str3);
+}
 NSPresentationEditor::CShapeWriter::CShapeWriter()
 {
 	m_pRels			= NULL;
@@ -431,8 +673,21 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 			m_oWriter.WriteString(" anchor=\"t\"");
 		else if (m_pShapeElement->m_oShape.m_oText.m_oAttributes.m_nTextAlignVertical == 2 )	
 			m_oWriter.WriteString(" anchor=\"b\"");
-		else if (m_pShapeElement->m_oShape.m_oText.m_oAttributes.m_nTextAlignVertical == 1 )					
+		else if (m_pShapeElement->m_oShape.m_oText.m_oAttributes.m_nTextAlignVertical == 1 )	
+		{
 			m_oWriter.WriteString(" anchor=\"ctr\"");
+			m_oWriter.WriteString(" anchorCtr=\"0\"");
+		}
+		if (m_pShapeElement->m_oShape.m_oText.m_oAttributes.m_dTextRotate > 0)
+		{
+			CString strProp;
+			strProp.Format(_T(" rot=\"%d\""), (int)(m_pShapeElement->m_oShape.m_oText.m_oAttributes.m_dTextRotate * 60000));
+			m_oWriter.WriteString(strProp);
+		}
+		if (m_pShapeElement->m_oShape.m_oText.m_bVertical)
+		{
+			m_oWriter.WriteString(" vert=\"eaVert\"");
+		}
 		m_oWriter.WriteString(std::wstring(L">"));
 
 		if (m_bWordArt)
@@ -466,6 +721,11 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 
 		NSPresentationEditor::CTextPFRun* pPF = &pParagraph->m_oPFRun;
 
+		if (pPF->textDirection.is_init())
+		{
+			if (pPF->textDirection.get() == 1)	m_oWriter.WriteString(std::wstring(L" rtl=\"1\""));
+			else								m_oWriter.WriteString(std::wstring(L" rtl=\"0\""));
+		}
 		if (pPF->fontAlign.is_init())
 		{
 			CString strProp = CStylesWriter::GetFontAlign(pPF->fontAlign.get());
@@ -473,7 +733,7 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 		}
 		if (pPF->leftMargin.is_init())
 		{
-			CString strProp = _T("");
+			CString strProp;
 			strProp.Format(_T(" marL=\"%d\""), pPF->leftMargin.get());
 			m_oWriter.WriteString(strProp);
 			if (pPF->indent.is_init() == false)
@@ -501,7 +761,7 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 		CString _str2 = _T(">");
 		m_oWriter.WriteString(_str2);
 
-		double dKoef1 = 3.52777778;
+		double dKoef1 = 3.52777778; // :-) чё это не понятно ...
 		if (pPF->lineSpacing.is_init())
 		{
 			LONG val = pPF->lineSpacing.get();
@@ -615,12 +875,12 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 		{
 			if (TRUE)
 			{
-				if ((nSpan == (nCountSpans - 1)) && (_T("\n") == pParagraph->m_arSpans[nSpan].m_strText || pParagraph->m_arSpans[nSpan].m_strText.IsEmpty()) )
+				if ((nSpan == (nCountSpans - 1)) && (_T("\n") == pParagraph->m_arSpans[nSpan].m_strText || pParagraph->m_arSpans[nSpan].m_strText.empty()) )
 				{
 					NSPresentationEditor::CTextCFRun* pCF = &pParagraph->m_arSpans[nSpan].m_oRun;
-					if (pCF->Size.is_init())
+					if ((pCF->Size.is_init()) && (pCF->Size.get() > 0) && (pCF->Size.get() < 4001))
 					{
-						CString strProp = _T("");
+						CString strProp;
 						strProp.Format(_T("<a:endParaRPr lang=\"en-US\" sz=\"%d\"/>"), (int)(100 * pCF->Size.get()));
 						m_oWriter.WriteString(strProp);
 					}
@@ -632,12 +892,12 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 				}
 			}
 
-			if (pParagraph->m_arSpans[nSpan].m_strText.IsEmpty()) continue;
+			if (pParagraph->m_arSpans[nSpan].m_strText.empty()) continue;
 
 			NSPresentationEditor::CTextCFRun* pCF = &pParagraph->m_arSpans[nSpan].m_oRun;
 
 			bool bIsBr  = false;
-			int span_sz = pParagraph->m_arSpans[nSpan].m_strText.GetLength() ;
+			int span_sz = pParagraph->m_arSpans[nSpan].m_strText.length() ;
 			if ((span_sz==1 && ( pParagraph->m_arSpans[nSpan].m_strText[0] == (TCHAR)13 )) ||
 				((span_sz==2 && ( pParagraph->m_arSpans[nSpan].m_strText[0] == (TCHAR)13 ) && ( pParagraph->m_arSpans[nSpan].m_strText[1] == (TCHAR)13 ))))
 			{
@@ -664,7 +924,7 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 				}
 			}					
 			
-			if (pCF->Size.is_init())
+			if ((pCF->Size.is_init()) && (pCF->Size.get() > 0) && (pCF->Size.get() < 4001))
 			{
 				CString strProp = _T("");
 				strProp.Format(_T(" sz=\"%d\""), (int)(100 * pCF->Size.get()));
@@ -691,6 +951,37 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 					m_oWriter.WriteString(std::wstring(L" u=\"sng\""));
 				else
 					m_oWriter.WriteString(std::wstring(L" u=\"none\""));
+			}
+			if (pCF->Language.is_init())
+			{
+				std::wstring str_lang = msLCID2wstring(pCF->Language.get());
+
+//#if defined(_WIN32) || defined(_WIN64)
+//				wchar_t buf[29] = {};
+//
+//				int ccBuf = GetLocaleInfo(pCF->Language.get(), LOCALE_SISO639LANGNAME, buf, 29);
+//				
+//				if (ccBuf > 0)
+//				{
+//					str_lang.append(buf);
+//					str_lang.append(_T("-"));
+//				}
+//				
+//				ccBuf = GetLocaleInfo(pCF->Language.get(), LOCALE_SISO3166CTRYNAME, buf, 29);
+//				
+//				if (ccBuf > 0) str_lang.append(buf);
+//#else
+//				for (int i = 0; i < 136; i++)
+//				{
+//					if (LCID_ms_convert[i].LCID_int == pCF->Language.get())
+//					{
+//						str_lang = LCID_ms_convert[i].LCID_string;
+//						break;
+//					}
+//				}
+//#endif
+				if (str_lang.length() > 0)
+					m_oWriter.WriteString(std::wstring(L" lang=\"") + str_lang + _T("\""));
 			}
 			m_oWriter.WriteString(std::wstring(L">"));
 
@@ -743,7 +1034,7 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 				CString strT1 = _T("<a:t>");
 				m_oWriter.WriteString(strT1);
 
-				CString strT = pParagraph->m_arSpans[nSpan].m_strText;
+				std::wstring strT = pParagraph->m_arSpans[nSpan].m_strText;
 				NSPresentationEditor::CorrectXmlString(strT);
 				m_oWriter.WriteString(strT);
 
@@ -776,7 +1067,8 @@ CString NSPresentationEditor::CShapeWriter::ConvertShape()
 	if (m_pShapeElement == NULL) return _T("");
 
 	std::wstring prstTxWarp;
-	std::wstring prstGeom	= oox::Spt2ShapeType((oox::MSOSPT)m_pShapeElement->m_lShapeType);
+	std::wstring prstGeom	= oox::Spt2ShapeType_mini((oox::MSOSPT)m_pShapeElement->m_lShapeType);
+//rect, ellipse, line
 
 	if (prstGeom.empty())
 	{
@@ -793,6 +1085,8 @@ CString NSPresentationEditor::CShapeWriter::ConvertShape()
 	{
 		if (oox::msosptTextBox == (oox::MSOSPT)m_pShapeElement->m_lShapeType)	
 			m_bTextBox = true;
+		if (oox::msosptLine == (oox::MSOSPT)m_pShapeElement->m_lShapeType)	
+			m_pShapeElement->m_bLine = true;
 	}
 
 	m_oWriter.WriteString(std::wstring(L"<p:sp>"));
@@ -849,7 +1143,7 @@ CString NSPresentationEditor::CShapeWriter::ConvertShape()
 		m_pShapeElement->m_oShape.ToRenderer(dynamic_cast<IRenderer*>(this), oInfo, m_oMetricInfo, 0.0, 1.0);
 	}
 
-	if ((/*prstGeom.empty() == false || */m_pShapeElement->m_bShapePreset) && prstTxWarp.empty())
+	if ((prstGeom.empty() == false || m_pShapeElement->m_bShapePreset) && prstTxWarp.empty())
 	{
 		if (prstGeom.empty()) prstGeom = L"rect";
 		m_oWriter.WriteString(std::wstring(L"<a:prstGeom"));

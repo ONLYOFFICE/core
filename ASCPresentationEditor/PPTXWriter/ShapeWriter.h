@@ -69,6 +69,7 @@ namespace NSPresentationEditor
 		{
 			m_pSimpleGraphicsConverter->PathCommandEnd();
 			m_pImageElement = pShapeElem;
+            m_pShapeElement = NULL;
 
 			m_oMetricInfo	= m_pImageElement->m_oMetric;
 			m_oBounds		= m_pImageElement->m_rcBounds;
@@ -86,6 +87,7 @@ namespace NSPresentationEditor
 		{
 			m_pSimpleGraphicsConverter->PathCommandEnd();
 			m_pShapeElement = pShapeElem;
+            m_pImageElement = NULL;
 
 			m_oMetricInfo	= m_pShapeElement->m_oMetric;
 			m_oBounds		= m_pShapeElement->m_rcBounds;

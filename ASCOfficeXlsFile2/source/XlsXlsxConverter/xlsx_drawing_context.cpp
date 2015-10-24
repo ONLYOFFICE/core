@@ -444,7 +444,18 @@ void xlsx_drawing_context::serialize_text(std::wostream & stream)
 	{
 		CP_XML_NODE(L"xdr:txBody")
 		{  
-			CP_XML_NODE(L"a:bodyPr");
+			CP_XML_NODE(L"a:bodyPr")
+			{
+				if (drawing_state.back().bWordArt)
+				{
+					std::wstring prstTxWarp = Spt2WordArtShapeType(drawing_state.back().shape_id);				
+					CP_XML_NODE(L"a:prstTxWarp")
+					{
+						CP_XML_ATTR(L"prst", prstTxWarp);
+						CP_XML_NODE(L"a:avLst");//модификаторы
+					}
+				}
+			}
 			CP_XML_NODE(L"a:lstStyle");		
 			
 			CP_XML_NODE(L"a:p")

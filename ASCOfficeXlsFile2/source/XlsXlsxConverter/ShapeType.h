@@ -212,6 +212,17 @@ namespace oox
 	};
 
 
+	std::wstring static Spt2ShapeType_mini( MSOSPT type) 
+	{
+		switch(type)
+		{
+        case msosptTextBox:						return L"rect";
+        case msosptRectangle : 					return L"rect";
+        case msosptEllipse : 					return L"ellipse";
+        case msosptLine : 						return L"line";
+		}
+        return L"";
+	}
 	std::wstring static Spt2ShapeType( MSOSPT type) 
 	{
 		switch(type)
@@ -290,8 +301,8 @@ namespace oox
         case msosptUpArrowCallout : 			return L"upArrowCallout";
         case msosptDownArrowCallout : 			return L"downArrowCallout";
         case msosptLeftRightArrowCallout : 		return L"leftRightArrowCallout";
-        case msosptUpDownArrowCallout : 		return L"UpDownArrowCallout";
-        case msosptQuadArrowCallout : 			return L"QuadArrowCallout";
+        case msosptUpDownArrowCallout : 		return L"upDownArrowCallout";
+        case msosptQuadArrowCallout : 			return L"quadArrowCallout";
         case msosptBevel : 						return L"bevel";
         case msosptLeftBracket : 				return L"leftBracket";
         case msosptRightBracket : 				return L"rightBracket";
@@ -308,7 +319,7 @@ namespace oox
         case msosptVerticalScroll : 			return L"verticalScroll";
         case msosptHorizontalScroll : 			return L"horizontalScroll";
         case msosptCircularArrow : 				return L"circularArrow";
-        //case msosptNotchedCircularArrow :		return L"notchedCircularArrow";
+        case msosptNotchedCircularArrow :		return L"flowChartDelay";		//return L"notchedCircularArrow";
         case msosptUturnArrow : 				return L"uturnArrow";
         case msosptCurvedRightArrow : 			return L"curvedRightArrow";
         case msosptCurvedLeftArrow : 			return L"curvedLeftArrow";
@@ -337,7 +348,7 @@ namespace oox
         case msosptFlowChartSort : 				return L"flowChartSort";
         case msosptFlowChartExtract : 			return L"flowChartExtract";
         case msosptFlowChartMerge : 			return L"flowChartMerge";
-        //case msosptFlowChartOfflineStorage : 	return L"chartOfflineStorage";
+        case msosptFlowChartOfflineStorage : 	return L"flowChartOfflineStorage";
         case msosptFlowChartOnlineStorage : 	return L"flowChartOnlineStorage";
         case msosptFlowChartMagneticTape :		return L"flowChartMagneticTape";
         case msosptFlowChartMagneticDisk :		return L"flowChartMagneticDisk";

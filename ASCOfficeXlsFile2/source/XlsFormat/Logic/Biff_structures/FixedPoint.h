@@ -14,8 +14,6 @@ public:
     FixedPoint(const int raw_data);
 	XLS::BiffStructurePtr clone();
 
-	//virtual void toXML(BiffStructurePtr & parent, const std::wstring & attrib_name);
-	//virtual const bool fromXML(BiffStructurePtr & parent, const std::wstring & attrib_name);
 	virtual void load(XLS::CFRecord& record);
 	virtual void store(XLS::CFRecord& record);
 

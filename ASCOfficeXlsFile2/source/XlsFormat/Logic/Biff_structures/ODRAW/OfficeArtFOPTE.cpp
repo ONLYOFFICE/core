@@ -367,20 +367,20 @@ void FillStyleBooleanProperties::load(XLS::CFRecord& record)
 {
 	OfficeArtFOPTE::load(record);
 
-	fNoFillHitTest = GETBIT(op, 0);
-	fillUseRect = GETBIT(op, 1);
-	fillShape = GETBIT(op, 2);
-	fHitTestFill = GETBIT(op, 3);
-	fFilled = GETBIT(op, 4);
-	fUseShapeAnchor = GETBIT(op, 5);
-	fRecolorFillAsPicture = GETBIT(op, 6);
-	fUsefNoFillHitTest = GETBIT(op, 16);
-	fUsefillUseRect = GETBIT(op, 17);
-	fUsefillShape = GETBIT(op, 18);
-	fUsefHitTestFill = GETBIT(op, 19);
-	fUsefFilled = GETBIT(op, 20);
-	fUsefUseShapeAnchor = GETBIT(op, 21);
-	fUsefRecolorFillAsPicture = GETBIT(op, 22);
+	fNoFillHitTest				= GETBIT(op, 0);
+	fillUseRect					= GETBIT(op, 1);
+	fillShape					= GETBIT(op, 2);
+	fHitTestFill				= GETBIT(op, 3);
+	fFilled						= GETBIT(op, 4);
+	fUseShapeAnchor				= GETBIT(op, 5);
+	fRecolorFillAsPicture		= GETBIT(op, 6);
+	fUsefNoFillHitTest			= GETBIT(op, 16);
+	fUsefillUseRect				= GETBIT(op, 17);
+	fUsefillShape				= GETBIT(op, 18);
+	fUsefHitTestFill			= GETBIT(op, 19);
+	fUsefFilled					= GETBIT(op, 20);
+	fUsefUseShapeAnchor			= GETBIT(op, 21);
+	fUsefRecolorFillAsPicture	= GETBIT(op, 22);
 }
 
 void fillBlip::ReadComplexData(XLS::CFRecord& record)

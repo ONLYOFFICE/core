@@ -1858,7 +1858,7 @@ protected:
 			int ph_type		= pShape->m_lPlaceholderType;
 			int ph_pos		= pShape->m_lPlaceholderID;
 
-			pTextSettings->m_lPlaceholderType = ph_type;
+			pTextSettings->m_lPlaceholderType = pShape->m_lPlaceholderType;
 
             size_t lElemsCount = 0;
 
@@ -2156,7 +2156,7 @@ protected:
 			if (RECORD_TYPE_TEXTSPECINFO_ATOM == oHeader.RecType)
 			{			
 				CRecordTextSpecInfoAtom* pSpecInfo = new CRecordTextSpecInfoAtom();
-				pSpecInfo->m_lCount = strText.length();
+				pSpecInfo->m_lCount = -1;
 
 				pSpecInfo->ReadFromStream(oHeader, oElemInfo.m_pStream);
 				pSpecInfo->ApplyProperties(&(pShape->m_oShape.m_oText));

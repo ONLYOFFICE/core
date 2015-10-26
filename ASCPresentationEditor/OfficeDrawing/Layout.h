@@ -9,6 +9,8 @@ namespace NSPresentationEditor
 		std::vector<IElement*>	m_arElements;
 		std::vector<CColor>		m_arColorScheme;
 
+		std::map<int,int>		m_pPlaceholders;
+
 		bool					m_bUseThemeColorScheme;
 
 		// "настоящие"(в логической системе координат), чтобы масштабировать

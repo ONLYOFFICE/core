@@ -27,6 +27,7 @@ namespace NSPresentationEditor
 
 		std::vector<IElement*>			m_arElements;
 
+		std::map<int,int>				m_pPlaceholders;
 		CMetricInfo						m_oInfo;
 
 		std::wstring					m_sThemeName;
@@ -35,12 +36,22 @@ namespace NSPresentationEditor
 
 		long m_lOriginalWidth;
 		long m_lOriginalHeight;
+	
+		bool m_bHasDate;
+		bool m_bHasSlideNumber;
+		bool m_bHasHeader;
+		bool m_bHasFooter;
 //------------------------------------------------------------------------------------
 		CTheme() : m_arColorScheme(), m_arFonts(), m_arBrushes(),
 			m_arPens(), m_arEffects(), m_arLayouts()
 		{
 			m_sThemeName = L"Default";
 			m_lOriginalWidth = m_lOriginalHeight = 0;
+			
+			m_bHasDate = false;
+			m_bHasSlideNumber = false;
+			m_bHasHeader = false;
+			m_bHasFooter = false;
 		}
 
 		CTheme(const CTheme& oSrc)
@@ -61,6 +72,10 @@ namespace NSPresentationEditor
 			m_lOriginalWidth	=	oSrc.m_lOriginalWidth ;
 			m_lOriginalHeight	=	oSrc.m_lOriginalHeight;
 
+			m_bHasDate			=	oSrc.m_bHasDate;
+			m_bHasSlideNumber	=	oSrc.m_bHasSlideNumber;
+			m_bHasHeader		=	oSrc.m_bHasHeader;
+			m_bHasFooter		=	oSrc.m_bHasFooter;
 
 			for (int i = 0; i < oSrc.m_arExtraColorScheme.size(); ++i)
 			{
@@ -129,6 +144,11 @@ namespace NSPresentationEditor
 			m_lOriginalWidth = m_lOriginalHeight = 0;
 
 			m_sThemeName = L"Default";
+			
+			m_bHasDate = false;
+			m_bHasSlideNumber = false;
+			m_bHasHeader = false;
+			m_bHasFooter = false;
 		}
 
 		~CTheme()

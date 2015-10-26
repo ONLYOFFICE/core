@@ -375,7 +375,6 @@ void CPPTUserInfo::LoadSlide(DWORD dwSlideID, CSlide* pSlide)
 
 	// транзишн
 
-
 	CTransition* pTransition = &pSlide->m_oSlideShow.m_oTransition;
 
 	if (pRecordSlide->m_bExistsTransition)
@@ -487,7 +486,13 @@ void CPPTUserInfo::LoadSlide(DWORD dwSlideID, CSlide* pSlide)
 		std::map<std::wstring, LONG>::iterator	pPairLayoutGeom	= pTheme->m_mapGeomToLayout.find(strLayoutType);
 		if (pPairLayoutGeom == pTheme->m_mapGeomToLayout.end())
 		{
-			pSlide->m_lLayoutID = AddNewLayout(pTheme, &oArraySlideAtoms[0]->m_oLayout, pRecordSlide->m_oPersist.m_arTextAttrs);
+			std::vector<CRecordHeadersFootersAtom*> oArrayHeadersFootersAtoms;
+			pRecordSlide->GetRecordsByType(&oArrayHeadersFootersAtoms, true, true);
+			
+			CRecordHeadersFootersAtom* headers_footers = NULL;
+			if (!oArrayHeadersFootersAtoms.empty()) headers_footers = oArrayHeadersFootersAtoms[0];
+			
+			pSlide->m_lLayoutID = AddNewLayout(pTheme, &oArraySlideAtoms[0]->m_oLayout, pRecordSlide->m_oPersist.m_arTextAttrs, headers_footers);
 			pLayout				= &pTheme->m_arLayouts[pSlide->m_lLayoutID];
 			pLayout->m_bShowMasterShapes	= true;
 		}
@@ -539,8 +544,6 @@ void CPPTUserInfo::LoadSlide(DWORD dwSlideID, CSlide* pSlide)
 			}
 		}
 	}
-	// ---------------------------------------------------------------------------------
-
 	// читаем все элементы...
 	std::vector<CRecordShapeContainer*> oArrayShapes;
 
@@ -548,6 +551,8 @@ void CPPTUserInfo::LoadSlide(DWORD dwSlideID, CSlide* pSlide)
 
 	pSlide->m_bShowMasterShapes = bMasterObjects;
 	pSlide->m_bIsBackground		= false;
+
+	std::vector<int> slidePlaceholders;
 
 	for (int nShape = 0; nShape < oArrayShapes.size(); ++nShape)
 	{
@@ -578,11 +583,25 @@ void CPPTUserInfo::LoadSlide(DWORD dwSlideID, CSlide* pSlide)
 			{
 				pSlide->m_arElements.push_back(pElem);
 			}
+			if (pElem->m_lPlaceholderType > 0 )
+				slidePlaceholders.push_back( pElem->m_lPlaceholderType );
 		}
 	}
-}
 
-int CPPTUserInfo::AddNewLayout(NSPresentationEditor::CTheme* pTheme, SSlideLayoutAtom* layoutRecord, std::vector<CTextFullSettings> & text, bool addShapes)
+	//элементы из шаблона которые явно на слайде не прописаны
+	//for (std::map<int, int>::iterator it = pLayout->m_pPlaceholders.begin(); it != pLayout->m_pPlaceholders.end(); it++)
+	//{
+	//	if ( std::find(slidePlaceholders.begin(), slidePlaceholders.end(), it->first) == slidePlaceholders.end() )
+	//	{
+	//		IElement * elm = pLayout->m_arElements[it->second]->CreateDublicate();
+	//		pSlide->m_arElements.push_back(elm);
+	//	}
+	//}
+}
+	
+
+int CPPTUserInfo::AddNewLayout(NSPresentationEditor::CTheme* pTheme, SSlideLayoutAtom* layoutRecord, std::vector<CTextFullSettings> & text, 
+							CRecordHeadersFootersAtom* headers_footers, bool addShapes)
 {
 	if (pTheme == NULL) return -1;
 
@@ -609,7 +628,6 @@ int CPPTUserInfo::AddNewLayout(NSPresentationEditor::CTheme* pTheme, SSlideLayou
 
 	if (!addShapes) return ind;
 
-
 	for (int i = 0 ; i < 8; i ++)
 	{
 		if (layoutRecord->m_pPlaceHolderID[i] == 0)	break;
@@ -620,6 +638,106 @@ int CPPTUserInfo::AddNewLayout(NSPresentationEditor::CTheme* pTheme, SSlideLayou
 		pShape->m_bPlaceholderSet	= false;
 
 		pLayout->m_arElements.push_back(dynamic_cast<IElement*>(pShape));
+		pLayout->m_pPlaceholders.insert(std::pair<int, int>(pShape->m_lPlaceholderType, pLayout->m_arElements.size()-1)); 
+	}
+	if (headers_footers)
+	{
+		std::map<int, int>::iterator it;
+
+		if (headers_footers->m_bHasSlideNumber)
+		{
+			IElement* pElement  = NULL;
+			it = pLayout->m_pPlaceholders.find(12);
+			if ( it == pLayout->m_pPlaceholders.end())
+			{
+				pElement = new CShapeElement(NSBaseShape::ppt, PPTShapes::sptCRect);
+
+				pElement->m_lPlaceholderType	= 12;
+				pElement->m_bPlaceholderSet		= false;
+				//pElement->m_bBoundsEnabled		= false;
+
+				pLayout->m_arElements.push_back(dynamic_cast<IElement*>(pElement));
+				pLayout->m_pPlaceholders.insert(std::pair<int, int>(pElement->m_lPlaceholderType, pLayout->m_arElements.size()-1)); 
+			}
+			else
+			{
+				pElement = pLayout->m_arElements[it->second];
+			}
+			if (pElement)
+			{
+			}
+		}
+		if (headers_footers->m_bHasTodayDate || 
+			headers_footers->m_bHasUserDate	||
+			headers_footers->m_bHasDate)
+		{
+			IElement* pElement  = NULL;
+			it = pLayout->m_pPlaceholders.find(5);
+			if (it == pLayout->m_pPlaceholders.end())
+			{
+				pElement = new CShapeElement(NSBaseShape::ppt, PPTShapes::sptCRect);
+
+				pElement->m_lPlaceholderType	= 5;
+				pElement->m_bPlaceholderSet		= false;
+				//pElement->m_bBoundsEnabled		= false;
+
+				pLayout->m_arElements.push_back(dynamic_cast<IElement*>(pElement));
+				pLayout->m_pPlaceholders.insert(std::pair<int, int>(pElement->m_lPlaceholderType, pLayout->m_arElements.size()-1)); 
+			}
+			else
+			{
+				pElement = pLayout->m_arElements[it->second];
+			}
+			if (pElement)
+			{
+			}
+		}
+		if (headers_footers->m_bHasHeader)
+		{
+			IElement* pElement  = NULL;
+			it = pLayout->m_pPlaceholders.find(7);
+			if (it == pLayout->m_pPlaceholders.end())
+			{
+				pElement = new CShapeElement(NSBaseShape::ppt, PPTShapes::sptCRect);
+
+				pElement->m_lPlaceholderType	= 7;
+				pElement->m_bPlaceholderSet		= false;
+				//pElement->m_bBoundsEnabled		= false;
+
+				pLayout->m_arElements.push_back(dynamic_cast<IElement*>(pElement));
+				pLayout->m_pPlaceholders.insert(std::pair<int, int>(pElement->m_lPlaceholderType, pLayout->m_arElements.size()-1)); 
+			}
+			else
+			{
+				pElement = pLayout->m_arElements[it->second];
+			}
+			if (pElement)
+			{
+			}
+		}
+		if (headers_footers->m_bHasFooter)
+		{
+			IElement* pElement  = NULL;
+			it = pLayout->m_pPlaceholders.find(6);
+			if (it == pLayout->m_pPlaceholders.end())
+			{
+				pElement = new CShapeElement(NSBaseShape::ppt, PPTShapes::sptCRect);
+
+				pElement->m_lPlaceholderType	= 6;
+				pElement->m_bPlaceholderSet		= false;
+				//pElement->m_bBoundsEnabled		= false;
+
+				pLayout->m_arElements.push_back(dynamic_cast<IElement*>(pElement));
+				pLayout->m_pPlaceholders.insert(std::pair<int, int>(pElement->m_lPlaceholderType, pLayout->m_arElements.size()-1)); 
+			}
+			else
+			{
+				pElement = pLayout->m_arElements[it->second];
+			}
+			if (pElement)
+			{
+			}
+		}	
 	}
 
 	return ind;
@@ -833,6 +951,45 @@ void CPPTUserInfo::LoadMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, co
 				continue;
 			}
 			pTheme->m_arElements.push_back(pElem);
+			if ( pElem->m_lPlaceholderType >0)
+				pTheme->m_pPlaceholders.insert(std::pair<int, int>(pElem->m_lPlaceholderType, pTheme->m_arElements.size()-1)); 
+
+		}
+	}
+	std::vector<CRecordHeadersFootersAtom*> oArrayHeadersFootersAtoms;
+	pMaster->GetRecordsByType(&oArrayHeadersFootersAtoms, true, true);
+
+	if (!oArrayHeadersFootersAtoms.empty())
+	{
+		if (oArrayHeadersFootersAtoms[0]->m_bHasSlideNumber)
+		{
+			if (pTheme->m_pPlaceholders.find(12) == pTheme->m_pPlaceholders.end())
+			{
+				CShapeElement* pElement = new CShapeElement(NSBaseShape::ppt, PPTShapes::sptCRect);
+
+				pElement->m_lPlaceholderType	= 12;
+				pElement->m_bPlaceholderSet		= false;
+				//pElement->m_bBoundsEnabled		= false;
+
+				pTheme->m_arElements.push_back(dynamic_cast<IElement*>(pElement));
+				pTheme->m_pPlaceholders.insert(std::pair<int, int>(pElement->m_lPlaceholderType, pTheme->m_arElements.size()-1)); 
+			}
+		}
+		if (oArrayHeadersFootersAtoms[0]->m_bHasTodayDate || 
+			oArrayHeadersFootersAtoms[0]->m_bHasUserDate	||
+			oArrayHeadersFootersAtoms[0]->m_bHasDate)
+		{
+			if (pTheme->m_pPlaceholders.find(5) == pTheme->m_pPlaceholders.end())
+			{
+				CShapeElement* pElement = new CShapeElement(NSBaseShape::ppt, PPTShapes::sptCRect);
+
+				pElement->m_lPlaceholderType	= 5;
+				pElement->m_bPlaceholderSet		= false;
+				//pElement->m_bBoundsEnabled		= false;
+
+				pTheme->m_arElements.push_back(dynamic_cast<IElement*>(pElement));
+				pTheme->m_pPlaceholders.insert(std::pair<int, int>(pElement->m_lPlaceholderType, pTheme->m_arElements.size()-1)); 
+			}
 		}
 	}
 }
@@ -929,15 +1086,11 @@ void CPPTUserInfo::LoadNoMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, 
 	CLayout* pLayout = NULL;
 	std::map<std::wstring, LONG>::iterator pPair1 = pTheme->m_mapGeomToLayout.find(strLayoutType);
 
-	//тут по сути ВСЕГДА разные шаблоны  заголовков !!!	//if (pPair1 == pTheme->m_mapGeomToLayout.end())
-	{
 		int lLayoutID	= AddNewLayout(pTheme, &oArraySlideAtoms[0]->m_oLayout, pCurMaster->m_oPersist.m_arTextAttrs, false);
 		pLayout			= &pTheme->m_arLayouts[lLayoutID];
 		pLayout->m_bShowMasterShapes	=	false;
 
 		pTheme->m_mapTitleLayout[dwMasterID] = lLayoutID;
-	}
-
 
 	std::vector<NSPresentationEditor::CColor>* pArrayColorScheme = &pTheme->m_arColorScheme;
 	// читаем цветовую схему -----------------------------------------------------------
@@ -1007,8 +1160,48 @@ void CPPTUserInfo::LoadNoMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, 
 
 			pElem->m_bPlaceholderSet = true;
 			pLayout->m_arElements.push_back(pElem);
+			if ( pElem->m_lPlaceholderType >0)
+				pLayout->m_pPlaceholders.insert(std::pair<int, int>(pElem->m_lPlaceholderType, pLayout->m_arElements.size()-1)); 
+
 		}
 	}
+	std::vector<CRecordHeadersFootersAtom*> oArrayHeadersFootersAtoms;
+	pCurMaster->GetRecordsByType(&oArrayHeadersFootersAtoms, true, true);
+
+	if (!oArrayHeadersFootersAtoms.empty())
+	{
+		if (oArrayHeadersFootersAtoms[0]->m_bHasSlideNumber)
+		{
+			if (pLayout->m_pPlaceholders.find(12) == pLayout->m_pPlaceholders.end())
+			{
+				CShapeElement* pElement = new CShapeElement(NSBaseShape::ppt, PPTShapes::sptCRect);
+
+				pElement->m_lPlaceholderType	= 12;
+				pElement->m_bPlaceholderSet		= false;
+				//pElement->m_bBoundsEnabled		= false;
+
+				pLayout->m_arElements.push_back(dynamic_cast<IElement*>(pElement));
+				pLayout->m_pPlaceholders.insert(std::pair<int, int>(pElement->m_lPlaceholderType, pLayout->m_arElements.size()-1)); 
+			}
+		}
+		if (oArrayHeadersFootersAtoms[0]->m_bHasTodayDate || 
+			oArrayHeadersFootersAtoms[0]->m_bHasUserDate	||
+			oArrayHeadersFootersAtoms[0]->m_bHasDate)
+		{
+			if (pLayout->m_pPlaceholders.find(5) == pLayout->m_pPlaceholders.end())
+			{
+				CShapeElement* pElement = new CShapeElement(NSBaseShape::ppt, PPTShapes::sptCRect);
+
+				pElement->m_lPlaceholderType	= 5;
+				pElement->m_bPlaceholderSet		= false;
+				//pElement->m_bBoundsEnabled		= false;
+
+				pLayout->m_arElements.push_back(dynamic_cast<IElement*>(pElement));
+				pLayout->m_pPlaceholders.insert(std::pair<int, int>(pElement->m_lPlaceholderType, pLayout->m_arElements.size()-1)); 
+			}
+		}
+	}
+
 }
 
 void CPPTUserInfo::LoadSlideFromPrevUsers(DWORD dwSlideID)

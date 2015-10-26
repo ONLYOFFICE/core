@@ -250,8 +250,6 @@ NSPresentationEditor::CShapeWriter::CShapeWriter()
 	m_pRels			= NULL;
 	m_lNextShapeID	= 1000;
 
-	m_bIsWriteGeom	= true;
-	
 	m_bWordArt		= false;
 	m_bTextBox		= false;
 	
@@ -956,30 +954,6 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 			{
 				std::wstring str_lang = msLCID2wstring(pCF->Language.get());
 
-//#if defined(_WIN32) || defined(_WIN64)
-//				wchar_t buf[29] = {};
-//
-//				int ccBuf = GetLocaleInfo(pCF->Language.get(), LOCALE_SISO639LANGNAME, buf, 29);
-//				
-//				if (ccBuf > 0)
-//				{
-//					str_lang.append(buf);
-//					str_lang.append(_T("-"));
-//				}
-//				
-//				ccBuf = GetLocaleInfo(pCF->Language.get(), LOCALE_SISO3166CTRYNAME, buf, 29);
-//				
-//				if (ccBuf > 0) str_lang.append(buf);
-//#else
-//				for (int i = 0; i < 136; i++)
-//				{
-//					if (LCID_ms_convert[i].LCID_int == pCF->Language.get())
-//					{
-//						str_lang = LCID_ms_convert[i].LCID_string;
-//						break;
-//					}
-//				}
-//#endif
 				if (str_lang.length() > 0)
 					m_oWriter.WriteString(std::wstring(L" lang=\"") + str_lang + _T("\""));
 			}
@@ -1105,7 +1079,7 @@ CString NSPresentationEditor::CShapeWriter::ConvertShape()
 
 	m_oWriter.WriteString(std::wstring(L"<p:spPr>"));
 
-	if (m_bIsWriteGeom)
+	if (m_pShapeElement->m_bBoundsEnabled)
 	{
 		CString str;
 		
@@ -1237,7 +1211,7 @@ CString NSPresentationEditor::CShapeWriter::ConvertImage()
 
 	m_oWriter.WriteString(std::wstring(L"<p:spPr>"));
 
-	if (m_bIsWriteGeom)
+	if (m_pImageElement->m_bBoundsEnabled)
 	{
 		CString str;
 		

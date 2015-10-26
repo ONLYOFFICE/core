@@ -3,6 +3,7 @@
 
 class CRecordHeadersFootersAtom : public CUnknownRecord
 {
+public:
 	WORD m_nFormatID;
 	
 	bool m_bHasDate;
@@ -12,8 +13,6 @@ class CRecordHeadersFootersAtom : public CUnknownRecord
 	bool m_bHasHeader;
 	bool m_bHasFooter;
 
-public:
-	
 	CRecordHeadersFootersAtom()
 	{
 	}
@@ -38,34 +37,14 @@ public:
 	}
 	virtual CString ToString()
 	{
-		XmlUtils::CXmlWriter oWriter;
-		CString strName = GetRecordName((DWORD)m_oHeader.RecType);
-		
-		oWriter.WriteNodeBegin(strName, TRUE);
-		oWriter.WriteAttribute(_T("length"), CDirectory::ToString(m_oHeader.RecLen));
-		oWriter.WriteAttribute(_T("type"), CDirectory::ToString(m_oHeader.RecType));
-		oWriter.WriteAttribute(_T("instance"), CDirectory::ToString(m_oHeader.RecInstance));
-
-		oWriter.WriteNodeEnd(strName, TRUE, FALSE);
-		
-		CDirectory::WriteValueToNode(_T("FormatID"), (DWORD)m_nFormatID, &oWriter);
-		
-		CDirectory::WriteValueToNode(_T("HasDate"), m_bHasDate, &oWriter);
-		CDirectory::WriteValueToNode(_T("HasTodayDate"), m_bHasTodayDate, &oWriter);
-		CDirectory::WriteValueToNode(_T("HasUserDate"), m_bHasUserDate, &oWriter);
-		CDirectory::WriteValueToNode(_T("HasSlideNumber"), m_bHasSlideNumber, &oWriter);
-		CDirectory::WriteValueToNode(_T("HasHeader"), m_bHasHeader, &oWriter);
-		CDirectory::WriteValueToNode(_T("HasFooter"), m_bHasFooter, &oWriter);
-
-		oWriter.WriteNodeEnd(strName);
-
-		return oWriter.GetXmlString();
+		return L"";
 	}
 };
 
 
 class CRecordRoundTripHeaderFooterDefaults12Atom : public CUnknownRecord
 {
+public:
 	WORD m_nFormatID;
 	
 	bool m_bIncludeDate;
@@ -73,8 +52,6 @@ class CRecordRoundTripHeaderFooterDefaults12Atom : public CUnknownRecord
 	bool m_bIncludeHeader;
 	bool m_bIncludeSlideNumber;
 
-public:
-	
 	CRecordRoundTripHeaderFooterDefaults12Atom()
 	{
 	}

@@ -25,6 +25,7 @@ namespace NSPresentationEditor
 		ElementType			m_etType;
 		CDoubleRect			m_rcBounds;
 		CDoubleRect			m_rcBoundsOriginal;
+		bool				m_bBoundsEnabled;
 
 		double				m_dStartTime;
 		double				m_dEndTime;
@@ -109,6 +110,8 @@ namespace NSPresentationEditor
 
 			m_etType					= etPicture;
 			
+			m_bBoundsEnabled			= true;
+			
 			m_rcBounds.left				= 0; 
 			m_rcBounds.top				= 0;
 			m_rcBounds.right			= 1; 
@@ -159,6 +162,8 @@ namespace NSPresentationEditor
 		{
 			if (NULL == pDublicate)
 				return;
+
+			pDublicate->m_bBoundsEnabled			= m_bBoundsEnabled;
 
 			pDublicate->m_bIsBackground				= m_bIsBackground;	
 			pDublicate->m_bHaveAnchor				= m_bHaveAnchor;

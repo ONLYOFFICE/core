@@ -48,7 +48,6 @@ namespace NSPresentationEditor
 		NSPresentationEditor::CRelsGenerator*	m_pRels;
 
 		LONG									m_lNextShapeID;
-		bool									m_bIsWriteGeom;
 
 		bool									m_bWordArt;
 		bool									m_bTextBox;
@@ -75,7 +74,6 @@ namespace NSPresentationEditor
 			m_oBounds		= m_pImageElement->m_rcBounds;
 			m_oTextRect		= m_oBounds;
 
-			m_bIsWriteGeom	= true;
 			m_bWordArt		= false;
 			m_bTextBox		= false;
 
@@ -93,7 +91,6 @@ namespace NSPresentationEditor
 			m_oBounds		= m_pShapeElement->m_rcBounds;
 			m_oTextRect		= m_oBounds;
 
-			m_bIsWriteGeom	= true;
 			m_bWordArt		= false;
 			m_bTextBox		= false;
 
@@ -105,10 +102,6 @@ namespace NSPresentationEditor
 			m_oWriter.ClearNoAttack();
 			m_oWriterPath.ClearNoAttack();
 			m_oWriterVML.ClearNoAttack();
-		}
-		AVSINLINE void SetIsWriteGeom(bool bIsWrite)
-		{
-			m_bIsWriteGeom = bIsWrite;
 		}
 //--------------------------------------------------------------------
 			CString ConvertShape	();

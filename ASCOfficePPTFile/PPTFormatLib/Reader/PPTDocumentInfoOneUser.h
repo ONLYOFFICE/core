@@ -251,5 +251,6 @@ public:
 	void AddAnimation		(DWORD dwSlideID, double Width, double Height, IElement* pElement);
 	void AddAudioTransition (DWORD dwSlideID, CTransition* pTransition, const std::wstring& strFilePath);
 
-	int AddNewLayout(NSPresentationEditor::CTheme* pTheme, SSlideLayoutAtom* layoutRecord, std::vector<CTextFullSettings> & text, bool addShapes = true);
+	int AddNewLayout(NSPresentationEditor::CTheme* pTheme, SSlideLayoutAtom* layoutRecord, std::vector<CTextFullSettings> & text, 
+						CRecordHeadersFootersAtom* headers_footers = NULL, bool addShapes = true);
 };

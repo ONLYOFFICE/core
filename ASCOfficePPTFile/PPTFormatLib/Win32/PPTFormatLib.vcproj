@@ -471,6 +471,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\Reader\ReadStructures.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\Reader\ReadStructures.h"
 				>
 			</File>
@@ -927,14 +931,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\ASCPresentationEditor\PPTXWriter\Converter.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\ASCPresentationEditor\PPTXWriter\Converter.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\ASCPresentationEditor\PPTXWriter\CSS.h"
 				>
 			</File>
@@ -1076,6 +1072,14 @@
 			</File>
 			<File
 				RelativePath="..\..\..\ASCOfficeDocxFile2\BinReader\ContentTypesWriter.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\ASCPresentationEditor\PPTXWriter\Converter.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\ASCPresentationEditor\PPTXWriter\Converter.h"
 				>
 			</File>
 			<File

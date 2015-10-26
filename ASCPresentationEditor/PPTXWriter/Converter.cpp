@@ -766,7 +766,7 @@ void NSPresentationEditor::CPPTXWriter::WriteElement(CStringWriter& oWriter, CRe
 						if (bIsEqualTransform)
 						{
 							if (pElement->m_rcBounds.IsEqual(pElLayout->m_rcBounds, 0.5))
-								m_pShapeWriter->SetIsWriteGeom(false);
+								pElement->m_bBoundsEnabled = false;
 						}
 
 						break;

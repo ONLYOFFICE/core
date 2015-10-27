@@ -30,12 +30,8 @@ public:
 		}
 	};
 
-private:
-
 	std::vector<SMasterTextPropRun> m_arrProps;
 
-public:
-	
 	CRecordMasterTextPropAtom()
 	{
 	}
@@ -63,26 +59,6 @@ public:
 	}
 	virtual CString ToString()
 	{
-		CString strName = GetRecordName((DWORD)m_oHeader.RecType);
-		
-		XmlUtils::CXmlWriter oWriter;
-		oWriter.WriteNodeBegin(strName, TRUE);
-		
-		oWriter.WriteAttribute(_T("type"), CDirectory::ToString(m_oHeader.RecType));
-		oWriter.WriteAttribute(_T("length"), CDirectory::ToString(m_oHeader.RecLen));
-		oWriter.WriteAttribute(_T("instance"), CDirectory::ToString(m_oHeader.RecInstance));
-
-		oWriter.WriteNodeEnd(strName, TRUE, FALSE);
-
-		for (size_t nIndex = 0; nIndex < m_arrProps.size(); ++nIndex)
-		{
-			CString str = _T("");
-			str.Format(_T("<Run count='%d' indentlevel='%d' />"), m_arrProps[nIndex].lCount, m_arrProps[nIndex].lIndentLevel);
-
-			oWriter.WriteString(str);
-		}
-
-		oWriter.WriteNodeEnd(strName);
-		return oWriter.GetXmlString();
+		return L"";
 	}
 };

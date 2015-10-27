@@ -975,14 +975,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\ASCPresentationEditor\PPTXWriter\ShapeWriter.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\ASCPresentationEditor\PPTXWriter\ShapeWriter.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\ASCPresentationEditor\OfficeDrawing\Slide.h"
 				>
 			</File>
@@ -1116,6 +1108,14 @@
 			</File>
 			<File
 				RelativePath="..\..\..\ASCOfficeDocxFile2\BinReader\SettingWriter.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\ASCPresentationEditor\PPTXWriter\ShapeWriter.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\ASCPresentationEditor\PPTXWriter\ShapeWriter.h"
 				>
 			</File>
 			<File

@@ -96,14 +96,16 @@ void CStylesWriter::ConvertStyleLevel(NSPresentationEditor::CTextStyleLevel& oLe
 				}
 			}
 
-			if (pPF->bulletFontProperties.is_init())
-			{
-				oWriter.WriteString(std::wstring(L"<a:buFont typeface=\"") + pPF->bulletFontProperties->strFontName + _T("\"/>"));
-			}
 			wchar_t bu = 0x2022;
 			if (pPF->bulletChar.is_init())
 			{
 				bu = pPF->bulletChar.get();
+				
+
+			}
+			if (pPF->bulletFontProperties.is_init() && (unsigned short)bu < 0xFF)
+			{
+				oWriter.WriteString(std::wstring(L"<a:buFont typeface=\"") + pPF->bulletFontProperties->strFontName + _T("\"/>"));
 			}
 			oWriter.WriteString(std::wstring(L"<a:buChar char=\""));
 			oWriter.WriteStringXML(std::wstring(&bu, 1));
@@ -532,19 +534,27 @@ void NSPresentationEditor::CShapeWriter::WriteImageInfo()
 
 	if (-1 != m_pImageElement->m_lPlaceholderType)
 	{
-		if (15 == m_pImageElement->m_lPlaceholderType)
-			m_pImageElement->m_lPlaceholderID = -1;
-		if (0 == m_pImageElement->m_lPlaceholderType)
-			m_pImageElement->m_lPlaceholderID = 1;
+		//if (15 == m_pImageElement->m_lPlaceholderType)
+		//	m_pImageElement->m_lPlaceholderID = -1;
+		//if (0 == m_pImageElement->m_lPlaceholderType) /// todooo для body idx ==  1???
+		//	m_pImageElement->m_lPlaceholderID = 1;
 
 		if (-1 == m_pImageElement->m_lPlaceholderID)
 		{
-            m_oWriter.WriteString(std::wstring(L"<p:nvPr><p:ph type=\"") + GetPhType(m_pImageElement->m_lPlaceholderType) +_T("\"/></p:nvPr>"));
+            m_oWriter.WriteString(std::wstring(L"<p:nvPr><p:ph"));
+			if (m_pImageElement->m_lPlaceholderType > 0)
+				m_oWriter.WriteString(std::wstring(L" type=\"") + GetPhType(m_pImageElement->m_lPlaceholderType) +_T("\""));
+			m_oWriter.WriteString(std::wstring(L"/></p:nvPr>"));
 		}
 		else
 		{
             CString strIdx; strIdx.Format(_T("%d"), m_pImageElement->m_lPlaceholderID);
-            m_oWriter.WriteString(std::wstring(L"<p:nvPr><p:ph type=\"") + GetPhType(m_pImageElement->m_lPlaceholderType) + _T("\" idx=\"") + string2std_string(strIdx) + _T("\"/></p:nvPr>"));
+            m_oWriter.WriteString(std::wstring(L"<p:nvPr><p:ph"));
+			
+			if (m_pImageElement->m_lPlaceholderType > 0)
+				m_oWriter.WriteString(std::wstring(L" type=\"") + GetPhType(m_pImageElement->m_lPlaceholderType) + _T("\""));
+
+			m_oWriter.WriteString(std::wstring(L" idx=\"") + string2std_string(strIdx) + _T("\"/></p:nvPr>"));
 
 		}
 	}
@@ -604,17 +614,20 @@ void NSPresentationEditor::CShapeWriter::WriteShapeInfo()
 
 	if (-1 != m_pShapeElement->m_lPlaceholderType)
 	{
-		if (15 == m_pShapeElement->m_lPlaceholderType)
-			m_pShapeElement->m_lPlaceholderID = -1;
-		if (0 == m_pShapeElement->m_lPlaceholderType)
-			m_pShapeElement->m_lPlaceholderID = 1;
+		//if (15 == m_pShapeElement->m_lPlaceholderType)
+		//	m_pShapeElement->m_lPlaceholderID = -1;
+		//if (0 == m_pShapeElement->m_lPlaceholderType)
+		//	m_pShapeElement->m_lPlaceholderID = 1;
 
 		if ( m_pShapeElement->m_lPlaceholderID < 0)
 		{
-            m_oWriter.WriteString(std::wstring(L"<p:nvPr><p:ph type=\"") + GetPhType(m_pShapeElement->m_lPlaceholderType) + _T("\""));
-			 if (5 == m_pShapeElement->m_lPlaceholderType)
-				 m_oWriter.WriteString(std::wstring(L" size=\"half\""));
-			 if (12 == m_pShapeElement->m_lPlaceholderType)
+            m_oWriter.WriteString(std::wstring(L"<p:nvPr><p:ph"));
+
+			if (m_pShapeElement->m_lPlaceholderType > 0)
+				m_oWriter.WriteString(std::wstring(L" type=\"") + GetPhType(m_pShapeElement->m_lPlaceholderType) + _T("\""));
+			if (5 == m_pShapeElement->m_lPlaceholderType)
+				m_oWriter.WriteString(std::wstring(L" size=\"half\""));
+			if (12 == m_pShapeElement->m_lPlaceholderType)
 				 m_oWriter.WriteString(std::wstring(L" size=\"quarter\""));
 			 //else
 				// m_oWriter.WriteString(std::wstring(L" size=\"half\""));
@@ -624,13 +637,18 @@ void NSPresentationEditor::CShapeWriter::WriteShapeInfo()
 		else
 		{
             CString strIdx; strIdx.Format(_T("%d"), m_pShapeElement->m_lPlaceholderID);
-			 m_oWriter.WriteString(std::wstring(L"<p:nvPr><p:ph type=\"") + GetPhType(m_pShapeElement->m_lPlaceholderType) + _T("\" idx=\"") + string2std_string(strIdx) + _T("\""));
-			 if (5 == m_pShapeElement->m_lPlaceholderType)
-				 m_oWriter.WriteString(std::wstring(L" size=\"half\""));
-			 if (12 == m_pShapeElement->m_lPlaceholderType)
-				 m_oWriter.WriteString(std::wstring(L" size=\"quarter\""));
-			 //else
-				// m_oWriter.WriteString(std::wstring(L" size=\"half\""));
+			 m_oWriter.WriteString(std::wstring(L"<p:nvPr><p:ph"));
+			 
+			if (m_pShapeElement->m_lPlaceholderType > 0)
+				m_oWriter.WriteString(std::wstring(L" type=\"") + GetPhType(m_pShapeElement->m_lPlaceholderType) + _T("\""));
+			m_oWriter.WriteString(std::wstring(L" idx=\"") + string2std_string(strIdx) + _T("\""));
+			
+			if (5 == m_pShapeElement->m_lPlaceholderType)
+				m_oWriter.WriteString(std::wstring(L" size=\"half\""));
+			if (12 == m_pShapeElement->m_lPlaceholderType)
+				m_oWriter.WriteString(std::wstring(L" size=\"quarter\""));
+			//else
+			// m_oWriter.WriteString(std::wstring(L" size=\"half\""));
 				 
 			m_oWriter.WriteString(std::wstring(L"/></p:nvPr>"));
 		}
@@ -646,8 +664,6 @@ void NSPresentationEditor::CShapeWriter::WriteShapeInfo()
 void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 {
 	size_t nCount = m_pShapeElement->m_oShape.m_oText.m_arParagraphs.size();
-	if (0x00 == (m_pShapeElement->m_oShape.m_lDrawType & c_ShapeDrawType_Text))
-		return;
 
 	m_oWriter.WriteString(std::wstring(L"<p:txBody>"));
 
@@ -705,13 +721,22 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 	}
 	m_oWriter.WriteString(std::wstring(L"<a:lstStyle>"));
 
-	CStylesWriter::ConvertStyles(m_pShapeElement->m_oShape.m_oText.m_oStyles, m_oMetricInfo, m_oWriter);
+	if (!m_bWordArt)
+	{
+		CStylesWriter::ConvertStyles(m_pShapeElement->m_oShape.m_oText.m_oStyles, m_oMetricInfo, m_oWriter);
+	}
 
 	m_oWriter.WriteString(std::wstring(L"</a:lstStyle>"));
 
 	for (size_t nIndexPar = 0; nIndexPar < nCount; ++nIndexPar)
 	{
 		NSPresentationEditor::CParagraph* pParagraph = &m_pShapeElement->m_oShape.m_oText.m_arParagraphs[nIndexPar];
+
+		if (m_bWordArt && nIndexPar == nCount-1)
+		{
+			if (pParagraph->m_arSpans.size() < 1) break;
+			if (pParagraph->m_arSpans.size() == 1 && pParagraph->m_arSpans[0].m_strText.empty()) break;
+		}
 
 		CString _str1 = _T("");
 		_str1.Format(_T("<a:p><a:pPr lvl=\"%d\""), pParagraph->m_lTextLevel);
@@ -838,17 +863,17 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 						m_oWriter.WriteString(str);
 					}
 				}
-
-				if (pPF->bulletFontProperties.is_init())
-				{
-					m_oWriter.WriteString(std::wstring(L"<a:buFont typeface=\"") + pPF->bulletFontProperties->strFontName + _T("\"/>"));
-				}
 				wchar_t bu = 0x2022;
-				m_oWriter.WriteString(std::wstring(L"<a:buChar char=\""));
 				if (pPF->bulletChar.is_init())
 				{
 					bu = pPF->bulletChar.get();
+
 				}
+				if (pPF->bulletFontProperties.is_init() && (unsigned short)bu < 0xFF) //??? 1 (91).ppt - windings + 0x2022 ????
+				{
+					m_oWriter.WriteString(std::wstring(L"<a:buFont typeface=\"") + pPF->bulletFontProperties->strFontName + _T("\"/>"));
+				}	
+				m_oWriter.WriteString(std::wstring(L"<a:buChar char=\""));
                 m_oWriter.WriteStringXML(std::wstring(&bu, 1));
                 m_oWriter.WriteString(std::wstring(L"\"/>"));
 			}
@@ -1140,7 +1165,14 @@ CString NSPresentationEditor::CShapeWriter::ConvertShape()
 		m_oWriter.WriteString(std::wstring(L"<a:prstGeom prst=\"rect\"/>"));
 	}
 
-	m_oWriter.WriteString(ConvertBrush(m_pShapeElement->m_oBrush));
+	if (m_bWordArt)
+	{
+		m_oWriter.WriteString(std::wstring(L"<a:noFill/>"));
+	}
+	else
+	{
+		m_oWriter.WriteString(ConvertBrush(m_pShapeElement->m_oBrush));
+	}
 
 	if (m_pShapeElement->m_bLine)
 	{
@@ -1160,7 +1192,14 @@ CString NSPresentationEditor::CShapeWriter::ConvertShape()
 
 CString NSPresentationEditor::CShapeWriter::ConvertImage()
 {
-	if (m_pImageElement->m_bImagePresent == false) return _T("");
+	if (m_pImageElement->m_bImagePresent == false)
+	{
+		if (m_pImageElement->m_sName.empty()) return _T("");
+		//ppt_presentation.ppt - ссылка на файл на диске 
+
+		m_pImageElement->m_strImageFileName.clear();
+		m_pImageElement->m_bImagePresent = true;
+	}
 	
 	m_oWriter.WriteString(std::wstring(L"<p:pic>"));
 
@@ -1177,7 +1216,15 @@ CString NSPresentationEditor::CShapeWriter::ConvertImage()
 	oInfo.m_lOriginalHeight	= (LONG)m_pImageElement->m_rcBoundsOriginal.GetHeight();
 
 	m_oWriter.WriteString(std::wstring(L"<p:blipFill>"));
-		CString strRid = m_pRels->WriteImage(m_pImageElement->m_strImageFileName);
+		CString strRid;
+		if (m_pImageElement->m_strImageFileName.empty())
+		{
+			strRid = m_pRels->WriteHyperlinkImage(m_pImageElement->m_sName);
+		}
+		else
+		{
+			strRid = m_pRels->WriteImage(m_pImageElement->m_strImageFileName);
+		}
 
 		CString strWrite = _T("<a:blip r:embed=\"") + strRid + _T("\"/>");
 		

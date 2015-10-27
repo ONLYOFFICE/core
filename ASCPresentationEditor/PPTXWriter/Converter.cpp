@@ -562,7 +562,12 @@ void NSPresentationEditor::CPPTXWriter::WriteThemes()
 
 		size_t nElements = pTheme->m_arElements.size();
 		for (size_t nEl = 0; nEl < nElements; ++nEl)
+		{
+			if (pTheme->m_arElements[nEl]->m_lPlaceholderType == 0)
+				pTheme->m_arElements[nEl]->m_lPlaceholderType =100; //body тип прописывать !!
+			
 			WriteElement(oWriter, oRels, pTheme->m_arElements[nEl]);
+		}
 
 		oWriter.WriteString(std::wstring(L"</p:spTree></p:cSld>"));
 
@@ -691,33 +696,6 @@ void NSPresentationEditor::CPPTXWriter::WriteBackground(CStringWriter& oWriter, 
 {
 	oWriter.WriteString(std::wstring(L"<p:bg><p:bgPr>"));
 
-	//if (oBackground.Type == c_BrushTypeTexture)
-	//{
-	//	CString strRid = oRels.WriteImage(oBackground.TexturePath);
-
-	//	oWriter.WriteString(std::wstring(L"<a:blipFill dpi=\"0\" rotWithShape=\"0\"><a:blip r:embed=\""));
-	//	oWriter.WriteString(strRid + _T("\">"));
-
-	//	if (oBackground.TextureAlpha != 255)
-	//	{
-	//		CString strAlpha;
-	//		strAlpha.Format(L"%d", (int)(oBackground.TextureAlpha * 100000. / 255));
-	//		oWriter.WriteString(std::wstring(L"<a:alphaModFix amt=\"") + string2std_string(strAlpha) + L"\"/>");
-	//	}
-
-	//	oWriter.WriteString(std::wstring(L"</a:blip><a:srcRect/>"));
-
-	//	if (oBackground.TextureMode == 1)
-	//		oWriter.WriteString(std::wstring(L"<a:tile algn=\"tl\"/>"));
-	//	else
-	//		oWriter.WriteString(std::wstring(L"<a:stretch><a:fillRect/></a:stretch>"));
-	//	
-	//	oWriter.WriteString(std::wstring(L"</a:blipFill><a:effectLst/>"));
-	//
-	//	oWriter.WriteString(std::wstring(L"</p:bgPr></p:bg>"));
-	//	return;
-	//}
-	//else
 	m_pShapeWriter->SetRelsGenerator(&oRels);
 	{
 		oWriter.WriteString(m_pShapeWriter->ConvertBrush(oBackground));

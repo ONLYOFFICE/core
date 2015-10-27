@@ -128,7 +128,7 @@ namespace NSPresentationEditor
 			m_dRotate					= 0.0;
 			m_bFlipH					= false;
 			m_bFlipV					= false;
-			m_bLine						= false;
+			m_bLine						= true;
 
 			m_lCountRef					= 1;
 

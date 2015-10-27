@@ -2,7 +2,6 @@
 
 #include "../OfficeDrawing/Document.h"
 
-#include "StylesWriter.h"
 #include "ImageManager.h"
 
 namespace NSPresentationEditor
@@ -12,6 +11,7 @@ namespace NSPresentationEditor
 		switch (lType)
 		{
 			case 0: return _T("body");
+			case 100: return _T("body"); // для master pages  
 			case 1: return _T("chart");
 			case 2: return _T("clipArt");
 			case 3: return _T("ctrTitle");

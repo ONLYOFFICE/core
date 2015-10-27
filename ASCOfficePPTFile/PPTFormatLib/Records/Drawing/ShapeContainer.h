@@ -12,6 +12,7 @@
 #include "../OutlineTextRefAtom.h"
 #include "../InteractiveInfoAtom.h"
 #include "../TextInteractiveInfoAtom.h"
+#include "../MasterTextPropAtom.h"
 
 #include "../../Reader/ClassesAtom.h"
 #include "../../Reader/SlideInfo.h"
@@ -410,8 +411,8 @@ public:
 				pElement->m_oBrush.TexturePath = pElement->m_oBrush.TexturePath + pInfo->GetFileNamePicture(dwOffset);
 				if (pElement->m_oBrush.Type == c_BrushTypePattern)
 				{
-					int rgbColor1 = 0;
-					int rgbColor2 = 0xFFFFFF;
+					int rgbColor1 = 0xFFFFFF;
+					int rgbColor2 = 0;
 
 					if (pElement->m_oBrush.Color1.m_lSchemeIndex == -1)
 					{
@@ -443,7 +444,7 @@ public:
 							rgbColor2 = pTheme->m_arColorScheme[pElement->m_oBrush.Color2.m_lSchemeIndex].GetLONG_RGB();
 						}
 					}
-					ChangeBlack2ColorImage(pElement->m_oBrush.TexturePath, rgbColor1, rgbColor2);
+					ChangeBlack2ColorImage(pElement->m_oBrush.TexturePath, rgbColor2, rgbColor1);
 					
 					pElement->m_oBrush.Type			= c_BrushTypeTexture;
 					pElement->m_oBrush.TextureMode	= c_BrushTextureModeTile;
@@ -597,8 +598,8 @@ public:
 				bool bUse3DOk					= (0x10 == (0x10 & flag3));
 				bool bUseShadowOk				= (0x20 == (0x20 & flag3));
 
-				if (bUseLineOk)
-					pElement->m_bLine = bLineOk;//?? todooo проверить
+				//if (bUseLineOk)
+				//	pElement->m_bLine = bLineOk;//?? todooo проверить - не сраюатывает ! 1 (82).ppt
 
 				if (bUseFillOk)
 					bIsFilled = bFillOk;
@@ -900,10 +901,8 @@ public:
 			}break;
 		case pibName:
 			{
-				std::wstring image_name = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)pProperty->m_pOptions, pProperty->m_lValue /2-1);
-
+				pElement->m_sName = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)pProperty->m_pOptions, pProperty->m_lValue /2-1);
 				// TextMining05.ppt, слайд 20  - некорректное имя ( - todooo потом подчистить его
-				//pElement->m_sName = image_name; 
 			}break;
 		case cropFromTop:
 			{
@@ -1055,9 +1054,16 @@ public:
 
 					if (!str.empty() && pParentShape->m_oText.m_arParagraphs.empty())
 					{
+						int length = str.length();
+
+						for (int i = length-1; i>=0; i--)
+						{
+							if (str.at(i) > 13 ) break;
+							length--;
+						}
 						NSPresentationEditor::CParagraph p;
 						NSPresentationEditor::CSpan s;
-						s.m_strText = std_string2string(str);
+						s.m_strText = str.substr(0,length);
 						p.m_arSpans.push_back(s);
 						pParentShape->m_oText.m_arParagraphs.push_back(p);
 					}
@@ -1346,8 +1352,7 @@ public:
 									}                
 									if (lMasterID == pLayout->m_arElements[nIndex]->m_lID)
 									{
-										*ppElement = pLayout->m_arElements[nIndex]->CreateDublicate();
-
+										*ppElement = pLayout->m_arElements[nIndex]->CreateDublicate();								
 
 										if (elType == etShape)
 										{
@@ -1442,9 +1447,8 @@ public:
 						pImageElem->m_strImageFileName	= oInfo.m_strFilePath + FILE_SEPARATOR_STR;
 
 						pElem = (IElement*)pImageElem;
-					}
-					break;
-				}
+					}					
+				}break;
 			default:
 				{
 					// shape
@@ -1454,43 +1458,35 @@ public:
 					{
 						pShape->m_bShapePreset = true;
 					}
-                    if (true)//if (/*отключим пока кастом*/OOXMLShapes::sptCustom != pShape->m_oShape.m_eType)
-					{
-						CExFilesInfo::ExFilesType exType		= CExFilesInfo::eftNone;
-						CExFilesInfo			* pTextureInfo	= pMapIDs->Lock(0xFFFFFFFF, exType);
-
-						if (NULL != pTextureInfo)
-						{
-							pShape->m_oBrush.TexturePath = pTextureInfo->m_strFilePath + FILE_SEPARATOR_STR;
-						}
-
-						pElem = (IElement*)pShape;
-											
-						std::vector<CRecordExObjRefAtom*> oArrayEx;
-						GetRecordsByType(&oArrayEx, true, true);
-						if (0 != oArrayEx.size())
-						{
-							CExFilesInfo* pInfo = pMapIDs->Lock(oArrayEx[0]->m_nExObjID, exType);
-
-							if (CExFilesInfo::eftHyperlink == exType && pInfo)
-							{
-								pShape->m_sHyperlink = pInfo->m_strFilePath;
-							}
-						}
-					}
-					else
-					{
-						delete pShape;
-						pShape = NULL;
-					}
-					break;
-				}
+					pElem = (IElement*)pShape;					
+				}break;
 			}
 		}
 
 		if (NULL == pElem)
 			return;
 
+		{
+			CExFilesInfo::ExFilesType exType		= CExFilesInfo::eftNone;
+			CExFilesInfo			* pTextureInfo	= pMapIDs->Lock(0xFFFFFFFF, exType);
+
+			if (NULL != pTextureInfo)
+			{
+				pElem->m_oBrush.TexturePath = pTextureInfo->m_strFilePath + FILE_SEPARATOR_STR;
+			}
+
+			std::vector<CRecordExObjRefAtom*> oArrayEx;
+			GetRecordsByType(&oArrayEx, true, true);
+			if (0 != oArrayEx.size())
+			{
+				CExFilesInfo* pInfo = pMapIDs->Lock(oArrayEx[0]->m_nExObjID, exType);
+
+				if (CExFilesInfo::eftHyperlink == exType && pInfo)
+				{
+					pElem->m_sHyperlink = pInfo->m_strFilePath;
+				}
+			}
+		}
 		pElem->m_lID = oArrayShape[0]->m_nID;
 		
 		// placeholder
@@ -1501,10 +1497,10 @@ public:
 			pElem->m_lPlaceholderID		= (int)(oArrayPlaceHolder[0]->m_nPosition);
 			pElem->m_lPlaceholderType	= (int)(oArrayPlaceHolder[0]->m_nPlacementID);
 
-			if (0 == pElem->m_lPlaceholderType)
-				pElem->m_lPlaceholderID = 1;
-			else if (15 == pElem->m_lPlaceholderType)//??
-				pElem->m_lPlaceholderID = -1;
+			//if (0 == pElem->m_lPlaceholderType)
+			//	pElem->m_lPlaceholderID = 1;
+			//else if (15 == pElem->m_lPlaceholderType)//??
+			//	pElem->m_lPlaceholderID = -1;
 
 			pElem->m_lPlaceholderType	= CPPTElement::CorrectPlaceHolderType(pElem->m_lPlaceholderType);
 		}
@@ -1529,6 +1525,8 @@ public:
 			pElem->m_rcBoundsOriginal.top		= (LONG)oArrayAnchor[0]->m_oBounds.Top;
 			pElem->m_rcBoundsOriginal.right		= (LONG)oArrayAnchor[0]->m_oBounds.Right;
 			pElem->m_rcBoundsOriginal.bottom	= (LONG)oArrayAnchor[0]->m_oBounds.Bottom;
+			
+			pElem->m_bBoundsEnabled	= true;
 			bAnchor = true;
 		}
 		else
@@ -1544,6 +1542,8 @@ public:
 				pElem->m_rcBoundsOriginal.bottom	= oArrayChildAnchor[0]->m_oBounds.bottom;
 
 				RecalcGroupShapeAnchor(pElem->m_rcBoundsOriginal);
+			
+				pElem->m_bBoundsEnabled	= true;
 				bAnchor = true;
 			}
 			else
@@ -1582,6 +1582,7 @@ public:
 			pElementLayout->m_rcBounds			= pElem->m_rcBounds;
 
 			pElementLayout->m_bPlaceholderSet	= true;
+			pElementLayout->m_bBoundsEnabled	= true;
 		}
 
 		// проверка на наличие текста
@@ -1717,6 +1718,14 @@ public:
 
 			pSlideWrapper->m_mapElements.insert(std::pair<LONG, CElementInfo>(pShapeElem->m_lID, oElementInfo));
 			SetUpTextStyle(strText, pTheme, pLayout, pElem, pThemeWrapper, pSlideWrapper, pSlide);
+			
+//------------------------------------------------------------------------------------
+			std::vector<CRecordMasterTextPropAtom*> oArrayMasterTextProp;
+			GetRecordsByType(&oArrayMasterTextProp, true);
+			if (!oArrayMasterTextProp.empty())
+			{
+				SetUpTextMasterIndent(pElem, oArrayMasterTextProp[0]);
+			}
 		}
 		else
 		{
@@ -1813,6 +1822,27 @@ public:
 
 protected:
 
+	void SetUpTextMasterIndent(IElement* pElem, CRecordMasterTextPropAtom* master_levels)
+	{
+		CShapeElement* pShape = dynamic_cast<CShapeElement*>(pElem);
+		if (NULL == pShape)
+			return;
+		if (master_levels->m_arrProps.empty()) return;
+
+		CTextAttributesEx* pText = &(pShape->m_oShape.m_oText);
+		
+		int pos_text = 0, pos_si = 0;
+		int ind = 0;
+		for (int i = 0; i < pText->m_arParagraphs.size(); i++)
+		{
+			if (i >= master_levels->m_arrProps.size()) break;
+			
+			pText->m_arParagraphs[i].m_lTextLevel = master_levels->m_arrProps[i].lIndentLevel;
+			pText->m_arParagraphs[i].m_oPFRun.leftMargin.reset();
+			pText->m_arParagraphs[i].m_oPFRun.indent.reset();
+		}
+
+	}
 	void SetUpTextStyle(std::wstring& strText, CTheme* pTheme, CLayout* pLayout, IElement* pElem, CSlideInfo* pThemeWrapper, CSlideInfo* pSlideWrapper, CSlide* pSlide = NULL)
 	{
 		// сначала проверяем на shape
@@ -2076,6 +2106,7 @@ protected:
 							break;
 						}
 					case NSOfficePPT::Body:
+					case NSOfficePPT::CenterBody:
 					case NSOfficePPT::MasterBody:
 					case NSOfficePPT::NotesBody:
 					case NSOfficePPT::MasterNotesBody:

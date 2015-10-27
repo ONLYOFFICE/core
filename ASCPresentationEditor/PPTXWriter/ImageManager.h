@@ -48,19 +48,23 @@ namespace NSPresentationEditor
 			if (-1 != nIndexExt)
 				strExts = strInput.substr(nIndexExt);
 
-			if (strExts == _T(".tmp"))
-				strExts = _T(".png");
+			if (strExts == _T(".tmp"))	strExts = _T(".png");
 
 			CString strImage = _T("");
 			strImage.Format(_T("image%d"), m_lIndexNextImage++);
 
 			std::wstring strOutput = m_strDstMedia + string2std_string(strImage) + strExts;		
 			strImage  = _T("../media/") + strImage + std_string2string(strExts);
-			m_mapImages[strInput] = string2std_string(strImage);
 
 			// теперь нужно скопировать картинку
 			if (strOutput != strInput)
-				CDirectory::CopyFile(std_string2string(strInput), std_string2string(strOutput), NULL, NULL);
+			{
+				if (CDirectory::CopyFile(std_string2string(strInput), std_string2string(strOutput), NULL, NULL) == false)
+				{
+					return L"";
+				}
+			}
+			m_mapImages[strInput] = string2std_string(strImage);
 			return strImage;
 		}
 
@@ -244,9 +248,8 @@ namespace NSPresentationEditor
 
 			m_oWriter.WriteString(strRels);
 		}
-		AVSINLINE CString WriteImage(const std::wstring& strImagePath)
+		AVSINLINE CString WriteHyperlinkImage(const std::wstring& strImage, bool bExternal = true)
 		{
-			std::wstring strImage = m_pManager->GenerateImage(strImagePath);
 			std::map<std::wstring, int>::iterator pPair = m_mapImages.find(strImage);
 
 			if (m_mapImages.end() != pPair)
@@ -264,11 +267,22 @@ namespace NSPresentationEditor
 			std::wstring strRels = _T("<Relationship Id=\"") ;
 
             strRels += string2std_string(strRid) + _T("\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"");
-            strRels += strImage + _T("\"/>");
+            strRels += strImage + _T("\"");
+
+			if (bExternal)
+				strRels += std::wstring(L" TargetMode=\"External\"");
+			strRels += std::wstring(L"/>");
 
 			m_oWriter.WriteString(strRels);
 
 			return strRid;
+		}
+		AVSINLINE CString WriteImage(const std::wstring& strImagePath)
+		{
+			std::wstring strImage = m_pManager->GenerateImage(strImagePath);
+
+			if (strImage.empty()) return WriteHyperlinkImage(strImagePath, true);			
+			return WriteHyperlinkImage(strImage, false);
 		}
 		
 	};

@@ -16,8 +16,7 @@ namespace NSPresentationEditor
 			int lCountCFs	= m_arParagraphs[i].m_arSpans.size();
 			for (int j = 0; j < lCountCFs; ++j)
 			{
-				std::wstring s	= m_arParagraphs[i].m_arSpans[j].m_strText;
-				int s_size		= s.length();
+				int s_size		= m_arParagraphs[i].m_arSpans[j].m_strText.length();
 				
 				int lFound1		= m_arParagraphs[i].m_arSpans[j].m_strText.find((TCHAR)13);
 				int lFound2		= m_arParagraphs[i].m_arSpans[j].m_strText.find((TCHAR)11);
@@ -74,6 +73,8 @@ namespace NSPresentationEditor
 
 				nullable_base<LONG>		indent;
 				nullable_base<LONG>		margin;
+				
+				nullable_base<LONG>		spaceBefore;
 
 				if (-1 != m_lTextType && m_lTextType < 4 && pTheme->m_pStyles[m_lTextType].m_pLevels[lLevel].is_init())
 				{
@@ -97,6 +98,9 @@ namespace NSPresentationEditor
 
 					if (pTheme->m_pStyles[m_lTextType].m_pLevels[lLevel]->m_oPFRun.indent.is_init())
 						indent = pTheme->m_pStyles[m_lTextType].m_pLevels[lLevel]->m_oPFRun.indent;
+		
+					if (pTheme->m_pStyles[m_lTextType].m_pLevels[lLevel]->m_oPFRun.spaceBefore.is_init())
+						spaceBefore = pTheme->m_pStyles[m_lTextType].m_pLevels[lLevel]->m_oPFRun.spaceBefore;
 				}
 				if (m_oLayoutStyles.m_pLevels[lLevel].is_init())
 				{
@@ -120,6 +124,9 @@ namespace NSPresentationEditor
 
 					if (m_oLayoutStyles.m_pLevels[lLevel]->m_oPFRun.indent.is_init())
 						indent = m_oLayoutStyles.m_pLevels[lLevel]->m_oPFRun.indent;
+				
+					if (m_oLayoutStyles.m_pLevels[lLevel]->m_oPFRun.spaceBefore.is_init())
+						spaceBefore = m_oLayoutStyles.m_pLevels[lLevel]->m_oPFRun.spaceBefore;	
 				}
 				if (m_oStyles.m_pLevels[lLevel].is_init())
 				{
@@ -143,6 +150,9 @@ namespace NSPresentationEditor
 
 					if (m_oStyles.m_pLevels[lLevel]->m_oPFRun.indent.is_init())
 						indent = m_oStyles.m_pLevels[lLevel]->m_oPFRun.indent;
+					
+					if (m_oStyles.m_pLevels[lLevel]->m_oPFRun.spaceBefore.is_init())
+						spaceBefore = m_oStyles.m_pLevels[lLevel]->m_oPFRun.spaceBefore;				
 				}
 				
 				if (!m_arParagraphs[nIndexP].m_oPFRun.hasBullet.is_init())
@@ -166,6 +176,8 @@ namespace NSPresentationEditor
 				if (!m_arParagraphs[nIndexP].m_oPFRun.indent.is_init())
 					m_arParagraphs[nIndexP].m_oPFRun.indent = indent;
 
+				if (!m_arParagraphs[nIndexP].m_oPFRun.spaceBefore.is_init())
+					m_arParagraphs[nIndexP].m_oPFRun.spaceBefore = spaceBefore;
 
 				if (m_arParagraphs[nIndexP].m_oPFRun.bulletFontRef.is_init())
 				{
@@ -173,7 +185,11 @@ namespace NSPresentationEditor
 						m_arParagraphs[nIndexP].m_oPFRun.bulletFontProperties = new CFontProperties();
 
 					int ref = m_arParagraphs[nIndexP].m_oPFRun.bulletFontRef.get();
-					m_arParagraphs[nIndexP].m_oPFRun.bulletFontProperties->SetFont(pTheme->m_arFonts[ref]);
+
+					if (ref < pTheme->m_arFonts.size())
+					{
+						m_arParagraphs[nIndexP].m_oPFRun.bulletFontProperties->SetFont(pTheme->m_arFonts[ref]);
+					}
 				}
 
 			}

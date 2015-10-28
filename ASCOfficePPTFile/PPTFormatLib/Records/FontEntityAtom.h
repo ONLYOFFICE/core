@@ -77,32 +77,4 @@ public:
 
 		m_lfPitchAndFamily = StreamUtils::ReadBYTE(pStream);
 	}
-	virtual CString ToString()
-	{
-		XmlUtils::CXmlWriter oWriter;
-		CString strName = GetRecordName((DWORD)m_oHeader.RecType);
-		
-		oWriter.WriteNodeBegin(strName, TRUE);
-		oWriter.WriteAttribute(_T("length"), CDirectory::ToString(m_oHeader.RecLen));
-		oWriter.WriteAttribute(_T("type"), CDirectory::ToString(m_oHeader.RecType));
-		oWriter.WriteAttribute(_T("instance"), CDirectory::ToString(m_oHeader.RecInstance));
-
-		oWriter.WriteNodeEnd(strName, TRUE, FALSE);
-		
-        CDirectory::WriteValueToNode(_T("FaceName"), m_strFaceName, &oWriter);
-		
-		CDirectory::WriteValueToNode(_T("CharSet"), (DWORD)m_lfCharSet, &oWriter);
-		
-		CDirectory::WriteValueToNode(_T("EmbedSubsetted"), m_bEmbedSubsetted, &oWriter);
-		CDirectory::WriteValueToNode(_T("IsRaster"), m_bIsRaster, &oWriter);
-		CDirectory::WriteValueToNode(_T("IsDevice"), m_bIsDevice, &oWriter);
-		CDirectory::WriteValueToNode(_T("IsTrueType"), m_bIsTrueType, &oWriter);
-		CDirectory::WriteValueToNode(_T("IsNoFontSubstitution"), m_bIsNoFontSubstitution, &oWriter);
-
-		CDirectory::WriteValueToNode(_T("PitchAndFamily"), (DWORD)m_lfPitchAndFamily, &oWriter);
-
-		oWriter.WriteNodeEnd(strName);
-
-		return oWriter.GetXmlString();
-	}
 };

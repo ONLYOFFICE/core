@@ -6,33 +6,7 @@
 
 void SRecordHeader::ToXmlWriter(XmlUtils::CXmlWriter* pWriter, POLE::Stream* pStream)
 {
-	if (IsContainer())
-	{
-		pWriter->WriteNodeBegin(GetRecordName((DWORD)RecType), TRUE);
-		pWriter->WriteAttribute(_T("length"), (int)RecLen);
-		pWriter->WriteNodeEnd(GetRecordName((DWORD)RecType), TRUE, FALSE);
-	
-		UINT lCurLen = 0;
-		SRecordHeader oRec;
-		
-		while (lCurLen < RecLen)
-		{
-			if (oRec.ReadFromStream(pStream) == FALSE )
-			{
-				break;
-			}
-			
-			lCurLen += (8 + oRec.RecLen);
-			oRec.ToXmlWriter(pWriter, pStream);
-		}
-		pWriter->WriteNodeEnd(GetRecordName((DWORD)RecType));
-	}
-	else
-	{
-		IRecord* pRecord = CreateByType(*this);
-		pRecord->ReadFromStream(*this, pStream);
-		pWriter->WriteString(pRecord->ToString());
-	}
+
 }
 
 void CRecordsContainer::ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)

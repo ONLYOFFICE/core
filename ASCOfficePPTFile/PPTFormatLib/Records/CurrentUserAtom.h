@@ -71,10 +71,6 @@ public:
         m_strUNICODEUserName = StreamUtils::ReadStringW(pStream, m_nLenUserName );
 
 	}
-	virtual CString ToString()
-	{
-		return L"";
-	}
 
     bool IsSupported()
 	{

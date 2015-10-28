@@ -130,9 +130,4 @@ public:
 			oArrayGroupContainer[i]->SetGroupRect();
 		}
 	}
-
-	virtual CString ToString()
-	{
-		return CRecordsContainer::ToString();
-	}
 };

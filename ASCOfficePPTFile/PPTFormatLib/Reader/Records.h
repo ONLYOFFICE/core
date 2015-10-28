@@ -87,25 +87,6 @@ struct SRecordHeader
 
 	void ToXmlWriter(XmlUtils::CXmlWriter* pWriter, POLE::Stream* pStream);
 
-	static CString ToString(SRecordHeader oHeader)
-	{
-		CString str = GetRecordName((DWORD)oHeader.RecType);
-		
-		XmlUtils::CXmlWriter oWriter;
-		oWriter.WriteNodeBegin(str, TRUE);
-		
-		oWriter.WriteAttribute(_T("type"), CDirectory::ToString(oHeader.RecType));
-		oWriter.WriteAttribute(_T("length"), CDirectory::ToString(oHeader.RecLen));
-		oWriter.WriteAttribute(_T("instance"), CDirectory::ToString(oHeader.RecInstance));
-
-		oWriter.WriteNodeEnd(str, TRUE);
-		return oWriter.GetXmlString();
-	}
-
-	CString ToString()
-	{
-		return ToString(*this);
-	}
 };
 
 class IRecord
@@ -117,7 +98,6 @@ public:
 	// читаем из файла
 	virtual ~IRecord(){}
 	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) = 0;
-	virtual CString ToString() = 0;
 };
 
 class CUnknownRecord : public IRecord
@@ -138,10 +118,6 @@ public:
 	{
 		m_oHeader = oHeader;
 		StreamUtils::StreamSkip((long)m_oHeader.RecLen, pStream);
-	}
-	virtual CString ToString()
-	{
-		return m_oHeader.ToString();
 	}
 };
 
@@ -177,35 +153,6 @@ public:
 	}
 	
 	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream);
-
-	virtual CString ToString()
-	{
-		XmlUtils::CXmlWriter oWriter;
-		CString strName = GetRecordName((DWORD)m_oHeader.RecType);
-		
-		oWriter.WriteNodeBegin(strName, TRUE);
-		oWriter.WriteAttribute(_T("length"), CDirectory::ToString(m_oHeader.RecLen));
-		oWriter.WriteAttribute(_T("type"), CDirectory::ToString(m_oHeader.RecType));
-		oWriter.WriteAttribute(_T("instance"), CDirectory::ToString(m_oHeader.RecInstance));
-
-		if (0 == m_arRecords.size())
-		{
-			oWriter.WriteNodeEnd(strName, TRUE);
-		}
-		else
-		{
-			oWriter.WriteNodeEnd(strName, TRUE, FALSE);
-
-			for (int nIndex = 0; nIndex < m_arRecords.size(); ++nIndex)
-			{
-				oWriter.WriteString(m_arRecords[nIndex]->ToString());
-			}
-
-			oWriter.WriteNodeEnd(strName);
-		}	
-		
-		return oWriter.GetXmlString();
-	}
 
 	template <typename T>
 	void GetRecordsByType(std::vector<T>* pArray, bool bIsChild, bool bOnlyFirst = false)

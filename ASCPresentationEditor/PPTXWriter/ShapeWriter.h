@@ -6,9 +6,81 @@
 
 namespace NSPresentationEditor
 {
-	AVSINLINE std::wstring GetPhType(const LONG& lType)
+	static inline LONG GetPPTXPlaceHolderType(const int & lType)
 	{
 		switch (lType)
+		{
+		case PT_None:	break;
+			
+		case PT_MasterTitle:
+		case PT_Title:
+		case PT_VerticalTitle:
+			return 15;	// title
+
+		case PT_MasterBody:
+		case PT_Body:
+		case PT_MasterNotesBody:
+		case PT_VerticalBody:
+		case PT_NotesBody:
+			return 0;	// body
+
+		case PT_MasterCenterTitle:
+		case PT_CenterTitle:
+			return 3;	// ctrTitle
+
+		case PT_MasterSubTitle:
+		case PT_SubTitle:
+			return 13;	// subtitle
+
+		case PT_Object:
+		case PT_VerticalObject:
+			return 9;	// object
+
+		case PT_MasterNotesSlideImage:
+		case PT_NotesSlideImage:
+			return 11;	// slideImg
+
+		case PT_Graph: 
+			return 1;	//chart
+
+		case PT_Table:
+			return 14;	// table
+
+		case PT_ClipArt:
+			return 2;	// clipArt
+
+		case PT_OrgChart:
+			return 1;	// chart
+
+		case PT_Media:
+			return 8;	// media
+
+		case PT_Picture:
+			return 10;	// picture
+
+		case PT_MasterDate:
+			return 5;	// date
+
+		case PT_MasterSlideNumber:
+			return 12;	// sldNum
+
+		case PT_MasterFooter:
+			return 6;	// footer
+
+		case PT_MasterHeader:
+			return 7;	// header
+		default:
+			break;
+		}
+
+		return lType;
+	}
+
+	AVSINLINE std::wstring GetPhType(const int & lType)
+	{
+		int TypePPTX = GetPPTXPlaceHolderType(lType);
+		
+		switch (TypePPTX)
 		{
 			case 0: return _T("body");
 			case 100: return _T("body"); // для master pages  

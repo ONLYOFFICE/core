@@ -83,35 +83,6 @@ public:
 		StreamUtils::StreamSkip(3, pStream);
 	}
 
-	virtual CString ToString()
-	{
-		XmlUtils::CXmlWriter oWriter;
-		CString strName = GetRecordName((DWORD)m_oHeader.RecType);
-		
-		oWriter.WriteNodeBegin(strName, TRUE);
-		oWriter.WriteAttribute(_T("length"), CDirectory::ToString(m_oHeader.RecLen));
-		oWriter.WriteAttribute(_T("type"), CDirectory::ToString(m_oHeader.RecType));
-		oWriter.WriteAttribute(_T("instance"), CDirectory::ToString(m_oHeader.RecInstance));
-
-		oWriter.WriteNodeEnd(strName, TRUE, FALSE);
-		
-		CDirectory::WriteValueToNode(_T("SlideTime"), (LONG)m_nSlideTime, &oWriter);
-		CDirectory::WriteValueToNode(_T("SoundRef"), m_nSoundRef, &oWriter);
-		CDirectory::WriteValueToNode(_T("EffectDuration"), (DWORD)m_nEffectDirection, &oWriter);
-		CDirectory::WriteValueToNode(_T("EffectType"), (DWORD)m_nEffectType, &oWriter);
-		CDirectory::WriteValueToNode(_T("ManualAdvance"), m_bManualAdvance, &oWriter);
-		CDirectory::WriteValueToNode(_T("Hidden"), m_bHidden, &oWriter);
-		CDirectory::WriteValueToNode(_T("Sound"), m_bSound, &oWriter);
-		CDirectory::WriteValueToNode(_T("LoopSound"), m_bLoopSound, &oWriter);
-		CDirectory::WriteValueToNode(_T("StopSound"), m_bStopSound, &oWriter);
-		CDirectory::WriteValueToNode(_T("AutoAdvance"), m_bAutoAdvance, &oWriter);
-		CDirectory::WriteValueToNode(_T("CursorVisible"), m_bCursorVisible, &oWriter);
-
-		oWriter.WriteNodeEnd(strName);
-
-		return oWriter.GetXmlString();
-	}
-
 	double GetTimeTransition()
 	{
 		double dTime = 500.0;

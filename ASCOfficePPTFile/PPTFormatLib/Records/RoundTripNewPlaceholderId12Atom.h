@@ -19,8 +19,5 @@ public:
 	{
 		return CUnknownRecord::ReadFromStream(oHeader, pStream);
 	}
-	virtual CString ToString()
-	{
-		return CUnknownRecord::ToString();
-	}
+
 };

@@ -57,8 +57,5 @@ public:
 			m_arrProps.push_back(oRun);
 		}
 	}
-	virtual CString ToString()
-	{
-		return L"";
-	}
+
 };

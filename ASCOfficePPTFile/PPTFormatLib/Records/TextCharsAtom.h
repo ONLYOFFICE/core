@@ -21,8 +21,5 @@ public:
 		m_oHeader = oHeader;
 		m_strText = StreamUtils::ReadStringW(pStream, m_oHeader.RecLen / 2);
 	}
-	virtual CString ToString()
-	{
-		return L"";
-	}
+
 };

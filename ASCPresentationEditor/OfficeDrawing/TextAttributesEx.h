@@ -52,7 +52,7 @@ namespace NSPresentationEditor
 			m_oLayoutStyles(),
 			m_oStyles()
 		{
-			m_lTextType			= 0;
+			m_lTextType			= -1;
 			m_lPlaceholderType	= -1;
 			m_lPlaceholderID	= -1;
 
@@ -87,8 +87,8 @@ namespace NSPresentationEditor
 			m_arParagraphs.insert(m_arParagraphs.end(), oSrc.m_arParagraphs.begin(), oSrc.m_arParagraphs.end());
 			m_oRuler = oSrc.m_oRuler;
 
-			m_oLayoutStyles	= oSrc.m_oLayoutStyles;
-			m_oStyles		= oSrc.m_oStyles;
+			m_oLayoutStyles		= oSrc.m_oLayoutStyles;
+			m_oStyles			= oSrc.m_oStyles;
 
 			m_lTextMasterType = oSrc.m_lTextMasterType;
 

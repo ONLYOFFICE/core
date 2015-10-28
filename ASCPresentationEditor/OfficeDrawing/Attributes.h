@@ -1059,19 +1059,6 @@ namespace NSPresentationEditor
 		virtual ~CFont()
 		{
 		}
-
-	public:
-		
-		virtual CString ToString()
-		{
-			CString strFont = _T("");
-
-			strFont.Format(_T("font-name='%s' font-size='%d' font-bold='%s' font-italic='%s' font-underline='%s' font-strikeout='%s' "),
-				std_string2string(Name), (int)Size, NSPresentationEditor::ToString(Bold), NSPresentationEditor::ToString(Italic),
-				NSPresentationEditor::ToString(Underline), NSPresentationEditor::ToString(Strikeout));
-			
-			return strFont;
-		}
 	};
 
 	class CShadow
@@ -1178,19 +1165,6 @@ namespace NSPresentationEditor
 		virtual ~CShadow()
 		{
 		}
-
-	public:
-		virtual CString ToString()
-		{
-			CString strShadow = _T("");
-			strShadow += (_T("shadow-visible=\"") + NSPresentationEditor::ToString(Visible) + _T("\" "));
-			strShadow += (_T("shadow-distancex=\"") + NSPresentationEditor::ToString(DistanceX) + _T("\" "));
-			strShadow += (_T("shadow-distancey=\"") + NSPresentationEditor::ToString(DistanceY) + _T("\" "));
-			strShadow += (_T("shadow-blursize=\"") + NSPresentationEditor::ToString(BlurSize) + _T("\" "));
-			strShadow += (_T("shadow-color=\"") + Color.ToString() + _T("\" "));
-			strShadow += (_T("shadow-alpha=\"") + NSPresentationEditor::ToString((int)Alpha) + _T("\" "));
-			return strShadow;
-		}
 	};
 
 	class CEdgeText
@@ -1237,25 +1211,6 @@ namespace NSPresentationEditor
 		virtual ~CEdgeText()
 		{
 		}
-
-	public:
-		virtual CString ToString()
-		{
-			CString strEdge = _T("");
-            strEdge += _T("edge-visible='");
-            strEdge += NSPresentationEditor::ToString(Visible);
-            strEdge += _T("' ");
-            strEdge += _T("edge-dist='");
-            strEdge += NSPresentationEditor::ToString(Dist);
-            strEdge += _T("' ");
-            strEdge += _T("edge-color='");
-            strEdge += Color.ToString();
-            strEdge += _T("' ");
-            strEdge += _T("edge-alpha='");
-            strEdge += NSPresentationEditor::ToString((int)Alpha);
-            strEdge += _T("' ");
-			return strEdge;
-		}
 	};
 
 	class CTextAttributes
@@ -1293,80 +1248,10 @@ namespace NSPresentationEditor
 
 			return (*this);
 		}
-		CString ToString()
-		{
-			CString strText = _T("<Attributes ");
-
-			// add Brush Param
-			strText += (_T("brush-type='")			+ NSPresentationEditor::ToString(m_oTextBrush.Type) + _T("' "));
-			strText += (_T("brush-color1='")		+ m_oTextBrush.Color1.ToString() + _T("' "));
-			strText += (_T("brush-color2='")		+ m_oTextBrush.Color2.ToString() + _T("' "));
-			strText += (_T("brush-alpha1='")		+ NSPresentationEditor::ToString(m_oTextBrush.Alpha1) + _T("' "));
-			strText += (_T("brush-alpha2='")		+ NSPresentationEditor::ToString(m_oTextBrush.Alpha2) + _T("' "));
-			strText += (_T("brush-texturepath='")	+ std_string2string(m_oTextBrush.TexturePath) + _T("' "));
-			strText += (_T("brush-texturealpha='")	+ NSPresentationEditor::ToString(m_oTextBrush.TextureAlpha) + _T("' "));
-			strText += (_T("brush-texturemode='")	+ NSPresentationEditor::ToString(m_oTextBrush.TextureMode) + _T("' "));
-			strText += (_T("brush-rectable='0' "));
-
-			// add Font Param
-			strText += m_oFont.ToString();
-
-			// add Format Param
-			strText += _T("font-antialiastext='1' ");
-			strText += (_T("font-stringalignmentvertical='") + NSPresentationEditor::ToString(m_nTextAlignVertical) + _T("' "));
-			strText += (_T("font-stringalignmenthorizontal='") + NSPresentationEditor::ToString(m_nTextAlignHorizontal) + _T("' "));
-			strText += (_T("font-angle='") + NSPresentationEditor::ToString((int)m_dTextRotate) + _T("' "));
-
-			// add Shadow Param
-			if (m_oTextShadow.Visible)
-				strText += m_oTextShadow.ToString();
-
-			// add Edge Param
-			if (m_oTextEdge.Visible > 0)
-				strText += m_oTextEdge.ToString();
-			
-			strText += _T("/>");
-
-			return strText;
-		}
 
 		void ToXmlWriter(NSPresentationEditor::CXmlWriter* pWriter)
 		{
-                        pWriter->WriteNodeBegin(_T("Attributes"), true);
-
-			// add Brush Param
-			pWriter->WriteAttributeLONG(_T("brush-type")			, m_oTextBrush.Type);
-			pWriter->WriteAttributeString(_T("brush-color1")		, m_oTextBrush.Color1.ToString());
-			pWriter->WriteAttributeString(_T("brush-color2")		, m_oTextBrush.Color2.ToString());
-			pWriter->WriteAttributeLONG(_T("brush-alpha1")			, m_oTextBrush.Alpha1);
-			pWriter->WriteAttributeLONG(_T("brush-alpha2")			, m_oTextBrush.Alpha2);
-			pWriter->WriteAttributeString(_T("brush-texturepath")	, std_string2string(m_oTextBrush.TexturePath));
-			pWriter->WriteAttributeLONG(_T("brush-texturealpha")	, m_oTextBrush.TextureAlpha);
-			pWriter->WriteAttributeLONG(_T("brush-texturemode")		, m_oTextBrush.TextureMode);
-			pWriter->WriteAttributeLONG(_T("brush-rectable")		, 0);
-
-			// add Font Param
-			pWriter->WriteString(m_oFont.ToString());
-
-			// add Format Param
-			pWriter->WriteAttributeLONG(_T("font-antialiastext"), 1);
-			pWriter->WriteAttributeLONG(_T("font-stringalignmentvertical"), m_nTextAlignVertical);
-			pWriter->WriteAttributeLONG(_T("font-stringalignmenthorizontal"), m_nTextAlignHorizontal);
-			pWriter->WriteAttributeLONG(_T("font-angle"), (int)m_dTextRotate);
-
-			// add Shadow Param
-			if (m_oTextShadow.Visible)
-			{
-				pWriter->WriteString(m_oTextShadow.ToString());
-			}
-
-			// add Edge Param
-			if (m_oTextEdge.Visible > 0)
-			{
-				pWriter->WriteString(m_oTextEdge.ToString());
-			}
-			
-                        pWriter->WriteNodeEnd(_T("Attributes"), true);
+ 
 		}
 	};
 

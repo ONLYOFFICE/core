@@ -405,11 +405,14 @@ namespace NSPresentationEditor
 		{
 			if (!hasBullet.is_init())				hasBullet			= oSrc.hasBullet;
 
-			if (!bulletFontRef.is_init())			bulletFontRef		= oSrc.bulletFontRef;
 			if (!bulletSize.is_init())				bulletSize			= oSrc.bulletSize;
-			if (!bulletChar.is_init())				bulletChar			= oSrc.bulletChar;
+			if (!bulletChar.is_init())
+			{
+				bulletChar			= oSrc.bulletChar;
+				bulletFontRef		= oSrc.bulletFontRef;
+				bulletFontProperties.reset();
+			}
 			if (!bulletColor.is_init())				bulletColor			= oSrc.bulletColor;
-			if (!bulletFontProperties.is_init())	bulletFontProperties = oSrc.bulletFontProperties;
 
 			if (!textAlignment.is_init())			textAlignment = oSrc.textAlignment;
 			if (!lineSpacing.is_init())				lineSpacing = oSrc.lineSpacing;
@@ -433,23 +436,26 @@ namespace NSPresentationEditor
 		{
 			if (oSrc.hasBullet.is_init())			hasBullet = oSrc.hasBullet;
 
-			if (oSrc.bulletFontRef.is_init())		bulletFontRef = oSrc.bulletFontRef;
 			if (oSrc.bulletSize.is_init())			bulletSize = oSrc.bulletSize;
-			if (oSrc.bulletChar.is_init())			bulletChar = oSrc.bulletChar;
-			if (oSrc.bulletColor.is_init())			bulletColor = oSrc.bulletColor;
-			if (oSrc.bulletFontProperties.is_init())bulletFontProperties = oSrc.bulletFontProperties;
+			if (oSrc.bulletChar.is_init())
+			{
+				bulletChar		= oSrc.bulletChar;
+				bulletFontRef	= oSrc.bulletFontRef;
+				bulletFontProperties.reset();
+			}
+			if (oSrc.bulletColor.is_init())			bulletColor		= oSrc.bulletColor;
 
-			if (oSrc.textAlignment.is_init())		textAlignment = oSrc.textAlignment;
-			if (oSrc.lineSpacing.is_init())			lineSpacing = oSrc.lineSpacing;
-			if (oSrc.spaceBefore.is_init())			spaceBefore = oSrc.spaceBefore;
-			if (oSrc.spaceAfter.is_init())			spaceAfter = oSrc.spaceAfter;
-			if (oSrc.leftMargin.is_init())			leftMargin = oSrc.leftMargin;
-			if (oSrc.indent.is_init())				indent = oSrc.indent;
-			if (oSrc.defaultTabSize.is_init())		defaultTabSize = oSrc.defaultTabSize;
+			if (oSrc.textAlignment.is_init())		textAlignment	= oSrc.textAlignment;
+			if (oSrc.lineSpacing.is_init())			lineSpacing		= oSrc.lineSpacing;
+			if (oSrc.spaceBefore.is_init())			spaceBefore		= oSrc.spaceBefore;
+			if (oSrc.spaceAfter.is_init())			spaceAfter		= oSrc.spaceAfter;
+			if (oSrc.leftMargin.is_init())			leftMargin		= oSrc.leftMargin;
+			if (oSrc.indent.is_init())				indent			= oSrc.indent;
+			if (oSrc.defaultTabSize.is_init())		defaultTabSize	= oSrc.defaultTabSize;
 
-			if (oSrc.fontAlign.is_init())			fontAlign = oSrc.fontAlign;
-			if (oSrc.textDirection.is_init())		textDirection = oSrc.textDirection;
-			if (oSrc.wrapFlags.is_init())			wrapFlags = oSrc.wrapFlags;
+			if (oSrc.fontAlign.is_init())			fontAlign		= oSrc.fontAlign;
+			if (oSrc.textDirection.is_init())		textDirection	= oSrc.textDirection;
+			if (oSrc.wrapFlags.is_init())			wrapFlags		= oSrc.wrapFlags;
 
 			if (0 != oSrc.tabStops.size())
 			{
@@ -854,8 +860,8 @@ namespace NSPresentationEditor
 		LONG m_lTextType;
 		LONG m_lTextLevel;
 
-		CTextPFRun m_oPFRun;
-		std::vector<CSpan> m_arSpans;
+		CTextPFRun			m_oPFRun;
+		std::vector<CSpan>	m_arSpans;
 
 	public:
 		CParagraph() : m_oPFRun(), m_arSpans()

@@ -10,7 +10,7 @@ namespace NSPresentationEditor
 	class CTheme
 	{
 	public:
-		std::map<std::wstring, LONG>	m_mapGeomToLayout;// типовые шаблоны
+		std::map<_UINT64, LONG>			m_mapGeomToLayout;// типовые шаблоны
 		std::map<DWORD, LONG>			m_mapTitleLayout; // заголовочные шаблоны
 		
 		std::vector<CColor>				m_arColorScheme;
@@ -170,7 +170,6 @@ namespace NSPresentationEditor
 		{
 			LONG lCountColors = (LONG)m_arColorScheme.size();
 
-			// пока здесь расчитываются только цвета
 			for (int pos = 0; pos < g_ThemeTextStylesCount; ++pos)
 			{
 				NSPresentationEditor::CTextStyles& oStyle = m_pStyles[pos];
@@ -214,6 +213,17 @@ namespace NSPresentationEditor
 								pLevel->m_oCFRun.FontProperties = new CFontProperties();
 
 							pLevel->m_oCFRun.FontProperties->SetFont(m_arFonts[lFontIndex]);
+						}
+					}
+					if (pLevel->m_oPFRun.bulletFontRef.IsInit())
+					{
+						WORD lFontIndex = pLevel->m_oPFRun.bulletFontRef.get();
+						if (lFontIndex < (WORD)m_arFonts.size())
+						{
+							if (!pLevel->m_oPFRun.bulletFontProperties.is_init())
+								pLevel->m_oPFRun.bulletFontProperties = new CFontProperties();
+
+							pLevel->m_oPFRun.bulletFontProperties->SetFont(m_arFonts[lFontIndex]);
 						}
 					}
 				}

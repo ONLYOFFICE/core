@@ -46,8 +46,5 @@ public:
 
         //m_strText = std_string2string(tmpStrTextW);
 	}
-	virtual CString ToString()
-	{
-		return L"";
-	}
+
 };

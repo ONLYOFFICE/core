@@ -264,26 +264,26 @@ namespace NSPresentationEditor
 						{
 							if (1 == lCountThisType)
 							{
-								if ((pLayout->m_arElements[i]->m_lPlaceholderType == pSlideElement->m_lPlaceholderType) &&
-									(pLayout->m_arElements[i]->m_etType == etShape))
+								if ((pLayout->m_arElements[i]->m_lPlaceholderType	== pSlideElement->m_lPlaceholderType) &&
+									(pLayout->m_arElements[i]->m_etType				== etShape))
 								{
 									CShapeElement* pLayoutElement = dynamic_cast<CShapeElement*>(pLayout->m_arElements[i]);
 									if (NULL != pLayoutElement)
 									{
-										pSlideElement->m_oShape.m_oText.m_oLayoutStyles = pLayoutElement->m_oShape.m_oText.m_oStyles;
+										pSlideElement->m_oShape.m_oText.m_oLayoutStyles		= pLayoutElement->m_oShape.m_oText.m_oStyles;
 									}
 								}
 							}
 							else
 							{
-								if ((pLayout->m_arElements[i]->m_lPlaceholderType == pSlideElement->m_lPlaceholderType) &&
-									(pLayout->m_arElements[i]->m_lPlaceholderID == pSlideElement->m_lPlaceholderID) &&
-									(pLayout->m_arElements[i]->m_etType == etShape))
+								if ((pLayout->m_arElements[i]->m_lPlaceholderType	== pSlideElement->m_lPlaceholderType) &&
+									(pLayout->m_arElements[i]->m_lPlaceholderID		== pSlideElement->m_lPlaceholderID) &&
+									(pLayout->m_arElements[i]->m_etType				== etShape))
 								{
 									CShapeElement* pLayoutElement = dynamic_cast<CShapeElement*>(pLayout->m_arElements[i]);
 									if (NULL != pLayoutElement)
 									{
-										pSlideElement->m_oShape.m_oText.m_oLayoutStyles = pLayoutElement->m_oShape.m_oText.m_oStyles;
+										pSlideElement->m_oShape.m_oText.m_oLayoutStyles		= pLayoutElement->m_oShape.m_oText.m_oStyles;
 									}
 								}								
 							}

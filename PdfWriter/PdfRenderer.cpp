@@ -1249,7 +1249,7 @@ HRESULT CPdfRenderer::DrawImageFromFile(const std::wstring& wsImagePath, const d
 	CImageFileFormatChecker oImageFormat(wsImagePath);
 	if (_CXIMAGE_FORMAT_WMF == oImageFormat.eFileType || _CXIMAGE_FORMAT_EMF == oImageFormat.eFileType || _CXIMAGE_FORMAT_SVM == oImageFormat.eFileType)
 	{
-		// TODO: Реализовать отрисовку метофайлов по нормальному
+		// TODO: Реализовать отрисовку метафайлов по-нормальному
 		MetaFile::CMetaFile oMeta(m_pAppFonts);
 		oMeta.LoadFromFile(wsImagePath.c_str());
 
@@ -1639,7 +1639,7 @@ void CPdfRenderer::UpdateBrush()
 		}
 		else if (_CXIMAGE_FORMAT_WMF == oImageFormat.eFileType || _CXIMAGE_FORMAT_EMF == oImageFormat.eFileType || _CXIMAGE_FORMAT_SVM == oImageFormat.eFileType)
 		{
-			// TODO: Реализовать отрисовку метофайлов по нормальному
+			// TODO: Реализовать отрисовку метафайлов по-нормальному
 			MetaFile::CMetaFile oMeta(m_pAppFonts);
 			oMeta.LoadFromFile(wsTexturePath.c_str());
 

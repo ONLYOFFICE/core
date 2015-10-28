@@ -236,3 +236,4 @@ SOURCES += \
     ../../../ASCPresentationEditor/OfficeDrawing/Theme.cpp \
     ../PPTFormatLib.cpp \
     ../../../Common/3dParty/pole/pole.cpp \
+    ../Reader/ReadStructures.cpp

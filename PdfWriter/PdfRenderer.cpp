@@ -13,6 +13,7 @@
 #include "../DesktopEditor/cximage/CxImage/ximage.h"
 #include "../DesktopEditor/fontengine/ApplicationFonts.h"
 #include "../DesktopEditor/fontengine/FontManager.h"
+#include "../DesktopEditor/raster/Metafile/MetaFile.h"
 
 #include "../DesktopEditor/common/File.h"
 #include "../DesktopEditor/common/Directory.h"
@@ -1243,9 +1244,36 @@ HRESULT CPdfRenderer::DrawImageFromFile(const std::wstring& wsImagePath, const d
 	if (!IsPageValid())
 		return S_OK;
 
-	Aggplus::CImage oAggImage(wsImagePath);
-	if (!DrawImage(&oAggImage, dX, dY, dW, dH, nAlpha))
+	Aggplus::CImage* pAggImage = NULL;
+
+	CImageFileFormatChecker oImageFormat(wsImagePath);
+	if (_CXIMAGE_FORMAT_WMF == oImageFormat.eFileType || _CXIMAGE_FORMAT_EMF == oImageFormat.eFileType || _CXIMAGE_FORMAT_SVM == oImageFormat.eFileType)
+	{
+		// TODO: Реализовать отрисовку метофайлов по нормальному
+		MetaFile::CMetaFile oMeta(m_pAppFonts);
+		oMeta.LoadFromFile(wsImagePath.c_str());
+
+		double dNewW = std::max(10.0, dW) / 25.4 * 300;
+		std::wstring wsTempFile = GetTempFile();
+		oMeta.ConvertToRaster(wsTempFile.c_str(), _CXIMAGE_FORMAT_PNG, dNewW);
+
+		pAggImage = new Aggplus::CImage(wsTempFile);
+	}
+	else
+	{
+		pAggImage = new Aggplus::CImage(wsImagePath);
+	}
+
+	if (!pAggImage)
 		return S_FALSE;
+
+	if (!DrawImage(pAggImage, dX, dY, dW, dH, nAlpha))
+	{
+		delete pAggImage;
+		return S_FALSE;
+	}
+
+	delete pAggImage;
 
 	return S_OK;
 }
@@ -1608,6 +1636,25 @@ void CPdfRenderer::UpdateBrush()
 				else
 					pImage->LoadJpx(wsTexturePath.c_str(), nImageW, nImageH);
 			}
+		}
+		else if (_CXIMAGE_FORMAT_WMF == oImageFormat.eFileType || _CXIMAGE_FORMAT_EMF == oImageFormat.eFileType || _CXIMAGE_FORMAT_SVM == oImageFormat.eFileType)
+		{
+			// TODO: Реализовать отрисовку метофайлов по нормальному
+			MetaFile::CMetaFile oMeta(m_pAppFonts);
+			oMeta.LoadFromFile(wsTexturePath.c_str());
+
+			double dL, dR, dT, dB;
+			m_oPath.GetBounds(dL, dT, dR, dB);
+
+			double dNewW = std::max(10.0, dR - dL) / 72 * 300;
+
+			std::wstring wsTempFile = GetTempFile();
+			oMeta.ConvertToRaster(wsTempFile.c_str(), _CXIMAGE_FORMAT_PNG, dNewW);
+
+			Aggplus::CImage oImage(wsTempFile);
+			nImageW = abs((int)oImage.GetWidth());
+			nImageH = abs((int)oImage.GetHeight());
+			pImage = LoadImage(&oImage, 255);
 		}
 		else
 		{

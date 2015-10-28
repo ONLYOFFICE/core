@@ -134,9 +134,4 @@ public:
 			}
 		}
 	}
-	
-	virtual CString ToString()
-	{
-		return CRecordsContainer::ToString();
-	}
 };

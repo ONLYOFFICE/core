@@ -16,10 +16,6 @@ public:
 	{
 		CRecordsContainer::ReadFromStream(oHeader, pStream);
 	}
-	virtual CString ToString()
-	{
-		return CRecordsContainer::ToString();
-	}
 };
 class CRecordExHyperlinkAtom : public CUnknownRecord
 {
@@ -40,9 +36,5 @@ public:
 		m_oHeader = oHeader;
 
 		m_nHyperlinkID = StreamUtils::ReadDWORD(pStream);
-	}
-	virtual CString ToString()
-	{
-		return CUnknownRecord::ToString();
 	}
 };

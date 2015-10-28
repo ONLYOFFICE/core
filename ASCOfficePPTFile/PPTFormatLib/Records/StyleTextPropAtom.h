@@ -72,30 +72,4 @@ public:
 		StreamUtils::StreamSeek(m_lOffsetInStream + m_oHeader.RecLen, pStream);
 	}
 
-	virtual CString ToString()
-	{
-		XmlUtils::CXmlWriter oWriter;
-		CString strName = GetRecordName((DWORD)m_oHeader.RecType);
-		
-		oWriter.WriteNodeBegin(strName, TRUE);
-		oWriter.WriteAttribute(_T("length"), CDirectory::ToString(m_oHeader.RecLen));
-		oWriter.WriteAttribute(_T("type"), CDirectory::ToString(m_oHeader.RecType));
-		oWriter.WriteAttribute(_T("instance"), CDirectory::ToString(m_oHeader.RecInstance));
-
-		oWriter.WriteNodeEnd(strName, TRUE, FALSE);
-		
-		for (size_t nIndexPF = 0; nIndexPF < m_arrPFs.size(); ++nIndexPF)
-		{
-			oWriter.WriteString(m_arrPFs[nIndexPF].m_oRun.ToString(m_arrPFs[nIndexPF].m_lCount));
-		}
-
-		for (size_t nIndexCF = 0; nIndexCF < m_arrCFs.size(); ++nIndexCF)
-		{
-			oWriter.WriteString(m_arrCFs[nIndexCF].m_oRun.ToString(m_arrCFs[nIndexCF].m_lCount));
-		}
-
-		oWriter.WriteNodeEnd(strName);
-
-		return oWriter.GetXmlString();
-	}
 };

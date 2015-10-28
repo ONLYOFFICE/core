@@ -17,8 +17,5 @@ public:
 	{
 		CRecordsContainer::ReadFromStream(oHeader, pStream);
 	}
-	virtual CString ToString()
-	{
-		return CRecordsContainer::ToString();
-	}
+
 };

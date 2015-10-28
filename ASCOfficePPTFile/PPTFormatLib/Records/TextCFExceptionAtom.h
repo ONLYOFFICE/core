@@ -26,14 +26,5 @@ public:
 		// это на всякий случай...
 		StreamUtils::StreamSeek(lPosition + m_oHeader.RecLen, pStream);
 	}
-	virtual CString ToString()
-	{
-		XmlUtils::CXmlWriter oWriter;
-		oWriter.WriteNodeBegin(_T("TextCFExceptionAtom"));
 
-		oWriter.WriteString(m_oCFRun.m_oRun.ToString(0));
-
-		oWriter.WriteNodeEnd(_T("TextCFExceptionAtom"));
-		return oWriter.GetXmlString();
-	}
 };

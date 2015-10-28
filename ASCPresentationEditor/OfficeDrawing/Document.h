@@ -592,13 +592,12 @@ namespace NSPresentationEditor
 						if (!pLayout->m_bUseThemeColorScheme && NULL != pShape)
 						{
 							int lPhType = pElement->m_lPlaceholderType;
+							
 							int lIndex = 0;
-							if (15 == lPhType)
-								lIndex = 1;
-							else if (0 == lPhType)
-								lIndex = 2;
-							else if (-1 != lPhType)
-								lIndex = 3;
+							
+							if (isTitlePlaceholder(lPhType))		lIndex = 1;
+							else if (isBodyPlaceholder(lPhType))	lIndex = 2;
+							else if (-1 != lPhType)					lIndex = 3;
 
 							CTextStyles* pThemeStyles = &pTheme->m_pStyles[lIndex];
 							for (int nIndexLevel = 0; nIndexLevel < 10; ++nIndexLevel)

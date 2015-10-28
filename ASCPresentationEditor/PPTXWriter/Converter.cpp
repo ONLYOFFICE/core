@@ -58,8 +58,6 @@ void NSPresentationEditor::CPPTXWriter::CreateFile(CPPTUserInfo* pUserInfo	)
 
 	m_pDocument = dynamic_cast<CDocument*>(pUserInfo);
 
-	//m_pDocument->Calculate();
-
 	m_pDocument->m_oInfo.m_lUnitsHor			= 36000 * m_pDocument->m_oInfo.m_lMillimetresHor;
 	m_pDocument->m_oInfo.m_lUnitsVer			= 36000 * m_pDocument->m_oInfo.m_lMillimetresVer;
 
@@ -466,6 +464,7 @@ void NSPresentationEditor::CPPTXWriter::WriteThemes()
 
 	int nCount = (int)m_pDocument->m_arThemes.size();
 	int nStartLayout = 0;
+
 	for (int nIndexTheme = 0; nIndexTheme < nCount; ++nIndexTheme)
 	{
 		CTheme* pTheme = &m_pDocument->m_arThemes[nIndexTheme];
@@ -563,7 +562,7 @@ void NSPresentationEditor::CPPTXWriter::WriteThemes()
 		size_t nElements = pTheme->m_arElements.size();
 		for (size_t nEl = 0; nEl < nElements; ++nEl)
 		{
-			if (pTheme->m_arElements[nEl]->m_lPlaceholderType == 0)
+			if (isBodyPlaceholder(pTheme->m_arElements[nEl]->m_lPlaceholderType))
 				pTheme->m_arElements[nEl]->m_lPlaceholderType =100; //body тип прописывать !!
 			
 			WriteElement(oWriter, oRels, pTheme->m_arElements[nEl]);

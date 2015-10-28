@@ -1,6 +1,5 @@
 #pragma once
 
-//#include "../../../ASCPresentationEditor/OfficeDrawing/TextAttributesEx.h"
 #include "ReadStructures.h"
 
 #include <zlib.h>

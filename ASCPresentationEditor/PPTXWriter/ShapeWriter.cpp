@@ -95,21 +95,18 @@ void CStylesWriter::ConvertStyleLevel(NSPresentationEditor::CTextStyleLevel& oLe
 					oWriter.WriteString(str);
 				}
 			}
-
-			wchar_t bu = 0x2022;
-			if (pPF->bulletChar.is_init())
-			{
-				bu = pPF->bulletChar.get();
-				
-
-			}
-			if (pPF->bulletFontProperties.is_init() && (unsigned short)bu < 0xFF)
+			if (pPF->bulletFontProperties.is_init())
 			{
 				oWriter.WriteString(std::wstring(L"<a:buFont typeface=\"") + pPF->bulletFontProperties->strFontName + _T("\"/>"));
 			}
-			oWriter.WriteString(std::wstring(L"<a:buChar char=\""));
-			oWriter.WriteStringXML(std::wstring(&bu, 1));
-			oWriter.WriteString(std::wstring(L"\"/>"));
+			if (pPF->bulletChar.is_init())
+			{
+				wchar_t bu = pPF->bulletChar.get();
+				
+				oWriter.WriteString(std::wstring(L"<a:buChar char=\""));
+				oWriter.WriteStringXML(std::wstring(&bu, 1));
+				oWriter.WriteString(std::wstring(L"\"/>"));	
+			}
 		}
 		else
 		{
@@ -534,11 +531,6 @@ void NSPresentationEditor::CShapeWriter::WriteImageInfo()
 
 	if (-1 != m_pImageElement->m_lPlaceholderType)
 	{
-		//if (15 == m_pImageElement->m_lPlaceholderType)
-		//	m_pImageElement->m_lPlaceholderID = -1;
-		//if (0 == m_pImageElement->m_lPlaceholderType) /// todooo дл€ body idx ==  1???
-		//	m_pImageElement->m_lPlaceholderID = 1;
-
 		if (-1 == m_pImageElement->m_lPlaceholderID)
 		{
             m_oWriter.WriteString(std::wstring(L"<p:nvPr><p:ph"));
@@ -614,23 +606,27 @@ void NSPresentationEditor::CShapeWriter::WriteShapeInfo()
 
 	if (-1 != m_pShapeElement->m_lPlaceholderType)
 	{
-		//if (15 == m_pShapeElement->m_lPlaceholderType)
-		//	m_pShapeElement->m_lPlaceholderID = -1;
-		//if (0 == m_pShapeElement->m_lPlaceholderType)
-		//	m_pShapeElement->m_lPlaceholderID = 1;
-
 		if ( m_pShapeElement->m_lPlaceholderID < 0)
 		{
             m_oWriter.WriteString(std::wstring(L"<p:nvPr><p:ph"));
 
 			if (m_pShapeElement->m_lPlaceholderType > 0)
 				m_oWriter.WriteString(std::wstring(L" type=\"") + GetPhType(m_pShapeElement->m_lPlaceholderType) + _T("\""));
-			if (5 == m_pShapeElement->m_lPlaceholderType)
-				m_oWriter.WriteString(std::wstring(L" size=\"half\""));
-			if (12 == m_pShapeElement->m_lPlaceholderType)
-				 m_oWriter.WriteString(std::wstring(L" size=\"quarter\""));
-			 //else
-				// m_oWriter.WriteString(std::wstring(L" size=\"half\""));
+
+			if (m_pShapeElement->m_lPlaceholderSizePreset > 1 && !isTitlePlaceholder(m_pShapeElement->m_lPlaceholderType))
+			{
+				if (m_pShapeElement->m_lPlaceholderSizePreset == 2)
+					m_oWriter.WriteString(std::wstring(L" size=\"half\""));
+				if (m_pShapeElement->m_lPlaceholderSizePreset == 4)
+					m_oWriter.WriteString(std::wstring(L" size=\"quarter\""));
+				if (m_pShapeElement->m_lPlaceholderSizePreset == 3)
+				{
+					if (isBodyPlaceholder(m_pShapeElement->m_lPlaceholderType))
+						m_oWriter.WriteString(std::wstring(L" size=\"half\""));
+					else 
+						m_oWriter.WriteString(std::wstring(L" size=\"quarter\""));
+				}
+			}
 			
 			m_oWriter.WriteString(std::wstring(L"/></p:nvPr>"));
 		}
@@ -643,9 +639,9 @@ void NSPresentationEditor::CShapeWriter::WriteShapeInfo()
 				m_oWriter.WriteString(std::wstring(L" type=\"") + GetPhType(m_pShapeElement->m_lPlaceholderType) + _T("\""));
 			m_oWriter.WriteString(std::wstring(L" idx=\"") + string2std_string(strIdx) + _T("\""));
 			
-			if (5 == m_pShapeElement->m_lPlaceholderType)
+			if (PT_MasterSlideNumber == m_pShapeElement->m_lPlaceholderType)
 				m_oWriter.WriteString(std::wstring(L" size=\"half\""));
-			if (12 == m_pShapeElement->m_lPlaceholderType)
+			if (PT_MasterDate == m_pShapeElement->m_lPlaceholderType)
 				m_oWriter.WriteString(std::wstring(L" size=\"quarter\""));
 			//else
 			// m_oWriter.WriteString(std::wstring(L" size=\"half\""));
@@ -863,19 +859,23 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 						m_oWriter.WriteString(str);
 					}
 				}
-				wchar_t bu = 0x2022;
+				if (pPF->bulletFontProperties.is_init())
+				{
+					int rFind = pPF->bulletFontProperties->strFontName.find(L"Wingdings");
+					unsigned short bu = pPF->bulletChar.is_init() ? pPF->bulletChar.get() : 0;
+					
+					if (!(rFind >=0 && bu > 0xff ) || rFind < 0)
+					{
+						m_oWriter.WriteString(std::wstring(L"<a:buFont typeface=\"") + pPF->bulletFontProperties->strFontName + _T("\"/>"));
+					}
+				}	
 				if (pPF->bulletChar.is_init())
 				{
-					bu = pPF->bulletChar.get();
-
+					wchar_t bu = pPF->bulletChar.get();
+					m_oWriter.WriteString(std::wstring(L"<a:buChar char=\""));
+					m_oWriter.WriteStringXML(std::wstring(&bu, 1));
+					m_oWriter.WriteString(std::wstring(L"\"/>"));
 				}
-				if (pPF->bulletFontProperties.is_init() && (unsigned short)bu < 0xFF) //??? 1 (91).ppt - windings + 0x2022 ????
-				{
-					m_oWriter.WriteString(std::wstring(L"<a:buFont typeface=\"") + pPF->bulletFontProperties->strFontName + _T("\"/>"));
-				}	
-				m_oWriter.WriteString(std::wstring(L"<a:buChar char=\""));
-                m_oWriter.WriteStringXML(std::wstring(&bu, 1));
-                m_oWriter.WriteString(std::wstring(L"\"/>"));
 			}
 			else
 			{
@@ -887,7 +887,7 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 
 		std::wstring typeRun = L"a:r";
 
-		//if (m_pShapeElement->m_lPlaceholderType == 12)
+		//if (m_pShapeElement->m_lPlaceholderType == PT_MasterSlideNumber)
 		//{
 		//	m_oWriter.WriteString(std::wstring(L"<a:fld id=\"{D038279B-FC19-497E-A7D1-5ADD9CAF016F}\" type=\"slidenum\">"));
 		//	m_oWriter.WriteString(std::wstring(L"<a:rPr/><a:t>Л#Ы</a:t></a:fld>"));
@@ -937,7 +937,7 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 			}
 			else
 			{
-				if (m_pShapeElement->m_lPlaceholderType == 12)//todooo + date
+				if (m_pShapeElement->m_lPlaceholderType == PT_MasterSlideNumber)//todooo + date
 				{
 					m_oWriter.WriteString(std::wstring(L"<a:fld id=\"{D038279B-FC19-497E-A7D1-5ADD9CAF016F}\" type=\"slidenum\"><a:rPr"));
 				}
@@ -1040,7 +1040,7 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 				CString strT2 = _T("</a:t>");
 				m_oWriter.WriteString(strT2);
 				
-				if (m_pShapeElement->m_lPlaceholderType == 12)
+				if (m_pShapeElement->m_lPlaceholderType == PT_MasterSlideNumber)
 					m_oWriter.WriteString(std::wstring(L"</a:fld>"));
 				else
 					m_oWriter.WriteString(std::wstring(L"</a:r>"));

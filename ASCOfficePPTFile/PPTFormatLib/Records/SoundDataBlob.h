@@ -30,10 +30,6 @@ public:
 			pStream->read(m_pData, m_lSize);
 		}
 	}
-	virtual CString ToString()
-	{
-		return CUnknownRecord::ToString();
-	}
 
 	void ReleaseData()
 	{

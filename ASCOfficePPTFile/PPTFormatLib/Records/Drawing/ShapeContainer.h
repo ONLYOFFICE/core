@@ -189,77 +189,6 @@ public:
 
 		return color;
 	}
-	static inline LONG CorrectPlaceHolderType(const LONG& lType)
-	{
-		switch (lType)
-		{
-		case 0x00:		//PT_None
-			break;
-
-		case 0x01:		//PT_MasterTitle
-		case 0x0D:		//PT_Title
-		case 0x11:		//PT_VerticalTitle
-			return 15;	// title
-
-		case 0x02:		//PT_MasterBody
-		case 0x0E:		//PT_Body
-		case 0x06:		//PT_MasterNotesBody
-		case 0x12:		//PT_VerticalBody
-		case 0x0C:		//PT_NotesBody
-			return 0;	// body
-
-		case 0x03:		//PT_MasterCenterTitle
-		case 0x0F:		//PT_CenterTitle
-			return 3;	// ctrTitle
-
-		case 0x04:		//PT_MasterSubTitle
-		case 0x10:		//PT_SubTitle
-			return 13;	// subtitle
-
-		case 0x13:		//PT_Object
-		case 0x19:		//PT_VerticalObject
-			return 9;	// object
-
-		case 0x05:		//PT_MasterNotesSlideImage
-		case 0x0B:		//PT_NotesSlideImage
-			return 11;	// slideImg
-
-		case 0x14:		//PT_Graph //????
-			return 1;	//chart
-
-		case 0x15:		//PT_Table
-			return 14;	// table
-
-		case 0x16:		//PT_ClipArt
-			return 2;	// clipArt
-
-		case 0x17:		//PT_OrgChart
-			return 1;	// chart
-
-		case 0x18:		//PT_Media
-			return 8;	// media
-
-		case 0x1A:		//PT_Picture
-			return 10;	// picture
-
-		case 0x07:		//PT_MasterDate
-			return 5;	// date
-
-		case 0x08:		//PT_MasterSlideNumber
-			return 12;	// sldNum
-
-		case 0x09:		//PT_MasterFooter
-			return 6;	// footer
-
-		case 0x0A:		//PT_MasterHeader
-			return 7;	// header
-		default:
-			break;
-		}
-
-		return lType; // undefined
-	}
-
 	inline void SetUpProperties(IElement* pElement, CTheme* pTheme, CSlideInfo* pWrapper, CSlide* pSlide, CProperties* pProperties)
 	{
 		long lCount = pProperties->m_lCount;
@@ -1295,10 +1224,7 @@ public:
 		m_pStream = pStream;
 		CRecordsContainer::ReadFromStream(oHeader, pStream);
 	}
-	virtual CString ToString()
-	{
-		return CRecordsContainer::ToString();
-	}
+
 
 	virtual void GetElement (IElement** ppElement, CExMedia* pMapIDs,
 							long lSlideWidth, long lSlideHeight, CTheme* pTheme, CLayout* pLayout, 
@@ -1497,12 +1423,7 @@ public:
 			pElem->m_lPlaceholderID		= (int)(oArrayPlaceHolder[0]->m_nPosition);
 			pElem->m_lPlaceholderType	= (int)(oArrayPlaceHolder[0]->m_nPlacementID);
 
-			//if (0 == pElem->m_lPlaceholderType)
-			//	pElem->m_lPlaceholderID = 1;
-			//else if (15 == pElem->m_lPlaceholderType)//??
-			//	pElem->m_lPlaceholderID = -1;
-
-			pElem->m_lPlaceholderType	= CPPTElement::CorrectPlaceHolderType(pElem->m_lPlaceholderType);
+			CorrectPlaceholderType(pElem->m_lPlaceholderType);
 		}
 
 		std::vector<CRecordRoundTripHFPlaceholder12Atom*> oArrayHFPlaceholder;
@@ -1510,8 +1431,8 @@ public:
 		if (0 < oArrayHFPlaceholder.size())
 		{
 			pElem->m_lPlaceholderType	= oArrayHFPlaceholder[0]->m_nPlacementID;//PT_MasterDate, PT_MasterSlideNumber, PT_MasterFooter, or PT_MasterHeader
-
-			pElem->m_lPlaceholderType	= CPPTElement::CorrectPlaceHolderType(pElem->m_lPlaceholderType);
+			
+			CorrectPlaceholderType(pElem->m_lPlaceholderType);
 		}
 
 		std::vector<CRecordClientAnchor*> oArrayAnchor;
@@ -1918,13 +1839,13 @@ protected:
 			oElemInfo = pPair->second;
 
 		//  persist ----------------------------------------------------------------------
-		std::vector<CTextFullSettings>* pArrayPlaseHolders	= &pSlideWrapper->m_arTextPlaceHolders;
-		int lCountPersistObjects							= pArrayPlaseHolders->size();
+		std::vector<CTextFullSettings>* pArrayPlaceHolders	= &pSlideWrapper->m_arTextPlaceHolders;
+		int lCountPersistObjects							= pArrayPlaceHolders->size();
 		int lPersistIndex									= oElemInfo.m_lPersistIndex;
 
 		if ((lPersistIndex >= 0) && (lPersistIndex < lCountPersistObjects))
 		{
-			CTextFullSettings* pSettings = &pArrayPlaseHolders->at(lPersistIndex);
+			CTextFullSettings* pSettings = &pArrayPlaceHolders->at(lPersistIndex);
 
 			eTypePersist = (NSOfficePPT::TextType)pSettings->m_nTextType;
 			strText = pSettings->ApplyProperties(pTextSettings);
@@ -2085,8 +2006,8 @@ protected:
 			{
 				if (NULL != pElementLayoutPH)
 				{
-					pTextSettings->m_oLayoutStyles = pElementLayoutPH->m_oShape.m_oText.m_oStyles;
-					pTextSettings->m_lTextType = pElementLayoutPH->m_oShape.m_oText.m_lTextType;
+					pTextSettings->m_oLayoutStyles		= pElementLayoutPH->m_oShape.m_oText.m_oStyles;
+					pTextSettings->m_lTextType			= pElementLayoutPH->m_oShape.m_oText.m_lTextType;
 				}
 				else
 				{	
@@ -2106,7 +2027,6 @@ protected:
 							break;
 						}
 					case NSOfficePPT::Body:
-					case NSOfficePPT::CenterBody:
 					case NSOfficePPT::MasterBody:
 					case NSOfficePPT::NotesBody:
 					case NSOfficePPT::MasterNotesBody:
@@ -2201,13 +2121,13 @@ protected:
 		if (pShape->m_oActions.m_bPresent)
 		{
 			//todooo разобраться нужно ли менять цвет на гиперлинк 
-			NSPresentationEditor::CColor oColor;
+/*			NSPresentationEditor::CColor oColor;
 			if ((NULL != pSlide) && !pSlide->m_bUseLayoutColorScheme)			oColor = pSlide->GetColor(11);
 			else if ((NULL != pLayout) && (!pLayout->m_bUseThemeColorScheme))	oColor = pLayout->GetColor(11);
 			else if (NULL != pTheme)											oColor = pTheme->GetColor(11);
-			oColor.m_lSchemeIndex = 11;
+			oColor.m_lSchemeIndex = 1*/1;
 
-			ApplyHyperlink(pShape, oColor);
+			/*ApplyHyperlink(pShape, oColor);*/
 		}
 
 		CPPTShape* pPPTShape = dynamic_cast<CPPTShape*>(pShape->m_oShape.m_pShape);

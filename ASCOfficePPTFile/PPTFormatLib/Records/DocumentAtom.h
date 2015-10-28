@@ -56,8 +56,5 @@ public:
 		m_bRightToLeft = StreamUtils::ReadBYTE(pStream);
 		m_bShowComments = StreamUtils::ReadBYTE(pStream);
 	}
-	virtual CString ToString()
-	{
-		return L"";
-	}
+
 };

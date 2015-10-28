@@ -329,7 +329,7 @@ namespace Animations
 			m_oHeader			=	oHeader;
 
 #if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
-			assert ( IsCorrect () );
+			if( IsCorrect () == false ) return;
 #endif
 			buildType		=	StreamUtils::ReadDWORD ( pStream );
 			buildId			=	StreamUtils::ReadDWORD ( pStream );
@@ -342,26 +342,6 @@ namespace Animations
 		}
 
 		virtual bool IsCorrect () { return m_oHeader.RecVersion == 0x0 && m_oHeader.RecInstance == 0x0 && m_oHeader.RecType == RT_BuildAtom && m_oHeader.RecLen == 0x00000010; }
-
-        virtual CString ToString()
-		{	
-			XmlUtils::CXmlWriter oWriter;
-
-            oWriter.WriteNodeBegin ( _T("BuildAtom"), true );
-
-            oWriter.WriteNodeEnd ( _T("BuildAtom"), true, false );
-
-			CDirectory::WriteValueToNode ( _T("buildType"),		(DWORD)buildType, &oWriter );
-			CDirectory::WriteValueToNode ( _T("buildId"),		(DWORD)buildId, &oWriter );
-			CDirectory::WriteValueToNode ( _T("shapeIdRef"),	(DWORD)shapeIdRef, &oWriter );
-
-			CDirectory::WriteValueToNode ( _T("fExpanded"),		(DWORD)fExpanded, &oWriter );
-			CDirectory::WriteValueToNode ( _T("fUIExpanded"),	(DWORD)fUIExpanded, &oWriter );
-
-			oWriter.WriteNodeEnd ( _T("BuildAtom") );
-
-			return oWriter.GetXmlString();
-		}
 
 	public:
 
@@ -380,7 +360,7 @@ namespace Animations
 			m_oHeader			=	oHeader;
 
 #if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
-			assert ( IsCorrect () );
+			if( IsCorrect () == false ) return;
 #endif
 			paraBuild					=	StreamUtils::ReadDWORD ( pStream );
 			buildLevel					=	StreamUtils::ReadDWORD ( pStream );
@@ -396,29 +376,6 @@ namespace Animations
 		}
 
 		virtual bool IsCorrect () { return m_oHeader.RecVersion == 0x1 && m_oHeader.RecInstance == 0x0 && m_oHeader.RecType == RT_ParaBuildAtom && m_oHeader.RecLen == 0x00000010; }
-
-        virtual CString ToString()
-		{	
-			XmlUtils::CXmlWriter oWriter;
-
-            oWriter.WriteNodeBegin ( _T("ParaBuildAtom"), true );
-
-            oWriter.WriteNodeEnd ( _T("ParaBuildAtom"), true, false );
-
-			CDirectory::WriteValueToNode ( _T("paraBuild"),					(DWORD)paraBuild, &oWriter );
-			CDirectory::WriteValueToNode ( _T("buildLevel"),				(DWORD)buildLevel, &oWriter );
-
-			CDirectory::WriteValueToNode ( _T("fAnimBackground"),			(DWORD)fAnimBackground, &oWriter );
-			CDirectory::WriteValueToNode ( _T("fReverse"),					(DWORD)fReverse, &oWriter );
-			CDirectory::WriteValueToNode ( _T("fUserSetAnimBackground"),	(DWORD)fUserSetAnimBackground, &oWriter );
-			CDirectory::WriteValueToNode ( _T("fAutomatic"),				(DWORD)fAutomatic, &oWriter );
-
-			CDirectory::WriteValueToNode ( _T("delayTime"),					(DWORD)delayTime, &oWriter );
-
-			oWriter.WriteNodeEnd ( _T("ParaBuildAtom") );
-
-			return oWriter.GetXmlString();
-		}
 
 	public:
 
@@ -446,28 +403,12 @@ namespace Animations
 			m_oHeader	=	oHeader;
 
 #if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
-			assert ( IsCorrect () );
+			if( IsCorrect () == false ) return;
 #endif
 			level		=	StreamUtils::ReadDWORD ( pStream );
 		}
 
 		virtual bool IsCorrect () { return m_oHeader.RecVersion == 0x0 && m_oHeader.RecInstance == 0x0 && m_oHeader.RecType == RT_LevelInfoAtom && m_oHeader.RecLen == 0x00000004; }
-
-        virtual CString ToString()
-		{	
-			XmlUtils::CXmlWriter oWriter;
-
-            oWriter.WriteNodeBegin ( _T("LevelInfoAtom"), true );
-            oWriter.WriteNodeEnd ( _T("LevelInfoAtom"), true, false );
-
-			CDirectory::WriteValueToNode ( _T("level"),		(DWORD)level, &oWriter );
-
-			oWriter.WriteNodeEnd ( _T("LevelInfoAtom") );
-
-			return oWriter.GetXmlString();
-		}
-
-	public:
 
 		DWORD	level;			
 	};
@@ -554,24 +495,7 @@ namespace Animations
 				StreamUtils::StreamSkip ( ReadHeader.RecLen, pStream );
 			}
 		}
-		virtual CString ToString()
-		{	
-			XmlUtils::CXmlWriter oWriter;
-
-            oWriter.WriteNodeBegin ( _T("ParaBuildContainer"), true );
-            oWriter.WriteNodeEnd ( _T("ParaBuildContainer"), true, false );
-
-			oWriter.WriteString ( buildAtom.ToString() );
-			oWriter.WriteString ( paraBuildAtom.ToString() );
-			//	rgParaBuildLevel
-
-			oWriter.WriteNodeEnd ( _T("ParaBuildContainer") );
-
-			return oWriter.GetXmlString();
-		}
-
 	public:
-
 		BuildAtom		buildAtom;
 		ParaBuildAtom	paraBuildAtom;
 
@@ -649,29 +573,7 @@ namespace Animations
 
 			StreamUtils::StreamSeek ( lPos + m_oHeader.RecLen, pStream );
 		}
-
-		virtual CString ToString()
-		{	
-			if ((long)rgChildRec.size())
-			{
-				XmlUtils::CXmlWriter oWriter;
-
-                oWriter.WriteNodeBegin ( _T("BuildListContainer"), true );
-                oWriter.WriteNodeEnd ( _T("BuildListContainer"), true, false );
-
-				for ( long i = 0; i < (long)rgChildRec.size(); ++i )
-					oWriter.WriteString ( rgChildRec[i]->ToString() );
-
-				oWriter.WriteNodeEnd ( _T("BuildListContainer") );
-
-				return oWriter.GetXmlString();
-			}
-
-			return _T("");
-		}
-
 	public:
-
 		std::vector <ParaBuildContainer*>	rgChildRec;
 		//ParaBuildContainer*	rgChildRec;
 	};
@@ -699,23 +601,7 @@ namespace Animations
 				m_oHeader.RecType			==	0xF142 &&
 				m_oHeader.RecLen			==	0x00000002;
 		}
-
-
-		virtual CString ToString()
-		{	
-			XmlUtils::CXmlWriter oWriter;
-
-            oWriter.WriteNodeBegin ( _T("TimeVariant"), true );
-
-            oWriter.WriteNodeEnd ( _T("TimeVariant"), true, false );
-
-			oWriter.WriteNodeEnd ( _T("TimeVariantBool") );
-
-			return oWriter.GetXmlString();
-		}
-
 	public:
-
 		TimeVariantTypeEnum		m_Type;
 	};
 
@@ -735,25 +621,7 @@ namespace Animations
 				m_oHeader.RecType			==	0xF142 &&
 				m_oHeader.RecLen			==	0x00000002;
 		}
-
-		virtual CString ToString()
-		{	
-			XmlUtils::CXmlWriter oWriter;
-
-            oWriter.WriteNodeBegin ( _T("TimeVariantBool"), true );
-
-            oWriter.WriteNodeEnd ( _T("TimeVariantBool"), true, false );
-
-			CDirectory::WriteValueToNode ( _T("Type"),		Helpers::GetTimeVariantTypeEnum ( m_Type ), &oWriter );
-			CDirectory::WriteValueToNode ( _T("Value"),		Helpers::IntToHexString ( m_Value ), &oWriter );
-
-			oWriter.WriteNodeEnd ( _T("TimeVariantBool") );
-
-			return oWriter.GetXmlString();
-		}
-
 	public:
-
 		TimeVariantTypeEnum		m_Type;
 		bool					m_Value;
 	};
@@ -773,22 +641,6 @@ namespace Animations
 			return	m_oHeader.RecVersion	==	0x0	&&
 				m_oHeader.RecType			==	0xF142 &&
 				m_oHeader.RecLen			==	0x00000005;
-		}
-
-		virtual CString ToString()
-		{	
-			XmlUtils::CXmlWriter oWriter;
-
-            oWriter.WriteNodeBegin ( _T(" TimeVariantInt "), true );
-
-            oWriter.WriteNodeEnd ( _T(" TimeVariantInt "), true, false );
-
-			CDirectory::WriteValueToNode ( _T("Type"),		Helpers::GetTimeVariantTypeEnum ( m_Type ), &oWriter );
-			CDirectory::WriteValueToNode ( _T("Value"),	(DWORD)m_Value, &oWriter );
-
-			oWriter.WriteNodeEnd ( _T(" TimeVariantInt ") );
-
-			return oWriter.GetXmlString();
 		}
 
 	public:
@@ -814,22 +666,6 @@ namespace Animations
 				m_oHeader.RecLen			==	0x00000005;
 		}
 
-		virtual CString ToString()
-		{	
-			XmlUtils::CXmlWriter oWriter;
-
-            oWriter.WriteNodeBegin ( _T("TimeVariantFloat"), true );
-
-            oWriter.WriteNodeEnd ( _T("TimeVariantFloat"), true, false );
-
-			CDirectory::WriteValueToNode ( _T("Type"),		Helpers::GetTimeVariantTypeEnum ( m_Type ), &oWriter );
-			CDirectory::WriteValueToNode ( _T("Value"),	(DWORD)m_Value, &oWriter );
-
-			oWriter.WriteNodeEnd ( _T("TimeVariantFloat") );
-
-			return oWriter.GetXmlString();
-		}
-
 	public:
 
 		TimeVariantTypeEnum		m_Type;
@@ -843,7 +679,7 @@ namespace Animations
 			m_oHeader			=	oHeader;
 
 #if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
-			assert ( IsCorrect () );
+			if( IsCorrect () == false ) return;
 #endif
 
 			m_Type				=	( TimeVariantTypeEnum )StreamUtils::ReadBYTE ( pStream );	//	MUST be TL_TVT_Bool	
@@ -871,21 +707,6 @@ namespace Animations
 			return	m_oHeader.RecVersion	==	0x0	&&
 				m_oHeader.RecType			==	0xF142;
 			//	&&	m_oHeader.RecLen % 2		==	0x00000001;
-		}
-
-		virtual CString ToString()
-		{	
-			XmlUtils::CXmlWriter oWriter;
-
-            oWriter.WriteNodeBegin ( _T("TimeVariantString"), true );
-            oWriter.WriteNodeEnd ( _T("TimeVariantString"), true, false );
-
-            CDirectory::WriteValueToNode ( _T("Type"),          Helpers::GetTimeVariantTypeEnum ( m_Type ), &oWriter );
-            CDirectory::WriteValueToNode ( _T("StringValue"),	stringValue, &oWriter ); //todooo проверить - нужен ли ansi
-
-			oWriter.WriteNodeEnd ( _T("TimeVariantString") );
-
-			return oWriter.GetXmlString();
 		}
 
 	public:
@@ -924,23 +745,6 @@ namespace Animations
 				m_oHeader.RecInstance		==	0x001;
 		}
 
-		virtual CString ToString()
-		{	
-			XmlUtils::CXmlWriter oWriter;
-
-            oWriter.WriteNodeBegin ( _T("TimeVariantString"), true );
-            oWriter.WriteNodeEnd ( _T("TimeVariantString"), true, false );
-
-			for ( int i = 0; i < m_Values.size(); ++i )
-			{
-                CDirectory::WriteValueToNode ( _T("Value"),	 m_Values [i].stringValue, &oWriter ); //ansi ????
-			}
-
-			oWriter.WriteNodeEnd ( _T("TimeVariantString") );
-
-			return oWriter.GetXmlString();
-		}
-
 	public:
 
 		std::vector <TimeVariantString>	m_Values;
@@ -955,7 +759,7 @@ namespace Animations
 			m_oHeader = oHeader;
 
 #if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
-			assert ( IsCorrect () );
+			if( IsCorrect () == false ) return;
 #endif
 			//	LONG lPos = 0;	StreamUtils::StreamPosition(lPos, pStream);
 
@@ -997,28 +801,6 @@ namespace Animations
 
         virtual bool IsCorrect () { return m_oHeader.RecVersion ==	0x0	&& m_oHeader.RecInstance ==	0x0	&& m_oHeader.RecType == 0xF127 && m_oHeader.RecLen == 0x00000020; }
 
-        virtual CString ToString()
-		{	
-			XmlUtils::CXmlWriter oWriter;
-
-            oWriter.WriteNodeBegin ( _T("TimeNodeAtom"), true );
-            oWriter.WriteNodeEnd ( _T("TimeNodeAtom"), true, false );
-
-			CDirectory::WriteValueToNode ( _T("Restart"),				(DWORD)m_dwRestart, &oWriter );
-			CDirectory::WriteValueToNode ( _T("Type"),					Helpers::GetTimeNodeTypeEnum ( m_dwType ), &oWriter );
-			CDirectory::WriteValueToNode ( _T("Fill"),					(DWORD)m_dwFill, &oWriter );
-			CDirectory::WriteValueToNode ( _T("Duration"),				(DWORD)m_nDuration, &oWriter );
-			CDirectory::WriteValueToNode ( _T("FillProperty"),			(DWORD)m_bFillProperty, &oWriter );
-			CDirectory::WriteValueToNode ( _T("RestartProperty"),		(DWORD)m_bRestartProperty, &oWriter );
-			CDirectory::WriteValueToNode ( _T("GroupingTypeProperty"),	(DWORD)m_bGroupingTypeProperty, &oWriter );
-			CDirectory::WriteValueToNode ( _T("DurationProperty"),		(DWORD)m_bDurationProperty, &oWriter );
-
-			oWriter.WriteNodeEnd ( _T("TimeNodeAtom") );
-
-			return oWriter.GetXmlString();
-		}
-
-
 	public:
 
 		DWORD				m_dwRestart;
@@ -1039,7 +821,7 @@ namespace Animations
 			m_oHeader = oHeader;
 
 #if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
-			assert ( IsCorrect () );
+			if( IsCorrect () == false ) return;
 #endif
 			// LONG lPos = 0;		StreamUtils::StreamPosition ( lPos, pStream );
 
@@ -1066,27 +848,6 @@ namespace Animations
 				m_oHeader.RecLen			==	0x00000014;
 		}
 
-		virtual CString ToString()
-		{	
-			XmlUtils::CXmlWriter oWriter;
-
-            oWriter.WriteNodeBegin ( _T("TimeSequenceDataAtom"), true );
-
-            oWriter.WriteNodeEnd (_T("TimeSequenceDataAtom"), true, false );
-
-			CDirectory::WriteValueToNode ( _T("Concurrency"),			(DWORD)m_nConcurrency, &oWriter );
-			CDirectory::WriteValueToNode ( _T("NextAction"),			(DWORD)m_nNextAction, &oWriter );
-			CDirectory::WriteValueToNode ( _T("PreviousAction"),		(DWORD)m_nPreviousAction, &oWriter );
-
-			CDirectory::WriteValueToNode ( _T("ConcurrencyPropertyUsed"),	(DWORD)m_bConcurrencyPropertyUsed, &oWriter );
-			CDirectory::WriteValueToNode ( _T("NextActionPropertyUsed"),	(DWORD)m_bNextActionPropertyUsed, &oWriter );
-			CDirectory::WriteValueToNode ( _T("PreviousActionPropertyUsed"),(DWORD)m_bPreviousActionPropertyUsed, &oWriter );
-
-			oWriter.WriteNodeEnd ( _T("TimeSequenceDataAtom") );
-
-			return oWriter.GetXmlString();
-		}
-
 	public:
 
 		DWORD		m_nConcurrency;
@@ -1103,309 +864,83 @@ namespace Animations
 {	
 	struct TimeDisplayType : public TimeVariantInt
 	{
-		virtual CString ToString()
-		{	
-			XmlUtils::CXmlWriter oWriter;
-
-            oWriter.WriteNodeBegin ( _T("TimeDisplayType"), true );
-            oWriter.WriteNodeEnd ( _T("TimeDisplayType"), true, false );
-
-			CDirectory::WriteValueToNode ( _T("Type"),			Helpers::GetTimeVariantTypeEnum ( m_Type ), &oWriter );
-			CDirectory::WriteValueToNode ( _T("DisplayType"),	(DWORD)m_Value, &oWriter );
-
-			oWriter.WriteNodeEnd ( _T("TimeDisplayType") );
-
-			return oWriter.GetXmlString();
-		}
-
 
 	};
 
 	struct TimeMasterRelType : public TimeVariantInt
 	{
-		virtual CString ToString()
-		{	
-			XmlUtils::CXmlWriter oWriter;
 
-            oWriter.WriteNodeBegin ( _T("TimeMasterRelType"), true );
-
-            oWriter.WriteNodeEnd ( _T("TimeMasterRelType"), true, false );
-
-			CDirectory::WriteValueToNode ( _T("Type"),			Helpers::GetTimeVariantTypeEnum ( m_Type ), &oWriter );
-			CDirectory::WriteValueToNode ( _T("MasterRel"),	(DWORD)m_Value, &oWriter );
-
-			oWriter.WriteNodeEnd ( _T("TimeMasterRelType") );
-
-			return oWriter.GetXmlString();
-		}
 	};
 
 	struct TimeSlaveType : public TimeVariantInt
 	{
-		virtual CString ToString()
-		{	
-			XmlUtils::CXmlWriter oWriter;
 
-            oWriter.WriteNodeBegin ( _T("TimeSlaveType"), true );
-            oWriter.WriteNodeEnd ( _T("TimeSlaveType"), true, false );
-
-			CDirectory::WriteValueToNode ( _T("Type"),		Helpers::GetTimeVariantTypeEnum ( m_Type ), &oWriter );
-			CDirectory::WriteValueToNode ( _T("SlaveType"),	(DWORD)m_Value, &oWriter );
-
-			oWriter.WriteNodeEnd ( _T("TimeSlaveType") );
-
-			return oWriter.GetXmlString();
-		}
 	};
 
 	struct TimeEffectID : public TimeVariantInt
 	{
-		virtual CString ToString()
-		{	
-			XmlUtils::CXmlWriter oWriter;
 
-            oWriter.WriteNodeBegin ( _T("TimeEffectID"), true );
-            oWriter.WriteNodeEnd ( _T("TimeEffectID"), true, false );
-
-			// CDirectory::WriteValueToNode ( _T("Type"),			Helpers::GetTimeVariantTypeEnum ( m_Type ), &oWriter );
-			CDirectory::WriteValueToNode ( _T("EffectID"),		Helpers::IntToHexString ( m_Value ), &oWriter );
-
-			oWriter.WriteNodeEnd ( _T("TimeEffectID") );
-
-			return oWriter.GetXmlString();
-		}
 	};
 
 	struct TimeEffectDir  : public TimeVariantInt
 	{
-		virtual CString ToString()
-		{	
-			XmlUtils::CXmlWriter oWriter;
 
-            oWriter.WriteNodeBegin ( _T("TimeEffectDir"), true );
-            oWriter.WriteNodeEnd ( _T("TimeEffectDir"), true, false );
-
-			//CDirectory::WriteValueToNode ( _T("Type"),			Helpers::GetTimeVariantTypeEnum ( m_Type ), &oWriter );
-			CDirectory::WriteValueToNode ( _T("EffectDir"),	(DWORD)m_Value, &oWriter );
-
-			oWriter.WriteNodeEnd ( _T("TimeEffectDir") );
-
-			return oWriter.GetXmlString();
-		}
 	};
 
 	struct TimeEffectType : public TimeVariantInt
 	{
-		virtual CString ToString()
-		{	
-			XmlUtils::CXmlWriter oWriter;
 
-            oWriter.WriteNodeBegin ( _T("TimeEffectType"), true );
-            oWriter.WriteNodeEnd ( _T("TimeEffectType"), true, false );
-
-			//CDirectory::WriteValueToNode ( _T("Type"),			Helpers::GetTimeVariantTypeEnum ( m_Type ), &oWriter );
-			CDirectory::WriteValueToNode ( _T("EffectType"),	Helpers::GetEffectTypeOfGroup ( m_Value ), &oWriter );
-
-			oWriter.WriteNodeEnd ( _T("TimeEffectType") );
-
-			return oWriter.GetXmlString();
-		}
 	};
 
 	struct TimeAfterEffect : public TimeVariantBool
 	{
-		virtual CString ToString()
-		{	
-			XmlUtils::CXmlWriter oWriter;
 
-            oWriter.WriteNodeBegin ( _T("TimeAfterEffect"), true );
-            oWriter.WriteNodeEnd ( _T("TimeAfterEffect"), true, false );
-
-			CDirectory::WriteValueToNode ( _T("Type"),			Helpers::GetTimeVariantTypeEnum ( m_Type ), &oWriter );
-			CDirectory::WriteValueToNode ( _T("AfterEffect"),		m_Value, &oWriter );
-
-			oWriter.WriteNodeEnd ( _T("TimeAfterEffect") );
-
-			return oWriter.GetXmlString();
-		}
 	};
 	struct TimeSlideCount : public TimeVariantInt
 	{
-		virtual CString ToString()
-		{	
-			XmlUtils::CXmlWriter oWriter;
 
-            oWriter.WriteNodeBegin ( _T("TimeSlideCount"), true );
-            oWriter.WriteNodeEnd ( _T("TimeSlideCount"), true, false );
-
-			CDirectory::WriteValueToNode ( _T("Type"),			Helpers::GetTimeVariantTypeEnum ( m_Type ), &oWriter );
-			CDirectory::WriteValueToNode ( _T("SlideCount"),	(DWORD)m_Value, &oWriter );
-
-			oWriter.WriteNodeEnd ( _T("TimeSlideCount") );
-
-			return oWriter.GetXmlString();
-		}
 	};
 
 	struct TimeNodeTimeFilter : public TimeVariantString
 	{
-		virtual CString ToString()
-		{	
-			XmlUtils::CXmlWriter oWriter;
 
-            oWriter.WriteNodeBegin ( _T("TimeNodeTimeFilter"), true );
-            oWriter.WriteNodeEnd ( _T("TimeNodeTimeFilter"), true, false );
-
-			CDirectory::WriteValueToNode ( _T("Type"),		Helpers::GetTimeVariantTypeEnum ( m_Type ), &oWriter );
-            CDirectory::WriteValueToNode ( _T("StringValue"),	stringValue , &oWriter );       // ansi ????
-
-			oWriter.WriteNodeEnd ( _T("TimeNodeTimeFilter") );
-
-			return oWriter.GetXmlString();
-		}
 	};
 	struct TimeEventFilter : public TimeVariantString
 	{
-		virtual CString ToString()
-		{	
-			XmlUtils::CXmlWriter oWriter;
 
-            oWriter.WriteNodeBegin ( _T("TimeEventFilter"), true );
-
-            oWriter.WriteNodeEnd ( _T("TimeEventFilter"), true, false );
-
-			CDirectory::WriteValueToNode ( _T("Type"),		Helpers::GetTimeVariantTypeEnum ( m_Type ), &oWriter );
-            CDirectory::WriteValueToNode ( _T("StringValue"),	 stringValue , &oWriter ); //ansi ????
-
-			oWriter.WriteNodeEnd ( _T("TimeEventFilter") );
-
-			return oWriter.GetXmlString();
-		}
 	};
 	struct TimeHideWhenStopped : public TimeVariantBool
 	{
-		virtual CString ToString()
-		{	
-			XmlUtils::CXmlWriter oWriter;
 
-            oWriter.WriteNodeBegin ( _T("TimeHideWhenStopped"), true );
-            oWriter.WriteNodeEnd ( _T("TimeHideWhenStopped"), true, false );
-
-			CDirectory::WriteValueToNode ( _T("Type"),			Helpers::GetTimeVariantTypeEnum ( m_Type ), &oWriter );
-			CDirectory::WriteValueToNode ( _T("HideWhenStopped"),	m_Value, &oWriter );
-
-			oWriter.WriteNodeEnd ( _T("TimeHideWhenStopped") );
-
-			return oWriter.GetXmlString();
-		}
 	};
 
 	struct TimeGroupID : public TimeVariantInt
 	{
-		virtual CString ToString()
-		{	
-			XmlUtils::CXmlWriter oWriter;
 
-            oWriter.WriteNodeBegin ( _T("TimeGroupID"), true );
-            oWriter.WriteNodeEnd ( _T("TimeGroupID"), true, false );
-
-			CDirectory::WriteValueToNode ( _T("Type"),			Helpers::GetTimeVariantTypeEnum ( m_Type ), &oWriter );
-			CDirectory::WriteValueToNode ( _T("GroupID"),	(DWORD)m_Value, &oWriter );
-
-			oWriter.WriteNodeEnd ( _T("TimeGroupID") );
-
-			return oWriter.GetXmlString();
-		}
 	};
 
 	struct TimeEffectNodeType  : public TimeVariantInt
 	{
-		virtual CString ToString()
-		{	
-			XmlUtils::CXmlWriter oWriter;
 
-            oWriter.WriteNodeBegin ( _T("TimeEffectNodeType"), true );
-            oWriter.WriteNodeEnd ( _T("TimeEffectNodeType"), true, false );
-
-			//CDirectory::WriteValueToNode ( _T("Type"),			Helpers::GetTimeVariantTypeEnum ( m_Type ), &oWriter );
-			CDirectory::WriteValueToNode ( _T("EffectNodeType"),	(DWORD)m_Value, &oWriter );
-
-			oWriter.WriteNodeEnd ( _T("TimeEffectNodeType") );
-
-			return oWriter.GetXmlString();
-		}
 	};
 
 	struct TimePlaceholderNode : public TimeVariantBool
 	{
-		virtual CString ToString()
-		{	
-			XmlUtils::CXmlWriter oWriter;
 
-            oWriter.WriteNodeBegin ( _T("TimePlaceholderNode"), true );
-            oWriter.WriteNodeEnd ( _T("TimePlaceholderNode"), true, false );
-
-			CDirectory::WriteValueToNode ( _T("Type"),			Helpers::GetTimeVariantTypeEnum ( m_Type ), &oWriter );
-			CDirectory::WriteValueToNode ( _T("PlaceholderNode"),	m_Value, &oWriter );
-
-			oWriter.WriteNodeEnd ( _T("TimePlaceholderNode") );
-
-			return oWriter.GetXmlString();
-		}
 	};
 
 	struct TimeMediaVolume : public TimeVariantFloat
 	{
-		virtual CString ToString()
-		{	
-			XmlUtils::CXmlWriter oWriter;
 
-            oWriter.WriteNodeBegin ( _T("TimeMediaVolume"), true );
-            oWriter.WriteNodeEnd ( _T("TimeMediaVolume"), true, false );
-
-			CDirectory::WriteValueToNode ( _T("Type"),			Helpers::GetTimeVariantTypeEnum ( m_Type ), &oWriter );
-            CDirectory::WriteValueToNode ( _T("MediaVolume"),	Helpers::DoubleToString ( (double)m_Value ), &oWriter );
-
-			oWriter.WriteNodeEnd ( _T("TimeMediaVolume") );
-
-			return oWriter.GetXmlString();
-		}
 	};
 
 	struct TimeMediaMute : public TimeVariantBool
 	{
-		virtual CString ToString()
-		{	
-			XmlUtils::CXmlWriter oWriter;
 
-            oWriter.WriteNodeBegin ( _T("TimeMediaMute"), true );
-            oWriter.WriteNodeEnd ( _T("TimeMediaMute"), true, false );
-
-			CDirectory::WriteValueToNode ( _T("Type"),			Helpers::GetTimeVariantTypeEnum ( m_Type ), &oWriter );
-			CDirectory::WriteValueToNode ( _T("MediaMute"),		m_Value, &oWriter );
-
-			oWriter.WriteNodeEnd ( _T("TimeMediaMute") );
-
-			return oWriter.GetXmlString();
-		}
 	};
 	struct TimeZoomToFullScreen : public TimeVariantBool
 	{
-		virtual CString ToString()
-		{	
-			XmlUtils::CXmlWriter oWriter;
 
-            oWriter.WriteNodeBegin ( _T("TimeZoomToFullScreen"), true );
-
-            oWriter.WriteNodeEnd ( _T("TimeZoomToFullScreen"), true, false );
-
-			CDirectory::WriteValueToNode ( _T("Type"),			Helpers::GetTimeVariantTypeEnum ( m_Type ), &oWriter );
-			CDirectory::WriteValueToNode ( _T("ZoomToFullScreen"),	m_Value, &oWriter );
-
-			oWriter.WriteNodeEnd ( _T("TimeZoomToFullScreen") );
-
-			return oWriter.GetXmlString();
-		}
 	};
 
 
@@ -1430,7 +965,7 @@ namespace Animations
 			m_oHeader = oHeader;
 
 #if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
-			assert ( IsCorrect () );
+			if( IsCorrect () == false ) return;
 #endif
 			LONG lPos = 0;
 			StreamUtils::StreamPosition ( lPos, pStream );
@@ -1566,31 +1101,6 @@ namespace Animations
 			m_arrElements.clear ();
 		}
 
-		virtual CString ToString()
-		{	
-			XmlUtils::CXmlWriter oWriter;
-
-            oWriter.WriteNodeBegin ( _T("TimePropertyList4TimeNodeContainer"), true );
-
-
-            oWriter.WriteNodeEnd ( _T("TimePropertyList4TimeNodeContainer"), true, false );
-
-			if ( false == m_nEmtyNode )
-			{
-				oWriter.WriteString ( m_EffectNodeType.ToString () );
-			}
-
-			for ( long i = 0; i < (long)m_arrElements.size(); ++i )
-			{
-				oWriter.WriteString ( m_arrElements[i]->ToString() );
-			}
-
-			oWriter.WriteNodeEnd ( _T("TimePropertyList4TimeNodeContainer") );
-
-			return oWriter.GetXmlString();
-		}
-
-
 		// helper
 
 		inline const DWORD& GetEffectNodeType () const
@@ -1630,7 +1140,7 @@ namespace Animations
 			m_oHeader = oHeader;
 
 #if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
-			assert ( IsCorrect () );
+			if( IsCorrect () == false ) return;
 #endif
 			LONG lPos = 0;	StreamUtils::StreamPosition ( lPos, pStream );
 
@@ -1647,19 +1157,6 @@ namespace Animations
 		{
 		}
 
-		virtual CString ToString()
-		{	
-			XmlUtils::CXmlWriter oWriter;
-
-            oWriter.WriteNodeBegin ( _T("TimePropertyList4TimeBehavior"), true );
-
-
-            oWriter.WriteNodeEnd ( _T("TimePropertyList4TimeBehavior"), true, false );
-
-			oWriter.WriteNodeEnd ( _T("TimePropertyList4TimeBehavior") );
-
-			return oWriter.GetXmlString();
-		}
 
 	public:
 	};
@@ -1676,7 +1173,7 @@ namespace Animations
 			m_oHeader			=	oHeader;
 
 #if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
-			assert ( IsCorrect () );
+			if( IsCorrect () == false ) return;
 #endif
 			m_Type				=	(TimeVisualElementEnum) StreamUtils::ReadDWORD ( pStream );
 			m_RefType			=	(ElementTypeEnum) StreamUtils::ReadDWORD ( pStream );
@@ -1691,36 +1188,6 @@ namespace Animations
 				m_oHeader.RecInstance		==	0x0 &&
 				m_oHeader.RecType			==	0x2AFB &&
 				m_oHeader.RecLen			==	0x00000014;
-		}
-
-
-		virtual CString ToString()
-		{	
-			XmlUtils::CXmlWriter oWriter;
-
-            oWriter.WriteNodeBegin ( _T("VisualShapeAtom"), true );
-
-
-            oWriter.WriteNodeEnd ( _T("VisualShapeAtom"), true, false );
-
-			CDirectory::WriteValueToNode ( _T("Type"),	Helpers::GetTimeVisualElementEnum (m_Type), &oWriter );
-			CDirectory::WriteValueToNode ( _T("ReferenceType"),	Helpers::GetElementTypeEnum (m_RefType), &oWriter );
-
-			if ( TL_TVET_Shape == m_RefType )
-			{
-				CDirectory::WriteValueToNode ( _T("ShapeID"),	m_nObjectIdRef, &oWriter );
-			}
-			else
-			{
-				CDirectory::WriteValueToNode ( _T("Type"),	m_nObjectIdRef, &oWriter );
-			}
-
-			CDirectory::WriteValueToNode ( _T("Data1"),	m_nData1, &oWriter );
-			CDirectory::WriteValueToNode ( _T("Data2"),	m_nData2, &oWriter );
-
-			oWriter.WriteNodeEnd ( _T("VisualShapeAtom") );
-
-			return oWriter.GetXmlString();
 		}
 
 	public:
@@ -1739,7 +1206,7 @@ namespace Animations
 			m_oHeader			=	oHeader;
 
 #if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
-			assert ( IsCorrect () );
+			if( IsCorrect () == false ) return;
 #endif
 			m_Type				=	(TimeVisualElementEnum) StreamUtils::ReadDWORD ( pStream );
 		}
@@ -1750,22 +1217,6 @@ namespace Animations
 				m_oHeader.RecInstance		==	0x0 &&
 				m_oHeader.RecType			==	0x2B01 &&
 				m_oHeader.RecLen			==	0x00000004;
-		}
-
-
-		virtual CString ToString()
-		{	
-			XmlUtils::CXmlWriter oWriter;
-
-            oWriter.WriteNodeBegin ( _T("VisualPageAtom"), true );
-
-            oWriter.WriteNodeEnd ( _T("VisualPageAtom"), true, false );
-
-			CDirectory::WriteValueToNode ( _T("Type"),	Helpers::GetTimeVisualElementEnum (m_Type), &oWriter );
-
-			oWriter.WriteNodeEnd ( _T("VisualPageAtom") );
-
-			return oWriter.GetXmlString();
 		}
 
 	public:
@@ -1787,7 +1238,7 @@ namespace Animations
 			m_oHeader			=	oHeader;
 
 #if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
-			assert ( IsCorrect () );
+			if( IsCorrect () == false ) return;
 #endif
 			//	LONG lPos = 0;	StreamUtils::StreamPosition ( lPos, pStream );
 
@@ -1817,25 +1268,6 @@ namespace Animations
 				m_oHeader.RecType			==	0xF13C;
 		}
 
-		virtual CString ToString()
-		{	
-			XmlUtils::CXmlWriter oWriter;
-
-            oWriter.WriteNodeBegin ( _T("ClientVisualElementContainer"), true );
-
-            oWriter.WriteNodeEnd ( _T("ClientVisualElementContainer"), true, false );
-
-			if ( m_bVisualPageAtom )
-				oWriter.WriteString ( m_oVisualPageAtom.ToString () );
-
-			if ( m_bVisualShapeAtom )
-				oWriter.WriteString ( m_oVisualShapeAtom.ToString () );
-
-			oWriter.WriteNodeEnd ( _T("ClientVisualElementContainer") );
-
-			return oWriter.GetXmlString();
-		}
-
 	public:
 
 		VisualPageAtom	m_oVisualPageAtom;
@@ -1852,7 +1284,7 @@ namespace Animations
 			m_oHeader			=	oHeader;
 
 #if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
-			assert ( IsCorrect () );
+			if( IsCorrect () == false ) return;
 #endif
 			// LONG lPos = 0;	StreamUtils::StreamPosition ( lPos, pStream );
 
@@ -1874,27 +1306,6 @@ namespace Animations
 				m_oHeader.RecInstance		==	0x0 &&
 				m_oHeader.RecType			==	0xF133 &&
 				m_oHeader.RecLen			==	0x00000010;
-		}
-
-		virtual CString ToString()
-		{	
-			XmlUtils::CXmlWriter oWriter;
-
-            oWriter.WriteNodeBegin ( _T("TimeBehaviorAtom"), true );
-
-
-            oWriter.WriteNodeEnd ( _T("TimeBehaviorAtom"), true, false );
-
-			CDirectory::WriteValueToNode ( _T("AdditivePropertyUsed"),			m_bAdditivePropertyUsed, &oWriter );
-			CDirectory::WriteValueToNode ( _T("AttributeNamesPropertyUsed"),	m_bAttributeNamesPropertyUsed, &oWriter );
-
-			CDirectory::WriteValueToNode ( _T("BehaviorAdditive"),				m_nBehaviorAdditive, &oWriter );
-			CDirectory::WriteValueToNode ( _T("BehaviorAccumulate"),			m_nBehaviorAccumulate, &oWriter );
-			CDirectory::WriteValueToNode ( _T("BehaviorTransform"),				m_nBehaviorTransform, &oWriter );
-
-			oWriter.WriteNodeEnd ( _T("TimeBehaviorAtom") );
-
-			return oWriter.GetXmlString();
 		}
 
 	public:
@@ -1932,7 +1343,7 @@ namespace Animations
             haveStringList		=	false;
 
 #if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
-			assert ( IsCorrect () );
+			if( IsCorrect () == false ) return;
 #endif
 			LONG lPos = 0;	StreamUtils::StreamPosition ( lPos, pStream );
 
@@ -2031,32 +1442,7 @@ namespace Animations
 
 		virtual bool IsCorrect () { return m_oHeader.RecVersion == 0xF && m_oHeader.RecInstance == 0x0 && m_oHeader.RecType == 0xF12A; }
 
-        virtual CString ToString()
-		{	
-			XmlUtils::CXmlWriter oWriter;
-
-            oWriter.WriteNodeBegin ( _T("TimeBehaviorContainer"), true );
-
-
-            oWriter.WriteNodeEnd ( _T("TimeBehaviorContainer"), true, false );
-
-			oWriter.WriteString (behaviorAtom.ToString());
-
-			if (stringList)
-				oWriter.WriteString (stringList->ToString());
-
-			if (propertyList)
-				oWriter.WriteString (propertyList->ToString());
-
-			oWriter.WriteString ( clientVisualElement.ToString () );
-
-			oWriter.WriteNodeEnd ( _T("TimeBehaviorContainer") );
-
-			return oWriter.GetXmlString();
-		}
-
-
-		inline long GetObjectID ()
+ 		inline long GetObjectID ()
 		{
 			return clientVisualElement.m_oVisualShapeAtom.m_nObjectIdRef;
 		}
@@ -2081,7 +1467,7 @@ namespace Animations
 			m_oHeader			=	oHeader;
 
 #if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
-			assert ( IsCorrect () );
+			if( IsCorrect () == false ) return;
 #endif
 			// LONG lPos = 0;	StreamUtils::StreamPosition ( lPos, pStream );
 
@@ -2105,27 +1491,6 @@ namespace Animations
 				m_oHeader.RecLen			==	0x00000008;
 		}
 
-		virtual CString ToString()
-		{	
-			XmlUtils::CXmlWriter oWriter;
-
-            oWriter.WriteNodeBegin ( _T("TimeEffectBehaviorAtom"), true );
-
-
-            oWriter.WriteNodeEnd ( _T("TimeEffectBehaviorAtom"), true, false );
-
-			CDirectory::WriteValueToNode ( _T("TransitionPropertyUsed"),	m_bTransitionPropertyUsed, &oWriter );
-			CDirectory::WriteValueToNode ( _T("TypePropertyUsed"),			m_bTypePropertyUsed, &oWriter );
-			CDirectory::WriteValueToNode ( _T("ProgressPropertyUsed"),		m_bProgressPropertyUsed, &oWriter );
-			CDirectory::WriteValueToNode ( _T("RuntimeContextObsolete"),	m_bRuntimeContextObsolete, &oWriter );
-
-			CDirectory::WriteValueToNode ( _T("EffectTransition"),			m_nEffectTransition, &oWriter );
-
-			oWriter.WriteNodeEnd ( _T("TimeEffectBehaviorAtom") );
-
-			return oWriter.GetXmlString();
-		}
-
 	public:
 		bool	m_bTransitionPropertyUsed;
 		bool	m_bTypePropertyUsed;
@@ -2142,7 +1507,7 @@ namespace Animations
 			m_oHeader			=	oHeader;
 
 #if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
-			assert ( IsCorrect () );
+			if( IsCorrect () == false ) return;
 #endif
 			//	LONG lPos = 0;	StreamUtils::StreamPosition ( lPos, pStream );
 
@@ -2195,30 +1560,6 @@ namespace Animations
 		}
 
 
-		virtual CString ToString()
-		{	
-			XmlUtils::CXmlWriter oWriter;
-
-            oWriter.WriteNodeBegin ( _T("TimeEffectBehaviorContainer"), true );
-
-            oWriter.WriteNodeEnd ( _T("TimeEffectBehaviorContainer"), true, false );
-
-			oWriter.WriteString ( effectBehaviorAtom.ToString () );
-
-			if ( effectBehaviorAtom.m_bTypePropertyUsed )
-                CDirectory::WriteValueToNode ( _T("TransitionEffect"),	m_varType.stringValue , &oWriter ); //ansi ???
-			if ( effectBehaviorAtom.m_bProgressPropertyUsed )
-                CDirectory::WriteValueToNode ( _T("VarProgres"),	Helpers::DoubleToString ( (double)m_varProgres.m_Value ), &oWriter );
-			if ( effectBehaviorAtom.m_bRuntimeContextObsolete )
-                CDirectory::WriteValueToNode ( _T("VarRuntimeContext"),	m_varRuntimeContext.stringValue, &oWriter );
-
-			oWriter.WriteString ( m_oBehavior.ToString () );
-
-			oWriter.WriteNodeEnd ( _T("TimeEffectBehaviorContainer") );
-
-			return oWriter.GetXmlString();
-		}
-
 	public:
 
 		TimeEffectBehaviorAtom	effectBehaviorAtom;
@@ -2236,7 +1577,7 @@ namespace Animations
 			m_oHeader			=	oHeader;
 
 #if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
-			assert ( IsCorrect () );
+			if( IsCorrect () == false ) return;
 #endif
 			m_TriggerObject		=	( TriggerObjectEnum )StreamUtils::ReadDWORD ( pStream );
 
@@ -2252,25 +1593,6 @@ namespace Animations
 				m_oHeader.RecType			==	0xF128 &&
 				m_oHeader.RecLen			==	0x00000010;
 		}
-
-		virtual CString ToString()
-		{	
-			XmlUtils::CXmlWriter oWriter;
-
-            oWriter.WriteNodeBegin ( _T("TimeConditionAtom"), true );
-
-            oWriter.WriteNodeEnd ( _T("TimeConditionAtom"), true, false );
-
-			CDirectory::WriteValueToNode ( _T("TriggerObject"),	Helpers::GetTriggerObjectEnum (m_TriggerObject), &oWriter );
-			CDirectory::WriteValueToNode ( _T("TriggerEvent"),	(DWORD)m_nTriggerEvent, &oWriter );
-			CDirectory::WriteValueToNode ( _T("ID"),			(DWORD)m_nID, &oWriter );
-			CDirectory::WriteValueToNode ( _T("TimeDelay"),		(DWORD)m_nTimeDelay, &oWriter );
-
-			oWriter.WriteNodeEnd ( _T("TimeConditionAtom") );
-
-			return oWriter.GetXmlString();
-		}
-
 	public:
 
 		TriggerObjectEnum	m_TriggerObject;
@@ -2286,7 +1608,7 @@ namespace Animations
 			m_oHeader = oHeader;
 
 #if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
-            assert ( IsCorrect () );
+            if( IsCorrect () == false ) return;
 #endif
 			//	LONG lPos = 0;	StreamUtils::StreamPosition ( lPos, pStream );
 
@@ -2314,28 +1636,6 @@ namespace Animations
 				m_oHeader.RecInstance		>=	0x001 && m_oHeader.RecInstance <= 0x005 &&
 				m_oHeader.RecType			==	0xF125;
 		}
-
-		virtual CString ToString()
-		{	
-			XmlUtils::CXmlWriter oWriter;
-
-            oWriter.WriteNodeBegin ( _T("TimeConditionContainer"), true );
-
-
-            oWriter.WriteNodeEnd ( _T("TimeConditionContainer"), true, false );
-
-			oWriter.WriteString ( m_oTimeConditionAtom.ToString () );
-
-			if ( TL_TOT_VisualElement == m_oTimeConditionAtom.m_TriggerObject )
-			{
-				oWriter.WriteString ( m_oVisualElement.ToString () );
-			}
-
-			oWriter.WriteNodeEnd ( _T("TimeConditionContainer") );
-
-			return oWriter.GetXmlString();
-		}
-
 	public:
 
 		TimeConditionAtom				m_oTimeConditionAtom;
@@ -2350,7 +1650,7 @@ namespace Animations
 			m_oHeader			=	oHeader;
 
 #if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
-			assert ( IsCorrect () );
+			if( IsCorrect () == false ) return;
 #endif
 			iterateInterval						=	StreamUtils::ReadDWORD ( pStream );
 			iterateType							=	StreamUtils::ReadDWORD ( pStream );
@@ -2367,30 +1667,7 @@ namespace Animations
 
 		virtual bool IsCorrect () { return m_oHeader.RecVersion == 0x0 && m_oHeader.RecInstance == 0x0 && m_oHeader.RecType == RT_TimeIterateData && m_oHeader.RecLen == 0x00000014; }
 
-        virtual CString ToString()
-		{	
-			XmlUtils::CXmlWriter oWriter;
-
-            oWriter.WriteNodeBegin ( _T("TimeIterateDataAtom"), true );
-
-            oWriter.WriteNodeEnd ( _T("TimeIterateDataAtom"), true, false );
-
-			CDirectory::WriteValueToNode ( _T("iterateInterval"),		(DWORD)iterateInterval, &oWriter );
-			CDirectory::WriteValueToNode ( _T("iterateType"),			(DWORD)iterateType, &oWriter );
-			CDirectory::WriteValueToNode ( _T("iterateDirection"),		(DWORD)iterateDirection, &oWriter );
-			CDirectory::WriteValueToNode ( _T("iterateIntervalType"),	(DWORD)iterateIntervalType, &oWriter );
-
-			CDirectory::WriteValueToNode ( _T("fIterateDirectionPropertyUsed"),			(DWORD)fIterateDirectionPropertyUsed		, &oWriter );
-			CDirectory::WriteValueToNode ( _T("fIterateTypePropertyUsed"),				(DWORD)fIterateTypePropertyUsed				, &oWriter );
-			CDirectory::WriteValueToNode ( _T("fIterateIntervalPropertyUsed"),			(DWORD)fIterateIntervalPropertyUsed			, &oWriter );
-			CDirectory::WriteValueToNode ( _T("fIterateIntervalTypePropertyUsed"),		(DWORD)fIterateIntervalTypePropertyUsed		, &oWriter );
-
-			oWriter.WriteNodeEnd ( _T("TimeIterateDataAtom") );
-
-			return oWriter.GetXmlString();
-		}
-
-	public:
+  	public:
 
 		unsigned long iterateInterval;
 		unsigned long iterateType;
@@ -2412,7 +1689,7 @@ namespace Animations
 		{
 			m_oHeader = oHeader;
 #if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
-			assert ( IsCorrect () );
+			if( IsCorrect () == false ) return;
 #endif
 			DWORD Value						=	StreamUtils::ReadDWORD ( pStream );
 
@@ -2442,37 +1719,6 @@ namespace Animations
 				m_oHeader.RecLen			==	0x00000020;
 		}
 
-
-		virtual CString ToString()
-		{	
-			XmlUtils::CXmlWriter oWriter;
-
-            oWriter.WriteNodeBegin ( _T("TimeMotionBehaviorAtom"), true );
-
-
-            oWriter.WriteNodeEnd ( _T("TimeMotionBehaviorAtom"), true, false );
-
-			CDirectory::WriteValueToNode ( _T("ByPropertyUsed"),			(DWORD)m_bByPropertyUsed				, &oWriter );
-			CDirectory::WriteValueToNode ( _T("FromPropertyUsed"),			(DWORD)m_bFromPropertyUsed				, &oWriter );
-			CDirectory::WriteValueToNode ( _T("ToPropertyUsed"),			(DWORD)m_bToPropertyUsed				, &oWriter );
-			CDirectory::WriteValueToNode ( _T("OriginPropertyUsed"),		(DWORD)m_bOriginPropertyUsed			, &oWriter );
-			CDirectory::WriteValueToNode ( _T("PathPropertyUsed"),			(DWORD)m_bPathPropertyUsed				, &oWriter );
-			CDirectory::WriteValueToNode ( _T("EditRotationPropertyUsed"),	(DWORD)m_bEditRotationPropertyUsed		, &oWriter );
-			CDirectory::WriteValueToNode ( _T("PointsTypesPropertyUsed"),	(DWORD)m_bPointsTypesPropertyUsed		, &oWriter );
-
-            CDirectory::WriteValueToNode ( _T("XBY"),						Helpers::DoubleToString ( (double)m_nXBY ), &oWriter );
-            CDirectory::WriteValueToNode ( _T("YBY"),						Helpers::DoubleToString ( (double)m_nYBY ), &oWriter );
-            CDirectory::WriteValueToNode ( _T("XFROM"),						Helpers::DoubleToString ( (double)m_nXFROM ), &oWriter );
-            CDirectory::WriteValueToNode ( _T("YFROM"),						Helpers::DoubleToString ( (double)m_nYFROM ), &oWriter );
-            CDirectory::WriteValueToNode ( _T("XTO"),						Helpers::DoubleToString ( (double)m_nXTO ), &oWriter );
-            CDirectory::WriteValueToNode ( _T("YTO"),						Helpers::DoubleToString ( (double)m_nYTO ), &oWriter );
-			CDirectory::WriteValueToNode ( _T("BehaviorOrigin"),			m_nBehaviorOrigin, &oWriter );
-
-			oWriter.WriteNodeEnd ( _T("TimeMotionBehaviorAtom") );
-
-			return oWriter.GetXmlString();
-		}
-
 	public:
 
 		bool	m_bByPropertyUsed;
@@ -2499,7 +1745,7 @@ namespace Animations
 			m_oHeader			=	oHeader;
 
 #if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
-			assert ( IsCorrect () );
+			if( IsCorrect () == false ) return;
 #endif
 			LONG lPos = 0;	StreamUtils::StreamPosition ( lPos, pStream );
 
@@ -2536,29 +1782,6 @@ namespace Animations
 				m_oHeader.RecType			==	0xF12E;
 		}
 
-		virtual CString ToString()
-		{	
-			XmlUtils::CXmlWriter oWriter;
-
-            oWriter.WriteNodeBegin ( _T("TimeMotionBehaviorContainer"), true );
-
-            oWriter.WriteNodeEnd ( _T("TimeMotionBehaviorContainer"), true, false );
-
-			oWriter.WriteString ( m_oMotionBehaviorAtom.ToString () );
-
-            CDirectory::WriteValueToNode ( _T("VarPath"), m_VarPath.stringValue , &oWriter ); ///ansi ???
-
-			if ( m_oMotionBehaviorAtom.m_bPathPropertyUsed )
-			{
-				oWriter.WriteString ( m_oBehavior.ToString () );
-			}
-
-			oWriter.WriteNodeEnd ( _T("TimeMotionBehaviorContainer") );
-
-			return oWriter.GetXmlString();
-		}
-
-
 	public:
 
 		TimeMotionBehaviorAtom		m_oMotionBehaviorAtom;
@@ -2576,7 +1799,7 @@ namespace Animations
 			m_oHeader			=	oHeader;
 
 #if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
-			assert ( IsCorrect () );
+			if( IsCorrect () == false ) return;
 #endif
 			DWORD Value						=	StreamUtils::ReadDWORD ( pStream );
 
@@ -2594,23 +1817,6 @@ namespace Animations
 				m_oHeader.RecLen			==	0x00000008;
 		}
 
-		virtual CString ToString()
-		{	
-			XmlUtils::CXmlWriter oWriter;
-
-            oWriter.WriteNodeBegin ( _T("TimeSetBehaviorAtom"), true );
-            oWriter.WriteNodeEnd ( _T("TimeSetBehaviorAtom"), true, false );
-
-			CDirectory::WriteValueToNode ( _T("ToPropertyUsed"),			(DWORD)m_bToPropertyUsed				, &oWriter );
-			CDirectory::WriteValueToNode ( _T("ValueTypePropertyUsed"),		(DWORD)m_bValueTypePropertyUsed			, &oWriter );
-
-			CDirectory::WriteValueToNode ( _T("ValueType"),					Helpers::GetTimeAnimateBehaviorValueTypeEnum ( m_ValueType ), &oWriter );
-
-			oWriter.WriteNodeEnd ( _T("TimeSetBehaviorAtom") );
-
-			return oWriter.GetXmlString();
-		}
-
 	public:
 
 		bool								m_bToPropertyUsed;
@@ -2626,7 +1832,7 @@ namespace Animations
 			m_oHeader			=	oHeader;
 
 #if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
-			assert ( IsCorrect () );
+			if( IsCorrect () == false ) return;
 #endif
 			LONG lPos = 0;	StreamUtils::StreamPosition ( lPos, pStream );
 
@@ -2650,29 +1856,7 @@ namespace Animations
 
 		virtual bool IsCorrect () { return m_oHeader.RecVersion == 0xF	&& m_oHeader.RecInstance == 0x0 && m_oHeader.RecType == RT_TimeSetBehaviorContainer; }
 
-        virtual CString ToString()
-		{	
-			XmlUtils::CXmlWriter oWriter;
-
-            oWriter.WriteNodeBegin ( _T("TimeSetBehaviorContainer"), true );
-
-            oWriter.WriteNodeEnd ( _T("TimeSetBehaviorContainer"), true, false );
-
-			oWriter.WriteString ( setBehaviorAtom.ToString () );
-
-			if ( setBehaviorAtom.m_bToPropertyUsed )
-				oWriter.WriteString ( varTo.ToString() );
-			oWriter.WriteString ( setBehaviorAtom.ToString () );
-
-			oWriter.WriteString ( behavior.ToString() );
-
-			oWriter.WriteNodeEnd ( _T("TimeSetBehaviorContainer") );
-
-			return oWriter.GetXmlString();
-		}
-
-
-	public:
+ 	public:
 
 		TimeSetBehaviorAtom		setBehaviorAtom;
 		TimeVariantString		varTo;
@@ -2689,7 +1873,7 @@ namespace Animations
 			m_oHeader			=	oHeader;
 
 #if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
-			assert ( IsCorrect () );
+			if( IsCorrect () == false ) return;
 #endif
 			m_nCalcMode						=	StreamUtils::ReadDWORD ( pStream );
 
@@ -2713,29 +1897,6 @@ namespace Animations
 				m_oHeader.RecLen			==	0x0000000C;
 		}
 
-		virtual CString ToString()
-		{	
-			XmlUtils::CXmlWriter oWriter;
-
-            oWriter.WriteNodeBegin ( _T("TimeAnimateBehaviorAtom"), true );
-
-
-            oWriter.WriteNodeEnd ( _T("TimeSetBehaviorAtom"), true, false );
-
-			CDirectory::WriteValueToNode ( _T("ByPropertyUsed"),				(DWORD)m_bByPropertyUsed				, &oWriter );
-			CDirectory::WriteValueToNode ( _T("FromPropertyUsed"),				(DWORD)m_bFromPropertyUsed				, &oWriter );
-			CDirectory::WriteValueToNode ( _T("ToPropertyUsed"),				(DWORD)m_bToPropertyUsed				, &oWriter );
-			CDirectory::WriteValueToNode ( _T("CalcModePropertyUsed"),			(DWORD)m_bCalcModePropertyUsed			, &oWriter );
-			CDirectory::WriteValueToNode ( _T("AnimationValuesPropertyUsed"),	(DWORD)m_bAnimationValuesPropertyUsed	, &oWriter );
-			CDirectory::WriteValueToNode ( _T("ValueTypePropertyUsed"),			(DWORD)m_bValueTypePropertyUsed			, &oWriter );
-
-			CDirectory::WriteValueToNode ( _T("ValueType"),						Helpers::GetTimeAnimateBehaviorValueTypeEnum ( m_ValueType ), &oWriter );
-
-			oWriter.WriteNodeEnd ( _T("TimeAnimateBehaviorAtom") );
-
-			return oWriter.GetXmlString();
-		}
-
 	public:
 
 		DWORD								m_nCalcMode;
@@ -2757,7 +1918,7 @@ namespace Animations
 			m_oHeader			=	oHeader;
 
 #if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
-			assert ( IsCorrect () );
+			if( IsCorrect () == false ) return;
 #endif
 			m_nTime				=	StreamUtils::ReadDWORD ( pStream );
 		}
@@ -2768,22 +1929,6 @@ namespace Animations
 				m_oHeader.RecInstance		==	0x0 &&
 				m_oHeader.RecType			==	0xF143 &&
 				m_oHeader.RecLen			==	0x00000004;
-		}
-
-		virtual CString ToString()
-		{	
-			XmlUtils::CXmlWriter oWriter;
-
-            oWriter.WriteNodeBegin ( _T("TimeAnimationValueAtom"), true );
-
-
-            oWriter.WriteNodeEnd ( _T("TimeAnimationValueAtom"), true, false );
-
-			CDirectory::WriteValueToNode ( _T("Time"), (DWORD)m_nTime, &oWriter );
-
-			oWriter.WriteNodeEnd ( _T("TimeAnimationValueAtom") );
-
-			return oWriter.GetXmlString();
 		}
 
 	public:
@@ -2842,7 +1987,7 @@ namespace Animations
 			m_oHeader			=	oHeader;
 
 #if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
-			assert ( IsCorrect () );
+			if( IsCorrect () == false ) return;
 #endif		
 			LONG lPos		=	0;
 			StreamUtils::StreamPosition ( lPos, pStream );
@@ -2876,24 +2021,6 @@ namespace Animations
 				m_oHeader.RecType			==	0xF13F;
 		}
 
-		virtual CString ToString()
-		{	
-			XmlUtils::CXmlWriter oWriter;
-
-            oWriter.WriteNodeBegin ( _T("TimeAnimationValueListContainer"), true );
-			oWriter.WriteString (_T(">") );
-
-			for ( int i = 0; i < m_arrEntry.size(); ++i )
-			{
-                CDirectory::WriteValueToNode ( _T("value"),	m_arrEntry[i].m_VarValue.stringValue , &oWriter );      //ansi ???
-                CDirectory::WriteValueToNode ( _T("formula"), m_arrEntry[i].m_VarFormula.stringValue , &oWriter ); //ansi ???
-			}
-
-			oWriter.WriteNodeEnd ( _T("TimeAnimationValueListContainer") );
-
-			return oWriter.GetXmlString();
-		}
-
 	public:
 
 		std::vector<TimeAnimationEntry>	m_arrEntry;
@@ -2906,7 +2033,7 @@ namespace Animations
 			m_oHeader			=	oHeader;
 
 #if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
-			assert ( IsCorrect () );
+			if( IsCorrect () == false ) return;
 #endif		
 			SRecordHeader ReadHeader;
 
@@ -2949,42 +2076,6 @@ namespace Animations
 				m_oHeader.RecType			==	0xF12B;
 		}
 
-		virtual CString ToString()
-		{	
-			XmlUtils::CXmlWriter oWriter;
-
-            oWriter.WriteNodeBegin ( _T("TimeAnimateBehaviorContainer"), true );
-
-            oWriter.WriteNodeEnd ( _T("TimeAnimateBehaviorContainer"), true, false );
-
-			oWriter.WriteString ( m_oAnimateBehaviorAtom.ToString () );
-
-			if ( m_oAnimateBehaviorAtom.m_bCalcModePropertyUsed )
-			{
-				oWriter.WriteString ( m_oAnimateValueList.ToString () );
-			}
-
-			if ( m_oAnimateBehaviorAtom.m_bByPropertyUsed )
-			{
-				oWriter.WriteString ( m_VarBy.ToString () );
-			}
-
-			if ( m_oAnimateBehaviorAtom.m_bFromPropertyUsed )
-			{
-				oWriter.WriteString ( m_VarFrom.ToString () );
-			}
-
-			if ( m_oAnimateBehaviorAtom.m_bToPropertyUsed )
-			{
-				oWriter.WriteString ( m_VarTo.ToString () );
-			}
-
-			oWriter.WriteString ( m_oBehavior.ToString () );
-
-			oWriter.WriteNodeEnd ( _T("TimeAnimateBehaviorContainer") );
-
-			return oWriter.GetXmlString();
-		}
 	public:
 
 		TimeAnimateBehaviorAtom			m_oAnimateBehaviorAtom;
@@ -3007,7 +2098,7 @@ namespace Animations
 			m_oHeader			=	oHeader;
 
 #if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
-			assert ( IsCorrect () );
+			if( IsCorrect () == false ) return;
 #endif
 			DWORD src						=	StreamUtils::ReadDWORD ( pStream );
 
@@ -3025,30 +2116,6 @@ namespace Animations
 
 
 		virtual bool IsCorrect () { return m_oHeader.RecVersion == 0x0 && m_oHeader.RecInstance == 0x0 && m_oHeader.RecType == 0xF138 && m_oHeader.RecLen == 0x00000014; }
-
-		virtual CString ToString()
-		{	
-			XmlUtils::CXmlWriter oWriter;
-
-            oWriter.WriteNodeBegin ( _T("TimeRotationBehaviorAtom"), true );
-
-
-            oWriter.WriteNodeEnd ( _T("TimeRotationBehaviorAtom"), true, false );
-
-			CDirectory::WriteValueToNode ( _T("fByPropertyUsed"),		(DWORD)fByPropertyUsed, &oWriter );
-			CDirectory::WriteValueToNode ( _T("fFromPropertyUsed"),		(DWORD)fFromPropertyUsed, &oWriter );
-			CDirectory::WriteValueToNode ( _T("fToPropertyUsed"),		(DWORD)fToPropertyUsed, &oWriter );
-			CDirectory::WriteValueToNode ( _T("fDirectionPropertyUsed"),(DWORD)fDirectionPropertyUsed, &oWriter );
-
-            CDirectory::WriteValueToNode ( _T("fBy"),					Helpers::DoubleToString ( (double)fBy ), &oWriter );
-            CDirectory::WriteValueToNode ( _T("fFrom"),					Helpers::DoubleToString ( (double)fFrom ), &oWriter );
-            CDirectory::WriteValueToNode ( _T("fTo"),					Helpers::DoubleToString ( (double)fTo ), &oWriter );
-			CDirectory::WriteValueToNode ( _T("rotationDirection"),		Helpers::IntToHexString ( rotationDirection ), &oWriter );
-
-			oWriter.WriteNodeEnd ( _T("TimeRotationBehaviorAtom") );
-
-			return oWriter.GetXmlString();
-		}
 
 	public:
 
@@ -3068,7 +2135,7 @@ namespace Animations
 			m_oHeader			=	oHeader;
 
 #if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
-			assert ( IsCorrect () );
+			if( IsCorrect () == false ) return;
 #endif
 			SRecordHeader ReadHeader;
 			
@@ -3081,20 +2148,6 @@ namespace Animations
 
         virtual bool IsCorrect () {	return	m_oHeader.RecVersion == 0xF && m_oHeader.RecInstance == 0x0 && m_oHeader.RecType == 0xF12F;	}
 
-		virtual CString ToString()
-		{	
-			XmlUtils::CXmlWriter oWriter;
-
-            oWriter.WriteNodeBegin ( _T("TimeRotationBehaviorContainer"), true );
-            oWriter.WriteNodeEnd ( _T("TimeRotationBehaviorContainer"), true, false );
-
-			oWriter.WriteString ( rotationBehaviorAtom.ToString () );
-			oWriter.WriteString ( behavior.ToString () );
-
-			oWriter.WriteNodeEnd ( _T("TimeRotationBehaviorContainer") );
-
-			return oWriter.GetXmlString();
-		}
 
 	public:
 
@@ -3112,7 +2165,7 @@ namespace Animations
 			m_oHeader			=	oHeader;
 
 #if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
-			assert ( IsCorrect () );
+			if( IsCorrect () == false ) return;
 #endif
 			DWORD src						=	StreamUtils::ReadDWORD ( pStream );
 
@@ -3134,33 +2187,6 @@ namespace Animations
 
 
 		virtual bool IsCorrect () { return m_oHeader.RecVersion == 0x0 && m_oHeader.RecInstance == 0x0 && m_oHeader.RecType == 0xF139 && m_oHeader.RecLen == 0x00000020; }
-
-		virtual CString ToString()
-		{	
-			XmlUtils::CXmlWriter oWriter;
-
-            oWriter.WriteNodeBegin ( _T("TimeScaleBehaviorAtom"), true );
-
-
-            oWriter.WriteNodeEnd ( _T("TimeScaleBehaviorAtom"), true, false );
-
-			CDirectory::WriteValueToNode ( _T("fByPropertyUsed"),		(DWORD)fByPropertyUsed, &oWriter );
-			CDirectory::WriteValueToNode ( _T("fFromPropertyUsed"),		(DWORD)fFromPropertyUsed, &oWriter );
-			CDirectory::WriteValueToNode ( _T("fToPropertyUsed"),		(DWORD)fToPropertyUsed, &oWriter );
-			CDirectory::WriteValueToNode ( _T("fZoomContentsUsed"),		(DWORD)fZoomContentsUsed, &oWriter );
-
-            CDirectory::WriteValueToNode ( _T("fXBy"),					Helpers::DoubleToString ( (double)fXBy ), &oWriter );
-            CDirectory::WriteValueToNode ( _T("fYBy"),					Helpers::DoubleToString ( (double)fYBy ), &oWriter );
-            CDirectory::WriteValueToNode ( _T("fXFrom"),				Helpers::DoubleToString ( (double)fXFrom ), &oWriter );
-            CDirectory::WriteValueToNode ( _T("fYFrom"),				Helpers::DoubleToString ( (double)fYFrom ), &oWriter );
-            CDirectory::WriteValueToNode ( _T("fXTo"),					Helpers::DoubleToString ( (double)fXTo ), &oWriter );
-            CDirectory::WriteValueToNode ( _T("fYTo"),					Helpers::DoubleToString ( (double)fYTo ), &oWriter );
-			CDirectory::WriteValueToNode ( _T("fZoomContents"),			(DWORD)fZoomContents, &oWriter );
-
-			oWriter.WriteNodeEnd ( _T("TimeScaleBehaviorAtom") );
-
-			return oWriter.GetXmlString();
-		}
 
 	public:
 
@@ -3184,7 +2210,7 @@ namespace Animations
 			m_oHeader			=	oHeader;
 
 #if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
-			assert ( IsCorrect () );
+			if( IsCorrect () == false ) return;
 #endif
 			SRecordHeader ReadHeader;
 	
@@ -3197,21 +2223,6 @@ namespace Animations
 
 
 		virtual bool IsCorrect () {	return	m_oHeader.RecVersion == 0xF && m_oHeader.RecInstance == 0x0 && m_oHeader.RecType == 0xF130;	}
-
-		virtual CString ToString()
-		{	
-			XmlUtils::CXmlWriter oWriter;
-
-            oWriter.WriteNodeBegin ( _T("TimeScaleBehaviorContainer"), true );
-            oWriter.WriteNodeEnd ( _T("TimeScaleBehaviorContainer"), true, false );
-
-			oWriter.WriteString ( scaleBehaviorAtom.ToString () );
-			oWriter.WriteString ( behavior.ToString () );
-
-			oWriter.WriteNodeEnd ( _T("TimeScaleBehaviorContainer") );
-
-			return oWriter.GetXmlString();
-		}
 
 	public:
 
@@ -3256,7 +2267,7 @@ namespace Animations
 			m_oHeader			=	oHeader;
 
 #if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
-			assert ( IsCorrect () );
+			if( IsCorrect () == false ) return;
 #endif
 			flag					=	StreamUtils::ReadDWORD ( pStream );
 
@@ -3273,24 +2284,6 @@ namespace Animations
 
 
 		virtual bool IsCorrect () { return m_oHeader.RecVersion == 0x0 && m_oHeader.RecInstance == 0x0 && m_oHeader.RecType == RT_TimeColorBehavior && m_oHeader.RecLen == 0x00000034; }
-
-		virtual CString ToString()
-		{	
-			XmlUtils::CXmlWriter oWriter;
-
-            oWriter.WriteNodeBegin ( _T("TimeColorBehaviorAtom"), true );
-            oWriter.WriteNodeEnd ( _T("TimeColorBehaviorAtom"), true, false );
-
-			CDirectory::WriteValueToNode ( _T("fByPropertyUsed"),		 (DWORD)fByPropertyUsed, &oWriter );
-			CDirectory::WriteValueToNode ( _T("fFromPropertyUsed"),		 (DWORD)fFromPropertyUsed, &oWriter );
-			CDirectory::WriteValueToNode ( _T("fToPropertyUsed"),		 (DWORD)fToPropertyUsed, &oWriter );
-			CDirectory::WriteValueToNode ( _T("fColorSpacePropertyUsed"),(DWORD)fColorSpacePropertyUsed, &oWriter );
-			CDirectory::WriteValueToNode ( _T("fColorSpacePropertyUsed"),(DWORD)fDirectionPropertyUsed, &oWriter );
-
-			oWriter.WriteNodeEnd ( _T("TimeColorBehaviorAtom") );
-
-			return oWriter.GetXmlString();
-		}
 
 	public:
 
@@ -3315,7 +2308,7 @@ namespace Animations
 			m_oHeader			=	oHeader;
 
 #if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
-			assert ( IsCorrect () );
+			if( IsCorrect () == false ) return;
 #endif
 			SRecordHeader ReadHeader;
 			if (ReadHeader.ReadFromStream(pStream) )	
@@ -3327,21 +2320,6 @@ namespace Animations
 
 
 		virtual bool IsCorrect () {	return	m_oHeader.RecVersion == 0xF && m_oHeader.RecInstance == 0x0 && m_oHeader.RecType == RT_TimeColorBehaviorContainer;	}
-
-		virtual CString ToString()
-		{	
-			XmlUtils::CXmlWriter oWriter;
-
-            oWriter.WriteNodeBegin ( _T("TimeColorBehaviorContainer"), true );
-            oWriter.WriteNodeEnd ( _T("TimeColorBehaviorContainer"), true, false );
-
-			oWriter.WriteString ( colorBehaviorAtom.ToString () );
-			oWriter.WriteString ( behavior.ToString () );
-
-			oWriter.WriteNodeEnd ( _T("TimeColorBehaviorContainer") );
-
-			return oWriter.GetXmlString();
-		}
 
 	public:
 
@@ -3360,7 +2338,7 @@ namespace Animations
 			m_oHeader	=	oHeader;
 
 #if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
-			assert ( IsCorrect () );
+			if( IsCorrect () == false ) return;
 #endif
 			type		=	StreamUtils::ReadDWORD(pStream);
 			value		=	StreamUtils::ReadFLOAT(pStream);
@@ -3368,23 +2346,6 @@ namespace Animations
 
 
 		virtual bool IsCorrect () { return m_oHeader.RecVersion == 0x0 && m_oHeader.RecType == RT_TimeModifierAtom && m_oHeader.RecLen == 0x00000008; }
-
-        virtual CString ToString()
-		{	
-			XmlUtils::CXmlWriter oWriter;
-
-            oWriter.WriteNodeBegin ( _T("TimeModifierAtom"), true );
-
-
-            oWriter.WriteNodeEnd ( _T("TimeModifierAtom"), true, false );
-
-			CDirectory::WriteValueToNode ( _T("type"),	type, &oWriter );
-            CDirectory::WriteValueToNode ( _T("value"),	Helpers::DoubleToString ( (double)value ), &oWriter );
-
-			oWriter.WriteNodeEnd ( _T("TimeModifierAtom") );
-
-			return oWriter.GetXmlString();
-		}
 
 	public:
 
@@ -3434,7 +2395,7 @@ namespace Animations
 			m_oHeader = oHeader;
 
 #if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
-			assert ( IsCorrect () );
+			if( IsCorrect () == false ) return;
 #endif
 			SRecordHeader	rHeader;
 
@@ -3508,29 +2469,6 @@ namespace Animations
 		}
 
 		virtual bool IsCorrect() { return m_oHeader.RecVersion == 0xF && m_oHeader.RecInstance == 0x01 && m_oHeader.RecType == 0xF145; }
-
-        virtual CString ToString()
-		{	
-			XmlUtils::CXmlWriter oWriter;
-
-            oWriter.WriteNodeBegin ( _T("SlaveContainer"), true );
-            oWriter.WriteNodeEnd ( _T("SlaveContainer"), true, false );
-
-			oWriter.WriteString (timeNodeAtom.ToString());
-
-			if (timePropertyList)
-				oWriter.WriteString ( timePropertyList->ToString() );
-			if (timeSetBehavior)
-				oWriter.WriteString ( timeSetBehavior->ToString () );
-			if (clientVisualElement)
-				oWriter.WriteString ( clientVisualElement->ToString () );
-			if (extTimeContainer)
-				oWriter.WriteString (extTimeContainer->ToString ());
-
-			oWriter.WriteNodeEnd ( _T("SlaveContainer") );
-
-			return oWriter.GetXmlString();
-		}
 
 	public:
 
@@ -3841,60 +2779,6 @@ namespace Animations
 		}
 
 
-		virtual CString ToString()
-		{	
-			XmlUtils::CXmlWriter oWriter;
-
-            oWriter.WriteNodeBegin ( _T("ExtTimeNodeContainer"), true );
-            oWriter.WriteNodeEnd ( _T("ExtTimeNodeContainer"), true, false );
-
-			oWriter.WriteString ( timeNodeAtom.ToString() );
-
-			if (timePropertyList)
-				oWriter.WriteString ( timePropertyList->ToString() );
-			if (timeAnimateBehavior)
-				oWriter.WriteString ( timeAnimateBehavior->ToString () );
-			if (timeColorBehavior)
-				oWriter.WriteString ( timeColorBehavior->ToString () );
-			if (timeEffectBehavior)
-				oWriter.WriteString ( timeEffectBehavior->ToString () );
-			if (timeMotionBehavior)
-				oWriter.WriteString ( timeMotionBehavior->ToString() );
-			if (timeRotationBehavior)
-				oWriter.WriteString ( timeRotationBehavior->ToString() );
-			if (timeScaleBehavior)
-				oWriter.WriteString ( timeScaleBehavior->ToString() );
-
-			if (clientVisualElement)
-				oWriter.WriteString ( clientVisualElement->ToString() );
-
-			if (timeSequenceDataAtom)
-				oWriter.WriteString ( timeSequenceDataAtom->ToString() );
-			if (timeIterateDataAtom)
-				oWriter.WriteString ( timeIterateDataAtom->ToString() );
-
-			if (timeSetBehavior)
-				oWriter.WriteString ( timeSetBehavior->ToString () );
-
-			for ( long i = 0; i < (long)timeCondition.size(); ++i )
-				oWriter.WriteString ( timeCondition[i]->ToString() );
-
-			for ( long i = 0; i < (long)rgTimeModifierAtom.size(); ++i )
-				oWriter.WriteString ( rgTimeModifierAtom[i]->ToString() );
-
-			if (rgSlave)
-				oWriter.WriteString (rgSlave->ToString());
-			if (buildList)
-				oWriter.WriteString (buildList->ToString());
-
-			for ( long i = 0; i < (long)rgExtTimeNodeChildren.size(); ++i )
-				oWriter.WriteString ( rgExtTimeNodeChildren[i]->ToString() );
-
-			oWriter.WriteNodeEnd ( _T("ExtTimeNodeContainer") );
-
-			return oWriter.GetXmlString();
-		}
-
 		//
 		inline TimeModifierAtom* GetModifier (long Type)
 		{
@@ -3976,7 +2860,7 @@ namespace Animations
 			m_oHeader = oHeader;
 
 #if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
-			assert ( IsCorrect () );
+			if( IsCorrect () == false ) return;
 #endif
 			pStream->read ((unsigned char*) &m_FileTime, sizeof ( FILETIME ) );
 
@@ -3995,20 +2879,6 @@ namespace Animations
 				m_oHeader.RecLen			==	0x00000008;
 		}
 
-
-		virtual CString ToString()
-		{	
-			XmlUtils::CXmlWriter oWriter;
-
-            oWriter.WriteNodeBegin ( _T("SlideTime10Atom"), true );
-
-            oWriter.WriteNodeEnd ( _T("SlideTime10Atom"), true, false );
-
-			oWriter.WriteNodeEnd ( _T("SlideTime10Atom") );
-
-			return oWriter.GetXmlString();
-		}
-
 	public:
 
 		SRecordHeader	m_oHeader;
@@ -4025,7 +2895,7 @@ namespace Animations
 			m_oHeader = oHeader;
 
 #if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
-			assert ( IsCorrect () );
+			if( IsCorrect () == false ) return;
 #endif
 			DWORD Value = 0L;
 			pStream->read ((unsigned char*) &Value, sizeof ( Value ));
@@ -4040,21 +2910,6 @@ namespace Animations
 				m_oHeader.RecInstance		==	0x0 &&
 				m_oHeader.RecType			==	0x2EEA &&
 				m_oHeader.RecLen			==	0x00000004;
-		}
-
-		virtual CString ToString()
-		{	
-			XmlUtils::CXmlWriter oWriter;
-
-            oWriter.WriteNodeBegin ( _T("SlideFlags10Atom"), true );
-
-
-            oWriter.WriteNodeEnd ( _T("SlideFlags10Atom"), true, false );
-
-
-			oWriter.WriteNodeEnd ( _T("SlideFlags10Atom") );
-
-			return oWriter.GetXmlString();
 		}
 
 	public:
@@ -4072,7 +2927,7 @@ namespace Animations
 			m_oHeader	=	oHeader;
 
 #if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
-			assert ( IsCorrect () );
+			if( IsCorrect () == false ) return;
 #endif
 			DWORD Value; 
 			pStream->read ( (unsigned char*) &Value, sizeof ( DWORD ) );
@@ -4086,19 +2941,6 @@ namespace Animations
 				m_oHeader.RecLen			==	0x00000004;
 		}
 
-
-		virtual CString ToString()
-		{	
-			XmlUtils::CXmlWriter oWriter;
-
-            oWriter.WriteNodeBegin ( _T("HashCode10Atom"), true );
-
-            oWriter.WriteNodeEnd ( _T("HashCode10Atom"), true, false );
-
-			oWriter.WriteNodeEnd ( _T("HashCode10Atom") );
-
-			return oWriter.GetXmlString();
-		}
 	};
 }
 
@@ -5037,32 +3879,6 @@ public:
 
 		StreamUtils::StreamSeek ( lPos + m_oHeader.RecLen, pStream );
 	}
-
-	virtual CString ToString()
-	{	
-		XmlUtils::CXmlWriter oWriter;
-
-        oWriter.WriteNodeBegin ( _T("PP10SlideBinaryTagExtension"), true );
-
-
-        oWriter.WriteNodeEnd ( _T("PP10SlideBinaryTagExtension"), true, false );
-
-		// oWriter.WriteString ( m_oSlideTime10Atom.ToString () );
-		// oWriter.WriteString ( m_oHashCode10Atom.ToString () );
-
-
-		if (extTimeNodeContainer)
-			oWriter.WriteString ( extTimeNodeContainer->ToString () );
-
-		if (buildListContainer)
-			oWriter.WriteString ( buildListContainer->ToString () );
-
-		oWriter.WriteNodeEnd ( _T("PP10SlideBinaryTagExtension") );
-
-		return oWriter.GetXmlString();
-	}
-
-
 public:
 
 	//Animations::SlideTime10Atom			m_oSlideTime10Atom;
@@ -5121,14 +3937,6 @@ public:
 				{
 					m_PP10SlideBinaryTagExtension.ReadFromStream (rhData, pStream);
 
-#if defined(_DEBUG) && (defined(_WIN32) || defined (_WIN64))
-					if (m_PP10SlideBinaryTagExtension.extTimeNodeContainer)
-					{
-						XmlUtils::CXmlWriter oWriter;
-						oWriter.WriteString (m_PP10SlideBinaryTagExtension.extTimeNodeContainer->ToString());
-						oWriter.SaveToFile(_T("C:\\ppt_animations.xml"));
-					}
-#endif
 				}
 			}
 #endif
@@ -5136,12 +3944,6 @@ public:
 
 		StreamUtils::StreamSeek ( lPos + m_oHeader.RecLen, pStream );
 	}
-
-	virtual CString ToString()
-	{	
-		return CString (_T(""));
-	}
-
 
 	inline Animations::CSlideTimeLine* GetTimeLine ()
 	{

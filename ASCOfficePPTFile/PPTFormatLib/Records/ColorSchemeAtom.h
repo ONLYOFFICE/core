@@ -35,30 +35,6 @@ public:
 		NSStreamReader::Read(pStream, m_oAccentAndHyperlinkColor);
 		NSStreamReader::Read(pStream, m_oAccentAndFollowingHyperlinkColor);
 	}
-	virtual CString ToString()
-	{
-		XmlUtils::CXmlWriter oWriter;
-		CString strName = GetRecordName((DWORD)m_oHeader.RecType);
-		
-		oWriter.WriteNodeBegin(strName, TRUE);
-		oWriter.WriteAttribute(_T("length"), CDirectory::ToString(m_oHeader.RecLen));
-		oWriter.WriteAttribute(_T("type"), CDirectory::ToString(m_oHeader.RecType));
-		oWriter.WriteAttribute(_T("instance"), CDirectory::ToString(m_oHeader.RecInstance));
-		oWriter.WriteNodeEnd(strName, TRUE, FALSE);
-		
-		oWriter.WriteString(m_oBackgroundColor.ToString(_T("Background")));
-		oWriter.WriteString(m_oTextAndLinesColor.ToString(_T("TextAndLines")));
-		oWriter.WriteString(m_oShadowsColor.ToString(_T("ShadowsColor")));
-		oWriter.WriteString(m_oTitleTextColor.ToString(_T("TitleText")));
-		oWriter.WriteString(m_oFillsColor.ToString(_T("FillsColor")));
-		oWriter.WriteString(m_oAccentColor.ToString(_T("Accent")));
-		oWriter.WriteString(m_oAccentAndHyperlinkColor.ToString(_T("AccentAndHyperlink")));
-		oWriter.WriteString(m_oAccentAndFollowingHyperlinkColor.ToString(_T("AccentAndFollowingHyperlink")));
-
-		oWriter.WriteNodeEnd(strName);
-
-		return oWriter.GetXmlString();
-	}
 
 	void ToArray(std::vector<SColorAtom>* pArray)
 	{

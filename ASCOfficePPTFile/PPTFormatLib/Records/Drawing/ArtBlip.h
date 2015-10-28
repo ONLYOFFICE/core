@@ -23,10 +23,7 @@ public:
 	}
 
 	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream);
-	virtual CString ToString()
-	{
-		return CUnknownRecord::ToString();
-	}
+
 };
 
 class CRecordBitmapBlip : public CUnknownRecord
@@ -50,8 +47,5 @@ public:
 	{
 		return CUnknownRecord::ReadFromStream(oHeader, pStream);
 	}
-	virtual CString ToString()
-	{
-		return CUnknownRecord::ToString();
-	}
+
 };

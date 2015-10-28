@@ -75,25 +75,4 @@ public:
 		}
 	}
 
-	virtual CString ToString()
-	{
-		XmlUtils::CXmlWriter oWriter;
-		CString strName = GetRecordName((DWORD)m_oHeader.RecType);
-		
-		oWriter.WriteNodeBegin(strName, TRUE);
-		oWriter.WriteAttribute(_T("length"), CDirectory::ToString(m_oHeader.RecLen));
-		oWriter.WriteAttribute(_T("type"), CDirectory::ToString(m_oHeader.RecType));
-		oWriter.WriteAttribute(_T("instance"), CDirectory::ToString(m_oHeader.RecInstance));
-
-		oWriter.WriteNodeEnd(strName, TRUE, FALSE);
-		
-		for (size_t nIndexSI = 0; nIndexSI < m_arrSIs.size(); ++nIndexSI)
-		{
-			oWriter.WriteString(m_arrSIs[nIndexSI].ToString());
-		}
-
-		oWriter.WriteNodeEnd(strName);
-
-		return oWriter.GetXmlString();
-	}
 };

@@ -35,10 +35,6 @@ public:
 		m_bHasHeader		= ((nFlag & 0x10) == 0x10);
 		m_bHasFooter		= ((nFlag & 0x20) == 0x20);
 	}
-	virtual CString ToString()
-	{
-		return L"";
-	}
 };
 
 
@@ -70,10 +66,6 @@ public:
 		m_bIncludeFooter		= ((nFlag & 0x08) == 0x08);
 		m_bIncludeHeader		= ((nFlag & 0x10) == 0x10);
 		m_bIncludeSlideNumber	= ((nFlag & 0x20) == 0x20);
-	}
-	virtual CString ToString()
-	{
-		return _T("");
 	}
 };
 

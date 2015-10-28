@@ -58,35 +58,4 @@ public:
 
 		m_nShapeID = m_oHeader.RecInstance;
 	}
-	virtual CString ToString()
-	{
-		XmlUtils::CXmlWriter oWriter;
-		CString strName = GetRecordName((DWORD)m_oHeader.RecType);
-		
-		oWriter.WriteNodeBegin(strName, TRUE);
-		oWriter.WriteAttribute(_T("length"), CDirectory::ToString(m_oHeader.RecLen));
-		oWriter.WriteAttribute(_T("type"), CDirectory::ToString(m_oHeader.RecType));
-		oWriter.WriteAttribute(_T("instance"), CDirectory::ToString(m_oHeader.RecInstance));
-
-		oWriter.WriteNodeEnd(strName, TRUE, FALSE);
-		
-		CDirectory::WriteValueToNode(_T("ShapeID"), (DWORD)m_nID, &oWriter);
-		
-		CDirectory::WriteValueToNode(_T("Group"), m_bGroup, &oWriter);
-		CDirectory::WriteValueToNode(_T("Child"), m_bChild, &oWriter);
-		CDirectory::WriteValueToNode(_T("Patriarch"), m_bPatriarch, &oWriter);
-		CDirectory::WriteValueToNode(_T("Deleted"), m_bDeleted, &oWriter);
-		CDirectory::WriteValueToNode(_T("OleShape"), m_bOleShape, &oWriter);
-		CDirectory::WriteValueToNode(_T("HaveMaster"), m_bHaveMaster, &oWriter);
-		CDirectory::WriteValueToNode(_T("FlipH"), m_bFlipH, &oWriter);
-		CDirectory::WriteValueToNode(_T("FlipV"), m_bFlipV, &oWriter);
-		CDirectory::WriteValueToNode(_T("Connector"), m_bConnector, &oWriter);
-		CDirectory::WriteValueToNode(_T("HaveAnchor"), m_bHaveAnchor, &oWriter);
-		CDirectory::WriteValueToNode(_T("Background"), m_bBackground, &oWriter);
-		CDirectory::WriteValueToNode(_T("HaveSpt"), m_bHaveSpt, &oWriter);
-
-		oWriter.WriteNodeEnd(strName);
-
-		return oWriter.GetXmlString();
-	}
 };

@@ -72,37 +72,6 @@ public:
 		// это на всякий случай...
 		StreamUtils::StreamSeek(lPosition + m_oHeader.RecLen, pStream);
 	}
-	virtual CString ToString()
-	{
-		XmlUtils::CXmlWriter oWriter;
-		CString strName = GetRecordName((DWORD)m_oHeader.RecType);
-		
-		oWriter.WriteNodeBegin(strName, TRUE);
-		oWriter.WriteAttribute(_T("length"), CDirectory::ToString(m_oHeader.RecLen));
-		oWriter.WriteAttribute(_T("type"), CDirectory::ToString(m_oHeader.RecType));
-		oWriter.WriteAttribute(_T("instance"), CDirectory::ToString(m_oHeader.RecInstance));
-
-		oWriter.WriteNodeEnd(strName, TRUE, FALSE);
-
-		for (int i = 0; i < 5; ++i)
-		{
-			oWriter.WriteString(_T("<TextStyleLevel>"));
-
-			if (m_pLevels[i].is_init())
-			{
-				oWriter.WriteString(m_pLevels[i]->m_oPFRun.ToString(0));
-				oWriter.WriteString(m_pLevels[i]->m_oCFRun.ToString(0));
-			}
-
-			oWriter.WriteString(_T("</TextStyleLevel>"));
-		}
-		
-		//oWriter.WriteString(NSPresentationEditor::CTextStyles::ToString());
-
-		oWriter.WriteNodeEnd(strName);
-		return oWriter.GetXmlString();
-	}
-
 protected:
 	void LoadLevel(LONG lLevel, POLE::Stream* pStream, bool bIsLevelPresent)
 	{

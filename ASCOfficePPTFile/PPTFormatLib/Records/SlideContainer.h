@@ -96,38 +96,6 @@ public:
 		}
 	}
 
-	virtual CString ToString()
-	{
-		XmlUtils::CXmlWriter oWriter;
-		CString strName = _T("__SLIDE__");
-		
-		oWriter.WriteNodeBegin(strName);
-
-		oWriter.WriteString(m_oPersist.ToString());
-		oWriter.WriteString(CRecordsContainer::ToString());
-
-		oWriter.WriteNodeEnd(strName);
-
-		return oWriter.GetXmlString();
-	}
-	virtual CString ToString(DWORD nPID)
-	{
-		XmlUtils::CXmlWriter oWriter;
-		CString strName = _T("__SLIDE__");
-		
-		oWriter.WriteNodeBegin(strName, TRUE);
-		oWriter.WriteAttribute(_T("id"), CDirectory::ToString(nPID));
-		oWriter.WriteNodeEnd(strName, TRUE, FALSE);
-
-		oWriter.WriteString(m_oPersist.ToString());
-		oWriter.WriteString(m_oSlideShowSlideInfoAtom.ToString());
-		oWriter.WriteString(CRecordsContainer::ToString());
-
-		oWriter.WriteNodeEnd(strName);
-
-		return oWriter.GetXmlString();
-	}
-
     bool IsSlide()
 	{
 		for (int nIndex = 0; nIndex < m_arRecords.size(); ++nIndex)

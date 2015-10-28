@@ -40,28 +40,5 @@ public:
 
 		StreamUtils::StreamSkip(4, pStream);
 	}
-	virtual CString ToString()
-	{
-		XmlUtils::CXmlWriter oWriter;
-		CString strName = GetRecordName((DWORD)m_oHeader.RecType);
-		
-		oWriter.WriteNodeBegin(strName, TRUE);
-		oWriter.WriteAttribute(_T("length"), CDirectory::ToString(m_oHeader.RecLen));
-		oWriter.WriteAttribute(_T("type"), CDirectory::ToString(m_oHeader.RecType));
-		oWriter.WriteAttribute(_T("instance"), CDirectory::ToString(m_oHeader.RecInstance));
 
-		oWriter.WriteNodeEnd(strName, TRUE, FALSE);
-		
-		CDirectory::WriteValueToNode(_T("PsrRef"), m_nPsrRef, &oWriter);
-		
-		CDirectory::WriteValueToNode(_T("ShouldCollapse"), m_bShouldCollapse, &oWriter);
-		CDirectory::WriteValueToNode(_T("NonOutlineData"), m_bNonOutlineData, &oWriter);
-
-		CDirectory::WriteValueToNode(_T("NumberText_PlaceholderShapes"), (DWORD)m_nNumberText, &oWriter);
-		CDirectory::WriteValueToNode(_T("SlideID"), m_nSlideID, &oWriter);
-
-		oWriter.WriteNodeEnd(strName);
-
-		return oWriter.GetXmlString();
-	}
 };

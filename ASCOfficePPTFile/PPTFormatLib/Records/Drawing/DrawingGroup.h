@@ -37,30 +37,5 @@ public:
 			m_arrIDs[nIndex].ReadFromStream(pStream);
 		}
 	}
-	virtual CString ToString()
-	{
-		XmlUtils::CXmlWriter oWriter;
-		CString strName = GetRecordName((DWORD)m_oHeader.RecType);
-		
-		oWriter.WriteNodeBegin(strName, TRUE);
-		oWriter.WriteAttribute(_T("length"), CDirectory::ToString(m_oHeader.RecLen));
-		oWriter.WriteAttribute(_T("type"), CDirectory::ToString(m_oHeader.RecType));
-		oWriter.WriteAttribute(_T("instance"), CDirectory::ToString(m_oHeader.RecInstance));
 
-		oWriter.WriteNodeEnd(strName, TRUE, FALSE);
-		
-		CDirectory::WriteValueToNode(_T("MaxShapeID"), (DWORD)m_nMaxShapeId, &oWriter);
-		CDirectory::WriteValueToNode(_T("ClustersCount"), (DWORD)m_nIdClustersCount, &oWriter);
-		CDirectory::WriteValueToNode(_T("ShapesSavedCount"), (DWORD)m_nShapesSavedCount, &oWriter);
-		CDirectory::WriteValueToNode(_T("DrawingsSavedCount"), (DWORD)m_nDrawingsSavedCount, &oWriter);
-
-		for (size_t nIndex = 0; nIndex < m_arrIDs.size(); ++nIndex)
-		{
-			oWriter.WriteString(m_arrIDs[nIndex].ToString());
-		}
-		
-		oWriter.WriteNodeEnd(strName);
-
-		return oWriter.GetXmlString();
-	}
 };

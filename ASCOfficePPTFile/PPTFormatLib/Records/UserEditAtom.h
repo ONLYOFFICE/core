@@ -49,27 +49,6 @@ public:
 
 		StreamUtils::StreamSkip(m_oHeader.RecLen - 22, pStream);
 	}
-	virtual CString ToString()
-	{
-		XmlUtils::CXmlWriter oWriter;
-		CString strName = GetRecordName((DWORD)m_oHeader.RecType);
-		
-		oWriter.WriteNodeBegin(strName, TRUE);
-		oWriter.WriteAttribute(_T("length"), CDirectory::ToString(m_oHeader.RecLen));
-		oWriter.WriteAttribute(_T("type"), CDirectory::ToString(m_oHeader.RecType));
-		oWriter.WriteAttribute(_T("instance"), CDirectory::ToString(m_oHeader.RecInstance));
-
-		oWriter.WriteNodeEnd(strName, TRUE, FALSE);
-		
-		CDirectory::WriteValueToNode(_T("LastSlideIdRef"), m_nLastSlideIdRef, &oWriter);
-		CDirectory::WriteValueToNode(_T("OffsetLastEdit"), m_nOffsetLastEdit, &oWriter);
-		CDirectory::WriteValueToNode(_T("OffsetPersistDirectory"), m_nOffsetPersistDirectory, &oWriter);
-		CDirectory::WriteValueToNode(_T("OffsetDocPersistIdRef"), m_nOffsetDocPersistIdRef, &oWriter);
-
-		oWriter.WriteNodeEnd(strName);
-
-		return oWriter.GetXmlString();
-	}
 
 	CRecordUserEditAtom& operator =(const CRecordUserEditAtom& oSrc)
 	{

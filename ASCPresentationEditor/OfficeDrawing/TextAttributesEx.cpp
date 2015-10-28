@@ -84,14 +84,14 @@ namespace NSPresentationEditor
 					if (pTheme->m_pStyles[m_lTextType].m_pLevels[lLevel]->m_oPFRun.bulletColor.is_init())
 						bulletColor = pTheme->m_pStyles[m_lTextType].m_pLevels[lLevel]->m_oPFRun.bulletColor;
 
-					if (pTheme->m_pStyles[m_lTextType].m_pLevels[lLevel]->m_oPFRun.bulletFontRef.is_init())
+					if (pTheme->m_pStyles[m_lTextType].m_pLevels[lLevel]->m_oPFRun.bulletChar.is_init() )
+					{
 						bulletFontRef = pTheme->m_pStyles[m_lTextType].m_pLevels[lLevel]->m_oPFRun.bulletFontRef;
-
+						bulletChar = pTheme->m_pStyles[m_lTextType].m_pLevels[lLevel]->m_oPFRun.bulletChar;
+					}
+					
 					if (pTheme->m_pStyles[m_lTextType].m_pLevels[lLevel]->m_oPFRun.bulletSize.is_init())
 						bulletSize = pTheme->m_pStyles[m_lTextType].m_pLevels[lLevel]->m_oPFRun.bulletSize;
-
-					if (pTheme->m_pStyles[m_lTextType].m_pLevels[lLevel]->m_oPFRun.bulletChar.is_init())
-						bulletChar = pTheme->m_pStyles[m_lTextType].m_pLevels[lLevel]->m_oPFRun.bulletChar;
 
 					if (pTheme->m_pStyles[m_lTextType].m_pLevels[lLevel]->m_oPFRun.leftMargin.is_init())
 						margin = pTheme->m_pStyles[m_lTextType].m_pLevels[lLevel]->m_oPFRun.leftMargin;
@@ -113,11 +113,11 @@ namespace NSPresentationEditor
 					if (m_oLayoutStyles.m_pLevels[lLevel]->m_oPFRun.bulletSize.is_init())
 						bulletSize = m_oLayoutStyles.m_pLevels[lLevel]->m_oPFRun.bulletSize;
 
-					if (m_oLayoutStyles.m_pLevels[lLevel]->m_oPFRun.bulletChar.is_init())
+					if (m_oLayoutStyles.m_pLevels[lLevel]->m_oPFRun.bulletChar.is_init() )
+					{
 						bulletChar = m_oLayoutStyles.m_pLevels[lLevel]->m_oPFRun.bulletChar;
-
-					if (m_oLayoutStyles.m_pLevels[lLevel]->m_oPFRun.bulletFontRef.is_init())
 						bulletFontRef = m_oLayoutStyles.m_pLevels[lLevel]->m_oPFRun.bulletFontRef;
+					}
 
 					if (m_oLayoutStyles.m_pLevels[lLevel]->m_oPFRun.leftMargin.is_init())
 						margin = m_oLayoutStyles.m_pLevels[lLevel]->m_oPFRun.leftMargin;
@@ -136,11 +136,11 @@ namespace NSPresentationEditor
 					if (m_oStyles.m_pLevels[lLevel]->m_oPFRun.bulletColor.is_init())
 						bulletColor = m_oStyles.m_pLevels[lLevel]->m_oPFRun.bulletColor;
 
-					if (m_oStyles.m_pLevels[lLevel]->m_oPFRun.bulletFontRef.is_init())
-						bulletFontRef = m_oStyles.m_pLevels[lLevel]->m_oPFRun.bulletFontRef;
-
 					if (m_oStyles.m_pLevels[lLevel]->m_oPFRun.bulletChar.is_init())
+					{
+						bulletFontRef = m_oStyles.m_pLevels[lLevel]->m_oPFRun.bulletFontRef;
 						bulletChar = m_oStyles.m_pLevels[lLevel]->m_oPFRun.bulletChar;
+					}
 
 					if (m_oStyles.m_pLevels[lLevel]->m_oPFRun.bulletSize.is_init())
 						bulletSize = m_oStyles.m_pLevels[lLevel]->m_oPFRun.bulletSize;
@@ -165,10 +165,14 @@ namespace NSPresentationEditor
 					m_arParagraphs[nIndexP].m_oPFRun.bulletSize = bulletSize;
 
 				if (!m_arParagraphs[nIndexP].m_oPFRun.bulletChar.is_init())
+				{
 					m_arParagraphs[nIndexP].m_oPFRun.bulletChar = bulletChar;
-
-				if (!m_arParagraphs[nIndexP].m_oPFRun.bulletFontRef.is_init())
 					m_arParagraphs[nIndexP].m_oPFRun.bulletFontRef = bulletFontRef;
+				}
+				else
+				{
+					int g=0;
+				}
 
 				if (!m_arParagraphs[nIndexP].m_oPFRun.leftMargin.is_init())
 					m_arParagraphs[nIndexP].m_oPFRun.leftMargin = margin;
@@ -179,10 +183,10 @@ namespace NSPresentationEditor
 				if (!m_arParagraphs[nIndexP].m_oPFRun.spaceBefore.is_init())
 					m_arParagraphs[nIndexP].m_oPFRun.spaceBefore = spaceBefore;
 
+				m_arParagraphs[nIndexP].m_oPFRun.bulletFontProperties.reset();				
 				if (m_arParagraphs[nIndexP].m_oPFRun.bulletFontRef.is_init())
 				{
-					if (!m_arParagraphs[nIndexP].m_oPFRun.bulletFontProperties.is_init())
-						m_arParagraphs[nIndexP].m_oPFRun.bulletFontProperties = new CFontProperties();
+					m_arParagraphs[nIndexP].m_oPFRun.bulletFontProperties = new CFontProperties();
 
 					int ref = m_arParagraphs[nIndexP].m_oPFRun.bulletFontRef.get();
 

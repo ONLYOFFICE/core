@@ -79,19 +79,21 @@ namespace NSPresentationEditor
 				if (-1 != m_lTextType && m_lTextType < 4 && pTheme->m_pStyles[m_lTextType].m_pLevels[lLevel].is_init())
 				{
 					if (pTheme->m_pStyles[m_lTextType].m_pLevels[lLevel]->m_oPFRun.hasBullet.is_init())
+					{
 						hasBullet = pTheme->m_pStyles[m_lTextType].m_pLevels[lLevel]->m_oPFRun.hasBullet;
 
-					if (pTheme->m_pStyles[m_lTextType].m_pLevels[lLevel]->m_oPFRun.bulletColor.is_init())
-						bulletColor = pTheme->m_pStyles[m_lTextType].m_pLevels[lLevel]->m_oPFRun.bulletColor;
+						if (pTheme->m_pStyles[m_lTextType].m_pLevels[lLevel]->m_oPFRun.bulletColor.is_init())
+							bulletColor = pTheme->m_pStyles[m_lTextType].m_pLevels[lLevel]->m_oPFRun.bulletColor;
 
-					if (pTheme->m_pStyles[m_lTextType].m_pLevels[lLevel]->m_oPFRun.bulletChar.is_init() )
-					{
-						bulletFontRef = pTheme->m_pStyles[m_lTextType].m_pLevels[lLevel]->m_oPFRun.bulletFontRef;
-						bulletChar = pTheme->m_pStyles[m_lTextType].m_pLevels[lLevel]->m_oPFRun.bulletChar;
+						if (pTheme->m_pStyles[m_lTextType].m_pLevels[lLevel]->m_oPFRun.bulletChar.is_init() )
+						{
+							bulletFontRef = pTheme->m_pStyles[m_lTextType].m_pLevels[lLevel]->m_oPFRun.bulletFontRef;
+							bulletChar = pTheme->m_pStyles[m_lTextType].m_pLevels[lLevel]->m_oPFRun.bulletChar;
+						}
+						
+						if (pTheme->m_pStyles[m_lTextType].m_pLevels[lLevel]->m_oPFRun.bulletSize.is_init())
+							bulletSize = pTheme->m_pStyles[m_lTextType].m_pLevels[lLevel]->m_oPFRun.bulletSize;
 					}
-					
-					if (pTheme->m_pStyles[m_lTextType].m_pLevels[lLevel]->m_oPFRun.bulletSize.is_init())
-						bulletSize = pTheme->m_pStyles[m_lTextType].m_pLevels[lLevel]->m_oPFRun.bulletSize;
 
 					if (pTheme->m_pStyles[m_lTextType].m_pLevels[lLevel]->m_oPFRun.leftMargin.is_init())
 						margin = pTheme->m_pStyles[m_lTextType].m_pLevels[lLevel]->m_oPFRun.leftMargin;
@@ -105,18 +107,20 @@ namespace NSPresentationEditor
 				if (m_oLayoutStyles.m_pLevels[lLevel].is_init())
 				{
 					if (m_oLayoutStyles.m_pLevels[lLevel]->m_oPFRun.hasBullet.is_init())
+					{
 						hasBullet = m_oLayoutStyles.m_pLevels[lLevel]->m_oPFRun.hasBullet;
 
-					if (m_oLayoutStyles.m_pLevels[lLevel]->m_oPFRun.bulletColor.is_init())
-						bulletColor = m_oLayoutStyles.m_pLevels[lLevel]->m_oPFRun.bulletColor;
+						if (m_oLayoutStyles.m_pLevels[lLevel]->m_oPFRun.bulletColor.is_init())
+							bulletColor = m_oLayoutStyles.m_pLevels[lLevel]->m_oPFRun.bulletColor;
 
-					if (m_oLayoutStyles.m_pLevels[lLevel]->m_oPFRun.bulletSize.is_init())
-						bulletSize = m_oLayoutStyles.m_pLevels[lLevel]->m_oPFRun.bulletSize;
+						if (m_oLayoutStyles.m_pLevels[lLevel]->m_oPFRun.bulletSize.is_init())
+							bulletSize = m_oLayoutStyles.m_pLevels[lLevel]->m_oPFRun.bulletSize;
 
-					if (m_oLayoutStyles.m_pLevels[lLevel]->m_oPFRun.bulletChar.is_init() )
-					{
-						bulletChar = m_oLayoutStyles.m_pLevels[lLevel]->m_oPFRun.bulletChar;
-						bulletFontRef = m_oLayoutStyles.m_pLevels[lLevel]->m_oPFRun.bulletFontRef;
+						if (m_oLayoutStyles.m_pLevels[lLevel]->m_oPFRun.bulletChar.is_init() )
+						{
+							bulletChar = m_oLayoutStyles.m_pLevels[lLevel]->m_oPFRun.bulletChar;
+							bulletFontRef = m_oLayoutStyles.m_pLevels[lLevel]->m_oPFRun.bulletFontRef;
+						}
 					}
 
 					if (m_oLayoutStyles.m_pLevels[lLevel]->m_oPFRun.leftMargin.is_init())
@@ -131,19 +135,22 @@ namespace NSPresentationEditor
 				if (m_oStyles.m_pLevels[lLevel].is_init())
 				{
 					if (m_oStyles.m_pLevels[lLevel]->m_oPFRun.hasBullet.is_init())
+					{
 						hasBullet = m_oStyles.m_pLevels[lLevel]->m_oPFRun.hasBullet;
 
-					if (m_oStyles.m_pLevels[lLevel]->m_oPFRun.bulletColor.is_init())
-						bulletColor = m_oStyles.m_pLevels[lLevel]->m_oPFRun.bulletColor;
+						if (m_oStyles.m_pLevels[lLevel]->m_oPFRun.bulletColor.is_init())
+							bulletColor = m_oStyles.m_pLevels[lLevel]->m_oPFRun.bulletColor;
 
-					if (m_oStyles.m_pLevels[lLevel]->m_oPFRun.bulletChar.is_init())
-					{
-						bulletFontRef = m_oStyles.m_pLevels[lLevel]->m_oPFRun.bulletFontRef;
-						bulletChar = m_oStyles.m_pLevels[lLevel]->m_oPFRun.bulletChar;
+						if (m_oStyles.m_pLevels[lLevel]->m_oPFRun.bulletChar.is_init())
+						{
+							bulletFontRef = m_oStyles.m_pLevels[lLevel]->m_oPFRun.bulletFontRef;
+							bulletChar = m_oStyles.m_pLevels[lLevel]->m_oPFRun.bulletChar;
+						}
+
+						if (m_oStyles.m_pLevels[lLevel]->m_oPFRun.bulletSize.is_init())
+							bulletSize = m_oStyles.m_pLevels[lLevel]->m_oPFRun.bulletSize;
 					}
-
-					if (m_oStyles.m_pLevels[lLevel]->m_oPFRun.bulletSize.is_init())
-						bulletSize = m_oStyles.m_pLevels[lLevel]->m_oPFRun.bulletSize;
+					
 
 					if (m_oStyles.m_pLevels[lLevel]->m_oPFRun.leftMargin.is_init())
 						margin = m_oStyles.m_pLevels[lLevel]->m_oPFRun.leftMargin;

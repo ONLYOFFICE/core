@@ -182,6 +182,7 @@ void CTextPFRun_ppt::LoadFromStream(POLE::Stream* pStream, bool bIsIndentation)
 	BYTE flag3 = (BYTE)(dwFlags >> 16);
 	BYTE flag4 = (BYTE)(dwFlags >> 24);
 
+	//флаги чтения
 	bool hasBullet_				= (0x01 == (0x01 & flag1));
 	bool bulletHasFont_			= (0x02 == (0x02 & flag1));
 	bool bulletHasColor_		= (0x04 == (0x04 & flag1));
@@ -213,33 +214,51 @@ void CTextPFRun_ppt::LoadFromStream(POLE::Stream* pStream, bool bIsIndentation)
 	bool bulletScheme_			= (0x01 == (0x01 & flag4));
 	bool bulletHasScheme_		= (0x02 == (0x02 & flag4));
 
+	WORD bulletFlag				= 0;
+
 	if (hasBullet_ || bulletHasFont_ || bulletHasColor_ || bulletHasSize_)
 	{
-		WORD bulletFlag		= StreamUtils::ReadWORD(pStream);
+		bulletFlag	= StreamUtils::ReadWORD(pStream);
 		if (bulletFlag & 0x0F)
-            m_oRun.hasBullet	= (bool)(0x01 == (bulletFlag & 0x01));
-		else
-            m_oRun.hasBullet	= false;
+		{
+			m_oRun.hasBullet	= (bool)(0x01 == (bulletFlag & 0x01));
+		}else
+			m_oRun.hasBullet = false;
 	}
 
 	if (bulletChar_)
 	{
-		if (sizeof(wchar_t) == 2)
+		unsigned short	utf16	= (unsigned short)StreamUtils::ReadWORD(pStream);
+
+		if (utf16 !=0x04)
 		{
-			m_oRun.bulletChar		= (WCHAR)StreamUtils::ReadWORD(pStream);
+			if (sizeof(wchar_t) == 2)
+			{
+				m_oRun.bulletChar		= utf16;
+			}
+			else
+			{
+				std::wstring	utf32	= NSFile::CUtf8Converter::GetWStringFromUTF16(&utf16, 1);
+				if (!utf32.empty())
+					m_oRun.bulletChar = utf32.c_str()[0];
+			}
 		}
-		else
-		{
-			unsigned short	utf16	= (unsigned short)StreamUtils::ReadWORD(pStream);
-			std::wstring	utf32	= NSFile::CUtf8Converter::GetWStringFromUTF16(&utf16, 1);
-			if (!utf32.empty())
-				m_oRun.bulletChar = utf32.c_str()[0];
-		}
+
 	}
 	if (bulletFontRef_)
+	{
 		m_oRun.bulletFontRef	= StreamUtils::ReadWORD(pStream);
+		
+		//if ((bulletFlag & 0x0F) && !(0x02 == (bulletFlag & 0x02)))
+		//	m_oRun.bulletFontRef.reset();
+	}
 	if (bulletSize_)
+	{
 		m_oRun.bulletSize		= StreamUtils::ReadWORD(pStream);
+	
+		//if ((bulletFlag & 0x0F) && !(0x08 == (bulletFlag & 0x08)))
+		//	m_oRun.bulletSize.reset();
+	}
 	if (bulletColor_)
 	{
 		SColorAtom oColorAtom;
@@ -260,7 +279,18 @@ void CTextPFRun_ppt::LoadFromStream(POLE::Stream* pStream, bool bIsIndentation)
 		}
 
 		m_oRun.bulletColor = oColor;
+		
+		//if ((bulletFlag & 0x0F) && !(0x04 == (bulletFlag & 0x04)))
+		//	m_oRun.bulletColor.reset();
 	}
+
+	//if (/*((m_oRun.hasBullet.is_init()) && (m_oRun.hasBullet.get() == false)) ||*/ !m_oRun.hasBullet.is_init())
+	//{
+	//	m_oRun.bulletColor.reset();
+	//	m_oRun.bulletSize.reset();
+	//	m_oRun.bulletFontRef.reset();
+	//	m_oRun.bulletChar.reset();
+	//}
 
 	if (textAlignment_)
 		m_oRun.textAlignment		= StreamUtils::ReadWORD(pStream);

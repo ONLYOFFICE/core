@@ -606,9 +606,9 @@ IElement* CPPTUserInfo::AddNewLayoutElement (CLayout *pLayout, int placeholderTy
 	pShape->m_lPlaceholderType			= placeholderType;
 	pShape->m_lPlaceholderSizePreset	= placeholderSizePreset;
 	
-	if (pShape->m_lPlaceholderSizePreset > 0)
-		pShape->m_bPlaceholderSet		= true;
-	else
+	//if (pShape->m_lPlaceholderSizePreset > 0)
+	//	pShape->m_bPlaceholderSet		= true;
+	//else
 		pShape->m_bPlaceholderSet		= false;
 	pShape->m_bLine						= false;
 	pShape->m_bBoundsEnabled			= false;
@@ -751,6 +751,7 @@ int CPPTUserInfo::AddNewLayout(NSPresentationEditor::CTheme* pTheme, SSlideLayou
 
 	return ind;
 }
+
 
 void CPPTUserInfo::LoadMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, const LONG& lOriginHeight)
 {

@@ -45,9 +45,10 @@ linux-g++:!contains(QMAKE_HOST.arch, x86_64):{
 shared {
     DEFINES += PDFWRITER_USE_DYNAMIC_LIBRARY
 
-    LIBS += -L$$DESTDIR -lASCOfficeUtilsLib
+    CONFIG += build_all_zlib build_zlib_as_sources
+    include(../OfficeUtils/OfficeUtils.pri)
 
-    #LIBS += -L$$DESTDIR -lgraphics
+    CONFIG += build_cximage_zlib_disable
     LIB_GRAPHICS_PRI_PATH = ../DesktopEditor
     include(../DesktopEditor/Qt_build/graphics/project/graphics.pri)
 

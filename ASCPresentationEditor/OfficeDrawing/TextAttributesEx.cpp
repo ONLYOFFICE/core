@@ -163,22 +163,20 @@ namespace NSPresentationEditor
 				}
 				
 				if (!m_arParagraphs[nIndexP].m_oPFRun.hasBullet.is_init())
+				{
 					m_arParagraphs[nIndexP].m_oPFRun.hasBullet = hasBullet;
 
-				if (!m_arParagraphs[nIndexP].m_oPFRun.bulletColor.is_init())
-					m_arParagraphs[nIndexP].m_oPFRun.bulletColor = bulletColor;
+					if (!m_arParagraphs[nIndexP].m_oPFRun.bulletColor.is_init())
+						m_arParagraphs[nIndexP].m_oPFRun.bulletColor = bulletColor;
 
-				if (!m_arParagraphs[nIndexP].m_oPFRun.bulletSize.is_init())
-					m_arParagraphs[nIndexP].m_oPFRun.bulletSize = bulletSize;
+					if (!m_arParagraphs[nIndexP].m_oPFRun.bulletSize.is_init())
+						m_arParagraphs[nIndexP].m_oPFRun.bulletSize = bulletSize;
 
-				if (!m_arParagraphs[nIndexP].m_oPFRun.bulletChar.is_init())
-				{
-					m_arParagraphs[nIndexP].m_oPFRun.bulletChar = bulletChar;
-					m_arParagraphs[nIndexP].m_oPFRun.bulletFontRef = bulletFontRef;
-				}
-				else
-				{
-					int g=0;
+					if (!m_arParagraphs[nIndexP].m_oPFRun.bulletChar.is_init())
+					{
+						m_arParagraphs[nIndexP].m_oPFRun.bulletChar = bulletChar;
+						m_arParagraphs[nIndexP].m_oPFRun.bulletFontRef = bulletFontRef;
+					}
 				}
 
 				if (!m_arParagraphs[nIndexP].m_oPFRun.leftMargin.is_init())

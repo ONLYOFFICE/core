@@ -232,6 +232,8 @@ public:
 class CMetaFileBuffer
 {
 public:
+    bool			m_bIsCompressed;
+
     bool			m_bIsValid;
 	CString			m_sExtension;
 private:
@@ -244,6 +246,7 @@ private:
 public:
 	CMetaFileBuffer()
 	{
+		m_bIsCompressed		= false;
         m_bIsValid			= false;
 
 		m_pMetaHeader		= NULL;
@@ -256,6 +259,10 @@ public:
 	{
 		RELEASEARRAYOBJECTS(m_pMetaHeader);
 		RELEASEARRAYOBJECTS(m_pMetaFile);
+
+		if (m_bIsCompressed)
+			RELEASEARRAYOBJECTS(m_pMetaFile);
+		m_bIsCompressed = false;
 	}
 
 	void SetHeader(BYTE* pHeader, LONG lSize)
@@ -266,7 +273,8 @@ public:
 
     void SetData(BYTE* pCompress, LONG lCompressSize, LONG lUncompressSize, bool bIsCompressed)
 	{
-		if (!bIsCompressed)
+		m_bIsCompressed = bIsCompressed;
+		if (!m_bIsCompressed)
 		{
 			m_pMetaFile		= pCompress;
 			m_lMetaFileSize = lUncompressSize;
@@ -279,11 +287,15 @@ public:
 			if (bRes)
 			{
 				m_lMetaFileSize = (LONG)lSize;
+				m_bIsCompressed = true;
 			}
 			else
 			{
 				RELEASEARRAYOBJECTS(m_pMetaFile);
-				m_lMetaFileSize = 0;
+			
+				m_pMetaFile		= pCompress;
+				m_lMetaFileSize = lUncompressSize;
+				m_bIsCompressed = false;
 			}
 		}
 	}

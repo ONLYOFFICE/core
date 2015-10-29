@@ -230,7 +230,7 @@ void CTextPFRun_ppt::LoadFromStream(POLE::Stream* pStream, bool bIsIndentation)
 	{
 		unsigned short	utf16	= (unsigned short)StreamUtils::ReadWORD(pStream);
 
-		if (utf16 !=0x04)
+		if (utf16 > 0x0013)
 		{
 			if (sizeof(wchar_t) == 2)
 			{
@@ -249,8 +249,8 @@ void CTextPFRun_ppt::LoadFromStream(POLE::Stream* pStream, bool bIsIndentation)
 	{
 		m_oRun.bulletFontRef	= StreamUtils::ReadWORD(pStream);
 		
-		//if ((bulletFlag & 0x0F) && !(0x02 == (bulletFlag & 0x02)))
-		//	m_oRun.bulletFontRef.reset();
+		if ((bulletFlag & 0x0F) && !(0x02 == (bulletFlag & 0x02)))
+			m_oRun.bulletFontRef.reset();
 	}
 	if (bulletSize_)
 	{

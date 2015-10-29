@@ -96,7 +96,24 @@ namespace NSPresentationEditor
 			return _T("");
 		}
 	};
-
+	static std::wstring CorrectXmlString3(const std::wstring & str)
+	{
+		std::wstring buffer;
+		buffer.reserve(str.size());
+		for(size_t pos = 0; pos != str.size(); ++pos)
+		{
+			switch(str[pos])
+			{
+			case '&':  buffer.append(_T("&amp;"));      break;
+			case '\"': buffer.append(_T("&quot;"));     break;
+			case '\'': buffer.append(_T("&apos;"));     break;
+			case '<':  buffer.append(_T("&lt;"));       break;
+			case '>':  buffer.append(_T("&gt;"));       break;
+			default:   buffer.append(&str[pos], 1);	break;
+			}
+		}
+		return buffer;
+	}
 	class CRelsGenerator
 	{
 	private:
@@ -248,6 +265,7 @@ namespace NSPresentationEditor
 
 			m_oWriter.WriteString(strRels);
 		}
+
 		AVSINLINE CString WriteHyperlinkImage(const std::wstring& strImage, bool bExternal = true)
 		{
 			std::map<std::wstring, int>::iterator pPair = m_mapImages.find(strImage);
@@ -281,7 +299,7 @@ namespace NSPresentationEditor
 		{
 			std::wstring strImage = m_pManager->GenerateImage(strImagePath);
 
-			if (strImage.empty()) return WriteHyperlinkImage(strImagePath, true);			
+			if (strImage.empty()) return WriteHyperlinkImage(CorrectXmlString3(strImagePath), true);			
 			return WriteHyperlinkImage(strImage, false);
 		}
 		

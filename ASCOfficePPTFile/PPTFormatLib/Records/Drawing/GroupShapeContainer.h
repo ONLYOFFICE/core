@@ -36,6 +36,9 @@ public:
 		std::vector<CRecordShapeContainer*> oArrayShapes;
 		GetRecordsByType(&oArrayShapes, false, false);
 
+		if (!oArrayShapes.empty())
+			oArrayShapes[0]->bGroupShape = true;//тут описание самой группы
+
 		int nIndexBreak = -1;
 		for (int nIndex = 0; nIndex < oArrayShapes.size(); ++nIndex)
 		{

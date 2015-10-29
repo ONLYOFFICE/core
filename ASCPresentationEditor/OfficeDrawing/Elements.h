@@ -289,7 +289,7 @@ namespace NSPresentationEditor
 		bool			m_bOLE;
 		bool			m_bImagePresent;
 
-		std::wstring	m_sName;
+		std::wstring	m_sImageName;
 
 	public:
 		CImageElement() : IElement()

@@ -42,9 +42,8 @@ void CRecordOfficeArtBlip::ReadFromStream(SRecordHeader & oHeader, POLE::Stream*
 				BYTE* pData = new BYTE[oHeader.RecLen - lOffset];
 				pStream->read(pData, oHeader.RecLen - lOffset); 
 
-				oMetaFile.SetData(pData, oMetaHeader.cbSave, oMetaHeader.cbSize, 0 == oMetaHeader.compression);
+				oMetaFile.SetData(pData, oMetaHeader.cbSave, oMetaHeader.cbSize, (bool)(oMetaHeader.compression != 0xFE) );
 
-				if (0 == oMetaHeader.compression) RELEASEARRAYOBJECTS(pData);					
 			}break;
 			case RECORD_TYPE_ESCHER_BLIP_WMF:
 			{
@@ -72,12 +71,10 @@ void CRecordOfficeArtBlip::ReadFromStream(SRecordHeader & oHeader, POLE::Stream*
 				BYTE* pData = new BYTE[oHeader.RecLen - lOffset];
 				pStream->read(pData, oHeader.RecLen - lOffset); 
 
-				oMetaFile.SetData(pData, oMetaHeader.cbSave, 
-					oMetaHeader.cbSize, 0 == oMetaHeader.compression);
+				oMetaFile.SetData(pData, oMetaHeader.cbSave, oMetaHeader.cbSize, (bool)(oMetaHeader.compression != 0xFE) );
 
-				if (0 == oMetaHeader.compression)	RELEASEARRAYOBJECTS(pData);					
 			}break;
-			case RECORD_TYPE_ESCHER_BLIP_PICT:
+			case RECORD_TYPE_ESCHER_BLIP_PICT://Medwoche.ppt 
 			{
 				if		(0x0542 == oHeader.RecInstance)	lOffset = 16;
 				else if (0x0543 == oHeader.RecInstance)	lOffset = 32;
@@ -90,21 +87,23 @@ void CRecordOfficeArtBlip::ReadFromStream(SRecordHeader & oHeader, POLE::Stream*
 				
 				CMetaHeader oMetaHeader;
 				oMetaHeader.FromStream(pStream);
-				Gdiplus::WmfPlaceableFileHeader oWmfHeader;
-				oMetaHeader.ToWMFHeader(&oWmfHeader);
 				
-				LONG lLenHeader = 22;
-				BYTE* pMetaHeader = new BYTE[lLenHeader];
-				memcpy(pMetaHeader, (void*)(&oWmfHeader), lLenHeader);
+				//TODOOO сделать поддрежку mac pict !!
 
-				oMetaFile.SetHeader(pMetaHeader, lLenHeader);
+				//Gdiplus::WmfPlaceableFileHeader oWmfHeader;
+				//oMetaHeader.ToWMFHeader(&oWmfHeader);
+				
+				//LONG lLenHeader = 22;
+				//BYTE* pMetaHeader = new BYTE[lLenHeader];
+				//memcpy(pMetaHeader, (void*)(&oWmfHeader), lLenHeader);
+
+				//oMetaFile.SetHeader(pMetaHeader, lLenHeader);
 
 				BYTE* pData = new BYTE[oHeader.RecLen - lOffset];
 				pStream->read(pData, oHeader.RecLen - lOffset); 
 
-				oMetaFile.SetData(pData, oMetaHeader.cbSave, oMetaHeader.cbSize, 0 == oMetaHeader.compression);
-
-				if (0 == oMetaHeader.compression) RELEASEARRAYOBJECTS(pData);					
+				
+				oMetaFile.SetData(pData, oMetaHeader.cbSave, oMetaHeader.cbSize, (bool)(oMetaHeader.compression != 0xFE) );
 			}break;
 			case RECORD_TYPE_ESCHER_BLIP_JPEG:
 			{

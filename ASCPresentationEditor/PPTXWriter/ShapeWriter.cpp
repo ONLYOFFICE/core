@@ -1219,7 +1219,7 @@ CString NSPresentationEditor::CShapeWriter::ConvertImage()
 		CString strRid;
 		if (m_pImageElement->m_strImageFileName.empty())
 		{
-			strRid = m_pRels->WriteHyperlinkImage(m_pImageElement->m_sName);
+			strRid = m_pRels->WriteHyperlinkImage(CorrectXmlString3(m_pImageElement->m_sImageName));
 		}
 		else
 		{

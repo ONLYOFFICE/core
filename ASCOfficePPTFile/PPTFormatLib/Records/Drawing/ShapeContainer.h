@@ -196,6 +196,8 @@ public:
 		{
 		case NSPresentationEditor::etVideo:
 			{
+				//default -> line = false
+				pElement->m_bLine = false;
 				for (long i = 0; i < lCount; ++i)
 				{
 					SetUpPropertyVideo((CVideoElement*)pElement, pTheme, pWrapper, pSlide, &pProperties->m_arProperties[i]);
@@ -204,6 +206,8 @@ public:
 			}
 		case NSPresentationEditor::etPicture:
 			{
+				//default -> line = false
+				pElement->m_bLine = false;
 				for (long i = 0; i < lCount; ++i)
 				{
 					SetUpPropertyImage((CImageElement*)pElement, pTheme, pWrapper, pSlide, &pProperties->m_arProperties[i]);
@@ -212,6 +216,8 @@ public:
 			}
 		case NSPresentationEditor::etAudio:
 			{
+				//default -> line = false
+				pElement->m_bLine = false;
 				for (long i = 0; i < lCount; ++i)
 				{
 					SetUpPropertyAudio((CAudioElement*)pElement, pTheme, pWrapper, pSlide, &pProperties->m_arProperties[i]);
@@ -830,7 +836,7 @@ public:
 			}break;
 		case pibName:
 			{
-				pElement->m_sName = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)pProperty->m_pOptions, pProperty->m_lValue /2-1);
+				pElement->m_sImageName = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)pProperty->m_pOptions, pProperty->m_lValue /2-1);
 				// TextMining05.ppt, слайд 20  - некорректное имя ( - todooo потом подчистить его
 			}break;
 		case cropFromTop:
@@ -1188,9 +1194,6 @@ public:
 	}
 };
 
-// один из самых главных классов
-// он умеет отдавать интерфейс IElement...
-// пока - это video, image, shape, text, color - наверное не надо
 class CRecordShapeContainer : public CRecordsContainer
 {
 private:
@@ -1198,13 +1201,15 @@ private:
 
 public:
 
+	bool bGroupShape;
+
 	RECT* m_pGroupBounds;
 	RECT* m_pGroupClientAnchor;
 
-public:
-
 	CRecordShapeContainer()
 	{
+		bGroupShape = false;
+
 		m_pStream = NULL;
 
 		m_pGroupBounds = NULL;
@@ -1232,6 +1237,8 @@ public:
 	{
 		if (NULL == ppElement)	
 			return;
+
+		if (bGroupShape) return;
 
 		*ppElement = NULL;
 
@@ -1420,6 +1427,7 @@ public:
 		GetRecordsByType(&oArrayPlaceHolder, true, true);
 		if (0 < oArrayPlaceHolder.size())
 		{
+			pElem->m_bLine				= false; //по умолчанию у них нет линий
 			pElem->m_lPlaceholderID		= (int)(oArrayPlaceHolder[0]->m_nPosition);
 			pElem->m_lPlaceholderType	= (int)(oArrayPlaceHolder[0]->m_nPlacementID);
 

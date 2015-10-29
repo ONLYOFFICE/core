@@ -45,10 +45,12 @@ linux-g++:!contains(QMAKE_HOST.arch, x86_64):{
 shared {
     DEFINES += XPS_USE_DYNAMIC_LIBRARY
 
-    LIBS += -L$$DESTDIR -lASCOfficeUtilsLib
     LIBS += -L$$DESTDIR -lPdfWriter
 
-    #LIBS += -L$$DESTDIR -lgraphics
+    CONFIG += build_all_zlib build_zlib_as_sources
+    include(../OfficeUtils/OfficeUtils.pri)
+
+    CONFIG += build_cximage_zlib_disable
     LIB_GRAPHICS_PRI_PATH = ../DesktopEditor
     include(../DesktopEditor/Qt_build/graphics/project/graphics.pri)
 

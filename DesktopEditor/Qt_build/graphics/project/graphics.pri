@@ -226,6 +226,20 @@ SOURCES += $$LIB_GRAPHICS_PRI_PATH/Qt_build/graphics/project/libpsd_pri.c
 SOURCES += $$LIB_GRAPHICS_PRI_PATH/Qt_build/graphics/project/libpsd_pri2.c
 SOURCES += $$LIB_GRAPHICS_PRI_PATH/Qt_build/graphics/project/libpsd_pri3.c
 
+!build_cximage_zlib_disable {
+SOURCES += \
+    $$LIB_GRAPHICS_PRI_PATH/cximage/zlib/crc32.c \
+    $$LIB_GRAPHICS_PRI_PATH/cximage/zlib/adler32.c \
+    $$LIB_GRAPHICS_PRI_PATH/cximage/zlib/deflate.c \
+    $$LIB_GRAPHICS_PRI_PATH/cximage/zlib/inffast.c \
+    $$LIB_GRAPHICS_PRI_PATH/cximage/zlib/inflate.c \
+    $$LIB_GRAPHICS_PRI_PATH/cximage/zlib/inftrees.c \
+    $$LIB_GRAPHICS_PRI_PATH/cximage/zlib/trees.c \
+    $$LIB_GRAPHICS_PRI_PATH/cximage/zlib/zutil.c \
+    $$LIB_GRAPHICS_PRI_PATH/cximage/zlib/uncompr.c \
+    $$LIB_GRAPHICS_PRI_PATH/cximage/zlib/compress.c \
+}
+
 SOURCES += \
     $$LIB_GRAPHICS_PRI_PATH/cximage/mng/libmng_callback_xs.c \
     $$LIB_GRAPHICS_PRI_PATH/cximage/mng/libmng_chunk_descr.c \
@@ -303,17 +317,6 @@ SOURCES += \
     $$LIB_GRAPHICS_PRI_PATH/cximage/tiff/tif_warning.c \
     $$LIB_GRAPHICS_PRI_PATH/cximage/tiff/tif_write.c \
     $$LIB_GRAPHICS_PRI_PATH/cximage/tiff/tif_zip.c \
-    \
-    $$LIB_GRAPHICS_PRI_PATH/cximage/zlib/crc32.c \
-    $$LIB_GRAPHICS_PRI_PATH/cximage/zlib/adler32.c \
-    $$LIB_GRAPHICS_PRI_PATH/cximage/zlib/deflate.c \
-    $$LIB_GRAPHICS_PRI_PATH/cximage/zlib/inffast.c \
-    $$LIB_GRAPHICS_PRI_PATH/cximage/zlib/inflate.c \
-    $$LIB_GRAPHICS_PRI_PATH/cximage/zlib/inftrees.c \
-    $$LIB_GRAPHICS_PRI_PATH/cximage/zlib/trees.c \
-    $$LIB_GRAPHICS_PRI_PATH/cximage/zlib/zutil.c \
-    $$LIB_GRAPHICS_PRI_PATH/cximage/zlib/uncompr.c \
-    $$LIB_GRAPHICS_PRI_PATH/cximage/zlib/compress.c \
     \
     $$LIB_GRAPHICS_PRI_PATH/cximage/CxImage/tif_xfile.cpp \
     $$LIB_GRAPHICS_PRI_PATH/cximage/CxImage/ximabmp.cpp \

@@ -201,7 +201,6 @@ HEADERS += \
     ../Records/Drawing/TextBox.h \
     ../Records/Drawing/ArtBlip.h \
     ../../../ASCPresentationEditor/PPTXWriter/Converter.h \
-    ../../../ASCPresentationEditor/PPTXWriter/CSS.h \
     ../../../ASCPresentationEditor/PPTXWriter/ImageManager.h \
     ../../../ASCPresentationEditor/PPTXWriter/ShapeWriter.h \
     ../../../ASCPresentationEditor/PPTXWriter/StylesWriter.h \
@@ -210,9 +209,6 @@ HEADERS += \
     ../../../ASCPresentationEditor/OfficeDrawing/Elements.h \
     ../../../ASCPresentationEditor/OfficeDrawing/Layout.h \
     ../../../ASCPresentationEditor/OfficeDrawing/Slide.h \
-    ../../../ASCPresentationEditor/OfficeDrawing/SVGConverter.h \
-    ../../../ASCPresentationEditor/OfficeDrawing/SVGFramework.h \
-    ../../../ASCPresentationEditor/OfficeDrawing/SVGTransformer.h \
     ../../../ASCPresentationEditor/OfficeDrawing/TextAttributesEx.h \
     ../../../ASCPresentationEditor/OfficeDrawing/TextStructures.h \
     ../../../ASCPresentationEditor/OfficeDrawing/Theme.h \
@@ -229,9 +225,6 @@ SOURCES += \
     ../../../ASCPresentationEditor/PPTXWriter/ShapeWriter.cpp \
     ../../../ASCPresentationEditor/OfficeDrawing/Elements.cpp \
     ../../../ASCPresentationEditor/OfficeDrawing/Layout.cpp \
-    ../../../ASCPresentationEditor/OfficeDrawing/SVGConverter.cpp \
-    ../../../ASCPresentationEditor/OfficeDrawing/SVGFramework.cpp \
-    ../../../ASCPresentationEditor/OfficeDrawing/SVGTransformer.cpp \
     ../../../ASCPresentationEditor/OfficeDrawing/TextAttributesEx.cpp \
     ../../../ASCPresentationEditor/OfficeDrawing/Theme.cpp \
     ../PPTFormatLib.cpp \

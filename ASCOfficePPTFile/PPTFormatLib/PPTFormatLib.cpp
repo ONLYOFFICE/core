@@ -68,7 +68,7 @@ HRESULT COfficePPTFile::LoadFromFile(std::wstring sSrcFileName, std::wstring sDs
 		m_Status = NULLMODE;
 		return S_FALSE;
 	}
-	if (0 < ((CPPTFileReader*)m_pReader)->m_oDocumentInfo.m_arUsers.size())
+	if (!((CPPTFileReader*)m_pReader)->m_oDocumentInfo.m_arUsers.empty())
 	{
 		NSPresentationEditor::CPPTXWriter	oPPTXWriter;
         oPPTXWriter.m_strTempDirectory = std_string2string(sDstPath);

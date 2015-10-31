@@ -398,9 +398,19 @@ void NSPresentationEditor::CPPTXWriter::WritePresInfo()
 	}
 	strDefaultTextStyle += _T("</p:defaultTextStyle>");
 
-	CString strPres = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\
-<p:presentation xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\" saveSubsetFonts=\"1\">\
-<p:sldMasterIdLst>") + strPresMasters + _T("</p:sldMasterIdLst>") + strNotesIDs + _T("<p:sldIdLst>") + strPresSlides + _T("</p:sldIdLst>") + strSizePres + strDefaultTextStyle + _T("</p:presentation>");
+	CString strPres = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>");
+	strPres += _T("<p:presentation xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\" saveSubsetFonts=\"1\"");
+		if ((m_pUserInfo) && (m_pUserInfo->m_bRtl))
+		{
+			strPres += _T(" rtl=\"1\"");
+		}
+		strPres += _T(">");
+		strPres += _T("<p:sldMasterIdLst>") + strPresMasters + _T("</p:sldMasterIdLst>");
+		strPres += strNotesIDs ;
+		strPres +=_T("<p:sldIdLst>") + strPresSlides + _T("</p:sldIdLst>");
+		strPres += strSizePres;
+		strPres += strDefaultTextStyle;
+	strPres +=_T("</p:presentation>");
 
     oFile.CreateFile(m_strTempDirectory+ FILE_SEPARATOR_STR  + _T("ppt") + FILE_SEPARATOR_STR + _T("presentation.xml"));
 	oFile.WriteStringUTF8(strPres);

@@ -857,8 +857,9 @@ namespace NSPresentationEditor
 	class CParagraph
 	{
 	public:
-		LONG m_lTextType;
-		LONG m_lTextLevel;
+		int m_lTextType;
+		int m_lTextLevel;
+		int m_lStyleThemeIndex;
 
 		CTextPFRun			m_oPFRun;
 		std::vector<CSpan>	m_arSpans;
@@ -866,8 +867,9 @@ namespace NSPresentationEditor
 	public:
 		CParagraph() : m_oPFRun(), m_arSpans()
 		{
-			m_lTextType		= 0;
-			m_lTextLevel	= 0;
+			m_lTextType			= 0;
+			m_lTextLevel		= 0;
+			m_lStyleThemeIndex	= 0;
 		}
 		CParagraph(const CParagraph& oSrc)
 		{
@@ -875,12 +877,13 @@ namespace NSPresentationEditor
 		}
 		CParagraph& operator=(const CParagraph& oSrc)
 		{
-			m_lTextLevel	= oSrc.m_lTextLevel;
-			m_lTextType		= oSrc.m_lTextType;
+			m_lTextLevel		= oSrc.m_lTextLevel;
+			m_lTextType			= oSrc.m_lTextType;
+			m_lStyleThemeIndex	= oSrc.m_lStyleThemeIndex;
 
-			m_oPFRun		= oSrc.m_oPFRun;
+			m_oPFRun			= oSrc.m_oPFRun;
 
-			m_arSpans = oSrc.m_arSpans;
+			m_arSpans			= oSrc.m_arSpans;
 
 			return *this;
 		}

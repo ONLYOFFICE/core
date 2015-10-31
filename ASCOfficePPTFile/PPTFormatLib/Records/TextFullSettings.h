@@ -19,15 +19,17 @@ public:
 
 	std::wstring	m_strText;
 	DWORD			m_nTextType;
+	DWORD			m_lStyleThemeIndex;
 
 public:
 	CTextFullSettings() : m_arRanges()
 	{
-		m_pTextStyleProp = NULL;
-		m_pTextSpecInfo = NULL;
-		m_pTextRuler = NULL;
+		m_pTextStyleProp	= NULL;
+		m_pTextSpecInfo		= NULL;
+		m_pTextRuler		= NULL;
 
-		m_nTextType = 0xFFFFFFFF;
+		m_nTextType			= 0xFFFFFFFF;
+		m_lStyleThemeIndex	= 0; //default
 		m_strText.clear();
 	}
 	CTextFullSettings(const CTextFullSettings& oSrc)
@@ -36,12 +38,13 @@ public:
 	}
 	CTextFullSettings& operator =(const CTextFullSettings& oSrc)
 	{
-		m_pTextStyleProp = oSrc.m_pTextStyleProp;
-		m_pTextSpecInfo = oSrc.m_pTextSpecInfo;
-		m_pTextRuler = oSrc.m_pTextRuler;
+		m_pTextStyleProp	= oSrc.m_pTextStyleProp;
+		m_pTextSpecInfo		= oSrc.m_pTextSpecInfo;
+		m_pTextRuler		= oSrc.m_pTextRuler;
+		m_lStyleThemeIndex	= oSrc.m_lStyleThemeIndex;
 
-		m_nTextType = oSrc.m_nTextType;
-		m_strText = oSrc.m_strText;
+		m_nTextType			= oSrc.m_nTextType;
+		m_strText			= oSrc.m_strText;
 		
 		m_arRanges = oSrc.m_arRanges;
 		return (*this);
@@ -58,7 +61,9 @@ public:
 		if (NULL == pTextAttributes)
 			return m_strText;
 
-		pTextAttributes->m_lTextType = m_nTextType;
+		pTextAttributes->m_lTextType		= m_nTextType;
+		pTextAttributes->m_lStyleThemeIndex	= m_lStyleThemeIndex;
+
 		if (NULL != m_pTextStyleProp)
 			NSPresentationEditor::ConvertPPTTextToEditorStructure(m_pTextStyleProp->m_arrPFs, m_pTextStyleProp->m_arrCFs, m_strText, *pTextAttributes); 
 

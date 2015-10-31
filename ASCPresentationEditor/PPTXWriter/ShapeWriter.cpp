@@ -279,16 +279,9 @@ CString	NSPresentationEditor::CShapeWriter::ConvertLine(CPen & pen)
 	strLine.Format(_T("<a:ln w=\"%d\">"), (int)(pen.Size * 36000));
 	line_writer.WriteString(strLine);
 
-	if (m_bWordArt)
-	{
-		line_writer.WriteString(std::wstring(L"<a:noFill/>"));
-	}
-	else
-	{
-		line_writer.WriteString(std::wstring(L"<a:solidFill>"));
-			line_writer.WriteString(ConvertColor(pen.Color, pen.Alpha));
-		line_writer.WriteString(std::wstring(L"</a:solidFill>"));
-	}
+	line_writer.WriteString(std::wstring(L"<a:solidFill>"));
+		line_writer.WriteString(ConvertColor(pen.Color, pen.Alpha));
+	line_writer.WriteString(std::wstring(L"</a:solidFill>"));
 
 	line_writer.WriteString(std::wstring(L"<a:round/><a:headEnd/><a:tailEnd/></a:ln>"));
 
@@ -518,12 +511,12 @@ void NSPresentationEditor::CShapeWriter::WriteImageInfo()
 		m_oWriter.WriteStringXML(m_pImageElement->m_sName);
 	m_oWriter.WriteString(std::wstring(L"\""));
 	
-	if (!m_pImageElement->m_sDescription.empty())
-	{
-		m_oWriter.WriteString(std::wstring(L" descr=\""));
-			m_oWriter.WriteStringXML(m_pImageElement->m_sDescription);
-		m_oWriter.WriteString(std::wstring(L"\""));
-	}
+	//if (!m_pImageElement->m_sDescription.empty())
+	//{//бывает всякая разная бяка сохранена 
+	//	m_oWriter.WriteString(std::wstring(L" descr=\""));
+	//		m_oWriter.WriteStringXML(m_pImageElement->m_sDescription);
+	//	m_oWriter.WriteString(std::wstring(L"\""));
+	//}
 
 	m_oWriter.WriteString(std::wstring(L"></p:cNvPr><p:cNvPicPr><a:spLocks noGrp=\"1\" noChangeAspect=\"1\"/></p:cNvPicPr>"));
 
@@ -705,7 +698,27 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 			std::wstring prstTxWarp = oox::Spt2WordArtShapeType((oox::MSOSPT)m_pShapeElement->m_lShapeType);				
 			m_oWriter.WriteString(std::wstring(L"<a:prstTxWarp"));
 				m_oWriter.WriteString(std::wstring(L" prst=\"") + prstTxWarp + _T("\">"));
-				m_oWriter.WriteString(std::wstring(L"<a:avLst/>"));//модификаторы
+				m_oWriter.WriteString(std::wstring(L"<a:avLst>"));//модификаторы
+
+				CPPTShape *pPPTShape = dynamic_cast<CPPTShape *>(m_pShapeElement->m_oShape.m_pShape);
+				CString strVal;
+
+				for (int i = 0 ; (pPPTShape) && (i < pPPTShape->m_arAdjustments.size()); i++)
+				{
+					switch(m_pShapeElement->m_lShapeType)
+					{
+						case oox::msosptTextFadeUp:
+						{
+							double kf = 4.63; //"волшебный"
+							strVal.Format(L"%d", (int)(kf * pPPTShape->m_arAdjustments[i]));
+							m_oWriter.WriteString(std::wstring(L"<a:gd name=\"adj\" fmla=\"val "));
+							m_oWriter.WriteString(strVal + _T("\"/>"));
+						}break;
+					}
+					
+				}
+
+				m_oWriter.WriteString(std::wstring(L"</a:avLst>"));
 			m_oWriter.WriteString(std::wstring(L"</a:prstTxWarp>"));
 		}
 	m_oWriter.WriteString(std::wstring(L"</a:bodyPr>"));
@@ -728,11 +741,11 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 	{
 		NSPresentationEditor::CParagraph* pParagraph = &m_pShapeElement->m_oShape.m_oText.m_arParagraphs[nIndexPar];
 
-		if (m_bWordArt && nIndexPar == nCount-1)
-		{
-			if (pParagraph->m_arSpans.size() < 1) break;
-			if (pParagraph->m_arSpans.size() == 1 && pParagraph->m_arSpans[0].m_strText.empty()) break;
-		}
+		//if (m_bWordArt && nIndexPar == nCount-1)
+		//{
+		//	if (pParagraph->m_arSpans.size() < 1) break;
+		//	if (pParagraph->m_arSpans.size() == 1 && pParagraph->m_arSpans[0].m_strText.empty()) break;
+		//}
 
 		CString _str1 = _T("");
 		_str1.Format(_T("<a:p><a:pPr lvl=\"%d\""), pParagraph->m_lTextLevel);
@@ -835,7 +848,6 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 
 		if (pPF->hasBullet.is_init())
 		{
-
 			if (pPF->hasBullet.get())
 			{
 				if (pPF->bulletColor.is_init())
@@ -876,6 +888,13 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 					m_oWriter.WriteStringXML(std::wstring(&bu, 1));
 					m_oWriter.WriteString(std::wstring(L"\"/>"));
 				}
+				else if (pParagraph->m_lTextLevel == 0)
+				{
+					wchar_t bu = 0x2022;
+					m_oWriter.WriteString(std::wstring(L"<a:buChar char=\""));
+					m_oWriter.WriteStringXML(std::wstring(&bu, 1));
+					m_oWriter.WriteString(std::wstring(L"\"/>"));
+				}
 			}
 			else
 			{
@@ -896,7 +915,7 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 		size_t nCountSpans = pParagraph->m_arSpans.size();
 		for (size_t nSpan = 0; nSpan < nCountSpans; ++nSpan)
 		{
-			if (TRUE)
+			if (true)
 			{
 				if ((nSpan == (nCountSpans - 1)) && (_T("\n") == pParagraph->m_arSpans[nSpan].m_strText || pParagraph->m_arSpans[nSpan].m_strText.empty()) )
 				{
@@ -985,10 +1004,15 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 			m_oWriter.WriteString(std::wstring(L">"));
 
 			if (m_bWordArt)
-			{
+			{//порядок важен - линия, заливка, тень !!!			
+				if (m_pShapeElement->m_bLine)
+				{
+					m_oWriter.WriteString(ConvertLine(m_pShapeElement->m_oPen));
+				}
 				m_oWriter.WriteString(ConvertBrush(m_pShapeElement->m_oBrush));
+				m_oWriter.WriteString(ConvertShadow(m_pShapeElement->m_oShadow));
 			}
-			else
+		else
 			{
 				if (pCF->Color.is_init())
 				{
@@ -1165,20 +1189,15 @@ CString NSPresentationEditor::CShapeWriter::ConvertShape()
 		m_oWriter.WriteString(std::wstring(L"<a:prstGeom prst=\"rect\"/>"));
 	}
 
-	if (m_bWordArt)
-	{
-		m_oWriter.WriteString(std::wstring(L"<a:noFill/>"));
-	}
-	else
+	if (!m_bWordArt)
 	{
 		m_oWriter.WriteString(ConvertBrush(m_pShapeElement->m_oBrush));
+		if (m_pShapeElement->m_bLine)
+		{
+			m_oWriter.WriteString(ConvertLine(m_pShapeElement->m_oPen));
+		}
+		m_oWriter.WriteString(ConvertShadow(m_pShapeElement->m_oShadow));
 	}
-
-	if (m_pShapeElement->m_bLine)
-	{
-		m_oWriter.WriteString(ConvertLine(m_pShapeElement->m_oPen));
-	}
-	m_oWriter.WriteString(ConvertShadow(m_pShapeElement->m_oShadow));
 
 	m_oWriter.WriteString(std::wstring(L"</p:spPr>"));			
 

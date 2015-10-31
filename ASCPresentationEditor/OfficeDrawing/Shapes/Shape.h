@@ -115,14 +115,14 @@ public:
 	}
 
 
-	virtual CString GetTextXml(CGeomShapeInfo& oGeomInfo, CMetricInfo& pInfo, double dStartTime, double dEndTime, CTheme* pTheme, CLayout* pLayout)
-	{
-		if (m_oText.IsEmptyText())
-			return _T("");
+	//virtual CString GetTextXml(CGeomShapeInfo& oGeomInfo, CMetricInfo& pInfo, double dStartTime, double dEndTime, CTheme* pTheme, CLayout* pLayout)
+	//{
+	//	if (m_oText.IsEmptyText())
+	//		return _T("");
 
-		GetTextRect(oGeomInfo);
-		return m_oText.ToString(oGeomInfo, pInfo, dStartTime, dEndTime, pTheme, pLayout);
-	}
+	//	GetTextRect(oGeomInfo);
+	//	return m_oText.ToString(oGeomInfo, pInfo, dStartTime, dEndTime, pTheme, pLayout);
+	//}
 
 
 	//virtual CString GetBrushXml()
@@ -285,29 +285,29 @@ public:
 		oInfo.bottom	= dTop + dHeight;
 	}
 
-	virtual CString ToXml(CGeomShapeInfo& oGeomInfo, CMetricInfo& pInfo, double dStartTime, double dEndTime, CTheme* pTheme, CLayout* pLayout)
-	{
-		CString strImageTransform = _T("");
+	//virtual CString ToXml(CGeomShapeInfo& oGeomInfo, CMetricInfo& pInfo, double dStartTime, double dEndTime, CTheme* pTheme, CLayout* pLayout)
+	//{
+	//	CString strImageTransform = _T("");
 
-		oGeomInfo.m_dLimoX = m_lLimoX;
-		oGeomInfo.m_dLimoY = m_lLimoY;
+	//	oGeomInfo.m_dLimoX = m_lLimoX;
+	//	oGeomInfo.m_dLimoY = m_lLimoY;
 
-		m_pShape->m_oPath.SetCoordsize((LONG)m_dWidthLogic, (LONG)m_dHeightLogic);
-		
-		CBrush	brush; //копии с уровня выше нужны
-		CPen	pen;
-		CString strDrawing = m_pShape->ToXML(oGeomInfo, pInfo, dStartTime, dEndTime, brush, pen);
-		if (m_lDrawType & c_ShapeDrawType_Graphic)
-		{
-			strImageTransform += strDrawing;
-		}
-		if (m_lDrawType & c_ShapeDrawType_Text)
-		{
-			strImageTransform += GetTextXml(oGeomInfo, pInfo, dStartTime, dEndTime, pTheme, pLayout);
-		}
+	//	m_pShape->m_oPath.SetCoordsize((LONG)m_dWidthLogic, (LONG)m_dHeightLogic);
+	//	
+	//	CBrush	brush; //копии с уровня выше нужны
+	//	CPen	pen;
+	//	CString strDrawing = m_pShape->ToXML(oGeomInfo, pInfo, dStartTime, dEndTime, brush, pen);
+	//	if (m_lDrawType & c_ShapeDrawType_Graphic)
+	//	{
+	//		strImageTransform += strDrawing;
+	//	}
+	//	if (m_lDrawType & c_ShapeDrawType_Text)
+	//	{
+	//		strImageTransform += GetTextXml(oGeomInfo, pInfo, dStartTime, dEndTime, pTheme, pLayout);
+	//	}
 
-		return strImageTransform;
-	}
+	//	return strImageTransform;
+	//}
 
 	void ToRenderer(IRenderer* pRenderer, CGeomShapeInfo& oGeomInfo, CMetricInfo& pInfo, double dStartTime, double dEndTime)
 	{

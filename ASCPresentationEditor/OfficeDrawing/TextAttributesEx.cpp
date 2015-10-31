@@ -3,12 +3,8 @@
 
 namespace NSPresentationEditor
 {
-	CString CTextAttributesEx::ToString(CGeomShapeInfo& oInfo, CMetricInfo& pMetricInfo, double dStartTime, double dEndTime, CTheme* pTheme, CLayout* pLayout)
-	{
-		return L"";
-	}
 
-	void CTextAttributesEx::RecalcParagraphsPPT(CTheme* pTheme)
+	void CTextAttributesEx::RecalcParagraphsPPT()
 	{
 		for (int i = 0; i < m_arParagraphs.size(); ++i)
 		{
@@ -55,10 +51,25 @@ namespace NSPresentationEditor
 				}
 			}
 		}
+	}
 
+	void CTextAttributesEx::RecalcParagraphs(CTheme* pTheme)
+	{
+#ifdef PPT_DEF
+		RecalcParagraphsPPT();
+		ApplyThemeStyle(pTheme);
+#else
+		size_t nCount = m_arParagraphs.size();
+		for (size_t i = 0; i < nCount; ++i)
+		{
+			m_arParagraphs[i].CheckErrors();
+		}
+#endif
+	}
+	void CTextAttributesEx::ApplyThemeStyle(CTheme* pTheme)
+	{
 		if (NULL != pTheme)
 		{
-			// теперь снаследуем все для буллета
 			size_t nCountPFs = m_arParagraphs.size();
 			for (size_t nIndexP = 0; nIndexP < nCountPFs; ++nIndexP)
 			{
@@ -76,33 +87,33 @@ namespace NSPresentationEditor
 				
 				nullable_base<LONG>		spaceBefore;
 
-				if (-1 != m_lTextType && m_lTextType < 4 && pTheme->m_pStyles[m_lTextType].m_pLevels[lLevel].is_init())
+				if (-1 != m_lStyleThemeIndex && m_lStyleThemeIndex < 4 && pTheme->m_pStyles[m_lStyleThemeIndex].m_pLevels[lLevel].is_init())
 				{
-					if (pTheme->m_pStyles[m_lTextType].m_pLevels[lLevel]->m_oPFRun.hasBullet.is_init())
+					if (pTheme->m_pStyles[m_lStyleThemeIndex].m_pLevels[lLevel]->m_oPFRun.hasBullet.is_init())
 					{
-						hasBullet = pTheme->m_pStyles[m_lTextType].m_pLevels[lLevel]->m_oPFRun.hasBullet;
+						hasBullet = pTheme->m_pStyles[m_lStyleThemeIndex].m_pLevels[lLevel]->m_oPFRun.hasBullet;
 
-						if (pTheme->m_pStyles[m_lTextType].m_pLevels[lLevel]->m_oPFRun.bulletColor.is_init())
-							bulletColor = pTheme->m_pStyles[m_lTextType].m_pLevels[lLevel]->m_oPFRun.bulletColor;
+						if (pTheme->m_pStyles[m_lStyleThemeIndex].m_pLevels[lLevel]->m_oPFRun.bulletColor.is_init())
+							bulletColor = pTheme->m_pStyles[m_lStyleThemeIndex].m_pLevels[lLevel]->m_oPFRun.bulletColor;
 
-						if (pTheme->m_pStyles[m_lTextType].m_pLevels[lLevel]->m_oPFRun.bulletChar.is_init() )
+						if (pTheme->m_pStyles[m_lStyleThemeIndex].m_pLevels[lLevel]->m_oPFRun.bulletChar.is_init() )
 						{
-							bulletFontRef = pTheme->m_pStyles[m_lTextType].m_pLevels[lLevel]->m_oPFRun.bulletFontRef;
-							bulletChar = pTheme->m_pStyles[m_lTextType].m_pLevels[lLevel]->m_oPFRun.bulletChar;
+							bulletFontRef = pTheme->m_pStyles[m_lStyleThemeIndex].m_pLevels[lLevel]->m_oPFRun.bulletFontRef;
+							bulletChar = pTheme->m_pStyles[m_lStyleThemeIndex].m_pLevels[lLevel]->m_oPFRun.bulletChar;
 						}
 						
-						if (pTheme->m_pStyles[m_lTextType].m_pLevels[lLevel]->m_oPFRun.bulletSize.is_init())
-							bulletSize = pTheme->m_pStyles[m_lTextType].m_pLevels[lLevel]->m_oPFRun.bulletSize;
+						if (pTheme->m_pStyles[m_lStyleThemeIndex].m_pLevels[lLevel]->m_oPFRun.bulletSize.is_init())
+							bulletSize = pTheme->m_pStyles[m_lStyleThemeIndex].m_pLevels[lLevel]->m_oPFRun.bulletSize;
 					}
 
-					if (pTheme->m_pStyles[m_lTextType].m_pLevels[lLevel]->m_oPFRun.leftMargin.is_init())
-						margin = pTheme->m_pStyles[m_lTextType].m_pLevels[lLevel]->m_oPFRun.leftMargin;
+					if (pTheme->m_pStyles[m_lStyleThemeIndex].m_pLevels[lLevel]->m_oPFRun.leftMargin.is_init())
+						margin = pTheme->m_pStyles[m_lStyleThemeIndex].m_pLevels[lLevel]->m_oPFRun.leftMargin;
 
-					if (pTheme->m_pStyles[m_lTextType].m_pLevels[lLevel]->m_oPFRun.indent.is_init())
-						indent = pTheme->m_pStyles[m_lTextType].m_pLevels[lLevel]->m_oPFRun.indent;
+					if (pTheme->m_pStyles[m_lStyleThemeIndex].m_pLevels[lLevel]->m_oPFRun.indent.is_init())
+						indent = pTheme->m_pStyles[m_lStyleThemeIndex].m_pLevels[lLevel]->m_oPFRun.indent;
 		
-					if (pTheme->m_pStyles[m_lTextType].m_pLevels[lLevel]->m_oPFRun.spaceBefore.is_init())
-						spaceBefore = pTheme->m_pStyles[m_lTextType].m_pLevels[lLevel]->m_oPFRun.spaceBefore;
+					if (pTheme->m_pStyles[m_lStyleThemeIndex].m_pLevels[lLevel]->m_oPFRun.spaceBefore.is_init())
+						spaceBefore = pTheme->m_pStyles[m_lStyleThemeIndex].m_pLevels[lLevel]->m_oPFRun.spaceBefore;
 				}
 				if (m_oLayoutStyles.m_pLevels[lLevel].is_init())
 				{
@@ -210,20 +221,7 @@ namespace NSPresentationEditor
 			m_arParagraphs[i].CheckErrors();
 		}
 
-		ApplyRuler(pTheme);
-	}
-
-	void CTextAttributesEx::RecalcParagraphs(CTheme* pTheme)
-	{
-#ifdef PPT_DEF
-		RecalcParagraphsPPT(pTheme);
-#else
-		size_t nCount = m_arParagraphs.size();
-		for (size_t i = 0; i < nCount; ++i)
-		{
-			m_arParagraphs[i].CheckErrors();
-		}
-#endif
+		ApplyRuler(pTheme);		
 	}
 	void CTextAttributesEx::ApplyRuler(CTheme* pTheme)
 	{

@@ -1092,8 +1092,8 @@ namespace NSPresentationEditor
 		void SetDefaultParams()
 		{
 			Visible		= false;
-			DistanceX	= 0.1;
-			DistanceY	= 0.1;
+			DistanceX	= 0.5;
+			DistanceY	= 0.5;
 			BlurSize	= 0;
 			Alpha		= 255;
 

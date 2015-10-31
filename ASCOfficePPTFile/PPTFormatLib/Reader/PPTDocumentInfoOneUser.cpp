@@ -18,14 +18,17 @@ CPPTUserInfo::CPPTUserInfo() :	CDocument(),
 								m_mapSlides(),
 								m_arOffsetPictures()
 {
-	m_pDocumentInfo = NULL;
-	m_lIndexThisUser = -1;
+	m_pDocumentInfo			= NULL;
+	m_lIndexThisUser		= -1;
 
 	m_nWriteSlideTimeOffset		=	0.0;
 	m_nWriteSlideTime			=	0.0;
 
-	m_strFileDirectory = _T("");
-    m_bIsSetupEmpty = false;
+	m_strFileDirectory		= _T("");
+    m_bIsSetupEmpty			= false;
+
+	m_bRtl					= false;
+	m_bShowComments			= false;
 }
 
 CPPTUserInfo::~CPPTUserInfo()
@@ -297,9 +300,6 @@ void CPPTUserInfo::FromDocument()
 			if (oSI[0]->m_oSIRun.bLang)
 				m_wLanguage = oSI[0]->m_oSIRun.Lang;
 
-			if (oSI[0]->m_oSIRun.bBidi)
-				m_bBidi = oSI[0]->m_oSIRun.Bidi;
-
 			m_oDefaultTextStyle.SetLanguage(m_wLanguage);
 		}
 	}
@@ -311,6 +311,9 @@ void CPPTUserInfo::FromDocument()
 	m_oInfo.m_lUnitsVer			= lOriginHeight;
 	m_oInfo.m_lMillimetresHor	= (LONG)(c_dMasterUnitsToMillimetreKoef * lOriginWidth);
 	m_oInfo.m_lMillimetresVer	= (LONG)(c_dMasterUnitsToMillimetreKoef * lOriginHeight);
+
+	m_bRtl						= (oArrayDoc[0]->m_bRightToLeft!=0);
+	m_bShowComments				= (oArrayDoc[0]->m_bShowComments!=0);
 
 	LoadMasters(lOriginWidth, lOriginHeight);
 

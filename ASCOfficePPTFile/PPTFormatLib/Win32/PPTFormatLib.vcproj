@@ -56,7 +56,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="&quot;../../../DesktopEditor/freetype-2.5.2/include&quot;"
-				PreprocessorDefinitions="_DEBUG;_LIB;_USE_MATH_DEFINES;PPTX_DEF;PPT_DEF;ENABLE_PPT_TO_PPTX_CONVERT;PPT_FORMAT;_SVG_CONVERT_TO_IMAGE_;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;USE_LITE_READER;_USE_XMLLITE_READER_;_PRESENTATION_WRITER_"
+				PreprocessorDefinitions="_DEBUG;_LIB;_USE_MATH_DEFINES;PPTX_DEF;PPT_DEF;ENABLE_PPT_TO_PPTX_CONVERT;PPT_FORMAT;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;USE_LITE_READER;_USE_XMLLITE_READER_"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -984,46 +984,6 @@
 			</File>
 			<File
 				RelativePath="..\..\..\ASCPresentationEditor\PPTXWriter\StylesWriter.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\ASCPresentationEditor\OfficeDrawing\SVGConverter.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\ASCPresentationEditor\OfficeDrawing\SVGConverter.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\ASCPresentationEditor\OfficeDrawing\SVGFramework.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\ASCPresentationEditor\OfficeDrawing\SVGFramework.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\ASCPresentationEditor\OfficeDrawing\SVGTransformer.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|x64"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalOptions="/bigobj"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|x64"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalOptions="/bigobj"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\..\ASCPresentationEditor\OfficeDrawing\SVGTransformer.h"
 				>
 			</File>
 			<File

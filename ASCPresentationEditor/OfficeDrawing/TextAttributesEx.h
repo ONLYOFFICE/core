@@ -19,6 +19,7 @@ namespace NSPresentationEditor
 		LONG	m_lTextMasterType; // only ppt property
 	public:
 		DWORD	m_lTextType;
+		DWORD	m_lStyleThemeIndex;
 		int		m_lPlaceholderType;
 		int		m_lPlaceholderID;
 
@@ -55,6 +56,8 @@ namespace NSPresentationEditor
 			m_lTextType			= -1;
 			m_lPlaceholderType	= -1;
 			m_lPlaceholderID	= -1;
+
+			m_lStyleThemeIndex	= 0;//default
 
 			m_lFontRef			= -1;
 			m_bIsSlideFontRef	= false;
@@ -105,7 +108,6 @@ namespace NSPresentationEditor
 			m_arParagraphs.clear();
 		}
 
-		CString ToString(CGeomShapeInfo& oInfo, CMetricInfo& pMetricInfo, double dStartTime, double dEndTime, CTheme* pTheme, CLayout* pLayout);
 	public:
 
 		inline void NormalizeString(CString& strText)
@@ -118,7 +120,8 @@ namespace NSPresentationEditor
 		}
 
 		void RecalcParagraphs	(CTheme* pTheme = NULL);
-		void RecalcParagraphsPPT(CTheme* pTheme = NULL);
+		void RecalcParagraphsPPT();
+		void ApplyThemeStyle	(CTheme* pTheme = NULL);
 		
 		void ApplyRuler			(CTheme* pTheme);
 		void ApplyRuler			(CTextPFRun* pPar, WORD lIndentLevel);

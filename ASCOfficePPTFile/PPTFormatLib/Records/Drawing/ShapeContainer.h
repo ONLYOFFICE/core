@@ -1644,17 +1644,20 @@ public:
 				pShapeElem->m_rcBounds.top		= dCy - dW / 2.0;
 				pShapeElem->m_rcBounds.bottom	= dCy + dW / 2.0;
 			}
-
-			pSlideWrapper->m_mapElements.insert(std::pair<LONG, CElementInfo>(pShapeElem->m_lID, oElementInfo));
-			SetUpTextStyle(strText, pTheme, pLayout, pElem, pThemeWrapper, pSlideWrapper, pSlide);
 			
-//------------------------------------------------------------------------------------
 			std::vector<CRecordMasterTextPropAtom*> oArrayMasterTextProp;
 			GetRecordsByType(&oArrayMasterTextProp, true);
+
+			CRecordMasterTextPropAtom* master_level = NULL;
 			if (!oArrayMasterTextProp.empty())
-			{
-				SetUpTextMasterIndent(pElem, oArrayMasterTextProp[0]);
-			}
+				master_level = oArrayMasterTextProp[0];
+
+			pSlideWrapper->m_mapElements.insert(std::pair<LONG, CElementInfo>(pShapeElem->m_lID, oElementInfo));
+			
+			SetUpTextStyle(strText, pTheme, pLayout, pElem, pThemeWrapper, pSlideWrapper, pSlide, master_level);
+			
+//------------------------------------------------------------------------------------
+
 		}
 		else
 		{
@@ -1751,28 +1754,31 @@ public:
 
 protected:
 
-	void SetUpTextMasterIndent(IElement* pElem, CRecordMasterTextPropAtom* master_levels)
+	void ApplyThemeStyle(IElement* pElem, CTheme* pTheme, CRecordMasterTextPropAtom* master_levels)
 	{
 		CShapeElement* pShape = dynamic_cast<CShapeElement*>(pElem);
 		if (NULL == pShape)
 			return;
-		if (master_levels->m_arrProps.empty()) return;
-
-		CTextAttributesEx* pText = &(pShape->m_oShape.m_oText);
 		
-		int pos_text = 0, pos_si = 0;
-		int ind = 0;
-		for (int i = 0; i < pText->m_arParagraphs.size(); i++)
+		CTextAttributesEx* pText = &(pShape->m_oShape.m_oText);
+
+		
+		if (master_levels)
 		{
-			if (i >= master_levels->m_arrProps.size()) break;
-			
-			pText->m_arParagraphs[i].m_lTextLevel = master_levels->m_arrProps[i].lIndentLevel;
-			pText->m_arParagraphs[i].m_oPFRun.leftMargin.reset();
-			pText->m_arParagraphs[i].m_oPFRun.indent.reset();
+			for (int i = 0; i < pText->m_arParagraphs.size(); i++)
+			{
+				if (i >= master_levels->m_arrProps.size()) break;
+				
+				pText->m_arParagraphs[i].m_lTextLevel = master_levels->m_arrProps[i].lIndentLevel;
+				pText->m_arParagraphs[i].m_oPFRun.leftMargin.reset();
+				pText->m_arParagraphs[i].m_oPFRun.indent.reset();
+			}
 		}
 
+		pText->ApplyThemeStyle(pTheme);
+
 	}
-	void SetUpTextStyle(std::wstring& strText, CTheme* pTheme, CLayout* pLayout, IElement* pElem, CSlideInfo* pThemeWrapper, CSlideInfo* pSlideWrapper, CSlide* pSlide = NULL)
+	void SetUpTextStyle(std::wstring& strText, CTheme* pTheme, CLayout* pLayout, IElement* pElem, CSlideInfo* pThemeWrapper, CSlideInfo* pSlideWrapper, CSlide* pSlide, CRecordMasterTextPropAtom* master_levels)
 	{
 		// сначала проверяем на shape
 		// затем применяем все настройки по-очереди
@@ -1909,7 +1915,7 @@ protected:
 				case NSOfficePPT::MasterTitle:
 				case NSOfficePPT::VerticalTextTitle:
 					{
-						pTextSettings->m_lTextType = 1;
+						pTextSettings->m_lStyleThemeIndex = 1;
 
 						if (NSOfficePPT::_Title != eTypeMaster)
 						{
@@ -1924,7 +1930,7 @@ protected:
 				case NSOfficePPT::CenteredTitle:
 				case NSOfficePPT::MasterCenteredTitle:
 					{
-						pTextSettings->m_lTextType = 1;
+						pTextSettings->m_lStyleThemeIndex = 1;
 
 						if (NSOfficePPT::_Title != eTypeMaster)
 						{
@@ -1944,9 +1950,9 @@ protected:
 				case NSOfficePPT::MasterSubtitle:
 				case NSOfficePPT::Subtitle:
 					{
-						pTextSettings->m_lTextType = 2;
+						pTextSettings->m_lStyleThemeIndex = 2;
 
-						if (NSOfficePPT::_Body != eTypeMaster)
+						if ((NSOfficePPT::_Body != eTypeMaster) || !pLayout) 
 						{
 							if (0 <= nTextMasterType && nTextMasterType < 9)
 							{
@@ -1958,9 +1964,9 @@ protected:
 					}
 				default:
 					{
-						pTextSettings->m_lTextType = 3;
+						pTextSettings->m_lStyleThemeIndex = 3;
 
-						if (NSOfficePPT::Other != eTypeMaster)
+						if ((NSOfficePPT::Other != eTypeMaster) || !pLayout) 
 						{
 							if (0 <= nTextMasterType && nTextMasterType < 9)
 							{
@@ -2016,6 +2022,7 @@ protected:
 				{
 					pTextSettings->m_oLayoutStyles		= pElementLayoutPH->m_oShape.m_oText.m_oStyles;
 					pTextSettings->m_lTextType			= pElementLayoutPH->m_oShape.m_oText.m_lTextType;
+					pTextSettings->m_lStyleThemeIndex	= pElementLayoutPH->m_oShape.m_oText.m_lStyleThemeIndex;
 				}
 				else
 				{	
@@ -2025,13 +2032,13 @@ protected:
 					case NSOfficePPT::MasterTitle:
 					case NSOfficePPT::VerticalTextTitle:
 						{
-							pTextSettings->m_lTextType = 1;
+							pTextSettings->m_lStyleThemeIndex = 1;
 							break;
 						}
 					case NSOfficePPT::CenteredTitle:
 					case NSOfficePPT::MasterCenteredTitle:
 						{
-							pTextSettings->m_lTextType = 1;
+							pTextSettings->m_lStyleThemeIndex = 1;
 							break;
 						}
 					case NSOfficePPT::Body:
@@ -2040,12 +2047,12 @@ protected:
 					case NSOfficePPT::MasterNotesBody:
 					case NSOfficePPT::VerticalTextBody:
 						{
-							pTextSettings->m_lTextType = 2;
+							pTextSettings->m_lStyleThemeIndex = 2;
 							break;
 						}
 					default:
 						{
-							pTextSettings->m_lTextType = 3;
+							pTextSettings->m_lStyleThemeIndex = 3;
 							break;
 						}
 					}
@@ -2053,7 +2060,7 @@ protected:
 			}
 			else
 			{
-				pTextSettings->m_lTextType = 0;
+				pTextSettings->m_lStyleThemeIndex = 0;
 			}
 
 			// теперь смотрим все остальные стили (persist и own) - просто применяем их к m_oStyles
@@ -2124,18 +2131,20 @@ protected:
 			}
 			StreamUtils::StreamSeek(lPosition, oElemInfo.m_pStream);
 		}
-		pShape->m_oShape.m_oText.RecalcParagraphsPPT(pTheme);
+		pShape->m_oShape.m_oText.RecalcParagraphsPPT();
+		
+		ApplyThemeStyle(pElem, pTheme, master_levels);
 
 		if (pShape->m_oActions.m_bPresent)
 		{
-			//todooo разобраться нужно ли менять цвет на гиперлинк 
-/*			NSPresentationEditor::CColor oColor;
+			//todooo разобраться нужно ли менять цвет на гиперлинк - 1-(34).ppt
+			NSPresentationEditor::CColor oColor;
 			if ((NULL != pSlide) && !pSlide->m_bUseLayoutColorScheme)			oColor = pSlide->GetColor(11);
 			else if ((NULL != pLayout) && (!pLayout->m_bUseThemeColorScheme))	oColor = pLayout->GetColor(11);
 			else if (NULL != pTheme)											oColor = pTheme->GetColor(11);
-			oColor.m_lSchemeIndex = 1*/1;
+			oColor.m_lSchemeIndex = 11;
 
-			/*ApplyHyperlink(pShape, oColor);*/
+			ApplyHyperlink(pShape, oColor);
 		}
 
 		CPPTShape* pPPTShape = dynamic_cast<CPPTShape*>(pShape->m_oShape.m_pShape);

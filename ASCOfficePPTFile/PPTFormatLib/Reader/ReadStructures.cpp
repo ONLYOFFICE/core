@@ -7,6 +7,73 @@
 
 using namespace NSPresentationEditor;
 
+namespace NSPresentationEditor
+{
+	static CColor GetStandartPaletteColor(int index)
+	{
+		CColor color;
+		static BYTE palette [56][3] = 
+		{
+			{	0	,	0	,	0	},
+			{	255	,	255	,	255	},
+			{	255	,	0	,	0	},
+			{	0	,	255	,	0	},
+			{	0	,	0	,	255	},
+			{	255	,	255	,	0	},
+			{	255	,	0	,	255	},
+			{	0	,	255	,	255	},
+			{	128	,	0	,	0	},
+			{	0	,	128	,	0	},
+			{	0	,	0	,	128	},
+			{	128	,	128	,	0	},
+			{	128	,	0	,	128	},
+			{	0	,	128	,	128	},
+			{	192	,	192	,	192	},
+			{	128	,	128	,	128	},
+			{	153	,	153	,	255	},
+			{	153	,	51	,	102	},
+			{	255	,	255	,	204	},
+			{	204	,	255	,	255	},
+			{	102	,	0	,	102	},
+			{	255	,	128	,	128	},
+			{	0	,	102	,	204	},
+			{	204	,	204	,	255	},
+			{	0	,	0	,	128	},
+			{	255	,	0	,	255	},
+			{	255	,	255	,	0	},
+			{	0	,	255	,	255	},
+			{	128	,	0	,	128	},
+			{	128	,	0	,	0	},
+			{	0	,	128	,	128	},
+			{	0	,	0	,	255	},
+			{	0	,	204	,	255	},
+			{	204	,	255	,	255	},
+			{	204	,	255	,	204	},
+			{	255	,	255	,	153	},
+			{	153	,	204	,	255	},
+			{	255	,	153	,	204	},
+			{	204	,	153	,	255	},
+			{	255	,	204	,	153	},
+			{	51	,	102	,	255	},
+			{	51	,	204	,	204	},
+			{	153	,	204	,	0	},
+			{	255	,	204	,	0	},
+			{	255	,	153	,	0	},
+			{	255	,	102	,	0	},
+			{	102	,	102	,	153	},
+			{	150	,	150	,	150	},
+			{	0	,	51	,	102	},
+			{	51	,	153	,	102	},
+			{	0	,	51	,	0	},
+			{	51	,	51	,	0	},
+			{	153	,	51	,	0	},
+			{	153	,	51	,	102	},
+			{	51	,	51	,	153	}
+		};
+		color.SetRGB(palette[index][0], palette[index][1], palette[index][2]);
+		return color;
+	}
+}
 
 namespace NSZLib
 {
@@ -272,7 +339,11 @@ void CTextPFRun_ppt::LoadFromStream(POLE::Stream* pStream, bool bIsIndentation)
 		oColor.A = 255;
 		oColor.m_lSchemeIndex = -1;
 
-		if (oColorAtom.Index < 10)
+		//if (oColorAtom.Index < 64 && oColorAtom.bPaletteIndex) 1-(23).ppt
+		//{
+		//	oColor = NSPresentationEditor::GetStandartPaletteColor(oColorAtom.Index);
+		//}
+		if (oColorAtom.Index < 10 && oColorAtom.bSchemeIndex)
 		{
 			oColor.m_lSchemeIndex = oColorAtom.Index;
 			NSPresentationEditor::CorrectColorPPT(oColor.m_lSchemeIndex);
@@ -428,7 +499,11 @@ void CTextCFRun_ppt::LoadFromStream(POLE::Stream* pStream, bool bIsIndentation)
 		oColor.A = 255;
 		oColor.m_lSchemeIndex = -1;
 
-		if (oColorAtom.Index < 10/* && oColorAtom.bSchemeIndex*/)
+		//if (oColorAtom.Index < 64 && oColorAtom.bPaletteIndex && !oColorAtom.bPaletteRGB)
+		//{
+		//	oColor = NSPresentationEditor::GetStandartPaletteColor(oColorAtom.Index);
+		//}
+		if (oColorAtom.Index < 10 && oColorAtom.bSchemeIndex)
 		{
 			oColor.m_lSchemeIndex = oColorAtom.Index;
 			NSPresentationEditor::CorrectColorPPT(oColor.m_lSchemeIndex);
@@ -469,9 +544,11 @@ namespace NSPresentationEditor
 			oAttributes.m_arParagraphs.push_back(elm);
 			NSPresentationEditor::CParagraph* pPar = &oAttributes.m_arParagraphs[nIndexPF];
 
-			pPar->m_oPFRun		= oArrayPF[nIndexPF].m_oRun;
-			pPar->m_lTextType	= oAttributes.m_lTextType;
-			pPar->m_lTextLevel	= oArrayPF[nIndexPF].m_lLevel;
+			pPar->m_lTextLevel			= oArrayPF[nIndexPF].m_lLevel;
+			pPar->m_oPFRun				= oArrayPF[nIndexPF].m_oRun;
+		
+			pPar->m_lTextType			= oAttributes.m_lTextType;
+			pPar->m_lStyleThemeIndex	= oAttributes.m_lStyleThemeIndex;
 
 			int nCountInPF = oArrayPF[nIndexPF].m_lCount;
 

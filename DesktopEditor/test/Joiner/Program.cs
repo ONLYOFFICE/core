@@ -47,6 +47,7 @@ namespace Joiner
                 List<int> arExcel = new List<int>();
 
                 List<string> arFiles = new List<string>();
+                List<int> arFindIndex = new List<int>();
 
                 int nStart = 0;
 
@@ -60,6 +61,7 @@ namespace Joiner
                     if (!map_files.ContainsKey(sFile))
                     {
                         arFiles.Add(sFile);
+                        arFindIndex.Add(nStart);
                         map_files.Add(sFile, true);
                     }
                 }
@@ -68,12 +70,13 @@ namespace Joiner
                 while ((nStart = sConfigSource.IndexOf("/Word/", nStart + 1)) >= 0)
                 {
                     int nFind = sConfigSource.IndexOf('\"', nStart);
-                    arCommon.Add(nStart);
+                    arWord.Add(nStart);
 
                     string sFile = sConfigSource.Substring(nStart, nFind - nStart);
                     if (!map_files.ContainsKey(sFile))
                     {
                         arFiles.Add(sFile);
+                        arFindIndex.Add(nStart);
                         map_files.Add(sFile, true);
                     }
                 }
@@ -88,6 +91,7 @@ namespace Joiner
                     if (!map_files.ContainsKey(sFile))
                     {
                         arFiles.Add(sFile);
+                        arFindIndex.Add(nStart);
                         map_files.Add(sFile, true);
                     }
                 }
@@ -102,16 +106,38 @@ namespace Joiner
                     if (!map_files.ContainsKey(sFile))
                     {
                         arFiles.Add(sFile);
+                        arFindIndex.Add(nStart);
                         map_files.Add(sFile, true);
+                    }
+                }
+
+                string[] _filesResult = arFiles.ToArray();
+                int[] _findResult = arFindIndex.ToArray();
+
+                int nLengthFilesCheck = _filesResult.Length;
+                for (int i = 0; i < nLengthFilesCheck; ++i)
+                {
+                    for (int j = i + 1; j < nLengthFilesCheck; ++j)
+                    {
+                        if (_findResult[i] > _findResult[j])
+                        {
+                            int nTmp = _findResult[i];
+                            _findResult[i] = _findResult[j];
+                            _findResult[j] = nTmp;
+
+                            string sTmp = _filesResult[i];
+                            _filesResult[i] = _filesResult[j];
+                            _filesResult[j] = sTmp;
+                        }
                     }
                 }
 
                 StringBuilder oBuilder = new StringBuilder();
 
                 List<string> arConcat = new List<string>();
-                for (int i = 0; i < arFiles.Count; i++)
+                for (int i = 0; i < nLengthFilesCheck; i++)
                 {
-                    string sFileCandidate = arFiles[i];
+                    string sFileCandidate = _filesResult[i];
                     if ((sFileCandidate.IndexOf("/Build/") >= 0) ||
                         (sFileCandidate.IndexOf("3rdparty") >= 0) ||
                         (sFileCandidate.IndexOf("-all.js") >= 0) ||
@@ -119,15 +145,17 @@ namespace Joiner
                         (sFileCandidate.LastIndexOf(".js") != (sFileCandidate.Length - 3)))
                         continue;
 
+                    /*
                     if ((sFileCandidate.IndexOf("/api.js") >= 0) ||
                         (sFileCandidate.IndexOf("/apiCommon.js") >= 0))
                     {
                         arConcat.Add(sFileCandidate);
                         continue;
                     }
+                    */ 
 
 
-                    StreamReader oReader2 = new StreamReader(sPathBase + "../.." + arFiles[i]);
+                    StreamReader oReader2 = new StreamReader(sPathBase + "../.." + _filesResult[i]);
                     oBuilder.Append(oReader2.ReadToEnd());
 
                     oBuilder.Append("\n\n");

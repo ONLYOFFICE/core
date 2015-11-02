@@ -267,26 +267,33 @@ bool COfficeFileFormatChecker::isOOXFormatFile(const std::wstring & fileName)
 
         std::string strContentTypes((char*)pBuffer, nBufferSize);
 
+        std::string::size_type res1 = std::string::npos;
         std::string::size_type res = 0;
-        if ( (res = strContentTypes.find(docxFormatLine))>0 || (res = strContentTypes.find(dotxFormatLine))>0 ||
-            (res = strContentTypes.find(docmFormatLine))>0 || (res = strContentTypes.find(dotmFormatLine))>0)
+        if ((std::string::npos != strContentTypes.find(docxFormatLine)) ||
+            (std::string::npos != strContentTypes.find(dotxFormatLine)) ||
+            (std::string::npos != strContentTypes.find(docmFormatLine)) ||
+            (std::string::npos != strContentTypes.find(dotmFormatLine)))
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX;
 		}
 
-        else if ((res = strContentTypes.find(xlsxFormatLine))>0 || (res = strContentTypes.find(xltxFormatLine))>0 ||
-            (res = strContentTypes.find(xlsmFormatLine))>0 || (res = strContentTypes.find(xltmFormatLine))>0)
+        else if ((std::string::npos != strContentTypes.find(xlsxFormatLine)) ||
+                 (std::string::npos != strContentTypes.find(xltxFormatLine)) ||
+                 (std::string::npos != strContentTypes.find(xlsmFormatLine)) ||
+                 (std::string::npos != strContentTypes.find(xltmFormatLine)))
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX;
 		}
 
-        else if ((res = strContentTypes.find(pptxFormatLine))>0 || /*(res = strContentTypes.find(ppsxFormatLine))>0 ||*/
-            (res = strContentTypes.find(potxFormatLine))>0 || (res = strContentTypes.find(pptmFormatLine))>0 ||
-            (res = strContentTypes.find(ppsmFormatLine))>0 || (res = strContentTypes.find(potmFormatLine))>0 )
+        else if ((std::string::npos != strContentTypes.find(pptxFormatLine)) ||
+                 (std::string::npos != strContentTypes.find(potxFormatLine)) ||
+                 (std::string::npos != strContentTypes.find(pptmFormatLine)) ||
+                 (std::string::npos != strContentTypes.find(ppsmFormatLine)) ||
+                 (std::string::npos != strContentTypes.find(potmFormatLine)))
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX;
 		}
-        else if ((res = strContentTypes.find(ppsxFormatLine)) >0)
+        else if ((std::string::npos != strContentTypes.find(ppsxFormatLine)))
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSX;
 		}

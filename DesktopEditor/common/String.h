@@ -24,43 +24,44 @@ namespace NSStringExt
 	}
 // end define
 
-#define NSSTRING_WITHLEADBYTE_CP(LEAD_CHAR, UnicodeMapCP, UnicodeMapWithLeadByte, lCount, pData) \
-	{\
-		int nLeadByte = -1;\
-		for (long i = 0; i < lCount; i++)\
-		{\
-			unsigned char  unCode = (unsigned char)pData[i];\
-			unsigned short ushUnicode = UnicodeMapCP[unCode];\
-			if (-1 == nLeadByte)\
-			{\
-				if (LEAD_CHAR != ushUnicode)\
-				{\
-					pUnicode[i] = ushUnicode;\
-					nLeadByte = -1;\
-				}\
-				else\
-				{\
-					nLeadByte = ushUnicode;\
-				}\
-			}\
-			else\
-			{\
-				unsigned short ushCode = (nLeadByte << 16) | ushUnicode;\
-				pUnicode[i] = 0x0020;\
-				TCodePagePair *pPair = (TCodePagePair*)UnicodeMapWithLeadByte;\
-				while(0xFFFF != pPair->ushCode)\
-				{\
-					if (ushCode == pPair->ushCode)\
-					{\
-						pUnicode[i] = pPair->ushUnicode;\
-						break;\
-					}\
-					pPair++;\
-				}\
-			}\
-		}\
+	static void NSSTRING_WITHLEADBYTE_CP(wchar_t** ppUnicode, unsigned short LEAD_CHAR, const unsigned short* UnicodeMapCP, const TCodePagePair* UnicodeMapWithLeadByte, long lCount, const unsigned char* pData)
+	{
+		int nLeadByte = -1;
+		int nUnicodePos = 0;
+		for (long i = 0; i < lCount; ++i)
+		{
+			unsigned char  unCode = (unsigned char)pData[i];
+			unsigned short ushUnicode = UnicodeMapCP[unCode];
+			if (-1 == nLeadByte)
+			{
+				if (LEAD_CHAR != ushUnicode)
+				{
+					(*ppUnicode)[nUnicodePos++] = ushUnicode;
+					nLeadByte = -1;
+				}
+				else
+				{
+					nLeadByte = unCode;
+				}
+			}
+			else
+			{
+				unsigned short ushCode = (nLeadByte << 8) | unCode;
+				TCodePagePair *pPair = (TCodePagePair*)UnicodeMapWithLeadByte;
+				while (0xFFFF != pPair->ushCode)
+				{
+					if (ushCode == pPair->ushCode)
+					{
+						(*ppUnicode)[nUnicodePos++] = pPair->ushUnicode;
+						break;
+					}
+					pPair++;
+				}
+				nLeadByte = -1;
+			}
+		}
+		(*ppUnicode)[nUnicodePos++] = 0x0000;
 	}
-// end define
 
 	class CConverter
 	{
@@ -124,15 +125,15 @@ namespace NSStringExt
 				case SINGLE_BYTE_ENCODING_CP1256: NSSTRING_COMMON_CP(NSStringExt::c_anUnicodeMapCP1256, lCount, pData); break;
 				case SINGLE_BYTE_ENCODING_CP1257: NSSTRING_COMMON_CP(NSStringExt::c_anUnicodeMapCP1257, lCount, pData); break;
 				case SINGLE_BYTE_ENCODING_CP1258: NSSTRING_COMMON_CP(NSStringExt::c_anUnicodeMapCP1258, lCount, pData); break;
-				case SINGLE_BYTE_ENCODING_CP932: NSSTRING_WITHLEADBYTE_CP(MSCP932_LEAD_CHAR, NSStringExt::c_anUnicodeMapCP932, c_aoUnicodeMapCP932WithLeadByte, lCount, pData); break;
-				case SINGLE_BYTE_ENCODING_CP936: NSSTRING_WITHLEADBYTE_CP(MSCP936_LEAD_CHAR, NSStringExt::c_anUnicodeMapCP936, NSStringExt::c_aoUnicodeMapCP936WithLeadByte, lCount, pData); break;
-				case SINGLE_BYTE_ENCODING_CP949: NSSTRING_WITHLEADBYTE_CP(MSCP949_LEAD_CHAR, NSStringExt::c_anUnicodeMapCP949, NSStringExt::c_aoUnicodeMapCP949WithLeadByte, lCount, pData); break;
-				case SINGLE_BYTE_ENCODING_CP950: NSSTRING_WITHLEADBYTE_CP(MSCP950_LEAD_CHAR, NSStringExt::c_anUnicodeMapCP950, NSStringExt::c_aoUnicodeMapCP950WithLeadByte, lCount, pData); break;
-				case SINGLE_BYTE_ENCODING_CP1361:NSSTRING_WITHLEADBYTE_CP(MSCP1361_LEAD_CHAR, NSStringExt::c_anUnicodeMapCP1361, NSStringExt::c_aoUnicodeMapCP1361WithLeadByte, lCount, pData); break;
+				case SINGLE_BYTE_ENCODING_CP932: NSSTRING_WITHLEADBYTE_CP(&pUnicode, MSCP932_LEAD_CHAR, NSStringExt::c_anUnicodeMapCP932, c_aoUnicodeMapCP932WithLeadByte, lCount, pData); break;
+				case SINGLE_BYTE_ENCODING_CP936: NSSTRING_WITHLEADBYTE_CP(&pUnicode, MSCP936_LEAD_CHAR, NSStringExt::c_anUnicodeMapCP936, NSStringExt::c_aoUnicodeMapCP936WithLeadByte, lCount, pData); break;
+				case SINGLE_BYTE_ENCODING_CP949: NSSTRING_WITHLEADBYTE_CP(&pUnicode, MSCP949_LEAD_CHAR, NSStringExt::c_anUnicodeMapCP949, NSStringExt::c_aoUnicodeMapCP949WithLeadByte, lCount, pData); break;
+				case SINGLE_BYTE_ENCODING_CP950: NSSTRING_WITHLEADBYTE_CP(&pUnicode, MSCP950_LEAD_CHAR, NSStringExt::c_anUnicodeMapCP950, NSStringExt::c_aoUnicodeMapCP950WithLeadByte, lCount, pData); break;
+				case SINGLE_BYTE_ENCODING_CP1361:NSSTRING_WITHLEADBYTE_CP(&pUnicode, MSCP1361_LEAD_CHAR, NSStringExt::c_anUnicodeMapCP1361, NSStringExt::c_aoUnicodeMapCP1361WithLeadByte, lCount, pData); break;
 			}
 
 			pUnicode[lCount] = 0;
-			std::wstring s(pUnicode, lCount);
+			std::wstring s(pUnicode);
 
 			if (pUnicode)
 				delete[] pUnicode;

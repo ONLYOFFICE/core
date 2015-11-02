@@ -579,7 +579,8 @@ namespace MetaFile
 						}
 
 						std::wstring wsTempText;
-						wsTempText += wsText.at(unCharsCount - 1);
+                        wsTempText += wsText.at(wsText.length() - 1);
+                        //wsTempText += wsText.at(unCharsCount - 1);
 
 						pFontManager->LoadString1(wsTempText, 0, 0);
 						TBBox oBox = pFontManager->MeasureString2();

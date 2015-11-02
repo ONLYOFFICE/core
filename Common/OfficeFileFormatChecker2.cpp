@@ -174,7 +174,7 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring & fileName)
 
         DWORD dwReadBytes = 0;
         file.ReadFile(buffer,MIN_SIZE_BUFFER,dwReadBytes);
-        int sizeRead = (int)file.GetFilePosition();
+        int sizeRead = (int)dwReadBytes;
 		file.CloseFile();
 
 		if ( isRtfFormatFile(buffer,sizeRead) )

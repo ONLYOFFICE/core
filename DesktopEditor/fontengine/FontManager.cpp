@@ -1,4 +1,4 @@
-﻿#include "ApplicationFonts.h"
+﻿ #include "ApplicationFonts.h"
 #include "../common/File.h"
 #include <stdio.h>
 #include "ftsnames.h"
@@ -683,8 +683,11 @@ INT CFontManager::LoadFontFromFile2(CFontsCache* pCache, const std::wstring& sPa
 
 void CFontManager::CloseFont()
 {
-    this->m_pFont->ClearCache();
-    this->m_pFont = NULL;
+    if (m_pFont)
+    {
+        m_pFont->ClearCache();
+        m_pFont = NULL;
+    }
 }
 
 std::wstring CFontManager::GetFontType() const

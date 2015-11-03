@@ -167,6 +167,11 @@ public:
 		m_oCS.Leave();
 		return m_lRef;
 	}
+    
+    void SetApplicationFonts(CApplicationFonts* pApplicationFonts)
+    {
+        m_pApplicationFonts = pApplicationFonts;
+    }
 };
 
 #endif // _BUILD_IMAGEFILESCACHE_H_

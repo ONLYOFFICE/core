@@ -2447,4 +2447,48 @@ namespace NSEditorApi
     };
 }
 
+namespace NSEditorApi
+{
+    class CAscLocalRecentsAll : public IMenuEventDataBase
+    {
+    private:
+        std::wstring m_sJSON;
+        int m_nId;
+
+    public:
+
+        CAscLocalRecentsAll()
+        {
+        }
+        virtual ~CAscLocalRecentsAll()
+        {
+        }
+
+        LINK_PROPERTY_STRING(JSON)
+        LINK_PROPERTY_INT(Id)
+    };
+
+    class CAscLocalOpenFileRecent_Recover : public IMenuEventDataBase
+    {
+    private:
+        int m_nId;
+        bool m_bIsRecover;
+        std::wstring m_sPath;
+
+    public:
+
+        CAscLocalOpenFileRecent_Recover()
+        {
+            m_bIsRecover = false;
+        }
+        virtual ~CAscLocalOpenFileRecent_Recover()
+        {
+        }
+
+        LINK_PROPERTY_BOOL(IsRecover)
+        LINK_PROPERTY_INT(Id)
+        LINK_PROPERTY_STRING(Path)
+    };
+}
+
 #endif //_BUILD_EDITOR_API_CROSSPLATFORM_H_

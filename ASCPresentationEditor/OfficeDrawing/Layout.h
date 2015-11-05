@@ -29,6 +29,7 @@ namespace NSPresentationEditor
 		bool					m_bShowMasterShapes;
 		std::wstring			m_strLayoutType;
 
+		std::wstring			m_sName;
 	public:
 		CLayout() 
 		{

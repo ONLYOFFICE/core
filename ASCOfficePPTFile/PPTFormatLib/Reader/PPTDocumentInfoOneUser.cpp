@@ -1549,15 +1549,9 @@ void CPPTUserInfo::CreateDefaultStyle(NSPresentationEditor::CTextStyles& pStyle,
 		NSPresentationEditor::CTextCFRun* pCF = &pStyle.m_pLevels[i]->m_oCFRun;
 
 		pCF->Language		= m_wLanguage;
-//----------------------------------------	?????????	
-        pCF->FontBold		= false;
-        pCF->FontItalic		= false;
-        pCF->FontUnderline	= false;
-        pCF->FontStrikeout	= false;
 
 		pCF->Size			= 18;
-		pCF->BaseLineOffset = 0.;
-//-------------------------------------------
+
 		pCF->FontProperties = new NSPresentationEditor::CFontProperties();
 		pCF->FontProperties->SetFont(pTheme->m_arFonts[0]);
 	}

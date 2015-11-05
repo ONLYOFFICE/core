@@ -2474,18 +2474,21 @@ namespace NSEditorApi
         int m_nId;
         bool m_bIsRecover;
         std::wstring m_sPath;
+        bool m_bIsRemove;
 
     public:
 
         CAscLocalOpenFileRecent_Recover()
         {
             m_bIsRecover = false;
+            m_bIsRemove = false;
         }
         virtual ~CAscLocalOpenFileRecent_Recover()
         {
         }
 
         LINK_PROPERTY_BOOL(IsRecover)
+        LINK_PROPERTY_BOOL(IsRemove)
         LINK_PROPERTY_INT(Id)
         LINK_PROPERTY_STRING(Path)
     };

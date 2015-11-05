@@ -215,12 +215,7 @@ void CStylesWriter::ConvertStyleLevel(NSPresentationEditor::CTextStyleLevel& oLe
 			oWriter.WriteString(strProp);
 		}
 	}
-
-	if ((pCF->FontProperties.is_init()) && (!pCF->FontProperties->strFontName.empty()))
-	{
-		oWriter.WriteString(std::wstring(L"<a:latin typeface=\"") + pCF->FontProperties->strFontName + _T("\"/>"));
-	}
-	else if (pCF->Typeface.is_init())
+	if (pCF->Typeface.is_init())
 	{
 		if (0 == pCF->Typeface.get())
 		{
@@ -232,6 +227,18 @@ void CStylesWriter::ConvertStyleLevel(NSPresentationEditor::CTextStyleLevel& oLe
 			CString strProp = _T("<a:latin typeface=\"+mn-lt\"/>");
 			oWriter.WriteString(strProp);
 		}
+	}
+	else if ((pCF->FontProperties.is_init()) && (!pCF->FontProperties->strFontName.empty()))
+	{
+		oWriter.WriteString(std::wstring(L"<a:latin typeface=\"") + pCF->FontProperties->strFontName + _T("\"/>"));
+	}
+	if (pCF->FontPropertiesEA.is_init())
+	{
+		oWriter.WriteString(std::wstring(L"<a:ea typeface=\"") + pCF->FontPropertiesEA->strFontName + _T("\"/>"));
+	}
+	if (pCF->FontPropertiesSym.is_init())
+	{
+		oWriter.WriteString(std::wstring(L"<a:sym typeface=\"") + pCF->FontPropertiesSym->strFontName + _T("\"/>"));
 	}
 	CString strCF2 = _T("</a:defRPr>");
 	oWriter.WriteString(strCF2);		
@@ -524,24 +531,17 @@ void NSPresentationEditor::CShapeWriter::WriteImageInfo()
 
 	if (-1 != m_pImageElement->m_lPlaceholderType)
 	{
-		if (-1 == m_pImageElement->m_lPlaceholderID)
-		{
-            m_oWriter.WriteString(std::wstring(L"<p:nvPr><p:ph"));
-			if (m_pImageElement->m_lPlaceholderType > 0)
-				m_oWriter.WriteString(std::wstring(L" type=\"") + GetPhType(m_pImageElement->m_lPlaceholderType) +_T("\""));
-			m_oWriter.WriteString(std::wstring(L"/></p:nvPr>"));
-		}
-		else
+		m_oWriter.WriteString(std::wstring(L"<p:nvPr><p:ph"));
+		if (m_pImageElement->m_lPlaceholderType > 0)
+			m_oWriter.WriteString(std::wstring(L" type=\"") + GetPhType(m_pImageElement->m_lPlaceholderType) +_T("\""));
+		
+		if (-1 != m_pImageElement->m_lPlaceholderID)
 		{
             CString strIdx; strIdx.Format(_T("%d"), m_pImageElement->m_lPlaceholderID);
-            m_oWriter.WriteString(std::wstring(L"<p:nvPr><p:ph"));
-			
-			if (m_pImageElement->m_lPlaceholderType > 0)
-				m_oWriter.WriteString(std::wstring(L" type=\"") + GetPhType(m_pImageElement->m_lPlaceholderType) + _T("\""));
-
-			m_oWriter.WriteString(std::wstring(L" idx=\"") + string2std_string(strIdx) + _T("\"/></p:nvPr>"));
+			m_oWriter.WriteString(std::wstring(L" idx=\"") + string2std_string(strIdx) + _T("\""));
 
 		}
+		m_oWriter.WriteString(std::wstring(L"/></p:nvPr>"));
 	}
 	else
 	{
@@ -599,48 +599,32 @@ void NSPresentationEditor::CShapeWriter::WriteShapeInfo()
 
 	if (-1 != m_pShapeElement->m_lPlaceholderType)
 	{
-		if ( m_pShapeElement->m_lPlaceholderID < 0)
+		m_oWriter.WriteString(std::wstring(L"<p:nvPr><p:ph"));
+		
+		if (m_pShapeElement->m_lPlaceholderType > 0 /*&& !isBodyPlaceholder(m_pShapeElement->m_lPlaceholderType)*/)
+			m_oWriter.WriteString(std::wstring(L" type=\"") + GetPhType(m_pShapeElement->m_lPlaceholderType) + _T("\""));
+		
+		if ( m_pShapeElement->m_lPlaceholderID != -1)
 		{
-            m_oWriter.WriteString(std::wstring(L"<p:nvPr><p:ph"));
-
-			if (m_pShapeElement->m_lPlaceholderType > 0)
-				m_oWriter.WriteString(std::wstring(L" type=\"") + GetPhType(m_pShapeElement->m_lPlaceholderType) + _T("\""));
-
-			if (m_pShapeElement->m_lPlaceholderSizePreset > 1 && !isTitlePlaceholder(m_pShapeElement->m_lPlaceholderType))
-			{
-				if (m_pShapeElement->m_lPlaceholderSizePreset == 2)
-					m_oWriter.WriteString(std::wstring(L" size=\"half\""));
-				if (m_pShapeElement->m_lPlaceholderSizePreset == 4)
-					m_oWriter.WriteString(std::wstring(L" size=\"quarter\""));
-				if (m_pShapeElement->m_lPlaceholderSizePreset == 3)
-				{
-					if (isBodyPlaceholder(m_pShapeElement->m_lPlaceholderType))
-						m_oWriter.WriteString(std::wstring(L" size=\"half\""));
-					else 
-						m_oWriter.WriteString(std::wstring(L" size=\"quarter\""));
-				}
-			}
-			
-			m_oWriter.WriteString(std::wstring(L"/></p:nvPr>"));
-		}
-		else
-		{
-            CString strIdx; strIdx.Format(_T("%d"), m_pShapeElement->m_lPlaceholderID);
-			 m_oWriter.WriteString(std::wstring(L"<p:nvPr><p:ph"));
-			 
-			if (m_pShapeElement->m_lPlaceholderType > 0)
-				m_oWriter.WriteString(std::wstring(L" type=\"") + GetPhType(m_pShapeElement->m_lPlaceholderType) + _T("\""));
+            CString strIdx; strIdx.Format(_T("%d"), m_pShapeElement->m_lPlaceholderID);			 
 			m_oWriter.WriteString(std::wstring(L" idx=\"") + string2std_string(strIdx) + _T("\""));
-			
-			if (PT_MasterSlideNumber == m_pShapeElement->m_lPlaceholderType)
-				m_oWriter.WriteString(std::wstring(L" size=\"half\""));
-			if (PT_MasterDate == m_pShapeElement->m_lPlaceholderType)
-				m_oWriter.WriteString(std::wstring(L" size=\"quarter\""));
-			//else
-			// m_oWriter.WriteString(std::wstring(L" size=\"half\""));
-				 
-			m_oWriter.WriteString(std::wstring(L"/></p:nvPr>"));
 		}
+		
+		if (m_pShapeElement->m_lPlaceholderSizePreset > 1 && !isTitlePlaceholder(m_pShapeElement->m_lPlaceholderType))
+		{
+			if (m_pShapeElement->m_lPlaceholderSizePreset == 2)
+				m_oWriter.WriteString(std::wstring(L" size=\"half\""));
+			if (m_pShapeElement->m_lPlaceholderSizePreset == 4)
+				m_oWriter.WriteString(std::wstring(L" size=\"quarter\""));
+			if (m_pShapeElement->m_lPlaceholderSizePreset == 3)
+			{
+				if (isBodyPlaceholder(m_pShapeElement->m_lPlaceholderType))
+					m_oWriter.WriteString(std::wstring(L" size=\"half\""));
+				else 
+					m_oWriter.WriteString(std::wstring(L" size=\"quarter\""));
+			}
+		}		
+		m_oWriter.WriteString(std::wstring(L"/></p:nvPr>"));
 	}
 	else
 	{
@@ -873,22 +857,27 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 				}
 				if (pPF->bulletFontProperties.is_init())
 				{
-					int rFind = pPF->bulletFontProperties->strFontName.find(L"Wingdings");
-					unsigned short bu = pPF->bulletChar.is_init() ? pPF->bulletChar.get() : 0;
-					
-					if (!(rFind >=0 && bu > 0xff ) || rFind < 0)
-					{
-						m_oWriter.WriteString(std::wstring(L"<a:buFont typeface=\"") + pPF->bulletFontProperties->strFontName + _T("\"/>"));
-					}
-				}	
+					m_oWriter.WriteString(std::wstring(L"<a:buFont typeface=\"") + pPF->bulletFontProperties->strFontName + _T("\"/>"));
+				}
+
+				bool set = true;
+				if (pPF->bulletFontProperties.is_init() == false && pPF->bulletSize.is_init() == false)
+				{
+					m_oWriter.WriteString(std::wstring(L"<a:buFontTx/>"));
+					if (pPF->bulletColor.is_init() == false)
+						set = false;
+				}
+
 				if (pPF->bulletChar.is_init())
 				{
 					wchar_t bu = pPF->bulletChar.get();
 					m_oWriter.WriteString(std::wstring(L"<a:buChar char=\""));
 					m_oWriter.WriteStringXML(std::wstring(&bu, 1));
 					m_oWriter.WriteString(std::wstring(L"\"/>"));
+					set = true;
 				}
-				else if (pParagraph->m_lTextLevel == 0)
+				
+				if (!set && pParagraph->m_lTextLevel == 0)
 				{
 					wchar_t bu = 0x2022;
 					m_oWriter.WriteString(std::wstring(L"<a:buChar char=\""));
@@ -1049,7 +1038,14 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 			{
 				m_oWriter.WriteString(std::wstring(L"<a:latin typeface=\"") + pCF->FontProperties->strFontName + _T("\"/>"));
 			}
-
+			if (pCF->FontPropertiesEA.is_init())
+			{
+				m_oWriter.WriteString(std::wstring(L"<a:ea typeface=\"") + pCF->FontPropertiesEA->strFontName + _T("\"/>"));
+			}
+			if (pCF->FontPropertiesSym.is_init())
+			{
+				m_oWriter.WriteString(std::wstring(L"<a:sym typeface=\"") + pCF->FontPropertiesSym->strFontName + _T("\"/>"));
+			}
 			m_oWriter.WriteString(std::wstring(L"</a:rPr>"));
 
 			if (!bIsBr)

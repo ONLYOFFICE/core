@@ -328,11 +328,13 @@ namespace NSStreamReader
 		oAtom.B				= StreamUtils::ReadBYTE(pStream);
 		oAtom.Index			= StreamUtils::ReadBYTE(pStream);
 
-		oAtom.bPaletteIndex	= (0x01 == (oAtom.Index & 0x01));
-		oAtom.bPaletteRGB	= (0x02 == (oAtom.Index & 0x02));
-		oAtom.bSystemRGB	= (0x04 == (oAtom.Index & 0x04));
-		oAtom.bSchemeIndex	= (0x08 == (oAtom.Index & 0x08));
-		oAtom.bSysIndex		= (0x10 == (oAtom.Index & 0x10));
+		oAtom.bPaletteIndex	= oAtom.bPaletteRGB = oAtom.bSystemRGB	= oAtom.bSysIndex = oAtom.bSchemeIndex = false;
+
+		if (oAtom.Index != 0xFF)
+		{
+			oAtom.bPaletteRGB	= (oAtom.Index == 0xFE);
+			oAtom.bSchemeIndex	= (oAtom.Index != 0xFE);
+		}
 	}
 	
 	void Read(POLE::Stream* pStream, NSPresentationEditor::CTextSIRun& oRun, bool bIsIndentation = true);

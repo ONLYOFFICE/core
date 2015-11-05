@@ -2060,7 +2060,7 @@ protected:
 			}
 			else
 			{
-				pTextSettings->m_lStyleThemeIndex = 0;
+				pTextSettings->m_lStyleThemeIndex = 0; //???
 			}
 
 			// теперь смотрим все остальные стили (persist и own) - просто применяем их к m_oStyles

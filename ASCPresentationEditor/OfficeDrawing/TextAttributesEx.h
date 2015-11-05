@@ -57,7 +57,7 @@ namespace NSPresentationEditor
 			m_lPlaceholderType	= -1;
 			m_lPlaceholderID	= -1;
 
-			m_lStyleThemeIndex	= 0;//default
+			m_lStyleThemeIndex	= -1;
 
 			m_lFontRef			= -1;
 			m_bIsSlideFontRef	= false;

@@ -128,11 +128,12 @@ namespace NSPresentationEditor
 		NSCommon::nullable_base<CColor>			Color;				// text color
 		NSCommon::nullable_base<WORD>			Size;				// font size
 
-
 		NSCommon::nullable_base<WORD>			Cap;				// 0 - none, 1 - TEXT, 2 - text
+		NSCommon::nullable_base<WORD>			Language;
 
 		NSCommon::nullable_base<CFontProperties>	FontProperties;
-		NSCommon::nullable_base<WORD>			Language;
+		NSCommon::nullable_base<CFontProperties>	FontPropertiesEA;
+		NSCommon::nullable_base<CFontProperties>	FontPropertiesSym;
 
 	public:
 
@@ -236,100 +237,6 @@ namespace NSPresentationEditor
 				Language = oSrc.Language;
 		}
 
-		CString ToString(LONG lCount)
-		{
-			NSPresentationEditor::CXmlWriter oWriter;
-                        oWriter.WriteNodeBegin(_T("Character"), true);
-			oWriter.WriteAttributeLONG(_T("count"), lCount);
-                        oWriter.WriteNodeEnd(_T("Character"), true, false);
-
-			oWriter.WriteNodeBegin(_T("Attributes"));
-
-			int nBold	= 0;
-			int nItalic = 0;
-			
-			CString strXml = _T("");
-
-			if (FontBold.is_init())
-			{
-				if (FontBold.get())
-				{
-					strXml += _T("<font-bold>1</font-bold>");
-					nBold = 1;
-				}
-			}
-			if (FontItalic.is_init())
-			{
-				if (FontItalic.get())
-				{
-					strXml += _T("<font-italic>1</font-italic>");
-					nItalic = 1;
-				}
-			}
-			if (FontUnderline.is_init())
-			{
-				if (FontUnderline.get())
-				{
-					strXml += _T("<font-underline>1</font-underline>");
-				}
-			}
-			if (FontStrikeout.is_init())
-			{
-				if (FontStrikeout.get())
-				{
-					strXml += _T("<font-strikeout>1</font-strikeout>");
-				}
-			}
-			if (FontShadow.is_init())
-			{
-				if (FontShadow.get())
-				{
-					strXml += _T("<shadow-visible>1</shadow-visible>");
-				}
-			}
-
-			strXml += ToNode(BaseLineOffset, _T("baseline-shift"));
-			strXml += ToNode(Color, _T("brush-color1"));
-			strXml += ToNode(Size, _T("font-size"));
-
-			if (FontProperties.is_init())
-			{
-				strXml += (_T("<font-name>") + std_string2string(FontProperties->strFontName) + _T("</font-name>"));
-
-				oWriter.WriteString(strXml);
-				oWriter.WriteNodeEnd(_T("Attributes"));
-
-				// font properties
-				strXml = _T("<FontProperties>");
-				strXml += (_T("<Name value='") + std_string2string(FontProperties->strFontName) + _T("' />"));
-
-				if (0 < FontProperties->arFontCharsets.size())
-					strXml += (_T("<Charset value='") + XmlUtils::IntToString((int)FontProperties->arFontCharsets[0]) + _T("' />"));
-
-				if (_T("unknown") != FontProperties->strPitchFamily)
-					strXml += (_T("<FamilyClass name='") + std_string2string(FontProperties->strPitchFamily) + _T("' />"));
-
-				if (-1 != FontProperties->lFontFixed)
-					strXml += (_T("<FixedWidth value='") + XmlUtils::IntToString(FontProperties->lFontFixed) + _T("' />"));
-
-				if (_T("") != FontProperties->strPanose)
-					strXml += (_T("<Panose value='") + std_string2string(FontProperties->strPanose) + _T("' />"));
-
-				strXml += (_T("<Style bold='") + XmlUtils::IntToString(nBold) + _T("' italic='") + XmlUtils::IntToString(nItalic) + _T("' />"));
-
-				strXml += _T("</FontProperties>");
-			}
-			else
-			{
-				oWriter.WriteNodeEnd(_T("Attributes"));
-			}
-
-			oWriter.WriteString(strXml);
-
-			oWriter.WriteNodeEnd(_T("Character"));
-			return oWriter.GetXmlString();
-		}
-
 	};
 
 	class CTextPFRun
@@ -403,16 +310,17 @@ namespace NSPresentationEditor
 
 		void ApplyBefore(const CTextPFRun& oSrc)
 		{
-			if (!hasBullet.is_init())				hasBullet			= oSrc.hasBullet;
-
-			if (!bulletSize.is_init())				bulletSize			= oSrc.bulletSize;
-			if (!bulletChar.is_init())
+			if (!hasBullet.is_init())			
 			{
+				hasBullet			= oSrc.hasBullet;
+
+				bulletSize			= oSrc.bulletSize;
 				bulletChar			= oSrc.bulletChar;
 				bulletFontRef		= oSrc.bulletFontRef;
+				bulletColor			= oSrc.bulletColor;
+				
 				bulletFontProperties.reset();
 			}
-			if (!bulletColor.is_init())				bulletColor			= oSrc.bulletColor;
 
 			if (!textAlignment.is_init())			textAlignment = oSrc.textAlignment;
 			if (!lineSpacing.is_init())				lineSpacing = oSrc.lineSpacing;
@@ -434,16 +342,17 @@ namespace NSPresentationEditor
 
 		void ApplyAfter(const CTextPFRun& oSrc)
 		{
-			if (oSrc.hasBullet.is_init())			hasBullet = oSrc.hasBullet;
-
-			if (oSrc.bulletSize.is_init())			bulletSize = oSrc.bulletSize;
-			if (oSrc.bulletChar.is_init())
+			if (oSrc.hasBullet.is_init())	
 			{
+				hasBullet = oSrc.hasBullet;
+
+				bulletSize = oSrc.bulletSize;	
 				bulletChar		= oSrc.bulletChar;
 				bulletFontRef	= oSrc.bulletFontRef;
+				bulletColor		= oSrc.bulletColor;
+
 				bulletFontProperties.reset();
 			}
-			if (oSrc.bulletColor.is_init())			bulletColor		= oSrc.bulletColor;
 
 			if (oSrc.textAlignment.is_init())		textAlignment	= oSrc.textAlignment;
 			if (oSrc.lineSpacing.is_init())			lineSpacing		= oSrc.lineSpacing;
@@ -867,9 +776,9 @@ namespace NSPresentationEditor
 	public:
 		CParagraph() : m_oPFRun(), m_arSpans()
 		{
-			m_lTextType			= 0;
+			m_lTextType			= -1;
 			m_lTextLevel		= 0;
-			m_lStyleThemeIndex	= 0;
+			m_lStyleThemeIndex	= -1;
 		}
 		CParagraph(const CParagraph& oSrc)
 		{

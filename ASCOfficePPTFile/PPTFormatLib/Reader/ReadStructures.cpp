@@ -316,15 +316,21 @@ void CTextPFRun_ppt::LoadFromStream(POLE::Stream* pStream, bool bIsIndentation)
 	{
 		m_oRun.bulletFontRef	= StreamUtils::ReadWORD(pStream);
 		
-		if ((bulletFlag & 0x0F) && !(0x02 == (bulletFlag & 0x02)))
-			m_oRun.bulletFontRef.reset();
+		if (bulletFlag & 0x0F)
+		{
+			if (!(0x02 == (bulletFlag & 0x02)))
+				m_oRun.bulletFontRef.reset();
+		}
 	}
 	if (bulletSize_)
 	{
 		m_oRun.bulletSize		= StreamUtils::ReadWORD(pStream);
 	
-		//if ((bulletFlag & 0x0F) && !(0x08 == (bulletFlag & 0x08)))
-		//	m_oRun.bulletSize.reset();
+		if (bulletFlag & 0x0F)
+		{
+			if (!(0x08 == (bulletFlag & 0x08)))
+				m_oRun.bulletSize.reset();
+		}
 	}
 	if (bulletColor_)
 	{
@@ -339,29 +345,23 @@ void CTextPFRun_ppt::LoadFromStream(POLE::Stream* pStream, bool bIsIndentation)
 		oColor.A = 255;
 		oColor.m_lSchemeIndex = -1;
 
-		//if (oColorAtom.Index < 64 && oColorAtom.bPaletteIndex) 1-(23).ppt
-		//{
-		//	oColor = NSPresentationEditor::GetStandartPaletteColor(oColorAtom.Index);
-		//}
-		if (oColorAtom.Index < 10 && oColorAtom.bSchemeIndex)
+		if (oColorAtom.bSchemeIndex)
 		{
 			oColor.m_lSchemeIndex = oColorAtom.Index;
 			NSPresentationEditor::CorrectColorPPT(oColor.m_lSchemeIndex);
 		}
 
-		m_oRun.bulletColor = oColor;
-		
-		//if ((bulletFlag & 0x0F) && !(0x04 == (bulletFlag & 0x04)))
-		//	m_oRun.bulletColor.reset();
+		if (oColorAtom.bSchemeIndex || oColorAtom.bPaletteRGB)
+		{
+			m_oRun.bulletColor = oColor;
+			
+			if (bulletFlag & 0x0F)
+			{
+				if (!(0x04 == (bulletFlag & 0x04)))
+					m_oRun.bulletColor.reset();	
+			}
+		}
 	}
-
-	//if (/*((m_oRun.hasBullet.is_init()) && (m_oRun.hasBullet.get() == false)) ||*/ !m_oRun.hasBullet.is_init())
-	//{
-	//	m_oRun.bulletColor.reset();
-	//	m_oRun.bulletSize.reset();
-	//	m_oRun.bulletFontRef.reset();
-	//	m_oRun.bulletChar.reset();
-	//}
 
 	if (textAlignment_)
 		m_oRun.textAlignment		= StreamUtils::ReadWORD(pStream);
@@ -499,20 +499,15 @@ void CTextCFRun_ppt::LoadFromStream(POLE::Stream* pStream, bool bIsIndentation)
 		oColor.A = 255;
 		oColor.m_lSchemeIndex = -1;
 
-		//if (oColorAtom.Index < 64 && oColorAtom.bPaletteIndex && !oColorAtom.bPaletteRGB)
-		//{
-		//	oColor = NSPresentationEditor::GetStandartPaletteColor(oColorAtom.Index);
-		//}
-		if (oColorAtom.Index < 10 && oColorAtom.bSchemeIndex)
+		if (oColorAtom.Index < 8 && oColorAtom.bSchemeIndex)
 		{
 			oColor.m_lSchemeIndex = oColorAtom.Index;
 			NSPresentationEditor::CorrectColorPPT(oColor.m_lSchemeIndex);
 		}
-		else
+		if (oColorAtom.bSchemeIndex || oColorAtom.bPaletteRGB)
 		{
+			m_oRun.Color = oColor;
 		}
-
-		m_oRun.Color = oColor;
 	}
 
 	if (BaseLineOffset_)

@@ -64,37 +64,26 @@ void NSPresentationEditor::CShapeElement::SetupTextProperties(CSlide* pSlide, CT
 					pRun->Color->m_lSchemeIndex = nColorIndex;
 				}
 			}
-			
-			if (pRun->Typeface.is_init() && (NULL != pTheme))
+			if (NULL != pTheme)
 			{
-				if (pRun->Typeface.get() < pTheme->m_arFonts.size())
+				if ((pRun->Typeface.is_init()) && (pRun->Typeface.get() < pTheme->m_arFonts.size()))
 				{
-					CFont* pFont = &(pTheme->m_arFonts[pRun->Typeface.get()]);
-
 					pRun->FontProperties = new CFontProperties();
-										
-					// font name
-					pRun->FontProperties->strFontName = pFont->Name;
-
-					// charset
-					pRun->FontProperties->arFontCharsets.clear();
-					pRun->FontProperties->arFontCharsets.push_back(pFont->Charset);
-
-					// pitchfamily
-					pRun->FontProperties->strPitchFamily = pFont->PitchFamily;
-
-					// font panose
-					pRun->FontProperties->strPanose		= pFont->Panose;
-					// font fixed
-					pRun->FontProperties->lFontFixed	= -1;
+					pRun->FontProperties->SetFont(pTheme->m_arFonts[pRun->Typeface.get()]);
 
 					if (1 < pRun->Typeface.get())
 						pRun->Typeface.reset();
 				}
-				/*if (m_arCFs[nIndex].fontEAFontRef < pContainer->m_pFonts->size())
+				if ((pRun->EAFontRef.is_init()) && (pRun->EAFontRef.get() < pTheme->m_arFonts.size()))
 				{
-					m_arCFs[nIndex].strFontName = (*(pContainer->m_pFonts))[m_arCFs[nIndex].fontEAFontRef].m_strFontName;
-				}*/
+					pRun->FontPropertiesEA = new CFontProperties();
+					pRun->FontPropertiesEA->SetFont(pTheme->m_arFonts[pRun->EAFontRef.get()]);
+				}
+				if ((pRun->SymbolFontRef.is_init()) && (pRun->SymbolFontRef.get() < pTheme->m_arFonts.size()))
+				{
+					pRun->FontPropertiesSym = new CFontProperties();
+					pRun->FontPropertiesSym->SetFont(pTheme->m_arFonts[pRun->SymbolFontRef.get()]);
+				}
 			}
 		}
 	}

@@ -1,6 +1,6 @@
 //
 //  ShapeAspects.h
-//  SpreadsheetEditorCtr
+//  UTILS
 //
 //  Created by alexey.musinov on 09.10.15.
 //  Copyright © 2015 Ascensio System SIA. All rights reserved.

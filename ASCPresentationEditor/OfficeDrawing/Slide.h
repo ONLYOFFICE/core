@@ -35,7 +35,7 @@ namespace NSPresentationEditor
 		CMetricInfo				m_oInfo;
 		
 		CString					m_strComment;
-
+		std::wstring			m_sName;
 	public:
 		CSlide() : m_arElements(), m_oSlideShow()
 		{

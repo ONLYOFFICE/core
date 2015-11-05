@@ -895,12 +895,6 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 
 		std::wstring typeRun = L"a:r";
 
-		//if (m_pShapeElement->m_lPlaceholderType == PT_MasterSlideNumber)
-		//{
-		//	m_oWriter.WriteString(std::wstring(L"<a:fld id=\"{D038279B-FC19-497E-A7D1-5ADD9CAF016F}\" type=\"slidenum\">"));
-		//	m_oWriter.WriteString(std::wstring(L"<a:rPr/><a:t>‹#›</a:t></a:fld>"));
-		//}
-
 		size_t nCountSpans = pParagraph->m_arSpans.size();
 		for (size_t nSpan = 0; nSpan < nCountSpans; ++nSpan)
 		{
@@ -945,9 +939,13 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 			}
 			else
 			{
-				if (m_pShapeElement->m_lPlaceholderType == PT_MasterSlideNumber)//todooo + date
+				if (m_pShapeElement->m_lPlaceholderType == PT_MasterSlideNumber)
 				{
 					m_oWriter.WriteString(std::wstring(L"<a:fld id=\"{D038279B-FC19-497E-A7D1-5ADD9CAF016F}\" type=\"slidenum\"><a:rPr"));
+				}
+				else if (m_pShapeElement->m_lPlaceholderType == PT_MasterDate)
+				{
+					m_oWriter.WriteString(std::wstring(L"<a:fld id=\"{D7E01130-044F-4930-9A27-C729C70D8524}\" type=\"datetime1\"><a:rPr"));
 				}
 				else
 				{						
@@ -1060,8 +1058,11 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 				CString strT2 = _T("</a:t>");
 				m_oWriter.WriteString(strT2);
 				
-				if (m_pShapeElement->m_lPlaceholderType == PT_MasterSlideNumber)
+				if (m_pShapeElement->m_lPlaceholderType == PT_MasterSlideNumber || 
+					m_pShapeElement->m_lPlaceholderType == PT_MasterDate)
+				{
 					m_oWriter.WriteString(std::wstring(L"</a:fld>"));
+				}
 				else
 					m_oWriter.WriteString(std::wstring(L"</a:r>"));
 			}

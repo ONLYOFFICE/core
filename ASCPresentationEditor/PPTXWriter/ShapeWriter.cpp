@@ -63,9 +63,13 @@ void CStylesWriter::ConvertStyleLevel(NSPresentationEditor::CTextStyleLevel& oLe
 		oWriter.WriteString(std::wstring(L"<a:tabLst>"));
 		for (int t = 0 ; t < pPF->tabStops.size(); t++)
 		{
-			CString strTab;
-			strTab.Format(L"<a:tab pos=\"%d\" algn=\"l\"/>", pPF->tabStops[t]) ;
-			oWriter.WriteString(strTab);
+			CString strTabPos; 	strTabPos.Format(L"%d", pPF->tabStops[t].first) ;
+			oWriter.WriteString(std::wstring(L"<a:tab pos=\"") + string2std_string(strTabPos) + _T("\""));
+
+			if		(pPF->tabStops[t].second == 1)	oWriter.WriteString(std::wstring(L" algn=\"ctr\"/>"));
+			else if (pPF->tabStops[t].second == 2)	oWriter.WriteString(std::wstring(L" algn=\"r\"/>"));
+			else if (pPF->tabStops[t].second == 3)	oWriter.WriteString(std::wstring(L" algn=\"dec\"/>"));
+			else									oWriter.WriteString(std::wstring(L" algn=\"l\"/>"));
 		}
 		oWriter.WriteString(std::wstring(L"</a:tabLst>"));
 	}
@@ -612,9 +616,9 @@ void NSPresentationEditor::CShapeWriter::WriteShapeInfo()
 		
 		if (m_pShapeElement->m_lPlaceholderSizePreset > 1 && !isTitlePlaceholder(m_pShapeElement->m_lPlaceholderType))
 		{
-			if (m_pShapeElement->m_lPlaceholderSizePreset == 2)
+			if (m_pShapeElement->m_lPlaceholderSizePreset == 1)
 				m_oWriter.WriteString(std::wstring(L" size=\"half\""));
-			if (m_pShapeElement->m_lPlaceholderSizePreset == 4)
+			if (m_pShapeElement->m_lPlaceholderSizePreset == 2)
 				m_oWriter.WriteString(std::wstring(L" size=\"quarter\""));
 			if (m_pShapeElement->m_lPlaceholderSizePreset == 3)
 			{
@@ -704,6 +708,10 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 
 				m_oWriter.WriteString(std::wstring(L"</a:avLst>"));
 			m_oWriter.WriteString(std::wstring(L"</a:prstTxWarp>"));
+		}
+		if (m_pShapeElement->m_oShape.m_oText.m_bAutoFit)
+		{
+			m_oWriter.WriteString(std::wstring(L"<a:spAutoFit/>"));
 		}
 	m_oWriter.WriteString(std::wstring(L"</a:bodyPr>"));
 	

@@ -303,6 +303,19 @@ void CPPTUserInfo::FromDocument()
 			m_oDefaultTextStyle.SetLanguage(m_wLanguage);
 		}
 	}
+	std::vector<CRecordHeadersFootersContainer*> oArrayHeadersFootersInfo;
+	m_oDocument.GetRecordsByType(&oArrayHeadersFootersInfo, true, false);
+
+	for (int j = 0 ; j < oArrayHeadersFootersInfo.size(); j++)
+	{
+		std::vector<CRecordCString*> oHeadersFootersInfo;
+		oArrayHeadersFootersInfo[j]->GetRecordsByType(&oHeadersFootersInfo, true, false);
+
+		for (int i = 0 ;i < oHeadersFootersInfo.size(); i++)
+		{
+			m_oFootersHeaderString.push_back(oHeadersFootersInfo[i]->m_strText);
+		}
+	}
 
 	LONG lOriginWidth		=	oArrayDoc[0]->m_oSlideSize.X;
 	LONG lOriginHeight		=	oArrayDoc[0]->m_oSlideSize.Y;
@@ -465,7 +478,7 @@ void CPPTUserInfo::LoadSlide(DWORD dwSlideID, CSlide* pSlide)
 		//????? слайду не присвоена тема !!!
 		pPairTheme = m_mapMasterToTheme.begin();
 	}
-//------------------наличие колонтитулов
+//------------------наличие колонтитулов (поштучный режим ... )
 	std::vector<CRecordHeadersFootersAtom*> oArrayHeadersFootersAtoms;
 	pRecordSlide->GetRecordsByType(&oArrayHeadersFootersAtoms, true, true);
 	
@@ -493,7 +506,7 @@ void CPPTUserInfo::LoadSlide(DWORD dwSlideID, CSlide* pSlide)
 		
 		if (pPairLayoutGeom == pTheme->m_mapGeomToLayout.end())
 		{
-			pSlide->m_lLayoutID = AddNewLayout(pTheme, &oArraySlideAtoms[0]->m_oLayout, pRecordSlide->m_oPersist.m_arTextAttrs, headers_footers);
+			pSlide->m_lLayoutID = AddNewLayout(pTheme, &oArraySlideAtoms[0]->m_oLayout, pRecordSlide->m_oPersist.m_arTextAttrs, headers_footers, true, bMasterObjects);
 			pLayout				= &pTheme->m_arLayouts[pSlide->m_lLayoutID];
 			pLayout->m_bShowMasterShapes	= true;
 		}
@@ -636,6 +649,20 @@ void CPPTUserInfo::LoadSlide(DWORD dwSlideID, CSlide* pSlide)
 
 }
 	
+IElement* CPPTUserInfo::AddThemeLayoutElement (CLayout *pLayout, int placeholderType, NSPresentationEditor::CTheme* pTheme)
+{
+	IElement* pElement  = NULL;
+	std::map<int, int>::iterator it = pTheme->m_pPlaceholders.find(placeholderType);
+	
+	if ((it != pTheme->m_pPlaceholders.end()) && (pLayout->m_pPlaceholders.find(placeholderType) == pLayout->m_pPlaceholders.end())) 
+	{
+		pElement = pTheme->m_arElements[it->second]->CreateDublicate();
+		pLayout->m_arElements.push_back(dynamic_cast<IElement*>(pElement));
+		pLayout->m_pPlaceholders.insert(std::pair<int, int>(it->first, pLayout->m_arElements.size()-1)); 
+	}
+	return pElement;
+}
+
 IElement* CPPTUserInfo::AddNewLayoutElement (CLayout *pLayout, int placeholderType, int placeholderSizePreset)
 {
 	if (placeholderType < 1) return NULL;
@@ -661,7 +688,7 @@ IElement* CPPTUserInfo::AddNewLayoutElement (CLayout *pLayout, int placeholderTy
 }
 
 int CPPTUserInfo::AddNewLayout(NSPresentationEditor::CTheme* pTheme, SSlideLayoutAtom* layoutRecord, std::vector<CTextFullSettings> & text, 
-							CRecordHeadersFootersAtom* headers_footers, bool addShapes)
+							CRecordHeadersFootersAtom* headers_footers, bool addShapes, bool bMasterObjects)
 {
 	if (pTheme == NULL) return -1;
 
@@ -692,10 +719,10 @@ int CPPTUserInfo::AddNewLayout(NSPresentationEditor::CTheme* pTheme, SSlideLayou
 	switch (layoutRecord->m_nGeom)
 	{
 		case 0x01:	// SL_TitleBody
-			defObjSize = 1;	break;
+			defObjSize = 0;	break;
 		case 0x08:	//SL_TwoColumns
 		case 0x09:	//SL_TwoRows
-			defObjSize = 2;	break;
+			defObjSize = 1;	break;
 		case 0x0A:	//SL_ColumnTwoRows
 			defObjSize = 3;	break;
 		case 0x0B:	//SL_TwoRowsColumn
@@ -703,11 +730,11 @@ int CPPTUserInfo::AddNewLayout(NSPresentationEditor::CTheme* pTheme, SSlideLayou
 		case 0x0D:	//SL_TwoColumnsRow
 			defObjSize = 3; break;
 		case 0x0E://SL_FourObjects
-			defObjSize = 4; break;
+			defObjSize = 2; break;
 		case 0x0F:	//SL_BigObject
 		case 0x11:	//SL_VerticalTitleBody
 		case 0x12:	//SL_VerticalTwoRows
-			defObjSize = 1; break;
+			defObjSize = 0; break;
 	}
 
 	for (int i = 0 ; i < 8; i ++)
@@ -746,80 +773,47 @@ int CPPTUserInfo::AddNewLayout(NSPresentationEditor::CTheme* pTheme, SSlideLayou
 		}
 	}
 
+	if (layoutRecord->m_nGeom==0x0F) return ind;
+
 	if (headers_footers)
 	{
-		std::map<int, int>::iterator it;
-
 		if (headers_footers->m_bHasSlideNumber)
 		{
-			IElement* pElement  = NULL;
-			it = pLayout->m_pPlaceholders.find(NSOfficePPT::MasterSlideNumber);
-			if ( it == pLayout->m_pPlaceholders.end())
+			if (!AddThemeLayoutElement(pLayout, MasterSlideNumber, pTheme))
 			{
-				it = pTheme->m_pPlaceholders.find(NSOfficePPT::MasterSlideNumber);
-				if (it  != pTheme->m_pPlaceholders.end())
-				{
-					pElement = pTheme->m_arElements[it->second]->CreateDublicate();
-					pLayout->m_arElements.push_back(dynamic_cast<IElement*>(pElement));
-					pLayout->m_pPlaceholders.insert(std::pair<int, int>(NSOfficePPT::MasterSlideNumber, pLayout->m_arElements.size()-1)); 
-				}
-				else
-					pElement = AddNewLayoutElement(pLayout, MasterSlideNumber, 4);
+				AddNewLayoutElement(pLayout, MasterSlideNumber, 2);
 			}
 		}
 		if (headers_footers->m_bHasTodayDate || 
 			headers_footers->m_bHasUserDate	||
 			headers_footers->m_bHasDate)
 		{
-			IElement* pElement  = NULL;
-			it = pLayout->m_pPlaceholders.find(MasterDate);
-			if (it == pLayout->m_pPlaceholders.end())
+			if (!AddThemeLayoutElement(pLayout, MasterDate, pTheme))
 			{
-				it = pTheme->m_pPlaceholders.find(NSOfficePPT::MasterDate);
-				if (it  != pTheme->m_pPlaceholders.end())
-				{
-					pElement = pTheme->m_arElements[it->second]->CreateDublicate();
-					pLayout->m_arElements.push_back(dynamic_cast<IElement*>(pElement));
-					pLayout->m_pPlaceholders.insert(std::pair<int, int>(NSOfficePPT::MasterDate, pLayout->m_arElements.size()-1)); 
-				}
-				else
-					pElement = AddNewLayoutElement(pLayout, MasterDate, 2);
+				AddNewLayoutElement(pLayout, MasterDate, 2);
 			}
 		}
 		if (headers_footers->m_bHasHeader)
 		{
-			IElement* pElement  = NULL;
-			it = pLayout->m_pPlaceholders.find(MasterHeader);
-			if (it == pLayout->m_pPlaceholders.end())
+			if (!AddThemeLayoutElement(pLayout, MasterHeader, pTheme))
 			{
-				it = pTheme->m_pPlaceholders.find(NSOfficePPT::MasterHeader);
-				if (it  != pTheme->m_pPlaceholders.end())
-				{
-					pElement = pTheme->m_arElements[it->second]->CreateDublicate();
-					pLayout->m_arElements.push_back(dynamic_cast<IElement*>(pElement));
-					pLayout->m_pPlaceholders.insert(std::pair<int, int>(NSOfficePPT::MasterHeader, pLayout->m_arElements.size()-1)); 
-				}
-				else
-					pElement = AddNewLayoutElement(pLayout, MasterHeader, 2);
+				AddNewLayoutElement(pLayout, MasterHeader, 2);
 			}
 		}
 		if (headers_footers->m_bHasFooter)
 		{
-			IElement* pElement  = NULL;
-			it = pLayout->m_pPlaceholders.find(MasterFooter);
-			if (it == pLayout->m_pPlaceholders.end())
+			if (!AddThemeLayoutElement(pLayout, MasterFooter, pTheme))
 			{
-				it = pTheme->m_pPlaceholders.find(NSOfficePPT::MasterFooter);
-				if (it  != pTheme->m_pPlaceholders.end())
-				{
-					pElement = pTheme->m_arElements[it->second]->CreateDublicate();
-					pLayout->m_arElements.push_back(dynamic_cast<IElement*>(pElement));
-					pLayout->m_pPlaceholders.insert(std::pair<int, int>(NSOfficePPT::MasterFooter, pLayout->m_arElements.size()-1)); 
-				}
-				else
-					pElement = AddNewLayoutElement(pLayout, MasterFooter, 4);
+				AddNewLayoutElement(pLayout, MasterFooter, 2);
 			}
 		}	
+	}
+	else if (bMasterObjects)
+	{
+		AddThemeLayoutElement(pLayout, MasterSlideNumber	,pTheme);
+		AddThemeLayoutElement(pLayout, MasterDate			,pTheme);
+		AddThemeLayoutElement(pLayout, MasterFooter			,pTheme);
+		AddThemeLayoutElement(pLayout, MasterHeader			,pTheme);
 	}
 
 	return ind;
@@ -979,6 +973,8 @@ void CPPTUserInfo::LoadMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, co
 		pMasterWrapper->m_pStyles[3]->ApplyBefore(m_oDefaultTextStyle);
 	else
 		pMasterWrapper->m_pStyles[3] = m_oDefaultTextStyle;
+
+	pTheme->m_oFootersHeaderString = m_oFootersHeaderString;
 
 	CTextStyles oPPTDefaultStyle;
 	CreateDefaultStyle(oPPTDefaultStyle, pTheme);
@@ -1165,7 +1161,7 @@ void CPPTUserInfo::LoadNoMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, 
 	
 	CLayout* pLayout = NULL;
 
-	int lLayoutID	= AddNewLayout(pTheme, &oArraySlideAtoms[0]->m_oLayout, pCurMaster->m_oPersist.m_arTextAttrs, NULL, false);
+	int lLayoutID	= AddNewLayout(pTheme, &oArraySlideAtoms[0]->m_oLayout, pCurMaster->m_oPersist.m_arTextAttrs, NULL, false, false);
 	
 	pLayout							= &pTheme->m_arLayouts[lLayoutID];
 	pLayout->m_bShowMasterShapes	=	false;

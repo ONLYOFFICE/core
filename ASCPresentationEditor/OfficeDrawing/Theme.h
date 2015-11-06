@@ -41,6 +41,9 @@ namespace NSPresentationEditor
 		bool m_bHasSlideNumber;
 		bool m_bHasHeader;
 		bool m_bHasFooter;
+
+		std::vector<std::wstring>		m_oFootersHeaderString;
+
 //------------------------------------------------------------------------------------
 		CTheme() : m_arColorScheme(), m_arFonts(), m_arBrushes(),
 			m_arPens(), m_arEffects(), m_arLayouts()

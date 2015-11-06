@@ -259,7 +259,7 @@ namespace NSPresentationEditor
 		NSCommon::nullable_base<LONG>				indent;
 		NSCommon::nullable_base<LONG>				defaultTabSize;
 		
-		std::vector<DWORD>							tabStops;
+		std::vector<std::pair<int, int>>			tabStops;
 
 		bool										bIsOneLine;
 
@@ -366,10 +366,7 @@ namespace NSPresentationEditor
 			if (oSrc.textDirection.is_init())		textDirection	= oSrc.textDirection;
 			if (oSrc.wrapFlags.is_init())			wrapFlags		= oSrc.wrapFlags;
 
-			if (0 != oSrc.tabStops.size())
-			{
-				tabStops.insert(tabStops.begin(), oSrc.tabStops.begin(), oSrc.tabStops.end());
-			}
+			if (!oSrc.tabStops.empty())				tabStops		= oSrc.tabStops;
 		}
 
 		CString ToString(LONG lCount)
@@ -384,7 +381,9 @@ namespace NSPresentationEditor
 	public:
 		NSCommon::nullable_base<LONG>	DefaultTabSize;
 		NSCommon::nullable_base<SHORT>	CLevels;
+	
 		NSCommon::nullable_base<SHORT>	TabStops;
+		std::vector<std::pair<int,int>>	tabsStops;
 
 		NSCommon::nullable_base<LONG>	LeftMargin1;
 		NSCommon::nullable_base<LONG>	LeftMargin2;
@@ -398,7 +397,6 @@ namespace NSPresentationEditor
 		NSCommon::nullable_base<LONG>	Indent4;
 		NSCommon::nullable_base<LONG>	Indent5;
 
-		std::vector<DWORD> tabsStops;
 
 	public:
 		CTextRuler() : DefaultTabSize(), CLevels(), TabStops(),
@@ -442,7 +440,7 @@ namespace NSPresentationEditor
 		void ApplyBefore(const CTextRuler& oSrc)
 		{
 			if (!DefaultTabSize.is_init())			DefaultTabSize = oSrc.DefaultTabSize;
-			if (!CLevels.is_init())					CLevels = oSrc.CLevels;
+			if (!CLevels.is_init())					CLevels		= oSrc.CLevels;
 			
 			if (!LeftMargin1.is_init())				LeftMargin1 = oSrc.LeftMargin1;
 			if (!LeftMargin2.is_init())				LeftMargin2 = oSrc.LeftMargin2;
@@ -456,7 +454,7 @@ namespace NSPresentationEditor
 			if (!Indent4.is_init())					Indent4 = oSrc.Indent4;
 			if (!Indent5.is_init())					Indent5 = oSrc.Indent5;
 
-			tabsStops.insert(tabsStops.end(), oSrc.tabsStops.begin(), oSrc.tabsStops.end());
+			if (!tabsStops.empty())					tabsStops = oSrc.tabsStops;
 		}
 
 		CString ToString()

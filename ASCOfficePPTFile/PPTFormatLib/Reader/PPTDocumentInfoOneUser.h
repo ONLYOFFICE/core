@@ -42,6 +42,8 @@ public:
 	std::vector<CFont>								m_arrFonts;
 	NSPresentationEditor::CTextStyles				m_oDefaultTextStyle;
 
+	std::vector<std::wstring>						m_oFootersHeaderString;
+
 	// чтобы загружать неизмененные элементы от других юзеров (предыдущих)
 	CPPTDocumentInfo*								m_pDocumentInfo;
 	int												m_lIndexThisUser;
@@ -237,6 +239,7 @@ public:
 		case 0x0E://SL_FourObjects
 			return _T("fourObj");		
 		case 0x0F:	//SL_BigObject
+			//return _T("tx");
 			return _T("objOnly");
 		case 0x10:	//SL_Blank
 			return _T("blank");
@@ -252,6 +255,8 @@ public:
 	void AddAudioTransition (DWORD dwSlideID, CTransition* pTransition, const std::wstring& strFilePath);
 
 	int			AddNewLayout(NSPresentationEditor::CTheme* pTheme, SSlideLayoutAtom* layoutRecord, std::vector<CTextFullSettings> & text, 
-						CRecordHeadersFootersAtom* headers_footers = NULL, bool addShapes = true);
-	IElement*	AddNewLayoutElement (CLayout *pLayout, int placeholderType, int placeholderSizePreset = -1);
+						CRecordHeadersFootersAtom* headers_footers, bool addShapes, bool bMasterObjects);
+	
+	IElement*	AddNewLayoutElement		(CLayout *pLayout, int placeholderType, int placeholderSizePreset = -1);
+	IElement*	AddThemeLayoutElement	(CLayout *pLayout, int placeholderType, NSPresentationEditor::CTheme* pTheme);
 };

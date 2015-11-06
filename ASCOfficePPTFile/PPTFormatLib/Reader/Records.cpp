@@ -130,13 +130,22 @@ IRecord* CreateByType(SRecordHeader oHeader)
 	//CREATE_BY_TYPE(RECORD_TYPE_SRKINSOKU_ATOM				, CRecordKinsokuAtom)
 	CREATE_BY_TYPE(RECORD_TYPE_EXHYPERLINK					, CRecordExHyperlinkContainer)
 	CREATE_BY_TYPE(RECORD_TYPE_EXHYPERLINK_ATOM				, CRecordExHyperlinkAtom)
-	//CREATE_BY_TYPE(RECORD_TYPE_UNKNOWN					, CRecordSlideNumberMCAtom)
+
+	CREATE_BY_TYPE(RECORD_TYPE_HEADERSFOOTERS				, CRecordHeadersFootersContainer)
 	CREATE_BY_TYPE(RECORD_TYPE_HEADERSFOOTERS_ATOM			, CRecordHeadersFootersAtom)
+
+	CREATE_BY_TYPE(RECORD_TYPE_SLIDENUMBER_META_ATOM		, CRecordSlideNumberMetaAtom)
+	CREATE_BY_TYPE(RECORD_TYPE_DATETIME_META_ATOM			, CRecordDateTimeMetaAtom)
+	CREATE_BY_TYPE(RECORD_TYPE_HEADER_META_ATOM				, CRecordHeaderMetaAtom)
+	CREATE_BY_TYPE(RECORD_TYPE_FOOTER_META_ATOM				, CRecordFooterMetaAtom)
+	CREATE_BY_TYPE(RECORD_TYPE_GENERICDATE_META_ATOM		, CRecordGenericDateMetaAtom)
+	CREATE_BY_TYPE(RECORD_TYPE_RTFDATETIME_META_ATOM		, CRecordRTFDateTimeMetaAtom)
+
 	//CREATE_BY_TYPE(RECORD_TYPE_UNKNOWN					, CRecordMouseTextInteractiveInfoAtom)
 	//CREATE_BY_TYPE(RECORD_TYPE_UNKNOWN					, CRecordRecolorInfoAtom)
 	//CREATE_BY_TYPE(RECORD_TYPE_UNKNOWN					, CRecordAnimationInfoAtom)
-	//CREATE_BY_TYPE(RECORD_TYPE_UNKNOWN					, CRecordDateTimeMCAtom)
-	//CREATE_BY_TYPE(RECORD_TYPE_UNKNOWN					, CRecordGenericDateMCAtom)
+
+
 	CREATE_BY_TYPE(RECORD_TYPE_EX_VIDEOCONTAINER			, CRecordExVideoContainer)
 	CREATE_BY_TYPE(RECORD_TYPE_EX_OBJREF_ATOM				, CRecordExObjRefAtom)
 	CREATE_BY_TYPE(RECORD_TYPE_EX_MEDIA_ATOM				, CRecordExMediaAtom)
@@ -178,11 +187,11 @@ IRecord* CreateByType(SRecordHeader oHeader)
 
 	default: 
 		{
-//#ifdef _DEBUG
-//			char str[1024]={};
-//			sprintf(str, "Unknown record type: %xd\n" , oHeader.RecType);
-//			std::cout << str;
-//#endif
+#ifdef _DEBUG
+			char str[1024]={};
+			sprintf(str, "Unknown record type: %xd\n" , oHeader.RecType);
+			std::cout << str;
+#endif
 		}break;		
 	};
 

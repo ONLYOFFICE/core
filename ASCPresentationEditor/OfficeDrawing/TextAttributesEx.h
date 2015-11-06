@@ -30,10 +30,11 @@ namespace NSPresentationEditor
 		CTextAttributes			m_oAttributes;
 		std::vector<CParagraph>	m_arParagraphs;
 
-		// параметры ВСЕГО текста (наверное тут их много будет потом)
         bool	m_bVertical;
+		bool	m_bAutoFit;
 
 		int		m_lWrapMode; // 0 - square, default; 1 - none wrap
+
 
 		// для ппт. чтобы не менять счас ничего
 		CTextRuler				m_oRuler;
@@ -68,6 +69,7 @@ namespace NSPresentationEditor
 			m_oBounds.bottom	= 50;
 
 			m_bVertical			= false;
+			m_bAutoFit			= false;
 			m_lWrapMode			= 0;
 
 			m_lTextMasterType	= -1;
@@ -86,6 +88,7 @@ namespace NSPresentationEditor
 			m_oAttributes	= oSrc.m_oAttributes;
 			m_bVertical		= oSrc.m_bVertical;
 			m_lWrapMode		= oSrc.m_lWrapMode;
+			m_bAutoFit		= oSrc.m_bAutoFit;
 
 			m_arParagraphs.insert(m_arParagraphs.end(), oSrc.m_arParagraphs.begin(), oSrc.m_arParagraphs.end());
 			m_oRuler = oSrc.m_oRuler;

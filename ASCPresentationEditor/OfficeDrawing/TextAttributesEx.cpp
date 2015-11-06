@@ -254,8 +254,8 @@ namespace NSPresentationEditor
 			{
 				pPar->tabStops = m_oRuler.tabsStops;
 
-				if (pPar->defaultTabSize.is_init() == false)
-					pPar->defaultTabSize = m_oRuler.tabsStops[0];
+				//if (pPar->defaultTabSize.is_init() == false)
+				//	pPar->defaultTabSize = m_oRuler.tabsStops[0];
 			}
 
 			if (m_oRuler.DefaultTabSize.is_init())

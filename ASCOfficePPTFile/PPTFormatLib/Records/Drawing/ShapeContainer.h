@@ -13,6 +13,7 @@
 #include "../InteractiveInfoAtom.h"
 #include "../TextInteractiveInfoAtom.h"
 #include "../MasterTextPropAtom.h"
+#include "../HeadersFootersAtom.h"
 
 #include "../../Reader/ClassesAtom.h"
 #include "../../Reader/SlideInfo.h"
@@ -1185,7 +1186,10 @@ public:
 						pParentShape->m_dTextMarginY		= 2.54;
 						pParentShape->m_dTextMarginBottom	= 1.27;
 					}
-				}				
+				}	
+				if (bUseFitShapeToText)
+					pParentShape->m_oText.m_bAutoFit = bFitShapeToText;
+
 			}break;
 
 		default:
@@ -1399,6 +1403,8 @@ public:
 		if (NULL == pElem)
 			return;
 
+		std::wstring strShapeText;
+
 		{
 			CExFilesInfo::ExFilesType exType		= CExFilesInfo::eftNone;
 			CExFilesInfo			* pTextureInfo	= pMapIDs->Lock(0xFFFFFFFF, exType);
@@ -1421,21 +1427,26 @@ public:
 			}
 		}
 		pElem->m_lID = oArrayShape[0]->m_nID;
-		
+
+//------------------------------------------------------------------------------------------------		
 		// placeholder
 		std::vector<CRecordPlaceHolderAtom*> oArrayPlaceHolder;
 		GetRecordsByType(&oArrayPlaceHolder, true, true);
 		if (0 < oArrayPlaceHolder.size())
 		{
-			pElem->m_bLine				= false; //по умолчанию у них нет линий
-			pElem->m_lPlaceholderID		= (int)(oArrayPlaceHolder[0]->m_nPosition);
-			pElem->m_lPlaceholderType	= (int)(oArrayPlaceHolder[0]->m_nPlacementID);
+			pElem->m_bLine					= false; //по умолчанию у них нет линий
+			pElem->m_lPlaceholderID			= oArrayPlaceHolder[0]->m_nPosition;
+			pElem->m_lPlaceholderType		= oArrayPlaceHolder[0]->m_nPlacementID;
+			pElem->m_lPlaceholderSizePreset	= oArrayPlaceHolder[0]->m_nSize;
+
+			if (pElementLayout) 
+				pElementLayout->m_lPlaceholderSizePreset	= oArrayPlaceHolder[0]->m_nSize;
 
 			CorrectPlaceholderType(pElem->m_lPlaceholderType);
 		}
 
 		std::vector<CRecordRoundTripHFPlaceholder12Atom*> oArrayHFPlaceholder;
-		this->GetRecordsByType(&oArrayHFPlaceholder, true, true);
+		GetRecordsByType(&oArrayHFPlaceholder, true, true);
 		if (0 < oArrayHFPlaceholder.size())
 		{
 			pElem->m_lPlaceholderType	= oArrayHFPlaceholder[0]->m_nPlacementID;//PT_MasterDate, PT_MasterSlideNumber, PT_MasterFooter, or PT_MasterHeader
@@ -1443,6 +1454,32 @@ public:
 			CorrectPlaceholderType(pElem->m_lPlaceholderType);
 		}
 
+		if (pElem->m_lPlaceholderType > 0) // meta
+		{
+			std::vector<CRecordFooterMetaAtom*> oArrayFooterMeta;
+			GetRecordsByType(&oArrayFooterMeta, true, true);
+			if (0 < oArrayFooterMeta.size())
+			{
+				pElem->m_lPlaceholderType = PT_MasterFooter;
+
+				DWORD posText = oArrayFooterMeta[0]->m_nPosition;
+				if (posText < pTheme->m_oFootersHeaderString.size())
+					strShapeText = pTheme->m_oFootersHeaderString[posText];
+			}
+			std::vector<CRecordSlideNumberMetaAtom*> oArraySlideNumberMeta;
+			GetRecordsByType(&oArraySlideNumberMeta, true, true);
+			if (0 < oArraySlideNumberMeta.size())
+			{
+				pElem->m_lPlaceholderType = PT_MasterSlideNumber;
+				DWORD posText = oArraySlideNumberMeta[0]->m_nPosition;
+
+				if (posText < pTheme->m_oFootersHeaderString.size())
+					strShapeText = pTheme->m_oFootersHeaderString[posText];
+
+			}			
+		}
+
+//----------------------------------------------------------------------------------------------
 		std::vector<CRecordClientAnchor*> oArrayAnchor;
 		this->GetRecordsByType(&oArrayAnchor, true, true);
 
@@ -1551,21 +1588,23 @@ public:
 				oElementInfo.m_lPersistIndex = oArrayTextRefs[0]->m_nIndex;
 			}
 
-			std::wstring strText;
 			// теперь сам текст...
 			std::vector<CRecordTextBytesAtom*> oArrayTextBytes;
 			GetRecordsByType(&oArrayTextBytes, true, true);
-			if (0 < oArrayTextBytes.size())
+			if (0 < oArrayTextBytes.size() && strShapeText.empty())
 			{
-				strText = oArrayTextBytes[0]->m_strText;
+				strShapeText = oArrayTextBytes[0]->m_strText;
+
+				if (pElem->m_lPlaceholderType == PT_MasterSlideNumber && strShapeText.length() > 5)
+					pElem->m_lPlaceholderType = PT_MasterFooter; ///???? 1-(33).ppt
 			}
 			
 			std::vector<CRecordTextCharsAtom*> oArrayTextChars;
 			GetRecordsByType(&oArrayTextChars, true, true);
 
-			if (0 < oArrayTextChars.size())
+			if (0 < oArrayTextChars.size() && strShapeText.empty())
 			{
-				strText = oArrayTextChars[0]->m_strText;
+				strShapeText = oArrayTextChars[0]->m_strText;
 			}
 
 			// теперь настройки этого текста...
@@ -1654,7 +1693,7 @@ public:
 
 			pSlideWrapper->m_mapElements.insert(std::pair<LONG, CElementInfo>(pShapeElem->m_lID, oElementInfo));
 			
-			SetUpTextStyle(strText, pTheme, pLayout, pElem, pThemeWrapper, pSlideWrapper, pSlide, master_level);
+			SetUpTextStyle(strShapeText, pTheme, pLayout, pElem, pThemeWrapper, pSlideWrapper, pSlide, master_level);
 			
 //------------------------------------------------------------------------------------
 

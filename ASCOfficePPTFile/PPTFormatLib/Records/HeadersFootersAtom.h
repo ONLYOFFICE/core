@@ -1,6 +1,10 @@
 #pragma once
 #include "../Reader/Records.h"
 
+class CRecordHeadersFootersContainer : public CRecordsContainer
+{
+};
+
 class CRecordHeadersFootersAtom : public CUnknownRecord
 {
 public:
@@ -69,3 +73,70 @@ public:
 	}
 };
 
+
+
+
+class CRecordMetaCharacterAtom : public CUnknownRecord
+{
+public:
+	DWORD m_nPosition;
+
+
+	CRecordMetaCharacterAtom()
+	{
+		m_nPosition = -1;
+	}
+
+	~CRecordMetaCharacterAtom()
+	{
+	}
+
+	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+	{
+		m_oHeader = oHeader;
+
+		m_nPosition =  StreamUtils::ReadDWORD(pStream);
+	}
+};
+
+class CRecordRTFDateTimeMetaAtom : public CRecordMetaCharacterAtom
+{
+public:
+	std::string m_strFormat;
+	
+	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+	{
+		CRecordMetaCharacterAtom::ReadFromStream(oHeader, pStream);
+
+		m_strFormat = StreamUtils::ReadStringA(pStream, 128);
+	}
+};
+
+class CRecordDateTimeMetaAtom : public CRecordMetaCharacterAtom
+{
+public:
+	BYTE m_FormatID;
+	
+	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+	{
+		CRecordMetaCharacterAtom::ReadFromStream(oHeader, pStream);
+
+		m_FormatID = StreamUtils::ReadBYTE(pStream);
+	}
+};
+
+class CRecordGenericDateMetaAtom : public CRecordMetaCharacterAtom
+{
+};
+
+class CRecordFooterMetaAtom : public CRecordMetaCharacterAtom
+{
+};
+
+class CRecordHeaderMetaAtom : public CRecordMetaCharacterAtom
+{
+};
+
+class CRecordSlideNumberMetaAtom : public CRecordMetaCharacterAtom
+{
+};

@@ -95,7 +95,9 @@ typedef BYTE BOOL1;
 #define		RECORD_TYPE_SRKINSOKU_ATOM						4050
 #define		RECORD_TYPE_EXHYPERLINK_ATOM					4051
 #define		RECORD_TYPE_EXHYPERLINK							4055
-#define		RECORD_TYPE_SLIDE_NUMBERMC_ATOM					4056
+
+#define		RECORD_TYPE_SLIDENUMBER_META_ATOM				0x0FD8
+
 #define		RECORD_TYPE_HEADERSFOOTERS						4057
 #define		RECORD_TYPE_HEADERSFOOTERS_ATOM					4058
 #define		RECORD_TYPE_TXINTERACTIVEINFO_ATOM				4063
@@ -111,9 +113,12 @@ typedef BYTE BOOL1;
 #define		RECORD_TYPE_INTERACTIVEINFO_ATOM				4083
 #define		RECORD_TYPE_USER_EDIT_ATOM						4085
 #define		RECORD_TYPE_CURRENTUSER_ATOM					4086
-#define		RECORD_TYPE_DATETIMEMC_ATOM						4087
-#define		RECORD_TYPE_GENERICDATEMC_ATOM					4088
-#define		RECORD_TYPE_FOOTERMC_ATOM						4090
+
+#define		RECORD_TYPE_DATETIME_META_ATOM					0x0FF7
+#define		RECORD_TYPE_GENERICDATE_META_ATOM				0x0FF8
+#define		RECORD_TYPE_HEADER_META_ATOM					0x0FF9
+#define		RECORD_TYPE_FOOTER_META_ATOM					0x0FFA
+
 #define		RECORD_TYPE_EXCONTROL_ATOM						4091
 #define		RECORD_TYPE_EX_MEDIA_ATOM						4100
 #define		RECORD_TYPE_EX_VIDEOCONTAINER					4101
@@ -127,7 +132,7 @@ typedef BYTE BOOL1;
 #define		RECORD_TYPE_EX_CDAUDIO_ATOM						4114
 #define		RECORD_TYPE_EXWAVAUDIOEMBEDDED_ATOM				4115
 #define		RECORD_TYPE_ANIMATIONINFO						4116
-#define		RECORD_TYPE_RTFDATETIMEMC_ATOM					4117
+#define		RECORD_TYPE_RTFDATETIME_META_ATOM				0x1015
 #define		RECORD_TYPE_PROGTAGS							5000
 #define		RECORD_TYPE_PROGSTRINGTAG						5001
 #define		RECORD_TYPE_PROGBINARYTAG						5002
@@ -300,7 +305,7 @@ static CString GetRecordName(DWORD dwType)
 	case RECORD_TYPE_SRKINSOKU_ATOM						: { strName = _T("SrKinsokuAtom"); break; }
 	case RECORD_TYPE_EXHYPERLINK_ATOM					: { strName = _T("ExHyperlinkAtom"); break; }
 	case RECORD_TYPE_EXHYPERLINK						: { strName = _T("ExHyperlink"); break; }
-	case RECORD_TYPE_SLIDE_NUMBERMC_ATOM				: { strName = _T("SlideNumberMcAtom"); break; }
+	case RECORD_TYPE_SLIDENUMBER_META_ATOM				: { strName = _T("SlideNumberMcAtom"); break; }
 	case RECORD_TYPE_HEADERSFOOTERS						: { strName = _T("HeadersFooters"); break; }
 	case RECORD_TYPE_HEADERSFOOTERS_ATOM				: { strName = _T("HeadersFootersAtom"); break; }
 	case RECORD_TYPE_TXINTERACTIVEINFO_ATOM				: { strName = _T("TxInteractiveInfoAtom"); break; }
@@ -315,9 +320,9 @@ static CString GetRecordName(DWORD dwType)
 	case RECORD_TYPE_INTERACTIVEINFO_ATOM				: { strName = _T("InteractiveInfoAtom"); break; }
 	case RECORD_TYPE_USER_EDIT_ATOM						: { strName = _T("UserEditAtom"); break; }
 	case RECORD_TYPE_CURRENTUSER_ATOM					: { strName = _T("CurrentUserAtom"); break; }
-	case RECORD_TYPE_DATETIMEMC_ATOM					: { strName = _T("DateTimeMCAtom"); break; }
-	case RECORD_TYPE_GENERICDATEMC_ATOM					: { strName = _T("GenericDateMCAtom"); break; }
-	case RECORD_TYPE_FOOTERMC_ATOM						: { strName = _T("FooterMCAtom"); break; }
+	case RECORD_TYPE_DATETIME_META_ATOM					: { strName = _T("DateTimeMCAtom"); break; }
+	case RECORD_TYPE_GENERICDATE_META_ATOM				: { strName = _T("GenericDateMCAtom"); break; }
+	case RECORD_TYPE_FOOTER_META_ATOM						: { strName = _T("FooterMCAtom"); break; }
 	case RECORD_TYPE_EXCONTROL_ATOM						: { strName = _T("ExControlAtom"); break; }
 	case RECORD_TYPE_EX_MEDIA_ATOM						: { strName = _T("ExMediaAtom"); break; }
 	case RECORD_TYPE_EX_VIDEOCONTAINER					: { strName = _T("ExVideoContainer"); break; }
@@ -332,7 +337,7 @@ static CString GetRecordName(DWORD dwType)
 	case RECORD_TYPE_EXWAVAUDIOEMBEDDED_ATOM			: { strName = _T("ExWavAudioEmbeddedAtom"); break; }
 	case RECORD_TYPE_ANIMATIONINFO						: { strName = _T("AnimationInfo"); break; }
 	case RECORD_TYPE_ANIMATIONINFO_ATOM					: { strName = _T("AnimationInfoAtom"); break; }
-	case RECORD_TYPE_RTFDATETIMEMC_ATOM					: { strName = _T("RtfDateTimeMCAtom"); break; }
+	case RECORD_TYPE_RTFDATETIME_META_ATOM				: { strName = _T("RtfDateTimeMCAtom"); break; }
 	case RECORD_TYPE_PROGTAGS							: { strName = _T("ProgTags"); break; }
 	case RECORD_TYPE_PROGSTRINGTAG						: { strName = _T("ProgStringTag"); break; }
 	case RECORD_TYPE_PROGBINARYTAG						: { strName = _T("ProgBinaryTag"); break; }

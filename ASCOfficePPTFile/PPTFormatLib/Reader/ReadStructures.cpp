@@ -197,34 +197,30 @@ namespace NSStreamReader
 
             for (int i = 0; i < (int)tabStopsCount; ++i)
             {
-				oRun.tabsStops.push_back(StreamUtils::ReadDWORD(pStream) * dScaleX);
+				WORD tabPos		= StreamUtils::ReadWORD(pStream) ;
+				WORD tabType	= StreamUtils::ReadWORD(pStream) ;
+
+				if ((tabPos & 0xff00) == 0xff00)
+					break;
+				tabType = 0x0000;
+				oRun.tabsStops.push_back( std::pair<int, int>(tabPos * dScaleX, tabType));
             }
         }
 
-		if (bLeftMargin1_)
-			oRun.LeftMargin1 = StreamUtils::ReadSHORT(pStream) * dScaleX;
-		if (bIndent1_)
-			oRun.Indent1 = StreamUtils::ReadSHORT(pStream) * dScaleX;
+		if (bLeftMargin1_)	oRun.LeftMargin1	= StreamUtils::ReadSHORT(pStream) * dScaleX;
+		if (bIndent1_)		oRun.Indent1		= StreamUtils::ReadSHORT(pStream) * dScaleX;
 
-		if (bLeftMargin2_)
-			oRun.LeftMargin2 = StreamUtils::ReadSHORT(pStream) * dScaleX;
-		if (bIndent2_)
-			oRun.Indent2 = StreamUtils::ReadSHORT(pStream) * dScaleX;
+		if (bLeftMargin2_)	oRun.LeftMargin2	= StreamUtils::ReadSHORT(pStream) * dScaleX;
+		if (bIndent2_)		oRun.Indent2		= StreamUtils::ReadSHORT(pStream) * dScaleX;
 
-		if (bLeftMargin3_)
-			oRun.LeftMargin3 = StreamUtils::ReadSHORT(pStream) * dScaleX;
-		if (bIndent3_)
-			oRun.Indent3 = StreamUtils::ReadSHORT(pStream) * dScaleX;
+		if (bLeftMargin3_)	oRun.LeftMargin3	= StreamUtils::ReadSHORT(pStream) * dScaleX;
+		if (bIndent3_)		oRun.Indent3		= StreamUtils::ReadSHORT(pStream) * dScaleX;
 
-		if (bLeftMargin4_)
-			oRun.LeftMargin4 = StreamUtils::ReadSHORT(pStream) * dScaleX;
-		if (bIndent4_)
-			oRun.Indent4 = StreamUtils::ReadSHORT(pStream) * dScaleX;
+		if (bLeftMargin4_)	oRun.LeftMargin4	= StreamUtils::ReadSHORT(pStream) * dScaleX;
+		if (bIndent4_)		oRun.Indent4		= StreamUtils::ReadSHORT(pStream) * dScaleX;
 
-		if (bLeftMargin5_)
-			oRun.LeftMargin5 = StreamUtils::ReadSHORT(pStream) * dScaleX;
-		if (bIndent5_)
-			oRun.Indent5 = StreamUtils::ReadSHORT(pStream) * dScaleX;
+		if (bLeftMargin5_)	oRun.LeftMargin5	= StreamUtils::ReadSHORT(pStream) * dScaleX;
+		if (bIndent5_)		oRun.Indent5		= StreamUtils::ReadSHORT(pStream) * dScaleX;
 	}
 }
 
@@ -363,42 +359,31 @@ void CTextPFRun_ppt::LoadFromStream(POLE::Stream* pStream, bool bIsIndentation)
 		}
 	}
 
-	if (textAlignment_)
-		m_oRun.textAlignment		= StreamUtils::ReadWORD(pStream);
-
-	if (lineSpacing_)
-		m_oRun.lineSpacing			= - StreamUtils::ReadSHORT(pStream);
-
-	if (spaceBefore_)
-		m_oRun.spaceBefore			= - (LONG)StreamUtils::ReadSHORT(pStream);
-
-	if (spaceAfter_)
-		m_oRun.spaceAfter			= - (LONG)StreamUtils::ReadSHORT(pStream);
-
-	if (leftMargin_)
-		m_oRun.leftMargin			= (LONG)StreamUtils::ReadSHORT(pStream) * dScaleX;
-
-	if (indent_)
-		m_oRun.indent				= (LONG)StreamUtils::ReadSHORT(pStream) * dScaleX;
-
-	if (defaultTabSize_)
-		m_oRun.defaultTabSize		= (LONG)StreamUtils::ReadWORD(pStream)  * dScaleX;
-
+	if (textAlignment_)		m_oRun.textAlignment	=	StreamUtils::ReadWORD(pStream);
+	if (lineSpacing_)		m_oRun.lineSpacing		= - StreamUtils::ReadSHORT(pStream);
+	if (spaceBefore_)		m_oRun.spaceBefore		= - StreamUtils::ReadSHORT(pStream);
+	if (spaceAfter_)		m_oRun.spaceAfter		= - StreamUtils::ReadSHORT(pStream);
+	if (leftMargin_)		m_oRun.leftMargin		=	StreamUtils::ReadSHORT(pStream)			* dScaleX;
+	if (indent_)			m_oRun.indent			=	StreamUtils::ReadSHORT(pStream)			* dScaleX;
+	if (defaultTabSize_)	m_oRun.defaultTabSize	= (_INT32)StreamUtils::ReadWORD(pStream)	* dScaleX;
 	if (tabStops_)
 	{
 		WORD tabStopsCount = StreamUtils::ReadWORD(pStream);
 		m_oRun.tabStops.clear();
 
-		if (tabStopsCount > 10)
-			tabStopsCount = 10;
-
 		for (int i = 0; i < (int)tabStopsCount; ++i)
 		{
-			m_oRun.tabStops.push_back(StreamUtils::ReadDWORD(pStream) * dScaleX );
+			WORD tabPos		= StreamUtils::ReadWORD(pStream);
+			WORD tabType	= StreamUtils::ReadWORD(pStream);
+
+			if ((tabPos & 0xff00) == 0xff00)
+				break;
+
+			m_oRun.tabStops.push_back( std::pair<int, int> (tabPos * dScaleX, tabType) );
 		}
 
-		if (0 < m_oRun.tabStops.size())
-			m_oRun.defaultTabSize = m_oRun.tabStops[0];
+		//if (0 < m_oRun.tabStops.size())
+		//	m_oRun.defaultTabSize = m_oRun.tabStops[0];
 	}
 
 	if (fontAlign_)

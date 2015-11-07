@@ -371,6 +371,8 @@ void CTextPFRun_ppt::LoadFromStream(POLE::Stream* pStream, bool bIsIndentation)
 		WORD tabStopsCount = StreamUtils::ReadWORD(pStream);
 		m_oRun.tabStops.clear();
 
+		tabStopsCount = tabStopsCount & 0x000f;
+
 		for (int i = 0; i < (int)tabStopsCount; ++i)
 		{
 			WORD tabPos		= StreamUtils::ReadWORD(pStream);

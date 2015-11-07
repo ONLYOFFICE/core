@@ -614,8 +614,8 @@ void CPPTUserInfo::LoadSlide(DWORD dwSlideID, CSlide* pSlide)
 //------------- колонтитулы на слайде (наследуемые)
 	std::map<int, int>::iterator it;
 
-	it = pLayout->m_pPlaceholders.find(NSOfficePPT::MasterSlideNumber);
-	if ( it != pLayout->m_pPlaceholders.end() && 
+	it = pLayout->m_mapPlaceholders.find(NSOfficePPT::MasterSlideNumber);
+	if ( it != pLayout->m_mapPlaceholders.end() && 
 		slidePlaceholders.find(NSOfficePPT::MasterSlideNumber) == slidePlaceholders.end())
 	{
 		IElement* pElement  = pLayout->m_arElements[it->second]->CreateDublicate();
@@ -623,24 +623,25 @@ void CPPTUserInfo::LoadSlide(DWORD dwSlideID, CSlide* pSlide)
 
 	}
 	
-	it = pLayout->m_pPlaceholders.find(MasterDate);
-	if ( it != pLayout->m_pPlaceholders.end() && 
+	it = pLayout->m_mapPlaceholders.find(MasterDate);
+	if ( it != pLayout->m_mapPlaceholders.end() && 
 		slidePlaceholders.find(NSOfficePPT::MasterDate) == slidePlaceholders.end())
 	{
 		IElement* pElement  = pLayout->m_arElements[it->second]->CreateDublicate();
 		pSlide->m_arElements.push_back(pElement);
 	}
 	
-	it = pLayout->m_pPlaceholders.find(MasterHeader);
-	if ( it != pLayout->m_pPlaceholders.end() && 
-		slidePlaceholders.find(NSOfficePPT::MasterHeader) == slidePlaceholders.end())
-	{
-		IElement* pElement  = pLayout->m_arElements[it->second]->CreateDublicate();
-		pSlide->m_arElements.push_back(pElement);
-	}
+	//верхний колонтитул в 97 офисе есть тока в Notes
+	//it = pLayout->m_mapPlaceholders.find(MasterHeader);
+	//if ( it != pLayout->m_mapPlaceholders.end() && 
+	//	slidePlaceholders.find(NSOfficePPT::MasterHeader) == slidePlaceholders.end())
+	//{
+	//	IElement* pElement  = pLayout->m_arElements[it->second]->CreateDublicate();
+	//	pSlide->m_arElements.push_back(pElement);
+	//}
 
-	it = pLayout->m_pPlaceholders.find(MasterFooter);
-	if ( it != pLayout->m_pPlaceholders.end() && 
+	it = pLayout->m_mapPlaceholders.find(MasterFooter);
+	if ( it != pLayout->m_mapPlaceholders.end() && 
 		slidePlaceholders.find(NSOfficePPT::MasterFooter) == slidePlaceholders.end())
 	{
 		IElement* pElement  = pLayout->m_arElements[it->second]->CreateDublicate();
@@ -649,21 +650,21 @@ void CPPTUserInfo::LoadSlide(DWORD dwSlideID, CSlide* pSlide)
 
 }
 	
-IElement* CPPTUserInfo::AddThemeLayoutElement (CLayout *pLayout, int placeholderType, NSPresentationEditor::CTheme* pTheme)
+IElement* CPPTUserInfo::AddThemeLayoutPlaceholder (CLayout *pLayout, int placeholderType, NSPresentationEditor::CTheme* pTheme)
 {
 	IElement* pElement  = NULL;
-	std::map<int, int>::iterator it = pTheme->m_pPlaceholders.find(placeholderType);
+	std::map<int, int>::iterator it = pTheme->m_mapPlaceholders.find(placeholderType);
 	
-	if ((it != pTheme->m_pPlaceholders.end()) && (pLayout->m_pPlaceholders.find(placeholderType) == pLayout->m_pPlaceholders.end())) 
+	if ((it != pTheme->m_mapPlaceholders.end()) && (pLayout->m_mapPlaceholders.find(placeholderType) == pLayout->m_mapPlaceholders.end())) 
 	{
 		pElement = pTheme->m_arElements[it->second]->CreateDublicate();
 		pLayout->m_arElements.push_back(dynamic_cast<IElement*>(pElement));
-		pLayout->m_pPlaceholders.insert(std::pair<int, int>(it->first, pLayout->m_arElements.size()-1)); 
+		pLayout->m_mapPlaceholders.insert(std::pair<int, int>(it->first, pLayout->m_arElements.size()-1)); 
 	}
 	return pElement;
 }
 
-IElement* CPPTUserInfo::AddNewLayoutElement (CLayout *pLayout, int placeholderType, int placeholderSizePreset)
+IElement* CPPTUserInfo::AddNewLayoutPlaceholder (CLayout *pLayout, int placeholderType, int placeholderSizePreset)
 {
 	if (placeholderType < 1) return NULL;
 
@@ -682,13 +683,13 @@ IElement* CPPTUserInfo::AddNewLayoutElement (CLayout *pLayout, int placeholderTy
 	CorrectPlaceholderType(pShape->m_lPlaceholderType);
 
 	pLayout->m_arElements.push_back(dynamic_cast<IElement*>(pShape));
-	pLayout->m_pPlaceholders.insert(std::pair<int, int>(pShape->m_lPlaceholderType, pLayout->m_arElements.size()-1)); 
+	pLayout->m_mapPlaceholders.insert(std::pair<int, int>(pShape->m_lPlaceholderType, pLayout->m_arElements.size()-1)); 
 
 	return pShape;
 }
 
-int CPPTUserInfo::AddNewLayout(NSPresentationEditor::CTheme* pTheme, SSlideLayoutAtom* layoutRecord, std::vector<CTextFullSettings> & text, 
-							CRecordHeadersFootersAtom* headers_footers, bool addShapes, bool bMasterObjects)
+int CPPTUserInfo::AddNewLayout(CTheme* pTheme, SSlideLayoutAtom* layoutRecord, std::vector<CTextFullSettings> & text, 
+									CRecordHeadersFootersAtom* headers_footers, bool addShapes, bool bMasterObjects)
 {
 	if (pTheme == NULL) return -1;
 
@@ -757,52 +758,76 @@ int CPPTUserInfo::AddNewLayout(NSPresentationEditor::CTheme* pTheme, SSlideLayou
 				int usualType = layoutRecord->m_pPlaceHolderID[i];
 				CorrectPlaceholderType(usualType);
 
-				if (!AddThemeLayoutElement(pLayout, usualType, pTheme))
+				if (!AddThemeLayoutPlaceholder(pLayout, usualType, pTheme))
 				{
-					AddNewLayoutElement(pLayout, usualType, defObjSize);
+					AddNewLayoutPlaceholder(pLayout, usualType, defObjSize);
 				}					
 			}break;
 		default:
-			AddNewLayoutElement(pLayout, layoutRecord->m_pPlaceHolderID[i], defObjSize);
+			AddNewLayoutPlaceholder(pLayout, layoutRecord->m_pPlaceHolderID[i], defObjSize);
 			break;
 		}
 	}
 
-	if (layoutRecord->m_nGeom==0x0F) return ind; // big object only !!!
+	//if (layoutRecord->m_nGeom==0x0F) return ind; // big object only !!!
 
 	if (headers_footers)
 	{
 		if (headers_footers->m_bHasSlideNumber)
 		{
-			AddThemeLayoutElement(pLayout, MasterSlideNumber, pTheme);
+			AddThemeLayoutPlaceholder(pLayout, MasterSlideNumber, pTheme);
 		}
 		if (headers_footers->m_bHasTodayDate || 
 			headers_footers->m_bHasUserDate	||
 			headers_footers->m_bHasDate)
 		{
-			AddThemeLayoutElement(pLayout, MasterDate, pTheme);
+			AddThemeLayoutPlaceholder(pLayout, MasterDate, pTheme);
 		}
-		if (headers_footers->m_bHasHeader)
-		{
-			AddThemeLayoutElement(pLayout, MasterHeader, pTheme);
-		}
+		//верхний колонтитул в 97 офисе есть тока в Notes
+		//if (headers_footers->m_bHasHeader)
+		//{
+		//	AddThemeLayoutPlaceholder(pLayout, MasterHeader, pTheme);
+		//}
 		if (headers_footers->m_bHasFooter)
 		{
-			AddThemeLayoutElement(pLayout, MasterFooter, pTheme);
+			AddThemeLayoutPlaceholder(pLayout, MasterFooter, pTheme);
 		}	
 	}
 	else if (bMasterObjects)
 	{
-		AddThemeLayoutElement(pLayout, MasterSlideNumber	,pTheme);
-		AddThemeLayoutElement(pLayout, MasterDate			,pTheme);
-		AddThemeLayoutElement(pLayout, MasterFooter			,pTheme);
-		AddThemeLayoutElement(pLayout, MasterHeader			,pTheme);
+		AddThemeLayoutPlaceholder(pLayout, MasterSlideNumber	,pTheme);
+		AddThemeLayoutPlaceholder(pLayout, MasterDate			,pTheme);
+		AddThemeLayoutPlaceholder(pLayout, MasterFooter			,pTheme);
+		//верхний колонтитул в 97 офисе есть тока в Notes
+		//AddThemeLayoutPlaceholder(pLayout, MasterHeader			,pTheme);
 	}
 
 	return ind;
 }
 
+IElement* CPPTUserInfo::AddNewThemePlaceholder (CTheme* pTheme, int placeholderType, int placeholderSizePreset)
+{
+	if (placeholderType < 1) return NULL;
 
+	CShapeElement* pShape = new CShapeElement(NSBaseShape::ppt, PPTShapes::sptCRect);
+
+	pShape->m_lPlaceholderType			= placeholderType;
+	pShape->m_lPlaceholderSizePreset	= placeholderSizePreset;
+	
+	//if (pShape->m_lPlaceholderSizePreset > 0)
+	//	pShape->m_bPlaceholderSet		= true;
+	//else
+		pShape->m_bPlaceholderSet		= false;
+	pShape->m_bLine						= false;
+	pShape->m_bBoundsEnabled			= false;
+
+	CorrectPlaceholderType(pShape->m_lPlaceholderType);
+
+	pTheme->m_arElements.push_back(dynamic_cast<IElement*>(pShape));
+	pTheme->m_mapPlaceholders.insert(std::pair<int, int>(pShape->m_lPlaceholderType, pTheme->m_arElements.size()-1)); 
+
+	return pShape;
+}
 void CPPTUserInfo::LoadMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, const LONG& lOriginHeight)
 {
 	std::map<DWORD, LONG>::iterator pPair = m_mapMasterToTheme.find(dwMasterID);
@@ -1011,7 +1036,7 @@ void CPPTUserInfo::LoadMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, co
 			pTheme->m_arElements.push_back(pElem);
 			
 			if ( pElem->m_lPlaceholderType >0)
-				pTheme->m_pPlaceholders.insert(std::pair<int, int>(pElem->m_lPlaceholderType, pTheme->m_arElements.size()-1)); 
+				pTheme->m_mapPlaceholders.insert(std::pair<int, int>(pElem->m_lPlaceholderType, pTheme->m_arElements.size()-1)); 
 
 		}
 	}
@@ -1022,33 +1047,34 @@ void CPPTUserInfo::LoadMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, co
 	{
 		if (oArrayHeadersFootersAtoms[0]->m_bHasSlideNumber)
 		{
-			if (pTheme->m_pPlaceholders.find(MasterSlideNumber) == pTheme->m_pPlaceholders.end())
+			if (pTheme->m_mapPlaceholders.find(MasterSlideNumber) == pTheme->m_mapPlaceholders.end())
 			{
-				CShapeElement* pElement = new CShapeElement(NSBaseShape::ppt, PPTShapes::sptCRect);
-
-				pElement->m_lPlaceholderType	= MasterSlideNumber;
-				pElement->m_bPlaceholderSet		= false;
-				pElement->m_bBoundsEnabled		= false;
-
-				pTheme->m_arElements.push_back(dynamic_cast<IElement*>(pElement));
-				pTheme->m_pPlaceholders.insert(std::pair<int, int>(pElement->m_lPlaceholderType, pTheme->m_arElements.size()-1)); 
+				AddNewThemePlaceholder(pTheme, MasterSlideNumber, 2);
 			}
 		}
 		if (oArrayHeadersFootersAtoms[0]->m_bHasTodayDate || 
 			oArrayHeadersFootersAtoms[0]->m_bHasUserDate	||
 			oArrayHeadersFootersAtoms[0]->m_bHasDate)
 		{
-			if (pTheme->m_pPlaceholders.find(MasterDate) == pTheme->m_pPlaceholders.end())
+			if (pTheme->m_mapPlaceholders.find(MasterDate) == pTheme->m_mapPlaceholders.end())
 			{
-				CShapeElement* pElement = new CShapeElement(NSBaseShape::ppt, PPTShapes::sptCRect);
-
-				pElement->m_lPlaceholderType	= MasterDate;
-				pElement->m_bPlaceholderSet		= false;
-				pElement->m_bBoundsEnabled		= false;
-
-				pTheme->m_arElements.push_back(dynamic_cast<IElement*>(pElement));
-				pTheme->m_pPlaceholders.insert(std::pair<int, int>(pElement->m_lPlaceholderType, pTheme->m_arElements.size()-1)); 
+				AddNewThemePlaceholder(pTheme, MasterDate, 2); 
 			}
+		}
+		//верхний колонтитул в 97 офисе есть тока в Notes
+		//if (oArrayHeadersFootersAtoms[0]->m_bHasHeader)
+		//{
+		//	if (pLayout->m_mapPlaceholders.find(MasterHeader) == pLayout->m_mapPlaceholders.end())
+		//	{
+		//		AddNewThemePlaceholder(pTheme, MasterHeader, 1);
+		//	}	
+		//}
+		if (oArrayHeadersFootersAtoms[0]->m_bHasFooter)
+		{
+			if (pLayout->m_mapPlaceholders.find(MasterFooter) == pLayout->m_mapPlaceholders.end())
+			{
+				AddNewThemePlaceholder(pTheme, MasterFooter, 1);
+			}		
 		}
 	}
 }
@@ -1231,7 +1257,7 @@ void CPPTUserInfo::LoadNoMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, 
 			pLayout->m_arElements.push_back(pElem);
 			
 			if ( pElem->m_lPlaceholderType >0)
-				pLayout->m_pPlaceholders.insert(std::pair<int, int>(pElem->m_lPlaceholderType, pLayout->m_arElements.size()-1)); 
+				pLayout->m_mapPlaceholders.insert(std::pair<int, int>(pElem->m_lPlaceholderType, pLayout->m_arElements.size()-1)); 
 
 		}
 	}
@@ -1242,19 +1268,33 @@ void CPPTUserInfo::LoadNoMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, 
 	{
 		if (oArrayHeadersFootersAtoms[0]->m_bHasSlideNumber)
 		{
-			if (pLayout->m_pPlaceholders.find(MasterSlideNumber) == pLayout->m_pPlaceholders.end())
+			if (pLayout->m_mapPlaceholders.find(MasterSlideNumber) == pLayout->m_mapPlaceholders.end())
 			{
-				AddNewLayoutElement(pLayout, MasterSlideNumber, 4);
+				AddNewLayoutPlaceholder(pLayout, MasterSlideNumber, 2);
 			}
 		}
 		if (oArrayHeadersFootersAtoms[0]->m_bHasTodayDate || 
 			oArrayHeadersFootersAtoms[0]->m_bHasUserDate	||
 			oArrayHeadersFootersAtoms[0]->m_bHasDate)
 		{
-			if (pLayout->m_pPlaceholders.find(MasterDate) == pLayout->m_pPlaceholders.end())
+			if (pLayout->m_mapPlaceholders.find(MasterDate) == pLayout->m_mapPlaceholders.end())
 			{
-				AddNewLayoutElement(pLayout, MasterDate, 2);
+				AddNewLayoutPlaceholder(pLayout, MasterDate, 2);
 			}
+		}
+		if (oArrayHeadersFootersAtoms[0]->m_bHasHeader)
+		{
+			if (pLayout->m_mapPlaceholders.find(MasterHeader) == pLayout->m_mapPlaceholders.end())
+			{
+				AddNewLayoutPlaceholder(pLayout, MasterHeader, 1);
+			}	
+		}
+		if (oArrayHeadersFootersAtoms[0]->m_bHasFooter)
+		{
+			if (pLayout->m_mapPlaceholders.find(MasterFooter) == pLayout->m_mapPlaceholders.end())
+			{
+				AddNewLayoutPlaceholder(pLayout, MasterFooter, 1);
+			}		
 		}
 	}
 

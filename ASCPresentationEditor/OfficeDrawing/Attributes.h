@@ -9,7 +9,7 @@
 
 #include "Metric.h"
 #include "Effects.h"
-#include "../../Common/DocxFormat/Source/XML/xmlutils.h"
+//#include "../../Common/DocxFormat/Source/XML/xmlutils.h"
 #include "../../Common/ASCUtils.h"
 #include "./XmlWriter.h"
 
@@ -639,49 +639,6 @@ namespace NSPresentationEditor
 			RELEASEARRAYOBJECTS(DashPattern);
 		}
 
-	public:
-
-		inline CString ToString()
-        {
-			if (0 == Count)
-			{
-				CString str = _T("");
-				str.Format(_T("<pen pen-color='%s' pen-alpha='%d' pen-size='%.6f' pen-style='%d' pen-line-start-cap='%d' pen-line-end-cap='%d' pen-line-join='%d'/>"),
-					Color.ToString(), Alpha, Size, DashStyle, LineStartCap, LineEndCap, LineJoin);
-				return str;
-			}
-			CString str = _T("");
-			str.Format(_T("<pen pen-color='%s' pen-alpha='%d' pen-size='%.6f' pen-style='%d' pen-line-start-cap='%d' pen-line-end-cap='%d' pen-line-join='%d' pen-dash-pattern-count='%d' dash-offset='%.2lf'>"),
-				Color.ToString(), Alpha, Size, DashStyle, LineStartCap, LineEndCap, LineJoin, Count, DashOffset);
-
-			str += _T("<dash-pattern>");
-
-			for (long i = 0; i < Count; ++i)
-			{
-				CString strMem = _T("");
-				strMem.Format(_T("<dash>%.2lf</dash>"), DashPattern[i]);
-				str += strMem;
-			}
-
-			str += _T("</dash-pattern></pen>");
-
-			return str;
-        }
-		inline CString ToXmlWriter(NSPresentationEditor::CXmlWriter* pWriter)
-		{
-			pWriter->WriteNodeBegin(_T("pen"), true);
-			pWriter->WriteAttributeString(_T("color"), Color.ToString());
-			pWriter->WriteAttributeLONG(_T("alpha"), Alpha);
-			pWriter->WriteAttributeDouble(_T("size"), Size);
-
-			pWriter->WriteAttributeDouble(_T("style"), (LONG)DashStyle);
-			pWriter->WriteAttributeDouble(_T("line-start-cap"), (LONG)LineStartCap);
-			pWriter->WriteAttributeDouble(_T("line-end-cap"), (LONG)LineEndCap);
-			pWriter->WriteAttributeDouble(_T("line-join"), (LONG)LineJoin);
-			pWriter->WriteNodeEnd(_T("pen"), true);
-
-            return CString(_T(""));
-		}
 	};
 
 	class CBrush
@@ -910,32 +867,6 @@ namespace NSPresentationEditor
 		}
 
 	public:
-		inline CString ToString()
-		{
-			return _T("<brush brush-type='")	+ NSPresentationEditor::ToString(Type)
-				+ _T("' brush-color1='")		+ Color1.ToString() + _T("' brush-color2='") + Color2.ToString()
-				+ _T("' brush-alpha1='")		+ NSPresentationEditor::ToString(Alpha1) + _T("' brush-alpha2='") + NSPresentationEditor::ToString(Alpha2) 
-				+ _T("' brush-texturepath='")	+ std_string2string(TexturePath) + _T("' brush-texturealpha='") + NSPresentationEditor::ToString(TextureAlpha)  
-				+ _T("' brush-texturemode='")	+ NSPresentationEditor::ToString(TextureMode)  + _T("' />");
-		}
-		inline CString ToXmlWriter(NSPresentationEditor::CXmlWriter* pWriter)
-		{
-			pWriter->WriteNodeBegin(_T("brush"), true);
-			pWriter->WriteAttributeLONG(_T("brush-type"), Type);
-			pWriter->WriteAttributeString(_T("brush-color1"), Color1.ToString());
-			pWriter->WriteAttributeString(_T("brush-color2"), Color2.ToString());
-			pWriter->WriteAttributeLONG(_T("brush-alpha1"), Alpha1);
-			pWriter->WriteAttributeLONG(_T("brush-alpha2"), Alpha2);
-
-			pWriter->WriteAttributeString(_T("brush-texturepath"), std_string2string(TexturePath));
-
-			pWriter->WriteAttributeDouble(_T("brush-texturealpha"), TextureAlpha);
-			pWriter->WriteAttributeDouble(_T("brush-texturemode"), TextureMode);
-
-			pWriter->WriteNodeEnd(_T("brush"), true);
-           
-            return CString(_T(""));
-		}
 	};
 
 	class CFont
@@ -1247,11 +1178,6 @@ namespace NSPresentationEditor
 			m_dTextRotate			= oSrc.m_dTextRotate;
 
 			return (*this);
-		}
-
-		void ToXmlWriter(NSPresentationEditor::CXmlWriter* pWriter)
-		{
- 
 		}
 	};
 

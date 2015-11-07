@@ -757,15 +757,10 @@ int CPPTUserInfo::AddNewLayout(NSPresentationEditor::CTheme* pTheme, SSlideLayou
 				int usualType = layoutRecord->m_pPlaceHolderID[i];
 				CorrectPlaceholderType(usualType);
 
-				std::map<int, int>::iterator it = pTheme->m_pPlaceholders.find(NSOfficePPT::MasterSlideNumber);
-				if (it  != pTheme->m_pPlaceholders.end())
+				if (!AddThemeLayoutElement(pLayout, usualType, pTheme))
 				{
-					IElement* pElement = pTheme->m_arElements[it->second]->CreateDublicate();
-					pLayout->m_arElements.push_back(dynamic_cast<IElement*>(pElement));
-					pLayout->m_pPlaceholders.insert(std::pair<int, int>(NSOfficePPT::MasterSlideNumber, pLayout->m_arElements.size()-1)); 
-				}
-				else
 					AddNewLayoutElement(pLayout, usualType, defObjSize);
+				}					
 			}break;
 		default:
 			AddNewLayoutElement(pLayout, layoutRecord->m_pPlaceHolderID[i], defObjSize);
@@ -773,39 +768,27 @@ int CPPTUserInfo::AddNewLayout(NSPresentationEditor::CTheme* pTheme, SSlideLayou
 		}
 	}
 
-	if (layoutRecord->m_nGeom==0x0F) return ind;
+	if (layoutRecord->m_nGeom==0x0F) return ind; // big object only !!!
 
 	if (headers_footers)
 	{
 		if (headers_footers->m_bHasSlideNumber)
 		{
-			if (!AddThemeLayoutElement(pLayout, MasterSlideNumber, pTheme))
-			{
-				AddNewLayoutElement(pLayout, MasterSlideNumber, 2);
-			}
+			AddThemeLayoutElement(pLayout, MasterSlideNumber, pTheme);
 		}
 		if (headers_footers->m_bHasTodayDate || 
 			headers_footers->m_bHasUserDate	||
 			headers_footers->m_bHasDate)
 		{
-			if (!AddThemeLayoutElement(pLayout, MasterDate, pTheme))
-			{
-				AddNewLayoutElement(pLayout, MasterDate, 2);
-			}
+			AddThemeLayoutElement(pLayout, MasterDate, pTheme);
 		}
 		if (headers_footers->m_bHasHeader)
 		{
-			if (!AddThemeLayoutElement(pLayout, MasterHeader, pTheme))
-			{
-				AddNewLayoutElement(pLayout, MasterHeader, 2);
-			}
+			AddThemeLayoutElement(pLayout, MasterHeader, pTheme);
 		}
 		if (headers_footers->m_bHasFooter)
 		{
-			if (!AddThemeLayoutElement(pLayout, MasterFooter, pTheme))
-			{
-				AddNewLayoutElement(pLayout, MasterFooter, 2);
-			}
+			AddThemeLayoutElement(pLayout, MasterFooter, pTheme);
 		}	
 	}
 	else if (bMasterObjects)

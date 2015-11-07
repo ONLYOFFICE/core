@@ -1357,29 +1357,7 @@ namespace NSPresentationEditor
 	#endif
 		CString ToXml(CGeomShapeInfo& pGeomInfo, double dStartTime, double dEndTime, CPen& pPen, CBrush& pFore, CMetricInfo& pInfo, NSBaseShape::ClassType ClassType)
 		{
-			CString strTimeLine = _T("");
-			strTimeLine.Format(_T("<timeline type='1' begin='%lf' end='%lf' fadein='0' fadeout='0' completeness='1.0'/>"), dStartTime, dEndTime);
-
-			CString strFill = _T("");
-			strFill.Format(_T(" stroke='%s' fill='%s' angle='%lf' flags='%d' bounds-left='%lf' bounds-top='%lf' bounds-right='%lf' bounds-bottom='%lf' widthmm='%d' heightmm='%d'>"),
-				NSPresentationEditor::BoolToString(m_bStroke), NSPresentationEditor::BoolToString(m_bFill), 
-				pGeomInfo.m_dRotate, pGeomInfo.GetFlags(), 
-				pGeomInfo.m_dLeft, pGeomInfo.m_dTop, pGeomInfo.m_dLeft + pGeomInfo.m_dWidth, pGeomInfo.m_dTop + pGeomInfo.m_dHeight,
-				pInfo.m_lMillimetresHor, pInfo.m_lMillimetresVer);
-
-			strFill += pPen.ToString();
-			if (m_bFill)
-				strFill += pFore.ToString();
-
-			CString strResult = _T("<ImagePaint-DrawGraphicPath") + strFill;
-			for (int nIndex = 0; nIndex < m_arSlices.size(); ++nIndex)
-			{
-				strResult += m_arSlices[nIndex].ToXml(pGeomInfo, width, height, ClassType);
-			}
-			strResult += strTimeLine;
-			strResult += _T("</ImagePaint-DrawGraphicPath>");
-
-			return strResult;
+			return _T("");
 		}
 
 		void ToRenderer(CGraphicPath* pRenderer, CGeomShapeInfo& pGeomInfo, double dStartTime, double dEndTime, CPen& pPen, CBrush& pFore, CMetricInfo& pInfo, NSBaseShape::ClassType ClassType)

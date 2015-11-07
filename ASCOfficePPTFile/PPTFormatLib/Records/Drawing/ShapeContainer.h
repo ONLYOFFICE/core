@@ -1403,8 +1403,10 @@ public:
 		if (NULL == pElem)
 			return;
 
-		std::wstring strShapeText;
+		pElem->m_lID		= oArrayShape[0]->m_nID;
+		pElem->m_lLayoutID	= lMasterID;
 
+//---------внешние ссылки 
 		{
 			CExFilesInfo::ExFilesType exType		= CExFilesInfo::eftNone;
 			CExFilesInfo			* pTextureInfo	= pMapIDs->Lock(0xFFFFFFFF, exType);
@@ -1426,10 +1428,9 @@ public:
 				}
 			}
 		}
-		pElem->m_lID = oArrayShape[0]->m_nID;
-
+		std::wstring strShapeText;
 //------------------------------------------------------------------------------------------------		
-		// placeholder
+		// placeholders
 		std::vector<CRecordPlaceHolderAtom*> oArrayPlaceHolder;
 		GetRecordsByType(&oArrayPlaceHolder, true, true);
 		if (0 < oArrayPlaceHolder.size())
@@ -1453,33 +1454,28 @@ public:
 			
 			CorrectPlaceholderType(pElem->m_lPlaceholderType);
 		}
-
-		if (pElem->m_lPlaceholderType > 0) // meta
+		//meta placeholders
+		std::vector<CRecordFooterMetaAtom*> oArrayFooterMeta;
+		GetRecordsByType(&oArrayFooterMeta, true, true);
+		if (0 < oArrayFooterMeta.size())
 		{
-			std::vector<CRecordFooterMetaAtom*> oArrayFooterMeta;
-			GetRecordsByType(&oArrayFooterMeta, true, true);
-			if (0 < oArrayFooterMeta.size())
-			{
-				pElem->m_lPlaceholderType = PT_MasterFooter;
+			pElem->m_lPlaceholderType = PT_MasterFooter;
 
-				DWORD posText = oArrayFooterMeta[0]->m_nPosition;
-				if (posText < pTheme->m_oFootersHeaderString.size())
-					strShapeText = pTheme->m_oFootersHeaderString[posText];
-			}
-			std::vector<CRecordSlideNumberMetaAtom*> oArraySlideNumberMeta;
-			GetRecordsByType(&oArraySlideNumberMeta, true, true);
-			if (0 < oArraySlideNumberMeta.size())
-			{
-				pElem->m_lPlaceholderType = PT_MasterSlideNumber;
-				DWORD posText = oArraySlideNumberMeta[0]->m_nPosition;
-
-				if (posText < pTheme->m_oFootersHeaderString.size())
-					strShapeText = pTheme->m_oFootersHeaderString[posText];
-
-			}			
+			DWORD posText = oArrayFooterMeta[0]->m_nPosition;
+			if (posText < pTheme->m_oFootersHeaderString.size())
+				strShapeText = pTheme->m_oFootersHeaderString[posText];
 		}
+		std::vector<CRecordSlideNumberMetaAtom*> oArraySlideNumberMeta;
+		GetRecordsByType(&oArraySlideNumberMeta, true, true);
+		if (0 < oArraySlideNumberMeta.size())
+		{
+			pElem->m_lPlaceholderType = PT_MasterSlideNumber;
+			DWORD posText = oArraySlideNumberMeta[0]->m_nPosition;
 
-//----------------------------------------------------------------------------------------------
+			if (posText < pTheme->m_oFootersHeaderString.size())
+				strShapeText = pTheme->m_oFootersHeaderString[posText];
+		}
+//------------- привязки ---------------------------------------------------------------------------------
 		std::vector<CRecordClientAnchor*> oArrayAnchor;
 		this->GetRecordsByType(&oArrayAnchor, true, true);
 
@@ -1550,8 +1546,7 @@ public:
 			pElementLayout->m_bPlaceholderSet	= true;
 			pElementLayout->m_bBoundsEnabled	= true;
 		}
-
-		// проверка на наличие текста
+//--------- наличие текста --------------------------------------------------------------------------
 		CShapeElement* pShapeElem = dynamic_cast<CShapeElement*>(pElem);
 		if (NULL != pShapeElem)
 		{
@@ -1588,15 +1583,12 @@ public:
 				oElementInfo.m_lPersistIndex = oArrayTextRefs[0]->m_nIndex;
 			}
 
-			// теперь сам текст...
+			// сам текст...
 			std::vector<CRecordTextBytesAtom*> oArrayTextBytes;
 			GetRecordsByType(&oArrayTextBytes, true, true);
 			if (0 < oArrayTextBytes.size() && strShapeText.empty())
 			{
 				strShapeText = oArrayTextBytes[0]->m_strText;
-
-				if (pElem->m_lPlaceholderType == PT_MasterSlideNumber && strShapeText.length() > 5)
-					pElem->m_lPlaceholderType = PT_MasterFooter; ///???? 1-(33).ppt
 			}
 			
 			std::vector<CRecordTextCharsAtom*> oArrayTextChars;
@@ -1607,16 +1599,15 @@ public:
 				strShapeText = oArrayTextChars[0]->m_strText;
 			}
 
-			// теперь настройки этого текста...
+			if (pElem->m_lPlaceholderType == PT_MasterSlideNumber && strShapeText.length() > 5)
+				pElem->m_lPlaceholderType = PT_MasterFooter; ///???? 1-(33).ppt
 
-			// сначала - проперти
+//------ shape properties ----------------------------------------------------------------------------------------
 			for (int nIndexProp = 0; nIndexProp < oArrayOptions.size(); ++nIndexProp)
 			{
 				CPPTElement oElement;
 				oElement.SetUpProperties(pElem, pTheme, pSlideWrapper, pSlide, &oArrayOptions[nIndexProp]->m_oProperties);
 			}
-
-			pElem->m_lLayoutID = lMasterID;
 
 			std::vector<CRecordStyleTextPropAtom*> oArrayTextStyle;
 			this->GetRecordsByType(&oArrayTextStyle, true, true);
@@ -1694,12 +1685,9 @@ public:
 			pSlideWrapper->m_mapElements.insert(std::pair<LONG, CElementInfo>(pShapeElem->m_lID, oElementInfo));
 			
 			SetUpTextStyle(strShapeText, pTheme, pLayout, pElem, pThemeWrapper, pSlideWrapper, pSlide, master_level);
-			
-//------------------------------------------------------------------------------------
-
 		}
 		else
-		{
+		{//image, audio, video ....
 			for (int nIndexProp = 0; nIndexProp < oArrayOptions.size(); ++nIndexProp)
 			{
 				CPPTElement oElement;
@@ -1708,7 +1696,7 @@ public:
 
 			pElem->m_lLayoutID = lMasterID;
 		}
-
+//----------------------------------------------------------------------------------------------------
 		if (NULL != pSlide)
 		{
 			pElem->m_dStartTime		= pSlide->m_dStartTime;

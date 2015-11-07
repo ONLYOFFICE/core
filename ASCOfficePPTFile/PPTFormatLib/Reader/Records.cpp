@@ -4,11 +4,6 @@
 
 #include <iostream>
 
-void SRecordHeader::ToXmlWriter(XmlUtils::CXmlWriter* pWriter, POLE::Stream* pStream)
-{
-
-}
-
 void CRecordsContainer::ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
 {
 	m_oHeader = oHeader;
@@ -187,11 +182,6 @@ IRecord* CreateByType(SRecordHeader oHeader)
 
 	default: 
 		{
-#ifdef _DEBUG
-			char str[1024]={};
-			sprintf(str, "Unknown record type: %xd\n" , oHeader.RecType);
-			std::cout << str;
-#endif
 		}break;		
 	};
 
@@ -204,12 +194,12 @@ IRecord* CreateByType(SRecordHeader oHeader)
 		else
 		{
 			pRecord = new CUnknownRecord();
+#ifdef _DEBUG
+			char str[1024]={};
+			sprintf(str, "Unknown record type: %xd\t" , oHeader.RecType);
+			std::cout << str << GetRecordName((DWORD)oHeader.RecType) << "\n"; 
+#endif
 		}
 	}
-//#ifdef _DEBUG
-		//wchar_t str[1024]={};
-		//swprintf(str, L"%s record type: %xd\n" , GetRecordName((DWORD)oHeader.RecType).GetBuffer(), oHeader.RecType);
-		//std::wcout << str;
-//#endif
 	return pRecord;
 }

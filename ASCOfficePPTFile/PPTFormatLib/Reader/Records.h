@@ -73,20 +73,6 @@ struct SRecordHeader
 		return (*this);
 	}
 
-	void ToXmlWriter(XmlUtils::CXmlWriter* pWriter)
-	{
-		CString str = GetRecordName((DWORD)RecType);
-		
-		pWriter->WriteNodeBegin(str, TRUE);
-		pWriter->WriteAttribute(_T("length"), CDirectory::ToString(RecLen));
-		pWriter->WriteAttribute(_T("type"), CDirectory::ToString(RecType));
-		pWriter->WriteAttribute(_T("instance"), CDirectory::ToString(RecInstance));
-
-		pWriter->WriteNodeEnd(str, TRUE);
-	}
-
-	void ToXmlWriter(XmlUtils::CXmlWriter* pWriter, POLE::Stream* pStream);
-
 };
 
 class IRecord

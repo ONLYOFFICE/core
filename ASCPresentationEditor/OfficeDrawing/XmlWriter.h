@@ -200,181 +200,181 @@ namespace NSPresentationEditor
 		}
 	};
 
-	class CXmlWriter
-	{
-		CStringWriter m_oWriter;
-	
-	public:
+	//class CXmlWriter
+	//{
+	//	CStringWriter m_oWriter;
+	//
+	//public:
 
-		CXmlWriter() : m_oWriter()
-		{
-		}
-		
-		inline CString GetXmlString()
-		{
-			return m_oWriter.GetData();
-		}
+	//	CXmlWriter() : m_oWriter()
+	//	{
+	//	}
+	//	
+	//	inline CString GetXmlString()
+	//	{
+	//		return m_oWriter.GetData();
+	//	}
 
-		// write value
-        AVSINLINE void WriteString(CString strValue)
-		{
-			m_oWriter.WriteString(strValue);
-		}
-        AVSINLINE void WriteDouble(const double& val)
-		{
-			CString str = _T("");
-			str.Format(_T("%lf"), val);
-			m_oWriter.WriteString(str);
-		}
-        AVSINLINE void WriteLONG(const long& val)
-		{
-			CString str = _T("");
-			str.Format(_T("%d"), val);
-			m_oWriter.WriteString(str);
-		}
-        AVSINLINE void WriteDWORD(const DWORD& val)
-		{
-			CString str = _T("");
-			str.Format(_T("%u"), val);
-			m_oWriter.WriteString(str);
-		}
-        AVSINLINE void WriteDWORD_hex(const DWORD& val)
-		{
-			CString str = _T("");
-			str.Format(_T("%x"), val);
-			m_oWriter.WriteString(str);
-		}
-		// write attribute
-        AVSINLINE void WriteAttributeString(const CString& strAttributeName, const CString& val)
-		{
-			m_oWriter.WriteString(g_bstr_node_space);
-			m_oWriter.WriteString(strAttributeName);
-			m_oWriter.WriteString(g_bstr_node_equal);
-			m_oWriter.WriteString(g_bstr_node_quote);
-			m_oWriter.WriteString(val);
-			m_oWriter.WriteString(g_bstr_node_quote);
-		}
-        AVSINLINE void WriteAttributeDouble(const CString& strAttributeName, const double& val)
-		{
-			m_oWriter.WriteString(g_bstr_node_space);
-			m_oWriter.WriteString(strAttributeName);
-			m_oWriter.WriteString(g_bstr_node_equal);
-			m_oWriter.WriteString(g_bstr_node_quote);
-			WriteDouble(val);
-			m_oWriter.WriteString(g_bstr_node_quote);
-		}
-        AVSINLINE void WriteAttributeLONG(const CString& strAttributeName, const LONG& val)
-		{
-			m_oWriter.WriteString(g_bstr_node_space);
-			m_oWriter.WriteString(strAttributeName);
-			m_oWriter.WriteString(g_bstr_node_equal);
-			m_oWriter.WriteString(g_bstr_node_quote);
-			WriteLONG(val);
-			m_oWriter.WriteString(g_bstr_node_quote);
-		}
-        AVSINLINE void WriteAttributeDWORD(const CString& strAttributeName, const DWORD& val)
-		{
-			m_oWriter.WriteString(g_bstr_node_space);
-			m_oWriter.WriteString(strAttributeName);
-			m_oWriter.WriteString(g_bstr_node_equal);
-			m_oWriter.WriteString(g_bstr_node_quote);
-			WriteDWORD(val);
-			m_oWriter.WriteString(g_bstr_node_quote);
-		}
-        AVSINLINE void WriteAttributeDWORD_hex(const CString& strAttributeName, const DWORD& val)
-		{
-			m_oWriter.WriteString(g_bstr_node_space);
-			m_oWriter.WriteString(strAttributeName);
-			m_oWriter.WriteString(g_bstr_node_equal);
-			m_oWriter.WriteString(g_bstr_node_quote);
-			WriteDWORD_hex(val);
-			m_oWriter.WriteString(g_bstr_node_quote);
-		}
-		// document methods
-        AVSINLINE void WriteNodeBegin(CString strNodeName, bool bAttributed = false)
-		{
-			m_oWriter.WriteString(g_bstr_nodeopen);
-			m_oWriter.WriteString(strNodeName);
-			
-			if (!bAttributed)
-				m_oWriter.WriteString(g_bstr_nodeclose);
-		}
-        AVSINLINE void WriteNodeEnd(CString strNodeName, bool bEmptyNode = false, bool bEndNode = true)
-		{
-			if (bEmptyNode)
-			{
-				if (bEndNode)
-					m_oWriter.WriteString(g_bstr_nodeclose_slash);
-				else
-					m_oWriter.WriteString(g_bstr_nodeclose);
-			}
-			else
-			{
-				m_oWriter.WriteString(g_bstr_nodeopen_slash);
-				m_oWriter.WriteString(strNodeName);
-				m_oWriter.WriteString(g_bstr_nodeclose);
-			}
-		}
-		// write node values
-        AVSINLINE void WriteNodeValueString(const CString& strNodeName, const CString& val)
-		{
-			WriteNodeBegin(strNodeName);
-			WriteString(val);
-			WriteNodeEnd(strNodeName);
-		}
-        AVSINLINE void WriteNodeValueBool(const CString& strNodeName, const bool& val)
-		{
-			WriteNodeBegin(strNodeName);
-			
-			if (val)
-				WriteString(_T("1"));
-			else
-				WriteString(_T("0"));
+	//	// write value
+ //       AVSINLINE void WriteString(CString strValue)
+	//	{
+	//		m_oWriter.WriteString(strValue);
+	//	}
+ //       AVSINLINE void WriteDouble(const double& val)
+	//	{
+	//		CString str = _T("");
+	//		str.Format(_T("%lf"), val);
+	//		m_oWriter.WriteString(str);
+	//	}
+ //       AVSINLINE void WriteLONG(const long& val)
+	//	{
+	//		CString str = _T("");
+	//		str.Format(_T("%d"), val);
+	//		m_oWriter.WriteString(str);
+	//	}
+ //       AVSINLINE void WriteDWORD(const DWORD& val)
+	//	{
+	//		CString str = _T("");
+	//		str.Format(_T("%u"), val);
+	//		m_oWriter.WriteString(str);
+	//	}
+ //       AVSINLINE void WriteDWORD_hex(const DWORD& val)
+	//	{
+	//		CString str = _T("");
+	//		str.Format(_T("%x"), val);
+	//		m_oWriter.WriteString(str);
+	//	}
+	//	// write attribute
+ //       AVSINLINE void WriteAttributeString(const CString& strAttributeName, const CString& val)
+	//	{
+	//		m_oWriter.WriteString(g_bstr_node_space);
+	//		m_oWriter.WriteString(strAttributeName);
+	//		m_oWriter.WriteString(g_bstr_node_equal);
+	//		m_oWriter.WriteString(g_bstr_node_quote);
+	//		m_oWriter.WriteString(val);
+	//		m_oWriter.WriteString(g_bstr_node_quote);
+	//	}
+ //       AVSINLINE void WriteAttributeDouble(const CString& strAttributeName, const double& val)
+	//	{
+	//		m_oWriter.WriteString(g_bstr_node_space);
+	//		m_oWriter.WriteString(strAttributeName);
+	//		m_oWriter.WriteString(g_bstr_node_equal);
+	//		m_oWriter.WriteString(g_bstr_node_quote);
+	//		WriteDouble(val);
+	//		m_oWriter.WriteString(g_bstr_node_quote);
+	//	}
+ //       AVSINLINE void WriteAttributeLONG(const CString& strAttributeName, const LONG& val)
+	//	{
+	//		m_oWriter.WriteString(g_bstr_node_space);
+	//		m_oWriter.WriteString(strAttributeName);
+	//		m_oWriter.WriteString(g_bstr_node_equal);
+	//		m_oWriter.WriteString(g_bstr_node_quote);
+	//		WriteLONG(val);
+	//		m_oWriter.WriteString(g_bstr_node_quote);
+	//	}
+ //       AVSINLINE void WriteAttributeDWORD(const CString& strAttributeName, const DWORD& val)
+	//	{
+	//		m_oWriter.WriteString(g_bstr_node_space);
+	//		m_oWriter.WriteString(strAttributeName);
+	//		m_oWriter.WriteString(g_bstr_node_equal);
+	//		m_oWriter.WriteString(g_bstr_node_quote);
+	//		WriteDWORD(val);
+	//		m_oWriter.WriteString(g_bstr_node_quote);
+	//	}
+ //       AVSINLINE void WriteAttributeDWORD_hex(const CString& strAttributeName, const DWORD& val)
+	//	{
+	//		m_oWriter.WriteString(g_bstr_node_space);
+	//		m_oWriter.WriteString(strAttributeName);
+	//		m_oWriter.WriteString(g_bstr_node_equal);
+	//		m_oWriter.WriteString(g_bstr_node_quote);
+	//		WriteDWORD_hex(val);
+	//		m_oWriter.WriteString(g_bstr_node_quote);
+	//	}
+	//	// document methods
+ //       AVSINLINE void WriteNodeBegin(CString strNodeName, bool bAttributed = false)
+	//	{
+	//		m_oWriter.WriteString(g_bstr_nodeopen);
+	//		m_oWriter.WriteString(strNodeName);
+	//		
+	//		if (!bAttributed)
+	//			m_oWriter.WriteString(g_bstr_nodeclose);
+	//	}
+ //       AVSINLINE void WriteNodeEnd(CString strNodeName, bool bEmptyNode = false, bool bEndNode = true)
+	//	{
+	//		if (bEmptyNode)
+	//		{
+	//			if (bEndNode)
+	//				m_oWriter.WriteString(g_bstr_nodeclose_slash);
+	//			else
+	//				m_oWriter.WriteString(g_bstr_nodeclose);
+	//		}
+	//		else
+	//		{
+	//			m_oWriter.WriteString(g_bstr_nodeopen_slash);
+	//			m_oWriter.WriteString(strNodeName);
+	//			m_oWriter.WriteString(g_bstr_nodeclose);
+	//		}
+	//	}
+	//	// write node values
+ //       AVSINLINE void WriteNodeValueString(const CString& strNodeName, const CString& val)
+	//	{
+	//		WriteNodeBegin(strNodeName);
+	//		WriteString(val);
+	//		WriteNodeEnd(strNodeName);
+	//	}
+ //       AVSINLINE void WriteNodeValueBool(const CString& strNodeName, const bool& val)
+	//	{
+	//		WriteNodeBegin(strNodeName);
+	//		
+	//		if (val)
+	//			WriteString(_T("1"));
+	//		else
+	//			WriteString(_T("0"));
 
-			WriteNodeEnd(strNodeName);
-		}
-        AVSINLINE void WriteNodeValueDouble(const CString& strNodeName, const double& val)
-		{
-			WriteNodeBegin(strNodeName);
-			WriteDouble(val);
-			WriteNodeEnd(strNodeName);
-		}
-        AVSINLINE void WriteNodeValueLONG(const CString& strNodeName, const LONG& val)
-		{
-			WriteNodeBegin(strNodeName);
-			WriteLONG(val);
-			WriteNodeEnd(strNodeName);
-		}
-        AVSINLINE void WriteNodeValueDWORD(const CString& strNodeName, const DWORD& val)
-		{
-			WriteNodeBegin(strNodeName);
-			WriteDWORD(val);
-			WriteNodeEnd(strNodeName);
-		}
-        AVSINLINE void WriteNodeValueDWORD_hex(const CString& strNodeName, const DWORD& val)
-		{
-			WriteNodeBegin(strNodeName);
-			WriteDWORD_hex(val);
-			WriteNodeEnd(strNodeName);
-		}
+	//		WriteNodeEnd(strNodeName);
+	//	}
+ //       AVSINLINE void WriteNodeValueDouble(const CString& strNodeName, const double& val)
+	//	{
+	//		WriteNodeBegin(strNodeName);
+	//		WriteDouble(val);
+	//		WriteNodeEnd(strNodeName);
+	//	}
+ //       AVSINLINE void WriteNodeValueLONG(const CString& strNodeName, const LONG& val)
+	//	{
+	//		WriteNodeBegin(strNodeName);
+	//		WriteLONG(val);
+	//		WriteNodeEnd(strNodeName);
+	//	}
+ //       AVSINLINE void WriteNodeValueDWORD(const CString& strNodeName, const DWORD& val)
+	//	{
+	//		WriteNodeBegin(strNodeName);
+	//		WriteDWORD(val);
+	//		WriteNodeEnd(strNodeName);
+	//	}
+ //       AVSINLINE void WriteNodeValueDWORD_hex(const CString& strNodeName, const DWORD& val)
+	//	{
+	//		WriteNodeBegin(strNodeName);
+	//		WriteDWORD_hex(val);
+	//		WriteNodeEnd(strNodeName);
+	//	}
 
-		
-                bool SaveToFile(CString strFilePath, bool bEncodingToUTF8 = false)
-		{
-			CString strData = m_oWriter.GetData();
-			if (!bEncodingToUTF8)
-			{
-				CFile oFile;
-				oFile.CreateFile(strFilePath);
-				oFile.WriteFile((void*)strData.GetBuffer(), strData.GetLength());
-				oFile.CloseFile();
-			}
-			else
-			{
-				CDirectory::SaveToFile(strFilePath, strData);
-			}
-			
-                        return true;
-		}
-	};
+	//	
+ //               bool SaveToFile(CString strFilePath, bool bEncodingToUTF8 = false)
+	//	{
+	//		CString strData = m_oWriter.GetData();
+	//		if (!bEncodingToUTF8)
+	//		{
+	//			CFile oFile;
+	//			oFile.CreateFile(strFilePath);
+	//			oFile.WriteFile((void*)strData.GetBuffer(), strData.GetLength());
+	//			oFile.CloseFile();
+	//		}
+	//		else
+	//		{
+	//			CDirectory::SaveToFile(strFilePath, strData);
+	//		}
+	//		
+ //                       return true;
+	//	}
+	//};
 }

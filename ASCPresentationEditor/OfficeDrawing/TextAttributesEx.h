@@ -3,8 +3,6 @@
 #include "TextStructures.h"
 
 #if !defined(_WIN32) && !defined (_WIN64)
-    //#include "./../../DesktopEditor/cximage/CxImage/ximadef.h"
-    //#include "../../ASCOfficePPTXFile/PPTXFormat/Logic/rectdef.h"
     #include "../../DesktopEditor/graphics/aggplustypes.h"
 #endif
 

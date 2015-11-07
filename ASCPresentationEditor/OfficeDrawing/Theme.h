@@ -13,6 +13,8 @@ namespace NSPresentationEditor
 		std::map<_UINT64, LONG>			m_mapGeomToLayout;// типовые шаблоны
 		std::map<DWORD, LONG>			m_mapTitleLayout; // заголовочные шаблоны
 		
+		std::map<int,int>				m_mapPlaceholders;
+
 		std::vector<CColor>				m_arColorScheme;
 		std::vector<CFont>				m_arFonts;
 		std::vector<CBrush>				m_arBrushes;
@@ -27,7 +29,6 @@ namespace NSPresentationEditor
 
 		std::vector<IElement*>			m_arElements;
 
-		std::map<int,int>				m_pPlaceholders;
 		CMetricInfo						m_oInfo;
 
 		std::wstring					m_sThemeName;
@@ -48,13 +49,13 @@ namespace NSPresentationEditor
 		CTheme() : m_arColorScheme(), m_arFonts(), m_arBrushes(),
 			m_arPens(), m_arEffects(), m_arLayouts()
 		{
-			m_sThemeName = L"Default";
-			m_lOriginalWidth = m_lOriginalHeight = 0;
+			m_sThemeName		= L"Default";
+			m_lOriginalWidth	= m_lOriginalHeight = 0;
 			
-			m_bHasDate = false;
-			m_bHasSlideNumber = false;
-			m_bHasHeader = false;
-			m_bHasFooter = false;
+			m_bHasDate			= false;
+			m_bHasSlideNumber	= false;
+			m_bHasHeader		= false;
+			m_bHasFooter		= false;
 		}
 
 		CTheme(const CTheme& oSrc)
@@ -91,6 +92,7 @@ namespace NSPresentationEditor
 			m_arLayouts			= oSrc.m_arLayouts;
 			m_mapTitleLayout	= oSrc.m_mapTitleLayout;
 			m_mapGeomToLayout	= oSrc.m_mapGeomToLayout;
+			m_mapPlaceholders	= oSrc.m_mapPlaceholders;
 	
 			m_bIsBackground		= oSrc.m_bIsBackground;
 			m_oBackground		= oSrc.m_oBackground;
@@ -143,6 +145,10 @@ namespace NSPresentationEditor
 			}
 
 			m_arElements.clear();
+			m_arLayouts.clear();
+			m_mapTitleLayout.clear();
+			m_mapGeomToLayout.clear();
+			m_mapPlaceholders.clear();
 
 			m_lOriginalWidth = m_lOriginalHeight = 0;
 

@@ -34,7 +34,7 @@ namespace NSPresentationEditor
 
 		CMetricInfo				m_oInfo;
 		
-		CString					m_strComment;
+		std::wstring			m_strComment;
 		std::wstring			m_sName;
 	public:
 		CSlide() : m_arElements(), m_oSlideShow()
@@ -70,7 +70,8 @@ namespace NSPresentationEditor
 			m_dDuration		= 30000.0;
 
 			m_bShowMasterShapes = true;
-			m_strComment = _T("");
+			m_strComment.clear();
+			m_sName.clear();
 
 		}
 
@@ -143,6 +144,7 @@ namespace NSPresentationEditor
 			m_bShowMasterShapes = oSrc.m_bShowMasterShapes;
 
 			m_strComment		= oSrc.m_strComment;
+			m_sName				= oSrc.m_sName;
 		}
 
 	public:
@@ -213,21 +215,7 @@ namespace NSPresentationEditor
 				return;
 			}
 			
-			//m_arElements[nIndexElement] = pLayoutElem->CreateDublicate();
-			//m_arElements[nIndexElement]->m_oProperties = pElement->m_oProperties;
 			m_arElements[nIndexElement]->SetupProperties(this, pTheme, pLayout);
-		}
-
-		virtual CString SerializeToXml()
-		{
-			CString strSlide = _T("");
-			strSlide.Format(_T("<Slide tid='%d' lid='%d'>"), m_lThemeID, m_lLayoutID);
-			for (size_t i = 0; i < m_arElements.size(); ++i)
-			{
-				strSlide += m_arElements[i]->SerializeToXml();
-			}
-			strSlide += _T("</Slide>");
-			return strSlide;
 		}
 
 		void SetMetricInfo(const CMetricInfo& oInfo)

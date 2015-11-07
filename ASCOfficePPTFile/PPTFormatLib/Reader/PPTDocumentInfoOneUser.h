@@ -257,6 +257,8 @@ public:
 	int			AddNewLayout(NSPresentationEditor::CTheme* pTheme, SSlideLayoutAtom* layoutRecord, std::vector<CTextFullSettings> & text, 
 						CRecordHeadersFootersAtom* headers_footers, bool addShapes, bool bMasterObjects);
 	
-	IElement*	AddNewLayoutElement		(CLayout *pLayout, int placeholderType, int placeholderSizePreset = -1);
-	IElement*	AddThemeLayoutElement	(CLayout *pLayout, int placeholderType, NSPresentationEditor::CTheme* pTheme);
+	IElement*	AddNewLayoutPlaceholder		(CLayout *pLayout, int placeholderType, int placeholderSizePreset = -1);
+	IElement*	AddThemeLayoutPlaceholder	(CLayout *pLayout, int placeholderType, CTheme* pTheme);
+
+	IElement*	AddNewThemePlaceholder		(CTheme* pTheme, int placeholderType, int placeholderSizePreset = -1);
 };

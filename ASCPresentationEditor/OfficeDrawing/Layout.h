@@ -9,7 +9,7 @@ namespace NSPresentationEditor
 		std::vector<IElement*>	m_arElements;
 		std::vector<CColor>		m_arColorScheme;
 
-		std::map<int,int>		m_pPlaceholders;
+		std::map<int,int>		m_mapPlaceholders;
 
 		bool					m_bUseThemeColorScheme;
 
@@ -45,7 +45,7 @@ namespace NSPresentationEditor
 		{
 			Clear();
 		
-			m_arElements.insert(m_arElements.end(), oSrc.m_arElements.begin(), oSrc.m_arElements.end());
+			m_arElements			= oSrc.m_arElements;
 
 			size_t nCount = m_arElements.size();
 			for (size_t nIndex = 0; nIndex < nCount; ++nIndex)
@@ -53,7 +53,8 @@ namespace NSPresentationEditor
 				ADDREFINTERFACE((m_arElements[nIndex]));
 			}
 
-			m_arColorScheme = oSrc.m_arColorScheme;
+			m_mapPlaceholders		= oSrc.m_mapPlaceholders;
+			m_arColorScheme			= oSrc.m_arColorScheme;
 
 			m_bUseThemeColorScheme	= oSrc.m_bUseThemeColorScheme;
 
@@ -68,6 +69,8 @@ namespace NSPresentationEditor
 
 			m_bShowMasterShapes		= oSrc.m_bShowMasterShapes;
 			m_strLayoutType			= oSrc.m_strLayoutType;
+
+			m_sName					= oSrc.m_sName;
 
 			return *this;
 		}
@@ -91,6 +94,7 @@ namespace NSPresentationEditor
 			}
 
 			m_arElements.clear();
+			m_mapPlaceholders.clear();
 			
 			m_bUseThemeColorScheme	= true;
 			m_bShowMasterShapes		= true;
@@ -122,7 +126,7 @@ namespace NSPresentationEditor
 			return pNew;
 		}
 
-                IElement* GetPlaceholder(LONG lID, bool bIsAddRef)
+		IElement* GetPlaceholder(LONG lID, bool bIsAddRef)
 		{
 			size_t nCount = m_arElements.size();
 			

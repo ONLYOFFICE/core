@@ -189,7 +189,7 @@ namespace NSPresentationEditor
 			str.Format(_T("<Relationship Id=\"rId%d\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/notesSlide\" Target=\"../notesSlides/notesSlide%d.xml\"/>"), m_lNextRelsID++, nIndexSlide + 1);
 			m_oWriter.WriteString(str);
 		}
-		static AVSINLINE void StartNotes(int nIndexSlide, CString strDirectory, CString strComment)
+		static AVSINLINE void StartNotes(int nIndexSlide, CString strDirectory, std::wstring strComment)
 		{
 			CString sNum = _T("");
 			sNum.Format(_T("%d"), nIndexSlide + 1);

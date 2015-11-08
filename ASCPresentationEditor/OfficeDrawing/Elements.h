@@ -497,74 +497,6 @@ namespace NSPresentationEditor
 		{
 		}
 
-		//virtual void WriteToXml(XmlUtils::CXmlWriter& oWriter)
-		//{
-		//	CString strXml = SaveToXML();
-		//	oWriter.WriteString(strXml);
-		//}
-		//virtual void ReadFromXml(XmlUtils::CXmlNode& oNode)
-		//{
-		//}
-
-		//virtual CString SaveToXML()
-		//{
-		//	if (!m_oAnimations.m_arAnimations.empty())
-		//		return ToAnimationXml();
-		//	
-		//	CGeomShapeInfo oInfo;
-		//	oInfo.SetBounds(m_rcBounds);
-
-		//	oInfo.m_dRotate = m_dRotate;
-		//	oInfo.m_bFlipH	= m_bFlipH;
-		//	oInfo.m_bFlipV	= m_bFlipV;
-
-		//	return m_oShape.ToXml(oInfo, m_oMetric, m_dStartTime, m_dEndTime, m_pTheme, m_pLayout);
-		//}
-
-		//CString ToAnimationXml()
-		//{
-		//	CGeomShapeInfo oInfo;
-		//	oInfo.SetBounds(m_rcBounds);
-
-		//	oInfo.m_dRotate = m_dRotate;
-		//	oInfo.m_bFlipH	= m_bFlipH;
-		//	oInfo.m_bFlipV	= m_bFlipV;
-
-		//	m_oAnimations.m_dSlideWidth		=	m_oMetric.m_lMillimetresHor;
-		//	m_oAnimations.m_dSlideHeight	=	m_oMetric.m_lMillimetresVer;
-
-		//	CString timeXML;
-		//	timeXML.Format(_T("<timeline type = \"1\"  begin=\"%f\" end=\"%f\" fadein=\"0\" fadeout=\"0\" completeness=\"1.0\"/> "), m_dStartTime, m_dEndTime );
-		//	
-		//	CString baseXML = m_oShape.ToXml(oInfo, m_oMetric, m_dStartTime, m_dEndTime, m_pTheme, m_pLayout);
-
-		//	if ( -1 != baseXML.Find ( _T("<ImagePaint-DrawTextEx") ) )
-		//	{
-		//		CString sBounds;	// FIX
-		//		sBounds.Format(_T("<bounds left='%d' top='%d' right='%d' bottom='%d'/>"), 
-		//			(LONG)m_rcBounds.left, (LONG)m_rcBounds.top, (LONG)m_rcBounds.right, (LONG)m_rcBounds.bottom);
-
-		//		CString sReplace = m_oAnimations.ToXml(m_dStartTime, m_dEndTime) + timeXML + sBounds + _T("</ImagePaint-DrawTextAnimateEx>");
-		//		
-		//		baseXML.Replace ( _T("</ImagePaint-DrawTextEx>"),	sReplace );
-		//		baseXML.Replace ( _T("<ImagePaint-DrawTextEx"),		_T("<ImagePaint-DrawTextAnimateEx") );
-		//	}
-
-		//	if ( -1 != baseXML.Find ( _T("<ImagePaint-DrawGraphicPath") ) )
-		//	{
-  //                              CString sAnim = m_oAnimations.ToXml(m_dStartTime, m_dEndTime, true);
-		//		if (sAnim.GetLength())
-		//		{
-		//			CString sReplace = sAnim + timeXML + _T("</ImagePaint-DrawGraphicPathAnimate>");
-		//			
-		//			baseXML.Replace ( _T("</ImagePaint-DrawGraphicPath>"),	sReplace );
-		//			baseXML.Replace ( _T("<ImagePaint-DrawGraphicPath"),	_T("<ImagePaint-DrawGraphicPathAnimate") );
-		//		}
-		//	}
-		//	
-		//	return baseXML;
-		//}
-
 		virtual IElement* CreateDublicate()
 		{
 			CShapeElement* pShapeElement = new CShapeElement(m_ClassType, m_lShapeType);
@@ -577,7 +509,7 @@ namespace NSPresentationEditor
 			m_oShape.SetToDublicate(&pShapeElement->m_oShape);
 			return (IElement*)pShapeElement;
 		}
-
+		void SetUpText(std::wstring newText);
 		
 		virtual void SetupProperties(CSlide* pSlide, CTheme* pTheme, CLayout* pLayout)
 		{

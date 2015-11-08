@@ -1456,24 +1456,25 @@ public:
 		}
 		//meta placeholders
 		std::vector<CRecordFooterMetaAtom*> oArrayFooterMeta;
+
 		GetRecordsByType(&oArrayFooterMeta, true, true);
 		if (0 < oArrayFooterMeta.size())
 		{
-			pElem->m_lPlaceholderType = PT_MasterFooter;
-
-			DWORD posText = oArrayFooterMeta[0]->m_nPosition;
-			if (posText < pTheme->m_oFootersHeaderString.size())
-				strShapeText = pTheme->m_oFootersHeaderString[posText];
+			pElem->m_lPlaceholderType		= PT_MasterFooter;
+			pElem->m_lPlaceholderUserStr	= oArrayFooterMeta[0]->m_nPosition;
 		}
 		std::vector<CRecordSlideNumberMetaAtom*> oArraySlideNumberMeta;
 		GetRecordsByType(&oArraySlideNumberMeta, true, true);
 		if (0 < oArraySlideNumberMeta.size())
 		{
 			pElem->m_lPlaceholderType = PT_MasterSlideNumber;
-			DWORD posText = oArraySlideNumberMeta[0]->m_nPosition;
-
-			if (posText < pTheme->m_oFootersHeaderString.size())
-				strShapeText = pTheme->m_oFootersHeaderString[posText];
+		}
+		std::vector<CRecordGenericDateMetaAtom*> oArrayDateMeta;
+		GetRecordsByType(&oArrayDateMeta, true, true);
+		if (0 < oArrayDateMeta.size())
+		{
+			pElem->m_lPlaceholderType		= PT_MasterDate;
+			pElem->m_lPlaceholderUserStr	= oArrayDateMeta[0]->m_nPosition;
 		}
 //------------- привязки ---------------------------------------------------------------------------------
 		std::vector<CRecordClientAnchor*> oArrayAnchor;

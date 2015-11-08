@@ -120,6 +120,8 @@ namespace NSPresentationEditor
 		int					m_lPlaceholderType;
 		bool				m_bPlaceholderSet;
 		int					m_lPlaceholderSizePreset;
+		int					m_lPlaceholderUserStr;
+		int					m_nFormatDate;
 
 		// метрика
 		CMetricInfo			m_oMetric;
@@ -134,7 +136,6 @@ namespace NSPresentationEditor
 		bool				m_bHaveAnchor;	
 
 		bool				m_bIsChangeable;	// можно ли редактировать элемент
-		bool				m_bIsLayoutElement;	// был ли элемент вставлен из шаблона, чтобы можно было менять шаблон
 
 		CElementProperties	m_oProperties;
 
@@ -175,7 +176,6 @@ namespace NSPresentationEditor
 			m_bHaveAnchor				= true;
 
 			m_bIsChangeable				= true;
-			m_bIsLayoutElement			= false;
 			
 			m_lID						= -1;
 			m_lLayoutID					= -1;
@@ -184,6 +184,8 @@ namespace NSPresentationEditor
 			m_lPlaceholderType			= -1;
 			m_bPlaceholderSet			= false;
 			m_lPlaceholderSizePreset	= -1;
+			m_lPlaceholderUserStr		= -1;
+			m_nFormatDate				= 1;
 
 			m_etType					= etPicture;
 			
@@ -246,7 +248,6 @@ namespace NSPresentationEditor
 			pDublicate->m_bHaveAnchor				= m_bHaveAnchor;
 			
 			pDublicate->m_bIsChangeable				= m_bIsChangeable;
-			pDublicate->m_bIsLayoutElement			= m_bIsLayoutElement;
 			
 			pDublicate->m_etType					= m_etType;
 			
@@ -267,6 +268,8 @@ namespace NSPresentationEditor
 			pDublicate->m_lPlaceholderType			= m_lPlaceholderType;
 			pDublicate->m_bPlaceholderSet			= m_bPlaceholderSet;
 			pDublicate->m_lPlaceholderSizePreset	= m_lPlaceholderSizePreset;
+			pDublicate->m_lPlaceholderUserStr					= m_lPlaceholderUserStr;
+			pDublicate->m_nFormatDate				= m_nFormatDate;
 
 			pDublicate->m_oMetric					= m_oMetric;
 			pDublicate->m_oProperties				= m_oProperties;

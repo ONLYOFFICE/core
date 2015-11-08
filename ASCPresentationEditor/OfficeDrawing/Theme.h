@@ -35,13 +35,14 @@ namespace NSPresentationEditor
 		
 		std::vector<std::vector<CColor>>m_arExtraColorScheme;
 
-		long m_lOriginalWidth;
-		long m_lOriginalHeight;
+		long							m_lOriginalWidth;
+		long							m_lOriginalHeight;
 	
-		bool m_bHasDate;
-		bool m_bHasSlideNumber;
-		bool m_bHasHeader;
-		bool m_bHasFooter;
+		bool							m_bHasDate;
+		bool							m_bHasSlideNumber;
+		bool							m_bHasFooter;
+
+		int								m_nFormatDate;//1- current, 2 - user
 
 		std::vector<std::wstring>		m_oFootersHeaderString;
 
@@ -49,13 +50,7 @@ namespace NSPresentationEditor
 		CTheme() : m_arColorScheme(), m_arFonts(), m_arBrushes(),
 			m_arPens(), m_arEffects(), m_arLayouts()
 		{
-			m_sThemeName		= L"Default";
-			m_lOriginalWidth	= m_lOriginalHeight = 0;
-			
-			m_bHasDate			= false;
-			m_bHasSlideNumber	= false;
-			m_bHasHeader		= false;
-			m_bHasFooter		= false;
+			Clear();
 		}
 
 		CTheme(const CTheme& oSrc)
@@ -78,8 +73,8 @@ namespace NSPresentationEditor
 
 			m_bHasDate			=	oSrc.m_bHasDate;
 			m_bHasSlideNumber	=	oSrc.m_bHasSlideNumber;
-			m_bHasHeader		=	oSrc.m_bHasHeader;
 			m_bHasFooter		=	oSrc.m_bHasFooter;
+			m_nFormatDate		=	oSrc.m_nFormatDate;
 
 			for (int i = 0; i < oSrc.m_arExtraColorScheme.size(); ++i)
 			{
@@ -152,12 +147,12 @@ namespace NSPresentationEditor
 
 			m_lOriginalWidth = m_lOriginalHeight = 0;
 
-			m_sThemeName = L"Default";
+			m_sThemeName		= L"Default";
 			
-			m_bHasDate = false;
-			m_bHasSlideNumber = false;
-			m_bHasHeader = false;
-			m_bHasFooter = false;
+			m_bHasDate			= false;
+			m_bHasSlideNumber	= false;
+			m_bHasFooter		= false;
+			m_nFormatDate		= 1;
 		}
 
 		~CTheme()

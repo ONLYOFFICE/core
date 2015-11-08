@@ -88,3 +88,21 @@ void NSPresentationEditor::CShapeElement::SetupTextProperties(CSlide* pSlide, CT
 		}
 	}
 }
+
+void NSPresentationEditor::CShapeElement::SetUpText(std::wstring newText)
+{
+	NSPresentationEditor::CTextAttributesEx* pText = &m_oShape.m_oText;
+
+	if (pText->m_arParagraphs.size() > 0)
+	{
+		if (pText->m_arParagraphs[0].m_arSpans.size() >0)
+		{
+			ReplaceAll(pText->m_arParagraphs[0].m_arSpans[0].m_strText, L"*", newText);
+			pText->m_arParagraphs[0].m_arSpans.erase(pText->m_arParagraphs[0].m_arSpans.begin()+1,pText->m_arParagraphs[0].m_arSpans.end());
+		}
+		pText->m_arParagraphs.erase(pText->m_arParagraphs.begin()+1,pText->m_arParagraphs.end());
+
+
+	}
+
+}

@@ -43,6 +43,10 @@ public:
 	NSPresentationEditor::CTextStyles				m_oDefaultTextStyle;
 
 	std::vector<std::wstring>						m_oFootersHeaderString;
+	bool											m_bHasDate;
+	bool											m_bHasSlideNumber;
+	bool											m_bHasFooter;
+	int												m_nFormatDate;
 
 	// чтобы загружать неизмененные элементы от других юзеров (предыдущих)
 	CPPTDocumentInfo*								m_pDocumentInfo;
@@ -254,8 +258,7 @@ public:
 	void AddAnimation		(DWORD dwSlideID, double Width, double Height, IElement* pElement);
 	void AddAudioTransition (DWORD dwSlideID, CTransition* pTransition, const std::wstring& strFilePath);
 
-	int			AddNewLayout(NSPresentationEditor::CTheme* pTheme, SSlideLayoutAtom* layoutRecord, std::vector<CTextFullSettings> & text, 
-						CRecordHeadersFootersAtom* headers_footers, bool addShapes, bool bMasterObjects);
+	int			AddNewLayout(NSPresentationEditor::CTheme* pTheme, CRecordSlide* pRecordSlide, bool addShapes, bool bMasterObjects);
 	
 	IElement*	AddNewLayoutPlaceholder		(CLayout *pLayout, int placeholderType, int placeholderSizePreset = -1);
 	IElement*	AddThemeLayoutPlaceholder	(CLayout *pLayout, int placeholderType, CTheme* pTheme);

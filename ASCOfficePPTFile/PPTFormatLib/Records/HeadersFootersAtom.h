@@ -73,9 +73,6 @@ public:
 	}
 };
 
-
-
-
 class CRecordMetaCharacterAtom : public CUnknownRecord
 {
 public:
@@ -99,35 +96,36 @@ public:
 	}
 };
 
-class CRecordRTFDateTimeMetaAtom : public CRecordMetaCharacterAtom
+class CRecordGenericDateMetaAtom : public CRecordMetaCharacterAtom
+{
+};
+
+class CRecordRTFDateTimeMetaAtom : public CRecordGenericDateMetaAtom
 {
 public:
 	std::string m_strFormat;
 	
 	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
 	{
-		CRecordMetaCharacterAtom::ReadFromStream(oHeader, pStream);
+		CRecordGenericDateMetaAtom::ReadFromStream(oHeader, pStream);
 
 		m_strFormat = StreamUtils::ReadStringA(pStream, 128);
 	}
 };
 
-class CRecordDateTimeMetaAtom : public CRecordMetaCharacterAtom
+class CRecordDateTimeMetaAtom : public CRecordGenericDateMetaAtom
 {
 public:
 	BYTE m_FormatID;
 	
 	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
 	{
-		CRecordMetaCharacterAtom::ReadFromStream(oHeader, pStream);
+		CRecordGenericDateMetaAtom::ReadFromStream(oHeader, pStream);
 
 		m_FormatID = StreamUtils::ReadBYTE(pStream);
 	}
 };
 
-class CRecordGenericDateMetaAtom : public CRecordMetaCharacterAtom
-{
-};
 
 class CRecordFooterMetaAtom : public CRecordMetaCharacterAtom
 {

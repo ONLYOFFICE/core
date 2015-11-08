@@ -156,16 +156,6 @@ namespace NSPresentationEditor
 			}
 		}
 
-		// функция нужна для отмены старой темы/шаблона
-		void ClearPreset()
-		{
-			size_t nCount = m_arSlides.size();
-			for (size_t nIndex = 0; nIndex < nCount; ++nIndex)
-			{
-				m_arSlides[nIndex]->ClearPreset();
-			}
-		}
-
 		CString GetXmlSlideTransition ( CSlide& oSlide/*, CAudioOverlay& oAudioOverlay*/ )
 		{
 			CString Source	=	CString ( _T("") );

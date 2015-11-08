@@ -14,17 +14,22 @@ namespace NSPresentationEditor
 		bool					m_bUseThemeColorScheme;
 
 		// "настоящие"(в логической системе координат), чтобы масштабировать
-		long m_lOriginalWidth;
-		long m_lOriginalHeight;
+		long					m_lOriginalWidth;
+		long					m_lOriginalHeight;
 
-		bool m_bIsBackground;
-		CBrush m_oBackground;
+		bool					m_bIsBackground;
+		CBrush					m_oBackground;
 
 		// размеры в миллиметрах
-		long m_lWidth;   
-		long m_lHeight; 	
+		long					m_lWidth;   
+		long					m_lHeight; 	
 
-		CMetricInfo m_oInfo;
+		CMetricInfo				m_oInfo;
+
+		bool					m_bHasDate;
+		bool					m_bHasSlideNumber;
+		bool					m_bHasFooter;
+		int						m_nFormatDate;
 
 		bool					m_bShowMasterShapes;
 		std::wstring			m_strLayoutType;
@@ -67,6 +72,11 @@ namespace NSPresentationEditor
 			m_bIsBackground			= oSrc.m_bIsBackground;
 			m_oBackground			= oSrc.m_oBackground;
 
+			m_bHasDate				= oSrc.m_bHasDate;
+			m_bHasSlideNumber		= oSrc.m_bHasSlideNumber;
+			m_bHasFooter			= oSrc.m_bHasFooter;
+			m_nFormatDate			= oSrc.m_nFormatDate;
+
 			m_bShowMasterShapes		= oSrc.m_bShowMasterShapes;
 			m_strLayoutType			= oSrc.m_strLayoutType;
 
@@ -96,6 +106,11 @@ namespace NSPresentationEditor
 			m_arElements.clear();
 			m_mapPlaceholders.clear();
 			
+			m_bHasDate			= false;
+			m_bHasSlideNumber	= false;
+			m_bHasFooter		= false;
+			m_nFormatDate		= 1;
+
 			m_bUseThemeColorScheme	= true;
 			m_bShowMasterShapes		= true;
 			m_strLayoutType			= _T("obj");

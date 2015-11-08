@@ -14,19 +14,19 @@ namespace NSPresentationEditor
 		CSlideShowInfo			m_oSlideShow;
 
 		// размеры в миллиметрах
-		long m_lWidth;   
-		long m_lHeight; 
+		long					m_lWidth;   
+		long					m_lHeight; 
 
 		// а вот эти - "настоящие" (в логической системе координат), чтобы масштабировать
-		long m_lOriginalWidth;
-		long m_lOriginalHeight;
+		long					m_lOriginalWidth;
+		long					m_lOriginalHeight;
 
-		double m_dStartTime;
-		double m_dEndTime;
-		double m_dDuration;
+		double					m_dStartTime;
+		double					m_dEndTime;
+		double					m_dDuration;
 
-		bool m_bIsBackground;
-		CBrush m_oBackground;
+		bool					m_bIsBackground;
+		CBrush					m_oBackground;
 
 		std::vector<CColor>		m_arColorScheme;
 		bool					m_bUseLayoutColorScheme;
@@ -34,6 +34,11 @@ namespace NSPresentationEditor
 
 		CMetricInfo				m_oInfo;
 		
+		bool					m_bHasDate;
+		bool					m_bHasSlideNumber;
+		bool					m_bHasFooter;
+		int						m_nFormatDate;
+
 		std::wstring			m_strComment;
 		std::wstring			m_sName;
 	public:
@@ -56,60 +61,29 @@ namespace NSPresentationEditor
 			m_arColorScheme.clear();
 			m_arElements.clear();
 			
-			m_lThemeID		= -1;
-			m_lLayoutID		= -1;
+			m_lThemeID			= -1;
+			m_lLayoutID			= -1;
 
-			m_lWidth		= 270;   
-			m_lHeight		= 190; 
+			m_lWidth			= 270;   
+			m_lHeight			= 190; 
 
 			m_lOriginalWidth	= 6000;
 			m_lOriginalHeight	= 5000;
 			
-			m_dStartTime	= 0.0;
-			m_dEndTime		= 0.0;
-			m_dDuration		= 30000.0;
+			m_dStartTime		= 0.0;
+			m_dEndTime			= 0.0;
+			m_dDuration			= 30000.0;
+
+			m_bHasDate			= false;
+			m_bHasSlideNumber	= false;
+			m_bHasFooter		= false;
+			m_nFormatDate		= 1;
 
 			m_bShowMasterShapes = true;
 			m_strComment.clear();
 			m_sName.clear();
 
 		}
-
-		//CSlide& operator=(const CSlide& oSrc)
-		//{
-		//	Clear();
-		//	
-		//	size_t nCount = oSrc.m_arElements.size();
-		//	for (size_t nIndex = 0; nIndex < nCount; ++nIndex)
-		//	{
-		//		m_arElements.push_back(oSrc.m_arElements[nIndex]->CreateDublicate());
-		//	}
-
-		//	m_arColorScheme		= oSrc.m_arColorScheme;
-
-		//	m_oSlideShow		= oSrc.m_oSlideShow;
-
-		//	m_lThemeID			= oSrc.m_lThemeID;
-		//	m_lLayoutID			= oSrc.m_lLayoutID;
-
-		//	m_lWidth			= oSrc.m_lWidth;
-		//	m_lHeight			= oSrc.m_lHeight;
-
-		//	m_lOriginalWidth	= oSrc.m_lOriginalWidth;
-		//	m_lOriginalHeight	= oSrc.m_lOriginalHeight;
-		//	
-		//	m_dStartTime		= oSrc.m_dStartTime;
-		//	m_dEndTime			= oSrc.m_dEndTime;
-		//	m_dDuration			= oSrc.m_dDuration;
-
-		//	m_bIsBackground		= oSrc.m_bIsBackground;
-		//	m_oBackground		= oSrc.m_oBackground;
-
-		//	m_bShowMasterShapes = oSrc.m_bShowMasterShapes;
-
-		//	m_strComment		= oSrc.m_strComment;
-		//	return *this;
-		//}
 
 		CSlide(const CSlide& oSrc)
 		{
@@ -143,6 +117,11 @@ namespace NSPresentationEditor
 
 			m_bShowMasterShapes = oSrc.m_bShowMasterShapes;
 
+			m_bHasDate			= oSrc.m_bHasDate;
+			m_bHasSlideNumber	= oSrc.m_bHasSlideNumber;
+			m_bHasFooter		= oSrc.m_bHasFooter;
+			m_nFormatDate		= oSrc.m_nFormatDate;
+
 			m_strComment		= oSrc.m_strComment;
 			m_sName				= oSrc.m_sName;
 		}
@@ -166,30 +145,6 @@ namespace NSPresentationEditor
 			{
 				CalculateElement(i, pTheme, pLayout);
 				m_arElements[i]->m_pTheme = pTheme;
-			}
-		}
-
-		void ClearPreset()
-		{
-			LONG nCount = (LONG)m_arElements.size();
-			for (LONG i = 0; i < nCount; ++i)
-			{
-				IElement* pElement = m_arElements[i];
-
-				if (NULL == pElement)
-				{
-					m_arElements.erase(m_arElements.begin() + i);
-					--i;
-					--nCount;
-					continue;
-				}
-				else if (pElement->m_bIsLayoutElement)
-				{
-					m_arElements.erase(m_arElements.begin() + i);
-					--i;
-					--nCount;
-					RELEASEINTERFACE(pElement);
-				}
 			}
 		}
 

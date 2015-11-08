@@ -45,8 +45,6 @@ public:
 
 		while (lMemCount < m_lCount + 1)
 		{
-			if (pStream->tell() >= m_lOffsetInStream + m_oHeader.RecLen) break;
-
 			CTextPFRun_ppt elm;
 			m_arrPFs.push_back(elm);
 			m_arrPFs[lCountItems].LoadFromStream(pStream);
@@ -59,8 +57,6 @@ public:
 		lCountItems = 0;
 		while (lMemCount < m_lCount + 1)
 		{
-			if (pStream->tell() >= m_lOffsetInStream + m_oHeader.RecLen) break;
-			
 			CTextCFRun_ppt elm;
 			m_arrCFs.push_back(elm);
 

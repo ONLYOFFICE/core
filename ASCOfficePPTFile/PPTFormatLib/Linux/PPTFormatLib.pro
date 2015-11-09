@@ -106,7 +106,6 @@ HEADERS += \
     ../Records/ColorSchemeAtom.h \
     ../Records/CString.h \
     ../Records/CurrentUserAtom.h \
-    ../Records/DateTimeMCAtom.h \
     ../Records/DocRoutingSlipAtom.h \
     ../Records/DocumentAtom.h \
     ../Records/DocumentRecords.h \
@@ -127,7 +126,6 @@ HEADERS += \
     ../Records/ExWAVAudioEmbeddedContainer.h \
     ../Records/ExWAVAudioLinkContainer.h \
     ../Records/FontEntityAtom.h \
-    ../Records/GenericDateMCAtom.h \
     ../Records/GridSpacing10Atom.h \
     ../Records/GuideAtom.h \
     ../Records/HeadersFootersAtom.h \
@@ -157,7 +155,6 @@ HEADERS += \
     ../Records/SlideColorSchemeAtom.h \
     ../Records/SlideContainer.h \
     ../Records/SlideListWithText.h \
-    ../Records/SlideNumberMCAtom.h \
     ../Records/SlidePersistAtom.h \
     ../Records/SlideViewInfoAtom.h \
     ../Records/SoundCollAtom.h \

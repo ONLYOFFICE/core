@@ -8,8 +8,7 @@ namespace NSPresentationEditor
 	public:
 		std::vector<IElement*>	m_arElements;
 		std::vector<CColor>		m_arColorScheme;
-
-		std::map<int,int>		m_mapPlaceholders;
+		std::multimap<int,int>	m_mapPlaceholders;
 
 		bool					m_bUseThemeColorScheme;
 

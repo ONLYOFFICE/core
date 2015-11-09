@@ -12,6 +12,7 @@ namespace NSPresentationEditor
 
 		std::vector<IElement*>	m_arElements;
 		CSlideShowInfo			m_oSlideShow;
+		std::multimap<int,int>	m_mapPlaceholders;
 
 		// размеры в миллиметрах
 		long					m_lWidth;   

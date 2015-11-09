@@ -13,7 +13,7 @@ namespace NSPresentationEditor
 		std::map<_UINT64, LONG>			m_mapGeomToLayout;// типовые шаблоны
 		std::map<DWORD, LONG>			m_mapTitleLayout; // заголовочные шаблоны
 		
-		std::map<int,int>				m_mapPlaceholders;
+		std::multimap<int,int>				m_mapPlaceholders;
 
 		std::vector<CColor>				m_arColorScheme;
 		std::vector<CFont>				m_arFonts;
@@ -44,7 +44,7 @@ namespace NSPresentationEditor
 
 		int								m_nFormatDate;//1- current, 2 - user
 
-		std::vector<std::wstring>		m_oFootersHeaderString;
+	std::vector<std::wstring>			m_PlaceholdersReplaceString[3]; //0-dates, 1 - headers, 2 - footers
 
 //------------------------------------------------------------------------------------
 		CTheme() : m_arColorScheme(), m_arFonts(), m_arBrushes(),

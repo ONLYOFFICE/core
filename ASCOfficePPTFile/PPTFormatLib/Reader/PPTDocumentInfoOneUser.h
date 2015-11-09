@@ -42,7 +42,8 @@ public:
 	std::vector<CFont>								m_arrFonts;
 	NSPresentationEditor::CTextStyles				m_oDefaultTextStyle;
 
-	std::vector<std::wstring>						m_oFootersHeaderString;
+	std::vector<std::wstring>						m_PlaceholdersReplaceString[3]; //0-dates, 1 - headers, 2 - footers
+
 	bool											m_bHasDate;
 	bool											m_bHasSlideNumber;
 	bool											m_bHasFooter;
@@ -260,8 +261,10 @@ public:
 
 	int			AddNewLayout(NSPresentationEditor::CTheme* pTheme, CRecordSlide* pRecordSlide, bool addShapes, bool bMasterObjects);
 	
-	IElement*	AddNewLayoutPlaceholder		(CLayout *pLayout, int placeholderType, int placeholderSizePreset = -1);
-	IElement*	AddThemeLayoutPlaceholder	(CLayout *pLayout, int placeholderType, CTheme* pTheme);
+	IElement*	AddNewLayoutPlaceholder		(CLayout *pLayout,	int placeholderType, int placeholderSizePreset = -1);
 
-	IElement*	AddNewThemePlaceholder		(CTheme* pTheme, int placeholderType, int placeholderSizePreset = -1);
+	IElement*	AddNewThemePlaceholder		(CTheme* pTheme,	int placeholderType, int placeholderSizePreset = -1);
+	
+	IElement*	AddThemeLayoutPlaceholder	(CLayout *pLayout,	int placeholderType, CTheme* pTheme);
+	IElement*	AddLayoutSlidePlaceholder	(CSlide *pSlide,	int placeholderType, CLayout *pLayout, bool idx_only = false);
 };

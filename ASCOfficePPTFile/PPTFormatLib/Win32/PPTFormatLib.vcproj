@@ -531,10 +531,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Records\DateTimeMCAtom.h"
-				>
-			</File>
-			<File
 				RelativePath="..\Records\DocRoutingSlipAtom.h"
 				>
 			</File>

@@ -509,7 +509,7 @@ namespace NSPresentationEditor
 			m_oShape.SetToDublicate(&pShapeElement->m_oShape);
 			return (IElement*)pShapeElement;
 		}
-		void SetUpText(std::wstring newText);
+		bool SetUpTextPlaceholder(std::wstring newText);
 		
 		virtual void SetupProperties(CSlide* pSlide, CTheme* pTheme, CLayout* pLayout)
 		{

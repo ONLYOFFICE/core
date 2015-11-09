@@ -1474,7 +1474,18 @@ public:
 		if (0 < oArrayDateMeta.size())
 		{
 			pElem->m_lPlaceholderType		= PT_MasterDate;
-			pElem->m_lPlaceholderUserStr	= oArrayDateMeta[0]->m_nPosition;
+			
+			CRecordDateTimeMetaAtom* format_data = dynamic_cast<CRecordDateTimeMetaAtom*>(oArrayDateMeta[0]);
+			if (format_data)
+			{
+				pElem->m_nFormatDate			= 1;
+				//todooo сделать форматированый вывод 
+			}
+			else
+			{
+				pElem->m_lPlaceholderUserStr	= oArrayDateMeta[0]->m_nPosition;
+				pElem->m_nFormatDate			= 2;
+			}
 		}
 //------------- привязки ---------------------------------------------------------------------------------
 		std::vector<CRecordClientAnchor*> oArrayAnchor;
@@ -1601,7 +1612,10 @@ public:
 			}
 
 			if (pElem->m_lPlaceholderType == PT_MasterSlideNumber && strShapeText.length() > 5)
-				pElem->m_lPlaceholderType = PT_MasterFooter; ///???? 1-(33).ppt
+			{
+				int pos = strShapeText.find(L"*"); 
+				if (pos < 0) pElem->m_lPlaceholderType = PT_MasterFooter; ///???? 1-(33).ppt
+			}
 
 //------ shape properties ----------------------------------------------------------------------------------------
 			for (int nIndexProp = 0; nIndexProp < oArrayOptions.size(); ++nIndexProp)

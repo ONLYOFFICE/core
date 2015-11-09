@@ -311,25 +311,17 @@ void CPPTUserInfo::FromDocument()
 
 	if (0 != oArrayHeadersFootersInfo.size())
 	{
-		std::vector<CRecordHeadersFootersAtom*> oHeadersFootersInfo;
-		oArrayHeadersFootersInfo[0]->GetRecordsByType(&oHeadersFootersInfo, true, false);
-
-		if (!oHeadersFootersInfo.empty())
+		if (oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom)
 		{
-			m_bHasDate			= oHeadersFootersInfo[0]->m_bHasDate || oHeadersFootersInfo[0]->m_bHasTodayDate || oHeadersFootersInfo[0]->m_bHasUserDate;
-			m_bHasFooter		= oHeadersFootersInfo[0]->m_bHasFooter;
-			m_bHasSlideNumber	= oHeadersFootersInfo[0]->m_bHasSlideNumber;
+			m_bHasDate			=	oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasDate ||
+									oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasTodayDate || 
+									oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasUserDate;
+			m_bHasFooter		=	oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasFooter;
+			m_bHasSlideNumber	=	oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasSlideNumber;
 
-			if (oHeadersFootersInfo[0]->m_bHasUserDate)	m_nFormatDate = 2;
+			if (oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasUserDate)	m_nFormatDate = 2;
 		}
-
-		std::vector<CRecordCString*> oHeadersFootersStr;
-		oArrayHeadersFootersInfo[0]->GetRecordsByType(&oHeadersFootersStr, true, false);
-
-		for (int i = 0 ;i < oHeadersFootersStr.size(); i++)
-		{
-			m_oFootersHeaderString.push_back(oHeadersFootersStr[i]->m_strText);
-		}
+		for (int i = 0 ; i < 3; i++) m_PlaceholdersReplaceString[i] = oArrayHeadersFootersInfo[0]->m_HeadersFootersString[i];
 	}
 
 	LONG lOriginWidth		=	oArrayDoc[0]->m_oSlideSize.X;
@@ -568,39 +560,33 @@ void CPPTUserInfo::LoadSlide(DWORD dwSlideID, CSlide* pSlide)
 		}
 	}
 //------------------------------------------------------------------------------------
-	pSlide->m_bHasDate			= pLayout->m_bHasDate;
-	pSlide->m_bHasFooter		= pLayout->m_bHasFooter;
-	pSlide->m_bHasSlideNumber	= pLayout->m_bHasSlideNumber;
-	pSlide->m_nFormatDate		= m_nFormatDate;
-
-	std::vector<std::wstring> users_placeholders = m_oFootersHeaderString;
-//------------------------------------------------------------------------------------
+	std::vector<std::wstring> users_placeholders[3];
+	
 	std::vector<CRecordHeadersFootersContainer*> oArrayHeadersFootersInfo;
-	pRecordSlide->GetRecordsByType(&oArrayHeadersFootersInfo, false, true);
+	pRecordSlide->GetRecordsByType(&oArrayHeadersFootersInfo, true, false);
 
 	if (0 != oArrayHeadersFootersInfo.size())
 	{
-		std::vector<CRecordHeadersFootersAtom*> oHeadersFootersInfo;
-		oArrayHeadersFootersInfo[0]->GetRecordsByType(&oHeadersFootersInfo, true, false);
-
-		if (!oHeadersFootersInfo.empty())
+		if (oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom)
 		{
-			pSlide->m_bHasDate			= oHeadersFootersInfo[0]->m_bHasDate || oHeadersFootersInfo[0]->m_bHasTodayDate || oHeadersFootersInfo[0]->m_bHasUserDate;
-			pSlide->m_bHasFooter		= oHeadersFootersInfo[0]->m_bHasFooter;
-			pSlide->m_bHasSlideNumber	= oHeadersFootersInfo[0]->m_bHasSlideNumber;
+			pSlide->m_bHasDate			=	oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasDate ||
+											oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasTodayDate || 
+											oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasUserDate;
+			pSlide->m_bHasFooter		=	oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasFooter;
+			pSlide->m_bHasSlideNumber	=	oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasSlideNumber;
 
-			if (oHeadersFootersInfo[0]->m_bHasUserDate)	pSlide->m_nFormatDate = 2;
-			else pSlide->m_nFormatDate = 1;
+			if (oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasUserDate)	pSlide->m_nFormatDate = 2;
 		}
+		for (int i = 0 ; i < 3; i++) users_placeholders[i] = oArrayHeadersFootersInfo[0]->m_HeadersFootersString[i];
+	}
+	else
+	{
+		pSlide->m_bHasDate			= pLayout->m_bHasDate;
+		pSlide->m_bHasFooter		= pLayout->m_bHasFooter;
+		pSlide->m_bHasSlideNumber	= pLayout->m_bHasSlideNumber;
+		pSlide->m_nFormatDate		= m_nFormatDate;
 
-		std::vector<CRecordCString*> oHeadersFootersStr;
-		oArrayHeadersFootersInfo[0]->GetRecordsByType(&oHeadersFootersStr, true, false);
-
-		if (!oHeadersFootersStr.empty()) users_placeholders.clear();
-		for (int i = 0 ;i < oHeadersFootersStr.size(); i++)
-		{
-			users_placeholders.push_back(oHeadersFootersStr[i]->m_strText);
-		}
+		for (int i = 0 ; i < 3; i++) users_placeholders[i] = m_PlaceholdersReplaceString[i];
 	}
 //-------------------------------------------------------------------------------------------------------
 	std::vector<CRecordCString*> oArrayStrings;
@@ -620,8 +606,6 @@ void CPPTUserInfo::LoadSlide(DWORD dwSlideID, CSlide* pSlide)
 
 	pSlide->m_bShowMasterShapes = bMasterObjects;
 	pSlide->m_bIsBackground		= false;
-
-	std::map<int,int>	slidePlaceholders;
 
 	for (int nShape = 0; nShape < oArrayShapes.size(); ++nShape)
 	{
@@ -652,74 +636,126 @@ void CPPTUserInfo::LoadSlide(DWORD dwSlideID, CSlide* pSlide)
 			{
 				pSlide->m_arElements.push_back(pElem);
 			}
-			if (pElem->m_lPlaceholderType > 0 )
+			if (pElem->m_lPlaceholderType >= 0 )
 			{
-				if (pElem->m_lPlaceholderUserStr >= 0 && pElem->m_lPlaceholderUserStr < users_placeholders.size())
-				{
-					CShapeElement* pShape = dynamic_cast<CShapeElement*>(pElem);
-					if (NULL != pShape)
-						pShape->SetUpText(users_placeholders[pElem->m_lPlaceholderUserStr]);
-				}				
-				slidePlaceholders.insert(std::pair<int,int>(pElem->m_lPlaceholderType, pSlide->m_arElements.size() - 1) );
+				pSlide->m_mapPlaceholders.insert(std::pair<int,int>(pElem->m_lPlaceholderType, pSlide->m_arElements.size() - 1) );
 			}
 		}
 	}
-//------------- колонтитулы на слайде 
-	std::map<int, int>::iterator it;
+	AddLayoutSlidePlaceholder(pSlide, MasterSlideNumber	, pLayout); 
+	AddLayoutSlidePlaceholder(pSlide, MasterDate		, pLayout);
+	
+	//------------- колонтитулы на слайде 
+	std::multimap<int, int>::iterator it;
 	IElement* pElement = NULL;
 	
 	if (pSlide->m_bHasSlideNumber)
 	{
-		it = pLayout->m_mapPlaceholders.find(NSOfficePPT::MasterSlideNumber);
-		if ( it != pLayout->m_mapPlaceholders.end() && 
-			slidePlaceholders.find(NSOfficePPT::MasterSlideNumber) == slidePlaceholders.end())
-		{
-			pElement  = pLayout->m_arElements[it->second]->CreateDublicate();
-			pSlide->m_arElements.push_back(pElement);
-		}
+		AddLayoutSlidePlaceholder(pSlide, MasterSlideNumber, pLayout, true);
 	}
 	
 	if (pSlide->m_bHasDate)
 	{
-		it = pLayout->m_mapPlaceholders.find(MasterDate);
-		if ( it != pLayout->m_mapPlaceholders.end() && 
-			slidePlaceholders.find(NSOfficePPT::MasterDate) == slidePlaceholders.end())
+		IElement *pElement = AddLayoutSlidePlaceholder(pSlide, MasterDate, pLayout, true);
+	
+		if (pElement) 
 		{
-			pElement  = pLayout->m_arElements[it->second]->CreateDublicate();
-			pSlide->m_arElements.push_back(pElement);
+			pElement->m_nFormatDate = pSlide->m_nFormatDate;
+		
+			if ( pElement->m_lPlaceholderUserStr >= 0)
+			{
+				CShapeElement* pShape = dynamic_cast<CShapeElement*>(pElement);
+				if (NULL != pShape)
+				{
+					if (pElement->m_lPlaceholderUserStr < users_placeholders[0].size())
+					{
+						pShape->SetUpTextPlaceholder(users_placeholders[0][pElement->m_lPlaceholderUserStr]);
+					}
+					else pShape->SetUpTextPlaceholder(L"");
+
+				}
+			}	
 		}
-		else
-		{
-			it = slidePlaceholders.find(NSOfficePPT::MasterDate);
-			pElement = pSlide->m_arElements[it->second];
-		}
-		pElement->m_nFormatDate = pSlide->m_nFormatDate;
 	}
 
 	if (pSlide->m_bHasFooter)
 	{
-		it = pLayout->m_mapPlaceholders.find(MasterFooter);
-		if ( it != pLayout->m_mapPlaceholders.end() && 
-			slidePlaceholders.find(NSOfficePPT::MasterFooter) == slidePlaceholders.end())
+		IElement *pElement = AddLayoutSlidePlaceholder(pSlide, MasterFooter, pLayout, true);
+		
+		if ((pElement) && (pElement->m_lPlaceholderUserStr >= 0))
 		{
-			pElement  = pLayout->m_arElements[it->second]->CreateDublicate();
-			pSlide->m_arElements.push_back(pElement);
-		}
+			CShapeElement* pShape = dynamic_cast<CShapeElement*>(pElement);
+			if (NULL != pShape)
+			{
+				if (pElement->m_lPlaceholderUserStr < users_placeholders[2].size())
+				{
+					pShape->SetUpTextPlaceholder(users_placeholders[2][pElement->m_lPlaceholderUserStr]);
+				}
+				else pShape->SetUpTextPlaceholder(L"");
+			}
+		}	
 	}
 }
-	
-IElement* CPPTUserInfo::AddThemeLayoutPlaceholder (CLayout *pLayout, int placeholderType, NSPresentationEditor::CTheme* pTheme)
+
+IElement* CPPTUserInfo::AddLayoutSlidePlaceholder (CSlide *pSlide, int placeholderType, CLayout *pLayout, bool idx_only)
 {
 	IElement* pElement  = NULL;
-	std::map<int, int>::iterator it = pTheme->m_mapPlaceholders.find(placeholderType);
-	
-	if ((it != pTheme->m_mapPlaceholders.end()) && (pLayout->m_mapPlaceholders.find(placeholderType) == pLayout->m_mapPlaceholders.end())) 
+
+	for (std::multimap<int, int>::iterator it = pLayout->m_mapPlaceholders.begin(); it != pLayout->m_mapPlaceholders.end(); it++)
 	{
-		pElement = pTheme->m_arElements[it->second]->CreateDublicate();
-		pLayout->m_arElements.push_back(dynamic_cast<IElement*>(pElement));
-		pLayout->m_mapPlaceholders.insert(std::pair<int, int>(it->first, pLayout->m_arElements.size()-1)); 
+		if (it->first == placeholderType )
+		{
+			if (idx_only == false)
+			{
+				if (pLayout->m_arElements[it->second]->m_lPlaceholderID >= 0 ) continue;
+
+				pElement = pLayout->m_arElements[it->second]->CreateDublicate();
+				
+				pSlide->m_arElements.push_back(dynamic_cast<IElement*>(pElement));
+				pSlide->m_mapPlaceholders.insert(std::pair<int, int>(placeholderType, pSlide->m_arElements.size()-1)); 
+			}
+			else
+			{
+				if (pLayout->m_arElements[it->second]->m_lPlaceholderID < 0 ) continue;
+
+				for (std::multimap<int, int>::iterator it1 = pSlide->m_mapPlaceholders.begin(); it1 != pSlide->m_mapPlaceholders.end(); it1++)
+				{
+					if (it1->first == placeholderType && pSlide->m_arElements[it1->second]->m_lPlaceholderID >= 0)
+					{
+						pElement = pSlide->m_arElements[it1->second];
+						break;
+					}
+				}
+				if (pElement == NULL)
+				{
+					pElement = pLayout->m_arElements[it->second]->CreateDublicate();
+					
+					pSlide->m_arElements.push_back(dynamic_cast<IElement*>(pElement));
+					pSlide->m_mapPlaceholders.insert(std::pair<int, int>(placeholderType, pSlide->m_arElements.size()-1)); 
+				}
+			}
+		}
 	}
-	return pElement;
+
+	return pElement; 
+}
+	
+IElement* CPPTUserInfo::AddThemeLayoutPlaceholder (CLayout *pLayout, int placeholderType, CTheme* pTheme)
+{
+	IElement* pElement  = NULL;
+
+	for (std::multimap<int, int>::iterator it = pTheme->m_mapPlaceholders.begin(); it != pTheme->m_mapPlaceholders.end(); it++)
+	{
+		if (it->first == placeholderType )
+		{
+			pElement = pTheme->m_arElements[it->second]->CreateDublicate();
+			
+			pLayout->m_arElements.push_back(dynamic_cast<IElement*>(pElement));
+			pLayout->m_mapPlaceholders.insert(std::pair<int, int>(placeholderType, pLayout->m_arElements.size()-1)); 
+		}
+	}
+
+	return pElement; //last added
 }
 
 IElement* CPPTUserInfo::AddNewLayoutPlaceholder (CLayout *pLayout, int placeholderType, int placeholderSizePreset)
@@ -841,19 +877,9 @@ int CPPTUserInfo::AddNewLayout(CTheme* pTheme, CRecordSlide* pRecordSlide, bool 
 	pLayout->m_bHasSlideNumber	= pTheme->m_bHasSlideNumber;
 	pLayout->m_nFormatDate		= pTheme->m_nFormatDate;
 
-	if (pLayout->m_bHasSlideNumber)
-	{
-		AddThemeLayoutPlaceholder(pLayout, MasterSlideNumber, pTheme);
-	}
-	if (pLayout->m_bHasDate)
-	{
-		AddThemeLayoutPlaceholder(pLayout, MasterDate, pTheme);
-	}
-	if (pLayout->m_bHasFooter)
-	{
-		AddThemeLayoutPlaceholder(pLayout, MasterFooter, pTheme);
-	}	
-
+	AddThemeLayoutPlaceholder(pLayout, MasterSlideNumber,	pTheme);
+	AddThemeLayoutPlaceholder(pLayout, MasterDate,			pTheme);
+	AddThemeLayoutPlaceholder(pLayout, MasterFooter,		pTheme);
 
 	return ind;
 }
@@ -946,40 +972,22 @@ void CPPTUserInfo::LoadMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, co
 	pTheme->m_lOriginalWidth	= lOriginWidth;
 	pTheme->m_lOriginalHeight	= lOriginHeight;
 
-	pTheme->m_bHasDate			= m_bHasDate;
-	pTheme->m_bHasFooter		= m_bHasFooter;
-	pTheme->m_bHasSlideNumber	= m_bHasSlideNumber;
-	pTheme->m_nFormatDate		= m_nFormatDate;
-
-	std::vector<std::wstring> users_placeholders = m_oFootersHeaderString;
-
 	std::vector<CRecordHeadersFootersContainer*> oArrayHeadersFootersInfo;
-	pMaster->GetRecordsByType(&oArrayHeadersFootersInfo, false, true);
+	pMaster->GetRecordsByType(&oArrayHeadersFootersInfo, true, false);
 
 	if (0 != oArrayHeadersFootersInfo.size())
 	{
-		std::vector<CRecordHeadersFootersAtom*> oHeadersFootersInfo;
-		oArrayHeadersFootersInfo[0]->GetRecordsByType(&oHeadersFootersInfo, true, false);
-
-		if (!oHeadersFootersInfo.empty())
+		if (oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom)
 		{
-			pTheme->m_bHasDate			= oHeadersFootersInfo[0]->m_bHasDate || oHeadersFootersInfo[0]->m_bHasTodayDate || oHeadersFootersInfo[0]->m_bHasUserDate;
-			pTheme->m_bHasFooter		= oHeadersFootersInfo[0]->m_bHasFooter;
-			pTheme->m_bHasSlideNumber	= oHeadersFootersInfo[0]->m_bHasSlideNumber;
+			pTheme->m_bHasDate			=	oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasDate ||
+											oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasTodayDate || 
+											oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasUserDate;
+			pTheme->m_bHasFooter		=	oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasFooter;
+			pTheme->m_bHasSlideNumber	=	oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasSlideNumber;
 			
-			if (oHeadersFootersInfo[0]->m_bHasUserDate ) 
-				m_nFormatDate = 2;
-			else m_nFormatDate = 1;
+			if (oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasUserDate ) 	pTheme->m_nFormatDate = 2;
 		}
-
-		std::vector<CRecordCString*> oHeadersFootersStr;
-		oArrayHeadersFootersInfo[0]->GetRecordsByType(&oHeadersFootersStr, true, false);
-
-		if (!oHeadersFootersStr.empty()) users_placeholders.clear();
-		for (int i = 0 ;i < oHeadersFootersStr.size(); i++)
-		{
-			users_placeholders.push_back(oHeadersFootersStr[i]->m_strText);
-		}
+		for(int i = 0 ; i< 3; i++) pTheme->m_PlaceholdersReplaceString[i] = oArrayHeadersFootersInfo[0]->m_HeadersFootersString[i];
 	}
 	std::vector<CRecordCString*> oArrayStrings;
 	pMaster->GetRecordsByType(&oArrayStrings, false, false);
@@ -1070,8 +1078,6 @@ void CPPTUserInfo::LoadMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, co
 	else
 		pMasterWrapper->m_pStyles[3] = m_oDefaultTextStyle;
 
-	pTheme->m_oFootersHeaderString = m_oFootersHeaderString;
-
 	CTextStyles oPPTDefaultStyle;
 	CreateDefaultStyle(oPPTDefaultStyle, pTheme);
 	oPPTDefaultStyle.ApplyAfter(m_oDefaultTextStyle);
@@ -1125,12 +1131,12 @@ void CPPTUserInfo::LoadMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, co
 			
 			if ( pElem->m_lPlaceholderType >0)
 			{
-				if (pElem->m_lPlaceholderUserStr >= 0 && pElem->m_lPlaceholderUserStr < users_placeholders.size())
+				if (pElem->m_lPlaceholderID >=0)
 				{
-					CShapeElement* pShape = dynamic_cast<CShapeElement*>(pElem);
-					if (NULL != pShape)
-						pShape->SetUpText(users_placeholders[pElem->m_lPlaceholderUserStr]);
-				}	
+					if (pElem->m_lPlaceholderType == MasterSlideNumber) pTheme->m_bHasSlideNumber	= true;
+					if (pElem->m_lPlaceholderType == MasterDate)		pTheme->m_bHasDate			= true;
+					if (pElem->m_lPlaceholderType == MasterFooter)		pTheme->m_bHasFooter		= true;
+				}
 				pTheme->m_mapPlaceholders.insert(std::pair<int, int>(pElem->m_lPlaceholderType, pTheme->m_arElements.size()-1)); 
 			}
 		}
@@ -1138,24 +1144,30 @@ void CPPTUserInfo::LoadMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, co
 
 	if (pTheme->m_bHasSlideNumber)
 	{
+		IElement *pElem = NULL;
 		if (pTheme->m_mapPlaceholders.find(MasterSlideNumber) == pTheme->m_mapPlaceholders.end())
 		{
-			AddNewThemePlaceholder(pTheme, MasterSlideNumber, 2);
+			pElem = AddNewThemePlaceholder(pTheme, MasterSlideNumber, 2);
 		}
 	}
-	if (pTheme->m_bHasDate && pTheme->m_nFormatDate == 1)
+	if (pTheme->m_bHasDate)
 	{
-		if (pTheme->m_mapPlaceholders.find(MasterDate) == pTheme->m_mapPlaceholders.end())
+		IElement *pElem = NULL;
+		if (pTheme->m_mapPlaceholders.find(MasterDate) == pTheme->m_mapPlaceholders.end() && pTheme->m_nFormatDate == 1)
 		{
-			AddNewThemePlaceholder(pTheme, MasterDate, 2); 
+			pElem = AddNewThemePlaceholder(pTheme, MasterDate, 2); 
 		}
+
 	}
+
 	if (pTheme->m_bHasFooter)
 	{
+		IElement *pElem = NULL;
 		if (pTheme->m_mapPlaceholders.find(MasterFooter) == pTheme->m_mapPlaceholders.end())
 		{
-			AddNewThemePlaceholder(pTheme, MasterFooter, 1);
+			pElem = AddNewThemePlaceholder(pTheme, MasterFooter, 1);
 		}		
+
 	}
 }
 
@@ -1296,28 +1308,19 @@ void CPPTUserInfo::LoadNoMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, 
 		}
 	}
 	std::vector<CRecordHeadersFootersContainer*> oArrayHeadersFootersInfo;
-	pCurMaster->GetRecordsByType(&oArrayHeadersFootersInfo, false, true);
+	pCurMaster->GetRecordsByType(&oArrayHeadersFootersInfo, true, false);
 
 	if (0 != oArrayHeadersFootersInfo.size())
 	{
-		std::vector<CRecordHeadersFootersAtom*> oHeadersFootersInfo;
-		oArrayHeadersFootersInfo[0]->GetRecordsByType(&oHeadersFootersInfo, true, false);
-
-		if (!oHeadersFootersInfo.empty())
+		if (oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom)
 		{
-			pLayout->m_bHasDate			= oHeadersFootersInfo[0]->m_bHasDate || oHeadersFootersInfo[0]->m_bHasTodayDate || oHeadersFootersInfo[0]->m_bHasUserDate;
-			pLayout->m_bHasFooter		= oHeadersFootersInfo[0]->m_bHasFooter;
-			pLayout->m_bHasSlideNumber	= oHeadersFootersInfo[0]->m_bHasSlideNumber;
+			pLayout->m_bHasDate			=	oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasDate ||
+											oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasTodayDate || 
+											oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasUserDate;
+			pLayout->m_bHasFooter		=	oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasFooter;
+			pLayout->m_bHasSlideNumber	=	oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasSlideNumber;
 			
-			if (oHeadersFootersInfo[0]->m_bHasUserDate) pLayout->m_nFormatDate = 2;
-		}
-
-		std::vector<CRecordCString*> oHeadersFootersStr;
-		oArrayHeadersFootersInfo[0]->GetRecordsByType(&oHeadersFootersStr, true, false);
-
-		for (int i = 0 ;i < oHeadersFootersStr.size(); i++)
-		{
-			m_oFootersHeaderString.push_back(oHeadersFootersStr[i]->m_strText);
+			if (oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasUserDate) pLayout->m_nFormatDate = 2;
 		}
 	}	
 	
@@ -1363,7 +1366,15 @@ void CPPTUserInfo::LoadNoMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, 
 			pLayout->m_arElements.push_back(pElem);
 			
 			if ( pElem->m_lPlaceholderType >0)
+			{
+				if (pElem->m_lPlaceholderID >=0)
+				{
+					if (pElem->m_lPlaceholderType == MasterSlideNumber) pLayout->m_bHasSlideNumber	= true;
+					if (pElem->m_lPlaceholderType == MasterDate)		pLayout->m_bHasDate			= true;
+					if (pElem->m_lPlaceholderType == MasterFooter)		pLayout->m_bHasFooter		= true;
+				}
 				pLayout->m_mapPlaceholders.insert(std::pair<int, int>(pElem->m_lPlaceholderType, pLayout->m_arElements.size()-1)); 
+			}
 
 		}
 	}

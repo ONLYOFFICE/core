@@ -541,7 +541,7 @@ void NSPresentationEditor::CShapeWriter::WriteImageInfo()
 		
 		if (-1 != m_pImageElement->m_lPlaceholderID)
 		{
-            CString strIdx; strIdx.Format(_T("%d"), m_pImageElement->m_lPlaceholderID);
+            CString strIdx; strIdx.Format(_T("%d"), m_pImageElement->m_lPlaceholderID );
 			m_oWriter.WriteString(std::wstring(L" idx=\"") + string2std_string(strIdx) + _T("\""));
 
 		}
@@ -610,7 +610,7 @@ void NSPresentationEditor::CShapeWriter::WriteShapeInfo()
 		
 		if ( m_pShapeElement->m_lPlaceholderID != -1)
 		{
-            CString strIdx; strIdx.Format(_T("%d"), m_pShapeElement->m_lPlaceholderID);			 
+            CString strIdx; strIdx.Format(_T("%d"), m_pShapeElement->m_lPlaceholderID );			 
 			m_oWriter.WriteString(std::wstring(L" idx=\"") + string2std_string(strIdx) + _T("\""));
 		}
 		

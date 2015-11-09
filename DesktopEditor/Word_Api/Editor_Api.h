@@ -2492,6 +2492,23 @@ namespace NSEditorApi
         LINK_PROPERTY_INT(Id)
         LINK_PROPERTY_STRING(Path)
     };
+
+    class CAscLocalFileCreate : public IMenuEventDataBase
+    {
+    private:
+        int m_nType;
+
+    public:
+
+        CAscLocalFileCreate()
+        {
+        }
+        virtual ~CAscLocalFileCreate()
+        {
+        }
+
+        LINK_PROPERTY_INT(Type)
+    };
 }
 
 #endif //_BUILD_EDITOR_API_CROSSPLATFORM_H_

@@ -42,10 +42,11 @@ void Formula::readFields(CFRecord& record)
 {
 	unsigned short flags;
 	record >> cell >> val >> flags;
-	fAlwaysCalc = GETBIT(flags, 0);
-	fFill = GETBIT(flags, 2);
-	fShrFmla = GETBIT(flags, 3);
-	fClearErrors = GETBIT(flags, 5);
+	
+	fAlwaysCalc		= GETBIT(flags, 0);
+	fFill			= GETBIT(flags, 2);
+	fShrFmla		= GETBIT(flags, 3);
+	fClearErrors	= GETBIT(flags, 5);
 	
 	unsigned int chn = 0;
 	record >> chn;

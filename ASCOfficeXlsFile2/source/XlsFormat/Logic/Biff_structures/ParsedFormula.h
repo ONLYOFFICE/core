@@ -22,11 +22,11 @@ public:
 	
 	static const ElementType	type = typeParsedFormula;
 
-	Rgce rgce;
-	RgbExtra rgcb;
+	Rgce		rgce;
+	RgbExtra	rgcb;
 
-	size_t cce; // Size of rgce variable. Setting explicit is mandatory
-	bool cce_is_set;
+	size_t	cce; // Size of rgce variable. Setting explicit is mandatory
+	bool	cce_is_set;
 };
 
 } // namespace XLS

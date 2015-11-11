@@ -7,8 +7,8 @@ namespace XLS
 
 class CellRef : public BiffStructure
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(CellRef)
 public:
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(CellRef)
 
 	CellRef();
 	CellRef(const std::wstring  str);
@@ -16,11 +16,10 @@ public:
 
 	BiffStructurePtr clone();
 
-	static const ElementType	type = typeCellRef;
-	
+	static const ElementType	type = typeCellRef;	
 
-	const std::wstring toString() const;
-	void fromString(const std::wstring& str);
+	const std::wstring	toString() const;
+	void				fromString(const std::wstring& str);
 	operator const std::wstring  () const;
 
 	void operator+=(const CellRef& appended_ref);
@@ -31,17 +30,17 @@ private:
     virtual void store(CFRecord& record) {}
 
 public:
-    const int getRow() const;
-    const int getColumn() const;
-	const bool getRowRelative() const;
-	const bool getColumnRelative() const;
+    const int	getRow() const;
+    const int	getColumn() const;
+	const bool	getRowRelative() const;
+	const bool	getColumnRelative() const;
 
 protected:
-    int row;
-    int column;
-	bool rowRelative;
-	bool colRelative;
-	bool fQuoted;
+    int		row;
+    int		column;
+	bool	rowRelative;
+	bool	colRelative;
+	bool	fQuoted;
 
 	mutable std::wstring to_string_cache;
 

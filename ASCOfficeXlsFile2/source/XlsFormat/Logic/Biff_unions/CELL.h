@@ -12,7 +12,7 @@ class CELL: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(CELL)
 public:
-	CELL(std::vector<CellRef>& shared_formulas_locations_ref);
+	CELL(std::vector<CellRangeRef>& shared_formulas_locations_ref);
 	~CELL();
 
 	BaseObjectPtr clone();
@@ -25,7 +25,7 @@ public:
 
     int RowNumber;
 
-	std::vector<CellRef>& shared_formulas_locations_ref_;
+	std::vector<CellRangeRef>& shared_formulas_locations_ref_;
 };
 
 } // namespace XLS

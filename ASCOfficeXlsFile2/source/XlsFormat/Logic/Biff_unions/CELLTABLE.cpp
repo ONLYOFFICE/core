@@ -17,7 +17,7 @@ class CELL_GROUP : public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(CELL_GROUP)
 public:
-	CELL_GROUP(std::vector<CellRef>& shared_formulas_locations_ref) : 
+	CELL_GROUP(std::vector<CellRangeRef>& shared_formulas_locations_ref) : 
 							shared_formulas_locations_ref_(shared_formulas_locations_ref)
 	{
 	}
@@ -76,7 +76,7 @@ public:
 	std::list<BaseObjectPtr>	m_DBCells;
 
 private:
-	std::vector<CellRef>& shared_formulas_locations_ref_;
+	std::vector<CellRangeRef>& shared_formulas_locations_ref_;
 };
 
 int CELL_GROUP::serialize(std::wostream & stream)
@@ -245,7 +245,7 @@ int CELL_GROUP::serialize(std::wostream & stream)
 //-----------------------------------------------------------------------------------------------------------------
 
 
-CELLTABLE::CELLTABLE(std::vector<CellRef>& shared_formulas_locations_ref) : 
+CELLTABLE::CELLTABLE(std::vector<CellRangeRef>& shared_formulas_locations_ref) : 
 												 m_count_CELL_GROUP(0)
 												,shared_formulas_locations_ref_(shared_formulas_locations_ref)
 {

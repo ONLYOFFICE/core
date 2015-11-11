@@ -17,8 +17,9 @@ namespace XLS
 
 extern int cellStyleXfs_count;
 
-FORMULA::FORMULA(std::vector<CellRef>& shared_formulas_locations_ref) : shared_formulas_locations_ref_(shared_formulas_locations_ref)
+FORMULA::FORMULA(std::vector<CellRangeRef>& shared_formulas_locations_ref) : shared_formulas_locations_ref_(shared_formulas_locations_ref)
 {
+	m_sharedIndex = -1;
 }
 
 
@@ -72,9 +73,18 @@ const bool FORMULA::loadContent(BinProcessor& proc)
 			m_SharedFormula = elements_.back();
 			elements_.pop_back();
 
-			shared_formulas_locations_ref_.push_back(location);
+			m_sharedIndex = shared_formulas_locations_ref_.size();
+			shared_formulas_locations_ref_.push_back(shr_formula.ref_);
 		}
 		//proc.optional<SUB>(); // I haven't found any mention about SUB in the docs
+	}
+
+	if ((formula) && (formula->fShrFmla.value()) && (formula->fShrFmla))
+	{
+		for (int i = 0; i < shared_formulas_locations_ref_.size(); i++)
+		{
+			if (shared_formulas_locations_ref_[i].inRange(location)) m_sharedIndex = i;
+		}		
 	}
 
 	if(proc.optional<String>())
@@ -92,7 +102,8 @@ const CellRef FORMULA::getLocation() const
 
 int FORMULA::serialize(std::wostream & stream)
 {
-	Formula *formula = dynamic_cast<Formula *>(m_Formula.get());
+	Formula *formula	= dynamic_cast<Formula *>(m_Formula.get());
+	ShrFmla *shared		= dynamic_cast<ShrFmla *>(m_SharedFormula.get());
 
 	if (formula == NULL) return 0;
 
@@ -114,12 +125,34 @@ int FORMULA::serialize(std::wostream & stream)
 				case 1: CP_XML_ATTR(L"t", L"b");	break;
 				case 2: CP_XML_ATTR(L"t", L"e");	break;
 			}		
+
 			const std::wstring & f_ = formula->formula.getAssembledFormula();
 			if (!f_.empty())
 			{
 				CP_XML_NODE(L"f")
 				{
 					CP_XML_STREAM() << xml::utils::replace_text_to_xml(f_);
+				}
+			}
+			else if (shared)
+			{
+				const std::wstring & f_ = shared->formula.getAssembledFormula();
+				CP_XML_NODE(L"f")
+				{
+					std::wstring shared_ref = shared->ref_.toString();
+					CP_XML_ATTR(L"ref", shared_ref);	
+					CP_XML_ATTR(L"t", L"shared");	
+					CP_XML_ATTR(L"si", m_sharedIndex);	
+
+					CP_XML_STREAM() << xml::utils::replace_text_to_xml(f_);
+				}
+			}
+			else if ((formula->fShrFmla.value()) && (formula->fShrFmla == true) && m_sharedIndex >= 0)
+			{
+				CP_XML_NODE(L"f")
+				{
+					CP_XML_ATTR(L"t", L"shared");	
+					CP_XML_ATTR(L"si", m_sharedIndex);	
 				}
 			}
 			std::wstring str_val = formula->val.getValue();

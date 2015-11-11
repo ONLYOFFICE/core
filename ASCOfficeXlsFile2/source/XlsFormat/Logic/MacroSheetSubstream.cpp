@@ -81,7 +81,7 @@ const bool MacroSheetSubstream::loadContent(BinProcessor& proc)
 	proc.mandatory<MACROSORTANDFILTER>();
 	proc.mandatory<Dimensions>();
 
-	std::vector<CellRef> shared_formulas_locations;
+	std::vector<CellRangeRef> shared_formulas_locations;
     CELLTABLE cell_table(shared_formulas_locations);
     proc.optional(cell_table);
 

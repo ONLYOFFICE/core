@@ -12,7 +12,7 @@ class CELLTABLE: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(CELLTABLE)
 public:
-	CELLTABLE(std::vector<CellRef>& shared_formulas_locations_ref);
+	CELLTABLE(std::vector<CellRangeRef>& shared_formulas_locations_ref);
 	~CELLTABLE();
 
 	BaseObjectPtr clone();
@@ -23,7 +23,7 @@ public:
 
 	int serialize(std::wostream & stream);
 
-	std::vector<CellRef>& shared_formulas_locations_ref_;
+	std::vector<CellRangeRef>& shared_formulas_locations_ref_;
 
     int m_count_CELL_GROUP;
 };

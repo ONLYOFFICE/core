@@ -74,22 +74,6 @@ BiffStructurePtr CellRangeRef::clone()
 	return BiffStructurePtr(new CellRangeRef(*this));
 }
 
-//
-//void CellRangeRef::getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	std::wstring  name = getStructAttribute(xml_tag, L"name");
-//	fromString(static_cast<wchar_t*>(name));
-//}
-//
-//
-//void CellRangeRef::(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	xml_tag->setAttribute(L"name", toString().c_str());
-//	xml_tag->setAttribute(L"top_left_cell", getTopLeftCell().toString().c_str());
-//	xml_tag->setAttribute(L"bottom_right_cell", CellRef(rowLast, columnLast, rowLastRelative, columnLastRelative).toString().c_str());
-//}
-
-
 const std::wstring CellRangeRef::toString(const bool useShortForm) const
 {
 	if(to_string_cache.empty())
@@ -185,20 +169,20 @@ const CellRef CellRangeRef::getTopLeftCell() const
 
 void CellRangeRef::operator+=(const CellRef& appended_ref)
 {
-	rowFirst += rowFirstRelative ? appended_ref.getRow() : 0;
-	rowLast += rowLastRelative ? appended_ref.getRow() : 0;
+	rowFirst	+= rowFirstRelative ? appended_ref.getRow() : 0;
+	rowLast		+= rowLastRelative ? appended_ref.getRow() : 0;
 	columnFirst += columnFirstRelative ? appended_ref.getColumn() : 0;
-	columnLast += columnLastRelative ? appended_ref.getColumn() : 0;
+	columnLast	+= columnLastRelative ? appended_ref.getColumn() : 0;
 	to_string_cache.clear();
 }
 
 
 void CellRangeRef::operator-=(const CellRef& subtracted_ref)
 {
-	rowFirst -= rowFirstRelative ? subtracted_ref.getRow() : 0;
-	rowLast -= rowLastRelative ? subtracted_ref.getRow() : 0;
+	rowFirst	-= rowFirstRelative ? subtracted_ref.getRow() : 0;
+	rowLast		-= rowLastRelative ? subtracted_ref.getRow() : 0;
 	columnFirst -= columnFirstRelative ? subtracted_ref.getColumn() : 0;
-	columnLast -= columnLastRelative ? subtracted_ref.getColumn() : 0;
+	columnLast	-= columnLastRelative ? subtracted_ref.getColumn() : 0;
 	to_string_cache.clear();
 }
 
@@ -216,6 +200,13 @@ void CellRangeRef::setRowRelativity(const bool is_relative)
 	to_string_cache.clear();
 }
 
+bool CellRangeRef::inRange(const CellRef& cell)
+{
+	if (cell.getColumn() <= columnLast	&& cell.getColumn() >= columnFirst &&
+		cell.getRow() <= rowLast		&& cell.getRow() >= rowFirst) return true;
+
+	return false;
+}
 
 } // namespace XLS
 

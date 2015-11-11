@@ -2,6 +2,7 @@
 
 #include <Logic/CompositeObject.h>
 #include <Logic/Biff_structures/CellRef.h>
+#include <Logic/Biff_structures/CellRangeRef.h>
 
 namespace XLS
 {
@@ -13,7 +14,7 @@ class FORMULA: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(FORMULA)
 public:
-	FORMULA(std::vector<CellRef>& shared_formulas_locations_ref);
+	FORMULA(std::vector<CellRangeRef>& shared_formulas_locations_ref);
 	~FORMULA();
 
 	BaseObjectPtr clone();
@@ -30,10 +31,11 @@ public:
 	BaseObjectPtr		m_ArrayFormula;
 	BaseObjectPtr		m_SharedFormula;
 
-
 	CellRef location;
 
-	std::vector<CellRef>& shared_formulas_locations_ref_;
+	std::vector<CellRangeRef>&	shared_formulas_locations_ref_;
+
+	int					m_sharedIndex;
 };
 
 } // namespace XLS

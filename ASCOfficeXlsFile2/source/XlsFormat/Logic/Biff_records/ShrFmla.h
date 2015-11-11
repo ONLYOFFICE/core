@@ -25,16 +25,9 @@ public:
 	static const ElementType	type = typeShrFmla;
 
 //-----------------------------
-	RefU ref_;
-	BackwardOnlyParam<unsigned char> cUse;
-	SharedParsedFormula formula;
-
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_COMPLEX(ref_)
-		//BO_ATTRIB_MARKUP_ATTRIB(cUse)
-		//BO_ATTRIB_MARKUP_COMPLEX(formula)
-	//BO_ATTRIB_MARKUP_END
+	RefU								ref_;
+	BackwardOnlyParam<unsigned char>	cUse;
+	SharedParsedFormula					formula;
 
 };
 

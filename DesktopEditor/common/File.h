@@ -842,6 +842,37 @@ namespace NSFile
 			return false;
 		}
 
+		static bool Truncate(const std::wstring& sPath, size_t nNewSize)
+		{
+			bool bIsSuccess = false;
+
+#if defined(_WIN32) || defined(_WIN32_WCE) || defined(_WIN64)
+			HANDLE hFile = ::CreateFileW( sPath.c_str(), GENERIC_WRITE, FILE_SHARE_READ,
+											NULL, OPEN_EXISTING,
+											FILE_ATTRIBUTE_NORMAL, NULL );
+			if ( hFile == INVALID_HANDLE_VALUE )
+			{
+				return bIsSuccess;
+			}
+
+			LARGE_INTEGER Size = { 0 };
+
+			if ( GetFileSizeEx( hFile, &Size ) )
+			{
+				LARGE_INTEGER Distance = { 0 };
+				// Negative values move the pointer backward in the file
+				Distance.QuadPart = (LONGLONG)nNewSize - Size.QuadPart;
+				bIsSuccess = (SetFilePointerEx(hFile, Distance, NULL, FILE_END) && SetEndOfFile(hFile));
+			}
+
+			CloseHandle( hFile );
+#else
+			std::string sFileUTF8 = U_TO_UTF8(m_sLocalFileChanges);
+			bIsSuccess = (0 == truncate(sFileUTF8, NewSize));
+#endif
+			return bIsSuccess;
+		}
+
 		static std::wstring GetTempPath()
 		{
 #if defined(_WIN32) || defined(_WIN32_WCE) || defined(_WIN64)

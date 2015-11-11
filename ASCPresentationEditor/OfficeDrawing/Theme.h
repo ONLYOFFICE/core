@@ -44,7 +44,7 @@ namespace NSPresentationEditor
 
 		int								m_nFormatDate;//1- current, 2 - user
 
-	std::vector<std::wstring>			m_PlaceholdersReplaceString[3]; //0-dates, 1 - headers, 2 - footers
+		vector_string					m_PlaceholdersReplaceString[3]; //0-dates, 1 - headers, 2 - footers
 
 //------------------------------------------------------------------------------------
 		CTheme() : m_arColorScheme(), m_arFonts(), m_arBrushes(),
@@ -75,6 +75,8 @@ namespace NSPresentationEditor
 			m_bHasSlideNumber	=	oSrc.m_bHasSlideNumber;
 			m_bHasFooter		=	oSrc.m_bHasFooter;
 			m_nFormatDate		=	oSrc.m_nFormatDate;
+
+			for (int i = 0 ; i < 3 ; i++) m_PlaceholdersReplaceString[i] = oSrc.m_PlaceholdersReplaceString[i];
 
 			for (int i = 0; i < oSrc.m_arExtraColorScheme.size(); ++i)
 			{
@@ -153,6 +155,8 @@ namespace NSPresentationEditor
 			m_bHasSlideNumber	= false;
 			m_bHasFooter		= false;
 			m_nFormatDate		= 1;
+		
+			for (int i = 0 ; i < 3 ; i++) m_PlaceholdersReplaceString[i].clear();
 		}
 
 		~CTheme()

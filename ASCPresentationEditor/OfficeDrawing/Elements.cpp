@@ -94,15 +94,28 @@ bool NSPresentationEditor::CShapeElement::SetUpTextPlaceholder(std::wstring newT
 	bool result = false;
 	NSPresentationEditor::CTextAttributesEx* pText = &m_oShape.m_oText;
 
-	if (pText->m_arParagraphs.size() > 0)
+	for (int p = 0 ; p < pText->m_arParagraphs.size(); p++) //тут по всем -> 1-(33).ppt
 	{
-		if (pText->m_arParagraphs[0].m_arSpans.size() >0)
+		if (pText->m_arParagraphs[p].m_arSpans.size() >0)//??? по всем?
 		{
-			int pos = pText->m_arParagraphs[0].m_arSpans[0].m_strText.find(L"*");
+			int pos = pText->m_arParagraphs[p].m_arSpans[0].m_strText.find(L"*");
 			
 			if (pos >= 0)
 			{
-				ReplaceAll(pText->m_arParagraphs[0].m_arSpans[0].m_strText, L"*", newText);
+				CSpan first = pText->m_arParagraphs[p].m_arSpans[0];
+				CSpan last = pText->m_arParagraphs[p].m_arSpans[0];
+				
+				first.m_strText	= pText->m_arParagraphs[p].m_arSpans[0].m_strText.substr(0, pos);
+				last.m_strText	= pText->m_arParagraphs[p].m_arSpans[0].m_strText.substr(pos + 1);
+
+				pText->m_arParagraphs[p].m_arSpans[0].m_strText = newText;
+				pText->m_arParagraphs[p].m_arSpans[0].m_bField	= true;
+
+				if (last.m_strText.empty() == false)
+					pText->m_arParagraphs[p].m_arSpans.insert(pText->m_arParagraphs[p].m_arSpans.begin() + 1, last);
+				if (first.m_strText.empty() == false)
+					pText->m_arParagraphs[p].m_arSpans.insert(pText->m_arParagraphs[p].m_arSpans.begin(), first);
+
 				result = true;
 			}
 		}

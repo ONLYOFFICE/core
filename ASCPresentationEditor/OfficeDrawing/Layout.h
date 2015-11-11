@@ -29,6 +29,7 @@ namespace NSPresentationEditor
 		bool					m_bHasSlideNumber;
 		bool					m_bHasFooter;
 		int						m_nFormatDate;
+		vector_string			m_PlaceholdersReplaceString[3]; //0-dates, 1 - headers, 2 - footers
 
 		bool					m_bShowMasterShapes;
 		std::wstring			m_strLayoutType;
@@ -76,6 +77,8 @@ namespace NSPresentationEditor
 			m_bHasFooter			= oSrc.m_bHasFooter;
 			m_nFormatDate			= oSrc.m_nFormatDate;
 
+			for (int i = 0 ; i < 3 ; i++) m_PlaceholdersReplaceString[i] = oSrc.m_PlaceholdersReplaceString[i];
+
 			m_bShowMasterShapes		= oSrc.m_bShowMasterShapes;
 			m_strLayoutType			= oSrc.m_strLayoutType;
 
@@ -109,6 +112,7 @@ namespace NSPresentationEditor
 			m_bHasSlideNumber	= false;
 			m_bHasFooter		= false;
 			m_nFormatDate		= 1;
+			for (int i = 0 ; i < 3 ; i++) m_PlaceholdersReplaceString[i].clear();
 
 			m_bUseThemeColorScheme	= true;
 			m_bShowMasterShapes		= true;

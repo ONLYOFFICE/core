@@ -267,8 +267,9 @@ namespace NSPresentationEditor
 			pDublicate->m_lPlaceholderID			= m_lPlaceholderID;
 			pDublicate->m_lPlaceholderType			= m_lPlaceholderType;
 			pDublicate->m_bPlaceholderSet			= m_bPlaceholderSet;
+			
 			pDublicate->m_lPlaceholderSizePreset	= m_lPlaceholderSizePreset;
-			pDublicate->m_lPlaceholderUserStr					= m_lPlaceholderUserStr;
+			pDublicate->m_lPlaceholderUserStr		= m_lPlaceholderUserStr;
 			pDublicate->m_nFormatDate				= m_nFormatDate;
 
 			pDublicate->m_oMetric					= m_oMetric;

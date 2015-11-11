@@ -35,11 +35,7 @@ namespace NSPresentationEditor
 
 		CMetricInfo				m_oInfo;
 		
-		bool					m_bHasDate;
-		bool					m_bHasSlideNumber;
-		bool					m_bHasFooter;
-		int						m_nFormatDate;
-
+		vector_string			m_PlaceholdersReplaceString[3];
 		std::wstring			m_strComment;
 		std::wstring			m_sName;
 	public:
@@ -75,15 +71,11 @@ namespace NSPresentationEditor
 			m_dEndTime			= 0.0;
 			m_dDuration			= 30000.0;
 
-			m_bHasDate			= false;
-			m_bHasSlideNumber	= false;
-			m_bHasFooter		= false;
-			m_nFormatDate		= 1;
-
 			m_bShowMasterShapes = true;
 			m_strComment.clear();
 			m_sName.clear();
 
+			for (int i = 0 ; i < 3 ; i++) m_PlaceholdersReplaceString[i].clear();
 		}
 
 		CSlide(const CSlide& oSrc)
@@ -118,62 +110,13 @@ namespace NSPresentationEditor
 
 			m_bShowMasterShapes = oSrc.m_bShowMasterShapes;
 
-			m_bHasDate			= oSrc.m_bHasDate;
-			m_bHasSlideNumber	= oSrc.m_bHasSlideNumber;
-			m_bHasFooter		= oSrc.m_bHasFooter;
-			m_nFormatDate		= oSrc.m_nFormatDate;
+			for (int i = 0 ; i < 3 ; i++) m_PlaceholdersReplaceString[i] = oSrc.m_PlaceholdersReplaceString[i];
 
 			m_strComment		= oSrc.m_strComment;
 			m_sName				= oSrc.m_sName;
 		}
 
 	public:
-		void Calculate(CTheme* pTheme)
-		{
-			CLayout* pLayout = NULL;
-
-			if (NULL != pTheme)
-			{
-				if ((0 <= m_lLayoutID) && (m_lLayoutID < (LONG)pTheme->m_arLayouts.size()))
-				{
-					pLayout = &pTheme->m_arLayouts[m_lLayoutID];
-				}
-			}
-
-			// все элементы добавлены
-			size_t nCount = m_arElements.size();
-			for (size_t i = 0; i < nCount; ++i)
-			{
-				CalculateElement(i, pTheme, pLayout);
-				m_arElements[i]->m_pTheme = pTheme;
-			}
-		}
-
-		void CalculateElement(size_t nIndexElement, CTheme* pTheme, CLayout* pLayout)
-		{
-			IElement* pElement = m_arElements[nIndexElement];
-			if (NULL == pElement)
-				return;
-
-			LONG lPlaceholderID = pElement->m_lPlaceholderType;
-			if (-1 == lPlaceholderID)
-			{
-				//pElement->SetupProperties(pTheme, pColorScheme);
-				m_arElements[nIndexElement]->SetupProperties(this, pTheme, pLayout);
-				return;
-			}
-
-			IElement* pLayoutElem = pLayout->GetPlaceholder(lPlaceholderID, FALSE);
-
-			if (NULL == pLayoutElem)
-			{
-				m_arElements[nIndexElement]->SetupProperties(this, pTheme, pLayout);
-				return;
-			}
-			
-			m_arElements[nIndexElement]->SetupProperties(this, pTheme, pLayout);
-		}
-
 		void SetMetricInfo(const CMetricInfo& oInfo)
 		{
 			m_oInfo  = oInfo;

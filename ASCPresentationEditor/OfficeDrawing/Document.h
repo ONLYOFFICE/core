@@ -82,80 +82,7 @@ namespace NSPresentationEditor
 
 	public:
 
-		// расчет layouts
-		void CalculateLayouts()
-		{
-			size_t nCountThemes = m_arThemes.size();
-			for (size_t i = 0; i < nCountThemes; ++i)
-			{
-				CTheme* pTheme = &m_arThemes[i];
-				size_t nCountLayouts = pTheme->m_arLayouts.size();
-
-				for (size_t j = 0; j < nCountLayouts; ++j)
-				{
-					CLayout* pLayout = &pTheme->m_arLayouts[j];
-
-					size_t nCountElements = pLayout->m_arElements.size();
-					for (size_t nElem = 0; nElem < nCountElements; ++nElem)
-					{
-						if (pLayout->m_bUseThemeColorScheme)
-						{
-							pLayout->m_arElements[nElem]->SetupProperties(NULL, &m_arThemes[i], NULL);
-						}
-						else
-						{
-							//pLayout->m_arElements[nElem]->SetupProperties(NULL, &m_arThemes[i], NULL);
-						}
-					}
-				}
-			}
-		}
-		
 		// функция производит расчет по теме и слайдам
-		void Calculate()
-		{
-			CalculateLayouts();
-
-			size_t nCount = m_arSlides.size();
-			for (size_t nIndex = 0; nIndex < nCount; ++nIndex)
-			{
-				int lThemeID	= m_arSlides[nIndex]->m_lThemeID;
-				
-				if ((0 > lThemeID) || (lThemeID >= (LONG)m_arThemes.size()))
-				{
-					m_arSlides[nIndex]->Calculate(NULL);
-					continue;
-				}
-
-				m_arSlides[nIndex]->Calculate(&m_arThemes[lThemeID]);				
-			}
-
-			// проставим стили темы всем элементам
-			size_t nCountThemes = m_arThemes.size();
-			for (size_t i = 0; i < nCountThemes; ++i)
-			{
-				CTheme* pTheme = &m_arThemes[i];
-				
-				size_t nCountEl = pTheme->m_arElements.size();
-				for (size_t j = 0; j < nCountEl; ++j)
-				{
-					pTheme->m_arElements[j]->m_pTheme = pTheme;
-				}
-
-				size_t nCountLayouts = pTheme->m_arLayouts.size();
-				for (size_t j = 0; j < nCountLayouts; ++j)
-				{
-					CLayout* pLayout = &pTheme->m_arLayouts[j];
-
-					nCountEl = pLayout->m_arElements.size();
-					for (size_t k = 0; k < nCountEl; ++k)
-					{
-						pLayout->m_arElements[k]->m_pTheme = pTheme;
-					}
-				}
-			}
-		}
-
 		CString GetXmlSlideTransition ( CSlide& oSlide/*, CAudioOverlay& oAudioOverlay*/ )
 		{
 			CString Source	=	CString ( _T("") );
@@ -529,9 +456,35 @@ namespace NSPresentationEditor
 		}
 
 	public:
-		
+		void ResetAutoText(IElement *pElement, vector_string const (&placeholdersReplaceString)[3])
+		{
+			CShapeElement* pShape = dynamic_cast<CShapeElement*>(pElement);
+			
+			if (NULL == pShape) return;
+			
+			if (pElement->m_lPlaceholderType == NSOfficePPT::MasterSlideNumber)	pShape->SetUpTextPlaceholder(L"<#>");
+			
+			int ind = -1;
+			if (pElement->m_lPlaceholderType == NSOfficePPT::MasterDate)	ind = 0;
+			if (pElement->m_lPlaceholderType == NSOfficePPT::MasterFooter)	ind = 2;
+
+			if (pElement->m_lPlaceholderUserStr >= 0 && ind >= 0)
+			{
+				if (pElement->m_lPlaceholderUserStr < placeholdersReplaceString[ind].size())
+					pShape->SetUpTextPlaceholder( placeholdersReplaceString[ind][pElement->m_lPlaceholderUserStr] );
+				else pShape->SetUpTextPlaceholder(L"");	
+			}
+			else
+			{
+				if (pElement->m_lPlaceholderType == NSOfficePPT::MasterDate)
+					pShape->SetUpTextPlaceholder(L"*");	//поле
+			}
+		}
+
 		void CalculateEditor(const NSPresentationEditor::CMetricInfo& oInfo, bool bIsPlaceholderSetUp = false)
 		{
+			// автозамены и поля настраиваем тут во избежания путаницы
+
 			m_oInfo = oInfo;
 
 			double dScaleX = (double)m_oInfo.m_lMillimetresHor / m_oInfo.m_lUnitsHor;
@@ -548,6 +501,10 @@ namespace NSPresentationEditor
 				{
 					IElement* pElement = pTheme->m_arElements[nIndexEl];
 
+					if (pElement->m_lPlaceholderType > 0)
+					{
+						ResetAutoText(pElement, pTheme->m_PlaceholdersReplaceString);
+					}
 					pElement->m_pTheme = pTheme;
 					pElement->m_pLayout = NULL;
 					
@@ -571,6 +528,11 @@ namespace NSPresentationEditor
 					for (size_t nIndexLayoutEl = 0; nIndexLayoutEl < nCountLayoutElements; ++nIndexLayoutEl)
 					{
 						IElement* pElement = pLayout->m_arElements[nIndexLayoutEl];
+						
+						if (pElement->m_lPlaceholderType > 0)
+						{
+							ResetAutoText(pElement, pLayout->m_PlaceholdersReplaceString);
+						}
 
 						pElement->m_oMetric = m_oInfo;
 						pElement->NormalizeCoords(dScaleX, dScaleY);
@@ -651,6 +613,10 @@ namespace NSPresentationEditor
 				{
 					IElement* pElement = pSlide->m_arElements[nIndexEl];
 
+					if (pElement->m_lPlaceholderType > 0)
+					{
+						ResetAutoText(pElement, pSlide->m_PlaceholdersReplaceString);
+					}
 					pElement->m_pTheme = pTheme;
 					pElement->m_pLayout = pLayout;
 
@@ -663,7 +629,5 @@ namespace NSPresentationEditor
 					pSlide->SetUpPlaceholderStyles(pLayout);
 			}
 		}
-
-
 	};
 }

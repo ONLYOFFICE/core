@@ -154,8 +154,7 @@ class CRecordSlideNumberMetaAtom : public CRecordMetaCharacterAtom
 class CRecordHeadersFootersContainer : public CRecordsContainer
 {
 public:
-	std::vector<std::wstring> m_HeadersFootersString[3]; //0-dates, 1 - headers, 2 - footers
-
+	vector_string m_HeadersFootersString[3]; //0-dates, 1 - headers, 2 - footers
 
 	CRecordHeadersFootersAtom *m_oHeadersFootersAtom;
 

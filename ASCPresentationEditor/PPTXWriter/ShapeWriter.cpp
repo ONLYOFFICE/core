@@ -947,11 +947,11 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 			}
 			else
 			{
-				if (m_pShapeElement->m_lPlaceholderType == PT_MasterSlideNumber)
+				if (m_pShapeElement->m_lPlaceholderType == PT_MasterSlideNumber && pParagraph->m_arSpans[nSpan].m_bField)
 				{
 					m_oWriter.WriteString(std::wstring(L"<a:fld id=\"{D038279B-FC19-497E-A7D1-5ADD9CAF016F}\" type=\"slidenum\"><a:rPr"));
 				}
-				else if (m_pShapeElement->m_lPlaceholderType == PT_MasterDate && m_pShapeElement->m_nFormatDate == 1)
+				else if (m_pShapeElement->m_lPlaceholderType == PT_MasterDate && m_pShapeElement->m_nFormatDate == 1 && pParagraph->m_arSpans[nSpan].m_bField)
 				{
 					m_oWriter.WriteString(std::wstring(L"<a:fld id=\"{D7E01130-044F-4930-9A27-C729C70D8524}\" type=\"datetime1\"><a:rPr"));
 				}
@@ -1066,8 +1066,8 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 				CString strT2 = _T("</a:t>");
 				m_oWriter.WriteString(strT2);
 				
-				if (m_pShapeElement->m_lPlaceholderType == PT_MasterSlideNumber || 
-					(m_pShapeElement->m_lPlaceholderType == PT_MasterDate && m_pShapeElement->m_nFormatDate == 1))
+				if ((m_pShapeElement->m_lPlaceholderType == PT_MasterSlideNumber || 
+					(m_pShapeElement->m_lPlaceholderType == PT_MasterDate && m_pShapeElement->m_nFormatDate == 1)) &&  pParagraph->m_arSpans[nSpan].m_bField)
 				{
 					m_oWriter.WriteString(std::wstring(L"</a:fld>"));
 				}

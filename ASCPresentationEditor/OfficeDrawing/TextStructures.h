@@ -601,9 +601,9 @@ namespace NSPresentationEditor
 	public:
 		CTextCFRun			m_oRun;
 		std::wstring		m_strText;
+		bool				m_bField;
 
-	public:
-		CSpan() : m_oRun(), m_strText(_T(""))
+		CSpan() : m_oRun(), m_strText(_T("")), m_bField(false)
 		{
 		}
 		CSpan(const CSpan& oSrc)
@@ -614,6 +614,7 @@ namespace NSPresentationEditor
 		{
 			m_oRun		= oSrc.m_oRun;
 			m_strText	= oSrc.m_strText;
+			m_bField	= oSrc.m_bField;
 
 			return *this;
 		}

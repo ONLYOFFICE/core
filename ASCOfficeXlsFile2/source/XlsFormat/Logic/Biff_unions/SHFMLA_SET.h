@@ -13,7 +13,7 @@ class SHFMLA_SET: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(SHFMLA_SET)
 public:
-	SHFMLA_SET(std::vector<CellRef>& shared_formulas_locations_ref);
+	SHFMLA_SET(std::vector<CellRangeRef>& shared_formulas_locations_ref);
 	~SHFMLA_SET();
 
 	BaseObjectPtr clone();
@@ -22,7 +22,7 @@ public:
 
 	static const ElementType	type = typeSHFMLA_SET;
 
-	std::vector<CellRef>& shared_formulas_locations_ref_;
+	std::vector<CellRangeRef> & shared_formulas_locations_ref_;
 };
 
 } // namespace XLS

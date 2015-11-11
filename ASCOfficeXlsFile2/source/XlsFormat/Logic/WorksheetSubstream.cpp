@@ -136,7 +136,7 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 		elements_.pop_back();
 	}
 
-    std::vector<CellRef>	shared_formulas_locations;
+    std::vector<CellRangeRef>	shared_formulas_locations;
     CELLTABLE               cell_table(shared_formulas_locations);
     if (proc.optional(cell_table))
 	{
@@ -147,7 +147,8 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 	if(0 != shared_formulas_locations.size())
 	{
         SHFMLA_SET shfmla_set(shared_formulas_locations);
-        if (proc.optional(shfmla_set))
+       
+		if (proc.optional(shfmla_set))
 		{
 			m_SHFMLA_SET = elements_.back();
 			elements_.pop_back();

@@ -27,22 +27,24 @@ public:
 
 	static const ElementType	type = typeCellRangeRef;
 
-	const std::wstring toString(const bool useShortForm = true) const;
-	void fromString(const std::wstring& str);
+	const std::wstring	toString(const bool useShortForm = true) const;
+	void				fromString(const std::wstring& str);
 	operator const std::wstring  () const;
 
 	const CellRef getTopLeftCell() const;
 
-    const int getRowFirst() const { return rowFirst; }
-    const int getRowLast() const { return rowLast; }
-	const bool getRowFirstRelative() const { return rowFirstRelative; }
-	const bool getRowLastRelative() const { return rowLastRelative; }
-    const int getColumnFirst() const { return columnFirst; }
-    const int getColumnLast() const { return columnLast; }
-	const bool getColumnFirstRelative() const { return columnFirstRelative; }
-	const bool getColumnLastRelative() const { return columnLastRelative; }
-	void setColumnRelativity(const bool is_relative);
-	void setRowRelativity(const bool is_relative);
+    const int	getRowFirst() const { return rowFirst; }
+    const int	getRowLast() const { return rowLast; }
+	const bool	getRowFirstRelative() const { return rowFirstRelative; }
+	const bool	getRowLastRelative() const { return rowLastRelative; }
+    const int	getColumnFirst() const { return columnFirst; }
+    const int	getColumnLast() const { return columnLast; }
+	const bool	getColumnFirstRelative() const { return columnFirstRelative; }
+	const bool	getColumnLastRelative() const { return columnLastRelative; }
+	void		setColumnRelativity(const bool is_relative);
+	void		setRowRelativity(const bool is_relative);
+
+	bool inRange(const CellRef& cell);
 
 	void operator+=(const CellRef& appended_ref);
 	void operator-=(const CellRef& subtracted_ref);
@@ -50,14 +52,14 @@ public:
     virtual void load(CFRecord& record) {}
     virtual void store(CFRecord& record) {}
 
-    int rowFirst;
-    int rowLast;
-	bool rowFirstRelative;
-	bool rowLastRelative;
-    int columnFirst;
-    int columnLast;
-	bool columnFirstRelative;
-	bool columnLastRelative;
+    int		rowFirst;
+    int		rowLast;
+	bool	rowFirstRelative;
+	bool	rowLastRelative;
+    int		columnFirst;
+    int		columnLast;
+	bool	columnFirstRelative;
+	bool	columnLastRelative;
 
 	mutable std::wstring to_string_cache;
 

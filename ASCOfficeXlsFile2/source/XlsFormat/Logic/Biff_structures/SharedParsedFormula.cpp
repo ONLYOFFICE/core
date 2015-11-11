@@ -23,6 +23,7 @@ void SharedParsedFormula::load(CFRecord& record)
 {
 	unsigned short cce;
 	record >> cce;
+	
 	rgce.load(record, cce);
 	rgcb.load(record, rgce.getPtgs(), is_part_of_a_revision_);
 }

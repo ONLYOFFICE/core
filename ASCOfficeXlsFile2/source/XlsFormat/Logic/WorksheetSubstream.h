@@ -1,10 +1,10 @@
 #pragma once
 
 #include <Logic/CompositeObject.h>
+#include <Logic/Biff_structures/CellRef.h>
 
 namespace XLS
 {;
-
 
 // Logical representation of WorksheetSubstream union of records 
 class WorksheetSubstream;

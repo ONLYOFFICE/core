@@ -1,6 +1,7 @@
 #pragma once
-//#include "stdafx.h"
+
 #include "Formula.h"
+
 LONG NSGuidesVML::CFormula::Calculate(NSGuidesVML::CFormulasManager* pManager)
 {
 	if ((0 > m_lIndex) || (m_lIndex >= pManager->m_arResults.size()))

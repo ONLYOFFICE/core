@@ -1,8 +1,7 @@
-//#include "stdafx.h"
 
 #include "Geometry.h"
-#include "../Editor/Drawing/Elements.h"
-#include "../Editor/Drawing/Shapes/BaseShape/Common.h"
+#include "../../Editor/Drawing/Elements.h"
+#include "../../Editor/Drawing/Shapes/BaseShape/Common.h"
 
 namespace PPTX
 {

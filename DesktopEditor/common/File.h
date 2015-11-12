@@ -868,7 +868,7 @@ namespace NSFile
 			CloseHandle( hFile );
 #else
 			std::string sFileUTF8 = U_TO_UTF8(sPath);
-			bIsSuccess = (0 == truncate(sFileUTF8, NewSize));
+			bIsSuccess = (0 == truncate(sFileUTF8.c_str(), nNewSize));
 #endif
 			return bIsSuccess;
 		}

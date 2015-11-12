@@ -356,13 +356,24 @@ void _GetFontArrayBuffer(const v8::FunctionCallbackInfo<v8::Value>& args)
     // по идее файлы могут совпадать по имени, но лежать в разных директориях.
     // и поэтому в AllFonts.js надо бы писать пути полные.
     // пока оставим по-старому
+    std::wstring sFind = to_cstring(args[0]);
+    bool bIsFullFilePath = (std::wstring::npos != sFind.find('\\') || std::wstring::npos != sFind.find('/'));
+    if (bIsFullFilePath)
     {
-        std::wstring sFind = to_cstring(args[0]);
+        bIsFullFilePath = NSFile::CFileBinary::Exists(sFind);
+    }
+
+    if (!bIsFullFilePath)
+    {        
         std::map<std::wstring, std::wstring>::iterator pair = pNative->m_map_fonts.find(sFind);
         if (pair != pNative->m_map_fonts.end())
             strDir = pair->second;
         else
             strDir = pNative->m_sDefaultFont;
+    }
+    else
+    {
+        strDir = sFind;
     }
 
     pNative->getFileData(strDir, pData, len);

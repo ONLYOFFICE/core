@@ -920,7 +920,7 @@
 			</Filter>
 		</Filter>
 		<Filter
-			Name="PresentationEditor"
+			Name="OOXElements"
 			>
 			<File
 				RelativePath="..\..\..\ASCPresentationEditor\OfficeDrawing\Attributes.h"
@@ -1023,15 +1023,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\ASCPresentationEditor\PPTXWriter\Converter.cpp"
+				RelativePath="..\PPTXWriter\Converter.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\ASCPresentationEditor\PPTXWriter\Converter.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\ASCOfficeDocxFile2\BinReader\DefaultThemeWriterWin.h"
+				RelativePath="..\PPTXWriter\Converter.h"
 				>
 			</File>
 			<File
@@ -1055,6 +1051,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\PPTXWriter\ImageManager.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\ASCOfficeDocxFile2\BinReader\MediaWriter.h"
 				>
 			</File>
@@ -1067,15 +1067,15 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\ASCPresentationEditor\PPTXWriter\ShapeWriter.cpp"
+				RelativePath="..\PPTXWriter\ShapeWriter.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\ASCPresentationEditor\PPTXWriter\ShapeWriter.h"
+				RelativePath="..\PPTXWriter\ShapeWriter.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\ASCOfficeDocxFile2\BinReader\StylesWriter.h"
+				RelativePath="..\PPTXWriter\StylesWriter.h"
 				>
 			</File>
 			<File

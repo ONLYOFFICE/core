@@ -1,8 +1,8 @@
 #include "ShapeWriter.h"
 #include "StylesWriter.h"
 
-#include "../../ASCOfficeXlsFile2/source/XlsXlsxConverter/ShapeType.h"
-#include "../../Common/MS-LCID.h"
+#include "../../../ASCOfficeXlsFile2/source/XlsXlsxConverter/ShapeType.h"
+#include "../../../Common/MS-LCID.h"
 
 const double EMU_MM = 36000;
 

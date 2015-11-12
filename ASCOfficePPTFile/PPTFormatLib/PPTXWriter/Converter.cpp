@@ -1,16 +1,18 @@
 #pragma once
 
-#include "../OfficeDrawing/Document.h"
-#include "../../Common/DocxFormat/Source/SystemUtility/File.h"
-#include "../../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"
+#include "../../../ASCPresentationEditor/OfficeDrawing/Document.h"
 
-#include "../../ASCOfficePPTFile/PPTFormatLib/Reader/PPTDocumentInfo.h"
+#include "../../../Common/DocxFormat/Source/SystemUtility/File.h"
+#include "../../../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"
+#include "../../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h"
+
+#include "../Reader/PPTDocumentInfo.h"
+
 #include "ShapeWriter.h"
 #include "StylesWriter.h"
 
-#include "../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h"
-#include "../../ASCOfficePPTXFile/Editor/DefaultNotesMaster.h"
-#include "../../ASCOfficePPTXFile/Editor/DefaultNotesTheme.h"
+#include "../../../ASCOfficePPTXFile/Editor/DefaultNotesMaster.h"
+#include "../../../ASCOfficePPTXFile/Editor/DefaultNotesTheme.h"
 
 #include "Converter.h"	
 

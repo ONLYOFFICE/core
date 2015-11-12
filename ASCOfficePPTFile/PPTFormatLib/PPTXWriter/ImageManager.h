@@ -1,7 +1,7 @@
 #pragma once
 
 #ifndef DISABLE_FILE_DOWNLOADER
-#include "../../Common/FileDownloader.h"
+#include "../../../Common/FileDownloader.h"
 #endif
 
 namespace NSPresentationEditor

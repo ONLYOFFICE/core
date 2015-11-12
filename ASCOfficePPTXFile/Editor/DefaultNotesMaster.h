@@ -1,5 +1,6 @@
-﻿#ifndef DEFAULTNOTESMASTER_H
-#define DEFAULTNOTESMASTER_H
+﻿#pragma once
+
+#include "../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h"
 
 namespace Writers
 {
@@ -207,4 +208,4 @@ namespace Writers
         }
     };
 }
-#endif // DEFAULTNOTESMASTER_H
+

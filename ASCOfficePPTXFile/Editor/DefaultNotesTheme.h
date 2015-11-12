@@ -1,5 +1,7 @@
-﻿#ifndef DEFAULTNOTESTHEME_H
-#define DEFAULTNOTESTHEME_H
+﻿#pragma once
+
+#include "../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h"
+
 namespace Writers
 {
     class DefaultNotesThemeWriter
@@ -302,4 +304,4 @@ namespace Writers
         }
     };
 }
-#endif // DEFAULTNOTESTHEME_H
+

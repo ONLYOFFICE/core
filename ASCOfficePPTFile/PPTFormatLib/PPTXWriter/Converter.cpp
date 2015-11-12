@@ -1,6 +1,9 @@
 #pragma once
 
-#include "../../../ASCPresentationEditor/OfficeDrawing/Document.h"
+#include "../../../ASCOfficePPTXFile/Editor/Drawing/Document.h"
+
+#include "../../../ASCOfficePPTXFile/Editor/DefaultNotesMaster.h"
+#include "../../../ASCOfficePPTXFile/Editor/DefaultNotesTheme.h"
 
 #include "../../../Common/DocxFormat/Source/SystemUtility/File.h"
 #include "../../../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"
@@ -10,9 +13,6 @@
 
 #include "ShapeWriter.h"
 #include "StylesWriter.h"
-
-#include "../../../ASCOfficePPTXFile/Editor/DefaultNotesMaster.h"
-#include "../../../ASCOfficePPTXFile/Editor/DefaultNotesTheme.h"
 
 #include "Converter.h"	
 

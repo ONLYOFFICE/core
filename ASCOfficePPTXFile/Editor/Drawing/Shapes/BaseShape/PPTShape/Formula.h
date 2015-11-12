@@ -7,11 +7,9 @@
 #include <math.h>
 #include "./../Common.h"
 
-#include "./../../../../../Common/DocxFormat/Source/XML/xmlutils.h"
+#include "../../../../../../Common/DocxFormat/Source/XML/xmlutils.h"
 
-//#include "./../../../../../DesktopEditor/cximage/CxImage/ximadef.h"
-//#include "../../../../../ASCOfficePPTXFile/PPTXFormat/Logic/rectdef.h"
-#include "./../../../../../DesktopEditor/graphics/aggplustypes.h"
+#include "../../../../../../DesktopEditor/graphics/aggplustypes.h"
 namespace NSGuidesVML
 {
 	enum FormulaType

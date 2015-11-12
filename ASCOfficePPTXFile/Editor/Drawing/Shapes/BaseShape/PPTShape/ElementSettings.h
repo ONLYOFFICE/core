@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../../../ASCOfficePPTFile/PPTFormatLib/Records/Drawing/ArtBlip.h"
+#include "../../../../../../ASCOfficePPTFile/PPTFormatLib/Records/Drawing/ArtBlip.h"
 
-#include "../../../../../Common/DocxFormat/Source/SystemUtility/File.h"
+#include "../../../../../../Common/DocxFormat/Source/SystemUtility/File.h"
 #include "Enums.h"
 
 // это класс, использующийся для передачи свойств объектов,

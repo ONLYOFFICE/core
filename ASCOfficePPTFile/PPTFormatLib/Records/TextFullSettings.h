@@ -6,7 +6,8 @@
 #include "TextSpecInfoAtom.h"
 #include "TextRulerAtom.h"
 #include "TextInteractiveInfoAtom.h"
-#include "../../../ASCPresentationEditor/OfficeDrawing/Interactive.h"
+
+#include "../../../ASCOfficePPTXFile/Editor/Drawing/Interactive.h"
 
 class CTextFullSettings
 {

@@ -202,14 +202,14 @@ HEADERS += \
     ../PPTXWriter/ImageManager.h \
     ../PPTXWriter/ShapeWriter.h \
     ../PPTXWriter/StylesWriter.h \
-    ../../../ASCPresentationEditor/OfficeDrawing/Element.h \
-    ../../../ASCPresentationEditor/OfficeDrawing/ElementProperties.h \
-    ../../../ASCPresentationEditor/OfficeDrawing/Elements.h \
-    ../../../ASCPresentationEditor/OfficeDrawing/Layout.h \
-    ../../../ASCPresentationEditor/OfficeDrawing/Slide.h \
-    ../../../ASCPresentationEditor/OfficeDrawing/TextAttributesEx.h \
-    ../../../ASCPresentationEditor/OfficeDrawing/TextStructures.h \
-    ../../../ASCPresentationEditor/OfficeDrawing/Theme.h \
+    ../../../ASCOfficePPTXFile/Editor/Drawing/Element.h \
+    ../../../ASCOfficePPTXFile/Editor/Drawing/ElementProperties.h \
+    ../../../ASCOfficePPTXFile/Editor/Drawing/Elements.h \
+    ../../../ASCOfficePPTXFile/Editor/Drawing/Layout.h \
+    ../../../ASCOfficePPTXFile/Editor/Drawing/Slide.h \
+    ../../../ASCOfficePPTXFile/Editor/Drawing/TextAttributesEx.h \
+    ../../../ASCOfficePPTXFile/Editor/Drawing/TextStructures.h \
+    ../../../ASCOfficePPTXFile/Editor/Drawing/Theme.h \
     ../../../Common/3dParty/pole/pole.h 
 
 SOURCES += \
@@ -222,8 +222,7 @@ SOURCES += \
     ../Records/Drawing/ArtBlip.cpp \
     ../PPTXWriter/Converter.cpp \
     ../PPTXWriter/ShapeWriter.cpp \
-    ../../../ASCPresentationEditor/OfficeDrawing/Elements.cpp \
-    ../../../ASCPresentationEditor/OfficeDrawing/Layout.cpp \
-    ../../../ASCPresentationEditor/OfficeDrawing/TextAttributesEx.cpp \
-    ../../../ASCPresentationEditor/OfficeDrawing/Theme.cpp \
+    ../../../ASCOfficePPTXFile/Editor/Drawing/Elements.cpp \
+    ../../../ASCOfficePPTXFile/Editor/Drawing/Layout.cpp \
+    ../../../ASCOfficePPTXFile/Editor/Drawing/TextAttributesEx.cpp \
     ../../../Common/3dParty/pole/pole.cpp

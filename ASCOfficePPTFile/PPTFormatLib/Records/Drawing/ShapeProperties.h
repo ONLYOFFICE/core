@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../../Reader/Records.h"
-#include "../../../../ASCPresentationEditor/OfficeDrawing/Shapes/BaseShape/PPTShape/ElementSettings.h"
+#include "../../../../ASCOfficePPTXFile/Editor/Drawing/Shapes/BaseShape/PPTShape/ElementSettings.h"
 
 class CRecordShapeProperties : public CUnknownRecord
 {

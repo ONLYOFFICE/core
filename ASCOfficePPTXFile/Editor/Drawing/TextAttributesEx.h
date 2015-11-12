@@ -3,7 +3,7 @@
 #include "TextStructures.h"
 
 #if !defined(_WIN32) && !defined (_WIN64)
-    #include "../../DesktopEditor/graphics/aggplustypes.h"
+    #include "../../../DesktopEditor/graphics/aggplustypes.h"
 #endif
 
 namespace NSPresentationEditor

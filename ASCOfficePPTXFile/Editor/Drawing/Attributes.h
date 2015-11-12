@@ -4,17 +4,17 @@
 	#include <atlcoll.h>
 	#include <gdiplus.h>
 #else
-    #include "../../ASCOfficePPTXFile/PPTXLib/Linux/PPTXFormatLib/linux_gdiplus.h"
+    #include "../../PPTXLib/Linux/PPTXFormatLib/linux_gdiplus.h"
 #endif
 
 #include "Metric.h"
 #include "Effects.h"
-//#include "../../Common/DocxFormat/Source/XML/xmlutils.h"
-#include "../../Common/ASCUtils.h"
-#include "./XmlWriter.h"
 
-#include "../../DesktopEditor/graphics/IRenderer.h"
-#include "../../DesktopEditor/graphics/structures.h"
+#include "../../../Common/ASCUtils.h"
+#include "./XmlStringWriter.h"
+
+#include "../../../DesktopEditor/graphics/IRenderer.h"
+#include "../../../DesktopEditor/graphics/structures.h"
 
 
 namespace NSPresentationEditor

@@ -2,7 +2,7 @@
 #include "Attributes.h"
 
 #if !defined(_WIN32) && !defined(_WIN64)
-    #include "../../DesktopEditor/common/ASCVariant.h"
+    #include "../../../DesktopEditor/common/ASCVariant.h"
 #endif
 
 namespace NSPresentationEditor

@@ -2,8 +2,8 @@
 #include <math.h>
 
 #if !defined(_WIN32) && !defined(_WIN64)
-    #include "./../../DesktopEditor/common/ASCVariant.h"
-    #include "../../Common/DocxFormat/Source/Base/ASCString.h"
+    #include "../../../DesktopEditor/common/ASCVariant.h"
+    #include "../../../Common/DocxFormat/Source/Base/ASCString.h"
 #endif
 
 namespace NSPresentationEditor

@@ -9,11 +9,11 @@
 	#include "../../../../Common/atldefine.h"
 
 #else
-    #include "../../../../Common/DocxFormat/Source/Base/ASCString.h"
+    #include "../../../../../Common/DocxFormat/Source/Base/ASCString.h"
 #endif
 
-#include "../../../../Common/DocxFormat/Source/Base/Base.h"
-#include "../../../../DesktopEditor/graphics/GraphicsPath.h"
+#include "../../../../../Common/DocxFormat/Source/Base/Base.h"
+#include "../../../../../DesktopEditor/graphics/GraphicsPath.h"
 
 const double ShapeSize		= 43200.0;
 const LONG ShapeSizeVML		= 21600;

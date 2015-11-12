@@ -132,9 +132,9 @@ SOURCES += pptxformatlib.cpp \
     ../../../PPTXFormat/Folder.cpp \
     ../../../Editor/BinaryFileReaderWriter.cpp \
     ../../../Editor/FontPicker.cpp \
-    ../../../../ASCPresentationEditor/OfficeDrawing/Layout.cpp \
-    ../../../../ASCPresentationEditor/OfficeDrawing/TextAttributesEx.cpp \
-    ../../../../ASCPresentationEditor/OfficeDrawing/Elements.cpp \
+    ../../../Editor/Drawing/Layout.cpp \
+    ../../../Editor/Drawing/TextAttributesEx.cpp \
+    ../../../Editor/Drawing/Elements.cpp \
     ../../../PPTXFormat/Logic/Controls.cpp \
     ../../../../HtmlRenderer/src/ASCSVGWriter.cpp
 
@@ -540,6 +540,9 @@ HEADERS += pptxformatlib.h \
     ../../../PPTXFormat/ViewProps.h \
     ../../../PPTXFormat/WrapperFile.h \
     ../../../PPTXFormat/WrapperWritingElement.h \
+    ../../../PPTXFormat/DocxFormat/Drawing/LegacyDiagramText.h \
+    ../../../PPTXFormat/DocxFormat/Drawing/VmlDrawing.h \
+    ../../../PPTXFormat/Logic/Controls.h \
     ../../../Editor/BinaryFileReaderWriter.h \
     ../../../Editor/BinReaderWriterDefines.h \
     ../../../Editor/BinWriters.h \
@@ -551,14 +554,11 @@ HEADERS += pptxformatlib.h \
     ../../../Editor/PPTXWriter.h \
     ../../../Editor/WMFToImageConverter.h \
     ../../../Editor/XmlWriter.h \
-    ../../Settings.h \
-    ../../../../ASCPresentationEditor/ASCPresentationEditorDef.h \
-    ../../../../Common/FileDownloader.h \
+    ../../../Editor/PresentationDrawingsDef.h \
     ../../../Editor/DefaultNotesMaster.h \
     ../../../Editor/DefaultNotesTheme.h \
-    ../../../PPTXFormat/DocxFormat/Drawing/LegacyDiagramText.h \
-    ../../../PPTXFormat/DocxFormat/Drawing/VmlDrawing.h \
-    ../../../PPTXFormat/Logic/Controls.h \
+    ../../Settings.h \
+    ../../../../Common/FileDownloader.h \
     ../../../../Common/DocxFormat/Source/Base/Nullable.h \
     ../../../../Common/DocxFormat/Source/XML/xmlutils.h \
     ../../../../HtmlRenderer/include/ASCSVGWriter.h

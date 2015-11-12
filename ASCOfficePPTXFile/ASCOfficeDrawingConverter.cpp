@@ -1,36 +1,30 @@
-//#include "stdafx.h"
+
 #include "ASCOfficeDrawingConverter.h"
 
 #include "./PPTXFormat/Logic/SpTreeElem.h"
-
-#include "../Common/DocxFormat/Source/Common/SimpleTypes_Base.h"
-#include "../ASCPresentationEditor/OfficeDrawing/Shapes/Shape.h"
-
 #include "./PPTXFormat/Logic/Geometry.h"
-
 #include "./PPTXFormat/Logic/SpTreeElem.h"
 #include "./PPTXFormat/Logic/Shape.h"
 #include "./PPTXFormat/Logic/Pic.h"
 #include "./PPTXFormat/Logic/CxnSp.h"
 #include "./PPTXFormat/Logic/SpTree.h"
 #include "./PPTXFormat/Logic/GraphicFrame.h"
-
 #include "./PPTXFormat/Logic/Colors/SrgbClr.h"
 #include "./PPTXFormat/Logic/Colors/PrstClr.h"
 #include "./PPTXFormat/Logic/Colors/SchemeClr.h"
 #include "./PPTXFormat/Logic/Colors/SysClr.h"
-
 #include "./PPTXFormat/DocxFormat/Media/Image.h"
-#include "../ASCPresentationEditor/OfficeDrawing/Elements.h"
-
-#include "../ASCPresentationEditor/OfficeDrawing/Shapes/BaseShape/PPTXShape/pptx2pptshapeconverter.h"
-#include "../ASCPresentationEditor/OfficeDrawing/Shapes/BaseShape/PPTShape/Formula.h"
-
 #include "./PPTXFormat/PPTX.h"
 #include "./PPTXFormat/DocxFormat/Drawing/LegacyDiagramText.h"
 
-#include "../ASCPresentationEditor/OfficeDrawing/Shapes/BaseShape/PPTXShape/PPTXShape.h"
+#include "./Editor/Drawing/Shapes/Shape.h"
+#include "./Editor/Drawing/Elements.h"
+#include "./Editor/Drawing/Shapes/BaseShape/PPTXShape/pptx2pptshapeconverter.h"
+#include "./Editor/Drawing/Shapes/BaseShape/PPTShape/Formula.h"
+#include "./Editor/Drawing/Shapes/BaseShape/PPTXShape/PPTXShape.h"
+
 #include "../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"
+#include "../Common/DocxFormat/Source/Common/SimpleTypes_Base.h"
 
 const double g_emu_koef	= 25.4 * 36000 / 72.0;
 
@@ -2081,9 +2075,7 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 		}
 		else
 		{
-#ifdef ENABLE_PPT_TO_PPTX_CONVERT
 			strXmlPPTX = oShapeElem.ConvertPPTShapeToPPTX(true);
-#endif
 		}
 
 		XmlUtils::CXmlNode oNodeG;

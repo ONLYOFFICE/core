@@ -18,8 +18,8 @@
 #include "../../Reader/ClassesAtom.h"
 #include "../../Reader/SlideInfo.h"
 
-#include "../../../../ASCPresentationEditor/OfficeDrawing/Document.h"
-#include "../../../../ASCPresentationEditor/OfficeDrawing/Shapes/BaseShape/PPTShape/ElementSettings.h"
+#include "../../../../ASCOfficePPTXFile/Editor/Drawing/Document.h"
+#include "../../../../ASCOfficePPTXFile/Editor/Drawing/Shapes/BaseShape/PPTShape/ElementSettings.h"
 
 #include "../../../../DesktopEditor/raster/BgraFrame.h"
 #include "../../../../Common/DocxFormat/Source/Base/Types_32.h"

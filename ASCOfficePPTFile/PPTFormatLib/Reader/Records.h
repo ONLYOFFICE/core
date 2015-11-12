@@ -2,7 +2,7 @@
 
 #include "PPTFileDefines.h"
 #include "../Reader/ReadStructures.h"
-#include "../../../ASCPresentationEditor/OfficeDrawing/Shapes/BaseShape/PPTShape/Enums.h"
+#include "../../../ASCOfficePPTXFile/Editor/Drawing/Shapes/BaseShape/PPTShape/Enums.h"
 #include "../../../Common/3dParty/pole/pole.h"
 
 using namespace NSPresentationEditor;

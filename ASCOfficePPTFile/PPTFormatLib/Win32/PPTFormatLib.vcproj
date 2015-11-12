@@ -923,87 +923,91 @@
 			Name="OOXElements"
 			>
 			<File
-				RelativePath="..\..\..\ASCPresentationEditor\OfficeDrawing\Attributes.h"
+				RelativePath="..\..\..\ASCOfficePPTXFile\Editor\Drawing\Animations.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\ASCPresentationEditor\PPTXWriter\CSS.h"
+				RelativePath="..\..\..\ASCOfficePPTXFile\Editor\Drawing\Attributes.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\ASCPresentationEditor\OfficeDrawing\Effects.h"
+				RelativePath="..\..\..\ASCOfficePPTXFile\Editor\Drawing\AudioOverlay.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\ASCPresentationEditor\OfficeDrawing\Element.h"
+				RelativePath="..\..\..\ASCOfficePPTXFile\Editor\Drawing\Document.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\ASCPresentationEditor\OfficeDrawing\ElementProperties.h"
+				RelativePath="..\..\..\ASCOfficePPTXFile\Editor\Drawing\Effects.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\ASCPresentationEditor\OfficeDrawing\Elements.cpp"
+				RelativePath="..\..\..\ASCOfficePPTXFile\Editor\Drawing\Element.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\ASCPresentationEditor\OfficeDrawing\Elements.h"
+				RelativePath="..\..\..\ASCOfficePPTXFile\Editor\Drawing\ElementProperties.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\ASCPresentationEditor\OfficeDrawing\Shapes\BaseShape\PPTShape\ElementSettings.h"
+				RelativePath="..\..\..\ASCOfficePPTXFile\Editor\Drawing\Elements.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\ASCPresentationEditor\PPTXWriter\ImageManager.h"
+				RelativePath="..\..\..\ASCOfficePPTXFile\Editor\Drawing\Elements.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\ASCPresentationEditor\OfficeDrawing\Layout.cpp"
+				RelativePath="..\..\..\ASCOfficePPTXFile\Editor\Drawing\Enums.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\ASCPresentationEditor\OfficeDrawing\Layout.h"
+				RelativePath="..\..\..\ASCOfficePPTXFile\Editor\Drawing\Interactive.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\ASCPresentationEditor\OfficeDrawing\Shapes\Shape.h"
+				RelativePath="..\..\..\ASCOfficePPTXFile\Editor\Drawing\Layout.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\ASCPresentationEditor\OfficeDrawing\Slide.h"
+				RelativePath="..\..\..\ASCOfficePPTXFile\Editor\Drawing\Layout.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\ASCPresentationEditor\OfficeDrawing\Structures.h"
+				RelativePath="..\..\..\ASCOfficePPTXFile\Editor\Drawing\Metric.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\ASCPresentationEditor\PPTXWriter\StylesWriter.h"
+				RelativePath="..\..\..\ASCOfficePPTXFile\Editor\Drawing\Slide.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\ASCPresentationEditor\OfficeDrawing\TextAttributesEx.cpp"
+				RelativePath="..\..\..\ASCOfficePPTXFile\Editor\Drawing\SlideShow.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\ASCPresentationEditor\OfficeDrawing\TextAttributesEx.h"
+				RelativePath="..\..\..\ASCOfficePPTXFile\Editor\Drawing\Structures.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\ASCPresentationEditor\OfficeDrawing\TextStructures.h"
+				RelativePath="..\..\..\ASCOfficePPTXFile\Editor\Drawing\TextAttributesEx.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\ASCPresentationEditor\OfficeDrawing\Theme.cpp"
+				RelativePath="..\..\..\ASCOfficePPTXFile\Editor\Drawing\TextAttributesEx.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\ASCPresentationEditor\OfficeDrawing\Theme.h"
+				RelativePath="..\..\..\ASCOfficePPTXFile\Editor\Drawing\TextStructures.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\ASCPresentationEditor\OfficeDrawing\XmlWriter.h"
+				RelativePath="..\..\..\ASCOfficePPTXFile\Editor\Drawing\Theme.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\ASCOfficePPTXFile\Editor\Drawing\XmlWriter.h"
 				>
 			</File>
 		</Filter>

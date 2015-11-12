@@ -1,5 +1,5 @@
 #pragma once
-#include "../../../../../Common/DocxFormat/Source/Base/Types_32.h"
+#include "../../../../../../Common/DocxFormat/Source/Base/Types_32.h"
 
 namespace NSOfficeDrawing
 {

@@ -1718,7 +1718,7 @@ namespace NSGuidesVML
 
 #else
 
-#include "../../../../../ASCOfficePPTXFile/Editor/XmlWriter.h"
+#include "../../../XmlWriter.h"
 
 namespace NSGuidesVML
 {

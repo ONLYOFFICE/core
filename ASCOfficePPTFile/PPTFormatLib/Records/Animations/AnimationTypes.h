@@ -4,7 +4,7 @@
 #include <map>
 
 #include "../../Reader/Records.h"
-#include "../../../../ASCPresentationEditor/OfficeDrawing/Document.h"
+#include "../../../../ASCOfficePPTXFile/Editor/Drawing/Document.h"
 
 #define __USE_ANIMATION__
 

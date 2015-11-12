@@ -381,7 +381,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCPresentationEditor\OfficeDrawing\Elements.cpp"
+				RelativePath="..\Editor\Drawing\Elements.cpp"
 				>
 			</File>
 			<File
@@ -397,11 +397,11 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\ASCPresentationEditor\OfficeDrawing\Layout.cpp"
+				RelativePath="..\Editor\Drawing\Layout.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCPresentationEditor\OfficeDrawing\TextAttributesEx.cpp"
+				RelativePath="..\Editor\Drawing\TextAttributesEx.cpp"
 				>
 			</File>
 		</Filter>

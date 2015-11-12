@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../OfficeDrawing/Document.h"
+#include "../../../ASCPresentationEditor/OfficeDrawing/Document.h"
 
 #include "ImageManager.h"
 

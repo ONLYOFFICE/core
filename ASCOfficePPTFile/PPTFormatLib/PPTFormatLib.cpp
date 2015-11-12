@@ -2,8 +2,8 @@
 #include "PPTFormatLib.h"
 
 
-#include "Reader/PPTFileReader.h"
-#include "../../../ASCPresentationEditor/PPTXWriter/Converter.h"
+#include "./Reader/PPTFileReader.h"
+#include "./PPTXWriter/Converter.h"
 
 #include "../../../ASCOfficeUtils/ASCOfficeUtilsLib/OfficeUtils.h"
 

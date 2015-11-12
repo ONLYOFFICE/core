@@ -87,6 +87,7 @@ unix {
 }
 
 HEADERS += \
+    ../PPTFormatLib.h \
     ../Reader/AudioOverlay.h \
     ../Reader/ClassesAtom.h \
     ../Reader/CommonZLib.h \
@@ -197,10 +198,10 @@ HEADERS += \
     ../Records/Drawing/ShapeProperties.h \
     ../Records/Drawing/TextBox.h \
     ../Records/Drawing/ArtBlip.h \
-    ../../../ASCPresentationEditor/PPTXWriter/Converter.h \
-    ../../../ASCPresentationEditor/PPTXWriter/ImageManager.h \
-    ../../../ASCPresentationEditor/PPTXWriter/ShapeWriter.h \
-    ../../../ASCPresentationEditor/PPTXWriter/StylesWriter.h \
+    ../PPTXWriter/Converter.h \
+    ../PPTXWriter/ImageManager.h \
+    ../PPTXWriter/ShapeWriter.h \
+    ../PPTXWriter/StylesWriter.h \
     ../../../ASCPresentationEditor/OfficeDrawing/Element.h \
     ../../../ASCPresentationEditor/OfficeDrawing/ElementProperties.h \
     ../../../ASCPresentationEditor/OfficeDrawing/Elements.h \
@@ -209,21 +210,20 @@ HEADERS += \
     ../../../ASCPresentationEditor/OfficeDrawing/TextAttributesEx.h \
     ../../../ASCPresentationEditor/OfficeDrawing/TextStructures.h \
     ../../../ASCPresentationEditor/OfficeDrawing/Theme.h \
-    ../PPTFormatLib.h \
-    ../../../Common/3dParty/pole/pole.h \
+    ../../../Common/3dParty/pole/pole.h 
 
 SOURCES += \
+    ../PPTFormatLib.cpp \
+    ../Reader/ReadStructures.cpp \
     ../Reader/PPTDocumentInfoOneUser.cpp \
     ../Reader/Records.cpp \
     ../Reader/SlidePersist.cpp \
     ../Records/Animations/AnimationTypes.cpp \
     ../Records/Drawing/ArtBlip.cpp \
-    ../../../ASCPresentationEditor/PPTXWriter/Converter.cpp \
-    ../../../ASCPresentationEditor/PPTXWriter/ShapeWriter.cpp \
+    ../PPTXWriter/Converter.cpp \
+    ../PPTXWriter/ShapeWriter.cpp \
     ../../../ASCPresentationEditor/OfficeDrawing/Elements.cpp \
     ../../../ASCPresentationEditor/OfficeDrawing/Layout.cpp \
     ../../../ASCPresentationEditor/OfficeDrawing/TextAttributesEx.cpp \
     ../../../ASCPresentationEditor/OfficeDrawing/Theme.cpp \
-    ../PPTFormatLib.cpp \
-    ../../../Common/3dParty/pole/pole.cpp \
-    ../Reader/ReadStructures.cpp
+    ../../../Common/3dParty/pole/pole.cpp

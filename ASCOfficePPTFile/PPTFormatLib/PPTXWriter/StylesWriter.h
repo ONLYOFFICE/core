@@ -1,7 +1,5 @@
 #pragma once
 
-//#include "CSS.h"
-
 class CStylesWriter
 {
 public:

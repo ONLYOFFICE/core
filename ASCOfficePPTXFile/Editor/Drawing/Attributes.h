@@ -307,6 +307,10 @@ namespace NSPresentationEditor
 
 			m_lSchemeIndex = -1;
 		}
+		CColor(DWORD rgb)
+		{	
+			CreateColor(rgb);
+		}
 		CColor& operator =(const CColor& oSrc)
 		{
 			R = oSrc.R;
@@ -317,7 +321,7 @@ namespace NSPresentationEditor
 			m_lSchemeIndex = oSrc.m_lSchemeIndex;
 			return (*this);
 		}
-                AVSINLINE bool IsEqual(const CColor& oSrc)
+		AVSINLINE bool IsEqual(const CColor& oSrc)
 		{
 			return ((R == oSrc.R) && (G == oSrc.G) && (B == oSrc.B) && (m_lSchemeIndex == oSrc.m_lSchemeIndex));
 		}
@@ -644,14 +648,13 @@ namespace NSPresentationEditor
 	class CBrush
 	{
 	public:
-
-		long Type;
+		long			Type;
 		
-		CColor Color1;
-		CColor Color2;
+		CColor			Color1;
+		CColor			Color2;
 
-		long Alpha1;
-		long Alpha2;
+		long			Alpha1;
+		long			Alpha2;
 		
 		std::wstring	TexturePath;
 		long			TextureAlpha;
@@ -660,7 +663,9 @@ namespace NSPresentationEditor
 		bool			Rectable;
 		Gdiplus::RectF	Rect;
 
-		double LinearAngle;
+		double			LinearAngle;
+
+		std::vector<std::pair<CColor, double>> ColorsPosition;
 
 	public:
 
@@ -755,6 +760,8 @@ namespace NSPresentationEditor
 			Rect.Y      = 0.0F;
 			Rect.Width  = 0.0F;
 			Rect.Height = 0.0F;
+
+			ColorsPosition.clear();
 		}
 		
 	public:
@@ -765,55 +772,58 @@ namespace NSPresentationEditor
 		}
 		CBrush( const CBrush& other )
 		{
-			Type    = other.Type;
+			Type			= other.Type;
 			
-			Color1  = other.Color1;
-			Alpha1  = other.Alpha1;
-			Color2  = other.Color2;
-			Alpha2  = other.Alpha2;
+			Color1			= other.Color1;
+			Alpha1			= other.Alpha1;
+			Color2			= other.Color2;
+			Alpha2			= other.Alpha2;
 
-			TexturePath  = other.TexturePath;
-			TextureAlpha = other.TextureAlpha;
-			TextureMode  = other.TextureMode;
+			TexturePath		= other.TexturePath;
+			TextureAlpha	= other.TextureAlpha;
+			TextureMode		= other.TextureMode;
 
-			Rectable = other.Rectable;
-			Rect     = other.Rect;
+			Rectable		= other.Rectable;
+			Rect			= other.Rect;
 
-			LinearAngle = other.LinearAngle;
+			LinearAngle		= other.LinearAngle;
+
+			ColorsPosition	= other.ColorsPosition;
 		}
 		CBrush& operator=(const CBrush& other)
 		{
-			Type    = other.Type;
+			Type			= other.Type;
 			
-			Color1  = other.Color1;
-			Alpha1  = other.Alpha1;
-			Color2  = other.Color2;
-			Alpha2  = other.Alpha2;
+			Color1			= other.Color1;
+			Alpha1			= other.Alpha1;
+			Color2			= other.Color2;
+			Alpha2			= other.Alpha2;
 
-			TexturePath  = other.TexturePath;
-			TextureAlpha = other.TextureAlpha;
-			TextureMode  = other.TextureMode;
+			TexturePath		= other.TexturePath;
+			TextureAlpha	= other.TextureAlpha;
+			TextureMode		= other.TextureMode;
 
-			Rectable = other.Rectable;
-			Rect     = other.Rect;
+			Rectable		= other.Rectable;
+			Rect			= other.Rect;
 
-			LinearAngle = other.LinearAngle;
+			LinearAngle		= other.LinearAngle;
 
+			ColorsPosition	= other.ColorsPosition;
 			return *this;
 		}
 		virtual ~CBrush()
 		{
 		}
 
-                bool IsTexture()
+		bool IsTexture()
 		{
 			return (c_BrushTypeTexture == Type);
 		}
-                bool IsOneColor()
+		bool IsOneColor()
 		{
 			return (c_BrushTypeSolid == Type);
 		}
-                bool IsTwoColor()
+		bool IsTwoColor()
 		{
 			return ((c_BrushTypeHorizontal <= Type && c_BrushTypeCylinderVer >= Type) ||
 					(c_BrushTypeHatch1 <= Type && c_BrushTypeHatch53 >= Type));
@@ -865,14 +875,11 @@ namespace NSPresentationEditor
 				pRenderer->put_BrushAlpha2(Alpha2);
 			}
 		}
-
-	public:
 	};
 
 	class CFont
 	{
 	public:
-
 		std::wstring	Path;
 		std::wstring	Name;
 		double			Size;

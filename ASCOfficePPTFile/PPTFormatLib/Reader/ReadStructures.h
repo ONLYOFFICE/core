@@ -137,96 +137,11 @@ public:
 	CMetaHeader()
 	{
 	}
-	void FromStream(POLE::Stream* pStream)
-	{
-		cbSize			= StreamUtils::ReadDWORD(pStream);
-		
-		rcBounds.left	= StreamUtils::ReadLONG(pStream);
-		rcBounds.top	= StreamUtils::ReadLONG(pStream);
-		rcBounds.right	= StreamUtils::ReadLONG(pStream);
-		rcBounds.bottom = StreamUtils::ReadLONG(pStream);
+	void FromStream(POLE::Stream* pStream);
 
-		ptSize.x		= StreamUtils::ReadLONG(pStream);
-		ptSize.y		= StreamUtils::ReadLONG(pStream);
-
-		cbSave			= StreamUtils::ReadDWORD(pStream);
-
-		compression		= StreamUtils::ReadBYTE(pStream);
-		filter			= StreamUtils::ReadBYTE(pStream);
-	}
-
-	void ToEMFHeader(Gdiplus::ENHMETAHEADER3* pHeader)
-	{
-		if (NULL == pHeader)
-			return;
-
-		pHeader->iType				= 0x00000001;
-		pHeader->nSize				= 88;
-
-		pHeader->rclBounds.left		= rcBounds.left;
-		pHeader->rclBounds.top		= rcBounds.top;
-		pHeader->rclBounds.right	= rcBounds.right;
-		pHeader->rclBounds.bottom	= rcBounds.bottom;
-
-		// нужно перевести в мм
-		pHeader->rclFrame.left		= rcBounds.left;
-		pHeader->rclFrame.top		= rcBounds.top;
-		pHeader->rclFrame.right		= rcBounds.right;
-		pHeader->rclFrame.bottom	= rcBounds.bottom;
-
-		pHeader->dSignature			= 0x464D4520;
-		pHeader->nVersion			= 0x00010000;
-		pHeader->nBytes				= cbSize;
-
-		pHeader->nRecords			= 1;
-		pHeader->nHandles			= 0;
-
-		pHeader->sReserved			= 0;
-
-		pHeader->nDescription		= 0;
-		pHeader->offDescription		= 0;
-
-		pHeader->nPalEntries		= 0;
-
-		pHeader->szlDevice.cx		= 200;
-		pHeader->szlDevice.cy		= 200;
-
-		// нужно перевести в мм
-		pHeader->szlMillimeters.cx	= 100;
-		pHeader->szlMillimeters.cy	= 100;
-	}
-
-	void ToWMFHeader(Gdiplus::WmfPlaceableFileHeader* pHeader)
-	{
-		if (NULL == pHeader)
-			return;
-
-		pHeader->Key				= 0x9AC6CDD7;
-		pHeader->Hmf				= 0;
-
-		pHeader->BoundingBox.Left	= (short)rcBounds.left;
-		pHeader->BoundingBox.Top	= (short)rcBounds.top;
-		pHeader->BoundingBox.Right	= (short)rcBounds.right;
-		pHeader->BoundingBox.Bottom = (short)rcBounds.bottom;
-
-		pHeader->Inch				= 1440; // 1:1
-		pHeader->Reserved			= 0;
-
-		pHeader->Checksum			= 0;
-		pHeader->Checksum			^= (pHeader->Key & 0x0000FFFFL);
-		pHeader->Checksum			^= ((pHeader->Key & 0xFFFF0000L) >> 16);
-		
-		pHeader->Checksum			^= pHeader->Hmf; 
-		
-		pHeader->Checksum			^= pHeader->BoundingBox.Left;
-		pHeader->Checksum			^= pHeader->BoundingBox.Top; 
-		pHeader->Checksum			^= pHeader->BoundingBox.Right;
-		pHeader->Checksum			^= pHeader->BoundingBox.Bottom; 
-		
-		pHeader->Checksum			^= pHeader->Inch;
-		pHeader->Checksum			^= (pHeader->Reserved & 0x0000FFFFL);
-		pHeader->Checksum			^= ((pHeader->Reserved & 0xFFFF0000L) >> 16);
-	}
+	void ToEMFHeader	(Gdiplus::ENHMETAHEADER3* pHeader);
+	void ToWMFHeader	(Gdiplus::WmfPlaceableFileHeader* pHeader);	
+	void ToPICTHeader	(BYTE *& pHeader, int & size);
 };
 
 class CMetaFileBuffer

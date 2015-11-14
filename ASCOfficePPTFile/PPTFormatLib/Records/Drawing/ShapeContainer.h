@@ -26,8 +26,8 @@
 
 const double EMU_MM = 36000;
 
-#define		FIXED_POINT(val) (double)((short)(val >> 16) + ((short)(val) / 65536.0));
-
+#define		FIXED_POINT(val) (double)((short)(val >> 16) + ((short)(val) / 65536.0))
+#define		FIXED_POINT_unsigned(val) (double)((WORD)(val >> 16) + ((WORD)(val) / 65536.0))
 
 using namespace NSOfficeDrawing;
 using namespace NSPresentationEditor;
@@ -466,26 +466,20 @@ public:
 			{//value (int) from 0x00000088 through 0x0000009F or complex
 			}break;
 		case fillShadeColors:
-			{//array of colors
-				struct _a
-				{
-					_INT32	color;
-					_INT32 position;
-				};
-				std::vector<_a> colors;
-				
-				unsigned short nElems;
-				
-				nElems = pProperty->m_lValue;
+			{
+				unsigned short nElems = pProperty->m_lValue/8;
                 _INT32* pCompl = (_INT32*)pProperty->m_pOptions;
+				
 				while(nElems--)
 				{
-					_a a1;
-                    a1.color	= *pCompl; pCompl++;
-                    a1.position = *pCompl; pCompl++;
-					colors.push_back(a1);
+					CColor color;
+  					SColorAtom oAtom;
+					oAtom.FromValue(*pCompl);	pCompl++;                    
+					oAtom.ToColor(&color);
+						
+					DWORD dwPosition = *pCompl; pCompl++;
+					pElement->m_oBrush.ColorsPosition.push_back(std::pair<CColor, double>(color, 100. * FIXED_POINT_unsigned(dwPosition)));
 				}
-
 			}break;
 		case fNoFillHitTest:
 			{
@@ -1252,6 +1246,9 @@ public:
 		if (0 == oArrayShape.size())
 			return;
 
+		std::vector<CRecordPlaceHolderAtom*> oArrayPlaceHolder;
+		GetRecordsByType(&oArrayPlaceHolder, true, true);
+
 		std::vector<CRecordShapeProperties*> oArrayOptions;
 		GetRecordsByType(&oArrayOptions, true, /*true*/false/*secondary & tetriary*/);
 
@@ -1273,34 +1270,39 @@ public:
 					{
 						lMasterID = oArrayOptions[0]->m_oProperties.m_arProperties[i].m_lValue;
 
-                        if (pLayout)
+						if (pLayout && !oArrayPlaceHolder.empty())
                         {
+							int placeholder_type	= oArrayPlaceHolder[0]->m_nPlacementID;
+							int placeholder_id		= oArrayPlaceHolder[0]->m_nPosition;
+
                             size_t nIndexMem = pLayout->m_arElements.size();
 
                             for (size_t nIndex = 0; nIndex < nIndexMem; ++nIndex)
                             {
-                                if (elType == pLayout->m_arElements[nIndex]->m_etType)
-                                {
-
+                                if ((placeholder_type == pLayout->m_arElements[nIndex]->m_lPlaceholderType )  &&
+									(	placeholder_id < 0 || pLayout->m_arElements[nIndex]->m_lPlaceholderID < 0 || 
+										placeholder_id == pLayout->m_arElements[nIndex]->m_lPlaceholderID))
+								{
 									if (pLayout->m_arElements[nIndex]->m_bPlaceholderSet == false)
 									{
-										pElementLayout = pLayout->m_arElements[nIndex]; //для переноса настроек
-										pElementLayout->m_lID = lMasterID;
-									}                
-									if (lMasterID == pLayout->m_arElements[nIndex]->m_lID)
-									{
-										*ppElement = pLayout->m_arElements[nIndex]->CreateDublicate();								
+										pElementLayout			= pLayout->m_arElements[nIndex]; //для переноса настроек
+										pElementLayout->m_lID	= lMasterID;
 
-										if (elType == etShape)
-										{
-											CShapeElement* pShape = dynamic_cast<CShapeElement*>(*ppElement);
-											if (NULL != pShape)
-												pShape->m_oShape.m_oText.m_arParagraphs.clear();
-										}
-	              
-										break;
+										if (placeholder_id >= 0 && pLayout->m_arElements[nIndex]->m_lPlaceholderID < 0 )
+											pLayout->m_arElements[nIndex]->m_lPlaceholderID = placeholder_id;
+									}  
+
+									*ppElement = pLayout->m_arElements[nIndex]->CreateDublicate();								
+
+									if (elType == etShape)
+									{
+										CShapeElement* pShape = dynamic_cast<CShapeElement*>(*ppElement);
+										if (NULL != pShape)
+											pShape->m_oShape.m_oText.m_arParagraphs.clear();
 									}
-                                }
+              
+									break;
+								}
                             }
                         }
 						break;
@@ -1431,8 +1433,6 @@ public:
 		std::wstring strShapeText;
 //------------------------------------------------------------------------------------------------		
 		// placeholders
-		std::vector<CRecordPlaceHolderAtom*> oArrayPlaceHolder;
-		GetRecordsByType(&oArrayPlaceHolder, true, true);
 		if (0 < oArrayPlaceHolder.size())
 		{
 			pElem->m_bLine					= false; //по умолчанию у них нет линий
@@ -1451,8 +1451,16 @@ public:
 		if (0 < oArrayHFPlaceholder.size())
 		{
 			pElem->m_lPlaceholderType	= oArrayHFPlaceholder[0]->m_nPlacementID;//PT_MasterDate, PT_MasterSlideNumber, PT_MasterFooter, or PT_MasterHeader
-			
 			CorrectPlaceholderType(pElem->m_lPlaceholderType);
+			
+			if (pLayout)
+			{
+				std::multimap<int, int>::iterator it = pLayout->m_mapPlaceholders.find(pElem->m_lPlaceholderType);
+				if (it != pLayout->m_mapPlaceholders.end())
+				{
+					pElem->m_lPlaceholderID = pLayout->m_arElements[it->second]->m_lPlaceholderID;
+				}
+			}
 		}
 		//meta placeholders
 		std::vector<CRecordFooterMetaAtom*> oArrayFooterMeta;
@@ -2121,6 +2129,13 @@ protected:
 				
 				if (0 <= nIndexType && nIndexType < 9 && pLayout)
 				{
+					if (eTypeOwn == NSOfficePPT::HalfBody || eTypeOwn == NSOfficePPT::QuarterBody)
+					{
+						if (pThemeWrapper->m_pStyles[1].IsInit())//body -> (560).ppt
+						{
+							pTextSettings->m_oStyles.ApplyAfter(pThemeWrapper->m_pStyles[1].get());
+						}
+					}
 					if (pThemeWrapper->m_pStyles[nIndexType].IsInit())
 					{
 						pTextSettings->m_oStyles.ApplyAfter(pThemeWrapper->m_pStyles[nIndexType].get());

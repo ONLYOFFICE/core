@@ -58,12 +58,12 @@ void CRecordOfficeArtBlip::ReadFromStream(SRecordHeader & oHeader, POLE::Stream*
 				oMetaFile.m_sExtension	= L".wmf";
 				
 				CMetaHeader oMetaHeader;
-				oMetaHeader.FromStream(pStream);
+				oMetaHeader.FromStream(pStream); 
 				Gdiplus::WmfPlaceableFileHeader oWmfHeader;
 				oMetaHeader.ToWMFHeader(&oWmfHeader);
 				
 				LONG lLenHeader = 22;
-				BYTE* pMetaHeader = new BYTE[lLenHeader];
+				BYTE* pMetaHeader = new BYTE[lLenHeader]; // удалится в oMetaFile
 				memcpy(pMetaHeader, (void*)(&oWmfHeader), lLenHeader);
 
 				oMetaFile.SetHeader(pMetaHeader, lLenHeader);
@@ -74,35 +74,30 @@ void CRecordOfficeArtBlip::ReadFromStream(SRecordHeader & oHeader, POLE::Stream*
 				oMetaFile.SetData(pData, oMetaHeader.cbSave, oMetaHeader.cbSize, (bool)(oMetaHeader.compression != 0xFE) );
 
 			}break;
-			case RECORD_TYPE_ESCHER_BLIP_PICT://Medwoche.ppt 
+			case RECORD_TYPE_ESCHER_BLIP_PICT://Medwoche.ppt , (483)
 			{
 				if		(0x0542 == oHeader.RecInstance)	lOffset = 16;
 				else if (0x0543 == oHeader.RecInstance)	lOffset = 32;
 
 				StreamUtils::StreamSkip(lOffset, pStream);
+
 				lOffset += 34;
 
 				oMetaFile.m_bIsValid	= TRUE;
-				oMetaFile.m_sExtension	= L".wmf";
+				oMetaFile.m_sExtension	= L".pct";
 				
 				CMetaHeader oMetaHeader;
-				oMetaHeader.FromStream(pStream);
+				oMetaHeader.FromStream(pStream); 
 				
-				//TODOOO сделать поддрежку mac pict !!
-
-				//Gdiplus::WmfPlaceableFileHeader oWmfHeader;
-				//oMetaHeader.ToWMFHeader(&oWmfHeader);
-				
-				//LONG lLenHeader = 22;
-				//BYTE* pMetaHeader = new BYTE[lLenHeader];
-				//memcpy(pMetaHeader, (void*)(&oWmfHeader), lLenHeader);
-
+				//int lLenHeader = 512;
+				//BYTE* pMetaHeader = new BYTE[lLenHeader]; // удалится в oMetaFile
+				//
+				//oMetaHeader.ToPICTHeader(pMetaHeader, lLenHeader);
 				//oMetaFile.SetHeader(pMetaHeader, lLenHeader);
 
 				BYTE* pData = new BYTE[oHeader.RecLen - lOffset];
 				pStream->read(pData, oHeader.RecLen - lOffset); 
 
-				
 				oMetaFile.SetData(pData, oMetaHeader.cbSave, oMetaHeader.cbSize, (bool)(oMetaHeader.compression != 0xFE) );
 			}break;
 			case RECORD_TYPE_ESCHER_BLIP_JPEG:

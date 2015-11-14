@@ -607,3 +607,170 @@ namespace NSPresentationEditor
 		}
 	}
 }
+//------------------------------------------------------------------------------------
+void CMetaHeader::FromStream(POLE::Stream* pStream)
+{
+	cbSize			= StreamUtils::ReadDWORD(pStream);
+	
+	rcBounds.left	= StreamUtils::ReadLONG(pStream);
+	rcBounds.top	= StreamUtils::ReadLONG(pStream);
+	rcBounds.right	= StreamUtils::ReadLONG(pStream);
+	rcBounds.bottom = StreamUtils::ReadLONG(pStream);
+
+	ptSize.x		= StreamUtils::ReadLONG(pStream);
+	ptSize.y		= StreamUtils::ReadLONG(pStream);
+
+	cbSave			= StreamUtils::ReadDWORD(pStream);
+
+	compression		= StreamUtils::ReadBYTE(pStream);
+	filter			= StreamUtils::ReadBYTE(pStream);
+}
+
+void CMetaHeader::ToEMFHeader(Gdiplus::ENHMETAHEADER3* pHeader)
+{
+	if (NULL == pHeader)
+		return;
+
+	pHeader->iType				= 0x00000001;
+	pHeader->nSize				= 88;
+
+	pHeader->rclBounds.left		= rcBounds.left;
+	pHeader->rclBounds.top		= rcBounds.top;
+	pHeader->rclBounds.right	= rcBounds.right;
+	pHeader->rclBounds.bottom	= rcBounds.bottom;
+
+	// нужно перевести в мм
+	pHeader->rclFrame.left		= rcBounds.left;
+	pHeader->rclFrame.top		= rcBounds.top;
+	pHeader->rclFrame.right		= rcBounds.right;
+	pHeader->rclFrame.bottom	= rcBounds.bottom;
+
+	pHeader->dSignature			= 0x464D4520;
+	pHeader->nVersion			= 0x00010000;
+	pHeader->nBytes				= cbSize;
+
+	pHeader->nRecords			= 1;
+	pHeader->nHandles			= 0;
+
+	pHeader->sReserved			= 0;
+
+	pHeader->nDescription		= 0;
+	pHeader->offDescription		= 0;
+
+	pHeader->nPalEntries		= 0;
+
+	pHeader->szlDevice.cx		= 200;
+	pHeader->szlDevice.cy		= 200;
+
+	// нужно перевести в мм
+	pHeader->szlMillimeters.cx	= 100;
+	pHeader->szlMillimeters.cy	= 100;
+}
+
+void CMetaHeader::ToWMFHeader(Gdiplus::WmfPlaceableFileHeader* pHeader)
+{
+	if (NULL == pHeader)
+		return;
+
+	pHeader->Key				= 0x9AC6CDD7;
+	pHeader->Hmf				= 0;
+
+	pHeader->BoundingBox.Left	= (short)rcBounds.left;
+	pHeader->BoundingBox.Top	= (short)rcBounds.top;
+	pHeader->BoundingBox.Right	= (short)rcBounds.right;
+	pHeader->BoundingBox.Bottom = (short)rcBounds.bottom;
+
+	pHeader->Inch				= 1440; // 1:1
+	pHeader->Reserved			= 0;
+
+	pHeader->Checksum			= 0;
+	pHeader->Checksum			^= (pHeader->Key & 0x0000FFFFL);
+	pHeader->Checksum			^= ((pHeader->Key & 0xFFFF0000L) >> 16);
+	
+	pHeader->Checksum			^= pHeader->Hmf; 
+	
+	pHeader->Checksum			^= pHeader->BoundingBox.Left;
+	pHeader->Checksum			^= pHeader->BoundingBox.Top; 
+	pHeader->Checksum			^= pHeader->BoundingBox.Right;
+	pHeader->Checksum			^= pHeader->BoundingBox.Bottom; 
+	
+	pHeader->Checksum			^= pHeader->Inch;
+	pHeader->Checksum			^= (pHeader->Reserved & 0x0000FFFFL);
+	pHeader->Checksum			^= ((pHeader->Reserved & 0xFFFF0000L) >> 16);
+}
+
+#define CLIPSIZE 12
+#define PIXMAPRECSIZE 50
+#define HEADERSIZE 40
+#define MAXCOLORTABLESIZE 256*8+8
+#define OPCODEMISCSIZE 2+8+8+2	/* opcode+srcRect+dstRect+mode */
+#define ENDOFPICTSIZE 2
+#define PICSIZE PIXMAPRECSIZE + HEADERSIZE + MAXCOLORTABLESIZE + ENDOFPICTSIZE + OPCODEMISCSIZE + CLIPSIZE
+
+void CMetaHeader::ToPICTHeader(BYTE *& pHeader, int & size)
+{
+	short 		myRowBytes;
+	short 		*picPtr;
+	short 		iii;
+	long 		handleSize;
+
+	myRowBytes = cbSize & 0x3fff; 
+
+
+ //Skip picSize and put out picFrame (10 bytes). 
+	picPtr = (short *) pHeader;
+	
+	*picPtr++ = (short)myRowBytes;
+	
+	*picPtr++ = (short)rcBounds.top;
+	*picPtr++ = (short)rcBounds.left;
+	*picPtr++ = (short)rcBounds.bottom;
+	*picPtr++ = (short)rcBounds.right;
+
+// Put out header (30 bytes). This could be done from a resource or taken from an existing picture.
+	*picPtr++ = 0x11;		/* Version opcode. */
+	*picPtr++ = 0x2ff;	/* Version number. */
+	*picPtr++ = 0xC00;	/* Header opcode. */
+	*picPtr++ = 0xFFFF;	/* Put out PICT header version. */
+	*picPtr++ = 0xFFFF;
+ //The rest of the header is ignored--0 it out. 
+	for(int iii = 10; iii > 0; iii--)
+		*picPtr++ = 0;		/* Write out 24 bytes of 0. */
+
+	/* Put out current port's clip region. */
+	*picPtr++ = 0x01;
+	*picPtr++ = 0x0A;		/* Clip region only has bounds rectangle. */
+	*picPtr++ = (short)rcBounds.top;
+	*picPtr++ = (short)rcBounds.left;
+	*picPtr++ = (short)rcBounds.bottom;
+	*picPtr++ = (short)rcBounds.right;
+
+	//filter ???
+	//if(srcBits->pixelType == RGBDirect)
+	//{			/* Must be 32-bits/pixel */
+	///* Put out opCode $9A, DirectBitsRect. */
+		*picPtr++ = 0x9A;
+
+
+	//	*picPtr++ = 0;	/* BaseAddr for direct pixMaps is 0x000000FF. */
+	//	*picPtr++ = 0xFF;
+	//	PutOutPixMapSrcRectDstRectAndMode(srcBits, &picPtr, srcRect, 
+	//		dstRect, mode);
+	//	if(PutOutPackedDirectPixData(srcBits, &picPtr))		/* Nonzero 
+	//		indicates an error. */
+	//		goto errorExit;
+	//}
+	//else
+	//{
+	/* Put out opCode $98, PackBitsRect. */
+		//*picPtr++ = 0x98;
+		//PutOutPixMapSrcRectDstRectAndMode(srcBits, &picPtr, srcRect, dstRect, mode);
+		//if(PutOutPackedIndexedPixData(srcBits, &picPtr))
+		//{
+		//	/* Nonzero indicates an error. */
+		//}
+							
+	//}
+	int sz = ((BYTE*)picPtr - pHeader);
+	size = sz;
+}

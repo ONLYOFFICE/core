@@ -476,8 +476,11 @@ namespace NSPresentationEditor
 			}
 			else
 			{
-				if (pElement->m_lPlaceholderType == NSOfficePPT::MasterDate)
-					pShape->SetUpTextPlaceholder(L"*");	//поле
+				if (pElement->m_lPlaceholderType == NSOfficePPT::MasterDate && pElement->m_nFormatDate == 1)
+				{
+					std::wstring current_date = L"11.11.2015";
+					pShape->SetUpTextPlaceholder(current_date);
+				}
 			}
 		}
 

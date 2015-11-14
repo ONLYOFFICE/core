@@ -325,12 +325,30 @@ CString	NSPresentationEditor::CShapeWriter::ConvertBrush(CBrush & brush)
 				brush.Type == c_BrushTypeHorizontal		||
 				brush.Type == c_BrushTypeVertical		) 
 	{
-		brush_writer.WriteString(std::wstring(L"<a:gradFill>"));
-			brush_writer.WriteString(std::wstring(L"<a:gsLst><a:gs pos=\"0\">"));
+		brush_writer.WriteString(std::wstring(L"<a:gradFill><a:gsLst>"));
+		if (brush.ColorsPosition.empty() == false)
+		{
+			for (int i = 0; i < brush.ColorsPosition.size(); i++)
+			{
+				CString strPos; strPos.Format(L"%d", (int)(brush.ColorsPosition[i].second * 1000));
+				
+				brush_writer.WriteString(std::wstring(L"<a:gs pos=\"") + string2std_string(strPos)+ L"\">");
+					brush_writer.WriteString(ConvertColor(brush.ColorsPosition[i].first, 255));
+				brush_writer.WriteString(std::wstring(L"</a:gs>"));	
+			}
+		}
+		else
+		{
+			brush_writer.WriteString(std::wstring(L"<a:gs pos=\"0\">"));
 				brush_writer.WriteString(ConvertColor(brush.Color1, brush.Alpha1));
-			brush_writer.WriteString(std::wstring(L"</a:gs><a:gs pos=\"100000\">"));
+			brush_writer.WriteString(std::wstring(L"</a:gs>"));
+			
+			brush_writer.WriteString(std::wstring(L"<a:gs pos=\"100000\">"));
 				brush_writer.WriteString(ConvertColor(brush.Color2, brush.Alpha2));
-			brush_writer.WriteString(std::wstring(L"</a:gs></a:gsLst><a:lin ang=\"5400000\" scaled=\"1\"/>"));
+			brush_writer.WriteString(std::wstring(L"</a:gs>"));
+		}
+		brush_writer.WriteString(std::wstring(L"</a:gsLst>"));
+		brush_writer.WriteString(std::wstring(L"<a:lin ang=\"5400000\" scaled=\"1\"/>"));
 		brush_writer.WriteString(std::wstring(L"</a:gradFill>"));
 	}
 	else if(brush.Type == c_BrushTypePattern)
@@ -925,25 +943,20 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 				}
 			}
 
-			if (pParagraph->m_arSpans[nSpan].m_strText.empty()) continue;
-
 			NSPresentationEditor::CTextCFRun* pCF = &pParagraph->m_arSpans[nSpan].m_oRun;
-
-			bool bIsBr  = false;
 			int span_sz = pParagraph->m_arSpans[nSpan].m_strText.length() ;
-			if ((span_sz==1 && ( pParagraph->m_arSpans[nSpan].m_strText[0] == (TCHAR)13 )) ||
+
+			if	((span_sz==1 && ( pParagraph->m_arSpans[nSpan].m_strText[0] == (TCHAR)13 )) ||
 				((span_sz==2 && ( pParagraph->m_arSpans[nSpan].m_strText[0] == (TCHAR)13 ) && ( pParagraph->m_arSpans[nSpan].m_strText[1] == (TCHAR)13 ))))
 			{
-				bIsBr=true;
+				continue;
 			}
-			
-			if (bIsBr)
-			{
-				//if (pParagraph->m_arSpans.size() < 2) 
-					continue;
 
-				CString strRun1 = _T("<a:br><a:rPr");
-				m_oWriter.WriteString(strRun1);
+			if (pParagraph->m_arSpans[nSpan].m_strText.empty() && !pParagraph->m_arSpans[nSpan].m_bBreak) continue;
+			
+			if (pParagraph->m_arSpans[nSpan].m_bBreak)
+			{
+				m_oWriter.WriteString(std::wstring(L"<a:br><a:rPr"));
 			}
 			else
 			{
@@ -1054,7 +1067,11 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 			}
 			m_oWriter.WriteString(std::wstring(L"</a:rPr>"));
 
-			if (!bIsBr)
+			if (pParagraph->m_arSpans[nSpan].m_bBreak)
+			{
+				m_oWriter.WriteString(std::wstring(L"</a:br>"));
+			}
+			else
 			{
 				CString strT1 = _T("<a:t>");
 				m_oWriter.WriteString(strT1);
@@ -1073,10 +1090,6 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 				}
 				else
 					m_oWriter.WriteString(std::wstring(L"</a:r>"));
-			}
-			else
-			{
-				m_oWriter.WriteString(std::wstring(L"</a:br>"));
 			}
 		}
 

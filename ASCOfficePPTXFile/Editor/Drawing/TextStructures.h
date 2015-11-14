@@ -313,14 +313,21 @@ namespace NSPresentationEditor
 			if (!hasBullet.is_init())			
 			{
 				hasBullet			= oSrc.hasBullet;
-
+			}
+			if (!bulletSize.is_init())
+			{
 				bulletSize			= oSrc.bulletSize;
+			}
+			if (!bulletChar.is_init())//master style (78).ppt
+			{
 				bulletChar			= oSrc.bulletChar;
 				bulletFontRef		= oSrc.bulletFontRef;
-				bulletColor			= oSrc.bulletColor;
-				
-				bulletFontProperties.reset();
 			}
+			if (!bulletColor.is_init())
+			{
+				bulletColor			= oSrc.bulletColor;				
+			}
+			bulletFontProperties.reset();
 
 			if (!textAlignment.is_init())			textAlignment = oSrc.textAlignment;
 			if (!lineSpacing.is_init())				lineSpacing = oSrc.lineSpacing;
@@ -602,8 +609,9 @@ namespace NSPresentationEditor
 		CTextCFRun			m_oRun;
 		std::wstring		m_strText;
 		bool				m_bField;
+		bool				m_bBreak;
 
-		CSpan() : m_oRun(), m_strText(_T("")), m_bField(false)
+		CSpan() : m_oRun(), m_strText(_T("")), m_bField(false), m_bBreak(false)
 		{
 		}
 		CSpan(const CSpan& oSrc)
@@ -615,6 +623,7 @@ namespace NSPresentationEditor
 			m_oRun		= oSrc.m_oRun;
 			m_strText	= oSrc.m_strText;
 			m_bField	= oSrc.m_bField;
+			m_bBreak	= oSrc.m_bBreak;
 
 			return *this;
 		}

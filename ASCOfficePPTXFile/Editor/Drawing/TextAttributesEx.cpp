@@ -8,19 +8,17 @@ namespace NSPresentationEditor
 	{
 		for (int i = 0; i < m_arParagraphs.size(); ++i)
 		{
-			bool bIsBreak	= true;
-			int lCountCFs	= m_arParagraphs[i].m_arSpans.size();
-			for (int j = 0; j < lCountCFs; ++j)
+			bool split_paragraph = false;
+			for (int j = 0; j < m_arParagraphs[i].m_arSpans.size(); ++j)
 			{
+				int lCountCFs	= m_arParagraphs[i].m_arSpans.size();
 				int s_size		= m_arParagraphs[i].m_arSpans[j].m_strText.length();
 				
-				int lFound1		= m_arParagraphs[i].m_arSpans[j].m_strText.find((TCHAR)13);
-				int lFound2		= m_arParagraphs[i].m_arSpans[j].m_strText.find((TCHAR)11);
+				int lFoundEnter = m_arParagraphs[i].m_arSpans[j].m_strText.find((TCHAR)13);
 
-				int lFoundEnter = (lFound1>=0 && lFound2>=0) ? (std::min)(lFound1, lFound2) : (lFound1>=0 ? lFound1 : (lFound2>=0 ? lFound2 : -1));
-
-				if( lFoundEnter >= 0 && (s_size > 1 || (s_size == 1 && m_arParagraphs[i].m_arSpans.size() > 1)))
-				{//"поделенный" параграф имеет единичный span - ваще то все равно остается возможность ошибки
+				if( !split_paragraph && lFoundEnter >= 0 && (s_size > 1 || (s_size == 1 && m_arParagraphs[i].m_arSpans.size() > 1)))
+				{
+					split_paragraph = true;
 					// разбиваем параграф
 					CParagraph oNewPar = m_arParagraphs[i];
 
@@ -42,12 +40,34 @@ namespace NSPresentationEditor
 
 					if (0 != oNewPar.m_arSpans.size())
 						m_arParagraphs.insert(m_arParagraphs.begin() +i + 1, oNewPar);	
-
-					break;
 				}
-				else
+
+				int lFoundBreak = m_arParagraphs[i].m_arSpans[j].m_strText.find((TCHAR)11);
+				if( lFoundBreak >= 0)
 				{
-					bIsBreak = false;
+					// разбиваем span
+					CSpan next	= m_arParagraphs[i].m_arSpans[j];
+					
+					next.m_strText								= next.m_strText.substr(lFoundBreak + 1);
+					m_arParagraphs[i].m_arSpans[j].m_strText	= m_arParagraphs[i].m_arSpans[j].m_strText.substr(0, lFoundBreak - 1);
+		
+					if( lFoundBreak == 0)
+					{
+						m_arParagraphs[i].m_arSpans[j].m_strText.clear();
+						m_arParagraphs[i].m_arSpans[j].m_bBreak	= true;
+
+						m_arParagraphs[i].m_arSpans.insert( m_arParagraphs[i].m_arSpans.begin() + j + 1 , next);
+					}
+					else
+					{
+						CSpan br		= m_arParagraphs[i].m_arSpans[j];
+						br.m_strText.clear(); 
+						br.m_bBreak		= true;
+						
+						m_arParagraphs[i].m_arSpans.insert(	m_arParagraphs[i].m_arSpans.begin() + j	+ 1	, br);
+						m_arParagraphs[i].m_arSpans.insert( m_arParagraphs[i].m_arSpans.begin() + j + 2 , next);
+						j++;
+					}
 				}
 			}
 		}

@@ -568,7 +568,7 @@ void CPPTUserInfo::LoadSlide(DWORD dwSlideID, CSlide* pSlide)
 	std::vector<CRecordHeadersFootersContainer*> oArrayHeadersFootersInfo;
 	pRecordSlide->GetRecordsByType(&oArrayHeadersFootersInfo, true, false);
 
-	if (0 != oArrayHeadersFootersInfo.size())
+	if (!oArrayHeadersFootersInfo.empty())
 	{
 		if (oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom)
 		{
@@ -639,12 +639,16 @@ void CPPTUserInfo::LoadSlide(DWORD dwSlideID, CSlide* pSlide)
 			{
 				pSlide->m_arElements.push_back(pElement);
 			}
+			if ( pElement->m_lPlaceholderType >0)
+			{
+				pSlide->m_mapPlaceholders.insert(std::pair<int, int>(pElement->m_lPlaceholderType, pSlide->m_arElements.size()-1)); 
+			}
 		}
 	}
 	
 	//даты и номера могут быть и не только в колонтитулах
 	//todooo ... возможно нужно все перенести плейсхолдеры без ID a-la как в AddLayout
-
+	
 	AddLayoutSlidePlaceholder(pSlide, MasterSlideNumber	, pLayout); 
 	AddLayoutSlidePlaceholder(pSlide, MasterDate		, pLayout);
 	
@@ -697,7 +701,7 @@ IElement* CPPTUserInfo::AddLayoutSlidePlaceholder (CSlide *pSlide, int placehold
 				if (pElement == NULL)
 				{
 					pElement = pLayout->m_arElements[it->second]->CreateDublicate();
-					
+
 					pSlide->m_arElements.push_back(dynamic_cast<IElement*>(pElement));
 					pSlide->m_mapPlaceholders.insert(std::pair<int, int>(placeholderType, pSlide->m_arElements.size()-1)); 
 				}
@@ -739,10 +743,7 @@ IElement* CPPTUserInfo::AddNewLayoutPlaceholder (CLayout *pLayout, int placehold
 	pShape->m_lPlaceholderType			= placeholderType;
 	pShape->m_lPlaceholderSizePreset	= placeholderSizePreset;
 	
-	//if (pShape->m_lPlaceholderSizePreset > 0)
-	//	pShape->m_bPlaceholderSet		= true;
-	//else
-		pShape->m_bPlaceholderSet		= false;
+	pShape->m_bPlaceholderSet			= false;
 	pShape->m_bLine						= false;
 	pShape->m_bBoundsEnabled			= false;
 
@@ -845,10 +846,8 @@ int CPPTUserInfo::AddNewLayout(CTheme* pTheme, CRecordSlide* pRecordSlide, bool 
 
 	//копируем все элементы без idx которые не были прописаны явно
 	for (std::multimap<int, int>::iterator it = pTheme->m_mapPlaceholders.begin(); it != pTheme->m_mapPlaceholders.end(); it++)
-	{
-		IElement *pElemTheme = pTheme->m_arElements[it->second]->CreateDublicate();
-		
-		if (pElemTheme->m_lPlaceholderID >= 0) continue;
+	{		
+		if (pTheme->m_arElements[it->second]->m_lPlaceholderID >= 0) continue;
 
 		bool found = false;
 		for (std::multimap<int, int>::iterator it1 = pLayout->m_mapPlaceholders.begin(); it1 != pLayout->m_mapPlaceholders.end(); it1++)
@@ -856,7 +855,7 @@ int CPPTUserInfo::AddNewLayout(CTheme* pTheme, CRecordSlide* pRecordSlide, bool 
 			if (it1->first == it->first)
 			{
 				IElement* pElemLayout = pLayout->m_arElements[it1->second];
-				if (pElemLayout->m_lPlaceholderID == pElemTheme->m_lPlaceholderID)
+				if (pElemLayout->m_lPlaceholderID == pTheme->m_arElements[it->second]->m_lPlaceholderID)
 				{
 					found = true;
 					break;
@@ -865,6 +864,8 @@ int CPPTUserInfo::AddNewLayout(CTheme* pTheme, CRecordSlide* pRecordSlide, bool 
 		}
 		if (found == false)
 		{
+			IElement *pElemTheme = pTheme->m_arElements[it->second]->CreateDublicate();
+		
 			pLayout->m_arElements.push_back(dynamic_cast<IElement*>(pElemTheme));
 			pLayout->m_mapPlaceholders.insert(std::pair<int, int>(it->first, pLayout->m_arElements.size()-1)); 
 		}
@@ -893,10 +894,7 @@ IElement* CPPTUserInfo::AddNewThemePlaceholder (CTheme* pTheme, int placeholderT
 	pShape->m_lPlaceholderType			= placeholderType;
 	pShape->m_lPlaceholderSizePreset	= placeholderSizePreset;
 	
-	//if (pShape->m_lPlaceholderSizePreset > 0)
-	//	pShape->m_bPlaceholderSet		= true;
-	//else
-		pShape->m_bPlaceholderSet		= false;
+	pShape->m_bPlaceholderSet			= false;
 	pShape->m_bLine						= false;
 	pShape->m_bBoundsEnabled			= false;
 
@@ -1142,34 +1140,6 @@ void CPPTUserInfo::LoadMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, co
 				pTheme->m_mapPlaceholders.insert(std::pair<int, int>(pElement->m_lPlaceholderType, pTheme->m_arElements.size()-1)); 
 			}
 		}
-	}
-
-	if (pTheme->m_bHasSlideNumber)
-	{
-		IElement *pElement = NULL;
-		if (pTheme->m_mapPlaceholders.find(MasterSlideNumber) == pTheme->m_mapPlaceholders.end())
-		{
-			pElement = AddNewThemePlaceholder(pTheme, MasterSlideNumber, 2);
-		}
-	}
-	if (pTheme->m_bHasDate)
-	{
-		IElement *pElement = NULL;
-		if (pTheme->m_mapPlaceholders.find(MasterDate) == pTheme->m_mapPlaceholders.end() && pTheme->m_nFormatDate == 1)
-		{
-			pElement = AddNewThemePlaceholder(pTheme, MasterDate, 2); 
-		}
-
-	}
-
-	if (pTheme->m_bHasFooter)
-	{
-		IElement *pElement = NULL;
-		if (pTheme->m_mapPlaceholders.find(MasterFooter) == pTheme->m_mapPlaceholders.end())
-		{
-			pElement = AddNewThemePlaceholder(pTheme, MasterFooter, 1);
-		}		
-
 	}
 }
 
@@ -1644,8 +1614,11 @@ void CPPTUserInfo::LoadExternal(CRecordExObjListContainer* pExObjects)
 			NSPresentationEditor::CExFilesInfo oInfo;
 
 			oInfo.m_dwID			= oArrayHyperlink[0]->m_nHyperlinkID;
-			oInfo.m_strFilePath		= oArrayCString[0]->m_strText;
-
+			for (int i = 0 ; i < oArrayCString.size(); i++)
+			{
+				if (oArrayCString[i]->m_oHeader.RecInstance == 1)
+					oInfo.m_strFilePath		= oArrayCString[i]->m_strText;
+			}
 			m_oExMedia.m_arHyperlinks.push_back(oInfo);
 		}
 	}

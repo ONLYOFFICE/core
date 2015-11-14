@@ -576,6 +576,9 @@ void NSPresentationEditor::CPPTXWriter::WriteThemes()
 		{
 			if (isBodyPlaceholder(pTheme->m_arElements[nEl]->m_lPlaceholderType))
 				pTheme->m_arElements[nEl]->m_lPlaceholderType =100; //body тип прописывать !!
+
+			if (pTheme->m_arElements[nEl]->m_bBoundsEnabled == false)
+				continue;
 			
 			WriteElement(oWriter, oRels, pTheme->m_arElements[nEl]);
 		}
@@ -598,6 +601,16 @@ void NSPresentationEditor::CPPTXWriter::WriteThemes()
 		}
 
 		oWriter.WriteString(std::wstring(L"</p:sldLayoutIdLst>"));
+
+		if (pTheme->m_bHasDate || pTheme->m_bHasFooter || pTheme->m_bHasSlideNumber)
+		{
+			oWriter.WriteString(std::wstring(L"<p:hf"));
+			if (!pTheme->m_bHasDate)		oWriter.WriteString(std::wstring(L" dt=\"0\""));
+			if (!pTheme->m_bHasSlideNumber) oWriter.WriteString(std::wstring(L" sldNum=\"0\""));
+											oWriter.WriteString(std::wstring(L" hdr=\"0\""));
+			if (!pTheme->m_bHasFooter)		oWriter.WriteString(std::wstring(L" ftr=\"0\""));
+			oWriter.WriteString(std::wstring(L"/>"));
+		}
 
 		oWriter.WriteString(std::wstring(L"<p:txStyles>"));
 
@@ -749,6 +762,7 @@ void NSPresentationEditor::CPPTXWriter::WriteElement(CStringWriter& oWriter, CRe
 						(pElement->m_lPlaceholderID == pLayout->m_arElements[nIndex]->m_lPlaceholderID))
 					{
 						IElement* pElLayout = pLayout->m_arElements[nIndex];
+						
 						bool bIsEqualTransform = ((pElement->m_dRotate == pElLayout->m_dRotate) 
 							&& (pElement->m_bFlipH == pElLayout->m_bFlipH) && (pElement->m_bFlipV == pElLayout->m_bFlipV));
 

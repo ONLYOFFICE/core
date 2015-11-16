@@ -80,7 +80,7 @@ bool COfficeFileFormatChecker::isPdfFormatFile	(unsigned char* pBuffer,int dwByt
 }
 bool COfficeFileFormatChecker::isDocFormatFile	(POLE::Storage * storage)
 {
-	if (storage == false) return false;
+	if (storage == NULL) return false;
 
 	POLE::Stream stream(storage, "WordDocument");	
 	
@@ -92,7 +92,7 @@ bool COfficeFileFormatChecker::isDocFormatFile	(POLE::Storage * storage)
 }
 bool COfficeFileFormatChecker::isXlsFormatFile	(POLE::Storage * storage)
 {
-	if (storage == false) return false;
+	if (storage == NULL) return false;
 
 	POLE::Stream stream(storage, "Workbook");
 	
@@ -104,7 +104,7 @@ bool COfficeFileFormatChecker::isXlsFormatFile	(POLE::Storage * storage)
 }
 bool COfficeFileFormatChecker::isPptFormatFile	(POLE::Storage * storage)
 {
-	if (storage == false) return false;
+	if (storage == NULL) return false;
 
 	POLE::Stream stream(storage, "PowerPoint Document");	
 
@@ -116,7 +116,7 @@ bool COfficeFileFormatChecker::isPptFormatFile	(POLE::Storage * storage)
 }
 bool COfficeFileFormatChecker::isMS_OFFCRYPTOFormatFile	(POLE::Storage * storage)
 {
-    if (storage == false) return false;
+    if (storage == NULL) return false;
 
     std::list<std::string> entries = storage->entries("DataSpaces");
     if (entries.size() > 0)

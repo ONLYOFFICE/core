@@ -54,7 +54,6 @@
 #include <cstring>
 
 #include "pole.h"
-#include "../../DocxFormat/Source/Base/unicode_util.h"
 
 
 // enable to activate debugging output
@@ -291,85 +290,12 @@ using namespace POLE;
 
 #ifdef POLE_USE_UTF16_FILENAMES
 #else
-	static std::string stringWstingToUtf8String (const std::wstring& aaSrc)
-	{
-	#if defined(_WIN32) || defined(_WIN64)
-			//#error "Not implemented"
-			return "";
-	#else
 
-		std::wstring aSrc = aaSrc;
-		UTF32 *pStrUtf32 = (UTF32 *) &aSrc[0];
-
-		uint32_t nLength = aSrc.length();
-		uint32_t nDstLength = 4*nLength + 1;
-		UTF8 *pStrUtf8 = new UTF8 [nDstLength];
-		memset ((void *) pStrUtf8, 0, sizeof (UTF8) * (nDstLength));
-
-				// this values will be modificated
-				const UTF32 *pStrUtf32_Conv = pStrUtf32;
-				UTF8 *pStrUtf8_Conv = pStrUtf8;
-
-				ConversionResult eUnicodeConversionResult =
-						ConvertUTF32toUTF8 (&pStrUtf32_Conv,
-											 &pStrUtf32[nLength]
-						, &pStrUtf8_Conv
-						, &pStrUtf8 [nDstLength]
-						, strictConversion);
-
-				if (conversionOK != eUnicodeConversionResult)
-				{
-	//                delete [] pStrUtf8;
-	//                return "";
-				}
-
-				std::string wsEntryName ((char *) pStrUtf8);
-
-				delete [] pStrUtf8;
-				return wsEntryName;
-
-	#endif
-	}
-
-
-	static std::wstring stringUtf8ToWString (const std::string& aSrc)
-	{
-	#if defined(_WIN32) || defined (_WIN64)
-		//#error "You don't need to convert std::wstring to utf16 on Windows"
-		return false;
-	#else
-
-		uint32_t nLength = aSrc.length();
-
-		UTF32 *pStrUtf32 = new UTF32 [nLength+1];
-		memset ((void *) pStrUtf32, 0, sizeof (UTF32) * (nLength+1));
-
-
-		UTF8 *pStrUtf8 = (UTF8 *) &aSrc[0];
-
-				// this values will be modificated
-				const UTF8 *pStrUtf8_Conv = pStrUtf8;
-				UTF32 *pStrUtf32_Conv = pStrUtf32;
-
-				ConversionResult eUnicodeConversionResult =
-						ConvertUTF8toUTF32 (&pStrUtf8_Conv,
-											 &pStrUtf8[nLength]
-						, &pStrUtf32_Conv
-						, &pStrUtf32 [nLength]
-						, strictConversion);
-
-				if (conversionOK != eUnicodeConversionResult)
-				{
-					delete [] pStrUtf32;
-					return L"";
-				}
-				std::wstring wsEntryName ((wchar_t *) pStrUtf32);
-
-				delete [] pStrUtf32;
-				return wsEntryName;
-	#endif
-	}
-
+#include "../../../DesktopEditor/common/File.h"
+static std::string stringWToUtf8String (const std::wstring& aaSrc)
+{
+    return U_TO_UTF8(aaSrc);
+}
 
 #endif //POLE_USE_UTF16_FILENAMES
 
@@ -1365,9 +1291,9 @@ void StorageIO::load(bool bWriteAccess)
       file.open(filename.c_str(), std::ios::binary | std::ios::in);
 #else
   if (bWriteAccess)
-      file.open(stringWstingToUtf8String(filename), std::ios::binary | std::ios::in | std::ios::out);
+      file.open(stringWToUtf8String(filename), std::ios::binary | std::ios::in | std::ios::out);
   else
-      file.open(stringWstingToUtf8String(filename), std::ios::binary | std::ios::in);
+      file.open(stringWToUtf8String(filename), std::ios::binary | std::ios::in);
 #endif //defined(POLE_USE_UTF16_FILENAMES) && defined(POLE_WIN)
 
   if( !file.good() ) return;
@@ -1456,7 +1382,7 @@ void StorageIO::create()
 #if defined(POLE_USE_UTF16_FILENAMES)
   file.open(filename.c_str(), std::ios::binary | std::ios::in | std::ios::out | std::ios::trunc);
 #else
-  file.open( stringWstingToUtf8String(filename).c_str(), std::ios::binary | std::ios::in | std::ios::out | std::ios::trunc);
+  file.open( stringWToUtf8String(filename).c_str(), std::ios::binary | std::ios::in | std::ios::out | std::ios::trunc);
 #endif
   if( !file.good() )
   {

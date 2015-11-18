@@ -2083,6 +2083,8 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 		pShape->spPr.Geometry = oNodeG;
 
 		XmlUtils::CXmlNode oNodeTextBox;
+		
+		CString sTextboxStyle;
 		if (oNodeShape.GetNode(_T("v:textbox"), oNodeTextBox))
 		{
 			XmlUtils::CXmlNode oNodeContent;
@@ -2095,8 +2097,10 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 				ConvertTextVML(oNodeTextBox, pShape);
 			}
 
-			CString sTextInset = oNodeTextBox.GetAttribute(_T("inset"));
-			CString sTextInsetMode = oNodeTextBox.GetAttribute(_T("o:insetmode"));
+			CString sTextInset		= oNodeTextBox.GetAttribute(_T("inset"));
+			CString sTextInsetMode	= oNodeTextBox.GetAttribute(_T("o:insetmode"));
+					sTextboxStyle	= oNodeTextBox.GetAttribute(_T("style"));
+
 			if (_T("") != sTextInset && ((_T("") == sTextInsetMode) || (_T("custom") == sTextInsetMode)))
 			{
 				PPTX::CStringTrimmer oTrimmer;
@@ -2113,6 +2117,38 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 				pShape->TextBoxBodyPr->rIns = (int)(12700 * dTextMarginRight);
 				pShape->TextBoxBodyPr->bIns = (int)(12700 * dTextMarginBottom);
 			}
+
+            if (!sTextboxStyle.IsEmpty())
+            {
+                PPTX::CCSS oCSSParser;
+                oCSSParser.LoadFromString2(sTextboxStyle);
+
+                if (oCSSParser.m_mapSettings.size() > 0)
+                {
+                    std::map<CString, CString>::iterator pPair = oCSSParser.m_mapSettings.find(_T("layout-flow"));
+
+                    if (pPair != oCSSParser.m_mapSettings.end())
+                    {
+                        if (pPair->second == _T("vertical"))
+                        {
+                            pShape->TextBoxBodyPr->vert = new PPTX::Limit::TextVerticalType();
+                            pShape->TextBoxBodyPr->vert->set(L"vert");
+                        }
+                    }
+
+                    pPair = oCSSParser.m_mapSettings.find(_T("mso-layout-flow-alt"));
+                    if (pPair != oCSSParser.m_mapSettings.end())
+                    {
+                        if (pPair->second == _T("bottom-to-top"))
+                        {
+                            if (pShape->TextBoxBodyPr->vert.IsInit() == false)
+                                pShape->TextBoxBodyPr->vert = new PPTX::Limit::TextVerticalType();
+                            pShape->TextBoxBodyPr->vert->set(L"vert270");
+                        }
+                    }
+
+                }
+            }
 		}
 
 		XmlUtils::CXmlNode oNodeTextData;

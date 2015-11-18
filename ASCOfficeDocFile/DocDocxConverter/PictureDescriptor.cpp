@@ -12,6 +12,7 @@ namespace DocFileFormat
 		//Get start and length of the PICT
 		int fc = GetFcPic( chpx );
 
+
 		if ( fc >= 0 )
 		{
 			parse( stream, fc, size );
@@ -40,6 +41,9 @@ namespace DocFileFormat
 
 		int lcb = reader.ReadInt32();
 		
+		if (lcb > 10000000) 
+			return;
+
 		if (lcb > sz) 
 		{
 			unsigned char* bytes = reader.ReadBytes(sz - fc - 4, false);

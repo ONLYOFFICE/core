@@ -81,15 +81,16 @@ namespace DocFileFormat
 		std::vector<CString> GetTextRectangles(const OptionEntry& inscribe) const;
 
 	private: 
-		bool						m_bBullet;
-		Spa*						m_pSpa;
-		IMapping*					m_pCaller;
-		BlipStoreContainer*			m_pBlipStore;
-		int							m_nImageId;
-		std::wstring				m_textPathStyle;
-		ConversionContext*			m_ctx;
-		PictureDescriptor*			m_pict;
-		XMLTools::XMLElement<wchar_t> m_fill; 
+		bool							m_bBullet;
+		Spa*							m_pSpa;
+		IMapping*						m_pCaller;
+		BlipStoreContainer*				m_pBlipStore;
+		int								m_nImageId;
+		std::wstring					m_textPathStyle;
+		ConversionContext*				m_ctx;
+		PictureDescriptor*				m_pict;
+
+		XMLTools::XMLElement<wchar_t>	m_fill; 
 		XMLTools::XMLElement<wchar_t>	m_stroke;
 		XMLTools::XMLElement<wchar_t>	m_shadow; 
 		XMLTools::XMLElement<wchar_t>	m_imagedata;

@@ -30,6 +30,11 @@ namespace DocFileFormat
 
 namespace DocFileFormat
 {	
+	void TextboxMapping::SetTextboxStyle(const std::wstring & style)
+	{
+		m_sTextBoxStyle = style;
+	}
+
 	void TextboxMapping::SetInset (int nLeft, int nTop, int nRight, int nBottom)
 	{
 		m_ndxTextLeft	=	nLeft;
@@ -47,11 +52,20 @@ namespace DocFileFormat
 			//if (m_nTBIndex < m_document->TextboxBreakPlex->Elements.size())
 			//	return;
 
-			//TODO найти, есть ли в документации эквивалент inset
-			if(m_ndxTextLeft >= 0 && m_ndyTextTop >= 0 && m_ndxTextRight >= 0 && m_ndyTextBottom >= 0)
-				m_pXmlWriter->WriteNodeBegin( (_T("v:textbox inset=\"")+FormatUtils::IntToWideString(m_ndxTextLeft)+_T(",")+FormatUtils::IntToWideString(m_ndyTextTop)+_T(",")+FormatUtils::IntToWideString(m_ndxTextRight)+_T(",")+FormatUtils::IntToWideString(m_ndyTextBottom)+_T("\"")).c_str() );
-			else
-				m_pXmlWriter->WriteNodeBegin( _T( "v:textbox" ) );
+			m_pXmlWriter->WriteNodeBegin(_T("v:textbox"), true);
+				if(m_ndxTextLeft >= 0 && m_ndyTextTop >= 0 && m_ndxTextRight >= 0 && m_ndyTextBottom >= 0)
+				{
+					m_pXmlWriter->WriteAttribute( _T( "inset" ), std_string2string(
+																		FormatUtils::IntToWideString(m_ndxTextLeft) + 
+															_T(",") +	FormatUtils::IntToWideString(m_ndyTextTop) +
+															_T(",") +	FormatUtils::IntToWideString(m_ndxTextRight) + 
+															_T(",") +	FormatUtils::IntToWideString(m_ndyTextBottom)));
+				}
+				if (!m_sTextBoxStyle.empty())
+				{
+					m_pXmlWriter->WriteAttribute( _T( "style" ), std_string2string(m_sTextBoxStyle));
+				}
+			m_pXmlWriter->WriteNodeEnd( _T( "" ), true, false );
 			
 			m_pXmlWriter->WriteNodeBegin( _T( "w:txbxContent" ) );
 

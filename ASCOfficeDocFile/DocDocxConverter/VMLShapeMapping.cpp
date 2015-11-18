@@ -227,13 +227,17 @@ namespace DocFileFormat
 				bool filled				=	true;
 				bool hasTextbox			=	false;
 				bool layoutInCell		=	false;
+				
 				int ndxTextLeft			=	-1;
 				int ndyTextTop			=	-1;
 				int ndxTextRight		=	-1;
 				int ndyTextBottom		=	-1;
+
 				bool bHavePath			=	false;
 				int	nAdjValues			=	0;
 				int	nLTxID				=	-1;
+
+				std::wstring sTextboxStyle;
 				
 				std::wstring					adjValues[8];
 				ShadowStyleBooleanProperties	shadowBoolean(0);
@@ -694,7 +698,23 @@ namespace DocFileFormat
 					case dyTextTop:		{ndyTextTop		= (int)iter->op;break;}
 					case dxTextRight:	{ndxTextRight	= (int)iter->op;break;}
 					case dyTextBottom:	{ndyTextBottom	= (int)iter->op;break;}
-	
+					case txflTextFlow:
+					{
+						switch(iter->op)
+						{
+						case 0:
+						case 4://обычный 							
+							break;
+						case 1:
+						case 5://верт (склони голову направо)						
+							appendStyleProperty(&sTextboxStyle, L"layout-flow", L"vertical");
+							break;
+						case 2://верт (склони голову налево)	
+							appendStyleProperty(&sTextboxStyle, L"layout-flow", L"vertical");
+							appendStyleProperty(&sTextboxStyle, L"mso-layout-flow-alt", L"bottom-to-top");
+							break;
+						}
+					}break;	
 	// TEXT PATH (Word Art)
 
 					case gtextUNICODE:
@@ -997,6 +1017,8 @@ namespace DocFileFormat
 					{
 						TextboxMapping textboxMapping(m_ctx, nIndex - 1, m_pXmlWriter, m_pCaller);
 						textboxMapping.SetInset(ndxTextLeft, ndyTextTop, ndxTextRight, ndyTextBottom);
+						textboxMapping.SetTextboxStyle(sTextboxStyle);
+
 						m_ctx->_doc->Convert(&textboxMapping);
 					}
 				}

@@ -84,16 +84,10 @@ void CRecordOfficeArtBlip::ReadFromStream(SRecordHeader & oHeader, POLE::Stream*
 				lOffset += 34;
 
 				oMetaFile.m_bIsValid	= TRUE;
-				oMetaFile.m_sExtension	= L".pct";
+				oMetaFile.m_sExtension	= L".wmf";//L".pct"; - ВРЕМЕННО пока не сделана конвертация pct(pic) хоть во что нито  !!!
 				
 				CMetaHeader oMetaHeader;
-				oMetaHeader.FromStream(pStream); 
-				
-				//int lLenHeader = 512;
-				//BYTE* pMetaHeader = new BYTE[lLenHeader]; // удалится в oMetaFile
-				//
-				//oMetaHeader.ToPICTHeader(pMetaHeader, lLenHeader);
-				//oMetaFile.SetHeader(pMetaHeader, lLenHeader);
+				oMetaHeader.FromStream(pStream); //отдельно вынесенный заголовок.. "форматный" находится в блоке данных
 
 				BYTE* pData = new BYTE[oHeader.RecLen - lOffset];
 				pStream->read(pData, oHeader.RecLen - lOffset); 

@@ -923,6 +923,8 @@ namespace NSFile
 			pcRes[lLen] = '\0';
 
 			int res = mkstemp(pcRes);
+			if (-1 != res)
+				close(res);
 
 			std::string sRes = pcRes;
 			return NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)sRes.c_str(), sRes.length());

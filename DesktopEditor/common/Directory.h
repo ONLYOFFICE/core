@@ -179,7 +179,19 @@ namespace NSDirectory
 		{
 			while ((dirp = readdir(dp)) != NULL)
 			{
-				if(DT_DIR == dirp->d_type)
+				bool bIsDir = false;
+				if (DT_DIR == dirp->d_type)
+					bIsDir = true;
+				else if (DT_UNKNOWN == dirp->d_type)
+				{
+					// XFS problem
+					struct stat buff;
+					std::string sTmp = std::string((char*)pUtf8) + "/" + std::string(dirp->d_name);
+					stat(sTmp.c_str(), &buff);
+					if (S_ISDIR(buff.st_mode))
+						bIsDir = true;
+				}
+				if(bIsDir)
 				{
 					if(dirp->d_name[0] != '.')
 					{

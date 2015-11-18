@@ -37,6 +37,8 @@ linux-g++ | linux-g++-64 | linux-g++-32:!contains(QMAKE_HOST.arch, x86_64):{
 
 mac {
     DESTDIR = $$DESTINATION_SDK_PATH/mac_64
+
+    QMAKE_MAC_SDK = macosx10.11
 }
 
 ################################################

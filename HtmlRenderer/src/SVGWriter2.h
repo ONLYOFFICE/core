@@ -105,14 +105,14 @@ namespace NSHtmlRenderer
 		{
 			// определ¤ем размеры картинки
 			if (NULL == m_pFrame)
-				return NULL;
+				return;
 
             BYTE* pBuffer = m_pFrame->get_Data();
 
 			RECT rect = GetImageBounds(m_pFrame);
 
 			if (((rect.right - rect.left) < 5) && ((rect.bottom - rect.top) < 5))
-				return NULL;
+				return;
 
 			BYTE* pBufferSrcMem = pBuffer + 4 * rect.top * m_lWidthPix + 4 * rect.left;
 			LONG lWidthShape	= rect.right - rect.left + 1;

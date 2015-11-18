@@ -4503,6 +4503,12 @@ namespace BinDocxRW
 						}
 						break;
 					}
+				case OOX::et_w_cr:
+					{
+						m_oBcw.m_oStream.WriteBYTE(c_oSerRunType::linebreak);
+						m_oBcw.m_oStream.WriteLONG(c_oSerPropLenType::Null);
+						break;
+					}
 				case OOX::et_mc_alternateContent:
 				case OOX::et_w_pict:
 				case OOX::et_w_drawing:

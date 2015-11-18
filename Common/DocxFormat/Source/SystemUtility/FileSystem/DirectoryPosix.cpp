@@ -115,6 +115,8 @@ namespace FileSystem {
         pcRes[a_str.length()] = '\0';
 
         int res = mkstemp( pcRes);
+        if (-1 != res)
+            close(res);
 
         std::string sRes = pcRes;
         return stringUtf8ToWString (sRes);
@@ -133,6 +135,8 @@ namespace FileSystem {
         pcRes[a_str.length()] = '\0';
 
         int res = mkstemp( pcRes);
+        if (-1 != res)
+            close(res);
 
         std::string sRes = pcRes;
         return stringUtf8ToWString (sRes);
@@ -191,8 +195,20 @@ namespace FileSystem {
         if(strncmp(entry->d_name, "..", 2) != 0 &&
            strncmp(entry->d_name, ".", 1) != 0)
         {
+          bool bIsDir = false;
+          if (DT_DIR == entry->d_type)
+              bIsDir = true;
+          else if (DT_UNKNOWN == entry->d_type)
+          {
+              // XFS problem
+              struct stat buff;
+              std::string sTmp = std::string((char*)dirname) + "/" + std::string(entry->d_name);
+              stat(sTmp.c_str(), &buff);
+              if (S_ISDIR(buff.st_mode))
+                  bIsDir = true;
+          }
           // If it's a directory recurse into it
-          if (entry->d_type == DT_DIR)
+          if (bIsDir)
           {
               if (recursive)
               {

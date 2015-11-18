@@ -903,7 +903,7 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 					set = true;
 				}
 				
-				if (!set && pParagraph->m_lTextLevel == 0)
+				if (!set)
 				{
 					wchar_t bu = 0x2022;
 					m_oWriter.WriteString(std::wstring(L"<a:buChar char=\""));

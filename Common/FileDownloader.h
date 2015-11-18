@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #ifdef _WIN32
-#include "../../Common/BaseThread.h"
+#include "BaseThread.h"
 
 #include <wininet.h>
 #pragma comment(lib, "Wininet")

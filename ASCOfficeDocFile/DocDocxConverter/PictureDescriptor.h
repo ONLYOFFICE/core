@@ -50,7 +50,7 @@ namespace DocFileFormat
 
 	public:
 		/// Parses the CHPX for a fcPic an loads the PictureDescriptor at this offset
-		PictureDescriptor( CharacterPropertyExceptions* chpx, POLE::Stream* stream, int size );
+		PictureDescriptor( CharacterPropertyExceptions* chpx, POLE::Stream* stream, int size = 0x7fffffff);
 		virtual ~PictureDescriptor();
 
 	private: 

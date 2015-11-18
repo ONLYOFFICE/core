@@ -17,7 +17,9 @@ namespace NSPresentationEditor
 		LONG	m_lTextMasterType; // only ppt property
 	public:
 		DWORD	m_lTextType;
-		DWORD	m_lStyleThemeIndex;
+		
+		int		m_lStyleThemeIndex;
+		
 		int		m_lPlaceholderType;
 		int		m_lPlaceholderID;
 

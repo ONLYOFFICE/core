@@ -1262,7 +1262,7 @@ public:
 		if (NULL != pSlide)
 		{
 			bool bIsMaster = oArrayShape[0]->m_bHaveMaster;
-			if (bIsMaster)
+			if (bIsMaster && elType !=etPicture)
 			{
 				for (int i = 0; i < oArrayOptions[0]->m_oProperties.m_lCount; ++i)
 				{
@@ -2110,7 +2110,7 @@ protected:
 			}
 			else
 			{
-				pTextSettings->m_lStyleThemeIndex = 0; //???
+				pTextSettings->m_lStyleThemeIndex = -1;
 			}
 
 			// теперь смотрим все остальные стили (persist и own) - просто применяем их к m_oStyles

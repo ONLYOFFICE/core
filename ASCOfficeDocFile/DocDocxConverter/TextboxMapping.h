@@ -11,19 +11,24 @@ namespace DocFileFormat
 
 		TextboxMapping(ConversionContext* ctx, int textboxIndex, XmlUtils::CXmlWriter* writer, IMapping* caller);
 		TextboxMapping(ConversionContext* ctx, XmlUtils::CXmlWriter* writer, IMapping* caller);
+		
 		virtual ~TextboxMapping();
 		virtual void Apply(IVisitable* visited);
-		void SetInset(int nLeft, int nTop, int nRight, int nBottom);
+		
+		void SetInset		(int nLeft, int nTop, int nRight, int nBottom);
+		void SetTextboxStyle(const std::wstring & style);
 
 	private:    
 
 		static int TextboxCount;
 		
-		int m_nTBIndex;
+		int				m_nTBIndex;
 		
-		int m_ndxTextLeft;
-		int m_ndyTextTop;
-		int m_ndxTextRight;
-		int m_ndyTextBottom;
+		int				m_ndxTextLeft;
+		int				m_ndyTextTop;
+		int				m_ndxTextRight;
+		int				m_ndyTextBottom;
+
+		std::wstring	m_sTextBoxStyle;
 	};
 }

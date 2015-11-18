@@ -431,31 +431,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ENABLE_BITCODE = NO;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					UNICODE,
-					_UNICODE,
-					_LINUX,
-					_LINUX_QT,
-					_USE_LIBXML2_READER,
-					LIBXML_READER_ENABLED,
-					LIBXML_PUSH_ENABLED,
-					HAVE_VA_COPY,
-					_GNU_SOURCE,
-					HAVE_UNISTD_H,
-					HAVE_STDLIB_H,
-					HAVE_CTYPE_H,
-					HAVE_STDINT_H,
-					HAVE_ERRNO_H,
-					HAVE__STAT,
-					HAVE_STAT,
-					HAVE_STDARG_H,
-					HAVE_SYS_STAT_H,
-					HAVE_FCNTL_H,
-					HAVE_TIME_H,
-					HAVE_MALLOC_H,
-					LIBXML_OUTPUT_ENABLED,
-					_IOS,
-				);
+				GCC_PREPROCESSOR_DEFINITIONS = _IOS;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
@@ -473,31 +449,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ENABLE_BITCODE = NO;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					UNICODE,
-					_UNICODE,
-					_LINUX,
-					_LINUX_QT,
-					_USE_LIBXML2_READER,
-					LIBXML_READER_ENABLED,
-					LIBXML_PUSH_ENABLED,
-					HAVE_VA_COPY,
-					_GNU_SOURCE,
-					HAVE_UNISTD_H,
-					HAVE_STDLIB_H,
-					HAVE_CTYPE_H,
-					HAVE_STDINT_H,
-					HAVE_ERRNO_H,
-					HAVE__STAT,
-					HAVE_STAT,
-					HAVE_STDARG_H,
-					HAVE_SYS_STAT_H,
-					HAVE_FCNTL_H,
-					HAVE_TIME_H,
-					HAVE_MALLOC_H,
-					LIBXML_OUTPUT_ENABLED,
-					_IOS,
-				);
+				GCC_PREPROCESSOR_DEFINITIONS = _IOS;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,

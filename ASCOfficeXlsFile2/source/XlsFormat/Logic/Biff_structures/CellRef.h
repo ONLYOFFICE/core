@@ -20,7 +20,7 @@ public:
 
 	const std::wstring	toString() const;
 	void				fromString(const std::wstring& str);
-	operator const std::wstring  () const;
+	operator std::wstring  () const;
 
 	void operator+=(const CellRef& appended_ref);
 	void operator-=(const CellRef& subtracted_ref);

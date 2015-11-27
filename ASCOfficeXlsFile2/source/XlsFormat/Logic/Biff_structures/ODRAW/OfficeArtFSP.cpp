@@ -17,46 +17,6 @@ XLS::BiffStructurePtr OfficeArtFSP::clone()
 	return XLS::BiffStructurePtr(new OfficeArtFSP(*this));
 }
 
-//
-//void OfficeArtFSP::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	xml_tag->setAttribute(L"shape_id", shape_id);
-//	xml_tag->setAttribute(L"spid", spid);
-//
-//	xml_tag->setAttribute(L"fGroup", fGroup);
-//	xml_tag->setAttribute(L"fChild", fChild);
-//	xml_tag->setAttribute(L"fPatriarch", fPatriarch);
-//	xml_tag->setAttribute(L"fDeleted", fDeleted);
-//	xml_tag->setAttribute(L"fOleShape", fOleShape);
-//	xml_tag->setAttribute(L"fHaveMaster", fHaveMaster);
-//	xml_tag->setAttribute(L"fFlipH", fFlipH);
-//	xml_tag->setAttribute(L"fFlipV", fFlipV);
-//	xml_tag->setAttribute(L"fConnector", fConnector);
-//	xml_tag->setAttribute(L"fHaveAnchor", fHaveAnchor);
-//	xml_tag->setAttribute(L"fBackground", fBackground);
-//	xml_tag->setAttribute(L"fHaveSpt", fHaveSpt);
-//}
-
-
-//void OfficeArtFSP::getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	shape_id = getStructAttribute(xml_tag, L"shape_id");
-//	spid = getStructAttribute(xml_tag, L"spid");
-//
-//	fGroup = getStructAttribute(xml_tag, L"fGroup");
-//	fChild = getStructAttribute(xml_tag, L"fChild");
-//	fPatriarch = getStructAttribute(xml_tag, L"fPatriarch");
-//	fDeleted = getStructAttribute(xml_tag, L"fDeleted");
-//	fOleShape = getStructAttribute(xml_tag, L"fOleShape");
-//	fHaveMaster = getStructAttribute(xml_tag, L"fHaveMaster");
-//	fFlipH = getStructAttribute(xml_tag, L"fFlipH");
-//	fFlipV = getStructAttribute(xml_tag, L"fFlipV");
-//	fConnector = getStructAttribute(xml_tag, L"fConnector");
-//	fHaveAnchor = getStructAttribute(xml_tag, L"fHaveAnchor");
-//	fBackground = getStructAttribute(xml_tag, L"fBackground");
-//	fHaveSpt = getStructAttribute(xml_tag, L"fHaveSpt");
-//}
-
 
 void OfficeArtFSP::storeFields(XLS::CFRecord& record)
 {

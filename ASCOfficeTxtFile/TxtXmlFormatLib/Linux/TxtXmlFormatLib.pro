@@ -9,6 +9,8 @@ QT       -= core gui
 TARGET = TxtXmlFormatLib
 TEMPLATE = lib
 CONFIG += staticlib
+
+CONFIG += c++11
 win32 {
     QMAKE_CXXFLAGS_RELEASE -= -Zc:strictStrings
 } else {
@@ -38,6 +40,10 @@ linux-g++ | linux-g++-64 | linux-g++-32:contains(QMAKE_HOST.arch, x86_64):{
 }
 linux-g++ | linux-g++-64 | linux-g++-32:!contains(QMAKE_HOST.arch, x86_64):{
     DESTDIR = $$DESTINATION_SDK_PATH/linux_32
+}
+
+mac {
+    DESTDIR = $$DESTINATION_SDK_PATH/mac_64
 }
 ############### destination path ###############
 
@@ -69,6 +75,18 @@ linux-g++ | linux-g++-64 | linux-g++-32 {
         _LINUX_QT
 
 INCLUDEPATH += /usr/include/libxml2
+}
+
+mac {
+    DEFINES += \
+        LINUX \
+        _LINUX \
+        _LINUX_QT \
+        _MAC \
+        MAC \
+        LIBXML_READER_ENABLED
+
+INCLUDEPATH += ../../../DesktopEditor/xml/libxml2/include
 }
 #################### LINUX ########################
 

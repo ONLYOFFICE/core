@@ -2733,7 +2733,7 @@ public:
 #ifdef SS_ANSI
         MYTYPE str;
         
-#ifdef __APPLE__
+#if defined(__APPLE__) && !defined(_MAC_NO_APPLE)
         va_start(argList, szFmt);
         apple_vscwprintf(str, szFmt, argList);
         va_end(argList);

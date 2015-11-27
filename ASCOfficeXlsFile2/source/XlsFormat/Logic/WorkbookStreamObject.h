@@ -29,8 +29,8 @@ public:
 	
 	BaseObjectPtr						m_GlobalsSubstream;
 
-	std::vector<BaseObjectPtr>			m_WorksheetSubstream;
-	std::vector<BaseObjectPtr>			m_MacroSheetSubstream;
+	std::vector<BaseObjectPtr>			m_arWorksheetSubstream;
+	std::vector<BaseObjectPtr>			m_arMacroSheetSubstream;
 	
 	unsigned short code_page_;
 };

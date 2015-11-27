@@ -17,7 +17,9 @@ CONFIG += c++11
 QMAKE_CXXFLAGS += -fvisibility=hidden
 QMAKE_CFLAGS += -fvisibility=hidden
 
-QMAKE_LFLAGS += -Wl,--rpath=./
+linux-g++ | linux-g++-64 | linux-g++-32 {
+    QMAKE_LFLAGS += -Wl,--rpath=./
+}
 
 ############### destination path ###############
 DESTINATION_SDK_PATH = $$PWD/../SDK/lib
@@ -50,6 +52,11 @@ linux-g++ | linux-g++-64 | linux-g++-32:!contains(QMAKE_HOST.arch, x86_64):{
     ICU_BUILDS_PLATFORM = linux32
 }
 
+mac {
+    DESTDIR = $$DESTINATION_SDK_PATH/mac_64
+    ICU_BUILDS_PLATFORM = mac
+}
+
 ################################################
 
 ############# dynamic dependencies #############
@@ -75,6 +82,15 @@ win32 {
     INCLUDEPATH += $$PWD/icubuilds/$$ICU_BUILDS_PLATFORM/include
     LIBS        += -L$$PWD/icubuilds/$$ICU_BUILDS_PLATFORM/lib -licuuc
     message(windows)
+}
+
+mac {
+    CONFIG += plugin
+
+    INCLUDEPATH += $$PWD/icubuilds/$$ICU_BUILDS_PLATFORM/release-55-1/source/common
+    LIBS        += $$PWD/icubuilds/$$ICU_BUILDS_PLATFORM/release-55-1/source/lib/libicuuc.55.1.dylib
+    LIBS        += $$PWD/icubuilds/$$ICU_BUILDS_PLATFORM/release-55-1/source/lib/libicudata.55.1.dylib
+    message(mac)
 }
 
 SOURCES += \

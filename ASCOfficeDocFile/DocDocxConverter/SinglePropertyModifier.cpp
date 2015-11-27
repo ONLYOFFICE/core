@@ -97,7 +97,7 @@ namespace DocFileFormat
 		}
 	}
 
-	bool SinglePropertyModifier::operator == (const SinglePropertyModifier& spm)
+	bool SinglePropertyModifier::operator == (const SinglePropertyModifier& spm) const
 	{
 		if ( ( this->argumentsSize == spm.argumentsSize ) && ( memcmp( this->Arguments, spm.Arguments, this->argumentsSize ) == 0 ) &&
 			( this->fSpec == spm.fSpec ) && ( this->OpCode == spm.OpCode ) && ( this->Type == spm.Type ) )
@@ -110,7 +110,7 @@ namespace DocFileFormat
 		}
 	}
 
-	bool SinglePropertyModifier::operator != (const SinglePropertyModifier& spm)
+	bool SinglePropertyModifier::operator != (const SinglePropertyModifier& spm) const
 	{
 		return !( *this == spm );
 	}

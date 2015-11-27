@@ -28,6 +28,7 @@ public:
 	BIFF_BYTE rt;
 	BIFF_BOOL fUnlinkedIfmt;
 	IFmt ifmt;
+	
 	ChartParsedFormula formula;
 };
 

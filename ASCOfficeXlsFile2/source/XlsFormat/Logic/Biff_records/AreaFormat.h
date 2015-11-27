@@ -30,8 +30,6 @@ public:
 	BIFF_BOOL fInvertNeg;
 	IcvChart icvFore;
 	IcvChart icvBack;
-
-
 };
 
 } // namespace XLS

@@ -170,7 +170,7 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 	count = proc.repeated<WINDOW>(1, 0);
 	while(count > 0)
 	{
-		m_WINDOW.insert(m_WINDOW.begin(), elements_.back());
+		m_arWINDOW.insert(m_arWINDOW.begin(), elements_.back());
 		elements_.pop_back();
 		count--;
 	}
@@ -184,7 +184,7 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 	count = proc.repeated<MergeCells>(0, 0);
 	while(count > 0)
 	{
-		m_MergeCells.insert(m_MergeCells.begin(), elements_.back());
+		m_arMergeCells.insert(m_arMergeCells.begin(), elements_.back());
 		elements_.pop_back();
 		count--;
 	}
@@ -197,7 +197,7 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 	count = proc.repeated<HLINK>(0, 0) ;
 	while(count > 0)
 	{
-		m_HLINK.insert(m_HLINK.begin(), elements_.back());
+		m_arHLINK.insert(m_arHLINK.begin(), elements_.back());
 		elements_.pop_back();
 		count--;
 	}

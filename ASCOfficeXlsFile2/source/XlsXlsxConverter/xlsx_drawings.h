@@ -16,9 +16,9 @@ struct drawing_elm
         : filename(_filename), content(_content), drawings(_drawings)
     {}
     
-    std::wstring filename;
-    std::wstring content;
-    xlsx_drawings_ptr drawings;
+    std::wstring		filename;
+    std::wstring		content;
+    xlsx_drawings_ptr	drawings;
 };
 
 class rels;

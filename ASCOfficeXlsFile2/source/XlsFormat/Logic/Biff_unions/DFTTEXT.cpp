@@ -32,8 +32,15 @@ const bool DFTTEXT::loadContent(BinProcessor& proc)
 {
 	if(proc.optional<DataLabExt>())
 	{
-		proc.mandatory<StartObject>();
+		m_DataLabExt = elements_.back();
+		elements_.pop_back();
+
+		proc.mandatory<StartObject>();	elements_.pop_back();
+
 		proc.mandatory<DefaultText>();
+		
+		m_DefaultText = elements_.back();
+		elements_.pop_back();
 	}
 	else
 	{
@@ -41,9 +48,15 @@ const bool DFTTEXT::loadContent(BinProcessor& proc)
 		{
 			return false;
 		}
+		m_DefaultText = elements_.back();
+		elements_.pop_back();
 	}
+
 	proc.mandatory<ATTACHEDLABEL>();
-	proc.optional<EndObject>();
+	m_ATTACHEDLABEL = elements_.back();
+	elements_.pop_back();
+
+	if (proc.optional<EndObject>()) elements_.pop_back();
 
 	return true;
 }

@@ -45,24 +45,67 @@ const bool SS::loadContent(BinProcessor& proc)
 	{
 		return false;
 	}
-	proc.mandatory<Begin>();
-	proc.optional<Chart3DBarShape>();
+	m_DataFormat = elements_.back();
+	elements_.pop_back();
+
+	proc.mandatory<Begin>();						elements_.pop_back();
+	if (proc.optional<Chart3DBarShape>())
+	{
+		m_Chart3DBarShape = elements_.back();
+		elements_.pop_back();
+	}
 	if(proc.optional<LineFormat>())
 	{
-		//proc.mandatory<AreaFormat>();
-		//proc.mandatory<PieFormat>();
-
-		// fix
-		proc.optional<AreaFormat>();
-		proc.optional<PieFormat>();
+		m_LineFormat = elements_.back();
+		elements_.pop_back();
+	
+		if (proc.optional<AreaFormat>())
+		{
+			m_AreaFormat = elements_.back();
+			elements_.pop_back();
+		}
+		
+		if (proc.optional<PieFormat>())
+		{
+			m_PieFormat = elements_.back();
+			elements_.pop_back();
+		}
 	}
-	proc.optional<SerFmt>();
-	proc.optional<GELFRAME>();
-	proc.optional<MarkerFormat>();
-	proc.optional<AttachedLabel>();
-	proc.repeated<SHAPEPROPS>(0, 2);
+	if (proc.optional<SerFmt>())
+	{
+		m_SerFmt = elements_.back();
+		elements_.pop_back();
+	}
+	
+	if (proc.optional<GELFRAME>())
+	{
+		m_GELFRAME = elements_.back();
+		elements_.pop_back();
+	}
+	
+	if (proc.optional<MarkerFormat>())
+	{
+		m_MarkerFormat = elements_.back();
+		elements_.pop_back();
+	}
+	
+	if (proc.optional<AttachedLabel>())
+	{
+		m_AttachedLabel = elements_.back();
+		elements_.pop_back();
+	}
+	
+	int count = proc.repeated<SHAPEPROPS>(0, 2);
+	while(count > 0)
+	{
+		m_arSHAPEPROPS.insert(m_arSHAPEPROPS.begin(), elements_.back());
+		elements_.pop_back();
+		count--;
+	}
+
+	
 	proc.optional<CRTMLFRT>();
-	proc.mandatory<End>();
+	proc.mandatory<End>();								elements_.pop_back();
 
 	return true;
 }

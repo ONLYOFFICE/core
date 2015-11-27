@@ -35,12 +35,12 @@ const bool DROPBAR::loadContent(BinProcessor& proc)
 	{
 		return false;
 	}
-	proc.mandatory<Begin>();
+	proc.mandatory<Begin>();			elements_.pop_back();
 	proc.mandatory<LineFormat>();
 	proc.mandatory<AreaFormat>();
 	proc.optional<GELFRAME>();
 	proc.optional<SHAPEPROPS>();
-	proc.mandatory<End>();
+	proc.mandatory<End>();				elements_.pop_back();
 
 	return true;
 }

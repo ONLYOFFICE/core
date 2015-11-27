@@ -33,8 +33,8 @@ namespace DocFileFormat
 		/// parses the unsigned char to retrieve a SPRM
 		SinglePropertyModifier( unsigned char* bytes, int size );
 		SinglePropertyModifier( const SinglePropertyModifier& spm );
-		bool operator == ( const SinglePropertyModifier& spm );
-		bool operator != ( const SinglePropertyModifier& spm );
+		bool operator == ( const SinglePropertyModifier& spm ) const;
+		bool operator != ( const SinglePropertyModifier& spm ) const;
 		SinglePropertyModifier& operator = ( const SinglePropertyModifier& spm );
 		~SinglePropertyModifier();
 		/// Get be used to get the size of the sprm's operand.

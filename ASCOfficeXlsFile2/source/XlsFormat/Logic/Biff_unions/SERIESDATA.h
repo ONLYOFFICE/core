@@ -19,6 +19,9 @@ public:
 	virtual const bool loadContent(BinProcessor& proc);
 
 	static const ElementType	type = typeSERIESDATA;
+
+	BaseObjectPtr				m_Dimensions;
+	std::vector<BaseObjectPtr>	m_arSIIndex;
 };
 
 } // namespace XLS

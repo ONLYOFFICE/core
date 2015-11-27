@@ -47,7 +47,7 @@ public:
 		record << val;
     }
 
-    operator const Type () const { return (val ? static_cast<Type>(*val) : (Type)0); }
+    operator Type () const { return (val ? static_cast<Type>(*val) : (Type)0); }
 	
     BiffAttributeSimple<Type> operator= (const BiffAttributeSimple<Type>& other)
 	{

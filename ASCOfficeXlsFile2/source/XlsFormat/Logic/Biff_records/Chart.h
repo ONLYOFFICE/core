@@ -29,14 +29,6 @@ public:
 	OSHARED::FixedPoint dx;
 	OSHARED::FixedPoint dy;
 
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(x)
-		//BO_ATTRIB_MARKUP_ATTRIB(y)
-		//BO_ATTRIB_MARKUP_ATTRIB(dx)
-		//BO_ATTRIB_MARKUP_ATTRIB(dy)
-	//BO_ATTRIB_MARKUP_END
-
 };
 
 } // namespace XLS

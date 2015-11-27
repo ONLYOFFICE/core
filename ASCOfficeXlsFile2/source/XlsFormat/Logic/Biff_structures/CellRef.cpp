@@ -74,7 +74,7 @@ void CellRef::fromString(const std::wstring& str)
 
 
 
-CellRef::operator const std::wstring  () const 
+CellRef::operator std::wstring  () const
 {
 	return toString().c_str();
 }

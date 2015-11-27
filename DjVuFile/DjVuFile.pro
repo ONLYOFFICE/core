@@ -39,6 +39,10 @@ linux-g++:!contains(QMAKE_HOST.arch, x86_64):{
     DESTDIR = $$DESTINATION_SDK_PATH/linux_32
 }
 
+mac {
+    DESTDIR = $$DESTINATION_SDK_PATH/mac_64
+}
+
 ################################################
 
 ############# dynamic dependencies #############
@@ -75,6 +79,13 @@ shared {
         QMAKE_CXXFLAGS += -fvisibility=hidden
         QMAKE_CFLAGS += -fvisibility=hidden
     }
+
+    mac {
+        CONFIG += plugin
+
+        QMAKE_CXXFLAGS += -fvisibility=hidden
+        QMAKE_CFLAGS += -fvisibility=hidden
+    }
 } else {
     LIBS += -L$$DESTDIR -llibxml
 }
@@ -105,6 +116,26 @@ linux-g++ | linux-g++-64 | linux-g++-32 {
     HAVE_WCHAR_H \
     UNIX \
     HAVE_STDINCLUDES
+}
+
+mac {
+    DEFINES += \
+    HAVE_UNISTD_H \
+    LINUX \
+    _LINUX \
+    _LINUX_QT \
+    HAVE_MBSTATE_T \
+    GCONTAINER_NO_MEMBER_TEMPLATES="1" \
+    HAS_WCHAR \
+    HAVE_WCHAR_H \
+    UNIX \
+    HAVE_STDINCLUDES \
+    _MAC \
+    MAC
+
+    CONFIG += c++11
+
+    message(mac)
 }
 
 win32 {

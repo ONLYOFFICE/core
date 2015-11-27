@@ -31,7 +31,7 @@ public:
 	~BiffString();
 
 
-	operator const std::wstring  () const;
+	operator std::wstring  () const;
 
 	std::wstring & value() {return str_;}
 

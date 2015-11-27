@@ -60,16 +60,54 @@ AXS = [IFmtRecord] [Tick] [FontX] *4(AxisLine LineFormat) [AreaFormat] [GELFRAME
 */
 const bool AXS::loadContent(BinProcessor& proc)
 {
-	proc.optional<IFmtRecord>();
-	proc.optional<Tick>();
-	proc.optional<FontX>();
-	proc.repeated<Parenthesis_AXS_1>(0, 4);
-	proc.optional<AreaFormat>();
-	proc.optional<GELFRAME>();
-	proc.repeated<SHAPEPROPS>(0, 4);
+	int count = 0;
+
+	if (proc.optional<IFmtRecord>())
+	{
+		m_IFmtRecord = elements_.back();
+		elements_.pop_back();
+	}
+	
+	if (proc.optional<Tick>())
+	{
+		m_Tick = elements_.back();
+		elements_.pop_back();
+	}
+
+	if (proc.optional<FontX>())
+	{
+		m_FontX = elements_.back();
+		elements_.pop_back();
+	}
+	
+	count = proc.repeated<Parenthesis_AXS_1>(0, 4);
+	while(count > 0)
+	{
+		_axis_line_format a;
+		a.axisLine		= elements_.back();		elements_.pop_back();
+		a.lineFormat	= elements_.back();		elements_.pop_back();
+		
+		m_AxisLine_Format.insert(m_AxisLine_Format.begin(), a);
+		count-=2;
+	}
+
+	if (proc.optional<AreaFormat>())
+	{
+		m_AreaFormat = elements_.back();
+		elements_.pop_back();
+	}
+	
+	if (proc.optional<GELFRAME>())
+	{
+		m_GELFRAME = elements_.back();
+		elements_.pop_back();
+	}
+	
+	count = proc.repeated<SHAPEPROPS>(0, 4);
+
 	if(proc.optional<TextPropsStream>())
 	{
-		proc.repeated<ContinueFrt12>(0, 0);
+		count = proc.repeated<ContinueFrt12>(0, 0);
 	}
 	
 	return true;

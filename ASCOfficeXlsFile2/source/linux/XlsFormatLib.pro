@@ -9,6 +9,9 @@ QT       -= core gui
 TARGET = XlsFormatLib
 TEMPLATE = lib
 CONFIG += staticlib
+
+CONFIG += c++11
+
 win32 {
     QMAKE_CXXFLAGS_RELEASE -= -Zc:strictStrings
 } else {
@@ -39,6 +42,10 @@ linux-g++ | linux-g++-64 | linux-g++-32:contains(QMAKE_HOST.arch, x86_64):{
 linux-g++ | linux-g++-64 | linux-g++-32:!contains(QMAKE_HOST.arch, x86_64):{
     DESTDIR = $$DESTINATION_SDK_PATH/linux_32
 }
+
+mac {
+    DESTDIR = $$DESTINATION_SDK_PATH/mac_64
+}
 ############### destination path ###############
 
 DEFINES +=  UNICODE \
@@ -64,8 +71,22 @@ linux-g++ | linux-g++-64 | linux-g++-32 {
         LINUX \
         _LINUX \
         _LINUX_QT
+}
+
+mac {
+    DEFINES += \
+        LINUX \
+        _LINUX \
+        _LINUX_QT \
+        _MAC \
+        MAC \
+        _MAC_NO_APPLE \
+        _ASC_USE_UNICODE_CONVERTER_ \
+        UNICODECONVERTER_USE_DYNAMIC_LIBRARY
 
 
+INCLUDEPATH += ../../../Common/boost_1_58_0
+LIBS += $$DESTDIR -lUnicodeConverter
 }
 #################### LINUX ########################
 
@@ -803,6 +824,7 @@ SOURCES +=  \
     ../XlsXlsxConverter/xlsx_protection.cpp \
     ../XlsXlsxConverter/xlsx_tablecontext.cpp \
     ../XlsXlsxConverter/xlsx_textcontext.cpp \
+    ../XlsXlsxConverter/xlsx_chart_context.cpp \
     ../XlsFormat/Logic/AnyObject.cpp \
     ../XlsFormat/Logic/AnySubstream.cpp \
     ../XlsFormat/Logic/BinProcessor.cpp \

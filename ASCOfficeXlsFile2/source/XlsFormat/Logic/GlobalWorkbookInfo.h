@@ -9,6 +9,9 @@
 
 #include "../Crypt/Decryptor.h"
 
+class XlsConverter;
+
+
 namespace XLS
 {;
 
@@ -18,7 +21,7 @@ typedef boost::shared_ptr<BaseObject> BaseObjectPtr;
 class GlobalWorkbookInfo
 {
 public:
-	GlobalWorkbookInfo(const unsigned short code_page);
+	GlobalWorkbookInfo(const unsigned short code_page, XlsConverter * xls_converter_);
 
 	const size_t	RegisterBorderId	(const BorderInfo& border);
 	const size_t	RegisterFillId		(const FillInfo& fill);	
@@ -39,7 +42,7 @@ public:
 	std::map<int,  FillInfoExt>					fonts_color_ext;
 	std::map<int,  std::wstring>				colors_palette;
 
-	std::vector<BaseObjectPtr>					*fonts;
+	std::vector<BaseObjectPtr>					*m_arFonts;
 	
 	unsigned int								last_AXES_id;
 	const static unsigned int					initial_AXES_id = 0;
@@ -56,6 +59,7 @@ public:
 
 	int Version;
 
+	XlsConverter								*xls_converter;
 };
 
 typedef boost::shared_ptr<GlobalWorkbookInfo> GlobalWorkbookInfoPtr;

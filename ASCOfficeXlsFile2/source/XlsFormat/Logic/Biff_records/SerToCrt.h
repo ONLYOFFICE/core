@@ -24,10 +24,6 @@ public:
 
 //-----------------------------
 	BIFF_WORD id;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(id)
-	//BO_ATTRIB_MARKUP_END
 
 };
 

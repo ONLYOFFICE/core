@@ -23,6 +23,10 @@ public:
 
 	unsigned int id;
 
+	BaseObjectPtr	m_Axis;
+	BaseObjectPtr	m_AXS;
+	BaseObjectPtr	m_CatSerRange;
+
 };
 
 } // namespace XLS

@@ -25,14 +25,14 @@ void OfficeArtFOPT::storeFields(XLS::CFRecord& record)
 
 void OfficeArtFOPT::loadFields(XLS::CFRecord& record)
 {
-	fopt.SetOptionsNumber(rh_own.recInstance);
+	fopt.SetOptionsCount(rh_own.recInstance);
 	record >> fopt;
 }
 
 
 const unsigned short OfficeArtFOPT::GetInstanceToStore()
 {
-	return fopt.GetOptionsNumber();
+	return fopt.GetOptionsCount();
 }
 
 

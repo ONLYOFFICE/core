@@ -20,7 +20,9 @@ void OfficeArtRGFOPTE::store(XLS::CFRecord& record)
 
 void OfficeArtRGFOPTE::load(XLS::CFRecord& record)
 {
-	for(int i = 0; i < options_num; ++i)
+	std::vector<OfficeArtFOPTEPtr> rgfopte; // temp ... for complex load
+
+	for(int i = 0; i < options_count; ++i)
 	{
 		OfficeArtFOPTEPtr fopte = OfficeArtFOPTE::load_and_create(record);
 		if (!fopte)continue;
@@ -89,6 +91,7 @@ void OfficeArtRGFOPTE::load(XLS::CFRecord& record)
 
 		rgfopte.push_back(fopte);
 	}
+//-----complex load 
 
 	for(std::vector<OfficeArtFOPTEPtr>::iterator it = rgfopte.begin(), itEnd = rgfopte.end(); it != itEnd; ++it)
 	{
@@ -101,15 +104,15 @@ void OfficeArtRGFOPTE::load(XLS::CFRecord& record)
 	rgfopte.clear();
 }
 
-void OfficeArtRGFOPTE::SetOptionsNumber(const unsigned short number)
+void OfficeArtRGFOPTE::SetOptionsCount(const unsigned short count)
 {
-	options_num = number;
+	options_count = count;
 }
 
 
-const unsigned short OfficeArtRGFOPTE::GetOptionsNumber()
+const unsigned short OfficeArtRGFOPTE::GetOptionsCount()
 {
-	return options_num;
+	return options_count;
 }
 
 } // namespace XLS

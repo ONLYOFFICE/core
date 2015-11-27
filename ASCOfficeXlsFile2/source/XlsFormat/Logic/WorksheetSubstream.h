@@ -24,8 +24,8 @@ public:
 
 	size_t						ws_index_;
 
-	std::vector<BaseObjectPtr>	m_MergeCells;
-	std::vector<BaseObjectPtr>	m_WINDOW;
+	std::vector<BaseObjectPtr>	m_arMergeCells;
+	std::vector<BaseObjectPtr>	m_arWINDOW;
 	
 	BaseObjectPtr				m_GLOBALS;
 	BaseObjectPtr				m_PAGESETUP;
@@ -36,7 +36,7 @@ public:
 	BaseObjectPtr				m_Dimensions;
 	BaseObjectPtr				m_SORTANDFILTER;
 	BaseObjectPtr				m_OBJECTS;
-	std::vector<BaseObjectPtr>	m_HLINK;
+	std::vector<BaseObjectPtr>	m_arHLINK;
 };
 
 } // namespace XLS

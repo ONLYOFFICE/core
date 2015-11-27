@@ -9,6 +9,8 @@ QT       -= core gui
 TARGET = PPTXFormatLib
 TEMPLATE = lib
 CONFIG += staticlib
+
+CONFIG += c++11
 win32 {
     #todo accentbordercallout90type, вернуть inline оптимизацию Ob2
     QMAKE_CXXFLAGS_RELEASE += -Ob0
@@ -41,6 +43,10 @@ linux-g++ | linux-g++-64 | linux-g++-32:contains(QMAKE_HOST.arch, x86_64):{
 }
 linux-g++ | linux-g++-64 | linux-g++-32:!contains(QMAKE_HOST.arch, x86_64):{
     DESTDIR = $$DESTINATION_SDK_PATH/linux_32
+}
+
+mac {
+    DESTDIR = $$DESTINATION_SDK_PATH/mac_64
 }
 ############### destination path ###############
 
@@ -79,6 +85,16 @@ linux-g++ | linux-g++-64 | linux-g++-32 {
         LIBXML_READER_ENABLED
 
 INCLUDEPATH += /usr/include/libxml2/libxml
+}
+
+mac {
+    DEFINES += \
+        LINUX \
+        _LINUX \
+        _LINUX_QT \
+        LIBXML_READER_ENABLED \
+        _MAC \
+        MAC
 }
 #################### LINUX ########################
 
@@ -558,10 +574,24 @@ HEADERS += pptxformatlib.h \
     ../../../Editor/DefaultNotesMaster.h \
     ../../../Editor/DefaultNotesTheme.h \
     ../../Settings.h \
-    ../../../../Common/FileDownloader.h \
     ../../../../Common/DocxFormat/Source/Base/Nullable.h \
     ../../../../Common/DocxFormat/Source/XML/xmlutils.h \
-    ../../../../HtmlRenderer/include/ASCSVGWriter.h
+    ../../../../HtmlRenderer/include/ASCSVGWriter.h \
+    ../../../../Common/FileDownloader/FileDownloader.h
+
+win32 {
+    SOURCES += \
+        ../../../../Common/FileDownloader/FileDownloader_win.cpp
+}
+linux-g++ | linux-g++-64 | linux-g++-32 {
+    SOURCES += \
+        ../../../../Common/FileDownloader/FileDownloader_curl.cpp
+}
+mac {
+    OBJECTIVE_SOURCES += \
+        ../../../../Common/FileDownloader/FileDownloader_mac.mm
+}
+
 unix {
     target.path = /usr/lib
     INSTALLS += target

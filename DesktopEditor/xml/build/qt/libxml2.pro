@@ -12,6 +12,8 @@ CONFIG += staticlib
 QMAKE_CXXFLAGS += -std=c++11 -Wall -g
 DEFINES += HAVE_VA_COPY
 
+CONFIG += c++11
+
 ############### destination path ###############
 DESTINATION_SDK_PATH = $$PWD/../../../../SDK/lib
 
@@ -36,6 +38,10 @@ linux-g++:contains(QMAKE_HOST.arch, x86_64):{
 }
 linux-g++:!contains(QMAKE_HOST.arch, x86_64):{
     DESTDIR = $$DESTINATION_SDK_PATH/linux_32
+}
+
+mac {
+    DESTDIR = $$DESTINATION_SDK_PATH/mac_64
 }
 
 ################################################

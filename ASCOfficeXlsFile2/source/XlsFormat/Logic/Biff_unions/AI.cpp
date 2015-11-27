@@ -28,18 +28,19 @@ BaseObjectPtr AI::clone()
 // AI = BRAI [SeriesText]
 const bool AI::loadContent(BinProcessor& proc)
 {
-	/*if(!proc.mandatory<BRAI>())
-	{
-		return false;
-	}*/
-
 	// fix
 	if(!proc.optional<BRAI>())
 	{
 		return false;
 	}
+	m_BRAI = elements_.back();
+	elements_.pop_back();
 
-	proc.optional<SeriesText>();
+	if (proc.optional<SeriesText>())
+	{
+		m_SeriesText = elements_.back();
+		elements_.pop_back();
+	}
 
 	return true;
 }

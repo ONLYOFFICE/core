@@ -20,8 +20,17 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
+	int serialize		(std::wostream & _stream);
+	int serialize_title (std::wostream & _stream, const BaseObjectPtr & attached_label, const BaseObjectPtr & dft_text);
+
 	static const ElementType	type = typeChartSheetSubstream;
-	
+
+	BaseObjectPtr				m_BACKGROUND;
+	std::vector<BaseObjectPtr>	m_arFbi;
+	BaseObjectPtr				m_CHARTFORMATS;
+	BaseObjectPtr				m_SERIESDATA;
+	BaseObjectPtr				m_OBJECTSCHART;
+
 };
 
 } // namespace XLS

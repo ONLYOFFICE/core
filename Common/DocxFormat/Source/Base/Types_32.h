@@ -15,6 +15,7 @@
         typedef uint32_t            _UINT32;
         typedef uint64_t            _UINT64;
 #elif __APPLE__
+#include "stdint.h"
         typedef int16_t             _INT16;
         typedef int32_t             _INT32;
         typedef int64_t             _INT64;

@@ -80,7 +80,6 @@ public:
 };
 
 
-
 BaseObjectPtr SERIESFORMAT::clone()
 {
 	return BaseObjectPtr(new SERIESFORMAT(*this));
@@ -93,16 +92,81 @@ SERIESFORMAT = Series Begin 4AI *SS (SerToCrt / (SerParent (SerAuxTrend / SerAux
 */
 const bool SERIESFORMAT::loadContent(BinProcessor& proc)
 {
+	int count = 0;
+
 	if(!proc.mandatory<Series>())
 	{
 		return false;
 	}
-	proc.mandatory<Begin>();
-	proc.repeated<AI>(4, 4);
-	proc.repeated<SS>(0, 0);
-	proc.mandatory<Parenthesis_SERIESFORMAT_1>();
-	proc.repeated<Parenthesis_SERIESFORMAT_2>(0, 0);
-	proc.mandatory<End>();
+	m_Series = elements_.back();
+	elements_.pop_back();
+	
+	proc.mandatory<Begin>();								elements_.pop_back(); //skip
+	
+	count = proc.repeated<AI>(4, 4);
+	while(count > 0)
+	{
+		m_arAI.insert(m_arAI.begin(), elements_.back());
+		elements_.pop_back();
+		count--;
+	}
+
+	count = proc.repeated<SS>(0, 0);
+	while(count > 0)
+	{
+		m_arSS.insert(m_arSS.begin(), elements_.back());
+		elements_.pop_back();
+		count--;
+	}	
+	//доп серии
+	if (proc.mandatory<Parenthesis_SERIESFORMAT_1>())
+	{
+		count = elements_.size();
+		while(count > 0)
+		{
+			m_arDopSeries.insert(m_arDopSeries.begin(), elements_.back());
+			elements_.pop_back();
+			count--;
+		}
+	}
+
+	count = proc.repeated<Parenthesis_SERIESFORMAT_2>(0, 0); // это типо "нормальных"
+
+	count = elements_.size();
+	while(count > 0)
+	{
+		_series_ex ex;
+
+		ex.legendException = elements_.front();
+		elements_.pop_front(); count--;
+
+		while ( count > 0 ) 
+		{
+			if ("ATTACHEDLABEL" == elements_.front()->getClassName())
+			{
+				ex.attachedLABEL = elements_.front();
+				elements_.pop_front(); count--;
+			}
+			else if ("TEXTPROPS" == elements_.front()->getClassName())
+			{
+				ex.textPROPS = elements_.front();
+				elements_.pop_front(); count--;
+			}
+			else if ("LegendException" == elements_.front()->getClassName())
+			{
+				break;
+				//next
+			}
+			else if (	"Begin" == elements_.front()->getClassName() ||
+						"End"	== elements_.front()->getClassName())
+			{
+				elements_.pop_front(); count--;
+			}
+		}
+		m_SeriesEx.push_back(ex);
+	}
+
+	proc.mandatory<End>();									elements_.pop_back(); //skip
 
 	return true;
 }

@@ -11,7 +11,7 @@ using namespace NSFontCutter;
 #endif
 
 #ifndef DISABLE_FILE_DOWNLOADER
-#include "../../Common/FileDownloader.h"
+#include "../../Common/FileDownloader/FileDownloader.h"
 #endif 
 
 #include "WMFToImageConverter.h"
@@ -291,15 +291,11 @@ namespace NSShapeImageGen
 
 #ifndef DISABLE_FILE_DOWNLOADER
 
-                CFileDownloader oDownloader(string2std_string(strFile1), true);
-				oDownloader.Start( 1 );
-				while ( oDownloader.IsRunned() )
+				CFileDownloader oDownloader(string2std_string(strFile1), true);
+				if (oDownloader.DownloadSync())
 				{
-					::Sleep( 10 );
-				}
-
-				if ( oDownloader.IsFileDownloaded() )
 					strDownload = std_string2string(oDownloader.GetFilePath());
+				}
 
 #endif
 

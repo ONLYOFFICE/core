@@ -22,10 +22,8 @@ public:
 
 	static const XLS::ElementType	type = XLS::typeOfficeArtRGFOPTE;
 
-	void SetOptionsNumber(const unsigned short number);
-	const unsigned short GetOptionsNumber();
-
-	std::vector<OfficeArtFOPTEPtr> rgfopte;
+	void SetOptionsCount(const unsigned short count);
+	const unsigned short GetOptionsCount();
 
 	std::vector<OfficeArtFOPTEPtr> GroupShape_props;
 	std::vector<OfficeArtFOPTEPtr> Shape_props;
@@ -37,7 +35,7 @@ public:
 	std::vector<OfficeArtFOPTEPtr> LineStyle_props;
 	std::vector<OfficeArtFOPTEPtr> Shadow_props;
 	std::vector<OfficeArtFOPTEPtr> Transform_props;
-	unsigned short options_num;
+	unsigned short options_count;
 };
 
 typedef boost::shared_ptr<OfficeArtRGFOPTE> OfficeArtRGFOPTEPtr;

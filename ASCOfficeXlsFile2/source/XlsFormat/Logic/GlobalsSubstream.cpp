@@ -169,7 +169,7 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 		FORMATTING* fmts = dynamic_cast<FORMATTING*>(m_Formating.get());
 		if (fmts)
 		{
-			proc.getGlobalWorkbookInfo()->fonts = &fmts->m_Fonts;
+			proc.getGlobalWorkbookInfo()->m_arFonts = &fmts->m_arFonts;
 		}
 	}
 
@@ -189,7 +189,7 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 	count = proc.repeated<LBL>(0, 0);
 	while(count > 0)
 	{
-		m_LBL.insert(m_LBL.begin(), elements_.back());
+		m_arLBL.insert(m_arLBL.begin(), elements_.back());
 		elements_.pop_back();
 		count--;
 	}
@@ -200,7 +200,7 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 	count = proc.repeated<HFPicture>(0, 0);
 	while(count > 0)
 	{
-		m_HFPicture.insert(m_HFPicture.begin(), elements_.back());
+		m_arHFPicture.insert(m_arHFPicture.begin(), elements_.back());
 		elements_.pop_back();
 		count--;
 	}
@@ -209,7 +209,7 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
     count = proc.repeated(mso_drawiing_group, 0, 0);
 	while(count > 0)
 	{
-		m_MSODRAWINGGROUP.insert(m_MSODRAWINGGROUP.begin(), elements_.back());
+		m_arMSODRAWINGGROUP.insert(m_arMSODRAWINGGROUP.begin(), elements_.back());
 		elements_.pop_back();
 		count--;
 	}

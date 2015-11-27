@@ -19,6 +19,10 @@ public:
 	virtual const bool loadContent(BinProcessor& proc);
 
 	static const ElementType	type = typeDFTTEXT;
+
+	BaseObjectPtr m_DefaultText;
+	BaseObjectPtr m_ATTACHEDLABEL;
+	BaseObjectPtr m_DataLabExt;
 };
 
 } // namespace XLS

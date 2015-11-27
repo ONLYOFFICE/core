@@ -23,15 +23,18 @@ public:
 	static const ElementType	type = typeBopPop;
 
 //-----------------------------
-	BIFF_BYTE pst;
+	BIFF_BYTE		pst;
 	Boolean<unsigned char> fAutoSplit;
-	BIFF_WORD split;
-	BIFF_SHORT iSplitPos;
-	BIFF_SHORT pcSplitPercent;
-	BIFF_SHORT pcPie2Size;
-	BIFF_SHORT pcGap;
-	BIFF_DOUBLE numSplitValue;
-	BIFF_BOOL fHasShadow;
+	BIFF_WORD		split;
+	BIFF_SHORT		iSplitPos;
+	BIFF_SHORT		pcSplitPercent;
+	BIFF_SHORT		pcPie2Size;
+	BIFF_SHORT		pcGap;
+	BIFF_DOUBLE		numSplitValue;
+	BIFF_BOOL		fHasShadow;
+
+
+	BaseObjectPtr	m_Custom;
 };
 
 } // namespace XLS

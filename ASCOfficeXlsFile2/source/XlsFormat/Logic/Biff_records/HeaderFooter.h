@@ -33,6 +33,7 @@ public:
 	BIFF_WORD cchFooterEven;
 	BIFF_WORD cchHeaderFirst;
 	BIFF_WORD cchFooterFirst;
+
 	XLUnicodeString strHeaderEven;
 	XLUnicodeString strFooterEven;
 	XLUnicodeString strHeaderFirst;

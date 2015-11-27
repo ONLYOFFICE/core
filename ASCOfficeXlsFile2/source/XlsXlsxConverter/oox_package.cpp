@@ -24,6 +24,7 @@ static std::wstring get_mime_type(const std::wstring & extension)
  	if (L"jpg" == extension)	return  L"image/x-jpeg";
   	if (L"jpeg" == extension)	return  L"image/x-jpeg";
   	if (L"tiff" == extension)	return  L"image/x-tiff";
+	if (L"bmp" == extension)	return  L"image/bmp";
 	if (L"pdf" == extension)	return  L"application/pdf";
 	if (L"wav" == extension)	return  L"audio/wav";
 	if (L"bin" == extension)	return  L"application/vnd.openxmlformats-officedocument.oleObject";
@@ -141,7 +142,7 @@ void rels_files::add(std::wstring const & Id,
 }
 ///////////////////////////////////////////
 
-chart_content::chart_content() : rels_(rels_file::create(L""))
+chart_content::chart_content() : rels_file_(rels_file::create(L""))
 {
         
 }
@@ -151,10 +152,10 @@ _CP_PTR(chart_content) chart_content::create()
     return boost::make_shared<chart_content>();
 }
 
-void chart_content::add_rel(relationship const & r)
-{
-    rels_->get_rels().add(r);
-}
+//void chart_content::add_rel(relationship const & r)
+//{
+//    rels_->get_rels().add(r);
+//}
 
 ///////////////////////////////////////////
 element_ptr simple_element::create(const std::wstring & FileName, const std::wstring & Content)

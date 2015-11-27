@@ -255,7 +255,7 @@ namespace XMLTools
 
 		/*========================================================================================================*/
 
-		bool operator == ( const XMLElement<T>& element )
+		bool operator == ( const XMLElement<T>& element ) const
 		{
 			bool result = false;
 
@@ -268,8 +268,8 @@ namespace XMLTools
 			else
 			{
 
-                AttMapIterator  thisIter = m_AttributeMap.begin();
-                AttMapIteratorConst elementIter = element.m_AttributeMap.begin();
+				AttMapIteratorConst  thisIter = m_AttributeMap.begin();
+				AttMapIteratorConst elementIter = element.m_AttributeMap.begin();
 
 				for ( ; thisIter != m_AttributeMap.end(); thisIter++, elementIter++ )
 				{
@@ -286,8 +286,8 @@ namespace XMLTools
 			}
 			else
 			{
-                ElementsIterator        thisIter    = m_Elements.begin();
-                ElementsIteratorConst  elementIter = element.m_Elements.begin();
+				ElementsIteratorConst        thisIter    = m_Elements.begin();
+				ElementsIteratorConst  elementIter = element.m_Elements.begin();
 
 				for ( ; thisIter != m_Elements.end(); thisIter++, elementIter++ )
 				{

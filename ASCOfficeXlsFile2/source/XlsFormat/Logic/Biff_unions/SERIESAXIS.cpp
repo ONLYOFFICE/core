@@ -44,19 +44,28 @@ const bool SERIESAXIS::loadContent(BinProcessor& proc)
 	{
 		return false;
 	}
-	proc.mandatory<Begin>();
-	proc.optional<CatSerRange>();
-	proc.mandatory<AXS>();
+	m_Axis = elements_.back();
+	elements_.pop_back();
+
+	proc.mandatory<Begin>();				elements_.pop_back();
+	
+	if (proc.optional<CatSerRange>())
+	{
+		m_CatSerRange = elements_.back();
+		elements_.pop_back();
+	}
+	
+	if (proc.mandatory<AXS>())
+	{
+		m_AXS = elements_.back();
+		elements_.pop_back();
+	}
+
 	proc.optional<CRTMLFRT>();
-	proc.mandatory<End>();
+	proc.mandatory<End>();					elements_.pop_back();
 
 	return true;
 }
-
-//void SERIESAXIS::toXML(MSXML2::IXMLDOMElementPtr own_tag)
-//{
-//	own_tag->setAttribute(L"id", id);
-//}
 
 } // namespace XLS
 

@@ -25,9 +25,9 @@ public:
 	size_t cell_xf_current_id;
 	size_t style_xf_current_id;
 
-	std::vector<BaseObjectPtr>	m_cell_xfs;
-	std::vector<BaseObjectPtr>	m_cell_styles;
-	std::vector<BaseObjectPtr>	m_xf_ext;
+	std::vector<BaseObjectPtr>	m_arCellXFs;
+	std::vector<BaseObjectPtr>	m_arCellStyles;
+	std::vector<BaseObjectPtr>	m_arXFext;
 
 };
 

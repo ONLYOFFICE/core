@@ -34,7 +34,7 @@ BiffString::~BiffString()
 
 
 
-BiffString::operator const std::wstring  () const 
+BiffString::operator std::wstring  () const
 {
 	return str_;
 }

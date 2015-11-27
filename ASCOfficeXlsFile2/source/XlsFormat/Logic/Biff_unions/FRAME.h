@@ -17,8 +17,17 @@ public:
 	BaseObjectPtr clone();
 
 	virtual const bool loadContent(BinProcessor& proc);
+	
+	int serialize(std::wostream & stream_);
 
 	static const ElementType	type = typeFRAME;
+
+	BaseObjectPtr m_Frame;
+	BaseObjectPtr m_AreaFormat;
+	BaseObjectPtr m_LineFormat;
+	BaseObjectPtr m_GELFRAME;
+	BaseObjectPtr m_SHAPEPROPS;
+
 };
 
 } // namespace XLS

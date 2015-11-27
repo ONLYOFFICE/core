@@ -4,8 +4,14 @@
 #include "Utils.h"
 #include <map>
 
-class XmlUtils::CXmlLiteReader;
-class XPS::CWString;
+namespace XmlUtils
+{
+    class CXmlLiteReader;
+}
+namespace XPS
+{
+    class CWString;
+}
 class IRenderer;
 
 namespace XPS

@@ -18,6 +18,10 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
+	BaseObjectPtr				m_AxisParent;
+	BaseObjectPtr				m_Pos;
+	BaseObjectPtr				m_AXES;
+	std::vector<BaseObjectPtr>	m_arCRT;
 };
 
 } // namespace XLS

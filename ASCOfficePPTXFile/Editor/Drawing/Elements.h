@@ -3,7 +3,7 @@
 #include "Shapes/Shape.h"
 
 #ifndef DISABLE_FILE_DOWNLOADER
-    #include "../../../Common/FileDownloader.h"
+    #include "../../../Common/FileDownloader/FileDownloader.h"
 #endif
 
 
@@ -429,13 +429,7 @@ namespace NSPresentationEditor
 		{
 #ifndef DISABLE_FILE_DOWNLOADER
 			CFileDownloader oDownloader(strFile, true);
-			oDownloader.Start( 1 );
-			while ( oDownloader.IsRunned() )
-			{
-				::Sleep( 10 );
-			}
-
-			if ( oDownloader.IsFileDownloaded() )
+			if ( oDownloader.DownloadSync() )
 			{
 				m_strImageFileName = oDownloader.GetFilePath();
 			}

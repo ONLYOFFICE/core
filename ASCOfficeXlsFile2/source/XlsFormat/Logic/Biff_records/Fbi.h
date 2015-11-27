@@ -30,14 +30,6 @@ public:
 	BIFF_WORD scab;
 	FontIndex ifnt;
 
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(dmixBasis)
-		//BO_ATTRIB_MARKUP_ATTRIB(dmiyBasis)
-		//BO_ATTRIB_MARKUP_ATTRIB(twpHeightBasis)
-		//BO_ATTRIB_MARKUP_ATTRIB(scab)
-		//BO_ATTRIB_MARKUP_ATTRIB(ifnt)
-	//BO_ATTRIB_MARKUP_END
 
 };
 

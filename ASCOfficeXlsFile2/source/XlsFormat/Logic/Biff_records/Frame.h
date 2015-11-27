@@ -26,12 +26,6 @@ public:
 	BIFF_WORD frt;
 	BIFF_BOOL fAutoSize;
 	BIFF_BOOL fAutoPosition;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(frt)
-		//BO_ATTRIB_MARKUP_ATTRIB(fAutoSize)
-		//BO_ATTRIB_MARKUP_ATTRIB(fAutoPosition)
-	//BO_ATTRIB_MARKUP_END
 
 };
 

@@ -21,30 +21,31 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
-		176285EB1BAAFC3B00AEDA07 /* Annotation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 176285C11BAAFC3B00AEDA07 /* Annotation.cpp */; settings = {ASSET_TAGS = (); }; };
-		176285EC1BAAFC3B00AEDA07 /* Catalog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 176285C31BAAFC3B00AEDA07 /* Catalog.cpp */; settings = {ASSET_TAGS = (); }; };
-		176285ED1BAAFC3B00AEDA07 /* Destination.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 176285C61BAAFC3B00AEDA07 /* Destination.cpp */; settings = {ASSET_TAGS = (); }; };
-		176285EE1BAAFC3B00AEDA07 /* Document.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 176285C81BAAFC3B00AEDA07 /* Document.cpp */; settings = {ASSET_TAGS = (); }; };
-		176285EF1BAAFC3B00AEDA07 /* Encrypt.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 176285CA1BAAFC3B00AEDA07 /* Encrypt.cpp */; settings = {ASSET_TAGS = (); }; };
-		176285F01BAAFC3B00AEDA07 /* EncryptDictionary.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 176285CC1BAAFC3B00AEDA07 /* EncryptDictionary.cpp */; settings = {ASSET_TAGS = (); }; };
-		176285F11BAAFC3B00AEDA07 /* Font.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 176285CE1BAAFC3B00AEDA07 /* Font.cpp */; settings = {ASSET_TAGS = (); }; };
-		176285F21BAAFC3B00AEDA07 /* Font14.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 176285D01BAAFC3B00AEDA07 /* Font14.cpp */; settings = {ASSET_TAGS = (); }; };
-		176285F31BAAFC3B00AEDA07 /* FontCidTT.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 176285D21BAAFC3B00AEDA07 /* FontCidTT.cpp */; settings = {ASSET_TAGS = (); }; };
-		176285F41BAAFC3B00AEDA07 /* FontTTWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 176285D41BAAFC3B00AEDA07 /* FontTTWriter.cpp */; settings = {ASSET_TAGS = (); }; };
-		176285F51BAAFC3B00AEDA07 /* GState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 176285D61BAAFC3B00AEDA07 /* GState.cpp */; settings = {ASSET_TAGS = (); }; };
-		176285F61BAAFC3B00AEDA07 /* Image.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 176285D81BAAFC3B00AEDA07 /* Image.cpp */; settings = {ASSET_TAGS = (); }; };
-		176285F71BAAFC3B00AEDA07 /* Info.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 176285DA1BAAFC3B00AEDA07 /* Info.cpp */; settings = {ASSET_TAGS = (); }; };
-		176285F81BAAFC3B00AEDA07 /* Objects.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 176285DC1BAAFC3B00AEDA07 /* Objects.cpp */; settings = {ASSET_TAGS = (); }; };
-		176285F91BAAFC3B00AEDA07 /* Outline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 176285DE1BAAFC3B00AEDA07 /* Outline.cpp */; settings = {ASSET_TAGS = (); }; };
-		176285FA1BAAFC3B00AEDA07 /* Pages.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 176285E01BAAFC3B00AEDA07 /* Pages.cpp */; settings = {ASSET_TAGS = (); }; };
-		176285FB1BAAFC3B00AEDA07 /* Pattern.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 176285E21BAAFC3B00AEDA07 /* Pattern.cpp */; settings = {ASSET_TAGS = (); }; };
-		176285FC1BAAFC3B00AEDA07 /* Shading.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 176285E41BAAFC3B00AEDA07 /* Shading.cpp */; settings = {ASSET_TAGS = (); }; };
-		176285FD1BAAFC3B00AEDA07 /* Streams.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 176285E61BAAFC3B00AEDA07 /* Streams.cpp */; settings = {ASSET_TAGS = (); }; };
-		176285FE1BAAFC3B00AEDA07 /* Utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 176285E91BAAFC3B00AEDA07 /* Utils.cpp */; settings = {ASSET_TAGS = (); }; };
-		176E573F1BB0057700276C19 /* BgraFrame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 176E573B1BB0057700276C19 /* BgraFrame.cpp */; settings = {ASSET_TAGS = (); }; };
-		176E57401BB0057700276C19 /* ImageFileFormatChecker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 176E573D1BB0057700276C19 /* ImageFileFormatChecker.cpp */; settings = {ASSET_TAGS = (); }; };
-		17FFC2C21BAB15CE00D91F59 /* PdfRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17FFC2C01BAB15CE00D91F59 /* PdfRenderer.cpp */; settings = {ASSET_TAGS = (); }; };
-		17FFC2C51BAB163500D91F59 /* OnlineOfficeBinToPdf.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17FFC2C31BAB163500D91F59 /* OnlineOfficeBinToPdf.cpp */; settings = {ASSET_TAGS = (); }; };
+		176285EB1BAAFC3B00AEDA07 /* Annotation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 176285C11BAAFC3B00AEDA07 /* Annotation.cpp */; };
+		176285EC1BAAFC3B00AEDA07 /* Catalog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 176285C31BAAFC3B00AEDA07 /* Catalog.cpp */; };
+		176285ED1BAAFC3B00AEDA07 /* Destination.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 176285C61BAAFC3B00AEDA07 /* Destination.cpp */; };
+		176285EE1BAAFC3B00AEDA07 /* Document.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 176285C81BAAFC3B00AEDA07 /* Document.cpp */; };
+		176285EF1BAAFC3B00AEDA07 /* Encrypt.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 176285CA1BAAFC3B00AEDA07 /* Encrypt.cpp */; };
+		176285F01BAAFC3B00AEDA07 /* EncryptDictionary.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 176285CC1BAAFC3B00AEDA07 /* EncryptDictionary.cpp */; };
+		176285F11BAAFC3B00AEDA07 /* Font.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 176285CE1BAAFC3B00AEDA07 /* Font.cpp */; };
+		176285F21BAAFC3B00AEDA07 /* Font14.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 176285D01BAAFC3B00AEDA07 /* Font14.cpp */; };
+		176285F31BAAFC3B00AEDA07 /* FontCidTT.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 176285D21BAAFC3B00AEDA07 /* FontCidTT.cpp */; };
+		176285F41BAAFC3B00AEDA07 /* FontTTWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 176285D41BAAFC3B00AEDA07 /* FontTTWriter.cpp */; };
+		176285F51BAAFC3B00AEDA07 /* GState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 176285D61BAAFC3B00AEDA07 /* GState.cpp */; };
+		176285F61BAAFC3B00AEDA07 /* Image.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 176285D81BAAFC3B00AEDA07 /* Image.cpp */; };
+		176285F71BAAFC3B00AEDA07 /* Info.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 176285DA1BAAFC3B00AEDA07 /* Info.cpp */; };
+		176285F81BAAFC3B00AEDA07 /* Objects.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 176285DC1BAAFC3B00AEDA07 /* Objects.cpp */; };
+		176285F91BAAFC3B00AEDA07 /* Outline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 176285DE1BAAFC3B00AEDA07 /* Outline.cpp */; };
+		176285FA1BAAFC3B00AEDA07 /* Pages.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 176285E01BAAFC3B00AEDA07 /* Pages.cpp */; };
+		176285FB1BAAFC3B00AEDA07 /* Pattern.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 176285E21BAAFC3B00AEDA07 /* Pattern.cpp */; };
+		176285FC1BAAFC3B00AEDA07 /* Shading.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 176285E41BAAFC3B00AEDA07 /* Shading.cpp */; };
+		176285FD1BAAFC3B00AEDA07 /* Streams.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 176285E61BAAFC3B00AEDA07 /* Streams.cpp */; };
+		176285FE1BAAFC3B00AEDA07 /* Utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 176285E91BAAFC3B00AEDA07 /* Utils.cpp */; };
+		176E573F1BB0057700276C19 /* BgraFrame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 176E573B1BB0057700276C19 /* BgraFrame.cpp */; };
+		176E57401BB0057700276C19 /* ImageFileFormatChecker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 176E573D1BB0057700276C19 /* ImageFileFormatChecker.cpp */; };
+		17FFC2C21BAB15CE00D91F59 /* PdfRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17FFC2C01BAB15CE00D91F59 /* PdfRenderer.cpp */; };
+		17FFC2C51BAB163500D91F59 /* OnlineOfficeBinToPdf.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17FFC2C31BAB163500D91F59 /* OnlineOfficeBinToPdf.cpp */; };
+		698AF5051C0766200080D889 /* unicode_util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 698AF5031C0766200080D889 /* unicode_util.cpp */; };
 		7C560FFC1AA73B7D000E5860 /* AscEditorPDFPrinter.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7C560FFB1AA73B7D000E5860 /* AscEditorPDFPrinter.mm */; };
 /* End PBXBuildFile section */
 
@@ -112,6 +113,8 @@
 		17FFC2C11BAB15CE00D91F59 /* PdfRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PdfRenderer.h; path = ../../../PdfWriter/PdfRenderer.h; sourceTree = "<group>"; };
 		17FFC2C31BAB163500D91F59 /* OnlineOfficeBinToPdf.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OnlineOfficeBinToPdf.cpp; path = ../../../PdfWriter/OnlineOfficeBinToPdf.cpp; sourceTree = "<group>"; };
 		17FFC2C41BAB163500D91F59 /* OnlineOfficeBinToPdf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OnlineOfficeBinToPdf.h; path = ../../../PdfWriter/OnlineOfficeBinToPdf.h; sourceTree = "<group>"; };
+		698AF5031C0766200080D889 /* unicode_util.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = unicode_util.cpp; path = ../../../Common/DocxFormat/Source/Base/unicode_util.cpp; sourceTree = "<group>"; };
+		698AF5041C0766200080D889 /* unicode_util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = unicode_util.h; path = ../../../Common/DocxFormat/Source/Base/unicode_util.h; sourceTree = "<group>"; };
 		7C560F6F1AA71A91000E5860 /* libPdfWriter.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPdfWriter.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		7C560FF01AA71C5C000E5860 /* AscEditorPDFPrinter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AscEditorPDFPrinter.h; sourceTree = "<group>"; };
 		7C560FFB1AA73B7D000E5860 /* AscEditorPDFPrinter.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AscEditorPDFPrinter.mm; sourceTree = "<group>"; };
@@ -131,6 +134,8 @@
 		1791A2181BAC19C600FC9C28 /* PdfWriter */ = {
 			isa = PBXGroup;
 			children = (
+				698AF5031C0766200080D889 /* unicode_util.cpp */,
+				698AF5041C0766200080D889 /* unicode_util.h */,
 				7C560FF01AA71C5C000E5860 /* AscEditorPDFPrinter.h */,
 				7C560FFB1AA73B7D000E5860 /* AscEditorPDFPrinter.mm */,
 				17FFC2C11BAB15CE00D91F59 /* PdfRenderer.h */,
@@ -287,7 +292,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "SIMULATOR_LIBRARY_PATH=\"${BUILD_DIR}/${CONFIGURATION}-iphonesimulator/lib${PROJECT_NAME}.a\" &&\nDEVICE_LIBRARY_PATH=\"${BUILD_DIR}/${CONFIGURATION}-iphoneos/lib${PROJECT_NAME}.a\" &&\nUNIVERSAL_LIBRARY_DIR=\"${BUILD_DIR}/${CONFIGURATION}-iphoneuniversal\" &&\nFRAMEWORK=\"${UNIVERSAL_LIBRARY_DIR}/${PROJECT_NAME}_ios.framework\" &&\n\n# Create framework directory structure.\nrm -rf \"${FRAMEWORK}\" &&\nmkdir -p \"${UNIVERSAL_LIBRARY_DIR}\" &&\n\n# Generate universal binary for the device and simulator.\nlipo \"${SIMULATOR_LIBRARY_PATH}\" \"${DEVICE_LIBRARY_PATH}\" -create -output \"${FRAMEWORK}\"\n\ncp -R \"${FRAMEWORK}\" \"${UNIVERSAL_LIBRARY_DIR}\"/../../../../../../../../SDK/lib/ios";
+			shellScript = "SIMULATOR_LIBRARY_PATH=\"${BUILD_DIR}/${CONFIGURATION}-iphonesimulator/lib${PROJECT_NAME}.a\" &&\nDEVICE_LIBRARY_PATH=\"${BUILD_DIR}/${CONFIGURATION}-iphoneos/lib${PROJECT_NAME}.a\" &&\nUNIVERSAL_LIBRARY_DIR=\"${BUILD_DIR}/${CONFIGURATION}-iphoneuniversal\" &&\nFRAMEWORK=\"${UNIVERSAL_LIBRARY_DIR}/${PROJECT_NAME}_ios.framework\" &&\n\n# Create framework directory structure.\nrm -rf \"${FRAMEWORK}\" &&\nmkdir -p \"${UNIVERSAL_LIBRARY_DIR}\" &&\n\n# Generate universal binary for the device and simulator.\nlipo \"${SIMULATOR_LIBRARY_PATH}\" \"${DEVICE_LIBRARY_PATH}\" -create -output \"${FRAMEWORK}\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -307,6 +312,7 @@
 				17FFC2C51BAB163500D91F59 /* OnlineOfficeBinToPdf.cpp in Sources */,
 				176285FE1BAAFC3B00AEDA07 /* Utils.cpp in Sources */,
 				7C560FFC1AA73B7D000E5860 /* AscEditorPDFPrinter.mm in Sources */,
+				698AF5051C0766200080D889 /* unicode_util.cpp in Sources */,
 				176285F81BAAFC3B00AEDA07 /* Objects.cpp in Sources */,
 				176285F91BAAFC3B00AEDA07 /* Outline.cpp in Sources */,
 				176285F01BAAFC3B00AEDA07 /* EncryptDictionary.cpp in Sources */,

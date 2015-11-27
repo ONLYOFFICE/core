@@ -117,7 +117,7 @@ namespace XmlUtils
 	}
 	AVSINLINE CString GetNamespace(const wchar_t* strNodeName)
 	{
-		const wchar_t* find = wcschr(strNodeName, TCHAR(':'));
+		const wchar_t* find = ::wcschr(strNodeName, wchar_t(':'));
 		if(NULL == find)
 			return _T("");
 		return CString(strNodeName, find - strNodeName);
@@ -138,7 +138,7 @@ namespace XmlUtils
 	}
 	AVSINLINE CString GetNameNoNS(const wchar_t* strNodeName)
 	{
-		const wchar_t* find = wcschr(strNodeName, TCHAR(':'));
+		const wchar_t* find = ::wcschr(strNodeName, TCHAR(':'));
 		if(NULL == find)
 			return CString(strNodeName);
 		return CString(find + 1);

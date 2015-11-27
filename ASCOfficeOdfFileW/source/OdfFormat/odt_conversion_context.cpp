@@ -616,7 +616,7 @@ bool odt_conversion_context::start_comment(int oox_comm_id)
 		if (text_context()->current_level_.size() > 0)
 			text_context()->current_level_.back().elm->add_child_element(comm_elm);
 
-		odf_element_state state={comm_elm, L"", office_element_ptr(),text_context()->current_level_.size()};
+		odf_element_state state={comm_elm, L"", office_element_ptr(),(int)text_context()->current_level_.size()};
 		text_context()->current_level_.push_back(state);
 
 		return false; //типо новый

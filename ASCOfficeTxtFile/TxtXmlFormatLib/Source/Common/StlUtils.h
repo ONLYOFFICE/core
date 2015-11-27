@@ -53,7 +53,7 @@ namespace StlUtils
 
 	static int ToInteger(const std::string& strValue)
 	{
-		return atoi(strValue.c_str());
+		return std::stoi(strValue);
 	}
 
 	static int ToInteger(const std::wstring& strValue)
@@ -67,7 +67,7 @@ namespace StlUtils
 
 	static double ToDouble(const std::string& strValue)
 	{
-		return atof(strValue.c_str());
+		return std::stod(strValue.c_str());
 	}
 
 	static double ToDouble(const std::wstring& strValue)

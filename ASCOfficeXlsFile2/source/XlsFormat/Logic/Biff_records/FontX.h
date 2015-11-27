@@ -24,10 +24,6 @@ public:
 
 //-----------------------------
 	BIFF_WORD iFont;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(iFont)
-	//BO_ATTRIB_MARKUP_END
 
 };
 

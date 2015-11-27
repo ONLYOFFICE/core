@@ -20,6 +20,20 @@ public:
 
 	static const ElementType	type = typeSS;
 	
+	BaseObjectPtr	m_DataFormat;
+	
+	BaseObjectPtr	m_Chart3DBarShape;
+	BaseObjectPtr	m_LineFormat;
+	BaseObjectPtr	m_AreaFormat;
+	BaseObjectPtr	m_PieFormat;
+
+	BaseObjectPtr	m_SerFmt;
+	BaseObjectPtr	m_GELFRAME;
+	BaseObjectPtr	m_MarkerFormat;
+	BaseObjectPtr	m_AttachedLabel;
+	
+	std::vector<BaseObjectPtr >	m_arSHAPEPROPS;
+	
 };
 
 } // namespace XLS

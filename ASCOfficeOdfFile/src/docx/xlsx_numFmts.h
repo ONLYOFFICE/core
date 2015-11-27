@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <iostream>
 #include <iosfwd>
 
 #include <boost/noncopyable.hpp>

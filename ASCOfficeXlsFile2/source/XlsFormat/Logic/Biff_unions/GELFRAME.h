@@ -19,6 +19,13 @@ public:
 	virtual const bool loadContent(BinProcessor& proc);
 
 	static const ElementType	type = typeGELFRAME;
+
+	int serialize(std::wostream & stream_);
+
+	GlobalWorkbookInfoPtr global_info;
+
+	BaseObjectPtr	m_GelFrame;
+	BaseObjectPtr	m_PICF;
 };
 
 } // namespace XLS

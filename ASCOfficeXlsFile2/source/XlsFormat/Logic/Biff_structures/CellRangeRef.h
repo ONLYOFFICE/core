@@ -29,7 +29,7 @@ public:
 
 	const std::wstring	toString(const bool useShortForm = true) const;
 	void				fromString(const std::wstring& str);
-	operator const std::wstring  () const;
+	operator std::wstring  () const;
 
 	const CellRef getTopLeftCell() const;
 

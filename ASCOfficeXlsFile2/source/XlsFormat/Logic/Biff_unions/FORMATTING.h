@@ -25,8 +25,8 @@ public:
 
 	BaseObjectPtr				m_Styles;
 	BaseObjectPtr				m_XFS;
-	std::vector<BaseObjectPtr>	m_Formats;
-	std::vector<BaseObjectPtr>	m_Fonts;
+	std::vector<BaseObjectPtr>	m_arFormats;
+	std::vector<BaseObjectPtr>	m_arFonts;
 	BaseObjectPtr				m_Palette;
 	BaseObjectPtr				m_ClrtClient;
 

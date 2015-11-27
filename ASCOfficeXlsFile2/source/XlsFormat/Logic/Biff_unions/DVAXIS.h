@@ -23,6 +23,22 @@ public:
 
 	unsigned int id;
 
+	BaseObjectPtr	m_Axis;
+	BaseObjectPtr	m_AXS;
+
+	BaseObjectPtr	m_ValueRange;
+	BaseObjectPtr	m_AXM;
+
+	BaseObjectPtr	m_CatSerRange;
+	BaseObjectPtr	m_Tick;
+	BaseObjectPtr	m_FontX;
+	
+	BaseObjectPtr	m_AxisLine1;
+	BaseObjectPtr	m_LineFormat1;
+	BaseObjectPtr	m_AxisLine2;
+	BaseObjectPtr	m_LineFormat2;
+
+
 };
 
 } // namespace XLS

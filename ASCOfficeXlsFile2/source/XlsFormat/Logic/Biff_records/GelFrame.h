@@ -20,18 +20,15 @@ public:
 	BaseObjectPtr clone();
 
 	void writeFields(CFRecord& record);
-	void readFields(CFRecord& record);
+	void readFields	(CFRecord& record);
+
+	void concatinate(GelFrame * addit);
 
 	static const ElementType	type = typeGelFrame;
 
 //-----------------------------
-	ODRAW::OfficeArtFOPT OPT1;
-	ODRAW::OfficeArtTertiaryFOPT OPT2;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_COMPLEX(OPT1)
-		//BO_ATTRIB_MARKUP_COMPLEX(OPT2)
-	//BO_ATTRIB_MARKUP_END
+	ODRAW::OfficeArtFOPT			OPT1;
+	ODRAW::OfficeArtTertiaryFOPT	OPT2;
 
 };
 

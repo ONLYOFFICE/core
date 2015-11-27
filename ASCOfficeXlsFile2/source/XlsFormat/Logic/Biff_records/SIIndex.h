@@ -23,11 +23,9 @@ public:
 	static const ElementType	type = typeSIIndex;
 
 //-----------------------------
-	BIFF_WORD numIndex;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(numIndex)
-	//BO_ATTRIB_MARKUP_END
+	BIFF_WORD					numIndex;
+
+	std::vector<BaseObjectPtr >	m_arData;
 
 };
 

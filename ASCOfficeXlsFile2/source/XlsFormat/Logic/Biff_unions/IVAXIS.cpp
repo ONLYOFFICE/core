@@ -52,25 +52,42 @@ const bool IVAXIS::loadContent(BinProcessor& proc)
 	{
 		return false;
 	}
-	proc.mandatory<Begin>();
-	proc.optional<CatSerRange>();
-	proc.mandatory<AxcExt>(); // 4-th place
-	proc.optional<CatLab>();
-	proc.mandatory<AXS>();
+	m_Axis = elements_.back();
+	elements_.pop_back();
+
+	proc.mandatory<Begin>();					elements_.pop_back();
+	
+	if (proc.optional<CatSerRange>())
+	{
+		m_CatSerRange = elements_.back();
+		elements_.pop_back();
+	}
+
+	if (proc.mandatory<AxcExt>()) // 4-th place
+	{
+		m_AxcExt = elements_.back();
+		elements_.pop_back();
+	}
+
+	if (proc.optional<CatLab>())
+	{
+		m_CatLab = elements_.back();
+		elements_.pop_back();
+	}
+	if (proc.mandatory<AXS>())
+	{
+		m_AXS = elements_.back();
+		elements_.pop_back();
+	}
 	proc.optional<CRTMLFRT>();
 	
 	// fix
 	proc.optional<CRTMLFRT>();
 
-	proc.mandatory<End>();
+	proc.mandatory<End>();						elements_.pop_back();
 
 	return true;
 }
-
-//void IVAXIS::toXML(MSXML2::IXMLDOMElementPtr own_tag)
-//{
-//	own_tag->setAttribute(L"id", id);
-//}
 
 } // namespace XLS
 

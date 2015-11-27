@@ -5,13 +5,6 @@
 #include "../DesktopEditor/common/Base64.h"
 #include "../DesktopEditor/common/String.h"
 
-#ifdef _ARM_ALIGN_
-#if !defined(_WIN32) && !defined(_WIN64)
-#include "../../../Common/DocxFormat/Source/Base/unicode_util.h"
-#include "../../../Common/DocxFormat/Source/Base/ASCString.h"
-#endif
-#endif
-
 #ifndef _INT32
 typedef int _INT32;
 #endif
@@ -177,9 +170,9 @@ namespace NSOnlineOfficeBinToPdf
 		{
 #if !defined(_WIN32) && !defined(_WIN64)
 			int len = nLen / 2;
-			UTF16* buf = new UTF16[len];
+			unsigned short* buf = new unsigned short[len];
 			memcpy(buf, pData, nLen);
-			wsTempString = stringUtf16ToWString(buf, len);
+			wsTempString = NSStringExt::CConverter::GetUnicodeFromUTF16((unsigned short*)buf, len);
 			RELEASEARRAYOBJECTS(buf);
 #endif
 		}

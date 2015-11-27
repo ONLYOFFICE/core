@@ -30,9 +30,10 @@ const bool PICF::loadContent(BinProcessor& proc)
 	if(!proc.mandatory<Begin>())
 	{
 		return false;
-	}
+	}								elements_.pop_back();
 	proc.mandatory<PicF>();
-	proc.mandatory<End>();
+	m_PicF = elements_.back();		elements_.pop_back();
+	proc.mandatory<End>();			elements_.pop_back();
 
 	return true;
 }

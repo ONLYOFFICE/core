@@ -17,6 +17,12 @@ public:
 	BaseObjectPtr clone();
 
 	virtual const bool loadContent(BinProcessor& proc);
+
+	std::vector<BaseObjectPtr >	m_arAxes;
+	std::vector<BaseObjectPtr >	m_arATTACHEDLABEL;
+
+	BaseObjectPtr				m_PlotArea;
+	BaseObjectPtr				m_FRAME;
 };
 
 } // namespace XLS

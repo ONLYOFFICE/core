@@ -118,7 +118,7 @@ XlsConverter::XlsConverter(const std::wstring & xls_file, const std::wstring & _
 			workbook_code_page = XLS::WorkbookStreamObject::DefaultCodePage;
 		}
 
-		xls_global_info = boost::shared_ptr<XLS::GlobalWorkbookInfo>(new XLS::GlobalWorkbookInfo(workbook_code_page));
+		xls_global_info = boost::shared_ptr<XLS::GlobalWorkbookInfo>(new XLS::GlobalWorkbookInfo(workbook_code_page, this));
 
 
 		XLS::CFStreamCacheReader stream_reader(cfile.getWorkbookStream(), xls_global_info);
@@ -229,18 +229,18 @@ void XlsConverter::convert(XLS::WorkbookStreamObject* woorkbook)
 
 	convert((XLS::GlobalsSubstream*)woorkbook->m_GlobalsSubstream.get());
 
-    for (int i=0 ; i < woorkbook->m_WorksheetSubstream.size(); i++)
+    for (int i=0 ; i < woorkbook->m_arWorksheetSubstream.size(); i++)
 	{
 		xlsx_context->start_table(xls_global_info->sheets_names[i]);
 
-		if (woorkbook->m_WorksheetSubstream[i]->get_type() == XLS::typeWorksheetSubstream)
+		if (woorkbook->m_arWorksheetSubstream[i]->get_type() == XLS::typeWorksheetSubstream)
 		{
-			convert(dynamic_cast<XLS::WorksheetSubstream*>(woorkbook->m_WorksheetSubstream[i].get()));
+			convert(dynamic_cast<XLS::WorksheetSubstream*>(woorkbook->m_arWorksheetSubstream[i].get()));
 		}
-		else if (woorkbook->m_WorksheetSubstream[i]->get_type() == XLS::typeChartSheetSubstream)
+		else if (woorkbook->m_arWorksheetSubstream[i]->get_type() == XLS::typeChartSheetSubstream)
 		{
 			//в xl\chartsheets
-			convert(dynamic_cast<XLS::ChartSheetSubstream*>(woorkbook->m_WorksheetSubstream[i].get()));
+			convert(dynamic_cast<XLS::ChartSheetSubstream*>(woorkbook->m_arWorksheetSubstream[i].get()));
 		}
 
 		xlsx_context->end_table();
@@ -279,22 +279,22 @@ void XlsConverter::convert(XLS::WorksheetSubstream* sheet)
 	{
 		sheet->m_CELLTABLE->serialize(xlsx_context->current_sheet().sheetData());
 	}
-	if (sheet->m_MergeCells.size() > 0)
+	if (sheet->m_arMergeCells.size() > 0)
 	{
 		CP_XML_WRITER(xlsx_context->current_sheet().mergeCells())    
 		{
 			CP_XML_NODE(L"mergeCells")
 			{  		
-                for (int i = 0 ; i < sheet->m_MergeCells.size(); i++)
+                for (int i = 0 ; i < sheet->m_arMergeCells.size(); i++)
 				{
-					sheet->m_MergeCells[i]->serialize(CP_XML_STREAM());
+					sheet->m_arMergeCells[i]->serialize(CP_XML_STREAM());
 				}
 			}
 		}
 	}
-    for (int i = 0 ; i < sheet->m_HLINK.size(); i++)
+    for (int i = 0 ; i < sheet->m_arHLINK.size(); i++)
 	{
-		convert((XLS::HLINK*)sheet->m_HLINK[i].get());
+		convert((XLS::HLINK*)sheet->m_arHLINK[i].get());
 	}
 	convert((XLS::OBJECTS*)sheet->m_OBJECTS.get());
 
@@ -314,14 +314,14 @@ void XlsConverter::convert(XLS::GlobalsSubstream* global)
 
 	convert((XLS::SHAREDSTRINGS*)global->m_SHAREDSTRINGS.get());
 
-    for (int i = 0 ; i < global->m_LBL.size(); i++)
+    for (int i = 0 ; i < global->m_arLBL.size(); i++)
 	{
-		convert((XLS::LBL*)global->m_LBL[i].get());
+		convert((XLS::LBL*)global->m_arLBL[i].get());
 	}
 
-    for (int i = 0 ; i < global->m_MSODRAWINGGROUP.size(); i++)
+    for (int i = 0 ; i < global->m_arMSODRAWINGGROUP.size(); i++)
 	{
-		convert((XLS::MSODRAWINGGROUP*)global->m_MSODRAWINGGROUP[i].get());
+		convert((XLS::MSODRAWINGGROUP*)global->m_arMSODRAWINGGROUP[i].get());
 	}
 }
 
@@ -416,61 +416,68 @@ void XlsConverter::convert(XLS::MSODRAWINGGROUP * mso_drawing)
 		
 }
 
-void XlsConverter::convert(ODRAW::OfficeArtBStoreContainer* art_bstore)
+std::wstring XlsConverter::WriteMediaFile	(char *data, int size, std::wstring type_ext, int id)
 {
-	if (art_bstore == NULL) return;
-	if (art_bstore->rgfb.size() < 1) return;
+	if (size < 1 || !data) return L"";
+	
+	if (id < 0)		id = xlsx_context->get_mediaitems().count_image + 100;
 
 	std::wstring xl_path = xlsx_path + FILE_SEPARATOR_STR + L"xl";
 	FileSystem::Directory::CreateDirectory(xl_path.c_str());
 	
 	FileSystem::Directory::CreateDirectory((xl_path + FILE_SEPARATOR_STR + L"media").c_str());
 
+	bool res = false;
+	std::wstring file_name = L"image" + boost::lexical_cast<std::wstring>(id);
+	
+	if (type_ext == L"dib_data")
+	{
+		file_name += std::wstring(L".png");
+
+		BITMAPINFOHEADER * header = (BITMAPINFOHEADER *)data;
+
+		CBgraFrame frame;
+		int offset = size - header->biSizeImage;
+		frame.put_Data((BYTE*)data + header->biSize);
+
+		frame.put_Height(header->biHeight);
+		frame.put_Width	(header->biWidth);
+		frame.put_Stride(-header->biBitCount / 8 * header->biWidth);
+
+		res = frame.SaveFile(xl_path + FILE_SEPARATOR_STR + L"media" + FILE_SEPARATOR_STR + file_name, 4);
+		frame.put_Data(NULL);
+	}
+	else
+	{
+		file_name  += type_ext;
+
+		NSFile::CFileBinary file;
+		if (file.CreateFileW(xl_path + FILE_SEPARATOR_STR + L"media" + FILE_SEPARATOR_STR + file_name))
+		{
+			file.WriteFile((BYTE*)data, size);
+			file.CloseFile();
+			res = true;
+		}
+	}
+
+	if (res)
+	{
+		xlsx_context->get_mediaitems().add_image(L"media/" + file_name, id);
+		return L"media/" + file_name;
+	}
+	return L"";
+}
+
+void XlsConverter::convert(ODRAW::OfficeArtBStoreContainer* art_bstore)
+{
+	if (art_bstore == NULL) return;
+	if (art_bstore->rgfb.size() < 1) return;
+
     for (int i =0 ; i < art_bstore->rgfb.size(); i++)
 	{
 		int bin_id = i + 1;
-		if (art_bstore->rgfb[i]->data_size > 0 && art_bstore->rgfb[i]->pict_data)
-		{	
-			bool res = false;
-			std::wstring file_name = L"image" + boost::lexical_cast<std::wstring>(bin_id);
-			if (art_bstore->rgfb[i]->pict_type == L"dib_data")
-			{
-				file_name += std::wstring(L".png");
 
-				BITMAPINFOHEADER * header = (BITMAPINFOHEADER *)art_bstore->rgfb[i]->pict_data;
-
-				CBgraFrame frame;
-				int offset = art_bstore->rgfb[i]->data_size - header->biSizeImage;
-				frame.put_Data((BYTE*)art_bstore->rgfb[i]->pict_data + header->biSize);
-
-				frame.put_Height(header->biHeight);
-				frame.put_Width	(header->biWidth);
-				frame.put_Stride(-header->biBitCount / 8 * header->biWidth);
-
-				res = frame.SaveFile(xl_path + FILE_SEPARATOR_STR + L"media" + FILE_SEPARATOR_STR + file_name, 4);
-				frame.put_Data(NULL);
-			}
-			else
-			{
-				file_name  += art_bstore->rgfb[i]->pict_type;
-
-				NSFile::CFileBinary file;
-				if (file.CreateFileW(xl_path + FILE_SEPARATOR_STR + L"media" + FILE_SEPARATOR_STR + file_name))
-				{
-					file.WriteFile((BYTE*)art_bstore->rgfb[i]->pict_data, art_bstore->rgfb[i]->data_size);
-					file.CloseFile();
-					res = true;
-				}
-			}
-
-			if (res)
-				xlsx_context->get_mediaitems().add_image(L"media/" + file_name, bin_id);
-		}
-		else
-		{
-			//???
-		}
-
+		WriteMediaFile(art_bstore->rgfb[i]->pict_data, art_bstore->rgfb[i]->pict_size, art_bstore->rgfb[i]->pict_type, bin_id);
 	}
 }
 
@@ -583,17 +590,9 @@ void XlsConverter::convert(XLS::OBJECTS* objects)
 				}
 				convert(sp, true);
 			}
+			convert(text_obj);
+			convert(chart);
 
-			if (text_obj)
-			{
-				std::wstringstream strm;
-				text_obj->serialize(strm);
-
-				xlsx_context->get_drawing_context().set_text(strm.str());
-			}
-			if (chart)
-			{
-			}
 			xlsx_context->get_drawing_context().end_drawing();
 		}
 
@@ -680,10 +679,19 @@ void XlsConverter::convert_fill_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & pr
 			}break;
 			case 0x0186:
 			{
-				bool isIternal = false;
-				std::wstring target;
-				std::wstring rId = xlsx_context->get_mediaitems().find_image(props[i]->op , target, isIternal);
-				xlsx_context->get_drawing_context().set_image(target);
+				ODRAW::fillBlip *fillBlip = (ODRAW::fillBlip *)(props[i].get());
+				if (fillBlip->blip)
+				{
+					std::wstring target = WriteMediaFile(fillBlip->blip->pict_data,fillBlip->blip->pict_size, fillBlip->blip->pict_type);
+					xlsx_context->get_drawing_context().set_image(target);
+				}
+				else
+				{
+					bool isIternal = false;
+					std::wstring target;
+					std::wstring rId = xlsx_context->get_mediaitems().find_image(props[i]->op , target, isIternal);
+					xlsx_context->get_drawing_context().set_image(target);
+				}
 			}break;
 			case 0x01BF:
 			{
@@ -952,4 +960,22 @@ void XlsConverter::convert(XLS::SHAREDSTRINGS* sharedstrings)
 	{
 		(*it)->serialize(xlsx_context->shared_strings());
 	}
+}
+
+void XlsConverter::convert(XLS::TxO * text_obj)
+{
+	if (text_obj == NULL) return;
+	
+	std::wstringstream strm;
+	text_obj->serialize(strm);
+
+	xlsx_context->get_drawing_context().set_text(strm.str());
+}
+
+void XlsConverter::convert(XLS::ChartSheetSubstream * chart)
+{
+	if (chart == NULL) return;
+
+	//chart->serialize(xlsx_context->current_chart().chartData());	
+	//convert(chart->m_OBJECTSCHART.get());непонятные какие то текстбоксы - пустые и бз привязок
 }

@@ -6,7 +6,6 @@
 namespace XLS
 {
 
-
 // Logical representation of ShapePropsStream record in BIFF8
 class ShapePropsStream: public BiffRecord
 {
@@ -24,6 +23,7 @@ public:
 	static const ElementType	type = typeShapePropsStream;
 
 	FrtHeader		frtHeader;
+	
 	unsigned short  wObjContext;
 	unsigned int	dwChecksum;
 

@@ -138,29 +138,94 @@ const bool CRT::loadContent(BinProcessor& proc)
 		return false;
 	}	
 
-	proc.mandatory<Begin>();	
+	m_ChartFormat = elements_.back();
+	elements_.pop_back(); 
+
+	proc.mandatory<Begin>();				elements_.pop_back();
 	proc.mandatory<Parenthesis_CRT_1>();
+
+	m_ChartType = elements_.front();
+	elements_.pop_front();
+
+	if (elements_.size() > 0 && "BopPop" == m_ChartType->getClassName())
+	{
+		BopPop *bp = dynamic_cast<BopPop*>(m_ChartType.get());
+		bp->m_Custom = elements_.front();
+		elements_.pop_front();
+	}
 	
-	//proc.mandatory<CrtLink>();
+	if (proc.optional<CrtLink>())
+	{
+		m_CrtLink = elements_.back();
+		elements_.pop_back();
+	}
 
-	// fix
-	proc.optional<CrtLink>();
-
-	proc.optional<SeriesList>();
-	proc.optional<Chart3d>();
-	proc.optional<LD>();
+	if (proc.optional<SeriesList>())
+	{
+		m_SeriesList = elements_.back();
+		elements_.pop_back();
+	}
+	if (proc.optional<Chart3d>())
+	{
+		m_Chart3d = elements_.back();
+		elements_.pop_back();
+	}
+	if (proc.optional<LD>())
+	{
+		m_LD = elements_.back();
+		elements_.pop_back();
+	}
+	
 	if(proc.optional<DROPBAR>())
 	{
+		m_DROPBAR[0] = elements_.back();
+		elements_.pop_back();
+
 		proc.mandatory<DROPBAR>();
+		m_DROPBAR[1] = elements_.back();
+		elements_.pop_back();
 	}
-	proc.repeated<Parenthesis_CRT_2>(0, 4);
-	proc.repeated<DFTTEXT>(0, 2);
-	proc.optional<DataLabExtContents>();
-	proc.optional<SS>();
-	proc.repeated<SHAPEPROPS>(0, 4);
-	proc.mandatory<End>();
+	
+	int count = proc.repeated<Parenthesis_CRT_2>(0, 4);
+	while(count > 0)
+	{
+		if ("CrtLine" == elements_.front()->getClassName())
+		{	
+			m_arCrtLine.push_back(elements_.front());
+		}
+		else if ("LineFormat" == elements_.front()->getClassName())
+		{
+			CrtLine * crt_line = dynamic_cast<CrtLine *>(m_arCrtLine.back().get());
+			crt_line->m_LineFormat = elements_.front();
+		} 
+		elements_.pop_front(); count--;
+	}
 
+	count = proc.repeated<DFTTEXT>(0, 2);
+	while(count > 0)
+	{
+		m_arDFTTEXT.push_back(elements_.front());
+		elements_.pop_front(); count--;
+	}
 
+	if (proc.optional<DataLabExtContents>())
+	{
+		m_DataLabExtContents = elements_.back();
+		elements_.pop_back();
+	}
+	if (proc.optional<SS>())
+	{
+		m_SS = elements_.back();
+		elements_.pop_back();
+	}
+	count = proc.repeated<SHAPEPROPS>(0, 4);
+	while(count > 0)
+	{
+		m_arSHAPEPROPS.push_back(elements_.front());
+		elements_.pop_front(); count--;
+	}
+	
+	proc.mandatory<End>();					elements_.pop_back();
 	return true;
 }
 

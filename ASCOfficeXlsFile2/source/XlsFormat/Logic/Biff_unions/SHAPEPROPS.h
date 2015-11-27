@@ -18,7 +18,11 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
+	int serialize(std::wostream & stream_);
+
 	static const ElementType	type = typeSHAPEPROPS;
+
+	BaseObjectPtr m_ShapePropsStream;
 	
 };
 

@@ -50,7 +50,7 @@ std::size_t hash_value(xlsx_alignment const & val)
 
 bool is_default(const xlsx_alignment & rVal)
 {
-    const xlsx_alignment defaultAlignment;
+    /*const */xlsx_alignment defaultAlignment;
     return rVal == defaultAlignment;
 }
 

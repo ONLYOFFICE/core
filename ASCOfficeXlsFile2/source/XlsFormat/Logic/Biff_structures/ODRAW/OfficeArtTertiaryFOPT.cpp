@@ -17,19 +17,6 @@ XLS::BiffStructurePtr OfficeArtTertiaryFOPT::clone()
 	return XLS::BiffStructurePtr(new OfficeArtTertiaryFOPT(*this));
 }
 
-
-//void OfficeArtTertiaryFOPT::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	fopt.toXML(xml_tag);
-//}
-//
-//
-//void OfficeArtTertiaryFOPT::getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	fopt.fromXML(xml_tag);
-//}
-
-
 void OfficeArtTertiaryFOPT::storeFields(XLS::CFRecord& record)
 {
 	record << fopt;
@@ -38,14 +25,14 @@ void OfficeArtTertiaryFOPT::storeFields(XLS::CFRecord& record)
 
 void OfficeArtTertiaryFOPT::loadFields(XLS::CFRecord& record)
 {
-	fopt.SetOptionsNumber(rh_own.recInstance);
+	fopt.SetOptionsCount(rh_own.recInstance);
 	record >> fopt;
 }
 
 
 const unsigned short OfficeArtTertiaryFOPT::GetInstanceToStore()
 {
-	return fopt.GetOptionsNumber();
+	return fopt.GetOptionsCount();
 }
 
 

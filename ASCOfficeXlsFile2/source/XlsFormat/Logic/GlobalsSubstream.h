@@ -30,9 +30,9 @@ public:
 	BaseObjectPtr				m_Template;
 	BaseObjectPtr				m_SHAREDSTRINGS;
 
-	std::vector<BaseObjectPtr>	m_HFPicture;
-	std::vector<BaseObjectPtr>	m_LBL;
-	std::vector<BaseObjectPtr>	m_MSODRAWINGGROUP;
+	std::vector<BaseObjectPtr>	m_arHFPicture;
+	std::vector<BaseObjectPtr>	m_arLBL;
+	std::vector<BaseObjectPtr>	m_arMSODRAWINGGROUP;
 	
 	unsigned short code_page_;
 };

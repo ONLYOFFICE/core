@@ -72,25 +72,37 @@ std::wstring external_items::add_image(const std::wstring & image, int bin_id)
 
     return rId;
 }
+std::wstring external_items::add_chart(std::wstring & oox_target)
+{
+    const bool isMediaInternal = true;
+  
+	count_charts++;  
+	
+	std::wstring rId = std::wstring(L"chartId") + boost::lexical_cast<std::wstring>(count_charts);
+	oox_target = std::wstring(L"charts/chart") + boost::lexical_cast<std::wstring>(count_charts) + L".xml";
+		
+	items_.push_back( item(oox_target, typeChart, isMediaInternal, -1, rId) );
 
-std::wstring external_items::find_image(int _id, std::wstring & target, bool & isInternal)
+    return rId;
+}
+std::wstring external_items::find_image(int _id, std::wstring & oox_target, bool & isInternal)
 {
     for (int i=0 ; i <items_.size(); i ++)
 	{
 		if (items_[i].type == typeImage && items_[i].id == _id)
 		{
-			target = items_[i].uri;
-			isInternal = items_[i].mediaInternal;
+			oox_target	= items_[i].uri;
+			isInternal	= items_[i].mediaInternal;
 			return items_[i].rId;
 		}
 	}
 	return L"";
 }
-std::wstring external_items::find_image(const std::wstring & target, bool & isInternal)
+std::wstring external_items::find_image(const std::wstring & oox_target, bool & isInternal)
 {
     for (int i=0 ; i <items_.size(); i ++)
 	{
-		if (items_[i].type == typeImage && items_[i].uri == target)
+		if (items_[i].type == typeImage && items_[i].uri == oox_target)
 		{
 			isInternal = items_[i].mediaInternal;
 			return items_[i].rId;

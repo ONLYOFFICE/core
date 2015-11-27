@@ -52,31 +52,76 @@ const bool DVAXIS::loadContent(BinProcessor& proc)
 	{
 		return false;
 	}
-	proc.mandatory<Begin>();
-	proc.optional<ValueRange>();
-	proc.optional<AXM>();
-	proc.mandatory<AXS>();
+	m_Axis = elements_.back();
+	elements_.pop_back();
+
+	proc.mandatory<Begin>();				elements_.pop_back();
+	
+	if (proc.optional<ValueRange>())
+	{
+		m_ValueRange = elements_.back();
+		elements_.pop_back();
+	}
+	
+	if (proc.optional<AXM>())
+	{
+		m_AXM = elements_.back();
+		elements_.pop_back();
+	}
+	
+	if (proc.mandatory<AXS>())
+	{
+		m_AXS = elements_.back();
+		elements_.pop_back();
+	}
+
 	proc.optional<CRTMLFRT>();
 
-	// fix
-	proc.optional<CatSerRange>();
-	proc.optional<Tick>();
-	proc.optional<FontX>();
-	proc.optional<AxisLine>();
-	proc.optional<LineFormat>();
+	if (proc.optional<CatSerRange>())
+	{
+		m_CatSerRange = elements_.back();
+		elements_.pop_back();
+	}
 
-	proc.optional<AxisLine>();
-	proc.optional<LineFormat>();
+	if (proc.optional<Tick>())
+	{
+		m_Tick = elements_.back();
+		elements_.pop_back();
+	}
+
+	if (proc.optional<FontX>())
+	{
+		m_FontX = elements_.back();
+		elements_.pop_back();
+	}
+
+	if (proc.optional<AxisLine>())
+	{
+		m_AxisLine1 = elements_.back();
+		elements_.pop_back();
+	}
+
+	if (proc.optional<LineFormat>())
+	{
+		m_LineFormat1 = elements_.back();
+		elements_.pop_back();
+	}
+
+	if (proc.optional<AxisLine>())
+	{
+		m_AxisLine2 = elements_.back();
+		elements_.pop_back();
+	}
+
+	if (proc.optional<LineFormat>())
+	{
+		m_LineFormat2 = elements_.back();
+		elements_.pop_back();
+	}
 	
-	proc.mandatory<End>();
+	proc.mandatory<End>();						elements_.pop_back();
 
 	return true;
 }
-
-//void DVAXIS::toXML(MSXML2::IXMLDOMElementPtr own_tag)
-//{
-//	own_tag->setAttribute(L"id", id);
-//}
-
 } // namespace XLS
 

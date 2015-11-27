@@ -27,13 +27,7 @@ public:
 	BIFF_WORD iObjectContext;
 	BIFF_WORD iObjectInstance1;
 	BIFF_WORD iObjectInstance2;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(iObjectKind)
-		//BO_ATTRIB_MARKUP_ATTRIB(iObjectContext)
-		//BO_ATTRIB_MARKUP_ATTRIB(iObjectInstance1)
-		//BO_ATTRIB_MARKUP_ATTRIB(iObjectInstance2)
-	//BO_ATTRIB_MARKUP_END
+
 
 };
 

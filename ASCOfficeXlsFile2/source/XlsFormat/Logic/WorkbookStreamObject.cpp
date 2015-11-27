@@ -87,7 +87,7 @@ const bool WorkbookStreamObject::loadContent(BinProcessor& proc)
                 if ((proc.mandatory(worksheet_substream)) && (elements_.size() > 0))
 				{
 					WorksheetSubstream_found = true;
-					m_WorksheetSubstream.push_back(elements_.back());
+					m_arWorksheetSubstream.push_back(elements_.back());
 					elements_.pop_back();				
 				}
 			}
@@ -103,7 +103,7 @@ const bool WorkbookStreamObject::loadContent(BinProcessor& proc)
 				if ((proc.mandatory<ChartSheetSubstream>())  && (elements_.size() > 0))
 				{
 					WorksheetSubstream_found = true;
-					m_WorksheetSubstream.push_back(elements_.back());
+					m_arWorksheetSubstream.push_back(elements_.back());
 					elements_.pop_back();
 				}
 			}
@@ -119,7 +119,7 @@ const bool WorkbookStreamObject::loadContent(BinProcessor& proc)
 				if ((proc.mandatory<MacroSheetSubstream>()) && (elements_.size() > 0))
 				{
 					WorksheetSubstream_found = true;
-					m_MacroSheetSubstream.push_back(elements_.back());
+					m_arMacroSheetSubstream.push_back(elements_.back());
 					elements_.pop_back();
 				}
 			}

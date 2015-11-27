@@ -3,11 +3,11 @@
 #include <Logic/Biff_records/ShapePropsStream.h>
 #include <Logic/Biff_records/ContinueFrt12.h>
 
-//#include <Logic/Biff_unions/PAGESETUP.h>
+#include <simple_xml_writer.h>
+#include <utils.h>
 
 namespace XLS
 {
-
 
 SHAPEPROPS::SHAPEPROPS()
 {
@@ -32,9 +32,20 @@ const bool SHAPEPROPS::loadContent(BinProcessor& proc)
 	{
 		return false;
 	}
+	m_ShapePropsStream = elements_.back();
+	elements_.pop_back();
+
 	proc.repeated<ContinueFrt12>(0, 0);
 
 	return true;
+}
+
+int SHAPEPROPS::serialize(std::wostream & _stream)
+{
+	CP_XML_WRITER(_stream)    
+	{
+	}
+	return 0;
 }
 
 } // namespace XLS

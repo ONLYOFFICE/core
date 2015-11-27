@@ -2,6 +2,10 @@
 
 #include "../../../Common/FileWriter.h"
 
+#ifdef _ASC_USE_UNICODE_CONVERTER_
+#include "../../../UnicodeConverter/UnicodeConverter.h"
+#endif
+
 #include "UniversalConverterUtils.h"
 
 #define BUF_SIZE 2048
@@ -622,6 +626,49 @@ public:
 
         return 1252;//ANSI
     }
+#ifdef _ASC_USE_UNICODE_CONVERTER_
+    static CString convert_string(std::string::const_iterator start, std::string::const_iterator end, int nCodepage = 0)
+    {
+        std::string sCodePage;
+        for (int i = 0; i < UNICODE_CONVERTER_ENCODINGS_COUNT; ++i)
+        {
+            if (nCodepage == NSUnicodeConverter::Encodings[i].WindowsCodePage)
+            {
+                sCodePage = NSUnicodeConverter::Encodings[i].Name;
+                break;
+            }
+        }
+        if (sCodePage.empty())
+            sCodePage = "CP" + std::to_string(nCodepage);
+
+        unsigned int insize = (unsigned int)(end - start);
+        const char* inptr = (const char*)start.operator ->();
+
+        NSUnicodeConverter::CUnicodeConverter oConverter;
+        return oConverter.toUnicode(inptr, insize, sCodePage.c_str());
+    }
+    static std::string convert_string(std::wstring::const_iterator start, std::wstring::const_iterator end, int nCodepage = 0)
+    {
+        std::string sCodePage;
+        for (int i = 0; i < UNICODE_CONVERTER_ENCODINGS_COUNT; ++i)
+        {
+            if (nCodepage == NSUnicodeConverter::Encodings[i].WindowsCodePage)
+            {
+                sCodePage = NSUnicodeConverter::Encodings[i].Name;
+                break;
+            }
+        }
+        if (sCodePage.empty())
+            sCodePage = "CP" + std::to_string(nCodepage);
+
+        unsigned int insize = (unsigned int)(end - start);
+        const wchar_t* inptr = (const wchar_t*)start.operator ->();
+
+        NSUnicodeConverter::CUnicodeConverter oConverter;
+        return oConverter.fromUnicode(inptr, insize, sCodePage.c_str());
+    }
+
+#else
     static CString convert_string(std::string::const_iterator start, std::string::const_iterator end, int nCodepage = 0)
     {
         bool ansi = true;
@@ -706,6 +753,7 @@ public:
 
         return out;
     }
+#endif
     static int CodepageToCharset( int nCodepage )
     {
 #if defined (_WIN32) || defined(_WIN64)

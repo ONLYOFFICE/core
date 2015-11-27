@@ -46,12 +46,12 @@ const bool XFS::loadContent(BinProcessor& proc)
 
 		if ((xfs->fStyle.value()) && (*xfs->fStyle.value()))
 		{
-			m_cell_styles.push_back(elements_.front());
+			m_arCellStyles.push_back(elements_.front());
 			cellStyleXfs_count++;
 		}
 		else
 		{
-			m_cell_xfs.push_back(elements_.front());
+			m_arCellXFs.push_back(elements_.front());
 		}
 		
 		elements_.pop_front();
@@ -69,7 +69,7 @@ const bool XFS::loadContent(BinProcessor& proc)
 
 			XFExt* ext = dynamic_cast<XFExt*>(elements_.front().get());
 
-			m_xf_ext.push_back(elements_.front());
+			m_arXFext.push_back(elements_.front());
 			elements_.pop_front();
 			count--;
 		}
@@ -77,17 +77,17 @@ const bool XFS::loadContent(BinProcessor& proc)
 
 	int first_xf_ext = 0;
 
-	for (_UINT16 i = 0 ; i < m_cell_styles.size(); i++)
+	for (_UINT16 i = 0 ; i < m_arCellStyles.size(); i++)
 	{
-		XF		*xfs = dynamic_cast<XF*>(m_cell_styles[i].get());
+		XF		*xfs = dynamic_cast<XF*>(m_arCellStyles[i].get());
 
-		if (m_xf_ext.size() > 0 && xfs->cell.fHasXFExt)
+		if (m_arXFext.size() > 0 && xfs->cell.fHasXFExt)
 		{
 			XFExt *ext_find = NULL;
 			
-			for (_UINT16 j = first_xf_ext ; j < m_xf_ext.size(); j++)
+			for (_UINT16 j = first_xf_ext ; j < m_arXFext.size(); j++)
 			{
-				XFExt *ext = dynamic_cast<XFExt*>(m_xf_ext[j].get());
+				XFExt *ext = dynamic_cast<XFExt*>(m_arXFext[j].get());
 				if (ext->ixfe > i)break;
 
 				if (ext->ixfe == i)
@@ -117,13 +117,13 @@ const bool XFS::loadContent(BinProcessor& proc)
 		}*/		
 	}
 	
-    for (int i = 0 ; i < m_cell_xfs.size(); i++)
+    for (int i = 0 ; i < m_arCellXFs.size(); i++)
 	{
-		XF		*xfs = dynamic_cast<XF*>(m_cell_xfs[i].get());
+		XF		*xfs = dynamic_cast<XF*>(m_arCellXFs[i].get());
 
-		if (m_xf_ext.size() > cellStyleXfs_count + i)
+		if (m_arXFext.size() > cellStyleXfs_count + i)
 		{
-			XFExt*ext = dynamic_cast<XFExt*>(m_xf_ext[i + cellStyleXfs_count].get());
+			XFExt*ext = dynamic_cast<XFExt*>(m_arXFext[i + cellStyleXfs_count].get());
 			if (ext)
 			{
 				xfs->cell.ext_props = ext->rgExt;
@@ -152,18 +152,18 @@ int XFS::serialize(std::wostream & stream)
     {
 		CP_XML_NODE(L"cellStyleXfs")
 		{
-			CP_XML_ATTR(L"count", m_cell_styles.size());
-            for (int i = 0; i < m_cell_styles.size(); i++)
+			CP_XML_ATTR(L"count", m_arCellStyles.size());
+            for (int i = 0; i < m_arCellStyles.size(); i++)
 			{
-				m_cell_styles[i]->serialize(CP_XML_STREAM());
+				m_arCellStyles[i]->serialize(CP_XML_STREAM());
 			}
 		}
 		CP_XML_NODE(L"cellXfs")
 		{
-			CP_XML_ATTR(L"count", m_cell_xfs.size());
-            for (int i = 0; i < m_cell_xfs.size(); i++)
+			CP_XML_ATTR(L"count", m_arCellXFs.size());
+            for (int i = 0; i < m_arCellXFs.size(); i++)
 			{
-				m_cell_xfs[i]->serialize(CP_XML_STREAM());
+				m_arCellXFs[i]->serialize(CP_XML_STREAM());
 			}
 		}
 	}

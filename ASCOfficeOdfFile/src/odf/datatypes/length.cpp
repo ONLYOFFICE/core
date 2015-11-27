@@ -1,4 +1,4 @@
-
+ï»¿
 #include "length.h"
 
 #include <iostream>
@@ -48,7 +48,7 @@ std::wostream & operator<< (std::wostream & _Wostream, const length & _Length)
 }
 length operator+ (length & _Length1, length & _Length2)
 {
-	return length(_Length1.get_value() + _Length2.get_value(),_Length1.get_unit()); //ïðîâåðêà íà îäèíàêîâîñòü òèïà .. èëè ïðèâåäåíèå ê îäíîìó
+	return length(_Length1.get_value() + _Length2.get_value(),_Length1.get_unit()); //Ð¿Ñ€Ð¾Ð²ÐµÑ€ÐºÐ° Ð½Ð° Ð¾Ð´Ð¸Ð½Ð°ÐºÐ¾Ð²Ð¾ÑÑ‚ÑŒ Ñ‚Ð¸Ð¿Ð° .. Ð¸Ð»Ð¸ Ð¿Ñ€Ð¸Ð²ÐµÐ´ÐµÐ½Ð¸Ðµ Ðº Ð¾Ð´Ð½Ð¾Ð¼Ñƒ
 }
 
 length operator+ (length & _Length1, double val)
@@ -58,7 +58,7 @@ length operator+ (length & _Length1, double val)
 
 length operator- (length & _Length1, length & _Length2)
 {
-	return length(_Length1.get_value() - _Length2.get_value(),_Length1.get_unit()); //ïðîâåðêà íà îäèíàêîâîñòü òèïà .. èëè ïðèâåäåíèå ê îäíîìó
+	return length(_Length1.get_value() - _Length2.get_value(),_Length1.get_unit()); //Ð¿Ñ€Ð¾Ð²ÐµÑ€ÐºÐ° Ð½Ð° Ð¾Ð´Ð¸Ð½Ð°ÐºÐ¾Ð²Ð¾ÑÑ‚ÑŒ Ñ‚Ð¸Ð¿Ð° .. Ð¸Ð»Ð¸ Ð¿Ñ€Ð¸Ð²ÐµÐ´ÐµÐ½Ð¸Ðµ Ðº Ð¾Ð´Ð½Ð¾Ð¼Ñƒ
 }
 length operator/ (length & _Length1, double val)
 {
@@ -81,14 +81,33 @@ bool operator== (const length & _Length1, const length & _Length2)
 
 length length::parse(const std::wstring & Str)
 {
-    double v;
-    std::wstring uStr;
-    std::wstringstream strm;
-    strm << Str;
-    if (!(strm >> v && strm >> uStr) || (strm.get() != std::wstringstream::traits_type::eof()))
+    int nSeparator = -1;
+    int nLength = (int)Str.length();
+    const wchar_t* pBuffer = Str.c_str();
+    for (int i = 0; i < nLength; ++i)
     {
-        BOOST_THROW_EXCEPTION( errors::invalid_attribute() );
+        if (pBuffer[i] != wchar_t('-') &&
+            pBuffer[i] != wchar_t('+') &&
+            pBuffer[i] != wchar_t(',') &&
+            pBuffer[i] != wchar_t('.') &&
+            (pBuffer[i] < wchar_t('0') || pBuffer[i] > wchar_t('9')))
+        {
+            nSeparator = i;
+            break;
+        }
     }
+
+    //double v = (nSeparator > 0) ? std::stod(Str.substr(0, nSeparator)) : 0;
+    // Ð²Ð¾Ð¾Ð±Ñ‰Ðµ Ð¿Ñ€ÐµÐ´Ñ‹Ð´ÑƒÑ‰Ð°Ñ ÑÑ‚Ñ€Ð¾Ñ‡ÐºÐ° Ð»ÑƒÑ‡ÑˆÐµ Ð½Ð°Ð¼Ð½Ð¾Ð³Ð¾, Ð½Ð¾ ÑÐ´ÐµÐ»Ð°ÑŽ ÐºÐ°Ðº Ð±Ñ‹Ð»Ð¾ (Ð±ÐµÐ· c++11)
+    double v = 0;
+    if (nSeparator > 0)
+    {
+        std::wstringstream strm;
+        strm << Str.substr(0, nSeparator);
+        strm >> v;
+    }
+
+    std::wstring uStr = (-1 != nSeparator) ? Str.substr(nSeparator) : L"";
 
     length::unit u = length::none;
 

@@ -42,12 +42,22 @@ linux-g++:!contains(QMAKE_HOST.arch, x86_64):{
     DESTDIR = $$DESTINATION_SDK_PATH/linux_32
 }
 
+mac {
+    DESTDIR = $$DESTINATION_SDK_PATH/mac_64
+}
+
 ################################################
 
 win32 {
     V8_CHECKOUT_PATH = $$PWD/v8_windows/v8
-} else {
+}
+
+linux-g++ | linux-g++-64 | linux-g++-32 {
     V8_CHECKOUT_PATH = /home/oleg/v8
+}
+
+mac {
+    V8_CHECKOUT_PATH = /Users/Oleg/Desktop/activex/v8
 }
 
 win32 {
@@ -65,6 +75,13 @@ linux-g++ | linux-g++-64 | linux-g++-32 {
     QMAKE_CFLAGS += -fvisibility=hidden
 
     TARGET_EXT = .so
+}
+
+mac {
+    CONFIG += plugin
+
+    QMAKE_CXXFLAGS += -fvisibility=hidden -Wall -Wno-inconsistent-missing-override
+    QMAKE_CFLAGS += -fvisibility=hidden -Wall -Wno-inconsistent-missing-override
 }
 
 INCLUDEPATH += \
@@ -134,10 +151,8 @@ mac {
     _MAC \
     QT_MAC
 
-    #TODO: graphics & libxml2
-
-    LIBS += -L$$V8_CHECKOUT_PATH/out/native/obj.target/tools/gyp -lv8_base -lv8_libbase -lv8_libplatform -lv8_nosnapshot -lv8_snapshot
-    LIBS += -L$$V8_CHECKOUT_PATH/out/native/obj.target/third_party/icu -licui18n -licuuc -licudata
+    LIBS += -L$$V8_CHECKOUT_PATH/out/native -lv8_base -lv8_libbase -lv8_libplatform -lv8_nosnapshot -lv8_snapshot
+    LIBS += -L$$V8_CHECKOUT_PATH/out/native -licui18n -licuuc -licudata
 
     message(mac)
 }

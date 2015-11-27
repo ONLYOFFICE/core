@@ -13,12 +13,6 @@ BiffStructurePtr PtgAreaErr3d::clone()
 }
 
 
-//void PtgAreaErr3d::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	xml_tag->setAttribute(L"ixti", ixti);
-//}
-
-
 void PtgAreaErr3d::storeFields(CFRecord& record)
 {
 	record << ixti;

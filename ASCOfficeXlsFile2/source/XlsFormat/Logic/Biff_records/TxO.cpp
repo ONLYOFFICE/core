@@ -126,13 +126,13 @@ int TxO::serialize (std::wostream & _stream)
 }
 int TxO::serialize_rPr	(std::wostream & _stream, int iFmt)
 {
-	if (!pGlobalWorkbookInfoPtr)		return 0;
-	if (!pGlobalWorkbookInfoPtr->fonts) return 0;
+	if (!pGlobalWorkbookInfoPtr)			return 0;
+	if (!pGlobalWorkbookInfoPtr->m_arFonts) return 0;
 
-	int sz = pGlobalWorkbookInfoPtr->fonts->size();
+	int sz = pGlobalWorkbookInfoPtr->m_arFonts->size();
 	if (iFmt -1 > sz || iFmt < 1) return 0;
 
-	Font * font = dynamic_cast<Font*>(pGlobalWorkbookInfoPtr->fonts->at(iFmt-1).get());
+	Font * font = dynamic_cast<Font*>(pGlobalWorkbookInfoPtr->m_arFonts->at(iFmt-1).get());
 
 	if (font) font->serialize_rPr(_stream);
 	

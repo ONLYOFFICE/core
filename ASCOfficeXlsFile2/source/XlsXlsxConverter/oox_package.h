@@ -129,16 +129,21 @@ class chart_content : boost::noncopyable
 {
 public:
     chart_content();
-    std::wostream & content() { return content_; }
-    void add_rel(relationship const & r);
-    rels_file_ptr get_rel_file() { return rels_; }
-    std::wstring str() { return content_.str(); }
     static _CP_PTR(chart_content) create();
+
+    std::wostream	& content() { return content_; }
+	rels			& rels()	{ return rels_file_->get_rels(); }
+
+    std::wstring	str() { return content_.str(); }
+	
+	friend class	xl_charts_files;
 private:
-    std::wstringstream content_;
-    rels_file_ptr rels_;
+    std::wstringstream	content_;
+	rels_file_ptr		rels_file_;
 };
-/////////////////////////////////
+
+//---------------------------------------------------------------------------------------------
+
 class document : public element
 {
 public:
@@ -166,8 +171,8 @@ public:
     virtual void write(const std::wstring & RootPath);
 
 private:
-    core_file core_;
-    app_file app_;
+    core_file	core_;
+    app_file	app_;
 
 };
 

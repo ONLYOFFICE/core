@@ -1,7 +1,7 @@
 #pragma once
 
 #ifndef DISABLE_FILE_DOWNLOADER
-#include "../../../Common/FileDownloader.h"
+#include "../../../Common/FileDownloader/FileDownloader.h"
 #endif
 
 namespace NSPresentationEditor
@@ -82,13 +82,7 @@ namespace NSPresentationEditor
 		{
 #ifndef DISABLE_FILE_DOWNLOADER
             CFileDownloader oDownloader(strFile, TRUE);
-			oDownloader.Start( 1 );
-			while ( oDownloader.IsRunned() )
-			{
-				::Sleep( 10 );
-			}
-
-			if ( oDownloader.IsFileDownloaded() )
+			if ( oDownloader.DownloadSync() )
 			{
 				return GenerateImage( oDownloader.GetFilePath() );
 			}

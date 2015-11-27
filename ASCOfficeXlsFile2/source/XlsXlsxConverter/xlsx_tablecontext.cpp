@@ -13,7 +13,7 @@
 namespace oox {
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-table_state::table_state(xlsx_conversion_context & Context) : drawing_context_(Context.get_drawing_context_handle())
+table_state::table_state(xlsx_conversion_context & Context) : drawing_context_(Context)
 {
 }
 
@@ -28,7 +28,7 @@ table_state_ptr & xlsx_table_context::state()
 //}
 
 xlsx_table_context::xlsx_table_context(xlsx_conversion_context & Context/*, xlsx_text_context & textContext*/) : 
-										context_(Context)//, xlsx_text_context_(textContext)
+										context_(Context) //, xlsx_text_context_(textContext)
 {        
 }
 

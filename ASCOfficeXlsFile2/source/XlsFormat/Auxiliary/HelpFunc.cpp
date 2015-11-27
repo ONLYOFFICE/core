@@ -2,10 +2,14 @@
 
 #include "HelpFunc.h"
 
+#ifndef _ASC_USE_UNICODE_CONVERTER_
 #if defined (_WIN32) || defined (_WIN64)
     #include "shlwapi.h"
 #else
     #include <iconv.h>
+#endif
+#else
+#include "../../../../UnicodeConverter/UnicodeConverter.h"
 #endif
 
 #include <Logic/Biff_structures/CellRangeRef.h>
@@ -347,7 +351,7 @@ const std::wstring unescape_ST_Xstring(const std::wstring& wstr)
 
     while(true)
 	{
-#ifdef __linux__
+#if defined(__linux__) || defined(_MAC)
 		const auto it_range = boost::make_iterator_range(x_pos_noncopied, wstr_end);
         x_pos_next = boost::algorithm::find_first(it_range, L"_x").begin();
 #else
@@ -434,6 +438,42 @@ const size_t hex_str2int(const std::wstring::const_iterator& it_begin, const std
 	return numeric;
 }
 
+ #ifdef _ASC_USE_UNICODE_CONVERTER_
+const std::wstring toStdWString(std::string ansi_string, const unsigned int code_page)
+{
+    std::string sCodePage;
+    for (int i = 0; i < UNICODE_CONVERTER_ENCODINGS_COUNT; ++i)
+    {
+        if (code_page == NSUnicodeConverter::Encodings[i].WindowsCodePage)
+        {
+            sCodePage = NSUnicodeConverter::Encodings[i].Name;
+            break;
+        }
+    }
+    if (sCodePage.empty())
+        sCodePage = "CP" + std::to_string(code_page);
+
+    NSUnicodeConverter::CUnicodeConverter oConverter;
+    return oConverter.toUnicode(ansi_string, sCodePage.c_str());
+}
+const std::string toStdString(std::wstring wide_string, const unsigned int code_page)
+{
+    std::string sCodePage;
+    for (int i = 0; i < UNICODE_CONVERTER_ENCODINGS_COUNT; ++i)
+    {
+        if (code_page == NSUnicodeConverter::Encodings[i].WindowsCodePage)
+        {
+            sCodePage = NSUnicodeConverter::Encodings[i].Name;
+            break;
+        }
+    }
+    if (sCodePage.empty())
+        sCodePage = "CP" + std::to_string(code_page);
+
+    NSUnicodeConverter::CUnicodeConverter oConverter;
+    return oConverter.fromUnicode(wide_string, sCodePage.c_str());
+}
+#else
 const std::string toStdString(std::wstring wide_string, const unsigned int code_page)
 {
 #if defined (_WIN32) || defined (_WIN64)
@@ -535,6 +575,7 @@ const std::wstring toStdWString(std::string ansi_string, const unsigned int code
     return w_out;
 #endif
 }
+#endif
 
 
 } // namespace STR

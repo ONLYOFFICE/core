@@ -35,15 +35,32 @@ const bool AXISPARENT::loadContent(BinProcessor& proc)
 	{
 		return false;
 	}
-	proc.mandatory<Begin>();
-	//proc.mandatory<Pos>();
+	m_AxisParent = elements_.back();
+	elements_.pop_back();
+	
+	proc.mandatory<Begin>();		elements_.pop_back();
 
-	// fix
-	proc.optional<Pos>();
+	if (proc.optional<Pos>())
+	{
+		m_Pos = elements_.back();
+		elements_.pop_back(); 
+	}
 
-	proc.optional<AXES>();
-	proc.repeated<CRT>(1, 4);
-	proc.mandatory<End>();
+	if (proc.optional<AXES>())
+	{
+		m_AXES = elements_.back();
+		elements_.pop_back(); 
+	}
+	
+	int count  = proc.repeated<CRT>(1, 4);
+	while(count > 0)
+	{
+		m_arCRT.insert(m_arCRT.begin(), elements_.back());
+		elements_.pop_back();
+		count--;
+	}	
+
+	proc.mandatory<End>();			elements_.pop_back();
 
 	return true;
 }

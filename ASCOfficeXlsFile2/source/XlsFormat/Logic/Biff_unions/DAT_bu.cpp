@@ -32,11 +32,23 @@ const bool DAT::loadContent(BinProcessor& proc)
 	{
 		return false;
 	}
-	proc.mandatory<Begin>();
+	proc.mandatory<Begin>();			elements_.pop_back();
 	proc.mandatory<LD>();
-	proc.mandatory<End>();
+	proc.mandatory<End>();				elements_.pop_back();
 
 	return true;
+}
+
+int DAT::serialize (std::wostream & _stream)
+{
+	if (elements_.empty()) return 0;
+
+	LD *LD_ = dynamic_cast<LD *>(elements_.back().get());
+	if (LD_)
+		LD_->serialize(_stream);
+
+	return 0;
+	
 }
 
 } // namespace XLS

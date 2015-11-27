@@ -342,13 +342,8 @@ namespace NSBinPptxRW
 	{
 #ifndef DISABLE_FILE_DOWNLOADER
         CFileDownloader oDownloader(string2std_string(strFile), false);
-		oDownloader.Start( 1 );
-		while ( oDownloader.IsRunned() )
-		{
-			::Sleep( 10 );
-		}
 
-		if ( oDownloader.IsFileDownloaded() )
+		if ( oDownloader.DownloadSync() )
 		{
 			return std_string2string(oDownloader.GetFilePath());
 		}

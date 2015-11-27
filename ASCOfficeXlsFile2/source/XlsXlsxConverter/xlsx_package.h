@@ -63,8 +63,8 @@ class xl_charts_files  : public element
 public:
 	xl_charts_files(){}
 
-    void add_chart(chart_content_ptr chart);
-	virtual void write(const std::wstring & RootPath);
+    void			add_chart(chart_content_ptr chart);
+	virtual void	write(const std::wstring & RootPath);
     
     std::vector<chart_content_ptr> charts_;
 
@@ -114,10 +114,8 @@ private:
     rels_files * rels_;
 
 };
-class xl_vml_drawings;
-typedef _CP_PTR(xl_vml_drawings) xl_vml_drawings_ptr;
-
-
+//class xl_vml_drawings;
+//typedef _CP_PTR(xl_vml_drawings) xl_vml_drawings_ptr;
 //class xl_vml_drawings: public element
 //{
 //public:
@@ -155,16 +153,16 @@ public:
 private:
     rels_files		rels_files_;
     sheets_files	sheets_files_;
-    //xl_charts_files charts_files_;
+    xl_charts_files charts_files_;
     element_ptr		theme_;
     element_ptr		workbook_;
 
-    element_ptr styles_;
-    element_ptr sharedStrings_;
-    element_ptr media_;
-    element_ptr drawings_;
-	element_ptr vml_drawings_;
-	element_ptr comments_;
+    element_ptr		styles_;
+    element_ptr		sharedStrings_;
+    element_ptr		media_;
+    element_ptr		drawings_;
+	element_ptr		vml_drawings_;
+	element_ptr		comments_;
 
 };
 

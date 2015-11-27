@@ -33,8 +33,8 @@ void AreaFormat::readFields(CFRecord& record)
 {
 	unsigned short flags;
 	record >> rgbFore >> rgbBack >> fls >> flags >> icvFore >> icvBack;
-	fAuto = GETBIT(flags, 0);
-	fInvertNeg = GETBIT(flags, 1);
+	fAuto		= GETBIT(flags, 0);
+	fInvertNeg	= GETBIT(flags, 1);
 }
 
 } // namespace XLS

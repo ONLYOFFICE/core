@@ -354,15 +354,6 @@ void TextBooleanProperties::load(XLS::CFRecord& record)
 	fUsefSelectText		= GETBIT(op, 20);
 }
 
-//void fillShadeType::setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag)
-//{
-//	msoshadeNone = GETBIT(op, 0);
-//	msoshadeGamma = GETBIT(op, 1);
-//	msoshadeSigma = GETBIT(op, 2);
-//	msoshadeBand = GETBIT(op, 3);
-//	msoshadeOneColor = GETBIT(op, 4);
-//}
-
 void FillStyleBooleanProperties::load(XLS::CFRecord& record)
 {
 	OfficeArtFOPTE::load(record);
@@ -385,7 +376,13 @@ void FillStyleBooleanProperties::load(XLS::CFRecord& record)
 
 void fillBlip::ReadComplexData(XLS::CFRecord& record)
 {
-	blip = OfficeArtBlip::load_blip(record);
+	OfficeArtRecordHeader rh_child;
+	record >> rh_child;
+	size_t child_beginning_ptr = record.getRdPtr();
+	record.RollRdPtrBack(rh_child.size());
+
+	blip = OfficeArtBlipPtr(new OfficeArtBlip(rh_child.recType));
+	blip->loadFields(record);
 }
 
 void anyString::ReadComplexData(XLS::CFRecord& record)
@@ -398,33 +395,6 @@ void anyString::ReadComplexData(XLS::CFRecord& record)
 	record.skipNunBytes(op);
 }
 
-//void fillBlipFlags::setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag)
-//{
-//	if(op == msoblipflagComment)
-//	{
-//		own_tag->setAttribute(L"msoblipflagComment", true);
-//	}
-//	else
-//	{
-//		if(0 != (op & msoblipflagFile))
-//		{
-//			own_tag->setAttribute(L"msoblipflagFile", true);
-//		}
-//		if(0 != (op & msoblipflagURL))
-//		{
-//			own_tag->setAttribute(L"msoblipflagURL", true);
-//		}
-//		if(0 != (op & msoblipflagDoNotSave))
-//		{
-//			own_tag->setAttribute(L"msoblipflagDoNotSave", true);
-//		}
-//		if(0 != (op & msoblipflagLinkToFile))
-//		{
-//			own_tag->setAttribute(L"msoblipflagLinkToFile", true);
-//		}
-//	}
-//}
-
 void fillShadeColors::ReadComplexData(XLS::CFRecord& record)
 {
 	record >> fillShadeColors_complex;
@@ -434,25 +404,25 @@ void ProtectionBooleanProperties::load(XLS::CFRecord& record)
 {
 	OfficeArtFOPTE::load(record);
 
-	fLockAgainstGrouping = GETBIT(op, 0);
-	fLockAdjustHandles = GETBIT(op, 1);
-	fLockText = GETBIT(op, 2);
-	fLockVertices = GETBIT(op, 3);
-	fLockCropping = GETBIT(op, 4);
-	fLockAgainstSelect = GETBIT(op, 5);
-	fLockPosition = GETBIT(op, 6);
-	fLockAspectRatio = GETBIT(op, 7);
-	fLockRotation = GETBIT(op, 8);
-	fLockAgainstUngrouping = GETBIT(op, 9);
+	fLockAgainstGrouping	= GETBIT(op, 0);
+	fLockAdjustHandles		= GETBIT(op, 1);
+	fLockText				= GETBIT(op, 2);
+	fLockVertices			= GETBIT(op, 3);
+	fLockCropping			= GETBIT(op, 4);
+	fLockAgainstSelect		= GETBIT(op, 5);
+	fLockPosition			= GETBIT(op, 6);
+	fLockAspectRatio		= GETBIT(op, 7);
+	fLockRotation			= GETBIT(op, 8);
+	fLockAgainstUngrouping	= GETBIT(op, 9);
 	fUsefLockAgainstGrouping = GETBIT(op, 16);
-	fUsefLockAdjustHandles = GETBIT(op, 17);
-	fUsefLockText = GETBIT(op, 18);
-	fUsefLockVertices = GETBIT(op, 19);
-	fUsefLockCropping = GETBIT(op, 20);
-	fUsefLockAgainstSelect = GETBIT(op, 21);
-	fUsefLockPosition = GETBIT(op, 22);
-	fUsefLockAspectRatio = GETBIT(op, 23);
-	fUsefLockRotation = GETBIT(op, 24);
+	fUsefLockAdjustHandles	= GETBIT(op, 17);
+	fUsefLockText			= GETBIT(op, 18);
+	fUsefLockVertices		= GETBIT(op, 19);
+	fUsefLockCropping		= GETBIT(op, 20);
+	fUsefLockAgainstSelect	= GETBIT(op, 21);
+	fUsefLockPosition		= GETBIT(op, 22);
+	fUsefLockAspectRatio	= GETBIT(op, 23);
+	fUsefLockRotation		= GETBIT(op, 24);
 	fUsefLockAgainstUngrouping = GETBIT(op, 25);
 }
 
@@ -482,10 +452,10 @@ void ShadowStyleBooleanProperties::load(XLS::CFRecord& record)
 {
 	OfficeArtFOPTE::load(record);
 
-	fshadowObscured = GETBIT(op, 0);
-	fShadow = GETBIT(op, 1);
+	fshadowObscured		= GETBIT(op, 0);
+	fShadow				= GETBIT(op, 1);
 	fUsefshadowObscured = GETBIT(op, 16);
-	fUsefShadow = GETBIT(op, 17);
+	fUsefShadow			= GETBIT(op, 17);
 }
 
 void GeometryBooleanProperties::load(XLS::CFRecord& record)

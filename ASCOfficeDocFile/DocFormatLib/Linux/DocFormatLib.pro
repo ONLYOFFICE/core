@@ -9,6 +9,9 @@ QT       -= core gui
 TARGET = DocFormatLib
 TEMPLATE = lib
 CONFIG += staticlib
+
+CONFIG += c++11
+
 win32 {
     QMAKE_CXXFLAGS_RELEASE -= -Zc:strictStrings
 } else {
@@ -39,6 +42,10 @@ linux-g++ | linux-g++-64 | linux-g++-32:contains(QMAKE_HOST.arch, x86_64):{
 linux-g++ | linux-g++-64 | linux-g++-32:!contains(QMAKE_HOST.arch, x86_64):{
     DESTDIR = $$DESTINATION_SDK_PATH/linux_32
 }
+
+mac {
+    DESTDIR = $$DESTINATION_SDK_PATH/mac_64
+}
 ############### destination path ###############
 
 DEFINES +=  UNICODE \
@@ -67,6 +74,19 @@ linux-g++ | linux-g++-64 | linux-g++-32 {
         _LINUX_QT
 
 INCLUDEPATH += /usr/include/libxml2
+}
+
+mac {
+    DEFINES += \
+        LINUX \
+        _LINUX \
+        _LINUX_QT \
+        _MAC \
+        MAC \
+        _MAC_NO_APPLE
+
+INCLUDEPATH += ../../../DesktopEditor/xml/libxml2/include
+QMAKE_MAC_SDK = macosx10.11
 }
 #################### LINUX ########################
 

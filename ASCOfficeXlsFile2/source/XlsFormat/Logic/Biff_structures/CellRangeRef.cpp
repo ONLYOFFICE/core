@@ -155,7 +155,7 @@ void CellRangeRef::fromString(const std::wstring& str)
 
 
 
-CellRangeRef::operator const std::wstring  () const
+CellRangeRef::operator std::wstring  () const
 {
 	return toString().c_str();
 }

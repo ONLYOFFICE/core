@@ -17,7 +17,7 @@ void OfficeArtBStoreContainerFileBlock::store(XLS::CFRecord& record)
 {	
 }
 
-void OfficeArtBStoreContainerFileBlock::readCompressedData(XLS::CFRecord& record, OfficeArtMetafileHeader metafileHeader)
+void OfficeArtBStoreContainerFileBlock::readCompressedData(XLS::CFRecord& record, OfficeArtMetafileHeader & metafileHeader)
 {
 	if (metafileHeader.cbSave > record.getDataSize() - record.getRdPtr())
 		return;
@@ -27,12 +27,12 @@ void OfficeArtBStoreContainerFileBlock::readCompressedData(XLS::CFRecord& record
 	unsigned char* inBuff = new unsigned char[metafileHeader.cbSave];
 	memcpy(inBuff, record.getCurData<unsigned char>(), metafileHeader.cbSave);		
 
-	data_size = metafileHeader.cbSize;
-	pict_data = new char[data_size];
+	pict_size = metafileHeader.cbSize;
+	pict_data = new char[pict_size];
 
 	COfficeUtils decompressor(NULL);
 
-	HRESULT hr = decompressor.Uncompress((unsigned char*)pict_data, ((unsigned long*)&data_size), inBuff, metafileHeader.cbSave);
+	HRESULT hr = decompressor.Uncompress((unsigned char*)pict_data, ((unsigned long*)&pict_size), inBuff, metafileHeader.cbSave);
 	delete [] inBuff;
 
 	record.skipNunBytes(metafileHeader.cbSave);					
@@ -54,6 +54,7 @@ void OfficeArtBStoreContainerFileBlock::load(XLS::CFRecord& record)
 		record.skipNunBytes(18);
 		unsigned short tag;
 		record >> tag;
+		
 		unsigned int size;
 		record >> size;
 		unsigned int cRef;
@@ -66,12 +67,12 @@ void OfficeArtBStoreContainerFileBlock::load(XLS::CFRecord& record)
 		record.skipNunBytes(2);
 		record.skipNunBytes(cbName);		
 
-		// read OfficeArtBlipPNG, OfficeArtBlipJPG ...			
 		record >> rc_header;
 		size_t skipLen = 0;
 
-		bool isCompressed = false;
 		recType = rc_header.recType;
+		
+		bool isCompressed = false;
 
 		switch (rc_header.recType)
 		{
@@ -135,7 +136,7 @@ void OfficeArtBStoreContainerFileBlock::load(XLS::CFRecord& record)
 						isCompressed = true;
 						readCompressedData(record, metafileHeader);
 					}
-					pict_type = L".wmf";///???? todooo
+					pict_type = L".pic";///???? todooo
 				}
 				break;				
 			case OfficeArtRecord::BlipJPEG:
@@ -211,18 +212,18 @@ void OfficeArtBStoreContainerFileBlock::load(XLS::CFRecord& record)
 		if (!isCompressed)
 		{
 			record.skipNunBytes(skipLen);
-			data_size = rc_header.recLen - skipLen;
+			pict_size = rc_header.recLen - skipLen;
 
-			if (data_size > record.getDataSize() - record.getRdPtr())
+			if (pict_size > record.getDataSize() - record.getRdPtr())
 				return;
 			else
 				result = true;
 
 			{
-				pict_data = new char[data_size];
-				memcpy(pict_data, record.getCurData<char>(), data_size);
+				pict_data = new char[pict_size];
+				memcpy(pict_data, record.getCurData<char>(), pict_size);
 			}
-			record.skipNunBytes(data_size);
+			record.skipNunBytes(pict_size);
 		}
 
 		/*std::ofstream fileOut("d:\\test.jpg", std::ios_base::binary);

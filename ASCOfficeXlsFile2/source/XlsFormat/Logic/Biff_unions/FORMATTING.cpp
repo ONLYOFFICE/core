@@ -41,7 +41,7 @@ const bool FORMATTING::loadContent(BinProcessor& proc)
 	count = proc.repeated<Font>(0, 510); // Wrong records sequence workaround (originally  at least one Font is mandatory)
 	while(count > 0)
 	{
-		m_Fonts.push_back(elements_.front());
+		m_arFonts.push_back(elements_.front());
 		elements_.pop_front();
 		count--;
 	}	
@@ -49,16 +49,16 @@ const bool FORMATTING::loadContent(BinProcessor& proc)
 	count = proc.repeated<Format>(0, 218); // Originally: proc.repeated<Format>(8, 218);
 	while(count > 0)
 	{
-		m_Formats.insert(m_Formats.begin(), elements_.back());
+		m_arFormats.insert(m_arFormats.begin(), elements_.back());
 		elements_.pop_back();
 		count--;
 	}
 //----------------------------------------------------------------------------------------------------	
 	count = proc.repeated<Font>(0, 510); // Wrong records sequence workaround (originally Font follows by Format)
-	int countFonts = m_Fonts.size();
+	int countFonts = m_arFonts.size();
 	while(count > 0)
 	{
-		m_Fonts.insert(m_Fonts.begin()+countFonts, elements_.back());
+		m_arFonts.insert(m_arFonts.begin()+countFonts, elements_.back());
 		elements_.pop_back();
 		count--;
 	}	
@@ -96,31 +96,31 @@ int FORMATTING::serialize1(std::wostream & stream)
 {
 	CP_XML_WRITER(stream)    
     {
-		if (m_Formats.size() > 0)
+		if (m_arFormats.size() > 0)
 		{
 			CP_XML_NODE(L"numFmts")
 			{
-				CP_XML_ATTR(L"count", m_Formats.size());
-                for (int i = 0 ; i < m_Formats.size(); i++)
+				CP_XML_ATTR(L"count", m_arFormats.size());
+                for (int i = 0 ; i < m_arFormats.size(); i++)
 				{
-					m_Formats[i]->serialize(CP_XML_STREAM());
+					m_arFormats[i]->serialize(CP_XML_STREAM());
 				}
 			}
 		}
-		if (m_Fonts.size() > 0)
+		if (m_arFonts.size() > 0)
 		{
 			CP_XML_NODE(L"fonts")
 			{
-				CP_XML_ATTR(L"count", m_Fonts.size());
-                for (int i = 0 ; i < m_Fonts.size(); i++)
+				CP_XML_ATTR(L"count", m_arFonts.size());
+                for (int i = 0 ; i < m_arFonts.size(); i++)
 				{
-					Font * font = dynamic_cast<Font*>(m_Fonts[i].get());
+					Font * font = dynamic_cast<Font*>(m_arFonts[i].get());
 					std::map<int, FillInfoExt>::iterator it = global_info->fonts_color_ext.find(i);
 					if (font && (it!=global_info->fonts_color_ext.end()))
 					{					
 						font->set_color_ext(it->second);
 					}
-					m_Fonts[i]->serialize(CP_XML_STREAM());
+					m_arFonts[i]->serialize(CP_XML_STREAM());
 				}
 			}
 		}

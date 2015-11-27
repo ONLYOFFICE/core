@@ -172,10 +172,10 @@ void xl_files::write(const std::wstring & RootPath)
         media_->write(path);
     }
 
-    //{
-    //    charts_files_.set_main_document(get_main_document());
-    //    charts_files_.write(path);
-    //}
+    {
+        charts_files_.set_main_document(get_main_document());
+        charts_files_.write(path);
+    }
 	if (drawings_)
     {
         drawings_->set_main_document(get_main_document());
@@ -225,37 +225,46 @@ void xl_files::set_vml_drawings(element_ptr Element)
 {
     vml_drawings_ = Element;
 }
-//void xl_files::add_charts(chart_content_ptr chart)
-//{
-//    charts_files_.add_chart(chart);
-//}
+void xl_files::add_charts(chart_content_ptr chart)
+{
+    charts_files_.add_chart(chart);
+}
 ////////////////////////////
-//void xl_charts_files::add_chart(chart_content_ptr chart)
-//{
-//    charts_.push_back(chart);
-//}
-//void xl_charts_files::write(const std::wstring & RootPath)
-//{
-//	std::wstring path = RootPath + FILE_SEPARATOR_STR + L"charts";
-//	FileSystem::Directory::CreateDirectory(path.c_str());
-//
-//    size_t count = 0;
-//
-//    BOOST_FOREACH(const chart_content_ptr & item, charts_)
-//    {
-//        if (item)
-//        {
-//            count++;
-//            const std::wstring fileName = std::wstring(L"chart") + boost::lexical_cast<std::wstring>(count) + L".xml";
-//            content_type & contentTypes = this->get_main_document()->content_type().get_content_type();
-//           
-//			static const std::wstring kWSConType = L"application/vnd.openxmlformats-officedocument.drawingml.chart+xml";
-//            contentTypes.add_override(std::wstring(L"/xl/charts/") + fileName, kWSConType);
-//
-//            package::simple_element(fileName, item->str()).write(path);
-//        }
-//    }
-//}
+void xl_charts_files::add_chart(chart_content_ptr chart)
+{
+    charts_.push_back(chart);
+}
+void xl_charts_files::write(const std::wstring & RootPath)
+{
+	std::wstring path = RootPath + FILE_SEPARATOR_STR + L"charts";
+	FileSystem::Directory::CreateDirectory(path.c_str());
+
+    size_t count = 0;
+
+    BOOST_FOREACH(const chart_content_ptr & item, charts_)
+    {
+        if (item)
+        {
+            count++;
+            const std::wstring fileName = std::wstring(L"chart") + boost::lexical_cast<std::wstring>(count) + L".xml";
+            content_type & contentTypes = this->get_main_document()->content_type().get_content_type();
+           
+			static const std::wstring kWSConType = L"application/vnd.openxmlformats-officedocument.drawingml.chart+xml";
+            contentTypes.add_override(std::wstring(L"/xl/charts/") + fileName, kWSConType);
+
+            package::simple_element(fileName, item->str()).write(path);
+
+			if (item->rels().empty() == false)
+			{
+				rels_files relFiles;
+				item->rels_file_->set_file_name(fileName + L".rels");
+				
+				relFiles.add_rel_file(item->rels_file_);
+				relFiles.write(path);
+			}
+        }
+    }
+}
 //////////////////////////
 xl_drawings_ptr xl_drawings::create(const std::vector<drawing_elm> & elms)
 {

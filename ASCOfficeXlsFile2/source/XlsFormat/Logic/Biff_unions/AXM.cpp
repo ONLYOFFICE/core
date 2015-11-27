@@ -32,9 +32,9 @@ const bool AXM::loadContent(BinProcessor& proc)
 	{
 		return false;
 	}
-	proc.mandatory<StartObject>();
+	proc.mandatory<StartObject>();	elements_.pop_back();
 	proc.mandatory<ATTACHEDLABEL>();
-	proc.mandatory<EndObject>();
+	proc.mandatory<EndObject>();	elements_.pop_back();
 
 	return true;
 }

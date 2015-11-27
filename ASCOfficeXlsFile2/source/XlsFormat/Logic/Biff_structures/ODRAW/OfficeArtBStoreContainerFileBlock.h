@@ -22,9 +22,10 @@ public:
 
 	OfficeArtBStoreContainerFileBlock()
 	{
-		data_size = 0;
+		pict_size = 0;
 		pict_data = NULL;
 		pict_type = L".jpeg";
+
 		rgbUid1 = L"";
 		rgbUid2 = L"";
 		result = false;
@@ -44,18 +45,18 @@ public:
 
 	static const XLS::ElementType	type = XLS::typeOfficeArtBStoreContainerFileBlock;
 
-	void readCompressedData(XLS::CFRecord& record, OfficeArtMetafileHeader metafileHeader);
+	void readCompressedData(XLS::CFRecord& record, OfficeArtMetafileHeader & metafileHeader);
 
-	int bin_data_id;
+	int				bin_data_id;
 
-	size_t data_size;
-	char* pict_data;
-	std::wstring  pict_type;
+	size_t			pict_size;
+	std::wstring	pict_type;
+	char			*pict_data;
 
-	size_t recType;	
-	std::wstring rgbUid1;
-	std::wstring rgbUid2;
-	bool result;
+	size_t			recType;	
+	std::wstring	rgbUid1;
+	std::wstring	rgbUid2;
+	bool			result;
 
 	const std::wstring ReadMD4Digest(XLS::CFRecord& record)
 	{

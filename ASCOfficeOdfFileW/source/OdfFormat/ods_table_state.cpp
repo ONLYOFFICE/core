@@ -222,7 +222,7 @@ void ods_table_state::add_column(office_element_ptr & elm, short repeated,office
 	odf_writer::style* style = dynamic_cast<odf_writer::style*>(style_elm.get());
 	if (style)style_name = style->style_name_;
 
-	ods_element_state state = {elm, repeated,style_name, style_elm, defaut_column_width_ , current_level_.size()};
+	ods_element_state state = {elm, repeated,style_name, style_elm, defaut_column_width_ , (short)current_level_.size()};
   
 	if (repeated > 10000)repeated = 1024;//????
 
@@ -311,7 +311,7 @@ void ods_table_state::add_row(office_element_ptr & elm, short repeated, office_e
 	odf_writer::style* style = dynamic_cast<odf_writer::style*>(style_elm.get());
 	if (style)style_name = style->style_name_;
 
-	ods_element_state state = {elm, repeated,style_name, style_elm, defaut_row_height_ , current_level_.size()};
+	ods_element_state state = {elm, repeated,style_name, style_elm, defaut_row_height_ , (short)current_level_.size()};
   
     rows_.push_back(state);
 
@@ -699,7 +699,7 @@ void ods_table_state::add_or_find_cell_shared_formula(std::wstring & formula, st
 			if (row2-row1 >0)moving_type = 2;
 			if (col2-col1 >0)moving_type = 1;
 		}
-		ods_shared_formula_state state = {ind, odf_formula,ref, current_table_column_,current_table_row_, moving_type};
+		ods_shared_formula_state state = {(short)ind, odf_formula,ref, current_table_column_,current_table_row_, moving_type};
 		shared_formulas_.push_back(state);
 		
 		cell->table_table_cell_attlist_.table_formula_ = odf_formula;

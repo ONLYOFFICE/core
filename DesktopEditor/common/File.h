@@ -1078,6 +1078,7 @@ namespace NSFile
             getcwd(buf, sizeof(buf));
             std::string sUTF8(buf);
             std::wstring sRet = CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)sUTF8.c_str(), sUTF8.length());
+            sRet += L"/executable_path"; // поправить потом!!! (дописал чтобы работал метод GetProcessDirectory())
             return sRet;
 #endif
             return L"";

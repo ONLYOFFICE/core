@@ -9,6 +9,9 @@
 #include <Logic/Biff_unions/GELFRAME.h>
 #include <Logic/Biff_unions/SHAPEPROPS.h>
 
+#include <simple_xml_writer.h>
+#include <utils.h>
+
 namespace XLS
 {
 
@@ -36,15 +39,55 @@ const bool FRAME::loadContent(BinProcessor& proc)
 	{
 		return false;
 	}
-	proc.mandatory<Begin>();
-	proc.mandatory<LineFormat>();
-	proc.mandatory<AreaFormat>();
-	proc.optional<GELFRAME>();
-	proc.optional<SHAPEPROPS>();
-	proc.mandatory<End>();
+	m_Frame = elements_.back();
+	elements_.pop_back();
+
+	proc.mandatory<Begin>();				elements_.pop_back();
+	if (proc.mandatory<LineFormat>())
+	{
+		m_LineFormat = elements_.back();
+		elements_.pop_back();
+	}
+
+	if (proc.mandatory<AreaFormat>())
+	{
+		m_AreaFormat = elements_.back();
+		elements_.pop_back();
+	}
+
+	if (proc.optional<GELFRAME>())
+	{
+		m_GELFRAME = elements_.back();
+		elements_.pop_back();
+	}
+
+	if (proc.optional<SHAPEPROPS>())
+	{
+		m_SHAPEPROPS = elements_.back();
+		elements_.pop_back();
+	}
+
+	proc.mandatory<End>();					elements_.pop_back();
 
 	return true;
 }
 
+int FRAME::serialize(std::wostream & _stream)
+{
+	CP_XML_WRITER(_stream)    
+	{
+		CP_XML_NODE(L"c:spPr")
+		{
+			if (m_GELFRAME)
+				m_GELFRAME->serialize(CP_XML_STREAM());
+			else 
+			{
+				//
+			}
+
+		}
+	}
+	return 0;
+}
 } // namespace XLS
 

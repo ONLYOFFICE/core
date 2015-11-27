@@ -4,7 +4,7 @@ namespace XLS
 {;
 
 
-GlobalWorkbookInfo::GlobalWorkbookInfo(const unsigned short code_page)
+GlobalWorkbookInfo::GlobalWorkbookInfo(const unsigned short code_page, XlsConverter * xls_converter_)
 :	CodePage(code_page)
 {
 	fill_x_ids[FillInfo(0, 0, 0)]		= 0;
@@ -16,6 +16,8 @@ GlobalWorkbookInfo::GlobalWorkbookInfo(const unsigned short code_page)
 	defaultRowHeight		= 14.4; 
 
 	Version					= 0x0600; //собственно xls
+
+	xls_converter			= xls_converter_;
 }
 
 

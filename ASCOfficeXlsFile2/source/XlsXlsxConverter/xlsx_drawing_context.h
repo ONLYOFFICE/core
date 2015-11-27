@@ -11,6 +11,7 @@
 namespace oox {
 
 class external_items;
+class xlsx_conversion_context;
 
 class xlsx_drawing_context_handle
 {
@@ -115,16 +116,17 @@ struct _hlink_desc
 class xlsx_drawing_context
 {
 public:
-    xlsx_drawing_context(xlsx_drawing_context_handle & h);
+    xlsx_drawing_context(xlsx_conversion_context & Context);
 	~xlsx_drawing_context(){}
 
 	xlsx_drawings_ptr get_drawings();
 	bool empty();	
-	
+
 	bool start_drawing(int type);	
 		void start_image();
 		void start_shape(int type);
 		void start_group();
+		void start_chart();
 
         void set_id			(int id);
 		void set_FlipH		();
@@ -166,6 +168,7 @@ public:
 		
 //------------------------------------------------------------------------------		
 		void serialize				(std::wostream & stream);
+		void serialize_chart		(std::wstring rId);	
 		void serialize_pic			(std::wstring rId);	
 		void serialize_shape();			
 		void serialize_color		(std::wostream & stream, const _color &color);
@@ -179,14 +182,16 @@ public:
 
 	void end_drawing();
 private:
+    xlsx_conversion_context		& context_;
 
-	std::vector<_drawing_state>		drawing_state;
+	std::vector<_drawing_state>	drawing_state;
 	
-	xlsx_drawing_context_handle	  & handle_;
-	xlsx_drawings_ptr				xlsx_drawings_;
-	int								count_object;
+	xlsx_drawing_context_handle	& handle_;
+	xlsx_drawings_ptr			xlsx_drawings_;
+	int							count_object;
+	bool						in_chart_;
 	
-	std::vector<_hlink_desc>		hlinks_;
+	std::vector<_hlink_desc>	hlinks_;
 };
 
 }

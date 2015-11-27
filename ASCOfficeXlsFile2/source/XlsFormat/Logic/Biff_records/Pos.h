@@ -20,6 +20,8 @@ public:
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
 
+	int serialize(std::wostream & stream_);
+
 	static const ElementType	type = typePos;
 
 //-----------------------------
@@ -29,15 +31,6 @@ public:
 	BIFF_SHORT y1;
 	BIFF_SHORT x2;
 	BIFF_SHORT y2;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(mdTopLt)
-		//BO_ATTRIB_MARKUP_ATTRIB(mdBotRt)
-		//BO_ATTRIB_MARKUP_ATTRIB(x1)
-		//BO_ATTRIB_MARKUP_ATTRIB(y1)
-		//BO_ATTRIB_MARKUP_ATTRIB(x2)
-		//BO_ATTRIB_MARKUP_ATTRIB(y2)
-	//BO_ATTRIB_MARKUP_END
 
 };
 

@@ -18,6 +18,9 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
+	BaseObjectPtr m_SeriesText ;
+	BaseObjectPtr m_BRAI;
+
 };
 
 } // namespace XLS

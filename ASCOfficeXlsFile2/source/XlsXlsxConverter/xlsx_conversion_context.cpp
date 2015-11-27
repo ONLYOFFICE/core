@@ -14,7 +14,7 @@ namespace oox {
     
 
 xlsx_conversion_context::xlsx_conversion_context( package::xlsx_document * outputDocument): output_document_(outputDocument),
-	xlsx_table_context_(*this/*, xlsx_text_context_*/), 
+	xlsx_table_context_(*this), 
 	xlsx_drawing_context_handle_(get_mediaitems())
 {
 }
@@ -23,15 +23,6 @@ xlsx_conversion_context::~xlsx_conversion_context()
 {
 }
 
-//std::wostream & xlsx_conversion_context::current_stream()
-//{
-//	return current_stream_;
-//}
-//
-//void xlsx_conversion_context::current_stream(std::wostream & stream)
-//{
-//	current_stream_ = stream;
-//}
 xlsx_drawing_context & xlsx_conversion_context::get_drawing_context()
 {
     return get_table_context().get_drawing_context();
@@ -52,12 +43,38 @@ xlsx_xml_worksheet & xlsx_conversion_context::current_sheet()
         throw std::runtime_error("internal error");
     }
 }
+oox_chart_context & xlsx_conversion_context::current_chart()
+{
+    if (!charts_.empty())
+    {
+        return *charts_.back().get();
+    }
+    else
+    {
+        throw std::runtime_error("internal error");
+    }
+}
 bool xlsx_conversion_context::start_table(const std::wstring & name)
 {
     sheets_.push_back(xlsx_xml_worksheet::create(name));
     get_table_context().start_table(name);
 
 	return true;
+}
+
+void xlsx_conversion_context::start_chart()
+{
+	charts_.push_back(oox_chart_context::create());
+	//добавл€ем новую форму дл€ диаграммы
+	 //в ней будет информационна€ часть - и она пишетс€ каждый раз в свою xml (их - по числу диаграмм)
+	//этот контекст нужно передавать в файл
+
+}
+
+void xlsx_conversion_context::end_chart()
+{
+	//current_chart().set_drawing_link(current_sheet().get_drawing_link());
+	//излишн€€ инфа
 }
 
 void xlsx_conversion_context::end_table()
@@ -134,17 +151,18 @@ void xlsx_conversion_context::end_document()
     }
 	//добавл€ем диаграммы
 
-	//count = 0;
- //   BOOST_FOREACH(const oox_chart_context_ptr& chart, charts_)
- //   {
-	//	count++;
-	//	package::chart_content_ptr content = package::chart_content::create();
+	count = 0;
+    BOOST_FOREACH(const oox_chart_context_ptr& chart, charts_)
+    {
+		count++;
+		package::chart_content_ptr content = package::chart_content::create();
 
-	//	chart->write_to(content->content());
+		chart->dump_rels(content->rels());
+		chart->write_to(content->content());
 
-	//	output_document_->get_xl_files().add_charts(content);
-	//
-	//}
+		output_document_->get_xl_files().add_charts(content);
+	
+	}
     //workbook_content << L"<calcPr iterateCount=\"100\" refMode=\"A1\" iterate=\"false\" iterateDelta=\"0.0001\" />";
 
 	{

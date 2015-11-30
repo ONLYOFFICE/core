@@ -7,17 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		175CC2461AC96AB2007D7DEC /* Metric.h in Headers */ = {isa = PBXBuildFile; fileRef = 175CC2451AC96AB2007D7DEC /* Metric.h */; };
-		175CC2491AC96ABE007D7DEC /* Layout.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 175CC2471AC96ABE007D7DEC /* Layout.cpp */; };
-		175CC24A1AC96ABE007D7DEC /* Layout.h in Headers */ = {isa = PBXBuildFile; fileRef = 175CC2481AC96ABE007D7DEC /* Layout.h */; };
-		175CC24D1AC96B5D007D7DEC /* TextAttributesEx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 175CC24B1AC96B5D007D7DEC /* TextAttributesEx.cpp */; };
-		175CC24E1AC96B5D007D7DEC /* TextAttributesEx.h in Headers */ = {isa = PBXBuildFile; fileRef = 175CC24C1AC96B5D007D7DEC /* TextAttributesEx.h */; };
-		175CC2501AC96B74007D7DEC /* TextStructures.h in Headers */ = {isa = PBXBuildFile; fileRef = 175CC24F1AC96B74007D7DEC /* TextStructures.h */; };
-		175CC2531AC96B8E007D7DEC /* Theme.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 175CC2511AC96B8E007D7DEC /* Theme.cpp */; };
-		175CC2541AC96B8E007D7DEC /* Theme.h in Headers */ = {isa = PBXBuildFile; fileRef = 175CC2521AC96B8E007D7DEC /* Theme.h */; };
-		175CC2561AC96B9C007D7DEC /* Enums.h in Headers */ = {isa = PBXBuildFile; fileRef = 175CC2551AC96B9C007D7DEC /* Enums.h */; };
-		175CC2591AC96C61007D7DEC /* Elements.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 175CC2571AC96C61007D7DEC /* Elements.cpp */; };
-		175CC25A1AC96C61007D7DEC /* Elements.h in Headers */ = {isa = PBXBuildFile; fileRef = 175CC2581AC96C61007D7DEC /* Elements.h */; };
 		179A436A1AC57B46005A27F7 /* pptxformatlib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 179A43681AC57B46005A27F7 /* pptxformatlib.cpp */; };
 		179A436B1AC57B46005A27F7 /* pptxformatlib.h in Headers */ = {isa = PBXBuildFile; fileRef = 179A43691AC57B46005A27F7 /* pptxformatlib.h */; };
 		179A45471AC57B83005A27F7 /* App.h in Headers */ = {isa = PBXBuildFile; fileRef = 179A436D1AC57B83005A27F7 /* App.h */; };
@@ -474,7 +463,6 @@
 		17C1FCB11ACC429D006B99B3 /* Blip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 179A44611AC57B83005A27F7 /* Blip.cpp */; };
 		17C1FCB21ACC429D006B99B3 /* Geometry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 179A446E1AC57B83005A27F7 /* Geometry.cpp */; };
 		17C1FCB31ACC429D006B99B3 /* ASCOfficeDrawingConverter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 179A46FC1AC57B92005A27F7 /* ASCOfficeDrawingConverter.cpp */; };
-		17C1FCB41ACC429D006B99B3 /* Theme.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 175CC2511AC96B8E007D7DEC /* Theme.cpp */; };
 		17C1FCB51ACC429D006B99B3 /* SpTree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 179A44B31AC57B83005A27F7 /* SpTree.cpp */; };
 		17C1FCB61ACC429D006B99B3 /* SmartArt.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 179A44AE1AC57B83005A27F7 /* SmartArt.cpp */; };
 		17C1FCB71ACC429D006B99B3 /* CxnSp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 179A44361AC57B83005A27F7 /* CxnSp.cpp */; };
@@ -490,7 +478,6 @@
 		17C1FCC11ACC429D006B99B3 /* FileMap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 179A43A31AC57B83005A27F7 /* FileMap.cpp */; };
 		17C1FCC21ACC429D006B99B3 /* ShapeTextProperties.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 179A44AC1AC57B83005A27F7 /* ShapeTextProperties.cpp */; };
 		17C1FCC31ACC429D006B99B3 /* TransitionBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 179A45051AC57B83005A27F7 /* TransitionBase.cpp */; };
-		17C1FCC41ACC429D006B99B3 /* Elements.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 175CC2571AC96C61007D7DEC /* Elements.cpp */; };
 		17C1FCC51ACC429D006B99B3 /* Shape.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 179A44A71AC57B83005A27F7 /* Shape.cpp */; };
 		17C1FCC61ACC429D006B99B3 /* ShapeProperties.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 179A44A91AC57B83005A27F7 /* ShapeProperties.cpp */; };
 		17C1FCC71ACC429D006B99B3 /* BuildNodeBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 179A44DE1AC57B83005A27F7 /* BuildNodeBase.cpp */; };
@@ -501,7 +488,6 @@
 		17C1FCCC1ACC429D006B99B3 /* FontPicker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17D91A1E1AC5A4DF0096D788 /* FontPicker.cpp */; };
 		17C1FCCD1ACC429D006B99B3 /* EffectDag.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 179A44391AC57B83005A27F7 /* EffectDag.cpp */; };
 		17C1FCCE1ACC429D006B99B3 /* FileContainer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 179A439F1AC57B83005A27F7 /* FileContainer.cpp */; };
-		17C1FCCF1ACC429D006B99B3 /* TextAttributesEx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 175CC24B1AC96B5D007D7DEC /* TextAttributesEx.cpp */; };
 		17C1FCD01ACC429D006B99B3 /* NvGrpSpPr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 179A44861AC57B83005A27F7 /* NvGrpSpPr.cpp */; };
 		17C1FCD11ACC429D006B99B3 /* Bg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 179A440B1AC57B83005A27F7 /* Bg.cpp */; };
 		17C1FCD21ACC429D006B99B3 /* Folder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 179A43A51AC57B83005A27F7 /* Folder.cpp */; };
@@ -511,7 +497,6 @@
 		17C1FCD61ACC429D006B99B3 /* SchemeClr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 179A442D1AC57B83005A27F7 /* SchemeClr.cpp */; };
 		17C1FCD71ACC429D006B99B3 /* ASCOfficePPTXFileRealization.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 179A47001AC57B9B005A27F7 /* ASCOfficePPTXFileRealization.cpp */; };
 		17C1FCD81ACC429D006B99B3 /* UniEffect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 179A450E1AC57B83005A27F7 /* UniEffect.cpp */; };
-		17C1FCD91ACC429D006B99B3 /* Layout.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 175CC2471AC96ABE007D7DEC /* Layout.cpp */; };
 		17C1FCDA1ACC429D006B99B3 /* Pic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 179A44981AC57B83005A27F7 /* Pic.cpp */; };
 		17C1FCDB1ACC429D006B99B3 /* NvGraphicFramePr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 179A44841AC57B83005A27F7 /* NvGraphicFramePr.cpp */; };
 		17C1FCE31ACC429D006B99B3 /* LineStyle.h in Headers */ = {isa = PBXBuildFile; fileRef = 179A447D1AC57B83005A27F7 /* LineStyle.h */; };
@@ -522,7 +507,6 @@
 		17C1FCE81ACC429D006B99B3 /* BuSzPct.h in Headers */ = {isa = PBXBuildFile; fileRef = 179A441B1AC57B83005A27F7 /* BuSzPct.h */; };
 		17C1FCE91ACC429D006B99B3 /* CNvPicPr.h in Headers */ = {isa = PBXBuildFile; fileRef = 179A44261AC57B83005A27F7 /* CNvPicPr.h */; };
 		17C1FCEA1ACC429D006B99B3 /* TableBgStyle.h in Headers */ = {isa = PBXBuildFile; fileRef = 179A44C21AC57B83005A27F7 /* TableBgStyle.h */; };
-		17C1FCEB1ACC429D006B99B3 /* Metric.h in Headers */ = {isa = PBXBuildFile; fileRef = 175CC2451AC96AB2007D7DEC /* Metric.h */; };
 		17C1FCEC1ACC429D006B99B3 /* ExtP.h in Headers */ = {isa = PBXBuildFile; fileRef = 179A445F1AC57B83005A27F7 /* ExtP.h */; };
 		17C1FCED1ACC429D006B99B3 /* StSnd.h in Headers */ = {isa = PBXBuildFile; fileRef = 179A45031AC57B83005A27F7 /* StSnd.h */; };
 		17C1FCEE1ACC429D006B99B3 /* BuFontTx.h in Headers */ = {isa = PBXBuildFile; fileRef = 179A44151AC57B83005A27F7 /* BuFontTx.h */; };
@@ -583,7 +567,6 @@
 		17C1FD251ACC429D006B99B3 /* RelationTable.h in Headers */ = {isa = PBXBuildFile; fileRef = 179A43981AC57B83005A27F7 /* RelationTable.h */; };
 		17C1FD261ACC429D006B99B3 /* BevelType.h in Headers */ = {isa = PBXBuildFile; fileRef = 179A43AF1AC57B83005A27F7 /* BevelType.h */; };
 		17C1FD271ACC429D006B99B3 /* App.h in Headers */ = {isa = PBXBuildFile; fileRef = 179A436D1AC57B83005A27F7 /* App.h */; };
-		17C1FD281ACC429D006B99B3 /* Enums.h in Headers */ = {isa = PBXBuildFile; fileRef = 175CC2551AC96B9C007D7DEC /* Enums.h */; };
 		17C1FD291ACC429D006B99B3 /* Xfrm.h in Headers */ = {isa = PBXBuildFile; fileRef = 179A45131AC57B83005A27F7 /* Xfrm.h */; };
 		17C1FD2A1ACC429D006B99B3 /* SchemeClr.h in Headers */ = {isa = PBXBuildFile; fileRef = 179A442E1AC57B83005A27F7 /* SchemeClr.h */; };
 		17C1FD2B1ACC429D006B99B3 /* Converter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D91A1A1AC5A4DF0096D788 /* Converter.h */; };
@@ -592,7 +575,6 @@
 		17C1FD2E1ACC429D006B99B3 /* CxnSp.h in Headers */ = {isa = PBXBuildFile; fileRef = 179A44371AC57B83005A27F7 /* CxnSp.h */; };
 		17C1FD2F1ACC429D006B99B3 /* Transition.h in Headers */ = {isa = PBXBuildFile; fileRef = 179A45041AC57B83005A27F7 /* Transition.h */; };
 		17C1FD301ACC429D006B99B3 /* EmbeddedFontDataId.h in Headers */ = {isa = PBXBuildFile; fileRef = 179A451B1AC57B83005A27F7 /* EmbeddedFontDataId.h */; };
-		17C1FD311ACC429D006B99B3 /* Elements.h in Headers */ = {isa = PBXBuildFile; fileRef = 175CC2581AC96C61007D7DEC /* Elements.h */; };
 		17C1FD321ACC429D006B99B3 /* TransitionBase.h in Headers */ = {isa = PBXBuildFile; fileRef = 179A45061AC57B83005A27F7 /* TransitionBase.h */; };
 		17C1FD331ACC429D006B99B3 /* TLNodeFillType.h in Headers */ = {isa = PBXBuildFile; fileRef = 179A43F31AC57B83005A27F7 /* TLNodeFillType.h */; };
 		17C1FD341ACC429D006B99B3 /* BulletColor.h in Headers */ = {isa = PBXBuildFile; fileRef = 179A44171AC57B83005A27F7 /* BulletColor.h */; };
@@ -619,7 +601,6 @@
 		17C1FD491ACC429D006B99B3 /* Slide.h in Headers */ = {isa = PBXBuildFile; fileRef = 179A45271AC57B83005A27F7 /* Slide.h */; };
 		17C1FD4A1ACC429D006B99B3 /* WrapperWritingElement.h in Headers */ = {isa = PBXBuildFile; fileRef = 179A45461AC57B83005A27F7 /* WrapperWritingElement.h */; };
 		17C1FD4B1ACC429D006B99B3 /* BuAutoNum.h in Headers */ = {isa = PBXBuildFile; fileRef = 179A44101AC57B83005A27F7 /* BuAutoNum.h */; };
-		17C1FD4C1ACC429D006B99B3 /* TextAttributesEx.h in Headers */ = {isa = PBXBuildFile; fileRef = 175CC24C1AC96B5D007D7DEC /* TextAttributesEx.h */; };
 		17C1FD4D1ACC429D006B99B3 /* SlideMaster.h in Headers */ = {isa = PBXBuildFile; fileRef = 179A45291AC57B83005A27F7 /* SlideMaster.h */; };
 		17C1FD4E1ACC429D006B99B3 /* FrameShape.h in Headers */ = {isa = PBXBuildFile; fileRef = 179A43C31AC57B83005A27F7 /* FrameShape.h */; };
 		17C1FD4F1ACC429D006B99B3 /* EffectDag.h in Headers */ = {isa = PBXBuildFile; fileRef = 179A443A1AC57B83005A27F7 /* EffectDag.h */; };
@@ -782,7 +763,6 @@
 		17C1FDEC1ACC429D006B99B3 /* MoveTo.h in Headers */ = {isa = PBXBuildFile; fileRef = 179A44931AC57B83005A27F7 /* MoveTo.h */; };
 		17C1FDED1ACC429D006B99B3 /* NotesMaster.h in Headers */ = {isa = PBXBuildFile; fileRef = 179A45151AC57B83005A27F7 /* NotesMaster.h */; };
 		17C1FDEE1ACC429D006B99B3 /* AlphaBiLevel.h in Headers */ = {isa = PBXBuildFile; fileRef = 179A44401AC57B83005A27F7 /* AlphaBiLevel.h */; };
-		17C1FDEF1ACC429D006B99B3 /* Theme.h in Headers */ = {isa = PBXBuildFile; fileRef = 175CC2521AC96B8E007D7DEC /* Theme.h */; };
 		17C1FDF01ACC429D006B99B3 /* Flip.h in Headers */ = {isa = PBXBuildFile; fileRef = 179A43C01AC57B83005A27F7 /* Flip.h */; };
 		17C1FDF11ACC429D006B99B3 /* Tile.h in Headers */ = {isa = PBXBuildFile; fileRef = 179A44691AC57B83005A27F7 /* Tile.h */; };
 		17C1FDF21ACC429D006B99B3 /* SideDirectionTransition.h in Headers */ = {isa = PBXBuildFile; fileRef = 179A45001AC57B83005A27F7 /* SideDirectionTransition.h */; };
@@ -802,7 +782,6 @@
 		17C1FE001ACC429D006B99B3 /* SndAc.h in Headers */ = {isa = PBXBuildFile; fileRef = 179A45011AC57B83005A27F7 /* SndAc.h */; };
 		17C1FE011ACC429D006B99B3 /* ShapeProperties.h in Headers */ = {isa = PBXBuildFile; fileRef = 179A44AA1AC57B83005A27F7 /* ShapeProperties.h */; };
 		17C1FE021ACC429D006B99B3 /* AlphaModFix.h in Headers */ = {isa = PBXBuildFile; fileRef = 179A44451AC57B83005A27F7 /* AlphaModFix.h */; };
-		17C1FE031ACC429D006B99B3 /* Layout.h in Headers */ = {isa = PBXBuildFile; fileRef = 175CC2481AC96ABE007D7DEC /* Layout.h */; };
 		17C1FE041ACC429D006B99B3 /* Duotone.h in Headers */ = {isa = PBXBuildFile; fileRef = 179A444D1AC57B83005A27F7 /* Duotone.h */; };
 		17C1FE051ACC429D006B99B3 /* Namespaces.h in Headers */ = {isa = PBXBuildFile; fileRef = 179A43941AC57B83005A27F7 /* Namespaces.h */; };
 		17C1FE061ACC429D006B99B3 /* ColorBase.h in Headers */ = {isa = PBXBuildFile; fileRef = 179A442A1AC57B83005A27F7 /* ColorBase.h */; };
@@ -830,7 +809,6 @@
 		17C1FE1C1ACC429D006B99B3 /* Blend.h in Headers */ = {isa = PBXBuildFile; fileRef = 179A44491AC57B83005A27F7 /* Blend.h */; };
 		17C1FE1D1ACC429D006B99B3 /* LightRig.h in Headers */ = {isa = PBXBuildFile; fileRef = 179A44791AC57B83005A27F7 /* LightRig.h */; };
 		17C1FE1E1ACC429D006B99B3 /* FileType.h in Headers */ = {isa = PBXBuildFile; fileRef = 179A43881AC57B83005A27F7 /* FileType.h */; };
-		17C1FE1F1ACC429D006B99B3 /* TextStructures.h in Headers */ = {isa = PBXBuildFile; fileRef = 175CC24F1AC96B74007D7DEC /* TextStructures.h */; };
 		17C1FE201ACC429D006B99B3 /* BuBlip.h in Headers */ = {isa = PBXBuildFile; fileRef = 179A44111AC57B83005A27F7 /* BuBlip.h */; };
 		17C1FE211ACC429D006B99B3 /* Ah.h in Headers */ = {isa = PBXBuildFile; fileRef = 179A44051AC57B83005A27F7 /* Ah.h */; };
 		17C1FE221ACC429D006B99B3 /* TransitionSpeed.h in Headers */ = {isa = PBXBuildFile; fileRef = 179A44011AC57B83005A27F7 /* TransitionSpeed.h */; };
@@ -955,6 +933,34 @@
 		17D91A311AC5A4DF0096D788 /* WMFToImageConverter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D91A221AC5A4DF0096D788 /* WMFToImageConverter.h */; };
 		17D91A321AC5A4DF0096D788 /* XmlWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D91A231AC5A4DF0096D788 /* XmlWriter.h */; };
 		17D91B491AC5AA340096D788 /* libcximage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 17D91B461AC5AA270096D788 /* libcximage.a */; };
+		695BBFE51C06FF7300817D7E /* Elements.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 695BBFE31C06FF7300817D7E /* Elements.cpp */; };
+		695BBFE61C06FF7300817D7E /* Elements.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 695BBFE31C06FF7300817D7E /* Elements.cpp */; };
+		695BBFE71C06FF7300817D7E /* Elements.h in Headers */ = {isa = PBXBuildFile; fileRef = 695BBFE41C06FF7300817D7E /* Elements.h */; };
+		695BBFE81C06FF7300817D7E /* Elements.h in Headers */ = {isa = PBXBuildFile; fileRef = 695BBFE41C06FF7300817D7E /* Elements.h */; };
+		695BBFEA1C06FF8600817D7E /* Theme.h in Headers */ = {isa = PBXBuildFile; fileRef = 695BBFE91C06FF8600817D7E /* Theme.h */; };
+		695BBFEB1C06FF8600817D7E /* Theme.h in Headers */ = {isa = PBXBuildFile; fileRef = 695BBFE91C06FF8600817D7E /* Theme.h */; };
+		695BBFED1C06FF9100817D7E /* Metric.h in Headers */ = {isa = PBXBuildFile; fileRef = 695BBFEC1C06FF9100817D7E /* Metric.h */; };
+		695BBFEE1C06FF9100817D7E /* Metric.h in Headers */ = {isa = PBXBuildFile; fileRef = 695BBFEC1C06FF9100817D7E /* Metric.h */; };
+		695BBFF11C06FF9800817D7E /* Layout.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 695BBFEF1C06FF9800817D7E /* Layout.cpp */; };
+		695BBFF21C06FF9800817D7E /* Layout.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 695BBFEF1C06FF9800817D7E /* Layout.cpp */; };
+		695BBFF31C06FF9800817D7E /* Layout.h in Headers */ = {isa = PBXBuildFile; fileRef = 695BBFF01C06FF9800817D7E /* Layout.h */; };
+		695BBFF41C06FF9800817D7E /* Layout.h in Headers */ = {isa = PBXBuildFile; fileRef = 695BBFF01C06FF9800817D7E /* Layout.h */; };
+		695BBFF71C06FFA100817D7E /* TextAttributesEx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 695BBFF51C06FFA100817D7E /* TextAttributesEx.cpp */; };
+		695BBFF81C06FFA100817D7E /* TextAttributesEx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 695BBFF51C06FFA100817D7E /* TextAttributesEx.cpp */; };
+		695BBFF91C06FFA200817D7E /* TextAttributesEx.h in Headers */ = {isa = PBXBuildFile; fileRef = 695BBFF61C06FFA100817D7E /* TextAttributesEx.h */; };
+		695BBFFA1C06FFA200817D7E /* TextAttributesEx.h in Headers */ = {isa = PBXBuildFile; fileRef = 695BBFF61C06FFA100817D7E /* TextAttributesEx.h */; };
+		695BBFFC1C06FFA800817D7E /* TextStructures.h in Headers */ = {isa = PBXBuildFile; fileRef = 695BBFFB1C06FFA800817D7E /* TextStructures.h */; };
+		695BBFFD1C06FFA800817D7E /* TextStructures.h in Headers */ = {isa = PBXBuildFile; fileRef = 695BBFFB1C06FFA800817D7E /* TextStructures.h */; };
+		695BC0001C06FFB300817D7E /* Elements.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 695BBFFE1C06FFB300817D7E /* Elements.cpp */; };
+		695BC0011C06FFB300817D7E /* Elements.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 695BBFFE1C06FFB300817D7E /* Elements.cpp */; };
+		695BC0021C06FFB300817D7E /* Elements.h in Headers */ = {isa = PBXBuildFile; fileRef = 695BBFFF1C06FFB300817D7E /* Elements.h */; };
+		695BC0031C06FFB300817D7E /* Elements.h in Headers */ = {isa = PBXBuildFile; fileRef = 695BBFFF1C06FFB300817D7E /* Elements.h */; };
+		695BC0051C06FFC400817D7E /* Enums.h in Headers */ = {isa = PBXBuildFile; fileRef = 695BC0041C06FFC400817D7E /* Enums.h */; };
+		695BC0061C06FFC400817D7E /* Enums.h in Headers */ = {isa = PBXBuildFile; fileRef = 695BC0041C06FFC400817D7E /* Enums.h */; };
+		695BC0361C070DE900817D7E /* ASCSVGWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 695BC0351C070DE900817D7E /* ASCSVGWriter.h */; };
+		695BC0371C070DE900817D7E /* ASCSVGWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 695BC0351C070DE900817D7E /* ASCSVGWriter.h */; };
+		695BC0391C070DEF00817D7E /* ASCSVGWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 695BC0381C070DEF00817D7E /* ASCSVGWriter.cpp */; };
+		695BC03A1C070DEF00817D7E /* ASCSVGWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 695BC0381C070DEF00817D7E /* ASCSVGWriter.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1130,17 +1136,6 @@
 
 /* Begin PBXFileReference section */
 		17063B631AC5708F0056A3F1 /* libPPTXFormatLib.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPPTXFormatLib.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		175CC2451AC96AB2007D7DEC /* Metric.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Metric.h; path = ../../../ASCPresentationEditor/OfficeDrawing/Metric.h; sourceTree = "<group>"; };
-		175CC2471AC96ABE007D7DEC /* Layout.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Layout.cpp; path = ../../../ASCPresentationEditor/OfficeDrawing/Layout.cpp; sourceTree = "<group>"; };
-		175CC2481AC96ABE007D7DEC /* Layout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Layout.h; path = ../../../ASCPresentationEditor/OfficeDrawing/Layout.h; sourceTree = "<group>"; };
-		175CC24B1AC96B5D007D7DEC /* TextAttributesEx.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TextAttributesEx.cpp; path = ../../../ASCPresentationEditor/OfficeDrawing/TextAttributesEx.cpp; sourceTree = "<group>"; };
-		175CC24C1AC96B5D007D7DEC /* TextAttributesEx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TextAttributesEx.h; path = ../../../ASCPresentationEditor/OfficeDrawing/TextAttributesEx.h; sourceTree = "<group>"; };
-		175CC24F1AC96B74007D7DEC /* TextStructures.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TextStructures.h; path = ../../../ASCPresentationEditor/OfficeDrawing/TextStructures.h; sourceTree = "<group>"; };
-		175CC2511AC96B8E007D7DEC /* Theme.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Theme.cpp; path = ../../../ASCPresentationEditor/OfficeDrawing/Theme.cpp; sourceTree = "<group>"; };
-		175CC2521AC96B8E007D7DEC /* Theme.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Theme.h; path = ../../../ASCPresentationEditor/OfficeDrawing/Theme.h; sourceTree = "<group>"; };
-		175CC2551AC96B9C007D7DEC /* Enums.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Enums.h; path = ../../../ASCPresentationEditor/OfficeDrawing/Enums.h; sourceTree = "<group>"; };
-		175CC2571AC96C61007D7DEC /* Elements.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Elements.cpp; path = ../../../ASCPresentationEditor/OfficeDrawing/Elements.cpp; sourceTree = "<group>"; };
-		175CC2581AC96C61007D7DEC /* Elements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Elements.h; path = ../../../ASCPresentationEditor/OfficeDrawing/Elements.h; sourceTree = "<group>"; };
 		179A43681AC57B46005A27F7 /* pptxformatlib.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = pptxformatlib.cpp; path = ../../Linux/PPTXFormatLib/pptxformatlib.cpp; sourceTree = "<group>"; };
 		179A43691AC57B46005A27F7 /* pptxformatlib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pptxformatlib.h; path = ../../Linux/PPTXFormatLib/pptxformatlib.h; sourceTree = "<group>"; };
 		179A436D1AC57B83005A27F7 /* App.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = App.h; sourceTree = "<group>"; };
@@ -1608,6 +1603,20 @@
 		17D91A221AC5A4DF0096D788 /* WMFToImageConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WMFToImageConverter.h; sourceTree = "<group>"; };
 		17D91A231AC5A4DF0096D788 /* XmlWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XmlWriter.h; sourceTree = "<group>"; };
 		17D91B411AC5AA270096D788 /* cximage.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = cximage.xcodeproj; path = ../../../DesktopEditor/mac_build/cximage/cximage.xcodeproj; sourceTree = "<group>"; };
+		695BBFE31C06FF7300817D7E /* Elements.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Elements.cpp; path = ../../Editor/Drawing/Elements.cpp; sourceTree = "<group>"; };
+		695BBFE41C06FF7300817D7E /* Elements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Elements.h; path = ../../Editor/Drawing/Elements.h; sourceTree = "<group>"; };
+		695BBFE91C06FF8600817D7E /* Theme.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Theme.h; path = ../../Editor/Drawing/Theme.h; sourceTree = "<group>"; };
+		695BBFEC1C06FF9100817D7E /* Metric.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Metric.h; path = ../../Editor/Drawing/Metric.h; sourceTree = "<group>"; };
+		695BBFEF1C06FF9800817D7E /* Layout.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Layout.cpp; path = ../../Editor/Drawing/Layout.cpp; sourceTree = "<group>"; };
+		695BBFF01C06FF9800817D7E /* Layout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Layout.h; path = ../../Editor/Drawing/Layout.h; sourceTree = "<group>"; };
+		695BBFF51C06FFA100817D7E /* TextAttributesEx.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TextAttributesEx.cpp; path = ../../Editor/Drawing/TextAttributesEx.cpp; sourceTree = "<group>"; };
+		695BBFF61C06FFA100817D7E /* TextAttributesEx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TextAttributesEx.h; path = ../../Editor/Drawing/TextAttributesEx.h; sourceTree = "<group>"; };
+		695BBFFB1C06FFA800817D7E /* TextStructures.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TextStructures.h; path = ../../Editor/Drawing/TextStructures.h; sourceTree = "<group>"; };
+		695BBFFE1C06FFB300817D7E /* Elements.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Elements.cpp; path = ../../Editor/Drawing/Elements.cpp; sourceTree = "<group>"; };
+		695BBFFF1C06FFB300817D7E /* Elements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Elements.h; path = ../../Editor/Drawing/Elements.h; sourceTree = "<group>"; };
+		695BC0041C06FFC400817D7E /* Enums.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Enums.h; path = ../../Editor/Drawing/Enums.h; sourceTree = "<group>"; };
+		695BC0351C070DE900817D7E /* ASCSVGWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ASCSVGWriter.h; path = ../../../HtmlRenderer/include/ASCSVGWriter.h; sourceTree = "<group>"; };
+		695BC0381C070DEF00817D7E /* ASCSVGWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ASCSVGWriter.cpp; path = ../../../HtmlRenderer/src/ASCSVGWriter.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1649,6 +1658,7 @@
 				17D918591AC5A12B0096D788 /* fontengine.xcodeproj */,
 				17D913F31AC59C430096D788 /* raster.xcodeproj */,
 				17D9139F1AC595220096D788 /* graphics.xcodeproj */,
+				695BC0221C070DCB00817D7E /* HtmlRenderer */,
 				175CC2441AC96AA0007D7DEC /* OfficeDrawing */,
 				17D91A141AC5A4DF0096D788 /* Editor */,
 				17063B651AC5708F0056A3F1 /* PPTXFormatLib */,
@@ -1681,17 +1691,18 @@
 		175CC2441AC96AA0007D7DEC /* OfficeDrawing */ = {
 			isa = PBXGroup;
 			children = (
-				175CC2551AC96B9C007D7DEC /* Enums.h */,
-				175CC24F1AC96B74007D7DEC /* TextStructures.h */,
-				175CC24C1AC96B5D007D7DEC /* TextAttributesEx.h */,
-				175CC24B1AC96B5D007D7DEC /* TextAttributesEx.cpp */,
-				175CC2481AC96ABE007D7DEC /* Layout.h */,
-				175CC2471AC96ABE007D7DEC /* Layout.cpp */,
-				175CC2451AC96AB2007D7DEC /* Metric.h */,
-				175CC2521AC96B8E007D7DEC /* Theme.h */,
-				175CC2511AC96B8E007D7DEC /* Theme.cpp */,
-				175CC2571AC96C61007D7DEC /* Elements.cpp */,
-				175CC2581AC96C61007D7DEC /* Elements.h */,
+				695BC0041C06FFC400817D7E /* Enums.h */,
+				695BBFFE1C06FFB300817D7E /* Elements.cpp */,
+				695BBFFF1C06FFB300817D7E /* Elements.h */,
+				695BBFFB1C06FFA800817D7E /* TextStructures.h */,
+				695BBFF51C06FFA100817D7E /* TextAttributesEx.cpp */,
+				695BBFF61C06FFA100817D7E /* TextAttributesEx.h */,
+				695BBFEF1C06FF9800817D7E /* Layout.cpp */,
+				695BBFF01C06FF9800817D7E /* Layout.h */,
+				695BBFEC1C06FF9100817D7E /* Metric.h */,
+				695BBFE91C06FF8600817D7E /* Theme.h */,
+				695BBFE31C06FF7300817D7E /* Elements.cpp */,
+				695BBFE41C06FF7300817D7E /* Elements.h */,
 			);
 			name = OfficeDrawing;
 			sourceTree = "<group>";
@@ -2405,6 +2416,15 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		695BC0221C070DCB00817D7E /* HtmlRenderer */ = {
+			isa = PBXGroup;
+			children = (
+				695BC0351C070DE900817D7E /* ASCSVGWriter.h */,
+				695BC0381C070DEF00817D7E /* ASCSVGWriter.cpp */,
+			);
+			name = HtmlRenderer;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -2420,11 +2440,11 @@
 				179A45E31AC57B83005A27F7 /* BuSzPct.h in Headers */,
 				179A45EE1AC57B83005A27F7 /* CNvPicPr.h in Headers */,
 				179A46831AC57B83005A27F7 /* TableBgStyle.h in Headers */,
-				175CC2461AC96AB2007D7DEC /* Metric.h in Headers */,
 				179A46251AC57B83005A27F7 /* ExtP.h in Headers */,
 				179A46C21AC57B83005A27F7 /* StSnd.h in Headers */,
 				179A45DD1AC57B83005A27F7 /* BuFontTx.h in Headers */,
 				179A46891AC57B83005A27F7 /* TextFit.h in Headers */,
+				695BBFED1C06FF9100817D7E /* Metric.h in Headers */,
 				179A46851AC57B83005A27F7 /* TableStyle.h in Headers */,
 				179A45CF1AC57B83005A27F7 /* AhBase.h in Headers */,
 				179A46D01AC57B83005A27F7 /* UniMedia.h in Headers */,
@@ -2454,6 +2474,7 @@
 				179A46711AC57B83005A27F7 /* SmartArt.h in Headers */,
 				179A45C11AC57B83005A27F7 /* TLPathEditMode.h in Headers */,
 				179A454C1AC57B83005A27F7 /* DefaultTable.h in Headers */,
+				695BBFFC1C06FFA800817D7E /* TextStructures.h in Headers */,
 				179A45B81AC57B83005A27F7 /* TLColorDirection.h in Headers */,
 				179A45631AC57B83005A27F7 /* Video.h in Headers */,
 				179A46291AC57B83005A27F7 /* GradFill.h in Headers */,
@@ -2467,6 +2488,7 @@
 				179A46581AC57B83005A27F7 /* QuadBezTo.h in Headers */,
 				179A465F1AC57B83005A27F7 /* PrstTxWarp.h in Headers */,
 				179A46271AC57B83005A27F7 /* Blip.h in Headers */,
+				695BBFF31C06FF9800817D7E /* Layout.h in Headers */,
 				179A46461AC57B83005A27F7 /* WavAudioFile.h in Headers */,
 				179A469D1AC57B83005A27F7 /* BldSub.h in Headers */,
 				179A46BC1AC57B83005A27F7 /* EmptyTransition.h in Headers */,
@@ -2481,7 +2503,6 @@
 				179A45681AC57B83005A27F7 /* RelationTable.h in Headers */,
 				179A45791AC57B83005A27F7 /* BevelType.h in Headers */,
 				179A45471AC57B83005A27F7 /* App.h in Headers */,
-				175CC2561AC96B9C007D7DEC /* Enums.h in Headers */,
 				179A46D21AC57B83005A27F7 /* Xfrm.h in Headers */,
 				179A45F51AC57B83005A27F7 /* SchemeClr.h in Headers */,
 				17D91A291AC5A4DF0096D788 /* Converter.h in Headers */,
@@ -2490,7 +2511,6 @@
 				179A45FE1AC57B83005A27F7 /* CxnSp.h in Headers */,
 				179A46C31AC57B83005A27F7 /* Transition.h in Headers */,
 				179A46D91AC57B83005A27F7 /* EmbeddedFontDataId.h in Headers */,
-				175CC25A1AC96C61007D7DEC /* Elements.h in Headers */,
 				179A46C51AC57B83005A27F7 /* TransitionBase.h in Headers */,
 				179A45BD1AC57B83005A27F7 /* TLNodeFillType.h in Headers */,
 				179A45DF1AC57B83005A27F7 /* BulletColor.h in Headers */,
@@ -2517,7 +2537,7 @@
 				179A46E01AC57B83005A27F7 /* Slide.h in Headers */,
 				179A46FB1AC57B83005A27F7 /* WrapperWritingElement.h in Headers */,
 				179A45D81AC57B83005A27F7 /* BuAutoNum.h in Headers */,
-				175CC24E1AC96B5D007D7DEC /* TextAttributesEx.h in Headers */,
+				695BBFF91C06FFA200817D7E /* TextAttributesEx.h in Headers */,
 				179A46E21AC57B83005A27F7 /* SlideMaster.h in Headers */,
 				179A458D1AC57B83005A27F7 /* FrameShape.h in Headers */,
 				179A46011AC57B83005A27F7 /* EffectDag.h in Headers */,
@@ -2537,6 +2557,7 @@
 				179A46721AC57B83005A27F7 /* Sp3d.h in Headers */,
 				179A45831AC57B83005A27F7 /* ContentStatus.h in Headers */,
 				179A45541AC57B83005A27F7 /* External.h in Headers */,
+				695BC0051C06FFC400817D7E /* Enums.h in Headers */,
 				179A46321AC57B83005A27F7 /* Gd.h in Headers */,
 				179A45C61AC57B83005A27F7 /* TLSyncBehavior.h in Headers */,
 				179A45D11AC57B83005A27F7 /* AhXY.h in Headers */,
@@ -2627,10 +2648,12 @@
 				179A45701AC57B83005A27F7 /* FileFactory.h in Headers */,
 				179A46881AC57B83005A27F7 /* TcTxStyle.h in Headers */,
 				179A45EF1AC57B83005A27F7 /* CNvPr.h in Headers */,
+				695BC0361C070DE900817D7E /* ASCSVGWriter.h in Headers */,
 				179A46821AC57B83005A27F7 /* TableRow.h in Headers */,
 				179A46AF1AC57B83005A27F7 /* TgtEl.h in Headers */,
 				179A46111AC57B83005A27F7 /* ClrChange.h in Headers */,
 				179A45A81AC57B83005A27F7 /* SplitterBarState.h in Headers */,
+				695BBFE71C06FF7300817D7E /* Elements.h in Headers */,
 				179A46241AC57B83005A27F7 /* EffectStyle.h in Headers */,
 				179A458B1AC57B83005A27F7 /* FontAlign.h in Headers */,
 				179A46FA1AC57B83005A27F7 /* WrapperFile.h in Headers */,
@@ -2675,13 +2698,13 @@
 				179A46D71AC57B83005A27F7 /* PPTXEvent.h in Headers */,
 				179A46901AC57B83005A27F7 /* AnimEffect.h in Headers */,
 				179A467F1AC57B83005A27F7 /* TableCellProperties.h in Headers */,
+				695BBFEA1C06FF8600817D7E /* Theme.h in Headers */,
 				179A454F1AC57B83005A27F7 /* Override.h in Headers */,
 				179A46961AC57B83005A27F7 /* AttrNameLst.h in Headers */,
 				179A45AE1AC57B83005A27F7 /* TextShapeType.h in Headers */,
 				179A46561AC57B83005A27F7 /* MoveTo.h in Headers */,
 				179A46D41AC57B83005A27F7 /* NotesMaster.h in Headers */,
 				179A46061AC57B83005A27F7 /* AlphaBiLevel.h in Headers */,
-				175CC2541AC96B8E007D7DEC /* Theme.h in Headers */,
 				179A458A1AC57B83005A27F7 /* Flip.h in Headers */,
 				179A462E1AC57B83005A27F7 /* Tile.h in Headers */,
 				179A46BF1AC57B83005A27F7 /* SideDirectionTransition.h in Headers */,
@@ -2701,7 +2724,6 @@
 				179A46C01AC57B83005A27F7 /* SndAc.h in Headers */,
 				179A466C1AC57B83005A27F7 /* ShapeProperties.h in Headers */,
 				179A460B1AC57B83005A27F7 /* AlphaModFix.h in Headers */,
-				175CC24A1AC96ABE007D7DEC /* Layout.h in Headers */,
 				179A46131AC57B83005A27F7 /* Duotone.h in Headers */,
 				179A45651AC57B83005A27F7 /* Namespaces.h in Headers */,
 				179A45F11AC57B83005A27F7 /* ColorBase.h in Headers */,
@@ -2729,7 +2751,6 @@
 				179A460F1AC57B83005A27F7 /* Blend.h in Headers */,
 				179A463E1AC57B83005A27F7 /* LightRig.h in Headers */,
 				179A455A1AC57B83005A27F7 /* FileType.h in Headers */,
-				175CC2501AC96B74007D7DEC /* TextStructures.h in Headers */,
 				179A45D91AC57B83005A27F7 /* BuBlip.h in Headers */,
 				179A45CE1AC57B83005A27F7 /* Ah.h in Headers */,
 				179A45CB1AC57B83005A27F7 /* TransitionSpeed.h in Headers */,
@@ -2754,6 +2775,7 @@
 				179A46E41AC57B83005A27F7 /* ClrScheme.h in Headers */,
 				179A46F71AC57B83005A27F7 /* SlideViewPr.h in Headers */,
 				179A46641AC57B83005A27F7 /* Br.h in Headers */,
+				695BC0021C06FFB300817D7E /* Elements.h in Headers */,
 				179A459A1AC57B83005A27F7 /* PathFillMode.h in Headers */,
 				179A45B31AC57B83005A27F7 /* TextWrap.h in Headers */,
 				179A45921AC57B83005A27F7 /* LightRigType.h in Headers */,
@@ -2849,11 +2871,11 @@
 				17C1FCE81ACC429D006B99B3 /* BuSzPct.h in Headers */,
 				17C1FCE91ACC429D006B99B3 /* CNvPicPr.h in Headers */,
 				17C1FCEA1ACC429D006B99B3 /* TableBgStyle.h in Headers */,
-				17C1FCEB1ACC429D006B99B3 /* Metric.h in Headers */,
 				17C1FCEC1ACC429D006B99B3 /* ExtP.h in Headers */,
 				17C1FCED1ACC429D006B99B3 /* StSnd.h in Headers */,
 				17C1FCEE1ACC429D006B99B3 /* BuFontTx.h in Headers */,
 				17C1FCEF1ACC429D006B99B3 /* TextFit.h in Headers */,
+				695BBFEE1C06FF9100817D7E /* Metric.h in Headers */,
 				17C1FCF01ACC429D006B99B3 /* TableStyle.h in Headers */,
 				17C1FCF11ACC429D006B99B3 /* AhBase.h in Headers */,
 				17C1FCF21ACC429D006B99B3 /* UniMedia.h in Headers */,
@@ -2883,6 +2905,7 @@
 				17C1FD0A1ACC429D006B99B3 /* SmartArt.h in Headers */,
 				17C1FD0B1ACC429D006B99B3 /* TLPathEditMode.h in Headers */,
 				17C1FD0C1ACC429D006B99B3 /* DefaultTable.h in Headers */,
+				695BBFFD1C06FFA800817D7E /* TextStructures.h in Headers */,
 				17C1FD0D1ACC429D006B99B3 /* TLColorDirection.h in Headers */,
 				17C1FD0E1ACC429D006B99B3 /* Video.h in Headers */,
 				17C1FD0F1ACC429D006B99B3 /* GradFill.h in Headers */,
@@ -2896,6 +2919,7 @@
 				17C1FD171ACC429D006B99B3 /* QuadBezTo.h in Headers */,
 				17C1FD181ACC429D006B99B3 /* PrstTxWarp.h in Headers */,
 				17C1FD191ACC429D006B99B3 /* Blip.h in Headers */,
+				695BBFF41C06FF9800817D7E /* Layout.h in Headers */,
 				17C1FD1A1ACC429D006B99B3 /* WavAudioFile.h in Headers */,
 				17C1FD1B1ACC429D006B99B3 /* BldSub.h in Headers */,
 				17C1FD1C1ACC429D006B99B3 /* EmptyTransition.h in Headers */,
@@ -2910,7 +2934,6 @@
 				17C1FD251ACC429D006B99B3 /* RelationTable.h in Headers */,
 				17C1FD261ACC429D006B99B3 /* BevelType.h in Headers */,
 				17C1FD271ACC429D006B99B3 /* App.h in Headers */,
-				17C1FD281ACC429D006B99B3 /* Enums.h in Headers */,
 				17C1FD291ACC429D006B99B3 /* Xfrm.h in Headers */,
 				17C1FD2A1ACC429D006B99B3 /* SchemeClr.h in Headers */,
 				17C1FD2B1ACC429D006B99B3 /* Converter.h in Headers */,
@@ -2919,7 +2942,6 @@
 				17C1FD2E1ACC429D006B99B3 /* CxnSp.h in Headers */,
 				17C1FD2F1ACC429D006B99B3 /* Transition.h in Headers */,
 				17C1FD301ACC429D006B99B3 /* EmbeddedFontDataId.h in Headers */,
-				17C1FD311ACC429D006B99B3 /* Elements.h in Headers */,
 				17C1FD321ACC429D006B99B3 /* TransitionBase.h in Headers */,
 				17C1FD331ACC429D006B99B3 /* TLNodeFillType.h in Headers */,
 				17C1FD341ACC429D006B99B3 /* BulletColor.h in Headers */,
@@ -2946,7 +2968,7 @@
 				17C1FD491ACC429D006B99B3 /* Slide.h in Headers */,
 				17C1FD4A1ACC429D006B99B3 /* WrapperWritingElement.h in Headers */,
 				17C1FD4B1ACC429D006B99B3 /* BuAutoNum.h in Headers */,
-				17C1FD4C1ACC429D006B99B3 /* TextAttributesEx.h in Headers */,
+				695BBFFA1C06FFA200817D7E /* TextAttributesEx.h in Headers */,
 				17C1FD4D1ACC429D006B99B3 /* SlideMaster.h in Headers */,
 				17C1FD4E1ACC429D006B99B3 /* FrameShape.h in Headers */,
 				17C1FD4F1ACC429D006B99B3 /* EffectDag.h in Headers */,
@@ -2966,6 +2988,7 @@
 				17C1FD5D1ACC429D006B99B3 /* Sp3d.h in Headers */,
 				17C1FD5E1ACC429D006B99B3 /* ContentStatus.h in Headers */,
 				17C1FD5F1ACC429D006B99B3 /* External.h in Headers */,
+				695BC0061C06FFC400817D7E /* Enums.h in Headers */,
 				17C1FD601ACC429D006B99B3 /* Gd.h in Headers */,
 				17C1FD611ACC429D006B99B3 /* TLSyncBehavior.h in Headers */,
 				17C1FD621ACC429D006B99B3 /* AhXY.h in Headers */,
@@ -3056,10 +3079,12 @@
 				17C1FDB61ACC429D006B99B3 /* FileFactory.h in Headers */,
 				17C1FDB71ACC429D006B99B3 /* TcTxStyle.h in Headers */,
 				17C1FDB81ACC429D006B99B3 /* CNvPr.h in Headers */,
+				695BC0371C070DE900817D7E /* ASCSVGWriter.h in Headers */,
 				17C1FDB91ACC429D006B99B3 /* TableRow.h in Headers */,
 				17C1FDBA1ACC429D006B99B3 /* TgtEl.h in Headers */,
 				17C1FDBB1ACC429D006B99B3 /* ClrChange.h in Headers */,
 				17C1FDBC1ACC429D006B99B3 /* SplitterBarState.h in Headers */,
+				695BBFE81C06FF7300817D7E /* Elements.h in Headers */,
 				17C1FDBD1ACC429D006B99B3 /* EffectStyle.h in Headers */,
 				17C1FDBE1ACC429D006B99B3 /* FontAlign.h in Headers */,
 				17C1FDBF1ACC429D006B99B3 /* WrapperFile.h in Headers */,
@@ -3104,13 +3129,13 @@
 				17C1FDE61ACC429D006B99B3 /* PPTXEvent.h in Headers */,
 				17C1FDE71ACC429D006B99B3 /* AnimEffect.h in Headers */,
 				17C1FDE81ACC429D006B99B3 /* TableCellProperties.h in Headers */,
+				695BBFEB1C06FF8600817D7E /* Theme.h in Headers */,
 				17C1FDE91ACC429D006B99B3 /* Override.h in Headers */,
 				17C1FDEA1ACC429D006B99B3 /* AttrNameLst.h in Headers */,
 				17C1FDEB1ACC429D006B99B3 /* TextShapeType.h in Headers */,
 				17C1FDEC1ACC429D006B99B3 /* MoveTo.h in Headers */,
 				17C1FDED1ACC429D006B99B3 /* NotesMaster.h in Headers */,
 				17C1FDEE1ACC429D006B99B3 /* AlphaBiLevel.h in Headers */,
-				17C1FDEF1ACC429D006B99B3 /* Theme.h in Headers */,
 				17C1FDF01ACC429D006B99B3 /* Flip.h in Headers */,
 				17C1FDF11ACC429D006B99B3 /* Tile.h in Headers */,
 				17C1FDF21ACC429D006B99B3 /* SideDirectionTransition.h in Headers */,
@@ -3130,7 +3155,6 @@
 				17C1FE001ACC429D006B99B3 /* SndAc.h in Headers */,
 				17C1FE011ACC429D006B99B3 /* ShapeProperties.h in Headers */,
 				17C1FE021ACC429D006B99B3 /* AlphaModFix.h in Headers */,
-				17C1FE031ACC429D006B99B3 /* Layout.h in Headers */,
 				17C1FE041ACC429D006B99B3 /* Duotone.h in Headers */,
 				17C1FE051ACC429D006B99B3 /* Namespaces.h in Headers */,
 				17C1FE061ACC429D006B99B3 /* ColorBase.h in Headers */,
@@ -3158,7 +3182,6 @@
 				17C1FE1C1ACC429D006B99B3 /* Blend.h in Headers */,
 				17C1FE1D1ACC429D006B99B3 /* LightRig.h in Headers */,
 				17C1FE1E1ACC429D006B99B3 /* FileType.h in Headers */,
-				17C1FE1F1ACC429D006B99B3 /* TextStructures.h in Headers */,
 				17C1FE201ACC429D006B99B3 /* BuBlip.h in Headers */,
 				17C1FE211ACC429D006B99B3 /* Ah.h in Headers */,
 				17C1FE221ACC429D006B99B3 /* TransitionSpeed.h in Headers */,
@@ -3183,6 +3206,7 @@
 				17C1FE351ACC429D006B99B3 /* ClrScheme.h in Headers */,
 				17C1FE361ACC429D006B99B3 /* SlideViewPr.h in Headers */,
 				17C1FE371ACC429D006B99B3 /* Br.h in Headers */,
+				695BC0031C06FFB300817D7E /* Elements.h in Headers */,
 				17C1FE381ACC429D006B99B3 /* PathFillMode.h in Headers */,
 				17C1FE391ACC429D006B99B3 /* TextWrap.h in Headers */,
 				17C1FE3A1ACC429D006B99B3 /* LightRigType.h in Headers */,
@@ -3321,7 +3345,7 @@
 		17063B5B1AC5708E0056A3F1 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0630;
+				LastUpgradeCheck = 0710;
 				ORGANIZATIONNAME = "Ascensio System SIA";
 				TargetAttributes = {
 					17063B621AC5708F0056A3F1 = {
@@ -3470,12 +3494,13 @@
 				179A46261AC57B83005A27F7 /* Blip.cpp in Sources */,
 				179A46331AC57B83005A27F7 /* Geometry.cpp in Sources */,
 				179A46FE1AC57B92005A27F7 /* ASCOfficeDrawingConverter.cpp in Sources */,
-				175CC2531AC96B8E007D7DEC /* Theme.cpp in Sources */,
 				179A46751AC57B83005A27F7 /* SpTree.cpp in Sources */,
 				179A46701AC57B83005A27F7 /* SmartArt.cpp in Sources */,
 				179A45FD1AC57B83005A27F7 /* CxnSp.cpp in Sources */,
+				695BBFF11C06FF9800817D7E /* Layout.cpp in Sources */,
 				179A463C1AC57B83005A27F7 /* Hyperlink.cpp in Sources */,
 				179A46731AC57B83005A27F7 /* SpPr.cpp in Sources */,
+				695BBFF71C06FFA100817D7E /* TextAttributesEx.cpp in Sources */,
 				17C1E3E01AD40612001E3D18 /* Controls.cpp in Sources */,
 				179A467D1AC57B83005A27F7 /* TableCell.cpp in Sources */,
 				179A456F1AC57B83005A27F7 /* FileFactory.cpp in Sources */,
@@ -3484,10 +3509,10 @@
 				179A46041AC57B83005A27F7 /* EffectProperties.cpp in Sources */,
 				179A46021AC57B83005A27F7 /* EffectLst.cpp in Sources */,
 				179A455D1AC57B83005A27F7 /* IFileContainer.cpp in Sources */,
+				695BC0391C070DEF00817D7E /* ASCSVGWriter.cpp in Sources */,
 				179A45711AC57B83005A27F7 /* FileMap.cpp in Sources */,
 				179A466E1AC57B83005A27F7 /* ShapeTextProperties.cpp in Sources */,
 				179A46C41AC57B83005A27F7 /* TransitionBase.cpp in Sources */,
-				175CC2591AC96C61007D7DEC /* Elements.cpp in Sources */,
 				179A46691AC57B83005A27F7 /* Shape.cpp in Sources */,
 				179A466B1AC57B83005A27F7 /* ShapeProperties.cpp in Sources */,
 				179A469E1AC57B83005A27F7 /* BuildNodeBase.cpp in Sources */,
@@ -3498,7 +3523,7 @@
 				17D91A2D1AC5A4DF0096D788 /* FontPicker.cpp in Sources */,
 				179A46001AC57B83005A27F7 /* EffectDag.cpp in Sources */,
 				179A456D1AC57B83005A27F7 /* FileContainer.cpp in Sources */,
-				175CC24D1AC96B5D007D7DEC /* TextAttributesEx.cpp in Sources */,
+				695BC0001C06FFB300817D7E /* Elements.cpp in Sources */,
 				179A464A1AC57B83005A27F7 /* NvGrpSpPr.cpp in Sources */,
 				179A45D41AC57B83005A27F7 /* Bg.cpp in Sources */,
 				179A45731AC57B83005A27F7 /* Folder.cpp in Sources */,
@@ -3508,8 +3533,8 @@
 				179A45F41AC57B83005A27F7 /* SchemeClr.cpp in Sources */,
 				179A47011AC57B9B005A27F7 /* ASCOfficePPTXFileRealization.cpp in Sources */,
 				179A46CD1AC57B83005A27F7 /* UniEffect.cpp in Sources */,
-				175CC2491AC96ABE007D7DEC /* Layout.cpp in Sources */,
 				179A465B1AC57B83005A27F7 /* Pic.cpp in Sources */,
+				695BBFE51C06FF7300817D7E /* Elements.cpp in Sources */,
 				179A46481AC57B83005A27F7 /* NvGraphicFramePr.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3523,12 +3548,13 @@
 				17C1FCB11ACC429D006B99B3 /* Blip.cpp in Sources */,
 				17C1FCB21ACC429D006B99B3 /* Geometry.cpp in Sources */,
 				17C1FCB31ACC429D006B99B3 /* ASCOfficeDrawingConverter.cpp in Sources */,
-				17C1FCB41ACC429D006B99B3 /* Theme.cpp in Sources */,
 				17C1FCB51ACC429D006B99B3 /* SpTree.cpp in Sources */,
 				17C1FCB61ACC429D006B99B3 /* SmartArt.cpp in Sources */,
 				17C1FCB71ACC429D006B99B3 /* CxnSp.cpp in Sources */,
+				695BBFF21C06FF9800817D7E /* Layout.cpp in Sources */,
 				17C1FCB81ACC429D006B99B3 /* Hyperlink.cpp in Sources */,
 				17C1FCB91ACC429D006B99B3 /* SpPr.cpp in Sources */,
+				695BBFF81C06FFA100817D7E /* TextAttributesEx.cpp in Sources */,
 				17C1E3E11AD40612001E3D18 /* Controls.cpp in Sources */,
 				17C1FCBA1ACC429D006B99B3 /* TableCell.cpp in Sources */,
 				17C1FCBB1ACC429D006B99B3 /* FileFactory.cpp in Sources */,
@@ -3537,10 +3563,10 @@
 				17C1FCBE1ACC429D006B99B3 /* EffectProperties.cpp in Sources */,
 				17C1FCBF1ACC429D006B99B3 /* EffectLst.cpp in Sources */,
 				17C1FCC01ACC429D006B99B3 /* IFileContainer.cpp in Sources */,
+				695BC03A1C070DEF00817D7E /* ASCSVGWriter.cpp in Sources */,
 				17C1FCC11ACC429D006B99B3 /* FileMap.cpp in Sources */,
 				17C1FCC21ACC429D006B99B3 /* ShapeTextProperties.cpp in Sources */,
 				17C1FCC31ACC429D006B99B3 /* TransitionBase.cpp in Sources */,
-				17C1FCC41ACC429D006B99B3 /* Elements.cpp in Sources */,
 				17C1FCC51ACC429D006B99B3 /* Shape.cpp in Sources */,
 				17C1FCC61ACC429D006B99B3 /* ShapeProperties.cpp in Sources */,
 				17C1FCC71ACC429D006B99B3 /* BuildNodeBase.cpp in Sources */,
@@ -3551,7 +3577,7 @@
 				17C1FCCC1ACC429D006B99B3 /* FontPicker.cpp in Sources */,
 				17C1FCCD1ACC429D006B99B3 /* EffectDag.cpp in Sources */,
 				17C1FCCE1ACC429D006B99B3 /* FileContainer.cpp in Sources */,
-				17C1FCCF1ACC429D006B99B3 /* TextAttributesEx.cpp in Sources */,
+				695BC0011C06FFB300817D7E /* Elements.cpp in Sources */,
 				17C1FCD01ACC429D006B99B3 /* NvGrpSpPr.cpp in Sources */,
 				17C1FCD11ACC429D006B99B3 /* Bg.cpp in Sources */,
 				17C1FCD21ACC429D006B99B3 /* Folder.cpp in Sources */,
@@ -3561,8 +3587,8 @@
 				17C1FCD61ACC429D006B99B3 /* SchemeClr.cpp in Sources */,
 				17C1FCD71ACC429D006B99B3 /* ASCOfficePPTXFileRealization.cpp in Sources */,
 				17C1FCD81ACC429D006B99B3 /* UniEffect.cpp in Sources */,
-				17C1FCD91ACC429D006B99B3 /* Layout.cpp in Sources */,
 				17C1FCDA1ACC429D006B99B3 /* Pic.cpp in Sources */,
+				695BBFE61C06FF7300817D7E /* Elements.cpp in Sources */,
 				17C1FCDB1ACC429D006B99B3 /* NvGraphicFramePr.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3652,6 +3678,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;

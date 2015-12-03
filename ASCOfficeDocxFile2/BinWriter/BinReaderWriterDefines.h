@@ -1,4 +1,4 @@
-#ifndef DOCX_BIN_READER_WRITER_DEFINES
+п»ї#ifndef DOCX_BIN_READER_WRITER_DEFINES
 #define DOCX_BIN_READER_WRITER_DEFINES
 
 namespace BinDocxRW
@@ -13,8 +13,8 @@ const int X_Right_Margin  = 15;  // 1.5 cm
 const int Y_Bottom_Margin = 20;  // 2   cm
 const int Y_Top_Margin    = 20;  // 2   cm
 
-const double Y_Default_Header = 12.5; // 1.25 cm расстояние от верха страницы до верха верхнего колонтитула
-const double Y_Default_Footer = 12.5; // 1.25 cm расстояние от низа страницы до низа нижнего колонтитула
+const double Y_Default_Header = 12.5; // 1.25 cm СЂР°СЃСЃС‚РѕСЏРЅРёРµ РѕС‚ РІРµСЂС…Р° СЃС‚СЂР°РЅРёС†С‹ РґРѕ РІРµСЂС…Р° РІРµСЂС…РЅРµРіРѕ РєРѕР»РѕРЅС‚РёС‚СѓР»Р°
+const double Y_Default_Footer = 12.5; // 1.25 cm СЂР°СЃСЃС‚РѕСЏРЅРёРµ РѕС‚ РЅРёР·Р° СЃС‚СЂР°РЅРёС†С‹ РґРѕ РЅРёР·Р° РЅРёР¶РЅРµРіРѕ РєРѕР»РѕРЅС‚РёС‚СѓР»Р°
 
 const int shd_Clear = 0;
 const int shd_Nil   = 1;
@@ -133,8 +133,8 @@ extern int g_nCurFormatVersion;
 		HdrFtr_Even = 3,
 		HdrFtr_Odd = 4,
 		HdrFtr_Content = 5,
-		HdrFtr_Y2 = 6,//устарел
-		HdrFtr_Y = 7//устарел
+		HdrFtr_Y2 = 6,//СѓСЃС‚Р°СЂРµР»
+		HdrFtr_Y = 7//СѓСЃС‚Р°СЂРµР»
 	};}
 	namespace c_oSerNumTypes{enum c_oSerNumTypes
 	{
@@ -247,7 +247,8 @@ extern int g_nCurFormatVersion;
 		Look = 9,
 		Style = 10,
 		tblpPr2 = 11,
-		Layout = 12
+		Layout = 12,
+		tblPrChange = 13
 	};}
 	namespace c_oSer_tblpPrType{enum c_oSer_tblpPrType
 	{
@@ -297,7 +298,9 @@ extern int g_nCurFormatVersion;
 		Spacing_BeforeAuto = 28,
 		Spacing_AfterAuto = 29,
 		FramePr = 30,
-		SectPr = 31
+		SectPr = 31,
+		numPr_Ins =  32,
+		pPrChange = 33
 	};}
 	namespace c_oSerProp_rPrType{enum c_oSerProp_rPrType
 	{
@@ -333,7 +336,10 @@ extern int g_nCurFormatVersion;
 		Shd = 29,
 		Vanish = 30,
 		TextOutline = 31,
-		TextFill = 32
+		TextFill = 32,
+		Del = 33,
+		Ins = 34,
+		rPrChange = 35
 	};}
 	namespace c_oSerProp_rowPrType{enum c_oSerProp_rowPrType
 	{
@@ -351,7 +357,10 @@ extern int g_nCurFormatVersion;
 		WAfterBefore_Type = 11,
 		After = 12,
 		Before = 13,
-		TableHeader = 14
+		TableHeader = 14,
+		Del = 15,
+		Ins = 16,
+		trPrChange = 17
 	};}
 	namespace c_oSerProp_cellPrType{enum c_oSerProp_cellPrType
 	{
@@ -361,7 +370,11 @@ extern int g_nCurFormatVersion;
 		TableCellW = 3,
 		VAlign = 4,
 		VMerge = 5,
-		CellMar = 6
+		CellMar = 6,
+		CellDel = 7,
+		CellIns = 8,
+		CellMerge = 9,
+		tcPrChange = 10
 	};}
 	namespace c_oSerProp_secPrType{enum c_oSerProp_secPrType
 	{
@@ -371,7 +384,8 @@ extern int g_nCurFormatVersion;
 		headers = 3,
 		footers = 4,
 		hdrftrelem = 5,
-		pageNumType = 6
+		pageNumType = 6,
+		sectPrChange = 7
 	};}
 	namespace c_oSerProp_secPrSettingsType{enum c_oSerProp_secPrSettingsType
 	{
@@ -396,7 +410,9 @@ extern int g_nCurFormatVersion;
 		OMathPara = 8,
 		OMath = 9,
 		Hyperlink = 10,
-		FldSimple = 11
+		FldSimple = 11,
+		Del = 12,
+		Ins = 13
 	};}
 	namespace c_oSerDocTableType{enum c_oSerDocTableType
 	{
@@ -409,7 +425,8 @@ extern int g_nCurFormatVersion;
 		Row_Content =  5,
 		Cell =  6,
 		Cell_Pr =  7,
-		Cell_Content =  8
+		Cell_Content =  8,
+		tblGridChange = 9
 	};}
 	namespace c_oSerRunType{enum c_oSerRunType
 	{
@@ -426,7 +443,8 @@ extern int g_nCurFormatVersion;
 		fldend = 10,
 		CommentReference = 11,
 		pptxDrawing = 12,
-		object = 14
+        object = 14,
+        delText = 15
 	};}
 	namespace c_oSerImageType{enum c_oSerImageType
 	{
@@ -812,6 +830,23 @@ extern int g_nCurFormatVersion;
 		Color = 1,
 		Tint = 2,
 		Shade = 3
+	};}
+	namespace c_oSerProp_RevisionType{enum c_oSerProp_RevisionType
+	{
+		Author = 0,
+		Date = 1,
+		Id = 2,
+        UserId = 3,
+        Content = 4,
+        VMerge = 5,
+        VMergeOrigin = 6,
+        pPrChange = 7,
+        rPrChange = 8,
+        sectPrChange = 9,
+        tblGridChange = 10,
+        tblPrChange = 11,
+        tcPrChange = 12,
+        trPrChange = 13
 	};}
 }
 

@@ -1,6 +1,8 @@
 ﻿#ifndef READER_CLASSES
 #define READER_CLASSES
 
+#include "../../Common/ATLDefine.h"
+
 namespace BinDocxRW {
 
 class SectPr
@@ -20,6 +22,7 @@ public:
 	bool EvenAndOddHeaders;
 	BYTE SectionType;
 	int PageNumStart;
+	CString sectPrChange;
 
 	bool bHeader;
 	bool bFooter;
@@ -89,6 +92,8 @@ public:
 		sRes.Append(_T("<w:cols w:space=\"708\"/><w:docGrid w:linePitch=\"360\"/>"));
 		if(bTitlePg && TitlePg)
 			sRes.Append(_T("<w:titlePg/>"));
+		if(!sectPrChange.IsEmpty())
+			sRes.Append(sectPrChange);
 		return sRes;
 	}
 };
@@ -308,6 +313,9 @@ public:
 	bool Vanish;
 	CString Outline;
 	CString Fill;
+	CString Del;
+	CString Ins;
+	CString rPrChange;
 
 	bool bBold;
 	bool bItalic;
@@ -391,11 +399,15 @@ public:
 		bVanish = false;
 		Outline.Empty();
 		Fill.Empty();
+		Del.Empty();
+		Ins.Empty();
+		rPrChange.Empty();
 	}
 	bool IsNoEmpty()
 	{
 		return bBold || bItalic || bUnderline || bStrikeout || bFontAscii || bFontHAnsi || bFontAE || bFontCS || bFontSize || bColor || bVertAlign || bHighLight || bShd ||
-			bRStyle || bSpacing || bDStrikeout || bCaps || bSmallCaps || bPosition || bFontHint || bBoldCs || bItalicCs || bFontSizeCs || bCs || bRtl || bLang || bLangBidi || bLangEA || bThemeColor || bVanish || !Outline.IsEmpty() || !Fill.IsEmpty();
+			bRStyle || bSpacing || bDStrikeout || bCaps || bSmallCaps || bPosition || bFontHint || bBoldCs || bItalicCs || bFontSizeCs || bCs || bRtl || bLang || bLangBidi || bLangEA || bThemeColor || bVanish ||
+			!Outline.IsEmpty() || !Fill.IsEmpty() || !Del.IsEmpty() || !Ins.IsEmpty() || !rPrChange.IsEmpty();
 	}
 	void Write(XmlUtils::CStringWriter*  pCStringWriter)
 	{
@@ -653,6 +665,12 @@ public:
 			pCStringWriter->WriteString(Outline);
 		if (!Fill.IsEmpty())
 			pCStringWriter->WriteString(Fill);
+		if (!Del.IsEmpty())
+			pCStringWriter->WriteString(Del);
+		if (!Ins.IsEmpty())
+			pCStringWriter->WriteString(Ins);
+		if (!rPrChange.IsEmpty())
+			pCStringWriter->WriteString(rPrChange);
 		pCStringWriter->WriteString(CString(_T("</w:rPr>")));
 	}
 };
@@ -2183,9 +2201,10 @@ public:
 	CString Style;
 	CString Look;
 	CString Layout;
+	CString tblPrChange;
 	bool IsEmpty()
 	{
-		return Jc.IsEmpty() && TableInd.IsEmpty() && TableW.IsEmpty() && TableCellMar.IsEmpty() && TableBorders.IsEmpty() && Shd.IsEmpty() && tblpPr.IsEmpty()&& Style.IsEmpty() && Look.IsEmpty();
+		return Jc.IsEmpty() && TableInd.IsEmpty() && TableW.IsEmpty() && TableCellMar.IsEmpty() && TableBorders.IsEmpty() && Shd.IsEmpty() && tblpPr.IsEmpty()&& Style.IsEmpty() && Look.IsEmpty() && tblPrChange.IsEmpty();
 	}
 	CString Write(bool bBandSize, bool bLayout)
 	{
@@ -2218,6 +2237,8 @@ public:
 			sRes.Append(TableCellMar);
 		if(false == Look.IsEmpty())
 			sRes.Append(Look);
+		if(!tblPrChange.IsEmpty())
+			sRes.Append(tblPrChange);
 		sRes.Append(_T("</w:tblPr>"));
 		return sRes;
 	}
@@ -2472,6 +2493,158 @@ public:
 			wr.WriteString(sStart);
 			wr.Write(writer);
 			wr.WriteString(CString(_T("</w:fldSimple>")));
+		}
+	}
+};
+class TrackRevision
+{
+public:
+	CString Author;
+	CString Date;
+	long* Id;
+    CString UserId;
+	long* vMerge;
+	long* vMergeOrigin;
+
+	rPr* RPr;
+	XmlUtils::CStringWriter* PPr;
+	SectPr* sectPr;
+	CWiterTblPr* tblPr;
+    XmlUtils::CStringWriter* tblGridChange;
+	XmlUtils::CStringWriter* trPr;
+	XmlUtils::CStringWriter* tcPr;
+	XmlUtils::CStringWriter* content;
+	TrackRevision()
+	{
+		Id = NULL;
+		vMerge = NULL;
+		vMergeOrigin = NULL;
+		RPr = NULL;
+		PPr = NULL;
+		sectPr = NULL;
+		tblPr = NULL;
+        tblGridChange = NULL;
+		trPr = NULL;
+		tcPr = NULL;
+		content = NULL;
+	}
+	~TrackRevision()
+	{
+		RELEASEOBJECT(Id);
+		RELEASEOBJECT(vMerge);
+		RELEASEOBJECT(vMergeOrigin);
+		RELEASEOBJECT(RPr);
+		RELEASEOBJECT(PPr);
+		RELEASEOBJECT(sectPr);
+		RELEASEOBJECT(tblPr);
+        RELEASEOBJECT(tblGridChange);
+		RELEASEOBJECT(trPr);
+		RELEASEOBJECT(tcPr);
+		RELEASEOBJECT(content);
+	}
+	bool IsNoEmpty()
+	{
+		return !Author.IsEmpty() || !Date.IsEmpty() || NULL != Id;
+	}
+	CString ToString(CString sName)
+	{
+		XmlUtils::CStringWriter writer;
+		Write(&writer, sName);
+		return writer.GetData();
+	}
+	void Write(XmlUtils::CStringWriter*  pCStringWriter, CString sName)
+	{
+		if(IsNoEmpty())
+		{
+			pCStringWriter->WriteString(CString(_T("<")));
+			pCStringWriter->WriteString(sName);
+            if(NULL != Id)
+            {
+                CString sId;sId.Format(_T(" w:id=\"%d\""), *Id);
+                pCStringWriter->WriteString(sId);
+            }
+            if(!Author.IsEmpty())
+			{
+				pCStringWriter->WriteString(_T(" w:author=\""));
+				pCStringWriter->WriteEncodeXmlString(Author);
+				pCStringWriter->WriteString(_T("\""));
+			}
+			if(!Date.IsEmpty())
+			{
+				pCStringWriter->WriteString(_T(" w:date=\""));
+				pCStringWriter->WriteEncodeXmlString(Date);
+				pCStringWriter->WriteString(_T("\""));
+			}
+            if(!UserId.IsEmpty())
+            {
+                pCStringWriter->WriteString(_T(" oouserid=\""));
+                pCStringWriter->WriteEncodeXmlString(UserId);
+                pCStringWriter->WriteString(_T("\""));
+            }
+			if(NULL != vMerge)
+			{
+				CString sId;sId.Format(_T(" w:vMerge=\"%d\""), *vMerge);
+				pCStringWriter->WriteString(sId);
+			}
+			if(NULL != vMergeOrigin)
+			{
+				CString sId;sId.Format(_T(" w:vMergeOrig=\"%d\""), *vMergeOrigin);
+				pCStringWriter->WriteString(sId);
+			}
+            if(NULL != RPr || NULL != PPr || NULL != sectPr || NULL != tblPr || NULL != tblGridChange || NULL != trPr || NULL != tcPr || NULL != content)
+			{
+				pCStringWriter->WriteString(CString(_T(">")));
+				if(NULL != RPr)
+				{
+					RPr->Write(pCStringWriter);
+				}
+				if(NULL != PPr)
+				{
+                    pCStringWriter->WriteString(_T("<w:pPr>"));
+					pCStringWriter->Write(*PPr);
+                    pCStringWriter->WriteString(_T("</w:pPr>"));
+				}
+				if(NULL != sectPr)
+				{
+					pCStringWriter->WriteString(_T("<w:sectPr>"));
+					pCStringWriter->WriteString(sectPr->Write());
+					pCStringWriter->WriteString(_T("</w:sectPr>"));
+				}
+				if(NULL != tblPr)
+				{
+					pCStringWriter->WriteString(tblPr->Write(false, true));
+				}
+                if(NULL != tblGridChange)
+                {
+                    pCStringWriter->WriteString(CString(_T("<w:tblGrid>")));
+                    pCStringWriter->Write(*tblGridChange);
+                    pCStringWriter->WriteString(CString(_T("</w:tblGrid>")));
+                }
+				if(NULL != trPr)
+				{
+                    pCStringWriter->WriteString(CString(_T("<w:trPr>")));
+					pCStringWriter->Write(*trPr);
+                    pCStringWriter->WriteString(CString(_T("</w:trPr>")));
+				}
+				if(NULL != tcPr)
+				{
+                    pCStringWriter->WriteString(CString(_T("<w:tcPr>")));
+					pCStringWriter->Write(*tcPr);
+                    pCStringWriter->WriteString(CString(_T("</w:tcPr>")));
+				}
+				if(NULL != content)
+				{
+					pCStringWriter->Write(*content);
+				}
+
+				pCStringWriter->WriteString(CString(_T("</")));
+				pCStringWriter->WriteString(sName);
+				pCStringWriter->WriteString(CString(_T(" >")));
+			}
+			else
+			{
+				pCStringWriter->WriteString(CString(_T(" />")));
+			}
 		}
 	}
 };

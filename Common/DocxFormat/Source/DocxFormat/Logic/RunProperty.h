@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #ifndef OOX_LOGIC_RUN_PROPERTY_INCLUDE_H_
 #define OOX_LOGIC_RUN_PROPERTY_INCLUDE_H_
 
@@ -86,7 +86,7 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:combine"),         m_oCombine )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:combineBrackets"), m_oCombineBrackets )
@@ -147,7 +147,7 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle ( oReader, _T("w:val"), m_oVal )
 				WritingElement_ReadAttributes_End( oReader )
@@ -201,7 +201,7 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle ( oReader, _T("w:val"), m_oVal )
 				WritingElement_ReadAttributes_End( oReader )
@@ -263,7 +263,7 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:id"),  m_oID  )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:val"), m_oVal )
@@ -319,7 +319,7 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle ( oReader, _T("w:val"), m_oVal )
 				WritingElement_ReadAttributes_End( oReader )
@@ -436,7 +436,7 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:ascii"),         m_sAscii )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:asciiTheme"),    m_oAsciiTheme )
@@ -538,7 +538,7 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:color"),      m_oColor )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:themeColor"), m_oThemeColor )
@@ -598,7 +598,7 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle ( oReader, _T("w:val"), m_oVal )
 				WritingElement_ReadAttributes_End( oReader )
@@ -650,7 +650,7 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle ( oReader, _T("w:val"), m_oVal )
 				WritingElement_ReadAttributes_End( oReader )
@@ -692,7 +692,8 @@ namespace OOX
 
 			nullable<CString                       > m_sAuthor;
 			nullable<SimpleTypes::CDateTime        > m_oDate;
-			nullable<SimpleTypes::CDecimalNumber<> > m_oID;
+			nullable<SimpleTypes::CDecimalNumber<> > m_oId;
+			nullable<CString                       > m_sUserId;
 
 			nullable<CRunProperty>					 m_pRunPr;
 		};
@@ -755,6 +756,9 @@ namespace OOX
 				if ( oNode.GetNode( _T("w:cs"), oChild ) )
 					m_oCs = oChild;
 
+				if ( oNode.GetNode( _T("w:del"), oChild ) )
+					m_oDel = oChild;
+
 				if ( oNode.GetNode( _T("w:dstrike"), oChild ) )
 					m_oDStrike = oChild;
 
@@ -775,6 +779,9 @@ namespace OOX
 
 				if ( oNode.GetNode( _T("w:highlight"), oChild ) )
 					m_oHighlight = oChild;
+
+				if ( oNode.GetNode( _T("w:ins"), oChild ) )
+					m_oIns = oChild;
 
 				if ( oNode.GetNode( _T("w:i"), oChild ) )
 					m_oItalic = oChild;
@@ -809,8 +816,8 @@ namespace OOX
 				if ( !m_bRPRChange && oNode.GetNode( _T("w:rPrChange"), oChild ) )
 					m_oRPrChange = oChild;
 
-				// В спецификации почему-то написано pStyle, хотя по смыслы, по ссылке в самой
-				// же спецификации и, в конце концов, по алфавиту тут толжно быть rStyle
+				// Р’ СЃРїРµС†РёС„РёРєР°С†РёРё РїРѕС‡РµРјСѓ-С‚Рѕ РЅР°РїРёСЃР°РЅРѕ pStyle, С…РѕС‚СЏ РїРѕ СЃРјС‹СЃР»С‹, РїРѕ СЃСЃС‹Р»РєРµ РІ СЃР°РјРѕР№
+				// Р¶Рµ СЃРїРµС†РёС„РёРєР°С†РёРё Рё, РІ РєРѕРЅС†Рµ РєРѕРЅС†РѕРІ, РїРѕ Р°Р»С„Р°РІРёС‚Сѓ С‚СѓС‚ С‚РѕР»Р¶РЅРѕ Р±С‹С‚СЊ rStyle
 				if ( oNode.GetNode( _T("w:rStyle"), oChild ) )
 					m_oRStyle = oChild;
 
@@ -886,6 +893,8 @@ namespace OOX
 						m_oColor = oReader;
 					else if ( _T("w:cs") == sName )
 						m_oCs = oReader;
+					else if ( _T("w:del") == sName )
+						m_oDel = oReader;
 					else if ( _T("w:dstrike") == sName )
 						m_oDStrike = oReader;
 					else if ( _T("w:eastAsianLayout") == sName )
@@ -900,6 +909,8 @@ namespace OOX
 						m_oFitText = oReader;
 					else if ( _T("w:highlight") == sName )
 						m_oHighlight = oReader;
+					else if ( _T("w:ins") == sName )
+						m_oIns = oReader;
 					else if ( _T("w:i") == sName )
 						m_oItalic = oReader;
 					else if ( _T("w:iCs") == sName )
@@ -922,8 +933,8 @@ namespace OOX
 						m_oRFonts = oReader;
 					else if ( !m_bRPRChange && _T("w:rPrChange") == sName )
 						m_oRPrChange = oReader;
-					// В спецификации почему-то написано pStyle, хотя по смыслы, по ссылке в самой
-					// же спецификации и, в конце концов, по алфавиту тут толжно быть rStyle
+					// Р’ СЃРїРµС†РёС„РёРєР°С†РёРё РїРѕС‡РµРјСѓ-С‚Рѕ РЅР°РїРёСЃР°РЅРѕ pStyle, С…РѕС‚СЏ РїРѕ СЃРјС‹СЃР»С‹, РїРѕ СЃСЃС‹Р»РєРµ РІ СЃР°РјРѕР№
+					// Р¶Рµ СЃРїРµС†РёС„РёРєР°С†РёРё Рё, РІ РєРѕРЅС†Рµ РєРѕРЅС†РѕРІ, РїРѕ Р°Р»С„Р°РІРёС‚Сѓ С‚СѓС‚ С‚РѕР»Р¶РЅРѕ Р±С‹С‚СЊ rStyle
 					else if ( _T("w:rStyle") == sName )
 						m_oRStyle = oReader;
 					else if ( !m_oRStyle.IsInit() && _T("w:pStyle") == sName )
@@ -1010,6 +1021,13 @@ namespace OOX
 					sResult += _T("/>");
 				}
 
+				if ( m_oDel.IsInit() )
+				{
+					sResult += _T("<w:del ");
+					sResult += m_oDel->ToString();
+					sResult += _T("/>");
+				}
+
 				if ( m_oDStrike.IsInit() )
 				{
 					sResult += _T("<w:dstrike ");
@@ -1056,6 +1074,13 @@ namespace OOX
 				{
 					sResult += _T("<w:highlight ");
 					sResult += m_oHighlight->ToString();
+					sResult += _T("/>");
+				}
+
+				if ( m_oIns.IsInit() )
+				{
+					sResult += _T("<w:ins ");
+					sResult += m_oIns->ToString();
 					sResult += _T("/>");
 				}
 
@@ -1266,6 +1291,7 @@ namespace OOX
 				oProperties.m_oCaps            = Merge( oPrev.m_oCaps,            oCurrent.m_oCaps );
 				oProperties.m_oColor           = Merge( oPrev.m_oColor,           oCurrent.m_oColor );
 				oProperties.m_oCs              = Merge( oPrev.m_oCs,              oCurrent.m_oCs );
+				oProperties.m_oDel             = Merge( oPrev.m_oDel,             oCurrent.m_oDel );
 				oProperties.m_oDStrike         = Merge( oPrev.m_oDStrike,         oCurrent.m_oDStrike );
 				oProperties.m_oEastAsianLayout = Merge( oPrev.m_oEastAsianLayout, oCurrent.m_oEastAsianLayout );
 				oProperties.m_oEffect          = Merge( oPrev.m_oEffect,          oCurrent.m_oEffect );
@@ -1273,6 +1299,7 @@ namespace OOX
 				oProperties.m_oEmboss          = Merge( oPrev.m_oEmboss,          oCurrent.m_oEmboss );
 				oProperties.m_oFitText         = Merge( oPrev.m_oFitText,         oCurrent.m_oFitText );
 				oProperties.m_oHighlight       = Merge( oPrev.m_oHighlight,       oCurrent.m_oHighlight );
+				oProperties.m_oIns             = Merge( oPrev.m_oIns,             oCurrent.m_oIns );
 				oProperties.m_oItalic          = Merge( oPrev.m_oItalic,          oCurrent.m_oItalic );
 				oProperties.m_oItalicCs        = Merge( oPrev.m_oItalicCs,        oCurrent.m_oItalicCs );
 				oProperties.m_oImprint         = Merge( oPrev.m_oImprint,         oCurrent.m_oImprint );
@@ -1336,6 +1363,9 @@ namespace OOX
 				if ( m_oCs.IsInit() )
 					return false;
 
+				if ( m_oDel.IsInit() )
+					return false;
+
 				if ( m_oDStrike.IsInit() )
 					return false;
 
@@ -1355,6 +1385,9 @@ namespace OOX
 					return false;
 
 				if ( m_oHighlight.IsInit() )
+					return false;
+
+				if ( m_oIns.IsInit() )
 					return false;
 
 				if ( m_oItalic.IsInit() )
@@ -1441,7 +1474,7 @@ namespace OOX
 
 		public:
 
-			bool                                                     m_bRPRChange; // Является ли данный w:rPr дочерним по отношению к w:rPrChange
+			bool                                                     m_bRPRChange; // РЇРІР»СЏРµС‚СЃСЏ Р»Рё РґР°РЅРЅС‹Р№ w:rPr РґРѕС‡РµСЂРЅРёРј РїРѕ РѕС‚РЅРѕС€РµРЅРёСЋ Рє w:rPrChange
 
 			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oBold;
 			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oBoldCs;
@@ -1449,6 +1482,7 @@ namespace OOX
 			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oCaps;
 			nullable<ComplexTypes::Word::CColor                          > m_oColor;
 			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oCs;
+			nullable<ComplexTypes::Word::CTrackChange                    > m_oDel;
 			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oDStrike;
 			nullable<ComplexTypes::Word::CEastAsianLayout                > m_oEastAsianLayout;
 			nullable<ComplexTypes::Word::CTextEffect                     > m_oEffect;
@@ -1456,6 +1490,7 @@ namespace OOX
 			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oEmboss;
 			nullable<ComplexTypes::Word::CFitText                        > m_oFitText;
 			nullable<ComplexTypes::Word::CHighlight                      > m_oHighlight;
+			nullable<ComplexTypes::Word::CTrackChange                    > m_oIns;
 			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oItalic;
 			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oItalicCs;
 			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oImprint;

@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 
 #ifndef OOX_LOGIC_TABLE_PROPERTY_INCLUDE_H_
 #define OOX_LOGIC_TABLE_PROPERTY_INCLUDE_H_
@@ -53,7 +53,7 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:val"), m_oVal )
 				WritingElement_ReadAttributes_End( oReader )
@@ -105,7 +105,7 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:type"), m_oType )
 				WritingElement_ReadAttributes_End( oReader )
@@ -318,7 +318,7 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:firstColumn"), m_oFirstColumn )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:firstRow"),    m_oFirstRow )
@@ -359,7 +359,7 @@ namespace ComplexTypes
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:val"), m_oVal )
 				WritingElement_ReadAttributes_End( oReader )
@@ -461,7 +461,7 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:bottomFromText"), m_oBottomFromText )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:horzAnchor"),     m_oHorzAnchor )
@@ -825,6 +825,7 @@ namespace OOX
 			nullable<CString                       > m_sAuthor;
 			nullable<SimpleTypes::CDateTime        > m_oDate;
 			nullable<SimpleTypes::CDecimalNumber<> > m_oId;
+			nullable<CString                       > m_sUserId;
 
 			// Childs
 			nullable<CTableProperty>				 m_pTblPr;
@@ -1077,7 +1078,7 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:hRule"), m_oHRule )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:val"),   m_oVal )
@@ -1127,6 +1128,7 @@ namespace OOX
 			nullable<CString                       > m_sAuthor;
 			nullable<SimpleTypes::CDateTime        > m_oDate;
 			nullable<SimpleTypes::CDecimalNumber<> > m_oId;
+			nullable<CString                       > m_sUserId;
 
 			// Childs
 			nullable<CTableRowProperties>            m_pTrPr;
@@ -1339,6 +1341,7 @@ namespace ComplexTypes
 				oNode.ReadAttributeBase( _T("w:id"),         m_oId );
 				oNode.ReadAttributeBase( _T("w:vMerge"),     m_oVMerge );
 				oNode.ReadAttributeBase( _T("w:vMergeOrig"), m_oVMergeOrig );
+				oNode.ReadAttributeBase( _T("oouserid"),     m_sUserId );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -1363,19 +1366,27 @@ namespace ComplexTypes
 				ComplexTypes_WriteAttribute( _T("w:vMerge=\""),     m_oVMerge );
 				ComplexTypes_WriteAttribute( _T("w:vMergeOrig=\""), m_oVMergeOrig );
 
+				if ( m_sUserId.IsInit() )
+				{
+					sResult += _T("oouserid=\"");
+					sResult += m_sUserId->GetString();
+					sResult += _T("\" ");
+				}
+
 				return sResult;
 			}
 		private:
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:author"),     m_sAuthor )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:date"),       m_oDate )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:id"),         m_oId )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:vMerge"),     m_oVMerge )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:vMergeOrig"), m_oVMergeOrig )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("oouserid"),     m_sUserId )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -1386,6 +1397,7 @@ namespace ComplexTypes
 			nullable<SimpleTypes::CDecimalNumber<>    > m_oId;
 			nullable<SimpleTypes::CAnnotationVMerge<> > m_oVMerge;
 			nullable<SimpleTypes::CAnnotationVMerge<> > m_oVMergeOrig;
+			nullable<CString                          > m_sUserId;
 
 		};
 		//--------------------------------------------------------------------------------
@@ -1425,7 +1437,7 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:val"), m_oVal )
 				WritingElement_ReadAttributes_End( oReader )
@@ -1474,7 +1486,7 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:val"), m_oVal )
 				WritingElement_ReadAttributes_End( oReader )
@@ -1825,6 +1837,7 @@ namespace OOX
 			nullable<CString                       > m_sAuthor;
 			nullable<SimpleTypes::CDateTime        > m_oDate;
 			nullable<SimpleTypes::CDecimalNumber<> > m_oId;
+			nullable<CString                       > m_sUserId;
 
 			// Childs
 			nullable<CTableCellProperties>			 m_pTcPr;
@@ -1882,7 +1895,7 @@ namespace OOX
 				WritingElement_ReadNode( oNode, oChild, _T("w:headers"),        m_oHeaders );
 				WritingElement_ReadNode( oNode, oChild, _T("w:hideMark"),       m_oHideMark );
 
-				// В списке аттрибутов написано "hMerge", а в примере "hmerge"
+				// Р’ СЃРїРёСЃРєРµ Р°С‚С‚СЂРёР±СѓС‚РѕРІ РЅР°РїРёСЃР°РЅРѕ "hMerge", Р° РІ РїСЂРёРјРµСЂРµ "hmerge"
 				WritingElement_ReadNode( oNode, oChild, _T("w:hmerge"),         m_oHMerge );
 				if ( !m_oHMerge.IsInit() )
 					WritingElement_ReadNode( oNode, oChild, _T("w:hMerge"),     m_oHMerge );
@@ -1900,7 +1913,7 @@ namespace OOX
 				WritingElement_ReadNode( oNode, oChild, _T("w:textDirection"),  m_oTextDirection );
 				WritingElement_ReadNode( oNode, oChild, _T("w:vAlign"),         m_oVAlign );
 
-				// В списке аттрибутов написано "vMerge", а в примере "vmerge"
+				// Р’ СЃРїРёСЃРєРµ Р°С‚С‚СЂРёР±СѓС‚РѕРІ РЅР°РїРёСЃР°РЅРѕ "vMerge", Р° РІ РїСЂРёРјРµСЂРµ "vmerge"
 				WritingElement_ReadNode( oNode, oChild, _T("w:vmerge"),         m_oVMerge );
 				if ( !m_oVMerge.IsInit() )
 					WritingElement_ReadNode( oNode, oChild, _T("w:vMerge"),     m_oVMerge );
@@ -1922,7 +1935,7 @@ namespace OOX
 					else if ( _T("w:gridSpan")       == sName ) m_oGridSpan = oReader;
 					else if ( _T("w:headers")        == sName ) m_oHeaders = oReader;
 					else if ( _T("w:hideMark")       == sName ) m_oHideMark = oReader;
-					// В списке аттрибутов написано "hMerge", а в примере "hmerge"
+					// Р’ СЃРїРёСЃРєРµ Р°С‚С‚СЂРёР±СѓС‚РѕРІ РЅР°РїРёСЃР°РЅРѕ "hMerge", Р° РІ РїСЂРёРјРµСЂРµ "hmerge"
 					else if ( _T("w:hmerge")         == sName ) m_oHMerge = oReader;
 					else if ( _T("w:hMerge")         == sName ) m_oHMerge = oReader;
 					else if ( _T("w:noWrap")         == sName ) m_oNoWrap = oReader;
@@ -1934,7 +1947,7 @@ namespace OOX
 					else if ( _T("w:tcW")            == sName ) m_oTcW = oReader;
 					else if ( _T("w:textDirection")  == sName ) m_oTextDirection = oReader;
 					else if ( _T("w:vAlign")         == sName ) m_oVAlign = oReader;
-					// В списке аттрибутов написано "vMerge", а в примере "vmerge"
+					// Р’ СЃРїРёСЃРєРµ Р°С‚С‚СЂРёР±СѓС‚РѕРІ РЅР°РїРёСЃР°РЅРѕ "vMerge", Р° РІ РїСЂРёРјРµСЂРµ "vmerge"
 					else if ( _T("w:vmerge")         == sName ) m_oVMerge = oReader;
 					else if ( _T("w:vMerge")         == sName ) m_oVMerge = oReader;
 				}

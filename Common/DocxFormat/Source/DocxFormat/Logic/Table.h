@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #ifndef OOX_LOGIC_TABLE_INCLUDE_H_
 #define OOX_LOGIC_TABLE_INCLUDE_H_
 
@@ -52,7 +52,7 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:w"), m_oW )
 				WritingElement_ReadAttributes_End( oReader )
@@ -256,6 +256,7 @@ namespace OOX
 			nullable<CString                       > m_sAuthor;
 			nullable<SimpleTypes::CDateTime        > m_oDate;
 			nullable<SimpleTypes::CDecimalNumber<> > m_oId;
+			nullable<CString					   > m_sUserId;
 
 			// Childs
 			nullable<CTblPrEx                      > m_pTblPrEx;
@@ -450,7 +451,7 @@ namespace OOX
 			// Childs
 			nullable<OOX::Logic::CTblGrid>			m_oTblGrid;
 			
-			OOX::Logic::CTableProperty*				m_oTableProperties; //todooo - выкинуть из m_arrItems, переделать на nullable<>
+			OOX::Logic::CTableProperty*				m_oTableProperties; //todooo - РІС‹РєРёРЅСѓС‚СЊ РёР· m_arrItems, РїРµСЂРµРґРµР»Р°С‚СЊ РЅР° nullable<>
 		};
 
 		//--------------------------------------------------------------------------------
@@ -531,7 +532,7 @@ namespace OOX
 			nullable<SimpleTypes::CLongHexNumber<> > m_oRsidTr;
 
 			// Childs
-			OOX::Logic::CTableRowProperties*	m_oTableRowProperties; //todooo - выкинуть из m_arrItems, переделать на nullable<>
+			OOX::Logic::CTableRowProperties*	m_oTableRowProperties; //todooo - РІС‹РєРёРЅСѓС‚СЊ РёР· m_arrItems, РїРµСЂРµРґРµР»Р°С‚СЊ РЅР° nullable<>
 		};
 
 		//--------------------------------------------------------------------------------
@@ -613,13 +614,13 @@ namespace OOX
 
 		public:
 
-			int                            m_nNumCol; // Номер колонки
+			int                            m_nNumCol; // РќРѕРјРµСЂ РєРѕР»РѕРЅРєРё
 
 			// Attributes
 			nullable<CString >             m_sId;
 
 			// Childs
-			OOX::Logic::CTableCellProperties*		m_oTableCellProperties; //todooo - выкинуть из m_arrItems, переделать на nullable<>
+			OOX::Logic::CTableCellProperties*		m_oTableCellProperties; //todooo - РІС‹РєРёРЅСѓС‚СЊ РёР· m_arrItems, РїРµСЂРµРґРµР»Р°С‚СЊ РЅР° nullable<>
 		};
 
 	} // namespace Logic

@@ -62,6 +62,7 @@ win32 {
     DEFINES += \
         LIBXML_READER_ENABLED
 
+INCLUDEPATH += C:/boost_1_58_0
 }
 #################### WINDOWS #####################
 

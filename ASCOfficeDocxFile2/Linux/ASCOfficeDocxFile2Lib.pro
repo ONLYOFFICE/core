@@ -131,7 +131,7 @@ HEADERS += ../DocWrapper/DocxSerializer.h \
     ../../XlsxSerializerCom/Writer/BinaryReader.h \
     ../../XlsxSerializerCom/Writer/CSVWriter.h \
     ../BinReader/webSettingsWriter.h \
-    ../../Common/FileDownloader.h \
+    ../../Common/FileDownloader/FileDownloader.h \
     ../BinReader/DefaultThemeWriter.h
 
 unix {

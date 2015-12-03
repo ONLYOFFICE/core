@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 
 #ifndef OOX_LOGIC_SECTOR_PROPERTY_INCLUDE_H_
 #define OOX_LOGIC_SECTOR_PROPERTY_INCLUDE_H_
@@ -64,7 +64,7 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:space"), m_oSpace )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:w"),     m_oW )
@@ -135,7 +135,7 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:charSpace"), m_oCharSpace )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:linePitch"), m_oLinePitch )
@@ -200,7 +200,7 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("r:id"),   m_oId )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:type"), m_oType )
@@ -280,7 +280,7 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:countBy"),  m_oCountBy )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:distance"), m_oDistance )
@@ -348,7 +348,7 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:first"), m_oFirst )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:other"), m_oOther )
@@ -475,7 +475,7 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:color"),       m_oColor )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:frame"),       m_oFrame )
@@ -632,7 +632,7 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("r:bottomLeft"), m_oBottomLeft )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("r:bottomRight"), m_oBottomRight )
@@ -785,7 +785,7 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:color"),       m_oColor )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:frame"),       m_oFrame )
@@ -899,7 +899,7 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:bottom"), m_oBottom )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:footer"), m_oFooter )
@@ -988,7 +988,7 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:chapSep"),   m_oChapSep )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:chapStyle"), m_oChapStyle )
@@ -1071,7 +1071,7 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:code"),   m_oCode )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:h"),      m_oH )
@@ -1132,7 +1132,7 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:val"), m_oVal )
 				WritingElement_ReadAttributes_End( oReader )
@@ -1269,7 +1269,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:equalWidth"), m_oEqualWidth )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:num"),        m_oNum )
@@ -1612,7 +1612,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:display"),    m_oDisplay )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:offsetFrom"), m_oOffsetFrom )
@@ -1661,6 +1661,7 @@ namespace OOX
 			nullable<CString                       > m_sAuthor;
 			nullable<SimpleTypes::CDateTime        > m_oDate;
 			nullable<SimpleTypes::CDecimalNumber<> > m_oId;
+			nullable<CString                       > m_sUserId;
 
 			// Childs
 			nullable<CSectionProperty>               m_pSecPr;
@@ -2082,7 +2083,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:rsidDel"),  m_oRsidDel )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:rsidR"),    m_oRsidR )

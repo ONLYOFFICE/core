@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 
 #include "../../Common/ComplexTypes.h"
 
@@ -512,7 +512,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("m:alnAt"), m_alnAt )
 				WritingElement_ReadAttributes_End( oReader )
@@ -551,6 +551,10 @@ namespace OOX
 					CWCharWrapper sName = oReader.GetName();
 					if ( _T("w:rPr") == sName )
 						m_oRPr = oReader;
+					else if ( _T("w:ins") == sName )
+						m_oIns = oReader;
+					else if ( _T("w:del") == sName )
+						m_oDel = oReader;
 				}
 			}
 			virtual CString      toXML() const
@@ -559,6 +563,10 @@ namespace OOX
 
 				if ( m_oRPr.IsInit() )
 					sResult += m_oRPr->toXML();
+				if ( m_oIns.IsInit() )
+					sResult += m_oIns->toXML();
+				if ( m_oDel.IsInit() )
+					sResult += m_oDel->toXML();
 				
 				sResult += _T("</m:ctrlPr>");
 
@@ -572,6 +580,8 @@ namespace OOX
 		public:			
 			//Childs
 			nullable<OOX::Logic::CRunProperty> m_oRPr;
+			nullable<OOX::Logic::CIns> m_oIns;
+			nullable<OOX::Logic::CDel> m_oDel;
 		};		
 		//--------------------------------------------------------------------------------
 		// CDelimiterPr 22.1.2.31 (Delimiter Properties) 
@@ -688,7 +698,7 @@ namespace OOX
 					else if ( _T("m:e") == sName )
 					{
 						pItem = new CElement( oReader );
-						//нужно заранее знать колисество столбцов для отрисовки
+						//РЅСѓР¶РЅРѕ Р·Р°СЂР°РЅРµРµ Р·РЅР°С‚СЊ РєРѕР»РёСЃРµСЃС‚РІРѕ СЃС‚РѕР»Р±С†РѕРІ РґР»СЏ РѕС‚СЂРёСЃРѕРІРєРё
 						m_lColumn++;
 					}
 
@@ -1422,7 +1432,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("m:val"), m_val )
 				WritingElement_ReadAttributes_End( oReader )

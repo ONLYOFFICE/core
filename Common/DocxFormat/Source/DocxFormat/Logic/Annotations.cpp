@@ -1,4 +1,4 @@
-#include "Annotations.h"
+п»ї#include "Annotations.h"
 #include "Bdo.h"
 #include "Paragraph.h"
 #include "Annotations.h"
@@ -11,7 +11,7 @@
 #include "../Math/oMathPara.h"
 #include "../Math/OMath.h"
 
-// TO DO: Нехватающие классы:
+// TO DO: РќРµС…РІР°С‚Р°СЋС‰РёРµ РєР»Р°СЃСЃС‹:
 //        <w:customXml>
 //        <w:moveFrom>
 //        <w:moveTo>

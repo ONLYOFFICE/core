@@ -1,4 +1,4 @@
-#include "Table.h" 
+п»ї#include "Table.h" 
 #include "Paragraph.h"
 #include "Annotations.h"
 #include "Sdt.h"
@@ -101,7 +101,7 @@ namespace OOX
 
 		void CTblGridChange::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
-			// Читаем атрибуты
+			// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 			WritingElement_ReadAttributes_Start( oReader )
 			WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:id"), m_oId )
 			WritingElement_ReadAttributes_End( oReader )
@@ -146,6 +146,7 @@ namespace OOX
 			oNode.ReadAttributeBase( _T("w:author"), m_sAuthor );
 			oNode.ReadAttributeBase( _T("w:date"),   m_oDate );
 			oNode.ReadAttributeBase( _T("w:id"),     m_oId );
+			oNode.ReadAttributeBase( _T("oouserid"), m_sUserId );
 
 			XmlUtils::CXmlNode oNode_tblPrEx;
 
@@ -193,6 +194,13 @@ namespace OOX
 				sResult += "\" ";
 			}
 
+			if ( m_sUserId.IsInit() )
+			{
+				sResult += "oouserid=\"";
+				sResult += m_sUserId->GetString();
+				sResult += "\" ";
+			}
+
 			sResult += _T(">");
 
 			if ( m_pTblPrEx.IsInit() )
@@ -205,18 +213,19 @@ namespace OOX
 
 		void CTblPrExChange::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
-			// Читаем атрибуты
+			// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 			WritingElement_ReadAttributes_Start( oReader )
 			WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:author"), m_sAuthor )
 			WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:date"),   m_oDate )
 			WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:id"),     m_oId )
+			WritingElement_ReadAttributes_Read_else_if( oReader, _T("oouserid"), m_sUserId )
 			WritingElement_ReadAttributes_End( oReader )
 		}
 		//--------------------------------------------------------------------------------
 		// CTbl 17.4.38 (Part 1)
 		//--------------------------------------------------------------------------------
 
-// TO DO: Нехватающие классы:
+// TO DO: РќРµС…РІР°С‚Р°СЋС‰РёРµ РєР»Р°СЃСЃС‹:
 //        <w:customXml>
 //        <w:moveFrom>
 //        <w:moveTo>
@@ -414,7 +423,7 @@ namespace OOX
 		// CTr 17.4.79 (Part 1)
 		//--------------------------------------------------------------------------------
 
-// TO DO: Нехватающие классы:
+// TO DO: РќРµС…РІР°С‚Р°СЋС‰РёРµ РєР»Р°СЃСЃС‹:
 //        <w:customXml>
 //        <w:moveFrom>
 //        <w:moveTo>
@@ -654,7 +663,7 @@ namespace OOX
 		}
 		void    CTr::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
-			// Читаем атрибуты
+			// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 			WritingElement_ReadAttributes_Start( oReader )
 			WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:rsidDel"), m_oRsidDel )
 			WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:rsidR"),   m_oRsidR )
@@ -666,7 +675,7 @@ namespace OOX
 		// CTc 17.4.66 (Part 1)
 		//--------------------------------------------------------------------------------
 
-// TO DO: Нехватающие классы:
+// TO DO: РќРµС…РІР°С‚Р°СЋС‰РёРµ РєР»Р°СЃСЃС‹:
 //        <w:altChunk>
 //        <w:customXml>
 //        <w:moveFrom>
@@ -870,7 +879,7 @@ namespace OOX
 		}
 		void    CTc::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
-			// Читаем атрибуты
+			// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 			WritingElement_ReadAttributes_Start( oReader )
 			WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:id"), m_sId )
 			WritingElement_ReadAttributes_End( oReader )

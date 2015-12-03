@@ -1,5 +1,7 @@
 ﻿#include "FileDownloader.h"
 
+#include <atlbase.h>
+#include <atlstr.h>
 #include <wininet.h>
 #pragma comment(lib, "Wininet")
 
@@ -23,34 +25,38 @@ public :
     CFileDownloaderBaseWin(std::wstring sFileUrl, bool bDelete = true) :
         CFileDownloaderBase(sFileUrl, bDelete)
     {
+        m_pFile     = NULL;
     }
     virtual ~CFileDownloaderBaseWin()
     {
+        if ( m_pFile )
+        {
+            ::fclose( m_pFile );
+            m_pFile = NULL;
+        }
     }
 
     virtual int DownloadFile()
     {
         CoInitialize ( NULL );
-
         if ( S_OK != _DownloadFile ( m_sFileUrl ) )
         {
             HRESULT hrResultAll = DownloadFileAll(m_sFileUrl, m_sFilePath);
 
             if (S_OK != hrResultAll)
             {
-                m_bRunThread = FALSE;
                 CoUninitialize ();
                 return S_FALSE;
             }
         }
 
-        m_bRunThread = FALSE;
         CoUninitialize ();
         m_bComplete = true;
         return S_OK;
     }
 
 protected:
+    FILE			*m_pFile;           // Хэндл на временный файл
     unsigned int _DownloadFile(std::wstring sFileUrl)
     {
         // Проверяем состояние соединения
@@ -101,7 +107,7 @@ protected:
                 {
                     // Чтение частями доступно
                     LONGLONG nStartByte = 0;
-                    while ( m_bRunThread )
+                    while ( true )
                     {
                         // Если закачали весь файл - то выходим
                         if ( nStartByte == nFileSize - 1 )
@@ -133,8 +139,8 @@ protected:
                         // Пишем в файл
                         ::fwrite( (BYTE*)arrBuffer, 1, dwBytesDownload, m_pFile );
                         ::fflush( m_pFile );
-                        // Проверка на приостановку
-                        CheckSuspend ();
+
+                        NSThreads::Sleep(10);
                     }
                 }
             }

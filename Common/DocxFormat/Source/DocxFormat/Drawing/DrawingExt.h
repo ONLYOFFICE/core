@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #ifndef OOX_LOGIC_DRAWING_EXT_INCLUDE_H_
 #define OOX_LOGIC_DRAWING_EXT_INCLUDE_H_
 
@@ -79,10 +79,10 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle( oReader, _T("uri"), m_oUri )
-				WritingElement_ReadAttributes_ReadSingle( oReader, _T("spid"), m_sSpId )
+				WritingElement_ReadAttributes_Read_if( oReader, _T("uri"), m_oUri )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("spid"), m_sSpId )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -118,7 +118,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{

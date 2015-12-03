@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #ifndef OOX_LOGIC_PARAGRAPH_PROPERTY_INCLUDE_H_
 #define OOX_LOGIC_PARAGRAPH_PROPERTY_INCLUDE_H_
 
@@ -168,7 +168,7 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:anchorLock"), m_oAnchorLock )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:dropCap"),    m_oDropCap )
@@ -231,7 +231,7 @@ namespace ComplexTypes
 				oNode.ReadAttributeBase( _T("w:start"),          m_oStart );
 				oNode.ReadAttributeBase( _T("w:startChars"),     m_oStartChars );
 
-				// См. 9.2.1.2 Part4
+				// РЎРј. 9.2.1.2 Part4
 				if ( !m_oStart.IsInit() )
 					oNode.ReadAttributeBase( _T("w:left"), m_oStart );
 				if ( !m_oStartChars.IsInit() )
@@ -340,7 +340,7 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:end"),            m_oEnd )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:endChars"),       m_oEndChars )
@@ -492,7 +492,7 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:after"),             m_oAfter )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:afterAutospacing"),  m_oAfterAutospacing )
@@ -574,7 +574,7 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:leader"), m_oLeader )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:pos"),    m_oPos )
@@ -631,7 +631,7 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:val"), m_oVal )
 				WritingElement_ReadAttributes_End( oReader )
@@ -684,7 +684,7 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:val"), m_oVal )
 				WritingElement_ReadAttributes_End( oReader )
@@ -973,7 +973,8 @@ namespace OOX
 
 			nullable<CString                       > m_sAuthor;
 			nullable<SimpleTypes::CDateTime        > m_oDate;
-			nullable<SimpleTypes::CDecimalNumber<> > m_oID;
+			nullable<SimpleTypes::CDecimalNumber<> > m_oId;
+			nullable<CString                       > m_sUserId;
 
 			nullable<OOX::Logic::CParagraphProperty> m_pParPr;
 

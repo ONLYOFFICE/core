@@ -27,6 +27,42 @@ enum ETblStyleOverrideType
 	tblstyleoverridetypeWholeTable = 12
 };
 
+#define READ1_DEF(stLen, fReadFunction, arg, res) {\
+	res = c_oSerConstants::ReadOk;\
+	long stCurPos = 0;\
+	while(stCurPos < stLen)\
+	{\
+		BYTE type = m_oBufferedStream.GetUChar();\
+		long length =  m_oBufferedStream.GetLong();\
+		res = fReadFunction(type, length, arg);\
+		if(res == c_oSerConstants::ReadUnknown)\
+		{\
+			m_oBufferedStream.GetPointer(length);\
+			res = c_oSerConstants::ReadOk;\
+		}\
+		else if(res != c_oSerConstants::ReadOk)\
+			break;\
+		stCurPos += length + 5;\
+	}\
+}
+#define READ1_TRACKREV(type, length, poResult) \
+	if(c_oSerProp_RevisionType::Author == type)\
+	{\
+		poResult->Author = m_oBufferedStream.GetString3(length);\
+	}\
+	else if(c_oSerProp_RevisionType::Date == type)\
+	{\
+		poResult->Date = m_oBufferedStream.GetString3(length);\
+	}\
+	else if(c_oSerProp_RevisionType::Id == type)\
+	{\
+		poResult->Id = new long(m_oBufferedStream.GetLong());\
+    }\
+    else if(c_oSerProp_RevisionType::UserId == type)\
+    {\
+        poResult->UserId = m_oBufferedStream.GetString3(length);\
+    }
+
 template <typename CallbackType > class Binary_CommonReader
 	{
 	protected:
@@ -53,22 +89,7 @@ template <typename CallbackType > class Binary_CommonReader
 		int Read1(long stLen, funcArg fReadFunction, void* poFuncObj, void* arg = NULL)
 		{
 			int res = c_oSerConstants::ReadOk;
-			long stCurPos = 0;
-			while(stCurPos < stLen)
-			{
-				//stItem
-				BYTE type = m_oBufferedStream.GetUChar();
-				long length =  m_oBufferedStream.GetLong();
-				res = (((CallbackType*)poFuncObj)->*fReadFunction)(type, length, arg);
-				if(res == c_oSerConstants::ReadUnknown)
-				{
-					m_oBufferedStream.GetPointer(length);
-					res = c_oSerConstants::ReadOk;
-				}
-				else if(res != c_oSerConstants::ReadOk)
-					return res;
-				stCurPos += length + 5;
-			}
+			READ1_DEF(stLen, (((CallbackType*)poFuncObj)->*fReadFunction), arg, res)
 			return res;
 		}
 		int Read2(long stLen, funcArg fReadFunction, void* poFuncObj, void* arg = NULL)
@@ -160,6 +181,12 @@ public:
 	{
 		return  Read2(length, &Binary_CommonReader2::ReadShd, this, shd);
 	}
+	template<typename T> int ReadTrackRevision(long length, T* poResult)
+	{
+		int res;
+		READ1_DEF(length, this->ReadTrackRevisionInner, poResult, res);
+		return res;
+	}
 private:
 	int ReadShd(BYTE type, long length, void* poResult)
 	{
@@ -182,6 +209,14 @@ private:
 		}
 		return res;
 	};
+	template<typename T> int ReadTrackRevisionInner(BYTE type, long length, T* poResult)
+	{
+		int res = c_oSerConstants::ReadOk;
+		READ1_TRACKREV(type, length, poResult)
+		else
+		 res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
 };
 class Binary_HdrFtrTableReader : public Binary_CommonReader<Binary_HdrFtrTableReader>
 {
@@ -467,12 +502,47 @@ public:
 				}
 			}
 			break;
+		case c_oSerProp_rPrType::Del:
+			{
+				TrackRevision oDel;
+				oBinary_CommonReader2.ReadTrackRevision(length, &oDel);
+				orPr->Del = oDel.ToString(_T("w:del"));
+			}
+			break;
+		case c_oSerProp_rPrType::Ins:
+			{
+				TrackRevision oIns;
+				oBinary_CommonReader2.ReadTrackRevision(length, &oIns);
+				orPr->Ins = oIns.ToString(_T("w:ins"));
+			}
+			break;
+		case c_oSerProp_rPrType::rPrChange:
+			{
+				TrackRevision oRPrChange;
+				res = Read1(length, &Binary_rPrReader::ReadrPrChange, this, &oRPrChange);
+				orPr->rPrChange = oRPrChange.ToString(_T("w:rPrChange"));
+			}
+			break;
 		default:
 			res = c_oSerConstants::ReadUnknown;
 			break;
 		}
 		return res;
 	}
+	int ReadrPrChange(BYTE type, long length, void* poResult)
+	{
+		int res = c_oSerConstants::ReadOk;
+		TrackRevision* pTrackRevision = static_cast<TrackRevision*>(poResult);
+		READ1_TRACKREV(type, length, pTrackRevision)
+		else if(c_oSerProp_RevisionType::rPrChange == type)
+		{
+			pTrackRevision->RPr = new rPr(m_oFileWriter.m_oFontTableWriter.m_mapFonts);
+			res = Read(length, pTrackRevision->RPr);
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	};
 };
 class Binary_pPrReader : public Binary_CommonReader<Binary_pPrReader>
 {
@@ -733,6 +803,13 @@ public:
 					oFramePr.Write(*pCStringWriter);
 				break;
 			}
+		case c_oSerProp_pPrType::pPrChange:
+			{
+				TrackRevision oPPrChange;
+				res = Read1(length, &Binary_pPrReader::ReadPPrChange, this, &oPPrChange);
+				oPPrChange.Write(pCStringWriter, _T("w:pPrChange"));
+				break;
+			}
 		case c_oSerProp_pPrType::SectPr:
 			{
 				SectPr oSectPr;
@@ -746,6 +823,20 @@ public:
 			res = c_oSerConstants::ReadUnknown;
 			break;
 		}
+		return res;
+	};
+	int ReadPPrChange(BYTE type, long length, void* poResult)
+	{
+		int res = c_oSerConstants::ReadOk;
+		TrackRevision* pPPrChange = static_cast<TrackRevision*>(poResult);
+		READ1_TRACKREV(type, length, pPPrChange)
+		else if(c_oSerProp_RevisionType::pPrChange == type)
+		{
+			pPPrChange->PPr = new XmlUtils::CStringWriter();
+			res = Read(length, pPPrChange->PPr);
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
 		return res;
 	};
 	int ReadInd(BYTE type, long length, void* poResult)
@@ -869,6 +960,12 @@ public:
 			m_nCurNumId = nnumId;
 			CString snumId;snumId.Format(_T("<w:numId w:val=\"%d\" />"), nnumId);
 			pCStringWriter->WriteString(snumId);
+		}
+		else if(c_oSerProp_pPrType::numPr_Ins == type)
+		{
+			TrackRevision Ins;
+			oBinary_CommonReader2.ReadTrackRevision(length, &Ins);
+			Ins.Write(pCStringWriter, _T("w:ins"));
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -1059,6 +1156,26 @@ public:
 		else if( c_oSerProp_secPrType::pageNumType == type )
 		{
 			res = Read1(length, &Binary_pPrReader::Read_pageNumType, this, poResult);
+		}
+		else if( c_oSerProp_secPrType::sectPrChange == type )
+		{
+			TrackRevision sectPrChange;
+			res = Read1(length, &Binary_pPrReader::ReadSectPrChange, this, &sectPrChange);
+			pSectPr->sectPrChange = sectPrChange.ToString(_T("w:sectPrChange"));
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int ReadSectPrChange(BYTE type, long length, void* poResult)
+	{
+		TrackRevision* sectPrChange = static_cast<TrackRevision*>(poResult);
+		int res = c_oSerConstants::ReadOk;
+		READ1_TRACKREV(type, length, sectPrChange)
+		else if( c_oSerProp_RevisionType::sectPrChange == type )
+		{
+			sectPrChange->sectPr = new SectPr();
+			res = Read1(length, &Binary_pPrReader::Read_SecPr, this, sectPrChange->sectPr);
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -1328,6 +1445,12 @@ public:
 			}
 			if(false == sLayout.IsEmpty())
                 pWiterTblPr->Layout.Format(_T("<w:tblLayout w:type=\"%ls\"/>"), sLayout);
+		}
+		else if( c_oSerProp_tblPrType::tblPrChange == type )
+		{
+			TrackRevision tblPrChange;
+			res = Read1(length, &Binary_tblPrReader::ReadTblPrChange, this, &tblPrChange);
+			pWiterTblPr->tblPrChange = tblPrChange.ToString(_T("w:tblPrChange"));
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -1610,6 +1733,24 @@ public:
 			else
 				pCStringWriter->WriteString(CString(_T("<w:tblHeader w:val=\"false\"/>")));
 		}
+		else if( c_oSerProp_rowPrType::Del == type )
+		{
+			TrackRevision Del;
+			oBinary_CommonReader2.ReadTrackRevision(length, &Del);
+			Del.Write(pCStringWriter, _T("w:del"));
+		}
+		else if( c_oSerProp_rowPrType::Ins == type )
+		{
+			TrackRevision Ins;
+			oBinary_CommonReader2.ReadTrackRevision(length, &Ins);
+			Ins.Write(pCStringWriter, _T("w:ins"));
+		}
+		else if( c_oSerProp_rowPrType::trPrChange == type )
+		{
+			TrackRevision trPrChange;
+			res = Read1(length, &Binary_tblPrReader::ReadTrPrChange, this, &trPrChange);
+			trPrChange.Write(pCStringWriter, _T("w:trPrChange"));
+		}
 		else
 			res = c_oSerConstants::ReadUnknown;
 		return res;
@@ -1741,6 +1882,30 @@ public:
 			case vmerge_Continue:pCStringWriter->WriteString(CString(_T("<w:vMerge w:val=\"continue\" />")));break;
 			}
 		}
+		else if( c_oSerProp_cellPrType::CellDel == type )
+		{
+			TrackRevision Del;
+			oBinary_CommonReader2.ReadTrackRevision(length, &Del);
+			Del.Write(pCStringWriter, _T("w:del"));
+		}
+		else if( c_oSerProp_cellPrType::CellIns == type )
+		{
+			TrackRevision Ins;
+			oBinary_CommonReader2.ReadTrackRevision(length, &Ins);
+			Ins.Write(pCStringWriter, _T("w:ins"));
+		}
+		else if( c_oSerProp_cellPrType::CellMerge == type )
+		{
+			TrackRevision cellMerge;
+			res = Read1(length, &Binary_tblPrReader::ReadCellMerge, this, &cellMerge);
+			cellMerge.Write(pCStringWriter, _T("w:cellMerge"));
+		}
+		else if( c_oSerProp_cellPrType::tcPrChange == type )
+		{
+			TrackRevision tcPrChange;
+			res = Read1(length, &Binary_tblPrReader::ReadTcPrChange, this, &tcPrChange);
+			tcPrChange.Write(pCStringWriter, _T("w:tcPrChange"));
+		}
 		else
 			res = c_oSerConstants::ReadUnknown;
 		return res;
@@ -1808,6 +1973,65 @@ public:
 			long nBottom = SerializeCommon::Round( g_dKoef_mm_to_twips * dBottom);
 			CString sXml;sXml.Format(_T(" w:bottomFromText=\"%d\""), nBottom);
 			pCStringWriter->WriteString(sXml);
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int ReadCellMerge(BYTE type, long length, void* poResult)
+	{
+		int res = c_oSerConstants::ReadOk;
+		TrackRevision* pTrackRevision = static_cast<TrackRevision*>(poResult);
+		READ1_TRACKREV(type, length, pTrackRevision)
+		else if (c_oSerProp_RevisionType::VMerge == type)
+		{
+			pTrackRevision->vMerge = new long(m_oBufferedStream.GetLong());
+		}
+		else if (c_oSerProp_RevisionType::VMergeOrigin == type)
+		{
+			pTrackRevision->vMergeOrigin = new long(m_oBufferedStream.GetLong());
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int ReadTblPrChange(BYTE type, long length, void* poResult)
+	{
+		int res = c_oSerConstants::ReadOk;
+		TrackRevision* pTrackRevision = static_cast<TrackRevision*>(poResult);
+		READ1_TRACKREV(type, length, pTrackRevision)
+		else if (c_oSerProp_RevisionType::tblPrChange == type)
+		{
+			pTrackRevision->tblPr = new CWiterTblPr();
+			res = Read_tblPrOut(length, pTrackRevision->tblPr);
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int ReadTrPrChange(BYTE type, long length, void* poResult)
+	{
+		int res = c_oSerConstants::ReadOk;
+		TrackRevision* pTrackRevision = static_cast<TrackRevision*>(poResult);
+		READ1_TRACKREV(type, length, pTrackRevision)
+		else if (c_oSerProp_RevisionType::tblPrChange == type)
+		{
+			pTrackRevision->trPr = new XmlUtils::CStringWriter();
+			res = Read_RowPrOut(length, pTrackRevision->trPr);
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int ReadTcPrChange(BYTE type, long length, void* poResult)
+	{
+		int res = c_oSerConstants::ReadOk;
+		TrackRevision* pTrackRevision = static_cast<TrackRevision*>(poResult);
+		READ1_TRACKREV(type, length, pTrackRevision)
+		else if (c_oSerProp_RevisionType::tcPrChange == type)
+		{
+			pTrackRevision->tcPr = new XmlUtils::CStringWriter();
+			res = Read_CellPrOut(length, pTrackRevision->tcPr);
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -3046,6 +3270,35 @@ public:
 			CFldSimple oFldSimple;
 			res = Read1(length, &Binary_DocumentTableReader::ReadFldSimple, this, &oFldSimple);
 			oFldSimple.Write(GetRunStringWriter());
+		}
+		else if ( c_oSerParType::Ins == type )
+		{
+			TrackRevision oTrackRevision;
+			res = Read1(length, &Binary_DocumentTableReader::ReadDelIns, this, &oTrackRevision);
+			oTrackRevision.Write(&GetRunStringWriter(), _T("w:ins"));
+		}
+		else if ( c_oSerParType::Del == type )
+		{
+			TrackRevision oTrackRevision;
+			res = Read1(length, &Binary_DocumentTableReader::ReadDelIns, this, &oTrackRevision);
+			oTrackRevision.Write(&GetRunStringWriter(), _T("w:del"));
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int ReadDelIns(BYTE type, long length, void* poResult)
+	{
+		int res = c_oSerConstants::ReadOk;
+		TrackRevision* pTrackRevision = static_cast<TrackRevision*>(poResult);
+		READ1_TRACKREV(type, length, pTrackRevision)
+		else if ( c_oSerProp_RevisionType::Content == type )
+		{
+			pTrackRevision->content = new XmlUtils::CStringWriter();
+			XmlUtils::CStringWriter* pPrevWriter = m_pCurWriter;
+			m_pCurWriter = pTrackRevision->content;
+			res = Read1(length, &Binary_DocumentTableReader::ReadParagraphContent, this, NULL);
+			m_pCurWriter = pPrevWriter;
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -5306,6 +5559,14 @@ public:
 			GetRunStringWriter().WriteString(sText);
 			GetRunStringWriter().WriteString(CString(_T("</w:t>")));
 		}
+		else if (c_oSerRunType::delText == type)
+		{
+			GetRunStringWriter().WriteString(CString(_T("<w:delText xml:space=\"preserve\">")));
+			CString sText(m_oBufferedStream.GetString3(length));
+			sText = XmlUtils::EncodeXmlString(sText);
+			GetRunStringWriter().WriteString(sText);
+			GetRunStringWriter().WriteString(CString(_T("</w:delText>")));
+		}
 		else if (c_oSerRunType::tab == type)
 		{
 			GetRunStringWriter().WriteString(CString(_T("<w:tab/>")));
@@ -5521,6 +5782,30 @@ public:
 			long ngridCol = SerializeCommon::Round( g_dKoef_mm_to_twips * dgridCol);
 			CString sgridCol;sgridCol.Format(_T("<w:gridCol w:w=\"%d\"/>"), ngridCol);
 			pCStringWriter->WriteString(sgridCol);
+		}
+		else if( c_oSerDocTableType::tblGridChange == type )
+		{
+			TrackRevision oTrackRevision;
+			res = Read1(length, &Binary_DocumentTableReader::Read_tblGridChange, this, &oTrackRevision);
+			oTrackRevision.Write(pCStringWriter, _T("w:tblGridChange"));
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	};
+	int Read_tblGridChange(BYTE type, long length, void* poResult)
+	{
+		int res = c_oSerConstants::ReadOk;
+		TrackRevision* pTrackRevision = static_cast<TrackRevision*>(poResult);
+		if(c_oSerProp_RevisionType::Id == type)
+		{
+			pTrackRevision->Id = new long(m_oBufferedStream.GetLong());
+		}
+		else if(c_oSerProp_RevisionType::tblGridChange == type)
+		{
+			oBinary_tblPrReader.m_aCurTblGrid.clear();
+			pTrackRevision->tblGridChange = new XmlUtils::CStringWriter();
+			res = Read2(length, &Binary_DocumentTableReader::Read_tblGrid, this, pTrackRevision->tblGridChange);
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;

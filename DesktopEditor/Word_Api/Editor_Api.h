@@ -2528,4 +2528,26 @@ namespace NSEditorApi
     };
 }
 
+namespace NSEditorApi
+{
+    class CAscExecCommand : public IMenuEventDataBase
+    {
+    private:
+        std::wstring m_sCommand;
+        std::wstring m_sParam;
+
+    public:
+
+        CAscExecCommand()
+        {
+        }
+        virtual ~CAscExecCommand()
+        {
+        }
+
+        LINK_PROPERTY_STRING(Command)
+        LINK_PROPERTY_STRING(Param)
+    };
+}
+
 #endif //_BUILD_EDITOR_API_CROSSPLATFORM_H_

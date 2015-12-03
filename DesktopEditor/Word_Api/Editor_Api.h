@@ -2493,6 +2493,23 @@ namespace NSEditorApi
         LINK_PROPERTY_STRING(Path)
     };
 
+    class CAscLocalFileOpen : public IMenuEventDataBase
+    {
+    private:
+        std::wstring m_sDirectory;
+
+    public:
+
+        CAscLocalFileOpen()
+        {
+        }
+        virtual ~CAscLocalFileOpen()
+        {
+        }
+
+        LINK_PROPERTY_STRING(Directory)
+    };
+
     class CAscLocalFileCreate : public IMenuEventDataBase
     {
     private:

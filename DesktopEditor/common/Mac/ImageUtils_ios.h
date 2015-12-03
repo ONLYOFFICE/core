@@ -47,7 +47,7 @@ namespace ImageUtils_IOS
                                             NO,
                                             renderingIntent);
         
-        CGFloat scale = [[UIScreen mainScreen] scale];
+        CGFloat scale = 1;//[[UIScreen mainScreen] scale];
         UIImage *ret = [UIImage imageWithCGImage:imageRef scale:scale orientation:UIImageOrientationDownMirrored];
         CGImageRelease(imageRef);
         CGColorSpaceRelease(colorSpaceRef);

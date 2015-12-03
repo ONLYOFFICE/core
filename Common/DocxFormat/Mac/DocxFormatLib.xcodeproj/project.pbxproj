@@ -7,16 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		173241491BBEC90000E67992 /* pole.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 173241431BBEC90000E67992 /* pole.cpp */; settings = {ASSET_TAGS = (); }; };
-		1732414A1BBEC90000E67992 /* pole.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 173241431BBEC90000E67992 /* pole.cpp */; settings = {ASSET_TAGS = (); }; };
-		1732414B1BBEC90000E67992 /* pole.h in Headers */ = {isa = PBXBuildFile; fileRef = 173241441BBEC90000E67992 /* pole.h */; settings = {ASSET_TAGS = (); }; };
-		1732414C1BBEC90000E67992 /* pole.h in Headers */ = {isa = PBXBuildFile; fileRef = 173241441BBEC90000E67992 /* pole.h */; settings = {ASSET_TAGS = (); }; };
-		1732463C1BBEDC2C00E67992 /* UnicodeConverter_Encodings.h in Headers */ = {isa = PBXBuildFile; fileRef = 173246391BBEDC2C00E67992 /* UnicodeConverter_Encodings.h */; settings = {ASSET_TAGS = (); }; };
-		1732463D1BBEDC2C00E67992 /* UnicodeConverter_Encodings.h in Headers */ = {isa = PBXBuildFile; fileRef = 173246391BBEDC2C00E67992 /* UnicodeConverter_Encodings.h */; settings = {ASSET_TAGS = (); }; };
-		1732463E1BBEDC2C00E67992 /* UnicodeConverter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1732463A1BBEDC2C00E67992 /* UnicodeConverter.cpp */; settings = {ASSET_TAGS = (); }; };
-		1732463F1BBEDC2C00E67992 /* UnicodeConverter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1732463A1BBEDC2C00E67992 /* UnicodeConverter.cpp */; settings = {ASSET_TAGS = (); }; };
-		173246401BBEDC2C00E67992 /* UnicodeConverter.h in Headers */ = {isa = PBXBuildFile; fileRef = 1732463B1BBEDC2C00E67992 /* UnicodeConverter.h */; settings = {ASSET_TAGS = (); }; };
-		173246411BBEDC2C00E67992 /* UnicodeConverter.h in Headers */ = {isa = PBXBuildFile; fileRef = 1732463B1BBEDC2C00E67992 /* UnicodeConverter.h */; settings = {ASSET_TAGS = (); }; };
+		173241491BBEC90000E67992 /* pole.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 173241431BBEC90000E67992 /* pole.cpp */; };
+		1732414A1BBEC90000E67992 /* pole.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 173241431BBEC90000E67992 /* pole.cpp */; };
+		1732414B1BBEC90000E67992 /* pole.h in Headers */ = {isa = PBXBuildFile; fileRef = 173241441BBEC90000E67992 /* pole.h */; };
+		1732414C1BBEC90000E67992 /* pole.h in Headers */ = {isa = PBXBuildFile; fileRef = 173241441BBEC90000E67992 /* pole.h */; };
+		1732463C1BBEDC2C00E67992 /* UnicodeConverter_Encodings.h in Headers */ = {isa = PBXBuildFile; fileRef = 173246391BBEDC2C00E67992 /* UnicodeConverter_Encodings.h */; };
+		1732463D1BBEDC2C00E67992 /* UnicodeConverter_Encodings.h in Headers */ = {isa = PBXBuildFile; fileRef = 173246391BBEDC2C00E67992 /* UnicodeConverter_Encodings.h */; };
+		1732463E1BBEDC2C00E67992 /* UnicodeConverter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1732463A1BBEDC2C00E67992 /* UnicodeConverter.cpp */; };
+		1732463F1BBEDC2C00E67992 /* UnicodeConverter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1732463A1BBEDC2C00E67992 /* UnicodeConverter.cpp */; };
+		173246401BBEDC2C00E67992 /* UnicodeConverter.h in Headers */ = {isa = PBXBuildFile; fileRef = 1732463B1BBEDC2C00E67992 /* UnicodeConverter.h */; };
+		173246411BBEDC2C00E67992 /* UnicodeConverter.h in Headers */ = {isa = PBXBuildFile; fileRef = 1732463B1BBEDC2C00E67992 /* UnicodeConverter.h */; };
 		17C102621ACC5114006B99B3 /* libPPTXFormatLib_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 17C1FE8E1ACC42B1006B99B3 /* libPPTXFormatLib_ios.a */; };
 		17C102631ACC511A006B99B3 /* libASCOfficeUtilsLib_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 17C1FC9F1ACC4251006B99B3 /* libASCOfficeUtilsLib_ios.a */; };
 		17C1FB941ACC4250006B99B3 /* Hyperlink.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E6A0621AC4262700F28F8B /* Hyperlink.cpp */; };
@@ -878,8 +878,8 @@
 			isa = PBXGroup;
 			children = (
 				173246391BBEDC2C00E67992 /* UnicodeConverter_Encodings.h */,
-				1732463A1BBEDC2C00E67992 /* UnicodeConverter.cpp */,
 				1732463B1BBEDC2C00E67992 /* UnicodeConverter.h */,
+				1732463A1BBEDC2C00E67992 /* UnicodeConverter.cpp */,
 			);
 			name = UnicodeConverter;
 			sourceTree = "<group>";
@@ -1896,7 +1896,7 @@
 		17E69FD41AC4259800F28F8B /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0630;
+				LastUpgradeCheck = 0710;
 				ORGANIZATIONNAME = "Ascensio System SIA";
 				TargetAttributes = {
 					17E69FDB1AC4259800F28F8B = {
@@ -2126,9 +2126,10 @@
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					/usr/include/,
 					/usr/include/libxml2/,
-					"$(PROJECT_DIR)/../../../UnicodeConverter/icubuilds/mac/icu/icu/source/common",
-					"$(PROJECT_DIR)/../../../UnicodeConverter/icubuilds/mac/icu/icu/source/i18n",
-					"$(PROJECT_DIR)/../../../UnicodeConverter/icubuilds/mac/icu/icu/source/io",
+					"$(PROJECT_DIR)/../../../UnicodeConverter/icubuilds/mac/icu/**",
+					"$(PROJECT_DIR)/../../../UnicodeConverter/icubuilds/mac/icu/icu/common",
+					"$(PROJECT_DIR)/../../../UnicodeConverter/icubuilds/mac/icu/icu/i18n",
+					"$(PROJECT_DIR)/../../../UnicodeConverter/icubuilds/mac/icu/icu/io",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				PRODUCT_NAME = DocxFormatLib_ios;
@@ -2160,9 +2161,10 @@
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					/usr/include/,
 					/usr/include/libxml2/,
-					"$(PROJECT_DIR)/../../../UnicodeConverter/icubuilds/mac/icu/icu/source/common",
-					"$(PROJECT_DIR)/../../../UnicodeConverter/icubuilds/mac/icu/icu/source/i18n",
-					"$(PROJECT_DIR)/../../../UnicodeConverter/icubuilds/mac/icu/icu/source/io",
+					"$(PROJECT_DIR)/../../../UnicodeConverter/icubuilds/mac/icu/**",
+					"$(PROJECT_DIR)/../../../UnicodeConverter/icubuilds/mac/icu/icu/common",
+					"$(PROJECT_DIR)/../../../UnicodeConverter/icubuilds/mac/icu/icu/i18n",
+					"$(PROJECT_DIR)/../../../UnicodeConverter/icubuilds/mac/icu/icu/io",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				PRODUCT_NAME = DocxFormatLib_ios;
@@ -2189,6 +2191,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;

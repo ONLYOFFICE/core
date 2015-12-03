@@ -2550,4 +2550,26 @@ namespace NSEditorApi
     };
 }
 
+namespace NSEditorApi
+{
+    class CAscError : public IMenuEventDataBase
+    {
+    private:
+        int m_nId;
+        int m_nLevel;
+        
+    public:
+        
+        CAscError()
+        {
+        }
+        virtual ~CAscError()
+        {
+        }
+        
+        LINK_PROPERTY_INT(Id)
+        LINK_PROPERTY_INT(Level)
+    };
+}
+
 #endif //_BUILD_EDITOR_API_CROSSPLATFORM_H_

@@ -6123,6 +6123,7 @@ DesktopEditor/ChromiumBasedEditors2/app/cefbuilds/win32/locales/vi.pak svn_mime_
 DesktopEditor/ChromiumBasedEditors2/app/cefbuilds/win32/locales/zh-CN.pak svn_mime_002dtype=application%2Foctet-stream
 DesktopEditor/ChromiumBasedEditors2/app/cefbuilds/win32/locales/zh-TW.pak svn_mime_002dtype=application%2Foctet-stream
 DesktopEditor/ChromiumBasedEditors2/app/cefbuilds/win32/snapshot_blob.bin svn_mime_002dtype=application%2Foctet-stream
+DesktopEditor/ChromiumBasedEditors2/app/cefbuilds/win32/widevinecdmadapter.dll svn_mime_002dtype=application%2Foctet-stream
 DesktopEditor/ChromiumBasedEditors2/app/cefbuilds/win32/wow_helper.exe svn_mime_002dtype=application%2Foctet-stream
 DesktopEditor/ChromiumBasedEditors2/app/cefbuilds/win64 svnc_tsvn_003alogminsize=5
 DesktopEditor/ChromiumBasedEditors2/app/cefbuilds/win64/cef.pak svn_mime_002dtype=application%2Foctet-stream
@@ -6193,6 +6194,7 @@ DesktopEditor/ChromiumBasedEditors2/app/cefbuilds/win64/locales/vi.pak svn_mime_
 DesktopEditor/ChromiumBasedEditors2/app/cefbuilds/win64/locales/zh-CN.pak svn_mime_002dtype=application%2Foctet-stream
 DesktopEditor/ChromiumBasedEditors2/app/cefbuilds/win64/locales/zh-TW.pak svn_mime_002dtype=application%2Foctet-stream
 DesktopEditor/ChromiumBasedEditors2/app/cefbuilds/win64/snapshot_blob.bin svn_mime_002dtype=application%2Foctet-stream
+DesktopEditor/ChromiumBasedEditors2/app/cefbuilds/win64/widevinecdmadapter.dll svn_mime_002dtype=application%2Foctet-stream
 DesktopEditor/ChromiumBasedEditors2/app/corebuilds svnc_tsvn_003alogminsize=5
 DesktopEditor/ChromiumBasedEditors2/app/corebuilds/linux64 svnc_tsvn_003alogminsize=5
 DesktopEditor/ChromiumBasedEditors2/app/corebuilds/linux64/libascdocumentscore.so svn_mime_002dtype=application%2Foctet-stream

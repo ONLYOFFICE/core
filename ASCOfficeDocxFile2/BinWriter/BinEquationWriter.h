@@ -3,7 +3,6 @@
 
 #include "BinReaderWriterDefines.h"
 #include "../../Common/DocxFormat/Source/MathEquation/OutputDev.h"
-//#include "String.h"
 #include <stack>
 
 /*namespace BinDocxRW
@@ -21,10 +20,12 @@ namespace MathEquation
 			bool bAccent;
 			MEMBELTYPE eType;
 			BYTE eStyle;
+			bool bNormal;
 
 		public:
 			EquationRun()
 			{
+				bNormal = false;
 				eStyle = NULL;
 			}
 			void AddChar(CString sChar, TMathFont* pNewFont, LONG lSize)
@@ -60,10 +61,24 @@ namespace MathEquation
 	{
 		private:
 			TMathFont* oCurFont;
-			std::vector<EquationRun> arrRun;
+			std::vector<EquationRun> arrRun;			
+
 		public:
+			RunManager()
+			{
+				bAlligment = false;
+			}
+			void SetAlligment(bool bPos)
+			{
+				bAlligment = bPos;
+				return;
+			}		
+			bool GetAlligment()
+			{
+				return bAlligment;
+			}
 			void Add(EquationRun oElem)
-			{				
+			{
 				arrRun.push_back(oElem);
 				return;
 			}			
@@ -109,6 +124,8 @@ namespace MathEquation
 				oRun.eType = eType;
 				Add(oRun);
 			}
+		public:
+			bool bAlligment;
 	};
 
 	class BinaryEquationWriter : public IOutputDev
@@ -198,7 +215,10 @@ namespace MathEquation
 			{
 
 				int nCurPos = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::MRPr);
-				WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::Sty, oRun.eStyle);
+				if (oRun.eStyle)
+					WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::Sty, oRun.eStyle);
+				if (oRun.bNormal)
+					WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::Nor, oRun.bNormal);
 				WriteItemEnd(nCurPos);
 				return;
 			}
@@ -208,7 +228,7 @@ namespace MathEquation
 				TMathFont* pCurFont = oRun.pFont;
 				int nCurPos = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::MRun);
 				WriteRPR(oRun.pFont, oRun.nTextSize, bIsOpen);
-				if (oRun.eStyle)
+				if (oRun.eStyle || oRun.bNormal)
 					WriteMRPR(oRun);
 				int nCurPos1 = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::MText);
 				m_oStream.WriteBYTE(BinDocxRW::c_oSer_OMathBottomNodesValType::Val);
@@ -336,6 +356,7 @@ namespace MathEquation
 					}
 					oRManager.Delete(0,lSize);
 				}
+				oRManager.SetAlligment(false);
 				return;
 			}
 
@@ -423,12 +444,20 @@ namespace MathEquation
 					{
 						switch(uChar)
 						{
-							case specialsymAlignment:  str.Insert(0,0x0089); break;
+							case specialsymAlignment:
+							{
+								str.Insert(0, 0x0026);
+								if (oRManager.GetAlligment())
+									oRun.bNormal = true;
+								else
+									oRManager.SetAlligment(true);
+							}
+							break;
 							case specialsymZeroSpace:  str.Insert(0,0x200B); break;
-							case specialsymThinSpace:  str.Insert(0,0x2009); break; break;
-							case specialsymThickSpace: str.Insert(0,0x2004); break;
-							case specialsymLargeSpace: str.Insert(0,0x2005); break;
-							case specialsymOnePtSpace: str.Insert(0,0x2003); break;
+							case specialsymThinSpace:  str.Insert(0,0x2009); break;
+                            case specialsymThickSpace: str.Insert(0,0x2005); break;
+                            case specialsymLargeSpace: str.Insert(0,0x2003); break;
+                            case specialsymOnePtSpace: str.Insert(0,0x200A); break;
 						}
 					}
 					else
@@ -436,6 +465,13 @@ namespace MathEquation
 						if ((uChar > 0x0390 && uChar < 0x03AA) //Greek Capital Letter
 							|| (uChar == 0x2207)) //Nabla
 							oRun.eStyle = SimpleTypes::stylePlain;
+						else if (uChar == 0x0026)
+						{
+							if (oRManager.GetAlligment())
+								oRun.bNormal = true;
+							else
+								oRManager.SetAlligment(true);
+						}
 						else if (uChar == 0x03C6)
 							uChar = 0x03D5;
 						else if (uChar == 0x03D5)
@@ -551,11 +587,18 @@ namespace MathEquation
 					CBaseCommand* pCommand = TopCommand();
 					pCommand->WriteEndBlock(this);
 
-					int nRows = m_aRowsCounter.top();
-					int nPos = m_aRowsPosCounter.top();
-					m_aRowsCounter.pop();
-					m_aRowsPosCounter.pop();
-
+                    int nRows = 0;
+                    if (!m_aRowsCounter.empty())
+                    {
+                        nRows = m_aRowsCounter.top();
+                        m_aRowsCounter.pop();
+                    }
+                    int nPos = 0;
+                    if (!m_aRowsPosCounter.empty())
+                    {
+                        nRows = m_aRowsPosCounter.top();
+                        m_aRowsPosCounter.pop();
+                    }
 					int nEnd = m_oStream.GetPosition();
 					m_oStream.SetPosition(nPos);
 					m_oStream.WriteLONG(nRows);
@@ -1505,7 +1548,7 @@ namespace MathEquation
 			{
                 bool bCurPile;
 				bCurPile = GetPile();
-				if (!bCurPile || (nBlockNum == -1))
+                if (!bCurPile || (nBlockNum == -1))
 					nBlockNum++;
 			}
 

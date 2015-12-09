@@ -2548,6 +2548,27 @@ namespace NSEditorApi
         LINK_PROPERTY_STRING(Command)
         LINK_PROPERTY_STRING(Param)
     };
+
+    class CAscExecCommandJS : public IMenuEventDataBase
+    {
+    private:
+        std::wstring m_sCommand;
+        std::wstring m_sParam;
+        std::wstring m_sFrameName;
+
+    public:
+
+        CAscExecCommandJS()
+        {
+        }
+        virtual ~CAscExecCommandJS()
+        {
+        }
+
+        LINK_PROPERTY_STRING(Command)
+        LINK_PROPERTY_STRING(Param)
+        LINK_PROPERTY_STRING(FrameName)
+    };
 }
 
 namespace NSEditorApi

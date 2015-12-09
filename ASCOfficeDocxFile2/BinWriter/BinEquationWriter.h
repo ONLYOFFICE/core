@@ -19,14 +19,12 @@ namespace MathEquation
 			LONG nTextSize;
 			bool bAccent;
 			MEMBELTYPE eType;
-			BYTE eStyle;
 			bool bNormal;
 
 		public:
 			EquationRun()
 			{
 				bNormal = false;
-				eStyle = NULL;
 			}
 			void AddChar(CString sChar, TMathFont* pNewFont, LONG lSize)
 			{
@@ -168,18 +166,6 @@ namespace MathEquation
 					//else
 					//	nCurPos = WriteItemStart(BinDocxRW::c_oSerRunType::rPr);
 
-					if (false != pFont->bBold)
-					{
-						m_oStream.WriteBYTE(BinDocxRW::c_oSerProp_rPrType::Bold);
-						m_oStream.WriteBYTE(BinDocxRW::c_oSerPropLenType::Byte);
-						m_oStream.WriteBOOL(true);
-					}
-					if (false != pFont->bItalic)
-					{
-						m_oStream.WriteBYTE(BinDocxRW::c_oSerProp_rPrType::Italic);
-						m_oStream.WriteBYTE(BinDocxRW::c_oSerPropLenType::Byte);
-						m_oStream.WriteBOOL(true);
-					}
 					CString sFontName;
                     //sFontName.Format(_T("%lS"), pFont->sName.c_str());
 					sFontName.Insert(0, _T("Cambria Math"));
@@ -215,8 +201,21 @@ namespace MathEquation
 			{
 
 				int nCurPos = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::MRPr);
-				if (oRun.eStyle)
-					WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::Sty, oRun.eStyle);
+                BYTE eStyle = SimpleTypes::stylePlain;
+                if (oRun.pFont->bBold || oRun.pFont->bItalic)
+                {
+                    if (oRun.pFont->bBold)
+                    {
+                        if (oRun.pFont->bItalic)
+                            eStyle = SimpleTypes::styleBoldItalic;
+                        else
+                            eStyle = SimpleTypes::styleBold;
+                    }
+                    else if ( oRun.pFont->bItalic )
+                        eStyle = SimpleTypes::styleItalic;
+                }
+                WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::Sty, eStyle );
+
 				if (oRun.bNormal)
 					WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::Nor, oRun.bNormal);
 				WriteItemEnd(nCurPos);
@@ -228,8 +227,7 @@ namespace MathEquation
 				TMathFont* pCurFont = oRun.pFont;
 				int nCurPos = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::MRun);
 				WriteRPR(oRun.pFont, oRun.nTextSize, bIsOpen);
-				if (oRun.eStyle || oRun.bNormal)
-					WriteMRPR(oRun);
+                WriteMRPR(oRun);
 				int nCurPos1 = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::MText);
 				m_oStream.WriteBYTE(BinDocxRW::c_oSer_OMathBottomNodesValType::Val);
 				m_oStream.WriteBYTE(BinDocxRW::c_oSerPropLenType::Variable);
@@ -461,11 +459,8 @@ namespace MathEquation
 						}
 					}
 					else
-					{
-						if ((uChar > 0x0390 && uChar < 0x03AA) //Greek Capital Letter
-							|| (uChar == 0x2207)) //Nabla
-							oRun.eStyle = SimpleTypes::stylePlain;
-						else if (uChar == 0x0026)
+                    {
+                        if (uChar == 0x0026)
 						{
 							if (oRManager.GetAlligment())
 								oRun.bNormal = true;
@@ -596,7 +591,7 @@ namespace MathEquation
                     int nPos = 0;
                     if (!m_aRowsPosCounter.empty())
                     {
-                        nRows = m_aRowsPosCounter.top();
+                        nPos = m_aRowsPosCounter.top();
                         m_aRowsPosCounter.pop();
                     }
 					int nEnd = m_oStream.GetPosition();

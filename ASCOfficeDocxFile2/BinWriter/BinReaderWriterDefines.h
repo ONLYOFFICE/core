@@ -444,7 +444,9 @@ extern int g_nCurFormatVersion;
 		CommentReference = 11,
 		pptxDrawing = 12,
         object = 14,
-        delText = 15
+		delText = 15,
+		del = 16,
+		ins = 17
 	};}
 	namespace c_oSerImageType{enum c_oSerImageType
 	{
@@ -790,7 +792,9 @@ extern int g_nCurFormatVersion;
 		CtrlPr = 58,
 		pagebreak = 59,
 		linebreak = 60,
-		Run = 61
+		Run = 61,
+		Ins = 62,
+		Del = 63
 	};}
 	namespace c_oSer_FramePrType{ enum c_oSer_FramePrType
 	{		
@@ -846,7 +850,8 @@ extern int g_nCurFormatVersion;
         tblGridChange = 10,
         tblPrChange = 11,
         tcPrChange = 12,
-        trPrChange = 13
+		trPrChange = 13,
+		ContentRun = 14
 	};}
 }
 

@@ -295,114 +295,122 @@ namespace OOX
 			{
 				CString sResult = _T("<m:r>");
 
-				if ( m_oAnnotationRef.IsInit() )
-					sResult += m_oAnnotationRef->toXML();
-
-				if ( m_oBr.IsInit() )
-					sResult += m_oBr->toXML();
-
-				if ( m_oCommentReference.IsInit() )
-					sResult += m_oCommentReference->toXML();
-
-				if ( m_oContentPart.IsInit() )
-					sResult += m_oContentPart->toXML();
-
-				if ( m_oContinuationSeparator.IsInit() )
-					sResult += m_oContinuationSeparator->toXML();
-
-				if ( m_oCr.IsInit() )
-					sResult += m_oCr->toXML();
-
-				if ( m_oDayLong.IsInit() )
-					sResult += m_oDayLong->toXML();
-
-				if ( m_oDayShort.IsInit() )
-					sResult += m_oDayShort->toXML();
-
-				if ( m_oDelInstrText.IsInit() )
-					sResult += m_oDelInstrText->toXML();
-
-				if ( m_oDelText.IsInit() )
-					sResult += m_oDelText->toXML();
-
-				if ( m_oDrawing.IsInit() )
-					sResult += m_oDrawing->toXML();
-
-				if ( m_oEndnoteRef.IsInit() )
-					sResult += m_oEndnoteRef->toXML();
-
-				if ( m_oEndnoteReference.IsInit() )
-					sResult += m_oEndnoteReference->toXML();
-
-				if ( m_oFldChar.IsInit() )
-					sResult += m_oFldChar->toXML();
-
-				if ( m_oFootnoteRef.IsInit() )
-					sResult += m_oFootnoteRef->toXML();
-
-				if ( m_oFootnoteReference.IsInit() )
-					sResult += m_oFootnoteReference->toXML();
-
-				if ( m_oInstrText.IsInit() )
-					sResult += m_oInstrText->toXML();
-
-				if ( m_oLastRenderedPageBreak.IsInit() )
-					sResult += m_oLastRenderedPageBreak->toXML();
-
-				if ( m_oMonthLong.IsInit() )
-					sResult += m_oMonthLong->toXML();
-
-				if ( m_oMonthShort.IsInit() )
-					sResult += m_oMonthShort->toXML();
-
-				if ( m_oNoBreakHyphen.IsInit() )
-					sResult += m_oNoBreakHyphen->toXML();
-
-				if ( m_oObject.IsInit() )
-					sResult += m_oObject->toXML();
-
-				if ( m_oPgNum.IsInit() )
-					sResult += m_oPgNum->toXML();
-
-				if ( m_oPtab.IsInit() )
-					sResult += m_oPtab->toXML();
-
-				if ( m_oMRPr.IsInit() )
-					sResult += m_oMRPr->toXML();
-
-				if ( m_oRPr.IsInit() )
-					sResult += m_oRPr->toXML();
-
-				if ( m_oRuby.IsInit() )
-					sResult += m_oRuby->toXML();
-
-				if ( m_oSeparator.IsInit() )
-					sResult += m_oSeparator->toXML();
-
-				if ( m_oSoftHyphen.IsInit() )
-					sResult += m_oSoftHyphen->toXML();
-
-				if ( m_oSym.IsInit() )
-					sResult += m_oSym->toXML();
-
-				if ( m_oMText.IsInit() )
-					sResult += m_oMText->toXML();
-
-				if ( m_oText.IsInit() )
-					sResult += m_oText->toXML();
-
-				if ( m_oTab.IsInit() )
-					sResult += m_oTab->toXML();
-
-				if ( m_oYearLong.IsInit() )
-					sResult += m_oYearLong->toXML();
-
-				if ( m_oYearShort.IsInit() )
-					sResult += m_oYearShort->toXML();
+				sResult += toXMLInner();
 				
 				sResult += _T("</m:r>");
 
 				return sResult;
 			}
+			 CString      CMRun::toXMLInner() const
+			 {
+				 CString sResult;
+
+				 if ( m_oAnnotationRef.IsInit() )
+					 sResult += m_oAnnotationRef->toXML();
+
+				 if ( m_oBr.IsInit() )
+					 sResult += m_oBr->toXML();
+
+				 if ( m_oCommentReference.IsInit() )
+					 sResult += m_oCommentReference->toXML();
+
+				 if ( m_oContentPart.IsInit() )
+					 sResult += m_oContentPart->toXML();
+
+				 if ( m_oContinuationSeparator.IsInit() )
+					 sResult += m_oContinuationSeparator->toXML();
+
+				 if ( m_oCr.IsInit() )
+					 sResult += m_oCr->toXML();
+
+				 if ( m_oDayLong.IsInit() )
+					 sResult += m_oDayLong->toXML();
+
+				 if ( m_oDayShort.IsInit() )
+					 sResult += m_oDayShort->toXML();
+
+				 if ( m_oDelInstrText.IsInit() )
+					 sResult += m_oDelInstrText->toXML();
+
+				 if ( m_oDelText.IsInit() )
+					 sResult += m_oDelText->toXML();
+
+				 if ( m_oDrawing.IsInit() )
+					 sResult += m_oDrawing->toXML();
+
+				 if ( m_oEndnoteRef.IsInit() )
+					 sResult += m_oEndnoteRef->toXML();
+
+				 if ( m_oEndnoteReference.IsInit() )
+					 sResult += m_oEndnoteReference->toXML();
+
+				 if ( m_oFldChar.IsInit() )
+					 sResult += m_oFldChar->toXML();
+
+				 if ( m_oFootnoteRef.IsInit() )
+					 sResult += m_oFootnoteRef->toXML();
+
+				 if ( m_oFootnoteReference.IsInit() )
+					 sResult += m_oFootnoteReference->toXML();
+
+				 if ( m_oInstrText.IsInit() )
+					 sResult += m_oInstrText->toXML();
+
+				 if ( m_oLastRenderedPageBreak.IsInit() )
+					 sResult += m_oLastRenderedPageBreak->toXML();
+
+				 if ( m_oMonthLong.IsInit() )
+					 sResult += m_oMonthLong->toXML();
+
+				 if ( m_oMonthShort.IsInit() )
+					 sResult += m_oMonthShort->toXML();
+
+				 if ( m_oNoBreakHyphen.IsInit() )
+					 sResult += m_oNoBreakHyphen->toXML();
+
+				 if ( m_oObject.IsInit() )
+					 sResult += m_oObject->toXML();
+
+				 if ( m_oPgNum.IsInit() )
+					 sResult += m_oPgNum->toXML();
+
+				 if ( m_oPtab.IsInit() )
+					 sResult += m_oPtab->toXML();
+
+				 if ( m_oMRPr.IsInit() )
+					 sResult += m_oMRPr->toXML();
+
+				 if ( m_oRPr.IsInit() )
+					 sResult += m_oRPr->toXML();
+
+				 if ( m_oRuby.IsInit() )
+					 sResult += m_oRuby->toXML();
+
+				 if ( m_oSeparator.IsInit() )
+					 sResult += m_oSeparator->toXML();
+
+				 if ( m_oSoftHyphen.IsInit() )
+					 sResult += m_oSoftHyphen->toXML();
+
+				 if ( m_oSym.IsInit() )
+					 sResult += m_oSym->toXML();
+
+				 if ( m_oMText.IsInit() )
+					 sResult += m_oMText->toXML();
+
+				 if ( m_oText.IsInit() )
+					 sResult += m_oText->toXML();
+
+				 if ( m_oTab.IsInit() )
+					 sResult += m_oTab->toXML();
+
+				 if ( m_oYearLong.IsInit() )
+					 sResult += m_oYearLong->toXML();
+
+				 if ( m_oYearShort.IsInit() )
+					 sResult += m_oYearShort->toXML();
+
+				 return sResult;
+			 }
 	}
 }

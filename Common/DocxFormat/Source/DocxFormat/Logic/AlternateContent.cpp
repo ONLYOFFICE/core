@@ -1,4 +1,4 @@
-#include "AlternateContent.h"
+ï»¿#include "AlternateContent.h"
 #include "Run.h"
 
 namespace OOX
@@ -36,13 +36,9 @@ namespace OOX
 					
 					for (unsigned int i = 0; i < altRun.m_arrItems.size(); ++i)
 						m_arrChoiceItems.push_back(altRun.m_arrItems[i]);
-
-					for (unsigned int i = 0; i < altRun.m_arrSpreadsheetItems.size(); ++i)
-						m_arrSpreadsheetChoiceItems.push_back(altRun.m_arrSpreadsheetItems[i]);
 					
-					//áåç RemoveAll îíè î÷èñòÿòñÿ âìåñòå ñ altRun
+					//Ð±ÐµÐ· RemoveAll Ð¾Ð½Ð¸ Ð¾Ñ‡Ð¸ÑÑ‚ÑÑ‚ÑÑ Ð²Ð¼ÐµÑÑ‚Ðµ Ñ altRun
 					altRun.m_arrItems.clear();
-					altRun.m_arrSpreadsheetItems.clear();
 				}
 				else if ( _T("mc:Fallback") == sName )
 				{
@@ -50,13 +46,9 @@ namespace OOX
 					
 					for (unsigned int i = 0; i < altRun.m_arrItems.size(); ++i)
 						m_arrFallbackItems.push_back(altRun.m_arrItems[i]);
-
-					for (unsigned int i = 0; i < altRun.m_arrSpreadsheetItems.size(); ++i)
-						m_arrSpreadsheetFallbackItems.push_back(altRun.m_arrSpreadsheetItems[i]);
 					
-					//áåç RemoveAll îíè î÷èñòÿòñÿ âìåñòå ñ altRun
+					//Ð±ÐµÐ· RemoveAll Ð¾Ð½Ð¸ Ð¾Ñ‡Ð¸ÑÑ‚ÑÑ‚ÑÑ Ð²Ð¼ÐµÑÑ‚Ðµ Ñ altRun
 					altRun.m_arrItems.clear();
-					altRun.m_arrSpreadsheetItems.clear();
 				}
 			}
 		}

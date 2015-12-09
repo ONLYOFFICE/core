@@ -3946,10 +3946,27 @@ public:
 			if(m_oMath_rPr.IsNoEmpty())
 			m_oMath_rPr.Write(&GetRunStringWriter());
 		}
+		else if ( c_oSerRunType::del == type )
+		{
+			TrackRevision oRPrChange;
+			res = Read1(length, &Binary_DocumentTableReader::ReadMathCtrlPrDelIns, this, &oRPrChange);
+			oRPrChange.Write(&GetRunStringWriter(), _T("w:del"));
+		}
+		else if ( c_oSerRunType::ins == type )
+		{
+			TrackRevision oRPrChange;
+			res = Read1(length, &Binary_DocumentTableReader::ReadMathCtrlPrDelIns, this, &oRPrChange);
+			oRPrChange.Write(&GetRunStringWriter(), _T("w:ins"));
+		}
 		else
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	}
+	int ReadMathCtrlPrDelIns(BYTE type, long length, void* poResult)
+	{
+		return oBinary_rPrReader.ReadrPrChange(type, length, poResult);
+	}
+
 	int ReadMathDelimiter(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
@@ -4935,10 +4952,39 @@ public:
 		{
 			GetRunStringWriter().WriteString(CString(_T("<w:br />")));
 		}
+		else if (c_oSer_OMathContentType::Del == type)
+		{
+			TrackRevision oTrackRevision;
+			res = Read1(length, &Binary_DocumentTableReader::ReadMathInsDel, this, &oTrackRevision);
+			oTrackRevision.Write(&GetRunStringWriter(), _T("w:del"));
+		}
+		else if (c_oSer_OMathContentType::Ins == type)
+		{
+			TrackRevision oTrackRevision;
+			res = Read1(length, &Binary_DocumentTableReader::ReadMathInsDel, this, &oTrackRevision);
+			oTrackRevision.Write(&GetRunStringWriter(), _T("w:ins"));
+		}
 		else
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	}
+	int ReadMathInsDel(BYTE type, long length, void* poResult)
+	{
+		int res = c_oSerConstants::ReadOk;
+		TrackRevision* pTrackRevision = static_cast<TrackRevision*>(poResult);
+		READ1_TRACKREV(type, length, pTrackRevision)
+		else if(c_oSerProp_RevisionType::ContentRun == type)
+		{
+			pTrackRevision->contentRun = new XmlUtils::CStringWriter();
+			XmlUtils::CStringWriter* pPrevWriter = m_pCurWriter;
+			m_pCurWriter = pTrackRevision->contentRun;
+			res = Read1(length, &Binary_DocumentTableReader::ReadMathMRun, this, NULL);
+			m_pCurWriter = pPrevWriter;
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	};
 	int ReadMathRad(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;

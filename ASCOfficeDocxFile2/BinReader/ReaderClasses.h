@@ -2514,6 +2514,7 @@ public:
 	XmlUtils::CStringWriter* trPr;
 	XmlUtils::CStringWriter* tcPr;
 	XmlUtils::CStringWriter* content;
+	XmlUtils::CStringWriter* contentRun;
 	TrackRevision()
 	{
 		Id = NULL;
@@ -2527,6 +2528,7 @@ public:
 		trPr = NULL;
 		tcPr = NULL;
 		content = NULL;
+		contentRun = NULL;
 	}
 	~TrackRevision()
 	{
@@ -2541,6 +2543,7 @@ public:
 		RELEASEOBJECT(trPr);
 		RELEASEOBJECT(tcPr);
 		RELEASEOBJECT(content);
+		RELEASEOBJECT(contentRun);
 	}
 	bool IsNoEmpty()
 	{
@@ -2591,7 +2594,7 @@ public:
 				CString sId;sId.Format(_T(" w:vMergeOrig=\"%d\""), *vMergeOrigin);
 				pCStringWriter->WriteString(sId);
 			}
-            if(NULL != RPr || NULL != PPr || NULL != sectPr || NULL != tblPr || NULL != tblGridChange || NULL != trPr || NULL != tcPr || NULL != content)
+			if(NULL != RPr || NULL != PPr || NULL != sectPr || NULL != tblPr || NULL != tblGridChange || NULL != trPr || NULL != tcPr || NULL != content|| NULL != contentRun)
 			{
 				pCStringWriter->WriteString(CString(_T(">")));
 				if(NULL != RPr)
@@ -2635,6 +2638,10 @@ public:
 				if(NULL != content)
 				{
 					pCStringWriter->Write(*content);
+				}
+				if(NULL != contentRun)
+				{
+					pCStringWriter->Write(*contentRun);
 				}
 
 				pCStringWriter->WriteString(CString(_T("</")));

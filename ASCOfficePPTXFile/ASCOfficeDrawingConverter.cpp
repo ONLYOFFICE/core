@@ -1264,6 +1264,14 @@ rIns=\"91440\" bIns=\"45720\" numCol=\"1\" spcCol=\"0\" rtlCol=\"0\" fromWordArt
 									oBlipFill.blip->oleInfo.Init();
 									oBlipFill.blip->oleInfo->m_sOleProperty.Format(_T("%d|%d|%s"), dxaOrig, dyaOrig, pOle->m_sProgId.get());
 									oBlipFill.blip->oleInfo->m_sRid = pOle->m_oId->GetValue();
+
+									PPTX::Logic::Pic *newElem = new PPTX::Logic::Pic();
+									
+									newElem->blipFill	= oBlipFill;
+									newElem->spPr		= pShape->spPr;
+									newElem->style		= pShape->style;
+
+									pElem->InitElem(newElem);
 								}
 							}
 						}

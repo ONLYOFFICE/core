@@ -3167,15 +3167,7 @@ namespace BinDocxRW
 				case OOX::et_m_ctrlPr:
 					{
 						OOX::Logic::CCtrlPr* pCtrlPr = static_cast<OOX::Logic::CCtrlPr*>(item);
-						nCurPos = m_oBcw.WriteItemStart(c_oSer_OMathContentType::CtrlPr);
-
-						if ( pCtrlPr->m_oRPr.IsInit() )
-						{
-							int nCurPos2 = m_oBcw.WriteItemStart(c_oSerRunType::rPr);
-							brPrs.Write_rPr(pCtrlPr->m_oRPr.get());
-							m_oBcw.WriteItemEnd(nCurPos2);
-						}
-						m_oBcw.WriteItemEnd(nCurPos);
+						WriteMathCtrlPr(*pCtrlPr, c_oSer_OMathContentType::CtrlPr);
 						break;
 					}
 				case OOX::et_m_d:
@@ -3341,34 +3333,7 @@ namespace BinDocxRW
 					{
 						OOX::Logic::CMRun* pMRun = static_cast<OOX::Logic::CMRun*>(item);
 						nCurPos = m_oBcw.WriteItemStart(c_oSer_OMathContentType::MRun);
-
-						if ( pMRun->m_oMRPr.IsInit() )
-							WriteMathMRPr(pMRun->m_oMRPr.get());
-						if ( pMRun->m_oRPr.IsInit() )
-						{
-							int nCurPos2 = m_oBcw.WriteItemStart(c_oSer_OMathContentType::RPr);
-							brPrs.Write_rPr(pMRun->m_oRPr.get());
-							m_oBcw.WriteItemEnd(nCurPos2);
-						}
-						if ( pMRun->m_oMText.IsInit() )
-							WriteMathText(pMRun->m_oMText.get());
-
-						if ( pMRun->m_oBr.IsInit() )
-						{
-							int nBreakType = -1;
-							switch(pMRun->m_oBr->m_oType.GetValue())
-							{
-							case SimpleTypes::brtypeColumn:
-							case SimpleTypes::brtypePage: nBreakType = c_oSer_OMathContentType::pagebreak;break;
-							case SimpleTypes::brtypeTextWrapping: nBreakType = c_oSer_OMathContentType::linebreak;break;
-							}
-							if(-1 != nBreakType)
-							{
-								m_oBcw.m_oStream.WriteBYTE(nBreakType);
-								m_oBcw.m_oStream.WriteLONG(c_oSerPropLenType::Null);
-							}					
-						}
-											
+						WriteMathRunContent(pMRun);
 						m_oBcw.WriteItemEnd(nCurPos);
 						break;
 					}
@@ -3452,6 +3417,47 @@ namespace BinDocxRW
 						break;
 					}
 				}
+			}
+		}
+		void WriteMathRunContent(OOX::Logic::CMRun* pMRun)
+		{
+			if ( pMRun->m_oMRPr.IsInit() )
+				WriteMathMRPr(pMRun->m_oMRPr.get());
+			if ( pMRun->m_oRPr.IsInit() )
+			{
+				int nCurPos2 = m_oBcw.WriteItemStart(c_oSer_OMathContentType::RPr);
+				brPrs.Write_rPr(pMRun->m_oRPr.get());
+				m_oBcw.WriteItemEnd(nCurPos2);
+			}
+			if ( pMRun->m_oMText.IsInit() )
+				WriteMathText(pMRun->m_oMText.get());
+
+			if ( pMRun->m_oBr.IsInit() )
+			{
+				int nBreakType = -1;
+				switch(pMRun->m_oBr->m_oType.GetValue())
+				{
+				case SimpleTypes::brtypeColumn:
+				case SimpleTypes::brtypePage: nBreakType = c_oSer_OMathContentType::pagebreak;break;
+				case SimpleTypes::brtypeTextWrapping: nBreakType = c_oSer_OMathContentType::linebreak;break;
+				}
+				if(-1 != nBreakType)
+				{
+					m_oBcw.m_oStream.WriteBYTE(nBreakType);
+					m_oBcw.m_oStream.WriteLONG(c_oSerPropLenType::Null);
+				}
+			}
+			if ( pMRun->m_oDel.IsInit() )
+			{
+				int nCurPos2 = m_oBcw.WriteItemStart(c_oSer_OMathContentType::Del);
+				WriteMathDel(pMRun->m_oDel.get());
+				m_oBcw.WriteItemEnd(nCurPos2);
+			}
+			if ( pMRun->m_oIns.IsInit() )
+			{
+				int nCurPos2 = m_oBcw.WriteItemStart(c_oSer_OMathContentType::Ins);
+				WriteMathIns(pMRun->m_oIns.get());
+				m_oBcw.WriteItemEnd(nCurPos2);
 			}
 		}
 		void WriteMathAccPr(const OOX::Logic::CAccPr &pAccPr)
@@ -3656,14 +3662,26 @@ namespace BinDocxRW
 			}
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		void WriteMathCtrlPr(const OOX::Logic::CCtrlPr &pCtrlPr)
+		void WriteMathCtrlPr(const OOX::Logic::CCtrlPr &pCtrlPr, BYTE type = c_oSer_OMathBottomNodesType::CtrlPr)
 		{
-			int nCurPos = m_oBcw.WriteItemStart(c_oSer_OMathBottomNodesType::CtrlPr);
+			int nCurPos = m_oBcw.WriteItemStart(type);
 
 			if ( pCtrlPr.m_oRPr.IsInit() )
 			{
 				int nCurPos2 = m_oBcw.WriteItemStart(c_oSerRunType::rPr);
 				brPrs.Write_rPr(pCtrlPr.m_oRPr.get());
+				m_oBcw.WriteItemEnd(nCurPos2);
+			}
+			if ( pCtrlPr.m_oDel.IsInit() )
+			{
+				int nCurPos2 = m_oBcw.WriteItemStart(c_oSerRunType::del);
+				brPrs.Write_rPrChange(pCtrlPr.m_oDel.get());
+				m_oBcw.WriteItemEnd(nCurPos2);
+			}
+			if ( pCtrlPr.m_oIns.IsInit() )
+			{
+				int nCurPos2 = m_oBcw.WriteItemStart(c_oSerRunType::ins);
+				brPrs.Write_rPrChange(pCtrlPr.m_oIns.get());
 				m_oBcw.WriteItemEnd(nCurPos2);
 			}
 			m_oBcw.WriteItemEnd(nCurPos);
@@ -4568,6 +4586,29 @@ namespace BinDocxRW
 				m_oBcw.m_oStream.WriteBOOL(pSupHide.m_val->GetValue());
 			}
 			m_oBcw.WriteItemEnd(nCurPos);
+		}
+		void WriteMathDel(const OOX::Logic::CMDel &pMDel)
+		{
+			int nCurPos = 0;
+			m_oBcw.WriteTrackRevision(pMDel);
+			if(pMDel.m_oRun.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerProp_RevisionType::ContentRun);
+				WriteMathRunContent(pMDel.m_oRun.GetPointer());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+		}
+		void WriteMathIns(const OOX::Logic::CMIns &pMIns)
+		{
+			int nCurPos = 0;
+			m_oBcw.WriteTrackRevision(pMIns);
+
+			if(pMIns.m_oRun.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerProp_RevisionType::ContentRun);
+				WriteMathRunContent(pMIns.m_oRun.GetPointer());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
 		}
 		void WriteMathText(const OOX::Logic::CMText &pMText)
 		{

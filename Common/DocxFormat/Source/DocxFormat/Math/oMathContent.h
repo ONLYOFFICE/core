@@ -580,8 +580,8 @@ namespace OOX
 		public:			
 			//Childs
 			nullable<OOX::Logic::CRunProperty> m_oRPr;
-			nullable<OOX::Logic::CIns> m_oIns;
-			nullable<OOX::Logic::CDel> m_oDel;
+			nullable<OOX::Logic::CRPrChange> m_oIns;
+			nullable<OOX::Logic::CRPrChange> m_oDel;
 		};		
 		//--------------------------------------------------------------------------------
 		// CDelimiterPr 22.1.2.31 (Delimiter Properties) 
@@ -2242,6 +2242,8 @@ namespace OOX
 		//--------------------------------------------------------------------------------
 		class CMText;
 		class CMRPr;
+		class CMDel;
+		class CMIns;
 		class CMRun : public WritingElement
 		{
 		public:
@@ -2281,6 +2283,8 @@ namespace OOX
 						m_oDayLong = oReader;
 					else if ( _T("w:dayShort") == sName )
 						m_oDayShort = oReader;
+					else if ( _T("w:del") == sName )
+						m_oDel = oReader;
 					else if ( _T("w:delInstrText") == sName )
 						m_oDelInstrText = oReader;
 					else if ( _T("w:delText") == sName )
@@ -2297,6 +2301,8 @@ namespace OOX
 						m_oFootnoteRef = oReader;
 					else if ( _T("w:footnoteReference") == sName )
 						m_oFootnoteReference = oReader;
+					else if ( _T("w:ins") == sName )
+						m_oIns = oReader;
 					else if ( _T("w:instrText") == sName )
 						m_oInstrText = oReader;
 					else if ( _T("w:lastRenderedPageBreak") == sName )
@@ -2338,6 +2344,7 @@ namespace OOX
 				}
 			}
 			virtual CString      toXML() const;			
+			virtual CString      toXMLInner() const;
 
 			virtual EElementType getType() const
 			{
@@ -2353,6 +2360,7 @@ namespace OOX
 			nullable<OOX::Logic::CCr>						m_oCr;
 			nullable<OOX::Logic::CDayLong>					m_oDayLong;
 			nullable<OOX::Logic::CDayShort>					m_oDayShort;
+			nullable<OOX::Logic::CMDel>						m_oDel;
 			nullable<OOX::Logic::CDelInstrText>				m_oDelInstrText;
 			nullable<OOX::Logic::CDelText>					m_oDelText;
 			nullable<OOX::Logic::CDrawing>					m_oDrawing;
@@ -2361,6 +2369,7 @@ namespace OOX
 			nullable<OOX::Logic::CFldChar>					m_oFldChar;
 			nullable<OOX::Logic::CFootnoteRef>				m_oFootnoteRef;
 			nullable<OOX::Logic::CFootnoteReference>		m_oFootnoteReference;
+			nullable<OOX::Logic::CMIns>						m_oIns;
 			nullable<OOX::Logic::CInstrText>				m_oInstrText;
 			nullable<OOX::Logic::CLastRenderedPageBreak>	m_oLastRenderedPageBreak;
 			nullable<OOX::Logic::CMonthLong>				m_oMonthLong;
@@ -2380,7 +2389,184 @@ namespace OOX
 			nullable<OOX::Logic::CTab>						m_oTab;
 			nullable<OOX::Logic::CYearLong>					m_oYearLong;
 			nullable<OOX::Logic::CYearShort>				m_oYearShort;
-		};		 
+		};
+		class CMDel : public WritingElement
+		{
+		public:
+			WritingElement_AdditionConstructors(CMDel)
+			CMDel()
+			{
+			}
+			virtual ~CMDel()
+			{
+			}
+
+		public:
+			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			{
+			}
+			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes(oReader);
+
+				m_oRun = oReader;
+			}
+			virtual CString      toXML() const
+			{
+				CString sResult;
+
+				sResult += "<w:del";
+
+				if ( m_sAuthor.IsInit() )
+				{
+					sResult += " w:author=\"";
+					sResult += XmlUtils::EncodeXmlString(m_sAuthor->GetString());
+					sResult += "\" ";
+				}
+
+				if ( m_oDate.IsInit() )
+				{
+					sResult += " w:date=\"";
+					sResult += XmlUtils::EncodeXmlString(m_oDate->ToString());
+					sResult += "\" ";
+				}
+
+				if ( m_oId.IsInit() )
+				{
+					sResult += " w:id=\"";
+					sResult += m_oId->ToString();
+					sResult += "\" ";
+				}
+
+				if ( m_sUserId.IsInit() )
+				{
+					sResult += " oouserid=\"";
+					sResult += XmlUtils::EncodeXmlString(m_sUserId->GetString());
+					sResult += "\" ";
+				}
+				sResult += ">";
+
+				if(m_oRun.IsInit())
+				{
+					sResult += m_oRun->toXMLInner();
+				}
+
+				sResult += "</w:del>";
+				return sResult;
+			}
+
+			virtual EElementType getType() const
+			{
+				return et_w_ins;
+			}
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				// Читаем атрибуты
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:author"), m_sAuthor )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:date"),   m_oDate  )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:id"),     m_oId )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("oouserid"), m_sUserId )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+		public:
+			nullable<CString                       > m_sAuthor;
+			nullable<SimpleTypes::CDateTime        > m_oDate;
+			nullable<SimpleTypes::CDecimalNumber<> > m_oId;
+			nullable<CString                       > m_sUserId;
+			// Childs
+			nullable<CMRun>								m_oRun;
+		};
+		class CMIns : public WritingElement
+		{
+		public:
+			WritingElement_AdditionConstructors(CMIns)
+			CMIns()
+			{
+			}
+			virtual ~CMIns()
+			{
+			}
+
+		public:
+			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			{
+			}
+			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes(oReader);
+
+				m_oRun = oReader;
+			}
+			virtual CString      toXML() const
+			{
+				CString sResult;
+
+				sResult += "<w:ins";
+
+				if ( m_sAuthor.IsInit() )
+				{
+					sResult += " w:author=\"";
+					sResult += XmlUtils::EncodeXmlString(m_sAuthor->GetString());
+					sResult += "\" ";
+				}
+
+				if ( m_oDate.IsInit() )
+				{
+					sResult += " w:date=\"";
+					sResult += XmlUtils::EncodeXmlString(m_oDate->ToString());
+					sResult += "\" ";
+				}
+
+				if ( m_oId.IsInit() )
+				{
+					sResult += " w:id=\"";
+					sResult += m_oId->ToString();
+					sResult += "\" ";
+				}
+
+				if ( m_sUserId.IsInit() )
+				{
+					sResult += " oouserid=\"";
+					sResult += XmlUtils::EncodeXmlString(m_sUserId->GetString());
+					sResult += "\" ";
+				}
+				sResult += ">";
+
+				if(m_oRun.IsInit())
+				{
+					sResult += m_oRun->toXMLInner();
+				}
+
+				sResult += "</w:ins>";
+				return sResult;
+			}
+
+			virtual EElementType getType() const
+			{
+				return et_w_ins;
+			}
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				// Читаем атрибуты
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:author"), m_sAuthor )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:date"),   m_oDate  )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:id"),     m_oId )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("oouserid"), m_sUserId )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+		public:
+			nullable<CString                       > m_sAuthor;
+			nullable<SimpleTypes::CDateTime        > m_oDate;
+			nullable<SimpleTypes::CDecimalNumber<> > m_oId;
+			nullable<CString                       > m_sUserId;
+			// Childs
+			nullable<CMRun>								m_oRun;
+		};
+
 		//--------------------------------------------------------------------------------
 		// CRad 22.1.2.88   (Radical Object)
 		//--------------------------------------------------------------------------------

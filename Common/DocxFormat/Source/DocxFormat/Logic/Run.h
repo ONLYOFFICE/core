@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #ifndef OOX_LOGIC_RUN_INCLUDE_H_
 #define OOX_LOGIC_RUN_INCLUDE_H_
 
@@ -60,13 +60,6 @@ namespace OOX
 				m_oRsidR.reset();
 				m_oRsidRPr.reset();
 				m_oRunProperty = NULL;
-
-				for (unsigned int nIndex = 0; nIndex < m_arrSpreadsheetItems.size(); nIndex++ )
-				{
-					if ( m_arrItems[nIndex] )delete m_arrSpreadsheetItems[nIndex];
-					m_arrSpreadsheetItems[nIndex] = NULL;
-				}
-				m_arrSpreadsheetItems.clear();				
 
 				for (unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
 				{
@@ -188,7 +181,6 @@ namespace OOX
 				{
 					CWCharWrapper sName = oReader.GetName();
 					WritingElement *pItem = NULL;
-					OOX::Spreadsheet::WritingElement *pSpreadsheetItem = NULL;
 
 					if ( _T("mc:AlternateContent") == sName )
 						pItem = new CAlternateContent( oReader );
@@ -263,8 +255,6 @@ namespace OOX
 
 					if ( pItem )
 						m_arrItems.push_back( pItem );
-					if ( pSpreadsheetItem )
-						m_arrSpreadsheetItems.push_back( pSpreadsheetItem );
 				}
 			}
 			virtual CString      toXML() const
@@ -288,15 +278,6 @@ namespace OOX
 						sResult += m_arrItems[nIndex]->toXML();
 					}
 				}
-				for (unsigned int nIndex = 0; nIndex < m_arrSpreadsheetItems.size(); nIndex++ )
-				{
-					if ( m_arrSpreadsheetItems[nIndex] )
-					{
-						if (m_arrItems[nIndex]->getType() == OOX::Spreadsheet::et_rPr) continue;
-						sResult += m_arrSpreadsheetItems[nIndex]->toXML();
-					}
-				}
-				
 
 				sResult += _T("</w:r>");
 
@@ -344,10 +325,8 @@ namespace OOX
 			nullable<SimpleTypes::CLongHexNumber<> > m_oRsidRPr;
 
 			// Childs
-			std::vector<OOX::Spreadsheet::WritingElement *> m_arrSpreadsheetItems;
-
-			OOX::Logic::CRunProperty						*m_oRunProperty;	// копия того что в m_arrItems...  - для быстрого доступа/анализа
-			// по идее нужно сделать как в Drawing::Run - то есть единственные подобъекты вынести отдельно
+			OOX::Logic::CRunProperty						*m_oRunProperty;	// РєРѕРїРёСЏ С‚РѕРіРѕ С‡С‚Рѕ РІ m_arrItems...  - РґР»СЏ Р±С‹СЃС‚СЂРѕРіРѕ РґРѕСЃС‚СѓРїР°/Р°РЅР°Р»РёР·Р°
+			// РїРѕ РёРґРµРµ РЅСѓР¶РЅРѕ СЃРґРµР»Р°С‚СЊ РєР°Рє РІ Drawing::Run - С‚Рѕ РµСЃС‚СЊ РµРґРёРЅСЃС‚РІРµРЅРЅС‹Рµ РїРѕРґРѕР±СЉРµРєС‚С‹ РІС‹РЅРµСЃС‚Рё РѕС‚РґРµР»СЊРЅРѕ
 		};
 	} // namespace Logic
 } // namespace OOX

@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 
 //#include "NamespaceOwn.h"
 #include "../XML/xmlutils.h"
@@ -44,7 +44,7 @@ namespace OOX
 	if ( oValue.IsInit() )\
 		sResult += oValue->toXML();
 
-// Следующие 3 define используются для чтения аттрибутов через CXmlLiteReader
+// РЎР»РµРґСѓСЋС‰РёРµ 3 define РёСЃРїРѕР»СЊР·СѓСЋС‚СЃСЏ РґР»СЏ С‡С‚РµРЅРёСЏ Р°С‚С‚СЂРёР±СѓС‚РѕРІ С‡РµСЂРµР· CXmlLiteReader
 #define WritingElement_ReadAttributes_Start(Reader) \
 	if ( Reader.GetAttributesCount() <= 0 )\
 		return;\

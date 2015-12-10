@@ -132,7 +132,7 @@ public:
     static _CP_PTR(chart_content) create();
 
     std::wostream	& content() { return content_; }
-	rels			& rels()	{ return rels_file_->get_rels(); }
+    rels			& get_rels()	{ return rels_file_->get_rels(); }
 
     std::wstring	str() { return content_.str(); }
 	

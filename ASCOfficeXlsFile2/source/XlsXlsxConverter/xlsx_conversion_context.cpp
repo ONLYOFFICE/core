@@ -157,7 +157,7 @@ void xlsx_conversion_context::end_document()
 		count++;
 		package::chart_content_ptr content = package::chart_content::create();
 
-		chart->dump_rels(content->rels());
+        chart->dump_rels(content->get_rels());
 		chart->write_to(content->content());
 
 		output_document_->get_xl_files().add_charts(content);

@@ -254,7 +254,7 @@ void xl_charts_files::write(const std::wstring & RootPath)
 
             package::simple_element(fileName, item->str()).write(path);
 
-			if (item->rels().empty() == false)
+            if (item->get_rels().empty() == false)
 			{
 				rels_files relFiles;
 				item->rels_file_->set_file_name(fileName + L".rels");

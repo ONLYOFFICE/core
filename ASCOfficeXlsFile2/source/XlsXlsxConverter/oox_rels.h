@@ -41,7 +41,7 @@ private:
 class rels;
 typedef _CP_PTR(rels) rels_ptr;
 
-/// \class rels
+/// class rels
 class rels 
 {
 public:

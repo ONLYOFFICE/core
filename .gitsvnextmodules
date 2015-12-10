@@ -1,0 +1,16 @@
+[submodule "DesktopEditor/ChromiumBasedEditors2/app/jsbuilds/Excel/css/main.css"]
+	path = DesktopEditor/ChromiumBasedEditors2/app/jsbuilds/Excel/css/main.css
+	owner = DesktopEditor/ChromiumBasedEditors2/app/jsbuilds/Excel/css
+	url = ^/AVS/Sources/TeamlabOffice/trunk/OfficeWeb/Excel/css/main.css
+	branch = /
+	fetch = :refs/remotes/git-svn
+	remote = svn
+	type = file
+[submodule "DesktopEditor/ChromiumBasedEditors2/app/jsbuilds/PowerPoint/themes"]
+	path = DesktopEditor/ChromiumBasedEditors2/app/jsbuilds/PowerPoint/themes
+	owner = DesktopEditor/ChromiumBasedEditors2/app/jsbuilds/PowerPoint
+	url = ^/AVS/Sources/TeamlabOffice/trunk/OfficeWeb/PowerPoint/themes
+	branch = /
+	fetch = :refs/remotes/git-svn
+	remote = svn
+	type = dir

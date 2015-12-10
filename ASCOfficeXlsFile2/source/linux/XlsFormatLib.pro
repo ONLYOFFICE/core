@@ -1606,7 +1606,8 @@ HEADERS +=  \
     ../XlsFormat/Auxiliary/HelpersTagsGenerator.h \
     ../XlsFormat/Auxiliary/HelpFunc.h \
     ../XlsFormat/Logic/SummaryInformationStream/Structures/CodePageOle.h \
-    ../XlsFormat/Logic/Biff_structures/SharedProperty.h
+    ../XlsFormat/Logic/Biff_structures/SharedProperty.h \
+    ../XlsXlsxConverter/xlsx_chart_context.h
 
 
 

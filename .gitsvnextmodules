@@ -1,3 +1,19 @@
+[submodule "DesktopEditor/ChromiumBasedEditors2/app/jsbuilds/Common/Images"]
+	path = DesktopEditor/ChromiumBasedEditors2/app/jsbuilds/Common/Images
+	owner = DesktopEditor/ChromiumBasedEditors2/app/jsbuilds/Common
+	url = ^/AVS/Sources/TeamlabOffice/trunk/OfficeWeb/Common/Images
+	branch = /
+	fetch = :refs/remotes/git-svn
+	remote = svn
+	type = dir
+[submodule "DesktopEditor/ChromiumBasedEditors2/app/jsbuilds/Common/Native/jquery_native.js"]
+	path = DesktopEditor/ChromiumBasedEditors2/app/jsbuilds/Common/Native/jquery_native.js
+	owner = DesktopEditor/ChromiumBasedEditors2/app/jsbuilds/Common/Native
+	url = ^/AVS/Sources/TeamlabOffice/trunk/OfficeWeb/Common/Native/jquery_native.js
+	branch = /
+	fetch = :refs/remotes/git-svn
+	remote = svn
+	type = file
 [submodule "DesktopEditor/ChromiumBasedEditors2/app/jsbuilds/Excel/css/main.css"]
 	path = DesktopEditor/ChromiumBasedEditors2/app/jsbuilds/Excel/css/main.css
 	owner = DesktopEditor/ChromiumBasedEditors2/app/jsbuilds/Excel/css

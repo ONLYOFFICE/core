@@ -164,7 +164,7 @@ namespace NSDoctRenderer
         std::wstring m_sErrorsLogFile;
 
     public:
-        CDoctRenderer_Private()
+        CDoctRenderer_Private(const std::wstring& sAllFontsPath = L"")
         {
             m_bIsInitTypedArrays = false;
 
@@ -183,6 +183,13 @@ namespace NSDoctRenderer
                     {
                         oNodes.GetAt(i, _node);
                         std::wstring strFilePath = _node.GetText();
+
+                        if (!sAllFontsPath.empty())
+                        {
+                            std::wstring::size_type nPos = strFilePath.rfind(L"AllFonts.js");
+                            if (nPos != std::wstring::npos && ((nPos + 11) == strFilePath.length())) // 11 = std::wstring(L"AllFonts.js").length();
+                                strFilePath = sAllFontsPath;
+                        }
 
                         if (NSFile::CFileBinary::Exists(strFilePath) &&
                             !NSFile::CFileBinary::Exists(m_strConfigDir + strFilePath))
@@ -876,9 +883,9 @@ namespace NSDoctRenderer
         }
     };
 
-    CDoctrenderer::CDoctrenderer()
+    CDoctrenderer::CDoctrenderer(const std::wstring& sAllFontsPath)
     {
-        m_pInternal = new CDoctRenderer_Private();
+        m_pInternal = new CDoctRenderer_Private(sAllFontsPath);
     }
 
     CDoctrenderer::~CDoctrenderer()

@@ -21,6 +21,10 @@
 #include <unistd.h>
 #endif
 
+#ifdef _MAC
+#include <mach-o/dyld.h>
+#endif
+
 #ifndef MAX_PATH
     #define MAX_PATH 1024
 #endif
@@ -1075,10 +1079,10 @@ namespace NSFile
         if (readlink ("/proc/self/exe", buf, NS_FILE_MAX_PATH) <= 0)
         {
 #ifdef _MAC
-            getcwd(buf, sizeof(buf));
+            uint32_t _size = NS_FILE_MAX_PATH;
+            _NSGetExecutablePath(buf, &_size);
             std::string sUTF8(buf);
             std::wstring sRet = CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)sUTF8.c_str(), sUTF8.length());
-            sRet += L"/executable_path"; // поправить потом!!! (дописал чтобы работал метод GetProcessDirectory())
             return sRet;
 #endif
             return L"";

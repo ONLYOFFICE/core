@@ -59,7 +59,7 @@ namespace NSDoctRenderer
     class Q_DECL_EXPORT CDoctrenderer
     {
     public:
-        CDoctrenderer();
+        CDoctrenderer(const std::wstring& sAllFontsPath = L"");
         ~CDoctrenderer();
 
     public:

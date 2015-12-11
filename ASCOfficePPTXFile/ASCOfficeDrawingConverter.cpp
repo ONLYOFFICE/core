@@ -1,4 +1,4 @@
-
+п»ї
 #include "ASCOfficeDrawingConverter.h"
 
 #include "./PPTXFormat/Logic/SpTreeElem.h"
@@ -439,7 +439,7 @@ namespace PPTX
 	}
 	void CStringTrimmer::LoadFromString(CString& strParams)
 	{
-		// здесь не будем плодить тормозов - напишем без всяких Mid, Find, чтобы был только один проход
+		// Р·РґРµСЃСЊ РЅРµ Р±СѓРґРµРј РїР»РѕРґРёС‚СЊ С‚РѕСЂРјРѕР·РѕРІ - РЅР°РїРёС€РµРј Р±РµР· РІСЃСЏРєРёС… Mid, Find, С‡С‚РѕР±С‹ Р±С‹Р» С‚РѕР»СЊРєРѕ РѕРґРёРЅ РїСЂРѕС…РѕРґ
 		TCHAR* pData	= strParams.GetBuffer();
 		int nCount		= strParams.GetLength();
 
@@ -493,7 +493,7 @@ namespace PPTX
 	{
 		Clear();
 
-		// здесь не будем плодить тормозов - напишем без всяких Mid, Find, чтобы был только один проход
+		// Р·РґРµСЃСЊ РЅРµ Р±СѓРґРµРј РїР»РѕРґРёС‚СЊ С‚РѕСЂРјРѕР·РѕРІ - РЅР°РїРёС€РµРј Р±РµР· РІСЃСЏРєРёС… Mid, Find, С‡С‚РѕР±С‹ Р±С‹Р» С‚РѕР»СЊРєРѕ РѕРґРёРЅ РїСЂРѕС…РѕРґ
 		TCHAR* pData	= strParams.GetBuffer();
 		int nCount		= strParams.GetLength();
 
@@ -519,7 +519,7 @@ namespace PPTX
 			++nPosition;
 			++pDataMem;
 
-			// пропускаем пробелы
+			// РїСЂРѕРїСѓСЃРєР°РµРј РїСЂРѕР±РµР»С‹
 			while ((nPosition < nCount) && ((TCHAR(' ') == *pDataMem) || (TCHAR('{') == *pDataMem)))
 			{
 				++nPosition;
@@ -528,7 +528,7 @@ namespace PPTX
 
 			int nPosOld = nPosition;
 
-			// ищем имя настройки
+			// РёС‰РµРј РёРјСЏ РЅР°СЃС‚СЂРѕР№РєРё
 			while ((nPosition < nCount) && (TCHAR(':') != *pDataMem))
 			{
 				++nPosition;
@@ -537,16 +537,16 @@ namespace PPTX
 
 			if (nPosOld == nPosition)
 			{
-				// нету ни одной настройки
+				// РЅРµС‚Сѓ РЅРё РѕРґРЅРѕР№ РЅР°СЃС‚СЂРѕР№РєРё
 				break;
 			}
 			CString strName = strParams.Mid(nPosOld, nPosition - nPosOld);
 
-			// убираем ':'
+			// СѓР±РёСЂР°РµРј ':'
 			++nPosition;
 			++pDataMem;
 
-			// пропускаем пробелы настройки
+			// РїСЂРѕРїСѓСЃРєР°РµРј РїСЂРѕР±РµР»С‹ РЅР°СЃС‚СЂРѕР№РєРё
 			while ((nPosition < nCount) && (TCHAR(' ') == *pDataMem))
 			{
 				++nPosition;
@@ -555,7 +555,7 @@ namespace PPTX
 
 			nPosOld = nPosition;
 
-			// пропускаем пробелы настройки
+			// РїСЂРѕРїСѓСЃРєР°РµРј РїСЂРѕР±РµР»С‹ РЅР°СЃС‚СЂРѕР№РєРё
 			while ((nPosition < nCount) && (TCHAR(';') != *pDataMem) && (TCHAR('}') != *pDataMem))
 			{
 				++nPosition;
@@ -572,7 +572,7 @@ namespace PPTX
 	{
 		Clear();
 
-		// здесь не будем плодить тормозов - напишем без всяких Mid, Find, чтобы был только один проход
+		// Р·РґРµСЃСЊ РЅРµ Р±СѓРґРµРј РїР»РѕРґРёС‚СЊ С‚РѕСЂРјРѕР·РѕРІ - РЅР°РїРёС€РµРј Р±РµР· РІСЃСЏРєРёС… Mid, Find, С‡С‚РѕР±С‹ Р±С‹Р» С‚РѕР»СЊРєРѕ РѕРґРёРЅ РїСЂРѕС…РѕРґ
 		TCHAR* pData	= strParams.GetBuffer();
 		int nCount		= strParams.GetLength();
 
@@ -583,7 +583,7 @@ namespace PPTX
 
 		while (true)
 		{
-			// пропускаем пробелы
+			// РїСЂРѕРїСѓСЃРєР°РµРј РїСЂРѕР±РµР»С‹
 			while ((nPosition < nCount) && ((TCHAR(' ') == *pDataMem) || (TCHAR('{') == *pDataMem) || (TCHAR(';') == *pDataMem)))
 			{
 				++nPosition;
@@ -592,7 +592,7 @@ namespace PPTX
 
 			int nPosOld = nPosition;
 
-			// ищем имя настройки
+			// РёС‰РµРј РёРјСЏ РЅР°СЃС‚СЂРѕР№РєРё
 			while ((nPosition < nCount) && (TCHAR(':') != *pDataMem))
 			{
 				++nPosition;
@@ -601,16 +601,16 @@ namespace PPTX
 
 			if (nPosOld == nPosition)
 			{
-				// нету ни одной настройки
+				// РЅРµС‚Сѓ РЅРё РѕРґРЅРѕР№ РЅР°СЃС‚СЂРѕР№РєРё
 				break;
 			}
 			CString strName = strParams.Mid(nPosOld, nPosition - nPosOld);
 
-			// убираем ':'
+			// СѓР±РёСЂР°РµРј ':'
 			++nPosition;
 			++pDataMem;
 
-			// пропускаем пробелы настройки
+			// РїСЂРѕРїСѓСЃРєР°РµРј РїСЂРѕР±РµР»С‹ РЅР°СЃС‚СЂРѕР№РєРё
 			while ((nPosition < nCount) && (TCHAR(' ') == *pDataMem))
 			{
 				++nPosition;
@@ -619,7 +619,7 @@ namespace PPTX
 
 			nPosOld = nPosition;
 
-			// пропускаем пробелы настройки
+			// РїСЂРѕРїСѓСЃРєР°РµРј РїСЂРѕР±РµР»С‹ РЅР°СЃС‚СЂРѕР№РєРё
 			while ((nPosition < nCount) && (TCHAR(';') != *pDataMem) && (TCHAR('}') != *pDataMem))
 			{
 				++nPosition;
@@ -631,7 +631,7 @@ namespace PPTX
 			if (pData[nPosOld] == WCHAR('.'))
 				strValue = (_T("0") + strValue);
 
-			//добавляем через [], а не insert, потому что ключи могут дублироваться(а в предыдущей реализации использовалось последнее значение)
+			//РґРѕР±Р°РІР»СЏРµРј С‡РµСЂРµР· [], Р° РЅРµ insert, РїРѕС‚РѕРјСѓ С‡С‚Рѕ РєР»СЋС‡Рё РјРѕРіСѓС‚ РґСѓР±Р»РёСЂРѕРІР°С‚СЊСЃСЏ(Р° РІ РїСЂРµРґС‹РґСѓС‰РµР№ СЂРµР°Р»РёР·Р°С†РёРё РёСЃРїРѕР»СЊР·РѕРІР°Р»РѕСЃСЊ РїРѕСЃР»РµРґРЅРµРµ Р·РЅР°С‡РµРЅРёРµ)
 			m_mapSettings[strName] = strValue;
 		}
 	}
@@ -828,7 +828,7 @@ HRESULT CDrawingConverter::SetMainDocument(BinDocxRW::CDocxSerializer* pDocument
 }
 HRESULT CDrawingConverter::SetRelsPath(const CString& bsRelsPath)
 {
-	// чтобы не переоткрывать рельсы - посмотрим - может у нас уже есть такой??
+	// С‡С‚РѕР±С‹ РЅРµ РїРµСЂРµРѕС‚РєСЂС‹РІР°С‚СЊ СЂРµР»СЊСЃС‹ - РїРѕСЃРјРѕС‚СЂРёРј - РјРѕР¶РµС‚ Сѓ РЅР°СЃ СѓР¶Рµ РµСЃС‚СЊ С‚Р°РєРѕР№??
 	m_strCurrentRelsPath = bsRelsPath;
 	return SetCurrentRelsPath();
 }
@@ -1457,7 +1457,7 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 					}
 				}
 
-				// теперь определяем bounds
+				// С‚РµРїРµСЂСЊ РѕРїСЂРµРґРµР»СЏРµРј bounds
 				int _x = INT_MAX;
 				int _y = INT_MAX;
 				int _r = INT_MIN;
@@ -1507,7 +1507,7 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 
 				pPPTShape = new CPPTShape();
 				pPPTShape->SetShapeType((PPTShapes::ShapeType)1);
-				// иначе сохранится рект
+				// РёРЅР°С‡Рµ СЃРѕС…СЂР°РЅРёС‚СЃСЏ СЂРµРєС‚
 				pPPTShape->m_eType = PPTShapes::sptCustom;
 
 				pPPTShape->LoadPathList(strPath);
@@ -1554,7 +1554,7 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 			{
 				pPPTShape = new CPPTShape();
 				pPPTShape->SetShapeType((PPTShapes::ShapeType)1);
-				// иначе сохранится рект
+				// РёРЅР°С‡Рµ СЃРѕС…СЂР°РЅРёС‚СЃСЏ СЂРµРєС‚
 				pPPTShape->m_eType = PPTShapes::sptCustom;
 			}			
 		}
@@ -2250,7 +2250,7 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 			}
 			else	
 			{
-				//oProps.X выставлять не надо, они учтены в pMainProps
+				//oProps.X РІС‹СЃС‚Р°РІР»СЏС‚СЊ РЅРµ РЅР°РґРѕ, РѕРЅРё СѓС‡С‚РµРЅС‹ РІ pMainProps
 				pShape->spPr.xfrm = new PPTX::Logic::Xfrm();
 				pShape->spPr.xfrm->offX = 0;
 				pShape->spPr.xfrm->offY = 0;
@@ -3889,6 +3889,16 @@ HRESULT CDrawingConverter::SaveObject(LONG lStart, LONG lLength, const CString& 
 				bOle = true;
 		}
 	}
+	else if (oElem.is<PPTX::Logic::Pic>())
+	{
+		PPTX::Logic::Pic& oPic = oElem.as<PPTX::Logic::Pic>();
+		if(oPic.spPr.Fill.Fill.is<PPTX::Logic::BlipFill>())
+		{
+			PPTX::Logic::BlipFill& oBlipFill = oPic.spPr.Fill.Fill.as<PPTX::Logic::BlipFill>();
+			if(oBlipFill.blip.IsInit() && oBlipFill.blip->oleInfo.IsInit())
+				bOle = true;
+		}
+	}
 	
 	m_pReader->m_lDocumentType = XMLWRITER_DOC_TYPE_PPTX;
 
@@ -3911,6 +3921,10 @@ HRESULT CDrawingConverter::SaveObject(LONG lStart, LONG lLength, const CString& 
 		if (oElem.is<PPTX::Logic::Shape>())
 		{
 			ConvertShapeVML(oElem, bsMainProps, oXmlWriter);
+		}
+		else
+		{
+			ConvertPicVML(oElem, bsMainProps, oXmlWriter);
 		}
 	}
 	else
@@ -3992,7 +4006,7 @@ HRESULT CDrawingConverter::SaveObjectEx(LONG lStart, LONG lLength, const CString
 	if (XMLWRITER_DOC_TYPE_DOCX == lDocType)
 	{
         m_pImageManager->m_bIsWord = true;
-		// нужно писать всякие inline/anchor + word2007 format
+		// РЅСѓР¶РЅРѕ РїРёСЃР°С‚СЊ РІСЃСЏРєРёРµ inline/anchor + word2007 format
 		return SaveObject(lStart, lLength, bsMainProps, bsXml);
 	}
 
@@ -4043,6 +4057,18 @@ HRESULT CDrawingConverter::SaveObjectEx(LONG lStart, LONG lLength, const CString
 	return S_OK;
 }
 
+void CDrawingConverter::ConvertPicVML(PPTX::Logic::SpTreeElem& oElem, const CString& bsMainProps, NSBinPptxRW::CXmlWriter& oWriter)
+{
+	if (bsMainProps)
+	{
+		ConvertMainPropsToVML(bsMainProps, oWriter, oElem);
+	}
+
+	oWriter.m_bIsTop = true; // РЅРµ Р·Р°Р±С‹С‚СЊ СЃРєРёРЅСѓС‚СЊ РІ СЃР°РјРѕРј С€РµР№РїРµ
+	PPTX::Logic::Pic& oPic = oElem.as<PPTX::Logic::Pic>();
+	oPic.toXmlWriterVML(&oWriter, *m_pTheme, *m_pClrMap);
+}
+
 void CDrawingConverter::ConvertShapeVML(PPTX::Logic::SpTreeElem& oElem, const CString& bsMainProps, NSBinPptxRW::CXmlWriter& oWriter)
 {
 	if (bsMainProps)
@@ -4050,7 +4076,7 @@ void CDrawingConverter::ConvertShapeVML(PPTX::Logic::SpTreeElem& oElem, const CS
 		ConvertMainPropsToVML(bsMainProps, oWriter, oElem);
 	}
 
-	oWriter.m_bIsTop = true; // не забыть скинуть в самом шейпе
+	oWriter.m_bIsTop = true; // РЅРµ Р·Р°Р±С‹С‚СЊ СЃРєРёРЅСѓС‚СЊ РІ СЃР°РјРѕРј С€РµР№РїРµ
 	PPTX::Logic::Shape& oShape = oElem.as<PPTX::Logic::Shape>();
 	oShape.toXmlWriterVML(&oWriter, *m_pTheme, *m_pClrMap);
 }
@@ -4059,11 +4085,11 @@ void CDrawingConverter::ConvertGroupVML(PPTX::Logic::SpTreeElem& oElem, const CS
 {
 	if (bsMainProps)
 	{
-		// TODO: здесь нужно заполнить поля в oXmlWriter'e
+		// TODO: Р·РґРµСЃСЊ РЅСѓР¶РЅРѕ Р·Р°РїРѕР»РЅРёС‚СЊ РїРѕР»СЏ РІ oXmlWriter'e
 		ConvertMainPropsToVML(bsMainProps, oWriter, oElem);
 	}
 
-	oWriter.m_bIsTop = true; // не забыть скинуть в самом шейпе (вместе с остальными параметрами)
+	oWriter.m_bIsTop = true; // РЅРµ Р·Р°Р±С‹С‚СЊ СЃРєРёРЅСѓС‚СЊ РІ СЃР°РјРѕРј С€РµР№РїРµ (РІРјРµСЃС‚Рµ СЃ РѕСЃС‚Р°Р»СЊРЅС‹РјРё РїР°СЂР°РјРµС‚СЂР°РјРё)
 	PPTX::Logic::SpTree& oGroup = oElem.as<PPTX::Logic::SpTree>();
 	oGroup.toXmlWriterVML(&oWriter, *m_pTheme, *m_pClrMap);
 }
@@ -4610,9 +4636,9 @@ HRESULT CDrawingConverter::SetDstContentRels()
 {
 	++m_pReader->m_nCurrentRelsStack;
 
-	//чистить текущий m_pRels хорошо при последовательной записи автофигур в word.
-	//плохо в случае записи перезентаций, с момента перехода на единственный обьект m_pReader.
-	//пример: презетации записали несколько Rels, записываем chart, вызывается SetDstContentRels и трутся Rels презентаций
+	//С‡РёСЃС‚РёС‚СЊ С‚РµРєСѓС‰РёР№ m_pRels С…РѕСЂРѕС€Рѕ РїСЂРё РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕР№ Р·Р°РїРёСЃРё Р°РІС‚РѕС„РёРіСѓСЂ РІ word.
+	//РїР»РѕС…Рѕ РІ СЃР»СѓС‡Р°Рµ Р·Р°РїРёСЃРё РїРµСЂРµР·РµРЅС‚Р°С†РёР№, СЃ РјРѕРјРµРЅС‚Р° РїРµСЂРµС…РѕРґР° РЅР° РµРґРёРЅСЃС‚РІРµРЅРЅС‹Р№ РѕР±СЊРµРєС‚ m_pReader.
+	//РїСЂРёРјРµСЂ: РїСЂРµР·РµС‚Р°С†РёРё Р·Р°РїРёСЃР°Р»Рё РЅРµСЃРєРѕР»СЊРєРѕ Rels, Р·Р°РїРёСЃС‹РІР°РµРј chart, РІС‹Р·С‹РІР°РµС‚СЃСЏ SetDstContentRels Рё С‚СЂСѓС‚СЃСЏ Rels РїСЂРµР·РµРЅС‚Р°С†РёР№
 	//if (0 == m_pReader->m_nCurrentRelsStack)
 	//{
 	//	m_pReader->m_pRels->Clear();

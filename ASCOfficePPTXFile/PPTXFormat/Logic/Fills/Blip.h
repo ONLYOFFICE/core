@@ -120,6 +120,66 @@ namespace PPTX
 		public:
 			virtual CString GetFullPicName(FileContainer* pRels = NULL)const;
 			virtual CString GetFullOleName(const PPTX::RId& pRId, FileContainer* pRels = NULL)const;
+			void writeOleStart(NSBinPptxRW::CXmlWriter *pWriter, NSShapeImageGen::COleInfo& oOleInfo, bool& bOle, CString& sOleProgID, CString& sOleNodeName)
+			{
+				if(oleInfo.IsInit())
+					oOleInfo = oleInfo.get();
+				if(!oOleInfo.m_sRid.IsEmpty() && !oOleInfo.m_sOleProperty.IsEmpty())
+				{
+					std::vector<CString> aOleProp;
+					int nTokenPos = 0;
+					CString strToken = oOleInfo.m_sOleProperty.Tokenize(_T("|"), nTokenPos);
+					while (!strToken.IsEmpty())
+					{
+						aOleProp.push_back(strToken);
+						strToken = oOleInfo.m_sOleProperty.Tokenize(_T("|"), nTokenPos);
+					}
+					if(3 == aOleProp.size())
+					{
+						bOle = true;
+						CString dxaOrig = aOleProp[0];
+						CString dyaOrig = aOleProp[1];
+						sOleProgID = aOleProp[2];
+						if(_T("0") != dxaOrig && _T("0") != dyaOrig)
+						{
+							sOleNodeName = _T("w:object");
+							pWriter->StartNode(sOleNodeName);
+							pWriter->StartAttributes();
+							pWriter->WriteAttribute(_T("w:dxaOrig"), dxaOrig);
+							pWriter->WriteAttribute(_T("w:dyaOrig"), dyaOrig);
+							pWriter->EndAttributes();
+						}
+						else
+						{
+							sOleNodeName = _T("w:pict");
+							pWriter->StartNode(sOleNodeName);
+							pWriter->StartAttributes();
+							pWriter->EndAttributes();
+						}
+					}
+				}
+			}
+			void writeOleEnd(NSBinPptxRW::CXmlWriter *pWriter, const NSShapeImageGen::COleInfo& oOleInfo, const CString& strId, const CString& sOleProgID, const CString& sOleNodeName)
+			{
+				if(!sOleProgID.IsEmpty())
+				{
+					pWriter->StartNode(_T("o:OLEObject"));
+					pWriter->StartAttributes();
+					pWriter->WriteAttribute(_T("Type"), CString(_T("Embed")));
+					pWriter->WriteAttribute(_T("ProgID"), sOleProgID);
+					pWriter->WriteAttribute(_T("ShapeID"), strId);
+					pWriter->WriteAttribute(_T("DrawAspect"), CString(_T("Content")));
+					CString sObjectID;
+					sObjectID.Format(_T("_%010d"), pWriter->m_lObjectIdOle++);
+					pWriter->WriteAttribute(_T("ObjectID"), sObjectID);
+					pWriter->WriteAttribute(_T("r:id"), oOleInfo.m_sRid);
+					pWriter->EndAttributes();
+					pWriter->EndNode(_T("o:OLEObject"));
+
+					pWriter->EndNode(sOleNodeName);
+				}
+			}
+
 		public:
 			std::vector<UniEffect> Effects;
 

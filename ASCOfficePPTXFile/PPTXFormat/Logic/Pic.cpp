@@ -287,6 +287,20 @@ namespace PPTX
 			smart_ptr<PPTX::Theme> oTheme = _oTheme.smart_dynamic_cast<PPTX::Theme>();
 			smart_ptr<PPTX::Logic::ClrMap> oClrMap = oTheme.smart_dynamic_cast<PPTX::Logic::ClrMap>();
 
+			NSShapeImageGen::COleInfo oOleInfo;
+			bool bOle = false;
+			CString sOleProgID;
+			CString sOleNodeName;
+			Blip* pBlip = NULL;
+			if(this->spPr.Fill.Fill.is<PPTX::Logic::BlipFill>())
+			{
+				PPTX::Logic::BlipFill& oBlipFill = this->spPr.Fill.Fill.as<PPTX::Logic::BlipFill>();
+				if(oBlipFill.blip.IsInit())
+					pBlip = oBlipFill.blip.GetPointer();
+			}
+			if(NULL != pBlip)
+				pBlip->writeOleStart(pWriter, oOleInfo, bOle, sOleProgID, sOleNodeName);
+
 			int dL = 0;
 			int dT = 0;
 			int dW = 0;
@@ -298,24 +312,28 @@ namespace PPTX
 			strSpid.Format(_T("_x%04d_s%04d"), 0xFFFF & (pWriter->m_lObjectIdVML >> 16), 0xFFFF & pWriter->m_lObjectIdVML);
 			pWriter->m_lObjectIdVML++;
 
-			if (spPr.xfrm.is_init())
-			{
-				if (spPr.xfrm->offX.is_init())
-					dL = (*spPr.xfrm->offX);
-				if (spPr.xfrm->offY.is_init())
-					dT = (*spPr.xfrm->offY);
-				if (spPr.xfrm->extX.is_init())
-					dW = (*spPr.xfrm->extX);
-				if (spPr.xfrm->extY.is_init())
-					dH = (*spPr.xfrm->extY);
-			}
-
 			NSBinPptxRW::CXmlWriter oStylesWriter;
-			oStylesWriter.WriteAttributeCSS(_T("position"), _T("absolute"));
-			oStylesWriter.WriteAttributeCSS_int(_T("left"), dL);
-			oStylesWriter.WriteAttributeCSS_int(_T("top"), dT);
-			oStylesWriter.WriteAttributeCSS_int(_T("width"), dW);
-			oStylesWriter.WriteAttributeCSS_int(_T("height"), dH);
+
+			if(_T("") == pWriter->m_strStyleMain)
+			{
+				if (spPr.xfrm.is_init())
+				{
+					if (spPr.xfrm->offX.is_init())
+						dL = (*spPr.xfrm->offX);
+					if (spPr.xfrm->offY.is_init())
+						dT = (*spPr.xfrm->offY);
+					if (spPr.xfrm->extX.is_init())
+						dW = (*spPr.xfrm->extX);
+					if (spPr.xfrm->extY.is_init())
+						dH = (*spPr.xfrm->extY);
+				}
+
+				oStylesWriter.WriteAttributeCSS(_T("position"), _T("absolute"));
+				oStylesWriter.WriteAttributeCSS_int(_T("left"), dL);
+				oStylesWriter.WriteAttributeCSS_int(_T("top"), dT);
+				oStylesWriter.WriteAttributeCSS_int(_T("width"), dW);
+				oStylesWriter.WriteAttributeCSS_int(_T("height"), dH);
+			}
 
 			if (spPr.xfrm.is_init())
 			{
@@ -363,9 +381,20 @@ namespace PPTX
 				pWriter->WriteAttribute(_T("o:spid"), strSpid);
 
 				pWriter->StartAttributes();
-				pWriter->WriteAttribute(_T("style"), oStylesWriter.GetXmlString());
-				pWriter->WriteAttribute(_T("coordsize"), (CString)_T("100000,100000"));
-				pWriter->WriteAttribute(_T("path"), strPath);
+				if (oStylesWriter.GetSize() == 0)
+				{
+					pWriter->WriteAttribute(_T("style"), pWriter->m_strStyleMain);
+				}
+				else
+				{
+					pWriter->WriteAttribute(_T("style"), pWriter->m_strStyleMain + oStylesWriter.GetXmlString());
+				}
+
+				if(!bOle)
+				{
+					pWriter->WriteAttribute(_T("coordsize"), (CString)_T("100000,100000"));
+					pWriter->WriteAttribute(_T("path"), strPath);
+				}
 
 				if (pWriter->m_strAttributesMain)
 				{
@@ -415,7 +444,15 @@ namespace PPTX
 				pWriter->WriteAttribute(_T("id"), strId);
 				pWriter->WriteAttribute(_T("o:spid"), strSpid);
 
-				pWriter->WriteAttribute(_T("style"), oStylesWriter.GetXmlString());
+				if (oStylesWriter.GetSize() == 0)
+				{
+					pWriter->WriteAttribute(_T("style"), pWriter->m_strStyleMain);
+				}
+				else
+				{
+					pWriter->WriteAttribute(_T("style"), pWriter->m_strStyleMain + oStylesWriter.GetXmlString());
+				}
+
 				pWriter->EndAttributes();
 
 				if (blipFill.blip.is_init() && blipFill.blip->embed.is_init())
@@ -430,6 +467,10 @@ namespace PPTX
 
 				pWriter->EndNode(_T("v:rect"));
 			}
+			pWriter->m_strStyleMain = _T("");
+
+			if(NULL != pBlip)
+				pBlip->writeOleEnd(pWriter, oOleInfo, strId, sOleProgID, sOleNodeName);
 		}
 	} // namespace Logic
 } // namespace PPTX

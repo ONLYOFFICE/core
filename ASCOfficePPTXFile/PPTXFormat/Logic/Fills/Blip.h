@@ -90,11 +90,6 @@ namespace PPTX
 
 				pWriter->EndRecord();
 
-				double dX = 0;
-				double dY = 0;
-				double dW = pWriter->GetWidthMM();
-				double dH = pWriter->GetHeightMM();
-
 				FileContainer* pRels = NULL;
 				if (pWriter->m_pCommonRels->is_init())
 					pRels = pWriter->m_pCommonRels->operator ->();
@@ -106,7 +101,7 @@ namespace PPTX
 					pOleInfo->m_sFilename = this->GetFullOleName(PPTX::RId(oleInfo->m_sRid), pRels);
 				}
 
-				NSShapeImageGen::CImageInfo oId = pWriter->m_pCommon->m_pImageManager->WriteImage(this->GetFullPicName(pRels), pOleInfo, dX, dY, dW, dH);
+				NSShapeImageGen::CImageInfo oId = pWriter->m_pCommon->m_pImageManager->WriteImage(this->GetFullPicName(pRels), pOleInfo);
 				CString s = oId.GetPath2();
 
 				pWriter->StartRecord(3);

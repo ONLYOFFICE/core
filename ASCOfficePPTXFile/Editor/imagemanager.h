@@ -256,9 +256,9 @@ namespace NSShapeImageGen
 				y -= height;
 			}
 			
-            return GenerateImageID(punkImage, (std::max)(1.0, width), (std::max)(1.0, height));
+			return GenerateImageID(punkImage);
 		}
-		CImageInfo WriteImage(const CString& strFile, COleInfo* pOle, double& x, double& y, double& width, double& height)
+		CImageInfo WriteImage(const CString& strFile, COleInfo* pOle)
 		{
 			bool bIsDownload = false;
 			int n1 = strFile.Find(_T("www"));
@@ -299,7 +299,7 @@ namespace NSShapeImageGen
 
 #endif
 
-                return GenerateImageID(strDownload, strFile1, pOle, (std::max)(1.0, width), (std::max)(1.0, height));
+				return GenerateImageID(strDownload, strFile1, pOle);
 
 
 			}
@@ -311,9 +311,7 @@ namespace NSShapeImageGen
 			
 			oFile.CloseFile();
 
-			if (-1 == width && -1 == height)
-				return GenerateImageID(strFile, CString(L""), pOle, width, height);
-            return GenerateImageID(strFile, CString(L""), pOle, (std::max)(1.0, width), (std::max)(1.0, height));
+			return GenerateImageID(strFile, CString(L""), pOle);
 		}
 		void SetFontManager(CFontManager* pFontManager)
 		{
@@ -368,7 +366,7 @@ namespace NSShapeImageGen
 			return false;
         }
 
-		void SaveImage(const CString& strFileSrc, CImageInfo& oInfo, LONG __width, LONG __height)
+		void SaveImage(const CString& strFileSrc, CImageInfo& oInfo)
 		{
 			if (CheckImageSimpleCopy(strFileSrc, oInfo))
 				return;
@@ -376,7 +374,7 @@ namespace NSShapeImageGen
 			CBgraFrame oBgraFrame;
 			if (oBgraFrame.OpenFile(std::wstring(strFileSrc.GetString())) == true)
 			{
-				SaveImage(oBgraFrame, oInfo, __width, __height);
+				SaveImage(oBgraFrame, oInfo);
 			}
 			else
 			{
@@ -390,7 +388,7 @@ namespace NSShapeImageGen
 				CDirectory::CopyFile(strFileSrc, strSaveItem, NULL, NULL);
 			}
 		}
-		void SaveImage(CBgraFrame& oBgraFrame, CImageInfo& oInfo, LONG __width, LONG __height)
+		void SaveImage(CBgraFrame& oBgraFrame, CImageInfo& oInfo)
 		{
 			LONG lWidth		= oBgraFrame.get_Width();
 			LONG lHeight	= oBgraFrame.get_Height();
@@ -436,15 +434,12 @@ namespace NSShapeImageGen
             oBgraFrame.SaveFile(std::wstring(pathSaveItem.GetPath()), nOutputFormat);
 		}
 
-		CImageInfo GenerateImageID(CBgraFrame& punkData, double dWidth, double dHeight)
+		CImageInfo GenerateImageID(CBgraFrame& punkData)
 		{
 			CImageInfo oInfo;
 
 			//if (NULL == punkData)
 			//	return oInfo;
-
-			LONG lWidth		= (LONG)(dWidth * 96 / 25.4);
-			LONG lHeight	= (LONG)(dHeight * 96 / 25.4);
 
 			BYTE* pBuffer = punkData.get_Data();
 			LONG lLen = 4 * punkData.get_Width() * punkData.get_Height();
@@ -458,7 +453,7 @@ namespace NSShapeImageGen
 				++m_lNextIDImage;
 				
 				oInfo.m_lID = m_lNextIDImage;
-				SaveImage(punkData, oInfo, lWidth, lHeight);
+				SaveImage(punkData, oInfo);
 				
 				m_mapImageData.insert(std::pair<DWORD,CImageInfo>(dwSum, oInfo));
 				m_listImages.push_back(oInfo);
@@ -471,7 +466,7 @@ namespace NSShapeImageGen
 			return oInfo;
 		}
 
-		CImageInfo GenerateImageID(const CString& strFileName, const CString & strUrl, COleInfo* pOle, double dWidth, double dHeight)
+		CImageInfo GenerateImageID(const CString& strFileName, const CString & strUrl, COleInfo* pOle)
 		{
 			CString sMapKey = strFileName;
 			if(!strUrl.IsEmpty())
@@ -480,9 +475,6 @@ namespace NSShapeImageGen
 				sMapKey += pOle->m_sFilename;
 			CImageInfo oInfo;
 			std::map<CString, CImageInfo>::iterator pPair = m_mapImagesFile.find(sMapKey);
-
-			LONG lWidth		= (LONG)(dWidth * 96 / 25.4);
-			LONG lHeight	= (LONG)(dHeight * 96 / 25.4);
 
 			if (m_mapImagesFile.end() == pPair)
 			{
@@ -537,12 +529,8 @@ namespace NSShapeImageGen
 						if(bIsRaster)
 						{
 							//случай растрового wmf/emf
-							//-1 == lHeight имеет спецальное значение(берет размеры из файла)
-							if(lWidth <= 0)			lWidth = -1;
-							if(lHeight <= 0)		lHeight = -1;
-
 							std::wstring strSaveItem = strSaveItemWE + _T(".png");
-							oMetafile.ConvertToRaster(strSaveItem.c_str(), 4 /*CXIMAGE_FORMAT_PNG*/,  lWidth, lHeight);
+							oMetafile.ConvertToRaster(strSaveItem.c_str(), 4 /*CXIMAGE_FORMAT_PNG*/, -1, -1);
 
 							bool bIsSuccess = NSFile::CFileBinary::Exists(strSaveItem);
 							if (bIsSuccess)
@@ -566,7 +554,7 @@ namespace NSShapeImageGen
 					}
 				}
 
-				SaveImage(strFileName, oInfo, lWidth, lHeight);
+				SaveImage(strFileName, oInfo);
 			
 				m_mapImagesFile.insert(std::pair<CString,CImageInfo>(sMapKey, oInfo));
 				m_listImages.push_back(oInfo);

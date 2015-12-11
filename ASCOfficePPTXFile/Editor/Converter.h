@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #include "../PPTXFormat/PPTX.h"
 
 #include "BinWriters.h"
@@ -9,7 +9,7 @@ namespace PPTX2EditorAdvanced
 
 	DWORD Convert(NSBinPptxRW::CBinaryFileWriter& oBinaryWriter, PPTX::Folder& oFolder, const CString& strSourceDirectory, const CString& strDstFile)
 	{	
-		// сначала соберем все объекты для конвертации и сформируем main-таблицы
+		// СЃРЅР°С‡Р°Р»Р° СЃРѕР±РµСЂРµРј РІСЃРµ РѕР±СЉРµРєС‚С‹ РґР»СЏ РєРѕРЅРІРµСЂС‚Р°С†РёРё Рё СЃС„РѕСЂРјРёСЂСѓРµРј main-С‚Р°Р±Р»РёС†С‹
 		NSBinPptxRW::CCommonWriter* pCommon = oBinaryWriter.m_pCommon;
 
 		std::vector<smart_ptr<PPTX::Theme>>				_themes;
@@ -23,7 +23,7 @@ namespace PPTX2EditorAdvanced
 		int cx = presentation->sldSz->cx;
 		int cy = presentation->sldSz->cy;
 
-		// записываем все темы
+		// Р·Р°РїРёСЃС‹РІР°РµРј РІСЃРµ С‚РµРјС‹
 		size_t nCountMasters = presentation->sldMasterIdLst.size();
 		for (size_t nMaster = 0; nMaster < nCountMasters; ++nMaster)
 		{
@@ -31,7 +31,7 @@ namespace PPTX2EditorAdvanced
 
             if (slideMaster.IsInit() == false)
             {
-                //Вебкасты.pptx - неверно назначены rId
+                //Р’РµР±РєР°СЃС‚С‹.pptx - РЅРµРІРµСЂРЅРѕ РЅР°Р·РЅР°С‡РµРЅС‹ rId
                 continue;
             }
             size_t pPointerSM = (size_t)(slideMaster.operator ->());
@@ -39,19 +39,19 @@ namespace PPTX2EditorAdvanced
 			std::map<size_t, LONG>::const_iterator pSearchSM = pCommon->slideMasters.find(pPointerSM);
 			if (pSearchSM != pCommon->slideMasters.end())
 			{
-				// такого быть не должно
+				// С‚Р°РєРѕРіРѕ Р±С‹С‚СЊ РЅРµ РґРѕР»Р¶РЅРѕ
 				continue;
 			}
 
 			oBinaryWriter.m_pCommon->m_oRels.push_back (CMasterSlideInfo());
 			CMasterSlideInfo& oMasterInfo = oBinaryWriter.m_pCommon->m_oRels[oBinaryWriter.m_pCommon->m_oRels.size() - 1];
 
-			// записываем mainMaster
+			// Р·Р°РїРёСЃС‹РІР°РµРј mainMaster
 			LONG lCountSM = (LONG)_slideMasters.size();
 			pCommon->slideMasters [pPointerSM] = lCountSM;
 			_slideMasters.push_back(slideMaster);
 
-			// проверяем theme
+			// РїСЂРѕРІРµСЂСЏРµРј theme
 			size_t pPointerTh = (size_t)(slideMaster->theme.operator ->()); 
 			std::map<size_t, LONG>::const_iterator pSearchTh = pCommon->themes.find (pPointerTh);
 			if (pSearchTh == pCommon->themes.end())
@@ -72,7 +72,7 @@ namespace PPTX2EditorAdvanced
                 CString rId = slideMaster->sldLayoutIdLst[iLayout].rid.get();
                 smart_ptr<PPTX::SlideLayout> slideLayout = ((*slideMaster)[rId]).smart_dynamic_cast<PPTX::SlideLayout>();
 
-				// проверяем layout
+				// РїСЂРѕРІРµСЂСЏРµРј layout
 				size_t pPointerL = (size_t)(slideLayout.operator ->()); 
 
                 if (pPointerL == 0 )
@@ -95,7 +95,7 @@ namespace PPTX2EditorAdvanced
 			}
 		}
 
-		// записываем все notesMasters
+		// Р·Р°РїРёСЃС‹РІР°РµРј РІСЃРµ notesMasters
 		size_t nCountNoteMasters = presentation->notesMasterIdLst.size();
 		for (size_t nNote = 0; nNote < nCountNoteMasters; ++nNote)
 		{
@@ -105,16 +105,16 @@ namespace PPTX2EditorAdvanced
 			std::map<size_t, LONG>::const_iterator pSearchNM = pCommon->notesMasters.find(pPointerNM);
 			if (pSearchNM != pCommon->notesMasters.end())
 			{
-				// такого быть не должно
+				// С‚Р°РєРѕРіРѕ Р±С‹С‚СЊ РЅРµ РґРѕР»Р¶РЅРѕ
 				continue;
 			}
 
-			// записываем mainMaster
+			// Р·Р°РїРёСЃС‹РІР°РµРј mainMaster
 			LONG lCountNM = (LONG)_notesMasters.size();
 			pCommon->notesMasters[pPointerNM] = lCountNM;
 			_notesMasters.push_back(noteMaster);
 
-			// проверяем theme
+			// РїСЂРѕРІРµСЂСЏРµРј theme
             size_t pPointerTh = (size_t)(noteMaster->theme_.operator ->());
 			std::map<size_t, LONG>::const_iterator pSearchTh = pCommon->themes.find(pPointerTh);
 			if (pSearchTh == pCommon->themes.end())
@@ -125,7 +125,7 @@ namespace PPTX2EditorAdvanced
 			}
 		}
 
-		// записываем все слайды
+		// Р·Р°РїРёСЃС‹РІР°РµРј РІСЃРµ СЃР»Р°Р№РґС‹
 		size_t nCount = presentation->sldIdLst.size();
 		for (size_t i = 0; i < nCount; ++i)
 		{
@@ -134,14 +134,14 @@ namespace PPTX2EditorAdvanced
 			
             if (slide.IsInit() == false)
             {
-                continue;// странное ... слайд 38 в FY10_September_Partner_Call.pptx
+                continue;// СЃС‚СЂР°РЅРЅРѕРµ ... СЃР»Р°Р№Рґ 38 РІ FY10_September_Partner_Call.pptx
             }
 			size_t pPointerS = (size_t)(slide.operator ->()); 
 
 			std::map<size_t, LONG>::const_iterator pSearchS = pCommon->slides.find(pPointerS);
 			if (pSearchS != pCommon->slides.end())
 			{
-				// такого быть не должно
+				// С‚Р°РєРѕРіРѕ Р±С‹С‚СЊ РЅРµ РґРѕР»Р¶РЅРѕ
 				continue;
 			}
 
@@ -149,7 +149,7 @@ namespace PPTX2EditorAdvanced
 			std::map<size_t, LONG>::const_iterator pSearchL = pCommon->layouts.find(pPointerL);
 			if (pSearchL == pCommon->layouts.end())
 			{
-				// такого быть не должно
+				// С‚Р°РєРѕРіРѕ Р±С‹С‚СЊ РЅРµ РґРѕР»Р¶РЅРѕ
 				oBinaryWriter.m_pCommon->m_oSlide_Layout_Rels.push_back(0);
 			}
 			else
@@ -161,7 +161,7 @@ namespace PPTX2EditorAdvanced
 			pCommon->slides [pPointerS] = lCountS;
 			_slides.push_back(slide);
 
-			// проверяем note
+			// РїСЂРѕРІРµСЂСЏРµРј note
 			size_t pPointerN = (size_t)(slide->Note.operator ->()); 
 
 			if (NULL != pPointerN)
@@ -176,9 +176,9 @@ namespace PPTX2EditorAdvanced
 			}
 		}
 
-		// нужно записать все в maintables. А кроме главных таблиц ничего и нету. Все остальное лежит в них
-		// на каждую таблицу - 5 байт (тип и сдвиг)
-		// число таблиц - заранее известно (сделаем 30. если потом не будет хватать - новая версия формата)
+		// РЅСѓР¶РЅРѕ Р·Р°РїРёСЃР°С‚СЊ РІСЃРµ РІ maintables. Рђ РєСЂРѕРјРµ РіР»Р°РІРЅС‹С… С‚Р°Р±Р»РёС† РЅРёС‡РµРіРѕ Рё РЅРµС‚Сѓ. Р’СЃРµ РѕСЃС‚Р°Р»СЊРЅРѕРµ Р»РµР¶РёС‚ РІ РЅРёС…
+		// РЅР° РєР°Р¶РґСѓСЋ С‚Р°Р±Р»РёС†Сѓ - 5 Р±Р°Р№С‚ (С‚РёРї Рё СЃРґРІРёРі)
+		// С‡РёСЃР»Рѕ С‚Р°Р±Р»РёС† - Р·Р°СЂР°РЅРµРµ РёР·РІРµСЃС‚РЅРѕ (СЃРґРµР»Р°РµРј 30. РµСЃР»Рё РїРѕС‚РѕРј РЅРµ Р±СѓРґРµС‚ С…РІР°С‚Р°С‚СЊ - РЅРѕРІР°СЏ РІРµСЂСЃРёСЏ С„РѕСЂРјР°С‚Р°)
 		oBinaryWriter.WriteReserved(5 * 30);
 
 		// Main
@@ -200,6 +200,14 @@ namespace PPTX2EditorAdvanced
 		{
 			oBinaryWriter.StartMainRecord(NSMainTables::Core);
 			core->toPPTY(&oBinaryWriter);
+		}
+
+		// PresProps
+		smart_ptr<PPTX::PresProps> presProps = presentation->get(PPTX::FileTypes::PresProps).smart_dynamic_cast<PPTX::PresProps>();
+		if (presProps.is_init())
+		{
+			oBinaryWriter.StartMainRecord(NSMainTables::PresProps);
+			presProps->toPPTY(&oBinaryWriter);
 		}
 
 		// ViewProps
@@ -255,7 +263,7 @@ namespace PPTX2EditorAdvanced
             if (_layouts[i].IsInit() == false)
             {
                 continue;
-                //непонятки с 42 шаблоном в FY10_September_Partner_Call.pptx
+                //РЅРµРїРѕРЅСЏС‚РєРё СЃ 42 С€Р°Р±Р»РѕРЅРѕРј РІ FY10_September_Partner_Call.pptx
             }
 			_layouts[i]->toPPTY(&oBinaryWriter);
 		}
@@ -271,7 +279,7 @@ namespace PPTX2EditorAdvanced
 
         if (false)
 		{
-			// ПОКА нету NOTES
+			// РџРћРљРђ РЅРµС‚Сѓ NOTES
 
 			// notes
 			oBinaryWriter.StartMainRecord(NSMainTables::NotesSlides);
@@ -395,7 +403,7 @@ namespace PPTX2EditorAdvanced
 		oBinaryWriter.WriteEmbeddedFonts();
 		oBinaryWriter.WriteMainPart();
 
-		// все записалось нормально. осталось скинуть на диск
+		// РІСЃРµ Р·Р°РїРёСЃР°Р»РѕСЃСЊ РЅРѕСЂРјР°Р»СЊРЅРѕ. РѕСЃС‚Р°Р»РѕСЃСЊ СЃРєРёРЅСѓС‚СЊ РЅР° РґРёСЃРє
 		BYTE* pbBinBuffer = oBinaryWriter.GetBuffer();
 		int nBinBufferLen = (int)oBinaryWriter.GetPosition();
 		int nBase64BufferLen = Base64::Base64EncodeGetRequiredLength(nBinBufferLen, Base64::B64_BASE64_FLAG_NOCRLF);

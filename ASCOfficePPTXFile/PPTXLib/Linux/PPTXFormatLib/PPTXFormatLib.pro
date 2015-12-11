@@ -577,7 +577,14 @@ HEADERS += pptxformatlib.h \
     ../../../../Common/DocxFormat/Source/Base/Nullable.h \
     ../../../../Common/DocxFormat/Source/XML/xmlutils.h \
     ../../../../HtmlRenderer/include/ASCSVGWriter.h \
-    ../../../../Common/FileDownloader/FileDownloader.h
+    ../../../../Common/FileDownloader/FileDownloader.h \
+    ../../../PPTXFormat/ShowPr/Browse.h \
+    ../../../PPTXFormat/ShowPr/CustShow.h \
+    ../../../PPTXFormat/ShowPr/Kiosk.h \
+    ../../../PPTXFormat/ShowPr/Present.h \
+    ../../../PPTXFormat/ShowPr/ShowPr.h \
+    ../../../PPTXFormat/ShowPr/SldAll.h \
+    ../../../PPTXFormat/ShowPr/SldRg.h
 
 win32 {
     SOURCES += \

@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #include "Converter.h"
 #include "../../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"
 
@@ -146,7 +146,7 @@ namespace NSBinPptxRW
 			// writer
 			CXmlWriter oXmlWriter;
 
-			// первым делом определим количество необходимого. если хоть одно из этих чисел - ноль, то ппту не корректный
+			// РїРµСЂРІС‹Рј РґРµР»РѕРј РѕРїСЂРµРґРµР»РёРј РєРѕР»РёС‡РµСЃС‚РІРѕ РЅРµРѕР±С…РѕРґРёРјРѕРіРѕ. РµСЃР»Рё С…РѕС‚СЊ РѕРґРЅРѕ РёР· СЌС‚РёС… С‡РёСЃРµР» - РЅРѕР»СЊ, С‚Рѕ РїРїС‚Сѓ РЅРµ РєРѕСЂСЂРµРєС‚РЅС‹Р№
 			LONG nCountThemes = 0;
 			LONG nCountMasters = 0;
 			LONG nCountLayouts = 0;
@@ -177,12 +177,12 @@ namespace NSBinPptxRW
 				nCountSlides = m_oReader.GetLong();
 			}
 
-			if (0 == nCountThemes || 0 == nCountMasters || 0 == nCountLayouts/* || 0 == nCountSlides*/) //rev 60054 - презентация без слайдов
+			if (0 == nCountThemes || 0 == nCountMasters || 0 == nCountLayouts/* || 0 == nCountSlides*/) //rev 60054 - РїСЂРµР·РµРЅС‚Р°С†РёСЏ Р±РµР· СЃР»Р°Р№РґРѕРІ
 			{
 				return;
 			}
 
-			// теперь создадим массивы для рельсов
+			// С‚РµРїРµСЂСЊ СЃРѕР·РґР°РґРёРј РјР°СЃСЃРёРІС‹ РґР»СЏ СЂРµР»СЊСЃРѕРІ
 			for (LONG i = 0; i < nCountMasters; ++i)
 			{
 				CSlideMasterInfo elm;
@@ -210,7 +210,7 @@ namespace NSBinPptxRW
 				}
 			}
 
-			// нужно проставить всем шаблонам мастер.
+			// РЅСѓР¶РЅРѕ РїСЂРѕСЃС‚Р°РІРёС‚СЊ РІСЃРµРј С€Р°Р±Р»РѕРЅР°Рј РјР°СЃС‚РµСЂ.
 			for (LONG i = 0; i < nCountMasters; ++i)
 			{
 				size_t _countL = m_arSlideMasters_Theme[i].m_arLayouts.size();				
@@ -220,7 +220,7 @@ namespace NSBinPptxRW
 				}
 			}
 
-			// готово, теперь нужно слайдам проставить шаблоны
+			// РіРѕС‚РѕРІРѕ, С‚РµРїРµСЂСЊ РЅСѓР¶РЅРѕ СЃР»Р°Р№РґР°Рј РїСЂРѕСЃС‚Р°РІРёС‚СЊ С€Р°Р±Р»РѕРЅС‹
 			pPair = m_mainTables.find(NSMainTables::SlideRels);
 			if (m_mainTables.end()  != pPair)
 			{
@@ -234,13 +234,13 @@ namespace NSBinPptxRW
 					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
 						break;
 
-					//m_arSlides_Layout[_at] = m_oReader.GetULong(); тут прописан не индекс, а тип - смотри - oBinaryWriter.WriteInt1(0, oBinaryWriter.m_pCommon->m_oSlide_Layout_Rels[i]);
+					//m_arSlides_Layout[_at] = m_oReader.GetULong(); С‚СѓС‚ РїСЂРѕРїРёСЃР°РЅ РЅРµ РёРЅРґРµРєСЃ, Р° С‚РёРї - СЃРјРѕС‚СЂРё - oBinaryWriter.WriteInt1(0, oBinaryWriter.m_pCommon->m_oSlide_Layout_Rels[i]);
 					if (index < m_arSlides_Layout.size())
 						m_arSlides_Layout[index++] = m_oReader.GetULong();
 				}
 			}
 
-			// теперь нужно удалить все themes, которые не ведут на мастерслайд
+			// С‚РµРїРµСЂСЊ РЅСѓР¶РЅРѕ СѓРґР°Р»РёС‚СЊ РІСЃРµ themes, РєРѕС‚РѕСЂС‹Рµ РЅРµ РІРµРґСѓС‚ РЅР° РјР°СЃС‚РµСЂСЃР»Р°Р№Рґ
 			std::vector<LONG> arThemes;
 			std::vector<LONG> arThemesDst;
 			std::vector<bool> arThemesSave;
@@ -262,7 +262,7 @@ namespace NSBinPptxRW
 				arThemesDst[i] = lCurrectTheme;
 				++lCurrectTheme;
 			}
-			// теперь нужно перебить ссылки
+			// С‚РµРїРµСЂСЊ РЅСѓР¶РЅРѕ РїРµСЂРµР±РёС‚СЊ СЃСЃС‹Р»РєРё
 			for (LONG i = 0; i < nCountMasters; ++i)
 			{
 				m_arSlideMasters_Theme[i].m_lThemeIndex = arThemesDst[i];
@@ -285,7 +285,7 @@ namespace NSBinPptxRW
 				{
 					if (!arThemesSave[i])
 					{
-						// это ненужная тема
+						// СЌС‚Рѕ РЅРµРЅСѓР¶РЅР°СЏ С‚РµРјР°
 						continue;
 					}
 
@@ -554,6 +554,14 @@ namespace NSBinPptxRW
 					m_oTableStyles.fromPPTY(&m_oReader);
 				}
 
+				// presProps
+				pPair = m_mainTables.find(NSMainTables::PresProps);
+				if (m_mainTables.end()  != pPair)
+				{
+					m_oReader.Seek(pPair->second);
+					m_oPresProps.fromPPTY(&m_oReader);
+				}
+
 				// viewProps
 				pPair = m_mainTables.find(NSMainTables::ViewProps);
 				if (m_mainTables.end()  != pPair)
@@ -562,16 +570,28 @@ namespace NSBinPptxRW
 					m_oViewProps.fromPPTY(&m_oReader);
 				}
 
-				CreateDefaultPresProps();
+				//CreateDefaultPresProps();
 			}
 			else
 			{
 				// create default
 				CreateDefaultApp();
 				CreateDefaultCore();
-				CreateDefaultPresProps();
+				//CreateDefaultPresProps();
 				//CreateDefaultTableStyles();
 				CreateDefaultViewProps();
+
+				// presProps
+				pPair = m_mainTables.find(NSMainTables::PresProps);
+				if (m_mainTables.end()  != pPair)
+				{
+					m_oReader.Seek(pPair->second);
+					m_oPresProps.fromPPTY(&m_oReader);
+				}
+				else
+				{
+					CreateDefaultPresProps();
+				}
 
 				pPair = m_mainTables.find(NSMainTables::TableStyles);
 				if (m_mainTables.end()  != pPair)

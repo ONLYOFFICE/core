@@ -733,7 +733,7 @@ namespace MetaFile
 					TranslatePoint(nX, nY, dX, dY);
 					TranslatePoint(nX + nW, nY + nH, dX1, dY1);
 
-					m_pOutput->DrawBitmap(dX, dY, abs(dX1 - dX), abs(dY1 - dY), pBgra, unWidth, unHeight);
+					m_pOutput->DrawBitmap(dX, dY, fabs(dX1 - dX), fabs(dY1 - dY), pBgra, unWidth, unHeight);
 				}
 
 				if (pBgra)

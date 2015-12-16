@@ -120,7 +120,7 @@ namespace MetaFile
 			if (lLogicalFontHeight < 0.01)
 				lLogicalFontHeight = 18;
 
-			double dFontHeight = abs(lLogicalFontHeight * m_dScaleY * m_pFile->GetPixelHeight() / 25.4 * 72);
+			double dFontHeight = fabs(lLogicalFontHeight * m_dScaleY * m_pFile->GetPixelHeight() / 25.4 * 72);
 
 			std::wstring wsFaceName = pFont->GetFaceName();
 			m_pRenderer->put_FontName(wsFaceName);

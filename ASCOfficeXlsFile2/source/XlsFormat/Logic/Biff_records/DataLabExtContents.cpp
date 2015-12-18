@@ -7,6 +7,7 @@ namespace XLS
 
 DataLabExtContents::DataLabExtContents()
 {
+	is_area = false;
 }
 
 
@@ -45,11 +46,57 @@ void DataLabExtContents::readFields(CFRecord& record)
 	unsigned short flags;
 	record >> flags >> rgchSep;
 
-	fSerName = GETBIT(flags, 0);
-	fCatName = GETBIT(flags, 1);
-	fValue = GETBIT(flags, 2);
-	fPercent = GETBIT(flags, 3);
-	fBubSizes = GETBIT(flags, 4);
+	fSerName	= GETBIT(flags, 0);
+	fCatName	= GETBIT(flags, 1);
+	fValue		= GETBIT(flags, 2);
+	fPercent	= GETBIT(flags, 3);
+	fBubSizes	= GETBIT(flags, 4);
+}
+
+int DataLabExtContents::serialize(std::wostream & _stream)
+{
+	CP_XML_WRITER(_stream)    
+	{
+		CP_XML_NODE(L"c:showVal")
+		{
+			CP_XML_ATTR (L"val" , fValue); 
+		}
+		CP_XML_NODE(L"c:showPercent")
+		{
+			CP_XML_ATTR (L"val" , fPercent); 
+		}
+		CP_XML_NODE(L"c:showBubbleSize")
+		{
+			CP_XML_ATTR (L"val" , fBubSizes); 
+		}
+
+		if (rgchSep.value().empty() == false)
+		{
+			CP_XML_NODE(L"c:separator")
+			{
+				CP_XML_STREAM() << rgchSep.value();
+			}
+		}
+		if (is_area == false)
+		{
+			CP_XML_NODE(L"c:showCatName")
+			{
+				CP_XML_ATTR (L"val" , fCatName); 
+			}		
+			CP_XML_NODE(L"c:showSerName") {	CP_XML_ATTR (L"val" , 0); }	
+		}
+		else
+		{
+			CP_XML_NODE(L"c:showCatName") {	CP_XML_ATTR (L"val" , 0); }	
+			CP_XML_NODE(L"c:showSerName")
+			{
+				CP_XML_ATTR (L"val" , fSerName); 
+			}		
+		}
+
+
+	}
+	return 0;
 }
 
 } // namespace XLS

@@ -1,6 +1,5 @@
 
 #include "Pos.h"
-#include <simple_xml_writer.h>
 #include <utils.h>
 
 namespace XLS
@@ -8,6 +7,7 @@ namespace XLS
 
 Pos::Pos()
 {
+	m_iLinkObject = -1;
 }
 
 
@@ -38,6 +38,8 @@ void Pos::writeFields(CFRecord& record)
 
 void Pos::readFields(CFRecord& record)
 {
+	pGlobalWorkbookInfoPtr = record.getGlobalWorkbookInfo();
+
 	record >> mdTopLt >> mdBotRt;
 	record >> x1;
 	record.skipNunBytes(2); // unused1
@@ -51,18 +53,43 @@ void Pos::readFields(CFRecord& record)
 
 int Pos::serialize(std::wostream & _stream)
 {
+	double x = x1 / 4000.;
+	double y = y1 / 4000.;
+
+	double w = x2 / 4000.;
+	double h = y2 / 4000.;
+
 	CP_XML_WRITER(_stream)    
 	{
 		CP_XML_NODE(L"c:layout")
 		{
 			CP_XML_NODE(L"c:manualLayout")
 			{
+				if (m_iLinkObject == 1) x += 0.5	+ (w > 0 ? w : 0);
+				if (m_iLinkObject == 2) x += 0.5	+ (w > 0 ? w : 0);
+				if (m_iLinkObject == 3) y += 0		+ (h > 0 ? h : 0);
+
 				CP_XML_NODE(L"c:xMode")	{CP_XML_ATTR(L"val", L"edge");}
 				CP_XML_NODE(L"c:yMode")	{CP_XML_ATTR(L"val", L"edge");}
-				CP_XML_NODE(L"c:x")		{CP_XML_ATTR(L"val", (int)(x1 / 4000));}
-				CP_XML_NODE(L"c:y")		{CP_XML_ATTR(L"val", (int)(y1 / 4000));}
-				CP_XML_NODE(L"c:w")		{CP_XML_ATTR(L"val", (int)((x2 - x1)/ 4000));}
-				CP_XML_NODE(L"c:h")		{CP_XML_ATTR(L"val", (int)((y2 - y1)/ 4000));}
+
+				if (x < 0) x = 0;
+				if (y < 0) y = 0;
+				
+				CP_XML_NODE(L"c:x")		{CP_XML_ATTR(L"val", x);}
+				CP_XML_NODE(L"c:y")		{CP_XML_ATTR(L"val", y);}
+				
+				if (m_iLinkObject != 1 && m_iLinkObject != 2 && m_iLinkObject != 3) //title, axis title vert, axis title horiz
+				{
+					if (w > 0) CP_XML_NODE(L"c:w")		{CP_XML_ATTR(L"val", w);}
+					if (h > 0) CP_XML_NODE(L"c:h")		{CP_XML_ATTR(L"val", h);}
+				}
+			}
+		}
+		if (m_iLinkObject == 1 || m_iLinkObject == 2 || m_iLinkObject == 3) 
+		{
+			CP_XML_NODE(L"c:overlay")
+			{
+				CP_XML_ATTR(L"val", 0);
 			}
 		}
 	}

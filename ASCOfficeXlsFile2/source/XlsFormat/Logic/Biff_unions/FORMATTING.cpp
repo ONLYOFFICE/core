@@ -10,8 +10,6 @@
 #include <Logic/Biff_records/TableStyles.h>
 #include <Logic/Biff_unions/TABLESTYLES.h>
 
-#include <simple_xml_writer.h>
-
 namespace XLS
 {
 

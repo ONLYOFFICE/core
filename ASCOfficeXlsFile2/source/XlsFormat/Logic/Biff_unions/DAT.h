@@ -20,6 +20,9 @@ public:
 	int serialize (std::wostream & _stream);
 
 	static const ElementType	type = typeDAT;
+	
+	BaseObjectPtr	m_Dat;
+	BaseObjectPtr	m_LD;
 };
 
 } // namespace XLS

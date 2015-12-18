@@ -34,9 +34,24 @@ void Radar::readFields(CFRecord& record)
 {
 	unsigned short flags;
 	record >> flags;
-	fRdrAxLab = GETBIT(flags, 0);
-	fHasShadow = GETBIT(flags, 1);
+	
+	fRdrAxLab	= GETBIT(flags, 0); //in tick
+	fHasShadow	= GETBIT(flags, 1);
+	
 	record.skipNunBytes(2); // unused
+}
+
+int	Radar::serialize(std::wostream & _stream)
+{
+	CP_XML_WRITER(_stream)    
+	{
+		CP_XML_NODE(L"c:radarStyle")
+		{
+			CP_XML_ATTR (L"val" , L"standard");
+		}
+	}
+
+	return 0;
 }
 
 } // namespace XLS

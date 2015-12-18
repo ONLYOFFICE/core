@@ -1,7 +1,6 @@
 #pragma once
 #include "oox_package.h"
 
-
 namespace oox {
 
 class oox_chart_context;
@@ -23,6 +22,7 @@ public:
 					std::wstring const & rid,
 					std::wstring const & target,
 					external_items::Type type);
+
 
 private:
     class Impl;

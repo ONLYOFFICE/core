@@ -21,6 +21,8 @@ public:
 
 	static const ElementType	type = typeIVAXIS;
 
+	int serialize(std::wostream & _stream);
+
 	unsigned int id;
 
 	BaseObjectPtr	m_Axis;
@@ -29,6 +31,12 @@ public:
 	BaseObjectPtr	m_CatSerRange;
 	BaseObjectPtr	m_AxcExt;
 	BaseObjectPtr	m_CatLab;
+
+	BaseObjectPtr	m_CRTMLFRT;
+
+//---------------------------------
+	bool m_bSecondary;
+	bool bDataAxis;
 };
 
 } // namespace XLS

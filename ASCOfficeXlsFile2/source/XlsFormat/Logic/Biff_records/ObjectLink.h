@@ -26,6 +26,12 @@ public:
 	BIFF_WORD wLinkVar1;
 	BIFF_WORD wLinkVar2;
 
+//-------------------------------
+
+	int testLinkObj;
+	int testLinkVar1;
+	int testLinkVar2;
+
 };
 
 } // namespace XLS

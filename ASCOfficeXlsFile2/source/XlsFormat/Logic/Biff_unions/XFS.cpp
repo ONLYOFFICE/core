@@ -5,7 +5,6 @@
 #include <Logic/Biff_records/XFExt.h>
 
 #include <Logic/Biff_structures/ExtProp.h>
-#include <simple_xml_writer.h>
 
 namespace XLS
 {

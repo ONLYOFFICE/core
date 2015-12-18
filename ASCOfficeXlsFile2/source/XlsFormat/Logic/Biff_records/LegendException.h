@@ -19,12 +19,13 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-//-----------------------------
-//	BIFF_WORD userName;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-//		//BO_ATTRIB_MARKUP_ATTRIB(userName)
-	//BO_ATTRIB_MARKUP_END
+
+	BIFF_WORD	iss;
+	BIFF_BOOL	fDelete;
+	BIFF_BOOL	fLabel;
+
+	int serialize(std::wostream & _stream);
+
 
 };
 

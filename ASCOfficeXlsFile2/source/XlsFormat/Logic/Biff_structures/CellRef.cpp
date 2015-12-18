@@ -113,6 +113,10 @@ void CellRef::operator-=(const CellRef& subtracted_ref)
 	to_string_cache.clear();
 }
 
+bool operator==(const CellRef& ref1, const CellRef& ref2)
+{
+	return (ref1.getRow() == ref2.getRow() && ref1.getColumn() == ref2.getColumn());
+}
 
 } // namespace XLS
 

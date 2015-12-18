@@ -23,11 +23,15 @@ public:
 		
 	static const ElementType	type = typeAreaFormat;
 
+	int serialize(std::wostream & _stream);
+
 	LongRGB rgbFore;
 	LongRGB rgbBack;
+	
 	BIFF_WORD fls;
 	BIFF_BOOL fAuto;
 	BIFF_BOOL fInvertNeg;
+	
 	IcvChart icvFore;
 	IcvChart icvBack;
 };

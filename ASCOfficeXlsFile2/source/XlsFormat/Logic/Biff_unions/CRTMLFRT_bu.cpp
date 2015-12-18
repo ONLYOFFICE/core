@@ -30,7 +30,9 @@ const bool CRTMLFRT::loadContent(BinProcessor& proc)
 	{
 		return false;
 	}
-	proc.repeated<CrtMlFrtContinue>(0, 0);
+	m_CrtMlFrt = elements_.back(); elements_.pop_back();
+
+	int count = proc.repeated<CrtMlFrtContinue>(0, 0);
 
 	return true;
 }

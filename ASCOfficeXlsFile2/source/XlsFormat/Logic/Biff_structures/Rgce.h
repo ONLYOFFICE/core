@@ -16,23 +16,23 @@ public:
 	BiffStructurePtr clone();
 
 	static const ElementType	type = typeRgce;
-
 	
-	void load(CFRecord& record, const size_t cce_val);
-	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
+	void			load(CFRecord& record, const size_t cce_val);
+	virtual void	load(CFRecord& record);
+	virtual void	store(CFRecord& record);
 
-	const size_t getCCE() const;
-	void setCCE(const size_t cce_val); // mandatory to call before any use of "cce"
-	const bool isEmpty() const;
-	const PtgVector& getPtgs() const;
-	void addPtg(const PtgPtr ptg);
-	const CellRef& getLocation() const;
+	const size_t	getCCE() const;
+	void			setCCE(const size_t cce_val); // mandatory to call before any use of "cce"
+	const bool		isEmpty() const;
+	const PtgVector&	getPtgs() const;
+	void				addPtg(const PtgPtr ptg);
+	
+	const CellRef&		getLocation() const;
 
-	const CellRef cell_base_ref;
+	const CellRef		cell_base_ref;
 
-	_CP_OPT(size_t) cce; // Size of rgce variable. Setting explicit is mandatory
-	PtgVector sequence;
+	_CP_OPT(size_t)		cce; // Size of rgce variable. Setting explicit is mandatory
+	PtgVector			sequence;
 };
 
 } // namespace XLS

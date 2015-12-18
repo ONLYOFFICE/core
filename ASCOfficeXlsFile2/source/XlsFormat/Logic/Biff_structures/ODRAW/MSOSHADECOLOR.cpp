@@ -33,6 +33,8 @@ void MSOSHADECOLOR::load(XLS::CFRecord& record)
     int raw_color;
 	record >> raw_color >> position;
 	color = OfficeArtCOLORREF(raw_color);
+
+	dPosition = position.Integral + position.Fractional / 65536.;
 }
 
 

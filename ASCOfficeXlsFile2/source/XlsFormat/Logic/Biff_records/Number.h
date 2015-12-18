@@ -29,9 +29,9 @@ public:
 	const CellRef getLocation() const;
 
 //-----------------------------
-	CellOffsetResender resender;
-	Cell cell;
-	BIFF_DOUBLE num;
+	CellOffsetResender	resender;
+	Cell				cell;
+	BIFF_DOUBLE			num;
 
 
 };

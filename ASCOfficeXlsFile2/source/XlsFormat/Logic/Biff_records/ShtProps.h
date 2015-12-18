@@ -28,15 +28,6 @@ public:
 	BIFF_BOOL fNotSizeWith;
 	BIFF_BOOL fAlwaysAutoPlotArea;
 	BIFF_BYTE mdBlank;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(fManSerAlloc)
-		//BO_ATTRIB_MARKUP_ATTRIB(fPlotVisOnly)
-		//BO_ATTRIB_MARKUP_ATTRIB(fNotSizeWith)
-		//BO_ATTRIB_MARKUP_ATTRIB(fAlwaysAutoPlotArea)
-		//BO_ATTRIB_MARKUP_ATTRIB(mdBlank)
-	//BO_ATTRIB_MARKUP_END
-
 };
 
 } // namespace XLS

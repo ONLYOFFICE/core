@@ -24,7 +24,9 @@ public:
 	unsigned char green;
 	unsigned char blue;
 	unsigned char alpha;
-	std::wstring  argb;
+	
+	std::wstring  strARGB;
+	std::wstring  strRGB;
 
 	bool is_alpha;
 };

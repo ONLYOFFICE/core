@@ -13,8 +13,6 @@
 #include <Logic/Biff_records/Setup.h>
 #include <Logic/Biff_records/HeaderFooter.h> // Moved from WorksheetSubstream
 
-#include <simple_xml_writer.h>
-
 namespace XLS
 {
 

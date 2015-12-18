@@ -21,11 +21,15 @@ public:
 
 	static const ElementType	type = typeSERIESAXIS;
 
+	int serialize(std::wostream & _stream);
+
 	unsigned int id;
 
 	BaseObjectPtr	m_Axis;
 	BaseObjectPtr	m_AXS;
 	BaseObjectPtr	m_CatSerRange;
+//---------------------------------------------
+	bool m_bSecondary;
 
 };
 

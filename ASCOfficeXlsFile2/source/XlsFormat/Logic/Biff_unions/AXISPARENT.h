@@ -22,6 +22,8 @@ public:
 	BaseObjectPtr				m_Pos;
 	BaseObjectPtr				m_AXES;
 	std::vector<BaseObjectPtr>	m_arCRT;
+
+	void concatinate_second (BaseObjectPtr & addit);
 };
 
 } // namespace XLS

@@ -3,8 +3,6 @@
 #include <Logic/Biff_records/DefColWidth.h>
 #include <Logic/Biff_records/ColInfo.h>
 
-#include <simple_xml_writer.h>
-
 namespace XLS
 {
 

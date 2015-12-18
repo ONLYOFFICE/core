@@ -6,7 +6,6 @@
 #include <Logic/Biff_records/NamePublish.h>
 
 #include <utils.h>
-#include <simple_xml_writer.h>
 
 namespace XLS
 {

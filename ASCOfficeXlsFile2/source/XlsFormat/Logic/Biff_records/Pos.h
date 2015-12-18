@@ -20,17 +20,23 @@ public:
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
 
+	GlobalWorkbookInfoPtr	pGlobalWorkbookInfoPtr;
+		
 	int serialize(std::wostream & stream_);
 
 	static const ElementType	type = typePos;
 
-//-----------------------------
-	BIFF_WORD mdTopLt;
-	BIFF_WORD mdBotRt;
+	_UINT16 mdTopLt;
+	_UINT16 mdBotRt;
+	
 	BIFF_SHORT x1;
 	BIFF_SHORT y1;
 	BIFF_SHORT x2;
 	BIFF_SHORT y2;
+
+//-----------------------------
+
+	short m_iLinkObject;
 
 };
 

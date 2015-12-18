@@ -34,9 +34,10 @@ void SerFmt::readFields(CFRecord& record)
 {
 	unsigned short flags;
 	record >> flags;
-	fSmoothedLine = GETBIT(flags, 0);
-	f3DBubbles = GETBIT(flags, 1);
-	fArShadow = GETBIT(flags, 2);
+	
+	fSmoothedLine	= GETBIT(flags, 0);
+	f3DBubbles		= GETBIT(flags, 1);
+	fArShadow		= GETBIT(flags, 2);
 }
 
 } // namespace XLS

@@ -18,11 +18,18 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
+	int serialize(std::wostream & _stream);
+	int serialize(std::wostream & _stream, bool secondary);
+
 	std::vector<BaseObjectPtr >	m_arAxes;
 	std::vector<BaseObjectPtr >	m_arATTACHEDLABEL;
 
-	BaseObjectPtr				m_PlotArea;
-	BaseObjectPtr				m_FRAME;
+//--------------------------------------------------------------------
+	std::vector<std::pair<int, int>>	m_arAxesId;
+	
+	BaseObjectPtr						m_PlotArea_FRAME;
+	BaseObjectPtr						m_Wall_FRAME;
+	BaseObjectPtr						m_Floor_FRAME;
 };
 
 } // namespace XLS

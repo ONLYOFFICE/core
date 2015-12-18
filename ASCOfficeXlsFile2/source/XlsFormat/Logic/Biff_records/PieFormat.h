@@ -22,12 +22,9 @@ public:
 
 	static const ElementType	type = typePieFormat;
 
-//-----------------------------
+	int serialize(std::wostream & _stream);
+
 	BIFF_SHORT pcExplode;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(pcExplode)
-	//BO_ATTRIB_MARKUP_END
 
 };
 

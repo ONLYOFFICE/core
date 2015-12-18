@@ -10,6 +10,7 @@
 #include <Logic/Biff_unions/SHAPEPROPS.h>
 #include <Logic/Biff_records/TextPropsStream.h>
 #include <Logic/Biff_records/ContinueFrt12.h>
+#include <Logic/Biff_records/Font.h>
 
 namespace XLS
 {
@@ -60,6 +61,8 @@ AXS = [IFmtRecord] [Tick] [FontX] *4(AxisLine LineFormat) [AreaFormat] [GELFRAME
 */
 const bool AXS::loadContent(BinProcessor& proc)
 {
+	pGlobalWorkbookInfoPtr = proc.getGlobalWorkbookInfo();
+
 	int count = 0;
 
 	if (proc.optional<IFmtRecord>())
@@ -84,11 +87,11 @@ const bool AXS::loadContent(BinProcessor& proc)
 	while(count > 0)
 	{
 		_axis_line_format a;
-		a.axisLine		= elements_.back();		elements_.pop_back();
-		a.lineFormat	= elements_.back();		elements_.pop_back();
+		a.axisLine		= elements_.front();		elements_.pop_front();
+		a.lineFormat	= elements_.front();		elements_.pop_front();
 		
-		m_AxisLine_Format.insert(m_AxisLine_Format.begin(), a);
-		count-=2;
+		m_AxisLine_Format.push_back( a);
+		count--;
 	}
 
 	if (proc.optional<AreaFormat>())
@@ -113,5 +116,152 @@ const bool AXS::loadContent(BinProcessor& proc)
 	return true;
 }
 
+int AXS::serialize(std::wostream & _stream)
+{
+	BaseObjectPtr axis_line_format;
+	Tick * tick = dynamic_cast<Tick*>(m_Tick.get());
+
+	CP_XML_WRITER(_stream)    
+	{
+		for (int i = 0 ; i < m_AxisLine_Format.size(); i++)
+		{
+			std::wstring grid;
+			
+			AxisLine *axis_line = dynamic_cast<AxisLine*>(m_AxisLine_Format[i].axisLine.get());
+			if (axis_line)
+			{
+				if (axis_line->id == (_UINT16)0) axis_line_format = m_AxisLine_Format[i].lineFormat;
+				if (axis_line->id == (_UINT16)1) grid = L"c:majorGridlines";
+				if (axis_line->id == (_UINT16)2) grid = L"c:minorGridlines";
+				if (axis_line->id == (_UINT16)3) {}//wall || floor todooo
+			}
+			
+			if (!grid.empty() && m_AxisLine_Format[i].lineFormat)
+			{
+				CP_XML_NODE(grid)
+				{
+					CP_XML_NODE(L"c:spPr")
+					{			
+						m_AxisLine_Format[i].lineFormat->serialize(CP_XML_STREAM());
+					}
+				}
+			}
+				
+		}
+
+		if (tick)
+		{
+			tick->serialize(_stream);
+		}
+		if (axis_line_format)
+		{
+			CP_XML_NODE(L"c:spPr")
+			{
+				axis_line_format->serialize(CP_XML_STREAM());
+			}
+		}
+		if (m_FontX)
+		{
+			CP_XML_NODE(L"c:txPr")
+			{
+				bool rtl = false;
+				CP_XML_NODE(L"a:bodyPr")
+				{
+					if (tick)
+					{
+						if (tick->fAutoRot == false)
+						{
+							if (tick->trot == (_UINT16)0xffff)	CP_XML_ATTR(L"vert", L"vert");
+							else
+							{
+								if (tick->trot > 90)	
+								{
+									CP_XML_ATTR(L"rot", (tick->trot - 90)	* 60000);	
+									switch(tick->rot)
+									{
+										case 0: CP_XML_ATTR(L"vert", L"horz");			break;
+										case 1: CP_XML_ATTR(L"vert", L"wordArtVert");	break;
+										case 2: CP_XML_ATTR(L"vert", L"vert270");		break;
+										case 3: CP_XML_ATTR(L"vert", L"vert");			break;
+									}	
+								}
+								else
+								{
+									CP_XML_ATTR(L"rot",	-tick->trot			* 60000);
+									CP_XML_ATTR(L"vert", L"horz");		//(1-333.xls) .. todoooo может тут нужно проверять гоизонт ось или нет
+								}
+								
+
+							}
+						}
+						if (tick->iReadingOrder == (unsigned char)2) rtl = true;
+					}
+				}
+			
+				CP_XML_NODE(L"a:p")
+				{
+					CP_XML_NODE(L"a:pPr")
+					{
+						FontX * font = dynamic_cast<FontX*>(m_FontX.get());
+						
+						_CP_OPT(unsigned int) color;
+						if (tick) color = ( tick->rgb.red << 16) + (tick->rgb.green << 8) + tick->rgb.blue;
+						
+						int iFont = font ? font->iFont : 0;
+
+						serialize_rPr (CP_XML_STREAM(), iFont, color, rtl, true);
+					}
+					CP_XML_NODE(L"a:endParaRPr");
+				}
+			}
+		}
+	}
+	return 0;
+}
+
+int AXS::serialize_rPr (std::wostream & _stream, int iFmt, _CP_OPT(unsigned int) color, bool rtl, bool defRPr)
+{
+	if (!pGlobalWorkbookInfoPtr)			return 0;
+	if (!pGlobalWorkbookInfoPtr->m_arFonts) return 0;
+
+	Font * font = NULL;
+	int sz = pGlobalWorkbookInfoPtr->m_arFonts->size();
+	
+	if (iFmt > 0 && iFmt <= sz)
+		font = dynamic_cast<Font*>(pGlobalWorkbookInfoPtr->m_arFonts->at(iFmt-1).get());
+
+	if (font)
+	{
+		FillInfoExt cFont;
+		if (color)
+		{
+			cFont = font->color_ext;
+			font->color_ext.enabled = true;
+			font->color_ext.xclrValue = *color;
+			font->color_ext.xclrType = 2; //rgb
+		}
+		font->serialize_rPr(_stream, rtl, defRPr);
+
+		if (color)font->color_ext = cFont;
+	}
+	else if (color)
+	{
+		CP_XML_WRITER(_stream)    
+		{
+			CP_XML_NODE(L"a:defRPr")
+			{
+				CP_XML_NODE(L"a:solidFill")
+				{
+					CP_XML_NODE(L"a:srgbClr")
+					{
+						CP_XML_ATTR(L"val", STR::toRGB(*color)); 
+					}				
+				}
+			}
+		}
+	}
+	
+	return 0;
+}
 } // namespace XLS
 

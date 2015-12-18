@@ -24,6 +24,9 @@ public:
 
 //-----------------------------
 	BIFF_WORD sdtX;
+	BIFF_WORD sdtY;
+	BIFF_WORD sdtBSize;
+
 	BIFF_WORD cValx;
 	BIFF_WORD cValy;
 	BIFF_WORD cValBSize;

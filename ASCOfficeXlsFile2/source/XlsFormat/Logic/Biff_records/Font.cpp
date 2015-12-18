@@ -1,8 +1,6 @@
 
 #include "Font.h"
 
-#include <simple_xml_writer.h>
-
 namespace XLS
 {
 	const static std::wstring shemeColor[17] = 
@@ -75,26 +73,33 @@ void Font::set_color_ext(FillInfoExt & color_ext_)
 {
 	color_ext = color_ext_;
 }
-int Font::serialize_rPr(std::wostream & stream)
+int Font::serialize_rPr(std::wostream & stream, bool rtl, bool defRPr)
 {
     CP_XML_WRITER(stream)    
     {
-		CP_XML_NODE(L"a:rPr")
+		std::wstring strRpr = L"a:rPr";
+		if (defRPr)strRpr = L"a:defRPr";
+		
+		CP_XML_NODE(strRpr)
 		{
 			if (dyHeight.value())
 			{
-				CP_XML_ATTR(L"sz", dyHeight/20 * 100);
+				CP_XML_ATTR(L"sz", (int)(dyHeight/20. * 100));
 
 			}
 			if ((bls.value()) && (*bls.value() == 700))
 			{
 				CP_XML_ATTR(L"b", true);
 			}
+			else
+				CP_XML_ATTR(L"b", false);
 
 			if ((fItalic.value()) && (fItalic))
 			{
 				CP_XML_ATTR(L"i", fItalic);
 			}
+			else 
+				CP_XML_ATTR(L"i", false);
 			//if (bCharSet.value())
 			//{
 			//    CP_XML_NODE(L"charset")
@@ -119,58 +124,80 @@ int Font::serialize_rPr(std::wostream & stream)
 	  //              CP_XML_ATTR(L"val", fExtend);
 	  //          }
 	  //      }
-			//if (!fontName.value().empty())
-			//{
-			//	CP_XML_ATTR(L"typeface", fontName.value());
-			//}
-	        
 			if (((icv.value()) && (icv < 0x7fff)) || color_ext.enabled )
 			{
-				CP_XML_NODE(L"a:solidFill")
+				if (color_ext.enabled )
 				{
-					if (color_ext.enabled )
+					CP_XML_NODE(L"a:solidFill")
 					{
 						switch(color_ext.xclrType)
-						{
-						case 0://auto
-							/*CP_XML_ATTR(L"auto");*/ break;
-						case 1://indexed
-							CP_XML_NODE(L"a:schemeClr")
 							{
-								CP_XML_ATTR(L"val",  color_ext.icv); break;
-							}
-						case 2://rgb
-							CP_XML_NODE(L"a:srgbClr")
-							{
-								CP_XML_ATTR(L"val", STR::toRGB(color_ext.xclrValue)); 
-							}break;
-						case 3://theme color
-							CP_XML_NODE(L"a:schemeClr")
-							{
-								CP_XML_ATTR(L"val", color_ext.xclrValue + 1); 
-								CP_XML_NODE(L"tint")
+							case 0://auto
+								/*CP_XML_ATTR(L"auto");*/ break;
+							case 1://indexed
+								CP_XML_NODE(L"a:schemeClr")
 								{
-									CP_XML_ATTR(L"val", color_ext.nTintShade / 32767.0);
-								}							
-							}break;
-						case 4://not set
-							break;
+									CP_XML_ATTR(L"val",  color_ext.icv); break;
+								}
+							case 2://rgb
+								CP_XML_NODE(L"a:srgbClr")
+								{
+									CP_XML_ATTR(L"val", STR::toRGB(color_ext.xclrValue)); 
+								}break;
+							case 3://theme color
+								CP_XML_NODE(L"a:schemeClr")
+								{
+									CP_XML_ATTR(L"val", color_ext.xclrValue + 1); 
+									CP_XML_NODE(L"tint")
+									{
+										CP_XML_ATTR(L"val", color_ext.nTintShade / 32767.0);
+									}							
+								}break;
+							case 4://not set
+								break;
+							}
 						}
-					}
-					else
+				}
+				else
+				{
+					std::wstring strColor;
+
+					std::map<int,  std::wstring>::iterator it = global_info->colors_palette.find(icv);
+				
+					if (it != global_info->colors_palette.end())	strColor = it->second;
+					else if ( icv < 64)								strColor = DefaultPalette[icv].substr(2);
+
+					if (!strColor.empty())
 					{
-						std::map<int,  std::wstring>::iterator it = global_info->colors_palette.find(icv);
-						if (it != global_info->colors_palette.end())
-						{					
+						CP_XML_NODE(L"a:solidFill")
+						{
 							CP_XML_NODE(L"a:srgbClr")
 							{
-								CP_XML_ATTR(L"val", it->second); 
-							}
+								CP_XML_ATTR(L"val", strColor); 
+							}							
 						}
 					}
 				}
 			}
-
+			if (!fontName.value().empty())
+			{
+				CP_XML_NODE(L"a:latin")
+				{
+					CP_XML_ATTR(L"typeface", fontName.value());
+				}
+				CP_XML_NODE(L"a:ea")
+				{
+					CP_XML_ATTR(L"typeface", fontName.value());
+				}
+				CP_XML_NODE(L"a:cs")
+				{
+					CP_XML_ATTR(L"typeface", fontName.value());
+				}
+			}
+			if (rtl)
+			{
+				CP_XML_NODE(L"a:rtl");
+			}
 			//if ((fOutline.value()) && (fOutline))
 	  //      {
 	  //          CP_XML_NODE(L"outline")

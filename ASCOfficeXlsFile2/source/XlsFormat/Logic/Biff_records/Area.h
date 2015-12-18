@@ -20,13 +20,13 @@ public:
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
 
+	int	serialize(std::wostream & _stream);
+
 	static const ElementType	type = typeArea;
 
 	BIFF_BOOL fStacked;
 	BIFF_BOOL f100;
 	BIFF_BOOL fHasShadow;
-
-
 };
 
 } // namespace XLS

@@ -38,10 +38,12 @@ void ShtProps::readFields(CFRecord& record)
 {
 	unsigned short flags;
 	record >> flags >> mdBlank;
-	fManSerAlloc = GETBIT(flags, 0);
-	fPlotVisOnly = GETBIT(flags, 1);
-	fNotSizeWith = GETBIT(flags, 2);
+	
+	fManSerAlloc		= GETBIT(flags, 0);
+	fPlotVisOnly		= GETBIT(flags, 1);
+	fNotSizeWith		= GETBIT(flags, 2);
 	fAlwaysAutoPlotArea = GETBIT(flags, 4);
+	
 	record.skipNunBytes(1); // reserved2
 }
 

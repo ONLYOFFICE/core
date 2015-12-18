@@ -29,14 +29,14 @@ public:
 	BIFF_DOUBLE numMinor;
 	BIFF_DOUBLE numCross;
 
-	BIFF_BOOL fAutoMin;
-	BIFF_BOOL fAutoMax;
-	BIFF_BOOL fAutoMajor;
-	BIFF_BOOL fAutoMinor;
-	BIFF_BOOL fAutoCross;
-	BIFF_BOOL fLog;
-	BIFF_BOOL fReversed;
-	BIFF_BOOL fMaxCross;
+	bool fAutoMin;
+	bool fAutoMax;
+	bool fAutoMajor;
+	bool fAutoMinor;
+	bool fAutoCross;
+	bool fLog;
+	bool fReversed;
+	bool fMaxCross;
 };
 
 } // namespace XLS

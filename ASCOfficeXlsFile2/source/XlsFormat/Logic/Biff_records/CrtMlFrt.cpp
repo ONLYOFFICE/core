@@ -32,7 +32,13 @@ void CrtMlFrt::readFields(CFRecord& record)
 {
 #pragma message("####################### CrtMlFrt record is not implemented")
 	Log::error("CrtMlFrt record is not implemented.");
-	//record >> some_value;	
+	
+	record >> cb;
+//
+//	if (cb > 0)
+//	{
+//		//XmlTkChain
+//	}
 }
 
 } // namespace XLS

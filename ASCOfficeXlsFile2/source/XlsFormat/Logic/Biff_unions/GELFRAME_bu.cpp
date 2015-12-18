@@ -5,8 +5,6 @@
 
 #include <Logic/Biff_unions/PICF.h>
 
-#include <simple_xml_writer.h>
-
 #include "../../../XlsXlsxConverter/XlsConverter.h"
 #include "../../../XlsXlsxConverter/xlsx_conversion_context.h"
 
@@ -75,7 +73,7 @@ int GELFRAME::serialize(std::wostream & _stream)
 		global_info->xls_converter->convert(&frame->OPT2);
 
 		global_info->xls_converter->xlsx_context->get_drawing_context().serialize_fill(_stream);
-		global_info->xls_converter->xlsx_context->get_drawing_context().serialize_line(_stream);
+		//global_info->xls_converter->xlsx_context->get_drawing_context().serialize_line(_stream);
 
 	global_info->xls_converter->xlsx_context->get_drawing_context().end_drawing();
 	return 0;

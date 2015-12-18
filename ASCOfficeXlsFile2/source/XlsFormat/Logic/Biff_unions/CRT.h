@@ -36,7 +36,12 @@ public:
 	std::vector<BaseObjectPtr>	m_arDFTTEXT;
 	std::vector<BaseObjectPtr>	m_arSHAPEPROPS;
 
+//-----------------------------------------------------------------------
+	std::wstring	getOoxChartType();
+	bool			m_bIs3D;
+	int				m_iChartType;
 
+	int				m_indAXISPARENT;
 };
 
 } // namespace XLS

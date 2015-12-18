@@ -45,6 +45,7 @@ protected:
 	mutable std::wstring to_string_cache;
 
 };
+bool operator==(const CellRef& ref1, const CellRef& ref2);
 
 class CellRangeRef;
 typedef boost::shared_ptr<CellRangeRef> CellRangeRefPtr;

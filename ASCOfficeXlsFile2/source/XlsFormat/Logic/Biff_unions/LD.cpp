@@ -11,14 +11,13 @@
 #include <Logic/Biff_unions/CRTMLFRT.h>
 #include <Logic/Biff_records/End.h>
 
-#include <simple_xml_writer.h>
-
 namespace XLS
 {
 
 
 LD::LD()
 {
+	m_countSeries = 1;
 }
 
 
@@ -40,11 +39,10 @@ const bool LD::loadContent(BinProcessor& proc)
 	{
 		return false;
 	}
-	proc.mandatory<Begin>();			elements_.pop_back();
+	m_Legend = elements_.back();		elements_.pop_back();
 	
-	//proc.mandatory<Pos>();
+	proc.mandatory<Begin>();			elements_.pop_back();
 
-	// fix
 	if (proc.optional<Pos>())
 	{
 		m_Pos = elements_.back();
@@ -62,54 +60,35 @@ const bool LD::loadContent(BinProcessor& proc)
 		elements_.pop_back();
 	}
 	proc.optional<CrtLayout12>();
-	proc.optional<TEXTPROPS>();
+	
+	if (proc.optional<TEXTPROPS>())
+	{
+		m_TEXTPROPS = elements_.back();
+		elements_.pop_back();
+	}
 	proc.optional<CRTMLFRT>();
 	proc.mandatory<End>();				elements_.pop_back();
 	return true;
 }
 
-int LD::serialize (std::wostream & _stream)
+int LD::serialize (std::wostream & _stream, const std::wstring & entries)
 {
-	ATTACHEDLABEL * label = dynamic_cast<ATTACHEDLABEL*>(m_ATTACHEDLABEL.get());
+	ATTACHEDLABEL	*att	= dynamic_cast<ATTACHEDLABEL*>	(m_ATTACHEDLABEL.get());
+	Legend			*legend = dynamic_cast<Legend *>		(m_Legend.get());
+	
+	if (legend == NULL) return 0;
 
-	CP_XML_WRITER(_stream)    
-	{
-		CP_XML_NODE(L"c:legend")
-		{
-			//<c:legendPos val="r"/>
-			CP_XML_NODE(L"c:legendEntry")
-			{
-				CP_XML_NODE(L"c:txPr")
-				{
-					CP_XML_NODE(L"a:bodyPr");
-					CP_XML_NODE(L"a:lstStyle");
-					CP_XML_NODE(L"a:p")
-					{
-						CP_XML_NODE(L"a:pPr")
-						{
-							if (label)
-							{
-								FontX * font = dynamic_cast<FontX*>(label->m_FontX.get());
-								if (font)
-								{
-									label->serialize_rPr(CP_XML_STREAM(), font->iFont, true);
-								}
-								else
-								{
-									//default ???
-								}
-							}
-						}
-					}
-				}
-			}
+	legend->serialize(_stream, m_countSeries);
+	
+	if (!entries.empty())
+		_stream << entries;
 
-			if (m_Pos)
-				m_Pos->serialize(CP_XML_STREAM());
+	if (m_FRAME)
+		m_FRAME->serialize(_stream);
 
-			//<c:overlay val="0"/>
-		}
-	}
+	if (att)
+		att->serialize_txPr(_stream);
+
 	return 0;
 }
 

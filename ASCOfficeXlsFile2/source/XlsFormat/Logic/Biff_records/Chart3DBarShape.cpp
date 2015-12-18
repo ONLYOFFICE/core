@@ -31,5 +31,28 @@ void Chart3DBarShape::readFields(CFRecord& record)
 	record >> riser >> taper;
 }
 
+int Chart3DBarShape::serialize(std::wostream & _stream)
+{
+	CP_XML_WRITER(_stream)    
+	{
+		CP_XML_NODE(L"c:shape")
+		{	
+			if (taper >=0 && taper < 3 && riser == (unsigned char)0)
+			{
+				switch(taper)
+				{
+					case 0:	CP_XML_ATTR(L"val", L"box");		break;
+					case 1:	CP_XML_ATTR(L"val", L"pyramid");	break;
+					case 2:	CP_XML_ATTR(L"val", L"pyramidToMax");break;
+				}
+			}
+			else
+				CP_XML_ATTR(L"val", L"cylinder");
+		}
+	}
+	return 0;
+}
+
+
 } // namespace XLS
 

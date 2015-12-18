@@ -32,6 +32,8 @@
 #include <Logic/Biff_records/ShapePropsStream.h>
 #include <Logic/Biff_records/TextPropsStream.h>
 #include <Logic/Biff_records/PlotArea.h>
+#include <Logic/Biff_records/DropBar.h>
+#include <Logic/Biff_records/CrtMlFrt.h>
 
 
 namespace XLS
@@ -40,6 +42,7 @@ namespace XLS
 
 CRT::CRT()
 {
+	m_indAXISPARENT = 0; 
 }
 
 
@@ -189,11 +192,12 @@ const bool CRT::loadContent(BinProcessor& proc)
 	int count = proc.repeated<Parenthesis_CRT_2>(0, 4);
 	while(count > 0)
 	{
-		if ("CrtLine" == elements_.front()->getClassName())
+		if (typeCrtLine == elements_.front()->get_type())
 		{	
 			m_arCrtLine.push_back(elements_.front());
+			elements_.pop_front(); 
 		}
-		else if ("LineFormat" == elements_.front()->getClassName())
+		if (typeLineFormat == elements_.front()->get_type())
 		{
 			CrtLine * crt_line = dynamic_cast<CrtLine *>(m_arCrtLine.back().get());
 			crt_line->m_LineFormat = elements_.front();
@@ -224,10 +228,96 @@ const bool CRT::loadContent(BinProcessor& proc)
 		m_arSHAPEPROPS.push_back(elements_.front());
 		elements_.pop_front(); count--;
 	}
+	if (proc.optional<CrtMlFrt>()) // 
+	{
+		elements_.pop_back();
+	}
 	
 	proc.mandatory<End>();					elements_.pop_back();
+//-------------------------------------------------------------------------------------
+	m_bIs3D = false;
+	if (m_Chart3d)
+	{
+		m_bIs3D = true;
+	}
+
+	m_iChartType = 1;
+	switch(m_ChartType->get_type())
+	{
+		case typeBar:		m_iChartType = 1; break;
+		case typeLine:		m_iChartType = 2; break;
+		case typePie:		m_iChartType = 3; break;
+		case typeArea:		m_iChartType = 4; break;
+		case typeSurf:		m_iChartType = 5; break;		
+		case typeRadar:		m_iChartType = 6; break;
+		case typeRadarArea:	m_iChartType = 7; break;
+		case typeBopPop:	m_iChartType = 8; break;		
+		case typeScatter:	m_iChartType = 9; break;
+	}
+	
 	return true;
 }
 
+std::wstring CRT::getOoxChartType()
+{
+	switch(m_ChartType->get_type())
+	{
+	case typeBar:		return (m_bIs3D ? L"c:bar3DChart"		: L"c:barChart");
+	case typeLine:
+	{
+		if (m_bIs3D) return  L"c:line3DChart";
+
+		DROPBAR* Dr1 = dynamic_cast<DROPBAR*>(m_DROPBAR[0].get());
+		DROPBAR* Dr2 = dynamic_cast<DROPBAR*>(m_DROPBAR[1].get());
+		if (Dr1 || Dr2)
+		{
+			DropBar  *dropBar = NULL;
+			if		(Dr1) dropBar = dynamic_cast<DropBar*>(Dr1->m_DropBar.get()); 
+			else if (Dr2) dropBar = dynamic_cast<DropBar*>(Dr2->m_DropBar.get());
+
+			if ((dropBar) && (dropBar->pcGap != (short)1)) 
+			{
+				m_iChartType = 11;
+				return L"c:stockChart";
+			}
+		}
+		return L"c:lineChart";
+	}
+	case typePie:	
+	{
+		Pie * p = dynamic_cast<Pie *>(m_ChartType.get());
+		if (p->pcDonut.value() && p->pcDonut > 0)
+		{
+			m_iChartType = 12;
+						return L"c:doughnutChart";
+		}
+		else 			return (m_bIs3D ? L"c:pie3DChart"		: L"c:pieChart");
+	}break;
+	case typeArea:		return (m_bIs3D ? L"c:area3DChart"		: L"c:areaChart");
+	case typeSurf:		
+	{
+		ChartFormat *format	= dynamic_cast<ChartFormat*>(m_ChartFormat.get());
+		format->fVaried = true;
+		
+		Surf* surf = dynamic_cast<Surf *>(m_ChartType.get());
+		return ((m_bIs3D && surf->f3DPhongShade == true) ? L"c:surface3DChart"	: L"c:surfaceChart");
+	}break;
+	case typeScatter:
+	{
+		Scatter * sc = dynamic_cast<Scatter *>(m_ChartType.get());
+		if ((sc->fBubbles.value()) && (sc->fBubbles))
+		{
+			m_iChartType = 10;
+			return L"c:bubbleChart";
+		}
+		else											return L"c:scatterChart";
+	}break;
+	case typeRadar:		return L"c:radarChart";
+	case typeRadarArea:	return L"c:radarChart";
+	case typeBopPop:	return L"c:ofPieChart";		
+	}
+	return L"c:barChart";
+
+}
 } // namespace XLS
 

@@ -22,15 +22,11 @@ public:
 
 	static const ElementType	type = typeRadar;
 
+	int serialize(std::wostream & _stream);
+
 //-----------------------------
 	BIFF_BOOL fRdrAxLab;
 	BIFF_BOOL fHasShadow;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(fRdrAxLab)
-		//BO_ATTRIB_MARKUP_ATTRIB(fHasShadow)
-	//BO_ATTRIB_MARKUP_END
-
 };
 
 } // namespace XLS

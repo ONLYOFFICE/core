@@ -39,5 +39,19 @@ void Area::readFields(CFRecord& record)
 	fHasShadow = GETBIT(flags, 2);
 }
 
+int	Area::serialize(std::wostream & _stream)
+{
+	CP_XML_WRITER(_stream)    
+	{
+		CP_XML_NODE(L"c:grouping")
+		{
+			if (f100)			CP_XML_ATTR (L"val" , L"percentStacked");			
+			else if (fStacked)	CP_XML_ATTR (L"val" , L"stacked");
+			else				CP_XML_ATTR (L"val" , L"standard");
+		}
+	}
+	return 0;
+}
+
 } // namespace XLS
 

@@ -309,6 +309,9 @@ OfficeArtFOPTEPtr OfficeArtFOPTE::load_and_create(XLS::CFRecord& record)
 		case 0x01FF:
 			fopte = OfficeArtFOPTEPtr(new LineStyleBooleanProperties);
 			break;
+		case 0x0204:
+			fopte = OfficeArtFOPTEPtr(new shadowOpacity);
+			break;
 		case 0x023F:
 			fopte = OfficeArtFOPTEPtr(new ShadowStyleBooleanProperties);
 			break;
@@ -334,6 +337,13 @@ OfficeArtFOPTEPtr OfficeArtFOPTE::load_and_create(XLS::CFRecord& record)
 	}
 
 	fopte->load(record);
+
+	FixedPoint * fixpoint = dynamic_cast<FixedPoint *>(fopte.get());
+	if (fixpoint)
+	{
+		fixpoint->dVal = (short)(fixpoint->op >> 16) + ((short)(fixpoint->op) / 65536.0);
+	}
+
 	return fopte;
 }
 

@@ -33,8 +33,9 @@ public:
 	bool fSchemeIndex;
 	bool fSysIndex;
 
-	std::wstring	colorRGB;
-	short			index;
+	std::wstring	sColorRGB;
+	int				nColorRGB;
+	int 			index;
 
 };
 

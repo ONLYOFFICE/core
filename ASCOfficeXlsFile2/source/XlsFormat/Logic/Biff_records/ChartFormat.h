@@ -22,15 +22,10 @@ public:
 
 	static const ElementType	type = typeChartFormat;
 
+	int serialize(std::wostream & _stream);
 //-----------------------------
 	BIFF_BOOL fVaried;
 	BIFF_WORD icrt;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(fVaried)
-		//BO_ATTRIB_MARKUP_ATTRIB(icrt)
-	//BO_ATTRIB_MARKUP_END
-
 };
 
 } // namespace XLS

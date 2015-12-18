@@ -19,6 +19,14 @@ public:
 	virtual const bool loadContent(BinProcessor& proc);
 
 	static const ElementType	type = typeDROPBAR;
+
+	int serialize(std::wostream & _stream);
+
+	BaseObjectPtr m_DropBar;
+	BaseObjectPtr m_LineFormat;
+	BaseObjectPtr m_AreaFormat;
+	BaseObjectPtr m_GELFRAME;
+	BaseObjectPtr m_SHAPEPROPS;
 };
 
 } // namespace XLS

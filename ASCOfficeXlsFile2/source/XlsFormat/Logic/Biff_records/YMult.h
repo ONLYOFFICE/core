@@ -22,9 +22,6 @@ public:
 	
 	static const ElementType	type = typeYMult;
 
-//-----------------------------
-//	BIFF_WORD userName;
-
 };
 
 } // namespace XLS

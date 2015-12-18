@@ -22,6 +22,8 @@ public:
 
 	static const ElementType	type = typeBopPop;
 
+	int serialize(std::wostream & _stream);
+
 //-----------------------------
 	BIFF_BYTE		pst;
 	Boolean<unsigned char> fAutoSplit;

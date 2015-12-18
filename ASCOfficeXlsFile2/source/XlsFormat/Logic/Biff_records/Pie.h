@@ -22,19 +22,13 @@ public:
 
 	static const ElementType	type = typePie;
 
+	int	serialize(std::wostream & _stream);
+
 //-----------------------------
 	BIFF_WORD anStart;
 	BIFF_WORD pcDonut;
 	BIFF_BOOL fHasShadow;
 	BIFF_BOOL fShowLdrLines;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(anStart)
-		//BO_ATTRIB_MARKUP_ATTRIB(pcDonut)
-		//BO_ATTRIB_MARKUP_ATTRIB(fHasShadow)
-		//BO_ATTRIB_MARKUP_ATTRIB(fShowLdrLines)
-	//BO_ATTRIB_MARKUP_END
-
 };
 
 } // namespace XLS

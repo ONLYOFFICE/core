@@ -88,6 +88,11 @@ class fillColor : public OfficeArtFOPTE
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillColor)
 };
 
+class FixedPoint : public OfficeArtFOPTE
+{
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillColor)
+	double dVal;
+};
 class TextBooleanProperties : public OfficeArtFOPTE
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(TextBooleanProperties)
@@ -128,7 +133,7 @@ class pictureRecolor : public OfficeArtFOPTE
 };
 
 
-class fillOpacity : public OfficeArtFOPTE
+class fillOpacity : public FixedPoint
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillOpacity)
 };
@@ -138,7 +143,7 @@ class fillBackColor : public OfficeArtFOPTE
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillBackColor)
 };
 
-class fillBackOpacity : public OfficeArtFOPTE
+class fillBackOpacity : public FixedPoint
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillBackOpacity)
 };
@@ -229,7 +234,7 @@ class fillHeight : public OfficeArtFOPTE
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillHeight)
 };
 
-class fillAngle : public OfficeArtFOPTE
+class fillAngle : public FixedPoint
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillAngle)
 
@@ -240,22 +245,22 @@ class fillFocus : public OfficeArtFOPTE
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillFocus)
 };
 
-class fillToLeft : public OfficeArtFOPTE
+class fillToLeft : public FixedPoint
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillToLeft)
 };
 
-class fillToTop : public OfficeArtFOPTE
+class fillToTop : public FixedPoint
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillToTop)
 };
 
-class fillToRight : public OfficeArtFOPTE
+class fillToRight : public FixedPoint
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillToRight)
 };
 
-class fillToBottom : public OfficeArtFOPTE
+class fillToBottom : public FixedPoint
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillToBottom)
 };
@@ -300,22 +305,22 @@ class fillShadeColors : public OfficeArtFOPTE
 };
 
 
-class fillShapeOriginX : public OfficeArtFOPTE
+class fillShapeOriginX : public FixedPoint
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillShapeOriginX)
 };
 
-class fillShapeOriginY : public OfficeArtFOPTE
+class fillShapeOriginY : public FixedPoint
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillShapeOriginY)
 };
 
-class fillOriginX : public OfficeArtFOPTE
+class fillOriginX : public FixedPoint
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillOriginX)
 };
 
-class fillOriginY : public OfficeArtFOPTE
+class fillOriginY : public FixedPoint
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillOriginY)
 };
@@ -460,7 +465,7 @@ class lineWidth : public OfficeArtFOPTE
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(lineWidth)
 };
 
-class lineMiterLimit : public OfficeArtFOPTE
+class lineMiterLimit : public FixedPoint
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(lineMiterLimit)
 };
@@ -475,17 +480,17 @@ class lineStyle : public OfficeArtFOPTE
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(lineStyle)
 };
 
-class cropFromBottom : public OfficeArtFOPTE 
+class cropFromBottom : public FixedPoint 
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(cropFromBottom)
 };
 
-class cropFromTop : public OfficeArtFOPTE 
+class cropFromTop : public FixedPoint 
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(cropFromTop)
 };
 
-class cropFromLeft : public OfficeArtFOPTE 
+class cropFromLeft : public FixedPoint 
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(cropFromLeft)
 };
@@ -494,13 +499,18 @@ class cropFromRight : public OfficeArtFOPTE
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(cropFromRight)
 };
 
-class Rotation : public OfficeArtFOPTE 
+class Rotation : public FixedPoint 
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(Rotation)
 };
 class OfficeArtShapeRectCoord : public OfficeArtFOPTE
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(OfficeArtShapeRectCoord)
+};
+
+class shadowOpacity : public FixedPoint
+{
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(shadowOpacity)
 };
 
 class MSOPOINT : public XLS::BiffStructure  
@@ -554,6 +564,7 @@ class MSOPATHINFO : public XLS::BiffStructure
 	short				VertexCount;
 	MSOPATHESCAPE		EscapeCode;
 };
+
 class ShapePath : public OfficeArtFOPTE 
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(ShapePath)

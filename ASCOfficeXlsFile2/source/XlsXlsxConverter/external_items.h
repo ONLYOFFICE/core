@@ -56,10 +56,15 @@ public:
 	void dump_rels(rels & Rels);
     items_array & items() { return items_; }
 
+	void create_media_path(const std::wstring & out_path);
+
+	std::wstring media_path();
+
 private:
 	std::wstring create_file_name(const std::wstring & uri, external_items::Type type, size_t Num);
 
-    items_array items_;
+	std::wstring	media_path_;
+    items_array		items_;
 
 };
 

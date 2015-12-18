@@ -22,22 +22,19 @@ public:
 	
 	static const ElementType	type = typeAttachedLabel;
 
-//-----------------------------
+	int serialize(std::wostream & _stream);
+
 	BIFF_BOOL fShowValue;
 	BIFF_BOOL fShowPercent;
 	BIFF_BOOL fShowLabelAndPerc;
 	BIFF_BOOL fShowLabel;
 	BIFF_BOOL fShowBubbleSizes;
 	BIFF_BOOL fShowSeriesName;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(fShowValue)
-		//BO_ATTRIB_MARKUP_ATTRIB(fShowPercent)
-		//BO_ATTRIB_MARKUP_ATTRIB(fShowLabelAndPerc)
-		//BO_ATTRIB_MARKUP_ATTRIB(fShowLabel)
-		//BO_ATTRIB_MARKUP_ATTRIB(fShowBubbleSizes)
-		//BO_ATTRIB_MARKUP_ATTRIB(fShowSeriesName)
-	//BO_ATTRIB_MARKUP_END
+
+//-----------------------------
+
+	bool is_area;
+
 };
 
 } // namespace XLS

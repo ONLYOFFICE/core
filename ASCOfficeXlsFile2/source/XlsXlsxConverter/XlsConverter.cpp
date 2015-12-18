@@ -49,7 +49,6 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/utility.hpp>
 #include "../../../DesktopEditor/common/File.h"
-#include "../../../DesktopEditor/raster/BgraFrame.h"
 
 #if !defined(_WIN32) && !defined(_WIN64)
 
@@ -239,8 +238,7 @@ void XlsConverter::convert(XLS::WorkbookStreamObject* woorkbook)
 		}
 		else if (woorkbook->m_arWorksheetSubstream[i]->get_type() == XLS::typeChartSheetSubstream)
 		{
-			//в xl\chartsheets
-			convert(dynamic_cast<XLS::ChartSheetSubstream*>(woorkbook->m_arWorksheetSubstream[i].get()));
+			convert_chart_sheet(dynamic_cast<XLS::ChartSheetSubstream*>(woorkbook->m_arWorksheetSubstream[i].get()));
 		}
 
 		xlsx_context->end_table();
@@ -420,46 +418,33 @@ std::wstring XlsConverter::WriteMediaFile	(char *data, int size, std::wstring ty
 {
 	if (size < 1 || !data) return L"";
 	
-	if (id < 0)		id = xlsx_context->get_mediaitems().count_image + 100;
+	if (id < 0)		id = xlsx_context->get_mediaitems().count_image + 1000; // встроенные в поток 
 
-	std::wstring xl_path = xlsx_path + FILE_SEPARATOR_STR + L"xl";
-	FileSystem::Directory::CreateDirectory(xl_path.c_str());
-	
-	FileSystem::Directory::CreateDirectory((xl_path + FILE_SEPARATOR_STR + L"media").c_str());
+	xlsx_context->get_mediaitems().create_media_path(xlsx_path);
 
 	bool res = false;
 	std::wstring file_name = L"image" + boost::lexical_cast<std::wstring>(id);
 	
-	if (type_ext == L"dib_data")
+	if (type_ext == L"dib_data")file_name += std::wstring(L".bmp");
+	else						file_name += type_ext;
+
+	NSFile::CFileBinary file;
+	if (file.CreateFileW(xlsx_context->get_mediaitems().media_path() + file_name))
 	{
-		file_name += std::wstring(L".png");
-
-		BITMAPINFOHEADER * header = (BITMAPINFOHEADER *)data;
-
-		CBgraFrame frame;
-		int offset = size - header->biSizeImage;
-		frame.put_Data((BYTE*)data + header->biSize);
-
-		frame.put_Height(header->biHeight);
-		frame.put_Width	(header->biWidth);
-		frame.put_Stride(-header->biBitCount / 8 * header->biWidth);
-
-		res = frame.SaveFile(xl_path + FILE_SEPARATOR_STR + L"media" + FILE_SEPARATOR_STR + file_name, 4);
-		frame.put_Data(NULL);
-	}
-	else
-	{
-		file_name  += type_ext;
-
-		NSFile::CFileBinary file;
-		if (file.CreateFileW(xl_path + FILE_SEPARATOR_STR + L"media" + FILE_SEPARATOR_STR + file_name))
+		if (type_ext == L"dib_data")
 		{
-			file.WriteFile((BYTE*)data, size);
-			file.CloseFile();
-			res = true;
-		}
-	}
+			BITMAPINFOHEADER * header = (BITMAPINFOHEADER *)data;
 
+			WORD vtType		= 0x4D42;				file.WriteFile((BYTE*)&vtType,	2);
+			DWORD dwLen		= header->biSizeImage;	file.WriteFile((BYTE*)&dwLen,	4);
+			DWORD dwRes		= 0;					file.WriteFile((BYTE*)&dwRes,	4);
+			DWORD dwOffset	= 2;					file.WriteFile((BYTE*)&dwOffset, 4);
+		}
+		
+		file.WriteFile((BYTE*)data, size);
+		file.CloseFile();
+		res = true;
+	}
 	if (res)
 	{
 		xlsx_context->get_mediaitems().add_image(L"media/" + file_name, id);
@@ -518,25 +503,37 @@ void XlsConverter::convert(XLS::THEME* theme)
 	if (theme == NULL) return;
 }
 
+struct _group_object
+{
+	_group_object() {spgr = NULL; ind = count = 0;}
+	ODRAW::OfficeArtSpgrContainer	*spgr;
+	int ind;
+	int count;
+};
+
 void XlsConverter::convert(XLS::OBJECTS* objects)
 {
 	if (objects == NULL) return;
-		
-	ODRAW::OfficeArtSpgrContainer	*spgr = dynamic_cast<ODRAW::OfficeArtSpgrContainer*>(objects->m_MsoDrawing.get()->rgChildRec.m_OfficeArtSpgrContainer.get());
 
-	bool note = false;
-	int ind = 0;
+	std::vector<_group_object> group_objects;
 
-	if ((spgr) && (ind < spgr->child_records.size()))
+	_group_object gr;		
+	gr.spgr		= dynamic_cast<ODRAW::OfficeArtSpgrContainer*>(objects->m_MsoDrawing.get()->rgChildRec.m_OfficeArtSpgrContainer.get());
+	gr.count	= gr.spgr->child_records.size();
+	group_objects.push_back(gr);
+
+	bool note		= false;
+
+	if ((group_objects.back().spgr) && (group_objects.back().ind < group_objects.back().spgr->child_records.size()))
 	{
-		ODRAW::OfficeArtSpContainer *s	= dynamic_cast<ODRAW::OfficeArtSpContainer*>(spgr->child_records[ind].get());
+		ODRAW::OfficeArtSpContainer *s	= dynamic_cast<ODRAW::OfficeArtSpContainer*>(group_objects.back().spgr->child_records[group_objects.back().ind].get());
 		if (s)
 		{
 			ODRAW::OfficeArtFSP *fsp = dynamic_cast<ODRAW::OfficeArtFSP*>(s->m_OfficeArtFSP.get());
-			if ((fsp) && (fsp->fPatriarch)) ind++;
+			if ((fsp) && (fsp->fPatriarch)) group_objects.back().ind++;
 		}
 	}
-
+	
 	for ( std::list<XLS::BaseObjectPtr>::iterator elem = objects->elements_.begin(); elem != objects->elements_.end(); elem++)
 	{
 		short type_object = -1;
@@ -573,20 +570,28 @@ void XlsConverter::convert(XLS::OBJECTS* objects)
 		if (type_object < 0)continue;
 		
 		ODRAW::OfficeArtSpContainer *sp			= NULL;
-		if (( spgr) && (ind < spgr->child_records.size()))
+
+		if (type_object == 0)
 		{
-			sp		= dynamic_cast<ODRAW::OfficeArtSpContainer*>(spgr->child_records[ind++].get());
+			_group_object gr;		
+			gr.spgr		= dynamic_cast<ODRAW::OfficeArtSpgrContainer*>(group_objects.back().spgr->child_records[group_objects.back().ind++].get());
+			gr.count	= gr.spgr->child_records.size();
+			group_objects.push_back(gr);
+		}
+		if ((group_objects.back().spgr ) && ( group_objects.back().ind < group_objects.back().count))
+		{
+			sp	= dynamic_cast<ODRAW::OfficeArtSpContainer*>(group_objects.back().spgr->child_records[group_objects.back().ind++].get());
 		}	
 		
 		if (xlsx_context->get_drawing_context().start_drawing(type_object))		
 		{
 			convert(sp);
 
-			if (!sp->m_OfficeArtAnchor)
+			if ((!sp) || (!sp->m_OfficeArtAnchor))
 			{
-				if (( spgr) && (ind < spgr->child_records.size()))
+				if ((group_objects.back().spgr ) && ( group_objects.back().ind < group_objects.back().count))
 				{
-					sp		= dynamic_cast<ODRAW::OfficeArtSpContainer*>(spgr->child_records[ind++].get());
+					sp		= dynamic_cast<ODRAW::OfficeArtSpContainer*>(group_objects.back().spgr->child_records[group_objects.back().ind++].get());
 				}
 				convert(sp, true);
 			}
@@ -595,10 +600,15 @@ void XlsConverter::convert(XLS::OBJECTS* objects)
 
 			xlsx_context->get_drawing_context().end_drawing();
 		}
-
 		if (TEXTOBJECT || CHART)
 		{
 			elem++;
+		}		
+		
+		if (group_objects.back().ind >= group_objects.back().count)
+		{
+			group_objects.back().spgr = NULL;
+			group_objects.pop_back();
 		}
 	}
 }
@@ -635,6 +645,12 @@ void XlsConverter::convert(ODRAW::OfficeArtRecord * art)
 		{
 			convert(dynamic_cast<ODRAW::OfficeArtFSP *>(art));
 		}break;
+	case XLS::typeOfficeArtChildAnchor:
+		{
+			//todoooo привязать к группам !!!
+			art->serialize(strm);
+            xlsx_context->get_drawing_context().set_anchor(strm.str());
+		}break;
 	case XLS::typeOfficeArtClientAnchorSheet:
 		{
 			art->serialize(strm);
@@ -659,38 +675,130 @@ void XlsConverter::convert_fill_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & pr
 	{
 		switch(props[i]->opid)
 		{
+			case 0x0180:
+			{
+				switch(props[i]->op)
+				{
+				case 1://fillPattern:
+					{
+						xlsx_context->get_drawing_context().set_fill_type(2);
+						//texture + change black to color2, white to color1
+					}break;
+					case 2://fillTexture :
+					{
+						xlsx_context->get_drawing_context().set_fill_type(3);
+						xlsx_context->get_drawing_context().set_fill_texture_mode(0);
+					}break;
+					case 3://fillPicture :
+					{
+						xlsx_context->get_drawing_context().set_fill_type(3);
+						xlsx_context->get_drawing_context().set_fill_texture_mode(1);
+					}break;
+					case 4://fillShadeCenter://1 color
+					case 5://fillShadeShape:
+					{
+						xlsx_context->get_drawing_context().set_fill_type(5);
+					}break;//
+					case 6://fillShadeTitle://2 colors and more
+					case 7://fillShade : 
+					case 8://fillShadeScale: 
+					{
+						xlsx_context->get_drawing_context().set_fill_type(4);
+					}break;
+					case 9://fillBackground:
+					{
+						xlsx_context->get_drawing_context().set_fill_type(0);
+					}break;				
+				}
+			}break;
 			case 0x0181:
 			{
 				ODRAW::fillColor * fill = (ODRAW::fillColor *)(props[i].get());
 				ODRAW::OfficeArtCOLORREF color(fill->op);
-				if (!color.colorRGB.empty())
-					xlsx_context->get_drawing_context().set_fill_color(color.colorRGB);
+				if (!color.sColorRGB.empty())
+					xlsx_context->get_drawing_context().set_fill_color(color.nColorRGB, color.sColorRGB);
 				else if (color. fPaletteIndex)
 				{
 					std::map<int,  std::wstring>::iterator it = xls_global_info->colors_palette.find(color.index);
 					if (it != xls_global_info->colors_palette.end())
 					{					
-						xlsx_context->get_drawing_context().set_fill_color(it->second);
+						//убрать 0!!! todooo
+						xlsx_context->get_drawing_context().set_fill_color(0, it->second);
 					}
 				}
 				else
 					xlsx_context->get_drawing_context().set_fill_color(color.index, color.fSchemeIndex ? 1 : 3 );
-
+			}break;
+			case 0x0182:
+			{
+				ODRAW::FixedPoint * fixed_point = static_cast<ODRAW::FixedPoint *>(props[i].get());
+				xlsx_context->get_drawing_context().set_fill_opacity(fixed_point->dVal);
+			}break;
+			case 0x0183:
+			{
+				ODRAW::fillColor * fill = (ODRAW::fillColor *)(props[i].get());
+				ODRAW::OfficeArtCOLORREF color(fill->op);
+				if (!color.sColorRGB.empty())
+					xlsx_context->get_drawing_context().set_fill_color(color.nColorRGB,color.sColorRGB, true );
+				else if (color. fPaletteIndex)
+				{
+					std::map<int,  std::wstring>::iterator it = xls_global_info->colors_palette.find(color.index);
+					if (it != xls_global_info->colors_palette.end())
+					{					
+						//todooo убрать 0 !!!
+						xlsx_context->get_drawing_context().set_fill_color(0, it->second, true );
+					}
+				}
+				else
+					xlsx_context->get_drawing_context().set_fill_color(color.index, color.fSchemeIndex ? 1 : 3, true );
+			}break;
+			case 0x0184:
+			{
+				ODRAW::FixedPoint * fixed_point = static_cast<ODRAW::FixedPoint *>(props[i].get());
+				xlsx_context->get_drawing_context().set_fill_opacity(fixed_point->dVal, true);
 			}break;
 			case 0x0186:
 			{
+				std::wstring target;
 				ODRAW::fillBlip *fillBlip = (ODRAW::fillBlip *)(props[i].get());
-				if (fillBlip->blip)
+				if ((fillBlip) && (fillBlip->blip))
 				{
-					std::wstring target = WriteMediaFile(fillBlip->blip->pict_data,fillBlip->blip->pict_size, fillBlip->blip->pict_type);
-					xlsx_context->get_drawing_context().set_image(target);
+					target = WriteMediaFile(fillBlip->blip->pict_data,fillBlip->blip->pict_size, fillBlip->blip->pict_type);
 				}
 				else
 				{
 					bool isIternal = false;
-					std::wstring target;
 					std::wstring rId = xlsx_context->get_mediaitems().find_image(props[i]->op , target, isIternal);
-					xlsx_context->get_drawing_context().set_image(target);
+				}
+				xlsx_context->get_drawing_context().set_fill_texture(target);
+			}break;
+			case 0x018B:
+			{
+				ODRAW::fillAngle * angle = (ODRAW::fillAngle *)(props[i].get());
+				xlsx_context->get_drawing_context().set_fill_angle(angle->dVal);
+			}break;
+			case 0x197:
+			{
+				ODRAW::fillShadeColors *shadeColors = (ODRAW::fillShadeColors *)(props[i].get());
+
+				for (int i = 0 ; (shadeColors) && (i < shadeColors->fillShadeColors_complex.data.size()); i++)
+				{
+					ODRAW::OfficeArtCOLORREF & color = shadeColors->fillShadeColors_complex.data[i].color;
+
+					std::wstring strColor;
+					if (!color.sColorRGB.empty())	strColor = color.sColorRGB;
+					else if (color. fPaletteIndex)
+					{
+						std::map<int,  std::wstring>::iterator it = xls_global_info->colors_palette.find(color.index);
+						if (it != xls_global_info->colors_palette.end())	strColor = it->second;
+					}
+					if (!strColor.empty())
+						xlsx_context->get_drawing_context().add_fill_colors( shadeColors->fillShadeColors_complex.data[i].dPosition, strColor);
+					else
+					{
+						xlsx_context->get_drawing_context().add_fill_colors( shadeColors->fillShadeColors_complex.data[i].dPosition, 
+																									color.index, color.fSchemeIndex ? 1 : 3 );
+					}
 				}
 			}break;
 			case 0x01BF:
@@ -715,14 +823,15 @@ void XlsConverter::convert_line_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & pr
 			case 0x01C0:
 			{
 				ODRAW::OfficeArtCOLORREF color(props[i]->op);
-				if (!color.colorRGB.empty())
-					xlsx_context->get_drawing_context().set_line_color(color.colorRGB);
+				if (!color.sColorRGB.empty())
+					xlsx_context->get_drawing_context().set_line_color(color.nColorRGB, color.sColorRGB);
 				else if (color. fPaletteIndex)
 				{
 					std::map<int,  std::wstring>::iterator it = xls_global_info->colors_palette.find(color.index);
 					if (it != xls_global_info->colors_palette.end())
 					{					
-						xlsx_context->get_drawing_context().set_line_color(it->second);
+						//todooo убрать 0 !!
+						xlsx_context->get_drawing_context().set_line_color(0, it->second);
 					}
 				}
 				else
@@ -743,6 +852,10 @@ void XlsConverter::convert_line_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & pr
 			{
 				xlsx_context->get_drawing_context().set_line_style(props[i]->op);
 			}break;
+			case 0x01CE:
+			{
+				xlsx_context->get_drawing_context().set_line_dash(props[i]->op);
+			}break;
 		}
 	}
 }
@@ -750,30 +863,35 @@ void XlsConverter::convert_blip(std::vector<ODRAW::OfficeArtFOPTEPtr> & props)
 {
 	for (int i = 0 ; i < props.size() ; i++)
 	{
+		ODRAW::FixedPoint * fixed_point = static_cast<ODRAW::FixedPoint *>(props[i].get());
 		switch(props[i]->opid)
 		{
 		case 0x100:
 			{
-				xlsx_context->get_drawing_context().set_crop_top(props[i]->op);
+				if (fixed_point)
+					xlsx_context->get_drawing_context().set_crop_top(fixed_point->dVal);
 			}break;
 		case 0x101:
 			{
-				xlsx_context->get_drawing_context().set_crop_bottom(props[i]->op);
+				if (fixed_point)
+					xlsx_context->get_drawing_context().set_crop_bottom(fixed_point->dVal);
 			}break;
 		case 0x102:
 			{
-				xlsx_context->get_drawing_context().set_crop_left(props[i]->op);
+				if (fixed_point)
+					xlsx_context->get_drawing_context().set_crop_left(fixed_point->dVal);
 			}break;
 		case 0x103:
 			{
-				xlsx_context->get_drawing_context().set_crop_right(props[i]->op);
+				if (fixed_point)
+					xlsx_context->get_drawing_context().set_crop_right(fixed_point->dVal);
 			}break;
 		case 0x104:
 			{
 				bool isIternal = false;
 				std::wstring target;
 				std::wstring rId = xlsx_context->get_mediaitems().find_image(props[i]->op , target, isIternal);
-				xlsx_context->get_drawing_context().set_image(target);
+				xlsx_context->get_drawing_context().set_fill_texture(target);
 			}break;
 		}
 	}
@@ -972,10 +1090,29 @@ void XlsConverter::convert(XLS::TxO * text_obj)
 	xlsx_context->get_drawing_context().set_text(strm.str());
 }
 
+void XlsConverter::convert_chart_sheet(XLS::ChartSheetSubstream * chart)
+{
+	if (chart == NULL) return;
+		
+	ODRAW::OfficeArtSpContainer *sp			= NULL;
+/*		if (( spgr) && (ind < spgr->child_records.size()))
+	{
+		sp		= dynamic_cast<ODRAW::OfficeArtSpContainer*>(spgr->child_records[ind++].get());
+	}*/	
+		
+	if (xlsx_context->get_drawing_context().start_drawing(0x0005))		
+	{
+		convert(chart);
+		xlsx_context->get_drawing_context().set_chart_sheet_anchor(xls_global_info->currentChartWidth, xls_global_info->currentChartHeight);//todooo - size chart
+		xlsx_context->get_drawing_context().set_id(1);
+
+		xlsx_context->get_drawing_context().end_drawing();
+	}
+}
 void XlsConverter::convert(XLS::ChartSheetSubstream * chart)
 {
 	if (chart == NULL) return;
 
-	//chart->serialize(xlsx_context->current_chart().chartData());	
+	chart->serialize(xlsx_context->current_chart().chartData());	
 	//convert(chart->m_OBJECTSCHART.get());непонятные какие то текстбоксы - пустые и бз привязок
 }

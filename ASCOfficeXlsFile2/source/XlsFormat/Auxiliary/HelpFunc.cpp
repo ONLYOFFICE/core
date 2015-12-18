@@ -385,8 +385,10 @@ const std::wstring toARGB(const unsigned int rgba)
 
 const std::wstring toRGB(const unsigned int rgba)
 {
-	return toRGB(static_cast<unsigned char>(rgba & 0xff), static_cast<unsigned char>((rgba >> 8) & 0xff),
-		static_cast<unsigned char>((rgba >> 16) & 0xff));
+	unsigned char R = static_cast<unsigned char>((rgba >> 16) & 0xff);
+	unsigned char G = static_cast<unsigned char>((rgba >> 8) & 0xff);
+	unsigned char B = static_cast<unsigned char>(rgba & 0xff);
+	return toRGB(R, G ,B);
 }
 
 const std::wstring toARGB(const unsigned char red, const unsigned char green, const unsigned char blue, const unsigned char alpha)
@@ -407,20 +409,31 @@ const bool fromARGB(const std::wstring& argb, unsigned char& red, unsigned char&
 	{
 		return false;
 	}
-	alpha = static_cast<unsigned char>(hex_str2int(argb.substr(0, 2)));
-	red = static_cast<unsigned char>(hex_str2int(argb.substr(2, 2)));
-	green = static_cast<unsigned char>(hex_str2int(argb.substr(4, 2)));
-	blue = static_cast<unsigned char>(hex_str2int(argb.substr(6, 2)));
+	alpha	= static_cast<unsigned char>	(hex_str2int(argb.substr(0, 2)));
+	red		= static_cast<unsigned char>	(hex_str2int(argb.substr(2, 2)));
+	green	= static_cast<unsigned char>	(hex_str2int(argb.substr(4, 2)));
+	blue	= static_cast<unsigned char>	(hex_str2int(argb.substr(6, 2)));
 
 	return true;
 }
 
-
+const int HexChar2Int(const char value)
+{
+	if (value >= '0' && value <= '9')
+		return value - '0';
+	if (value >= 'a' && value <= 'f')
+		return 10 + value - 'a';
+	if (value >= 'A' && value <= 'F')
+		return 10 + value - 'A';
+	return 0;
+}
 const size_t hex_str2int(const std::wstring& hex)
 {
-	return hex_str2int(hex.begin(), hex.end());
+	size_t  summa = 0;
+	for (int i = 0; i != hex.length(); ++i)
+		summa += HexChar2Int((char)hex[i]) << (4 * (hex.length() - i - 1));
+	return summa;
 }
-
 
 const size_t hex_str2int(const std::wstring::const_iterator& it_begin, const std::wstring::const_iterator& it_end)
 {

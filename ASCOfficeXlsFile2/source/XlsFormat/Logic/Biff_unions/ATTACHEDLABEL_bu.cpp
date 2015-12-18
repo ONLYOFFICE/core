@@ -17,7 +17,6 @@
 #include <Logic/Biff_unions/TEXTPROPS.h>
 #include <Logic/Biff_unions/CRTMLFRT.h>
 
-#include <simple_xml_writer.h>
 #include <utils.h>
 
 namespace XLS
@@ -53,6 +52,9 @@ const bool ATTACHEDLABEL::loadContent(BinProcessor& proc)
 	{
 		return false;
 	}
+	m_TextProperties = elements_.back();
+	elements_.pop_back();
+	
 	proc.mandatory<Begin>();	elements_.pop_back();
 
 	if (proc.optional<Pos>())
@@ -94,6 +96,9 @@ const bool ATTACHEDLABEL::loadContent(BinProcessor& proc)
 		
 		m_iLinkObject = o_l->wLinkObj;
 
+		Pos * pos = dynamic_cast<Pos*>(m_Pos.get());
+		if (pos)
+			pos->m_iLinkObject = m_iLinkObject;
 	}
 	
 	if (proc.optional<DataLabExtContents>())
@@ -115,6 +120,31 @@ const bool ATTACHEDLABEL::loadContent(BinProcessor& proc)
 	return true;
 }
 
+int ATTACHEDLABEL::serialize_txPr(std::wostream & _stream)
+{
+	FontX *font = dynamic_cast<FontX*>(m_FontX.get());
+
+	if (font == NULL) return 0;
+
+	CP_XML_WRITER(_stream)    
+	{
+		CP_XML_NODE(L"c:txPr")
+		{
+			CP_XML_NODE(L"a:bodyPr");
+			CP_XML_NODE(L"a:lstStyle");
+			CP_XML_NODE(L"a:p")
+			{
+				CP_XML_NODE(L"a:pPr")
+				{
+					serialize_rPr(CP_XML_STREAM(),font->iFont, false, true);
+				}
+				CP_XML_NODE(L"a:endParaRPr");
+			}
+		}
+	}
+	return 0;
+}
+
 int ATTACHEDLABEL::serialize(std::wostream & _stream)
 {
 	AI *ai	= dynamic_cast<AI *>( m_AI.get());
@@ -123,84 +153,115 @@ int ATTACHEDLABEL::serialize(std::wostream & _stream)
 	SeriesText * seriesText = dynamic_cast<SeriesText *>(ai->m_SeriesText.get());
 
 	AlRuns *allRuns = dynamic_cast<AlRuns *>( m_AlRuns.get());
-	int count_runs = allRuns->rgRuns.size();
+	int count_runs = allRuns ? allRuns->rgRuns.size() : 0;
+
+	Text * textProps = dynamic_cast<Text*> (m_TextProperties.get());
+	bool rtl = false;
+	if((textProps) && (textProps->iReadingOrder == (unsigned char)2)) rtl = true;
 
 	CP_XML_WRITER(_stream)    
 	{
-		CP_XML_NODE(L"c:tx")
+		if (seriesText)
 		{
-			CP_XML_NODE(L"c:rich")
+			CP_XML_NODE(L"c:tx")
 			{
-				//<a:bodyPr>
-				//  <xsl:if test="$ATTACHEDLABEL/Text/@trot != 0">
-				//    <xsl:attribute name="rot">
-				//      <xsl:call-template name="angle_b2x">
-				//        <xsl:with-param name="degrees" select="$ATTACHEDLABEL/Text/@trot"/>
-				//      </xsl:call-template>
-				//    </xsl:attribute>
-				//  </xsl:if>
-				//</a:bodyPr>
-				CP_XML_NODE(L"a:p")
+				CP_XML_NODE(L"c:rich")
 				{
-					CP_XML_NODE(L"a:pPr")
+					CP_XML_NODE(L"a:bodyPr")
 					{
-						FontX * font = dynamic_cast<FontX*>(m_FontX.get());
-						if (font)
+						if (textProps)
 						{
-							serialize_rPr (CP_XML_STREAM(),font->iFont, true);
+							if (textProps->trot != 0)
+							{
+								if (textProps->trot == (_UINT16)0xffff)	CP_XML_ATTR(L"vert", L"vert");	
+								else
+								{
+									if (textProps->trot > 90)	CP_XML_ATTR(L"rot", (textProps->trot - 90)	* 60000);						
+									else						CP_XML_ATTR(L"rot",	-textProps->trot		* 60000);
+									CP_XML_ATTR(L"vert", L"horz");	
+								}
+							}							
 						}
 					}
-					if (seriesText)//todoooo сделать вариант с DFTTEXT
-					{	
-						std::wstring & str_ = seriesText->stText.value();
-						int str_size = str_.size();
-
-						for (int i = 0 ; i < allRuns->rgRuns.size(); i++)
+					CP_XML_NODE(L"a:p")
+					{
+						CP_XML_NODE(L"a:pPr")
 						{
-							FormatRun *run = dynamic_cast<FormatRun*>(allRuns->rgRuns[i].get());
-							if (run == NULL) continue;
-
-							int end_string = str_size;
-
-							if ( i < allRuns->rgRuns.size() - 1)
+							FontX * font = dynamic_cast<FontX*>(m_FontX.get());
+							if (font)
 							{
-								FormatRun *run_next = dynamic_cast<FormatRun*>(allRuns->rgRuns[i+1].get());
-								if (run_next)
-									end_string = run_next->ich;
+								serialize_rPr (CP_XML_STREAM(),font->iFont, rtl, true);
 							}
+						}
+						if (seriesText)//todoooo сделать вариант с DFTTEXT
+						{	
+							std::wstring & str_ = seriesText->stText.value();
 
-							CP_XML_NODE(L"a:r")
+							if (count_runs == 0)
 							{
-								serialize_rPr(CP_XML_STREAM(), run->ifnt );
-
-								CP_XML_NODE(L"a:t")
-								{		
-									if (run->ich > str_.length())
+								CP_XML_NODE(L"a:r")
+								{
+									CP_XML_NODE(L"a:t")
 									{
-										//ошибка
-										run->ich = 0;
+										CP_XML_STREAM() << xml::utils::replace_text_to_xml(str_);
+									}
+								}
+							}
+							else
+							{
+								int str_size = str_.size();
+								for (int i = 0 ; i < count_runs; i++)
+								{
+									FormatRun *run = dynamic_cast<FormatRun*>(allRuns->rgRuns[i].get());
+									if (run == NULL) continue;
+
+									int end_string = str_size;
+
+									if ( i < count_runs - 1)
+									{
+										FormatRun *run_next = dynamic_cast<FormatRun*>(allRuns->rgRuns[i+1].get());
+										if (run_next)
+											end_string = run_next->ich;
 									}
 
-									std::wstring str_part = str_.substr( run->ich, end_string - run->ich);
+									CP_XML_NODE(L"a:r")
+									{
+										serialize_rPr(CP_XML_STREAM(), run->ifnt, rtl, false );
 
-									CP_XML_STREAM() << xml::utils::replace_text_to_xml(str_part);
+										CP_XML_NODE(L"a:t")
+										{		
+											if (run->ich > str_.length())
+											{
+												//ошибка
+												run->ich = 0;
+											}
+
+											std::wstring str_part = str_.substr( run->ich, end_string - run->ich);
+
+											CP_XML_STREAM() << xml::utils::replace_text_to_xml(str_part);
+										}
+									}
 								}
 							}
 						}
 					}
-				}
-			}	
+				}	
+			}
+			if (m_Pos)		m_Pos->serialize(_stream);
+			if (m_FRAME)	m_FRAME->serialize(_stream);
 		}
-		Pos *pos = dynamic_cast<Pos *>(m_Pos.get());
-		if (pos)pos->serialize(_stream);
+		else
+		{
+			if (m_Pos)		m_Pos->serialize(_stream);
+			if (m_FRAME)	m_FRAME->serialize(_stream);
+			serialize_txPr(_stream);
+		}
 	
-		FRAME *frame = dynamic_cast<FRAME *>(m_FRAME.get());
-		if (frame)frame->serialize(_stream);
 	}
 	return 0;
 }
 
-int ATTACHEDLABEL::serialize_rPr (std::wostream & _stream, int iFmt, bool defRPr)
+int ATTACHEDLABEL::serialize_rPr (std::wostream & _stream, int iFmt, bool rtl, bool defRPr)
 {
 	if (!pGlobalWorkbookInfoPtr)			return 0;
 	if (!pGlobalWorkbookInfoPtr->m_arFonts) return 0;
@@ -210,22 +271,21 @@ int ATTACHEDLABEL::serialize_rPr (std::wostream & _stream, int iFmt, bool defRPr
 
 	Font * font = dynamic_cast<Font*>(pGlobalWorkbookInfoPtr->m_arFonts->at(iFmt-1).get());
 
+	Text * text_props = dynamic_cast<Text*>(m_TextProperties.get());
+	
+	_CP_OPT(_UINT16) color;
+
 	if (font)
-	{
-		if (defRPr)
+	{	
+		if (text_props)
 		{
-			CP_XML_WRITER(_stream)    
-			{		
-				CP_XML_NODE(L"a:defRPr")
-				{
-					font->serialize_properties(CP_XML_STREAM(), true);
-				}
-			}
-		}		
-		else
-		{
-			font->serialize_rPr(_stream);
+			color = font->icv;
+			font->icv = text_props->icvText;
 		}
+
+		font->serialize_rPr(_stream, rtl, defRPr);
+		
+		if (color)font->icv = *color;
 	}
 	
 	return 0;

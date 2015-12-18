@@ -26,6 +26,7 @@ public:
 //-----------------------------
 	OSHARED::FixedPoint x;
 	OSHARED::FixedPoint y;
+	
 	OSHARED::FixedPoint dx;
 	OSHARED::FixedPoint dy;
 

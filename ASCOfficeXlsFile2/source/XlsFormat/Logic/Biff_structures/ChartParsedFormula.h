@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ParsedFormula.h"
+#include <Logic/Biff_structures/CellRangeRef.h>
 
 namespace XLS
 {
@@ -15,8 +16,12 @@ public:
 
 	BiffStructurePtr clone();
 	void load(CFRecord& record);
+	
 	virtual void store(CFRecord& record);
 
+	std::vector<CellRangeRef>	cell_ranges;
+
+	bool inRange(const CellRef & ref);
 };
 
 } // namespace XLS

@@ -17,9 +17,10 @@ public:
 	virtual void load(XLS::CFRecord& record);
 	virtual void store(XLS::CFRecord& record);
 
-private:
-	short Integral;
-	unsigned short Fractional;
+	short			Integral;
+	unsigned short	Fractional;
+
+	double			dVal;
 };
 
 } // namespace OSHARED

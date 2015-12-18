@@ -33,6 +33,8 @@ void FixedPoint::store(XLS::CFRecord& record)
 void FixedPoint::load(XLS::CFRecord& record)
 {
 	record >> Fractional >> Integral;
+
+	dVal =  Integral + Fractional/65536.;
 }
 
 

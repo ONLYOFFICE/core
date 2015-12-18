@@ -22,15 +22,11 @@ public:
 
 	static const ElementType	type = typeSurf;
 
+	int serialize(std::wostream & _stream);
+
 //-----------------------------
 	BIFF_BOOL fFillSurface;
 	BIFF_BOOL f3DPhongShade;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(fFillSurface)
-		//BO_ATTRIB_MARKUP_ATTRIB(f3DPhongShade)
-	//BO_ATTRIB_MARKUP_END
-
 };
 
 } // namespace XLS

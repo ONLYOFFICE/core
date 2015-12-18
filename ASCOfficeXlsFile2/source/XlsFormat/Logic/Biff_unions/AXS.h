@@ -18,6 +18,11 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
+	int serialize		(std::wostream & _stream);
+	int serialize_rPr	(std::wostream & _stream, int iFmt, _CP_OPT(unsigned int) color, bool rtl, bool defRPr);
+
+	GlobalWorkbookInfoPtr	pGlobalWorkbookInfoPtr;
+
 	struct _axis_line_format
 	{
 		BaseObjectPtr	axisLine;
@@ -28,6 +33,7 @@ public:
 	BaseObjectPtr	m_IFmtRecord;
 	BaseObjectPtr	m_Tick;
 	BaseObjectPtr	m_FontX;
+
 	BaseObjectPtr	m_AreaFormat;
 	BaseObjectPtr	m_GELFRAME;
 

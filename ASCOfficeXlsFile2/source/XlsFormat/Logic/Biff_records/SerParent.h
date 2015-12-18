@@ -24,11 +24,9 @@ public:
 
 //-----------------------------
 	BIFF_WORD series;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(series)
-	//BO_ATTRIB_MARKUP_END
 
+	BaseObjectPtr m_SerAuxTrend;
+	BaseObjectPtr m_SerAuxErrBar;
 };
 
 } // namespace XLS

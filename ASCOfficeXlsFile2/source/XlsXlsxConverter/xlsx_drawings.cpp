@@ -30,29 +30,29 @@ class xlsx_drawings::Impl
     };
 
 public:
-	void add(std::wstring const & d,
-        bool isInternal,
-        std::wstring const & rid,
-        std::wstring const & target,
-		external_items::Type type)
-    {
-        xlsx_drawings_.push_back(d);
-		
-		bool present = false;
-        BOOST_FOREACH(rel_ const & r, xlsx_drawing_rels_)
-        {		
-			if (r.rid_ == rid && r.target_ == target)
-				present = true;
-		}
-		if (!present)
-		{
-			xlsx_drawing_rels_.push_back(rel_(isInternal, rid, target, type));
-		}
-  //      BOOST_FOREACH(_hlink_desc h, d.hlinks)
-  //      {
-		//	xlsx_drawing_rels_.push_back(rel_(false, h.hId, h.hRef, external_items::typeHyperlink));
-		//}
-    }
+	//void add(std::wstring const & d,
+ //       bool isInternal,
+ //       std::wstring const & rid,
+ //       std::wstring const & target,
+	//	external_items::Type type)
+ //   {
+ //       xlsx_drawings_.push_back(d);
+	//	
+	//	bool present = false;
+ //       BOOST_FOREACH(rel_ const & r, xlsx_drawing_rels_)
+ //       {		
+	//		if (r.rid_ == rid && r.target_ == target)
+	//			present = true;
+	//	}
+	//	if (!present)
+	//	{
+	//		xlsx_drawing_rels_.push_back(rel_(isInternal, rid, target, type));
+	//	}
+ // //      BOOST_FOREACH(_hlink_desc h, d.hlinks)
+ // //      {
+	//	//	xlsx_drawing_rels_.push_back(rel_(false, h.hId, h.hRef, external_items::typeHyperlink));
+	//	//}
+ //   }
     void add(
         bool isInternal,
         std::wstring const & rid,
@@ -72,31 +72,7 @@ public:
 		}
     }
 
-
-	void serialize(std::wostream & strm) 
-    {
-        CP_XML_WRITER(strm)
-        {
-            CP_XML_NODE(L"xdr:wsDr")
-            {
-                CP_XML_ATTR(L"xmlns:xdr", L"http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing");
-                CP_XML_ATTR(L"xmlns:a"	, L"http://schemas.openxmlformats.org/drawingml/2006/main");
-                CP_XML_ATTR(L"xmlns:r"	, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
-
-				BOOST_FOREACH(std::wstring & d, xlsx_drawings_)
-                {
-                    CP_XML_STREAM() << d;
-                }
-			}
-        }
-    }
-    
-    bool empty() const
-    {
-        return (xlsx_drawings_.empty());
-    }
-
-    void dump_rels(rels & Rels)
+   void dump_rels(rels & Rels)
     {
         BOOST_FOREACH(rel_ const & r, xlsx_drawing_rels_)
         {
@@ -135,7 +111,7 @@ public:
 
 private:
 
-	std::vector<std::wstring>	xlsx_drawings_;	
+	//std::vector<std::wstring>	xlsx_drawings_;	
 	std::vector<rel_>			xlsx_drawing_rels_;
 };
 
@@ -147,14 +123,14 @@ xlsx_drawings::~xlsx_drawings()
 {
 }
 
-void xlsx_drawings::add(std::wstring const & d,
-        bool isInternal,
-        std::wstring const & rid,
-        std::wstring const & target,
-        external_items::Type type)
-{
-    impl_->add(d, isInternal, rid, target, type);
-}
+//void xlsx_drawings::add(std::wstring const & d,
+//        bool isInternal,
+//        std::wstring const & rid,
+//        std::wstring const & target,
+//        external_items::Type type)
+//{
+//    impl_->add(d, isInternal, rid, target, type);
+//}
 void xlsx_drawings::add(
         bool isInternal,
         std::wstring const & rid,
@@ -163,15 +139,7 @@ void xlsx_drawings::add(
 {
     impl_->add(isInternal, rid, target, type);
 }
-void xlsx_drawings::serialize(std::wostream & _Wostream)
-{
-    impl_->serialize(_Wostream);
-}
 
-bool xlsx_drawings::empty() const
-{
-    return impl_->empty();
-}
 
 void xlsx_drawings::dump_rels(rels & Rels)
 {

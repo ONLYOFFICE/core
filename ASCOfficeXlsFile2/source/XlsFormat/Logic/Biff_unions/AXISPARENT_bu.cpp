@@ -65,5 +65,22 @@ const bool AXISPARENT::loadContent(BinProcessor& proc)
 	return true;
 }
 
+void AXISPARENT::concatinate_second (BaseObjectPtr & addit)
+{
+	AXISPARENT * second = dynamic_cast<AXISPARENT *>(addit.get());
+
+	if (second == NULL) return;
+
+	for (int i = 0; i < second->m_arCRT.size(); i++)
+	{
+		CRT* crt = dynamic_cast<CRT*>(second->m_arCRT[i].get());
+		crt->m_indAXISPARENT = 1;
+
+		m_arCRT.push_back(second->m_arCRT[i]);
+	}
+
+}
+
+
 } // namespace XLS
 

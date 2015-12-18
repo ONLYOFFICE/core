@@ -3,8 +3,6 @@
 #include <Logic/Biff_records/Style.h>
 #include <Logic/Biff_records/StyleExt.h>
 
-#include <simple_xml_writer.h>
-
 namespace XLS
 {
 

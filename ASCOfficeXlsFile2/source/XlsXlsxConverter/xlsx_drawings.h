@@ -31,19 +31,18 @@ public:
     static xlsx_drawings_ptr create();
 
 public:
-	void add(std::wstring const & d,
-        bool isInternal,
-        std::wstring const & rid,
-        std::wstring const & target,
-		external_items::Type type
-        );
+	//void add(std::wstring const & d,
+ //       bool isInternal,
+ //       std::wstring const & rid,
+ //       std::wstring const & target,
+	//	external_items::Type type
+ //       );
     void add(
         bool isInternal,
         std::wstring const & rid,
         std::wstring const & target,
 		external_items::Type type
         );
-    bool empty() const;
 
     void dump_rels(rels & Rels);
    

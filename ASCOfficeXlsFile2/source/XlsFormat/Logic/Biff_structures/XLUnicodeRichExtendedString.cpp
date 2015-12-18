@@ -4,7 +4,6 @@
 #include <Logic/GlobalWorkbookInfo.h>
 #include <Logic/Biff_records/Font.h>
 
-#include <simple_xml_writer.h>
 #include <utils.h>
 
 namespace XLS

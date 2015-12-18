@@ -20,12 +20,16 @@ public:
 
 	static const ElementType	type = typeSERIESFORMAT;
 
-	std::vector<BaseObjectPtr>	m_arSS;
+	int serialize_legend(std::wostream & _stream, int idx);
+
+	BaseObjectPtr				m_SS;
+	std::vector<BaseObjectPtr>	m_arPtSS;
 	std::vector<BaseObjectPtr>	m_arAI;
 
 	BaseObjectPtr				m_Series;
 	
-	std::vector<BaseObjectPtr>	m_arDopSeries;
+	BaseObjectPtr				m_SerToCrt;
+	BaseObjectPtr				m_SerParent;
 
 	struct _series_ex
 	{

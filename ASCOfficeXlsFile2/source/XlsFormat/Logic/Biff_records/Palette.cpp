@@ -1,6 +1,5 @@
 
 #include "Palette.h"
-#include <simple_xml_writer.h>
 
 namespace XLS
 {
@@ -62,9 +61,7 @@ void Palette::readFields(CFRecord& record)
 		record >> *rgb;
 		rgColor.push_back(rgb);
 
-		std::wstring rgb_color = STR::toRGB(rgb->red, rgb->green, rgb->blue);
-
-		global_info->RegisterPaletteColor(i+8, rgb_color);
+		global_info->RegisterPaletteColor(i+8, rgb->strRGB);
 	}
 }
 
@@ -89,7 +86,7 @@ int Palette::serialize(std::wostream & stream)
 				LongRGB * rgb = dynamic_cast<LongRGB *>(rgColor[i].get());
 				CP_XML_NODE(L"rgbColor")
 				{
-					CP_XML_ATTR(L"rgb", rgb->argb);
+					CP_XML_ATTR(L"rgb", rgb->strARGB);
 				}
 			}
 		}

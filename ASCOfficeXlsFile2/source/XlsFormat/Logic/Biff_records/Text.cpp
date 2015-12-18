@@ -6,6 +6,7 @@ namespace XLS
 
 Text::Text()
 {
+	is_area = false;
 }
 
 
@@ -62,8 +63,31 @@ void Text::readFields(CFRecord& record)
 	fShowBubbleSizes = GETBIT(flags1, 13);
 	fShowLabel = GETBIT(flags1, 14);
 
-	dlp = static_cast<unsigned char>(GETBITS(flags2, 0, 3));
-	iReadingOrder = static_cast<unsigned char>(GETBITS(flags2, 14, 15));
+	dlp				= static_cast<unsigned char>(GETBITS(flags2, 0, 3));
+	iReadingOrder	= static_cast<unsigned char>(GETBITS(flags2, 14, 15));
+
+	rot = trot;
+}
+
+int Text::serialize(std::wostream & _stream)
+{
+	CP_XML_WRITER(_stream)    
+	{
+		CP_XML_NODE(L"c:showVal")			{	CP_XML_ATTR (L"val" , fShowValue); }
+		if ( is_area )
+		{
+		 	CP_XML_NODE(L"c:showSerName")	{	CP_XML_ATTR (L"val" , fShowLabel); }
+			CP_XML_NODE(L"c:showCatName")	{	CP_XML_ATTR (L"val" , 0); }
+		}
+		else
+		{
+		 	CP_XML_NODE(L"c:showSerName")	{	CP_XML_ATTR (L"val" , 0); }
+			CP_XML_NODE(L"c:showCatName")	{	CP_XML_ATTR (L"val" , fShowLabel); }
+		}
+		CP_XML_NODE(L"c:showPercent")		{	CP_XML_ATTR (L"val" , fShowPercent); }
+		CP_XML_NODE(L"c:showBubbleSize")	{	CP_XML_ATTR (L"val" , fShowBubbleSizes); }
+	}
+	return 0;
 }
 
 } // namespace XLS

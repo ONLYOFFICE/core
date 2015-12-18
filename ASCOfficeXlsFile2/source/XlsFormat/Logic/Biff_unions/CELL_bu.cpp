@@ -9,8 +9,6 @@
 #include <Logic/Biff_records/Number.h>
 #include <Logic/Biff_records/LabelSst.h>
 
-#include <simple_xml_writer.h>
-
 namespace XLS
 {
 

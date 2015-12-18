@@ -6,6 +6,8 @@
 
 #include "Logging/Log.h"
 #include "XlsElementsType.h" //шоб со строками не работать
+#include <simple_xml_writer.h>
+
 
 namespace XLS
 {
@@ -33,7 +35,7 @@ public:
 
 	//virtual void toFrom(BinProcessor& proc) = 0; // This function shall contain only mark functions and is the universal XML serialiser
 
-        virtual const std::string & getClassName() const = 0; // Must be overridden in every deriver. The return value must be a reference to a static variable inside the getter
+	virtual const std::string & getClassName() const = 0; // Must be overridden in every deriver. The return value must be a reference to a static variable inside the getter
 
 	void add_child (BaseObjectPtr e) {elements_.push_back(e);}
 	
@@ -43,11 +45,13 @@ public:
 
 	virtual int serialize(std::wostream & _stream)
 	{
-                std::stringstream s;
-                s << std::string("This element - ") << getClassName() << std::string("- not serialize");
+		std::stringstream s;
+		s << std::string("This element - ") << getClassName() << std::string("- not serialize");
 		Log::warning(s.str());
 		return 0;
 	}
+
+	virtual void serialize_attribute(CP_ATTR_NODE){}
 };
 
 #define BASE_OBJECT_DEFINE_CLASS_NAME(class_name)\

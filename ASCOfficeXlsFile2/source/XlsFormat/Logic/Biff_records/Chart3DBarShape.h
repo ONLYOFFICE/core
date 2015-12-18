@@ -20,16 +20,13 @@ public:
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
 
+	int serialize(std::wostream & _stream);
+
 	static const ElementType	type = typeChart3DBarShape;
 
 //-----------------------------
 	BIFF_BYTE riser;
 	BIFF_BYTE taper;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(riser)
-		//BO_ATTRIB_MARKUP_ATTRIB(taper)
-	//BO_ATTRIB_MARKUP_END
 
 };
 

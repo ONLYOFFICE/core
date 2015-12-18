@@ -26,13 +26,6 @@ public:
 	BIFF_BOOL fSmoothedLine;
 	BIFF_BOOL f3DBubbles;
 	BIFF_BOOL fArShadow;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(fSmoothedLine)
-		//BO_ATTRIB_MARKUP_ATTRIB(f3DBubbles)
-		//BO_ATTRIB_MARKUP_ATTRIB(fArShadow)
-	//BO_ATTRIB_MARKUP_END
-
 };
 
 } // namespace XLS

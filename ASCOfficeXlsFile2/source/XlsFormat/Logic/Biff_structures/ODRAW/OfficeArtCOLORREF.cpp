@@ -26,7 +26,8 @@ OfficeArtCOLORREF::OfficeArtCOLORREF(const int raw_data)
 
 	if(!fSchemeIndex && !fPaletteIndex && !fSysIndex)
 	{
-		colorRGB = STR::toRGB(red, green, blue);
+		nColorRGB	= (blue<<16) + (green<<8) + (red);
+		sColorRGB	= STR::toRGB(red, green, blue);
 	}
 	else if(fSchemeIndex)
 	{
@@ -38,7 +39,7 @@ OfficeArtCOLORREF::OfficeArtCOLORREF(const int raw_data)
 	}
 	else if(fSysIndex)
 	{
-		index = ((green) << 8) + red;
+		index = (blue<<16) + (green<<8) + (red);
 	}
 }
 

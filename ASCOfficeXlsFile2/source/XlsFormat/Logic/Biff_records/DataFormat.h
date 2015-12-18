@@ -22,19 +22,10 @@ public:
 
 	static const ElementType	type = typeDataFormat;
 
-//-----------------------------
 	BIFF_WORD xi;
 	BIFF_WORD yi;
 	BIFF_WORD iss;
 	BIFF_BOOL fUnknown;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(xi)
-		//BO_ATTRIB_MARKUP_ATTRIB(yi)
-		//BO_ATTRIB_MARKUP_ATTRIB(iss)
-		//BO_ATTRIB_MARKUP_ATTRIB(fUnknown)
-	//BO_ATTRIB_MARKUP_END
-
 };
 
 } // namespace XLS

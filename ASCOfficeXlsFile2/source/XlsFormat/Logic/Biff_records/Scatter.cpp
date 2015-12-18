@@ -34,9 +34,42 @@ void Scatter::readFields(CFRecord& record)
 {
 	unsigned short flags;
 	record >> pcBubbleSizeRatio >> wBubbleSize >> flags;
-	fBubbles = GETBIT(flags, 0);
+	
+	fBubbles		= GETBIT(flags, 0);
 	fShowNegBubbles = GETBIT(flags, 1);
-	fHasShadow = GETBIT(flags, 2);
+	fHasShadow		= GETBIT(flags, 2);
+}
+
+int	Scatter::serialize(std::wostream & _stream)
+{
+	CP_XML_WRITER(_stream)    
+	{
+		if (fBubbles)
+		{
+			CP_XML_NODE(L"c:bubbleScale")
+			{
+				CP_XML_ATTR (L"val" , pcBubbleSizeRatio);
+			}
+			if (fShowNegBubbles)
+			{
+				CP_XML_NODE(L"c:showNegBubbles") { CP_XML_ATTR (L"val" , L"1"); }
+			}
+			if (wBubbleSize == (_UINT16)2)
+			{
+				CP_XML_NODE(L"c:sizeRepresents") { CP_XML_ATTR (L"val" , L"2"); }
+			}
+		}
+		else
+		{
+			CP_XML_NODE(L"c:scatterStyle")
+			{
+				//CP_XML_ATTR (L"val" , L"smoothMarker");
+				CP_XML_ATTR (L"val" , L"lineMarker");
+			}
+		}
+	}
+	
+	return 0;
 }
 
 } // namespace XLS

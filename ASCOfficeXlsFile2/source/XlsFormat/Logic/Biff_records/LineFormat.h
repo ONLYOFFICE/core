@@ -20,25 +20,16 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
+
+	int serialize(std::wostream & _stream);
 //-----------------------------
 	LongRGB rgb;
 	BIFF_WORD lns;
-	BIFF_SHORT we;
+	BIFF_WORD we;
 	BIFF_BOOL fAuto;
 	BIFF_BOOL fAxisOn;
 	BIFF_BOOL fAutoCo;
-	IcvChart icv;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_COMPLEX(rgb)
-		//BO_ATTRIB_MARKUP_ATTRIB(lns)
-		//BO_ATTRIB_MARKUP_ATTRIB(we)
-		//BO_ATTRIB_MARKUP_ATTRIB(fAuto)
-		//BO_ATTRIB_MARKUP_ATTRIB(fAxisOn)
-		//BO_ATTRIB_MARKUP_ATTRIB(fAutoCo)
-		//BO_ATTRIB_MARKUP_ATTRIB(icv)
-	//BO_ATTRIB_MARKUP_END
-
+	IcvChart icv;	
 };
 
 } // namespace XLS

@@ -20,8 +20,6 @@
 #include <Logic/Biff_records/HorizontalPageBreaks.h>
 #include <Logic/Biff_records/VerticalPageBreaks.h>
 
-#include <simple_xml_writer.h>
-
 namespace XLS
 {
 

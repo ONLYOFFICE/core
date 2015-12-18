@@ -14,8 +14,9 @@ namespace XLS
 
 
 IVAXIS::IVAXIS()
-:	id(0)
+:	id(0), bDataAxis(false)
 {
+	m_bSecondary = false;
 }
 
 
@@ -67,6 +68,9 @@ const bool IVAXIS::loadContent(BinProcessor& proc)
 	{
 		m_AxcExt = elements_.back();
 		elements_.pop_back();
+		
+		AxcExt *ext = dynamic_cast<AxcExt *>(m_AxcExt.get());
+		bDataAxis = ext->fDateAxis;
 	}
 
 	if (proc.optional<CatLab>())
@@ -79,15 +83,81 @@ const bool IVAXIS::loadContent(BinProcessor& proc)
 		m_AXS = elements_.back();
 		elements_.pop_back();
 	}
-	proc.optional<CRTMLFRT>();
+	if (proc.optional<CRTMLFRT>())
+	{
+		m_CRTMLFRT = elements_.back();
+		elements_.pop_back();
+	}
 	
 	// fix
-	proc.optional<CRTMLFRT>();
+	proc.optional<CRTMLFRT>(); ///????
 
 	proc.mandatory<End>();						elements_.pop_back();
 
 	return true;
 }
 
+int IVAXIS::serialize(std::wostream & _stream)
+{
+	CatSerRange * cat_ser_range = dynamic_cast<CatSerRange*>(m_CatSerRange.get());
+	Axis		* axis			= dynamic_cast<Axis*>		(m_Axis.get());
+	AxcExt		* axcExt		= dynamic_cast<AxcExt*>		(m_AxcExt.get());
+
+	int axes_type = axis->wType + 1;
+
+	CP_XML_WRITER(_stream)    
+	{
+		CP_XML_NODE(L"c:axId")
+		{
+			CP_XML_ATTR(L"val", id);
+		}
+		
+		CP_XML_NODE(L"c:scaling")
+		{
+			if (cat_ser_range->fReversed)
+			{
+				CP_XML_NODE(L"c:orientation"){  CP_XML_ATTR(L"val", L"maxMin"); }
+			}else
+			{
+				CP_XML_NODE(L"c:orientation"){  CP_XML_ATTR(L"val", L"minMax"); }
+			}
+		}
+		CP_XML_NODE(L"c:auto")	{  CP_XML_ATTR(L"val", 0); }
+		CP_XML_NODE(L"c:delete"){  CP_XML_ATTR(L"val", 0); }
+		
+//-------------------------------------------------------------------------------
+		CP_XML_NODE(L"c:axPos")
+		{
+			if (axes_type == 1)
+			{
+				if (m_bSecondary)	CP_XML_ATTR(L"val", L"t");
+				else				CP_XML_ATTR(L"val", L"b");
+			}
+			else if (axes_type == 2)
+			{
+				if (m_bSecondary)	CP_XML_ATTR(L"val", L"r");
+				else				CP_XML_ATTR(L"val", L"l");
+			}
+			else
+			{
+				if (m_bSecondary)	CP_XML_ATTR(L"val", L"t");
+				else				CP_XML_ATTR(L"val", L"b");
+			}
+		}
+//-----------------------------------------------------------------------------------
+		m_AXS->serialize(_stream);
+
+		if (m_AxcExt)
+			m_AxcExt->serialize(_stream);
+	
+		CP_XML_NODE(L"c:crosses")
+		{
+			if ((cat_ser_range) && (cat_ser_range->fMaxCross == true))	CP_XML_ATTR(L"val", L"max");
+			else CP_XML_ATTR(L"val", L"autoZero");
+		}	
+	}
+	
+	return 	axes_type;
+}
 } // namespace XLS
 

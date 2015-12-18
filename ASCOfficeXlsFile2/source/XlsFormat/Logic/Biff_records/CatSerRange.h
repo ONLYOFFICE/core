@@ -26,19 +26,10 @@ public:
 	BIFF_SHORT catCross;
 	BIFF_SHORT catLabel;
 	BIFF_SHORT catMark;
+	
 	BIFF_BOOL fBetween;
 	BIFF_BOOL fMaxCross;
-	BIFF_BOOL fReverse;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(catCross)
-		//BO_ATTRIB_MARKUP_ATTRIB(catLabel)
-		//BO_ATTRIB_MARKUP_ATTRIB(catMark)
-		//BO_ATTRIB_MARKUP_ATTRIB(fBetween)
-		//BO_ATTRIB_MARKUP_ATTRIB(fMaxCross)
-		//BO_ATTRIB_MARKUP_ATTRIB(fReverse)
-	//BO_ATTRIB_MARKUP_END
-
+	BIFF_BOOL fReversed;
 };
 
 } // namespace XLS

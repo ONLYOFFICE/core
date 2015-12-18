@@ -2,8 +2,6 @@
 #include "Dimensions.h"
 #include <Logic/Biff_structures/CellRangeRef.h>
 
-#include <simple_xml_writer.h>
-
 namespace XLS
 {
 

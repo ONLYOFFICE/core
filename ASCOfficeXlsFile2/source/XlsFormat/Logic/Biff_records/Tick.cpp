@@ -47,6 +47,48 @@ void Tick::readFields(CFRecord& record)
 	rot = GETBITS(flags, 2, 4);
 	fAutoRot = GETBIT(flags, 5);
 	iReadingOrder = GETBITS(flags, 14, 15);
+
+	rott = rot;
+}
+
+int Tick::serialize(std::wostream & _stream)
+{
+	CP_XML_WRITER(_stream)    
+	{
+		CP_XML_NODE(L"c:majorTickMark")
+		{
+			switch(tktMajor)
+			{
+			case 0: CP_XML_ATTR(L"val", L"none");	break;
+			case 1:	CP_XML_ATTR(L"val", L"in");		break;
+			case 2:	CP_XML_ATTR(L"val", L"out");	break;
+			case 3:	CP_XML_ATTR(L"val", L"cross");	break;
+			}
+			
+		}
+		CP_XML_NODE(L"c:minorTickMark")
+		{
+			switch(tktMinor)
+			{
+			case 0: CP_XML_ATTR(L"val", L"none");	break;
+			case 1:	CP_XML_ATTR(L"val", L"in");		break;
+			case 2:	CP_XML_ATTR(L"val", L"out");	break;
+			case 3:	CP_XML_ATTR(L"val", L"cross");	break;
+			}
+			
+		}
+		CP_XML_NODE(L"c:tickLblPos")
+		{
+			switch(tlt)
+			{
+			case 0: CP_XML_ATTR(L"val", L"none");	break;
+			case 1:	CP_XML_ATTR(L"val", L"low");	break;
+			case 2:	CP_XML_ATTR(L"val", L"high");	break;
+			case 3:	CP_XML_ATTR(L"val", L"nextTo");	break;
+			}
+		}
+	}
+	return 0;
 }
 
 } // namespace XLS

@@ -3,7 +3,6 @@
 #include <Logic/Biff_records/ShapePropsStream.h>
 #include <Logic/Biff_records/ContinueFrt12.h>
 
-#include <simple_xml_writer.h>
 #include <utils.h>
 
 namespace XLS

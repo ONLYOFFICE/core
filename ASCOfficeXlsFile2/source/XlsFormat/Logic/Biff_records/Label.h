@@ -27,13 +27,6 @@ public:
 //-----------------------------
 	Cell cell;
 	XLUnicodeString st;
-
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_COMPLEX(cell)
-		//BO_ATTRIB_MARKUP_ATTRIB(st)
-	//BO_ATTRIB_MARKUP_END
-
 };
 
 } // namespace XLS

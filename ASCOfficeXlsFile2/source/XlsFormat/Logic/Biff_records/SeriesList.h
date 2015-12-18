@@ -41,10 +41,6 @@ public:
 
 //-----------------------------
 	RGISeriesListSpecial rgiser;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_COMPLEX(rgiser)
-	//BO_ATTRIB_MARKUP_END
 
 };
 

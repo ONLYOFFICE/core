@@ -29,14 +29,14 @@ public:
 	bool fMove;
 	bool fSize;
 
-	XLS::Col256U colL;
-	short dxL;
-	XLS::RwU rwT;
-	short dyT;
-	XLS::Col256U colR;
-	short dxR;
-	XLS::RwU rwB;
-	short dyB;
+	XLS::Col256U	colL;
+	short			dxL;
+	XLS::RwU		rwT;
+	short			dyT;
+	XLS::Col256U	colR;
+	short			dxR;
+	XLS::RwU		rwB;
+	short			dyB;
 
 	unsigned int _dxL;
 	unsigned int _dyT;

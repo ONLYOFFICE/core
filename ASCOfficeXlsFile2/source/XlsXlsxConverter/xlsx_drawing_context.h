@@ -8,6 +8,15 @@
 
 #include "ShapeType.h"	
 
+const std::wstring standart_color[56] = {
+		L"000000",L"FFFFFF",L"FF0000",L"00FF00",L"0000FF",L"FFFF00",L"FF00FF",L"00FFFF",
+		L"800000",L"008000",L"000080",L"808000",L"800080",L"008080",L"C0C0C0",L"808080",
+		L"9999FF",L"993366",L"FFFFCC",L"CCFFFF",L"660066",L"FF8080",L"0066CC",L"CCCCFF",
+		L"000080",L"FF00FF",L"FFFF00",L"00FFFF",L"800080",L"800000",L"008080",L"0000FF",
+		L"00CCFF",L"CCFFFF",L"CCFFCC",L"FFFF99",L"99CCFF",L"FF99CC",L"CC99FF",L"FFCC99",
+		L"3366FF",L"33CCCC",L"99CC00",L"FFCC00",L"FF9900",L"FF6600",L"666699",L"969696",
+		L"003366",L"339966",L"003300",L"333300",L"993300",L"993366",L"333399",L"333333"	};
+
 namespace oox {
 
 class external_items;
@@ -30,10 +39,18 @@ private:
 
 struct _color
 {
-	_color() : index(-1), bScheme(false){}
-	std::wstring	rgb;
+	_color() : index(-1), bScheme(false), nRGB(0){}
+	int				nRGB;
+	std::wstring	sRGB;
 	int				index;
 	bool			bScheme;
+
+	void SetRGB(unsigned char nR, unsigned char  nG, unsigned char  nB);
+
+	unsigned char  GetB() { return (unsigned char )(nRGB);}
+	unsigned char  GetG() { return (unsigned char )(nRGB>>8);}
+	unsigned char  GetR() { return (unsigned char )(nRGB>>16);}
+
 };
 
 struct _rect
@@ -46,16 +63,41 @@ struct _rect
     int   bottom;
 
 };
+enum _fill_type
+{
+	fillNone,
+	fillSolid,
+	fillPattern,
+	fillTexture,
+	fillGradient,
+	fillGradientOne
+};
+enum _texture_mode
+{
+	textureTill,
+	textureStretch
+};
+enum _line_typeDash
+{
+	lineSolid,
+	lineDash,
+	lineDot,
+	lineDashDot,
+	lineDashDotDot
+};
+	
+class _drawing_state;
+typedef _CP_PTR(_drawing_state) _drawing_state_ptr;
 
 class _drawing_state
 {
 public:
-	_drawing_state() : isInternal(false), shape_id(msosptNotPrimitive),  flipH(false), flipV(false), bTextBox(false), bWordArt(false)
+	_drawing_state() : isInternal(false), shape_id(msosptRectangle),  flipH(false), flipV(false), bTextBox(false), bWordArt(false)
 	{
-		id = -1;
-		memset(image_crop, 0, 4 * sizeof(int));
-		rotation = 0;
-		image_crop_enabled = false;
+		id			= -1;		
+		rotation	= 0;
+		type_anchor	= 1;
+		parent_drawing_states = NULL;
 	}
 
 	int						shape_type;
@@ -64,13 +106,10 @@ public:
 	std::wstring			name;
 	std::wstring			description;
 
+	int						type_anchor;
 	std::wstring			anchor;
 	std::wstring			shape;
 
-	std::wstring			image_target;
-	int						image_crop[4];
-	bool					image_crop_enabled;
-	
 	int						id;
 	MSOSPT					shape_id;
 	
@@ -90,22 +129,49 @@ public:
 
 	struct _line
 	{
-		_line() {opacity = 0; type = L"solidFill"; style = L"simple"; width = 0; color.rgb = L"000000";}
+		_line() {opacity = 0; type = fillSolid; style = L"simple"; width = 0; color.sRGB = L"000000"; typeDash = lineSolid;}
 		_color			color;
 		int				opacity;
-		std::wstring	type;
+		_fill_type		type;
 		std::wstring	style;
         int             width;
-	}line;
+		_line_typeDash	typeDash;
+	}line;	
 
+	struct _shadow
+	{
+		_shadow() {is = false;}
+		bool			is;
+		_color			color;
+		int				opacity;
+	}shadow;
+	
 	struct _fill
 	{
-		_fill() {opacity = 0; type = 1; }
+		_fill() 
+		{
+			angle = opacity = opacity2 = 0; type = fillSolid; 
+			memset(texture_crop, 0, 4 * sizeof(int));
+			texture_crop_enabled = false;
+		}
 		_color			color;
 		_color			color2;
-		int				opacity;
-		int				type;
+		double			opacity;
+		double			opacity2;
+		_fill_type		type;
+
+		double			angle;
+		
+		std::wstring	texture_target;
+		int				texture_crop[4];
+		bool			texture_crop_enabled;
+		_texture_mode	texture_mode;
+
+		std::vector<std::pair<double, _color>> colorsPosition;
 	}fill;
+//for group
+	std::vector<_drawing_state_ptr>		drawing_states;
+	std::vector<_drawing_state_ptr>*	parent_drawing_states;
 };
 struct _hlink_desc
 {
@@ -122,11 +188,12 @@ public:
 	xlsx_drawings_ptr get_drawings();
 	bool empty();	
 
+	void start_group();
 	bool start_drawing(int type);	
 		void start_image();
 		void start_shape(int type);
-		void start_group();
 		void start_chart();
+
 
         void set_id			(int id);
 		void set_FlipH		();
@@ -136,25 +203,31 @@ public:
         void set_name		(const std::wstring & str);
         void set_description(const std::wstring & str);
 		
-        void set_crop_top	(int val);
-        void set_crop_bottom(int val);
-        void set_crop_left	(int val);
-        void set_crop_right	(int val);
+        void set_crop_top	(double val);
+        void set_crop_bottom(double val);
+        void set_crop_left	(double val);
+        void set_crop_right	(double val);
 
-        void set_rotation	(int val);
+        void set_rotation	(double val);
 
-        void set_fill_color	(const std::wstring & color);
-		void set_fill_color	(int index, int type);
-        void set_fill_type	(int val);
+        void set_fill_color		(int nColor, const std::wstring & sColor, bool background = false);
+		void set_fill_color		(int index, int type, bool background = false);
+ 		void set_fill_opacity	(double val, bool background = false);       
+		void set_fill_type		(int val);
+		void set_fill_angle		(double val);
+		void set_fill_texture_mode(int val);
+        void set_fill_texture	(const std::wstring & str);
+		void add_fill_colors	(double position, const std::wstring & color);
+		void add_fill_colors	(double position, int index, int type);
 
-		void set_line_color	(const std::wstring & color);
+		void set_line_color	(int nColor, const std::wstring & color);
 		void set_line_color	(int index, int type);
         void set_line_type	(int val);
         void set_line_style	(int val);
         void set_line_width (int val);
+		void set_line_dash	(int val);
 
-        void set_image		(const std::wstring & str);
-
+		void set_chart_sheet_anchor(double width, double height);
         void set_anchor		(const std::wstring & str);
 		bool is_anchor		();
 
@@ -167,24 +240,20 @@ public:
 		void set_text		(const std::wstring & text);
 		
 //------------------------------------------------------------------------------		
-		void serialize				(std::wostream & stream);
-		void serialize_chart		(std::wstring rId);	
-		void serialize_pic			(std::wstring rId);	
-		void serialize_shape();			
-		void serialize_color		(std::wostream & stream, const _color &color);
-		void serialize_line			(std::wostream & stream);
+		void serialize_shape		(_drawing_state_ptr & drawing_state);			
+		void serialize_chart		(_drawing_state_ptr & drawing_state, std::wstring rId );	
+		void serialize_pic			(_drawing_state_ptr & drawing_state, std::wstring rId );	
+
+		void serialize				(std::wostream & stream, _drawing_state_ptr & drawing_state);
+		void serialize_fill			(std::wostream & stream, _drawing_state_ptr & drawing_state);
 		void serialize_fill			(std::wostream & stream);
-		void serialize_bitmap_fill	(std::wostream & stream, std::wstring rId, const std::wstring ns = L"a:");
-		void serialize_solid_fill	(std::wostream & stream, const _color &color);
-		void serialize_none_fill	(std::wostream & stream);
-		void serialize_xfrm			(std::wostream & stream);
-		void serialize_text			(std::wostream & stream);
+		void serialize				(std::wostream & stream);
 
 	void end_drawing();
+	void end_group();
 private:
+	int							current_level;
     xlsx_conversion_context		& context_;
-
-	std::vector<_drawing_state>	drawing_state;
 	
 	xlsx_drawing_context_handle	& handle_;
 	xlsx_drawings_ptr			xlsx_drawings_;
@@ -192,6 +261,23 @@ private:
 	bool						in_chart_;
 	
 	std::vector<_hlink_desc>	hlinks_;
+
+	std::vector<_drawing_state_ptr>		drawing_states;
+	std::vector<_drawing_state_ptr>*	current_drawing_states;
+	
+	void end_drawing			(_drawing_state_ptr & drawing_state);
+	
+	void serialize_line			(std::wostream & stream, _drawing_state_ptr & drawing_state);
+	void serialize_gradient_fill(std::wostream & stream, _drawing_state_ptr & drawing_state);
+	void serialize_bitmap_fill	(std::wostream & stream, _drawing_state_ptr & drawing_state, std::wstring rId, const std::wstring ns = L"a:");
+	void serialize_solid_fill	(std::wostream & stream, const _color &color, double opacity = 0);
+	void serialize_none_fill	(std::wostream & stream);
+	void serialize_xfrm			(std::wostream & stream, _drawing_state_ptr & drawing_state);
+	void serialize_text			(std::wostream & stream, _drawing_state_ptr & drawing_state);
+	void serialize_color		(std::wostream & stream, const _color &color, double opacity = 0);
+
+	bool ChangeBlack2ColorImage(std::wstring sRgbColor1, std::wstring sRgbColor2, _drawing_state_ptr & drawing_state);
+	_color CorrectSysColor(int nColorCode, _drawing_state_ptr & drawing_state);
 };
 
 }

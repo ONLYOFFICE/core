@@ -34,7 +34,6 @@ public:
 	}
 	virtual void store(XLS::CFRecord& record){}
 
-public:
 	std::vector<Type> data;
 };
 

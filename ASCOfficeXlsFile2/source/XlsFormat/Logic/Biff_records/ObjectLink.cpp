@@ -29,6 +29,11 @@ void ObjectLink::writeFields(CFRecord& record)
 void ObjectLink::readFields(CFRecord& record)
 {
 	record >> wLinkObj >> wLinkVar1 >> wLinkVar2;
+
+//--------------------------------------------------
+	testLinkObj = wLinkObj;
+	testLinkVar1= wLinkVar1;
+	testLinkVar2= wLinkVar2;
 }
 
 } // namespace XLS

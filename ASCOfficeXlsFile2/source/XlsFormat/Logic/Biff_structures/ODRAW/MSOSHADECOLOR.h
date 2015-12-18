@@ -28,8 +28,11 @@ public:
 	virtual void store(XLS::CFRecord& record);
 
 	unsigned short		cbElement;
+	
 	OfficeArtCOLORREF	color;
 	OSHARED::FixedPoint position;
+
+	double				dPosition;
 };
 
 typedef boost::shared_ptr<MSOSHADECOLOR> MSOSHADECOLORPtr;

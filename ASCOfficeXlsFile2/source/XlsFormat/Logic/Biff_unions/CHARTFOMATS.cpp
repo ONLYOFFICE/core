@@ -83,10 +83,9 @@ const bool CHARTFORMATS::loadContent(BinProcessor& proc)
 	{
 		return false;
 	}
-	m_ChartRect = elements_.back();
-	elements_.pop_back();
-	
-	proc.mandatory<Begin>();				elements_.pop_back();
+	m_ChartRect = elements_.back();				elements_.pop_back();
+
+	proc.mandatory<Begin>();					elements_.pop_back();
 	
 	count = proc.repeated<FONTLIST>(0, 2);
 	while(count > 0)
@@ -98,20 +97,17 @@ const bool CHARTFORMATS::loadContent(BinProcessor& proc)
 
 	if (proc.optional<Scl>())
 	{
-		m_Scl = elements_.back();
-		elements_.pop_back();
+		m_Scl = elements_.back();				elements_.pop_back();
 
 		if (proc.optional<PlotGrowth>())
 		{
-			m_PlotGrowth = elements_.back();
-			elements_.pop_back();
+			m_PlotGrowth = elements_.back();	elements_.pop_back();
 		}
 	}
 
 	if (proc.optional<FRAME>())
 	{
-		m_FRAME = elements_.back();
-		elements_.pop_back();
+		m_FRAME = elements_.back();				elements_.pop_back();
 	}
 
 	count = proc.repeated<SERIESFORMAT>(0, 0);
@@ -132,8 +128,7 @@ const bool CHARTFORMATS::loadContent(BinProcessor& proc)
 
 	if (proc.mandatory<ShtProps>())
 	{
-		m_ShtProps = elements_.back();
-		elements_.pop_back();
+		m_ShtProps = elements_.back();			elements_.pop_back();
 	}
 	
 	count = proc.repeated<DFTTEXT>(0, 2);
@@ -145,27 +140,29 @@ const bool CHARTFORMATS::loadContent(BinProcessor& proc)
 	}	
 	if (proc.mandatory<AxesUsed>())
 	{
-		m_AxesUsed = elements_.back();
-		elements_.pop_back(); 
+		m_AxesUsed = elements_.back();			elements_.pop_back(); 
 	}
 	
 	count = proc.repeated<AXISPARENT>(1, 2);
-	while(count > 0)
+	m_arAXISPARENT.push_back(elements_.front()); 
+	elements_.pop_front(); count--;
+	if (count > 0)
 	{
-		m_arAXISPARENT.insert(m_arAXISPARENT.begin(), elements_.back());
-		elements_.pop_back();
-		count--;
+		AXISPARENT * ax_first = dynamic_cast<AXISPARENT *>(m_arAXISPARENT[0].get());
+		if (ax_first) ax_first->concatinate_second(elements_.front()); //for crt recalc
+
+		m_arAXISPARENT.push_back(elements_.front()); count--;
+		elements_.pop_front();
+		
 	}
 	
 	if (proc.optional<CrtLayout12A>())
 	{
-		m_CrtLayout12A = elements_.back();
-		elements_.pop_back();
+		m_CrtLayout12A = elements_.back();		elements_.pop_back();
 	}
 	if (proc.optional<DAT>())
 	{
-		m_DAT = elements_.back();
-		elements_.pop_back(); 
+		m_DAT = elements_.back();				elements_.pop_back(); 
 	}
 	
 	count = proc.repeated<ATTACHEDLABEL>(0, 0);
@@ -175,7 +172,10 @@ const bool CHARTFORMATS::loadContent(BinProcessor& proc)
 		elements_.pop_back();
 		count--;
 	}
-	proc.optional<CRTMLFRT>();
+	if (proc.optional<CRTMLFRT>())
+	{
+		elements_.pop_back();
+	}
 	
 	count = proc.repeated<Parenthesis_CHARTFORMATS_1>(0, 0);
 
@@ -185,32 +185,41 @@ const bool CHARTFORMATS::loadContent(BinProcessor& proc)
 		_chart_format cf;
 
 		if ("DataLabExt" == elements_.front()->getClassName())
-		{
+		{//необязат
 			cf.dataLabExt = elements_.front();
 			elements_.pop_front();
 			count--;
 		}
+		if (cf.dataLabExt)
+		{//start
+			elements_.pop_front();
+			count--;
+		}
 		if ("ATTACHEDLABEL" == elements_.front()->getClassName())
-		{
+		{//обязат
 			cf.attachedLABEL = elements_.front();
 			elements_.pop_front();
 			count--;
 		
 			m_arChartFormats.push_back(cf);
 		}
-		else break;
+		if (cf.dataLabExt)
+		{//end
+			elements_.pop_front();
+			count--;
+		}
 	}
 	if (proc.optional<TEXTPROPS>())
 	{
-		m_TEXTPROPS = elements_.back();
-		elements_.pop_back(); 
+		m_TEXTPROPS = elements_.back();		elements_.pop_back(); 
 	}
-	proc.repeated<CRTMLFRT>(0, 2);
+	count = proc.repeated<CRTMLFRT>(0, 2);
+
 	proc.mandatory<End>();					elements_.pop_back();
 
 	return true;
 }
-BaseObjectPtr CHARTFORMATS::find_label( _UINT16 link_id)
+BaseObjectPtr CHARTFORMATS::find_label( _UINT16 link_id, unsigned short ex)
 {
 	for (int i = 0 ; i < m_arATTACHEDLABEL.size(); i++)
 	{
@@ -219,10 +228,36 @@ BaseObjectPtr CHARTFORMATS::find_label( _UINT16 link_id)
 		if (obj_link == NULL) continue;
 		
 		if (obj_link->wLinkObj == link_id)
-			return m_arATTACHEDLABEL[i];
+		{
+			if (link_id !=4 ) 
+				return m_arATTACHEDLABEL[i];
+			else if (obj_link->wLinkVar1 == ex && obj_link->wLinkVar2 == (unsigned short)0xffff)
+				return m_arATTACHEDLABEL[i];
+		}
+		
 	}
 	ATTACHEDLABEL * nul = NULL;
 	return BaseObjectPtr(nul);
+}
+
+std::vector<std::pair<int, BaseObjectPtr>> CHARTFORMATS::find_labels( _UINT16 link_id, unsigned short ex)
+{
+	std::vector<std::pair<int, BaseObjectPtr>> result;
+
+	for (int i = 0 ; i < m_arATTACHEDLABEL.size(); i++)
+	{
+		ATTACHEDLABEL	* label		= dynamic_cast<ATTACHEDLABEL *>	(m_arATTACHEDLABEL[i].get());
+		ObjectLink		* obj_link	= dynamic_cast<ObjectLink *>	(label->m_ObjectLink.get());
+		if (obj_link == NULL) continue;
+		
+		if (obj_link->wLinkObj == link_id && obj_link->wLinkVar1 == ex && obj_link->wLinkVar2 != (unsigned short)0xffff)
+		{
+			result.push_back(std::pair<int, BaseObjectPtr>(obj_link->wLinkVar2, m_arATTACHEDLABEL[i]));
+		}
+		
+	}
+
+	return result;
 }
 
 BaseObjectPtr CHARTFORMATS::find_default_text( _UINT16 link_id)

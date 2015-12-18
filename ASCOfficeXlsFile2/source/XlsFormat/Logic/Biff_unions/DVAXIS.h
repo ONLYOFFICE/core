@@ -21,24 +21,19 @@ public:
 
 	static const ElementType	type = typeDVAXIS;
 
+	int serialize(std::wostream & _stream);
+
 	unsigned int id;
 
 	BaseObjectPtr	m_Axis;
 	BaseObjectPtr	m_AXS;
 
+	BaseObjectPtr	m_CRTMLFRT;
+
 	BaseObjectPtr	m_ValueRange;
 	BaseObjectPtr	m_AXM;
-
-	BaseObjectPtr	m_CatSerRange;
-	BaseObjectPtr	m_Tick;
-	BaseObjectPtr	m_FontX;
-	
-	BaseObjectPtr	m_AxisLine1;
-	BaseObjectPtr	m_LineFormat1;
-	BaseObjectPtr	m_AxisLine2;
-	BaseObjectPtr	m_LineFormat2;
-
-
+//-----------------------------------------------
+	bool m_bSecondary;
 };
 
 } // namespace XLS

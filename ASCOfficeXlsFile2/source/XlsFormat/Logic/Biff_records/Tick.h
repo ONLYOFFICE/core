@@ -23,6 +23,8 @@ public:
 
 	static const ElementType	type = typeTick;
 
+	int serialize(std::wostream & _stream);
+
 //-----------------------------
 	BIFF_BYTE tktMajor;
 	BIFF_BYTE tktMinor;
@@ -39,6 +41,7 @@ public:
 	Icv icv;
 	BIFF_WORD trot;
 
+	int rott;
 };
 
 } // namespace XLS

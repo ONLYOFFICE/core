@@ -30,27 +30,38 @@ CellRangeRef::CellRangeRef(const CellRef& cell_ref, const SourceType type)
 	switch(type)
 	{
 		case stColumnBelow:
-			rowFirst = cell_ref.getRow() + 1;
-			rowLast = 65535;
-			columnFirst = cell_ref.getColumn();
-			columnLast = cell_ref.getColumn();
-			rowFirstRelative = false;
-			rowLastRelative = false;
+			rowFirst			= cell_ref.getRow() + 1;
+			rowLast				= 65535;
+			columnFirst			= cell_ref.getColumn();
+			columnLast			= cell_ref.getColumn();
+			rowFirstRelative	= false;
+			rowLastRelative		= false;
 			columnFirstRelative = cell_ref.getColumnRelative();
-			columnLastRelative = cell_ref.getColumnRelative();
+			columnLastRelative	= cell_ref.getColumnRelative();
 			break;
 		case stRow:
-			rowFirst = cell_ref.getRow();
-			rowLast = cell_ref.getRow();
-			columnFirst = 0;
-			columnLast = 255;
-			rowFirstRelative = cell_ref.getRowRelative();
-			rowLastRelative = cell_ref.getRowRelative();
+			rowFirst			= cell_ref.getRow();
+			rowLast				= cell_ref.getRow();
+			columnFirst			= 0;
+			columnLast			= 255;
+			rowFirstRelative	= cell_ref.getRowRelative();
+			rowLastRelative		= cell_ref.getRowRelative();
 			columnFirstRelative = false;
-			columnLastRelative = false;
+			columnLastRelative	= false;
+			break;
+		case stSingleCell:
+			rowFirst			= cell_ref.getRow();
+			rowLast				= cell_ref.getRow();
+			columnFirst			= cell_ref.getColumn();
+			columnLast			= cell_ref.getColumn();
+			rowFirstRelative	= cell_ref.getRowRelative();
+			rowLastRelative		= cell_ref.getRowRelative();
+			columnFirstRelative = false;
+			columnLastRelative	= false;
 			break;
 		default:
-			throw;// EXCEPT::LE::WhatIsTheFuck("Unexpected value.", __FUNCTION__);
+			// EXCEPT::LE::WhatIsTheFuck("Unexpected value.", __FUNCTION__);
+			break;
 	}
 
 }

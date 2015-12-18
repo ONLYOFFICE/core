@@ -1,6 +1,5 @@
 #include "SST.h"
 
-#include <simple_xml_writer.h>
 #include <utils.h>
 
 namespace XLS

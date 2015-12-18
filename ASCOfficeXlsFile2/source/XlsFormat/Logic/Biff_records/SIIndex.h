@@ -2,6 +2,8 @@
 
 #include "BiffRecord.h"
 
+#include <Logic/Biff_structures/ChartParsedFormula.h>
+
 namespace XLS
 {
 
@@ -21,6 +23,9 @@ public:
 	void readFields(CFRecord& record);
 	
 	static const ElementType	type = typeSIIndex;
+
+	int serialize(std::wostream & _stream, ChartParsedFormula & in_ref);
+	int serialize(std::wostream & _stream, int idx, const CellRef & in_ref);
 
 //-----------------------------
 	BIFF_WORD					numIndex;

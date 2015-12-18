@@ -111,22 +111,54 @@ const bool SERIESFORMAT::loadContent(BinProcessor& proc)
 		count--;
 	}
 
+	if (proc.mandatory<SS>())
+	{
+		m_SS = elements_.back();
+		elements_.pop_back();
+	}	
+	//SS* ss_common = dynamic_cast<SS*>(m_SS.get());
 	count = proc.repeated<SS>(0, 0);
 	while(count > 0)
 	{
-		m_arSS.insert(m_arSS.begin(), elements_.back());
+		//SS* ss = dynamic_cast<SS*>(elements_.back().get());
+		//if (ss && ss_common)
+		//{
+		//	if (!ss->m_LineFormat && ss_common->m_LineFormat)
+		//	{
+		//		ss->m_LineFormat	= ss_common->m_LineFormat;
+		//		ss->m_AreaFormat	= ss_common->m_AreaFormat;
+		//		ss->m_PieFormat		= ss_common->m_PieFormat;
+		//	}
+		//}
+
+		m_arPtSS.insert(m_arPtSS.begin(), elements_.back());
 		elements_.pop_back();
 		count--;
-	}	
+	}
 	//доп серии
 	if (proc.mandatory<Parenthesis_SERIESFORMAT_1>())
 	{
 		count = elements_.size();
 		while(count > 0)
 		{
-			m_arDopSeries.insert(m_arDopSeries.begin(), elements_.back());
-			elements_.pop_back();
-			count--;
+			if		("SerParent"	== elements_.front()->getClassName())
+				m_SerParent = elements_.front();
+			else if ("SerToCrt"		== elements_.front()->getClassName())
+				m_SerToCrt = elements_.front();
+			else if ("SerAuxTrend"	== elements_.front()->getClassName() ||
+					 "SerAuxErrBar"	== elements_.front()->getClassName())
+			{
+				SerParent *parent = dynamic_cast<SerParent*>(m_SerParent.get());
+				if (parent  && "SerAuxTrend"	== elements_.front()->getClassName())
+				{
+					parent->m_SerAuxTrend = elements_.front();
+				}
+				if (parent  && "SerAuxErrBar"	== elements_.front()->getClassName())
+				{
+					parent->m_SerAuxErrBar = elements_.front();
+				}
+			}
+			elements_.pop_front();	count--;
 		}
 	}
 
@@ -145,23 +177,16 @@ const bool SERIESFORMAT::loadContent(BinProcessor& proc)
 			if ("ATTACHEDLABEL" == elements_.front()->getClassName())
 			{
 				ex.attachedLABEL = elements_.front();
-				elements_.pop_front(); count--;
 			}
 			else if ("TEXTPROPS" == elements_.front()->getClassName())
 			{
 				ex.textPROPS = elements_.front();
-				elements_.pop_front(); count--;
 			}
 			else if ("LegendException" == elements_.front()->getClassName())
 			{
-				break;
-				//next
+				break;	//next
 			}
-			else if (	"Begin" == elements_.front()->getClassName() ||
-						"End"	== elements_.front()->getClassName())
-			{
-				elements_.pop_front(); count--;
-			}
+			elements_.pop_front(); count--;
 		}
 		m_SeriesEx.push_back(ex);
 	}
@@ -170,6 +195,34 @@ const bool SERIESFORMAT::loadContent(BinProcessor& proc)
 
 	return true;
 }
+
+int SERIESFORMAT::serialize_legend(std::wostream & _stream, int idx)
+{
+	if (m_SeriesEx.empty()) return 0;
+
+	ATTACHEDLABEL	*att				= dynamic_cast<ATTACHEDLABEL*>	(m_SeriesEx[0].attachedLABEL.get());
+	LegendException *legendException	= dynamic_cast<LegendException*>(m_SeriesEx[0].legendException.get());
+	TEXTPROPS		*text_props			= dynamic_cast<TEXTPROPS*>		(m_SeriesEx[0].textPROPS.get());
+
+	CP_XML_WRITER(_stream)    
+	{
+		CP_XML_NODE(L"c:legendEntry")//legendException->fLabel ????? 
+		{
+			CP_XML_NODE(L"c:idx")
+			{
+				CP_XML_ATTR(L"val", idx); //legendException->iss = oxffff легенда для серий
+			}
+			if (att)
+			{
+				att->serialize_txPr(CP_XML_STREAM());
+			}
+			legendException->serialize(CP_XML_STREAM());
+		}
+	}
+
+	return 0;
+}
+
 
 } // namespace XLS
 

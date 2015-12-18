@@ -18,6 +18,8 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
+	int serialize(std::wostream & _stream);
+
 	BaseObjectPtr m_SeriesText ;
 	BaseObjectPtr m_BRAI;
 

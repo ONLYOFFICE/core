@@ -24,11 +24,6 @@ public:
 
 //-----------------------------
 	BIFF_WORD ifmt;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(ifmt)
-	//BO_ATTRIB_MARKUP_END
-
 };
 
 } // namespace XLS

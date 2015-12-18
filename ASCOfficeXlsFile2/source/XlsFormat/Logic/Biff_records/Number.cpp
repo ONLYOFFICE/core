@@ -1,6 +1,5 @@
 #include "Number.h"
 #include <Auxiliary/HelpFunc.h>
-#include <simple_xml_writer.h>
 
 namespace XLS
 {

@@ -24,11 +24,6 @@ public:
 
 //-----------------------------
 	Boolean<unsigned int> fNoCompatChk;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(fNoCompatChk)
-	//BO_ATTRIB_MARKUP_END
-
 };
 
 } // namespace XLS

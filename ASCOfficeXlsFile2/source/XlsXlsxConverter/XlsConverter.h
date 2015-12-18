@@ -88,7 +88,9 @@ public:
 
 	std::wstring GetTargetMoniker(XLS::BiffStructure *moniker);
 
-private:		
+private:	
+	void convert_chart_sheet	(XLS::ChartSheetSubstream * chart);
+
 	void convert_shape			(std::vector<ODRAW::OfficeArtFOPTEPtr> & fort);
 	void convert_group_shape	(std::vector<ODRAW::OfficeArtFOPTEPtr> & fort);
 	void convert_blip			(std::vector<ODRAW::OfficeArtFOPTEPtr> & fort);

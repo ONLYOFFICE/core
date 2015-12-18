@@ -18,6 +18,17 @@ namespace XLS
 class BaseObject;
 typedef boost::shared_ptr<BaseObject> BaseObjectPtr;
 
+static const std::wstring DefaultPalette[] = {
+	L"00000000",	L"00FFFFFF",	L"00FF0000",	L"0000FF00",	L"000000FF",	L"00FFFF00",	L"00FF00FF",	L"0000FFFF",	
+	L"00000000",	L"00FFFFFF",	L"00FF0000",	L"0000FF00",	L"000000FF",	L"00FFFF00",	L"00FF00FF",	L"0000FFFF",	
+	L"00800000",	L"00008000",	L"00000080",	L"00808000",	L"00800080",	L"00008080",	L"00C0C0C0",	L"00808080",	
+	L"009999FF",	L"00993366",	L"00FFFFCC",	L"00CCFFFF",	L"00660066",	L"00FF8080",	L"000066CC",	L"00CCCCFF",	
+	L"00000080",	L"00FF00FF",	L"00FFFF00",	L"0000FFFF",	L"00800080",	L"00800000",	L"00008080",	L"000000FF",	
+	L"0000CCFF",	L"00CCFFFF",	L"00CCFFCC",	L"00FFFF99",	L"0099CCFF",	L"00FF99CC",	L"00CC99FF",	L"00FFCC99",	
+	L"003366FF",	L"0033CCCC",	L"0099CC00",	L"00FFCC00",	L"00FF9900",	L"00FF6600",	L"00666699",	L"00969696",	
+	L"00003366",	L"00339966",	L"00003300",	L"00333300",	L"00993300",	L"00993366",	L"00333399",	L"00333333"
+};
+
 class GlobalWorkbookInfo
 {
 public:
@@ -45,7 +56,7 @@ public:
 	std::vector<BaseObjectPtr>					*m_arFonts;
 	
 	unsigned int								last_AXES_id;
-	const static unsigned int					initial_AXES_id = 0;
+	const static unsigned int					initial_AXES_id = 0x2000000;
 
 	std::vector<std::wstring>					defineNames;
 
@@ -57,9 +68,13 @@ public:
 	double										defaultColumnWidth;
 	double										defaultRowHeight;
 
+	double										currentChartWidth;
+	double										currentChartHeight;
+
 	int Version;
 
 	XlsConverter								*xls_converter;
+
 };
 
 typedef boost::shared_ptr<GlobalWorkbookInfo> GlobalWorkbookInfoPtr;

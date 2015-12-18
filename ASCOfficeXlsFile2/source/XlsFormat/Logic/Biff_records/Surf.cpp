@@ -33,8 +33,22 @@ void Surf::readFields(CFRecord& record)
 {
 	unsigned short flags;
 	record >> flags;
-	fFillSurface = GETBIT(flags, 0);
-	f3DPhongShade = GETBIT(flags, 1);
+	
+	fFillSurface	= GETBIT(flags, 0);
+	f3DPhongShade	= GETBIT(flags, 1);
+}
+
+int Surf::serialize(std::wostream & _stream)
+{
+	CP_XML_WRITER(_stream)    
+	{
+		CP_XML_NODE(L"c:wireframe")
+		{
+			CP_XML_ATTR (L"val" , !fFillSurface);
+		}
+	}
+
+	return 0;
 }
 
 } // namespace XLS

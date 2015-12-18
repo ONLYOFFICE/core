@@ -22,6 +22,8 @@ public:
 
 	static const ElementType	type = typeAxcExt;
 
+	int serialize(std::wostream & _stream);
+
 //-----------------------------
 	BIFF_WORD catMin;
 	BIFF_WORD catMax;
@@ -32,14 +34,14 @@ public:
 	BIFF_WORD duBase;
 	BIFF_WORD catCrossDate;
 
-	BIFF_BOOL fAutoMin;
-	BIFF_BOOL fAutoMax;
-	BIFF_BOOL fAutoMajor;
-	BIFF_BOOL fAutoMinor;
-	BIFF_BOOL fDateAxis;
-	BIFF_BOOL fAutoBase;
-	BIFF_BOOL fAutoCross;
-	BIFF_BOOL fAutoDate;
+	bool fAutoMin;
+	bool fAutoMax;
+	bool fAutoMajor;
+	bool fAutoMinor;
+	bool fDateAxis;
+	bool fAutoBase;
+	bool fAutoCross;
+	bool fAutoDate;
 
 };
 

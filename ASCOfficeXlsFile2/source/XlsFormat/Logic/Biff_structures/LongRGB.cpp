@@ -61,7 +61,8 @@ void LongRGBA::load(CFRecord& record)
 		alpha = 0;
 		record.skipNunBytes(1); // reserved
 	}
-	argb = STR::toARGB(red, green, blue, alpha).c_str();
+	strRGB	= STR::toRGB (red, green, blue);
+	strARGB	= STR::toARGB(red, green, blue, alpha);
 }
 
 

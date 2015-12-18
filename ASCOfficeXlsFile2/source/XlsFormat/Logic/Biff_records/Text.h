@@ -23,15 +23,16 @@ public:
 
 	static const ElementType	type = typeText;
 
-//-----------------------------
-	BIFF_BYTE at;
-	BIFF_BYTE vat;
-	BIFF_WORD wBkgMode;
-	LongRGB rgbText;
-	BIFF_LONG x;
-	BIFF_LONG y;
-	BIFF_LONG dx;
-	BIFF_LONG dy;
+	int serialize(std::wostream & _stream);
+
+	BIFF_BYTE	at;
+	BIFF_BYTE	vat;
+	BIFF_WORD	wBkgMode;
+	LongRGB		rgbText;
+	BIFF_LONG	x;
+	BIFF_LONG	y;
+	BIFF_LONG	dx;
+	BIFF_LONG	dy;
 
 	BIFF_BOOL fAutoColor;
 	BIFF_BOOL fShowKey;
@@ -45,10 +46,15 @@ public:
 	BIFF_BOOL fShowBubbleSizes;
 	BIFF_BOOL fShowLabel;
 
-	Icv icvText;
-	BIFF_BYTE dlp;
-	BIFF_BYTE iReadingOrder;
-	BIFF_WORD trot;
+	Icv			icvText;
+	BIFF_BYTE	dlp;
+	BIFF_BYTE	iReadingOrder;
+	BIFF_WORD	trot;
+
+//-----------------------------
+	bool is_area;
+
+	int rot;
 };
 
 } // namespace XLS

@@ -29,6 +29,12 @@ void Chart::writeFields(CFRecord& record)
 void Chart::readFields(CFRecord& record)
 {
 	record >> x >> y >> dx >> dy;
+
+	GlobalWorkbookInfoPtr pGlobalWorkbookInfoPtr = record.getGlobalWorkbookInfo();
+
+	pGlobalWorkbookInfoPtr->currentChartWidth	= dx.Integral + dx.Fractional / 65536.;
+	pGlobalWorkbookInfoPtr->currentChartHeight	= dy.Integral + dy.Fractional / 65536.;
+
 }
 
 } // namespace XLS

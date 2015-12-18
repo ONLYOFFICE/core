@@ -5,6 +5,10 @@
 namespace XLS
 {;
 
+class CHARTFORMATS;
+class SERIESDATA;
+class CRT;
+
 class ChartSheetSubstream;
 typedef boost::shared_ptr<ChartSheetSubstream>	ChartSheetSubstreamPtr;
 
@@ -20,8 +24,14 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
-	int serialize		(std::wostream & _stream);
-	int serialize_title (std::wostream & _stream, const BaseObjectPtr & attached_label, const BaseObjectPtr & dft_text);
+	int serialize			(std::wostream & _stream);
+	int serialize_title		(std::wostream & _stream);
+	int serialize_plot_area (std::wostream & _stream);
+	int serialize_legend	(std::wostream & _stream, const std::wstring & legend_entries);
+	int serialize_ser		(std::wstring sNodeName, std::wostream & _stream, int series_id, const BaseObjectPtr & ai, int type, int count);
+	int serialize_dPt		(std::wostream & _stream, int series_id, CRT *crt, int count_point);
+	int serialize_dLbls		(std::wostream & _stream, int series_id, CRT *crt);
+	int serialize_3D		(std::wostream & _stream);
 
 	static const ElementType	type = typeChartSheetSubstream;
 
@@ -30,6 +40,14 @@ public:
 	BaseObjectPtr				m_CHARTFORMATS;
 	BaseObjectPtr				m_SERIESDATA;
 	BaseObjectPtr				m_OBJECTSCHART;
+
+private:
+
+	void recalc(CHARTFORMATS*	charts);
+	void recalc(SERIESDATA*		data);
+
+	std::map<int, std::vector<int>> m_mapTypeChart;//тут нужен несортированый .. пока оставим этот
+
 
 };
 

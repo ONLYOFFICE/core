@@ -9,7 +9,6 @@
 #include <Logic/Biff_unions/GELFRAME.h>
 #include <Logic/Biff_unions/SHAPEPROPS.h>
 
-#include <simple_xml_writer.h>
 #include <utils.h>
 
 namespace XLS
@@ -80,11 +79,9 @@ int FRAME::serialize(std::wostream & _stream)
 		{
 			if (m_GELFRAME)
 				m_GELFRAME->serialize(CP_XML_STREAM());
-			else 
-			{
-				//
-			}
-
+			else if (m_AreaFormat) m_AreaFormat->serialize(CP_XML_STREAM());
+			
+			if (m_LineFormat) m_LineFormat->serialize(CP_XML_STREAM());
 		}
 	}
 	return 0;

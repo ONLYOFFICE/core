@@ -36,6 +36,7 @@ void BRAI::readFields(CFRecord& record)
 	fUnlinkedIfmt = static_cast<unsigned char>(GETBIT(flags, 0));
 	record >> ifmt;
 	formula.load(record);
+
 }
 
 } // namespace XLS

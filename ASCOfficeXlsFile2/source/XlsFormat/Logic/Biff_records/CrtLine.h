@@ -22,9 +22,14 @@ public:
 
 	static const ElementType	type = typeCrtLine;
 
-//-----------------------------
+	int serialize(std::wostream & _stream);
+
 	BIFF_WORD		id;
 	BaseObjectPtr	m_LineFormat;
+
+//-----------------------------
+
+	int m_iChartType;
 };
 
 } // namespace XLS

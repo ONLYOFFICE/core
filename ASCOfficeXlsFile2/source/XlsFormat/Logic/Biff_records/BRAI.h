@@ -1,7 +1,9 @@
 #pragma once
 
 #include "BiffRecord.h"
+
 #include <Logic/Biff_structures/ChartParsedFormula.h>
+#include <Logic/Biff_structures/CellRangeRef.h>
 
 namespace XLS
 {
@@ -24,12 +26,12 @@ public:
 	static const ElementType	type = typeBRAI;
 
 //-----------------------------
-	BIFF_BYTE id;
-	BIFF_BYTE rt;
-	BIFF_BOOL fUnlinkedIfmt;
-	IFmt ifmt;
+	BIFF_BYTE	id;
+	BIFF_BYTE	rt;
+	BIFF_BOOL	fUnlinkedIfmt;
+	IFmt		ifmt;
 	
-	ChartParsedFormula formula;
+	ChartParsedFormula			formula; //набор диапазонов и €чеек
 };
 
 } // namespace XLS

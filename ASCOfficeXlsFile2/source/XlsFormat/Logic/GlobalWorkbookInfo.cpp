@@ -3,7 +3,6 @@
 namespace XLS
 {;
 
-
 GlobalWorkbookInfo::GlobalWorkbookInfo(const unsigned short code_page, XlsConverter * xls_converter_)
 :	CodePage(code_page)
 {
@@ -18,6 +17,10 @@ GlobalWorkbookInfo::GlobalWorkbookInfo(const unsigned short code_page, XlsConver
 	Version					= 0x0600; //собственно xls
 
 	xls_converter			= xls_converter_;
+
+	currentChartWidth		= 1.;
+	currentChartHeight		= 1.;
+
 }
 
 
@@ -61,9 +64,9 @@ void GlobalWorkbookInfo::RegisterFontColorId (int id, const FillInfoExt & font_c
 	fonts_color_ext.insert(std::pair<int, FillInfoExt>(id, font_color));
 }
 
-void GlobalWorkbookInfo::RegisterPaletteColor(int id, const std::wstring & argb)
+void GlobalWorkbookInfo::RegisterPaletteColor(int id, const std::wstring & rgb)
 {
-	colors_palette.insert(std::pair<int, std::wstring>(id, argb));
+	colors_palette.insert(std::pair<int, std::wstring>(id, rgb));
 }
 
 const unsigned int GlobalWorkbookInfo::GenerateAXESId()

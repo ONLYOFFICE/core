@@ -1510,8 +1510,16 @@ void CFontList::LoadFromArrayFiles(CArray<std::wstring>& oArray)
 
 			std::wstring wsFamilyName = NSFile::CUtf8Converter::GetUnicodeFromCharPtr(sFamilyName);
 			std::wstring wsStyleName = NSFile::CUtf8Converter::GetUnicodeFromCharPtr(sStyleName);
+            
+#ifdef _MAC
+            if (wsFamilyName.find(L".") == 0)
+            {
+                FT_Done_Face( pFace );
+                continue;
+            }
+#endif
 
-			CFontInfo* pFontInfo = new CFontInfo( wsFamilyName, 
+			CFontInfo* pFontInfo = new CFontInfo( wsFamilyName,
 				wsStyleName, 
 				oArray[nIndex], 
 				nIndexFace, 

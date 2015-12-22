@@ -5,7 +5,7 @@
 
 namespace NSHtmlRenderer
 {
-	CASCSVGWriter::CASCSVGWriter()
+    CASCSVGWriter::CASCSVGWriter(bool bIsInitializeFonts)
 	{
         m_dDpiX = 72;
         m_dDpiY	= 72;
@@ -33,8 +33,12 @@ namespace NSHtmlRenderer
 		m_pFullTransform = new Aggplus::CMatrix();
 
 		//todo вроде как подбора нет, но может нужно передавать?
-		m_pFontManager = new CFontManager();
-		m_pFontManager->Initialize();
+        m_pFontManager = NULL;
+        if (bIsInitializeFonts)
+        {
+            m_pFontManager = new CFontManager();
+            m_pFontManager->Initialize();
+        }
 
 		m_pVectorWriter = new NSHtmlRenderer::CSVGGraphicsWriter();
 		m_pVectorWriter->m_pSimpleConverter  = m_pSimpleGraphicsConverter;

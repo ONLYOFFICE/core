@@ -24,7 +24,7 @@ namespace NSHtmlRenderer
     class CASCSVGWriter : public IRenderer
 	{
 	public:
-		CASCSVGWriter();
+                CASCSVGWriter(bool bIsInitializeFonts = true);
 		~CASCSVGWriter();
 
 	public:

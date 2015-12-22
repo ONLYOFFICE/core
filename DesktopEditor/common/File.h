@@ -832,8 +832,8 @@ namespace NSFile
 			LONG lLenDst = 0;
 			CUtf8Converter::GetUtf8StringFromUnicode(strDst.c_str(), strDst.length(), pUtf8Dst, lLenDst, false);
 
-                        src.open(pUtf8Src, std::ios::binary);
-                        dst.open(pUtf8Dst, std::ios::binary);
+                        src.open((char*)pUtf8Src, std::ios::binary);
+                        dst.open((char*)pUtf8Dst, std::ios::binary);
 
 			delete [] pUtf8Src;
 			delete [] pUtf8Dst;

@@ -207,7 +207,7 @@ int AXS::serialize(std::wostream & _stream)
 						_CP_OPT(unsigned int) color;
 						if (tick) color = ( tick->rgb.red << 16) + (tick->rgb.green << 8) + tick->rgb.blue;
 						
-						int iFont = font ? font->iFont : 0;
+                        int iFont = font ? (_UINT16)font->iFont : 0;
 
 						serialize_rPr (CP_XML_STREAM(), iFont, color, rtl, true);
 					}

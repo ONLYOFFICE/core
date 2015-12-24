@@ -72,6 +72,12 @@ namespace NSUnicodeConverter
                 }
                 ucnv_close(conv);
             }
+
+            if (sRes.empty() && nInputLen > 0)
+            {
+                std::wstring ws(sInput, nInputLen);
+                sRes = std::string(ws.begin(), ws.end());
+            }
             return sRes;
         }
 
@@ -85,31 +91,39 @@ namespace NSUnicodeConverter
             std::wstring sRes = L"";
             UErrorCode status = U_ZERO_ERROR;
             UConverter* conv = ucnv_open(converterName, &status);
-
-            std::string sss = ucnv_getName(conv, &status);
-            int iii = ucnv_getCCSID(conv, &status);
-
-            //UConverter* conv = ucnv_openCCSID(5347, UCNV_IBM, &status);
             if (U_SUCCESS(status))
             {
-                const char* source = sInput;
-                const char* sourceLimit = source + nInputLen;
+                std::string sss = ucnv_getName(conv, &status);
+                int iii = ucnv_getCCSID(conv, &status);
 
-                unsigned int uBufSize = (nInputLen / ucnv_getMinCharSize(conv));
-                UChar* targetStart = (UChar*)malloc(uBufSize * sizeof(UChar));
-                UChar* target = targetStart;
-                UChar* targetLimit = target + uBufSize;
-
-                ucnv_toUnicode(conv, &target, targetLimit, &source, sourceLimit, NULL, TRUE, &status);
+                //UConverter* conv = ucnv_openCCSID(5347, UCNV_IBM, &status);
                 if (U_SUCCESS(status))
                 {
-                    unsigned int nTargetSize = target - targetStart;
-                    sRes.resize(nTargetSize * 2);// UTF-16 uses 2 code-points per char
-                    int32_t nResLen = 0;
-                    u_strToWCS(&sRes[0], sRes.size(), &nResLen, targetStart, nTargetSize, &status);
-                    sRes.resize(nResLen);
+                    const char* source = sInput;
+                    const char* sourceLimit = source + nInputLen;
+
+                    unsigned int uBufSize = (nInputLen / ucnv_getMinCharSize(conv));
+                    UChar* targetStart = (UChar*)malloc(uBufSize * sizeof(UChar));
+                    UChar* target = targetStart;
+                    UChar* targetLimit = target + uBufSize;
+
+                    ucnv_toUnicode(conv, &target, targetLimit, &source, sourceLimit, NULL, TRUE, &status);
+                    if (U_SUCCESS(status))
+                    {
+                        unsigned int nTargetSize = target - targetStart;
+                        sRes.resize(nTargetSize * 2);// UTF-16 uses 2 code-points per char
+                        int32_t nResLen = 0;
+                        u_strToWCS(&sRes[0], sRes.size(), &nResLen, targetStart, nTargetSize, &status);
+                        sRes.resize(nResLen);
+                    }
+                    ucnv_close(conv);
                 }
-                ucnv_close(conv);
+            }
+
+            if (sRes.empty() && nInputLen > 0)
+            {
+                std::string ws(sInput, nInputLen);
+                sRes = std::wstring(ws.begin(), ws.end());
             }
             return sRes;
         }

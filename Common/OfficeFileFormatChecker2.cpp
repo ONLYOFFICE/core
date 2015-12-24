@@ -218,7 +218,10 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring & fileName)
 //// by Extension
 
     std::wstring::size_type nExtPos = fileName.rfind(L'.');
-	std::wstring sExt = fileName.substr(nExtPos);
+	std::wstring sExt = L"unknown";
+    
+    if (nExtPos != std::wstring::npos)
+        sExt = fileName.substr(nExtPos);
 
 	std::transform(sExt.begin(), sExt.end(), sExt.begin(), tolower);
 

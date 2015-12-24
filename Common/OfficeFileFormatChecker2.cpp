@@ -167,10 +167,10 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring & fileName)
     {
         NSFile::CFileBinary file;
         if (!file.OpenFile(fileName))
-            return L"";
+            return false;
 		
 		unsigned char* buffer = new unsigned char[4096]; //enaf !!
-        if (!buffer){file.CloseFile();return L"";}
+        if (!buffer){file.CloseFile();return false;}
 
         DWORD dwReadBytes = 0;
         file.ReadFile(buffer,MIN_SIZE_BUFFER,dwReadBytes);

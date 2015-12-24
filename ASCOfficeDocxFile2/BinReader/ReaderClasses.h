@@ -2016,7 +2016,7 @@ public:
 					if(bChart)
 						sXml.Append(_T("<w:drawing>"));
 
-					sXml.AppendFormat(_T("<wp:anchor xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" distT=\"%lld\" distB=\"%lld\" distL=\"%lld\" distR=\"%lld\" simplePos=\"%d\" relativeHeight=\"%lu\" behindDoc=\"%d\" locked=\"0\" layoutInCell=\"%d\" allowOverlap=\"1\">"), emuDistT, emuDistB, emuDistL, emuDistR, nSimplePos, nRelativeHeight, nBehindDoc, nLayoutInCell);
+					sXml.AppendFormat(_T("<wp:anchor xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" distT=\"%lld\" distB=\"%lld\" distL=\"%lld\" distR=\"%lld\" simplePos=\"%d\" relativeHeight=\"%u\" behindDoc=\"%d\" locked=\"0\" layoutInCell=\"%d\" allowOverlap=\"1\">"), emuDistT, emuDistB, emuDistL, emuDistR, nSimplePos, nRelativeHeight, nBehindDoc, nLayoutInCell);
 					__int64 emuX = 0;
 					if(bSimplePosX)
 						emuX = (__int64)(g_dKoef_mm_to_emu * SimplePosX);

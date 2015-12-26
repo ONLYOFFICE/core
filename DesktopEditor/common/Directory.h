@@ -29,6 +29,32 @@
 
 namespace NSDirectory
 {
+#if !defined(_WIN32) && !defined (_WIN64)
+    static bool _mkdir (const char *dir)
+    {
+        char tmp[MAX_PATH];
+        char *p = NULL;
+        size_t len;
+        bool res = true;
+
+        snprintf(tmp, sizeof(tmp),"%s",dir);
+        len = strlen(tmp);
+        if(tmp[len - 1] == '/')
+                tmp[len - 1] = 0;
+        for(p = tmp + 1; *p; p++)
+                if(*p == '/') {
+                        *p = 0;
+                        res = (0 == mkdir(tmp, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH));
+                        *p = '/';
+                        if (!res)
+                            break;
+                }
+        if (res)
+            res = (0 == mkdir(tmp, S_IRWXU));
+        return res;
+    }
+#endif
+
 #ifdef _IOS
     void GetFiles2_ios(std::wstring strDirectory, CArray<std::wstring>& oArray, bool bIsRecursion);
 #endif

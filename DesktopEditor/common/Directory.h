@@ -9,6 +9,7 @@
 #if defined(_WIN32) || defined (_WIN64)
     #include "windows.h"
     #include "windef.h"
+    #include <shlobj.h>
 #elif __linux__
     #include <sys/types.h>
     #include <sys/stat.h>
@@ -282,6 +283,31 @@ namespace NSDirectory
         return 0 == nRes;
 #endif
         return false;
+	}
+	static bool CreateDirectories(const std::wstring& strDirectory)
+	{
+		if (Exists(strDirectory) == true)  return true;
+
+#if defined(_WIN32) || defined (_WIN64)
+		DWORD dwAttrib = ::GetFileAttributesW(strDirectory.c_str());
+		if  (dwAttrib != INVALID_FILE_ATTRIBUTES && 0 != (dwAttrib & FILE_ATTRIBUTE_DIRECTORY)) return true;
+
+		int codeResult = ERROR_SUCCESS;
+
+		SECURITY_ATTRIBUTES sa={};
+
+		codeResult = SHCreateDirectoryExW(NULL, strDirectory.c_str(), &sa);
+
+		bool created = false;
+		if (codeResult == ERROR_SUCCESS)
+			created = true;
+
+		return created;
+#else
+		std::string pathUtf8 = U_TO_UTF8(strDirectory);
+		return _mkdir (pathUtf8.c_str());
+#endif
+		return false;
 	}
 	static void DeleteDirectory(const std::wstring& strDirectory, bool deleteRoot = true)
 	{

@@ -235,7 +235,7 @@ int AXES::serialize(std::wostream & _stream, bool secondary)
 					{
 						ATTACHEDLABEL	*label = dynamic_cast<ATTACHEDLABEL *>	(m_arATTACHEDLABEL[i].get() );
 						
-						label->serialize(CP_XML_STREAM());
+						label->serialize(CP_XML_STREAM(), false);
 
 					}
 				}

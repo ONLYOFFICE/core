@@ -147,6 +147,11 @@ int ATTACHEDLABEL::serialize_txPr(std::wostream & _stream)
 
 int ATTACHEDLABEL::serialize(std::wostream & _stream)
 {
+	return serialize(_stream, true);
+}
+
+int ATTACHEDLABEL::serialize(std::wostream & _stream, bool isPosition)
+{
 	AI *ai	= dynamic_cast<AI *>( m_AI.get());
 	
 	if (ai == NULL) return 0;
@@ -247,13 +252,13 @@ int ATTACHEDLABEL::serialize(std::wostream & _stream)
 					}
 				}	
 			}
-			if (m_Pos)		m_Pos->serialize(_stream);
-			if (m_FRAME)	m_FRAME->serialize(_stream);
+			if (m_Pos && isPosition)	m_Pos->serialize(_stream);
+			if (m_FRAME)				m_FRAME->serialize(_stream);
 		}
 		else
 		{
-			if (m_Pos)		m_Pos->serialize(_stream);
-			if (m_FRAME)	m_FRAME->serialize(_stream);
+			if (m_Pos && isPosition)	m_Pos->serialize(_stream);
+			if (m_FRAME)				m_FRAME->serialize(_stream);
 			serialize_txPr(_stream);
 		}
 	

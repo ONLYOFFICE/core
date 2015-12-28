@@ -372,6 +372,8 @@ void xlsx_drawing_context::end_drawing()
 	{
 		end_drawing(current_drawing_states->back());
 	}
+	else
+		current_drawing_states->pop_back();
 }
 
 void xlsx_drawing_context::end_drawing(_drawing_state_ptr & drawing_state)

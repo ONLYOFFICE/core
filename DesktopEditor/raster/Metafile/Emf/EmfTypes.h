@@ -12,11 +12,7 @@
 #define PT_BEZIERTO         0x04
 #define PT_MOVETO           0x06
 
-#ifndef _MAC
-    #define ENHMETA_SIGNATURE       0x464D4520
-#else
-    #define ENHMETA_SIGNATURE       0x20454D46
-#endif
+#define ENHMETA_SIGNATURE       0x464D4520
 
 // Stock object flag used in the object handle index in the enhanced
 // metafile records.

@@ -215,22 +215,13 @@ namespace DocFileFormat
 					//it's a meta image
 					MetafilePictBlip* metaBlip = static_cast<MetafilePictBlip*>(oBlipEntry->Blip);
 					if (metaBlip)
-					{
-						////meta images can be compressed
-						//unsigned char* decompressed = NULL;
-						//int decompressedSize = 0;
-
-						//decompressedSize = metaBlip->Decompress(&decompressed);
-						//if (0 != decompressedSize && NULL != decompressed)
-						//{
-							unsigned char *newData	= NULL;
-							int newDataSize = metaBlip->oMetaFile.ToBuffer(newData);
-							
-							m_ctx->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(oBlipEntry->btWin32), std::vector<unsigned char>(newData, (newData + newDataSize))));
-							
-							//RELEASEARRAYOBJECTS(decompressed);
-							RELEASEARRAYOBJECTS(newData);
-						//}
+					{//decompress inside MetafilePictBlip
+						unsigned char *newData	= NULL;
+						int newDataSize = metaBlip->oMetaFile.ToBuffer(newData);
+						
+						m_ctx->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(oBlipEntry->btWin32), std::vector<unsigned char>(newData, (newData + newDataSize))));
+						
+						RELEASEARRAYOBJECTS(newData);
 					}
 				}
 				break;

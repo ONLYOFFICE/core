@@ -305,14 +305,17 @@ typedef enum _BlipCompression
 			oMetaHeader.compression	= m_fCompression;
 			oMetaHeader.filter		= m_fFilter;
 
-			WmfPlaceableFileHeader oWmfHeader = {};
-			oMetaHeader.ToWMFHeader(&oWmfHeader);
-			
-			LONG lLenHeader = 22;
-			BYTE* pMetaHeader = new BYTE[lLenHeader];
-			memcpy(pMetaHeader, (void*)(&oWmfHeader), lLenHeader);
+			if (typeCode == 0xf01b)
+			{
+				WmfPlaceableFileHeader oWmfHeader = {};
+				oMetaHeader.ToWMFHeader(&oWmfHeader);
+				
+				LONG lLenHeader = 22;
+				BYTE* pMetaHeader = new BYTE[lLenHeader];
+				memcpy(pMetaHeader, (void*)(&oWmfHeader), lLenHeader);
 
-			oMetaFile.SetHeader(pMetaHeader, lLenHeader);
+				oMetaFile.SetHeader(pMetaHeader, lLenHeader);	
+			}
 			
 			oMetaFile.SetData(m_pvBits, oMetaHeader.cbSave, oMetaHeader.cbSize, 0 == oMetaHeader.compression);
 

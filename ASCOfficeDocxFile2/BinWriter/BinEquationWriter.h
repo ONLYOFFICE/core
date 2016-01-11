@@ -202,7 +202,7 @@ namespace MathEquation
 
 				int nCurPos = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::MRPr);
                 BYTE eStyle = SimpleTypes::stylePlain;
-                if (oRun.pFont->bBold || oRun.pFont->bItalic)
+                if (oRun.pFont && (oRun.pFont->bBold || oRun.pFont->bItalic))
                 {
                     if (oRun.pFont->bBold)
                     {

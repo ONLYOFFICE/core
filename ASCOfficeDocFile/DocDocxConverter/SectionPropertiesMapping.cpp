@@ -299,7 +299,7 @@ namespace DocFileFormat
 						if (NULL == m_arrWidth)
 							m_arrWidth		=	new short [m_nColumns];
 
-						unsigned char nInd			=	iter->Arguments[0];
+						unsigned char nInd	=	iter->Arguments[0];
 						m_arrWidth[nInd]	=	FormatUtils::BytesToInt16 (iter->Arguments, 1, iter->argumentsSize);
 					}
 				}
@@ -313,7 +313,7 @@ namespace DocFileFormat
 						if (NULL == m_arrSpace)
 							m_arrSpace			=	new short[m_nColumns];
 
-						unsigned char nInd				=	iter->Arguments[0];
+						unsigned char nInd		=	iter->Arguments[0];
 						m_arrSpace [nInd]		=	FormatUtils::BytesToInt16 (iter->Arguments, 1, iter->argumentsSize);
 					}
 				}

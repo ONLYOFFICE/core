@@ -120,7 +120,8 @@ namespace DocFileFormat
 				//write paragraph properties
 				if ( (*iter)->papx != NULL )
 				{
-					ParagraphPropertiesMapping* ppMappingnew = new ParagraphPropertiesMapping (m_pXmlWriter, _ctx, m_document, NULL, false);
+					bool isBidi = false;
+					ParagraphPropertiesMapping* ppMappingnew = new ParagraphPropertiesMapping (m_pXmlWriter, _ctx, m_document, NULL, isBidi, false);
 					(*iter)->papx->Convert( ppMappingnew );
 					RELEASEOBJECT( ppMappingnew );
 				}
@@ -222,6 +223,15 @@ namespace DocFileFormat
 
 		m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
 		m_pXmlWriter->WriteNodeEnd( _T( "w:rFonts" ) );
+
+		LanguageId langid(this->m_document->FIB->m_FibBase.lid);
+		wstring langcode = LanguageIdMapping::getLanguageCode( &langid );
+
+		m_pXmlWriter->WriteNodeBegin( _T( "w:lang" ), TRUE );
+		m_pXmlWriter->WriteAttribute( _T( "w:val" ), langcode.c_str() );
+		m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
+		m_pXmlWriter->WriteNodeEnd( _T( "w:lang" ) );
+
 		m_pXmlWriter->WriteNodeEnd( _T( "w:rPr" ) );
 		m_pXmlWriter->WriteNodeEnd( _T( "w:rPrDefault" ) );
 	}

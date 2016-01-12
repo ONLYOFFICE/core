@@ -9,6 +9,7 @@
 
 namespace DocFileFormat
 {
+	static int count_vml_objects = 0;
 	void VMLPictureMapping::appendStyleProperty(std::wstring* b, const std::wstring& propName, const std::wstring& propValue) const
 	{
 		if ( b != NULL )
@@ -31,15 +32,7 @@ namespace DocFileFormat
 
 		m_imageData			=	new XMLTools::XMLElement<wchar_t>( _T( "v:imagedata" ) );
 
-        //GUID guid			=	GUID_NULL;
-//      wstring  guid;
-//		LPOLESTR guidString =	NULL;
-
-//		CoCreateGuid (&guid);
-//		StringFromCLSID (guid, &guidString);
-
-//        m_ShapeId			=	std::wstring(guidString);
-//		CoTaskMemFree(guidString);
+		m_ShapeId			=	std::wstring(L"_x0000_i") + FormatUtils::IntToWideString(1024 + (count_vml_objects++));
 	}
 
 	VMLPictureMapping::~VMLPictureMapping()

@@ -26,12 +26,24 @@ namespace DocFileFormat
 		m_pXmlWriter->WriteNodeBegin(_T("w:document"), TRUE );
 
 		// Namespaces
-		m_pXmlWriter->WriteAttribute(_T("xmlns:w"), OpenXmlNamespaces::WordprocessingML );
-		m_pXmlWriter->WriteAttribute(_T("xmlns:v"), OpenXmlNamespaces::VectorML );
-		m_pXmlWriter->WriteAttribute(_T("xmlns:o"), OpenXmlNamespaces::Office );
-		m_pXmlWriter->WriteAttribute(_T("xmlns:w10"), OpenXmlNamespaces::OfficeWord );
-		m_pXmlWriter->WriteAttribute(_T("xmlns:r"), OpenXmlNamespaces::Relationships );
+		m_pXmlWriter->WriteAttribute(_T("xmlns:w"),		OpenXmlNamespaces::WordprocessingML );
+		m_pXmlWriter->WriteAttribute(_T("xmlns:v"),		OpenXmlNamespaces::VectorML );
+		m_pXmlWriter->WriteAttribute(_T("xmlns:o"),		OpenXmlNamespaces::Office );
+		m_pXmlWriter->WriteAttribute(_T("xmlns:w10"),	OpenXmlNamespaces::OfficeWord );
+		m_pXmlWriter->WriteAttribute(_T("xmlns:r"),		OpenXmlNamespaces::Relationships );
 
+		//m_pXmlWriter->WriteAttribute(_T("xmlns:wpc"),	_T("http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas"));
+		//m_pXmlWriter->WriteAttribute(_T("xmlns:mc"),	_T("http://schemas.openxmlformats.org/markup-compatibility/2006")); 
+		//m_pXmlWriter->WriteAttribute(_T("xmlns:m"),		_T("http://schemas.openxmlformats.org/officeDocument/2006/math"));
+		//m_pXmlWriter->WriteAttribute(_T("xmlns:wp14"),	_T("http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing"));
+		//m_pXmlWriter->WriteAttribute(_T("xmlns:wp"),	_T("http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"));
+		//m_pXmlWriter->WriteAttribute(_T("xmlns:w14"),	_T("http://schemas.microsoft.com/office/word/2010/wordml"));
+		//m_pXmlWriter->WriteAttribute(_T("xmlns:wpg"),	_T("http://schemas.microsoft.com/office/word/2010/wordprocessingGroup"));
+		//m_pXmlWriter->WriteAttribute(_T("xmlns:wpi"),	_T("http://schemas.microsoft.com/office/word/2010/wordprocessingInk"));
+		//m_pXmlWriter->WriteAttribute(_T("xmlns:wne"),	_T("http://schemas.microsoft.com/office/word/2006/wordml"));
+		//m_pXmlWriter->WriteAttribute(_T("xmlns:wps"),	_T("http://schemas.microsoft.com/office/word/2010/wordprocessingShape"));
+		//m_pXmlWriter->WriteAttribute(_T("mc:Ignorable"), _T("w14 wp14"));
+		
 		m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
 
 		m_pXmlWriter->WriteNodeBegin( _T("w:body"), FALSE );

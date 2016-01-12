@@ -14,6 +14,9 @@ CONFIG += c++11
 
 win32 {
     QMAKE_CXXFLAGS_RELEASE -= -Zc:strictStrings
+    CONFIG(debug, debug|release) {
+        QMAKE_CXXFLAGS += /bigobj
+    }
 } else {
     QMAKE_CXXFLAGS += -std=c++11 -Wall -Wno-ignored-qualifiers
 }

@@ -15,6 +15,9 @@ win32 {
     #todo accentbordercallout90type, вернуть inline оптимизацию Ob2
     QMAKE_CXXFLAGS_RELEASE += -Ob0
     QMAKE_CXXFLAGS_RELEASE -= -Zc:strictStrings
+    CONFIG(debug, debug|release) {
+        QMAKE_CXXFLAGS += /bigobj
+    }
 } else {
     QMAKE_CXXFLAGS += -std=c++11 -Wall -Wno-ignored-qualifiers
 }

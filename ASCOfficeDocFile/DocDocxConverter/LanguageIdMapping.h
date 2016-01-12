@@ -22,8 +22,7 @@ namespace DocFileFormat
 		virtual ~LanguageIdMapping();
 		void Apply( IVisitable* lid );
 
-	private:
-		wstring getLanguageCode( LanguageId* lid );
+		static wstring getLanguageCode( LanguageId* lid );
 	
 	private: 
 		LanguageType _type;

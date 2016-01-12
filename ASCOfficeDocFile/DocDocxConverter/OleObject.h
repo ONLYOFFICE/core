@@ -42,10 +42,8 @@ namespace DocFileFormat
 		{
 			HRESULT res = S_OK;
 			
-			POLE::Stream* ObjectPoolStorage = //docStorage->GetStorage()->stream("ObjectPool");
-				new POLE::Stream(oleStorage, "ObjectPool");
+			POLE::Stream* ObjectPoolStorage = new POLE::Stream(oleStorage, "ObjectPool");
 
-			//if (oleStorage->enterDirectory("ObjectPool"))
 			if (ObjectPoolStorage)
 			{
 				ObjectId = getOleEntryName( chpx );
@@ -64,7 +62,8 @@ namespace DocFileFormat
 					{
 					  processCompObjStream(  name +  "CompObj"  );
 					}
-					//oleStorage->leaveDirectory();
+
+					processEquationNativeStream(  name +  "Equation Native"  );
 				}
 				//oleStorage->leaveDirectory();
 				delete  ObjectPoolStorage;
@@ -131,6 +130,36 @@ namespace DocFileFormat
 		{
 		}
       }
+      
+	  void processEquationNativeStream( const string& eqStream )
+      {
+        try
+        {
+          POLE::Stream* pCompStream = NULL;
+		  HRESULT res = S_OK;
+
+		  pCompStream = new POLE::Stream(oleStorage, eqStream);
+
+          if ( pCompStream )
+		  {
+		    VirtualStreamReader reader( pCompStream );
+
+			int sz = reader.GetSize();
+
+			unsigned char *Buffer = reader.ReadBytes( sz, true );
+
+			if (Buffer)
+			{
+				delete []Buffer;
+			}
+
+			delete pCompStream;
+		  }
+	    }
+        catch (...)
+		{
+		}
+      }
 
       void processCompObjStream( const string& compStream )
       {
@@ -139,10 +168,7 @@ namespace DocFileFormat
           POLE::Stream* pCompStream = NULL;
 		  HRESULT res = S_OK;
 
-		  pCompStream = //oleStorage->stream(compStream);
-			  new POLE::Stream(oleStorage, compStream);
-
-		  //res = oleStorage->OpenStream( compStream.c_str(), NULL, STGM_SHARE_EXCLUSIVE, NULL, &pCompStream );
+		  pCompStream = new POLE::Stream(oleStorage, compStream);
 
           if ( pCompStream )
 		  {
@@ -170,9 +196,7 @@ namespace DocFileFormat
           POLE::Stream* pOleStream;
 		  HRESULT res = S_OK;
 
-		  pOleStream  = //oleStorage->stream(oleStreamName);
-			  new POLE::Stream(oleStorage, oleStreamName);
-		  //res = oleStorage->OpenStream( oleStream.c_str(), NULL, STGM_SHARE_EXCLUSIVE, NULL, &pOleStream );
+		  pOleStream  = new POLE::Stream(oleStorage, oleStreamName);
 
 		  if ( pOleStream )
 		  {

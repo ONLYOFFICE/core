@@ -121,9 +121,9 @@ namespace Global
 
 	static const wchar_t JustificationCode[10][15] =
 	{
-		_T( "left" ),
+		_T( "start" ),
 		_T( "center" ),
-		_T( "right" ),
+		_T( "end" ),
 		_T( "both" ),
 		_T( "distribute" ),
 		_T( "mediumKashida" ),

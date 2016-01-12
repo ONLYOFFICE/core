@@ -3,7 +3,8 @@
 
 namespace DocFileFormat
 {
-	CharacterPropertiesMapping::CharacterPropertiesMapping( XmlUtils::CXmlWriter* writer, WordDocument* doc, RevisionData* rev, ParagraphPropertyExceptions* currentPapx, bool styleChpx, bool isRunStyleNeeded) : PropertiesMapping( writer ), _isRunStyleNeeded(isRunStyleNeeded), _isOwnRPr(true)
+	CharacterPropertiesMapping::CharacterPropertiesMapping( XmlUtils::CXmlWriter* writer, WordDocument* doc, RevisionData* rev, ParagraphPropertyExceptions* currentPapx, bool styleChpx, bool isRunStyleNeeded)
+		: PropertiesMapping( writer ), _isRunStyleNeeded(isRunStyleNeeded), _isOwnRPr(true), _isRTL(false)
 	{
 		this->_doc = doc;
 		this->_rPr = new XMLTools::XMLElement<wchar_t>( _T( "w:rPr" ) );
@@ -13,7 +14,8 @@ namespace DocFileFormat
 		this->_currentIstd = USHRT_MAX;
 	}
 
-	CharacterPropertiesMapping::CharacterPropertiesMapping( XMLTools::XMLElement<wchar_t>* rPr, WordDocument* doc, RevisionData* rev, ParagraphPropertyExceptions* currentPapx, bool styleChpx, bool isRunStyleNeeded ): PropertiesMapping( NULL ), _isRunStyleNeeded(isRunStyleNeeded), _isOwnRPr(false)    
+	CharacterPropertiesMapping::CharacterPropertiesMapping( XMLTools::XMLElement<wchar_t>* rPr, WordDocument* doc, RevisionData* rev, ParagraphPropertyExceptions* currentPapx, bool styleChpx, bool isRunStyleNeeded )
+		: PropertiesMapping( NULL ), _isRunStyleNeeded(isRunStyleNeeded), _isOwnRPr(false), _isRTL(false)   
 	{
 		this->_doc = doc;
 		this->_rPr = rPr;
@@ -81,10 +83,10 @@ namespace DocFileFormat
 
 	void CharacterPropertiesMapping::convertSprms( list<SinglePropertyModifier>* sprms, XMLTools::XMLElement<wchar_t>* parent )
 	{
-		XMLTools::XMLElement<wchar_t>* rFonts = new XMLTools::XMLElement<wchar_t>( _T( "w:rFonts" ) );
-		XMLTools::XMLElement<wchar_t>* color = new XMLTools::XMLElement<wchar_t>( _T( "w:color" ) );
-		XMLTools::XMLAttribute<wchar_t>* colorVal = new XMLTools::XMLAttribute<wchar_t>( _T( "w:val" ) );
-		XMLTools::XMLElement<wchar_t>* lang = new XMLTools::XMLElement<wchar_t>( _T( "w:lang" ) );
+		XMLTools::XMLElement<wchar_t>	* rFonts	= new XMLTools::XMLElement<wchar_t>	( _T( "w:rFonts" ) );
+		XMLTools::XMLElement<wchar_t>	* color		= new XMLTools::XMLElement<wchar_t>	( _T( "w:color" ) );
+		XMLTools::XMLAttribute<wchar_t>	* colorVal	= new XMLTools::XMLAttribute<wchar_t>( _T( "w:val" ) );
+		XMLTools::XMLElement<wchar_t>	* lang		= new XMLTools::XMLElement<wchar_t>	( _T( "w:lang" ) );
 
 		// флаг наличия стиля для баги - http://bugzserver/show_bug.cgi?id=13353 	TODO : найти в чем создан такой документ
 		bool haveStyle	=	FALSE;	
@@ -109,6 +111,7 @@ namespace DocFileFormat
 				
 			case 0x085A :	//	Element flags
 				appendFlagElement( parent, *iter, _T( "rtl" ), true );
+				this->_isRTL = true;
 				break;
 
 			case 0x0835 :

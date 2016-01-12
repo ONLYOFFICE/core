@@ -29,6 +29,7 @@ namespace DocFileFormat
 		void Apply( IVisitable* chpx );
 		bool CheckIsSymbolFont();
 
+		bool _isRTL;
 	private:
 		void convertSprms( list<SinglePropertyModifier>* sprms, XMLTools::XMLElement<wchar_t>* parent );
 		list<CharacterPropertyExceptions*> buildHierarchy( const StyleSheet* styleSheet, unsigned short istdStart );

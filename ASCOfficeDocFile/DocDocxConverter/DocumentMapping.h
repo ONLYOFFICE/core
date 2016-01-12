@@ -44,6 +44,8 @@ namespace DocFileFormat
 
 	protected:
 
+		/// Looks into the section table to find out if this CP is the current of a section
+		int getCurrentSection(int cp);
 		/// Looks into the section table to find out if this CP is the end of a section
 		bool isSectionEnd( int cp );
 		/// Writes a Paragraph that starts at the given cp and 

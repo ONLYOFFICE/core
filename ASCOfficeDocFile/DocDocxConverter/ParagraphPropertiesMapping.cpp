@@ -4,24 +4,33 @@
 
 namespace DocFileFormat
 {
-	ParagraphPropertiesMapping::ParagraphPropertiesMapping(XmlUtils::CXmlWriter* writer, ConversionContext* context, WordDocument* document, CharacterPropertyExceptions* paraEndChpx, bool isParagraphStyleNeeded) : PropertiesMapping( writer ), m_context(NULL), _pPr(NULL), _framePr(NULL), _sepx(NULL), _paraEndChpx(NULL), _sectionNr(0), m_document(NULL), _isParagraphStyleNeeded(isParagraphStyleNeeded)
+	ParagraphPropertiesMapping::ParagraphPropertiesMapping(XmlUtils::CXmlWriter* writer, ConversionContext* context, WordDocument* document, CharacterPropertyExceptions* paraEndChpx, bool isBidi, bool isParagraphStyleNeeded)
+		: PropertiesMapping( writer ), m_context(NULL), _pPr(NULL), _framePr(NULL), _sepx(NULL), _paraEndChpx(NULL), _sectionNr(0),
+		m_document(NULL), _isParagraphStyleNeeded(isParagraphStyleNeeded)
 	{
-		m_document	=	document;
-		m_context	=	context;
+		m_document		=	document;
+		m_context		=	context;
 	
-		_pPr = new XMLTools::XMLElement<wchar_t>( _T( "w:pPr" ) );
-		_framePr = new XMLTools::XMLElement<wchar_t>( _T( "w:framePr" ) );
-		_paraEndChpx = paraEndChpx;
+		_pPr			= new XMLTools::XMLElement<wchar_t>( _T( "w:pPr" ) );
+		_framePr		= new XMLTools::XMLElement<wchar_t>( _T( "w:framePr" ) );
+
+		_paraEndChpx	= paraEndChpx;
+		_isBidi			= isBidi;
 	}
 
-	ParagraphPropertiesMapping::ParagraphPropertiesMapping( XmlUtils::CXmlWriter* writer, ConversionContext* context, WordDocument* document, CharacterPropertyExceptions* paraEndChpx, SectionPropertyExceptions* sepx, int sectionNr, bool isParagraphStyleNeeded ): PropertiesMapping( writer ), m_context(NULL), _pPr(NULL), _framePr(NULL), _sepx(NULL), _paraEndChpx(NULL), _sectionNr(0), m_document(NULL), _isParagraphStyleNeeded(isParagraphStyleNeeded)
+	ParagraphPropertiesMapping::ParagraphPropertiesMapping( XmlUtils::CXmlWriter* writer, ConversionContext* context, WordDocument* document, CharacterPropertyExceptions* paraEndChpx, bool isBidi, SectionPropertyExceptions* sepx, int sectionNr, bool isParagraphStyleNeeded )
+		: PropertiesMapping( writer ), m_context(NULL), _pPr(NULL), _framePr(NULL), _sepx(NULL), _paraEndChpx(NULL), _sectionNr(0), 
+		m_document(NULL), _isParagraphStyleNeeded(isParagraphStyleNeeded)
 	{
-		m_document	=	document;
-		m_context	=	context;
+		m_document		=	document;
+		m_context		=	context;
 		
-		_pPr = new XMLTools::XMLElement<wchar_t>( _T( "w:pPr" ) );
-		_framePr = new XMLTools::XMLElement<wchar_t>( _T( "w:framePr" ) );
-		_paraEndChpx = paraEndChpx;
+		_pPr			= new XMLTools::XMLElement<wchar_t>( _T( "w:pPr" ) );
+		_framePr		= new XMLTools::XMLElement<wchar_t>( _T( "w:framePr" ) );
+		
+		_paraEndChpx	= paraEndChpx;
+		_isBidi			= isBidi;
+		
 		_sepx = sepx;
 		_sectionNr = sectionNr;
 	}
@@ -114,6 +123,7 @@ namespace DocFileFormat
 			case sprmPFBiDi:
 				{
 					appendFlagElement( _pPr, *iter, _T( "bidi" ), true );
+					_isBidi = true;
 				}
 				break;
 
@@ -256,6 +266,10 @@ namespace DocFileFormat
 			case sprmPJc:
 			case sprmPJc80:
 				{ 
+					if (this->_isBidi && (iter->Arguments[0] == 0 || iter->Arguments[0] == 2))
+					{
+						iter->Arguments[0] = (iter->Arguments[0] == 0 ? 2 : 0);
+					}
 					RELEASEOBJECT( jc );
 					jc = new XMLTools::XMLElement<wchar_t>( _T( "w:jc" ) );
 					XMLTools::XMLAttribute<wchar_t> jcVal( _T( "w:val" ), FormatUtils::MapValueToWideString( iter->Arguments[0], &Global::JustificationCode[0][0], 10, 15 ).c_str() );

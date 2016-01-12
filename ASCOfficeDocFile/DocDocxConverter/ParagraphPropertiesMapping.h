@@ -15,8 +15,8 @@ namespace DocFileFormat
 	class ParagraphPropertiesMapping: public PropertiesMapping, public IMapping
 	{
 	public: 
-		ParagraphPropertiesMapping( XmlUtils::CXmlWriter* writer, ConversionContext* ctx, WordDocument* document, CharacterPropertyExceptions* paraEndChpx, bool isParagraphStyleNeeded = true );
-		ParagraphPropertiesMapping( XmlUtils::CXmlWriter* writer, ConversionContext* ctx, WordDocument* document, CharacterPropertyExceptions* paraEndChpx, SectionPropertyExceptions* sepx, int sectionNr, bool isParagraphStyleNeeded = true );
+		ParagraphPropertiesMapping( XmlUtils::CXmlWriter* writer, ConversionContext* ctx, WordDocument* document, CharacterPropertyExceptions* paraEndChpx, bool isBidi, bool isParagraphStyleNeeded = true );
+		ParagraphPropertiesMapping( XmlUtils::CXmlWriter* writer, ConversionContext* ctx, WordDocument* document, CharacterPropertyExceptions* paraEndChpx, bool isBidi, SectionPropertyExceptions* sepx, int sectionNr, bool isParagraphStyleNeeded = true );
 		virtual ~ParagraphPropertiesMapping();
 		void Apply(IVisitable* visited);
 
@@ -31,5 +31,6 @@ namespace DocFileFormat
 		int _sectionNr;
 
 		bool _isParagraphStyleNeeded;
+		bool _isBidi;
 	};
 }

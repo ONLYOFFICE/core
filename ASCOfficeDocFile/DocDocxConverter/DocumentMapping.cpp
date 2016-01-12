@@ -38,8 +38,23 @@ namespace DocFileFormat
 
 namespace DocFileFormat
 {
-	// Looks into the section table to find out if this CP is the end of a section  
+	// Looks into the section table to find out if this CP is the end & current  of a sections 
+	
+	int DocumentMapping::getCurrentSection(int cp)
+	{
+		//if cp is the last char of a section, the next section will start at cp +1
+		int current = 0;
 
+		for (std::vector<int>::iterator iter = m_document->SectionPlex->CharacterPositions.begin() + 1; iter != m_document->SectionPlex->CharacterPositions.end(); ++iter)
+		{
+			if (cp < *iter)
+			{
+				break;
+			}
+			current++;
+		}
+		return m_document->SectionPlex->CharacterPositions[current + 1];
+	}
 	bool DocumentMapping::isSectionEnd(int cp)
 	{
 		bool result = false;
@@ -133,8 +148,15 @@ namespace DocFileFormat
 		m_pXmlWriter->WriteNodeBegin(_T("w:p"), TRUE);
 		writeParagraphRsid(papx);
 
-		// check for section properties
-		
+// ----------- check for section properties
+		bool isBidi = false;
+		SectionPropertyExceptions* currentSection = findValidSepx(getCurrentSection(cp));
+		if (currentSection)
+		{
+			isBidi = currentSection->isBidi;
+		}
+
+//-----------------------------------------------------------		
 		if (sectionEnd)
 		{
 			// this is the last paragraph of this section
@@ -142,7 +164,7 @@ namespace DocFileFormat
 			
 			if (papx)
 			{
-				ParagraphPropertiesMapping oMapping(m_pXmlWriter, m_context, m_document, paraEndChpx, findValidSepx(cpEnd), _sectionNr);
+				ParagraphPropertiesMapping oMapping(m_pXmlWriter, m_context, m_document, paraEndChpx, isBidi, findValidSepx(cpEnd), _sectionNr);
 				papx->Convert(&oMapping);
 			}
 
@@ -154,7 +176,7 @@ namespace DocFileFormat
 			
 			if (papx)
 			{
-				ParagraphPropertiesMapping oMapping(m_pXmlWriter, m_context, m_document, paraEndChpx);
+				ParagraphPropertiesMapping oMapping(m_pXmlWriter, m_context, m_document, paraEndChpx, isBidi);
 				papx->Convert(&oMapping);
 			}
 		}

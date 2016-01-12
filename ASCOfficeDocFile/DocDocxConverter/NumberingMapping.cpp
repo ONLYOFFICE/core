@@ -424,7 +424,8 @@ namespace DocFileFormat
 			m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
 
 			// pPr
-			ParagraphPropertiesMapping oppMapping(m_pXmlWriter, m_context, m_document, NULL);
+			bool isBidi = false;
+			ParagraphPropertiesMapping oppMapping(m_pXmlWriter, m_context, m_document, NULL, isBidi);
 			lvl->grpprlPapx->Convert(&oppMapping);
 
 			// пишем rPr

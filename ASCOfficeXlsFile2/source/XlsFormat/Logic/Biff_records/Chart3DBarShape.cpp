@@ -37,7 +37,7 @@ int Chart3DBarShape::serialize(std::wostream & _stream)
 	{
 		CP_XML_NODE(L"c:shape")
 		{	
-			if (taper >=0 && taper < 3 && riser == (unsigned char)0)
+			if (riser == (unsigned char)0)
 			{
 				switch(taper)
 				{
@@ -47,7 +47,14 @@ int Chart3DBarShape::serialize(std::wostream & _stream)
 				}
 			}
 			else
-				CP_XML_ATTR(L"val", L"cylinder");
+			{
+				switch(taper)
+				{
+					case 0:	CP_XML_ATTR(L"val", L"cylinder");	break;
+					case 1:	CP_XML_ATTR(L"val", L"cone");	break;
+					case 2:	CP_XML_ATTR(L"val", L"coneToMax");break;
+				}	
+			}
 		}
 	}
 	return 0;

@@ -36,7 +36,8 @@ public:
 
 //-----------------------------
 
-	short m_iLinkObject;
+	short			m_iLinkObject;
+	BaseObjectPtr	m_Frame;
 
 };
 

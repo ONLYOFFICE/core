@@ -49,7 +49,7 @@ public:
 	Icv			icvText;
 	BIFF_BYTE	dlp;
 	BIFF_BYTE	iReadingOrder;
-	BIFF_WORD	trot;
+	_UINT16		trot;
 
 //-----------------------------
 	bool is_area;

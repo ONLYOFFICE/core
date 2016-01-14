@@ -241,18 +241,19 @@ const bool CRT::loadContent(BinProcessor& proc)
 		m_bIs3D = true;
 	}
 
-	m_iChartType = 1;
+	m_iChartType = CHART_TYPE_Bar;
+
 	switch(m_ChartType->get_type())
 	{
-		case typeBar:		m_iChartType = 1; break;
-		case typeLine:		m_iChartType = 2; break;
-		case typePie:		m_iChartType = 3; break;
-		case typeArea:		m_iChartType = 4; break;
-		case typeSurf:		m_iChartType = 5; break;		
-		case typeRadar:		m_iChartType = 6; break;
-		case typeRadarArea:	m_iChartType = 7; break;
-		case typeBopPop:	m_iChartType = 8; break;		
-		case typeScatter:	m_iChartType = 9; break;
+		case typeBar:		m_iChartType = CHART_TYPE_Bar;			break;
+		case typeLine:		m_iChartType = CHART_TYPE_Line;			break;
+		case typePie:		m_iChartType = CHART_TYPE_Pie;			break;
+		case typeArea:		m_iChartType = CHART_TYPE_Area;			break;
+		case typeSurf:		m_iChartType = CHART_TYPE_Surf;			break;		
+		case typeRadar:		m_iChartType = CHART_TYPE_Radar;		break;
+		case typeRadarArea:	m_iChartType = CHART_TYPE_RadarArea;	break;
+		case typeBopPop:	m_iChartType = CHART_TYPE_BopPop;		break;		
+		case typeScatter:	m_iChartType = CHART_TYPE_Scatter;		break;
 	}
 	
 	return true;
@@ -277,7 +278,7 @@ std::wstring CRT::getOoxChartType()
 
 			if ((dropBar) && (dropBar->pcGap != (short)1)) 
 			{
-				m_iChartType = 11;
+				m_iChartType = CHART_TYPE_Stock;
 				return L"c:stockChart";
 			}
 		}
@@ -288,7 +289,7 @@ std::wstring CRT::getOoxChartType()
 		Pie * p = dynamic_cast<Pie *>(m_ChartType.get());
 		if (p->pcDonut.value() && p->pcDonut > 0)
 		{
-			m_iChartType = 12;
+			m_iChartType = CHART_TYPE_Doughnut;
 						return L"c:doughnutChart";
 		}
 		else 			return (m_bIs3D ? L"c:pie3DChart"		: L"c:pieChart");
@@ -307,10 +308,10 @@ std::wstring CRT::getOoxChartType()
 		Scatter * sc = dynamic_cast<Scatter *>(m_ChartType.get());
 		if ((sc->fBubbles.value()) && (sc->fBubbles))
 		{
-			m_iChartType = 10;
+			m_iChartType = CHART_TYPE_Bubble;
 			return L"c:bubbleChart";
 		}
-		else											return L"c:scatterChart";
+		else			return L"c:scatterChart";
 	}break;
 	case typeRadar:		return L"c:radarChart";
 	case typeRadarArea:	return L"c:radarChart";

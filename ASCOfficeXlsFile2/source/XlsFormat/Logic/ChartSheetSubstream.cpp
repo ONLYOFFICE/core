@@ -26,6 +26,7 @@
 #include <Logic/Biff_records/SIIndex.h>
 #include <Logic/Biff_records/DataFormat.h>
 #include <Logic/Biff_records/Text.h>
+#include <Logic/Biff_records/Pos.h>
 #include <Logic/Biff_records/Pie.h>
 #include <Logic/Biff_records/ShtProps.h>
 #include <Logic/Biff_records/Chart3d.h>
@@ -442,8 +443,8 @@ int ChartSheetSubstream::serialize_plot_area (std::wostream & _stream)
 	{
 		CP_XML_NODE(L"c:plotArea")
 		{
-			BaseObjectPtr PlotAreaFrame;
-			BaseObjectPtr PlotAreaPos;
+			FRAME	*PlotAreaFRAME	= NULL;
+			Pos		*PlotAreaPos	= NULL;
 
 			for (int i = 0; i < chart_formats->m_arAXISPARENT.size(); i++)
 			{
@@ -453,13 +454,21 @@ int ChartSheetSubstream::serialize_plot_area (std::wostream & _stream)
 
 				if (((bool)ax_parent->iax == false) && axes) //primary axes
 				{
-					PlotAreaFrame	= axes->m_PlotArea_FRAME;
-					PlotAreaPos		= parent->m_Pos;
+					PlotAreaFRAME	= dynamic_cast<FRAME*>	(axes->m_PlotArea_FRAME.get());
+					PlotAreaPos		= dynamic_cast<Pos*>	(parent->m_Pos.get());
+					
+					if (PlotAreaFRAME && PlotAreaPos)
+					{
+						PlotAreaPos->m_Frame = PlotAreaFRAME->m_Frame;
+					}
 				}
 			}
 
 			if (PlotAreaPos && (sht_props) && (sht_props->fAlwaysAutoPlotArea != false))
+			{
+
 				PlotAreaPos->serialize(CP_XML_STREAM());
+			}
 
 			for (std::map<int, std::vector<int>>::iterator it = m_mapTypeChart.begin(); it != m_mapTypeChart.end(); it++)
 			{
@@ -471,7 +480,8 @@ int ChartSheetSubstream::serialize_plot_area (std::wostream & _stream)
 				CP_XML_NODE(crt->getOoxChartType())
 				{	
 					crt->m_ChartType->serialize_attribute( CP_GET_XML_NODE());
-					if (crt->m_iChartType != 11)
+					
+					if (crt->m_iChartType != CHART_TYPE_Stock)
 						crt->m_ChartType->serialize(CP_XML_STREAM());
 					
 					format->serialize(CP_XML_STREAM());
@@ -486,8 +496,11 @@ int ChartSheetSubstream::serialize_plot_area (std::wostream & _stream)
 						series_ss->apply_crt_ss(crt->m_SS);						
 						series_ss->m_is3D = crt->m_bIs3D;
 
-						if (crt->m_iChartType == 3 || crt->m_iChartType == 8 || crt->m_iChartType == 12 || crt->m_iChartType == 5)
-							series_ss->m_isVaried	= format->fVaried;
+						if (crt->m_iChartType == CHART_TYPE_Pie			|| 
+							crt->m_iChartType == CHART_TYPE_BopPop		||
+							crt->m_iChartType == CHART_TYPE_Doughnut	|| 
+							crt->m_iChartType == CHART_TYPE_Surf )
+								series_ss->m_isVaried	= format->fVaried;
 
 						DataFormat * series_data_format = dynamic_cast<DataFormat *>(series_ss->m_DataFormat.get());
 						int series_id = series_data_format->iss;
@@ -505,12 +518,13 @@ int ChartSheetSubstream::serialize_plot_area (std::wostream & _stream)
 
 							serialize_dPt(CP_XML_STREAM(), it->second[i], crt, std::max(ser->cValx, ser->cValy));//+bubbles
 							
-							if (crt->m_iChartType == 9 || crt->m_iChartType == 10)//scatter & bubble
+							if (crt->m_iChartType == CHART_TYPE_Scatter || 
+								crt->m_iChartType == CHART_TYPE_Bubble)
 							{
 								serialize_ser(L"c:xVal", CP_XML_STREAM(), series_id, series->m_arAI[2], ser->sdtX, ser->cValx);
 								serialize_ser(L"c:yVal", CP_XML_STREAM(), series_id, series->m_arAI[1], ser->sdtY, ser->cValy);
 
-								if (crt->m_iChartType == 10)
+								if (crt->m_iChartType == CHART_TYPE_Bubble)
 									serialize_ser(L"c:bubbleSize", CP_XML_STREAM(), series_id, series->m_arAI[3], ser->sdtBSize, ser->cValBSize);
 							}
 							else
@@ -588,8 +602,8 @@ int ChartSheetSubstream::serialize_plot_area (std::wostream & _stream)
 				axes->serialize(CP_XML_STREAM(), secondary);
 			}
 
-			if (PlotAreaFrame)
-				PlotAreaFrame->serialize(CP_XML_STREAM());		
+			if (PlotAreaFRAME)
+				PlotAreaFRAME->serialize(CP_XML_STREAM());		
 		}	
 
 		serialize_legend (_stream, stream_legend_entries.str());
@@ -620,8 +634,11 @@ int ChartSheetSubstream::serialize_dPt(std::wostream & _stream, int id, CRT *crt
 
 				series_ss->m_is3D		= crt->m_bIs3D;
 				
-				if (crt->m_iChartType == 3 || crt->m_iChartType == 8 || crt->m_iChartType == 12 || crt->m_iChartType == 5)
-					series_ss->m_isVaried	= format->fVaried;
+				if (crt->m_iChartType == CHART_TYPE_Pie		|| 
+					crt->m_iChartType == CHART_TYPE_BopPop	|| 
+					crt->m_iChartType == CHART_TYPE_Doughnut || 
+					crt->m_iChartType == CHART_TYPE_Surf )
+						series_ss->m_isVaried	= format->fVaried;
 
 				CP_XML_NODE(L"c:idx")
 				{
@@ -636,8 +653,11 @@ int ChartSheetSubstream::serialize_dPt(std::wostream & _stream, int id, CRT *crt
 		}
 
 		bool varied = false;
-		if (crt->m_iChartType == 3 || crt->m_iChartType == 8 || crt->m_iChartType == 12 || crt->m_iChartType == 5)
-			varied	= format->fVaried;	
+		if (crt->m_iChartType == CHART_TYPE_Pie		|| 
+			crt->m_iChartType == CHART_TYPE_BopPop	|| 
+			crt->m_iChartType == CHART_TYPE_Doughnut || 
+			crt->m_iChartType == CHART_TYPE_Surf )
+				varied	= format->fVaried;	
 
 		if (varied && present_idx.size() < count_point)
 		{
@@ -673,7 +693,7 @@ int ChartSheetSubstream::serialize_dLbls (std::wostream & _stream, int id, CRT *
 	SS				*series_ss		= dynamic_cast<SS *>(series->m_SS.get());	
 	DataFormat		*series_df		= dynamic_cast<DataFormat *>(series_ss->m_DataFormat.get());
 
-	bool is_area = (crt->m_iChartType == 4 || crt->m_iChartType == 7);
+	bool is_area = (crt->m_iChartType == CHART_TYPE_Area || crt->m_iChartType == CHART_TYPE_RadarArea);
 	int series_id = series_df->iss;
 	
 	std::vector<std::pair<int, BaseObjectPtr>>	labels = chart_formats->find_labels ( 4, id);
@@ -683,39 +703,30 @@ int ChartSheetSubstream::serialize_dLbls (std::wostream & _stream, int id, CRT *
 
 	CP_XML_WRITER(_stream)
 	{
+		Text * text = NULL;
 		AttachedLabel * att_label = dynamic_cast<AttachedLabel*>(series_ss->m_AttachedLabel.get());
+		ATTACHEDLABEL* AT_LABEL = dynamic_cast<ATTACHEDLABEL*>(chart_formats->find_label(4, id).get());
+		if (AT_LABEL) text = dynamic_cast<Text*> (AT_LABEL->m_TextProperties.get());
+		
 		if (att_label)
 		{
 			att_label->is_area = is_area;
 			series_ss->m_AttachedLabel->serialize(_stream); 
 			add_labels = true;
 		}
-		else
-		{
-			Text * text = NULL;
-			ATTACHEDLABEL* AT_LABEL = dynamic_cast<ATTACHEDLABEL*>(chart_formats->find_label(4, id).get());
-			if (AT_LABEL) 
+		else 
+		{				
+			if ((AT_LABEL) && (AT_LABEL->m_FRAME))
 			{
-				text = dynamic_cast<Text*> (AT_LABEL->m_TextProperties.get());
-				
-				if (AT_LABEL->m_FRAME)
-				{
-					AT_LABEL->m_FRAME->serialize(_stream);
-					add_labels = true;
-				}
-
-				if (text)
-				{
-					CP_XML_NODE(L"c:showLegendKey") {CP_XML_ATTR(L"val", text->fShowKey);}
-					need_add_labels = true;
-				}
-			}							
+				AT_LABEL->m_FRAME->serialize(_stream);
+				add_labels = true;
+			}
 			DataLabExtContents * data_ext_cont = NULL; 
 
 			if (!data_ext_cont && AT_LABEL)
 				data_ext_cont = dynamic_cast<DataLabExtContents *>(AT_LABEL->m_DataLabExtContents.get());
 			
-			if (!data_ext_cont)
+			if (!data_ext_cont && crt)
 				data_ext_cont = dynamic_cast<DataLabExtContents *>(crt->m_DataLabExtContents.get());
 
 			if (data_ext_cont)		
@@ -735,6 +746,13 @@ int ChartSheetSubstream::serialize_dLbls (std::wostream & _stream, int id, CRT *
 				need_add_labels = true;
 			}
 		}
+		
+		if (text)
+		{
+			CP_XML_NODE(L"c:showLegendKey") {CP_XML_ATTR(L"val", text->fShowKey);}
+			need_add_labels = true;
+		}
+
 		Pie *pie = dynamic_cast<Pie *>(crt->m_ChartType.get());
 		if ( (pie) && (pie->fShowLdrLines) ) 
 		{
@@ -744,6 +762,7 @@ int ChartSheetSubstream::serialize_dLbls (std::wostream & _stream, int id, CRT *
 		}
 		if (!add_labels && need_add_labels)
 		{
+			CP_XML_NODE(L"c:showLegendKey")	{ CP_XML_ATTR (L"val" , 0); }
 			CP_XML_NODE(L"c:showVal")		{ CP_XML_ATTR (L"val" , 0); }
 			CP_XML_NODE(L"c:showPercent")	{ CP_XML_ATTR (L"val" , 0); }
 			CP_XML_NODE(L"c:showBubbleSize"){ CP_XML_ATTR (L"val" , 0); }
@@ -771,6 +790,9 @@ int ChartSheetSubstream::serialize_dLbls (std::wostream & _stream, int id, CRT *
 					{
 						CP_XML_NODE(L"c:showLegendKey") {CP_XML_ATTR(L"val", text->fShowKey);}
 					}
+					else
+						CP_XML_NODE(L"c:showLegendKey") {CP_XML_ATTR(L"val", 0);}
+
 				}							
 				DataLabExtContents * data_ext_cont = dynamic_cast<DataLabExtContents *>(crt->m_DataLabExtContents.get());
 

@@ -194,25 +194,27 @@ int SS::serialize_default(std::wostream & _stream, int series_type, int ind )
 			{
 			}
 		}
-		//if (m_MarkerFormat && series_type != 10)
+		//if (m_MarkerFormat && series_type != CHART_TYPE_Bubble)
 		//	m_MarkerFormat->serialize(_stream);
 		//else
 		//{
 		//	//генерация (series_data_format->iss)
 		//	//todooo
 		//}
-		if (m_PieFormat && (series_type == 12 || series_type == 8 || series_type == 3))
+		if (m_PieFormat && (series_type == CHART_TYPE_Doughnut	|| 
+							series_type == CHART_TYPE_BopPop	|| 
+							series_type == CHART_TYPE_Pie))
 		{
 			m_PieFormat->serialize(_stream);
 		}
-		if (m_Chart3DBarShape && series_type == 1 && m_is3D)
+		if (m_Chart3DBarShape && series_type == CHART_TYPE_Bar && m_is3D)
 		{
 			m_Chart3DBarShape->serialize(_stream);
 		}
 		
 		if (series_format)
 		{
-			if (series_type == 2 || series_type == 6 || series_type == 9)
+			if (series_type == CHART_TYPE_Line || series_type == CHART_TYPE_Radar || series_type == CHART_TYPE_Scatter)
 			{
 				CP_XML_NODE(L"c:smooth")
 				{
@@ -253,7 +255,9 @@ int SS::serialize(std::wostream & _stream, int series_type, int indPt)
 		{
 			CP_XML_NODE(L"c:spPr")
 			{
-				if ((series_type != 2 && series_type != 9 && series_type != 11) || m_is3D == true ) //line & scatter & stock
+				if (m_is3D == true || (	series_type != CHART_TYPE_Line		&& 
+										series_type != CHART_TYPE_Scatter	&& 
+										series_type != CHART_TYPE_Stock)) 
 				{		
 					if (m_GELFRAME && bArea)			
 					{
@@ -285,13 +289,14 @@ int SS::serialize(std::wostream & _stream, int series_type, int indPt)
 				else
 				{
 					//генерация (automatic)
-					if ( series_type != 2 || m_is3D == true ) //line & !3dLine
+					if ( series_type != CHART_TYPE_Line || m_is3D == true ) //line & !3dLine
 						ind = 31; //black
 					CP_XML_NODE(L"a:ln")
 					{
 						CP_XML_ATTR(L"w", 12700);//single
 
-						if (series_type == 9 || series_type == 11) //points only - todooo сделать дефолтовые точки ala 95 стиль & stork
+						if (series_type == CHART_TYPE_Scatter || series_type == CHART_TYPE_Stock) 
+							//points only - todooo сделать дефолтовые точки ala 95 стиль & stork
 						{
 							CP_XML_NODE(L"a:noFill");
 						}
@@ -313,12 +318,16 @@ int SS::serialize(std::wostream & _stream, int series_type, int indPt)
 				}
 			}
 		}
-		if (m_PieFormat && (series_type == 12 || series_type == 8 || series_type == 3))
+		if (m_PieFormat && (series_type == CHART_TYPE_Doughnut	|| 
+							series_type == CHART_TYPE_BopPop	|| 
+							series_type == CHART_TYPE_Pie))
 			m_PieFormat->serialize(_stream);
 
-		if (m_MarkerFormat && series_type != 10 && series_type != 1)
+		if (m_MarkerFormat &&	series_type != CHART_TYPE_Bubble	&& 
+								series_type != CHART_TYPE_Bar		&&	
+								series_type != CHART_TYPE_BopPop )
 			m_MarkerFormat->serialize(_stream);
-		else if (/*series_type == 2 ||*/ series_type == 9)
+		else if (/*series_type == CHART_TYPE_Line ||*/ series_type == CHART_TYPE_Scatter)
 		{
 			CP_XML_NODE(L"c:marker");
 		}
@@ -336,12 +345,12 @@ int SS::serialize2(std::wostream & _stream, int series_type)
 
 	CP_XML_WRITER(_stream)    
 	{
-		if (m_Chart3DBarShape && series_type == 1 && m_is3D)
+		if (m_Chart3DBarShape && series_type == CHART_TYPE_Bar && m_is3D)
 		{
 			m_Chart3DBarShape->serialize(_stream);
 		}
 
-		if (series_type == 10)
+		if (series_type == CHART_TYPE_Bubble)
 		{
 			if ((series_format) && (series_format->f3DBubbles == true))
 			{
@@ -349,7 +358,9 @@ int SS::serialize2(std::wostream & _stream, int series_type)
 			}
 		}
 		
-		if ((series_type == 2 || series_type == 6 || series_type == 9) && m_isAutoLine == false)
+		if (m_isAutoLine == false && (	series_type == CHART_TYPE_Line	|| 
+										series_type == CHART_TYPE_Radar || 
+										series_type == CHART_TYPE_Scatter))
 		{
 			if (series_format)
 			{

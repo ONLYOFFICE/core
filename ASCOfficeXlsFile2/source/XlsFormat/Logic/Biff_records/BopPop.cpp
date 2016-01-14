@@ -49,21 +49,21 @@ int BopPop::serialize(std::wostream & _stream)
 		{
 			CP_XML_ATTR (L"val", pcGap);
 		}
-		CP_XML_NODE(L"c:splitType")
-		{
-			switch(split)
-			{
-			case 0: CP_XML_ATTR (L"val" , L"pos");		break;
-			case 1: CP_XML_ATTR (L"val" , L"val");		break;
-			case 2: CP_XML_ATTR (L"val" , L"percent");	break;
-			case 3: CP_XML_ATTR (L"val" , L"cust");		break;
-			default:
-					CP_XML_ATTR (L"val" , L"auto");		break;
-			}
-		}
 
 		if (fAutoSplit == (unsigned char)0)
 		{
+			CP_XML_NODE(L"c:splitType")
+			{
+				switch(split)
+				{
+				case 0: CP_XML_ATTR (L"val" , L"pos");		break;
+				case 1: CP_XML_ATTR (L"val" , L"val");		break;
+				case 2: CP_XML_ATTR (L"val" , L"percent");	break;
+				case 3: CP_XML_ATTR (L"val" , L"cust");		break;
+				default:
+						CP_XML_ATTR (L"val" , L"auto");		break;
+				}
+			}
 			CP_XML_NODE(L"c:splitPos")
 			{
 				CP_XML_ATTR (L"val", iSplitPos);

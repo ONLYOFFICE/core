@@ -164,6 +164,14 @@ int ATTACHEDLABEL::serialize(std::wostream & _stream, bool isPosition)
 	bool rtl = false;
 	if((textProps) && (textProps->iReadingOrder == (unsigned char)2)) rtl = true;
 
+	FRAME	*FRAME_ = dynamic_cast<FRAME*>	(m_FRAME.get());
+	Pos		*Pos_	= dynamic_cast<Pos*>	(m_Pos.get());
+
+	if (FRAME_ && Pos_)
+	{
+		Pos_->m_Frame = FRAME_->m_Frame;
+	}
+
 	CP_XML_WRITER(_stream)    
 	{
 		if (seriesText)
@@ -176,9 +184,13 @@ int ATTACHEDLABEL::serialize(std::wostream & _stream, bool isPosition)
 					{
 						if (textProps)
 						{
-							if (textProps->trot != 0)
+							//if (textProps->trot != 0)
 							{
-								if (textProps->trot == (_UINT16)0xffff)	CP_XML_ATTR(L"vert", L"vert");	
+								if (textProps->trot == (_UINT16)0xff)	
+								{
+									CP_XML_ATTR(L"rot", 0);
+									CP_XML_ATTR(L"vert", L"wordArtVert");	
+								}
 								else
 								{
 									if (textProps->trot > 90)	CP_XML_ATTR(L"rot", (textProps->trot - 90)	* 60000);						

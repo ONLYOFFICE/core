@@ -42,6 +42,7 @@ void ShtProps::readFields(CFRecord& record)
 	fManSerAlloc		= GETBIT(flags, 0);
 	fPlotVisOnly		= GETBIT(flags, 1);
 	fNotSizeWith		= GETBIT(flags, 2);
+	fManPlotArea		= GETBIT(flags, 3);
 	fAlwaysAutoPlotArea = GETBIT(flags, 4);
 	
 	record.skipNunBytes(1); // reserved2

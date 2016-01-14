@@ -19,7 +19,7 @@ public:
 	virtual const bool	loadContent		(BinProcessor& proc);
 	
 	int					serialize		(std::wostream & _stream);
-	int					serialize		(std::wostream & _stream, bool position = true);
+	int					serialize		(std::wostream & _stream, bool position);
 	int					serialize_rPr	(std::wostream & _stream, int iFmt, bool rtl = false, bool defRPr = false);
 	int					serialize_txPr	(std::wostream & _stream);
 

@@ -24,6 +24,7 @@ public:
 
 //-----------------------------
 	BIFF_BOOL fManSerAlloc;
+	BIFF_BOOL fManPlotArea;
 	BIFF_BOOL fPlotVisOnly;
 	BIFF_BOOL fNotSizeWith;
 	BIFF_BOOL fAlwaysAutoPlotArea;

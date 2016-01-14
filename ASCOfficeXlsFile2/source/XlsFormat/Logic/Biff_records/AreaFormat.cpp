@@ -32,7 +32,9 @@ void AreaFormat::writeFields(CFRecord& record)
 void AreaFormat::readFields(CFRecord& record)
 {
 	unsigned short flags;
+	
 	record >> rgbFore >> rgbBack >> fls >> flags >> icvFore >> icvBack;
+	
 	fAuto		= GETBIT(flags, 0);
 	fInvertNeg	= GETBIT(flags, 1);
 }
@@ -41,11 +43,18 @@ int AreaFormat::serialize(std::wostream & _stream)
 {
 	CP_XML_WRITER(_stream)    
 	{
-		CP_XML_NODE(L"a:solidFill")
+		if (fls == (_UINT16)0)
 		{
-			CP_XML_NODE(L"a:srgbClr")
+			CP_XML_NODE(L"a:noFill");
+		}
+		else
+		{
+			CP_XML_NODE(L"a:solidFill")
 			{
-				CP_XML_ATTR(L"val",  rgbFore.strRGB);		
+				CP_XML_NODE(L"a:srgbClr")
+				{
+					CP_XML_ATTR(L"val",  rgbFore.strRGB);		
+				}
 			}
 		}
 	}

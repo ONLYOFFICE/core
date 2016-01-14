@@ -2,6 +2,19 @@
 
 #include <Logic/CompositeObject.h>
 
+#define CHART_TYPE_Bar			1
+#define CHART_TYPE_Line			2
+#define CHART_TYPE_Pie			3
+#define CHART_TYPE_Area			4
+#define CHART_TYPE_Surf			5		
+#define CHART_TYPE_Radar		6
+#define CHART_TYPE_RadarArea	7
+#define CHART_TYPE_BopPop		8		
+#define CHART_TYPE_Scatter		9
+#define CHART_TYPE_Bubble		10
+#define CHART_TYPE_Stock		11
+#define CHART_TYPE_Doughnut		12
+
 namespace XLS
 {
 

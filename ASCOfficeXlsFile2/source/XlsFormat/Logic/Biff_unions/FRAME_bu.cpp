@@ -73,15 +73,29 @@ const bool FRAME::loadContent(BinProcessor& proc)
 
 int FRAME::serialize(std::wostream & _stream)
 {
+	AreaFormat * area = dynamic_cast<AreaFormat*>(m_AreaFormat.get());
+	LineFormat * line = dynamic_cast<LineFormat*>(m_LineFormat.get());
+
+	bool bArea = m_GELFRAME ? true : false;
+	if (!bArea && (area) && (area->fAuto == false)) bArea = true;
+
+	bool bLine = false;
+	if ((line) && (line->fAuto == false)) bLine = true;
+
+	if (!bArea && !bLine) return 0;
+
 	CP_XML_WRITER(_stream)    
 	{
 		CP_XML_NODE(L"c:spPr")
 		{
-			if (m_GELFRAME)
-				m_GELFRAME->serialize(CP_XML_STREAM());
-			else if (m_AreaFormat) m_AreaFormat->serialize(CP_XML_STREAM());
+			if (bArea)
+			{
+				if (m_GELFRAME)
+					m_GELFRAME->serialize(CP_XML_STREAM());
+				else if (m_AreaFormat) m_AreaFormat->serialize(CP_XML_STREAM());
+			}
 			
-			if (m_LineFormat) m_LineFormat->serialize(CP_XML_STREAM());
+			if (m_LineFormat && bLine) m_LineFormat->serialize(CP_XML_STREAM());
 		}
 	}
 	return 0;

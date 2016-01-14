@@ -924,7 +924,7 @@ void text_format_properties_content::docx_convert(oox::docx_conversion_context &
         _rPr << L"<w:em w:val=\"" << em << "\" />";        
     }
 
-    if (style_font_name_ || style_font_name_asian_ || style_font_name_complex_)
+    if (style_font_name_ || style_font_name_asian_ || style_font_name_complex_ || fo_font_family_)
     {
         std::wstring w_eastAsia;
         std::wstring w_hAnsi;
@@ -947,6 +947,15 @@ void text_format_properties_content::docx_convert(oox::docx_conversion_context &
         if (font)
             w_hAnsi = font->name();
 
+		if (w_ascii.empty() && fo_font_family_)
+		{
+			w_ascii = fo_font_family_.get();
+		}
+		if (w_hAnsi.empty() && fo_font_family_)
+		{
+			w_hAnsi = fo_font_family_.get();
+		}
+
         font = fonts.font_by_style_name(w_eastAsia);
         if (font)
             w_eastAsia = font->name();
@@ -967,6 +976,7 @@ void text_format_properties_content::docx_convert(oox::docx_conversion_context &
 
         _rPr << L" />";
     }
+
 	_CP_OPT(color) color_text = fo_color_;
 
 	if (Context.get_drawing_context().get_current_shape())

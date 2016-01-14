@@ -136,7 +136,8 @@ public:
 		CString sMediaPath;
 		CString sEmbedPath;
 		
-		m_oCDocxSerializer.CreateDocxFolders(sDirectoryOut, sThemePath, sMediaPath, sEmbedPath);
+		if (!m_oCDocxSerializer.CreateDocxFolders(sDirectoryOut, sThemePath, sMediaPath, sEmbedPath))
+			return S_FALSE;
 		bool bRes = m_oCDocxSerializer.loadFromFile(CString(bstrFileIn), CString(bstrDirectoryOut), CString(_T("")), CString(sThemePath.GetString()), CString(sMediaPath.GetString()), sEmbedPath);
 		
 		return bRes ? S_OK : S_FALSE;

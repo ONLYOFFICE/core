@@ -138,39 +138,43 @@ bool BinDocxRW::CDocxSerializer::saveToFile(const CString& sSrcFileName, const C
 	RELEASEOBJECT(pFontPicker);
 	return true;
 }
-void BinDocxRW::CDocxSerializer::CreateDocxFolders(CString strDirectory, CString& sThemePath, CString& sMediaPath, CString& sEmbedPath)
+
+bool BinDocxRW::CDocxSerializer::CreateDocxFolders(CString strDirectory, CString& sThemePath, CString& sMediaPath, CString& sEmbedPath)
 {
+	bool res = true;
 	// rels
     OOX::CPath pathRels = strDirectory + FILE_SEPARATOR_STR + _T("_rels");
-    FileSystem::Directory::CreateDirectory(pathRels.GetPath());
+	if (!NSDirectory::CreateDirectory(pathRels.GetPath().GetBuffer()))	res = false;
 
 	// word
     OOX::CPath pathWord = strDirectory + FILE_SEPARATOR_STR + _T("word");
-    FileSystem::Directory::CreateDirectory(pathWord.GetPath());
+    if (!NSDirectory::CreateDirectory(pathWord.GetPath().GetBuffer()))	res = false;
 
 	// documentRels
     OOX::CPath pathWordRels = pathWord + FILE_SEPARATOR_STR + _T("_rels");
-    FileSystem::Directory::CreateDirectory(pathWordRels.GetPath());
+    if (!NSDirectory::CreateDirectory(pathWordRels.GetPath().GetBuffer()))res = false;
 
 	//media
     OOX::CPath pathMedia = pathWord + FILE_SEPARATOR_STR + _T("media");
-    FileSystem::Directory::CreateDirectory(pathMedia.GetPath());
+	if (!NSDirectory::CreateDirectory(pathMedia.GetPath().GetBuffer()))		res = false;
 	sMediaPath = pathMedia.GetPath();
 
 	//embeddings
     OOX::CPath pathEmbeddings = pathWord + FILE_SEPARATOR_STR + _T("embeddings");
-    FileSystem::Directory::CreateDirectory(pathEmbeddings.GetPath());
+	if (!NSDirectory::CreateDirectory(pathEmbeddings.GetPath().GetBuffer()))res = false;
 	sEmbedPath = pathEmbeddings.GetPath();
 
 	// theme
     OOX::CPath pathTheme = pathWord + FILE_SEPARATOR_STR + _T("theme");
-    FileSystem::Directory::CreateDirectory(pathTheme.GetPath());
+	if (!NSDirectory::CreateDirectory(pathTheme.GetPath().GetBuffer()))		res = false;
 
     OOX::CPath pathThemeRels = pathTheme + FILE_SEPARATOR_STR + _T("_rels");
-    FileSystem::Directory::CreateDirectory(pathThemeRels.GetPath());
+	if (!NSDirectory::CreateDirectory(pathThemeRels.GetPath().GetBuffer())) res = false;
 	
     pathTheme = pathTheme + FILE_SEPARATOR_STR + _T("theme1.xml");
 	sThemePath = pathTheme.GetPath();
+
+	return res;
 }
 bool BinDocxRW::CDocxSerializer::loadFromFile(const CString& sSrcFileName, const CString& sDstPath, const CString& sXMLOptions, const CString& sThemePath, const CString& sMediaPath, const CString& sEmbedPath)
 {

@@ -101,6 +101,7 @@ namespace OOX
 			}
 		}
 
+#if defined(_WIN32) || defined (_WIN64)
 		AVSINLINE void Normalize()
 		{
 			if (0 == m_strFilename.GetLength())
@@ -117,10 +118,7 @@ namespace OOX
 			int nCurrentSlash = -1;
 			int nCurrentW = 0;
 			bool bIsUp = false;
-#if !defined(_WIN32) && !defined (_WIN64)
-        if (pData[nCurrent] == (TCHAR)'/')
-           pDataNorm[nCurrentW++] = (TCHAR) FILE_SEPARATOR_CHAR;
-#endif
+
 			while (nCurrent < nLen)
 			{
                 if (pData[nCurrent] == (TCHAR) '\\' || pData[nCurrent] == (TCHAR)'/')
@@ -161,53 +159,7 @@ namespace OOX
 			m_strFilename = CString(pDataNorm, nCurrentW);
 
 			delete []pSlashPoints;
-			delete []pDataNorm;			
-			
-			/*			
-			m_strFilename.Replace(_T("\\\\"), _T("\\"));
-			m_strFilename.Replace(TCHAR('/'), TCHAR('\\'));
-
-			std::vector<CString> arNames;
-			CString resToken;
-			int curPos= 0;
-
-			bool bEndSlash = (m_strFilename.GetAt(m_strFilename.GetLength() - 1) == (TCHAR)'\\');
-
-			resToken = m_strFilename.Tokenize(_T("\\"), curPos);
-			while (resToken != _T(""))
-			{
-				if (_T("..") == resToken)
-				{
-					size_t nCount = arNames.GetCount();
-					if (0 < nCount)
-						arNames.RemoveAt(nCount - 1);
-					else
-						arNames.push_back(resToken);
-				}
-				else 
-					arNames.push_back(resToken);
-				resToken = m_strFilename.Tokenize(_T("\\"), curPos);
-			}
-
-			size_t nCount = arNames.GetCount();
-			m_strFilename = _T("");
-			for (size_t i = 0; i < nCount; ++i)
-			{
-				m_strFilename += arNames[i];
-				if (i != (nCount - 1))
-					m_strFilename += _T("\\");
-			}
-
-			if (bEndSlash)
-				m_strFilename += _T("\\");
-			*/
-		}
-		void SetName(CString sName, bool bNormalize)
-		{
-			m_strFilename = sName;
-			CheckIsRoot();
-			if(bNormalize)
-				Normalize();
+			delete []pDataNorm;				
 		}
 		void CheckIsRoot()
 		{
@@ -216,6 +168,86 @@ namespace OOX
 			else
 				m_bIsRoot = false;
 		}
+#else
+		AVSINLINE void Normalize()
+		{
+			if (0 == m_strFilename.GetLength())
+				return;
+
+			TCHAR* pData = m_strFilename.GetBuffer();
+			int nLen = m_strFilename.GetLength();
+
+			TCHAR* pDataNorm = new TCHAR[nLen + 1];
+			int* pSlashPoints = new int[nLen + 1];
+
+			int nStart = 0;
+			int nCurrent = 0;
+			int nCurrentSlash = -1;
+			int nCurrentW = 0;
+			bool bIsUp = false;
+
+			if (pData[nCurrent] == (TCHAR)'/')
+			   pDataNorm[nCurrentW++] = (TCHAR) FILE_SEPARATOR_CHAR;
+
+			while (nCurrent < nLen)
+			{
+                if (pData[nCurrent] == (TCHAR)'/')
+				{
+					if (nStart < nCurrent)
+					{
+						bIsUp = false;
+						if ((nCurrent - nStart) == 2)
+						{
+							if (pData[nStart] == (TCHAR)'.' && pData[nStart + 1] == (TCHAR)'.')
+							{
+								if (nCurrentSlash > 0)
+								{
+									--nCurrentSlash;
+									nCurrentW = pSlashPoints[nCurrentSlash];
+									bIsUp = true;
+								}
+							}
+						}
+						if (!bIsUp)
+						{
+                            pDataNorm[nCurrentW++] = (TCHAR) FILE_SEPARATOR_CHAR;
+							++nCurrentSlash;
+							pSlashPoints[nCurrentSlash] = nCurrentW;
+						}
+					}
+					nStart = nCurrent + 1;					
+					++nCurrent;
+					continue;
+				}
+				pDataNorm[nCurrentW++] = pData[nCurrent];
+				++nCurrent;
+			}
+
+			pDataNorm[nCurrentW] = (TCHAR)'\0';
+
+			m_strFilename.ReleaseBuffer();
+			m_strFilename = CString(pDataNorm, nCurrentW);
+
+			delete []pSlashPoints;
+			delete []pDataNorm;				
+		}
+		void CheckIsRoot()
+		{
+			if(m_strFilename.GetLength() > 0 && ( '/' == m_strFilename[0] ))
+				m_bIsRoot = true;
+			else
+				m_bIsRoot = false;
+		}
+
+#endif
+		void SetName(CString sName, bool bNormalize)
+		{
+			m_strFilename = sName;
+			CheckIsRoot();
+			if(bNormalize)
+				Normalize();
+		}
+
 		bool GetIsRoot()
 		{
 			return m_bIsRoot;

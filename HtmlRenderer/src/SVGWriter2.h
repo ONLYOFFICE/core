@@ -971,14 +971,14 @@ namespace NSHtmlRenderer
 			}
 
             m_oDocument.WriteString(L"<path style=\"fill:", 18);
-            m_oDocument.WriteHexInt3(m_pBrush->Color1);
+            m_oDocument.WriteHexColor3(m_pBrush->Color1);
             m_oDocument.WriteString(L";fill-opacity:", 14);
             m_oDocument.AddDouble((double)m_pBrush->Alpha1 / 255, 2);
             if (nType & c_nEvenOddFillMode)
                 m_oDocument.WriteString(L";fill-rule:evenodd;stroke:", 26);
             else
                 m_oDocument.WriteString(L";fill-rule:nonzero;stroke:", 26);
-            m_oDocument.WriteHexInt3(m_pPen->Color);
+            m_oDocument.WriteHexColor3(m_pPen->Color);
             m_oDocument.WriteString(L";stroke-width:", 14);
             m_oDocument.AddInt(nPenW);
             m_oDocument.WriteString(L";stroke-opacity:", 16);

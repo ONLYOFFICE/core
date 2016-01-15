@@ -22,35 +22,6 @@ namespace NSDoctRenderer
             INVALID = 255
         };
     }
-
-    class Q_DECL_EXPORT CExecuteParams
-    {
-    public:
-        DoctRendererFormat::FormatFile m_eSrcFormat;
-        DoctRendererFormat::FormatFile m_eDstFormat;
-
-        std::wstring m_strFontsDirectory;
-        std::wstring m_strImagesDirectory;
-        std::wstring m_strThemesDirectory;
-
-        std::wstring m_strSrcFilePath;
-        std::wstring m_strDstFilePath;
-
-        CArray<std::wstring> m_arChanges;
-        int m_nCountChangesItems;
-
-        std::wstring m_strMailMergeDatabasePath;
-        std::wstring m_strMailMergeField;
-        int m_nMailMergeIndexStart;
-        int m_nMailMergeIndexEnd;
-
-    public:
-        CExecuteParams();
-        ~CExecuteParams();
-
-    public:
-        bool FromXml(const std::wstring& sXml);
-    };
 }
 
 namespace NSDoctRenderer

@@ -233,6 +233,8 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring & fileName)
 		nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML;
     else if (0 == sExt.compare(L".bin")) //base64 string
 		nFileType = AVS_OFFICESTUDIO_FILE_CANVAS_PDF;
+    else if (0 == sExt.compare(L".doct"))//случай архива с html viewer
+		nFileType = AVS_OFFICESTUDIO_FILE_TEAMLAB_DOCY;
     else //if (0 == sExt.compare(L".txt") || 0 == sExt.compare(L".xml")) //volsciv.rtf -или любой другой
         nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT;
 

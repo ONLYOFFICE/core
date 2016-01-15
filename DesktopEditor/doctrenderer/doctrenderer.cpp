@@ -10,6 +10,111 @@
 
 #include <iostream>
 
+namespace NSDoctRenderer
+{
+    class CExecuteParams
+    {
+    public:
+        DoctRendererFormat::FormatFile m_eSrcFormat;
+        DoctRendererFormat::FormatFile m_eDstFormat;
+
+        std::wstring m_strFontsDirectory;
+        std::wstring m_strImagesDirectory;
+        std::wstring m_strThemesDirectory;
+
+        std::wstring m_strSrcFilePath;
+        std::wstring m_strDstFilePath;
+
+        CArray<std::wstring> m_arChanges;
+        int m_nCountChangesItems;
+
+        std::wstring m_strMailMergeDatabasePath;
+        std::wstring m_strMailMergeField;
+        int m_nMailMergeIndexStart;
+        int m_nMailMergeIndexEnd;
+
+        bool m_bIsRetina;
+
+    public:
+        CExecuteParams() : m_arChanges()
+        {
+            m_eSrcFormat = DoctRendererFormat::INVALID;
+            m_eDstFormat = DoctRendererFormat::INVALID;
+
+            m_strFontsDirectory = L"";
+            m_strImagesDirectory = L"";
+            m_strThemesDirectory = L"";
+
+            m_strSrcFilePath = L"";
+            m_strDstFilePath = L"";
+
+            m_nCountChangesItems = -1;
+
+            m_strMailMergeDatabasePath = L"";
+            m_strMailMergeField = L"";
+            m_nMailMergeIndexStart = -1;
+            m_nMailMergeIndexEnd = -1;
+
+            m_bIsRetina = false;
+        }
+        ~CExecuteParams()
+        {
+            m_arChanges.RemoveAll();
+        }
+
+    public:
+        bool FromXml(const std::wstring& strXml)
+        {
+            XmlUtils::CXmlNode oNode;
+            if (!oNode.FromXmlString(strXml))
+                return false;
+
+            m_strSrcFilePath = oNode.ReadValueString(L"SrcFilePath");
+            m_strDstFilePath = oNode.ReadValueString(L"DstFilePath");
+
+            m_eSrcFormat = (DoctRendererFormat::FormatFile)(oNode.ReadValueInt(L"SrcFileType"));
+            m_eDstFormat = (DoctRendererFormat::FormatFile)(oNode.ReadValueInt(L"DstFileType"));
+
+            m_strFontsDirectory = oNode.ReadValueString(L"FontsDirectory");
+            m_strImagesDirectory = oNode.ReadValueString(L"ImagesDirectory");
+            m_strThemesDirectory = oNode.ReadValueString(L"ThemesDirectory");
+
+            XmlUtils::CXmlNode oNodeChanges;
+            if (oNode.GetNode(L"Changes", oNodeChanges))
+            {
+                m_nCountChangesItems = oNodeChanges.ReadAttributeInt(L"TopItem", -1);
+
+                XmlUtils::CXmlNodes oNodes;
+                oNodeChanges.GetNodes(L"Change", oNodes);
+
+                int nCount = oNodes.GetCount();
+                for (int i = 0; i < nCount; ++i)
+                {
+                    XmlUtils::CXmlNode _node;
+                    oNodes.GetAt(i, _node);
+
+                    m_arChanges.Add(_node.GetText());
+                }
+            }
+
+            XmlUtils::CXmlNode oNodeMailMerge;
+            if (oNode.GetNode(L"MailMergeData", oNodeMailMerge))
+            {
+                m_strMailMergeDatabasePath = oNodeMailMerge.ReadAttribute(L"DatabasePath");
+                m_nMailMergeIndexStart = oNodeMailMerge.ReadAttributeInt(L"Start", -1);
+                m_nMailMergeIndexEnd = oNodeMailMerge.ReadAttributeInt(L"End", -1);
+                m_strMailMergeField = oNodeMailMerge.ReadAttribute(L"Field");
+            }
+
+            int nParams = oNode.ReadValueInt(L"DoctParams", 0);
+            if (nParams & 0x01)
+                m_bIsRetina = true;
+
+            return true;
+        }
+    };
+}
+
 void CreateNativeObject(const v8::FunctionCallbackInfo<v8::Value>& args)
 {
     v8::Isolate* isolate = v8::Isolate::GetCurrent();
@@ -47,77 +152,7 @@ namespace NSDoctRenderer
             start_pos += to.length();
         }
         return str;
-    }
-
-    CExecuteParams::CExecuteParams() : m_arChanges()
-    {
-        m_eSrcFormat = DoctRendererFormat::INVALID;
-        m_eDstFormat = DoctRendererFormat::INVALID;
-
-        m_strFontsDirectory = L"";
-        m_strImagesDirectory = L"";
-        m_strThemesDirectory = L"";
-
-        m_strSrcFilePath = L"";
-        m_strDstFilePath = L"";
-
-        m_nCountChangesItems = -1;
-
-        m_strMailMergeDatabasePath = L"";
-        m_strMailMergeField = L"";
-        m_nMailMergeIndexStart = -1;
-        m_nMailMergeIndexEnd = -1;
-    }
-    CExecuteParams::~CExecuteParams()
-    {
-        m_arChanges.RemoveAll();
-    }
-
-    bool CExecuteParams::FromXml(const std::wstring& strXml)
-    {
-        XmlUtils::CXmlNode oNode;
-        if (!oNode.FromXmlString(strXml))
-            return FALSE;
-
-        m_strSrcFilePath = oNode.ReadValueString(L"SrcFilePath");
-        m_strDstFilePath = oNode.ReadValueString(L"DstFilePath");
-
-        m_eSrcFormat = (DoctRendererFormat::FormatFile)(oNode.ReadValueInt(L"SrcFileType"));
-        m_eDstFormat = (DoctRendererFormat::FormatFile)(oNode.ReadValueInt(L"DstFileType"));
-
-        m_strFontsDirectory = oNode.ReadValueString(L"FontsDirectory");
-        m_strImagesDirectory = oNode.ReadValueString(L"ImagesDirectory");
-        m_strThemesDirectory = oNode.ReadValueString(L"ThemesDirectory");
-
-        XmlUtils::CXmlNode oNodeChanges;
-        if (oNode.GetNode(L"Changes", oNodeChanges))
-        {
-            m_nCountChangesItems = oNodeChanges.ReadAttributeInt(L"TopItem", -1);
-
-            XmlUtils::CXmlNodes oNodes;
-            oNodeChanges.GetNodes(L"Change", oNodes);
-
-            int nCount = oNodes.GetCount();
-            for (int i = 0; i < nCount; ++i)
-            {
-                XmlUtils::CXmlNode _node;
-                oNodes.GetAt(i, _node);
-
-                m_arChanges.Add(_node.GetText());
-            }
-        }
-
-        XmlUtils::CXmlNode oNodeMailMerge;
-        if (oNode.GetNode(L"MailMergeData", oNodeMailMerge))
-        {
-            m_strMailMergeDatabasePath = oNodeMailMerge.ReadAttribute(L"DatabasePath");
-            m_nMailMergeIndexStart = oNodeMailMerge.ReadAttributeInt(L"Start", -1);
-            m_nMailMergeIndexEnd = oNodeMailMerge.ReadAttributeInt(L"End", -1);
-            m_strMailMergeField = oNodeMailMerge.ReadAttribute(L"Field");
-        }
-
-        return true;
-    }
+    }    
 }
 
 namespace NSDoctRenderer
@@ -522,6 +557,14 @@ namespace NSDoctRenderer
                         strError = L"code=\"run\"";
                         bIsBreak = true;
                     }
+                }
+
+                if (!bIsBreak && m_oParams.m_bIsRetina)
+                {
+                    v8::Local<v8::String> sourceParams = v8::String::NewFromUtf8(isolate,
+                        "(function(){ if (window && window.SetDoctRendererParams) {window.SetDoctRendererParams({retina:true});} })();");
+                    v8::Local<v8::Script> scriptParams = v8::Script::Compile(sourceParams);
+                    scriptParams->Run();
                 }
 
                 //---------------------------------------------------------------

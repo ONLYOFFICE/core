@@ -573,7 +573,28 @@ namespace NSStringUtils
 		}
 		void AddDouble(double val, int count)
 		{
-			// TODO:
+			std::wstring s = std::to_wstring(val);
+
+			if (count != -1)
+			{
+				size_t nSize = s.length();
+				std::wstring::size_type pos1 = s.find(wchar_t('.'));
+				if (pos1 != std::wstring::npos)
+				{
+					size_t nCountNeed = pos1 + 1 + count;
+					if (nCountNeed < nSize)
+						s = s.substr(0, nCountNeed);
+				}
+				std::wstring::size_type pos2 = s.find(wchar_t(','));
+				if (pos2 != std::wstring::npos)
+				{
+					size_t nCountNeed = pos2 + 1 + count;
+					if (nCountNeed < nSize)
+						s = s.substr(0, nCountNeed);
+				}
+			}
+
+			WriteString(s);
 		}
 
 		inline void WriteHexByteNoSafe(const unsigned char& value)

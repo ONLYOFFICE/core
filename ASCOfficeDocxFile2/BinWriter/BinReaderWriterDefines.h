@@ -385,7 +385,8 @@ extern int g_nCurFormatVersion;
 		footers = 4,
 		hdrftrelem = 5,
 		pageNumType = 6,
-		sectPrChange = 7
+		sectPrChange = 7,
+		cols = 8
 	};}
 	namespace c_oSerProp_secPrSettingsType{enum c_oSerProp_secPrSettingsType
 	{
@@ -852,6 +853,16 @@ extern int g_nCurFormatVersion;
         tcPrChange = 12,
 		trPrChange = 13,
 		ContentRun = 14
+	};}
+	namespace c_oSerProp_Columns{enum c_oSerProp_Columns
+	{
+		EqualWidth = 0,
+		Num = 1,
+		Sep = 2,
+		Space = 3,
+		Column = 4,
+		ColumnSpace = 5,
+		ColumnW = 6
 	};}
 }
 

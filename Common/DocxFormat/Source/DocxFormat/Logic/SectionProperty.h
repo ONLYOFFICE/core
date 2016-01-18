@@ -44,17 +44,17 @@ namespace ComplexTypes
 			{
 				CString sResult;
 
-				if ( m_oSpace.IsInit() )
-				{
-					sResult += "w:space=\"";
-					sResult += m_oSpace->ToString();
-					sResult += "\" ";
-				}
-
 				if ( m_oW.IsInit() )
 				{
 					sResult += "w:w=\"";
-					sResult += m_oW->ToString();
+					sResult.AppendFormat(_T("%d"), m_oW->ToTwips());
+					sResult += "\" ";
+				}
+
+				if ( m_oSpace.IsInit() )
+				{
+					sResult += "w:space=\"";
+					sResult.AppendFormat(_T("%d"), m_oSpace->ToTwips());
 					sResult += "\" ";
 				}
 
@@ -1217,13 +1217,6 @@ namespace OOX
 			{
 				CString sResult = _T("<w:cols ");
 
-				if ( m_oEqualWidth.IsInit() )
-				{
-					sResult += "w:equalWidth=\"";
-					sResult += m_oEqualWidth->ToString();
-					sResult += "\" ";
-				}
-
 				if ( m_oNum.IsInit() )
 				{
 					sResult += "w:num=\"";
@@ -1234,14 +1227,21 @@ namespace OOX
 				if ( m_oSep.IsInit() )
 				{
 					sResult += "w:sep=\"";
-					sResult += m_oSep->ToString();
+					sResult += m_oSep->ToString2(SimpleTypes::onofftostring1);
 					sResult += "\" ";
 				}
 
 				if ( m_oSpace.IsInit() )
 				{
 					sResult += "w:space=\"";
-					sResult += m_oSpace->ToString();
+					sResult.AppendFormat(_T("%d"), m_oSpace->ToTwips());
+					sResult += "\" ";
+				}
+
+				if ( m_oEqualWidth.IsInit() )
+				{
+					sResult += "w:equalWidth=\"";
+					sResult += m_oEqualWidth->ToString2(SimpleTypes::onofftostring1);
 					sResult += "\" ";
 				}
 

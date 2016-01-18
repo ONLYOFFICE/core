@@ -6,6 +6,7 @@
 #include "ReaderClasses.h"
 #include "../../XlsxSerializerCom/Writer/BinaryReader.h"
 #include "../../DesktopEditor/common/ASCVariant.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Docx.h"
 
 
 namespace BinDocxRW {
@@ -1163,6 +1164,12 @@ public:
 			res = Read1(length, &Binary_pPrReader::ReadSectPrChange, this, &sectPrChange);
 			pSectPr->sectPrChange = sectPrChange.ToString(_T("w:sectPrChange"));
 		}
+		else if( c_oSerProp_secPrType::cols == type )
+		{
+			OOX::Logic::CColumns oCols;
+			res = Read1(length, &Binary_pPrReader::ReadCols, this, &oCols);
+			pSectPr->cols = oCols.toXML();
+		}
 		else
 			res = c_oSerConstants::ReadUnknown;
 		return res;
@@ -1316,6 +1323,58 @@ public:
 		{
 			pSectPr->bPageNumStart = true;
 			pSectPr->PageNumStart = m_oBufferedStream.GetLong();
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int ReadCols(BYTE type, long length, void* poResult)
+	{
+		OOX::Logic::CColumns* pCols = static_cast<OOX::Logic::CColumns*>(poResult);
+		int res = c_oSerConstants::ReadOk;
+		if( c_oSerProp_Columns::EqualWidth == type )
+		{
+			pCols->m_oEqualWidth.Init();
+			pCols->m_oEqualWidth->FromBool(m_oBufferedStream.GetBool());
+		}
+		else if( c_oSerProp_Columns::Num == type )
+		{
+			pCols->m_oNum.Init();
+			pCols->m_oNum->SetValue(m_oBufferedStream.GetLong());
+		}
+		else if( c_oSerProp_Columns::Sep == type )
+		{
+			pCols->m_oSep.Init();
+			pCols->m_oSep->FromBool(m_oBufferedStream.GetBool());
+		}
+		else if( c_oSerProp_Columns::Space == type )
+		{
+			pCols->m_oSpace.Init();
+			pCols->m_oSpace->FromTwips(m_oBufferedStream.GetLong());
+		}
+		else if( c_oSerProp_Columns::Column == type )
+		{
+			ComplexTypes::Word::CColumn* pCol = new ComplexTypes::Word::CColumn();
+			res = Read1(length, &Binary_pPrReader::ReadCol, this, pCol);
+			pCols->m_arrColumns.push_back(pCol);
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int ReadCol(BYTE type, long length, void* poResult)
+	{
+		ComplexTypes::Word::CColumn* pCol = static_cast<ComplexTypes::Word::CColumn*>(poResult);
+		int res = c_oSerConstants::ReadOk;
+		if( c_oSerProp_Columns::ColumnSpace == type )
+		{
+			pCol->m_oSpace.Init();
+			pCol->m_oSpace->FromTwips(m_oBufferedStream.GetLong());
+		}
+		else if( c_oSerProp_Columns::ColumnW == type )
+		{
+			pCol->m_oW.Init();
+			pCol->m_oW->FromTwips(m_oBufferedStream.GetLong());
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;

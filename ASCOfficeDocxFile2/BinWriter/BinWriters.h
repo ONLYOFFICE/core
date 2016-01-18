@@ -1318,6 +1318,12 @@ namespace BinDocxRW
 					WriteSectPrChange(pSectPr->m_oSectPrChange.get());
 					m_oBcw.WriteItemEnd(nCurPos);
 				}
+				if(pSectPr->m_oCols.IsInit())
+				{
+					nCurPos = m_oBcw.WriteItemStart(c_oSerProp_secPrType::cols);
+					WriteColumns(pSectPr->m_oCols.get());
+					m_oBcw.WriteItemEnd(nCurPos);
+				}
 			};
 			void WritePageSettings(OOX::Logic::CSectionProperty* pSectPr)
 			{
@@ -1483,6 +1489,58 @@ namespace BinDocxRW
 				{
 					nCurPos = m_oBcw.WriteItemStart(c_oSerProp_RevisionType::sectPrChange);
 					WriteSectPr(sectPrChange.m_pSecPr.GetPointer());
+					m_oBcw.WriteItemWithLengthEnd(nCurPos);
+				}
+			}
+			void WriteColumns(const OOX::Logic::CColumns& columns)
+			{
+				int nCurPos = 0;
+
+				if(columns.m_oEqualWidth.IsInit())
+				{
+					nCurPos = m_oBcw.WriteItemStart(c_oSerProp_Columns::EqualWidth);
+					m_oBcw.m_oStream.WriteBOOL(columns.m_oEqualWidth->ToBool());
+					m_oBcw.WriteItemWithLengthEnd(nCurPos);
+				}
+				if(columns.m_oNum.IsInit())
+				{
+					nCurPos = m_oBcw.WriteItemStart(c_oSerProp_Columns::Num);
+					m_oBcw.m_oStream.WriteLONG(columns.m_oNum->GetValue());
+					m_oBcw.WriteItemWithLengthEnd(nCurPos);
+				}
+				if(columns.m_oSep.IsInit())
+				{
+					nCurPos = m_oBcw.WriteItemStart(c_oSerProp_Columns::Sep);
+					m_oBcw.m_oStream.WriteBOOL(columns.m_oSep->ToBool());
+					m_oBcw.WriteItemWithLengthEnd(nCurPos);
+				}
+				if(columns.m_oSpace.IsInit())
+				{
+					nCurPos = m_oBcw.WriteItemStart(c_oSerProp_Columns::Space);
+					m_oBcw.m_oStream.WriteLONG(columns.m_oSpace->ToTwips());
+					m_oBcw.WriteItemWithLengthEnd(nCurPos);
+				}
+				for(int i = 0; i < columns.m_arrColumns.size(); ++i)
+				{
+					nCurPos = m_oBcw.WriteItemStart(c_oSerProp_Columns::Column);
+					WriteColumn(*columns.m_arrColumns[i]);
+					m_oBcw.WriteItemWithLengthEnd(nCurPos);
+				}
+			}
+			void WriteColumn(const ComplexTypes::Word::CColumn& column)
+			{
+				int nCurPos = 0;
+
+				if(column.m_oSpace.IsInit())
+				{
+					nCurPos = m_oBcw.WriteItemStart(c_oSerProp_Columns::ColumnSpace);
+					m_oBcw.m_oStream.WriteLONG(column.m_oSpace->ToTwips());
+					m_oBcw.WriteItemWithLengthEnd(nCurPos);
+				}
+				if(column.m_oW.IsInit())
+				{
+					nCurPos = m_oBcw.WriteItemStart(c_oSerProp_Columns::ColumnW);
+					m_oBcw.m_oStream.WriteLONG(column.m_oW->ToTwips());
 					m_oBcw.WriteItemWithLengthEnd(nCurPos);
 				}
 			}

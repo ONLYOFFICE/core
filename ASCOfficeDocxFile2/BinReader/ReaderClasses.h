@@ -23,6 +23,7 @@ public:
 	BYTE SectionType;
 	int PageNumStart;
 	CString sectPrChange;
+	CString cols;
 
 	bool bHeader;
 	bool bFooter;
@@ -42,6 +43,7 @@ public:
 		Header = 12.5;
 		Footer = 12.5;
 		sHeaderFooterReference = _T("");
+		cols = _T("<w:cols w:space=\"708\"/>");
 
 		bHeader = false;
 		bFooter = false;
@@ -89,7 +91,9 @@ public:
 		sRes.Append(_T("/>"));
 		if(bPageNumStart)
 			sRes.AppendFormat(_T("<w:pgNumType w:start=\"%d\"/>"), PageNumStart);
-		sRes.Append(_T("<w:cols w:space=\"708\"/><w:docGrid w:linePitch=\"360\"/>"));
+		if(!cols.IsEmpty())
+			sRes.Append(cols);
+		sRes.Append(_T("<w:docGrid w:linePitch=\"360\"/>"));
 		if(bTitlePg && TitlePg)
 			sRes.Append(_T("<w:titlePg/>"));
 		if(!sectPrChange.IsEmpty())

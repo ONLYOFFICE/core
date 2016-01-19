@@ -533,9 +533,11 @@ void XlsConverter::convert(XLS::OBJECTS* objects)
 			if ((fsp) && (fsp->fPatriarch)) group_objects.back().ind++;
 		}
 	}
+	int count = 0;
 	
 	for ( std::list<XLS::BaseObjectPtr>::iterator elem = objects->elements_.begin(); elem != objects->elements_.end(); elem++)
 	{
+		count++;
 		short type_object = -1;
 
 		XLS::OBJ		* OBJ			= dynamic_cast<XLS::OBJ*>		(elem->get());
@@ -574,9 +576,14 @@ void XlsConverter::convert(XLS::OBJECTS* objects)
 		if (type_object == 0)
 		{
 			_group_object gr;		
-			gr.spgr		= dynamic_cast<ODRAW::OfficeArtSpgrContainer*>(group_objects.back().spgr->child_records[group_objects.back().ind++].get());
-			gr.count	= gr.spgr->child_records.size();
-			group_objects.push_back(gr);
+			if (group_objects.back().ind < group_objects.back().spgr->child_records.size())
+			{
+				gr.spgr		= dynamic_cast<ODRAW::OfficeArtSpgrContainer*>(group_objects.back().spgr->child_records[group_objects.back().ind++].get());
+				gr.count	= gr.spgr->child_records.size();
+				group_objects.push_back(gr);
+			}
+			else //сюда попадать не должно !!!!
+				continue;
 		}
 		if ((group_objects.back().spgr ) && ( group_objects.back().ind < group_objects.back().count))
 		{
@@ -603,9 +610,10 @@ void XlsConverter::convert(XLS::OBJECTS* objects)
 		if (TEXTOBJECT || CHART)
 		{
 			elem++;
+			count++;
 		}		
 		
-		if (group_objects.back().ind >= group_objects.back().count)
+		while ((group_objects.size() >0) && (group_objects.back().ind >= group_objects.back().count))
 		{
 			group_objects.back().spgr = NULL;
 			group_objects.pop_back();

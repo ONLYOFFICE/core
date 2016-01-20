@@ -612,6 +612,14 @@
 				RelativePath="..\..\Common\DocxFormat\Source\XML\libxml2\libxml2.cpp"
 				>
 				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Debug|x64"
 					>
 					<Tool
@@ -647,6 +655,14 @@
 			<File
 				RelativePath="..\..\Common\3dParty\pole\pole.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug|x64"
 					>

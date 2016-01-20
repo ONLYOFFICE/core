@@ -614,6 +614,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\source\LeptonLib\lepton_utils.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\source\LeptonLib\list.cpp"
 				>
 			</File>
@@ -927,10 +931,6 @@
 			</File>
 			<File
 				RelativePath="..\source\LeptonLib\tiffiostub.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\source\LeptonLib\utils.cpp"
 				>
 			</File>
 			<File

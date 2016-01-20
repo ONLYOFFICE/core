@@ -822,8 +822,8 @@ namespace NSFile
                         }
 
 #if defined(_WIN32) || defined(_WIN32_WCE) || defined(_WIN64)
-                        src.open(strSrc, std::ios::binary);
-                        dst.open(strDst, std::ios::binary);
+                        src.open(strSrc.c_str(), std::ios::binary);
+                        dst.open(strDst.c_str(), std::ios::binary);
 #else
 			BYTE* pUtf8Src = NULL;
 			LONG lLenSrc = 0;

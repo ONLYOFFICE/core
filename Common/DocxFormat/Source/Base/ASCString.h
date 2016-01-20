@@ -9,6 +9,15 @@
 #include "unicode_util.h"
 #include <stdlib.h>
 
+#if defined(MAC) || defined(_MAC)
+#if !defined(__APPLE__)
+#define __APPLE__
+#endif
+#endif
+
+#ifdef __APPLE__
+#include "./strings_hack_printf.h"
+#endif
 
 #include <string>
 #include <string.h>
@@ -19,7 +28,10 @@
 #define FMT_BLOCK_SIZE		2048 // # of bytes to increment per try
 #define BUFSIZE_1ST	256
 #define BUFSIZE_2ND 512
+
+#ifndef STD_BUF_SIZE
 #define STD_BUF_SIZE		1024
+#endif
 
 #define WriteUtf16_WCHAR(code, p)   \
 if (code < 0x10000)                 \
@@ -2691,41 +2703,6 @@ public:
     //      themselves.  Why am I doing this?  Well, if you had any idea the
     //      number of times I've been emailed by people about this
     //      "incompatability" in my code, you wouldn't ask.
-    
-#ifdef SS_ANSI
-#ifdef __APPLE__
-    
-    int apple_vscwprintf(MYTYPE& str, const wchar_t *format, va_list argptr)
-    {
-        // Unlike vsnprintf(), vswprintf() does not tell you how many
-        // characters would have been written if there was space enough in
-        // the buffer - it just reports an error when there is not enough
-        // space.  Assume a moderately large machine so kilobytes of wchar_t
-        // on the stack is not a problem.
-        
-        int buf_size = STD_BUF_SIZE;
-        
-        while (buf_size < STD_BUF_SIZE * STD_BUF_SIZE)
-        {
-            va_list args;
-            va_copy(args, argptr);
-            wchar_t buffer[buf_size];
-            
-            int fmt_size = vswprintf(buffer, sizeof(buffer)/sizeof(buffer[0]), format, args);
-            if (fmt_size >= 0) {
-                str = MYTYPE(buffer);
-                return fmt_size;
-            }
-            
-            buf_size *= 2;
-        }
-        
-        return -1;
-    }
-    
-#endif
-#endif
-    
     void Fmt(const CT* szFmt, ...)
     {
         va_list argList;
@@ -2733,9 +2710,9 @@ public:
 #ifdef SS_ANSI
         MYTYPE str;
         
-#if defined(__APPLE__) && !defined(_MAC_NO_APPLE)
+#if defined(__APPLE__)
         va_start(argList, szFmt);
-        apple_vscwprintf(str, szFmt, argList);
+        strings_hack_printf(str, szFmt, argList);
         va_end(argList);
         *this = str;
         return;

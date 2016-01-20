@@ -53,7 +53,11 @@ namespace StlUtils
 
 	static int ToInteger(const std::string& strValue)
 	{
+#if defined(_WIN32) || defined(_WIN64)
+        return atoi(strValue.c_str());
+#else
 		return std::stoi(strValue);
+#endif
 	}
 
 	static int ToInteger(const std::wstring& strValue)
@@ -67,7 +71,11 @@ namespace StlUtils
 
 	static double ToDouble(const std::string& strValue)
 	{
+#if defined(_WIN32) || defined(_WIN64)
+        return atof(strValue.c_str());
+#else
 		return std::stod(strValue.c_str());
+#endif
 	}
 
 	static double ToDouble(const std::wstring& strValue)

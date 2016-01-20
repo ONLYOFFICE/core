@@ -702,7 +702,7 @@ CString RtfCharProperty::RenderToOOX(RenderParameter oRenderParameter)
 	RENDER_OOX_BOOL( m_bImprint, sResult, _T("w:imprint") )
 	RENDER_OOX_INT( m_nKerning, sResult, _T("w:kern") )
 	if(m_bRightToLeft !=0 && m_bRightToLeft != PROP_DEF)
-		sResult.Append(_T("<w:rtl />"));
+		sResult.Append(_T("<w:rtl/>"));
 	RENDER_OOX_BOOL( m_nComplexScript, sResult, _T("w:cs") )
 	RENDER_OOX_BOOL( m_bOutline, sResult, _T("w:outline") )
 	RENDER_OOX_BOOL( m_bScaps, sResult, _T("w:smallCaps") )

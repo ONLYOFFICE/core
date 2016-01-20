@@ -41,7 +41,14 @@ CString RtfChar::renderRtfText( CString& sText, void* poDocument, RtfCharPropert
         nCodePage = CP_ACP;
 
     std::wstring    unicodeStr (sText.GetBuffer(), sText.GetLength());
-    std::string     ansiStr    = RtfUtility::convert_string(unicodeStr.begin(), unicodeStr.end(), nCodePage);
+    std::string     ansiStr ;
+
+	if (unicodeStr.empty())
+	{
+		return sResult;
+	}
+
+	ansiStr = RtfUtility::convert_string(unicodeStr.begin(), unicodeStr.end(), nCodePage);
 
     CString sTextBack  = RtfUtility::convert_string(ansiStr.begin(), ansiStr.end(), nCodePage);
     //обратное преобразование чтобы понять какие символы свонвертировались неправильно

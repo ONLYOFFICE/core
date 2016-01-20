@@ -20,6 +20,8 @@ namespace ParseAllCultureInfo
             [DataMember]
             public string Name;
             [DataMember]
+            public int CurrencyPositivePattern;
+            [DataMember]
             public int CurrencyNegativePattern;
             [DataMember]
             public string CurrencySymbol;
@@ -57,6 +59,7 @@ namespace ParseAllCultureInfo
                 Name = ci.Name;
 
                 NumberFormatInfo ni = ci.NumberFormat;
+                CurrencyPositivePattern = ni.CurrencyPositivePattern;
                 CurrencyNegativePattern = ni.CurrencyNegativePattern;
                 CurrencySymbol = ni.CurrencySymbol;
                 NumberDecimalSeparator = ni.NumberDecimalSeparator;

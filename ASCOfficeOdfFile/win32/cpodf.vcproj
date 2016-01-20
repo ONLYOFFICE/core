@@ -110,7 +110,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../include;&quot;../../DesktopEditor/freetype-2.5.2/include&quot;"
+				AdditionalIncludeDirectories="../include;&quot;../../../DesktopEditor/freetype-2.5.2/include&quot;"
 				PreprocessorDefinitions="_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -1037,6 +1037,14 @@
 				<File
 					RelativePath="..\src\docx\pptx_comments.cpp"
 					>
+					<FileConfiguration
+						Name="Debug|x64"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							AdditionalOptions="/bigobj"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\src\docx\pptx_comments.h"
@@ -1045,6 +1053,14 @@
 				<File
 					RelativePath="..\src\docx\pptx_comments_context.cpp"
 					>
+					<FileConfiguration
+						Name="Debug|x64"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							AdditionalOptions="/bigobj"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\src\docx\pptx_comments_context.h"
@@ -1053,6 +1069,14 @@
 				<File
 					RelativePath="..\src\docx\pptx_conversion_context.cpp"
 					>
+					<FileConfiguration
+						Name="Debug|x64"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							AdditionalOptions="/bigobj"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\src\docx\pptx_conversion_context.h"
@@ -1065,6 +1089,14 @@
 				<File
 					RelativePath="..\src\docx\pptx_drawing.cpp"
 					>
+					<FileConfiguration
+						Name="Debug|x64"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							AdditionalOptions="/bigobj"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\src\docx\pptx_drawing.h"
@@ -1073,6 +1105,14 @@
 				<File
 					RelativePath="..\src\docx\pptx_drawings.cpp"
 					>
+					<FileConfiguration
+						Name="Debug|x64"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							AdditionalOptions="/bigobj"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\src\docx\pptx_drawings.h"
@@ -1097,6 +1137,14 @@
 				<File
 					RelativePath="..\src\docx\pptx_slide_context.cpp"
 					>
+					<FileConfiguration
+						Name="Debug|x64"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							AdditionalOptions="/bigobj"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\src\docx\pptx_slide_context.h"
@@ -1105,6 +1153,14 @@
 				<File
 					RelativePath="..\src\docx\pptx_table_context.cpp"
 					>
+					<FileConfiguration
+						Name="Debug|x64"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							AdditionalOptions="/bigobj"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\src\docx\pptx_table_context.h"
@@ -1113,6 +1169,14 @@
 				<File
 					RelativePath="..\src\docx\pptx_text_context.cpp"
 					>
+					<FileConfiguration
+						Name="Debug|x64"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							AdditionalOptions="/bigobj"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\src\docx\pptx_text_context.h"
@@ -1138,6 +1202,14 @@
 			<File
 				RelativePath="..\src\odf\chart_build_oox.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|x64"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						AdditionalOptions="/bigobj"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\src\odf\chart_build_oox.h"
@@ -1178,14 +1250,38 @@
 			<File
 				RelativePath="..\src\odf\draw_frame_docx.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|x64"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						AdditionalOptions="/bigobj"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\src\odf\draw_frame_pptx.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|x64"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						AdditionalOptions="/bigobj"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\src\odf\draw_frame_xlsx.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|x64"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						AdditionalOptions="/bigobj"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\src\odf\draw_page.cpp"
@@ -1198,6 +1294,14 @@
 			<File
 				RelativePath="..\src\odf\draw_shapes.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|x64"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						AdditionalOptions="/bigobj"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\src\odf\draw_shapes.h"
@@ -1206,14 +1310,38 @@
 			<File
 				RelativePath="..\src\odf\draw_shapes_docx.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|x64"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						AdditionalOptions="/bigobj"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\src\odf\draw_shapes_pptx.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|x64"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						AdditionalOptions="/bigobj"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\src\odf\draw_shapes_xlsx.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|x64"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						AdditionalOptions="/bigobj"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\src\odf\font_face.cpp"
@@ -1234,6 +1362,14 @@
 			<File
 				RelativePath="..\src\odf\math_elements.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|x64"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						AdditionalOptions="/bigobj"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\src\odf\math_elements.h"
@@ -1250,6 +1386,14 @@
 			<File
 				RelativePath="..\src\odf\number_style.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|x64"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						AdditionalOptions="/bigobj"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\src\odf\number_style.h"

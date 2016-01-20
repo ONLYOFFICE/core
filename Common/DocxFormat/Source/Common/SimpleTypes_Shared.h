@@ -715,11 +715,33 @@ namespace SimpleTypes
 
 		virtual unsigned int FromString(CString &sValue)
 		{
+
+            try
+            {
 #if !defined(_WIN32) && !defined (_WIN64)
-            this->m_eValue = _wtoi( sValue.c_str() );
+		        this->m_eValue = _wtoi( sValue.c_str() );
 #else
-            this->m_eValue = _wtoi( sValue );
+				this->m_eValue = _wtoi( sValue );
 #endif
+                return this->m_eValue;
+            }
+            catch(...)
+            {
+            }
+
+            try
+            {
+#if !defined(_WIN32) && !defined (_WIN64)
+				this->m_eValue = static_cast<int>(_wtoi64(sValue.c_str()));
+#else
+				this->m_eValue = static_cast<int>(_wtoi64(sValue));
+#endif
+			}
+            catch(...)
+            {
+                this->m_eValue = 0;
+            }
+
 
             return this->m_eValue;
 		}

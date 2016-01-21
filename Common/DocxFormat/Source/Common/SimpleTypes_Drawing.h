@@ -1045,7 +1045,7 @@ namespace SimpleTypes
 			int nLen = sValue.GetLength();
 			if ( -1 == nPos || nPos != sValue.GetLength() - 1 || nLen <= 0  )
 			{
-				if ( -1 == nPos )
+				if ( -1 == nPos && nLen > 0)
 				{
 					// Поправка 12.1.2.1 Part4
                     int nValue = (std::min)( 100000, (std::max)( -100000, _wtoi( sValue ) ) );
@@ -1945,10 +1945,10 @@ namespace SimpleTypes
 				if ( -1 == nPos )
 				{
 					//test
-                    double dValue = sValue.IsEmpty() ? 0: _wtof(sValue);
-                    if (abs(dValue) >= 0 && abs(dValue) <=1 )
+                    double dValue = sValue.IsEmpty() ? 0 : _wtof(sValue);
+                    if (fabs(dValue) >= 0 && fabs(dValue) <=1 )
 					{
-						m_dValue = dValue  ;
+						m_dValue = dValue;
 					}
 					else
 					{
@@ -2105,7 +2105,7 @@ namespace SimpleTypes
 			int nLen = sValue.GetLength();
 			if ( -1 == nPos || nPos != sValue.GetLength() - 1 || nLen <= 0  )
 			{
-				if ( -1 == nPos )
+				if ( -1 == nPos && nLen > 0)
 				{
 					// Поправка 12.1.2.3 (Part4)
                     int nValue = (std::max)( 0, (std::min)( 100000, _wtoi( sValue ) ) );
@@ -2159,7 +2159,7 @@ namespace SimpleTypes
 			int nLen = sValue.GetLength();
 			if ( -1 == nPos || nPos != sValue.GetLength() - 1 || nLen <= 0  )
 			{
-				if ( -1 == nPos )
+				if ( -1 == nPos && nLen > 0)
 				{
 					// Поправка 12.1.2.4 (Part4)
                     int nValue = (std::max)( 0, _wtoi( sValue ) );
@@ -4991,7 +4991,7 @@ namespace SimpleTypes
 			int nLen = sValue.GetLength();
 			if ( -1 == nPos || nPos != sValue.GetLength() - 1 || nLen <= 0  )
 			{
-				if ( -1 == nPos )
+				if ( -1 == nPos && nLen > 0)
 				{
 					// Поправка 12.1.2.5 (Part4)
                     int nValue = (std::min)( 100000, (std::max)( 1000, _wtoi( sValue ) ) );
@@ -5444,7 +5444,7 @@ namespace SimpleTypes
 			int nLen = sValue.GetLength();
 			if ( -1 == nPos || nPos != sValue.GetLength() - 1 || nLen <= 0  )
 			{
-				if ( -1 == nPos )
+				if ( -1 == nPos && nLen > 0)
 				{
 					// Поправка 12.1.2.7 (Part4)
                     int nValue = (std::min)( 13200000, (std::max)( 0, _wtoi( sValue ) ) );

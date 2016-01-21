@@ -511,7 +511,7 @@ public:
         {
             double _center = _x;
 
-			int pen_mw = (int)((m_pRenderer->GetDpiX() * abs(leftMW) * 2 / 25.4) + 0.5);
+			int pen_mw = (int)((m_pRenderer->GetDpiX() * fabs(leftMW) * 2 / 25.4) + 0.5);
 			if (0 == pen_mw)
 				pen_mw = 1;
 
@@ -528,7 +528,7 @@ public:
         {
             double _center = _r;
 
-			int pen_mw = (int)((m_pRenderer->GetDpiX() * abs(rightMW) * 2 / 25.4) + 0.5);
+			int pen_mw = (int)((m_pRenderer->GetDpiX() * fabs(rightMW) * 2 / 25.4) + 0.5);
 			if (0 == pen_mw)
 				pen_mw = 1;
 

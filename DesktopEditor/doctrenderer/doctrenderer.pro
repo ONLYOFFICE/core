@@ -149,6 +149,7 @@ mac {
     _LINUX \
     _LINUX_QT \
     _MAC \
+    MAC \
     QT_MAC
 
     LIBS += -L$$V8_CHECKOUT_PATH/out/native -lv8_base -lv8_libbase -lv8_libplatform -lv8_nosnapshot -lv8_snapshot

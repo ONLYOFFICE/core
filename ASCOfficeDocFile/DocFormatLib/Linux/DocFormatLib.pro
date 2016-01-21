@@ -85,8 +85,7 @@ mac {
         _LINUX \
         _LINUX_QT \
         _MAC \
-        MAC \
-        _MAC_NO_APPLE
+        MAC
 
 INCLUDEPATH += ../../../DesktopEditor/xml/libxml2/include
 QMAKE_MAC_SDK = macosx10.11

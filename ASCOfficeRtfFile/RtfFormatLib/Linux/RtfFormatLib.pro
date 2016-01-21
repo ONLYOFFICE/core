@@ -80,7 +80,6 @@ mac {
         _LINUX_QT \
         _MAC \
         MAC \
-        _MAC_NO_APPLE \
         LIBXML_READER_ENABLED \
         _ASC_USE_UNICODE_CONVERTER_ \
         UNICODECONVERTER_USE_DYNAMIC_LIBRARY

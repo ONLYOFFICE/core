@@ -407,7 +407,7 @@ void odf_drawing_context::end_drawing()
 			if (impl_->current_drawing_state_.rotateAngle )
 				rotate += *impl_->current_drawing_state_.rotateAngle;
 
-			if (abs(rotate)>0.001)impl_->current_drawing_state_.rotateAngle = rotate;
+			if (fabs(rotate)>0.001)impl_->current_drawing_state_.rotateAngle = rotate;
 		}
         double x = impl_->current_drawing_state_.svg_x_ ? impl_->current_drawing_state_.svg_x_->get_value() : 0;
         double y = impl_->current_drawing_state_.svg_y_ ? impl_->current_drawing_state_.svg_y_->get_value() : 0;

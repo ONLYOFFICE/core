@@ -381,7 +381,7 @@ CString	NSPresentationEditor::CShapeWriter::ConvertShadow(CShadow	& shadow)
 	double dist = sqrt(shadow.DistanceY * shadow.DistanceY  + shadow.DistanceX * shadow.DistanceX);
 	double dir	= 0;
 	
-	if (abs(shadow.DistanceY) > 0)
+	if (fabs(shadow.DistanceY) > 0)
 	{
 		dir = 180 * atan(shadow.DistanceX / shadow.DistanceY) / 3.1415926;
 

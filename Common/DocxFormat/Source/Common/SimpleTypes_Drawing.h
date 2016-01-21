@@ -3,7 +3,7 @@
 #include "SimpleTypes_Base.h"
 #include <stdlib.h>
 #include "../Base/ASCWinAPI.h"  // GetSysColor
-// Здесь представлены все простые типы Drawing-Main из спецификации Office Open Xml (20.1.10)
+// Р—РґРµСЃСЊ РїСЂРµРґСЃС‚Р°РІР»РµРЅС‹ РІСЃРµ РїСЂРѕСЃС‚С‹Рµ С‚РёРїС‹ Drawing-Main РёР· СЃРїРµС†РёС„РёРєР°С†РёРё Office Open Xml (20.1.10)
 namespace SimpleTypes
 {
 	//--------------------------------------------------------------------------------
@@ -180,7 +180,7 @@ namespace SimpleTypes
 			}
 			else
 			{
-				// Последние два символа не проверяем
+				// РџРѕСЃР»РµРґРЅРёРµ РґРІР° СЃРёРјРІРѕР»Р° РЅРµ РїСЂРѕРІРµСЂСЏРµРј
 				for ( int nIndex = 0; nIndex < sValue.GetLength() - 2; nIndex++ )
 				{
 					if ( !iswdigit( sValue[nIndex] ) && sValue[nIndex] != '.' && sValue[nIndex] != '-' )
@@ -200,7 +200,7 @@ namespace SimpleTypes
 			else
 			{
                 this->m_eValue = adjcoordinateCoord;
-				// Значение хранится в m_dValue
+				// Р—РЅР°С‡РµРЅРёРµ С…СЂР°РЅРёС‚СЃСЏ РІ m_dValue
 			}
 		}
 
@@ -1047,7 +1047,7 @@ namespace SimpleTypes
 			{
 				if ( -1 == nPos )
 				{
-					// Поправка 12.1.2.1 Part4
+					// РџРѕРїСЂР°РІРєР° 12.1.2.1 Part4
                     int nValue = (std::min)( 100000, (std::max)( -100000, _wtoi( sValue ) ) );
 					m_dValue = nValue / 1000.0;
 				}
@@ -1206,7 +1206,7 @@ namespace SimpleTypes
 
 		void Parse()
 		{
-			// TO DO: Сделать разбор формул. См. стр.3244 Part1.
+			// TO DO: РЎРґРµР»Р°С‚СЊ СЂР°Р·Р±РѕСЂ С„РѕСЂРјСѓР». РЎРј. СЃС‚СЂ.3244 Part1.
 		}
 
 	private:
@@ -1952,7 +1952,7 @@ namespace SimpleTypes
 					}
 					else
 					{
-						// Поправка 12.1.2.2 (Part4)
+						// РџРѕРїСЂР°РІРєР° 12.1.2.2 (Part4)
                         m_dValue = dValue / 1000.0;
 					}
 				}
@@ -2107,7 +2107,7 @@ namespace SimpleTypes
 			{
 				if ( -1 == nPos )
 				{
-					// Поправка 12.1.2.3 (Part4)
+					// РџРѕРїСЂР°РІРєР° 12.1.2.3 (Part4)
                     int nValue = (std::max)( 0, (std::min)( 100000, _wtoi( sValue ) ) );
 					m_dValue = nValue / 1000.0;
 				}
@@ -2161,7 +2161,7 @@ namespace SimpleTypes
 			{
 				if ( -1 == nPos )
 				{
-					// Поправка 12.1.2.4 (Part4)
+					// РџРѕРїСЂР°РІРєР° 12.1.2.4 (Part4)
                     int nValue = (std::max)( 0, _wtoi( sValue ) );
 					m_dValue = nValue / 1000.0;
 				}
@@ -3973,7 +3973,7 @@ namespace SimpleTypes
 ////new//////////////
 		 shapetypeBallon,
 		 shapetypeRightUpArrow,
- //дубирует с WordArd - может задаваться как внутри текстого бокса, так и в виде объекта
+ //РґСѓР±РёСЂСѓРµС‚ СЃ WordArd - РјРѕР¶РµС‚ Р·Р°РґР°РІР°С‚СЊСЃСЏ РєР°Рє РІРЅСѓС‚СЂРё С‚РµРєСЃС‚РѕРіРѕ Р±РѕРєСЃР°, С‚Р°Рє Рё РІ РІРёРґРµ РѕР±СЉРµРєС‚Р°
 		 shapetypeTextArchDownPour,
 		 shapetypeTextArchUpPour,
 		 shapetypeTextCanDown,
@@ -4993,7 +4993,7 @@ namespace SimpleTypes
 			{
 				if ( -1 == nPos )
 				{
-					// Поправка 12.1.2.5 (Part4)
+					// РџРѕРїСЂР°РІРєР° 12.1.2.5 (Part4)
                     int nValue = (std::min)( 100000, (std::max)( 1000, _wtoi( sValue ) ) );
 					m_dValue = nValue / 1000.0;
 				}
@@ -5169,8 +5169,8 @@ namespace SimpleTypes
 //    class CTextPoint : public CSimpleType<__int64, nDefValue>
 //    {
 //    public:
-///*	The ST_TextPointUnqualified simple type (§20.1.10.75).
-//	The ST_UniversalMeasure simple type (§22.9.2.15). */     
+///*	The ST_TextPointUnqualified simple type (В§20.1.10.75).
+//	The ST_UniversalMeasure simple type (В§22.9.2.15). */     
 //	CTextPoint() {}
 //
 //        virtual __int64 FromString(CString &sValue)
@@ -5446,7 +5446,7 @@ namespace SimpleTypes
 			{
 				if ( -1 == nPos )
 				{
-					// Поправка 12.1.2.7 (Part4)
+					// РџРѕРїСЂР°РІРєР° 12.1.2.7 (Part4)
                     int nValue = (std::min)( 13200000, (std::max)( 0, _wtoi( sValue ) ) );
 					m_dValue = nValue / 1000.0;
 				}
@@ -5783,7 +5783,7 @@ namespace SimpleTypes
 
 } // SimpleTypes
 
-// Здесь представлены все простые типы Drawing-Word из спецификации Office Open Xml (20.4.3)
+// Р—РґРµСЃСЊ РїСЂРµРґСЃС‚Р°РІР»РµРЅС‹ РІСЃРµ РїСЂРѕСЃС‚С‹Рµ С‚РёРїС‹ Drawing-Word РёР· СЃРїРµС†РёС„РёРєР°С†РёРё Office Open Xml (20.4.3)
 namespace SimpleTypes
 {
 	//--------------------------------------------------------------------------------
@@ -6155,19 +6155,19 @@ namespace SimpleTypes
 
 } // SimpleTypes
 
-// Здесь представлены все простые типы Drawing-Spreadsheet из спецификации Office Open Xml (20.5.3)
+// Р—РґРµСЃСЊ РїСЂРµРґСЃС‚Р°РІР»РµРЅС‹ РІСЃРµ РїСЂРѕСЃС‚С‹Рµ С‚РёРїС‹ Drawing-Spreadsheet РёР· СЃРїРµС†РёС„РёРєР°С†РёРё Office Open Xml (20.5.3)
 namespace SimpleTypes
 {
 
 } // SimpleTypes
 
-// Здесь представлены все простые типы Drawing-Charts из спецификации Office Open Xml (21.2.3, 21.3.3)
+// Р—РґРµСЃСЊ РїСЂРµРґСЃС‚Р°РІР»РµРЅС‹ РІСЃРµ РїСЂРѕСЃС‚С‹Рµ С‚РёРїС‹ Drawing-Charts РёР· СЃРїРµС†РёС„РёРєР°С†РёРё Office Open Xml (21.2.3, 21.3.3)
 namespace SimpleTypes
 {
 
 } // SimpleTypes
 
-// Здесь представлены все простые типы Drawing-Diagrams из спецификации Office Open Xml (21.4.7)
+// Р—РґРµСЃСЊ РїСЂРµРґСЃС‚Р°РІР»РµРЅС‹ РІСЃРµ РїСЂРѕСЃС‚С‹Рµ С‚РёРїС‹ Drawing-Diagrams РёР· СЃРїРµС†РёС„РёРєР°С†РёРё Office Open Xml (21.4.7)
 namespace SimpleTypes
 {
 

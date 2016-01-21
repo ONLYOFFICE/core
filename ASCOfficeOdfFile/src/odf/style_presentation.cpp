@@ -40,8 +40,8 @@ void presentation_placeholder::pptx_convert(oox::pptx_conversion_context & Conte
 	double cy = svg_height_.get_value_or(length(0)).get_value_unit(length::pt);
 
 	//пока не понятно что значит отрицательная ширина ...
-	cx = abs(cx);
-	cy = abs(cy);
+	cx = fabs(cx);
+	cy = fabs(cy);
 	
 	double x = svg_x_.get_value_or(length(0)).get_value_unit(length::pt);
 	double y = svg_y_.get_value_or(length(0)).get_value_unit(length::pt);

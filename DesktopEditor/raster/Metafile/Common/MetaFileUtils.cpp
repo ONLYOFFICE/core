@@ -842,7 +842,7 @@ namespace MetaFile
 		}
 
 		double dDist = sqrt((double)(nX - dX0) * (nX - dX0) + (nY - dY0) * (nY - dY0));
-		double dRadAngle = asin(abs(nY - dY0) / dDist);
+		double dRadAngle = asin(fabs(nY - dY0) / dDist);
 
 		double dAngle = dRadAngle * 180 / 3.14159265358979323846;
 		switch (nQuarter)

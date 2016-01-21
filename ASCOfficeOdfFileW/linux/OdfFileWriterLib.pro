@@ -88,7 +88,6 @@ mac {
         _LINUX_QT \
         _MAC \
         MAC \
-        _MAC_NO_APPLE \
         LIBXML_READER_ENABLED
 
 INCLUDEPATH += ../../Common/DocxFormat/Source/XML/libxml2/XML/include

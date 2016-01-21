@@ -323,8 +323,8 @@ bool odf_page_layout_context::add_footer(int type)
 		if (length_cm > 0.01)
 		{
 			props->style_page_layout_properties_attlist_.common_vertical_margin_attlist_.fo_margin_bottom_ = length_;
-			footer_props->style_header_footer_properties_attlist_.svg_height_ = length(abs(length_cm),length::cm);//fo_min_height_
-			footer_props->style_header_footer_properties_attlist_.fo_min_height_ = length(abs(length_cm),length::cm);
+			footer_props->style_header_footer_properties_attlist_.svg_height_ = length(fabs(length_cm),length::cm);//fo_min_height_
+			footer_props->style_header_footer_properties_attlist_.fo_min_height_ = length(fabs(length_cm),length::cm);
 		}
 		else if (-length_cm >0.01)
 		{
@@ -376,8 +376,8 @@ bool odf_page_layout_context::add_header(int type)
 		if (length_cm > 0.01)
 		{
 			props->style_page_layout_properties_attlist_.common_vertical_margin_attlist_.fo_margin_top_ = length_;
-			header_props->style_header_footer_properties_attlist_.svg_height_ = length(abs(length_cm),length::cm);
-			header_props->style_header_footer_properties_attlist_.fo_min_height_ = length(abs(length_cm),length::cm);//fo_min_height_
+			header_props->style_header_footer_properties_attlist_.svg_height_ = length(fabs(length_cm),length::cm);
+			header_props->style_header_footer_properties_attlist_.fo_min_height_ = length(fabs(length_cm),length::cm);//fo_min_height_
 		}
 		else if (-length_cm >0.01)
 		{

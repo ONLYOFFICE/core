@@ -10,7 +10,7 @@
 #define STD_BUF_SIZE 1024
 #endif
 
-int strings_hack_printf_internal(wchar_t* _buffer, size_t _size_alloc, wchar_t* _format, va_list va)
+static int strings_hack_printf_internal(wchar_t* _buffer, size_t _size_alloc, wchar_t* _format, va_list va)
 {
     size_t write_size = 0;
 
@@ -78,7 +78,7 @@ int strings_hack_printf_internal(wchar_t* _buffer, size_t _size_alloc, wchar_t* 
     return (int)write_size;
 }
 
-int strings_hack_printf_internal_a(char* _buffer, size_t _size_alloc, char* _format, va_list va)
+static int strings_hack_printf_internal_a(char* _buffer, size_t _size_alloc, char* _format, va_list va)
 {
     size_t write_size = 0;
 
@@ -147,7 +147,7 @@ int strings_hack_printf_internal_a(char* _buffer, size_t _size_alloc, char* _for
 }
 
 template <typename T>
-int strings_hack_printf(T& str, const wchar_t *format, va_list argptr)
+static int strings_hack_printf(T& str, const wchar_t *format, va_list argptr)
 {
     int buf_size = STD_BUF_SIZE;
 
@@ -155,8 +155,9 @@ int strings_hack_printf(T& str, const wchar_t *format, va_list argptr)
     if (0 == nFormatLen)
         return -1;
 
-    wchar_t* tmp_format = new wchar_t[nFormatLen];
+    wchar_t* tmp_format = new wchar_t[nFormatLen + 1];
     memcpy(tmp_format, format, nFormatLen * sizeof(wchar_t));
+    tmp_format[nFormatLen] = '\0';
 
     while (buf_size < STD_BUF_SIZE * STD_BUF_SIZE)
     {
@@ -179,7 +180,7 @@ int strings_hack_printf(T& str, const wchar_t *format, va_list argptr)
     return -1;
 }
 template <typename T>
-int strings_hack_printf(T& str, const char* format, va_list argptr)
+static int strings_hack_printf(T& str, const char* format, va_list argptr)
 {
     int buf_size = STD_BUF_SIZE;
 
@@ -187,8 +188,9 @@ int strings_hack_printf(T& str, const char* format, va_list argptr)
     if (0 == nFormatLen)
         return -1;
 
-    char* tmp_format = new char[nFormatLen];
+    char* tmp_format = new char[nFormatLen + 1];
     memcpy(tmp_format, format, nFormatLen * sizeof(char));
+    tmp_format[nFormatLen] = '\0';
 
     while (buf_size < STD_BUF_SIZE * STD_BUF_SIZE)
     {
@@ -212,7 +214,7 @@ int strings_hack_printf(T& str, const char* format, va_list argptr)
 }
 
 template<typename T, typename CHAR_TYPE>
-void strings_hack_printf_exec(T& sRes, const CHAR_TYPE* szFmt, ...)
+static void strings_hack_printf_exec(T& sRes, const CHAR_TYPE* szFmt, ...)
 {
     va_list argList;
 

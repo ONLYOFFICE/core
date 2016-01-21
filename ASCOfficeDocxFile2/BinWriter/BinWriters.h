@@ -2854,18 +2854,19 @@ namespace BinDocxRW
 			m_oBcw.WriteItemWithLengthEnd(nCurPos);
 
 		};
-	FldStruct* ParseField(CString& sFld)
+	FldStruct* ParseField(const CString& sFld)
 	{
-		sFld.Trim();
-		sFld.MakeUpper();
+		CString sFldCopy = sFld;
+		sFldCopy.Trim();
+		sFldCopy.MakeUpper();
 		FldStruct* pRes = NULL;
 		int nIndex = 0;
-		if(-1 != (nIndex = sFld.Find(_T("TOC"))))
-			pRes = new FldStruct(sFld, fieldstruct_toc);
-		else if(-1 != (nIndex = sFld.Find(_T("HYPERLINK"))))
-			pRes = new FldStruct(sFld, fieldstruct_hyperlink);
+		if(-1 != (nIndex = sFldCopy.Find(_T("TOC"))))
+			pRes = new FldStruct(sFldCopy, fieldstruct_toc);
+		else if(-1 != (nIndex = sFldCopy.Find(_T("HYPERLINK"))))
+			pRes = new FldStruct(sFldCopy, fieldstruct_hyperlink);
 		else
-			pRes = new FldStruct(sFld, fieldstruct_none);
+			pRes = new FldStruct(sFldCopy, fieldstruct_none);
 		return pRes;
 	}
 		void WriteParagraphContent(const std::vector<OOX::WritingElement *>& Content, bool bHyperlink = false)

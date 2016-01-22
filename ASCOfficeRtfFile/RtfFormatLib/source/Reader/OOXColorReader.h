@@ -58,23 +58,28 @@ public:
 	}
 	bool Parse (ReaderParameter oParam, ComplexTypes::Word::CColor ooxColor, RtfColor & oOutputColor)
 	{
+		bool res = false;
 		if (ooxColor.m_oThemeColor.IsInit())
 		{
 			oParam.oRtf->m_oColorTable.GetColor( ooxColor.m_oThemeColor->GetValue() , oOutputColor );
+			if (oOutputColor.m_eTheme != RtfColor::TC_NONE) res = true;
 		}
 		if (ooxColor.m_oThemeShade.IsInit())
 		{
 			oOutputColor.SetShade( ooxColor.m_oThemeShade->GetValue() );
+			res = true;
 		}
 		if (ooxColor.m_oThemeTint.IsInit())
 		{
 			oOutputColor.SetTint( ooxColor.m_oThemeTint->GetValue() );
+			res = true;
 		}
-		if (ooxColor.m_oVal.IsInit())
+		if ((ooxColor.m_oVal.IsInit()) && (ooxColor.m_oVal->GetValue() == SimpleTypes::hexcolorRGB))
 		{
 			oOutputColor.SetRGB(ooxColor.m_oVal->Get_R(), ooxColor.m_oVal->Get_G(), ooxColor.m_oVal->Get_B());
+			res = true;
 		}
-		return true;
+		return res;
 
 	}
 };

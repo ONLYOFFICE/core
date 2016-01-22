@@ -26,7 +26,7 @@ public:
 
 		if (m_ooxPageBorder)
 		{
-			if (m_ooxPageBorder->m_oColor.IsInit())
+			if ((m_ooxPageBorder->m_oColor.IsInit()) && (m_ooxPageBorder->m_oColor->GetValue() == SimpleTypes::hexcolorRGB))
 			{
 				RtfColor oColor(m_ooxPageBorder->m_oColor->Get_R(), m_ooxPageBorder->m_oColor->Get_G(), m_ooxPageBorder->m_oColor->Get_B());
 				oOutputBorder.m_nColor = oParam.oRtf->m_oColorTable.AddItem( oColor );
@@ -43,7 +43,7 @@ public:
 
 		if (m_ooxBorder)
 		{
-			if (m_ooxBorder->m_oColor.IsInit())
+			if ((m_ooxBorder->m_oColor.IsInit()) && (m_ooxBorder->m_oColor->GetValue() == SimpleTypes::hexcolorRGB))
 			{
 				RtfColor oColor(m_ooxBorder->m_oColor->Get_R(), m_ooxBorder->m_oColor->Get_G(), m_ooxBorder->m_oColor->Get_B());
 				oOutputBorder.m_nColor = oParam.oRtf->m_oColorTable.AddItem( oColor );

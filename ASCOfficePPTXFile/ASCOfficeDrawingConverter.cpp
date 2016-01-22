@@ -3284,11 +3284,11 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem& oElem, XmlUtils
 		sOpacity.reset();
 		oNodeFill.ReadAttributeBase(_T("opacity"), sOpacity);
 
-		sFillColor.reset();
-		oNodeFill.ReadAttributeBase(L"color", sFillColor);
-		if (sFillColor.is_init())
+		nullable_string sColor;
+		oNodeFill.ReadAttributeBase(L"color", sColor);
+		if (sColor.is_init())
 		{
-			NSPresentationEditor::CColor color = NS_DWC_Common::getColorFromString(*sFillColor);
+			NSPresentationEditor::CColor color = NS_DWC_Common::getColorFromString(*sColor);
 
 			PPTX::Logic::SolidFill* pSolid = new PPTX::Logic::SolidFill();
 			pSolid->m_namespace = _T("a");
@@ -3296,7 +3296,11 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem& oElem, XmlUtils
 			pSolid->Color.Color->SetRGB(color.R, color.G, color.B);
 
 			pShape->spPr.Fill.Fill = pSolid;
+
+			if (!sFillColor.is_init()) 
+				sFillColor = sColor;
 		}
+		if (!sColor.is_init()) sColor = sFillColor;
 
 		nullable_string sRid;
 		oNodeFill.ReadAttributeBase(L"r:id", sRid);
@@ -3314,10 +3318,65 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem& oElem, XmlUtils
 
 			pShape->spPr.Fill.Fill = pBlipFill;
 		}		
+		nullable_string sRotate;
+		oNodeFill.ReadAttributeBase(L"rotate", sRotate);
 
+		nullable_string sMethod;
+		oNodeFill.ReadAttributeBase(L"method", sMethod);
+		
+		nullable_string sColor2;
+		oNodeFill.ReadAttributeBase(L"color2", sColor2);
+		
+		nullable_string sFocus;
+		oNodeFill.ReadAttributeBase(L"focus", sFocus);
+		//
 		if (sType.is_init() && (*sType == _T("gradient") || *sType == _T("gradientradial")))
 		{
-			// TODO:
+			PPTX::Logic::GradFill* pGradFill = new PPTX::Logic::GradFill();
+			pGradFill->m_namespace = _T("a");
+		
+			if (sColor.is_init())
+			{
+				NSPresentationEditor::CColor color = NS_DWC_Common::getColorFromString(*sColor);
+
+				PPTX::Logic::Gs Gs_;
+				Gs_.color.Color = new PPTX::Logic::SrgbClr();
+				Gs_.color.Color->SetRGB(color.R, color.G, color.B);
+
+				Gs_.pos = 0;
+				pGradFill->GsLst.push_back( Gs_ );
+			}
+			if (sColor2.is_init())
+			{
+				PPTX::Logic::Gs Gs_;
+				Gs_.color.Color = new PPTX::Logic::SrgbClr();
+				if (sColor2->Find(L"fill") != -1)
+				{
+					//todooo
+					Gs_.color.Color->SetRGB(0xff, 0xff, 0xff);
+				}
+				else
+				{
+					NSPresentationEditor::CColor color = NS_DWC_Common::getColorFromString(*sColor2);
+					Gs_.color.Color->SetRGB(color.R, color.G, color.B);
+				}
+
+				Gs_.pos = 100 * 1000;
+				pGradFill->GsLst.push_back( Gs_ );
+			}
+			//todooo method
+			if (sRotate.is_init())
+			{
+				pGradFill->lin = new PPTX::Logic::Lin();
+				pGradFill->lin->scaled = 1;
+
+				if (*sRotate == L"l") pGradFill->lin->ang = 0   * 60000;
+				if (*sRotate == L"t") pGradFill->lin->ang = 90  * 60000;
+				if (*sRotate == L"b") pGradFill->lin->ang = 270 * 60000;
+				if (*sRotate == L"r") pGradFill->lin->ang = 180 * 60000;
+			}
+
+			pShape->spPr.Fill.Fill = pGradFill;
 		}	
 
 		if (sOpacity.is_init())

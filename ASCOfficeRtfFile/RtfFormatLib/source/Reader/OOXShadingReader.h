@@ -15,12 +15,12 @@ public:
 	{	
 		if (m_ooxShading == NULL) return false;
 		
-		if (m_ooxShading->m_oColor.IsInit())
+		if ((m_ooxShading->m_oColor.IsInit()) && (m_ooxShading->m_oColor->GetValue() == SimpleTypes::hexcolorRGB))
 		{
 			RtfColor oColor(m_ooxShading->m_oColor->Get_R(), m_ooxShading->m_oColor->Get_G(), m_ooxShading->m_oColor->Get_B());
 			oOutputShading.m_nForeColor = oParam.oRtf->m_oColorTable.AddItem( oColor );
 		}
-		if (m_ooxShading->m_oFill.IsInit())
+		if ((m_ooxShading->m_oFill.IsInit()) && (m_ooxShading->m_oFill->GetValue() == SimpleTypes::hexcolorRGB))
 		{
 			RtfColor oColor(m_ooxShading->m_oFill->Get_R(), m_ooxShading->m_oFill->Get_G(), m_ooxShading->m_oFill->Get_B());
 			oOutputShading.m_nBackColor = oParam.oRtf->m_oColorTable.AddItem( oColor );

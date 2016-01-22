@@ -321,7 +321,10 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 	oNewProperty.SetDefaultOOX();
 	//применяем default
 	oNewProperty = oParam.oRtf->m_oDefaultCharProp; 
+	
 	//применяем внешний стиль
+	oNewProperty.Merge( oOutputParagraph.m_oProperty.m_oCharProperty );
+
 	if( NULL != poStyle && TYPE_RTF_PROPERTY_STYLE_CHAR == poStyle->GetType() )
 	{
 		RtfCharStylePtr oCharStyle = boost::static_pointer_cast<RtfCharStyle, RtfStyle>( poStyle );
@@ -1189,7 +1192,9 @@ bool OOXrPrReader::Parse( ReaderParameter oParam ,RtfCharProperty& oOutputProper
 		OOXColorReader oColorReader;
 		RtfColor oColor;
 		if( true == oColorReader.Parse( oParam, m_ooxRunProps->m_oColor.get2(), oColor ) )
+		{
 			oOutputProperty.m_nForeColor = oParam.oRtf->m_oColorTable.AddItem( oColor );
+		}
 	}
 	if( m_ooxRunProps->m_oU.IsInit() &&  m_ooxRunProps->m_oU->m_oVal.IsInit())
 	{
@@ -1215,7 +1220,7 @@ bool OOXrPrReader::Parse( ReaderParameter oParam ,RtfCharProperty& oOutputProper
 		case SimpleTypes::underlineWords           : oOutputProperty.m_eUnderStyle = RtfCharProperty::uls_Word;					break;
 		}
 
-		if (m_ooxRunProps->m_oU->m_oColor.IsInit())
+		if ((m_ooxRunProps->m_oU->m_oColor.IsInit()) && (m_ooxRunProps->m_oU->m_oColor->GetValue() == SimpleTypes::hexcolorRGB))
 		{
 			RtfColor oColor(m_ooxRunProps->m_oU->m_oColor->Get_R(), m_ooxRunProps->m_oU->m_oColor->Get_G(), m_ooxRunProps->m_oU->m_oColor->Get_B());	
 			oOutputProperty.m_nUnderlineColor =  oParam.oRtf->m_oColorTable.AddItem( oColor );

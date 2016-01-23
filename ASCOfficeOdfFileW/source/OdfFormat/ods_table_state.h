@@ -108,6 +108,9 @@ namespace utils {
 		std::wstring strCol, strRow;
 		splitCellAddress(ref,strCol,strRow);
 
+		if (strCol.empty() || strRow.empty()) 
+			return;
+		
 		col = getColAddressInv(strCol)+1;
 		row = getRowAdderssInv(strRow)+1;
 

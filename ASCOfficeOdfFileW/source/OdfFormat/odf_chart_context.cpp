@@ -80,10 +80,11 @@ namespace odf_writer
 	};	
 	struct _cell_cash
 	{
-		int col;
-		int row;
-		bool label;
-		std::wstring val;
+		int				col;
+		int				row;
+		bool			label;
+		bool			cash_only;
+		std::wstring	val;
 	};
 class odf_chart_context::Impl
 {
@@ -1431,8 +1432,11 @@ void odf_chart_context::Impl::create_local_table_rows(ods_table_state * table_st
 	bool add = false;
     for (long i = 0; i< cells.size(); i++)
     {
+		if (cells[i].cash_only)
+			continue;
+
 		add = false;
-		if (cells[i].row  > curr_row+1)
+		if (cells[i].row  > curr_row + 1)
 		{	
 			office_element_ptr row_elm;
 
@@ -1441,7 +1445,7 @@ void odf_chart_context::Impl::create_local_table_rows(ods_table_state * table_st
 			curr_row =  cells[i].row-1;
 			add = true;
 		}
-		if (cells[i].row == curr_row+1)
+		if (cells[i].row == curr_row + 1)
 		{
 			if (cells[i].label == header && !add)
 			{
@@ -1456,7 +1460,7 @@ void odf_chart_context::Impl::create_local_table_rows(ods_table_state * table_st
 		}
 		if (cells[i].label == !header)continue;
 
-		if (curr_cell+1 < cells[i].col)
+		if (curr_cell + 1 < cells[i].col)
 			table_state->add_default_cell(cells[i].col - curr_cell-1);
 		
 		office_element_ptr cell_elm;
@@ -1500,35 +1504,44 @@ void odf_chart_context::Impl::create_local_table()
 		std::vector<std::wstring> refs;
 		boost::algorithm::split(refs,cash_[i].ref, boost::algorithm::is_any_of(L":"), boost::algorithm::token_compress_on);
 
-        int col1,col2,row1,row2;
+        int col1 = -1, col2 = -1, row1 = -1, row2 = -1;
 
 		if (refs.size()<1) continue;
-		int r = refs[0].find(L".");
-		if (r>0)
+		int r = refs[0].rfind(L".");//в имени таблички может быть точка
+		if (r > 0)
 		{
 			table_name = refs[0].substr (0,r);
 			refs[0] = refs[0].substr(r+1,refs[0].size()-r);
 		}
 
-		utils::parsing_ref( refs[0],col1,row1);
+		utils::parsing_ref( refs[0], col1, row1);
 		
-		if (refs.size()>1) 
+		if (refs.size() > 1) 
 		{
-			r = refs[1].find(L".");
+			r = refs[1].rfind(L".");
 			if (r>=0)refs[1] = refs[1].substr(r+1,refs[1].size()-r);
-			utils::parsing_ref( refs[1],col2,row2);
+			utils::parsing_ref( refs[1], col2, row2);
 		}
 		else
 		{
-			col2=col1;row2=row1;
+			col2 = col1; row2 = row1;
 		}
 		for (long j=0;j<cash_[i].data_str.size(); j++)
 		{
-			_cell_cash c;
-			c.col = (col2==col1) ? col1 : col1+j;
-			c.row = (row2==row1) ? row1 : row1+j;
-			c.val = cash_[i].data_str[j];
-			c.label = false;
+			_cell_cash c = {0, 0, false, false, L""};
+
+			if (col1 >= 0 && row1 >= 0)
+			{
+				c.col = (col2 == col1) ? col1 : col1 + j;
+				c.row = (row2 == row1) ? row1 : row1 + j;
+				c.val = cash_[i].data_str[j];
+				c.label = false;
+			}
+			else
+			{
+				c.val		= cash_[i].data_str[j];
+				c.cash_only = true;
+			}
 
 			if (cash_[i].label && c.row == 1)
 			{
@@ -1544,12 +1557,12 @@ void odf_chart_context::Impl::create_local_table()
 			if (c.label) cells_cash_label.push_back(c);
 			//else cells_cash.push_back(c);
 
-			if (c.col > max_columns) max_columns = c.col;
+			if (c.col > max_columns && c.col < 10000) max_columns = c.col;
 		}
 	}
 
-	std::sort(cells_cash.begin(), cells_cash.end(),sort_cells);
-	std::sort(cells_cash_label.begin(), cells_cash_label.end(),sort_cells);
+	std::sort(cells_cash.begin()		, cells_cash.end()			,sort_cells);
+	std::sort(cells_cash_label.begin()	, cells_cash_label.end()	,sort_cells);
 
 /////////////////////////
 	//create tables

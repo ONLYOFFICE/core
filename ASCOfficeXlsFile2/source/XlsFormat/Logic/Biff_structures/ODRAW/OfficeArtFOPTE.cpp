@@ -66,24 +66,30 @@ OfficeArtFOPTEPtr OfficeArtFOPTE::load_and_create(XLS::CFRecord& record)
 		case 0x007F:
 			fopte = OfficeArtFOPTEPtr(new ProtectionBooleanProperties);
 			break;
-/*todo*/case 0x0080://lTxid
-		case 0x0081://dxTextLeft
-		case 0x0082://dyTextTop
-		case 0x0083://dxTextRight
-		case 0x0084://dyTextBottom
-		case 0x0085://WrapText
-		case 0x0086://unused134
-		case 0x0087://anchorText
-		case 0x0088://txflTextFlow
-		case 0x0089://cdirFont
-		case 0x008a://hspNext
-		case 0x008b://txdir
-		case 0x008c://unused140
-		case 0x008d://unused141
+		case NSOfficeDrawing::lTxid:
+		case NSOfficeDrawing::dxTextLeft:
+		case NSOfficeDrawing::dyTextTop:
+		case NSOfficeDrawing::dxTextRight:
+		case NSOfficeDrawing::dyTextBottom:
+		case NSOfficeDrawing::WrapText:
+		case NSOfficeDrawing::anchorText:
+		case NSOfficeDrawing::txflTextFlow:
+		case NSOfficeDrawing::cdirFont:
+		case NSOfficeDrawing::hspNext:
+		case NSOfficeDrawing::txdir:
+		case NSOfficeDrawing::gtextRTF:
+		case NSOfficeDrawing::gtextAlign:
+		case NSOfficeDrawing::gtextSize:
+		case NSOfficeDrawing::gtextSpacing:
+		case NSOfficeDrawing::gtextFont:
+		case NSOfficeDrawing::gtextCSSFont:
 			fopte = OfficeArtFOPTEPtr(new OfficeArtFOPTE);
 			break;
-		case 0x00BF:
+		case NSOfficeDrawing::fFitTextToShape:
 			fopte = OfficeArtFOPTEPtr(new TextBooleanProperties);
+			break;
+		case NSOfficeDrawing::gtextUNICODE:
+			fopte = OfficeArtFOPTEPtr(new anyString);
 			break;
 		case 0x0100:
 			fopte = OfficeArtFOPTEPtr(new cropFromTop);
@@ -402,6 +408,16 @@ void anyString::ReadComplexData(XLS::CFRecord& record)
 #else
         string_ = XLS::convertUtf16ToWString(record.getCurData<UTF16>(), op);
 #endif
+	if (!string_.empty())
+	{
+		int i, length = min(op, string_.length());
+
+		for (i = 0; i < length; i++)
+		{
+			if (string_.at(i) < 14 ) break;
+		}
+		string_ = string_.substr(0, i);
+	}
 	record.skipNunBytes(op);
 }
 

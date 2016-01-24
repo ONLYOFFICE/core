@@ -238,6 +238,7 @@ public:
 		void set_path		(const std::wstring & path);
 
 		void set_text		(const std::wstring & text);
+		void set_wordart_text(const std::wstring & text);
 		
 //------------------------------------------------------------------------------		
 		void serialize_shape		(_drawing_state_ptr & drawing_state);			

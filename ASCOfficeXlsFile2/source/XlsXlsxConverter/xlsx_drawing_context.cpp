@@ -1124,12 +1124,12 @@ void xlsx_drawing_context::set_fill_color (int index, int type, bool background)
 	}
 	else
 	{	
-	//	color.index		= index;	
-	//	color.sRGB		= L"";
-	//	color.bScheme = true;
-		color.nRGB = shemeDefaultColor[index];
+		if (index < 64)
+		{
+			color.nRGB = shemeDefaultColor[index];
+			color.sRGB = STR::toRGB(color.nRGB);
+		}
 		color.index = -1;
-		color.sRGB = STR::toRGB(color.nRGB);
 	}
 
 	if (background)	current_drawing_states->back()->fill.color2	= color;
@@ -1241,6 +1241,28 @@ void xlsx_drawing_context::set_path (const std::wstring & path)
 	if (current_drawing_states == NULL) return;	
 
 	current_drawing_states->back()->path = path;
+}
+
+void xlsx_drawing_context::set_wordart_text(const std::wstring & text)
+{
+	if (current_drawing_states == NULL) return;	
+	std::wstringstream strm;
+	
+	CP_XML_WRITER(strm)    
+	{
+		CP_XML_NODE(L"a:r")
+		{
+			//Fmt = run->formatRun.ifnt;
+			//serialize_rPr(CP_XML_STREAM(), Fmt );
+
+			CP_XML_NODE(L"a:t")
+			{		
+				CP_XML_STREAM() << xml::utils::replace_text_to_xml(text);
+			}
+		}
+	}
+
+	set_text(strm.str());
 }
 
 void xlsx_drawing_context::set_text (const std::wstring & text)

@@ -814,7 +814,7 @@ void XlsConverter::convert_fill_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & pr
 				ODRAW::FillStyleBooleanProperties * fill = (ODRAW::FillStyleBooleanProperties *)(props[i].get());
 				if (fill)
 				{
-					if (fill->fFilled == false) 
+					if (fill->fUsefFilled && fill->fFilled == false) 
 						xlsx_context->get_drawing_context().set_fill_type(0);
 				}
 			}break;
@@ -1000,10 +1000,101 @@ void XlsConverter::convert_geometry_text(std::vector<ODRAW::OfficeArtFOPTEPtr> &
 {
 	for (int i = 0 ; i < props.size() ; i++)
 	{
+		switch(props[i]->opid)
+		{
+		case NSOfficeDrawing::gtextUNICODE://word art text
+			{
+				ODRAW::anyString *str = dynamic_cast<ODRAW::anyString*>(props[i].get());
+				xlsx_context->get_drawing_context().set_wordart_text(str->string_);
+			}break;
+		case NSOfficeDrawing::gtextFont:
+			{
+				ODRAW::anyString *str = dynamic_cast<ODRAW::anyString*>(props[i].get());
+				//xlsx_context->get_drawing_context().set_text_font(str->string_);
+			}break;
+		case NSOfficeDrawing::gtextSize:
+			//xlsx_context->get_drawing_context().set_text_font_size((INT)((props[i]->op >> 16) & 0x0000FFFF));
+			break;
+		case NSOfficeDrawing::gtextAlign:
+			{
+				//switch (props[i]->op)
+				//{
+				//case NSOfficeDrawing::alignTextLeft:
+				//		pParentShape->m_oText.m_oAttributes.m_nTextAlignHorizontal = 0;	break;
+				//case NSOfficeDrawing::alignTextCenter:
+				//		pParentShape->m_oText.m_oAttributes.m_nTextAlignHorizontal = 1;	break;
+				//case NSOfficeDrawing::alignTextRight:
+				//		pParentShape->m_oText.m_oAttributes.m_nTextAlignHorizontal = 2;	break;
+				//default:
+				//		pParentShape->m_oText.m_oAttributes.m_nTextAlignHorizontal = 1;
+				//}				
+			}break;
+		}
 	}
 }
 void XlsConverter::convert_text(std::vector<ODRAW::OfficeArtFOPTEPtr> & props)
 {
+	for (int i = 0 ; i < props.size() ; i++)
+	{
+		switch(props[i]->opid)
+		{
+		case NSOfficeDrawing::lTxid:
+			
+			break;
+		case NSOfficeDrawing::dxTextLeft:	
+			//pParentShape->m_dTextMarginX = (double)pProperty->m_lValue / EMU_MM;		break;
+		case NSOfficeDrawing::dxTextRight:
+			//pParentShape->m_dTextMarginRight = (double)pProperty->m_lValue / EMU_MM;	break;			
+		case NSOfficeDrawing::dyTextTop:
+			//pParentShape->m_dTextMarginY = (double)pProperty->m_lValue / EMU_MM;		break;
+		case NSOfficeDrawing::dyTextBottom:
+			//pParentShape->m_dTextMarginBottom = (double)pProperty->m_lValue / EMU_MM;	break;
+		case NSOfficeDrawing::WrapText:
+			{
+				int lWrapMode = props[i]->op;				
+			}break;
+		case NSOfficeDrawing::anchorText:
+			{
+				//switch (props[i]->op)
+				//{
+				//case NSOfficeDrawing::anchorTop:
+				//case NSOfficeDrawing::anchorTopBaseline:
+				//		pParentShape->m_oText.m_oAttributes.m_nTextAlignVertical = 0;	break;
+				//case NSOfficeDrawing::anchorMiddle:
+				//		pParentShape->m_oText.m_oAttributes.m_nTextAlignVertical = 1;	break;
+				//		
+				//case NSOfficeDrawing::anchorBottom:
+				//case NSOfficeDrawing::anchorBottomBaseline:
+				//	{
+				//		pParentShape->m_oText.m_oAttributes.m_nTextAlignHorizontal = 0;
+				//		pParentShape->m_oText.m_oAttributes.m_nTextAlignVertical = 2;
+				//	}break;
+				//case NSOfficeDrawing::anchorTopCentered:
+				//case NSOfficeDrawing::anchorTopCenteredBaseline:
+				//	{
+				//		pParentShape->m_oText.m_oAttributes.m_nTextAlignHorizontal = 1;
+				//		pParentShape->m_oText.m_oAttributes.m_nTextAlignVertical = 0;
+				//	}break;
+				//case NSOfficeDrawing::anchorMiddleCentered:
+				//	{
+				//		pParentShape->m_oText.m_oAttributes.m_nTextAlignHorizontal = 1;
+				//		pParentShape->m_oText.m_oAttributes.m_nTextAlignVertical = 1;
+				//	}break;
+				//case NSOfficeDrawing::anchorBottomCentered:
+				//case NSOfficeDrawing::anchorBottomCenteredBaseline:
+				//	{
+				//		pParentShape->m_oText.m_oAttributes.m_nTextAlignHorizontal = 1;
+				//		pParentShape->m_oText.m_oAttributes.m_nTextAlignVertical = 2;						
+				//	}break;
+				//default:
+				//	{
+				//		pParentShape->m_oText.m_oAttributes.m_nTextAlignHorizontal = 1;
+				//		pParentShape->m_oText.m_oAttributes.m_nTextAlignVertical = -1; // not set						
+				//	}break;
+				//}
+			}break;
+		}
+	}
 }
 void XlsConverter::convert_shadow(std::vector<ODRAW::OfficeArtFOPTEPtr> & props)
 {

@@ -92,7 +92,11 @@ typedef _CP_PTR(_drawing_state) _drawing_state_ptr;
 class _drawing_state
 {
 public:
-	_drawing_state() : isInternal(false), shape_id(msosptRectangle),  flipH(false), flipV(false), bTextBox(false), bWordArt(false)
+	_drawing_state() :	isInternal(false), 
+						shape_id(msosptRectangle),  
+						flipH(false), flipV(false), 
+						text_wrap(2), //none
+						bTextBox(false)
 	{
 		id			= -1;		
 		rotation	= 0;
@@ -121,22 +125,25 @@ public:
 	std::wstring			path;
 	_rect					path_rect;
 
-	std::wstring			text_content;
+	std::wstring			text_content;	//c форматированием
+	int						text_wrap;
 	
-	bool					isInternal;
-	bool					bTextBox;
-	bool					bWordArt;
-
-	struct _line
+	struct _wordart
 	{
-		_line() {opacity = 0; type = fillSolid; style = L"simple"; width = 0; color.sRGB = L"000000"; typeDash = lineSolid;}
-		_color			color;
-		int				opacity;
-		_fill_type		type;
-		std::wstring	style;
-        int             width;
-		_line_typeDash	typeDash;
-	}line;	
+		_wordart() : bEnabled(false), size(0), align(1), bold(false), italic(false), underline(false), vertical(false) {}
+		bool			bEnabled;
+		std::wstring	text;	
+		std::wstring	font;	
+		int				size;
+		int				align;
+		bool			bold;
+		bool			italic;
+		bool			underline;
+		bool			vertical;
+	}wordart;
+	
+	bool				isInternal;
+	bool				bTextBox;
 
 	struct _shadow
 	{
@@ -150,7 +157,7 @@ public:
 	{
 		_fill() 
 		{
-			angle = opacity = opacity2 = 0; type = fillSolid; 
+			angle = opacity = opacity2 = focus = 0; type = fillSolid; 
 			memset(texture_crop, 0, 4 * sizeof(int));
 			texture_crop_enabled = false;
 		}
@@ -160,6 +167,7 @@ public:
 		double			opacity2;
 		_fill_type		type;
 
+		int				focus;
 		double			angle;
 		
 		std::wstring	texture_target;
@@ -169,6 +177,14 @@ public:
 
 		std::vector<std::pair<double, _color>> colorsPosition;
 	}fill;
+
+	struct _line
+	{
+		std::wstring	style;
+        int             width;
+		_line_typeDash	typeDash;
+		_fill			fill;
+	}line;	
 //for group
 	std::vector<_drawing_state_ptr>		drawing_states;
 	std::vector<_drawing_state_ptr>*	parent_drawing_states;
@@ -218,7 +234,8 @@ public:
 		void set_fill_texture_mode(int val);
         void set_fill_texture	(const std::wstring & str);
 		void add_fill_colors	(double position, const std::wstring & color);
-		void add_fill_colors	(double position, int index, int type);
+		void add_fill_colors	(double position, int index, int type);		
+		void set_fill_focus	(int val);
 
 		void set_line_color	(int nColor, const std::wstring & color);
 		void set_line_color	(int index, int type);
@@ -238,7 +255,16 @@ public:
 		void set_path		(const std::wstring & path);
 
 		void set_text		(const std::wstring & text);
-		void set_wordart_text(const std::wstring & text);
+		void set_text_wrap	(int val);
+		
+		void set_wordart_text		(const std::wstring & text);
+		void set_wordart_font		(const std::wstring & text);
+		void set_wordart_size		(int val);
+		void set_wordart_align		(int val);
+		void set_wordart_bold		(bool val);
+		void set_wordart_italic		(bool val);
+		void set_wordart_underline	(bool val);
+		void set_wordart_vertical	(bool val);
 		
 //------------------------------------------------------------------------------		
 		void serialize_shape		(_drawing_state_ptr & drawing_state);			
@@ -267,12 +293,16 @@ private:
 	std::vector<_drawing_state_ptr>*	current_drawing_states;
 	
 	void end_drawing			(_drawing_state_ptr & drawing_state);
+	void reset_fill_pattern		(_drawing_state_ptr & drawing_state);
 	
-	void serialize_line			(std::wostream & stream, _drawing_state_ptr & drawing_state);
-	void serialize_gradient_fill(std::wostream & stream, _drawing_state_ptr & drawing_state);
-	void serialize_bitmap_fill	(std::wostream & stream, _drawing_state_ptr & drawing_state, std::wstring rId, const std::wstring ns = L"a:");
+	void serialize_line			(std::wostream & stream, _drawing_state::_line & line);
+	void serialize_fill			(std::wostream & stream, _drawing_state::_fill & fill);
+	void serialize_gradient_fill(std::wostream & stream, _drawing_state::_fill & fill);
+	void serialize_bitmap_fill	(std::wostream & stream, _drawing_state::_fill & fill, std::wstring rId, const std::wstring ns = L"a:");
 	void serialize_solid_fill	(std::wostream & stream, const _color &color, double opacity = 0);
 	void serialize_none_fill	(std::wostream & stream);
+	
+	void serialize_line			(std::wostream & stream, _drawing_state_ptr & drawing_state);
 	void serialize_xfrm			(std::wostream & stream, _drawing_state_ptr & drawing_state);
 	void serialize_text			(std::wostream & stream, _drawing_state_ptr & drawing_state);
 	void serialize_color		(std::wostream & stream, const _color &color, double opacity = 0);

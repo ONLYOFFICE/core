@@ -109,6 +109,30 @@ class TextBooleanProperties : public OfficeArtFOPTE
 	bool fUsefSelectText;
 };
 
+class GeometryTextBooleanProperties : public OfficeArtFOPTE
+{
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(TextBooleanProperties)
+	
+	virtual void load(XLS::CFRecord& record);
+	
+	bool gFReverseRows;
+	bool fGtext;
+	bool fVertical;
+	bool fKern;
+	bool fStretch;
+	bool fTight;
+	bool fBestFit;
+	bool fShrinkFit;
+	bool fNormalize;
+	bool fDxMeasure;
+	bool fBold;
+	bool fItalic;
+	bool fUnderline;
+	bool fShadow;
+	bool fSmallcaps;
+	bool fStrikethrough;
+};
+
 class lineColor : public OfficeArtFOPTE
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(lineColor)

@@ -683,7 +683,7 @@ void XlsConverter::convert_fill_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & pr
 	{
 		switch(props[i]->opid)
 		{
-			case 0x0180:
+			case NSOfficeDrawing::fillType:
 			{
 				switch(props[i]->op)
 				{
@@ -719,7 +719,7 @@ void XlsConverter::convert_fill_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & pr
 					}break;				
 				}
 			}break;
-			case 0x0181:
+			case NSOfficeDrawing::fillColor:
 			{
 				ODRAW::fillColor * fill = (ODRAW::fillColor *)(props[i].get());
 				ODRAW::OfficeArtCOLORREF color(fill->op);
@@ -737,12 +737,12 @@ void XlsConverter::convert_fill_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & pr
 				else
 					xlsx_context->get_drawing_context().set_fill_color(color.index, color.fSchemeIndex ? 1 : 3 );
 			}break;
-			case 0x0182:
+			case NSOfficeDrawing::fillOpacity:
 			{
 				ODRAW::FixedPoint * fixed_point = static_cast<ODRAW::FixedPoint *>(props[i].get());
 				xlsx_context->get_drawing_context().set_fill_opacity(fixed_point->dVal);
 			}break;
-			case 0x0183:
+			case NSOfficeDrawing::fillBackColor:
 			{
 				ODRAW::fillColor * fill = (ODRAW::fillColor *)(props[i].get());
 				ODRAW::OfficeArtCOLORREF color(fill->op);
@@ -760,12 +760,12 @@ void XlsConverter::convert_fill_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & pr
 				else
 					xlsx_context->get_drawing_context().set_fill_color(color.index, color.fSchemeIndex ? 1 : 3, true );
 			}break;
-			case 0x0184:
+			case NSOfficeDrawing::fillBackOpacity:
 			{
 				ODRAW::FixedPoint * fixed_point = static_cast<ODRAW::FixedPoint *>(props[i].get());
 				xlsx_context->get_drawing_context().set_fill_opacity(fixed_point->dVal, true);
 			}break;
-			case 0x0186:
+			case NSOfficeDrawing::fillBlip:
 			{
 				std::wstring target;
 				ODRAW::fillBlip *fillBlip = (ODRAW::fillBlip *)(props[i].get());
@@ -780,12 +780,19 @@ void XlsConverter::convert_fill_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & pr
 				}
 				xlsx_context->get_drawing_context().set_fill_texture(target);
 			}break;
-			case 0x018B:
+			case NSOfficeDrawing::fillAngle:
 			{
 				ODRAW::fillAngle * angle = (ODRAW::fillAngle *)(props[i].get());
 				xlsx_context->get_drawing_context().set_fill_angle(angle->dVal);
 			}break;
-			case 0x197:
+			case NSOfficeDrawing::fillFocus:
+			{
+				xlsx_context->get_drawing_context().set_fill_focus(props[i]->op);
+			}break;
+			case NSOfficeDrawing::fillShadePreset:
+			{
+			}break;
+			case NSOfficeDrawing::fillShadeColors:
 			{
 				ODRAW::fillShadeColors *shadeColors = (ODRAW::fillShadeColors *)(props[i].get());
 
@@ -809,7 +816,10 @@ void XlsConverter::convert_fill_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & pr
 					}
 				}
 			}break;
-			case 0x01BF:
+			case NSOfficeDrawing::fillShadeType:
+			{
+			}break;
+			case NSOfficeDrawing::fNoFillHitTest:
 			{
 				ODRAW::FillStyleBooleanProperties * fill = (ODRAW::FillStyleBooleanProperties *)(props[i].get());
 				if (fill)
@@ -1005,29 +1015,41 @@ void XlsConverter::convert_geometry_text(std::vector<ODRAW::OfficeArtFOPTEPtr> &
 		case NSOfficeDrawing::gtextUNICODE://word art text
 			{
 				ODRAW::anyString *str = dynamic_cast<ODRAW::anyString*>(props[i].get());
-				xlsx_context->get_drawing_context().set_wordart_text(str->string_);
+				if (str) xlsx_context->get_drawing_context().set_wordart_text(str->string_);
 			}break;
 		case NSOfficeDrawing::gtextFont:
 			{
 				ODRAW::anyString *str = dynamic_cast<ODRAW::anyString*>(props[i].get());
-				//xlsx_context->get_drawing_context().set_text_font(str->string_);
+				if (str) xlsx_context->get_drawing_context().set_wordart_font(str->string_);
 			}break;
 		case NSOfficeDrawing::gtextSize:
-			//xlsx_context->get_drawing_context().set_text_font_size((INT)((props[i]->op >> 16) & 0x0000FFFF));
-			break;
+			{
+				xlsx_context->get_drawing_context().set_wordart_size((INT)((props[i]->op >> 16) & 0x0000FFFF));
+			}break;
 		case NSOfficeDrawing::gtextAlign:
 			{
-				//switch (props[i]->op)
-				//{
-				//case NSOfficeDrawing::alignTextLeft:
-				//		pParentShape->m_oText.m_oAttributes.m_nTextAlignHorizontal = 0;	break;
-				//case NSOfficeDrawing::alignTextCenter:
-				//		pParentShape->m_oText.m_oAttributes.m_nTextAlignHorizontal = 1;	break;
-				//case NSOfficeDrawing::alignTextRight:
-				//		pParentShape->m_oText.m_oAttributes.m_nTextAlignHorizontal = 2;	break;
-				//default:
-				//		pParentShape->m_oText.m_oAttributes.m_nTextAlignHorizontal = 1;
-				//}				
+				switch (props[i]->op)
+				{
+				case NSOfficeDrawing::alignTextLeft:
+					xlsx_context->get_drawing_context().set_wordart_align(0);	break;
+				case NSOfficeDrawing::alignTextCenter:
+					xlsx_context->get_drawing_context().set_wordart_align(1);	break;
+				case NSOfficeDrawing::alignTextRight:
+					xlsx_context->get_drawing_context().set_wordart_align(2);	break;
+				default:
+					xlsx_context->get_drawing_context().set_wordart_align(1);	break;
+				}				
+			}break;
+		case 0xff:
+			{				
+				ODRAW::GeometryTextBooleanProperties *bools = dynamic_cast<ODRAW::GeometryTextBooleanProperties*>(props[i].get());
+				if (bools) 
+				{
+					if (bools->fBold)		xlsx_context->get_drawing_context().set_wordart_bold	(true); 
+					if (bools->fItalic)		xlsx_context->get_drawing_context().set_wordart_italic	(true); 
+					if (bools->fVertical)	xlsx_context->get_drawing_context().set_wordart_vertical(true); 
+					if (bools->fUnderline)	xlsx_context->get_drawing_context().set_wordart_underline(true); 
+				}
 			}break;
 		}
 	}
@@ -1051,7 +1073,7 @@ void XlsConverter::convert_text(std::vector<ODRAW::OfficeArtFOPTEPtr> & props)
 			//pParentShape->m_dTextMarginBottom = (double)pProperty->m_lValue / EMU_MM;	break;
 		case NSOfficeDrawing::WrapText:
 			{
-				int lWrapMode = props[i]->op;				
+				xlsx_context->get_drawing_context().set_text_wrap(props[i]->op);				
 			}break;
 		case NSOfficeDrawing::anchorText:
 			{
@@ -1066,30 +1088,21 @@ void XlsConverter::convert_text(std::vector<ODRAW::OfficeArtFOPTEPtr> & props)
 				//case NSOfficeDrawing::anchorBottom:
 				//case NSOfficeDrawing::anchorBottomBaseline:
 				//	{
-				//		pParentShape->m_oText.m_oAttributes.m_nTextAlignHorizontal = 0;
 				//		pParentShape->m_oText.m_oAttributes.m_nTextAlignVertical = 2;
 				//	}break;
 				//case NSOfficeDrawing::anchorTopCentered:
 				//case NSOfficeDrawing::anchorTopCenteredBaseline:
 				//	{
-				//		pParentShape->m_oText.m_oAttributes.m_nTextAlignHorizontal = 1;
 				//		pParentShape->m_oText.m_oAttributes.m_nTextAlignVertical = 0;
 				//	}break;
 				//case NSOfficeDrawing::anchorMiddleCentered:
 				//	{
-				//		pParentShape->m_oText.m_oAttributes.m_nTextAlignHorizontal = 1;
 				//		pParentShape->m_oText.m_oAttributes.m_nTextAlignVertical = 1;
 				//	}break;
 				//case NSOfficeDrawing::anchorBottomCentered:
 				//case NSOfficeDrawing::anchorBottomCenteredBaseline:
 				//	{
-				//		pParentShape->m_oText.m_oAttributes.m_nTextAlignHorizontal = 1;
 				//		pParentShape->m_oText.m_oAttributes.m_nTextAlignVertical = 2;						
-				//	}break;
-				//default:
-				//	{
-				//		pParentShape->m_oText.m_oAttributes.m_nTextAlignHorizontal = 1;
-				//		pParentShape->m_oText.m_oAttributes.m_nTextAlignVertical = -1; // not set						
 				//	}break;
 				//}
 			}break;

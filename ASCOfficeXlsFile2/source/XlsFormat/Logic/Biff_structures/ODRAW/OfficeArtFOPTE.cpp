@@ -453,7 +453,7 @@ void anyString::ReadComplexData(XLS::CFRecord& record)
 #endif
 	if (!string_.empty())
 	{
-		int i, length = min(op, string_.length());
+        int i, length = (std::min)(op, (_INT32)string_.length());
 
 		for (i = 0; i < length; i++)
 		{

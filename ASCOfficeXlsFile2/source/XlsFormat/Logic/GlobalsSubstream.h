@@ -29,6 +29,8 @@ public:
 	BaseObjectPtr				m_Formating;
 	BaseObjectPtr				m_Template;
 	BaseObjectPtr				m_SHAREDSTRINGS;
+	BaseObjectPtr				m_CodePage;
+	BaseObjectPtr				m_Country;
 
 	std::vector<BaseObjectPtr>	m_arHFPicture;
 	std::vector<BaseObjectPtr>	m_arLBL;

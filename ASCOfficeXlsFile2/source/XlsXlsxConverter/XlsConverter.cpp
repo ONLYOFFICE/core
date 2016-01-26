@@ -104,15 +104,14 @@ XlsConverter::XlsConverter(const std::wstring & xls_file, const std::wstring & _
 		if(summary)
 		{
 			OLEPS::SummaryInformation summary_info(summary);
-			workbook_code_page = summary_info.GetCodePage();
+			workbook_code_page = summary_info.GetCodePage(); //from software last open 
 		}
-		else if(doc_summary)
+		if(doc_summary)
 		{
 			OLEPS::SummaryInformation doc_summary_info(doc_summary);
-			workbook_code_page = doc_summary_info.GetCodePage();
+			workbook_code_page = doc_summary_info.GetCodePage(); 
 		}
-
-		if(1200/* UTF-16 */ == workbook_code_page || 0/*error*/ == workbook_code_page)
+		if(  0/*error*/ == workbook_code_page)//|| 65001 /*UTF-8*/ == workbook_code_page || 1200/* UTF-16 */ == workbook_code_page
 		{
 			workbook_code_page = XLS::WorkbookStreamObject::DefaultCodePage;
 		}
@@ -1143,8 +1142,23 @@ void XlsConverter::convert_group_shape(std::vector<ODRAW::OfficeArtFOPTEPtr> & p
 				ODRAW::pihlShape *pihlShape = dynamic_cast<ODRAW::pihlShape*>(props[i].get());
 				if (pihlShape)
 				{
-					std::wstring target = GetTargetMoniker(pihlShape->IHlink_complex.hyperlink.oleMoniker.data.get());
-					xlsx_context->get_drawing_context().set_hyperlink(target);
+					std::wstring	sTarget;					
+					bool			bExternal = false;					
+					
+					if (pihlShape->IHlink_complex.hyperlink.hlstmfHasMoniker)
+					{
+						sTarget = GetTargetMoniker(pihlShape->IHlink_complex.hyperlink.oleMoniker.data.get());
+						bExternal = true;
+					}
+					else if (pihlShape->IHlink_complex.hyperlink.hlstmfHasLocationStr)
+					{
+						sTarget = pihlShape->IHlink_complex.hyperlink.location.value();
+					}
+
+					std::wstring sDisplay = pihlShape->IHlink_complex.hyperlink.displayName;
+					if (sDisplay.empty())	sDisplay = sTarget;
+
+					xlsx_context->get_drawing_context().set_hyperlink( sTarget, sDisplay, bExternal);				
 				}
 			}break;
 		}

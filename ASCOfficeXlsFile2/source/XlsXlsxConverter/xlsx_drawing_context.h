@@ -191,8 +191,10 @@ public:
 };
 struct _hlink_desc
 {
-    std::wstring hId;
-    std::wstring hRef;
+    std::wstring	sId;
+    std::wstring	sLink;
+	std::wstring	sDisplay;
+	bool			bExternal;
 };
 
 class xlsx_drawing_context
@@ -249,7 +251,7 @@ public:
 		bool is_anchor		();
 
         void set_properties	(const std::wstring & str);
-        void set_hyperlink	(const std::wstring & str);
+        void set_hyperlink	(const std::wstring & link, const std::wstring & display, bool is_external);
 
 		void set_path_rect	(_rect & rect);
 		void set_path		(const std::wstring & path);

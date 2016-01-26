@@ -76,7 +76,7 @@ public:
     {
         BOOST_FOREACH(rel_ const & r, xlsx_drawing_rels_)
         {
-			if (r.type_ == external_items::typeChart)//временно - нужно потом все загнать в релс
+			if (r.type_ == external_items::typeChart)
 			{
 				Rels.add(relationship(
 							r.rid_,
@@ -96,14 +96,13 @@ public:
 							) 
 					);
 			}
-			//typeShape внутренний рисованый объект - релсов нет
- 			else if (r.type_ == external_items::typeHyperlink)//заместо гипрелинка пользуем неизвестный ... поменять ... временно .. сделать красиво
+ 			else if (r.type_ == external_items::typeHyperlink)
 			{
 				Rels.add(relationship(
 							r.rid_,
 							L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink",
 							r.target_,
-							L"External")
+							(r.is_internal_ ? L"" : L"External"))
 				);
 			}
 		}

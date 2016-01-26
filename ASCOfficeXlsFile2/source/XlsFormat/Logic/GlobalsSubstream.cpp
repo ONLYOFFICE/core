@@ -134,7 +134,18 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 	proc.mandatory<INTERFACE_T>();
 	proc.mandatory<WriteAccess>();
 	proc.optional<FileSharing>();
-	proc.mandatory<CodePage>();
+	if (proc.mandatory<CodePage>())
+	{
+		m_CodePage = elements_.back();
+		elements_.pop_back();
+
+		CodePage *CodePage_ = dynamic_cast<CodePage*>(m_CodePage.get());
+
+		if ((CodePage_) && (CodePage_->cv != 0/* && CodePage_->cv != 1200*/))
+			code_page_ = CodePage_->cv;
+
+		proc.getGlobalWorkbookInfo()->CodePage = code_page_;
+	}
 	proc.repeated<Lel>(0, 2047);
 	proc.mandatory<DSF>();
 	proc.optional<Excel9File>();
@@ -156,7 +167,20 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 	proc.mandatory<CalcPrecision>();
 	proc.mandatory<RefreshAll>();
 	proc.mandatory<BookBool>();
-	proc.optional<Country>(); // OpenOffice Calc stored files workaround
+	if (proc.optional<Country>()) // OpenOffice Calc stored files workaround
+	{
+		m_Country = elements_.back();
+		elements_.pop_back();
+
+		Country *Country_ = dynamic_cast<Country*>(m_Country.get());
+		if (Country_)
+		{
+			int countryDef = Country_->iCountryDef;
+			int countryWinIni = Country_->iCountryWinIni;
+
+			proc.getGlobalWorkbookInfo()->CodePage;
+		}
+	}
 	proc.optional<UsesELFs>(); // OpenOffice Calc stored files workaround
 	proc.optional<RecalcId>(); // OpenOffice Calc stored files workaround
 	proc.repeated<Window1>(0, 0); // OpenOffice Calc stored files workaround
@@ -183,7 +207,20 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 	proc.optional<MTRSettings>();
 	proc.optional<ForceFullCalculation>();
 
-	proc.optional<Country>();
+	if (proc.optional<Country>())
+	{
+		m_Country = elements_.back();
+		elements_.pop_back();
+
+		Country *Country_ = dynamic_cast<Country*>(m_Country.get());
+		if (Country_)
+		{
+			int countryDef = Country_->iCountryDef;
+			int countryWinIni = Country_->iCountryWinIni;
+
+			proc.getGlobalWorkbookInfo()->CodePage;
+		}
+	}
 	proc.repeated<SUPBOOK>(0, 0);
 	
 	count = proc.repeated<LBL>(0, 0);

@@ -533,30 +533,28 @@ const std::string toStdString(std::wstring wide_string, const unsigned int code_
 
 #endif
 }
-
-
-const std::wstring toStdWString(std::string ansi_string, const unsigned int code_page)
-{
-#if defined (_WIN32) || defined (_WIN64)
-    const int nSize = MultiByteToWideChar(code_page, 0, ansi_string.c_str(), ansi_string.size(), NULL, 0);
+ const std::wstring	toStdWString(char* ansi, int size, const unsigned int code_page)
+ {
+ #if defined (_WIN32) || defined (_WIN64)
+    const int nSize = MultiByteToWideChar(code_page, 0, ansi, size, NULL, 0);
 
     wchar_t *sTemp = new wchar_t[nSize];
     if (!sTemp)
         return std::wstring();
 
-    int size = MultiByteToWideChar(code_page, 0, ansi_string.c_str(), ansi_string.size(), sTemp, nSize);
+    int size_out = MultiByteToWideChar(code_page, 0, ansi, size, sTemp, nSize);
 
-    std::wstring sResult(sTemp, size);
+    std::wstring sResult(sTemp, size_out);
     delete []sTemp;
 
     return sResult;
 #else
-    bool ansi = true;
+    bool bAnsi = true;
 
-    size_t insize = ansi_string.length();
+    size_t insize = size;
     std::wstring w_out;
 
-    char *inptr = (char*)ansi_string.c_str();
+    char *inptr = ansi;
 
     if (code_page >= 0)
     {
@@ -576,17 +574,25 @@ const std::wstring toStdWString(std::string ansi_string, const unsigned int code
                 insize = ansi_string.length();
                 ((wchar_t*)out_str)[insize] = 0;
                 w_out = std::wstring((wchar_t*)out_str, insize);
-                ansi = false;
+                bAnsi = false;
             }
             iconv_close(ic);
             delete []out_str;
         }
     }
-    if (ansi)
+    if (bAnsi)
+	{
+		std::string ansi_string(ansi, size);
         w_out = std::wstring(ansi_string.begin(), ansi_string.end());
+	}
 
     return w_out;
 #endif
+ }
+
+const std::wstring toStdWString(std::string ansi_string, const unsigned int code_page)
+{
+	return toStdWString((char*)ansi_string.c_str(), (int)ansi_string.length(), code_page);
 }
 #endif
 

@@ -22,14 +22,8 @@ public:
 
 	static const ElementType	type = typeCountry;
 
-//-----------------------------
 	BIFF_WORD iCountryDef;
 	BIFF_WORD iCountryWinIni;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(iCountryDef)
-		//BO_ATTRIB_MARKUP_ATTRIB(iCountryWinIni)
-	//BO_ATTRIB_MARKUP_END
 
 };
 

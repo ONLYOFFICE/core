@@ -283,12 +283,10 @@ void xl_drawings::write(const std::wstring & RootPath)
         rels_files relFiles;
         rels_file_ptr r = rels_file::create(e.filename + L".rels");
         e.drawings->dump_rels(r->get_rels());
-               
                 
         relFiles.add_rel_file(r);
         relFiles.write(path);
         
-
         content_type & contentTypes = this->get_main_document()->content_type().get_content_type();
 
         const std::wstring kDrawingCT = L"application/vnd.openxmlformats-officedocument.drawing+xml";

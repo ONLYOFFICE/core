@@ -26,7 +26,7 @@ public:
 	int serialize		(std::wostream & _stream);	
 	int serialize_rPr	(std::wostream & _stream, int iFmt);
 
-	void set_code_page(short cp) {code_page_ = cp;}
+	void set_code_page(short cp) ;
 	
 	virtual void load	(CFRecord& record);
 	virtual void store	(CFRecord& record);

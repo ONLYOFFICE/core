@@ -21,7 +21,7 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
-    static const unsigned short DefaultCodePage = OLEPS::CodePageOle::DefaultCodePage;
+    static const unsigned short DefaultCodePage = OLEPS::PropertyCodePage::DefaultCodePage;
 
 	void set_code_page(const unsigned short code_page);
 

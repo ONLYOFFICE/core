@@ -1318,20 +1318,21 @@ void xlsx_drawing_context::set_line_width (int val)
 	current_drawing_states->back()->line.width = val;
 }
 
-void xlsx_drawing_context::set_hyperlink(const std::wstring & str)
+void xlsx_drawing_context::set_hyperlink(const std::wstring & link, const std::wstring & display, bool is_external)
 {
 	if (current_drawing_states == NULL) return;	
 
-	std::wstring hId=std::wstring(L"hId") + boost::lexical_cast<std::wstring>(hlinks_.size()+1);
-	
-	std::wstring href_correct = xml::utils::replace_text_to_xml(str);
+	std::wstring sId			= std::wstring(L"hId") + boost::lexical_cast<std::wstring>(hlinks_.size()+1);
+	std::wstring link_correct	= link;
 
-	_hlink_desc desc = {hId, href_correct};
+	if (!is_external) link_correct = std::wstring(L"#") + link_correct;
+	
+	_hlink_desc desc = {sId, link_correct, display, is_external};
 
 	hlinks_.push_back(desc);
-	current_drawing_states->back()->hyperlink = hId;
+	current_drawing_states->back()->hyperlink = sId;
 
-	xlsx_drawings_->add( false, hId , href_correct, external_items::typeHyperlink);
+	xlsx_drawings_->add( !is_external, sId , link_correct, external_items::typeHyperlink);
 }
 
 void xlsx_drawing_context::set_path (const std::wstring & path)

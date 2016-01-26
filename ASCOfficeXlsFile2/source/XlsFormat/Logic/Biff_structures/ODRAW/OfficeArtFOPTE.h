@@ -9,7 +9,7 @@
 #include "MSO_enums.h"
 #include <Logic/Biff_structures/HyperlinkObject.h>
 
-#include "../../../ascofficepptxfile/editor/drawing/shapes/baseshape/pptshape/enums.h"
+#include "../../../ASCOfficePPTXFile/Editor/Drawing/Shapes/BaseShape/PPTShape/Enums.h"
 
 namespace XLS
 {

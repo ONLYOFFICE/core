@@ -21,6 +21,7 @@ XLUnicodeRichExtendedString::XLUnicodeRichExtendedString(std::list<CFRecordPtr>&
 	fHighByte(true),
 	extRst(cont_recs)
 {
+	code_page_  = 0;
 }
 
 const bool XLUnicodeRichExtendedString::appendNextContinue(CFRecord& record, const bool read_high_byte)
@@ -60,7 +61,11 @@ const bool XLUnicodeRichExtendedString::appendNextContinue(CFRecord& record, con
 
 XLUnicodeRichExtendedString::~XLUnicodeRichExtendedString()
 {
-	code_page_  = 0;
+}
+
+void XLUnicodeRichExtendedString::set_code_page(short cp)
+{
+	code_page_ = cp;
 }
 
 
@@ -304,8 +309,27 @@ void XLUnicodeRichExtendedString::loadSymbols(CFRecord& record, const size_t cch
 		}
 		else
 		{
-			std::string int_str(record.getCurData<char>(), cch);
-			str_ = STR::toStdWString(int_str, record.getGlobalWorkbookInfo()->CodePage).c_str();
+			std::string inp_str(record.getCurData<char>(), cch);
+
+			if (record.getGlobalWorkbookInfo()->CodePage == 1200)
+			{
+				int inp_str_size = inp_str.length();
+				wchar_t *out_str = new wchar_t[inp_str_size + 1];
+				char* out_str_char = (char*) out_str;
+				for (int i = 0; i < inp_str_size; i++)
+				{
+					out_str_char[2*i+0] = inp_str.c_str()[i];
+					out_str_char[2*i+1] = 0;
+				}
+				out_str[inp_str_size] = 0;
+
+				str_ = std::wstring(out_str, inp_str_size);
+				delete []out_str;
+			}
+			else
+			{
+				str_ = STR::toStdWString(inp_str, record.getGlobalWorkbookInfo()->CodePage).c_str();
+			}
 		}
 		record.skipNunBytes(raw_length);
 	}

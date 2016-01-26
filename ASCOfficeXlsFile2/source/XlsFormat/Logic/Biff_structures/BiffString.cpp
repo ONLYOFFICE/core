@@ -86,16 +86,36 @@ void BiffString::load(CFRecord& record, const size_t cch1, const bool is_wide1)
 	if(is_wide)
 	{
 #if defined(_WIN32) || defined(_WIN64)
-		std::wstring int_str(record.getCurData<wchar_t>(), cch);
-		str_ = int_str.c_str();
+		std::wstring inp_str(record.getCurData<wchar_t>(), cch);
+		str_ = inp_str.c_str();
 #else
 		str_= convertUtf16ToWString(record.getCurData<UTF16>(), cch);
 #endif
 	}
 	else
 	{
-		std::string int_str(record.getCurData<char>(), cch);
-		str_ = STR::toStdWString(int_str, record.getGlobalWorkbookInfo()->CodePage).c_str();
+		std::string inp_str(record.getCurData<char>(), cch);
+
+		if (record.getGlobalWorkbookInfo()->CodePage == 1200)
+		{
+			int inp_str_size = inp_str.length();
+			wchar_t *out_str = new wchar_t[inp_str_size + 1];
+			char* out_str_char = (char*) out_str;
+			for (int i = 0; i < inp_str_size; i++)
+			{
+				out_str_char[2*i+0] = inp_str.c_str()[i];
+				out_str_char[2*i+1] = 0;
+			}
+			out_str[inp_str_size] = 0;
+
+			str_ = std::wstring(out_str, inp_str_size);
+			delete []out_str;
+		}
+		else
+		{
+			str_ = STR::toStdWString(inp_str, record.getGlobalWorkbookInfo()->CodePage).c_str();
+		}
+
 	}
 	record.skipNunBytes(raw_length);
 }

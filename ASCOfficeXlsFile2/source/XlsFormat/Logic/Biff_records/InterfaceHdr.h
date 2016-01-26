@@ -22,11 +22,6 @@ public:
 	void readFields(CFRecord& record);
 //-----------------------------
 	BIFF_WORD codePage;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(codePage)
-	//BO_ATTRIB_MARKUP_END
-
 };
 
 } // namespace XLS

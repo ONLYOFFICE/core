@@ -81,9 +81,11 @@ OfficeArtFOPTEPtr OfficeArtFOPTE::load_and_create(XLS::CFRecord& record)
 		case NSOfficeDrawing::gtextRTF:
 		case NSOfficeDrawing::gtextAlign:
 		case NSOfficeDrawing::gtextSize:
-		case NSOfficeDrawing::gtextSpacing:
 		case NSOfficeDrawing::gtextCSSFont:
 			fopte = OfficeArtFOPTEPtr(new OfficeArtFOPTE);
+			break;
+		case NSOfficeDrawing::gtextSpacing:
+			fopte = OfficeArtFOPTEPtr(new FixedPoint);
 			break;
 		case NSOfficeDrawing::fFitTextToShape:
 			fopte = OfficeArtFOPTEPtr(new TextBooleanProperties);
@@ -348,15 +350,17 @@ OfficeArtFOPTEPtr OfficeArtFOPTE::load_and_create(XLS::CFRecord& record)
 
 	fopte->load(record);
 
-	FixedPoint * fixpoint = dynamic_cast<FixedPoint *>(fopte.get());
-	if (fixpoint)
-	{
-		fixpoint->dVal = (short)(fixpoint->op >> 16) + ((short)(fixpoint->op) / 65536.0);
-	}
-
 	return fopte;
 }
+void FixedPoint::load(XLS::CFRecord& record)
+{
+	OfficeArtFOPTE::load(record);
 
+	short			Integral	= op >> 16;
+	unsigned short Fractional	= op - (Integral << 16);
+
+	dVal = Integral + (Fractional / 65536.0);
+}
 void OfficeArtFOPTE::ReadComplexData(XLS::CFRecord& record)
 {
 	record.skipNunBytes(op); // default is to skip complex data
@@ -365,52 +369,52 @@ void OfficeArtFOPTE::ReadComplexData(XLS::CFRecord& record)
 void TextBooleanProperties::load(XLS::CFRecord& record)
 {
 	OfficeArtFOPTE::load(record);
-
-	fFitShapeToText		= GETBIT(op, 1);
-	fAutoTextMargin		= GETBIT(op, 3);
-	fSelectText			= GETBIT(op, 4);
 	
 	fUsefFitShapeToText = GETBIT(op, 17);
 	fUsefAutoTextMargin = GETBIT(op, 19);
 	fUsefSelectText		= GETBIT(op, 20);
+	
+	fFitShapeToText		= GETBIT(op, 1);
+	fAutoTextMargin		= GETBIT(op, 3);
+	fSelectText			= GETBIT(op, 4);
 }
 void GeometryTextBooleanProperties::load(XLS::CFRecord& record)
 {
 	OfficeArtFOPTE::load(record);
 
-	bool fUsegFReverseRows	= GETBIT(op, 31);
-	bool fUsefGtext			= GETBIT(op, 30);
-	bool fUsegFVertical		= GETBIT(op, 29);
-	bool fUsegtextFKern		= GETBIT(op, 28);
-	bool fUsegTight			= GETBIT(op, 27);
-	bool fUsegFStretch		= GETBIT(op, 26);
-	bool fUsegFShrinkFit	= GETBIT(op, 25);
-	bool fUsegFBestFit		= GETBIT(op, 24);
-	bool fUsegFNormalize	= GETBIT(op, 23);
-	bool fUsegFDxMeasure	= GETBIT(op, 22);
-	bool fUsegFBold			= GETBIT(op, 21);
-	bool fUsegFItalic		= GETBIT(op, 20);
-	bool fUsegFUnderline	= GETBIT(op, 19);
-	bool fUsegFShadow		= GETBIT(op, 18);
-	bool fUsegFSmallcaps	= GETBIT(op, 17);
-	bool fUsegFStrikethrough= GETBIT(op, 16);
+	fUsegFReverseRows	= GETBIT(op, 31);
+	fUsefGtext			= GETBIT(op, 30);
+	fUsegFVertical		= GETBIT(op, 29);
+	fUsegtextFKern		= GETBIT(op, 28);
+	fUsegTight			= GETBIT(op, 27);
+	fUsegFStretch		= GETBIT(op, 26);
+	fUsegFShrinkFit		= GETBIT(op, 25);
+	fUsegFBestFit		= GETBIT(op, 24);
+	fUsegFNormalize		= GETBIT(op, 23);
+	fUsegFDxMeasure		= GETBIT(op, 22);
+	fUsegFBold			= GETBIT(op, 21);
+	fUsegFItalic		= GETBIT(op, 20);
+	fUsegFUnderline		= GETBIT(op, 19);
+	fUsegFShadow		= GETBIT(op, 18);
+	fUsegFSmallcaps		= GETBIT(op, 17);
+	fUsegFStrikethrough	= GETBIT(op, 16);
 	
-	gFReverseRows	= fUsegFReverseRows ? GETBIT(op, 15) : false;
-	fGtext			= fUsefGtext		? GETBIT(op, 14) : false;
-	fVertical		= fUsegFVertical	? GETBIT(op, 13) : false;
-	fKern			= fUsegtextFKern	? GETBIT(op, 12) : false;
-	fTight			= fUsegTight		? GETBIT(op, 11) : false;
-	fStretch		= fUsegFStretch		? GETBIT(op, 10) : false;
-	fShrinkFit		= fUsegFShrinkFit	? GETBIT(op,  9) : false;
-	fBestFit		= fUsegFBestFit		? GETBIT(op,  8) : false;
-	fNormalize		= fUsegFNormalize	? GETBIT(op,  7) : false;
-	fDxMeasure		= fUsegFDxMeasure	? GETBIT(op,  6) : false;
-	fBold			= fUsegFBold		? GETBIT(op,  5) : false;
-	fItalic			= fUsegFItalic		? GETBIT(op,  4) : false;
-	fUnderline		= fUsegFUnderline	? GETBIT(op,  3) : false;
-	fShadow			= fUsegFShadow		? GETBIT(op,  2) : false;
-	fSmallcaps		= fUsegFSmallcaps	? GETBIT(op,  1) : false;
-	fStrikethrough	= fUsegFStrikethrough? GETBIT(op,  0) : false;
+	gFReverseRows	= GETBIT(op, 15);
+	fGtext			= GETBIT(op, 14);
+	fVertical		= GETBIT(op, 13);
+	fKern			= GETBIT(op, 12);
+	fTight			= GETBIT(op, 11);
+	fStretch		= GETBIT(op, 10);
+	fShrinkFit		= GETBIT(op,  9);
+	fBestFit		= GETBIT(op,  8);
+	fNormalize		= GETBIT(op,  7);
+	fDxMeasure		= GETBIT(op,  6);
+	fBold			= GETBIT(op,  5);
+	fItalic			= GETBIT(op,  4);
+	fUnderline		= GETBIT(op,  3);
+	fShadow			= GETBIT(op,  2);
+	fSmallcaps		= GETBIT(op,  1);
+	fStrikethrough	= GETBIT(op,  0);
 }
 
 void FillStyleBooleanProperties::load(XLS::CFRecord& record)

@@ -93,6 +93,8 @@ class fillColor : public OfficeArtFOPTE
 class FixedPoint : public OfficeArtFOPTE
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillColor)
+	virtual void load(XLS::CFRecord& record);
+	
 	double dVal;
 };
 class TextBooleanProperties : public OfficeArtFOPTE
@@ -104,6 +106,7 @@ class TextBooleanProperties : public OfficeArtFOPTE
 	bool fFitShapeToText;
 	bool fAutoTextMargin;
 	bool fSelectText;
+
 	bool fUsefFitShapeToText;
 	bool fUsefAutoTextMargin;
 	bool fUsefSelectText;
@@ -131,6 +134,23 @@ class GeometryTextBooleanProperties : public OfficeArtFOPTE
 	bool fShadow;
 	bool fSmallcaps;
 	bool fStrikethrough;
+
+	bool fUsegFReverseRows;
+	bool fUsefGtext	;
+	bool fUsegFVertical	;
+	bool fUsegtextFKern	;
+	bool fUsegTight	;
+	bool fUsegFStretch	;
+	bool fUsegFShrinkFit;
+	bool fUsegFBestFit	;
+	bool fUsegFNormalize;
+	bool fUsegFDxMeasure;
+	bool fUsegFBold		;
+	bool fUsegFItalic	;
+	bool fUsegFUnderline	;
+	bool fUsegFShadow	;
+	bool fUsegFSmallcaps	;
+	bool fUsegFStrikethrough;
 };
 
 class lineColor : public OfficeArtFOPTE

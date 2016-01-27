@@ -38,11 +38,15 @@ public:
 
 	BIFF_BYTE				hAlignment;
 	BIFF_BYTE				vAlignment;
+
 	BIFF_BYTE				fLockText;
 	BIFF_BYTE				fJustLast;
 	BIFF_BYTE				fSecretEdit;
+
 	BIFF_WORD				rot;
+
 	ControlInfo				controlInfo;
+
 	BIFF_WORD				cchText;
 	BIFF_WORD				cbRuns;
 	FontIndex				ifntEmpty;

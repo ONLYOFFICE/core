@@ -92,10 +92,8 @@ typedef _CP_PTR(_drawing_state) _drawing_state_ptr;
 class _drawing_state
 {
 public:
-	_drawing_state() :	isInternal(false), 
-						shape_id(msosptRectangle),  
-						flipH(false), flipV(false), 
-						text_wrap(2), //none
+	_drawing_state() :	shape_id(msosptRectangle),  
+						flipH(false), flipV(false), 						
 						bTextBox(false)
 	{
 		id			= -1;		
@@ -125,29 +123,36 @@ public:
 	std::wstring			path;
 	_rect					path_rect;
 
-	std::wstring			text_content;	//c форматированием
-	int						text_wrap;
+	struct _text
+	{
+		_text() : align(0)/*noset*/, wrap(2)/*none*/, vert_align(0)/*noset*/, vertical(0)/*horiz*/ {}
+		std::wstring	content;	//c форматированием
+		int				wrap;
+		int				align;
+		int				vert_align;
+		int				vertical;
+	}text;
 	
 	struct _wordart
 	{
-		_wordart() : bEnabled(false), size(0), align(1), bold(false), italic(false), underline(false), vertical(false) {}
-		bool			bEnabled;
+		_wordart() : is(false), size(0), bold(false), italic(false), underline(false), vertical(false), strike(false), spacing(1.) {}
+		bool			is;
 		std::wstring	text;	
 		std::wstring	font;	
 		int				size;
-		int				align;
 		bool			bold;
 		bool			italic;
 		bool			underline;
+		bool			strike;
 		bool			vertical;
+		double			spacing;
 	}wordart;
 	
-	bool				isInternal;
 	bool				bTextBox;
 
 	struct _shadow
 	{
-		_shadow() {is = false;}
+		_shadow() {is = false; color.SetRGB(0x7f, 0x7f, 0x7f);}
 		bool			is;
 		_color			color;
 		int				opacity;
@@ -157,6 +162,7 @@ public:
 	{
 		_fill() 
 		{
+			color.SetRGB(0xff, 0xff, 0xff);
 			angle = opacity = opacity2 = focus = 0; type = fillSolid; 
 			memset(texture_crop, 0, 4 * sizeof(int));
 			texture_crop_enabled = false;
@@ -180,6 +186,7 @@ public:
 
 	struct _line
 	{
+		_line() { fill.color.SetRGB(0, 0, 0);}
 		std::wstring	style;
         int             width;
 		_line_typeDash	typeDash;
@@ -207,7 +214,7 @@ public:
 	bool empty();	
 
 	void start_group();
-	bool start_drawing(int type);	
+	bool start_drawing	(int type);	
 		void start_image();
 		void start_shape(int type);
 		void start_chart();
@@ -217,56 +224,60 @@ public:
 		void set_FlipH		();
 		void set_FlipV		();
 		void set_shape_id	(int id);
-
-        void set_name		(const std::wstring & str);
-        void set_description(const std::wstring & str);
+//--------------------------------------------------------------------------------------
+        void set_name				(const std::wstring & str);
+        void set_description		(const std::wstring & str);
 		
-        void set_crop_top	(double val);
-        void set_crop_bottom(double val);
-        void set_crop_left	(double val);
-        void set_crop_right	(double val);
+        void set_crop_top			(double val);
+        void set_crop_bottom		(double val);
+        void set_crop_left			(double val);
+        void set_crop_right			(double val);
 
-        void set_rotation	(double val);
+        void set_rotation			(double val);
 
-        void set_fill_color		(int nColor, const std::wstring & sColor, bool background = false);
-		void set_fill_color		(int index, int type, bool background = false);
- 		void set_fill_opacity	(double val, bool background = false);       
-		void set_fill_type		(int val);
-		void set_fill_angle		(double val);
-		void set_fill_texture_mode(int val);
-        void set_fill_texture	(const std::wstring & str);
-		void add_fill_colors	(double position, const std::wstring & color);
-		void add_fill_colors	(double position, int index, int type);		
-		void set_fill_focus	(int val);
+        void set_fill_color			(int nColor, const std::wstring & sColor, bool background = false);
+		void set_fill_color			(int index, int type, bool background = false);
+ 		void set_fill_opacity		(double val, bool background = false);       
+		void set_fill_type			(int val);
+		void set_fill_angle			(double val);
+		void set_fill_texture_mode	(int val);
+        void set_fill_texture		(const std::wstring & str);
+		void add_fill_colors		(double position, const std::wstring & color);
+		void add_fill_colors		(double position, int index, int type);		
+		void set_fill_focus			(int val);
 
-		void set_line_color	(int nColor, const std::wstring & color);
-		void set_line_color	(int index, int type);
-        void set_line_type	(int val);
-        void set_line_style	(int val);
-        void set_line_width (int val);
-		void set_line_dash	(int val);
+		void set_line_color			(int nColor, const std::wstring & color);
+		void set_line_color			(int index, int type);
+        void set_line_type			(int val);
+        void set_line_style			(int val);
+        void set_line_width			(int val);
+		void set_line_dash			(int val);
 
-		void set_chart_sheet_anchor(double width, double height);
-        void set_anchor		(const std::wstring & str);
-		bool is_anchor		();
+		void set_chart_sheet_anchor	(double width, double height);
+        void set_anchor				(const std::wstring & str);
+		bool is_anchor				();
 
-        void set_properties	(const std::wstring & str);
-        void set_hyperlink	(const std::wstring & link, const std::wstring & display, bool is_external);
+        void set_properties			(const std::wstring & str);
+        void set_hyperlink			(const std::wstring & link, const std::wstring & display, bool is_external);
 
-		void set_path_rect	(_rect & rect);
-		void set_path		(const std::wstring & path);
+		void set_path_rect			(_rect & rect);
+		void set_path				(const std::wstring & path);
 
-		void set_text		(const std::wstring & text);
-		void set_text_wrap	(int val);
+		void set_text				(const std::wstring & text);
+		void set_text_wrap			(int val);
+		void set_text_align			(int val);
+		void set_text_vert_align	(int val);
+		void set_text_vertical		(int val);
 		
 		void set_wordart_text		(const std::wstring & text);
 		void set_wordart_font		(const std::wstring & text);
 		void set_wordart_size		(int val);
-		void set_wordart_align		(int val);
 		void set_wordart_bold		(bool val);
 		void set_wordart_italic		(bool val);
 		void set_wordart_underline	(bool val);
+		void set_wordart_strike		(bool val);
 		void set_wordart_vertical	(bool val);
+		void set_wordart_spacing	(double val);
 		
 //------------------------------------------------------------------------------		
 		void serialize_shape		(_drawing_state_ptr & drawing_state);			
@@ -277,7 +288,7 @@ public:
 		void serialize_fill			(std::wostream & stream, _drawing_state_ptr & drawing_state);
 		void serialize_fill			(std::wostream & stream);
 		void serialize				(std::wostream & stream);
-
+//-----------------------------------------------------------------------------------
 	void end_drawing();
 	void end_group();
 private:

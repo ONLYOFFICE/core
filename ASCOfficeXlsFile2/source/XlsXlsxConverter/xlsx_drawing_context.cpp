@@ -559,7 +559,7 @@ void xlsx_drawing_context::serialize_shape(_drawing_state_ptr & drawing_state)
 		prstTxWarp = Spt2WordArtShapeType(drawing_state->shape_id);
 		if (prstTxWarp.empty() == false)
 		{
-			drawing_state->wordart.bEnabled = true;
+			drawing_state->wordart.is = true;
 			drawing_state->bTextBox = true;
 			prstGeom = L"rect";
 		}
@@ -586,7 +586,7 @@ void xlsx_drawing_context::serialize_shape(_drawing_state_ptr & drawing_state)
 					
 					if (drawing_state->name.empty())
 					{
-						if (drawing_state->wordart.bEnabled)
+						if (drawing_state->wordart.is)
 							drawing_state->name = L"WordArt_" + boost::lexical_cast<std::wstring>(count_object);
 						else
 							drawing_state->name = L"Shape_" + boost::lexical_cast<std::wstring>(count_object);
@@ -623,7 +623,7 @@ void xlsx_drawing_context::serialize_shape(_drawing_state_ptr & drawing_state)
 					CP_XML_NODE(L"a:prstGeom")
 					{
 						CP_XML_ATTR(L"prst", prstGeom);
-						if (!drawing_state->wordart.bEnabled)	CP_XML_NODE(L"a:avLst");
+						if (!drawing_state->wordart.is)	CP_XML_NODE(L"a:avLst");
 					}
 				}
 				else
@@ -743,15 +743,16 @@ void xlsx_drawing_context::serialize_fill(std::wostream & stream, _drawing_state
 	if (drawing_state->fill.type == fillPattern) 
 		reset_fill_pattern(drawing_state);
 
-	if (drawing_state->wordart.bEnabled)
+	if (drawing_state->wordart.is)
 		serialize_none_fill(stream);
 	else
 		serialize_fill(stream, drawing_state->fill);
 }
 void xlsx_drawing_context::serialize_line(std::wostream & stream, _drawing_state_ptr & drawing_state)
 {
-	if (!drawing_state->wordart.bEnabled)
-		serialize_line(stream, drawing_state->line);
+	if (drawing_state->wordart.is)					return;
+	
+	serialize_line(stream, drawing_state->line);
 }
 void xlsx_drawing_context::serialize_none_fill(std::wostream & stream)
 {
@@ -778,6 +779,8 @@ void xlsx_drawing_context::serialize_gradient_fill(std::wostream & stream, _draw
 	{
 		CP_XML_NODE(L"a:gradFill")
 		{
+			CP_XML_ATTR(L"rotWithShape", 0);
+
 			CP_XML_NODE(L"a:gsLst")
 			{
 				if (fill.colorsPosition.empty() && fill.focus != 0)
@@ -921,23 +924,23 @@ void xlsx_drawing_context::serialize_color	(std::wostream & stream, const _color
 
 void xlsx_drawing_context::serialize_text(std::wostream & stream, _drawing_state_ptr & drawing_state)
 {
-	if (drawing_state->text_content.empty() && drawing_state->wordart.text.empty()) return;
+	if (drawing_state->text.content.empty() && drawing_state->wordart.text.empty()) return;
 
 	CP_XML_WRITER(stream)    
 	{
 		CP_XML_NODE(L"xdr:txBody")
 		{  
-			CP_XML_NODE(L"a:bodyPr")
+			CP_XML_NODE(L"a:bodyPr")//todooo rtl
 			{
-				if (drawing_state->text_wrap == 2)
+				if (drawing_state->text.wrap == 2 || drawing_state->wordart.is)
 					CP_XML_ATTR(L"wrap", L"none" ); 
 
-				if (drawing_state->wordart.bEnabled)
+				if (drawing_state->wordart.is)
 				{
 					CP_XML_ATTR(L"fromWordArt", 1);					
 
 					if (drawing_state->wordart.vertical)
-						CP_XML_ATTR(L"vert", L"wordArtVert"); //todooo rtl
+						CP_XML_ATTR(L"vert", L"wordArtVert"); 
 					
 					std::wstring prstTxWarp = Spt2WordArtShapeType(drawing_state->shape_id);				
 					CP_XML_NODE(L"a:prstTxWarp")
@@ -946,35 +949,60 @@ void xlsx_drawing_context::serialize_text(std::wostream & stream, _drawing_state
 						CP_XML_NODE(L"a:avLst");//модификаторы
 					}
 				}
+				else
+				{
+					switch (drawing_state->text.vert_align)
+					{
+						case 1: CP_XML_ATTR(L"anchor", L"t");	break;
+						case 2: CP_XML_ATTR(L"anchor", L"ctr"); break;
+						case 3: CP_XML_ATTR(L"anchor", L"b");	break;
+					}
+					switch(drawing_state->text.vertical)
+					{
+						case 1: 
+						case 3: CP_XML_ATTR(L"vert", L"vert");			break;
+						case 2: CP_XML_ATTR(L"vert", L"vert270");		break;
+						case 5: CP_XML_ATTR(L"vert", L"wordArtVert");	break;
+					}
+				}
 			}
 			CP_XML_NODE(L"a:lstStyle");		
 			
 			CP_XML_NODE(L"a:p")
 			{
-				if (drawing_state->wordart.bEnabled)
+				CP_XML_NODE(L"a:pPr")
 				{
-					CP_XML_NODE(L"a:pPr")
+					switch(drawing_state->text.align)
 					{
-						switch(drawing_state->wordart.align)
-						{
-							case 0: CP_XML_ATTR(L"algn", L"l");		break;
-							case 1: CP_XML_ATTR(L"algn", L"ctr"); 	break;
-							case 2: CP_XML_ATTR(L"algn", L"r"); 	break;
-						}
+						case 1: CP_XML_ATTR(L"algn", L"l");		break;
+						case 2: CP_XML_ATTR(L"algn", L"ctr"); 	break;
+						case 3: CP_XML_ATTR(L"algn", L"r"); 	break;
+						case 4: CP_XML_ATTR(L"algn", L"just"); 	break;
+						case 5: CP_XML_ATTR(L"algn", L"dist"); 	break;
 					}
+				}
+				if (drawing_state->wordart.is)
+				{		
 					CP_XML_NODE(L"a:r")
 					{
 						CP_XML_NODE(L"a:rPr")
 						{	
-							if (drawing_state->wordart.size > 0)
-								CP_XML_ATTR(L"sz", (int)(drawing_state->wordart.size * 100)); 
+							if (drawing_state->wordart.size < 1) drawing_state->wordart.size = 36;
+							CP_XML_ATTR(L"sz", (int)(drawing_state->wordart.size * 100)); 
 							
 							if (drawing_state->wordart.bold)		CP_XML_ATTR(L"b", 1);
 							if (drawing_state->wordart.italic)		CP_XML_ATTR(L"i", 1);
 							if (drawing_state->wordart.underline)	CP_XML_ATTR(L"u", 1);
+							if (drawing_state->wordart.strike)		CP_XML_ATTR(L"strike", L"sngStrike");
 						
 							CP_XML_ATTR(L"kern", 10);
-							CP_XML_ATTR(L"spc", 0);
+							
+							if (drawing_state->wordart.spacing > 1) 
+								CP_XML_ATTR(L"spc", (int) ((drawing_state->wordart.spacing - 1 ) * 3600.));
+							else if (drawing_state->wordart.spacing < 1) 
+								CP_XML_ATTR(L"spc", (int) ((drawing_state->wordart.spacing - 1 ) * 1800.));
+							else
+								CP_XML_ATTR(L"spc", 0);
 						
 							serialize_line(CP_XML_STREAM(), drawing_state->line);
 							serialize_fill(CP_XML_STREAM(), drawing_state->fill);
@@ -992,7 +1020,7 @@ void xlsx_drawing_context::serialize_text(std::wostream & stream, _drawing_state
 				}
 				else
 				{
-					CP_XML_STREAM() << drawing_state->text_content;
+					CP_XML_STREAM() << drawing_state->text.content;
 				}
 			}
 		}
@@ -1001,6 +1029,8 @@ void xlsx_drawing_context::serialize_text(std::wostream & stream, _drawing_state
 
 void xlsx_drawing_context::serialize_line(std::wostream & stream, _drawing_state::_line & line)
 {
+	if (line.fill.type == fillNone)	return;
+	
 	CP_XML_WRITER(stream)    
 	{
 		CP_XML_NODE(L"a:ln")
@@ -1295,6 +1325,7 @@ void xlsx_drawing_context::set_line_type (int val)
 	case 0: current_drawing_states->back()->line.fill.type = fillSolid;		break;
 	case 1: current_drawing_states->back()->line.fill.type = fillPattern;	break;
 	case 2: current_drawing_states->back()->line.fill.type = fillTexture;	break;
+	case 5: current_drawing_states->back()->line.fill.type = fillNone;		break;
 	}
 }
 void xlsx_drawing_context::set_line_style (int val)
@@ -1360,11 +1391,23 @@ void xlsx_drawing_context::set_wordart_size	(int val)
 
 	current_drawing_states->back()->wordart.size = val;
 }
-void xlsx_drawing_context::set_wordart_align (int val)
+void xlsx_drawing_context::set_text_align (int val)
 {
 	if (current_drawing_states == NULL) return;	
 
-	current_drawing_states->back()->wordart.align = val;
+	current_drawing_states->back()->text.align = val;
+}
+void xlsx_drawing_context::set_text_vert_align (int val)
+{
+	if (current_drawing_states == NULL) return;	
+
+	current_drawing_states->back()->text.vert_align = val;
+}
+void xlsx_drawing_context::set_text_vertical (int val)
+{
+	if (current_drawing_states == NULL) return;	
+
+	current_drawing_states->back()->text.vertical = val;
 }
 void xlsx_drawing_context::set_wordart_bold	(bool val)
 {
@@ -1384,23 +1427,36 @@ void xlsx_drawing_context::set_wordart_underline (bool val)
 
 	current_drawing_states->back()->wordart.underline = val;
 }
+void xlsx_drawing_context::set_wordart_strike(bool val)
+{
+	if (current_drawing_states == NULL) return;	
+
+	current_drawing_states->back()->wordart.strike = val;
+}
+
 void xlsx_drawing_context::set_wordart_vertical	(bool val)
 {
 	if (current_drawing_states == NULL) return;	
 
 	current_drawing_states->back()->wordart.vertical = val;
 }
+void xlsx_drawing_context::set_wordart_spacing	(double val)
+{
+	if (current_drawing_states == NULL) return;	
+
+	current_drawing_states->back()->wordart.spacing = val;
+}
 void xlsx_drawing_context::set_text (const std::wstring & text)
 {
 	if (current_drawing_states == NULL) return;	
 
-	current_drawing_states->back()->text_content = text;
+	current_drawing_states->back()->text.content = text;
 }
 void xlsx_drawing_context::set_text_wrap (int val)
 {
 	if (current_drawing_states == NULL) return;	
 
-	current_drawing_states->back()->text_wrap = val;
+	current_drawing_states->back()->text.wrap = val;
 }
 void xlsx_drawing_context::set_path_rect(_rect & rect)
 {

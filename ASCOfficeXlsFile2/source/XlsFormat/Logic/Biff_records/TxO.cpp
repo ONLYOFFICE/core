@@ -30,10 +30,12 @@ void TxO::readFields(CFRecord& record)
 
 	unsigned short flags;
 	record >> flags;
-	hAlignment = static_cast<unsigned char>(GETBITS(flags, 1, 3));
-	vAlignment = static_cast<unsigned char>(GETBITS(flags, 4, 6));	// reserved2 (2 bits)	
-	fLockText = GETBIT(flags, 9);	// reserved3 (4 bits)	
-	fJustLast = GETBIT(flags, 14);
+	
+	hAlignment	= static_cast<unsigned char>(GETBITS(flags, 1, 3));
+	vAlignment	= static_cast<unsigned char>(GETBITS(flags, 4, 6));	// reserved2 (2 bits)	
+	
+	fLockText	= GETBIT(flags, 9);	// reserved3 (4 bits)	
+	fJustLast	= GETBIT(flags, 14);
 	fSecretEdit = GETBIT(flags, 15);
 
 	record >> rot;

@@ -571,7 +571,7 @@ const std::string toStdString(std::wstring wide_string, const unsigned int code_
             nconv = iconv (ic, &inptr, &insize, &outptr, &avail);
             if (nconv == 0)
             {
-                insize = ansi_string.length();
+                insize = size;
                 ((wchar_t*)out_str)[insize] = 0;
                 w_out = std::wstring((wchar_t*)out_str, insize);
                 bAnsi = false;

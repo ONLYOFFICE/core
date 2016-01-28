@@ -1,6 +1,7 @@
 #include "BgraFrame.h"
 #include "../common/File.h"
 #include "../cximage/CxImage/ximage.h"
+#include "ImageFileFormatChecker.h"
 
 #include "Jp2/J2kFile.h"
 #include "JBig2/source/JBig2File.h"
@@ -14,6 +15,11 @@ bool CBgraFrame::OpenFile(const std::wstring& strFileName, unsigned int nFileTyp
     }
 	else
 	{
+		if (nFileType == 0)
+		{
+			CImageFileFormatChecker checker(strFileName);
+			nFileType = checker.eFileType;
+		}
 		NSFile::CFileBinary oFile;
 		if (!oFile.OpenFile(strFileName))
 			return false;

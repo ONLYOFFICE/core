@@ -642,7 +642,6 @@ SOURCES += \
     ../../../raster/ImageFileFormatChecker.cpp \
     ../../../cximage/libpsd/test.c \
     ../../../raster/JBig2/source/LeptonLib/blend1.cpp \
-    ../../../raster/JBig2/source/LeptonLib/blend1.cpp \
     ../../../raster/Metafile/StarView/SvmClip.cpp \
     ../../../raster/Metafile/StarView/SvmFile.cpp \
     ../../../raster/Metafile/StarView/SvmObjects.cpp \

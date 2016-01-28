@@ -89,12 +89,12 @@ const bool ChartSheetSubstream::loadContent(BinProcessor& proc)
 	if(!proc.mandatory<BOF>())
 	{
 		return false;
-	}
+    }
 	int count = 0 ;
 	
 	proc.optional<WriteProtect>();
 	proc.optional<SheetExt>();
-	proc.optional<WebPub>();
+    proc.optional<WebPub>();
 	proc.repeated<HFPicture>(0, 0);
 	proc.mandatory<PAGESETUP>();
 	proc.mandatory<PrintSize>();

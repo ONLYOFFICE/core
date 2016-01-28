@@ -314,7 +314,7 @@ void XLUnicodeRichExtendedString::loadSymbols(CFRecord& record, const size_t cch
 			if (record.getGlobalWorkbookInfo()->CodePage == 1200)
 			{
 				int inp_str_size = inp_str.length();
-				wchar_t *out_str = new wchar_t[inp_str_size + 1];
+                UTF16 *out_str = new UTF16[inp_str_size + 1];
 				char* out_str_char = (char*) out_str;
 				for (int i = 0; i < inp_str_size; i++)
 				{
@@ -323,8 +323,12 @@ void XLUnicodeRichExtendedString::loadSymbols(CFRecord& record, const size_t cch
 				}
 				out_str[inp_str_size] = 0;
 
-				str_ = std::wstring(out_str, inp_str_size);
-				delete []out_str;
+#if defined(_WIN32) || defined(_WIN64)
+                str_ = std::wstring((wchar_t*)out_str, inp_str_size);
+#else
+                str_ = convertUtf16ToWString(out_str, inp_str_size);
+#endif
+                delete []out_str;
 			}
 			else
 			{

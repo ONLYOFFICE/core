@@ -139,32 +139,32 @@ public: CString RenderToRtf(RenderParameter oRenderParameter)
 			sResult.Append( m_oProperty.RenderToRtf( oRenderParameter ) );
 			switch( m_eType )
 			{
-				case rsc_chdate: sResult.Append( _T("\\chdate") );break;
-				case rsc_chdpl: sResult.Append( _T("\\chdpl") );break;
-				case rsc_chdpa: sResult.Append( _T("\\chdpa") );break;
-				case rsc_chtime: sResult.Append( _T("\\chtime") );break;
-				case rsc_chpgn: sResult.Append( _T("\\chpgn") );break;
-				case rsc_sectnum: sResult.Append( _T("\\sectnum") );break;
-				case rsc_chftn: sResult.Append( _T("\\chftn") );break;
-				case rsc_chftnEnd: sResult.Append( _T("\\chftn") );break;
-				case rsc_chatn: sResult.Append( _T("\\chatn") );break;
-				case rsc_chftnsep: sResult.Append( _T("\\chftnsep") );break;
-				case rsc_chftnsepc: sResult.Append( _T("\\chftnsepc") );break;
-				case rsc_page: sResult.Append( _T("\\page") );break;
-				case rsc_column: sResult.Append( _T("\\column") );break;
-				case rsc_line: sResult.Append( _T("\\line") );break;
-				case rsc_softpage: sResult.Append( _T("\\softpage") );break;
-				case rsc_softcol: sResult.Append( _T("\\softcol") );break;
-				case rsc_softline: sResult.Append( _T("\\softline") );break;
-				case rsc_tab: sResult.Append( _T("\\tab") );break;
-				case rsc_Formula: sResult.Append( _T("\\|") );break;
-				case rsc_OptHyphen: sResult.Append( _T("\\-") );break;
-				case rsc_NonBrHyphen: sResult.Append( _T("\\_") );break;
-				case rsc_NonBrSpace: sResult.Append( _T("\\~") );break;
-				case rsc_zwbo: sResult.Append( _T("\\zwbo") );break;
-				case rsc_zwnbo: sResult.Append( _T("\\zwnbo") );break;
-				case rsc_zwj: sResult.Append( _T("\\zwj") );break;
-				case rsc_zwnj: sResult.Append( _T("\\zwnj") );break;
+				case rsc_chdate:		sResult.Append( _T("\\chdate") );		break;
+				case rsc_chdpl:			sResult.Append( _T("\\chdpl") );		break;
+				case rsc_chdpa:			sResult.Append( _T("\\chdpa") );		break;
+				case rsc_chtime:		sResult.Append( _T("\\chtime") );		break;
+				case rsc_chpgn:			sResult.Append( _T("\\chpgn") );		break;
+				case rsc_sectnum:		sResult.Append( _T("\\sectnum") );		break;
+				case rsc_chftn:			sResult.Append( _T("\\chftn") );		break;
+				case rsc_chftnEnd:		sResult.Append( _T("\\chftn") );		break;
+				case rsc_chatn:			sResult.Append( _T("\\chatn") );		break;
+				case rsc_chftnsep:		sResult.Append( _T("\\chftnsep") );		break;
+				case rsc_chftnsepc:		sResult.Append( _T("\\chftnsepc") );	break;
+				case rsc_page:			sResult.Append( _T("\\page") );			break;
+				case rsc_column:		sResult.Append( _T("\\column") );	break;
+				case rsc_line:			sResult.Append( _T("\\line") );		break;
+				case rsc_softpage:		sResult.Append( _T("\\softpage") );	break;
+				case rsc_softcol:		sResult.Append( _T("\\softcol") );	break;
+				case rsc_softline:		sResult.Append( _T("\\softline") );	break;
+				case rsc_tab:			sResult.Append( _T("\\tab") );		break;
+				case rsc_Formula:		sResult.Append( _T("\\|") );		break;
+				case rsc_OptHyphen:		sResult.Append( _T("\\-") );		break;
+				case rsc_NonBrHyphen:	sResult.Append( _T("\\_") );		break;
+				case rsc_NonBrSpace:	sResult.Append( _T("\\~") );		break;
+				case rsc_zwbo:			sResult.Append( _T("\\zwbo") );		break;
+				case rsc_zwnbo:			sResult.Append( _T("\\zwnbo") );	break;
+				case rsc_zwj:			sResult.Append( _T("\\zwj") );		break;
+				case rsc_zwnj:			sResult.Append( _T("\\zwnj") );		break;
 			}
 			if( PROP_DEF != m_nTextWrapBreak )
 				sResult.Append( _T("\\par") );
@@ -187,34 +187,34 @@ public: CString _RenderToOOX(RenderParameter oRenderParameter)
 			CString sResult;
 			switch( m_eType )
 			{
-			case rsc_chdate: sResult.Append( _T("") );break;
-				case rsc_chdpl: sResult.Append( _T("") );break;
-				case rsc_chdpa: sResult.Append( _T("") );break;
-				case rsc_chtime: sResult.Append( _T("") );break;
-				case rsc_chpgn: sResult.Append( _T("<w:pgNum />") );break;
-				case rsc_sectnum: sResult.Append( _T("") );break;
-				case rsc_chftn: sResult.Append( _T("<w:footnoteRef/>") );break;
-				case rsc_chftnEnd: sResult.Append( _T("<w:endnoteRef/>") );break;
-				case rsc_chatn: sResult.Append( _T("<w:annotationRef />") );break;
-				case rsc_chftnsep: sResult.Append( _T("<w:separator />") );break;
-				case rsc_chftnsepc: sResult.Append( _T("<w:continuationSeparator/>") );break;
-				case rsc_page: sResult.Append( _T("<w:br w:type=\"page\"/>") );break;
-				case rsc_column: sResult.Append( _T("<w:br w:type=\"column\"/>") );break;
-				case rsc_line: sResult.Append( _T("<w:br w:type=\"textWrapping\" w:clear=\"none\"/>") );break;
-				case rsc_softpage: sResult.Append( _T("") );break;
-				case rsc_softcol: sResult.Append( _T("") );break;
-				case rsc_softline: sResult.Append( _T("") );break;
-				case rsc_tab: sResult.Append( _T("<w:tab/>") );break;
-				case rsc_emspace: sResult.Append( _T("") );break;
-				case rsc_qmspace: sResult.Append( _T("") );break;
-				case rsc_Formula: sResult.Append( _T("") );break;
-				case rsc_OptHyphen: sResult.Append( _T("<w:t xml:space=\"preserve\">-</w:t>") );break;//<w:softHyphen/>
-				case rsc_NonBrHyphen: sResult.Append( _T("<w:t xml:space=\"preserve\">-</w:t>") );break;//<w:nonBreakHyphen/>
-				case rsc_NonBrSpace: sResult.Append( _T("<w:t xml:space=\"preserve\"> </w:t>") );break;
-				case rsc_zwbo: sResult.Append( _T("") );break;
-				case rsc_zwnbo: sResult.Append( _T("") );break;
-				case rsc_zwj: sResult.Append( _T("") );break;
-				case rsc_zwnj: sResult.Append( _T("") );break;
+			case rsc_chdate:			sResult.Append( _T("") );break;
+				case rsc_chdpl:			sResult.Append( _T("") );break;
+				case rsc_chdpa:			sResult.Append( _T("") );break;
+				case rsc_chtime:		sResult.Append( _T("") );break;
+				case rsc_chpgn:			sResult.Append( _T("<w:pgNum />") );break;
+				case rsc_sectnum:		sResult.Append( _T("") );break;
+				case rsc_chftn:			sResult.Append( _T("<w:footnoteRef/>") );break;
+				case rsc_chftnEnd:		sResult.Append( _T("<w:endnoteRef/>") );break;
+				case rsc_chatn:			sResult.Append( _T("<w:annotationRef />") );break;
+				case rsc_chftnsep:		sResult.Append( _T("<w:separator />") );break;
+				case rsc_chftnsepc:		sResult.Append( _T("<w:continuationSeparator/>") );break;
+				case rsc_page:			sResult.Append( _T("<w:br w:type=\"page\"/>") );break;
+				case rsc_column:		sResult.Append( _T("<w:br w:type=\"column\"/>") );break;
+				case rsc_line:			sResult.Append( _T("<w:br w:type=\"textWrapping\" w:clear=\"none\"/>") );break;
+				case rsc_softpage:		sResult.Append( _T("") );break;
+				case rsc_softcol:		sResult.Append( _T("") );break;
+				case rsc_softline:		sResult.Append( _T("") );break;
+				case rsc_tab:			sResult.Append( _T("<w:tab/>") );break;
+				case rsc_emspace:		sResult.Append( _T("") );break;
+				case rsc_qmspace:		sResult.Append( _T("") );break;
+				case rsc_Formula:		sResult.Append( _T("") );break;
+				case rsc_OptHyphen:		sResult.Append( _T("<w:t xml:space=\"preserve\">-</w:t>") );break;//<w:softHyphen/>
+				case rsc_NonBrHyphen:	sResult.Append( _T("<w:t xml:space=\"preserve\">-</w:t>") );break;//<w:nonBreakHyphen/>
+				case rsc_NonBrSpace:	sResult.Append( _T("<w:t xml:space=\"preserve\"> </w:t>") );break;
+				case rsc_zwbo:			sResult.Append( _T("") );break;
+				case rsc_zwnbo:			sResult.Append( _T("") );break;
+				case rsc_zwj:			sResult.Append( _T("") );break;
+				case rsc_zwnj:			sResult.Append( _T("") );break;
 			}
 			switch ( m_nTextWrapBreak )
 			{

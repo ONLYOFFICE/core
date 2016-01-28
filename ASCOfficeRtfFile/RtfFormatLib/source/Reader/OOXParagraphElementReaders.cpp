@@ -7,7 +7,7 @@
 
 #include "../RtfOle.h"
 
-bool OOXParagraphReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagraph, CcnfStyle oConditionalTableStyle, bool& bStartNewSection )
+bool OOXParagraphReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagraph, CcnfStyle oConditionalTableStyle )
 {
 	if (m_ooxParagraph == NULL) return false;
 
@@ -21,7 +21,7 @@ bool OOXParagraphReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputPa
 	if (m_ooxParagraph->m_oParagraphProperty)
 	{
 		OOXpPrReader opPrReader(m_ooxParagraph->m_oParagraphProperty);
-		opPrReader.Parse( oParam, oOutputParagraph.m_oProperty, oConditionalTableStyle, bStartNewSection);
+		opPrReader.Parse( oParam, oOutputParagraph.m_oProperty, oConditionalTableStyle);
 		oResultTableStyle = oConditionalTableStyle.ApplyTableStyle( oParam.poTableStyle );
 	}
 	else
@@ -52,12 +52,15 @@ bool OOXParagraphReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputPa
 	}
 
 	m_ooxElement = dynamic_cast<OOX::WritingElementWithChilds<OOX::WritingElement>*>(m_ooxParagraph);
-	return Parse2(oParam ,oOutputParagraph, oConditionalTableStyle, bStartNewSection, poExternalStyle );
+
+	bool res = Parse2(oParam ,oOutputParagraph, oConditionalTableStyle, poExternalStyle );
+
+	return res;
 }
 
 
 
-bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputParagraph, CcnfStyle oConditionalTableStyle, bool& bStartNewSection, RtfStylePtr poStyle )
+bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputParagraph, CcnfStyle oConditionalTableStyle, RtfStylePtr poStyle )
 {
 	if (m_ooxElement == NULL) return false;
 	
@@ -121,8 +124,7 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 				if (pFldSimple->m_arrItems.size() >0)
 				{
 					OOXParagraphReader oSubParReader(pFldSimple);
-					bool bStartNewSection;
-					oSubParReader.Parse2( oParam, *oNewResultParagraph, CcnfStyle(), bStartNewSection, poExternalStyle);
+					oSubParReader.Parse2( oParam, *oNewResultParagraph, CcnfStyle(), poExternalStyle);
 					oCurField->m_oResult->AddItem( oNewResultParagraph 	);			
 				}
 				oOutputParagraph.AddItem( oCurField );
@@ -187,8 +189,7 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 						if (pHyperlink->m_arrItems.size() >0)
 						{
 							OOXParagraphReader oSubParReader(pHyperlink);
-							bool bStartNewSection;
-							oSubParReader.Parse2( oParam, *oNewResultParagraph, CcnfStyle(), bStartNewSection, poExternalStyle);
+							oSubParReader.Parse2( oParam, *oNewResultParagraph, CcnfStyle(), poExternalStyle);
 							oCurField->m_oResult->AddItem( oNewResultParagraph );
 						}
 						oOutputParagraph.AddItem( oCurField );
@@ -226,8 +227,7 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 					if (pHyperlink->m_arrItems.size() > 0)
 					{
 						OOXParagraphReader oSubParReader(pHyperlink);					
-						bool bStartNewSection;
-						oSubParReader.Parse2( oParam, *oNewResultParagraph, CcnfStyle(), bStartNewSection, poExternalStyle);
+						oSubParReader.Parse2( oParam, *oNewResultParagraph, CcnfStyle(), poExternalStyle);
 						oCurField->m_oResult->AddItem( oNewResultParagraph );
 					}
 					oOutputParagraph.AddItem( oCurField );
@@ -303,8 +303,7 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 					if (pSdt->m_oSdtContent->m_arrItems.size() > 0)
 					{
 						OOXParagraphReader oStdReader(pSdt->m_oSdtContent.GetPointer());
-						bool bStartNewSection;
-						oStdReader.Parse2( oParam, oOutputParagraph, CcnfStyle(), bStartNewSection, poExternalStyle );	
+						oStdReader.Parse2( oParam, oOutputParagraph, CcnfStyle(), poExternalStyle );	
 					}
 				}
 			}break;
@@ -653,8 +652,10 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 				{
 					switch(ooxBr->m_oType.GetValue())
 					{
-					case SimpleTypes::brtypeColumn       : oNewChar->m_eType = RtfCharSpecial::rsc_page;	break;
-					case SimpleTypes::brtypePage         : oNewChar->m_eType = RtfCharSpecial::rsc_column;	break;
+					case SimpleTypes::brtypeColumn       : 
+						oNewChar->m_eType = RtfCharSpecial::rsc_column;	break;
+					case SimpleTypes::brtypePage         : 
+						oNewChar->m_eType = RtfCharSpecial::rsc_page;	break;
 					case SimpleTypes::brtypeTextWrapping :
 						switch(ooxBr->m_oClear.GetValue())
 						{
@@ -734,7 +735,7 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 }
 
 
-bool OOXpPrReader::Parse( ReaderParameter oParam ,RtfParagraphProperty& oOutputProperty, CcnfStyle& oConditionalTableStyle, bool& bStartNewSection )
+bool OOXpPrReader::Parse( ReaderParameter oParam ,RtfParagraphProperty& oOutputProperty, CcnfStyle& oConditionalTableStyle )
 {
 	if (m_ooxParaProps == NULL) return false;
 
@@ -1032,10 +1033,9 @@ bool OOXpPrReader::Parse( ReaderParameter oParam ,RtfParagraphProperty& oOutputP
 		oTabReader.Parse( oParam, oOutputProperty.m_oTabs );
 	}
 	if( m_ooxParaProps->m_oSectPr.IsInit())
-	{//todooo что то тут не тооооо 
-		bStartNewSection = true;
-		//OOXSectionPropertyReader oSectReader;
-		//oSectReader.Parse( oParam, oParam.oReader->m_oCurSectionProp );
+	{
+		oParam.oRtf->m_oStatusSection.number++;
+		oParam.oRtf->m_oStatusSection.start_new = true;
 	}
 	
 	if( m_ooxParaProps->m_oRPr.IsInit() )
@@ -1368,6 +1368,8 @@ bool OOXSectionPropertyReader::Parse( ReaderParameter oParam , RtfSectionPropert
 	{
 		if(m_ooxSectionProperty->m_oCols->m_oNum.IsInit())
 			oOutput.m_nColumnNumber = m_ooxSectionProperty->m_oCols->m_oNum->GetValue();
+		else 
+			oOutput.m_nColumnNumber = 1;
 		
 		if(m_ooxSectionProperty->m_oCols->m_oSpace.IsInit())
 			oOutput.m_nColumnSpace = m_ooxSectionProperty->m_oCols->m_oSpace->ToTwips(); //todooo twips????	

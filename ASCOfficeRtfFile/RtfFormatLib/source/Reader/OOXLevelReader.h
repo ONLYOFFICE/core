@@ -96,7 +96,7 @@ public:
 			bool bStartNewSectoion;
 			
             CcnfStyle style;
-            if( true == opPrReader.Parse( oParam, oNewProperty, style, bStartNewSectoion ) )
+            if( true == opPrReader.Parse( oParam, oNewProperty, style) )
 			{
 				oLevelProperty.m_nFirstIndent	= oNewProperty.m_nIndFirstLine;
 				oLevelProperty.m_nIndent		= oNewProperty.m_nIndLeft;

@@ -24,6 +24,6 @@ public:
 		m_ooxParagraph	= NULL;
 		m_ooxElement	= ooxElement;
 	}
-	bool Parse( ReaderParameter oParam , RtfParagraph& oOutputParagraph, CcnfStyle oConditionalTableStyle, bool& bStartNewSection );
-	bool Parse2( ReaderParameter oParam , RtfParagraph& oOutputParagraph, CcnfStyle oConditionalTableStyle, bool& bStartNewSection, RtfStylePtr poStyle);
+	bool Parse( ReaderParameter oParam , RtfParagraph& oOutputParagraph, CcnfStyle oConditionalTableStyle);
+	bool Parse2( ReaderParameter oParam , RtfParagraph& oOutputParagraph, CcnfStyle oConditionalTableStyle, RtfStylePtr poStyle);
 };

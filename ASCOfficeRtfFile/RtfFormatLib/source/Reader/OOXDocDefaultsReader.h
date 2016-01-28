@@ -41,7 +41,7 @@ public:
 
             CcnfStyle style;
 			
-            if( true == opPrReader.Parse( oParam, oNewProperty, style, bStartNewSectoion ) )
+            if( true == opPrReader.Parse( oParam, oNewProperty, style) )
 				oParam.oRtf->m_oDefaultParagraphProp = oNewProperty;
 		}
 		return true;

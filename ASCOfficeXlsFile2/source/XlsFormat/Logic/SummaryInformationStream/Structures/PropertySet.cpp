@@ -29,6 +29,8 @@ PropertySet::PropertySet(XLS::CFStreamPtr stream, const unsigned int property_se
     code_page = PropertyCodePage::DefaultCodePage;
 	for(unsigned int i = 0; i < NumProperties; ++i)
 	{
+		if (stream->getStreamPointer() - property_set_offset > Size)
+			break;
 		PropertyPtr next_property = PropertyFactory::ReadProperty(prop_offsets[i].PropertyIdentifier, stream, property_set_offset + prop_offsets[i].Offset);
 		if(next_property) // Skip the property if the corresponding class is not implemented
 		{

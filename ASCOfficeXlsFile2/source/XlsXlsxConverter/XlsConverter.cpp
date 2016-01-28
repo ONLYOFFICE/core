@@ -133,6 +133,13 @@ XlsConverter::XlsConverter(const std::wstring & xls_file, const std::wstring & _
 	}
 	if (UpdateProgress(400000))return;
 
+	if (xls_global_info->Version < 0x0600) 
+	{
+		Log::error("Version xls is old !!!");
+		return;
+	}
+
+	
 	output_document		= new oox::package::xlsx_document();
     xlsx_context		= new oox::xlsx_conversion_context(output_document);
 }

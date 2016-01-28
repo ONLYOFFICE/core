@@ -119,7 +119,7 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 
 	BOF* bof = dynamic_cast<BOF*>(elements_.back().get());
 	
-	if (bof->vers != 0x0600) //testdoc01.xls
+	if (bof->vers < 0x0600) //testdoc01.xls
 	{
 		proc.getGlobalWorkbookInfo()->Version = bof->vers;
 		return false;

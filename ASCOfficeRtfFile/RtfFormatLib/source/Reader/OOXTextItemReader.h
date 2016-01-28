@@ -25,7 +25,7 @@ public:
 			case OOX::et_w_p:
 			{
 				OOX::Logic::CParagraph * pParagraph = dynamic_cast<OOX::Logic::CParagraph*>(ooxElement);
-				bool bStartNewSection = false;
+				
 				OOXParagraphReader	m_oParagraphReader(pParagraph);
 				RtfParagraphPtr oNewParagraph( new RtfParagraph() );
 				//применяем к новому параграфу default property
@@ -33,17 +33,17 @@ public:
 				oNewParagraph->m_oProperty.m_oCharProperty = oParam.oRtf->m_oDefaultCharProp;
 				oNewParagraph->m_oProperty.m_nItap = 0;
 
-				if( true == m_oParagraphReader.Parse( oParam, (*oNewParagraph), CcnfStyle(), bStartNewSection ))
+				if( true == m_oParagraphReader.Parse( oParam, (*oNewParagraph), CcnfStyle() ))
 				{
 					m_oTextItems->AddItem( oNewParagraph );
-					if( true == bStartNewSection )
+					if( true == oParam.oRtf->m_oStatusSection.start_new )
 					{
 						RtfSectionPtr oCurSection;
-						//1 - т.к. секции удаляются когда полностью запишутся
-						if( true == oParam.oRtf->GetItem( oCurSection, 1 ) )
+						if( true == oParam.oRtf->GetItem( oCurSection, oParam.oRtf->m_oStatusSection.number - 1) )
 						{
 							m_oTextItems = oCurSection;
 						}
+						oParam.oRtf->m_oStatusSection.start_new = false;
 					}
 				}
 			}break;

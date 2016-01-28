@@ -88,9 +88,8 @@ public:
 			OOXpPrReader opPrReader(m_ooxStyle->m_oParPr.GetPointer());
 			opPrReader.m_bDefStyle = false;
 			
-            bool bStartNewSection;
             CcnfStyle style;
-            opPrReader.Parse( oParam, oNewParStyle->m_oParProp, style, bStartNewSection );
+            opPrReader.Parse( oParam, oNewParStyle->m_oParProp, style );
 			
 			oNewParStyle->m_oParProp.m_nListId = PROP_DEF; //экспериментально вроде нельзя иметь numbering в параграф стиле
 			oNewParStyle->m_oParProp.m_nListLevel = PROP_DEF;
@@ -254,10 +253,9 @@ public:
 			OOXpPrReader opPrReader(oox_tableStyle->m_oParPr.GetPointer());
 			opPrReader.m_bDefStyle = false;
 			
-            bool bStartNewSection;
             CcnfStyle style;
 
-            opPrReader.Parse( oParam, oNewParStyle->m_oParProp, style, bStartNewSection );
+            opPrReader.Parse( oParam, oNewParStyle->m_oParProp, style );
 			
 			oNewParStyle->m_oParProp.m_nListId = PROP_DEF; //экспериментально вроде нельзя иметь numbering в параграф стиле
 			oNewParStyle->m_oParProp.m_nListLevel = PROP_DEF;

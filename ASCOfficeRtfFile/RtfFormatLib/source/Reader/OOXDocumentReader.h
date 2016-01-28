@@ -27,7 +27,8 @@ public:
 
 		m_poReader = oParam.oReader;
 		m_poDocument = oParam.oRtf;
-	
+		
+		oParam.oRtf->m_oStatusSection.start_new = false;
 
 		RtfSectionPtr oCurSection;
 		if( true == oParam.oRtf->GetItem( oCurSection ) )
@@ -62,13 +63,16 @@ public:
 			if (m_ooxDocument->m_oSectPr.IsInit())// свойства последней секции
 			{
 				OOXSectionPropertyReader oSectReader(m_ooxDocument->m_oSectPr.GetPointer());
-				oSectReader.Parse( oParam, oCurSection->m_oProperty );
+				if (oSectReader.Parse( oParam, oCurSection->m_oProperty ))
+				{
+				}
 			}
 
 			RtfSectionPtr oFirstSection;
 			if( true == m_poDocument->GetItem( oFirstSection, 0 ) )
 			{
-				m_oTextItemReader.m_oTextItems = oFirstSection;
+				m_oTextItemReader.m_oTextItems			= oFirstSection;
+				oParam.oRtf->m_oStatusSection.number	= 1;
 
 				for (long i = 0; i < m_ooxDocument->m_arrItems.size(); i++)
 				{

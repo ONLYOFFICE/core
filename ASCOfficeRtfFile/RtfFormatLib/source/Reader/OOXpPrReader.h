@@ -22,5 +22,5 @@ public:
 		m_bDefStyle = true;
 		m_ooxParaProps = ooxParaProps;
 	}
-	bool Parse( ReaderParameter oParam ,RtfParagraphProperty& oOutputProperty, CcnfStyle& oConditionalTableStyle, bool& bStartNewSection );
+	bool Parse( ReaderParameter oParam ,RtfParagraphProperty& oOutputProperty, CcnfStyle& oConditionalTableStyle);
 };

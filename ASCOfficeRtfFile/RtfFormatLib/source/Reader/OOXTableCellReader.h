@@ -47,8 +47,7 @@ public:
 					oNewParagraph->m_oProperty.m_oCharProperty = oParam.oRtf->m_oDefaultCharProp;
 					
 					OOXParagraphReader oParagraphReader(pParagraph);
-					bool bStartNewSection;
-					oParagraphReader.Parse( oParam, (*oNewParagraph), oConditionalTableStyle, bStartNewSection );
+					oParagraphReader.Parse( oParam, (*oNewParagraph), oConditionalTableStyle );
 					
 					//ставим стиль таблицы
 					if( NULL != oParam.poTableStyle )

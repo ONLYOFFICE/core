@@ -28,6 +28,12 @@ public:
 //для того чтобы конвертировать старый формат List в Numbering
 	std::vector<RtfOldListPtr> m_aOldLists;
 
+	struct _status_section
+	{
+		bool	start_new;
+		int		number;
+	}m_oStatusSection;
+
 private: 
 	std::vector<int> m_aShapeId;
 public: 

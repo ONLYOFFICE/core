@@ -2127,7 +2127,7 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 			}
 
             if (!sTextboxStyle.IsEmpty())
-            {
+            {//todooo прописать все остальное 
                 PPTX::CCSS oCSSParser;
                 oCSSParser.LoadFromString2(sTextboxStyle);
 
@@ -2152,7 +2152,25 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
                             if (pShape->TextBoxBodyPr->vert.IsInit() == false)
                                 pShape->TextBoxBodyPr->vert = new PPTX::Limit::TextVerticalType();
                             pShape->TextBoxBodyPr->vert->set(L"vert270");
-                        }
+                       }
+                    }
+					if (pShape->TextBoxBodyPr->vert.IsInit())
+					{
+						if (pShape->txBody.IsInit() == false)
+                            pShape->txBody = new PPTX::Logic::TxBody();
+						pShape->txBody->bodyPr.vert = pShape->TextBoxBodyPr->vert;		
+					}
+
+                    pPair = oCSSParser.m_mapSettings.find(_T("mso-rotate"));
+                    if (pPair != oCSSParser.m_mapSettings.end())
+                    {
+						try
+						{
+							pShape->TextBoxBodyPr->rot = _wtoi(pPair->second) * 60000; //для docx, xlsx
+							if (pShape->txBody.IsInit() == false)	//для pptx
+                                pShape->txBody = new PPTX::Logic::TxBody();
+							pShape->txBody->bodyPr.rot = pShape->TextBoxBodyPr->rot;
+						}catch(...){}
                     }
 
                 }

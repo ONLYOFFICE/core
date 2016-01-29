@@ -191,14 +191,39 @@ int CHtmlFile::Convert(const std::vector<std::wstring>& arFiles, const std::wstr
         pCommandLine[sApp.length()] = (wchar_t)'\0';
     }
 
+#if 0
+    std::wstringstream ss;
+    ss << L"PATH=" << _wgetenv(L"PATH");
+    ss << L";" << NSFile::GetProcessDirectory();
+    ss << L";" << (NSFile::GetProcessDirectory() + L"\\..");
+    ss << L";" << (NSFile::GetProcessDirectory() + L"\\..\\..");
+    std::wstring env = ss.str();
+
+    wchar_t* pCommandLineEnv = NULL;
+    if (true)
+    {
+        pCommandLineEnv = new wchar_t[env.length() + 2];
+        memcpy(pCommandLineEnv, env.c_str(), sApp.length() * sizeof(wchar_t));
+        pCommandLineEnv[env.length()] = (wchar_t)'\0';
+        pCommandLineEnv[env.length() + 1] = (wchar_t)'\0';
+    }
+
+    PROCESS_INFORMATION processinfo;
+    ZeroMemory(&processinfo,sizeof(PROCESS_INFORMATION));
+    BOOL bResult = CreateProcessW(sInternal.c_str(), pCommandLine,
+                               NULL, NULL, TRUE, CREATE_UNICODE_ENVIRONMENT, (LPVOID)pCommandLineEnv, NULL, &sturtupinfo, &processinfo);
+#else
+
     PROCESS_INFORMATION processinfo;
     ZeroMemory(&processinfo,sizeof(PROCESS_INFORMATION));
     BOOL bResult = CreateProcessW(sInternal.c_str(), pCommandLine,
                                NULL, NULL, TRUE, NULL, NULL, NULL, &sturtupinfo, &processinfo);
 
+#endif
+
     ::WaitForSingleObject(processinfo.hProcess, INFINITE);
 
-    RELEASEARRAYOBJECTS(pCommandLine);
+    RELEASEARRAYOBJECTS(pCommandLine);    
 
     //get exit code
     DWORD dwExitCode = 0;

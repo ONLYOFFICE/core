@@ -42,7 +42,8 @@ public:
 			{
 				RtfStylePtr oResultStyle = oParam.oRtf->m_oStyleTable.GetStyleResulting( oStyle );
 				RtfTableStylePtr oTableStyle = boost::static_pointer_cast<RtfTableStyle, RtfStyle>( oResultStyle );
-				oOutputProperty = oTableStyle->m_oTableProp;
+				
+				oOutputProperty.Merge( oTableStyle->m_oTableProp );
 				oOutputProperty.m_nStyle = oTableStyle->m_nID;
 			}
 		}
@@ -190,14 +191,20 @@ public:
 		
 		if( m_ooxTableProps->m_oTblW.IsInit() && m_ooxTableProps->m_oTblW->m_oW.IsInit())
 		{
-			oOutputProperty.m_nWidth = m_ooxTableProps->m_oTblW->m_oW->GetValue();
-			
 			if( m_ooxTableProps->m_oTblW->m_oType.IsInit())
 			{
 				switch(m_ooxTableProps->m_oTblW->m_oType->GetValue())
 				{
-					case SimpleTypes::tblwidthDxa:	oOutputProperty.m_eMUWidth = mu_Twips;	break;
-					case SimpleTypes::tblwidthPct:	oOutputProperty.m_eMUWidth = mu_Percent; break;
+					case SimpleTypes::tblwidthDxa:
+					{
+						oOutputProperty.m_nWidth	= m_ooxTableProps->m_oTblW->m_oW->GetValue();
+						oOutputProperty.m_eMUWidth	= mu_Twips;		
+					}break;
+					case SimpleTypes::tblwidthPct:	
+					{
+						oOutputProperty.m_nWidth	= m_ooxTableProps->m_oTblW->m_oW->GetValue();
+						oOutputProperty.m_eMUWidth	= mu_Percent;	
+					}break;
 				}
 			}
 		}

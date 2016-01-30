@@ -43,6 +43,8 @@ public:
 
 	OOXReader( RtfDocument& oDocument, std::wstring  path );
 	bool Parse();
+
+	OOX::IFileContainer		*m_currentContainer;
 private: 
 	void ParseColorTable( RtfDocument& oDocument );
 	CString GetFolder	( CString sDocPath );

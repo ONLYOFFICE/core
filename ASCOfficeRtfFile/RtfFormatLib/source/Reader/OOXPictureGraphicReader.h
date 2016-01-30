@@ -49,14 +49,17 @@ public:
 				{
 					CString sImageId = picture->m_oBlipFill.m_oBlip->m_oEmbed.GetValue();
 
-					//todooo ... вынести отдельно (для встроенных документов)
-					smart_ptr<OOX::File> oFile = oParam.oDocx->GetDocument()->Find(sImageId);
-					if ( oFile.IsInit() && (OOX::FileTypes::Image == oFile->type()))
+					if (oParam.oReader->m_currentContainer)
 					{
-						OOX::Image* pImage = (OOX::Image*)oFile.operator->();
+						smart_ptr<OOX::File> oFile = oParam.oReader->m_currentContainer->Find(sImageId);
+						
+						if ( oFile.IsInit() && (OOX::FileTypes::Image == oFile->type()))
+						{
+							OOX::Image* pImage = (OOX::Image*)oFile.operator->();
 
-						CString sImagePath = pImage->filename().GetPath();
-						WriteDataToPicture( sImagePath, oOutput, _T("") );
+							CString sImagePath = pImage->filename().GetPath();
+							WriteDataToPicture( sImagePath, oOutput, _T("") );
+						}
 					}
 				}
 			}

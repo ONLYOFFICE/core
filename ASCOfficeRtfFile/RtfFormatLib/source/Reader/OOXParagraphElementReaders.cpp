@@ -136,11 +136,15 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 				if( pHyperlink->m_oId.IsInit() )
 				{
 					CString sTarget;
-					smart_ptr<OOX::File> oFile = oParam.oDocx->GetDocument()->Find(pHyperlink->m_oId->GetValue());
-					if ((oFile.IsInit()) && (OOX::FileTypes::HyperLink == oFile->type()))
-					{
-						OOX::HyperLink* pH = (OOX::HyperLink*)oFile.operator->();
-						sTarget = pH->Uri().GetPath();
+					
+					if (oParam.oReader->m_currentContainer)
+					{ 
+						smart_ptr<OOX::File> oFile = oParam.oReader->m_currentContainer->Find(pHyperlink->m_oId->GetValue());
+						if ((oFile.IsInit()) && (OOX::FileTypes::HyperLink == oFile->type()))
+						{
+							OOX::HyperLink* pH = (OOX::HyperLink*)oFile.operator->();
+							sTarget = pH->Uri().GetPath();
+						}
 					}
 					if( _T("") != sTarget )
 					{
@@ -489,12 +493,16 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 						if(ooxObject->m_oOleObject->m_oId.IsInit())
 						{
 							CString sRelativePath;
-							smart_ptr<OOX::File> oFile = oParam.oDocx->GetDocument()->Find(ooxObject->m_oOleObject->m_oId->GetValue());
 							
-							if ((oFile.IsInit() && (OOX::FileTypes::OleObject == oFile->type())))
-							{
-								OOX::OleObject* pO = (OOX::OleObject*)oFile.operator->();
-								sRelativePath = pO->m_sFilename;
+							if (oParam.oReader->m_currentContainer)
+							{ 
+								smart_ptr<OOX::File> oFile = oParam.oReader->m_currentContainer->Find(ooxObject->m_oOleObject->m_oId->GetValue());
+							
+								if ((oFile.IsInit() && (OOX::FileTypes::OleObject == oFile->type())))
+								{
+									OOX::OleObject* pO = (OOX::OleObject*)oFile.operator->();
+									sRelativePath = pO->m_sFilename;
+								}
 							}
 							//todooo проверить что тут за путь ..
 							CString sOlePath = oParam.oReader->m_sPath + FILE_SEPARATOR_STR + sRelativePath;

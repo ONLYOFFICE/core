@@ -50,16 +50,19 @@ bool OOXShapeReader::Parse2( ReaderParameter oParam , RtfShapePtr& oOutput)
 				if (srId.GetLength() < 1)
                     srId = image_data->m_rId.IsInit() ? image_data->m_rId->GetValue() : _T("") ;
 
-                smart_ptr<OOX::File> oFile = oParam.oDocx->GetDocument()->Find(srId);
+				if (oParam.oReader->m_currentContainer)
+				{        
+					smart_ptr<OOX::File> oFile = oParam.oReader->m_currentContainer->Find(srId);
 				
-				if ( oFile.IsInit() && (OOX::FileTypes::Image == oFile->type()))
-				{
-					OOX::Image* pImage = (OOX::Image*)oFile.operator->();
+					if ( oFile.IsInit() && (OOX::FileTypes::Image == oFile->type()))
+					{
+						OOX::Image* pImage = (OOX::Image*)oFile.operator->();
 
-					CString sImagePath = pImage->filename().GetPath();
-					
-					//todooo проверить что за путь тут выставляется
-					OOXPictureGraphicReader::WriteDataToPicture( sImagePath, *oOutput->m_oPicture, oParam.oReader->m_sPath );
+						CString sImagePath = pImage->filename().GetPath();
+						
+						//todooo проверить что за путь тут выставляется
+						OOXPictureGraphicReader::WriteDataToPicture( sImagePath, *oOutput->m_oPicture, oParam.oReader->m_sPath );
+					}
 				}
 				int nCropedWidthGoal = oOutput->m_oPicture->m_nWidthGoal;
 				if( PROP_DEF != nCropedWidthGoal )

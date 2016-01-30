@@ -10,6 +10,8 @@ bool OOXHeaderReader::Parse( ReaderParameter oParam, CString sRID, TextItemConta
 	OOX::CHdrFtr    *pHdrFtr = oParam.oDocx->GetHeaderOrFooter(m_ref->m_oId->GetValue());
 	if (pHdrFtr == NULL) return false;	
 
+	oParam.oReader->m_currentContainer = dynamic_cast<OOX::IFileContainer*>(pHdrFtr);
+	
 	OOXTextItemReader oOOXTextItemReader;
 	oOutput = TextItemContainerPtr( new TextItemContainer() );
 	oOOXTextItemReader.m_oTextItems = oOutput;
@@ -18,6 +20,8 @@ bool OOXHeaderReader::Parse( ReaderParameter oParam, CString sRID, TextItemConta
 	{
 		oOOXTextItemReader.Parse(pHdrFtr->m_arrItems[i], oParam );
 	}
+	
+	oParam.oReader->m_currentContainer = dynamic_cast<OOX::IFileContainer*>(oParam.oDocx->GetDocument());
 	
 	return true;
 }

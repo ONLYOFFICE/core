@@ -481,7 +481,7 @@ CString RtfSectionProperty::RenderToOOX(RenderParameter oRenderParameter)
 		case sb_sbkodd: sResult.Append(_T("<w:type w:val=\"oddPage\"/>") );break;
 	}
 	//Columns
-	if( PROP_DEF != m_nColumnNumber )
+	if( PROP_DEF != m_nColumnNumber ) 
 	{
 		CString sCollumnFormating;
 		bool bEqualWidth = false;

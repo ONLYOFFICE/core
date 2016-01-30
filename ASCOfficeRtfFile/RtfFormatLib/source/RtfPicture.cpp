@@ -73,13 +73,13 @@ CString RtfPicture::RenderToRtf(RenderParameter oRenderParameter)
 		RENDER_RTF_INT( m_nHeightGoal, sResult, _T("pichgoal") )
 
 		switch( eDataType )
-	{
-		case dt_emf: sResult.Append(_T("\\emfblip"));break;
-		case dt_wmf: sResult.Append(_T("\\wmetafile8"));break;
-		case dt_png: sResult.Append(_T("\\pngblip"));break;
-		case dt_jpg: sResult.Append(_T("\\jpegblip"));break;
-			//case dt_bmp: sResult.Append(_T("wbitmap8"));break;
-	}
+		{
+			case dt_emf: sResult.Append(_T("\\emfblip"));break;
+			case dt_wmf: sResult.Append(_T("\\wmetafile8"));break;
+			case dt_png: sResult.Append(_T("\\pngblip"));break;
+			case dt_jpg: sResult.Append(_T("\\jpegblip"));break;
+				//case dt_bmp: sResult.Append(_T("wbitmap8"));break;
+		}
 	sResult.Append( _T(" "));
 
     sResult.Append( RtfUtility::RtfInternalEncoder::Encode( m_sPicFilename ) );

@@ -3277,7 +3277,9 @@ public: RtfSectionCommand()
 			{
 				ParagraphReader oParagraphReader(sCommand, oReader);
 				oAbstrReader.StartSubReader( oParagraphReader, oDocument, oReader );
-
+				
+				oParagraphReader.m_oParPropDest.Finalize(oReader);
+				
 				TextItemContainerPtr oNewFooterHeader = oParagraphReader.m_oParPropDest.m_oTextItems; 
 
 				if( _T("header") == sCommand )
@@ -3294,7 +3296,7 @@ public: RtfSectionCommand()
 					oReader.m_oCurSectionProp.m_oFooterLeft = oNewFooterHeader;
 				else if( _T("footerr") == sCommand )
 					oReader.m_oCurSectionProp.m_oFooterRight = oNewFooterHeader;
-				else if( _T("footerr") == sCommand )
+				else if( _T("footerf") == sCommand )
 					oReader.m_oCurSectionProp.m_oFooterFirst = oNewFooterHeader;
 			}
 			else

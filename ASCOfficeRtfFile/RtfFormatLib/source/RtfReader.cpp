@@ -17,7 +17,7 @@ bool RtfReader::Load()
 	oNormalReader.Parse( m_oDocument, (*this) );
 	m_oLex.CloseSource();
     return true;
-}
+} 
 void RtfReader::PushState()
 {
 	ReaderStatePtr psaveNew = ReaderStatePtr(new ReaderState());

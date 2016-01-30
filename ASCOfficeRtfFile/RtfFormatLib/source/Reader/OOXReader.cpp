@@ -15,6 +15,7 @@ OOXReader::OOXReader( RtfDocument& oDocument, std::wstring  path ): m_oDocument(
 	m_nCurItap = 0;
 
 	m_convertationManager = NULL;
+	m_currentContainer = NULL;
 }
 bool OOXReader::Parse()
 {
@@ -93,9 +94,12 @@ bool OOXReader::Parse()
 	OOX::CDocument* document = inputDocxFile.GetDocument();		
 	if (document)
 	{
+		m_currentContainer = dynamic_cast<OOX::IFileContainer*>(document);
+		
 		OOXDocumentReader oDocReader( document );
 		oDocReader.Parse( oReaderParameter );
 	}
+
 
 	return true;
 }

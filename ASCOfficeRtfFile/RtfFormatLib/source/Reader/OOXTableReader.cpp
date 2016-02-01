@@ -11,7 +11,7 @@ bool OOXTableReader::Parse( ReaderParameter oParam, RtfTable& oOutputTable )
 	if(m_ooxTable->m_oTableProperties )
 	{
 		OOXtblPrReader otblPrReader(m_ooxTable->m_oTableProperties);
-		otblPrReader.Parse( oParam, oOutputTable.m_oProperty);
+		otblPrReader.Parse( oParam, oOutputTable.m_oProperty); 
 		bExistTablPr = true;
 	}
 
@@ -26,15 +26,18 @@ bool OOXTableReader::Parse( ReaderParameter oParam, RtfTable& oOutputTable )
 			if( RtfStyle::stTable == oResultStyle->m_eType )
 			{
 				poTableStyle = boost::static_pointer_cast<RtfTableStyle, RtfStyle>( oResultStyle );
-				poTableStyle->m_oTableProp = oOutputTable.m_oProperty; //TableProperty ставим как уже прочитали чтобы не терять порядок применения свойст
+				
+				poTableStyle->m_oTableProp = oOutputTable.m_oProperty; 
+				//TableProperty ставим как уже прочитали чтобы не терять порядок применения свойст
 				//например индент последовательно затирает друг друга в стилях, numbering, просто в свойствах
+				//затирает свойства и на First, Last .... todoooo
 			}
 		}
 	}
 	else if( true == bExistTablPr )
 	{
 		RtfTableStylePtr poTableStyle = RtfTableStylePtr( new RtfTableStyle() );
-		poTableStyle->m_oTableProp.Merge( oOutputTable.m_oProperty );
+		poTableStyle->m_oTableProp.Merge( oOutputTable.m_oProperty ); // будут использованы ниже
 	}
 
 	if( m_ooxTable->m_oTblGrid.IsInit() )
@@ -46,12 +49,15 @@ bool OOXTableReader::Parse( ReaderParameter oParam, RtfTable& oOutputTable )
 		}
 	}
 
-	long nRowCount = m_ooxTable->m_nCountRow;
+	long nRowCount = m_ooxTable->m_nCountRow, nCurRow = 0;
 
 	for( int i = 0; i < m_ooxTable->m_arrItems.size(); i++ )
 	{
 		if (m_ooxTable->m_arrItems[i] == NULL) continue;
 		if (m_ooxTable->m_arrItems[i]->getType() != OOX::et_w_tr) continue;
+
+		ReaderParameter newParam	= oParam;
+		newParam.poTableStyle		= poTableStyle;
 
 		RtfTableRowPtr oNewRow( new RtfTableRow() );
 		//применяем свойства таблицы к каждому row
@@ -61,7 +67,7 @@ bool OOXTableReader::Parse( ReaderParameter oParam, RtfTable& oOutputTable )
 		OOX::Logic::CTr *ooxRow = dynamic_cast<OOX::Logic::CTr *>(m_ooxTable->m_arrItems[i]);
 		
 		OOXTableRowReader oRowReader(ooxRow);
-		oRowReader.Parse( oParam, *oNewRow, i, nRowCount );
+		oRowReader.Parse( newParam, *oNewRow, nCurRow++, nRowCount );
 		oOutputTable.AddItem( oNewRow );
 	}
 	oOutputTable.CalculateCellx( *oParam.oRtf );

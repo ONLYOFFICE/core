@@ -135,7 +135,7 @@ public:
 
 				oNewSubStyle->m_sName = oNewStyle->m_sName;
 				
-				if( true == oNewSubStyle->IsValid() && RtfStyle::stTable == oNewSubStyle->m_eType )
+				if( /*true == oNewSubStyle->IsValid() && */RtfStyle::stTable == oNewSubStyle->m_eType )
 				{
 					oNewSubStyle->m_nID = oParam.oRtf->m_oStyleTable.GetCount() + 1;
 
@@ -233,7 +233,10 @@ public:
 		if (oox_tableStyle == NULL) return false;
 
         if (oOutputStyle == NULL)
-            oOutputStyle = RtfStylePtr( new RtfTableStyle() );
+		{
+            oOutputStyle		= RtfStylePtr( new RtfTableStyle() );
+			oOutputStyle->m_nID = oParam.oRtf->m_oStyleTable.GetCount() + 1;
+		}
 		RtfStyle::StyleType eStyleType = oOutputStyle->m_eType;//todooo проверить
 
 		if (oox_tableStyle->m_oRunPr.IsInit() && 

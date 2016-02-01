@@ -154,28 +154,29 @@ public:
 	 {
 		RtfStylePtr oResultStyle;
 		RtfStyle::StyleType eStyleType = RtfStyle::st_none;
+		
 		int nStyleId = oInputStyle->m_nID;
 		int nLinked = PROP_DEF;
 		int nBaseOn = oInputStyle->m_nBasedOn;
-		 if( RtfStyle::stCharacter == oInputStyle->m_eType )
-		 {
+		
+		if( RtfStyle::stCharacter == oInputStyle->m_eType )
+		{
 			eStyleType = RtfStyle::stCharacter;
 			oResultStyle = RtfCharStylePtr( new RtfCharStyle() );
-		 }
-		 else if( RtfStyle::stParagraph == oInputStyle->m_eType )
-		 {
+		}
+		else if( RtfStyle::stParagraph == oInputStyle->m_eType )
+		{
 			eStyleType = RtfStyle::stParagraph;
 			oResultStyle = RtfParagraphStylePtr( new RtfParagraphStyle() );
 			nLinked = oInputStyle->m_nLink;//linked будем смотреть только у стилей параграфа, чтобы избежать рекурсии
-		 }
-		 else if( RtfStyle::stTable == oInputStyle->m_eType )
-		 {
+		}
+		else if( RtfStyle::stTable == oInputStyle->m_eType )
+		{
 			eStyleType = RtfStyle::stTable;
 			oResultStyle = RtfTableStylePtr( new RtfTableStyle() );
-		 }
-		 else
-			 return oInputStyle;
-
+		}
+		else
+			return oInputStyle;	//ОПАСНО .. потом может другим затереться todooo
 
 		 RtfStylePtr oLinkedStyle;
 		 //if( PROP_DEF != nLinked && nStyleId != nLinked)
@@ -191,21 +192,18 @@ public:
 			 if( true == GetStyle( nBaseOn, oTemStyle) )
 				oBaseStyle = GetStyleResulting( oTemStyle );
 		 }
-		 if( NULL == oLinkedStyle && NULL == oBaseStyle )
-			 return oInputStyle;
-		 else
-		 {
-			 //Опытным путем установлено - Base старше Link
-			 if( NULL != oLinkedStyle )
-			 {
-				oResultStyle->Merge( oLinkedStyle );
-			 }
-			 if( NULL != oBaseStyle )
-			 {
-				oResultStyle->Merge( oBaseStyle );
-			 }
-			oResultStyle->Merge( oInputStyle );
-		 }
+		
+		 //Опытным путем установлено - Base старше Link
+		if( NULL != oLinkedStyle )
+		{
+			oResultStyle->Merge( oLinkedStyle );
+		}
+		if( NULL != oBaseStyle )
+		{
+			oResultStyle->Merge( oBaseStyle );
+		}
+		oResultStyle->Merge( oInputStyle );
+
 		return oResultStyle;
 	 }
 	CString RenderToRtf(RenderParameter oRenderParameter)

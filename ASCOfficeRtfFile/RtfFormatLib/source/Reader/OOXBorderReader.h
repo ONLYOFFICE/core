@@ -43,22 +43,11 @@ public:
 
 		if (m_ooxBorder)
 		{
-			if ((m_ooxBorder->m_oColor.IsInit()) && (m_ooxBorder->m_oColor->GetValue() == SimpleTypes::hexcolorRGB))
-			{
-				RtfColor oColor(m_ooxBorder->m_oColor->Get_R(), m_ooxBorder->m_oColor->Get_G(), m_ooxBorder->m_oColor->Get_B());
-				oOutputBorder.m_nColor = oParam.oRtf->m_oColorTable.AddItem( oColor );
-			}
-			if (m_ooxBorder->m_oSpace.IsInit())
-			{
-				oOutputBorder.m_nSpace = RtfUtility::pt2Twip(m_ooxBorder->m_oSpace->ToPoints());
-			}
-			if (m_ooxBorder->m_oSz.IsInit())
-			{
-				oOutputBorder.m_nWidth = RtfUtility::pt2Twip(m_ooxBorder->m_oSz->ToPoints());// = 5 * nSize / 2;//w:sz  1/8 twips (equivalent to 1/576th of an inch)
-			}
-
 			if (m_ooxBorder->m_oVal.IsInit())
 			{
+				if (m_ooxBorder->m_oVal->GetValue() == SimpleTypes::bordervalueNone ) return true; 
+						// это отсутствие свойства а не бордера (Nil)
+
 				switch(m_ooxBorder->m_oVal->GetValue())
 				{
 				//case SimpleTypes::bordervalueApples                : return _T("apples");
@@ -252,12 +241,27 @@ public:
 				//case SimpleTypes::bordervalueWoodwork              : return _T("woodwork");
 				//case SimpleTypes::bordervalueXIllusions            : return _T("xIllusions");
 				//case SimpleTypes::bordervalueZanyTriangles         : return _T("zanyTriangles");
+
+			}
 				//case SimpleTypes::bordervalueZigZag                : return _T("zigZag");
 				//case SimpleTypes::SimpleTypes::bordervalueZigZagStitch          : return _T("zigZagStitch");
 					//oOutputBorder.m_eType = RtfBorder::bt_brdrsh;
 					//oOutputBorder.m_eType = RtfBorder::bt_brdrhair;
-				}
 			}
+
+			if ((m_ooxBorder->m_oColor.IsInit()) && (m_ooxBorder->m_oColor->GetValue() == SimpleTypes::hexcolorRGB))
+			{
+				RtfColor oColor(m_ooxBorder->m_oColor->Get_R(), m_ooxBorder->m_oColor->Get_G(), m_ooxBorder->m_oColor->Get_B());
+				oOutputBorder.m_nColor = oParam.oRtf->m_oColorTable.AddItem( oColor );
+			}
+			if (m_ooxBorder->m_oSpace.IsInit())
+			{
+				oOutputBorder.m_nSpace = RtfUtility::pt2Twip(m_ooxBorder->m_oSpace->ToPoints());
+			}
+			if (m_ooxBorder->m_oSz.IsInit())
+			{
+				oOutputBorder.m_nWidth = RtfUtility::pt2Twip(m_ooxBorder->m_oSz->ToPoints());// = 5 * nSize / 2;//w:sz  1/8 twips (equivalent to 1/576th of an inch)
+			}	
 		}
 		return true;
 	}

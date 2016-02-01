@@ -86,6 +86,14 @@ namespace BinDocxRW
 			m_oStream.WriteLONG(nEnd - nStart - 4);
 			m_oStream.SetPosition(nEnd);
 		}
+		void WriteBorder(const BYTE & type, const ComplexTypes::Word::CBorder& border)
+		{
+			if ((border.m_oVal.IsInit()) && (border.m_oVal->GetValue() == SimpleTypes::bordervalueNone)) return;
+
+			int nCurPos = WriteItemStart(type);
+			WriteBorder(border);
+			WriteItemEnd(nCurPos);
+		}
 		void WriteBorder(const ComplexTypes::Word::CBorder& border)
 		{
 			if(border.m_oVal.IsInit())
@@ -123,44 +131,32 @@ namespace BinDocxRW
 			//Left
 			if(Borders.m_oStart.IsInit())
 			{
-				nCurPos = WriteItemStart(c_oSerBordersType::left);
-				WriteBorder(Borders.m_oStart.get());
-				WriteItemEnd(nCurPos);
+				WriteBorder(c_oSerBordersType::left, Borders.m_oStart.get());
 			}
 			//Top
 			if(Borders.m_oTop.IsInit())
 			{
-				nCurPos = WriteItemStart(c_oSerBordersType::top);
-				WriteBorder(Borders.m_oTop.get());
-				WriteItemEnd(nCurPos);
+				WriteBorder(c_oSerBordersType::top, Borders.m_oTop.get());
 			}
 			//Right
 			if(Borders.m_oEnd.IsInit())
 			{
-				nCurPos = WriteItemStart(c_oSerBordersType::right);
-				WriteBorder(Borders.m_oEnd.get());
-				WriteItemEnd(nCurPos);
+				WriteBorder(c_oSerBordersType::right, Borders.m_oEnd.get());
 			}
 			//Bottom
 			if(Borders.m_oBottom.IsInit())
 			{
-				nCurPos = WriteItemStart(c_oSerBordersType::bottom);
-				WriteBorder(Borders.m_oBottom.get());
-				WriteItemEnd(nCurPos);
+				WriteBorder(c_oSerBordersType::bottom, Borders.m_oBottom.get());
 			}
 			//InsideV
 			if(Borders.m_oInsideV.IsInit())
 			{
-				nCurPos = WriteItemStart(c_oSerBordersType::insideV);
-				WriteBorder(Borders.m_oInsideV.get());
-				WriteItemEnd(nCurPos);
+				WriteBorder(c_oSerBordersType::insideV, Borders.m_oInsideV.get());
 			}
 			//InsideH
 			if(Borders.m_oInsideH.IsInit())
 			{
-				nCurPos = WriteItemStart(c_oSerBordersType::insideH);
-				WriteBorder(Borders.m_oInsideH.get());
-				WriteItemEnd(nCurPos);
+				WriteBorder(c_oSerBordersType::insideH, Borders.m_oInsideH.get());
 			}
 		};
 		void WriteTcBorders(const OOX::Logic::CTcBorders& Borders)
@@ -169,44 +165,32 @@ namespace BinDocxRW
 			//Left
 			if(Borders.m_oStart.IsInit())
 			{
-				nCurPos = WriteItemStart(c_oSerBordersType::left);
-				WriteBorder(Borders.m_oStart.get());
-				WriteItemEnd(nCurPos);
+				WriteBorder(c_oSerBordersType::left, Borders.m_oStart.get());
 			}
 			//Top
 			if(Borders.m_oTop.IsInit())
 			{
-				nCurPos = WriteItemStart(c_oSerBordersType::top);
-				WriteBorder(Borders.m_oTop.get());
-				WriteItemEnd(nCurPos);
+				WriteBorder(c_oSerBordersType::top, Borders.m_oTop.get());
 			}
 			//Right
 			if(Borders.m_oEnd.IsInit())
 			{
-				nCurPos = WriteItemStart(c_oSerBordersType::right);
-				WriteBorder(Borders.m_oEnd.get());
-				WriteItemEnd(nCurPos);
+				WriteBorder(c_oSerBordersType::right, Borders.m_oEnd.get());
 			}
 			//Bottom
 			if(Borders.m_oBottom.IsInit())
 			{
-				nCurPos = WriteItemStart(c_oSerBordersType::bottom);
-				WriteBorder(Borders.m_oBottom.get());
-				WriteItemEnd(nCurPos);
+				WriteBorder(c_oSerBordersType::bottom, Borders.m_oBottom.get());
 			}
 			//InsideV
 			if(Borders.m_oInsideV.IsInit())
 			{
-				nCurPos = WriteItemStart(c_oSerBordersType::insideV);
-				WriteBorder(Borders.m_oInsideV.get());
-				WriteItemEnd(nCurPos);
+				WriteBorder(c_oSerBordersType::insideV, Borders.m_oInsideV.get());
 			}
 			//InsideH
 			if(Borders.m_oInsideH.IsInit())
 			{
-				nCurPos = WriteItemStart(c_oSerBordersType::insideH);
-				WriteBorder(Borders.m_oInsideH.get());
-				WriteItemEnd(nCurPos);
+				WriteBorder(c_oSerBordersType::insideH, Borders.m_oInsideH.get());
 			}
 		};
 		void WritePBorders(const OOX::Logic::CPBdr& Borders)
@@ -215,37 +199,27 @@ namespace BinDocxRW
 			//Left
 			if(Borders.m_oLeft.IsInit())
 			{
-				nCurPos = WriteItemStart(c_oSerBordersType::left);
-				WriteBorder(Borders.m_oLeft.get());
-				WriteItemEnd(nCurPos);
+				WriteBorder(c_oSerBordersType::left, Borders.m_oLeft.get());
 			}
 			//Top
 			if(Borders.m_oTop.IsInit())
 			{
-				nCurPos = WriteItemStart(c_oSerBordersType::top);
-				WriteBorder(Borders.m_oTop.get());
-				WriteItemEnd(nCurPos);
+				WriteBorder(c_oSerBordersType::top, Borders.m_oTop.get());
 			}
 			//Right
 			if(Borders.m_oRight.IsInit())
 			{
-				nCurPos = WriteItemStart(c_oSerBordersType::right);
-				WriteBorder(Borders.m_oRight.get());
-				WriteItemEnd(nCurPos);
+				WriteBorder(c_oSerBordersType::right, Borders.m_oRight.get());
 			}
 			//Bottom
 			if(Borders.m_oBottom.IsInit())
 			{
-				nCurPos = WriteItemStart(c_oSerBordersType::bottom);
-				WriteBorder(Borders.m_oBottom.get());
-				WriteItemEnd(nCurPos);
+				WriteBorder(c_oSerBordersType::bottom, Borders.m_oBottom.get());
 			}
 			//Between
 			if(Borders.m_oBetween.IsInit())
 			{
-				nCurPos = WriteItemStart(c_oSerBordersType::between);
-				WriteBorder(Borders.m_oBetween.get());
-				WriteItemEnd(nCurPos);
+				WriteBorder(c_oSerBordersType::between, Borders.m_oBetween.get());
 			}
 		};
 		void WriteColor(BYTE type, const SimpleTypes::CHexColor<>& color)

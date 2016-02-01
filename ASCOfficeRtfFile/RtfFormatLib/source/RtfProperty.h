@@ -2322,6 +2322,7 @@ public:
 		m_oBorderBottom.Merge( oCellPr.m_oBorderBottom );
 		m_oBorderInsideH.Merge( oCellPr.m_oBorderInsideH );
 		m_oBorderInsideV.Merge( oCellPr.m_oBorderInsideV );
+		
 		m_oShading.Merge( oCellPr.m_oShading );
 
 		MERGE_PROPERTY_DEF( m_eAlign, oCellPr, ca_none )
@@ -2908,102 +2909,43 @@ public:
 	   SetDefault();
 	   m_eType = stCharacter;
 	}
-		int GetType()
-		{
-			return TYPE_RTF_PROPERTY_STYLE_CHAR;
-		}
-		void Merge( RtfStylePtr oStyle );
-		CString RenderToRtf(RenderParameter oRenderParameter);
-		CString RenderToOOX(RenderParameter oRenderParameter);
+	int GetType()
+	{
+		return TYPE_RTF_PROPERTY_STYLE_CHAR;
+	}
+	void Merge( RtfStylePtr oStyle );
+	CString RenderToRtf(RenderParameter oRenderParameter);
+	CString RenderToOOX(RenderParameter oRenderParameter);
 };
 class RtfParagraphStyle: public RtfCharStyle
 {
-public: RtfParagraphProperty m_oParProp;
+public: 
+	RtfParagraphProperty m_oParProp;
 
-public:RtfParagraphStyle()
-	   {
-		   SetDefault();
-		   m_eType = stParagraph;
-	   }
-		int GetType()
-		{
-			return TYPE_RTF_PROPERTY_STYLE_PARAGRAPH;
-		}
-		void Merge( RtfStylePtr oStyle );
-		CString RenderToRtf(RenderParameter oRenderParameter);
-		CString RenderToOOX(RenderParameter oRenderParameter);
+	RtfParagraphStyle()
+	{
+	   SetDefault();
+	   m_eType = stParagraph;
+	}
+	int GetType()
+	{
+		return TYPE_RTF_PROPERTY_STYLE_PARAGRAPH;
+	}
+	void Merge( RtfStylePtr oStyle );
+	
+	CString RenderToRtf(RenderParameter oRenderParameter);
+	CString RenderToOOX(RenderParameter oRenderParameter);
 };
-//class RtfTableStyleProperty : public IRenderableProperty
-//{
-//public: typedef enum{ av_none,
-//			av_tsvertalt, //\tsvertalt	Top vertical alignment of cell
-//			av_tsvertalc, //\tsvertalc	Center vertical alignment of cell
-//			av_tsvertalb //\tsvertalb	Bottom vertical alignment of cell
-//		}AlignVertical;
-//		int m_nPaddingLeft; //\tscellpaddlN	Left padding value.
-//		int m_nIsPaddingLeft; //\tscellpaddflN	Units for \tscellpaddlN
-//		int m_nPaddingRight; //\tscellpaddrN	Right padding value
-//		int m_nIsPaddingRight; //\tscellpaddfrN	Units for \tscellpaddrN
-//		int m_nPaddingTop; //\tscellpaddtN	Top padding value.
-//		int m_nIsPaddingTop; //\tscellpaddftN	Units for \tscellpaddtN 
-//		int m_nPaddingBottom; //\tscellpaddbN	Bottom padding value
-//		int m_nIsPaddingBottom; //\tscellpaddfbN	Units for \tscellpaddbN
-//
-//		AlignVertical m_eAlign;
-//		int m_bNoCellWrap;//\tsnowrap	No cell wrapping
-//
-//		RtfShadingTableStyle m_oShading;
-//
-//
-//		RtfBorder m_oCellTopBorder; //\tsbrdrt	Top border for cell
-//		RtfBorder m_oCellBottomBorder; //\tsbrdrb	Bottom border for cell
-//		RtfBorder m_oCellLeftBorder; //\tsbrdrl	Left border for cell
-//		RtfBorder m_oCellRightBorder; //\tsbrdrr	Right border for cell
-//		RtfBorder m_oCellHorBorder; //\tsbrdrh	Horizontal (inside) border for cell
-//		RtfBorder m_oCellVerBorder; //\tsbrdrv	Vertical (inside) border for cell
-//		int m_nRowBandNumber; //\tscbandshN	Count of rows in a row band
-//		int m_nCellBandNumber; //\tscbandsvN	Count of cells in a cell band
-//
-//		RtfTableStyleProperty()
-//		{
-//			SetDefault();
-//		}
-//		void SetDefault()
-//		{
-//			DEFAULT_PROPERTY( m_nPaddingLeft )
-//			DEFAULT_PROPERTY( m_nIsPaddingLeft )
-//			DEFAULT_PROPERTY( m_nPaddingRight )
-//			DEFAULT_PROPERTY( m_nIsPaddingRight )
-//			DEFAULT_PROPERTY( m_nPaddingTop )
-//			DEFAULT_PROPERTY( m_nIsPaddingTop )
-//			DEFAULT_PROPERTY( m_nPaddingBottom )
-//			DEFAULT_PROPERTY( m_nIsPaddingBottom )
-//			m_eAlign = av_none;
-//			DEFAULT_PROPERTY( m_bNoCellWrap )
-//			DEFAULT_PROPERTY( m_nRowBandNumber )
-//			DEFAULT_PROPERTY( m_nCellBandNumber )
-//
-//			m_oShading.SetDefault();
-//			m_oCellTopBorder.SetDefault();
-//			m_oCellBottomBorder.SetDefault();
-//			m_oCellLeftBorder.SetDefault();
-//			m_oCellRightBorder.SetDefault();
-//			m_oCellHorBorder.SetDefault();
-//			m_oCellVerBorder.SetDefault();
-//		}
-//		CString RenderToRtf(RenderParameter oRenderParameter);
-//		CString RenderToOOX(RenderParameter oRenderParameter);
-//};
+
 class RtfTableStyle;
 typedef boost::shared_ptr<RtfTableStyle> RtfTableStylePtr;
 class RtfTableStyle: public RtfParagraphStyle
 {
 public: 
-	RtfTableProperty m_oTableProp;
-	RtfRowProperty m_oRowProp;
-	RtfCellProperty m_oCellProp;
+	RtfTableProperty	m_oTableProp;
+	RtfRowProperty		m_oRowProp;
+	RtfCellProperty		m_oCellProp;
 
-//		RtfTableStyleProperty m_oTableStyleProperty;
 
 	RtfTableStylePtr m_oFirstRow;
 	RtfTableStylePtr m_oLastRow;
@@ -3043,6 +2985,7 @@ public:
 		return TYPE_RTF_PROPERTY_STYLE_TABLE;
 	}
 	void Merge( RtfStylePtr oStyle );
+	
 	CString RenderToRtf(RenderParameter oRenderParameter);
 	CString RenderToOOX(RenderParameter oRenderParameter);
 };

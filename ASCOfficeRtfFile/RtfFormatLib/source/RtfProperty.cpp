@@ -502,12 +502,12 @@ CString RtfBorder::RenderToRtf(RenderParameter oRenderParameter)
 		case bt_brdroutset: sResult = _T("\\brdroutset"); break;
 		case bt_brdrnone: sResult = _T("\\brdrnone"); break;
 	}
-	if( PROP_DEF != m_nWidth )
-		sResult.AppendFormat( _T("\\brdrw%d"),m_nWidth );
-	if( PROP_DEF != m_nSpace )
-		sResult.AppendFormat( _T("\\brsp%d"),m_nSpace );
+	if( PROP_DEF != m_nWidth && m_nWidth > 0)
+		sResult.AppendFormat( _T("\\brdrw%d"), m_nWidth );
+	if( PROP_DEF != m_nSpace  && m_nSpace > 0)
+		sResult.AppendFormat( _T("\\brsp%d"),	m_nSpace );
 	if( PROP_DEF != m_nColor )
-		sResult.AppendFormat( _T("\\brdrcf%d"),m_nColor );
+		sResult.AppendFormat( _T("\\brdrcf%d"), m_nColor );
 	return sResult;
 }
 CString RtfBorder::RenderToOOX(RenderParameter oRenderParameter)
@@ -1624,35 +1624,40 @@ CString RtfParagraphProperty::RenderToRtf(RenderParameter oRenderParameter)
 	if( true == m_oShading.IsValid() )
 		sResult.Append( m_oShading.RenderToRtf( oRenderParameter ) );
 
+	bool border_sides = false;
 	if( true == m_oBorderTop.IsValid() )
 	{
 		sResult.Append(_T("\\brdrt"));
 		sResult.Append( m_oBorderTop.RenderToRtf( oRenderParameter ) );
+		border_sides = true;
 	}
 	if( true == m_oBorderLeft.IsValid() )
 	{
 		sResult.Append(_T("\\brdrl"));
 		sResult.Append( m_oBorderLeft.RenderToRtf( oRenderParameter ) );
+		border_sides = true;
 	}
 	if( true == m_oBorderBottom.IsValid() )
 	{
 		sResult.Append(_T("\\brdrb"));
 		sResult.Append( m_oBorderBottom.RenderToRtf( oRenderParameter ) );
+		border_sides = true;
 	}
 	if( true == m_oBorderRight.IsValid() )
 	{
 		sResult.Append(_T("\\brdrr"));
 		sResult.Append( m_oBorderRight.RenderToRtf( oRenderParameter ) );
-	}
-	if( true == m_oBorderBox.IsValid() )
-	{
-		sResult.Append(_T("\\box"));
-		sResult.Append( m_oBorderBox.RenderToRtf( oRenderParameter ) );
+		border_sides = true;
 	}
 	if( true == m_oBorderBar.IsValid() )
 	{
 		sResult.Append(_T("\\brdrbar"));
 		sResult.Append( m_oBorderBar.RenderToRtf( oRenderParameter ) );
+	}
+	if( true == m_oBorderBox.IsValid() && !border_sides)
+	{
+		sResult.Append(_T("\\box"));
+		sResult.Append( m_oBorderBox.RenderToRtf( oRenderParameter ) );
 	}
 
 	if( true == m_oFrame.IsValid() )
@@ -1922,8 +1927,6 @@ CString RtfCellProperty::RenderToRtf(RenderParameter oRenderParameter)
 	RENDER_RTF_INT( m_nSpacingBottom, sResult, _T("clspb") )
 	
 	RENDER_RTF_BOOL( m_bHideMark, sResult, _T("clhidemark") )
-
-
 
 	if( true == m_oBorderDiagonalLR.IsValid() )
 	{
@@ -2236,12 +2239,12 @@ CString RtfTableProperty::RenderToRtf(RenderParameter oRenderParameter)
 		sResult.Append(_T("\\trbrdrb"));
 		sResult.Append(m_oBorderBottom.RenderToRtf( oRenderParameter ) );
 	}
-	if( m_oBorderVert.IsValid() == true )
+	if( m_oBorderVert.IsValid() == true && m_bAutoNoColBand != 1)
 	{
 		sResult.Append(_T("\\trbrdrv"));
 		sResult.Append(m_oBorderVert.RenderToRtf( oRenderParameter ) );
 	}
-	if( m_oBorderHor.IsValid() == true )
+	if( m_oBorderHor.IsValid() == true  && m_bAutoNoRowBand != 1)
 	{
 		sResult.Append(_T("\\trbrdrh"));
 		sResult.Append(m_oBorderHor.RenderToRtf( oRenderParameter ) );
@@ -2903,85 +2906,88 @@ else if( TYPE_RTF_PROPERTY_STYLE_TABLE == oStyle->GetType() )
 }
 void RtfTableStyle::Merge( RtfStylePtr oStyle )
 {
-RtfStyle::Merge( oStyle );
-if( TYPE_RTF_PROPERTY_STYLE_CHAR == oStyle->GetType() )
-{
-    RtfCharStylePtr oCharStyle = boost::static_pointer_cast<RtfCharStyle, RtfStyle>( oStyle );
-	m_oCharProp.Merge( oCharStyle->m_oCharProp );
-}
-else if( TYPE_RTF_PROPERTY_STYLE_PARAGRAPH == oStyle->GetType() )
-{
-    RtfParagraphStylePtr oParagraphStyle = boost::static_pointer_cast<RtfParagraphStyle, RtfStyle>( oStyle );
-	m_oParProp.Merge( oParagraphStyle->m_oParProp );
-	m_oCharProp.Merge( oParagraphStyle->m_oCharProp );
-}
-if( TYPE_RTF_PROPERTY_STYLE_TABLE == oStyle->GetType() )
-{
-    RtfTableStylePtr oTableStyle = boost::static_pointer_cast<RtfTableStyle, RtfStyle>( oStyle );
-	m_oTableProp.Merge( oTableStyle->m_oTableProp );
-	m_oRowProp.Merge( oTableStyle->m_oRowProp );
-	m_oCellProp.Merge( oTableStyle->m_oCellProp );
-	m_oParProp.Merge( oTableStyle->m_oParProp );
-	m_oCharProp.Merge( oTableStyle->m_oCharProp );
-	if( NULL != oTableStyle->m_oFirstRow )
+	RtfStyle::Merge( oStyle );
+	if( TYPE_RTF_PROPERTY_STYLE_CHAR == oStyle->GetType() )
 	{
-		m_oFirstRow = RtfTableStylePtr( new RtfTableStyle() );
-		m_oFirstRow->Merge( oTableStyle->m_oFirstRow );
+		RtfCharStylePtr oCharStyle = boost::static_pointer_cast<RtfCharStyle, RtfStyle>( oStyle );
+		
+		m_oCharProp.Merge( oCharStyle->m_oCharProp );
 	}
-	if( NULL != oTableStyle->m_oLastRow )
+	else if( TYPE_RTF_PROPERTY_STYLE_PARAGRAPH == oStyle->GetType() )
 	{
-		m_oLastRow = RtfTableStylePtr( new RtfTableStyle() );
-		m_oLastRow->Merge( oTableStyle->m_oLastRow );
+		RtfParagraphStylePtr oParagraphStyle = boost::static_pointer_cast<RtfParagraphStyle, RtfStyle>( oStyle );
+		
+		m_oParProp.Merge( oParagraphStyle->m_oParProp );
+		m_oCharProp.Merge( oParagraphStyle->m_oCharProp );
 	}
-	if( NULL != oTableStyle->m_oFirstCol )
+	if( TYPE_RTF_PROPERTY_STYLE_TABLE == oStyle->GetType() )
 	{
-		m_oFirstCol = RtfTableStylePtr( new RtfTableStyle() );
-		m_oFirstCol->Merge( oTableStyle->m_oFirstCol );
+		RtfTableStylePtr oTableStyle = boost::static_pointer_cast<RtfTableStyle, RtfStyle>( oStyle );
+		
+		m_oTableProp.Merge( oTableStyle->m_oTableProp );
+		m_oRowProp.Merge( oTableStyle->m_oRowProp );
+		m_oCellProp.Merge( oTableStyle->m_oCellProp );
+		m_oParProp.Merge( oTableStyle->m_oParProp );
+		m_oCharProp.Merge( oTableStyle->m_oCharProp );
+		if( NULL != oTableStyle->m_oFirstRow )
+		{
+			m_oFirstRow = RtfTableStylePtr( new RtfTableStyle() );
+			m_oFirstRow->Merge( oTableStyle->m_oFirstRow );
+		}
+		if( NULL != oTableStyle->m_oLastRow )
+		{
+			m_oLastRow = RtfTableStylePtr( new RtfTableStyle() );
+			m_oLastRow->Merge( oTableStyle->m_oLastRow );
+		}
+		if( NULL != oTableStyle->m_oFirstCol )
+		{
+			m_oFirstCol = RtfTableStylePtr( new RtfTableStyle() );
+			m_oFirstCol->Merge( oTableStyle->m_oFirstCol );
+		}
+		if( NULL != oTableStyle->m_oLastCol )
+		{
+			m_oLastCol = RtfTableStylePtr( new RtfTableStyle() );
+			m_oLastCol->Merge( oTableStyle->m_oLastCol );
+		}
+		if( NULL != oTableStyle->m_oBandHorEven )
+		{
+			m_oBandHorEven = RtfTableStylePtr( new RtfTableStyle() );
+			m_oBandHorEven->Merge( oTableStyle->m_oBandHorEven );
+		}
+		if( NULL != oTableStyle->m_oBandVerEven )
+		{
+			m_oBandVerEven = RtfTableStylePtr( new RtfTableStyle() );
+			m_oBandVerEven->Merge( oTableStyle->m_oBandVerEven );
+		}
+		if( NULL != oTableStyle->m_oBandHorOdd )
+		{
+			m_oBandHorOdd = RtfTableStylePtr( new RtfTableStyle() );
+			m_oBandHorOdd->Merge( oTableStyle->m_oBandHorOdd );
+		}
+		if( NULL != oTableStyle->m_oBandVerOdd )
+		{
+			m_oBandVerOdd = RtfTableStylePtr( new RtfTableStyle() );
+			m_oBandVerOdd->Merge( oTableStyle->m_oBandVerOdd );
+		}
+		if( NULL != oTableStyle->m_oNWCell )
+		{
+			m_oNWCell = RtfTableStylePtr( new RtfTableStyle() );
+			m_oNWCell->Merge( oTableStyle->m_oNWCell );
+		}
+		if( NULL != oTableStyle->m_oNECell )
+		{
+			m_oNECell = RtfTableStylePtr( new RtfTableStyle() );
+			m_oNECell->Merge( oTableStyle->m_oNECell );
+		}
+		if( NULL != oTableStyle->m_oSWCell )
+		{
+			m_oSWCell = RtfTableStylePtr( new RtfTableStyle() );
+			m_oSWCell->Merge( oTableStyle->m_oSWCell );
+		}
+		if( NULL != oTableStyle->m_oSECell )
+		{
+			m_oSECell = RtfTableStylePtr( new RtfTableStyle() );
+			m_oSECell->Merge( oTableStyle->m_oSECell );
+		}
 	}
-	if( NULL != oTableStyle->m_oLastCol )
-	{
-		m_oLastCol = RtfTableStylePtr( new RtfTableStyle() );
-		m_oLastCol->Merge( oTableStyle->m_oLastCol );
-	}
-	if( NULL != oTableStyle->m_oBandHorEven )
-	{
-		m_oBandHorEven = RtfTableStylePtr( new RtfTableStyle() );
-		m_oBandHorEven->Merge( oTableStyle->m_oBandHorEven );
-	}
-	if( NULL != oTableStyle->m_oBandVerEven )
-	{
-		m_oBandVerEven = RtfTableStylePtr( new RtfTableStyle() );
-		m_oBandVerEven->Merge( oTableStyle->m_oBandVerEven );
-	}
-	if( NULL != oTableStyle->m_oBandHorOdd )
-	{
-		m_oBandHorOdd = RtfTableStylePtr( new RtfTableStyle() );
-		m_oBandHorOdd->Merge( oTableStyle->m_oBandHorOdd );
-	}
-	if( NULL != oTableStyle->m_oBandVerOdd )
-	{
-		m_oBandVerOdd = RtfTableStylePtr( new RtfTableStyle() );
-		m_oBandVerOdd->Merge( oTableStyle->m_oBandVerOdd );
-	}
-	if( NULL != oTableStyle->m_oNWCell )
-	{
-		m_oNWCell = RtfTableStylePtr( new RtfTableStyle() );
-		m_oNWCell->Merge( oTableStyle->m_oNWCell );
-	}
-	if( NULL != oTableStyle->m_oNECell )
-	{
-		m_oNECell = RtfTableStylePtr( new RtfTableStyle() );
-		m_oNECell->Merge( oTableStyle->m_oNECell );
-	}
-	if( NULL != oTableStyle->m_oSWCell )
-	{
-		m_oSWCell = RtfTableStylePtr( new RtfTableStyle() );
-		m_oSWCell->Merge( oTableStyle->m_oSWCell );
-	}
-	if( NULL != oTableStyle->m_oSECell )
-	{
-		m_oSECell = RtfTableStylePtr( new RtfTableStyle() );
-		m_oSECell->Merge( oTableStyle->m_oSECell );
-	}
-}
 }

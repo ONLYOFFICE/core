@@ -28,26 +28,26 @@ public:
 			otrPrReader.Parse( oParam, oOutputRow.m_oProperty, oConditionStyle);// может поменяться на любой condition(first row)
 		}
 
-		int nCellCount = m_ooxRowTable->m_nCountCell;
+		int nCellCount = m_ooxRowTable->m_nCountCell, nCurCell = 0;
 
-		for( int nCurCell = 0; nCurCell < nCellCount; nCurCell++)
+		for( int i = 0; i < m_ooxRowTable->m_arrItems.size(); i++)
 		{
+			if (m_ooxRowTable->m_arrItems[i]			== NULL)		continue;
+			if (m_ooxRowTable->m_arrItems[i]->getType() != OOX::et_w_tc)continue;//todooo bookmarks
+
 			RtfTableCellPtr oNewCell( new RtfTableCell() );
 
             OOX::Logic::CTc *ooxCell = NULL;
 
             if (nCurCell < m_ooxRowTable->m_arrItems.size())
-                ooxCell = dynamic_cast<OOX::Logic::CTc *>(m_ooxRowTable->m_arrItems[nCurCell]);
+                ooxCell = dynamic_cast<OOX::Logic::CTc *>(m_ooxRowTable->m_arrItems[i]);
 
-			if (ooxCell)
-			{
-				OOXTableCellReader oCellReader(ooxCell);
-				oCellReader.Parse( oParam, *oNewCell, oConditionStyle, nCurCell, nCurRow, nCellCount, nRowCount );
-				//добавляем cell
-				oOutputRow.AddItem(oNewCell);
-				//свойства cell в row
-				oOutputRow.m_oProperty.AddItem( oNewCell->m_oProperty );
-			}
+			OOXTableCellReader oCellReader(ooxCell);
+			oCellReader.Parse( oParam, *oNewCell, oConditionStyle, nCurCell++, nCurRow, nCellCount, nRowCount );
+			//добавляем cell
+			oOutputRow.AddItem(oNewCell);
+			//свойства cell в row
+			oOutputRow.m_oProperty.AddItem( oNewCell->m_oProperty );
 		}
 		return true;
 	}

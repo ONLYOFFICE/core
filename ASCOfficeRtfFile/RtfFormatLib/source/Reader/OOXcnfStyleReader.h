@@ -246,7 +246,7 @@ private:
 			oOutputProperty.m_oBorderLeft.Merge( oInputStyle->m_oTableProp.m_oBorderLeft );
 			if( nBoundRight == nCurX )
 				oOutputProperty.m_oBorderRight.Merge( oInputStyle->m_oTableProp.m_oBorderRight );
-			else
+			else if (oInputStyle->m_oTableProp.m_bAutoNoColBand != 1)
 				oOutputProperty.m_oBorderRight.Merge( oInputStyle->m_oTableProp.m_oBorderVert );
 		}
 		else if( nBoundRight == nCurX )
@@ -265,7 +265,7 @@ private:
 			oOutputProperty.m_oBorderTop.Merge( oInputStyle->m_oTableProp.m_oBorderTop );
 			if( nBoundBottom == nCurY )
 				oOutputProperty.m_oBorderBottom.Merge( oInputStyle->m_oTableProp.m_oBorderBottom );
-			else
+			else if (oInputStyle->m_oTableProp.m_bAutoNoRowBand != 1)
 				oOutputProperty.m_oBorderBottom.Merge( oInputStyle->m_oTableProp.m_oBorderHor );
 		}
 		else if( nBoundBottom == nCurY )

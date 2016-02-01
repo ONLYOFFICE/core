@@ -2,32 +2,32 @@
 #include "RtfDocument.h"
 
 CString RtfFontTable::RenderToRtf(RenderParameter oRenderParameter)
-		{
-			////записывает default charset и codepage
-			//RtfDocument* poDocument = static_cast<RtfDocument*>( oRenderParameter.poDocument );
-			//if( PROP_DEF != poDocument->m_oProperty.m_nAnsiCodePage )
-			//{
-			//	int nCodepage = poDocument->m_oProperty.m_nAnsiCodePage;
-			//	int nCharset = RtfUtility::CodepageToCharset( nCodepage );
-			//	for( int i = 0; i < (int)m_aArray.size(); i++ )
-			//		{
-			//			m_aArray[i].m_nCharset = nCharset;
-			//			m_aArray[i].m_nCodePage = nCodepage;
-			//		}
-			//}
-			
-			CString sResult;
-			if( m_aArray.size() > 0 )
-			{
-				sResult.Append(_T("{\\fonttbl"));
-				RenderParameter oNewParameter = oRenderParameter;
-				oNewParameter.nType = RENDER_TO_RTF_PARAM_FONT_TBL;
-				for( int i = 0; i < (int)m_aArray.size(); i++ )
-                    sResult.AppendFormat(_T("%ls"),m_aArray[i].RenderToRtf( oNewParameter ).GetBuffer());
-				sResult.Append(_T("}"));
-			}
-			return sResult;
-		}
+{
+	////записывает default charset и codepage
+	//RtfDocument* poDocument = static_cast<RtfDocument*>( oRenderParameter.poDocument );
+	//if( PROP_DEF != poDocument->m_oProperty.m_nAnsiCodePage )
+	//{
+	//	int nCodepage = poDocument->m_oProperty.m_nAnsiCodePage;
+	//	int nCharset = RtfUtility::CodepageToCharset( nCodepage );
+	//	for( int i = 0; i < (int)m_aArray.size(); i++ )
+	//		{
+	//			m_aArray[i].m_nCharset = nCharset;
+	//			m_aArray[i].m_nCodePage = nCodepage;
+	//		}
+	//}
+	
+	CString sResult;
+	if( m_aArray.size() > 0 )
+	{
+		sResult.Append(_T("{\\fonttbl"));
+		RenderParameter oNewParameter = oRenderParameter;
+		oNewParameter.nType = RENDER_TO_RTF_PARAM_FONT_TBL;
+		for( int i = 0; i < (int)m_aArray.size(); i++ )
+            sResult.AppendFormat(_T("%ls"),m_aArray[i].RenderToRtf( oNewParameter ).GetBuffer());
+		sResult.Append(_T("}"));
+	}
+	return sResult;
+}
 CString RtfListTable::RenderToOOX(RenderParameter oRenderParameter)
 {
 	CString sResult;

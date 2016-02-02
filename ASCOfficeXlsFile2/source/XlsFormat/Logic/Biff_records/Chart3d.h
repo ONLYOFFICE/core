@@ -30,11 +30,11 @@ public:
 	BIFF_SHORT pcDepth;
 	BIFF_WORD pcGap;
 
-	BIFF_BOOL fPerspective;
-	BIFF_BOOL fCluster;
-	BIFF_BOOL f3DScaling;
-	BIFF_BOOL fNotPieChart;
-	BIFF_BOOL fWalls2D;
+	bool fPerspective;
+	bool fCluster;
+	bool f3DScaling;
+	bool fNotPieChart;
+	bool fWalls2D;
 
 };
 

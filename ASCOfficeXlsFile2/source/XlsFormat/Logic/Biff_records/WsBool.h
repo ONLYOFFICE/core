@@ -23,17 +23,17 @@ public:
 	static const ElementType	type = typeWsBool;
 
 //-----------------------------
-	BIFF_BOOL fShowAutoBreaks;
-	BIFF_BOOL fDialog;
-	BIFF_BOOL fApplyStyles;
-	BIFF_BOOL fRowSumsBelow;
-	BIFF_BOOL fColSumsRight;
-	BIFF_BOOL fFitToPage;
-	BIFF_BOOL fDspGuts;
-	BIFF_BOOL fSyncHoriz;
-	BIFF_BOOL fSyncVert;
-	BIFF_BOOL fAltExprEval;
-	BIFF_BOOL fAltFormulaEntry;
+	bool fShowAutoBreaks;
+	bool fDialog;
+	bool fApplyStyles;
+	bool fRowSumsBelow;
+	bool fColSumsRight;
+	bool fFitToPage;
+	bool fDspGuts;
+	bool fSyncHoriz;
+	bool fSyncVert;
+	bool fAltExprEval;
+	bool fAltFormulaEntry;
 
 
 };

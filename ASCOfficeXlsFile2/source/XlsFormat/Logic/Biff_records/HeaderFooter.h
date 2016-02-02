@@ -25,10 +25,10 @@ public:
 
 //-----------------------------
 	BIFF_BSTR guidSView;
-	BIFF_BOOL fHFDiffOddEven;
-	BIFF_BOOL fHFDiffFirst;
-	BIFF_BOOL fHFScaleWithDoc;
-	BIFF_BOOL fHFAlignMargins;
+	bool fHFDiffOddEven;
+	bool fHFDiffFirst;
+	bool fHFScaleWithDoc;
+	bool fHFAlignMargins;
 	BIFF_WORD cchHeaderEven;
 	BIFF_WORD cchFooterEven;
 	BIFF_WORD cchHeaderFirst;

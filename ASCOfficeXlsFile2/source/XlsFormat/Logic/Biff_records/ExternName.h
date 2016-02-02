@@ -28,13 +28,13 @@ public:
 	static const ElementType	type = typeExternName;
 
 //-----------------------------
-	BIFF_BOOL fBuiltIn;
-	BIFF_BOOL fWantAdvise;
-	BIFF_BOOL fWantPict;
-	BIFF_BOOL fOle;
-	BIFF_BOOL fOleLink;
+	bool fBuiltIn;
+	bool fWantAdvise;
+	bool fWantPict;
+	bool fOle;
+	bool fOleLink;
 	BIFF_WORD cf;
-	BIFF_BOOL fIcon;
+	bool fIcon;
 	BiffStructurePtr body;
 
 //-----------------------------

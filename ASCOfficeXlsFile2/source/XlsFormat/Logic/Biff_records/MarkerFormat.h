@@ -27,9 +27,9 @@ public:
 	LongRGB rgbBack;
 	
 	BIFF_WORD imk;
-	BIFF_BOOL fAuto;
-	BIFF_BOOL fNotShowInt;
-	BIFF_BOOL fNotShowBrd;
+	bool fAuto;
+	bool fNotShowInt;
+	bool fNotShowBrd;
 	
 	IcvChart icvFore;
 	IcvChart icvBack;

@@ -45,10 +45,12 @@ void DefaultRowHeight::readFields(CFRecord& record)
 
 	unsigned short flags;
 	record >> flags;
-	fUnsynced = GETBIT(flags, 0);
-	fDyZero = GETBIT(flags, 1);
-	fExAsc = GETBIT(flags, 2);
-	fExDsc = GETBIT(flags, 3);
+	
+	fUnsynced	= GETBIT(flags, 0);
+	fDyZero		= GETBIT(flags, 1);
+	fExAsc		= GETBIT(flags, 2);
+	fExDsc		= GETBIT(flags, 3);
+	
 	if(!fDyZero)
 	{
 		record >> miyRw;

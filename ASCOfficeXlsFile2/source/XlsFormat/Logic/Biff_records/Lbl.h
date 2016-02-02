@@ -28,15 +28,15 @@ public:
 	const XLUnicodeStringNoCch getName() const;
 
 //-----------------------------
-	BIFF_BOOL fHidden;
-	BIFF_BOOL fFunc;
-	BIFF_BOOL fOB;
-	BIFF_BOOL fProc;
-	BIFF_BOOL fCalcExp;
-	BIFF_BOOL fBuiltin;
+	bool fHidden;
+	bool fFunc;
+	bool fOB;
+	bool fProc;
+	bool fCalcExp;
+	bool fBuiltin;
 	BIFF_BYTE fGrp;
-	BIFF_BOOL fPublished;
-	BIFF_BOOL fWorkbookParam;
+	bool fPublished;
+	bool fWorkbookParam;
 	BIFF_BYTE chKey;
 	BIFF_WORD itab;
 	XLUnicodeStringNoCch Name_bin;

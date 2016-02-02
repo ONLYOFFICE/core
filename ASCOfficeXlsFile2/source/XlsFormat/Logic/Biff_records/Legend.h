@@ -31,11 +31,11 @@ public:
 	BIFF_DWORD dy;
 	BIFF_BYTE wSpace;
 
-	BIFF_BOOL fAutoPosition;
-	BIFF_BOOL fAutoPosX;
-	BIFF_BOOL fAutoPosY;
-	BIFF_BOOL fVert;
-	BIFF_BOOL fWasDataTable;
+	bool fAutoPosition;
+	bool fAutoPosX;
+	bool fAutoPosY;
+	bool fVert;
+	bool fWasDataTable;
 
 };
 

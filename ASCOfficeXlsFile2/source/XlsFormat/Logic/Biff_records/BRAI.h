@@ -28,7 +28,7 @@ public:
 //-----------------------------
 	BIFF_BYTE	id;
 	BIFF_BYTE	rt;
-	BIFF_BOOL	fUnlinkedIfmt;
+	bool	fUnlinkedIfmt;
 	IFmt		ifmt;
 	
 	ChartParsedFormula			formula; //набор диапазонов и €чеек

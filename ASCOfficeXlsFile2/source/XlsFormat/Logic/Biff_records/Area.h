@@ -24,9 +24,9 @@ public:
 
 	static const ElementType	type = typeArea;
 
-	BIFF_BOOL fStacked;
-	BIFF_BOOL f100;
-	BIFF_BOOL fHasShadow;
+	bool fStacked;
+	bool f100;
+	bool fHasShadow;
 };
 
 } // namespace XLS

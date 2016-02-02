@@ -25,13 +25,13 @@ public:
 
 //-----------------------------
 
-	BIFF_BOOL fCol;
-	BIFF_BOOL fKey1Dsc;
-	BIFF_BOOL fKey2Dsc;
-	BIFF_BOOL fKey3Dsc;
-	BIFF_BOOL fCaseSensitive;
+	bool fCol;
+	bool fKey1Dsc;
+	bool fKey2Dsc;
+	bool fKey3Dsc;
+	bool fCaseSensitive;
 	BIFF_SHORT iOrder;
-	BIFF_BOOL fAltMethod;
+	bool fAltMethod;
 
 	XLUnicodeStringNoCch stKey1;
 	XLUnicodeStringNoCch stKey2;

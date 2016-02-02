@@ -24,8 +24,8 @@ public:
 	static const ElementType	type = typeTableStyle;
 
 //-----------------------------
-	BIFF_BOOL fIsPivot;
-	BIFF_BOOL fIsTable;
+	bool fIsPivot;
+	bool fIsTable;
 	BIFF_DWORD ctse;
 	LPWideStringNoCch rgchName;
 

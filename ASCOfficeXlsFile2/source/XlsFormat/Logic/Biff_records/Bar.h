@@ -27,10 +27,10 @@ public:
 	BIFF_SHORT			pcOverlap;
 	BIFF_WORD			pcGap;
 
-	BIFF_BOOL			fTranspose;
-	BIFF_BOOL			fStacked;
-	BIFF_BOOL			f100;
-	BIFF_BOOL			fHasShadow;
+	bool			fTranspose;
+	bool			fStacked;
+	bool			f100;
+	bool			fHasShadow;
 //------------------------------------
 	BaseObjectPtr		m_chart3D;
 };

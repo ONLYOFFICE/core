@@ -25,14 +25,7 @@ public:
 //-----------------------------
 	BIFF_WORD wOffset;
 	BIFF_WORD at;
-	BIFF_BOOL cAutoCatLabelReal;
-
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(wOffset)
-		//BO_ATTRIB_MARKUP_ATTRIB(at)
-		//BO_ATTRIB_MARKUP_ATTRIB(cAutoCatLabelReal)
-	//BO_ATTRIB_MARKUP_END
-
+	bool cAutoCatLabelReal;
 };
 
 } // namespace XLS

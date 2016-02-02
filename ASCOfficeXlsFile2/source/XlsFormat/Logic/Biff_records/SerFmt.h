@@ -23,9 +23,9 @@ public:
 	static const ElementType	type = typeSerFmt;
 
 //-----------------------------
-	BIFF_BOOL fSmoothedLine;
-	BIFF_BOOL f3DBubbles;
-	BIFF_BOOL fArShadow;
+	bool fSmoothedLine;
+	bool f3DBubbles;
+	bool fArShadow;
 };
 
 } // namespace XLS

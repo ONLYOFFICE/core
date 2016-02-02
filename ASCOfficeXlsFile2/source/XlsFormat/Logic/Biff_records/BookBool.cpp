@@ -57,10 +57,12 @@ void BookBool::readFields(CFRecord& record)
 {
 	unsigned short flags;
 	record >> flags;
-	fNoSaveSup = GETBIT(flags, 0);
-	fHasEnvelope = GETBIT(flags, 2);
-	fEnvelopeVisible = GETBIT(flags, 3);
-	fEnvelopeInitDone = GETBIT(flags, 4);
+	
+	fNoSaveSup			= GETBIT(flags, 0);
+	fHasEnvelope		= GETBIT(flags, 2);
+	fEnvelopeVisible	= GETBIT(flags, 3);
+	fEnvelopeInitDone	= GETBIT(flags, 4);
+	
 	unsigned char grUpdateLinks_num = GETBITS(flags, 5, 6);
 	switch(grUpdateLinks_num)
 	{
@@ -77,6 +79,7 @@ void BookBool::readFields(CFRecord& record)
 			throw;// EXCEPT::RT::WrongBiffRecord("Unsupported value of grUpdateLinks.", record.getTypeString());
 
 	}
+	
 	fHideBorderUnselLists = GETBIT(flags, 8);
 }
 

@@ -76,9 +76,10 @@ int STYLES::serialize(std::wostream & stream)
 							{
 								CP_XML_ATTR(L"name", styleExt->stName.value());
 							
-								if ((styleExt->fBuiltIn.value()) && (*styleExt->fBuiltIn.value()))
+								if (styleExt->fBuiltIn)
 								{
 									CP_XML_ATTR(L"builtinId", styleExt->builtInData.istyBuiltIn);
+									
 									if (styleExt->builtInData.iLevel > 0 && styleExt->builtInData.iLevel < 255)
 									{
 										CP_XML_ATTR(L"iLevel", styleExt->builtInData.iLevel);
@@ -93,7 +94,7 @@ int STYLES::serialize(std::wostream & stream)
 							{
 								CP_XML_ATTR(L"name", style->user.value());
 									
-								if ((style->fBuiltIn.value()) && (*style->fBuiltIn.value()))
+								if (style->fBuiltIn)
 								{
 									CP_XML_ATTR(L"builtinId", style->builtInData.istyBuiltIn);
 									if (style->builtInData.iLevel > 0 && style->builtInData.iLevel < 255)

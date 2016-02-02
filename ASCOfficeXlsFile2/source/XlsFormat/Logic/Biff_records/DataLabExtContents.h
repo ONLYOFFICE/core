@@ -25,11 +25,11 @@ public:
 
 	int serialize(std::wostream & _stream);
 
-	BIFF_BOOL fSerName;
-	BIFF_BOOL fCatName;
-	BIFF_BOOL fValue;
-	BIFF_BOOL fPercent;
-	BIFF_BOOL fBubSizes;
+	bool fSerName;
+	bool fCatName;
+	bool fValue;
+	bool fPercent;
+	bool fBubSizes;
 
 	XLUnicodeStringMin2 rgchSep;
 

@@ -32,22 +32,22 @@ public:
 	BIFF_DWORD dy;
 	BIFF_WORD wTabRatio;
 
-	BIFF_BOOL fDspFmlaBar;
-	BIFF_BOOL fDspStatus;
+	bool fDspFmlaBar;
+	bool fDspStatus;
 	BIFF_BSTR mdNoteDisp;
-	BIFF_BOOL fDspHScroll;
-	BIFF_BOOL fDspVScroll;
-	BIFF_BOOL fBotAdornment;
-	BIFF_BOOL fZoom;
+	bool fDspHScroll;
+	bool fDspVScroll;
+	bool fBotAdornment;
+	bool fZoom;
 	BIFF_BSTR fHideObj;
-	BIFF_BOOL fPrintIncl;
-	BIFF_BOOL fRowColIncl;
-	BIFF_BOOL fInvalidTabId;
-	BIFF_BOOL fTimedUpdate;
-	BIFF_BOOL fAllMemChanges;
-	BIFF_BOOL fOnlySync;
-	BIFF_BOOL fPersonalView;
-	BIFF_BOOL fIconic;
+	bool fPrintIncl;
+	bool fRowColIncl;
+	bool fInvalidTabId;
+	bool fTimedUpdate;
+	bool fAllMemChanges;
+	bool fOnlySync;
+	bool fPersonalView;
+	bool fIconic;
 	BIFF_WORD wMergeInterval;
 	XLUnicodeString st;
 

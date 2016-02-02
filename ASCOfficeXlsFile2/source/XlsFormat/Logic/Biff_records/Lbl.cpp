@@ -131,15 +131,17 @@ void Lbl::readFields(CFRecord& record)
 {
 	unsigned short flags;
 	record >> flags >> chKey;
-	fHidden = GETBIT(flags, 0);
-	fFunc = GETBIT(flags, 1);
-	fOB = GETBIT(flags, 2);
-	fProc = GETBIT(flags, 3);
-	fCalcExp = GETBIT(flags, 4);
-	fBuiltin = GETBIT(flags, 5);
-	fGrp = GETBITS(flags, 6, 11);
-	fPublished = GETBIT(flags, 13);
-	fWorkbookParam = GETBIT(flags, 14);
+	
+	fHidden			= GETBIT(flags, 0);
+	fFunc			= GETBIT(flags, 1);
+	fOB				= GETBIT(flags, 2);
+	fProc			= GETBIT(flags, 3);
+	fCalcExp		= GETBIT(flags, 4);
+	fBuiltin		= GETBIT(flags, 5);
+	fGrp			= GETBITS(flags, 6, 11);
+	fPublished		= GETBIT(flags, 13);
+	fWorkbookParam	= GETBIT(flags, 14);
+	
 	unsigned char cch;
 	unsigned short cce;
 	record >> cch >> cce;

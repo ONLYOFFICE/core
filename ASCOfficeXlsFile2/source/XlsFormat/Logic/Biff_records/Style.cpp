@@ -41,8 +41,10 @@ void Style::readFields(CFRecord& record)
 {
 	unsigned short flags;
 	record >> flags;
-	ixfe = GETBITS(flags, 0, 11);
-	fBuiltIn = GETBIT(flags, 15);
+	
+	ixfe		= GETBITS(flags, 0, 11);
+	fBuiltIn	= GETBIT(flags, 15);
+	
 	if(fBuiltIn)
 	{
 		record >> builtInData;

@@ -27,9 +27,9 @@ public:
 //-----------------------------
 	BIFF_WORD pcBubbleSizeRatio;
 	BIFF_WORD wBubbleSize;
-	BIFF_BOOL fBubbles;
-	BIFF_BOOL fShowNegBubbles;
-	BIFF_BOOL fHasShadow;
+	bool fBubbles;
+	bool fShowNegBubbles;
+	bool fHasShadow;
 
 };
 

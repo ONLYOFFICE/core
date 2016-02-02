@@ -23,11 +23,11 @@ public:
 	static const ElementType	type = typeShtProps;
 
 //-----------------------------
-	BIFF_BOOL fManSerAlloc;
-	BIFF_BOOL fManPlotArea;
-	BIFF_BOOL fPlotVisOnly;
-	BIFF_BOOL fNotSizeWith;
-	BIFF_BOOL fAlwaysAutoPlotArea;
+	bool fManSerAlloc;
+	bool fManPlotArea;
+	bool fPlotVisOnly;
+	bool fNotSizeWith;
+	bool fAlwaysAutoPlotArea;
 	BIFF_BYTE mdBlank;
 };
 

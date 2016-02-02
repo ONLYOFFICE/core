@@ -35,6 +35,7 @@ void Dat::readFields(CFRecord& record)
 {
 	unsigned short flags;
 	record >> flags;
+	
 	fHasBordHorz = GETBIT(flags, 0);
 	fHasBordVert = GETBIT(flags, 1);
 	fHasBordOutline = GETBIT(flags, 2);

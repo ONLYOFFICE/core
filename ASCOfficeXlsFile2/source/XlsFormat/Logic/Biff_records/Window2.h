@@ -24,18 +24,18 @@ public:
 	static const ElementType	type = typeWindow2;
 
 //-----------------------------
-	BIFF_BOOL fDspFmlaRt;
-	BIFF_BOOL fDspGridRt;
-	BIFF_BOOL fDspRwColRt;
-	BIFF_BOOL fFrozenRt;
-	BIFF_BOOL fDspZerosRt;
-	BIFF_BOOL fDefaultHdr;
-	BIFF_BOOL fRightToLeft;
-	BIFF_BOOL fDspGuts;
-	BIFF_BOOL fFrozenNoSplit;
-	BIFF_BOOL fSelected;
-	BIFF_BOOL fPaged;
-	BIFF_BOOL fSLV;
+	bool fDspFmlaRt;
+	bool fDspGridRt;
+	bool fDspRwColRt;
+	bool fFrozenRt;
+	bool fDspZerosRt;
+	bool fDefaultHdr;
+	bool fRightToLeft;
+	bool fDspGuts;
+	bool fFrozenNoSplit;
+	bool fSelected;
+	bool fPaged;
+	bool fSLV;
 
 	bool is_contained_in_chart_substream;
 

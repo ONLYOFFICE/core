@@ -58,6 +58,7 @@ void BOF::readFields(CFRecord& record)
 	{
 		unsigned int flags;
 		record >> flags;
+		
 		fWin = GETBIT(flags, 0);
 		fRisc = GETBIT(flags, 1);
 		fBeta = GETBIT(flags, 2);
@@ -68,6 +69,7 @@ void BOF::readFields(CFRecord& record)
 		fOOM = GETBIT(flags, 9);
 		fGlJmp = GETBIT(flags, 10);
 		fFontLimit = GETBIT(flags, 13);
+		
 		verXLHigh = static_cast<unsigned char>(GETBITS(flags, 14, 17));
 
 		record >> verLowestBiff;

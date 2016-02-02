@@ -35,12 +35,12 @@ public:
 //-----------------------------
 	BIFF_WORD dyHeight; // measured in twips (1/20 of of a printer's point)
 
-	BIFF_BOOL fItalic;
-	BIFF_BOOL fStrikeOut;
-	BIFF_BOOL fOutline;
-	BIFF_BOOL fShadow;
-	BIFF_BOOL fCondense;
-	BIFF_BOOL fExtend;
+	bool fItalic;
+	bool fStrikeOut;
+	bool fOutline;
+	bool fShadow;
+	bool fCondense;
+	bool fExtend;
 
 	BIFF_WORD icv;
 	BIFF_WORD bls;

@@ -25,8 +25,8 @@ public:
 	int serialize(std::wostream & _stream);
 
 //-----------------------------
-	BIFF_BOOL fFillSurface;
-	BIFF_BOOL f3DPhongShade;
+	bool fFillSurface;
+	bool f3DPhongShade;
 };
 
 } // namespace XLS

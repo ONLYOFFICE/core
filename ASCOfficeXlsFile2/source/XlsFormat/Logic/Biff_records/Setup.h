@@ -29,15 +29,15 @@ public:
 	BIFF_WORD iFitWidth;
 	BIFF_WORD iFitHeight;
 
-	BIFF_BOOL fLeftToRight;
-	BIFF_BOOL fPortrait;
-	BIFF_BOOL fNoPls;
-	BIFF_BOOL fNoColor;
-	BIFF_BOOL fDraft;
-	BIFF_BOOL fNotes;
-	BIFF_BOOL fNoOrient;
-	BIFF_BOOL fUsePage;
-	BIFF_BOOL fEndNotes;
+	bool fLeftToRight;
+	bool fPortrait;
+	bool fNoPls;
+	bool fNoColor;
+	bool fDraft;
+	bool fNotes;
+	bool fNoOrient;
+	bool fUsePage;
+	bool fEndNotes;
 	BIFF_BYTE iErrors;
 
 	BIFF_WORD iRes;

@@ -30,14 +30,16 @@ public:
 //-----------------------------
 	FontIndex ifnt;
 	BIFF_WORD ifmt;
-	BIFF_BOOL fLocked;
-	BIFF_BOOL fHidden;
-	BIFF_BOOL fStyle;
-	BIFF_BOOL f123Prefix;
-	BIFF_WORD ixfParent;
+	
+	BIFF_WORD	ixfParent;
+	CellXF		cell;
+	StyleXF		style;
 
-	CellXF	cell;
-	StyleXF	style;
+	bool fLocked;
+	bool fHidden;
+	bool fStyle;
+	bool f123Prefix;
+
 };
 
 } // namespace XLS

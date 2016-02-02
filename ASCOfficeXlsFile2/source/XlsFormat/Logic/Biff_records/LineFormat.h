@@ -26,9 +26,9 @@ public:
 	LongRGB rgb;
 	BIFF_WORD lns;
 	BIFF_WORD we;
-	BIFF_BOOL fAuto;
-	BIFF_BOOL fAxisOn;
-	BIFF_BOOL fAutoCo;
+	bool fAuto;
+	bool fAxisOn;
+	bool fAutoCo;
 	IcvChart icv;	
 };
 

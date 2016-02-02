@@ -26,15 +26,16 @@ public:
 
 //-----------------------------
 	BIFF_DWORD cb;
-	BIFF_BOOL fDontAutoRecover;
-	BIFF_BOOL fHidePivotList;
-	BIFF_BOOL fFilterPrivacy;
-	BIFF_BOOL fEmbedFactoids;
+
+	bool fDontAutoRecover;
+	bool fHidePivotList;
+	bool fFilterPrivacy;
+	bool fEmbedFactoids;
 	BIFF_BYTE mdFactoidDisplay;
-	BIFF_BOOL fSavedDuringRecovery;
-	BIFF_BOOL fCreatedViaMinimalSave;
-	BIFF_BOOL fOpenedViaDataRecovery;
-	BIFF_BOOL fOpenedViaSafeLoad;
+	bool fSavedDuringRecovery;
+	bool fCreatedViaMinimalSave;
+	bool fOpenedViaDataRecovery;
+	bool fOpenedViaSafeLoad;
 
 	BookExt_Conditional11 grbit1;
 	BookExt_Conditional12 grbit2;

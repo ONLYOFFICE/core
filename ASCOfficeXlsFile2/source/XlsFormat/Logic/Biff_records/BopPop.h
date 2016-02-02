@@ -33,7 +33,8 @@ public:
 	BIFF_SHORT		pcPie2Size;
 	BIFF_SHORT		pcGap;
 	BIFF_DOUBLE		numSplitValue;
-	BIFF_BOOL		fHasShadow;
+	
+	bool		fHasShadow;
 
 
 	BaseObjectPtr	m_Custom;

@@ -45,12 +45,13 @@ void Font::readFields(CFRecord& record)
 
 	unsigned short flags;
 	record >> dyHeight >> flags;
-	fItalic = GETBIT(flags, 1);
-	fStrikeOut = GETBIT(flags, 3);
-	fOutline = GETBIT(flags, 4);
-	fShadow = GETBIT(flags, 5);
-	fCondense = GETBIT(flags, 6);
-	fExtend = GETBIT(flags, 7);
+	
+	fItalic		= GETBIT(flags, 1);
+	fStrikeOut	= GETBIT(flags, 3);
+	fOutline	= GETBIT(flags, 4);
+	fShadow		= GETBIT(flags, 5);
+	fCondense	= GETBIT(flags, 6);
+	fExtend		= GETBIT(flags, 7);
 
 	record >> icv >> bls >> sss >> uls >> bFamily >> bCharSet;
 	record.skipNunBytes(1);
@@ -94,7 +95,7 @@ int Font::serialize_rPr(std::wostream & stream, bool rtl, bool defRPr)
 			else
 				CP_XML_ATTR(L"b", false);
 
-			if ((fItalic.value()) && (fItalic))
+			if (fItalic)
 			{
 				CP_XML_ATTR(L"i", fItalic);
 			}
@@ -312,15 +313,15 @@ int Font::serialize_properties(std::wostream & stream, bool rPr)
             }
 		}
 
-        if ((fCondense.value()) && (*fCondense.value()))
+        if (fCondense)
         {
             CP_XML_NODE(L"condense")
             {
-                CP_XML_ATTR(L"val", (int)(*fCondense.value()));
+                CP_XML_ATTR(L"val", 1);
             }
         }
 
-		if ((fExtend.value()) && (fExtend))
+		if (fExtend)
         {
             CP_XML_NODE(L"extend")
             {
@@ -336,7 +337,7 @@ int Font::serialize_properties(std::wostream & stream, bool rPr)
             }
         }
 
-        if ((fItalic.value()) && (fItalic))
+        if (fItalic)
         {
             CP_XML_NODE(L"i")
             {
@@ -362,7 +363,7 @@ int Font::serialize_properties(std::wostream & stream, bool rPr)
 			}
 		}
 
-		if ((fOutline.value()) && (fOutline))
+		if (fOutline)
         {
             CP_XML_NODE(L"outline")
             {
@@ -378,7 +379,7 @@ int Font::serialize_properties(std::wostream & stream, bool rPr)
         //    }
         //}
 
-		if ((fShadow.value()) && (fShadow))
+		if (fShadow)
         {
             CP_XML_NODE(L"shadow")
             {
@@ -386,7 +387,7 @@ int Font::serialize_properties(std::wostream & stream, bool rPr)
             }
         }
 
-        if ((fStrikeOut.value()) && (fStrikeOut))
+        if (fStrikeOut)
         {
             CP_XML_NODE(L"strike")
             {

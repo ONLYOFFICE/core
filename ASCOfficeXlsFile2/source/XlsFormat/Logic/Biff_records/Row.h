@@ -29,15 +29,15 @@ public:
 	BIFF_WORD miyRw;
 
 	BIFF_BYTE iOutLevel;
-	BIFF_BOOL fCollapsed;
-	BIFF_BOOL fDyZero;
-	BIFF_BOOL fUnsynced;
-	BIFF_BOOL fGhostDirty;
+	bool fCollapsed;
+	bool fDyZero;
+	bool fUnsynced;
+	bool fGhostDirty;
 	
 	BIFF_WORD ixfe_val;
-	BIFF_BOOL fExAsc;
-	BIFF_BOOL fExDes;
-	BIFF_BOOL fPhonetic;
+	bool fExAsc;
+	bool fExDes;
+	bool fPhonetic;
 	BackwardOnlyParam<unsigned int> in_block_position;
 };
 

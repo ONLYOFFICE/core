@@ -1,11 +1,11 @@
-#pragma once
+ï»¿#pragma once
 
 #include "../WritingElement.h"
 #include "../../Base/Nullable.h"
 #include "../../Common/SimpleTypes_Word.h"
 #include "../../Common/ComplexTypes.h"
 
-//        2. Êëàññ CRuby   17.3.3.25
+//        2. ÐšÐ»Ð°ÑÑ CRuby   17.3.3.25
 
 namespace OOX
 {
@@ -125,9 +125,9 @@ namespace OOX
 
 				if ( m_oId.IsInit() )
 				{
-					sResult += "r:id=\"";
+					sResult += _T("r:id=\"");
 					sResult += m_oId->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				sResult += _T(" />");

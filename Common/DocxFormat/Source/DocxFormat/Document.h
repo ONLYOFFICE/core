@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #ifndef OOX_DOCUMENT_FILE_INCLUDE_H_
 #define OOX_DOCUMENT_FILE_INCLUDE_H_
 
@@ -31,7 +31,7 @@ namespace OOX
 		// Background 17.2.1 (Part 1)
 		//--------------------------------------------------------------------------------
 
-		// TO DO: Когда будет реализован класс CDrawing добавить его обработку тут
+		// TO DO: РљРѕРіРґР° Р±СѓРґРµС‚ СЂРµР°Р»РёР·РѕРІР°РЅ РєР»Р°СЃСЃ CDrawing РґРѕР±Р°РІРёС‚СЊ РµРіРѕ РѕР±СЂР°Р±РѕС‚РєСѓ С‚СѓС‚
 		class CBackground : public WritingElement
 		{
 		public:
@@ -73,30 +73,30 @@ namespace OOX
 
 				if ( m_oColor.IsInit() )
 				{
-					sResult += "w:color=\"";
+					sResult += _T("w:color=\"");
 					sResult += m_oColor->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oThemeColor.IsInit() )
 				{
-					sResult += "w:themeColor=\"";
+					sResult += _T("w:themeColor=\"");
 					sResult += m_oThemeColor->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oThemeShade.IsInit() )
 				{
-					sResult += "w:themeShade=\"";
+					sResult += _T("w:themeShade=\"");
 					sResult += m_oThemeShade->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oThemeTint.IsInit() )
 				{
-					sResult += "w:themeTint=\"";
+					sResult += _T("w:themeTint=\"");
 					sResult += m_oThemeTint->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oDrawing.IsInit() )
@@ -120,7 +120,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:color"),      m_oColor )
@@ -148,7 +148,7 @@ namespace OOX
 namespace OOX
 {
 
-// TO DO: Нехватающие классы:
+// TO DO: РќРµС…РІР°С‚Р°СЋС‰РёРµ РєР»Р°СЃСЃС‹:
 //        <w:altChunk>
 //        <w:customXml>
 //        <w:moveFrom>
@@ -459,33 +459,33 @@ namespace OOX
 		}
 		void AddImage(const CPath& oImagePath, const long lWidth, const long lHeight)
 		{
-			//// TO DO: Сделать добавление Image
+			//// TO DO: РЎРґРµР»Р°С‚СЊ РґРѕР±Р°РІР»РµРЅРёРµ Image
 
 			//OOX::Image* pImage = new OOX::Image( oImagePath );
 			//const RId rId = add( smart_ptr<OOX::File>(pImage) );
 
 			//WritingElement *pPara = new OOX::Logic::CParagraph();
 
-			//// Добавить добавление картинки в параграф
+			//// Р”РѕР±Р°РІРёС‚СЊ РґРѕР±Р°РІР»РµРЅРёРµ РєР°СЂС‚РёРЅРєРё РІ РїР°СЂР°РіСЂР°С„
 
 			//m_arrItems.push_back( pPara );
 		}
 		void AddImage(const CPath& oImagePath, const long lEmuX, const CString& sHRelativeFrom, const long lEmuY, const CString& sVRelativeFrom, const long lWidthEmu, const long lHeightEmu)
 		{
-			//// TO DO: Сделать добавление Image
+			//// TO DO: РЎРґРµР»Р°С‚СЊ РґРѕР±Р°РІР»РµРЅРёРµ Image
 
 			//OOX::Image* pImage = new OOX::Image( oImagePath );
 			//const RId rId = add( smart_ptr<OOX::File>(pImage) );
 
 			//WritingElement *pPara = new OOX::Logic::CParagraph();
 
-			//// Добавить добавление картинки в параграф
+			//// Р”РѕР±Р°РІРёС‚СЊ РґРѕР±Р°РІР»РµРЅРёРµ РєР°СЂС‚РёРЅРєРё РІ РїР°СЂР°РіСЂР°С„
 
 			//m_arrItems.push_back( pPara );
 		}
 		void AddImageInBegin(const CPath& oImagePath, const long lWidth, const long lHeight)
 		{
-			//// TO DO: Сделать добавление Image
+			//// TO DO: РЎРґРµР»Р°С‚СЊ РґРѕР±Р°РІР»РµРЅРёРµ Image
 
 			//ClearItems();
 
@@ -494,7 +494,7 @@ namespace OOX
 
 			//WritingElement *pPara = new OOX::Logic::CParagraph();
 
-			//// Добавить добавление картинки в параграф
+			//// Р”РѕР±Р°РІРёС‚СЊ РґРѕР±Р°РІР»РµРЅРёРµ РєР°СЂС‚РёРЅРєРё РІ РїР°СЂР°РіСЂР°С„
 
 			//m_arrItems.push_back( pPara );
 		}
@@ -547,7 +547,7 @@ namespace OOX
 			smart_ptr<OOX::File> oHyperlink = smart_ptr<OOX::File>( new OOX::HyperLink( sNameHref ) );
 			const OOX::RId rId = Add( oHyperlink );
 
-			// TO DO: Сделать добавление гиперссылок в параграфах
+			// TO DO: РЎРґРµР»Р°С‚СЊ РґРѕР±Р°РІР»РµРЅРёРµ РіРёРїРµСЂСЃСЃС‹Р»РѕРє РІ РїР°СЂР°РіСЂР°С„Р°С…
 			//pPara->AddHyperlink( rId, sText );
 
 			m_arrItems.push_back( pNewElement );
@@ -561,7 +561,7 @@ namespace OOX
 				smart_ptr<OOX::File> oHyperlink = smart_ptr<OOX::File>( new OOX::HyperLink( sNameHref ) );
 				const OOX::RId rId = Add( oHyperlink );
 
-				// TO DO: Сделать добавление гиперссылок в параграфах
+				// TO DO: РЎРґРµР»Р°С‚СЊ РґРѕР±Р°РІР»РµРЅРёРµ РіРёРїРµСЂСЃСЃС‹Р»РѕРє РІ РїР°СЂР°РіСЂР°С„Р°С…
 				//pPara->AddHyperlink( rId, sText );
 			}		
 		}
@@ -569,7 +569,7 @@ namespace OOX
 	private:
 		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
-			// Читаем атрибуты
+			// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 			WritingElement_ReadAttributes_Start( oReader )
 			WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:conformance"), m_oConformance )
 			WritingElement_ReadAttributes_End( oReader )

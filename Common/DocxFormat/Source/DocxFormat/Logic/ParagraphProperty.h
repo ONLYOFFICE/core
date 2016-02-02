@@ -59,107 +59,107 @@ namespace ComplexTypes
 
 				if ( m_oAnchorLock.IsInit() )
 				{
-					sResult += "w:anchorLock=\"";
+					sResult += _T("w:anchorLock=\"");
 					sResult += m_oAnchorLock->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oDropCap.IsInit() )
 				{
-					sResult += "w:dropCap=\"";
+					sResult += _T("w:dropCap=\"");
 					sResult += m_oDropCap->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oH.IsInit() )
 				{
-					sResult += "w:h=\"";
+					sResult += _T("w:h=\"");
 					sResult += m_oH->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oHAnchor.IsInit() )
 				{
-					sResult += "w:hAnchor=\"";
+					sResult += _T("w:hAnchor=\"");
 					sResult += m_oHAnchor->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oHRule.IsInit() )
 				{
-					sResult += "w:hRule=\"";
+					sResult += _T("w:hRule=\"");
 					sResult += m_oHRule->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oHSpace.IsInit() )
 				{
-					sResult += "w:hSpace=\"";
+					sResult += _T("w:hSpace=\"");
 					sResult += m_oHSpace->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oLines.IsInit() )
 				{
-					sResult += "w:lines=\"";
+					sResult += _T("w:lines=\"");
 					sResult += m_oLines->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oVAnchor.IsInit() )
 				{
-					sResult += "w:vAnchor=\"";
+					sResult += _T("w:vAnchor=\"");
 					sResult += m_oVAnchor->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oVSpace.IsInit() )
 				{
-					sResult += "w:vSpace=\"";
+					sResult += _T("w:vSpace=\"");
 					sResult += m_oVSpace->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oW.IsInit() )
 				{
-					sResult += "w:w=\"";
+					sResult += _T("w:w=\"");
 					sResult += m_oW->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oWrap.IsInit() )
 				{
-					sResult += "w:wrap=\"";
+					sResult += _T("w:wrap=\"");
 					sResult += m_oWrap->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oX.IsInit() )
 				{
-					sResult += "w:x=\"";
+					sResult += _T("w:x=\"");
 					sResult += m_oX->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oXAlign.IsInit() )
 				{
-					sResult += "w:xAlign=\"";
+					sResult += _T("w:xAlign=\"");
 					sResult += m_oXAlign->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oY.IsInit() )
 				{
-					sResult += "w:y=\"";
+					sResult += _T("w:y=\"");
 					sResult += m_oY->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oYAlign.IsInit() )
 				{
-					sResult += "w:yAlign=\"";
+					sResult += _T("w:yAlign=\"");
 					sResult += m_oYAlign->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				return sResult;
@@ -254,58 +254,58 @@ namespace ComplexTypes
 
 				if ( m_oEnd.IsInit() )
 				{
-					sResult += "w:end=\"";
+					sResult += _T("w:end=\"");
 					sResult += m_oEnd->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oEndChars.IsInit() )
 				{
-					sResult += "w:endChars=\"";
+					sResult += _T("w:endChars=\"");
 					sResult += m_oEndChars->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oFirstLine.IsInit() )
 				{
-					sResult += "w:firstLine=\"";
+					sResult += _T("w:firstLine=\"");
 					sResult += m_oFirstLine->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oFirstLineChars.IsInit() )
 				{
-					sResult += "w:firstLineChars=\"";
+					sResult += _T("w:firstLineChars=\"");
 					sResult += m_oFirstLineChars->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oHanging.IsInit() )
 				{
-					sResult += "w:hanging=\"";
+					sResult += _T("w:hanging=\"");
 					sResult += m_oHanging->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oHangingChars.IsInit() )
 				{
-					sResult += "w:hangingChars=\"";
+					sResult += _T("w:hangingChars=\"");
 					sResult += m_oHangingChars->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oStart.IsInit() )
 				{
-					sResult += "w:start=\"";
+					sResult += _T("w:start=\"");
 					sResult += m_oStart->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oStartChars.IsInit() )
 				{
-					sResult += "w:startChars=\"";
+					sResult += _T("w:startChars=\"");
 					sResult += m_oStartChars->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				return sResult;
@@ -406,58 +406,58 @@ namespace ComplexTypes
 
 				if ( m_oAfter.IsInit() )
 				{
-					sResult += "w:after=\"";
+					sResult += _T("w:after=\"");
 					sResult += m_oAfter->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oAfterAutospacing.IsInit() )
 				{
-					sResult += "w:afterAutospacing=\"";
+					sResult += _T("w:afterAutospacing=\"");
 					sResult += m_oAfterAutospacing->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oAfterLines.IsInit() )
 				{
-					sResult += "w:afterLines=\"";
+					sResult += _T("w:afterLines=\"");
 					sResult += m_oAfterLines->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oBefore.IsInit() )
 				{
-					sResult += "w:before=\"";
+					sResult += _T("w:before=\"");
 					sResult += m_oBefore->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oBeforeAutospacing.IsInit() )
 				{
-					sResult += "w:beforeAutospacing=\"";
+					sResult += _T("w:beforeAutospacing=\"");
 					sResult += m_oBeforeAutospacing->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oBeforeLines.IsInit() )
 				{
-					sResult += "w:beforeLines=\"";
+					sResult += _T("w:beforeLines=\"");
 					sResult += m_oBeforeLines->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oLine.IsInit() )
 				{
-					sResult += "w:line=\"";
+					sResult += _T("w:line=\"");
 					sResult += m_oLine->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oLineRule.IsInit() )
 				{
-					sResult += "w:lineRule=\"";
+					sResult += _T("w:lineRule=\"");
 					sResult += m_oLineRule->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				return sResult;
@@ -549,23 +549,23 @@ namespace ComplexTypes
 
 				if ( m_oLeader.IsInit() )
 				{
-					sResult += "w:leader=\"";
+					sResult += _T("w:leader=\"");
 					sResult += m_oLeader->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oPos.IsInit() )
 				{
-					sResult += "w:pos=\"";
+					sResult += _T("w:pos=\"");
 					sResult += m_oPos->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oVal.IsInit() )
 				{
-					sResult += "w:val=\"";
+					sResult += _T("w:val=\"");
 					sResult += m_oVal->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				return sResult;
@@ -620,9 +620,9 @@ namespace ComplexTypes
 
 				if ( m_oVal.IsInit() )
 				{
-					sResult += "w:val=\"";
+					sResult += _T("w:val=\"");
 					sResult += m_oVal->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				return sResult;
@@ -673,9 +673,9 @@ namespace ComplexTypes
 
 				if ( m_oVal.IsInit() )
 				{
-					sResult += "w:val=\"";
+					sResult += _T("w:val=\"");
 					sResult += m_oVal->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				return sResult;
@@ -756,23 +756,23 @@ namespace OOX
 
 				if ( m_oIlvl.IsInit() )
 				{
-					sResult += "<w:ilvl ";
+					sResult += _T("<w:ilvl ");
 					sResult += m_oIlvl->ToString();
-					sResult += "/>";
+					sResult += _T("/>");
 				}
 
 				if ( m_oIns.IsInit() )
 				{
-					sResult += "<w:ins ";
+					sResult += _T("<w:ins ");
 					sResult += m_oIns->ToString();
-					sResult += "/>";
+					sResult += _T("/>");
 				}
 
 				if ( m_oNumID.IsInit() )
 				{
-					sResult += "<w:numId ";
+					sResult += _T("<w:numId ");
 					sResult += m_oNumID->ToString();
-					sResult += "/>";
+					sResult += _T("/>");
 				}
 
 				sResult += _T("</w:numPr>");
@@ -862,44 +862,44 @@ namespace OOX
 
 				if ( m_oBar.IsInit() )
 				{
-					sResult += "<w:bar ";
+					sResult += _T("<w:bar ");
 					sResult += m_oBar->ToString();
-					sResult += "/>";
+					sResult += _T("/>");
 				}
 
 				if ( m_oBetween.IsInit() )
 				{
-					sResult += "<w:between ";
+					sResult += _T("<w:between ");
 					sResult += m_oBetween->ToString();
-					sResult += "/>";
+					sResult += _T("/>");
 				}
 
 				if ( m_oBottom.IsInit() )
 				{
-					sResult += "<w:bottom ";
+					sResult += _T("<w:bottom ");
 					sResult += m_oBottom->ToString();
-					sResult += "/>";
+					sResult += _T("/>");
 				}
 
 				if ( m_oLeft.IsInit() )
 				{
-					sResult += "<w:left ";
+					sResult += _T("<w:left ");
 					sResult += m_oLeft->ToString();
-					sResult += "/>";
+					sResult += _T("/>");
 				}
 
 				if ( m_oRight.IsInit() )
 				{
-					sResult += "<w:right ";
+					sResult += _T("<w:right ");
 					sResult += m_oRight->ToString();
-					sResult += "/>";
+					sResult += _T("/>");
 				}
 
 				if ( m_oTop.IsInit() )
 				{
-					sResult += "<w:top ";
+					sResult += _T("<w:top ");
 					sResult += m_oTop->ToString();
-					sResult += "/>";
+					sResult += _T("/>");
 				}
 
 				sResult += _T("</w:pBdr>");

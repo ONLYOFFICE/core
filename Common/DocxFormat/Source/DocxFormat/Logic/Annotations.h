@@ -240,30 +240,30 @@ namespace OOX
 
 				if ( m_sAuthor.IsInit() )
 				{
-					sResult += "w:author=\"";
+					sResult += _T("w:author=\"");
 					sResult += m_sAuthor->GetString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oDate.IsInit() )
 				{
-					sResult += "w:date=\"";
+					sResult += _T("w:date=\"");
 					sResult += m_oDate->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oID.IsInit() )
 				{
-					sResult += "w:id=\"";
+					sResult += _T("w:id=\"");
 					sResult += m_oID->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_sUserId.IsInit() )
 				{
-					sResult += "oouserid=\"";
+					sResult += _T("oouserid=\"");
 					sResult += m_sUserId->GetString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				sResult += _T("/>");
@@ -389,30 +389,30 @@ namespace OOX
 
 				if ( m_sAuthor.IsInit() )
 				{
-					sResult += "w:author=\"";
+					sResult += _T("w:author=\"");
 					sResult += m_sAuthor->GetString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oDate.IsInit() )
 				{
-					sResult += "w:date=\"";
+					sResult += _T("w:date=\"");
 					sResult += m_oDate->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oID.IsInit() )
 				{
-					sResult += "w:id=\"";
+					sResult += _T("w:id=\"");
 					sResult += m_oID->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_sUserId.IsInit() )
 				{
-					sResult += "oouserid=\"";
+					sResult += _T("oouserid=\"");
 					sResult += m_sUserId->GetString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				sResult += _T("/>");
@@ -536,30 +536,30 @@ namespace OOX
 
 				if ( m_sAuthor.IsInit() )
 				{
-					sResult += "w:author=\"";
+					sResult += _T("w:author=\"");
 					sResult += m_sAuthor->GetString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oDate.IsInit() )
 				{
-					sResult += "w:date=\"";
+					sResult += _T("w:date=\"");
 					sResult += m_oDate->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oID.IsInit() )
 				{
-					sResult += "w:id=\"";
+					sResult += _T("w:id=\"");
 					sResult += m_oID->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_sUserId.IsInit() )
 				{
-					sResult += "oouserid=\"";
+					sResult += _T("oouserid=\"");
 					sResult += m_sUserId->GetString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				sResult += _T("/>");
@@ -685,30 +685,30 @@ namespace OOX
 
 				if ( m_sAuthor.IsInit() )
 				{
-					sResult += "w:author=\"";
+					sResult += _T("w:author=\"");
 					sResult += m_sAuthor->GetString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oDate.IsInit() )
 				{
-					sResult += "w:date=\"";
+					sResult += _T("w:date=\"");
 					sResult += m_oDate->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oID.IsInit() )
 				{
-					sResult += "w:id=\"";
+					sResult += _T("w:id=\"");
 					sResult += m_oID->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_sUserId.IsInit() )
 				{
-					sResult += "oouserid=\"";
+					sResult += _T("oouserid=\"");
 					sResult += m_sUserId->GetString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				sResult += _T("/>");

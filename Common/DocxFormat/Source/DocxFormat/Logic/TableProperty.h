@@ -42,9 +42,9 @@ namespace ComplexTypes
 
 				if ( m_oVal.IsInit() )
 				{
-					sResult += "w:val=\"";
+					sResult += _T("w:val=\"");
 					sResult += m_oVal->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				return sResult;
@@ -94,9 +94,9 @@ namespace ComplexTypes
 
 				if ( m_oType.IsInit() )
 				{
-					sResult += "w:type=\"";
+					sResult += _T("w:type=\"");
 					sResult += m_oType->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				return sResult;
@@ -152,44 +152,44 @@ namespace ComplexTypes
 
 				if ( m_oFirstColumn.IsInit() )
 				{
-					sResult += "w:firstColumn=\"";
+					sResult += _T("w:firstColumn=\"");
 					sResult += m_oFirstColumn->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oFirstRow.IsInit() )
 				{
-					sResult += "w:firstRow=\"";
+					sResult += _T("w:firstRow=\"");
 					sResult += m_oFirstRow->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oLastColumn.IsInit() )
 				{
-					sResult += "w:lastColumn=\"";
+					sResult += _T("w:lastColumn=\"");
 					sResult += m_oLastColumn->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oLastRow.IsInit() )
 				{
-					sResult += "w:lastRow=\"";
+					sResult += _T("w:lastRow=\"");
 					sResult += m_oLastRow->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oNoHBand.IsInit() )
 				{
-					sResult += "w:noHBand=\"";
+					sResult += _T("w:noHBand=\"");
 					sResult += m_oNoHBand->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oNoVBand.IsInit() )
 				{
-					sResult += "w:noVBand=\"";
+					sResult += _T("w:noVBand=\"");
 					sResult += m_oNoVBand->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				ComplexTypes_WriteAttribute( _T("w:val=\""), m_oVal );
@@ -370,9 +370,9 @@ namespace ComplexTypes
 
 				if ( m_oVal.IsInit() )
 				{
-					sResult += "w:val=\"";
+					sResult += _T("w:val=\"");
 					sResult += m_oVal->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				return sResult;

@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #ifndef OOX_LOGIC_SDT_INCLUDE_H_
 #define OOX_LOGIC_SDT_INCLUDE_H_
 
@@ -41,16 +41,16 @@ namespace ComplexTypes
 
 				if ( m_sDisplayText.IsInit() )
 				{
-					sResult += "w:displayText=\"";
+					sResult += _T("w:displayText=\"");
 					sResult += m_sDisplayText->GetString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_sValue.IsInit() )
 				{
-					sResult += "w:value=\"";
+					sResult += _T("w:value=\"");
 					sResult += m_sValue->GetString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				return sResult;
@@ -60,7 +60,7 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:displayText"), m_sDisplayText )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:value"),       m_sValue )
@@ -106,23 +106,23 @@ namespace ComplexTypes
 
 				if ( m_sPrefixMappings.IsInit() )
 				{
-					sResult += "w:prefixMappings=\"";
+					sResult += _T("w:prefixMappings=\"");
 					sResult += m_sPrefixMappings->GetString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_sStoreItemID.IsInit() )
 				{
-					sResult += "w:storeItemID=\"";
+					sResult += _T("w:storeItemID=\"");
 					sResult += m_sStoreItemID->GetString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_sXPath.IsInit() )
 				{
-					sResult += "w:xpath=\"";
+					sResult += _T("w:xpath=\"");
 					sResult += m_sXPath->GetString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				return sResult;
@@ -131,7 +131,7 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:prefixMappings"), m_sPrefixMappings )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:storeItemID"),    m_sStoreItemID )
@@ -183,7 +183,7 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:val"), m_oVal )
 				WritingElement_ReadAttributes_End( oReader )
@@ -231,7 +231,7 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:val"), m_oVal )
 				WritingElement_ReadAttributes_End( oReader )
@@ -279,7 +279,7 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:val"), m_oVal )
 				WritingElement_ReadAttributes_End( oReader )
@@ -327,7 +327,7 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:multiLine"), m_oMultiLine )
 				WritingElement_ReadAttributes_End( oReader )
@@ -442,7 +442,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:lastValue"), m_sLastValue )
 				WritingElement_ReadAttributes_End( oReader )
@@ -537,7 +537,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:fullDate"), m_oFullDate )
 				WritingElement_ReadAttributes_End( oReader )
@@ -717,7 +717,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:lastValue"), m_sLastValue )
 				WritingElement_ReadAttributes_End( oReader )

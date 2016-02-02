@@ -2415,43 +2415,43 @@ namespace OOX
 			{
 				CString sResult;
 
-				sResult += "<w:del";
+				sResult += _T("<w:del");
 
 				if ( m_sAuthor.IsInit() )
 				{
-					sResult += " w:author=\"";
+					sResult += _T(" w:author=\"");
 					sResult += XmlUtils::EncodeXmlString(m_sAuthor->GetString());
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oDate.IsInit() )
 				{
-					sResult += " w:date=\"";
+					sResult += _T(" w:date=\"");
 					sResult += XmlUtils::EncodeXmlString(m_oDate->ToString());
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oId.IsInit() )
 				{
-					sResult += " w:id=\"";
+					sResult += _T(" w:id=\"");
 					sResult += m_oId->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_sUserId.IsInit() )
 				{
-					sResult += " oouserid=\"";
+					sResult += _T(" oouserid=\"");
 					sResult += XmlUtils::EncodeXmlString(m_sUserId->GetString());
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
-				sResult += ">";
+				sResult += _T(">");
 
 				if(m_oRun.IsInit())
 				{
 					sResult += m_oRun->toXMLInner();
 				}
 
-				sResult += "</w:del>";
+				sResult += _T("</w:del>");
 				return sResult;
 			}
 
@@ -2503,36 +2503,36 @@ namespace OOX
 			{
 				CString sResult;
 
-				sResult += "<w:ins";
+				sResult += _T("<w:ins");
 
 				if ( m_sAuthor.IsInit() )
 				{
-					sResult += " w:author=\"";
+					sResult += _T(" w:author=\"");
 					sResult += XmlUtils::EncodeXmlString(m_sAuthor->GetString());
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oDate.IsInit() )
 				{
-					sResult += " w:date=\"";
+					sResult += _T(" w:date=\"");
 					sResult += XmlUtils::EncodeXmlString(m_oDate->ToString());
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oId.IsInit() )
 				{
-					sResult += " w:id=\"";
+					sResult += _T(" w:id=\"");
 					sResult += m_oId->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_sUserId.IsInit() )
 				{
-					sResult += " oouserid=\"";
+					sResult += _T(" oouserid=\"");
 					sResult += XmlUtils::EncodeXmlString(m_sUserId->GetString());
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
-				sResult += ">";
+				sResult += _T(">");
 
 				if(m_oRun.IsInit())
 				{

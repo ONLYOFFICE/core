@@ -41,9 +41,9 @@ namespace ComplexTypes
 
 				if ( m_oW.IsInit() )
 				{
-					sResult += "w:w=\"";
+					sResult += _T("w:w=\"");
 					sResult += m_oW->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				return sResult;

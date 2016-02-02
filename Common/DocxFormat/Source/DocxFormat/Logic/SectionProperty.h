@@ -46,16 +46,16 @@ namespace ComplexTypes
 
 				if ( m_oW.IsInit() )
 				{
-					sResult += "w:w=\"";
+					sResult += _T("w:w=\"");
 					sResult.AppendFormat(_T("%d"), m_oW->ToTwips());
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oSpace.IsInit() )
 				{
-					sResult += "w:space=\"";
+					sResult += _T("w:space=\"");
 					sResult.AppendFormat(_T("%d"), m_oSpace->ToTwips());
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				return sResult;
@@ -110,23 +110,23 @@ namespace ComplexTypes
 
 				if ( m_oCharSpace.IsInit() )
 				{
-					sResult += "w:charSpace=\"";
+					sResult += _T("w:charSpace=\"");
 					sResult += m_oCharSpace->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oLinePitch.IsInit() )
 				{
-					sResult += "w:linePitch=\"";
+					sResult += _T("w:linePitch=\"");
 					sResult += m_oLinePitch->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oType.IsInit() )
 				{
-					sResult += "w:type=\"";
+					sResult += _T("w:type=\"");
 					sResult += m_oType->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				return sResult;
@@ -182,16 +182,16 @@ namespace ComplexTypes
 
 				if ( m_oId.IsInit() )
 				{
-					sResult += "r:id=\"";
+					sResult += _T("r:id=\"");
 					sResult += m_oId->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oType.IsInit() )
 				{
-					sResult += "w:type=\"";
+					sResult += _T("w:type=\"");
 					sResult += m_oType->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				return sResult;
@@ -248,30 +248,30 @@ namespace ComplexTypes
 
 				if ( m_oCountBy.IsInit() )
 				{
-					sResult += "w:countBy=\"";
+					sResult += _T("w:countBy=\"");
 					sResult += m_oCountBy->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oDistance.IsInit() )
 				{
-					sResult += "w:distance=\"";
+					sResult += _T("w:distance=\"");
 					sResult += m_oDistance->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oRestart.IsInit() )
 				{
-					sResult += "w:restart=\"";
+					sResult += _T("w:restart=\"");
 					sResult += m_oRestart->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oStart.IsInit() )
 				{
-					sResult += "w:start=\"";
+					sResult += _T("w:start=\"");
 					sResult += m_oStart->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				return sResult;
@@ -330,16 +330,16 @@ namespace ComplexTypes
 
 				if ( m_oFirst.IsInit() )
 				{
-					sResult += "w:first=\"";
+					sResult += _T("w:first=\"");
 					sResult += m_oFirst->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oOther.IsInit() )
 				{
-					sResult += "w:other=\"";
+					sResult += _T("w:other=\"");
 					sResult += m_oOther->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				return sResult;
@@ -403,70 +403,70 @@ namespace ComplexTypes
 
 				if ( m_oColor.IsInit() )
 				{
-					sResult += "w:color=\"";
+					sResult += _T("w:color=\"");
 					sResult += m_oColor->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oFrame.IsInit() )
 				{
-					sResult += "w:frame=\"";
+					sResult += _T("w:frame=\"");
 					sResult += m_oFrame->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 				if ( m_oId.IsInit() )
 				{
-					sResult += "r:id=\"";
+					sResult += _T("r:id=\"");
 					sResult += m_oId->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oShadow.IsInit() )
 				{
-					sResult += "w:shadow=\"";
+					sResult += _T("w:shadow=\"");
 					sResult += m_oShadow->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oSpace.IsInit() )
 				{
-					sResult += "w:space=\"";
+					sResult += _T("w:space=\"");
 					sResult += m_oSpace->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oSz.IsInit() )
 				{
-					sResult += "w:sz=\"";
+					sResult += _T("w:sz=\"");
 					sResult += m_oSz->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 				if ( m_oThemeColor.IsInit() )
 				{
-					sResult += "w:themeColor=\"";
+					sResult += _T("w:themeColor=\"");
 					sResult += m_oThemeColor->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oThemeShade.IsInit() )
 				{
-					sResult += "w:themeShade=\"";
+					sResult += _T("w:themeShade=\"");
 					sResult += m_oThemeShade->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oThemeTint.IsInit() )
 				{
-					sResult += "w:themeTint=\"";
+					sResult += _T("w:themeTint=\"");
 					sResult += m_oThemeTint->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oVal.IsInit() )
 				{
-					sResult += "w:val=\"";
+					sResult += _T("w:val=\"");
 					sResult += m_oVal->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				return sResult;
@@ -546,84 +546,84 @@ namespace ComplexTypes
 
 				if ( m_oBottomLeft.IsInit() )
 				{
-					sResult += "r:bottomLeft=\"";
+					sResult += _T("r:bottomLeft=\"");
 					sResult += m_oBottomLeft->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oBottomRight.IsInit() )
 				{
-					sResult += "r:bottomRight=\"";
+					sResult += _T("r:bottomRight=\"");
 					sResult += m_oBottomRight->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oColor.IsInit() )
 				{
-					sResult += "w:color=\"";
+					sResult += _T("w:color=\"");
 					sResult += m_oColor->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oFrame.IsInit() )
 				{
-					sResult += "w:frame=\"";
+					sResult += _T("w:frame=\"");
 					sResult += m_oFrame->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 				if ( m_oId.IsInit() )
 				{
-					sResult += "r:id=\"";
+					sResult += _T("r:id=\"");
 					sResult += m_oId->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oShadow.IsInit() )
 				{
-					sResult += "w:shadow=\"";
+					sResult += _T("w:shadow=\"");
 					sResult += m_oShadow->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oSpace.IsInit() )
 				{
-					sResult += "w:space=\"";
+					sResult += _T("w:space=\"");
 					sResult += m_oSpace->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oSz.IsInit() )
 				{
-					sResult += "w:sz=\"";
+					sResult += _T("w:sz=\"");
 					sResult += m_oSz->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 				if ( m_oThemeColor.IsInit() )
 				{
-					sResult += "w:themeColor=\"";
+					sResult += _T("w:themeColor=\"");
 					sResult += m_oThemeColor->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oThemeShade.IsInit() )
 				{
-					sResult += "w:themeShade=\"";
+					sResult += _T("w:themeShade=\"");
 					sResult += m_oThemeShade->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oThemeTint.IsInit() )
 				{
-					sResult += "w:themeTint=\"";
+					sResult += _T("w:themeTint=\"");
 					sResult += m_oThemeTint->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oVal.IsInit() )
 				{
-					sResult += "w:val=\"";
+					sResult += _T("w:val=\"");
 					sResult += m_oVal->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				return sResult;
@@ -699,84 +699,84 @@ namespace ComplexTypes
 
 				if ( m_oColor.IsInit() )
 				{
-					sResult += "w:color=\"";
+					sResult += _T("w:color=\"");
 					sResult += m_oColor->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oFrame.IsInit() )
 				{
-					sResult += "w:frame=\"";
+					sResult += _T("w:frame=\"");
 					sResult += m_oFrame->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 				if ( m_oId.IsInit() )
 				{
-					sResult += "r:id=\"";
+					sResult += _T("r:id=\"");
 					sResult += m_oId->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oShadow.IsInit() )
 				{
-					sResult += "w:shadow=\"";
+					sResult += _T("w:shadow=\"");
 					sResult += m_oShadow->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oSpace.IsInit() )
 				{
-					sResult += "w:space=\"";
+					sResult += _T("w:space=\"");
 					sResult += m_oSpace->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oSz.IsInit() )
 				{
-					sResult += "w:sz=\"";
+					sResult += _T("w:sz=\"");
 					sResult += m_oSz->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 				if ( m_oThemeColor.IsInit() )
 				{
-					sResult += "w:themeColor=\"";
+					sResult += _T("w:themeColor=\"");
 					sResult += m_oThemeColor->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oThemeShade.IsInit() )
 				{
-					sResult += "w:themeShade=\"";
+					sResult += _T("w:themeShade=\"");
 					sResult += m_oThemeShade->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oThemeTint.IsInit() )
 				{
-					sResult += "w:themeTint=\"";
+					sResult += _T("w:themeTint=\"");
 					sResult += m_oThemeTint->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oTopLeft.IsInit() )
 				{
-					sResult += "r:topLeft=\"";
+					sResult += _T("r:topLeft=\"");
 					sResult += m_oTopLeft->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oTopRight.IsInit() )
 				{
-					sResult += "r:topRight=\"";
+					sResult += _T("r:topRight=\"");
 					sResult += m_oTopRight->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oVal.IsInit() )
 				{
-					sResult += "w:val=\"";
+					sResult += _T("w:val=\"");
 					sResult += m_oVal->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				return sResult;
@@ -847,49 +847,49 @@ namespace ComplexTypes
 
 				if ( m_oBottom.IsInit() )
 				{
-					sResult += "w:bottom=\"";
+					sResult += _T("w:bottom=\"");
 					sResult += m_oBottom->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oFooter.IsInit() )
 				{
-					sResult += "w:footer=\"";
+					sResult += _T("w:footer=\"");
 					sResult += m_oFooter->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 				if ( m_oGutter.IsInit() )
 				{
-					sResult += "w:gutter=\"";
+					sResult += _T("w:gutter=\"");
 					sResult += m_oGutter->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oHeader.IsInit() )
 				{
-					sResult += "w:header=\"";
+					sResult += _T("w:header=\"");
 					sResult += m_oHeader->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oLeft.IsInit() )
 				{
-					sResult += "w:left=\"";
+					sResult += _T("w:left=\"");
 					sResult += m_oLeft->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oRight.IsInit() )
 				{
-					sResult += "w:right=\"";
+					sResult += _T("w:right=\"");
 					sResult += m_oRight->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 				if ( m_oTop.IsInit() )
 				{
-					sResult += "w:top=\"";
+					sResult += _T("w:top=\"");
 					sResult += m_oTop->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				return sResult;
@@ -958,28 +958,28 @@ namespace ComplexTypes
 
 				if ( m_oChapSep.IsInit() )
 				{
-					sResult += "w:chapSep=\"";
+					sResult += _T("w:chapSep=\"");
 					sResult += m_oChapSep->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oChapStyle.IsInit() )
 				{
-					sResult += "w:chapStyle=\"";
+					sResult += _T("w:chapStyle=\"");
 					sResult += m_oChapStyle->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 				if ( m_oFmt.IsInit() )
 				{
-					sResult += "w:fmt=\"";
+					sResult += _T("w:fmt=\"");
 					sResult += m_oFmt->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 				if ( m_oStart.IsInit() )
 				{
-					sResult += "w:start=\"";
+					sResult += _T("w:start=\"");
 					sResult += m_oStart->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				return sResult;
@@ -1041,28 +1041,28 @@ namespace ComplexTypes
 
 				if ( m_oCode.IsInit() )
 				{
-					sResult += "w:code=\"";
+					sResult += _T("w:code=\"");
 					sResult += m_oCode->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oH.IsInit() )
 				{
-					sResult += "w:h=\"";
+					sResult += _T("w:h=\"");
 					sResult += m_oH->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 				if ( m_oOrient.IsInit() )
 				{
-					sResult += "w:orient=\"";
+					sResult += _T("w:orient=\"");
 					sResult += m_oOrient->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 				if ( m_oW.IsInit() )
 				{
-					sResult += "w:w=\"";
+					sResult += _T("w:w=\"");
 					sResult += m_oW->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				return sResult;
@@ -1121,9 +1121,9 @@ namespace ComplexTypes
 
 				if ( m_oVal.IsInit() )
 				{
-					sResult += "w:val=\"";
+					sResult += _T("w:val=\"");
 					sResult += m_oVal->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				return sResult;
@@ -1219,30 +1219,30 @@ namespace OOX
 
 				if ( m_oNum.IsInit() )
 				{
-					sResult += "w:num=\"";
+					sResult += _T("w:num=\"");
 					sResult += m_oNum->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oSep.IsInit() )
 				{
-					sResult += "w:sep=\"";
+					sResult += _T("w:sep=\"");
 					sResult += m_oSep->ToString2(SimpleTypes::onofftostring1);
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oSpace.IsInit() )
 				{
-					sResult += "w:space=\"";
+					sResult += _T("w:space=\"");
 					sResult.AppendFormat(_T("%d"), m_oSpace->ToTwips());
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oEqualWidth.IsInit() )
 				{
-					sResult += "w:equalWidth=\"";
+					sResult += _T("w:equalWidth=\"");
 					sResult += m_oEqualWidth->ToString2(SimpleTypes::onofftostring1);
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				sResult += _T(">");
@@ -1343,30 +1343,30 @@ namespace OOX
 
 				if ( m_oNumFmt.IsInit() )
 				{
-					sResult += "<w:numFmt ";
+					sResult += _T("<w:numFmt ");
 					sResult += m_oNumFmt->ToString();
-					sResult += "/>";
+					sResult += _T("/>");
 				}
 
 				if ( m_oNumRestart.IsInit() )
 				{
-					sResult += "<w:numRestart ";
+					sResult += _T("<w:numRestart ");
 					sResult += m_oNumRestart->ToString();
-					sResult += "/>";
+					sResult += _T("/>");
 				}
 
 				if ( m_oNumStart.IsInit() )
 				{
-					sResult += "<w:numStart ";
+					sResult += _T("<w:numStart ");
 					sResult += m_oNumStart->ToString();
-					sResult += "/>";
+					sResult += _T("/>");
 				}
 
 				if ( m_oPos.IsInit() )
 				{
-					sResult += "<w:pos ";
+					sResult += _T("<w:pos ");
 					sResult += m_oPos->ToString();
-					sResult += "/>";
+					sResult += _T("/>");
 				}
 
 				sResult += _T("</w:endnotePr>");
@@ -1444,30 +1444,30 @@ namespace OOX
 
 				if ( m_oNumFmt.IsInit() )
 				{
-					sResult += "<w:numFmt ";
+					sResult += _T("<w:numFmt ");
 					sResult += m_oNumFmt->ToString();
-					sResult += "/>";
+					sResult += _T("/>");
 				}
 
 				if ( m_oNumRestart.IsInit() )
 				{
-					sResult += "<w:numRestart ";
+					sResult += _T("<w:numRestart ");
 					sResult += m_oNumRestart->ToString();
-					sResult += "/>";
+					sResult += _T("/>");
 				}
 
 				if ( m_oNumStart.IsInit() )
 				{
-					sResult += "<w:numStart ";
+					sResult += _T("<w:numStart ");
 					sResult += m_oNumStart->ToString();
-					sResult += "/>";
+					sResult += _T("/>");
 				}
 
 				if ( m_oPos.IsInit() )
 				{
-					sResult += "<w:pos ";
+					sResult += _T("<w:pos ");
 					sResult += m_oPos->ToString();
-					sResult += "/>";
+					sResult += _T("/>");
 				}
 
 				sResult += _T("</w:footnotePr>");
@@ -1550,53 +1550,53 @@ namespace OOX
 
 				if ( m_oDisplay.IsInit() )
 				{
-					sResult += "w:display=\"";
+					sResult += _T("w:display=\"");
 					sResult += m_oDisplay->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oOffsetFrom.IsInit() )
 				{
-					sResult += "w:offsetFrom=\"";
+					sResult += _T("w:offsetFrom=\"");
 					sResult += m_oOffsetFrom->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oZOrder.IsInit() )
 				{
-					sResult += "w:zOrder=\"";
+					sResult += _T("w:zOrder=\"");
 					sResult += m_oZOrder->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				sResult += _T(">");
 
 				if ( m_oBottom.IsInit() )
 				{
-					sResult += "<w:bottom ";
+					sResult += _T("<w:bottom ");
 					sResult += m_oBottom->ToString();
-					sResult += "/>";
+					sResult += _T("/>");
 				}
 
 				if ( m_oLeft.IsInit() )
 				{
-					sResult += "<w:left ";
+					sResult += _T("<w:left ");
 					sResult += m_oLeft->ToString();
-					sResult += "/>";
+					sResult += _T("/>");
 				}
 
 				if ( m_oRight.IsInit() )
 				{
-					sResult += "<w:right ";
+					sResult += _T("<w:right ");
 					sResult += m_oRight->ToString();
-					sResult += "/>";
+					sResult += _T("/>");
 				}
 
 				if ( m_oTop.IsInit() )
 				{
-					sResult += "<w:top ";
+					sResult += _T("<w:top ");
 					sResult += m_oTop->ToString();
-					sResult += "/>";
+					sResult += _T("/>");
 				}
 
 				sResult += _T("</w:pgBorders>");

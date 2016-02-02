@@ -47,37 +47,37 @@ namespace ComplexTypes
 
 				if ( m_oCombine.IsInit() )
 				{
-					sResult += "w:combine=\"";
+					sResult += _T("w:combine=\"");
 					sResult += m_oCombine->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oCombineBrackets.IsInit() )
 				{
-					sResult += "w:combineBrackets=\"";
+					sResult += _T("w:combineBrackets=\"");
 					sResult += m_oCombineBrackets->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oID.IsInit() )
 				{
-					sResult += "w:themeTint=\"";
+					sResult += _T("w:themeTint=\"");
 					sResult += m_oID->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oVert.IsInit() )
 				{
-					sResult += "w:vert=\"";
+					sResult += _T("w:vert=\"");
 					sResult += m_oVert->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oVertCompress.IsInit() )
 				{
-					sResult += "w:vertCompress=\"";
+					sResult += _T("w:vertCompress=\"");
 					sResult += m_oVert->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				return sResult;
@@ -136,9 +136,9 @@ namespace ComplexTypes
 
 				if ( m_oVal.IsInit() )
 				{
-					sResult += "w:val=\"";
+					sResult += _T("w:val=\"");
 					sResult += m_oVal->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				return sResult;
@@ -190,9 +190,9 @@ namespace ComplexTypes
 
 				if ( m_oVal.IsInit() )
 				{
-					sResult += "w:val=\"";
+					sResult += _T("w:val=\"");
 					sResult += m_oVal->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				return sResult;
@@ -245,16 +245,16 @@ namespace ComplexTypes
 
 				if ( m_oID.IsInit() )
 				{
-					sResult += "w:id=\"";
+					sResult += _T("w:id=\"");
 					sResult += m_oID->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oVal.IsInit() )
 				{
-					sResult += "w:val=\"";
+					sResult += _T("w:val=\"");
 					sResult += m_oVal->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				return sResult;
@@ -308,9 +308,9 @@ namespace ComplexTypes
 
 				if ( m_oVal.IsInit() )
 				{
-					sResult += "w:val=\"";
+					sResult += _T("w:val=\"");
 					sResult += m_oVal->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				return sResult;
@@ -369,65 +369,65 @@ namespace ComplexTypes
 
 				if ( m_sAscii.IsInit() )
 				{
-					sResult += "w:ascii=\"";
+					sResult += _T("w:ascii=\"");
 					sResult += m_sAscii->GetString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oAsciiTheme.IsInit() )
 				{
-					sResult += "w:asciiTheme=\"";
+					sResult += _T("w:asciiTheme=\"");
 					sResult += m_oAsciiTheme->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_sCs.IsInit() )
 				{
-					sResult += "w:cs=\"";
+					sResult += _T("w:cs=\"");
 					sResult += m_sCs->GetString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oCsTheme.IsInit() )
 				{
-					sResult += "w:cstheme=\"";
+					sResult += _T("w:cstheme=\"");
 					sResult += m_oCsTheme->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_sEastAsia.IsInit() )
 				{
-					sResult += "w:eastAsia=\"";
+					sResult += _T("w:eastAsia=\"");
 					sResult += m_sEastAsia->GetString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oEastAsiaTheme.IsInit() )
 				{
-					sResult += "w:eastAsiaTheme=\"";
+					sResult += _T("w:eastAsiaTheme=\"");
 					sResult += m_oEastAsiaTheme->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_sHAnsi.IsInit() )
 				{
-					sResult += "w:hAnsi=\"";
+					sResult += _T("w:hAnsi=\"");
 					sResult += m_sHAnsi->GetString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oHAnsiTheme.IsInit() )
 				{
-					sResult += "w:hAnsiTheme=\"";
+					sResult += _T("w:hAnsiTheme=\"");
 					sResult += m_oHAnsiTheme->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oHint.IsInit() )
 				{
-					sResult += "w:hint=\"";
+					sResult += _T("w:hint=\"");
 					sResult += m_oHint->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				return sResult;
@@ -499,37 +499,37 @@ namespace ComplexTypes
 
 				if ( m_oColor.IsInit() )
 				{
-					sResult += "w:color=\"";
+					sResult += _T("w:color=\"");
 					sResult += m_oColor->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oThemeColor.IsInit() )
 				{
-					sResult += "w:themeColor=\"";
+					sResult += _T("w:themeColor=\"");
 					sResult += m_oThemeColor->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oThemeShade.IsInit() )
 				{
-					sResult += "w:themeShade=\"";
+					sResult += _T("w:themeShade=\"");
 					sResult += m_oThemeShade->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oThemeTint.IsInit() )
 				{
-					sResult += "w:themeTint=\"";
+					sResult += _T("w:themeTint=\"");
 					sResult += m_oThemeTint->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				if ( m_oVal.IsInit() )
 				{
-					sResult += "w:val=\"";
+					sResult += _T("w:val=\"");
 					sResult += m_oVal->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				return sResult;
@@ -587,9 +587,9 @@ namespace ComplexTypes
 
 				if ( m_oVal.IsInit() )
 				{
-					sResult += "w:val=\"";
+					sResult += _T("w:val=\"");
 					sResult += m_oVal->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				return sResult;
@@ -639,9 +639,9 @@ namespace ComplexTypes
 
 				if ( m_oVal.IsInit() )
 				{
-					sResult += "w:val=\"";
+					sResult += _T("w:val=\"");
 					sResult += m_oVal->ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 				}
 
 				return sResult;

@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #include "../Common/ComplexTypes.h"
 
 #include "SimpleTypes_Spreadsheet.h"
@@ -25,7 +25,7 @@ namespace ComplexTypes
 				}
 				virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 				{
-					// Читаем атрибуты
+					// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 					WritingElement_ReadAttributes_Start( oReader )
 						WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
 						WritingElement_ReadAttributes_End( oReader )
@@ -34,9 +34,9 @@ namespace ComplexTypes
 				{
 					CString sResult;
 
-					sResult += "val=\"";
+					sResult += _T("val=\"");
 					sResult += m_oVal.ToString();
-					sResult += "\" ";
+					sResult += _T("\" ");
 
 					return sResult;
 				}
@@ -79,9 +79,9 @@ namespace ComplexTypes
 
 					if ( m_oVal.IsInit() )
 					{
-						sResult += "val=\"";
+						sResult += _T("val=\"");
 						sResult += m_oVal->ToString();
-						sResult += "\" ";
+						sResult += _T("\" ");
 					}
 
 					return sResult;
@@ -90,7 +90,7 @@ namespace ComplexTypes
 
 				void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 				{
-					// Читаем атрибуты
+					// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 					WritingElement_ReadAttributes_Start( oReader )
 					WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
 					WritingElement_ReadAttributes_End( oReader )
@@ -127,9 +127,9 @@ namespace ComplexTypes
 
 					if ( m_sVal.IsInit() )
 					{
-						sResult += "val=\"";
+						sResult += _T("val=\"");
 						sResult += m_sVal->GetString();
-						sResult += "\" ";
+						sResult += _T("\" ");
 					}
 
 					return sResult;
@@ -147,7 +147,7 @@ namespace ComplexTypes
 
 				void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 				{
-					// Читаем атрибуты
+					// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 					WritingElement_ReadAttributes_Start( oReader )
 						WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_sVal )
 						WritingElement_ReadAttributes_End( oReader )
@@ -185,9 +185,9 @@ namespace ComplexTypes
 
 					if ( m_oVal.IsInit() )
 					{
-						sResult += "val=\"";
+						sResult += _T("val=\"");
 						sResult += m_oVal->ToString();
-						sResult += "\" ";
+						sResult += _T("\" ");
 					}
 
 					return sResult;
@@ -196,7 +196,7 @@ namespace ComplexTypes
 
 				void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 				{
-					// Читаем атрибуты
+					// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 					WritingElement_ReadAttributes_Start( oReader )
 						WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
 						WritingElement_ReadAttributes_End( oReader )
@@ -234,9 +234,9 @@ namespace ComplexTypes
 
 					if ( m_oVal.IsInit() )
 					{
-						sResult += "val=\"";
+						sResult += _T("val=\"");
 						sResult += m_oVal->ToString();
-						sResult += "\" ";
+						sResult += _T("\" ");
 					}
 
 					return sResult;
@@ -245,7 +245,7 @@ namespace ComplexTypes
 
 				void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 				{
-					// Читаем атрибуты
+					// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 					WritingElement_ReadAttributes_Start( oReader )
 						WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
 						WritingElement_ReadAttributes_End( oReader )
@@ -283,9 +283,9 @@ namespace ComplexTypes
 
 					if ( m_oVal.IsInit() )
 					{
-						sResult += "val=\"";
+						sResult += _T("val=\"");
 						sResult += m_oVal->ToString();
-						sResult += "\" ";
+						sResult += _T("\" ");
 					}
 
 					return sResult;
@@ -294,7 +294,7 @@ namespace ComplexTypes
 
 				void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 				{
-					// Читаем атрибуты
+					// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 					WritingElement_ReadAttributes_Start( oReader )
 						WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
 						WritingElement_ReadAttributes_End( oReader )
@@ -332,9 +332,9 @@ namespace ComplexTypes
 
 					if ( m_oVal.IsInit() )
 					{
-						sResult += "val=\"";
+						sResult += _T("val=\"");
 						sResult += m_oVal->ToString();
-						sResult += "\" ";
+						sResult += _T("\" ");
 					}
 
 					return sResult;
@@ -343,7 +343,7 @@ namespace ComplexTypes
 
 				void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 				{
-					// Читаем атрибуты
+					// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 					WritingElement_ReadAttributes_Start( oReader )
 						WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
 						WritingElement_ReadAttributes_End( oReader )
@@ -381,9 +381,9 @@ namespace ComplexTypes
 
 					if ( m_oVal.IsInit() )
 					{
-						sResult += "val=\"";
+						sResult += _T("val=\"");
 						sResult += m_oVal->ToString();
-						sResult += "\" ";
+						sResult += _T("\" ");
 					}
 
 					return sResult;
@@ -392,7 +392,7 @@ namespace ComplexTypes
 
 				void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 				{
-					// Читаем атрибуты
+					// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 					WritingElement_ReadAttributes_Start( oReader )
 						WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
 						WritingElement_ReadAttributes_End( oReader )
@@ -430,9 +430,9 @@ namespace ComplexTypes
 
 					if ( m_oVal.IsInit() )
 					{
-						sResult += "val=\"";
+						sResult += _T("val=\"");
 						sResult += m_oVal->ToString();
-						sResult += "\" ";
+						sResult += _T("\" ");
 					}
 
 					return sResult;
@@ -441,7 +441,7 @@ namespace ComplexTypes
 
 				void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 				{
-					// Читаем атрибуты
+					// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 					WritingElement_ReadAttributes_Start( oReader )
 						WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
 						WritingElement_ReadAttributes_End( oReader )
@@ -479,9 +479,9 @@ namespace ComplexTypes
 
 					if ( m_oVal.IsInit() )
 					{
-						sResult += "val=\"";
+						sResult += _T("val=\"");
 						sResult += m_oVal->ToString();
-						sResult += "\" ";
+						sResult += _T("\" ");
 					}
 
 					return sResult;
@@ -490,7 +490,7 @@ namespace ComplexTypes
 
 				void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 				{
-					// Читаем атрибуты
+					// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 					WritingElement_ReadAttributes_Start( oReader )
 						WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
 						WritingElement_ReadAttributes_End( oReader )
@@ -528,9 +528,9 @@ namespace ComplexTypes
 
 					if ( m_oVal.IsInit() )
 					{
-						sResult += "val=\"";
+						sResult += _T("val=\"");
 						sResult += m_oVal->ToString();
-						sResult += "\" ";
+						sResult += _T("\" ");
 					}
 
 					return sResult;
@@ -539,7 +539,7 @@ namespace ComplexTypes
 
 				void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 				{
-					// Читаем атрибуты
+					// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 					WritingElement_ReadAttributes_Start( oReader )
 						WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
 						WritingElement_ReadAttributes_End( oReader )

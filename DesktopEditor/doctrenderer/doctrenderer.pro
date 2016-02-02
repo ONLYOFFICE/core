@@ -48,6 +48,15 @@ mac {
 
 ################################################
 
+LIBS_DESTDIR_PATH = $$DESTDIR
+#CONFIG += static_link_libstd
+static_link_libstd {
+    QMAKE_LFLAGS += -static-libstdc++ -static-libgcc
+    DESTDIR_POSTFIX = _static_stdlib
+    DESTDIR = $$DESTDIR$$DESTDIR_POSTFIX
+    message(static_link_libstd)
+}
+
 win32 {
     V8_CHECKOUT_PATH = $$PWD/v8_windows/v8
 }

@@ -45,6 +45,15 @@ mac {
 
 ################################################
 
+LIBS_DESTDIR_PATH = $$DESTDIR
+#CONFIG += static_link_libstd
+static_link_libstd {
+    QMAKE_LFLAGS += -static-libstdc++ -static-libgcc
+    DESTDIR_POSTFIX = _static_stdlib
+    DESTDIR = $$DESTDIR$$DESTDIR_POSTFIX
+    message(static_link_libstd)
+}
+
 ############# dynamic dependencies #############
 shared {
     DEFINES += XPS_USE_DYNAMIC_LIBRARY
@@ -104,7 +113,7 @@ linux-g++ | linux-g++-64 | linux-g++-32 {
     message(linux)
 }
 
-linux-g++ | linux-g++-64 | linux-g++-32 {
+mac {
     DEFINES += \
     HAVE_UNISTD_H \
     LINUX \

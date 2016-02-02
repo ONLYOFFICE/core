@@ -48,6 +48,14 @@ mac {
 DEFINES += UNICODECONVERTER_USE_DYNAMIC_LIBRARY
 LIBS += -L$$DESTDIR -lUnicodeConverter
 
+#CONFIG += static_link_libstd
+static_link_libstd {
+    QMAKE_LFLAGS += -static-libstdc++ -static-libgcc
+    DESTDIR_POSTFIX = _static_stdlib
+    DESTDIR = $$DESTDIR$$DESTDIR_POSTFIX
+    message(static_link_libstd)
+}
+
 ############# dynamic dependencies #############
 shared {
     DEFINES += HTMLFILE_USE_DYNAMIC_LIBRARY

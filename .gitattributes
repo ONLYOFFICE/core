@@ -7947,6 +7947,7 @@ SDK/lib/linux_64_static_stdlib/libPdfWriter.so svn_mime_002dtype=application%2Fo
 SDK/lib/linux_64_static_stdlib/libUnicodeConverter.so svn_mime_002dtype=application%2Foctet-stream
 SDK/lib/linux_64_static_stdlib/libXpsFile.so svn_mime_002dtype=application%2Foctet-stream
 SDK/lib/linux_64_static_stdlib/libdoctrenderer.so svn_mime_002dtype=application%2Foctet-stream
+SDK/lib/linux_64_static_stdlib/x2t svn_mime_002dtype=application%2Foctet-stream
 SDK/lib/mac_64 svnc_tsvn_003alogminsize=5
 SDK/lib/mac_64/libDjVuFile.dylib svn_mime_002dtype=application%2Foctet-stream
 SDK/lib/mac_64/libHtmlFile.dylib svn_mime_002dtype=application%2Foctet-stream

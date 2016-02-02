@@ -32,10 +32,10 @@ public:
 	BIFF_BYTE wBkgMode;
 	LongRGB rgb;
 
-	BIFF_BOOL fAutoCo;
-	BIFF_BOOL fAutoMode;
+	bool fAutoCo;
+	bool fAutoMode;
 	BIFF_BYTE rot;
-	BIFF_BOOL fAutoRot;
+	bool fAutoRot;
 	BIFF_BYTE iReadingOrder;
 
 	Icv icv;

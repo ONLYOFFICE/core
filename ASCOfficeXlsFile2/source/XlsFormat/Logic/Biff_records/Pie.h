@@ -27,8 +27,8 @@ public:
 //-----------------------------
 	BIFF_WORD anStart;
 	BIFF_WORD pcDonut;
-	BIFF_BOOL fHasShadow;
-	BIFF_BOOL fShowLdrLines;
+	bool fHasShadow;
+	bool fShowLdrLines;
 };
 
 } // namespace XLS

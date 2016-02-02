@@ -23,10 +23,11 @@ public:
 	static const ElementType	type = typeDefaultRowHeight;
 
 //-----------------------------
-	BIFF_BOOL fUnsynced;
-	BIFF_BOOL fDyZero;
-	BIFF_BOOL fExAsc;
-	BIFF_BOOL fExDsc;
+	bool fUnsynced;
+	bool fDyZero;
+	bool fExAsc;
+	bool fExDsc;
+	
 	BIFF_SHORT miyRw; // measured in twips (1/20 of of a printer's point)
 	BIFF_SHORT miyRwHidden;
 

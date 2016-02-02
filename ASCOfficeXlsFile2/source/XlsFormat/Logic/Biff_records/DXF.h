@@ -26,15 +26,9 @@ public:
 
 //-----------------------------
 	FrtRefHeaderU frtRefHeaderU;
-	BIFF_BOOL fNewBorder;
 	XFProps xfprops;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_COMPLEX(frtRefHeaderU)
-		//BO_ATTRIB_MARKUP_ATTRIB(fNewBorder)
-		//BO_ATTRIB_MARKUP_COMPLEX(xfprops)
-	//BO_ATTRIB_MARKUP_END
-
+	
+	bool fNewBorder;
 };
 
 } // namespace XLS

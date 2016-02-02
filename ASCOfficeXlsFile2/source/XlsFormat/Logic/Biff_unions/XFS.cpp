@@ -43,7 +43,7 @@ const bool XFS::loadContent(BinProcessor& proc)
 		//разделить style & complex
 		XF* xfs = dynamic_cast<XF*>(elements_.front().get());
 
-		if ((xfs->fStyle.value()) && (*xfs->fStyle.value()))
+		if (xfs->fStyle)
 		{
 			m_arCellStyles.push_back(elements_.front());
 			cellStyleXfs_count++;

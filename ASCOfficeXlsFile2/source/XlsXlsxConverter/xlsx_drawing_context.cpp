@@ -992,7 +992,7 @@ void xlsx_drawing_context::serialize_text(std::wostream & stream, _drawing_state
 							
 							if (drawing_state->wordart.bold)		CP_XML_ATTR(L"b", 1);
 							if (drawing_state->wordart.italic)		CP_XML_ATTR(L"i", 1);
-							if (drawing_state->wordart.underline)	CP_XML_ATTR(L"u", 1);
+							if (drawing_state->wordart.underline)	CP_XML_ATTR(L"u", L"sng");
 							if (drawing_state->wordart.strike)		CP_XML_ATTR(L"strike", L"sngStrike");
 						
 							CP_XML_ATTR(L"kern", 10);
@@ -1545,7 +1545,7 @@ void xlsx_drawing_context::set_chart_sheet_anchor(double width, double height)
 
 	set_anchor(stream.str());
 
-	current_drawing_states->back()->type_anchor = 2;
+	current_drawing_states->back()->type_anchor = 3;
 }
 
 void xlsx_drawing_context::serialize(std::wostream & strm) 

@@ -24,12 +24,12 @@ public:
 
 	int serialize(std::wostream & _stream);
 
-	BIFF_BOOL fShowValue;
-	BIFF_BOOL fShowPercent;
-	BIFF_BOOL fShowLabelAndPerc;
-	BIFF_BOOL fShowLabel;
-	BIFF_BOOL fShowBubbleSizes;
-	BIFF_BOOL fShowSeriesName;
+	bool fShowValue;
+	bool fShowPercent;
+	bool fShowLabelAndPerc;
+	bool fShowLabel;
+	bool fShowBubbleSizes;
+	bool fShowSeriesName;
 
 //-----------------------------
 

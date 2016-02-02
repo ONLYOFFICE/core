@@ -35,31 +35,12 @@ public:
 	CFParsedFormulaNoCCE rgce1;
 	CFParsedFormulaNoCCE rgce2;
 	CFParsedFormula fmlaActive;
-	BIFF_BOOL fStopIfTrue;
 	BIFF_WORD ipriority;
 	BIFF_WORD icfTemplate;
 	CFExTemplateParams rgbTemplateParms;
 	BiffStructurePtr rgbCT;
 
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_COMPLEX(frtRefHeader)
-		//BO_ATTRIB_MARKUP_ATTRIB(ct)
-		//BO_ATTRIB_MARKUP_ATTRIB(cp)
-		//BO_ATTRIB_MARKUP_COMPLEX(dxf)
-		//BO_ATTRIB_MARKUP_COMPLEX(rgce1)
-		//BO_ATTRIB_MARKUP_COMPLEX(rgce2)
-		//BO_ATTRIB_MARKUP_COMPLEX(fmlaActive)
-		//BO_ATTRIB_MARKUP_ATTRIB(fStopIfTrue)
-		//BO_ATTRIB_MARKUP_ATTRIB(ipriority)
-		//BO_ATTRIB_MARKUP_ATTRIB(icfTemplate)
-		//rgbTemplateParms.toXML(proc.getParent(), static_cast<unsigned char>(icfTemplate));
-		//if(rgbCT)
-		//{
-		//	//BO_ATTRIB_MARKUP_COMPLEX(*rgbCT)
-		//}
-	//BO_ATTRIB_MARKUP_END
-
+	bool fStopIfTrue;
 };
 
 typedef boost::shared_ptr<CF12> CF12Ptr;

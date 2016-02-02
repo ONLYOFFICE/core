@@ -23,13 +23,13 @@ public:
 	static const ElementType	type = typeBookBool;
 
 //-----------------------------
-	BIFF_BOOL fNoSaveSup;
-	BIFF_BOOL fHasEnvelope;
-	BIFF_BOOL fEnvelopeVisible;
-	BIFF_BOOL fEnvelopeInitDone;
-	BIFF_BSTR grUpdateLinks;
-	BIFF_BOOL fHideBorderUnselLists;
+	bool fNoSaveSup;
+	bool fHasEnvelope;
+	bool fEnvelopeVisible;
+	bool fEnvelopeInitDone;
+	bool fHideBorderUnselLists;
 
+	BIFF_BSTR grUpdateLinks;
 };
 
 } // namespace XLS

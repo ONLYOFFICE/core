@@ -25,9 +25,9 @@ public:
 	int serialize(std::wostream & _stream);
 
 //-----------------------------
-	BIFF_BOOL fStacked;
-	BIFF_BOOL f100;
-	BIFF_BOOL fHasShadow;
+	bool fStacked;
+	bool f100;
+	bool fHasShadow;
 
 };
 

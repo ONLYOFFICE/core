@@ -23,7 +23,7 @@ public:
 	static const ElementType	type = typePrintGrid;
 
 //-----------------------------
-	BIFF_BOOL fPrintGrid;
+	bool fPrintGrid;
 public:
 	//BO_ATTRIB_MARKUP_BEGIN
 		//BO_ATTRIB_MARKUP_ATTRIB(fPrintGrid)

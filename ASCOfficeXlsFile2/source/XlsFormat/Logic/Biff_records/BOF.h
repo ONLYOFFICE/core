@@ -42,16 +42,18 @@ public:
 	BIFF_WORD dt;
 	BIFF_WORD rupBuild;
 	BIFF_WORD rupYear;
-	BIFF_BOOL fWin;
-	BIFF_BOOL fRisc;
-	BIFF_BOOL fBeta;
-	BIFF_BOOL fWinAny;
-	BIFF_BOOL fMacAny;
-	BIFF_BOOL fBetaAny;
-	BIFF_BOOL fRiscAny;
-	BIFF_BOOL fOOM;
-	BIFF_BOOL fGlJmp;
-	BIFF_BOOL fFontLimit;
+	
+	bool fWin;
+	bool fRisc;
+	bool fBeta;
+	bool fWinAny;
+	bool fMacAny;
+	bool fBetaAny;
+	bool fRiscAny;
+	bool fOOM;
+	bool fGlJmp;
+	bool fFontLimit;
+	
 	BIFF_WORD verXLHigh;
 	BIFF_BYTE verLowestBiff;
 	BIFF_BYTE verLastXLSaved;

@@ -24,8 +24,8 @@ public:
 	static const ElementType	type = typeNamePublish;
 
 //-----------------------------
-	BIFF_BOOL fPublished;
-	BIFF_BOOL fWorkbookParam;
+	bool fPublished;
+	bool fWorkbookParam;
 	XLNameUnicodeString strName;
 public:
 	//BO_ATTRIB_MARKUP_BEGIN

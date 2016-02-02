@@ -24,9 +24,9 @@ public:
 
 //-----------------------------
 	BIFF_WORD wScalePLV;
-	BIFF_BOOL fPageLayoutView;
-	BIFF_BOOL fRulerVisible;
-	BIFF_BOOL fWhitespaceHidden;
+	bool fPageLayoutView;
+	bool fRulerVisible;
+	bool fWhitespaceHidden;
 public:
 	//BO_ATTRIB_MARKUP_BEGIN
 		//BO_ATTRIB_MARKUP_ATTRIB(wScalePLV)

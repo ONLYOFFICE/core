@@ -23,7 +23,7 @@ public:
 	static const ElementType	type = typeDVal;
 
 //-----------------------------
-	BIFF_BOOL fWnClosed;
+	bool fWnClosed;
 	BIFF_DWORD xLeft;
 	BIFF_DWORD yTop;
 	BIFF_LONG idObj;

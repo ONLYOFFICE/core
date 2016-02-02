@@ -29,8 +29,9 @@ public:
 	LongRGB rgbBack;
 	
 	BIFF_WORD fls;
-	BIFF_BOOL fAuto;
-	BIFF_BOOL fInvertNeg;
+	
+	bool fAuto;
+	bool fInvertNeg;
 	
 	IcvChart icvFore;
 	IcvChart icvBack;

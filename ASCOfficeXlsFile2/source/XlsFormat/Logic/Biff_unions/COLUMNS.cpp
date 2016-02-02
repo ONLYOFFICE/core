@@ -89,11 +89,11 @@ int COLUMNS::serialize(std::wostream & stream)
 						CP_XML_ATTR(L"style", column_info->ixfe - cellStyleXfs_count);
 					}
 
-					if ((column_info->fBestFit.value()) && (column_info->fBestFit))
+					if (column_info->fBestFit)
 					{
 						CP_XML_ATTR(L"bestFit", column_info->fBestFit);
 					}
-					if ((column_info->fHidden.value()) && (column_info->fHidden))
+					if (column_info->fHidden)
 					{
 						CP_XML_ATTR(L"hidden", column_info->fHidden);
 					}

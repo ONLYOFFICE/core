@@ -29,9 +29,9 @@ public:
 //-----------------------------
 	Cell					cell;
 	FormulaValue			val;
-	BIFF_BOOL				fAlwaysCalc;
+	bool				fAlwaysCalc;
 	BackwardOnlyParam<bool> fFill;
-	BIFF_BOOL				fShrFmla;
+	bool				fShrFmla;
 	BackwardOnlyParam<bool> fClearErrors;
 
 	CellParsedFormula		formula;

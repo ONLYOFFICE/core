@@ -36,6 +36,7 @@ void CF12::readFields(CFRecord& record)
 {
 	record >> frtRefHeader;
 	record >> ct >> cp;
+	
 	unsigned short cce1;
 	unsigned short cce2;
 	record >> cce1 >> cce2;
@@ -43,9 +44,11 @@ void CF12::readFields(CFRecord& record)
 	rgce1.load(record, cce1);
 	rgce2.load(record, cce2);
 	fmlaActive.load(record);
+	
 	unsigned char flags;
 	record >> flags;
 	fStopIfTrue = GETBIT(flags, 1);
+	
 	record >> ipriority >> icfTemplate;
 	unsigned char cbTemplateParm;
 	record >> cbTemplateParm;

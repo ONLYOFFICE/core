@@ -25,12 +25,12 @@ public:
 //-----------------------------
 	BIFF_BYTE valType;
 	BIFF_BYTE errStyle;
-	BIFF_BOOL fStrLookup;
-	BIFF_BOOL fAllowBlank;
-	BIFF_BOOL fSuppressCombo;
+	bool fStrLookup;
+	bool fAllowBlank;
+	bool fSuppressCombo;
 	BIFF_BYTE mdImeMode;
-	BIFF_BOOL fShowInputMsg;
-	BIFF_BOOL fShowErrorMsg;
+	bool fShowInputMsg;
+	bool fShowErrorMsg;
 	BIFF_BYTE typOperator;
 
 	XLUnicodeString PromptTitle;

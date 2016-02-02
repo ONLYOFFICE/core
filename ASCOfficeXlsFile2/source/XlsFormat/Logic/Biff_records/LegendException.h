@@ -21,8 +21,8 @@ public:
 	void readFields(CFRecord& record);
 
 	BIFF_WORD	iss;
-	BIFF_BOOL	fDelete;
-	BIFF_BOOL	fLabel;
+	bool	fDelete;
+	bool	fLabel;
 
 	int serialize(std::wostream & _stream);
 

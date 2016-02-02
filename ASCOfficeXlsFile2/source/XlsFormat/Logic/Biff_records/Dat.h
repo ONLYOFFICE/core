@@ -23,18 +23,10 @@ public:
 	static const ElementType	type = typeDat;
 
 //-----------------------------
-	BIFF_BOOL fHasBordHorz;
-	BIFF_BOOL fHasBordVert;
-	BIFF_BOOL fHasBordOutline;
-	BIFF_BOOL fShowSeriesKey;
-
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(fHasBordHorz)
-		//BO_ATTRIB_MARKUP_ATTRIB(fHasBordVert)
-		//BO_ATTRIB_MARKUP_ATTRIB(fHasBordOutline)
-		//BO_ATTRIB_MARKUP_ATTRIB(fShowSeriesKey)
-	//BO_ATTRIB_MARKUP_END
-
+	bool fHasBordHorz;
+	bool fHasBordVert;
+	bool fHasBordOutline;
+	bool fShowSeriesKey;
 };
 
 } // namespace XLS

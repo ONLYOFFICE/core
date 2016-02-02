@@ -130,9 +130,9 @@ int CELL_GROUP::serialize(std::wostream & stream)
 							if (row->rw + 1  == current_row_number)
 							{
 								bool xf_set = true;
-								if ((row->fGhostDirty.value()) && ( *row->fGhostDirty.value()== false)) xf_set = false;
+								if (row->fGhostDirty == false) xf_set = false;
 								
-								if (row->ixfe_val.value() && xf_set)
+								if (row->ixfe_val && xf_set)
 								{
 									if (row->ixfe_val > cellStyleXfs_count)
 									{
@@ -153,15 +153,15 @@ int CELL_GROUP::serialize(std::wostream & stream)
 								{
 									CP_XML_ATTR(L"outlineLevel", row->iOutLevel);
 								}
-								if ((row->fCollapsed.value()) && (row->fCollapsed))
+								if (row->fCollapsed)
 								{
 									CP_XML_ATTR(L"collapsed", row->fCollapsed);
 								}
-								if ((row->fExAsc.value()) && (row->fExAsc))
+								if (row->fExAsc)
 								{
 									CP_XML_ATTR(L"thickTop", true);
 								}
-								if ((row->fExDes.value()) && (row->fExDes))
+								if (row->fExDes)
 								{
 									CP_XML_ATTR(L"thickBot", true);
 								}
@@ -207,7 +207,7 @@ int CELL_GROUP::serialize(std::wostream & stream)
 					CP_XML_ATTR(L"r", current_row_number);
 					
 					bool xf_set = true;
-					if ((row->fGhostDirty.value()) && ( *row->fGhostDirty.value()== false)) xf_set = false;
+					if (row->fGhostDirty == false) xf_set = false;
 					
 					if (row->ixfe_val.value() && xf_set)
 					{
@@ -231,7 +231,7 @@ int CELL_GROUP::serialize(std::wostream & stream)
 					{
 						CP_XML_ATTR(L"outlineLevel", row->iOutLevel);
 					}
-					if ((row->fCollapsed.value()) && (row->fCollapsed))
+					if (row->fCollapsed)
 					{
 						CP_XML_ATTR(L"collapsed", row->fCollapsed);
 					}

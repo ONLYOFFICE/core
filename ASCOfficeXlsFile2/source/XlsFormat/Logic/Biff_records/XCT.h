@@ -25,7 +25,7 @@ public:
 //-----------------------------
 	BIFF_WORD ccrn;
 	BIFF_WORD itab;
-	BIFF_BOOL itab_exist;
+	bool itab_exist;
 
 		//if(itab_exist)
 		//{

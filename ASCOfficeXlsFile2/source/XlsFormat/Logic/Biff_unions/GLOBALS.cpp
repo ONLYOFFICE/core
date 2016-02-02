@@ -98,7 +98,7 @@ int GLOBALS::serialize(std::wostream & stream)
 				DefaultRowHeight* def_row = dynamic_cast<DefaultRowHeight*>(m_DefaultRowHeight.get());
 				if (def_row)
 				{
-					if(!def_row->fDyZero.value() || ((def_row->fDyZero.value()) && (!def_row->fDyZero)))
+					if(!def_row->fDyZero)
 					{
 						CP_XML_ATTR(L"defaultRowHeight", def_row->miyRw / 20.);
 						CP_XML_ATTR(L"customHeight", true);
@@ -108,8 +108,8 @@ int GLOBALS::serialize(std::wostream & stream)
 						CP_XML_ATTR(L"zeroHeight", true);
 						CP_XML_ATTR(L"defaultRowHeight", def_row->miyRwHidden /20.);
 					}
-					if ((def_row->fExAsc.value()) && (def_row->fExAsc))	CP_XML_ATTR(L"thickTop", true);
-					if ((def_row->fExDsc.value()) && (def_row->fExDsc))	CP_XML_ATTR(L"thickBottom", true);
+					if (def_row->fExAsc)	CP_XML_ATTR(L"thickTop", true);
+					if (def_row->fExDsc)	CP_XML_ATTR(L"thickBottom", true);
 				}
 
 			}

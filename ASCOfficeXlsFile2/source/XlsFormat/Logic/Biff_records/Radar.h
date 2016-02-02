@@ -25,8 +25,8 @@ public:
 	int serialize(std::wostream & _stream);
 
 //-----------------------------
-	BIFF_BOOL fRdrAxLab;
-	BIFF_BOOL fHasShadow;
+	bool fRdrAxLab;
+	bool fHasShadow;
 };
 
 } // namespace XLS

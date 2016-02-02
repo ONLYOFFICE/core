@@ -78,7 +78,7 @@ const bool FORMULA::loadContent(BinProcessor& proc)
 		//proc.optional<SUB>(); // I haven't found any mention about SUB in the docs
 	}
 
-	if ((formula) && (formula->fShrFmla.value()) && (formula->fShrFmla))
+	if ((formula) && (formula->fShrFmla))
 	{
 		for (int i = 0; i < shared_formulas_locations_ref_.size(); i++)
 		{
@@ -146,7 +146,7 @@ int FORMULA::serialize(std::wostream & stream)
 					CP_XML_STREAM() << xml::utils::replace_text_to_xml(f_);
 				}
 			}
-			else if ((formula->fShrFmla.value()) && (formula->fShrFmla == true) && m_sharedIndex >= 0)
+			else if (formula->fShrFmla && m_sharedIndex >= 0)
 			{
 				CP_XML_NODE(L"f")
 				{

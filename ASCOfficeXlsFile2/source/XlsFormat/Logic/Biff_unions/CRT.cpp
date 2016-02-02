@@ -306,7 +306,7 @@ std::wstring CRT::getOoxChartType()
 	case typeScatter:
 	{
 		Scatter * sc = dynamic_cast<Scatter *>(m_ChartType.get());
-		if ((sc->fBubbles.value()) && (sc->fBubbles))
+		if (sc->fBubbles)
 		{
 			m_iChartType = CHART_TYPE_Bubble;
 			return L"c:bubbleChart";

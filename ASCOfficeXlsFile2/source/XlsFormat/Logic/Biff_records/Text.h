@@ -34,17 +34,17 @@ public:
 	BIFF_LONG	dx;
 	BIFF_LONG	dy;
 
-	BIFF_BOOL fAutoColor;
-	BIFF_BOOL fShowKey;
-	BIFF_BOOL fShowValue;
-	BIFF_BOOL fAutoText;
-	BIFF_BOOL fGenerated;
-	BIFF_BOOL fDeleted;
-	BIFF_BOOL fAutoMode;
-	BIFF_BOOL fShowLabelAndPerc;
-	BIFF_BOOL fShowPercent;
-	BIFF_BOOL fShowBubbleSizes;
-	BIFF_BOOL fShowLabel;
+	bool fAutoColor;
+	bool fShowKey;
+	bool fShowValue;
+	bool fAutoText;
+	bool fGenerated;
+	bool fDeleted;
+	bool fAutoMode;
+	bool fShowLabelAndPerc;
+	bool fShowPercent;
+	bool fShowBubbleSizes;
+	bool fShowLabel;
 
 	Icv			icvText;
 	BIFF_BYTE	dlp;

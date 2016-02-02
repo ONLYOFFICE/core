@@ -26,11 +26,11 @@ public:
 //-----------------------------
 	Ref ref_;
 
-	BIFF_BOOL fAlwaysCalc;
-	BIFF_BOOL fRw;
-	BIFF_BOOL fTbl2;
-	BIFF_BOOL fDeleted1;
-	BIFF_BOOL fDeleted2;
+	bool fAlwaysCalc;
+	bool fRw;
+	bool fTbl2;
+	bool fDeleted1;
+	bool fDeleted2;
 
 	BIFF_BSTR r1;
 	BIFF_BSTR r2;

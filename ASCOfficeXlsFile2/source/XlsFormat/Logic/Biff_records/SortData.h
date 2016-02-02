@@ -25,9 +25,9 @@ public:
 	static const ElementType	type = typeSortData;
 
 //-----------------------------
-	BIFF_BOOL fCol;
-	BIFF_BOOL fCaseSensitive;
-	BIFF_BOOL fAltMethod;
+	bool fCol;
+	bool fCaseSensitive;
+	bool fAltMethod;
 	BIFF_BYTE sfp;
 
 	BIFF_BSTR rfx;

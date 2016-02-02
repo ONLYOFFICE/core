@@ -24,7 +24,7 @@ public:
 
 	int serialize(std::wostream & _stream);
 //-----------------------------
-	BIFF_BOOL fVaried;
+	bool fVaried;
 	BIFF_WORD icrt;
 };
 

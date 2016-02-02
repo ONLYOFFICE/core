@@ -25,7 +25,7 @@ public:
 	static const ElementType	type = typeNote;
 
 //-----------------------------
-// 	BIFF_BOOL is_contained_in_Workbook_;
+// 	bool is_contained_in_Workbook_;
 	
 	NoteSh note_sh;
 // 	NoteRR note_rr;

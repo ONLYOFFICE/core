@@ -24,8 +24,8 @@ public:
 
 //-----------------------------
 	BIFF_WORD frt;
-	BIFF_BOOL fAutoSize;
-	BIFF_BOOL fAutoPosition;
+	bool fAutoSize;
+	bool fAutoPosition;
 
 };
 

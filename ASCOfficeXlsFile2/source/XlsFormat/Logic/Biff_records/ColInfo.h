@@ -28,12 +28,12 @@ public:
 	BIFF_WORD coldx;
 	IXFCell ixfe;
 
-	BIFF_BOOL fHidden;
-	BIFF_BOOL fUserSet;
-	BIFF_BOOL fBestFit;
-	BIFF_BOOL fPhonetic;
+	bool fHidden;
+	bool fUserSet;
+	bool fBestFit;
+	bool fPhonetic;
 	BIFF_BYTE iOutLevel;
-	BIFF_BOOL fCollapsed;
+	bool fCollapsed;
 };
 
 } // namespace XLS

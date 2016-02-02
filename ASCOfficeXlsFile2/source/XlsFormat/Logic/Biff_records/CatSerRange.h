@@ -27,9 +27,9 @@ public:
 	BIFF_SHORT catLabel;
 	BIFF_SHORT catMark;
 	
-	BIFF_BOOL fBetween;
-	BIFF_BOOL fMaxCross;
-	BIFF_BOOL fReversed;
+	bool fBetween;
+	bool fMaxCross;
+	bool fReversed;
 };
 
 } // namespace XLS

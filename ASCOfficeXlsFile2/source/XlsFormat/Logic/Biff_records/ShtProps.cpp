@@ -26,7 +26,7 @@ void ShtProps::writeFields(CFRecord& record)
 	SETBIT(flags, 0, fManSerAlloc);
 	SETBIT(flags, 1, fPlotVisOnly);
 	SETBIT(flags, 2, fNotSizeWith);
-	BIFF_BOOL fManPlotArea = fAlwaysAutoPlotArea;
+	bool fManPlotArea = fAlwaysAutoPlotArea;
 	SETBIT(flags, 3, fManPlotArea);
 	SETBIT(flags, 4, fAlwaysAutoPlotArea);
 	record << flags << mdBlank;

@@ -24,10 +24,9 @@ public:
 	
 	static const ElementType	type = typeArray;
 
-	Ref ref_;
-	BIFF_BOOL fAlwaysCalc;
-	ArrayParsedFormula formula;
-
+	Ref					ref_;
+	ArrayParsedFormula	formula;
+	bool				fAlwaysCalc;
 };
 
 typedef boost::shared_ptr<Array> ArrayPtr;

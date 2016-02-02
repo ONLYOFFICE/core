@@ -49,7 +49,6 @@ typedef BiffAttributeSimple<_UINT16>			BIFF_WORD;
 typedef BiffAttributeSimple<_INT16>				BIFF_SHORT;
 typedef BiffAttributeSimple<_UINT32>			BIFF_DWORD;
 typedef BiffAttributeSimple<_INT32>				BIFF_LONG;
-typedef BiffAttributeSimple<bool>				BIFF_BOOL;
 typedef BiffAttributeSimple<double>				BIFF_DOUBLE;
 typedef BiffAttributeSimple<std::wstring>		BIFF_BSTR;
 

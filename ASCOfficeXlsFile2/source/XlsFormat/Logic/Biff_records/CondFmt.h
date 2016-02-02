@@ -27,7 +27,7 @@ public:
 
 //-----------------------------
 	BIFF_WORD ccf;
-	BIFF_BOOL fToughRecalc;
+	bool fToughRecalc;
 	BIFF_WORD nID;
 	SqRefU sqref;
 	BIFF_BSTR refBound;

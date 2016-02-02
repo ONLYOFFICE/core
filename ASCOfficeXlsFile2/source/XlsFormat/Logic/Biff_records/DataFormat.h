@@ -25,7 +25,8 @@ public:
 	BIFF_WORD xi;
 	BIFF_WORD yi;
 	BIFF_WORD iss;
-	BIFF_BOOL fUnknown;
+
+	bool fUnknown;
 };
 
 } // namespace XLS

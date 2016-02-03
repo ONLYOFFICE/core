@@ -77,6 +77,7 @@ XlsConverter::XlsConverter(const std::wstring & xls_file, const std::wstring & _
 	
 	pCallBack			= CallBack;
 	bUserStopConvert	= false;
+	is_older_version	= false;
 
 	try{
 		XLS::CompoundFile cfile(xls_file, XLS::CompoundFile::cf_ReadMode);
@@ -137,6 +138,7 @@ XlsConverter::XlsConverter(const std::wstring & xls_file, const std::wstring & _
 	if (xls_global_info->Version < 0x0600) 
 	{
 		Log::error("Version xls is old !!!");
+		is_older_version = true;
 		return;
 	}
 
@@ -149,6 +151,14 @@ XlsConverter::~XlsConverter()
 {
 	if (xlsx_context)		delete xlsx_context;
 	if (output_document)	delete output_document;
+}
+
+XlsConverter::isError()
+{
+	if (!xlsx_context)		return true;
+	if (!output_document)	return true;
+
+	return false;
 }
 
 #define PROGRESSEVENT_ID	0

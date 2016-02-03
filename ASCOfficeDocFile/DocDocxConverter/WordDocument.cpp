@@ -1,5 +1,6 @@
 
 #include "WordDocument.h"
+#include "../../../Common/OfficeFileErrorDescription.h"
 
 namespace DocFileFormat
 {
@@ -128,13 +129,13 @@ namespace DocFileFormat
 			if (m_pStorage->SetFile (m_sFileName.GetBuffer()) == false)
 			{
 				Clear();
-                return S_FALSE;
+                return AVS_ERROR_FILEFORMAT;
 			}
 		}
 		if (m_pStorage->GetStream ("WordDocument", &WordDocumentStream) == false)
 		{
 			Clear();
-            return S_FALSE;
+            return AVS_ERROR_FILEFORMAT;
 		}
 
 		// Parse FIB
@@ -165,7 +166,7 @@ namespace DocFileFormat
 			if (FIB->m_FibBase.nFib < Fib1997)
 			{
 				Clear();
-                return S_FALSE;
+                return AVS_MSFILE_ERROR_OLDER;
 			}
 		}
 		else
@@ -173,7 +174,7 @@ namespace DocFileFormat
 			if (FIB->m_FibNew.nFibNew < Fib1997)
 			{
 				Clear();
-                return S_FALSE;
+                return AVS_MSFILE_ERROR_OLDER;
 			}
 		}
 
@@ -190,7 +191,7 @@ namespace DocFileFormat
 		if (res == false)
 		{
 			Clear();
-            return S_FALSE;
+            return AVS_ERROR_FILEFORMAT;
 		}
 
 		try
@@ -218,7 +219,7 @@ namespace DocFileFormat
 			if (bCancel)
 			{
 				Clear();
-				return S_FALSE;
+				return AVS_ERROR_FILEFORMAT;
 			}
 		}
 
@@ -286,7 +287,7 @@ namespace DocFileFormat
 			if (bCancel)
 			{
 				Clear();
-				return S_FALSE;
+				return AVS_ERROR_FILEFORMAT;
 			}
 		}
 
@@ -321,7 +322,7 @@ namespace DocFileFormat
 			if (bCancel)
 			{
 				Clear();
-				return S_FALSE;
+				return AVS_ERROR_FILEFORMAT;
 			}
 		}
 
@@ -385,7 +386,7 @@ namespace DocFileFormat
 			if (bCancel)
 			{
 				Clear();
-				return S_FALSE;
+				return AVS_ERROR_FILEFORMAT;
 			}
 		}
 
@@ -423,11 +424,11 @@ namespace DocFileFormat
 			if (bCancel)
 			{
 				Clear();
-				return S_FALSE;
+				return AVS_ERROR_FILEFORMAT;
 			}
 		}
 
-		return S_OK;
+		return 0;
 	}
 
 	// Returns a list of all CHPX which are valid for the given FCs.

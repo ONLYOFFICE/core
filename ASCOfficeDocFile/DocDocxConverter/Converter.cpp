@@ -169,11 +169,11 @@ namespace DocFileFormat
 		
 		result = doc.LoadDocument(progress);
 
-        if (result != S_FALSE)
+        if (result == S_OK)
 		{
 			result = Convert(&doc, &docx, progress);
 
-            if (result != S_FALSE)
+            if (result == S_OK)
 			{
 				docx.SaveDocument();
 

@@ -88,6 +88,9 @@ public:
 
 	std::wstring GetTargetMoniker(XLS::BiffStructure *moniker);
 
+	bool isError();
+	bool is_older_version;
+
 private:	
 	void convert_chart_sheet	(XLS::ChartSheetSubstream * chart);
 

@@ -35,8 +35,11 @@
 #define AVS_OFFICEFILE_ERROR_SAVE_EMPTY									(AVS_OFFICEFILE_ERROR_FIRST + 0x0004) //Формат файла не поддерживается
 #define AVS_OFFICEFILE_ERROR_PRINT_OUT_OF_AREA							(AVS_OFFICEFILE_ERROR_FIRST + 0x0005) //печать за границами области печати
 
+//AVSOfficeMsFile
+#define AVS_MSFILE_ERROR_OLDER			(AVS_ERROR_FIRST + 0x0090)
 
-// AVSOdtFile	0x0100 - 0x0200
+
+// AVSOdfFile	0x0100 - 0x0200
 #define AVS_ODTFILE_ERROR_INPUT_FILE	(AVS_ERROR_FIRST + 0x0100)	// Ошибка в входном файле
 #define AVS_ODTFILE_ERROR_ORIGIN_FILE	(AVS_ERROR_FIRST + 0x0101)	// Ошибка в шаблоном файле
 #define AVS_ODTFILE_ERROR_CONVERT		(AVS_ERROR_FIRST + 0x0102)	// Ошибка при конвертации

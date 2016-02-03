@@ -10,6 +10,7 @@ namespace XLS
 SHAREDSTRINGS::SHAREDSTRINGS(const unsigned short code_page)
 : code_page_(code_page)
 {
+	size_ = 0 ;
 }
 
 
@@ -33,6 +34,8 @@ const bool SHAREDSTRINGS::loadContent(BinProcessor& proc)
 		return false;
 	}
 	proc.repeated<Continue>(0, 0);
+
+	size_ = sst.rgb.size();
 	return true;
 }
 

@@ -21,6 +21,7 @@ GlobalWorkbookInfo::GlobalWorkbookInfo(const unsigned short code_page, XlsConver
 	currentChartWidth		= 1.;
 	currentChartHeight		= 1.;
 
+	startAddedSharedStrings = 0;
 }
 
 

@@ -22,11 +22,15 @@ public:
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
 
+	int serialize(std::wostream & stream);
+
 	static const ElementType	type = typeLabel;
 
-//-----------------------------
 	Cell cell;
 	XLUnicodeString st;
+//-----------------------------
+
+	int isst_;
 };
 
 } // namespace XLS

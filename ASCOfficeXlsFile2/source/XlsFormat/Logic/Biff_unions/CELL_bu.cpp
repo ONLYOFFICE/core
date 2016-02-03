@@ -8,6 +8,7 @@
 #include <Logic/Biff_records/BoolErr.h>
 #include <Logic/Biff_records/Number.h>
 #include <Logic/Biff_records/LabelSst.h>
+#include <Logic/Biff_records/Label.h> // глючный файл SchetPrintForm.xls
 
 namespace XLS
 {
@@ -40,6 +41,7 @@ const bool CELL::loadContent(BinProcessor& proc)
 	BoolErr		boolerr;
 	Number		number;
 	LabelSst	labelsst;
+	Label		label;
 
 	if(proc.optional(formula_union))
 	{
@@ -68,6 +70,10 @@ const bool CELL::loadContent(BinProcessor& proc)
 	else if(proc.optional(number))
 	{
 		RowNumber = number.getLocation().getRow();
+	}
+	else if(proc.optional(label))//
+	{
+		RowNumber = label.cell.getLocation().getRow();
 	}
 	else if(proc.optional(labelsst))
 	{

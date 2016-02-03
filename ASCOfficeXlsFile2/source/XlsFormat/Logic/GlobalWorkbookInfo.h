@@ -61,6 +61,9 @@ public:
 	std::multimap<std::wstring, std::wstring>	mapDefineNames;
 	std::vector<std::wstring>					arDefineNames;
 
+	unsigned int								startAddedSharedStrings;
+	std::vector<std::wstring>					arAddedSharedStrings;
+
 	std::vector<std::pair<boost::shared_array<char>, size_t> >	bin_data;
 
 	std::map<int, double>						customColumnsWidth;

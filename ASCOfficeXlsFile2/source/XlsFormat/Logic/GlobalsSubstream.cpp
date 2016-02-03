@@ -257,6 +257,8 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 	{
 		m_SHAREDSTRINGS = elements_.back();
 		elements_.pop_back();
+
+		proc.getGlobalWorkbookInfo()->startAddedSharedStrings = shared_strings.size_;
 	}
 	
 	proc.optional<ExtSST>(); // OpenOffice Calc stored files workaround (ExtSST is mandatory according to [MS-XLS])

@@ -92,7 +92,15 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 		m_GLOBALS = elements_.back();
 		elements_.pop_back();
 	}
-	
+//------------------------------глючный файл SchetPrintForm.xls
+	if (proc.optional<Dimensions>())
+	{
+		m_Dimensions = elements_.back();
+		elements_.pop_back();
+	}
+	count = proc.repeated<WINDOW>(1, 0);
+//----------------------------------------------
+
 	// OpenOffice Calc stored files workaround (DefColWidth is mandatory and located inside COLUMNS according to [MS-XLS])
 	if (proc.optional<COLUMNS>())
 	{
@@ -154,7 +162,6 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 			elements_.pop_back();
 		}
 	}
-
     OBJECTS objects(false);
     if (proc.optional(objects))
 	{

@@ -45,6 +45,7 @@
 #include "xlsx_package.h"
 
 #include <simple_xml_writer.h>
+#include <utils.h>
 
 #include <boost/lexical_cast.hpp>
 #include <boost/utility.hpp>
@@ -236,7 +237,7 @@ void XlsConverter::convert(XLS::WorkbookStreamObject* woorkbook)
 
     for (int i=0 ; i < woorkbook->m_arWorksheetSubstream.size(); i++)
 	{
-		xlsx_context->start_table(xls_global_info->sheets_names[i]);
+		xlsx_context->start_table(xls_global_info->sheets_names.size() > i ? xls_global_info->sheets_names[i] : L"Sheet_" + boost::lexical_cast<std::wstring>(i+1));
 
 		if (woorkbook->m_arWorksheetSubstream[i]->get_type() == XLS::typeWorksheetSubstream)
 		{
@@ -1239,11 +1240,34 @@ void XlsConverter::convert(ODRAW::OfficeArtFOPT * fort)
 
 void XlsConverter::convert(XLS::SHAREDSTRINGS* sharedstrings)
 {
-	if (sharedstrings == NULL) return;
-	
-	for (std::list<XLS::BaseObjectPtr>::iterator it = sharedstrings->elements_.begin(); it != sharedstrings->elements_.end(); it++)
+	int count = xls_global_info->startAddedSharedStrings + xls_global_info->arAddedSharedStrings.size();
+
+	CP_XML_WRITER(xlsx_context->shared_strings())    
 	{
-		(*it)->serialize(xlsx_context->shared_strings());
+		CP_XML_NODE(L"sst")
+		{
+			CP_XML_ATTR(L"uniqueCount", count);
+			CP_XML_ATTR(L"xmlns", "http://schemas.openxmlformats.org/spreadsheetml/2006/main");
+			if (sharedstrings)
+			{	
+				for (std::list<XLS::BaseObjectPtr>::iterator it = sharedstrings->elements_.begin(); it != sharedstrings->elements_.end(); it++)
+				{
+					(*it)->serialize(CP_XML_STREAM());
+				}
+			}
+
+			for (int i = 0 ; i < xls_global_info->arAddedSharedStrings.size(); i++)
+			{
+				CP_XML_NODE(L"si")
+				{	
+					CP_XML_NODE(L"t")
+					{		
+						CP_XML_ATTR(L"xml:space", "preserve");
+						CP_XML_STREAM() << STR::escape_ST_Xstring(xml::utils::replace_text_to_xml(xls_global_info->arAddedSharedStrings[i]));
+					}
+				}
+			}
+		}
 	}
 }
 

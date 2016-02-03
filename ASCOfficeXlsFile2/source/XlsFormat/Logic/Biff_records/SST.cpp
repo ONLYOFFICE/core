@@ -87,38 +87,32 @@ int SST::serialize(std::wostream & stream)
 {
 	CP_XML_WRITER(stream)    
 	{
-		CP_XML_NODE(L"sst")
+		for (int i=0; i < rgb.size(); i++)
 		{
-			CP_XML_ATTR(L"uniqueCount", rgb.size());
-			CP_XML_ATTR(L"xmlns", "http://schemas.openxmlformats.org/spreadsheetml/2006/main");
+			XLUnicodeRichExtendedString *richText = dynamic_cast<XLUnicodeRichExtendedString *>(rgb[i].get());
 
-            for (int i=0; i < rgb.size(); i++)
-			{
-				XLUnicodeRichExtendedString *richText = dynamic_cast<XLUnicodeRichExtendedString *>(rgb[i].get());
+			if (richText == NULL) continue;
 
-				if (richText == NULL) continue;
-
-				CP_XML_NODE(L"si")
-				{	
-					try
+			CP_XML_NODE(L"si")
+			{	
+				try
+				{
+					//внутрь не втаскиваем- в некоторых элементах обязательно писать r-rPr-t в некоторых достаточно t
+					if (richText->rgRun.size() >0)
+					{							
+						richText->serialize(CP_XML_STREAM());
+					}
+					else
 					{
-						//внутрь не втаскиваем- в некоторых элементах обязательно писать r-rPr-t в некоторых достаточно t
-						if (richText->rgRun.size() >0)
-						{							
-							richText->serialize(CP_XML_STREAM());
-						}
-						else
-						{
-							CP_XML_NODE(L"t")
-							{		
-								CP_XML_STREAM() << STR::escape_ST_Xstring(xml::utils::replace_text_to_xml(richText->str_));
-							}
+						CP_XML_NODE(L"t")
+						{		
+							CP_XML_STREAM() << STR::escape_ST_Xstring(xml::utils::replace_text_to_xml(richText->str_));
 						}
 					}
-					catch(...)
-					{
-						CP_XML_NODE(L"t");
-					}
+				}
+				catch(...)
+				{
+					CP_XML_NODE(L"t");
 				}
 			}
 		}

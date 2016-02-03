@@ -107,6 +107,7 @@ namespace DocFileFormat
 		int								_footnoteNr;
 		int								_endnoteNr;
 		int								_commentNr;
+		bool							_isSectionPageBreak;
 		bool							_writeInstrText;
 		unsigned int					_fldCharCounter;
 		IMapping*						_caller;

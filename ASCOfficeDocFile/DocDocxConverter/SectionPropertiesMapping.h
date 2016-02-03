@@ -133,13 +133,12 @@ namespace DocFileFormat
 		// Converts the given SectionPropertyExceptions
 		virtual void Apply (IVisitable* visited);
 
+		const std::wstring	& get_section_type();
 	private:
 		
 		void AppendRef (XMLTools::XMLElement<wchar_t>* pBaseNode, const wchar_t* element, const wchar_t* refType, const wchar_t* refId);
 
 		bool WriteSectionStory (CharacterRange* pRange, const std::wstring& StoryType, const std::wstring& Story);
-
-	private: 
 
 		XMLTools::XMLElement<wchar_t>*	m_pXmlNode;
 		bool							m_bDeleteNode;

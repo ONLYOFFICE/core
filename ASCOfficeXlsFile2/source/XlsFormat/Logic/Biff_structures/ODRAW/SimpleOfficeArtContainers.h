@@ -82,12 +82,12 @@ public:
 
 	static const XLS::ElementType	type = XLS::typeOfficeArtClientData;//FConnectorRule
 
-	unsigned int ruid;
-	unsigned int spidA;
-	unsigned int spidB;
-	unsigned int spidC;
-	unsigned int cptiA;
-	unsigned int cptiB;
+	_UINT32 ruid;
+	_UINT32 spidA;
+	_UINT32 spidB;
+	_UINT32 spidC;
+	_UINT32 cptiA;
+	_UINT32 cptiB;
 
 };
 

@@ -22,8 +22,8 @@ public:
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-	unsigned int hashValue;
-	std::vector<FactoidData> rgFactoid;
+	_UINT32						hashValue;
+	std::vector<FactoidData>	rgFactoid;
 };
 
 } // namespace XLS

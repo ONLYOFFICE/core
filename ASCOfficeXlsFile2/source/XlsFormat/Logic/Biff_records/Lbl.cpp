@@ -147,9 +147,12 @@ void Lbl::readFields(CFRecord& record)
 	record >> cch >> cce;
 	record.skipNunBytes(2);
 	record >> itab;
+
 	record.skipNunBytes(4);
+	
 	Name_bin.setSize(cch); // this is to process built-in string values
 	record >> Name_bin;
+	
 	rgce.load(record, cce);
 
 	if(!fBuiltin)

@@ -18,7 +18,7 @@ public:
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-	unsigned int index;
+	_UINT32 index;
 };
 
 typedef boost::shared_ptr<MDXStrIndex> MDXStrIndexPtr;

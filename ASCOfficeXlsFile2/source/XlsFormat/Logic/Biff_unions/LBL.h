@@ -23,6 +23,9 @@ public:
 	static const ElementType	type = typeLBL;
 
 	BaseObjectPtr m_Lbl;
+//-------------------------------------------------------
+
+	bool isSerialize;
 
 };
 

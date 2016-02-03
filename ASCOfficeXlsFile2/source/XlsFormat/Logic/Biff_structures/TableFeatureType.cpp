@@ -94,17 +94,17 @@ void TableFeatureType::load(CFRecord& record)
 	record >> cbFSData;			// 64
 	record >> rupBuild;			// Build number of the application
 
-	unsigned int _lt = lt;
-	unsigned int _idList = idList;
-	unsigned int _crwHeader = crwHeader;
-	unsigned int _crwTotals = crwTotals;
-	unsigned int _idFieldNext = idFieldNext;
-	unsigned int _cbFSData = cbFSData;
-	unsigned int _rupBuild = rupBuild;
+	_UINT32 _lt = lt;
+	_UINT32 _idList = idList;
+	_UINT32 _crwHeader = crwHeader;
+	_UINT32 _crwTotals = crwTotals;
+	_UINT32 _idFieldNext = idFieldNext;
+	_UINT32 _cbFSData = cbFSData;
+	_UINT32 _rupBuild = rupBuild;
 
 	record.skipNunBytes(2);		// unused1
 
-	unsigned short flags;
+	_UINT16 flags;
 	record >> flags;
 	
 	fAutoFilter = static_cast<unsigned char>(GETBIT(flags, 1));

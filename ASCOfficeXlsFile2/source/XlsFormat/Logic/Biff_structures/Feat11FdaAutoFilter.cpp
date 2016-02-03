@@ -45,7 +45,7 @@ void Feat11FdaAutoFilter::load(CFRecord& record)
 	record >> cbAutoFilter;	
 	record.skipNunBytes(2);	
 
-	unsigned int size = cbAutoFilter;
+	_UINT32 size = cbAutoFilter;
 	if (cbAutoFilter)
 		recAutoFilter.readFields(record);
 }

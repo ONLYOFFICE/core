@@ -20,9 +20,9 @@ public:
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-	unsigned int cbDxf;
-	DXFNPtr dxfn;
-	XFExtNoFRTPtr xfext;
+	_UINT32			cbDxf;
+	DXFNPtr			dxfn;
+	XFExtNoFRTPtr	xfext;
 };
 
 } // namespace XLS

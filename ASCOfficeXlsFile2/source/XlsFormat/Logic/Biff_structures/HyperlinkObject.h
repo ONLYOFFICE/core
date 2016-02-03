@@ -28,7 +28,7 @@ public:
 	virtual void load(XLS::CFRecord& record);
 	virtual void store(XLS::CFRecord& record);
 
-	unsigned int streamVersion;
+	_UINT32 streamVersion;
 
 	static const XLS::ElementType	type = XLS::typeHyperlinkObject;
 

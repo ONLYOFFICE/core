@@ -20,7 +20,7 @@ public:
 	virtual void load(XLS::CFRecord& record);
 	virtual void store(XLS::CFRecord& record);
 
-	unsigned int id;
+	_UINT32	 id;
 	PBString rgbUri;
 	PBString rgbTag;
 	PBString rgbDownLoadURL;

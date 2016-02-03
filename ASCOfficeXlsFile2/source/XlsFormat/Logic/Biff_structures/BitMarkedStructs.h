@@ -165,7 +165,7 @@ struct BErr : public BiffStructure_NoVtbl
 
 struct XColorType : public BiffStructure_NoVtbl
 {
-	unsigned int type;
+	_UINT32 type;
 	enum
 	{
 		XCLRAUTO = 0x00000000, // Automatic color
@@ -179,7 +179,7 @@ struct XColorType : public BiffStructure_NoVtbl
 
 struct RevisionType : public BiffStructure_NoVtbl
 {
-	unsigned short type;
+	_UINT16 type;
 	enum
 	{
 		REVTINSRW = 0x0000,		// Insert Row.
@@ -268,15 +268,14 @@ struct ExtSheetPair : public BiffStructure_NoVtbl
 
 struct CondDataValue : public BiffStructure_NoVtbl
 {
-	unsigned int condDataValue;
-private:
-	unsigned int reserved;
+	_UINT32 condDataValue;
+	_UINT32 reserved;
 };
 
 
 struct KPISets : public BiffStructure_NoVtbl
 {
-	unsigned int set;
+	_UINT32 set;
 	enum {
 		KPINIL = 0xFFFFFFFF, // Sort by no-icon
 		KPI3ARROWS = 0x00000000, // Kpi3 Arrows set

@@ -21,8 +21,11 @@ void XFPropGradient::store(CFRecord& record)
 
 void XFPropGradient::load(CFRecord& record)
 {
-	record >> type1 >> numDegree >> numFillToLeft >> numFillToRight >> 
+	_UINT32 temp;
+	record >> temp >> numDegree >> numFillToLeft >> numFillToRight >> 
 		numFillToTop >> numFillToBottom;
+	
+	type1 = temp;
 }
 
 

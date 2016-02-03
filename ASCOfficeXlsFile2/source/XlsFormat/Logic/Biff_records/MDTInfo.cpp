@@ -32,8 +32,10 @@ void MDTInfo::readFields(CFRecord& record)
 {
 	record.skipNunBytes(12);
 #pragma message("############################ frtHeader skipped here")
-	unsigned int flags;
+	
+	_UINT32 flags;
 	record >> flags;
+	
 	fGhostRow = GETBIT(flags, 0);
 	fGhostCol = GETBIT(flags, 1);
 	fEdit = GETBIT(flags, 2);

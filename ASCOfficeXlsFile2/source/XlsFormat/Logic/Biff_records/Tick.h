@@ -41,7 +41,7 @@ public:
 	Icv icv;
 	BIFF_WORD trot;
 
-	int rott;
+	int _rott;
 };
 
 } // namespace XLS

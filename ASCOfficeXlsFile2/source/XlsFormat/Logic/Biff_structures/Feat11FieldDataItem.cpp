@@ -65,7 +65,7 @@ void Feat11FieldDataItem::load(CFRecord& record)
 	record >> cbFmtAgg;
 	record >> istnAgg;
 
-	unsigned int flags;
+	_UINT32 flags;
 	record >> flags;
 
 	fAutoFilter = static_cast<unsigned char>(GETBIT(flags, 0));

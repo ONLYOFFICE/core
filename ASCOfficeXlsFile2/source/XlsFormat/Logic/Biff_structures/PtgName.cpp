@@ -54,9 +54,9 @@ void PtgName::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
 
 	std::wstring ptg;
 	
-	if ((global_info) && (nameindex <= global_info->defineNames.size()))
+	if ((global_info) && (nameindex <= global_info->arDefineNames.size()))
 	{
-		ptg = global_info->defineNames[nameindex-1];
+		ptg = global_info->arDefineNames[nameindex-1];
 	}
 	
 	if(!ptg.empty())

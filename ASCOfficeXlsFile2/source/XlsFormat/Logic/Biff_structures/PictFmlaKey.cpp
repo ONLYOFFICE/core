@@ -40,7 +40,7 @@ void PictFmlaKey::store(CFRecord& record)
 
 void PictFmlaKey::load(CFRecord& record)
 {
-	unsigned int cbKey;
+	_UINT32 cbKey;
 	record >> cbKey;
 
 	record.skipNunBytes(cbKey); // ActiveX license key is here

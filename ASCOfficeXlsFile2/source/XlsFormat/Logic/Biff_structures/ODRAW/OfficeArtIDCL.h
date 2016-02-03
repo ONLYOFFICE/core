@@ -21,9 +21,8 @@ public:
 	virtual void load(XLS::CFRecord& record);
 	virtual void store(XLS::CFRecord& record);
 
-public:
-	unsigned int dgid;
-	unsigned int cspidCur;
+	_UINT32 dgid;
+	_UINT32 cspidCur;
 };
 
 typedef boost::shared_ptr<OfficeArtIDCL> OfficeArtIDCLPtr;

@@ -20,7 +20,8 @@ BiffStructurePtr CellXF::clone()
 
 void CellXF::store(CFRecord& record)
 {
-	unsigned int flags = 0;
+	_UINT32 flags = 0;
+
 	SETBITS(flags, 0, 2, alc);
 	SETBIT(flags, 3, fWrap);
 	SETBITS(flags, 4, 6, alcV);
@@ -68,11 +69,13 @@ void CellXF::load(CFRecord& record)
 {
 	m_GlobalWorkbookInfo = record.getGlobalWorkbookInfo();
 
-	unsigned int flags1;
-	unsigned int flags2;
-	unsigned int flags3;
-	unsigned short flags4;
+	_UINT32 flags1;
+	_UINT32 flags2;
+	_UINT32 flags3;
+	_UINT16 flags4;
+
 	record >> flags1 >> flags2 >> flags3 >> flags4;
+	
 	alc = static_cast<unsigned char>(GETBITS(flags1, 0, 2));
 	fWrap = GETBIT(flags1, 3);
 	alcV = static_cast<unsigned char>(GETBITS(flags1, 4, 6));

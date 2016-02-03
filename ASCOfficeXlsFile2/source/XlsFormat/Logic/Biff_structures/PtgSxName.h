@@ -20,7 +20,7 @@ public:
 	virtual void assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data);
 
 private:
-	unsigned int sxIndex;
+	_UINT32 sxIndex;
 };
 
 } // namespace XLS

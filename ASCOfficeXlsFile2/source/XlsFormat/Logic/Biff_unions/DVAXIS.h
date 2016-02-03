@@ -23,7 +23,7 @@ public:
 
 	int serialize(std::wostream & _stream);
 
-	unsigned int id;
+	_UINT32			id;
 
 	BaseObjectPtr	m_Axis;
 	BaseObjectPtr	m_AXS;

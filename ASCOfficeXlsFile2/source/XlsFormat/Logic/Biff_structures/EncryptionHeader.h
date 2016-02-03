@@ -20,11 +20,11 @@ public:
 	virtual void store(XLS::CFRecord& record);
 
 	EncryptionHeaderFlags Flags;
-    int AlgID;
-    int AlgIDHash;
-	unsigned int KeySize;
-	unsigned int ProviderType;
-	std::wstring CSPName;
+    _INT32			AlgID;
+    _INT32			AlgIDHash;
+	_UINT32			KeySize;
+	_UINT32			ProviderType;
+	std::wstring	CSPName;
 };
 
 } // namespace CRYPTO

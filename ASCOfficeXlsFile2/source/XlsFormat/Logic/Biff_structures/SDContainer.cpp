@@ -33,7 +33,7 @@ void SDContainer::store(CFRecord& record)
 
 void SDContainer::load(CFRecord& record)
 {
-	unsigned int cbSD;
+	_UINT32 cbSD;
 	record >> cbSD >> sd;
 }
 

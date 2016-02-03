@@ -23,7 +23,8 @@ BiffStructurePtr StyleXF::clone()
 
 void StyleXF::store(CFRecord& record)
 {
-	unsigned int flags = 0;
+	_UINT32 flags = 0;
+	
 	SETBITS(flags, 0, 2, alc);
 	SETBIT(flags, 3, fWrap);
 	SETBITS(flags, 4, 6, alcV);
@@ -52,7 +53,7 @@ void StyleXF::store(CFRecord& record)
 	SETBITS(flags, 26, 31, fill.fls);
 	record << flags;
 
-	unsigned short flags2 = 0;
+	_UINT16 flags2 = 0;
 	SETBITS(flags2, 0, 6, fill.icvFore);
 	SETBITS(flags2, 7, 13, fill.icvBack);
 	record << flags2;
@@ -63,10 +64,10 @@ void StyleXF::load(CFRecord& record)
 {
 	m_GlobalWorkbookInfo = record.getGlobalWorkbookInfo();
 
-	unsigned int flags1;
-	unsigned int flags2;
-	unsigned int flags3;
-	unsigned short flags4;
+	_UINT32 flags1;
+	_UINT32 flags2;
+	_UINT32 flags3;
+	_UINT16 flags4;
 	
 	record >> flags1 >> flags2 >> flags3 >> flags4;
 	

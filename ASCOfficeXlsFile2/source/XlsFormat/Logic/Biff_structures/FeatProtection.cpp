@@ -35,7 +35,7 @@ void FeatProtection::store(CFRecord& record)
 
 void FeatProtection::load(CFRecord& record)
 {
-	unsigned int flags;
+	_UINT32 flags;
 	record >> flags;
 	fSD = GETBIT(flags, 0);
 	record >> wPassword >> stTitle;

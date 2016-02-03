@@ -22,7 +22,7 @@ void FactoidType::store(XLS::CFRecord& record)
 
 void FactoidType::load(XLS::CFRecord& record)
 {
-	unsigned int cbFactoid;
+	_UINT32 cbFactoid;
 	record >> cbFactoid >> id >> rgbUri >> rgbTag >> rgbDownLoadURL;
 }
 

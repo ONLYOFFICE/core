@@ -49,8 +49,9 @@ void ItemMoniker::store(XLS::CFRecord& record)
 
 void ItemMoniker::load(XLS::CFRecord& record)
 {
-	unsigned int delimiterLength;
+	_UINT32 delimiterLength;
 	record >> delimiterLength >> delimiterAnsi;
+	
 	int sizeof_delimiterUnicode = delimiterLength - (delimiterAnsi.length() + 1);
 
     if(sizeof_delimiterUnicode > 0)
@@ -63,8 +64,9 @@ void ItemMoniker::load(XLS::CFRecord& record)
         record.skipNunBytes(sizeof_delimiterUnicode);
 	}
 
-	unsigned int itemLength;
+	_UINT32 itemLength;
 	record >> itemLength >> itemAnsi;
+	
 	int sizeof_itemUnicode = itemLength - (itemAnsi.length() + 1);
 
     if(sizeof_itemUnicode > 0)

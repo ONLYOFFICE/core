@@ -48,7 +48,7 @@ void Tick::readFields(CFRecord& record)
 	fAutoRot = GETBIT(flags, 5);
 	iReadingOrder = GETBITS(flags, 14, 15);
 
-	rott = rot;
+	_rott = rot;
 }
 
 int Tick::serialize(std::wostream & _stream)

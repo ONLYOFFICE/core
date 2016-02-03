@@ -24,7 +24,7 @@ public:
 	static const ElementType	type = typeBoundSheet8;
 
 //-----------------------------
-	ForwardOnlyParam<unsigned int> lbPlyPos;
+	ForwardOnlyParam<_UINT32> lbPlyPos;
 	BIFF_BSTR hsState;
 	BIFF_BYTE dt;
 	ShortXLUnicodeString stName;

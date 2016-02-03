@@ -38,8 +38,10 @@ void SheetExt::readFields(CFRecord& record)
 	record >> frtHeader;
 
 	record >> cb;
-	unsigned int flags;
+	
+	_UINT32 flags;
 	record >> flags;
+	
 	icvPlain = static_cast<unsigned char>(GETBITS(flags, 0, 6));
 
 	if(0x00000028 == cb)

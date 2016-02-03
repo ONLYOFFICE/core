@@ -46,7 +46,8 @@ BiffStructurePtr DXFALC::clone()
 //
 void DXFALC::store(CFRecord& record)
 {
-	unsigned int flags = 0;
+	_UINT32 flags = 0;
+	
 	SETBITS(flags, 0, 2, alc);
 	SETBIT(flags, 3, fWrap);
 	SETBITS(flags, 4, 6, alcv);
@@ -63,8 +64,9 @@ void DXFALC::store(CFRecord& record)
 
 void DXFALC::load(CFRecord& record)
 {
-	unsigned int flags;
+	_UINT32 flags;
 	record >> flags;
+	
 	alc = static_cast<unsigned char>(GETBITS(flags, 0, 2));
 	fWrap = GETBIT(flags, 3);
 	alcv = static_cast<unsigned char>(GETBITS(flags, 4, 6));

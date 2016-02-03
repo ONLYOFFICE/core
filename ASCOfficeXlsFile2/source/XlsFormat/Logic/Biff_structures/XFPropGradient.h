@@ -18,7 +18,8 @@ public:
 
 	static const ElementType	type = typeXFPropGradient;
 
-	Boolean<unsigned int> type1;
+	bool	type1;
+
 	double numDegree;
 	double numFillToLeft;
 	double numFillToRight;

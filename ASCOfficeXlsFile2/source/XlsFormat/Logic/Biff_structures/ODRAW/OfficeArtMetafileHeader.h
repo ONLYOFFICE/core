@@ -42,10 +42,10 @@ public:
 	virtual void store(XLS::CFRecord& record);
 	virtual void load(XLS::CFRecord& record);
 
-	unsigned int cbSize;
+	_UINT32 cbSize;
 	RECT rcBounds;
 	POINT ptSize;
-	unsigned int cbSave;
+	_UINT32 cbSave;
 	unsigned char compression;
 	unsigned char filter;
 };

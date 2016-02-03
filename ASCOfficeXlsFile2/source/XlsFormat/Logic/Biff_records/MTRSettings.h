@@ -20,15 +20,10 @@ public:
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
 //-----------------------------
-	Boolean<unsigned int> fMTREnabled;
-	Boolean<unsigned int> fUserSetThreadCount;
+	bool fMTREnabled;
+	bool fUserSetThreadCount;
+	
 	BIFF_DWORD cUserThreadCount;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(fMTREnabled)
-		//BO_ATTRIB_MARKUP_ATTRIB(fUserSetThreadCount)
-		//BO_ATTRIB_MARKUP_ATTRIB(cUserThreadCount)
-	//BO_ATTRIB_MARKUP_END
 
 };
 

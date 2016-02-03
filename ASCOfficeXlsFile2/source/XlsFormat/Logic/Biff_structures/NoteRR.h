@@ -23,21 +23,23 @@ public:
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-	RRD rrd;
-	bool bitfDelNote;
-	bool bitfAddNote;
-	RwU row;
-	ColU col;
-	bool fShow;
-	bool fRwHidden;
-	bool fColHidden;
-	_GUID_ guid;
-	unsigned int ichEnd;
-	unsigned int cchNote;
+	RRD				rrd;
+	bool			bitfDelNote;
+	bool			bitfAddNote;
+
+	RwU				row;
+	ColU			col;
+
+	bool			fShow;
+	bool			fRwHidden;
+	bool			fColHidden;
+
+	_GUID_			guid;
+	
+	_UINT32			ichEnd;
+	_UINT32			cchNote;
+
 	XLUnicodeString stAuthor;
-
-
-
 };
 
 } // namespace XLS

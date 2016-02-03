@@ -33,8 +33,9 @@ void SheetExtOptional::store(CFRecord& record)
 
 void SheetExtOptional::load(CFRecord& record)
 {
-	unsigned int flags;
+	_UINT32 flags;
 	record >> flags;
+	
 	icvPlain12 = static_cast<unsigned char>(GETBITS(flags, 0, 6));
 	fCondFmtCalc = GETBIT(flags, 7);
 	fNotPublished = GETBIT(flags, 8);

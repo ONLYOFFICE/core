@@ -21,7 +21,7 @@ public:
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-	unsigned int offset;
+	_UINT32 offset;
 };
 
 typedef boost::shared_ptr<FilePointer> FilePointerPtr;

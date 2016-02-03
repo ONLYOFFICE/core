@@ -25,9 +25,10 @@ public:
 	virtual void loadFields(XLS::CFRecord& record);
 	virtual void storeFields(XLS::CFRecord& record);
 
-	unsigned int spidMax;
-	unsigned int cspSaved;
-	unsigned int cdgSaved;
+	_UINT32 spidMax;
+	_UINT32 cspSaved;
+	_UINT32 cdgSaved;
+	
 	std::vector<OfficeArtIDCL> Rgidcl;
 };
 

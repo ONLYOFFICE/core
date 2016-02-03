@@ -18,8 +18,8 @@ public:
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-    int imdt;
-	unsigned short mdd;
+    _INT32		imdt;
+	_UINT16		mdd;
 };
 
 typedef boost::shared_ptr<MDir> MDirPtr;

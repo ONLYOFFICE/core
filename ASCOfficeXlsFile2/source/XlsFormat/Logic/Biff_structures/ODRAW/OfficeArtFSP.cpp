@@ -20,7 +20,8 @@ XLS::BiffStructurePtr OfficeArtFSP::clone()
 
 void OfficeArtFSP::storeFields(XLS::CFRecord& record)
 {
-	unsigned int flags = 0;
+	_UINT32 flags = 0;
+
 	SETBIT(flags, 0, fGroup);
 	SETBIT(flags, 1, fChild);
 	SETBIT(flags, 2, fPatriarch);
@@ -40,7 +41,7 @@ void OfficeArtFSP::storeFields(XLS::CFRecord& record)
 
 void OfficeArtFSP::loadFields(XLS::CFRecord& record)
 {
-	unsigned int flags;
+	_UINT32 flags;
 	record >> spid >> flags;
 
 	fGroup = GETBIT(flags, 0);

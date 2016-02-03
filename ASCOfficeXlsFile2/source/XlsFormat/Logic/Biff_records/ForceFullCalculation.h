@@ -23,11 +23,7 @@ public:
 	static const ElementType	type = typeForceFullCalculation;
 
 //-----------------------------
-	Boolean<unsigned int> fNoDeps;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(fNoDeps)
-	//BO_ATTRIB_MARKUP_END
+	bool fNoDeps;
 
 };
 

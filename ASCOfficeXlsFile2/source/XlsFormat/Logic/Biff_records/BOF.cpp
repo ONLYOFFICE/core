@@ -29,7 +29,8 @@ void BOF::writeFields(CFRecord& record)
 		record.registerDelayedFilePointerSource(rt_BoundSheet8);
 	}
 	record << vers << dt << rupBuild << rupYear;
-	unsigned int flags = 0;
+	
+	_UINT32 flags = 0;
 	SETBIT(flags, 0, fWin);
 	SETBIT(flags, 1, fRisc);
 	SETBIT(flags, 2, fBeta);
@@ -43,6 +44,7 @@ void BOF::writeFields(CFRecord& record)
 	SETBITS(flags, 14,17, verXLHigh);
 	record << flags;
 	record << verLowestBiff;
+	
 	unsigned char flags2 = 0;
 	SETBITS(flags2, 0, 3, verLastXLSaved);
 	record << flags2;
@@ -56,7 +58,7 @@ void BOF::readFields(CFRecord& record)
 	
 	if (vers == (_UINT16)0x600)
 	{
-		unsigned int flags;
+		_UINT32 flags;
 		record >> flags;
 		
 		fWin = GETBIT(flags, 0);
@@ -76,6 +78,7 @@ void BOF::readFields(CFRecord& record)
 		unsigned char flags2;
 		record >> flags2;
 		verLastXLSaved = GETBITS(flags2, 0, 3);
+		
 		stream_ptr = record.getStreamPointer();
 		record.skipNunBytes(2); // reserved
 	}

@@ -18,8 +18,8 @@ public:
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-	unsigned int ib;
-	unsigned short cbOffset;
+	_UINT32 ib;
+	_UINT16 cbOffset;
 };
 
 typedef boost::shared_ptr<ISSTInf> ISSTInfPtr;

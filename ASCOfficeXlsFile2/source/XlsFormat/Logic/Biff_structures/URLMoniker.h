@@ -21,12 +21,12 @@ public:
 
 	static const XLS::ElementType	type = XLS::typeURLMoniker;
 
-	std::wstring url;
-	std::wstring serialGUID;
+	std::wstring	url;
+	std::wstring	serialGUID;
 	
-	unsigned int serialVersion;
+	_UINT32			serialVersion;
 	
-	URICreateFlags uriFlags;
+	URICreateFlags	uriFlags;
 };
 
 } // namespace OSHARED

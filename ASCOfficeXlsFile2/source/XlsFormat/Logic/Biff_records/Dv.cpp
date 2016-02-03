@@ -20,11 +20,13 @@ void Dv::writeFields(CFRecord& record)
 
 void Dv::readFields(CFRecord& record)
 {
-	unsigned int flags;
+	_UINT32 flags;
 	record >> flags;
+
 	valType = static_cast<unsigned char>(GETBITS(flags, 0, 3));
 	errStyle = static_cast<unsigned char>(GETBITS(flags, 4, 6));
-	fStrLookup = GETBIT(flags, 7);
+	
+	fStrLookup	= GETBIT(flags, 7);
 	fAllowBlank = GETBIT(flags, 8);
 	fSuppressCombo = GETBIT(flags, 9);
 	mdImeMode = static_cast<unsigned char>(GETBITS(flags, 10, 17));

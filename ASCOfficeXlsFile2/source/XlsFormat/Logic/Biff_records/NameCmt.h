@@ -24,12 +24,6 @@ public:
 //-----------------------------
 	XLUnicodeStringNoCch name;
 	XLUnicodeStringNoCch comment;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(name)
-		//BO_ATTRIB_MARKUP_ATTRIB(comment)
-	//BO_ATTRIB_MARKUP_END
-
 };
 
 } // namespace XLS

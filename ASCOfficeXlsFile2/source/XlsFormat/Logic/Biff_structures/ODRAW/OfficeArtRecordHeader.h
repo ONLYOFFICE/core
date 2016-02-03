@@ -28,7 +28,7 @@ public:
 	unsigned char	recVer;
 	unsigned short	recInstance;
 	unsigned short	recType;
-	unsigned int	recLen;
+	_UINT32	recLen;
 };
 
 typedef boost::shared_ptr<OfficeArtRecordHeader> OfficeArtRecordHeaderPtr;

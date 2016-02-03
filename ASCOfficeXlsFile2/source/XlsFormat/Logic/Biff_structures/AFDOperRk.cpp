@@ -36,7 +36,7 @@ void AFDOperRk::load(CFRecord& record)
 	record >> rk;
 	record.skipNunBytes(4);
 
-	unsigned int _rk = rk;
+	_UINT32 _rk = rk;
 }
 
 

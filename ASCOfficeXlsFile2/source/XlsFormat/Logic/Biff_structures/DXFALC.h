@@ -18,17 +18,17 @@ public:
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-	unsigned char alc;
-	bool fWrap;
-	unsigned char alcv;
-	bool fJustLast;
-	unsigned char trot;
-	unsigned char cIndent;
-	bool fShrinkToFit;
-	bool fMergeCell;
-	unsigned char iReadingOrder;
+	unsigned char	alc;
+	bool			fWrap;
+	unsigned char	alcv;
+	bool			fJustLast;
+	unsigned char	trot;
+	unsigned char	cIndent;
+	bool			fShrinkToFit;
+	bool			fMergeCell;
+	unsigned char	iReadingOrder;
 
-	unsigned int iIndent;
+	_UINT32			iIndent;
 };
 
 } // namespace XLS

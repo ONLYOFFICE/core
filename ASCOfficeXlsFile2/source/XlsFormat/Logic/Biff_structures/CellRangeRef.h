@@ -120,9 +120,12 @@ public:
 		RwType rwLast;
 		ColType colFirst;
 		ColType colLast;
+		
 		record >> rwFirst >> rwLast >> colFirst >> colLast;
+		
 		rowFirst = rwFirst;
 		rowLast = rwLast;
+		
 		switch(rel_info)
 		{
 			case rel_Present:

@@ -573,8 +573,8 @@ class MSOPOINT : public XLS::BiffStructure
 
 	static const XLS::ElementType	type = XLS::typeOfficeArtRecord;
 
-    int x;
-    int y;
+    _INT32 x;
+    _INT32 y;
 
 	int cbElement;
 };

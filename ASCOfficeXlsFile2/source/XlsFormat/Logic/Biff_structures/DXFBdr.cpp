@@ -50,7 +50,8 @@ BiffStructurePtr DXFBdr::clone()
 //
 void DXFBdr::store(CFRecord& record)
 {
-	unsigned int flags = 0;
+	_UINT32 flags = 0;
+	
 	SETBITS(flags, 0, 3, dgLeft);
 	SETBITS(flags, 4, 7, dgRight);
 	SETBITS(flags, 8, 11, dgTop);
@@ -61,7 +62,8 @@ void DXFBdr::store(CFRecord& record)
 	SETBIT(flags, 31, bitDiagUp);
 	record << flags;
 
-	unsigned int flags2 = 0;
+	_UINT32 flags2 = 0;
+	
 	SETBITS(flags2, 0, 6, icvTop);
 	SETBITS(flags2, 7, 13, icvBottom);
 	SETBITS(flags2, 14, 20, icvDiag);
@@ -72,14 +74,16 @@ void DXFBdr::store(CFRecord& record)
 
 void DXFBdr::load(CFRecord& record)
 {
-	unsigned int flags;
+	_UINT32 flags;
 	record >> flags;
+	
 	dgLeft = static_cast<unsigned char>(GETBITS(flags, 0, 3));
 	dgRight = static_cast<unsigned char>(GETBITS(flags, 4, 7));
 	dgTop = static_cast<unsigned char>(GETBITS(flags, 8, 11));
 	dgBottom = static_cast<unsigned char>(GETBITS(flags, 12, 15));
 	icvLeft = static_cast<unsigned char>(GETBITS(flags, 16, 22));
 	icvRight = static_cast<unsigned char>(GETBITS(flags, 23, 29));
+	
 	bitDiagDown = GETBIT(flags, 30);
 	bitDiagUp = GETBIT(flags, 31);
 

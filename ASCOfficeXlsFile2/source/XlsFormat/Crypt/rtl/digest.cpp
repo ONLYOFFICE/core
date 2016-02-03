@@ -47,16 +47,16 @@ void DigestMD5::InitContext()
 {
 	memset(&m_context, 0, sizeof (DigestContextMD5));
 
-	m_context.m_nA = (unsigned int)0x67452301L;
-	m_context.m_nB = (unsigned int)0xefcdab89L;
-	m_context.m_nC = (unsigned int)0x98badcfeL;
-	m_context.m_nD = (unsigned int)0x10325476L;
+	m_context.m_nA = (_UINT32)0x67452301L;
+	m_context.m_nB = (_UINT32)0xefcdab89L;
+	m_context.m_nC = (_UINT32)0x98badcfeL;
+	m_context.m_nD = (_UINT32)0x10325476L;
 }
 
 void DigestMD5::UpdateContext()
 {
-	register unsigned int  A, B, C, D;
-	register unsigned int *X;
+	_UINT32  A, B, C, D;
+	_UINT32 *X;
 
 	A = m_context.m_nA;
 	B = m_context.m_nB;
@@ -146,8 +146,8 @@ void DigestMD5::EndContext()
 	};
 	register const unsigned char *p = end;
 	
-	register unsigned int *X;
-	register int i;
+	register _UINT32 *X;
+	register _INT32 i;
 
 	X = m_context.m_pData;
 	i = (m_context.m_nDatLen >> 2);
@@ -273,6 +273,7 @@ DigestMD5::rtlDigestError DigestMD5::Raw(unsigned char *pBuffer, const unsigned 
 	RTL_DIGEST_LTOC (m_context.m_nB, p);
 	RTL_DIGEST_LTOC (m_context.m_nC, p);
 	RTL_DIGEST_LTOC (m_context.m_nD, p);
+	
 	InitContext();
 
 	return rtl_Digest_E_None;

@@ -24,7 +24,7 @@ public:
 	static const ElementType	type = typeTextPropsStream;
 
 	FrtHeader		frtHeader;
-	unsigned int	dwChecksum;
+	_UINT32			dwChecksum;
 
 	std::string		xml_;
 };

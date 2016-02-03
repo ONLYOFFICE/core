@@ -596,6 +596,7 @@ void MSOPOINT::load(XLS::CFRecord& record)
 	{
 		unsigned char x_;
 		record >> x_;
+		
 		x = GETBITS(x_,0 , 3) << 8;
 		y = GETBITS(x_,4 , 8) << 8;
 	}

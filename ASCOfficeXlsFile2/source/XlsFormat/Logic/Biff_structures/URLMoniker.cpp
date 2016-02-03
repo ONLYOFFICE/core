@@ -24,14 +24,14 @@ XLS::BiffStructurePtr URLMoniker::clone()
 
 void URLMoniker::store(XLS::CFRecord& record)
 {
-	unsigned int length = (url.length() + 1) * 2;
+	_UINT32 length = (url.length() + 1) * 2;
 	record << length << url;
 }
 
 
 void URLMoniker::load(XLS::CFRecord& record)
 {
-	unsigned int length;
+	_UINT32 length;
 	record >> length;
 	try
 	{

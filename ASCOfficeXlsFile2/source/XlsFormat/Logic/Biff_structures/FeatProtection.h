@@ -23,10 +23,11 @@ public:
 	static const ElementType	type = typeFeatProtection;
 
 	bool fSD;
-	unsigned int wPassword;
+	_UINT32			wPassword;
 	XLUnicodeString stTitle;
-	SDContainer sdContainer;
-	bool sdContainer_set;
+	
+	SDContainer		sdContainer;
+	bool			sdContainer_set;
 };
 
 } // namespace XLS

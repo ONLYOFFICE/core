@@ -20,9 +20,9 @@ public:
 
 	static const ElementType	type = typeExternOleDdeLink;
 
-	unsigned int lStgName;
-	ShortXLUnicodeString linkName;
-	MOper moper;
+	_UINT32					lStgName;
+	ShortXLUnicodeString	linkName;
+	MOper					moper;
 };
 
 } // namespace XLS

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../../../Common/DocxFormat/Source/Base/Types_32.h"
 
 class DigestMD5
 {
@@ -26,15 +27,15 @@ private:
 	void EndContext();
 
 private:
-	static const unsigned int DIGEST_CBLOCK_MD5 = 64;
-	static const unsigned int DIGEST_LBLOCK_MD5 = 16;
+	static const _UINT32 DIGEST_CBLOCK_MD5 = 64;
+	static const _UINT32 DIGEST_LBLOCK_MD5 = 16;
 
 	typedef struct digestMD5_context_st
 	{
-		unsigned int m_nDatLen;
-		unsigned int m_pData[DIGEST_LBLOCK_MD5];
-		unsigned int m_nA, m_nB, m_nC, m_nD;
-		unsigned int m_nL, m_nH;
+		_UINT32 m_nDatLen;
+		_UINT32 m_pData[DIGEST_LBLOCK_MD5];
+		_UINT32 m_nA, m_nB, m_nC, m_nD;
+		_UINT32 m_nL, m_nH;
 	} DigestContextMD5;
 
 	DigestContextMD5 m_context;

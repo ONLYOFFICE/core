@@ -21,13 +21,13 @@ public:
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-	unsigned int cbMemory;
-    int revid;
+	_UINT32		cbMemory;
+    _INT32		revid;
 	RevisionType revt;
-	bool fAccepted;
-	bool fUndoAction;
-	bool fDelAtEdgeOfSort;
-	TabId tabid;
+	bool		fAccepted;
+	bool		fUndoAction;
+	bool		fDelAtEdgeOfSort;
+	TabId		tabid;
 
 };
 

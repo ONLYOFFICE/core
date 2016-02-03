@@ -32,7 +32,11 @@ void ForceFullCalculation::readFields(CFRecord& record)
 {
 	record.skipNunBytes(12);
 #pragma message("############################ frtHeader skipped here")
-	record >> fNoDeps;
+
+	_UINT32 temp;
+	record >> temp;
+	
+	fNoDeps = temp;
 }
 
 } // namespace XLS

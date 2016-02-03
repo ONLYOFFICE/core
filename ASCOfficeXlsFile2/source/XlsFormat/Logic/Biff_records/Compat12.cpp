@@ -32,8 +32,13 @@ void Compat12::writeFields(CFRecord& record)
 void Compat12::readFields(CFRecord& record)
 {
 	FrtHeader frtHeader(rt_Compat12);
+	
 	record >> frtHeader;
-	record >> fNoCompatChk;
+
+	_UINT32 flag = 0;
+	record >> flag;
+	
+	fNoCompatChk = (bool)flag;
 }
 
 } // namespace XLS

@@ -24,7 +24,7 @@ public:
 
 	Version EncryptionVersionInfo;
 	EncryptionHeaderFlags Flags;
-	unsigned int EncryptionHeaderSize;
+	_UINT32 EncryptionHeaderSize;
 	EncryptionHeader encryptionHeader;
 	EncryptionVerifier encryptionVerifier;
 };

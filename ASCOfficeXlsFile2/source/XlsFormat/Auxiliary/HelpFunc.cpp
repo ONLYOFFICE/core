@@ -637,7 +637,12 @@ const std::wstring xti_indexes2sheet_name(const short itabFirst, const short ita
 	static boost::wregex correct_sheet_name(L"^\\w[\\w\\d.]*(:\\w[\\w\\d.]*)?$");
 	if(!boost::regex_search(escaped_prefix.begin(), escaped_prefix.end(), correct_sheet_name))
 	{
-		return L'\'' + escaped_prefix + L'\'';
+		//int res_1 = escaped_prefix.find(L"\''");
+		//int res_2 = escaped_prefix.rfind(L"\''");
+		//if (res_1 != 0 || res_2 !=escaped_prefix.length() - 1)
+		{
+			return L'\'' + escaped_prefix + L'\'';
+		}
 	}
 	return escaped_prefix;
 }

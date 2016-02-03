@@ -23,8 +23,8 @@ public:
 
 	static const XLS::ElementType	type = XLS::typeOfficeArtFDG;
 
-	unsigned int csp;
-	unsigned int spidCur;
+	_UINT32 csp;
+	_UINT32 spidCur;
 };
 
 typedef boost::shared_ptr<OfficeArtFDG> OfficeArtFDGPtr;

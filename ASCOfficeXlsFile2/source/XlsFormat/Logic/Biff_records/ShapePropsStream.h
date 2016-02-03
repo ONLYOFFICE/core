@@ -24,8 +24,8 @@ public:
 
 	FrtHeader		frtHeader;
 	
-	unsigned short  wObjContext;
-	unsigned int	dwChecksum;
+	_UINT16			wObjContext;
+	_UINT32			dwChecksum;
 
 	std::string		xml_;
 

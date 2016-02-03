@@ -491,6 +491,10 @@ namespace DocFileFormat
 		parent->AppendChild (headerRef);
 	}
 
+	const std::wstring & SectionPropertiesMapping::get_section_type()
+	{
+		return _type;
+	}
 	bool SectionPropertiesMapping::WriteSectionStory (CharacterRange* pRange, const std::wstring& StoryType, const std::wstring& Story)
 	{
 		if ( pRange )

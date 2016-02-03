@@ -14,8 +14,9 @@ namespace DocFileFormat
 		_pPr			= new XMLTools::XMLElement<wchar_t>( _T( "w:pPr" ) );
 		_framePr		= new XMLTools::XMLElement<wchar_t>( _T( "w:framePr" ) );
 
-		_paraEndChpx	= paraEndChpx;
-		_isBidi			= isBidi;
+		_paraEndChpx		= paraEndChpx;
+		_isBidi				= isBidi;
+		_isSectionPageBreak	= false;
 	}
 
 	ParagraphPropertiesMapping::ParagraphPropertiesMapping( XmlUtils::CXmlWriter* writer, ConversionContext* context, WordDocument* document, CharacterPropertyExceptions* paraEndChpx, bool isBidi, SectionPropertyExceptions* sepx, int sectionNr, bool isParagraphStyleNeeded )
@@ -28,11 +29,12 @@ namespace DocFileFormat
 		_pPr			= new XMLTools::XMLElement<wchar_t>( _T( "w:pPr" ) );
 		_framePr		= new XMLTools::XMLElement<wchar_t>( _T( "w:framePr" ) );
 		
-		_paraEndChpx	= paraEndChpx;
-		_isBidi			= isBidi;
+		_paraEndChpx		= paraEndChpx;
+		_isBidi				= isBidi;
+		_isSectionPageBreak	= false;
 		
-		_sepx = sepx;
-		_sectionNr = sectionNr;
+		_sepx				= sepx;
+		_sectionNr			= sectionNr;
 	}
 
 	ParagraphPropertiesMapping::~ParagraphPropertiesMapping()
@@ -44,14 +46,18 @@ namespace DocFileFormat
 
 namespace DocFileFormat
 {
+	bool ParagraphPropertiesMapping::get_section_page_break()
+	{
+		return _isSectionPageBreak;
+	}
 	void ParagraphPropertiesMapping::Apply( IVisitable* visited )
 	{
 		ParagraphPropertyExceptions* papx = static_cast<ParagraphPropertyExceptions*>( visited );
 
-		XMLTools::XMLElement<wchar_t> ind( _T( "w:ind" ) );
-		XMLTools::XMLElement<wchar_t> numPr( _T( "w:numPr" ) );
-		XMLTools::XMLElement<wchar_t> pBdr( _T( "w:pBdr" ) );
-		XMLTools::XMLElement<wchar_t> spacing( _T( "w:spacing" ) );
+		XMLTools::XMLElement<wchar_t> ind		( _T( "w:ind" ) );
+		XMLTools::XMLElement<wchar_t> numPr		( _T( "w:numPr" ) );
+		XMLTools::XMLElement<wchar_t> pBdr		( _T( "w:pBdr" ) );
+		XMLTools::XMLElement<wchar_t> spacing	( _T( "w:spacing" ) );
 		XMLTools::XMLElement<wchar_t>* jc = NULL;
 
 		if ( this->_isParagraphStyleNeeded )
@@ -551,6 +557,13 @@ namespace DocFileFormat
 			XMLTools::XMLElement<wchar_t> sectPr( _T( "w:sectPr" ) );
 			SectionPropertiesMapping* sectionPropertiesMapping = new SectionPropertiesMapping( &sectPr, this->m_context, this->_sectionNr );
 			_sepx->Convert( sectionPropertiesMapping );
+
+			if (sectionPropertiesMapping->get_section_type() == L"nextPage")
+			{
+				//в этом параграфе уже есть разрыв страницы - br на page не нужен
+				//Vinci_Customer_Case_Study.doc
+				_isSectionPageBreak = true;
+			}
 			RELEASEOBJECT( sectionPropertiesMapping );
 			_pPr->AppendChild( sectPr );
 		}

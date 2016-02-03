@@ -16,6 +16,8 @@ namespace DocFileFormat
 		m_document				=	NULL;
 		m_context				=	context;
 		m_bInternalXmlWriter	=	false;
+
+		_isSectionPageBreak		=	false;
 	}
 
 	DocumentMapping::DocumentMapping(ConversionContext* context, XmlUtils::CXmlWriter* writer, IMapping* caller):_skipRuns(0),  _lastValidPapx(NULL), _lastValidSepx(NULL), _writeInstrText(false),
@@ -25,6 +27,8 @@ namespace DocFileFormat
 		m_document				=	NULL;
 		m_context				=	context;
 		m_bInternalXmlWriter	=	false;
+	
+		_isSectionPageBreak		=	false;
 	}
 
 	DocumentMapping::~DocumentMapping()
@@ -119,11 +123,11 @@ namespace DocFileFormat
 	
 	int DocumentMapping::writeParagraph (int initialCp, int cpEnd, bool sectionEnd)
 	{
-		int cp											=	initialCp;
-		int fc											=	m_document->FindFileCharPos(cp); 
-		int fcEnd										=	m_document->FindFileCharPos(cpEnd);
-
-		ParagraphPropertyExceptions* papx				=	findValidPapx(fc);
+		int		cp							=	initialCp;
+		int		fc							=	m_document->FindFileCharPos(cp); 
+		int		fcEnd						=	m_document->FindFileCharPos(cpEnd);
+		
+		ParagraphPropertyExceptions* papx	=	findValidPapx(fc);
 
 		// get all CHPX between these boundaries to determine the count of runs
 		
@@ -166,6 +170,8 @@ namespace DocFileFormat
 			{
 				ParagraphPropertiesMapping oMapping(m_pXmlWriter, m_context, m_document, paraEndChpx, isBidi, findValidSepx(cpEnd), _sectionNr);
 				papx->Convert(&oMapping);
+
+				_isSectionPageBreak = oMapping.get_section_page_break();
 			}
 
 			++_sectionNr;
@@ -268,6 +274,7 @@ namespace DocFileFormat
 		RELEASEOBJECT(chpxFcs);
 		RELEASEOBJECT(chpxs);
 
+		_isSectionPageBreak = false;
 		return cpEnd++;
 	}
 
@@ -464,7 +471,7 @@ namespace DocFileFormat
 				else if (TextMark::PageBreakOrSectionMark == c)
 				{
 					//write page break, section breaks are written by writeParagraph() method
-					if (!isSectionEnd(c))
+					if (/*!isSectionEnd(c)*/_isSectionPageBreak == false)
 					{
                         writeTextElement(text, textType);
 
@@ -475,6 +482,7 @@ namespace DocFileFormat
 
 						m_pXmlWriter->WriteString(elem.GetXMLString().c_str());
 					}
+					_isSectionPageBreak = false;
 				}
 				else if (TextMark::ColumnBreak == c)
 				{

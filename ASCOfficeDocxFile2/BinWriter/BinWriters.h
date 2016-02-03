@@ -3470,7 +3470,7 @@ namespace BinDocxRW
 				int nBreakType = -1;
 				switch(pMRun->m_oBr->m_oType.GetValue())
 				{
-				case SimpleTypes::brtypeColumn:
+				case SimpleTypes::brtypeColumn: nBreakType = c_oSer_OMathContentType::columnbreak;break;
 				case SimpleTypes::brtypePage: nBreakType = c_oSer_OMathContentType::pagebreak;break;
 				case SimpleTypes::brtypeTextWrapping: nBreakType = c_oSer_OMathContentType::linebreak;break;
 				}
@@ -4814,7 +4814,7 @@ namespace BinDocxRW
 						int nBreakType = -1;
 						switch(pBr->m_oType.GetValue())
 						{
-						case SimpleTypes::brtypeColumn:
+						case SimpleTypes::brtypeColumn: nBreakType = c_oSerRunType::columnbreak;break;
 						case SimpleTypes::brtypePage: nBreakType = c_oSerRunType::pagebreak;break;
 						case SimpleTypes::brtypeTextWrapping: nBreakType = c_oSerRunType::linebreak;break;
 						}

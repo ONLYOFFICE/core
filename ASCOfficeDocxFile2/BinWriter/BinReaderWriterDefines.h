@@ -447,7 +447,8 @@ extern int g_nCurFormatVersion;
         object = 14,
 		delText = 15,
 		del = 16,
-		ins = 17
+		ins = 17,
+		columnbreak = 18
 	};}
 	namespace c_oSerImageType{enum c_oSerImageType
 	{
@@ -795,7 +796,8 @@ extern int g_nCurFormatVersion;
 		linebreak = 60,
 		Run = 61,
 		Ins = 62,
-		Del = 63
+		Del = 63,
+		columnbreak = 64
 	};}
 	namespace c_oSer_FramePrType{ enum c_oSer_FramePrType
 	{		

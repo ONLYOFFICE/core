@@ -5011,6 +5011,10 @@ public:
 		{
 			GetRunStringWriter().WriteString(CString(_T("<w:br />")));
 		}
+		else if (c_oSer_OMathContentType::columnbreak == type)
+		{
+			GetRunStringWriter().WriteString(CString(_T("<w:br w:type=\"column\"/>")));
+		}
 		else if (c_oSer_OMathContentType::Del == type)
 		{
 			TrackRevision oTrackRevision;
@@ -5696,6 +5700,10 @@ public:
 		else if (c_oSerRunType::linebreak == type)
 		{
 			GetRunStringWriter().WriteString(CString(_T("<w:br />")));
+		}
+		else if (c_oSerRunType::columnbreak == type)
+		{
+			GetRunStringWriter().WriteString(CString(_T("<w:br w:type=\"column\"/>")));
 		}
 		else if(c_oSerRunType::image == type)
 		{

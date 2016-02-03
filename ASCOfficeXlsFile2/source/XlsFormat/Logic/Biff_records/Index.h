@@ -24,20 +24,12 @@ public:
 	static const ElementType	type = typeIndex;
 
 //-----------------------------
-	BackwardOnlyParam<unsigned int> rwMic;
-	BackwardOnlyParam<unsigned int> rwMac;
-	ForwardOnlyParam<unsigned int> ibXF;
-	BackwardOnlyParam<unsigned int> num_pointers;
+	BackwardOnlyParam<_UINT32>	rwMic;
+	BackwardOnlyParam<_UINT32>	rwMac;
+	ForwardOnlyParam<_UINT32>	ibXF;
+	BackwardOnlyParam<_UINT32>	num_pointers;
+
 	BiffStructurePtrVector rgibRw;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(rwMic)
-		//BO_ATTRIB_MARKUP_ATTRIB(rwMac)
-// "ibXF" and "FilePointer" are not used in XSLT
-// 		//BO_ATTRIB_MARKUP_ATTRIB(ibXF)
-		//BO_ATTRIB_MARKUP_ATTRIB(num_pointers)
-// 		//BO_ATTRIB_MARKUP_VECTOR_COMPLEX(rgibRw, FilePointer)
-	//BO_ATTRIB_MARKUP_END
 
 };
 

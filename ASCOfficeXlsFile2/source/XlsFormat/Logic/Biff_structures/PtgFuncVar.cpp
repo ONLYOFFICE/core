@@ -73,6 +73,18 @@ void PtgFuncVar::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
 	if(0xFF == tab.getIndex() && ptg_stack.size() > 0) // user-defined function
 	{
 		func_name = ptg_stack.top();
+
+		if (	func_name == L"WEEKS"		|| 
+				func_name == L"DAYSINYEAR"	|| 
+				func_name == L"DAYSINMONTH"	||
+				func_name == L"ISLEAPYEAR"	||
+				func_name == L"MONTHS"		||
+				func_name == L"WEEKS"		||
+				func_name == L"WEEKSINYEAR"	||
+				func_name == L"YEARS")
+		{
+			func_name = L"_xll." + func_name;
+		}
 		ptg_stack.pop();
 	}
 	ptg_stack.push(func_name + L'(' + arguments + L')');

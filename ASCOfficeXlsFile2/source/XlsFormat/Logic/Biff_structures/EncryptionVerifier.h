@@ -18,25 +18,28 @@ public:
 	virtual void load(XLS::CFRecord& record);
 	virtual void store(XLS::CFRecord& record);
 
-	unsigned int SaltSize;
-	struct SALT_TAG {
-		unsigned int b1;
-		unsigned int b2;
-		unsigned int b3;
-		unsigned int b4;
+	_UINT32 SaltSize;
+	struct SALT_TAG 
+	{
+		_UINT32 b1;
+		_UINT32 b2;
+		_UINT32 b3;
+		_UINT32 b4;
 	} Salt;
-	struct ENCRYPTED_VERIFIER_TAG {
-		unsigned int b1;
-		unsigned int b2;
-		unsigned int b3;
-		unsigned int b4;
+	struct ENCRYPTED_VERIFIER_TAG 
+	{
+		_UINT32 b1;
+		_UINT32 b2;
+		_UINT32 b3;
+		_UINT32 b4;
 	} EncryptedVerifier;
-	unsigned int VerifierHashSize;
-	struct ENCRYPTED_VERIFIER_HASH_TAG {
-		unsigned int b1;
-		unsigned int b2;
-		unsigned int b3;
-		unsigned int b4;
+	_UINT32 VerifierHashSize;
+	struct ENCRYPTED_VERIFIER_HASH_TAG
+	{
+		_UINT32 b1;
+		_UINT32 b2;
+		_UINT32 b3;
+		_UINT32 b4;
 	} EncryptedVerifierHash;
 
 };

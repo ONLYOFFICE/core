@@ -27,17 +27,18 @@ void AutoFilter12::writeFields(CFRecord& record)
 
 void AutoFilter12::readFields(CFRecord& record)
 {
-	unsigned short flags;
-	unsigned int unused2;
+	_UINT16 flags;
+	_UINT32 unused2;
+	
 	record >> frtRefHeader >> iEntry >> fHideArrow >> ft >> cft >> cCriteria >> cDateGroupings >> flags >> unused2 >> idList;
 
-	unsigned short _iEntry = iEntry;
-	unsigned int _fHideArrow = fHideArrow;
-	unsigned int _ft = ft;
-	unsigned int _cft = cft;
-	unsigned int _cCriteria = cCriteria;
-	unsigned int _cDateGroupings = cDateGroupings;
-	unsigned int _idList = idList;	
+	_UINT16 _iEntry = iEntry;
+	_UINT32 _fHideArrow = fHideArrow;
+	_UINT32 _ft = ft;
+	_UINT32 _cft = cft;
+	_UINT32 _cCriteria = cCriteria;
+	_UINT32 _cDateGroupings = cDateGroupings;
+	_UINT32 _idList = idList;	
 
 	// TODO доделать
 	record.skipNunBytes(record.getDataSize() - record.getRdPtr());

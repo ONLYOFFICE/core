@@ -50,10 +50,23 @@ void PtgNameX::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
 		return;
 	}
 
-	std::wstring udfName;
-	if(nameindex > 0 && nameindex <= global_info->AddinUdfs.size() && !(udfName = global_info->AddinUdfs[nameindex - 1]).empty())
+	std::wstring _Name;
+	if(nameindex > 0 && nameindex <= global_info->AddinUdfs.size() && !(_Name = global_info->AddinUdfs[nameindex - 1]).empty())
 	{
-		ptg_stack.push(udfName);
+		ptg_stack.push(_Name);
+	}
+	else if(ixti > 0 && ixti <= global_info->xti_parsed.size())
+	{
+		std::wstring sheet = global_info->xti_parsed[ixti-1];
+
+		if (!sheet.empty()) sheet += L"!";
+		
+		if (nameindex > 0 && nameindex <= global_info->arDefineNames.size())
+		{
+			_Name = global_info->arDefineNames[nameindex - 1];
+		}
+
+		ptg_stack.push(sheet + _Name);
 	}
 	else
 	{

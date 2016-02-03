@@ -18,8 +18,8 @@ public:
     virtual void load(XLS::CFRecord& record);
     virtual void store(XLS::CFRecord& record);
 
-	unsigned int keyIndex;
-	unsigned int valueIndex;
+	_UINT32 keyIndex;
+	_UINT32 valueIndex;
 };
 
 } // namespace OSHARED

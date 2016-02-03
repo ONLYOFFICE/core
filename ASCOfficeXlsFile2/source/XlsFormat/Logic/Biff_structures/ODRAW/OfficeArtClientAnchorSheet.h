@@ -38,10 +38,10 @@ public:
 	XLS::RwU		rwB;
 	short			dyB;
 
-	unsigned int _dxL;
-	unsigned int _dyT;
-	unsigned int _dxR;
-	unsigned int _dyB;
+	_UINT32		_dxL;
+	_UINT32		_dyT;
+	_UINT32		_dxR;
+	_UINT32		_dyB;
 };
 
 typedef boost::shared_ptr<OfficeArtClientAnchorSheet> OfficeArtClientAnchorSheetPtr;
@@ -65,10 +65,10 @@ public:
 	short dxR;
 	short dyB;
 
-	unsigned int _dxL;
-	unsigned int _dyT;
-	unsigned int _dxR;
-	unsigned int _dyB;
+	_UINT32 _dxL;
+	_UINT32 _dyT;
+	_UINT32 _dxR;
+	_UINT32 _dyB;
 };
 
 typedef boost::shared_ptr<OfficeArtChildAnchor> OfficeArtChildAnchorPtr;

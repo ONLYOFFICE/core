@@ -57,6 +57,7 @@ public:
 	BIFF_WORD verXLHigh;
 	BIFF_BYTE verLowestBiff;
 	BIFF_BYTE verLastXLSaved;
+	
 	ForwardOnlyParam<unsigned int> stream_ptr;
 	
 };

@@ -25,9 +25,9 @@ public:
 	virtual void load(CFRecord& record){}
 	virtual void store(CFRecord& record){}
 
-	ObjFmla fmla;
-	unsigned int lPosInCtlStm;
-	unsigned int cbBufInCtlStm;
+	ObjFmla		fmla;
+	_UINT32		lPosInCtlStm;
+	_UINT32		cbBufInCtlStm;
 	PictFmlaKey key;
 };
 

@@ -23,7 +23,7 @@ public:
 	static const ElementType	type = typeCompat12;
 
 //-----------------------------
-	Boolean<unsigned int> fNoCompatChk;
+	bool fNoCompatChk;
 };
 
 } // namespace XLS

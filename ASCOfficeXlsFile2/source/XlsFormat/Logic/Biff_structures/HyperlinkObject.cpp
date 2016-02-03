@@ -15,7 +15,8 @@ XLS::BiffStructurePtr HyperlinkObject::clone()
 
 void HyperlinkObject::store(XLS::CFRecord& record)
 {
-	unsigned int flags = 0;
+	_UINT32 flags = 0;
+	
 	SETBIT(flags, 0, hlstmfHasMoniker);
 	SETBIT(flags, 1, hlstmfIsAbsolute);
 	SETBIT(flags, 2, hlstmfSiteGaveDisplayName);
@@ -67,7 +68,8 @@ void HyperlinkObject::store(XLS::CFRecord& record)
 
 void HyperlinkObject::load(XLS::CFRecord& record)
 {
-	unsigned int flags;
+	_UINT32 flags;
+	
 	record >> streamVersion >> flags;
 	
 	hlstmfHasMoniker = GETBIT(flags, 0);

@@ -34,8 +34,8 @@ void BkHim::readFields(CFRecord& record)
 	//Log::error("BkHim record is not implemented.");
 	//record >> some_value;
 	
-	unsigned short cf;
-	unsigned int lcb;
+	_UINT16 cf;
+	_UINT32 lcb;
 
 	record >> cf;
 	record.skipNunBytes(2);

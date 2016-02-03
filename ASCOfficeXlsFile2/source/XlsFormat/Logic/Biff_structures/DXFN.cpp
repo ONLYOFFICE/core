@@ -137,7 +137,8 @@ BiffStructurePtr DXFN::clone()
 //
 void DXFN::store(CFRecord& record)
 {
-	unsigned int flags = 0;
+	_UINT32 flags = 0;
+	
 	SETBIT(flags, 0, alchNinch);
 	SETBIT(flags, 1, alcvNinch);
 	SETBIT(flags, 2, wrapNinch);
@@ -167,7 +168,8 @@ void DXFN::store(CFRecord& record)
 	SETBIT(flags, 30, ibitAtrProt);
 	SETBIT(flags, 31, iReadingOrderNinch);
 	record << flags;
-	unsigned short flags2 = 0;
+	
+	_UINT16 flags2 = 0;
 	SETBIT(flags2, 0, fIfmtUser);
 	SETBIT(flags2, 2, fNewBorder);
 	SETBIT(flags2, 15, fZeroInited);
@@ -202,8 +204,9 @@ void DXFN::store(CFRecord& record)
 
 void DXFN::load(CFRecord& record)
 {
-	unsigned int flags;
+	_UINT32 flags;
 	record >> flags;
+
 	alchNinch = GETBIT(flags, 0);
 	alcvNinch = GETBIT(flags, 1);
 	wrapNinch = GETBIT(flags, 2);

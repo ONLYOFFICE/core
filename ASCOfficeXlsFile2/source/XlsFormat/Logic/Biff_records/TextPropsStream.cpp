@@ -33,7 +33,7 @@ void TextPropsStream::readFields(CFRecord& record)
 	record >> frtHeader;
 	record >> dwChecksum;
 	
-	unsigned int	cb=0;
+	_UINT32	cb=0;
 	record >> cb;
 
 	if (cb > 0)

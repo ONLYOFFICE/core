@@ -82,8 +82,8 @@ CipherARCFOUR::rtlCipherError CipherARCFOUR::Decode(const void *pvData, const si
 
 CipherARCFOUR::rtlCipherError CipherARCFOUR::Update(const unsigned char *pData, const size_t nDatLen, unsigned char *pBuffer, const size_t nBufLen)
 {
-	register unsigned int *S;
-	register unsigned int  x, y, t;
+	_UINT32 *S;
+	_UINT32  x, y, t;
 	size_t k;
 
 	/* Check arguments. */

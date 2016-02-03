@@ -55,13 +55,16 @@ void OfficeArtBStoreContainerFileBlock::load(XLS::CFRecord& record)
 		unsigned short tag;
 		record >> tag;
 		
-		unsigned int size;
+		_UINT32 size;
 		record >> size;
-		unsigned int cRef;
+		
+		_UINT32 cRef;
 		record >> cRef;
-		unsigned int foDelay;
+		
+		_UINT32 foDelay;
 		record >> foDelay;
 		record.skipNunBytes(1);
+		
 		char cbName;
 		record >> cbName;
 		record.skipNunBytes(2);

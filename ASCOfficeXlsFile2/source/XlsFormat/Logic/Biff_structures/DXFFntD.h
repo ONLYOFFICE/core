@@ -22,15 +22,17 @@ public:
 	virtual void store(CFRecord& record);
 
 	XLUnicodeStringNoCch stFontName;
-	Stxp stxp;
-    int icvFore;
-	Ts tsNinch;
-	Boolean<unsigned int> fSssNinch;
-	Boolean<unsigned int> fUlsNinch;
-	Boolean<unsigned int> fBlsNinch;
-    int ich;
-    int cch;
-	unsigned short iFnt;
+	Stxp	stxp;
+    _INT32	icvFore;
+	Ts		tsNinch;
+	
+	_UINT32 fSssNinch;
+	_UINT32 fUlsNinch;
+	_UINT32 fBlsNinch;
+    
+	_INT32 ich;
+    _INT32 cch;
+	_UINT16 iFnt;
 
 };
 

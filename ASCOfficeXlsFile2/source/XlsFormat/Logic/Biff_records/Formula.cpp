@@ -24,14 +24,16 @@ BaseObjectPtr Formula::clone()
 void Formula::writeFields(CFRecord& record)
 {
 	record << cell << val;
-	unsigned short flags = 0;
+	
+	_UINT16 flags = 0;
 	SETBIT(flags, 0, fAlwaysCalc);
 	SETBIT(flags, 2, fFill);
 	SETBIT(flags, 3, fShrFmla);
 	SETBIT(flags, 5, fClearErrors);
+	
 	record << flags;
 
-	unsigned int chn = 0;
+	_UINT32 chn = 0;
 	record << chn;
 	formula.store(record);
 	//formula.store(record, cell.getLocation());
@@ -48,7 +50,7 @@ void Formula::readFields(CFRecord& record)
 	fShrFmla		= GETBIT(flags, 3);
 	fClearErrors	= GETBIT(flags, 5);
 	
-	unsigned int chn = 0;
+	_UINT32 chn = 0;
 	record >> chn;
 	formula.load(record);
 

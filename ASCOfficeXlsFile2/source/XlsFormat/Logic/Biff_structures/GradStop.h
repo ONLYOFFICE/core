@@ -19,11 +19,12 @@ public:
 
 	static const ElementType	type = typeGradStop;
 
-	unsigned short xclrType;
-	unsigned int xclrValue;
-	LongRGBA xclrValue_rgb;
-	double numPosition;
-	double numTint;
+	_UINT16		xclrType;
+	_UINT32		xclrValue;
+	LongRGBA	xclrValue_rgb;
+	
+	double		numPosition;
+	double		numTint;
 };
 
 } // namespace XLS

@@ -27,7 +27,8 @@ void BookExt::writeFields(CFRecord& record)
 	FrtHeader header(rt_BookExt);
 	record << header;
 	record << cb;
-	unsigned int flags = 0;
+	
+	_UINT32 flags = 0;
 	SETBIT(flags, 0, fDontAutoRecover);
 	SETBIT(flags, 1, fHidePivotList);
 	SETBIT(flags, 2, fFilterPrivacy);
@@ -51,7 +52,7 @@ void BookExt::readFields(CFRecord& record)
 	record >> header;
 
 	record >> cb;
-	unsigned int flags;
+	_UINT32 flags;
 	
 	if (record.loadAnyData(flags))
 	{	

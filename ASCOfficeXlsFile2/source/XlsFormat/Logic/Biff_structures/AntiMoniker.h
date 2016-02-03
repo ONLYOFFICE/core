@@ -18,8 +18,7 @@ public:
 	virtual void load(XLS::CFRecord& record);
 	virtual void store(XLS::CFRecord& record);
 
-private:
-	unsigned int count;
+	_UINT32 count;
 };
 
 } // namespace OSHARED

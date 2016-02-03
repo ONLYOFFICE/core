@@ -20,13 +20,13 @@ public:
 	virtual void load(XLS::CFRecord& record);
 	virtual void store(XLS::CFRecord& record);
 
-	unsigned short cAnti;
-	std::string ansiPath;
-	unsigned short endServer;
-	unsigned short versionNumber;
-	unsigned int cbUnicodePathSize;
-	unsigned short usKeyValue;
-	std::wstring unicodePath;
+	_UINT16			cAnti;
+	std::string		ansiPath;
+	_UINT16			endServer;
+	_UINT16			versionNumber;
+	_UINT32			cbUnicodePathSize;
+	_UINT16			usKeyValue;
+	std::wstring	unicodePath;
 };
 
 } // namespace OSHARED

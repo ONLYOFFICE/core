@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stddef.h>
+#include "../../../Common/DocxFormat/Source/Base/Types_32.h"
 
 class CipherARCFOUR
 {
@@ -33,11 +34,11 @@ private:
 	rtlCipherError Update(const unsigned char *pData, const size_t nDatLen, unsigned char *pBuffer, const size_t nBufLen);
 
 private:
-	static const unsigned int CIPHER_CBLOCK_ARCFOUR = 256;
+	static const _UINT32 CIPHER_CBLOCK_ARCFOUR = 256;
 	typedef struct
 	{
-		unsigned int m_S[CIPHER_CBLOCK_ARCFOUR];
-		unsigned int m_X, m_Y;
+		_UINT32 m_S[CIPHER_CBLOCK_ARCFOUR];
+		_UINT32 m_X, m_Y;
 	} CipherContext;
 
 	rtlCipherDirection  m_direction;

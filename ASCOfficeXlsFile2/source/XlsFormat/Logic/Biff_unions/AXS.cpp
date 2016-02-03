@@ -204,7 +204,7 @@ int AXS::serialize(std::wostream & _stream)
 					{
 						FontX * font = dynamic_cast<FontX*>(m_FontX.get());
 						
-						_CP_OPT(unsigned int) color;
+						_CP_OPT(_UINT32) color;
 						if (tick) color = ( tick->rgb.red << 16) + (tick->rgb.green << 8) + tick->rgb.blue;
 						
                         int iFont = font ? (_UINT16)font->iFont : 0;

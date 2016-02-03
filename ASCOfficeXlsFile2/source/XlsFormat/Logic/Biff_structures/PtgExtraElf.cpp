@@ -42,11 +42,13 @@ void PtgExtraElf::store(CFRecord& record)
 
 void PtgExtraElf::load(CFRecord& record)
 {
-	unsigned int flags;
+	_UINT32 flags;
 	record >> flags;
-	unsigned int count = flags & 0x3fffffff;
+	
+	_UINT32 count = flags & 0x3fffffff;
+	
 	fRel = GETBIT(flags, 31);
-	for(unsigned int i = 0; i < count; ++i)
+	for(_UINT32 i = 0; i < count; ++i)
 	{
 		RgceElfLocExtra cell_ref;
 		record >> cell_ref;

@@ -31,8 +31,12 @@ void MTRSettings::writeFields(CFRecord& record)
 void MTRSettings::readFields(CFRecord& record)
 {
 	record.skipNunBytes(12);
+	_UINT32 temp1, temp2;
 #pragma message("############################ frtHeader skipped here")
-	record >> fMTREnabled >> fUserSetThreadCount >> cUserThreadCount;
+	record >> temp1 >> temp2 >> cUserThreadCount;
+
+	fMTREnabled			= temp1;
+	fUserSetThreadCount	= temp2;
 }
 
 } // namespace XLS

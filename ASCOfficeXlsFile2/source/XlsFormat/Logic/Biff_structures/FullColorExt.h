@@ -21,7 +21,7 @@ public:
 	unsigned char	icv;
 	unsigned char	xclrType;
 	short			nTintShade;
-	unsigned int	xclrValue;
+	_UINT32			xclrValue;
 };
 
 } // namespace XLS

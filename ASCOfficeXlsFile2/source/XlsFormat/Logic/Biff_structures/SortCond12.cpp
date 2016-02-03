@@ -59,8 +59,9 @@ void SortCond12::load(CFRecord& record)
 {
 	unsigned short flags;
 	record >> flags;
-	fSortDes = GETBIT(flags, 0);
-	sortOn = GETBITS(flags, 1, 4);
+	
+	fSortDes	= GETBIT(flags, 0);
+	sortOn		= GETBITS(flags, 1, 4);
 
 	record >> rfx;
 

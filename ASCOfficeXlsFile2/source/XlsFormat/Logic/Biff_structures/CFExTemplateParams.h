@@ -21,9 +21,9 @@ private:
 
 private:
 	unsigned char reserved2_1;
-	unsigned int reserved2_2;
-	unsigned int reserved2_3;
-	unsigned int reserved2_4;
+	_UINT32 reserved2_2;
+	_UINT32 reserved2_3;
+	_UINT32 reserved2_4;
 };
 
 
@@ -36,10 +36,10 @@ private:
 	unsigned short ctp;
 
 private:
-	unsigned short reserved_1;
-	unsigned int reserved_2;
-	unsigned int reserved_3;
-	unsigned int reserved_4;
+	_UINT16 reserved_1;
+	_UINT32 reserved_2;
+	_UINT32 reserved_3;
+	_UINT32 reserved_4;
 };
 
 
@@ -52,10 +52,10 @@ private:
 	unsigned short dateOp;
 
 private:
-	unsigned short reserved_1;
-	unsigned int reserved_2;
-	unsigned int reserved_3;
-	unsigned int reserved_4;
+	_UINT16 reserved_1;
+	_UINT32 reserved_2;
+	_UINT32 reserved_3;
+	_UINT32 reserved_4;
 };
 
 
@@ -69,9 +69,9 @@ private:
 
 private:
 	unsigned short reserved_1;
-	unsigned int reserved_2;
-	unsigned int reserved_3;
-	unsigned int reserved_4;
+	_UINT32 reserved_2;
+	_UINT32 reserved_3;
+	_UINT32 reserved_4;
 };
 
 
@@ -81,10 +81,10 @@ public:
 	//void toXML(BiffStructurePtr & parent);
 
 private:
-	unsigned int unused1;
-	unsigned int unused2;
-	unsigned int unused3;
-	unsigned int unused4;
+	_UINT32 unused1;
+	_UINT32 unused2;
+	_UINT32 unused3;
+	_UINT32 unused4;
 };
 
 

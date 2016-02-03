@@ -21,7 +21,7 @@ public:
 	static const ElementType	type = typeXFExtGradient;
 
 	XFPropGradient			gradient;
-	unsigned int			cGradStops;
+	_UINT32					cGradStops;
 	std::vector<GradStop>	rgGradStops;
 };
 

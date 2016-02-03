@@ -36,7 +36,7 @@ void SST::writeFields(CFRecord& record)
 		}
 		CFRecord& current_record = recs.size() ? *recs.back() : record; // Points to the original 'record' or the last created 'Continue'
 
-		unsigned int ssss;
+		_UINT32 ssss;
 		if(!current_record.checkFitWriteSafe(ssss = element->getNonVariablePartSize())) // If we cannot write non-variable part into the current record
 		{
 			current_record.commitData();

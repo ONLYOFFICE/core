@@ -38,7 +38,8 @@ public:
 	bool fExAsc;
 	bool fExDes;
 	bool fPhonetic;
-	BackwardOnlyParam<unsigned int> in_block_position;
+	
+	BackwardOnlyParam<_UINT32> in_block_position;
 };
 
 } // namespace XLS

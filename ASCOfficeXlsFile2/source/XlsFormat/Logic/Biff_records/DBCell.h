@@ -26,17 +26,9 @@ public:
 
 	static const ElementType	type = typeDBCell;
 //-----------------------------
-	ForwardOnlyParam<unsigned int> dbRtrw;
+	ForwardOnlyParam<_UINT32> dbRtrw;
 	BiffStructurePtrVector rgdb;
-	BackwardOnlyParam<unsigned int> num_pointers;
-
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(dbRtrw)
-		//BO_ATTRIB_MARKUP_ATTRIB(num_pointers)
-		//BO_ATTRIB_MARKUP_VECTOR_COMPLEX(rgdb, FileOffset)
-	//BO_ATTRIB_MARKUP_END
-
+	BackwardOnlyParam<_UINT32> num_pointers;
 };
 
 } // namespace XLS

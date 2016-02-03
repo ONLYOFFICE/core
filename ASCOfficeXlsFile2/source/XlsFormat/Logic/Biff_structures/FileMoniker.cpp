@@ -33,13 +33,14 @@ void FileMoniker::store(XLS::CFRecord& record)
 
 void FileMoniker::load(XLS::CFRecord& record)
 {
-	unsigned int ansiLength;
+	_UINT32 ansiLength;
+	
 	record >> cAnti >> ansiLength >> ansiPath >> endServer >> versionNumber;
 	record.skipNunBytes(20); // reserved
 	record >> cbUnicodePathSize;
 	if(cbUnicodePathSize)
 	{
-		unsigned int cbUnicodePathBytes;
+		_UINT32 cbUnicodePathBytes;
 		record >> cbUnicodePathBytes >> usKeyValue;
 
 #if defined(_WIN32) || defined(_WIN64)

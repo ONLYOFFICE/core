@@ -26,8 +26,8 @@ void ExtSST::writeFields(CFRecord& record)
 
 	for(size_t i = 0; i < num_sets; ++i)
 	{
-		record.registerDelayedDataReceiver(NULL, sizeof(unsigned int)/*ISSTInf::ib*/);
-		record.registerDelayedDataReceiver(NULL, sizeof(unsigned short)/*ISSTInf::cbOffset*/);
+		record.registerDelayedDataReceiver(NULL, sizeof(_UINT32)/*ISSTInf::ib*/);
+		record.registerDelayedDataReceiver(NULL, sizeof(_UINT16)/*ISSTInf::cbOffset*/);
 		record.reserveNunBytes(2);
 	}
 }

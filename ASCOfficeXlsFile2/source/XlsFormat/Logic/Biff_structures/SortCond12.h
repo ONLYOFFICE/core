@@ -21,15 +21,15 @@ public:
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-	bool fSortDes;
-	unsigned short sortOn;
-	RFX rfx;
+	bool			fSortDes;
+	unsigned short	sortOn;
+	RFX				rfx;
 
-	CondDataValue condDataValue;
-	CFFlag cfflag;
+	CondDataValue			condDataValue;
+	CFFlag					cfflag;
 
-    int cchSt;
-	XLUnicodeStringNoCch stSslist;
+    _INT32					cchSt;
+	XLUnicodeStringNoCch	stSslist;
 };
 
 typedef boost::shared_ptr<SortCond12> SortCond12Ptr;

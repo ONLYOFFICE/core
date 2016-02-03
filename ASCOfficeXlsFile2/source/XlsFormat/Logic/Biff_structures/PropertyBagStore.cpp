@@ -42,8 +42,9 @@ void PropertyBagStore::store(XLS::CFRecord& record)
 
 void PropertyBagStore::load(XLS::CFRecord& record)
 {
-	unsigned int cFactoidType;
+	_UINT32 cFactoidType;
 	record >> cFactoidType;
+	
 	for(size_t i = 0; i < cFactoidType; ++i)
 	{
 		FactoidType f;
@@ -52,7 +53,7 @@ void PropertyBagStore::load(XLS::CFRecord& record)
 	}
 	record >> cbHdr >> sVer;
 	record.skipNunBytes(4); // ignored
-	unsigned int cste;
+	_UINT32 cste;
 	record >> cste;
 	for(size_t i = 0; i < cste; ++i)
 	{

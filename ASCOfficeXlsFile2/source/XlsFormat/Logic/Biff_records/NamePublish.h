@@ -26,14 +26,8 @@ public:
 //-----------------------------
 	bool fPublished;
 	bool fWorkbookParam;
-	XLNameUnicodeString strName;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(fPublished)
-		//BO_ATTRIB_MARKUP_ATTRIB(fWorkbookParam)
-		//BO_ATTRIB_MARKUP_ATTRIB(strName)
-	//BO_ATTRIB_MARKUP_END
 
+	XLNameUnicodeString strName;
 };
 
 } // namespace XLS

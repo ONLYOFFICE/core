@@ -37,6 +37,7 @@ public:
 	BIFF_BYTE fGrp;
 	bool fPublished;
 	bool fWorkbookParam;
+	
 	BIFF_BYTE chKey;
 	BIFF_WORD itab;
 	XLUnicodeStringNoCch Name_bin;

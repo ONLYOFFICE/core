@@ -1350,7 +1350,9 @@ namespace DocFileFormat
 		if ( ( style != NULL ) && (pSpa != NULL ) )
 		{
 			//append size and position ...
-			if (pSpa->fAnchorLock )
+
+			//if (pSpa->fAnchorLock )
+			if (pSpa->bx == TEXT && pSpa->by == TEXT)
 			{
 				appendStyleProperty( style, _T( "position" ), _T( "static" ) );
 			}
@@ -1841,7 +1843,9 @@ namespace DocFileFormat
 			else if (m_pSpa)
 			{
 				//append size and position ...
-				if (m_pSpa->fAnchorLock)
+				//if (m_pSpa->fAnchorLock)//это возможность смены привязки , а не ее тип
+
+				if (m_pSpa->bx == TEXT && m_pSpa->by == TEXT)
 				{
 					appendStyleProperty( &style, _T( "position" ), _T( "static" ) );
 				}

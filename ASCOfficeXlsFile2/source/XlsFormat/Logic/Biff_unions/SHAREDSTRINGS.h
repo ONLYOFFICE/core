@@ -22,7 +22,8 @@ public:
 	
 	int serialize(std::wostream & stream);
 
-	unsigned short code_page_;
+	unsigned short	code_page_;
+	unsigned int	size_;
 };
 
 } // namespace XLS

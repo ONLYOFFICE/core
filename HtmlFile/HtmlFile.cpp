@@ -262,7 +262,7 @@ int CHtmlFile::Convert(const std::vector<std::wstring>& arFiles, const std::wstr
         if (std::string::npos != sProgramm.find_last_of('/'))
             sLibraryDir = "LD_LIBRARY_PATH=" + sProgramm.substr(0, sProgramm.find_last_of('/'));
 
-#if 0
+#ifdef asc_static_link_libstd
         const char* nargs[2];
         nargs[0] = sXmlA.c_str();
         nargs[1] = NULL;
@@ -277,7 +277,6 @@ int CHtmlFile::Convert(const std::vector<std::wstring>& arFiles, const std::wstr
                (char * const *)nenv);
         exit(EXIT_SUCCESS);
 #else
-
         const char* nargs[6];
         nargs[0] = "-a";
         nargs[1] = "--auto-servernum";
@@ -294,6 +293,7 @@ int CHtmlFile::Convert(const std::vector<std::wstring>& arFiles, const std::wstr
         execve("/usr/bin/xvfb-run", (char * const *)nargs, (char * const *)nenv);
         exit(EXIT_SUCCESS);
 #endif
+
         break;
     }
     default: // parent process, pid now contains the child pid

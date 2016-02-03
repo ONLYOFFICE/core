@@ -7939,6 +7939,7 @@ SDK/lib/linux_64/libdoctrenderer.so svn_mime_002dtype=application%2Foctet-stream
 SDK/lib/linux_64/libgraphics.a svn_mime_002dtype=application%2Foctet-stream
 SDK/lib/linux_64/liblibxml.a svn_mime_002dtype=application%2Foctet-stream
 SDK/lib/linux_64/libnative_control.a svn_mime_002dtype=application%2Foctet-stream
+SDK/lib/linux_64_static_stdlib/HtmlFileInternal svn_mime_002dtype=application%2Foctet-stream
 SDK/lib/linux_64_static_stdlib/libDjVuFile.so svn_mime_002dtype=application%2Foctet-stream
 SDK/lib/linux_64_static_stdlib/libHtmlFile.so svn_mime_002dtype=application%2Foctet-stream
 SDK/lib/linux_64_static_stdlib/libHtmlRenderer.so svn_mime_002dtype=application%2Foctet-stream

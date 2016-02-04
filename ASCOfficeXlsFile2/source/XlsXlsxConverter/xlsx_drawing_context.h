@@ -186,7 +186,7 @@ public:
 
 	struct _line
 	{
-		_line() { fill.color.SetRGB(0, 0, 0);}
+		_line() { fill.color.SetRGB(0, 0, 0); width = 0;}
 		std::wstring	style;
         int             width;
 		_line_typeDash	typeDash;

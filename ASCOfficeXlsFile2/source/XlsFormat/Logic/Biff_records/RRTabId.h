@@ -25,10 +25,6 @@ public:
 
 //-----------------------------
 	BiffStructurePtrVector sheet_ids;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_VECTOR_COMPLEX(sheet_ids, SheetId)
-	//BO_ATTRIB_MARKUP_END
 
 };
 

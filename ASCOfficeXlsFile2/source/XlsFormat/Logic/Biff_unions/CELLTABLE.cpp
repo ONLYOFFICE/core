@@ -79,17 +79,8 @@ private:
 	std::vector<CellRangeRef>& shared_formulas_locations_ref_;
 };
 
-bool compare_row_in_cell(const XLS::BaseObjectPtr& first, const XLS::BaseObjectPtr& second)
-{
-	CELL * cell_1 = dynamic_cast<CELL *>(first.get());
-	CELL * cell_2 = dynamic_cast<CELL *>(second.get());
 
-	if (cell_1->RowNumber <= cell_2->RowNumber) 
-		return true;
-	else 
-		return false;
-}
-struct _CompareRowNumber
+struct _CompareRowCell
 {
     bool operator()(XLS::BaseObjectPtr & first, XLS::BaseObjectPtr & second)
 	{
@@ -101,16 +92,31 @@ struct _CompareRowNumber
 
 		if (cell_1->RowNumber < cell_2->RowNumber) 
 			return true;
-		else 
+		else
 			return false;
 	}
-}CompareRowNumber;
+}CompareRowCell;
+
+struct _CompareColumnCell
+{
+    bool operator()(XLS::BaseObjectPtr & first, XLS::BaseObjectPtr & second)
+	{
+		CELL * cell_1 = dynamic_cast<CELL *>(first.get());
+		CELL * cell_2 = dynamic_cast<CELL *>(second.get());
+
+		if (!cell_1 || !cell_2) 
+			return true;
+
+		if (cell_1->ColumnNumber < cell_2->ColumnNumber) 
+			return true;
+		else
+			return false;
+	}
+}CompareColumCell;
 
 int CELL_GROUP::serialize(std::wostream & stream)
 {
-	elements_.sort(CompareRowNumber);
-
-
+	elements_.sort(CompareRowCell);//пока так .. todooo  сделать мап(rownumb, list<cells> - и там смотреть нужно ли сортировать €чейки)
 	CP_XML_WRITER(stream)    
     {
 		std::list<XLS::BaseObjectPtr>::iterator current_cell_start	= elements_.begin();

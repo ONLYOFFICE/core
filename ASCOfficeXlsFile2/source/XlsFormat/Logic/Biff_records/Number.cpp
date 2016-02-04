@@ -31,6 +31,12 @@ void Number::writeFields(CFRecord& record)
 void Number::readFields(CFRecord& record)
 {
 	record >> cell >> num;
+
+	_INT32 val = 0;
+	if (record.getDataSize() >= 18)//SchetPrintForm.xls
+	{
+		record >> val;
+	}
 }
 
 const CellRef Number::getLocation() const

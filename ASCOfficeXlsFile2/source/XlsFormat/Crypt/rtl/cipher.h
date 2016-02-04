@@ -1,6 +1,11 @@
 #pragma once
 
 #include <stddef.h>
+
+#ifdef __linux__
+    #include <inttypes.h>
+#endif
+
 #include "../../../Common/DocxFormat/Source/Base/Types_32.h"
 
 class CipherARCFOUR

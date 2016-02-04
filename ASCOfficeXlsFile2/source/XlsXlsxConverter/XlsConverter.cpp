@@ -153,7 +153,7 @@ XlsConverter::~XlsConverter()
 	if (output_document)	delete output_document;
 }
 
-XlsConverter::isError()
+bool XlsConverter::isError()
 {
 	if (!xlsx_context)		return true;
 	if (!output_document)	return true;

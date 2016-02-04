@@ -1,5 +1,9 @@
 #pragma once
 
+#ifdef __linux__
+    #include <inttypes.h>
+#endif
+
 #include "../../../Common/DocxFormat/Source/Base/Types_32.h"
 
 class DigestMD5

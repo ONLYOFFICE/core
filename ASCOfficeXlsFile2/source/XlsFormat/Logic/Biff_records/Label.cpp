@@ -33,7 +33,7 @@ void Label::readFields(CFRecord& record)
 	
 	record >> cell >> st;
 
-	isst_ = pGlobalWorkbookInfoPtr->startAddedSharedStrings + pGlobalWorkbookInfoPtr->arAddedSharedStrings.size();
+    isst_ = pGlobalWorkbookInfoPtr->startAddedSharedStrings + pGlobalWorkbookInfoPtr->arAddedSharedStrings.size() + 1;
 	pGlobalWorkbookInfoPtr->arAddedSharedStrings.push_back(st.value());
 }
 

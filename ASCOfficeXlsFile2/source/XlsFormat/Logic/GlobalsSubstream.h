@@ -35,6 +35,7 @@ public:
 	std::vector<BaseObjectPtr>	m_arHFPicture;
 	std::vector<BaseObjectPtr>	m_arLBL;
 	std::vector<BaseObjectPtr>	m_arMSODRAWINGGROUP;
+	std::vector<BaseObjectPtr>	m_arWindow1;
 	
 	unsigned short code_page_;
 };

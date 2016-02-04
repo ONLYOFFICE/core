@@ -22,6 +22,7 @@ public:
 
 	static const ElementType	type = typeWindow1;
 
+	int serialize(std::wostream & stream);
 //-----------------------------
 	BIFF_SHORT xWn;
 	BIFF_SHORT yWn;

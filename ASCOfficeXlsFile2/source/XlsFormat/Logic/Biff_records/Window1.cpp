@@ -39,14 +39,35 @@ void Window1::readFields(CFRecord& record)
 {
 	unsigned short flags;
 	record >> xWn >> yWn >> dxWn >> dyWn >> flags >> itabCur >> itabFirst >> ctabSel >> wTabRatio;
-	fHidden = GETBIT(flags, 0);
-	fIconic = GETBIT(flags, 1);
-	fVeryHidden = GETBIT(flags, 2);
-	fDspHScroll = GETBIT(flags, 3);
-	fDspVScroll = GETBIT(flags, 4);
-	fBotAdornment = GETBIT(flags, 5);
-	fNoAFDateGroup = GETBIT(flags, 6);
+	
+	fHidden			= GETBIT(flags, 0);
+	fIconic			= GETBIT(flags, 1);
+	fVeryHidden		= GETBIT(flags, 2);
+	fDspHScroll		= GETBIT(flags, 3);
+	fDspVScroll		= GETBIT(flags, 4);
+	fBotAdornment	= GETBIT(flags, 5);
+	fNoAFDateGroup	= GETBIT(flags, 6);
 }
+
+int Window1::serialize(std::wostream & stream)
+{
+	CP_XML_WRITER(stream)    
+    {
+		CP_XML_NODE(L"workbookView")
+		{
+			CP_XML_ATTR(L"activeTab"	, itabCur);
+			CP_XML_ATTR(L"firstSheet"	, itabFirst);
+			CP_XML_ATTR(L"tabRatio"		, wTabRatio);
+			CP_XML_ATTR(L"windowHeight"	, dyWn);
+			CP_XML_ATTR(L"windowWidth"	, dxWn);
+			CP_XML_ATTR(L"yWindow"		, yWn);
+			CP_XML_ATTR(L"xWindow"		, xWn);
+			
+		}
+	}
+	return 0;
+}
+
 
 } // namespace XLS
 

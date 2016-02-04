@@ -154,14 +154,29 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 	proc.optional<ObNoMacros>();
 	proc.optional<CodeName>();
 	proc.optional<FNGROUPS>();
+	
 	proc.repeated<Lbl>(0, 0);
+	
 	proc.optional<OleObjectSize>();
 	proc.mandatory<PROTECTION>();
 
-	proc.repeated<Window1>(0, 0); // OpenOffice Calc stored files workaround (Window1 must exist at least once according to [MS-XLS])
+	count = proc.repeated<Window1>(0, 0); // OpenOffice Calc stored files workaround (Window1 must exist at least once according to [MS-XLS])
+	while(count > 0)
+	{
+		m_arWindow1.insert(m_arWindow1.begin(), elements_.back());
+		elements_.pop_back();
+		count--;
+	}
 	proc.mandatory<Backup>();
 	proc.mandatory<HideObj>();
-	proc.repeated<Window1>(0, 0); // OpenOffice Calc stored files workaround
+	count = proc.repeated<Window1>(0, 0); // OpenOffice Calc stored files workaround
+	while(count > 0)
+	{
+		m_arWindow1.insert(m_arWindow1.begin(), elements_.back());
+		elements_.pop_back();
+		count--;
+	}
+
 	proc.mandatory<Date1904>();
 	
 	proc.mandatory<CalcPrecision>();
@@ -184,6 +199,7 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 	proc.optional<UsesELFs>(); // OpenOffice Calc stored files workaround
 	proc.optional<RecalcId>(); // OpenOffice Calc stored files workaround
 	proc.repeated<Window1>(0, 0); // OpenOffice Calc stored files workaround
+
 
 	if (proc.mandatory<FORMATTING>())
 	{
@@ -233,6 +249,7 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 	proc.repeated<RTD>(0, 0);
 
 	proc.optional<RecalcId>();
+	proc.optional<Date1904>();		//china-price.xls
 	
 	count = proc.repeated<HFPicture>(0, 0);
 	while(count > 0)

@@ -338,6 +338,10 @@ void XlsConverter::convert(XLS::GlobalsSubstream* global)
 	{
 		convert((XLS::MSODRAWINGGROUP*)global->m_arMSODRAWINGGROUP[i].get());
 	}
+    for (int i = 0 ; i < global->m_arWindow1.size(); i++)
+	{
+		global->m_arWindow1[i]->serialize(xlsx_context->workbook_views());
+	}
 }
 
 typedef boost::unordered_map<XLS::FillInfo, int>	mapFillInfo;
@@ -514,7 +518,12 @@ void XlsConverter::convert(XLS::LBL * def_name)
 
 	def_name->serialize(xlsx_context->defined_names());
 }
+void XlsConverter::convert(XLS::WINDOW * window)
+{
+	if (window == NULL) return;
 
+	//window->serialize(xlsx_context->worksheet_view());
+}
 void XlsConverter::convert(XLS::THEME* theme)
 {
 	if (theme == NULL) return;

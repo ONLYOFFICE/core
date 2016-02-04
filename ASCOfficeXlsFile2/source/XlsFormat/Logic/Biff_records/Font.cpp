@@ -395,7 +395,7 @@ int Font::serialize_properties(std::wostream & stream, bool rPr)
             }
         }
 
-        if (dyHeight.value())
+        if ((dyHeight.value()) && (dyHeight > 0))
         {
             CP_XML_NODE(L"sz")
             {

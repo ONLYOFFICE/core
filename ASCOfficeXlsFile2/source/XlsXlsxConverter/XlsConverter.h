@@ -30,6 +30,7 @@ namespace XLS
 	class GlobalsSubstream;
 	class ChartSheetSubstream;
 	
+	class WINDOW;
 	class FORMATTING;
 	class THEME;
 	class SHAREDSTRINGS;
@@ -79,6 +80,7 @@ public:
 	void convert(XLS::OBJECTS					* objects);
 	void convert(XLS::MSODRAWINGGROUP			* mso_drawing);
 	void convert(XLS::TxO						* text_obj);
+	void convert(XLS::WINDOW					* window);
 
 	void convert(ODRAW::OfficeArtRecord			* art);
 	void convert(ODRAW::OfficeArtBStoreContainer* art_bstore);

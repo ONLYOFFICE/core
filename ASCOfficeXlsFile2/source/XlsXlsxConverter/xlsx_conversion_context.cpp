@@ -180,6 +180,11 @@ void xlsx_conversion_context::end_document()
                 CP_XML_ATTR(L"xmlns", L"http://schemas.openxmlformats.org/spreadsheetml/2006/main");
                 CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
 
+                CP_XML_NODE(L"bookViews")
+                {
+					CP_XML_STREAM() << xlsx_workbook_views_.str();
+				}
+
                 CP_XML_NODE(L"sheets")
                 {
                     CP_XML_STREAM() << workbook_content.str();

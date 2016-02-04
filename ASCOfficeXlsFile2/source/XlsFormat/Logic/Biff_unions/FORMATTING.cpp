@@ -2,13 +2,15 @@
 #include "FORMATTING.h"
 #include <Logic/Biff_records/Font.h>
 #include <Logic/Biff_records/Format.h>
-#include <Logic/Biff_unions/XFS.h>
 #include <Logic/Biff_records/DXF.h>
 #include <Logic/Biff_unions/STYLES.h>
 #include <Logic/Biff_records/Palette.h>
 #include <Logic/Biff_records/ClrtClient.h>
 #include <Logic/Biff_records/TableStyles.h>
+#include <Logic/Biff_records/Compat12.h>
 #include <Logic/Biff_unions/TABLESTYLES.h>
+#include <Logic/Biff_unions/XFS.h>
+#include <Logic/Biff_unions/THEME.h>
 
 namespace XLS
 {
@@ -76,6 +78,12 @@ const bool FORMATTING::loadContent(BinProcessor& proc)
 	}
 //----------------------------------------------------------------------------------------------------	
 	proc.optional<TABLESTYLES>();
+		
+	if (proc.optional<THEME>()) // не по стандарту - china_price.xls 
+	{
+	}
+	proc.optional<Compat12>();	//china_price.xls
+
 	if (proc.optional<Palette>())
 	{
 		m_Palette = elements_.back();

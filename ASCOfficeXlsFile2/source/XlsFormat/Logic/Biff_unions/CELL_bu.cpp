@@ -15,6 +15,8 @@ namespace XLS
 
 CELL::CELL(std::vector<CellRangeRef>& shared_formulas_locations_ref) : shared_formulas_locations_ref_(shared_formulas_locations_ref)
 {
+	ColumnNumber	= -1;
+	RowNumber		= -1;
 }
 
 
@@ -45,39 +47,48 @@ const bool CELL::loadContent(BinProcessor& proc)
 
 	if(proc.optional(formula_union))
 	{
-		RowNumber = formula_union.getLocation().getRow();
+		RowNumber		= formula_union.getLocation().getRow();
+		ColumnNumber	= formula_union.getLocation().getColumn();
 	}
 	else if(proc.optional(blank))
 	{
 		RowNumber = blank.getLocation().getRow();
+		ColumnNumber	= formula_union.getLocation().getColumn();
 	}
 	else if(proc.optional(mulblank))
 	{
-		RowNumber = mulblank.GetRow();
+		RowNumber		= mulblank.GetRow();
+		ColumnNumber	= formula_union.getLocation().getColumn();
 	}
 	else if(proc.optional(rk))
 	{
-		RowNumber = rk.getLocation().getRow();
+		RowNumber		= rk.getLocation().getRow();
+		ColumnNumber	= formula_union.getLocation().getColumn();
 	}
 	else if(proc.optional(mulrk))
 	{
-		RowNumber = mulrk.GetRow();
+		RowNumber		= mulrk.GetRow();
+		ColumnNumber	= formula_union.getLocation().getColumn();
 	}
 	else if(proc.optional(boolerr))
 	{
-		RowNumber = boolerr.getLocation().getRow();
+		RowNumber		= boolerr.getLocation().getRow();
+		ColumnNumber	= formula_union.getLocation().getColumn();
 	}
 	else if(proc.optional(number))
 	{
-		RowNumber = number.getLocation().getRow();
+		RowNumber		= number.getLocation().getRow();
+		ColumnNumber	= formula_union.getLocation().getColumn();
 	}
 	else if(proc.optional(label))//
 	{
-		RowNumber = label.cell.getLocation().getRow();
+		RowNumber		= label.cell.getLocation().getRow();
+		ColumnNumber	= formula_union.getLocation().getColumn();
 	}
 	else if(proc.optional(labelsst))
 	{
-		RowNumber = labelsst.getLocation().getRow();
+		RowNumber		= labelsst.getLocation().getRow();
+		ColumnNumber	= formula_union.getLocation().getColumn();
 	}
 	else
 	{

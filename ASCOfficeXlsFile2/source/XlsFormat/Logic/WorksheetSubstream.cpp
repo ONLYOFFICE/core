@@ -98,7 +98,13 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 		m_Dimensions = elements_.back();
 		elements_.pop_back();
 	}
-	count = proc.repeated<WINDOW>(1, 0);
+	count = proc.repeated<WINDOW>(0, 0);
+	while(count > 0)
+	{
+		m_arWINDOW.insert(m_arWINDOW.begin(), elements_.back());
+		elements_.pop_back();
+		count--;
+	}
 //----------------------------------------------
 
 	// OpenOffice Calc stored files workaround (DefColWidth is mandatory and located inside COLUMNS according to [MS-XLS])
@@ -170,23 +176,26 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 	}
 	
 	proc.repeated<HFPicture>(0, 0);
-	proc.repeated<Note>(0, 0);
+	proc.repeated<Note>		(0, 0);
 	proc.repeated<PIVOTVIEW>(0, 0);
-	proc.optional<DCON>();
+	proc.optional<DCON>		();
 	
 	count = proc.repeated<WINDOW>(1, 0);
 	while(count > 0)
 	{
-		m_arWINDOW.insert(m_arWINDOW.begin(), elements_.back());
-		elements_.pop_back();
+		if (elements_.back()->get_type() == typeWINDOW)
+		{
+			m_arWINDOW.insert(m_arWINDOW.begin(), elements_.back());
+			elements_.pop_back();
+		}
 		count--;
 	}
 
 	proc.optional<SheetExt>(); //BulletinSearch.xls ??? тута или ниже
 
-	proc.repeated<CUSTOMVIEW>(0, 0);
-	proc.repeated<SORT>(0, 2);
-	proc.optional<DxGCol>();
+	proc.repeated<CUSTOMVIEW>	(0, 0);
+	proc.repeated<SORT>			(0, 2);
+	proc.optional<DxGCol>		();
 	
 	count = proc.repeated<MergeCells>(0, 0);
 	while(count > 0)
@@ -196,10 +205,10 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 		count--;
 	}
 	
-	proc.optional<LRng>();
-	proc.repeated<QUERYTABLE>(0, 0);
-	proc.optional<PHONETICINFO>();
-	proc.optional<CONDFMTS>();  // Let it be optional
+	proc.optional<LRng>			();
+	proc.repeated<QUERYTABLE>	(0, 0);
+	proc.optional<PHONETICINFO>	();
+	proc.optional<CONDFMTS>		();  // Let it be optional
 	
 	count = proc.repeated<HLINK>(0, 0) ;
 	while(count > 0)
@@ -209,14 +218,14 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 		count--;
 	}
 	
-	proc.optional<DVAL>();
-	proc.optional<CodeName>();
-	proc.repeated<WebPub>(0, 0);
+	proc.optional<DVAL>		();
+	proc.optional<CodeName>	();
+	proc.repeated<WebPub>	(0, 0);
 	proc.repeated<CellWatch>(0, 0);
-	proc.optional<SheetExt>();
-	proc.repeated<FEAT>(0, 0);
-	proc.repeated<FEAT11>(0, 0);
-	proc.repeated<RECORD12>(0, 0);
+	proc.optional<SheetExt>	();
+	proc.repeated<FEAT>		(0, 0);
+	proc.repeated<FEAT11>	(0, 0);
+	proc.repeated<RECORD12>	(0, 0);
 
 #pragma message("####################### Some trash records may be skipped here")
 	proc.SeekToEOF(); // Thus we skip problems with the trash at the end of the stream (found in Domens.xls)

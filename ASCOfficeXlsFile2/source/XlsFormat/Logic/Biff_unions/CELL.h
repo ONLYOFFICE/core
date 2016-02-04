@@ -24,6 +24,7 @@ public:
 	static const ElementType	type = typeCELL;
 
     int RowNumber;
+    int ColumnNumber;
 
 	std::vector<CellRangeRef>& shared_formulas_locations_ref_;
 };

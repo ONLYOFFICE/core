@@ -69,24 +69,27 @@ void Window2::readFields(CFRecord& record)
 		return;
 	}
 
-	fDspFmlaRt = GETBIT(flags, 0);
-	fDspGridRt = GETBIT(flags, 1);
-	fDspRwColRt = GETBIT(flags, 2);
-	fFrozenRt = GETBIT(flags, 3);
-	fDspZerosRt = GETBIT(flags, 4);
-	fDefaultHdr = GETBIT(flags, 5);
-	fRightToLeft = GETBIT(flags, 6);
-	fDspGuts = GETBIT(flags, 7);
-	fFrozenNoSplit = GETBIT(flags, 8);
-	fPaged = GETBIT(flags, 10);
-	fSLV = GETBIT(flags, 11);
+	fDspFmlaRt		= GETBIT(flags, 0);
+	fDspGridRt		= GETBIT(flags, 1);
+	fDspRwColRt		= GETBIT(flags, 2);
+	fFrozenRt		= GETBIT(flags, 3);
+	fDspZerosRt		= GETBIT(flags, 4);
+	fDefaultHdr		= GETBIT(flags, 5);
+	fRightToLeft	= GETBIT(flags, 6);
+	fDspGuts		= GETBIT(flags, 7);
+	fFrozenNoSplit	= GETBIT(flags, 8);
+	fPaged			= GETBIT(flags, 10);
+	fSLV			= GETBIT(flags, 11);
 
 	record >> rwTop >> colLeft >> icvHdr;
+	
 	topLeftCell = static_cast<std::wstring >(CellRef(rwTop, colLeft, true, true));
 	record.skipNunBytes(2); // reserved
+
 	record >> wScaleSLV >> wScaleNormal;
 	record.skipNunBytes(4); // unused / reserved
 }
+
 
 } // namespace XLS
 

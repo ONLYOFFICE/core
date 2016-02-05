@@ -26,6 +26,7 @@ public:
 
 	std::vector<BaseObjectPtr>	m_arMergeCells;
 	std::vector<BaseObjectPtr>	m_arWINDOW;
+	std::vector<BaseObjectPtr>	m_arCUSTOMVIEW;
 	
 	BaseObjectPtr				m_GLOBALS;
 	BaseObjectPtr				m_PAGESETUP;
@@ -36,7 +37,13 @@ public:
 	BaseObjectPtr				m_Dimensions;
 	BaseObjectPtr				m_SORTANDFILTER;
 	BaseObjectPtr				m_OBJECTS;
+	BaseObjectPtr				m_CONDFMTS;
+	BaseObjectPtr				m_CodeName;
+	BaseObjectPtr				m_SheetExt;
+
+	std::vector<BaseObjectPtr>	m_arNote;
 	std::vector<BaseObjectPtr>	m_arHLINK;
+	std::vector<BaseObjectPtr>	m_arSORT;
 };
 
 } // namespace XLS

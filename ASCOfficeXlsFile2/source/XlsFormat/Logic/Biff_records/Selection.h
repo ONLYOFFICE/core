@@ -25,22 +25,14 @@ public:
 	static const ElementType	type = typeSelection;
 
 //-----------------------------
-	PaneType pnn;
-	R_RwU rwAct;
-	ColU colAct;
-	BIFF_SHORT irefAct;
-	BIFF_BSTR sqref;
-	BIFF_BSTR activeCell;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(pnn)
-// 		//BO_ATTRIB_MARKUP_ATTRIB_NAME(rwAct.rw,L"rwAct")
-// 		//BO_ATTRIB_MARKUP_ATTRIB_NAME(colAct.col,L"colAct")
-		//BO_ATTRIB_MARKUP_ATTRIB(activeCell)
-		//BO_ATTRIB_MARKUP_ATTRIB(irefAct)
-		//BO_ATTRIB_MARKUP_ATTRIB(sqref)
-	//BO_ATTRIB_MARKUP_END
+	PaneType	pnn;
 
+	R_RwU		rwAct;
+	ColU		colAct;
+	BIFF_SHORT	irefAct;
+	
+	BIFF_BSTR	sqref;
+	BIFF_BSTR	activeCell;
 };
 
 } // namespace XLS

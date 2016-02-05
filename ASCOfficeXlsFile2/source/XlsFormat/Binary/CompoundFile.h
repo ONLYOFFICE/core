@@ -22,6 +22,8 @@ public:
 public:
 	CompoundFile(const std::wstring & file_path, const ReadWriteMode mode);
 	~CompoundFile();
+	
+	bool isError();
 
 	CFStreamPtr getWorkbookStream();
 	CFStreamPtr createWorkbookStream();

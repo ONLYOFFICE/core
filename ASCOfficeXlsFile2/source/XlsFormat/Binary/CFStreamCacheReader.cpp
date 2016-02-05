@@ -37,7 +37,7 @@ CFRecordPtr CFStreamCacheReader::getNextRecord(const CFRecordType::TypeId desira
 	{
 		CFRecordType::TypeString rec_name = records_cache.front()->getTypeString();
 
-		Log::warning(rec_name);
+		//Log::warning(rec_name);
 
 		if (desirable_type == rt_MsoDrawingGroup)	// объединяем rt_MsoDrawingGroup + rt_Continue в один блок 
 		{

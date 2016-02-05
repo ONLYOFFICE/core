@@ -21,11 +21,6 @@ public:
 	void readFields(CFRecord& record);
 
 	static const ElementType	type = typeGridSet;
-
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-	//BO_ATTRIB_MARKUP_END
-
 };
 
 } // namespace XLS

@@ -16,6 +16,13 @@ CompoundFile::~CompoundFile()
 	storage_ = NULL;
 }
 
+bool CompoundFile::isError()
+{
+	if (storage_ != NULL) return false;
+	return true;	
+}
+
+
 CompoundFile::CompoundFile(const std::wstring & file_path, const ReadWriteMode mode)
 :	rwMode(mode)
 {

@@ -49,6 +49,9 @@ private:
 	std::map<int, std::vector<int>> m_mapTypeChart;//тут нужен несортированый .. пока оставим этот
 
 
+	GlobalWorkbookInfoPtr pGlobalWorkbookInfo;
+
+
 };
 
 } // namespace XLS

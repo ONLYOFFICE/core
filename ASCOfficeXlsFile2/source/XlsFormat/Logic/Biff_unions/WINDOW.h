@@ -21,6 +21,14 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
+	int serialize(std::wostream & stream);
+
+	std::vector<BaseObjectPtr>	m_arSelection;
+	BaseObjectPtr				m_Scl;
+	BaseObjectPtr				m_PLV;
+	BaseObjectPtr				m_Window2;
+	BaseObjectPtr				m_Pane;
+
 	
 };
 

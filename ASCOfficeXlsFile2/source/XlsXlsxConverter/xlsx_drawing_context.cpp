@@ -1135,7 +1135,8 @@ void xlsx_drawing_context::set_anchor(const std::wstring & str)
 	if (str.empty())				return;
 	if (current_drawing_states == NULL) return;	
 	
-	current_drawing_states->back()->anchor = str;
+	current_drawing_states->back()->anchor		= str;
+	current_drawing_states->back()->type_anchor = 1;
 }
 
 bool xlsx_drawing_context::is_anchor()
@@ -1526,6 +1527,7 @@ bool xlsx_drawing_context::ChangeBlack2ColorImage(std::wstring sRgbColor1, std::
 void xlsx_drawing_context::set_chart_sheet_anchor(double width, double height)
 {
 	if (current_drawing_states == NULL) return;	
+	if (!current_drawing_states->back()->anchor.empty()) return; // уже есть
 
 	std::wstringstream stream;
 

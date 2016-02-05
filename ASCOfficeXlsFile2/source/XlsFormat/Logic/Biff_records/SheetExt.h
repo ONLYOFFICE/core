@@ -23,19 +23,12 @@ public:
 	
 	static const ElementType	type = typeSheetExt;
 
+	int serialize(std::wostream & stream);
 //-----------------------------
 	BIFF_DWORD cb;
 	BIFF_BYTE icvPlain;
+	
 	SheetExtOptional sheetExtOptional;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-	//BO_ATTRIB_MARKUP_ATTRIB(icvPlain)
-	//if(0x00000028 == cb)
-	//{
-	//	//BO_ATTRIB_MARKUP_COMPLEX(sheetExtOptional)
-	//}
-	//BO_ATTRIB_MARKUP_END
-
 };
 
 } // namespace XLS

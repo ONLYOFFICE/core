@@ -75,7 +75,11 @@ const bool GLOBALS::loadContent(BinProcessor& proc)
 	}
 	
     WsBool wsbool(is_dialog);
-    proc.mandatory(wsbool); // The most interesting
+    if (proc.mandatory(wsbool)) // The most interesting
+	{
+		m_WsBool = elements_.back();
+		elements_.pop_back();
+	}
 
 	proc.optional<Sync>();
 	proc.optional<LPr>();
@@ -83,6 +87,7 @@ const bool GLOBALS::loadContent(BinProcessor& proc)
 	proc.optional<VerticalPageBreaks>();
 	proc.optional<PrintRowCol>();// OpenOffice Calc stored files workaround (PrintRowCol is mandatory according to [MS-XLS])
 	proc.optional<PrintGrid>();// OpenOffice Calc stored files workaround (PrintGrid is mandatory according to [MS-XLS])
+	
 	proc.optional<GridSet>();// OpenOffice Calc stored files workaround (GridSet is mandatory according to [MS-XLS])
 	return true;
 }

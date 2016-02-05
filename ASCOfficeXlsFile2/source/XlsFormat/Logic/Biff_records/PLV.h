@@ -24,16 +24,10 @@ public:
 
 //-----------------------------
 	BIFF_WORD wScalePLV;
+	
 	bool fPageLayoutView;
 	bool fRulerVisible;
 	bool fWhitespaceHidden;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(wScalePLV)
-		//BO_ATTRIB_MARKUP_ATTRIB(fPageLayoutView)
-		//BO_ATTRIB_MARKUP_ATTRIB(fRulerVisible)
-		//BO_ATTRIB_MARKUP_ATTRIB(fWhitespaceHidden)
-	//BO_ATTRIB_MARKUP_END
 
 };
 

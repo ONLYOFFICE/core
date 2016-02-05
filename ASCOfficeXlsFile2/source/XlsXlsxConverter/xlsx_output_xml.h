@@ -25,6 +25,7 @@ public:
     std::wostream & dimension();
 	std::wostream & sheetViews();
 	std::wostream & cols();
+	std::wostream & sheetProperties();
     std::wostream & sheetFormat();
     std::wostream & sheetData();
     std::wostream & hyperlinks();
@@ -37,9 +38,9 @@ public:
 
     void write_to(std::wostream & strm);
 
-    void set_drawing_link(std::wstring const & fileName, std::wstring const & id);
-    void set_vml_drawing_link(std::wstring const & fileName, std::wstring const & id);
-    void set_comments_link(std::wstring const & fileName, std::wstring const & id);
+    void set_drawing_link		(std::wstring const & fileName, std::wstring const & id);
+    void set_vml_drawing_link	(std::wstring const & fileName, std::wstring const & id);
+    void set_comments_link		(std::wstring const & fileName, std::wstring const & id);
 	
 	std::pair<std::wstring, std::wstring> get_drawing_link() const;
 	std::pair<std::wstring, std::wstring> get_vml_drawing_link() const;

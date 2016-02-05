@@ -39,36 +39,14 @@ public:
 
 	bool is_contained_in_chart_substream;
 
-	R_RwU rwTop;
-	ColU colLeft;
-	Icv icvHdr;
-	BIFF_WORD wScaleSLV;
-	BIFF_WORD wScaleNormal;
-	BIFF_BSTR topLeftCell;
+	R_RwU		rwTop;
+	ColU		colLeft;
 
-
-//		if(!is_contained_in_chart_substream)
-//		{
-//			//BO_ATTRIB_MARKUP_ATTRIB(fDspFmlaRt)
-//			//BO_ATTRIB_MARKUP_ATTRIB(fDspGridRt)
-//			//BO_ATTRIB_MARKUP_ATTRIB(fDspRwColRt)
-//			//BO_ATTRIB_MARKUP_ATTRIB(fFrozenRt)
-//			//BO_ATTRIB_MARKUP_ATTRIB(fDspZerosRt)
-//			//BO_ATTRIB_MARKUP_ATTRIB(fDefaultHdr)
-//			//BO_ATTRIB_MARKUP_ATTRIB(fRightToLeft)
-//			//BO_ATTRIB_MARKUP_ATTRIB(fDspGuts)
-//			//BO_ATTRIB_MARKUP_ATTRIB(fFrozenNoSplit)
-//			//BO_ATTRIB_MARKUP_ATTRIB(fPaged)
-//			//BO_ATTRIB_MARKUP_ATTRIB(fSLV)
-//
-//// 			//BO_ATTRIB_MARKUP_ATTRIB_NAME(rwTop.rw, L"rwTop")
-//// 			//BO_ATTRIB_MARKUP_ATTRIB_NAME(colLeft.col, L"colLeft")
-//			//BO_ATTRIB_MARKUP_ATTRIB(topLeftCell)
-//			//BO_ATTRIB_MARKUP_ATTRIB(icvHdr)
-//			//BO_ATTRIB_MARKUP_ATTRIB(wScaleSLV)
-//			//BO_ATTRIB_MARKUP_ATTRIB(wScaleNormal)
-//		}
-
+	Icv			icvHdr;
+	
+	BIFF_WORD	wScaleSLV;
+	BIFF_WORD	wScaleNormal;
+	BIFF_BSTR	topLeftCell;
 };
 
 } // namespace XLS

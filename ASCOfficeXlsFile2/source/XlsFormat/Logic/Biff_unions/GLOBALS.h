@@ -24,10 +24,11 @@ public:
 
 	bool is_dialog;
 
-	BaseObjectPtr				 m_DefColWidth;
-	BaseObjectPtr				 m_DefaultRowHeight;
-	BaseObjectPtr				 m_Guts;
-};
+	BaseObjectPtr				m_DefColWidth;
+	BaseObjectPtr				m_DefaultRowHeight;
+	BaseObjectPtr				m_Guts;
+	BaseObjectPtr				m_WsBool;
+};		
 
 } // namespace XLS
 

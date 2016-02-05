@@ -201,6 +201,10 @@ int CELL_GROUP::serialize(std::wostream & stream)
 								{
 									CP_XML_ATTR(L"thickBot", true);
 								}
+								if (row->fDyZero)
+								{
+									CP_XML_ATTR(L"hidden", true);
+								}
 							}
 							if (row->rw + 1  <= current_row_number)
 							{								

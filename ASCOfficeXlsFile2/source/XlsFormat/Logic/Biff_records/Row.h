@@ -23,21 +23,22 @@ public:
 	static const ElementType	type = typeRow;
 
 //-----------------------------
-	Rw rw;
+	Rw			rw;
 	BackwardOnlyParam<unsigned short> colMic;
 	BackwardOnlyParam<unsigned short> colMac;
-	BIFF_WORD miyRw;
-
-	BIFF_BYTE iOutLevel;
-	bool fCollapsed;
-	bool fDyZero;
-	bool fUnsynced;
-	bool fGhostDirty;
 	
-	BIFF_WORD ixfe_val;
-	bool fExAsc;
-	bool fExDes;
-	bool fPhonetic;
+	BIFF_WORD	miyRw;
+
+	BIFF_BYTE	iOutLevel;
+	bool		fCollapsed;
+	bool		fDyZero;
+	bool		fUnsynced;
+	bool		fGhostDirty;
+	
+	BIFF_WORD	ixfe_val;
+	bool		fExAsc;
+	bool		fExDes;
+	bool		fPhonetic;
 	
 	BackwardOnlyParam<_UINT32> in_block_position;
 };

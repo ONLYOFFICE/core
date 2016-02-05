@@ -22,10 +22,13 @@ public:
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-	unsigned char icvPlain12;
-	bool fCondFmtCalc;
-	bool fNotPublished;
-	CFColor color;
+	unsigned char	icvPlain12;
+	bool			fCondFmtCalc;
+	bool			fNotPublished;
+	CFColor			color;
+
+//----------------------------------------
+	bool			bEnabled;
 };
 
 } // namespace XLS

@@ -14,7 +14,8 @@ public:
     std::wstring name_;
   
 	std::wstringstream  cols_;
-    std::wstringstream  sheetFormatPr_;
+	std::wstringstream  sheetPr_;
+	std::wstringstream  sheetFormatPr_;
     std::wstringstream  sheetData_;
     std::wstringstream  mergeCells_;
     std::wstringstream  drawing_;
@@ -71,7 +72,10 @@ std::wostream & xlsx_xml_worksheet::sheetFormat()
 {
     return impl_->sheetFormatPr_;
 }
-
+std::wostream & xlsx_xml_worksheet::sheetProperties()
+{
+    return impl_->sheetPr_;
+}
 std::wostream & xlsx_xml_worksheet::sheetData()
 {
     return impl_->sheetData_;
@@ -114,6 +118,7 @@ void xlsx_xml_worksheet::write_to(std::wostream & strm)
             CP_XML_ATTR(L"mc:Ignorable", L"x14ac");
             CP_XML_ATTR(L"xmlns:x14ac", L"http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac");
 
+			CP_XML_STREAM() << impl_->sheetPr_.str();
 			CP_XML_STREAM() << impl_->dimension_.str();
 			CP_XML_STREAM() << impl_->sheetViews_.str();
 			CP_XML_STREAM() << impl_->sheetFormatPr_.str();

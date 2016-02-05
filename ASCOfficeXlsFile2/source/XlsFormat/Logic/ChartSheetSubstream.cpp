@@ -1,5 +1,6 @@
 
 #include "ChartSheetSubstream.h"
+
 #include <Logic/Biff_records/WriteProtect.h>
 #include <Logic/Biff_records/SheetExt.h>
 #include <Logic/Biff_records/WebPub.h>
@@ -36,6 +37,7 @@
 #include <Logic/Biff_records/DataLabExtContents.h>
 #include <Logic/Biff_records/CrtLine.h>
 #include <Logic/Biff_records/Dat.h>
+#include <Logic/Biff_records/Chart.h>
 
 #include <Logic/Biff_unions/PAGESETUP.h>
 #include <Logic/Biff_unions/BACKGROUND.h>
@@ -56,6 +58,10 @@
 #include <Logic/Biff_unions/AI.h>
 #include <Logic/Biff_unions/LD.h>
 #include <Logic/Biff_unions/DAT.h>
+
+#include "../../XlsXlsxConverter/XlsConverter.h"
+#include "../../XlsXlsxConverter/xlsx_conversion_context.h"
+
 
 namespace XLS
 {;
@@ -86,6 +92,8 @@ CHARTSHEET = BOF CHARTSHEETCONTENT
 */
 const bool ChartSheetSubstream::loadContent(BinProcessor& proc)
 {
+	pGlobalWorkbookInfo = proc.getGlobalWorkbookInfo();
+	
 	if(!proc.mandatory<BOF>())
 	{
 		return false;
@@ -219,7 +227,8 @@ int ChartSheetSubstream::serialize (std::wostream & _stream)
 		chart_area_format				= dynamic_cast<AreaFormat*>(chart_frame->m_AreaFormat.get());
 
 	ShtProps		*sht_props			= dynamic_cast<ShtProps*>(chart_formats->m_ShtProps.get());
-	
+	Chart			*chart_rect			= dynamic_cast<Chart*>(chart_formats->m_ChartRect.get());
+
 	CP_XML_WRITER(_stream)    
 	{
 		CP_XML_NODE(L"c:roundedCorners") 
@@ -257,6 +266,12 @@ int ChartSheetSubstream::serialize (std::wostream & _stream)
 		{
 			//default spPr ???
 		}
+	}
+
+	if (chart_rect)
+	{
+		pGlobalWorkbookInfo->xls_converter->xlsx_context->get_drawing_context().set_chart_sheet_anchor(chart_rect->dx.dVal, chart_rect->dy.dVal);
+		
 	}
 	return 0;
 }
@@ -516,7 +531,7 @@ int ChartSheetSubstream::serialize_plot_area (std::wostream & _stream)
 							
 							series_ss->serialize(CP_XML_STREAM(), crt->m_iChartType);
 
-							serialize_dPt(CP_XML_STREAM(), it->second[i], crt, std::max(ser->cValx, ser->cValy));//+bubbles
+							serialize_dPt(CP_XML_STREAM(), it->second[i], crt, (std::max)(ser->cValx, ser->cValy));//+bubbles
 							
 							if (crt->m_iChartType == CHART_TYPE_Scatter || 
 								crt->m_iChartType == CHART_TYPE_Bubble)

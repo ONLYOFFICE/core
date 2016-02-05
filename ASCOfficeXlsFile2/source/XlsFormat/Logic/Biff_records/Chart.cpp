@@ -30,10 +30,10 @@ void Chart::readFields(CFRecord& record)
 {
 	record >> x >> y >> dx >> dy;
 
-	GlobalWorkbookInfoPtr pGlobalWorkbookInfoPtr = record.getGlobalWorkbookInfo();
+	//GlobalWorkbookInfoPtr pGlobalWorkbookInfoPtr = record.getGlobalWorkbookInfo();
 
-	pGlobalWorkbookInfoPtr->currentChartWidth	= dx.Integral + dx.Fractional / 65536.;
-	pGlobalWorkbookInfoPtr->currentChartHeight	= dy.Integral + dy.Fractional / 65536.;
+	//pGlobalWorkbookInfoPtr->currentChartWidth	= dx.dVal;
+	//pGlobalWorkbookInfoPtr->currentChartHeight	= dy.dVal;
 
 }
 

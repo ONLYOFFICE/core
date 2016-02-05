@@ -82,6 +82,8 @@ XlsConverter::XlsConverter(const std::wstring & xls_file, const std::wstring & _
 	try{
 		XLS::CompoundFile cfile(xls_file, XLS::CompoundFile::cf_ReadMode);
 
+		if (cfile.isError())return;
+
 		XLS::CFStreamPtr summary;
 		XLS::CFStreamPtr doc_summary;
 
@@ -271,9 +273,18 @@ void XlsConverter::convert(XLS::WorksheetSubstream* sheet)
 {
 	if (sheet == NULL) return;
 
+	if (sheet->m_arWINDOW.size() > 0)
+	{
+		sheet->m_arWINDOW[0]->serialize(xlsx_context->current_sheet().sheetViews());
+	}
 	if (sheet->m_Dimensions)
 	{
 		sheet->m_Dimensions->serialize(xlsx_context->current_sheet().dimension());
+	}
+	if (sheet->m_SheetExt)
+	{
+		sheet->m_SheetExt->serialize(xlsx_context->current_sheet().sheetProperties());
+		// todooo + GLOBALS->WsBool
 	}
 	if (sheet->m_GLOBALS)
 	{
@@ -517,12 +528,6 @@ void XlsConverter::convert(XLS::LBL * def_name)
 	if (def_name == NULL) return;
 
 	def_name->serialize(xlsx_context->defined_names());
-}
-void XlsConverter::convert(XLS::WINDOW * window)
-{
-	if (window == NULL) return;
-
-	//window->serialize(xlsx_context->worksheet_view());
 }
 void XlsConverter::convert(XLS::THEME* theme)
 {
@@ -1091,7 +1096,9 @@ void XlsConverter::convert_geometry_text(std::vector<ODRAW::OfficeArtFOPTEPtr> &
 					if (bools->fUsegFItalic		&& bools->fItalic)		xlsx_context->get_drawing_context().set_wordart_italic	(true); 
 					if (bools->fUsegFVertical	&& bools->fVertical)	xlsx_context->get_drawing_context().set_wordart_vertical(true); 
 					if (bools->fUsegFUnderline	&& bools->fUnderline)	xlsx_context->get_drawing_context().set_wordart_underline(true); 
-					if (bools->fStrikethrough	&& bools->fStrikethrough)xlsx_context->get_drawing_context().set_wordart_strike(true); 
+					if (bools->fStrikethrough	&& bools->fStrikethrough)xlsx_context->get_drawing_context().set_wordart_strike(true);
+
+					//if (bools->fUsegFShrinkFit && bools->fShrinkFit)
 				}
 			}break;
 		}
@@ -1329,9 +1336,8 @@ void XlsConverter::convert_chart_sheet(XLS::ChartSheetSubstream * chart)
 		
 	if (xlsx_context->get_drawing_context().start_drawing(0x0005))		
 	{
-		convert(chart);
-		xlsx_context->get_drawing_context().set_chart_sheet_anchor(xls_global_info->currentChartWidth, xls_global_info->currentChartHeight);//todooo - size chart
 		xlsx_context->get_drawing_context().set_id(1);
+		convert(chart);
 
 		xlsx_context->get_drawing_context().end_drawing();
 	}

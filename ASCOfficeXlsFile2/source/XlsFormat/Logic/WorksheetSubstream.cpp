@@ -138,6 +138,7 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 	}
 
 	proc.optional<SCENARIOS>();
+	
 	if (proc.optional<SORTANDFILTER>())// Let it be optional
 	{
 		m_SORTANDFILTER = elements_.back();
@@ -151,7 +152,7 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 	}
 
     std::vector<CellRangeRef>	shared_formulas_locations;
-    CELLTABLE               cell_table(shared_formulas_locations);
+    CELLTABLE        cell_table(shared_formulas_locations);
     if (proc.optional(cell_table))
 	{
 		m_CELLTABLE = elements_.back();
@@ -176,11 +177,18 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 	}
 	
 	proc.repeated<HFPicture>(0, 0);
-	proc.repeated<Note>		(0, 0);
+	
+	count = proc.repeated<Note>(0, 0);
+	while(count > 0)
+	{
+		m_arNote.insert(m_arNote.begin(), elements_.back());
+		elements_.pop_back();
+		count--;
+	}
 	proc.repeated<PIVOTVIEW>(0, 0);
 	proc.optional<DCON>		();
 	
-	count = proc.repeated<WINDOW>(1, 0);
+	count = proc.repeated<WINDOW>(1, 0);//??по спецификации 1 штук
 	while(count > 0)
 	{
 		if (elements_.back()->get_type() == typeWINDOW)
@@ -193,8 +201,22 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 
 	proc.optional<SheetExt>(); //BulletinSearch.xls ??? тута или ниже
 
-	proc.repeated<CUSTOMVIEW>	(0, 0);
-	proc.repeated<SORT>			(0, 2);
+	count = proc.repeated<CUSTOMVIEW>(0, 0);
+	while(count > 0)
+	{
+		m_arCUSTOMVIEW.insert(m_arCUSTOMVIEW.begin(), elements_.back());
+		elements_.pop_back();
+		count--;
+	}
+	
+	count = proc.repeated<SORT>(0, 2);
+	while(count > 0)
+	{
+		m_arSORT.insert(m_arSORT.begin(), elements_.back());
+		elements_.pop_back();
+		count--;
+	}
+	
 	proc.optional<DxGCol>		();
 	
 	count = proc.repeated<MergeCells>(0, 0);
@@ -208,7 +230,12 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 	proc.optional<LRng>			();
 	proc.repeated<QUERYTABLE>	(0, 0);
 	proc.optional<PHONETICINFO>	();
-	proc.optional<CONDFMTS>		();  // Let it be optional
+	
+	if (proc.optional<CONDFMTS>())  // Let it be optional
+	{
+		m_CONDFMTS = elements_.back();
+		elements_.pop_back();
+	}
 	
 	count = proc.repeated<HLINK>(0, 0) ;
 	while(count > 0)
@@ -218,11 +245,23 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 		count--;
 	}
 	
-	proc.optional<DVAL>		();
-	proc.optional<CodeName>	();
+	proc.optional<DVAL>();
+	
+	if (proc.optional<CodeName>	())
+	{
+		m_CodeName = elements_.back();
+		elements_.pop_back();
+	}
+
 	proc.repeated<WebPub>	(0, 0);
 	proc.repeated<CellWatch>(0, 0);
-	proc.optional<SheetExt>	();
+	
+	if (proc.optional<SheetExt>())
+	{
+		m_SheetExt = elements_.back();
+		elements_.pop_back();
+	}
+
 	proc.repeated<FEAT>		(0, 0);
 	proc.repeated<FEAT11>	(0, 0);
 	proc.repeated<RECORD12>	(0, 0);

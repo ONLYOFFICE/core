@@ -25,10 +25,6 @@ public:
 
 //-----------------------------
 	XLUnicodeString codeName;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-	//BO_ATTRIB_MARKUP_ATTRIB(codeName)
-	//BO_ATTRIB_MARKUP_END
 
 };
 

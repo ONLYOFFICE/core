@@ -50,5 +50,31 @@ void SheetExt::readFields(CFRecord& record)
 	}
 }
 
+int SheetExt::serialize(std::wostream & stream)
+{
+	if (!sheetExtOptional.bEnabled) return 0;
+	
+	CP_XML_WRITER(stream)    
+    {
+		CP_XML_NODE(L"sheetPr")
+		{	
+			if (!sheetExtOptional.fCondFmtCalc)	
+				CP_XML_ATTR(L"enableFormatConditionsCalculation", false);
+			if (!sheetExtOptional.fNotPublished)	
+				CP_XML_ATTR(L"published" ,false);
+
+			if (sheetExtOptional.color.xclrType.type == XColorType::XCLRRGB)
+			{
+				CP_XML_NODE(L"tabColor")
+				{
+					CP_XML_ATTR(L"rgb", sheetExtOptional.color.rgb.strARGB);
+				}
+			}
+
+		}
+	}
+	return 0;
+}
+
 } // namespace XLS
 

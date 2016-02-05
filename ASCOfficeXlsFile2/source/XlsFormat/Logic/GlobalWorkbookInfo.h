@@ -72,9 +72,6 @@ public:
 	double										defaultColumnWidth;
 	double										defaultRowHeight;
 
-	double										currentChartWidth;
-	double										currentChartHeight;
-
 	int Version;
 
 	XlsConverter								*xls_converter;

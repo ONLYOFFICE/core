@@ -24,6 +24,8 @@ public:
     std::wstringstream  dimension_;
     std::wstringstream  sheetViews_;
 	std::wstringstream  pageProperties_;
+	std::wstringstream  sortAndFilters_;
+	std::wstringstream  customViews_;
 
 	rels hyperlinks_rels_;
 
@@ -102,6 +104,15 @@ std::wostream & xlsx_xml_worksheet::hyperlinks()
 {
     return impl_->hyperlinks_;
 }
+std::wostream & xlsx_xml_worksheet::sheetSortAndFilters()
+{
+	return impl_->sortAndFilters_;
+}
+std::wostream & xlsx_xml_worksheet::customViews()
+{
+    return impl_->customViews_;
+}
+//-----------------------------------------------------------------
 rels & xlsx_xml_worksheet::hyperlinks_rels()
 {
     return impl_->hyperlinks_rels_;
@@ -133,7 +144,12 @@ void xlsx_xml_worksheet::write_to(std::wostream & strm)
 			//объединенные €чейки раньше чем гиперлинки !!!
            
 			CP_XML_STREAM() << impl_->mergeCells_.str();
+			
 			CP_XML_STREAM() << impl_->hyperlinks_.str();
+
+			CP_XML_STREAM() << impl_->sortAndFilters_.str();
+  	
+			CP_XML_STREAM() << impl_->customViews_.str();
 
 			CP_XML_STREAM() << impl_->pageProperties_.str();
 

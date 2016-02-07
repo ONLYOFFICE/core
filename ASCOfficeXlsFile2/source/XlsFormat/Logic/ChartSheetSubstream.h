@@ -40,7 +40,8 @@ public:
 	BaseObjectPtr				m_CHARTFORMATS;
 	BaseObjectPtr				m_SERIESDATA;
 	BaseObjectPtr				m_OBJECTSCHART;
-
+	std::vector<BaseObjectPtr>	m_arWINDOW;
+	std::vector<BaseObjectPtr>	m_arCUSTOMVIEW;
 private:
 
 	void recalc(CHARTFORMATS*	charts);

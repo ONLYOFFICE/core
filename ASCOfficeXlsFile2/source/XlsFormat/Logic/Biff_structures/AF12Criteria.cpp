@@ -20,17 +20,6 @@ AF12Criteria::~AF12Criteria()
 {
 }
 
-//
-//void AF12Criteria::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{	
-//	xml_tag->setAttribute(L"str", _str);
-//}
-//
-//
-//void AF12Criteria::getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{	
-//}
-
 
 void AF12Criteria::store(CFRecord& record)
 {	

@@ -23,23 +23,30 @@ public:
 
 	static const ElementType	type = typeUserBView;
 
+	int serialize(std::wostream & stream);
 //-----------------------------
 	BIFF_WORD tabId;
 	BIFF_BSTR guid;
+	
 	BIFF_DWORD x;
 	BIFF_DWORD y;
 	BIFF_DWORD dx;
 	BIFF_DWORD dy;
+
 	BIFF_WORD wTabRatio;
 
 	bool fDspFmlaBar;
 	bool fDspStatus;
-	BIFF_BSTR mdNoteDisp;
+	
+	std::wstring mdNoteDisp;
+	
 	bool fDspHScroll;
 	bool fDspVScroll;
 	bool fBotAdornment;
 	bool fZoom;
-	BIFF_BSTR fHideObj;
+	
+	std::wstring fHideObj;
+	
 	bool fPrintIncl;
 	bool fRowColIncl;
 	bool fInvalidTabId;
@@ -48,13 +55,9 @@ public:
 	bool fOnlySync;
 	bool fPersonalView;
 	bool fIconic;
-	BIFF_WORD wMergeInterval;
+	
+	BIFF_WORD		wMergeInterval;
 	XLUnicodeString st;
-
-		//if(fPersonalView && fTimedUpdate)
-		//{
-		//	//BO_ATTRIB_MARKUP_ATTRIB(wMergeInterval)
-		//}
 
 };
 

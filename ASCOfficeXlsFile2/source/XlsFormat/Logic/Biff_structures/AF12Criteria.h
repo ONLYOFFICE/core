@@ -24,6 +24,7 @@ public:
 
 	AFDOper doper;
 	XLUnicodeStringNoCch str;
+	
 	BIFF_BSTR _str;
 };
 

@@ -24,11 +24,11 @@ public:
 	static const ElementType	type = typeUserSViewBegin;
 
 //-----------------------------
-	BIFF_BSTR guid;
-	TabId iTabid;
-	BIFF_DWORD wScale;
-	Icv icvHdr;
-	PaneType pnnSel;
+	BIFF_BSTR	guid;
+	TabId		iTabid;
+	BIFF_DWORD	wScale;
+	Icv			icvHdr;
+	PaneType	pnnSel;
 
 	bool fShowBrks;
 	bool fDspFmlaSv;
@@ -57,13 +57,14 @@ public:
 	bool fPageLayoutView;
 	bool fRuler;
 
-	BIFF_BSTR ref8TopLeft;
-	BIFF_DOUBLE operNumX;
-	BIFF_DOUBLE operNumY;
+	std::wstring	ref8TopLeft;
+	BIFF_DOUBLE		operNumX;
+	BIFF_DOUBLE		operNumY;
+	
 	ForwardOnlyParam<unsigned short> colRPane;
 	ForwardOnlyParam<unsigned short> rwBPane;
 
-	BIFF_BSTR pane_top_left_cell;
+	std::wstring	pane_top_left_cell;
 
 };
 

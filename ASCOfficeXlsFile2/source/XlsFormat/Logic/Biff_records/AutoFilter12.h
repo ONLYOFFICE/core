@@ -28,24 +28,19 @@ public:
 	static const ElementType	type = typeAutoFilter12;
 
 	FrtRefHeader frtRefHeader;
-	BIFF_WORD iEntry;
-	BIFF_DWORD fHideArrow;
-	BIFF_DWORD ft;
-	BIFF_DWORD cft;
-	BIFF_DWORD cCriteria;
-	BIFF_DWORD cDateGroupings;
-	BIFF_DWORD idList;
+	BIFF_WORD	iEntry;
+	BIFF_DWORD	fHideArrow;
+	BIFF_DWORD	ft;
+	BIFF_DWORD	cft;
+	BIFF_DWORD	cCriteria;
+	BIFF_DWORD	cDateGroupings;
+	BIFF_DWORD	idList;
+	
 	BiffStructurePtrVector rgbAF12Criteries;
 	
 //-----------------------------
-//	BIFF_WORD userName;
 
-
-		//if ( (ft == BIFF_DWORD(0)) && (cCriteria > 0) )
-		//{
-		//	//BO_ATTRIB_MARKUP_VECTOR_COMPLEX(rgbAF12Criteries, AF12Criteria)
-		//}
-
+	std::vector<BaseObjectPtr>	m_arContinueFrt12;
 
 };
 

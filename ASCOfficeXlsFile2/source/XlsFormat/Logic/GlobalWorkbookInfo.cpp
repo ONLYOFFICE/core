@@ -19,6 +19,7 @@ GlobalWorkbookInfo::GlobalWorkbookInfo(const unsigned short code_page, XlsConver
 	xls_converter			= xls_converter_;
 
 	startAddedSharedStrings = 0;
+	current_sheet			= 0;
 }
 
 

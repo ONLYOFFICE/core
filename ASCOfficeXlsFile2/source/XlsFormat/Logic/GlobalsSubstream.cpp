@@ -182,6 +182,7 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 	proc.mandatory<CalcPrecision>();
 	proc.mandatory<RefreshAll>();
 	proc.mandatory<BookBool>();
+
 	if (proc.optional<Country>()) // OpenOffice Calc stored files workaround
 	{
 		m_Country = elements_.back();
@@ -198,8 +199,14 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 	}
 	proc.optional<UsesELFs>(); // OpenOffice Calc stored files workaround
 	proc.optional<RecalcId>(); // OpenOffice Calc stored files workaround
-	proc.repeated<Window1>(0, 0); // OpenOffice Calc stored files workaround
-
+	
+	count = proc.repeated<Window1>(0, 0); // OpenOffice Calc stored files workaround
+	while(count > 0)
+	{
+		m_arWindow1.insert(m_arWindow1.begin(), elements_.back());
+		elements_.pop_back();
+		count--;
+	}
 
 	if (proc.mandatory<FORMATTING>())
 	{
@@ -215,7 +222,14 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 
 	proc.repeated<PIVOTCACHEDEFINITION>(0, 0);
 	proc.optional<DOCROUTE>();
-	proc.repeated<UserBView>(0, 0);
+	
+	count = proc.repeated<UserBView>(0, 0);
+	while(count > 0)
+	{
+		m_arUserBView.insert(m_arUserBView.begin(), elements_.back());
+		elements_.pop_back();
+		count--;
+	}	
 	
 	proc.optional<UsesELFs>();
 	proc.repeated<BUNDLESHEET>(1, 0);

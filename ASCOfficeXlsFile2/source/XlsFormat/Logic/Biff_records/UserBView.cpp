@@ -110,62 +110,105 @@ void UserBView::readFields(CFRecord& record)
 	record.skipNunBytes(4); // unused1
 	record >> tabId;
 	record.skipNunBytes(2); // reserved1
+	
 	_GUID_ guid_num;
 	record >> guid_num >> x >> y >> dx >> dy >> wTabRatio;
 	guid = STR::guid2bstr(guid_num);
 
 	unsigned short flags1;
 	record >> flags1;
-	fDspFmlaBar = GETBIT(flags1, 0);
-	fDspStatus = GETBIT(flags1, 1);
+	fDspFmlaBar	= GETBIT(flags1, 0);
+	fDspStatus	= GETBIT(flags1, 1);
+	
 	unsigned char mdNoteDisp_num = GETBITS(flags1, 2, 3);
 	switch(mdNoteDisp_num)
 	{
 		case 0x0:
 			mdNoteDisp = std::wstring (L"commNone");
 			break;
-		case 0x1:
-			mdNoteDisp = std::wstring (L"commIndicator");
-			break;
 		case 0x2:
 			mdNoteDisp = std::wstring (L"commIndAndComment");
 			break;
+		case 0x1:
 		default:
-			throw;// EXCEPT::RT::WrongBiffRecord("Unsupported value of mdNoteDisp.", record.getTypeString());
+			mdNoteDisp = std::wstring (L"commIndicator");
+			break;
 	}
-	fDspHScroll = GETBIT(flags1, 4);
-	fDspVScroll = GETBIT(flags1, 5);
-	fBotAdornment = GETBIT(flags1, 6);
-	fZoom = GETBIT(flags1, 7);
+	fDspHScroll		= GETBIT(flags1, 4);
+	fDspVScroll		= GETBIT(flags1, 5);
+	fBotAdornment	= GETBIT(flags1, 6);
+	fZoom			= GETBIT(flags1, 7);
+	
 	unsigned char fHideObj_num = GETBITS(flags1, 8, 9);
 	switch(fHideObj_num)
 	{
-	case 0x0:
-		fHideObj = std::wstring (L"all");
-		break;
 	case 0x1:
 		fHideObj = std::wstring (L"placeholders");
 		break;
 	case 0x2:
 		fHideObj = std::wstring (L"none");
 		break;
+	case 0x0:
 	default:
-		throw;// EXCEPT::RT::WrongBiffRecord("Unsupported value of fHideObj.", record.getTypeString());
+		fHideObj = std::wstring (L"all");
+		break;
 	}
-	fPrintIncl = GETBIT(flags1, 10);
-	fRowColIncl = GETBIT(flags1, 11);
-	fInvalidTabId = GETBIT(flags1, 12);
-	fTimedUpdate = GETBIT(flags1, 13);
-	fAllMemChanges = GETBIT(flags1, 14);
-	fOnlySync = GETBIT(flags1, 15);
+	fPrintIncl		= GETBIT(flags1, 10);
+	fRowColIncl		= GETBIT(flags1, 11);
+	fInvalidTabId	= GETBIT(flags1, 12);
+	fTimedUpdate	= GETBIT(flags1, 13);
+	fAllMemChanges	= GETBIT(flags1, 14);
+	fOnlySync		= GETBIT(flags1, 15);
 
 	record.skipNunBytes(2); // unused2
 	unsigned short flags2;
 	record >> flags2;
-	fPersonalView = GETBIT(flags2, 0);
-	fIconic = GETBIT(flags2, 1);
+	
+	fPersonalView	= GETBIT(flags2, 0);
+	fIconic			= GETBIT(flags2, 1);
 
 	record >> wMergeInterval >> st;
+}
+
+int UserBView::serialize(std::wostream & stream)
+{
+	CP_XML_WRITER(stream)    
+    {
+		CP_XML_NODE(L"customWorkbookView")
+		{	
+			if (!st.value().empty())
+			{
+				CP_XML_ATTR(L"name", st.value());
+			}
+			CP_XML_ATTR(L"windowWidth",		dx);
+			CP_XML_ATTR(L"windowHeight",	dy);
+			CP_XML_ATTR(L"activeSheetId",	tabId);
+			CP_XML_ATTR(L"guid",			*guid.value());
+			CP_XML_ATTR(L"mergeInterval",	wMergeInterval);
+
+			if (fTimedUpdate)	CP_XML_ATTR(L"autoUpdate"		,	true);
+			if (fAllMemChanges)	CP_XML_ATTR(L"changesSavedWin"	,	true);
+			if (!fRowColIncl)	CP_XML_ATTR(L"includeHiddenRowCol",	false);
+			if (!fPrintIncl)	CP_XML_ATTR(L"includePrintSettings",false);
+			if (fZoom)			CP_XML_ATTR(L"maximized"		,	true);
+			if (fIconic)		CP_XML_ATTR(L"minimized"		,	true);
+			if (fOnlySync)		CP_XML_ATTR(L"onlySync"			,	true);
+			if (fPersonalView)	CP_XML_ATTR(L"personalView"		,	true);
+			if (!fDspFmlaBar)	CP_XML_ATTR(L"showFormulaBar"	,	false);
+			if (!fDspHScroll)	CP_XML_ATTR(L"showHorizontalScroll",false);
+			if (!fDspVScroll)	CP_XML_ATTR(L"showVerticalScroll",	false);
+			if (!fBotAdornment)	CP_XML_ATTR(L"showSheetTabs"	,	false);
+			if (!fDspStatus)	CP_XML_ATTR(L"showStatusbar"	,	false);
+
+			if (mdNoteDisp != L"commIndicator")	CP_XML_ATTR(L"showComments", mdNoteDisp);
+			
+			if (fHideObj != L"all")	CP_XML_ATTR(L"showObjects"	,	fHideObj);
+			if (wTabRatio != 600)	CP_XML_ATTR(L"tabRatio"		,	wTabRatio);
+			if (x != 0)				CP_XML_ATTR(L"xWindow"		,	x);
+			if (y != 0)				CP_XML_ATTR(L"yWindow"		,	y);
+		}
+	}
+	return 0;
 }
 
 } // namespace XLS

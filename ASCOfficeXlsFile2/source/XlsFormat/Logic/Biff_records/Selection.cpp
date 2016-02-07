@@ -56,5 +56,37 @@ void Selection::readFields(CFRecord& record)
 	sqref = sqref_str;
 }
 
+int Selection::serialize(std::wostream & stream)
+{	
+	if (pnn == (unsigned char)PaneType::REVTPNNTOPLEFT &&
+		activeCell == L"A1"		&&
+		irefAct == (_INT16)0		&&
+		sqref == L"A1") return 0;
+
+	CP_XML_WRITER(stream)    
+    {
+		CP_XML_NODE(L"selection")
+		{
+			switch(pnn)
+			{
+			case PaneType::REVTPNNBOTRIGHT:	CP_XML_ATTR(L"pane", L"bottomRight");	break;
+			case PaneType::REVTPNNTOPRIGHT:	CP_XML_ATTR(L"pane", L"topRight");		break;
+			case PaneType::REVTPNNBOTLEFT:	CP_XML_ATTR(L"pane", L"bottomLeft");	break;
+			//	default:					CP_XML_ATTR(L"pane", L"topLeft"); 
+			}
+
+			if (*activeCell.value() != L"A1") 
+				CP_XML_ATTR(L"activeCell", *activeCell.value());
+
+			if (irefAct != 0) 
+				CP_XML_ATTR(L"activeCellId", irefAct);
+
+			if (*sqref.value() != L"A1") 
+				CP_XML_ATTR(L"sqref", *sqref.value());
+		}
+	}
+	return 0;
+}
+
 } // namespace XLS
 

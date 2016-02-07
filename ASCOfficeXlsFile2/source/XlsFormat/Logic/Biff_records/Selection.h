@@ -24,6 +24,8 @@ public:
 
 	static const ElementType	type = typeSelection;
 
+	int serialize(std::wostream & stream);
+
 //-----------------------------
 	PaneType	pnn;
 

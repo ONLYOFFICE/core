@@ -24,39 +24,25 @@ public:
 	static const ElementType	type = typeAutoFilter;
 
 	BIFF_WORD iEntry;
+	
 	BIFF_BYTE wJoin;
-	BIFF_BYTE fSimple1;
-	BIFF_BYTE fSimple2;
-	BIFF_BYTE fTopN;
+	
+	bool fSimple1;
+	bool fSimple2;
+	
+	bool fTopN;
+	bool fPercent;
+	
 	BIFF_BYTE fTop;
-	BIFF_BYTE fPercent;
 	BIFF_WORD wTopN;
 
 	AFDOper doper1;
 	AFDOper doper2;
 
 	bool m_bAutoFilter12;
-	XLUnicodeStringNoCch str1;
-	XLUnicodeStringNoCch str2;
-
-//-----------------------------
-
-
-
-		//if (!m_bAutoFilter12)
-		//{
-		//	if (fSimple1)
-		//	{
-		//		//BO_ATTRIB_MARKUP_ATTRIB(str1)
-		//		//BO_ATTRIB_MARKUP_COMPLEX(doper1)
-		//	}
-		//	if (fSimple2)
-		//	{
-		//		//BO_ATTRIB_MARKUP_ATTRIB(str2)
-		//		//BO_ATTRIB_MARKUP_COMPLEX(doper2)
-		//	}			
-		//}
-
+	
+	std::wstring str1;
+	std::wstring str2;
 
 };
 

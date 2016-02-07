@@ -70,7 +70,12 @@ const bool MacroSheetSubstream::loadContent(BinProcessor& proc)
 	proc.optional<Intl>();
 
     GLOBALS globals(false);
-    proc.mandatory(globals); // not dialog
+    if (proc.mandatory(globals)) // not dialog
+	{
+		m_GLOBALS = elements_.back();
+		elements_.pop_back();
+	}
+	int count = 0;
 
 	proc.mandatory<PAGESETUP>();
 	proc.optional<HeaderFooter>();
@@ -78,6 +83,7 @@ const bool MacroSheetSubstream::loadContent(BinProcessor& proc)
 	proc.repeated<BIGNAME>(0, 0);
 	proc.optional<PROTECTION_COMMON>();
 	proc.mandatory<COLUMNS>();
+	
 	proc.mandatory<MACROSORTANDFILTER>();
 	proc.mandatory<Dimensions>();
 
@@ -86,13 +92,24 @@ const bool MacroSheetSubstream::loadContent(BinProcessor& proc)
     proc.optional(cell_table);
 
     OBJECTS objects(false);
-    proc.mandatory(objects);
+    if (proc.mandatory(objects))
+	{
+		m_OBJECTS = elements_.back();
+		elements_.pop_back();
+	}
 
 	proc.repeated<HFPicture>(0, 0);
 	proc.repeated<Note>(0, 0);
 	proc.optional<DCON>();
 	proc.repeated<WINDOW>(1, 0);
-	proc.repeated<CUSTOMVIEW>(0, 0);
+	
+	count = proc.repeated<CUSTOMVIEW>(0, 0);
+	while(count > 0)
+	{
+		m_arCUSTOMVIEW.insert(m_arCUSTOMVIEW.begin(), elements_.back());
+		elements_.pop_back();
+		count--;
+	}
 	proc.repeated<SORT>(0, 2);
 	proc.optional<DxGCol>();
 	proc.optional<PHONETICINFO>();

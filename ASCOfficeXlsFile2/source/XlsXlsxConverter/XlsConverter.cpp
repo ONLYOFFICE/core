@@ -249,6 +249,7 @@ void XlsConverter::convert(XLS::WorkbookStreamObject* woorkbook)
 
     for (int i=0 ; i < woorkbook->m_arWorksheetSubstream.size(); i++)
 	{
+		xls_global_info->current_sheet = i + 1;
 		xlsx_context->start_table(xls_global_info->sheets_names.size() > i ? xls_global_info->sheets_names[i] : L"Sheet_" + boost::lexical_cast<std::wstring>(i+1));
 
 		if (woorkbook->m_arWorksheetSubstream[i]->get_type() == XLS::typeWorksheetSubstream)
@@ -322,11 +323,32 @@ void XlsConverter::convert(XLS::WorksheetSubstream* sheet)
 	{
 		convert((XLS::HLINK*)sheet->m_arHLINK[i].get());
 	}
+
+	if (sheet->m_SORTANDFILTER)
+	{
+		sheet->m_SORTANDFILTER->serialize(xlsx_context->current_sheet().sheetSortAndFilters());
+	}
+
+
 	convert((XLS::OBJECTS*)sheet->m_OBJECTS.get());
 
 	if (sheet->m_PAGESETUP)
 	{
 		sheet->m_PAGESETUP->serialize(xlsx_context->current_sheet().pageProperties());
+	}
+ 	
+	if (sheet->m_arCUSTOMVIEW.size() > 0)
+	{
+		CP_XML_WRITER(xlsx_context->current_sheet().customViews())    
+		{
+			CP_XML_NODE(L"customSheetViews")
+            {
+				for (int i = 0 ; i < sheet->m_arCUSTOMVIEW.size(); i++)
+				{
+					sheet->m_arCUSTOMVIEW[i]->serialize(CP_XML_STREAM());
+				}
+			}
+		}
 	}
 }
 
@@ -352,6 +374,10 @@ void XlsConverter::convert(XLS::GlobalsSubstream* global)
     for (int i = 0 ; i < global->m_arWindow1.size(); i++)
 	{
 		global->m_arWindow1[i]->serialize(xlsx_context->workbook_views());
+	}
+    for (int i = 0 ; i < global->m_arUserBView.size(); i++)
+	{
+		global->m_arUserBView[i]->serialize(xlsx_context->custom_views());
 	}
 }
 

@@ -18,6 +18,16 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
+	int serialize(std::wostream & stream);
+
+	BaseObjectPtr								m_AutoFilterInfo;	
+	std::vector<BaseObjectPtr>					m_arFilters;
+	std::map<int, std::vector<BaseObjectPtr>>	m_mapFilters12;
+
+	std::vector<BaseObjectPtr>					m_arSORTDATA12;
+
+	GlobalWorkbookInfoPtr		pGlobalWorkbookInfoPtr;
+
 };
 
 } // namespace XLS

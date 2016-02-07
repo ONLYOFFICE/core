@@ -55,11 +55,12 @@ public:
 
 	std::vector<BaseObjectPtr>					*m_arFonts;
 	
+	unsigned int								current_sheet;
 	unsigned int								last_AXES_id;
 	const static unsigned int					initial_AXES_id = 0x2000000;
 
-	std::multimap<std::wstring, std::wstring>	mapDefineNames;
-	std::vector<std::wstring>					arDefineNames;
+	std::map<std::wstring, std::vector<std::wstring>>	mapDefineNames;
+	std::vector<std::wstring>							arDefineNames;
 
 	unsigned int								startAddedSharedStrings;
 	std::vector<std::wstring>					arAddedSharedStrings;

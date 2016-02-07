@@ -32,7 +32,9 @@ public:
     std::wostream & mergeCells();
     std::wostream & drawing(); 
     std::wostream & comments(); 
+	std::wostream & sheetSortAndFilters();
 	std::wostream & pageProperties();
+	std::wostream & customViews();
 	
 	rels & hyperlinks_rels();
 

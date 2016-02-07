@@ -38,7 +38,8 @@ public:
 	std::wostream				& shared_strings()			{ return xlsx_shared_strings_; }    
  	std::wostream				& defined_names()			{ return xlsx_defined_names_; }    
 	std::wostream				& workbook_views()			{ return xlsx_workbook_views_; }
-	
+	std::wostream				& custom_views()			{ return xlsx_custom_views_; }
+
 	xlsx_text_context           & get_text_context()		{ return xlsx_text_context_; }
     xlsx_table_context          & get_table_context()		{ return xlsx_table_context_; }
     xlsx_xml_worksheet          & current_sheet();
@@ -74,6 +75,7 @@ private:
 	std::wstringstream					xlsx_shared_strings_;
 	std::wstringstream					xlsx_defined_names_;
 	std::wstringstream					xlsx_workbook_views_;
+	std::wstringstream					xlsx_custom_views_;
 
     xlsx_drawing_context_handle			xlsx_drawing_context_handle_;
     //xlsx_comments_context_handle    xlsx_comments_context_handle_;

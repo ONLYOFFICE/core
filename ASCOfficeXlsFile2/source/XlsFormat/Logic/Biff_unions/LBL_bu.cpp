@@ -68,28 +68,29 @@ const bool LBL::loadContent(BinProcessor& proc)
 
 	if (!value.empty() && !name.empty())
 	{
-		//bool insert = false;
+		int ind_sheet = lbl->itab;
 
-		//std::multimap<std::wstring, std::wstring>::iterator it = global_info_->mapDefineNames.find(name);
-		//
-		//if (it == global_info_->mapDefineNames.end())
-		//{
-		//	insert = true;
-		//}
-		//else
-		//{
-		//	while (it != global_info_->mapDefineNames.end())//полные дубляжи
-		//	{
-		//		if (it->second != value) insert = true;
-		//		else break;
-		//		it++;
-		//	}
-		//}
-		//if (insert)
+		std::map<std::wstring, std::vector<std::wstring>>::iterator it = global_info_->mapDefineNames.find(name);
+		
+		if (it != global_info_->mapDefineNames.end())
 		{
-			global_info_->mapDefineNames.insert(std::pair<std::wstring, std::wstring>(name, value)); // для поиска дубликатов имен
-			isSerialize = true;
+			if (ind_sheet >= it->second.size())
+			{
+				it->second.reserve(ind_sheet + 1);
+			}
+			it->second[ind_sheet] = value;
+			//it->second.push_back(value);
 		}
+		else
+		{
+			std::vector<std::wstring> ar(ind_sheet + 1);
+		
+			ar[ind_sheet] = value;
+			//ar.push_back(value);
+
+			global_info_->mapDefineNames.insert(std::pair<std::wstring, std::vector<std::wstring>>(name, ar));
+		}
+		isSerialize = true;
 	}
 	else
 	{

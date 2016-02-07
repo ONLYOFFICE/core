@@ -19,6 +19,10 @@ public:
 	virtual const bool loadContent(BinProcessor& proc);
 
 	static const ElementType	type = typeMacroSheetSubstream;
+
+	BaseObjectPtr				m_GLOBALS;
+	BaseObjectPtr				m_OBJECTS;
+	std::vector<BaseObjectPtr>	m_arCUSTOMVIEW;
 	
 };
 

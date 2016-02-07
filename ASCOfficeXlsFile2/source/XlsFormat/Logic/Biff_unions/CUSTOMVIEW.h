@@ -20,6 +20,12 @@ public:
 	
 	static const ElementType	type = typeCUSTOMVIEW;
 
+	int serialize(std::wostream & stream);
+
+	BaseObjectPtr				m_UserSView;
+	std::vector<BaseObjectPtr>	m_arSelection;
+	BaseObjectPtr				m_pls;
+	BaseObjectPtr				m_AUTOFILTER;
 };
 
 } // namespace XLS

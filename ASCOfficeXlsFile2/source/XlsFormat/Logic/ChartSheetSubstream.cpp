@@ -162,8 +162,23 @@ const bool ChartSheetSubstream::loadContent(BinProcessor& proc)
 		
 		recalc((SERIESDATA*)m_SERIESDATA.get());
 	}
-	proc.repeated<WINDOW>(0, 0);
-	proc.repeated<CUSTOMVIEW>(0, 0);
+
+	count = proc.repeated<WINDOW>(0, 0);
+	while(count > 0)
+	{
+		m_arWINDOW.insert(m_arWINDOW.begin(), elements_.back());
+		elements_.pop_back();
+		count--;
+	}
+
+	count = proc.repeated<CUSTOMVIEW>(0, 0);
+	while(count > 0)
+	{
+		m_arCUSTOMVIEW.insert(m_arCUSTOMVIEW.begin(), elements_.back());
+		elements_.pop_back();
+		count--;
+	}
+	
 	proc.optional<CodeName>();
 	proc.optional<CRTMLFRT>();
 

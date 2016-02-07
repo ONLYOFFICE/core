@@ -148,34 +148,8 @@ int WINDOW::serialize(std::wostream & stream)
 				}
 				for (int i = 0; i < m_arSelection.size(); i++)
 				{
-					Selection * selection = dynamic_cast<Selection*>(m_arSelection[i].get());
-					if (selection == NULL) continue;
-
-					if (selection->pnn == (unsigned char)PaneType::REVTPNNTOPLEFT &&
-						selection->activeCell == L"A1"		&&
-						selection->irefAct == (_INT16)0		&&
-						selection->sqref == L"A1") continue;
-
-					CP_XML_NODE(L"selection")
-					{
-						switch(selection->pnn)
-						{
-						case PaneType::REVTPNNBOTRIGHT:	CP_XML_ATTR(L"pane", L"bottomRight");	break;
-						case PaneType::REVTPNNTOPRIGHT:	CP_XML_ATTR(L"pane", L"topRight");		break;
-						case PaneType::REVTPNNBOTLEFT:	CP_XML_ATTR(L"pane", L"bottomLeft");	break;
-						//	default:					CP_XML_ATTR(L"pane", L"topLeft"); 
-						}
-
-						if (*selection->activeCell.value() != L"A1") 
-							CP_XML_ATTR(L"activeCell", *selection->activeCell.value());
-
-						if (selection->irefAct != 0) 
-							CP_XML_ATTR(L"activeCellId", selection->irefAct);
-
- 						if (*selection->sqref.value() != L"A1") 
-							CP_XML_ATTR(L"sqref", *selection->sqref.value());
-					}
-
+					if (m_arSelection[i] == NULL) continue;
+					m_arSelection[i]->serialize(CP_XML_STREAM());
 				}
 			}
 		}

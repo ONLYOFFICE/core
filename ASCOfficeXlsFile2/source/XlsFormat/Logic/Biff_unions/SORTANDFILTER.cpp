@@ -30,12 +30,45 @@ BaseObjectPtr SORTANDFILTER::clone()
 const bool SORTANDFILTER::loadContent(BinProcessor& proc)
 {
 	bool res1 = proc.optional<Sort>();
+	if (res1)
+	{
+		m_Sort = elements_.back();
+		elements_.pop_back();
+	}		
 	bool res2 = proc.optional<SORTDATA12>();
+	if (res2)
+	{
+		m_SORTDATA12 = elements_.back();
+		elements_.pop_back();
+	}
 	bool res3 = proc.optional<FilterMode>();
+	if (res3)
+	{
+		m_FilterMode = elements_.back();
+		elements_.pop_back();
+	}
 	bool res4 = proc.optional<DropDownObjIds>();
+	if (res3)
+	{
+		m_DropDownObjIds = elements_.back();
+		elements_.pop_back();
+	}
 	bool res5 = proc.optional<AUTOFILTER>();
-
+	if (res5)
+	{
+		m_AUTOFILTER = elements_.back();
+		elements_.pop_back();
+	}
 	return res1 || res2 || res3 || res4 || res5;
+}
+
+int SORTANDFILTER::serialize(std::wostream & stream)
+{
+	if (m_AUTOFILTER)
+	{
+		m_AUTOFILTER->serialize(stream);
+	}
+	return 0;
 }
 
 } // namespace XLS

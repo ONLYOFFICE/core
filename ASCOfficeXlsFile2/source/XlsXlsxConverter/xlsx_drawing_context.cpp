@@ -253,11 +253,11 @@ bool xlsx_drawing_context::start_drawing(int type)
 	case 0x000E: // Label
 	case 0x000F: // Dialog box
 	case 0x0010: // Spin control
-	case 0x0011: // Scrollbar
 	case 0x0012: // List
 	case 0x0013: // Group box
-	case 0x0014: // Dropdown list
 		start_shape(0x0002); return true;
+	case 0x0011: // Scrollbar
+	case 0x0014: // Dropdown list
 	case 0x0019: // Note
 		break;
 	}

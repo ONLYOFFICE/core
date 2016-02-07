@@ -194,7 +194,11 @@ void xlsx_conversion_context::end_document()
                 {
 					CP_XML_STREAM() << xlsx_defined_names_.str();
 				}
-            }
+				CP_XML_NODE(L"customWorkbookViews")
+                {
+					CP_XML_STREAM() << xlsx_custom_views_.str();
+				}
+			}
         }
 
         output_document_->get_xl_files().set_workbook( package::simple_element::create(L"workbook.xml", strm_workbook.str()) );

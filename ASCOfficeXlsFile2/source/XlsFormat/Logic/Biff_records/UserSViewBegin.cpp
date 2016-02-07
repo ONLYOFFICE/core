@@ -108,22 +108,22 @@ void UserSViewBegin::readFields(CFRecord& record)
 	unsigned short flags;
 	record >> flags;
 
-	fShowBrks = GETBIT(flags, 0);
-	fDspFmlaSv = GETBIT(flags, 1);
-	fDspGridSv = GETBIT(flags, 2);
+	fShowBrks	= GETBIT(flags, 0);
+	fDspFmlaSv	= GETBIT(flags, 1);
+	fDspGridSv	= GETBIT(flags, 2);
 	fDspRwColSv = GETBIT(flags, 3);
-	fDspGutsSv = GETBIT(flags, 4);
+	fDspGutsSv	= GETBIT(flags, 4);
 	fDspZerosSv = GETBIT(flags, 5);
 	fHorizontal = GETBIT(flags, 6);
-	fVertical = GETBIT(flags, 7);
+	fVertical	= GETBIT(flags, 7);
 	fPrintRwCol = GETBIT(flags, 8);
-	fPrintGrid = GETBIT(flags, 9);
-	fFitToPage = GETBIT(flags, 10);
-	fPrintArea = GETBIT(flags, 11);
+	fPrintGrid	= GETBIT(flags, 9);
+	fFitToPage	= GETBIT(flags, 10);
+	fPrintArea	= GETBIT(flags, 11);
 	fOnePrintArea = GETBIT(flags, 12);
 	fFilterMode = GETBIT(flags, 13);
-	fEzFilter = GETBIT(flags, 14);
-	fFrozen = GETBIT(flags, 15);
+	fEzFilter	= GETBIT(flags, 14);
+	fFrozen		= GETBIT(flags, 15);
 
 	record >> flags;
 
@@ -131,20 +131,19 @@ void UserSViewBegin::readFields(CFRecord& record)
 	record >> top_left;
 	ref8TopLeft = static_cast<std::wstring >(top_left.getTopLeftCell());
 
-	fFrozenNoSplit = GETBIT(flags, 0);
-	fSplitV = GETBIT(flags, 1);
-	fSplitH = GETBIT(flags, 2);
-	fHiddenRw = GETBIT(flags, 3);
-	fHiddenCol = GETBIT(flags, 5);
-	fFilterUnique = GETBIT(flags, 9);
+	fFrozenNoSplit	= GETBIT(flags, 0);
+	fSplitV			= GETBIT(flags, 1);
+	fSplitH			= GETBIT(flags, 2);
+	fHiddenRw		= GETBIT(flags, 3);
+	fHiddenCol		= GETBIT(flags, 5);
+	fFilterUnique	= GETBIT(flags, 9);
 	fSheetLayoutView = GETBIT(flags, 10);
 	fPageLayoutView = GETBIT(flags, 11);
-	fRuler = GETBIT(flags, 13);
+	fRuler			= GETBIT(flags, 13);
 
 	record >> operNumX >> operNumY >> colRPane >> rwBPane;
 
-    //todooo
-    //pane_top_left_cell = std::wstring (CellRef(fSplitH ? rwBPane : 0 , fSplitV ? colRPane : 0, true, true).toString().c_str());
+	pane_top_left_cell = CellRef(fSplitH ? rwBPane : 0 , fSplitV ? colRPane : 0, true, true).toString();
 }
 
 } // namespace XLS

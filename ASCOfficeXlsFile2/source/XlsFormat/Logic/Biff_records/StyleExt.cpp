@@ -33,9 +33,10 @@ void StyleExt::readFields(CFRecord& record)
 #pragma message("############################ frtHeader skipped here")
 	unsigned char flags;
 	record >> flags;
-	fBuiltIn = GETBIT(flags, 0);
-	fHidden = GETBIT(flags, 1);
-	fCustom = GETBIT(flags, 2);
+	
+	fBuiltIn	= GETBIT(flags, 0);
+	fHidden		= GETBIT(flags, 1);
+	fCustom		= GETBIT(flags, 2);
 
 	record >> iCategory>> builtInData >> stName >> xfProps;
 }

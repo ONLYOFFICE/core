@@ -68,8 +68,15 @@ const bool FORMATTING::loadContent(BinProcessor& proc)
 		m_XFS = elements_.back();
 		elements_.pop_back();
 	}
-	proc.repeated<DXF>(0, 0);
+	count = proc.repeated<DXF>(0, 0);
+	while(count > 0)
+	{
+		m_arDXF.insert(m_arDXF.begin(), elements_.back());
+		elements_.pop_back();
+		count--;
+	}	
 
+	global_info->cellStyleDxfs_count = m_arDXF.size(); // + будут юзерские
 	//----------------------------------------------------------------------------------------------------	
 	if (proc.optional<STYLES>())
 	{
@@ -146,6 +153,22 @@ int FORMATTING::serialize2(std::wostream & stream)
 		{
 			m_Styles->serialize(stream);
 		}
+		if (m_arDXF.size() > 0)
+		{
+			CP_XML_NODE(L"dxfs")
+			{
+				CP_XML_ATTR(L"count", global_info->cellStyleDxfs_count);
+
+				for (int i = 0 ; i < m_arDXF.size(); i++)
+				{
+					m_arDXF[i]->serialize(CP_XML_STREAM());
+				}
+
+				CP_XML_STREAM() << global_info->users_Dxfs_stream.str();
+			}
+		}
+		// tableStyles 
+
 		if (m_Palette)
 		{
 			CP_XML_NODE(L"colors")

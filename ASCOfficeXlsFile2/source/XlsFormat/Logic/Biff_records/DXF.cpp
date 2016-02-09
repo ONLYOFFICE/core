@@ -32,8 +32,22 @@ void DXF::readFields(CFRecord& record)
 {
 	record >> frtRefHeaderU;
 	unsigned short flags;
+	
 	record >> flags >> xfprops;
-	fNewBorder = GETBIT(flags, 1);
+	
+	xfprops.fNewBorder = GETBIT(flags, 1);
+}
+
+int DXF::serialize(std::wostream & stream)
+{
+	CP_XML_WRITER(stream)    
+    {
+		CP_XML_NODE(L"dxf")
+		{
+			xfprops.serialize(CP_XML_STREAM());
+		}
+	}
+	return 0;
 }
 
 } // namespace XLS

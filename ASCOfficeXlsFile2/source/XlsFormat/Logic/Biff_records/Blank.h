@@ -29,8 +29,9 @@ public:
 	const CellRef getLocation() const;
 
 //-----------------------------
-	CellOffsetResender resender;
-	Cell cell;
+	GlobalWorkbookInfoPtr	global_info_;
+	CellOffsetResender		resender;
+	Cell					cell;
 
 };
 

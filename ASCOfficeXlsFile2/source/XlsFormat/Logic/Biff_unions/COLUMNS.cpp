@@ -6,7 +6,6 @@
 namespace XLS
 {
 
-extern int cellStyleXfs_count;
 
 COLUMNS::COLUMNS()
 {
@@ -27,7 +26,7 @@ BaseObjectPtr COLUMNS::clone()
 // COLUMNS = DefColWidth *255ColInfo
 const bool COLUMNS::loadContent(BinProcessor& proc)
 {
-	GlobalWorkbookInfoPtr global_info = proc.getGlobalWorkbookInfo();
+	global_info_ = proc.getGlobalWorkbookInfo();
 
 	bool def_ok = proc.optional<DefColWidth>(); 
 			// OpenOffice Calc stored files workaround (DefColWidth is mandatory according to [MS-XLS])
@@ -49,7 +48,7 @@ const bool COLUMNS::loadContent(BinProcessor& proc)
 		{
 			if (column_info->coldx.value())
 			{
-				global_info->customColumnsWidth.insert(std::pair<int, double>(i,column_info->coldx / 256.));
+				global_info_->customColumnsWidth.insert(std::pair<int, double>(i,column_info->coldx / 256.));
 			}
 		}
 
@@ -84,9 +83,9 @@ int COLUMNS::serialize(std::wostream & stream)
 					if (column_info->colLast.value())
 						CP_XML_ATTR(L"max", column_info->colLast + 1);
 
-					if ((column_info->ixfe.value()) && (column_info->ixfe > cellStyleXfs_count))
+					if ((column_info->ixfe.value()) && (column_info->ixfe > global_info_->cellStyleXfs_count))
 					{
-						CP_XML_ATTR(L"style", column_info->ixfe - cellStyleXfs_count);
+						CP_XML_ATTR(L"style", column_info->ixfe - global_info_->cellStyleXfs_count);
 					}
 
 					if (column_info->fBestFit)

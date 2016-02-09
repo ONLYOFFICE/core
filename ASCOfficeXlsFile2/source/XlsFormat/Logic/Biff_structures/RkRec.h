@@ -21,8 +21,9 @@ public:
 
 	const unsigned short get_ixfe() const;
 
-	unsigned short ixfe;
-	RkNumber RK_;
+	GlobalWorkbookInfoPtr	global_info_;
+	unsigned short			ixfe;
+	RkNumber				RK_;
 };
 
 typedef boost::shared_ptr<RkRec> RkRecPtr;

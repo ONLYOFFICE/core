@@ -329,6 +329,11 @@ void XlsConverter::convert(XLS::WorksheetSubstream* sheet)
 		sheet->m_SORTANDFILTER->serialize(xlsx_context->current_sheet().sheetSortAndFilters());
 	}
 
+	if (sheet->m_CONDFMTS)
+	{
+		sheet->m_CONDFMTS->serialize(xlsx_context->current_sheet().conditionalFormatting());
+	}
+
 
 	convert((XLS::OBJECTS*)sheet->m_OBJECTS.get());
 

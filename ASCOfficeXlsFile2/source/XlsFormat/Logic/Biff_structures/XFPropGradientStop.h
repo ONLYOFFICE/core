@@ -19,7 +19,9 @@ public:
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-	double numPosition;
+	int serialize(std::wostream & stream);
+
+	double		numPosition;
 	XFPropColor color;
 };
 

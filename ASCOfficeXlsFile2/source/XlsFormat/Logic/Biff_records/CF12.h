@@ -7,6 +7,7 @@
 #include <Logic/Biff_structures/CFParsedFormula.h>
 #include <Logic/Biff_structures/CFExTemplateParams.h>
 
+
 namespace XLS
 {
 
@@ -27,20 +28,30 @@ public:
 
 	static const ElementType	type = typeCF12;
 
-//-----------------------------
-	FrtRefHeader frtRefHeader;
-	BIFF_BYTE ct;
-	BIFF_BYTE cp;
-	DXFN12 dxf;
-	CFParsedFormulaNoCCE rgce1;
-	CFParsedFormulaNoCCE rgce2;
-	CFParsedFormula fmlaActive;
-	BIFF_WORD ipriority;
-	BIFF_WORD icfTemplate;
-	CFExTemplateParams rgbTemplateParms;
-	BiffStructurePtr rgbCT;
+	int serialize(std::wostream & stream);
+	FrtRefHeader			frtRefHeader;
 
+	BIFF_BYTE				ct;
+	BIFF_BYTE				cp;
+
+	DXFN12					dxf;
+
+	CFParsedFormulaNoCCE	rgce1;
+	CFParsedFormulaNoCCE	rgce2;
+
+	CFParsedFormula			fmlaActive;
+	BIFF_WORD				ipriority;
+	BIFF_WORD				icfTemplate;
+	CFExTemplateParams		rgbTemplateParms;
+
+	BiffStructurePtr		rgbCT;
+
+//-----------------------------
 	bool fStopIfTrue;
+
+	int ipriority_;
+
+	int dxfId_;
 };
 
 typedef boost::shared_ptr<CF12> CF12Ptr;

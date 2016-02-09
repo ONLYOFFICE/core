@@ -19,8 +19,20 @@ public:
 
 	static const ElementType	type = typeXFProps;
 
-	unsigned short cprops;
-	std::vector<XFProp> xfPropArray;
+	unsigned short		cprops;
+
+	int serialize(std::wostream & stream);
+	
+	std::vector<XFProp> arXFPropFont;
+	std::vector<XFProp> arXFPropNumFmt;
+	std::vector<XFProp> arXFPropFill;
+	std::vector<XFProp> arXFPropAlignment;
+	std::vector<XFProp> arXFPropBorder;
+	std::vector<XFProp> arXFPropProtection;
+	std::vector<XFProp> arXFPropGradient;
+
+//-----------------------------------------------------
+	bool			fNewBorder;
 };
 
 } // namespace XLS

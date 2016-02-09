@@ -19,10 +19,8 @@ public:
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-private:
-	XFPropColor color;
-	unsigned short dgBorder;
+	XFPropColor		color;
+	unsigned short	dgBorder;
 };
-//#pragma pack() // restore
 
 } // namespace XLS

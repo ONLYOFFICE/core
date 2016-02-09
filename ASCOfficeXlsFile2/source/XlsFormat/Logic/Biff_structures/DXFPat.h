@@ -5,8 +5,8 @@
 
 namespace XLS
 {
-
 class CFRecord;
+class DXFN;
 
 class DXFPat : public BiffStructure
 {
@@ -19,9 +19,14 @@ public:
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
+	int serialize(std::wostream & stream);
+
 	FillPattern fls;
+	
 	unsigned char icvForeground;
 	unsigned char icvBackground;
+//------------------------------------------------
+	DXFN *parent;
 };
 
 } // namespace XLS

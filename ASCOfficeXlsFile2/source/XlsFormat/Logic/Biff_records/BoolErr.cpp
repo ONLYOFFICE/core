@@ -2,7 +2,6 @@
 
 namespace XLS
 {
-extern int cellStyleXfs_count;
 
 BoolErr::BoolErr()
 {
@@ -29,6 +28,8 @@ void BoolErr::writeFields(CFRecord& record)
 
 void BoolErr::readFields(CFRecord& record)
 {
+	global_info_ = record.getGlobalWorkbookInfo();
+
 	record >> cell >> bes;
 }
 
@@ -50,7 +51,7 @@ int BoolErr::serialize(std::wostream & stream)
 
 			if (cell.ixfe.value())
 			{
-				CP_XML_ATTR(L"s", *cell.ixfe.value() - cellStyleXfs_count);
+				CP_XML_ATTR(L"s", *cell.ixfe.value() - global_info_->cellStyleXfs_count);
 			}
 		}			
 	}

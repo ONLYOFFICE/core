@@ -10,7 +10,6 @@
 namespace XLS
 {
 
-extern int cellStyleXfs_count;
 // This class is made a deriver of CompositeObject intentionally.
 // This is an optimization step - to form a CELLTABLE that is divided into smaller groups
 class CELL_GROUP : public CompositeObject
@@ -29,7 +28,7 @@ public:
 
 	const bool loadContent(BinProcessor& proc)
 	{
-		GlobalWorkbookInfoPtr global_info = proc.getGlobalWorkbookInfo();
+		global_info_ = proc.getGlobalWorkbookInfo();
 		
 		int count, count_row = 0;
 		
@@ -44,7 +43,7 @@ public:
 				{
 					if (row->miyRw.value())
 					{
-						global_info->customRowsHeight.insert(std::pair<int, double>(row->rw,row->miyRw / 20.));
+						global_info_->customRowsHeight.insert(std::pair<int, double>(row->rw,row->miyRw / 20.));
 					}
 				}
 				m_rows.insert(m_rows.begin(), elements_.back());
@@ -77,6 +76,8 @@ public:
 
 private:
 	std::vector<CellRangeRef>& shared_formulas_locations_ref_;
+
+	GlobalWorkbookInfoPtr global_info_;
 };
 
 
@@ -170,9 +171,9 @@ int CELL_GROUP::serialize(std::wostream & stream)
 								
 								if (row->ixfe_val && xf_set)
 								{
-									if (row->ixfe_val > cellStyleXfs_count)
+									if (row->ixfe_val > global_info_->cellStyleXfs_count)
 									{
-										CP_XML_ATTR(L"s", row->ixfe_val - cellStyleXfs_count);
+										CP_XML_ATTR(L"s", row->ixfe_val - global_info_->cellStyleXfs_count);
 									}
 									else
 									{
@@ -251,9 +252,9 @@ int CELL_GROUP::serialize(std::wostream & stream)
 					
 					if (row->ixfe_val.value() && xf_set)
 					{
-						if (row->ixfe_val > cellStyleXfs_count)
+						if (row->ixfe_val > global_info_->cellStyleXfs_count)
 						{
-							CP_XML_ATTR(L"s", row->ixfe_val - cellStyleXfs_count);
+							CP_XML_ATTR(L"s", row->ixfe_val - global_info_->cellStyleXfs_count);
 						}
 						else
 						{

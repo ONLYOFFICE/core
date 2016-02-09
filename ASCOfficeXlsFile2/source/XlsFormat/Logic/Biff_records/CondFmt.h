@@ -26,20 +26,11 @@ public:
 	const CellRef getLocation() const;
 
 //-----------------------------
-	BIFF_WORD ccf;
-	bool fToughRecalc;
-	BIFF_WORD nID;
-	SqRefU sqref;
-	BIFF_BSTR refBound;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(ccf)
-		//BO_ATTRIB_MARKUP_ATTRIB(fToughRecalc)
-		//BO_ATTRIB_MARKUP_ATTRIB(nID)
-		//BO_ATTRIB_MARKUP_ATTRIB(refBound)
-		//BO_ATTRIB_MARKUP_COMPLEX(sqref)
-	//BO_ATTRIB_MARKUP_END
-
+	BIFF_WORD	ccf;
+	bool		fToughRecalc;
+	BIFF_WORD	nID;
+	SqRefU		sqref;
+	BIFF_BSTR	refBound;
 };
 
 typedef boost::shared_ptr<CondFmt> CondFmtPtr;

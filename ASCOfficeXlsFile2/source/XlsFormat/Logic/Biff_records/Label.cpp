@@ -3,7 +3,6 @@
 
 namespace XLS
 {
-extern int cellStyleXfs_count;
 
 Label::Label()
 {
@@ -24,18 +23,20 @@ BaseObjectPtr Label::clone()
 
 void Label::writeFields(CFRecord& record)
 {
+	global_info_ = record.getGlobalWorkbookInfo();
+
 	record << cell << st;
 }
 
 
 void Label::readFields(CFRecord& record)
 {
-	GlobalWorkbookInfoPtr pGlobalWorkbookInfoPtr = record.getGlobalWorkbookInfo();
+	global_info_ = record.getGlobalWorkbookInfo();
 	
 	record >> cell >> st;
 
-    isst_ = pGlobalWorkbookInfoPtr->startAddedSharedStrings + pGlobalWorkbookInfoPtr->arAddedSharedStrings.size() ;
-	pGlobalWorkbookInfoPtr->arAddedSharedStrings.push_back(st.value());
+    isst_ = global_info_->startAddedSharedStrings + global_info_->arAddedSharedStrings.size() ;
+	global_info_->arAddedSharedStrings.push_back(st.value());
 }
 
 int Label::serialize(std::wostream & stream)
@@ -49,10 +50,10 @@ int Label::serialize(std::wostream & stream)
 		{
 			CP_XML_ATTR(L"r", ref);
 
-			int st = (int)cell.ixfe - cellStyleXfs_count;
-			if ((cell.ixfe.value()) && (cell.ixfe > cellStyleXfs_count))
+			int st = (int)cell.ixfe - global_info_->cellStyleXfs_count;
+			if ((cell.ixfe.value()) && (cell.ixfe > global_info_->cellStyleXfs_count))
 			{
-				CP_XML_ATTR(L"s", cell.ixfe - cellStyleXfs_count);
+				CP_XML_ATTR(L"s", cell.ixfe - global_info_->cellStyleXfs_count);
 			}
 
 			CP_XML_ATTR(L"t", L"s");

@@ -20,6 +20,8 @@ public:
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
+	int serialize(std::wostream & stream);
+
 	_UINT32			cbDxf;
 	DXFNPtr			dxfn;
 	XFExtNoFRTPtr	xfext;

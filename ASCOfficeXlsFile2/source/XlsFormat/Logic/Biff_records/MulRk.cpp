@@ -2,7 +2,6 @@
 
 namespace XLS
 {
-extern int cellStyleXfs_count;
 
 MulRk::MulRk()
 {
@@ -30,6 +29,8 @@ void MulRk::writeFields(CFRecord& record)
 
 void MulRk::readFields(CFRecord& record)
 {
+	global_info_ = record.getGlobalWorkbookInfo();
+
 	Col colFirst;
 	Col colLast;
 // A little hack to extract colLast before it is used
@@ -70,9 +71,9 @@ int MulRk::serialize(std::wostream & stream)
 			{
 				CP_XML_ATTR(L"r", ref);
 
-				if ((cell->ixfe.value()) && (cell->ixfe > cellStyleXfs_count))
+				if ((cell->ixfe.value()) && (cell->ixfe > global_info_->cellStyleXfs_count))
 				{
-					CP_XML_ATTR(L"s", cell->ixfe - cellStyleXfs_count);
+					CP_XML_ATTR(L"s", cell->ixfe - global_info_->cellStyleXfs_count);
 				}
 				CP_XML_NODE(L"v")
 				{

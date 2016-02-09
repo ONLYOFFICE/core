@@ -86,9 +86,9 @@ int STYLES::serialize(std::wostream & stream)
 									}
 								}
 
-                                for (int i = 0; i < styleExt->xfProps.xfPropArray.size(); i++)
-								{
-								}
+        //                        for (int i = 0; i < styleExt->xfProps.xfPropArray.size(); i++)
+								//{
+								//}
 							}
 							else
 							{

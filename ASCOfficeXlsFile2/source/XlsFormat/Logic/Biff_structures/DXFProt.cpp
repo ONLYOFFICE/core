@@ -1,30 +1,14 @@
 
-#include "DXFProt.h"
+#include "DXFN.h"
 #include <Binary/CFRecord.h>
 
 namespace XLS
 {
 
-
-
 BiffStructurePtr DXFProt::clone()
 {
 	return BiffStructurePtr(new DXFProt(*this));
 }
-
-
-//void DXFProt::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	xml_tag->setAttribute(L"fLocked", fLocked);
-//	xml_tag->setAttribute(L"fHidden", fHidden);
-//}
-//
-//
-//void DXFProt::getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	fLocked = getStructAttribute(xml_tag, L"fLocked");
-//	fHidden = getStructAttribute(xml_tag, L"fHidden");
-//}
 
 
 void DXFProt::store(CFRecord& record)
@@ -40,8 +24,26 @@ void DXFProt::load(CFRecord& record)
 {
 	unsigned short flags;
 	record >> flags;
+	
 	fLocked = GETBIT(flags, 0);
 	fHidden = GETBIT(flags, 1);
+}
+
+int DXFProt::serialize(std::wostream & stream)
+{
+	if (parent->lockedNinch && parent->hiddenNinch) return 0;
+
+	CP_XML_WRITER(stream)    
+    {
+		CP_XML_NODE(L"protect")
+		{	
+			if (!parent->lockedNinch)
+ 				CP_XML_ATTR(L"locked", fLocked);
+			if (!parent->hiddenNinch )
+				CP_XML_ATTR(L"hidden", fHidden);
+		}
+	}
+	return 0;
 }
 
 

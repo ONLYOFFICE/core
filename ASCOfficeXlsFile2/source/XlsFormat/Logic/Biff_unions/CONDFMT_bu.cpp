@@ -31,6 +31,8 @@ const bool CONDFMT::loadContent(BinProcessor& proc)
 	{
 		return false;
 	}
+	m_CondFmt = elements_.back();
+	elements_.pop_back();
 	/*  The above is equal to:
 
 	if(!proc.mandatory<CondFmt>())
@@ -40,13 +42,24 @@ const bool CONDFMT::loadContent(BinProcessor& proc)
 	*/
 	{
 		CF cf1(cond_fmt.getLocation());
-		proc.optional(cf1);
+		if (proc.optional(cf1))
+		{
+			m_arCF.push_back( elements_.back());
+			elements_.pop_back();
+		}
 
 		CF cf2(cond_fmt.getLocation());
 		if(proc.optional(cf2))
 		{
+			m_arCF.push_back( elements_.back());
+			elements_.pop_back();
+
 			CF cf3(cond_fmt.getLocation());
-			proc.optional(cf3);
+			if (proc.optional(cf3))
+			{
+				m_arCF.push_back( elements_.back());
+				elements_.pop_back();
+			}
 		}
 	}
 	/*  The above is equal to:
@@ -54,6 +67,28 @@ const bool CONDFMT::loadContent(BinProcessor& proc)
 	*/
 	return true;
 }
+int CONDFMT::serialize(std::wostream & stream)
+{
+	if (!m_CondFmt) return 0;
 
+	CP_XML_WRITER(stream)    
+    {
+		CP_XML_NODE(L"conditionalFormatting")
+		{
+			CondFmt * condFmt	= dynamic_cast<CondFmt*>(m_CondFmt.get());
+
+			CP_XML_ATTR(L"sqref", condFmt->sqref.sqref);
+			//condition_id
+			//condition_pos
+
+			for (int i = 0; i < m_arCF.size(); i++)
+			{
+				if (m_arCF[i] == NULL) continue;
+				m_arCF[i]->serialize(CP_XML_STREAM());
+			}
+		}
+	}
+	return 0;
+}
 } // namespace XLS
 

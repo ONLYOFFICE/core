@@ -4,7 +4,6 @@
 
 namespace XLS
 {
-extern int cellStyleXfs_count;
 
 BiffStructurePtr RkRec::clone()
 {
@@ -19,6 +18,8 @@ void RkRec::store(CFRecord& record)
 
 void RkRec::load(CFRecord& record)
 {
+	global_info_ = record.getGlobalWorkbookInfo();
+	
 	record >> ixfe >> RK_;
 }
 

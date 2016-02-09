@@ -26,6 +26,7 @@ public:
 	std::wstringstream  pageProperties_;
 	std::wstringstream  sortAndFilters_;
 	std::wstringstream  customViews_;
+	std::wstringstream  conditionalFormatting_;
 
 	rels hyperlinks_rels_;
 
@@ -112,6 +113,11 @@ std::wostream & xlsx_xml_worksheet::customViews()
 {
     return impl_->customViews_;
 }
+
+std::wostream & xlsx_xml_worksheet::conditionalFormatting()
+{
+    return impl_->conditionalFormatting_;
+}
 //-----------------------------------------------------------------
 rels & xlsx_xml_worksheet::hyperlinks_rels()
 {
@@ -148,9 +154,11 @@ void xlsx_xml_worksheet::write_to(std::wostream & strm)
 			CP_XML_STREAM() << impl_->hyperlinks_.str();
 
 			CP_XML_STREAM() << impl_->sortAndFilters_.str();
-  	
+
 			CP_XML_STREAM() << impl_->customViews_.str();
 
+			CP_XML_STREAM() << impl_->conditionalFormatting_.str();
+  	
 			CP_XML_STREAM() << impl_->pageProperties_.str();
 
             CP_XML_STREAM() << impl_->drawing_.str();

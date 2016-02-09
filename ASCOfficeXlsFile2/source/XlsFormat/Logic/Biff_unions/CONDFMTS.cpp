@@ -66,10 +66,40 @@ BaseObjectPtr CONDFMTS::clone()
 // CONDFMTS = *(CONDFMT / CONDFMT12) *(CFEx [CF12])
 const bool CONDFMTS::loadContent(BinProcessor& proc)
 {
-	bool res1 = proc.repeated<Parenthesis_CONDFMTS_1>(0, 0);
-	bool res2 = proc.repeated<Parenthesis_CONDFMTS_2>(0, 0);
-	return res1 || res2;
+	bool res = false;
+	
+	int count = proc.repeated<Parenthesis_CONDFMTS_1>(0, 0);
+	if (count > 0) res = true;
+	while(count > 0)
+	{
+		m_arCONDFMT.insert(m_arCONDFMT.begin(), elements_.back());
+		elements_.pop_back();
+		count--;
+	}
+
+	count = proc.repeated<Parenthesis_CONDFMTS_2>(0, 0);
+	if (count > 0) res = true;
+	while(count > 0)
+	{
+		m_arCFEx.insert(m_arCFEx.begin(), elements_.back());
+		elements_.pop_back();
+		count--;
+	}	
+	return res;
 }
 
+
+int CONDFMTS::serialize(std::wostream & stream)
+{
+	if (m_arCONDFMT.empty()) return 0;
+
+	for (int i = 0 ; i < m_arCONDFMT.size(); i++)
+	{
+		if (!m_arCONDFMT[i]) continue;
+		m_arCONDFMT[i]->serialize(stream);
+	}
+
+	return 0;
+}
 } // namespace XLS
 

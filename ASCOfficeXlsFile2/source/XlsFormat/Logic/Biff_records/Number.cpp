@@ -3,7 +3,6 @@
 
 namespace XLS
 {
-extern int cellStyleXfs_count;
 
 Number::Number()
 {
@@ -30,6 +29,8 @@ void Number::writeFields(CFRecord& record)
 
 void Number::readFields(CFRecord& record)
 {
+	global_info_ = record.getGlobalWorkbookInfo();
+
 	record >> cell >> num;
 
 	_INT32 val = 0;
@@ -55,9 +56,9 @@ int Number::serialize(std::wostream & stream)
 		{
 			CP_XML_ATTR(L"r", ref);
 
-			if ((cell.ixfe.value()) && (cell.ixfe > cellStyleXfs_count))
+			if ((cell.ixfe.value()) && (cell.ixfe > global_info_->cellStyleXfs_count))
 			{
-				CP_XML_ATTR(L"s", cell.ixfe - cellStyleXfs_count);
+				CP_XML_ATTR(L"s", cell.ixfe - global_info_->cellStyleXfs_count);
 			}
 			if (num.value())
 			{

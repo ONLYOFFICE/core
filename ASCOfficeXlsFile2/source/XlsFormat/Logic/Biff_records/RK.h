@@ -29,8 +29,9 @@ public:
 	const CellRef getLocation() const;
 
 //-----------------------------
-	RkRec rkrec;
-	Cell cell;
+	GlobalWorkbookInfoPtr	global_info_;
+	RkRec					rkrec;
+	Cell					cell;
 
 };
 

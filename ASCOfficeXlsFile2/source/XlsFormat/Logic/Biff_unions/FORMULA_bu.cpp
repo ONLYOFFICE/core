@@ -14,8 +14,6 @@
 namespace XLS
 {
 
-extern int cellStyleXfs_count;
-
 FORMULA::FORMULA(std::vector<CellRangeRef>& shared_formulas_locations_ref) : shared_formulas_locations_ref_(shared_formulas_locations_ref)
 {
 	m_sharedIndex = -1;
@@ -36,6 +34,8 @@ BaseObjectPtr FORMULA::clone()
 // FORMULA = [Uncalced] Formula [Array / Table / ShrFmla / SUB] [String *Continue]
 const bool FORMULA::loadContent(BinProcessor& proc)
 {
+	m_global_info = proc.getGlobalWorkbookInfo();
+
 	proc.optional<Uncalced>();
 
 	Formula *formula = NULL;
@@ -114,9 +114,9 @@ int FORMULA::serialize(std::wostream & stream)
 		{
 			CP_XML_ATTR(L"r", ref);
 
-			if ((formula->cell.ixfe.value()) && (formula->cell.ixfe > cellStyleXfs_count))
+			if ((formula->cell.ixfe.value()) && (formula->cell.ixfe > m_global_info->cellStyleXfs_count))
 			{
-				CP_XML_ATTR(L"s", formula->cell.ixfe - cellStyleXfs_count);
+				CP_XML_ATTR(L"s", formula->cell.ixfe - m_global_info->cellStyleXfs_count);
 			}
 			switch (formula->val.getType())
 			{

@@ -1,7 +1,7 @@
 
-#include "DXFNum.h"
+#include "DXFN.h"
 #include <Binary/CFRecord.h>
-//#include <Exception/StructureParameterNotSet.h>
+
 
 namespace XLS
 {
@@ -23,32 +23,6 @@ BiffStructurePtr DXFNum::clone()
 {
 	return BiffStructurePtr(new DXFNum(*this));
 }
-
-
-//void DXFNum::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	if(is_user_defined_)
-//	{
-//		user_defined.toXML(xml_tag);
-//	}
-//	else
-//	{
-//		xml_tag->setAttribute(L"ifmt", fmt_id.ifmt);
-//	}
-//}
-
-
-//void DXFNum::getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	if(is_user_defined_)
-//	{
-//		user_defined.fromXML(xml_tag);
-//	}
-//	else
-//	{
-//		fmt_id.ifmt = getStructAttribute(xml_tag, L"ifmt");
-//	}
-//}
 
 
 void DXFNum::store(CFRecord& record)
@@ -75,6 +49,25 @@ void DXFNum::load(CFRecord& record)
 		record >> fmt_id;
 	}
 }
+
+
+int DXFNum::serialize(std::wostream & stream)
+{
+	if (parent->ifmtNinch && parent->fIfmtUser) return 0;
+
+	CP_XML_WRITER(stream)    
+    {
+		CP_XML_NODE(L"numFmt")
+		{	
+			if (!parent->ifmtNinch)
+				CP_XML_ATTR(L"numFmtId", fmt_id.ifmt);
+ 			if (!parent->fIfmtUser)
+ 				CP_XML_ATTR(L"formatCode", user_defined.fmt.value());
+		}
+	}
+	return 0;
+}
+
 
 
 } // namespace XLS

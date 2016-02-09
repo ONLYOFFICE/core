@@ -26,9 +26,10 @@ public:
 
 	int serialize(std::wostream & stream);
 //-----------------------------
-	Rw rw;
-	BiffStructurePtrVector rgrkrec;
-	BiffStructurePtrVector cells;
+	GlobalWorkbookInfoPtr	global_info_;
+	Rw						rw;
+	BiffStructurePtrVector	rgrkrec;
+	BiffStructurePtrVector	cells;
 
 };
 

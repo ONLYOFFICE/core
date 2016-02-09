@@ -44,10 +44,11 @@ public:
 	int serialize(std::wostream & stream);
 
 //-----------------------------
-	Rw rw;
-	Col colFirst;
-	IXFCellMulBlankSpecial rgixfe;
-	Col colLast;
+	GlobalWorkbookInfoPtr	global_info_;
+	Rw						rw;
+	Col						colFirst;
+	IXFCellMulBlankSpecial	rgixfe;
+	Col						colLast;
 };
 
 

@@ -21,12 +21,11 @@ public:
 
 	const CellRef getLocation() const;
 
-private:
-	unsigned short ccf;
-	bool fToughRecalc;
-	unsigned short nID;
-	Ref8U refBound;
-	SqRefU sqref;
+	unsigned short	ccf;
+	bool			fToughRecalc;
+	unsigned short	nID;
+	Ref8U			refBound;
+	SqRefU			sqref;
 };
 
 } // namespace XLS

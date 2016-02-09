@@ -28,9 +28,10 @@ public:
 	int serialize(std::wostream & stream);
 
 //-----------------------------
-	bool		fBuiltIn;
-	bool		fHidden;
-	bool		fCustom;
+	bool			fBuiltIn;
+	bool			fHidden;
+	bool			fCustom;
+
 	BIFF_BYTE		iCategory;
 	BuiltInStyle	builtInData;
 	LPWideString	stName;

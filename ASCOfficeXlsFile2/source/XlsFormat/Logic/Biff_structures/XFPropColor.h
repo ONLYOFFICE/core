@@ -19,11 +19,17 @@ public:
 
 	static const ElementType	type = typeXFPropColor;
 
-	bool fValidRGBA;
-	unsigned char xclrType;
-	unsigned char icv;
-	short nTintShade;
-	LongRGBA dwRgba;
+	int serialize(std::wostream & stream);
+
+	bool			fValidRGBA;
+	unsigned char	xclrType;
+	unsigned char	icv;
+	short			nTintShade;
+	LongRGBA		dwRgba;
+
+//-------------------------------------------
+
+	std::wstring	node_name;
 };
 
 } // namespace XLS

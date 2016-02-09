@@ -23,6 +23,8 @@ public:
 	static const ElementType	type = typeCOLUMNS;
 
 	BaseObjectPtr m_DefColWidth;
+
+	GlobalWorkbookInfoPtr global_info_;
 };
 
 } // namespace XLS

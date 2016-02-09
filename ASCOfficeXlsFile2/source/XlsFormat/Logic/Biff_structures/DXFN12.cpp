@@ -11,35 +11,6 @@ BiffStructurePtr DXFN12::clone()
 	return BiffStructurePtr(new DXFN12(*this));
 }
 
-
-//void DXFN12::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	if(cbDxf)
-//	{
-//		dxfn->toXML(xml_tag);
-//		if(xfext)
-//		{
-//			xfext->toXML(xml_tag);
-//		}
-//	}
-//}
-
-
-//void DXFN12::getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	DXFNPtr dxfn_temp(new DXFN);
-//	if(dxfn_temp->fromXML(xml_tag))
-//	{
-//		std::swap(dxfn, dxfn_temp);
-//		XFExtNoFRTPtr xfext_temp(new XFExtNoFRT);
-//		if(xfext_temp->fromXML(xml_tag))
-//		{
-//			std::swap(xfext, xfext_temp);
-//		}
-//	}
-//}
-
-
 void DXFN12::store(CFRecord& record)
 {
 	if(dxfn)
@@ -64,11 +35,14 @@ void DXFN12::store(CFRecord& record)
 void DXFN12::load(CFRecord& record)
 {
 	record >> cbDxf;
+	
 	if(cbDxf)
 	{
 		const size_t end_of_struct_pos = record.getRdPtr() + cbDxf;
+		
 		dxfn = DXFNPtr(new DXFN);
 		record >> *dxfn;
+		
 		if(record.getRdPtr() < end_of_struct_pos)
 		{
 			xfext = XFExtNoFRTPtr(new XFExtNoFRT);
@@ -81,6 +55,26 @@ void DXFN12::load(CFRecord& record)
 	}
 }
 
+int DXFN12::serialize(std::wostream & stream)
+{
+	if (dxfn && !xfext)
+	{
+		dxfn->serialize(stream);
+	}
+	else
+	{
+		CP_XML_WRITER(stream)    
+		{			
+			CP_XML_NODE(L"dxf")
+			{
+				if (xfext)
+				{
+				}
+			}
+		}
+	}
+	return 0;
+}
 
 } // namespace XLS
 

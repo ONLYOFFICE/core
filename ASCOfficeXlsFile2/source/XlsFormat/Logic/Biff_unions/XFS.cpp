@@ -9,7 +9,6 @@
 namespace XLS
 {
 
-int cellStyleXfs_count = 0;
 
 XFS::XFS()
 :	cell_xf_current_id(0), style_xf_current_id(0)
@@ -33,7 +32,7 @@ const bool XFS::loadContent(BinProcessor& proc)
 {
 	GlobalWorkbookInfoPtr global_info = proc.getGlobalWorkbookInfo();
 	
-	cellStyleXfs_count = 0;
+	global_info->cellStyleXfs_count = 0;
 	
     XF xf(cell_xf_current_id, style_xf_current_id);
     int count = proc.repeated(xf ,16, 0);
@@ -46,7 +45,7 @@ const bool XFS::loadContent(BinProcessor& proc)
 		if (xfs->fStyle)
 		{
 			m_arCellStyles.push_back(elements_.front());
-			cellStyleXfs_count++;
+			global_info->cellStyleXfs_count++;
 		}
 		else
 		{
@@ -120,9 +119,9 @@ const bool XFS::loadContent(BinProcessor& proc)
 	{
 		XF		*xfs = dynamic_cast<XF*>(m_arCellXFs[i].get());
 
-		if (m_arXFext.size() > cellStyleXfs_count + i)
+		if (m_arXFext.size() > global_info->cellStyleXfs_count + i)
 		{
-			XFExt*ext = dynamic_cast<XFExt*>(m_arXFext[i + cellStyleXfs_count].get());
+			XFExt*ext = dynamic_cast<XFExt*>(m_arXFext[i + global_info->cellStyleXfs_count].get());
 			if (ext)
 			{
 				xfs->cell.ext_props = ext->rgExt;

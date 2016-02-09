@@ -23,6 +23,7 @@ public:
 	Ts ts;
 	short bls;
 	short sss;
+	
 	unsigned char uls;
 	unsigned char bFamily;
 	unsigned char bCharSet;

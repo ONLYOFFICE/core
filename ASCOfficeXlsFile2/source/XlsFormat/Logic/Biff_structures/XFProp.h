@@ -4,6 +4,8 @@
 #include <Logic/Biff_structures/FullColorExt.h>
 #include <Logic/Biff_structures/XFExtGradient.h>
 
+#include <simple_xml_writer.h>
+
 namespace XLS
 {
 
@@ -20,9 +22,12 @@ public:
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-	unsigned short xfPropType;
-	unsigned short cb;
-	BiffStructurePtr xfPropDataBlob;
+	int		serialize(std::wostream & stream);
+	void	serialize_attr(CP_ATTR_NODE);
+
+	unsigned short		xfPropType;
+	unsigned short		cb;
+	BiffStructurePtr	xfPropDataBlob;
 };
 
 } // namespace XLS

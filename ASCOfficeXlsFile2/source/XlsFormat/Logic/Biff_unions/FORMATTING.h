@@ -29,6 +29,7 @@ public:
 	std::vector<BaseObjectPtr>	m_arFonts;
 	BaseObjectPtr				m_Palette;
 	BaseObjectPtr				m_ClrtClient;
+	std::vector<BaseObjectPtr>	m_arDXF;
 
 
 	GlobalWorkbookInfoPtr		global_info;

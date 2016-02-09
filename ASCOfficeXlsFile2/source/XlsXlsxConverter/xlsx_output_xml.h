@@ -35,6 +35,7 @@ public:
 	std::wostream & sheetSortAndFilters();
 	std::wostream & pageProperties();
 	std::wostream & customViews();
+	std::wostream & conditionalFormatting();
 	
 	rels & hyperlinks_rels();
 

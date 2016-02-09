@@ -24,11 +24,11 @@ public:
 
 	static const ElementType	type = typeDXF;
 
-//-----------------------------
-	FrtRefHeaderU frtRefHeaderU;
-	XFProps xfprops;
+	int serialize(std::wostream & stream);
 	
-	bool fNewBorder;
+	FrtRefHeaderU	frtRefHeaderU;
+	XFProps			xfprops;
+	
 };
 
 } // namespace XLS

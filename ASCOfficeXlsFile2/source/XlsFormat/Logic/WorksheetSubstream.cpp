@@ -75,6 +75,7 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 	
 	global_info->defaultColumnWidth		= 8;
 	global_info->defaultRowHeight		= 14.4; 
+	global_info->cmt_rules				= 0;
 
 	int count = 0;
 

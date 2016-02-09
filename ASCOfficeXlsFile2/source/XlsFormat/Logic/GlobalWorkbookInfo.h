@@ -72,8 +72,14 @@ public:
 
 	double										defaultColumnWidth;
 	double										defaultRowHeight;
+	int											cmt_rules;
 
 	int Version;
+
+	int											cellStyleXfs_count;
+	int											cellStyleDxfs_count;
+
+	std::wstringstream							users_Dxfs_stream;
 
 	XlsConverter								*xls_converter;
 

@@ -24,11 +24,10 @@ public:
 
 	static const ElementType	type = typeCondFmt12;
 
-
 	const CellRef getLocation() const;
 //-----------------------------
-	FrtRefHeaderU frtRefHeaderU;
-	CondFmtStructure mainCF;
+	FrtRefHeaderU		frtRefHeaderU;
+	CondFmtStructure	mainCF;
 
 };
 

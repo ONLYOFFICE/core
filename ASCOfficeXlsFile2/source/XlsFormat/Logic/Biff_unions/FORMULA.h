@@ -35,7 +35,8 @@ public:
 
 	std::vector<CellRangeRef>&	shared_formulas_locations_ref_;
 
-	int					m_sharedIndex;
+	int						m_sharedIndex;
+	GlobalWorkbookInfoPtr	m_global_info;
 };
 
 } // namespace XLS

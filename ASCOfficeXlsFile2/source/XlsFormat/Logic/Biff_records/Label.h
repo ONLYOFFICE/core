@@ -30,7 +30,8 @@ public:
 	XLUnicodeString st;
 //-----------------------------
 
-	int isst_;
+	GlobalWorkbookInfoPtr	global_info_;
+	int						isst_;
 };
 
 } // namespace XLS

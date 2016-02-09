@@ -19,6 +19,11 @@ public:
 	virtual const bool loadContent(BinProcessor& proc);
 
 	static const ElementType	type = typeCONDFMT12;
+
+	int serialize(std::wostream & stream);
+
+	BaseObjectPtr				m_CondFmt12;
+	std::vector<BaseObjectPtr>	m_arCF12;
 };
 
 } // namespace XLS

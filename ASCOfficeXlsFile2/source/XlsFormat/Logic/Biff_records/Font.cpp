@@ -409,10 +409,11 @@ int Font::serialize_properties(std::wostream & stream, bool rPr)
             {
 				switch(uls)
 				{
-					case 1:		CP_XML_ATTR(L"val", "single");break;
-					case 2:		CP_XML_ATTR(L"val", "double");break;
-					case 33:	CP_XML_ATTR(L"val", "singleAccounting");break;
-					case 34:	CP_XML_ATTR(L"val", "doubleAccounting");break;
+					case 0:		CP_XML_ATTR(L"val", L"none");break;
+					case 1:		CP_XML_ATTR(L"val", L"single");break;
+					case 2:		CP_XML_ATTR(L"val", L"double");break;
+					case 33:	CP_XML_ATTR(L"val", L"singleAccounting");break;
+					case 34:	CP_XML_ATTR(L"val", L"doubleAccounting");break;
 				}
             }
         }

@@ -6,8 +6,8 @@
 
 namespace XLS
 {
-
 class CFRecord;
+class DXFN;
 
 class DXFNum : public BiffStructure
 {
@@ -20,12 +20,18 @@ public:
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-	void setIsUserDefined(const bool is_user_defined); 
-	const bool getIsUserDefined() const; 
+	int serialize(std::wostream & stream);
+
+	void		setIsUserDefined(const bool is_user_defined); 
+	const bool	getIsUserDefined() const; 
 
 	_CP_OPT(bool)	is_user_defined_;
+	
 	DXFNumIFmt		fmt_id;
 	DXFNumUsr		user_defined;
+
+//------------------------------------------------
+	DXFN *parent;
 
 };
 

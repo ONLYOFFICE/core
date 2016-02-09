@@ -7,6 +7,7 @@ namespace XLS
 
 class CFRecord;
 
+class DXFN;
 class DXFBdr : public BiffStructure
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(DXFBdr)
@@ -18,12 +19,15 @@ public:
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
+	int serialize(std::wostream & stream);
+
 	unsigned char dgLeft;
 	unsigned char dgRight;
 	unsigned char dgTop;
 	unsigned char dgBottom;
 	unsigned char icvLeft;
 	unsigned char icvRight;
+	
 	bool bitDiagDown;
 	bool bitDiagUp;
 
@@ -31,6 +35,10 @@ public:
 	unsigned char icvBottom;
 	unsigned char icvDiag;
 	unsigned char dgDiag;
+
+//------------------------------------------------
+	DXFN *parent;
+
 
 };
 

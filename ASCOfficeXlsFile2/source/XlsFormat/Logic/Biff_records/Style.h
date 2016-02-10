@@ -26,11 +26,11 @@ public:
 
 	int serialize(std::wostream & stream);
 //-----------------------------
-	BIFF_WORD		ixfe;	
+	_UINT16			ixfe;	
 	BuiltInStyle 	builtInData;
 	XLUnicodeString user;
 
-	bool		fBuiltIn;
+	bool			fBuiltIn;
 };
 
 } // namespace XLS

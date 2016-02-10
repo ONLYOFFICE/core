@@ -200,8 +200,12 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 		count--;
 	}
 
-	proc.optional<SheetExt>(); //BulletinSearch.xls ??? тута или ниже
-
+	if (proc.optional<SheetExt>())//BulletinSearch.xls ??? тута или ниже
+	{
+		m_SheetExt = elements_.back();
+		elements_.pop_back();
+	}
+	
 	count = proc.repeated<CUSTOMVIEW>(0, 0);
 	while(count > 0)
 	{

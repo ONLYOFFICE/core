@@ -25,7 +25,7 @@ public:
 
 	static const ElementType	type = typeGlobalsSubstream;
 	
-	BaseObjectPtr				m_Theme;
+	BaseObjectPtr				m_THEME;
 	BaseObjectPtr				m_Formating;
 	BaseObjectPtr				m_Template;
 	BaseObjectPtr				m_SHAREDSTRINGS;

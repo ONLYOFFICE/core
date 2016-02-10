@@ -305,7 +305,7 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 	
 	if (proc.optional<THEME>())
 	{
-		m_Theme = elements_.back();
+		m_THEME = elements_.back();
 		elements_.pop_back();
 	}
 	proc.optional<CompressPictures>();

@@ -84,10 +84,16 @@ const bool FORMATTING::loadContent(BinProcessor& proc)
 		elements_.pop_back();
 	}
 //----------------------------------------------------------------------------------------------------	
-	proc.optional<TABLESTYLES>();
+	if (proc.optional<TABLESTYLES>())
+	{
+		m_TABLESTYLES = elements_.back();
+		elements_.pop_back();
+	}
 		
 	if (proc.optional<THEME>()) // не по стандарту - china_price.xls 
 	{
+		m_THEME = elements_.back();
+		elements_.pop_back();
 	}
 	proc.optional<Compat12>();	//china_price.xls
 
@@ -167,7 +173,8 @@ int FORMATTING::serialize2(std::wostream & stream)
 				CP_XML_STREAM() << global_info->users_Dxfs_stream.str();
 			}
 		}
-		// tableStyles 
+		if (m_TABLESTYLES)
+			m_TABLESTYLES->serialize(stream);
 
 		if (m_Palette)
 		{

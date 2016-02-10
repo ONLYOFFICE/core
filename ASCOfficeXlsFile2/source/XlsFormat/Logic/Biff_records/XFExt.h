@@ -24,9 +24,9 @@ public:
 	static const ElementType	type = typeXFExt;
 
 //-----------------------------
-	BIFF_WORD ixfe;
-	BIFF_WORD cexts;
-	BiffStructurePtrVector rgExt;
+	_UINT16					ixfe;
+	BIFF_WORD				cexts;
+	BiffStructurePtrVector	rgExt;
 
 };
 

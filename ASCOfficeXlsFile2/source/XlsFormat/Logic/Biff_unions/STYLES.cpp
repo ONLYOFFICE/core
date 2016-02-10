@@ -103,14 +103,10 @@ int STYLES::serialize(std::wostream & stream)
 									}
 								}
 							}
-
-							if (style->ixfe.value())
-							{
-								int xfId = *style->ixfe.value() - 1;
-								if (xfId < 0) xfId = 0;
+							int xfId = style->ixfe - 1;
+							if (xfId < 0) xfId = 0;
 								
-								CP_XML_ATTR(L"xfId", xfId);
-							}
+							CP_XML_ATTR(L"xfId", xfId);
 						}
 					}
 				}

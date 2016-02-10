@@ -19,6 +19,17 @@ public:
 	virtual const bool loadContent(BinProcessor& proc);
 
 	static const ElementType	type = typeTABLESTYLES;
+
+	int serialize(std::wostream & stream);
+//----------------------------------------------------------------------------------
+	BaseObjectPtr				m_TableStyles;
+
+	struct _table_style
+	{
+		BaseObjectPtr				style_;
+		std::vector<BaseObjectPtr>	elements_;
+	};
+	std::vector<_table_style>		m_arTableStyles;
 	
 };
 

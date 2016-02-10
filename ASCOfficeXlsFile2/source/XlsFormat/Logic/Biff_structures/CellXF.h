@@ -25,21 +25,21 @@ public:
 
 	GlobalWorkbookInfoPtr m_GlobalWorkbookInfo;
 	
-	unsigned char alc;
-	bool fWrap;
-	unsigned char alcV;
-	bool fJustLast;
-	unsigned char trot;
-	unsigned char cIndent;
-	bool fShrinkToFit;
-	unsigned char iReadOrder;
+	unsigned char	alc;
+	bool			fWrap;
+	unsigned char	alcV;
+	bool			fJustLast;
+	unsigned char	trot;
+	unsigned char	cIndent;
+	bool			fShrinkToFit;
+	unsigned char	iReadOrder;
 	
-	bool fAtrNum;
-	bool fAtrFnt;
-	bool fAtrAlc;
-	bool fAtrBdr;
-	bool fAtrPat;
-	bool fAtrProt;
+	bool			fAtrNum;
+	bool			fAtrFnt;
+	bool			fAtrAlc;
+	bool			fAtrBdr;
+	bool			fAtrPat;
+	bool			fAtrProt;
 
 	BorderInfo border;
 	FillInfo fill;
@@ -49,8 +49,8 @@ public:
 	FillInfoExt		font_color;
 	size_t			font_id;
 
-	bool fHasXFExt;
-	bool fsxButton;
+	bool			fHasXFExt;
+	bool			fsxButton;
 
 	size_t border_x_id;
 	size_t fill_x_id;

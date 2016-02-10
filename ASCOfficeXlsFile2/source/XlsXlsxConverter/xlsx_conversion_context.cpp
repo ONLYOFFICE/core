@@ -194,9 +194,15 @@ void xlsx_conversion_context::end_document()
                 {
 					CP_XML_STREAM() << xlsx_defined_names_.str();
 				}
-				CP_XML_NODE(L"customWorkbookViews")
-                {
-					CP_XML_STREAM() << xlsx_custom_views_.str();
+				
+				std::wstring str_ = xlsx_custom_views_.str();
+
+				if (!str_.empty())
+				{
+					CP_XML_NODE(L"customWorkbookViews")
+					{
+						CP_XML_STREAM() << str_;
+					}
 				}
 			}
         }

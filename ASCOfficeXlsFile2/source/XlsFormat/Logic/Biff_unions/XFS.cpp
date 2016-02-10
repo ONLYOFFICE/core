@@ -37,10 +37,13 @@ const bool XFS::loadContent(BinProcessor& proc)
     XF xf(cell_xf_current_id, style_xf_current_id);
     int count = proc.repeated(xf ,16, 0);
 
+	int ind = 0;
 	while (count > 0)
 	{
 		//разделить style & complex
 		XF* xfs = dynamic_cast<XF*>(elements_.front().get());
+
+		xfs->ind_xf = ind++;
 
 		if (xfs->fStyle)
 		{
@@ -72,34 +75,28 @@ const bool XFS::loadContent(BinProcessor& proc)
 			count--;
 		}
 	}
-
+//------------------------------------------------------------------------------------
 	int first_xf_ext = 0;
 
 	for (_UINT16 i = 0 ; i < m_arCellStyles.size(); i++)
 	{
 		XF		*xfs = dynamic_cast<XF*>(m_arCellStyles[i].get());
 
-		if (m_arXFext.size() > 0 && xfs->cell.fHasXFExt)
-		{
-			XFExt *ext_find = NULL;
-			
-			for (_UINT16 j = first_xf_ext ; j < m_arXFext.size(); j++)
-			{
-				XFExt *ext = dynamic_cast<XFExt*>(m_arXFext[j].get());
-				if (ext->ixfe > i)break;
+		//if (m_arXFext.size() > 0 && xfs->style.fHasXFExt)
+		//{
+		//	for (_UINT16 j = first_xf_ext ; j < m_arXFext.size(); j++)
+		//	{
+		//		XFExt *ext = dynamic_cast<XFExt*>(m_arXFext[j].get());
+		//		if (ext->ixfe > i)break;
 
-				if (ext->ixfe == i)
-				{
-					ext_find = ext;
-					first_xf_ext = j + 1;
-					break;
-				}
-			}
-			if (ext_find)
-			{
-				xfs->style.ext_props = ext_find->rgExt;
-			}
-		}
+		//		if (ext->ixfe == xfs->ind_xf)
+		//		{
+		//			xfs->style.ext_props = ext->rgExt;
+		//			first_xf_ext	= j + 1;
+		//			break;
+		//		}
+		//	}
+		//}
 		xfs->style.RegisterFillBorder();
 		
 		//if (xfs->cell.font_id < 0xFFFF)
@@ -114,20 +111,35 @@ const bool XFS::loadContent(BinProcessor& proc)
 			global_info->RegisterFontColorId(font_id, xfs->style.font_color);
 		}*/		
 	}
+	first_xf_ext = 0;
 	
     for (int i = 0 ; i < m_arCellXFs.size(); i++)
 	{
 		XF		*xfs = dynamic_cast<XF*>(m_arCellXFs[i].get());
 
-		if (m_arXFext.size() > global_info->cellStyleXfs_count + i)
+		////////if (m_arXFext.size() > global_info->cellStyleXfs_count + i)
+		//////{
+		//////	XFExt*ext = dynamic_cast<XFExt*>(m_arXFext[i + global_info->cellStyleXfs_count].get());
+		//////	if (ext)
+		//////	{
+		//////		xfs->cell.ext_props = ext->rgExt;
+		//////	}
+		//////}
+		if (m_arXFext.size() > 0 && xfs->cell.fHasXFExt)
 		{
-			XFExt*ext = dynamic_cast<XFExt*>(m_arXFext[i + global_info->cellStyleXfs_count].get());
-			if (ext)
+			for (_UINT16 j = first_xf_ext ; j < m_arXFext.size(); j++)
 			{
-				xfs->cell.ext_props = ext->rgExt;
+				XFExt *ext = dynamic_cast<XFExt*>(m_arXFext[j].get());
+				if (ext->ixfe > i)break;
+
+				if (ext->ixfe == xfs->ind_xf)
+				{
+					xfs->cell.ext_props = ext->rgExt;
+					first_xf_ext	= j + 1;
+					break;
+				}
 			}
-		}
-		
+		}		
 		xfs->cell.RegisterFillBorder();
 
 		//if (xfs->cell.font_id < 0xFFFF)

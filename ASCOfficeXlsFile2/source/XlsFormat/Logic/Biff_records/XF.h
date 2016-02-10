@@ -27,7 +27,6 @@ public:
 
 	static const ElementType	type = typeXF;
 
-//-----------------------------
 	FontIndex ifnt;
 	BIFF_WORD ifmt;
 	
@@ -40,6 +39,9 @@ public:
 	bool fStyle;
 	bool f123Prefix;
 
+//-----------------------------
+
+	int ind_xf;//for ext
 };
 
 } // namespace XLS

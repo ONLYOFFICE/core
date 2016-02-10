@@ -30,6 +30,8 @@ public:
 	BaseObjectPtr				m_Palette;
 	BaseObjectPtr				m_ClrtClient;
 	std::vector<BaseObjectPtr>	m_arDXF;
+	BaseObjectPtr				m_TABLESTYLES;
+	BaseObjectPtr				m_THEME;
 
 
 	GlobalWorkbookInfoPtr		global_info;

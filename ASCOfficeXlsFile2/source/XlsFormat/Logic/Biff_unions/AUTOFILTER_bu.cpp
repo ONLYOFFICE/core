@@ -127,11 +127,26 @@ int AUTOFILTER::serialize(std::wostream & stream)
 	std::wstring ref;
 	
 	if (ind < it->second.size())
+	{
 		ref = it->second[ind];	//from current worksheet
+	}
 
 	if (ref.empty())
 	{
 		ref = it->second[0]; //from workbook
+	}
+	if (ref.empty()) return 0;
+
+	std::wstring sheet_name = ind <= pGlobalWorkbookInfoPtr->sheets_names.size() ? pGlobalWorkbookInfoPtr->sheets_names[ind-1] : L"";
+	if (!sheet_name.empty())
+	{
+		int pos = ref.find(sheet_name);
+		if (pos >= 0)
+		{
+			pos = ref.find(L"!");
+			if (pos > 0)
+				ref.erase(0, pos + 1);
+		}
 	}
 
 	CP_XML_WRITER(stream)    

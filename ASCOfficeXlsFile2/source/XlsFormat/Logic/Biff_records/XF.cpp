@@ -33,6 +33,7 @@ void XF::writeFields(CFRecord& record)
 	SETBITS(flags, 4, 15, ixfParent);
 	record << ifnt << ifmt << flags;
 	
+
 	if(fStyle)
 	{
 		style.store(record);

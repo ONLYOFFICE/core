@@ -35,6 +35,7 @@ void Theme::readFields(CFRecord& record)
 	record.skipNunBytes(12);
 #pragma message("############################ frtHeader skipped here")
 	record >> dwThemeVersion;
+
 	if(!dwThemeVersion)
 	{
 		Log::info("\"Theme\" binary parsing is not implemented.");

@@ -363,7 +363,7 @@ void XlsConverter::convert(XLS::GlobalsSubstream* global)
 	
 	convert((XLS::FORMATTING*)global->m_Formating.get());
 	
-	convert((XLS::THEME*)global->m_Theme.get());
+	convert((XLS::THEME*)global->m_THEME.get());
 
 	convert((XLS::SHAREDSTRINGS*)global->m_SHAREDSTRINGS.get());
 

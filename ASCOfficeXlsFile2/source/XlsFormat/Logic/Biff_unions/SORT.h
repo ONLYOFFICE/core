@@ -19,7 +19,8 @@ public:
 	virtual const bool loadContent(BinProcessor& proc);
 
 	static const ElementType	type = typeSORT;
-	
+
+	BaseObjectPtr m_RRSort;	
 };
 
 } // namespace XLS

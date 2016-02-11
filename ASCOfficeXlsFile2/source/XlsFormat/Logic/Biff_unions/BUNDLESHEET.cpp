@@ -25,7 +25,6 @@ BaseObjectPtr BUNDLESHEET::clone()
 // BUNDLESHEET = BoundSheet8
 const bool BUNDLESHEET::loadContent(BinProcessor& proc)
 {
-
 	if(!proc.mandatory<BoundSheet8>())
 	{
 		return false;

@@ -56,14 +56,15 @@ const bool SUPBOOK::loadContent(BinProcessor& proc)
 	{
 		return false;
 	}
-	/*  The above is equal to:
+	m_SupBook = elements_.back();
+	elements_.pop_back();
 
-	if(!proc.mandatory<SupBook>())
+	if (supbook.cch != 0x0401  && supbook.cch != 0x3A01 )
 	{
-	return false;
+		proc.getGlobalWorkbookInfo()->arExternalNames.clear();
 	}
-	*/
-	for(;/*infinity*/;)
+
+	while(true)
 	{
 		ExternName extern_name(supbook.getSupportingLinkType());
 		if(!proc.optional(extern_name))
@@ -71,11 +72,14 @@ const bool SUPBOOK::loadContent(BinProcessor& proc)
 			break;
 		}
 	}
-	//proc.repeated<ExternName>(0, 0);
-	
 
-	proc.repeated<Parenthesis_SUPBOOK_1>(0, 0);
-	proc.optional<ExternSheet>();
+	int count = proc.repeated<Parenthesis_SUPBOOK_1>(0, 0);
+	
+	if (proc.optional<ExternSheet>())
+	{
+		m_ExternSheet = elements_.back();
+		elements_.pop_back();
+	}
 	//proc.repeated<Continue>(0, 0);
 	return true;
 }

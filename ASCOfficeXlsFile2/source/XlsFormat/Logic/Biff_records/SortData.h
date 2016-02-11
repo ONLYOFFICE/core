@@ -24,34 +24,18 @@ public:
 
 	static const ElementType	type = typeSortData;
 
-//-----------------------------
-	bool fCol;
-	bool fCaseSensitive;
-	bool fAltMethod;
-	BIFF_BYTE sfp;
+	bool			fCol;
+	bool			fCaseSensitive;
+	bool			fAltMethod;
+	BIFF_BYTE		sfp;
 
-	BIFF_BSTR rfx;
-	BIFF_DWORD cconditions;
-	BIFF_DWORD idParent;
+	BIFF_DWORD		cconditions;
+	BIFF_DWORD		idParent;
 
 	BiffStructurePtrVector sortCond12Array;
 
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(fCol)
-		//BO_ATTRIB_MARKUP_ATTRIB(fCaseSensitive)
-		//BO_ATTRIB_MARKUP_ATTRIB(fAltMethod)
-		//BO_ATTRIB_MARKUP_ATTRIB(sfp)
-		//BO_ATTRIB_MARKUP_ATTRIB(rfx)
-		//BO_ATTRIB_MARKUP_ATTRIB(cconditions)
-		//if(0x01 == sfp || 0x03 == sfp)
-		//{
-		//	//BO_ATTRIB_MARKUP_ATTRIB(idParent)
-		//}
-		//BO_ATTRIB_MARKUP_VECTOR_COMPLEX(sortCond12Array, SortCond12)
-
-	//BO_ATTRIB_MARKUP_END
-
+//-----------------------------
+	std::wstring	rfx;
 };
 
 } // namespace XLS

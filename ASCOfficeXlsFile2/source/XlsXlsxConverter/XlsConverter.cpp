@@ -251,6 +251,7 @@ void XlsConverter::convert(XLS::WorkbookStreamObject* woorkbook)
 	{
 		xls_global_info->current_sheet = i + 1;
 		xlsx_context->start_table(xls_global_info->sheets_names.size() > i ? xls_global_info->sheets_names[i] : L"Sheet_" + boost::lexical_cast<std::wstring>(i+1));
+		xlsx_context->set_state(xls_global_info->sheets_state.size() > i ? xls_global_info->sheets_state[i] : L"visible");
 
 		if (woorkbook->m_arWorksheetSubstream[i]->get_type() == XLS::typeWorksheetSubstream)
 		{

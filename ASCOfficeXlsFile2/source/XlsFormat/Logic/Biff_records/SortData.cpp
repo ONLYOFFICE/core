@@ -32,16 +32,21 @@ void SortData::readFields(CFRecord& record)
 {
 	record.skipNunBytes(12);
 #pragma message("############################ frtHeader skipped here")
+	
 	unsigned short flags;
 	record >> flags;
-	fCol = GETBIT(flags, 0);
-	fCaseSensitive = GETBIT(flags, 1);
-	fAltMethod = GETBIT(flags, 2);
-	sfp = GETBITS(flags, 3, 5);
+
+	fCol			= GETBIT(flags, 0);
+	fCaseSensitive	= GETBIT(flags, 1);
+	fAltMethod		= GETBIT(flags, 2);
+	sfp				= GETBITS(flags, 3, 5);
+	
 	RFX rfx_orig;
 	record >> rfx_orig >> cconditions;
 	rfx = static_cast<std::wstring >(rfx_orig);
+	
 	record >> idParent;
+	
 	std::list<CFRecordPtr>& recs = continue_records[rt_ContinueFrt12];
 	while(!recs.empty())
 	{
@@ -49,6 +54,7 @@ void SortData::readFields(CFRecord& record)
 		record.appendRawData(recs.front()->getData() + 12, recs.front()->getDataSize() - 12);
 		recs.pop_front();
 	}
+	
 	for(unsigned int i = 0; i < cconditions; ++i)
 	{
 		SortCond12Ptr sort_cond(new SortCond12);

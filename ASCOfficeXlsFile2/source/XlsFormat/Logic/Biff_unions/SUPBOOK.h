@@ -19,6 +19,9 @@ public:
 	virtual const bool loadContent(BinProcessor& proc);
 
 	static const ElementType	type = typeSUPBOOK;
+
+	BaseObjectPtr	m_SupBook;
+	BaseObjectPtr	m_ExternSheet;
 	
 };
 

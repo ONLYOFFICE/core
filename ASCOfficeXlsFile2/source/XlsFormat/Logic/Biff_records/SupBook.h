@@ -26,17 +26,11 @@ public:
 	static const ElementType	type = typeSupBook;
 
 //-----------------------------
-	BIFF_WORD ctab;
-	BIFF_WORD cch;
-	XLUnicodeStringNoCch virtPath;
-	XLUnicodeString rgst;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(ctab)
-		//BO_ATTRIB_MARKUP_ATTRIB(cch)
-		//BO_ATTRIB_MARKUP_ATTRIB_NAME(virtPath/*.getEscapedW()*/, L"virtPath")
-		//BO_ATTRIB_MARKUP_ATTRIB(rgst)
-	//BO_ATTRIB_MARKUP_END
+	_UINT16					ctab;
+	_UINT16					cch;
+
+	XLUnicodeStringNoCch	virtPath;
+	XLUnicodeString			rgst;
 
 };
 

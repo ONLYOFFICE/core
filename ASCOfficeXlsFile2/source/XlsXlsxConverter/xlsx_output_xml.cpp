@@ -10,8 +10,13 @@ namespace oox {
 class xlsx_xml_worksheet::Impl
 {
 public:
-    Impl(std::wstring const & name) : name_(name){}
-    std::wstring name_;
+    Impl(std::wstring const & name) : name_(name)
+	{
+		state_ = L"visible";
+	}
+    
+	std::wstring name_;
+	std::wstring state_;
   
 	std::wstringstream  cols_;
 	std::wstringstream  sheetPr_;
@@ -44,7 +49,10 @@ std::wstring xlsx_xml_worksheet::name() const
 {
     return impl_->name_;
 }
-
+std::wstring xlsx_xml_worksheet::state() const
+{
+    return impl_->state_;
+}
 xlsx_xml_worksheet_ptr xlsx_xml_worksheet::create(std::wstring const & name)
 {
     return boost::make_shared<xlsx_xml_worksheet>(name);
@@ -148,16 +156,16 @@ void xlsx_xml_worksheet::write_to(std::wostream & strm)
             }
 			//оказываетс€ пор€док нахождени€ элементов важен !!! (дл€ office 2010)
 			//объединенные €чейки раньше чем гиперлинки !!!
-           
-			CP_XML_STREAM() << impl_->mergeCells_.str();
-			
-			CP_XML_STREAM() << impl_->hyperlinks_.str();
 
 			CP_XML_STREAM() << impl_->sortAndFilters_.str();
-
+           
 			CP_XML_STREAM() << impl_->customViews_.str();
-
+			
+			CP_XML_STREAM() << impl_->mergeCells_.str();
+			
 			CP_XML_STREAM() << impl_->conditionalFormatting_.str();
+
+			CP_XML_STREAM() << impl_->hyperlinks_.str();
   	
 			CP_XML_STREAM() << impl_->pageProperties_.str();
 
@@ -177,7 +185,10 @@ void xlsx_xml_worksheet::write_to(std::wostream & strm)
 		}
     }
 }
-
+void xlsx_xml_worksheet::set_state (std::wstring const & state)
+{
+	impl_->state_ = state;
+}
 void xlsx_xml_worksheet::set_drawing_link(std::wstring const & fileName, std::wstring const & id)
 {
     impl_->drawingName_ = fileName;

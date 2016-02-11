@@ -74,9 +74,9 @@ const bool LBL::loadContent(BinProcessor& proc)
 		
 		if (it != global_info_->mapDefineNames.end())
 		{
-			if (ind_sheet >= it->second.size())
+			while ( it->second.size() <= ind_sheet)
 			{
-				it->second.reserve(ind_sheet + 1);
+				it->second.push_back(L"");
 			}
 			it->second[ind_sheet] = value;
 			//it->second.push_back(value);

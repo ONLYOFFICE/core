@@ -72,9 +72,40 @@ void ExternName::readFields(CFRecord& record)
 		{
 			body = BiffStructurePtr(new ExternDocName);
 		}
-		record.getGlobalWorkbookInfo()->AddinUdfs.push_back(L"");// This fills in the gaps between AddinUdfs if the body is not AddinUdf. The simplest way to maintain indexing from my point of view.
+		// This fills in the gaps between AddinUdfs if the body is not AddinUdf. The simplest way to maintain indexing from my point of view.
 	}
 	body->load(record);
+
+	if(0x3A01 != supbook_cch)
+	{
+		std::wstring name; 
+		if(!fOle && !fOleLink)
+		{
+			ExternDocName* n = dynamic_cast<ExternDocName*>(body.get());
+
+			if (n->ixals > 0)
+			{
+				//from SupBook
+			}
+			else
+			{
+				name = n->nameDefinition.getAssembledFormula();
+				if (name.empty())
+					name = n->extName.value();
+			}
+		}
+		if(fOle && !fOleLink) // DDE data item
+		{
+			ExternDdeLinkNoOper* n = dynamic_cast<ExternDdeLinkNoOper*>(body.get());
+			name = n->linkName.value();
+		}
+		if(!fOle && fOleLink)
+		{
+			ExternOleDdeLink* n = dynamic_cast<ExternOleDdeLink*>(body.get());
+			name = n->linkName.value();
+		}
+		record.getGlobalWorkbookInfo()->arExternalNames.push_back(name);
+	}
 }
 
 } // namespace XLS

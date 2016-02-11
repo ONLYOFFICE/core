@@ -37,6 +37,7 @@ public:
 	std::vector<BaseObjectPtr>	m_arMSODRAWINGGROUP;
 	std::vector<BaseObjectPtr>	m_arWindow1;
 	std::vector<BaseObjectPtr>	m_arUserBView;
+	std::vector<BaseObjectPtr>	m_arSUPBOOK;
 	
 	unsigned short code_page_;
 };

@@ -1,6 +1,7 @@
 
 #include "CF12.h"
 #include <Logic/Biff_structures/CFMultistate.h>
+#include <utils.h>
 
 namespace XLS
 {
@@ -130,9 +131,9 @@ int CF12::serialize(std::wostream & stream)
 			CP_XML_NODE(L"formula")
 			{
 				if (!s1.empty()) 
-					CP_XML_STREAM() << s1;
+					CP_XML_STREAM() << xml::utils::replace_text_to_xml(s1);
 				else if(!s2.empty()) 
-					CP_XML_STREAM() << s2;
+					CP_XML_STREAM() << xml::utils::replace_text_to_xml(s2);
 			}
 		}
 	}

@@ -21,9 +21,9 @@ public:
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-	bool			fSortDes;
-	unsigned short	sortOn;
-	RFX				rfx;
+	bool					fSortDes;
+	unsigned short			sortOn;
+	RFX						rfx;
 
 	CondDataValue			condDataValue;
 	CFFlag					cfflag;

@@ -26,11 +26,13 @@ BaseObjectPtr SORT::clone()
 // SORT = RRSort *Continue
 const bool SORT::loadContent(BinProcessor& proc)
 {
-
 	if(!proc.mandatory<RRSort>())
 	{
 		return false;
 	}
+	m_RRSort = elements_.back();
+	elements_.pop_back();
+
 	proc.repeated<Continue>(0, 0);
 
 	return true;

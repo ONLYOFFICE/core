@@ -61,6 +61,18 @@ void ExtNameParsedFormula::load(CFRecord& record) // Maybe this class shouldn't 
 		val->load(record);
 		rgce.addPtg(val);
 	}
+	if (record.getDataSize() > record.getRdPtr())
+	{
+		int sz = record.getDataSize() - record.getRdPtr();
+		if (sz < 100)
+		{
+			char *buf = new char[sz];
+			memcpy(buf, record.getCurData<char>(), sz);
+
+			record.skipNunBytes(sz);
+			delete []buf;
+		}
+	}
 }
 
 

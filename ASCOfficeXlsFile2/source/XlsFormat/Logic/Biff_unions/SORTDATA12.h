@@ -20,6 +20,9 @@ public:
 
 	static const ElementType	type = typeSORTDATA12;
 	
+	int serialize(std::wostream & stream);
+
+	BaseObjectPtr		m_SortData;
 };
 
 } // namespace XLS

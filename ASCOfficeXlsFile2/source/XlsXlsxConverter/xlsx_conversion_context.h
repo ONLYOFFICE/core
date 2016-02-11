@@ -30,6 +30,7 @@ public:
     void end_document();
 
 	bool start_table(const std::wstring & name);
+		void set_state(const std::wstring & state);
     void end_table();
 
     void start_chart();

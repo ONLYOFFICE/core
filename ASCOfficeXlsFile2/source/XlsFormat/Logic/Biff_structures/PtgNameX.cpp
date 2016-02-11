@@ -66,6 +66,11 @@ void PtgNameX::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
 			_Name = global_info->arDefineNames[nameindex - 1];
 		}
 
+		if (sheet.empty() && _Name.empty() && nameindex <= global_info->arExternalNames.size())
+		{
+			_Name = global_info->arExternalNames[nameindex - 1];
+		}
+
 		ptg_stack.push(sheet + _Name);
 	}
 	else

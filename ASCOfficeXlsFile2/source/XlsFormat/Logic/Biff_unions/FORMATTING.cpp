@@ -159,7 +159,7 @@ int FORMATTING::serialize2(std::wostream & stream)
 		{
 			m_Styles->serialize(stream);
 		}
-		if (m_arDXF.size() > 0)
+		if (global_info->cellStyleDxfs_count > 0)
 		{
 			CP_XML_NODE(L"dxfs")
 			{

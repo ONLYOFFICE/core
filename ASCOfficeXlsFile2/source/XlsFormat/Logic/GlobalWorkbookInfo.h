@@ -44,6 +44,7 @@ public:
 	unsigned short								CodePage;
 	CRYPT::DecryptorPtr							decryptor;
 	
+	std::vector<std::wstring>					sheets_state;
 	std::vector<std::wstring>					sheets_names;
 	std::vector<std::wstring>					xti_parsed;
 	std::vector<std::wstring>					AddinUdfs;
@@ -61,6 +62,7 @@ public:
 
 	std::map<std::wstring, std::vector<std::wstring>>	mapDefineNames;
 	std::vector<std::wstring>							arDefineNames;
+	std::vector<std::wstring>							arExternalNames;
 
 	unsigned int								startAddedSharedStrings;
 	std::vector<std::wstring>					arAddedSharedStrings;

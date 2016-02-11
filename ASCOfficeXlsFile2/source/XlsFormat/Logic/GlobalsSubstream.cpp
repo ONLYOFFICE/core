@@ -134,6 +134,7 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 	proc.mandatory<INTERFACE_T>();
 	proc.mandatory<WriteAccess>();
 	proc.optional<FileSharing>();
+	
 	if (proc.mandatory<CodePage>())
 	{
 		m_CodePage = elements_.back();
@@ -155,7 +156,7 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 	proc.optional<CodeName>();
 	proc.optional<FNGROUPS>();
 	
-	proc.repeated<Lbl>(0, 0);
+	count = proc.repeated<Lbl>(0, 0);
 	
 	proc.optional<OleObjectSize>();
 	proc.mandatory<PROTECTION>();
@@ -169,6 +170,7 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 	}
 	proc.mandatory<Backup>();
 	proc.mandatory<HideObj>();
+	
 	count = proc.repeated<Window1>(0, 0); // OpenOffice Calc stored files workaround
 	while(count > 0)
 	{
@@ -232,7 +234,9 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 	}	
 	
 	proc.optional<UsesELFs>();
-	proc.repeated<BUNDLESHEET>(1, 0);
+	
+	count = proc.repeated<BUNDLESHEET>(1, 0);
+	
 	proc.optional<METADATA>(); // Let it be optional
 	proc.optional<MTRSettings>();
 	proc.optional<ForceFullCalculation>();
@@ -251,8 +255,14 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 			proc.getGlobalWorkbookInfo()->CodePage;
 		}
 	}
-	proc.repeated<SUPBOOK>(0, 0);
-	
+	count = proc.repeated<SUPBOOK>(0, 0);
+	while(count > 0)
+	{
+		m_arSUPBOOK.insert(m_arSUPBOOK.begin(), elements_.back());
+		elements_.pop_back();
+		count--;
+	}
+
 	count = proc.repeated<LBL>(0, 0);
 	while(count > 0)
 	{

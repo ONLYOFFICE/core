@@ -21,6 +21,7 @@ public:
     ~xlsx_xml_worksheet();
 public:
     std::wstring name() const;
+    std::wstring state() const;
    
     std::wostream & dimension();
 	std::wostream & sheetViews();
@@ -44,6 +45,7 @@ public:
     void set_drawing_link		(std::wstring const & fileName, std::wstring const & id);
     void set_vml_drawing_link	(std::wstring const & fileName, std::wstring const & id);
     void set_comments_link		(std::wstring const & fileName, std::wstring const & id);
+	void set_state				(std::wstring const & state);
 	
 	std::pair<std::wstring, std::wstring> get_drawing_link() const;
 	std::pair<std::wstring, std::wstring> get_vml_drawing_link() const;

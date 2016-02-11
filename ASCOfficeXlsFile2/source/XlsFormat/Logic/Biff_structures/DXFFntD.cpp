@@ -67,7 +67,7 @@ int DXFFntD::serialize(std::wostream & stream)
 					CP_XML_ATTR(L"val", stFontName.value());
 				}
 			}
-			if (stxp.twpHeight != 0)
+			if (stxp.twpHeight > 20)
 			{
 				CP_XML_NODE(L"sz")
 				{

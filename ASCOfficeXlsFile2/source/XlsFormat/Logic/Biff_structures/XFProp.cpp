@@ -250,7 +250,7 @@ int XFProp::serialize(std::wostream & stream)
 		case 0x0022:	serialize_val_prop	(stream, L"charset",		xfPropDataBlob);	break;
 		case 0x0023:	serialize_val_prop	(stream, L"family",		xfPropDataBlob);		break;
 		case 0x0024:	serialize_val_prop	(stream, L"sz",			xfPropDataBlob);		break;
-		case 0x0025:	serialize_val_prop	(stream, L"scheme",		xfPropDataBlob);		break;
+		//case 0x0025:	serialize_val_prop	(stream, L"scheme",		xfPropDataBlob);		break;
 		case 0x0026:	serialize_val_prop	(stream, L"formatCode",	xfPropDataBlob);		break;
 		case 0x0029:	serialize_val_prop	(stream, L"numFmtId",		xfPropDataBlob);	break;
 		case 0x002A:	serialize_val_prop	(stream, L"relativeIndent", xfPropDataBlob);	break;

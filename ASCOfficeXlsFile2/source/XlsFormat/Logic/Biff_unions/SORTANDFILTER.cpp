@@ -68,6 +68,10 @@ int SORTANDFILTER::serialize(std::wostream & stream)
 	{
 		m_AUTOFILTER->serialize(stream);
 	}
+	if (m_SORTDATA12)
+	{
+		m_SORTDATA12->serialize(stream);
+	}
 	return 0;
 }
 

@@ -20,9 +20,9 @@ public:
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-	unsigned short ixals;
-	ShortXLUnicodeString extName;
-	ExtNameParsedFormula nameDefinition;
+	unsigned short			ixals;
+	ShortXLUnicodeString	extName;
+	ExtNameParsedFormula	nameDefinition;
 };
 
 } // namespace XLS

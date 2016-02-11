@@ -62,6 +62,13 @@ bool xlsx_conversion_context::start_table(const std::wstring & name)
 	return true;
 }
 
+void xlsx_conversion_context::set_state(const std::wstring & state)
+{
+	if (state.empty()) return;
+
+	sheets_.back()->set_state(state);
+}
+
 void xlsx_conversion_context::start_chart()
 {
 	charts_.push_back(oox_chart_context::create());
@@ -141,10 +148,10 @@ void xlsx_conversion_context::end_document()
         {
             CP_XML_NODE(L"sheet")
             {
-                CP_XML_ATTR(L"name", sheet->name());
+                CP_XML_ATTR(L"name",	sheet->name());
                 CP_XML_ATTR(L"sheetId", count);
-                CP_XML_ATTR(L"state", L"visible");
-                CP_XML_ATTR(L"r:id", id);            
+                CP_XML_ATTR(L"state",	sheet->state()	);
+                CP_XML_ATTR(L"r:id",	id);            
             }
         }
 

@@ -53,8 +53,6 @@ void BoundSheet8::readFields(CFRecord& record)
 	unsigned short flags;
 	record >> lbPlyPos >> flags >> stName;
 
-	record.getGlobalWorkbookInfo()->sheets_names.push_back(stName);
-
 	switch(GETBITS(flags, 0, 1))
 	{
 		case 0:
@@ -64,11 +62,12 @@ void BoundSheet8::readFields(CFRecord& record)
 			hsState = std::wstring (L"hidden");
 			break;
 		case 2:
-			hsState = std::wstring (L"veryHidden");
+			hsState = std::wstring (L"hidden");//(L"veryHidden");
 			break;
-		default:
-			throw;// EXCEPT::RT::WrongBiffRecord("Unsupported value of hsState.", record.getTypeString());
 	}
+	record.getGlobalWorkbookInfo()->sheets_names.push_back(stName);
+	record.getGlobalWorkbookInfo()->sheets_state.push_back(hsState);
+	
 	dt = GETBITS(flags, 8, 15);
 }
 

@@ -29,6 +29,7 @@ public:
 	BaseObjectPtr				m_Formating;
 	BaseObjectPtr				m_Template;
 	BaseObjectPtr				m_SHAREDSTRINGS;
+	BaseObjectPtr				m_ExtSST;
 	BaseObjectPtr				m_CodePage;
 	BaseObjectPtr				m_Country;
 

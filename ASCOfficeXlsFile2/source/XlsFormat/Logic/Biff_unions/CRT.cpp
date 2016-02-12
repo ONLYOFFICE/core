@@ -35,7 +35,8 @@
 #include <Logic/Biff_records/DropBar.h>
 #include <Logic/Biff_records/CrtMlFrt.h>
 
-
+#include <Logic/Biff_records/StartObject.h>
+#include <Logic/Biff_records/EndObject.h>
 namespace XLS
 {
 
@@ -162,7 +163,10 @@ const bool CRT::loadContent(BinProcessor& proc)
 		m_CrtLink = elements_.back();
 		elements_.pop_back();
 	}
-
+	if (proc.optional<StartObject>())
+	{
+		proc.optional<EndObject>();
+	}
 	if (proc.optional<SeriesList>())
 	{
 		m_SeriesList = elements_.back();

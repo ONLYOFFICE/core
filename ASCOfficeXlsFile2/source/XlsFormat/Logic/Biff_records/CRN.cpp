@@ -23,9 +23,7 @@ BaseObjectPtr CRN::clone()
 
 void CRN::writeFields(CFRecord& record)
 {
-#pragma message("####################### CRN record is not implemented")
-	Log::error("CRN record is not implemented.");
-	//record << some_value;
+
 }
 
 

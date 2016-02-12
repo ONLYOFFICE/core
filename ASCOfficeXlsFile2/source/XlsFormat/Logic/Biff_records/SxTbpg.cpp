@@ -33,6 +33,9 @@ void SxTbpg::readFields(CFRecord& record)
 #pragma message("####################### SxTbpg record is not implemented")
 	Log::error("SxTbpg record is not implemented.");
 	//record >> some_value;
+	
+	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
+
 }
 
 } // namespace XLS

@@ -12,9 +12,7 @@ BaseObjectPtr Dv::clone()
 
 void Dv::writeFields(CFRecord& record)
 {
-#pragma message("####################### Dv record is not implemented")
-	Log::error("Dv record is not implemented.");
-	//record << some_value;
+
 }
 
 

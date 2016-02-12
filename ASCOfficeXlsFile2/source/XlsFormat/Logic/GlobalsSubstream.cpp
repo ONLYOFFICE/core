@@ -292,6 +292,15 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 		count--;
 	}
 	proc.repeated<SUPBOOK>(0, 0);//order_history.xls
+	
+	count = proc.repeated<LBL>(0, 0);
+	int start_pos = m_arLBL.size();
+	while(count > 0)
+	{
+		m_arLBL.insert(m_arLBL.begin() + start_pos, elements_.back());
+		elements_.pop_back();
+		count--;
+	}
 
     SHAREDSTRINGS shared_strings(code_page_);
     if (proc.optional(shared_strings))
@@ -302,7 +311,11 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 		proc.getGlobalWorkbookInfo()->startAddedSharedStrings = shared_strings.size_;
 	}
 	
-	proc.optional<ExtSST>(); // OpenOffice Calc stored files workaround (ExtSST is mandatory according to [MS-XLS])
+	if (proc.optional<ExtSST>()) // OpenOffice Calc stored files workaround (ExtSST is mandatory according to [MS-XLS])
+	{
+		m_ExtSST = elements_.back();
+		elements_.pop_back();
+	}
 	proc.repeated<WebPub>(0, 0);
 	proc.optional<WOpt>();
 	proc.optional<CrErr>();

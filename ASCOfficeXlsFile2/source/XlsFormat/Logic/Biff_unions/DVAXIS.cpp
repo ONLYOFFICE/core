@@ -82,7 +82,7 @@ const bool DVAXIS::loadContent(BinProcessor& proc)
 		elements_.pop_back();
 	}
 	
-	proc.mandatory<End>();						elements_.pop_back();
+	if (proc.mandatory<End>())					elements_.pop_back();
 
 	return true;
 }

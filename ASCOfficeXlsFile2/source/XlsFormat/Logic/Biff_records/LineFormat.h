@@ -21,6 +21,7 @@ public:
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
 
+	static const ElementType	type = typeLineFormat;
 	int serialize(std::wostream & _stream);
 //-----------------------------
 	LongRGB rgb;

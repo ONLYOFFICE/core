@@ -137,6 +137,7 @@ enum ElementType
 	typeFormula,
 	typeFrame,
 	typeFrtFontList,
+	typeFrtWrapper,
 	typeGelFrame,
 	typeGridSet,
 	typeGUIDTypeLib,

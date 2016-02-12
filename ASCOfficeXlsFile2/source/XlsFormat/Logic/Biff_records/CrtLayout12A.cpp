@@ -22,9 +22,7 @@ BaseObjectPtr CrtLayout12A::clone()
 
 void CrtLayout12A::writeFields(CFRecord& record)
 {
-#pragma message("####################### CrtLayout12A record is not implemented")
-	Log::error("CrtLayout12A record is not implemented.");
-	//record << some_value;
+
 }
 
 
@@ -32,7 +30,8 @@ void CrtLayout12A::readFields(CFRecord& record)
 {
 #pragma message("####################### CrtLayout12A record is not implemented")
 	Log::error("CrtLayout12A record is not implemented.");
-	//record >> some_value;
+
+	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
 }
 
 } // namespace XLS

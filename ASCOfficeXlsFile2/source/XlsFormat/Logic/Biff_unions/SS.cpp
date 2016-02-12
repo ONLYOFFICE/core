@@ -15,6 +15,9 @@
 #include <Logic/Biff_unions/SHAPEPROPS.h>
 #include <Logic/Biff_unions/CRTMLFRT.h>
 
+#include <Logic/Biff_records/StartObject.h>
+#include <Logic/Biff_records/EndObject.h>
+
 namespace XLS
 {
 
@@ -73,63 +76,117 @@ const bool SS::loadContent(BinProcessor& proc)
 	m_DataFormat = elements_.back();
 	elements_.pop_back();
 
-	proc.mandatory<Begin>();						elements_.pop_back();
-	if (proc.optional<Chart3DBarShape>())
+	if (proc.mandatory<Begin>())
 	{
-		m_Chart3DBarShape = elements_.back();
 		elements_.pop_back();
-	}
-	if(proc.optional<LineFormat>())
-	{
-		m_LineFormat = elements_.back();
-		elements_.pop_back();
-	
-		if (proc.optional<AreaFormat>())
+		while (true)
 		{
-			m_AreaFormat = elements_.back();
-			elements_.pop_back();
+			CFRecordType::TypeId type = proc.getNextRecordType();
+			
+			if (type == rt_NONE) break;
+			if (type == rt_End) 
+			{
+				if (proc.mandatory<End>())	elements_.pop_back();
+				break;
+			}
+
+			switch(type)
+			{
+				case rt_Chart3DBarShape:
+				{
+					if (proc.optional<Chart3DBarShape>())
+					{
+						m_Chart3DBarShape = elements_.back();
+						elements_.pop_back();
+					}
+				}break;
+				case rt_LineFormat:
+				{
+					if(proc.optional<LineFormat>())
+					{
+						m_LineFormat = elements_.back();
+						elements_.pop_back();
+					}
+				}break;
+				case rt_AreaFormat:
+				{
+					if (proc.optional<AreaFormat>())
+					{
+						m_AreaFormat = elements_.back();
+						elements_.pop_back();
+					}
+				}break;
+				case rt_PieFormat:
+				{					
+					if (proc.optional<PieFormat>())
+					{
+						m_PieFormat = elements_.back();
+						elements_.pop_back();
+					}
+				}break;
+				case rt_SerFmt:
+				{
+					if (proc.optional<SerFmt>())
+					{
+						m_SerFmt = elements_.back();
+						elements_.pop_back();
+					}
+				}break;
+				case rt_GelFrame:
+				{
+					if (proc.optional<GELFRAME>())
+					{
+						m_GELFRAME = elements_.back();
+						elements_.pop_back();
+					}
+				}break;
+				case rt_MarkerFormat:
+				{
+					if (proc.optional<MarkerFormat>())
+					{
+						m_MarkerFormat = elements_.back();
+						elements_.pop_back();
+					}
+				}break;
+				case rt_AttachedLabel:
+				{
+					if (proc.optional<AttachedLabel>())
+					{
+						m_AttachedLabel = elements_.back();
+						elements_.pop_back();
+					}
+				}break;
+				case rt_ShapePropsStream:
+				{	
+					int count = proc.repeated<SHAPEPROPS>(0, 2);
+					while(count > 0)
+					{
+						m_arSHAPEPROPS.insert(m_arSHAPEPROPS.begin(), elements_.back());
+						elements_.pop_back();
+						count--;
+					}
+				}break;
+				case rt_CrtMlFrt:
+				{
+					proc.optional<CRTMLFRT>();
+				}break;
+				case rt_StartBlock:
+				case rt_EndBlock:
+				case rt_StartObject:
+				{
+					if (proc.optional<StartObject>())
+					{
+						elements_.pop_back();
+						if (proc.mandatory<EndObject>())	elements_.pop_back();
+					}
+				}break;
+				default://skip					
+				{
+					return true;
+				}break;
+			}
 		}
-		
-		if (proc.optional<PieFormat>())
-		{
-			m_PieFormat = elements_.back();
-			elements_.pop_back();
-		}
 	}
-	if (proc.optional<SerFmt>())
-	{
-		m_SerFmt = elements_.back();
-		elements_.pop_back();
-	}
-	
-	if (proc.optional<GELFRAME>())
-	{
-		m_GELFRAME = elements_.back();
-		elements_.pop_back();
-	}
-	
-	if (proc.optional<MarkerFormat>())
-	{
-		m_MarkerFormat = elements_.back();
-		elements_.pop_back();
-	}
-	
-	if (proc.optional<AttachedLabel>())
-	{
-		m_AttachedLabel = elements_.back();
-		elements_.pop_back();
-	}
-	
-	int count = proc.repeated<SHAPEPROPS>(0, 2);
-	while(count > 0)
-	{
-		m_arSHAPEPROPS.insert(m_arSHAPEPROPS.begin(), elements_.back());
-		elements_.pop_back();
-		count--;
-	}
-	
-	proc.optional<CRTMLFRT>();
-	proc.mandatory<End>();								elements_.pop_back();
 
 	return true;
 }

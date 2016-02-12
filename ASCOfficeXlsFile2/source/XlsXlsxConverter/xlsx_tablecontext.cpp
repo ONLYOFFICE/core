@@ -44,7 +44,8 @@ void xlsx_table_context::end_table()
 		std::wstringstream strm;
 		get_drawing_context().serialize(strm);
 		
-		const std::pair<std::wstring, std::wstring> drawingName	= context_.get_drawing_context_handle().add_drawing_xml(strm.str(), get_drawing_context().get_drawings());
+		const std::pair<std::wstring, std::wstring> drawingName	= 
+			context_.get_drawing_context_handle().add_drawing_xml(strm.str(), get_drawing_context().get_drawings_rels());
 
 		context_.current_sheet().set_drawing_link(drawingName.first, drawingName.second);
 

@@ -22,9 +22,7 @@ BaseObjectPtr ContinueBigName::clone()
 
 void ContinueBigName::writeFields(CFRecord& record)
 {
-#pragma message("####################### ContinueBigName record is not implemented")
-	Log::error("ContinueBigName record is not implemented.");
-	//record << some_value;
+
 }
 
 
@@ -32,7 +30,8 @@ void ContinueBigName::readFields(CFRecord& record)
 {
 #pragma message("####################### ContinueBigName record is not implemented")
 	Log::error("ContinueBigName record is not implemented.");
-	//record >> some_value;
+
+	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
 }
 
 } // namespace XLS

@@ -65,10 +65,10 @@ public:
 	short dxR;
 	short dyB;
 
-	_UINT32 _dxL;
-	_UINT32 _dyT;
-	_UINT32 _dxR;
-	_UINT32 _dyB;
+	int _x;
+	int _y;
+	int _cx;
+	int _cy;
 };
 
 typedef boost::shared_ptr<OfficeArtChildAnchor> OfficeArtChildAnchorPtr;

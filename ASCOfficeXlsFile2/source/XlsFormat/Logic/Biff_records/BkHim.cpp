@@ -22,18 +22,13 @@ BaseObjectPtr BkHim::clone()
 
 void BkHim::writeFields(CFRecord& record)
 {
-#pragma message("####################### BkHim record is not implemented")
-	Log::error("BkHim record is not implemented.");
-	//record << some_value;
+
 }
 
 
 void BkHim::readFields(CFRecord& record)
 {
-//#pragma message("####################### BkHim record is not implemented")
-	//Log::error("BkHim record is not implemented.");
-	//record >> some_value;
-	
+
 	_UINT16 cf;
 	_UINT32 lcb;
 

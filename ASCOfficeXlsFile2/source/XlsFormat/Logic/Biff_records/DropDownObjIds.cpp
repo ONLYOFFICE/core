@@ -23,9 +23,7 @@ BaseObjectPtr DropDownObjIds::clone()
 
 void DropDownObjIds::writeFields(CFRecord& record)
 {
-#pragma message("####################### DropDownObjIds record is not implemented")
-	Log::error("DropDownObjIds record is not implemented.");
-	//record << some_value;
+
 }
 
 

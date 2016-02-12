@@ -22,9 +22,7 @@ BaseObjectPtr CrErr::clone()
 
 void CrErr::writeFields(CFRecord& record)
 {
-#pragma message("####################### CrErr record is not implemented")
-	Log::error("CrErr record is not implemented.");
-	//record << some_value;
+
 }
 
 
@@ -33,7 +31,7 @@ void CrErr::readFields(CFRecord& record)
 #pragma message("####################### CrErr record is not implemented")
 	Log::error("CrErr record is not implemented.");
 
-	//record >> some_value;
+	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
 }
 
 } // namespace XLS

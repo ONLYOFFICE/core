@@ -29,9 +29,7 @@ BaseObjectPtr CF12::clone()
 
 void CF12::writeFields(CFRecord& record)
 {
-#pragma message("####################### CF12 record is not implemented")
-	Log::error("CF12 record is not implemented.");
-	//record << some_value;
+
 }
 
 

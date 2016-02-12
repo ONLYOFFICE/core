@@ -22,9 +22,7 @@ BaseObjectPtr CFEx::clone()
 
 void CFEx::writeFields(CFRecord& record)
 {
-#pragma message("####################### CFEx record is not implemented")
-	Log::error("CFEx record is not implemented.");
-	//record << some_value;
+
 }
 
 

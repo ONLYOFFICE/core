@@ -1442,6 +1442,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\XlsFormat\Logic\Biff_records\FrtWrapper.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\XlsFormat\Logic\Biff_records\FrtWrapper.h"
+					>
+				</File>
+				<File
 					RelativePath="..\XlsFormat\Logic\Biff_records\GelFrame.cpp"
 					>
 				</File>

@@ -12,7 +12,7 @@
 
 namespace oox {
 
-class xlsx_drawings::Impl
+class xlsx_drawings_rels::Impl
 {
     struct rel_
     { 
@@ -30,29 +30,6 @@ class xlsx_drawings::Impl
     };
 
 public:
-	//void add(std::wstring const & d,
- //       bool isInternal,
- //       std::wstring const & rid,
- //       std::wstring const & target,
-	//	external_items::Type type)
- //   {
- //       xlsx_drawings_.push_back(d);
-	//	
-	//	bool present = false;
- //       BOOST_FOREACH(rel_ const & r, xlsx_drawing_rels_)
- //       {		
-	//		if (r.rid_ == rid && r.target_ == target)
-	//			present = true;
-	//	}
-	//	if (!present)
-	//	{
-	//		xlsx_drawing_rels_.push_back(rel_(isInternal, rid, target, type));
-	//	}
- // //      BOOST_FOREACH(_hlink_desc h, d.hlinks)
- // //      {
-	//	//	xlsx_drawing_rels_.push_back(rel_(false, h.hId, h.hRef, external_items::typeHyperlink));
-	//	//}
- //   }
     void add(
         bool isInternal,
         std::wstring const & rid,
@@ -61,20 +38,20 @@ public:
     {
 		bool present = false;
         
-		BOOST_FOREACH(rel_ const & r, xlsx_drawing_rels_)
+		BOOST_FOREACH(rel_ const & r, rels_)
         {		
 			if (r.rid_ == rid && r.target_ == target)
 				present = true;
 		}
 		if (!present)
 		{
-			xlsx_drawing_rels_.push_back(rel_(isInternal, rid, target, type));
+			rels_.push_back(rel_(isInternal, rid, target, type));
 		}
     }
 
    void dump_rels(rels & Rels)
     {
-        BOOST_FOREACH(rel_ const & r, xlsx_drawing_rels_)
+        BOOST_FOREACH(rel_ const & r, rels_)
         {
 			if (r.type_ == external_items::typeChart)
 			{
@@ -109,28 +86,18 @@ public:
     }
 
 private:
-
-	//std::vector<std::wstring>	xlsx_drawings_;	
-	std::vector<rel_>			xlsx_drawing_rels_;
+	std::vector<rel_>	rels_;
 };
 
-xlsx_drawings::xlsx_drawings() : impl_( new xlsx_drawings::Impl() )
+xlsx_drawings_rels::xlsx_drawings_rels() : impl_( new xlsx_drawings_rels::Impl() )
 {
 }
 
-xlsx_drawings::~xlsx_drawings()
+xlsx_drawings_rels::~xlsx_drawings_rels()
 {
 }
 
-//void xlsx_drawings::add(std::wstring const & d,
-//        bool isInternal,
-//        std::wstring const & rid,
-//        std::wstring const & target,
-//        external_items::Type type)
-//{
-//    impl_->add(d, isInternal, rid, target, type);
-//}
-void xlsx_drawings::add(
+void xlsx_drawings_rels::add(
         bool isInternal,
         std::wstring const & rid,
         std::wstring const & target,
@@ -139,15 +106,14 @@ void xlsx_drawings::add(
     impl_->add(isInternal, rid, target, type);
 }
 
-
-void xlsx_drawings::dump_rels(rels & Rels)
+void xlsx_drawings_rels::dump_rels(rels & Rels)
 {
     return impl_->dump_rels(Rels);
 }
 
-xlsx_drawings_ptr xlsx_drawings::create()
+xlsx_drawings_rels_ptr xlsx_drawings_rels::create()
 {
-    return boost::make_shared<xlsx_drawings>();
+    return boost::make_shared<xlsx_drawings_rels>();
 }
 
 }

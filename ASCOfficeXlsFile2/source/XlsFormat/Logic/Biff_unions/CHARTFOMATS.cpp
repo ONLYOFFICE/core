@@ -144,8 +144,12 @@ const bool CHARTFORMATS::loadContent(BinProcessor& proc)
 	}
 	
 	count = proc.repeated<AXISPARENT>(1, 2);
-	m_arAXISPARENT.push_back(elements_.front()); 
-	elements_.pop_front(); count--;
+	if (elements_.size() > 0)
+	{
+		m_arAXISPARENT.push_back(elements_.front()); 
+		elements_.pop_front(); 
+	}
+	count--;
 	if (count > 0)
 	{
 		AXISPARENT * ax_first = dynamic_cast<AXISPARENT *>(m_arAXISPARENT[0].get());
@@ -215,7 +219,7 @@ const bool CHARTFORMATS::loadContent(BinProcessor& proc)
 	}
 	count = proc.repeated<CRTMLFRT>(0, 2);
 
-	proc.mandatory<End>();					elements_.pop_back();
+	if(proc.mandatory<End>())				elements_.pop_back();
 
 	return true;
 }

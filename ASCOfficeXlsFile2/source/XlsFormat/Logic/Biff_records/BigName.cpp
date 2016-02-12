@@ -22,9 +22,7 @@ BaseObjectPtr BigName::clone()
 
 void BigName::writeFields(CFRecord& record)
 {
-#pragma message("####################### BigName record is not implemented")
-	Log::error("BigName record is not implemented.");
-	//record << some_value;
+
 }
 
 
@@ -32,7 +30,8 @@ void BigName::readFields(CFRecord& record)
 {
 #pragma message("####################### BigName record is not implemented")
 	Log::error("BigName record is not implemented.");
-	//record >> some_value;
+
+	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
 }
 
 } // namespace XLS

@@ -32,7 +32,8 @@ void YMult::readFields(CFRecord& record)
 {
 #pragma message("####################### YMult record is not implemented")
 	Log::error("YMult record is not implemented.");
-	//record >> some_value;
+	
+	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
 }
 
 } // namespace XLS

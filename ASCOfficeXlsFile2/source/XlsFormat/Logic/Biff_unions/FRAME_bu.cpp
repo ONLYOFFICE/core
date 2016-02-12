@@ -9,6 +9,9 @@
 #include <Logic/Biff_unions/GELFRAME.h>
 #include <Logic/Biff_unions/SHAPEPROPS.h>
 
+#include <Logic/Biff_records/StartObject.h>
+#include <Logic/Biff_records/EndObject.h>
+
 #include <utils.h>
 
 namespace XLS
@@ -41,32 +44,33 @@ const bool FRAME::loadContent(BinProcessor& proc)
 	m_Frame = elements_.back();
 	elements_.pop_back();
 
-	proc.mandatory<Begin>();				elements_.pop_back();
+	if (proc.mandatory<Begin>())			elements_.pop_back();
+
 	if (proc.mandatory<LineFormat>())
 	{
-		m_LineFormat = elements_.back();
-		elements_.pop_back();
+		m_LineFormat = elements_.back();	elements_.pop_back();
 	}
-
+	if (proc.optional<StartObject>())
+	{
+		elements_.pop_back();
+		if (proc.mandatory<EndObject>())	elements_.pop_back();
+	}
 	if (proc.mandatory<AreaFormat>())
 	{
-		m_AreaFormat = elements_.back();
-		elements_.pop_back();
+		m_AreaFormat = elements_.back();	elements_.pop_back();
 	}
 
 	if (proc.optional<GELFRAME>())
 	{
-		m_GELFRAME = elements_.back();
-		elements_.pop_back();
+		m_GELFRAME = elements_.back();		elements_.pop_back();
 	}
 
 	if (proc.optional<SHAPEPROPS>())
 	{
-		m_SHAPEPROPS = elements_.back();
-		elements_.pop_back();
+		m_SHAPEPROPS = elements_.back();	elements_.pop_back();
 	}
 
-	proc.mandatory<End>();					elements_.pop_back();
+	if(proc.mandatory<End>())				elements_.pop_back();
 
 	return true;
 }

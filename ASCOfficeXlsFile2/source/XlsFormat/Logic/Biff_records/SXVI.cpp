@@ -33,6 +33,7 @@ void SXVI::readFields(CFRecord& record)
 #pragma message("####################### SXVI record is not implemented")
 	Log::error("SXVI record is not implemented.");
 	//record >> some_value;
+	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
 }
 
 } // namespace XLS

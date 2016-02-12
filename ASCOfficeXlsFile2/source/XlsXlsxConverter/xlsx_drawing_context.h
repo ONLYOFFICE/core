@@ -28,7 +28,7 @@ public:
     xlsx_drawing_context_handle(external_items & items);
     ~xlsx_drawing_context_handle();
     
-    std::pair<std::wstring, std::wstring> add_drawing_xml(std::wstring const & content, xlsx_drawings_ptr drawings);
+    std::pair<std::wstring, std::wstring> add_drawing_xml(std::wstring const & content, xlsx_drawings_rels_ptr rels);
     const std::vector<drawing_elm> & content() const;
 
     friend class xlsx_drawing_context;
@@ -93,7 +93,7 @@ class _drawing_state
 {
 public:
 	_drawing_state() :	shape_id(msosptRectangle),  
-						flipH(false), flipV(false), 						
+						flipH(false), flipV(false), x(0), y(0), cx(0), cy(0),						
 						bTextBox(false)
 	{
 		id			= -1;		
@@ -114,15 +114,19 @@ public:
 
 	int						id;
 	MSOSPT					shape_id;
-	
+//----------------------------------------------	
+	int						x;
+	int						y;
+	int						cx;
+	int						cy;
 	bool					flipV;
 	bool					flipH;
-	std::wstring			hyperlink;
 	int						rotation;
-
+//-----------------------------------------------
 	std::wstring			path;
 	_rect					path_rect;
 
+	std::wstring			hyperlink;
 	struct _text
 	{
 		_text() : align(0)/*noset*/, wrap(2)/*none*/, vert_align(0)/*noset*/, vertical(0)/*horiz*/ {}
@@ -210,7 +214,7 @@ public:
     xlsx_drawing_context(xlsx_conversion_context & Context);
 	~xlsx_drawing_context(){}
 
-	xlsx_drawings_ptr get_drawings();
+	xlsx_drawings_rels_ptr get_drawings_rels();
 	bool empty();	
 
 	void start_group();
@@ -253,8 +257,9 @@ public:
         void set_line_width			(int val);
 		void set_line_dash			(int val);
 
-		void set_chart_sheet_anchor	(double width, double height);
-        void set_anchor				(const std::wstring & str);
+		void set_absolute_anchor	(double width, double height);
+        void set_child_anchor		(int x, int y, int cx, int cy);
+        void set_sheet_anchor		(const std::wstring & str);
 		bool is_anchor				();
 
         void set_properties			(const std::wstring & str);
@@ -279,7 +284,8 @@ public:
 		void set_wordart_vertical	(bool val);
 		void set_wordart_spacing	(double val);
 		
-//------------------------------------------------------------------------------		
+//------------------------------------------------------------------------------	
+		void serialize_group		();
 		void serialize_shape		(_drawing_state_ptr & drawing_state);			
 		void serialize_chart		(_drawing_state_ptr & drawing_state, std::wstring rId );	
 		void serialize_pic			(_drawing_state_ptr & drawing_state, std::wstring rId );	
@@ -296,7 +302,7 @@ private:
     xlsx_conversion_context		& context_;
 	
 	xlsx_drawing_context_handle	& handle_;
-	xlsx_drawings_ptr			xlsx_drawings_;
+	xlsx_drawings_rels_ptr		rels_;
 	int							count_object;
 	bool						in_chart_;
 	

@@ -34,6 +34,7 @@ namespace NSDoctRenderer
         int m_nMailMergeIndexEnd;
 
         bool m_bIsRetina;
+        int m_nSaveToPDFParams;
 
     public:
         CExecuteParams() : m_arChanges()
@@ -56,6 +57,7 @@ namespace NSDoctRenderer
             m_nMailMergeIndexEnd = -1;
 
             m_bIsRetina = false;
+            m_nSaveToPDFParams = 0;
         }
         ~CExecuteParams()
         {
@@ -109,6 +111,9 @@ namespace NSDoctRenderer
             int nParams = oNode.ReadValueInt(L"DoctParams", 0);
             if (nParams & 0x01)
                 m_bIsRetina = true;
+
+            if (nParams & 0x02)
+                m_nSaveToPDFParams = 1;
 
             return true;
         }
@@ -458,6 +463,7 @@ namespace NSDoctRenderer
                     if (js_func_get_file_s->IsFunction())
                     {
                         v8::Handle<v8::Function> func_get_file_s = v8::Handle<v8::Function>::Cast(js_func_get_file_s);
+                        args[0] = v8::Int32::New(isolate, pParams->m_nSaveToPDFParams);
                         v8::Local<v8::Value> js_result2 = func_get_file_s->Call(global_js, 1, args);
 
                         if (try_catch.HasCaught())

@@ -101,9 +101,12 @@ namespace DocFileFormat
 					if (_isRunStyleNeeded)
 					{
 						_currentIstd = FormatUtils::BytesToUInt16( iter->Arguments, 0, iter->argumentsSize );
-						appendValueElement( parent, _T( "rStyle" ), StyleSheetMapping::MakeStyleId( this->_doc->Styles->Styles->at( _currentIstd ) ).c_str(), true );
+						if (_currentIstd < this->_doc->Styles->Styles->size())
+						{
+							appendValueElement( parent, _T( "rStyle" ), StyleSheetMapping::MakeStyleId( this->_doc->Styles->Styles->at( _currentIstd ) ).c_str(), true );
 
-						haveStyle	=	TRUE;
+							haveStyle	=	TRUE;
+						}
 					}
 				}
 				break;

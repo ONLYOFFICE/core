@@ -92,7 +92,7 @@ const bool IVAXIS::loadContent(BinProcessor& proc)
 	// fix
 	proc.optional<CRTMLFRT>(); ///????
 
-	proc.mandatory<End>();						elements_.pop_back();
+	if (proc.mandatory<End>())				elements_.pop_back();
 
 	return true;
 }

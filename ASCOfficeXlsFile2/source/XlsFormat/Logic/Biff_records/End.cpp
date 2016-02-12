@@ -22,9 +22,7 @@ BaseObjectPtr End::clone()
 
 void End::writeFields(CFRecord& record)
 {
-#pragma message("####################### End record is not implemented")
-	Log::error("End record is not implemented.");
-	//record << some_value;
+
 }
 
 

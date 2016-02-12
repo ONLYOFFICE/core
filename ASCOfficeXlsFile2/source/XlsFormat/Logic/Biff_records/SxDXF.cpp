@@ -33,6 +33,7 @@ void SxDXF::readFields(CFRecord& record)
 #pragma message("####################### SxDXF record is not implemented")
 	Log::error("SxDXF record is not implemented.");
 	//record >> some_value;
+	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
 }
 
 } // namespace XLS

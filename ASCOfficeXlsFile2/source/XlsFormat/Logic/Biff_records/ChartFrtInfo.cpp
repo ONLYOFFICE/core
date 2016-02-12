@@ -23,9 +23,7 @@ BaseObjectPtr ChartFrtInfo::clone()
 
 void ChartFrtInfo::writeFields(CFRecord& record)
 {
-#pragma message("####################### ChartFrtInfo record is not implemented")
-	Log::error("ChartFrtInfo record is not implemented.");
-	//record << some_value;
+
 }
 
 
@@ -36,8 +34,7 @@ void ChartFrtInfo::readFields(CFRecord& record)
 	unsigned short cCFRTID;
 	record >> cCFRTID;
 
-#pragma message("####################### ChartFrtInfo record is not implemented")
-	Log::error("ChartFrtInfo record is not implemented.");
+
 }
 
 } // namespace XLS

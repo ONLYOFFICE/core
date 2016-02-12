@@ -33,6 +33,7 @@ void SXStreamID::readFields(CFRecord& record)
 #pragma message("####################### SXStreamID record is not implemented")
 	Log::error("SXStreamID record is not implemented.");
 	//record >> some_value;
+	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
 }
 
 } // namespace XLS

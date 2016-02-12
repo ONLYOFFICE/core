@@ -22,9 +22,7 @@ BaseObjectPtr CondFmt12::clone()
 
 void CondFmt12::writeFields(CFRecord& record)
 {
-#pragma message("####################### CondFmt12 record is not implemented")
-	Log::error("CondFmt12 record is not implemented.");
-	//record << some_value;
+
 }
 
 

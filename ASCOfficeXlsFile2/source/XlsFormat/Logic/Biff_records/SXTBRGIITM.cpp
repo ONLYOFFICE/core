@@ -33,6 +33,7 @@ void SXTBRGIITM::readFields(CFRecord& record)
 #pragma message("####################### SXTBRGIITM record is not implemented")
 	Log::error("SXTBRGIITM record is not implemented.");
 	//record >> some_value;
+	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
 }
 
 } // namespace XLS

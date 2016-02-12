@@ -285,7 +285,7 @@ int ChartSheetSubstream::serialize (std::wostream & _stream)
 
 	if (chart_rect)
 	{
-		pGlobalWorkbookInfo->xls_converter->xlsx_context->get_drawing_context().set_chart_sheet_anchor(chart_rect->dx.dVal, chart_rect->dy.dVal);
+		pGlobalWorkbookInfo->xls_converter->xlsx_context->get_drawing_context().set_absolute_anchor(chart_rect->dx.dVal, chart_rect->dy.dVal);
 		
 	}
 	return 0;

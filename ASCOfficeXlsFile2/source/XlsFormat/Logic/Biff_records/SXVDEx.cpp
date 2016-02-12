@@ -33,6 +33,7 @@ void SXVDEx::readFields(CFRecord& record)
 #pragma message("####################### SXVDEx record is not implemented")
 	Log::error("SXVDEx record is not implemented.");
 	//record >> some_value;
+	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
 }
 
 } // namespace XLS

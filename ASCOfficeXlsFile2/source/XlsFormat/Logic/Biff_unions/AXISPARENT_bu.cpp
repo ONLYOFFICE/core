@@ -53,14 +53,15 @@ const bool AXISPARENT::loadContent(BinProcessor& proc)
 	}
 	
 	int count  = proc.repeated<CRT>(1, 4);
-	while(count > 0)
+
+	while(count > 0 && !elements_.empty())
 	{
 		m_arCRT.insert(m_arCRT.begin(), elements_.back());
 		elements_.pop_back();
 		count--;
 	}	
 
-	proc.mandatory<End>();			elements_.pop_back();
+	if (proc.mandatory<End>())			elements_.pop_back();
 
 	return true;
 }

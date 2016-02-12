@@ -58,7 +58,9 @@ public:
 	// Universal check if the we have the specified record in our processing plans (in binary it is not more than 'num_records_to_check' records forward)
 	virtual const bool checkNextRecord(const CFRecordType::TypeId desirable_type, const size_t num_records_to_check) = 0;
 	// Determine the next substream type
-        virtual const bool getNextSubstreamType(_UINT16& type) = 0;
+	virtual const CFRecordType::TypeId getNextRecordType() = 0;
+
+	virtual const bool getNextSubstreamType(_UINT16& type) = 0;
 	virtual void SeekToEOF() = 0;
 
 	BaseObject* getParent() const { return parent_;};
@@ -82,7 +84,8 @@ public:
 	const bool checkNextRecord(const CFRecordType::TypeId desirable_type, const size_t num_records_to_check);
 	// Assume that the next record is BOF (if not - return false) and get the type without extracting is from cache
 	// In the case of stream end returns false
-        const bool getNextSubstreamType(_UINT16& type);
+	const CFRecordType::TypeId getNextRecordType();
+	const bool getNextSubstreamType(_UINT16& type);
 	void SeekToEOF();
 
 private:

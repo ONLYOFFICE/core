@@ -22,9 +22,7 @@ BaseObjectPtr DXF::clone()
 
 void DXF::writeFields(CFRecord& record)
 {
-#pragma message("####################### DXF record is not implemented")
-	Log::error("DXF record is not implemented.");
-	//record << some_value;
+
 }
 
 

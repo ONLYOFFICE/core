@@ -32,7 +32,8 @@ void DocRoute::readFields(CFRecord& record)
 {
 #pragma message("####################### DocRoute record is not implemented")
 	Log::error("DocRoute record is not implemented.");
-	//record >> some_value;
+	
+	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
 }
 
 } // namespace XLS

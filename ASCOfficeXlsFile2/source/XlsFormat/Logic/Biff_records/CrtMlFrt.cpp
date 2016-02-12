@@ -22,9 +22,7 @@ BaseObjectPtr CrtMlFrt::clone()
 
 void CrtMlFrt::writeFields(CFRecord& record)
 {
-#pragma message("####################### CrtMlFrt record is not implemented")
-	Log::error("CrtMlFrt record is not implemented.");
-	//record << some_value;
+
 }
 
 
@@ -33,7 +31,7 @@ void CrtMlFrt::readFields(CFRecord& record)
 #pragma message("####################### CrtMlFrt record is not implemented")
 	Log::error("CrtMlFrt record is not implemented.");
 	
-	record >> cb;
+	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
 //
 //	if (cb > 0)
 //	{

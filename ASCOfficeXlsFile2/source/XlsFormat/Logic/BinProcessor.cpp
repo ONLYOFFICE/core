@@ -159,7 +159,16 @@ const bool BinReaderProcessor::getNextSubstreamType(unsigned short& type)
 	return true;
 }
 
-
+// Check the next record type
+const CFRecordType::TypeId BinReaderProcessor::getNextRecordType()
+{
+	CFRecordPtr record = reader_.touchTheNextRecord();
+	if(!record)
+	{
+		return rt_NONE; // EOF
+	}
+	return record->getTypeId();
+}
 void BinReaderProcessor::SeekToEOF()
 {
 	reader_.SeekToEOF();

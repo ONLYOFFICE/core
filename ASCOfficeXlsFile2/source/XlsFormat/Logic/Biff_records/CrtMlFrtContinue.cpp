@@ -22,9 +22,7 @@ BaseObjectPtr CrtMlFrtContinue::clone()
 
 void CrtMlFrtContinue::writeFields(CFRecord& record)
 {
-#pragma message("####################### CrtMlFrtContinue record is not implemented")
-	Log::error("CrtMlFrtContinue record is not implemented.");
-	//record << some_value;
+
 }
 
 
@@ -32,7 +30,8 @@ void CrtMlFrtContinue::readFields(CFRecord& record)
 {
 #pragma message("####################### CrtMlFrtContinue record is not implemented")
 	Log::error("CrtMlFrtContinue record is not implemented.");
-	//record >> some_value;
+
+	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
 }
 
 } // namespace XLS

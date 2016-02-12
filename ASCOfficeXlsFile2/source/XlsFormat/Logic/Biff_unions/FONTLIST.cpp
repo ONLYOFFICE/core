@@ -5,6 +5,7 @@
 #include <Logic/Biff_records/Font.h>
 #include <Logic/Biff_records/Fbi.h>
 #include <Logic/Biff_records/EndObject.h>
+#include <Logic/Biff_records/FrtWrapper.h>
 
 namespace XLS
 {

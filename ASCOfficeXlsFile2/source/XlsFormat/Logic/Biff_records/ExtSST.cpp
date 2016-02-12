@@ -36,6 +36,7 @@ void ExtSST::writeFields(CFRecord& record)
 void ExtSST::readFields(CFRecord& record)
 {
 	record >> dsst;
+	
 	while(!record.isEOF())
 	{
 		ISSTInfPtr element(new ISSTInf);

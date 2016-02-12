@@ -22,9 +22,7 @@ BaseObjectPtr ContinueFrt::clone()
 
 void ContinueFrt::writeFields(CFRecord& record)
 {
-#pragma message("####################### ContinueFrt record is not implemented")
-	Log::error("ContinueFrt record is not implemented.");
-	//record << some_value;
+
 }
 
 
@@ -32,7 +30,8 @@ void ContinueFrt::readFields(CFRecord& record)
 {
 #pragma message("####################### ContinueFrt record is not implemented")
 	Log::error("ContinueFrt record is not implemented.");
-	//record >> some_value;
+	
+	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
 }
 
 } // namespace XLS

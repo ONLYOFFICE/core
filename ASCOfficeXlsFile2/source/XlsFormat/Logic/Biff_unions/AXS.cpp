@@ -12,6 +12,8 @@
 #include <Logic/Biff_records/ContinueFrt12.h>
 #include <Logic/Biff_records/Font.h>
 
+#include <Logic/Biff_records/StartObject.h>
+#include <Logic/Biff_records/EndObject.h>
 namespace XLS
 {
 
@@ -43,6 +45,11 @@ public:
 			return false;
 		}
 		proc.mandatory<LineFormat>();
+
+		if (proc.optional<StartObject>())
+		{
+			proc.optional<EndObject>();
+		}
 		return true;
 	};
 };

@@ -191,7 +191,7 @@ const bool SERIESFORMAT::loadContent(BinProcessor& proc)
 		m_SeriesEx.push_back(ex);
 	}
 
-	proc.mandatory<End>();									elements_.pop_back(); //skip
+	if (proc.mandatory<End>())							elements_.pop_back(); //skip
 
 	return true;
 }

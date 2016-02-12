@@ -40,6 +40,8 @@
 #include <Logic/Biff_structures/ODRAW/OfficeArtFOPTE.h>
 #include <Logic/Biff_structures/ODRAW/OfficeArtFSP.h>
 #include <Logic/Biff_structures/ODRAW/OfficeArtBlip.h>
+#include <Logic/Biff_structures/ODRAW/OfficeArtFSPGR.h>
+#include <Logic/Biff_structures/ODRAW/OfficeArtClientAnchorSheet.h>
 
 #include "xlsx_conversion_context.h"
 #include "xlsx_package.h"
@@ -585,8 +587,6 @@ void XlsConverter::convert(XLS::OBJECTS* objects)
 	gr.count	= gr.spgr->child_records.size();
 	group_objects.push_back(gr);
 
-	bool note		= false;
-
 	if ((group_objects.back().spgr) && (group_objects.back().ind < group_objects.back().spgr->child_records.size()))
 	{
 		ODRAW::OfficeArtSpContainer *s	= dynamic_cast<ODRAW::OfficeArtSpContainer*>(group_objects.back().spgr->child_records[group_objects.back().ind].get());
@@ -653,7 +653,7 @@ void XlsConverter::convert(XLS::OBJECTS* objects)
 			sp	= dynamic_cast<ODRAW::OfficeArtSpContainer*>(group_objects.back().spgr->child_records[group_objects.back().ind++].get());
 		}	
 		
-		if (xlsx_context->get_drawing_context().start_drawing(type_object))		
+		if (xlsx_context->get_drawing_context().start_drawing(type_object))		//группы тоже
 		{
 			convert(sp);
 
@@ -661,14 +661,15 @@ void XlsConverter::convert(XLS::OBJECTS* objects)
 			{
 				if ((group_objects.back().spgr ) && ( group_objects.back().ind < group_objects.back().count))
 				{
-					sp		= dynamic_cast<ODRAW::OfficeArtSpContainer*>(group_objects.back().spgr->child_records[group_objects.back().ind++].get());
+					sp	= dynamic_cast<ODRAW::OfficeArtSpContainer*>(group_objects.back().spgr->child_records[group_objects.back().ind++].get());
 				}
 				convert(sp, true);
 			}
 			convert(text_obj);
 			convert(chart);
 
-			xlsx_context->get_drawing_context().end_drawing();
+			if (type_object != 0) 
+				xlsx_context->get_drawing_context().end_drawing();
 		}
 		if (TEXTOBJECT || CHART)
 		{
@@ -680,6 +681,8 @@ void XlsConverter::convert(XLS::OBJECTS* objects)
 		{
 			group_objects.back().spgr = NULL;
 			group_objects.pop_back();
+			
+			xlsx_context->get_drawing_context().end_group();
 		}
 	}
 }
@@ -716,16 +719,25 @@ void XlsConverter::convert(ODRAW::OfficeArtRecord * art)
 		{
 			convert(dynamic_cast<ODRAW::OfficeArtFSP *>(art));
 		}break;
+	case XLS::typeOfficeArtFSPGR:
+		{
+			ODRAW::OfficeArtFSPGR * ch = dynamic_cast<ODRAW::OfficeArtFSPGR *>(art);
+			int l = ch->xLeft;
+			int r = ch->xRight;
+			int t = ch->yTop;
+			int b = ch->yBottom;
+		}break;
 	case XLS::typeOfficeArtChildAnchor:
 		{
-			//todoooo привязать к группам !!!
-			art->serialize(strm);
-            xlsx_context->get_drawing_context().set_anchor(strm.str());
+			//art->serialize(strm);
+            //xlsx_context->get_drawing_context().set_child_anchor(strm.str());
+			ODRAW::OfficeArtChildAnchor * ch = dynamic_cast<ODRAW::OfficeArtChildAnchor *>(art);
+			xlsx_context->get_drawing_context().set_child_anchor(ch->_x, ch->_y, ch->_cx, ch->_cy);
 		}break;
 	case XLS::typeOfficeArtClientAnchorSheet:
 		{
 			art->serialize(strm);
-            xlsx_context->get_drawing_context().set_anchor(strm.str());
+            xlsx_context->get_drawing_context().set_sheet_anchor(strm.str());
 		}break;
 	}
 }
@@ -1230,7 +1242,7 @@ void XlsConverter::convert_group_shape(std::vector<ODRAW::OfficeArtFOPTEPtr> & p
 		case 0x380:
 			{
 				ODRAW::anyString *str = dynamic_cast<ODRAW::anyString*>(props[i].get());
-				xlsx_context->get_drawing_context().set_name(str->string_);
+				//xlsx_context->get_drawing_context().set_name(str->string_);
 			}break;
 		case 0x381:
 			{

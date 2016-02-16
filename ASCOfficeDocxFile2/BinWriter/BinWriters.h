@@ -2010,6 +2010,12 @@ namespace BinDocxRW
 					WriteTcPrChange(cellPr.m_oTcPrChange.get());
 					m_oBcw.WriteItemWithLengthEnd(nCurPos);
 				}
+				if(cellPr.m_oTextDirection.IsInit() && cellPr.m_oTextDirection->m_oVal.IsInit())
+				{
+					m_oBcw.m_oStream.WriteBYTE(c_oSerProp_cellPrType::textDirection);
+					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+					m_oBcw.m_oStream.WriteBYTE(cellPr.m_oTextDirection->m_oVal->GetValue());
+				}
 			};
 			void WriteCellMerge(const ComplexTypes::Word::CCellMergeTrackChange& cellMerge)
 			{

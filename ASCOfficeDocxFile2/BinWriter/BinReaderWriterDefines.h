@@ -374,7 +374,8 @@ extern int g_nCurFormatVersion;
 		CellDel = 7,
 		CellIns = 8,
 		CellMerge = 9,
-		tcPrChange = 10
+		tcPrChange = 10,
+		textDirection = 11
 	};}
 	namespace c_oSerProp_secPrType{enum c_oSerProp_secPrType
 	{

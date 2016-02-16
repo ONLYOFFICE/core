@@ -5715,12 +5715,12 @@ namespace SimpleTypes
 
 	enum ETextDirection
 	{
-		textdirectionLr   = 0,
-		textdirectionLrV  = 1,
-		textdirectionRl   = 2,
-		textdirectionRlV  = 3,
-		textdirectionTb   = 4,
-		textdirectionTbV  = 5
+		textdirectionTb   = 0,
+		textdirectionRl   = 1,
+		textdirectionLr   = 2,
+		textdirectionTbV  = 3,
+		textdirectionRlV  = 4,
+		textdirectionLrV  = 5
 	};
 
 	template<ETextDirection eDefValue = textdirectionLr>

@@ -33,9 +33,9 @@ void AF12Criteria::load(CFRecord& record)
 
 	if (doper.vt == BIFF_BYTE(0x06))
 	{
-		unsigned char _cch = doper.vtValue.cch;
+		unsigned char _cch = doper.vtValueStr.cch;
 
-		str.setSize(doper.vtValue.cch);
+		str.setSize(doper.vtValueStr.cch);
 		record >> str;
 		_str = str.getEscaped_ST_Xstring();
 	}

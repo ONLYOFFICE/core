@@ -1,8 +1,8 @@
 #pragma once
-#include "../PPTShape.h"
+#include "../CustomShape.h"
 
 // 38
-class CCurvedConnectorType : public CPPTShape
+class CCurvedConnectorType : public CCustomShape
 {
 public:
 	CCurvedConnectorType()

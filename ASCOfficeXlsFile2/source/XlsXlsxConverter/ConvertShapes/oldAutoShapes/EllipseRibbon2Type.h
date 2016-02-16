@@ -1,8 +1,8 @@
 #pragma once
-#include "../PPTShape.h"
+#include "../CustomShape.h"
 
 // 108
-class CEllipceRibbon2Type : public CPPTShape
+class CEllipceRibbon2Type : public CCustomShape
 {
 public:
 	CEllipceRibbon2Type()

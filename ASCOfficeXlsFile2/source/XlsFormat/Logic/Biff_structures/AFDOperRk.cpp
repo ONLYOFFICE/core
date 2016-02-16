@@ -11,18 +11,6 @@ BiffStructurePtr AFDOperRk::clone()
 	return BiffStructurePtr(new AFDOperRk(*this));
 }
 
-
-//void AFDOperRk::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{	
-//	xml_tag->setAttribute(L"rk", rk);	
-//}
-//
-//
-//void AFDOperRk::getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{	
-//}
-
-
 void AFDOperRk::store(CFRecord& record)
 {	
 }
@@ -35,8 +23,6 @@ void AFDOperRk::load(CFRecord& record)
 
 	record >> rk;
 	record.skipNunBytes(4);
-
-	_UINT32 _rk = rk;
 }
 
 

@@ -471,110 +471,112 @@ namespace NSCustomVML
 			m_ePath = ePath;
                         m_bIsPathPresent = true;
 		}
-		//void LoadVertices(CProperty* pProperty)
-		//{
-		//	CBinaryReader oReader(pProperty->m_pOptions, pProperty->m_lValue);
+		void LoadVertices(int val, unsigned char* buffer, int buffer_size)
+		{
+			CBinaryReader oReader(buffer, buffer_size);
 
-		//	m_arVertices.clear();
-		//	
-		//	WORD lCount = (WORD)(pProperty->m_lValue / 8);
-		//	if (pProperty->m_bIsTruncated)
-		//	{
-		//		lCount = (WORD)(pProperty->m_lValue / 4);
-		//	}
+			m_arVertices.clear();
+			
+			WORD lCount = (WORD)(val / 8);
+			
+			//if (pProperty->m_bIsTruncated)todooo
+			{
+				lCount = (WORD)(val / 4);
+			}
 
-		//	if (lCount > 0)
-		//	{
-		//		m_bIsVerticesPresent = true;
-		//	}
+			if (lCount > 0)
+			{
+				m_bIsVerticesPresent = true;
+			}
 
-		//	for (WORD lIndex = 0; lIndex < lCount; ++lIndex)
-		//	{
-  //              Aggplus::POINT oPoint;
-		//		if (pProperty->m_bIsTruncated)
-		//		{
-		//			oPoint.x = (short)oReader.ReadWORD();
-		//			oPoint.y = (short)oReader.ReadWORD();
-		//		}
-		//		else
-		//		{
-		//			oPoint.x = oReader.ReadLONG();
-		//			oPoint.y = oReader.ReadLONG();
-		//		}
+			for (WORD lIndex = 0; lIndex < lCount; ++lIndex)
+			{
+                Aggplus::POINT oPoint;
+				
+				//if (pProperty->m_bIsTruncated)todooo
+				//{
+				//	oPoint.x = (short)oReader.ReadWORD();
+				//	oPoint.y = (short)oReader.ReadWORD();
+				//}
+				//else
+				{
+					oPoint.x = oReader.ReadLONG();
+					oPoint.y = oReader.ReadLONG();
+				}
 
-		//		LONG lMinF = (LONG)0x80000000;
-		//		LONG lMaxF = (LONG)0x8000007F;
-		//		if (lMinF <= (DWORD)oPoint.x)
-		//		{
-		//			int nGuideIndex = (DWORD)oPoint.x - 0x80000000;	
+				LONG lMinF = (LONG)0x80000000;
+				LONG lMaxF = (LONG)0x8000007F;
+				if (lMinF <= (DWORD)oPoint.x)
+				{
+					int nGuideIndex = (DWORD)oPoint.x - 0x80000000;	
 
-		//			bool b = false;
-		//		}
-		//		if (lMinF <= (DWORD)oPoint.y)
-		//		{
-		//			int nGuideIndex = (DWORD)oPoint.y - 0x80000000;					
+					bool b = false;
+				}
+				if (lMinF <= (DWORD)oPoint.y)
+				{
+					int nGuideIndex = (DWORD)oPoint.y - 0x80000000;					
 
-		//			bool b = false;
-		//		}
+					bool b = false;
+				}
 
-		//		m_arVertices.push_back(oPoint);
-		//	}
-		//}
+				m_arVertices.push_back(oPoint);
+			}
+		}
 
-		//void LoadAHs(CProperty* pProperty)
-		//{
-		//}
-		//void LoadSegments(CProperty* pProperty)
-		//{
-		//	CBinaryReader oReader(pProperty->m_pOptions, pProperty->m_lValue);
-		//	m_arSegments.clear();
+		void LoadAHs(unsigned char* buffer, int buffer_size)
+		{
+		}
+		void LoadSegments(int val, unsigned char* buffer, int buffer_size)
+		{
+			CBinaryReader oReader(buffer, buffer_size);
+			m_arSegments.clear();
 
-		//	WORD lCount = (WORD)(pProperty->m_lValue / 2);
+			WORD lCount = (WORD)(val / 2);
 
-		//	if (lCount > 0)
-		//	{
-  //                              m_bIsPathPresent = true;
-		//	}
+			if (lCount > 0)
+			{
+                                m_bIsPathPresent = true;
+			}
 
-		//	for (WORD lIndex = 0; lIndex < lCount; ++lIndex)
-		//	{
-		//		CSegment oInfo;
-		//		oInfo.Read(oReader);
+			for (WORD lIndex = 0; lIndex < lCount; ++lIndex)
+			{
+				CSegment oInfo;
+				oInfo.Read(oReader);
 
-		//		if (0 == oInfo.m_nCount)
-		//		{
-		//			if ((rtEnd		!= oInfo.m_eRuler) &&
-		//				(rtNoFill	!= oInfo.m_eRuler) &&
-		//				(rtNoStroke != oInfo.m_eRuler) &&
-		//				(rtClose	!= oInfo.m_eRuler))
-		//			{
-		//				continue;
-		//			}
-		//		}
+				if (0 == oInfo.m_nCount)
+				{
+					if ((rtEnd		!= oInfo.m_eRuler) &&
+						(rtNoFill	!= oInfo.m_eRuler) &&
+						(rtNoStroke != oInfo.m_eRuler) &&
+						(rtClose	!= oInfo.m_eRuler))
+					{
+						continue;
+					}
+				}
 
-		//		//if (rtClose == oInfo.m_eRuler)
-		//		//{
-		//		//	// проводим линию					
-		//		//	CSegment oInfo2(rtLineTo, 1);
-		//		//	m_arSegments.push_back(oInfo2);
-		//		//}
+				//if (rtClose == oInfo.m_eRuler)
+				//{
+				//	// проводим линию					
+				//	CSegment oInfo2(rtLineTo, 1);
+				//	m_arSegments.push_back(oInfo2);
+				//}
 
-		//		m_arSegments.push_back(oInfo);
-		//	}
-		//}
-		//void LoadGuides(CProperty* pProperty)
-		//{
-		//	CBinaryReader oReader(pProperty->m_pOptions, pProperty->m_lValue);
-		//	WORD lCount = (WORD)(pProperty->m_lValue / 4);
+				m_arSegments.push_back(oInfo);
+			}
+		}
+		void LoadGuides(int val, unsigned char* buffer, int buffer_size)
+		{
+			CBinaryReader oReader(buffer, buffer_size);
+			WORD lCount = (WORD)(val / 4);
 
-		//	for (WORD lIndex = 0; lIndex < lCount; ++lIndex)
-		//	{
-		//		CGuide oInfo;
-		//		oInfo.Read(oReader);
-		//		m_arGuides.push_back(oInfo);
-		//	}
+			for (WORD lIndex = 0; lIndex < lCount; ++lIndex)
+			{
+				CGuide oInfo;
+				oInfo.Read(oReader);
+				m_arGuides.push_back(oInfo);
+			}
 
-		//}
+		}
 		void LoadAdjusts(LONG lIndex, LONG lValue)
 		{
 			if (NULL == m_pAdjustValues)

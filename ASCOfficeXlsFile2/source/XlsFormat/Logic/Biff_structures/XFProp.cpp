@@ -157,7 +157,6 @@ static void serialize_border_prop(std::wostream & stream, const std::wstring & n
 		{
 			switch(border->dgBorder)
 			{		
-				case 0: CP_XML_ATTR(L"style", L"none");				break;
 				case 1: CP_XML_ATTR(L"style", L"thin");				break;
 				case 2: CP_XML_ATTR(L"style", L"medium");			break;
 				case 3: CP_XML_ATTR(L"style", L"dashed");			break;

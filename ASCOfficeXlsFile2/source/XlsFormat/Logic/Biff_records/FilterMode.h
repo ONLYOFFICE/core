@@ -22,9 +22,6 @@ public:
 
 	static const ElementType	type = typeFilterMode;
 
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-	//BO_ATTRIB_MARKUP_END
 };
 
 } // namespace XLS

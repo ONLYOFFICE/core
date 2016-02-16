@@ -1,8 +1,8 @@
 #pragma once
-#include "../PPTShape.h"
+#include "../CustomShape.h"
 
 // 177
-class CFlowChartOffpageConnectorType : public CPPTShape
+class CFlowChartOffpageConnectorType : public CCustomShape
 {
 public:
 	CFlowChartOffpageConnectorType()

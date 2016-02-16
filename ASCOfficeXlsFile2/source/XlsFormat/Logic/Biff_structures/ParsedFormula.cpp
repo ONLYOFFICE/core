@@ -55,7 +55,8 @@ const std::wstring ParsedFormula::getAssembledFormula() const
 	}
 	if(1 != ptg_stack.size())
 	{
-		throw;// EXCEPT::LE::WrongAPIUsage("Wrong formula assembling.", __FUNCTION__);
+		return L"";
+		//throw; EXCEPT::LE::WrongAPIUsage("Wrong formula assembling.", __FUNCTION__);
 	}
 	return ptg_stack.top();
 }

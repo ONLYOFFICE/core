@@ -87,7 +87,7 @@ void xlsx_conversion_context::end_chart()
 void xlsx_conversion_context::end_table()
 {
     get_table_context().serialize_hyperlinks(current_sheet().hyperlinks());
-	get_table_context().dump_rels_hyperlinks(current_sheet().hyperlinks_rels());
+	get_table_context().dump_rels_hyperlinks(current_sheet().sheet_rels());
 
     get_table_context().end_table();
 }
@@ -120,7 +120,7 @@ void xlsx_conversion_context::end_document()
             content->add_rel(relationship(dId, kType, dName));
         }
 //////////////////////////////////////////////////////////////////////////////////////////////////
-        content->add_rels(sheet->hyperlinks_rels());
+        content->add_rels(sheet->sheet_rels());
 /////////////////////////////////////////////////////////////////////////////////////////////////
 		const std::pair<std::wstring, std::wstring> p2 = sheet->get_comments_link();        
 		if (!p2.first.empty())

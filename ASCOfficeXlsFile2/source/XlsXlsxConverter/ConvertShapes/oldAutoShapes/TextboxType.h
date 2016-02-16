@@ -1,9 +1,9 @@
 #pragma once
-#include "../PPTShape.h"
+#include "../CustomShape.h"
 
 /////////   !!!!!!!!!!!!!!!!!!!!  /////////////
 // 202
-class CTextboxType : public CPPTShape
+class CTextboxType : public CCustomShape
 {
 public:
 	CTextboxType()

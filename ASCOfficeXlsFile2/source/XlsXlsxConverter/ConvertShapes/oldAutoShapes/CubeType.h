@@ -1,8 +1,8 @@
 #pragma once
-#include "../PPTShape.h"
+#include "../CustomShape.h"
 
 // 16
-class CCubeType : public CPPTShape
+class CCubeType : public CCustomShape
 {
 public:
 	CCubeType()

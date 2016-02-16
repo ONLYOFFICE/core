@@ -4,6 +4,7 @@
 #include <boost/foreach.hpp>
 #include "namespaces.h"
 
+#include "mediaitems_utils.h"
 #include "simple_xml_writer.h"
 
 namespace oox {
@@ -11,6 +12,14 @@ namespace oox {
 const wchar_t * relationship::ns = L"";
 const wchar_t * relationship::name = L"Relationship";
 
+relationship::relationship(const std::wstring & Id, int Type, const std::wstring & Target, bool bExternal)        
+{
+	id_			= Id;
+	type_		= utils::media::get_rel_type((external_items::Type)Type);
+	target_		= Target;
+	target_mode_= bExternal ? L"External" : L"" ;
+
+}
 ::std::wostream & relationship::xml_to_stream(::std::wostream & _Wostream) const
 {
     CP_XML_WRITER(_Wostream)

@@ -1,8 +1,8 @@
 #pragma once
-#include "../PPTShape.h"
+#include "../CustomShape.h"
 
 // 87
-class CLeftBraceType : public CPPTShape
+class CLeftBraceType : public CCustomShape
 {
 public:
 	CLeftBraceType()

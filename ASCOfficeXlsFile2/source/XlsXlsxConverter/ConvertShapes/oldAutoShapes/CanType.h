@@ -1,8 +1,8 @@
 #pragma once
-#include "../PPTShape.h"
+#include "../CustomShape.h"
 
 // 22
-class CCanType : public CPPTShape
+class CCanType : public CCustomShape
 {
 public:
 	CCanType()

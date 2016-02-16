@@ -13,22 +13,6 @@ BiffStructurePtr Bes::clone()
 	return BiffStructurePtr(new Bes(*this));
 }
 
-
-//void Bes::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	xml_tag->setAttribute(L"fError", fError);
-//	xml_tag->setAttribute(L"bBoolErr", bBoolErr);
-//	xml_tag->setAttribute(L"value", toString().c_str());
-//}
-//
-//
-//void Bes::getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	std::wstring  val = getStructAttribute(xml_tag, L"value");
-//	fromString(static_cast<wchar_t*>(val));
-//}
-
-
 void Bes::store(CFRecord& record)
 {
 	record << bBoolErr << fError;

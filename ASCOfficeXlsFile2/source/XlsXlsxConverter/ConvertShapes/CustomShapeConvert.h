@@ -1,12 +1,13 @@
 #pragma once
 
-#include "Formula.h"
-#include "Path.h"
+#include "FormulaShape.h"
+#include "PathShape.h"
 
+#include "XmlWriter.h"
 
 namespace NSGuidesVML
 {
-	AVSINLINE int __wstrlen(const wchar_t* str)
+	int __wstrlen(const wchar_t* str)
 	{
 		const wchar_t* s = str;
 		for (; *s != 0; ++s);
@@ -161,31 +162,33 @@ namespace NSGuidesVML
 		LONG m_lWidth;
 		LONG m_lHeight;
 	
-		std::vector<LONG> m_arIndexDst;
+		std::vector<LONG>		m_arIndexDst;
 		std::vector<CSlicePath> m_arSlicesPath;
 		std::vector<CPartPath> m_arParts;
 
-		std::wstring strFmlaNum;
-		std::wstring strSign;
-		std::wstring strFrmla;
-		std::wstring strResult;
-        Aggplus::POINT pCurPoint;
-		SPointType pCurPointType;
-        Aggplus::POINT pCurPoint1;
-		SPointType pCurPointType1;
-        Aggplus::POINT pTmpPoint;
-		CFormParam m_oParam;
+		std::wstring	strFmlaNum;
+		std::wstring	strSign;
+		std::wstring	strFrmla;
+		std::wstring	strResult;
+       
+		Aggplus::POINT	pCurPoint;
+		SPointType		pCurPointType;
+       
+		Aggplus::POINT	pCurPoint1;
+		SPointType		pCurPointType1;
+       
+		Aggplus::POINT	pTmpPoint;
+		CFormParam		m_oParam;
 
 		int m_lMaxAdjUse;
 
 	public:
-		// все в одно не получитс€, формулы по€вл€ютс€ и при конвертации path/adj и т.д.
-		NSBinPptxRW::CXmlWriter m_oGuidsRes;
-		NSBinPptxRW::CXmlWriter m_oPathRes;
-		NSBinPptxRW::CXmlWriter m_oHandleRes;
-		NSBinPptxRW::CXmlWriter m_oAdjRes;
-		NSBinPptxRW::CXmlWriter m_oTextRect;
-		NSBinPptxRW::CXmlWriter m_oCoef;
+		CXmlWriter	m_oGuidsRes;
+		CXmlWriter	m_oPathRes;
+		CXmlWriter	m_oHandleRes;
+		CXmlWriter	m_oAdjRes;
+		CXmlWriter	m_oTextRect;
+		CXmlWriter	m_oCoef;
 
 	public:	
 		CFormulaConverter()
@@ -369,20 +372,25 @@ namespace NSGuidesVML
 
 
 		
-		void ConvertPath(std::wstring strPath, const NSPresentationEditor::CPath& oPath)
+		void ConvertPath(std::wstring strPath, const CPath& oPath)
 		{
 			m_arParts.clear();
 			std::vector<std::wstring> oArray;
-			NSStringUtils::ParseString(_T("e"), strPath, &oArray);
+			NSStringUtils::ParseString(_T("e"), strPath, oArray);
 
 			int nSizeArr = oArray.size();
 			for (int nIndex = 0; nIndex < nSizeArr; ++nIndex)
 			{
-				const CPartPath& oPart = oPath.m_arParts[nIndex];
-				m_lWidth = oPart.width;
-				m_lHeight = oPart.height;
+				if (nIndex < oPath.m_arParts.size() )
+				{
+					const CPartPath& oPart = oPath.m_arParts[nIndex];
+					m_lWidth = oPart.width;
+					m_lHeight = oPart.height;
+				}
+				
 				bool bFill = false;
 				bool bStroke = false;
+				
 				std::wstring strValue;
 				FromXML(oArray[nIndex], bFill, bStroke);
 				LONG nCountSlices = m_arSlicesPath.size();
@@ -486,7 +494,7 @@ namespace NSGuidesVML
 			}
 		}
 
-		void ConvertHandle(const std::vector<CHandle_>& arHandles, std::vector<long>& arAdj, PPTShapes::ShapeType oSType)
+		void ConvertHandle(const std::vector<CHandle_>& arHandles, std::vector<long>& arAdj, oox::MSOSPT oSType)
 		{
 			LONG nHandlesCount = arHandles.size();
 			if (oSType == 19) // в пптх не реализована функци€ изменени€ размера шейпа при изменении handle
@@ -504,7 +512,7 @@ namespace NSGuidesVML
 
 				if (pHnPoint.position != _T(""))
 				{
-					NSStringUtils::ParseString(_T(","), pHnPoint.position, &arPos);
+					NSStringUtils::ParseString(_T(","), pHnPoint.position, arPos);
 					sPos0 = arPos[0];
 					sPos1 = arPos[1];
 
@@ -526,7 +534,7 @@ namespace NSGuidesVML
 						oHandle.bRefPolarExist.y = true;
 						oHandle.bMinPolarExist.y = true;
 
-						NSStringUtils::ParseString(_T(","), pHnPoint.polar, &arPos);
+						NSStringUtils::ParseString(_T(","), pHnPoint.polar, arPos);
 
 						oHandle.PolarCentre.x = GetHandleValue(arPos[0], m_lWidth, ptType);
 						oHandle.PolarCentreType.x = ptType;
@@ -547,7 +555,7 @@ namespace NSGuidesVML
 							m_lIndexSrc++;
 							
 							// TODO: !!! тут медленный код.
-							NSBinPptxRW::CXmlWriter memGuidsRes;
+							CXmlWriter memGuidsRes;
 							ConvertProd(oHandle.gdRef.y, oHandle.gdRefType.y, m_oParam.m_lCoef, ptValue, pow3_16, ptValue, false, true, false, memGuidsRes);
 							m_oGuidsRes.m_oWriter.WriteBefore(memGuidsRes.m_oWriter);
 							m_arIndexDst.push_back(m_lIndexDst-1);
@@ -579,12 +587,12 @@ namespace NSGuidesVML
 							ConvertSum(oHandle.PolarCentre.y, oHandle.PolarCentreType.y, m_lIndexDst-2, ptFormula, 0, ptValue, false, true, false, m_oGuidsRes);
 							m_arIndexDst.push_back(m_lIndexDst-1);
 
-							std::wstring strMem;
-							strMem.Format (_T("&%d"), m_lIndexDst-2);
+							std::wstring strMem = boost::lexical_cast<std::wstring>(m_lIndexDst-2);
+
 							oHandle.Pos.x = GetHandlePos(strMem, _T("w"), m_lWidth);
 							oHandle.PosType.x = ptFormula;
 
-							strMem.Format (_T("&%d"), m_lIndexDst-2);
+							strMem = boost::lexical_cast<std::wstring>(m_lIndexDst-2);
 							oHandle.Pos.y = GetHandlePos(strMem, _T("h"), m_lHeight);
 							oHandle.PosType.y = ptFormula;
 						}
@@ -625,7 +633,7 @@ namespace NSGuidesVML
 						oHandle.bRefExist.y = false;
 					}
 
-					NSStringUtils::ParseString(_T(","), pHnPoint.xrange, &arPos);					
+					NSStringUtils::ParseString(_T(","), pHnPoint.xrange, arPos);					
 					oHandle.Min.x = GetHandleValue(arPos[0], m_lWidth, ptType);
 					oHandle.MinType.x = ptType;
 					if ( oHandle.bRefExist.x)
@@ -650,7 +658,7 @@ namespace NSGuidesVML
 						oHandle.bRefExist.y = true;
 					}
 
-					NSStringUtils::ParseString(_T(","), pHnPoint.yrange, &arPos);					
+					NSStringUtils::ParseString(_T(","), pHnPoint.yrange, arPos);					
 					oHandle.Min.y = GetHandleValue(arPos[0], m_lHeight, ptType);
 					oHandle.MinType.y = ptType;
 					if ( oHandle.bRefExist.y )
@@ -664,7 +672,7 @@ namespace NSGuidesVML
 
 				if (pHnPoint.radiusrange != _T(""))
 				{
-					NSStringUtils::ParseString(_T(","), pHnPoint.radiusrange, &arPos);					
+					NSStringUtils::ParseString(_T(","), pHnPoint.radiusrange, arPos);					
 					oHandle.Min.x = GetHandleValue(arPos[0], m_lHeight, ptType);
 					oHandle.MinType.x = ptType;
 					oHandle.bMinPolarExist.x = true;
@@ -692,7 +700,7 @@ namespace NSGuidesVML
 				return;
 
 			std::vector<std::wstring> arBorder;
-			NSStringUtils::ParseString(_T(","), strRect, &arBorder);
+			NSStringUtils::ParseString(_T(","), strRect, arBorder);
 
 			m_lIndexSrc++;
 			ConvertProd(_T("w"), arBorder[0], m_lWidth, m_oGuidsRes);
@@ -713,7 +721,7 @@ namespace NSGuidesVML
 		}
 	private:
 
-                AVSINLINE void GetValue(const LONG& lParam, const ParamType& eParamType, const bool& bExtShape, NSBinPptxRW::CXmlWriter& oWriter)
+                void GetValue(const LONG& lParam, const ParamType& eParamType, const bool& bExtShape, CXmlWriter& oWriter)
 		{
 			oWriter.m_oWriter.AddSize(15);
 			switch (eParamType)
@@ -758,22 +766,20 @@ namespace NSGuidesVML
 			case ptFormula: 
 				{ 								
 					if (bExtShape)
-						strValue.Format(_T("%d"), lParam);
+						strValue = boost::lexical_cast<std::wstring>(lParam);
 					else									
-						strValue.Format(_T("%d"), m_arIndexDst[lParam]);
+						strValue = boost::lexical_cast<std::wstring>(m_arIndexDst[lParam]);
 					strValue = _T("gd") + strValue; 
 					break; 
 				}
 			case ptAdjust:  
 				{ 	
-					strValue.Format(_T("%d"), lParam);
-					strValue = _T("adj") + strValue; 
+					strValue = _T("adj") +  boost::lexical_cast<std::wstring>(lParam); 
 					break; 
 				}
 			case ptValue:
 				{
-					strValue.Format(_T("%d"), lParam);
-					strValue = strValue; 
+					strValue = boost::lexical_cast<std::wstring>(lParam);
 					break;
 				}
 			default: 
@@ -783,94 +789,94 @@ namespace NSGuidesVML
 		}
 		//---------------------------------------
 
-                void ConvertVal(const LONG& lParam1, const ParamType& eType1, const bool& bExtShape1, NSBinPptxRW::CXmlWriter& oWriter)
+                void ConvertVal(const LONG& lParam1, const ParamType& eType1, const bool& bExtShape1, CXmlWriter& oWriter)
 		{
 			GUIDE_PARAM_1(val)
 		}
 
 		void ConvertSum(const LONG& lParam1, const ParamType& eType1, const LONG& lParam2, const ParamType& eType2, 
-                        const LONG& lParam3, const ParamType& eType3, const bool& bExtShape1, const bool& bExtShape2, const bool& bExtShape3, NSBinPptxRW::CXmlWriter& oWriter)
+                        const LONG& lParam3, const ParamType& eType3, const bool& bExtShape1, const bool& bExtShape2, const bool& bExtShape3, CXmlWriter& oWriter)
 		{
 			GUIDE_PARAM_3(sum)
 		}
 
 		void ConvertProd(const LONG& lParam1, const ParamType& eType1, const LONG& lParam2, const ParamType& eType2, 
-                        const LONG& lParam3, const ParamType& eType3, const bool& bExtShape1, const bool& bExtShape2, const bool& bExtShape3, NSBinPptxRW::CXmlWriter& oWriter)
+                        const LONG& lParam3, const ParamType& eType3, const bool& bExtShape1, const bool& bExtShape2, const bool& bExtShape3, CXmlWriter& oWriter)
 		{
 			GUIDE_PARAM_3(prod)
 		}
 
-                void ConvertAbs(const LONG& lParam1, const ParamType& eType1, const bool& bExtShape1, NSBinPptxRW::CXmlWriter& oWriter)
+                void ConvertAbs(const LONG& lParam1, const ParamType& eType1, const bool& bExtShape1, CXmlWriter& oWriter)
 		{
 			GUIDE_PARAM_1(abs)
 		}
 
 		void ConvertMin(const LONG& lParam1, const ParamType& eType1, const LONG& lParam2, const ParamType& eType2, 
-                        const bool& bExtShape1, const bool& bExtShape2, NSBinPptxRW::CXmlWriter& oWriter)
+                        const bool& bExtShape1, const bool& bExtShape2, CXmlWriter& oWriter)
 		{
 			GUIDE_PARAM_2(min)
 		}
 
 		void ConvertMax (const LONG& lParam1, const ParamType& eType1, const LONG& lParam2, const ParamType& eType2, 
-                        const bool& bExtShape1, const bool& bExtShape2, NSBinPptxRW::CXmlWriter& oWriter)
+                        const bool& bExtShape1, const bool& bExtShape2, CXmlWriter& oWriter)
 		{
 			GUIDE_PARAM_2(max)
 		}
 
 		void ConvertIf(const LONG& lParam1, const ParamType& eType1, const LONG& lParam2, const ParamType& eType2, 
-                        const LONG& lParam3, const ParamType& eType3, const bool& bExtShape1, const bool& bExtShape2, const bool& bExtShape3, NSBinPptxRW::CXmlWriter& oWriter)
+                        const LONG& lParam3, const ParamType& eType3, const bool& bExtShape1, const bool& bExtShape2, const bool& bExtShape3, CXmlWriter& oWriter)
 		{
 			GUIDE_PARAM_3(_if)
 		}
 
-                void ConvertSqrt(const LONG& lParam1, const ParamType& eType1, const bool& bExtShape1, NSBinPptxRW::CXmlWriter& oWriter)
+                void ConvertSqrt(const LONG& lParam1, const ParamType& eType1, const bool& bExtShape1, CXmlWriter& oWriter)
 		{
 			GUIDE_PARAM_1(sqrt)
 		}
 
 		void ConvertAt2 (const LONG& lParam1, const ParamType& eType1, const LONG& lParam2, const ParamType& eType2, 
-                        const bool& bExtShape1, const bool& bExtShape2, NSBinPptxRW::CXmlWriter& oWriter)
+                        const bool& bExtShape1, const bool& bExtShape2, CXmlWriter& oWriter)
 		{
 			GUIDE_PARAM_2(at2)
 		}
 
 		void ConvertSin (const LONG& lParam1, const ParamType& eType1, const LONG& lParam2, const ParamType& eType2, 
-                        const bool& bExtShape1, const bool& bExtShape2, NSBinPptxRW::CXmlWriter& oWriter)
+                        const bool& bExtShape1, const bool& bExtShape2, CXmlWriter& oWriter)
 		{
 			GUIDE_PARAM_2(sin)
 		}
 
 		void ConvertCos (const LONG& lParam1, const ParamType& eType1, const LONG& lParam2, const ParamType& eType2, 
-                        const bool& bExtShape1, const bool& bExtShape2, NSBinPptxRW::CXmlWriter& oWriter)
+                        const bool& bExtShape1, const bool& bExtShape2, CXmlWriter& oWriter)
 		{
 			GUIDE_PARAM_2(cos)
 		}
 
 		void ConvertCat2(const LONG& lParam1, const ParamType& eType1, const LONG& lParam2, const ParamType& eType2, 
-                        const LONG& lParam3, const ParamType& eType3, const bool& bExtShape1, const bool& bExtShape2, const bool& bExtShape3, NSBinPptxRW::CXmlWriter& oWriter)
+                        const LONG& lParam3, const ParamType& eType3, const bool& bExtShape1, const bool& bExtShape2, const bool& bExtShape3, CXmlWriter& oWriter)
 		{
 			GUIDE_PARAM_3(cat2)
 		}
 
 		void ConvertSat2(const LONG& lParam1, const ParamType& eType1, const LONG& lParam2, const ParamType& eType2, 
-                        const LONG& lParam3, const ParamType& eType3, const bool& bExtShape1, const bool& bExtShape2, const bool& bExtShape3, NSBinPptxRW::CXmlWriter& oWriter)
+                        const LONG& lParam3, const ParamType& eType3, const bool& bExtShape1, const bool& bExtShape2, const bool& bExtShape3, CXmlWriter& oWriter)
 		{
 			GUIDE_PARAM_3(sat2)
 		}
 
 		void ConvertMod(const LONG& lParam1, const ParamType& eType1, const LONG& lParam2, const ParamType& eType2, 
-                        const LONG& lParam3, const ParamType& eType3, const bool& bExtShape1, const bool& bExtShape2, const bool& bExtShape3, NSBinPptxRW::CXmlWriter& oWriter)
+                        const LONG& lParam3, const ParamType& eType3, const bool& bExtShape1, const bool& bExtShape2, const bool& bExtShape3, CXmlWriter& oWriter)
 		{
 			GUIDE_PARAM_3(mod)
 		}
 
 		void ConvertTag (const LONG& lParam1, const ParamType& eType1, const LONG& lParam2, const ParamType& eType2, 
-                        const bool& bExtShape1, const bool& bExtShape2, NSBinPptxRW::CXmlWriter& oWriter)
+                        const bool& bExtShape1, const bool& bExtShape2, CXmlWriter& oWriter)
 		{
 			GUIDE_PARAM_2(tag)
 		}
 
-		void ConvertProd(const std::wstring& strParam1, const std::wstring& strParam2, const LONG& lParam3, NSBinPptxRW::CXmlWriter& oWriter)
+		void ConvertProd(const std::wstring& strParam1, const std::wstring& strParam2, const LONG& lParam3, CXmlWriter& oWriter)
 		{
 			oWriter.m_oWriter.AddSize(g_guide_max_len);
 			oWriter.m_oWriter.AddStringNoCheck(g_guide_string1, g_guide_string1_len);
@@ -881,12 +887,12 @@ namespace NSGuidesVML
 
 			if ('#' == strParam2[0])
 			{					
-				LONG lRes = (LONG)XmlUtils::GetInteger(strParam2.Mid(1));
+				LONG lRes = (LONG)NSGuidesVML::GetInteger(strParam2.substr(1));
 				GetValue(lRes, ptAdjust, false, oWriter);
 			}
 			else if ('@' == strParam2[0])
 			{
-				LONG lRes = (LONG)XmlUtils::GetInteger(strParam2.Mid(1));
+				LONG lRes = (LONG)NSGuidesVML::GetInteger(strParam2.substr(1));
 				GetValue(lRes, ptFormula, false, oWriter);
 			}
 			else
@@ -1040,21 +1046,21 @@ namespace NSGuidesVML
 			std::wstring strSize;
 			std::wstring strIndex;
 
-			strSize.Format(_T(" %d"), lSize);
+			strSize = boost::lexical_cast<std::wstring>( lSize);
 
 			if ('#' == strParam[0])
 			{					
-				lRes = (LONG)XmlUtils::GetInteger(strParam.Mid(1));
+				lRes = (LONG)NSGuidesVML::GetInteger(strParam.substr(1));
 				strFrmla = GetValue2(lRes, ptAdjust, false) + strSize;
 			}
 			else if ('&' == strParam[0])
 			{
-				lRes = (LONG)XmlUtils::GetInteger(strParam.Mid(1));
+				lRes = (LONG)NSGuidesVML::GetInteger(strParam.substr(1));
 				strFrmla = GetValue2(lRes, ptFormula, true) + strSize;
 			}
 			else if ('@' == strParam[0])
 			{
-				lRes = (LONG)XmlUtils::GetInteger(strParam.Mid(1));
+				lRes = (LONG)NSGuidesVML::GetInteger(strParam.substr(1));
 				strFrmla = GetValue2(lRes, ptFormula, false) + strSize;
 			}
 			else if (!NSStringUtils::IsNumber(strParam))
@@ -1068,13 +1074,13 @@ namespace NSGuidesVML
 			}	
 			else
 			{
-				lRes = (LONG)XmlUtils::GetInteger(strParam);
+				lRes = (LONG)NSGuidesVML::GetInteger(strParam.c_str());
 				strFrmla = GetValue2(lRes, ptValue, false) + strSize;
 			}
 
 			m_lIndexSrc++;				
 			m_arIndexDst.push_back(m_lIndexDst);
-			strIndex.Format( _T("%d"), m_lIndexDst);
+			strIndex = boost::lexical_cast<std::wstring>(m_lIndexDst);
 
 			m_oGuidsRes.WriteString(_T("<a:gd name=\"gd"));
 			m_oGuidsRes.WriteString(strIndex);
@@ -1096,12 +1102,12 @@ namespace NSGuidesVML
 			if ('#' == strParam[0])
 			{
 				ptType = ptAdjust;
-				return (LONG)XmlUtils::GetInteger(strParam.Mid(1));
+				return (LONG)NSGuidesVML::GetInteger(strParam.substr(1).c_str());
 			}
 			else if ('@' == strParam[0])
 			{
 				ptType = ptFormula;
-				return (LONG)XmlUtils::GetInteger(strParam.Mid(1));
+				return (LONG)NSGuidesVML::GetInteger(strParam.substr(1).c_str());
 			}
 			else if (!NSStringUtils::IsNumber(strParam))
 			{
@@ -1116,7 +1122,7 @@ namespace NSGuidesVML
             else
             {
                 ptType = ptValue;
-                return (LONG)XmlUtils::GetInteger(strParam);
+				return (LONG)NSGuidesVML::GetInteger(strParam.c_str());
             }
 		}
         void ConvertQuadrX(Aggplus::POINT pPoint, SPointType pPointType)

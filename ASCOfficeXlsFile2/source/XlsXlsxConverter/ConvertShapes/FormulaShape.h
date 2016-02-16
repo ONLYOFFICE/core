@@ -269,7 +269,7 @@ private:
 		void FromString(std::wstring strFormula, long lShapeWidth = ShapeSizeVML, long lShapeHeight = ShapeSizeVML)
 		{
 			std::vector<std::wstring> oArrayParams;
-			NSStringUtils::ParseString(_T(" "), strFormula, &oArrayParams);
+			NSStringUtils::ParseString(_T(" "), strFormula, oArrayParams);
 			int nCount = oArrayParams.size();
 			if (0 >= nCount)
 				return;

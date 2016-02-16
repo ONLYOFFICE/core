@@ -1,8 +1,8 @@
 #pragma once
-#include "../PPTShape.h"
+#include "../CustomShape.h"
 
 // 46
-class CAccentCallout3Type : public CPPTShape
+class CAccentCallout3Type : public CCustomShape
 {
 public:
 	CAccentCallout3Type()

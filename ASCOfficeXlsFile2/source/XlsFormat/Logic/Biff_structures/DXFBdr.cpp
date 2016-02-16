@@ -71,7 +71,6 @@ void serialize_one(std::wostream & stream, const std::wstring & name, unsigned c
 		{
 			switch(type)
 			{		
-				case 0: CP_XML_ATTR(L"style", L"none");				break;
 				case 1: CP_XML_ATTR(L"style", L"thin");				break;
 				case 2: CP_XML_ATTR(L"style", L"medium");			break;
 				case 3: CP_XML_ATTR(L"style", L"dashed");			break;
@@ -106,14 +105,14 @@ int DXFBdr::serialize(std::wostream & stream)
     {
 		CP_XML_NODE(L"border")
 		{	
-			if (!parent->glTopNinch)
-				serialize_one(CP_XML_STREAM(), L"top", dgTop, icvTop);
-			if (!parent->glBottomNinch)
-				serialize_one(CP_XML_STREAM(), L"bottom", dgBottom, icvBottom);
 			if (!parent->glLeftNinch)
 				serialize_one(CP_XML_STREAM(), L"left", dgLeft, icvLeft);
 			if (!parent->glRightNinch)
 				serialize_one(CP_XML_STREAM(), L"right", dgRight, icvRight);
+			if (!parent->glTopNinch)
+				serialize_one(CP_XML_STREAM(), L"top", dgTop, icvTop);
+			if (!parent->glBottomNinch)
+				serialize_one(CP_XML_STREAM(), L"bottom", dgBottom, icvBottom);
 			
 			if (!parent->glDiagDownNinch || !parent->glDiagUpNinch)
 				serialize_one(CP_XML_STREAM(), L"diagonal", dgDiag, icvDiag);

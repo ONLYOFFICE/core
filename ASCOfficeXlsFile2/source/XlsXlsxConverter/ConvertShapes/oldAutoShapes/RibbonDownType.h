@@ -1,8 +1,8 @@
 #pragma once
-#include "../PPTShape.h"
+#include "../CustomShape.h"
 
 // 53
-class CRibbonDownType : public CPPTShape
+class CRibbonDownType : public CCustomShape
 {
 public:
 	CRibbonDownType()

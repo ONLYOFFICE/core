@@ -471,6 +471,8 @@ enum ElementType
 	typeAF12Criteria,
 	typeAFDOper,
 	typeAFDOperRk,
+	typeAFDOperBoolErr,
+	typeAFDOperXNum,
 	typeAFDOperStr,
 	typeBes,
 	typeBiffAttribute,

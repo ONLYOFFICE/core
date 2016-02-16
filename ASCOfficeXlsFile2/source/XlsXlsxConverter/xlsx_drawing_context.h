@@ -328,6 +328,8 @@ private:
 
 	bool ChangeBlack2ColorImage(std::wstring sRgbColor1, std::wstring sRgbColor2, _drawing_state_ptr & drawing_state);
 	_color CorrectSysColor(int nColorCode, _drawing_state_ptr & drawing_state);
+	
+	std::wstring convert_custom_shape(_drawing_state_ptr & drawing_state);
 };
 
 }

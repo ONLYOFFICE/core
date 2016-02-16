@@ -1,8 +1,8 @@
 #pragma once
-#include "../PPTShape.h"
+#include "../CustomShape.h"
 
 // 67
-class CDownArrowType : public CPPTShape
+class CDownArrowType : public CCustomShape
 {
 public:
 	CDownArrowType()

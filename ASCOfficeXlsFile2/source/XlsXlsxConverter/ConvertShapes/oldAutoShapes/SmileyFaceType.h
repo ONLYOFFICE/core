@@ -1,8 +1,8 @@
 #pragma once
-#include "../PPTShape.h"
+#include "../CustomShape.h"
 
 // 96
-class CSmileyFaceType : public CPPTShape
+class CSmileyFaceType : public CCustomShape
 {
 public:
 	CSmileyFaceType()

@@ -1,8 +1,8 @@
 #pragma once
-#include "../PPTShape.h"
+#include "../CustomShape.h"
 
 // 60
-class CSeal32Type : public CPPTShape
+class CSeal32Type : public CCustomShape
 {
 public:
 	CSeal32Type()

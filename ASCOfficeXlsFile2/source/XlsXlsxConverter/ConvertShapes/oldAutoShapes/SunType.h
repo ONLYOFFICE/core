@@ -1,8 +1,8 @@
 #pragma once
-#include "../PPTShape.h"
+#include "../CustomShape.h"
 
 // 183
-class CSunType : public CPPTShape
+class CSunType : public CCustomShape
 {
 public:
 	CSunType()

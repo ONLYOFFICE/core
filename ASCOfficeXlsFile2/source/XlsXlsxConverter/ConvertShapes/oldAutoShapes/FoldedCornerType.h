@@ -1,8 +1,8 @@
 #pragma once
-#include "../PPTShape.h"
+#include "../CustomShape.h"
 
 // 65
-class CFoldedCornerType : public CPPTShape
+class CFoldedCornerType : public CCustomShape
 {
 public:
 	CFoldedCornerType()

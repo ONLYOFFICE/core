@@ -1,8 +1,8 @@
 #pragma once
-#include "../PPTShape.h"
+#include "../CustomShape.h"
 
 // 72
-class CIrregularSealTwo : public CPPTShape
+class CIrregularSealTwo : public CCustomShape
 {
 public:
 	CIrregularSealTwo()

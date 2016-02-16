@@ -1,8 +1,8 @@
 #pragma once
-#include "../PPTShape.h"
+#include "../CustomShape.h"
 
 // 131
-class CFlowChartMagneticTapeType : public CPPTShape
+class CFlowChartMagneticTapeType : public CCustomShape
 {
 public:
 	CFlowChartMagneticTapeType()

@@ -2,7 +2,11 @@
 
 #include <Logic/Biff_records/BiffRecord.h>
 #include <Logic/Biff_structures/BiffString.h>
+
 #include "AFDOperStr.h"
+#include "AFDOperRk.h"
+#include "AFDOperBoolErr.h"
+#include "AFDOperXNum.h"
 
 namespace XLS
 {
@@ -22,9 +26,13 @@ public:
 
 	static const ElementType	type = typeAFDOper;
 
-	BIFF_BYTE vt;
-	BIFF_BYTE grbitSign;
-	AFDOperStr vtValue;
+	unsigned char	vt;
+	unsigned char	grbitSign;
+	
+	AFDOperStr		vtValueStr;
+	AFDOperBoolErr	vtValueBool;
+	AFDOperRk		vtValueRk;
+	AFDOperXNum		vtValueNum;	//64-bit binary floating-point number
 
 	bool m_bAutoFilter;
 };

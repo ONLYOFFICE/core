@@ -1,8 +1,8 @@
 #pragma once
-#include "../PPTShape.h"
+#include "../CustomShape.h"
 
 // 184
-class CMoonType : public CPPTShape
+class CMoonType : public CCustomShape
 {
 public:
 	CMoonType()

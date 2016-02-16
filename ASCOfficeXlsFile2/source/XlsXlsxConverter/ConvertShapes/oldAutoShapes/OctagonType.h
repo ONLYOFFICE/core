@@ -1,8 +1,8 @@
 #pragma once
-#include "../PPTShape.h"
+#include "../CustomShape.h"
 
 // 10
-class COctagonType : public CPPTShape
+class COctagonType : public CCustomShape
 {
 public:
 	COctagonType()

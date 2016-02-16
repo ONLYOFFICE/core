@@ -1,8 +1,8 @@
 #pragma once
-#include "../PPTShape.h"
+#include "../CustomShape.h"
 
 // 73
-class CLightningBoltType : public CPPTShape
+class CLightningBoltType : public CCustomShape
 {
 public:
 	CLightningBoltType()

@@ -1,8 +1,8 @@
 #pragma once
-#include "../PPTShape.h"
+#include "../CustomShape.h"
 
 // 15
-class CHomePlateType : public CPPTShape
+class CHomePlateType : public CCustomShape
 {
 public:
 	CHomePlateType()

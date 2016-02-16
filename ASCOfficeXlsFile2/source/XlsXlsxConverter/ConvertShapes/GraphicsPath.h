@@ -1,6 +1,8 @@
 #pragma once
 
 #include <string>
+#include <boost/algorithm/string.hpp>
+
 #include "../../../../DesktopEditor/graphics/GraphicsPath.h"
 
 //#include "../../Metric.h"
@@ -520,27 +522,16 @@ namespace NSGuidesVML
 			//	}
 			//}
 			void ParseString(std::wstring strDelimeters, std::wstring strSource, 
-                std::vector<std::wstring>* pArrayResults, bool bIsCleared = true)
+                std::vector<std::wstring>& pArrayResults, bool bIsCleared = true)
 			{
-				if (NULL == pArrayResults)
-					return;
-
 				if (bIsCleared)
-                    pArrayResults->clear();
+                    pArrayResults.clear();
 
 				std::wstring resToken;
 				int curPos= 0;
 
-				int endPos = strSource.find(strDelimeters, curPos);
-				resToken = strSource.substr(curPos, (endPos == std::wstring::npos) ? std::wstring::npos : endPos - curPos);
+				boost::algorithm::split(pArrayResults, strSource, boost::algorithm::is_any_of(strDelimeters), boost::algorithm::token_compress_on);
 
-				while (resToken != L"")
-				{
-                    pArrayResults->push_back(resToken);
-					
-					int endPos = strSource.find(strDelimeters, curPos);
-					resToken = strSource.substr(curPos, (endPos == std::wstring::npos) ? std::wstring::npos : endPos - curPos);
-				};
 			}
 
 			void CheckLastPoint(IRenderer* pRenderer, CDoublePoint& pointCur)

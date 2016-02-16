@@ -18,6 +18,11 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
+	int serialize (std::wostream & _stream);
+
+	GlobalWorkbookInfoPtr	pGlobalWorkbookInfoPtr;
+	BaseObjectPtr			m_BkHim;
+
 };
 
 } // namespace XLS

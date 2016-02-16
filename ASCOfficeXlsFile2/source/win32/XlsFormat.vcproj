@@ -2958,6 +2958,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\XlsFormat\Logic\Biff_structures\AFDOperBoolErr.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\XlsFormat\Logic\Biff_structures\AFDOperBoolErr.h"
+					>
+				</File>
+				<File
 					RelativePath="..\XlsFormat\Logic\Biff_structures\AFDOperRk.cpp"
 					>
 				</File>
@@ -2971,6 +2979,14 @@
 				</File>
 				<File
 					RelativePath="..\XlsFormat\Logic\Biff_structures\AFDOperStr.h"
+					>
+				</File>
+				<File
+					RelativePath="..\XlsFormat\Logic\Biff_structures\AFDOperXNum.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\XlsFormat\Logic\Biff_structures\AFDOperXNum.h"
 					>
 				</File>
 				<File

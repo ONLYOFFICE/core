@@ -1,8 +1,8 @@
 #pragma once
-#include "../PPTShape.h"
+#include "../CustomShape.h"
 
 // 181
-class CAccentBorderCallout90Type : public CPPTShape
+class CAccentBorderCallout90Type : public CCustomShape
 {
 public:
 	CAccentBorderCallout90Type()

@@ -1,8 +1,8 @@
 #pragma once
-#include "../PPTShape.h"
+#include "../CustomShape.h"
 
 // 126
-class CFlowChartSortType : public CPPTShape
+class CFlowChartSortType : public CCustomShape
 {
 public:
 	CFlowChartSortType()

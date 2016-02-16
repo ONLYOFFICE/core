@@ -1,8 +1,8 @@
 #pragma once
-#include "../PPTShape.h"
+#include "../CustomShape.h"
 
 // 116
-class CFlowChartTerminatorType : public CPPTShape
+class CFlowChartTerminatorType : public CCustomShape
 {
 public:
 	CFlowChartTerminatorType()

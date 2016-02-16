@@ -1,8 +1,8 @@
 #pragma once
-#include "../PPTShape.h"
+#include "../CustomShape.h"
 
 // 55
-class CChevronType : public CPPTShape
+class CChevronType : public CCustomShape
 {
 public:
 	CChevronType()

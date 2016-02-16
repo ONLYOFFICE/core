@@ -1,8 +1,8 @@
 #pragma once
-#include "../PPTShape.h"
+#include "../CustomShape.h"
 
 // 113
-class CFlowChartInternalStorageType : public CPPTShape
+class CFlowChartInternalStorageType : public CCustomShape
 {
 public:
 	CFlowChartInternalStorageType()

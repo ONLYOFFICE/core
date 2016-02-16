@@ -1,8 +1,8 @@
 #pragma once
-#include "../PPTShape.h"
+#include "../CustomShape.h"
 
 // 12
-class CStarType : public CPPTShape
+class CStarType : public CCustomShape
 {
 public:
 	CStarType()

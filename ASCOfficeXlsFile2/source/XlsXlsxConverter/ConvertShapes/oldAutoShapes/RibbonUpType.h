@@ -1,8 +1,8 @@
 #pragma once
-#include "../PPTShape.h"
+#include "../CustomShape.h"
 
 // 54
-class CRibbonUpType : public CPPTShape
+class CRibbonUpType : public CCustomShape
 {
 public:
 	CRibbonUpType()

@@ -1,8 +1,8 @@
 #pragma once
-#include "../PPTShape.h"
+#include "../CustomShape.h"
 
 // 78
-class CRightArrowCalloutType : public CPPTShape
+class CRightArrowCalloutType : public CCustomShape
 {
 public:
 	CRightArrowCalloutType()

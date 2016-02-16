@@ -37,11 +37,6 @@ public:
 	BIFF_DWORD	idList;
 	
 	BiffStructurePtrVector rgbAF12Criteries;
-	
-//-----------------------------
-
-	std::vector<BaseObjectPtr>	m_arContinueFrt12;
-
 };
 
 } // namespace XLS

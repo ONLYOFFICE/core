@@ -1,8 +1,8 @@
 #pragma once
-#include "../PPTShape.h"
+#include "../CustomShape.h"
 
 // 5
-class CIsoscelesTriangleType : public CPPTShape
+class CIsoscelesTriangleType : public CCustomShape
 {
 public:
 	CIsoscelesTriangleType()

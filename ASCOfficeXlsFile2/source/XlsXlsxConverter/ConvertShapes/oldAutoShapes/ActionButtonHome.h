@@ -1,8 +1,8 @@
 #pragma once
-#include "../PPTShape.h"
+#include "../CustomShape.h"
 
 // 190
-class CActionButtonHomeType : public CPPTShape
+class CActionButtonHomeType : public CCustomShape
 {
 public:
 	CActionButtonHomeType()

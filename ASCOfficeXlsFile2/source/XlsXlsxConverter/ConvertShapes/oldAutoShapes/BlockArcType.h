@@ -1,8 +1,8 @@
 #pragma once
-#include "../PPTShape.h"
+#include "../CustomShape.h"
 
 // 95
-class CBlockArcType : public CPPTShape
+class CBlockArcType : public CCustomShape
 {
 public:
 	CBlockArcType()

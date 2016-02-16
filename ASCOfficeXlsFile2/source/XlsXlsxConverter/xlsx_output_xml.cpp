@@ -32,8 +32,9 @@ public:
 	std::wstringstream  sortAndFilters_;
 	std::wstringstream  customViews_;
 	std::wstringstream  conditionalFormatting_;
+	std::wstringstream  picture_;
 
-	rels hyperlinks_rels_;
+	rels rels_;
 
     std::wstring drawingName_;
     std::wstring drawingId_;
@@ -121,15 +122,19 @@ std::wostream & xlsx_xml_worksheet::customViews()
 {
     return impl_->customViews_;
 }
-
 std::wostream & xlsx_xml_worksheet::conditionalFormatting()
 {
     return impl_->conditionalFormatting_;
 }
-//-----------------------------------------------------------------
-rels & xlsx_xml_worksheet::hyperlinks_rels()
+std::wostream & xlsx_xml_worksheet::picture()
 {
-    return impl_->hyperlinks_rels_;
+    return impl_->picture_;
+}
+
+//-----------------------------------------------------------------
+rels & xlsx_xml_worksheet::sheet_rels()
+{
+    return impl_->rels_;
 }
 void xlsx_xml_worksheet::write_to(std::wostream & strm)
 {
@@ -178,6 +183,8 @@ void xlsx_xml_worksheet::write_to(std::wostream & strm)
 					CP_XML_ATTR(L"r:id",impl_->vml_drawingId_);
 				}
 			}
+
+			CP_XML_STREAM() << impl_->picture_.str();
 
 			//CP_XML_NODE(L"rowBreaks){}
 

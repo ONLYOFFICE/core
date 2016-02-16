@@ -1,8 +1,8 @@
 #pragma once
-#include "../PPTShape.h"
+#include "../CustomShape.h"
 
 // 7
-class CParallelogramType : public CPPTShape
+class CParallelogramType : public CCustomShape
 {
 public:
 	CParallelogramType()

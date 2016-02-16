@@ -1,8 +1,8 @@
 #pragma once
-#include "../PPTShape.h"
+#include "../CustomShape.h"
 
 // 3
-class CEllipseType : public CPPTShape
+class CEllipseType : public CCustomShape
 {
 public:
 	CEllipseType()

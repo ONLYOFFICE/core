@@ -1,8 +1,8 @@
 #pragma once
-#include "../PPTShape.h"
+#include "../CustomShape.h"
 
 // 6
-class CRightTriangleType : public CPPTShape
+class CRightTriangleType : public CCustomShape
 {
 public:
 	CRightTriangleType()

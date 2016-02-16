@@ -1,8 +1,8 @@
 #pragma once
-#include "../PPTShape.h"
+#include "../CustomShape.h"
 
 // 19
-class CArcType : public CPPTShape
+class CArcType : public CCustomShape
 {
 public:
 	CArcType()

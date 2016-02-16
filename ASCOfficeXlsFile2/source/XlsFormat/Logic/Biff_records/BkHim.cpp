@@ -28,10 +28,6 @@ void BkHim::writeFields(CFRecord& record)
 
 void BkHim::readFields(CFRecord& record)
 {
-
-	_UINT16 cf;
-	_UINT32 lcb;
-
 	record >> cf;
 	record.skipNunBytes(2);
 	record >> lcb;//imageBlob size
@@ -46,10 +42,22 @@ void BkHim::readFields(CFRecord& record)
 	{
 		//native
 	}
+
+	if (lcb < 1) return;
 	
-	//imageBlob
+	std::list<CFRecordPtr>& recs = continue_records[rt_Continue];
+
+	while (record.getRdPtr() + lcb > record.getDataSize() && !recs.empty())
+	{
+		record.appendRawData(recs.front());
+		recs.pop_front();
+	}
+
 	if (record.checkFitReadSafe(lcb))
 	{
+		pData = boost::shared_array<char>(new char[lcb]);
+
+		memcpy(pData.get(), record.getCurData<char>(), lcb);
 
 		record.skipNunBytes(lcb);
 	}

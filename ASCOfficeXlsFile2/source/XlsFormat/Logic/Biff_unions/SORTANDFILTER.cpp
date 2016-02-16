@@ -48,7 +48,7 @@ const bool SORTANDFILTER::loadContent(BinProcessor& proc)
 		elements_.pop_back();
 	}
 	bool res4 = proc.optional<DropDownObjIds>();
-	if (res3)
+	if (res4)
 	{
 		m_DropDownObjIds = elements_.back();
 		elements_.pop_back();

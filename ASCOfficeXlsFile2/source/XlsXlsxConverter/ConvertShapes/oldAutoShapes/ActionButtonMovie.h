@@ -1,8 +1,8 @@
 #pragma once
-#include "../PPTShape.h"
+#include "../CustomShape.h"
 
 // 200
-class CActionButtonMovieType : public CPPTShape
+class CActionButtonMovieType : public CCustomShape
 {
 public:
 	CActionButtonMovieType()

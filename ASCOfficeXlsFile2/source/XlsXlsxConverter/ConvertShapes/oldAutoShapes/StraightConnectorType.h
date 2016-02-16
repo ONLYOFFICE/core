@@ -1,8 +1,8 @@
 #pragma once
-#include "../PPTShape.h"
+#include "../CustomShape.h"
 
 // 32
-class CStraightConnectorType : public CPPTShape
+class CStraightConnectorType : public CCustomShape
 {
 public:
 	CStraightConnectorType()

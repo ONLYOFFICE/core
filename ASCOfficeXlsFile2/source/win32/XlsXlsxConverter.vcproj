@@ -433,11 +433,19 @@
 				>
 			</File>
 			<File
-				RelativePath="..\XlsXlsxConverter\ConvertShapes\custom_shape_convert.h"
+				RelativePath="..\XlsXlsxConverter\ConvertShapes\CustomGeomShape.h"
 				>
 			</File>
 			<File
-				RelativePath="..\XlsXlsxConverter\ConvertShapes\CustomGeomShape.h"
+				RelativePath="..\XlsXlsxConverter\ConvertShapes\CustomShape.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsXlsxConverter\ConvertShapes\CustomShape.h"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsXlsxConverter\ConvertShapes\CustomShapeConvert.h"
 				>
 			</File>
 			<File
@@ -454,18 +462,6 @@
 			</File>
 			<File
 				RelativePath="..\XlsXlsxConverter\ConvertShapes\PathShape.h"
-				>
-			</File>
-			<File
-				RelativePath="..\XlsXlsxConverter\ConvertShapes\PPTShape.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\XlsXlsxConverter\ConvertShapes\PPTShape.h"
-				>
-			</File>
-			<File
-				RelativePath="..\XlsXlsxConverter\ConvertShapes\PPTShapeEnum.h"
 				>
 			</File>
 			<File

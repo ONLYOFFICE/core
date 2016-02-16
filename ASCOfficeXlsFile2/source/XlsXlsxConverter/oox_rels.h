@@ -23,7 +23,9 @@ public:
         const std::wstring & TargetMode = L"") : id_(Id), type_(Type), target_(Target), target_mode_(TargetMode) 
     {}
 
-    virtual std::wostream & xml_to_stream(::std::wostream & _Wostream) const;
+	relationship(const std::wstring & Id, int Type, const std::wstring & Target, bool lExternal) ;
+
+	virtual std::wostream & xml_to_stream(::std::wostream & _Wostream) const;
 
 public:
     const std::wstring & id() const { return id_; }

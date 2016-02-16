@@ -1,8 +1,8 @@
 #pragma once
-#include "../PPTShape.h"
+#include "../CustomShape.h"
 
 // 20
-class CLineType : public CPPTShape
+class CLineType : public CCustomShape
 {
 public:
 	CLineType()

@@ -26,19 +26,6 @@ AFDOperStr::~AFDOperStr()
 {
 }
 
-//
-//void AFDOperStr::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{	
-//	xml_tag->setAttribute(L"cch", cch);
-//	xml_tag->setAttribute(L"fCompare", fCompare);	
-//}
-//
-//
-//void AFDOperStr::getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{	
-//}
-
-
 void AFDOperStr::store(CFRecord& record)
 {	
 }

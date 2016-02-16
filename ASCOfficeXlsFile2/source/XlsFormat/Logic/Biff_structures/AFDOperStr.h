@@ -19,7 +19,6 @@ public:
 
 	static const ElementType	type = typeAFDOperStr;
 	
-	
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 

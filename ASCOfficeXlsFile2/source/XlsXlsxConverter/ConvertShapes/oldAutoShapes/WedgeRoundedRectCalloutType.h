@@ -1,8 +1,8 @@
 #pragma once
-#include "../PPTShape.h"
+#include "../CustomShape.h"
 
 // 62
-class CWedgeRoundedRectCalloutType : public CPPTShape
+class CWedgeRoundedRectCalloutType : public CCustomShape
 {
 public:
 	CWedgeRoundedRectCalloutType()

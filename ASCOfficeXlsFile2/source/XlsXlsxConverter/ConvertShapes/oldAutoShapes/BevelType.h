@@ -1,8 +1,8 @@
 #pragma once
-#include "../PPTShape.h"
+#include "../CustomShape.h"
 
 // 84
-class CBevelType : public CPPTShape
+class CBevelType : public CCustomShape
 {
 public:
 	CBevelType()

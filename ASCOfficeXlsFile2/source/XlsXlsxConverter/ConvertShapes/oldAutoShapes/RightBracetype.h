@@ -1,8 +1,8 @@
 #pragma once
-#include "../PPTShape.h"
+#include "../CustomShape.h"
 
 // 88
-class CRightBracetype : public CPPTShape
+class CRightBracetype : public CCustomShape
 {
 public: 
 	CRightBracetype()

@@ -1,8 +1,8 @@
 #pragma once
-#include "../PPTShape.h"
+#include "../CustomShape.h"
 
 // 57
-class CNoSmokingType : public CPPTShape
+class CNoSmokingType : public CCustomShape
 {
 public:
 	CNoSmokingType()

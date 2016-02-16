@@ -1,8 +1,8 @@
 #pragma once
-#include "../PPTShape.h"
+#include "../CustomShape.h"
 
 // 185
-class CBracketPairType : public CPPTShape
+class CBracketPairType : public CCustomShape
 {
 public:
 	CBracketPairType()

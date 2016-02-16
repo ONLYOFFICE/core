@@ -24,7 +24,9 @@
 #include "../XlsFormat/Logic/Biff_unions/OBJ.h"
 #include "../XlsFormat/Logic/Biff_unions/TEXTOBJECT.h"
 #include "../XlsFormat/Logic/Biff_unions/CHART.h"
+#include "../XlsFormat/Logic/Biff_unions/BACKGROUND.h"
 
+#include <Logic/Biff_records/BkHim.h>
 #include <Logic/Biff_records/HLink.h>
 #include <Logic/Biff_records/MsoDrawingGroup.h>
 #include <Logic/Biff_records/MsoDrawing.h>
@@ -51,7 +53,9 @@
 
 #include <boost/lexical_cast.hpp>
 #include <boost/utility.hpp>
+
 #include "../../../DesktopEditor/common/File.h"
+#include "../../../DesktopEditor/raster/BgraFrame.h"
 
 #if !defined(_WIN32) && !defined(_WIN64)
 
@@ -337,7 +341,6 @@ void XlsConverter::convert(XLS::WorksheetSubstream* sheet)
 		sheet->m_CONDFMTS->serialize(xlsx_context->current_sheet().conditionalFormatting());
 	}
 
-
 	convert((XLS::OBJECTS*)sheet->m_OBJECTS.get());
 
 	if (sheet->m_PAGESETUP)
@@ -357,6 +360,11 @@ void XlsConverter::convert(XLS::WorksheetSubstream* sheet)
 				}
 			}
 		}
+	}
+
+	if (sheet->m_BACKGROUND)
+	{
+		convert(dynamic_cast<XLS::BACKGROUND*>(sheet->m_BACKGROUND.get()));
 	}
 }
 
@@ -480,7 +488,7 @@ void XlsConverter::convert(XLS::MSODRAWINGGROUP * mso_drawing)
 		
 }
 
-std::wstring XlsConverter::WriteMediaFile	(char *data, int size, std::wstring type_ext, int id)
+std::wstring XlsConverter::WriteMediaFile(char *data, int size, std::wstring type_ext, int id)
 {
 	if (size < 1 || !data) return L"";
 	
@@ -491,26 +499,69 @@ std::wstring XlsConverter::WriteMediaFile	(char *data, int size, std::wstring ty
 	bool res = false;
 	std::wstring file_name = L"image" + boost::lexical_cast<std::wstring>(id);
 	
-	if (type_ext == L"dib_data")file_name += std::wstring(L".bmp");
-	else						file_name += type_ext;
 
-	NSFile::CFileBinary file;
-	if (file.CreateFileW(xlsx_context->get_mediaitems().media_path() + file_name))
+	if (type_ext == L"dib_data")
 	{
-		if (type_ext == L"dib_data")
-		{
-			BITMAPINFOHEADER * header = (BITMAPINFOHEADER *)data;
+		int offset = 0;
+		CBgraFrame frame;
 
-			WORD vtType		= 0x4D42;				file.WriteFile((BYTE*)&vtType,	2);
-			DWORD dwLen		= header->biSizeImage;	file.WriteFile((BYTE*)&dwLen,	4);
-			DWORD dwRes		= 0;					file.WriteFile((BYTE*)&dwRes,	4);
-			DWORD dwOffset	= 2;					file.WriteFile((BYTE*)&dwOffset, 4);
-		}
+		BITMAPINFOHEADER * header = (BITMAPINFOHEADER *)data;
+
+		if (header->biWidth > 100000 || header->biHeight > 100000)
+		{
+			//Formulas Matriciais - A Outra Dimensão do Excel.xls todoooo найти еще файлы 
+			//775x20 
+			offset = 12; //sizeof(BITMAPCOREHEADER)
+			
+			BITMAPCOREHEADER * header_core = (BITMAPCOREHEADER *)data;
 		
-		file.WriteFile((BYTE*)data, size);
-		file.CloseFile();
-		res = true;
+			frame.put_Height	(header_core->bcHeight );
+			frame.put_Width		(header_core->bcWidth );
+			
+			int sz_bitmap = header_core->bcHeight * header_core->bcWidth * header_core->bcBitCount/ 8;
+			
+			if (header_core->bcWidth % 2 != 0 && sz_bitmap < size -offset)
+				header_core->bcWidth++;
+			
+			frame.put_Stride	(header_core->bcBitCount * header_core->bcWidth /8);
+		}
+		else
+		{
+			offset = 40; //sizeof(BITMAPINFOHEADER)
+
+			frame.put_Height	(header->biHeight );
+			frame.put_Width		(header->biWidth );
+			
+			int sz_bitmap = header->biHeight * header->biWidth * header->biBitCount/ 8;
+			
+			if (header->biWidth % 2 != 0 && sz_bitmap < size -offset)
+				header->biWidth++;
+			
+			frame.put_Stride	(header->biBitCount * header->biWidth /8);
+		
+		}
+		frame.put_Data((unsigned char*)data + offset);
+		
+		file_name += std::wstring(L".png");
+		
+		res = frame.SaveFile(xlsx_context->get_mediaitems().media_path() + file_name, 4/*CXIMAGE_FORMAT_PNG*/);
+		frame.put_Data(NULL);
 	}
+	else
+	{
+		file_name += type_ext;
+
+		NSFile::CFileBinary file;
+		if (file.CreateFileW(xlsx_context->get_mediaitems().media_path() + file_name))
+		{		
+			file.WriteFile((BYTE*)data, size);
+			file.CloseFile();
+		}
+	}
+//------------------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------------------
+	res = true;
 	if (res)
 	{
 		xlsx_context->get_mediaitems().add_image(L"media/" + file_name, id);
@@ -563,6 +614,35 @@ void XlsConverter::convert(XLS::LBL * def_name)
 
 	def_name->serialize(xlsx_context->defined_names());
 }
+
+void XlsConverter::convert(XLS::BACKGROUND * back)
+{
+	if (back == NULL) return;
+
+	XLS::BkHim * bkHim = dynamic_cast<XLS::BkHim*>(back->m_BkHim.get());
+	
+	if (bkHim->lcb < 1 || bkHim->pData == NULL) return;
+	
+	bool bInternal = false;
+
+	std::wstring target = WriteMediaFile(bkHim->pData.get(), bkHim->lcb, L"dib_data");
+
+	std::wstring rId = xlsx_context->get_mediaitems().find_image(target, bInternal);
+	
+	xlsx_context->current_sheet().sheet_rels().add(oox::relationship(rId, oox::external_items::typeImage, std::wstring(L"../") + target, !bInternal));
+
+	if (rId.empty()) return;
+
+	CP_XML_WRITER(xlsx_context->current_sheet().picture())    
+	{
+		CP_XML_NODE(L"picture")
+		{
+			CP_XML_ATTR(L"r:id", rId);
+		}
+	}
+
+}
+
 void XlsConverter::convert(XLS::THEME* theme)
 {
 	if (theme == NULL) return;

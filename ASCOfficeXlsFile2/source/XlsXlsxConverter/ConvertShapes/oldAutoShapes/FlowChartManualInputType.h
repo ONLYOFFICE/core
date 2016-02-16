@@ -1,8 +1,8 @@
 #pragma once
-#include "../PPTShape.h"
+#include "../CustomShape.h"
 
 // 118
-class CFlowChartManualInputType : public CPPTShape
+class CFlowChartManualInputType : public CCustomShape
 {
 public:
 	CFlowChartManualInputType()

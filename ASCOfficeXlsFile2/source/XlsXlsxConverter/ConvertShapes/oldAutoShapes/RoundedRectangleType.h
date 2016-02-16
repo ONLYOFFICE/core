@@ -1,8 +1,8 @@
 #pragma once
-#include "../PPTShape.h"
+#include "../CustomShape.h"
 
 // 2
-class CRoundedRectangleType : public CPPTShape
+class CRoundedRectangleType : public CCustomShape
 {
 public:
 	CRoundedRectangleType()

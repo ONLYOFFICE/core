@@ -1,8 +1,8 @@
 #pragma once
-#include "../PPTShape.h"
+#include "../CustomShape.h"
 
 // 91
-class CBentArrowType : public CPPTShape
+class CBentArrowType : public CCustomShape
 {
 public:
 	CBentArrowType()

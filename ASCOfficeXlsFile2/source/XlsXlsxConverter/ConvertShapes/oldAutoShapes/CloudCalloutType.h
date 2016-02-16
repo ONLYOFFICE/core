@@ -1,8 +1,8 @@
 #pragma once
-#include "../PPTShape.h"
+#include "../CustomShape.h"
 
 // 106
-class CCloudCalloutType : public CPPTShape
+class CCloudCalloutType : public CCustomShape
 {
 public:
 	CCloudCalloutType()

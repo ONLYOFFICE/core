@@ -37,15 +37,6 @@ public:
 			{
 				return false;
 			}
-			AutoFilter12 * af12  = dynamic_cast<AutoFilter12*>(elements_.back().get());
-			
-			int count = proc.repeated<ContinueFrt12>(0, 0);
-			while(count > 0)
-			{
-				af12->m_arContinueFrt12.insert(af12->m_arContinueFrt12.begin(), elements_.back());
-				elements_.pop_back();
-				count--;
-			}
 		}
 		return true;
 	};

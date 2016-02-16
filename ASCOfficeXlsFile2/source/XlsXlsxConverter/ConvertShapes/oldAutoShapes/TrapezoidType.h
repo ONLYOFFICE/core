@@ -1,8 +1,8 @@
 #pragma once
-#include "../PPTShape.h"
+#include "../CustomShape.h"
 
 // 8
-class CTrapezoidType : public CPPTShape
+class CTrapezoidType : public CCustomShape
 {
 public:
 	CTrapezoidType()

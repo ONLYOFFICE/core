@@ -1,8 +1,8 @@
 #pragma once
-#include "../PPTShape.h"
+#include "../CustomShape.h"
 
 // 1
-class CRectangleType : public CPPTShape
+class CRectangleType : public CCustomShape
 {
 public:
 	CRectangleType()

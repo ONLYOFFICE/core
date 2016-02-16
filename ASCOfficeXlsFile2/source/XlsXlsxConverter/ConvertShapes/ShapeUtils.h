@@ -1,19 +1,23 @@
 #pragma once
 
+#include <string>
 #include <algorithm>
 #include <vector>
+#include <boost/algorithm/string.hpp>
 
-#if defined(_WIN32) || defined(_WIN64)
-	#include <atlbase.h>
-	#include <atlstr.h>
-	#include "../../../../Common/atldefine.h"
-
-#else
-    #include "../../../../../Common/DocxFormat/Source/Base/ASCString.h"
-#endif
+//#if defined(_WIN32) || defined(_WIN64)
+//	#include <atlbase.h>
+//	#include <atlstr.h>
+//	#include "../../../../Common/atldefine.h"
+//
+//#else
+//    #include "../../../../../Common/DocxFormat/Source/Base/ASCString.h"
+//#endif
 
 #include "../../../../../Common/DocxFormat/Source/Base/Base.h"
 #include "../../../../../DesktopEditor/graphics/GraphicsPath.h"
+
+
 
 const double ShapeSize		= 43200.0;
 const LONG ShapeSizeVML		= 21600;
@@ -67,45 +71,27 @@ namespace NSStringUtils
 	}
 	
 	static void ParseString(std::wstring strDelimeters, std::wstring strSource, 
-		std::vector<std::wstring>* pArrayResults, bool bIsCleared = true)
+		std::vector<std::wstring>& pArrayResults, bool bIsCleared = true)
 	{
-		if (NULL == pArrayResults)
-			return;
-
 		if (bIsCleared)
-			pArrayResults->clear();
+			pArrayResults.clear();
 
-		std::wstring resToken;
-		int curPos= 0;
 
-		int endPos = strSource.find(strDelimeters, curPos);
-		resToken = strSource.substr(curPos, (endPos == std::wstring::npos) ? std::wstring::npos : endPos - curPos);
-		while (resToken != _T(""))
-		{
-			pArrayResults->push_back(resToken);
-
-			int endPos = strSource.find(strDelimeters, curPos);
-			resToken = strSource.substr(curPos, (endPos == std::wstring::npos) ? std::wstring::npos : endPos - curPos);
-		};
+		boost::algorithm::split(pArrayResults, strSource, boost::algorithm::is_any_of(strDelimeters), boost::algorithm::token_compress_on);
 
 	}
-	static void ParseString(std::vector<char>* pArrayDelimeters, std::wstring strSource, 
-		std::vector<std::wstring>* pArrayResults, bool bIsCleared = true)
+	static void ParseString(std::vector<char>& pArrayDelimeters, std::wstring strSource, 
+		std::vector<std::wstring> & pArrayResults, bool bIsCleared = true)
 	{
-		if (NULL == pArrayDelimeters)
-			return;
-
 		std::wstring strDelimeters = _T("");
-		for (int nIndex = 0; nIndex < pArrayDelimeters->size(); ++nIndex)
-			strDelimeters += (*pArrayDelimeters)[nIndex];
+		for (int nIndex = 0; nIndex < pArrayDelimeters.size(); ++nIndex)
+			strDelimeters += pArrayDelimeters[nIndex];
 
 		return ParseString(strDelimeters, strSource, pArrayResults, bIsCleared);
 	}
-	static void ParsePath(std::wstring strSource, std::vector<std::wstring>* pArrayResults, bool bIsCleared = true)
+	static void ParsePath(std::wstring strSource, std::vector<std::wstring> pArrayResults, bool bIsCleared = true)
 	{
-		if (NULL == pArrayResults)
-			return;
-		
+	
 		std::wstring strPath = strSource;
 		//strPath.Replace(_T(" "), _T(","));
 		for (int nIndex = 0; nIndex < strPath.length(); ++nIndex)

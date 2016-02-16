@@ -1,8 +1,8 @@
 #pragma once
-#include "../PPTShape.h"
+#include "../CustomShape.h"
 
 // 21
-class CPlaqueType : public CPPTShape
+class CPlaqueType : public CCustomShape
 {
 public:
 	CPlaqueType()

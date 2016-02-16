@@ -10,6 +10,9 @@
 
 #include "../../../DesktopEditor/raster/BgraFrame.h"
 
+#include "ConvertShapes/CustomShape.h"
+#include "ConvertShapes/CustomShapeConvert.h"
+
 namespace oox {
 
 	const static std::wstring shemeColor[18] = 
@@ -402,7 +405,7 @@ void xlsx_drawing_context::end_drawing(_drawing_state_ptr & drawing_state)
 			
 			serialize_pic(drawing_state, rId);
 		
-			rels_->add(/*strm.str(), */isIternal, 	rId , drawing_state->fill.texture_target, drawing_state->type);
+			rels_->add(isIternal, rId , drawing_state->fill.texture_target, drawing_state->type);
 		}
 		else 
 			drawing_state->type = external_items::typeShape;
@@ -615,6 +618,7 @@ void xlsx_drawing_context::serialize_shape(_drawing_state_ptr & drawing_state)
 
 	std::wstring prstTxWarp;
 	std::wstring prstGeom	= Spt2ShapeType(drawing_state->shape_id);
+	std::wstring customGeom	= convert_custom_shape(drawing_state);
 
 	if (prstGeom.empty())
 	{
@@ -690,35 +694,42 @@ void xlsx_drawing_context::serialize_shape(_drawing_state_ptr & drawing_state)
 				}
 				else
 				{
-					CP_XML_NODE(L"a:custGeom")
-					{        
-						CP_XML_NODE(L"a:avLst");
-						//oox_serialize_aLst(CP_XML_STREAM(),val.additional);
-						CP_XML_NODE(L"a:ahLst");
-						//CP_XML_NODE(L"a:gdLst");
-						CP_XML_NODE(L"a:rect")
-						{
-							CP_XML_ATTR(L"b",L"b");
-							CP_XML_ATTR(L"l",0);
-							CP_XML_ATTR(L"r",L"r");
-							CP_XML_ATTR(L"t",0);
-						}
-						CP_XML_NODE(L"a:pathLst")
-						{ 	
-							int w = drawing_state->path_rect.right - drawing_state->path_rect.left;
-							int h = drawing_state->path_rect.bottom- drawing_state->path_rect.top;
-
-							if (w > 0 && h > 0)
+					if (customGeom.empty())
+					{
+						CP_XML_NODE(L"a:custGeom")
+						{        
+							CP_XML_NODE(L"a:avLst");
+							//oox_serialize_aLst(CP_XML_STREAM(),val.additional);
+							CP_XML_NODE(L"a:ahLst");
+							//CP_XML_NODE(L"a:gdLst");
+							CP_XML_NODE(L"a:rect")
 							{
-								CP_XML_NODE(L"a:path")
+								CP_XML_ATTR(L"b",L"b");
+								CP_XML_ATTR(L"l",0);
+								CP_XML_ATTR(L"r",L"r");
+								CP_XML_ATTR(L"t",0);
+							}
+							CP_XML_NODE(L"a:pathLst")
+							{ 	
+								int w = drawing_state->path_rect.right - drawing_state->path_rect.left;
+								int h = drawing_state->path_rect.bottom- drawing_state->path_rect.top;
+
+								if (w > 0 && h > 0)
 								{
-									CP_XML_ATTR(L"w", w);
-									CP_XML_ATTR(L"h", h);
-									
-									CP_XML_STREAM() << drawing_state->path;
+									CP_XML_NODE(L"a:path")
+									{
+										CP_XML_ATTR(L"w", w);
+										CP_XML_ATTR(L"h", h);
+										
+										CP_XML_STREAM() << drawing_state->path;
+									}
 								}
 							}
 						}
+					}
+					else
+					{
+						CP_XML_STREAM() << customGeom;
 					}
 				}
 				serialize_fill(CP_XML_STREAM(), drawing_state);
@@ -729,6 +740,105 @@ void xlsx_drawing_context::serialize_shape(_drawing_state_ptr & drawing_state)
 	}
 
 	drawing_state->shape = strm.str();
+}
+
+std::wstring xlsx_drawing_context::convert_custom_shape(_drawing_state_ptr & drawing_state)
+{
+	std::wstring strResult;
+
+	CCustomShape * shape = CCustomShape::CreateByType(drawing_state->shape_id);
+	if (shape == NULL) return L"";
+
+	//shape->m_oCustomVML.LoadSegments(pProperty);
+	//shape->m_oCustomVML.LoadVertices(pProperty);
+	//shape->m_oCustomVML.LoadGuides(pProperty);
+	//shape->m_oCustomVML.LoadAHs(pProperty);
+
+	//LONG lIndexAdj = pProperty->m_ePID - NSOfficeDrawing::adjustValue;
+	//if (lIndexAdj >= 0 && lIndexAdj < pShape->m_arAdjustments.size())
+	//{
+	//	shape->m_oCustomVML.LoadAdjusts(lIndexAdj, (LONG)pProperty->m_lValue);
+	//}
+	//else
+	//{
+	//	shape->m_oCustomVML.LoadAdjusts(lIndexAdj, (LONG)pProperty->m_lValue);
+	//}
+//-------------------------------------------------------------------------------------
+
+	NSGuidesVML::CFormParam pParamCoef;
+	pParamCoef.m_eType = NSGuidesVML::ptValue;
+	pParamCoef.m_lParam = 65536;
+	pParamCoef.m_lCoef = 65536;
+	
+	NSGuidesVML::CFormulaConverter pFormulaConverter;
+
+	//coeff
+	pFormulaConverter.ConvertCoef(pParamCoef);
+
+	//guids----------------------------------------
+	int nGuidCount = shape->m_oManager.m_arFormulas.size();
+	if (0 != nGuidCount)
+	{
+		pFormulaConverter.ConvertFormula(shape->m_oManager.m_arFormulas);
+	}				
+
+	//path------------------------------------------
+	int nPathCount = shape->m_strPath.length();
+	
+	if (0 != nPathCount && shape->m_eType != 1)
+	{
+		pFormulaConverter.ConvertPath(shape->m_strPath, shape->m_oPath);
+
+		//string rect
+		int nRectCount = (int)shape->m_arStringTextRects.size();
+		if (0 != nRectCount)
+		{
+			pFormulaConverter.ConvertTextRect(shape->m_arStringTextRects[0]);
+		}
+
+		int nHandlesCount = shape->m_arHandles.size();
+		int nAdjCount = shape->m_arAdjustments.size();
+
+		//handles
+		if (0 != nHandlesCount || 0 != nAdjCount)
+		{
+			pFormulaConverter.ConvertHandle(shape->m_arHandles, shape->m_arAdjustments, shape->m_eType);
+		}
+
+		//adj----------------------------
+		if (pFormulaConverter.m_oAdjRes.GetSize() == 0)
+			strResult += _T("<a:avLst/>");
+		else
+			strResult += _T("<a:avLst>") + pFormulaConverter.m_oAdjRes.GetXmlString() + _T("</a:avLst>");
+
+		//guids--------------------------
+		if (pFormulaConverter.m_oGuidsRes.GetSize() == 0)
+			strResult += _T("<a:gdLst>") + pFormulaConverter.m_oCoef.GetXmlString() + _T("</a:gdLst>");
+		else
+			strResult += _T("<a:gdLst>") + pFormulaConverter.m_oCoef.GetXmlString() + pFormulaConverter.m_oGuidsRes.GetXmlString() + _T("</a:gdLst>");
+
+		//handles---------------------------
+		if (pFormulaConverter.m_oHandleRes.GetSize() == 0)
+			strResult += _T("<a:ahLst/>");
+		else
+			strResult += _T("<a:ahLst>") + pFormulaConverter.m_oHandleRes.GetXmlString() + _T("</a:ahLst>");
+			
+		//connectors-------------------------
+		strResult += _T("<a:cxnLst/>");
+		
+		//textRect---------------------------
+		if (pFormulaConverter.m_oTextRect.GetSize() != 0)
+			strResult += pFormulaConverter.m_oTextRect.GetXmlString();
+
+		//path------------------------------
+		strResult += _T("<a:pathLst>");
+		strResult += pFormulaConverter.m_oPathRes.GetXmlString();
+		strResult += _T("</a:pathLst>");	
+	}
+
+	delete shape;
+
+	return strResult;
 }
 
 void xlsx_drawing_context::reset_fill_pattern (_drawing_state_ptr & drawing_state)
@@ -778,7 +888,7 @@ void xlsx_drawing_context::serialize_fill(std::wostream & stream, _drawing_state
 			}
 			else 
 			{
-				rels_->add(isIternal, 	rId , fill.texture_target, external_items::typeImage);
+				rels_->add(isIternal, rId , fill.texture_target, external_items::typeImage);
 			}
 			serialize_bitmap_fill(stream, fill, rId);
 			return;
@@ -1637,15 +1747,7 @@ void xlsx_drawing_context::serialize(std::wostream & strm)
 
 			for (int i = 0 ; i < drawing_states.size(); i++)
 			{
-				//if (drawing_states[i]->drawing_states.size() > 1)
-				//{
-				//	//группа
-				//	serialize(CP_XML_STREAM(), drawing_states[i]->drawing_states
-				//}
-				//else
-				{
-					serialize(CP_XML_STREAM(), drawing_states[i]);
-				}
+				serialize(CP_XML_STREAM(), drawing_states[i]);
 			}
 
 		}

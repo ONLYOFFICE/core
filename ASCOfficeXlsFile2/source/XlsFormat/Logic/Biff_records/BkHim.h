@@ -22,10 +22,10 @@ public:
 
 	static const ElementType	type = typeBkHim;
 
-//-----------------------------
-//	BIFF_WORD userName;
+	_UINT16 cf;
+	_UINT32 lcb;
 
-
+	boost::shared_array<char> pData;
 };
 
 } // namespace XLS

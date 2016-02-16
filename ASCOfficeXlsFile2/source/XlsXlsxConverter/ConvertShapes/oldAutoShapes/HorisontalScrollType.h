@@ -1,8 +1,8 @@
 #pragma once
-#include "../PPTShape.h"
+#include "../CustomShape.h"
 
 // 98
-class CHorizontalScrollType : public CPPTShape
+class CHorizontalScrollType : public CCustomShape
 {
 public:
 	CHorizontalScrollType()

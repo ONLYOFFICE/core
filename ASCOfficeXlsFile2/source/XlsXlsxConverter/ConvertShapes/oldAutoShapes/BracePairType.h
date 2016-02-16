@@ -1,8 +1,8 @@
 #pragma once
-#include "../PPTShape.h"
+#include "../CustomShape.h"
 
 // 186
-class CBracePairType : public CPPTShape
+class CBracePairType : public CCustomShape
 {
 public:
 	CBracePairType()

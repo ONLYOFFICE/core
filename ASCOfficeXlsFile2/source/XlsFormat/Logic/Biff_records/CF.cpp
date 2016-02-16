@@ -93,7 +93,7 @@ int CF::serialize(std::wostream & stream)
 			CP_XML_ATTR(L"dxfId", dxfId_);	
 
 			std::wstring s1 = rgce1.getAssembledFormula();
-			std::wstring s2 = rgce1.getAssembledFormula();
+			std::wstring s2 = rgce2.getAssembledFormula();
 			CP_XML_NODE(L"formula")
 			{
 				if (!s1.empty()) 

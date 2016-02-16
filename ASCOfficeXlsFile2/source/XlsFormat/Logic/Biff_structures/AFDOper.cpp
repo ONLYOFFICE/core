@@ -13,7 +13,9 @@ BiffStructurePtr AFDOper::clone()
 
 AFDOper::AFDOper()
 {	
-	m_bAutoFilter = true;
+	m_bAutoFilter	= true;
+	vt				= 0xff;
+	grbitSign		= 0xff;
 }
 
 AFDOper::AFDOper(bool bAutoFilter)
@@ -26,20 +28,6 @@ AFDOper::~AFDOper()
 {
 }
 
-
-//void AFDOper::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{	
-//	xml_tag->setAttribute(L"vt", vt);
-//	xml_tag->setAttribute(L"grbitSign", grbitSign);
-//	vtValue.toXML(xml_tag);
-//}
-//
-//
-//void AFDOper::getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{	
-//}
-
-
 void AFDOper::store(CFRecord& record)
 {	
 }
@@ -49,15 +37,32 @@ void AFDOper::load(CFRecord& record)
 {
 	record >> vt >> grbitSign;
 
-	unsigned char _vt = vt;
-	unsigned char _grbitSign = grbitSign;
-
-	if (vt == BIFF_BYTE(0))
-		record.skipNunBytes(8);
-	if (vt == BIFF_BYTE(0x06))
+	switch(vt)
 	{
-		vtValue.m_bAutoFilter = m_bAutoFilter;
-		record >> vtValue;
+		case  0x02:
+		{
+			record >> vtValueRk;
+		}break;
+		case  0x04:
+		{
+			record >> vtValueNum;
+		}break;
+		case  0x06:
+		{
+			vtValueStr.m_bAutoFilter = m_bAutoFilter;
+			record >> vtValueStr;
+		}break;
+		case  0x08:
+		{
+			record >> vtValueBool;
+		}break;
+		case 0x0C:	//All blanks are matched.
+		case 0x0E:	//All non-blanks are matched.
+		case 0x00:
+		default:
+		{
+			record.skipNunBytes(8);
+		}break;
 	}
 }
 

@@ -1,8 +1,8 @@
 #pragma once
-#include "../PPTShape.h"
+#include "../CustomShape.h"
 
 // 123
-class CFlowChartSummingJunctionType : public CPPTShape
+class CFlowChartSummingJunctionType : public CCustomShape
 {
 public:
 	CFlowChartSummingJunctionType()

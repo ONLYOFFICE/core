@@ -30,6 +30,7 @@ namespace XLS
 	class GlobalsSubstream;
 	class ChartSheetSubstream;
 	
+	class BACKGROUND;
 	class FORMATTING;
 	class THEME;
 	class SHAREDSTRINGS;
@@ -73,6 +74,7 @@ public:
 
 	void convert(XLS::FORMATTING				* formating);
 	void convert(XLS::THEME						* theme);
+	void convert(XLS::BACKGROUND 				* back);
 	void convert(XLS::SHAREDSTRINGS				* sharedstrings);
 	void convert(XLS::HLINK						* hlink);
 	void convert(XLS::LBL						* def_name);

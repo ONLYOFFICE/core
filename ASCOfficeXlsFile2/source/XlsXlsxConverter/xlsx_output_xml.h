@@ -37,8 +37,9 @@ public:
 	std::wostream & pageProperties();
 	std::wostream & customViews();
 	std::wostream & conditionalFormatting();
+	std::wostream & picture();
 	
-	rels & hyperlinks_rels();
+	rels & sheet_rels();//hyperlink, background image, external, media ...
 
     void write_to(std::wostream & strm);
 

@@ -1,8 +1,8 @@
 #pragma once
-#include "../PPTShape.h"
+#include "../CustomShape.h"
 
 // 188
-class CWaveDoubleType : public CPPTShape
+class CWaveDoubleType : public CCustomShape
 {
 public:
 	CWaveDoubleType()

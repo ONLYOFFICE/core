@@ -1965,6 +1965,14 @@ public:
 			res = Read1(length, &Binary_tblPrReader::ReadTcPrChange, this, &tcPrChange);
 			tcPrChange.Write(pCStringWriter, _T("w:tcPrChange"));
 		}
+		else if( c_oSerProp_cellPrType::textDirection == type )
+		{
+			SimpleTypes::CTextDirection<> oTextDirection;
+			oTextDirection.SetValue((SimpleTypes::ETextDirection)m_oBufferedStream.GetUChar());
+			pCStringWriter->WriteString(CString(_T("<w:textDirection w:val=\"")));
+			pCStringWriter->WriteString(oTextDirection.ToString());
+			pCStringWriter->WriteString(CString(_T("\" />")));
+		}
 		else
 			res = c_oSerConstants::ReadUnknown;
 		return res;

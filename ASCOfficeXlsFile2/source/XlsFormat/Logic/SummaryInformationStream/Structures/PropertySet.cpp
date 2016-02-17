@@ -21,13 +21,18 @@ PropertySet::PropertySet(XLS::CFStreamPtr stream, const unsigned int property_se
 	std::vector<PropertyIdentifierAndOffset> prop_offsets;
 	for(unsigned int i = 0; i < NumProperties; ++i)
 	{
+		if (stream->getStreamPointer() + 8 > stream->getStreamSize())
+			break;
 		PropertyIdentifierAndOffset prop_offset;
 		*stream >> prop_offset;
+
+		if (prop_offset.Offset - property_set_offset > Size)
+			break;
 		prop_offsets.push_back(prop_offset);
 	}
 
     code_page = PropertyCodePage::DefaultCodePage;
-	for(unsigned int i = 0; i < NumProperties; ++i)
+	for(unsigned int i = 0; i < prop_offsets.size(); ++i)
 	{
 		if (stream->getStreamPointer() - property_set_offset > Size)
 			break;

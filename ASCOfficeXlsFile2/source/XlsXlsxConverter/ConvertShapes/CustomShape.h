@@ -8,13 +8,13 @@
 class CCustomShape : public NSGuidesVML::CBaseShape
 {
 public:
-	oox::MSOSPT			m_eType;
+	oox::MSOSPT						m_eType;
 	NSGuidesVML::CFormulasManager	m_oManager;
 
-	NSCustomVML::CCustomVML m_oCustomVML;
+	NSCustomVML::CCustomVML			m_oCustomVML;
 	
-	std::wstring m_strPathLimoX;
-	std::wstring m_strPathLimoY;
+	std::wstring					m_strPathLimoX;
+	std::wstring					m_strPathLimoY;
 
 	std::vector<std::wstring> m_arStringTextRects;
 public:

@@ -7,6 +7,55 @@
 
 namespace ODRAW
 {
+	static int GetCountPoints2(NSGuidesVML::RulesType eRuler, int lRepeatCount)
+	{
+		switch (eRuler)
+		{
+		case NSGuidesVML::rtMoveTo:				
+		case NSGuidesVML::rtRMoveTo:
+			{ return 1; }
+		
+		case NSGuidesVML::rtLineTo:		
+		case NSGuidesVML::rtRLineTo:
+			{ return lRepeatCount; }
+		
+		case NSGuidesVML::rtCurveTo:		
+		case NSGuidesVML::rtRCurveTo:
+			{ return 3 * lRepeatCount; }
+		
+		case NSGuidesVML::rtNoFill:
+		case NSGuidesVML::rtNoStroke:
+		case NSGuidesVML::rtClose:
+		case NSGuidesVML::rtEnd:	
+			{ return 0; }
+		
+		case NSGuidesVML::rtAngleEllipseTo:
+		case NSGuidesVML::rtAngleEllipse:
+			{ return lRepeatCount; }
+		
+		case NSGuidesVML::rtArc:
+		case NSGuidesVML::rtArcTo:
+
+		case NSGuidesVML::rtClockwiseArcTo:
+		case NSGuidesVML::rtClockwiseArc:
+			{ return lRepeatCount; }
+
+		case NSGuidesVML::rtEllipticalQuadrX:
+		case NSGuidesVML::rtEllipticalQuadrY:
+			{ return 1 * lRepeatCount; }
+
+		case NSGuidesVML::rtQuadrBesier:			
+			{ return /*2 * */lRepeatCount; }
+		case NSGuidesVML::rtFillColor:
+		case NSGuidesVML::rtLineColor:
+			{
+				return 1;
+			}
+		default: return 3 * lRepeatCount;
+		};
+
+		return 0;
+	}
 	static int BitmaskToInt( int value, int mask )
 	{
 		int ret = value & mask;
@@ -152,11 +201,13 @@ OfficeArtFOPTEPtr OfficeArtFOPTE::load_and_create(XLS::CFRecord& record)
 		case 0x0151:
 			fopte = OfficeArtFOPTEPtr(new pAdjustHandles);
 			break;
+		case 0x0156:
+			fopte = OfficeArtFOPTEPtr(new pGuides);
+			break;
 		case 0x0152:
 		case 0x0153:
 		case 0x0154:
 		case 0x0155:
-		case 0x0156:
 		case 0x0157:
 		case 0x0158:
 			fopte = OfficeArtFOPTEPtr(new OfficeArtFOPTE);
@@ -565,7 +616,7 @@ void pihlShape::ReadComplexData(XLS::CFRecord& record)
 {
 	record >> IHlink_complex;
 }
-
+//---------------------------------------------------------------------------------------------
 MSOPOINT::MSOPOINT()
 {
 	cbElement = 4;
@@ -594,14 +645,14 @@ void MSOPOINT::load(XLS::CFRecord& record)
 	}
 	else
 	{
-		unsigned char x_;
-		record >> x_;
+		unsigned short x_, y_;
+		record >> x_ >> y_;
 		
-		x = GETBITS(x_,0 , 3) << 8;
-		y = GETBITS(x_,4 , 8) << 8;
+		x = x_;
+		y = y_;
 	}
 }
-
+//---------------------------------------------------------------------------------------------
 MSOPATHINFO::MSOPATHINFO()
 {
 	cbElement = 4;
@@ -621,35 +672,214 @@ XLS::BiffStructurePtr MSOPATHINFO::clone()
 
 void MSOPATHINFO::load(XLS::CFRecord& record)
 {
-	unsigned short val;
-	record >> val;
+	_UINT16 mem = 0;
+	
+	record >> mem;
 
-	typeSegment			=	(MSOPATHTYPE)BitmaskToInt (val, 0xE000);
-
-	EscapeCode	= msopathEscapeExtension;
-	VertexCount	= 0;
-	Segments	= 0;
-
-	if (msopathEscape == typeSegment || msopathClientEscape == typeSegment)
+	unsigned char type = (mem >> 13 & 0x07);
+	
+	if (type <= 4)
 	{
-		EscapeCode	=	(MSOPATHESCAPE)	BitmaskToInt (val, 0x1F00);
-		VertexCount =					BitmaskToInt (val, 0x00FF);
+		m_eRuler	= (NSGuidesVML::RulesType)type;
+		m_nCount	= (mem & 0x1FFF);
+		m_nCount	= (_UINT16)GetCountPoints2(m_eRuler, m_nCount);
+		return;
 	}
-	else
+
+	type = (mem >> 8) & 0x1F;
+	mem = mem & 0xFF;
+
+	switch (type)
 	{
-		Segments	=	BitmaskToInt (val, 0x1FFF);
+	case 0x00:
+		{
+			m_eRuler = NSGuidesVML::rtLineTo;
+			break;
+		}
+	case 0x01:
+		{
+			m_eRuler = NSGuidesVML::rtAngleEllipseTo;
+			break;
+		}
+	case 0x02:
+		{
+			m_eRuler = NSGuidesVML::rtAngleEllipse;
+			break;
+		}
+	case 0x03:
+		{
+			m_eRuler = NSGuidesVML::rtArcTo;
+			break;
+		}
+	case 0x04:
+		{
+			m_eRuler = NSGuidesVML::rtArc;
+			break;
+		}
+	case 0x05:
+		{
+			m_eRuler = NSGuidesVML::rtClockwiseArcTo;
+			break;
+		}
+	case 0x06:
+		{
+			m_eRuler = NSGuidesVML::rtClockwiseArc;
+			break;
+		}
+	case 0x07:
+		{
+			m_eRuler = NSGuidesVML::rtEllipticalQuadrX;
+			break;
+		}
+	case 0x08:
+		{
+			m_eRuler = NSGuidesVML::rtEllipticalQuadrY;
+			break;
+		}
+	case 0x09:
+		{
+			m_eRuler = NSGuidesVML::rtQuadrBesier;
+			break;
+		}
+	case 0x0A:
+		{
+			m_eRuler = NSGuidesVML::rtNoFill;
+			break;
+		}
+	case 0x0B:
+		{
+			m_eRuler = NSGuidesVML::rtNoStroke;
+			break;
+		}
+	case 0x0C:
+	case 0x10:
+		{
+			m_eRuler = NSGuidesVML::rtLineTo;
+			break;
+		}
+	case 0x0D:
+	case 0x0E:
+	case 0x0F:
+	case 0x11:
+	case 0x12:
+	case 0x13:
+	case 0x14:
+		{
+			m_eRuler = NSGuidesVML::rtCurveTo;
+			break;
+		}
+	case 0x15:
+		{
+			m_eRuler = NSGuidesVML::rtFillColor;
+			break;
+		}
+	case 0x16:
+		{
+			m_eRuler = NSGuidesVML::rtLineColor;
+			break;
+		}
+	default:
+		{
+			m_eRuler = NSGuidesVML::rtCurveTo;
+		}
+	};
+
+	m_nCount = (_UINT16)mem;
+	m_nCount = (_UINT16)GetCountPoints2(m_eRuler, m_nCount);
+}
+//---------------------------------------------------------------------------------------------
+MSOSG::MSOSG()
+{
+	cbElement = 4;
+}
+MSOSG::MSOSG(unsigned short cbElement_)
+{
+	cbElement = 4;
+
+	if (cbElement_ == 0xfff0)
+		cbElement = 2;
+}
+
+XLS::BiffStructurePtr MSOSG::clone()
+{
+	return XLS::BiffStructurePtr(new MSOSG(*this));
+}
+
+void MSOSG::load(XLS::CFRecord& record)
+{
+	_UINT16 ftType;
+	record >> ftType;
+
+	m_eType = NSGuidesVML::FormulaType(ftType & 0x1FFF);
+
+	m_param_type1 = (unsigned char)(ftType & 0x04);
+	m_param_type2 = (unsigned char)(ftType & 0x02);
+	m_param_type3 = (unsigned char)(ftType & 0x01);
+
+	record >> m_param_value1 >> m_param_value2 >> m_param_value3;
+}
+//---------------------------------------------------------------------------------------------
+ADJH::ADJH()
+{
+	cbElement = 4;
+}
+
+ADJH::ADJH(unsigned short cbElement_)
+{
+	cbElement = 4;
+
+	if (cbElement_ == 0xfff0)
+	{
+		cbElement = 2;
 	}
 }
 
+XLS::BiffStructurePtr ADJH::clone() 
+{
+	return XLS::BiffStructurePtr(new ADJH(*this));
+}
+
+void ADJH::load(XLS::CFRecord& record)
+{
+	_UINT32 flag;
+	record >> flag;
+
+	fahInverseX			= GETBIT(flag, 31);
+	fahInverseY			= GETBIT(flag, 30);
+	fahSwitchPosition	= GETBIT(flag, 29);
+	fahPolar			= GETBIT(flag, 28);
+	fahPin				= GETBIT(flag, 27);
+	fahUnused			= GETBIT(flag, 26);
+	fahxMin				= GETBIT(flag, 25);
+	fahxMax				= GETBIT(flag, 24);
+	fahyMin				= GETBIT(flag, 23);
+	fahyMax				= GETBIT(flag, 22);
+	fahxRange			= GETBIT(flag, 21);
+	fahyRange			= GETBIT(flag, 20);
+	fahPolarPin			= GETBIT(flag, 19);
+	
+	record >> apX >> apY >> xRange >> yRange;
+	record >> xMin >> xMax >> yMin >> yMax;
+
+
+}
+//---------------------------------------------------------------------------------------------
 void PVertices::ReadComplexData(XLS::CFRecord& record)
 {
-
-	record >> path_complex;
+	record >> complex;
 }
 
 void PSegmentInfo::ReadComplexData(XLS::CFRecord& record)
 {
-	record >> path_complex;
+	record >> complex;
 }
 
+void pGuides::ReadComplexData(XLS::CFRecord& record)
+{
+	record >> complex;
+}
+void pAdjustHandles::ReadComplexData(XLS::CFRecord& record)
+{
+	record >> complex;
+}
 } 

@@ -12,7 +12,7 @@ namespace ODRAW
 OfficeArtClientAnchorSheet::OfficeArtClientAnchorSheet()
 :	OfficeArtRecord(0x00, ClientAnchor)
 {
-
+	_x = _y = _cx = _cy = 0;
 }
 
 
@@ -118,6 +118,47 @@ void OfficeArtClientAnchorSheet::loadFields(XLS::CFRecord& record)
 	}
 	else 
 		_dyB = dyB * kfRow * global_info->defaultRowHeight;	
+
+//----------------------------------------------------------------------------------------------------
+	for (int i = 1 ; i < colL; i++)
+	{
+		if (global_info->customColumnsWidth.find(i) != global_info->customColumnsWidth.end())
+			_x +=  256 * kfCol * global_info->customColumnsWidth[i];	
+		else 
+			_x +=  256 * kfCol * global_info->defaultColumnWidth;
+	}
+	_x += _dxL;
+
+	for (int i = colL ; i < colR; i++)
+	{
+		if (global_info->customColumnsWidth.find(i) != global_info->customColumnsWidth.end())
+			_cx += 256 * kfCol * global_info->customColumnsWidth[i];	
+		else 
+			_cx += 256 * kfCol * global_info->defaultColumnWidth;
+	}
+	_cx += _dxR;
+
+	for (int i = 1 ; i < rwT; i++)
+	{
+		if (global_info->customRowsHeight.find(i) != global_info->customRowsHeight.end())
+		{
+			_y += 256 * kfRow * global_info->customRowsHeight[i];	
+		}
+		else 
+			_y += 256 * kfRow * global_info->defaultRowHeight;	
+	}
+	_y += _dyT;
+
+	for (int i = rwT ; i < rwB; i++)
+	{
+		if (global_info->customRowsHeight.find(i) != global_info->customRowsHeight.end())
+		{
+			_cy += 256 * kfRow * global_info->customRowsHeight[i];	
+		}
+		else 
+			_cy += 256 * kfRow * global_info->defaultRowHeight;	
+	}
+	_cy += _dyT;
 }
 
 
@@ -128,7 +169,7 @@ void OfficeArtClientAnchorSheet::loadFields(XLS::CFRecord& record)
 OfficeArtChildAnchor::OfficeArtChildAnchor()
 :	OfficeArtRecord(0x00, ChildAnchor)
 {
-
+	_x = _y = _cx = _cy = 0;
 }
 
 
@@ -170,18 +211,7 @@ void OfficeArtChildAnchor::loadFields(XLS::CFRecord& record)
 	_y	= (std::min)(dyT, dyB) ;	
 	_cy = (std::max)(dyT, dyB) - _y;	
 
-	if (_x < 0) _x = 0;
-	if (_y < 0) _y = 0;
 
-	double kfCol	= 17640 / 256.;
-	double kfRow	= ( 360000 * 2.54 / 72) / 256. ;
-
-
-	_x	*=  326;
-	_cx *=  326;
-	_y	*=  kfRow;//326;
-	_cy *=  kfRow;//326;
-	//todooo выяснить почему бывают перевернутые . ... flip?
 }
 
 } // namespace XLS

@@ -27,6 +27,12 @@ void OfficeArtFSPGR::storeFields(XLS::CFRecord& record)
 void OfficeArtFSPGR::loadFields(XLS::CFRecord& record)
 {
 	record >> xLeft >> yTop >> xRight >> yBottom;
+
+	_x	= (std::min)(xLeft, xRight);
+	_cx = (std::max)(xLeft, xRight) - _x;
+	
+	_y	= (std::min)(yTop, yBottom) ;	
+	_cy = (std::max)(yTop, yBottom) - _y;	
 }
 
 

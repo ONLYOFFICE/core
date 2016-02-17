@@ -42,6 +42,11 @@ public:
 	_UINT32		_dyT;
 	_UINT32		_dxR;
 	_UINT32		_dyB;
+
+	int _x;
+	int _y;
+	int _cx;
+	int _cy;
 };
 
 typedef boost::shared_ptr<OfficeArtClientAnchorSheet> OfficeArtClientAnchorSheetPtr;
@@ -60,10 +65,10 @@ public:
 
 	int serialize(std::wostream & stream);
 
-	short dxL;
-	short dyT;
-	short dxR;
-	short dyB;
+	_INT32 dxL;
+	_INT32 dyT;
+	_INT32 dxR;
+	_INT32 dyB;
 
 	int _x;
 	int _y;

@@ -40,7 +40,9 @@ public:
 	BaseObjectPtr				m_CONDFMTS;
 	BaseObjectPtr				m_CodeName;
 	BaseObjectPtr				m_SheetExt;
-
+	
+	std::vector<BaseObjectPtr>	m_arFEAT;
+	std::vector<BaseObjectPtr>	m_arFEAT11;
 	std::vector<BaseObjectPtr>	m_arNote;
 	std::vector<BaseObjectPtr>	m_arHLINK;
 	std::vector<BaseObjectPtr>	m_arSORT;

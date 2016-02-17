@@ -5,9 +5,10 @@
 #include <vector>
 #include <boost/algorithm/string.hpp>
 
+#include <stdlib.h>
 
-#include "../../../../../Common/DocxFormat/Source/Base/Base.h"
-#include "../../../../../DesktopEditor/graphics/GraphicsPath.h"
+#include "../../../../Common/DocxFormat/Source/Base/Base.h"
+#include "../../../../DesktopEditor/graphics/GraphicsPath.h"
 
 const double	ShapeSize		= 43200.0;
 const int		ShapeSizeVML	= 21600;
@@ -20,13 +21,6 @@ const double	RadKoef			= M_PI/10800000.0;
 #ifndef		pow3_16
 #define		pow3_16			60000
 #endif
-
-
-inline LONG round(double dVal)
-{
-	return (LONG)(2 * dVal) - (LONG)(dVal);
-}
-
 
 namespace NSStringUtils
 {
@@ -55,9 +49,13 @@ namespace NSStringUtils
 
 	static std::wstring ToString(LONG val)
 	{
-		wchar_t buf[20]={};
-		_itow(val, buf, 10);
-		return std::wstring(buf);
+#if defined(_WIN32) || defined (_WIN64)
+            wchar_t buff[32] ={};
+            _itow(val, buff, 10);
+            return std::wstring(buff);
+#else
+            return (std::to_wstring(val));
+#endif
 	}
 	
 	static void ParseString(std::wstring strDelimeters, std::wstring strSource, 

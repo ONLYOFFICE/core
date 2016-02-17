@@ -297,26 +297,21 @@ namespace NSCustomVML
 					if (lMaxF > m_arVertices[nIndex].x )	nGuideIndex_x = (DWORD)m_arVertices[nIndex].x - (DWORD)lMinF;	
 					if (lMaxF > m_arVertices[nIndex].y )	nGuideIndex_y = (DWORD)m_arVertices[nIndex].y - (DWORD)lMinF;	
 
-					wchar_t buf[2]={};
 					if (nGuideIndex_x >= 0 ) 
 					{
-						_itow(m_arGuides[nGuideIndex_x].m_param_value1, buf, 10);
-						strPath += std::wstring(buf) + L",";
+                        strPath += NSStringUtils::ToString(m_arGuides[nGuideIndex_x].m_param_value1) + L",";
 					}
 					else
 					{
-						_itow(m_arVertices[nIndex].x, buf, 10);
-						strPath += std::wstring(buf) + L",";
+                       strPath += NSStringUtils::ToString(m_arVertices[nIndex].x) + L",";
 					}
 					if (nGuideIndex_y >= 0)
 					{
-						_itow(m_arGuides[nGuideIndex_y].m_param_value1, buf, 10);
-						strPath += std::wstring(buf) + L",";
+                        strPath += NSStringUtils::ToString(m_arGuides[nGuideIndex_y].m_param_value1) + L",";
 					}
 					else
 					{
-						_itow(m_arVertices[nIndex].y, buf, 10);
-						strPath += std::wstring(buf) + L",";
+                        strPath += NSStringUtils::ToString(m_arVertices[nIndex].y) + L",";
 					}
 				}
 				strPath.erase(strPath.length() - 1);
@@ -378,26 +373,21 @@ namespace NSCustomVML
 						if (lMaxF > m_arVertices[nV].x )	nGuideIndex_x = (DWORD)m_arVertices[nV].x - (DWORD)lMinF;	
 						if (lMaxF > m_arVertices[nV].y )	nGuideIndex_y = (DWORD)m_arVertices[nV].y - (DWORD)lMinF;	
 
-						wchar_t buf[20]={};
 						if (nGuideIndex_x >= 0 )
 						{
-							_itow(m_arGuides[nGuideIndex_x].m_param_value1, buf, 10);
-							strPath += std::wstring(buf) + L",";
+                            strPath += NSStringUtils::ToString(m_arGuides[nGuideIndex_x].m_param_value1) + L",";
 						}
 						else
 						{
-							_itow(m_arVertices[nV].x, buf, 10);
-							strPath += std::wstring(buf) + L",";
+                            strPath += NSStringUtils::ToString(m_arVertices[nV].x) + L",";
 						}
 						if (nGuideIndex_y >= 0)
 						{
-							_itow(m_arGuides[nGuideIndex_y].m_param_value1, buf, 10);
-							strPath += std::wstring(buf) + L",";
+                            strPath += NSStringUtils::ToString(m_arGuides[nGuideIndex_y].m_param_value1) + L",";
 						}
 						else
 						{
-							_itow(m_arVertices[nV].y, buf, 10);
-							strPath += std::wstring(buf) + L",";
+                            strPath += NSStringUtils::ToString(m_arVertices[nV].y) + L",";
 						}
 					}
 

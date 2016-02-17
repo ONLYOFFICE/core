@@ -618,7 +618,7 @@ void xlsx_drawing_context::serialize_shape(_drawing_state_ptr & drawing_state)
 
 	std::wstring prstTxWarp;
 	std::wstring prstGeom	= Spt2ShapeType(drawing_state->shape_id);
-	std::wstring customGeom	= convert_custom_shape(drawing_state);
+	std::wstring customGeom;
 
 	if (prstGeom.empty())
 	{
@@ -629,10 +629,9 @@ void xlsx_drawing_context::serialize_shape(_drawing_state_ptr & drawing_state)
 			drawing_state->bTextBox = true;
 			prstGeom = L"rect";
 		}
-		else if (drawing_state->path.empty())
+		else
 		{
-			//error !!!
-			prstGeom = L"rect";
+			customGeom	= convert_custom_shape(drawing_state);
 		}
 	}
 	else
@@ -694,40 +693,7 @@ void xlsx_drawing_context::serialize_shape(_drawing_state_ptr & drawing_state)
 				}
 				else
 				{
-					if (customGeom.empty())
-					{
-						CP_XML_NODE(L"a:custGeom")
-						{        
-							CP_XML_NODE(L"a:avLst");
-							//oox_serialize_aLst(CP_XML_STREAM(),val.additional);
-							CP_XML_NODE(L"a:ahLst");
-							//CP_XML_NODE(L"a:gdLst");
-							CP_XML_NODE(L"a:rect")
-							{
-								CP_XML_ATTR(L"b",L"b");
-								CP_XML_ATTR(L"l",0);
-								CP_XML_ATTR(L"r",L"r");
-								CP_XML_ATTR(L"t",0);
-							}
-							CP_XML_NODE(L"a:pathLst")
-							{ 	
-								int w = drawing_state->path_rect.right - drawing_state->path_rect.left;
-								int h = drawing_state->path_rect.bottom- drawing_state->path_rect.top;
-
-								if (w > 0 && h > 0)
-								{
-									CP_XML_NODE(L"a:path")
-									{
-										CP_XML_ATTR(L"w", w);
-										CP_XML_ATTR(L"h", h);
-										
-										CP_XML_STREAM() << drawing_state->path;
-									}
-								}
-							}
-						}
-					}
-					else
+					CP_XML_NODE(L"a:custGeom")
 					{
 						CP_XML_STREAM() << customGeom;
 					}
@@ -749,20 +715,46 @@ std::wstring xlsx_drawing_context::convert_custom_shape(_drawing_state_ptr & dra
 	CCustomShape * shape = CCustomShape::CreateByType(drawing_state->shape_id);
 	if (shape == NULL) return L"";
 
-	//shape->m_oCustomVML.LoadSegments(pProperty);
-	//shape->m_oCustomVML.LoadVertices(pProperty);
-	//shape->m_oCustomVML.LoadGuides(pProperty);
-	//shape->m_oCustomVML.LoadAHs(pProperty);
+	shape->m_oCustomVML.m_bIsVerticesPresent = drawing_state->custom_verticles.empty() ? false : true;
+	for (int i = 0 ; i < drawing_state->custom_verticles.size(); i++)
+	{
+		 Aggplus::POINT p;
+		
+		 p.x = drawing_state->custom_verticles[i].x;
+		 p.y = drawing_state->custom_verticles[i].y;
+		
+		 shape->m_oCustomVML.m_arVertices.push_back(p);
+	}
+	for (int i = 0 ; i < drawing_state->custom_guides.size(); i++)
+	{//todooo מבתוהוםטעü/סנאסעטעü !!
+		NSCustomVML::CGuide guid;
+		
+		guid.m_eType		= drawing_state->custom_guides[i].m_eType;
+		guid.m_param_type1	= drawing_state->custom_guides[i].m_param_type1;
+		guid.m_param_type2	= drawing_state->custom_guides[i].m_param_type2;
+		guid.m_param_type3	= drawing_state->custom_guides[i].m_param_type3;
+		guid.m_param_value1 = drawing_state->custom_guides[i].m_param_value1;
+		guid.m_param_value2 = drawing_state->custom_guides[i].m_param_value2;
+		guid.m_param_value3 = drawing_state->custom_guides[i].m_param_value3;
+		
+		shape->m_oCustomVML.addGuide(guid);
+	}	
+	for (int i = 0 ; i < drawing_state->custom_segments.size(); i++)
+	{
+		shape->m_oCustomVML.addSegment(drawing_state->custom_segments[i].m_eRuler , drawing_state->custom_segments[i].m_nCount);
+	}	
 
-	//LONG lIndexAdj = pProperty->m_ePID - NSOfficeDrawing::adjustValue;
-	//if (lIndexAdj >= 0 && lIndexAdj < pShape->m_arAdjustments.size())
-	//{
-	//	shape->m_oCustomVML.LoadAdjusts(lIndexAdj, (LONG)pProperty->m_lValue);
-	//}
-	//else
-	//{
-	//	shape->m_oCustomVML.LoadAdjusts(lIndexAdj, (LONG)pProperty->m_lValue);
-	//}
+	for (int i = 0; i < drawing_state->custom_adjustValues.size(); i++)
+	{
+		if (drawing_state->custom_adjustValues[i])
+		{
+			shape->m_oCustomVML.addAdjust(i, *drawing_state->custom_adjustValues[i]);
+		}
+	}
+
+	shape->m_oCustomVML.SetPath((NSGuidesVML::RulesType)drawing_state->custom_path);
+	shape->m_oCustomVML.ToCustomShape(shape, shape->m_oManager);
+	shape->ReCalculate();
 //-------------------------------------------------------------------------------------
 
 	NSGuidesVML::CFormParam pParamCoef;
@@ -772,6 +764,16 @@ std::wstring xlsx_drawing_context::convert_custom_shape(_drawing_state_ptr & dra
 	
 	NSGuidesVML::CFormulaConverter pFormulaConverter;
 
+	if (drawing_state->custom_rect.cx > 0 && drawing_state->custom_rect.cy > 0)
+	{
+		pFormulaConverter.m_lWidth	= drawing_state->custom_rect.cx;
+		pFormulaConverter.m_lHeight = drawing_state->custom_rect.cy;
+	}
+	else
+	{
+		pFormulaConverter.m_lWidth	= 21600;
+		pFormulaConverter.m_lHeight = 21600;
+	}
 	//coeff
 	pFormulaConverter.ConvertCoef(pParamCoef);
 
@@ -1026,13 +1028,27 @@ void xlsx_drawing_context::serialize_xfrm(std::wostream & stream, _drawing_state
 			
 			CP_XML_NODE(L"a:off")
 			{
-				CP_XML_ATTR(L"x", drawing_state->x);
-				CP_XML_ATTR(L"y", drawing_state->y);
+				CP_XML_ATTR(L"x", drawing_state->child_anchor.x);
+				CP_XML_ATTR(L"y", drawing_state->child_anchor.y);
 			}
 			CP_XML_NODE(L"a:ext")
 			{
-				CP_XML_ATTR(L"cx", drawing_state->cx);
-				CP_XML_ATTR(L"cy", drawing_state->cy);
+				CP_XML_ATTR(L"cx", drawing_state->child_anchor.cx);
+				CP_XML_ATTR(L"cy", drawing_state->child_anchor.cy);
+			}
+
+			if (drawing_state->type == external_items::typeGroup)
+			{
+				CP_XML_NODE(L"a:chOff")
+				{
+					CP_XML_ATTR(L"x", drawing_state->group_anchor.x);
+					CP_XML_ATTR(L"y", drawing_state->group_anchor.y);
+				}
+				CP_XML_NODE(L"a:chExt")
+				{
+					CP_XML_ATTR(L"cx", drawing_state->group_anchor.cx);
+					CP_XML_ATTR(L"cy", drawing_state->group_anchor.cy);
+				}				
 			}
 		}
 	}
@@ -1123,6 +1139,11 @@ void xlsx_drawing_context::serialize_text(std::wostream & stream, _drawing_state
 				}
 				else
 				{
+					CP_XML_ATTR(L"lIns", drawing_state->text.margins.left);	
+					CP_XML_ATTR(L"tIns", drawing_state->text.margins.top);	
+					CP_XML_ATTR(L"rIns", drawing_state->text.margins.right);
+					CP_XML_ATTR(L"bIns", drawing_state->text.margins.bottom);
+
 					switch (drawing_state->text.vert_align)
 					{
 						case 1: CP_XML_ATTR(L"anchor", L"t");	break;
@@ -1137,6 +1158,8 @@ void xlsx_drawing_context::serialize_text(std::wostream & stream, _drawing_state
 						case 5: CP_XML_ATTR(L"vert", L"wordArtVert");	break;
 					}
 				}
+				//text margins
+
 			}
 			CP_XML_NODE(L"a:lstStyle");		
 			
@@ -1316,13 +1339,19 @@ void xlsx_drawing_context::set_child_anchor(int x, int y, int cx, int cy)
 {
 	if (current_drawing_states == NULL) return;	
 
-	current_drawing_states->back()->x	= x;
-	current_drawing_states->back()->y	= y;
-	current_drawing_states->back()->cx	= cx;
-	current_drawing_states->back()->cy	= cy;	
-	
-	//current_drawing_states->back()->anchor		= str;
-	//current_drawing_states->back()->type_anchor = 4;
+	current_drawing_states->back()->child_anchor.x	= x;
+	current_drawing_states->back()->child_anchor.y	= y;
+	current_drawing_states->back()->child_anchor.cx	= cx;
+	current_drawing_states->back()->child_anchor.cy	= cy;	
+}
+void xlsx_drawing_context::set_group_anchor(int x, int y, int cx, int cy)
+{
+	if (current_drawing_states == NULL) return;	
+
+	current_drawing_states->back()->group_anchor.x	= x;
+	current_drawing_states->back()->group_anchor.y	= y;
+	current_drawing_states->back()->group_anchor.cx	= cx;
+	current_drawing_states->back()->group_anchor.cy	= cy;	
 }
 void xlsx_drawing_context::set_absolute_anchor(double width, double height)
 {
@@ -1577,13 +1606,6 @@ void xlsx_drawing_context::set_hyperlink(const std::wstring & link, const std::w
 	rels_->add( !is_external, sId , link_correct, external_items::typeHyperlink);
 }
 
-void xlsx_drawing_context::set_path (const std::wstring & path)
-{
-	if (current_drawing_states == NULL) return;	
-
-	current_drawing_states->back()->path = path;
-}
-
 void xlsx_drawing_context::set_wordart_text(const std::wstring & text)
 {
 	if (current_drawing_states == NULL) return;	
@@ -1619,6 +1641,12 @@ void xlsx_drawing_context::set_text_vertical (int val)
 	if (current_drawing_states == NULL) return;	
 
 	current_drawing_states->back()->text.vertical = val;
+}
+void xlsx_drawing_context::set_text_margin(RECT & val)
+{
+	if (current_drawing_states == NULL) return;	
+
+	current_drawing_states->back()->text.margins = val;
 }
 void xlsx_drawing_context::set_wordart_bold	(bool val)
 {
@@ -1669,17 +1697,47 @@ void xlsx_drawing_context::set_text_wrap (int val)
 
 	current_drawing_states->back()->text.wrap = val;
 }
-void xlsx_drawing_context::set_path_rect(_rect & rect)
+void xlsx_drawing_context::set_custom_rect(_rect & rect)
 {
 	if (current_drawing_states == NULL) return;	
 
-	current_drawing_states->back()->path_rect = rect;
+	current_drawing_states->back()->custom_rect = rect;
 }
 void xlsx_drawing_context::set_properties(const std::wstring & str)
 {
 	if (current_drawing_states == NULL) return;
 	
 	current_drawing_states->back()->shape = str;
+}
+void xlsx_drawing_context::set_custom_verticles (std::vector<ODRAW::MSOPOINT> & points)
+{
+	if (current_drawing_states == NULL) return;
+
+	current_drawing_states->back()->custom_verticles = points;
+}
+void xlsx_drawing_context::set_custom_guides (std::vector<ODRAW::MSOSG> & guides)
+{
+	if (current_drawing_states == NULL) return;
+	
+	current_drawing_states->back()->custom_guides = guides;
+}
+void xlsx_drawing_context::set_custom_segments (std::vector<ODRAW::MSOPATHINFO> & segments)
+{
+	if (current_drawing_states == NULL) return;
+	
+	current_drawing_states->back()->custom_segments = segments;
+}
+void xlsx_drawing_context::set_custom_adjustValues(std::vector<_CP_OPT(int)> & values)
+{
+	if (current_drawing_states == NULL) return;
+
+	current_drawing_states->back()->custom_adjustValues = values;
+}
+void xlsx_drawing_context::set_custom_path (int type_path)
+{
+	if (current_drawing_states == NULL) return;
+
+	current_drawing_states->back()->custom_path = type_path;
 }
 bool xlsx_drawing_context::empty()
 {

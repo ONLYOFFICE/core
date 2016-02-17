@@ -73,6 +73,14 @@
             _UINT32      biClrUsed;
             _UINT32      biClrImportant;
     } BITMAPINFOHEADER;
+
+typedef struct tagBITMAPCOREHEADER {
+        DWORD   bcSize;                 /* used to get to color table */
+        WORD    bcWidth;
+        WORD    bcHeight;
+        WORD    bcPlanes;
+        WORD    bcBitCount;
+} BITMAPCOREHEADER;
 #endif
 
 XlsConverter::XlsConverter(const std::wstring & xls_file, const std::wstring & _xlsx_path, const ProgressCallback* CallBack) 
@@ -502,6 +510,7 @@ std::wstring XlsConverter::WriteMediaFile(char *data, int size, std::wstring typ
 
 	if (type_ext == L"dib_data")
 	{
+		bool bPNG = false;
 		int offset = 0;
 		CBgraFrame frame;
 
@@ -524,8 +533,10 @@ std::wstring XlsConverter::WriteMediaFile(char *data, int size, std::wstring typ
 				header_core->bcWidth++;
 			
 			frame.put_Stride	(header_core->bcBitCount * header_core->bcWidth /8);
+
+			bPNG = true;
 		}
-		else
+		else if (header->biBitCount >=24)
 		{
 			offset = 40; //sizeof(BITMAPINFOHEADER)
 
@@ -538,14 +549,39 @@ std::wstring XlsConverter::WriteMediaFile(char *data, int size, std::wstring typ
 				header->biWidth++;
 			
 			frame.put_Stride	(header->biBitCount * header->biWidth /8);
-		
+			bPNG = true;
 		}
-		frame.put_Data((unsigned char*)data + offset);
-		
-		file_name += std::wstring(L".png");
-		
-		res = frame.SaveFile(xlsx_context->get_mediaitems().media_path() + file_name, 4/*CXIMAGE_FORMAT_PNG*/);
-		frame.put_Data(NULL);
+		if (bPNG)
+		{
+			frame.put_Data((unsigned char*)data + offset);
+			
+			file_name += std::wstring(L".png");
+			
+			res = frame.SaveFile(xlsx_context->get_mediaitems().media_path() + file_name, 4/*CXIMAGE_FORMAT_PNG*/);
+			frame.put_Data(NULL);
+
+			if (res = false)
+			{
+				//
+			}
+		}
+		else
+		{
+			//тут паттерные картинки
+			file_name += std::wstring(L".bmp");
+			NSFile::CFileBinary file;
+			if (file.CreateFileW(xlsx_context->get_mediaitems().media_path() + file_name))
+			{
+				WORD vtType		= 0x4D42;				file.WriteFile((BYTE*)&vtType,	2);
+				DWORD dwLen		= header->biSizeImage;	file.WriteFile((BYTE*)&dwLen,	4);
+				DWORD dwRes		= 0;					file.WriteFile((BYTE*)&dwRes,	4);
+				DWORD dwOffset	= 2;					file.WriteFile((BYTE*)&dwOffset, 4);
+			
+				file.WriteFile((BYTE*)data, size);
+				file.CloseFile();
+				res = true;
+			}
+		}
 	}
 	else
 	{
@@ -802,20 +838,20 @@ void XlsConverter::convert(ODRAW::OfficeArtRecord * art)
 	case XLS::typeOfficeArtFSPGR:
 		{
 			ODRAW::OfficeArtFSPGR * ch = dynamic_cast<ODRAW::OfficeArtFSPGR *>(art);
-			int l = ch->xLeft;
-			int r = ch->xRight;
-			int t = ch->yTop;
-			int b = ch->yBottom;
+
+			xlsx_context->get_drawing_context().set_group_anchor(ch->_x, ch->_y, ch->_cx, ch->_cy);
 		}break;
 	case XLS::typeOfficeArtChildAnchor:
 		{
-			//art->serialize(strm);
-            //xlsx_context->get_drawing_context().set_child_anchor(strm.str());
 			ODRAW::OfficeArtChildAnchor * ch = dynamic_cast<ODRAW::OfficeArtChildAnchor *>(art);
 			xlsx_context->get_drawing_context().set_child_anchor(ch->_x, ch->_y, ch->_cx, ch->_cy);
 		}break;
 	case XLS::typeOfficeArtClientAnchorSheet:
 		{
+			ODRAW::OfficeArtClientAnchorSheet * ch = dynamic_cast<ODRAW::OfficeArtClientAnchorSheet *>(art);
+			
+			xlsx_context->get_drawing_context().set_child_anchor(ch->_x, ch->_y, ch->_cx, ch->_cy);
+			
 			art->serialize(strm);
             xlsx_context->get_drawing_context().set_sheet_anchor(strm.str());
 		}break;
@@ -989,6 +1025,8 @@ void XlsConverter::convert_fill_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & pr
 }
 void XlsConverter::convert_line_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & props)
 {
+	if (props.size() < 1) return;
+
 	for (int i = 0 ; i < props.size() ; i++)
 	{
 		switch(props[i]->opid)
@@ -1043,6 +1081,8 @@ void XlsConverter::convert_line_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & pr
 }
 void XlsConverter::convert_blip(std::vector<ODRAW::OfficeArtFOPTEPtr> & props)
 {
+	if (props.size() < 1) return;
+
 	for (int i = 0 ; i < props.size() ; i++)
 	{
 		ODRAW::FixedPoint * fixed_point = static_cast<ODRAW::FixedPoint *>(props[i].get());
@@ -1080,98 +1120,59 @@ void XlsConverter::convert_blip(std::vector<ODRAW::OfficeArtFOPTEPtr> & props)
 }
 void XlsConverter::convert_geometry(std::vector<ODRAW::OfficeArtFOPTEPtr> & props)
 {
-	std::vector<ODRAW::MSOPOINT>		points;
-	std::vector<ODRAW::MSOPATHINFO>		command;
-	ODRAW::ShapePath::msoShapePathType	shapeType;
-	oox::_rect rect;
+	if (props.size() < 1) return;
+
+	oox::_rect					rect;
+	std::vector<_CP_OPT(int)>	adjustValues(8);
 	
 	for (int i = 0 ; i < props.size() ; i++)
 	{
 		switch(props[i]->opid)
 		{
-		case 0x0140:	rect.left	= props[i]->op; break;
-		case 0x0141:	rect.top	= props[i]->op; break;
-		case 0x0142:	rect.right	= props[i]->op; break;
-		case 0x0143:	rect.bottom = props[i]->op; break;
-		case 0x0144:	shapeType	= (ODRAW::ShapePath::msoShapePathType)props[i]->op; break;
+		case 0x0140:	rect.x	= props[i]->op; break;
+		case 0x0141:	rect.y	= props[i]->op; break;
+		case 0x0142:	rect.cx	= props[i]->op; break;
+		case 0x0143:	rect.cy = props[i]->op; break;
+		case 0x0144:
+			xlsx_context->get_drawing_context().set_custom_path(props[i]->op); break;
 		case 0x0145:
 			{
 				ODRAW::PVertices * v = (ODRAW::PVertices *)(props[i].get());
-				points = v->path_complex.data;
+				xlsx_context->get_drawing_context().set_custom_verticles(v->complex.data);
 			}break;
 		case 0x0146:
 			{
 				ODRAW::PSegmentInfo * s = (ODRAW::PSegmentInfo *)(props[i].get());
-				command = s->path_complex.data;
+				xlsx_context->get_drawing_context().set_custom_segments(s->complex.data);
+			}break;
+		case 0x0147: //adjustValue .... //adjust8Value
+		case 0x0148:
+		case 0x0149:
+		case 0x014A:
+		case 0x014B:
+		case 0x014C:
+		case 0x014D:
+		case 0x014E:
+			{
+				adjustValues[props[i]->opid - 0x0147] = props[i]->op ;
+			}break;
+		case 0x0156:
+			{
+				ODRAW::pGuides* s = (ODRAW::pGuides *)(props[i].get());
+				xlsx_context->get_drawing_context().set_custom_guides(s->complex.data);
 			}break;
 		}
 	}
-
-	if (points.size() > 0 || command.size() > 0)
-	{
-		std::wstringstream strm;
-		CP_XML_WRITER(strm)    
-		{
-			if (command.size() == 0)
-			{
-				for (int i = 0 ; i < points.size(); i++)
-				{
-					CP_XML_NODE(L"a:lnTo")
-					{
-						CP_XML_NODE(L"a:pt")
-						{
-							CP_XML_ATTR(L"x", points[i].x);
-							CP_XML_ATTR(L"y", points[i].y);
-						}
-					}
-				}
-			}
-			else
-			{
-				int ind_point = 0;
-				std::wstring comm[] = { L"a:lnTo", L"a:cubicBezTo", L"a:moveTo", L"a:close" };
-				int count_point[] = { 1, 3, 1, 0};
-				for (int i = 0 ; i < command.size(); i++)
-				{
-					if (ind_point >= points.size())
-						break;				
-					
-					//if (command[i].typeSegment == ODRAW::msopathEnd) break;
-					if (command[i].typeSegment > 3) continue;
-
-					CP_XML_NODE(comm[command[i].typeSegment])
-					{
-						for (int j=0 ; j < count_point[command[i].typeSegment]; j ++)
-						{
-							if (ind_point < points.size())
-							{
-								CP_XML_NODE(L"a:pt")
-								{
-									CP_XML_ATTR(L"x", points[ind_point].x);
-									CP_XML_ATTR(L"y", points[ind_point].y);
-									ind_point++;
-								}
-							}
-							else
-							{
-								CP_XML_NODE(L"a:pt")
-								{
-									CP_XML_ATTR(L"x", 0);
-									CP_XML_ATTR(L"y", 0);
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-		//xlsx_context->get_drawing_context().set_shapeType
-		xlsx_context->get_drawing_context().set_path_rect(rect);
-		xlsx_context->get_drawing_context().set_path(strm.str());
-	}
+	rect.cy -= rect.y;
+	rect.cx -= rect.x;
+	xlsx_context->get_drawing_context().set_custom_rect(rect);
+	
+	xlsx_context->get_drawing_context().set_custom_adjustValues(adjustValues);
 }
 void XlsConverter::convert_geometry_text(std::vector<ODRAW::OfficeArtFOPTEPtr> & props)
 {
+	if (props.size() < 1) return;
+
 	for (int i = 0 ; i < props.size() ; i++)
 	{
 		switch(props[i]->opid)
@@ -1230,18 +1231,17 @@ void XlsConverter::convert_geometry_text(std::vector<ODRAW::OfficeArtFOPTEPtr> &
 }
 void XlsConverter::convert_text(std::vector<ODRAW::OfficeArtFOPTEPtr> & props)
 {
+	if (props.size() < 1) return;
+
+	RECT text_margin = {0x00016530, 0x0000b298, 0x00016530, 0x0000b298};
 	for (int i = 0 ; i < props.size() ; i++)
 	{
 		switch(props[i]->opid)
 		{
-		case NSOfficeDrawing::dxTextLeft:	
-			//pParentShape->m_dTextMarginX = (double)pProperty->m_lValue / EMU_MM;		break;
-		case NSOfficeDrawing::dxTextRight:
-			//pParentShape->m_dTextMarginRight = (double)pProperty->m_lValue / EMU_MM;	break;			
-		case NSOfficeDrawing::dyTextTop:
-			//pParentShape->m_dTextMarginY = (double)pProperty->m_lValue / EMU_MM;		break;
-		case NSOfficeDrawing::dyTextBottom:
-			//pParentShape->m_dTextMarginBottom = (double)pProperty->m_lValue / EMU_MM;	break;
+		case NSOfficeDrawing::dxTextLeft:		text_margin.left	= props[i]->op;	break;
+		case NSOfficeDrawing::dxTextRight:		text_margin.right	= props[i]->op;	break;			
+		case NSOfficeDrawing::dyTextTop:		text_margin.top		= props[i]->op;	break;
+		case NSOfficeDrawing::dyTextBottom:		text_margin.bottom	= props[i]->op;	break;
 		case NSOfficeDrawing::WrapText:
 			{
 				xlsx_context->get_drawing_context().set_text_wrap(props[i]->op);				
@@ -1299,6 +1299,7 @@ void XlsConverter::convert_text(std::vector<ODRAW::OfficeArtFOPTEPtr> & props)
 			}break;
 		}
 	}
+	xlsx_context->get_drawing_context().set_text_margin(text_margin);
 }
 void XlsConverter::convert_shadow(std::vector<ODRAW::OfficeArtFOPTEPtr> & props)
 {
@@ -1322,7 +1323,7 @@ void XlsConverter::convert_group_shape(std::vector<ODRAW::OfficeArtFOPTEPtr> & p
 		case 0x380:
 			{
 				ODRAW::anyString *str = dynamic_cast<ODRAW::anyString*>(props[i].get());
-				//xlsx_context->get_drawing_context().set_name(str->string_);
+				xlsx_context->get_drawing_context().set_name(str->string_);
 			}break;
 		case 0x381:
 			{

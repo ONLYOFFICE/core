@@ -10,6 +10,8 @@
 #include <Logic/Biff_structures/HyperlinkObject.h>
 
 #include "../../../ASCOfficePPTXFile/Editor/Drawing/Shapes/BaseShape/PPTShape/Enums.h"
+#include "../../../../XlsXlsxConverter/ConvertShapes/GraphicsPath.h"
+#include "../../../../XlsXlsxConverter/ConvertShapes/FormulaShape.h"
 
 namespace XLS
 {
@@ -18,44 +20,7 @@ namespace XLS
 
 namespace ODRAW
 {
-		enum MSOPATHTYPE
-		{
-			msopathLineTo,
-			msopathCurveTo,
-			msopathMoveTo,
-			msopathClose,
-			msopathEnd,
-			msopathEscape,
-			msopathClientEscape,
-			msopathInvalid
-		};
 
-		enum MSOPATHESCAPE
-		{
-			msopathEscapeExtension 				=	0x00000000,	
-			msopathEscapeAngleEllipseTo  		=	0x00000001,
-			msopathEscapeAngleEllipse 	 		=	0x00000002,
-			msopathEscapeArcTo  				=	0x00000003,
-			msopathEscapeArc  					=	0x00000004,
-			msopathEscapeClockwiseArcTo  		=	0x00000005,
-			msopathEscapeClockwiseArc 	 		=	0x00000006,
-			msopathEscapeEllipticalQuadrantX  	=	0x00000007,
-			msopathEscapeEllipticalQuadrantY 	=	0x00000008,
-			msopathEscapeQuadraticBezier 	 	=	0x00000009,
-			msopathEscapeNoFill  				=	0x0000000A,
-			msopathEscapeNoLine  				=	0x0000000B,
-			msopathEscapeAutoLine  				=	0x0000000C,
-			msopathEscapeAutoCurve  			=	0x0000000D,
-			msopathEscapeCornerLine  			=	0x0000000E,
-			msopathEscapeCornerCurve 			=	0x0000000F,
-			msopathEscapeSmoothLine  			=	0x00000010,
-			msopathEscapeSmoothCurve  			=	0x00000011,
-			msopathEscapeSymmetricLine 			=	0x00000012,
-			msopathEscapeSymmetricCurve 		=	0x00000013,
-			msopathEscapeFreeform 				=	0x00000014,
-			msopathEscapeFillColor 				=	0x00000015,
-			msopathEscapeLineColor 				=	0x00000016
-		};
 class OfficeArtFOPTE;
 typedef boost::shared_ptr<OfficeArtFOPTE> OfficeArtFOPTEPtr;
 
@@ -593,24 +558,77 @@ class MSOPATHINFO : public XLS::BiffStructure
 
 	static const XLS::ElementType	type = XLS::typeOfficeArtRecord;
 
-	//enum msoPathSegmentType
-	//{
-	//	msopathLineTo = 0,
-	//	msopathCurveTo,
-	//	msopathMoveTo,
-	//	msopathClose,
-	//	msopathEnd,
-	//	msopathEscape,
-	//	msopathClientEscape
-	//};
-	unsigned short		cbElement;
-
-	MSOPATHTYPE			typeSegment;
-	short				Segments;
-	short				VertexCount;
-	MSOPATHESCAPE		EscapeCode;
+	NSGuidesVML::RulesType	m_eRuler;
+	_UINT16					m_nCount;
+	
+	int cbElement;
 };
+class MSOSG : public XLS::BiffStructure 
+{
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(MSOSG)
 
+	MSOSG();
+	MSOSG(unsigned short cbElement_);
+
+	XLS::BiffStructurePtr clone();
+
+	virtual void load(XLS::CFRecord& record);
+	virtual void store(XLS::CFRecord& record){}
+
+	static const XLS::ElementType	type = XLS::typeOfficeArtRecord;
+
+	NSGuidesVML::FormulaType	m_eType;
+
+	unsigned char				m_param_type1;
+	unsigned char				m_param_type2;
+	unsigned char				m_param_type3;
+
+	_UINT16						m_param_value1;
+	_UINT16						m_param_value2;
+	_UINT16						m_param_value3;
+	
+	int cbElement;
+};
+class ADJH : public XLS::BiffStructure 
+{
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(ADJH)
+
+	ADJH();
+	ADJH(unsigned short cbElement_);
+
+	XLS::BiffStructurePtr clone();
+
+	virtual void load(XLS::CFRecord& record);
+	virtual void store(XLS::CFRecord& record){}
+
+	static const XLS::ElementType	type = XLS::typeOfficeArtRecord;
+
+	int cbElement;
+
+	_UINT32 apX;
+	_UINT32 apY;
+	_INT32	xRange;
+	_INT32	yRange;
+	_INT32	xMin;
+	_INT32	xMax;
+	_INT32	yMin;
+	_INT32	yMax;
+
+//-------------------------
+	bool fahInverseX;
+	bool fahInverseY;
+	bool fahSwitchPosition;
+	bool fahPolar;
+	bool fahPin;
+	bool fahUnused;
+	bool fahxMin;
+	bool fahxMax;
+	bool fahyMin;
+	bool fahyMax;
+	bool fahxRange;
+	bool fahyRange;
+	bool fahPolarPin;
+};
 class ShapePath : public OfficeArtFOPTE 
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(ShapePath)
@@ -631,7 +649,7 @@ class PVertices : public OfficeArtFOPTE
 
 	virtual void ReadComplexData(XLS::CFRecord& record);
 
-	IMsoArray<MSOPOINT> path_complex;
+	IMsoArray<MSOPOINT> complex;
 };
 
 class PSegmentInfo : public OfficeArtFOPTE 
@@ -640,7 +658,15 @@ class PSegmentInfo : public OfficeArtFOPTE
 
 	virtual void ReadComplexData(XLS::CFRecord& record);
 
-	IMsoArray<MSOPATHINFO> path_complex;
+	IMsoArray<MSOPATHINFO> complex;
+};
+class pGuides : public OfficeArtFOPTE 
+{
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(pGuides)
+
+	virtual void ReadComplexData(XLS::CFRecord& record);
+
+	IMsoArray<MSOSG> complex;
 };
 
 class AdjustValue : public OfficeArtFOPTE 
@@ -651,6 +677,10 @@ class AdjustValue : public OfficeArtFOPTE
 class pAdjustHandles : public OfficeArtFOPTE 
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(pAdjustHandles)
+	
+	virtual void ReadComplexData(XLS::CFRecord& record);
+
+	IMsoArray<ADJH> complex;
 };
 
 class lineOpacity : public OfficeArtFOPTE 

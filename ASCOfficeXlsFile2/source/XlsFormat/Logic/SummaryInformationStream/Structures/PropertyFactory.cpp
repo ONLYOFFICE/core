@@ -16,6 +16,8 @@ PropertyPtr PropertyFactory::ReadProperty(const unsigned int prop_type, XLS::CFS
 {
 	stream->seekFromBegin(property_offset);
 	unsigned short value_type;
+
+	if (stream->getStreamPointer() +2 > stream->getStreamSize()) return PropertyPtr();
 	*stream >> value_type;
 	stream->seekFromCurForward(2); // Skip 2 reserved unsigned chars
 

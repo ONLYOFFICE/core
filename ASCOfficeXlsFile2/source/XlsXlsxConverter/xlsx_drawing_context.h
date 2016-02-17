@@ -4,6 +4,11 @@
 #include <iosfwd>
 #include <string.h>
 
+#include <boost/shared_array.hpp>
+#include "../Common/common.h"
+
+#include <Logic/Biff_structures/ODRAW/OfficeArtFOPTE.h>
+
 #include "xlsx_drawings.h"
 
 #include "ShapeType.h"	
@@ -19,8 +24,8 @@ const std::wstring standart_color[56] = {
 
 namespace oox {
 
-class external_items;
-class xlsx_conversion_context;
+	class external_items;
+	class xlsx_conversion_context;
 
 class xlsx_drawing_context_handle
 {
@@ -55,12 +60,12 @@ struct _color
 
 struct _rect
 {
-	_rect() : left(0), top(0), right(0),bottom(0){}
+	_rect() : x(0), y(0), cx(0), cy(0){}
 
-    int   left;
-    int   top;
-    int   right;
-    int   bottom;
+    int   x;
+    int   y;
+    int   cx;
+    int   cy;
 
 };
 enum _fill_type
@@ -93,13 +98,14 @@ class _drawing_state
 {
 public:
 	_drawing_state() :	shape_id(msosptRectangle),  
-						flipH(false), flipV(false), x(0), y(0), cx(0), cy(0),						
+						flipH(false), flipV(false), 					
 						bTextBox(false)
 	{
 		id			= -1;		
 		rotation	= 0;
 		type_anchor	= 1;
 		parent_drawing_states = NULL;
+		custom_path = -1;
 	}
 
 	int						shape_type;
@@ -115,26 +121,33 @@ public:
 	int						id;
 	MSOSPT					shape_id;
 //----------------------------------------------	
-	int						x;
-	int						y;
-	int						cx;
-	int						cy;
+	_rect					child_anchor;
 	bool					flipV;
 	bool					flipH;
 	int						rotation;
 //-----------------------------------------------
-	std::wstring			path;
-	_rect					path_rect;
+	std::vector<ODRAW::MSOPATHINFO>	custom_segments;
+	std::vector<ODRAW::MSOSG>		custom_guides;
+	std::vector<ODRAW::MSOPOINT>	custom_verticles;
 
-	std::wstring			hyperlink;
+	_rect							custom_rect;
+	std::vector<_CP_OPT(int)>		custom_adjustValues;
+	int								custom_path;
+
+	std::wstring					hyperlink;
 	struct _text
 	{
-		_text() : align(0)/*noset*/, wrap(2)/*none*/, vert_align(0)/*noset*/, vertical(0)/*horiz*/ {}
+		_text() :	align(0)/*noset*/, wrap(2)/*none*/, vert_align(0)/*noset*/, vertical(0)/*horiz*/ 
+		{
+			margins.left = margins.right = 0x00016530;
+			margins.top = margins.bottom = 0x0000b298;
+		}
 		std::wstring	content;	//c форматированием
 		int				wrap;
 		int				align;
 		int				vert_align;
 		int				vertical;
+		RECT			margins;
 	}text;
 	
 	struct _wordart
@@ -199,6 +212,7 @@ public:
 //for group
 	std::vector<_drawing_state_ptr>		drawing_states;
 	std::vector<_drawing_state_ptr>*	parent_drawing_states;
+	_rect								group_anchor;
 };
 struct _hlink_desc
 {
@@ -259,20 +273,20 @@ public:
 
 		void set_absolute_anchor	(double width, double height);
         void set_child_anchor		(int x, int y, int cx, int cy);
+		void set_group_anchor		(int x, int y, int cx, int cy);
         void set_sheet_anchor		(const std::wstring & str);
 		bool is_anchor				();
 
         void set_properties			(const std::wstring & str);
         void set_hyperlink			(const std::wstring & link, const std::wstring & display, bool is_external);
 
-		void set_path_rect			(_rect & rect);
-		void set_path				(const std::wstring & path);
 
 		void set_text				(const std::wstring & text);
 		void set_text_wrap			(int val);
 		void set_text_align			(int val);
 		void set_text_vert_align	(int val);
 		void set_text_vertical		(int val);
+		void set_text_margin		(RECT & val);
 		
 		void set_wordart_text		(const std::wstring & text);
 		void set_wordart_font		(const std::wstring & text);
@@ -283,7 +297,13 @@ public:
 		void set_wordart_strike		(bool val);
 		void set_wordart_vertical	(bool val);
 		void set_wordart_spacing	(double val);
-		
+
+		void set_custom_rect		(_rect							& rect);
+		void set_custom_verticles	(std::vector<ODRAW::MSOPOINT>	& points);
+		void set_custom_segments	(std::vector<ODRAW::MSOPATHINFO>& segments);
+		void set_custom_guides		(std::vector<ODRAW::MSOSG>		& guides);
+		void set_custom_adjustValues(std::vector<_CP_OPT(int)>		& values);
+		void set_custom_path		(int type_path);
 //------------------------------------------------------------------------------	
 		void serialize_group		();
 		void serialize_shape		(_drawing_state_ptr & drawing_state);			

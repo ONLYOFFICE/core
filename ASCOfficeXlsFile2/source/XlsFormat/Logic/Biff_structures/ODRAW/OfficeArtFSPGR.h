@@ -27,6 +27,11 @@ public:
     _INT32 yTop;
     _INT32 xRight;
     _INT32 yBottom;
+
+	int _x;
+	int _y;
+	int _cx;
+	int _cy;
 };
 
 typedef boost::shared_ptr<OfficeArtFSPGR> OfficeArtFSPGRPtr;

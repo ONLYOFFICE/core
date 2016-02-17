@@ -267,8 +267,20 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 		elements_.pop_back();
 	}
 
-	proc.repeated<FEAT>		(0, 0);
-	proc.repeated<FEAT11>	(0, 0);
+	count = proc.repeated<FEAT>		(0, 0);
+	while(count > 0)
+	{
+		m_arFEAT.insert(m_arFEAT.begin(), elements_.back());
+		elements_.pop_back();
+		count--;
+	}
+	count = proc.repeated<FEAT11>	(0, 0);
+	while(count > 0)
+	{
+		m_arFEAT11.insert(m_arFEAT11.begin(), elements_.back());
+		elements_.pop_back();
+		count--;
+	}
 	proc.repeated<RECORD12>	(0, 0);
 
 #pragma message("####################### Some trash records may be skipped here")

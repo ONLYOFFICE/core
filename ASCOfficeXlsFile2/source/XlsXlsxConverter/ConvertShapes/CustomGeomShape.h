@@ -1,8 +1,8 @@
 #pragma once
-#include "BinaryReader.h"
-//#include "ElementSettings.h"
+
+
 #include "BaseShape.h"
-//#include "../../../Attributes.h"
+
 #include "FormulaShape.h"
 
 #include "../../../../Common/DocxFormat/Source/SystemUtility/File.h"
@@ -14,10 +14,9 @@ namespace NSCustomVML
 	class CSegment
 	{
 	public:
-		RulesType m_eRuler;
-		WORD m_nCount;
+		RulesType	m_eRuler;
+		WORD		m_nCount;
 
-	public:
 		CSegment(RulesType eType = rtMoveTo, WORD nCount = 2)
 		{
 			m_eRuler = eType;
@@ -41,217 +40,6 @@ namespace NSCustomVML
 		~CSegment()
 		{
 		}
-		void Read(POLE::Stream* pStream)
-		{
-			WORD mem = StreamUtils::ReadWORD(pStream);
-
-			BYTE type = mem & 0x07;
-			if (type <= 4)
-			{
-				m_eRuler	= (RulesType)type;
-				m_nCount	= (mem >> 3) & 0x1FFF;
-				return;
-			}
-
-			mem = (mem >> 3) & 0x1FFF;
-			type = mem & 0x1F;
-
-			switch (type)
-			{
-			case 0x00:
-				{
-					m_eRuler = rtLineTo;
-					break;
-				}
-			case 0x01:
-				{
-					m_eRuler = rtAngleEllipseTo;
-					break;
-				}
-			case 0x02:
-				{
-					m_eRuler = rtAngleEllipse;
-					break;
-				}
-			case 0x03:
-				{
-					m_eRuler = rtArcTo;
-					break;
-				}
-			case 0x04:
-				{
-					m_eRuler = rtArc;
-					break;
-				}
-			case 0x05:
-				{
-					m_eRuler = rtClockwiseArcTo;
-					break;
-				}
-			case 0x06:
-				{
-					m_eRuler = rtClockwiseArc;
-					break;
-				}
-			case 0x07:
-				{
-					m_eRuler = rtEllipticalQuadrX;
-					break;
-				}
-			case 0x08:
-				{
-					m_eRuler = rtEllipticalQuadrY;
-					break;
-				}
-			case 0x09:
-				{
-					m_eRuler = rtQuadrBesier;
-					break;
-				}
-			case 0x0A:
-				{
-					m_eRuler = rtNoFill;
-					break;
-				}
-			case 0x0B:
-				{
-					m_eRuler = rtNoStroke;
-					break;
-				}
-			case 0x15:
-				{
-					m_eRuler = rtFillColor;
-					break;
-				}
-			case 0x16:
-				{
-					m_eRuler = rtLineColor;
-					break;
-				}
-			default:
-				{
-					m_eRuler = rtCurveTo;
-				}
-			};
-
-			m_nCount = (mem >> 5) & 0x00FF;
-		}
-		void Read(CBinaryReader& oReader)
-		{
-			WORD mem = oReader.ReadWORD();
-
-			BYTE type = (mem >> 13 & 0x07);
-			if (type <= 4)
-			{
-				m_eRuler	= (RulesType)type;
-				m_nCount	= (mem & 0x1FFF);
-				//m_nCount = (WORD)GetCountPoints2(m_eRuler);
-				m_nCount = (WORD)GetCountPoints2(m_eRuler, m_nCount);
-				return;
-			}
-
-			type = (mem >> 8) & 0x1F;
-			mem = mem & 0xFF;
-
-			switch (type)
-			{
-			case 0x00:
-				{
-					m_eRuler = rtLineTo;
-					break;
-				}
-			case 0x01:
-				{
-					m_eRuler = rtAngleEllipseTo;
-					break;
-				}
-			case 0x02:
-				{
-					m_eRuler = rtAngleEllipse;
-					break;
-				}
-			case 0x03:
-				{
-					m_eRuler = rtArcTo;
-					break;
-				}
-			case 0x04:
-				{
-					m_eRuler = rtArc;
-					break;
-				}
-			case 0x05:
-				{
-					m_eRuler = rtClockwiseArcTo;
-					break;
-				}
-			case 0x06:
-				{
-					m_eRuler = rtClockwiseArc;
-					break;
-				}
-			case 0x07:
-				{
-					m_eRuler = rtEllipticalQuadrX;
-					break;
-				}
-			case 0x08:
-				{
-					m_eRuler = rtEllipticalQuadrY;
-					break;
-				}
-			case 0x09:
-				{
-					m_eRuler = rtQuadrBesier;
-					break;
-				}
-			case 0x0A:
-				{
-					m_eRuler = rtNoFill;
-					break;
-				}
-			case 0x0B:
-				{
-					m_eRuler = rtNoStroke;
-					break;
-				}
-			case 0x0C:
-			case 0x10:
-				{
-					m_eRuler = rtLineTo;
-					break;
-				}
-			case 0x0D:
-			case 0x0E:
-			case 0x0F:
-			case 0x11:
-			case 0x12:
-			case 0x13:
-			case 0x14:
-				{
-					m_eRuler = rtCurveTo;
-					break;
-				}
-			case 0x15:
-				{
-					m_eRuler = rtFillColor;
-					break;
-				}
-			case 0x16:
-				{
-					m_eRuler = rtLineColor;
-					break;
-				}
-			default:
-				{
-					m_eRuler = rtCurveTo;
-				}
-			};
-
-			m_nCount = (WORD)mem;
-			m_nCount = (WORD)GetCountPoints2(m_eRuler, m_nCount);
-			//m_nCount = (WORD)GetCountPoints2(m_eRuler);
-		}
 	};
 
 	class CGuide
@@ -267,9 +55,8 @@ namespace NSCustomVML
 		WORD m_param_value2;
 		WORD m_param_value3;
 
-		LONG m_lShapeWidth;
-		LONG m_lShapeHeight;
-
+		//LONG m_lShapeWidth;
+		//LONG m_lShapeHeight;
 
 		CGuide()
 		{
@@ -283,8 +70,8 @@ namespace NSCustomVML
 			m_param_value2 = 0;
 			m_param_value3 = 0;
 
-			m_lShapeWidth	= ShapeSizeVML;
-			m_lShapeHeight	= ShapeSizeVML;
+			//m_lShapeWidth	= ShapeSizeVML;
+			//m_lShapeHeight= ShapeSizeVML;
 		}
 
 		CGuide(const CGuide& oSrc)
@@ -304,8 +91,8 @@ namespace NSCustomVML
 			m_param_value2	= oSrc.m_param_value2;
 			m_param_value3	= oSrc.m_param_value3;
 
-			m_lShapeWidth	= oSrc.m_lShapeWidth;
-			m_lShapeHeight	= oSrc.m_lShapeHeight;
+			//m_lShapeWidth	= oSrc.m_lShapeWidth;
+			//m_lShapeHeight	= oSrc.m_lShapeHeight;
 
 			return *this;
 		}
@@ -317,35 +104,6 @@ namespace NSCustomVML
 			SetParam(m_param_type1, m_param_value1, oFormula.m_eType1, oFormula.m_lParam1);
 			SetParam(m_param_type2, m_param_value2, oFormula.m_eType2, oFormula.m_lParam2);
 			SetParam(m_param_type3, m_param_value3, oFormula.m_eType3, oFormula.m_lParam3);
-		}
-
-		void Read(POLE::Stream* pStream)
-		{
-			WORD ftType = StreamUtils::ReadWORD(pStream);
-
-			m_eType = FormulaType(ftType & 0x1FFF);
-
-			m_param_type1 = (BYTE)(ftType & 0x04);
-			m_param_type2 = (BYTE)(ftType & 0x02);
-			m_param_type3 = (BYTE)(ftType & 0x01);
-
-			m_param_value1 = StreamUtils::ReadWORD(pStream);
-			m_param_value2 = StreamUtils::ReadWORD(pStream);
-			m_param_value3 = StreamUtils::ReadWORD(pStream);
-		}
-		void Read(CBinaryReader& oReader)
-		{
-			WORD ftType = oReader.ReadWORD();
-
-			m_eType = FormulaType(ftType & 0x1FFF);
-
-			m_param_type1 = (BYTE)(ftType & 0x04);
-			m_param_type2 = (BYTE)(ftType & 0x02);
-			m_param_type3 = (BYTE)(ftType & 0x01);
-
-			m_param_value1 = oReader.ReadWORD();
-			m_param_value2 = oReader.ReadWORD();
-			m_param_value3 = oReader.ReadWORD();
 		}
 
 	private:
@@ -403,7 +161,7 @@ namespace NSCustomVML
 
 	class CCustomVML
 	{
-	private:
+	public:
 		RulesType m_ePath;
 
         std::vector<Aggplus::POINT>		m_arVertices;
@@ -417,7 +175,6 @@ namespace NSCustomVML
 		//CBrush	m_oBrush;
 		//CPen	m_oPen;
 
-	public:
 		CCustomVML() : m_arVertices(), m_arSegments(), m_arGuides(), m_pAdjustValues(NULL)
 		{
 			m_ePath = rtCurveTo/*rtLineTo*/;
@@ -450,7 +207,7 @@ namespace NSCustomVML
 			m_bIsVerticesPresent	= oSrc.m_bIsVerticesPresent;
 
 			//m_oBrush	= oSrc.m_oBrush;
-			//m_oPen		= oSrc.m_oPen;
+			//m_oPen	= oSrc.m_oPen;
 
 			return *this;
 		}
@@ -469,125 +226,31 @@ namespace NSCustomVML
 		void SetPath(RulesType ePath)
 		{
 			m_ePath = ePath;
-                        m_bIsPathPresent = true;
+			m_bIsPathPresent = true;
 		}
-		void LoadVertices(int val, unsigned char* buffer, int buffer_size)
-		{
-			CBinaryReader oReader(buffer, buffer_size);
-
-			m_arVertices.clear();
-			
-			WORD lCount = (WORD)(val / 8);
-			
-			//if (pProperty->m_bIsTruncated)todooo
-			{
-				lCount = (WORD)(val / 4);
-			}
-
-			if (lCount > 0)
-			{
-				m_bIsVerticesPresent = true;
-			}
-
-			for (WORD lIndex = 0; lIndex < lCount; ++lIndex)
-			{
-                Aggplus::POINT oPoint;
-				
-				//if (pProperty->m_bIsTruncated)todooo
-				//{
-				//	oPoint.x = (short)oReader.ReadWORD();
-				//	oPoint.y = (short)oReader.ReadWORD();
-				//}
-				//else
-				{
-					oPoint.x = oReader.ReadLONG();
-					oPoint.y = oReader.ReadLONG();
-				}
-
-				LONG lMinF = (LONG)0x80000000;
-				LONG lMaxF = (LONG)0x8000007F;
-				if (lMinF <= (DWORD)oPoint.x)
-				{
-					int nGuideIndex = (DWORD)oPoint.x - 0x80000000;	
-
-					bool b = false;
-				}
-				if (lMinF <= (DWORD)oPoint.y)
-				{
-					int nGuideIndex = (DWORD)oPoint.y - 0x80000000;					
-
-					bool b = false;
-				}
-
-				m_arVertices.push_back(oPoint);
-			}
-		}
-
 		void LoadAHs(unsigned char* buffer, int buffer_size)
 		{
 		}
-		void LoadSegments(int val, unsigned char* buffer, int buffer_size)
+		void addSegment(RulesType eRuler, _UINT16	nCount)
 		{
-			CBinaryReader oReader(buffer, buffer_size);
-			m_arSegments.clear();
-
-			WORD lCount = (WORD)(val / 2);
-
-			if (lCount > 0)
-			{
-                                m_bIsPathPresent = true;
-			}
-
-			for (WORD lIndex = 0; lIndex < lCount; ++lIndex)
-			{
-				CSegment oInfo;
-				oInfo.Read(oReader);
-
-				if (0 == oInfo.m_nCount)
-				{
-					if ((rtEnd		!= oInfo.m_eRuler) &&
-						(rtNoFill	!= oInfo.m_eRuler) &&
-						(rtNoStroke != oInfo.m_eRuler) &&
-						(rtClose	!= oInfo.m_eRuler))
-					{
-						continue;
-					}
-				}
-
-				//if (rtClose == oInfo.m_eRuler)
-				//{
-				//	// проводим линию					
-				//	CSegment oInfo2(rtLineTo, 1);
-				//	m_arSegments.push_back(oInfo2);
-				//}
-
-				m_arSegments.push_back(oInfo);
-			}
+			CSegment oInfo(eRuler, nCount);
+			m_arSegments.push_back(oInfo);
 		}
-		void LoadGuides(int val, unsigned char* buffer, int buffer_size)
+		void addGuide(CGuide & oInfo)
 		{
-			CBinaryReader oReader(buffer, buffer_size);
-			WORD lCount = (WORD)(val / 4);
-
-			for (WORD lIndex = 0; lIndex < lCount; ++lIndex)
-			{
-				CGuide oInfo;
-				oInfo.Read(oReader);
-				m_arGuides.push_back(oInfo);
-			}
-
+			m_arGuides.push_back(oInfo);
 		}
-		void LoadAdjusts(LONG lIndex, LONG lValue)
+		void addAdjust(int lIndex, int lValue)
 		{
 			if (NULL == m_pAdjustValues)
 				return;
 			
-			LONG lCount = (LONG)m_pAdjustValues->size();
+			int lCount = m_pAdjustValues->size();
 			
 			while (lCount <= lIndex)
 			{
 				m_pAdjustValues->push_back(0);
-				lCount = (LONG)m_pAdjustValues->size();
+				lCount = m_pAdjustValues->size();
 			}
 
 			(*m_pAdjustValues)[lIndex] = lValue;

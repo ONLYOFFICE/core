@@ -5,23 +5,13 @@
 #include <vector>
 #include <boost/algorithm/string.hpp>
 
-//#if defined(_WIN32) || defined(_WIN64)
-//	#include <atlbase.h>
-//	#include <atlstr.h>
-//	#include "../../../../Common/atldefine.h"
-//
-//#else
-//    #include "../../../../../Common/DocxFormat/Source/Base/ASCString.h"
-//#endif
 
 #include "../../../../../Common/DocxFormat/Source/Base/Base.h"
 #include "../../../../../DesktopEditor/graphics/GraphicsPath.h"
 
-
-
-const double ShapeSize		= 43200.0;
-const LONG ShapeSizeVML		= 21600;
-const double RadKoef = M_PI/10800000.0;
+const double	ShapeSize		= 43200.0;
+const int		ShapeSizeVML	= 21600;
+const double	RadKoef			= M_PI/10800000.0;
 
 #ifndef		pow2_16
 #define		pow2_16			65536

@@ -158,9 +158,6 @@ namespace NSGuidesVML
 	private:
 		int m_lIndexSrc;
 		int m_lIndexDst;
-
-		LONG m_lWidth;
-		LONG m_lHeight;
 	
 		std::vector<LONG>		m_arIndexDst;
 		std::vector<CSlicePath> m_arSlicesPath;
@@ -183,6 +180,10 @@ namespace NSGuidesVML
 		int m_lMaxAdjUse;
 
 	public:
+
+		LONG m_lWidth;
+		LONG m_lHeight;
+
 		CXmlWriter	m_oGuidsRes;
 		CXmlWriter	m_oPathRes;
 		CXmlWriter	m_oHandleRes;

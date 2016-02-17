@@ -279,7 +279,14 @@ int ChartSheetSubstream::serialize (std::wostream & _stream)
 			chart_frame->serialize(_stream);
 		else
 		{
-			//default spPr ???
+			CP_XML_NODE(L"c:spPr")
+			{
+				CP_XML_NODE(L"a:noFill");
+				CP_XML_NODE(L"a:ln")
+				{
+					CP_XML_NODE(L"a:noFill");
+				}
+			}
 		}
 	}
 

@@ -1,12 +1,7 @@
 ﻿#pragma once
 
-//#include "./BinReaderWriterDefines.h"
-//#include "./Drawing/Shapes/BaseShape/Common.h"
-//
-//#include "../../../DesktopEditor/graphics/IRenderer.h"
-
-#include "../../../Common/DocxFormat/Source/Base/Nullable.h"
-#include "../../../DesktopEditor/Common/File.h"
+//#include "../../../Common/DocxFormat/Source/Base/Nullable.h"
+#include "../../../DesktopEditor/common/File.h"
 
 namespace NSGuidesVML
 {
@@ -46,10 +41,6 @@ namespace NSGuidesVML
 	static double FABS(double dVal)
 	{
 		return (dVal >= 0) ? dVal : -dVal;
-	}
-	static int round(double dVal)
-	{
-		return (int)(dVal + 0.5);
 	}
 
 	class CStringWriter
@@ -304,59 +295,8 @@ namespace NSGuidesVML
 		}		
 		void WriteBool(const bool& val)
 		{
-			m_oWriter.WriteString(boost::lexical_cast<std::wstring>(val));
-;			
+			m_oWriter.WriteString(boost::lexical_cast<std::wstring>(val));		
 		}
-		// write attribute
-		//void WriteAttributeCSS(const std::wstring& strAttributeName, const std::wstring& val)
-		//{
-		//	m_oWriter.WriteString(strAttributeName);
-		//	m_oWriter.AddSize(15);
-		//	m_oWriter.AddCharNoCheck(WCHAR(':'));
-		//	m_oWriter.WriteString(val);
-		//	m_oWriter.AddCharNoCheck(WCHAR(';'));
-		//}
-		//void WriteAttributeCSS_int(const std::wstring& strAttributeName, const int& val)
-		//{
-		//	m_oWriter.WriteString(strAttributeName);
-		//	m_oWriter.AddSize(15);
-		//	m_oWriter.AddCharNoCheck(WCHAR(':'));
-		//	m_oWriter.AddIntNoCheck(val);
-		//	m_oWriter.AddCharNoCheck(WCHAR(';'));
-		//}
-		//void WriteAttributeCSS_double1(const std::wstring& strAttributeName, const double& val)
-		//{
-		//	m_oWriter.WriteString(strAttributeName);
-		//	m_oWriter.AddSize(15);
-		//	std::wstring s = _T("");
-		//	s.Format(_T("%.1lf"), val);
-		//	m_oWriter.AddCharNoCheck(WCHAR(':'));
-		//	m_oWriter.WriteString(s);
-		//	m_oWriter.AddCharNoCheck(WCHAR(';'));
-		//}
-		//void WriteAttributeCSS_int_pt(const std::wstring& strAttributeName, const int& val)
-		//{
-		//	m_oWriter.WriteString(strAttributeName);
-		//	m_oWriter.AddSize(15);
-		//	m_oWriter.AddCharNoCheck(WCHAR(':'));
-		//	m_oWriter.AddIntNoCheck(val);
-		//	m_oWriter.AddCharNoCheck(WCHAR('p'));
-		//	m_oWriter.AddCharNoCheck(WCHAR('t'));
-		//	m_oWriter.AddCharNoCheck(WCHAR(';'));
-		//}
-		//void WriteAttributeCSS_double1_pt(const std::wstring& strAttributeName, const double& val)
-		//{
-		//	m_oWriter.WriteString(strAttributeName);
-		//	m_oWriter.AddSize(20);
-		//	std::wstring s = _T("");
-		//	s.Format(_T("%.1lf"), val);
-		//	m_oWriter.AddCharNoCheck(WCHAR(':'));
-		//	m_oWriter.WriteString(s);
-		//	m_oWriter.AddCharNoCheck(WCHAR('p'));
-		//	m_oWriter.AddCharNoCheck(WCHAR('t'));
-		//	m_oWriter.AddCharNoCheck(WCHAR(';'));
-		//}
-		//
 		void WriteAttribute(const std::wstring& strAttributeName, const std::wstring& val)
 		{
 			m_oWriter.WriteString(g_bstr_node_space);
@@ -503,99 +443,8 @@ namespace NSGuidesVML
 			WriteNodeEnd(strNodeName);
 		}
 		
- /*       bool SaveToFile(std::wstring strFilePath, bool bEncodingToUTF8 = true, bool bIsClearNoAttack = true)
-		{
-			std::wstring strData = m_oWriter.GetData();
-			if (!bEncodingToUTF8)
-			{
-				NSFile::CFileBinary oFile;
-				oFile.CreateFile(strFilePath);
-				oFile.WriteFile((BYTE*)strData.c_str(), strData.length());
-				oFile.CloseFile();
-			}
-			else
-			{
-				CDirectory::SaveToFile(strFilePath, strData);
-				
-				NSFile::CFileBinary oFile;
-				oFile.CreateFile(strFilePath.c_str());
-				std::wstring strHead = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
-				oFile.WriteStringUTF8(strHead);
-				oFile.WriteStringUTF8(strData);
-				oFile.CloseFile();
-			}
-
-			if (bIsClearNoAttack)
-			{
-				m_oWriter.ClearNoAttack();
-			}
-			
-            return true;
-		}*/
-
 	public:
-		// ATTRIBUTES --------------------------------------------------------------------------
-		void WriteAttribute(const std::wstring& strName, const nullable_int& value)
-		{
-			if (value.IsInit())
-				WriteAttribute(strName, *value);
-		}
-		void WriteAttribute(const std::wstring& strName, const nullable_double& value)
-		{
-			if (value.IsInit())
-				WriteAttribute(strName, *value);
-		}
-		void WriteAttribute(const std::wstring& strName, const nullable_string& value)
-		{
-			if (value.IsInit())
-				WriteAttribute(strName, *value);
-		}
-		void WriteAttribute2(const std::wstring& strName, const nullable_string& value)
-		{
-			if (value.IsInit())
-				WriteAttribute2(strName, value->GetBuffer());
-		}
-		void WriteAttribute(const std::wstring& strName, const nullable_bool& value)
-		{
-			if (value.IsInit())
-				WriteAttribute(strName, *value);
-		}
-		template <typename T>
-		void WriteAttribute(const std::wstring& strName, const nullable_limit<T>& value)
-		{
-			if (value.IsInit())
-				WriteAttribute(strName, (*value).get());			
-		}
-		// -------------------------------------------------------------------------------------
-		// NODES -------------------------------------------------------------------------------
-		void WriteNodeValue(const std::wstring& strName, const nullable_int& value)
-		{
-			if (value.IsInit())
-				WriteNodeValue(strName, *value);
-		}
-		void WriteNodeValue(const std::wstring& strName, const nullable_double& value)
-		{
-			if (value.IsInit())
-				WriteNodeValue(strName, *value);
-		}
-		void WriteNodeValue(const std::wstring& strName, const nullable_string& value)
-		{
-			if (value.IsInit())
-				WriteNodeValue(strName, *value);
-		}
-		void WriteNodeValue(const std::wstring& strName, const nullable_bool& value)
-		{
-			if (value.IsInit())
-				WriteNodeValue(strName, *value);
-		}
-		template <typename T>
-		void WriteNodeValue(const std::wstring& strName, const nullable_limit<T>& value)
-		{
-			if (value.IsInit())
-				WriteNodeValue(strName, (*value).get);			
-		}
-		// -------------------------------------------------------------------------------------
-		// DOCUMENT ----------------------------------------------------------------------------
+
 		void StartNode(const std::wstring& name)
 		{
 			m_oWriter.WriteString(g_bstr_nodeopen);
@@ -641,12 +490,7 @@ namespace NSGuidesVML
 			}
 		}
 
-		template<typename T>
-		void Write(const nullable<T>& val)
-		{
-			if (val.is_init())
-				val->toXmlWriter(this);
-		}
+
 		// -------------------------------------------------------------------------------------
 
 		void ReplaceString(std::wstring from, std::wstring to)

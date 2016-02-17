@@ -21,7 +21,6 @@ public:
 	CCustomShape() : CBaseShape()
 	{
 		m_eType = oox::msosptNotPrimitive;
-
 	}
 
 	~CCustomShape()

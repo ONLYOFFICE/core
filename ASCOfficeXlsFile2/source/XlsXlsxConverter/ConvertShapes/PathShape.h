@@ -376,10 +376,6 @@ namespace NSGuidesVML
 			bIsX = !bIsX;
 		}
 
-
-
-
-
 		void ApplyLimo(CGeomShapeInfo& pGeomInfo, double& lX, double& lY)
 		{
 			if ((0 == pGeomInfo.m_dLimoX) || (0 == pGeomInfo.m_dLimoY))
@@ -502,39 +498,12 @@ namespace NSGuidesVML
 	public:
 		CPartPath() : m_arSlices()
 		{
-			m_bFill = true;
-			m_bStroke = true;
-			width = 43200;
-			height = 43200;
+			m_bFill		= true;
+			m_bStroke	= true;
+			
+			width		= ShapeSizeVML;
+			height		= ShapeSizeVML; //43200?
 		}
-	#if defined(PPTX_DEF)
-		void FromXML(XmlUtils::CXmlNode& PathNode, NSGuidesOOXML::CFormulaManager& pManager)
-		{
-			m_bFill = PathNode.GetAttribute(_T("fill"), _T("norm")) != _T("none");
-			std::wstring stroke = PathNode.GetAttribute(_T("stroke"), _T("true"));
-			m_bStroke = (stroke == _T("true")) || (stroke == _T("1"));
-			width = (long)XmlUtils::GetInteger(PathNode.GetAttribute(_T("w"), _T("0")));
-			height = (long)XmlUtils::GetInteger(PathNode.GetAttribute(_T("h"), _T("0")));
-			if(width == 0) width = (long)pManager.GetWidth();
-			if(height == 0) height = (long)pManager.GetHeight();
-
-			XmlUtils::CXmlNodes list;
-			PathNode.GetNodes(_T("*"), list);
-			for(long i = 0; i < list.GetCount(); i++)
-			{
-				CSlice slice;
-				XmlUtils::CXmlNode node;
-				list.GetAt(i, node);
-				slice.FromXML(node, pManager, pManager.GetWidth()/width, pManager.GetHeight()/height);
-				m_arSlices.push_back(slice);
-			}
-
-			//CSlice EndSlice;
-			//EndSlice.m_eRuler = rtEnd;
-			//m_arSlices.push_back(EndSlice);
-		}
-	#endif
-	#if defined(PPT_DEF)
 		void FromXML(std::wstring strPath, NSGuidesVML::CFormulasManager& pManager)
 		{
 			NSStringUtils::CheckPathOn_Fill_Stroke(strPath, m_bFill, m_bStroke);
@@ -585,7 +554,6 @@ namespace NSGuidesVML
 				}
 			}
 		}
-	#endif
 
 		CPartPath& operator =(const CPartPath& oSrc)
 		{
@@ -608,33 +576,21 @@ namespace NSGuidesVML
 	{
 	public:
 		std::vector<CPartPath> m_arParts;
+		
+		void FromXML(std::wstring strPath, NSGuidesVML::CFormulasManager& pManager)
+		{
+			m_arParts.clear();
+			std::vector<std::wstring> oArray;
 
-		//std::wstring ToXml(CGeomShapeInfo& pGeomInfo, double dStartTime, double dEndTime, CPen& pPen, CBrush& pFore, CMetricInfo& pInfo, NSBaseShape::ClassType ClassType)
-		//{
-		//	std::wstring strResult = _T("");
-		//	for (int nIndex = 0; nIndex < m_arParts.size(); ++nIndex)
-		//	{
-		//		strResult += m_arParts[nIndex].ToXml(pGeomInfo, dStartTime, dEndTime, pPen, pFore, pInfo, ClassType);
-		//	}
-		//	return strResult;
-		//}
+			NSStringUtils::ParseString(_T("e"), strPath, oArray);
 
-		//void ToRenderer(IRenderer* pRenderer, CGeomShapeInfo& pGeomInfo, double dStartTime, 
-		//	double dEndTime, CPen& pPen, CBrush& pFore, CMetricInfo& pInfo, NSBaseShape::ClassType ClassType)
-		//{
-		//	CGraphicPath oPath;
-		//	oPath.Pen	= pPen;
-		//	oPath.Brush	= pFore;
-
-		//	int nSize = m_arParts.size();
-		//	for (int nIndex = 0; nIndex < nSize; ++nIndex)
-		//	{
-		//		oPath.Clear();
-		//		m_arParts[nIndex].ToRenderer(&oPath, pGeomInfo, dStartTime, dEndTime, pPen, pFore, pInfo, ClassType);
-
-		//		oPath.Draw(pRenderer);
-		//	}
-		//}
+			for (int nIndex = 0; nIndex < oArray.size(); ++nIndex)
+			{
+				CPartPath oPath;
+				m_arParts.push_back(oPath);
+				m_arParts.back().FromXML(oArray[nIndex], pManager);
+			}
+		}
 
 		CPath& operator =(const CPath& oSrc)
 		{

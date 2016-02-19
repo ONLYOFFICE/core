@@ -528,7 +528,6 @@ void xlsx_drawing_context::serialize_pic(_drawing_state_ptr & drawing_state, std
 						CP_XML_NODE(L"a:hlinkClick")
 						{
 							CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
-							//CP_XML_ATTR(L"xmlns:a", L"http://schemas.openxmlformats.org/drawingml/2006/main");
 							
 							CP_XML_ATTR(L"r:id", drawing_state->hyperlink);
 						}
@@ -602,7 +601,6 @@ void xlsx_drawing_context::serialize_chart(_drawing_state_ptr & drawing_state, s
 					CP_XML_NODE(L"c:chart")
 					{
 						CP_XML_ATTR(L"xmlns:c", L"http://schemas.openxmlformats.org/drawingml/2006/chart");
-						CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
 						CP_XML_ATTR(L"r:id", rId);
 					}
 				}
@@ -676,6 +674,11 @@ void xlsx_drawing_context::serialize_shape(_drawing_state_ptr & drawing_state)
 				CP_XML_NODE(L"xdr:cNvSpPr")
 				{
 					if (drawing_state->bTextBox)CP_XML_ATTR(L"txBox", 1);
+					CP_XML_NODE(L"a:spLocks")
+					{
+						CP_XML_ATTR(L"noGrp", 1); 
+						CP_XML_ATTR(L"noChangeArrowheads", 1);
+					}
 				}
 			}
 			
@@ -710,12 +713,17 @@ void xlsx_drawing_context::serialize_shape(_drawing_state_ptr & drawing_state)
 
 std::wstring xlsx_drawing_context::convert_custom_shape(_drawing_state_ptr & drawing_state)
 {
-	std::wstring strResult;
 
 	CCustomShape * shape = CCustomShape::CreateByType(drawing_state->shape_id);
 	if (shape == NULL) return L"";
 
+	std::wstring strResult;
+	std::wstringstream strm;
+
+	shape->m_oCustomVML.SetAdjusts(&shape->m_arAdjustments);
+	
 	shape->m_oCustomVML.m_bIsVerticesPresent = drawing_state->custom_verticles.empty() ? false : true;
+	
 	for (int i = 0 ; i < drawing_state->custom_verticles.size(); i++)
 	{
 		 Aggplus::POINT p;
@@ -725,6 +733,7 @@ std::wstring xlsx_drawing_context::convert_custom_shape(_drawing_state_ptr & dra
 		
 		 shape->m_oCustomVML.m_arVertices.push_back(p);
 	}
+	
 	for (int i = 0 ; i < drawing_state->custom_guides.size(); i++)
 	{//todooo מבתוהוםטעü/סנאסעטעü !!
 		NSCustomVML::CGuide guid;
@@ -739,8 +748,19 @@ std::wstring xlsx_drawing_context::convert_custom_shape(_drawing_state_ptr & dra
 		
 		shape->m_oCustomVML.addGuide(guid);
 	}	
+	
 	for (int i = 0 ; i < drawing_state->custom_segments.size(); i++)
 	{
+		if (0 == drawing_state->custom_segments[i].m_nCount)
+		{
+			if ((NSGuidesVML::rtEnd			!= drawing_state->custom_segments[i].m_eRuler) &&
+				(NSGuidesVML::rtNoFill		!= drawing_state->custom_segments[i].m_eRuler) &&
+				(NSGuidesVML::rtNoStroke	!= drawing_state->custom_segments[i].m_eRuler) &&
+				(NSGuidesVML::rtClose		!= drawing_state->custom_segments[i].m_eRuler))
+			{
+				continue;
+			}
+		}
 		shape->m_oCustomVML.addSegment(drawing_state->custom_segments[i].m_eRuler , drawing_state->custom_segments[i].m_nCount);
 	}	
 
@@ -751,11 +771,19 @@ std::wstring xlsx_drawing_context::convert_custom_shape(_drawing_state_ptr & dra
 			shape->m_oCustomVML.addAdjust(i, *drawing_state->custom_adjustValues[i]);
 		}
 	}
-
-	shape->m_oCustomVML.SetPath((NSGuidesVML::RulesType)drawing_state->custom_path);
+	if (drawing_state->custom_path >=0)
+		shape->m_oCustomVML.SetPath((NSGuidesVML::RulesType)drawing_state->custom_path);
+	
 	shape->m_oCustomVML.ToCustomShape(shape, shape->m_oManager);
 	shape->ReCalculate();
 //-------------------------------------------------------------------------------------
+	if (drawing_state->custom_rect.cx > 0 && drawing_state->custom_rect.cy > 0)
+	{
+		//shape->m_oManager.m_lShapeWidth	= drawing_state->custom_rect.cx;
+		//shape->m_oManager.m_lShapeHeight = drawing_state->custom_rect.cy;
+		
+		shape->m_oPath.SetCoordsize(drawing_state->custom_rect.cx, drawing_state->custom_rect.cy);
+	}
 
 	NSGuidesVML::CFormParam pParamCoef;
 	pParamCoef.m_eType = NSGuidesVML::ptValue;
@@ -764,16 +792,6 @@ std::wstring xlsx_drawing_context::convert_custom_shape(_drawing_state_ptr & dra
 	
 	NSGuidesVML::CFormulaConverter pFormulaConverter;
 
-	if (drawing_state->custom_rect.cx > 0 && drawing_state->custom_rect.cy > 0)
-	{
-		pFormulaConverter.m_lWidth	= drawing_state->custom_rect.cx;
-		pFormulaConverter.m_lHeight = drawing_state->custom_rect.cy;
-	}
-	else
-	{
-		pFormulaConverter.m_lWidth	= 21600;
-		pFormulaConverter.m_lHeight = 21600;
-	}
 	//coeff
 	pFormulaConverter.ConvertCoef(pParamCoef);
 
@@ -806,36 +824,35 @@ std::wstring xlsx_drawing_context::convert_custom_shape(_drawing_state_ptr & dra
 		{
 			pFormulaConverter.ConvertHandle(shape->m_arHandles, shape->m_arAdjustments, shape->m_eType);
 		}
-
-		//adj----------------------------
-		if (pFormulaConverter.m_oAdjRes.GetSize() == 0)
-			strResult += _T("<a:avLst/>");
-		else
-			strResult += _T("<a:avLst>") + pFormulaConverter.m_oAdjRes.GetXmlString() + _T("</a:avLst>");
-
-		//guids--------------------------
-		if (pFormulaConverter.m_oGuidsRes.GetSize() == 0)
-			strResult += _T("<a:gdLst>") + pFormulaConverter.m_oCoef.GetXmlString() + _T("</a:gdLst>");
-		else
-			strResult += _T("<a:gdLst>") + pFormulaConverter.m_oCoef.GetXmlString() + pFormulaConverter.m_oGuidsRes.GetXmlString() + _T("</a:gdLst>");
-
-		//handles---------------------------
-		if (pFormulaConverter.m_oHandleRes.GetSize() == 0)
-			strResult += _T("<a:ahLst/>");
-		else
-			strResult += _T("<a:ahLst>") + pFormulaConverter.m_oHandleRes.GetXmlString() + _T("</a:ahLst>");
+		CP_XML_WRITER(strm)    
+		{
+			CP_XML_NODE(L"a:avLst")
+			{
+				CP_XML_STREAM() << pFormulaConverter.m_oAdjRes.GetXmlString();
+			}
+			CP_XML_NODE(L"a:gdLst")
+			{
+				CP_XML_STREAM() << pFormulaConverter.m_oCoef.GetXmlString();
+				CP_XML_STREAM() << pFormulaConverter.m_oGuidsRes.GetXmlString();
+			}
+			CP_XML_NODE(L"a:ahLst")
+			{
+				CP_XML_STREAM() << pFormulaConverter.m_oHandleRes.GetXmlString();
+			}
+				
+			//connectors-------------------------
+			CP_XML_NODE(L"a:cxnLst");
 			
-		//connectors-------------------------
-		strResult += _T("<a:cxnLst/>");
-		
-		//textRect---------------------------
-		if (pFormulaConverter.m_oTextRect.GetSize() != 0)
-			strResult += pFormulaConverter.m_oTextRect.GetXmlString();
+			////textRect---------------------------
+			//if (pFormulaConverter.m_oTextRect.GetSize() != 0)
+			strm << pFormulaConverter.m_oTextRect.GetXmlString();
 
-		//path------------------------------
-		strResult += _T("<a:pathLst>");
-		strResult += pFormulaConverter.m_oPathRes.GetXmlString();
-		strResult += _T("</a:pathLst>");	
+			CP_XML_NODE(L"a:pathLst")
+			{
+				CP_XML_STREAM() << pFormulaConverter.m_oPathRes.GetXmlString();
+			}	
+		}
+		strResult = strm.str();
 	}
 
 	delete shape;
@@ -1259,7 +1276,6 @@ void xlsx_drawing_context::serialize_bitmap_fill(std::wostream & stream, _drawin
 		{
 			CP_XML_NODE(L"a:blip")
 			{
-				CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
 				CP_XML_ATTR(L"r:embed", rId);
 			}
 
@@ -1802,6 +1818,7 @@ void xlsx_drawing_context::serialize(std::wostream & strm)
             CP_XML_ATTR(L"xmlns:xdr", L"http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing");
             CP_XML_ATTR(L"xmlns:a"	, L"http://schemas.openxmlformats.org/drawingml/2006/main");
             CP_XML_ATTR(L"xmlns:r"	, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
+			CP_XML_ATTR(L"xmlns:mc"	, L"http://schemas.openxmlformats.org/markup-compatibility/2006");
 
 			for (int i = 0 ; i < drawing_states.size(); i++)
 			{

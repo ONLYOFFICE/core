@@ -850,7 +850,7 @@ void XlsConverter::convert(ODRAW::OfficeArtRecord * art)
 		{
 			ODRAW::OfficeArtClientAnchorSheet * ch = dynamic_cast<ODRAW::OfficeArtClientAnchorSheet *>(art);
 			
-			xlsx_context->get_drawing_context().set_child_anchor(ch->_x, ch->_y, ch->_cx, ch->_cy);
+			//xlsx_context->get_drawing_context().set_child_anchor(ch->_x, ch->_y, ch->_cx, ch->_cy);
 			
 			art->serialize(strm);
             xlsx_context->get_drawing_context().set_sheet_anchor(strm.str());

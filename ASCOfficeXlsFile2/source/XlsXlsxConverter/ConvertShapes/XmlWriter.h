@@ -176,6 +176,8 @@ namespace NSGuidesVML
 
 		std::wstring GetData()
 		{
+			if (m_lSizeCur < 1 || !m_pData) return L"";
+
             std::wstring str(m_pData, (int)m_lSizeCur);
 			return str;
 		}

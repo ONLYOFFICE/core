@@ -19,7 +19,7 @@ namespace NSGuidesVML
 	static wchar_t*	g_guide_string1			= L"<a:gd name=\"gd";
 	static int		g_guide_string1_len		= __wstrlen(g_guide_string1);
 
-	static wchar_t*	g_guide_string2			= L"\" />";
+	static wchar_t*	g_guide_string2			= L"\"></a:gd>";
 	static int		g_guide_string2_len		= __wstrlen(g_guide_string2);
 
 	static wchar_t*	g_guide_string_val		= L"\" fmla=\"val ";
@@ -196,8 +196,8 @@ namespace NSGuidesVML
 		{
 			m_lIndexDst = 0;
 			m_lIndexSrc = -1;
-			m_lWidth	= 0;
-			m_lHeight	= 0;
+			m_lWidth	= ShapeSizeVML;
+			m_lHeight	= ShapeSizeVML;
 
 			m_lMaxAdjUse = -1;
 		}
@@ -236,7 +236,7 @@ namespace NSGuidesVML
 				m_oAdjRes.WriteINT(i);
 				m_oAdjRes.WriteString(_T("\" fmla=\"val "));
 				m_oAdjRes.WriteINT(arAdj[i]);
-				m_oAdjRes.WriteString(_T("\" />"));
+				m_oAdjRes.WriteString(_T("\"></a:gd>"));
 			}
 			for (int i = nAdjCount; i <= m_lMaxAdjUse; ++i)
 			{
@@ -244,7 +244,7 @@ namespace NSGuidesVML
 				m_oAdjRes.WriteINT(i);
 				m_oAdjRes.WriteString(_T("\" fmla=\"val "));
 				m_oAdjRes.WriteINT(0);
-				m_oAdjRes.WriteString(_T("\" />"));
+				m_oAdjRes.WriteString(_T("\"></a:gd>"));
 			}
 		}
 		void ConvertFormula(const std::vector<CFormula>& arFormulas)
@@ -377,11 +377,13 @@ namespace NSGuidesVML
 		{
 			m_arParts.clear();
 			std::vector<std::wstring> oArray;
-			NSStringUtils::ParseString(_T("e"), strPath, oArray);
+			NSStringUtils::ParseString(L"e", strPath, oArray);
 
 			int nSizeArr = oArray.size();
 			for (int nIndex = 0; nIndex < nSizeArr; ++nIndex)
 			{
+				if (oArray[nIndex].empty()) continue;
+
 				if (nIndex < oPath.m_arParts.size() )
 				{
 					const CPartPath& oPart = oPath.m_arParts[nIndex];
@@ -396,15 +398,15 @@ namespace NSGuidesVML
 				FromXML(oArray[nIndex], bFill, bStroke);
 				LONG nCountSlices = m_arSlicesPath.size();
 
-				m_oPathRes.StartNode(_T("a:path"));
+				m_oPathRes.StartNode(L"a:path");
 				m_oPathRes.StartAttributes();
-				m_oPathRes.WriteAttribute(_T("w"), m_lWidth);
-				m_oPathRes.WriteAttribute(_T("h"), m_lHeight);
+				m_oPathRes.WriteAttribute(L"w", m_lWidth);
+				m_oPathRes.WriteAttribute(L"h", m_lHeight);
 
-				if (!bStroke)
-					m_oPathRes.WriteAttribute(_T("stroke"), (std::wstring)_T("false"));
-				if (!bFill)
-					m_oPathRes.WriteAttribute(_T("fill"), (std::wstring)_T("none"));
+				m_oPathRes.WriteAttribute(L"fill"		, std::wstring(bFill ? L"norm" : L"none"));
+				m_oPathRes.WriteAttribute(L"stroke"		, bStroke ? 1	: 0);
+				m_oPathRes.WriteAttribute(L"extrusionOk", 0);
+				
 				m_oPathRes.EndAttributes();
 				
 				for (int i = 0; i < nCountSlices; ++i)
@@ -718,11 +720,11 @@ namespace NSGuidesVML
 			GetValue(m_lIndexDst-2, ptFormula, true, m_oTextRect);
 			m_oTextRect.WriteString(_T("\" b=\""));
 			GetValue(m_lIndexDst-1, ptFormula, true, m_oTextRect);
-			m_oTextRect.WriteString(_T("\" />"));
+			m_oTextRect.WriteString(_T("\"/>"));
 		}
 	private:
 
-                void GetValue(const LONG& lParam, const ParamType& eParamType, const bool& bExtShape, CXmlWriter& oWriter)
+		void GetValue(const LONG& lParam, const ParamType& eParamType, const bool& bExtShape, CXmlWriter& oWriter)
 		{
 			oWriter.m_oWriter.AddSize(15);
 			switch (eParamType)
@@ -759,7 +761,7 @@ namespace NSGuidesVML
 				break;
 			}
 		}
-                std::wstring GetValue2(const LONG& lParam, const ParamType& eParamType, const bool& bExtShape)
+		std::wstring GetValue2(const LONG& lParam, const ParamType& eParamType, const bool& bExtShape)
 		{
 			std::wstring strValue;			
 			switch (eParamType)
@@ -790,7 +792,7 @@ namespace NSGuidesVML
 		}
 		//---------------------------------------
 
-                void ConvertVal(const LONG& lParam1, const ParamType& eType1, const bool& bExtShape1, CXmlWriter& oWriter)
+		void ConvertVal(const LONG& lParam1, const ParamType& eType1, const bool& bExtShape1, CXmlWriter& oWriter)
 		{
 			GUIDE_PARAM_1(val)
 		}
@@ -1052,17 +1054,17 @@ namespace NSGuidesVML
 			if ('#' == strParam[0])
 			{					
 				lRes = (LONG)NSGuidesVML::GetInteger(strParam.substr(1));
-				strFrmla = GetValue2(lRes, ptAdjust, false) + strSize;
+				strFrmla = GetValue2(lRes, ptAdjust, false) + L" " + strSize;
 			}
 			else if ('&' == strParam[0])
 			{
 				lRes = (LONG)NSGuidesVML::GetInteger(strParam.substr(1));
-				strFrmla = GetValue2(lRes, ptFormula, true) + strSize;
+				strFrmla = GetValue2(lRes, ptFormula, true) + L" " + strSize;
 			}
 			else if ('@' == strParam[0])
 			{
 				lRes = (LONG)NSGuidesVML::GetInteger(strParam.substr(1));
-				strFrmla = GetValue2(lRes, ptFormula, false) + strSize;
+				strFrmla = GetValue2(lRes, ptFormula, false) + L" " + strSize;
 			}
 			else if (!NSStringUtils::IsNumber(strParam))
 			{
@@ -1089,7 +1091,7 @@ namespace NSGuidesVML
 			m_oGuidsRes.WriteString(strBase);
 			m_oGuidsRes.WriteString(_T(" "));
 			m_oGuidsRes.WriteString(strFrmla);
-			m_oGuidsRes.WriteString(_T("\" />"));
+			m_oGuidsRes.WriteString(_T("\"></a:gd>"));
 			
 			m_lIndexDst++;
 
@@ -1156,7 +1158,7 @@ namespace NSGuidesVML
 			GetValue(nIndex-5, ptFormula, true, m_oPathRes);
 			m_oPathRes.WriteString(_T("\" swAng=\""));
 			GetValue(nIndex-4, ptFormula, true, m_oPathRes);
-			m_oPathRes.WriteString(_T("\" />"));
+			m_oPathRes.WriteString(_T("\"/>"));
 
 			m_lIndexSrc++;
 			ConvertVal(pPoint.x, pPointType.x, false, m_oGuidsRes);
@@ -1194,7 +1196,7 @@ namespace NSGuidesVML
 			GetValue(nIndex-5, ptFormula, true, m_oPathRes);
 			m_oPathRes.WriteString(_T("\" swAng=\""));
 			GetValue(nIndex-4, ptFormula, true, m_oPathRes);
-			m_oPathRes.WriteString(_T("\" />"));
+			m_oPathRes.WriteString(_T("\"/>"));
 
 			m_lIndexSrc++;
 			ConvertVal(pPoint.x, pPointType.x, false, m_oGuidsRes);
@@ -1222,7 +1224,7 @@ namespace NSGuidesVML
 				GetValue(m_lIndexDst-2, ptFormula, true, m_oPathRes);
 				m_oPathRes.WriteString(_T("\" y=\""));
 				GetValue(m_lIndexDst-1, ptFormula, true, m_oPathRes);
-				m_oPathRes.WriteString(_T("\" /></a:moveTo>"));
+				m_oPathRes.WriteString(_T("\"/></a:moveTo>"));
 			}
 		}
 
@@ -1244,7 +1246,7 @@ namespace NSGuidesVML
 				GetValue(m_lIndexDst-2, ptFormula, true, m_oPathRes);
 				m_oPathRes.WriteString(_T("\" y=\""));
 				GetValue(m_lIndexDst-1, ptFormula, true, m_oPathRes);
-				m_oPathRes.WriteString(_T("\" /></a:moveTo>"));
+				m_oPathRes.WriteString(_T("\"/></a:moveTo>"));
 			}
 		}
 
@@ -1266,7 +1268,7 @@ namespace NSGuidesVML
 				GetValue(m_lIndexDst-2, ptFormula, true, m_oPathRes);
 				m_oPathRes.WriteString(_T("\" y=\""));
 				GetValue(m_lIndexDst-1, ptFormula, true, m_oPathRes);
-				m_oPathRes.WriteString(_T("\" /></a:lnTo>"));
+				m_oPathRes.WriteString(_T("\"/></a:lnTo>"));
 			}
 		}
 
@@ -1288,7 +1290,7 @@ namespace NSGuidesVML
 				GetValue(m_lIndexDst-2, ptFormula, true, m_oPathRes);
 				m_oPathRes.WriteString(_T("\" y=\""));
 				GetValue(m_lIndexDst-1, ptFormula, true, m_oPathRes);
-				m_oPathRes.WriteString(_T("\" /></a:lnTo>"));
+				m_oPathRes.WriteString(_T("\"/></a:lnTo>"));
 			}
 		}
 
@@ -1512,7 +1514,7 @@ namespace NSGuidesVML
 					GetValue(nIndex-5, ptFormula, true, m_oPathRes);
 					m_oPathRes.WriteString(_T("\" y=\""));
 					GetValue(nIndex, ptFormula, true, m_oPathRes);
-					m_oPathRes.WriteString(_T("\" /></a:moveTo><a:arcTo wR=\""));
+					m_oPathRes.WriteString(_T("\"/></a:moveTo><a:arcTo wR=\""));
 					GetValue(m_lIndexDst-2, ptFormula, true, m_oPathRes);
 					m_oPathRes.WriteString(_T("\" hR=\""));
 					GetValue(m_lIndexDst-1, ptFormula, true, m_oPathRes);
@@ -1520,7 +1522,7 @@ namespace NSGuidesVML
 					GetValue(nIndex1, ptFormula, true, m_oPathRes);
 					m_oPathRes.WriteString(_T("\" swAng=\""));
 					GetValue(nIndex2, ptFormula, true, m_oPathRes);
-					m_oPathRes.WriteString(_T("\" />"));
+					m_oPathRes.WriteString(_T("\"/>"));
 				}
 				else
 				{
@@ -1528,7 +1530,7 @@ namespace NSGuidesVML
 					GetValue(nIndex-5, ptFormula, true, m_oPathRes);
 					m_oPathRes.WriteString(_T("\" y=\""));
 					GetValue(nIndex, ptFormula, true, m_oPathRes);
-					m_oPathRes.WriteString(_T("\" /></a:lnTo><a:arcTo wR=\""));
+					m_oPathRes.WriteString(_T("\"/></a:lnTo><a:arcTo wR=\""));
 					GetValue(m_lIndexDst-2, ptFormula, true, m_oPathRes);
 					m_oPathRes.WriteString(_T("\" hR=\""));
 					GetValue(m_lIndexDst-1, ptFormula, true, m_oPathRes);
@@ -1536,14 +1538,14 @@ namespace NSGuidesVML
 					GetValue(nIndex1, ptFormula, true, m_oPathRes);
 					m_oPathRes.WriteString(_T("\" swAng=\""));
 					GetValue(nIndex2, ptFormula, true, m_oPathRes);
-					m_oPathRes.WriteString(_T("\" />"));
+					m_oPathRes.WriteString(_T("\"/>"));
 				}
 
 				//старт
 				/*
 				LONG nIndex3 = m_arIndexDst[m_lIndexSrc-14];
 				strPathRes += _T("<a:moveTo><a:pt x=\"0\" y=\"0\" /></a:moveTo><a:lnTo><a:pt x=\"") + GetValue(nIndex3-1, ptFormula, true) + _T("\" y=\"") + GetValue(nIndex3, ptFormula, true) + 
-					+ _T("\" /></a:lnTo>");
+					+ _T("\"/></a:lnTo>");
 				*/
 
 				//текущая точка
@@ -1764,7 +1766,7 @@ namespace NSGuidesVML
 					GetValue(nIndex-5, ptFormula, true, m_oPathRes);
 					m_oPathRes.WriteString(_T("\" y=\""));
 					GetValue(nIndex, ptFormula, true, m_oPathRes);
-					m_oPathRes.WriteString(_T("\" /></a:moveTo><a:arcTo wR=\""));
+					m_oPathRes.WriteString(_T("\"/></a:moveTo><a:arcTo wR=\""));
 					GetValue(m_lIndexDst-2, ptFormula, true, m_oPathRes);
 					m_oPathRes.WriteString(_T("\" hR=\""));
 					GetValue(m_lIndexDst-1, ptFormula, true, m_oPathRes);
@@ -1772,7 +1774,7 @@ namespace NSGuidesVML
 					GetValue(nIndex1, ptFormula, true, m_oPathRes);
 					m_oPathRes.WriteString(_T("\" swAng=\""));
 					GetValue(nIndex2, ptFormula, true, m_oPathRes);
-					m_oPathRes.WriteString(_T("\" />"));
+					m_oPathRes.WriteString(_T("\"/>"));
 				}
 				else
 				{
@@ -1780,7 +1782,7 @@ namespace NSGuidesVML
 					GetValue(nIndex-5, ptFormula, true, m_oPathRes);
 					m_oPathRes.WriteString(_T("\" y=\""));
 					GetValue(nIndex, ptFormula, true, m_oPathRes);
-					m_oPathRes.WriteString(_T("\" /></a:lnTo><a:arcTo wR=\""));
+					m_oPathRes.WriteString(_T("\"/></a:lnTo><a:arcTo wR=\""));
 					GetValue(m_lIndexDst-2, ptFormula, true, m_oPathRes);
 					m_oPathRes.WriteString(_T("\" hR=\""));
 					GetValue(m_lIndexDst-1, ptFormula, true, m_oPathRes);
@@ -1788,7 +1790,7 @@ namespace NSGuidesVML
 					GetValue(nIndex1, ptFormula, true, m_oPathRes);
 					m_oPathRes.WriteString(_T("\" swAng=\""));
 					GetValue(nIndex2, ptFormula, true, m_oPathRes);
-					m_oPathRes.WriteString(_T("\" />"));
+					m_oPathRes.WriteString(_T("\"/>"));
 				}
 			
 				//текущая точка
@@ -1816,7 +1818,7 @@ namespace NSGuidesVML
 						GetValue(pCurPoint.x, pCurPointType.x, false, m_oPathRes);
 						m_oPathRes.WriteString(_T("\" y=\""));
 						GetValue(pCurPoint.y, pCurPointType.y, false, m_oPathRes);
-						m_oPathRes.WriteString(_T("\" />"));
+						m_oPathRes.WriteString(_T("\"/>"));
 					}
 					m_oPathRes.WriteString(_T("</a:quadBezTo>"));
 				}
@@ -1831,7 +1833,7 @@ namespace NSGuidesVML
 						GetValue(pCurPoint.x, pCurPointType.x, false, m_oPathRes);
 						m_oPathRes.WriteString(_T("\" y=\""));
 						GetValue(pCurPoint.y, pCurPointType.y, false, m_oPathRes);
-						m_oPathRes.WriteString(_T("\" /></a:lnTo>"));
+						m_oPathRes.WriteString(_T("\"/></a:lnTo>"));
 					}
 				}
 
@@ -1861,7 +1863,7 @@ namespace NSGuidesVML
 						GetValue(pCurPoint.x, pCurPointType.x, false, m_oPathRes);
 						m_oPathRes.WriteString(_T("\" y=\""));
 						GetValue(pCurPoint.y, pCurPointType.y, false, m_oPathRes);
-						m_oPathRes.WriteString(_T("\" />"));
+						m_oPathRes.WriteString(_T("\"/>"));
 					}
 					m_oPathRes.WriteString(_T("</a:cubicBezTo>"));
 				}
@@ -1873,7 +1875,7 @@ namespace NSGuidesVML
 						GetValue(pCurPoint.x, pCurPointType.x, false, m_oPathRes);
 						m_oPathRes.WriteString(_T("\" y=\""));
 						GetValue(pCurPoint.y, pCurPointType.y, false, m_oPathRes);
-						m_oPathRes.WriteString(_T("\" /></a:lnTo>"));
+						m_oPathRes.WriteString(_T("\"/></a:lnTo>"));
 					}
 				}
 
@@ -1910,7 +1912,7 @@ namespace NSGuidesVML
 						GetValue(m_lIndexDst-2, ptFormula, true, m_oPathRes);
 						m_oPathRes.WriteString(_T("\" y=\""));
 						GetValue(m_lIndexDst-1, ptFormula, true, m_oPathRes);
-						m_oPathRes.WriteString(_T("\" />"));
+						m_oPathRes.WriteString(_T("\"/>"));
 					}
 					m_oPathRes.WriteString(_T("</a:cubicBezTo>"));
 				}
@@ -1930,7 +1932,7 @@ namespace NSGuidesVML
 						GetValue(m_lIndexDst-2, ptFormula, true, m_oPathRes);
 						m_oPathRes.WriteString(_T("\" y=\""));
 						GetValue(m_lIndexDst-1, ptFormula, true, m_oPathRes);
-						m_oPathRes.WriteString(_T("\" /></a:lnTo>"));
+						m_oPathRes.WriteString(_T("\"/></a:lnTo>"));
 					}									
 				}
 
@@ -2034,7 +2036,7 @@ namespace NSGuidesVML
 					GetValue(nIndex-2, ptFormula, true, m_oPathRes);
 					m_oPathRes.WriteString(_T("\" y=\""));
 					GetValue(nIndex, ptFormula, true, m_oPathRes);
-					m_oPathRes.WriteString(_T("\" /></a:moveTo><a:arcTo wR=\""));
+					m_oPathRes.WriteString(_T("\"/></a:moveTo><a:arcTo wR=\""));
 					GetValue(nIndex2-1, ptFormula, true, m_oPathRes);
 					m_oPathRes.WriteString(_T("\" hR=\""));
 					GetValue(nIndex2, ptFormula, true, m_oPathRes);
@@ -2042,7 +2044,7 @@ namespace NSGuidesVML
 					GetValue(nIndex1-2, ptFormula, true, m_oPathRes);
 					m_oPathRes.WriteString(_T("\" swAng=\""));
 					GetValue(nIndex1, ptFormula, true, m_oPathRes);
-					m_oPathRes.WriteString(_T("\" />"));
+					m_oPathRes.WriteString(_T("\"/>"));
 				}
 				else
 				{
@@ -2050,7 +2052,7 @@ namespace NSGuidesVML
 					GetValue(nIndex-2, ptFormula, true, m_oPathRes);
 					m_oPathRes.WriteString(_T("\" y=\""));
 					GetValue(nIndex, ptFormula, true, m_oPathRes);
-					m_oPathRes.WriteString(_T("\" /></a:lnTo><a:arcTo wR=\""));
+					m_oPathRes.WriteString(_T("\"/></a:lnTo><a:arcTo wR=\""));
 					GetValue(nIndex2-1, ptFormula, true, m_oPathRes);
 					m_oPathRes.WriteString(_T("\" hR=\""));
 					GetValue(nIndex2, ptFormula, true, m_oPathRes);
@@ -2058,7 +2060,7 @@ namespace NSGuidesVML
 					GetValue(nIndex1-2, ptFormula, true, m_oPathRes);
 					m_oPathRes.WriteString(_T("\" swAng=\""));
 					GetValue(nIndex1, ptFormula, true, m_oPathRes);
-					m_oPathRes.WriteString(_T("\" />"));
+					m_oPathRes.WriteString(_T("\"/>"));
 				}
 
 				//текущая точка

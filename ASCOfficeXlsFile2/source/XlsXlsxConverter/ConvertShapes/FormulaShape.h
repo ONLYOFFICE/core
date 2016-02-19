@@ -338,8 +338,7 @@ private:
 		void Clear()
 		{
 			m_pAdjustments	= NULL;
-			m_lShapeWidth	= ShapeSizeVML;
-			m_lShapeHeight	= ShapeSizeVML;
+
 
 			m_arFormulas.clear();
 			m_arResults.clear();

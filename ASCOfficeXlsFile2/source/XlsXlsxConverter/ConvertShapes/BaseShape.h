@@ -40,11 +40,11 @@ namespace NSGuidesVML
 class CBaseShape
 {
 public:
-	std::vector<long>		m_arAdjustments;
-	std::vector<double>		m_arGuides;
+	std::vector<long>					m_arAdjustments;
+	std::vector<double>					m_arGuides;
 
-	LONG					m_eJoin;
-	bool					m_bConcentricFill;
+	LONG								m_eJoin;
+	bool								m_bConcentricFill;
 
     std::vector<SimpleTypes::CPoint>	m_arConnectors;
 	std::vector<LONG>					m_arConnectorAngles;
@@ -67,65 +67,54 @@ public:
 	{
 	}
 
-	//virtual bool LoadFromXML(const std::wstring& xml)			= 0;
-	//virtual bool LoadFromXML(XmlUtils::CXmlNode& xmlNode)		= 0;
-	//virtual bool LoadAdjustValuesList(const std::wstring& xml)	= 0;
-	//virtual bool LoadGuidesList(const std::wstring& xml)		= 0;
-	//virtual bool LoadAdjustHandlesList(const std::wstring& xml)	= 0;
-	//virtual bool LoadConnectorsList(const std::wstring& xml)	= 0;
 	virtual bool LoadTextRect(const std::wstring& xml)			= 0;
 	virtual bool LoadPathList(const std::wstring& xml)			= 0;
-	//virtual bool SetAdjustment(long index, long value)			= 0;
-	//virtual void ReCalculate()									= 0;
-
-
-	//virtual void AddGuide(const std::wstring& strGuide)	{}
 
 	static CBaseShape* CreateByType(int ShapeType);
 	
 	bool SetType(int ShapeType);
 
-	//virtual bool SetProperties(CBaseShape* Shape)
-	//{
-	//	if( Shape == NULL)
-	//		return false;
+	virtual bool SetProperties(CBaseShape* Shape)
+	{
+		if( Shape == NULL)
+			return false;
 
-	//	m_oPath		= Shape->m_oPath;
-	//	m_strPath	= Shape->m_strPath;
-	//	m_strRect	= Shape->m_strRect;
-	//	
-	//	m_arAdjustments.clear();
-	//	for(int i = 0; i < Shape->m_arAdjustments.size(); i++)
-	//		m_arAdjustments.push_back(Shape->m_arAdjustments[i]);
+		m_oPath		= Shape->m_oPath;
+		m_strPath	= Shape->m_strPath;
+		m_strRect	= Shape->m_strRect;
+		
+		m_arAdjustments.clear();
+		for(int i = 0; i < Shape->m_arAdjustments.size(); i++)
+			m_arAdjustments.push_back(Shape->m_arAdjustments[i]);
 
-	//	Guides.clear();
-	//	for(int i = 0; i < Shape->Guides.size(); i++)
-	//		Guides.push_back(Shape->Guides[i]);
+		m_arGuides.clear();
+		for(int i = 0; i < Shape->m_arGuides.size(); i++)
+			m_arGuides.push_back(Shape->m_arGuides[i]);
 
-	//	m_eJoin				= Shape->m_eJoin;
-	//	m_bConcentricFill	= Shape->m_bConcentricFill;
+		m_eJoin				= Shape->m_eJoin;
+		m_bConcentricFill	= Shape->m_bConcentricFill;
 
-	//	m_arConnectors.clear();
-	//	for(int i = 0; i < Shape->m_arConnectors.size(); i++)
-	//		m_arConnectors.push_back(Shape->m_arConnectors[i]);
+		m_arConnectors.clear();
+		for(int i = 0; i < Shape->m_arConnectors.size(); i++)
+			m_arConnectors.push_back(Shape->m_arConnectors[i]);
 
-	//	m_arConnectorAngles.clear();
-	//	for(int i = 0; i < Shape->m_arConnectorAngles.size(); i++)
-	//		m_arConnectorAngles.push_back(Shape->m_arConnectorAngles[i]);
+		m_arConnectorAngles.clear();
+		for(int i = 0; i < Shape->m_arConnectorAngles.size(); i++)
+			m_arConnectorAngles.push_back(Shape->m_arConnectorAngles[i]);
 
-	//	m_arTextRects.clear();
-	//	for(int i = 0; i < Shape->m_arTextRects.size(); i++)
-	//		m_arTextRects.push_back(Shape->m_arTextRects[i]);
+		m_arTextRects.clear();
+		for(int i = 0; i < Shape->m_arTextRects.size(); i++)
+			m_arTextRects.push_back(Shape->m_arTextRects[i]);
 
-	//	m_arHandles.clear();
-	//	for(int i = 0; i < Shape->m_arHandles.size(); i++)
-	//		m_arHandles.push_back(Shape->m_arHandles[i]);
+		m_arHandles.clear();
+		for(int i = 0; i < Shape->m_arHandles.size(); i++)
+			m_arHandles.push_back(Shape->m_arHandles[i]);
 
 
-	//	m_strRect = Shape->m_strRect;
-	//	m_strTransformXml = Shape->m_strTransformXml;
-	//	return true;
-	//}
+		m_strRect = Shape->m_strRect;
+		m_strTransformXml = Shape->m_strTransformXml;
+		return true;
+	}
 
 	//virtual bool SetToDublicate(CBaseShape* Shape)
 	//{

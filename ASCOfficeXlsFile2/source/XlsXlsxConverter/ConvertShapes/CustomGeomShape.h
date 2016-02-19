@@ -169,11 +169,8 @@ namespace NSCustomVML
 		std::vector<CGuide>				m_arGuides;
 		std::vector<LONG>*				m_pAdjustValues;
 
-        bool m_bIsVerticesPresent;
-        bool m_bIsPathPresent;
-
-		//CBrush	m_oBrush;
-		//CPen	m_oPen;
+        bool							m_bIsVerticesPresent;
+        bool							m_bIsPathPresent;
 
 		CCustomVML() : m_arVertices(), m_arSegments(), m_arGuides(), m_pAdjustValues(NULL)
 		{
@@ -205,9 +202,6 @@ namespace NSCustomVML
 			
 			m_bIsPathPresent		= oSrc.m_bIsPathPresent;
 			m_bIsVerticesPresent	= oSrc.m_bIsVerticesPresent;
-
-			//m_oBrush	= oSrc.m_oBrush;
-			//m_oPen	= oSrc.m_oPen;
 
 			return *this;
 		}
@@ -403,9 +397,7 @@ namespace NSCustomVML
 					}
 				}
 			}
-
 			oManager.CalculateResults();
-
 			pShape->LoadPathList(strPath);
 		}
 	};

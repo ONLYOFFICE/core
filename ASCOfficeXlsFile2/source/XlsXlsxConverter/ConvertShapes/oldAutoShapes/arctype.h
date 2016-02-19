@@ -19,8 +19,8 @@ public:
 		m_arAdjustments.push_back(-5898240);
 		m_arAdjustments.push_back(0);
 		m_arAdjustments.push_back(0);
-		m_arAdjustments.push_back((LONG)ShapeSize);
-		m_arAdjustments.push_back((LONG)ShapeSize);
+		m_arAdjustments.push_back(43200/*ShapeSizeVML*/);//43200??
+		m_arAdjustments.push_back(43200/*ShapeSizeVML*/);//??43200
 
 		LoadConnectorsList(_T("0,0;21600,21600;0,21600"));
 

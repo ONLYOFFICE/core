@@ -10,7 +10,6 @@
 #include "../../../../Common/DocxFormat/Source/Base/Base.h"
 #include "../../../../DesktopEditor/graphics/GraphicsPath.h"
 
-const double	ShapeSize		= 43200.0;
 const int		ShapeSizeVML	= 21600;
 const double	RadKoef			= M_PI/10800000.0;
 
@@ -66,20 +65,27 @@ namespace NSStringUtils
 
 
 		boost::algorithm::split(pArrayResults, strSource, boost::algorithm::is_any_of(strDelimeters), boost::algorithm::token_compress_on);
+		
+		while (pArrayResults.size() > 0)
+		{
+			if (pArrayResults[pArrayResults.size() - 1].empty())
+				pArrayResults.erase(pArrayResults.begin() + pArrayResults.size() - 1);
+			else
+				break;
+		}
 
 	}
-	static void ParseString(std::vector<char>& pArrayDelimeters, std::wstring strSource, 
-		std::vector<std::wstring> & pArrayResults, bool bIsCleared = true)
-	{
-		std::wstring strDelimeters = _T("");
-		for (int nIndex = 0; nIndex < pArrayDelimeters.size(); ++nIndex)
-			strDelimeters += pArrayDelimeters[nIndex];
+	//static void ParseString(std::vector<char>& pArrayDelimeters, std::wstring strSource, 
+	//	std::vector<std::wstring> & pArrayResults, bool bIsCleared = true)
+	//{
+	//	std::wstring strDelimeters = _T("");
+	//	for (int nIndex = 0; nIndex < pArrayDelimeters.size(); ++nIndex)
+	//		strDelimeters += pArrayDelimeters[nIndex];
 
-		return ParseString(strDelimeters, strSource, pArrayResults, bIsCleared);
-	}
+	//	return ParseString(strDelimeters, strSource, pArrayResults, bIsCleared);
+	//}
 	static void ParsePath(std::wstring strSource, std::vector<std::wstring> pArrayResults, bool bIsCleared = true)
 	{
-	
 		std::wstring strPath = strSource;
 		//strPath.Replace(_T(" "), _T(","));
 		for (int nIndex = 0; nIndex < strPath.length(); ++nIndex)

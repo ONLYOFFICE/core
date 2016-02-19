@@ -26,7 +26,7 @@ public:
         AddGuide(_T("sum @4 @10 0")); 
         AddGuide(_T("sum @11 #1 width")); 
         AddGuide(_T("sum @7 @10 0")); 
-        AddGuide(_T("sum @12 width #0 "));
+        AddGuide(_T("sum @12 width #0"));
         AddGuide(_T("sum @5 0 #0"));
         AddGuide(_T("prod @15 1 2")); 
         AddGuide(_T("mid @4 @7"));
@@ -36,7 +36,7 @@ public:
         AddGuide(_T("val width"));
         AddGuide(_T("val height"));
         AddGuide(_T("prod height 2 1")); 
-        AddGuide(_T("sum @17 0 @4 "));
+        AddGuide(_T("sum @17 0 @4"));
         AddGuide(_T("ellipse @24 @4 height")); 
         AddGuide(_T("sum height 0 @25")); 
         AddGuide(_T("sum @8 128 0")); 

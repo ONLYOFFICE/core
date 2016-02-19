@@ -87,12 +87,12 @@ mac {
         _ASC_USE_UNICODE_CONVERTER_ \
         UNICODECONVERTER_USE_DYNAMIC_LIBRARY
 
-
 INCLUDEPATH += ../../../Common/boost_1_58_0
+
 LIBS += $$DESTDIR -lUnicodeConverter
 }
 #################### LINUX ########################
-
+INCLUDEPATH += ../../../DesktopEditor/freetype-2.5.2/include
 INCLUDEPATH += ../XlsFormat
 INCLUDEPATH += ../Common
 
@@ -841,7 +841,13 @@ SOURCES +=  \
     ../XlsFormat/Auxiliary/HelpersTagsGenerator.cpp \
     ../XlsFormat/Auxiliary/HelpFunc.cpp \
     ../XlsFormat/Logic/SummaryInformationStream/Structures/CodePageOle.cpp \
-    ../XlsFormat/Logic/Biff_structures/SharedProperty.cpp
+    ../XlsFormat/Logic/Biff_structures/SharedProperty.cpp \
+    ../XlsFormat/Logic/Biff_records/FrtWrapper.cpp \
+    ../XlsXlsxConverter/ConvertShapes/FormulaShape.cpp \
+    ../XlsXlsxConverter/ConvertShapes/CustomShape.cpp \
+    ../XlsXlsxConverter/ConvertShapes/BaseShape_1.cpp \
+    ../XlsFormat/Logic/Biff_structures/AFDOperBoolErr.cpp \
+    ../XlsFormat/Logic/Biff_structures/AFDOperXNum.cpp
 
 
 
@@ -1609,7 +1615,163 @@ HEADERS +=  \
     ../XlsFormat/Auxiliary/HelpFunc.h \
     ../XlsFormat/Logic/SummaryInformationStream/Structures/CodePageOle.h \
     ../XlsFormat/Logic/Biff_structures/SharedProperty.h \
-    ../XlsXlsxConverter/xlsx_chart_context.h
+    ../XlsXlsxConverter/xlsx_chart_context.h \
+    ../XlsFormat/Logic/Biff_records/FrtWrapper.h \
+    ../XlsXlsxConverter/ConvertShapes/BaseShape.h \
+    ../XlsXlsxConverter/ConvertShapes/BinaryReader.h \
+    ../XlsXlsxConverter/ConvertShapes/CustomGeomShape.h \
+    ../XlsXlsxConverter/ConvertShapes/CustomShapeConvert.h \
+    ../XlsXlsxConverter/ConvertShapes/FormulaShape.h \
+    ../XlsXlsxConverter/ConvertShapes/GraphicsPath.h \
+    ../XlsXlsxConverter/ConvertShapes/PathShape.h \
+    ../XlsXlsxConverter/ConvertShapes/PPTShapeEnum.h \
+    ../XlsXlsxConverter/ConvertShapes/PresetShapesHeader.h \
+    ../XlsXlsxConverter/ConvertShapes/ShapeUtils.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/accentbordercallout1type.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/accentbordercallout3type.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/accentbordercallout90type.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/AccentBorderCallout2Type.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/AccentCallout1Type.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/AccentCallout2Type.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/AccentCallout3Type.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/AccentCallout90Type.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/ActionButtonBack.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/ActionButtonBeginning.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/ActionButtonBlank.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/ActionButtonDocument.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/ActionButtonEnd.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/ActionButtonHelp.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/ActionButtonHome.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/ActionButtonInfo.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/ActionButtonMovie.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/ActionButtonNext.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/ActionButtonReturn.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/ActionButtonSound.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/arctype.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/BentArrowType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/BentConnector.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/BentUpArrowType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/BevelType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/BlockArcType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/BorderCallout1Type.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/BorderCallout2Type.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/BorderCallout3Type.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/BorderCallout90Type.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/BracePairType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/BracketPairType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/Callout1Type.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/Callout2Type.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/Callout3Type.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/Callout90Type.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/CanType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/ChevronType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/CircularArrowType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/CloudCalloutType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/CubeType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/CurvedConnector.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/CurvedDownArrowType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/CurvedLeftArrowType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/CurvedRightArrowType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/CurvedUpArrowType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/DiamondType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/DonutType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/DownArrowCalloutType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/DownArrowType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/EllipseRibbon2Type.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/EllipseRibbonType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/EllipseType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/FlowChartAlternateProcessType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/FlowChartCollateType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/FlowChartConnectorType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/FlowChartDecisionType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/FlowChartDelayType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/FlowChartDisplayType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/FlowChartDocumentType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/FlowChartExtractType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/FlowChartInputOutputType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/FlowChartInternalStorageType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/FlowChartMagneticDiskType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/FlowChartMagneticDrumType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/FlowChartMagneticTapeType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/FlowChartManualInputType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/FlowChartManualOperationType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/FlowChartMergeType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/FlowChartMultidocumentType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/FlowChartOffpageConnectorType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/FlowChartOnlineStorageType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/FlowChartOrType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/FlowChartPredefinedProcessType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/FlowChartPreparationType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/FlowChartProcessType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/FlowChartPunchedCardType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/FlowChartPunchedTapeType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/FlowChartSortType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/FlowChartSummingJunctionType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/FlowChartTerminatorType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/FoldedCornerType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/HeartType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/HexagonType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/HomePlateType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/HorisontalScrollType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/IrregularSealOneType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/IrregularSealTwo.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/IsoscelesTriangleType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/LeftArrowCalloutType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/LeftArrowType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/LeftBraceType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/LeftBracketType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/LeftRightArrowCalloutType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/LeftRightArrowType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/LeftRightUpArrow.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/LeftUpArrowType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/LightningBoltType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/LineType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/MoonType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/NoSmokingType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/NotchedRightArrowType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/OctagonType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/ParallelogramType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/PentagonType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/PlaqueType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/PlusType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/QuadArrowCalloutType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/QuadArrowType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/RectangleType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/RibbonDownType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/RibbonUpType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/RightArrowCalloutType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/RightArrowType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/RightBracetype.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/RightBracketType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/RightTriangleType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/RoundedRectangleType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/Seal4Type.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/Seal8Type.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/Seal16Type.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/Seal24Type.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/Seal32Type.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/SmileyFaceType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/Startype.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/StraightConnectorType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/StripedRightArrowType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/SunType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/TextboxType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/TrapezoidType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/UpArrowCalloutType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/UpArrowType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/UpDownArrowCalloutType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/UpDownArrowType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/UturnArrowType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/VerticalScrollType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/WaveDoubleType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/WaveType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/WedgeEllipseCalloutType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/WedgeRectCalloutType.h \
+    ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/WedgeRoundedRectCalloutType.h \
+    ../XlsXlsxConverter/ConvertShapes/XmlWriter.h \
+    ../XlsXlsxConverter/ConvertShapes/CustomShape.h \
+    ../XlsFormat/Logic/Biff_structures/AFDOperBoolErr.h \
+    ../XlsFormat/Logic/Biff_structures/AFDOperXNum.h
 
 
 

@@ -143,9 +143,9 @@ void UserSViewBegin::readFields(CFRecord& record)
 	fPageLayoutView = GETBIT(flags, 11);
 	fRuler			= GETBIT(flags, 13);
 
-	record >> operNumX >> operNumY >> colRPane >> rwBPane;
+    record >> operNumX >> operNumY >> colRPane >> rwBPane;
 
-	pane_top_left_cell = CellRef(fSplitH ? rwBPane : 0 , fSplitV ? colRPane : 0, true, true).toString();
+    pane_top_left_cell = CellRef(fSplitH ? (int)rwBPane : 0 , fSplitV ? (int)colRPane : 0, true, true).toString();
 }
 
 } // namespace XLS

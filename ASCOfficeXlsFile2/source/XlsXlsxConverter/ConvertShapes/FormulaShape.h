@@ -294,7 +294,7 @@ private:
 				m_eType3 = ptType;		
 			}
 		}
-		LONG Calculate(CFormulasManager* pManager);
+        LONG CalculateFormula(CFormulasManager* pManager);
 	};
 
 	class CFormulasManager
@@ -372,7 +372,7 @@ private:
 		{
 			for (int index = 0; index < m_arFormulas.size(); ++index)
 			{
-                LONG lResult = m_arFormulas[index].Calculate(this);
+                LONG lResult = m_arFormulas[index].CalculateFormula(this);
 			}
 		}
 	};

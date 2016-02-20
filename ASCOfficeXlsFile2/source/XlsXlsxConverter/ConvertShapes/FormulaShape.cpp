@@ -2,7 +2,7 @@
 
 #include "FormulaShape.h"
 
-LONG NSGuidesVML::CFormula::Calculate(NSGuidesVML::CFormulasManager* pManager)
+LONG NSGuidesVML::CFormula::CalculateFormula(NSGuidesVML::CFormulasManager* pManager)
 {
 	if ((0 > m_lIndex) || (m_lIndex >= pManager->m_arResults.size()))
 		return 0;
@@ -19,7 +19,7 @@ LONG NSGuidesVML::CFormula::Calculate(NSGuidesVML::CFormulasManager* pManager)
 	LONG a1 = m_lParam1;
 	if (ptFormula == m_eType1)
 	{
-		a1 = (m_lParam1 >= lGuidesCount) ? 0 : pManager->m_arFormulas[m_lParam1].Calculate(pManager);
+        a1 = (m_lParam1 >= lGuidesCount) ? 0 : pManager->m_arFormulas[m_lParam1].CalculateFormula(pManager);
 	}
 	else if (ptAdjust == m_eType1)
 	{
@@ -29,7 +29,7 @@ LONG NSGuidesVML::CFormula::Calculate(NSGuidesVML::CFormulasManager* pManager)
 	LONG b1 = m_lParam2;
 	if (ptFormula == m_eType2)
 	{
-		b1 = (m_lParam2 >= lGuidesCount) ? 0 : pManager->m_arFormulas[m_lParam2].Calculate(pManager);
+        b1 = (m_lParam2 >= lGuidesCount) ? 0 : pManager->m_arFormulas[m_lParam2].CalculateFormula(pManager);
 	}
 	else if (ptAdjust == m_eType2)
 	{
@@ -39,7 +39,7 @@ LONG NSGuidesVML::CFormula::Calculate(NSGuidesVML::CFormulasManager* pManager)
 	LONG c1 = m_lParam3;
 	if (ptFormula == m_eType3)
 	{
-		c1 = (m_lParam3 >= lGuidesCount) ? 0 : pManager->m_arFormulas[m_lParam3].Calculate(pManager);
+        c1 = (m_lParam3 >= lGuidesCount) ? 0 : pManager->m_arFormulas[m_lParam3].CalculateFormula(pManager);
 	}
 	else if (ptAdjust == m_eType3)
 	{

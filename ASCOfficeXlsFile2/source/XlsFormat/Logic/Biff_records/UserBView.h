@@ -25,15 +25,15 @@ public:
 
 	int serialize(std::wostream & stream);
 //-----------------------------
-	BIFF_WORD tabId;
-	BIFF_BSTR guid;
+	BIFF_WORD		tabId;
+	std::wstring	guid;
 	
-	BIFF_DWORD x;
-	BIFF_DWORD y;
-	BIFF_DWORD dx;
-	BIFF_DWORD dy;
+	BIFF_DWORD		x;
+	BIFF_DWORD		y;
+	BIFF_DWORD		dx;
+	BIFF_DWORD		dy;
 
-	BIFF_WORD wTabRatio;
+	BIFF_WORD		wTabRatio;
 
 	bool fDspFmlaBar;
 	bool fDspStatus;

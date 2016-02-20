@@ -105,7 +105,7 @@ int CUSTOMVIEW::serialize(std::wostream & stream)
     {
 		CP_XML_NODE(L"customSheetView")
 		{	
-			CP_XML_ATTR(L"guid",			*userSView->guid.value());
+			CP_XML_ATTR(L"guid",			userSView->guid);
 			CP_XML_ATTR(L"showGridLines",	userSView->fDspGridSv);
 
 			if (userSView->wScale != 100)	CP_XML_ATTR(L"scale", userSView->wScale);

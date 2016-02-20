@@ -24,11 +24,11 @@ public:
 	static const ElementType	type = typeUserSViewBegin;
 
 //-----------------------------
-	BIFF_BSTR	guid;
-	TabId		iTabid;
-	BIFF_DWORD	wScale;
-	Icv			icvHdr;
-	PaneType	pnnSel;
+	std::wstring	guid;
+	TabId			iTabid;
+	BIFF_DWORD		wScale;
+	Icv				icvHdr;
+	PaneType		pnnSel;
 
 	bool fShowBrks;
 	bool fDspFmlaSv;

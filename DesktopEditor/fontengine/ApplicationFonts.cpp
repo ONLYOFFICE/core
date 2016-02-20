@@ -1383,7 +1383,7 @@ void CFontList::LoadFromArrayFiles(CArray<std::wstring>& oArray, int nFlag)
 				continue;
 
             INT bBold   = (pFace->style_flags & FT_STYLE_FLAG_BOLD ? 1 : 0);
-            INT bItalic = pFace->style_flags & FT_STYLE_FLAG_ITALIC;
+            INT bItalic = (pFace->style_flags & FT_STYLE_FLAG_ITALIC) ? 1 : 0;
 
 			const char* pPostName = FT_Get_Postscript_Name(pFace);
 			std::string sPostscriptName = "";

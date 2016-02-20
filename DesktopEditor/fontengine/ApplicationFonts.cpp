@@ -1296,7 +1296,7 @@ void CFontList::SetDefaultFont(std::wstring& sName)
 	}
 }
 
-void CFontList::LoadFromArrayFiles(CArray<std::wstring>& oArray)
+void CFontList::LoadFromArrayFiles(CArray<std::wstring>& oArray, int nFlag)
 {
 	int nCount = oArray.GetCount();
 
@@ -1494,7 +1494,8 @@ void CFontList::LoadFromArrayFiles(CArray<std::wstring>& oArray)
 
 			EFontFormat eFormat = GetFontFormat( pFace );
 
-            if (eFormat != fontTrueType)
+            bool bSupportFont = ((eFormat == fontTrueType) || ((nFlag & 1) && (eFormat == fontOpenType)));
+            if (!bSupportFont)
             {
                 FT_Done_Face( pFace );
                 continue;
@@ -1795,7 +1796,9 @@ CArray<std::wstring> CApplicationFonts::GetSetupFontFiles()
 #endif
 
 #if defined(_MAC) && !defined(_IOS)
-    return NSDirectory::GetFiles(L"/Library/Fonts", true);
+    CArray<std::wstring> _array = NSDirectory::GetFiles(L"/Library/Fonts", true);
+    NSDirectory::GetFiles2(L"/System/Library/Fonts", _array, true);
+    return _array;
 #endif
     
 #ifdef _IOS
@@ -1807,9 +1810,9 @@ CArray<std::wstring> CApplicationFonts::GetSetupFontFiles()
     return ret;
 }
 
-void CApplicationFonts::InitializeFromArrayFiles(CArray<std::wstring>& files)
+void CApplicationFonts::InitializeFromArrayFiles(CArray<std::wstring>& files, int nFlag)
 {
-    m_oList.LoadFromArrayFiles(files);
+    m_oList.LoadFromArrayFiles(files, nFlag);
 }
 
 #if defined(_WIN32) || defined (_WIN64)

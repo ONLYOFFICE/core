@@ -760,6 +760,7 @@
 					"$(PROJECT_DIR)/../../XML/include",
 					"$(PROJECT_DIR)/../../XML/include/libxml",
 				);
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				PLIST_FILE_OUTPUT_FORMAT = "same-as-input";
 				PRODUCT_NAME = libxml2_ios;
 				SDKROOT = iphoneos;
@@ -783,6 +784,7 @@
 					"$(PROJECT_DIR)/../../XML/include",
 					"$(PROJECT_DIR)/../../XML/include/libxml",
 				);
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				PLIST_FILE_OUTPUT_FORMAT = "same-as-input";
 				PRODUCT_NAME = libxml2_ios;
 				SDKROOT = iphoneos;
@@ -933,6 +935,7 @@
 				17CAFB4A1ACD2938004BA96A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

@@ -39,7 +39,6 @@
 		17C1FEB51ACC42C4006B99B3 /* HeaderFooterWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EF41AC4544900BEA2EA /* HeaderFooterWriter.h */; };
 		17C1FEB61ACC42C4006B99B3 /* webSettingsWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EFB1AC4544900BEA2EA /* webSettingsWriter.h */; };
 		17C1FEB71ACC42C4006B99B3 /* SettingWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EF91AC4544900BEA2EA /* SettingWriter.h */; };
-		17C1FEB81ACC42C4006B99B3 /* FileDownloader.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17F4E1AC454EF00BEA2EA /* FileDownloader.h */; };
 		17C1FEB91ACC42C4006B99B3 /* ReaderClasses.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EF71AC4544900BEA2EA /* ReaderClasses.h */; };
 		17C1FEBA1ACC42C4006B99B3 /* BinaryReader.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17F2E1AC4549B00BEA2EA /* BinaryReader.h */; };
 		17C1FEBC1ACC42C4006B99B3 /* DocxSerializer.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17F0F1AC4546100BEA2EA /* DocxSerializer.h */; };
@@ -82,7 +81,10 @@
 		17E17F491AC4549B00BEA2EA /* BinaryReader.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17F2E1AC4549B00BEA2EA /* BinaryReader.h */; };
 		17E17F4A1AC4549B00BEA2EA /* CSVWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E17F2F1AC4549B00BEA2EA /* CSVWriter.cpp */; };
 		17E17F4B1AC4549B00BEA2EA /* CSVWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17F301AC4549B00BEA2EA /* CSVWriter.h */; };
-		17E17F4F1AC454EF00BEA2EA /* FileDownloader.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17F4E1AC454EF00BEA2EA /* FileDownloader.h */; };
+		69F181AE1C77274E00B2952B /* FileDownloader.h in Headers */ = {isa = PBXBuildFile; fileRef = 69F181AD1C77274E00B2952B /* FileDownloader.h */; };
+		69F181AF1C77274E00B2952B /* FileDownloader.h in Headers */ = {isa = PBXBuildFile; fileRef = 69F181AD1C77274E00B2952B /* FileDownloader.h */; };
+		69F181B41C77276D00B2952B /* FileDownloader_curl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 69F181B31C77276D00B2952B /* FileDownloader_curl.cpp */; };
+		69F181B51C77276D00B2952B /* FileDownloader_curl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 69F181B31C77276D00B2952B /* FileDownloader_curl.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -156,7 +158,8 @@
 		17E17F2E1AC4549B00BEA2EA /* BinaryReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BinaryReader.h; sourceTree = "<group>"; };
 		17E17F2F1AC4549B00BEA2EA /* CSVWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSVWriter.cpp; sourceTree = "<group>"; };
 		17E17F301AC4549B00BEA2EA /* CSVWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSVWriter.h; sourceTree = "<group>"; };
-		17E17F4E1AC454EF00BEA2EA /* FileDownloader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FileDownloader.h; path = ../../../Common/FileDownloader.h; sourceTree = "<group>"; };
+		69F181AD1C77274E00B2952B /* FileDownloader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FileDownloader.h; path = ../../../Common/FileDownloader/FileDownloader.h; sourceTree = "<group>"; };
+		69F181B31C77276D00B2952B /* FileDownloader_curl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FileDownloader_curl.cpp; path = ../../../Common/FileDownloader/FileDownloader_curl.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -304,7 +307,8 @@
 		17E17F4D1AC454E200BEA2EA /* Common */ = {
 			isa = PBXGroup;
 			children = (
-				17E17F4E1AC454EF00BEA2EA /* FileDownloader.h */,
+				69F181AD1C77274E00B2952B /* FileDownloader.h */,
+				69F181B31C77276D00B2952B /* FileDownloader_curl.cpp */,
 			);
 			name = Common;
 			sourceTree = "<group>";
@@ -331,6 +335,7 @@
 				17C1FEAD1ACC42C4006B99B3 /* ChartWriter.h in Headers */,
 				17C1FEAE1ACC42C4006B99B3 /* DocumentRelsWriter.h in Headers */,
 				17C1FEAF1ACC42C4006B99B3 /* CommentsWriter.h in Headers */,
+				69F181AF1C77274E00B2952B /* FileDownloader.h in Headers */,
 				17C1FEB01ACC42C4006B99B3 /* BinaryCommonReader.h in Headers */,
 				17C1FEB11ACC42C4006B99B3 /* Common.h in Headers */,
 				17C1FEB21ACC42C4006B99B3 /* XlsxSerializer.h in Headers */,
@@ -339,7 +344,6 @@
 				17C1FEB51ACC42C4006B99B3 /* HeaderFooterWriter.h in Headers */,
 				17C1FEB61ACC42C4006B99B3 /* webSettingsWriter.h in Headers */,
 				17C1FEB71ACC42C4006B99B3 /* SettingWriter.h in Headers */,
-				17C1FEB81ACC42C4006B99B3 /* FileDownloader.h in Headers */,
 				17C1FEB91ACC42C4006B99B3 /* ReaderClasses.h in Headers */,
 				17C1FEBA1ACC42C4006B99B3 /* BinaryReader.h in Headers */,
 				17C1FEBC1ACC42C4006B99B3 /* DocxSerializer.h in Headers */,
@@ -367,6 +371,7 @@
 				17E17EFC1AC4544900BEA2EA /* ChartWriter.h in Headers */,
 				17E17F011AC4544900BEA2EA /* DocumentRelsWriter.h in Headers */,
 				17E17EFD1AC4544900BEA2EA /* CommentsWriter.h in Headers */,
+				69F181AE1C77274E00B2952B /* FileDownloader.h in Headers */,
 				17E17F481AC4549B00BEA2EA /* BinaryCommonReader.h in Headers */,
 				17E17F3C1AC4549B00BEA2EA /* Common.h in Headers */,
 				17E17F191AC4546100BEA2EA /* XlsxSerializer.h in Headers */,
@@ -375,7 +380,6 @@
 				17E17F051AC4544900BEA2EA /* HeaderFooterWriter.h in Headers */,
 				17E17F0C1AC4544900BEA2EA /* webSettingsWriter.h in Headers */,
 				17E17F0A1AC4544900BEA2EA /* SettingWriter.h in Headers */,
-				17E17F4F1AC454EF00BEA2EA /* FileDownloader.h in Headers */,
 				17E17F081AC4544900BEA2EA /* ReaderClasses.h in Headers */,
 				17E17F491AC4549B00BEA2EA /* BinaryReader.h in Headers */,
 				17E17F151AC4546100BEA2EA /* DocxSerializer.h in Headers */,
@@ -483,6 +487,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				69F181B51C77276D00B2952B /* FileDownloader_curl.cpp in Sources */,
 				17C1FE961ACC42C4006B99B3 /* Common.cpp in Sources */,
 				17C1FE971ACC42C4006B99B3 /* ChartFromToBinary.cpp in Sources */,
 				17C1FE981ACC42C4006B99B3 /* CSVReader.cpp in Sources */,
@@ -498,6 +503,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				69F181B41C77276D00B2952B /* FileDownloader_curl.cpp in Sources */,
 				17E17F3B1AC4549B00BEA2EA /* Common.cpp in Sources */,
 				17E17F3E1AC4549B00BEA2EA /* ChartFromToBinary.cpp in Sources */,
 				17E17F421AC4549B00BEA2EA /* CSVReader.cpp in Sources */,

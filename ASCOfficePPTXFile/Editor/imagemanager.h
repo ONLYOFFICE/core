@@ -111,7 +111,8 @@ namespace NSShapeImageGen
 			}
 
 			CString strExt = _T("");
-			strExt.Format(_T("%ls%d.%ls"), m_sName, m_lID, _strExt);
+			strExt.Format(_T("%ls%d."), m_sName, m_lID);
+            strExt += _strExt;
 			return strExt;
 		}
 		AVSINLINE CString GetPathWithoutExtension()

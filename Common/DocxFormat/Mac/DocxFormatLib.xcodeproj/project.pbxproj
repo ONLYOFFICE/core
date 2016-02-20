@@ -515,6 +515,8 @@
 		17E6B3B01AC4263A00F28F8B /* xmlutils.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6B1F11AC4263900F28F8B /* xmlutils.h */; };
 		17E6B3B31AC4279400F28F8B /* docxformatlib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E6B3B11AC4279400F28F8B /* docxformatlib.cpp */; };
 		17E6B3B41AC4279400F28F8B /* docxformatlib.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6B3B21AC4279400F28F8B /* docxformatlib.h */; };
+		69F181EB1C7734A700B2952B /* strings_hack_printf.h in Headers */ = {isa = PBXBuildFile; fileRef = 69F181EA1C7734A700B2952B /* strings_hack_printf.h */; };
+		69F181EC1C7734A700B2952B /* strings_hack_printf.h in Headers */ = {isa = PBXBuildFile; fileRef = 69F181EA1C7734A700B2952B /* strings_hack_printf.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -840,6 +842,7 @@
 		17E6B3BF1AC4298500F28F8B /* File.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = File.h; sourceTree = "<group>"; };
 		17E6B3C01AC4298500F28F8B /* Path.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Path.h; sourceTree = "<group>"; };
 		17E6B3C11AC4298500F28F8B /* Types.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Types.h; sourceTree = "<group>"; };
+		69F181EA1C7734A700B2952B /* strings_hack_printf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = strings_hack_printf.h; path = ../../Common/DocxFormat/Source/Base/strings_hack_printf.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1421,6 +1424,7 @@
 				17E6B3BF1AC4298500F28F8B /* File.h */,
 				17E6B3C01AC4298500F28F8B /* Path.h */,
 				17E6B3C11AC4298500F28F8B /* Types.h */,
+				69F181EA1C7734A700B2952B /* strings_hack_printf.h */,
 			);
 			name = common;
 			path = ../../../../DesktopEditor/common;
@@ -1574,6 +1578,7 @@
 				17C1FC591ACC4250006B99B3 /* Si.h in Headers */,
 				17C1FC5A1ACC4250006B99B3 /* SystemUtility.h in Headers */,
 				17C1FC5B1ACC4250006B99B3 /* Namespaces.h in Headers */,
+				69F181EC1C7734A700B2952B /* strings_hack_printf.h in Headers */,
 				17C1FC5C1ACC4250006B99B3 /* RId.h in Headers */,
 				17C1FC5D1ACC4250006B99B3 /* DrawingPicture.h in Headers */,
 				17C1FC5E1ACC4250006B99B3 /* Shape.h in Headers */,
@@ -1784,6 +1789,7 @@
 				17E6B2D31AC4263900F28F8B /* Si.h in Headers */,
 				17E6B2AC1AC4263900F28F8B /* SystemUtility.h in Headers */,
 				17E6B2861AC4263900F28F8B /* Namespaces.h in Headers */,
+				69F181EB1C7734A700B2952B /* strings_hack_printf.h in Headers */,
 				17E6B2891AC4263900F28F8B /* RId.h in Headers */,
 				17E6B2351AC4263900F28F8B /* DrawingPicture.h in Headers */,
 				17E6B26E1AC4263900F28F8B /* Shape.h in Headers */,
@@ -2119,6 +2125,7 @@
 					USE_LITE_READER,
 					MAC,
 					unix,
+					_IOS,
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				HEADER_SEARCH_PATHS = (
@@ -2154,6 +2161,7 @@
 					USE_LITE_READER,
 					MAC,
 					unix,
+					_IOS,
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				HEADER_SEARCH_PATHS = (

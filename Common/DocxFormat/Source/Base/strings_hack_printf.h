@@ -1,4 +1,4 @@
-﻿#ifndef STRINGS_HACK_PRINTF_H
+#ifndef STRINGS_HACK_PRINTF_H
 #define STRINGS_HACK_PRINTF_H
 
 #include <string>
@@ -48,7 +48,26 @@ static int strings_hack_printf_internal(wchar_t* _buffer, size_t _size_alloc, wc
 
         if (*tmp_format)
         {
+#ifndef _IOS
+            // crash on ios.
             int fmt_size = vswprintf(tmp_buffer, _size_alloc - write_size, tmp_format, va);
+#else
+            va_list arg_copy;
+            va_copy(arg_copy, va);
+            
+            for (wchar_t* tmp = tmp_format; *tmp != '\0'; ++tmp)
+            {
+                if ('%' == *tmp)
+                {
+                    if ('%' == tmp[1])
+                        ++tmp;
+                    else
+                        void* p = va_arg(va, void*);
+                }
+            }
+            
+            int fmt_size = vswprintf(tmp_buffer, _size_alloc - write_size, tmp_format, arg_copy);
+#endif
             if (fmt_size < 0)
                 return -1;
 
@@ -116,7 +135,26 @@ static int strings_hack_printf_internal_a(char* _buffer, size_t _size_alloc, cha
 
         if (*tmp_format)
         {
+#ifndef _IOS
+            // crash on ios.
             int fmt_size = vsnprintf(tmp_buffer, _size_alloc - write_size, tmp_format, va);
+#else
+            va_list arg_copy;
+            va_copy(arg_copy, va);
+            
+            for (char* tmp = tmp_format; *tmp != '\0'; ++tmp)
+            {
+                if ('%' == *tmp)
+                {
+                    if ('%' == tmp[1])
+                        ++tmp;
+                    else
+                        void* p = va_arg(va, void*);
+                }
+            }
+            
+            int fmt_size = vsnprintf(tmp_buffer, _size_alloc - write_size, tmp_format, arg_copy);
+#endif
             if (fmt_size < 0)
                 return -1;
 

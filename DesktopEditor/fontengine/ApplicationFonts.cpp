@@ -1339,6 +1339,13 @@ void CFontList::LoadFromArrayFiles(CArray<std::wstring>& oArray, int nFlag)
     
 	for (int nIndex = 0; nIndex < nCount; ++nIndex)
 	{
+        if ((nFlag & 2) != 0)
+        {
+            std::wstring::size_type _pos_dfont = oArray[nIndex].find(L".dfont");
+            if (_pos_dfont != std::wstring::npos && _pos_dfont == (oArray[nIndex].length() - 6))
+                continue;
+        }
+
 		// open file
 		CFontStream oStream;
 		if (!oStream.CreateFromFile(oArray[nIndex], pDataFontFile))

@@ -209,7 +209,7 @@ public:
     void ToBuffer(BYTE** pDstData, LONG* pLen, std::wstring strDirectory = L"", bool bIsOnlyFileName = false);
 
 public:
-	void LoadFromArrayFiles(CArray<std::wstring>& arrFiles);
+	void LoadFromArrayFiles(CArray<std::wstring>& arrFiles, int nFlag = 0);
 	void LoadFromFolder(const std::wstring& strDirectory);
 	bool CheckLoadFromFolderBin(const std::wstring& strDirectory);
 	void Add(CFontInfo* pInfo);
@@ -238,7 +238,7 @@ public:
     void Initialize(bool bIsCheckSelection = true);
       
     CArray<std::wstring> GetSetupFontFiles();
-    void InitializeFromArrayFiles(CArray<std::wstring>& files);
+    void InitializeFromArrayFiles(CArray<std::wstring>& files, int nFlag = 0);
 
 #if defined(_WIN32) || defined (_WIN64)
 	void InitFromReg();

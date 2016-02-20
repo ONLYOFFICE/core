@@ -23,33 +23,6 @@ BiffStructurePtr NoteRR::clone()
 }
 
 
-//void NoteRR::toXML(BiffStructurePtr & parent)
-//{
-//	MSXML2::IXMLDOMElementPtr own_tag = XMLSTUFF::createElement(getClassName(), parent);
-//
-//	rrd.toXML(own_tag);
-//	own_tag->setAttribute(L"bitfDelNote", bitfDelNote);
-//	own_tag->setAttribute(L"bitfAddNote", bitfAddNote);
-//	own_tag->setAttribute(L"row", row);
-//	own_tag->setAttribute(L"col", col);
-//	own_tag->setAttribute(L"fShow", fShow);
-//	own_tag->setAttribute(L"fRwHidden", fRwHidden);
-//	own_tag->setAttribute(L"fColHidden", fColHidden);
-//	own_tag->setAttribute(L"guid", STR::guid2bstr(guid));
-//	own_tag->setAttribute(L"ichEnd", ichEnd);
-//	own_tag->setAttribute(L"cchNote", cchNote);
-//	own_tag->setAttribute(L"stAuthor", stAuthor);
-//}
-//
-//
-//const bool NoteRR::fromXML(BiffStructurePtr & parent)
-//{
-//#pragma message("####################### NoteRR record has no BiffStructure::fromXML() implemented")
-//	Log::error(" Error!!! NoteRR record has no BiffStructure::fromXML() implemented.");
-//	return false;
-//}
-
-
 void NoteRR::store(CFRecord& record)
 {
 #pragma message("####################### NoteRR record has no BiffStructure::store() implemented")

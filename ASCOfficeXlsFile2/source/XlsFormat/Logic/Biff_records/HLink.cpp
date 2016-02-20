@@ -31,6 +31,7 @@ void HLink::readFields(CFRecord& record)
 {
 	_GUID_ clsid;
 	record >> ref8 >> clsid >> hyperlink;
+	
 	hlinkClsid = STR::guid2bstr(clsid);
 }
 

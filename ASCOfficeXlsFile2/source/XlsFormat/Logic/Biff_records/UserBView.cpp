@@ -113,6 +113,7 @@ void UserBView::readFields(CFRecord& record)
 	
 	_GUID_ guid_num;
 	record >> guid_num >> x >> y >> dx >> dy >> wTabRatio;
+	
 	guid = STR::guid2bstr(guid_num);
 
 	unsigned short flags1;
@@ -183,7 +184,7 @@ int UserBView::serialize(std::wostream & stream)
 			CP_XML_ATTR(L"windowWidth",		dx);
 			CP_XML_ATTR(L"windowHeight",	dy);
 			CP_XML_ATTR(L"activeSheetId",	tabId);
-			CP_XML_ATTR(L"guid",			*guid.value());
+			CP_XML_ATTR(L"guid",			guid);
 			CP_XML_ATTR(L"mergeInterval",	wMergeInterval);
 
 			if (fTimedUpdate)	CP_XML_ATTR(L"autoUpdate"		,	true);

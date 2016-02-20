@@ -23,11 +23,8 @@ public:
 	static const ElementType	type = typeGUIDTypeLib;
 
 //-----------------------------
-	BIFF_BSTR guid;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(guid)
-	//BO_ATTRIB_MARKUP_END
+	std::wstring guid;
+
 
 };
 

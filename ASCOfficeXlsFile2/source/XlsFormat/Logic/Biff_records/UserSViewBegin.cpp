@@ -98,7 +98,9 @@ void UserSViewBegin::readFields(CFRecord& record)
 {
 	_GUID_ guid_num;
 	record >> guid_num >> iTabid;
+	
 	guid = STR::guid2bstr(guid_num);
+	
 	record.skipNunBytes(2); // reserved
 	record >> wScale >> icvHdr;
 	record.skipNunBytes(2); // reserved

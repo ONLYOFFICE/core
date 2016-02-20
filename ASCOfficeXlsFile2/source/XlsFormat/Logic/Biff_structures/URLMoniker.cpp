@@ -44,6 +44,7 @@ void URLMoniker::load(XLS::CFRecord& record)
 	{
 		_GUID_ guid;
 		record >> guid >> serialVersion >> uriFlags;
+		
 		serialGUID = STR::guid2bstr(guid);
 	}
 }

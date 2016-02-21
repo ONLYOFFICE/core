@@ -2,10 +2,10 @@
 
 #include <vector>
 #include <sstream>
-#include <boost/shared_ptr.hpp>
 
 #include "../XlsElementsType.h"
 
+#include <common.h>
 #include <Logging/Log.h>
 
 #include "../../Binary/CFRecord.h"

@@ -2,7 +2,6 @@
 #include "xlsx_tablecontext.h"
 #include "xlsx_textcontext.h"
 #include "xlsx_conversion_context.h"
-//#include "logging.h"
 
 #include <boost/foreach.hpp>
 #include <sstream>
@@ -13,7 +12,7 @@
 namespace oox {
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-table_state::table_state(xlsx_conversion_context & Context) : drawing_context_(Context)
+table_state::table_state(xlsx_conversion_context & Context) : drawing_context_(Context), comments_context_(Context.get_comments_context_handle())
 {
 }
 
@@ -21,14 +20,8 @@ table_state_ptr & xlsx_table_context::state()
 {
     return tables_state_.back();
 }
-//
-//const xlsx_table_state & xlsx_table_context::state() const
-//{
-//    return table_state_stack_.back();
-//}
 
-xlsx_table_context::xlsx_table_context(xlsx_conversion_context & Context/*, xlsx_text_context & textContext*/) : 
-										context_(Context) //, xlsx_text_context_(textContext)
+xlsx_table_context::xlsx_table_context(xlsx_conversion_context & Context) : context_(Context)
 {        
 }
 
@@ -57,6 +50,23 @@ void xlsx_table_context::end_table()
             }
         }
     }
+	if (!get_comments_context().empty())
+    {
+        std::wstringstream strm;
+        get_comments_context().write_comments(strm);
+        
+        std::wstringstream vml_strm;
+        get_comments_context().write_comments_vml(vml_strm);
+		
+		const std::pair<std::wstring, std::wstring> commentsName =
+            context_.get_comments_context_handle().add_comments_xml(strm.str(), vml_strm.str(), context_.get_comments_context().get_comments() );
+
+		const std::pair<std::wstring, std::wstring> vml_drawingName =
+								context_.get_comments_context_handle().get_vml_drawing_xml();
+
+        context_.current_sheet().set_comments_link(commentsName.first, commentsName.second);
+        context_.current_sheet().set_vml_drawing_link(vml_drawingName.first, vml_drawingName.second);
+    }    
 }
 
 
@@ -64,27 +74,13 @@ xlsx_drawing_context & xlsx_table_context::get_drawing_context()
 {
     return state()->drawing_context_;
 }
-//
-//xlsx_comments_context & xlsx_table_context::get_comments_context()
-//{
-//    return state().get_comments_context();
-//}
-//void xlsx_table_context::table_column_last_width(double w)
-//{
-//    return state().table_column_last_width(w);
-//}
-//
-//double xlsx_table_context::table_column_last_width() const
-//{
-//    return state().table_column_last_width();
-//}
-//
-//void xlsx_table_context::start_hyperlink()
-//{
-//    return state().start_hyperlink();
-//}
-//
- std::wstring xlsx_table_context::add_hyperlink(std::wstring const & ref, std::wstring const & target, std::wstring const & display, bool bExternal)
+
+xlsx_comments_context & xlsx_table_context::get_comments_context()
+{
+    return state()->comments_context_;
+}
+
+std::wstring xlsx_table_context::add_hyperlink(std::wstring const & ref, std::wstring const & target, std::wstring const & display, bool bExternal)
 {
     return state()->hyperlinks_.add( ref, target, display, bExternal);
 }

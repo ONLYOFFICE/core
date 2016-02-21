@@ -26,7 +26,7 @@ public:
 
 	int serialize				(std::wostream & stream);
 	int serialize_properties	(std::wostream & stream, bool rPr = false);
-	int serialize_rPr			(std::wostream & stream, bool rtl = false, bool defRPr = false);
+	int serialize_rPr			(std::wostream & stream, bool rtl = false, bool defRPr = false, std::wstring namespace_ = L"a:");
 
 	void set_color_ext			(FillInfoExt & color_ext);
 

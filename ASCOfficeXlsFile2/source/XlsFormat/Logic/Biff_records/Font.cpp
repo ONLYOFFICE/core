@@ -74,12 +74,12 @@ void Font::set_color_ext(FillInfoExt & color_ext_)
 {
 	color_ext = color_ext_;
 }
-int Font::serialize_rPr(std::wostream & stream, bool rtl, bool defRPr)
+int Font::serialize_rPr(std::wostream & stream, bool rtl, bool defRPr, std::wstring namespace_)
 {
     CP_XML_WRITER(stream)    
     {
-		std::wstring strRpr = L"a:rPr";
-		if (defRPr)strRpr = L"a:defRPr";
+		std::wstring	strRpr = namespace_ + L"rPr";
+		if (defRPr)		strRpr = namespace_ + L"defRPr";
 		
 		CP_XML_NODE(strRpr)
 		{
@@ -129,24 +129,24 @@ int Font::serialize_rPr(std::wostream & stream, bool rtl, bool defRPr)
 			{
 				if (color_ext.enabled )
 				{
-					CP_XML_NODE(L"a:solidFill")
+					CP_XML_NODE(namespace_ + L"solidFill")
 					{
 						switch(color_ext.xclrType)
 							{
 							case 0://auto
 								/*CP_XML_ATTR(L"auto");*/ break;
 							case 1://indexed
-								CP_XML_NODE(L"a:schemeClr")
+								CP_XML_NODE(namespace_ + L"schemeClr")
 								{
 									CP_XML_ATTR(L"val",  color_ext.icv); break;
 								}
 							case 2://rgb
-								CP_XML_NODE(L"a:srgbClr")
+								CP_XML_NODE(namespace_ + L"srgbClr")
 								{
 									CP_XML_ATTR(L"val", STR::toRGB(color_ext.xclrValue)); 
 								}break;
 							case 3://theme color
-								CP_XML_NODE(L"a:schemeClr")
+								CP_XML_NODE(namespace_ + L"schemeClr")
 								{
 									CP_XML_ATTR(L"val", color_ext.xclrValue + 1); 
 									CP_XML_NODE(L"tint")
@@ -170,9 +170,9 @@ int Font::serialize_rPr(std::wostream & stream, bool rtl, bool defRPr)
 
 					if (!strColor.empty())
 					{
-						CP_XML_NODE(L"a:solidFill")
+						CP_XML_NODE(namespace_ + L"solidFill")
 						{
-							CP_XML_NODE(L"a:srgbClr")
+							CP_XML_NODE(namespace_ + L"srgbClr")
 							{
 								CP_XML_ATTR(L"val", strColor); 
 							}							
@@ -182,22 +182,22 @@ int Font::serialize_rPr(std::wostream & stream, bool rtl, bool defRPr)
 			}
 			if (!fontName.value().empty())
 			{
-				CP_XML_NODE(L"a:latin")
+				CP_XML_NODE(namespace_ + L"latin")
 				{
 					CP_XML_ATTR(L"typeface", fontName.value());
 				}
-				CP_XML_NODE(L"a:ea")
+				CP_XML_NODE(namespace_ + L"ea")
 				{
 					CP_XML_ATTR(L"typeface", fontName.value());
 				}
-				CP_XML_NODE(L"a:cs")
+				CP_XML_NODE(namespace_ + L"cs")
 				{
 					CP_XML_ATTR(L"typeface", fontName.value());
 				}
 			}
 			if (rtl)
 			{
-				CP_XML_NODE(L"a:rtl");
+				CP_XML_NODE(namespace_ + L"rtl");
 			}
 			//if ((fOutline.value()) && (fOutline))
 	  //      {

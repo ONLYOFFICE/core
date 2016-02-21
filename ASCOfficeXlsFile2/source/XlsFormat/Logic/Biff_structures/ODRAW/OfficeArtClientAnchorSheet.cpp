@@ -118,6 +118,9 @@ void OfficeArtClientAnchorSheet::loadFields(XLS::CFRecord& record)
 	}
 	else 
 		_dyB = dyB * kfRow * global_info->defaultRowHeight;	
+//----------------------------------------------------------------------------------------------------
+	column	= (std::min)(colL, colR);
+	row		= (std::min)(rwT, rwB);
 
 //----------------------------------------------------------------------------------------------------
 	for (int i = 1 ; i < colL; i++)

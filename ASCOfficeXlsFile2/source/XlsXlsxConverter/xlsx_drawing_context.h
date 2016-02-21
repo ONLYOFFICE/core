@@ -103,7 +103,6 @@ public:
 	{
 		id			= -1;		
 		rotation	= 0;
-		type_anchor	= 1;
 		parent_drawing_states = NULL;
 		custom_path = -1;
 	}
@@ -114,8 +113,15 @@ public:
 	std::wstring			name;
 	std::wstring			description;
 
-	int						type_anchor;
-	std::wstring			anchor;
+	struct _anchor
+	{
+		_anchor() : column(-1), row(-1), type(0){}
+		int					column;
+		int					row;
+		int					type;
+		std::wstring		str;
+	}anchor;
+	
 	std::wstring			shape;
 
 	int						id;
@@ -133,11 +139,11 @@ public:
 	_rect							custom_rect;
 	std::vector<_CP_OPT(int)>		custom_adjustValues;
 	int								custom_path;
-
+//-----------------------------------------------
 	std::wstring					hyperlink;
 	struct _text
 	{
-		_text() :	align(0)/*noset*/, wrap(2)/*none*/, vert_align(0)/*noset*/, vertical(0)/*horiz*/ 
+		_text() :	align(0)/*noset*/, wrap(0)/*square*/, vert_align(0)/*noset*/, vertical(0)/*horiz*/ ,fit_shape(false)
 		{
 			margins.left = margins.right = 0x00016530;
 			margins.top = margins.bottom = 0x0000b298;
@@ -148,6 +154,7 @@ public:
 		int				vert_align;
 		int				vertical;
 		RECT			margins;
+		bool			fit_shape;
 	}text;
 	
 	struct _wordart
@@ -228,6 +235,8 @@ public:
     xlsx_drawing_context(xlsx_conversion_context & Context);
 	~xlsx_drawing_context(){}
 
+	external_items::Type	getType();
+
 	xlsx_drawings_rels_ptr get_drawings_rels();
 	bool empty();	
 
@@ -236,7 +245,7 @@ public:
 		void start_image();
 		void start_shape(int type);
 		void start_chart();
-
+		void start_comment();
 
         void set_id			(int id);
 		void set_FlipH		();
@@ -275,7 +284,6 @@ public:
         void set_child_anchor		(int x, int y, int cx, int cy);
 		void set_group_anchor		(int x, int y, int cx, int cy);
         void set_sheet_anchor		(const std::wstring & str);
-		bool is_anchor				();
 
         void set_properties			(const std::wstring & str);
         void set_hyperlink			(const std::wstring & link, const std::wstring & display, bool is_external);
@@ -287,6 +295,7 @@ public:
 		void set_text_vert_align	(int val);
 		void set_text_vertical		(int val);
 		void set_text_margin		(RECT & val);
+		void set_text_fit_shape		(bool val);
 		
 		void set_wordart_text		(const std::wstring & text);
 		void set_wordart_font		(const std::wstring & text);

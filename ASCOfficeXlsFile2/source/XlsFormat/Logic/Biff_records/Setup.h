@@ -46,42 +46,6 @@ public:
 	BIFF_DOUBLE numFtr;
 	BIFF_WORD iCopies;
 
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(fNoPls)
-		//if(!fNoPls)
-		//{
-		//	//BO_ATTRIB_MARKUP_ATTRIB(iPaperSize)
-		//	//BO_ATTRIB_MARKUP_ATTRIB(iScale)
-		//	//BO_ATTRIB_MARKUP_ATTRIB(iRes)
-		//	//BO_ATTRIB_MARKUP_ATTRIB(iVRes)
-		//	//BO_ATTRIB_MARKUP_ATTRIB(iCopies)
-		//	//BO_ATTRIB_MARKUP_ATTRIB(fNoOrient)
-		//	if(!fNoOrient)
-		//	{
-		//		//BO_ATTRIB_MARKUP_ATTRIB(fPortrait)
-		//	}
-		//}
-		////BO_ATTRIB_MARKUP_ATTRIB(fUsePage)
-		//if(fUsePage)
-		//{
-		//	//BO_ATTRIB_MARKUP_ATTRIB(iPageStart)
-		//}
-		//BO_ATTRIB_MARKUP_ATTRIB(iFitWidth)
-		//BO_ATTRIB_MARKUP_ATTRIB(iFitHeight)
-
-		//BO_ATTRIB_MARKUP_ATTRIB(fLeftToRight)
-		//BO_ATTRIB_MARKUP_ATTRIB(fNoColor)
-		//BO_ATTRIB_MARKUP_ATTRIB(fDraft)
-		//BO_ATTRIB_MARKUP_ATTRIB(fNotes)
-		//BO_ATTRIB_MARKUP_ATTRIB(fEndNotes)
-
-		//BO_ATTRIB_MARKUP_ATTRIB(iErrors)
-
-		//BO_ATTRIB_MARKUP_ATTRIB(numHdr)
-		//BO_ATTRIB_MARKUP_ATTRIB(numFtr)
-	//BO_ATTRIB_MARKUP_END
-
 };
 
 } // namespace XLS

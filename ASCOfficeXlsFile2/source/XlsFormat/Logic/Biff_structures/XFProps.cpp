@@ -23,6 +23,8 @@ void XFProps::store(CFRecord& record)
 
 void XFProps::load(CFRecord& record)
 {
+	arXFPropBorder.is_present = false;
+
 	record.skipNunBytes(2); // reserved
 	record >> cprops;
 	
@@ -33,7 +35,19 @@ void XFProps::load(CFRecord& record)
 
 		if		(prop.xfPropType >=  0 && prop.xfPropType <=  3)							arXFPropFill.push_back(prop);
 		else if (prop.xfPropType == 4)														arXFPropGradient.push_back(prop);
-		else if (prop.xfPropType >=  6 && prop.xfPropType <= 14)							arXFPropBorder.push_back(prop);
+		else if (prop.xfPropType >=  6 && prop.xfPropType <= 14)
+		{
+			arXFPropBorder.is_present = true;
+			switch(prop.xfPropType)
+			{
+				case 6: arXFPropBorder.top		= prop; break;
+				case 7: arXFPropBorder.bottom	= prop; break;
+				case 8: arXFPropBorder.left		= prop; break;
+				case 9: arXFPropBorder.right	= prop; break;
+				default:
+					arXFPropBorder.other.push_back(prop);
+			}
+		}
 		else if (prop.xfPropType >= 15 && prop.xfPropType <= 22 || prop.xfPropType == 42)	arXFPropAlignment.push_back(prop);
 		else if	(prop.xfPropType >= 24 && prop.xfPropType <= 37 || prop.xfPropType ==  5)	arXFPropFont.push_back(prop);
 		else if (prop.xfPropType >= 38 && prop.xfPropType <= 41)							arXFPropNumFmt.push_back(prop);	
@@ -117,13 +131,20 @@ int XFProps::serialize(std::wostream & stream)
 				}
 			}
 		}
-		if (arXFPropBorder.size() > 0)
+		if (arXFPropBorder.is_present)
 		{
 			CP_XML_NODE(L"border")
 			{	
-				for (int i = 0; i < arXFPropBorder.size(); i++)
+				//порядок важен - xfPropType - 8, 9, 6, 7 ( - DataVal_Headings.xls
+				if (arXFPropBorder.left)	arXFPropBorder.left->serialize(CP_XML_STREAM());
+				if (arXFPropBorder.right)	arXFPropBorder.right->serialize(CP_XML_STREAM());
+				if (arXFPropBorder.top)		arXFPropBorder.top->serialize(CP_XML_STREAM());
+				if (arXFPropBorder.bottom)	arXFPropBorder.bottom->serialize(CP_XML_STREAM());
+
+				//----------------------------------------
+				for (int i = 0; i < arXFPropBorder.other.size(); i++)
 				{
-					arXFPropBorder[i].serialize(CP_XML_STREAM());
+					arXFPropBorder.other[i].serialize(CP_XML_STREAM());
 				}
 			}
 		}	

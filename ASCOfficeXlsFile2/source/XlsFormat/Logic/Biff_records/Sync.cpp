@@ -33,7 +33,7 @@ void Sync::writeFields(CFRecord& record)
 void Sync::readFields(CFRecord& record)
 {
 	record >> rw >> col;
-	ref_ = std::wstring (CellRef(rw, col, true, true).toString().c_str());
+	ref_ = CellRef(rw, col, true, true).toString();
 }
 
 } // namespace XLS

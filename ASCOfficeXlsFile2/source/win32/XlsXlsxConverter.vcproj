@@ -361,6 +361,22 @@
 				>
 			</File>
 			<File
+				RelativePath="..\XlsXlsxConverter\xlsx_comments.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsXlsxConverter\xlsx_comments.h"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsXlsxConverter\xlsx_comments_context.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsXlsxConverter\xlsx_comments_context.h"
+				>
+			</File>
+			<File
 				RelativePath="..\XlsXlsxConverter\xlsx_conversion_context.cpp"
 				>
 			</File>

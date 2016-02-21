@@ -32,6 +32,7 @@
 #include <Logic/Biff_records/MsoDrawing.h>
 #include <Logic/Biff_records/Obj.h>
 #include <Logic/Biff_records/TxO.h>
+#include <Logic/Biff_records/Note.h>
 
 #include <Logic/Biff_structures/URLMoniker.h>
 #include <Logic/Biff_structures/FileMoniker.h>
@@ -349,7 +350,7 @@ void XlsConverter::convert(XLS::WorksheetSubstream* sheet)
 		sheet->m_CONDFMTS->serialize(xlsx_context->current_sheet().conditionalFormatting());
 	}
 
-	convert((XLS::OBJECTS*)sheet->m_OBJECTS.get());
+	convert((XLS::OBJECTS*)sheet->m_OBJECTS.get(), sheet);
 
 	if (sheet->m_PAGESETUP)
 	{
@@ -692,7 +693,7 @@ struct _group_object
 	int count;
 };
 
-void XlsConverter::convert(XLS::OBJECTS* objects)
+void XlsConverter::convert(XLS::OBJECTS* objects, XLS::WorksheetSubstream * sheet)
 {
 	if (objects == NULL) return;
 
@@ -769,7 +770,7 @@ void XlsConverter::convert(XLS::OBJECTS* objects)
 			sp	= dynamic_cast<ODRAW::OfficeArtSpContainer*>(group_objects.back().spgr->child_records[group_objects.back().ind++].get());
 		}	
 		
-		if (xlsx_context->get_drawing_context().start_drawing(type_object))		//группы тоже
+		if (xlsx_context->get_drawing_context().start_drawing(type_object))
 		{
 			convert(sp);
 
@@ -783,9 +784,21 @@ void XlsConverter::convert(XLS::OBJECTS* objects)
 			}
 			convert(text_obj);
 			convert(chart);
+			
+			if (type_object == 0x19)
+			{	
+				for (int i = 0 ; i < sheet->m_arNote.size(); i++)
+				{
+					XLS::Note* note = dynamic_cast<XLS::Note*>(sheet->m_arNote[i].get());
+					if ((note) && (note->note_sh.idObj == obj->cmo.id))
+					{
+						convert(note);
+						break;
+					}
+				}
+			}
 
-			if (type_object != 0) 
-				xlsx_context->get_drawing_context().end_drawing();
+			xlsx_context->get_drawing_context().end_drawing();
 		}
 		if (TEXTOBJECT || CHART)
 		{
@@ -849,11 +862,11 @@ void XlsConverter::convert(ODRAW::OfficeArtRecord * art)
 	case XLS::typeOfficeArtClientAnchorSheet:
 		{
 			ODRAW::OfficeArtClientAnchorSheet * ch = dynamic_cast<ODRAW::OfficeArtClientAnchorSheet *>(art);
-			
-			//xlsx_context->get_drawing_context().set_child_anchor(ch->_x, ch->_y, ch->_cx, ch->_cy);
-			
+		
 			art->serialize(strm);
-            xlsx_context->get_drawing_context().set_sheet_anchor(strm.str());
+        
+			xlsx_context->get_drawing_context().set_sheet_anchor(strm.str());
+			xlsx_context->get_drawing_context().set_child_anchor(ch->_x, ch->_y, ch->_cx, ch->_cy);
 		}break;
 	}
 }
@@ -1255,6 +1268,13 @@ void XlsConverter::convert_text(std::vector<ODRAW::OfficeArtFOPTEPtr> & props)
 				ODRAW::TextBooleanProperties *bools = dynamic_cast<ODRAW::TextBooleanProperties*>(props[i].get());
 				if (bools)
 				{
+					if (bools->fUsefFitShapeToText)
+					{
+						xlsx_context->get_drawing_context().set_text_fit_shape(bools->fFitShapeToText);
+					}
+					if (bools->fUsefAutoTextMargin)
+					{
+					}
 				}
 			}break;
 		case NSOfficeDrawing::anchorText:
@@ -1357,6 +1377,16 @@ void XlsConverter::convert_group_shape(std::vector<ODRAW::OfficeArtFOPTEPtr> & p
 		}
 	}
 }
+
+void XlsConverter::convert(XLS::Note* note)
+{
+	if (note == NULL) return;
+
+	xlsx_context->get_comments_context().set_ref	(note->note_sh.ref, note->note_sh.col, note->note_sh.row);
+	xlsx_context->get_comments_context().add_author	(note->note_sh.stAuthor);
+	xlsx_context->get_comments_context().set_visibly(note->note_sh.fShow);
+}
+
 void XlsConverter::convert_transform(std::vector<ODRAW::OfficeArtFOPTEPtr> & props)
 {
 	for (int i = 0 ; i < props.size() ; i++)

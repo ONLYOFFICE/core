@@ -27,7 +27,18 @@ public:
 	std::vector<XFProp> arXFPropNumFmt;
 	std::vector<XFProp> arXFPropFill;
 	std::vector<XFProp> arXFPropAlignment;
-	std::vector<XFProp> arXFPropBorder;
+	
+	struct _b
+	{
+		bool is_present;
+
+		_CP_OPT(XFProp) left;
+		_CP_OPT(XFProp) right;
+		_CP_OPT(XFProp) top;
+		_CP_OPT(XFProp) bottom;
+		std::vector<XFProp> other;
+	}arXFPropBorder;
+
 	std::vector<XFProp> arXFPropProtection;
 	std::vector<XFProp> arXFPropGradient;
 

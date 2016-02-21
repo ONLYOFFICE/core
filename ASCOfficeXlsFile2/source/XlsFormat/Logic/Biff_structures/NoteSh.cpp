@@ -36,12 +36,15 @@ void NoteSh::load(CFRecord& record)
 {
 	unsigned short flags;
 	record >> row >> col >> flags;
-	fShow = GETBIT(flags, 1);
-	fRwHidden = GETBIT(flags, 7);
-	fColHidden = GETBIT(flags, 8);
+	
+	fShow		= GETBIT(flags, 1);
+	fRwHidden	= GETBIT(flags, 7);
+	fColHidden	= GETBIT(flags, 8);
 
 	record >> idObj >> stAuthor;
 	record.skipNunBytes(1); // unused
+
+	ref = CellRef(row, col, false, false).toString();
 }
 
 

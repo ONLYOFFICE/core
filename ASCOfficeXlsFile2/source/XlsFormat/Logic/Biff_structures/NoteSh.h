@@ -22,13 +22,15 @@ public:
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-	Rw row;
-	Col col;
-	bool fShow;
-	bool fRwHidden;
-	bool fColHidden;
-	ObjId idObj;
+	Rw				row;
+	Col				col;
+	bool			fShow;
+	bool			fRwHidden;
+	bool			fColHidden;
+	ObjId			idObj;
 	XLUnicodeString stAuthor;
+//------------------------------------------
+	std::wstring	ref;
 
 };
 

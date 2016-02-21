@@ -32,7 +32,7 @@ public:
 	static const ElementType	type = typeTxO;
 
 	int serialize		(std::wostream & _stream);	
-	int serialize_rPr	(std::wostream & _stream, int iFmt);
+	int serialize_rPr	(std::wostream & _stream, int iFmt, std::wstring namespace_= L"a:");
 
 	GlobalWorkbookInfoPtr	pGlobalWorkbookInfoPtr;
 

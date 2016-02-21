@@ -5,6 +5,10 @@
 
 #include <utils.h>
 
+#include "../../../XlsXlsxConverter/XlsConverter.h"
+#include "../../../XlsXlsxConverter/xlsx_conversion_context.h"
+
+
 namespace XLS
 {
 
@@ -84,6 +88,12 @@ int TxO::serialize (std::wostream & _stream)
 
 	int Fmt = 0; 
 	
+	std::wstring namespace_ = L"a:";
+	oox::external_items::Type type = pGlobalWorkbookInfoPtr->xls_converter->xlsx_context->get_drawing_context().getType();
+
+	if (type == oox::external_items::typeComment) 
+		namespace_.clear();
+	
 	CP_XML_WRITER(_stream)    
 	{
 		for (int i = 0 ; i < TxOruns.rgTxoRuns.size(); i++)
@@ -100,12 +110,12 @@ int TxO::serialize (std::wostream & _stream)
 					end_string = run_next->formatRun.ich;
 			}
 
-			CP_XML_NODE(L"a:r")
+			CP_XML_NODE(namespace_ + L"r")
 			{
 				Fmt = run->formatRun.ifnt;
-				serialize_rPr(CP_XML_STREAM(), Fmt );
+				serialize_rPr(CP_XML_STREAM(), Fmt, namespace_);
 
-				CP_XML_NODE(L"a:t")
+				CP_XML_NODE(namespace_ + L"t")
 				{		
 					//CP_XML_ATTR(L"xml:space", L"preserve");
 
@@ -125,7 +135,7 @@ int TxO::serialize (std::wostream & _stream)
 	
 	return 0;
 }
-int TxO::serialize_rPr	(std::wostream & _stream, int iFmt)
+int TxO::serialize_rPr	(std::wostream & _stream, int iFmt, std::wstring namespace_)
 {
 	if (!pGlobalWorkbookInfoPtr)			return 0;
 	if (!pGlobalWorkbookInfoPtr->m_arFonts) return 0;
@@ -135,7 +145,7 @@ int TxO::serialize_rPr	(std::wostream & _stream, int iFmt)
 
 	Font * font = dynamic_cast<Font*>(pGlobalWorkbookInfoPtr->m_arFonts->at(iFmt-1).get());
 
-	if (font) font->serialize_rPr(_stream);
+	if (font) font->serialize_rPr(_stream, false, false, namespace_);
 	
 	return 0;
 }

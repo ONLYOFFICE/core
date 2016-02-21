@@ -25,7 +25,8 @@ public:
 //-----------------------------
 	ForwardOnlyParam<unsigned short> rw;
 	ForwardOnlyParam<unsigned short> col;
-	BIFF_BSTR ref_;
+	
+	std::wstring ref_;
 
 };
 

@@ -7,7 +7,6 @@
 namespace XLS
 {
 
-
 // Logical representation of Note record in BIFF8
 class Note: public BiffRecord
 {
@@ -24,23 +23,9 @@ public:
 
 	static const ElementType	type = typeNote;
 
-//-----------------------------
-// 	bool is_contained_in_Workbook_;
-	
 	NoteSh note_sh;
 // 	NoteRR note_rr;
 
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-// 		if(is_contained_in_Workbook_)
-// 		{
-			//BO_ATTRIB_MARKUP_COMPLEX(note_sh)
-// 		}
-// 		else
-// 		{
-// 			//BO_ATTRIB_MARKUP_COMPLEX(note_rr)
-// 		}
-	//BO_ATTRIB_MARKUP_END
 
 };
 

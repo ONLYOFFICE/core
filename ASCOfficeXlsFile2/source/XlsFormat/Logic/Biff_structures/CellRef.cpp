@@ -42,20 +42,6 @@ BiffStructurePtr CellRef::clone()
 	return BiffStructurePtr(new CellRef(*this));
 }
 
-
-//void CellRef::getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	std::wstring  name = getStructAttribute(xml_tag, L"name");
-//	fromString(static_cast<wchar_t*>(name));
-//}
-//
-//
-//void CellRef::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	xml_tag->setAttribute(L"name", toString().c_str());
-//}
-
-
 const std::wstring CellRef::toString() const
 {
 	if(to_string_cache.empty())

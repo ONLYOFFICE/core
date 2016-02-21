@@ -19,15 +19,6 @@ TxOLastRun::~TxOLastRun()
 {
 }
 
-//void TxOLastRun::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{	
-//	xml_tag->setAttribute(L"cchText", cchText);
-//}
-//
-//void TxOLastRun::getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{	
-//}
-
 void TxOLastRun::store(CFRecord& record)
 {	
 }

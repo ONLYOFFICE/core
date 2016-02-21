@@ -39,6 +39,7 @@ namespace XLS
 	class OBJECTS;
 	class MSODRAWINGGROUP;
 
+	class Note;
 	class TxO;
 }
 
@@ -78,9 +79,10 @@ public:
 	void convert(XLS::SHAREDSTRINGS				* sharedstrings);
 	void convert(XLS::HLINK						* hlink);
 	void convert(XLS::LBL						* def_name);
-	void convert(XLS::OBJECTS					* objects);
+	void convert(XLS::OBJECTS					* objects, XLS::WorksheetSubstream * sheet);
 	void convert(XLS::MSODRAWINGGROUP			* mso_drawing);
 	void convert(XLS::TxO						* text_obj);
+	void convert(XLS::Note						* note);
 
 	void convert(ODRAW::OfficeArtRecord			* art);
 	void convert(ODRAW::OfficeArtBStoreContainer* art_bstore);

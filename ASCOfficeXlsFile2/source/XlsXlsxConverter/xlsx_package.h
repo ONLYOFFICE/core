@@ -5,9 +5,9 @@
 #include <boost/noncopyable.hpp>
 
 #include "xlsx_drawings.h"
-//#include "xlsx_comments.h"
-//
-//class CApplicationFonts;
+#include "xlsx_comments.h"
+
+
 namespace oox {
 namespace package {
 
@@ -71,26 +71,26 @@ public:
 };
 ///////////////////////////////////////////////////////////
 
-//class xl_comments;
-//typedef _CP_PTR(xl_comments) xl_comments_ptr;
-//
-///// \class xl_comments
-//class xl_comments: public element
-//{
-//public:
-//    virtual void write(const std::wstring & RootPath);
-//
-//    xl_comments(const std::vector<comment_elm> & elms) : comments_ ( elms )
-//    {
-//    }
-//
-//    static xl_comments_ptr create(const std::vector<comment_elm> & elms);
-//
-//private:
-//    const std::vector<comment_elm> & comments_;
-//
-//};
-//
+class xl_comments;
+typedef _CP_PTR(xl_comments) xl_comments_ptr;
+
+/// \class xl_comments
+class xl_comments: public element
+{
+public:
+    virtual void write(const std::wstring & RootPath);
+
+    xl_comments(const std::vector<comment_elm> & elms) : comments_ ( elms )
+    {
+    }
+
+    static xl_comments_ptr create(const std::vector<comment_elm> & elms);
+
+private:
+    const std::vector<comment_elm> & comments_;
+
+};
+
 class xl_drawings;
 typedef _CP_PTR(xl_drawings) xl_drawings_ptr;
 
@@ -114,22 +114,6 @@ private:
     rels_files * rels_;
 
 };
-//class xl_vml_drawings;
-//typedef _CP_PTR(xl_vml_drawings) xl_vml_drawings_ptr;
-//class xl_vml_drawings: public element
-//{
-//public:
-//    virtual void write(const std::wstring & RootPath);
-//    xl_vml_drawings(const std::vector<comment_elm> & elms) : vml_drawings_ ( comment_elm )
-//    {
-//    }
-//
-//    static xl_vml_drawings_ptr create(const std::vector<comment_elm> & elms);
-//
-//private:
-//    const std::vector<comment_elm> & vml_drawings_;
-//
-//};
 
 /// \class  xl_files
 class xl_files : public element
@@ -144,7 +128,7 @@ public:
     void set_styles(element_ptr Element);
     void set_sharedStrings(element_ptr Element);
     void add_sheet(sheet_content_ptr sheet);
-    void set_media(external_items & _Mediaitems/*, CApplicationFonts *pAppFonts*/);    
+    void set_media(external_items & _Mediaitems);    
     void set_drawings(element_ptr Element);
 	void set_vml_drawings(element_ptr Element);
 	void set_comments(element_ptr Element);

@@ -7,6 +7,7 @@
 #include "xlsx_tablecontext.h"
 #include "xlsx_drawing_context.h"
 #include "xlsx_chart_context.h"
+#include "xlsx_comments_context.h"
 
 #include "xlsx_output_xml.h"
 
@@ -45,13 +46,12 @@ public:
     xlsx_table_context          & get_table_context()		{ return xlsx_table_context_; }
     xlsx_xml_worksheet          & current_sheet();
  
-//   const xlsx_table_context    & get_table_context() const { return xlsx_table_context_; }
 	oox_chart_context			& current_chart();
 
 	xlsx_drawing_context        & get_drawing_context();
 	xlsx_drawing_context_handle & get_drawing_context_handle();	
- //	xlsx_comments_context       & get_comments_context();
-//	xlsx_comments_context_handle & get_comments_context_handle();
+ 	xlsx_comments_context       & get_comments_context();
+	xlsx_comments_context_handle & get_comments_context_handle();
 
 	external_items & get_mediaitems() { return mediaitems_; }
 private:
@@ -79,7 +79,7 @@ private:
 	std::wstringstream					xlsx_custom_views_;
 
     xlsx_drawing_context_handle			xlsx_drawing_context_handle_;
-    //xlsx_comments_context_handle    xlsx_comments_context_handle_;
+    xlsx_comments_context_handle		xlsx_comments_context_handle_;
     
 };
 

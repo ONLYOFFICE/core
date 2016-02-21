@@ -295,28 +295,28 @@ void xl_drawings::write(const std::wstring & RootPath)
 }
 
 //////////////////////////////
-//xl_comments_ptr xl_comments::create(const std::vector<comment_elm> & elms)
-//{
-//    return boost::make_shared<xl_comments>(boost::ref(elms));
-//}
-//
-//void xl_comments::write(const std::wstring & RootPath)
-//{
-//	std::wstring vml_path = RootPath + FILE_SEPARATOR_STR + L"drawings";
-//	FileSystem::Directory::CreateDirectory(vml_path.c_str());
-//   
-//	BOOST_FOREACH(comment_elm const & e, comments_)
-//    {
-//		content_type & contentTypes = this->get_main_document()->content_type().get_content_type();
-//
-//		static const std::wstring kWSConType = L"application/vnd.openxmlformats-officedocument.spreadsheetml.comments+xml";
-//        contentTypes.add_override(std::wstring(L"/xl/") + e.filename, kWSConType);
-//			
-//		package::simple_element(e.filename, e.content).write(RootPath);        
-//		package::simple_element(e.vml_filename, e.vml_content).write(vml_path);        
-//	}
-//}
-//
+xl_comments_ptr xl_comments::create(const std::vector<comment_elm> & elms)
+{
+    return boost::make_shared<xl_comments>(boost::ref(elms));
+}
+
+void xl_comments::write(const std::wstring & RootPath)
+{
+	std::wstring vml_path = RootPath + FILE_SEPARATOR_STR + L"drawings";
+	FileSystem::Directory::CreateDirectory(vml_path.c_str());
+   
+	BOOST_FOREACH(comment_elm const & e, comments_)
+    {
+		content_type & contentTypes = this->get_main_document()->content_type().get_content_type();
+
+		static const std::wstring kWSConType = L"application/vnd.openxmlformats-officedocument.spreadsheetml.comments+xml";
+        contentTypes.add_override(std::wstring(L"/xl/") + e.filename, kWSConType);
+			
+		package::simple_element(e.filename, e.content).write(RootPath);        
+		package::simple_element(e.vml_filename, e.vml_content).write(vml_path);        
+	}
+}
+
 
 }
 }

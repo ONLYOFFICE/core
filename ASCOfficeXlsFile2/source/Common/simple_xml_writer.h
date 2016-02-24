@@ -5,6 +5,7 @@
 #include <sstream>
 #include <stack>
 #include <cassert>
+#include <boost/optional/optional_io.hpp>
 
 namespace xml 
 {

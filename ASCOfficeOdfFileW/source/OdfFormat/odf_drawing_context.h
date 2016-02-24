@@ -31,6 +31,7 @@ public:
 
 	void set_header_state(bool Val);
 	void set_footer_state(bool Val);
+	void check_anchor();
 
 	void set_margin_left	(double valPt);
 	void set_margin_right	(double valPt);

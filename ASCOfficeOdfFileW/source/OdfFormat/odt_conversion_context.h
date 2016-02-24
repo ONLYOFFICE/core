@@ -111,6 +111,8 @@ public:
 
 	void set_background(_CP_OPT(color) & color, int type);
 
+	bool is_paragraph_in_current_section_;
+
 private:
 	office_text*				root_text_;
 	office_element_ptr			root_document_;

@@ -52,6 +52,8 @@ odt_conversion_context::odt_conversion_context(package::odf_document * outputDoc
 	is_header_	= false;
 	is_footer_	= false;
 
+	is_paragraph_in_current_section_ = false;
+
 	drop_cap_state_.clear();
 }
 
@@ -202,7 +204,7 @@ void odt_conversion_context::end_drawings()
 
 	office_element_ptr & elm = drawing_context()->get_root_element();
 
-	if (elm && text_context()->current_level_.size() > 0)//add to p or h !!!!!
+	if (elm && text_context()->current_level_.size() > 0)//add to 'p' or 'h' !!!!!
 	{
 		anchor_type::type anchor = drawing_context()->get_anchor();
 
@@ -383,8 +385,13 @@ void odt_conversion_context::start_field(bool in_span)
 
 void odt_conversion_context::set_master_page_name(std::wstring master_name)
 {
-	if (current_root_elements_.size() < 1) return;
+	if (current_root_elements_.size() < 1)// return; - эффект_штурмовика.docx - 1 страница !! (и ваще - 
+	{
+		is_paragraph_in_current_section_ = true;
+		return;
+	}
 
+	is_paragraph_in_current_section_ = false;
 	style *style_ = dynamic_cast<style*>(current_root_elements_[0].style_elm.get());
 
 	if (style_)style_->style_master_page_name_ = master_name;

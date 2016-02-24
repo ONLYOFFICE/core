@@ -270,7 +270,20 @@ void odf_drawing_context::set_header_state(bool Val)
 {
 	impl_->is_header_ = Val;
 }
+void odf_drawing_context::check_anchor()
+{
+	return;
+	if ((impl_->is_footer_ || impl_->is_header_) && (impl_->anchor_settings_.run_through_) && (impl_->anchor_settings_.run_through_->get_type() == run_through::Background))
+	{
+		set_anchor(anchor_type::Char);
+		//подозрительно на подложку страницы
+		impl_->anchor_settings_.style_wrap_ = style_wrap(style_wrap::RunThrough);
+		impl_->anchor_settings_.run_through_ = run_through(run_through::Background);
 
+		if (impl_->is_footer_)
+			set_vertical_pos(0);
+	}
+}
 void odf_drawing_context::start_group()
 {
     office_element_ptr group_elm = impl_->create_draw_element(5000);
@@ -1094,7 +1107,14 @@ void odf_drawing_context::set_object_foreground(bool Val)
 {
 	if (Val)
 	{
-		impl_->anchor_settings_.run_through_ = run_through(run_through::Foreground);
+		if (impl_->is_footer_|| impl_->is_header_)
+		{
+			impl_->anchor_settings_.run_through_ = run_through(run_through::Background);
+		}
+		else
+		{
+			impl_->anchor_settings_.run_through_ = run_through(run_through::Foreground);
+		}
 		impl_->anchor_settings_.style_wrap_ = style_wrap(style_wrap::RunThrough);
 	}
 }
@@ -1143,17 +1163,6 @@ void odf_drawing_context::set_vertical_rel(int from)
 	case 5:	type = vertical_rel::Page;		set_anchor(anchor_type::Page);		break;//	relfromvPage          
 	case 6:	type = vertical_rel::Paragraph;	set_anchor(anchor_type::Paragraph);	break;//	relfromvParagraph    
 	case 7:	type = vertical_rel::Baseline;										break;//	relfromvTopMargin   ???  
-	}
-
-	if ((impl_->is_footer_ || impl_->is_header_) && ( from ==3 /*|| 5*/))
-	{
-		set_anchor(anchor_type::Paragraph);
-		//подозрительно на подложку страницы
-		impl_->anchor_settings_.style_wrap_ = style_wrap(style_wrap::RunThrough);
-		impl_->anchor_settings_.run_through_ = run_through(run_through::Background);
-
-		if (impl_->is_footer_)
-			set_vertical_pos(0);
 	}
 
 	impl_->anchor_settings_.style_vertical_rel_ = vertical_rel(type);
@@ -1739,8 +1748,22 @@ void odf_drawing_context::set_textarea_padding(double left,double top, double ri
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //вложенные элементы
-void odf_drawing_context::start_image(std::wstring path)
+void odf_drawing_context::start_image(std::wstring odf_path)
 {	
+	if (impl_->is_footer_ || impl_->is_header_)
+	{
+		start_shape(142/*SimpleTypes::shapetypeRect*/);
+		start_bitmap_style();
+		
+		draw_fill_image * fill_image = dynamic_cast<draw_fill_image *>(impl_->styles_context_->last_state()->get_office_element().get());
+		if (fill_image)
+		{
+			fill_image->xlink_attlist_.href_= odf_path;
+		}
+		set_opacity(50);
+		return;
+	}
+
 	impl_->current_drawing_state_.oox_shape_preset = 3000;
 	
 	start_frame();
@@ -1762,7 +1785,7 @@ void odf_drawing_context::start_image(std::wstring path)
 	image->common_xlink_attlist_.show_ = xlink_show::Embed;
 	image->common_xlink_attlist_.actuate_= xlink_actuate::OnLoad;
 
-	if (path.length() >0)   image->common_xlink_attlist_.href_= path; //may be later set
+	if (!odf_path.empty())   image->common_xlink_attlist_.href_= odf_path; //may be later set
 	
 	start_element(image_elm);
 			
@@ -1797,8 +1820,8 @@ void odf_drawing_context::start_text_box()
 
 	start_element(text_box_elm);
 
-	if (impl_->is_footer_ ==false && impl_->is_header_ ==false)
-		set_text_box_parent_style(L"Frame");
+	//if (impl_->is_footer_ ==false && impl_->is_header_ ==false)
+	//	set_text_box_parent_style(L"Frame");
 
 	start_area_properties();
 		set_no_fill();
@@ -1834,8 +1857,14 @@ void odf_drawing_context::set_text_box_parent_style(std::wstring style_name)
 
 void odf_drawing_context::end_image()
 {
+	if (impl_->is_footer_ || impl_->is_header_)
+	{
+		end_bitmap_style();
+		end_shape();
+		return;
+	}
+	
 	end_element();
-
 	end_frame();
 }
 void odf_drawing_context::end_text_box()
@@ -2463,7 +2492,7 @@ void odf_drawing_context::start_bitmap_style()
 
 	fill_image->draw_name_				= impl_->styles_context_->find_free_name(style_family::FillImage);
 	fill_image->draw_display_name_		= std::wstring(L"User") + fill_image->draw_name_.get() ;
-	//fill_image->xlink_attlist_.type_	= xlink_type::Simple;
+	fill_image->xlink_attlist_.type_	= xlink_type::Simple;
 	fill_image->xlink_attlist_.show_	= xlink_show::Embed;
 	fill_image->xlink_attlist_.actuate_	= xlink_actuate::OnLoad;
 	
@@ -2503,7 +2532,7 @@ void odf_drawing_context::set_bitmap_tile_align(int align)
 }
 void odf_drawing_context::set_image_style_repeat(int style)
 {
-	if (!impl_->current_graphic_properties)return;
+	if (!impl_->current_graphic_properties)		return;
 
 	if (style == 1)
 		impl_->current_graphic_properties->content().common_draw_fill_attlist_.style_repeat_ = style_repeat(style_repeat::Stretch);
@@ -2555,9 +2584,6 @@ void odf_drawing_context::set_bitmap_link(std::wstring file_path)
 		if (image == NULL)return;
 
 		image->common_xlink_attlist_.href_= odf_ref_name;
-//backgroud image 
-		//set_anchor(anchor_type::Char);
-		//set_overlap(true);
 	}
 	else
 	{

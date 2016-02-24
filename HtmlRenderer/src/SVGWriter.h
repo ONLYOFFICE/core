@@ -769,6 +769,9 @@ namespace NSHtmlRenderer
         {
             if (m_bIsClipping)
             {
+                if (!m_oDocument.IsSpace())
+                    m_oDocument.AddCharSafe(' ');
+
                 m_oDocument.WriteString(L"clip-path=\"url(#clip", 20);
                 m_oDocument.AddInt(m_lClippingPath - 1);
                 m_oDocument.WriteString(L")\" ", 3);

@@ -418,8 +418,16 @@ void DocxConverter::convert(OOX::Logic::CParagraph *oox_paragraph)
 
 	if ((list_present = odt_context->text_context()->get_list_item_state()) == false) odt_context->set_no_list();
 
-	if (bStartNewParagraph) odt_context->start_paragraph(bStyled);
-	
+	if (bStartNewParagraph)
+	{
+		odt_context->start_paragraph(bStyled);
+
+		if (odt_context->is_paragraph_in_current_section_)
+		{
+			odt_context->set_master_page_name(odt_context->page_layout_context()->last_master() ?
+											  odt_context->page_layout_context()->last_master()->get_name() : L"");
+		}		
+	}
 	for (unsigned int nIndex = 0; nIndex < oox_paragraph->m_arrItems.size(); nIndex++ )
 	{
 		//те элементы которые тока для Paragraph - здесь - остальные в общей куче		
@@ -434,6 +442,7 @@ void DocxConverter::convert(OOX::Logic::CParagraph *oox_paragraph)
 				break;
 		}
 	}
+
 	if (odt_context->text_context()->get_KeepNextParagraph()) odt_context->end_drop_cap();
 
 	if (!odt_context->text_context()->get_KeepNextParagraph())  odt_context->end_paragraph();
@@ -442,6 +451,9 @@ void DocxConverter::convert(OOX::Logic::CParagraph *oox_paragraph)
 	{
 		odt_context->end_list_item();
 	}
+
+
+
 }
 void DocxConverter::convert(OOX::Logic::CRun *oox_run)//wordprocessing 22.1.2.87 math 17.3.2.25
 {
@@ -956,9 +968,6 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool r
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	odt_context->page_layout_context()->start_master_page(root ? L"Standard" : L"");
 	
-    odt_context->set_master_page_name(odt_context->page_layout_context()->last_master() ?
-                                          odt_context->page_layout_context()->last_master()->get_name() : L"");
-	
 	bool present_header = false;
 	bool present_footer = false;
 
@@ -1107,6 +1116,10 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool r
 		}
 	}
 //--------------------------------------------------------------------------------------------------------------------------------------------		
+	
+    odt_context->set_master_page_name(odt_context->page_layout_context()->last_master() ?
+                                          odt_context->page_layout_context()->last_master()->get_name() : L"");
+
 	// то что относится собственно к секциям-разделам
 	if (!root)odt_context->add_section(continuous);
 
@@ -2131,6 +2144,8 @@ void DocxConverter::convert(OOX::Drawing::CAnchor *oox_anchor)
 	}
 	OoxConverter::convert(oox_anchor->m_oDocPr.GetPointer());
 	convert(oox_anchor->m_oGraphic.GetPointer());
+
+	odf_context()->drawing_context()->check_anchor();
 }
 void DocxConverter::convert(OOX::Drawing::CInline *oox_inline)
 {
@@ -2757,7 +2772,7 @@ void DocxConverter::convert(OOX::CDocDefaults *def_style)
 	//зачемто ?! для OpenOffice для врезок/фреймов нужен базовый стиль - без него другой тип геометрии oO !!!
 	odt_context->styles_context()->create_style(L"Frame", odf_types::style_family::Graphic,false,true);		
 	odf_writer::style_graphic_properties	* graphic_properties	= odt_context->styles_context()->last_state()->get_graphic_properties();
-	if (graphic_properties)graphic_properties->content().common_background_color_attlist_.fo_background_color_ = odf_types::background_color(odf_types::background_color::Transparent);
+	//if (graphic_properties)graphic_properties->content().common_background_color_attlist_.fo_background_color_ = odf_types::background_color(odf_types::background_color::Transparent);
 
 }
 

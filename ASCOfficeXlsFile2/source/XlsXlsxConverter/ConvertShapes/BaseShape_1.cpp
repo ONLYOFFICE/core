@@ -4,14 +4,16 @@
 
 #include "CustomShape.h"
 
-
-NSGuidesVML::CBaseShape* NSGuidesVML::CBaseShape::CreateByType( int ShapeType)
+namespace NSCustomShapesConvert
+{
+CBaseShape* CBaseShape::CreateByType( int ShapeType)
 {
     return CCustomShape::CreateByType((oox::MSOSPT)ShapeType);
 }
 
-bool NSGuidesVML::CBaseShape::SetType( int ShapeType)
+bool CBaseShape::SetType( int ShapeType)
 {
 
     return ((CCustomShape*)this)->SetShapeType((oox::MSOSPT)ShapeType);
+}
 }

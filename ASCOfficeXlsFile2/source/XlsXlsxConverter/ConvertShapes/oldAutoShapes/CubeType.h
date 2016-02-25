@@ -2,6 +2,8 @@
 #include "../CustomShape.h"
 
 // 16
+namespace NSCustomShapesConvert
+{
 class CCubeType : public CCustomShape
 {
 public:
@@ -44,3 +46,4 @@ public:
 		m_lLimoY = 10800;
     }
 };
+}

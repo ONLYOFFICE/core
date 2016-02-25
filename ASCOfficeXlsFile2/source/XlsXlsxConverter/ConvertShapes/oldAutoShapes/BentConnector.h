@@ -2,6 +2,8 @@
 #include "../CustomShape.h"
 
 // 34
+namespace NSCustomShapesConvert
+{
 class CBentConnectorType : public CCustomShape
 {
 public:
@@ -21,3 +23,4 @@ public:
 		LoadConnectorsList(_T("0,0;21600,21600"));
     }
 };
+}

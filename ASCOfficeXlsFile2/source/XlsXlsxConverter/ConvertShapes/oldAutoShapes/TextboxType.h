@@ -3,6 +3,9 @@
 
 /////////   !!!!!!!!!!!!!!!!!!!!  /////////////
 // 202
+namespace NSCustomShapesConvert
+{
+
 class CTextboxType : public CCustomShape
 {
 public:
@@ -14,3 +17,4 @@ public:
         m_strPath = _T("m,l,21600r21600,l21600,xe");
     }
 };
+}

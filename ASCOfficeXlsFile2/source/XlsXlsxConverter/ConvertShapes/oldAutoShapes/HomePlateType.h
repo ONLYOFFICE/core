@@ -2,6 +2,8 @@
 #include "../CustomShape.h"
 
 // 15
+namespace NSCustomShapesConvert
+{
 class CHomePlateType : public CCustomShape
 {
 public:
@@ -32,5 +34,4 @@ public:
         m_arHandles.push_back(oHandle1);
     }
 };
-
-
+}

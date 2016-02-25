@@ -2,6 +2,8 @@
 #include "../CustomShape.h"
 
 // 94
+namespace NSCustomShapesConvert
+{
 class CNotchedRightArrowType : public CCustomShape
 {
 public:
@@ -39,3 +41,4 @@ public:
         m_arHandles.push_back(oHandle1);
     }
 };
+}

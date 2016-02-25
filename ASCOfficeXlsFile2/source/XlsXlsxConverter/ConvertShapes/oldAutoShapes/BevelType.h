@@ -2,6 +2,8 @@
 #include "../CustomShape.h"
 
 // 84
+namespace NSCustomShapesConvert
+{
 class CBevelType : public CCustomShape
 {
 public:
@@ -42,3 +44,4 @@ public:
 		m_lLimoY = 10800;
     }
 };
+}

@@ -2,6 +2,8 @@
 #include "../CustomShape.h"
 
 // 184
+namespace NSCustomShapesConvert
+{
 class CMoonType : public CCustomShape
 {
 public:
@@ -47,3 +49,4 @@ public:
         m_arHandles.push_back(oHandle1);
     }
 };
+}

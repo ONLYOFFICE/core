@@ -7,10 +7,8 @@
 
 #include "../../../../Common/DocxFormat/Source/SystemUtility/File.h"
 
-namespace NSCustomVML
+namespace NSCustomShapesConvert
 {
-    using namespace NSGuidesVML;
-
 	class CSegment
 	{
 	public:
@@ -97,7 +95,7 @@ namespace NSCustomVML
 			return *this;
 		}
 
-		void SetToFormula(NSGuidesVML::CFormula& oFormula)
+		void SetToFormula(NSCustomShapesConvert::CFormula& oFormula)
 		{
 			oFormula.m_eFormulaType = m_eType;
 
@@ -255,7 +253,7 @@ namespace NSCustomVML
 			m_pAdjustValues = pList;
 		}
 
-		void ToCustomShape(CBaseShape* pShape, NSGuidesVML::CFormulasManager& oManager)
+		void ToCustomShape(CBaseShape* pShape, NSCustomShapesConvert::CFormulasManager& oManager)
 		{
 			if ((NULL == pShape) || (!IsCustom()))
 				return;
@@ -264,7 +262,7 @@ namespace NSCustomVML
 			// сначала заполним формулы
 			for (size_t nIndex = 0; nIndex < m_arGuides.size(); ++nIndex)
 			{
-				NSGuidesVML::CFormula oF;
+				NSCustomShapesConvert::CFormula oF;
 				m_arGuides[nIndex].SetToFormula(oF);
 				oManager.AddFormula(oF);
 			}

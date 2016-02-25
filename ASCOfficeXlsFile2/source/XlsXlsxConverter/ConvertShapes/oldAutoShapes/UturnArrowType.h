@@ -2,6 +2,9 @@
 #include "../CustomShape.h"
 
 // 101
+namespace NSCustomShapesConvert
+{
+
 class CUturnArrowType : public CCustomShape
 {
 public:
@@ -23,3 +26,4 @@ public:
         LoadTextRect(_T("0,8310,6110,21600"));
     }
 };
+}

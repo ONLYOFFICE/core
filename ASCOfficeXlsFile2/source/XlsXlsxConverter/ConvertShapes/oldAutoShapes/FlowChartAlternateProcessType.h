@@ -2,6 +2,8 @@
 #include "../CustomShape.h"
 
 // 176
+namespace NSCustomShapesConvert
+{
 class CFlowChartAlternateProcessType : public CCustomShape
 {
 public:
@@ -33,3 +35,4 @@ public:
 		m_lLimoY = 10800;
     }
 };
+}

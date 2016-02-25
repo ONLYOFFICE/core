@@ -5,16 +5,19 @@
 #include "../ShapeType.h"
 #include "../../../ASCOfficePPTXFile/Editor/Drawing/Shapes/BaseShape/PPTShape/Enums.h"
 
-class CCustomShape : public NSGuidesVML::CBaseShape
+namespace NSCustomShapesConvert
+{
+
+class CCustomShape : public NSCustomShapesConvert::CBaseShape
 {
 public:
-	oox::MSOSPT						m_eType;
-	NSGuidesVML::CFormulasManager	m_oManager;
+	oox::MSOSPT								m_eType;
+	NSCustomShapesConvert::CFormulasManager	m_oManager;
 
-	NSCustomVML::CCustomVML			m_oCustomVML;
+	NSCustomShapesConvert::CCustomVML		m_oCustomVML;
 	
-	std::wstring					m_strPathLimoX;
-	std::wstring					m_strPathLimoY;
+	std::wstring							m_strPathLimoX;
+	std::wstring							m_strPathLimoY;
 
 	std::vector<std::wstring> m_arStringTextRects;
 public:
@@ -36,32 +39,6 @@ public:
 	{
 		return true;
 	}
-
-	//void LoadAHList(XmlUtils::CXmlNode& oNode)
-	//{
-	//	m_arHandles.clear();
-
-	//	XmlUtils::CXmlNodes oNodes;
-	//	if (oNode.GetNodes(_T("v:h"), oNodes))
-	//	{
-	//		int nCount = oNodes.GetCount();
-	//		for (int i = 0; i < nCount; ++i)
-	//		{
-	//			XmlUtils::CXmlNode oNodeH;
-	//			oNodes.GetAt(i, oNodeH);
-
-	//			CHandle_ oH;
-	//			oH.polar		= oNodeH.GetAttribute(_T("polar"));
-	//			oH.position		= oNodeH.GetAttribute(_T("position"));
-	//			oH.radiusrange	= oNodeH.GetAttribute(_T("radiusrange"));
-	//			oH.switchHandle = oNodeH.GetAttribute(_T("switch"));
-	//			oH.xrange		= oNodeH.GetAttribute(_T("xrange"));
-	//			oH.yrange		= oNodeH.GetAttribute(_T("yrange"));
-
-	//			m_arHandles.push_back(oH);
-	//		}
-	//	}
-	//}
 
 	virtual bool LoadConnectorsList(const std::wstring& xml)
 	{
@@ -150,39 +127,5 @@ public:
 		m_eType = oox::msosptNotPrimitive;
 		return false;
 	}
-
-//protected:
-//
-//	bool GetPos(std::wstring str, LONG& lValue)
-//	{
-//		if (str.GetLength() == 0)
-//			return false;
-//
-//		TCHAR mem = str.GetAt(0);
-//
-//		bool bFormula = false;
-//		if ('@' == mem)
-//		{
-//			bFormula = true;
-//			str.Delete(0);
-//		}
-//		
-//		if (!NSStringUtils::IsNumber(str))
-//			return false;
-//
-//		lValue = 0;
-//		lValue = _ttoi(str);
-//
-//		if (bFormula)
-//		{
-//			if (lValue >= 0 || lValue < m_oManager.m_arResults.size())
-//			{
-//				lValue = m_oManager.m_arResults[lValue];
-//				return true;
-//			}
-//			return false;
-//		}
-//
-//		return true;
-//	}
 };
+}

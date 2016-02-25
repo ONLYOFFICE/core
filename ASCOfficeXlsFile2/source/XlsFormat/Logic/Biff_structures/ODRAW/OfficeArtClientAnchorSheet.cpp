@@ -118,12 +118,9 @@ void OfficeArtClientAnchorSheet::loadFields(XLS::CFRecord& record)
 	}
 	else 
 		_dyB = dyB * kfRow * global_info->defaultRowHeight;	
-//----------------------------------------------------------------------------------------------------
-	column	= (std::min)(colL, colR);
-	row		= (std::min)(rwT, rwB);
 
-//----------------------------------------------------------------------------------------------------
-	for (int i = 1 ; i < colL; i++)
+	//----------------------------------------------------------------------------------------------------
+	for (int i = 0 ; i < colL; i++)
 	{
 		if (global_info->customColumnsWidth.find(i) != global_info->customColumnsWidth.end())
 			_x +=  256 * kfCol * global_info->customColumnsWidth[i];	
@@ -141,7 +138,7 @@ void OfficeArtClientAnchorSheet::loadFields(XLS::CFRecord& record)
 	}
 	_cx += _dxR;
 
-	for (int i = 1 ; i < rwT; i++)
+	for (int i = 0 ; i < rwT; i++)
 	{
 		if (global_info->customRowsHeight.find(i) != global_info->customRowsHeight.end())
 		{

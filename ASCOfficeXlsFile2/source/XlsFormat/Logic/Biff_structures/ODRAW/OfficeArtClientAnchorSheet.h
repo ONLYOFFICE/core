@@ -38,9 +38,6 @@ public:
 	XLS::RwU		rwB;
 	short			dyB;
 
-	int column;
-	int row;
-
 	_UINT32		_dxL;
 	_UINT32		_dyT;
 	_UINT32		_dxR;

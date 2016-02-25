@@ -113,6 +113,7 @@ int TxO::serialize (std::wostream & _stream)
 			CP_XML_NODE(namespace_ + L"r")
 			{
 				Fmt = run->formatRun.ifnt;
+				
 				serialize_rPr(CP_XML_STREAM(), Fmt, namespace_);
 
 				CP_XML_NODE(namespace_ + L"t")
@@ -145,7 +146,20 @@ int TxO::serialize_rPr	(std::wostream & _stream, int iFmt, std::wstring namespac
 
 	Font * font = dynamic_cast<Font*>(pGlobalWorkbookInfoPtr->m_arFonts->at(iFmt-1).get());
 
-	if (font) font->serialize_rPr(_stream, false, false, namespace_);
+	if (!font) return 0;
+
+	if (namespace_.empty())
+	{
+		CP_XML_WRITER(_stream)    
+		{	
+			CP_XML_NODE( L"rPr")
+			{
+				font->serialize_properties(CP_XML_STREAM(), true);
+			}
+		}
+	}
+	else
+		font->serialize_rPr(_stream, false, false, namespace_);
 	
 	return 0;
 }

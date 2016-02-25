@@ -2,6 +2,8 @@
 #include "../CustomShape.h"
 
 // 9
+namespace NSCustomShapesConvert
+{
 class CHexagonType : public CCustomShape
 {
 public:
@@ -32,3 +34,4 @@ public:
 
     }
 };
+}

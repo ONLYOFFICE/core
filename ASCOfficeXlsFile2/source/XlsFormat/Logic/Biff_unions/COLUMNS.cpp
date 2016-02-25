@@ -77,11 +77,8 @@ int COLUMNS::serialize(std::wostream & stream)
 						CP_XML_ATTR(L"customWidth", true);
 					}
 
-					if (column_info->colFirst.value()) 
-						CP_XML_ATTR(L"min", column_info->colFirst + 1);/// from 0 
-
-					if (column_info->colLast.value())
-						CP_XML_ATTR(L"max", column_info->colLast + 1);
+					CP_XML_ATTR(L"min", column_info->colFirst + 1);/// from 0 
+					CP_XML_ATTR(L"max", column_info->colLast + 1);
 
 					if ((column_info->ixfe.value()) && (column_info->ixfe > global_info_->cellStyleXfs_count))
 					{

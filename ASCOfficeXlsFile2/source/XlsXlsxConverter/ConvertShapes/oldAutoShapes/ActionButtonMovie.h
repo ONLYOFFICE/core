@@ -2,6 +2,8 @@
 #include "../CustomShape.h"
 
 // 200
+namespace NSCustomShapesConvert
+{
 class CActionButtonMovieType : public CCustomShape
 {
 public:
@@ -99,3 +101,4 @@ public:
 		m_lLimoY = 10800;
     }
 };
+}

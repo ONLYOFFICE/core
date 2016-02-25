@@ -2,6 +2,8 @@
 #include "../CustomShape.h"
 
 // 57
+namespace NSCustomShapesConvert
+{
 class CNoSmokingType : public CCustomShape
 {
 public:
@@ -43,3 +45,4 @@ public:
     }
 };
 
+}

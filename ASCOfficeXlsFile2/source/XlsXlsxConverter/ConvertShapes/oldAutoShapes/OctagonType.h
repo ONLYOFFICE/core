@@ -2,6 +2,8 @@
 #include "../CustomShape.h"
 
 // 10
+namespace NSCustomShapesConvert
+{
 class COctagonType : public CCustomShape
 {
 public:
@@ -39,3 +41,4 @@ public:
 		m_lLimoY = 10800;
     }
 };
+}

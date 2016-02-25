@@ -2,6 +2,9 @@
 #include "../CustomShape.h"
 
 // 190
+namespace NSCustomShapesConvert
+{
+
 class CActionButtonHomeType : public CCustomShape
 {
 public:
@@ -78,3 +81,4 @@ public:
 		m_lLimoY = 10800;
     }
 };
+}

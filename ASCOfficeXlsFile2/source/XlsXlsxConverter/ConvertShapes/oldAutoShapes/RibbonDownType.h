@@ -2,6 +2,8 @@
 #include "../CustomShape.h"
 
 // 53
+namespace NSCustomShapesConvert
+{
 class CRibbonDownType : public CCustomShape
 {
 public:
@@ -61,3 +63,4 @@ public:
         m_arHandles.push_back(oHandle2);
     }
 };
+}

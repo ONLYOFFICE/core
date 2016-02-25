@@ -2,6 +2,9 @@
 #include "../CustomShape.h"
 
 // 96
+namespace NSCustomShapesConvert
+{
+
 class CSmileyFaceType : public CCustomShape
 {
 public:
@@ -29,3 +32,4 @@ public:
         m_arHandles.push_back(oHandle1);
     }
 };
+}

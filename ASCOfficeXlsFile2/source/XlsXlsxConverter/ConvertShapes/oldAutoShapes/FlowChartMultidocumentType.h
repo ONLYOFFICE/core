@@ -2,6 +2,8 @@
 #include "../CustomShape.h"
 
 // 115
+namespace NSCustomShapesConvert
+{
 class CFlowChartMultidocumentType : public CCustomShape
 {
 public:
@@ -17,3 +19,4 @@ public:
         LoadTextRect(_T("0,3675,18595,18022"));
     }
 };
+}

@@ -2,6 +2,8 @@
 #include "../CustomShape.h"
 
 // 49
+namespace NSCustomShapesConvert
+{
 class CBorderCallout3Type : public CCustomShape
 {
 public:
@@ -51,3 +53,4 @@ public:
         m_arHandles.push_back(oHandle4);
     }
 };
+}

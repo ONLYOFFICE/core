@@ -2,7 +2,7 @@
 
 #include "FormulaShape.h"
 
-LONG NSGuidesVML::CFormula::CalculateFormula(NSGuidesVML::CFormulasManager* pManager)
+LONG NSCustomShapesConvert::CFormula::CalculateFormula(NSCustomShapesConvert::CFormulasManager* pManager)
 {
 	if ((0 > m_lIndex) || (m_lIndex >= pManager->m_arResults.size()))
 		return 0;

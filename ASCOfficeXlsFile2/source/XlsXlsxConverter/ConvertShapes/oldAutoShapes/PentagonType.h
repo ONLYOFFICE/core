@@ -2,6 +2,8 @@
 #include "../CustomShape.h"
 
 // 56
+namespace NSCustomShapesConvert
+{
 class CPentagonType : public CCustomShape
 {
 public:
@@ -24,3 +26,4 @@ public:
         LoadTextRect(_T("4200,5077,17400,21600"));
     }
 };
+}

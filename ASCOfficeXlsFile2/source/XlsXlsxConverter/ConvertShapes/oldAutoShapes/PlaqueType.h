@@ -2,6 +2,8 @@
 #include "../CustomShape.h"
 
 // 21
+namespace NSCustomShapesConvert
+{
 class CPlaqueType : public CCustomShape
 {
 public:
@@ -38,3 +40,4 @@ public:
 		m_lLimoY = 10800;
     }
 };
+}

@@ -2,6 +2,8 @@
 #include "../CustomShape.h"
 
 // 4
+namespace NSCustomShapesConvert
+{
 class CDiamondType : public CCustomShape
 {
 public:
@@ -18,3 +20,4 @@ public:
 
     }
 };
+}

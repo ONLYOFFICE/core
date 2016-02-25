@@ -2,6 +2,8 @@
 #include "../CustomShape.h"
 
 // 131
+namespace NSCustomShapesConvert
+{
 class CFlowChartMagneticTapeType : public CCustomShape
 {
 public:
@@ -15,5 +17,6 @@ public:
         LoadTextRect(_T("3163,3163,18437,18437"));
     }
 };
+}
 
 

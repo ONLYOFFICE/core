@@ -2,6 +2,9 @@
 #include "../CustomShape.h"
 
 // 63
+namespace NSCustomShapesConvert
+{
+
 class CWedgeEllipseCalloutType : public CCustomShape
 {
 public:
@@ -47,3 +50,4 @@ public:
         m_arHandles.push_back(oHandle1);
     }
 };
+}

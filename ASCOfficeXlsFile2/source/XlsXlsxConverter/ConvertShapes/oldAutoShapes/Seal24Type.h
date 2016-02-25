@@ -2,6 +2,8 @@
 #include "../CustomShape.h"
 
 // 92
+namespace NSCustomShapesConvert
+{
 class CSeal24Type : public CCustomShape
 {
 public:
@@ -46,5 +48,5 @@ public:
         m_arHandles.push_back(oHandle1);
     }
 };
-
+}
 

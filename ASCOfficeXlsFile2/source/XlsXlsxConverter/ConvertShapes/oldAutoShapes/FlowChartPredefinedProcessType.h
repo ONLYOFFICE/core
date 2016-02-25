@@ -2,6 +2,8 @@
 #include "../CustomShape.h"
 
 // 112
+namespace NSCustomShapesConvert
+{
 class CFlowChartPredefinedProcessType : public CCustomShape
 {
 public:
@@ -17,3 +19,4 @@ public:
         LoadTextRect(_T("2610,0,18990,21600"));
     }
 };
+}

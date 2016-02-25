@@ -7,47 +7,47 @@
 
 namespace ODRAW
 {
-	static int GetCountPoints2(NSGuidesVML::RulesType eRuler, int lRepeatCount)
+	static int GetCountPoints2(NSCustomShapesConvert::RulesType eRuler, int lRepeatCount)
 	{
 		switch (eRuler)
 		{
-		case NSGuidesVML::rtMoveTo:				
-		case NSGuidesVML::rtRMoveTo:
+		case NSCustomShapesConvert::rtMoveTo:				
+		case NSCustomShapesConvert::rtRMoveTo:
 			{ return 1; }
 		
-		case NSGuidesVML::rtLineTo:		
-		case NSGuidesVML::rtRLineTo:
+		case NSCustomShapesConvert::rtLineTo:		
+		case NSCustomShapesConvert::rtRLineTo:
 			{ return lRepeatCount; }
 		
-		case NSGuidesVML::rtCurveTo:		
-		case NSGuidesVML::rtRCurveTo:
+		case NSCustomShapesConvert::rtCurveTo:		
+		case NSCustomShapesConvert::rtRCurveTo:
 			{ return 3 * lRepeatCount; }
 		
-		case NSGuidesVML::rtNoFill:
-		case NSGuidesVML::rtNoStroke:
-		case NSGuidesVML::rtClose:
-		case NSGuidesVML::rtEnd:	
+		case NSCustomShapesConvert::rtNoFill:
+		case NSCustomShapesConvert::rtNoStroke:
+		case NSCustomShapesConvert::rtClose:
+		case NSCustomShapesConvert::rtEnd:	
 			{ return 0; }
 		
-		case NSGuidesVML::rtAngleEllipseTo:
-		case NSGuidesVML::rtAngleEllipse:
+		case NSCustomShapesConvert::rtAngleEllipseTo:
+		case NSCustomShapesConvert::rtAngleEllipse:
 			{ return lRepeatCount; }
 		
-		case NSGuidesVML::rtArc:
-		case NSGuidesVML::rtArcTo:
+		case NSCustomShapesConvert::rtArc:
+		case NSCustomShapesConvert::rtArcTo:
 
-		case NSGuidesVML::rtClockwiseArcTo:
-		case NSGuidesVML::rtClockwiseArc:
+		case NSCustomShapesConvert::rtClockwiseArcTo:
+		case NSCustomShapesConvert::rtClockwiseArc:
 			{ return lRepeatCount; }
 
-		case NSGuidesVML::rtEllipticalQuadrX:
-		case NSGuidesVML::rtEllipticalQuadrY:
+		case NSCustomShapesConvert::rtEllipticalQuadrX:
+		case NSCustomShapesConvert::rtEllipticalQuadrY:
 			{ return 1 * lRepeatCount; }
 
-		case NSGuidesVML::rtQuadrBesier:			
+		case NSCustomShapesConvert::rtQuadrBesier:			
 			{ return /*2 * */lRepeatCount; }
-		case NSGuidesVML::rtFillColor:
-		case NSGuidesVML::rtLineColor:
+		case NSCustomShapesConvert::rtFillColor:
+		case NSCustomShapesConvert::rtLineColor:
 			{
 				return 1;
 			}
@@ -680,7 +680,7 @@ void MSOPATHINFO::load(XLS::CFRecord& record)
 	
 	if (type <= 4)
 	{
-		m_eRuler	= (NSGuidesVML::RulesType)type;
+		m_eRuler	= (NSCustomShapesConvert::RulesType)type;
 		m_nCount	= (mem & 0x1FFF);
 		m_nCount	= (_UINT16)GetCountPoints2(m_eRuler, m_nCount);
 		return;
@@ -693,68 +693,68 @@ void MSOPATHINFO::load(XLS::CFRecord& record)
 	{
 	case 0x00:
 		{
-			m_eRuler = NSGuidesVML::rtLineTo;
+			m_eRuler = NSCustomShapesConvert::rtLineTo;
 			break;
 		}
 	case 0x01:
 		{
-			m_eRuler = NSGuidesVML::rtAngleEllipseTo;
+			m_eRuler = NSCustomShapesConvert::rtAngleEllipseTo;
 			break;
 		}
 	case 0x02:
 		{
-			m_eRuler = NSGuidesVML::rtAngleEllipse;
+			m_eRuler = NSCustomShapesConvert::rtAngleEllipse;
 			break;
 		}
 	case 0x03:
 		{
-			m_eRuler = NSGuidesVML::rtArcTo;
+			m_eRuler = NSCustomShapesConvert::rtArcTo;
 			break;
 		}
 	case 0x04:
 		{
-			m_eRuler = NSGuidesVML::rtArc;
+			m_eRuler = NSCustomShapesConvert::rtArc;
 			break;
 		}
 	case 0x05:
 		{
-			m_eRuler = NSGuidesVML::rtClockwiseArcTo;
+			m_eRuler = NSCustomShapesConvert::rtClockwiseArcTo;
 			break;
 		}
 	case 0x06:
 		{
-			m_eRuler = NSGuidesVML::rtClockwiseArc;
+			m_eRuler = NSCustomShapesConvert::rtClockwiseArc;
 			break;
 		}
 	case 0x07:
 		{
-			m_eRuler = NSGuidesVML::rtEllipticalQuadrX;
+			m_eRuler = NSCustomShapesConvert::rtEllipticalQuadrX;
 			break;
 		}
 	case 0x08:
 		{
-			m_eRuler = NSGuidesVML::rtEllipticalQuadrY;
+			m_eRuler = NSCustomShapesConvert::rtEllipticalQuadrY;
 			break;
 		}
 	case 0x09:
 		{
-			m_eRuler = NSGuidesVML::rtQuadrBesier;
+			m_eRuler = NSCustomShapesConvert::rtQuadrBesier;
 			break;
 		}
 	case 0x0A:
 		{
-			m_eRuler = NSGuidesVML::rtNoFill;
+			m_eRuler = NSCustomShapesConvert::rtNoFill;
 			break;
 		}
 	case 0x0B:
 		{
-			m_eRuler = NSGuidesVML::rtNoStroke;
+			m_eRuler = NSCustomShapesConvert::rtNoStroke;
 			break;
 		}
 	case 0x0C:
 	case 0x10:
 		{
-			m_eRuler = NSGuidesVML::rtLineTo;
+			m_eRuler = NSCustomShapesConvert::rtLineTo;
 			break;
 		}
 	case 0x0D:
@@ -765,22 +765,22 @@ void MSOPATHINFO::load(XLS::CFRecord& record)
 	case 0x13:
 	case 0x14:
 		{
-			m_eRuler = NSGuidesVML::rtCurveTo;
+			m_eRuler = NSCustomShapesConvert::rtCurveTo;
 			break;
 		}
 	case 0x15:
 		{
-			m_eRuler = NSGuidesVML::rtFillColor;
+			m_eRuler = NSCustomShapesConvert::rtFillColor;
 			break;
 		}
 	case 0x16:
 		{
-			m_eRuler = NSGuidesVML::rtLineColor;
+			m_eRuler = NSCustomShapesConvert::rtLineColor;
 			break;
 		}
 	default:
 		{
-			m_eRuler = NSGuidesVML::rtCurveTo;
+			m_eRuler = NSCustomShapesConvert::rtCurveTo;
 		}
 	};
 
@@ -810,7 +810,7 @@ void MSOSG::load(XLS::CFRecord& record)
 	_UINT16 ftType;
 	record >> ftType;
 
-	m_eType = NSGuidesVML::FormulaType(ftType & 0x1FFF);
+	m_eType = NSCustomShapesConvert::FormulaType(ftType & 0x1FFF);
 
 	m_param_type1 = (unsigned char)(ftType & 0x04);
 	m_param_type2 = (unsigned char)(ftType & 0x02);

@@ -2,6 +2,8 @@
 #include "../CustomShape.h"
 
 // 121
+namespace NSCustomShapesConvert
+{
 class CFlowChartPunchedCardType : public CCustomShape
 {
 public:
@@ -16,4 +18,4 @@ public:
     }
 };
 
-
+}

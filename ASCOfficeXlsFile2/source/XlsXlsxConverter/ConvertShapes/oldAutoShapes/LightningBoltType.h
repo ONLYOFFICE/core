@@ -2,6 +2,8 @@
 #include "../CustomShape.h"
 
 // 73
+namespace NSCustomShapesConvert
+{
 class CLightningBoltType : public CCustomShape
 {
 public:
@@ -25,3 +27,4 @@ public:
         LoadTextRect(_T("8757,7437,13917,14277"));
     }
 };
+}

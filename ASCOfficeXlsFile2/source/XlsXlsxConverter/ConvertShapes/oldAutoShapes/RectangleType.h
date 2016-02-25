@@ -2,6 +2,8 @@
 #include "../CustomShape.h"
 
 // 1
+namespace NSCustomShapesConvert
+{
 class CRectangleType : public CCustomShape
 {
 public:
@@ -13,3 +15,4 @@ public:
         m_strPath = _T("m,l,21600r21600,l21600,xe");
      }
 };
+}

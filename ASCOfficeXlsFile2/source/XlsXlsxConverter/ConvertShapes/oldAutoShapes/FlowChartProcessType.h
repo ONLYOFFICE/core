@@ -2,6 +2,8 @@
 #include "../CustomShape.h"
 
 // 109
+namespace NSCustomShapesConvert
+{
 class CFlowChartProcessType : public CCustomShape
 {
 public:
@@ -15,3 +17,4 @@ public:
         LoadConnectorsList(_T("Rectangle"));
     }
 };
+}

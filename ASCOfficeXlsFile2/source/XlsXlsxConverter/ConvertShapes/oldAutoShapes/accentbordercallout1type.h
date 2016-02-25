@@ -2,6 +2,9 @@
 #include "../CustomShape.h"
 
 // 50
+namespace NSCustomShapesConvert
+{
+
 class CAccentBorderCallout1Type : public CCustomShape
 {
 public:
@@ -35,3 +38,4 @@ public:
         m_arHandles.push_back(oHandle2);
     }
 };
+}

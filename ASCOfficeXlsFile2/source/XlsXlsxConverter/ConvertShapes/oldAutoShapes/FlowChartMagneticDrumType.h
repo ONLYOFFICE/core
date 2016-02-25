@@ -2,6 +2,8 @@
 #include "../CustomShape.h"
 
 // 133
+namespace NSCustomShapesConvert
+{
 class CFlowChartMagneticDrumType : public CCustomShape
 {
 public:
@@ -22,5 +24,6 @@ public:
         LoadTextRect(_T("3581,0,14438,21600"));
     }
 };
+}
 
 

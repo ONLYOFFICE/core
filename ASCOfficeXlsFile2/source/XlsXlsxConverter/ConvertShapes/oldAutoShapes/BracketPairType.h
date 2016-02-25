@@ -2,6 +2,8 @@
 #include "../CustomShape.h"
 
 // 185
+namespace NSCustomShapesConvert
+{
 class CBracketPairType : public CCustomShape
 {
 public:
@@ -40,3 +42,4 @@ public:
 		m_lLimoY = 10800;
     }
 };
+}

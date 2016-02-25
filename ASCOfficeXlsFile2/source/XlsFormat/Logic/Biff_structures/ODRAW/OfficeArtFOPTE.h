@@ -558,7 +558,7 @@ class MSOPATHINFO : public XLS::BiffStructure
 
 	static const XLS::ElementType	type = XLS::typeOfficeArtRecord;
 
-	NSGuidesVML::RulesType	m_eRuler;
+	NSCustomShapesConvert::RulesType	m_eRuler;
 	_UINT16					m_nCount;
 	
 	int cbElement;
@@ -577,7 +577,7 @@ class MSOSG : public XLS::BiffStructure
 
 	static const XLS::ElementType	type = XLS::typeOfficeArtRecord;
 
-	NSGuidesVML::FormulaType	m_eType;
+	NSCustomShapesConvert::FormulaType	m_eType;
 
 	unsigned char				m_param_type1;
 	unsigned char				m_param_type2;

@@ -2,6 +2,9 @@
 #include "../CustomShape.h"
 
 // 188
+namespace NSCustomShapesConvert
+{
+
 class CWaveDoubleType : public CCustomShape
 {
 public:
@@ -89,3 +92,4 @@ public:
         m_arHandles.push_back(oHandle2);
     }
 };
+}

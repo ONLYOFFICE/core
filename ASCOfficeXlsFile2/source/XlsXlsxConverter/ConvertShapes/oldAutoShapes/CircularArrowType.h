@@ -2,6 +2,8 @@
 #include "../CustomShape.h"
 
 // 99
+namespace NSCustomShapesConvert
+{
 class CCircularArrowType : public CCustomShape
 {
 public:
@@ -81,5 +83,4 @@ public:
 		m_arHandles.push_back(oHandle2);
 	}
 };
-
-
+}

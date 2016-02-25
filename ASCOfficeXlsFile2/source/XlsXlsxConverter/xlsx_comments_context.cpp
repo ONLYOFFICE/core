@@ -127,7 +127,7 @@ void xlsx_comments_context::start_comment ()
 {
     impl_->current_.ref_		= L"";
 	impl_->current_.visibly_	= false;
-	impl_->current_.fill_		= L"ffff3f";
+	impl_->current_.fill_		= L"FFFFE1";
 	impl_->current_.line_		= L"3465af";
 }
 void xlsx_comments_context::set_size (double width_pt, double height_pt, double x_pt, double y_pt)

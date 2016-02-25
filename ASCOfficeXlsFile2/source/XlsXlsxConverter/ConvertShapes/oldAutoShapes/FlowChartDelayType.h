@@ -2,6 +2,8 @@
 #include "../CustomShape.h"
 
 // 135
+namespace NSCustomShapesConvert
+{
 class CFlowChartDelayType : public CCustomShape
 {
 public:
@@ -15,5 +17,5 @@ public:
         LoadTextRect(_T("0,3163,18437,18437"));
     }
 };
-
+}
 

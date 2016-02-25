@@ -2,6 +2,8 @@
 #include "PathShape.h"
 #include "../../../Common/DocxFormat/Source/Common/SimpleTypes_Base.h"
 
+namespace NSCustomShapesConvert
+{
 
 class CHandle_
 {
@@ -34,9 +36,7 @@ public:
 		return (*this);
 	}
 };
-//
-namespace NSGuidesVML
-{
+
 class CBaseShape
 {
 public:

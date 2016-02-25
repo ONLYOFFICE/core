@@ -2,6 +2,9 @@
 #include "../CustomShape.h"
 
 // 97
+namespace NSCustomShapesConvert
+{
+
 class CVerticalScrollType : public CCustomShape
 {
 public:
@@ -49,3 +52,4 @@ public:
 		m_lLimoY = 10800;
     }
 };
+}

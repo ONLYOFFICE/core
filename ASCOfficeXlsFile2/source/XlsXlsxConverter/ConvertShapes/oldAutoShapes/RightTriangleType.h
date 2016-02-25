@@ -2,6 +2,8 @@
 #include "../CustomShape.h"
 
 // 6
+namespace NSCustomShapesConvert
+{
 class CRightTriangleType : public CCustomShape
 {
 public:
@@ -17,3 +19,4 @@ public:
         LoadTextRect(_T("1800,12600,12600,19800"));
     }
 };
+}

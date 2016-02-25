@@ -23,10 +23,10 @@ public:
 	static const ElementType	type = typeColInfo;
 
 //-----------------------------
-	Col256U colFirst;
-	Col256U colLast;
-	BIFF_WORD coldx;
-	IXFCell ixfe;
+	Col256U		colFirst;
+	Col256U		colLast;
+	BIFF_WORD	coldx;
+	IXFCell		ixfe;
 
 	bool fHidden;
 	bool fUserSet;

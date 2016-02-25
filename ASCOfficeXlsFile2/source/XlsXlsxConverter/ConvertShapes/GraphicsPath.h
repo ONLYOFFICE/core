@@ -5,14 +5,11 @@
 
 #include "../../../../DesktopEditor/graphics/GraphicsPath.h"
 
-//#include "../../Metric.h"
-//#include "../../Attributes.h"
-
 #define _USE_MATH_DEFINES
 #include <math.h>//M_PI
 #include <vector>
 
-namespace NSGuidesVML
+namespace NSCustomShapesConvert
 {
 	const double c_dMasterUnitsToInchKoef		= 1.0 / 576;
 	const double c_dInchToMillimetreKoef		= 25.4;

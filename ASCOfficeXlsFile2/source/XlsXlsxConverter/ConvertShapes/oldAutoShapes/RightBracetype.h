@@ -2,6 +2,8 @@
 #include "../CustomShape.h"
 
 // 88
+namespace NSCustomShapesConvert
+{
 class CRightBracetype : public CCustomShape
 {
 public: 
@@ -42,3 +44,4 @@ public:
         m_arHandles.push_back(oHandle2);
     }
 };
+}

@@ -2,6 +2,8 @@
 #include "../CustomShape.h"
 
 // 80
+namespace NSCustomShapesConvert
+{
 class CDownArrowCalloutType : public CCustomShape
 {
 public:
@@ -53,5 +55,5 @@ public:
 
     }
 };
-
+}
 

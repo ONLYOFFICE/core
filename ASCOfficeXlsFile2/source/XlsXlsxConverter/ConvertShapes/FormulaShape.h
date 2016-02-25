@@ -11,7 +11,7 @@
 
 #include "../../../../DesktopEditor/graphics/aggplustypes.h"
 
-namespace NSGuidesVML
+namespace NSCustomShapesConvert
 {
 	enum FormulaType
 	{
@@ -161,10 +161,7 @@ namespace NSGuidesVML
 
 		return ftVal;
 	}
-}
 
-namespace NSGuidesVML
-{
 	struct SPointType
 	{
 			ParamType x;

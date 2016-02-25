@@ -2,6 +2,8 @@
 #include "../CustomShape.h"
 
 // 23
+namespace NSCustomShapesConvert
+{
 class CDonutType : public CCustomShape
 {
 public:
@@ -29,3 +31,4 @@ public:
         m_arHandles.push_back(oHandle1);
     }
 };
+}

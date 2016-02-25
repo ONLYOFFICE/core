@@ -750,8 +750,7 @@ void xlsx_drawing_context::serialize_shape(_drawing_state_ptr & drawing_state)
 
 std::wstring xlsx_drawing_context::convert_custom_shape(_drawing_state_ptr & drawing_state)
 {
-
-	CCustomShape * shape = CCustomShape::CreateByType(drawing_state->shape_id);
+	NSCustomShapesConvert::CCustomShape * shape = NSCustomShapesConvert::CCustomShape::CreateByType(drawing_state->shape_id);
 	if (shape == NULL) return L"";
 
 	std::wstring strResult;
@@ -773,7 +772,7 @@ std::wstring xlsx_drawing_context::convert_custom_shape(_drawing_state_ptr & dra
 	
 	for (int i = 0 ; i < drawing_state->custom_guides.size(); i++)
 	{//todooo מבתוהוםטעü/סנאסעטעü !!
-		NSCustomVML::CGuide guid;
+		NSCustomShapesConvert::CGuide guid;
 		
 		guid.m_eType		= drawing_state->custom_guides[i].m_eType;
 		guid.m_param_type1	= drawing_state->custom_guides[i].m_param_type1;
@@ -790,10 +789,10 @@ std::wstring xlsx_drawing_context::convert_custom_shape(_drawing_state_ptr & dra
 	{
 		if (0 == drawing_state->custom_segments[i].m_nCount)
 		{
-			if ((NSGuidesVML::rtEnd			!= drawing_state->custom_segments[i].m_eRuler) &&
-				(NSGuidesVML::rtNoFill		!= drawing_state->custom_segments[i].m_eRuler) &&
-				(NSGuidesVML::rtNoStroke	!= drawing_state->custom_segments[i].m_eRuler) &&
-				(NSGuidesVML::rtClose		!= drawing_state->custom_segments[i].m_eRuler))
+			if ((NSCustomShapesConvert::rtEnd			!= drawing_state->custom_segments[i].m_eRuler) &&
+				(NSCustomShapesConvert::rtNoFill		!= drawing_state->custom_segments[i].m_eRuler) &&
+				(NSCustomShapesConvert::rtNoStroke	!= drawing_state->custom_segments[i].m_eRuler) &&
+				(NSCustomShapesConvert::rtClose		!= drawing_state->custom_segments[i].m_eRuler))
 			{
 				continue;
 			}
@@ -809,7 +808,7 @@ std::wstring xlsx_drawing_context::convert_custom_shape(_drawing_state_ptr & dra
 		}
 	}
 	if (drawing_state->custom_path >=0)
-		shape->m_oCustomVML.SetPath((NSGuidesVML::RulesType)drawing_state->custom_path);
+		shape->m_oCustomVML.SetPath((NSCustomShapesConvert::RulesType)drawing_state->custom_path);
 	
 	shape->m_oCustomVML.ToCustomShape(shape, shape->m_oManager);
 	shape->ReCalculate();
@@ -822,12 +821,12 @@ std::wstring xlsx_drawing_context::convert_custom_shape(_drawing_state_ptr & dra
 		shape->m_oPath.SetCoordsize(drawing_state->custom_rect.cx, drawing_state->custom_rect.cy);
 	}
 
-	NSGuidesVML::CFormParam pParamCoef;
-	pParamCoef.m_eType = NSGuidesVML::ptValue;
+	NSCustomShapesConvert::CFormParam pParamCoef;
+	pParamCoef.m_eType = NSCustomShapesConvert::ptValue;
 	pParamCoef.m_lParam = 65536;
 	pParamCoef.m_lCoef = 65536;
 	
-	NSGuidesVML::CFormulaConverter pFormulaConverter;
+	NSCustomShapesConvert::CFormulaConverter pFormulaConverter;
 
 	//coeff
 	pFormulaConverter.ConvertCoef(pParamCoef);

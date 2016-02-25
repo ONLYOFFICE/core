@@ -5,7 +5,7 @@
 
 #include "XmlWriter.h"
 
-namespace NSGuidesVML
+namespace NSCustomShapesConvert
 {
     static int __wstrlen(const wchar_t* str)
 	{
@@ -201,7 +201,7 @@ namespace NSGuidesVML
 
 			m_lMaxAdjUse = -1;
 		}
-		void ConvertCoef(NSGuidesVML::CFormParam pCoef)
+		void ConvertCoef(NSCustomShapesConvert::CFormParam pCoef)
 		{
 			if (pCoef.m_eType == ptValue)
 				ConvertVal(pCoef.m_lParam, pCoef.m_eType, false, m_oCoef);
@@ -214,7 +214,7 @@ namespace NSGuidesVML
 			m_oParam.m_eType	= ptFormula;
 			m_oParam.m_lCoef	= pCoef.m_lCoef;
 		}
-		void ConvertCoef2(NSGuidesVML::CFormParam pCoef)
+		void ConvertCoef2(NSCustomShapesConvert::CFormParam pCoef)
 		{
 			if (pCoef.m_eType == ptValue)
 				ConvertVal(pCoef.m_lParam, pCoef.m_eType, false, m_oGuidsRes);
@@ -890,12 +890,12 @@ namespace NSGuidesVML
 
 			if ('#' == strParam2[0])
 			{					
-				LONG lRes = (LONG)NSGuidesVML::GetInteger(strParam2.substr(1));
+				LONG lRes = (LONG)NSCustomShapesConvert::GetInteger(strParam2.substr(1));
 				GetValue(lRes, ptAdjust, false, oWriter);
 			}
 			else if ('@' == strParam2[0])
 			{
-				LONG lRes = (LONG)NSGuidesVML::GetInteger(strParam2.substr(1));
+				LONG lRes = (LONG)NSCustomShapesConvert::GetInteger(strParam2.substr(1));
 				GetValue(lRes, ptFormula, false, oWriter);
 			}
 			else
@@ -925,7 +925,7 @@ namespace NSGuidesVML
 			for (int nIndex = 0; nIndex < oArray.size(); ++nIndex)
 			{
 				std::wstring str = oArray[nIndex];
-				lValue = NSGuidesVML::GetValue(oArray[nIndex], eParamType, bRes);
+				lValue = NSCustomShapesConvert::GetValue(oArray[nIndex], eParamType, bRes);
 				if (bRes)
 				{	
 					if (0 != m_arSlicesPath.size())
@@ -1053,17 +1053,17 @@ namespace NSGuidesVML
 
 			if ('#' == strParam[0])
 			{					
-				lRes = (LONG)NSGuidesVML::GetInteger(strParam.substr(1));
+				lRes = (LONG)NSCustomShapesConvert::GetInteger(strParam.substr(1));
 				strFrmla = GetValue2(lRes, ptAdjust, false) + L" " + strSize;
 			}
 			else if ('&' == strParam[0])
 			{
-				lRes = (LONG)NSGuidesVML::GetInteger(strParam.substr(1));
+				lRes = (LONG)NSCustomShapesConvert::GetInteger(strParam.substr(1));
 				strFrmla = GetValue2(lRes, ptFormula, true) + L" " + strSize;
 			}
 			else if ('@' == strParam[0])
 			{
-				lRes = (LONG)NSGuidesVML::GetInteger(strParam.substr(1));
+				lRes = (LONG)NSCustomShapesConvert::GetInteger(strParam.substr(1));
 				strFrmla = GetValue2(lRes, ptFormula, false) + L" " + strSize;
 			}
 			else if (!NSStringUtils::IsNumber(strParam))
@@ -1077,7 +1077,7 @@ namespace NSGuidesVML
 			}	
 			else
 			{
-				lRes = (LONG)NSGuidesVML::GetInteger(strParam.c_str());
+				lRes = (LONG)NSCustomShapesConvert::GetInteger(strParam.c_str());
 				strFrmla = GetValue2(lRes, ptValue, false) + strSize;
 			}
 
@@ -1105,12 +1105,12 @@ namespace NSGuidesVML
 			if ('#' == strParam[0])
 			{
 				ptType = ptAdjust;
-				return (LONG)NSGuidesVML::GetInteger(strParam.substr(1).c_str());
+				return (LONG)NSCustomShapesConvert::GetInteger(strParam.substr(1).c_str());
 			}
 			else if ('@' == strParam[0])
 			{
 				ptType = ptFormula;
-				return (LONG)NSGuidesVML::GetInteger(strParam.substr(1).c_str());
+				return (LONG)NSCustomShapesConvert::GetInteger(strParam.substr(1).c_str());
 			}
 			else if (!NSStringUtils::IsNumber(strParam))
 			{
@@ -1125,7 +1125,7 @@ namespace NSGuidesVML
             else
             {
                 ptType = ptValue;
-				return (LONG)NSGuidesVML::GetInteger(strParam.c_str());
+				return (LONG)NSCustomShapesConvert::GetInteger(strParam.c_str());
             }
 		}
         void ConvertQuadrX(Aggplus::POINT pPoint, SPointType pPointType)

@@ -2,6 +2,8 @@
 #include "../CustomShape.h"
 
 // 22
+namespace NSCustomShapesConvert
+{
 class CCanType : public CCustomShape
 {
 public:
@@ -33,3 +35,4 @@ public:
         m_arHandles.push_back(oHandle1);
     }
 };
+}

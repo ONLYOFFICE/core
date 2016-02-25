@@ -2,6 +2,8 @@
 #include "../CustomShape.h"
 
 // 122
+namespace NSCustomShapesConvert
+{
 class CFlowChartPunchedTapeType : public CCustomShape
 {
 public:
@@ -15,5 +17,5 @@ public:
         LoadTextRect(_T("0,4337,21600,17260"));
     }
 };
-
+}
 

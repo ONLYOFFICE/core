@@ -2,6 +2,8 @@
 #include "../CustomShape.h"
 
 // 177
+namespace NSCustomShapesConvert
+{
 class CFlowChartOffpageConnectorType : public CCustomShape
 {
 public:
@@ -16,3 +18,4 @@ public:
     }
 };
 
+}

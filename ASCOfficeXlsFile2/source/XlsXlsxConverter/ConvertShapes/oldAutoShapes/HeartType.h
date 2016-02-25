@@ -2,6 +2,8 @@
 #include "../CustomShape.h"
 
 // 74
+namespace NSCustomShapesConvert
+{
 class CHeartType : public CCustomShape
 {
 public:
@@ -22,7 +24,7 @@ public:
         LoadTextRect(_T("5037,2277,16557,13677"));
     }
 };
-
+}
 
 
 

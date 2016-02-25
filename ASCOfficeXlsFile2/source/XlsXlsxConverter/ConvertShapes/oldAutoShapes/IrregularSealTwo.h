@@ -2,6 +2,8 @@
 #include "../CustomShape.h"
 
 // 72
+namespace NSCustomShapesConvert
+{
 class CIrregularSealTwo : public CCustomShape
 {
 public:
@@ -24,3 +26,4 @@ public:
 
     }
 };
+}

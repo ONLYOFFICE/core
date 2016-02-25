@@ -265,7 +265,7 @@ int Font::serialize_rPr(std::wostream & stream, bool rtl, bool defRPr, std::wstr
 }
 
 
-int Font::serialize_properties(std::wostream & stream, bool rPr)
+int Font::serialize_properties(std::wostream & stream, bool isRPr)
 {
     CP_XML_WRITER(stream)    
     {
@@ -347,7 +347,7 @@ int Font::serialize_properties(std::wostream & stream, bool rPr)
 
 		if (!fontName.value().empty())
 		{
-			if (rPr)
+			if (isRPr)
 			{
 				CP_XML_NODE(L"rFont")
 				{

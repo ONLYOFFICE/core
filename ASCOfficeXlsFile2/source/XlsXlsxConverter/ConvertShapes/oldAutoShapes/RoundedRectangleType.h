@@ -2,6 +2,8 @@
 #include "../CustomShape.h"
 
 // 2
+namespace NSCustomShapesConvert
+{
 class CRoundedRectangleType : public CCustomShape
 {
 public:
@@ -29,3 +31,4 @@ public:
 		m_lLimoY = 10800;
     }
 };
+}

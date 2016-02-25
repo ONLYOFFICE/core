@@ -2,6 +2,8 @@
 #include "../CustomShape.h"
 
 // 65
+namespace NSCustomShapesConvert
+{
 class CFoldedCornerType : public CCustomShape
 {
 public:
@@ -40,3 +42,4 @@ public:
         
     }
 };
+}

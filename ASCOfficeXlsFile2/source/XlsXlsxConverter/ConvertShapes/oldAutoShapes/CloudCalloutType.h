@@ -1,7 +1,10 @@
 #pragma once
 #include "../CustomShape.h"
 
+
 // 106
+namespace NSCustomShapesConvert
+{
 class CCloudCalloutType : public CCustomShape
 {
 public:
@@ -65,3 +68,4 @@ public:
         m_arHandles.push_back(oHandle1);
     }
 };
+}

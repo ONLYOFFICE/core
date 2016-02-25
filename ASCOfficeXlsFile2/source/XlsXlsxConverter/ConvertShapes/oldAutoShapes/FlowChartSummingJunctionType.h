@@ -2,6 +2,8 @@
 #include "../CustomShape.h"
 
 // 123
+namespace NSCustomShapesConvert
+{
 class CFlowChartSummingJunctionType : public CCustomShape
 {
 public:
@@ -15,5 +17,5 @@ public:
         LoadTextRect(_T("3163,3163,18437,18437"));
     }
 };
-
+}
 

@@ -2,6 +2,8 @@
 #include "../CustomShape.h"
 
 // 90
+namespace NSCustomShapesConvert
+{
 class CBentUpArrowType : public CCustomShape
 {
 public:
@@ -57,3 +59,4 @@ public:
 		m_arHandles.push_back(oHandle2);
     }
 };
+}

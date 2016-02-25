@@ -16,8 +16,6 @@ namespace XLS
 {
 
 typedef BiffAttributeSimple<_UINT32>		RwLongU;
-typedef BiffAttributeSimple<unsigned short> ColU;
-typedef BiffAttributeSimple<unsigned short> Col256U;
 typedef BiffAttributeSimple<unsigned short> IXFCell;
 typedef BiffAttributeSimple<unsigned short> Rw;
 typedef BiffAttributeSimple<unsigned short> Col;
@@ -28,6 +26,8 @@ typedef BiffAttributeSimple<_INT16>			Col_NegativeOne;
 typedef BiffAttributeSimple<unsigned short> R_RwU; // Special version for use as a record attribute
 typedef BiffAttributeSimple<unsigned short> IFmt;
 typedef BiffAttributeSimple<unsigned short> CrtLayout12Mode;
+typedef BiffAttributeSimple<unsigned short> ColU;
+typedef unsigned short Col256U;
 typedef unsigned short RwU;
 typedef unsigned short Ilel;
 typedef unsigned char DColunByteU;

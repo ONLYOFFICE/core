@@ -12,6 +12,8 @@ const double EMU_MM = 36000;
 
 using namespace NSOfficeDrawing;
 
+namespace NSCustomShapesConvert
+{
 CCustomShape* CCustomShape::CreateByType(oox::MSOSPT type)
 {
 	CCustomShape* pShape = NULL;
@@ -260,3 +262,4 @@ CCustomShape* CCustomShape::CreateByType(oox::MSOSPT type)
 	return pShape;
 }
 
+}

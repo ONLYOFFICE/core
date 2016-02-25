@@ -2,6 +2,8 @@
 #include "../CustomShape.h"
 
 // 71
+namespace NSCustomShapesConvert
+{
 class CIrregularSealOneType : public CCustomShape
 {
 public:
@@ -23,3 +25,4 @@ public:
         LoadTextRect(_T("4627,6320,16702,13937"));
     }
 };
+}

@@ -2,6 +2,8 @@
 #include "../CustomShape.h"
 
 // 95
+namespace NSCustomShapesConvert
+{
 class CBlockArcType : public CCustomShape
 {
 public:
@@ -72,3 +74,4 @@ public:
 		m_arHandles.push_back(oHandle1);
     }
 };
+}

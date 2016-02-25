@@ -3,7 +3,7 @@
 //#include "../../../Common/DocxFormat/Source/Base/Nullable.h"
 #include "../../../DesktopEditor/common/File.h"
 
-namespace NSGuidesVML
+namespace NSCustomShapesConvert
 {
 	static int GetInteger (const std::wstring& string)
 	{

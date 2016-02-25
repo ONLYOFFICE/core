@@ -2,6 +2,8 @@
 #include "../CustomShape.h"
 
 // 5
+namespace NSCustomShapesConvert
+{
 class CIsoscelesTriangleType : public CCustomShape
 {
 public:
@@ -29,3 +31,4 @@ public:
         m_arHandles.push_back(oHandle1);
     }
 };
+}

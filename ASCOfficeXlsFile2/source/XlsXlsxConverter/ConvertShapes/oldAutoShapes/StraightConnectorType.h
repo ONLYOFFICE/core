@@ -2,6 +2,9 @@
 #include "../CustomShape.h"
 
 // 32
+namespace NSCustomShapesConvert
+{
+
 class CStraightConnectorType : public CCustomShape
 {
 public:
@@ -12,3 +15,4 @@ public:
         LoadConnectorsList(_T("0,0;21600,21600"));
     }
 };
+}

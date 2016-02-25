@@ -2,6 +2,8 @@
 #include "../CustomShape.h"
 
 // 3
+namespace NSCustomShapesConvert
+{
 class CEllipseType : public CCustomShape
 {
 public:
@@ -14,3 +16,4 @@ public:
 		LoadTextRect(_T("3233,3233,18367,18367"));
     }
 };
+}

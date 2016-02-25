@@ -2,6 +2,8 @@
 #include "../CustomShape.h"
 
 // 199
+namespace NSCustomShapesConvert
+{
 class CActionButtonSoundType : public CCustomShape
 {
 public:
@@ -67,3 +69,4 @@ public:
 		m_lLimoY = 10800;
     }
 };
+}

@@ -2,6 +2,8 @@
 #include "../CustomShape.h"
 
 // 187
+namespace NSCustomShapesConvert
+{
 class CSeal4Type : public CCustomShape
 {
 public:
@@ -30,3 +32,4 @@ public:
 };
 
 
+}

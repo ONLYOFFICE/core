@@ -866,7 +866,6 @@ void XlsConverter::convert(ODRAW::OfficeArtRecord * art)
 			art->serialize(strm);
         
 			xlsx_context->get_drawing_context().set_sheet_anchor(strm.str());
-			xlsx_context->get_drawing_context().set_child_anchor(ch->_x, ch->_y, ch->_cx, ch->_cy);
 		}break;
 	}
 }

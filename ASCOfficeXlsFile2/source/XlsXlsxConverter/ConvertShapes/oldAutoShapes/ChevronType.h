@@ -2,6 +2,8 @@
 #include "../CustomShape.h"
 
 // 55
+namespace NSCustomShapesConvert
+{
 class CChevronType : public CCustomShape
 {
 public:
@@ -33,3 +35,4 @@ public:
     }
 };
 
+}

@@ -2,6 +2,8 @@
 #include "../CustomShape.h"
 
 // 20
+namespace NSCustomShapesConvert
+{
 class CLineType : public CCustomShape
 {
 public:
@@ -15,3 +17,4 @@ public:
 		LoadConnectorsList(_T("0,0;21600,21600;10800,10800"));
     }
 };
+}

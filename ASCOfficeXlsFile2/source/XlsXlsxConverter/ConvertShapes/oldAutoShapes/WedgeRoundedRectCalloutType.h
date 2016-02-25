@@ -2,6 +2,9 @@
 #include "../CustomShape.h"
 
 // 62
+namespace NSCustomShapesConvert
+{
+
 class CWedgeRoundedRectCalloutType : public CCustomShape
 {
 public:
@@ -60,3 +63,4 @@ public:
         m_arHandles.push_back(oHandle1);
     }
 };
+}

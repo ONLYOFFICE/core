@@ -3,7 +3,7 @@
 #include "GraphicsPath.h"
 #include "FormulaShape.h"
 
-namespace NSGuidesVML
+namespace NSCustomShapesConvert
 {
 	static std::wstring GetRulerVML(RulesType eRuler)
 	{
@@ -504,7 +504,7 @@ namespace NSGuidesVML
 			width		= ShapeSizeVML;
 			height		= ShapeSizeVML; //43200?
 		}
-		void FromXML(std::wstring strPath, NSGuidesVML::CFormulasManager& pManager)
+		void FromXML(std::wstring strPath, NSCustomShapesConvert::CFormulasManager& pManager)
 		{
 			NSStringUtils::CheckPathOn_Fill_Stroke(strPath, m_bFill, m_bStroke);
 			std::vector<std::wstring> oArray;
@@ -577,7 +577,7 @@ namespace NSGuidesVML
 	public:
 		std::vector<CPartPath> m_arParts;
 		
-		void FromXML(std::wstring strPath, NSGuidesVML::CFormulasManager& pManager)
+		void FromXML(std::wstring strPath, NSCustomShapesConvert::CFormulasManager& pManager)
 		{
 			m_arParts.clear();
 			std::vector<std::wstring> oArray;

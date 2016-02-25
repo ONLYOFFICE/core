@@ -2,6 +2,8 @@
 #include "../CustomShape.h"
 
 // 76
+namespace NSCustomShapesConvert
+{
 class CQuadArrowType : public CCustomShape
 {
 public:
@@ -43,3 +45,4 @@ public:
         m_arHandles.push_back(oHandle2);
     }
 };
+}

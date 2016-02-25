@@ -2,6 +2,8 @@
 #include "../CustomShape.h"
 
 // 124
+namespace NSCustomShapesConvert
+{
 class CFlowChartOrType : public CCustomShape
 {
 public:
@@ -17,3 +19,4 @@ public:
 };
 
 
+}

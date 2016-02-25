@@ -2,6 +2,8 @@
 #include "../CustomShape.h"
 
 // 108
+namespace NSCustomShapesConvert
+{
 class CEllipceRibbon2Type : public CCustomShape
 {
 public:
@@ -87,3 +89,4 @@ public:
         m_arHandles.push_back(oHandle3);
     }
 };
+}

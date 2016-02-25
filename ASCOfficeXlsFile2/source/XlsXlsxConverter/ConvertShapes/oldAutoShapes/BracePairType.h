@@ -2,6 +2,8 @@
 #include "../CustomShape.h"
 
 // 186
+namespace NSCustomShapesConvert
+{
 class CBracePairType : public CCustomShape
 {
 public:
@@ -45,3 +47,4 @@ public:
 		m_lLimoY = 10800;
     }
 };
+}

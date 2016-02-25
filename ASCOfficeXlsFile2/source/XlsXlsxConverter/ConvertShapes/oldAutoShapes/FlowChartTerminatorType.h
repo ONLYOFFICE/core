@@ -2,6 +2,8 @@
 #include "../CustomShape.h"
 
 // 116
+namespace NSCustomShapesConvert
+{
 class CFlowChartTerminatorType : public CCustomShape
 {
 public:
@@ -17,3 +19,4 @@ public:
         LoadTextRect(_T("1018,3163,20582,18437"));
     }
 };
+}

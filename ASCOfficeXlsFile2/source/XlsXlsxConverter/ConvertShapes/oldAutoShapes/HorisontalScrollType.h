@@ -2,6 +2,8 @@
 #include "../CustomShape.h"
 
 // 98
+namespace NSCustomShapesConvert
+{
 class CHorizontalScrollType : public CCustomShape
 {
 public:
@@ -49,3 +51,4 @@ public:
 		m_lLimoY = 10800;
     }
 };
+}

@@ -3415,7 +3415,7 @@ void DocxConverter::convert(OOX::Logic::CTbl *oox_table)
 		odt_context->drawing_context()->end_drawing();
 		odt_context->end_drawings();
 		
-		odt_context->end_paragraph();
+		odt_context->text_context()->set_KeepNextParagraph(true);
 	}	
 }
 void DocxConverter::convert(OOX::Logic::CTblGrid	*oox_table_grid)

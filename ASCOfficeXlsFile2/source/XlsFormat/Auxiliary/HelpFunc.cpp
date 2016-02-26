@@ -462,6 +462,23 @@ const std::wstring toStdWString(std::string ansi_string, const unsigned int code
     NSUnicodeConverter::CUnicodeConverter oConverter;
     return oConverter.toUnicode(ansi_string, sCodePage.c_str());
 }
+const std::wstring	toStdWString(char* ansi, int size, const unsigned int code_page)
+{
+    std::string sCodePage;
+    for (int i = 0; i < UNICODE_CONVERTER_ENCODINGS_COUNT; ++i)
+    {
+        if (code_page == NSUnicodeConverter::Encodings[i].WindowsCodePage)
+        {
+            sCodePage = NSUnicodeConverter::Encodings[i].Name;
+            break;
+        }
+    }
+    if (sCodePage.empty())
+        sCodePage = "CP" + std::to_string(code_page);
+
+    NSUnicodeConverter::CUnicodeConverter oConverter;
+    return oConverter.toUnicode(ansi, size, sCodePage.c_str());
+}
 const std::string toStdString(std::wstring wide_string, const unsigned int code_page)
 {
     std::string sCodePage;

@@ -9237,11 +9237,7 @@ UnicodeConverter/icubuilds/linux64/usr/local/lib/libicudata.so.55 svn_mime_002dt
 UnicodeConverter/icubuilds/linux64/usr/local/lib/libicuuc.so.55 svn_mime_002dtype=application%2Foctet-stream
 UnicodeConverter/icubuilds/mac svnc_tsvn_003alogminsize=5
 UnicodeConverter/icubuilds/mac/build_release-55-1/lib/libicudata.55.1.dylib svn_mime_002dtype=application%2Foctet-stream
-UnicodeConverter/icubuilds/mac/build_release-55-1/lib/libicudata.55.dylib svn_mime_002dtype=application%2Foctet-stream
-UnicodeConverter/icubuilds/mac/build_release-55-1/lib/libicudata.dylib svn_mime_002dtype=application%2Foctet-stream
 UnicodeConverter/icubuilds/mac/build_release-55-1/lib/libicuuc.55.1.dylib svn_mime_002dtype=application%2Foctet-stream
-UnicodeConverter/icubuilds/mac/build_release-55-1/lib/libicuuc.55.dylib svn_mime_002dtype=application%2Foctet-stream
-UnicodeConverter/icubuilds/mac/build_release-55-1/lib/libicuuc.dylib svn_mime_002dtype=application%2Foctet-stream
 UnicodeConverter/icubuilds/mac/icu svnc_tsvn_003alogminsize=5
 UnicodeConverter/icubuilds/mac/icu/icu svnc_tsvn_003alogminsize=5
 UnicodeConverter/icubuilds/mac/icu/icu.xcodeproj svnc_tsvn_003alogminsize=5

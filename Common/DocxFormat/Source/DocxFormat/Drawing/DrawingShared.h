@@ -225,32 +225,34 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
-					if ( _T("a:accent1") == sName )
+					CString sNameFull = oReader.GetName();
+					CString sName = XmlUtils::GetNameNoNS(sNameFull);
+					
+					if ( _T("accent1") == sName )
 						m_oAccent1 = oReader;
-					else if ( _T("a:accent2") == sName )
+					else if ( _T("accent2") == sName )
 						m_oAccent2 = oReader;
-					else if ( _T("a:accent3") == sName )
+					else if ( _T("accent3") == sName )
 						m_oAccent3 = oReader;
-					else if ( _T("a:accent4") == sName )
+					else if ( _T("accent4") == sName )
 						m_oAccent4 = oReader;
-					else if ( _T("a:accent5") == sName )
+					else if ( _T("accent5") == sName )
 						m_oAccent5 = oReader;
-					else if ( _T("a:accent6") == sName )
+					else if ( _T("accent6") == sName )
 						m_oAccent6 = oReader;
-					else if ( _T("a:dk1") == sName )
+					else if ( _T("dk1") == sName )
 						m_oDk1 = oReader;
-					else if ( _T("a:dk2") == sName )
+					else if ( _T("dk2") == sName )
 						m_oDk2 = oReader;
-					else if ( _T("a:extLst") == sName )
+					else if ( _T("extLst") == sName )
 						m_oExtLst = oReader;
-					else if ( _T("a:folHlink") == sName )
+					else if ( _T("folHlink") == sName )
 						m_oFolHlink = oReader;
-					else if ( _T("a:hlink") == sName )
+					else if ( _T("hlink") == sName )
 						m_oHlink = oReader;
-					else if ( _T("a:lt1") == sName )
+					else if ( _T("lt1") == sName )
 						m_oLt1 = oReader;
-					else if ( _T("a:lt2") == sName )
+					else if ( _T("lt2") == sName )
 						m_oLt2 = oReader;
 				}
 			}
@@ -287,7 +289,7 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				// Читаем атрибуты
-				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Start_No_NS( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("name"), m_sName )
 				WritingElement_ReadAttributes_End( oReader )
 			}

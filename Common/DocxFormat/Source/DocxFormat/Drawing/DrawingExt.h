@@ -80,7 +80,7 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				// Читаем атрибуты
-				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Start_No_NS( oReader )
 				WritingElement_ReadAttributes_Read_if( oReader, _T("uri"), m_oUri )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("spid"), m_sSpId )
 				WritingElement_ReadAttributes_End( oReader )

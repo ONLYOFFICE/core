@@ -680,20 +680,22 @@ namespace OOX
 			int nCurDepth = oReader.GetDepth();
 			while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 			{
-                CString sName = oReader.GetName();
-				if ( _T("a:gsLst") == sName )
+                CString sNameFull = oReader.GetName();
+				CString sName = XmlUtils::GetNameNoNS(sNameFull);
+
+				if ( _T("gsLst") == sName )
 					m_oGsLst = oReader;
-				else if ( _T("a:lin") == sName )
+				else if ( _T("lin") == sName )
 				{
 					m_oLin = oReader;
 					m_eGradType = gradfilltypeLinear;
 				}
-				else if ( _T("a:path") == sName )
+				else if ( _T("path") == sName )
 				{
 					m_oPath = oReader;
 					m_eGradType = gradfilltypePath;
 				}
-				else if ( _T("a:tileRect") == sName )
+				else if ( _T("tileRect") == sName )
 					m_oTileRect = oReader;
 			}
 		}

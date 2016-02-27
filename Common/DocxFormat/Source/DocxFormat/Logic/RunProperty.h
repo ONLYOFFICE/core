@@ -8,6 +8,8 @@
 #include "../../Common/SimpleTypes_Shared.h"
 #include "../../Common/ComplexTypes.h"
 
+#include "../Drawing/DrawingEffects.h"
+
 namespace ComplexTypes
 {
 	namespace Word
@@ -870,111 +872,7 @@ namespace OOX
 					m_oWebHidden = oChild;
 
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				if ( oReader.IsEmptyNode() )
-					return;
-
-				int nParentDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nParentDepth )  )
-				{
-                    CString sName = oReader.GetName();
-					WritingElement *pItem = NULL;
-
-					if ( _T("w:b") == sName )
-						m_oBold = oReader;
-					else if ( _T("w:bCs") == sName )
-						m_oBoldCs = oReader;
-					else if ( _T("w:bdr") == sName )
-						m_oBdr = oReader;
-					else if ( _T("w:caps") == sName )
-						m_oCaps = oReader;
-					else if ( _T("w:color") == sName )
-						m_oColor = oReader;
-					else if ( _T("w:cs") == sName )
-						m_oCs = oReader;
-					else if ( _T("w:del") == sName )
-						m_oDel = oReader;
-					else if ( _T("w:dstrike") == sName )
-						m_oDStrike = oReader;
-					else if ( _T("w:eastAsianLayout") == sName )
-						m_oEastAsianLayout = oReader;
-					else if ( _T("w:effect") == sName )
-						m_oEffect = oReader;
-					else if ( _T("w:em") == sName )
-						m_oEm = oReader;
-					else if ( _T("w:emboss") == sName )
-						m_oEmboss = oReader;
-					else if ( _T("w:fitText") == sName )
-						m_oFitText = oReader;
-					else if ( _T("w:highlight") == sName )
-						m_oHighlight = oReader;
-					else if ( _T("w:ins") == sName )
-						m_oIns = oReader;
-					else if ( _T("w:i") == sName )
-						m_oItalic = oReader;
-					else if ( _T("w:iCs") == sName )
-						m_oItalicCs = oReader;
-					else if ( _T("w:imprint") == sName )
-						m_oImprint = oReader;
-					else if ( _T("w:kern") == sName )
-						m_oKern = oReader;
-					else if ( _T("w:lang") == sName )
-						m_oLang = oReader;
-					else if ( _T("w:noProof") == sName )
-						m_oNoProof = oReader;
-					else if ( _T("m:oMath") == sName )
-						m_oMath = oReader;
-					else if ( _T("w:outline") == sName )
-						m_oOutline = oReader;
-					else if ( _T("w:position") == sName )
-						m_oPosition = oReader;
-					else if ( _T("w:rFonts") == sName )
-						m_oRFonts = oReader;
-					else if ( !m_bRPRChange && _T("w:rPrChange") == sName )
-						m_oRPrChange = oReader;
-					// В спецификации почему-то написано pStyle, хотя по смыслы, по ссылке в самой
-					// же спецификации и, в конце концов, по алфавиту тут толжно быть rStyle
-					else if ( _T("w:rStyle") == sName )
-						m_oRStyle = oReader;
-					else if ( !m_oRStyle.IsInit() && _T("w:pStyle") == sName )
-						m_oRStyle = oReader;
-					else if ( _T("w:rtl") == sName )
-						m_oRtL = oReader;
-					else if ( _T("w:shadow") == sName )
-						m_oShadow = oReader;
-					else if ( _T("w:shd") == sName )
-						m_oShd = oReader;
-					else if ( _T("w:smallCaps") == sName )
-						m_oSmallCaps = oReader;
-					else if ( _T("w:snapToGrid") == sName )
-						m_oSnapToGrid = oReader;
-					else if ( _T("w:spacing") == sName )
-						m_oSpacing = oReader;
-					else if ( _T("w:specVanish") == sName )
-						m_oSpecVanish = oReader;
-					else if ( _T("w:strike") == sName )
-						m_oStrike = oReader;
-					else if ( _T("w:sz") == sName )
-						m_oSz = oReader;
-					else if ( _T("w:szCs") == sName )
-						m_oSzCs = oReader;
-					else if ( _T("w:u") == sName )
-						m_oU = oReader;
-					else if ( _T("w:vanish") == sName )
-						m_oVanish = oReader;
-					else if ( _T("w:vertAlign") == sName )
-						m_oVertAlign = oReader;
-					else if ( _T("w:w") == sName )
-						m_oW = oReader;
-					else if ( _T("w:webHidden") == sName )
-						m_oWebHidden = oReader;
-					else if (_T("w14:textOutline") == sName)
-						m_sTextOutline = oReader.GetOuterXml();
-					else if (_T("w14:textFill") == sName)
-						m_sTextFill = oReader.GetOuterXml();
-				}
-			}
+			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
 			virtual CString      toXML() const
 			{
 				CString sResult = _T("<w:rPr>");
@@ -1518,8 +1416,11 @@ namespace OOX
 			nullable<ComplexTypes::Word::CVerticalAlignRun               > m_oVertAlign;
 			nullable<ComplexTypes::Word::CTextScale                      > m_oW;
 			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oWebHidden;
-			nullable<CString> m_sTextOutline;
-			nullable<CString> m_sTextFill;
+			
+			nullable<CString>									m_sTextOutline;
+			nullable<CString>									m_sTextFill;
+
+			nullable<OOX::Drawing::CGradientFillProperties>		m_oGradFill;
 		};
 
 	} // namespace Logic

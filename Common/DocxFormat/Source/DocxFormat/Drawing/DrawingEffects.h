@@ -1475,14 +1475,17 @@ namespace OOX
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				m_eType = et_Unknown;
-                CString sName = oReader.GetName();
-				if ( _T("a:fillRect") == sName )
+				
+				CString sNameFull = oReader.GetName();
+				CString sName = XmlUtils::GetNameNoNS(sNameFull);
+
+				if ( _T("fillRect") == sName )
 					m_eType = et_a_fillRect;
-				else if ( _T("a:fillToRect") == sName )
+				else if ( _T("fillToRect") == sName )
 					m_eType = et_a_fillToRect;
-				else if ( _T("a:tileRect") == sName )
+				else if ( _T("tileRect") == sName )
 					m_eType = et_a_tileRect;
-				else if ( _T("a:srcRect") == sName )
+				else if ( _T("srcRect") == sName )
 					m_eType = et_a_srcRect;
 				else
 					return;
@@ -1802,7 +1805,7 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				// Читаем атрибуты
-				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Start_No_NS( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("pos"), m_oPos )
 				WritingElement_ReadAttributes_End( oReader )
 			}
@@ -1846,8 +1849,10 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-                    CString sName = oReader.GetName();
-					if ( _T("a:gs") == sName )
+					CString sNameFull = oReader.GetName();
+					CString sName = XmlUtils::GetNameNoNS(sNameFull);
+					
+					if ( _T("gs") == sName )
 					{
 						CGradientStop *oGs = new CGradientStop(oReader);
                         if (oGs) m_arrGs.push_back( oGs );
@@ -2437,8 +2442,10 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-                    CString sName = oReader.GetName();
-					if ( _T("a:fillToRect") == sName )
+					CString sNameFull = oReader.GetName();
+					CString sName = XmlUtils::GetNameNoNS(sNameFull);
+					
+					if ( _T("fillToRect") == sName )
 						m_oFillToRect = oReader;
 				}
 			}

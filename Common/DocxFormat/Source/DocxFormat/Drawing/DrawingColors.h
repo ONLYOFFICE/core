@@ -61,7 +61,7 @@ namespace OOX
 				void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 				{
 					// Читаем атрибуты
-					WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Start_No_NS( oReader )
 					WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
 					WritingElement_ReadAttributes_End( oReader )
 				}
@@ -116,7 +116,7 @@ namespace OOX
 				void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 				{
 					// Читаем атрибуты
-					WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Start_No_NS( oReader )
 					WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
 					WritingElement_ReadAttributes_End( oReader )
 				}
@@ -171,7 +171,7 @@ namespace OOX
 				void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 				{
 					// Читаем атрибуты
-					WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Start_No_NS( oReader )
 					WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
 					WritingElement_ReadAttributes_End( oReader )
 				}
@@ -226,7 +226,7 @@ namespace OOX
 				void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 				{
 					// Читаем атрибуты
-					WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Start_No_NS( oReader )
 					WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
 					WritingElement_ReadAttributes_End( oReader )
 				}
@@ -281,7 +281,7 @@ namespace OOX
 				void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 				{
 					// Читаем атрибуты
-					WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Start_No_NS( oReader )
 					WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
 					WritingElement_ReadAttributes_End( oReader )
 				}
@@ -336,7 +336,7 @@ namespace OOX
 				void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 				{
 					// Читаем атрибуты
-					WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Start_No_NS( oReader )
 					WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
 					WritingElement_ReadAttributes_End( oReader )
 				}
@@ -499,7 +499,7 @@ namespace OOX
 				void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 				{
 					// Читаем атрибуты
-					WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Start_No_NS( oReader )
 					WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
 					WritingElement_ReadAttributes_End( oReader )
 				}
@@ -554,7 +554,7 @@ namespace OOX
 				void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 				{
 					// Читаем атрибуты
-					WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Start_No_NS( oReader )
 					WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
 					WritingElement_ReadAttributes_End( oReader )
 				}
@@ -609,7 +609,7 @@ namespace OOX
 				void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 				{
 					// Читаем атрибуты
-					WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Start_No_NS( oReader )
 					WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
 					WritingElement_ReadAttributes_End( oReader )
 				}
@@ -664,7 +664,7 @@ namespace OOX
 				void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 				{
 					// Читаем атрибуты
-					WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Start_No_NS( oReader )
 					WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
 					WritingElement_ReadAttributes_End( oReader )
 				}
@@ -719,7 +719,7 @@ namespace OOX
 				void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 				{
 					// Читаем атрибуты
-					WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Start_No_NS( oReader )
 					WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
 					WritingElement_ReadAttributes_End( oReader )
 				}
@@ -774,7 +774,7 @@ namespace OOX
 				void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 				{
 					// Читаем атрибуты
-					WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Start_No_NS( oReader )
 					WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
 					WritingElement_ReadAttributes_End( oReader )
 				}
@@ -901,7 +901,7 @@ namespace OOX
 				void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 				{
 					// Читаем атрибуты
-					WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Start_No_NS( oReader )
 					WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
 					WritingElement_ReadAttributes_End( oReader )
 				}
@@ -956,7 +956,7 @@ namespace OOX
 				void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 				{
 					// Читаем атрибуты
-					WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Start_No_NS( oReader )
 					WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
 					WritingElement_ReadAttributes_End( oReader )
 				}
@@ -1011,7 +1011,7 @@ namespace OOX
 				void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 				{
 					// Читаем атрибуты
-					WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Start_No_NS( oReader )
 					WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
 					WritingElement_ReadAttributes_End( oReader )
 				}
@@ -1066,7 +1066,7 @@ namespace OOX
 				void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 				{
 					// Читаем атрибуты
-					WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Start_No_NS( oReader )
 					WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
 					WritingElement_ReadAttributes_End( oReader )
 				}
@@ -1121,7 +1121,7 @@ namespace OOX
 				void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 				{
 					// Читаем атрибуты
-					WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Start_No_NS( oReader )
 					WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
 					WritingElement_ReadAttributes_End( oReader )
 				}
@@ -1176,7 +1176,7 @@ namespace OOX
 				void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 				{
 					// Читаем атрибуты
-					WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Start_No_NS( oReader )
 					WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
 					WritingElement_ReadAttributes_End( oReader )
 				}
@@ -1231,7 +1231,7 @@ namespace OOX
 				void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 				{
 					// Читаем атрибуты
-					WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Start_No_NS( oReader )
 					WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
 					WritingElement_ReadAttributes_End( oReader )
 				}
@@ -1286,7 +1286,7 @@ namespace OOX
 				void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 				{
 					// Читаем атрибуты
-					WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Start_No_NS( oReader )
 					WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
 					WritingElement_ReadAttributes_End( oReader )
 				}
@@ -1341,7 +1341,7 @@ namespace OOX
 				void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 				{
 					// Читаем атрибуты
-					WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Start_No_NS( oReader )
 					WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
 					WritingElement_ReadAttributes_End( oReader )
 				}
@@ -1396,7 +1396,7 @@ namespace OOX
 				void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 				{
 					// Читаем атрибуты
-					WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Start_No_NS( oReader )
 					WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
 					WritingElement_ReadAttributes_End( oReader )
 				}
@@ -1451,7 +1451,7 @@ namespace OOX
 				void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 				{
 					// Читаем атрибуты
-					WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Start_No_NS( oReader )
 					WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
 					WritingElement_ReadAttributes_End( oReader )
 				}
@@ -1499,64 +1499,65 @@ namespace OOX
 					int nCurDepth = oReader.GetDepth();
 					while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 					{
-                        CString sName = oReader.GetName();
-
+						CString sNameFull = oReader.GetName();
+						CString sName = XmlUtils::GetNameNoNS(sNameFull);
+						
 						WritingElement *pTransform = NULL;
-						if ( _T("a:alpha") == sName )
+						if ( _T("alpha") == sName )
 							pTransform = new CAlphaTransform( oReader );
-						else if ( _T("a:alphaMod") == sName )
+						else if ( _T("alphaMod") == sName )
 							pTransform = new CAlphaModTransform( oReader );
-						else if ( _T("a:alphaOff") == sName )
+						else if ( _T("alphaOff") == sName )
 							pTransform = new CAlphaOffTransform( oReader );
-						else if ( _T("a:blue") == sName )
+						else if ( _T("blue") == sName )
 							pTransform = new CBlueTransform( oReader );
-						else if ( _T("a:blueMod") == sName )
+						else if ( _T("blueMod") == sName )
 							pTransform = new CBlueModTransform( oReader );
-						else if ( _T("a:blueOff") == sName )
+						else if ( _T("blueOff") == sName )
 							pTransform = new CBlueOffTransform( oReader );
-						else if ( _T("a:comp") == sName )
+						else if ( _T("comp") == sName )
 							pTransform = new CComplementTransform( oReader );
-						else if ( _T("a:gamma") == sName )
+						else if ( _T("gamma") == sName )
 							pTransform = new CGammaTransform( oReader );
-						else if ( _T("a:gray") == sName )
+						else if ( _T("gray") == sName )
 							pTransform = new CGrayscaleTransform( oReader );
-						else if ( _T("a:green") == sName )
+						else if ( _T("green") == sName )
 							pTransform = new CGreenTransform( oReader );
-						else if ( _T("a:greenMod") == sName )
+						else if ( _T("greenMod") == sName )
 							pTransform = new CGreenModTransform( oReader );
-						else if ( _T("a:greenOff") == sName )
+						else if ( _T("greenOff") == sName )
 							pTransform = new CGreenOffTransform( oReader );
-						else if ( _T("a:hue") == sName )
+						else if ( _T("hue") == sName )
 							pTransform = new CHueTransform( oReader );
-						else if ( _T("a:hueMod") == sName )
+						else if ( _T("hueMod") == sName )
 							pTransform = new CHueModTransform( oReader );
-						else if ( _T("a:hueOff") == sName )
+						else if ( _T("hueOff") == sName )
 							pTransform = new CHueOffTransform( oReader );
-						else if ( _T("a:inv") == sName )
+						else if ( _T("inv") == sName )
 							pTransform = new CInverseTransform( oReader );
-						else if ( _T("a:invGamma") == sName )
+						else if ( _T("invGamma") == sName )
 							pTransform = new CInverseGammaTransform( oReader );
-						else if ( _T("a:lum") == sName )
+						else if ( _T("lum") == sName )
 							pTransform = new CLumTransform( oReader );
-						else if ( _T("a:lumMod") == sName )
+						else if ( _T("lumMod") == sName )
 							pTransform = new CLumModTransform( oReader );
-						else if ( _T("a:lumOff") == sName )
+						else if ( _T("lumOff") == sName )
 							pTransform = new CLumOffTransform( oReader );
-						else if ( _T("a:red") == sName )
+						else if ( _T("red") == sName )
 							pTransform = new CRedTransform( oReader );
-						else if ( _T("a:redMod") == sName )
+						else if ( _T("redMod") == sName )
 							pTransform = new CRedModTransform( oReader );
-						else if ( _T("a:redOff") == sName )
+						else if ( _T("redOff") == sName )
 							pTransform = new CRedOffTransform( oReader );
-						else if ( _T("a:sat") == sName )
+						else if ( _T("sat") == sName )
 							pTransform = new CSatTransform( oReader );
-						else if ( _T("a:satMod") == sName )
+						else if ( _T("satMod") == sName )
 							pTransform = new CSatModTransform( oReader );
-						else if ( _T("a:satOff") == sName )
+						else if ( _T("satOff") == sName )
 							pTransform = new CSatOffTransform( oReader );
-						else if ( _T("a:shade") == sName )
+						else if ( _T("shade") == sName )
 							pTransform = new CShadeTransform( oReader );
-						else if ( _T("a:tint") == sName )
+						else if ( _T("tint") == sName )
 							pTransform = new CTintTransform( oReader );
 
 						if ( pTransform )
@@ -2106,7 +2107,7 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				// Читаем атрибуты
-				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Start_No_NS( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("hue"), m_oHue )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("lum"), m_oLum )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("sat"), m_oSat )
@@ -2174,7 +2175,7 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				// Читаем атрибуты
-				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Start_No_NS( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
 				WritingElement_ReadAttributes_End( oReader )
 			}
@@ -2235,7 +2236,7 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				// Читаем атрибуты
-				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Start_No_NS( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
 				WritingElement_ReadAttributes_End( oReader )
 			}
@@ -2302,7 +2303,7 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				// Читаем атрибуты
-				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Start_No_NS( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("b"), m_oB )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("g"), m_oG )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("r"), m_oR )
@@ -2369,7 +2370,7 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				// Читаем атрибуты
-				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Start_No_NS( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
 				WritingElement_ReadAttributes_End( oReader )
 			}
@@ -2432,7 +2433,7 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				// Читаем атрибуты
-				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Start_No_NS( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("lastClr"), m_oLastClr )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("val"),     m_oVal )
 				WritingElement_ReadAttributes_End( oReader )
@@ -2484,33 +2485,35 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-                    CString sName = oReader.GetName();
-					if ( _T("a:hslClr") == sName )
+					CString sNameFull = oReader.GetName();
+					CString sName = XmlUtils::GetNameNoNS(sNameFull);
+
+					if ( _T("hslClr") == sName )
 					{
 						m_oHslClr = oReader;
 						m_eType   = colorHsl;
 					}
-					else if ( _T("a:prstClr") == sName )
+					else if ( _T("prstClr") == sName )
 					{
 						m_oPrstClr = oReader;
 						m_eType    = colorPrst;
 					}
-					else if ( _T("a:schemeClr") == sName )
+					else if ( _T("schemeClr") == sName )
 					{
 						m_oShemeClr = oReader;
 						m_eType     = colorSheme;
 					}
-					else if ( _T("a:scrgbClr") == sName )
+					else if ( _T("scrgbClr") == sName )
 					{
 						m_oScrgbClr = oReader;
 						m_eType     = colorScRgb;
 					}
-					else if ( _T("a:srgbClr") == sName )
+					else if ( _T("srgbClr") == sName )
 					{
 						m_oSrgbClr = oReader;
 						m_eType    = colorSRgb;
 					}
-					else if ( _T("a:sysClr") == sName )
+					else if ( _T("sysClr") == sName )
 					{
 						m_oSysClr = oReader;
 						m_eType   = colorSys;

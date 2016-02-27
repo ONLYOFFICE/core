@@ -994,6 +994,7 @@ void OoxConverter::convert(OOX::Drawing::CSchemeColor     *oox_ShemeClr,	std::ws
 	int theme_ind = oox_ShemeClr->m_oVal.GetValue();
 	
 	BYTE ucA=0, ucG=0, ucB=0, ucR =0;
+
 	bool result = false;
 
 	switch(theme_ind)
@@ -1114,6 +1115,12 @@ void OoxConverter::convert(OOX::Drawing::CTextBodyProperties	*oox_bodyPr)
 	{
 		//+ style section
 		//+element text:section в котором параграфы
+	}
+	if (oox_bodyPr->m_oSpAutoFit.IsInit())
+	{
+		//изменяемы размеры
+		odf_context()->drawing_context()->set_text_box_min_size(true);//уже выставленые в min
+
 	}
 	if (oox_bodyPr->m_oFromWordArt.ToBool() && oox_bodyPr->m_oPrstTxWrap.IsInit())
 	{

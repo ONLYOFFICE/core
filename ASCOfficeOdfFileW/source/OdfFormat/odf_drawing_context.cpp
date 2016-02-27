@@ -635,6 +635,55 @@ void odf_drawing_context::start_shape(int type)
 		impl_->create_draw_base(7);
 	}
 }
+
+bool odf_drawing_context::change_text_box_2_wordart()
+{
+	if (impl_->current_drawing_state_.oox_shape_preset > 2000 && impl_->current_drawing_state_.oox_shape_preset < 3000)
+		return true;	
+	if (impl_->current_drawing_state_.elements_.size() < 1) return false;
+
+	draw_text_box* t = dynamic_cast<draw_text_box*>(impl_->current_drawing_state_.elements_.back().elm.get());
+	if (!t) return false;
+//------------------------------------------------------------------------
+	office_element_ptr draw_elm = impl_->create_draw_element(7);
+	
+	draw_base* draw = dynamic_cast<draw_base*>(draw_elm.get());
+	if (draw == NULL)return false;
+
+	int sz = impl_->current_level_.size();
+	if (sz < 2) return false;
+
+	int sz_state = impl_->current_drawing_state_.elements_.size();
+	if (sz_state < 2) return false;
+
+	if (sz > 2) //в группе ??
+	{
+		draw_base* draw_old = dynamic_cast<draw_base*>(impl_->current_level_[sz-2].get());
+		if (draw_old)
+		{
+			draw_old->content_[draw_old->content_.size() - 1] = draw_elm;
+		}
+	}
+//----------------------------------------------
+
+	odf_element_state state = impl_->current_drawing_state_.elements_[sz_state - 2];
+	state.elm = draw_elm;
+
+	draw->common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_draw_style_name_attlist_.draw_style_name_ 
+		= style_ref(state.style_name);
+
+	impl_->current_level_.erase (impl_->current_level_.end() - 2, impl_->current_level_.end());
+	impl_->current_level_.push_back(draw_elm);
+
+	impl_->current_drawing_state_.elements_.erase(impl_->current_drawing_state_.elements_.end() - 2, impl_->current_drawing_state_.elements_.end());
+	impl_->current_drawing_state_.elements_.push_back( state);
+
+	impl_->current_drawing_state_.oox_shape_preset = 2031;//plain text
+
+	if (sz == 2)	impl_->root_element_ = draw_elm;
+	return true;
+}
+
 void odf_drawing_context::end_shape()
 {
 	if (impl_->current_drawing_state_.elements_.size() < 1) 
@@ -1827,6 +1876,21 @@ void odf_drawing_context::start_text_box()
 		set_no_fill();
 	end_area_properties();
 }
+
+void odf_drawing_context::set_text_box_min_size(bool val)
+{
+	if (impl_->current_drawing_state_.elements_.size() < 1) return;
+	draw_text_box* draw = dynamic_cast<draw_text_box*>(impl_->current_drawing_state_.elements_.back().elm.get());
+	
+	if (draw)
+	{
+		if (!draw->draw_text_box_attlist_.fo_min_height_)
+			draw->draw_text_box_attlist_.fo_min_height_ = impl_->anchor_settings_.svg_height_;
+		if (!draw->draw_text_box_attlist_.fo_min_width_)
+			draw->draw_text_box_attlist_.fo_min_width_ = impl_->anchor_settings_.svg_width_;
+	}
+}
+
 void odf_drawing_context::set_text_box_min_size(double w_pt, double h_pt)
 {
 	if (impl_->current_drawing_state_.elements_.size() < 1) return;
@@ -1836,6 +1900,7 @@ void odf_drawing_context::set_text_box_min_size(double w_pt, double h_pt)
 	{
 		if (h_pt >0) draw->draw_text_box_attlist_.fo_min_height_= length(length(h_pt,length::pt).get_value_unit(length::cm), length::cm);
 		if (w_pt >0) draw->draw_text_box_attlist_.fo_min_width_= length(length(w_pt,length::pt).get_value_unit(length::cm), length::cm);
+
 
 	}
 }

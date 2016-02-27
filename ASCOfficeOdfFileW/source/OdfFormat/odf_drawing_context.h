@@ -78,11 +78,13 @@ public:
 
 	void start_shape(int type);
 	void end_shape();
+	bool change_text_box_2_wordart();
 
 	void start_image(std::wstring file_path);
 	void end_image();
 		
 	void start_text_box();
+		void set_text_box_min_size(bool val);
 		void set_text_box_min_size(double w_pt, double h_pt);
 		void set_text_box_parent_style(std::wstring style_name);
 	void end_text_box();

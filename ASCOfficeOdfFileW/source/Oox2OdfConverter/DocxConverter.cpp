@@ -1572,7 +1572,18 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::st
 		else
 			text_properties->content().fo_font_weight_ = odf_types::font_weight(odf_types::font_weight::WNormal);
 	}
-	if (oox_run_pr->m_oColor.IsInit())
+
+	if (oox_run_pr->m_oGradFill.IsInit())
+	{
+		bool res = odf_context()->drawing_context()->change_text_box_2_wordart();
+
+		odf_context()->drawing_context()->start_area_properties();
+		{		
+			OoxConverter::convert(oox_run_pr->m_oGradFill.GetPointer(), NULL);
+		}
+		odf_context()->drawing_context()->end_area_properties();
+	}
+	else if (oox_run_pr->m_oColor.IsInit())
 	{
 		if(oox_run_pr->m_oColor->m_oVal.IsInit() && oox_run_pr->m_oColor->m_oVal->GetValue() == SimpleTypes::hexcolorAuto)
 			text_properties->content().fo_color_ = odf_types::color(L"#000000");

@@ -728,7 +728,7 @@ class pihlShape : public OfficeArtFOPTE
 
 	void ReadComplexData(XLS::CFRecord& record);
 
-	IHlink IHlink_complex;
+	IHlink complex;
 };
 
 

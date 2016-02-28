@@ -32,6 +32,8 @@ void Format::readFields(CFRecord& record)
 }
 int Format::serialize(std::wostream & stream)
 {
+	if (ifmt < 164) return 0;
+
     CP_XML_WRITER(stream)    
     {
         CP_XML_NODE(L"numFmt")
@@ -40,7 +42,7 @@ int Format::serialize(std::wostream & stream)
 			CP_XML_ATTR(L"formatCode", stFormat.value());
 		}
 	}
-	return 0;
+	return 1;
 }
 
 } // namespace XLS

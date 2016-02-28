@@ -227,7 +227,11 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 	count = proc.repeated<MergeCells>(0, 0);
 	while(count > 0)
 	{
-		m_arMergeCells.insert(m_arMergeCells.begin(), elements_.back());
+		MergeCells* m = dynamic_cast<MergeCells*>(elements_.back().get());
+		if ((m) && (m->rgref.size() > 0))
+		{
+			m_arMergeCells.insert(m_arMergeCells.begin(), elements_.back());
+		}
 		elements_.pop_back();
 		count--;
 	}

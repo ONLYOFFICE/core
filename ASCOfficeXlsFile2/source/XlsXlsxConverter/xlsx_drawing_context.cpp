@@ -217,6 +217,12 @@ _color xlsx_drawing_context::CorrectSysColor(int nColorCode, _drawing_state_ptr 
     if ( nAdditionalFlags & 0x20 )                  // invert color
         color.SetRGB(0xff - color.GetR(), 0xff - color.GetG(), 0xff - color.GetB());
 
+	//if (color.sRGB.empty())
+	//{неверно
+	//	color.nRGB = shemeDefaultColor[nColorIndex];
+	//	color.index = -1;
+	//	color.sRGB = STR::toRGB(color.nRGB);
+	//}
 	return color;
 }
 
@@ -454,13 +460,13 @@ void xlsx_drawing_context::end_drawing(_drawing_state_ptr & drawing_state)
 	}
 	if ( drawing_state->type == external_items::typeComment )
 	{
-		context_.get_comments_context().set_fill_color(drawing_state->fill.color.sRGB);
-		context_.get_comments_context().set_line_color(drawing_state->line.fill.color.sRGB);
+		//context_.get_comments_context().set_fill_color(drawing_state->fill.color.sRGB);
+		//context_.get_comments_context().set_line_color(drawing_state->line.fill.color.sRGB);
 		
 		context_.get_comments_context().add_content(drawing_state->text.content);
 
-		context_.get_comments_context().set_size(	drawing_state->child_anchor.cx / 12700, 
-													drawing_state->child_anchor.cy / 12700,
+		context_.get_comments_context().set_size(	drawing_state->child_anchor.cx / 12700 +2, 
+													drawing_state->child_anchor.cy / 12700 +2,
 													drawing_state->child_anchor.x / 12700, 
 													drawing_state->child_anchor.y / 12700); //in pt (1 pt = 12700 emu)
 		context_.get_comments_context().end_comment();
@@ -738,7 +744,10 @@ void xlsx_drawing_context::serialize_shape(_drawing_state_ptr & drawing_state)
 						CP_XML_STREAM() << customGeom;
 					}
 				}
-				serialize_fill(CP_XML_STREAM(), drawing_state);
+				if (!is_lined_shape(drawing_state))
+				{
+					serialize_fill(CP_XML_STREAM(), drawing_state);
+				}
 				serialize_line(CP_XML_STREAM(), drawing_state);		
 			}
 			serialize_text(CP_XML_STREAM(), drawing_state);
@@ -746,6 +755,22 @@ void xlsx_drawing_context::serialize_shape(_drawing_state_ptr & drawing_state)
 	}
 
 	drawing_state->shape = strm.str();
+}
+
+bool xlsx_drawing_context::is_lined_shape	(_drawing_state_ptr & drawing_state)
+{
+	if (drawing_state->shape_id == msosptStraightConnector1 ||
+		drawing_state->shape_id == msosptLine				||
+		drawing_state->shape_id == msosptBentConnector2		||
+		drawing_state->shape_id == msosptBentConnector3		||
+		drawing_state->shape_id == msosptBentConnector4		||
+		drawing_state->shape_id == msosptBentConnector5		||
+		drawing_state->shape_id == msosptCurvedConnector2	||
+		drawing_state->shape_id == msosptCurvedConnector3	||
+		drawing_state->shape_id == msosptCurvedConnector4	||
+		drawing_state->shape_id == msosptCurvedConnector5	)return true;
+
+	return false;
 }
 
 std::wstring xlsx_drawing_context::convert_custom_shape(_drawing_state_ptr & drawing_state)
@@ -1056,7 +1081,9 @@ void xlsx_drawing_context::serialize_gradient_fill(std::wostream & stream, _draw
 			}
 			CP_XML_NODE(L"a:lin")
 			{
-				CP_XML_ATTR(L"ang", (int)( 90 - fill.angle) * 60000);
+				int val = 90 - fill.angle;
+				if (val < 0) val = 0;
+				CP_XML_ATTR(L"ang", val * 60000);
 				CP_XML_ATTR(L"scaled", 1);
 			}
 		}
@@ -1490,15 +1517,25 @@ void xlsx_drawing_context::set_line_color (int index, int type)
 {
 	if (current_drawing_states == NULL) return;
 	
-	//drawing_state.back().line.color.index	= index;	
-	//drawing_state.back().line.color.sRGB		= L"";
+	_color color;
+	if (type == 3)
+	{
+		color = CorrectSysColor(index, current_drawing_states->back());
+	}
+	else
+	{	
+		if (index < 64)
+		{
+			color.nRGB = shemeDefaultColor[index];
+			color.sRGB = STR::toRGB(color.nRGB);
+		}
+		color.index = -1;
+	}
 
-	current_drawing_states->back()->line.fill.color.nRGB	= shemeDefaultColor[index];
-	current_drawing_states->back()->line.fill.color.index	= -1;
-	current_drawing_states->back()->line.fill.color.sRGB	= STR::toRGB(shemeDefaultColor[index]);
-
-	if (type == 1)		
-		current_drawing_states->back()->line.fill.color.bScheme = true;
+	if (color.sRGB.empty())
+		return;
+		
+	current_drawing_states->back()->line.fill.color = color;
 }
 void xlsx_drawing_context::set_fill_angle (double val)
 {
@@ -1545,9 +1582,11 @@ void xlsx_drawing_context::set_fill_color (int index, int type, bool background)
 		}
 		color.index = -1;
 	}
+	if (color.sRGB.empty())
+		return;
 
 	if (background)	current_drawing_states->back()->fill.color2	= color;
-	else			current_drawing_states->back()->fill.color		= color;
+	else			current_drawing_states->back()->fill.color	= color;
 }
 void xlsx_drawing_context::set_fill_opacity	(double val, bool background)
 {

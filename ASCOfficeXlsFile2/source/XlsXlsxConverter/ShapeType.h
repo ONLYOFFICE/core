@@ -251,7 +251,7 @@ namespace oox
         //case msosptPlaque : 					return L"plaque";
         //case msosptCan : 						return L"can";
         //case msosptDonut : 					return L"donut";
-        //case msosptStraightConnector1 : 		return L"straightConnector1";
+        case msosptStraightConnector1 : 		return L"straightConnector1";
         //case msosptBentConnector2 : 			return L"bentConnector2";
         //case msosptBentConnector3 : 			return L"bentConnector3";
         //case msosptBentConnector4 : 			return L"bentConnector4";

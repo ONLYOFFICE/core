@@ -11,6 +11,19 @@
 #include "oox_rels.h"
 
 
+struct sort_
+{
+	inline bool operator() (const oox::_xlsx_comment& c1, const oox::_xlsx_comment& c2)
+    {
+		if (c1.row_ < c2.row_) return true;
+		if (c1.row_ > c2.row_) return false;
+		
+		if (c1.col_ < c2.col_) return true;
+
+        return false;
+    }
+};
+
 namespace oox {
 
 	unsigned int hex_string_to_int(std::wstring str)
@@ -21,14 +34,17 @@ namespace oox {
 		ss >> x;
 		return x;
 	}	
-	
+
+
 class xlsx_comments::Impl
 {
 public:
 
-	void serialize(std::wostream & strm) const
+	void serialize(std::wostream & strm)
     {
-        CP_XML_WRITER(strm)
+		//std::sort(xlsx_comment_.begin(), xlsx_comment_.end(), sort_());
+        
+		CP_XML_WRITER(strm)
         {
             CP_XML_NODE(L"comments")
             {
@@ -77,33 +93,34 @@ public:
 			CP_XML_ATTR(L"xmlns:v", L"urn:schemas-microsoft-com:vml");
 			CP_XML_ATTR(L"xmlns:o", L"urn:schemas-microsoft-com:office:office");
 			CP_XML_ATTR(L"xmlns:x", L"urn:schemas-microsoft-com:office:excel");
-		
+			
+			CP_XML_NODE(L"v:shapetype")
+            {
+                CP_XML_ATTR(L"id"		, L"_x0000_t202");
+                CP_XML_ATTR(L"coordsize", L"21600,21600");
+                CP_XML_ATTR(L"o:spt"	, L"202");
+                CP_XML_ATTR(L"path"		, L"m,l,21600r21600,l21600,xe");
 
- 
+				CP_XML_NODE(L"v:stroke")
+				{
+					CP_XML_ATTR(L"joinstyle", L"miter");
+				}
+				CP_XML_NODE(L"v:path")
+				{
+					CP_XML_ATTR(L"gradientshapeok", L"t");				
+					CP_XML_ATTR(L"o:connecttype", L"rect");
+				}
+			}				
+
+			int count = 0;
+
 			BOOST_FOREACH(_xlsx_comment const & c, xlsx_comment_)
 			{
-				CP_XML_NODE(L"v:shapetype")
-	            {
-	                CP_XML_ATTR(L"id"		, L"shapetype_202");
-	                CP_XML_ATTR(L"coordsize", L"21600,21600");
-	                CP_XML_ATTR(L"o:spt"	, L"202");
-	                CP_XML_ATTR(L"path"		, L"m,l,21600l21600,21600l21600,xe");
-
-					CP_XML_NODE(L"v:stroke")
-					{
-						CP_XML_ATTR(L"joinstyle", L"miter");
-					}
-					CP_XML_NODE(L"v:path")
-					{
-						CP_XML_ATTR(L"gradientshapeok", L"t");				
-						CP_XML_ATTR(L"o:connecttype", L"rect");
-					}
-				}				
 				CP_XML_NODE(L"v:shape")
 				{
 					CP_XML_ATTR(L"fillcolor", std::wstring(L"#") + c.fill_);
 
-					CP_XML_ATTR(L"id", L"shape_0");
+					CP_XML_ATTR(L"id", L"shape_" + boost::lexical_cast<std::wstring>(count++));
 					
 					std::wstring style = std::wstring(L"position:absolute;");
 					
@@ -111,11 +128,13 @@ public:
 					style += std::wstring(L"margin-top:")	+ boost::lexical_cast<std::wstring>(c.top_)		+ std::wstring(L"pt;");
 					style += std::wstring(L"width:")		+ boost::lexical_cast<std::wstring>(c.width_)	+ std::wstring(L"pt;");
 					style += std::wstring(L"height:")		+ boost::lexical_cast<std::wstring>(c.height_)	+ std::wstring(L"pt;");
+					style += std::wstring(L"z-index:")		+ boost::lexical_cast<std::wstring>(count)		+ std::wstring(L";");
+
 
 					if (c.visibly_ == false) style += std::wstring(L"visibility:hidden;");
 
 					CP_XML_ATTR(L"style",style);
-					CP_XML_ATTR(L"type", L"shapetype_202");
+					CP_XML_ATTR(L"type", L"_x0000_t202");
 					//if (odf_reader::GetProperty(c.graphicProperties_,L"opacity",dVal))
 					//{
 					//	CP_XML_ATTR(L"opacity",boost::lexical_cast<std::wstring>((int)(100.-dVal.get())) + L"%");
@@ -133,9 +152,8 @@ public:
 					}
 					CP_XML_NODE(L"v:fill")
 					{
-						CP_XML_ATTR(L"detectmouseclick", L"t");
 						CP_XML_ATTR(L"color"	, std::wstring(L"#") + c.fill_);
-						CP_XML_ATTR(L"color2"	, std::wstring(L"#") + c.fill_);
+						//CP_XML_ATTR(L"color2"	, std::wstring(L"#") + c.fill_);
 						CP_XML_ATTR(L"type"		, L"solid");
 						//if (odf_reader::GetProperty(c.graphicProperties_,L"opacity",dVal))
 						//{
@@ -152,11 +170,11 @@ public:
 						//{
 						//	CP_XML_ATTR(L"opacity",(100.-dVal.get())/100.);
 						//}
-						CP_XML_ATTR(L"endcap"			, L"flat");
-						CP_XML_ATTR(L"joinstyle"		, L"round");
-						CP_XML_ATTR(L"startarrow"		, L"block");
-						CP_XML_ATTR(L"v:startarrowwidth", L"medium");
-						CP_XML_ATTR(L"startarrowlength"	, L"medium");
+						//CP_XML_ATTR(L"endcap"			, L"flat");
+						//CP_XML_ATTR(L"joinstyle"		, L"round");
+						//CP_XML_ATTR(L"startarrow"		, L"block");
+						//CP_XML_ATTR(L"v:startarrowwidth", L"medium");
+						//CP_XML_ATTR(L"startarrowlength"	, L"medium");
 					}							
 					CP_XML_NODE(L"x:ClientData")
 					{

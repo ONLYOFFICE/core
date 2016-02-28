@@ -65,7 +65,6 @@ const bool FORMULA::loadContent(BinProcessor& proc)
 	
 	if(!m_ArrayFormula && !m_TableFormula)
 	{
-		//proc.optional<ShrFmla>(); // replaced with below:
 		ShrFmla shr_formula(location);
 		if(proc.optional(shr_formula))
 		{
@@ -88,7 +87,16 @@ const bool FORMULA::loadContent(BinProcessor& proc)
 
 	if(proc.optional<String>())
 	{
-		proc.repeated<Continue>(0, 0);
+		m_Cash = elements_.back();
+		elements_.pop_back();
+		
+		int count  = proc.repeated<Continue>(0, 0);
+		while(count > 0)
+		{
+			m_arContinue.insert(m_arContinue.begin(), elements_.back());
+			elements_.pop_back();
+			count--;
+		}
 	}
 
 	return true;
@@ -101,68 +109,90 @@ const CellRef FORMULA::getLocation() const
 
 int FORMULA::serialize(std::wostream & stream)
 {
-	Formula *formula	= dynamic_cast<Formula *>(m_Formula.get());
-	ShrFmla *shared		= dynamic_cast<ShrFmla *>(m_SharedFormula.get());
+	Formula *formula	= dynamic_cast<Formula *>	(m_Formula.get());
+	ShrFmla *shared		= dynamic_cast<ShrFmla *>	(m_SharedFormula.get());
+	Array	*array_		= dynamic_cast<Array *>		(m_ArrayFormula.get());
+	Table	*table		= dynamic_cast<Table *>		(m_TableFormula.get());
 
-	if (formula == NULL) return 0;
-
+	if (formula == NULL && shared == NULL && array_ == NULL && table == NULL) return 0;
+	
 	CP_XML_WRITER(stream)    
     {
 		std::wstring ref = formula->cell.getLocation().toString();
 		
+		std::wstring formula_str;
+		std::wstring formula_cash;
+	
 		CP_XML_NODE(L"c")
 		{
 			CP_XML_ATTR(L"r", ref);
 
-			if ((formula->cell.ixfe.value()) && (formula->cell.ixfe > m_global_info->cellStyleXfs_count))
+			if (formula)
 			{
-				CP_XML_ATTR(L"s", formula->cell.ixfe - m_global_info->cellStyleXfs_count);
-			}
-			switch (formula->val.getType())
-			{
-				case 0: CP_XML_ATTR(L"t", L"str");	break;
-				case 1: CP_XML_ATTR(L"t", L"b");	break;
-				case 2: CP_XML_ATTR(L"t", L"e");	break;
-			}		
-
-			const std::wstring & f_ = formula->formula.getAssembledFormula();
-			if (!f_.empty())
-			{
-				CP_XML_NODE(L"f")
+				switch (formula->val.getType())
 				{
-					CP_XML_STREAM() << xml::utils::replace_text_to_xml(f_);
+					case 0: CP_XML_ATTR(L"t", L"str");	break;
+					case 1: CP_XML_ATTR(L"t", L"b");	break;
+					case 2: CP_XML_ATTR(L"t", L"e");	break;
+				}	
+				if ((formula->cell.ixfe.value()) && (formula->cell.ixfe > m_global_info->cellStyleXfs_count))
+				{
+					CP_XML_ATTR(L"s", formula->cell.ixfe - m_global_info->cellStyleXfs_count);
 				}
 			}
-			else if (shared)
-			{
-				const std::wstring & f_ = shared->formula.getAssembledFormula();
-				CP_XML_NODE(L"f")
+
+			CP_XML_NODE(L"f")
+			{			
+				if (formula)
 				{
-					std::wstring shared_ref = shared->ref_.toString();
-					CP_XML_ATTR(L"ref", shared_ref);	
+					formula_str		= formula->formula.getAssembledFormula();
+					formula_cash	= formula->val.getValue();
+				}
+				if ((shared) || ((formula) && (formula->fShrFmla && m_sharedIndex >= 0)))
+				{
+					if (shared)
+					{
+						formula_str = shared->formula.getAssembledFormula();
+
+						CP_XML_ATTR(L"ref", shared->ref_.toString());	
+					}
 					CP_XML_ATTR(L"t", L"shared");	
 					CP_XML_ATTR(L"si", m_sharedIndex);	
-
-					CP_XML_STREAM() << xml::utils::replace_text_to_xml(f_);
-				}
-			}
-			else if (formula->fShrFmla && m_sharedIndex >= 0)
-			{
-				CP_XML_NODE(L"f")
+				}		
+				if (array_)
 				{
-					CP_XML_ATTR(L"t", L"shared");	
-					CP_XML_ATTR(L"si", m_sharedIndex);	
+					CP_XML_ATTR(L"ref", array_->ref_.toString());
+
+					CP_XML_ATTR(L"t", L"array");
+					
+					formula_str = array_->formula.getAssembledFormula();
+					//aca="true" ca="true"
+				}
+
+				if (!formula_str.empty())
+				{
+					CP_XML_STREAM() << xml::utils::replace_text_to_xml(formula_str);
 				}
 			}
-			std::wstring str_val = formula->val.getValue();
-			if (!str_val.empty())
+
+			if (formula_cash.empty())
+			{
+				if (m_Cash)
+				{
+					String * str = dynamic_cast<String*>(m_Cash.get());
+					if (str)
+						formula_cash =str->string.value();
+				}
+			}
+
+			if (!formula_cash.empty())
 			{
 				CP_XML_NODE(L"v")
 				{
-					CP_XML_STREAM() << str_val;
+					CP_XML_STREAM() << formula_cash;
 				}
 			}
-		}			
+		}
 	}
 	return 0;
 }

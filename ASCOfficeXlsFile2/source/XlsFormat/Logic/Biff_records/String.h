@@ -25,10 +25,6 @@ public:
 
 //-----------------------------
 	XLUnicodeString string;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(string)
-	//BO_ATTRIB_MARKUP_END
 
 };
 

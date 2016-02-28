@@ -44,7 +44,7 @@ void NoteSh::load(CFRecord& record)
 	record >> idObj >> stAuthor;
 	record.skipNunBytes(1); // unused
 
-	ref = CellRef(row, col, false, false).toString();
+	ref = CellRef(row, col, true, true).toString();
 }
 
 

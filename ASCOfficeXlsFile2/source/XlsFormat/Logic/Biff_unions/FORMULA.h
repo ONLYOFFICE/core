@@ -26,10 +26,13 @@ public:
 
 	const CellRef getLocation() const;
 
-	BaseObjectPtr		m_Formula;
-	BaseObjectPtr		m_TableFormula;
-	BaseObjectPtr		m_ArrayFormula;
-	BaseObjectPtr		m_SharedFormula;
+	BaseObjectPtr				m_Formula;
+	BaseObjectPtr				m_TableFormula;
+	BaseObjectPtr				m_ArrayFormula;
+	BaseObjectPtr				m_SharedFormula;
+
+	BaseObjectPtr				m_Cash;
+	std::vector<BaseObjectPtr>	m_arContinue;
 
 	CellRef location;
 

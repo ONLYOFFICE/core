@@ -555,22 +555,22 @@ void LineStyleBooleanProperties::load(XLS::CFRecord& record)
 {
 	OfficeArtFOPTE::load(record);
 
-	fNoLineDrawDash = GETBIT(op, 0);
-	fLineFillShape = GETBIT(op, 1);
-	fHitTestLine = GETBIT(op, 2);
-	fLine = GETBIT(op, 3);
-	fArrowheadsOK = GETBIT(op, 4);
-	fInsetPenOK = GETBIT(op, 5);
-	fInsetPen = GETBIT(op, 6);
-	fLineOpaqueBackColor = GETBIT(op, 9);
-	fUsefNoLineDrawDash = GETBIT(op, 16);
-	fUsefLineFillShape = GETBIT(op, 17);
-	fUsefHitTestLine = GETBIT(op, 18);
-	fUsefLine = GETBIT(op, 19);
-	fUsefArrowheadsOK = GETBIT(op, 20);
-	fUsefInsetPenOK = GETBIT(op, 21);
-	fUsefInsetPen = GETBIT(op, 22);
-	fUsefLineOpaqueBackColor = GETBIT(op, 25);
+	fNoLineDrawDash			= GETBIT(op, 0);
+	fLineFillShape			= GETBIT(op, 1);
+	fHitTestLine			= GETBIT(op, 2);
+	fLine					= GETBIT(op, 3);
+	fArrowheadsOK			= GETBIT(op, 4);
+	fInsetPenOK				= GETBIT(op, 5);
+	fInsetPen				= GETBIT(op, 6);
+	fLineOpaqueBackColor	= GETBIT(op, 9);
+	fUsefNoLineDrawDash		= GETBIT(op, 16);
+	fUsefLineFillShape		= GETBIT(op, 17);
+	fUsefHitTestLine		= GETBIT(op, 18);
+	fUsefLine				= GETBIT(op, 19);
+	fUsefArrowheadsOK		= GETBIT(op, 20);
+	fUsefInsetPenOK			= GETBIT(op, 21);
+	fUsefInsetPen			= GETBIT(op, 22);
+	fUsefLineOpaqueBackColor= GETBIT(op, 25);
 }
 
 void ShadowStyleBooleanProperties::load(XLS::CFRecord& record)
@@ -614,7 +614,20 @@ void IHlink::load(XLS::CFRecord& record)
 
 void pihlShape::ReadComplexData(XLS::CFRecord& record)
 {
-	record >> IHlink_complex;
+	int pos = record.getRdPtr();
+
+	record >> complex;
+
+	int pos2 = record.getRdPtr() - pos;
+
+	if (pos2 > 0 && pos2 < op)
+	{
+		record.skipNunBytes(op - pos2);
+	}
+	if (pos2 > 0 && pos2 > op)
+	{
+		record.RollRdPtrBack( pos2 - op);
+	}
 }
 //---------------------------------------------------------------------------------------------
 MSOPOINT::MSOPOINT()
@@ -826,12 +839,7 @@ ADJH::ADJH()
 
 ADJH::ADJH(unsigned short cbElement_)
 {
-	cbElement = 4;
-
-	if (cbElement_ == 0xfff0)
-	{
-		cbElement = 2;
-	}
+	cbElement = cbElement_;
 }
 
 XLS::BiffStructurePtr ADJH::clone() 
@@ -857,29 +865,104 @@ void ADJH::load(XLS::CFRecord& record)
 	fahxRange			= GETBIT(flag, 21);
 	fahyRange			= GETBIT(flag, 20);
 	fahPolarPin			= GETBIT(flag, 19);
+
+	cbElement -= 4;
+
+	if (cbElement == 4)
+	{
+		_UINT16 x, y;
+		record >> x >> y;
+		
+		apX	= x;
+		apY = y;
+
+		cbElement -= 4;
+	}
+	else 
+	{	
+		record >> apX >> apY;
 	
-	record >> apX >> apY >> xRange >> yRange;
-	record >> xMin >> xMax >> yMin >> yMax;
-
-
+		cbElement -= 8;
+	}
+	
+	if (cbElement < 1) return;
+	
+	if (fahxRange)	record >> xRange; 
+	if (fahyRange)	record >> yRange;
+	if (fahxMin)	record >> xMin;
+	if (fahxMax)	record >> xMax;
+	if (fahyMin)	record >> yMin;
+	if (fahyMax)	record >> yMax;
 }
 //---------------------------------------------------------------------------------------------
 void PVertices::ReadComplexData(XLS::CFRecord& record)
 {
+	int pos = record.getRdPtr();
+
 	record >> complex;
+
+	int pos2 = record.getRdPtr() - pos;
+
+	if (pos2 > 0 && pos2 < op)
+	{
+		record.skipNunBytes(op - pos2);
+	}
+	if (pos2 > 0 && pos2 > op)
+	{
+		record.RollRdPtrBack( pos2 - op);
+	}
 }
 
 void PSegmentInfo::ReadComplexData(XLS::CFRecord& record)
 {
+	int pos = record.getRdPtr();
+
 	record >> complex;
+
+	int pos2 = record.getRdPtr() - pos;
+
+	if (pos2 > 0 && pos2 < op)
+	{
+		record.skipNunBytes(op - pos2);
+	}
+	if (pos2 > 0 && pos2 > op)
+	{
+		record.RollRdPtrBack( pos2 - op);
+	}
 }
 
 void pGuides::ReadComplexData(XLS::CFRecord& record)
 {
+	int pos = record.getRdPtr();
+
 	record >> complex;
+
+	int pos2 = record.getRdPtr() - pos;
+
+	if (pos2 > 0 && pos2 < op)
+	{
+		record.skipNunBytes(op - pos2);
+	}
+	if (pos2 > 0 && pos2 > op)
+	{
+		record.RollRdPtrBack( pos2 - op);
+	}
 }
 void pAdjustHandles::ReadComplexData(XLS::CFRecord& record)
 {
+	int pos = record.getRdPtr();
+
 	record >> complex;
+
+	int pos2 = record.getRdPtr() - pos;
+
+	if (pos2 > 0 && pos2 < op)
+	{
+		record.skipNunBytes(op - pos2);
+	}
+	if (pos2 > 0 && pos2 > op)
+	{
+		record.RollRdPtrBack( pos2 - op);
+	}
 }
 } 

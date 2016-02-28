@@ -117,8 +117,11 @@ int TxO::serialize (std::wostream & _stream)
 				serialize_rPr(CP_XML_STREAM(), Fmt, namespace_);
 
 				CP_XML_NODE(namespace_ + L"t")
-				{		
-					//CP_XML_ATTR(L"xml:space", L"preserve");
+				{
+					if (preserve_enabled)
+					{
+						CP_XML_ATTR(L"xml:space", L"preserve");
+					}
 
 					if (run->formatRun.ich > str_.length())
 					{

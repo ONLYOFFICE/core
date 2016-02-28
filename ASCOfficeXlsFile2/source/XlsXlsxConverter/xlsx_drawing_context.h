@@ -324,6 +324,7 @@ public:
 		void serialize_fill			(std::wostream & stream);
 		void serialize				(std::wostream & stream);
 //-----------------------------------------------------------------------------------
+		bool is_lined_shape			(_drawing_state_ptr & drawing_state);
 	void end_drawing();
 	void end_group();
 private:

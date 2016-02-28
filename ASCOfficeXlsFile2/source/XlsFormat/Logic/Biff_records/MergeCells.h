@@ -26,8 +26,8 @@ public:
 	int serialize(std::wostream & stream);
 
 //-----------------------------
-	BIFF_WORD cmcs;
-	BiffStructurePtrVector rgref;
+	_UINT16					cmcs;
+	BiffStructurePtrVector	rgref;
 
 };
 

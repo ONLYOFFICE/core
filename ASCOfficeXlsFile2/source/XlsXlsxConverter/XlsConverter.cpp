@@ -781,12 +781,11 @@ void XlsConverter::convert(XLS::OBJECTS* objects, XLS::WorksheetSubstream * shee
 					sp	= dynamic_cast<ODRAW::OfficeArtSpContainer*>(group_objects.back().spgr->child_records[group_objects.back().ind++].get());
 				}
 				convert(sp, true);
-			}
-			convert(text_obj);
-			convert(chart);
-			
+			}			
 			if (type_object == 0x19)
 			{	
+				text_obj->preserve_enabled = true;
+
 				for (int i = 0 ; i < sheet->m_arNote.size(); i++)
 				{
 					XLS::Note* note = dynamic_cast<XLS::Note*>(sheet->m_arNote[i].get());
@@ -797,6 +796,8 @@ void XlsConverter::convert(XLS::OBJECTS* objects, XLS::WorksheetSubstream * shee
 					}
 				}
 			}
+			convert(text_obj);
+			convert(chart);
 
 			xlsx_context->get_drawing_context().end_drawing();
 		}
@@ -865,6 +866,7 @@ void XlsConverter::convert(ODRAW::OfficeArtRecord * art)
 		
 			art->serialize(strm);
         
+			xlsx_context->get_drawing_context().set_child_anchor(ch->_x, ch->_y, ch->_cx, ch->_cy);
 			xlsx_context->get_drawing_context().set_sheet_anchor(strm.str());
 		}break;
 	}
@@ -1342,7 +1344,7 @@ void XlsConverter::convert_group_shape(std::vector<ODRAW::OfficeArtFOPTEPtr> & p
 		case 0x380:
 			{
 				ODRAW::anyString *str = dynamic_cast<ODRAW::anyString*>(props[i].get());
-				xlsx_context->get_drawing_context().set_name(str->string_);
+		xlsx_context->get_drawing_context().set_name(str->string_);
 			}break;
 		case 0x381:
 			{
@@ -1357,17 +1359,17 @@ void XlsConverter::convert_group_shape(std::vector<ODRAW::OfficeArtFOPTEPtr> & p
 					std::wstring	sTarget;					
 					bool			bExternal = false;					
 					
-					if (pihlShape->IHlink_complex.hyperlink.hlstmfHasMoniker)
+					if (pihlShape->complex.hyperlink.hlstmfHasMoniker)
 					{
-						sTarget = GetTargetMoniker(pihlShape->IHlink_complex.hyperlink.oleMoniker.data.get());
+						sTarget = GetTargetMoniker(pihlShape->complex.hyperlink.oleMoniker.data.get());
 						bExternal = true;
 					}
-					else if (pihlShape->IHlink_complex.hyperlink.hlstmfHasLocationStr)
+					else if (pihlShape->complex.hyperlink.hlstmfHasLocationStr)
 					{
-						sTarget = pihlShape->IHlink_complex.hyperlink.location.value();
+						sTarget = pihlShape->complex.hyperlink.location.value();
 					}
 
-					std::wstring sDisplay = pihlShape->IHlink_complex.hyperlink.displayName;
+					std::wstring sDisplay = pihlShape->complex.hyperlink.displayName;
 					if (sDisplay.empty())	sDisplay = sTarget;
 
 					xlsx_context->get_drawing_context().set_hyperlink( sTarget, sDisplay, bExternal);				

@@ -664,7 +664,8 @@ const std::wstring make3dRef(const unsigned short ixti, const std::wstring cell_
 	{
 		return sheets_prefix;
 	}
-	return sheets_prefix + L'!' + cell_ref;
+	else if (!sheets_prefix.empty()) sheets_prefix += L"!";
+	return sheets_prefix + cell_ref;
 }
 
 

@@ -23,8 +23,8 @@ public:
 	static const ElementType	type = typeGuts;
 
 //-----------------------------
-	BIFF_WORD iLevelRwMac;
-	BIFF_WORD iLevelColMac;
+	_UINT16 iLevelRwMac;
+	_UINT16 iLevelColMac;
 
 };
 

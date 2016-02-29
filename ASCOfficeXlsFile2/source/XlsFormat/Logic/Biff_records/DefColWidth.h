@@ -23,7 +23,7 @@ public:
 	static const ElementType	type = typeDefColWidth;
 
 //-----------------------------
-	BIFF_WORD cchdefColWidth;
+	_UINT16 cchdefColWidth;
 };
 
 } // namespace XLS

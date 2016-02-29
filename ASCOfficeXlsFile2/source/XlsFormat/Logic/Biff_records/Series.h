@@ -23,13 +23,13 @@ public:
 	static const ElementType	type = typeSeries;
 
 //-----------------------------
-	BIFF_WORD sdtX;
-	BIFF_WORD sdtY;
-	BIFF_WORD sdtBSize;
+	_UINT16 sdtX;
+	_UINT16 sdtY;
+	_UINT16 sdtBSize;
 
-	BIFF_WORD cValx;
-	BIFF_WORD cValy;
-	BIFF_WORD cValBSize;
+	_UINT16 cValx;
+	_UINT16 cValy;
+	_UINT16 cValBSize;
 };
 
 } // namespace XLS

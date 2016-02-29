@@ -99,7 +99,8 @@ class _drawing_state
 public:
 	_drawing_state() :	shape_id(msosptRectangle),  
 						flipH(false), flipV(false), 					
-						bTextBox(false)
+						bTextBox(false),
+						type_anchor(0)
 	{
 		id			= -1;		
 		rotation	= 0;
@@ -115,19 +116,27 @@ public:
 
 	struct _anchor
 	{
-		_anchor() : column(-1), row(-1), type(0){}
-		int					column;
-		int					row;
-		int					type;
-		std::wstring		str;
-	}anchor;
+		_anchor() : colFrom(-1), rwFrom(-1), colTo(-1), rwTo(0), xFrom(0), yFrom(0),xTo(0),yTo(0){}
+		int					colFrom;
+		int					xFrom;
+		int					rwFrom;
+		int					yFrom;
+		int					colTo;
+		int					xTo;
+		int					rwTo;
+		int					yTo;
+	}						sheet_anchor;
+	_rect					child_anchor;
+	_rect					group_anchor;
+	_rect					absolute_anchor;
+
+	int						type_anchor;
 	
 	std::wstring			shape;
 
 	int						id;
 	MSOSPT					shape_id;
 //----------------------------------------------	
-	_rect					child_anchor;
 	bool					flipV;
 	bool					flipH;
 	int						rotation;
@@ -135,6 +144,7 @@ public:
 	std::vector<ODRAW::MSOPATHINFO>	custom_segments;
 	std::vector<ODRAW::MSOSG>		custom_guides;
 	std::vector<ODRAW::MSOPOINT>	custom_verticles;
+	std::vector<ODRAW::ADJH>		custom_adjustHandles;
 
 	_rect							custom_rect;
 	std::vector<_CP_OPT(int)>		custom_adjustValues;
@@ -219,7 +229,6 @@ public:
 //for group
 	std::vector<_drawing_state_ptr>		drawing_states;
 	std::vector<_drawing_state_ptr>*	parent_drawing_states;
-	_rect								group_anchor;
 };
 struct _hlink_desc
 {
@@ -280,10 +289,10 @@ public:
         void set_line_width			(int val);
 		void set_line_dash			(int val);
 
-		void set_absolute_anchor	(double width, double height);
+		void set_absolute_anchor	(double x, double y, double cx, double cy);
         void set_child_anchor		(int x, int y, int cx, int cy);
 		void set_group_anchor		(int x, int y, int cx, int cy);
-        void set_sheet_anchor		(const std::wstring & str);
+        void set_sheet_anchor		(int colFrom, int xFrom, int rwFrom, int yFrom, int colTo, int xTo, int rwTo,int yTo);
 
         void set_properties			(const std::wstring & str);
         void set_hyperlink			(const std::wstring & link, const std::wstring & display, bool is_external);
@@ -311,6 +320,7 @@ public:
 		void set_custom_verticles	(std::vector<ODRAW::MSOPOINT>	& points);
 		void set_custom_segments	(std::vector<ODRAW::MSOPATHINFO>& segments);
 		void set_custom_guides		(std::vector<ODRAW::MSOSG>		& guides);
+		void set_custom_adjustHandles(std::vector<ODRAW::ADJH>		& handles);
 		void set_custom_adjustValues(std::vector<_CP_OPT(int)>		& values);
 		void set_custom_path		(int type_path);
 //------------------------------------------------------------------------------	
@@ -353,6 +363,7 @@ private:
 	
 	void serialize_line			(std::wostream & stream, _drawing_state_ptr & drawing_state);
 	void serialize_xfrm			(std::wostream & stream, _drawing_state_ptr & drawing_state);
+	void serialize_anchor		(std::wostream & stream, _drawing_state_ptr & drawing_state);
 	void serialize_text			(std::wostream & stream, _drawing_state_ptr & drawing_state);
 	void serialize_color		(std::wostream & stream, const _color &color, double opacity = 0);
 

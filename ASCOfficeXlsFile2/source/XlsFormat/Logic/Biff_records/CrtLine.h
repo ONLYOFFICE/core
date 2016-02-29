@@ -24,7 +24,7 @@ public:
 
 	int serialize(std::wostream & _stream);
 
-	BIFF_WORD		id;
+	_UINT16		id;
 	BaseObjectPtr	m_LineFormat;
 
 //-----------------------------

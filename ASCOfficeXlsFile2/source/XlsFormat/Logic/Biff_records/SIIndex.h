@@ -28,7 +28,7 @@ public:
 	int serialize(std::wostream & _stream, int idx, const CellRef & in_ref);
 
 //-----------------------------
-	BIFF_WORD					numIndex;
+	_UINT16					numIndex;
 
 	std::vector<BaseObjectPtr >	m_arData;
 

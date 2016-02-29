@@ -24,7 +24,7 @@ public:
 	static const ElementType	type = typeVerticalPageBreaks;
 
 //-----------------------------
-	BIFF_WORD cbrk;
+	_UINT16 cbrk;
 	BiffStructurePtrVector rgbrk;
 };
 

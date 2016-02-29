@@ -27,10 +27,10 @@ public:
 
 	static const ElementType	type = typeXF;
 
-	FontIndex ifnt;
-	BIFF_WORD ifmt;
+	FontIndex	ifnt;
+	_UINT16		ifmt;
 	
-	BIFF_WORD	ixfParent;
+	_UINT16		ixfParent;
 	CellXF		cell;
 	StyleXF		style;
 

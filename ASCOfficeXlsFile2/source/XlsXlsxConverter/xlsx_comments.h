@@ -9,8 +9,10 @@ namespace oox {
 
 	struct _xlsx_comment
 	{
-		size_t left_, top_;
-		size_t width_, height_;
+		double left_, top_;
+		double width_, height_;
+
+		std::wstring  anchor_;
 
 		std::wstring  ref_;
 
@@ -25,7 +27,6 @@ namespace oox {
 		std::wstring  author_;
 		std::wstring  content_;
 	};
-//class rels;
 
 class xlsx_comments;
 typedef _CP_PTR(xlsx_comments) xlsx_comments_ptr;

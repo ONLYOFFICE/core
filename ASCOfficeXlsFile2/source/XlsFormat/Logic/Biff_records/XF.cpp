@@ -77,10 +77,7 @@ int XF::serialize(std::wostream & stream)
 		{	
 			if (ifnt.value())			CP_XML_ATTR(L"fontId"	, ifnt.getValue());
 			
-			if (ifmt.value())
-			{
-				CP_XML_ATTR(L"numFmtId"	, ifmt);
-			}
+			CP_XML_ATTR(L"numFmtId"	, ifmt);
 
 			if(fStyle)
 			{

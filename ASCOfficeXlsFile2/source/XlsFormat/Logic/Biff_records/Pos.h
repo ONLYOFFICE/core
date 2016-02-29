@@ -29,10 +29,10 @@ public:
 	_UINT16 mdTopLt;
 	_UINT16 mdBotRt;
 	
-	BIFF_SHORT x1;
-	BIFF_SHORT y1;
-	BIFF_SHORT x2;
-	BIFF_SHORT y2;
+	_INT16 x1;
+	_INT16 y1;
+	_INT16 x2;
+	_INT16 y2;
 
 //-----------------------------
 

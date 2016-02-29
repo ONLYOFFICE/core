@@ -40,8 +40,8 @@ public:
 	CFParsedFormulaNoCCE	rgce2;
 
 	CFParsedFormula			fmlaActive;
-	BIFF_WORD				ipriority;
-	BIFF_WORD				icfTemplate;
+	_UINT16				ipriority;
+	_UINT16				icfTemplate;
 	CFExTemplateParams		rgbTemplateParms;
 
 	BiffStructurePtr		rgbCT;

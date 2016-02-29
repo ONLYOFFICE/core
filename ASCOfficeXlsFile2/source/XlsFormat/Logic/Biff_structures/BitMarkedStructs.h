@@ -15,43 +15,41 @@
 namespace XLS
 {
 
-typedef BiffAttributeSimple<_UINT32>		RwLongU;
-typedef BiffAttributeSimple<unsigned short> IXFCell;
-typedef BiffAttributeSimple<unsigned short> Rw;
-typedef BiffAttributeSimple<unsigned short> Col;
-typedef BiffAttributeSimple<unsigned short> Icv;
-typedef BiffAttributeSimple<unsigned short> IcvChart;
-typedef BiffAttributeSimple<unsigned short> TabId;
-typedef BiffAttributeSimple<_INT16>			Col_NegativeOne;
-typedef BiffAttributeSimple<unsigned short> R_RwU; // Special version for use as a record attribute
-typedef BiffAttributeSimple<unsigned short> IFmt;
-typedef BiffAttributeSimple<unsigned short> CrtLayout12Mode;
-typedef BiffAttributeSimple<unsigned short> ColU;
-typedef unsigned short Col256U;
-typedef unsigned short RwU;
-typedef unsigned short Ilel;
-typedef unsigned char DColunByteU;
-typedef unsigned short DRw;
-typedef unsigned char ColunByte;
-typedef unsigned char ColunByteU;
-typedef _INT32 Rw12;
-typedef _INT32 Col12;
-typedef unsigned short Rwx;
-typedef unsigned short Colx;
-typedef _UINT32 ColorICV;
-typedef _UINT32 ColorTheme;
-typedef _UINT16 ObjId;
-typedef unsigned char FillPattern;
+typedef _UINT32			RwLongU;
+typedef unsigned short	IXFCell;
+typedef unsigned short	Rw;
+typedef unsigned short	Col;
+typedef unsigned short	Icv;
+typedef unsigned short	IcvChart;
+typedef unsigned short	TabId;
+typedef _INT16			Col_NegativeOne;
+typedef unsigned short	R_RwU; // Special version for use as a record attribute
+typedef unsigned short	IFmt;
+typedef unsigned short	CrtLayout12Mode;
+typedef unsigned short	ColU;
+typedef unsigned short	Col256U;
+typedef unsigned short	RwU;
+typedef unsigned short	Ilel;
+typedef unsigned char	DColunByteU;
+typedef unsigned short	DRw;
+typedef unsigned char	ColunByte;
+typedef unsigned char	ColunByteU;
 
+typedef _INT32			Rw12;
+typedef _INT32			Col12;
+typedef unsigned short	Rwx;
+typedef unsigned short	Colx;
+typedef _UINT32			ColorICV;
+typedef _UINT32			ColorTheme;
+typedef _UINT16			ObjId;
+typedef unsigned char	FillPattern;
 
 typedef BiffAttributeSimple<unsigned char>		BIFF_BYTE;
 typedef BiffAttributeSimple<_UINT16>			BIFF_WORD;
-typedef BiffAttributeSimple<_INT16>				BIFF_SHORT;
 typedef BiffAttributeSimple<_UINT32>			BIFF_DWORD;
 typedef BiffAttributeSimple<_INT32>				BIFF_LONG;
 typedef BiffAttributeSimple<double>				BIFF_DOUBLE;
 typedef BiffAttributeSimple<std::wstring>		BIFF_BSTR;
-
 
 
 struct PtgAttrSpaceType : public BiffStructure_NoVtbl

@@ -22,8 +22,6 @@ public:
 
 	static const ElementType	type = typeUncalced;
 
-//-----------------------------
-//	BIFF_WORD userName;
 
 };
 

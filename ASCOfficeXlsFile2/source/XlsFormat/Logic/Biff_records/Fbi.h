@@ -24,10 +24,10 @@ public:
 	static const ElementType	type = typeFbi;
 
 //-----------------------------
-	BIFF_WORD dmixBasis;
-	BIFF_WORD dmiyBasis;
-	BIFF_WORD twpHeightBasis;
-	BIFF_WORD scab;
+	_UINT16 dmixBasis;
+	_UINT16 dmiyBasis;
+	_UINT16 twpHeightBasis;
+	_UINT16 scab;
 	FontIndex ifnt;
 
 

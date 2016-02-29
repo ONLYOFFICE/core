@@ -23,7 +23,7 @@ public:
 
 	static const ElementType	type = typeAutoFilter;
 
-	BIFF_WORD iEntry;
+	_UINT16 iEntry;
 	
 	BIFF_BYTE wJoin;
 	
@@ -34,7 +34,7 @@ public:
 	bool fPercent;
 	
 	BIFF_BYTE fTop;
-	BIFF_WORD wTopN;
+	_UINT16 wTopN;
 
 	AFDOper doper1;
 	AFDOper doper2;

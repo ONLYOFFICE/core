@@ -83,12 +83,12 @@ int Font::serialize_rPr(std::wostream & stream, bool rtl, bool defRPr, std::wstr
 		
 		CP_XML_NODE(strRpr)
 		{
-			if (dyHeight.value())
+			if (dyHeight > 0)
 			{
 				CP_XML_ATTR(L"sz", (int)(dyHeight/20. * 100));
 
 			}
-			if ((bls.value()) && (*bls.value() == 700))
+			if (bls == 700)
 			{
 				CP_XML_ATTR(L"b", true);
 			}
@@ -125,7 +125,7 @@ int Font::serialize_rPr(std::wostream & stream, bool rtl, bool defRPr, std::wstr
 	  //              CP_XML_ATTR(L"val", fExtend);
 	  //          }
 	  //      }
-			if (((icv.value()) && (icv < 0x7fff)) || color_ext.enabled )
+			if ( (icv < 0x7fff) || color_ext.enabled )
 			{
 				if (color_ext.enabled )
 				{
@@ -269,7 +269,7 @@ int Font::serialize_properties(std::wostream & stream, bool isRPr)
 {
     CP_XML_WRITER(stream)    
     {
-        if ((bls.value()) && (*bls.value() == 700))
+        if ( bls== 700)
         {
             CP_XML_NODE(L"b")
             {
@@ -285,7 +285,7 @@ int Font::serialize_properties(std::wostream & stream, bool isRPr)
             }
         }
 
-        if (((icv.value()) && (icv < 0x7fff)) || color_ext.enabled )
+        if (icv < 0x7fff || color_ext.enabled )
 		{
             CP_XML_NODE(L"color")
             {
@@ -395,7 +395,7 @@ int Font::serialize_properties(std::wostream & stream, bool isRPr)
             }
         }
 
-        if ((dyHeight.value()) && (dyHeight > 0))
+        if (dyHeight > 0)
         {
             CP_XML_NODE(L"sz")
             {
@@ -418,11 +418,11 @@ int Font::serialize_properties(std::wostream & stream, bool isRPr)
             }
         }
 
-        if ((sss.value()) && (*sss.value() > 0))
+        if (sss > 0)
         {
             CP_XML_NODE(L"vertAlign")
             {
-				switch(*sss.value())
+				switch(sss)
 				{
 					case 1:	CP_XML_ATTR(L"val", L"superscript");break;
 					case 2:	CP_XML_ATTR(L"val", L"subscript");break;

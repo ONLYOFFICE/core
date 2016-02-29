@@ -28,7 +28,7 @@ public:
 	static const ElementType	type = typeAutoFilter12;
 
 	FrtRefHeader frtRefHeader;
-	BIFF_WORD	iEntry;
+	_UINT16		iEntry;
 	BIFF_DWORD	fHideArrow;
 	BIFF_DWORD	ft;
 	BIFF_DWORD	cft;

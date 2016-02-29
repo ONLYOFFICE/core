@@ -103,15 +103,14 @@ int GLOBALS::serialize(std::wostream & stream)
 				DefaultRowHeight* def_row = dynamic_cast<DefaultRowHeight*>(m_DefaultRowHeight.get());
 				if (def_row)
 				{
+					CP_XML_ATTR(L"defaultRowHeight", def_row->miyRw / 20.);
 					if(!def_row->fDyZero)
 					{
-						CP_XML_ATTR(L"defaultRowHeight", def_row->miyRw / 20.);
 						CP_XML_ATTR(L"customHeight", true);
 					}
 					else 
 					{
 						CP_XML_ATTR(L"zeroHeight", true);
-						CP_XML_ATTR(L"defaultRowHeight", def_row->miyRwHidden /20.);
 					}
 					if (def_row->fExAsc)	CP_XML_ATTR(L"thickTop", true);
 					if (def_row->fExDsc)	CP_XML_ATTR(L"thickBottom", true);
@@ -131,10 +130,10 @@ int GLOBALS::serialize(std::wostream & stream)
 			{
 				Guts * guts= dynamic_cast<Guts*>(m_Guts.get());
 
-				if ((guts->iLevelRwMac.value()) && (guts->iLevelRwMac > 0)) 
+				if (guts->iLevelRwMac > 0)
 					CP_XML_ATTR(L"outlineLevelRow", guts->iLevelRwMac);
 				
-				if ((guts->iLevelColMac.value()) && (guts->iLevelColMac > 0)) 
+				if (guts->iLevelColMac > 0)
 					CP_XML_ATTR(L"outlineLevelCol", guts->iLevelColMac);
 			}
 		}

@@ -23,11 +23,11 @@ public:
 	static const ElementType	type = typeSetup;
 
 //-----------------------------
-	BIFF_WORD iPaperSize;
-	BIFF_WORD iScale;
-	BIFF_SHORT iPageStart;
-	BIFF_WORD iFitWidth;
-	BIFF_WORD iFitHeight;
+	_UINT16 iPaperSize;
+	_UINT16 iScale;
+	_INT16 iPageStart;
+	_UINT16 iFitWidth;
+	_UINT16 iFitHeight;
 
 	bool fLeftToRight;
 	bool fPortrait;
@@ -40,11 +40,11 @@ public:
 	bool fEndNotes;
 	BIFF_BYTE iErrors;
 
-	BIFF_WORD iRes;
-	BIFF_WORD iVRes;
+	_UINT16 iRes;
+	_UINT16 iVRes;
 	BIFF_DOUBLE numHdr;
 	BIFF_DOUBLE numFtr;
-	BIFF_WORD iCopies;
+	_UINT16 iCopies;
 
 };
 

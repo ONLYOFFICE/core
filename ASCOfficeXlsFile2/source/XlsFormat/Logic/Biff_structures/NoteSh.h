@@ -30,8 +30,9 @@ public:
 	ObjId			idObj;
 	XLUnicodeString stAuthor;
 //------------------------------------------
-	std::wstring	ref;
-
+	std::wstring	ref_;
+	int				x_;
+	int				y_;
 };
 
 } // namespace XLS

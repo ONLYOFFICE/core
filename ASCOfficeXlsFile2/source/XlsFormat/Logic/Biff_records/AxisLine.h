@@ -23,7 +23,7 @@ public:
 	static const ElementType	type = typeAxisLine;
 
 //-----------------------------
-	BIFF_WORD id;
+	_UINT16 id;
 };
 
 } // namespace XLS

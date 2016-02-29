@@ -129,19 +129,25 @@ void xlsx_comments_context::start_comment ()
 	impl_->current_.visibly_	= false;
 	impl_->current_.fill_		= L"FFFFE1";
 	impl_->current_.line_		= L"3465af";
+
+	impl_->current_.anchor_		= L"";
+
+	impl_->current_.left_ =  impl_->current_.top_ = impl_->current_.width_ = impl_->current_.height_ = 0;
 }
 void xlsx_comments_context::set_size (double width_pt, double height_pt, double x_pt, double y_pt)
 {
 	impl_->current_.width_	= width_pt;
     impl_->current_.height_ = height_pt;
-    impl_->current_.left_	= x_pt;
+ 
+	impl_->current_.left_	= x_pt;
     impl_->current_.top_	= y_pt; 
+
 }
-void xlsx_comments_context::add_content(std::wstring  content)
+void xlsx_comments_context::set_content(std::wstring  content)
 {
 	impl_->current_.content_ = content;
 }
-void xlsx_comments_context::add_author(std::wstring  author)
+void xlsx_comments_context::set_author(std::wstring  author)
 {
 	impl_->current_.author_ = author;
 }
@@ -149,10 +155,14 @@ void xlsx_comments_context::set_visibly(bool Val)
 {
 	impl_->current_.visibly_ = Val;
 }
-
+void xlsx_comments_context::set_anchor(std::wstring val)
+{
+	impl_->current_.anchor_ = val;
+}
 void xlsx_comments_context::set_ref(std::wstring ref, int col, int row)
 {
 	impl_->current_.ref_ = ref;
+	
 	impl_->current_.col_ = col;
 	impl_->current_.row_ = row;
 }

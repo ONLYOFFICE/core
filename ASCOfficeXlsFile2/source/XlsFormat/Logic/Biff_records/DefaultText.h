@@ -23,7 +23,7 @@ public:
 	static const ElementType	type = typeDefaultText;
 
 //-----------------------------
-	BIFF_WORD id;
+	_UINT16 id;
 
 };
 

@@ -53,9 +53,6 @@ namespace NSCustomShapesConvert
 		WORD m_param_value2;
 		WORD m_param_value3;
 
-		//LONG m_lShapeWidth;
-		//LONG m_lShapeHeight;
-
 		CGuide()
 		{
 			m_eType = ftVal;
@@ -68,8 +65,6 @@ namespace NSCustomShapesConvert
 			m_param_value2 = 0;
 			m_param_value3 = 0;
 
-			//m_lShapeWidth	= ShapeSizeVML;
-			//m_lShapeHeight= ShapeSizeVML;
 		}
 
 		CGuide(const CGuide& oSrc)
@@ -88,9 +83,6 @@ namespace NSCustomShapesConvert
 			m_param_value1	= oSrc.m_param_value1;
 			m_param_value2	= oSrc.m_param_value2;
 			m_param_value3	= oSrc.m_param_value3;
-
-			//m_lShapeWidth	= oSrc.m_lShapeWidth;
-			//m_lShapeHeight	= oSrc.m_lShapeHeight;
 
 			return *this;
 		}
@@ -337,7 +329,7 @@ namespace NSCustomShapesConvert
 							}
 							else
 							{
-								//m_oPen.Color	= (DWORD)m_arVertices[nStart].x;	odooooo
+								//m_oPen.Color	= (DWORD)m_arVertices[nStart].x;	todooooo
 							}
 						}
 						nEnd = nStart + m_arSegments[nS].m_nCount;

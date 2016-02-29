@@ -135,7 +135,7 @@ int FORMULA::serialize(std::wostream & stream)
 					case 1: CP_XML_ATTR(L"t", L"b");	break;
 					case 2: CP_XML_ATTR(L"t", L"e");	break;
 				}	
-				if ((formula->cell.ixfe.value()) && (formula->cell.ixfe > m_global_info->cellStyleXfs_count))
+				if (formula->cell.ixfe > m_global_info->cellStyleXfs_count)
 				{
 					CP_XML_ATTR(L"s", formula->cell.ixfe - m_global_info->cellStyleXfs_count);
 				}

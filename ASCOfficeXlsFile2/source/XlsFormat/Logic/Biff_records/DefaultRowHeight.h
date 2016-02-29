@@ -28,8 +28,7 @@ public:
 	bool fExAsc;
 	bool fExDsc;
 	
-	BIFF_SHORT miyRw; // measured in twips (1/20 of of a printer's point)
-	BIFF_SHORT miyRwHidden;
+	_INT16 miyRw; // measured in twips (1/20 of of a printer's point)
 
 };
 

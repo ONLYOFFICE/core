@@ -22,8 +22,8 @@ public:
 
 	static const ElementType	type = typeCountry;
 
-	BIFF_WORD iCountryDef;
-	BIFF_WORD iCountryWinIni;
+	_UINT16 iCountryDef;
+	_UINT16 iCountryWinIni;
 
 };
 

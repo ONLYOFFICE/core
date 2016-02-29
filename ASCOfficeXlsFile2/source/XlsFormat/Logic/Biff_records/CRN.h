@@ -26,7 +26,7 @@ public:
 //-----------------------------
 	BIFF_BYTE colLast;
 	BIFF_BYTE colFirst;
-	BIFF_WORD row;
+	_UINT16 row;
 	BiffStructurePtrVector crnOper;
 
 };

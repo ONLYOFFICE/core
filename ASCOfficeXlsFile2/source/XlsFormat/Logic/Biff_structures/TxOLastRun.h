@@ -21,7 +21,7 @@ public:
 	virtual void store(CFRecord& record);
 
 public:	
-	BIFF_WORD cchText;
+	_UINT16 cchText;
 };
 
 typedef boost::shared_ptr<TxOLastRun> TxOLastRunPtr;

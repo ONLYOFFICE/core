@@ -27,7 +27,7 @@ public:
 	BackwardOnlyParam<unsigned short> colMic;
 	BackwardOnlyParam<unsigned short> colMac;
 	
-	BIFF_WORD	miyRw;
+	_UINT16		miyRw;
 
 	BIFF_BYTE	iOutLevel;
 	bool		fCollapsed;
@@ -35,7 +35,7 @@ public:
 	bool		fUnsynced;
 	bool		fGhostDirty;
 	
-	BIFF_WORD	ixfe_val;
+	_UINT16		ixfe_val;
 	bool		fExAsc;
 	bool		fExDes;
 	bool		fPhonetic;

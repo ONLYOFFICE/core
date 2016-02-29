@@ -6,6 +6,7 @@ namespace XLS
 
 DefaultRowHeight::DefaultRowHeight()
 {
+	miyRw = -1;
 }
 
 
@@ -27,15 +28,10 @@ void DefaultRowHeight::writeFields(CFRecord& record)
 	SETBIT(flags, 1, fDyZero);
 	SETBIT(flags, 2, fExAsc);
 	SETBIT(flags, 3, fExDsc);
+	
 	record << flags;
-	if(!fDyZero)
-	{
-		record << miyRw;
-	}
-	else
-	{
-		record << miyRwHidden;
-	}
+	record << miyRw;
+
 }
 
 
@@ -51,16 +47,10 @@ void DefaultRowHeight::readFields(CFRecord& record)
 	fExAsc		= GETBIT(flags, 2);
 	fExDsc		= GETBIT(flags, 3);
 	
-	if(!fDyZero)
-	{
-		record >> miyRw;
-		global_info->defaultRowHeight = miyRw / 20.;
-	}
-	else
-	{
-		record >> miyRwHidden;
-		global_info->defaultRowHeight = miyRwHidden / 20.;
-	}
+	record >> miyRw;
+
+	global_info->defaultRowHeight = miyRw / 20.;
+
 }
 
 } // namespace XLS

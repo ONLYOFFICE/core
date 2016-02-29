@@ -22,8 +22,6 @@ public:
 
 	static const ElementType	type = typeBigName;
 
-//-----------------------------
-//	BIFF_WORD userName;
 
 };
 

@@ -33,35 +33,25 @@ public:
 	bool fWantPict;
 	bool fOle;
 	bool fOleLink;
-	BIFF_WORD cf;
+	_UINT16 cf;
 	bool fIcon;
 	BiffStructurePtr body;
 
 //-----------------------------
-	BIFF_WORD supbook_cch;
+	_UINT16 supbook_cch;
 
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(fBuiltIn)
-		//BO_ATTRIB_MARKUP_ATTRIB(fWantAdvise)
-		//BO_ATTRIB_MARKUP_ATTRIB(fWantPict)
-		//BO_ATTRIB_MARKUP_ATTRIB(fOle)
-		//BO_ATTRIB_MARKUP_ATTRIB(fOleLink)
-		//BO_ATTRIB_MARKUP_ATTRIB(cf)
-		//BO_ATTRIB_MARKUP_ATTRIB(fIcon)
-		//if(0x3A01 == supbook_cch)
-		//{
-		//	if(!body)
-		//	{
-		//		body = BiffStructurePtr(new AddinUdf);
-		//	}
-		//	//BO_ATTRIB_MARKUP_COMPLEX(*body)
-		//}
-		//else
-		//{
-		//	throw;// EXCEPT::LE::NotImplemented(__FUNCTION__);
-		//}
-	//BO_ATTRIB_MARKUP_END
+	//if(0x3A01 == supbook_cch)
+	//{
+	//	if(!body)
+	//	{
+	//		body = BiffStructurePtr(new AddinUdf);
+	//	}
+	//	//BO_ATTRIB_MARKUP_COMPLEX(*body)
+	//}
+	//else
+	//{
+	//	throw;// EXCEPT::LE::NotImplemented(__FUNCTION__);
+	//}
 
 };
 

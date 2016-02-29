@@ -23,7 +23,7 @@ public:
 	static const ElementType	type = typeIFmtRecord;
 
 //-----------------------------
-	BIFF_WORD ifmt;
+	_UINT16 ifmt;
 };
 
 } // namespace XLS

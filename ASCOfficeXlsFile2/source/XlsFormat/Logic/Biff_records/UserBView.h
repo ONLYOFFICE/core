@@ -25,7 +25,7 @@ public:
 
 	int serialize(std::wostream & stream);
 //-----------------------------
-	BIFF_WORD		tabId;
+	_UINT16			tabId;
 	std::wstring	guid;
 	
 	BIFF_DWORD		x;
@@ -33,12 +33,12 @@ public:
 	BIFF_DWORD		dx;
 	BIFF_DWORD		dy;
 
-	BIFF_WORD		wTabRatio;
+	_UINT16			wTabRatio;
 
-	bool fDspFmlaBar;
-	bool fDspStatus;
+	bool			fDspFmlaBar;
+	bool			fDspStatus;
 	
-	std::wstring mdNoteDisp;
+	std::wstring	mdNoteDisp;
 	
 	bool fDspHScroll;
 	bool fDspVScroll;
@@ -56,7 +56,7 @@ public:
 	bool fPersonalView;
 	bool fIconic;
 	
-	BIFF_WORD		wMergeInterval;
+	_UINT16			wMergeInterval;
 	XLUnicodeString st;
 
 };

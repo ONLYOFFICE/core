@@ -24,7 +24,7 @@ public:
 
 
 //-----------------------------
-	BIFF_WORD count;
+	_UINT16 count;
 };
 
 } // namespace XLS

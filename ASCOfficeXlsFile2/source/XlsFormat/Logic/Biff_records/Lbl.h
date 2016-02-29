@@ -39,7 +39,7 @@ public:
 	bool fWorkbookParam;
 	
 	BIFF_BYTE chKey;
-	BIFF_WORD itab;
+	_UINT16 itab;
 	XLUnicodeStringNoCch Name_bin;
 	BIFF_BSTR Name;
 	NameParsedFormula rgce;

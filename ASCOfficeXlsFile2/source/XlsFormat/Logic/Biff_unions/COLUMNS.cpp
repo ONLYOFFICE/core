@@ -46,7 +46,7 @@ const bool COLUMNS::loadContent(BinProcessor& proc)
 
 		for (int i = column_info->colFirst; i <= column_info->colLast; i++)
 		{
-			if (column_info->coldx.value())
+			if (column_info->coldx > 0)
 			{
 				global_info_->customColumnsWidth.insert(std::pair<int, double>(i,column_info->coldx / 256.));
 			}
@@ -71,7 +71,7 @@ int COLUMNS::serialize(std::wostream & stream)
 
 				CP_XML_NODE(L"col")
 				{
-					if (column_info->coldx.value())
+					if (column_info->coldx > 0)
 					{
 						CP_XML_ATTR(L"width", column_info->coldx / 256.);
 						CP_XML_ATTR(L"customWidth", true);
@@ -80,7 +80,7 @@ int COLUMNS::serialize(std::wostream & stream)
 					CP_XML_ATTR(L"min", column_info->colFirst + 1);/// from 0 
 					CP_XML_ATTR(L"max", column_info->colLast + 1);
 
-					if ((column_info->ixfe.value()) && (column_info->ixfe > global_info_->cellStyleXfs_count))
+					if (column_info->ixfe > global_info_->cellStyleXfs_count)
 					{
 						CP_XML_ATTR(L"style", column_info->ixfe - global_info_->cellStyleXfs_count);
 					}
@@ -93,7 +93,7 @@ int COLUMNS::serialize(std::wostream & stream)
 					{
 						CP_XML_ATTR(L"hidden", column_info->fHidden);
 					}
-					if ((column_info->iOutLevel.value()) && (column_info->iOutLevel>0))
+					if (column_info->iOutLevel>0)
 					{
 						CP_XML_ATTR(L"outlineLevel", column_info->iOutLevel);
 					}

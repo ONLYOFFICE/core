@@ -33,7 +33,7 @@ public:
 	GlobalWorkbookInfoPtr global_info;
 
 //-----------------------------
-	BIFF_WORD dyHeight; // measured in twips (1/20 of of a printer's point)
+	_UINT16 dyHeight; // measured in twips (1/20 of of a printer's point)
 
 	bool fItalic;
 	bool fStrikeOut;
@@ -42,9 +42,9 @@ public:
 	bool fCondense;
 	bool fExtend;
 
-	BIFF_WORD icv;
-	BIFF_WORD bls;
-	BIFF_WORD sss;
+	_UINT16 icv;
+	_UINT16 bls;
+	_UINT16 sss;
 	BIFF_BYTE uls;
 	BIFF_BYTE bFamily;
 	BIFF_BYTE bCharSet;

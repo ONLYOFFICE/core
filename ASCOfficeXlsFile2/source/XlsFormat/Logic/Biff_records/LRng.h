@@ -24,18 +24,10 @@ public:
 	static const ElementType type = typeLRng;
 
 //-----------------------------
-	BIFF_WORD crefRw;
+	_UINT16 crefRw;
 	BiffStructurePtrVector refRow;
-	BIFF_WORD crefCol;
+	_UINT16 crefCol;
 	BiffStructurePtrVector refCol;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(crefRw)
-		//BO_ATTRIB_MARKUP_VECTOR_COMPLEX(refRow, Ref8U)
-		//BO_ATTRIB_MARKUP_ATTRIB(crefCol)
-		//BO_ATTRIB_MARKUP_VECTOR_COMPLEX(refCol, Ref8U)
-	//BO_ATTRIB_MARKUP_END
-
 };
 
 } // namespace XLS

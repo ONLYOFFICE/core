@@ -28,7 +28,7 @@ public:
 	LongRGB rgbFore;
 	LongRGB rgbBack;
 	
-	BIFF_WORD fls;
+	_UINT16 fls;
 	
 	bool fAuto;
 	bool fInvertNeg;

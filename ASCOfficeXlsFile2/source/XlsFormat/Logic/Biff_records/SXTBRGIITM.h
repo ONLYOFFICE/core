@@ -22,13 +22,6 @@ public:
 
 	static const ElementType	type = typeSXTBRGIITM;
 
-//-----------------------------
-//	BIFF_WORD userName;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-//		//BO_ATTRIB_MARKUP_ATTRIB(userName)
-	//BO_ATTRIB_MARKUP_END
-
 };
 
 } // namespace XLS

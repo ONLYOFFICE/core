@@ -44,12 +44,12 @@ public:
 	BIFF_BYTE				fJustLast;
 	BIFF_BYTE				fSecretEdit;
 
-	BIFF_WORD				rot;
+	_UINT16				rot;
 
 	ControlInfo				controlInfo;
 
-	BIFF_WORD				cchText;
-	BIFF_WORD				cbRuns;
+	_UINT16				cchText;
+	_UINT16				cbRuns;
 	FontIndex				ifntEmpty;
 	ObjFmla					fmla;
 	TxORuns					TxOruns;

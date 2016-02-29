@@ -22,9 +22,9 @@ public:
 
 	static const ElementType	type = typeDataFormat;
 
-	BIFF_WORD xi;
-	BIFF_WORD yi;
-	BIFF_WORD iss;
+	_UINT16 xi;
+	_UINT16 yi;
+	_UINT16 iss;
 
 	bool fUnknown;
 };

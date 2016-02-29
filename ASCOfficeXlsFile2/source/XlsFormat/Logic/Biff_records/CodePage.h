@@ -20,7 +20,7 @@ public:
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
 //-----------------------------
-	BIFF_WORD cv;
+	_UINT16 cv;
 
 };
 

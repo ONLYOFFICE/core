@@ -23,8 +23,8 @@ public:
 	static const ElementType	type = typeCatLab;
 
 //-----------------------------
-	BIFF_WORD wOffset;
-	BIFF_WORD at;
+	_UINT16 wOffset;
+	_UINT16 at;
 	bool cAutoCatLabelReal;
 };
 

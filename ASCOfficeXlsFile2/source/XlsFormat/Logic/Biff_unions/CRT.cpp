@@ -291,7 +291,7 @@ std::wstring CRT::getOoxChartType()
 	case typePie:	
 	{
 		Pie * p = dynamic_cast<Pie *>(m_ChartType.get());
-		if (p->pcDonut.value() && p->pcDonut > 0)
+		if ( p->pcDonut > 0)
 		{
 			m_iChartType = CHART_TYPE_Doughnut;
 						return L"c:doughnutChart";

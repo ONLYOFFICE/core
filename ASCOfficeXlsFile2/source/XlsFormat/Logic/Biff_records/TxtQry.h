@@ -22,8 +22,6 @@ public:
 
 	static const ElementType	type = typeTxtQry;
 
-//-----------------------------
-//	BIFF_WORD userName;
 
 };
 

@@ -21,7 +21,7 @@ public:
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
 //-----------------------------
-	BIFF_WORD codePage;
+	_UINT16 codePage;
 };
 
 } // namespace XLS

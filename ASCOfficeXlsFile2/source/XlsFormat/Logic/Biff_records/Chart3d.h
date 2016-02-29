@@ -23,12 +23,12 @@ public:
 	static const ElementType	type = typeChart3d;
 
 //-----------------------------
-	BIFF_SHORT anRot;
-	BIFF_SHORT anElev;
-	BIFF_SHORT pcDist;
-	BIFF_DWORD pcHeight;
-	BIFF_SHORT pcDepth;
-	BIFF_WORD pcGap;
+	_INT16	anRot;
+	_INT16	anElev;
+	_INT16	pcDist;
+	_UINT32 pcHeight;
+	_INT16	pcDepth;
+	_UINT16 pcGap;
 
 	bool fPerspective;
 	bool fCluster;

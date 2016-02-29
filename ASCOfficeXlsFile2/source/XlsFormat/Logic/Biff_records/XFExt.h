@@ -25,7 +25,7 @@ public:
 
 //-----------------------------
 	_UINT16					ixfe;
-	BIFF_WORD				cexts;
+	_UINT16					cexts;
 	BiffStructurePtrVector	rgExt;
 
 };

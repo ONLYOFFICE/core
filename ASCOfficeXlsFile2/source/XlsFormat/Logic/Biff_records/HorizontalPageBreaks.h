@@ -25,13 +25,8 @@ public:
 
 
 //-----------------------------
-	BIFF_WORD cbrk;
+	_UINT16 cbrk;
 	BiffStructurePtrVector rgbrk;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(cbrk)
-		//BO_ATTRIB_MARKUP_VECTOR_COMPLEX(rgbrk, HorzBrk)
-	//BO_ATTRIB_MARKUP_END
 
 };
 

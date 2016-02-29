@@ -23,7 +23,7 @@ public:
 	static const ElementType	type = typePLV;
 
 //-----------------------------
-	BIFF_WORD wScalePLV;
+	_UINT16 wScalePLV;
 	
 	bool fPageLayoutView;
 	bool fRulerVisible;

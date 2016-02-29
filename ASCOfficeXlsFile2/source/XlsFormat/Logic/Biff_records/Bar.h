@@ -24,8 +24,8 @@ public:
 
 	int		serialize(std::wostream & _stream);
 
-	BIFF_SHORT			pcOverlap;
-	BIFF_WORD			pcGap;
+	_INT16			pcOverlap;
+	_UINT16			pcGap;
 
 	bool			fTranspose;
 	bool			fStacked;

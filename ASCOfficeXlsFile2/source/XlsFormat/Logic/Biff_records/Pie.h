@@ -25,8 +25,8 @@ public:
 	int	serialize(std::wostream & _stream);
 
 //-----------------------------
-	BIFF_WORD anStart;
-	BIFF_WORD pcDonut;
+	_UINT16 anStart;
+	_UINT16 pcDonut;
 	bool fHasShadow;
 	bool fShowLdrLines;
 };

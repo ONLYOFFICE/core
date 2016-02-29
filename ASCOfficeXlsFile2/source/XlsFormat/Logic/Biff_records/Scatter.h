@@ -25,8 +25,8 @@ public:
 	int	serialize(std::wostream & _stream);
 
 //-----------------------------
-	BIFF_WORD pcBubbleSizeRatio;
-	BIFF_WORD wBubbleSize;
+	_UINT16 pcBubbleSizeRatio;
+	_UINT16 wBubbleSize;
 	bool fBubbles;
 	bool fShowNegBubbles;
 	bool fHasShadow;

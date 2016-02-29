@@ -25,11 +25,11 @@ public:
 	int serialize(std::wostream & _stream);
 //-----------------------------
 	LongRGB rgb;
-	BIFF_WORD lns;
-	BIFF_WORD we;
-	bool fAuto;
-	bool fAxisOn;
-	bool fAutoCo;
+	_UINT16 lns;
+	_UINT16 we;
+	bool	fAuto;
+	bool	fAxisOn;
+	bool	fAutoCo;
 	IcvChart icv;	
 };
 

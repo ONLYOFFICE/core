@@ -24,7 +24,7 @@ public:
 	static const ElementType	type = typeExtSST;
 
 //-----------------------------
-	BIFF_WORD dsst;
+	_UINT16 dsst;
 	BiffStructurePtrVector rgISSTInf;
 	BackwardOnlyParam<_UINT32> num_sets;
 

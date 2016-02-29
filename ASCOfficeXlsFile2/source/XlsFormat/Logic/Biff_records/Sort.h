@@ -30,7 +30,7 @@ public:
 	bool fKey2Dsc;
 	bool fKey3Dsc;
 	bool fCaseSensitive;
-	BIFF_SHORT iOrder;
+	_INT16 iOrder;
 	bool fAltMethod;
 
 	XLUnicodeStringNoCch stKey1;

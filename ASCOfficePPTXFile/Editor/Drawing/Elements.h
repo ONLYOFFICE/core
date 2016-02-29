@@ -533,28 +533,28 @@ namespace NSPresentationEditor
 
 		virtual void SetupProperty(CSlide* pSlide, CTheme* pTheme, CLayout* pLayout, CElementProperty* pProperty)
 		{
-			const LONG EMU_MM = 36000;
+			const LONG _EMU_MM = 36000;
 
 			switch (pProperty->m_ID)
 			{
 			case CElementProperty::epTextMarginLeft:
 				{
-					m_oShape.m_dTextMarginX		= (double)pProperty->m_dwValue / EMU_MM;
+					m_oShape.m_dTextMarginX		= (double)pProperty->m_dwValue / _EMU_MM;
 					break;
 				}
 			case CElementProperty::epTextMarginTop:
 				{
-					m_oShape.m_dTextMarginY			= (double)pProperty->m_dwValue / EMU_MM;
+					m_oShape.m_dTextMarginY			= (double)pProperty->m_dwValue / _EMU_MM;
 					break;
 				}
 			case CElementProperty::epTextMarginRight:
 				{
-					m_oShape.m_dTextMarginRight		= (double)pProperty->m_dwValue / EMU_MM;
+					m_oShape.m_dTextMarginRight		= (double)pProperty->m_dwValue / _EMU_MM;
 					break;
 				}
 			case CElementProperty::epTextMarginBottom:
 				{
-					m_oShape.m_dTextMarginBottom	= (double)pProperty->m_dwValue / EMU_MM;
+					m_oShape.m_dTextMarginBottom	= (double)pProperty->m_dwValue / _EMU_MM;
 					break;
 				}
 			case CElementProperty::epText:

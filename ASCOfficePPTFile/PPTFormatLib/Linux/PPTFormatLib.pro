@@ -233,6 +233,10 @@ HEADERS += \
     ../../../ASCOfficePPTXFile/Editor/Drawing/Theme.h \
     ../../../Common/3dParty/pole/pole.h 
 
+build_fast {
+SOURCES += \
+    pptformatlib_logic.cpp
+} else {
 SOURCES += \
     ../PPTFormatLib.cpp \
     ../Reader/ReadStructures.cpp \
@@ -245,7 +249,10 @@ SOURCES += \
     ../PPTXWriter/ShapeWriter.cpp \
     ../../../ASCOfficePPTXFile/Editor/Drawing/Elements.cpp \
     ../../../ASCOfficePPTXFile/Editor/Drawing/Layout.cpp \
-    ../../../ASCOfficePPTXFile/Editor/Drawing/TextAttributesEx.cpp \
+    ../../../ASCOfficePPTXFile/Editor/Drawing/TextAttributesEx.cpp
+}
+
+SOURCES += \
     ../../../Common/3dParty/pole/pole.cpp
 
 win32 {

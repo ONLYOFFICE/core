@@ -90,6 +90,10 @@ LIBS += $$DESTDIR -lUnicodeConverter
 }
 #################### LINUX ########################
 
+build_fast {
+SOURCES += \
+    rtfformatlib_source.cpp
+} else {
 SOURCES += \
     ../source/DestinationCommand.cpp \
     ../source/RtfBookmark.cpp \
@@ -112,6 +116,7 @@ SOURCES += \
     ../source/Writer/OOXDocumentWriter.cpp \
     ../source/Writer/OOXWriter.cpp \
     ../source/ConvertationManager.cpp
+}
 
 HEADERS += \
     ../source/Basic.h \

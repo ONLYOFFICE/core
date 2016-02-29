@@ -108,7 +108,14 @@ INCLUDEPATH += \
     ../../../../Common/ASCDocxFormat/Source \
     ../../../../Common/DocxFormat/Source/XML/libxml2/XML/include
 
-SOURCES += pptxformatlib.cpp \
+SOURCES += pptxformatlib.cpp
+
+build_fast {
+SOURCES += \
+    pptxformatlib_logic.cpp \
+    pptxformatlib_converter.cpp
+} else {
+SOURCES += \
     ../../../ASCOfficeDrawingConverter.cpp \
     ../../../ASCOfficePPTXFileRealization.cpp \
     ../../../../Common/DocxFormat/Source/XML/stringcommon.cpp \
@@ -156,6 +163,7 @@ SOURCES += pptxformatlib.cpp \
     ../../../Editor/Drawing/Elements.cpp \
     ../../../PPTXFormat/Logic/Controls.cpp \
     ../../../../HtmlRenderer/src/ASCSVGWriter.cpp
+}
 
 HEADERS += pptxformatlib.h \
 ../../../ASCOfficeDrawingConverter.h \

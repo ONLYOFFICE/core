@@ -17,11 +17,8 @@
 #include "./PPTXFormat/PPTX.h"
 #include "./PPTXFormat/DocxFormat/Drawing/LegacyDiagramText.h"
 
-#include "./Editor/Drawing/Shapes/Shape.h"
 #include "./Editor/Drawing/Elements.h"
 #include "./Editor/Drawing/Shapes/BaseShape/PPTXShape/pptx2pptshapeconverter.h"
-#include "./Editor/Drawing/Shapes/BaseShape/PPTShape/Formula.h"
-#include "./Editor/Drawing/Shapes/BaseShape/PPTXShape/PPTXShape.h"
 
 #include "../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"
 #include "../Common/DocxFormat/Source/Common/SimpleTypes_Base.h"

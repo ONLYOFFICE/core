@@ -3,7 +3,9 @@
 #include "CustomShape.h"
 #include "PresetShapesHeader.h"
 
-const double EMU_MM = 36000;
+#ifndef EMU_MM
+#define EMU_MM 36000.0
+#endif
 
 //-------------------------------------------------------------------------------
 #define CREATE_BY_SPT(SHAPE_TYPE, CLASS_SHAPE_NAME)								\

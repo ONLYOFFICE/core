@@ -12,11 +12,6 @@ namespace PPTX
 	namespace Logic
 	{
 
-		int GetIntegerFromHex(const CString& string)
-		{
-			return XmlUtils::GetInteger(string);
-		}
-
 		ShapeProperties::ShapeProperties()
 		{
 			for(int i = 0; i < 10; i++)
@@ -488,7 +483,7 @@ namespace PPTX
 				charset = MinorLatin.charset.get_value_or(_T(""));
 			if(charset == _T(""))
 				charset = _T("01");
-			return GetIntegerFromHex(charset);
+			return XmlUtils::GetInteger(charset);
 		}
 
 		BYTE ShapeProperties::GetRunPitchFamily(int level, const nullable<RunProperties>& pRun, const nullable<TextParagraphPr>& pParagraph)const
@@ -515,7 +510,7 @@ namespace PPTX
 				pitchFamily = MinorLatin.pitchFamily.get_value_or(_T(""));
 			if(pitchFamily == _T(""))
 				pitchFamily = _T("0");
-			return GetIntegerFromHex(pitchFamily);
+			return XmlUtils::GetInteger(pitchFamily);
 		}
 
 

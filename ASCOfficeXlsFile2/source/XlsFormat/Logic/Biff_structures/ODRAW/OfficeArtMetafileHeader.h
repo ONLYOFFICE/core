@@ -6,11 +6,14 @@
 
 #if !defined(_WIN32) && !defined(_WIN64)
 
+#ifndef customTagPoint
+#define customTagPoint
     typedef struct tagPOINT
     {
         _INT32  x;
         _INT32  y;
     } POINT;
+#endif
 
     typedef struct tagRECT
     {

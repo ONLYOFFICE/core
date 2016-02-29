@@ -14,9 +14,7 @@ CONFIG += c++11
 
 win32 {
     QMAKE_CXXFLAGS_RELEASE -= -Zc:strictStrings
-    CONFIG(debug, debug|release) {
-        QMAKE_CXXFLAGS += /bigobj
-    }
+    QMAKE_CXXFLAGS += /bigobj
 } else {
     QMAKE_CXXFLAGS += -std=c++11 -Wall -Wno-ignored-qualifiers
 }
@@ -95,6 +93,13 @@ QMAKE_MAC_SDK = macosx10.11
 SOURCES +=  \
     ../DocFormatLib.cpp \
     ../../Common/MD4/md4c.cpp \
+    ../../../Common/3dParty/pole/pole.cpp
+
+build_fast {
+SOURCES += \
+    docformatlib_converter.cpp
+} else {
+SOURCES += \
     ../../DocDocxConverter/AnnotationReferenceDescriptor.cpp \
     ../../DocDocxConverter/CharacterPropertiesMapping.cpp \
     ../../DocDocxConverter/Converter.cpp \
@@ -141,10 +146,8 @@ SOURCES +=  \
     ../../DocDocxConverter/WordprocessingDocument.cpp \
     ../../DocDocxConverter/OfficeDrawing/Record.cpp \
     ../../DocDocxConverter/OfficeDrawing/RecordFactory.cpp \
-    ../../DocDocxConverter/OfficeDrawing/ShapeTypeFactory.cpp \
-    ../../../Common/3dParty/pole/pole.cpp
-
-
+    ../../DocDocxConverter/OfficeDrawing/ShapeTypeFactory.cpp
+}
 
 HEADERS +=  \
     ../DocFormatLib.h \

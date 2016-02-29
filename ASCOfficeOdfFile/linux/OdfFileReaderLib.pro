@@ -14,9 +14,7 @@ CONFIG += c++11
 
 win32 {
     QMAKE_CXXFLAGS_RELEASE -= -Zc:strictStrings
-    CONFIG(debug, debug|release) {
-        QMAKE_CXXFLAGS += /bigobj
-    }
+    QMAKE_CXXFLAGS += /bigobj
 } else {
     QMAKE_CXXFLAGS += -std=c++11 -Wall -Wno-ignored-qualifiers
 }
@@ -97,9 +95,15 @@ INCLUDEPATH += ../../Common/boost_1_58_0
 }
 #################### LINUX ########################
 
+build_fast {
 SOURCES += \
-    ../formulasconvert/formulasconvert_odf.cpp \
-    ../formulasconvert/formulasconvert_oox.cpp \
+    odffilereaderlib_odf.cpp \
+    odffilereaderlib_docx.cpp \
+    odffilereaderlib_pptx.cpp \
+    odffilereaderlib_xlsx.cpp \
+    odffilereaderlib_converter.cpp
+} else {
+SOURCES += \    
     ../src/conversionelement.cpp \
     ../src/xml/attributes.cpp \
     ../src/xml/sax.cpp \
@@ -336,6 +340,11 @@ SOURCES += \
     ../src/common/readdocelement.cpp \
     ../src/ConvertOO2OOX.cpp \
     ../src/odf/math_elements.cpp
+}
+
+SOURCES += \
+    ../formulasconvert/formulasconvert_odf.cpp \
+    ../formulasconvert/formulasconvert_oox.cpp
 
 HEADERS += \
     ../formulasconvert/formulasconvert.h \

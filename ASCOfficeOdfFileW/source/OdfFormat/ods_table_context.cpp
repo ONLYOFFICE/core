@@ -35,7 +35,7 @@ void ods_table_context::start_autofilter(std::wstring ref)
 
 	if (!d_range)return;
 
-	static formulasconvert::oox2odf_converter formulas_converter;
+	formulasconvert::oox2odf_converter formulas_converter;
 
 	std::wstring odf_range = formulas_converter.convert_named_ref(ref);
 	boost::algorithm::replace_all(odf_range, L"[", L"");
@@ -61,7 +61,7 @@ void ods_table_context::add_defined_range(const std::wstring & name, const std::
 	table_named_range* named_range = dynamic_cast<table_named_range*>(elm.get());
 	if (named_range == NULL)return;
 
-	static formulasconvert::oox2odf_converter formulas_converter;
+	formulasconvert::oox2odf_converter formulas_converter;
 
 	std::wstring odf_range = formulas_converter.convert_named_ref(cell_range);//todo - разделить конвертацию диапазонов/рэнжей на c [] и без
 	boost::algorithm::replace_all(odf_range, L"[", L"");
@@ -107,7 +107,7 @@ void ods_table_context::add_defined_expression(const std::wstring & name, const 
 	table_named_expression* named_expression = dynamic_cast<table_named_expression*>(elm.get());
 	if (named_expression == NULL)return;
 
-	static formulasconvert::oox2odf_converter formulas_converter;
+	formulasconvert::oox2odf_converter formulas_converter;
 
 	std::wstring odf_value = formulas_converter.convert_named_ref(value);
 	std::wstring odf_base_cell = formulas_converter.find_base_cell(value);

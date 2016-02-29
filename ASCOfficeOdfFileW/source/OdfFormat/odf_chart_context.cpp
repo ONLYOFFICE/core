@@ -1298,14 +1298,14 @@ void odf_chart_context::end_chart()
 
 	impl_->clear_current();
 }
-static formulasconvert::oox2odf_converter formulas_converter;
+static formulasconvert::oox2odf_converter formulas_converter_chart;
 
 void odf_chart_context::set_series_value_formula(std::wstring oox_formula)
 {
 	std::wstring odfFormula;
 	
 	if (oox_formula.length() > 0)
-		odfFormula = formulas_converter.convert_chart_distance(oox_formula);
+		odfFormula = formulas_converter_chart.convert_chart_distance(oox_formula);
 
 	chart_series *series = dynamic_cast<chart_series*>(impl_->current_chart_state_.elements_.back().elm.get());
 	if (series == NULL)return;
@@ -1316,7 +1316,7 @@ void odf_chart_context::set_series_value_formula(std::wstring oox_formula)
 	if (oox_formula.length() > 0)
 	{
 		series->chart_series_attlist_.chart_values_cell_range_address_ = odfFormula;
-		impl_->current_data_points_series_count_ = formulas_converter.get_count_value_points(oox_formula);
+		impl_->current_data_points_series_count_ = formulas_converter_chart.get_count_value_points(oox_formula);
 	}
 }
 void odf_chart_context::set_series_label_formula(std::wstring oox_formula)
@@ -1324,7 +1324,7 @@ void odf_chart_context::set_series_label_formula(std::wstring oox_formula)
 	std::wstring odfFormula;
 
 	if (oox_formula.length() > 0)
-		odfFormula = formulas_converter.convert_chart_distance(oox_formula);
+		odfFormula = formulas_converter_chart.convert_chart_distance(oox_formula);
 
 	Impl::_range r = {odfFormula, true};
 	impl_->data_cell_ranges_.push_back(r);
@@ -1342,7 +1342,7 @@ void odf_chart_context::set_category_axis_formula(std::wstring oox_formula,int t
 	std::wstring odfFormula;
 	
 	if (oox_formula.length() > 0)
-		odfFormula = formulas_converter.convert_chart_distance(oox_formula);
+		odfFormula = formulas_converter_chart.convert_chart_distance(oox_formula);
 
 	Impl::_range r = {odfFormula, true};
 	impl_->data_cell_ranges_.push_back(r);

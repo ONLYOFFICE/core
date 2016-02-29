@@ -115,7 +115,7 @@ namespace NSBinPptxRW
 				return;
 
             CStringA __str_decode_len_ansi((LPSTR)(pBuffer + start_pos), cur_pos - start_pos);
-			CString  __str_decode_len = __str_decode_len_ansi;
+			CString  __str_decode_len = (CString)__str_decode_len_ansi;
 			start_pos = cur_pos + 1;
 
 			pBuffer += start_pos;

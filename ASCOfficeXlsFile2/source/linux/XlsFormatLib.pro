@@ -14,9 +14,7 @@ CONFIG += c++11
 
 win32 {
     QMAKE_CXXFLAGS_RELEASE -= -Zc:strictStrings
-    CONFIG(debug, debug|release) {
-        QMAKE_CXXFLAGS += /bigobj
-    }
+    QMAKE_CXXFLAGS += /bigobj
 } else {
     QMAKE_CXXFLAGS += -std=c++11 -Wall -Wno-ignored-qualifiers
 }
@@ -96,6 +94,11 @@ INCLUDEPATH += ../../../DesktopEditor/freetype-2.5.2/include
 INCLUDEPATH += ../XlsFormat
 INCLUDEPATH += ../Common
 
+build_fast {
+SOURCES += \
+    xlsformatlib_logic.cpp \
+    xlsformatlib_converter.cpp
+} else {
 SOURCES +=  \
     ../XlsFormat/Logic/Biff_records/AlRuns.cpp \
     ../XlsFormat/Logic/Biff_records/Area.cpp \
@@ -828,8 +831,6 @@ SOURCES +=  \
     ../XlsXlsxConverter/xlsx_tablecontext.cpp \
     ../XlsXlsxConverter/xlsx_textcontext.cpp \
     ../XlsXlsxConverter/xlsx_chart_context.cpp \
-    ../XlsXlsxConverter/xlsx_comments.cpp \
-    ../XlsXlsxConverter/xlsx_comments_context.cpp \
     ../XlsFormat/Logic/AnyObject.cpp \
     ../XlsFormat/Logic/AnySubstream.cpp \
     ../XlsFormat/Logic/BinProcessor.cpp \
@@ -850,9 +851,7 @@ SOURCES +=  \
     ../XlsXlsxConverter/ConvertShapes/BaseShape_1.cpp \
     ../XlsFormat/Logic/Biff_structures/AFDOperBoolErr.cpp \
     ../XlsFormat/Logic/Biff_structures/AFDOperXNum.cpp
-
-
-
+}
 
 HEADERS +=  \
     ../XlsFormat/Logic/Biff_records/AlRuns.h \

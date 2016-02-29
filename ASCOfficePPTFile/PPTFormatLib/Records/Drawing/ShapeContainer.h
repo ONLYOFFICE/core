@@ -24,7 +24,9 @@
 #include "../../../../DesktopEditor/raster/BgraFrame.h"
 #include "../../../../Common/DocxFormat/Source/Base/Types_32.h"
 
-const double EMU_MM = 36000;
+#ifndef EMU_MM
+#define EMU_MM 36000.0
+#endif
 
 #define		FIXED_POINT(val) (double)((short)(val >> 16) + ((short)(val) / 65536.0))
 #define		FIXED_POINT_unsigned(val) (double)((WORD)(val >> 16) + ((WORD)(val) / 65536.0))

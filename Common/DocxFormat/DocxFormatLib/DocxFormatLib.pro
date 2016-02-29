@@ -14,9 +14,7 @@ CONFIG += c++11
 
 win32 {
     QMAKE_CXXFLAGS_RELEASE -= -Zc:strictStrings
-    CONFIG(debug, debug|release) {
-        QMAKE_CXXFLAGS += /bigobj
-    }
+    QMAKE_CXXFLAGS += /bigobj
 } else {
     QMAKE_CXXFLAGS += -std=c++11 -Wall -Wno-ignored-qualifiers
 }
@@ -88,16 +86,12 @@ DEFINES += \
 }
 #################### LINUX ########################
 
-SOURCES += docxformatlib.cpp \
-    ../Source/Common/Align.cpp \
-    ../Source/Common/Color.cpp \
-    ../Source/Common/Index.cpp \
-    ../Source/Common/NumFormat.cpp \
-    ../Source/Common/Position.cpp \
-    ../Source/Common/Utils.cpp \
-    ../Source/Common/Wrap.cpp \
-    ../Source/Common/ZIndex.cpp \
-    ../Source/Common/SimpleTypes_Word.cpp \
+build_fast {
+SOURCES += \
+    docxformatlib_logic.cpp \
+    docxformatlib_file.cpp
+} else {
+SOURCES += \
     ../Source/DocxFormat/Drawing/DrawingCoreInfo.cpp \
     ../Source/DocxFormat/Drawing/DrawingEffects.cpp \
     ../Source/DocxFormat/Logic/AlternateContent.cpp \
@@ -118,22 +112,18 @@ SOURCES += docxformatlib.cpp \
     ../Source/DocxFormat/Math/oMath.cpp \
     ../Source/DocxFormat/Math/oMathContent.cpp \
     ../Source/DocxFormat/Math/oMathPara.cpp \
+    ../Source/MathEquation/MathEquation.cpp \
     ../Source/DocxFormat/Docx.cpp \
+    ../Source/XlsxFormat/Chart/ChartSerialize.cpp \
+    \
+    ../Source/XlsxFormat/Common.cpp \
+    ../Source/XML/libxml2/libxml2.cpp \
+    ../Source/XML/stringcommon.cpp \
     ../Source/DocxFormat/FileFactory.cpp \
     ../Source/DocxFormat/IFileContainer.cpp \
     ../Source/SystemUtility/SystemUtility.cpp \
-    ../Source/Utility/codecvt.cpp \
-    ../Source/Utility/DateTime.cpp \
-    ../Source/Utility/TxtFile.cpp \
-    ../Source/XlsxFormat/Chart/ChartSerialize.cpp \
-    ../Source/XlsxFormat/Common.cpp \
     ../Source/XlsxFormat/FileFactory_Spreadsheet.cpp \
     ../Source/XlsxFormat/IFileContainer_Spreadsheet.cpp \
-    ../Source/XML/libxml2/libxml2.cpp \
-    ../Source/XML/stringcommon.cpp \
-    ../Source/MathEquation/MathEquation.cpp \
-    ../Source/Base/unicode_util.cpp \
-    ../../3dParty/pole/pole.cpp
 
 win32 {
     SOURCES += \
@@ -144,6 +134,23 @@ win32 {
         ../Source/SystemUtility/FileSystem/DirectoryPosix.cpp \
         ../Source/SystemUtility/FileSystem/FilePosix.cpp \
 }
+}
+
+SOURCES += docxformatlib.cpp \
+    ../Source/Common/Align.cpp \
+    ../Source/Common/Color.cpp \
+    ../Source/Common/Index.cpp \
+    ../Source/Common/NumFormat.cpp \
+    ../Source/Common/Position.cpp \
+    ../Source/Common/Utils.cpp \
+    ../Source/Common/Wrap.cpp \
+    ../Source/Common/ZIndex.cpp \
+    ../Source/Common/SimpleTypes_Word.cpp \
+    ../Source/Utility/codecvt.cpp \
+    ../Source/Utility/DateTime.cpp \
+    ../Source/Utility/TxtFile.cpp \
+    ../Source/Base/unicode_util.cpp \
+    ../../3dParty/pole/pole.cpp
 
 HEADERS += docxformatlib.h \
     ../Source/Base/Base.h \

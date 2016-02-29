@@ -4,7 +4,9 @@
 #include "../../../ASCOfficeXlsFile2/source/XlsXlsxConverter/ShapeType.h"
 #include "../../../Common/MS-LCID.h"
 
-const double EMU_MM = 36000;
+#ifndef EMU_MM
+#define EMU_MM 36000.0
+#endif
 
 void CStylesWriter::ConvertStyleLevel(NSPresentationEditor::CTextStyleLevel& oLevel,	NSPresentationEditor::CMetricInfo& oMetricInfo,
 																		NSPresentationEditor::CStringWriter& oWriter, const int& nLevel)

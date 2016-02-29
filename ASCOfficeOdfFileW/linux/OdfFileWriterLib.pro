@@ -14,9 +14,7 @@ CONFIG += c++11
 
 win32 {
     QMAKE_CXXFLAGS_RELEASE -= -Zc:strictStrings
-    CONFIG(debug, debug|release) {
-        QMAKE_CXXFLAGS += /bigobj
-    }
+    QMAKE_CXXFLAGS += /bigobj
 } else {
     QMAKE_CXXFLAGS += -std=c++11 -Wall -Wno-ignored-qualifiers
 }
@@ -99,7 +97,10 @@ CONFIG(debug, debug|release){
 DEFINES +=  _DEBUG
 }
 
-
+build_fast {
+SOURCES += \
+    odffilewriterlib_all.cpp
+} else {
 SOURCES += \
     ../source/OdfFormat/abstract_xml.cpp \
     ../source/OdfFormat/calcext_elements.cpp \
@@ -160,6 +161,7 @@ SOURCES += \
     ../source/Oox2OdfConverter/ConvertVml.cpp \
     ../source/Oox2OdfConverter/DocxConverter.cpp \
     ../source/Oox2OdfConverter/XlsxConverter.cpp
+}
 
 
 HEADERS += \

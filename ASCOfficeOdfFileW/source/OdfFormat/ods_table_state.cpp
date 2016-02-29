@@ -98,7 +98,7 @@ std::wstring convert_time(const std::wstring & oox_time)
 };
 
 ///////////////////////////////////////////////////////////////
-static formulasconvert::oox2odf_converter formulas_converter;
+static formulasconvert::oox2odf_converter formulas_converter_table;
 
 ods_table_state::ods_table_state(odf_conversion_context * Context, office_element_ptr & elm): context_(Context),drawing_context_(Context)
 {     
@@ -624,7 +624,7 @@ void ods_table_state::set_cell_formula(std::wstring & formula)
 		if (b) return;  //todoooo
 	}
 
-	std::wstring odfFormula = formulas_converter.convert_formula(formula);
+	std::wstring odfFormula = formulas_converter_table.convert_formula(formula);
 	
 	table_table_cell* cell = dynamic_cast<table_table_cell*>(cells_.back().elm.get());
 	if (cell == NULL)return;
@@ -684,7 +684,7 @@ void ods_table_state::add_or_find_cell_shared_formula(std::wstring & formula, st
 	
 	if (formula.size() > 0)
 	{
-		odf_formula = formulas_converter.convert_formula(formula);
+		odf_formula = formulas_converter_table.convert_formula(formula);
 
 		int moving_type = 0;
 		
@@ -1116,7 +1116,7 @@ void ods_table_state::set_conditional_formula(std::wstring formula)
 
 	if (condition)
 	{
-		std::wstring odfFormula = formulas_converter.convert_conditional_formula(formula);
+		std::wstring odfFormula = formulas_converter_table.convert_conditional_formula(formula);
 		
 		std::wstring operator_;
 		bool s = false;

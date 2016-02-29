@@ -25,7 +25,7 @@ public:
 	int serialize(std::wostream & _stream);
 //-----------------------------
 	bool fVaried;
-	BIFF_WORD icrt;
+	_UINT16 icrt;
 };
 
 } // namespace XLS

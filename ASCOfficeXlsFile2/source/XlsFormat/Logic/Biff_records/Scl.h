@@ -23,8 +23,8 @@ public:
 	static const ElementType	type = typeScl;
 
 //-----------------------------
-	BIFF_SHORT nscl;
-	BIFF_SHORT dscl;
+	_INT16 nscl;
+	_INT16 dscl;
 
 };
 

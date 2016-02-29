@@ -22,8 +22,6 @@ public:
 
 	static const ElementType	type = typeWebPub;
 
-//-----------------------------
-//	BIFF_WORD userName;
 
 };
 

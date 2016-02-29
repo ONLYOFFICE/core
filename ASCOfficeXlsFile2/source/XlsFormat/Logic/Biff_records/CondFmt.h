@@ -26,9 +26,9 @@ public:
 	const CellRef getLocation() const;
 
 //-----------------------------
-	BIFF_WORD	ccf;
+	_UINT16		ccf;
 	bool		fToughRecalc;
-	BIFF_WORD	nID;
+	_UINT16		nID;
 	SqRefU		sqref;
 	BIFF_BSTR	refBound;
 };

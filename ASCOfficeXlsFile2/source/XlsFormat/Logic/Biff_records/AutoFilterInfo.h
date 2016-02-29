@@ -22,7 +22,7 @@ class AutoFilterInfo: public BiffRecord
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
 //-----------------------------
-	BIFF_WORD cEntries;
+	_UINT16 cEntries;
 
 };
 

@@ -39,13 +39,13 @@ public:
 
 	bool is_contained_in_chart_substream;
 
-	R_RwU		rwTop;
-	ColU		colLeft;
+	_UINT16		rwTop;
+	_UINT16		colLeft;
 
-	Icv			icvHdr;
+	_UINT16		icvHdr;
 	
-	BIFF_WORD	wScaleSLV;
-	BIFF_WORD	wScaleNormal;
+	_UINT16		wScaleSLV;
+	_UINT16		wScaleNormal;
 	BIFF_BSTR	topLeftCell;
 };
 

@@ -23,11 +23,7 @@ public:
 	static const ElementType	type = typePrintSize;
 
 //-----------------------------
-	BIFF_WORD printSize;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(printSize)
-	//BO_ATTRIB_MARKUP_END
+	_UINT16 printSize;
 
 };
 

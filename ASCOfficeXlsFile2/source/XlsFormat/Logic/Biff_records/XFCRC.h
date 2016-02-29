@@ -23,7 +23,7 @@ public:
 	static const ElementType	type = typeXFCRC;
 
 //-----------------------------
-	BIFF_WORD cxfs;
+	_UINT16 cxfs;
 	BIFF_DWORD crc;
 
 };

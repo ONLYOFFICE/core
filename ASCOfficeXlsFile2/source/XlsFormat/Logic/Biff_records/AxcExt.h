@@ -25,14 +25,14 @@ public:
 	int serialize(std::wostream & _stream);
 
 //-----------------------------
-	BIFF_WORD catMin;
-	BIFF_WORD catMax;
-	BIFF_WORD catMajor;
-	BIFF_WORD duMajor;
-	BIFF_WORD catMinor;
-	BIFF_WORD duMinor;
-	BIFF_WORD duBase;
-	BIFF_WORD catCrossDate;
+	_UINT16 catMin;
+	_UINT16 catMax;
+	_UINT16 catMajor;
+	_UINT16 duMajor;
+	_UINT16 catMinor;
+	_UINT16 duMinor;
+	_UINT16 duBase;
+	_UINT16 catCrossDate;
 
 	bool fAutoMin;
 	bool fAutoMax;

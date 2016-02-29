@@ -22,8 +22,6 @@ public:
 	
 	static const ElementType	type = typeSXVS;
 
-//-----------------------------
-//	BIFF_WORD userName;
 
 };
 

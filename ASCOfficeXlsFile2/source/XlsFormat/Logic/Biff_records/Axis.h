@@ -23,7 +23,7 @@ public:
 	static const ElementType	type = typeAxis;
 
 //-----------------------------
-	BIFF_WORD wType;
+	_UINT16 wType;
 
 };
 

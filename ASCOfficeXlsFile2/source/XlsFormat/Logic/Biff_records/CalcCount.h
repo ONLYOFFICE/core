@@ -23,7 +23,7 @@ public:
 	static const ElementType	type = typeCalcCount;
 
 //-----------------------------
-	BIFF_SHORT cIter;
+	_INT16 cIter;
 };
 
 } // namespace XLS

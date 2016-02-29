@@ -38,8 +38,8 @@ public:
 	bool fAutoRot;
 	BIFF_BYTE iReadingOrder;
 
-	Icv icv;
-	BIFF_WORD trot;
+	_UINT16 icv;
+	_UINT16 trot;
 
 	int _rott;
 };

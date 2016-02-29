@@ -22,9 +22,9 @@ public:
 
 	static const ElementType	type = typeObjectLink;
 
-	BIFF_WORD wLinkObj;
-	BIFF_WORD wLinkVar1;
-	BIFF_WORD wLinkVar2;
+	_UINT16 wLinkObj;
+	_UINT16 wLinkVar1;
+	_UINT16 wLinkVar2;
 
 //-------------------------------
 

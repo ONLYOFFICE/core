@@ -26,10 +26,10 @@ public:
 	
 	std::wstring ref_;
 //-----------------------------
-	RwLongU rwMic;
-	BIFF_DWORD rwMac;
-	ColU colMic;
-	BIFF_WORD colMac;
+	_UINT32		rwMic;
+	_UINT32		rwMac;
+	_UINT16		colMic;
+	_UINT16		colMac;
 	
 
 };

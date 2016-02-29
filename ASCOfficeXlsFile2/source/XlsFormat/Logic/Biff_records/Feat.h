@@ -28,7 +28,7 @@ public:
 
 //-----------------------------
 	SharedFeatureType isf;
-	BIFF_WORD cref;
+	_UINT16 cref;
 	BIFF_DWORD cbFeatData;
 	BiffStructurePtrVector refs;
 	BIFF_BSTR sqref;
@@ -38,12 +38,6 @@ public:
 	FeatSmartTag smart_tag;
 
 public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(isf)
-		//BO_ATTRIB_MARKUP_ATTRIB(cref)
-		//BO_ATTRIB_MARKUP_ATTRIB(sqref)
-		//BO_ATTRIB_MARKUP_ATTRIB(cbFeatData)
-		//BO_ATTRIB_MARKUP_VECTOR_COMPLEX(refs, Ref8U)
 		//switch(isf)
 		//{
 		//	case SharedFeatureType::ISFPROTECTION:
@@ -56,9 +50,6 @@ public:
 		//		//BO_ATTRIB_MARKUP_COMPLEX(smart_tag)
 		//		break;
 		//}
-
-
-	//BO_ATTRIB_MARKUP_END
 
 };
 

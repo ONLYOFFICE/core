@@ -23,9 +23,9 @@ public:
 	static const ElementType	type = typeColInfo;
 
 //-----------------------------
-	Col256U		colFirst;
-	Col256U		colLast;
-	BIFF_WORD	coldx;
+	_UINT16		colFirst;
+	_UINT16		colLast;
+	_UINT16		coldx;
 	IXFCell		ixfe;
 
 	bool fHidden;

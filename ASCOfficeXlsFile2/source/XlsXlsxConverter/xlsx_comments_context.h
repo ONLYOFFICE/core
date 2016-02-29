@@ -9,8 +9,6 @@
 
 namespace oox {
 
-//class xlsx_table_metrics;
-
 class xlsx_comments;
 typedef _CP_PTR(xlsx_comments) xlsx_comments_ptr;
 
@@ -41,10 +39,11 @@ public:
 
     void start_comment();
 
-	void add_content	(std::wstring  content);
-	void add_author		(std::wstring  author);
+	void set_content	(std::wstring  content);
+	void set_author		(std::wstring  author);
+	void set_anchor		(std::wstring  anchor);
     void set_size		(double width_pt, double height_pt, double x_pt, double y_pt);
-	void set_ref		(std::wstring ref,int col,int row);
+	void set_ref		(std::wstring ref, int col, int row);
 	void set_visibly	(bool Val);
  	void set_fill_color	(std::wstring  color);
   	void set_line_color	(std::wstring  color);

@@ -27,7 +27,7 @@ public:
 
 	BIFF_BYTE	at;
 	BIFF_BYTE	vat;
-	BIFF_WORD	wBkgMode;
+	_UINT16	wBkgMode;
 	LongRGB		rgbText;
 	BIFF_LONG	x;
 	BIFF_LONG	y;

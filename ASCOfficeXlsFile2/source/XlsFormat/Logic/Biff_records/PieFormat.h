@@ -24,7 +24,7 @@ public:
 
 	int serialize(std::wostream & _stream);
 
-	BIFF_SHORT pcExplode;
+	_INT16 pcExplode;
 
 };
 

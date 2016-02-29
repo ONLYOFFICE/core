@@ -38,10 +38,10 @@ public:
 
 
 //-----------------------------
-	BIFF_WORD vers;
-	BIFF_WORD dt;
-	BIFF_WORD rupBuild;
-	BIFF_WORD rupYear;
+	_UINT16 vers;
+	_UINT16 dt;
+	_UINT16 rupBuild;
+	_UINT16 rupYear;
 	
 	bool fWin;
 	bool fRisc;
@@ -54,7 +54,7 @@ public:
 	bool fGlJmp;
 	bool fFontLimit;
 	
-	BIFF_WORD verXLHigh;
+	_UINT16 verXLHigh;
 	BIFF_BYTE verLowestBiff;
 	BIFF_BYTE verLastXLSaved;
 	

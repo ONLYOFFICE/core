@@ -24,7 +24,7 @@ public:
 	BIFF_BYTE fHelp;
 	BIFF_BYTE fCancel;
 	BIFF_BYTE fDismiss;
-	BIFF_WORD accel1;
+	_UINT16 accel1;
 };
 
 } // namespace XLS

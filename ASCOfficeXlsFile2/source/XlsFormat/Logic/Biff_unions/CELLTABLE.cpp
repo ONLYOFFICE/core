@@ -41,9 +41,9 @@ public:
 				Row* row = dynamic_cast<Row*>(elements_.back().get());
 				if (row)
 				{
-					if (row->miyRw.value())
+					if (row->miyRw > 0 && std::abs(row->miyRw/20. - global_info_->defaultRowHeight) > 0.001)
 					{
-						global_info_->customRowsHeight.insert(std::pair<int, double>(row->rw,row->miyRw / 20.));
+						global_info_->customRowsHeight.insert(std::pair<int, double>(row->rw, row->miyRw / 20.));
 					}
 				}
 				m_rows.insert(m_rows.begin(), elements_.back());
@@ -181,9 +181,9 @@ int CELL_GROUP::serialize(std::wostream & stream)
 									}
 									CP_XML_ATTR(L"customFormat", true);
 								}
-								if (row->miyRw.value())// 255 twips(1/20 pt)
+								if (row->miyRw > 0 && std::abs(row->miyRw/20. - global_info_->defaultRowHeight) > 0.01)
 								{
-									CP_XML_ATTR(L"ht", row->miyRw / 16.);
+									CP_XML_ATTR(L"ht", row->miyRw / 20.);
 									CP_XML_ATTR(L"customHeight", true);
 								}
 								if ((row->iOutLevel.value()) && (row->iOutLevel > 0))
@@ -250,7 +250,7 @@ int CELL_GROUP::serialize(std::wostream & stream)
 					bool xf_set = true;
 					if (row->fGhostDirty == false) xf_set = false;
 					
-					if (row->ixfe_val.value() && xf_set)
+					if (xf_set)
 					{
 						if (row->ixfe_val > global_info_->cellStyleXfs_count)
 						{
@@ -263,7 +263,7 @@ int CELL_GROUP::serialize(std::wostream & stream)
 						CP_XML_ATTR(L"customFormat", true);
 					}
 
-					if (row->miyRw.value())
+					if (row->miyRw > 0 && std::abs(row->miyRw/20. - global_info_->defaultRowHeight) > 0.01)
 					{
 						CP_XML_ATTR(L"ht", row->miyRw / 20.);
 						CP_XML_ATTR(L"customHeight", true);

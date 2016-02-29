@@ -28,19 +28,8 @@ public:
 //-----------------------------
 	FrtRefHeaderU frtRefHeaderU;
 	Boolean<unsigned int> fIsCF12;
-	BIFF_WORD nID;
+	_UINT16 nID;
 	CFExNonCF12 rgbContent;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_COMPLEX(frtRefHeaderU)
-		//BO_ATTRIB_MARKUP_ATTRIB(fIsCF12)
-		//BO_ATTRIB_MARKUP_ATTRIB(nID)
-		//if(!fIsCF12)
-		//{
-		//	//BO_ATTRIB_MARKUP_COMPLEX(rgbContent)
-		//}
-	//BO_ATTRIB_MARKUP_END
-
 };
 
 } // namespace XLS

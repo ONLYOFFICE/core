@@ -460,15 +460,23 @@ void xlsx_drawing_context::end_drawing(_drawing_state_ptr & drawing_state)
 	}
 	if ( drawing_state->type == external_items::typeComment )
 	{
-		//context_.get_comments_context().set_fill_color(drawing_state->fill.color.sRGB);
-		//context_.get_comments_context().set_line_color(drawing_state->line.fill.color.sRGB);
-		
-		context_.get_comments_context().add_content(drawing_state->text.content);
+		std::wstringstream strm;
 
-		context_.get_comments_context().set_size(	drawing_state->child_anchor.cx / 12700 +2, 
-													drawing_state->child_anchor.cy / 12700 +2,
-													drawing_state->child_anchor.x / 12700, 
-													drawing_state->child_anchor.y / 12700); //in pt (1 pt = 12700 emu)
+		context_.get_comments_context().set_fill_color(drawing_state->fill.color.sRGB);
+		context_.get_comments_context().set_line_color(drawing_state->line.fill.color.sRGB);
+		
+		context_.get_comments_context().set_content(drawing_state->text.content);
+
+		strm	<< drawing_state->sheet_anchor.colFrom	<< L", " << (int)(2 * drawing_state->sheet_anchor.xFrom / 12700.)	<< L", " 
+				<< drawing_state->sheet_anchor.rwFrom	<< L", " << (int)(2 * drawing_state->sheet_anchor.yFrom / 12700.)	<< L", " 
+				<< drawing_state->sheet_anchor.colTo	<< L", " << (int)(2 * drawing_state->sheet_anchor.xTo / 12700.)		<< L", " 
+				<< drawing_state->sheet_anchor.rwTo		<< L", " << (int)(2 * drawing_state->sheet_anchor.yTo / 12700.); 
+		context_.get_comments_context().set_anchor(strm.str());
+
+		context_.get_comments_context().set_size(	drawing_state->child_anchor.cx / 12700., 
+													drawing_state->child_anchor.cy / 12700.,
+													drawing_state->child_anchor.x / 12700., 
+													drawing_state->child_anchor.y / 12700.); //in pt (1 pt = 12700 emu)
 		context_.get_comments_context().end_comment();
 	}
 	if ( drawing_state->type == external_items::typeShape)
@@ -814,8 +822,8 @@ std::wstring xlsx_drawing_context::convert_custom_shape(_drawing_state_ptr & dra
 	{
 		if (0 == drawing_state->custom_segments[i].m_nCount)
 		{
-			if ((NSCustomShapesConvert::rtEnd			!= drawing_state->custom_segments[i].m_eRuler) &&
-				(NSCustomShapesConvert::rtNoFill		!= drawing_state->custom_segments[i].m_eRuler) &&
+			if ((NSCustomShapesConvert::rtEnd		!= drawing_state->custom_segments[i].m_eRuler) &&
+				(NSCustomShapesConvert::rtNoFill	!= drawing_state->custom_segments[i].m_eRuler) &&
 				(NSCustomShapesConvert::rtNoStroke	!= drawing_state->custom_segments[i].m_eRuler) &&
 				(NSCustomShapesConvert::rtClose		!= drawing_state->custom_segments[i].m_eRuler))
 			{
@@ -824,7 +832,10 @@ std::wstring xlsx_drawing_context::convert_custom_shape(_drawing_state_ptr & dra
 		}
 		shape->m_oCustomVML.addSegment(drawing_state->custom_segments[i].m_eRuler , drawing_state->custom_segments[i].m_nCount);
 	}	
-
+	//for (int i = 0; i < drawing_state->custom_adjustHandles.size(); i++)
+	//{//todooo - ранее этого не было ?????
+	//	shape->m_oCustomVML.addHandle(i, *drawing_state->custom_adjustHandles[i]);
+	//}
 	for (int i = 0; i < drawing_state->custom_adjustValues.size(); i++)
 	{
 		if (drawing_state->custom_adjustValues[i])
@@ -840,16 +851,13 @@ std::wstring xlsx_drawing_context::convert_custom_shape(_drawing_state_ptr & dra
 //-------------------------------------------------------------------------------------
 	if (drawing_state->custom_rect.cx > 0 && drawing_state->custom_rect.cy > 0)
 	{
-		//shape->m_oManager.m_lShapeWidth	= drawing_state->custom_rect.cx;
-		//shape->m_oManager.m_lShapeHeight = drawing_state->custom_rect.cy;
-		
 		shape->m_oPath.SetCoordsize(drawing_state->custom_rect.cx, drawing_state->custom_rect.cy);
 	}
 
 	NSCustomShapesConvert::CFormParam pParamCoef;
-	pParamCoef.m_eType = NSCustomShapesConvert::ptValue;
+	pParamCoef.m_eType	= NSCustomShapesConvert::ptValue;
 	pParamCoef.m_lParam = 65536;
-	pParamCoef.m_lCoef = 65536;
+	pParamCoef.m_lCoef	= 65536;
 	
 	NSCustomShapesConvert::CFormulaConverter pFormulaConverter;
 
@@ -1085,6 +1093,43 @@ void xlsx_drawing_context::serialize_gradient_fill(std::wostream & stream, _draw
 				if (val < 0) val = 0;
 				CP_XML_ATTR(L"ang", val * 60000);
 				CP_XML_ATTR(L"scaled", 1);
+			}
+		}
+	}
+}
+
+void xlsx_drawing_context::serialize_anchor (std::wostream & stream, _drawing_state_ptr & drawing_state)
+{
+	CP_XML_WRITER(stream)    
+	{
+		if (drawing_state->type_anchor == 1)
+		{
+			CP_XML_NODE(L"xdr:from")
+			{ 
+				CP_XML_NODE(L"xdr:col")		{ CP_XML_CONTENT (drawing_state->sheet_anchor.colFrom);	}
+				CP_XML_NODE(L"xdr:colOff")	{ CP_XML_CONTENT (drawing_state->sheet_anchor.xFrom) ;	}
+				CP_XML_NODE(L"xdr:row")		{ CP_XML_CONTENT (drawing_state->sheet_anchor.rwFrom);	}
+				CP_XML_NODE(L"xdr:rowOff")	{ CP_XML_CONTENT (drawing_state->sheet_anchor.yFrom) ;	}
+			}
+			CP_XML_NODE(L"xdr:to")
+			{  		
+				CP_XML_NODE(L"xdr:col")		{ CP_XML_CONTENT (drawing_state->sheet_anchor.colTo);	}
+				CP_XML_NODE(L"xdr:colOff")	{ CP_XML_CONTENT (drawing_state->sheet_anchor.xTo);	}
+				CP_XML_NODE(L"xdr:row")		{ CP_XML_CONTENT (drawing_state->sheet_anchor.rwTo);	}
+				CP_XML_NODE(L"xdr:rowOff")	{ CP_XML_CONTENT (drawing_state->sheet_anchor.yTo);	}
+			}
+		}
+		if (drawing_state->type_anchor == 3)
+		{
+			CP_XML_NODE(L"xdr:pos")//in emu (1 pt = 12700)
+			{ 
+				CP_XML_ATTR(L"x", (int)(drawing_state->absolute_anchor.x * 12700));
+				CP_XML_ATTR(L"y", (int)(drawing_state->absolute_anchor.y * 12700));
+			}
+			CP_XML_NODE(L"xdr:ext") //in emu (1 pt = 12700)
+			{ 
+				CP_XML_ATTR(L"cx", (int)(drawing_state->absolute_anchor.cx * 12700));
+				CP_XML_ATTR(L"cy", (int)(drawing_state->absolute_anchor.cy * 12700)); 
 			}
 		}
 	}
@@ -1370,12 +1415,12 @@ void xlsx_drawing_context::serialize_bitmap_fill(std::wostream & stream, _drawin
 
 void xlsx_drawing_context::serialize(std::wostream & stream, _drawing_state_ptr & drawing_state)
 {
-	if (drawing_state->anchor.str.empty()) return;
+	if		(drawing_state->type_anchor == 0) return;
 
 	std::wstring sNodeAnchor;
 
-	if		(drawing_state->anchor.type == 1)	sNodeAnchor = L"xdr:twoCellAnchor";
-	else if (drawing_state->anchor.type == 2)	sNodeAnchor = L"xdr:oneCellAnchor";
+	if		(drawing_state->type_anchor == 1)	sNodeAnchor = L"xdr:twoCellAnchor";
+	else if (drawing_state->type_anchor == 2)	sNodeAnchor = L"xdr:oneCellAnchor";
 	else										sNodeAnchor = L"xdr:absoluteAnchor";
 
 	if (sNodeAnchor.empty()) return;
@@ -1384,9 +1429,10 @@ void xlsx_drawing_context::serialize(std::wostream & stream, _drawing_state_ptr 
 	{
 		CP_XML_NODE(sNodeAnchor)
 		{ 
-			//CP_XML_ATTR(L"editAs", L"oneCell");
+			//if (drawing_state->anchor.type == 1) CP_XML_ATTR(L"editAs", L"oneCell");
 
-			CP_XML_STREAM() << drawing_state->anchor.str;
+			serialize_anchor(CP_XML_STREAM(), drawing_state);
+
 			CP_XML_STREAM() << drawing_state->shape;
 			
 			CP_XML_NODE(L"xdr:clientData");
@@ -1406,13 +1452,20 @@ void xlsx_drawing_context::set_description(const std::wstring & str)
 
 	current_drawing_states->back()->description = str;
 }
-void xlsx_drawing_context::set_sheet_anchor(const std::wstring & str)
+void xlsx_drawing_context::set_sheet_anchor(int colFrom, int xFrom, int rwFrom, int yFrom, int colTo, int xTo, int rwTo,int yTo)
 {
-	if (str.empty())					return;
 	if (current_drawing_states == NULL) return;	
 	
-	current_drawing_states->back()->anchor.str		= str;
-	current_drawing_states->back()->anchor.type		= 1;
+	current_drawing_states->back()->sheet_anchor.colFrom	= colFrom;
+	current_drawing_states->back()->sheet_anchor.colTo		= colTo;
+	current_drawing_states->back()->sheet_anchor.rwFrom		= rwFrom;
+	current_drawing_states->back()->sheet_anchor.rwTo		= rwTo;
+	current_drawing_states->back()->sheet_anchor.xFrom		= xFrom;
+	current_drawing_states->back()->sheet_anchor.yFrom		= yFrom;
+	current_drawing_states->back()->sheet_anchor.xTo		= xTo;
+	current_drawing_states->back()->sheet_anchor.yTo		= yTo;
+
+	current_drawing_states->back()->type_anchor	= 1;
 }
 void xlsx_drawing_context::set_child_anchor(int x, int y, int cx, int cy)
 {
@@ -1432,29 +1485,16 @@ void xlsx_drawing_context::set_group_anchor(int x, int y, int cx, int cy)
 	current_drawing_states->back()->group_anchor.cx	= cx;
 	current_drawing_states->back()->group_anchor.cy	= cy;	
 }
-void xlsx_drawing_context::set_absolute_anchor(double width, double height)
+void xlsx_drawing_context::set_absolute_anchor(double x, double y, double cx, double cy)
 {
 	if (current_drawing_states == NULL) return;	
-	if (!current_drawing_states->back()->anchor.str.empty()) return; // уже есть
 
-	std::wstringstream stream;
+	current_drawing_states->back()->absolute_anchor.x	= x;
+	current_drawing_states->back()->absolute_anchor.y	= y;
+	current_drawing_states->back()->absolute_anchor.cx	= cx;
+	current_drawing_states->back()->absolute_anchor.cy	= cy;
 
-	CP_XML_WRITER(stream)    
-	{
-		CP_XML_NODE(L"xdr:pos")
-		{ 
-			CP_XML_ATTR(L"x", 0);
-			CP_XML_ATTR(L"y", 0);
-		}
-		CP_XML_NODE(L"xdr:ext")
-		{ 
-			CP_XML_ATTR(L"cx", (int)(width * 12700)); //in emu (1 pt = 12700)
-			CP_XML_ATTR(L"cy", (int)(height * 12700)); //in emu (1 pt = 12700)
-		}
-	}
-
-	current_drawing_states->back()->anchor.str	= stream.str();
-	current_drawing_states->back()->anchor.type = 3;
+	current_drawing_states->back()->type_anchor = 3;
 }
 
 void xlsx_drawing_context::set_fill_texture_mode(int val)
@@ -1817,6 +1857,12 @@ void xlsx_drawing_context::set_custom_segments (std::vector<ODRAW::MSOPATHINFO> 
 	if (current_drawing_states == NULL) return;
 	
 	current_drawing_states->back()->custom_segments = segments;
+}
+void xlsx_drawing_context::set_custom_adjustHandles(std::vector<ODRAW::ADJH> & handles)
+{
+	if (current_drawing_states == NULL) return;
+	
+	current_drawing_states->back()->custom_adjustHandles = handles;
 }
 void xlsx_drawing_context::set_custom_adjustValues(std::vector<_CP_OPT(int)> & values)
 {

@@ -49,9 +49,9 @@ int BoolErr::serialize(std::wostream & stream)
 		{
 			CP_XML_ATTR(L"r", ref);
 
-			if (cell.ixfe.value())
+			if (cell.ixfe - global_info_->cellStyleXfs_count > 0)
 			{
-				CP_XML_ATTR(L"s", *cell.ixfe.value() - global_info_->cellStyleXfs_count);
+				CP_XML_ATTR(L"s", cell.ixfe - global_info_->cellStyleXfs_count);
 			}
 		}			
 	}

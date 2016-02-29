@@ -38,12 +38,14 @@ void ColInfo::readFields(CFRecord& record)
 {
 	unsigned short flags;
 	record >> colFirst >> colLast >> coldx >> ixfe >> flags;
-	fHidden = GETBIT(flags, 0);
-	fUserSet = GETBIT(flags, 1);
-	fBestFit = GETBIT(flags, 2);
-	fPhonetic = GETBIT(flags, 3);
-	iOutLevel = GETBITS(flags, 8, 10);
-	fCollapsed = GETBIT(flags, 12);
+	
+	fHidden		= GETBIT(flags, 0);
+	fUserSet	= GETBIT(flags, 1);
+	fBestFit	= GETBIT(flags, 2);
+	fPhonetic	= GETBIT(flags, 3);
+	iOutLevel	= GETBITS(flags, 8, 10);
+	fCollapsed	= GETBIT(flags, 12);
+	
 	record.skipNunBytes(2); // unused
 }
 

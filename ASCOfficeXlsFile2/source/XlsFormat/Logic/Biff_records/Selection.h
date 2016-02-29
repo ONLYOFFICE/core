@@ -31,7 +31,7 @@ public:
 
 	R_RwU		rwAct;
 	ColU		colAct;
-	BIFF_SHORT	irefAct;
+	_INT16	irefAct;
 	
 	BIFF_BSTR	sqref;
 	BIFF_BSTR	activeCell;

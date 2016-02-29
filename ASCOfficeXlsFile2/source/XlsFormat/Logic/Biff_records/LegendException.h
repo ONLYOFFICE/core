@@ -20,7 +20,7 @@ public:
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
 
-	BIFF_WORD	iss;
+	_UINT16	iss;
 	bool	fDelete;
 	bool	fLabel;
 

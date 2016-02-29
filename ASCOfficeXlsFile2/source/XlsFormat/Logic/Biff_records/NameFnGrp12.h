@@ -21,8 +21,8 @@ public:
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
 //-----------------------------
-	BIFF_WORD cachName;
-	BIFF_WORD fgrp;
+	_UINT16 cachName;
+	_UINT16 fgrp;
 
 	XLNameUnicodeString rgach;
 

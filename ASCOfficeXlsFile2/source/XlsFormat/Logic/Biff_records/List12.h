@@ -26,7 +26,7 @@ public:
 
 public:
 	FrtHeader frtHeader;
-	BIFF_WORD lsd;
+	_UINT16 lsd;
 	BIFF_DWORD idList;
 
 	List12BlockLevel rgbList12BlockLevel;
@@ -34,12 +34,7 @@ public:
 	List12DisplayName rgbList12DisplayName;
 
 public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_COMPLEX(frtHeader)
-		//BO_ATTRIB_MARKUP_ATTRIB(lsd)
-		//BO_ATTRIB_MARKUP_ATTRIB(idList)
-
-		//switch (lsd)
+	//switch (lsd)
 		//{
 		//	case 0:
 		//		//BO_ATTRIB_MARKUP_COMPLEX(rgbList12BlockLevel)
@@ -51,9 +46,6 @@ public:
 		//		//BO_ATTRIB_MARKUP_COMPLEX(rgbList12DisplayName)
 		//		break;
 		//}
-
-	//BO_ATTRIB_MARKUP_END
-
 };
 
 } // namespace XLS

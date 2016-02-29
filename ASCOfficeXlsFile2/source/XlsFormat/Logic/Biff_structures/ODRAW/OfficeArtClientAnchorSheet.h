@@ -24,8 +24,6 @@ public:
 	virtual void loadFields(XLS::CFRecord& record);
 	virtual void storeFields(XLS::CFRecord& record);
 
-	int serialize(std::wostream & stream);
-
 	bool fMove;
 	bool fSize;
 
@@ -62,8 +60,6 @@ public:
 	
 	virtual void loadFields(XLS::CFRecord& record);
 	virtual void storeFields(XLS::CFRecord& record){}
-
-	int serialize(std::wostream & stream);
 
 	_INT32 dxL;
 	_INT32 dyT;

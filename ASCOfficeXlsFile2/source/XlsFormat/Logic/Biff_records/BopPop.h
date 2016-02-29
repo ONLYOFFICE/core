@@ -27,11 +27,11 @@ public:
 //-----------------------------
 	BIFF_BYTE		pst;
 	Boolean<unsigned char> fAutoSplit;
-	BIFF_WORD		split;
-	BIFF_SHORT		iSplitPos;
-	BIFF_SHORT		pcSplitPercent;
-	BIFF_SHORT		pcPie2Size;
-	BIFF_SHORT		pcGap;
+	_UINT16		split;
+	_INT16		iSplitPos;
+	_INT16		pcSplitPercent;
+	_INT16		pcPie2Size;
+	_INT16		pcGap;
 	BIFF_DOUBLE		numSplitValue;
 	
 	bool		fHasShadow;

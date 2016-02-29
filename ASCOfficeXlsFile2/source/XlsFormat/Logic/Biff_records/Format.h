@@ -25,7 +25,7 @@ public:
 
 	int serialize(std::wostream & stream);
 //-----------------------------
-	BIFF_WORD ifmt;
+	_UINT16 ifmt;
 	XLUnicodeString stFormat;
 
 };

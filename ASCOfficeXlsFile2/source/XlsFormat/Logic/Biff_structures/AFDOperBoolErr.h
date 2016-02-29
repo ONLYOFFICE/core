@@ -16,7 +16,7 @@ public:
 
 	static const ElementType	type = typeAFDOperBoolErr;
 
-	BIFF_SHORT bes;
+	_INT16 bes;
 };
 
 } // namespace XLS

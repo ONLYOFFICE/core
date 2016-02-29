@@ -49,7 +49,7 @@ int Blank::serialize(std::wostream & stream)
 			CP_XML_ATTR(L"r", ref);
 
 			int st = (int)cell.ixfe - global_info_->cellStyleXfs_count;
-			if ((cell.ixfe.value()) && (cell.ixfe > global_info_->cellStyleXfs_count))
+			if (cell.ixfe > global_info_->cellStyleXfs_count)
 			{
 				CP_XML_ATTR(L"s", cell.ixfe - global_info_->cellStyleXfs_count);
 			}

@@ -22,7 +22,7 @@ public:
 
 	static const ElementType	type = typeDropBar;
 
-	BIFF_SHORT pcGap;
+	_INT16 pcGap;
 };
 
 } // namespace XLS

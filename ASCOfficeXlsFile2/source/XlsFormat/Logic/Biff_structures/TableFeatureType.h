@@ -28,7 +28,7 @@ public:
 	BIFF_DWORD crwTotals;
 	BIFF_DWORD idFieldNext;
 	BIFF_DWORD cbFSData;
-	BIFF_WORD rupBuild;
+	_UINT16 rupBuild;
 
 	BIFF_BYTE fAutoFilter;
 	BIFF_BYTE fPersistAutoFilter;
@@ -55,7 +55,7 @@ public:
 	BIFF_DWORD lem;		// LEMMode
 
 	XLUnicodeString rgbName;
-	BIFF_WORD cFieldData;
+	_UINT16 cFieldData;
 	XLUnicodeString cSPName;
 	XLUnicodeString entryId;
 

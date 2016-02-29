@@ -26,23 +26,13 @@ struct sort_
 
 namespace oox {
 
-	unsigned int hex_string_to_int(std::wstring str)
-	{
-		unsigned int x;   
-		std::wstringstream ss;
-		ss << std::hex << str;
-		ss >> x;
-		return x;
-	}	
-
-
 class xlsx_comments::Impl
 {
 public:
 
 	void serialize(std::wostream & strm)
     {
-		//std::sort(xlsx_comment_.begin(), xlsx_comment_.end(), sort_());
+		//std::sort(xlsx_comment_.begin(), xlsx_comment_.end(), sort_()); - излишне
         
 		CP_XML_WRITER(strm)
         {
@@ -135,10 +125,7 @@ public:
 
 					CP_XML_ATTR(L"style",style);
 					CP_XML_ATTR(L"type", L"_x0000_t202");
-					//if (odf_reader::GetProperty(c.graphicProperties_,L"opacity",dVal))
-					//{
 					//	CP_XML_ATTR(L"opacity",boost::lexical_cast<std::wstring>((int)(100.-dVal.get())) + L"%");
-					//}
 					CP_XML_NODE(L"v:shadow")
 					{
 						CP_XML_ATTR(L"color", L"black");
@@ -155,35 +142,27 @@ public:
 						CP_XML_ATTR(L"color"	, std::wstring(L"#") + c.fill_);
 						//CP_XML_ATTR(L"color2"	, std::wstring(L"#") + c.fill_);
 						CP_XML_ATTR(L"type"		, L"solid");
-						//if (odf_reader::GetProperty(c.graphicProperties_,L"opacity",dVal))
-						//{
 						//	CP_XML_ATTR(L"opacity", (dVal.get())/100.);
-						//	//CP_XML_ATTR(L"opacity2",(dVal.get())/100.);
-						//}		
 					}
 
 					CP_XML_NODE(L"v:stroke")
 					{
 						CP_XML_ATTR(L"color", std::wstring(L"#") + c.line_);
-
-						//if (odf_reader::GetProperty(c.graphicProperties_,L"stroke-opacity",dVal))
-						//{
 						//	CP_XML_ATTR(L"opacity",(100.-dVal.get())/100.);
-						//}
-						//CP_XML_ATTR(L"endcap"			, L"flat");
-						//CP_XML_ATTR(L"joinstyle"		, L"round");
-						//CP_XML_ATTR(L"startarrow"		, L"block");
-						//CP_XML_ATTR(L"v:startarrowwidth", L"medium");
-						//CP_XML_ATTR(L"startarrowlength"	, L"medium");
 					}							
 					CP_XML_NODE(L"x:ClientData")
 					{
 						CP_XML_ATTR(L"ObjectType", L"Note");
 						CP_XML_NODE(L"x:MoveWithCells"){}
 						CP_XML_NODE(L"x:SizeWithCells"){}
+						if (!c.anchor_.empty())
+						{
+							CP_XML_NODE(L"x:Anchor"){CP_XML_CONTENT(c.anchor_);}
+						}
 						CP_XML_NODE(L"x:AutoFill")	{CP_XML_CONTENT("False");}
 						CP_XML_NODE(L"x:Row")		{CP_XML_CONTENT(c.row_);}
 						CP_XML_NODE(L"x:Column")	{CP_XML_CONTENT(c.col_);}
+						if (c.visibly_) CP_XML_NODE(L"x:Visible");
 					}
 				}
 			}

@@ -863,11 +863,9 @@ void XlsConverter::convert(ODRAW::OfficeArtRecord * art)
 	case XLS::typeOfficeArtClientAnchorSheet:
 		{
 			ODRAW::OfficeArtClientAnchorSheet * ch = dynamic_cast<ODRAW::OfficeArtClientAnchorSheet *>(art);
-		
-			art->serialize(strm);
         
 			xlsx_context->get_drawing_context().set_child_anchor(ch->_x, ch->_y, ch->_cx, ch->_cy);
-			xlsx_context->get_drawing_context().set_sheet_anchor(strm.str());
+			xlsx_context->get_drawing_context().set_sheet_anchor(ch->colL, ch->_dxL, ch->rwT, ch->_dyT, ch->colR, ch->_dxR, ch->rwB, ch->_dyB);
 		}break;
 	}
 }
@@ -1170,6 +1168,11 @@ void XlsConverter::convert_geometry(std::vector<ODRAW::OfficeArtFOPTEPtr> & prop
 			{
 				adjustValues[props[i]->opid - 0x0147] = props[i]->op ;
 			}break;
+		case 0x0151:
+			{
+				ODRAW::pAdjustHandles * a = (ODRAW::pAdjustHandles *)(props[i].get());
+				xlsx_context->get_drawing_context().set_custom_adjustHandles(a->complex.data);
+			}break;
 		case 0x0156:
 			{
 				ODRAW::pGuides* s = (ODRAW::pGuides *)(props[i].get());
@@ -1383,8 +1386,10 @@ void XlsConverter::convert(XLS::Note* note)
 {
 	if (note == NULL) return;
 
-	xlsx_context->get_comments_context().set_ref	(note->note_sh.ref, note->note_sh.col, note->note_sh.row);
-	xlsx_context->get_comments_context().add_author	(note->note_sh.stAuthor);
+	xlsx_context->get_comments_context().set_ref	(note->note_sh.ref_, 
+													 note->note_sh.col, 
+													 note->note_sh.row);
+	xlsx_context->get_comments_context().set_author	(note->note_sh.stAuthor);
 	xlsx_context->get_comments_context().set_visibly(note->note_sh.fShow);
 }
 

@@ -22,7 +22,6 @@ public:
 
 	static const ElementType	type = typeDCon;
 //-----------------------------
-//	BIFF_WORD userName;
 	unsigned short iiftab;
 	unsigned short fLeftCat;
 	unsigned short fTopCat;

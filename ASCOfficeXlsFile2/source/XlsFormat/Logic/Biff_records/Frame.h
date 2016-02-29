@@ -23,7 +23,7 @@ public:
 	static const ElementType	type = typeFrame;
 
 //-----------------------------
-	BIFF_WORD frt;
+	_UINT16 frt;
 	bool fAutoSize;
 	bool fAutoPosition;
 

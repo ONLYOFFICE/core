@@ -24,10 +24,10 @@ public:
 
 	int serialize(std::wostream & stream);
 //-----------------------------
-	BIFF_SHORT xWn;
-	BIFF_SHORT yWn;
-	BIFF_SHORT dxWn;
-	BIFF_SHORT dyWn;
+	_INT16 xWn;
+	_INT16 yWn;
+	_INT16 dxWn;
+	_INT16 dyWn;
 	bool fHidden;
 	bool fIconic;
 	bool fVeryHidden;
@@ -35,10 +35,10 @@ public:
 	bool fDspVScroll;
 	bool fBotAdornment;
 	bool fNoAFDateGroup;
-	BIFF_WORD itabCur;
-	BIFF_WORD itabFirst;
-	BIFF_WORD ctabSel;
-	BIFF_WORD wTabRatio;
+	_UINT16 itabCur;
+	_UINT16 itabFirst;
+	_UINT16 ctabSel;
+	_UINT16 wTabRatio;
 
 };
 

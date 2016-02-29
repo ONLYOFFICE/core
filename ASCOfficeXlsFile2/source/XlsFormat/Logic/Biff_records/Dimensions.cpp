@@ -46,11 +46,12 @@ void Dimensions::writeFields(CFRecord& record)
 void Dimensions::readFields(CFRecord& record)
 {
 	record >> rwMic >> rwMac >> colMic >> colMac;
+	
 	record.skipNunBytes(2); // reserved
 	
-	if(rwMac.value() && colMac.value())
+	if(rwMac >= 0 && colMac >= 0)
 	{
-		ref_ = static_cast<std::wstring >(CellRangeRef(CellRef(*rwMic.value(), *colMic.value(), true, true), CellRef(*rwMac.value() - 1, *colMac.value() - 1, true, true)).toString(false).c_str());
+		ref_ = static_cast<std::wstring >(CellRangeRef(CellRef(rwMic, colMic, true, true), CellRef(rwMac - 1, colMac - 1, true, true)).toString(false).c_str());
 	}
 	else
 	{

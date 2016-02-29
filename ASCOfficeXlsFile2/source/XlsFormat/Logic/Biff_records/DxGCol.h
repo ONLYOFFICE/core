@@ -23,12 +23,7 @@ public:
 	static const ElementType	type = typeDxGCol;
 
 //-----------------------------
-	BIFF_WORD dxgCol;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(dxgCol)
-	//BO_ATTRIB_MARKUP_END
-
+	_UINT16 dxgCol;
 };
 
 } // namespace XLS

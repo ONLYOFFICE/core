@@ -23,7 +23,7 @@ public:
 	static const ElementType	type = typeAxesUsed;
 
 //-----------------------------
-	BIFF_WORD cAxes;
+	_UINT16 cAxes;
 
 };
 

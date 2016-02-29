@@ -23,8 +23,8 @@ public:
 	static const ElementType	type = typeXCT;
 
 //-----------------------------
-	BIFF_WORD ccrn;
-	BIFF_WORD itab;
+	_UINT16 ccrn;
+	_UINT16 itab;
 	bool itab_exist;
 
 		//if(itab_exist)

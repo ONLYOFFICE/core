@@ -25,10 +25,10 @@ public:
 	static const ElementType	type = typePane;
 
 //-----------------------------
-	BIFF_WORD	x;
-	BIFF_WORD	y;
-	R_RwU		rwTop;
-	ColU		colLeft;
+	_UINT16		x;
+	_UINT16		y;
+	_UINT16		rwTop;
+	_UINT16		colLeft;
 	PaneType	pnnAcct;
 	
 	BIFF_BSTR	topLeftCell;

@@ -23,7 +23,7 @@ public:
 	static const ElementType	type = typeSerParent;
 
 //-----------------------------
-	BIFF_WORD series;
+	_UINT16 series;
 
 	BaseObjectPtr m_SerAuxTrend;
 	BaseObjectPtr m_SerAuxErrBar;

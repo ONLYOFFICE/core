@@ -22,14 +22,6 @@ public:
 
 	static const ElementType	type = typeSXAddl;
 
-
-//-----------------------------
-//	BIFF_WORD userName;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-//		//BO_ATTRIB_MARKUP_ATTRIB(userName)
-	//BO_ATTRIB_MARKUP_END
-
 };
 
 // The following classes are not implemented and most probably won't be.

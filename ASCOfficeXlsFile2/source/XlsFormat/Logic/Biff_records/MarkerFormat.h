@@ -26,7 +26,7 @@ public:
 	LongRGB rgbFore;
 	LongRGB rgbBack;
 	
-	BIFF_WORD imk;
+	_UINT16 imk;
 	bool fAuto;
 	bool fNotShowInt;
 	bool fNotShowBrd;

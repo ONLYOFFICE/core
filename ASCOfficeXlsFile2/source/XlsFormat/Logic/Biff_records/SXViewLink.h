@@ -21,8 +21,7 @@ public:
 	void readFields(CFRecord& record);
 
 	static const ElementType	type = typeSXViewLink;
-//-----------------------------
-//	BIFF_WORD userName;
+
 
 
 };

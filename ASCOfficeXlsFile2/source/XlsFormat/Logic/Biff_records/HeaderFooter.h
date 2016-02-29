@@ -30,10 +30,10 @@ public:
 	bool			fHFScaleWithDoc;
 	bool			fHFAlignMargins;
 	
-	BIFF_WORD cchHeaderEven;
-	BIFF_WORD cchFooterEven;
-	BIFF_WORD cchHeaderFirst;
-	BIFF_WORD cchFooterFirst;
+	_UINT16 cchHeaderEven;
+	_UINT16 cchFooterEven;
+	_UINT16 cchHeaderFirst;
+	_UINT16 cchFooterFirst;
 
 	XLUnicodeString strHeaderEven;
 	XLUnicodeString strFooterEven;

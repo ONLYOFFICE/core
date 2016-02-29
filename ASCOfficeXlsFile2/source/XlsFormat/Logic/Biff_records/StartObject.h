@@ -23,10 +23,10 @@ public:
 	static const ElementType	type = typeStartObject;
 
 //-----------------------------
-	BIFF_WORD iObjectKind;
-	BIFF_WORD iObjectContext;
-	BIFF_WORD iObjectInstance1;
-	BIFF_WORD iObjectInstance2;
+	_UINT16 iObjectKind;
+	_UINT16 iObjectContext;
+	_UINT16 iObjectInstance1;
+	_UINT16 iObjectInstance2;
 
 
 };

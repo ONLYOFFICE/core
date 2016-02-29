@@ -23,7 +23,7 @@ public:
 	static const ElementType	type = typeFontX;
 
 //-----------------------------
-	BIFF_WORD iFont;
+	_UINT16 iFont;
 
 };
 

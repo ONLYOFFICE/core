@@ -29,12 +29,11 @@ public:
 //-----------------------------
 	Boolean<unsigned short> wEncryptionType;
 	XORObfuscation key;
-	BIFF_WORD majorVer;
+	_UINT16 majorVer;
 	CRYPTO::RC4EncryptionHeader rc4Header;
 	CRYPTO::RC4CryptoAPIEncryptionHeader rc4CryptoAPIHeader;
 
 public:
-	//BO_ATTRIB_MARKUP_BEGIN
 		//BO_ATTRIB_MARKUP_ATTRIB(wEncryptionType)
 		//if(!wEncryptionType)
 		//{
@@ -49,7 +48,6 @@ public:
 		//	//BO_ATTRIB_MARKUP_COMPLEX(rc4CryptoAPIHeader)
 		//}
 
-	//BO_ATTRIB_MARKUP_END
 
 };
 

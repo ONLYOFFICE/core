@@ -21,58 +21,15 @@ XLS::BiffStructurePtr OfficeArtClientAnchorSheet::clone()
 	return XLS::BiffStructurePtr(new OfficeArtClientAnchorSheet(*this));
 }
 
-int OfficeArtClientAnchorSheet::serialize(std::wostream &stream)
-{
-//-------------------------------------------------
-	CP_XML_WRITER(stream)    
-	{
-		CP_XML_NODE(L"xdr:from")
-		{ 
-			CP_XML_NODE(L"xdr:col")
-			{
-				CP_XML_STREAM() << boost::lexical_cast<std::wstring>(colL);
-			}
-			CP_XML_NODE(L"xdr:colOff")
-			{
-				CP_XML_STREAM() << boost::lexical_cast<std::wstring>(_dxL );
-			}
-			CP_XML_NODE(L"xdr:row")
-			{
-				CP_XML_STREAM() << boost::lexical_cast<std::wstring>(rwT); 
-			}
-			CP_XML_NODE(L"xdr:rowOff")
-			{
-				CP_XML_STREAM() << boost::lexical_cast<std::wstring>(_dyT);
-			}
-		}
-		CP_XML_NODE(L"xdr:to")
-		{  		
-			CP_XML_NODE(L"xdr:col")
-			{
-				CP_XML_STREAM() << boost::lexical_cast<std::wstring>(colR); 
-			}
-			CP_XML_NODE(L"xdr:colOff")
-			{
-				CP_XML_STREAM() << boost::lexical_cast<std::wstring>(_dxR );
-			}
-			CP_XML_NODE(L"xdr:row")
-			{
-				CP_XML_STREAM() << boost::lexical_cast<std::wstring>(rwB);
-			}
-			CP_XML_NODE(L"xdr:rowOff")
-			{
-				CP_XML_STREAM() << boost::lexical_cast<std::wstring>(_dyB); 
-			}
-		}
-	}
-	return 0;
-}
+
 
 void OfficeArtClientAnchorSheet::storeFields(XLS::CFRecord& record)
 {
 	unsigned short flags = 0;
+	
 	SETBIT(flags, 0, fMove);
 	SETBIT(flags, 1, fSize);
+	
 	record << flags << colL << dxL << rwT << dyT << colR << dxR << rwB << dyB;
 }
 
@@ -119,7 +76,7 @@ void OfficeArtClientAnchorSheet::loadFields(XLS::CFRecord& record)
 	else 
 		_dyB = dyB * kfRow * global_info->defaultRowHeight;	
 
-	//----------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------
 	for (int i = 0 ; i < colL; i++)
 	{
 		if (global_info->customColumnsWidth.find(i) != global_info->customColumnsWidth.end())
@@ -178,26 +135,6 @@ XLS::BiffStructurePtr OfficeArtChildAnchor::clone()
 	return XLS::BiffStructurePtr(new OfficeArtChildAnchor(*this));
 }
 
-int OfficeArtChildAnchor::serialize(std::wostream &stream)
-{
-	CP_XML_WRITER(stream)    
-	{
-		CP_XML_NODE(L"a:xfrm")
-		{ 
-			CP_XML_NODE(L"a:off")
-			{
-				CP_XML_ATTR(L"x", _x);
-				CP_XML_ATTR(L"y", _y);
-			}
-			CP_XML_NODE(L"xdr:colOff")
-			{
-				CP_XML_ATTR(L"cx", _cx);
-				CP_XML_ATTR(L"cy", _cy);
-			}
-		}
-	}
-	return 0;
-}
 void OfficeArtChildAnchor::loadFields(XLS::CFRecord& record)
 {
 	XLS::GlobalWorkbookInfoPtr global_info = record.getGlobalWorkbookInfo();

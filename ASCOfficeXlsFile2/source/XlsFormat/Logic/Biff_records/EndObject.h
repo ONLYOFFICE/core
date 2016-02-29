@@ -23,11 +23,7 @@ public:
 	static const ElementType	type = typeEndObject;
 
 //-----------------------------
-	BIFF_WORD iObjectKind;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(iObjectKind)
-	//BO_ATTRIB_MARKUP_END
+	_UINT16 iObjectKind;
 
 };
 

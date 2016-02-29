@@ -23,9 +23,9 @@ public:
 	static const ElementType	type = typeCatSerRange;
 
 //-----------------------------
-	BIFF_SHORT catCross;
-	BIFF_SHORT catLabel;
-	BIFF_SHORT catMark;
+	_INT16 catCross;
+	_INT16 catLabel;
+	_INT16 catMark;
 	
 	bool fBetween;
 	bool fMaxCross;

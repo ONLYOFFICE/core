@@ -523,6 +523,11 @@
 #define c_oAscAlignShapeType_ALIGN_CENTER		4
 #define c_oAscAlignShapeType_ALIGN_MIDDLE		5
 
+#define c_oAscDrawingLayerType_BringToFront     0
+#define c_oAscDrawingLayerType_SendToBack       1
+#define c_oAscDrawingLayerType_BringForward     2
+#define c_oAscDrawingLayerType_SendBackward     3
+
 #define c_oAscVerticalTextAlign_TEXT_ALIGN_BOTTOM		0	// (Text Anchor Enum ( Bottom ))
 #define c_oAscVerticalTextAlign_TEXT_ALIGN_CTR			1	// (Text Anchor Enum ( Center ))
 #define c_oAscVerticalTextAlign_TEXT_ALIGN_DIST			2	// (Text Anchor Enum ( Distributed ))

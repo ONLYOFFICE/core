@@ -24,10 +24,10 @@ namespace DocFileFormat
 		
 		int				m_nTBIndex;
 		
-		int				m_ndxTextLeft;
-		int				m_ndyTextTop;
-		int				m_ndxTextRight;
-		int				m_ndyTextBottom;
+		double			m_dxTextLeft;
+		double			m_dyTextTop;
+		double			m_dxTextRight;
+		double			m_dyTextBottom;
 
 		std::wstring	m_sTextBoxStyle;
 	};

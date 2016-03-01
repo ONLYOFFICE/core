@@ -63,10 +63,10 @@ namespace DocFileFormat
 		XMLTools::XMLElement<wchar_t> pgMar		(_T("w:pgMar"));
 		XMLTools::XMLElement<wchar_t> lnNumType	(_T("w:lnNumType"));
 		XMLTools::XMLElement<wchar_t> cols		(_T("w:cols"));
-		XMLTools::XMLElement<wchar_t> docGrid		(_T("w:docGrid"));
+		XMLTools::XMLElement<wchar_t> docGrid	(_T("w:docGrid"));
 		XMLTools::XMLElement<wchar_t> pgBorders	(_T("w:pgBorders"));
 		XMLTools::XMLElement<wchar_t> paperSrc	(_T("w:paperSrc"));
-		XMLTools::XMLElement<wchar_t> footnotePr	(_T("w:footnotePr"));
+		XMLTools::XMLElement<wchar_t> footnotePr(_T("w:footnotePr"));
 		XMLTools::XMLElement<wchar_t> endnotePr	(_T("w:endnotePr"));
 		XMLTools::XMLElement<wchar_t> pgNumType	(_T("w:pgNumType"));
 

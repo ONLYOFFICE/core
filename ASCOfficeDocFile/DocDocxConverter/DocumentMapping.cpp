@@ -17,7 +17,7 @@ namespace DocFileFormat
 		m_context				=	context;
 		m_bInternalXmlWriter	=	false;
 
-		_isSectionPageBreak		=	false;
+		_isSectionPageBreak		=	0;
 	}
 
 	DocumentMapping::DocumentMapping(ConversionContext* context, XmlUtils::CXmlWriter* writer, IMapping* caller):_skipRuns(0),  _lastValidPapx(NULL), _lastValidSepx(NULL), _writeInstrText(false),
@@ -28,7 +28,7 @@ namespace DocFileFormat
 		m_context				=	context;
 		m_bInternalXmlWriter	=	false;
 	
-		_isSectionPageBreak		=	false;
+		_isSectionPageBreak		=	0;
 	}
 
 	DocumentMapping::~DocumentMapping()
@@ -274,7 +274,6 @@ namespace DocFileFormat
 		RELEASEOBJECT(chpxFcs);
 		RELEASEOBJECT(chpxs);
 
-		_isSectionPageBreak = false;
 		return cpEnd++;
 	}
 
@@ -471,7 +470,7 @@ namespace DocFileFormat
 				else if (TextMark::PageBreakOrSectionMark == c)
 				{
 					//write page break, section breaks are written by writeParagraph() method
-					if (/*!isSectionEnd(c)*/_isSectionPageBreak == false)
+					if (/*!isSectionEnd(c)*/_isSectionPageBreak == 0)
 					{
                         writeTextElement(text, textType);
 
@@ -482,7 +481,6 @@ namespace DocFileFormat
 
 						m_pXmlWriter->WriteString(elem.GetXMLString().c_str());
 					}
-					_isSectionPageBreak = false;
 				}
 				else if (TextMark::ColumnBreak == c)
 				{

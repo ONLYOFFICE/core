@@ -20,7 +20,7 @@ namespace DocFileFormat
 		virtual ~ParagraphPropertiesMapping();
 		void Apply(IVisitable* visited);
 
-		bool get_section_page_break();
+		int get_section_page_break();
 
 	private:
 		WordDocument*		m_document;
@@ -35,6 +35,6 @@ namespace DocFileFormat
 		bool _isParagraphStyleNeeded;
 		bool _isBidi;
 
-		bool _isSectionPageBreak;
+		int _isSectionPageBreak;
 	};
 }

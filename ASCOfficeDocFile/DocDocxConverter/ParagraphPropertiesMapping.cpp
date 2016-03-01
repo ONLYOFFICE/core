@@ -16,7 +16,7 @@ namespace DocFileFormat
 
 		_paraEndChpx		= paraEndChpx;
 		_isBidi				= isBidi;
-		_isSectionPageBreak	= false;
+		_isSectionPageBreak	= 0;
 	}
 
 	ParagraphPropertiesMapping::ParagraphPropertiesMapping( XmlUtils::CXmlWriter* writer, ConversionContext* context, WordDocument* document, CharacterPropertyExceptions* paraEndChpx, bool isBidi, SectionPropertyExceptions* sepx, int sectionNr, bool isParagraphStyleNeeded )
@@ -31,7 +31,7 @@ namespace DocFileFormat
 		
 		_paraEndChpx		= paraEndChpx;
 		_isBidi				= isBidi;
-		_isSectionPageBreak	= false;
+		_isSectionPageBreak	= 0;
 		
 		_sepx				= sepx;
 		_sectionNr			= sectionNr;
@@ -46,7 +46,7 @@ namespace DocFileFormat
 
 namespace DocFileFormat
 {
-	bool ParagraphPropertiesMapping::get_section_page_break()
+	int ParagraphPropertiesMapping::get_section_page_break()
 	{
 		return _isSectionPageBreak;
 	}
@@ -551,6 +551,7 @@ namespace DocFileFormat
 			_pPr->AppendChild( *_framePr );
 		}
 
+		_isSectionPageBreak = 0;
 		//append section properties
 		if ( _sepx != NULL )
 		{
@@ -562,8 +563,10 @@ namespace DocFileFormat
 			{
 				//в этом параграфе уже есть разрыв страницы - br на page не нужен
 				//Vinci_Customer_Case_Study.doc
-				_isSectionPageBreak = true;
+				_isSectionPageBreak = 1;
 			}
+			else _isSectionPageBreak = 2;
+			
 			RELEASEOBJECT( sectionPropertiesMapping );
 			_pPr->AppendChild( sectPr );
 		}

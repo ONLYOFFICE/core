@@ -164,9 +164,11 @@ int FORMULA::serialize(std::wostream & stream)
 					CP_XML_ATTR(L"ref", array_->ref_.toString());
 
 					CP_XML_ATTR(L"t", L"array");
+					CP_XML_ATTR(L"ca", L"true");
+					
+					if (array_->fAlwaysCalc) CP_XML_ATTR(L"aca", L"true");
 					
 					formula_str = array_->formula.getAssembledFormula();
-					//aca="true" ca="true"
 				}
 
 				if (!formula_str.empty())
@@ -175,21 +177,21 @@ int FORMULA::serialize(std::wostream & stream)
 				}
 			}
 
-			if (formula_cash.empty())
-			{
-				if (m_Cash)
-				{
-					String * str = dynamic_cast<String*>(m_Cash.get());
-					if (str)
-						formula_cash =str->string.value();
-				}
-			}
+			//if (formula_cash.empty())
+			//{ todooo неверно читается - general_formulas.xls
+			//	if (m_Cash)
+			//	
+			//		String * str = dynamic_cast<String*>(m_Cash.get());
+			//		if (str)
+			//			formula_cash =str->string.value();
+			//	}
+			//}
 
 			if (!formula_cash.empty())
 			{
 				CP_XML_NODE(L"v")
 				{
-					CP_XML_STREAM() << formula_cash;
+					CP_XML_STREAM() << xml::utils::replace_text_to_xml(formula_cash);
 				}
 			}
 		}

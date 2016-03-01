@@ -110,9 +110,15 @@ int LBL::serialize(std::wostream & stream)
 	Lbl *lbl = dynamic_cast<Lbl*>(m_Lbl.get());
 	if (lbl == NULL) return 0;
 		
-	const std::wstring & value = lbl->rgce.getAssembledFormula();
+	std::wstring value = lbl->rgce.getAssembledFormula();
 
 	if (value.empty()) return 0;
+
+	int res = 0;
+	if (lbl->itab == 0 && (res = value.find(L"!")) < 0)
+	{
+		value = std::wstring(L"#REF!");
+	}
 
 	CP_XML_WRITER(stream)    
     {

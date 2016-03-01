@@ -104,6 +104,9 @@ include(../Qt_build/graphics/project/graphics_fonts.pri)
 LIB_XML_PRI_PATH = ../xml
 include(../xml/build/qt/libxml2.pri)
 
+CONFIG += build_all_zlib build_zlib_as_sources
+include(../../OfficeUtils/OfficeUtils.pri)
+
 win32:contains(QMAKE_TARGET.arch, x86_64):{
 
 CONFIG(debug, debug|release) {
@@ -168,9 +171,18 @@ mac {
 }
 ##################################################
 
-SOURCES +=  doctrenderer.cpp
+SOURCES += \
+    memorystream.cpp \
+    nativecontrol.cpp \
+    doctrenderer.cpp \
+    docbuilder.cpp
+
+SOURCES += \
+    ../../Common/OfficeFileFormatChecker2.cpp \
+    ../../Common/3dParty/pole/pole.cpp
 
 HEADERS += doctrenderer.h \
+    docbuilder.h \
     memorystream.h \
     nativecontrol.h
 

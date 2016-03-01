@@ -11,15 +11,15 @@ int main(int argc, char *argv[])
 
 #if 1
     std::wstring strXml = L"<Settings>\
-<SrcFileType>1</SrcFileType>\
+<SrcFileType>0</SrcFileType>\
 <DstFileType>3</DstFileType>\
-<SrcFilePath>D:\\build_doc</SrcFilePath>\
-<DstFilePath>D:\\build_doc\\EditorWithChanges.bin</DstFilePath>\
-<FontsDirectory>D:\\activex\\AVS\\Sources\\TeamlabOffice\\trunk\\OfficeWeb\\Fonts\\native</FontsDirectory>\
-<ImagesDirectory>D:\\build_doc\\media</ImagesDirectory>\
+<SrcFilePath>D:\\DE_CAD4</SrcFilePath>\
+<DstFilePath>D:\\DE_CAD4\\EditorWithChanges.bin</DstFilePath>\
+<FontsDirectory>D:\\activex\\AVS\\Sources\\TeamlabOffice\\trunk\\ServerComponents\\DesktopEditor\\ChromiumBasedEditors2\\app\\test\\src\\build\\win64\\Debug\\Local\\converter\\fonts\\</FontsDirectory>\
+<ImagesDirectory>D:\\DE_CAD4\\media</ImagesDirectory>\
 <ThemesDirectory>D:\\activex\\AVS\\Sources\\TeamlabOffice\\trunk\\ServerComponents\\Test\\Applications\\TestAVSOfficeDocxFile2\\TestAVSOfficeDocxFile2\\bin\\x86\\presentationthemes</ThemesDirectory>\
 <Changes TopItem=\"-1\">\
-<Change>D:\\build_doc\\changes\\changes0.json</Change>\
+<Change>D:\\DE_CAD4\\changes\\changes0.json</Change>\
 </Changes>\
 </Settings>";
 
@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
 
 #if 1
 
-    NSDoctRenderer::CDoctrenderer oRenderer;
+    NSDoctRenderer::CDoctrenderer oRenderer(L"C:/ProgramData/ONLYOFFICE/webdata/cloud/fonts/AllFonts.js");
 
     std::wstring sError;
     oRenderer.Execute(strXml, sError);
@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
     CPdfRenderer oPDF(&oFonts);
     oPDF.SetTempFolder(L"D:\\test_pdf");
 
-    oPDF.OnlineWordToPdfFromBinary(L"D:\\test_pdf\\pdf.bin", L"D:\\test_pdf\\123.pdf");
+    oPDF.OnlineWordToPdfFromBinary(L"D:\\DE_CAD4\\EditorWithChanges.bin", L"D:\\test_pdf\\123.pdf");
 
 #endif
 

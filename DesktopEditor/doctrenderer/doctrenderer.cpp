@@ -133,6 +133,19 @@ void CreateNativeObject(const v8::FunctionCallbackInfo<v8::Value>& args)
     args.GetReturnValue().Set(obj);
 }
 
+void CreateNativeObjectBuilder(const v8::FunctionCallbackInfo<v8::Value>& args)
+{
+    v8::Isolate* isolate = v8::Isolate::GetCurrent();
+
+    v8::Handle<v8::ObjectTemplate> NativeObjectTemplate = CreateNativeControlTemplateBuilder(isolate);
+    CNativeControl* pNativeObject = new CNativeControl();
+
+    v8::Local<v8::Object> obj = NativeObjectTemplate->NewInstance();
+    obj->SetInternalField(0, v8::External::New(v8::Isolate::GetCurrent(), pNativeObject));
+
+    args.GetReturnValue().Set(obj);
+}
+
 void CreateNativeMemoryStream(const v8::FunctionCallbackInfo<v8::Value>& args)
 {
     v8::Isolate* isolate = v8::Isolate::GetCurrent();

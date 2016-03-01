@@ -209,21 +209,52 @@ private:
 class section_context : boost::noncopyable
 {
 public:
-    section_context() : after_section_(false) {}
-    struct section { std::wstring Name; std::wstring Style; };
-  
-	void start_section(const std::wstring & SectionName, const std::wstring & Style);
-    void end_section();
+	section_context() /*: after_section_(false) */{}
     
-	bool empty() const { return sections_.empty(); }
-    const section & get() const { return sections_.back(); }
+	struct _section 
+	{
+		_section() {is_dump_ = false;}
+		
+		_section(const std::wstring & SectionName, const std::wstring & Style, const std::wstring & PageProperties) 
+		{ 
+			is_dump_		= false;
+			name_			= SectionName;
+			style_			= Style;
+			page_properties_.push_back(PageProperties);
+		}
+		std::wstring				name_; 
+		std::wstring				style_; 
+		
+		std::vector<std::wstring>	page_properties_;
 
-    void set_after_section(bool Val) { after_section_ = Val; }
-    bool get_after_section() { return after_section_; }
-        
+		bool						is_dump_;
+	};
+  
+	void add_section(const std::wstring & SectionName, const std::wstring & Style, const std::wstring & PageProperties);
+  
+	bool is_empty()		
+	{ 
+		return sections_.empty(); 
+	}
+    _section & get()		
+	{ 
+		if (sections_.empty())
+			return main_section_;
+		else
+			return sections_[0]; 
+	}
+	void remove_section()	
+	{
+		if (!sections_.empty()) 
+		{
+			sections_.erase(sections_.begin(), sections_.begin() + 1);
+		}
+	}
+	std::wstring			dump_;
+  
 private:    
-    std::list<section> sections_; 
-    bool after_section_;
+	_section				main_section_;
+    std::vector<_section>	sections_; 
 };
 
 class header_footer_context
@@ -396,6 +427,9 @@ public:
     void dump_headers_footers(rels & Rels) const;
     void dump_notes(rels & Rels) const;
 
+ 	bool next_dump_page_properties_;
+	bool next_dump_section_;
+
     odf_reader::odf_document * root()
     {
         return odf_document_;
@@ -406,18 +440,19 @@ public:
 
 	std::wstring  dump_settings_document();
 
-    void start_body();
-    void end_body();
-    void start_office_text();
-    void end_office_text();
-
-    void process_styles();
-    void process_fonts();
+    void start_body	();
+    void end_body	();
     
-    void process_list_styles();
-    void process_page_properties(std::wostream & strm);
+	void start_office_text	();
+    void end_office_text	();
+
+    void process_styles			();
+    void process_fonts			();
+    
+    void process_list_styles	();
+    bool process_page_properties(std::wostream & strm);
     void process_headers_footers();
-    void process_comments();
+    void process_comments		();
 
     void set_settings_property(const odf_reader::_property & prop);
 	std::vector<odf_reader::_property> & get_settings_properties();
@@ -429,8 +464,8 @@ public:
     void end_automatic_style();
     bool in_automatic_style();
 
-    styles_context & get_styles_context() { return styles_context_; }
-    styles_map & get_style_map() { return style_map_; }
+    styles_context	& get_styles_context()	{ return styles_context_; }
+    styles_map		& get_style_map()		{ return style_map_; }
 
     void push_text_properties(const odf_reader::style_text_properties * TextProperties);
     void pop_text_properties();
@@ -442,9 +477,14 @@ public:
     void set_page_break_before(bool val);
     bool get_page_break_before();
 
-    void set_page_properties(const std::wstring & StyleName);
-    const std::wstring & get_page_properties() const;
-    void next_dump_page_properties();
+	void set_page_break		(bool val);
+    bool get_page_break		();
+	
+	void			add_page_properties		(const std::wstring & StyleName);
+    std::wstring	get_page_properties		();
+	void			remove_page_properties	();
+    
+	void next_dump_page_properties(bool val);
     bool is_next_dump_page_properties();
 
     void set_master_page_name(const std::wstring & MasterPageName);
@@ -542,11 +582,11 @@ private:
     
 	bool page_break_after_;
     bool page_break_before_;
+	bool page_break_;
    
 	bool in_automatic_style_;
     
-	std::wstring current_page_properties_;
-    bool next_dump_page_properties_;
+
    
 	std::wstring text_list_style_name_;
     std::list<std::wstring> list_style_stack_;

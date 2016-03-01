@@ -191,7 +191,7 @@ void style_table_column_properties::docx_convert(oox::docx_conversion_context & 
 		const page_layout_instance * pp = Context.root()->odf_context().pageLayoutContainer().page_layout_first();//
 		if (pp)
 		{
-			const style_page_layout_properties_attlist & attr_page = pp->properties()->get_style_page_layout_properties_attlist();
+			style_page_layout_properties_attlist & attr_page = pp->properties()->style_page_layout_properties_attlist_;
 			if (attr_page.fo_page_width_)
 			{
 				int val =  0.5 + 20.0 * attr_page.fo_page_width_->get_value_unit(length::pt);

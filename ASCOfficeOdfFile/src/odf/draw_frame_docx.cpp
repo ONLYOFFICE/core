@@ -740,9 +740,10 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, const unio
     
 	if (pageLayoutInst)  pagePropertiesNode = pageLayoutInst->properties();
 
-    /*const */style_page_layout_properties_attlist emptyPageProperties;
-    const style_page_layout_properties_attlist & pageProperties =
-        pagePropertiesNode ? pagePropertiesNode->get_style_page_layout_properties_attlist() : emptyPageProperties;
+    style_page_layout_properties_attlist	emptyPageProperties;
+    
+	const style_page_layout_properties_attlist &	pageProperties =
+		pagePropertiesNode ? pagePropertiesNode->style_page_layout_properties_attlist_ : emptyPageProperties;
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 

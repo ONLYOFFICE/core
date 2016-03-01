@@ -117,24 +117,6 @@ private:
     rels_files * rels_;
 
 };
-//class xl_vml_drawings;
-//typedef _CP_PTR(xl_vml_drawings) xl_vml_drawings_ptr;
-//
-///// \class xl_drawings
-//class xl_vml_drawings: public element
-//{
-//public:
-//    virtual void write(const std::wstring & RootPath);
-//    xl_vml_drawings(const std::vector<comment_elm> & elms) : vml_drawings_ ( comment_elm )
-//    {
-//    }
-//
-//    static xl_vml_drawings_ptr create(const std::vector<comment_elm> & elms);
-//
-//private:
-//    const std::vector<comment_elm> & vml_drawings_;
-//
-//};
 
 /// \class  xl_files
 class xl_files : public element

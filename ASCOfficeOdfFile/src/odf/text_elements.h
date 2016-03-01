@@ -192,6 +192,7 @@ public:
 
 public:
     virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
+    void docx_convert(oox::docx_conversion_context & Context);
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );

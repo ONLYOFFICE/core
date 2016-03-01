@@ -107,8 +107,8 @@ int process_paragraph_attr(const paragraph_attrs & Attr, oox::docx_conversion_co
 {
     if (!Attr.text_style_name_.empty())
     {
-        if (style_instance * styleInst 
-            = Context.root()->odf_context().styleContainer().style_by_name(Attr.text_style_name_.style_name(), style_family::Paragraph,Context.process_headers_footers_)
+        if (style_instance * styleInst =
+				Context.root()->odf_context().styleContainer().style_by_name(Attr.text_style_name_.style_name(), style_family::Paragraph,Context.process_headers_footers_)
             )
         {
             process_page_break_after(styleInst, Context);
@@ -319,30 +319,33 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
 
         if (!masterPageName.empty()  && Context.get_master_page_name() != masterPageName)
         {
-            const std::wstring pageLayoutName = Context.root()->odf_context().pageLayoutContainer().page_layout_name_by_style(masterPageName);
-            Context.next_dump_page_properties();
-            Context.get_section_context().set_after_section(false);
-
+            Context.next_dump_page_properties(true);
 			is_empty = false;
         }
-    }
-    
-    if (next_section_ || next_end_section_)
+    } 
+	if (next_section_ || next_end_section_)
 	{
-        Context.next_dump_page_properties();
+		Context.get_section_context().get().is_dump_ = true;
 		is_empty = false;
 	}
 
-    const std::wstring & styleName = paragraph_attrs_.text_style_name_.style_name();
-    const std::wstring masterPageName = Context.root()->odf_context().styleContainer().master_page_name_by_name(styleName);
-    if (!masterPageName.empty())
+    const std::wstring & styleName		= paragraph_attrs_.text_style_name_.style_name();
+    const std::wstring masterPageName	= Context.root()->odf_context().styleContainer().master_page_name_by_name(styleName);
+   
+	if (!masterPageName.empty())
     {
-        const std::wstring masterPageNameLayout = Context.root()->odf_context().pageLayoutContainer().page_layout_name_by_style(masterPageName);
-        Context.set_page_properties(masterPageNameLayout);
-        Context.set_master_page_name(masterPageName);
+		Context.set_master_page_name(masterPageName);
+        
+		const std::wstring masterPageNameLayout = Context.root()->odf_context().pageLayoutContainer().page_layout_name_by_style(masterPageName);
+        
+		Context.remove_page_properties();
+		Context.add_page_properties(masterPageNameLayout);
+
+		Context.set_page_break(true);
 
 		is_empty = false;
     }    
+
 	process_paragraph_drop_cap_attr(paragraph_attrs_, Context);
 
 	if (Context.get_drop_cap_context().state() == 2)//active
@@ -363,20 +366,16 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
 
     BOOST_FOREACH(const office_element_ptr & elm, paragraph_content_)
     {
+		if (Context.get_page_break())
+		{
+			_Wostream << L"<w:lastRenderedPageBreak/>";
+			Context.set_page_break(false);
+		}
         elm->docx_convert(Context); 
  		
 		if (Context.get_drop_cap_context().state() >0)		
 			Context.get_drop_cap_context().state(0);//disable
-
-		if (elm->get_type() == typeTextSoftPageBreak && !Context.get_page_break_after() && !Context.get_page_break_before())
-		{
-			_Wostream << L"<w:lastRenderedPageBreak/>";
-
-			if (next_section_ || next_end_section_)
-				Context.set_page_break_before(true);
-		}
-
-   }
+	}
 
     if (textStyle>0)
 	{
@@ -407,6 +406,12 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
 
 
 	Context.finish_paragraph();
+
+	std::wstringstream strm;
+	if (Context.process_page_properties(strm))
+	{
+		Context.get_section_context().dump_ = strm.str();
+	}
 }
 
 void paragraph::xlsx_convert(oox::xlsx_conversion_context & Context)
@@ -427,6 +432,15 @@ void paragraph::pptx_convert(oox::pptx_conversion_context & Context)
     }
     Context.get_text_context().end_paragraph();    
 }
+///////////////////////////////////////////
+void soft_page_break::docx_convert(oox::docx_conversion_context & Context)
+{
+	if (!Context.get_page_break_after() && !Context.get_page_break_before())
+	{
+		Context.output_stream() << L"<w:lastRenderedPageBreak/>";
+	}
+}
+
 //////////////////////////////////////////////
 
 ::std::wostream & h::text_to_stream(::std::wostream & _Wostream) const
@@ -670,17 +684,16 @@ void text_section::add_child_element( xml::sax * Reader, const ::std::wstring & 
 
 void text_section::docx_convert(oox::docx_conversion_context & Context)
 {
-    Context.get_section_context().start_section(
+    Context.get_section_context().add_section(
         text_section_attr_.text_name_, 
-        text_section_attr_.text_style_name_.get_value_or(style_ref()).style_name()
+        text_section_attr_.text_style_name_.get_value_or(style_ref()).style_name(),
+		Context.get_page_properties()
         );
 
     BOOST_FOREACH(const office_element_ptr & elm, text_content_)
     {
         elm->docx_convert(Context);
     }
-
-    Context.get_section_context().end_section();
 }
 
 // text-section-source-attr

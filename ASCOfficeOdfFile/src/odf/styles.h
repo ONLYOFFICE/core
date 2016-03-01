@@ -1030,10 +1030,6 @@ public:
     
 	bool docx_back_serialize(std::wostream & strm, oox::docx_conversion_context & Context);
 
-    const style_page_layout_properties_attlist & get_style_page_layout_properties_attlist() const
-    {
-        return style_page_layout_properties_attlist_;
-    };
 
 public:
     style_page_layout_properties() { }

@@ -37,10 +37,11 @@ namespace DocFileFormat
 
 	void TextboxMapping::SetInset (int nLeft, int nTop, int nRight, int nBottom)
 	{
-		m_ndxTextLeft	=	nLeft;
-		m_ndyTextTop	=	nTop;
-		m_ndxTextRight	=	nRight;
-		m_ndyTextBottom	=	nBottom;
+		//emu to pt (1 pt = 12700)
+		m_dxTextLeft	=	nLeft	/ 12700.;
+		m_dyTextTop	=	nTop	/ 12700.;
+		m_dxTextRight	=	nRight	/ 12700.;
+		m_dyTextBottom	=	nBottom	/ 12700.;
 	}
 
 	void TextboxMapping::Apply (IVisitable* visited)
@@ -53,13 +54,13 @@ namespace DocFileFormat
 			//	return;
 
 			m_pXmlWriter->WriteNodeBegin(_T("v:textbox"), true);
-				if(m_ndxTextLeft >= 0 && m_ndyTextTop >= 0 && m_ndxTextRight >= 0 && m_ndyTextBottom >= 0)
+				if(m_dxTextLeft >= 0 && m_dyTextTop >= 0 && m_dxTextRight >= 0 && m_dyTextBottom >= 0)
 				{
 					m_pXmlWriter->WriteAttribute( _T( "inset" ), std_string2string(
-																		FormatUtils::IntToWideString(m_ndxTextLeft) + 
-															_T(",") +	FormatUtils::IntToWideString(m_ndyTextTop) +
-															_T(",") +	FormatUtils::IntToWideString(m_ndxTextRight) + 
-															_T(",") +	FormatUtils::IntToWideString(m_ndyTextBottom)));
+																		FormatUtils::DoubleToWideString(m_dxTextLeft) + 
+															_T("pt,") +	FormatUtils::DoubleToWideString(m_dyTextTop) +
+															_T("pt,") +	FormatUtils::DoubleToWideString(m_dxTextRight) + 
+															_T("pt,") +	FormatUtils::DoubleToWideString(m_dyTextBottom) + _T("pt")));
 				}
 				if (!m_sTextBoxStyle.empty())
 				{

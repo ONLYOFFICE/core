@@ -61,6 +61,9 @@ const std::wstring PtgExtraArray::toString() const
 {
 	std::wstring ret_val;
 	unsigned char col_cnt = cols + 1;
+
+	if (array_.empty()) return L"";
+
 	for(std::vector<SerArPtr>::const_iterator it = array_.begin(), itEnd = --array_.end(); it != itEnd; ++it)
 	{
 		ret_val += (*it)->toString();

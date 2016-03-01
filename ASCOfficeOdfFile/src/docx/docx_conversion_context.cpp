@@ -32,8 +32,10 @@ docx_conversion_context::docx_conversion_context(package::docx_document * Output
 	current_run_(false),
 	page_break_after_(false),
 	page_break_before_(false),
+	page_break_(false),
 	in_automatic_style_(false),
 	next_dump_page_properties_(false),
+	next_dump_section_(false),
 	mediaitems_( OdfDocument->get_folder() ),
 	in_paragraph_(false),
 	table_context_(*this),
@@ -586,14 +588,23 @@ void docx_conversion_context::start_process_style_content()
     styles_context_.start();
 }
 
-void docx_conversion_context::process_page_properties(std::wostream & strm)
+bool docx_conversion_context::process_page_properties(std::wostream & strm)
 {
-    if (is_next_dump_page_properties())
+    if (is_next_dump_page_properties() || get_section_context().get().is_dump_)
     {
-        const std::wstring pageProperties = get_page_properties();
-		odf_reader::page_layout_instance * page_layout_instance_ = root()->odf_context().pageLayoutContainer().page_layout_by_name(pageProperties);
-		if (page_layout_instance_) page_layout_instance_->docx_convert_serialize(strm,*this);
+        std::wstring pageProperties = get_page_properties();
+		if (!pageProperties.empty())//??? если пустая??? 
+		{
+			odf_reader::page_layout_instance * page_layout_instance_ = root()->odf_context().pageLayoutContainer().page_layout_by_name(pageProperties);
+			
+			if (page_layout_instance_) 
+				page_layout_instance_->docx_convert_serialize(strm,*this);
+
+		}
+		next_dump_page_properties(false);
+		return true;
     }
+	return false;
 }
 
 void docx_conversion_context::end_process_style_content(bool in_styles)
@@ -608,16 +619,29 @@ void docx_conversion_context::docx_serialize_paragraph_style(std::wostream & str
  //in_styles = true -> styles.xml
 //почему то конструкция <pPr><rPr/></pPr><rPr/> "не работает" в части в rPr в ms2010 )
 {
-	std::wstringstream & paragraph_style = get_styles_context().paragraph_nodes();
- 	std::wstringstream & run_style = get_styles_context().text_style();
+	std::wstringstream & paragraph_style	= get_styles_context().paragraph_nodes();
+ 	std::wstringstream & run_style			= get_styles_context().text_style();
    
-	if (!paragraph_style.str().empty() || !ParentId.empty())
-    {
-		CP_XML_WRITER(strm)
+	CP_XML_WRITER(strm)
+	{
+		if (get_section_context().dump_.empty() == false && !ParentId.empty())
 		{
 			CP_XML_NODE(L"w:pPr")
 			{
-				process_page_properties(CP_XML_STREAM());//????????
+				CP_XML_STREAM() << get_section_context().dump_;
+				get_section_context().dump_.clear();
+			}
+			finish_paragraph();
+			start_paragraph();
+		}
+
+		if (!paragraph_style.str().empty() || !ParentId.empty())
+		{		
+			CP_XML_NODE(L"w:pPr")
+			{
+				CP_XML_STREAM() << get_section_context().dump_;
+				get_section_context().dump_.clear();
+				
 				if (!ParentId.empty())
 				{
 					CP_XML_NODE(L"w:pStyle")
@@ -688,7 +712,14 @@ bool docx_conversion_context::get_page_break_after()
 {
     return page_break_after_ ;
 }
-
+void docx_conversion_context::set_page_break(bool val)
+{
+    page_break_ = val;
+}
+bool docx_conversion_context::get_page_break()
+{
+    return page_break_;
+}
 void docx_conversion_context::set_page_break_before(bool val)
 {
     page_break_before_ = val;
@@ -700,29 +731,47 @@ bool docx_conversion_context::get_page_break_before()
 }
 
 
-void docx_conversion_context::set_page_properties(const std::wstring & StyleName)
+void docx_conversion_context::add_page_properties(const std::wstring & StyleName)
 {
-    current_page_properties_ = StyleName;
+	section_context::_section & s = section_context_.get();
+	
+	s.page_properties_.push_back( StyleName);
 }
 
-const std::wstring & docx_conversion_context::get_page_properties() const
+std::wstring docx_conversion_context::get_page_properties()
 {
-    return current_page_properties_;
+	section_context::_section & s = section_context_.get();
+
+	if (s.page_properties_.size() > 1)			return s.page_properties_[1];
+	else if (s.page_properties_.size() == 1)	return s.page_properties_[0];
+	else										return L"";
+}
+void docx_conversion_context::remove_page_properties()
+{
+	section_context::_section & s = section_context_.get();
+
+	if (s.page_properties_.size() > 1)
+	{
+		//первая общая (если есть) для всего документа - оставляем ее
+		s.page_properties_.erase(s.page_properties_.begin() + 1, s.page_properties_.begin() + 2);
+	}
+	else if (s.page_properties_.size() == 1)
+	{
+		s.page_properties_.clear();
+	}
 }
 
-void docx_conversion_context::next_dump_page_properties()
+void docx_conversion_context::next_dump_page_properties(bool val)
 {
-    if (!process_headers_footers_)
-        next_dump_page_properties_ = true;
+	if (process_headers_footers_ && val) return;
+		
+	next_dump_page_properties_ = val;
 }
 
 bool docx_conversion_context::is_next_dump_page_properties()
 {
-    bool t = next_dump_page_properties_;
-    next_dump_page_properties_ = false;
-    return t;    
+    return next_dump_page_properties_;    
 }
-
 
 
 void docx_conversion_context::start_text_list_style(const std::wstring & StyleName)
@@ -848,17 +897,12 @@ void docx_conversion_context::docx_convert_delayed()
 	delayed_converting_=false;
 }
 
-void section_context::start_section(const std::wstring & SectionName, const std::wstring & Style)
+void section_context::add_section(const std::wstring & SectionName, const std::wstring & Style, const std::wstring & PageProperties)
 {
-    section newSec = {SectionName, Style};
+    _section newSec(SectionName, Style, PageProperties );
     sections_.push_back(newSec);
 }
 
-void section_context::end_section()
-{
-    sections_.pop_back();
-    set_after_section(true);
-}
 
 void docx_conversion_context::section_properties_in_table(odf_reader::office_element * Elm)
 {
@@ -929,7 +973,7 @@ void docx_conversion_context::process_headers_footers()
     {
         const std::wstring & styleName = page->style_master_page_attlist_.style_name_.get_value_or( odf_types::style_ref(L"") ).style_name();
         const std::wstring masterPageNameLayout =context.pageLayoutContainer().page_layout_name_by_style(styleName);
-        set_page_properties(masterPageNameLayout);
+        add_page_properties(masterPageNameLayout);
 		
 		process_one_header_footer(*this, styleName, page->style_header_.get(), headers_footers::header);
         process_one_header_footer(*this, styleName, page->style_footer_.get(), headers_footers::footer );
@@ -945,6 +989,8 @@ void docx_conversion_context::process_headers_footers()
 			rels rels_;
 			get_headers_footers().add(styleName, L"", headers_footers::none, rels_);
 		}
+		
+		remove_page_properties();
     }
     process_headers_footers_ = false;
 }

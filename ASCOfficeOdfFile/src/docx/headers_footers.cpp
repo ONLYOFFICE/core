@@ -70,21 +70,22 @@ bool headers_footers::write_sectPr(const std::wstring & StyleName, std::wostream
 {
     if (!instances_.count(StyleName))return false;
 
-	bool first=false, left=false;
-	bool res=false;
-    BOOST_FOREACH(const instance_ptr & inst, instances_.at(StyleName))
+	bool first	=	false, left	=	false;
+	bool res	=	false;
+   
+	BOOST_FOREACH(const instance_ptr & inst, instances_.at(StyleName))
     {
         std::wstring type = L"default";
 		
 		if ( inst->type_ == headerFirst || inst->type_ == footerFirst )
 		{
 			type = L"first";
-			first=true;
+			first = true;
 		}
 		else if ( inst->type_ == footerLeft || inst->type_ == headerLeft )
 		{
 			type = L"even";
-			left=true;
+			left = true;
 		}
 
         std::wstring name;  
@@ -97,10 +98,12 @@ bool headers_footers::write_sectPr(const std::wstring & StyleName, std::wostream
 		{
 			_Wostream << L"<" << name << L" r:id=\"" << inst->id_ << L"\" w:type=\"" << type << "\" />";
 		}
-	
-		if (first)_Wostream << L"<w:titlePg/>";
 		res=true;
-		
+	}
+	
+	if (first)
+	{
+		_Wostream << L"<w:titlePg/>";
 	}
 	return res;
 }

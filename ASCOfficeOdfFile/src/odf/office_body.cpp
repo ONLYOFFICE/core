@@ -62,7 +62,6 @@ void office_body::xlsx_convert(oox::xlsx_conversion_context & Context)
 
 void office_body::docx_convert(oox::docx_conversion_context & Context)
 {
-
     std::vector<style_master_page*> & masterPages = Context.root()->odf_context().pageLayoutContainer().master_pages();
     if (!masterPages.empty())
     {
@@ -70,7 +69,17 @@ void office_body::docx_convert(oox::docx_conversion_context & Context)
     }
 
 	const page_layout_instance * layout = Context.root()->odf_context().pageLayoutContainer().page_layout_first();
-	if (layout)    Context.set_page_properties(layout->name());
+	
+	if (layout)   //два раза - чтобы дефолтовые настройки всегда были
+	{
+		Context.add_page_properties(layout->name());
+		Context.add_page_properties(layout->name());
+	}
+	else
+	{
+		Context.add_page_properties(L""); // 
+		Context.add_page_properties(L"");
+	}
 //backcolor (for all pages) 
     if (page_layout_instance * firtsPageLayout = Context.root()->odf_context().pageLayoutContainer().page_layout_by_name(Context.get_page_properties()))
 	{
@@ -92,6 +101,7 @@ void office_body::docx_convert(oox::docx_conversion_context & Context)
     if (page_layout_instance * lastPageLayout = Context.root()->odf_context().pageLayoutContainer().page_layout_by_name(Context.get_page_properties()))
 	{
         lastPageLayout->docx_convert_serialize(Context.output_stream(), Context);
+		//Context.remove_page_properties();
 	}
 
     Context.end_body();    

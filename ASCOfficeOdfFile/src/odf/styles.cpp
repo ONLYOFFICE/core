@@ -1194,15 +1194,15 @@ void style_page_layout_properties::add_child_element( xml::sax * Reader, const :
 }
 bool style_page_layout_properties::docx_back_serialize(std::wostream & strm, oox::docx_conversion_context & Context)
 {
-	if (!get_style_page_layout_properties_attlist().common_background_color_attlist_.fo_background_color_)return false;
+	if (!style_page_layout_properties_attlist_.common_background_color_attlist_.fo_background_color_)return false;
 
-    if (get_style_page_layout_properties_attlist().common_background_color_attlist_.fo_background_color_->get_type() == background_color::Transparent) return true;
+    if (style_page_layout_properties_attlist_.common_background_color_attlist_.fo_background_color_->get_type() == background_color::Transparent) return true;
     //прозрачный фон
 	CP_XML_WRITER(strm)
 	{
 		CP_XML_NODE(L"w:background")
 		{
-			std::wstring color = get_style_page_layout_properties_attlist().common_background_color_attlist_.fo_background_color_->get_color().get_hex_value();
+			std::wstring color = style_page_layout_properties_attlist_.common_background_color_attlist_.fo_background_color_->get_color().get_hex_value();
 			CP_XML_ATTR(L"w:color",color);
 		}
 	}
@@ -1210,8 +1210,6 @@ bool style_page_layout_properties::docx_back_serialize(std::wostream & strm, oox
 }
 void style_page_layout_properties::docx_convert_serialize(std::wostream & strm, oox::docx_conversion_context & Context)
 {
-	if (Context.get_drawing_context().get_current_level()>0) return;
-    
 	if (Context.get_table_context().in_table())
     {
         // мы находимся внутри таблицы, устанавливаем специальное значение
@@ -1241,50 +1239,47 @@ void style_page_layout_properties::docx_convert_serialize(std::wostream & strm, 
 	{
 		CP_XML_NODE(L"w:sectPr")
 		{
-			if (!Context.get_section_context().empty())
+			oox::section_context::_section & section = Context.get_section_context().get();
+			
+			if (const style_instance * secStyle = 
+				Context.root()->odf_context().styleContainer().style_by_name(section.style_, style_family::Section,Context.process_headers_footers_))
 			{
-				CP_XML_NODE(L"w:type")
+				if (const style_content * content = secStyle->content())
 				{
-					CP_XML_ATTR(L"w:val","continuous");
-				}
-				const std::wstring & secStyleName = Context.get_section_context().get().Style;
-				if (const style_instance * secStyle = 
-					Context.root()->odf_context().styleContainer().style_by_name(secStyleName, style_family::Section,Context.process_headers_footers_))
-				{
-					if (const style_content * content = secStyle->content())
+					if (style_section_properties * sectPr = content->get_style_section_properties())
 					{
-						if (style_section_properties * sectPr = content->get_style_section_properties())
+						if (style_columns * columns = dynamic_cast<style_columns *>( sectPr->style_columns_.get() ))
 						{
-							if (style_columns * columns = dynamic_cast<style_columns *>( sectPr->style_columns_.get() ))
+							if (columns->fo_column_count_)
 							{
-								if (columns->fo_column_count_)
-								{
-									count_columns =  *columns->fo_column_count_;
-								}
-								if (style_column_sep * columns_sep = dynamic_cast<style_column_sep *>( columns->style_column_sep_.get() ))
-								{
-									if (columns_sep->style_style_ != _T("none"))
-										sep_columns = true;
-								}
+								count_columns =  *columns->fo_column_count_;
 							}
-
-							sect_margin_left_ = sectPr->common_horizontal_margin_attlist_.fo_margin_left_;
-							sect_margin_right_ = sectPr->common_horizontal_margin_attlist_.fo_margin_right_;
+							if (style_column_sep * columns_sep = dynamic_cast<style_column_sep *>( columns->style_column_sep_.get() ))
+							{
+								if (columns_sep->style_style_ != _T("none"))
+									sep_columns = true;
+							}
 						}
+
+						sect_margin_left_ = sectPr->common_horizontal_margin_attlist_.fo_margin_left_;
+						sect_margin_right_ = sectPr->common_horizontal_margin_attlist_.fo_margin_right_;
 					}
 				}
-			}
-			else
-			{
-				CP_XML_NODE(L"w:type")
-				{				
-					if (!Context.get_section_context().get_after_section())
-						CP_XML_ATTR(L"w:val", L"nextPage");
-					else
-						CP_XML_ATTR(L"w:val", L"continuous");
+				if (section.is_dump_)
+				{
+					Context.get_section_context().remove_section();				
 				}
 			}
-			
+			CP_XML_NODE(L"w:type")
+			{				
+				if (Context.is_next_dump_page_properties())
+				{
+					CP_XML_ATTR(L"w:val", L"nextPage");
+				}else
+				{
+					CP_XML_ATTR(L"w:val", L"continuous");
+				}
+			}			
 			if (count_columns > 1)
 			{
 				CP_XML_NODE(L"w:cols")
@@ -1295,19 +1290,20 @@ void style_page_layout_properties::docx_convert_serialize(std::wostream & strm, 
 					CP_XML_ATTR(L"w:space",0);
 				}
 			}
-			
+			std::wstring masterPageName = Context.get_master_page_name();//выдавался последний по document.xml!!!
+			bool res = Context.get_headers_footers().write_sectPr(masterPageName, strm);
+			if (res == false)
 			{
-				std::wstring masterPageName = Context.get_master_page_name();//выдавался последний по document.xml!!!
+				// default???
+				masterPageName = L"Standard";
+				const std::wstring masterPageNameLayout = Context.root()->odf_context().pageLayoutContainer().page_layout_name_by_style(masterPageName);
+				
+				Context.remove_page_properties();
+				Context.add_page_properties(masterPageNameLayout);
+				
 				bool res = Context.get_headers_footers().write_sectPr(masterPageName, strm);
-				if (res == false)
-				{
-					// default???
-					masterPageName = L"Standard";
-					const std::wstring masterPageNameLayout = Context.root()->odf_context().pageLayoutContainer().page_layout_name_by_style(masterPageName);
-					Context.set_page_properties(masterPageNameLayout);
-					bool res = Context.get_headers_footers().write_sectPr(masterPageName, strm);
-				}
 			}
+
 			style_page_layout_properties_attlist_.docx_convert_serialize(strm, Context, sect_margin_left_, sect_margin_right_);
 			//todooo при появлении еще накладок - переписать !!
 		}

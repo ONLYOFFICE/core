@@ -22,6 +22,8 @@ namespace NSDoctRenderer
         void CloseFile();
         bool ExecuteCommand(const std::wstring& command);
 
+        bool Run(const std::wstring& path);
+
     private:
         CDocBuilder_Private* m_pInternal;
     };

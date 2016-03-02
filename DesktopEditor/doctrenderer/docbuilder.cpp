@@ -14,6 +14,7 @@
 #include "../../Common/OfficeFileFormatChecker.h"
 
 #include "nativecontrol.h"
+#include <list>
 
 template <typename T>
 class CScopeWrapper
@@ -95,7 +96,7 @@ public:
 
 public:
 
-    void _LOGGING_ERROR_(const std::wstring& strType, const std::wstring& strError)
+    static void _LOGGING_ERROR_(const std::wstring& strType, const std::wstring& strError)
     {
         std::string sT = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(strType);
         std::string sE = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(strError);
@@ -272,6 +273,8 @@ public:
 
         if (!bIsBreak)
             bIsBreak = !this->ExecuteCommand(L"asc_nativeInitBuilder();", false);
+        if (!bIsBreak)
+            bIsBreak = !this->ExecuteCommand(L"asc_SetSilentMode(true);", false);
 
         return !bIsBreak;
     }
@@ -530,6 +533,7 @@ namespace NSDoctRenderer
         bool OpenFile(const std::wstring& path, const std::wstring& params)
         {
             CheckFileDir();
+            NSDirectory::CreateDirectory(m_sFileDir + L"/changes");
 
             COfficeFileFormatChecker oChecker;
             if (!oChecker.isOfficeFile(path))
@@ -923,6 +927,40 @@ namespace NSDoctRenderer
 
 namespace NSDoctRenderer
 {
+    void ParceParameters(const std::string& command, std::wstring* params)
+    {
+        const char* _commandsPtr = command.c_str();
+        size_t _commandsLen = command.length();
+        size_t _currentPos = 0;
+
+        int nIndex = 0;
+
+        while (true)
+        {
+            while (_currentPos < _commandsLen && !(_commandsPtr[_currentPos] == '\"' && _commandsPtr[_currentPos - 1] != '\\'))
+                ++_currentPos;
+
+            ++_currentPos;
+            size_t _start = _currentPos;
+
+            while (_currentPos < _commandsLen && !(_commandsPtr[_currentPos] == '\"' && _commandsPtr[_currentPos - 1] != '\\'))
+                ++_currentPos;
+
+            if (_currentPos > _start)
+            {
+                if (_currentPos == (_start + 1))
+                    params[nIndex++] = L"";
+                else
+                    params[nIndex++] = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)(_commandsPtr + _start), (LONG)(_currentPos - _start));
+            }
+
+            ++_currentPos;
+
+            if (_currentPos >= _commandsLen)
+                break;
+        }
+    }
+
     CDocBuilder::CDocBuilder()
     {
         m_pInternal = new CDocBuilder_Private();
@@ -964,5 +1002,133 @@ namespace NSDoctRenderer
     bool CDocBuilder::ExecuteCommand(const std::wstring& command)
     {
         return m_pInternal->ExecuteCommand(command);
+    }
+
+    bool CDocBuilder::Run(const std::wstring& path)
+    {
+        std::wstring sPath = path;
+        if (!NSFile::CFileBinary::Exists(sPath))
+            sPath = NSFile::GetProcessDirectory() + L"/" + sPath;
+
+        std::string sCommands;
+        bool bRet = NSFile::CFileBinary::ReadAllTextUtf8A(sPath, sCommands);
+
+        if (!bRet)
+        {
+            CV8RealTimeWorker::_LOGGING_ERROR_(L"error", L"cannot read run file");
+            return bRet;
+        }
+
+        std::list<std::string> _commands;
+        const char* _commandsPtr = sCommands.c_str();
+        size_t _commandsLen = sCommands.length();
+        size_t _currentPos = 0;
+
+        while (true)
+        {
+            while (_currentPos < _commandsLen && (_commandsPtr[_currentPos] == 0x0d || _commandsPtr[_currentPos] == 0x0a))
+                ++_currentPos;
+
+            size_t _start = _currentPos;
+
+            while (_currentPos < _commandsLen && (_commandsPtr[_currentPos] != 0x0d && _commandsPtr[_currentPos] != 0x0a))
+                ++_currentPos;
+
+            if (_currentPos > (_start + 1))
+                _commands.push_back(std::string(_commandsPtr + _start, _currentPos - _start));
+
+            if (_currentPos >= _commandsLen)
+                break;
+        }
+
+        std::wstring _builder_params[4]; // с запасом
+        for (std::list<std::string>::iterator i = _commands.begin(); i != _commands.end(); i++)
+        {
+            const std::string& command = *i;
+            const char* _data = command.c_str();
+            size_t _len = command.length();
+
+            if (_data[0] == '#')
+                continue;
+
+            bool bIsBuilder = false;
+            if (_len > 8)
+            {
+                if (_data[0] == 'b' &&
+                    _data[1] == 'u' &&
+                    _data[2] == 'i' &&
+                    _data[3] == 'l' &&
+                    _data[4] == 'd' &&
+                    _data[5] == 'e' &&
+                    _data[6] == 'r' &&
+                    _data[7] == '.')
+                    bIsBuilder = true;
+            }
+
+            bool bIsNoError = true;
+            if (bIsBuilder)
+            {
+                size_t _pos = 8;
+                while (_data[_pos] != '(')
+                    ++_pos;
+
+                std::string sFuncNum(_data + 8, _pos - 8);
+                ParceParameters(command, _builder_params);
+
+                if ("OpenFile" == sFuncNum)
+                    bIsNoError = this->OpenFile(_builder_params[0], _builder_params[1]);
+                else if ("CreateFile" == sFuncNum)
+                {
+                    if (L"docx" == _builder_params[0])
+                        bIsNoError = this->CreateFile(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX);
+                    else if (L"pptx" == _builder_params[0])
+                        bIsNoError = this->CreateFile(AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX);
+                    else if (L"xlsx" == _builder_params[0])
+                        bIsNoError = this->CreateFile(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX);
+                }
+                else if ("SetTmpFolder" == sFuncNum)
+                    this->SetTmpFolder(_builder_params[0]);
+                else if ("CloseFile" == sFuncNum)
+                    this->CloseFile();
+                else if ("SaveFile" == sFuncNum)
+                {
+                    int nFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX;
+
+                    if (L"docx" == _builder_params[0])
+                        nFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX;
+                    else if (L"doc" == _builder_params[0])
+                        nFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC;
+                    else if (L"odt" == _builder_params[0])
+                        nFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT;
+                    else if (L"rtf" == _builder_params[0])
+                        nFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_RTF;
+                    else if (L"txt" == _builder_params[0])
+                        nFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT;
+                    else if (L"pptx" == _builder_params[0])
+                        nFormat = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX;
+                    else if (L"xlsx" == _builder_params[0])
+                        nFormat = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX;
+                    else if (L"xls" == _builder_params[0])
+                        nFormat = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS;
+                    else if (L"ods" == _builder_params[0])
+                        nFormat = AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS;
+                    else if (L"csv" == _builder_params[0])
+                        nFormat = AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV;
+                    else if (L"pdf" == _builder_params[0])
+                        nFormat = AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF;
+
+                    this->SaveFile(nFormat, _builder_params[1]);
+                }
+            }
+            else
+            {
+                bIsNoError = this->ExecuteCommand(NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)_data, (LONG)_len));
+            }
+
+            if (!bIsNoError)
+                return false;
+        }
+
+        return true;
     }
 }

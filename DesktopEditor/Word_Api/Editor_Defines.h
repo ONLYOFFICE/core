@@ -3,228 +3,237 @@
 
 #define g_bDate1904 = false;
 
-#define CellValueType_Number	0
-#define CellValueType_String	1
-#define CellValueType_Bool		2
-#define CellValueType_Error		3
+#define CellValueType_Number                                0
+#define CellValueType_String                                1
+#define CellValueType_Bool                                  2
+#define CellValueType_Error                                 3
 
 //NumFormat defines
-#define	c_oAscNumFormatType_General		0
-#define c_oAscNumFormatType_Custom		1
-#define c_oAscNumFormatType_Text		2
-#define c_oAscNumFormatType_Number		3
-#define c_oAscNumFormatType_Integer		4
-#define c_oAscNumFormatType_Scientific	5
-#define c_oAscNumFormatType_Currency	6
-#define c_oAscNumFormatType_Date		7
-#define c_oAscNumFormatType_Time		8
-#define c_oAscNumFormatType_Percent		9
-#define c_oAscNumFormatType_Fraction	10
+#define	c_oAscNumFormatType_General                         0
+#define c_oAscNumFormatType_Custom                          1
+#define c_oAscNumFormatType_Text                            2
+#define c_oAscNumFormatType_Number                          3
+#define c_oAscNumFormatType_Integer                         4
+#define c_oAscNumFormatType_Scientific                      5
+#define c_oAscNumFormatType_Currency                        6
+#define c_oAscNumFormatType_Date                            7
+#define c_oAscNumFormatType_Time                            8
+#define c_oAscNumFormatType_Percent                         9
+#define c_oAscNumFormatType_Fraction                        10
 	 
-#define c_oAscDrawingLayerType_BringToFront		0
-#define c_oAscDrawingLayerType_SendToBack		1
-#define c_oAscDrawingLayerType_BringForward		2
-#define c_oAscDrawingLayerType_SendBackward		3
+#define c_oAscDrawingLayerType_BringToFront                 0
+#define c_oAscDrawingLayerType_SendToBack                   1
+#define c_oAscDrawingLayerType_BringForward                 2
+#define c_oAscDrawingLayerType_SendBackward                 3
 
-#define c_oAscTransactionState_No		-1
-#define c_oAscTransactionState_Start	0
-#define c_oAscTransactionState_Stop		1
+#define c_oAscTransactionState_No                           -1
+#define c_oAscTransactionState_Start                        0
+#define c_oAscTransactionState_Stop                         1
 							
-#define c_oAscCellAnchorType_cellanchorAbsolute		0
-#define c_oAscCellAnchorType_cellanchorOneCell		1
-#define c_oAscCellAnchorType_cellanchorTwoCell		2
+#define c_oAscCellAnchorType_cellanchorAbsolute             0
+#define c_oAscCellAnchorType_cellanchorOneCell              1
+#define c_oAscCellAnchorType_cellanchorTwoCell              2
 
-#define c_oAscChartDefines_defaultChartWidth		478
-#define c_oAscChartDefines_defaultChartHeight		286
+#define c_oAscChartDefines_defaultChartWidth                478
+#define c_oAscChartDefines_defaultChartHeight               286
 	
-#define c_oAscLineDrawingRule_Left		0
-#define c_oAscLineDrawingRule_Center	1
-#define c_oAscLineDrawingRule_Right		2
-#define c_oAscLineDrawingRule_Top		0
-#define c_oAscLineDrawingRule_Bottom	2
+#define c_oAscLineDrawingRule_Left                          0
+#define c_oAscLineDrawingRule_Center                        1
+#define c_oAscLineDrawingRule_Right                         2
+#define c_oAscLineDrawingRule_Top                           0
+#define c_oAscLineDrawingRule_Bottom                        2
 	
-#define align_Right		0
-#define align_Left		1
-#define align_Center	2
-#define align_Justify	3
+#define align_Right                                         0
+#define align_Left                                          1
+#define align_Center                                        2
+#define align_Justify                                       3
 
-#define linerule_AtLeast	0
-#define linerule_Auto		1
-#define linerule_Exact		2
+#define linerule_AtLeast                                    0
+#define linerule_Auto                                       1
+#define linerule_Exact                                      2
 
-#define shd_Clear	0
-#define shd_Nil		1
+#define shd_Clear                                           0
+#define shd_Nil                                             1
 
-#define vertalign_Baseline		0
-#define vertalign_SuperScript	1
-#define vertalign_SubScript		2
-#define hdrftr_Header			0x01
-#define hdrftr_Footer			0x02
+#define vertalign_Baseline                                  0
+#define vertalign_SuperScript                               1
+#define vertalign_SubScript                                 2
+#define hdrftr_Header                                       0x01
+#define hdrftr_Footer                                       0x02
 
-#define c_oAscChartTitleShowSettings_none			0
-#define c_oAscChartTitleShowSettings_overlay		1
-#define c_oAscChartTitleShowSettings_noOverlay		2
+#define c_oAscChartTitleShowSettings_none                   0
+#define c_oAscChartTitleShowSettings_overlay                1
+#define c_oAscChartTitleShowSettings_noOverlay              2
 
-#define c_oAscChartHorAxisLabelShowSettings_none		0
-#define c_oAscChartHorAxisLabelShowSettings_noOverlay	1
+#define c_oAscChartHorAxisLabelShowSettings_none            0
+#define c_oAscChartHorAxisLabelShowSettings_noOverlay       1
 
 #define c_oAscChartVertAxisLabelShowSettings_none			0
 #define c_oAscChartVertAxisLabelShowSettings_rotated		1
 #define c_oAscChartVertAxisLabelShowSettings_vertical		2
 #define c_oAscChartVertAxisLabelShowSettings_horizontal		3
 
-#define c_oAscChartLegendShowSettings_none				0
-#define c_oAscChartLegendShowSettings_left				1
-#define c_oAscChartLegendShowSettings_top				2
-#define c_oAscChartLegendShowSettings_right				3
-#define c_oAscChartLegendShowSettings_bottom			4
-#define c_oAscChartLegendShowSettings_leftOverlay		5
-#define c_oAscChartLegendShowSettings_rightOverlay		6
-#define c_oAscChartLegendShowSettings_layout			7
+#define c_oAscChartLegendShowSettings_none                  0
+#define c_oAscChartLegendShowSettings_left                  1
+#define c_oAscChartLegendShowSettings_top                   2
+#define c_oAscChartLegendShowSettings_right                 3
+#define c_oAscChartLegendShowSettings_bottom                4
+#define c_oAscChartLegendShowSettings_leftOverlay           5
+#define c_oAscChartLegendShowSettings_rightOverlay          6
+#define c_oAscChartLegendShowSettings_layout                7
 
-#define c_oAscChartDataLabelsPos_none			0
-#define c_oAscChartDataLabelsPos_b				1
-#define c_oAscChartDataLabelsPos_bestFit		2
-#define c_oAscChartDataLabelsPos_ctr			3
-#define c_oAscChartDataLabelsPos_inBase			4
-#define c_oAscChartDataLabelsPos_inEnd			5
-#define c_oAscChartDataLabelsPos_l				6
-#define c_oAscChartDataLabelsPos_outEnd			7
-#define c_oAscChartDataLabelsPos_r				8
-#define c_oAscChartDataLabelsPos_t				9
+#define c_oAscChartDataLabelsPos_none                       0
+#define c_oAscChartDataLabelsPos_b                          1
+#define c_oAscChartDataLabelsPos_bestFit                    2
+#define c_oAscChartDataLabelsPos_ctr                        3
+#define c_oAscChartDataLabelsPos_inBase                     4
+#define c_oAscChartDataLabelsPos_inEnd                      5
+#define c_oAscChartDataLabelsPos_l                          6
+#define c_oAscChartDataLabelsPos_outEnd                     7
+#define c_oAscChartDataLabelsPos_r                          8
+#define c_oAscChartDataLabelsPos_t                          9
 
-#define c_oAscChartCatAxisSettings_none				0
-#define c_oAscChartCatAxisSettings_leftToRight		1
-#define c_oAscChartCatAxisSettings_rightToLeft		2
-#define c_oAscChartCatAxisSettings_noLabels			3
+#define c_oAscChartCatAxisSettings_none                     0
+#define c_oAscChartCatAxisSettings_leftToRight              1
+#define c_oAscChartCatAxisSettings_rightToLeft              2
+#define c_oAscChartCatAxisSettings_noLabels                 3
 
-#define c_oAscChartValAxisSettings_none				0
-#define c_oAscChartValAxisSettings_byDefault		1
-#define c_oAscChartValAxisSettings_thousands		2
-#define c_oAscChartValAxisSettings_millions			3
-#define c_oAscChartValAxisSettings_billions			4
-#define c_oAscChartValAxisSettings_log				5
+#define c_oAscChartValAxisSettings_none                     0
+#define c_oAscChartValAxisSettings_byDefault                1
+#define c_oAscChartValAxisSettings_thousands                2
+#define c_oAscChartValAxisSettings_millions                 3
+#define c_oAscChartValAxisSettings_billions                 4
+#define c_oAscChartValAxisSettings_log                      5
 
-#define c_oAscAxisTypeSettings_vert		0
-#define c_oAscAxisTypeSettings_hor		1
+#define c_oAscAxisTypeSettings_vert                         0
+#define c_oAscAxisTypeSettings_hor                          1
 
-#define c_oAscGridLinesSettings_none		0
-#define c_oAscGridLinesSettings_major		1
-#define c_oAscGridLinesSettings_minor		2
-#define c_oAscGridLinesSettings_majorMinor	3
+#define c_oAscGridLinesSettings_none                        0
+#define c_oAscGridLinesSettings_major                       1
+#define c_oAscGridLinesSettings_minor                       2
+#define c_oAscGridLinesSettings_majorMinor                  3
 
-#define c_oAscChartTypeSettings_barNormal				0
-#define c_oAscChartTypeSettings_barStacked				1
-#define c_oAscChartTypeSettings_barStackedPer			2
-#define c_oAscChartTypeSettings_lineNormal				3
-#define c_oAscChartTypeSettings_lineStacked				4
-#define c_oAscChartTypeSettings_lineStackedPer			5
-#define c_oAscChartTypeSettings_lineNormalMarker		6
-#define c_oAscChartTypeSettings_lineStackedMarker		7
-#define c_oAscChartTypeSettings_lineStackedPerMarker	8
-#define c_oAscChartTypeSettings_pie						9
-#define c_oAscChartTypeSettings_hBarNormal				10
-#define c_oAscChartTypeSettings_hBarStacked				11
-#define c_oAscChartTypeSettings_hBarStackedPer			12
-#define c_oAscChartTypeSettings_areaNormal				13
-#define c_oAscChartTypeSettings_areaStacked				14
-#define c_oAscChartTypeSettings_areaStackedPer			15
-#define c_oAscChartTypeSettings_doughnut				16
-#define c_oAscChartTypeSettings_stock					17
-#define c_oAscChartTypeSettings_scatter					18
-#define c_oAscChartTypeSettings_scatterLine				19
-#define c_oAscChartTypeSettings_scatterLineMarker		20
-#define c_oAscChartTypeSettings_scatterMarker			21
-#define c_oAscChartTypeSettings_scatterNone				22
-#define c_oAscChartTypeSettings_scatterSmooth			23
-#define c_oAscChartTypeSettings_scatterSmoothMarker		24
-#define c_oAscChartTypeSettings_unknown					25
+#define c_oAscChartTypeSettings_barNormal                   0
+#define c_oAscChartTypeSettings_barStacked                  1
+#define c_oAscChartTypeSettings_barStackedPer               2
+#define c_oAscChartTypeSettings_barNormal3d                 3
+#define c_oAscChartTypeSettings_barStacked3d                4
+#define c_oAscChartTypeSettings_barStackedPer3d             5
+#define c_oAscChartTypeSettings_barNormal3dPerspective      6
+#define c_oAscChartTypeSettings_lineNormal                  7
+#define c_oAscChartTypeSettings_lineStacked                 8
+#define c_oAscChartTypeSettings_lineStackedPer              9
+#define c_oAscChartTypeSettings_lineNormalMarker            10
+#define c_oAscChartTypeSettings_lineStackedMarker           11
+#define c_oAscChartTypeSettings_lineStackedPerMarker        12
+#define c_oAscChartTypeSettings_line3d                      13
+#define c_oAscChartTypeSettings_pie                         14
+#define c_oAscChartTypeSettings_pie3d                       15
+#define c_oAscChartTypeSettings_hBarNormal                  16
+#define c_oAscChartTypeSettings_hBarStacked                 17
+#define c_oAscChartTypeSettings_hBarStackedPer              18
+#define c_oAscChartTypeSettings_hBarNormal3d                19
+#define c_oAscChartTypeSettings_hBarStacked3d               20
+#define c_oAscChartTypeSettings_hBarStackedPer3d            21
+#define c_oAscChartTypeSettings_areaNormal                  22
+#define c_oAscChartTypeSettings_areaStacked                 23
+#define c_oAscChartTypeSettings_areaStackedPer              24
+#define c_oAscChartTypeSettings_doughnut                    25
+#define c_oAscChartTypeSettings_stock                       26
+#define c_oAscChartTypeSettings_scatter                     27
+#define c_oAscChartTypeSettings_scatterLine                 28
+#define c_oAscChartTypeSettings_scatterLineMarker           29
+#define c_oAscChartTypeSettings_scatterMarker               30
+#define c_oAscChartTypeSettings_scatterNone                 31
+#define c_oAscChartTypeSettings_scatterSmooth               32
+#define c_oAscChartTypeSettings_scatterSmoothMarker         33
+#define c_oAscChartTypeSettings_unknown                     34
 
-#define c_oAscValAxisRule_auto		0
-#define c_oAscValAxisRule_fixed		1
+#define c_oAscValAxisRule_auto                              0
+#define c_oAscValAxisRule_fixed                             1
 
-#define c_oAscValAxUnits_none					0
-#define c_oAscValAxUnits_BILLIONS				1
-#define c_oAscValAxUnits_HUNDRED_MILLIONS		2
-#define c_oAscValAxUnits_HUNDREDS				3
-#define c_oAscValAxUnits_HUNDRED_THOUSANDS		4
-#define c_oAscValAxUnits_MILLIONS				5
-#define c_oAscValAxUnits_TEN_MILLIONS			6
-#define c_oAscValAxUnits_TEN_THOUSANDS			7
-#define c_oAscValAxUnits_TRILLIONS				8
-#define c_oAscValAxUnits_CUSTOM					9
-#define c_oAscValAxUnits_THOUSANDS				10
+#define c_oAscValAxUnits_none                               0
+#define c_oAscValAxUnits_BILLIONS                           1
+#define c_oAscValAxUnits_HUNDRED_MILLIONS                   2
+#define c_oAscValAxUnits_HUNDREDS                           3
+#define c_oAscValAxUnits_HUNDRED_THOUSANDS                  4
+#define c_oAscValAxUnits_MILLIONS                           5
+#define c_oAscValAxUnits_TEN_MILLIONS                       6
+#define c_oAscValAxUnits_TEN_THOUSANDS                      7
+#define c_oAscValAxUnits_TRILLIONS                          8
+#define c_oAscValAxUnits_CUSTOM                             9
+#define c_oAscValAxUnits_THOUSANDS                          10
 
-#define c_oAscTickMark_TICK_MARK_CROSS			0
-#define c_oAscTickMark_TICK_MARK_IN				1
-#define c_oAscTickMark_TICK_MARK_NONE			2
-#define c_oAscTickMark_TICK_MARK_OUT			3
+#define c_oAscTickMark_TICK_MARK_CROSS                      0
+#define c_oAscTickMark_TICK_MARK_IN                         1
+#define c_oAscTickMark_TICK_MARK_NONE                       2
+#define c_oAscTickMark_TICK_MARK_OUT                        3
 
 #define c_oAscTickLabelsPos_TICK_LABEL_POSITION_HIGH		0
 #define c_oAscTickLabelsPos_TICK_LABEL_POSITION_LOW			1
 #define c_oAscTickLabelsPos_TICK_LABEL_POSITION_NEXT_TO		2
 #define c_oAscTickLabelsPos_TICK_LABEL_POSITION_NONE		3
 
-#define c_oAscCrossesRule_auto			0
-#define c_oAscCrossesRule_maxValue		1
-#define c_oAscCrossesRule_value			2
-#define c_oAscCrossesRule_minValue		3
+#define c_oAscCrossesRule_auto                              0
+#define c_oAscCrossesRule_maxValue                          1
+#define c_oAscCrossesRule_value                             2
+#define c_oAscCrossesRule_minValue                          3
 
-#define c_oAscHorAxisType_auto			0
-#define c_oAscHorAxisType_date			1
-#define c_oAscHorAxisType_text			2
+#define c_oAscHorAxisType_auto                              0
+#define c_oAscHorAxisType_date                              1
+#define c_oAscHorAxisType_text                              2
 
-#define c_oAscBetweenLabelsRule_auto	0
-#define c_oAscBetweenLabelsRule_manual	1
+#define c_oAscBetweenLabelsRule_auto                        0
+#define c_oAscBetweenLabelsRule_manual                      1
 
-#define c_oAscLabelsPosition_byDivisions		0
-#define c_oAscLabelsPosition_betweenDivisions	1
+#define c_oAscLabelsPosition_byDivisions                    0
+#define c_oAscLabelsPosition_betweenDivisions               1
 
-#define c_oAscAxisType_auto		0
-#define c_oAscAxisType_date		1
-#define c_oAscAxisType_text		2
-#define c_oAscAxisType_cat		3
-#define c_oAscAxisType_val		4
+#define c_oAscAxisType_auto                                 0
+#define c_oAscAxisType_date                                 1
+#define c_oAscAxisType_text                                 2
+#define c_oAscAxisType_cat                                  3
+#define c_oAscAxisType_val                                  4
 
-#define c_oAscHAnchor_Margin		0x00
-#define c_oAscHAnchor_Page			0x01
-#define c_oAscHAnchor_Text			0x02
-#define c_oAscHAnchor_PageInternal	0xFF // только для внутреннего использования
+#define c_oAscHAnchor_Margin                                0x00
+#define c_oAscHAnchor_Page                                  0x01
+#define c_oAscHAnchor_Text                                  0x02
+#define c_oAscHAnchor_PageInternal                          0xFF // только для внутреннего использования
 
-#define c_oAscXAlign_Center			0x00
-#define c_oAscXAlign_Inside			0x01
-#define c_oAscXAlign_Left			0x02
-#define c_oAscXAlign_Outside		0x03
-#define c_oAscXAlign_Right			0x04
+#define c_oAscXAlign_Center                                 0x00
+#define c_oAscXAlign_Inside                                 0x01
+#define c_oAscXAlign_Left                                   0x02
+#define c_oAscXAlign_Outside                                0x03
+#define c_oAscXAlign_Right                                  0x04
 
-#define c_oAscYAlign_Bottom			0x00
-#define c_oAscYAlign_Center			0x01
-#define c_oAscYAlign_Inline			0x02
-#define c_oAscYAlign_Inside			0x03
-#define c_oAscYAlign_Outside		0x04
-#define c_oAscYAlign_Top			0x05
+#define c_oAscYAlign_Bottom                                 0x00
+#define c_oAscYAlign_Center                                 0x01
+#define c_oAscYAlign_Inline                                 0x02
+#define c_oAscYAlign_Inside                                 0x03
+#define c_oAscYAlign_Outside                                0x04
+#define c_oAscYAlign_Top                                    0x05
 
-#define c_oAscVAnchor_Margin		0x00
-#define c_oAscVAnchor_Page			0x01
-#define c_oAscVAnchor_Text			0x02
+#define c_oAscVAnchor_Margin                                0x00
+#define c_oAscVAnchor_Page                                  0x01
+#define c_oAscVAnchor_Text                                  0x02
 
-#define c_oAscRelativeFromH_Character		0x00
-#define c_oAscRelativeFromH_Column			0x01
-#define c_oAscRelativeFromH_InsideMargin	0x02
-#define c_oAscRelativeFromH_LeftMargin		0x03
-#define c_oAscRelativeFromH_Margin			0x04
-#define c_oAscRelativeFromH_OutsideMargin	0x05
-#define c_oAscRelativeFromH_Page			0x06
-#define c_oAscRelativeFromH_RightMargin		0x07
+#define c_oAscRelativeFromH_Character                       0x00
+#define c_oAscRelativeFromH_Column                          0x01
+#define c_oAscRelativeFromH_InsideMargin                    0x02
+#define c_oAscRelativeFromH_LeftMargin                      0x03
+#define c_oAscRelativeFromH_Margin                          0x04
+#define c_oAscRelativeFromH_OutsideMargin                   0x05
+#define c_oAscRelativeFromH_Page                            0x06
+#define c_oAscRelativeFromH_RightMargin                     0x07
 
-#define c_oAscRelativeFromV_BottomMargin		0x00
-#define c_oAscRelativeFromV_InsideMargin		0x01
-#define c_oAscRelativeFromV_Line				0x02
-#define c_oAscRelativeFromV_Margin				0x03
-#define c_oAscRelativeFromV_OutsideMargin		0x04
-#define c_oAscRelativeFromV_Page				0x05
-#define c_oAscRelativeFromV_Paragraph			0x06
-#define c_oAscRelativeFromV_TopMargin			0x07
+#define c_oAscRelativeFromV_BottomMargin                    0x00
+#define c_oAscRelativeFromV_InsideMargin                    0x01
+#define c_oAscRelativeFromV_Line                            0x02
+#define c_oAscRelativeFromV_Margin                          0x03
+#define c_oAscRelativeFromV_OutsideMargin                   0x04
+#define c_oAscRelativeFromV_Page                            0x05
+#define c_oAscRelativeFromV_Paragraph                       0x06
+#define c_oAscRelativeFromV_TopMargin                       0x07
 
 // image wrap style
 #define c_oAscWrapStyle_Inline			0
@@ -522,11 +531,6 @@
 #define c_oAscAlignShapeType_ALIGN_BOTTOM		3
 #define c_oAscAlignShapeType_ALIGN_CENTER		4
 #define c_oAscAlignShapeType_ALIGN_MIDDLE		5
-
-#define c_oAscDrawingLayerType_BringToFront     0
-#define c_oAscDrawingLayerType_SendToBack       1
-#define c_oAscDrawingLayerType_BringForward     2
-#define c_oAscDrawingLayerType_SendBackward     3
 
 #define c_oAscVerticalTextAlign_TEXT_ALIGN_BOTTOM		0	// (Text Anchor Enum ( Bottom ))
 #define c_oAscVerticalTextAlign_TEXT_ALIGN_CTR			1	// (Text Anchor Enum ( Center ))

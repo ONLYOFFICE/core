@@ -29,8 +29,20 @@
 #define AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_DJVU		AVS_OFFICESTUDIO_FILE_CROSSPLATFORM + 0x0003
 #define AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_XPS			AVS_OFFICESTUDIO_FILE_CROSSPLATFORM + 0x0004
 
+#ifdef WIN32
+int wmain(int argc, wchar_t *argv[])
+#else
 int main(int argc, char *argv[])
+#endif
 {
+    if (argc <= 0)
+        return 0;
+
+    std::wstring sBuildFile(argv[argc - 1]);
+    NSDoctRenderer::CDocBuilder oBuilder;
+    oBuilder.Run(sBuildFile);
+
+#if 0
     NSDoctRenderer::CDocBuilder oBuilder;
 
     // tmpfolder
@@ -46,6 +58,7 @@ int main(int argc, char *argv[])
 #endif
 
     oBuilder.SaveFile(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF, L"D:/TESTFILES/images.pdf");
+#endif
 
     return 0;
 }

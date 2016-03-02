@@ -18,6 +18,10 @@ CONFIG -= debug_and_release debug_and_release_target
 ############### destination path ###############
 DESTINATION_SDK_PATH = $$PWD/../../../SDK/lib
 
+win32 {
+DEFINES += WIN32
+}
+
 # WINDOWS
 win32:contains(QMAKE_TARGET.arch, x86_64):{
 CONFIG(debug, debug|release) {

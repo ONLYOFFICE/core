@@ -188,8 +188,8 @@ namespace DocFileFormat
 					//genarate new
 					m_mapStyleIdLock.Enter();
 					int nIndex = m_mapStyleId.size();
-					ret = _T("StGen") + FormatUtils::IntToWideString( nIndex );
-					pair< std::wstring, std::wstring > p( std->xstzName, ret );
+					ret = _T("UserStyle_") + FormatUtils::IntToWideString( nIndex );
+					pair< std::wstring, std::wstring > p( std->xstzName, ret);
 					m_mapStyleId.insert(p);
 					m_mapStyleIdLock.Leave();
 				}
@@ -253,44 +253,49 @@ namespace DocFileFormat
 	/// Word 2007 needs the identifier instead of the stylename for translating it into the UI language.
 	wstring StyleSheetMapping::getStyleName( StyleSheetDescription* std )
 	{
-		wstring ret;
+		wstring id;
+		wstring name;
 
 		if ( std != NULL )
 		{
+			name =  std->xstzName;
+
 			if ( ( std->sti != User ) && ( std->sti != Null ) )
 			{
 				//use the identifier
 				if ( std->sti < 159 )
 				{
-					ret = wstring( StyleIdentifierMap[std->sti] );
+					id = wstring( StyleIdentifierMap[std->sti] );
 				}
 				else
 				{
-					ret = FormatUtils::IntToWideString( std->sti );
+					id = FormatUtils::IntToWideString( std->sti );
 				}
 			}
 			else
 			{
 				//if no identifier is set, use the unique id.
-				map<std::wstring, std::wstring>::const_iterator findResult = m_mapStyleId.find(std->xstzName);
+				map<std::wstring, std::wstring>::const_iterator findResult = m_mapStyleId.find(name);
 				if( findResult != m_mapStyleId.end() )
 				{
-					ret = findResult->second;
+					id		= findResult->second;
 				}
 				else
 				{
 					//genarate new
 					m_mapStyleIdLock.Enter();
 					int nIndex = m_mapStyleId.size();
-					ret = _T("StGen") + FormatUtils::IntToWideString( nIndex );
-					pair< std::wstring, std::wstring > p( std->xstzName, ret );
+					id = _T("UserStyle_") + FormatUtils::IntToWideString( nIndex );
+					pair< std::wstring, std::wstring > p( name, id);
 					m_mapStyleId.insert(p);
 					m_mapStyleIdLock.Leave();
 				}
 			}
 		}
+		if (name.empty())
+			name = id;
 
-		return ret;
+		return name;
 	}
 
 	/*========================================================================================================*/

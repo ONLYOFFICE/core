@@ -88,9 +88,6 @@ namespace DocFileFormat
 		XMLTools::XMLAttribute<wchar_t>	* colorVal	= new XMLTools::XMLAttribute<wchar_t>( _T( "w:val" ) );
 		XMLTools::XMLElement<wchar_t>	* lang		= new XMLTools::XMLElement<wchar_t>	( _T( "w:lang" ) );
 
-		// флаг наличия стиля для баги - http://bugzserver/show_bug.cgi?id=13353 	TODO : найти в чем создан такой документ
-		bool haveStyle	=	FALSE;	
-		
 		std::list<SinglePropertyModifier>::iterator end = sprms->end();
 		for (std::list<SinglePropertyModifier>::iterator iter = sprms->begin(); iter != end; ++iter)
 		{
@@ -104,15 +101,10 @@ namespace DocFileFormat
 						if (_currentIstd < this->_doc->Styles->Styles->size())
 						{
 							appendValueElement( parent, _T( "rStyle" ), StyleSheetMapping::MakeStyleId( this->_doc->Styles->Styles->at( _currentIstd ) ).c_str(), true );
-
-							haveStyle	=	TRUE;
 						}
 					}
-				}
-				break;
-
-				
-			case 0x085A :	//	Element flags
+				}break;				
+			case 0x085A :	//	right to left
 				appendFlagElement( parent, *iter, _T( "rtl" ), true );
 				this->_isRTL = true;
 				break;
@@ -187,10 +179,8 @@ namespace DocFileFormat
 
 			case 0x2A48:
 				appendValueElement( parent, _T( "vertAlign" ), FormatUtils::MapValueToWideString( iter->Arguments[0], &SuperscriptIndex[0][0], 3, 12 ).c_str(), true );
-				break;
-
-				//language
-			case 0x486D:
+				break;				
+			case 0x486D://language
 			case 0x4873:
 				{
 					//latin
@@ -201,13 +191,10 @@ namespace DocFileFormat
 					langid.Convert( langIDMapping );
 
 					RELEASEOBJECT( langIDMapping );
-				}
-				break;
-
+				}break;			
 			case 0x486E:
-			case 0x4874:
-				{
-					//east asia
+			case 0x4874://east asia
+				{					
 					LanguageId langid( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
 
 					LanguageIdMapping* langIDMapping = new LanguageIdMapping( lang, EastAsian );
@@ -215,12 +202,9 @@ namespace DocFileFormat
 					langid.Convert( langIDMapping );
 
 					RELEASEOBJECT( langIDMapping );
-				}
-				break;
-
-			case 0x485F:
-				{
-					//bidi
+				}break;
+			case 0x485F://bidi
+				{					
 					LanguageId langid( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
 
 					LanguageIdMapping* langIDMapping = new LanguageIdMapping( lang, Complex );
@@ -228,36 +212,27 @@ namespace DocFileFormat
 					langid.Convert( langIDMapping );
 
 					RELEASEOBJECT( langIDMapping );
-				}
-				break;
-
-				//borders
-			case 0x6865:
+				}break;				
+			case 0x6865://borders
 			case 0xCA72:
 				{  
 					XMLTools::XMLElement<wchar_t> bdr( _T( "w:bdr" ) );
 					BorderCode bc( iter->Arguments, iter->argumentsSize );
 					appendBorderAttributes( &bc, &bdr );
 					parent->AppendChild( bdr );
-				}
-				break;
-
-				//shading
-			case 0x4866:
+				}break;				
+			case 0x4866://shading
 			case 0xCA71:
 				{  
 					ShadingDescriptor desc( iter->Arguments, iter->argumentsSize );
 
 					appendShading( parent, desc );
-				}
-				break;
-
-				//color
-			case 0x2A42:
+				}break;								
+			case 0x2A42://color
 			case 0x4A60:
-				colorVal->SetValue( FormatUtils::MapValueToWideString( iter->Arguments[0], &Global::ColorIdentifier[0][0], 17, 12 ).c_str() );
-				break;
-
+				{
+					colorVal->SetValue( FormatUtils::MapValueToWideString( iter->Arguments[0], &Global::ColorIdentifier[0][0], 17, 12 ).c_str() );
+				}break;
 			case 0x6870:
 				{
                     CString rgbColor;
@@ -265,70 +240,46 @@ namespace DocFileFormat
                     rgbColor.Format( _T( "%02x%02x%02x" ), /*R*/iter->Arguments[0], /*G*/iter->Arguments[1], /*B*/iter->Arguments[2] );
 
                     colorVal->SetValue( rgbColor.GetString() );
-				}
-				break;
-
-				//highlightning
-			case 0x2A0C:
-				appendValueElement( parent, _T( "highlight" ), FormatUtils::MapValueToWideString( iter->Arguments[0], &Global::ColorIdentifier[0][0], 17, 12 ).c_str(), true );
-				break;
-
-				//spacing
-			case 0x8840:
+				}break;								
+			case 0x2A0C://highlightning
+				{
+					appendValueElement( parent, _T( "highlight" ), FormatUtils::MapValueToWideString( iter->Arguments[0], &Global::ColorIdentifier[0][0], 17, 12 ).c_str(), true );
+				}break;			
+			case 0x8840://spacing
 				{
 					appendValueElement( parent, _T( "spacing" ), FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ).c_str(), true );
-				}
-				break;
-
+				}break;
 			case sprmCFtcBi :
-				{
-					//SHORT fontIndex	=	FormatUtils::BytesToUInt16 (iter->Arguments, 0, iter->argumentsSize);
-					//ATLTRACE ( _T("fontIndex : %d\n"), fontIndex);
-				}
-				break;
-
+				{//default from FontTable
+					SHORT nIndex	=	FormatUtils::BytesToUInt16 (iter->Arguments, 0, iter->argumentsSize);
+					if( nIndex < _doc->FontTable->cData )
+					{
+						FontFamilyName* ffn = static_cast<FontFamilyName*>( _doc->FontTable->operator [] ( nIndex ) );
+						this->m_sDefaultFont = ffn->xszFtn;
+					}
+				}break;
 			case sprmCHpsBi :
 				{
-					//SHORT fontSize	=	FormatUtils::BytesToUInt16 (iter->Arguments, 0, iter->argumentsSize);
-					//ATLTRACE ( _T("CHpsBi : %d\n"), fontSize);
-
-					if (FALSE == haveStyle)
-					{
-						appendValueElement( parent, _T( "szCs" ), 
-							FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ).c_str(),
-							true );
-					}
+					appendValueElement( parent, _T( "szCs" ), 
+						FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ).c_str(),
+						true );
 				}
 				break;
-
-
 			case sprmCHps : // Font Size in points (2~3276) default 20-half-points
 				{  
-					//SHORT fontSize	=	FormatUtils::BytesToUInt16 (iter->Arguments, 0, iter->argumentsSize);
-					//ATLTRACE ( _T("CHps : %d\n"), fontSize);
-					
-					if (FALSE == haveStyle)
-					{					
-						appendValueElement (parent, _T( "sz" ), 
-							FormatUtils::IntToWideString (FormatUtils::BytesToUInt16 (iter->Arguments, 0, iter->argumentsSize) ).c_str(),
-							true );
-					}
-				}
-				break;
-
+					appendValueElement (parent, _T( "sz" ), 
+						FormatUtils::IntToWideString (FormatUtils::BytesToUInt16 (iter->Arguments, 0, iter->argumentsSize) ).c_str(),
+						true );
+				}break;
 			case sprmCHpsPos: // The vertical position, in half-points, of text relative to the normal position. (MUST be between -3168 and 3168)
 				{
 					short nVertPos = FormatUtils::BytesToInt16(iter->Arguments, 0, iter->argumentsSize);
 					appendValueElement (parent, _T("position"), nVertPos, true);
-				}
-				break;
-
+				}break;
 			case sprmCHpsKern:
 				{
 					appendValueElement( parent, _T( "kern" ), FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ).c_str(), true );
-				}
-				break;
-
+				}break;
 			case sprmCRgFtc0:	//	font family
 				{
 					int nIndex = FormatUtils::BytesToUInt16( iter->Arguments, 0, iter->argumentsSize );
@@ -341,10 +292,8 @@ namespace DocFileFormat
 						rFonts->AppendAttribute( *ascii );
 						RELEASEOBJECT( ascii );
 					}
-				}
-				break;
-
-			case 0x4A50:
+				}break;
+			case sprmCRgFtc1:
 				{
 					int nIndex = FormatUtils::BytesToUInt16( iter->Arguments, 0, iter->argumentsSize );
 					if( nIndex>=0 && nIndex < _doc->FontTable->cData )
@@ -371,36 +320,68 @@ namespace DocFileFormat
 						rFonts->AppendAttribute( *ansi );
 						RELEASEOBJECT( ansi );
 					}
-				}
-				break;
-
-				//Underlining
-			case 0x2A3E:
+				}break;					
+			case 0x2A3E://Underlining
 				{
 					appendValueElement( parent, _T( "u" ), FormatUtils::MapValueToWideString( iter->Arguments[0], &Global::UnderlineCode[0][0], 56, 16 ).c_str(), true );
 				}
-				break;
-
-				//char width
-			case 0x4852:
+				break;			
+			case 0x4852://char width
 				{
 					appendValueElement( parent, _T( "w" ), FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ).c_str(), true );
-				}
-				break;
-
-				//animation
-			case 0x2859:
+				}break;	
+							
+			case 0x2859://animation
 				{
 					appendValueElement( parent, _T( "effect" ), FormatUtils::MapValueToWideString( iter->Arguments[0], &Global::TextAnimation[0][0], 7, 16 ).c_str(), true );
+				}break;	
+			case sprmCIdctHint:
+				{
+					switch(iter->Arguments[0])
+					{
+					case 0:		break;	// default
+					case 1:		break;	// eastAsia
+					case 2:		break;	// cs
+					case 0xFF:	break;	//No ST_Hint equivalent
+					}
+
+				}break;
+			case sprmCPbiIBullet:
+				{
+					int nIndex = FormatUtils::BytesToInt32( iter->Arguments, 0, iter->argumentsSize );
+					if (nIndex >=0)
+					{
+						std::map<int, int>::iterator it = _doc->PictureBulletsCPsMap.find(nIndex);
+						if (it != _doc->PictureBulletsCPsMap.end())
+						{
+							//добавить
+						}
+					}
+				}break;
+			case sprmCPbiGrf:
+				{
+					//used picture bullet
+					int val = FormatUtils::BytesToUInt16( iter->Arguments, 0, iter->argumentsSize );
+
+				}break;
+			case sprmCRsidProp:
+			case sprmCRsidText:
+				break;
+			default:
+				if (iter->argumentsSize == 2)
+				{
+					int nIndex = FormatUtils::BytesToUInt16( iter->Arguments, 0, iter->argumentsSize );
 				}
 				break;
-							
-			default:
-#ifdef _DEBUG 
-				// //ATLTRACE (_T("CharacterPropertiesMapping - UNKNOWN SPRM : 0x%x\n"), iter->OpCode);
-#endif
-				break;
 			}
+		}
+
+		if (!m_sDefaultFont.empty() && m_sAsciiFont.empty() && m_sEastAsiaFont.empty() && m_shAnsiFont.empty())
+		{//????
+			XMLTools::XMLAttribute<wchar_t>* ascii = new XMLTools::XMLAttribute<wchar_t>( _T( "w:ascii" ) );
+			ascii->SetValue( FormatUtils::XmlEncode(m_sDefaultFont).c_str() );
+			//rFonts->AppendAttribute( *ascii );
+			RELEASEOBJECT( ascii );
 		}
 
 		//apend lang

@@ -2593,4 +2593,34 @@ namespace NSEditorApi
     };
 }
 
+namespace NSEditorApi
+{
+    class CAscUserZoom : public IMenuEventDataBase
+    {
+    public:
+        
+        CAscUserZoom()
+        {
+        }
+        virtual ~CAscUserZoom()
+        {
+        }
+        
+        LINK_PROPERTY_INT(Type)
+        LINK_PROPERTY_DOUBLE(AnchorX)
+        LINK_PROPERTY_DOUBLE(AnchorY)
+        LINK_PROPERTY_DOUBLE(MinZoom)
+        LINK_PROPERTY_DOUBLE(MaxZoom)
+        LINK_PROPERTY_DOUBLE(Zoom)
+    private:
+        
+        int m_nType;        // 1 - touchBegin, -1 - touchEnd, 0 - touchProcessing
+        double m_dAnchorX;
+        double m_dAnchorY;
+        double m_dMinZoom;
+        double m_dMaxZoom;
+        double m_dZoom;
+    };
+}
+
 #endif //_BUILD_EDITOR_API_CROSSPLATFORM_H_

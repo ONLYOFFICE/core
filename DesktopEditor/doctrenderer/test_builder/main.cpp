@@ -38,27 +38,15 @@ int main(int argc, char *argv[])
     if (argc <= 0)
         return 0;
 
+#ifdef WIN32
     std::wstring sBuildFile(argv[argc - 1]);
+#else
+    std::string sBuildFileA(argv[argc - 1]);
+    std::wstring sBuildFile = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)sBuildFileA.c_str(), (LONG)sBuildFileA.length());
+#endif
+
     NSDoctRenderer::CDocBuilder oBuilder;
     oBuilder.Run(sBuildFile);
-
-#if 0
-    NSDoctRenderer::CDocBuilder oBuilder;
-
-    // tmpfolder
-    oBuilder.SetTmpFolder(L"D:/BuilderTest");
-
-#if 1
-    oBuilder.CreateFile(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX);
-    oBuilder.ExecuteCommand(L"Add_Text(\"Oleg\");");
-#endif
-
-#if 0
-    oBuilder.OpenFile(L"D:/TESTFILES/images.docx", L"");
-#endif
-
-    oBuilder.SaveFile(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF, L"D:/TESTFILES/images.pdf");
-#endif
 
     return 0;
 }

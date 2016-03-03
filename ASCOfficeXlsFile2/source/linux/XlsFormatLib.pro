@@ -831,6 +831,8 @@ SOURCES +=  \
     ../XlsXlsxConverter/xlsx_tablecontext.cpp \
     ../XlsXlsxConverter/xlsx_textcontext.cpp \
     ../XlsXlsxConverter/xlsx_chart_context.cpp \
+    ../XlsXlsxConverter/xlsx_comments.cpp \
+    ../XlsXlsxConverter/xlsx_comments_context.cpp \
     ../XlsFormat/Logic/AnyObject.cpp \
     ../XlsFormat/Logic/AnySubstream.cpp \
     ../XlsFormat/Logic/BinProcessor.cpp \

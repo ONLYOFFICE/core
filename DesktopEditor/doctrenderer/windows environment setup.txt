@@ -37,7 +37,7 @@ v8_libplatform
 v8_nosnapshot
 ñ) Project Properies -> Configuration Properties -> C/C++ ->Code Generation
 for Debug Configuration change "Runtime Library" to "Multi-threaded Debug DLL (/MDd)"
-for Release Configuration change "Runtime Library" to "Multi-threaded Debug (/MD)"
+for Release Configuration change "Runtime Library" to "Multi-threaded DLL(/MD)"
 
 Rebuild All
 

@@ -315,6 +315,8 @@ namespace NSDoctRenderer
             m_sX2tPath = NSFile::GetProcessDirectory();
             m_pWorker = NULL;
 
+            m_nFileType = -1;
+
 #if 1
             m_sX2tPath += L"/converter";
 #endif
@@ -499,6 +501,7 @@ namespace NSDoctRenderer
 
         bool CreateFile(int type)
         {
+#if 1
             CheckFileDir();
 
             std::wstring sEmptyPath = NSFile::GetProcessDirectory() + L"/empty/";
@@ -528,12 +531,25 @@ namespace NSDoctRenderer
             }
 
             return bRet;
+#else
+            std::wstring sPath = NSFile::GetProcessDirectory() + L"/empty/new.";
+            if (type & AVS_OFFICESTUDIO_FILE_DOCUMENT)
+                sPath += L"docx";
+            else if (type & AVS_OFFICESTUDIO_FILE_PRESENTATION)
+                sPath += L"pptx";
+            else if (type & AVS_OFFICESTUDIO_FILE_SPREADSHEET)
+                sPath += L"xlsx";
+            return this->OpenFile(sPath, L"");
+#endif
         }
 
         bool OpenFile(const std::wstring& path, const std::wstring& params)
         {
             CheckFileDir();
             NSDirectory::CreateDirectory(m_sFileDir + L"/changes");
+
+            std::wstring sFileCopy = m_sFileDir + L"/origin." + NSCommon::GetFileExtention(path);
+            NSFile::CFileBinary::Copy(path, sFileCopy);
 
             COfficeFileFormatChecker oChecker;
             if (!oChecker.isOfficeFile(path))
@@ -548,7 +564,7 @@ namespace NSDoctRenderer
 
             NSStringUtils::CStringBuilder oBuilder;
             oBuilder.WriteString(L"<?xml version=\"1.0\" encoding=\"utf-8\"?><TaskQueueDataConvert><m_sFileFrom>");
-            oBuilder.WriteEncodeXmlString(path);
+            oBuilder.WriteEncodeXmlString(sFileCopy);
             oBuilder.WriteString(L"</m_sFileFrom><m_sFileTo>");
             oBuilder.WriteEncodeXmlString(m_sFileDir);
             oBuilder.WriteString(L"/Editor.bin</m_sFileTo><m_nFormatTo>8192</m_nFormatTo>");
@@ -679,12 +695,16 @@ namespace NSDoctRenderer
             NSDirectory::DeleteDirectory(m_sFileDir);
             m_sFileDir = L"";
             m_nFileType = -1;
+
+            CV8RealTimeWorker::_LOGGING_ERROR_(L"error: ", L"open file error");
             return false;
         }
 
         void CloseFile()
         {
-            NSDirectory::DeleteDirectory(m_sFileDir);
+            if (NSDirectory::Exists(m_sFileDir))
+                NSDirectory::DeleteDirectory(m_sFileDir);
+
             m_sFileDir = L"";
             m_nFileType = -1;
 
@@ -693,6 +713,12 @@ namespace NSDoctRenderer
 
         bool SaveFile(const int& type, const std::wstring& path)
         {
+            if (-1 == m_nFileType)
+            {
+                CV8RealTimeWorker::_LOGGING_ERROR_(L"error (save)", L"file not opened!");
+                return false;
+            }
+
             NSStringUtils::CStringBuilder oBuilder;
 
             oBuilder.WriteString(L"<?xml version=\"1.0\" encoding=\"utf-8\"?><TaskQueueDataConvert><m_sFileFrom>");
@@ -836,13 +862,17 @@ namespace NSDoctRenderer
             if (0 == nReturnCode)
                 return true;
 
+            CV8RealTimeWorker::_LOGGING_ERROR_(L"error: ", L"save file error");
             return false;
         }
 
         bool ExecuteCommand(const std::wstring& command)
         {
             if (-1 == m_nFileType)
+            {
+                CV8RealTimeWorker::_LOGGING_ERROR_(L"error (command)", L"file not opened!");
                 return false;
+            }
 
             if (NULL == m_pWorker)
             {
@@ -878,7 +908,7 @@ namespace NSDoctRenderer
                     break;
                 }
             default:
-                return false;
+                return "";
             }
 
             std::string strScript = "";

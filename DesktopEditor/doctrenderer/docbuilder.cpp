@@ -317,7 +317,7 @@ namespace NSDoctRenderer
 
             m_nFileType = -1;
 
-#if 1
+#if 0
             m_sX2tPath += L"/converter";
 #endif
 

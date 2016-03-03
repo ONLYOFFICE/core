@@ -192,15 +192,7 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring & fileName)
 		else if ( isBinaryPpttFormatFile(buffer,sizeRead) )
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_CANVAS_PRESENTATION;
-		}
-        else if (isHtmlFormatFile(buffer,sizeRead) )
-        {
-            nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML;
-        }
-        else if (isFB2FormatFile(buffer,sizeRead) )
-        {
-            nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_FB2;
-        }
+		}        
         else if (isPdfFormatFile(buffer,sizeRead) )
         {
             nFileType = AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF;
@@ -208,6 +200,14 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring & fileName)
         else if (isDjvuFormatFile(buffer,sizeRead) )
         {
             nFileType = AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_DJVU;
+        }
+        else if (isHtmlFormatFile(buffer,sizeRead) )
+        {
+            nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML;
+        }
+        else if (isFB2FormatFile(buffer,sizeRead) )
+        {
+            nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_FB2;
         }
 	/////////////////////////////////////////////////////////////////////////
 		if (buffer)delete []buffer;

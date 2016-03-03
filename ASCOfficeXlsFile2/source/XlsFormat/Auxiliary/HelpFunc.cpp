@@ -36,7 +36,7 @@ const int normalizeColumn(const int column)
 }
 
 
-const std::wstring column2str(const int column)
+const std::wstring column2str(const int column, const bool col_rel)
 {
 	int column_value = normalizeColumn(column);
 	const int radix = L'Z' - L'A' + 1;
@@ -48,7 +48,8 @@ const std::wstring column2str(const int column)
 		ret_val = sym + ret_val;
 		column_value = (column_value - 1) / radix;
 	}
-	return ret_val;
+
+	return (col_rel ? L"" : L"$") + ret_val;
 }
 
 
@@ -67,16 +68,16 @@ const int normalizeRow(const int row)
 }
 
 
-const std::wstring row2str(const int row)
+const std::wstring row2str(const int row, const bool row_rel)
 {
 	int row_value = normalizeRow(row);
-	return STR::int2wstr(row_value + 1, 10);
+	return  (row_rel ? L"" : L"$") + STR::int2wstr(row_value + 1, 10);
 }
 
 
 const std::wstring loc2str(const int row, const bool row_rel, const int column, const bool col_rel)
 {
-	return (col_rel ? L"" : L"$") + column2str(column) + (row_rel ? L"" : L"$") + row2str(row);
+	return column2str(column, col_rel) + row2str(row, row_rel);
 }
 
 

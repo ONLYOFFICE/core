@@ -396,7 +396,12 @@ void odt_conversion_context::set_master_page_name(std::wstring master_name)
 
 	if (style_)style_->style_master_page_name_ = master_name;
 }
-
+int odt_conversion_context::get_current_section_columns()
+{
+	if (sections_.size() > 0)
+		sections_.back().count_columns;
+	else return 1;
+}
 void odt_conversion_context::add_section(bool continuous)
 {
 	odt_section_state state;
@@ -426,6 +431,7 @@ void odt_conversion_context::add_section_columns(int count, double space_pt, boo
 	create_element(L"style", L"columns",section_properties->style_columns_,this);	
 	style_columns* columns = dynamic_cast<style_columns*>(section_properties->style_columns_.get());
 	if (!columns)return;
+	sections_.back().count_columns = count;
 
 						columns->fo_column_count_	= count;
 	if (space_pt >= 0)	columns->fo_column_gap_		= length(length(space_pt,length::pt).get_value_unit(length::cm),length::cm);
@@ -451,17 +457,47 @@ void odt_conversion_context::add_section_column(std::vector<std::pair<double,dou
 	if (!style_)return;
 
 	style_section_properties	* section_properties	= style_->style_content_.get_style_section_properties();
-	section_properties->text_dont_balance_text_columns_ = true;
+	//section_properties->text_dont_balance_text_columns_ = true;
 	
 	style_columns* columns = dynamic_cast<style_columns*>(section_properties->style_columns_.get());
 	if (!columns)return;
+	
+	double width_all = 0;
+	for (int i = 0; i < width_space.size() ; i++)
+	{
+		if (width_space[i].first >= 0) 
+		
+			width_all += width_space[i].first/* + width_space[i].second*/;
+	}
 
+	double curr = 0;
+	int width_absolute = 0;
 
-	//office_element_ptr col_elm;
-	//
-	//create_element(L"style", L"column",col_elm,this);
-	//style_column* col = dynamic_cast<style_column*>(col_elm.get());
-	//if (!col) return;
+	if (width_all < 1)	return;
+
+	section_properties->style_editable_ = false;
+
+	for (int i = 0; i < width_space.size() && width_all > 0 ; i++)
+	{
+		office_element_ptr col_elm;
+		
+		create_element(L"style", L"column", col_elm, this);
+		style_column* col = dynamic_cast<style_column*>(col_elm.get());
+		if (!col) continue;
+
+		int val =  (width_space[i].first/* + width_space[i].second*/)* 65535. /width_all /*:65535 - width_absolute*/;
+		col->style_rel_width_ = odf_types::percent_rel(val);
+		width_absolute += val;
+		
+		//col->fo_start_indent_ = odf_types::length(curr,odf_types::length::pt);
+		//curr += width_space[0].first;
+		//
+		//col->fo_end_indent_ = odf_types::length(curr,odf_types::length::pt);
+		//curr += width_space[0].second;
+		
+		columns->add_child_element(col_elm);
+
+	}
 }
 void odt_conversion_context::end_field()
 {

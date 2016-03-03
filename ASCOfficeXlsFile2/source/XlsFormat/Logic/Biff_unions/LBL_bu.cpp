@@ -5,6 +5,8 @@
 #include <Logic/Biff_records/NameFnGrp12.h>
 #include <Logic/Biff_records/NamePublish.h>
 
+#include <Logic/Biff_structures/PtgRef3d.h>
+
 #include <utils.h>
 
 namespace XLS
@@ -105,8 +107,6 @@ const bool LBL::loadContent(BinProcessor& proc)
 }
 int LBL::serialize(std::wostream & stream)
 {
-	//if (isSerialize == false) return 0;
-
 	Lbl *lbl = dynamic_cast<Lbl*>(m_Lbl.get());
 	if (lbl == NULL) return 0;
 		
@@ -115,9 +115,13 @@ int LBL::serialize(std::wostream & stream)
 	if (value.empty()) return 0;
 
 	int res = 0;
-	if (lbl->itab == 0 && (res = value.find(L"!")) < 0)
+
+	if ((lbl->itab == 0)				&& 
+		(res = value.find(L"!")) < 0	&& 
+		(lbl->rgce.rgce.sequence.size() < 2))
 	{
-		value = std::wstring(L"#REF!");
+		PtgRef3d* ptg = dynamic_cast<PtgRef3d*>(lbl->rgce.rgce.sequence[0].get());
+		if (ptg) value = std::wstring(L"#REF!");
 	}
 
 	CP_XML_WRITER(stream)    

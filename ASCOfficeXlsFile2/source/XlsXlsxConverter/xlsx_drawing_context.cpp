@@ -460,13 +460,14 @@ void xlsx_drawing_context::end_drawing(_drawing_state_ptr & drawing_state)
 	}
 	if ( drawing_state->type == external_items::typeComment )
 	{
-		std::wstringstream strm;
-
+		//serialize_vml_shape()
+		//context_.get_comments_context().set_drawing(drawing_state->text.content);
 		context_.get_comments_context().set_fill_color(drawing_state->fill.color.sRGB);
 		context_.get_comments_context().set_line_color(drawing_state->line.fill.color.sRGB);
 		
 		context_.get_comments_context().set_content(drawing_state->text.content);
 
+		std::wstringstream strm;
 		strm	<< drawing_state->sheet_anchor.colFrom	<< L", " << (int)(2 * drawing_state->sheet_anchor.xFrom / 12700.)	<< L", " 
 				<< drawing_state->sheet_anchor.rwFrom	<< L", " << (int)(2 * drawing_state->sheet_anchor.yFrom / 12700.)	<< L", " 
 				<< drawing_state->sheet_anchor.colTo	<< L", " << (int)(2 * drawing_state->sheet_anchor.xTo / 12700.)		<< L", " 
@@ -1488,6 +1489,7 @@ void xlsx_drawing_context::set_group_anchor(int x, int y, int cx, int cy)
 void xlsx_drawing_context::set_absolute_anchor(double x, double y, double cx, double cy)
 {
 	if (current_drawing_states == NULL) return;	
+	if (current_drawing_states->back()->type_anchor != 0) return;	
 
 	current_drawing_states->back()->absolute_anchor.x	= x;
 	current_drawing_states->back()->absolute_anchor.y	= y;

@@ -106,6 +106,7 @@ int XLUnicodeRichExtendedString::serialize (std::wostream & _stream)
 
 				CP_XML_NODE(L"t")
 				{	
+					CP_XML_ATTR(L"xml:space", L"preserve");
 					std::wstring str_part = str_.substr( start_string, str_.size() - start_string );
 					CP_XML_STREAM() << xml::utils::replace_text_to_xml(str_part);
 				}

@@ -30,15 +30,6 @@ BiffStructurePtr PtgArea3d::clone()
 	return BiffStructurePtr(new PtgArea3d(*this));
 }
 
-
-//void PtgArea3d::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	xml_tag->setAttribute(L"ixti", ixti);
-//
-//	area.toXML(xml_tag);
-//}
-
-
 void PtgArea3d::storeFields(CFRecord& record)
 {
 	record << ixti;

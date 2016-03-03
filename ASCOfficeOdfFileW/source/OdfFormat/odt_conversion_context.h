@@ -23,6 +23,7 @@ struct odt_section_state
 
 	bool				empty;
 	bool				continuous;
+	int					count_columns;
 };
 
 
@@ -70,6 +71,7 @@ public:
 	void add_section(bool continuous);
 	void add_section_columns(int count, double space_pt, bool separator );
 	void add_section_column(std::vector<std::pair<double,double>> width_space);
+	int get_current_section_columns();
 	void flush_section();
 
 	void set_master_page_name(std::wstring master_name);

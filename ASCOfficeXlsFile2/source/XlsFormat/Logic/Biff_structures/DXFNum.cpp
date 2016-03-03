@@ -2,6 +2,7 @@
 #include "DXFN.h"
 #include <Binary/CFRecord.h>
 
+#include <utils.h>
 
 namespace XLS
 {
@@ -62,7 +63,7 @@ int DXFNum::serialize(std::wostream & stream)
 			if (!parent->ifmtNinch)
 				CP_XML_ATTR(L"numFmtId", fmt_id.ifmt);
  			if (!parent->fIfmtUser)
- 				CP_XML_ATTR(L"formatCode", user_defined.fmt.value());
+ 				CP_XML_ATTR(L"formatCode", /*xml::utils::replace_text_to_xml*/(user_defined.fmt.value()));
 		}
 	}
 	return 0;

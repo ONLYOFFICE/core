@@ -9,6 +9,8 @@
 
 #include <Logic/Biff_structures/BitMarkedStructs.h>
 
+#include <utils.h>
+
 namespace XLS
 {
 
@@ -140,7 +142,7 @@ static void serialize_val_prop(std::wostream & stream, const std::wstring & name
 			if (byte_)	CP_XML_ATTR(L"val", byte_->value());
 
 			LPWideString * str_ = dynamic_cast<LPWideString*>(val.get());
-			if (str_)	CP_XML_ATTR(L"val", str_->value());
+			if (str_)	CP_XML_ATTR(L"val", xml::utils::replace_text_to_xml(str_->value()));
 		}
 	}
 }

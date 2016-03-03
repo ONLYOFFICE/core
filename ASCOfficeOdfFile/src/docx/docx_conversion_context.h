@@ -23,6 +23,7 @@ namespace cpdoccore {
 	namespace odf_types
 	{
 		class style_ref;
+		class length_or_percent;
 	}
 namespace odf_reader 
 {
@@ -33,6 +34,7 @@ namespace odf_reader
     class draw_shape;
     typedef boost::shared_ptr<style_text_properties> style_text_properties_ptr;
     class office_element;
+	class style_columns;
 
     
     namespace text{
@@ -222,8 +224,10 @@ public:
 			style_			= Style;
 			page_properties_.push_back(PageProperties);
 		}
+
 		std::wstring				name_; 
 		std::wstring				style_; 
+		_CP_OPT(odf_types::length_or_percent) margin_left_, margin_right_;
 		
 		std::vector<std::wstring>	page_properties_;
 
@@ -453,6 +457,8 @@ public:
     bool process_page_properties(std::wostream & strm);
     void process_headers_footers();
     void process_comments		();
+	void process_section		(std::wostream & strm, odf_reader::style_columns * columns = NULL);
+
 
     void set_settings_property(const odf_reader::_property & prop);
 	std::vector<odf_reader::_property> & get_settings_properties();

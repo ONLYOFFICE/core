@@ -1,5 +1,6 @@
-
 #include "Format.h"
+
+#include <utils.h>
 
 namespace XLS
 {
@@ -25,21 +26,20 @@ void Format::writeFields(CFRecord& record)
 	record << ifmt << stFormat;
 }
 
-
 void Format::readFields(CFRecord& record)
 {
 	record >> ifmt >> stFormat;
+	stFormat = xml::utils::replace_xml_to_text(stFormat.value());
 }
+
 int Format::serialize(std::wostream & stream)
 {
-	if (ifmt < 164) return 0;
-
     CP_XML_WRITER(stream)    
     {
         CP_XML_NODE(L"numFmt")
         {
 			CP_XML_ATTR(L"numFmtId", ifmt);
-			CP_XML_ATTR(L"formatCode", stFormat.value());
+			CP_XML_ATTR(L"formatCode", /*xml::utils::replace_text_to_xml*/(stFormat.value()));
 		}
 	}
 	return 1;

@@ -72,7 +72,7 @@ void office_body::docx_convert(oox::docx_conversion_context & Context)
 	
 	if (layout)   //два раза - чтобы дефолтовые настройки всегда были
 	{
-		Context.add_page_properties(layout->name());
+		//Context.add_page_properties(layout->name());
 		Context.add_page_properties(layout->name());
 	}
 	else
@@ -98,10 +98,19 @@ void office_body::docx_convert(oox::docx_conversion_context & Context)
         content_->docx_convert(Context);
 
 	Context.get_headers_footers().set_enable_write(true);
-    if (page_layout_instance * lastPageLayout = Context.root()->odf_context().pageLayoutContainer().page_layout_by_name(Context.get_page_properties()))
+
+	if (!Context.get_section_context().dump_.empty())
 	{
-        lastPageLayout->docx_convert_serialize(Context.output_stream(), Context);
-		//Context.remove_page_properties();
+		Context.output_stream() << Context.get_section_context().dump_;
+		Context.get_section_context().dump_.clear();
+	}
+	else
+	{
+		if (page_layout_instance * lastPageLayout = Context.root()->odf_context().pageLayoutContainer().page_layout_by_name(Context.get_page_properties()))
+		{
+			lastPageLayout->docx_convert_serialize(Context.output_stream(), Context);
+			//Context.remove_page_properties();
+		}
 	}
 
     Context.end_body();    

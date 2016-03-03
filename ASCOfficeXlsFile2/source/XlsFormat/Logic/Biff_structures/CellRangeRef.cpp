@@ -89,15 +89,16 @@ const std::wstring CellRangeRef::toString(const bool useShortForm) const
 {
 	if(to_string_cache.empty())
 	{
-        int rowLast_norm = AUX::normalizeRow(rowLast);
-        int rowFirst_norm = AUX::normalizeRow(rowFirst);
-        int columnFirst_norm = AUX::normalizeColumn(columnFirst);
-        int columnLast_norm = AUX::normalizeColumn(columnLast);
+        int rowLast_norm		= AUX::normalizeRow		(rowLast);
+        int rowFirst_norm		= AUX::normalizeRow		(rowFirst);
+        int columnFirst_norm	= AUX::normalizeColumn	(columnFirst);
+        int columnLast_norm		= AUX::normalizeColumn	(columnLast);
+		
 		if(0 == rowFirst_norm && 65535 == rowLast_norm ) // whole column or range of columns
 		{
 			if(useShortForm)
 			{
-				return to_string_cache = AUX::column2str(columnFirst_norm) + L':' + AUX::column2str(columnLast_norm);
+				return to_string_cache = AUX::column2str(columnFirst_norm, columnFirstRelative) + L':' + AUX::column2str(columnLast_norm, columnLastRelative);
 			}
 			else
 			{
@@ -108,7 +109,7 @@ const std::wstring CellRangeRef::toString(const bool useShortForm) const
 		{
 			if(useShortForm)
 			{
-				return to_string_cache = AUX::row2str(rowFirst_norm) + L':' + AUX::row2str(rowLast_norm);
+				return to_string_cache = AUX::row2str(rowFirst_norm, rowFirstRelative) + L':' + AUX::row2str(rowLast_norm, rowLastRelative);
 			}
 			else
 			{

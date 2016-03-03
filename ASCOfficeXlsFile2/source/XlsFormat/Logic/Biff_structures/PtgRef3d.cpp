@@ -30,16 +30,6 @@ BiffStructurePtr PtgRef3d::clone()
 	return BiffStructurePtr(new PtgRef3d(*this));
 }
 
-//
-//void PtgRef3d::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	static std::wstring  ixti_name(L"ixti");
-//	xml_tag->setAttribute(ixti_name, ixti);
-//
-//	rgce_loc.toXML(xml_tag);
-//}
-
-
 void PtgRef3d::storeFields(CFRecord& record)
 {
 	rgce_loc_rel = rgce_loc;
@@ -69,7 +59,9 @@ void PtgRef3d::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
 
 	std::wstring cell_ref = rgce_loc.toString();
 
-	ptg_stack.push(XMLSTUFF::make3dRef(ixti, cell_ref, global_info->xti_parsed));
+	cell_ref = XMLSTUFF::make3dRef(ixti, cell_ref, global_info->xti_parsed);
+
+	ptg_stack.push(cell_ref);
 }
 
 

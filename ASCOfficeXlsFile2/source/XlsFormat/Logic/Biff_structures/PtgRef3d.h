@@ -18,7 +18,6 @@ public:
 
 	void fromString(const std::wstring& str);
 
-	
 	virtual void loadFields(CFRecord& record);
 	virtual void storeFields(CFRecord& record);
 

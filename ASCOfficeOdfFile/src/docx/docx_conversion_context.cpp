@@ -588,18 +588,90 @@ void docx_conversion_context::start_process_style_content()
     styles_context_.start();
 }
 
+void docx_conversion_context::process_section(std::wostream & strm, odf_reader::style_columns * columns)
+{
+	int count_columns = 1;
+	bool sep_columns = false;
+
+	oox::section_context::_section & section = get_section_context().get();
+	
+	if (columns)
+	{
+		if ((columns->fo_column_count_) && (*columns->fo_column_count_ > 1))
+		{
+			count_columns =  *columns->fo_column_count_;
+		}
+		if (odf_reader::style_column_sep * columns_sep = dynamic_cast<odf_reader::style_column_sep *>( columns->style_column_sep_.get() ))
+		{
+			if (columns_sep->style_style_ != _T("none"))
+				sep_columns = true;
+		}
+	}
+	if (const odf_reader::style_instance * secStyle = root()->odf_context().styleContainer().style_by_name(section.style_, odf_types::style_family::Section, process_headers_footers_))
+	{
+		if (const odf_reader::style_content * content = secStyle->content())
+		{
+			if (odf_reader::style_section_properties * sectPr = content->get_style_section_properties())
+			{
+				if (odf_reader::style_columns * columns = dynamic_cast<odf_reader::style_columns *>( sectPr->style_columns_.get() ))
+				{
+					if (columns->fo_column_count_)
+					{
+						count_columns =  *columns->fo_column_count_;
+					}
+					if (odf_reader::style_column_sep * columns_sep = dynamic_cast<odf_reader::style_column_sep *>( columns->style_column_sep_.get() ))
+					{
+						if (columns_sep->style_style_ != _T("none"))
+							sep_columns = true;
+					}
+				}
+
+				section.margin_left_	= sectPr->common_horizontal_margin_attlist_.fo_margin_left_;
+				section.margin_right_	= sectPr->common_horizontal_margin_attlist_.fo_margin_right_;
+			}
+		}
+		if (section.is_dump_)
+		{
+			get_section_context().remove_section();				
+		}
+	}
+
+	CP_XML_WRITER(strm)
+	{
+		CP_XML_NODE(L"w:cols")
+		{
+			CP_XML_ATTR(L"w:equalWidth", L"true");
+			CP_XML_ATTR(L"w:num", count_columns);
+			CP_XML_ATTR(L"w:sep", sep_columns);
+			CP_XML_ATTR(L"w:space",0);
+		}
+	}
+}
 bool docx_conversion_context::process_page_properties(std::wostream & strm)
 {
     if (is_next_dump_page_properties() || get_section_context().get().is_dump_)
     {
         std::wstring pageProperties = get_page_properties();
-		if (!pageProperties.empty())//??? если пустая??? 
-		{
-			odf_reader::page_layout_instance * page_layout_instance_ = root()->odf_context().pageLayoutContainer().page_layout_by_name(pageProperties);
-			
-			if (page_layout_instance_) 
-				page_layout_instance_->docx_convert_serialize(strm,*this);
+		odf_reader::page_layout_instance * page_layout_instance_ = root()->odf_context().pageLayoutContainer().page_layout_by_name(pageProperties);
 
+		if (page_layout_instance_) 
+		{
+				page_layout_instance_->docx_convert_serialize(strm, *this);
+		}
+		else
+		{
+			CP_XML_WRITER(strm)
+			{
+				CP_XML_NODE(L"w:sectPr")
+				{
+					process_section( CP_XML_STREAM(), NULL);
+
+					CP_XML_NODE(L"w:type")
+					{				
+						CP_XML_ATTR(L"w:val", L"continuous");
+					}
+				}
+			}
 		}
 		next_dump_page_properties(false);
 		return true;
@@ -624,8 +696,8 @@ void docx_conversion_context::docx_serialize_paragraph_style(std::wostream & str
    
 	CP_XML_WRITER(strm)
 	{
-		if (get_section_context().dump_.empty() == false && !ParentId.empty())
-		{
+		if (get_section_context().dump_.empty() == false && (!ParentId.empty() || get_section_context().get().is_dump_))
+		{//две подряд секции или если стиль определен 
 			CP_XML_NODE(L"w:pPr")
 			{
 				CP_XML_STREAM() << get_section_context().dump_;

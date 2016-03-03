@@ -34,11 +34,11 @@ public:
 	void serialize(std::wostream & strm ,const wchar_t * ns, const wchar_t * name );
 
     _CP_OPT(odf_types::length)			style_width_;
-    _CP_OPT(odf_types::percent)		style_rel_width_;
+    _CP_OPT(odf_types::percent)			style_rel_width_;
     _CP_OPT(odf_types::Bool)			style_may_break_between_rows_;
     _CP_OPT(odf_types::border_model)	table_border_model_;
     _CP_OPT(odf_types::Bool)			table_display_;
-    _CP_OPT(odf_types::table_align)	table_align_;
+    _CP_OPT(odf_types::table_align)		table_align_;
 	_CP_OPT(odf_types::color)			tableooo_tab_color_;
 	
 	odf_types::common_horizontal_margin_attlist	common_horizontal_margin_attlist_;

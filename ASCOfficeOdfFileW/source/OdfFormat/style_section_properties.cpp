@@ -157,7 +157,8 @@ void style_section_properties::serialize(std::wostream & strm)
 			common_horizontal_margin_attlist_.serialize(CP_GET_XML_NODE());
 			common_writing_mode_attlist_.serialize(CP_GET_XML_NODE());
 
-			CP_XML_ATTR_OPT(L"style:protect",				style_protect_); // default false
+			CP_XML_ATTR_OPT(L"style:editable",					style_editable_);
+			CP_XML_ATTR_OPT(L"style:protect",					style_protect_); // default false
 			CP_XML_ATTR_OPT(L"text:dont-balance-text-columns",	text_dont_balance_text_columns_);
 		 
 			if (style_columns_)			style_columns_->serialize(CP_XML_STREAM());

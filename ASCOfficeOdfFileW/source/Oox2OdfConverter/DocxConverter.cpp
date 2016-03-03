@@ -874,9 +874,10 @@ void DocxConverter::apply_from(OOX::Logic::CSectionProperty *props, OOX::Logic::
 	{
 		props->m_oCols.Init();
 		props->m_oCols->m_oEqualWidth	= other->m_oCols->m_oEqualWidth;
-		props->m_oCols->m_oNum			= other->m_oCols->m_oNum;
+		props->m_oCols->m_oNum			= other->m_oCols->m_oNum;	//тут может быть неверное число если колонки определены массивом
 		props->m_oCols->m_oSep			= other->m_oCols->m_oSep;
 		props->m_oCols->m_oSpace		= other->m_oCols->m_oSpace;
+
 		for (unsigned int i =0; i < other->m_oCols->m_arrColumns.size(); i++)
 		{	
 			if (other->m_oCols->m_arrColumns[i] == NULL)continue;
@@ -887,6 +888,11 @@ void DocxConverter::apply_from(OOX::Logic::CSectionProperty *props, OOX::Logic::
 			if (other->m_oCols->m_arrColumns[i]->m_oSpace.IsInit()) col->m_oSpace	= new SimpleTypes::CTwipsMeasure(*other->m_oCols->m_arrColumns[i]->m_oSpace.GetPointer());
 
 			props->m_oCols->m_arrColumns.push_back(col);
+		}
+		if (props->m_oCols->m_arrColumns.size() > 0 && other->m_oCols->m_oNum->GetValue() > 1)
+		{
+			props->m_oCols->m_oNum = new SimpleTypes::CDecimalNumber<0>();
+			props->m_oCols->m_oNum->SetValue(props->m_oCols->m_arrColumns.size());
 		}
 	}
 
@@ -934,7 +940,7 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool r
 {
 	if (oox_section_pr == NULL) return;
 
-	odt_context->text_context()->set_type_break(-1,0);
+	odt_context->text_context()->set_type_break(-1, 0);
  
 	bool continuous	= false;
 
@@ -958,7 +964,7 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool r
 	{	// нужно убрать автоматический разрыв.на следующую страницу
 		// + 
 		//нужно текущие совйства накотить на предыдущие !! .. и так пока continues далее повторяется 
-        apply_from(last_section_properties,oox_section_pr);
+        apply_from(last_section_properties, oox_section_pr);
 	}
 	else
 	{
@@ -966,7 +972,10 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool r
 
     //oox_section_pr = last_section_properties;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	odt_context->page_layout_context()->start_master_page(root ? L"Standard" : L"");
+	if (!continuous/* || root*/)
+	{
+		odt_context->page_layout_context()->start_master_page(root ? L"Standard" : L"");
+	}
 	
 	bool present_header = false;
 	bool present_footer = false;
@@ -1117,11 +1126,12 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool r
 	}
 //--------------------------------------------------------------------------------------------------------------------------------------------		
 	
-    odt_context->set_master_page_name(odt_context->page_layout_context()->last_master() ?
+	if (!continuous)
+		odt_context->set_master_page_name(odt_context->page_layout_context()->last_master() ?
                                           odt_context->page_layout_context()->last_master()->get_name() : L"");
 
 	// то что относится собственно к секциям-разделам
-	if (!root)odt_context->add_section(continuous);
+	//if (!root)odt_context->add_section(continuous);
 
 			//nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oBidi;
 			//nullable<ComplexTypes::Word::CDocGrid                        > m_oDocGrid;
@@ -1137,18 +1147,27 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool r
 			//nullable<OOX::Logic::CSectPrChange                           > m_oSectPrChange;
 //--------------------------------------------------------------------------------------------------------------------------------------------		
 
-	if ((oox_section_pr->m_oCols.IsInit()) && (oox_section_pr->m_oCols->m_oNum.IsInit()) && (oox_section_pr->m_oCols->m_oNum->GetValue() > 1))//колонки
+	int num_columns = 1;
+	
+	if (oox_section_pr->m_oCols.IsInit())
 	{
-		if (root)odt_context->add_section(continuous);
+		num_columns = oox_section_pr->m_oCols->m_oNum.IsInit() ? oox_section_pr->m_oCols->m_oNum->GetValue() : 1;
 		
-		unsigned int count = oox_section_pr->m_oCols->m_oNum->GetValue();
+		if (num_columns > 1 && oox_section_pr->m_oCols->m_arrColumns.size() > 0)
+			num_columns = /*(std::max)*/( /*num_columns,*/ (int)oox_section_pr->m_oCols->m_arrColumns.size()) ; 
+	}
+
+	if (/*num_columns != odt_context->get_current_section_columns() || */num_columns >= 1) //колонки
+	{
+		odt_context->add_section(continuous);
 		
 		double default_space_pt = -1;
 		if (oox_section_pr->m_oCols->m_oSpace.IsInit())	default_space_pt = oox_section_pr->m_oCols->m_oSpace->ToPoints();
 		
 		bool separator = oox_section_pr->m_oCols->m_oSep.IsInit() && oox_section_pr->m_oCols->m_oSep->ToBool();
 		
-		odt_context->add_section_columns(count, default_space_pt, separator );
+		odt_context->add_section_columns(num_columns, 
+			oox_section_pr->m_oCols->m_arrColumns.size() > 0 ? -1 : default_space_pt , separator );
 
 		std::vector<std::pair<double,double>> width_space;
 		
@@ -1163,19 +1182,19 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool r
 			if (oox_section_pr->m_oCols->m_arrColumns[i]->m_oW.IsInit())
 				w = oox_section_pr->m_oCols->m_arrColumns[i]->m_oW->ToPoints();
 			
-			width_space.push_back(std::pair<double,double>(w,space));
+			width_space.push_back(std::pair<double,double>(w, space));
 		}
-		for (unsigned int i= oox_section_pr->m_oCols->m_arrColumns.size(); i< count; i ++)
-		{
-			width_space.push_back(std::pair<double,double>(-1, default_space_pt));
-		}
+		//for (unsigned int i= oox_section_pr->m_oCols->m_arrColumns.size(); i< num_columns; i ++)
+		//{
+		//	width_space.push_back(std::pair<double,double>(-1, default_space_pt));
+		//}
 		odt_context->add_section_column(width_space);
 
 		if (root) odt_context->flush_section();
 	}
 
-	odt_context->page_layout_context()->end_master_page(); // для добавления автогенераций
-	if (root)odt_context->page_layout_context()->set_current_master_page_base();
+	if (!continuous)	odt_context->page_layout_context()->end_master_page(); // для добавления автогенераций
+	if (root)			odt_context->page_layout_context()->set_current_master_page_base();
 
     last_section_properties = oox_section_pr;
 }

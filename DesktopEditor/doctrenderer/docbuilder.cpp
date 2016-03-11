@@ -16,6 +16,12 @@
 #include "nativecontrol.h"
 #include <list>
 
+#ifdef LINUX
+#include <unistd.h>
+#include <sys/wait.h>
+#include <stdio.h>
+#endif
+
 template <typename T>
 class CScopeWrapper
 {

@@ -17,6 +17,7 @@ CONFIG -= debug_and_release debug_and_release_target
 
 ############### destination path ###############
 DESTINATION_SDK_PATH = $$PWD/../../../SDK/lib
+DESTINATION_PATH = $$PWD/../../../SDK/bin/docbuilder
 
 win32 {
 DEFINES += WIN32
@@ -29,6 +30,7 @@ CONFIG(debug, debug|release) {
 } else {
     DESTINATION_SDK_PATH_DOCTRENDERER = $$DESTINATION_SDK_PATH/win_64
 }
+TARGET_PLATFORM = _win64
 }
 win32:!contains(QMAKE_TARGET.arch, x86_64):{
 CONFIG(debug, debug|release) {
@@ -36,24 +38,25 @@ CONFIG(debug, debug|release) {
 } else {
     DESTINATION_SDK_PATH_DOCTRENDERER = $$DESTINATION_SDK_PATH/win_32
 }
+TARGET_PLATFORM = _win32
 }
 
 linux-g++:contains(QMAKE_HOST.arch, x86_64):{
     DESTINATION_SDK_PATH_DOCTRENDERER = $$DESTINATION_SDK_PATH/linux_64
+    TARGET_PLATFORM = _linux64
 }
 linux-g++:!contains(QMAKE_HOST.arch, x86_64):{
     DESTINATION_SDK_PATH_DOCTRENDERER = $$DESTINATION_SDK_PATH/linux_32
+    TARGET_PLATFORM = _linux32
 }
 
 mac {
     DESTINATION_SDK_PATH_DOCTRENDERER = $$DESTINATION_SDK_PATH/mac_64
+    TARGET_PLATFORM = _mac64
 }
 
-CONFIG(debug, debug|release) {
-    DESTDIR = $$PWD/Debug
-} else {
-    DESTDIR = $$PWD/Release
-}
+DESTDIR = $$DESTINATION_PATH
+TARGET = docbuilder$$TARGET_PLATFORM
 
 ################################################
 

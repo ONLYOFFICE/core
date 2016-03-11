@@ -919,19 +919,27 @@ int main(int argc, char** argv)
 #endif
 
 #if 0
+
 #ifdef WIN32
     //std::wstring strFontsFolder = L"C:/Windows/Fonts";
-    std::wstring strFontsFolder = L"D:/activex/AVS/Sources/TeamlabOffice/trunk/OfficeWeb/Fonts/native";
-    std::wstring strAllFontsJSPath = L"D:/AllFontsGenTest/AllFonts.js";
-    std::wstring strThumbnailsFolder = L"D:/AllFontsGenTest";
-    std::wstring strFontsSelectionBin = L"D:/AllFontsGenTest/font_selection.bin";
+    strFontsFolder = L"D:/activex/AVS/Sources/TeamlabOffice/trunk/OfficeWeb/Fonts/native";
+    strAllFontsJSPath = L"D:/AllFontsGenTest/AllFonts.js";
+    strThumbnailsFolder = L"D:/AllFontsGenTest";
+    strFontsSelectionBin = L"D:/AllFontsGenTest/font_selection.bin";
 #endif
 
-#ifdef _LINUX
-    std::wstring strFontsFolder = L"";
-    std::wstring strAllFontsJSPath = L"/home/oleg/AllFontsGen/AllFonts.js";
-    std::wstring strThumbnailsFolder = L"/home/oleg/AllFontsGen/";
-    std::wstring strFontsSelectionBin = L"/home/oleg/AllFontsGen/font_selection.bin";
+#if defined(_LINUX) && !defined(_MAC)
+    strFontsFolder = L"";
+    strAllFontsJSPath = L"/home/oleg/AllFontsGen/AllFonts.js";
+    strThumbnailsFolder = L"/home/oleg/AllFontsGen/";
+    strFontsSelectionBin = L"/home/oleg/AllFontsGen/font_selection.bin";
+#endif
+
+#ifdef _MAC
+    strFontsFolder = L"";
+    strAllFontsJSPath = L"/Users/Oleg/Desktop/activex/AllFonts.js";
+    strThumbnailsFolder = L"/Users/Oleg/Desktop/activex/";
+    strFontsSelectionBin = L"/Users/Oleg/Desktop/activex/font_selection.bin";
 #endif
 
 #endif

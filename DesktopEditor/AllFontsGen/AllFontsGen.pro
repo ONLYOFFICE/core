@@ -3,6 +3,8 @@ CONFIG += console
 CONFIG -= app_bundle
 CONFIG -= qt
 
+CONFIG += c++11
+
 ############### destination path ###############
 DESTDIR = $$PWD/../../SDK/bin/AllFontsGen
 
@@ -19,6 +21,10 @@ linux-g++:contains(QMAKE_HOST.arch, x86_64):{
 }
 linux-g++:!contains(QMAKE_HOST.arch, x86_64):{
     TARGET = linux_32
+}
+
+mac {
+    TARGET = mac_64
 }
 
 ################################################
@@ -47,8 +53,12 @@ linux-g++:!contains(QMAKE_HOST.arch, x86_64):{
     DESTINATION_SDK_PATH = $$DESTINATION_SDK_PATH/linux_32
 }
 
+mac {
+    DESTINATION_SDK_PATH = $$DESTINATION_SDK_PATH/mac_64
+}
+
 LIBS += -L$$DESTINATION_SDK_PATH -lgraphics
-LIBS += -L$$DESTINATION_SDK_PATH -lASCOfficeUtilsLib
+LIBS += -L$$DESTINATION_SDK_PATH -lOfficeUtils
 linux-g++ | linux-g++-64 | linux-g++-32 {
     LIBS += -lz
 }

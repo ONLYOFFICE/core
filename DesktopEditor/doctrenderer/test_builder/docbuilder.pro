@@ -14,6 +14,7 @@ CONFIG   -= app_bundle
 TEMPLATE = app
 
 CONFIG -= debug_and_release debug_and_release_target
+CONFIG += c++11
 
 ############### destination path ###############
 DESTINATION_SDK_PATH = $$PWD/../../../SDK/lib
@@ -21,6 +22,22 @@ DESTINATION_PATH = $$PWD/../../../SDK/bin/docbuilder
 
 win32 {
 DEFINES += WIN32
+}
+
+linux-g++ | linux-g++-64 | linux-g++-32 {
+    DEFINES += \
+        LINUX \
+        _LINUX \
+        _LINUX_QT
+}
+
+mac {
+    DEFINES += \
+    LINUX \
+    _LINUX \
+    _LINUX_QT \
+    _MAC \
+    MAC
 }
 
 # WINDOWS

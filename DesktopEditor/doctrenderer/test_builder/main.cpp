@@ -1,5 +1,9 @@
 #include "../docbuilder.h"
 
+#ifdef LINUX
+#include "../../common/File.h"
+#endif
+
 #define OFFICESTUDIO_FILE_DOCUMENT					0x0040
 #define OFFICESTUDIO_FILE_DOCUMENT_DOCX				OFFICESTUDIO_FILE_DOCUMENT + 0x0001
 #define OFFICESTUDIO_FILE_DOCUMENT_DOC				OFFICESTUDIO_FILE_DOCUMENT + 0x0002

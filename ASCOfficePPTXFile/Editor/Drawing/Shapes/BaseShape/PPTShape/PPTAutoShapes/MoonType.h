@@ -25,7 +25,7 @@ public:
         AddGuide(_T("sum 10800 0 @9"));
         AddGuide(_T("sum @9 10800 0"));
         AddGuide(_T("prod #0 9598 32768"));
-        AddGuide(_T(" sum 21600 0 @12"));
+        AddGuide(_T("sum 21600 0 @12"));
         AddGuide(_T("ellipse @13 21600 10800"));
         AddGuide(_T("sum 10800 0 @14"));
         AddGuide(_T("sum @14 10800 0"));

@@ -386,9 +386,8 @@ public:
 					
 					pElement->m_oBrush.Type			= c_BrushTypeTexture;
 					pElement->m_oBrush.TextureMode	= c_BrushTextureModeTile;
-				}
-				break;
-			}
+				}				
+			}break;
 		case fillColor:
 			{
 				SColorAtom oAtom;
@@ -401,9 +400,8 @@ public:
 
 				if (pElement->m_oBrush.Type == c_BrushTypeNoFill )
 					pElement->m_oBrush.Type = c_BrushTypeSolid;
-
-				break;
-			}
+				
+			}break;
 		case fillBackColor:
 			{
 				SColorAtom oAtom;
@@ -483,7 +481,7 @@ public:
 					pElement->m_oBrush.ColorsPosition.push_back(std::pair<CColor, double>(color, 100. * FIXED_POINT_unsigned(dwPosition)));
 				}
 			}break;
-		case fNoFillHitTest:
+		case fillBoolean:
 			{
 				BYTE flag1 = (BYTE)(pProperty->m_lValue);
 				BYTE flag2 = (BYTE)(pProperty->m_lValue >> 16);
@@ -509,7 +507,7 @@ public:
 
 				break;
 			}
-		case NSOfficeDrawing::fFillOK:
+		case NSOfficeDrawing::geoBoolean:
 			{
 				BYTE flag1 = (BYTE)(pProperty->m_lValue);
 				BYTE flag2 = (BYTE)(pProperty->m_lValue >> 8);
@@ -539,7 +537,7 @@ public:
 				break;
 			}
 // line --------------------------------------------------------
-		case fNoLineDrawDash: //Line Style Boolean Properties
+		case lineBoolean: //Line Style Boolean Properties
 			{
 				bool bNoLineDrawDash		= GETBIT(pProperty->m_lValue, 0);
 				bool bLineFillShape			= GETBIT(pProperty->m_lValue, 1);
@@ -778,7 +776,7 @@ public:
 			{
 				pElement->m_oShadow.PerspectiveY = ((int)pProperty->m_lValue) ;// EMU_MM;//FIXED_POINT(pProperty->m_lValue);
 			}break;
-		case fshadowObscured:
+		case shadowBoolean:
 			{
 				bool fshadowObscured		= GETBIT(pProperty->m_lValue, 0);
 				bool fShadow				= GETBIT(pProperty->m_lValue, 1);
@@ -793,6 +791,45 @@ public:
 					//контурная
 					pElement->m_oShadow.Visible = fshadowObscured;
 				}
+			}break;
+		case groupShapeBoolean:
+			{
+				bool fUsefLayoutInCell		= GETBIT(pProperty->m_lValue, 0);
+				bool fUsefIsBullet			= GETBIT(pProperty->m_lValue, 1);
+				bool fUsefStandardHR		= GETBIT(pProperty->m_lValue, 2);
+				bool fUsefNoshadeHR			= GETBIT(pProperty->m_lValue, 3);
+				bool fUsefHorizRule			= GETBIT(pProperty->m_lValue, 4);
+				bool fUsefUserDrawn			= GETBIT(pProperty->m_lValue, 5);
+				bool fUsefAllowOverlap		= GETBIT(pProperty->m_lValue, 6);
+				bool fUsefReallyHidden		= GETBIT(pProperty->m_lValue, 7);
+				bool fUsefScriptAnchor		= GETBIT(pProperty->m_lValue, 8);
+				bool fUsefEditedWrap		= GETBIT(pProperty->m_lValue, 9);
+				bool fUsefBehindDocument	= GETBIT(pProperty->m_lValue, 10);
+				bool fUsefOnDblClickNotify	= GETBIT(pProperty->m_lValue, 11);
+				bool fUsefIsButton			= GETBIT(pProperty->m_lValue, 12);
+				bool fUsefOneD				= GETBIT(pProperty->m_lValue, 13);
+				bool fUsefHidden			= GETBIT(pProperty->m_lValue, 14);
+				bool fUsefPrint				= GETBIT(pProperty->m_lValue, 15);
+				
+				bool fLayoutInCell		= fUsefLayoutInCell	? GETBIT(pProperty->m_lValue, 16)	: true;
+				bool fIsBullet			= fUsefIsBullet		? GETBIT(pProperty->m_lValue, 17)	: false;
+				bool fStandardHR		= fUsefStandardHR	? GETBIT(pProperty->m_lValue, 18)	: false;
+				bool fNoshadeHR			= fUsefNoshadeHR	? GETBIT(pProperty->m_lValue, 19)	: false;
+				bool fHorizRule			= fUsefHorizRule	? GETBIT(pProperty->m_lValue, 20)	: false;
+				bool fUserDrawn			= fUsefUserDrawn	? GETBIT(pProperty->m_lValue, 21)	: false;
+				bool fAllowOverlap		= fUsefAllowOverlap	? GETBIT(pProperty->m_lValue, 22)	: true;
+				bool fReallyHidden 		= fUsefReallyHidden		? GETBIT(pProperty->m_lValue, 23) : false;
+				bool fScriptAnchor		= fUsefScriptAnchor		? GETBIT(pProperty->m_lValue, 24) : false;
+				bool fEditedWrap		= fUsefEditedWrap		? GETBIT(pProperty->m_lValue, 25) : false;
+				bool fBehindDocument	= fUsefBehindDocument	? GETBIT(pProperty->m_lValue, 26) : false;
+				bool fOnDblClickNotify	= fUsefOnDblClickNotify ? GETBIT(pProperty->m_lValue, 27) : false;
+				bool fIsButton			= fUsefIsButton		? GETBIT(pProperty->m_lValue, 28)	: false;
+				bool fOneD				= fUsefOneD			? GETBIT(pProperty->m_lValue, 29)	: false;
+				bool fHidden			= fUsefHidden		? GETBIT(pProperty->m_lValue, 30)	: false;
+				bool fPrint				= fUsefPrint		? GETBIT(pProperty->m_lValue, 31)	: true;
+
+				pElement->m_bHidden = fHidden || fIsBullet;
+								//presentation_ticio_20100610.ppt
 			}break;
 		default:
 			break;
@@ -878,58 +915,59 @@ public:
 			// здесь просто применяем проперти...
 			// geometry ----------------------------------------------------
 			// top, left, right, bottom logic
+		case NSOfficeDrawing::metroBlob:
+			{
+				//альтернатива в формате oox
+				//NSFile::CFileBinary f;
+				//f.CreateFileW(L"d:\\test.zip");
+				//f.WriteFile(pProperty->m_pOptions, pProperty->m_lValue);
+				//f.CloseFile();
+			}break;
 		case NSOfficeDrawing::geoRight:
 			{
 				if (0 < pProperty->m_lValue)
-					pParentShape->m_dWidthLogic = (double)(pProperty->m_lValue);
-				break;
-			}
+					pParentShape->m_dWidthLogic = (double)(pProperty->m_lValue);				
+			}break;
 		case NSOfficeDrawing::geoBottom:
 			{
 				if (0 < pProperty->m_lValue)
-					pParentShape->m_dHeightLogic = (double)(pProperty->m_lValue);
-				break;
-			}
+					pParentShape->m_dHeightLogic = (double)(pProperty->m_lValue);				
+			}break;
 			// shapePath
 		case NSOfficeDrawing::shapePath:
 			{
-				pShape->m_oCustomVML.SetPath((RulesType)pProperty->m_lValue);
-				break;
-			}
+				pShape->m_oCustomVML.SetPath((RulesType)pProperty->m_lValue);				
+			}break;
 			// segmentsInfo
 		case NSOfficeDrawing::pSegmentInfo:
 			{
 				if (pProperty->m_bComplex)
 				{
 					pShape->m_oCustomVML.LoadSegments(pProperty);
-				}
-				break;
-			}
+				}				
+			}break;
 			// verticesInfo
 		case NSOfficeDrawing::pVertices:
 			{
 				if (pProperty->m_bComplex)
 				{
 					pShape->m_oCustomVML.LoadVertices(pProperty);
-				}
-				break;
-			}
+				}				
+			}break;
 		case NSOfficeDrawing::pGuides:
 			{
 				if (pProperty->m_bComplex)
 				{
 					pShape->m_oCustomVML.LoadGuides(pProperty);
-				}
-				break;
-			}
+				}				
+			}break;
 		case NSOfficeDrawing::pAdjustHandles:
 			{
 				if (pProperty->m_bComplex)
 				{
 					pShape->m_oCustomVML.LoadAHs(pProperty);
-				}
-				break;
-			}
+				}				
+			}break;
 		case NSOfficeDrawing::adjustValue:
 		case NSOfficeDrawing::adjust2Value:
 		case NSOfficeDrawing::adjust3Value:
@@ -949,17 +987,15 @@ public:
 				else
 				{
 					pShape->m_oCustomVML.LoadAdjusts(lIndexAdj, (LONG)pProperty->m_lValue);
-				}
-				break;
-			}
+				}				
+			}break;
 //--------------------------------------------------------------------------------------------------------------------
 		case lTxid:
 			{
 			}break;
 		case NSOfficeDrawing::dxTextLeft:
 			{
-				pParentShape->m_dTextMarginX = (double)pProperty->m_lValue / EMU_MM;
-				
+				pParentShape->m_dTextMarginX = (double)pProperty->m_lValue / EMU_MM;				
 			}break;
 		case NSOfficeDrawing::dxTextRight:
 			{
@@ -975,8 +1011,7 @@ public:
 			}break;
 		case NSOfficeDrawing::WrapText:
 			{
-				pParentShape->m_oText.m_lWrapMode = (LONG)pProperty->m_lValue;
-				
+				pParentShape->m_oText.m_lWrapMode = (LONG)pProperty->m_lValue;				
 			}break;
 		case NSOfficeDrawing::gtextUNICODE://word art text
 			{
@@ -1007,9 +1042,8 @@ public:
 				{
 					std::wstring str = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)pProperty->m_pOptions, pProperty->m_lValue/2-1);
 					pParentShape->m_oText.m_oAttributes.m_oFont.Name = std_string2string(str);
-				}
-				break;
-			}
+				}				
+			}break;
 		case NSOfficeDrawing::gtextSize:
 			{
 				pParentShape->m_oText.m_oAttributes.m_oFont.Size = (INT)((pProperty->m_lValue >> 16) & 0x0000FFFF);
@@ -1092,7 +1126,7 @@ public:
 				};
 				break;
 			}
-		case NSOfficeDrawing::gtextFStrikethrough:
+		case NSOfficeDrawing::gtextBoolean:
 			{
 				// вот здесь - нужно единицы перевести в пикселы
 				BYTE flag1 = (BYTE)(pProperty->m_lValue);
@@ -1158,7 +1192,7 @@ public:
 					break;
 				}
 			}break;
-		case NSOfficeDrawing::fFitTextToShape:
+		case NSOfficeDrawing::textBoolean:
 			{
 				BYTE flag1 = (BYTE)(pProperty->m_lValue);
 				BYTE flag2 = (BYTE)(pProperty->m_lValue >> 8);
@@ -1187,7 +1221,6 @@ public:
 					pParentShape->m_oText.m_bAutoFit = bFitShapeToText;
 
 			}break;
-
 		default:
 			break;
 		}

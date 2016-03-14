@@ -1,8 +1,6 @@
 ﻿#ifndef DOCBUILDER_H
 #define DOCBUILDER_H
 
-#include <string>
-#include <vector>
 #include "../common/base_export.h"
 
 namespace NSDoctRenderer
@@ -15,14 +13,14 @@ namespace NSDoctRenderer
         ~CDocBuilder();
 
     public:
-        bool OpenFile(const std::wstring& path, const std::wstring& params);
+        bool OpenFile(const wchar_t* path, const wchar_t* params);
         bool CreateFile(const int& type);
-        void SetTmpFolder(const std::wstring& folder);
-        bool SaveFile(const int& type, const std::wstring& path);
+        void SetTmpFolder(const wchar_t* folder);
+        bool SaveFile(const int& type, const wchar_t* path);
         void CloseFile();
-        bool ExecuteCommand(const std::wstring& command);
+        bool ExecuteCommand(const wchar_t* command);
 
-        bool Run(const std::wstring& path);
+        bool Run(const wchar_t* path);
 
     private:
         CDocBuilder_Private* m_pInternal;

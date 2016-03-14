@@ -538,6 +538,8 @@ void NSPresentationEditor::CShapeWriter::WriteImageInfo()
 	
 	if (m_pImageElement->m_sName.empty()) m_pImageElement->m_sName = std::wstring(L"Image ") +  string2std_string(strShapeID);
 	
+	if (m_pImageElement->m_bHidden)	m_oWriter.WriteString(std::wstring(L" hidden=\"1\""));
+
 	m_oWriter.WriteString(std::wstring(L" name=\""));
 		m_oWriter.WriteStringXML(m_pImageElement->m_sName);
 	m_oWriter.WriteString(std::wstring(L"\""));
@@ -591,6 +593,8 @@ void NSPresentationEditor::CShapeWriter::WriteShapeInfo()
 
 	if (m_pShapeElement->m_sName.empty()) m_pShapeElement->m_sName = std::wstring(L"Shape ") +  string2std_string(strShapeID);
 
+	if (m_pShapeElement->m_bHidden)	m_oWriter.WriteString(std::wstring(L" hidden=\"1\""));
+	
 	m_oWriter.WriteString(std::wstring(L" name=\""));
 		m_oWriter.WriteStringXML(m_pShapeElement->m_sName);
 	m_oWriter.WriteString(std::wstring(L"\""));

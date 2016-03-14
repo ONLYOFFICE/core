@@ -496,11 +496,13 @@ void CPPTUserInfo::LoadSlide(DWORD dwSlideID, CSlide* pSlide)
 	if (pPairLayoutTitle != pTheme->m_mapTitleLayout.end())
 	{
 		//основан на заголовочном шаблоне
-		pSlide->m_lLayoutID = pPairLayoutTitle->second;
-		pLayout				= &pTheme->m_arLayouts[pSlide->m_lLayoutID];
+		pSlide->m_bShowMasterShapes = bMasterObjects;
+		pSlide->m_lLayoutID			= pPairLayoutTitle->second;
+		pLayout						= &pTheme->m_arLayouts[pSlide->m_lLayoutID];
 	}
 	else
 	{
+		pSlide->m_bShowMasterShapes			= true; //???
 		//основан на типовом шаблоне
 		std::map<_UINT64, LONG>::iterator	pPairLayoutGeom	= pTheme->m_mapGeomToLayout.find(oArraySlideAtoms[0]->m_oLayout.m_hash);
 		
@@ -607,7 +609,6 @@ void CPPTUserInfo::LoadSlide(DWORD dwSlideID, CSlide* pSlide)
 
 	pRecordSlide->GetRecordsByType(&oArrayShapes, true);
 
-	pSlide->m_bShowMasterShapes = bMasterObjects;
 	pSlide->m_bIsBackground		= false;
 
 	for (int nShape = 0; nShape < oArrayShapes.size(); ++nShape)

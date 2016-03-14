@@ -852,7 +852,12 @@ void NSPresentationEditor::CPPTXWriter::WriteSlide(int nIndexSlide)
 		oRels.StartSlide(nLayout, nIndexSlide);
 	}
 
-	oWriter.WriteString(std::wstring(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><p:sld xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\">"));
+	oWriter.WriteString(std::wstring(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"));
+	oWriter.WriteString(std::wstring(L"<p:sld xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\""));
+	if (!pSlide->m_bShowMasterShapes)
+		oWriter.WriteString(std::wstring(L" showMasterSp=\"0\""));
+	oWriter.WriteString(std::wstring(L">"));
+	
 	oWriter.WriteString(std::wstring(L"<p:cSld"));
 
 	if ( pSlide->m_sName.empty() == false)

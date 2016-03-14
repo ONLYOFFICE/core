@@ -1034,11 +1034,7 @@ namespace NSOfficeDrawing
         txdir=139,
         ccol=140,
         dzColMargin=141,
-        fSelectText=187,
-        fAutoTextMargin=188,
-        fRotateText=189,
-        fFitShapeToText=190,
-        fFitTextToShape=191,
+        textBoolean=191,
 
         //GeoText
         gtextUNICODE=192,
@@ -1049,21 +1045,7 @@ namespace NSOfficeDrawing
         gtextFont=197,
         gtextCSSFont=198,
         gtextFReverseRows=240,
-        fGtext=241,
-        gtextFVertical=242,
-        gtextFKern=243,
-        gtextFTight=244,
-        gtextFStretch=245,
-        gtextFShrinkFit=246,
-        gtextFBestFit=247,
-        gtextFNormalize=248,
-        gtextFDxMeasure=249,
-        gtextFBold=250,
-        gtextFItalic=251,
-        gtextFUnderline=252,
-        gtextFShadow=253,
-        gtextFSmallcaps=254,
-        gtextFStrikethrough=255,
+        gtextBoolean=255,
 
         //BLIP
         cropFromTop=256,
@@ -1120,13 +1102,7 @@ namespace NSOfficeDrawing
         pInscribe=343,
         cxk=344,
         pFragments=345,
-        fColumnLineOK=377,
-        fShadowOK=378,
-        f3DOK=379,
-        fLineOK=380,
-        fGtextOK=381,
-        fFillShadeShapeOK=382,
-        fFillOK=383,
+        geoBoolean=383,
 
         //Fill Style
         fillType=384,
@@ -1164,7 +1140,7 @@ namespace NSOfficeDrawing
         fHitTestFill=444,
         fillShape=445,
         fillUseRect=446,
-        fNoFillHitTest=447,
+        fillBoolean=447,
 
         //Line Style
         lineColor=448,
@@ -1191,13 +1167,7 @@ namespace NSOfficeDrawing
         lineEndArrowLength=469,
         lineJoinStyle=470,
         lineEndCapStyle=471,
-        fInsetPen=505,
-        fInsetPenOK=506,
-        fArrowheadsOK=507,
-        fLine=508,
-        fHitTestLine=509,
-        lineFillShape=510,
-        fNoLineDrawDash=511,
+        lineBoolean=511,
 
         //Shadow Style
         shadowType=512,
@@ -1218,8 +1188,7 @@ namespace NSOfficeDrawing
         shadowWeight=527,
         shadowOriginX=528,
         shadowOriginY=529,
-        fShadow=574,
-        fshadowObscured=575,
+        shadowBoolean=575,
 
         //Perspective Style
         perspectiveType=576,
@@ -1234,7 +1203,7 @@ namespace NSOfficeDrawing
         perspectiveWeight=585,
         perspectiveOriginX=586,
         perspectiveOriginY=587,
-        fPerspective=639,
+        perspectiveBoolean=639,
 
         //3D Object
         c3DSpecularAmt=640,
@@ -1363,15 +1332,7 @@ namespace NSOfficeDrawing
         wzAccessBlob=936,
         metroBlob=937,
         dhgt=938,
-        fLayoutInCell=944,
-        fIsBullet=945,
-        fStandardHR=946,
-        fNoshadeHR=947,
-        fHorizRule=948,
-        fUserDrawn=949,
-        fAllowOverlap=950,
-        fReallyHidden=951,
-        fScriptAnchor=952,
+		groupShapeBoolean=959,
 
         //Unknown HTML
         wzLineId=1026,

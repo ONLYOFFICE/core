@@ -134,6 +134,7 @@ namespace NSPresentationEditor
 
 		bool				m_bIsBackground;	
 		bool				m_bHaveAnchor;	
+		bool				m_bHidden;
 
 		bool				m_bIsChangeable;	// можно ли редактировать элемент
 
@@ -174,6 +175,7 @@ namespace NSPresentationEditor
 		{
 			m_bIsBackground				= false;
 			m_bHaveAnchor				= true;
+			m_bHidden					= false;
 
 			m_bIsChangeable				= true;
 			
@@ -246,6 +248,7 @@ namespace NSPresentationEditor
 
 			pDublicate->m_bIsBackground				= m_bIsBackground;	
 			pDublicate->m_bHaveAnchor				= m_bHaveAnchor;
+			pDublicate->m_bHidden					= m_bHidden;
 			
 			pDublicate->m_bIsChangeable				= m_bIsChangeable;
 			

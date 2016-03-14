@@ -136,7 +136,7 @@ OfficeArtFOPTEPtr OfficeArtFOPTE::load_and_create(XLS::CFRecord& record)
 		case NSOfficeDrawing::gtextSpacing:
 			fopte = OfficeArtFOPTEPtr(new FixedPoint);
 			break;
-		case NSOfficeDrawing::fFitTextToShape:
+		case NSOfficeDrawing::textBoolean:
 			fopte = OfficeArtFOPTEPtr(new TextBooleanProperties);
 			break;
 		case NSOfficeDrawing::gtextUNICODE:

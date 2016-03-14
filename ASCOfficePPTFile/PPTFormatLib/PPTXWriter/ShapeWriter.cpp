@@ -670,73 +670,70 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 
 	m_oWriter.WriteString(std::wstring(L"<a:bodyPr" ));
 
-  //		int __l = (int)((m_oBounds.left		+ m_oTextRect.left)	* EMU_MM);
-		//int __t = (int)((m_oBounds.top		+ m_oTextRect.top)	* EMU_MM);
-		//int __r = (int)((m_oBounds.right	- m_oTextRect.right)* EMU_MM);
-		//int __b = (int)((m_oBounds.bottom	- m_oTextRect.bottom)* EMU_MM);
+	int __l = (int)((-	m_oBounds.left		+ m_oTextRect.left	)* EMU_MM);
+	int __t = (int)((-	m_oBounds.top		+ m_oTextRect.top	)* EMU_MM);
+	int __r = (int)((	m_oBounds.right		- m_oTextRect.right	)* EMU_MM);
+	int __b = (int)((	m_oBounds.bottom	- m_oTextRect.bottom)* EMU_MM);
 
-		//if (true)
-		//{
-		//	CString str;
-		//	str.Format(L" lIns=\"%d\" tIns=\"%d\" rIns=\"%d\" bIns=\"%d\"",__l, __t, __r, __b);
-		//	m_oWriter.WriteString(str);
-		//}
-		//else
-			m_oWriter.WriteString(std::wstring(L" lIns=\"0\" tIns=\"0\" rIns=\"0\" bIns=\"0\""));
+	CString str;
+	str.Format(L" lIns=\"%d\" tIns=\"%d\" rIns=\"%d\" bIns=\"%d\"",__l, __t, __r, __b);
+	m_oWriter.WriteString(str);
+	
+//	m_oWriter.WriteString(std::wstring(L" lIns=\"0\" tIns=\"0\" rIns=\"0\" bIns=\"0\""));
 
-		if (m_pShapeElement->m_oShape.m_oText.m_oAttributes.m_nTextAlignVertical == 0 )			
-			m_oWriter.WriteString(" anchor=\"t\"");
-		else if (m_pShapeElement->m_oShape.m_oText.m_oAttributes.m_nTextAlignVertical == 2 )	
-			m_oWriter.WriteString(" anchor=\"b\"");
-		else if (m_pShapeElement->m_oShape.m_oText.m_oAttributes.m_nTextAlignVertical == 1 )	
-		{
-			m_oWriter.WriteString(" anchor=\"ctr\"");
-			m_oWriter.WriteString(" anchorCtr=\"0\"");
-		}
-		if (m_pShapeElement->m_oShape.m_oText.m_oAttributes.m_dTextRotate > 0)
-		{
-			CString strProp;
-			strProp.Format(_T(" rot=\"%d\""), (int)(m_pShapeElement->m_oShape.m_oText.m_oAttributes.m_dTextRotate * 60000));
-			m_oWriter.WriteString(strProp);
-		}
-		if (m_pShapeElement->m_oShape.m_oText.m_bVertical)
-		{
-			m_oWriter.WriteString(" vert=\"eaVert\"");
-		}
-		m_oWriter.WriteString(std::wstring(L">"));
+	if (m_pShapeElement->m_oShape.m_oText.m_oAttributes.m_nTextAlignVertical == 0 )			
+		m_oWriter.WriteString(" anchor=\"t\"");
+	else if (m_pShapeElement->m_oShape.m_oText.m_oAttributes.m_nTextAlignVertical == 2 )	
+		m_oWriter.WriteString(" anchor=\"b\"");
+	else if (m_pShapeElement->m_oShape.m_oText.m_oAttributes.m_nTextAlignVertical == 1 )	
+	{
+		m_oWriter.WriteString(" anchor=\"ctr\"");
+		m_oWriter.WriteString(" anchorCtr=\"0\"");
+	}
+	if (m_pShapeElement->m_oShape.m_oText.m_oAttributes.m_dTextRotate > 0)
+	{
+		CString strProp;
+		strProp.Format(_T(" rot=\"%d\""), (int)(m_pShapeElement->m_oShape.m_oText.m_oAttributes.m_dTextRotate * 60000));
+		m_oWriter.WriteString(strProp);
+	}
+	if (m_pShapeElement->m_oShape.m_oText.m_bVertical)
+	{
+		m_oWriter.WriteString(" vert=\"eaVert\"");
+	}
+	m_oWriter.WriteString(std::wstring(L">"));
 
-		if (m_bWordArt)
-		{
-			std::wstring prstTxWarp = oox::Spt2WordArtShapeType((oox::MSOSPT)m_pShapeElement->m_lShapeType);				
-			m_oWriter.WriteString(std::wstring(L"<a:prstTxWarp"));
-				m_oWriter.WriteString(std::wstring(L" prst=\"") + prstTxWarp + _T("\">"));
-				m_oWriter.WriteString(std::wstring(L"<a:avLst>"));//модификаторы
+	if (m_bWordArt)
+	{
+		std::wstring prstTxWarp = oox::Spt2WordArtShapeType((oox::MSOSPT)m_pShapeElement->m_lShapeType);				
+		m_oWriter.WriteString(std::wstring(L"<a:prstTxWarp"));
+			m_oWriter.WriteString(std::wstring(L" prst=\"") + prstTxWarp + _T("\">"));
+			m_oWriter.WriteString(std::wstring(L"<a:avLst>"));//модификаторы
 
-				CPPTShape *pPPTShape = dynamic_cast<CPPTShape *>(m_pShapeElement->m_oShape.m_pShape);
-				CString strVal;
+			CPPTShape *pPPTShape = dynamic_cast<CPPTShape *>(m_pShapeElement->m_oShape.m_pShape);
+			CString strVal;
 
-				for (int i = 0 ; (pPPTShape) && (i < pPPTShape->m_arAdjustments.size()); i++)
+			for (int i = 0 ; (pPPTShape) && (i < pPPTShape->m_arAdjustments.size()); i++)
+			{
+				switch(m_pShapeElement->m_lShapeType)
 				{
-					switch(m_pShapeElement->m_lShapeType)
+					case oox::msosptTextFadeUp:
 					{
-						case oox::msosptTextFadeUp:
-						{
-							double kf = 4.63; //"волшебный"
-							strVal.Format(L"%d", (int)(kf * pPPTShape->m_arAdjustments[i]));
-							m_oWriter.WriteString(std::wstring(L"<a:gd name=\"adj\" fmla=\"val "));
-							m_oWriter.WriteString(strVal + _T("\"/>"));
-						}break;
-					}
-					
+						double kf = 4.63; //"волшебный"
+						strVal.Format(L"%d", (int)(kf * pPPTShape->m_arAdjustments[i]));
+						m_oWriter.WriteString(std::wstring(L"<a:gd name=\"adj\" fmla=\"val "));
+						m_oWriter.WriteString(strVal + _T("\"/>"));
+					}break;
 				}
+				
+			}
 
-				m_oWriter.WriteString(std::wstring(L"</a:avLst>"));
-			m_oWriter.WriteString(std::wstring(L"</a:prstTxWarp>"));
-		}
-		if (m_pShapeElement->m_oShape.m_oText.m_bAutoFit)
-		{
-			m_oWriter.WriteString(std::wstring(L"<a:spAutoFit/>"));
-		}
+			m_oWriter.WriteString(std::wstring(L"</a:avLst>"));
+		m_oWriter.WriteString(std::wstring(L"</a:prstTxWarp>"));
+	}
+	if (m_pShapeElement->m_oShape.m_oText.m_bAutoFit)
+	{
+		m_oWriter.WriteString(std::wstring(L"<a:spAutoFit/>"));
+	}
 	m_oWriter.WriteString(std::wstring(L"</a:bodyPr>"));
 	
 	if (0 == nCount)

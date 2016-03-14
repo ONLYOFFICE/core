@@ -1022,7 +1022,7 @@ void XlsConverter::convert_fill_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & pr
 			case NSOfficeDrawing::fillShadeType:
 			{
 			}break;
-			case NSOfficeDrawing::fNoFillHitTest:
+			case NSOfficeDrawing::fillBoolean:
 			{
 				ODRAW::FillStyleBooleanProperties * bools = (ODRAW::FillStyleBooleanProperties *)(props[i].get());
 				if (bools)
@@ -1079,7 +1079,7 @@ void XlsConverter::convert_line_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & pr
 			{
 				xlsx_context->get_drawing_context().set_line_dash(props[i]->op);
 			}break;
-			case NSOfficeDrawing::fNoLineDrawDash:
+			case NSOfficeDrawing::lineBoolean:
 			{
 				ODRAW::LineStyleBooleanProperties * bools = (ODRAW::LineStyleBooleanProperties *)(props[i].get());
 				if (bools)
@@ -1267,7 +1267,7 @@ void XlsConverter::convert_text(std::vector<ODRAW::OfficeArtFOPTEPtr> & props)
 			{
 				xlsx_context->get_drawing_context().set_text_vertical(props[i]->op);
 			}break;
-		case NSOfficeDrawing::fFitTextToShape:
+		case NSOfficeDrawing::textBoolean:
 			{
 				ODRAW::TextBooleanProperties *bools = dynamic_cast<ODRAW::TextBooleanProperties*>(props[i].get());
 				if (bools)

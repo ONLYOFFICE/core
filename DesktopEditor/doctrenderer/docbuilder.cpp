@@ -1006,7 +1006,7 @@ namespace NSDoctRenderer
         RELEASEOBJECT(m_pInternal);
     }
 
-    bool CDocBuilder::OpenFile(const std::wstring& path, const std::wstring& params)
+    bool CDocBuilder::OpenFile(const wchar_t* path, const wchar_t* params)
     {
         m_pInternal->m_nFileType = -1;
         if (!NSDirectory::Exists(m_pInternal->m_sTmpFolder))
@@ -1022,11 +1022,11 @@ namespace NSDoctRenderer
 
         return m_pInternal->CreateFile(type);
     }
-    void CDocBuilder::SetTmpFolder(const std::wstring& folder)
+    void CDocBuilder::SetTmpFolder(const wchar_t* folder)
     {
-        m_pInternal->m_sTmpFolder = folder;
+        m_pInternal->m_sTmpFolder = std::wstring(folder);
     }
-    bool CDocBuilder::SaveFile(const int& type, const std::wstring& path)
+    bool CDocBuilder::SaveFile(const int& type, const wchar_t* path)
     {
         return m_pInternal->SaveFile(type, path);
     }
@@ -1035,14 +1035,14 @@ namespace NSDoctRenderer
         m_pInternal->CloseFile();
     }
 
-    bool CDocBuilder::ExecuteCommand(const std::wstring& command)
+    bool CDocBuilder::ExecuteCommand(const wchar_t* command)
     {
         return m_pInternal->ExecuteCommand(command);
     }
 
-    bool CDocBuilder::Run(const std::wstring& path)
+    bool CDocBuilder::Run(const wchar_t* path)
     {
-        std::wstring sPath = path;
+        std::wstring sPath(path);
         if (!NSFile::CFileBinary::Exists(sPath))
             sPath = NSFile::GetProcessDirectory() + L"/" + sPath;
 
@@ -1112,7 +1112,7 @@ namespace NSDoctRenderer
                 ParceParameters(command, _builder_params);
 
                 if ("OpenFile" == sFuncNum)
-                    bIsNoError = this->OpenFile(_builder_params[0], _builder_params[1]);
+                    bIsNoError = this->OpenFile(_builder_params[0].c_str(), _builder_params[1].c_str());
                 else if ("CreateFile" == sFuncNum)
                 {
                     if (L"docx" == _builder_params[0])
@@ -1123,7 +1123,7 @@ namespace NSDoctRenderer
                         bIsNoError = this->CreateFile(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX);
                 }
                 else if ("SetTmpFolder" == sFuncNum)
-                    this->SetTmpFolder(_builder_params[0]);
+                    this->SetTmpFolder(_builder_params[0].c_str());
                 else if ("CloseFile" == sFuncNum)
                     this->CloseFile();
                 else if ("SaveFile" == sFuncNum)
@@ -1153,12 +1153,12 @@ namespace NSDoctRenderer
                     else if (L"pdf" == _builder_params[0])
                         nFormat = AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF;
 
-                    this->SaveFile(nFormat, _builder_params[1]);
+                    this->SaveFile(nFormat, _builder_params[1].c_str());
                 }
             }
             else
             {
-                bIsNoError = this->ExecuteCommand(NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)_data, (LONG)_len));
+                bIsNoError = this->m_pInternal->ExecuteCommand(NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)_data, (LONG)_len));
             }
 
             if (!bIsNoError)

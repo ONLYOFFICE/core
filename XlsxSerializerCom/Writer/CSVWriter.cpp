@@ -1,9 +1,38 @@
 ﻿#include "CSVWriter.h"
 #include "../../UnicodeConverter/UnicodeConverter.h"
 #include "../../UnicodeConverter/UnicodeConverter_Encodings.h"
+#include "../../DesktopEditor\common\StringBuilder.h"
 
 namespace CSVWriter
 {
+	void escapeJson(const CString sInput, NSStringUtils::CStringBuilder& oBuilder)
+	{
+		//http://stackoverflow.com/questions/7724448/simple-json-string-escape-for-c
+		for (int i = 0; i < sInput.GetLength(); ++i)
+		{
+			WCHAR c = sInput[i];
+			switch (c)
+			{
+			case '"': oBuilder.WriteString(_T("\\\"")); break;
+			case '\\': oBuilder.WriteString(_T("\\\\")); break;
+			case '\b': oBuilder.WriteString(_T("\\b")); break;
+			case '\f': oBuilder.WriteString(_T("\\f")); break;
+			case '\n': oBuilder.WriteString(_T("\\n")); break;
+			case '\r': oBuilder.WriteString(_T("\\r")); break;
+			case '\t': oBuilder.WriteString(_T("\\t")); break;
+			default:
+				if ('\x00' <= c && c <= '\x1f')
+				{
+					oBuilder.WriteString(_T("\\u00"));
+					oBuilder.WriteHexByte((unsigned char)c);
+				}
+				else
+				{
+					oBuilder.AddCharSafe(c);
+				}
+			}
+		}
+	}
     void WriteFile(NSFile::CFileBinary *pFile, WCHAR **pWriteBuffer, INT &nCurrentIndex, CString &sWriteString, UINT &nCodePage, bool bIsEnd)
 	{
 		if (NULL == pFile || NULL == pWriteBuffer)
@@ -192,7 +221,15 @@ namespace CSVWriter
 							}
 
 							// Escape cell value
-							if (bJSON || -1 != sCellValue.FindOneOf(sEscape))
+							if(bJSON)
+							{
+								NSStringUtils::CStringBuilder oBuilder;
+								oBuilder.WriteString(_T("\""));
+								escapeJson(sCellValue, oBuilder);
+								oBuilder.WriteString(_T("\""));
+								sCellValue = CString(oBuilder.GetBuffer(), oBuilder.GetCurSize());
+							}
+							else if (-1 != sCellValue.FindOneOf(sEscape))
 							{
 								sCellValue.Replace(sQuote, sDoubleQuote);
 								sCellValue = sQuote + sCellValue + sQuote;

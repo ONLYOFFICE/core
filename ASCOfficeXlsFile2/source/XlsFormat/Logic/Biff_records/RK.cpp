@@ -33,7 +33,10 @@ void RK::readFields(CFRecord& record)
 
 	Rw rw;
 	Col col;
-	record >> rw >> col >> rkrec;
+	
+	record >> rw >> col;
+	record >> rkrec;
+	
 	cell = Cell(rw, col, rkrec.get_ixfe());
 }
 

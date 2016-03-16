@@ -519,8 +519,14 @@ int ChartSheetSubstream::serialize_plot_area (std::wostream & _stream)
 				{	
 					crt->m_ChartType->serialize_attribute( CP_GET_XML_NODE());
 					
-					if (crt->m_iChartType != CHART_TYPE_Stock)
+					if (crt->m_iChartType == CHART_TYPE_Scatter)
+					{
+						serialize_scatter_style(CP_XML_STREAM(), crt);
+					}
+					else if (crt->m_iChartType != CHART_TYPE_Stock)
+					{
 						crt->m_ChartType->serialize(CP_XML_STREAM());
+					}
 					
 					format->serialize(CP_XML_STREAM());
 					for (int i = 0 ; i < it->second.size(); i++)
@@ -649,7 +655,30 @@ int ChartSheetSubstream::serialize_plot_area (std::wostream & _stream)
 	}
 	return 0;
 }
+int ChartSheetSubstream::serialize_scatter_style(std::wostream & _stream, CRT *crt)
+{
+	bool bMarker = true, bSmooth = false, bLine = true;//todooo  - так как есть отдельные настройки
 
+	CP_XML_WRITER(_stream)
+	{
+		CP_XML_NODE(L"c:scatterStyle")
+		{
+			if (bLine)
+			{
+				if (bSmooth && bMarker)	CP_XML_ATTR (L"val" , L"smoothMarker");
+				else if (bSmooth)		CP_XML_ATTR (L"val" , L"smooth");		
+				else if (bMarker)		CP_XML_ATTR (L"val" , L"lineMarker");	
+				else					CP_XML_ATTR (L"val" , L"line");	
+			}
+			else
+			{
+				if (bMarker)			CP_XML_ATTR (L"val" , L"marker");
+				else					CP_XML_ATTR (L"val" , L"none");
+			}
+		}
+	}
+	return 0;
+}
 int ChartSheetSubstream::serialize_dPt(std::wostream & _stream, int id, CRT *crt, int count_point)
 {
 	if (crt == NULL) return 0;//1 (318).xls

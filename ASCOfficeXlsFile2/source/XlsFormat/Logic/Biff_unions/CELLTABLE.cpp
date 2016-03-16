@@ -30,7 +30,9 @@ public:
 	{
 		global_info_ = proc.getGlobalWorkbookInfo();
 
-		GlobalWorkbookInfo::_sheet_size_info & sheet_info = global_info_->sheet_size_info[global_info_->current_sheet - 1];
+		XLS::GlobalWorkbookInfo::_sheet_size_info zero;
+		XLS::GlobalWorkbookInfo::_sheet_size_info & sheet_info = global_info_->current_sheet >=0 ? 
+											global_info_->sheet_size_info[global_info_->current_sheet - 1] : zero;
 		
 		int count, count_row = 0;
 		
@@ -119,7 +121,9 @@ struct _CompareColumnCell
 
 int CELL_GROUP::serialize(std::wostream & stream)
 {
-	GlobalWorkbookInfo::_sheet_size_info & sheet_info = global_info_->sheet_size_info[global_info_->current_sheet - 1];
+	XLS::GlobalWorkbookInfo::_sheet_size_info zero;
+	XLS::GlobalWorkbookInfo::_sheet_size_info & sheet_info = global_info_->current_sheet >=0 ? 
+										global_info_->sheet_size_info[global_info_->current_sheet - 1] : zero;
 	
 	elements_.sort(CompareRowCell);//пока так .. todooo  сделать мап(rownumb, list<cells> - и там смотреть нужно ли сортировать €чейки)
 	

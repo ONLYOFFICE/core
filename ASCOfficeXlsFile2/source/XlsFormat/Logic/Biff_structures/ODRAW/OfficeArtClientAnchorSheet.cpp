@@ -47,7 +47,9 @@ void OfficeArtClientAnchorSheet::loadFields(XLS::CFRecord& record)
 
 void OfficeArtClientAnchorSheet::calculate()
 {
-	XLS::GlobalWorkbookInfo::_sheet_size_info & sheet_info = global_info->sheet_size_info[global_info->current_sheet - 1];
+	XLS::GlobalWorkbookInfo::_sheet_size_info zero;
+	XLS::GlobalWorkbookInfo::_sheet_size_info & sheet_info = global_info->current_sheet >=0 ? 
+										global_info->sheet_size_info[global_info->current_sheet - 1] : zero;
 
 //----------------------------------------------------------------------------------------------------
 	double kfCol	= 17640 / 256.;

@@ -52,7 +52,9 @@ void NoteSh::load(CFRecord& record)
 //-----------------------------------------------------------------------
 void NoteSh::calculate()
 {
-	XLS::GlobalWorkbookInfo::_sheet_size_info & sheet_info = global_info->sheet_size_info[global_info->current_sheet - 1];
+	XLS::GlobalWorkbookInfo::_sheet_size_info zero;
+	XLS::GlobalWorkbookInfo::_sheet_size_info & sheet_info = global_info->current_sheet >=0 ? 
+										global_info->sheet_size_info[global_info->current_sheet - 1] : zero;
 
 	ref_ = CellRef(row, col, true, true).toString();
 

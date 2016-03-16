@@ -61,11 +61,7 @@ int	Scatter::serialize(std::wostream & _stream)
 		}
 		else
 		{
-			CP_XML_NODE(L"c:scatterStyle")
-			{
-				//CP_XML_ATTR (L"val" , L"smoothMarker");
-				CP_XML_ATTR (L"val" , L"lineMarker");
-			}
+			//CP_XML_NODE(L"c:scatterStyle") - уровнем выше
 		}
 	}
 	

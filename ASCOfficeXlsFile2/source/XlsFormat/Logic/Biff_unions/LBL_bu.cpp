@@ -6,6 +6,7 @@
 #include <Logic/Biff_records/NamePublish.h>
 
 #include <Logic/Biff_structures/PtgRef3d.h>
+#include <Logic/Biff_structures/PtgArea3d.h>
 
 #include <utils.h>
 
@@ -122,6 +123,9 @@ int LBL::serialize(std::wostream & stream)
 	{
 		PtgRef3d* ptg = dynamic_cast<PtgRef3d*>(lbl->rgce.rgce.sequence[0].get());
 		if (ptg) value = std::wstring(L"#REF!");
+	
+		PtgArea3d* ptg1 = dynamic_cast<PtgArea3d*>(lbl->rgce.rgce.sequence[0].get());
+		if (ptg1) value = std::wstring(L"#REF!");
 	}
 
 	CP_XML_WRITER(stream)    

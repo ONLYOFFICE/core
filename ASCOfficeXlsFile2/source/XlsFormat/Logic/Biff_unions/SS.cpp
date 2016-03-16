@@ -211,7 +211,7 @@ int SS::serialize_default(std::wostream & _stream, int series_type, int ind )
 
 		CP_XML_NODE(L"c:spPr")
 		{
-			if (m_isAutoFill && series_type != 2 && series_type != 9) //line & scatter
+			if (m_isAutoFill && series_type != CHART_TYPE_Line && series_type != CHART_TYPE_Scatter) //line & scatter
 			{			
 				CP_XML_NODE(L"a:solidFill")
 				{
@@ -221,7 +221,7 @@ int SS::serialize_default(std::wostream & _stream, int series_type, int ind )
 					}
 				}
 			}
-			if (series_type != 2 && series_type != 9)
+			if (series_type != CHART_TYPE_Line && series_type != CHART_TYPE_Scatter)
 			{
 				ind = 31; //black
 				LineFormat* line = dynamic_cast<LineFormat*>(m_LineFormat.get());

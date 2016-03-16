@@ -1938,6 +1938,7 @@ namespace SimpleTypes
 
         virtual double FromString(CString &sValue)
         {
+            //todo странно что если пришло значение от 0 до 1, то m_dValue от 0 до 1. В других случаях от 0 до 100
 			int nPos = sValue.Find( '%' );
 			int nLen = sValue.GetLength();
 			if ( -1 == nPos || nPos != sValue.GetLength() - 1 || nLen <= 0  )

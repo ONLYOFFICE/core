@@ -1184,6 +1184,18 @@ namespace SimpleTypes
 			return m_dValue;
 		}
 
+		int GetValueIntegerPercent() const
+		{
+			if(m_bTrailingPercentSign)
+			{
+				return (int)((m_dValue / 2) * 100);
+			}
+			else
+			{
+				return (int)m_dValue;
+			}
+		}
+
 		void   SetValue(double &dValue)
 		{
 			m_dValue = dValue;

@@ -1855,7 +1855,7 @@ namespace BinDocxRW
 			void WriteW(int nType, const ComplexTypes::Word::CTblWidth& tableW, bool bWrite2 = false)
 			{
 				int nCurPos = 0;
-				if(tableW.m_oW.IsInit() && tableW.m_oType.IsInit() && SimpleTypes::tblwidthPct != tableW.m_oType->GetValue())
+				if(tableW.m_oW.IsInit() && tableW.m_oType.IsInit())
 				{
 					if(nType >= 0)
 					{
@@ -1895,7 +1895,7 @@ namespace BinDocxRW
 					{
 						m_oBcw.m_oStream.WriteBYTE(c_oSerWidthType::WDocx);
 						m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
-						m_oBcw.m_oStream.WriteLONG(tableW.m_oW->GetValue());
+						m_oBcw.m_oStream.WriteLONG(tableW.m_oW->GetValueIntegerPercent());
 					}
 					if(nType >= 0)
 						m_oBcw.WriteItemEnd(nCurPos);

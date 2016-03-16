@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #ifndef OOX_LOGIC_DRAWING_INCLUDE_H_
 #define OOX_LOGIC_DRAWING_INCLUDE_H_
 
@@ -40,7 +40,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -133,7 +133,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("l"), m_oL )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("t"), m_oT )
@@ -168,7 +168,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -228,7 +228,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("relativeFrom"), m_oRelativeFrom )
 				WritingElement_ReadAttributes_End( oReader )
@@ -247,7 +247,7 @@ namespace OOX
 
 		public:
 
-			bool                                     m_bAlign; // используем Align или (PosOffset или PctOffset)
+			bool                                     m_bAlign; // РёСЃРїРѕР»СЊР·СѓРµРј Align РёР»Рё (PosOffset РёР»Рё PctOffset)
 
 			// Attributes
 			nullable<SimpleTypes::CRelFromH<>      > m_oRelativeFrom;
@@ -275,7 +275,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -334,7 +334,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("relativeFrom"), m_oRelativeFrom )
 				WritingElement_ReadAttributes_End( oReader )
@@ -353,7 +353,7 @@ namespace OOX
 
 		public:
 
-			bool                                     m_bAlign; // используем Align или PosOffset
+			bool                                     m_bAlign; // РёСЃРїРѕР»СЊР·СѓРµРј Align РёР»Рё PosOffset
 
 			// Attributes
 			nullable<SimpleTypes::CRelFromV<>		> m_oRelativeFrom;
@@ -412,7 +412,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -456,7 +456,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("distB"),    m_oDistB )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("distL"),    m_oDistL )
@@ -502,7 +502,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -555,7 +555,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("edited"), m_oEdited )
 				WritingElement_ReadAttributes_End( oReader )
@@ -588,7 +588,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -629,7 +629,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("distL"),    m_oDistL )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("distR"),    m_oDistR )
@@ -665,7 +665,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -706,7 +706,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("distL"),    m_oDistL )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("distR"),    m_oDistR )
@@ -742,7 +742,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -784,7 +784,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("distB"), m_oDistB )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("distT"), m_oDistT )
@@ -830,7 +830,7 @@ namespace OOX
 			{
 				m_eWrapType = anchorwrapUnknown;
 
-				// TO DO: Реализовать
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -860,15 +860,15 @@ namespace OOX
 					else if ( _T("wp:simplePos") == sName )
 						m_oSimplePos = oReader;
 					else if ( _T("mc:AlternateContent") == sName )
-					//ПРИВЛЕЧЕНИЕ СРЕДСТВ ИЗ МЕСТНЫХ ИСТОЧНИКОВ.docx
-					//вариативность на разные версии офиса части параметров - кстати ... это может встретиться в ЛЮБОМ месте 
-					//todooo сделать чтение не обязательно fallback, по выбору версии нужной нам (w14, ..)
+					//РџР РР’Р›Р•Р§Р•РќРР• РЎР Р•Р”РЎРўР’ РР— РњР•РЎРўРќР«РҐ РРЎРўРћР§РќРРљРћР’.docx
+					//РІР°СЂРёР°С‚РёРІРЅРѕСЃС‚СЊ РЅР° СЂР°Р·РЅС‹Рµ РІРµСЂСЃРёРё РѕС„РёСЃР° С‡Р°СЃС‚Рё РїР°СЂР°РјРµС‚СЂРѕРІ - РєСЃС‚Р°С‚Рё ... СЌС‚Рѕ РјРѕР¶РµС‚ РІСЃС‚СЂРµС‚РёС‚СЊСЃСЏ РІ Р›Р®Р‘РћРњ РјРµСЃС‚Рµ 
+					//todooo СЃРґРµР»Р°С‚СЊ С‡С‚РµРЅРёРµ РЅРµ РѕР±СЏР·Р°С‚РµР»СЊРЅРѕ fallback, РїРѕ РІС‹Р±РѕСЂСѓ РІРµСЂСЃРёРё РЅСѓР¶РЅРѕР№ РЅР°Рј (w14, ..)
 					{
 						nCurDepth++;
 						while( oReader.ReadNextSiblingNode( nCurDepth ) )
 						{
 							CString sName = oReader.GetName();
-							if ( _T("mc:Fallback") == sName )
+							if ( _T("mc:Fallback") == sName || _T("mc:Choice") == sName )
 							{
 								CString strXml = _T("<root xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\">");
 									strXml.Append(oReader.GetOuterXml());
@@ -881,7 +881,8 @@ namespace OOX
 									oSubReader.ReadNextNode();//root
 									oSubReader.ReadNextNode();//fallback
 
-									fromXML(oSubReader);	
+									fromXML(oSubReader);
+									//break С‡С‚РѕР±С‹ РЅРµ С‡РёС‚Р°С‚СЊ СЃСЂР°Р·Сѓ РѕР±Р° Choice Рё Fallback
 									break;
 								}
 							}
@@ -1040,7 +1041,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("allowOverlap"),   m_oAllowOverlap )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("behindDoc"),      m_oBehindDoc )
@@ -1107,7 +1108,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -1171,7 +1172,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("distB"),          m_oDistB )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("distL"),          m_oDistL )
@@ -1234,8 +1235,8 @@ namespace OOX
 			//	if ( !m_oInline->m_oEffectExtent.Init() ) return;
 
 			//	int nNewH, nNewW, nDpi = 96;
-			//	double dHeightPage = 25.7; // в сантиметрах
-			//	double dWidthPage  = 16.5; // в сантиметрах
+			//	double dHeightPage = 25.7; // РІ СЃР°РЅС‚РёРјРµС‚СЂР°С…
+			//	double dWidthPage  = 16.5; // РІ СЃР°РЅС‚РёРјРµС‚СЂР°С…
 			//	double dMaximum = max( lWidth / ( dWidthPage / 2.54 * nDpi ), lHeight / ( dHeightPage / 2.54 * nDpi ) );
 
 			//	if ( dMaximum < 1 )
@@ -1372,7 +1373,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -1456,7 +1457,7 @@ namespace OOX
 
 		public:
 
-			bool                            m_bAnchor; // используем Anchor или Inline
+			bool                            m_bAnchor; // РёСЃРїРѕР»СЊР·СѓРµРј Anchor РёР»Рё Inline
 
 			nullable<CString> m_sXml;
 			// Childs

@@ -36,7 +36,7 @@ const bool COLUMNS::loadContent(BinProcessor& proc)
 		m_DefColWidth = elements_.back();
 		elements_.pop_back();
 	}
-	bool col_ok = proc.repeated<ColInfo>(0, 255);
+	int count = proc.repeated<ColInfo>(0, 255);
 
 	int last_add = 0;
 
@@ -46,15 +46,19 @@ const bool COLUMNS::loadContent(BinProcessor& proc)
 
 		for (int i = column_info->colFirst; i <= column_info->colLast; i++)
 		{
-			if (column_info->coldx > 0)
+			if (column_info->coldx > 0 && column_info->fUserSet)
 			{
-				global_info_->customColumnsWidth.insert(std::pair<int, double>(i,column_info->coldx / 256.));
+				global_info_->sheet_size_info.back().customColumnsWidth.insert(std::pair<int, double>(i, column_info->coldx / 256.));
+			}
+			else if (def_ok)
+			{
+				global_info_->sheet_size_info.back().customColumnsWidth.insert(std::pair<int, double>(i, global_info_->sheet_size_info.back().defaultColumnWidth));
 			}
 		}
 
 	}
 
-	return def_ok || col_ok;
+	return def_ok || (count > 0);
 }
 
 int COLUMNS::serialize(std::wostream & stream)

@@ -36,84 +36,90 @@ void OfficeArtClientAnchorSheet::storeFields(XLS::CFRecord& record)
 
 void OfficeArtClientAnchorSheet::loadFields(XLS::CFRecord& record)
 {
-	XLS::GlobalWorkbookInfoPtr global_info = record.getGlobalWorkbookInfo();
+	global_info = record.getGlobalWorkbookInfo();
 	
 	unsigned short flags;
 	record >> flags >> colL >> dxL >> rwT >> dyT >> colR >> dxR >> rwB >> dyB;
 	
 	fMove = GETBIT(flags, 0);
 	fSize = GETBIT(flags, 1);
+}
+
+void OfficeArtClientAnchorSheet::calculate()
+{
+	XLS::GlobalWorkbookInfo::_sheet_size_info & sheet_info = global_info->sheet_size_info[global_info->current_sheet - 1];
+
 //----------------------------------------------------------------------------------------------------
 	double kfCol	= 17640 / 256.;
 	double kfRow	= ( 360000 * 2.54 / 72) / 256. ;
 
-	if (global_info->customColumnsWidth.find(colL) != global_info->customColumnsWidth.end())
+	if (sheet_info.customColumnsWidth.find(colL) != sheet_info.customColumnsWidth.end())
 	{
-		_dxL = dxL * kfCol * global_info->customColumnsWidth[colL];	
+		_dxL = dxL * kfCol * sheet_info.customColumnsWidth[colL];	
 	}
 	else 
-		_dxL = dxL * kfCol * global_info->defaultColumnWidth;	
+		_dxL = dxL * kfCol * sheet_info.defaultColumnWidth;	
 
-	if (global_info->customColumnsWidth.find(colR) != global_info->customColumnsWidth.end())
+	if (sheet_info.customColumnsWidth.find(colR) != sheet_info.customColumnsWidth.end())
 	{
-		_dxR = dxR * kfCol * global_info->customColumnsWidth[colR];	
+		_dxR = dxR * kfCol * sheet_info.customColumnsWidth[colR];	
 	}
 	else 
-		_dxR = dxR * kfCol * global_info->defaultColumnWidth;	
+		_dxR = dxR * kfCol * sheet_info.defaultColumnWidth;	
 
 //---------------------------------------------------------------------------------------------------
-	if (global_info->customRowsHeight.find(rwT) != global_info->customRowsHeight.end())
+	if (sheet_info.customRowsHeight.find(rwT) != sheet_info.customRowsHeight.end())
 	{
-		_dyT = dyT * kfRow * global_info->customRowsHeight[rwT];	
+		_dyT = dyT * kfRow * sheet_info.customRowsHeight[rwT];	
 	}
 	else 
-		_dyT = dyT * kfRow * global_info->defaultRowHeight;	
+		_dyT = dyT * kfRow * sheet_info.defaultRowHeight;	
 
-	if (global_info->customRowsHeight.find(rwB) != global_info->customRowsHeight.end())
+	if (sheet_info.customRowsHeight.find(rwB) != sheet_info.customRowsHeight.end())
 	{
-		_dyB = dyB * kfRow * global_info->customRowsHeight[rwB];	
+		_dyB = dyB * kfRow * sheet_info.customRowsHeight[rwB];	
 	}
 	else 
-		_dyB = dyB * kfRow * global_info->defaultRowHeight;	
+		_dyB = dyB * kfRow * sheet_info.defaultRowHeight;	
 
 //----------------------------------------------------------------------------------------------------
 	for (int i = 0 ; i < colL; i++)
 	{
-		if (global_info->customColumnsWidth.find(i) != global_info->customColumnsWidth.end())
-			_x +=  256 * kfCol * global_info->customColumnsWidth[i];	
+		if (sheet_info.customColumnsWidth.find(i) != sheet_info.customColumnsWidth.end())
+			_x +=  256 * kfCol * sheet_info.customColumnsWidth[i];	
 		else 
-			_x +=  256 * kfCol * global_info->defaultColumnWidth;
+			_x +=  256 * kfCol * sheet_info.defaultColumnWidth;
 	}
 	_x += _dxL;
 
 	for (int i = colL ; i < colR; i++)
 	{
-		if (global_info->customColumnsWidth.find(i) != global_info->customColumnsWidth.end())
-			_cx += 256 * kfCol * global_info->customColumnsWidth[i];	
+		if (sheet_info.customColumnsWidth.find(i) != sheet_info.customColumnsWidth.end())
+			_cx += 256 * kfCol * sheet_info.customColumnsWidth[i];	
 		else 
-			_cx += 256 * kfCol * global_info->defaultColumnWidth;
+			_cx += 256 * kfCol * sheet_info.defaultColumnWidth;
 	}
 	_cx += _dxR;
 
 	for (int i = 0 ; i < rwT; i++)
 	{
-		if (global_info->customRowsHeight.find(i) != global_info->customRowsHeight.end())
+		if (sheet_info.customRowsHeight.find(i) != sheet_info.customRowsHeight.end())
 		{
-			_y += 256 * kfRow * global_info->customRowsHeight[i];	
+			_y += 256 * kfRow * sheet_info.customRowsHeight[i];	
 		}
 		else 
-			_y += 256 * kfRow * global_info->defaultRowHeight;	
+			_y += 256 * kfRow * sheet_info.defaultRowHeight;	
 	}
 	_y += _dyT;
 
 	for (int i = rwT ; i < rwB; i++)
 	{
-		if (global_info->customRowsHeight.find(i) != global_info->customRowsHeight.end())
+		if (sheet_info.customRowsHeight.find(i) != sheet_info.customRowsHeight.end())
 		{
-			_cy += 256 * kfRow * global_info->customRowsHeight[i];	
+			_cy += 256 * kfRow * sheet_info.customRowsHeight[i];	
 		}
 		else 
-			_cy += 256 * kfRow * global_info->defaultRowHeight;	
+			_cy += 256 * kfRow * sheet_info.defaultRowHeight;	
 	}
 	_cy += _dyT;
 }
@@ -123,8 +129,7 @@ void OfficeArtClientAnchorSheet::loadFields(XLS::CFRecord& record)
 //-------------------------------------------------------------------------------------
 
 
-OfficeArtChildAnchor::OfficeArtChildAnchor()
-:	OfficeArtRecord(0x00, ChildAnchor)
+OfficeArtChildAnchor::OfficeArtChildAnchor() :	OfficeArtRecord(0x00, ChildAnchor)
 {
 	_x = _y = _cx = _cy = 0;
 }

@@ -265,6 +265,7 @@ void XlsConverter::convert(XLS::WorkbookStreamObject* woorkbook)
     for (int i=0 ; i < woorkbook->m_arWorksheetSubstream.size(); i++)
 	{
 		xls_global_info->current_sheet = i + 1;
+		
 		xlsx_context->start_table(xls_global_info->sheets_names.size() > i ? xls_global_info->sheets_names[i] : L"Sheet_" + boost::lexical_cast<std::wstring>(i+1));
 		xlsx_context->set_state(xls_global_info->sheets_state.size() > i ? xls_global_info->sheets_state[i] : L"visible");
 
@@ -308,10 +309,12 @@ void XlsConverter::convert(XLS::WorksheetSubstream* sheet)
 		XLS::GLOBALS * globals  = dynamic_cast<XLS::GLOBALS *>(sheet->m_GLOBALS.get());
 		XLS::COLUMNS * columns = dynamic_cast<XLS::COLUMNS *>(sheet->m_COLUMNS.get());
 
-		if (globals && columns)
+		if (columns)
 		{
-			globals->m_DefColWidth = columns->m_DefColWidth; 
+			globals->m_DefColWidth	= columns->m_DefColWidth; 
 		}
+		globals->m_DxGCol = sheet->m_DxGCol;
+		
 		sheet->m_GLOBALS->serialize(xlsx_context->current_sheet().sheetFormat());
 	}
 	if (sheet->m_COLUMNS)
@@ -512,15 +515,16 @@ std::wstring XlsConverter::WriteMediaFile(char *data, int size, std::wstring typ
 	if (type_ext == L"dib_data")
 	{
 		bool bPNG = false;
-		int offset = 0;
+		int offset = 0, biSizeImage = 0;
 		CBgraFrame frame;
 
 		BITMAPINFOHEADER * header = (BITMAPINFOHEADER *)data;
 
 		if (header->biWidth > 100000 || header->biHeight > 100000)
 		{
-			//Formulas Matriciais - A Outra Dimensão do Excel.xls todoooo найти еще файлы 
-			//775x20 
+			//Formulas Matriciais - A Outra Dimensão do Excel.xls	775x20 		todoooo найти еще файлы 
+			//Planilha Bastter Blue 7.0 Free.xls 10x3836
+			//
 			offset = 12; //sizeof(BITMAPCOREHEADER)
 			
 			BITMAPCOREHEADER * header_core = (BITMAPCOREHEADER *)data;
@@ -530,11 +534,13 @@ std::wstring XlsConverter::WriteMediaFile(char *data, int size, std::wstring typ
 			
 			int sz_bitmap = header_core->bcHeight * header_core->bcWidth * header_core->bcBitCount/ 8;
 			
-			if (header_core->bcWidth % 2 != 0 && sz_bitmap < size -offset)
-				header_core->bcWidth++;
+			//if (header_core->bcWidth % 2 != 0 && sz_bitmap < size - offset)
+			//	header_core->bcWidth++;
 			
-			frame.put_Stride	(header_core->bcBitCount * header_core->bcWidth /8);
+			int stride = (size - offset) / header_core->bcHeight;
+			frame.put_Stride	(stride/*header_core->bcBitCount * header_core->bcWidth /8 */);
 
+			biSizeImage = size - offset;
 			bPNG = true;
 		}
 		else if (header->biBitCount >=24)
@@ -548,6 +554,8 @@ std::wstring XlsConverter::WriteMediaFile(char *data, int size, std::wstring typ
 			
 			if (header->biWidth % 2 != 0 && sz_bitmap < size -offset)
 				header->biWidth++;
+
+			biSizeImage = header->biSizeImage;
 			
 			frame.put_Stride	(header->biBitCount * header->biWidth /8);
 			bPNG = true;
@@ -566,7 +574,7 @@ std::wstring XlsConverter::WriteMediaFile(char *data, int size, std::wstring typ
 				//
 			}
 		}
-		else
+		else if (biSizeImage > 0)
 		{
 			//тут паттерные картинки
 			file_name += std::wstring(L".bmp");
@@ -574,7 +582,7 @@ std::wstring XlsConverter::WriteMediaFile(char *data, int size, std::wstring typ
 			if (file.CreateFileW(xlsx_context->get_mediaitems().media_path() + file_name))
 			{
 				WORD vtType		= 0x4D42;				file.WriteFile((BYTE*)&vtType,	2);
-				DWORD dwLen		= header->biSizeImage;	file.WriteFile((BYTE*)&dwLen,	4);
+				DWORD dwLen		= biSizeImage;	file.WriteFile((BYTE*)&dwLen,	4);
 				DWORD dwRes		= 0;					file.WriteFile((BYTE*)&dwRes,	4);
 				DWORD dwOffset	= 2;					file.WriteFile((BYTE*)&dwOffset, 4);
 			
@@ -864,7 +872,8 @@ void XlsConverter::convert(ODRAW::OfficeArtRecord * art)
 		{
 			ODRAW::OfficeArtClientAnchorSheet * ch = dynamic_cast<ODRAW::OfficeArtClientAnchorSheet *>(art);
         
-			xlsx_context->get_drawing_context().set_child_anchor(ch->_x, ch->_y, ch->_cx, ch->_cy);
+			ch->calculate();
+			//xlsx_context->get_drawing_context().set_child_anchor(ch->_x, ch->_y, ch->_cx, ch->_cy);
 			xlsx_context->get_drawing_context().set_sheet_anchor(ch->colL, ch->_dxL, ch->rwT, ch->_dyT, ch->colR, ch->_dxR, ch->rwB, ch->_dyB);
 		}break;
 	}
@@ -1385,6 +1394,8 @@ void XlsConverter::convert_group_shape(std::vector<ODRAW::OfficeArtFOPTEPtr> & p
 void XlsConverter::convert(XLS::Note* note)
 {
 	if (note == NULL) return;
+
+	note->note_sh.calculate();
 
 	xlsx_context->get_comments_context().set_ref	(note->note_sh.ref_, 
 													 note->note_sh.col, 

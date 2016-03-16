@@ -1,6 +1,7 @@
 
 #include "GLOBALS.h"
 #include <Logic/Biff_records/DefColWidth.h>
+#include <Logic/Biff_records/DxGCol.h>
 
 #include <Logic/Biff_records/Protect.h>
 #include <Logic/Biff_records/CalcMode.h>
@@ -47,6 +48,7 @@ GLOBALS = CalcMode CalcCount CalcRefMode CalcIter CalcDelta CalcSaveRecalc Print
 */
 const bool GLOBALS::loadContent(BinProcessor& proc)
 {
+	global_info_ = proc.getGlobalWorkbookInfo();
 // 	if(!proc.mandatory<CalcMode>())
 // 	{
 // 		return false;
@@ -121,7 +123,12 @@ int GLOBALS::serialize(std::wostream & stream)
 			{
 				CP_XML_ATTR(L"defaultRowHeight", 14.4);
 			}
-			if (m_DefColWidth)
+			if (m_DxGCol)
+			{
+				DxGCol* def_col = dynamic_cast<DxGCol*>(m_DxGCol.get());
+				CP_XML_ATTR(L"defaultColWidth", def_col->dxgCol / 256.);
+			}
+			else if (m_DefColWidth)
 			{
 				DefColWidth* def_col = dynamic_cast<DefColWidth*>(m_DefColWidth.get());
 				CP_XML_ATTR(L"defaultColWidth", def_col->cchdefColWidth);

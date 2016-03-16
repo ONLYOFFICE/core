@@ -73,8 +73,10 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 {
 	GlobalWorkbookInfoPtr global_info = proc.getGlobalWorkbookInfo();
 	
-	global_info->defaultColumnWidth		= 8;
-	global_info->defaultRowHeight		= 14.4; 
+	GlobalWorkbookInfo::_sheet_size_info sheet_size_info;
+	global_info->sheet_size_info.push_back(sheet_size_info);
+	global_info->current_sheet = global_info->sheet_size_info.size();
+
 	global_info->cmt_rules				= 0;
 
 	int count = 0;
@@ -222,7 +224,14 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 		count--;
 	}
 	
-	proc.optional<DxGCol>		();
+	if (proc.optional<DxGCol>())
+	{
+		m_DxGCol = elements_.back();
+		elements_.pop_back(); 
+		
+		DxGCol* dx = dynamic_cast<DxGCol*>(m_DxGCol.get());
+		global_info->sheet_size_info.back().defaultColumnWidth = dx->dxgCol / 256.;
+	}
 	
 	count = proc.repeated<MergeCells>(0, 0);
 	while(count > 0)
@@ -291,9 +300,6 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 	proc.SeekToEOF(); // Thus we skip problems with the trash at the end of the stream (found in Domens.xls)
 	
 	proc.mandatory<EOF_T>();
-
-	global_info->customColumnsWidth.clear();
-	global_info->customRowsHeight.clear();
 
 	return true;
 }

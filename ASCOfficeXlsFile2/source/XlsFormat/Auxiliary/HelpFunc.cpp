@@ -641,21 +641,36 @@ const std::wstring xti_indexes2sheet_name(const short itabFirst, const short ita
 	{
 		return L"#REF!";
 	}
-	std::wstring sheets_prefix = tab2sheet_name(itabFirst, sheets_names) + ((itabLast == itabFirst) ? L"" : L':' + tab2sheet_name(itabLast, sheets_names));
-
-	std::wstring escaped_prefix(boost::algorithm::replace_all_copy(sheets_prefix, L"'", L"''"));
-
-	static boost::wregex correct_sheet_name(L"^\\w[\\w\\d.]*(:\\w[\\w\\d.]*)?$");
-	if(!boost::regex_search(escaped_prefix.begin(), escaped_prefix.end(), correct_sheet_name))
-	{
-		//int res_1 = escaped_prefix.find(L"\''");
-		//int res_2 = escaped_prefix.rfind(L"\''");
-		//if (res_1 != 0 || res_2 !=escaped_prefix.length() - 1)
-		{
-			return L'\'' + escaped_prefix + L'\'';
+	static boost::wregex correct_sheet_name(L"^\\'.+?\\'$");
+	static boost::wregex test_sheet_name(L"[\\s\\':.]+");
+	
+	std::wstring sheet_first = tab2sheet_name(itabFirst, sheets_names);
+	if(!boost::regex_search(sheet_first.begin(), sheet_first.end(), correct_sheet_name))
+	{	
+		if(boost::regex_search(sheet_first.begin(), sheet_first.end(), test_sheet_name))
+		{	
+			sheet_first = boost::algorithm::replace_all_copy(sheet_first, L"'", L"''"); 
+			sheet_first = std::wstring(L"\'") + sheet_first + std::wstring(L"\'");
 		}
 	}
-	return escaped_prefix;
+
+	std::wstring sheet_last;
+	if (itabLast != itabFirst)
+	{
+		sheet_last = tab2sheet_name(itabLast, sheets_names);
+		
+		if(!boost::regex_search(sheet_last.begin(), sheet_last.end(), correct_sheet_name))
+		{	
+			if(boost::regex_search(sheet_last.begin(), sheet_last.end(), test_sheet_name))
+			{	
+				sheet_last = boost::algorithm::replace_all_copy(sheet_last, L"'", L"''"); 
+				sheet_last = std::wstring(L"\'") + sheet_last + std::wstring(L"\'");
+			}
+		}
+		sheet_last = std::wstring(L":") + sheet_last;
+	}
+
+	return sheet_first + sheet_last;
 }
 
 const std::wstring make3dRef(const unsigned short ixti, const std::wstring cell_ref, std::vector<std::wstring>& xti_parsed)

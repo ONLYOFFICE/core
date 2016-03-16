@@ -40,6 +40,7 @@ public:
 	BaseObjectPtr				m_CONDFMTS;
 	BaseObjectPtr				m_CodeName;
 	BaseObjectPtr				m_SheetExt;
+	BaseObjectPtr				m_DxGCol;
 	
 	std::vector<BaseObjectPtr>	m_arFEAT;
 	std::vector<BaseObjectPtr>	m_arFEAT11;

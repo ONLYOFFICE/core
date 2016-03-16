@@ -29,6 +29,8 @@ public:
 	const bool loadContent(BinProcessor& proc)
 	{
 		global_info_ = proc.getGlobalWorkbookInfo();
+
+		GlobalWorkbookInfo::_sheet_size_info & sheet_info = global_info_->sheet_size_info[global_info_->current_sheet - 1];
 		
 		int count, count_row = 0;
 		
@@ -41,9 +43,9 @@ public:
 				Row* row = dynamic_cast<Row*>(elements_.back().get());
 				if (row)
 				{
-					if (row->miyRw > 0 && std::abs(row->miyRw/20. - global_info_->defaultRowHeight) > 0.001)
+					if (row->miyRw > 0 && std::abs(row->miyRw/20. - sheet_info.defaultRowHeight) > 0.001)
 					{
-						global_info_->customRowsHeight.insert(std::pair<int, double>(row->rw, row->miyRw / 20.));
+						sheet_info.customRowsHeight.insert(std::pair<int, double>(row->rw, row->miyRw / 20.));
 					}
 				}
 				m_rows.insert(m_rows.begin(), elements_.back());
@@ -117,7 +119,10 @@ struct _CompareColumnCell
 
 int CELL_GROUP::serialize(std::wostream & stream)
 {
+	GlobalWorkbookInfo::_sheet_size_info & sheet_info = global_info_->sheet_size_info[global_info_->current_sheet - 1];
+	
 	elements_.sort(CompareRowCell);//пока так .. todooo  сделать мап(rownumb, list<cells> - и там смотреть нужно ли сортировать €чейки)
+	
 	CP_XML_WRITER(stream)    
     {
 		std::list<XLS::BaseObjectPtr>::iterator current_cell_start	= elements_.begin();
@@ -181,7 +186,7 @@ int CELL_GROUP::serialize(std::wostream & stream)
 									}
 									CP_XML_ATTR(L"customFormat", true);
 								}
-								if (row->miyRw > 0 && std::abs(row->miyRw/20. - global_info_->defaultRowHeight) > 0.01)
+								if (row->miyRw > 0/* && std::abs(row->miyRw/20. - sheet_info.defaultRowHeight) > 0.01*/)
 								{
 									CP_XML_ATTR(L"ht", row->miyRw / 20.);
 									CP_XML_ATTR(L"customHeight", true);
@@ -263,7 +268,7 @@ int CELL_GROUP::serialize(std::wostream & stream)
 						CP_XML_ATTR(L"customFormat", true);
 					}
 
-					if (row->miyRw > 0 && std::abs(row->miyRw/20. - global_info_->defaultRowHeight) > 0.01)
+					if (row->miyRw > 0 /*&& std::abs(row->miyRw/20. - sheet_info.defaultRowHeight) > 0.01*/)
 					{
 						CP_XML_ATTR(L"ht", row->miyRw / 20.);
 						CP_XML_ATTR(L"customHeight", true);

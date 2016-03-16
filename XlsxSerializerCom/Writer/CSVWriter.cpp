@@ -1,7 +1,7 @@
 ﻿#include "CSVWriter.h"
 #include "../../UnicodeConverter/UnicodeConverter.h"
 #include "../../UnicodeConverter/UnicodeConverter_Encodings.h"
-#include "../../DesktopEditor\common\StringBuilder.h"
+#include "../../DesktopEditor/common/StringBuilder.h"
 
 namespace CSVWriter
 {

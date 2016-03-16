@@ -61,16 +61,15 @@ struct PtgAttrSpaceType : public BiffStructure_NoVtbl
 
 struct RkNumber : public BiffStructure_NoVtbl
 {
-	unsigned int fX100 : 1;
-	unsigned int fInt : 1;
-	unsigned int num : 30;
+	unsigned int	fX100	: 1;
+	unsigned int	fInt	: 1;
+	int				num		: 30;
 
 	std::wstring value()
 	{
 		if(fInt)
 		{
-			//return fX100 ? num / 100 : num;
-			return fX100 ? STR::double2str(num / 100.0) : STR::int2wstr(num);
+			return fX100 ? STR::double2str( num / 100.0) : STR::int2wstr(num);
 		}
 		else
 		{

@@ -117,7 +117,7 @@ int AUTOFILTER::serialize(std::wostream & stream)
 	int ind = pGlobalWorkbookInfoPtr->current_sheet;
 	std::wstring ref;
 	
-	if (ind < it->second.size())
+	if (ind < it->second.size() && ind >= 0)
 	{
 		ref = it->second[ind];	//from current worksheet
 	}

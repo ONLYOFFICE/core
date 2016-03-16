@@ -262,19 +262,25 @@ void XlsConverter::convert(XLS::WorkbookStreamObject* woorkbook)
 
 	convert((XLS::GlobalsSubstream*)woorkbook->m_GlobalsSubstream.get());
 
+	int count_sheets = 0, count_chart_sheets = 0;
     for (int i=0 ; i < woorkbook->m_arWorksheetSubstream.size(); i++)
 	{
-		xls_global_info->current_sheet = i + 1;
-		
-		xlsx_context->start_table(xls_global_info->sheets_names.size() > i ? xls_global_info->sheets_names[i] : L"Sheet_" + boost::lexical_cast<std::wstring>(i+1));
-		xlsx_context->set_state(xls_global_info->sheets_state.size() > i ? xls_global_info->sheets_state[i] : L"visible");
-
 		if (woorkbook->m_arWorksheetSubstream[i]->get_type() == XLS::typeWorksheetSubstream)
 		{
+			count_sheets++;
+			xls_global_info->current_sheet = count_sheets;
+		
+			xlsx_context->start_table(xls_global_info->sheets_names.size() > i ? xls_global_info->sheets_names[i] : L"Sheet_" + boost::lexical_cast<std::wstring>(count_sheets));
+			xlsx_context->set_state(xls_global_info->sheets_state.size() > i ? xls_global_info->sheets_state[i] : L"visible");
+
 			convert(dynamic_cast<XLS::WorksheetSubstream*>(woorkbook->m_arWorksheetSubstream[i].get()));
 		}
 		else if (woorkbook->m_arWorksheetSubstream[i]->get_type() == XLS::typeChartSheetSubstream)
 		{
+			count_chart_sheets++;
+			xls_global_info->current_sheet = -1; 
+			xlsx_context->start_table(xls_global_info->sheets_names.size() > i ? xls_global_info->sheets_names[i] : L"ChartSheet_" + boost::lexical_cast<std::wstring>(count_chart_sheets));
+
 			convert_chart_sheet(dynamic_cast<XLS::ChartSheetSubstream*>(woorkbook->m_arWorksheetSubstream[i].get()));
 		}
 
@@ -1499,12 +1505,6 @@ void XlsConverter::convert(XLS::TxO * text_obj)
 void XlsConverter::convert_chart_sheet(XLS::ChartSheetSubstream * chart)
 {
 	if (chart == NULL) return;
-		
-	ODRAW::OfficeArtSpContainer *sp			= NULL;
-/*		if (( spgr) && (ind < spgr->child_records.size()))
-	{
-		sp		= dynamic_cast<ODRAW::OfficeArtSpContainer*>(spgr->child_records[ind++].get());
-	}*/	
 		
 	if (xlsx_context->get_drawing_context().start_drawing(0x0005))		
 	{

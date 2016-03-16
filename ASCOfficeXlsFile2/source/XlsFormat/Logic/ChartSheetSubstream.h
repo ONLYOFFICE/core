@@ -32,6 +32,8 @@ public:
 	int serialize_dPt		(std::wostream & _stream, int series_id, CRT *crt, int count_point);
 	int serialize_dLbls		(std::wostream & _stream, int series_id, CRT *crt);
 	int serialize_3D		(std::wostream & _stream);
+	
+	int serialize_scatter_style(std::wostream & _stream, CRT *crt);
 
 	static const ElementType	type = typeChartSheetSubstream;
 

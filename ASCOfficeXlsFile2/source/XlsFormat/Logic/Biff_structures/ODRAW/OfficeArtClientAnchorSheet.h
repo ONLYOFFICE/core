@@ -36,6 +36,11 @@ public:
 	XLS::RwU		rwB;
 	short			dyB;
 
+//-----------------------------------------------------------------------------
+	XLS::GlobalWorkbookInfoPtr global_info;
+
+	void calculate();
+
 	_UINT32		_dxL;
 	_UINT32		_dyT;
 	_UINT32		_dxR;

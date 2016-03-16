@@ -57,6 +57,7 @@ public:
 	std::vector<BaseObjectPtr>					*m_arFonts;
 	
 	unsigned int								current_sheet;
+
 	unsigned int								last_AXES_id;
 	const static unsigned int					initial_AXES_id = 0x2000000;
 
@@ -69,15 +70,21 @@ public:
 
 	std::vector<std::pair<boost::shared_array<char>, size_t> >	bin_data;
 
-	std::map<int, double>						customColumnsWidth;
-	std::map<int, double>						customRowsHeight;
-
-	double										defaultColumnWidth;
-	double										defaultRowHeight;
-	int											cmt_rules;
+	struct _sheet_size_info
+	{
+		_sheet_size_info() : defaultColumnWidth(8.), defaultRowHeight (14.4) {}
+		std::map<int, double>					customColumnsWidth;
+		std::map<int, double>					customRowsHeight;
+		
+		double									defaultColumnWidth;
+		double									defaultRowHeight;
+		
+	};
+	std::vector<_sheet_size_info>				sheet_size_info;
 
 	int Version;
 
+	int											cmt_rules;
 	int											cellStyleXfs_count;
 	int											cellStyleDxfs_count;
 

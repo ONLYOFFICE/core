@@ -32,7 +32,7 @@ void DefColWidth::readFields(CFRecord& record)
 	GlobalWorkbookInfoPtr global_info = record.getGlobalWorkbookInfo();
 	record >> cchdefColWidth;
 
-	global_info->defaultColumnWidth = cchdefColWidth ;
+	global_info->sheet_size_info.back().defaultColumnWidth = cchdefColWidth ;
 }
 
 } // namespace XLS

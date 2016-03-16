@@ -36,7 +36,7 @@ void NoteSh::store(CFRecord& record)
 
 void NoteSh::load(CFRecord& record)
 {
-	XLS::GlobalWorkbookInfoPtr global_info = record.getGlobalWorkbookInfo();
+	global_info = record.getGlobalWorkbookInfo();
 
 	unsigned short flags;
 	record >> row >> col >> flags;
@@ -47,8 +47,13 @@ void NoteSh::load(CFRecord& record)
 
 	record >> idObj >> stAuthor;
 	record.skipNunBytes(1); // unused
+}
 
 //-----------------------------------------------------------------------
+void NoteSh::calculate()
+{
+	XLS::GlobalWorkbookInfo::_sheet_size_info & sheet_info = global_info->sheet_size_info[global_info->current_sheet - 1];
+
 	ref_ = CellRef(row, col, true, true).toString();
 
 	double kfCol	= 17640 / 256.;
@@ -56,20 +61,20 @@ void NoteSh::load(CFRecord& record)
 
 	for (int i = 0 ; i < col; i++)
 	{
-		if (global_info->customColumnsWidth.find(i) != global_info->customColumnsWidth.end())
-			x_ +=  256 * kfCol * global_info->customColumnsWidth[i];	
+		if (sheet_info.customColumnsWidth.find(i) != sheet_info.customColumnsWidth.end())
+			x_ +=  256 * kfCol * sheet_info.customColumnsWidth[i];	
 		else 
-			x_ +=  256 * kfCol * global_info->defaultColumnWidth;
+			x_ +=  256 * kfCol * sheet_info.defaultColumnWidth;
 	}
 
 	for (int i = 0 ; i < row; i++)
 	{
-		if (global_info->customRowsHeight.find(i) != global_info->customRowsHeight.end())
+		if (sheet_info.customRowsHeight.find(i) != sheet_info.customRowsHeight.end())
 		{
-			y_ += 256 * kfRow * global_info->customRowsHeight[i];	
+			y_ += 256 * kfRow * sheet_info.customRowsHeight[i];	
 		}
 		else 
-			y_ += 256 * kfRow * global_info->defaultRowHeight;	
+			y_ += 256 * kfRow * sheet_info.defaultRowHeight;	
 	}
 }
 

@@ -30,6 +30,10 @@ public:
 	ObjId			idObj;
 	XLUnicodeString stAuthor;
 //------------------------------------------
+	GlobalWorkbookInfoPtr global_info;
+
+	void calculate();
+
 	std::wstring	ref_;
 	int				x_;
 	int				y_;

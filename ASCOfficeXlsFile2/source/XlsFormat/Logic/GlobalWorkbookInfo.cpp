@@ -11,9 +11,6 @@ GlobalWorkbookInfo::GlobalWorkbookInfo(const unsigned short code_page, XlsConver
 	
 	last_AXES_id			= initial_AXES_id;
 
-	defaultColumnWidth		= 8;
-	defaultRowHeight		= 14.4; 
-
 	Version					= 0x0600; //собственно xls
 
 	xls_converter			= xls_converter_;

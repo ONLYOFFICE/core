@@ -88,8 +88,7 @@ namespace BinDocxRW
 		}
 		void WriteBorder(const BYTE & type, const ComplexTypes::Word::CBorder& border)
 		{
-			if ((border.m_oVal.IsInit()) && (border.m_oVal->GetValue() == SimpleTypes::bordervalueNone)) return;
-
+			//if ((border.m_oVal.IsInit()) && (border.m_oVal->GetValue() == SimpleTypes::bordervalueNone)) return;
 			int nCurPos = WriteItemStart(type);
 			WriteBorder(border);
 			WriteItemEnd(nCurPos);

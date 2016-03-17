@@ -2255,7 +2255,16 @@ namespace BinXlsxRW {
 			//Value
 			if(oCell.m_oValue.IsInit())
 			{
-				double dValue = _wtof(oCell.m_oValue->ToString());
+
+                double dValue = 0;
+                __try
+                {
+                    dValue = _wtof(oCell.m_oValue->ToString());
+                }
+                catch(...)
+                {   //1.3912059045063478e-310
+                    //Lighting Load Calculation.xls
+                }
 
 				nCurPos = m_oBcw.WriteItemStart(c_oSerCellTypes::Value);
 				m_oBcw.m_oStream.WriteDoubleReal(dValue);

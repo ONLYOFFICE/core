@@ -642,7 +642,7 @@ const std::wstring xti_indexes2sheet_name(const short itabFirst, const short ita
 		return L"#REF!";
 	}
 	static boost::wregex correct_sheet_name(L"^\\'.+?\\'$");
-	static boost::wregex test_sheet_name(L"[\\s\\':.-]+");
+    static boost::wregex test_sheet_name(L"[\\s)(\\':.-]+");
 	
 	std::wstring sheet_first = tab2sheet_name(itabFirst, sheets_names);
 	if(!boost::regex_search(sheet_first.begin(), sheet_first.end(), correct_sheet_name))

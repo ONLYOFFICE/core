@@ -27,13 +27,6 @@ BiffStructurePtr PtgAreaN::clone()
 	return BiffStructurePtr(new PtgAreaN(*this));
 }
 
-
-//void PtgAreaN::setXMLAttributes(BiffStructurePtr & xml_tag)
-//{
-//	(area + cell_base_ref).toXML(xml_tag);
-//}
-
-
 void PtgAreaN::storeFields(CFRecord& record)
 {
 	record << area;
@@ -46,7 +39,7 @@ void PtgAreaN::loadFields(CFRecord& record)
 }
 
 
-void PtgAreaN::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
+void PtgAreaN::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {
 	ptg_stack.push((area + cell_base_ref).toString());
 }

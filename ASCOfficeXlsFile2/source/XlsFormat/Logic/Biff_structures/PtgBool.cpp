@@ -58,7 +58,7 @@ void PtgBool::loadFields(CFRecord& record)
 }
 
 
-void PtgBool::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
+void PtgBool::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {
 	ptg_stack.push(boolean_ ? L"TRUE" : L"FALSE");
 }

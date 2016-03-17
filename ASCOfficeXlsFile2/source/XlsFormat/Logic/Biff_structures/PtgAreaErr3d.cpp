@@ -28,7 +28,7 @@ void PtgAreaErr3d::loadFields(CFRecord& record)
 }
 
 
-void PtgAreaErr3d::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
+void PtgAreaErr3d::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {
 	RevExternPtr tab_ids;
 	if(!extra_data.empty() && (tab_ids = boost::dynamic_pointer_cast<RevExtern>(extra_data.front())))

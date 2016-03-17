@@ -35,7 +35,7 @@ void PtgRefErr::loadFields(CFRecord& record)
 }
 
 
-void PtgRefErr::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
+void PtgRefErr::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {
 	ptg_stack.push(L"#REF!");
 }

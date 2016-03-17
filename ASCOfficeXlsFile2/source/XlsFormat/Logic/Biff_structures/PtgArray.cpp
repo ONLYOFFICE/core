@@ -36,7 +36,7 @@ void PtgArray::loadFields(CFRecord& record)
 }
 
 
-void PtgArray::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
+void PtgArray::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {
 	std::wstring array_string;
 

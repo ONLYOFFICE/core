@@ -50,7 +50,7 @@ const bool LBL::loadContent(BinProcessor& proc)
 	if (lbl->fBuiltin)	name = lbl->Name.value().get_value_or(L"");	
 	if (name.empty())	name = lbl->Name_bin.value();
 
-	std::wstring value = lbl->rgce.getAssembledFormula();
+	std::wstring value = lbl->rgce.getAssembledFormula(lbl->itab == 0 ? true : false);
 	
     NameCmt namecmt(name);
     if (proc.optional(namecmt))
@@ -111,21 +111,33 @@ int LBL::serialize(std::wostream & stream)
 	Lbl *lbl = dynamic_cast<Lbl*>(m_Lbl.get());
 	if (lbl == NULL) return 0;
 		
-	std::wstring value = lbl->rgce.getAssembledFormula();
+	std::wstring value = lbl->rgce.getAssembledFormula(lbl->itab == 0 ? true : false);
+	std::wstring description;
 
 	if (value.empty()) return 0;
 
 	int res = 0;
 
-	if ((lbl->itab == 0)				&& 
-		(res = value.find(L"!")) < 0	&& 
-		(lbl->rgce.rgce.sequence.size() < 2))
+	if ((lbl->itab == 0) && (res = value.find(L"#REF!")) >= 0)
 	{
-		PtgRef3d* ptg = dynamic_cast<PtgRef3d*>(lbl->rgce.rgce.sequence[0].get());
-		if (ptg) value = std::wstring(L"#REF!");
-	
-		PtgArea3d* ptg1 = dynamic_cast<PtgArea3d*>(lbl->rgce.rgce.sequence[0].get());
-		if (ptg1) value = std::wstring(L"#REF!");
+		for (int i = 0 ; i < lbl->rgce.rgce.sequence.size(); i++)
+		{
+			PtgRef3d* ptg = dynamic_cast<PtgRef3d*>(lbl->rgce.rgce.sequence[i].get());
+			if (ptg) 
+			{
+				description = value;
+				value = std::wstring(L"#REF!");
+				break;
+			}
+		
+			PtgArea3d* ptg1 = dynamic_cast<PtgArea3d*>(lbl->rgce.rgce.sequence[i].get());
+			if (ptg1) 
+			{
+				description = value;
+				value = std::wstring(L"#REF!");
+				break;
+			}
+		}
 	}
 
 	CP_XML_WRITER(stream)    
@@ -138,6 +150,9 @@ int LBL::serialize(std::wostream & stream)
 			if (name.empty())	name = lbl->Name_bin.value();
 
 			CP_XML_ATTR(L"name", xml::utils::replace_text_to_xml(name));
+
+			if (!description.empty())
+				CP_XML_ATTR(L"comment", xml::utils::replace_text_to_xml(description));
 
 			if (lbl->itab != 0)
 			{

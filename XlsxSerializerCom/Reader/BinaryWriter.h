@@ -1576,6 +1576,13 @@ namespace BinXlsxRW {
                 m_oBcw.m_oStream.WriteBOOL(definedName.m_oHidden->ToBool());
                 m_oBcw.WriteItemWithLengthEnd(nCurPos);
             }
+			//Comment
+			if (definedName.m_oComment.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerDefinedNameTypes::Comment);
+				m_oBcw.m_oStream.WriteStringW(definedName.m_oComment.get2());
+                m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
 		};
 	};
 	class BinaryWorksheetTableWriter

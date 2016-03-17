@@ -642,7 +642,7 @@ const std::wstring xti_indexes2sheet_name(const short itabFirst, const short ita
 		return L"#REF!";
 	}
 	static boost::wregex correct_sheet_name(L"^\\'.+?\\'$");
-	static boost::wregex test_sheet_name(L"[\\s\\':.]+");
+	static boost::wregex test_sheet_name(L"[\\s\\':.-]+");
 	
 	std::wstring sheet_first = tab2sheet_name(itabFirst, sheets_names);
 	if(!boost::regex_search(sheet_first.begin(), sheet_first.end(), correct_sheet_name))
@@ -673,14 +673,17 @@ const std::wstring xti_indexes2sheet_name(const short itabFirst, const short ita
 	return sheet_first + sheet_last;
 }
 
-const std::wstring make3dRef(const unsigned short ixti, const std::wstring cell_ref, std::vector<std::wstring>& xti_parsed)
+const std::wstring make3dRef(const unsigned short ixti, const std::wstring cell_ref, std::vector<std::wstring>& xti_parsed, bool full_ref)
 {
 	std::wstring sheets_prefix = xti2sheets(ixti, xti_parsed);
+	
 	if(L"#REF!" == sheets_prefix)
 	{
 		return sheets_prefix;
 	}
-	else if (!sheets_prefix.empty()) sheets_prefix += L"!";
+	else if (!sheets_prefix.empty())				sheets_prefix += L"!";
+	else if (sheets_prefix.empty() && full_ref)		sheets_prefix += L"#REF!";
+	
 	return sheets_prefix + cell_ref;
 }
 

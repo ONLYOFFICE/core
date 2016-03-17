@@ -23,14 +23,6 @@ BiffStructurePtr PtgFuncVar::clone()
 	return BiffStructurePtr(new PtgFuncVar(*this));
 }
 
-//
-//void PtgFuncVar::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	xml_tag->setAttribute(L"cparams", cparams);
-//	xml_tag->setAttribute(L"fCeFunc", fCeFunc);
-//	tab.toXML(xml_tag);
-//}
-//
 
 void PtgFuncVar::storeFields(CFRecord& record)
 {
@@ -47,7 +39,7 @@ void PtgFuncVar::loadFields(CFRecord& record)
 }
 
 
-void PtgFuncVar::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
+void PtgFuncVar::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {
 	std::wstring arguments;
 	std::wstring func_name = tab.getFuncName();

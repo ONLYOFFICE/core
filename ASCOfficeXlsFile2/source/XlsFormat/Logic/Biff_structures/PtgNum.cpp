@@ -47,7 +47,7 @@ void PtgNum::loadFields(CFRecord& record)
 }
 
 
-void PtgNum::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
+void PtgNum::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {
 	ptg_stack.push(STR::double2str(value_));
 }

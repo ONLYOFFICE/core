@@ -45,7 +45,7 @@ void PtgRefN::loadFields(CFRecord& record)
 }
 
 
-void PtgRefN::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
+void PtgRefN::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {
 	ptg_stack.push((loc + cell_base_ref).toString());
 }

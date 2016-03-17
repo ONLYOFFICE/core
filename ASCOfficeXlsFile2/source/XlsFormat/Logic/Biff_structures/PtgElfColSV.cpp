@@ -25,7 +25,7 @@ void PtgElfColSV::loadFields(CFRecord& record)
 }
 
 
-void PtgElfColSV::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
+void PtgElfColSV::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {
 	PtgExtraElfPtr range;
 	Log::message("PtgElfColSV found!!! PtgElfColSV found!!! PtgElfColSV found!!! PtgElfColSV found!!!");

@@ -38,7 +38,7 @@ void PtgNameX::loadFields(CFRecord& record)
 }
 
 
-void PtgNameX::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
+void PtgNameX::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {
 	RevNamePtr tab_id;
 	if(!extra_data.empty() && (tab_id = boost::dynamic_pointer_cast<RevName>(extra_data.front())))

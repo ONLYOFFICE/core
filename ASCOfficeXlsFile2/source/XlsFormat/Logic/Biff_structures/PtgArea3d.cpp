@@ -46,7 +46,7 @@ void PtgArea3d::loadFields(CFRecord& record)
 }
 
 
-void PtgArea3d::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
+void PtgArea3d::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {
 	RevExternPtr tab_ids;
 	if(!extra_data.empty() && (tab_ids = boost::dynamic_pointer_cast<RevExtern>(extra_data.front())))
@@ -60,7 +60,7 @@ void PtgArea3d::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
 
 	std::wstring range_ref = area.toString();
 
-	ptg_stack.push(XMLSTUFF::make3dRef(ixti, range_ref, global_info->xti_parsed));
+	ptg_stack.push(XMLSTUFF::make3dRef(ixti, range_ref, global_info->xti_parsed, full_ref));
 
 }
 

@@ -14,12 +14,10 @@ public:
 	PtgTbl();
 	BiffStructurePtr clone();
 
-	
-	
 	virtual void loadFields(CFRecord& record);
 	virtual void storeFields(CFRecord& record);
 
-	virtual void assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data);
+	virtual void assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref = false);
 
 	static const unsigned short fixed_id = 0x02;
 

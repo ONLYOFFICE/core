@@ -12,12 +12,6 @@ BiffStructurePtr PtgMemNoMem::clone()
 }
 
 
-//void PtgMemNoMem::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	xml_tag->setAttribute(L"cce", cce);
-//}
-
-
 void PtgMemNoMem::storeFields(CFRecord& record)
 {
 	record.reserveNunBytes(4); // unused
@@ -32,9 +26,8 @@ void PtgMemNoMem::loadFields(CFRecord& record)
 }
 
 
-void PtgMemNoMem::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
+void PtgMemNoMem::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {
-// I assume it doesn't generate an error.
 }
 
 

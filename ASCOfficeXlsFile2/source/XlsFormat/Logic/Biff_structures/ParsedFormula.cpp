@@ -40,7 +40,7 @@ const bool ParsedFormula::HasPtgTbl() const
 }
 
 
-const std::wstring ParsedFormula::getAssembledFormula() const
+const std::wstring ParsedFormula::getAssembledFormula(bool full_ref) const
 {
 	const PtgVector& ptgs = rgce.getPtgs();
 	if(ptgs.empty())
@@ -51,7 +51,7 @@ const std::wstring ParsedFormula::getAssembledFormula() const
 	PtgQueue extra_data = rgcb.getPtgs();
 	for(PtgVectorIterator it = ptgs.begin(), itEnd = ptgs.end(); it != itEnd; ++it)
 	{
-		(*it)->assemble(ptg_stack, extra_data);
+		(*it)->assemble(ptg_stack, extra_data, full_ref);
 	}
 	if(1 != ptg_stack.size())
 	{

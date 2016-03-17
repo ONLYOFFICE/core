@@ -39,7 +39,7 @@ public:
 	const size_t getOffsetInRecord() const;
 	const size_t getSizeOfStruct() const;
 
-	virtual void assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data);
+	virtual void assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref = false);
 
 	_CP_OPT(unsigned short)	ptg_id;
 	_CP_OPT(size_t)			offset_in_record;

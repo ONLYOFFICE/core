@@ -16,7 +16,7 @@ public:
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-	virtual void assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data);
+	virtual void assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref = false);
 
 private:
 	unsigned char type1;

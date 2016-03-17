@@ -47,7 +47,7 @@ void PtgInt::loadFields(CFRecord& record)
 }
 
 
-void PtgInt::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
+void PtgInt::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {
 	ptg_stack.push(STR::int2wstr(integer));
 }

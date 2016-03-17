@@ -19,27 +19,6 @@ BiffStructurePtr RgbExtra::clone()
 	return BiffStructurePtr(new RgbExtra(*this));
 }
 
-
-//void RgbExtra::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	if(!ptg_records.empty())
-//	{
-//		PtgQueue copy_queue(ptg_records);
-//		while(!copy_queue.empty())
-//		{
-//			copy_queue.front()->toXML(xml_tag);
-//			copy_queue.pop();
-//		}
-//	}
-//}
-//
-//
-//void RgbExtra::getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//// No need special processing here
-//}
-//
-
 void RgbExtra::store(CFRecord& record)
 {
 	while(ptg_records.size())

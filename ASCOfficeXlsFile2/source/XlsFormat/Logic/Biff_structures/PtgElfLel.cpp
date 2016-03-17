@@ -35,7 +35,7 @@ void PtgElfLel::loadFields(CFRecord& record)
 }
 
 
-void PtgElfLel::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
+void PtgElfLel::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {
 	ptg_stack.push(L"#NAME?"); // The best decision I think
 }

@@ -11,12 +11,6 @@ BiffStructurePtr PtgAttrIf::clone()
 	return BiffStructurePtr(new PtgAttrIf(*this));
 }
 
-//
-//void PtgAttrIf::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	xml_tag->setAttribute(L"offset", offset);
-//}
-
 
 void PtgAttrIf::storeFields(CFRecord& record)
 {
@@ -30,9 +24,8 @@ void PtgAttrIf::loadFields(CFRecord& record)
 }
 
 
-void PtgAttrIf::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
+void PtgAttrIf::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {
-	// All control tokens shall be skipped
 }
 
 

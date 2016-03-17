@@ -1,7 +1,6 @@
 
 #include "Ptg.h"
 #include <Binary/CFRecord.h>
-//#include <Exception/UnexpectedProgramPath.h>
 
 
 namespace XLS
@@ -11,42 +10,35 @@ Ptg::Ptg()
 {
 }
 
-
 Ptg::Ptg(const unsigned short ptg_id_init)
 :	ptg_id(ptg_id_init)
 {
 }
-
 
 const unsigned short Ptg::getPtgId() const
 {
 	return ptg_id.get_value_or(0);
 }
 
-
 const size_t Ptg::getOffsetInRecord() const
 {
 	return offset_in_record.get_value_or(0);
 }
-
 
 const size_t Ptg::getSizeOfStruct() const
 {
 	return size_of_struct.get_value_or(0);
 }
 
-
 void Ptg::addFuncWrapper(AssemblerStack& ptg_stack, const std::wstring& func_name)
 {
 	ptg_stack.top() = func_name + L'(' + ptg_stack.top() + L')';
 }
 
-
-void Ptg::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
+void Ptg::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {
 
 }
-
 
 void Ptg::store(CFRecord& record)
 {

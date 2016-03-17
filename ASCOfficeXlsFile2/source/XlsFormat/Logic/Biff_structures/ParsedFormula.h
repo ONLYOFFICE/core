@@ -19,7 +19,7 @@ public:
 	
 	const bool HasPtgTbl() const;
 
-	const std::wstring getAssembledFormula() const;
+	const std::wstring getAssembledFormula(bool full_names = false) const;
 	
 	static const ElementType	type = typeParsedFormula;
 

@@ -24,12 +24,6 @@ BiffStructurePtr PtgRefErr3d::clone()
 	return BiffStructurePtr(new PtgRefErr3d(*this));
 }
 
-//
-//void PtgRefErr3d::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	xml_tag->setAttribute(L"ixti", ixti);
-//}
-
 
 void PtgRefErr3d::storeFields(CFRecord& record)
 {
@@ -46,7 +40,7 @@ void PtgRefErr3d::loadFields(CFRecord& record)
 }
 
 
-void PtgRefErr3d::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
+void PtgRefErr3d::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {
 	RevExternPtr tab_ids;
 	if(!extra_data.empty() && (tab_ids = boost::dynamic_pointer_cast<RevExtern>(extra_data.front())))

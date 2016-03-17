@@ -24,9 +24,8 @@ void PtgAttrSpaceSemi::loadFields(CFRecord& record)
 }
 
 
-void PtgAttrSpaceSemi::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
+void PtgAttrSpaceSemi::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {
-	// Display token that shall be skipped
 }
 
 

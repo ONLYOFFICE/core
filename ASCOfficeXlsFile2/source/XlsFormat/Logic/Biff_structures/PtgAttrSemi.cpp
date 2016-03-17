@@ -24,7 +24,7 @@ void PtgAttrSemi::loadFields(CFRecord& record)
 }
 
 
-void PtgAttrSemi::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
+void PtgAttrSemi::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {
 	// volatile property is not seen in the textual form
 }

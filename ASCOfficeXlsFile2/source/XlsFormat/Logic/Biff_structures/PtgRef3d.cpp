@@ -45,7 +45,7 @@ void PtgRef3d::loadFields(CFRecord& record)
 }
 
 
-void PtgRef3d::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
+void PtgRef3d::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {
 	RevExternPtr tab_ids;
 	if(!extra_data.empty() && (tab_ids = boost::dynamic_pointer_cast<RevExtern>(extra_data.front())))
@@ -59,7 +59,7 @@ void PtgRef3d::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
 
 	std::wstring cell_ref = rgce_loc.toString();
 
-	cell_ref = XMLSTUFF::make3dRef(ixti, cell_ref, global_info->xti_parsed);
+	cell_ref = XMLSTUFF::make3dRef(ixti, cell_ref, global_info->xti_parsed, full_ref);
 
 	ptg_stack.push(cell_ref);
 }

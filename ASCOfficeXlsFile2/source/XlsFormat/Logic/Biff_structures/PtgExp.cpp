@@ -18,21 +18,6 @@ BiffStructurePtr PtgExp::clone()
 	return BiffStructurePtr(new PtgExp(*this));
 }
 
-//
-//void PtgExp::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	xml_tag->setAttribute(L"ref", RgceLoc(row, col, true, true).toString().c_str());
-//}
-//
-//
-//void PtgExp::getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	std::wstring  cell_ref = getStructAttribute(xml_tag, L"ref");
-//	RgceLoc location(cell_ref);
-//	row = static_cast<unsigned short>(location.getRow());
-//	col = static_cast<unsigned short>(location.getColumn());
-//}
-
 
 void PtgExp::storeFields(CFRecord& record)
 {
@@ -46,7 +31,7 @@ void PtgExp::loadFields(CFRecord& record)
 }
 
 
-void PtgExp::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
+void PtgExp::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {
 	// The reference coordinates shall be obtained from row/column values.
 	// No textual form need but the empty line.

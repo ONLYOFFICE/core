@@ -35,7 +35,7 @@ void PtgAreaErr::loadFields(CFRecord& record)
 }
 
 
-void PtgAreaErr::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
+void PtgAreaErr::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {
 	if(!ptg_stack.empty() && 0 == ptg_stack.top().find(L"#PtgElfRadical"))
 	{

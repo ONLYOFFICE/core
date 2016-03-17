@@ -18,7 +18,7 @@ public:
 	virtual void loadFields(CFRecord& record);
 	virtual void storeFields(CFRecord& record);
 
-	virtual void assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data);
+	virtual void assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref = false);
 
 	virtual const unsigned short getPtgId() const	{ return id_fixed | (static_cast<unsigned char>(data_type) << 5);}
 

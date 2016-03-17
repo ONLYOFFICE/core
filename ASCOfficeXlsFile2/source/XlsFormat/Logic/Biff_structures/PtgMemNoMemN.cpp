@@ -30,9 +30,8 @@ void PtgMemNoMemN::load(CFRecord& record)
 }
 
 
-void PtgMemNoMemN::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
+void PtgMemNoMemN::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {
-	// I assume it doesn't generate an error.
 }
 
 

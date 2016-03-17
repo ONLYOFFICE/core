@@ -25,12 +25,6 @@ BiffStructurePtr PtgStr::clone()
 }
 
 
-//void PtgStr::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	xml_tag->setAttribute(L"string", string_);
-//}
-
-
 void PtgStr::storeFields(CFRecord& record)
 {
 	record << string_;
@@ -43,7 +37,7 @@ void PtgStr::loadFields(CFRecord& record)
 }
 
 
-void PtgStr::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
+void PtgStr::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {
 	ptg_stack.push(L"\"" + boost::algorithm::replace_all_copy(std::wstring(string_), L"\"", L"\"\"") + L"\"");
 }

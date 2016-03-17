@@ -13,12 +13,6 @@ BiffStructurePtr PtgMemArea::clone()
 }
 
 
-//void PtgMemArea::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	xml_tag->setAttribute(L"cce", cce);
-//}
-
-
 void PtgMemArea::storeFields(CFRecord& record)
 {
 #pragma message("####################### PtgMemArea record has no BiffStructure::store() implemented")
@@ -34,7 +28,7 @@ void PtgMemArea::loadFields(CFRecord& record)
 }
 
 
-void PtgMemArea::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
+void PtgMemArea::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {
 	PtgExtraMemPtr range;
 	if(extra_data.empty() || !(range = boost::dynamic_pointer_cast<PtgExtraMem>(extra_data.front())))

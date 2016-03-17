@@ -12,12 +12,6 @@ BiffStructurePtr PtgSxName::clone()
 }
 
 
-//void PtgSxName::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	xml_tag->setAttribute(L"sxIndex", sxIndex);
-//}
-
-
 void PtgSxName::storeFields(CFRecord& record)
 {
 	record << sxIndex;
@@ -30,7 +24,7 @@ void PtgSxName::loadFields(CFRecord& record)
 }
 
 
-void PtgSxName::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
+void PtgSxName::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {
 #pragma message("####################### PtgSxName struct is not implemented")
 	Log::info("PtgSxName structure is not implemented.");

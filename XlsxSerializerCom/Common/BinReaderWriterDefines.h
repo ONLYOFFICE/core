@@ -171,7 +171,8 @@ namespace BinXlsxRW
 		Name = 0,
 		Ref = 1,
         LocalSheetId = 2,
-        Hidden = 3
+        Hidden = 3,
+		Comment = 4
 	};}
 	namespace c_oSerWorksheetsTypes{enum c_oSerWorksheetsTypes
 	{

@@ -1555,6 +1555,12 @@ namespace BinXlsxRW {
                  pDefinedName->m_oHidden.Init();
                  pDefinedName->m_oHidden->SetValue(false != m_oBufferedStream.GetBool() ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
             }
+			else if(c_oSerDefinedNameTypes::Comment == type)
+            {
+				CString sComment(m_oBufferedStream.GetString3(length));
+				pDefinedName->m_oComment.Init();
+				pDefinedName->m_oComment->Append(sComment);
+            }
 			return res;
 		};
 	};

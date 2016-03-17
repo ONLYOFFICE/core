@@ -23,12 +23,6 @@ BiffStructurePtr PtgFunc::clone()
 	return BiffStructurePtr(new PtgFunc(*this));
 }
 
-//
-//void PtgFunc::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	iftab.toXML(xml_tag);
-//}
-
 
 void PtgFunc::storeFields(CFRecord& record)
 {
@@ -42,7 +36,7 @@ void PtgFunc::loadFields(CFRecord& record)
 }
 
 
-void PtgFunc::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
+void PtgFunc::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {
     int num_params = iftab.getParamsNum();
 	std::wstring arguments;

@@ -24,7 +24,7 @@ void ExtPtgErr::load(CFRecord& record)
 }
 
 
-void ExtPtgErr::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
+void ExtPtgErr::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {
 	ptg_stack.push(err.toString());
 }

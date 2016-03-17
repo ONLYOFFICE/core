@@ -44,7 +44,7 @@ void PtgArea::loadFields(CFRecord& record)
 }
 
 
-void PtgArea::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
+void PtgArea::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {
 	RgceArea range(area);
 	if(!ptg_stack.empty())

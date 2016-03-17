@@ -24,7 +24,7 @@ class BOperatorPtg_T: public OperatorPtg
 public:
 	BOperatorPtg_T() : OperatorPtg(fixedPtgId) {};
 	
-	virtual void assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
+	virtual void assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref = false)
 	{
 		std::wstring operand2(ptg_stack.top());
 		ptg_stack.pop();
@@ -41,7 +41,7 @@ class UOperatorPtg_T: public OperatorPtg
 {
 public:
 	UOperatorPtg_T() : OperatorPtg(fixedType) {};
-	void assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
+	void assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref = false)
 	{
 		ptg_stack.top() = T::getSymbols() + ptg_stack.top();
 	};
@@ -302,7 +302,7 @@ public:
 		static const std::wstring symbols(L"%");
 		return symbols;
 	}
-	virtual void assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
+	virtual void assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref = false)
 	{
 		ptg_stack.top() += getOperatorSymbols();
 	};

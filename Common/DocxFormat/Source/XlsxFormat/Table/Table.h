@@ -28,27 +28,29 @@ namespace OOX
 			}
 			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
+				int nShowColumnStripes = 0;
+				int nShowFirstColumn = 0;
+				int nShowLastColumn = 0;
+				int nShowRowStripes = 0;
+				if(m_oShowColumnStripes.IsInit() && true == m_oShowColumnStripes->ToBool())
+					nShowColumnStripes = 1;
+				if(m_oShowFirstColumn.IsInit() && true == m_oShowFirstColumn->ToBool())
+					nShowFirstColumn = 1;
+				if(m_oShowLastColumn.IsInit() && true == m_oShowLastColumn->ToBool())
+					nShowLastColumn = 1;
+				if(m_oShowRowStripes.IsInit() && true == m_oShowRowStripes->ToBool())
+					nShowRowStripes = 1;
+
+				CString sXml;
+				sXml.Append(_T("<tableStyleInfo"));
 				if(m_oName.IsInit())
 				{
-					int nShowColumnStripes = 0;
-					int nShowFirstColumn = 0;
-					int nShowLastColumn = 0;
-					int nShowRowStripes = 0;
-					if(m_oShowColumnStripes.IsInit() && true == m_oShowColumnStripes->ToBool())
-						nShowColumnStripes = 1;
-					if(m_oShowFirstColumn.IsInit() && true == m_oShowFirstColumn->ToBool())
-						nShowFirstColumn = 1;
-					if(m_oShowLastColumn.IsInit() && true == m_oShowLastColumn->ToBool())
-						nShowLastColumn = 1;
-					if(m_oShowRowStripes.IsInit() && true == m_oShowRowStripes->ToBool())
-						nShowRowStripes = 1;
-
-					CString sXml;
-					sXml.Append(_T("<tableStyleInfo name=\""));
+					sXml.Append(_T(" name=\""));
 					sXml.Append(XmlUtils::EncodeXmlString(m_oName.get()));
-					sXml.AppendFormat(_T("\" showFirstColumn=\"%d\" showLastColumn=\"%d\" showRowStripes=\"%d\" showColumnStripes=\"%d\"/>"), nShowFirstColumn, nShowLastColumn, nShowRowStripes, nShowColumnStripes);
-					writer.WriteString(sXml);
+					sXml.Append(_T("\""));
 				}
+				sXml.AppendFormat(_T(" showFirstColumn=\"%d\" showLastColumn=\"%d\" showRowStripes=\"%d\" showColumnStripes=\"%d\"/>"), nShowFirstColumn, nShowLastColumn, nShowRowStripes, nShowColumnStripes);
+				writer.WriteString(sXml);
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -66,7 +68,7 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("name"),      m_oName )
@@ -126,7 +128,7 @@ namespace OOX
 					sXml.Append(_T("\""));
 					writer.WriteString(sXml);
 				}
-				//есть такой баг: при сохранениии "sum" и названия таблицы "Table1" (русский excel), выдается ошибка в формулах
+				//РµСЃС‚СЊ С‚Р°РєРѕР№ Р±Р°Рі: РїСЂРё СЃРѕС…СЂР°РЅРµРЅРёРёРё "sum" Рё РЅР°Р·РІР°РЅРёСЏ С‚Р°Р±Р»РёС†С‹ "Table1" (СЂСѓСЃСЃРєРёР№ excel), РІС‹РґР°РµС‚СЃСЏ РѕС€РёР±РєР° РІ С„РѕСЂРјСѓР»Р°С…
 				if(m_oTotalsRowFunction.IsInit())
 				{
 					CString sXml;
@@ -194,7 +196,7 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("id"),      m_oId )
@@ -267,7 +269,7 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("count"),      m_oCount )
@@ -361,7 +363,7 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("ref"),      m_oRef )
@@ -423,7 +425,7 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("r:id"),      m_oRId )
@@ -486,7 +488,7 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("count"),      m_oCount )
@@ -496,7 +498,7 @@ namespace OOX
 		public:
 			nullable<SimpleTypes::CUnsignedDecimalNumber<> > m_oCount;
 		};
-		//необработанные child:
+		//РЅРµРѕР±СЂР°Р±РѕС‚Р°РЅРЅС‹Рµ child:
 		//<extLst>
 		class CTableFile : public OOX::FileGlobalEnumerated, public OOX::Spreadsheet::IFileContainer
 		{

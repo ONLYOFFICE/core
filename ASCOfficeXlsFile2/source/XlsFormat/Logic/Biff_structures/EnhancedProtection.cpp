@@ -23,36 +23,6 @@ BiffStructurePtr EnhancedProtection::clone()
 }
 
 
-//void EnhancedProtection::toXML(BiffStructurePtr & parent)
-//{
-//	MSXML2::IXMLDOMElementPtr own_tag = XMLSTUFF::createElement(getClassName(), parent);
-//
-//	own_tag->setAttribute(L"iprotObjects", iprotObjects);
-//	own_tag->setAttribute(L"iprotScenarios", iprotScenarios);
-//	own_tag->setAttribute(L"iprotFormatCells", iprotFormatCells);
-//	own_tag->setAttribute(L"iprotFormatColumns", iprotFormatColumns);
-//	own_tag->setAttribute(L"iprotFormatRows", iprotFormatRows);
-//	own_tag->setAttribute(L"iprotInsertColumns", iprotInsertColumns);
-//	own_tag->setAttribute(L"iprotInsertRows", iprotInsertRows);
-//	own_tag->setAttribute(L"iprotInsertHyperlinks", iprotInsertHyperlinks);
-//	own_tag->setAttribute(L"iprotDeleteColumns", iprotDeleteColumns);
-//	own_tag->setAttribute(L"iprotDeleteRows", iprotDeleteRows);
-//	own_tag->setAttribute(L"iprotSelLockedCells", iprotSelLockedCells);
-//	own_tag->setAttribute(L"iprotSort", iprotSort);
-//	own_tag->setAttribute(L"iprotAutoFilter", iprotAutoFilter);
-//	own_tag->setAttribute(L"iprotPivotTables", iprotPivotTables);
-//	own_tag->setAttribute(L"iprotSelUnlockedCells", iprotSelUnlockedCells);
-//}
-//
-//
-//const bool EnhancedProtection::fromXML(BiffStructurePtr & parent)
-//{
-//#pragma message("####################### EnhancedProtection record has no BiffStructure::fromXML() implemented")
-//	Log::error(" Error!!! EnhancedProtection record has no BiffStructure::fromXML() implemented.");
-//	return false;
-//}
-
-
 void EnhancedProtection::store(CFRecord& record)
 {
 #pragma message("####################### EnhancedProtection record has no BiffStructure::store() implemented")

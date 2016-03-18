@@ -62,23 +62,6 @@ void BopPopCustomPiesIndices::load(CFRecord& record)
 	}
 }
 
-//
-//void BopPopCustomPiesIndices::toXML(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	if(pie_indices.size() != 0)
-//	{
-//		static std::wstring  tag_name(L"pie");
-//		static std::wstring  attr_name(L"index");
-//		for(std::vector<unsigned short>::const_iterator it = pie_indices.begin(), itEnd = pie_indices.end(); it != itEnd; ++it)
-//		{
-//			BiffStructurePtr rgi_tag = XMLSTUFF::createElement(tag_name, xml_tag);
-//			rgi_tag->setAttribute(attr_name, *it);
-//		}
-//	}
-//}
-
-
-
 
 } // namespace XLS
 

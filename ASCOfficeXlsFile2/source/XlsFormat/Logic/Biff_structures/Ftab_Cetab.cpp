@@ -23,13 +23,6 @@ Ftab_Cetab::Ftab_Cetab(const unsigned short func_index_init)
 }
 
 
-//void Ftab_Cetab::toXML(BiffStructurePtr & parent)
-//{
-//	MSXML2::IXMLDOMElementPtr own_tag = XMLSTUFF::createElement(isMacro() ? "Cetab" : "Ftab", parent);
-//	own_tag->setAttribute(isMacro() ? L"cetab" : L"iftab", func_index);
-//}
-//
-//
 Ftab_Cetab::ValuesDetermination::ValuesDetermination()
 {
 	// Ftab values

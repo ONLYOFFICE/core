@@ -11,7 +11,6 @@ class CFRecord;
 class Cetab : public BiffStructure_NoVtbl
 {
 public:
-	//void toXML(BiffStructurePtr & parent);
 	unsigned short getHighBit() const;
 	void clrHighBit();
 	const std::wstring getFuncName() const;

@@ -38,18 +38,16 @@ public:
 	BiffString operator=(const std::wstring & str);
 	BiffStructurePtr clone();
 
-	//virtual void toXML(BiffStructurePtr & parent, const std::wstring & attrib_name);
-	//virtual const bool fromXML(MSXML2::IXMLDOMElementPtr xml_tag, const std::wstring & attrib_name);
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 	
 	void load(CFRecord& record, const size_t cch, const bool is_wide);
 	void store(CFRecord& record, const bool is_wide);
 
-	void setSize(const size_t size); // Set cch for string that don't have own cch field
-	const size_t getStructSize() const; // Number of unsigned chars read while loading
-	void setStructSize(const size_t size); // Set number of unsigned chars read while loading. Must be used by >> operator only
-	const size_t getSize() const; // String length in characters
+	void setSize(const size_t size);		// Set cch for string that don't have own cch field
+	const size_t getStructSize() const;		// Number of unsigned chars read while loading
+	void setStructSize(const size_t size);	// Set number of unsigned chars read while loading. Must be used by >> operator only
+	const size_t getSize() const;			// String length in characters
 
 	const bool isConformToOleLink() const;
 	const bool isConformToVirtPath() const;

@@ -5,15 +5,6 @@
 namespace XLS
 {
 
-
-//void Cetab::toXML(BiffStructurePtr & parent)
-//{
-//	MSXML2::IXMLDOMElementPtr own_tag = XMLSTUFF::createElement(L"Cetab", parent);
-//
-//	own_tag->setAttribute(L"cetab", cetab);
-//}
-
-
 unsigned short Cetab::getHighBit() const
 {
 	return cetab & 0x8000;

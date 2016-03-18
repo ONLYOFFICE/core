@@ -12,18 +12,6 @@ BiffStructurePtr BookExt_Conditional12::clone()
 }
 
 
-//void BookExt_Conditional12::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	xml_tag->setAttribute(L"fPublishedBookItems", fPublishedBookItems);
-//	xml_tag->setAttribute(L"fShowPivotChartFilter", fShowPivotChartFilter);
-//}
-//
-//void BookExt_Conditional12::getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	fPublishedBookItems = getStructAttribute(xml_tag, L"fPublishedBookItems");
-//	fShowPivotChartFilter = getStructAttribute(xml_tag, L"fShowPivotChartFilter");
-//}
-
 
 void BookExt_Conditional12::store(CFRecord& record)
 {

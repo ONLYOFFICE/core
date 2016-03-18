@@ -12,12 +12,6 @@ BiffStructurePtr PtgElfRwV::clone()
 	return BiffStructurePtr(new PtgElfRwV(*this));
 }
 
-//
-//void PtgElfRwV::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	loc.toXML(xml_tag);
-//}
-
 
 void PtgElfRwV::storeFields(CFRecord& record)
 {

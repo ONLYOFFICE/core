@@ -24,11 +24,6 @@ public:
 
 //-----------------------------
 	Boolean<unsigned short> fLock;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(fLock)
-	//BO_ATTRIB_MARKUP_END
-
 };
 
 } // namespace XLS

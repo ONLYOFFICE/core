@@ -26,12 +26,6 @@ public:
 //-----------------------------
 	OSHARED::FixedPoint dxPlotGrowth;
 	OSHARED::FixedPoint dyPlotGrowth;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(dxPlotGrowth)
-		//BO_ATTRIB_MARKUP_ATTRIB(dyPlotGrowth)
-	//BO_ATTRIB_MARKUP_END
-
 };
 
 } // namespace XLS

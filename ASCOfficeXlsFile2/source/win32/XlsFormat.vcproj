@@ -6119,14 +6119,6 @@
 			Name="Auxiliary"
 			>
 			<File
-				RelativePath="..\XlsFormat\Auxiliary\HelpersTagsGenerator.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\XlsFormat\Auxiliary\HelpersTagsGenerator.h"
-				>
-			</File>
-			<File
 				RelativePath="..\XlsFormat\Auxiliary\HelpFunc.cpp"
 				>
 			</File>

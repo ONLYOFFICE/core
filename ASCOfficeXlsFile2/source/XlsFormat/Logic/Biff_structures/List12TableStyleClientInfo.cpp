@@ -20,22 +20,6 @@ List12TableStyleClientInfo::~List12TableStyleClientInfo()
 {
 }
 
-//
-//void List12TableStyleClientInfo::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{		
-//	xml_tag->setAttribute(L"fFirstColumn", fFirstColumn);
-//	xml_tag->setAttribute(L"fLastColumn", fLastColumn);
-//	xml_tag->setAttribute(L"fRowStripes", fRowStripes);
-//	xml_tag->setAttribute(L"fColumnStripes", fColumnStripes);
-//	xml_tag->setAttribute(L"fDefaultStyle", fDefaultStyle);
-//	xml_tag->setAttribute(L"stListStyleName", stListStyleName);
-//}
-
-//
-//void List12TableStyleClientInfo::getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{	
-//}
-
 
 void List12TableStyleClientInfo::store(CFRecord& record)
 {	

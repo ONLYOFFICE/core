@@ -25,10 +25,6 @@ public:
 
 //-----------------------------
 	HideObjEnum hideObj;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(hideObj)
-	//BO_ATTRIB_MARKUP_END
 
 };
 

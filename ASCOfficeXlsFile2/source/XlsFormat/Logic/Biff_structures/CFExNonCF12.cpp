@@ -12,29 +12,6 @@ BiffStructurePtr CFExNonCF12::clone()
 }
 
 
-//void CFExNonCF12::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	xml_tag->setAttribute(L"icf", icf);
-//	xml_tag->setAttribute(L"cp", cp);
-//	xml_tag->setAttribute(L"icfTemplate", icfTemplate);
-//	xml_tag->setAttribute(L"ipriority", ipriority);
-//	xml_tag->setAttribute(L"fActive", fActive);
-//	xml_tag->setAttribute(L"fStopIfTrue", fStopIfTrue);
-//	if(fHasDXF)
-//	{
-//		dxf.toXML(xml_tag);
-//	}
-//	rgbTemplateParms.toXML(xml_tag, icfTemplate);
-//}
-
-//
-//void CFExNonCF12::getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//#pragma message("####################### CFExNonCF12 record has no BiffStructure::fromXML() implemented")
-//	Log::error(" Error!!! CFExNonCF12 record has no BiffStructure::fromXML() implemented.");
-//}
-
-
 void CFExNonCF12::store(CFRecord& record)
 {
 #pragma message("####################### CFExNonCF12 record has no BiffStructure::store() implemented")

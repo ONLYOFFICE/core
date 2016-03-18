@@ -21,18 +21,7 @@ BiffStructurePtr FilePointer::clone()
 {
 	return BiffStructurePtr(new FilePointer(*this));
 }
-//
-//
-//void FilePointer::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	xml_tag->setAttribute(L"offset", offset);
-//}
-//
-//
-//void FilePointer::getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	offset = getStructAttribute(xml_tag, L"offset");
-//}
+
 
 
 void FilePointer::store(CFRecord& record)

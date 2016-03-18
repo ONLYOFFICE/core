@@ -22,13 +22,8 @@ public:
 
 	static const ElementType	type = typeRefreshAll;
 
-
 //-----------------------------
 	Boolean<unsigned short> refreshAll;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(refreshAll)
-	//BO_ATTRIB_MARKUP_END
 
 };
 

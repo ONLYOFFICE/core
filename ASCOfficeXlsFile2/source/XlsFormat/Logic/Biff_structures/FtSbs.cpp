@@ -12,40 +12,6 @@ BiffStructurePtr FtSbs::clone()
 }
 
 
-//void FtSbs::setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag)
-//{
-//	own_tag->setAttribute(L"iVal", iVal);
-//	own_tag->setAttribute(L"iMin", iMin);
-//	own_tag->setAttribute(L"iMax", iMax);
-//	own_tag->setAttribute(L"dInc", dInc);
-//	own_tag->setAttribute(L"dPage", dPage);
-//	own_tag->setAttribute(L"fHoriz", fHoriz);
-//	own_tag->setAttribute(L"dxScroll", dxScroll);
-//
-//	own_tag->setAttribute(L"fDraw", fDraw);
-//	own_tag->setAttribute(L"fDrawSliderOnly", fDrawSliderOnly);
-//	own_tag->setAttribute(L"fTrackElevator", fTrackElevator);
-//	own_tag->setAttribute(L"fNo3d", fNo3d);
-//}
-//
-//
-//void FtSbs::getXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag)
-//{
-//	iVal = getStructAttribute(own_tag, L"iVal");
-//	iMin = getStructAttribute(own_tag, L"iMin");
-//	iMax = getStructAttribute(own_tag, L"iMax");
-//	dInc = getStructAttribute(own_tag, L"dInc");
-//	dPage = getStructAttribute(own_tag, L"dPage");
-//	fHoriz = static_cast<bool>(getStructAttribute(own_tag, L"fHoriz"));
-//	dxScroll = getStructAttribute(own_tag, L"dxScroll");
-//
-//	fDraw = getStructAttribute(own_tag, L"fDraw");
-//	fDrawSliderOnly = getStructAttribute(own_tag, L"fDrawSliderOnly");
-//	fTrackElevator = getStructAttribute(own_tag, L"fTrackElevator");
-//	fNo3d = getStructAttribute(own_tag, L"fNo3d");
-//}
-//
-//
 void FtSbs::store(CFRecord& record)
 {
 	unsigned short ft = 0x0C; // reserved

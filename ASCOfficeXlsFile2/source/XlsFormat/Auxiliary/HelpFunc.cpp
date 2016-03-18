@@ -1,5 +1,3 @@
-
-
 #include "HelpFunc.h"
 
 #ifndef _ASC_USE_UNICODE_CONVERTER_
@@ -252,27 +250,7 @@ const std::string guid2str(const _GUID_ guid)
 
 const bool bstr2guid(const std::wstring & guid_str, _GUID_& guid)
 {
-//#if defined(_WIN32) || defined(_WIN64)
-//
-//	GUID guid1={};
-//    HRESULT res = IIDFromString((LPWSTR)(guid_str.c_str()), &guid1);
-//    if(S_OK != res)
-//    {
-//        switch(res)
-//        {
-//            case E_INVALIDARG:
-//                return false;
-//            case E_OUTOFMEMORY:
-//                throw;// EXCEPT::LE::WhatIsTheFuck("IIDFromString failed.", "bstr2guid");
-//        }
-//    }
-//	else memcpy(&guid, &guid1, sizeof(guid1));
-//#else
-//    //todooooo
-//
-//#endif
-
-	return true;
+	return false;
 }
 
 
@@ -652,6 +630,16 @@ const std::wstring xti_indexes2sheet_name(const short itabFirst, const short ita
 			sheet_first = boost::algorithm::replace_all_copy(sheet_first, L"'", L"''"); 
 			sheet_first = std::wstring(L"\'") + sheet_first + std::wstring(L"\'");
 		}
+	}
+	else
+	{
+		//todooo найти хоть один файл где в апострофах уже есть внутренний не экранированный апостроф
+		//static boost::wregex test_sheet_name1(L"[\']+");
+		//if(boost::regex_search(sheet_first.begin() + 1, sheet_first.end() - 1, test_sheet_name1))
+		//{	
+		//	sheet_first = boost::algorithm::replace_all_copy(sheet_first.begin()+1, sheet_first.end() - 1 , L"'", L"''"); 
+		//	sheet_first = std::wstring(L"\'") + sheet_first + std::wstring(L"\'");
+		//}
 	}
 
 	std::wstring sheet_last;

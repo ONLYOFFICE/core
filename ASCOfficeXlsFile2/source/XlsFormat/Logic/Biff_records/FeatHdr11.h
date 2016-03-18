@@ -30,13 +30,6 @@ public:
 	SharedFeatureType isf;
 	BIFF_DWORD idListNext;
 
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_COMPLEX(frt)
-		//BO_ATTRIB_MARKUP_ATTRIB(isf)
-		//BO_ATTRIB_MARKUP_ATTRIB(idListNext)
-	//BO_ATTRIB_MARKUP_END
-
 };
 
 } // namespace XLS

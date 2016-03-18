@@ -11,13 +11,6 @@ BiffStructurePtr PtgMemErr::clone()
 	return BiffStructurePtr(new PtgMemErr(*this));
 }
 
-//
-//void PtgMemErr::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	xml_tag->setAttribute(L"err", err);
-//	xml_tag->setAttribute(L"cce", cce);
-//}
-
 
 void PtgMemErr::storeFields(CFRecord& record)
 {

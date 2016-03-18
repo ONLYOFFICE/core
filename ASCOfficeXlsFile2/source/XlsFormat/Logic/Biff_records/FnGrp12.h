@@ -25,10 +25,6 @@ public:
 
 //-----------------------------
 	XLUnicodeString astFnGrp;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-	//BO_ATTRIB_MARKUP_ATTRIB(astFnGrp)
-	//BO_ATTRIB_MARKUP_END
 
 };
 

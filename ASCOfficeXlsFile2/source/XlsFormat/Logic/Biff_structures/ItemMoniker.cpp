@@ -22,21 +22,6 @@ XLS::BiffStructurePtr ItemMoniker::clone()
 	return XLS::BiffStructurePtr(new ItemMoniker(*this));
 }
 
-//
-//void ItemMoniker::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	xml_tag->setAttribute(L"delimiterAnsi", delimiterAnsi.c_str());
-//	xml_tag->setAttribute(L"delimiterUnicode", delimiterUnicode.c_str());
-//	xml_tag->setAttribute(L"itemAnsi", delimiterAnsi.c_str());
-//	xml_tag->setAttribute(L"itemUnicode", delimiterUnicode.c_str());
-//}
-//
-//
-//void ItemMoniker::getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//#pragma message("####################### ItemMoniker record has no BiffStructure::fromXML() implemented")
-//	Log::error(" Error!!! ItemMoniker record has no BiffStructure::fromXML() implemented.");
-//}
 
 
 void ItemMoniker::store(XLS::CFRecord& record)

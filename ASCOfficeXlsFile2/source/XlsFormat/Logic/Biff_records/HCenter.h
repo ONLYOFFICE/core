@@ -24,10 +24,6 @@ public:
 
 //-----------------------------
 	Boolean<unsigned short> hcenter;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(hcenter)
-	//BO_ATTRIB_MARKUP_END
 
 };
 

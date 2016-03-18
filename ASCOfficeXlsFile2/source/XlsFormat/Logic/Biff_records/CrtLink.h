@@ -22,10 +22,6 @@ public:
 
 	static const ElementType	type = typeCrtLink;
 
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-	//BO_ATTRIB_MARKUP_END
-
 };
 
 } // namespace XLS

@@ -46,11 +46,9 @@ public:
 	//	{
 	//		body = BiffStructurePtr(new AddinUdf);
 	//	}
-	//	//BO_ATTRIB_MARKUP_COMPLEX(*body)
 	//}
 	//else
 	//{
-	//	throw;// EXCEPT::LE::NotImplemented(__FUNCTION__);
 	//}
 
 };

@@ -11,18 +11,6 @@ BiffStructurePtr PictFmlaEmbedInfo::clone()
 	return BiffStructurePtr(new PictFmlaEmbedInfo(*this));
 }
 
-//
-//void PictFmlaEmbedInfo::setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag)
-//{
-//	own_tag->setAttribute(L"strClass", strClass);
-//}
-//
-//
-//void PictFmlaEmbedInfo::getXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag)
-//{
-//	strClass = static_cast<std::wstring >(getStructAttribute(own_tag, L"strClass"));
-//}
-
 
 void PictFmlaEmbedInfo::store(CFRecord& record)
 {

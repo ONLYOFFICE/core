@@ -22,11 +22,6 @@ public:
 
 	static const ElementType	type = typeFeature12;
 
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-//		//BO_ATTRIB_MARKUP_ATTRIB(userName)
-	//BO_ATTRIB_MARKUP_END
-
 };
 
 } // namespace XLS

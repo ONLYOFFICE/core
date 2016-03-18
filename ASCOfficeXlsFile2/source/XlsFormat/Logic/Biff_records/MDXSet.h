@@ -27,16 +27,6 @@ public:
 	BIFF_DWORD istrSetDef;
 	BIFF_LONG cistr;
 	BiffStructurePtrVector rgistr;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(istrConnName)
-		//BO_ATTRIB_MARKUP_ATTRIB(tfnSrc)
-		//BO_ATTRIB_MARKUP_ATTRIB(sso)
-		//BO_ATTRIB_MARKUP_ATTRIB(istrSetDef)
-		//BO_ATTRIB_MARKUP_ATTRIB(cistr)
-		//BO_ATTRIB_MARKUP_VECTOR_COMPLEX(rgistr, MDXStrIndex)
-	//BO_ATTRIB_MARKUP_END
-
 };
 
 } // namespace XLS

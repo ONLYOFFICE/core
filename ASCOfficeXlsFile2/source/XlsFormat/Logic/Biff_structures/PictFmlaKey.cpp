@@ -17,20 +17,6 @@ BiffStructurePtr PictFmlaKey::clone()
 }
 
 
-//void PictFmlaKey::setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag)
-//{
-//	fmlaLinkedCell.toXML(own_tag);
-//	fmlaListFillRange.toXML(own_tag);
-//}
-//
-//
-//void PictFmlaKey::getXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag)
-//{
-//	fmlaLinkedCell.fromXML(own_tag);
-//	fmlaListFillRange.fromXML(own_tag);
-//}
-
-
 void PictFmlaKey::store(CFRecord& record)
 {
 #pragma message("####################### PictFmlaKey record has no BiffStructure::fromXML() implemented")

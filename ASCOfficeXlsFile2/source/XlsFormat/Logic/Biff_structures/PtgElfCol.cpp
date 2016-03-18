@@ -13,12 +13,6 @@ BiffStructurePtr PtgElfCol::clone()
 }
 
 
-//void PtgElfCol::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	loc.toXML(xml_tag);
-//}
-
-
 void PtgElfCol::storeFields(CFRecord& record)
 {
 	record << loc;

@@ -33,22 +33,6 @@ public:
 	CRYPTO::RC4EncryptionHeader rc4Header;
 	CRYPTO::RC4CryptoAPIEncryptionHeader rc4CryptoAPIHeader;
 
-public:
-		//BO_ATTRIB_MARKUP_ATTRIB(wEncryptionType)
-		//if(!wEncryptionType)
-		//{
-		//	//BO_ATTRIB_MARKUP_COMPLEX(key)
-		//}
-		//if(0x0001 == majorVer) // RC4 encryption header structure
-		//{
-		//	//BO_ATTRIB_MARKUP_COMPLEX(rc4Header)
-		//}
-		//else // RC4 CryptoAPI encryption header structure
-		//{
-		//	//BO_ATTRIB_MARKUP_COMPLEX(rc4CryptoAPIHeader)
-		//}
-
-
 };
 
 } // namespace XLS

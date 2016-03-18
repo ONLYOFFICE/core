@@ -11,18 +11,6 @@ BiffStructurePtr ControlInfo::clone()
 	return BiffStructurePtr(new ControlInfo(*this));
 }
 
-//void ControlInfo::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	xml_tag->setAttribute(L"fDefault", fDefault);
-//	xml_tag->setAttribute(L"fHelp", fHelp);
-//	xml_tag->setAttribute(L"fCancel", fCancel);
-//	xml_tag->setAttribute(L"fDismiss", fDismiss);
-//	xml_tag->setAttribute(L"accel1", accel1);
-//}
-//
-//void ControlInfo::getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//}
 
 void ControlInfo::store(CFRecord& record)
 {	

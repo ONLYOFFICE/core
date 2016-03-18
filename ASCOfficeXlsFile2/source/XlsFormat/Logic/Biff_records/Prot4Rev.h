@@ -24,10 +24,6 @@ public:
 
 //-----------------------------
 	Boolean<unsigned short> fRevLock;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(fRevLock)
-	//BO_ATTRIB_MARKUP_END
 
 };
 

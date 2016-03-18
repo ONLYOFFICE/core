@@ -16,18 +16,6 @@ BiffStructurePtr ObjFmla::clone()
 	return BiffStructurePtr(new ObjFmla(*this));
 }
 
-//
-//void ObjFmla::setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag)
-//{
-//	fmla.toXML(own_tag);
-//}
-//
-//
-//void ObjFmla::getXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag)
-//{
-//	fmla_found = fmla.fromXML(own_tag);
-//}
-
 
 void ObjFmla::load(CFRecord& record)
 {

@@ -40,12 +40,6 @@ BiffStructurePtr PtgBool::clone()
 }
 
 
-//void PtgBool::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	xml_tag->setAttribute(L"boolean", boolean_);
-//}
-//
-
 void PtgBool::storeFields(CFRecord& record)
 {
 	record << boolean_;

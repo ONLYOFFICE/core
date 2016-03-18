@@ -22,14 +22,6 @@ BiffStructurePtr RevNameTabid::clone()
 	return BiffStructurePtr(new RevNameTabid(*this));
 }
 
-
-//void RevNameTabid::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	xml_tag->setAttribute(L"tabid", tabid);
-//	name.toXML(xml_tag);
-//}
-
-
 void RevNameTabid::store(CFRecord& record)
 {
 	record << tabid << name;

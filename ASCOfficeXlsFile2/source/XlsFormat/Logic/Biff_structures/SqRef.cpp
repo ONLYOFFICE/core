@@ -12,23 +12,6 @@ BiffStructurePtr SqRef::clone()
 }
 
 
-//void SqRef::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	std::for_each(rgrefs.begin(), rgrefs.end(), boost::bind(&Ref8U::toXML, _1, xml_tag));
-//}
-//
-//
-//void SqRef::getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	Ref8U ref1;
-//	size_t counter = 0;
-//	while(ref1.fromXML(xml_tag, ++counter))
-//	{
-//		rgrefs.push_back(ref1);
-//	}
-//}
-
-
 void SqRef::store(CFRecord& record)
 {
 	unsigned short cref = rgrefs.size();

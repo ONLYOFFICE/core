@@ -12,18 +12,6 @@ BiffStructurePtr SqRefU::clone()
 	return BiffStructurePtr(new SqRefU(*this));
 }
 
-//
-//void SqRefU::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	xml_tag->setAttribute(L"sqref", sqref);
-//}
-//
-//
-//void SqRefU::getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	sqref = getStructAttribute(xml_tag, L"sqref");
-//}
-
 
 void SqRefU::store(CFRecord& record)
 {

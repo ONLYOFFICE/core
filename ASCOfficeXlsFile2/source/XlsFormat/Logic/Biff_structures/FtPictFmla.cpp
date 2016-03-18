@@ -17,23 +17,6 @@ BiffStructurePtr FtPictFmla::clone()
 }
 
 
-//void FtPictFmla::setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag)
-//{
-//	fmla.toXML(own_tag);
-//	own_tag->setAttribute(L"lPosInCtlStm", lPosInCtlStm);
-//	own_tag->setAttribute(L"cbBufInCtlStm", cbBufInCtlStm);
-//	key.toXML(own_tag);
-//}
-//
-//
-//void FtPictFmla::getXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag)
-//{
-//	fmla.fromXML(own_tag);
-//	lPosInCtlStm = getStructAttribute(own_tag, L"lPosInCtlStm");
-//	cbBufInCtlStm = getStructAttribute(own_tag, L"cbBufInCtlStm");
-//	key.fromXML(own_tag);
-//}
-
 
 void FtPictFmla::store(CFRecord& record, FtPioGrbit& pictFlags)
 {

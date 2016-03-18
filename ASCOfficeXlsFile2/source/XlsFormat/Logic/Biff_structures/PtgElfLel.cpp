@@ -11,13 +11,6 @@ BiffStructurePtr PtgElfLel::clone()
 	return BiffStructurePtr(new PtgElfLel(*this));
 }
 
-//
-//void PtgElfLel::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	xml_tag->setAttribute(L"ilel", ilel);
-//	xml_tag->setAttribute(L"fQuoted", fQuoted);
-//}
-
 
 void PtgElfLel::storeFields(CFRecord& record)
 {

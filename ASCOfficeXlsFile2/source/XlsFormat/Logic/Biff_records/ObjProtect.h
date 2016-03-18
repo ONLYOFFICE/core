@@ -24,10 +24,6 @@ public:
 
 //-----------------------------
 	Boolean<unsigned short> fLockObj;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(fLockObj)
-	//BO_ATTRIB_MARKUP_END
 
 };
 

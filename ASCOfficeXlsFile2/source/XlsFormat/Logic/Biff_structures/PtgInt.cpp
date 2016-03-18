@@ -28,13 +28,6 @@ BiffStructurePtr PtgInt::clone()
 	return BiffStructurePtr(new PtgInt(*this));
 }
 
-//
-//void PtgInt::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	xml_tag->setAttribute(L"integer", integer);
-//}
-
-
 void PtgInt::storeFields(CFRecord& record)
 {
 	record << integer;

@@ -22,10 +22,6 @@ public:
 	void readFields(CFRecord& record);
 //-----------------------------
 	XLUnicodeString stFormulaName;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-	//BO_ATTRIB_MARKUP_ATTRIB(stFormulaName)
-	//BO_ATTRIB_MARKUP_END
 
 };
 

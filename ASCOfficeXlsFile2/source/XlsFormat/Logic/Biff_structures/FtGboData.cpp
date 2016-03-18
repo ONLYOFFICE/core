@@ -11,19 +11,6 @@ BiffStructurePtr FtGboData::clone()
 	return BiffStructurePtr(new FtGboData(*this));
 }
 
-//
-//void FtGboData::setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag)
-//{
-//	own_tag->setAttribute(L"accel", accel);
-//	own_tag->setAttribute(L"fNo3d", fNo3d);
-//}
-//
-//
-//void FtGboData::getXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag)
-//{
-//	accel = getStructAttribute(own_tag, L"accel");
-//	fNo3d = getStructAttribute(own_tag, L"fNo3d");
-//}
 
 
 void FtGboData::store(CFRecord& record)

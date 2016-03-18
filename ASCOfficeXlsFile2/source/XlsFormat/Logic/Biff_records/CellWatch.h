@@ -25,10 +25,6 @@ public:
 
 //-----------------------------
 	FrtRefHeaderU frtRefHeaderU;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_COMPLEX(frtRefHeaderU)
-	//BO_ATTRIB_MARKUP_END
 
 };
 

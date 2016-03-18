@@ -24,13 +24,6 @@ public:
 	BIFF_BYTE tfnSrc;
 	BIFF_DWORD istrMbr;
 	BIFF_DWORD istrProp;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(istrConnName)
-		//BO_ATTRIB_MARKUP_ATTRIB(tfnSrc)
-		//BO_ATTRIB_MARKUP_ATTRIB(istrMbr)
-		//BO_ATTRIB_MARKUP_ATTRIB(istrProp)
-	//BO_ATTRIB_MARKUP_END
 
 };
 

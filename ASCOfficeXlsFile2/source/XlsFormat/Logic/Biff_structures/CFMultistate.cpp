@@ -12,36 +12,6 @@ BiffStructurePtr CFMultistate::clone()
 }
 
 
-//void CFMultistate::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	xml_tag->setAttribute(L"cStates", cStates);
-//	xml_tag->setAttribute(L"iIconSet", iIconSet);
-//	xml_tag->setAttribute(L"fIconOnly", fIconOnly);
-//	xml_tag->setAttribute(L"fReverse", fReverse);
-//	for(std::vector<CFMStateItemPtr>::iterator it = rgStates.begin(), itEnd = rgStates.end(); it != itEnd; ++it)
-//	{
-//		(*it)->toXML(xml_tag);
-//	}
-//}
-
-
-//void CFMultistate::getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	cStates = getStructAttribute(xml_tag, L"cStates");
-//	iIconSet = getStructAttribute(xml_tag, L"iIconSet");
-//	fIconOnly = getStructAttribute(xml_tag, L"fIconOnly");
-//	fReverse = getStructAttribute(xml_tag, L"fReverse");
-//	for(size_t i = 0; i <= 255; ++i)
-//	{
-//		CFMStateItemPtr item(new CFMStateItem);
-//		if(!item->fromXML(xml_tag, i, false))
-//		{
-//			break;
-//		}
-//		rgStates.push_back(item);
-//	}
-//}
-
 
 void CFMultistate::store(CFRecord& record)
 {

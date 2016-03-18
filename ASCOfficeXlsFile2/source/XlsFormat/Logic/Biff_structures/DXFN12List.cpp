@@ -21,16 +21,6 @@ DXFN12List::~DXFN12List()
 }
 
 
-//void DXFN12List::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{		
-//}
-//
-//
-//void DXFN12List::getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{	
-//}
-
-
 void DXFN12List::store(CFRecord& record)
 {	
 }

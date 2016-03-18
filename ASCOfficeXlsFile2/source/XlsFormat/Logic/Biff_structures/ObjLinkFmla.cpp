@@ -17,18 +17,6 @@ BiffStructurePtr ObjLinkFmla::clone()
 }
 
 
-//void ObjLinkFmla::setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag)
-//{
-//	fmla.toXML(own_tag);
-//}
-//
-//
-//void ObjLinkFmla::getXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag)
-//{
-//	fmla.fromXML(own_tag);
-//}
-//
-
 void ObjLinkFmla::store(CFRecord& record, const unsigned short ot)
 {
 	unsigned short ft = ot == 0x0B || ot == 0x0C ? 0x0014 : 0x000E; // reserved

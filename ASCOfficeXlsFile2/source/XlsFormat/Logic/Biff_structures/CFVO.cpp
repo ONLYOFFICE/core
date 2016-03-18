@@ -11,27 +11,6 @@ BiffStructurePtr CFVO::clone()
 	return BiffStructurePtr(new CFVO(*this));
 }
 
-//
-//void CFVO::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	xml_tag->setAttribute(L"cfvoType", cfvoType);
-//	fmla.toXML(xml_tag);
-//	if(!fmla.getCCE())
-//	{
-//		xml_tag->setAttribute(L"numValue", numValue);
-//	}
-//}
-//
-//
-//void CFVO::getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	cfvoType = getStructAttribute(xml_tag, L"cfvoType");
-//	if(!fmla.fromXML(xml_tag))
-//	{
-//		numValue = getStructAttribute(xml_tag, L"numValue");
-//	}
-//}
-
 
 void CFVO::store(CFRecord& record)
 {

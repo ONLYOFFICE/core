@@ -24,19 +24,6 @@ BiffStructurePtr RevLblName::clone()
 }
 
 
-//void RevLblName::toXML(BiffStructurePtr & parent)
-//{
-//	parent->setAttribute(L"name", st); 
-//}
-//
-//
-//const bool RevLblName::fromXML(BiffStructurePtr & parent)
-//{
-//#pragma message("####################### RevLblName record has no BiffStructure::fromXML() implemented")
-//	Log::error(" Error!!! RevLblName record has no BiffStructure::fromXML() implemented.");
-//	return false;
-//}
-//
 
 void RevLblName::store(CFRecord& record)
 {

@@ -10,9 +10,6 @@ class HideObjEnum : public BiffAttributeSimple<unsigned short>
 public:
 	BiffStructurePtr clone();
 
-	//virtual void toXML(BiffStructurePtr & parent, const std::wstring & attrib_name);
-	//virtual const bool fromXML(BiffStructurePtr & parent, const std::wstring & attrib_name);
-
 	enum
 	{
 		SHOWALL = 0x0000,

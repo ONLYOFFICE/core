@@ -1,8 +1,6 @@
 #pragma once
 
 #include "BiffStructure.h"
-//#include <Logic/Biff_structures/Phs.h>
-//#include <Logic/Biff_structures/BiffString.h>
 
 namespace XLS
 {
@@ -11,9 +9,6 @@ namespace XLS
 
 struct CFExFilterParams : public BiffStructure_NoVtbl
 {
-public:
-	//void toXML(BiffStructurePtr & parent);
-
 private:
 	bool fTop : 1;
 	bool fPercent : 1;
@@ -29,9 +24,6 @@ private:
 
 struct CFExTextTemplateParams : public BiffStructure_NoVtbl
 {
-public:
-	//void toXML(BiffStructurePtr & parent);
-
 private:
 	unsigned short ctp;
 
@@ -45,9 +37,6 @@ private:
 
 struct CFExDateTemplateParams : public BiffStructure_NoVtbl
 {
-public:
-	//void toXML(BiffStructurePtr & parent);
-
 private:
 	unsigned short dateOp;
 
@@ -61,9 +50,6 @@ private:
 
 struct CFExAveragesTemplateParams : public BiffStructure_NoVtbl
 {
-public:
-	//void toXML(BiffStructurePtr & parent);
-
 private:
 	unsigned short iParam;
 
@@ -77,9 +63,6 @@ private:
 
 struct CFExDefaultTemplateParams : public BiffStructure_NoVtbl
 {
-public:
-	//void toXML(BiffStructurePtr & parent);
-
 private:
 	_UINT32 unused1;
 	_UINT32 unused2;
@@ -91,12 +74,10 @@ private:
 class CFExTemplateParams : public BiffStructure
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(CFExTemplateParams)
-	//virtual void toXML(BiffStructurePtr & parent) {};
-	//virtual const bool fromXML(BiffStructurePtr & parent) {return false;};
+
 public:
 	BiffStructurePtr clone();
 
-	//virtual void toXML(BiffStructurePtr & parent, const unsigned char icfTemplate);
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 

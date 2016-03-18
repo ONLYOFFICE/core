@@ -16,8 +16,6 @@ class CellOffsetResender : public BiffStructure
 public:
 	BiffStructurePtr clone();
 
-	//virtual void toXML(BiffStructurePtr & parent); // stubbed to avoid generating unnecessary tags
-	
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 

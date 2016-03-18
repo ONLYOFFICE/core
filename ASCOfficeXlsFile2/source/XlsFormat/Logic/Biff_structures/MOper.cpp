@@ -12,24 +12,6 @@ BiffStructurePtr MOper::clone()
 }
 
 
-//void MOper::toXML(BiffStructurePtr & parent)
-//{
-//	MSXML2::IXMLDOMElementPtr own_tag = XMLSTUFF::createElement(getClassName(), parent);
-//
-//	own_tag->setAttribute(L"colLast", colLast);
-//	own_tag->setAttribute(L"rowLast", rowLast);
-//	std::for_each(extOper.begin(), extOper.end(), boost::bind(&SerAr::toXML, _1, own_tag));
-//}
-
-//
-//const bool MOper::fromXML(BiffStructurePtr & parent)
-//{
-//#pragma message("####################### MOper record has no BiffStructure::fromXML() implemented")
-//	Log::error(" Error!!! MOper record has no BiffStructure::fromXML() implemented.");
-//	return false;
-//}
-
-
 void MOper::store(CFRecord& record)
 {
 #pragma message("####################### MOper record has no BiffStructure::store() implemented")

@@ -16,20 +16,6 @@ BiffStructurePtr DXFNumUsr::clone()
 	return BiffStructurePtr(new DXFNumUsr(*this));
 }
 
-//
-//void DXFNumUsr::toXML(BiffStructurePtr & parent)
-//{
-//	parent->setAttribute(L"fmt", fmt);
-//}
-//
-//
-//const bool DXFNumUsr::fromXML(BiffStructurePtr & parent)
-//{
-//	fmt = static_cast<std::wstring >(getStructAttribute(parent, L"fmt"));
-//	return true;
-//}
-//
-
 void DXFNumUsr::store(CFRecord& record)
 {
 	size_t start_ptr = record.getDataSize();

@@ -11,17 +11,6 @@ BiffStructurePtr FtCf::clone()
 	return BiffStructurePtr(new FtCf(*this));
 }
 
-//
-//void FtCf::setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag)
-//{
-//	own_tag->setAttribute(L"cf", cf);
-//}
-//
-//
-//void FtCf::getXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag)
-//{
-//	cf = getStructAttribute(own_tag, L"cf");
-//}
 
 
 void FtCf::store(CFRecord& record)

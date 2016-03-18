@@ -22,15 +22,6 @@ BiffStructurePtr RevExtern::clone()
 	return BiffStructurePtr(new RevExtern(*this));
 }
 
-
-//void RevExtern::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	xml_tag->setAttribute(L"book", book);
-//	itabFirst.toXML(xml_tag);
-//	itabLast.toXML(xml_tag);
-//}
-
-
 void RevExtern::store(CFRecord& record)
 {
 #pragma message("####################### RevExtern record has no BiffStructure::store() implemented")

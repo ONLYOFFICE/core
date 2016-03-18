@@ -24,10 +24,6 @@ public:
 
 //-----------------------------
 	Boolean<unsigned short> fScenProtect;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(fScenProtect)
-	//BO_ATTRIB_MARKUP_END
 
 };
 

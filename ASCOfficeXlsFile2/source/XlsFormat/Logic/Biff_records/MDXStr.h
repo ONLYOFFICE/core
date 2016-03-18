@@ -22,10 +22,6 @@ public:
 	void readFields(CFRecord& record);
 //-----------------------------
 	LPWideString st;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(st)
-	//BO_ATTRIB_MARKUP_END
 
 };
 

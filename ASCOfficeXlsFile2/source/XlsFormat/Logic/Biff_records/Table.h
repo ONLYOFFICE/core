@@ -35,10 +35,6 @@ public:
 	BIFF_BSTR r1;
 	BIFF_BSTR r2;
 
-		//if(fTbl2)
-		//{
-		//	//BO_ATTRIB_MARKUP_ATTRIB(r2)
-		//}
 };
 
 } // namespace XLS

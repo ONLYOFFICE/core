@@ -13,21 +13,6 @@ BiffStructurePtr FtCblsData::clone()
 }
 
 
-//void FtCblsData::setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag)
-//{
-//	own_tag->setAttribute(L"fChecked", fChecked);
-//	own_tag->setAttribute(L"accel", accel);
-//	own_tag->setAttribute(L"fNo3d", fNo3d);
-//}
-//
-//
-//void FtCblsData::getXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag)
-//{
-//	fChecked = getStructAttribute(own_tag, L"fChecked");
-//	accel = getStructAttribute(own_tag, L"accel");
-//	fNo3d = getStructAttribute(own_tag, L"fNo3d");
-//}
-
 
 void FtCblsData::store(CFRecord& record)
 {

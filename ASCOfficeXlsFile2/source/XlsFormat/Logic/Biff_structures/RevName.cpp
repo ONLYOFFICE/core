@@ -23,20 +23,6 @@ BiffStructurePtr RevName::clone()
 }
 
 
-//void RevName::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	xml_tag->setAttribute(L"book", book);
-//	if(fExtern)
-//	{
-//		externName.toXML(xml_tag);
-//	}
-//	else
-//	{
-//		name.toXML(xml_tag);
-//	}
-//}
-
-
 void RevName::store(CFRecord& record)
 {
 #pragma message("####################### RevName record has no BiffStructure::store() implemented")

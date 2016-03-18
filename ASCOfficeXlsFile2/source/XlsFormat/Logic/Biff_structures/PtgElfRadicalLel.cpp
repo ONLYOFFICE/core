@@ -11,13 +11,6 @@ BiffStructurePtr PtgElfRadicalLel::clone()
 	return BiffStructurePtr(new PtgElfRadicalLel(*this));
 }
 
-//
-//void PtgElfRadicalLel::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	xml_tag->setAttribute(L"ilel", ilel);
-//	xml_tag->setAttribute(L"fQuoted", fQuoted);
-//}
-
 
 void PtgElfRadicalLel::storeFields(CFRecord& record)
 {

@@ -39,71 +39,23 @@ public:
 	static const ElementType	type = typeObj;
 
 //-----------------------------
-	FtCmo cmo;
-	FtCf pictFormat;
+	FtCmo			cmo;
+	FtCf			pictFormat;
 
-	FtPioGrbit pictFlags;
-	FtSbs sbs;
-	FtNts nts;
-	FtMacro macro;
-	FtPictFmla pictFmla;
-	ObjLinkFmla linkFmla;
-	FtCblsData checkBox;
-	FtRboData radioButton;
-	FtEdoData edit;
-	FtLbsData list;
-	FtGboData gbo;
+	FtPioGrbit		pictFlags;
+	FtSbs			sbs;
+	FtNts			nts;
+	FtMacro			macro;
+	FtPictFmla		pictFmla;
+	ObjLinkFmla		linkFmla;
+	FtCblsData		checkBox;
+	FtRboData		radioButton;
+	FtEdoData		edit;
+	FtLbsData		list;
+	FtGboData		gbo;
 
-	MsoDrawingPtr					mso_drawing_;
+	MsoDrawingPtr	mso_drawing_;
 
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_COMPLEX(cmo)
-		//if(0x08 == cmo.ot)
-		//{
-		//	//BO_ATTRIB_MARKUP_COMPLEX(pictFormat)
-		//	//BO_ATTRIB_MARKUP_COMPLEX(pictFlags)
-		//}
-		//if(0x10 == cmo.ot || 0x11 == cmo.ot || 0x12 == cmo.ot || 0x14 == cmo.ot)
-		//{
-		//	//BO_ATTRIB_MARKUP_COMPLEX(sbs)
-		//}
-		//if(0x19 == cmo.ot)
-		//{
-		//	//BO_ATTRIB_MARKUP_COMPLEX(nts)
-		//}
-		//if(false) // TODO: Find out the condition
-		//{
-		//	//BO_ATTRIB_MARKUP_COMPLEX(macro)
-		//}
-		//if(0x08 == cmo.ot)
-		//{
-		//	////BO_ATTRIB_MARKUP_COMPLEX(pictFmla)
-		//}
-		//if(0x0B == cmo.ot || 0x0C == cmo.ot || 0x10 == cmo.ot || 0x11 == cmo.ot || 0x12 == cmo.ot /*|| 0x14 == cmo.ot*/)
-		//{
-		//	//BO_ATTRIB_MARKUP_COMPLEX(linkFmla)
-		//}
-		//if(0x0B == cmo.ot || 0x0C == cmo.ot)
-		//{
-		//	//BO_ATTRIB_MARKUP_COMPLEX(checkBox)
-		//}
-		//if(0x0C == cmo.ot)
-		//{
-		//	//BO_ATTRIB_MARKUP_COMPLEX(radioButton)
-		//}
-		//if(0x0D == cmo.ot)
-		//{
-		//	//BO_ATTRIB_MARKUP_COMPLEX(edit)
-		//}
-		//if(0x12 == cmo.ot || 0x14 == cmo.ot)
-		//{
-		//	//BO_ATTRIB_MARKUP_COMPLEX(list)
-		//}
-		//if(0x13 == cmo.ot)
-		//{
-		//	//BO_ATTRIB_MARKUP_COMPLEX(gbo)
-		//}
-	//BO_ATTRIB_MARKUP_END
 
 };
 

@@ -24,14 +24,6 @@ BiffStructurePtr PtgExtraElf::clone()
 }
 
 
-//void PtgExtraElf::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	xml_tag->setAttribute(L"fRel", fRel);
-//	std::for_each(array_.begin(), array_.end(), boost::bind(&RgceElfLocExtra::toXML, _1, xml_tag));
-//}
-//
-
-
 void PtgExtraElf::store(CFRecord& record)
 {
 #pragma message("####################### PtgExtraElf record has no BiffStructure::store() implemented")

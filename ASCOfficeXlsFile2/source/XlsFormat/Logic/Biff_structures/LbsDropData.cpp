@@ -13,26 +13,6 @@ BiffStructurePtr LbsDropData::clone()
 }
 
 
-//void LbsDropData::setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag)
-//{
-//	own_tag->setAttribute(L"wStyle", wStyle);
-//	own_tag->setAttribute(L"fFiltered", fFiltered);
-//	own_tag->setAttribute(L"cLine", cLine);
-//	own_tag->setAttribute(L"dxMin", dxMin);
-//	own_tag->setAttribute(L"str", str);
-//}
-//
-//
-//void LbsDropData::getXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag)
-//{
-//	wStyle = getStructAttribute(own_tag, L"wStyle");
-//	fFiltered = getStructAttribute(own_tag, L"fFiltered");
-//	cLine = getStructAttribute(own_tag, L"cLine");
-//	dxMin = getStructAttribute(own_tag, L"dxMin");
-//	str = static_cast<std::wstring >(getStructAttribute(own_tag, L"str"));
-//}
-//
-//
 void LbsDropData::store(CFRecord& record)
 {
 	unsigned short flags = 0;

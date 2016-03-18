@@ -12,38 +12,6 @@ BiffStructurePtr FtCmo::clone()
 }
 
 
-//void FtCmo::setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag)
-//{
-//	own_tag->setAttribute(L"ot", ot);
-//	own_tag->setAttribute(L"id", id);
-//
-//	own_tag->setAttribute(L"fLocked", fLocked);
-//	own_tag->setAttribute(L"fDefaultSize", fDefaultSize);
-//	own_tag->setAttribute(L"fPublished", fPublished);
-//	own_tag->setAttribute(L"fPrint", fPrint);
-//	own_tag->setAttribute(L"fDisabled", fDisabled);
-//	own_tag->setAttribute(L"fUIObj", fUIObj);
-//	own_tag->setAttribute(L"fRecalcObj", fRecalcObj);
-//	own_tag->setAttribute(L"fRecalcObjAlways", fRecalcObjAlways);
-//}
-//
-//
-//void FtCmo::getXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag)
-//{
-//	ot = getStructAttribute(own_tag, L"ot");
-//	id = getStructAttribute(own_tag, L"id");
-//
-//	fLocked = getStructAttribute(own_tag, L"fLocked");
-//	fDefaultSize = getStructAttribute(own_tag, L"fDefaultSize");
-//	fPublished = getStructAttribute(own_tag, L"fPublished");
-//	fPrint = getStructAttribute(own_tag, L"fPrint");
-//	fDisabled = getStructAttribute(own_tag, L"fDisabled");
-//	fUIObj = getStructAttribute(own_tag, L"fUIObj");
-//	fRecalcObj = getStructAttribute(own_tag, L"fRecalcObj");
-//	fRecalcObjAlways = getStructAttribute(own_tag, L"fRecalcObjAlways");
-//}
-//
-
 void FtCmo::store(CFRecord& record)
 {
 	unsigned short ft = 0x15; // reserved

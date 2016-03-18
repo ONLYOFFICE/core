@@ -22,11 +22,6 @@ public:
 	void readFields(CFRecord& record);
 //-----------------------------
 	BiffStructurePtrVector rgmdir;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_VECTOR_COMPLEX(rgmdir, MDir)
-	//BO_ATTRIB_MARKUP_END
-
 };
 
 } // namespace XLS

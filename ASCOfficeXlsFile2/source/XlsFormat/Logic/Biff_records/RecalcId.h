@@ -25,10 +25,6 @@ public:
 
 //-----------------------------
 	BIFF_DWORD dwBuild;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(dwBuild)
-	//BO_ATTRIB_MARKUP_END
 
 };
 

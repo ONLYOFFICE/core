@@ -27,11 +27,6 @@ public:
 	_UINT16 itab;
 	bool itab_exist;
 
-		//if(itab_exist)
-		//{
-		//	//BO_ATTRIB_MARKUP_ATTRIB(itab)
-		//}
-
 };
 
 } // namespace XLS

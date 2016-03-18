@@ -13,20 +13,6 @@ BiffStructurePtr FtRboData::clone()
 }
 
 
-//void FtRboData::setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag)
-//{
-//	own_tag->setAttribute(L"fChecked", idRadNext);
-//	own_tag->setAttribute(L"fFirstBtn", fFirstBtn);
-//}
-//
-//
-//void FtRboData::getXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag)
-//{
-//	idRadNext = getStructAttribute(own_tag, L"idRadNext");
-//	fFirstBtn = static_cast<bool>(getStructAttribute(own_tag, L"fFirstBtn"));
-//}
-
-
 void FtRboData::store(CFRecord& record)
 {
 	unsigned short ft = 0x0011; // reserved

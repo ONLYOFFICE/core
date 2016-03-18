@@ -32,20 +32,6 @@ public:
 	List12BlockLevel rgbList12BlockLevel;
 	List12TableStyleClientInfo rgbList12TableStyleClientInfo;
 	List12DisplayName rgbList12DisplayName;
-
-public:
-	//switch (lsd)
-		//{
-		//	case 0:
-		//		//BO_ATTRIB_MARKUP_COMPLEX(rgbList12BlockLevel)
-		//		break;
-		//	case 1:
-		//		//BO_ATTRIB_MARKUP_COMPLEX(rgbList12TableStyleClientInfo)
-		//		break;
-		//	case 2:
-		//		//BO_ATTRIB_MARKUP_COMPLEX(rgbList12DisplayName)
-		//		break;
-		//}
 };
 
 } // namespace XLS

@@ -12,19 +12,6 @@ BiffStructurePtr ISSTInf::clone()
 }
 
 
-//void ISSTInf::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	xml_tag->setAttribute(L"ib", ib);
-//	xml_tag->setAttribute(L"cbOffset", cbOffset);
-//}
-//
-//void ISSTInf::getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	ib = getStructAttribute(xml_tag, L"ib");
-//	cbOffset = getStructAttribute(xml_tag, L"cbOffset");
-//}
-
-
 void ISSTInf::store(CFRecord& record)
 {
 	record << ib << cbOffset;

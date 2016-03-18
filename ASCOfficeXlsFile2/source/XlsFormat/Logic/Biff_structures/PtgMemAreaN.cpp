@@ -12,12 +12,6 @@ BiffStructurePtr PtgMemAreaN::clone()
 	return BiffStructurePtr(new PtgMemAreaN(*this));
 }
 
-//
-//void PtgMemAreaN::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	xml_tag->setAttribute(L"cce", cce);
-//}
-
 
 void PtgMemAreaN::storeFields(CFRecord& record)
 {

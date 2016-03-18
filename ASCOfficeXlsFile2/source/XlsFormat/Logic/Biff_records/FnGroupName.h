@@ -25,10 +25,6 @@ public:
 
 //-----------------------------
 	XLUnicodeString rgch;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-	//BO_ATTRIB_MARKUP_ATTRIB(rgch)
-	//BO_ATTRIB_MARKUP_END
 
 };
 

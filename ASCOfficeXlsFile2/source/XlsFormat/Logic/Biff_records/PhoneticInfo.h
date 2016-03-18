@@ -27,11 +27,6 @@ public:
 //-----------------------------
 	Phs phs;
 	SqRef sqref;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_COMPLEX(phs)
-		//BO_ATTRIB_MARKUP_COMPLEX(sqref)
-	//BO_ATTRIB_MARKUP_END
 
 };
 

@@ -28,13 +28,6 @@ BiffStructurePtr PtgNum::clone()
 	return BiffStructurePtr(new PtgNum(*this));
 }
 
-
-//void PtgNum::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	xml_tag->setAttribute(L"value", value_);
-//}
-
-
 void PtgNum::storeFields(CFRecord& record)
 {
 	record << value_;

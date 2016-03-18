@@ -25,11 +25,6 @@ public:
 //-----------------------------
 	BIFF_BYTE verOriginator;
 	BIFF_BYTE verWriter;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(verOriginator)
-		//BO_ATTRIB_MARKUP_ATTRIB(verWriter)
-	//BO_ATTRIB_MARKUP_END
 
 };
 

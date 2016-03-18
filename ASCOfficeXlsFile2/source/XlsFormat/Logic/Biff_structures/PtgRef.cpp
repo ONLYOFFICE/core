@@ -25,12 +25,6 @@ BiffStructurePtr PtgRef::clone()
 }
 
 
-//void PtgRef::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	loc.toXML(xml_tag);
-//}
-
-
 void PtgRef::storeFields(CFRecord& record)
 {
 	record << loc;

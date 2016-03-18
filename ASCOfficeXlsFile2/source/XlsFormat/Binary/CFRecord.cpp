@@ -210,10 +210,9 @@ const size_t CFRecord::getRdPtr() const
 }
 
 
-// whether all the data have bean read
 const bool CFRecord::isEOF() const
 {
-	if(rdPtr > size_) // data buffer bounds crossing
+	if(rdPtr > size_)
 	{
 		throw;// EXCEPT::LE::WrongFormatInterpretation(__FUNCTION__);
 	}
@@ -241,16 +240,12 @@ bool CFRecord::checkFitRead(const size_t size) const
 }
 
 
-// Checks whether the specified number of unsigned chars fits in max size of the buffer
-// Doesn't generate an exception
 const bool CFRecord::checkFitWriteSafe(const size_t size) const
 {
 	return (size_ + size <= MAX_RECORD_SIZE);
 }
 
 
-// Checks whether the specified number of unsigned chars fits in max size of the buffer
-// Generates an exception
 void CFRecord::checkFitWrite(const size_t size) const
 {
 	if(!checkFitWriteSafe(size))
@@ -260,7 +255,6 @@ void CFRecord::checkFitWrite(const size_t size) const
 }
 
 
-// Skip the specified number of unsigned chars without reading
 void CFRecord::skipNunBytes(const size_t n)
 {
 	//ASSERT(data_); // This throws if we use skipNunBytes instead of reserveNunBytes
@@ -271,7 +265,6 @@ void CFRecord::skipNunBytes(const size_t n)
 }
 
 
-// Skip the specified number of unsigned chars without reading
 void CFRecord::RollRdPtrBack(const size_t n)
 {
 	//ASSERT(data_); // This throws if we use RollRdPtrBack while storing data
@@ -283,14 +276,12 @@ void CFRecord::RollRdPtrBack(const size_t n)
 }
 
 
-// Skip the specified number of unsigned chars filled them in with zeros
 void CFRecord::reserveNunBytes(const size_t n)
 {
 	reserveNunBytes(n, static_cast<unsigned int>(0));
 }
 
 
-// The following func is called every time the record is read again
 void CFRecord::resetPointerToBegin()
 {
 	rdPtr = 0;
@@ -311,7 +302,6 @@ CFRecord& CFRecord::operator<<(bool& val)
 }
 
 
-// Registers data receiver place and reserves n unsigned chars for it
 void CFRecord::registerDelayedDataReceiver(CFStream::DELAYED_DATA_SAVER fn, const size_t n, const CFRecordType::TypeId receiver_id)
 {
 	//ASSERT(!data_); // This throws if used after Commit or while reading of binary
@@ -325,7 +315,6 @@ void CFRecord::registerDelayedDataReceiver(CFStream::DELAYED_DATA_SAVER fn, cons
 }
 
 
-// Registers delayed source data as any user-defined unsigned int
 void CFRecord::registerDelayedDataSource(const unsigned int data,  const CFRecordType::TypeId receiver_id)
 {
 	//ASSERT(!data_); // This throws if used after Commit or while reading of binary
@@ -338,7 +327,6 @@ void CFRecord::registerDelayedDataSource(const unsigned int data,  const CFRecor
 }
 
 
-// Registers delayed source data as file pointer of the start of the record
 void CFRecord::registerDelayedFilePointerSource(const CFRecordType::TypeId receiver_id)
 {
 	//ASSERT(!data_); // This throws if used after Commit or while reading of binary
@@ -351,7 +339,6 @@ void CFRecord::registerDelayedFilePointerSource(const CFRecordType::TypeId recei
 }
 
 
-// Registers delayed source data as file pointer of the start of the record and the specified offset added
 void CFRecord::registerDelayedFilePointerAndOffsetSource(const unsigned int offset,  const CFRecordType::TypeId receiver_id)
 {
 	//ASSERT(!data_); // This throws if used after Commit or while reading of binary

@@ -22,10 +22,6 @@ public:
 
 	static const ElementType	type = typeEntExU2;
 
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-	//BO_ATTRIB_MARKUP_END
-
 };
 
 } // namespace XLS

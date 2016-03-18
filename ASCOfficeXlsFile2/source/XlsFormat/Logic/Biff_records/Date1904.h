@@ -24,10 +24,6 @@ public:
 
 //-----------------------------
 	Boolean<unsigned short> f1904DateSystem;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(f1904DateSystem)
-	//BO_ATTRIB_MARKUP_END
 
 };
 

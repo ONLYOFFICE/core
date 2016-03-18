@@ -37,20 +37,6 @@ public:
 	FeatFormulaErr2 formula_err;
 	FeatSmartTag smart_tag;
 
-public:
-		//switch(isf)
-		//{
-		//	case SharedFeatureType::ISFPROTECTION:
-		//		//BO_ATTRIB_MARKUP_COMPLEX(protection)
-		//		break;
-		//	case SharedFeatureType::ISFFEC2:
-		//		//BO_ATTRIB_MARKUP_COMPLEX(formula_err)
-		//		break;
-		//	case SharedFeatureType::ISFFACTOID:
-		//		//BO_ATTRIB_MARKUP_COMPLEX(smart_tag)
-		//		break;
-		//}
-
 };
 
 } // namespace XLS

@@ -25,11 +25,6 @@ public:
 //-----------------------------
 	BIFF_BSTR protPwdRev;
 
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(protPwdRev)
-	//BO_ATTRIB_MARKUP_END
-
 };
 
 } // namespace XLS

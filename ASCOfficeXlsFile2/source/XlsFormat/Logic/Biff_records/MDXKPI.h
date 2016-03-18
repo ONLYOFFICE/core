@@ -25,15 +25,6 @@ public:
 	BIFF_BYTE kpiprop;
 	BIFF_LONG istrKPIName;
 	BIFF_LONG istrMbrKPI;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(istrConnName)
-		//BO_ATTRIB_MARKUP_ATTRIB(tfnSrc)
-		//BO_ATTRIB_MARKUP_ATTRIB(kpiprop)
-		//BO_ATTRIB_MARKUP_ATTRIB(istrKPIName)
-		//BO_ATTRIB_MARKUP_ATTRIB(istrMbrKPI)
-	//BO_ATTRIB_MARKUP_END
-
 };
 
 } // namespace XLS

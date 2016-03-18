@@ -12,34 +12,6 @@ BiffStructurePtr FtPioGrbit::clone()
 }
 
 
-//void FtPioGrbit::setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag)
-//{
-//	own_tag->setAttribute(L"fAutoPict", fAutoPict);
-//	own_tag->setAttribute(L"fDde", fDde);
-//	own_tag->setAttribute(L"fPrintCalc", fPrintCalc);
-//	own_tag->setAttribute(L"fIcon", fIcon);
-//	own_tag->setAttribute(L"fCtl", fCtl);
-//	own_tag->setAttribute(L"fPrstm", fPrstm);
-//	own_tag->setAttribute(L"fCamera", fCamera);
-//	own_tag->setAttribute(L"fDefaultSize", fDefaultSize);
-//	own_tag->setAttribute(L"fAutoLoad", fAutoLoad);
-//}
-//
-//
-//void FtPioGrbit::getXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag)
-//{
-//	fAutoPict = getStructAttribute(own_tag, L"fAutoPict");
-//	fDde = getStructAttribute(own_tag, L"fDde");
-//	fPrintCalc = getStructAttribute(own_tag, L"fPrintCalc");
-//	fIcon = getStructAttribute(own_tag, L"fIcon");
-//	fCtl = getStructAttribute(own_tag, L"fCtl");
-//	fPrstm = getStructAttribute(own_tag, L"fPrstm");
-//	fCamera = getStructAttribute(own_tag, L"fCamera");
-//	fDefaultSize = getStructAttribute(own_tag, L"fDefaultSize");
-//	fAutoLoad = getStructAttribute(own_tag, L"fAutoLoad");
-//}
-//
-//
 void FtPioGrbit::store(CFRecord& record)
 {
 	unsigned short ft = 0x08; // reserved

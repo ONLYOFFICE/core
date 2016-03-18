@@ -12,24 +12,6 @@ BiffStructurePtr CellOffsetResender::clone()
 	return BiffStructurePtr(new CellOffsetResender(*this));
 }
 
-//
-// // Stubbed to avoid generating unnecessary tags
-//void CellOffsetResender::toXML(BiffStructurePtr & parent)
-//{
-//}
-//
-//
-// // Stubbed to make class non-abstract
-//void CellOffsetResender::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//}
-
-//
-//void CellOffsetResender::getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	row_starts = getStructAttribute(xml_tag, L"row_starts");
-//}
-
 
 void CellOffsetResender::resend(CFStream& stream, const unsigned int data_place, const unsigned int data)
 {

@@ -12,18 +12,6 @@ BiffStructurePtr MDXStrIndex::clone()
 }
 
 
-//void MDXStrIndex::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	xml_tag->setAttribute(L"index", index);
-//}
-//
-//
-//void MDXStrIndex::getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	index = getStructAttribute(xml_tag, L"index");
-//}
-//
-
 void MDXStrIndex::store(CFRecord& record)
 {
 	record >> index;

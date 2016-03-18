@@ -25,12 +25,6 @@ public:
 //-----------------------------
 	BIFF_BSTR wzTooltip;
 	BackwardOnlyParam<std::wstring > ref_;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB_NAME(ref_, L"ref")
-		//BO_ATTRIB_MARKUP_ATTRIB(wzTooltip)
-	//BO_ATTRIB_MARKUP_END
-
 };
 
 } // namespace XLS

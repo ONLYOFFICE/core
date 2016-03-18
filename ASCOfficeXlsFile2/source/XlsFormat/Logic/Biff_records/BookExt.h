@@ -40,15 +40,6 @@ public:
 	BookExt_Conditional11 grbit1;
 	BookExt_Conditional12 grbit2;
 
-		//if(cb > 20)
-		//{
-		//	//BO_ATTRIB_MARKUP_COMPLEX(grbit1)
-		//}
-		//if(cb > 21)
-		//{
-		//	//BO_ATTRIB_MARKUP_COMPLEX(grbit2)
-		//}
-
 };
 
 } // namespace XLS

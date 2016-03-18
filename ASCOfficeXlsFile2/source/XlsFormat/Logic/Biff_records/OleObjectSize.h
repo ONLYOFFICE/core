@@ -25,10 +25,6 @@ public:
 
 //-----------------------------
 	RefU ref_;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_COMPLEX(ref_)
-	//BO_ATTRIB_MARKUP_END
 
 };
 

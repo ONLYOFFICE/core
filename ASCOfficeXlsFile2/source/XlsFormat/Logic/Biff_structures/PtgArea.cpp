@@ -25,12 +25,6 @@ BiffStructurePtr PtgArea::clone()
 	return BiffStructurePtr(new PtgArea(*this));
 }
 
-//
-//void PtgArea::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	area.toXML(xml_tag);
-//}
-
 
 void PtgArea::storeFields(CFRecord& record)
 {

@@ -24,10 +24,6 @@ public:
 
 //-----------------------------
 	BIFF_BSTR wPassword;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(wPassword)
-	//BO_ATTRIB_MARKUP_END
 
 };
 

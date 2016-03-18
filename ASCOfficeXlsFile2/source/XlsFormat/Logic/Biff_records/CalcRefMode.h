@@ -25,10 +25,6 @@ public:
 //-----------------------------
 	BIFF_BSTR fRefA1;
 
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(fRefA1)
-	//BO_ATTRIB_MARKUP_END
-
 };
 
 } // namespace XLS

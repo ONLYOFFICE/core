@@ -29,15 +29,6 @@ public:
 	BIFF_LONG idObj;
 	BIFF_DWORD idvMac;
 
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(fWnClosed)
-		//BO_ATTRIB_MARKUP_ATTRIB(xLeft)
-		//BO_ATTRIB_MARKUP_ATTRIB(yTop)
-		//BO_ATTRIB_MARKUP_ATTRIB(idObj)
-		//BO_ATTRIB_MARKUP_ATTRIB(idvMac)
-	//BO_ATTRIB_MARKUP_END
-
 };
 
 } // namespace XLS

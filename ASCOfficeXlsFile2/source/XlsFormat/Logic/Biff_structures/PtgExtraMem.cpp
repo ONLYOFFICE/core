@@ -23,12 +23,6 @@ BiffStructurePtr PtgExtraMem::clone()
 }
 
 
-//void PtgExtraMem::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	std::for_each(array_.begin(), array_.end(), boost::bind(&Ref8U::toXML, _1, xml_tag));
-//}
-
-
 void PtgExtraMem::store(CFRecord& record)
 {
 #pragma message("####################### PtgExtraMem record has no BiffStructure::store() implemented")

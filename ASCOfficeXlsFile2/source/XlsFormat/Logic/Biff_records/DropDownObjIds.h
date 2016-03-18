@@ -25,10 +25,6 @@ public:
 
 //-----------------------------
 	BiffStructurePtrVector rgidObj;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_VECTOR_COMPLEX(rgidObj, DropDownObjId)
-	//BO_ATTRIB_MARKUP_END
 
 };
 

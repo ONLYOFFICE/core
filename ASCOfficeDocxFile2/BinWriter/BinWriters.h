@@ -2015,6 +2015,24 @@ namespace BinDocxRW
 					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
 					m_oBcw.m_oStream.WriteBYTE(cellPr.m_oTextDirection->m_oVal->GetValue());
 				}
+				if(cellPr.m_oHideMark.IsInit())
+				{
+					m_oBcw.m_oStream.WriteBYTE(c_oSerProp_cellPrType::hideMark);
+					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+					m_oBcw.m_oStream.WriteBOOL(cellPr.m_oHideMark->m_oVal.ToBool());
+				}
+				if(cellPr.m_oNoWrap.IsInit())
+				{
+					m_oBcw.m_oStream.WriteBYTE(c_oSerProp_cellPrType::noWrap);
+					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+					m_oBcw.m_oStream.WriteBOOL(cellPr.m_oNoWrap->m_oVal.ToBool());
+				}
+				if(cellPr.m_oTcFitText.IsInit())
+				{
+					m_oBcw.m_oStream.WriteBYTE(c_oSerProp_cellPrType::tcFitText);
+					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+					m_oBcw.m_oStream.WriteBOOL(cellPr.m_oTcFitText->m_oVal.ToBool());
+				}
 			};
 			void WriteCellMerge(const ComplexTypes::Word::CCellMergeTrackChange& cellMerge)
 			{

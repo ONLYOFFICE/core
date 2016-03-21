@@ -2257,7 +2257,7 @@ namespace BinXlsxRW {
 			{
 
                 double dValue = 0;
-                __try
+                try
                 {
                     dValue = _wtof(oCell.m_oValue->ToString());
                 }

@@ -1973,6 +1973,30 @@ public:
 			pCStringWriter->WriteString(oTextDirection.ToString());
 			pCStringWriter->WriteString(CString(_T("\" />")));
 		}
+		else if( c_oSerProp_cellPrType::hideMark == type )
+		{
+			bool hideMark = m_oBufferedStream.GetBool();
+			if(hideMark)
+				pCStringWriter->WriteString(CString(_T("<w:hideMark />")));
+			else
+				pCStringWriter->WriteString(CString(_T("<w:hideMark w:val=\"false\"/>")));
+		}
+		else if( c_oSerProp_cellPrType::noWrap == type )
+		{
+			bool noWrap = m_oBufferedStream.GetBool();
+			if(noWrap)
+				pCStringWriter->WriteString(CString(_T("<w:noWrap />")));
+			else
+				pCStringWriter->WriteString(CString(_T("<w:noWrap w:val=\"false\"/>")));
+		}
+		else if( c_oSerProp_cellPrType::tcFitText == type )
+		{
+			bool tcFitText = m_oBufferedStream.GetBool();
+			if(tcFitText)
+				pCStringWriter->WriteString(CString(_T("<w:tcFitText />")));
+			else
+				pCStringWriter->WriteString(CString(_T("<w:tcFitText w:val=\"false\"/>")));
+		}
 		else
 			res = c_oSerConstants::ReadUnknown;
 		return res;

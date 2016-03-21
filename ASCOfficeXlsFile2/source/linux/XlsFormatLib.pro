@@ -843,7 +843,6 @@ SOURCES +=  \
     ../XlsFormat/Logic/MacroSheetSubstream.cpp \
     ../XlsFormat/Logic/WorkbookStreamObject.cpp \
     ../XlsFormat/Logic/WorksheetSubstream.cpp \
-    ../XlsFormat/Auxiliary/HelpersTagsGenerator.cpp \
     ../XlsFormat/Auxiliary/HelpFunc.cpp \
     ../XlsFormat/Logic/SummaryInformationStream/Structures/CodePageOle.cpp \
     ../XlsFormat/Logic/Biff_structures/SharedProperty.cpp \
@@ -1614,7 +1613,6 @@ HEADERS +=  \
     ../XlsFormat/Logic/WorksheetSubstream.h \
     ../XlsFormat/Logic/XlsElementsType.h \
     ../XlsXlsxConverter/ShapeType.h \
-    ../XlsFormat/Auxiliary/HelpersTagsGenerator.h \
     ../XlsFormat/Auxiliary/HelpFunc.h \
     ../XlsFormat/Logic/SummaryInformationStream/Structures/CodePageOle.h \
     ../XlsFormat/Logic/Biff_structures/SharedProperty.h \

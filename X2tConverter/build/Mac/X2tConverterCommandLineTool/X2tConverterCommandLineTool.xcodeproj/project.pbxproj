@@ -1,0 +1,317 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		17DAB6521ACC0F1C005AF479 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 17DAB6511ACC0F1C005AF479 /* main.m */; };
+		17DAB6601ACC0F5E005AF479 /* libX2tConverter_mac.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 17DAB65D1ACC0F4E005AF479 /* libX2tConverter_mac.a */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		17DAB65C1ACC0F4E005AF479 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 17DAB6581ACC0F4E005AF479 /* X2tConverter.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 17C27A141AC2DB3C00E1D003;
+			remoteInfo = X2tConverter_mac;
+		};
+		17DAB65E1ACC0F55005AF479 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 17DAB6581ACC0F4E005AF479 /* X2tConverter.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 17C27A131AC2DB3C00E1D003;
+			remoteInfo = X2tConverter_mac;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		17DAB64C1ACC0F1C005AF479 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		17DAB64E1ACC0F1C005AF479 /* X2tConverterCommandLineTool */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = X2tConverterCommandLineTool; sourceTree = BUILT_PRODUCTS_DIR; };
+		17DAB6511ACC0F1C005AF479 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		17DAB6581ACC0F4E005AF479 /* X2tConverter.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = X2tConverter.xcodeproj; path = /Volumes/Docx2DoctConverter/AsyncServerComponents/Mac/TestMacX2tConverter/../X2tConverter/X2tConverter.xcodeproj; sourceTree = "<absolute>"; };
+		17DAB6611ACC0F98005AF479 /* X2tConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = X2tConverter.h; path = ../../X2tConverter/X2tConverter/X2tConverter.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		17DAB64B1ACC0F1C005AF479 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				17DAB6601ACC0F5E005AF479 /* libX2tConverter_mac.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		17DAB6451ACC0F1A005AF479 = {
+			isa = PBXGroup;
+			children = (
+				17DAB6581ACC0F4E005AF479 /* X2tConverter.xcodeproj */,
+				17DAB6501ACC0F1C005AF479 /* X2tConverterCommandLineTool */,
+				17DAB64F1ACC0F1C005AF479 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		17DAB64F1ACC0F1C005AF479 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				17DAB64E1ACC0F1C005AF479 /* X2tConverterCommandLineTool */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		17DAB6501ACC0F1C005AF479 /* X2tConverterCommandLineTool */ = {
+			isa = PBXGroup;
+			children = (
+				17DAB6621ACC0FA0005AF479 /* SDK */,
+				17DAB6511ACC0F1C005AF479 /* main.m */,
+			);
+			path = X2tConverterCommandLineTool;
+			sourceTree = "<group>";
+		};
+		17DAB6591ACC0F4E005AF479 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				17DAB65D1ACC0F4E005AF479 /* libX2tConverter_mac.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		17DAB6621ACC0FA0005AF479 /* SDK */ = {
+			isa = PBXGroup;
+			children = (
+				17DAB6611ACC0F98005AF479 /* X2tConverter.h */,
+			);
+			name = SDK;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		17DAB64D1ACC0F1C005AF479 /* X2tConverterCommandLineTool */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 17DAB6551ACC0F1C005AF479 /* Build configuration list for PBXNativeTarget "X2tConverterCommandLineTool" */;
+			buildPhases = (
+				17DAB64A1ACC0F1C005AF479 /* Sources */,
+				17DAB64B1ACC0F1C005AF479 /* Frameworks */,
+				17DAB64C1ACC0F1C005AF479 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				17DAB65F1ACC0F55005AF479 /* PBXTargetDependency */,
+			);
+			name = X2tConverterCommandLineTool;
+			productName = X2tConverterCommandLineTool;
+			productReference = 17DAB64E1ACC0F1C005AF479 /* X2tConverterCommandLineTool */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		17DAB6461ACC0F1A005AF479 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0710;
+				ORGANIZATIONNAME = "Ascensio System SIA";
+				TargetAttributes = {
+					17DAB64D1ACC0F1C005AF479 = {
+						CreatedOnToolsVersion = 6.2;
+					};
+				};
+			};
+			buildConfigurationList = 17DAB6491ACC0F1A005AF479 /* Build configuration list for PBXProject "X2tConverterCommandLineTool" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 17DAB6451ACC0F1A005AF479;
+			productRefGroup = 17DAB64F1ACC0F1C005AF479 /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 17DAB6591ACC0F4E005AF479 /* Products */;
+					ProjectRef = 17DAB6581ACC0F4E005AF479 /* X2tConverter.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				17DAB64D1ACC0F1C005AF479 /* X2tConverterCommandLineTool */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		17DAB65D1ACC0F4E005AF479 /* libX2tConverter_mac.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libX2tConverter_mac.a;
+			remoteRef = 17DAB65C1ACC0F4E005AF479 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXSourcesBuildPhase section */
+		17DAB64A1ACC0F1C005AF479 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				17DAB6521ACC0F1C005AF479 /* main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		17DAB65F1ACC0F55005AF479 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = X2tConverter_mac;
+			targetProxy = 17DAB65E1ACC0F55005AF479 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		17DAB6531ACC0F1C005AF479 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		17DAB6541ACC0F1C005AF479 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		17DAB6561ACC0F1C005AF479 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				OTHER_LDFLAGS = (
+					"-lstdc++",
+					"-lxml2",
+					"-lcurl",
+					"-lz",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		17DAB6571ACC0F1C005AF479 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				OTHER_LDFLAGS = (
+					"-lstdc++",
+					"-lxml2",
+					"-lcurl",
+					"-lz",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		17DAB6491ACC0F1A005AF479 /* Build configuration list for PBXProject "X2tConverterCommandLineTool" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				17DAB6531ACC0F1C005AF479 /* Debug */,
+				17DAB6541ACC0F1C005AF479 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		17DAB6551ACC0F1C005AF479 /* Build configuration list for PBXNativeTarget "X2tConverterCommandLineTool" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				17DAB6561ACC0F1C005AF479 /* Debug */,
+				17DAB6571ACC0F1C005AF479 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 17DAB6461ACC0F1A005AF479 /* Project object */;
+}

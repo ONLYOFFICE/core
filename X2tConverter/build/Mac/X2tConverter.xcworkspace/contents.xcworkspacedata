@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace
+   version = "1.0">
+   <FileRef
+      location = "group:TestIOSX2tConverter/TestIOSX2tConverter.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:TestMacX2tConverter/../X2tConverter/X2tConverter.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:TestMacX2tConverter/TestMacX2tConverter.xcodeproj">
+   </FileRef>
+</Workspace>

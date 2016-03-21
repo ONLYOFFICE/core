@@ -37,10 +37,33 @@ public:
     CScopeWrapper(v8::Isolate* isolate) : m_handler(isolate) {}
 };
 
+class CV8Initializer
+{
+private:
+    v8::Platform* m_platform;
+
+public:
+    CV8Initializer()
+    {
+        m_platform = v8::platform::CreateDefaultPlatform();
+        v8::V8::InitializePlatform(m_platform);
+
+        v8::V8::Initialize();
+        v8::V8::InitializeICU();
+
+        enableTypedArrays();
+    }
+    ~CV8Initializer()
+    {
+        v8::V8::Dispose();
+        v8::V8::ShutdownPlatform();
+        delete m_platform;
+    }
+};
+
 class CV8RealTimeWorker
 {
 public:
-    v8::Platform* m_platform;
     v8::Isolate* m_isolate;
 
     v8::Isolate::Scope* m_isolate_scope;
@@ -51,25 +74,17 @@ public:
 
     int m_nFileType;
 
-private:
-    static bool m_bIsInitTypedArrays;
+public:
+    static CV8Initializer* m_pInitializer;
 
 public:
 
     CV8RealTimeWorker()
     {
+        if (NULL == m_pInitializer)
+            NSDoctRenderer::CDocBuilder::Initialize();
+
         m_nFileType = -1;
-        m_platform = v8::platform::CreateDefaultPlatform();
-        v8::V8::InitializePlatform(m_platform);
-
-        v8::V8::Initialize();
-        v8::V8::InitializeICU();
-
-        if (!m_bIsInitTypedArrays)
-        {
-            m_bIsInitTypedArrays = true;
-            enableTypedArrays();
-        }
 
         m_isolate = v8::Isolate::New();
 
@@ -92,11 +107,6 @@ public:
         RELEASEOBJECT(m_isolate_scope);
 
         m_isolate->Dispose();
-        v8::V8::Dispose();
-
-        v8::V8::ShutdownPlatform();
-        delete m_platform;
-        m_platform = NULL;
         m_isolate = NULL;
     }
 
@@ -286,7 +296,7 @@ public:
     }
 };
 
-bool CV8RealTimeWorker::m_bIsInitTypedArrays = false;
+CV8Initializer* CV8RealTimeWorker::m_pInitializer = NULL;
 
 #ifdef CreateFile
 #undef CreateFile
@@ -316,7 +326,7 @@ namespace NSDoctRenderer
 
         CV8RealTimeWorker* m_pWorker;
     public:
-        CDocBuilder_Private()
+        CDocBuilder_Private(bool bIsCheckSystemFonts)
         {
             m_sX2tPath = NSFile::GetProcessDirectory();
             m_pWorker = NULL;
@@ -382,7 +392,7 @@ namespace NSDoctRenderer
             if (!NSFile::CFileBinary::Exists(m_strXlstSDK))
                 m_strXlstSDK = sConfigDir + m_strXlstSDK;
 
-            CheckFonts();
+            CheckFonts(bIsCheckSystemFonts);
 
             m_sTmpFolder = NSFile::CFileBinary::CreateTempFileWithUniqueName(NSFile::CFileBinary::GetTempPath(), L"DTB");
 
@@ -396,7 +406,7 @@ namespace NSDoctRenderer
             CloseFile();
         }
 
-        void CheckFonts()
+        void CheckFonts(bool bIsCheckSystemFonts)
         {
             CArray<std::string> strFonts;
             std::wstring strDirectory = NSCommon::GetDirectoryName(m_strAllFonts);
@@ -435,54 +445,52 @@ namespace NSDoctRenderer
                 }
             }
 
-            CApplicationFonts oApplicationF;
-            CArray<std::wstring> strFontsW_Cur = oApplicationF.GetSetupFontFiles();
+            bool bIsEqual = NSFile::CFileBinary::Exists(strFontsSelectionBin);
 
-            bool bIsEqual = true;
-            if (strFonts.GetCount() != strFontsW_Cur.GetCount())
-                bIsEqual = false;
-
-            if (bIsEqual)
+            if (bIsEqual && bIsCheckSystemFonts)
             {
-                int nCount = strFonts.GetCount();
-                for (int i = 0; i < nCount; ++i)
+                CApplicationFonts oApplicationF;
+                CArray<std::wstring> strFontsW_Cur = oApplicationF.GetSetupFontFiles();
+
+                if (strFonts.GetCount() != strFontsW_Cur.GetCount())
+                    bIsEqual = false;
+
+                if (bIsEqual)
                 {
-                    if (strFonts[i] != NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(strFontsW_Cur[i].c_str(), strFontsW_Cur[i].length()))
+                    int nCount = strFonts.GetCount();
+                    for (int i = 0; i < nCount; ++i)
                     {
-                        bIsEqual = false;
-                        break;
+                        if (strFonts[i] != NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(strFontsW_Cur[i].c_str(), strFontsW_Cur[i].length()))
+                        {
+                            bIsEqual = false;
+                            break;
+                        }
                     }
                 }
-            }
 
-            if (bIsEqual)
-            {
-                if (!NSFile::CFileBinary::Exists(strFontsSelectionBin))
-                    bIsEqual = false;
-            }
-
-            if (!bIsEqual)
-            {
-                if (NSFile::CFileBinary::Exists(strAllFontsJSPath))
-                    NSFile::CFileBinary::Remove(strAllFontsJSPath);
-                if (NSFile::CFileBinary::Exists(strFontsSelectionBin))
-                    NSFile::CFileBinary::Remove(strFontsSelectionBin);
-
-                if (strFonts.GetCount() != 0)
-                    NSFile::CFileBinary::Remove(strDirectory + L"/fonts.log");
-
-                NSFile::CFileBinary oFile;
-                oFile.CreateFileW(strDirectory + L"/fonts.log");
-                int nCount = strFontsW_Cur.GetCount();
-                for (int i = 0; i < nCount; ++i)
+                if (!bIsEqual)
                 {
-                    oFile.WriteStringUTF8(strFontsW_Cur[i]);
-                    oFile.WriteFile((BYTE*)"\n", 1);
-                }
-                oFile.CloseFile();
+                    if (NSFile::CFileBinary::Exists(strAllFontsJSPath))
+                        NSFile::CFileBinary::Remove(strAllFontsJSPath);
+                    if (NSFile::CFileBinary::Exists(strFontsSelectionBin))
+                        NSFile::CFileBinary::Remove(strFontsSelectionBin);
 
-                oApplicationF.InitializeFromArrayFiles(strFontsW_Cur, 2);
-                NSCommon::SaveAllFontsJS(oApplicationF, strAllFontsJSPath, L"", strFontsSelectionBin);
+                    if (strFonts.GetCount() != 0)
+                        NSFile::CFileBinary::Remove(strDirectory + L"/fonts.log");
+
+                    NSFile::CFileBinary oFile;
+                    oFile.CreateFileW(strDirectory + L"/fonts.log");
+                    int nCount = strFontsW_Cur.GetCount();
+                    for (int i = 0; i < nCount; ++i)
+                    {
+                        oFile.WriteStringUTF8(strFontsW_Cur[i]);
+                        oFile.WriteFile((BYTE*)"\n", 1);
+                    }
+                    oFile.CloseFile();
+
+                    oApplicationF.InitializeFromArrayFiles(strFontsW_Cur, 2);
+                    NSCommon::SaveAllFontsJS(oApplicationF, strAllFontsJSPath, L"", strFontsSelectionBin);
+                }
             }
         }
 
@@ -997,9 +1005,9 @@ namespace NSDoctRenderer
         }
     }
 
-    CDocBuilder::CDocBuilder()
+    CDocBuilder::CDocBuilder(bool bIsCheckSystemFonts)
     {
-        m_pInternal = new CDocBuilder_Private();
+        m_pInternal = new CDocBuilder_Private(bIsCheckSystemFonts);
     }
     CDocBuilder::~CDocBuilder()
     {
@@ -1012,7 +1020,7 @@ namespace NSDoctRenderer
         if (!NSDirectory::Exists(m_pInternal->m_sTmpFolder))
             NSDirectory::CreateDirectory(m_pInternal->m_sTmpFolder);
 
-        return m_pInternal->OpenFile(path, params);
+        return m_pInternal->OpenFile(path, params);        
     }
     bool CDocBuilder::CreateFile(const int& type)
     {
@@ -1055,23 +1063,34 @@ namespace NSDoctRenderer
             return bRet;
         }
 
+        return this->RunTextA(sCommands.c_str());
+    }
+
+    bool CDocBuilder::RunTextW(const wchar_t* commands)
+    {
+        std::wstring sCommandsW(commands);
+        std::string sCommands = U_TO_UTF8(sCommandsW);
+        return this->RunTextA(sCommands.c_str());
+    }
+
+    bool CDocBuilder::RunTextA(const char* commands)
+    {
         std::list<std::string> _commands;
-        const char* _commandsPtr = sCommands.c_str();
-        size_t _commandsLen = sCommands.length();
+        size_t _commandsLen = strlen(commands);
         size_t _currentPos = 0;
 
         while (true)
         {
-            while (_currentPos < _commandsLen && (_commandsPtr[_currentPos] == 0x0d || _commandsPtr[_currentPos] == 0x0a))
+            while (_currentPos < _commandsLen && (commands[_currentPos] == 0x0d || commands[_currentPos] == 0x0a))
                 ++_currentPos;
 
             size_t _start = _currentPos;
 
-            while (_currentPos < _commandsLen && (_commandsPtr[_currentPos] != 0x0d && _commandsPtr[_currentPos] != 0x0a))
+            while (_currentPos < _commandsLen && (commands[_currentPos] != 0x0d && commands[_currentPos] != 0x0a))
                 ++_currentPos;
 
             if (_currentPos > (_start + 1))
-                _commands.push_back(std::string(_commandsPtr + _start, _currentPos - _start));
+                _commands.push_back(std::string(commands + _start, _currentPos - _start));
 
             if (_currentPos >= _commandsLen)
                 break;
@@ -1166,5 +1185,18 @@ namespace NSDoctRenderer
         }
 
         return true;
+    }
+
+    void CDocBuilder::Initialize()
+    {
+        if (NULL == CV8RealTimeWorker::m_pInitializer)
+            CV8RealTimeWorker::m_pInitializer = new CV8Initializer();
+    }
+
+    void CDocBuilder::Dispose()
+    {
+        if (NULL != CV8RealTimeWorker::m_pInitializer)
+            delete CV8RealTimeWorker::m_pInitializer;
+        CV8RealTimeWorker::m_pInitializer = NULL;
     }
 }

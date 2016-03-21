@@ -9,7 +9,7 @@ namespace NSDoctRenderer
     class Q_DECL_EXPORT CDocBuilder
     {
     public:
-        CDocBuilder();
+        CDocBuilder(bool bIsCheckSystemFonts);
         ~CDocBuilder();
 
     public:
@@ -21,6 +21,13 @@ namespace NSDoctRenderer
         bool ExecuteCommand(const wchar_t* command);
 
         bool Run(const wchar_t* path);
+
+        bool RunTextW(const wchar_t* commands);
+        bool RunTextA(const char* commands);
+
+    public:
+        static void Initialize();
+        static void Dispose();
 
     private:
         CDocBuilder_Private* m_pInternal;

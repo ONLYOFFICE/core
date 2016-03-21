@@ -1,0 +1,434 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		7CC224031C05C1210073FE7D /* libASCOfficeDocxFile2Lib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7CC223EE1C05C1210073FE7D /* libASCOfficeDocxFile2Lib.a */; };
+		7CC224041C05C1210073FE7D /* libDjVuFile.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7CC223EF1C05C1210073FE7D /* libDjVuFile.dylib */; };
+		7CC224051C05C1210073FE7D /* libDocFormatLib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7CC223F01C05C1210073FE7D /* libDocFormatLib.a */; };
+		7CC224061C05C1210073FE7D /* libdoctrenderer.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7CC223F11C05C1210073FE7D /* libdoctrenderer.dylib */; };
+		7CC224071C05C1210073FE7D /* libDocxFormatLib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7CC223F21C05C1210073FE7D /* libDocxFormatLib.a */; };
+		7CC224081C05C1210073FE7D /* libgraphics.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7CC223F31C05C1210073FE7D /* libgraphics.a */; };
+		7CC224091C05C1210073FE7D /* libHtmlFile.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7CC223F41C05C1210073FE7D /* libHtmlFile.dylib */; };
+		7CC2240A1C05C1210073FE7D /* libHtmlRenderer.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7CC223F51C05C1210073FE7D /* libHtmlRenderer.dylib */; };
+		7CC2240B1C05C1210073FE7D /* liblibxml.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7CC223F61C05C1210073FE7D /* liblibxml.a */; };
+		7CC2240C1C05C1210073FE7D /* libOdfFileReaderLib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7CC223F71C05C1210073FE7D /* libOdfFileReaderLib.a */; };
+		7CC2240D1C05C1210073FE7D /* libOdfFileWriterLib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7CC223F81C05C1210073FE7D /* libOdfFileWriterLib.a */; };
+		7CC2240E1C05C1210073FE7D /* libOfficeUtils.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7CC223F91C05C1210073FE7D /* libOfficeUtils.a */; };
+		7CC2240F1C05C1210073FE7D /* libPdfReader.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7CC223FA1C05C1210073FE7D /* libPdfReader.dylib */; };
+		7CC224101C05C1210073FE7D /* libPdfWriter.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7CC223FB1C05C1210073FE7D /* libPdfWriter.dylib */; };
+		7CC224111C05C1210073FE7D /* libPptFormatLib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7CC223FC1C05C1210073FE7D /* libPptFormatLib.a */; };
+		7CC224121C05C1210073FE7D /* libPPTXFormatLib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7CC223FD1C05C1210073FE7D /* libPPTXFormatLib.a */; };
+		7CC224131C05C1210073FE7D /* libRtfFormatLib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7CC223FE1C05C1210073FE7D /* libRtfFormatLib.a */; };
+		7CC224141C05C1210073FE7D /* libTxtXmlFormatLib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7CC223FF1C05C1210073FE7D /* libTxtXmlFormatLib.a */; };
+		7CC224151C05C1210073FE7D /* libUnicodeConverter.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7CC224001C05C1210073FE7D /* libUnicodeConverter.dylib */; };
+		7CC224161C05C1210073FE7D /* libXlsFormatLib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7CC224011C05C1210073FE7D /* libXlsFormatLib.a */; };
+		7CC224171C05C1210073FE7D /* libXpsFile.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7CC224021C05C1210073FE7D /* libXpsFile.dylib */; };
+		7CC224191C05C1570073FE7D /* libboost_regex.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7CC224181C05C1570073FE7D /* libboost_regex.a */; };
+		7CC2241B1C05C1EB0073FE7D /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7CC2241A1C05C1EB0073FE7D /* AppKit.framework */; };
+		7CC224211C05C22A0073FE7D /* ASCConverters.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7CC2241C1C05C22A0073FE7D /* ASCConverters.cpp */; };
+		7CC224221C05C22A0073FE7D /* cextracttools.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7CC2241E1C05C22A0073FE7D /* cextracttools.cpp */; };
+		7CC224231C05C22A0073FE7D /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7CC224201C05C22A0073FE7D /* main.cpp */; };
+		7CC224261C05C24D0073FE7D /* OfficeFileFormatChecker2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7CC224251C05C24D0073FE7D /* OfficeFileFormatChecker2.cpp */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		7CC223E21C05C0750073FE7D /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		7CC223E41C05C0750073FE7D /* X2tConverterMacOS */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = X2tConverterMacOS; sourceTree = BUILT_PRODUCTS_DIR; };
+		7CC223EE1C05C1210073FE7D /* libASCOfficeDocxFile2Lib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libASCOfficeDocxFile2Lib.a; path = ../../../ServerComponents/SDK/lib/mac_64/libASCOfficeDocxFile2Lib.a; sourceTree = "<group>"; };
+		7CC223EF1C05C1210073FE7D /* libDjVuFile.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libDjVuFile.dylib; path = ../../../ServerComponents/SDK/lib/mac_64/libDjVuFile.dylib; sourceTree = "<group>"; };
+		7CC223F01C05C1210073FE7D /* libDocFormatLib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libDocFormatLib.a; path = ../../../ServerComponents/SDK/lib/mac_64/libDocFormatLib.a; sourceTree = "<group>"; };
+		7CC223F11C05C1210073FE7D /* libdoctrenderer.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libdoctrenderer.dylib; path = ../../../ServerComponents/SDK/lib/mac_64/libdoctrenderer.dylib; sourceTree = "<group>"; };
+		7CC223F21C05C1210073FE7D /* libDocxFormatLib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libDocxFormatLib.a; path = ../../../ServerComponents/SDK/lib/mac_64/libDocxFormatLib.a; sourceTree = "<group>"; };
+		7CC223F31C05C1210073FE7D /* libgraphics.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgraphics.a; path = ../../../ServerComponents/SDK/lib/mac_64/libgraphics.a; sourceTree = "<group>"; };
+		7CC223F41C05C1210073FE7D /* libHtmlFile.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libHtmlFile.dylib; path = ../../../ServerComponents/SDK/lib/mac_64/libHtmlFile.dylib; sourceTree = "<group>"; };
+		7CC223F51C05C1210073FE7D /* libHtmlRenderer.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libHtmlRenderer.dylib; path = ../../../ServerComponents/SDK/lib/mac_64/libHtmlRenderer.dylib; sourceTree = "<group>"; };
+		7CC223F61C05C1210073FE7D /* liblibxml.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblibxml.a; path = ../../../ServerComponents/SDK/lib/mac_64/liblibxml.a; sourceTree = "<group>"; };
+		7CC223F71C05C1210073FE7D /* libOdfFileReaderLib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libOdfFileReaderLib.a; path = ../../../ServerComponents/SDK/lib/mac_64/libOdfFileReaderLib.a; sourceTree = "<group>"; };
+		7CC223F81C05C1210073FE7D /* libOdfFileWriterLib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libOdfFileWriterLib.a; path = ../../../ServerComponents/SDK/lib/mac_64/libOdfFileWriterLib.a; sourceTree = "<group>"; };
+		7CC223F91C05C1210073FE7D /* libOfficeUtils.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libOfficeUtils.a; path = ../../../ServerComponents/SDK/lib/mac_64/libOfficeUtils.a; sourceTree = "<group>"; };
+		7CC223FA1C05C1210073FE7D /* libPdfReader.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libPdfReader.dylib; path = ../../../ServerComponents/SDK/lib/mac_64/libPdfReader.dylib; sourceTree = "<group>"; };
+		7CC223FB1C05C1210073FE7D /* libPdfWriter.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libPdfWriter.dylib; path = ../../../ServerComponents/SDK/lib/mac_64/libPdfWriter.dylib; sourceTree = "<group>"; };
+		7CC223FC1C05C1210073FE7D /* libPptFormatLib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPptFormatLib.a; path = ../../../ServerComponents/SDK/lib/mac_64/libPptFormatLib.a; sourceTree = "<group>"; };
+		7CC223FD1C05C1210073FE7D /* libPPTXFormatLib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPPTXFormatLib.a; path = ../../../ServerComponents/SDK/lib/mac_64/libPPTXFormatLib.a; sourceTree = "<group>"; };
+		7CC223FE1C05C1210073FE7D /* libRtfFormatLib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libRtfFormatLib.a; path = ../../../ServerComponents/SDK/lib/mac_64/libRtfFormatLib.a; sourceTree = "<group>"; };
+		7CC223FF1C05C1210073FE7D /* libTxtXmlFormatLib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libTxtXmlFormatLib.a; path = ../../../ServerComponents/SDK/lib/mac_64/libTxtXmlFormatLib.a; sourceTree = "<group>"; };
+		7CC224001C05C1210073FE7D /* libUnicodeConverter.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libUnicodeConverter.dylib; path = ../../../ServerComponents/SDK/lib/mac_64/libUnicodeConverter.dylib; sourceTree = "<group>"; };
+		7CC224011C05C1210073FE7D /* libXlsFormatLib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libXlsFormatLib.a; path = ../../../ServerComponents/SDK/lib/mac_64/libXlsFormatLib.a; sourceTree = "<group>"; };
+		7CC224021C05C1210073FE7D /* libXpsFile.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libXpsFile.dylib; path = ../../../ServerComponents/SDK/lib/mac_64/libXpsFile.dylib; sourceTree = "<group>"; };
+		7CC224181C05C1570073FE7D /* libboost_regex.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_regex.a; path = ../../../ServerComponents/Common/boost_1_58_0/stage/lib/libboost_regex.a; sourceTree = "<group>"; };
+		7CC2241A1C05C1EB0073FE7D /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		7CC2241C1C05C22A0073FE7D /* ASCConverters.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ASCConverters.cpp; path = ../../X2tConverter/ASCConverters.cpp; sourceTree = "<group>"; };
+		7CC2241D1C05C22A0073FE7D /* ASCConverters.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ASCConverters.h; path = ../../X2tConverter/ASCConverters.h; sourceTree = "<group>"; };
+		7CC2241E1C05C22A0073FE7D /* cextracttools.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = cextracttools.cpp; path = ../../X2tConverter/cextracttools.cpp; sourceTree = "<group>"; };
+		7CC2241F1C05C22A0073FE7D /* cextracttools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = cextracttools.h; path = ../../X2tConverter/cextracttools.h; sourceTree = "<group>"; };
+		7CC224201C05C22A0073FE7D /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = ../../X2tConverter/main.cpp; sourceTree = "<group>"; };
+		7CC224241C05C24D0073FE7D /* OfficeFileFormatChecker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OfficeFileFormatChecker.h; path = ../../../../ServerComponents/Common/OfficeFileFormatChecker.h; sourceTree = "<group>"; };
+		7CC224251C05C24D0073FE7D /* OfficeFileFormatChecker2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OfficeFileFormatChecker2.cpp; path = ../../../../ServerComponents/Common/OfficeFileFormatChecker2.cpp; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		7CC223E11C05C0750073FE7D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7CC2241B1C05C1EB0073FE7D /* AppKit.framework in Frameworks */,
+				7CC224151C05C1210073FE7D /* libUnicodeConverter.dylib in Frameworks */,
+				7CC2240F1C05C1210073FE7D /* libPdfReader.dylib in Frameworks */,
+				7CC224161C05C1210073FE7D /* libXlsFormatLib.a in Frameworks */,
+				7CC224081C05C1210073FE7D /* libgraphics.a in Frameworks */,
+				7CC224071C05C1210073FE7D /* libDocxFormatLib.a in Frameworks */,
+				7CC224171C05C1210073FE7D /* libXpsFile.dylib in Frameworks */,
+				7CC2240B1C05C1210073FE7D /* liblibxml.a in Frameworks */,
+				7CC224121C05C1210073FE7D /* libPPTXFormatLib.a in Frameworks */,
+				7CC224141C05C1210073FE7D /* libTxtXmlFormatLib.a in Frameworks */,
+				7CC2240E1C05C1210073FE7D /* libOfficeUtils.a in Frameworks */,
+				7CC2240A1C05C1210073FE7D /* libHtmlRenderer.dylib in Frameworks */,
+				7CC224131C05C1210073FE7D /* libRtfFormatLib.a in Frameworks */,
+				7CC224101C05C1210073FE7D /* libPdfWriter.dylib in Frameworks */,
+				7CC2240D1C05C1210073FE7D /* libOdfFileWriterLib.a in Frameworks */,
+				7CC224051C05C1210073FE7D /* libDocFormatLib.a in Frameworks */,
+				7CC224191C05C1570073FE7D /* libboost_regex.a in Frameworks */,
+				7CC224091C05C1210073FE7D /* libHtmlFile.dylib in Frameworks */,
+				7CC2240C1C05C1210073FE7D /* libOdfFileReaderLib.a in Frameworks */,
+				7CC224031C05C1210073FE7D /* libASCOfficeDocxFile2Lib.a in Frameworks */,
+				7CC224041C05C1210073FE7D /* libDjVuFile.dylib in Frameworks */,
+				7CC224111C05C1210073FE7D /* libPptFormatLib.a in Frameworks */,
+				7CC224061C05C1210073FE7D /* libdoctrenderer.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		7CC223DB1C05C0750073FE7D = {
+			isa = PBXGroup;
+			children = (
+				7CC2241A1C05C1EB0073FE7D /* AppKit.framework */,
+				7CC223EE1C05C1210073FE7D /* libASCOfficeDocxFile2Lib.a */,
+				7CC223EF1C05C1210073FE7D /* libDjVuFile.dylib */,
+				7CC223F01C05C1210073FE7D /* libDocFormatLib.a */,
+				7CC223F11C05C1210073FE7D /* libdoctrenderer.dylib */,
+				7CC223F21C05C1210073FE7D /* libDocxFormatLib.a */,
+				7CC223F31C05C1210073FE7D /* libgraphics.a */,
+				7CC223F41C05C1210073FE7D /* libHtmlFile.dylib */,
+				7CC223F51C05C1210073FE7D /* libHtmlRenderer.dylib */,
+				7CC223F61C05C1210073FE7D /* liblibxml.a */,
+				7CC223F71C05C1210073FE7D /* libOdfFileReaderLib.a */,
+				7CC223F81C05C1210073FE7D /* libOdfFileWriterLib.a */,
+				7CC223F91C05C1210073FE7D /* libOfficeUtils.a */,
+				7CC223FA1C05C1210073FE7D /* libPdfReader.dylib */,
+				7CC223FB1C05C1210073FE7D /* libPdfWriter.dylib */,
+				7CC223FC1C05C1210073FE7D /* libPptFormatLib.a */,
+				7CC223FD1C05C1210073FE7D /* libPPTXFormatLib.a */,
+				7CC223FE1C05C1210073FE7D /* libRtfFormatLib.a */,
+				7CC223FF1C05C1210073FE7D /* libTxtXmlFormatLib.a */,
+				7CC224001C05C1210073FE7D /* libUnicodeConverter.dylib */,
+				7CC224011C05C1210073FE7D /* libXlsFormatLib.a */,
+				7CC224021C05C1210073FE7D /* libXpsFile.dylib */,
+				7CC224181C05C1570073FE7D /* libboost_regex.a */,
+				7CC223E61C05C0750073FE7D /* X2tConverterMacOS */,
+				7CC223E51C05C0750073FE7D /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		7CC223E51C05C0750073FE7D /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				7CC223E41C05C0750073FE7D /* X2tConverterMacOS */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		7CC223E61C05C0750073FE7D /* X2tConverterMacOS */ = {
+			isa = PBXGroup;
+			children = (
+				7CC224241C05C24D0073FE7D /* OfficeFileFormatChecker.h */,
+				7CC224251C05C24D0073FE7D /* OfficeFileFormatChecker2.cpp */,
+				7CC2241C1C05C22A0073FE7D /* ASCConverters.cpp */,
+				7CC2241D1C05C22A0073FE7D /* ASCConverters.h */,
+				7CC2241E1C05C22A0073FE7D /* cextracttools.cpp */,
+				7CC2241F1C05C22A0073FE7D /* cextracttools.h */,
+				7CC224201C05C22A0073FE7D /* main.cpp */,
+			);
+			path = X2tConverterMacOS;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		7CC223E31C05C0750073FE7D /* X2tConverterMacOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7CC223EB1C05C0750073FE7D /* Build configuration list for PBXNativeTarget "X2tConverterMacOS" */;
+			buildPhases = (
+				7CC223E01C05C0750073FE7D /* Sources */,
+				7CC223E11C05C0750073FE7D /* Frameworks */,
+				7CC223E21C05C0750073FE7D /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = X2tConverterMacOS;
+			productName = X2tConverterMacOS;
+			productReference = 7CC223E41C05C0750073FE7D /* X2tConverterMacOS */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		7CC223DC1C05C0750073FE7D /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0710;
+				ORGANIZATIONNAME = "Ascensio System";
+				TargetAttributes = {
+					7CC223E31C05C0750073FE7D = {
+						CreatedOnToolsVersion = 7.1.1;
+					};
+				};
+			};
+			buildConfigurationList = 7CC223DF1C05C0750073FE7D /* Build configuration list for PBXProject "X2tConverterMacOS" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 7CC223DB1C05C0750073FE7D;
+			productRefGroup = 7CC223E51C05C0750073FE7D /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				7CC223E31C05C0750073FE7D /* X2tConverterMacOS */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		7CC223E01C05C0750073FE7D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7CC224221C05C22A0073FE7D /* cextracttools.cpp in Sources */,
+				7CC224261C05C24D0073FE7D /* OfficeFileFormatChecker2.cpp in Sources */,
+				7CC224211C05C22A0073FE7D /* ASCConverters.cpp in Sources */,
+				7CC224231C05C22A0073FE7D /* main.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		7CC223E91C05C0750073FE7D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
+				CLANG_CXX_LIBRARY = "compiler-default";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = "compiler-default";
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		7CC223EA1C05C0750073FE7D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
+				CLANG_CXX_LIBRARY = "compiler-default";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = "compiler-default";
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		7CC223EC1C05C0750073FE7D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					_LINUX,
+					LINUX,
+					_LINUX_QT,
+					_MAC,
+					MAC,
+					_MAC_NO_APPLE,
+					LIBXML_READER_ENABLED,
+					UNICODECONVERTER_USE_DYNAMIC_LIBRARY,
+					HTMLFILE_USE_DYNAMIC_LIBRARY,
+					HTMLRENDERER_USE_DYNAMIC_LIBRARY,
+					DJVU_USE_DYNAMIC_LIBRARY,
+					XPS_USE_DYNAMIC_LIBRARY,
+					PDFWRITER_USE_DYNAMIC_LIBRARY,
+					PDFREADER_USE_DYNAMIC_LIBRARY,
+					UNICODE,
+					_UNICODE,
+					_USE_LIBXML2_READER_,
+					_USE_XMLLITE_READER_,
+					USE_LITE_READER,
+					AVS_USE_CONVERT_PPTX_TOCUSTOM_VML,
+					DONT_WRITE_EMBEDDED_FONTS,
+					BUILD_CONFIG_FULL_VERSION,
+					CXIMAGE_DONT_DECLARE_TCHAR,
+					FILTER_FLATE_DECODE_ENABLED,
+					NODOCX,
+					ENABLE_PPT_TO_PPTX_CONVERT,
+					PPT_DEF,
+					PPTX_DEF,
+				);
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path";
+				LIBRARY_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/../../../ServerComponents/SDK/lib/mac_64",
+					"$(PROJECT_DIR)/../../../ServerComponents/Common/boost_1_58_0/stage/lib",
+				);
+				OTHER_CFLAGS = (
+					"-I./../../../ServerComponents/DesktopEditor/freetype-2.5.2/include",
+					"-I./../../../ServerComponents/ASCOfficeUtils/ZLIB/zlib-1.2.3",
+					"-I./../../../ServerComponents/Common/DocxFormat/Source/XML/libxml2/XML/include",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		7CC223ED1C05C0750073FE7D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					_LINUX,
+					LINUX,
+					_LINUX_QT,
+					_MAC,
+					MAC,
+					_MAC_NO_APPLE,
+					LIBXML_READER_ENABLED,
+					UNICODECONVERTER_USE_DYNAMIC_LIBRARY,
+					HTMLFILE_USE_DYNAMIC_LIBRARY,
+					HTMLRENDERER_USE_DYNAMIC_LIBRARY,
+					DJVU_USE_DYNAMIC_LIBRARY,
+					XPS_USE_DYNAMIC_LIBRARY,
+					PDFWRITER_USE_DYNAMIC_LIBRARY,
+					PDFREADER_USE_DYNAMIC_LIBRARY,
+					UNICODE,
+					_UNICODE,
+					_USE_LIBXML2_READER_,
+					_USE_XMLLITE_READER_,
+					USE_LITE_READER,
+					AVS_USE_CONVERT_PPTX_TOCUSTOM_VML,
+					DONT_WRITE_EMBEDDED_FONTS,
+					BUILD_CONFIG_FULL_VERSION,
+					CXIMAGE_DONT_DECLARE_TCHAR,
+					FILTER_FLATE_DECODE_ENABLED,
+					NODOCX,
+					ENABLE_PPT_TO_PPTX_CONVERT,
+					PPT_DEF,
+					PPTX_DEF,
+				);
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path";
+				LIBRARY_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/../../../ServerComponents/SDK/lib/mac_64",
+					"$(PROJECT_DIR)/../../../ServerComponents/Common/boost_1_58_0/stage/lib",
+				);
+				OTHER_CFLAGS = (
+					"-I./../../../ServerComponents/DesktopEditor/freetype-2.5.2/include",
+					"-I./../../../ServerComponents/ASCOfficeUtils/ZLIB/zlib-1.2.3",
+					"-I./../../../ServerComponents/Common/DocxFormat/Source/XML/libxml2/XML/include",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		7CC223DF1C05C0750073FE7D /* Build configuration list for PBXProject "X2tConverterMacOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7CC223E91C05C0750073FE7D /* Debug */,
+				7CC223EA1C05C0750073FE7D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		7CC223EB1C05C0750073FE7D /* Build configuration list for PBXNativeTarget "X2tConverterMacOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7CC223EC1C05C0750073FE7D /* Debug */,
+				7CC223ED1C05C0750073FE7D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 7CC223DC1C05C0750073FE7D /* Project object */;
+}

@@ -33,6 +33,8 @@
 #define OFFICESTUDIO_FILE_CROSSPLATFORM_DJVU		OFFICESTUDIO_FILE_CROSSPLATFORM + 0x0003
 #define OFFICESTUDIO_FILE_CROSSPLATFORM_XPS			OFFICESTUDIO_FILE_CROSSPLATFORM + 0x0004
 
+#include <string>
+
 #ifdef WIN32
 int wmain(int argc, wchar_t *argv[])
 #else
@@ -49,8 +51,15 @@ int main(int argc, char *argv[])
     std::wstring sBuildFile = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)sBuildFileA.c_str(), (LONG)sBuildFileA.length());
 #endif
 
-    NSDoctRenderer::CDocBuilder oBuilder;
-    oBuilder.Run(sBuildFile);
+    NSDoctRenderer::CDocBuilder::Initialize();
+
+    NSDoctRenderer::CDocBuilder oBuilder(false);
+    oBuilder.Run(sBuildFile.c_str());
+
+    NSDoctRenderer::CDocBuilder oBuilder2(false);
+    oBuilder2.Run(sBuildFile.c_str());
+
+    NSDoctRenderer::CDocBuilder::Dispose();
 
     return 0;
 }

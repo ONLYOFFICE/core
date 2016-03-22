@@ -1,4 +1,4 @@
-﻿#ifndef _BUILD_FILE_CROSSPLATFORM_H_
+#ifndef _BUILD_FILE_CROSSPLATFORM_H_
 #define _BUILD_FILE_CROSSPLATFORM_H_
 
 #include <stdio.h>
@@ -18,6 +18,10 @@
 #define U_TO_UTF8(val) NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(val.c_str(), val.length())
 
 #if defined(__linux__) || defined(_MAC) && !defined(_IOS)
+#include <unistd.h>
+#endif
+
+#ifdef _IOS
 #include <unistd.h>
 #endif
 

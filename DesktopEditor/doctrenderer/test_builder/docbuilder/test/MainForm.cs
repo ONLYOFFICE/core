@@ -83,7 +83,7 @@ namespace test
             _text.Multiline = true;
             _text.Dock = DockStyle.Fill;
             _text.Text = _code;
-
+            _text.Font = new System.Drawing.Font(_text.Font.Name, 12);
             _page.Controls.Add(_text);
 
             m_oTabControl.Controls.Add(_page);

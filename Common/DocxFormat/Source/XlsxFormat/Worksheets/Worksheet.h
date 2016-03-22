@@ -24,7 +24,7 @@ namespace OOX
 {
 	namespace Spreadsheet
 	{
-		//необработанные child:
+		//РЅРµРѕР±СЂР°Р±РѕС‚Р°РЅРЅС‹Рµ child:
 		//<cellWatches>
 		//<colBreaks>
 		//<controls>
@@ -373,6 +373,56 @@ namespace OOX
 					const OOX::RId rId(sExistRId);
 					return rId;
 				}
+			}
+			static bool parse3DRef(const CString& sRef, CString& workbook, CString& sheetFrom, CString& sheetTo, int& nRow1, int& nCol1, int& nRow2, int& nCol2)
+			{
+				bool bRes = false;
+				int nIndex = sRef.Find('!');
+				CString sCellRef;
+				if(-1 != nIndex)
+				{
+					CString sSheetPrefix = sRef.Left(nIndex);
+					if(sSheetPrefix.GetLength() > 0 && '\'' == sSheetPrefix[0] && '\'' == sSheetPrefix[sSheetPrefix.GetLength() - 1])
+					{
+						sSheetPrefix = sSheetPrefix.Mid(1, sSheetPrefix.GetLength() - 2);
+					}
+					sSheetPrefix.Replace(L"''", L"'");
+					int nIndexWbStart = sSheetPrefix.Find('[');
+					int nIndexWbEnd = sSheetPrefix.Find(']');
+					if(-1 != nIndexWbStart && -1 != nIndexWbEnd)
+					{
+						workbook = sSheetPrefix.Mid(nIndexWbStart + 1, nIndexWbEnd - nIndexWbStart - 1);
+						sSheetPrefix = sSheetPrefix.Right(sSheetPrefix.GetLength() - nIndexWbEnd - 1);
+					}
+					int nIndexColon = sSheetPrefix.Find(':');
+					if(-1 != nIndexColon)
+					{
+						sheetFrom = sSheetPrefix.Left(nIndexColon);
+						sheetTo = sSheetPrefix.Right(sSheetPrefix.GetLength() - nIndexColon - 1);
+					}
+					else
+					{
+						sheetFrom = sSheetPrefix;
+					}
+					sCellRef = sRef.Right(sRef.GetLength() - nIndex - 1);
+				}
+				else
+				{
+					sCellRef = sRef;
+				}
+				sCellRef.Replace(L"$", L"");
+				int nIndexColon = sCellRef.Find(':');
+				if(-1 != nIndexColon)
+				{
+					bRes = parseRef(sCellRef.Left(nIndexColon), nRow1, nCol1) && parseRef(sCellRef.Right(sCellRef.GetLength() - nIndexColon - 1), nRow2, nCol2);
+				}
+				else
+				{
+					bRes = parseRef(sCellRef, nRow1, nCol1);
+					nRow2 = nRow1;
+					nCol2 = nCol1;
+				}
+				return bRes;
 			}
 			static bool parseRef(CString sRef, int& nRow, int& nCol)
 			{

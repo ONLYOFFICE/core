@@ -735,6 +735,7 @@ namespace NSBinPptxRW
 				<Default Extension=\"gif\" ContentType=\"image/gif\"/>\
 				<Default Extension=\"emf\" ContentType=\"image/x-emf\"/>\
 				<Default Extension=\"jpg\" ContentType=\"image/jpeg\"/>\
+				<Default Extension=\"xlsx\" ContentType=\"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\"/>\
 				\
 				<Override PartName=\"/ppt/presentation.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.presentation.main+xml\" />\
 				<Override PartName=\"/ppt/presProps.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.presProps+xml\" />\

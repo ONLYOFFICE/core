@@ -102,7 +102,8 @@ SOURCES += ../DocWrapper/DocxSerializer.cpp \
     ../../XlsxSerializerCom/Reader/ChartFromToBinary.cpp \
     ../../XlsxSerializerCom/Reader/CommonWriter.cpp \
     ../../XlsxSerializerCom/Reader/CSVReader.cpp \
-    ../../XlsxSerializerCom/Writer/CSVWriter.cpp
+    ../../XlsxSerializerCom/Writer/CSVWriter.cpp \
+    ../DocWrapper/ChartWriter.cpp
 
 HEADERS += ../DocWrapper/DocxSerializer.h \
     ../DocWrapper/FontProcessor.h \
@@ -135,7 +136,8 @@ HEADERS += ../DocWrapper/DocxSerializer.h \
     ../../XlsxSerializerCom/Writer/CSVWriter.h \
     ../BinReader/webSettingsWriter.h \
     ../../Common/FileDownloader/FileDownloader.h \
-    ../BinReader/DefaultThemeWriter.h
+    ../BinReader/DefaultThemeWriter.h \
+    ../DocWrapper/ChartWriter.h
 
 unix {
     target.path = /usr/lib

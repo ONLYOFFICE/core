@@ -18,7 +18,7 @@ namespace OOX
 {
 	namespace Spreadsheet
 	{
-		//необработанные child:
+		//РЅРµРѕР±СЂР°Р±РѕС‚Р°РЅРЅС‹Рµ child:
 		//<extLst>
 		class CStyles : public OOX::File, public OOX::Spreadsheet::IFileContainer
 		{
@@ -123,9 +123,70 @@ namespace OOX
 			}
 			void PrepareToWrite()
 			{
+				//fonts
+				if(false == m_oFonts.IsInit())
+				{
+					m_oFonts.Init();
+					OOX::Spreadsheet::CFont* pFont = new OOX::Spreadsheet::CFont();
+					pFont->m_oSz.Init();
+					pFont->m_oSz->m_oVal.Init();
+					pFont->m_oSz->m_oVal->SetValue(11);
+					pFont->m_oColor.Init();
+					pFont->m_oColor->m_oThemeColor.Init();
+					pFont->m_oColor->m_oThemeColor->SetValue(SimpleTypes::Spreadsheet::themecolorDark1);
+					pFont->m_oRFont.Init();
+					pFont->m_oRFont->m_sVal.Init();
+					pFont->m_oRFont->m_sVal->Append(L"Calibri");
+					pFont->m_oFamily.Init();
+					pFont->m_oFamily->m_oFontFamily.Init();
+					pFont->m_oFamily->m_oFontFamily->SetValue(SimpleTypes::Spreadsheet::fontfamilySwiss);
+					pFont->m_oScheme.Init();
+					pFont->m_oScheme->m_oFontScheme.Init();
+					pFont->m_oScheme->m_oFontScheme->SetValue(SimpleTypes::Spreadsheet::fontschemeMinor);
+					m_oFonts->m_arrItems.push_back(pFont);
+				}
+				if(false == m_oFonts->m_oCount.IsInit())
+				{
+					m_oFonts->m_oCount.Init();
+					m_oFonts->m_oCount->SetValue(m_oFonts->m_arrItems.size());
+				}
 				//fills
 				if(false == m_oFills.IsInit())
+				{
 					m_oFills.Init();
+					OOX::Spreadsheet::CFill* pFill1 = new OOX::Spreadsheet::CFill();
+					pFill1->m_oPatternFill.Init();
+					pFill1->m_oPatternFill->m_oPatternType.Init();
+					pFill1->m_oPatternFill->m_oPatternType->SetValue(SimpleTypes::Spreadsheet::patterntypeNone);
+					OOX::Spreadsheet::CFill* pFill2 = new OOX::Spreadsheet::CFill();
+					pFill2->m_oPatternFill.Init();
+					pFill2->m_oPatternFill->m_oPatternType.Init();
+					pFill2->m_oPatternFill->m_oPatternType->SetValue(SimpleTypes::Spreadsheet::patterntypeGray125);
+					m_oFills->m_arrItems.push_back(pFill1);
+					m_oFills->m_arrItems.push_back(pFill2);
+				}
+				if(false == m_oFills->m_oCount.IsInit())
+				{
+					m_oFills->m_oCount.Init();
+					m_oFills->m_oCount->SetValue(m_oFills->m_arrItems.size());
+				}
+				//borders
+				if(false == m_oBorders.IsInit())
+				{
+					m_oBorders.Init();
+					OOX::Spreadsheet::CBorder* pBorder = new OOX::Spreadsheet::CBorder();
+					pBorder->m_oStart.Init();
+					pBorder->m_oEnd.Init();
+					pBorder->m_oTop.Init();
+					pBorder->m_oBottom.Init();
+					pBorder->m_oDiagonal.Init();
+					m_oBorders->m_arrItems.push_back(pBorder);
+				}
+				if(false == m_oBorders->m_oCount.IsInit())
+				{
+					m_oBorders->m_oCount.Init();
+					m_oBorders->m_oCount->SetValue(m_oBorders->m_arrItems.size());
+				}
 				//cellXfs
 				if(m_oCellXfs.IsInit())
 				{
@@ -142,11 +203,7 @@ namespace OOX
 				//cellStyles
 				if(false == m_oCellStyles.IsInit())
 					m_oCellStyles.Init();
-				if(false == m_oCellStyles->m_oCount.IsInit())
-				{
-					m_oCellStyles->m_oCount.Init();
-					m_oCellStyles->m_oCount->SetValue(1);
-				}
+
 				if(0 == m_oCellStyles->m_arrItems.size())
 				{
 					CCellStyle* pCellStyle = new CCellStyle();
@@ -157,14 +214,15 @@ namespace OOX
 						pCellStyle->m_oBuiltinId->SetValue(0);
 					m_oCellStyles->m_arrItems.push_back(pCellStyle);
 				}
+				if(false == m_oCellStyles->m_oCount.IsInit())
+				{
+					m_oCellStyles->m_oCount.Init();
+					m_oCellStyles->m_oCount->SetValue(m_oCellStyles->m_arrItems.size());
+				}
 				//cellStyleXfs
 				if(false == m_oCellStyleXfs.IsInit())
 					m_oCellStyleXfs.Init();
-				if(false == m_oCellStyleXfs->m_oCount.IsInit())
-				{
-					m_oCellStyleXfs->m_oCount.Init();
-					m_oCellStyleXfs->m_oCount->SetValue(1);
-				}
+
 				if(0 == m_oCellStyleXfs->m_arrItems.size())
 				{
 					CXfs* pXfs = new CXfs();
@@ -177,6 +235,11 @@ namespace OOX
 						pXfs->m_oBorderId.Init();
 						pXfs->m_oBorderId->SetValue(0);
 					m_oCellStyleXfs->m_arrItems.push_back(pXfs);
+				}
+				if(false == m_oCellStyleXfs->m_oCount.IsInit())
+				{
+					m_oCellStyleXfs->m_oCount.Init();
+					m_oCellStyleXfs->m_oCount->SetValue(m_oCellStyleXfs->m_arrItems.size());
 				}
 				//dxfs
 				if(false == m_oDxfs.IsInit())

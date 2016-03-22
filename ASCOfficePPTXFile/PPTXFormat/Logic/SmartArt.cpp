@@ -227,11 +227,11 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" 
             CString strPptChartFolder   = _T("/ppt/charts/");
 
             if (pReader->m_lDocumentType == XMLWRITER_DOC_TYPE_DOCX)
-                oXlsxSerializer.saveChart(*pReader, lLen, strChart, strWordChartFolder, &sContentTypes);
+                oXlsxSerializer.saveChart(*pReader, lLen, strChart, strWordChartFolder, &sContentTypes, m_lChartNumber);
 			else if (pReader->m_lDocumentType == XMLWRITER_DOC_TYPE_XLSX)
-                oXlsxSerializer.saveChart(*pReader, lLen, strChart, strXlChartFolder, &sContentTypes);
+                oXlsxSerializer.saveChart(*pReader, lLen, strChart, strXlChartFolder, &sContentTypes, m_lChartNumber);
 			else
-                oXlsxSerializer.saveChart(*pReader, lLen, strChart, strPptChartFolder, &sContentTypes);
+                oXlsxSerializer.saveChart(*pReader, lLen, strChart, strPptChartFolder, &sContentTypes, m_lChartNumber);
 
 			pReader->m_strContentTypes += (*sContentTypes);
 			RELEASEOBJECT(sContentTypes);

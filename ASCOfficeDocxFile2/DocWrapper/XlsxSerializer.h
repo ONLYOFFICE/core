@@ -8,6 +8,15 @@
 	#include "../../Common/DocxFormat/Source/Base/ASCString.h"
 #endif
 
+#include <string>
+
+namespace OOX
+{
+namespace Spreadsheet
+{
+class CChartSpace;
+}
+}
 namespace NSBinPptxRW{
 	class CDrawingConverter;
 }
@@ -32,11 +41,13 @@ namespace BinXlsxRW {
         bool saveToFile(const CString& sSrcFileName, const CString& sDstPath, const CString& sXMLOptions);
 		
 		bool loadChart(CString& sChartPath, NSBinPptxRW::CBinaryFileWriter& oBufferedStream, long& lDataSize);
-		bool saveChart(NSBinPptxRW::CBinaryFileReader& oBufferedStream, long lLength, CString& sFilename, CString& sContentTypePath, CString** sContentTypeElement);
+		bool saveChart(NSBinPptxRW::CBinaryFileReader& oBufferedStream, long lLength, CString& sFilename, CString& sContentTypePath, CString** sContentTypeElement, const LONG& lChartNumber);
 		
 		void setFontDir(CString& sFontDir);
 		void setEmbeddedFontsDir(CString& sEmbeddedFontsDir);
 		void setDrawingConverter(NSBinPptxRW::CDrawingConverter* pDrawingConverter);
+
+		void writeChartXlsx(const std::wstring& sDstFile ,const OOX::Spreadsheet::CChartSpace& oChart);
 	};
 }
 #endif	// #ifndef XLSX_SERIALIZER

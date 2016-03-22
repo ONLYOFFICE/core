@@ -7,6 +7,9 @@
 #include "../../XlsxSerializerCom/Writer/BinaryReader.h"
 #include "../../ASCOfficePPTXFile/Editor/FontPicker.h"
 
+#include "../../OfficeUtils/src/OfficeUtils.h"
+#include "ChartWriter.h"
+
 #include "../BinReader/DefaultThemeWriter.h"
 
 namespace BinXlsxRW{
@@ -140,7 +143,7 @@ namespace BinXlsxRW{
 		}
 		return bRes;
 	}
-	bool CXlsxSerializer::saveChart(NSBinPptxRW::CBinaryFileReader& oBufferedStream, long lLength, CString& sFilepath, CString& sContentTypePath, CString** sContentTypeElement)
+	bool CXlsxSerializer::saveChart(NSBinPptxRW::CBinaryFileReader& oBufferedStream, long lLength, CString& sFilepath, CString& sContentTypePath, CString** sContentTypeElement, const LONG& lChartNumber)
 	{
 		bool bRes = false;
 		*sContentTypeElement = NULL;
@@ -150,12 +153,17 @@ namespace BinXlsxRW{
 
 			//получаем sThemePath из bsFilename предполагая что папка theme находится на уровень выше bsFilename
 			CString sThemePath;
+			CString sEmbedingPath;
 			CString sFilenameReverse = sFilepath;sFilenameReverse.MakeReverse();
 			
 			int nIndex	= sFilenameReverse.Find(FILE_SEPARATOR_CHAR);
 			nIndex		= sFilenameReverse.Find(FILE_SEPARATOR_CHAR, nIndex + 1);
 			if(-1 != nIndex)
-				sThemePath = sFilepath.Left(sFilepath.GetLength() - nIndex) + _T("theme");
+			{
+				CString sFilepathLeft = sFilepath.Left(sFilepath.GetLength() - nIndex);
+				sThemePath = sFilepathLeft + _T("theme");
+				sEmbedingPath = sFilepathLeft + _T("embeddings");
+			}
 
 			//todo theme path
 			BinXlsxRW::SaveParams oSaveParams(sThemePath);
@@ -165,6 +173,25 @@ namespace BinXlsxRW{
 
 			if(oChartSpace.isValid())
 			{
+				//save xlsx
+				if(!sEmbedingPath.IsEmpty())
+				{
+					std::wstring sXlsxFilename = L"Microsoft_Excel_Worksheet" + std::to_wstring(lChartNumber) + L".xlsx";
+					std::wstring sXlsxPath = string2std_string(sEmbedingPath + FILE_SEPARATOR_STR) + sXlsxFilename;
+					writeChartXlsx(sXlsxPath, oChartSpace);
+
+					std::wstring sChartsWorksheetRelsName = L"../embeddings/" + sXlsxFilename;
+					long rId;
+					CString bstrChartsWorksheetRelType = OOX::Spreadsheet::FileTypes::ChartsWorksheet.RelationType();
+					m_pExternalDrawingConverter->WriteRels(bstrChartsWorksheetRelType, std_string2string(sChartsWorksheetRelsName), CString(), &rId);
+
+					oChartSpace.m_oChartSpace.m_externalData = new OOX::Spreadsheet::CT_ExternalData();
+					oChartSpace.m_oChartSpace.m_externalData->m_id = new CString();
+					oChartSpace.m_oChartSpace.m_externalData->m_id->AppendFormat(L"rId%d", rId);
+					oChartSpace.m_oChartSpace.m_externalData->m_autoUpdate = new OOX::Spreadsheet::CT_Boolean();
+					oChartSpace.m_oChartSpace.m_externalData->m_autoUpdate->m_val = new bool(false);
+				}
+
 				std::wstring strFilepath	= string2std_string(sFilepath);
                 CString strDir              = std_string2string(NSSystemPath::GetDirectoryName(strFilepath));
                 CString strFilename         = std_string2string(NSSystemPath::GetFileName(strFilepath));
@@ -201,5 +228,31 @@ namespace BinXlsxRW{
 	void CXlsxSerializer::setDrawingConverter(NSBinPptxRW::CDrawingConverter* pDrawingConverter)
 	{
 		m_pExternalDrawingConverter = pDrawingConverter;
+	}
+	void CXlsxSerializer::writeChartXlsx(const std::wstring& sDstFile, const OOX::Spreadsheet::CChartSpace& oChart)
+	{
+		//анализируем chart
+		BinXlsxRW::ChartWriter helper;
+		helper.parseChart(oChart.m_oChartSpace.m_chart);
+		//создаем temp
+		std::wstring sTempDir = NSSystemPath::GetDirectoryName(sDstFile) + FILE_SEPARATOR_STR + NSSystemPath::GetFileName(sDstFile) + L"_TEMP";
+		NSDirectory::CreateDirectory(sTempDir);
+		OOX::CPath oPath(sTempDir.c_str());
+		//шиблонные папки
+		CString sXmlOptions = _T("");
+		CString sMediaPath;// will be filled by 'CreateXlsxFolders' method
+		CString sEmbedPath; // will be filled by 'CreateXlsxFolders' method
+		CreateXlsxFolders (sXmlOptions, std_string2string(sTempDir), sMediaPath, sEmbedPath);
+		//заполняем Xlsx
+		OOX::Spreadsheet::CXlsx oXlsx;
+		helper.toXlsx(oXlsx);
+		//write
+		CString sAdditionalContentTypes;
+		oXlsx.Write(oPath, sAdditionalContentTypes);
+		//zip
+		COfficeUtils oOfficeUtils(NULL);
+		oOfficeUtils.CompressFileOrDirectory(sTempDir, sDstFile, -1);
+		//clean
+		NSDirectory::DeleteDirectory(sTempDir);
 	}
 };

@@ -318,6 +318,12 @@ namespace OOX
 						writer.WriteString(CString(_T(" totalsRowCount=\"1\"")));
 					else
 						writer.WriteString(CString(_T(" totalsRowShown=\"0\"")));
+					if(m_oTableBorderDxfId.IsInit())
+					{
+						writer.WriteString(CString(_T(" tableBorderDxfId=\"")));
+						writer.WriteString(m_oTableBorderDxfId->ToString());
+						writer.WriteString(CString(_T("\"")));
+					}
 					writer.WriteString(CString(_T(">")));
 
 					if(m_oAutoFilter.IsInit())
@@ -370,6 +376,7 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("headerRowCount"),      m_oHeaderRowCount )
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("totalsRowCount"),      m_oTotalsRowCount )
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("displayName"),      m_oDisplayName )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("tableBorderDxfId"),      m_oTableBorderDxfId )
 
 					WritingElement_ReadAttributes_End( oReader )
 			}
@@ -378,6 +385,7 @@ namespace OOX
 			nullable<SimpleTypes::CUnsignedDecimalNumber<> > m_oHeaderRowCount;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<> > m_oTotalsRowCount;
 			nullable<CString > m_oDisplayName;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<> > m_oTableBorderDxfId;
 
 			nullable<CAutofilter > m_oAutoFilter;
 			nullable<CSortState > m_oSortState;

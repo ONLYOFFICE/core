@@ -51,6 +51,10 @@ namespace OOX
 												_T("application/vnd.openxmlformats-officedocument.drawingml.chart+xml"),
 												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart"), true, true);
 
+			const FileType ChartsWorksheet(L"../embeddings", L"Microsoft_Excel_Worksheet.xlsx",
+												_T(""),
+												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/package"), true, true);
+
 			const FileType Table(L"../tables", L"table.xml",
 												_T("application/vnd.openxmlformats-officedocument.spreadsheetml.table+xml"),
 												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/table"), true, true);

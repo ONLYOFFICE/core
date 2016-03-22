@@ -7,6 +7,7 @@
 #include "../../XlsxSerializerCom/Writer/BinaryReader.h"
 #include "../../DesktopEditor/common/ASCVariant.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Docx.h"
+#include "../DocWrapper/XlsxSerializer.h"
 
 
 namespace BinDocxRW {
@@ -6102,11 +6103,14 @@ public:
 		{
 			if(false == m_oFileWriter.m_bSaveChartAsImg)
 			{
-				OOX::CPath pathChartsDir = m_oFileWriter.m_oChartWriter.m_sDir + FILE_SEPARATOR_STR + _T("word") + FILE_SEPARATOR_STR +_T("charts");			
+				OOX::CPath pathChartsDir = m_oFileWriter.m_oChartWriter.m_sDir + FILE_SEPARATOR_STR + _T("word") + FILE_SEPARATOR_STR +_T("charts");
 				OOX::CSystemUtility::CreateDirectories(pathChartsDir.GetPath());
 				
 				OOX::CPath pathChartsRelsDir = pathChartsDir.GetPath() + FILE_SEPARATOR_STR +  _T("_rels");                
 				OOX::CSystemUtility::CreateDirectories(pathChartsRelsDir.GetPath());
+
+				OOX::CPath pathChartsWorksheetDir = m_oFileWriter.m_oChartWriter.m_sDir + FILE_SEPARATOR_STR + _T("word") + FILE_SEPARATOR_STR +_T("embeddings");
+				OOX::CSystemUtility::CreateDirectories(pathChartsWorksheetDir.GetPath());
 
 				m_oFileWriter.m_pDrawingConverter->SetDstContentRels();
 
@@ -6121,6 +6125,24 @@ public:
 				OOX::Spreadsheet::CChartSpace* pChartSpace = new OOX::Spreadsheet::CChartSpace();
 				oBinaryChartReader.ReadCT_ChartSpace(length, &pChartSpace->m_oChartSpace);
 
+				//save xlsx
+				std::wstring sXlsxFilename = L"Microsoft_Excel_Worksheet" + std::to_wstring(m_oFileWriter.m_oChartWriter.getChartCount() + 1) + L".xlsx";
+				std::wstring sXlsxPath = string2std_string(pathChartsWorksheetDir.GetPath() + FILE_SEPARATOR_STR) + sXlsxFilename;
+				BinXlsxRW::CXlsxSerializer oXlsxSerializer;
+				oXlsxSerializer.writeChartXlsx(sXlsxPath, *pChartSpace);
+
+				std::wstring sChartsWorksheetRelsName = L"../embeddings/" + sXlsxFilename;
+				long rIdXlsx;
+				CString bstrChartsWorksheetRelType = OOX::Spreadsheet::FileTypes::ChartsWorksheet.RelationType();
+				m_oFileWriter.m_pDrawingConverter->WriteRels(bstrChartsWorksheetRelType, std_string2string(sChartsWorksheetRelsName), CString(), &rIdXlsx);
+
+				pChartSpace->m_oChartSpace.m_externalData = new OOX::Spreadsheet::CT_ExternalData();
+				pChartSpace->m_oChartSpace.m_externalData->m_id = new CString();
+				pChartSpace->m_oChartSpace.m_externalData->m_id->AppendFormat(L"rId%d", rIdXlsx);
+				pChartSpace->m_oChartSpace.m_externalData->m_autoUpdate = new OOX::Spreadsheet::CT_Boolean();
+				pChartSpace->m_oChartSpace.m_externalData->m_autoUpdate->m_val = new bool(false);
+
+				//save chart.xml
 				XmlUtils::CStringWriter sw;
 				pChartSpace->toXML(sw);
 			
@@ -6135,11 +6157,11 @@ public:
                 OOX::CPath pathChartsRels =  pathChartsRelsDir.GetPath() + FILE_SEPARATOR_STR + sFilename + _T(".rels");
 				m_oFileWriter.m_pDrawingConverter->SaveDstContentRels(pathChartsRels.GetPath());
 
-				long rId;
+				long rIdChart;
 				CString bstrChartRelType = OOX::Spreadsheet::FileTypes::Charts.RelationType();
-				m_oFileWriter.m_pDrawingConverter->WriteRels(bstrChartRelType, sRelsName, CString(), &rId);
+				m_oFileWriter.m_pDrawingConverter->WriteRels(bstrChartRelType, sRelsName, CString(), &rIdChart);
 
-				pDrawingProperty->sChartRels.Format(_T("rId%d"), rId);
+				pDrawingProperty->sChartRels.Format(_T("rId%d"), rIdChart);
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;

@@ -492,7 +492,6 @@
 		698AED3B1C0726990080D889 /* rbbirb.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = rbbirb.cpp; sourceTree = "<group>"; };
 		698AED3C1C0726990080D889 /* rbbirb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rbbirb.h; sourceTree = "<group>"; };
 		698AED3D1C0726990080D889 /* rbbirpt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rbbirpt.h; sourceTree = "<group>"; };
-		698AED3E1C0726990080D889 /* rbbirpt.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = rbbirpt.txt; sourceTree = "<group>"; };
 		698AED3F1C0726990080D889 /* rbbiscan.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = rbbiscan.cpp; sourceTree = "<group>"; };
 		698AED401C0726990080D889 /* rbbiscan.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rbbiscan.h; sourceTree = "<group>"; };
 		698AED411C0726990080D889 /* rbbisetb.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = rbbisetb.cpp; sourceTree = "<group>"; };
@@ -1174,7 +1173,6 @@
 				698AED3B1C0726990080D889 /* rbbirb.cpp */,
 				698AED3C1C0726990080D889 /* rbbirb.h */,
 				698AED3D1C0726990080D889 /* rbbirpt.h */,
-				698AED3E1C0726990080D889 /* rbbirpt.txt */,
 				698AED3F1C0726990080D889 /* rbbiscan.cpp */,
 				698AED401C0726990080D889 /* rbbiscan.h */,
 				698AED411C0726990080D889 /* rbbisetb.cpp */,

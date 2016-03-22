@@ -1172,6 +1172,7 @@
 					_UNICODE,
 					_LINUX,
 					LINUX,
+					_IOS,
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				HEADER_SEARCH_PATHS = (
@@ -1197,6 +1198,7 @@
 					_UNICODE,
 					_LINUX,
 					LINUX,
+					_IOS,
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				HEADER_SEARCH_PATHS = (

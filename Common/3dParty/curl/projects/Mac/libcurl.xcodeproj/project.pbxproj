@@ -68,7 +68,6 @@
 		170108631AD7EDCD009EF02B /* krb5.c in Sources */ = {isa = PBXBuildFile; fileRef = 170107981AD7EDCC009EF02B /* krb5.c */; };
 		170108641AD7EDCD009EF02B /* ldap.c in Sources */ = {isa = PBXBuildFile; fileRef = 170107991AD7EDCC009EF02B /* ldap.c */; };
 		170108651AD7EDCD009EF02B /* llist.c in Sources */ = {isa = PBXBuildFile; fileRef = 1701079D1AD7EDCC009EF02B /* llist.c */; };
-		170108661AD7EDCD009EF02B /* Makefile.inc in Sources */ = {isa = PBXBuildFile; fileRef = 170107A41AD7EDCC009EF02B /* Makefile.inc */; };
 		170108671AD7EDCD009EF02B /* md4.c in Sources */ = {isa = PBXBuildFile; fileRef = 170107AD1AD7EDCD009EF02B /* md4.c */; };
 		170108681AD7EDCD009EF02B /* md5.c in Sources */ = {isa = PBXBuildFile; fileRef = 170107AE1AD7EDCD009EF02B /* md5.c */; };
 		170108691AD7EDCD009EF02B /* memdebug.c in Sources */ = {isa = PBXBuildFile; fileRef = 170107AF1AD7EDCD009EF02B /* memdebug.c */; };
@@ -79,7 +78,6 @@
 		1701086E1AD7EDCD009EF02B /* nonblock.c in Sources */ = {isa = PBXBuildFile; fileRef = 170107BB1AD7EDCD009EF02B /* nonblock.c */; };
 		1701086F1AD7EDCD009EF02B /* nwlib.c in Sources */ = {isa = PBXBuildFile; fileRef = 170107BD1AD7EDCD009EF02B /* nwlib.c */; };
 		170108701AD7EDCD009EF02B /* nwos.c in Sources */ = {isa = PBXBuildFile; fileRef = 170107BE1AD7EDCD009EF02B /* nwos.c */; };
-		170108711AD7EDCD009EF02B /* objnames.inc in Sources */ = {isa = PBXBuildFile; fileRef = 170107C11AD7EDCD009EF02B /* objnames.inc */; };
 		170108721AD7EDCD009EF02B /* openldap.c in Sources */ = {isa = PBXBuildFile; fileRef = 170107C21AD7EDCD009EF02B /* openldap.c */; };
 		170108731AD7EDCD009EF02B /* parsedate.c in Sources */ = {isa = PBXBuildFile; fileRef = 170107C31AD7EDCD009EF02B /* parsedate.c */; };
 		170108741AD7EDCD009EF02B /* pingpong.c in Sources */ = {isa = PBXBuildFile; fileRef = 170107C51AD7EDCD009EF02B /* pingpong.c */; };
@@ -189,8 +187,6 @@
 		170107191AD7EDCC009EF02B /* base64.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = base64.c; sourceTree = "<group>"; };
 		1701071A1AD7EDCC009EF02B /* bundles.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = bundles.c; sourceTree = "<group>"; };
 		1701071B1AD7EDCC009EF02B /* bundles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bundles.h; sourceTree = "<group>"; };
-		1701071C1AD7EDCC009EF02B /* checksrc.pl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.perl; path = checksrc.pl; sourceTree = "<group>"; };
-		1701071D1AD7EDCC009EF02B /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		1701071E1AD7EDCC009EF02B /* config-amigaos.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "config-amigaos.h"; sourceTree = "<group>"; };
 		1701071F1AD7EDCC009EF02B /* config-dos.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "config-dos.h"; sourceTree = "<group>"; };
 		170107201AD7EDCC009EF02B /* config-mac.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "config-mac.h"; sourceTree = "<group>"; };
@@ -216,8 +212,6 @@
 		170107341AD7EDCC009EF02B /* curl_config-32.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "curl_config-32.h"; sourceTree = "<group>"; };
 		170107351AD7EDCC009EF02B /* curl_config-64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "curl_config-64.h"; sourceTree = "<group>"; };
 		170107361AD7EDCC009EF02B /* curl_config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = curl_config.h; sourceTree = "<group>"; };
-		170107371AD7EDCC009EF02B /* curl_config.h.cmake */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = curl_config.h.cmake; sourceTree = "<group>"; };
-		170107381AD7EDCC009EF02B /* curl_config.h.in */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = curl_config.h.in; sourceTree = "<group>"; };
 		170107391AD7EDCC009EF02B /* curl_endian.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = curl_endian.c; sourceTree = "<group>"; };
 		1701073A1AD7EDCC009EF02B /* curl_endian.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = curl_endian.h; sourceTree = "<group>"; };
 		1701073B1AD7EDCC009EF02B /* curl_fnmatch.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = curl_fnmatch.c; sourceTree = "<group>"; };
@@ -268,7 +262,6 @@
 		170107681AD7EDCC009EF02B /* file.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = file.h; sourceTree = "<group>"; };
 		170107691AD7EDCC009EF02B /* fileinfo.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = fileinfo.c; sourceTree = "<group>"; };
 		1701076A1AD7EDCC009EF02B /* fileinfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fileinfo.h; sourceTree = "<group>"; };
-		1701076B1AD7EDCC009EF02B /* firefox-db2pem.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "firefox-db2pem.sh"; sourceTree = "<group>"; };
 		1701076C1AD7EDCC009EF02B /* formdata.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = formdata.c; sourceTree = "<group>"; };
 		1701076D1AD7EDCC009EF02B /* formdata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = formdata.h; sourceTree = "<group>"; };
 		1701076E1AD7EDCC009EF02B /* ftp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ftp.c; sourceTree = "<group>"; };
@@ -315,31 +308,12 @@
 		170107971AD7EDCC009EF02B /* inet_pton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = inet_pton.h; sourceTree = "<group>"; };
 		170107981AD7EDCC009EF02B /* krb5.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = krb5.c; sourceTree = "<group>"; };
 		170107991AD7EDCC009EF02B /* ldap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ldap.c; sourceTree = "<group>"; };
-		1701079A1AD7EDCC009EF02B /* libcurl.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = libcurl.plist; sourceTree = "<group>"; };
-		1701079B1AD7EDCC009EF02B /* libcurl.rc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = libcurl.rc; sourceTree = "<group>"; };
-		1701079C1AD7EDCC009EF02B /* libcurl.vers.in */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = libcurl.vers.in; sourceTree = "<group>"; };
 		1701079D1AD7EDCC009EF02B /* llist.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = llist.c; sourceTree = "<group>"; };
 		1701079E1AD7EDCC009EF02B /* llist.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = llist.h; sourceTree = "<group>"; };
-		1701079F1AD7EDCC009EF02B /* Makefile.am */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Makefile.am; sourceTree = "<group>"; };
-		170107A01AD7EDCC009EF02B /* makefile.amiga */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = makefile.amiga; sourceTree = "<group>"; };
-		170107A11AD7EDCC009EF02B /* Makefile.b32 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Makefile.b32; sourceTree = "<group>"; };
-		170107A21AD7EDCC009EF02B /* makefile.dj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = makefile.dj; sourceTree = "<group>"; };
-		170107A31AD7EDCC009EF02B /* Makefile.in */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Makefile.in; sourceTree = "<group>"; };
-		170107A41AD7EDCC009EF02B /* Makefile.inc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.pascal; path = Makefile.inc; sourceTree = "<group>"; };
-		170107A51AD7EDCC009EF02B /* Makefile.m32 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Makefile.m32; sourceTree = "<group>"; };
-		170107A61AD7EDCC009EF02B /* Makefile.netware */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Makefile.netware; sourceTree = "<group>"; };
-		170107A71AD7EDCC009EF02B /* Makefile.vc10 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Makefile.vc10; sourceTree = "<group>"; };
-		170107A81AD7EDCD009EF02B /* Makefile.vc6 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Makefile.vc6; sourceTree = "<group>"; };
-		170107A91AD7EDCD009EF02B /* Makefile.vc8 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Makefile.vc8; sourceTree = "<group>"; };
-		170107AA1AD7EDCD009EF02B /* Makefile.vc9 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Makefile.vc9; sourceTree = "<group>"; };
-		170107AB1AD7EDCD009EF02B /* Makefile.vxworks */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Makefile.vxworks; sourceTree = "<group>"; };
-		170107AC1AD7EDCD009EF02B /* Makefile.Watcom */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Makefile.Watcom; sourceTree = "<group>"; };
 		170107AD1AD7EDCD009EF02B /* md4.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = md4.c; sourceTree = "<group>"; };
 		170107AE1AD7EDCD009EF02B /* md5.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = md5.c; sourceTree = "<group>"; };
 		170107AF1AD7EDCD009EF02B /* memdebug.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = memdebug.c; sourceTree = "<group>"; };
 		170107B01AD7EDCD009EF02B /* memdebug.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = memdebug.h; sourceTree = "<group>"; };
-		170107B11AD7EDCD009EF02B /* mk-ca-bundle.pl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.perl; path = "mk-ca-bundle.pl"; sourceTree = "<group>"; };
-		170107B21AD7EDCD009EF02B /* mk-ca-bundle.vbs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "mk-ca-bundle.vbs"; sourceTree = "<group>"; };
 		170107B31AD7EDCD009EF02B /* mprintf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mprintf.c; sourceTree = "<group>"; };
 		170107B41AD7EDCD009EF02B /* multi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = multi.c; sourceTree = "<group>"; };
 		170107B51AD7EDCD009EF02B /* multihandle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = multihandle.h; sourceTree = "<group>"; };
@@ -352,9 +326,6 @@
 		170107BC1AD7EDCD009EF02B /* nonblock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nonblock.h; sourceTree = "<group>"; };
 		170107BD1AD7EDCD009EF02B /* nwlib.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = nwlib.c; sourceTree = "<group>"; };
 		170107BE1AD7EDCD009EF02B /* nwos.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = nwos.c; sourceTree = "<group>"; };
-		170107BF1AD7EDCD009EF02B /* objnames-test08.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "objnames-test08.sh"; sourceTree = "<group>"; };
-		170107C01AD7EDCD009EF02B /* objnames-test10.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "objnames-test10.sh"; sourceTree = "<group>"; };
-		170107C11AD7EDCD009EF02B /* objnames.inc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.pascal; path = objnames.inc; sourceTree = "<group>"; };
 		170107C21AD7EDCD009EF02B /* openldap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = openldap.c; sourceTree = "<group>"; };
 		170107C31AD7EDCD009EF02B /* parsedate.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = parsedate.c; sourceTree = "<group>"; };
 		170107C41AD7EDCD009EF02B /* parsedate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = parsedate.h; sourceTree = "<group>"; };
@@ -368,16 +339,6 @@
 		170107CC1AD7EDCD009EF02B /* progress.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = progress.h; sourceTree = "<group>"; };
 		170107CD1AD7EDCD009EF02B /* rawstr.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = rawstr.c; sourceTree = "<group>"; };
 		170107CE1AD7EDCD009EF02B /* rawstr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rawstr.h; sourceTree = "<group>"; };
-		170107CF1AD7EDCD009EF02B /* README.ares */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.ares; sourceTree = "<group>"; };
-		170107D01AD7EDCD009EF02B /* README.curlx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.curlx; sourceTree = "<group>"; };
-		170107D11AD7EDCD009EF02B /* README.curl_off_t */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.curl_off_t; sourceTree = "<group>"; };
-		170107D21AD7EDCD009EF02B /* README.encoding */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.encoding; sourceTree = "<group>"; };
-		170107D31AD7EDCD009EF02B /* README.hostip */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.hostip; sourceTree = "<group>"; };
-		170107D41AD7EDCD009EF02B /* README.httpauth */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.httpauth; sourceTree = "<group>"; };
-		170107D51AD7EDCD009EF02B /* README.memoryleak */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.memoryleak; sourceTree = "<group>"; };
-		170107D61AD7EDCD009EF02B /* README.multi_socket */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.multi_socket; sourceTree = "<group>"; };
-		170107D71AD7EDCD009EF02B /* README.pingpong */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.pingpong; sourceTree = "<group>"; };
-		170107D81AD7EDCD009EF02B /* README.pipelining */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.pipelining; sourceTree = "<group>"; };
 		170107D91AD7EDCD009EF02B /* rtsp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = rtsp.c; sourceTree = "<group>"; };
 		170107DA1AD7EDCD009EF02B /* rtsp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rtsp.h; sourceTree = "<group>"; };
 		170107DB1AD7EDCD009EF02B /* security.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = security.c; sourceTree = "<group>"; };
@@ -575,8 +536,6 @@
 				170107191AD7EDCC009EF02B /* base64.c */,
 				1701071A1AD7EDCC009EF02B /* bundles.c */,
 				1701071B1AD7EDCC009EF02B /* bundles.h */,
-				1701071C1AD7EDCC009EF02B /* checksrc.pl */,
-				1701071D1AD7EDCC009EF02B /* CMakeLists.txt */,
 				1701071E1AD7EDCC009EF02B /* config-amigaos.h */,
 				1701071F1AD7EDCC009EF02B /* config-dos.h */,
 				170107201AD7EDCC009EF02B /* config-mac.h */,
@@ -602,8 +561,6 @@
 				170107341AD7EDCC009EF02B /* curl_config-32.h */,
 				170107351AD7EDCC009EF02B /* curl_config-64.h */,
 				170107361AD7EDCC009EF02B /* curl_config.h */,
-				170107371AD7EDCC009EF02B /* curl_config.h.cmake */,
-				170107381AD7EDCC009EF02B /* curl_config.h.in */,
 				170107391AD7EDCC009EF02B /* curl_endian.c */,
 				1701073A1AD7EDCC009EF02B /* curl_endian.h */,
 				1701073B1AD7EDCC009EF02B /* curl_fnmatch.c */,
@@ -654,7 +611,6 @@
 				170107681AD7EDCC009EF02B /* file.h */,
 				170107691AD7EDCC009EF02B /* fileinfo.c */,
 				1701076A1AD7EDCC009EF02B /* fileinfo.h */,
-				1701076B1AD7EDCC009EF02B /* firefox-db2pem.sh */,
 				1701076C1AD7EDCC009EF02B /* formdata.c */,
 				1701076D1AD7EDCC009EF02B /* formdata.h */,
 				1701076E1AD7EDCC009EF02B /* ftp.c */,
@@ -701,31 +657,12 @@
 				170107971AD7EDCC009EF02B /* inet_pton.h */,
 				170107981AD7EDCC009EF02B /* krb5.c */,
 				170107991AD7EDCC009EF02B /* ldap.c */,
-				1701079A1AD7EDCC009EF02B /* libcurl.plist */,
-				1701079B1AD7EDCC009EF02B /* libcurl.rc */,
-				1701079C1AD7EDCC009EF02B /* libcurl.vers.in */,
 				1701079D1AD7EDCC009EF02B /* llist.c */,
 				1701079E1AD7EDCC009EF02B /* llist.h */,
-				1701079F1AD7EDCC009EF02B /* Makefile.am */,
-				170107A01AD7EDCC009EF02B /* makefile.amiga */,
-				170107A11AD7EDCC009EF02B /* Makefile.b32 */,
-				170107A21AD7EDCC009EF02B /* makefile.dj */,
-				170107A31AD7EDCC009EF02B /* Makefile.in */,
-				170107A41AD7EDCC009EF02B /* Makefile.inc */,
-				170107A51AD7EDCC009EF02B /* Makefile.m32 */,
-				170107A61AD7EDCC009EF02B /* Makefile.netware */,
-				170107A71AD7EDCC009EF02B /* Makefile.vc10 */,
-				170107A81AD7EDCD009EF02B /* Makefile.vc6 */,
-				170107A91AD7EDCD009EF02B /* Makefile.vc8 */,
-				170107AA1AD7EDCD009EF02B /* Makefile.vc9 */,
-				170107AB1AD7EDCD009EF02B /* Makefile.vxworks */,
-				170107AC1AD7EDCD009EF02B /* Makefile.Watcom */,
 				170107AD1AD7EDCD009EF02B /* md4.c */,
 				170107AE1AD7EDCD009EF02B /* md5.c */,
 				170107AF1AD7EDCD009EF02B /* memdebug.c */,
 				170107B01AD7EDCD009EF02B /* memdebug.h */,
-				170107B11AD7EDCD009EF02B /* mk-ca-bundle.pl */,
-				170107B21AD7EDCD009EF02B /* mk-ca-bundle.vbs */,
 				170107B31AD7EDCD009EF02B /* mprintf.c */,
 				170107B41AD7EDCD009EF02B /* multi.c */,
 				170107B51AD7EDCD009EF02B /* multihandle.h */,
@@ -738,9 +675,6 @@
 				170107BC1AD7EDCD009EF02B /* nonblock.h */,
 				170107BD1AD7EDCD009EF02B /* nwlib.c */,
 				170107BE1AD7EDCD009EF02B /* nwos.c */,
-				170107BF1AD7EDCD009EF02B /* objnames-test08.sh */,
-				170107C01AD7EDCD009EF02B /* objnames-test10.sh */,
-				170107C11AD7EDCD009EF02B /* objnames.inc */,
 				170107C21AD7EDCD009EF02B /* openldap.c */,
 				170107C31AD7EDCD009EF02B /* parsedate.c */,
 				170107C41AD7EDCD009EF02B /* parsedate.h */,
@@ -754,16 +688,6 @@
 				170107CC1AD7EDCD009EF02B /* progress.h */,
 				170107CD1AD7EDCD009EF02B /* rawstr.c */,
 				170107CE1AD7EDCD009EF02B /* rawstr.h */,
-				170107CF1AD7EDCD009EF02B /* README.ares */,
-				170107D01AD7EDCD009EF02B /* README.curlx */,
-				170107D11AD7EDCD009EF02B /* README.curl_off_t */,
-				170107D21AD7EDCD009EF02B /* README.encoding */,
-				170107D31AD7EDCD009EF02B /* README.hostip */,
-				170107D41AD7EDCD009EF02B /* README.httpauth */,
-				170107D51AD7EDCD009EF02B /* README.memoryleak */,
-				170107D61AD7EDCD009EF02B /* README.multi_socket */,
-				170107D71AD7EDCD009EF02B /* README.pingpong */,
-				170107D81AD7EDCD009EF02B /* README.pipelining */,
 				170107D91AD7EDCD009EF02B /* rtsp.c */,
 				170107DA1AD7EDCD009EF02B /* rtsp.h */,
 				170107DB1AD7EDCD009EF02B /* security.c */,
@@ -1038,7 +962,6 @@
 				170108581AD7EDCD009EF02B /* http2.c in Sources */,
 				1701085B1AD7EDCD009EF02B /* http_negotiate.c in Sources */,
 				170109241AD7EE6A009EF02B /* tool_metalink.c in Sources */,
-				170108711AD7EDCD009EF02B /* objnames.inc in Sources */,
 				170108971AD7EDCD009EF02B /* gtls.c in Sources */,
 				170108321AD7EDCD009EF02B /* curl_addrinfo.c in Sources */,
 				1701084E1AD7EDCD009EF02B /* gopher.c in Sources */,
@@ -1060,7 +983,6 @@
 				1701088C1AD7EDCD009EF02B /* telnet.c in Sources */,
 				1701084C1AD7EDCD009EF02B /* getenv.c in Sources */,
 				1701083A1AD7EDCD009EF02B /* curl_ntlm_core.c in Sources */,
-				170108661AD7EDCD009EF02B /* Makefile.inc in Sources */,
 				170109131AD7EE6A009EF02B /* tool_cb_rea.c in Sources */,
 				170108401AD7EDCD009EF02B /* curl_sasl_sspi.c in Sources */,
 				170108631AD7EDCD009EF02B /* krb5.c in Sources */,

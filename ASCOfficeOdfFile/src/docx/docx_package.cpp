@@ -265,7 +265,6 @@ namespace
 								xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" \
 								xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" \
 								xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" \
-								xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" \
 								xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
 								xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" \
 								xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" >";

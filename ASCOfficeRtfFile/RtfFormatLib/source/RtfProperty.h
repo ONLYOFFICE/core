@@ -1870,14 +1870,14 @@ public:
 		DEFAULT_PROPERTY( m_nWidth )
 		m_eMUWidth = mu_none;
 
-		m_nDefCellMarBottom = 0;
-		m_nDefCellMarRight = 108;
-		m_nDefCellMarLeft = 108;
-		m_nDefCellMarTop = 0;
-		//DEFAULT_PROPERTY( m_nDefCellMarBottom )
-		//DEFAULT_PROPERTY( m_nDefCellMarRight )
-		//DEFAULT_PROPERTY( m_nDefCellMarLeft )
-		//DEFAULT_PROPERTY( m_nDefCellMarTop )
+		//m_nDefCellMarBottom = 0;
+		//m_nDefCellMarRight = 108;
+		//m_nDefCellMarLeft = 108;
+		//m_nDefCellMarTop = 0;
+		DEFAULT_PROPERTY( m_nDefCellMarBottom )
+		DEFAULT_PROPERTY( m_nDefCellMarRight )
+		DEFAULT_PROPERTY( m_nDefCellMarLeft )
+		DEFAULT_PROPERTY( m_nDefCellMarTop )
 
 		m_nDefCellMarBottomUnits = 3;
 		m_nDefCellMarRightUnits = 3;
@@ -2170,7 +2170,8 @@ public:
 	RtfBorder m_oBorderInsideH;
 	RtfBorder m_oBorderInsideV;
 
-	RtfShadingCell m_oShading;
+	RtfShadingCell	m_oShading;
+	int				m_nShadingPctFrom;
 
 	typedef enum{ ca_none, 
 					ca_Top, //\clvertalt	Text is top-aligned in cell (the default).
@@ -2256,7 +2257,9 @@ public:
 		m_oBorderBottom.SetDefault();
 		m_oBorderInsideH.SetDefault();
 		m_oBorderInsideV.SetDefault();
+		
 		m_oShading.SetDefault();
+		DEFAULT_PROPERTY( m_nShadingPctFrom )
 
 		m_eAlign = ca_none;
 		m_oCellFlow = cf_none;
@@ -2324,6 +2327,7 @@ public:
 		m_oBorderInsideV.Merge( oCellPr.m_oBorderInsideV );
 		
 		m_oShading.Merge( oCellPr.m_oShading );
+		MERGE_PROPERTY	( m_nShadingPctFrom, oCellPr)
 
 		MERGE_PROPERTY_DEF( m_eAlign, oCellPr, ca_none )
 		MERGE_PROPERTY_DEF( m_oCellFlow, oCellPr, cf_none )

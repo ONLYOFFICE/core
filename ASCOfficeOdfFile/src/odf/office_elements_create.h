@@ -23,7 +23,12 @@ typedef shared_ptr<office_element>::Type office_element_ptr;
 
 #define CP_REGISTER_OFFICE_ELEMENT2(A) \
 namespace { \
-    RegisterElement<A> RegisterElement##A;\
+    RegisterElement<A> RegisterElement##A(true);\
+}
+
+#define CP_REGISTER_OFFICE_ELEMENT3(A) \
+namespace { \
+    RegisterElement<A> RegisterElement1##A(false);\
 }
 
 class office_element_creator
@@ -62,20 +67,30 @@ private:
     public:
         static typename shared_ptr<V>::Type create()
         {
-            //return shared_ptr<T>::Type( new T() );
             return boost::make_shared<V>();
         }
     };
 
     static int class_registered_;
+    static int class_registered_1_;
 public:
-    RegisterElement()
+    RegisterElement(bool is_namespace)
     {
-        if (class_registered_++ == 0)
-        {
-            // Jerry Schwarz counter
-            office_element_creator::get()->register_element(T::ns, T::name, &CreateImpl_<T>::create);            
-        }
+		if (is_namespace)
+		{
+			if (class_registered_++ == 0)// Jerry Schwarz counter
+			{	            
+				office_element_creator::get()->register_element(T::ns, T::name, &CreateImpl_<T>::create);  
+			}
+		}
+		else
+		{
+			if (class_registered_1_++ == 0)
+			{
+				std::wstring ns_;
+				office_element_creator::get()->register_element(ns_, T::name, &CreateImpl_<T>::create);  
+			}
+		}
     }
 
     ~RegisterElement()
@@ -83,7 +98,9 @@ public:
     }
 };
 
-template<class T> int RegisterElement<T>::class_registered_ = 0;
+template<class T> int RegisterElement<T>::class_registered_		= 0; //with namespace
+template<class T> int RegisterElement<T>::class_registered_1_	= 0; //without namespace
+
 
 /// \brief  Создать элемент и в случае успеха прочитать его содержимое из SAX, поместить в shared_ptr
 bool create_element_and_read(xml::sax * Reader,
@@ -102,11 +119,12 @@ bool create_element_and_read(xml::sax * Reader,
                              bool isRoot = false);
 
 
-#define CP_CREATE_ELEMENT_SIMPLE(ELEMENT) create_element_and_read(Reader, Ns, Name, (ELEMENT), Context)
-#define CP_CREATE_ELEMENT(ELEMENT) create_element_and_read(Reader, Ns, Name, (ELEMENT), getContext())
-#define _CPDOCCORE_CREATE_ELEMENT_ROOT(ELEMENT) create_element_and_read(Reader, Ns, Name, (ELEMENT), getContext(), true)
+#define CP_CREATE_ELEMENT_SIMPLE(ELEMENT)		create_element_and_read(Reader, Ns, Name, (ELEMENT),	Context)
+#define CP_CREATE_ELEMENT(ELEMENT)				create_element_and_read(Reader, Ns, Name, (ELEMENT),	getContext())
+#define _CPDOCCORE_CREATE_ELEMENT_ROOT(ELEMENT) create_element_and_read(Reader, Ns, Name, (ELEMENT),	getContext(), true)
 
 #define CP_CHECK_NAME(NS, NAME) ((NS) == Ns && (NAME) == Name)
+#define CP_CHECK_NAME1(NAME) ((NAME) == Name)
 
 void not_applicable_element(const office_element * CurrentElm, xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 void not_applicable_element(const std::wstring & Current, xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);

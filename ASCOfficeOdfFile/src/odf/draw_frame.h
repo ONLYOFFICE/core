@@ -270,8 +270,8 @@ private:
     virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
 
 public:
-    draw_object_attlist draw_object_attlist_;
-    odf_types::common_xlink_attlist common_xlink_attlist_;
+    draw_object_attlist					draw_object_attlist_;
+    odf_types::common_xlink_attlist		common_xlink_attlist_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(draw_object);

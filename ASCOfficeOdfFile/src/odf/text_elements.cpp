@@ -119,7 +119,7 @@ int process_paragraph_attr(const paragraph_attrs & Attr, oox::docx_conversion_co
                     std::wstring id;
                     if (const style_instance * parentStyleContent = styleInst->parent())
 					{
-                        id = Context.get_style_map().get( parentStyleContent->name(), parentStyleContent->type() );
+                        id = Context.styles_map_.get( parentStyleContent->name(), parentStyleContent->type() );
 					}
 
                     Context.start_automatic_style(id);
@@ -153,7 +153,7 @@ int process_paragraph_attr(const paragraph_attrs & Attr, oox::docx_conversion_co
             }
             else
             {
-                const std::wstring id = Context.get_style_map().get( styleInst->name(), styleInst->type() );
+                const std::wstring id = Context.styles_map_.get( styleInst->name(), styleInst->type() );
 				std::wostream & _Wostream = Context.output_stream();
                 _Wostream << L"<w:pPr>";
 					_Wostream << Context.get_section_context().dump_;

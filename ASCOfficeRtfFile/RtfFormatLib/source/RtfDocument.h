@@ -7,23 +7,23 @@
 class RtfDocument :public ItemContainer<RtfSectionPtr>
 {
 public: 
-	RtfDocumentProperty m_oProperty;
-	RtfFontTable m_oFontTable;
-	RtfColorTable m_oColorTable;
-	RtfStyleTable m_oStyleTable;
-	RtfInformation m_oInformation;
+	RtfDocumentProperty		m_oProperty;
+	RtfFontTable			m_oFontTable;
+	RtfColorTable			m_oColorTable;
+	RtfStyleTable			m_oStyleTable;
+	RtfInformation			m_oInformation;
 
-	RtfListTable m_oListTabel;
-	RtfListOverrideTable m_oListOverrideTabel;
+	RtfListTable			m_oListTabel;
+	RtfListOverrideTable	m_oListOverrideTabel;
 
-	RtfParagraphProperty m_oDefaultParagraphProp;
-	RtfCharProperty m_oDefaultCharProp;
-	RtfMathProperty m_oMathProp;
+	RtfParagraphProperty	m_oDefaultParagraphProp;
+	RtfCharProperty			m_oDefaultCharProp;
+	RtfMathProperty			m_oMathProp;
 
-	TextItemContainerPtr m_oFootnoteSep;
-	TextItemContainerPtr m_oFootnoteCon;
-	TextItemContainerPtr m_oEndnoteSep;
-	TextItemContainerPtr m_oEndnoteCon;
+	TextItemContainerPtr	m_oFootnoteSep;
+	TextItemContainerPtr	m_oFootnoteCon;
+	TextItemContainerPtr	m_oEndnoteSep;
+	TextItemContainerPtr	m_oEndnoteCon;
 
 //для того чтобы конвертировать старый формат List в Numbering
 	std::vector<RtfOldListPtr> m_aOldLists;

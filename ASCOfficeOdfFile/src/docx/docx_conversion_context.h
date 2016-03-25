@@ -85,7 +85,9 @@ private:
     std::wstring name(const std::wstring & Name, odf_types::style_family::type Type);
     
     size_t count_;
-    boost::unordered_map<std::wstring, std::wstring> map_;
+    //boost::unordered_map<std::wstring, std::wstring> map_;
+
+	std::multimap<std::wstring, std::wstring> map_;
 
 };
 
@@ -471,7 +473,7 @@ public:
     bool in_automatic_style();
 
     styles_context	& get_styles_context()	{ return styles_context_; }
-    styles_map		& get_style_map()		{ return style_map_; }
+    styles_map		* get_style_map()		{ return &styles_map_; }
 
     void push_text_properties(const odf_reader::style_text_properties * TextProperties);
     void pop_text_properties();
@@ -521,9 +523,9 @@ public:
 
     docx_table_context & get_table_context() { return table_context_; }
 
-	section_context & get_section_context() { return section_context_; }
+	section_context				& get_section_context() { return section_context_; }
+    odf_reader::office_element	* get_section_properties_in_table();
 	void section_properties_in_table(odf_reader::office_element * Elm);
-    odf_reader::office_element * get_section_properties_in_table();
 
     typedef boost::shared_ptr<streams_man> StreamsManPtr;
     void set_stream_man(StreamsManPtr Sm) { streams_man_ = Sm; }
@@ -548,12 +550,18 @@ public:
 	void end_comment()		{process_comment_ = false;}
 	bool process_comment_;
    
+	void start_math_formula();
+	void end_math_formula();
+	bool process_math_formula_;
+
 	void set_process_headers_footers(bool Val) { process_headers_footers_ = Val; }
     headers_footers & get_headers_footers() { return headers_footers_; }
 	header_footer_context & get_header_footer_context() { return header_footer_context_; }
 	bool process_headers_footers_;
 
 	drop_cap_context & get_drop_cap_context(){return drop_cap_context_;}
+	
+	styles_map styles_map_;
 private:
     std::wstringstream document_xml_;
     std::wstringstream styles_xml_;
@@ -579,7 +587,6 @@ private:
 	hyperlinks hyperlinks_;
     mediaitems mediaitems_;
      
-	styles_map style_map_;
     styles_context styles_context_;
 
     std::wstring automatic_parent_style_; 

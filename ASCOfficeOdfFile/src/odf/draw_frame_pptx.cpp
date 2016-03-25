@@ -246,8 +246,8 @@ void draw_object::pptx_convert(oox::pptx_conversion_context & Context)
     try {
         const std::wstring href		= common_xlink_attlist_.href_.get_value_or(L"");
 
-        odf_reader::odf_document::Impl * odfImpl = Context.root()->get_impl();
-		const std::wstring folderPath = odfImpl->get_folder();
+        odf_reader::odf_document * odf_reader	= Context.root();        
+		std::wstring folderPath					= odf_reader->get_folder();
 
         std::wstring objectPath = folderPath + FILE_SEPARATOR_STR +  href;
 

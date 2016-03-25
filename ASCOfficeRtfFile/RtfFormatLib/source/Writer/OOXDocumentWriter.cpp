@@ -95,13 +95,39 @@ CString OOXDocumentWriter::CreateXmlEnd( )
 	OOXNumberingWriter* poNumberingWriter = static_cast<OOXNumberingWriter*>( m_oWriter.m_poNumberingWriter );
 	oNewParam.poRels	= poNumberingWriter->m_oRelsWriter.get();
 	oNewParam.nType		= RENDER_TO_OOX_PARAM_NUMBERING;
+	
 	poNumberingWriter->AddNumbering( m_oDocument.m_oListTabel.RenderToOOX(oNewParam) );
 	poNumberingWriter->AddNumbering( m_oDocument.m_oListOverrideTabel.RenderToOOX(oNewParam) );
 
 	//style.xml
 	OOXStylesWriter* poStylesWriter = static_cast<OOXStylesWriter*>( m_oWriter.m_poStylesWriter );
 	oNewParam.poRels	= poNumberingWriter->m_oRelsWriter.get();
-	oNewParam.nType		= RENDER_TO_OOX_PARAM_NUMBERING;
+	oNewParam.nType		= RENDER_TO_OOX_PARAM_STYLES;
+
+	CString sStyles;
+	CString sTempParaDef = m_oDocument.m_oDefaultParagraphProp.RenderToOOX(oNewParam);
+	CString sTempCharDef = m_oDocument.m_oDefaultCharProp.RenderToOOX(oNewParam);
+	
+	if( false == sTempParaDef.IsEmpty() || false == sTempCharDef.IsEmpty() )
+	{
+		sStyles += _T("<w:docDefaults>");
+		if( false == sTempParaDef.IsEmpty() )
+		{
+			sStyles += _T("<w:pPrDefault><w:pPr>");
+			sStyles +=  sTempParaDef;
+			sStyles += _T("</w:pPr></w:pPrDefault>");
+		}
+		if( false == sTempCharDef.IsEmpty() )
+		{
+			sStyles += _T("<w:rPrDefault><w:rPr>");
+			sStyles += sTempCharDef ;
+			sStyles += _T("</w:rPr></w:rPrDefault>");
+		}
+		sStyles.Append(_T("</w:docDefaults>"));
+	}
+
+	sStyles += m_oDocument.m_oStyleTable.RenderToOOX(oNewParam);
+	poStylesWriter->AddContent(sStyles);
 
 	//core.xml
 	oNewParam.poRels	= NULL;

@@ -152,8 +152,8 @@ void draw_frame::add_attributes( const xml::attributes_wc_ptr & Attributes )
 void draw_frame::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
 {
     if (CP_CHECK_NAME(L"draw", L"text-box") ||
-        CP_CHECK_NAME(L"draw", L"image") ||//копия чарта в виде картинки ну.. или просто картинка
-        CP_CHECK_NAME(L"draw", L"object") ||//месторасположение чарта
+        CP_CHECK_NAME(L"draw", L"image") ||//копия объекта в виде картинки ну.. или просто картинка
+        CP_CHECK_NAME(L"draw", L"object") ||//месторасположение embedded объекта
         CP_CHECK_NAME(L"draw", L"object-ole") ||
         CP_CHECK_NAME(L"draw", L"applet") ||
         CP_CHECK_NAME(L"draw", L"floating-frame") ||

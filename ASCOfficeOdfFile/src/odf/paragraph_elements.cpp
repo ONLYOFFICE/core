@@ -52,7 +52,7 @@ const wchar_t * text::name = L"";
 void text::add_text(const std::wstring & Text) 
 {
     text_ = Text;
-};
+}
 
 void text::docx_convert(oox::docx_conversion_context & Context)
 {
@@ -347,7 +347,7 @@ void span::docx_convert(oox::docx_conversion_context & Context)
             }
             else
             {
-                const std::wstring id = Context.get_style_map().get( styleInst->name(), styleInst->type() );
+                const std::wstring id = Context.styles_map_.get( styleInst->name(), styleInst->type() );
                 Context.add_new_run(id);
                 addNewRun = true;
             }                        
@@ -465,7 +465,7 @@ void a::docx_convert(oox::docx_conversion_context & Context)
         }
         else
         {
-            const std::wstring id = Context.get_style_map().get( styleInst->name(), styleInst->type() );
+            const std::wstring id = Context.styles_map_.get( styleInst->name(), styleInst->type() );
             tempStyleTextProp = style_text_properties_ptr( new style_text_properties(id) );
             Context.push_text_properties( tempStyleTextProp.get() );
             pushed = true;
@@ -573,7 +573,7 @@ void note::docx_convert(oox::docx_conversion_context & Context)
                 = Context.root()->odf_context().styleContainer().style_by_name(styleName, style_family::Text,Context.process_headers_footers_)
                 )
             {
-                const std::wstring id = Context.get_style_map().get( styleInst->name(), styleInst->type() );
+                const std::wstring id = Context.styles_map_.get( styleInst->name(), styleInst->type() );
 				Context.add_new_run(id);
                 addNewRun = true;
             }

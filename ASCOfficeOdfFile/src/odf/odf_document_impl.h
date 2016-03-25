@@ -31,7 +31,9 @@ public:
     bool pptx_convert(oox::pptx_conversion_context & Context);
 
     const std::wstring & get_folder() const { return base_folder_; }
-    const office_element * get_content() const;
+   
+	const	office_element * get_content() const;
+			office_element * get_content();
 
 	long get_office_mime_type() {return office_mime_type_;}
 

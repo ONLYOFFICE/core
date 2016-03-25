@@ -727,8 +727,12 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, const unio
 	odf_reader::style_instance* styleInst = Context.root()->odf_context().styleContainer().style_by_name(styleName, odf_types::style_family::Graphic,Context.process_headers_footers_);
 	if (styleInst)
 	{
-		style_instance * defaultStyle = Context.root()->odf_context().styleContainer().style_default_by_type(odf_types::style_family::Graphic);
-		if (defaultStyle)instances.push_back(defaultStyle);
+		if (drawing.sub_type > 0)
+		{
+			style_instance * defaultStyle = Context.root()->odf_context().styleContainer().style_default_by_type(odf_types::style_family::Graphic);
+			if (defaultStyle)instances.push_back(defaultStyle);
+		}
+		
 		instances.push_back(styleInst);
 	}
 	graphic_format_properties graphicProperties = calc_graphic_properties_content(instances);	
@@ -778,6 +782,9 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, const unio
 
 	if (!drawing.isInline)
     {
+		if (!drawing.styleWrap)
+			drawing.styleWrap = style_wrap(style_wrap::Parallel);//у опен офис и мс разные дефолты
+
         drawing.relativeHeight = L"2";
         drawing.behindDoc = L"0";
 
@@ -1228,7 +1235,7 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
         cpdoccore::odf_reader::odf_document objectSubDoc(objectPath,NULL);    
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //функциональная часть
-		const office_element *contentSubDoc = objectSubDoc.get_impl()->get_content();
+		office_element *contentSubDoc = objectSubDoc.get_impl()->get_content();
 		if (!contentSubDoc)
 			return;
 
@@ -1237,44 +1244,89 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
         contentSubDoc->accept(process_build_object_); 
 
 		objectBuild.docx_convert(Context);		
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		
-		if (objectBuild.object_type_ == 1) //диаграмма
+		draw_frame * frame = Context.get_drawing_context().get_current_frame();//owner
+		if (!frame)
+			return;
+//------------------------------------------------------------------------------------------------------------
+		if (objectBuild.object_type_ == 1 ) //диаграмма
 		{	
-			//отображательная часть	
-			const draw_frame * frame = Context.get_drawing_context().get_current_frame();//owner
-			if (!frame)
-				return;
 			oox::_docx_drawing drawing = oox::_docx_drawing();
 
-			drawing.type = oox::mediaitems::typeChart;
+			drawing.type	=  oox::mediaitems::typeChart;
 			
-			drawing.id = Context.get_drawing_context().get_current_frame_id();
-			drawing.name = Context.get_drawing_context().get_current_object_name();
+			drawing.id		= Context.get_drawing_context().get_current_frame_id();
+			drawing.name	= Context.get_drawing_context().get_current_object_name();
 			
 			bool isMediaInternal = true;        
-			drawing.chartId = Context.add_mediaitem(href, oox::mediaitems::typeChart, isMediaInternal, href);
-
-			common_draw_docx_convert(Context, frame->common_draw_attlists_, drawing);
+			drawing.chartId = Context.add_mediaitem(href, drawing.type, isMediaInternal, href);
 			
+			common_draw_docx_convert(Context, frame->common_draw_attlists_, drawing);
+						
 			bool runState	= Context.get_run_state();
 			bool pState		= Context.get_paragraph_state();
 			
 			Context.set_run_state(false);	
 			Context.set_paragraph_state(false);	
 			
-			std::wostream & strm = Context.output_stream();		
-			
 			Context.add_new_run(_T(""));
 			
-			docx_serialize(strm, drawing);
+			docx_serialize(Context.output_stream(), drawing);
 			
 			Context.finish_run();
 			
 			Context.set_run_state(runState);
 			Context.set_paragraph_state(pState);	
 		}
-		else if (objectBuild.object_type_ == 0 || objectBuild.object_type_ == 3) 
+		else if (objectBuild.object_type_ == 3) //мат формулы
+		{	
+			oox::_docx_drawing drawing = oox::_docx_drawing();
+
+			drawing.type	= oox::mediaitems::typeShape;			
+			drawing.id		= Context.get_drawing_context().get_current_frame_id();
+			drawing.name	= Context.get_drawing_context().get_current_object_name();
+		
+			common_draw_docx_convert(Context, frame->common_draw_attlists_, drawing);
+			const std::wstring & content = Context.get_drawing_context().get_text_stream_frame();
+
+			bool runState	= Context.get_run_state();
+			bool pState		= Context.get_paragraph_state();
+			
+			if (drawing.isInline)
+			{
+				if (runState) Context.finish_run();
+				if (pState == false)
+				{
+					Context.output_stream() << L"<m:oMathPara>";
+					Context.output_stream() << L"<m:oMathParaPr/>";
+				}
+				Context.output_stream() << content;
+
+				if (pState == false)
+				{
+					Context.output_stream() << L"</m:oMathPara>";
+				}
+				if (runState) Context.add_new_run(_T(""));
+			}
+			else
+			{//in frame				
+				drawing.additional.push_back(_property(L"text-content",std::wstring(L"<w:p>") + content + L"</w:p>"));
+
+				Context.set_run_state(false);	
+				Context.set_paragraph_state(false);					
+				
+				Context.add_new_run(_T(""));
+				
+				docx_serialize(Context.output_stream(), drawing);
+				
+				Context.finish_run();
+				
+				Context.set_run_state(runState);
+				Context.set_paragraph_state(pState);
+			}
+			Context.get_drawing_context().clear_stream_frame();						
+		}
+		else if (objectBuild.object_type_ == 0) 
 		{
 			//временно - замещающая картинка(если она конечно присутствует)
 

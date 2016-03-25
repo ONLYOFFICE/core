@@ -11,7 +11,6 @@
 #include "datatypes/fontvariant.h"
 #include "datatypes/fontweight.h"
 #include "datatypes/fontstretch.h"
-#include "datatypes/length.h"
 #include "datatypes/fontfamilygeneric.h"
 #include "datatypes/fontpitch.h"
 

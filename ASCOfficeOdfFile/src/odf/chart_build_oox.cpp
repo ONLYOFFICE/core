@@ -168,7 +168,24 @@ void chart_build::docx_convert(oox::docx_conversion_context & Context)
 	}
 	else if (object_type_ == 3 && office_math_)
 	{
+		oox::docx_conversion_context::StreamsManPtr prev = Context.get_stream_man();
+		
+		std::wstringstream temp_stream(Context.get_drawing_context().get_text_stream_frame());
+		Context.set_stream_man( boost::shared_ptr<oox::streams_man>( new oox::streams_man(temp_stream) ));	
+		bool runState = Context.get_run_state();
+		Context.set_run_state(false);
+
+		bool pState = Context.get_paragraph_state();
+		Context.set_paragraph_state(false);		
+		
+		bool graphic_parent=false;
+		
 		office_math_->docx_convert(Context);
+
+		Context.get_drawing_context().get_text_stream_frame() = temp_stream.str();
+		Context.set_stream_man(prev);
+		Context.set_run_state(runState);
+		Context.set_paragraph_state(pState);	
 	}
 }
 void chart_build::pptx_convert(oox::pptx_conversion_context & Context)
@@ -235,7 +252,7 @@ void chart_build::oox_convert(oox::oox_chart_context & chart)
 
 	BOOST_FOREACH(series & s, series_)
 	{
-		if (s.class_!=last_set_type)
+		if (s.class_ != last_set_type)
 		{//разные типы серий в диаграмме - например бар и лини€.
 			chart.add_chart(s.class_);
 			last_set_type = s.class_;
@@ -249,8 +266,9 @@ void chart_build::oox_convert(oox::oox_chart_context & chart)
 	
 		current->add_series(series_id++);
 		
-		if (s.cell_range_address_.length()<1) s.cell_range_address_ = plot_area_.cell_range_address_;//SplitByColumn(ind_ser,range);
-																									//SplitByRow(ind_ser,range)
+		if (s.cell_range_address_.length() <1 ) 
+			s.cell_range_address_ = plot_area_.cell_range_address_; //SplitByColumn	(ind_ser,range);
+																	//SplitByRow	(ind_ser,range);
 		//тут данные нужно поделить по столбцам или строкам - так как в плот-ареа общий диапазон
 		//первый столбец-строка ћќ∆≈т использоватьс€ дл€ подписей
 		//кажда€ сери€ берет каждый последующий диапазрн
@@ -259,7 +277,7 @@ void chart_build::oox_convert(oox::oox_chart_context & chart)
 		std::vector<std::wstring>				cell_cash;
 		calc_cash_series(s.cell_range_address_,	cell_cash);
 
-		if (domain_cell_range_adress_.length()>0) 
+		if (domain_cell_range_adress_.length() > 0) 
 		{
 			std::vector<std::wstring> domain_cash;
 		
@@ -425,11 +443,12 @@ void process_build_chart::visit(office_text& val)
 	chart_build_.object_type_ = 2;
 	chart_build_.office_text_ = &val;//конвертаци€ будет уровнем выше
 }
-void process_build_chart::visit(const math& val)
+void process_build_chart::visit(office_math& val)
 {
 	chart_build_.object_type_ = 3;
-	//chart_build_.math_semantics_ = &val.semantics_;//конвертаци€ будет уровнем выше
+	chart_build_.office_math_ = &val;//конвертаци€ будет уровнем выше
 }
+
 void process_build_chart::visit(const chart_chart& val)
 {
 	chart_build_.object_type_ = 1;

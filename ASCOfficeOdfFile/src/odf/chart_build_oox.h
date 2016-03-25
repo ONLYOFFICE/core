@@ -121,7 +121,7 @@ public:
 
 	int			object_type_;
 	office_text *office_text_;
- 	math		*office_math_;
+ 	office_math	*office_math_;
  
 	std::wstring str_class_;  
 	chart::class_type class_;  
@@ -176,12 +176,10 @@ class process_build_chart : public base_visitor,
 	public const_visitor<office_document_content>,
     
 	public visitor<office_body>,
-    public visitor<office_chart>,
-    
+    public visitor<office_chart>,    
 	public visitor<office_text>,
-
- 	public const_visitor<math>,
-   
+	public visitor<office_math>,
+ 
     public const_visitor<chart_chart>,
 
     public const_visitor<chart_title>,
@@ -248,11 +246,13 @@ private:
 public:
 
 	virtual void visit(const office_document_content& val);
-	virtual void visit(office_body& val);
-    virtual void visit(office_chart& val);
-    virtual void visit(office_text& val);
-    virtual void visit(const math& val);
-    virtual void visit(const chart_chart& val);
+	
+	virtual void visit(office_body	& val);
+    virtual void visit(office_chart	& val);
+    virtual void visit(office_text	& val);   
+	virtual void visit(office_math	& val);
+
+	virtual void visit(const chart_chart& val);
 	virtual void visit(const chart_title& val);
     virtual void visit(const chart_subtitle& val);
     virtual void visit(const chart_footer& val);

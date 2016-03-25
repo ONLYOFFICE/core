@@ -27,25 +27,24 @@ namespace oox {
 
 docx_conversion_context::docx_conversion_context(package::docx_document * OutputDocument, odf_reader::odf_document * OdfDocument) : 
 	streams_man_( streams_man::create(temp_stream_) ), 
-	output_document_(OutputDocument), 
-	odf_document_(OdfDocument),
-	current_run_(false),
-	page_break_after_(false),
-	page_break_before_(false),
-	page_break_(false),
-	in_automatic_style_(false),
+	output_document_	(OutputDocument), 
+	odf_document_		(OdfDocument),
+	mediaitems_			(OdfDocument->get_folder() ),
+	current_run_			(false),
+	page_break_after_		(false),
+	page_break_before_		(false),
 	next_dump_page_properties_(false),
-	next_dump_section_(false),
-	mediaitems_( OdfDocument->get_folder() ),
-	in_paragraph_(false),
-	table_context_(*this),
+	in_automatic_style_		(false),
+	in_paragraph_			(false),
+	table_context_			(*this),
 	section_properties_in_table_(NULL),
-	new_list_style_number_(0),
-	rtl_(false),
-	delayed_converting_(false),
+	process_note_			(noNote),
+	new_list_style_number_	(0),	
+	rtl_					(false),
+	delayed_converting_		(false),
 	process_headers_footers_(false),
-	process_note_(noNote),
-	process_comment_(false)
+	process_comment_		(false),
+	process_math_formula_	(false)
 {
     applicationFonts_ = new CApplicationFonts();
 }
@@ -62,14 +61,20 @@ void docx_conversion_context::set_font_directory(std::wstring pathFonts)
 std::wstring styles_map::get(const std::wstring & Name, odf_types::style_family::type Type)
 {
     const std::wstring n = name(Name, Type);
-    if (map_.count(n))
+	
+	//typedef boost::unordered::unordered_map<std::wstring,std::wstring>::iterator _mapIter;
+	typedef std::multimap<std::wstring,std::wstring>::iterator _mapIter;
+	
+	_mapIter it = map_.find( n );
+    
+	if (it != map_.end() )
     {
-        return map_[n];
+        return it->second;
     }
     else
     {
         const std::wstring id = std::wstring(L"style") + boost::lexical_cast<std::wstring>(count_++);
-        map_[n] = id;
+        map_.insert(std::make_pair(n, id));
         return id;        
     }
 }
@@ -140,6 +145,19 @@ void docx_conversion_context::finish_run()
 		}
     }
 }
+void docx_conversion_context::start_math_formula()
+{
+	process_math_formula_ = true;
+
+	output_stream() << L"<m:oMath>";
+}
+
+void docx_conversion_context::end_math_formula()
+{
+	output_stream() << L"</m:oMath>";
+	process_math_formula_ = false;
+}
+
 void docx_conversion_context::start_chart(std::wstring const & name)
 {
 	charts_.push_back(oox_chart_context::create(name));
@@ -399,7 +417,6 @@ xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\"
 xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
 xmlns:o=\"urn:schemas-microsoft-com:office:office\" \
 xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
-xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" \
 xmlns:v=\"urn:schemas-microsoft-com:vml\" \
 xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" \
 xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" \
@@ -505,7 +522,7 @@ void docx_conversion_context::process_styles()
         // add all styles to the map
         BOOST_FOREACH(odf_reader::style_instance_ptr & inst, styles.instances())
         {
-            style_map_.get(inst->name(), inst->type());
+            styles_map_.get(inst->name(), inst->type());
         }
 
         _Wostream << L"<w:docDefaults>";
@@ -532,7 +549,7 @@ void docx_conversion_context::process_styles()
 					inst->type() == odf_types::style_family::Text
 					))
             {
-                const std::wstring id = style_map_.get(inst->name(), inst->type());
+                const std::wstring id = styles_map_.get(inst->name(), inst->type());
                 _Wostream << L"<w:style w:styleId=\"" << id << L"\" w:type=\"" << StyleTypeOdf2Docx(inst->type()) << L"\""; 
 				if (!inst->is_default())
 				{
@@ -546,18 +563,18 @@ void docx_conversion_context::process_styles()
 
                 if (odf_reader::style_instance * baseOn = inst->parent())
                 {
-                    const std::wstring basedOnId = style_map_.get(baseOn->name(), baseOn->type());
+                    const std::wstring basedOnId = styles_map_.get(baseOn->name(), baseOn->type());
                     _Wostream << L"<w:basedOn w:val=\"" << basedOnId << "\" />";
                 }
-                else if (!inst->is_default() && style_map_.check(L"", inst->type()))
+                else if (!inst->is_default() && styles_map_.check(L"", inst->type()))
                 {
-                    const std::wstring basedOnId = style_map_.get(L"", inst->type());
+                    const std::wstring basedOnId = styles_map_.get(L"", inst->type());
                     _Wostream << L"<w:basedOn w:val=\"" << basedOnId << "\" />";
                 }
 
                 if (odf_reader::style_instance * next = inst->next())
                 {
-                    const std::wstring nextId = style_map_.get(next->name(), next->type());
+                    const std::wstring nextId = styles_map_.get(next->name(), next->type());
                     _Wostream << L"<w:next w:val=\"" << nextId << "\" />";
                 }
                 else if (inst->is_default())

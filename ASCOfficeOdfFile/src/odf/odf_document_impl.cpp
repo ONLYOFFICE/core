@@ -33,6 +33,7 @@
 #include "templates.h"
 
 #include "math_elements.h"
+
 #include "paragraph_elements.h"
 #include "text_elements.h"
 
@@ -678,5 +679,9 @@ const office_element * odf_document::Impl::get_content() const
     return content_xml_->get_content();
 }
 
+office_element * odf_document::Impl::get_content()
+{
+    return content_xml_->get_content();
+}
 }
 }

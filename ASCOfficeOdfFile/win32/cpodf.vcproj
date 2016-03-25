@@ -1360,6 +1360,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\odf\math_elementaries.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\odf\math_elementaries.h"
+				>
+			</File>
+			<File
 				RelativePath="..\src\odf\math_elements.cpp"
 				>
 				<FileConfiguration
@@ -1373,6 +1381,38 @@
 			</File>
 			<File
 				RelativePath="..\src\odf\math_elements.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\odf\math_layout_elements.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\odf\math_layout_elements.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\odf\math_limit_elements.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\odf\math_limit_elements.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\odf\math_table_elements.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\odf\math_table_elements.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\odf\math_token_elements.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\odf\math_token_elements.h"
 				>
 			</File>
 			<File

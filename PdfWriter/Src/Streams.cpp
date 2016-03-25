@@ -6,7 +6,7 @@
 
 #include <sstream>
 
-#include "../../ASCOfficeUtils/ZLIB/zlib-1.2.3/zlib.h"
+#include "../../OfficeUtils/src/zlib-1.2.3/zlib.h"
 
 #define DEFLATE_BUF_SIZ  ((int)(STREAM_BUF_SIZ * 1.1) + 13)
 

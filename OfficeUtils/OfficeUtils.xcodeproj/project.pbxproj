@@ -1,0 +1,340 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		69676DAA1CA58BBE00D7A1D1 /* OfficeUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 69676CB81CA58BBD00D7A1D1 /* OfficeUtils.cpp */; };
+		69676DAB1CA58BBE00D7A1D1 /* ZipUtilsCP.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 69676CBB1CA58BBD00D7A1D1 /* ZipUtilsCP.cpp */; };
+		69676DD01CA58BBE00D7A1D1 /* ioapi.c in Sources */ = {isa = PBXBuildFile; fileRef = 69676D2A1CA58BBD00D7A1D1 /* ioapi.c */; };
+		69676DD31CA58BBE00D7A1D1 /* miniunz.c in Sources */ = {isa = PBXBuildFile; fileRef = 69676D2F1CA58BBD00D7A1D1 /* miniunz.c */; };
+		69676DD41CA58BBE00D7A1D1 /* minizip.c in Sources */ = {isa = PBXBuildFile; fileRef = 69676D301CA58BBD00D7A1D1 /* minizip.c */; };
+		69676DD51CA58BBE00D7A1D1 /* mztools.c in Sources */ = {isa = PBXBuildFile; fileRef = 69676D311CA58BBD00D7A1D1 /* mztools.c */; };
+		69676DD61CA58BBE00D7A1D1 /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = 69676D331CA58BBD00D7A1D1 /* unzip.c */; };
+		69676DD71CA58BBE00D7A1D1 /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = 69676D351CA58BBD00D7A1D1 /* zip.c */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		69676CA71CA58B7400D7A1D1 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/$(PRODUCT_NAME)";
+			dstSubfolderSpec = 16;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		69676CA91CA58B7400D7A1D1 /* libOfficeUtils.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libOfficeUtils.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		69676CB61CA58BBD00D7A1D1 /* ASCOfficeCriticalSection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASCOfficeCriticalSection.h; sourceTree = "<group>"; };
+		69676CB71CA58BBD00D7A1D1 /* CSLocker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSLocker.h; sourceTree = "<group>"; };
+		69676CB81CA58BBD00D7A1D1 /* OfficeUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OfficeUtils.cpp; sourceTree = "<group>"; };
+		69676CB91CA58BBD00D7A1D1 /* OfficeUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OfficeUtils.h; sourceTree = "<group>"; };
+		69676CBA1CA58BBD00D7A1D1 /* OfficeUtilsCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OfficeUtilsCommon.h; sourceTree = "<group>"; };
+		69676CBB1CA58BBD00D7A1D1 /* ZipUtilsCP.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ZipUtilsCP.cpp; sourceTree = "<group>"; };
+		69676CBC1CA58BBD00D7A1D1 /* ZipUtilsCP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZipUtilsCP.h; sourceTree = "<group>"; };
+		69676D291CA58BBD00D7A1D1 /* crypt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = crypt.h; sourceTree = "<group>"; };
+		69676D2A1CA58BBD00D7A1D1 /* ioapi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ioapi.c; sourceTree = "<group>"; };
+		69676D2B1CA58BBD00D7A1D1 /* ioapi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ioapi.h; sourceTree = "<group>"; };
+		69676D2F1CA58BBD00D7A1D1 /* miniunz.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = miniunz.c; sourceTree = "<group>"; };
+		69676D301CA58BBD00D7A1D1 /* minizip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = minizip.c; sourceTree = "<group>"; };
+		69676D311CA58BBD00D7A1D1 /* mztools.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mztools.c; sourceTree = "<group>"; };
+		69676D321CA58BBD00D7A1D1 /* mztools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mztools.h; sourceTree = "<group>"; };
+		69676D331CA58BBD00D7A1D1 /* unzip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = unzip.c; sourceTree = "<group>"; };
+		69676D341CA58BBD00D7A1D1 /* unzip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = unzip.h; sourceTree = "<group>"; };
+		69676D351CA58BBD00D7A1D1 /* zip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = zip.c; sourceTree = "<group>"; };
+		69676D361CA58BBD00D7A1D1 /* zip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zip.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		69676CA61CA58B7400D7A1D1 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		69676CA01CA58B7400D7A1D1 = {
+			isa = PBXGroup;
+			children = (
+				69676CB51CA58BBD00D7A1D1 /* src */,
+				69676CAA1CA58B7400D7A1D1 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		69676CAA1CA58B7400D7A1D1 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				69676CA91CA58B7400D7A1D1 /* libOfficeUtils.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		69676CB51CA58BBD00D7A1D1 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				69676CB61CA58BBD00D7A1D1 /* ASCOfficeCriticalSection.h */,
+				69676CB71CA58BBD00D7A1D1 /* CSLocker.h */,
+				69676CB81CA58BBD00D7A1D1 /* OfficeUtils.cpp */,
+				69676CB91CA58BBD00D7A1D1 /* OfficeUtils.h */,
+				69676CBA1CA58BBD00D7A1D1 /* OfficeUtilsCommon.h */,
+				69676CBB1CA58BBD00D7A1D1 /* ZipUtilsCP.cpp */,
+				69676CBC1CA58BBD00D7A1D1 /* ZipUtilsCP.h */,
+				69676CBD1CA58BBD00D7A1D1 /* zlib-1.2.3 */,
+			);
+			path = src;
+			sourceTree = "<group>";
+		};
+		69676CBD1CA58BBD00D7A1D1 /* zlib-1.2.3 */ = {
+			isa = PBXGroup;
+			children = (
+				69676CCB1CA58BBD00D7A1D1 /* contrib */,
+			);
+			path = "zlib-1.2.3";
+			sourceTree = "<group>";
+		};
+		69676CCB1CA58BBD00D7A1D1 /* contrib */ = {
+			isa = PBXGroup;
+			children = (
+				69676D271CA58BBD00D7A1D1 /* minizip */,
+			);
+			path = contrib;
+			sourceTree = "<group>";
+		};
+		69676D271CA58BBD00D7A1D1 /* minizip */ = {
+			isa = PBXGroup;
+			children = (
+				69676D291CA58BBD00D7A1D1 /* crypt.h */,
+				69676D2A1CA58BBD00D7A1D1 /* ioapi.c */,
+				69676D2B1CA58BBD00D7A1D1 /* ioapi.h */,
+				69676D2F1CA58BBD00D7A1D1 /* miniunz.c */,
+				69676D301CA58BBD00D7A1D1 /* minizip.c */,
+				69676D311CA58BBD00D7A1D1 /* mztools.c */,
+				69676D321CA58BBD00D7A1D1 /* mztools.h */,
+				69676D331CA58BBD00D7A1D1 /* unzip.c */,
+				69676D341CA58BBD00D7A1D1 /* unzip.h */,
+				69676D351CA58BBD00D7A1D1 /* zip.c */,
+				69676D361CA58BBD00D7A1D1 /* zip.h */,
+			);
+			path = minizip;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		69676CA81CA58B7400D7A1D1 /* OfficeUtils */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 69676CB21CA58B7400D7A1D1 /* Build configuration list for PBXNativeTarget "OfficeUtils" */;
+			buildPhases = (
+				69676CA51CA58B7400D7A1D1 /* Sources */,
+				69676CA61CA58B7400D7A1D1 /* Frameworks */,
+				69676CA71CA58B7400D7A1D1 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = OfficeUtils;
+			productName = OfficeUtils;
+			productReference = 69676CA91CA58B7400D7A1D1 /* libOfficeUtils.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		69676CA11CA58B7400D7A1D1 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0730;
+				ORGANIZATIONNAME = "Ascensio System SIA";
+				TargetAttributes = {
+					69676CA81CA58B7400D7A1D1 = {
+						CreatedOnToolsVersion = 7.3;
+					};
+				};
+			};
+			buildConfigurationList = 69676CA41CA58B7400D7A1D1 /* Build configuration list for PBXProject "OfficeUtils" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 69676CA01CA58B7400D7A1D1;
+			productRefGroup = 69676CAA1CA58B7400D7A1D1 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				69676CA81CA58B7400D7A1D1 /* OfficeUtils */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		69676CA51CA58B7400D7A1D1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				69676DAB1CA58BBE00D7A1D1 /* ZipUtilsCP.cpp in Sources */,
+				69676DD41CA58BBE00D7A1D1 /* minizip.c in Sources */,
+				69676DD01CA58BBE00D7A1D1 /* ioapi.c in Sources */,
+				69676DD31CA58BBE00D7A1D1 /* miniunz.c in Sources */,
+				69676DAA1CA58BBE00D7A1D1 /* OfficeUtils.cpp in Sources */,
+				69676DD61CA58BBE00D7A1D1 /* unzip.c in Sources */,
+				69676DD51CA58BBE00D7A1D1 /* mztools.c in Sources */,
+				69676DD71CA58BBE00D7A1D1 /* zip.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		69676CB01CA58B7400D7A1D1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		69676CB11CA58B7400D7A1D1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		69676CB31CA58B7400D7A1D1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					UNICODE,
+					_UNICODE,
+					MAC,
+					unix,
+					_IOS,
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		69676CB41CA58B7400D7A1D1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					UNICODE,
+					_UNICODE,
+					MAC,
+					unix,
+					_IOS,
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		69676CA41CA58B7400D7A1D1 /* Build configuration list for PBXProject "OfficeUtils" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				69676CB01CA58B7400D7A1D1 /* Debug */,
+				69676CB11CA58B7400D7A1D1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		69676CB21CA58B7400D7A1D1 /* Build configuration list for PBXNativeTarget "OfficeUtils" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				69676CB31CA58B7400D7A1D1 /* Debug */,
+				69676CB41CA58B7400D7A1D1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 69676CA11CA58B7400D7A1D1 /* Project object */;
+}

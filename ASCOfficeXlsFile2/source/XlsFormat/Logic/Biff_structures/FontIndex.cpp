@@ -15,6 +15,7 @@ BiffStructurePtr FontIndex::clone()
 const unsigned short FontIndex::getValue() const
 {	
 	unsigned short index = static_cast<unsigned short>(val.get_value_or(0));
+	
 	return index < 4 ? index : index - 1;
 }
 void	FontIndex::setValue(unsigned short val_)

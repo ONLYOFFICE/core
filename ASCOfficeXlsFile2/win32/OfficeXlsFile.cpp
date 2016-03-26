@@ -16,7 +16,7 @@
 
 #include "../Common/XmlUtils.h"
 
-#include "../../ASCOfficeUtils/ASCOfficeUtilsLib/OfficeUtils.h"
+#include "../../OfficeUtils/src/OfficeUtils.h"
 #include "../../Common/ASCATLError.h"
 
 #include "OfficeXlsFile.h"

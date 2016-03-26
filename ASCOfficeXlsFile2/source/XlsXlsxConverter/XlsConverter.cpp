@@ -22,6 +22,7 @@
 #include "../XlsFormat/Logic/Biff_unions/OBJECTS.h"
 #include "../XlsFormat/Logic/Biff_unions/MSODRAWINGGROUP.h"
 #include "../XlsFormat/Logic/Biff_unions/OBJ.h"
+#include "../XlsFormat/Logic/Biff_unions/IMDATAOBJECT.h"
 #include "../XlsFormat/Logic/Biff_unions/TEXTOBJECT.h"
 #include "../XlsFormat/Logic/Biff_unions/CHART.h"
 #include "../XlsFormat/Logic/Biff_unions/BACKGROUND.h"
@@ -32,6 +33,7 @@
 #include <Logic/Biff_records/MsoDrawing.h>
 #include <Logic/Biff_records/Obj.h>
 #include <Logic/Biff_records/TxO.h>
+#include <Logic/Biff_records/IMDATA.h>
 #include <Logic/Biff_records/Note.h>
 
 #include <Logic/Biff_structures/URLMoniker.h>
@@ -154,9 +156,10 @@ XlsConverter::XlsConverter(const std::wstring & xls_file, const std::wstring & _
 
 	if (xls_global_info->Version < 0x0600) 
 	{
-		Log::error("Version xls is old !!!");
+		std::wstring sVer = STR::int2hex_wstr(xls_global_info->Version);
+		Log::error("Version xls is old !!! - " + std::string(sVer.begin(), sVer.end()));
 		is_older_version = true;
-		return;
+		//return;
 	}
 
 	
@@ -243,6 +246,11 @@ void XlsConverter::convert(XLS::BaseObject	*xls_unknown)
 		{
 			XLS::OBJECTS * obj = dynamic_cast<XLS::OBJECTS *>(xls_unknown);
 			convert(obj);
+		}break;
+	case XLS::typeTxO:
+		{
+			XLS::TxO * txo = dynamic_cast<XLS::TxO *>(xls_unknown);
+			convert(txo);
 		}break;
 	case XLS::typeAnyObject:	
 	default:
@@ -360,6 +368,14 @@ void XlsConverter::convert(XLS::WorksheetSubstream* sheet)
 	}
 
 	convert((XLS::OBJECTS*)sheet->m_OBJECTS.get(), sheet);
+
+	if (sheet->m_arNote.size() > 0 && xls_global_info->Version < 0x0600)
+	{
+		for (int i = 0 ; i < sheet->m_arNote.size(); i++)
+		{
+			convert((XLS::Note*)sheet->m_arNote[i].get());
+		}
+	}
 
 	if (sheet->m_PAGESETUP)
 	{
@@ -528,9 +544,11 @@ std::wstring XlsConverter::WriteMediaFile(char *data, int size, std::wstring typ
 
 		if (header->biWidth > 100000 || header->biHeight > 100000)
 		{
+			//biff8
 			//Formulas Matriciais - A Outra Dimensão do Excel.xls	775x20 		todoooo найти еще файлы 
 			//Planilha Bastter Blue 7.0 Free.xls 10x3836
-			//
+			//biff 5
+			//test-picture.xls
 			offset = 12; //sizeof(BITMAPCOREHEADER)
 			
 			BITMAPCOREHEADER * header_core = (BITMAPCOREHEADER *)data;
@@ -542,12 +560,18 @@ std::wstring XlsConverter::WriteMediaFile(char *data, int size, std::wstring typ
 			
 			//if (header_core->bcWidth % 2 != 0 && sz_bitmap < size - offset)
 			//	header_core->bcWidth++;
+			///???? todooo непонятно .. в biff5 нужно флипать картинку, в biff8 не ясно ( - 
 			
-			int stride = (size - offset) / header_core->bcHeight;
+			int stride = - (size - offset) / header_core->bcHeight;
 			frame.put_Stride	(stride/*header_core->bcBitCount * header_core->bcWidth /8 */);
 
 			biSizeImage = size - offset;
+			
 			bPNG = true;
+			if (stride < header->biWidth)
+			{
+				bPNG = false;
+			}
 		}
 		else if (header->biBitCount >=24)
 		{
@@ -558,13 +582,19 @@ std::wstring XlsConverter::WriteMediaFile(char *data, int size, std::wstring typ
 			
 			int sz_bitmap = header->biHeight * header->biWidth * header->biBitCount/ 8;
 			
-			if (header->biWidth % 2 != 0 && sz_bitmap < size -offset)
-				header->biWidth++;
-
-			biSizeImage = header->biSizeImage;
+			//if (header->biWidth % 2 != 0 && sz_bitmap < size -offset)
+			//	header->biWidth++;
 			
-			frame.put_Stride	(header->biBitCount * header->biWidth /8);
+			int stride = (size - offset) / header->biHeight;
+
 			bPNG = true;
+			if (stride < header->biWidth)
+			{
+				bPNG = false;
+			}
+			frame.put_Stride	(stride/*header->biBitCount * header->biWidth /8*/);
+			
+			biSizeImage = header->biSizeImage;
 		}
 		if (bPNG)
 		{
@@ -665,6 +695,25 @@ void XlsConverter::convert(XLS::LBL * def_name)
 
 	def_name->serialize(xlsx_context->defined_names());
 }
+void XlsConverter::convert(XLS::IMDATA * imdata)
+{
+	if (imdata == NULL) return;
+
+	if (imdata->lcb < 1 || imdata->pData == NULL) return;
+	
+	bool bInternal = false;
+
+	std::wstring type_image;
+
+	if (imdata->cf == 0x09 && imdata->env == 0x01)	type_image = L".wmf";
+	if (imdata->cf == 0x09 && imdata->env == 0x02)	type_image = L".pict";
+	if (imdata->cf == 0x09)							type_image = L"dib_data";
+	if (imdata->cf == 0x0e)							type_image = L"";			//native aka unknown
+
+	std::wstring target = WriteMediaFile(imdata->pData.get(), imdata->lcb, type_image);
+	xlsx_context->get_drawing_context().set_fill_texture(target);
+
+}
 
 void XlsConverter::convert(XLS::BACKGROUND * back)
 {
@@ -706,15 +755,102 @@ struct _group_object
 	int ind;
 	int count;
 };
+void XlsConverter::convert_old(XLS::OBJECTS* objects, XLS::WorksheetSubstream * sheet)
+{
+	int count = 0;
+	
+	for ( std::list<XLS::BaseObjectPtr>::iterator elem = objects->elements_.begin(); elem != objects->elements_.end(); elem++)
+	{
+		count++;
+		short type_object = -1;
 
+		XLS::OBJ			* OBJ			= dynamic_cast<XLS::OBJ*>		(elem->get());
+		XLS::IMDATAOBJECT	* IMDATAOBJECT	= NULL;
+		XLS::CHART			* CHART			= NULL;
+		
+		std::list<XLS::BaseObjectPtr>::iterator elem_next = boost::next(elem);
+		if ( elem_next !=objects->elements_.end() )
+		{
+			IMDATAOBJECT	= dynamic_cast<XLS::IMDATAOBJECT*>	(elem_next->get());
+			CHART			= dynamic_cast<XLS::CHART*>			(elem_next->get());
+		}
+
+		XLS::Obj					* obj		= OBJ			? dynamic_cast<XLS::Obj *>(OBJ->m_Obj.get()) : NULL;
+		XLS::IMDATA					* image_obj	= IMDATAOBJECT	? dynamic_cast<XLS::IMDATA *>(IMDATAOBJECT->m_IMDATA.get())	: NULL;
+		XLS::ChartSheetSubstream	* chart		= CHART			? dynamic_cast<XLS::ChartSheetSubstream *>(CHART->m_ChartSheetSubstream.get()) : NULL;		
+		
+		if (!obj)continue;
+		
+		type_object = obj->cmo.ot;
+//-----------------------------------------------------------------------------
+		if (type_object < 0)continue;
+		
+		if (type_object == 0) 
+			continue;
+		//{
+		//	_group_object gr;		
+		//	if (group_objects.back().ind < group_objects.back().spgr->child_records.size())
+		//	{
+		//		gr.spgr		= dynamic_cast<ODRAW::OfficeArtSpgrContainer*>(group_objects.back().spgr->child_records[group_objects.back().ind++].get());
+		//		gr.count	= gr.spgr->child_records.size();
+		//		group_objects.push_back(gr);
+		//	}
+		//	else //сюда попадать не должно !!!!
+		//		continue;
+		//}
+
+		if (xlsx_context->get_drawing_context().start_drawing(type_object))
+		{
+			convert(obj->old_version.anchor.get());
+
+			if (obj->old_version.bFill)
+				xlsx_context->get_drawing_context().set_fill_old_version(obj->old_version.fill);
+			else 
+				xlsx_context->get_drawing_context().set_fill_type(0);	//no fill
+			
+			xlsx_context->get_drawing_context().set_name(obj->old_version.name);
+			xlsx_context->get_drawing_context().set_line_old_version(obj->old_version.line);
+			xlsx_context->get_drawing_context().set_flag_old_version(obj->old_version.flag, obj->old_version.flag2);
+
+			for (int i = 0 ; i < obj->old_version.additional.size(); i++)
+			{
+				convert(obj->old_version.additional[i].get());
+			}
+
+			convert(image_obj);
+			convert(chart);
+
+			xlsx_context->get_drawing_context().end_drawing();
+		}
+		if (IMDATAOBJECT || CHART)
+		{
+			elem++;
+			count++;
+		}	
+		//while ((group_objects.size() >0) && (group_objects.back().ind >= group_objects.back().count))
+		//{
+		//	group_objects.back().spgr = NULL;
+		//	group_objects.pop_back();
+		//	
+		//	xlsx_context->get_drawing_context().end_group();
+		//}
+	}
+}
 void XlsConverter::convert(XLS::OBJECTS* objects, XLS::WorksheetSubstream * sheet)
 {
 	if (objects == NULL) return;
+
+	if (xls_global_info->Version < 0x0600)
+		return convert_old(objects, sheet);
 
 	std::vector<_group_object> group_objects;
 
 	_group_object gr;		
 	gr.spgr		= dynamic_cast<ODRAW::OfficeArtSpgrContainer*>(objects->m_MsoDrawing.get()->rgChildRec.m_OfficeArtSpgrContainer.get());
+	
+	if (gr.spgr	== NULL) 
+		return;
+
 	gr.count	= gr.spgr->child_records.size();
 	group_objects.push_back(gr);
 
@@ -1403,11 +1539,24 @@ void XlsConverter::convert(XLS::Note* note)
 
 	note->note_sh.calculate();
 
+	if (xls_global_info->Version < 0x0600)
+	{
+		xlsx_context->get_comments_context().start_comment();
+	}
+
 	xlsx_context->get_comments_context().set_ref	(note->note_sh.ref_, 
 													 note->note_sh.col, 
 													 note->note_sh.row);
 	xlsx_context->get_comments_context().set_author	(note->note_sh.stAuthor);
 	xlsx_context->get_comments_context().set_visibly(note->note_sh.fShow);
+
+	if (xls_global_info->Version < 0x0600)
+	{
+		//todooo размеры произвольные .. можно сделать оценку по размеру строки
+		xlsx_context->get_comments_context().set_size(120, 64, note->note_sh.x_/ 12700. , note->note_sh.y_/ 12700.);
+		xlsx_context->get_comments_context().set_content(std::wstring(L"<t>") + note->note_sh.stText.value() + std::wstring(L"</t>"));
+		xlsx_context->get_comments_context().end_comment();
+	}
 }
 
 void XlsConverter::convert_transform(std::vector<ODRAW::OfficeArtFOPTEPtr> & props)

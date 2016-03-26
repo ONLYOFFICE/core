@@ -25,8 +25,8 @@ public:
 	static const ElementType	type = typeChart3DBarShape;
 
 //-----------------------------
-	BIFF_BYTE riser;
-	BIFF_BYTE taper;
+	unsigned char	riser;
+	unsigned char	taper;
 
 };
 

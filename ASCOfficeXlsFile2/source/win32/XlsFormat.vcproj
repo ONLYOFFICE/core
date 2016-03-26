@@ -1554,6 +1554,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\XlsFormat\Logic\Biff_records\IMDATA.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\XlsFormat\Logic\Biff_records\IMDATA.h"
+					>
+				</File>
+				<File
 					RelativePath="..\XlsFormat\Logic\Biff_records\Index.cpp"
 					>
 				</File>
@@ -5375,6 +5383,14 @@
 				</File>
 				<File
 					RelativePath="..\XlsFormat\Logic\Biff_unions\HLINK_bu.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\XlsFormat\Logic\Biff_unions\IMDATAOBJECT.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\XlsFormat\Logic\Biff_unions\IMDATAOBJECT.h"
 					>
 				</File>
 				<File

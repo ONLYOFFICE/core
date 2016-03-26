@@ -23,7 +23,7 @@ public:
 	virtual void store(CFRecord& record); // No type info
 
 private:
-	VirtualPath book;
+	XLUnicodeString book;
 	unsigned char fExtern;
 	RevNameTabid name;
 	RevNamePly externName;

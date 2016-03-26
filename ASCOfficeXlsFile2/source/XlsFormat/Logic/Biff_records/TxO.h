@@ -19,6 +19,8 @@ class TxO: public BiffRecordContinued
 public:
 	TxO(MsoDrawingPtr mso_drawing) : mso_drawing_(mso_drawing), fmla(false)
 	{
+		macrosSize			= 0;
+		nameLength			= 0;
 		cbRuns				= 0;
 		sp_enabled			= false;
 		preserve_enabled	= false;
@@ -44,16 +46,16 @@ public:
 	BIFF_BYTE				fJustLast;
 	BIFF_BYTE				fSecretEdit;
 
-	_UINT16				rot;
+	_UINT16					rot;
 
 	ControlInfo				controlInfo;
 
-	_UINT16				cchText;
-	_UINT16				cbRuns;
+	_UINT16					cchText;
+	_UINT16					cbRuns;
 	FontIndex				ifntEmpty;
 	ObjFmla					fmla;
 	TxORuns					TxOruns;
-	XLUnicodeStringNoCch	commentText;
+	XLUnicodeStringNoCch	rawText;
 
 	bool					sp_enabled;
 
@@ -62,7 +64,9 @@ public:
 
 //---------------------------------------------
 	bool					preserve_enabled;
-
+	short					macrosSize;
+	short					nameLength;
+	ShortXLAnsiString		name;
 };
 
 } // namespace XLS

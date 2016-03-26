@@ -25,13 +25,13 @@ public:
 	static const ElementType	type = typeBookExt;
 
 //-----------------------------
-	BIFF_DWORD cb;
+	_UINT32	cb;
 
 	bool fDontAutoRecover;
 	bool fHidePivotList;
 	bool fFilterPrivacy;
 	bool fEmbedFactoids;
-	BIFF_BYTE mdFactoidDisplay;
+	unsigned char	mdFactoidDisplay;
 	bool fSavedDuringRecovery;
 	bool fCreatedViaMinimalSave;
 	bool fOpenedViaDataRecovery;

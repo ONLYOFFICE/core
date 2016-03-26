@@ -34,12 +34,19 @@ void ExternSheet::writeFields(CFRecord& record)
 
 void ExternSheet::readFields(CFRecord& record)
 {
-	record >> cXTI;
-	for(int i = 0; i < cXTI; ++i)
+	if (record.getGlobalWorkbookInfo()->Version < 0x0600)
 	{
-		XTIPtr xti(new XTI);
-		record >> *xti;
-		rgXTI.push_back(xti);
+		record.skipNunBytes(record.getDataSize() - record.getRdPtr());
+	}
+	else
+	{
+		record >> cXTI;
+		for(int i = 0; i < cXTI; ++i)
+		{
+			XTIPtr xti(new XTI);
+			record >> *xti;
+			rgXTI.push_back(xti);
+		}
 	}
 }
 

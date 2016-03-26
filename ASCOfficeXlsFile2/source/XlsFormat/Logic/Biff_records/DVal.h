@@ -24,10 +24,10 @@ public:
 
 //-----------------------------
 	bool fWnClosed;
-	BIFF_DWORD xLeft;
-	BIFF_DWORD yTop;
-	BIFF_LONG idObj;
-	BIFF_DWORD idvMac;
+	_UINT32	xLeft;
+	_UINT32	yTop;
+	_INT32	idObj;
+	_UINT32	idvMac;
 
 };
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "BiffRecordContinued.h"
+
 #include <Logic/Biff_structures/FtCmo.h>
 #include <Logic/Biff_structures/FtCf.h>
 #include <Logic/Biff_structures/FtPioGrbit.h>
@@ -28,6 +29,7 @@ class Obj : public BiffRecordContinued
 public:
 	Obj(MsoDrawingPtr mso_drawing)  : mso_drawing_(mso_drawing)
 	{
+		old_version.enabled = false;
 	}
 	~Obj();
 
@@ -40,6 +42,7 @@ public:
 
 //-----------------------------
 	FtCmo			cmo;
+	
 	FtCf			pictFormat;
 
 	FtPioGrbit		pictFlags;
@@ -55,6 +58,21 @@ public:
 	FtGboData		gbo;
 
 	MsoDrawingPtr	mso_drawing_;
+
+	struct _
+	{
+		_() : bFill(false), enabled(false), fill(0), line(0), flag(0), flag2(0) {}
+		bool						enabled;
+		ODRAW::OfficeArtRecordPtr	anchor;
+		std::vector<BaseObjectPtr>	additional;
+		bool						bFill;
+		ShortXLAnsiString			name;
+
+		_UINT32						fill;
+		_UINT32						line;
+		_UINT16						flag;
+		_UINT16						flag2;
+	}old_version;
 
 
 };

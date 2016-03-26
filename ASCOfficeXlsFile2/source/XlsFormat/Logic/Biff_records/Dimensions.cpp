@@ -45,7 +45,19 @@ void Dimensions::writeFields(CFRecord& record)
 
 void Dimensions::readFields(CFRecord& record)
 {
-	record >> rwMic >> rwMac >> colMic >> colMac;
+	if (record.getGlobalWorkbookInfo()->Version < 0x0600)
+	{
+		_UINT16	Mic, Mac;
+		record >> Mic >> Mac;
+		
+		rwMic = Mic;
+		rwMac = Mac;
+	}
+	else
+	{
+		record >> rwMic >> rwMac;
+	}
+	record >> colMic >> colMac;
 	
 	record.skipNunBytes(2); // reserved
 	

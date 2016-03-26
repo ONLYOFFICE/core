@@ -37,18 +37,38 @@ void FtCmo::load(CFRecord& record)
 {
 	record.skipNunBytes(4); // reserved
 
-	unsigned short flags;
-	record >> ot >> id >> flags;
-	record.skipNunBytes(12); // unused
+	record >> ot >> id;
+	
+	if (record.getGlobalWorkbookInfo()->Version < 0x0600)
+	{
+		unsigned char flags;
+		record >> flags;
+		
+		fLocked			= GETBIT(flags, 0);
+		fDefaultSize	= GETBIT(flags, 2);
+		fPublished		= GETBIT(flags, 3);
+		fPrint			= GETBIT(flags, 4);
+		fDisabled		= GETBIT(flags, 7);
+		
+		fUIObj			= false;
+		fRecalcObj		= false;
+		fRecalcObjAlways = false;
+	}
+	else
+	{
+		unsigned short flags;
+		record >> flags;
+		record.skipNunBytes(12); // unused
 
-	fLocked = GETBIT(flags, 0);
-	fDefaultSize = GETBIT(flags, 2);
-	fPublished = GETBIT(flags, 3);
-	fPrint = GETBIT(flags, 4);
-	fDisabled = GETBIT(flags, 7);
-	fUIObj = GETBIT(flags, 8);
-	fRecalcObj = GETBIT(flags, 9);
-	fRecalcObjAlways = GETBIT(flags, 12);
+		fLocked			= GETBIT(flags, 0);
+		fDefaultSize	= GETBIT(flags, 2);
+		fPublished		= GETBIT(flags, 3);
+		fPrint			= GETBIT(flags, 4);
+		fDisabled		= GETBIT(flags, 7);
+		fUIObj			= GETBIT(flags, 8);
+		fRecalcObj		= GETBIT(flags, 9);
+		fRecalcObjAlways = GETBIT(flags, 12);
+	}
 }
 
 

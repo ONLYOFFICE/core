@@ -24,7 +24,7 @@ public:
 
 //-----------------------------
 	_UINT16 cxfs;
-	BIFF_DWORD crc;
+	_UINT32	crc;
 
 };
 

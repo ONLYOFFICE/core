@@ -29,7 +29,7 @@ public:
 //-----------------------------
 	SharedFeatureType isf;
 	_UINT16 cref;
-	BIFF_DWORD cbFeatData;
+	_UINT32	cbFeatData;
 	BiffStructurePtrVector refs;
 	BIFF_BSTR sqref;
 

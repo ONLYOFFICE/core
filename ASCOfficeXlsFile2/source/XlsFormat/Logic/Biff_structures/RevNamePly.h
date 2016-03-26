@@ -22,8 +22,8 @@ public:
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-	RevSheetName sheet;
-	RevLblName name;
+	XLUnicodeString sheet;
+	RevLblName		name;
 };
 
 } // namespace XLS

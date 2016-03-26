@@ -26,7 +26,7 @@ public:
 //-----------------------------
 	bool fIsPivot;
 	bool fIsTable;
-	BIFF_DWORD ctse;
+	_UINT32	ctse;
 	LPWideStringNoCch rgchName;
 
 

@@ -39,9 +39,22 @@ void PtgRef3d::storeFields(CFRecord& record)
 
 void PtgRef3d::loadFields(CFRecord& record)
 {
-	record >> ixti >> rgce_loc;
-	rgce_loc_rel = rgce_loc;
 	global_info = record.getGlobalWorkbookInfo();
+	
+	if (global_info->Version < 0x0600)
+	{
+		record >> ixals;
+		record.skipNunBytes(8);
+
+		record >> itabFirst >> itabLast >> grbitRw >> col;	
+	}
+	else
+	{
+		record >> ixti >> rgce_loc;
+	
+		rgce_loc_rel = rgce_loc;
+	}
+	
 }
 
 
@@ -57,11 +70,23 @@ void PtgRef3d::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool fu
 		return;
 	}
 
-	std::wstring cell_ref = rgce_loc.toString();
+	if (global_info->Version < 0x0600)
+	{
+		CellRef cell(grbitRw,col,  false, false);
 
-	cell_ref = XMLSTUFF::make3dRef(ixti, cell_ref, global_info->xti_parsed, full_ref);
-
-	ptg_stack.push(cell_ref);
+		std::wstring range_ref = cell.toString();
+		
+		if (ixals == 0xffff)
+			ptg_stack.push(XMLSTUFF::make3dRef(global_info->current_sheet - 1, range_ref, global_info->sheets_names, full_ref));
+		else
+			ptg_stack.push(XMLSTUFF::make3dRef(ixals, range_ref, global_info->xti_parsed, full_ref));
+	}
+	else
+	{
+		std::wstring cell_ref = rgce_loc.toString();
+		cell_ref = XMLSTUFF::make3dRef(ixti, cell_ref, global_info->xti_parsed, full_ref);
+		ptg_stack.push(cell_ref);
+	}
 }
 
 

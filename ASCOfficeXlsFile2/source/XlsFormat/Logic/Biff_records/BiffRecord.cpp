@@ -18,7 +18,6 @@ BiffRecord::~BiffRecord()
 }
 
 
-// Common algorithm of loading from bin to XML
 const bool BiffRecord::read(CFStreamCacheReader& reader, BaseObject* parent, const bool is_mandatory)
 {
 	parent_ = parent;		
@@ -53,46 +52,11 @@ const bool BiffRecord::read(CFStreamCacheReader& reader, BaseObject* parent, con
 	return true; // Record reading OK
 }
 
-
-//const bool BiffRecord::write(BinWriterProcessor& proc, const bool is_mandatory)
-//{
-//	CFRecordPtr record(new CFRecord(getTypeId(), proc.getGlobalWorkbookInfo()));
-//		
-//	BiffStructurePtr own_tag = proc.getChildNode(getClassName(), is_mandatory);
-//	if(!own_tag)
-//	{
-//		return false;
-//	}
-//	BinWriterProcessor writer_proc(proc, own_tag, is_mandatory); // Creates new processor with empty tags counters and own tag
-//	
-//	toFrom(writer_proc); 
-//	writeFields(*record);
-//	record->commitData();
-//
-//	if(proc.getWriter().storeNextRecord(record))
-//	{
-//		writeCreatedContinueRecords(proc.getWriter());
-//		return true;
-//	}
-//	return false;
-//}
-//
-//
-//
-//
-// Stub. May be overridden in derivers
 void BiffRecord::readFollowingContinue(CFStreamCacheReader& reader)
 {
 }
 
 
-//// Stub. May be overridden in derivers
-//void BiffRecord::writeCreatedContinueRecords(CFStreamCacheWriter& writer)
-//{
-//}
-
-
-// Stub. May be overridden in derivers
 const bool BiffRecord::storeRecordAndDecideProceeding(CFRecordPtr record)
 {
 	return true;

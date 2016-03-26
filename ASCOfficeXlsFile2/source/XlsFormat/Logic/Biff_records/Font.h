@@ -45,9 +45,9 @@ public:
 	_UINT16 icv;
 	_UINT16 bls;
 	_UINT16 sss;
-	BIFF_BYTE uls;
-	BIFF_BYTE bFamily;
-	BIFF_BYTE bCharSet;
+	unsigned char	uls;
+	unsigned char	bFamily;
+	unsigned char	bCharSet;
 
 	FillInfoExt				color_ext;
 	ShortXLUnicodeString	fontName;

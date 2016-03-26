@@ -357,18 +357,18 @@ void xlsx_drawing_context::start_shape(int type)
 	current_drawing_states->push_back(create_drawing_state());
 
 	current_drawing_states->back()->type = external_items::typeShape;
-	current_drawing_states->back()->shape_type = type;
 
-	if (0x0006 == type)
+	switch(type)
 	{
-		current_drawing_states->back()->shape_type = msosptTextBox;
-		//drawing_state.back().bTextBox = true;
+		case 0x0001: current_drawing_states->back()->shape_id = MSOSPT::msosptLine;			break;
+		case 0x0002: current_drawing_states->back()->shape_id = MSOSPT::msosptRectangle;	break;
+		case 0x0003: current_drawing_states->back()->shape_id = MSOSPT::msosptEllipse;		break;
+		case 0x0004: current_drawing_states->back()->shape_id = MSOSPT::msosptArc;			break;
+		case 0x0006: current_drawing_states->back()->shape_id = MSOSPT::msosptTextBox;		break;
+		case 0x001E: current_drawing_states->back()->shape_id = MSOSPT::msosptRectangle;	break;// OfficeArt object
+		case 0x0009: current_drawing_states->back()->shape_id = MSOSPT::msosptNotPrimitive;	break;// Polygon:
 	}
-	if (0x001E == type)
-	{
-		current_drawing_states->back()->shape_type = msosptTextBox;
-		//drawing_state.back().bWordArt = true;
-	}
+
 	count_object++;
 }
 
@@ -1663,6 +1663,7 @@ void xlsx_drawing_context::set_fill_type (int val)
 	
 	current_drawing_states->back()->fill.type = (_fill_type) val;
 }
+//---------------------------------------------------------
 void xlsx_drawing_context::set_line_dash(int val)
 {
 	if (current_drawing_states == NULL) return;	
@@ -1701,11 +1702,11 @@ void xlsx_drawing_context::set_line_style (int val)
 
 	switch(val)
 	{
-	case 0: current_drawing_states->back()->line.style = L"simple"; break;
-	case 1: current_drawing_states->back()->line.style = L"double"; break;
-	case 2: current_drawing_states->back()->line.style = L"thickThin"; break;
-	case 3: current_drawing_states->back()->line.style = L"thinThick"; break;
-	case 4: current_drawing_states->back()->line.style = L"triple"; break;
+	case 0: current_drawing_states->back()->line.style = L"simple";		break;
+	case 1: current_drawing_states->back()->line.style = L"double";		break;
+	case 2: current_drawing_states->back()->line.style = L"thickThin";	break;
+	case 3: current_drawing_states->back()->line.style = L"thinThick";	break;
+	case 4: current_drawing_states->back()->line.style = L"triple";		break;
 	}
 }
 
@@ -1715,7 +1716,114 @@ void xlsx_drawing_context::set_line_width (int val)
 
 	current_drawing_states->back()->line.width = val;
 }
+//----------------------------------------------------------------------
+void xlsx_drawing_context::set_fill_old_version (_UINT32 val)
+{
+	unsigned char backColorIdx		= GETBITS(val, 0, 7);
+	unsigned char patternColorIdx	= GETBITS(val, 8,15);
+	unsigned char pattern			= GETBITS(val,16,23);
+	unsigned char auto_				= GETBITS(val,24,31);
 
+	if (auto_)
+	{
+		if (current_drawing_states->back()->shape_id == MSOSPT::msosptTextBox)
+			set_fill_type(0);
+	}
+	else if (pattern)
+	{
+		set_fill_color(patternColorIdx, 2);
+	}
+	else
+	{
+		set_fill_color(backColorIdx, 2);
+	}
+
+
+}
+void xlsx_drawing_context::set_line_old_version (_UINT32 val)
+{
+	unsigned char colorIdx	= GETBITS(val,  0,  7);
+	unsigned char style		= GETBITS(val,  8, 15);
+	unsigned char width		= GETBITS(val, 16, 23);
+	unsigned char auto_		= GETBITS(val, 24, 31);
+
+	if (auto_)
+		return;
+
+	set_line_color(colorIdx, 2);
+	
+	if (style < 5) set_line_dash(style);
+	else if (style == 0xff)
+		set_line_type(5);  
+
+    //switch( style )
+    //{
+        //case 5:	med;
+        //case 6:	dark;
+        //case 7:	light;
+    //}
+    switch( width )
+    {
+        case 0:		break; //hair
+        case 1:     break; //single
+        case 2:		set_line_style(1);	break;
+        case 3:		set_line_style(44);	break;
+    }	
+}
+void xlsx_drawing_context::set_flag_old_version(_UINT16 val, _UINT16 val2)
+{
+	unsigned short flips_flag = 0;
+	if (current_drawing_states->back()->shape_id == MSOSPT::msosptArc)
+	{
+		flips_flag = val;
+	}
+	if (current_drawing_states->back()->shape_id == MSOSPT::msosptLine)
+	{
+		unsigned char nArrowType = GETBITS(val,  0,  3);
+		bool bLineStart = false;
+		bool bLineEnd = false;
+		bool bFilled = false;
+		switch( nArrowType )
+		{
+			case 0:	bLineStart = false; bLineEnd = true;  bFilled = false;  break;
+			case 1:	bLineStart = true;  bLineEnd = true;  bFilled = false;  break;
+			case 2: bLineStart = false; bLineEnd = true;  bFilled = true;   break;
+			case 3:	bLineStart = true;  bLineEnd = true;  bFilled = true;   break;
+		}
+		if( bLineStart || bLineEnd )
+		{
+			unsigned char nArrowWidth = GETBITS(val,  4,  7);
+			double fArrowWidth = 3.0;
+			switch( nArrowWidth )
+			{
+				case 0:	fArrowWidth = 2.0;  break;
+				case 1:	fArrowWidth = 3.0;  break;
+				case 2:	fArrowWidth = 5.0;  break;
+			}
+
+			unsigned char nArrowLength = GETBITS(val, 8, 11 );
+			double fArrowLength = 3.0;
+			switch( nArrowLength )
+			{
+				case 0:	fArrowLength = 2.5; break;
+				case 1:	fArrowLength = 3.5; break;
+				case 2:	fArrowLength = 6.0; break;
+			}
+		}
+		flips_flag = val2;
+	}
+	switch( flips_flag )
+	{
+		case 1:	
+			current_drawing_states->back()->flipH = true; 
+			current_drawing_states->back()->flipV = true;	break;
+		case 2:
+			current_drawing_states->back()->flipH = true;	break;
+		case 3:
+			current_drawing_states->back()->flipV = true;	break;
+	}
+}
+//-------------------------------------------------------------------------------------------------------------------
 void xlsx_drawing_context::set_hyperlink(const std::wstring & link, const std::wstring & display, bool is_external)
 {
 	if (current_drawing_states == NULL) return;	

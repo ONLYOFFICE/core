@@ -34,11 +34,11 @@ public:
 	bool fProc;
 	bool fCalcExp;
 	bool fBuiltin;
-	BIFF_BYTE fGrp;
+	unsigned char	fGrp;
 	bool fPublished;
 	bool fWorkbookParam;
 	
-	BIFF_BYTE chKey;
+	unsigned char	chKey;
 	_UINT16 itab;
 	XLUnicodeStringNoCch Name_bin;
 	BIFF_BSTR Name;

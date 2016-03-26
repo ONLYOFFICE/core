@@ -25,7 +25,7 @@ public:
 
 	_UINT16 iEntry;
 	
-	BIFF_BYTE wJoin;
+	unsigned char	wJoin;
 	
 	bool fSimple1;
 	bool fSimple2;
@@ -33,7 +33,7 @@ public:
 	bool fTopN;
 	bool fPercent;
 	
-	BIFF_BYTE fTop;
+	unsigned char	fTop;
 	_UINT16 wTopN;
 
 	AFDOper doper1;

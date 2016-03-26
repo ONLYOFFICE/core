@@ -21,25 +21,25 @@ public:
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-	BIFF_DWORD idField;
-	BIFF_DWORD lfdt;
-	BIFF_DWORD lfxidt;
-	BIFF_DWORD ilta;
-	BIFF_DWORD cbFmtAgg;
-	BIFF_DWORD istnAgg;
+	_UINT32	idField;
+	_UINT32	lfdt;
+	_UINT32	lfxidt;
+	_UINT32	ilta;
+	_UINT32	cbFmtAgg;
+	_UINT32	istnAgg;
 
-	BIFF_BYTE fAutoFilter;
-	BIFF_BYTE fAutoFilterHidden;
-	BIFF_BYTE fLoadXmapi;
-	BIFF_BYTE fLoadFmla;
-	BIFF_BYTE fLoadTotalFmla;
-	BIFF_BYTE fLoadTotalArray;
-	BIFF_BYTE fSaveStyleName;
-	BIFF_BYTE fLoadTotalStr;
-	BIFF_BYTE fAutoCreateCalcCol;
+	unsigned char	fAutoFilter;
+	unsigned char	fAutoFilterHidden;
+	unsigned char	fLoadXmapi;
+	unsigned char	fLoadFmla;
+	unsigned char	fLoadTotalFmla;
+	unsigned char	fLoadTotalArray;
+	unsigned char	fSaveStyleName;
+	unsigned char	fLoadTotalStr;
+	unsigned char	fAutoCreateCalcCol;
 	
-	BIFF_DWORD cbFmtInsertRow;
-	BIFF_DWORD istnInsertRow;
+	_UINT32	cbFmtInsertRow;
+	_UINT32	istnInsertRow;
 
 	XLUnicodeString strFieldName;
 	XLUnicodeString strCaption;

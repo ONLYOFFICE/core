@@ -19,12 +19,12 @@ public:
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-public:
-	BIFF_BYTE fDefault;
-	BIFF_BYTE fHelp;
-	BIFF_BYTE fCancel;
-	BIFF_BYTE fDismiss;
-	_UINT16 accel1;
+
+	BIFF_BYTE	fDefault;
+	BIFF_BYTE	fHelp;
+	BIFF_BYTE	fCancel;
+	BIFF_BYTE	fDismiss;
+	_UINT16		accel1;
 };
 
 } // namespace XLS

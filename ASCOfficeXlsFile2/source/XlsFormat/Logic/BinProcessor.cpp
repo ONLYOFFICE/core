@@ -173,6 +173,10 @@ void BinReaderProcessor::SeekToEOF()
 {
 	reader_.SeekToEOF();
 }
+void BinReaderProcessor::SkipRecord()
+{
+	reader_.SkipRecord();
+}
 
 
 

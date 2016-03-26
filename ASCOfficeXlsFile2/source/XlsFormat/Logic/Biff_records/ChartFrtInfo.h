@@ -23,8 +23,8 @@ public:
 	static const ElementType	type = typeChartFrtInfo;
 
 //-----------------------------
-	BIFF_BYTE verOriginator;
-	BIFF_BYTE verWriter;
+	unsigned char	verOriginator;
+	unsigned char	verWriter;
 
 };
 

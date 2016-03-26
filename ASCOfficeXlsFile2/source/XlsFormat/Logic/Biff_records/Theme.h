@@ -23,7 +23,7 @@ public:
 	static const ElementType	type = typeTheme;
 
 //-----------------------------
-	BIFF_DWORD dwThemeVersion;
+	_UINT32	dwThemeVersion;
 	//std::wstring rgb;
 
 };

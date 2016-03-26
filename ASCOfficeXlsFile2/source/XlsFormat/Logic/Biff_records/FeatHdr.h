@@ -27,7 +27,7 @@ public:
 //-----------------------------
 	bool is_contained_in_Globals;
 	SharedFeatureType isf;
-	BIFF_DWORD cbHdrData;
+	_UINT32	cbHdrData;
 	EnhancedProtection protection;
 	OSHARED::PropertyBagStore prop;
 };

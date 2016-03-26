@@ -33,7 +33,17 @@ void Footer::readFields(CFRecord& record)
 {
 	if(!record.isEOF())
 	{
-		record >> ast;
+		if (record.getGlobalWorkbookInfo()->Version < 0x0600)
+		{
+			ShortXLAnsiString name;
+			record >> name;
+			
+			ast = name;
+		}
+		else
+		{	
+			record >> ast;
+		}
 	}
 }
 

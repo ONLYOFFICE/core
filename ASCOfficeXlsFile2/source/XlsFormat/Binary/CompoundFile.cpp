@@ -59,7 +59,8 @@ CFStreamPtr CompoundFile::getWorkbookStream()
 {
 	CFStreamPtr stream = getNamedStream("Workbook");
 
-	if (stream == NULL) stream = getNamedStream("Book");
+	if (stream == NULL) 
+		stream = getNamedStream("Book");
 	return stream;
 }
 

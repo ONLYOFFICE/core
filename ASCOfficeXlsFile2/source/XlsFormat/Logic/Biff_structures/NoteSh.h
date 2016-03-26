@@ -28,7 +28,9 @@ public:
 	bool			fRwHidden;
 	bool			fColHidden;
 	ObjId			idObj;
+	
 	XLUnicodeString stAuthor;
+	XLUnicodeString stText;
 //------------------------------------------
 	GlobalWorkbookInfoPtr global_info;
 

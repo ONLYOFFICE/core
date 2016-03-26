@@ -25,11 +25,11 @@ public:
 	static const ElementType	type = typeLegend;
 
 //-----------------------------
-	BIFF_DWORD x;
-	BIFF_DWORD y;
-	BIFF_DWORD dx;
-	BIFF_DWORD dy;
-	BIFF_BYTE wSpace;
+	_UINT32	x;
+	_UINT32	y;
+	_UINT32	dx;
+	_UINT32	dy;
+	unsigned char	wSpace;
 
 	bool fAutoPosition;
 	bool fAutoPosX;

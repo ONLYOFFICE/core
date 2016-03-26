@@ -108,8 +108,6 @@ public:
 		custom_path = -1;
 	}
 
-	int						shape_type;
-
 	external_items::Type	type;
 	std::wstring			name;
 	std::wstring			description;
@@ -282,12 +280,17 @@ public:
 		void add_fill_colors		(double position, int index, int type);		
 		void set_fill_focus			(int val);
 
+
 		void set_line_color			(int nColor, const std::wstring & color);
 		void set_line_color			(int index, int type);
         void set_line_type			(int val);
         void set_line_style			(int val);
         void set_line_width			(int val);
 		void set_line_dash			(int val);
+
+		void set_fill_old_version	(_UINT32 val);
+		void set_line_old_version	(_UINT32 val);
+		void set_flag_old_version	(_UINT16 val, _UINT16 val2);
 
 		void set_absolute_anchor	(double x, double y, double cx, double cy);
         void set_child_anchor		(int x, int y, int cx, int cy);

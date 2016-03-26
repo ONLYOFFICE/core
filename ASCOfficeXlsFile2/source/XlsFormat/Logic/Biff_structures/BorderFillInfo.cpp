@@ -81,6 +81,9 @@ int FillInfo::serialize(std::wostream & stream)
 		{
 			CP_XML_NODE(L"patternFill")
 			{
+				if (fls < 0 || fls > 18) 
+					fls = 1;
+
 				CP_XML_ATTR(L"patternType", PatternType[fls]);
 
 				if (fls > 0)
@@ -94,7 +97,8 @@ int FillInfo::serialize(std::wostream & stream)
 							case 0://auto
 								/*CP_XML_ATTR(L"auto");*/ break;
 							case 1://indexed
-								CP_XML_ATTR(L"indexed",  foreFillInfo_.icv); break;
+								if (foreFillInfo_.icv < 64) 
+									CP_XML_ATTR(L"indexed",  foreFillInfo_.icv); break;
 							case 2://rgb
 								CP_XML_ATTR(L"rgb", STR::toARGB(foreFillInfo_.xclrValue)); break;
 							case 3://theme color
@@ -116,7 +120,8 @@ int FillInfo::serialize(std::wostream & stream)
 							case 0://auto
 								/*CP_XML_ATTR(L"auto");*/ break;
 							case 1://indexed
-								CP_XML_ATTR(L"indexed",  backFillInfo_.icv); break;
+								if (backFillInfo_.icv < 64)
+									CP_XML_ATTR(L"indexed",  backFillInfo_.icv); break;
 							case 2://rgb
 								CP_XML_ATTR(L"rgb", STR::toARGB(backFillInfo_.xclrValue)); break;
 							case 3://theme color

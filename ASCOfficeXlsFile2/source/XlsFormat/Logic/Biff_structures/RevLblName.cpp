@@ -35,7 +35,8 @@ void RevLblName::store(CFRecord& record)
 
 void RevLblName::load(CFRecord& record)
 {
-	XLNameUnicodeString st_raw;
+	XLUnicodeString st_raw;
+	
 	unsigned char iBuiltin;
 	record >> iBuiltin >> st_raw;
 	switch(iBuiltin)

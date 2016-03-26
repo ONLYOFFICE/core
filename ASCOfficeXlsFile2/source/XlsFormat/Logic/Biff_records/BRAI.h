@@ -26,12 +26,12 @@ public:
 	static const ElementType	type = typeBRAI;
 
 //-----------------------------
-	BIFF_BYTE	id;
-	BIFF_BYTE	rt;
-	bool	fUnlinkedIfmt;
-	IFmt		ifmt;
+	unsigned char	id;
+	unsigned char	rt;
+	bool			fUnlinkedIfmt;
+	unsigned short	ifmt;
 	
-	ChartParsedFormula			formula; //набор диапазонов и €чеек
+	ChartParsedFormula	formula; //набор диапазонов и €чеек
 };
 
 } // namespace XLS

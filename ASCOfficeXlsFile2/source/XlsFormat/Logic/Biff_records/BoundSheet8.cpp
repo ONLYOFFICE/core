@@ -51,7 +51,18 @@ void BoundSheet8::writeFields(CFRecord& record)
 void BoundSheet8::readFields(CFRecord& record)
 {
 	unsigned short flags;
-	record >> lbPlyPos >> flags >> stName;
+	record >> lbPlyPos >> flags;
+	
+	if (record.getGlobalWorkbookInfo()->Version < 0x0600)
+	{
+		ShortXLAnsiString name;
+		record >> name;
+		stName = name;
+	}
+	else
+	{
+		record >> stName;
+	}
 
 	switch(GETBITS(flags, 0, 1))
 	{

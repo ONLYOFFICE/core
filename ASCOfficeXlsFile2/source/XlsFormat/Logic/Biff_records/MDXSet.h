@@ -21,11 +21,11 @@ public:
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
 //-----------------------------
-	BIFF_LONG istrConnName;
-	BIFF_BYTE tfnSrc;
-	BIFF_BYTE sso;
-	BIFF_DWORD istrSetDef;
-	BIFF_LONG cistr;
+	_INT32	istrConnName;
+	unsigned char	tfnSrc;
+	unsigned char	sso;
+	_UINT32	istrSetDef;
+	_INT32	cistr;
 	BiffStructurePtrVector rgistr;
 };
 

@@ -26,8 +26,8 @@ public:
 
 	static const ElementType	type = typeLabel;
 
-	Cell cell;
-	XLUnicodeString st;
+	Cell				cell;
+	XLUnicodeString 	st;	
 //-----------------------------
 
 	GlobalWorkbookInfoPtr	global_info_;

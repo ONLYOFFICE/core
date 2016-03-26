@@ -33,7 +33,7 @@ public:
 	
 	IcvChart icvFore;
 	IcvChart icvBack;
-	BIFF_DWORD miSize;
+	_UINT32	miSize;
 };
 
 } // namespace XLS

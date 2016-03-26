@@ -26,8 +26,8 @@ public:
 	int serialize(std::wostream & stream);
 
 //-----------------------------
-	BIFF_LONG cstTotal;
-	BIFF_LONG cstUnique;
+	_INT32	cstTotal;
+	_INT32	cstUnique;
 	BiffStructurePtrVector rgb;
 
 //-----------------------------

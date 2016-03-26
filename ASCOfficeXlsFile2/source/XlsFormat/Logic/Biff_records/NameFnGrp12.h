@@ -24,7 +24,7 @@ public:
 	_UINT16 cachName;
 	_UINT16 fgrp;
 
-	XLNameUnicodeString rgach;
+	XLUnicodeString rgach;
 
 };
 

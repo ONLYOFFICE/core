@@ -6,6 +6,22 @@ namespace XLS
 
 Window2::Window2()
 {
+	is_contained_in_chart_substream = false;
+	
+	fSelected		= false;
+	fDspFmlaRt		= false;
+	fDspGridRt		= false;
+	fDspRwColRt		= false;
+	fFrozenRt		= false;
+	fDspZerosRt		= false;
+	fDefaultHdr		= false;
+	fRightToLeft	= false;
+	fDspGuts		= false;
+	fFrozenNoSplit	= false;
+	fPaged			= false;
+	fSLV			= false;
+
+	wScaleSLV = wScaleNormal = 0;
 }
 
 
@@ -43,6 +59,7 @@ void Window2::writeFields(CFRecord& record)
 	SETBIT(flags, 8, fFrozenNoSplit);
 	SETBIT(flags, 10, fPaged);
 	SETBIT(flags, 11, fSLV);
+	
 	record << flags;
 
 	CellRef topLeftCellRef(topLeftCell);
@@ -58,17 +75,21 @@ void Window2::writeFields(CFRecord& record)
 
 void Window2::readFields(CFRecord& record)
 {
-	is_contained_in_chart_substream = (10 == record.getDataSize());
+	if (record.getGlobalWorkbookInfo()->Version >= 0x0600)
+	{
+		is_contained_in_chart_substream = (10 == record.getDataSize());
+	}
+
 	unsigned short flags;
 	record >> flags;
 
-	fSelected = GETBIT(flags, 9);
+	fSelected		= GETBIT(flags, 9);
+
 	if(is_contained_in_chart_substream)
 	{
 		record.skipNunBytes(8); // must be ignored
 		return;
 	}
-
 	fDspFmlaRt		= GETBIT(flags, 0);
 	fDspGridRt		= GETBIT(flags, 1);
 	fDspRwColRt		= GETBIT(flags, 2);
@@ -80,14 +101,17 @@ void Window2::readFields(CFRecord& record)
 	fFrozenNoSplit	= GETBIT(flags, 8);
 	fPaged			= GETBIT(flags, 10);
 	fSLV			= GETBIT(flags, 11);
-
+	
 	record >> rwTop >> colLeft >> icvHdr;
 	
 	topLeftCell = static_cast<std::wstring >(CellRef(rwTop, colLeft, true, true));
 	record.skipNunBytes(2); // reserved
 
-	record >> wScaleSLV >> wScaleNormal;
-	record.skipNunBytes(4); // unused / reserved
+	if (10 > record.getDataSize())
+	{
+		record >> wScaleSLV >> wScaleNormal;
+		record.skipNunBytes(4); // unused / reserved
+	}
 }
 
 

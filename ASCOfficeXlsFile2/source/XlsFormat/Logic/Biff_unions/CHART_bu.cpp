@@ -11,16 +11,13 @@ CHART::~CHART()
 {
 }
 
-
 // CHART = CHARTSHEET *Continue
-// hope that CHARTSHEET is not the same as the so-called substream
+
 BaseObjectPtr CHART::clone()
 {
 	return BaseObjectPtr(new CHART(*this));
 }
 
-
-// Shit!!! It is.
 const bool CHART::loadContent(BinProcessor& proc)
 {
 	unsigned short ss_type;

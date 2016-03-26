@@ -47,18 +47,26 @@ const std::wstring ParsedFormula::getAssembledFormula(bool full_ref) const
 	{
 		return L"";
 	}
-	AssemblerStack ptg_stack;
-	PtgQueue extra_data = rgcb.getPtgs();
-	for(PtgVectorIterator it = ptgs.begin(), itEnd = ptgs.end(); it != itEnd; ++it)
+
+	try
 	{
-		(*it)->assemble(ptg_stack, extra_data, full_ref);
+		AssemblerStack ptg_stack;
+		PtgQueue extra_data = rgcb.getPtgs();
+		for(PtgVectorIterator it = ptgs.begin(), itEnd = ptgs.end(); it != itEnd; ++it)
+		{
+			(*it)->assemble(ptg_stack, extra_data, full_ref);
+		}
+		if(1 != ptg_stack.size())
+		{
+			return L"";
+			//throw; EXCEPT::LE::WrongAPIUsage("Wrong formula assembling.", __FUNCTION__);
+		}
+		return ptg_stack.top();
 	}
-	if(1 != ptg_stack.size())
+	catch(...)
 	{
-		return L"";
-		//throw; EXCEPT::LE::WrongAPIUsage("Wrong formula assembling.", __FUNCTION__);
 	}
-	return ptg_stack.top();
+	return L"";
 }
 
 

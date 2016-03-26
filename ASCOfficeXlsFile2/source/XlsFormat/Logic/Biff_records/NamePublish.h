@@ -27,7 +27,7 @@ public:
 	bool fPublished;
 	bool fWorkbookParam;
 
-	XLNameUnicodeString strName;
+	XLUnicodeString strName;
 };
 
 } // namespace XLS

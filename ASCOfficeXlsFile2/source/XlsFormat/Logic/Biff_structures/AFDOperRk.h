@@ -16,7 +16,7 @@ public:
 
 	static const ElementType	type = typeAFDOperRk;
 
-	BIFF_DWORD rk;
+	_UINT32	rk;
 };
 
 } // namespace XLS

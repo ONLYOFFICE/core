@@ -24,9 +24,9 @@ public:
 	static const ElementType	type = typeMDXTuple;
 
 //-----------------------------
-	BIFF_LONG istrConnName;
-	BIFF_BYTE tfnSrc;
-	BIFF_LONG cistr;
+	_INT32	istrConnName;
+	unsigned char	tfnSrc;
+	_INT32	cistr;
 	BiffStructurePtrVector rgistr;
 
 };

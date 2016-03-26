@@ -23,11 +23,11 @@ public:
 	static const ElementType	type = typeSerAuxErrBar;
 
 //-----------------------------
-	BIFF_BYTE sertm;
-	BIFF_BYTE ebsrc;
-	Boolean<unsigned char> fTeeTop;
-	BIFF_DOUBLE numValue;
-	BIFF_WORD cnum;
+	unsigned char	sertm;
+	unsigned char	ebsrc;
+	unsigned char	fTeeTop;
+	BIFF_DOUBLE		numValue;
+	_UINT16			cnum;
 
 };
 

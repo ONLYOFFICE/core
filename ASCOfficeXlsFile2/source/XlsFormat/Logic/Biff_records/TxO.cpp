@@ -33,7 +33,92 @@ void TxO::readFields(CFRecord& record)
 	pGlobalWorkbookInfoPtr = record.getGlobalWorkbookInfo();
 
 	unsigned short flags;
-	record >> flags;
+	
+	if (pGlobalWorkbookInfoPtr->Version < 0x0600)
+	{
+		short mnLinkSize;
+		short mnButtonFlags;
+		short mnShortcut;
+		short mnShortcutEA;	
+		
+		record >> cchText;
+		record.skipNunBytes( 2 );
+		record >> cbRuns >> ifntEmpty;
+		record.skipNunBytes( 2 );
+		record >> flags >> rot;
+		record.skipNunBytes( 2 );
+		record >> mnLinkSize;
+		record.skipNunBytes( 2 );
+		record >> mnButtonFlags >> mnShortcut >> mnShortcutEA;
+
+		if (nameLength > 0)
+		{
+			record >> name;
+		}
+
+		bool bAutoSize = flags & 0x0080;
+
+		if (record.getRdPtr() % 2 != 0/*name.value().empty() == false*/)
+			record.skipNunBytes(1);
+
+		record.skipNunBytes(macrosSize);
+
+		LPAnsiStringNoCch text(cchText);
+		record >> text;
+		
+		rawText = text;
+
+		record.skipNunBytes(mnLinkSize ); 
+		
+		if (record.getRdPtr() % 2 != 0)
+		{
+			record.skipNunBytes( 1 );
+		}
+
+		TxOruns.m_runCount = cbRuns / 8 - 1;
+		TxOruns.load(record);	
+	}
+	else
+	{
+		record >> flags;
+		record >> rot;
+		record.skipNunBytes(6);	// reserved4 + reserved5
+		
+		//record >> controlInfo;	// The field MUST exist if and only if the value of cmo.ot in the preceding Obj record is 0, 5, 7, 11, 12, or 14.
+		record >> cchText;
+
+		if (cchText != 0)
+			record >> cbRuns;
+		
+		record >> ifntEmpty;
+		fmla.load(record);
+		
+		std::list<CFRecordPtr>& recs = continue_records[rt_Continue];
+
+		int sz = cchText;
+		if ( cbRuns )
+		{	
+			while (record.getRdPtr() + cchText > record.getDataSize() && !recs.empty())
+			{
+				record.appendRawData(recs.front());
+				recs.pop_front();
+			}
+			rawText.setSize(cchText);
+			record >> rawText;
+
+			TxOruns.set_records(&recs);
+
+			TxOruns.m_runCount = cbRuns / 8 - 1;
+			TxOruns.load(record);
+		}
+
+		while( !recs.empty() )
+		{
+			sp_enabled	= true;
+			mso_drawing_->storeRecordAndDecideProceeding(recs.front());
+			recs.pop_front();
+		}
+	}
 	
 	hAlignment	= static_cast<unsigned char>(GETBITS(flags, 1, 3));
 	vAlignment	= static_cast<unsigned char>(GETBITS(flags, 4, 6));	// reserved2 (2 bits)	
@@ -41,49 +126,12 @@ void TxO::readFields(CFRecord& record)
 	fLockText	= GETBIT(flags, 9);	// reserved3 (4 bits)	
 	fJustLast	= GETBIT(flags, 14);
 	fSecretEdit = GETBIT(flags, 15);
-
-	record >> rot;
-	record.skipNunBytes(6);	// reserved4 + reserved5
-	//record >> controlInfo;	// The field MUST exist if and only if the value of cmo.ot in the preceding Obj record is 0, 5, 7, 11, 12, or 14.
-	record >> cchText;
-
-	if (cchText != 0)
-		record >> cbRuns;
-	
-	record >> ifntEmpty;
-	fmla.load(record);
-	
-	std::list<CFRecordPtr>& recs = continue_records[rt_Continue];
-
-	int sz = cchText;
-	if ( cbRuns )
-	{	
-		while (record.getRdPtr() + cchText > record.getDataSize() && !recs.empty())
-		{
-			record.appendRawData(recs.front());
-			recs.pop_front();
-		}
-		commentText.setSize(cchText);
-		record >> commentText;
-
-		TxOruns.set_records(&recs);
-
-		TxOruns.m_runCount = cbRuns / 8 - 1;
-		TxOruns.load(record);
-	}
-
-	while( !recs.empty() )
-	{
-		sp_enabled	= true;
-		mso_drawing_->storeRecordAndDecideProceeding(recs.front());
-		recs.pop_front();
-	}
 }
 
 
 int TxO::serialize (std::wostream & _stream)
 {
-	std::wstring str_ = commentText.value();
+	std::wstring str_ = rawText.value();
 	int str_size = str_.size();
 
 	int Fmt = 0; 
@@ -145,7 +193,7 @@ int TxO::serialize_rPr	(std::wostream & _stream, int iFmt, std::wstring namespac
 	if (!pGlobalWorkbookInfoPtr->m_arFonts) return 0;
 
 	int sz = pGlobalWorkbookInfoPtr->m_arFonts->size();
-	if (iFmt -1 > sz || iFmt < 1) return 0;
+	if (iFmt - 1 > sz || iFmt < 1) return 0;
 
 	Font * font = dynamic_cast<Font*>(pGlobalWorkbookInfoPtr->m_arFonts->at(iFmt-1).get());
 

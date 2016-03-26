@@ -18,8 +18,6 @@ global_info_(global_info)
 	skippable_records_names.push_back("StartBlock");
 	skippable_records_names.push_back("EndBlock");
 	skippable_records_names.push_back("ChartFrtInfo");
-	//skippable_records_names.push_back("TextPropsStream");
-	//skippable_records_names.push_back("ShapePropsStream");
 }
 
 
@@ -188,6 +186,20 @@ void CFStreamCacheReader::skipNunBytes(const size_t n)
 
 // Seek to the next substream (Read all records till EOF then skip EOF)
 // Doesn't generate EndOfStreamReached if the stream is the last one
+void CFStreamCacheReader::SkipRecord()
+{
+	if (records_cache.begin() != records_cache.end())
+	{
+		CFRecordType::TypeString rec_name = records_cache.front()->getTypeString();
+
+		if (rec_name.empty())
+			Log::warning(L"The extracted record has obsoleted or unknown type(0x" + STR::int2hex_wstr(records_cache.front()->getTypeId(), sizeof(CFRecordType::TypeId)) + L")");
+		else
+			Log::warning("The record has been skipped (" + rec_name + ")");
+		records_cache.pop_front(); 
+	}
+
+}
 const bool CFStreamCacheReader::SeekToEOF()
 {
 	while(readFromStream(1))

@@ -19,6 +19,9 @@ void XTI::store(CFRecord& record)
 
 void XTI::load(CFRecord& record)
 {
+	if (record.checkFitReadSafe(6) == false) //Version < 0x0600
+		return;
+
 	record >> iSupBook >> itabFirst >> itabLast;
 
 	if (itabFirst < 0 && itabLast < 0)

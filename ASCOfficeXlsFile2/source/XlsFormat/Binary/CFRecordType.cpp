@@ -130,6 +130,7 @@ CFRecordTypeValues[] =
 	{"SXVS",					rt_SXVS},
 	{"MergeCells",				rt_MergeCells},
 	{"BkHim",					rt_BkHim},
+	{"IMDATA",					rt_IMDATA},
 	{"MsoDrawingGroup",			rt_MsoDrawingGroup},
 	{"MsoDrawing",				rt_MsoDrawing},
 	{"MsoDrawingSelection",		rt_MsoDrawingSelection},

@@ -33,7 +33,17 @@ void Label::readFields(CFRecord& record)
 {
 	global_info_ = record.getGlobalWorkbookInfo();
 	
-	record >> cell >> st;
+	record >> cell;
+	
+	if (record.getGlobalWorkbookInfo()->Version < 0x0600)
+	{
+		LPAnsiString name;
+		record >> name;
+		
+		st = name;
+	}
+	else
+		record >> st;
 
     isst_ = global_info_->startAddedSharedStrings + global_info_->arAddedSharedStrings.size() ;
 	global_info_->arAddedSharedStrings.push_back(st.value());

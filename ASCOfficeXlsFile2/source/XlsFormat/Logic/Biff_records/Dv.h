@@ -23,15 +23,15 @@ public:
 	static const ElementType	type = typeDv;
 
 //-----------------------------
-	BIFF_BYTE valType;
-	BIFF_BYTE errStyle;
+	unsigned char	valType;
+	unsigned char	errStyle;
 	bool fStrLookup;
 	bool fAllowBlank;
 	bool fSuppressCombo;
-	BIFF_BYTE mdImeMode;
+	unsigned char	mdImeMode;
 	bool fShowInputMsg;
 	bool fShowErrorMsg;
-	BIFF_BYTE typOperator;
+	unsigned char	typOperator;
 
 	XLUnicodeString PromptTitle;
 	XLUnicodeString ErrorTitle;

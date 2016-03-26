@@ -22,8 +22,8 @@ public:
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-	BIFF_BYTE cch;
-	BIFF_BYTE fCompare;	
+	unsigned char	cch;
+	unsigned char	fCompare;	
 
 	bool m_bAutoFilter;
 };

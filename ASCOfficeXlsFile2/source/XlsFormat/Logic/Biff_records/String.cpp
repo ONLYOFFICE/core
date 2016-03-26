@@ -28,7 +28,14 @@ void String::writeFields(CFRecord& record)
 
 void String::readFields(CFRecord& record)
 {
-	record >> string;
+	if (record.getGlobalWorkbookInfo()->Version < 0x0600)
+	{
+		LPAnsiString s;
+		record >> s;
+		string = s;
+	}
+	else
+		record >> string;
 }
 
 } // namespace XLS

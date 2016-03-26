@@ -88,7 +88,7 @@ int XF::serialize(std::wostream & stream)
 				//CP_XML_ATTR(L"applyBorder"		, style.fAtrBdr);
 				//CP_XML_ATTR(L"applyNumberFormat"	, style.fAtrNum);
 
-				if (style.alc  >=0	&& style.alc  <8 && style.alcV >=0	&& style.alcV <5)
+				if ((style.alc  >=0	&& style.alc  <8) || (style.alcV >=0 && style.alcV <5) || (style.fShrinkToFit) || (cell.cIndent > 0) || (style.trot > 0 && style.trot < 0xff) || (style.fWrap))
 				{
 					//CP_XML_ATTR(L"applyAlignment", style.fAtrAlc);
 					CP_XML_NODE(L"alignment")
@@ -100,7 +100,7 @@ int XF::serialize(std::wostream & stream)
 						if (cell.cIndent > 0) CP_XML_ATTR(L"indent", style.cIndent);
 						CP_XML_ATTR(L"wrapText"		, style.fWrap);
 						
-						if (style.trot > 0) CP_XML_ATTR(L"textRotation"	, style.trot);
+						if (style.trot > 0 && style.trot < 0xff) CP_XML_ATTR(L"textRotation"	, style.trot);
 					}
 				}		
 			}
@@ -114,10 +114,10 @@ int XF::serialize(std::wostream & stream)
 				CP_XML_ATTR(L"applyBorder"		, cell.fAtrBdr);
 				CP_XML_ATTR(L"applyNumberFormat", cell.fAtrNum);
 				CP_XML_ATTR(L"applyFont"		, cell.fAtrFnt);
+				CP_XML_ATTR(L"applyAlignment"	, cell.fAtrAlc);
 
-				if (cell.fAtrAlc)
+				if ((cell.alc  >=0	&& cell.alc  <8) || (cell.alcV >=0 && cell.alcV <5) || (cell.fShrinkToFit) || (cell.cIndent > 0) || (cell.trot > 0 && cell.trot < 0xff) || (cell.fWrap))
 				{
-					CP_XML_ATTR(L"applyAlignment", cell.fAtrAlc);
 					CP_XML_NODE(L"alignment")
 					{
 						if (cell.alc  >=0	&& cell.alc  <8)	CP_XML_ATTR(L"horizontal"	, HorAlign[cell.alc]);
@@ -127,7 +127,7 @@ int XF::serialize(std::wostream & stream)
 						if (cell.cIndent > 0) CP_XML_ATTR(L"indent", cell.cIndent);
 						CP_XML_ATTR(L"wrapText"		, cell.fWrap);
 					
-						if (cell.trot > 0) CP_XML_ATTR(L"textRotation"	, cell.trot);
+						if (cell.trot > 0 && cell.trot < 0xff) CP_XML_ATTR(L"textRotation"	, cell.trot);
 					}
 				}
 			}

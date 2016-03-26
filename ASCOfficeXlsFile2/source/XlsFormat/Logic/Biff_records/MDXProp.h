@@ -20,10 +20,10 @@ public:
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
 //-----------------------------
-	BIFF_LONG istrConnName;
-	BIFF_BYTE tfnSrc;
-	BIFF_DWORD istrMbr;
-	BIFF_DWORD istrProp;
+	_INT32	istrConnName;
+	unsigned char	tfnSrc;
+	_UINT32	istrMbr;
+	_UINT32	istrProp;
 
 };
 

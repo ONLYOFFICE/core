@@ -24,8 +24,8 @@ public:
 	static const ElementType	type = typeCRN;
 
 //-----------------------------
-	BIFF_BYTE colLast;
-	BIFF_BYTE colFirst;
+	unsigned char	colLast;
+	unsigned char	colFirst;
 	_UINT16 row;
 	BiffStructurePtrVector crnOper;
 

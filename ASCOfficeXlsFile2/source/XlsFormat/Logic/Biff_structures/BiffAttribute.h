@@ -40,6 +40,7 @@ public:
     }
 	virtual void load(CFRecord& record)
 	{
+		version = record.getGlobalWorkbookInfo()->Version;
 		record >> val;
     }
 	virtual void store(CFRecord& record)
@@ -66,7 +67,9 @@ public:
     bool operator==(const Type & F2){return (val == F2);}
 
 protected:
-    boost::optional<Type> val;
+    boost::optional<Type>	val;
+	int						version;
+
 };
 
 //BiffAttributeSimple<std::wstring>::operator ==(const Type &F2)

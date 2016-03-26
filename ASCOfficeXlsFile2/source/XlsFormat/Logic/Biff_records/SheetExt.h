@@ -25,8 +25,8 @@ public:
 
 	int serialize(std::wostream & stream);
 //-----------------------------
-	BIFF_DWORD cb;
-	BIFF_BYTE icvPlain;
+	_UINT32	cb;
+	unsigned char	icvPlain;
 	
 	SheetExtOptional sheetExtOptional;
 };

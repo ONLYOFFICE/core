@@ -28,7 +28,7 @@ public:
 	bool fPlotVisOnly;
 	bool fNotSizeWith;
 	bool fAlwaysAutoPlotArea;
-	BIFF_BYTE mdBlank;
+	unsigned char	mdBlank;
 };
 
 } // namespace XLS

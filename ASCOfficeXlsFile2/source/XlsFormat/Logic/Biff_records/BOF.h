@@ -55,8 +55,8 @@ public:
 	bool fFontLimit;
 	
 	_UINT16 verXLHigh;
-	BIFF_BYTE verLowestBiff;
-	BIFF_BYTE verLastXLSaved;
+	unsigned char	verLowestBiff;
+	unsigned char	verLastXLSaved;
 	
 	ForwardOnlyParam<unsigned int> stream_ptr;
 	

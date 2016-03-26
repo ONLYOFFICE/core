@@ -23,7 +23,7 @@ public:
 	static const ElementType	type = typeTableStyles;
 
 //-----------------------------
-	BIFF_DWORD cts;
+	_UINT32	cts;
 	LPWideStringNoCch rgchDefTableStyle;
 	LPWideStringNoCch rgchDefPivotStyle;
 

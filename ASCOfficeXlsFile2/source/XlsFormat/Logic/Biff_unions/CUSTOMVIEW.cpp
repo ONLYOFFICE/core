@@ -74,8 +74,7 @@ const bool CUSTOMVIEW::loadContent(BinProcessor& proc)
 	proc.optional<TopMargin>();
 	proc.optional<BottomMargin>();
 
-    Pls pls(proc.getParent());
-    if (proc.optional(pls))//??????
+    if (proc.optional<Pls>())
 	{
 		m_pls = elements_.back();
 		elements_.pop_back();

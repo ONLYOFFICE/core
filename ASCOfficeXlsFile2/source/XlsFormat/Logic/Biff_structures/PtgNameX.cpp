@@ -34,6 +34,7 @@ void PtgNameX::storeFields(CFRecord& record)
 void PtgNameX::loadFields(CFRecord& record)
 {
 	record >> ixti >> nameindex;
+	
 	global_info = record.getGlobalWorkbookInfo();
 }
 
@@ -66,7 +67,7 @@ void PtgNameX::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool fu
 			_Name = global_info->arDefineNames[nameindex - 1];
 		}
 
-		if (sheet.empty() && _Name.empty() && nameindex <= global_info->arExternalNames.size())
+		if (sheet.empty() && _Name.empty() && nameindex <= global_info->arExternalNames.size() && nameindex > 0)
 		{
 			_Name = global_info->arExternalNames[nameindex - 1];
 		}

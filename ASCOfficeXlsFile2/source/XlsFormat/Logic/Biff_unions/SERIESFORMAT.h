@@ -21,6 +21,7 @@ public:
 	static const ElementType	type = typeSERIESFORMAT;
 
 	int serialize_legend(std::wostream & _stream, int idx);
+	int serialize_parent(std::wostream & _stream, bool ext = false);
 
 	BaseObjectPtr				m_SS;
 	std::vector<BaseObjectPtr>	m_arPtSS;
@@ -41,6 +42,7 @@ public:
 
 //-----------------------------------------------------------------------
 
+	BaseObjectPtr	m_SERIESFORMAT_ext;
 	
 };
 } // namespace XLS

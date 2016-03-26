@@ -2,11 +2,15 @@
 #include "OBJECTS.h"
 #include <Logic/Biff_records/MsoDrawingSelection.h>
 #include <Logic/Biff_records/MsoDrawing.h>
+
 #include <Logic/Biff_unions/TEXTOBJECT.h>
 #include <Logic/Biff_unions/OBJ.h>
 #include <Logic/Biff_unions/CHART.h>
+#include <Logic/Biff_unions/IMDATAOBJECT.h>
+
 #include <Logic/Biff_records/Continue.h>
 #include <Logic/Biff_records/Obj.h>
+#include <Logic/Biff_records/IMDATA.h>
 
 namespace XLS
 {
@@ -46,6 +50,11 @@ public:
 		CHART CHART_(mso_drawing_);
 		bool res3 = proc.optional(CHART_);
 
+		if (proc.getGlobalWorkbookInfo()->Version < 0x0600)
+		{
+			res3 = res3 || proc.optional<IMDATAOBJECT>();
+		}
+
 		return res1 || res2 || res3;
 	}
 	
@@ -79,7 +88,7 @@ public:
 
         Parenthesis_OBJECTS_2 parenthesis_objects_2(mso_drawing_);
         
-		int count			= proc.repeated(parenthesis_objects_2, 0, 0);
+		int count = proc.repeated(parenthesis_objects_2, 0, 0);
 		
 		return res || count>0;
 	}

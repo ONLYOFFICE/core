@@ -21,15 +21,15 @@ public:
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-	BIFF_DWORD cbdxfHeader;
-	BIFF_DWORD istnHeader;
-	BIFF_DWORD cbdxfData;
-	BIFF_DWORD istnData;
-	BIFF_DWORD cbdxfAgg;
-	BIFF_DWORD istnAgg;
-	BIFF_DWORD cbdxfBorder;
-	BIFF_DWORD cbdxfHeaderBorder;
-	BIFF_DWORD cbdxfAggBorder;
+	_UINT32	cbdxfHeader;
+	_UINT32	istnHeader;
+	_UINT32	cbdxfData;
+	_UINT32	istnData;
+	_UINT32	cbdxfAgg;
+	_UINT32	istnAgg;
+	_UINT32	cbdxfBorder;
+	_UINT32	cbdxfHeaderBorder;
+	_UINT32	cbdxfAggBorder;
 
 	DXFN12List dxfHeader;
 	DXFN12List dxfData;
@@ -37,6 +37,7 @@ public:
 	DXFN12List dxfBorder;
 	DXFN12List dxfHeaderBorder;
 	DXFN12List dxfAggBorder;
+	
 	XLUnicodeString stHeader;
 	XLUnicodeString stData;
 	XLUnicodeString stAgg;

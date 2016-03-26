@@ -8,6 +8,21 @@ namespace XLS
 
 BOF::BOF()
 {
+	fWin		= true;
+	fRisc		= false;
+	fBeta		= false;
+	fWinAny		= true;
+	fMacAny		= false;
+	fBetaAny	= false;
+	fRiscAny	= false;
+	fOOM		= false;
+	fGlJmp		= false;
+	fFontLimit	= false;
+	
+	verXLHigh = 0;
+
+	verLowestBiff	= 6;
+	verLastXLSaved	= 0;
 }
 
 
@@ -56,21 +71,21 @@ void BOF::readFields(CFRecord& record)
 {
 	record >> vers >> dt >> rupBuild >> rupYear;
 	
-	if (vers == (_UINT16)0x600)
+	if ( record.checkFitReadSafe(8))
 	{
 		_UINT32 flags;
 		record >> flags;
 		
-		fWin = GETBIT(flags, 0);
-		fRisc = GETBIT(flags, 1);
-		fBeta = GETBIT(flags, 2);
-		fWinAny = GETBIT(flags, 3);
-		fMacAny = GETBIT(flags, 4);
-		fBetaAny = GETBIT(flags, 5);
-		fRiscAny = GETBIT(flags, 8);
-		fOOM = GETBIT(flags, 9);
-		fGlJmp = GETBIT(flags, 10);
-		fFontLimit = GETBIT(flags, 13);
+		fWin		= GETBIT(flags, 0);
+		fRisc		= GETBIT(flags, 1);
+		fBeta		= GETBIT(flags, 2);
+		fWinAny		= GETBIT(flags, 3);
+		fMacAny		= GETBIT(flags, 4);
+		fBetaAny	= GETBIT(flags, 5);
+		fRiscAny	= GETBIT(flags, 8);
+		fOOM		= GETBIT(flags, 9);
+		fGlJmp		= GETBIT(flags, 10);
+		fFontLimit	= GETBIT(flags, 13);
 		
 		verXLHigh = static_cast<unsigned char>(GETBITS(flags, 14, 17));
 
@@ -81,9 +96,6 @@ void BOF::readFields(CFRecord& record)
 		
 		stream_ptr = record.getStreamPointer();
 		record.skipNunBytes(2); // reserved
-	}
-	else if (vers == (_UINT16)0x500)//testdoc01.xls
-	{
 	}
 }
 

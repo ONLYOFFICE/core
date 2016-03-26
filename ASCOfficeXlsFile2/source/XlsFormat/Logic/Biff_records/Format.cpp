@@ -28,7 +28,18 @@ void Format::writeFields(CFRecord& record)
 
 void Format::readFields(CFRecord& record)
 {
-	record >> ifmt >> stFormat;
+	record >> ifmt;
+	
+	if (record.getGlobalWorkbookInfo()->Version < 0x0600)
+	{
+		ShortXLAnsiString name;
+		record >> name;
+		
+		stFormat = name;
+	}
+	else
+		record >> stFormat;
+
 	stFormat = xml::utils::replace_xml_to_text(stFormat.value());
 }
 

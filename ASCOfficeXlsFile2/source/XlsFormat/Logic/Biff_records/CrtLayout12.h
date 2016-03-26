@@ -23,8 +23,8 @@ public:
 	static const ElementType	type = typeCrtLayout12;
 
 //-----------------------------
-	BIFF_DWORD dwCheckSum;
-	BIFF_BYTE autolayouttype;
+	_UINT32	dwCheckSum;
+	unsigned char	autolayouttype;
 	
 	CrtLayout12Mode wXMode;
 	CrtLayout12Mode wYMode;

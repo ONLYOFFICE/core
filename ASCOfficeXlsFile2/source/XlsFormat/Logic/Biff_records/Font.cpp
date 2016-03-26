@@ -35,6 +35,7 @@ void Font::writeFields(CFRecord& record)
 	record << dyHeight << flags;
 	record << icv << bls << sss << uls << bFamily << bCharSet;
 	record.reserveNunBytes(1, static_cast<unsigned char>(0x5E));
+	
 	record << fontName;
 }
 
@@ -55,7 +56,18 @@ void Font::readFields(CFRecord& record)
 
 	record >> icv >> bls >> sss >> uls >> bFamily >> bCharSet;
 	record.skipNunBytes(1);
-	record >> fontName;
+	
+	if (record.getGlobalWorkbookInfo()->Version < 0x0600)
+	{
+		ShortXLAnsiString name;
+		record >> name;
+		
+		fontName = name;
+	}
+	else
+	{
+		record >> fontName;
+	}
 }
 
 int Font::serialize(std::wostream & stream)

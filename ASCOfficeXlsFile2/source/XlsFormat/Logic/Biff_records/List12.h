@@ -27,7 +27,7 @@ public:
 public:
 	FrtHeader frtHeader;
 	_UINT16 lsd;
-	BIFF_DWORD idList;
+	_UINT32	idList;
 
 	List12BlockLevel rgbList12BlockLevel;
 	List12TableStyleClientInfo rgbList12TableStyleClientInfo;

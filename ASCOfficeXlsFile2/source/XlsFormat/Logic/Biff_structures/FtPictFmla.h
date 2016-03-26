@@ -17,6 +17,7 @@ public:
 	FtPictFmla();
 	BiffStructurePtr clone();
 
+	virtual void load(CFRecord& record, int linkSize);
 	virtual void load(CFRecord& record, FtPioGrbit& pictFlags);
 	virtual void store(CFRecord& record, FtPioGrbit& pictFlags);
 

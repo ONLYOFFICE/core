@@ -1,5 +1,6 @@
 
 #include "GlobalsSubstream.h"
+#include <Logic/AnyObject.h>
 #include <Logic/Biff_records/BOF.h>
 #include <Logic/Biff_records/WriteProtect.h>
 #include <Logic/Biff_records/FilePass.h>
@@ -57,6 +58,7 @@
 #include <Logic/Biff_records/EOF.h>
 #include <Logic/Biff_records/BOF.h>
 #include <Logic/Biff_records/MDTInfo.h>
+#include <Logic/Biff_records/ExternSheet.h>
 
 namespace XLS
 {;
@@ -97,7 +99,6 @@ BaseObjectPtr GlobalsSubstream::clone()
 // };
 // 
 
-
 /*
 WORKBOOKCONTENT = [WriteProtect] [FilePass] [Template] INTERFACE WriteAccess [FileSharing] CodePage 
 					*2047Lel DSF [Excel9File] RRTabId [ObProj] [ObNoMacros] [CodeName [FNGROUPS] *Lbl 
@@ -110,235 +111,228 @@ WORKBOOK = BOF WORKBOOKCONTENT
 */
 const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 {
-	int count = 0;
-
-	if(!proc.mandatory<BOF>())
-	{
-		return false;
-	}
-
-	BOF* bof = dynamic_cast<BOF*>(elements_.back().get());
+	int	count = 0;
 	
-	if (bof->vers < 0x0600) //testdoc01.xls
+	while (true)
 	{
-		proc.getGlobalWorkbookInfo()->Version = bof->vers;
-		return false;
-	}
-	proc.optional<WriteProtect>();
-	proc.optional<FilePass>();
-	if (proc.optional<Template>())
-	{
-		m_Template = elements_.back();
-		elements_.pop_back();
-	}
-	proc.mandatory<INTERFACE_T>();
-	proc.mandatory<WriteAccess>();
-	proc.optional<FileSharing>();
-	
-	if (proc.mandatory<CodePage>())
-	{
-		m_CodePage = elements_.back();
-		elements_.pop_back();
-
-		CodePage *CodePage_ = dynamic_cast<CodePage*>(m_CodePage.get());
-
-		if ((CodePage_) && (CodePage_->cv != 0/* && CodePage_->cv != 1200*/))
-			code_page_ = CodePage_->cv;
-
-		proc.getGlobalWorkbookInfo()->CodePage = code_page_;
-	}
-	proc.repeated<Lel>(0, 2047);
-	proc.mandatory<DSF>();
-	proc.optional<Excel9File>();
-	proc.mandatory<RRTabId>(); // Make optional if more than 4112 sheets
-	proc.optional<ObProj>();
-	proc.optional<ObNoMacros>();
-	proc.optional<CodeName>();
-	proc.optional<FNGROUPS>();
-	
-	count = proc.repeated<Lbl>(0, 0);
-	
-	proc.optional<OleObjectSize>();
-	proc.mandatory<PROTECTION>();
-
-	count = proc.repeated<Window1>(0, 0); // OpenOffice Calc stored files workaround (Window1 must exist at least once according to [MS-XLS])
-	while(count > 0)
-	{
-		m_arWindow1.insert(m_arWindow1.begin(), elements_.back());
-		elements_.pop_back();
-		count--;
-	}
-	proc.mandatory<Backup>();
-	proc.mandatory<HideObj>();
-	
-	count = proc.repeated<Window1>(0, 0); // OpenOffice Calc stored files workaround
-	while(count > 0)
-	{
-		m_arWindow1.insert(m_arWindow1.begin(), elements_.back());
-		elements_.pop_back();
-		count--;
-	}
-
-	proc.mandatory<Date1904>();
-	
-	proc.mandatory<CalcPrecision>();
-	proc.mandatory<RefreshAll>();
-	proc.mandatory<BookBool>();
-
-	if (proc.optional<Country>()) // OpenOffice Calc stored files workaround
-	{
-		m_Country = elements_.back();
-		elements_.pop_back();
-
-		Country *Country_ = dynamic_cast<Country*>(m_Country.get());
-		if (Country_)
+		CFRecordType::TypeId type = proc.getNextRecordType();
+		
+		if (type == rt_NONE) break;
+		if (type == rt_EOF) 
 		{
-			int countryDef = Country_->iCountryDef;
-			int countryWinIni = Country_->iCountryWinIni;
-
-			proc.getGlobalWorkbookInfo()->CodePage;
+			proc.mandatory<EOF_T>();
+			break;
 		}
-	}
-	proc.optional<UsesELFs>(); // OpenOffice Calc stored files workaround
-	proc.optional<RecalcId>(); // OpenOffice Calc stored files workaround
-	
-	count = proc.repeated<Window1>(0, 0); // OpenOffice Calc stored files workaround
-	while(count > 0)
-	{
-		m_arWindow1.insert(m_arWindow1.begin(), elements_.back());
-		elements_.pop_back();
-		count--;
-	}
 
-	if (proc.mandatory<FORMATTING>())
-	{
-		m_Formating = elements_.back();
-		elements_.pop_back();
-
-		FORMATTING* fmts = dynamic_cast<FORMATTING*>(m_Formating.get());
-		if (fmts)
+		switch(type)
 		{
-			proc.getGlobalWorkbookInfo()->m_arFonts = &fmts->m_arFonts;
-		}
-	}
+			case rt_BOF:
+			{
+				if (proc.optional<BOF>())
+				{
+					BOF *bof = dynamic_cast<BOF*>(elements_.back().get());
+					proc.getGlobalWorkbookInfo()->Version = bof->vers;
+					if (proc.getGlobalWorkbookInfo()->Version < 0x0600)
+					{				
 
-	proc.repeated<PIVOTCACHEDEFINITION>(0, 0);
-	proc.optional<DOCROUTE>();
-	
-	count = proc.repeated<UserBView>(0, 0);
-	while(count > 0)
-	{
-		m_arUserBView.insert(m_arUserBView.begin(), elements_.back());
-		elements_.pop_back();
-		count--;
+						proc.getGlobalWorkbookInfo()->CodePage = 0; //???
+					}
+				}
+			}break;
+			case rt_WriteProtect:	proc.optional<WriteProtect>();	break;
+			case rt_FilePass:		proc.optional<FilePass>();		break;
+			case rt_Template:
+			{
+				if (proc.optional<Template>())
+				{
+					m_Template = elements_.back();
+					elements_.pop_back();
+				}
+			}break;
+			case rt_InterfaceHdr:		proc.optional<INTERFACE_T>();	break;
+			case rt_WriteAccess:		proc.optional<WriteAccess>();	break;
+			case rt_Lel:				proc.repeated<Lel>(0, 2047);	break;
+			case rt_DSF:				proc.optional<DSF>();			break;
+			case rt_Excel9File:			proc.optional<Excel9File>();	break;
+			case rt_RRTabId:			proc.optional<RRTabId>();		break;
+			case rt_ObProj:				proc.optional<ObProj>();		break;
+			case rt_ObNoMacros:			proc.optional<ObNoMacros>();	break;
+			case rt_CodeName:			proc.optional<CodeName>();		break;
+			case rt_BuiltInFnGroupCount:proc.optional<FNGROUPS>();		break;
+			case rt_OleObjectSize:		proc.optional<OleObjectSize>();	break;
+			case rt_WinProtect:			proc.optional<PROTECTION>();	break;
+			case rt_FileSharing:		proc.optional<CodePage>();		break;
+			case rt_CodePage:
+			{
+				if (proc.optional<CodePage>())
+				{
+					m_CodePage = elements_.back();
+					elements_.pop_back();
+
+					CodePage *CodePage_ = dynamic_cast<CodePage*>(m_CodePage.get());
+
+					if ((CodePage_) && (CodePage_->cv != 0/* && CodePage_->cv != 1200*/))
+						code_page_ = CodePage_->cv;
+
+					proc.getGlobalWorkbookInfo()->CodePage = code_page_;
+				}
+			}break;
+			case rt_Window1:
+			{
+				count = proc.repeated<Window1>(0, 0);
+				while(count > 0)
+				{
+					m_arWindow1.insert(m_arWindow1.begin(), elements_.back());
+					elements_.pop_back();
+					count--;
+				}
+			}break;
+			case rt_Backup:			proc.optional<Backup>();		break;
+			case rt_HideObj:		proc.optional<HideObj>();		break;
+			case rt_ExternSheet:	proc.optional<ExternSheet>();	break;
+			case rt_Date1904:		proc.optional<Date1904>();		break;
+			case rt_CalcPrecision:	proc.optional<CalcPrecision>();	break;
+			case rt_RefreshAll:		proc.optional<RefreshAll>();	break;
+			case rt_BookBool:		proc.optional<BookBool>();		break;
+			case rt_Country:	
+			{
+				if (proc.optional<Country>())
+				{
+					m_Country = elements_.back();
+					elements_.pop_back();
+
+					Country *Country_ = dynamic_cast<Country*>(m_Country.get());
+					if (Country_)
+					{
+						int countryDef = Country_->iCountryDef;
+						int countryWinIni = Country_->iCountryWinIni;
+
+						proc.getGlobalWorkbookInfo()->CodePage;
+					}
+				}	
+			}break;
+			case rt_UsesELFs:		proc.optional<UsesELFs>();	break;
+			case rt_RecalcId:		proc.optional<RecalcId>();	break;
+			case rt_Font:	
+			{
+				if (proc.mandatory<FORMATTING>())
+				{
+					m_Formating = elements_.back();
+					elements_.pop_back();
+
+					FORMATTING* fmts = dynamic_cast<FORMATTING*>(m_Formating.get());
+					if (fmts)
+					{
+						proc.getGlobalWorkbookInfo()->m_arFonts = &fmts->m_arFonts;
+					}
+				}		
+			}break;
+			case rt_SXStreamID:			proc.repeated<PIVOTCACHEDEFINITION>(0, 0);	break;
+			case rt_DocRoute:			proc.repeated<DOCROUTE>(0, 0);				break;
+			case rt_UserBView:
+			{
+				count = proc.repeated<UserBView>(0, 0);
+				while(count > 0)
+				{
+					m_arUserBView.insert(m_arUserBView.begin(), elements_.back());
+					elements_.pop_back();
+					count--;
+				}
+			}break;
+			case rt_BoundSheet8:			proc.repeated<BUNDLESHEET>(1, 0);		break;
+			case rt_MDTInfo:				proc.optional<METADATA>();				break;
+			case rt_MTRSettings:			proc.optional<MTRSettings>();			break;
+			case rt_ForceFullCalculation:	proc.optional<ForceFullCalculation>();	break;
+			case rt_SupBook:
+			{
+				count = proc.repeated<SUPBOOK>(0, 0);
+				while(count > 0)
+				{
+					m_arSUPBOOK.insert(m_arSUPBOOK.begin(), elements_.back());
+					elements_.pop_back();
+					count--;
+				}
+			}break;
+			case rt_RealTimeData:			proc.repeated<RTD>(0, 0);				break;
+			case rt_HFPicture:
+			{
+				count = proc.repeated<HFPicture>(0, 0);
+				while(count > 0)
+				{
+					m_arHFPicture.insert(m_arHFPicture.begin(), elements_.back());
+					elements_.pop_back();
+					count--;
+				}
+			}break;
+			case rt_MsoDrawingGroup:
+			{
+				MSODRAWINGGROUP mso_drawiing_group(false);
+				count = proc.repeated(mso_drawiing_group, 0, 0);
+				while(count > 0)
+				{
+					m_arMSODRAWINGGROUP.insert(m_arMSODRAWINGGROUP.begin(), elements_.back());
+					elements_.pop_back();
+					count--;
+				}			
+			}break;
+			case rt_Lbl:
+			{
+				count = proc.repeated<LBL>(0, 0);
+				int start_pos = m_arLBL.size();
+				while(count > 0)
+				{
+					m_arLBL.insert(m_arLBL.begin() + start_pos, elements_.back());
+					elements_.pop_back();
+					count--;
+				}
+			}break;
+			case rt_SST:
+			{
+				SHAREDSTRINGS	shared_strings(code_page_);
+				if (proc.optional(shared_strings))
+				{
+					m_SHAREDSTRINGS = elements_.back();
+					elements_.pop_back();
+
+					proc.getGlobalWorkbookInfo()->startAddedSharedStrings = shared_strings.size_;
+				}
+			}break;
+			case rt_ExtSST:
+			{
+				if (proc.optional<ExtSST>())
+				{
+					m_ExtSST = elements_.back();
+					elements_.pop_back();
+				}
+			}break;
+			case rt_WebPub:				proc.repeated<WebPub>(0, 0);			break;
+			case rt_WOpt:				proc.repeated<WOpt>(0, 0);				break;
+			case rt_CrErr:				proc.optional<CrErr>();					break;
+			case rt_BookExt:			proc.optional<BookExt>();				break;
+			case rt_FeatHdr:
+			{
+				FeatHdr feat_hdr(true);
+				proc.repeated(feat_hdr, 0, 0);
+			}break;
+			case rt_DConn:				proc.repeated<DConn>(0, 0);				break;
+			case rt_Theme:
+			{
+				if (proc.optional<THEME>())
+				{
+					m_THEME = elements_.back();
+					elements_.pop_back();
+				}
+			}break;
+			case rt_CompressPictures:	proc.optional<CompressPictures>();		break;
+			case rt_Compat12:			proc.optional<Compat12>();				break;
+			case rt_GUIDTypeLib:		proc.optional<GUIDTypeLib>();			break;
+
+			default://skip					
+			{
+				proc.SkipRecord();	
+			}break;
+		}
 	}	
-	
-	proc.optional<UsesELFs>();
-	
-	count = proc.repeated<BUNDLESHEET>(1, 0);
-	
-	proc.optional<METADATA>(); // Let it be optional
-	proc.optional<MTRSettings>();
-	proc.optional<ForceFullCalculation>();
-
-	if (proc.optional<Country>())
-	{
-		m_Country = elements_.back();
-		elements_.pop_back();
-
-		Country *Country_ = dynamic_cast<Country*>(m_Country.get());
-		if (Country_)
-		{
-			int countryDef = Country_->iCountryDef;
-			int countryWinIni = Country_->iCountryWinIni;
-
-			proc.getGlobalWorkbookInfo()->CodePage;
-		}
-	}
-	count = proc.repeated<SUPBOOK>(0, 0);
-	while(count > 0)
-	{
-		m_arSUPBOOK.insert(m_arSUPBOOK.begin(), elements_.back());
-		elements_.pop_back();
-		count--;
-	}
-
-	count = proc.repeated<LBL>(0, 0);
-	while(count > 0)
-	{
-		m_arLBL.insert(m_arLBL.begin(), elements_.back());
-		elements_.pop_back();
-		count--;
-	}
-	proc.repeated<RTD>(0, 0);
-
-	proc.optional<RecalcId>();
-	proc.optional<Date1904>();		//china-price.xls
-	
-	count = proc.repeated<HFPicture>(0, 0);
-	while(count > 0)
-	{
-		m_arHFPicture.insert(m_arHFPicture.begin(), elements_.back());
-		elements_.pop_back();
-		count--;
-	}
-	
-    MSODRAWINGGROUP mso_drawiing_group(false);
-    count = proc.repeated(mso_drawiing_group, 0, 0);
-	while(count > 0)
-	{
-		m_arMSODRAWINGGROUP.insert(m_arMSODRAWINGGROUP.begin(), elements_.back());
-		elements_.pop_back();
-		count--;
-	}
-	proc.repeated<SUPBOOK>(0, 0);//order_history.xls
-	
-	count = proc.repeated<LBL>(0, 0);
-	int start_pos = m_arLBL.size();
-	while(count > 0)
-	{
-		m_arLBL.insert(m_arLBL.begin() + start_pos, elements_.back());
-		elements_.pop_back();
-		count--;
-	}
-
-    SHAREDSTRINGS shared_strings(code_page_);
-    if (proc.optional(shared_strings))
-	{
-		m_SHAREDSTRINGS = elements_.back();
-		elements_.pop_back();
-
-		proc.getGlobalWorkbookInfo()->startAddedSharedStrings = shared_strings.size_;
-	}
-	
-	if (proc.optional<ExtSST>()) // OpenOffice Calc stored files workaround (ExtSST is mandatory according to [MS-XLS])
-	{
-		m_ExtSST = elements_.back();
-		elements_.pop_back();
-	}
-	proc.repeated<WebPub>(0, 0);
-	proc.optional<WOpt>();
-	proc.optional<CrErr>();
-	proc.optional<BookExt>();
-
-    FeatHdr feat_hdr(true);
-    proc.repeated(feat_hdr, 0, 0);
-
-    proc.repeated<DConn>(0, 0);
-	
-	if (proc.optional<THEME>())
-	{
-		m_THEME = elements_.back();
-		elements_.pop_back();
-	}
-	proc.optional<CompressPictures>();
-	proc.optional<Compat12>();
-	proc.optional<GUIDTypeLib>();
-
-#pragma message("####################### Some trash records may be skipped here")
-	proc.SeekToEOF(); // Thus we skip problems with the trash at the end of the stream (found in Domens.xls)
-	
-	proc.mandatory<EOF_T>();
 
 	return true;
 }

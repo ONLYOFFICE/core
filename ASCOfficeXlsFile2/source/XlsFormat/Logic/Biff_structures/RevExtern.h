@@ -22,9 +22,9 @@ public:
 	virtual void store(CFRecord& record); // No type info
 
 private:
-	VirtualPath book;
-	RevItab itabFirst;
-	RevItab itabLast;
+	XLUnicodeString book;
+	RevItab			itabFirst;
+	RevItab			itabLast;
 };
 
 typedef boost::shared_ptr<RevExtern> RevExternPtr;

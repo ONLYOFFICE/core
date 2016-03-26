@@ -25,11 +25,19 @@ public:
 
 	static const unsigned short fixed_id = 0x1A;
 private:
-	unsigned short ixti;
-	RgceLocRel rgce_loc_rel;
-	RgceLoc rgce_loc;
-	const CellRef& cell_base_ref;
-	GlobalWorkbookInfoPtr global_info;
+//biff8
+	unsigned short			ixti;
+	RgceLocRel				rgce_loc_rel;
+	RgceLoc					rgce_loc;
+	const CellRef&			cell_base_ref;
+//biff5
+	_UINT16					ixals;
+	_UINT16					itabFirst;
+	_UINT16					itabLast;
+	_UINT16					grbitRw;
+	unsigned char			col;
+
+	GlobalWorkbookInfoPtr	global_info;
 
 };
 

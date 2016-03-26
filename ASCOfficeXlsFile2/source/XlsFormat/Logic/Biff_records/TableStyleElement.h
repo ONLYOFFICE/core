@@ -23,9 +23,9 @@ public:
 	static const ElementType	type = typeTableStyleElement;
 
 //-----------------------------
-	BIFF_DWORD tseType;
-	BIFF_DWORD size;
-	BIFF_DWORD index;
+	_UINT32	tseType;
+	_UINT32	size;
+	_UINT32	index;
 
 };
 

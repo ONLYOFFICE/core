@@ -38,7 +38,7 @@ public:
 	bool fNoOrient;
 	bool fUsePage;
 	bool fEndNotes;
-	BIFF_BYTE iErrors;
+	unsigned char	iErrors;
 
 	_UINT16 iRes;
 	_UINT16 iVRes;

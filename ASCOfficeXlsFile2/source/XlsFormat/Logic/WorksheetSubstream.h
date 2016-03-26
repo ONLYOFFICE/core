@@ -19,7 +19,8 @@ public:
 
 	BaseObjectPtr clone();
 
-	virtual const bool loadContent(BinProcessor& proc);
+	virtual const	bool loadContent	(BinProcessor& proc);
+
 	static const ElementType	type = typeWorksheetSubstream;
 
 	size_t						ws_index_;
@@ -31,6 +32,7 @@ public:
 	BaseObjectPtr				m_GLOBALS;
 	BaseObjectPtr				m_PAGESETUP;
 	BaseObjectPtr				m_BACKGROUND;
+	BaseObjectPtr				m_DefaultRowHeight;
 	BaseObjectPtr				m_COLUMNS;
 	BaseObjectPtr				m_CELLTABLE;
 	BaseObjectPtr				m_SHFMLA_SET;

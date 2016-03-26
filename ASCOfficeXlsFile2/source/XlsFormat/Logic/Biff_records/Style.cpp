@@ -51,7 +51,14 @@ void Style::readFields(CFRecord& record)
 	}
 	else
 	{
-		record >> user;
+		if (record.getGlobalWorkbookInfo()->Version < 0x0600)
+		{
+			ShortXLAnsiString s;
+			record >> s;
+			user = s;
+		}
+		else
+			record >> user;
 	}
 }
 

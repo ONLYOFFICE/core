@@ -31,6 +31,8 @@ public:
 	const bool isEOF() const;
 	// Skip the specified number of unsigned chars without processing
 	void skipNunBytes(const size_t n);
+
+	void SkipRecord();
 	// Seek to the next substream (Read all records till EOF then skip EOF)
 	// Doesn't generate EndOfStreamReached if the stream is the last one
 	const bool SeekToEOF(); 

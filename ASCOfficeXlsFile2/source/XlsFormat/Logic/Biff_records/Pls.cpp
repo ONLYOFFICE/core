@@ -4,8 +4,7 @@
 namespace XLS
 {
 
-Pls::Pls(BaseObject* parent)
-:	parent_(parent)
+Pls::Pls()
 {
 }
 
@@ -17,7 +16,7 @@ Pls::~Pls()
 
 BaseObjectPtr Pls::clone()
 {
-	return BaseObjectPtr(new Pls(*this));
+	return BaseObjectPtr(new Pls());
 }
 
 
@@ -63,9 +62,23 @@ void Pls::readFields(CFRecord& record)
 	
 	if (record.loadAnyData(rgb) == false) return;
 
-	int size	= record.getDataSize() - 2;
-	const char* data	= record.getData() + 2;
+	if (continue_records.size() > 0)
+	{
+		std::list<CFRecordPtr>& recs = continue_records[rt_Continue];
 
+		if (recs.size())
+		{
+			while( !recs.empty() )
+			{
+				record.appendRawData(recs.front()->getData(), recs.front()->getDataSize());
+				recs.pop_front();
+			}
+		}
+	}
+
+	int size			= record.getDataSize() - 2;
+	const char* data	= record.getData() + 2;
+	
 	boost::shared_array<char> buffer(new char[size]);
     memcpy(buffer.get(), data, size);
 	

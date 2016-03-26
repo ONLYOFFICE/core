@@ -38,11 +38,23 @@ void OfficeArtClientAnchorSheet::loadFields(XLS::CFRecord& record)
 {
 	global_info = record.getGlobalWorkbookInfo();
 	
-	unsigned short flags;
-	record >> flags >> colL >> dxL >> rwT >> dyT >> colR >> dxR >> rwB >> dyB;
+	if (record.getGlobalWorkbookInfo()->Version < 0x0600)
+	{
+		unsigned char flags;
+		record >> flags;
+		fMove = GETBIT(flags, 0);
+		fSize = GETBIT(flags, 1);
+	}
+	else
+	{
+		unsigned short flags;
+		record >> flags;
+		
+		fMove = GETBIT(flags, 0);
+		fSize = GETBIT(flags, 1);
+	}
 	
-	fMove = GETBIT(flags, 0);
-	fSize = GETBIT(flags, 1);
+	record >> colL >> dxL >> rwT >> dyT >> colR >> dxR >> rwB >> dyB;
 }
 
 void OfficeArtClientAnchorSheet::calculate()
@@ -52,23 +64,38 @@ void OfficeArtClientAnchorSheet::calculate()
 										global_info->sheet_size_info[global_info->current_sheet - 1] : zero;
 
 //----------------------------------------------------------------------------------------------------
-	double kfCol	= 17640 / 256.;
+	//1 inch	=	72 point
+	//1 emu		=	360000 * 2.54 inch
+
+	double kfCol	=  360000 / 72.;
+
 	double kfRow	= ( 360000 * 2.54 / 72) / 256. ;
+
+	double Digit_Width = 8.43;
+	double column_width = 0;
 
 	if (sheet_info.customColumnsWidth.find(colL) != sheet_info.customColumnsWidth.end())
 	{
-		_dxL = dxL * kfCol * sheet_info.customColumnsWidth[colL];	
+		column_width = sheet_info.customColumnsWidth[colL] / 1024.;	
 	}
 	else 
-		_dxL = dxL * kfCol * sheet_info.defaultColumnWidth;	
+		column_width = sheet_info.defaultColumnWidth / 1024.;	
+
+	//double width = ((int)((column_width * Maximum_Digit_Width + 5 ) / Maximum_Digit_Width * 256. )) / 256.; //px
+	double width = (double)(((256. * column_width + (int)(128. / Digit_Width)) / 256.) * Digit_Width) * 72 / 96.;
+	
+	_dxL = dxL * kfCol * width;
 
 	if (sheet_info.customColumnsWidth.find(colR) != sheet_info.customColumnsWidth.end())
 	{
-		_dxR = dxR * kfCol * sheet_info.customColumnsWidth[colR];	
+		column_width = sheet_info.customColumnsWidth[colR];		
 	}
 	else 
-		_dxR = dxR * kfCol * sheet_info.defaultColumnWidth;	
+		column_width = sheet_info.defaultColumnWidth;
 
+	width = (double)(((256. * column_width + (int)(128. / Digit_Width)) / 256.) * Digit_Width) * 72 / 96.;
+	
+	_dxR = dxR * kfCol * width;
 //---------------------------------------------------------------------------------------------------
 	if (sheet_info.customRowsHeight.find(rwT) != sheet_info.customRowsHeight.end())
 	{

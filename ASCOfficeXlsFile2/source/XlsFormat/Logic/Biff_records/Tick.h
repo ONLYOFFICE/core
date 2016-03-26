@@ -26,17 +26,17 @@ public:
 	int serialize(std::wostream & _stream);
 
 //-----------------------------
-	BIFF_BYTE tktMajor;
-	BIFF_BYTE tktMinor;
-	BIFF_BYTE tlt;
-	BIFF_BYTE wBkgMode;
+	unsigned char	tktMajor;
+	unsigned char	tktMinor;
+	unsigned char	tlt;
+	unsigned char	wBkgMode;
 	LongRGB rgb;
 
 	bool fAutoCo;
 	bool fAutoMode;
-	BIFF_BYTE rot;
+	unsigned char	rot;
 	bool fAutoRot;
-	BIFF_BYTE iReadingOrder;
+	unsigned char	iReadingOrder;
 
 	_UINT16 icv;
 	_UINT16 trot;

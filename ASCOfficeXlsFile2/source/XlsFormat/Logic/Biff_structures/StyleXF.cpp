@@ -64,38 +64,87 @@ void StyleXF::load(CFRecord& record)
 {
 	m_GlobalWorkbookInfo = record.getGlobalWorkbookInfo();
 
-	_UINT32 flags1;
-	_UINT32 flags2;
-	_UINT32 flags3;
-	_UINT16 flags4;
-	
-	record >> flags1 >> flags2 >> flags3 >> flags4;
-	
-	alc = static_cast<unsigned char>(GETBITS(flags1, 0, 2));
-	fWrap = GETBIT(flags1, 3);
-	alcV = static_cast<unsigned char>(GETBITS(flags1, 4, 6));
-	fJustLast = GETBIT(flags1, 7);
-	trot = static_cast<unsigned char>(GETBITS(flags1, 8, 15));
-	cIndent = static_cast<unsigned char>(GETBITS(flags1, 16, 19));
-	fShrinkToFit = GETBIT(flags1, 20);
-	iReadOrder = static_cast<unsigned char>(GETBITS(flags1, 22, 23));
+	if (m_GlobalWorkbookInfo->Version < 0x0600)
+	{
+		_UINT16 flags1;
+		_UINT32 flags2;
+		_UINT32 flags3;
 
-	border.dgLeft = static_cast<unsigned char>(GETBITS(flags2, 0, 3));
-	border.dgRight = static_cast<unsigned char>(GETBITS(flags2, 4, 7));
-	border.dgTop = static_cast<unsigned char>(GETBITS(flags2, 8, 11));
-	border.dgBottom = static_cast<unsigned char>(GETBITS(flags2, 12, 15));
-	border.dgDiag = static_cast<unsigned char>(GETBITS(flags3, 21, 24));
-	border.grbitDiag = static_cast<unsigned char>(GETBITS(flags2, 30, 31));
+		record >> flags1 >> flags2 >> flags3;
+		
+		alc					= static_cast<unsigned char>(GETBITS(flags1, 0, 2));
+		fWrap				= GETBIT(flags1, 3);
+		alcV				= static_cast<unsigned char>(GETBITS(flags1, 4, 6));
+		fJustLast			= GETBIT(flags1, 7);
+		trot				= 0;//static_cast<unsigned char>(GETBITS(flags1, 8, 15));	
+		cIndent				= 0;//static_cast<unsigned char>(GETBITS(flags1, 16, 19));
+		fShrinkToFit		= 0;//GETBIT(flags1, 20);
+		iReadOrder			= 0;//static_cast<unsigned char>(GETBITS(flags1, 22, 23));
 
-	border.icvLeft	= 0 != border.dgLeft ? static_cast<unsigned char>(GETBITS(flags2, 16, 22)) : 0;
-	border.icvRight = 0 != border.dgRight ? static_cast<unsigned char>(GETBITS(flags2, 23, 29)) : 0;
-	border.icvTop	= 0 != border.dgTop ? static_cast<unsigned char>(GETBITS(flags3, 0, 6)) : 0;
-	border.icvBottom = 0 != border.dgBottom ? static_cast<unsigned char>(GETBITS(flags3, 7, 13)) : 0;
-	border.icvDiag	= 0 != border.dgDiag ? static_cast<unsigned char>(GETBITS(flags3, 14, 20)) : 0;
-	
-	fill.fls = static_cast<unsigned char>(GETBITS(flags3, 26, 31));
-	fill.icvFore = GETBITS(flags4, 0, 6);
-	fill.icvBack = GETBITS(flags4, 7, 13);
+		char orient			= GETBITS(flags1, 8, 10);
+		
+		switch(orient)
+		{
+			case 0:	trot = 0;		break;		// Text orientation: not rotated.
+			case 1: trot = 0xff;	break;		// Text orientation: vertically stacked.
+			case 2: trot = 90;		break;		// Text orientation: 90 deg counterclockwise.
+			case 3: trot = 270;		break;		// Text orientation: 90 deg clockwise.
+		}	
+
+		fill.fls = static_cast<unsigned char>(GETBITS(flags2, 16, 21));
+		
+		fill.icvFore = GETBITS(flags2, 0, 6);
+		fill.icvBack = GETBITS(flags2, 7, 13);
+		
+		border.dgTop		= static_cast<unsigned char>(GETBITS(flags3, 0, 2));
+		border.dgLeft		= static_cast<unsigned char>(GETBITS(flags3, 3, 5));
+		border.dgRight		= static_cast<unsigned char>(GETBITS(flags3, 6, 8));		
+		border.dgBottom		= static_cast<unsigned char>(GETBITS(flags2, 22, 24));	
+		border.dgDiag		= 0;
+		border.grbitDiag	= 0;
+
+		border.icvLeft		= (0 != border.dgLeft)	? static_cast<unsigned char>(GETBITS(flags3, 16, 22))	: 0;
+		border.icvRight		= (0 != border.dgRight)	? static_cast<unsigned char>(GETBITS(flags3, 23, 29))	: 0;
+		border.icvTop		= (0 != border.dgTop)	? static_cast<unsigned char>(GETBITS(flags3,  9, 15))	: 0;
+		border.icvBottom	= (0 != border.dgBottom)? static_cast<unsigned char>(GETBITS(flags2, 25, 31))	: 0;
+		border.icvDiag		= 0;
+	}
+	else
+	{
+		_UINT32 flags1;
+		_UINT32 flags2;
+		_UINT32 flags3;
+		_UINT16 flags4;
+		
+		record >> flags1 >> flags2 >> flags3 >> flags4;
+		
+		alc					= static_cast<unsigned char>(GETBITS(flags1, 0, 2));
+		fWrap				= GETBIT(flags1, 3);
+		alcV				= static_cast<unsigned char>(GETBITS(flags1, 4, 6));
+		fJustLast			= GETBIT(flags1, 7);
+		trot				= static_cast<unsigned char>(GETBITS(flags1, 8, 15));
+		cIndent				= static_cast<unsigned char>(GETBITS(flags1, 16, 19));
+		fShrinkToFit		= GETBIT(flags1, 20);
+		iReadOrder			= static_cast<unsigned char>(GETBITS(flags1, 22, 23));
+
+		border.dgLeft		= static_cast<unsigned char>(GETBITS(flags2, 0, 3));
+		border.dgRight		= static_cast<unsigned char>(GETBITS(flags2, 4, 7));
+		border.dgTop		= static_cast<unsigned char>(GETBITS(flags2, 8, 11));
+		border.dgBottom		= static_cast<unsigned char>(GETBITS(flags2, 12, 15));
+		border.dgDiag		= static_cast<unsigned char>(GETBITS(flags3, 21, 24));
+		border.grbitDiag	= static_cast<unsigned char>(GETBITS(flags2, 30, 31));
+
+		border.icvLeft		= (0 != border.dgLeft)	? static_cast<unsigned char>(GETBITS(flags2, 16, 22))	: 0;
+		border.icvRight		= (0 != border.dgRight)	? static_cast<unsigned char>(GETBITS(flags2, 23, 29))	: 0;
+		border.icvTop		= (0 != border.dgTop)	? static_cast<unsigned char>(GETBITS(flags3, 0, 6))		: 0;
+		border.icvBottom	= (0 != border.dgBottom)? static_cast<unsigned char>(GETBITS(flags3, 7, 13))	: 0;
+		border.icvDiag		= (0 != border.dgDiag)	? static_cast<unsigned char>(GETBITS(flags3, 14, 20))	: 0;
+		
+		fill.fls = static_cast<unsigned char>(GETBITS(flags3, 26, 31));
+		
+		fill.icvFore = GETBITS(flags4, 0, 6);
+		fill.icvBack = GETBITS(flags4, 7, 13);
+	}
 
 }
 

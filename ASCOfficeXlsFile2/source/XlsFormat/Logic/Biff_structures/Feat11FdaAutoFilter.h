@@ -21,7 +21,7 @@ public:
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-	BIFF_DWORD cbAutoFilter;
+	_UINT32	cbAutoFilter;
 	AutoFilter recAutoFilter;
 };
 

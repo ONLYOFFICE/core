@@ -20,6 +20,7 @@
 #include <Logic/Biff_records/LPr.h>
 #include <Logic/Biff_records/HorizontalPageBreaks.h>
 #include <Logic/Biff_records/VerticalPageBreaks.h>
+#include <Logic/Biff_records/Country.h>
 
 namespace XLS
 {
@@ -41,56 +42,67 @@ BaseObjectPtr GLOBALS::clone()
 	return BaseObjectPtr(new GLOBALS(*this));
 }
 
-
 /*
 GLOBALS = CalcMode CalcCount CalcRefMode CalcIter CalcDelta CalcSaveRecalc PrintRowCol PrintGrid GridSet 
 			Guts DefaultRowHeight WsBool [Sync] [LPr] [HorizontalPageBreaks] [VerticalPageBreaks]
-*/
+*/	
 const bool GLOBALS::loadContent(BinProcessor& proc)
 {
 	global_info_ = proc.getGlobalWorkbookInfo();
-// 	if(!proc.mandatory<CalcMode>())
-// 	{
-// 		return false;
-// 	}
-	proc.optional<Protect>();
-	proc.optional<CalcMode>(); // OpenOffice Calc stored files workaround (CalcMode is mandatory according to [MS-XLS])	
-	proc.mandatory<CalcCount>();
-	proc.mandatory<CalcRefMode>();
-	proc.mandatory<CalcIter>();
-	proc.mandatory<CalcDelta>();
-	proc.mandatory<CalcSaveRecalc>();
-	proc.optional<PrintRowCol>();// OpenOffice Calc stored files workaround (PrintRowCol is mandatory according to [MS-XLS])
-	proc.optional<PrintGrid>();// OpenOffice Calc stored files workaround (PrintGrid is mandatory according to [MS-XLS])
-	proc.optional<GridSet>();// OpenOffice Calc stored files workaround (GridSet is mandatory according to [MS-XLS])
-	
-	if (proc.mandatory<Guts>())
-	{
-		m_Guts = elements_.back();
-		elements_.pop_back();
-	}
-	
-	if (proc.mandatory<DefaultRowHeight>())
-	{
-		m_DefaultRowHeight = elements_.back();
-		elements_.pop_back();
-	}
-	
-    WsBool wsbool(is_dialog);
-    if (proc.mandatory(wsbool)) // The most interesting
-	{
-		m_WsBool = elements_.back();
-		elements_.pop_back();
-	}
 
-	proc.optional<Sync>();
-	proc.optional<LPr>();
-	proc.optional<HorizontalPageBreaks>();
-	proc.optional<VerticalPageBreaks>();
-	proc.optional<PrintRowCol>();// OpenOffice Calc stored files workaround (PrintRowCol is mandatory according to [MS-XLS])
-	proc.optional<PrintGrid>();// OpenOffice Calc stored files workaround (PrintGrid is mandatory according to [MS-XLS])
-	
-	proc.optional<GridSet>();// OpenOffice Calc stored files workaround (GridSet is mandatory according to [MS-XLS])
+	while (true)
+	{
+		CFRecordType::TypeId type = proc.getNextRecordType();
+		
+		if (type == rt_NONE) break;
+
+		switch(type)
+		{
+			case rt_CalcMode:		proc.optional<CalcMode>();			break;
+			case rt_CalcCount:		proc.optional<CalcCount>();			break;
+			case rt_CalcRefMode:	proc.optional<CalcRefMode>();		break;
+			case rt_CalcIter:		proc.optional<CalcIter>();			break;
+			case rt_CalcDelta:		proc.optional<CalcDelta>();			break;
+			case rt_CalcSaveRecalc:	proc.optional<CalcSaveRecalc>();	break;
+			case rt_PrintRowCol:	proc.optional<PrintRowCol>();		break;
+			case rt_PrintGrid:		proc.optional<PrintGrid>();			break;
+			case rt_GridSet:		proc.optional<GridSet>();			break;
+			case rt_Sync:			proc.optional<Sync>();				break;
+			case rt_LPr:			proc.optional<LPr>();				break;
+			case rt_Guts:
+			{
+				if (proc.optional<Guts>())
+				{
+					m_Guts = elements_.back();
+					elements_.pop_back();
+				}
+			}break;			
+			case rt_DefaultRowHeight:
+			{
+				if (proc.optional<DefaultRowHeight>())
+				{
+					m_DefaultRowHeight = elements_.back();
+					elements_.pop_back();
+				}
+			}break;	
+			case rt_WsBool:
+			{
+				WsBool wsbool(is_dialog);
+				if (proc.optional(wsbool)) // The most interesting
+				{
+					m_WsBool = elements_.back();
+					elements_.pop_back();
+				}
+			}break;				
+			
+			case rt_HorizontalPageBreaks:	proc.optional<HorizontalPageBreaks>();	break;
+			case rt_VerticalPageBreaks:		proc.optional<VerticalPageBreaks>();	break;
+
+			default://unknown .... back	upper		
+				return true;
+		}
+	}	
+
 	return true;
 }
 

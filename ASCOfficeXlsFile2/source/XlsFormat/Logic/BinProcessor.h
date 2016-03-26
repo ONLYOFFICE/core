@@ -62,6 +62,7 @@ public:
 
 	virtual const bool getNextSubstreamType(_UINT16& type) = 0;
 	virtual void SeekToEOF() = 0;
+	virtual void SkipRecord() = 0;
 
 	BaseObject* getParent() const { return parent_;};
 	GlobalWorkbookInfoPtr getGlobalWorkbookInfo() const { return global_info_;};
@@ -87,6 +88,7 @@ public:
 	const CFRecordType::TypeId getNextRecordType();
 	const bool getNextSubstreamType(_UINT16& type);
 	void SeekToEOF();
+	void SkipRecord();
 
 private:
 	const bool readChild(BaseObject& object, const bool is_mandatory);

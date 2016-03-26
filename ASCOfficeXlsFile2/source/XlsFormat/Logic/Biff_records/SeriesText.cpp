@@ -30,7 +30,15 @@ void SeriesText::writeFields(CFRecord& record)
 void SeriesText::readFields(CFRecord& record)
 {
 	record.skipNunBytes(2); // reserved
-	record >> stText;
+
+	if (record.getGlobalWorkbookInfo()->Version < 0x0600)
+	{
+		ShortXLAnsiString s;
+		record >> s;
+		stText = s;
+	}
+	else
+		record >> stText;
 }
 
 } // namespace XLS

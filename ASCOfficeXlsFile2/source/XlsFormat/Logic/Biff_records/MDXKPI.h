@@ -20,11 +20,11 @@ public:
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
 //-----------------------------
-	BIFF_LONG istrConnName;
-	BIFF_BYTE tfnSrc;
-	BIFF_BYTE kpiprop;
-	BIFF_LONG istrKPIName;
-	BIFF_LONG istrMbrKPI;
+	_INT32			istrConnName;
+	unsigned char	tfnSrc;
+	unsigned char	kpiprop;
+	_INT32			istrKPIName;
+	_INT32			istrMbrKPI;
 };
 
 } // namespace XLS

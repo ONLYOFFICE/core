@@ -35,6 +35,7 @@ void BRAI::readFields(CFRecord& record)
 	record >> id >> rt >> flags;
 	fUnlinkedIfmt = static_cast<unsigned char>(GETBIT(flags, 0));
 	record >> ifmt;
+	
 	formula.load(record);
 
 }

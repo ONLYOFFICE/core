@@ -5,7 +5,6 @@
 namespace XLS
 {
 
-
 BiffString::BiffString()
 :	struct_size(0)
 {

@@ -10,6 +10,10 @@ namespace XLS
 NoteSh::NoteSh()
 {
 	x_ = y_ = 0;
+	
+	fShow		= false;
+	fRwHidden	= false;
+	fColHidden	= false;
 }
 
 
@@ -39,14 +43,27 @@ void NoteSh::load(CFRecord& record)
 	global_info = record.getGlobalWorkbookInfo();
 
 	unsigned short flags;
-	record >> row >> col >> flags;
+	record >> row >> col;
 	
-	fShow		= GETBIT(flags, 1);
-	fRwHidden	= GETBIT(flags, 7);
-	fColHidden	= GETBIT(flags, 8);
-
-	record >> idObj >> stAuthor;
-	record.skipNunBytes(1); // unused
+	if (global_info->Version < 0x0600)
+	{
+		LPAnsiString stText1;
+		record >> stText1;
+		
+		stText = stText1;
+	}
+	else
+	{
+		record >> flags;
+		
+		fShow		= GETBIT(flags, 1);
+		fRwHidden	= GETBIT(flags, 7);
+		fColHidden	= GETBIT(flags, 8);
+		
+		record >> idObj >> stAuthor;
+	
+		record.skipNunBytes(1); // unused
+	}
 }
 
 //-----------------------------------------------------------------------

@@ -70,8 +70,7 @@ class XLUnicodeString_T : public BiffString
 {
 public:
     XLUnicodeString_T() {}
-	//XLUnicodeString_T(const XLUnicodeString_T& other) : struct_size(other.struct_size), str_(other.str_), cch_(other.cch_) {};
-    XLUnicodeString_T(const size_t size) : BiffString(size) {}
+	XLUnicodeString_T(const size_t size) : BiffString(size) {}
     XLUnicodeString_T(const std::wstring & str) : BiffString(str) {}
 	XLUnicodeString_T operator=(const std::wstring & str) 
 	{
@@ -90,6 +89,7 @@ private:
 	{
 		size_t struct_size_local = 0;
 		bool is_wide = false;
+		
 		if(cch_READ_FROM_RECORD == cch_where)
 		{
 			if(aw_READ_FROM_CCH == det_id)
@@ -118,16 +118,16 @@ private:
 };
 
 
-typedef XLUnicodeString_T<unsigned short, aw_READ_FROM_RECORD, cch_READ_FROM_RECORD> XLUnicodeString;
-typedef XLUnicodeString_T<unsigned char, aw_READ_FROM_RECORD, cch_READ_FROM_RECORD> ShortXLUnicodeString;
-typedef XLUnicodeString_T<unsigned short, aw_WIDE, cch_READ_FROM_RECORD> LPWideString;
-typedef XLUnicodeString_T<unsigned short, aw_WIDE, cch_PASSED_AS_AN_ARGUMENT> LPWideStringNoCch;
-typedef XLUnicodeString_T<unsigned short, aw_READ_FROM_RECORD, cch_PASSED_AS_AN_ARGUMENT> XLUnicodeStringNoCch;
-typedef XLUnicodeString_T<unsigned short, aw_READ_FROM_RECORD_IF_CCH_NOT_ZERO, cch_READ_FROM_RECORD> XLUnicodeStringMin2;
+typedef XLUnicodeString_T<unsigned short,	aw_READ_FROM_RECORD,					cch_READ_FROM_RECORD>		XLUnicodeString;
+typedef XLUnicodeString_T<unsigned char,	aw_READ_FROM_RECORD,					cch_READ_FROM_RECORD>		ShortXLUnicodeString;
+typedef XLUnicodeString_T<unsigned short,	aw_WIDE,								cch_READ_FROM_RECORD>		LPWideString;
+typedef XLUnicodeString_T<unsigned short,	aw_WIDE,								cch_PASSED_AS_AN_ARGUMENT>	LPWideStringNoCch;
+typedef XLUnicodeString_T<unsigned short,	aw_READ_FROM_RECORD,					cch_PASSED_AS_AN_ARGUMENT>	XLUnicodeStringNoCch;
+typedef XLUnicodeString_T<unsigned short,	aw_READ_FROM_RECORD_IF_CCH_NOT_ZERO,	cch_READ_FROM_RECORD>		XLUnicodeStringMin2;
+typedef XLUnicodeString_T<unsigned short,	aw_ANSI,								cch_READ_FROM_RECORD>		LPAnsiString;
+typedef XLUnicodeString_T<unsigned char,	aw_ANSI,								cch_READ_FROM_RECORD>		ShortXLAnsiString;
+typedef XLUnicodeString_T<unsigned short,	aw_ANSI,								cch_PASSED_AS_AN_ARGUMENT>	LPAnsiStringNoCch;
 
-typedef XLUnicodeString XLNameUnicodeString; // temporarily equal
-typedef XLUnicodeString VirtualPath; // temporarily equal
-typedef XLUnicodeString RevSheetName;
 
 template<class cchType, AW_DETERMINATION det_id, CCH_SOURCE cch_where>
 CFRecord& operator>>(CFRecord& record, XLUnicodeString_T<cchType, det_id, cch_where>& val)
@@ -138,6 +138,8 @@ CFRecord& operator>>(CFRecord& record, XLUnicodeString_T<cchType, det_id, cch_wh
 	if (record.getRdPtr() >= record.getDataSize())
 		return record;
 
+	bool is_wide = false;
+	
 	switch(cch_where)
 	{
 		case cch_READ_FROM_RECORD:
@@ -150,8 +152,6 @@ CFRecord& operator>>(CFRecord& record, XLUnicodeString_T<cchType, det_id, cch_wh
 			cch = val.getSize();
 			break;
 	}
-
-	bool is_wide = false;
 	switch(det_id)
 	{
 		case aw_READ_FROM_RECORD_IF_CCH_NOT_ZERO:
@@ -175,11 +175,16 @@ CFRecord& operator>>(CFRecord& record, XLUnicodeString_T<cchType, det_id, cch_wh
 			cch &= (static_cast<cchType>(-1) >> 1);
 			break;
 	}
+
+	
 	struct_size += (cch << (is_wide ? 1 : 0));
+
 	val.load(record, cch, is_wide);
-	val.setStructSize(struct_size); // The only usage is DXFFntD::load
+	val.setStructSize(struct_size); 
+	
 	return record;
 }
+
 
 
 template<class cchType, AW_DETERMINATION det_id, CCH_SOURCE cch_where>
@@ -233,6 +238,7 @@ CFRecord& operator<<(CFRecord& record, XLUnicodeString_T<cchType, det_id, cch_wh
 	val.setStructSize(struct_size); // The only usage is DXFFntD::load
 	return record;
 }
+
 
 
 } // namespace XLS

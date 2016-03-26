@@ -28,7 +28,7 @@ public:
 public:
 	FrtHeader frt;
 	SharedFeatureType isf;
-	BIFF_DWORD idListNext;
+	_UINT32	idListNext;
 
 };
 

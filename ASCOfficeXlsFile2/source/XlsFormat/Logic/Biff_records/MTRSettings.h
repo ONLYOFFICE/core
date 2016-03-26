@@ -23,7 +23,7 @@ public:
 	bool fMTREnabled;
 	bool fUserSetThreadCount;
 	
-	BIFF_DWORD cUserThreadCount;
+	_UINT32	cUserThreadCount;
 
 };
 

@@ -38,7 +38,7 @@ const bool XFS::loadContent(BinProcessor& proc)
     int count = proc.repeated(xf ,16, 0);
 
 	int ind = 0;
-	while (count > 0)
+	while (count > 0 && elements_.size() > 0)
 	{
 		//разделить style & complex
 		XF* xfs = dynamic_cast<XF*>(elements_.front().get());
@@ -82,34 +82,8 @@ const bool XFS::loadContent(BinProcessor& proc)
 	{
 		XF		*xfs = dynamic_cast<XF*>(m_arCellStyles[i].get());
 
-		//if (m_arXFext.size() > 0 && xfs->style.fHasXFExt)
-		//{
-		//	for (_UINT16 j = first_xf_ext ; j < m_arXFext.size(); j++)
-		//	{
-		//		XFExt *ext = dynamic_cast<XFExt*>(m_arXFext[j].get());
-		//		if (ext->ixfe > i)break;
-
-		//		if (ext->ixfe == xfs->ind_xf)
-		//		{
-		//			xfs->style.ext_props = ext->rgExt;
-		//			first_xf_ext	= j + 1;
-		//			break;
-		//		}
-		//	}
-		//}
 		xfs->style.RegisterFillBorder();
-		
-		//if (xfs->cell.font_id < 0xFFFF)
-		//{
-		//	xfs->ifnt.setValue((unsigned short) xfs->style.font_id);
-		//}
-		
 
-/*		if (xfs->style.font_color.enabled)
-		{
-			int font_id = xfs->ifnt;
-			global_info->RegisterFontColorId(font_id, xfs->style.font_color);
-		}*/		
 	}
 	first_xf_ext = 0;
 	
@@ -117,14 +91,6 @@ const bool XFS::loadContent(BinProcessor& proc)
 	{
 		XF		*xfs = dynamic_cast<XF*>(m_arCellXFs[i].get());
 
-		////////if (m_arXFext.size() > global_info->cellStyleXfs_count + i)
-		//////{
-		//////	XFExt*ext = dynamic_cast<XFExt*>(m_arXFext[i + global_info->cellStyleXfs_count].get());
-		//////	if (ext)
-		//////	{
-		//////		xfs->cell.ext_props = ext->rgExt;
-		//////	}
-		//////}
 		if (m_arXFext.size() > 0 && xfs->cell.fHasXFExt)
 		{
 			for (_UINT16 j = first_xf_ext ; j < m_arXFext.size(); j++)
@@ -141,17 +107,6 @@ const bool XFS::loadContent(BinProcessor& proc)
 			}
 		}		
 		xfs->cell.RegisterFillBorder();
-
-		//if (xfs->cell.font_id < 0xFFFF)
-		//{
-		//	xfs->ifnt.setValue( (unsigned short) xfs->cell.font_id);
-		//}
-		
-		//if (xfs->cell.font_color.enabled)
-		//{
-		//	int font_id = xfs->ifnt;
-		//	global_info->RegisterFontColorId(font_id, xfs->cell.font_color);
-		//}
 	}
 
 	return true;

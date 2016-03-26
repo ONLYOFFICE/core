@@ -8,6 +8,8 @@
 #include <Logic/Biff_records/SerAuxErrBar.h>
 #include <Logic/Biff_records/LegendException.h>
 #include <Logic/Biff_records/End.h>
+#include <Logic/Biff_records/SerAuxTrend.h>
+#include <Logic/Biff_records/SerAuxErrBar.h>
 
 #include <Logic/Biff_unions/AI.h>
 #include <Logic/Biff_unions/SS.h>
@@ -104,7 +106,7 @@ const bool SERIESFORMAT::loadContent(BinProcessor& proc)
 	proc.mandatory<Begin>();								elements_.pop_back(); //skip
 	
 	count = proc.repeated<AI>(4, 4);
-	while(count > 0)
+	while(count > 0 && elements_.size() > 0)
 	{
 		m_arAI.insert(m_arAI.begin(), elements_.back());
 		elements_.pop_back();
@@ -223,6 +225,65 @@ int SERIESFORMAT::serialize_legend(std::wostream & _stream, int idx)
 	return 0;
 }
 
+int SERIESFORMAT::serialize_parent(std::wostream & _stream, bool ext)
+{
+	if (m_SerParent == NULL)
+	{
+		if (m_SERIESFORMAT_ext)
+		{
+			SERIESFORMAT * series_ext = dynamic_cast<SERIESFORMAT *>(m_SERIESFORMAT_ext.get());
+			if (series_ext)
+				return series_ext->serialize_parent(_stream, true/*, series_id, crt*/);
+		}
+		return 0;
+	}
+	SerParent *ser_parent = dynamic_cast<SerParent*>(m_SerParent.get());
+	if (ser_parent == NULL) return 0;
 
+	CP_XML_WRITER(_stream)    
+	{
+		SerAuxTrend		* trendline = dynamic_cast<SerAuxTrend *>(ser_parent->m_SerAuxTrend.get());
+		SerAuxErrBar	* err_bars	= dynamic_cast<SerAuxErrBar*>(ser_parent->m_SerAuxErrBar.get());
+		
+		if (trendline)
+		{
+			CP_XML_NODE(L"c:trendline")
+			{
+				//<c:spPr><a:ln w="25400"><a:solidFill><a:srgbClr val="000000"/></a:solidFill><a:prstDash val="solid"/></a:ln></c:spPr>
+				CP_XML_NODE(L"c:trendlineType")
+				{
+					switch(trendline->regt)
+					{
+						case 1:		CP_XML_ATTR (L"val", L"exp");		break;
+						case 2:		CP_XML_ATTR (L"val", L"log");		break;
+						case 3:		CP_XML_ATTR (L"val", L"power");		break;
+						case 4:		CP_XML_ATTR (L"val", L"movingAvg"); break;
+						case 0:		//CP_XML_ATTR (L"val", L"poly");		break;
+						default:	CP_XML_ATTR (L"val", L"linear");	break;
+					}
+				}
+				
+				CP_XML_NODE(L"c:dispRSqr")
+				{
+					CP_XML_ATTR (L"val" , (bool)trendline->fRSquared);	
+				}
+				CP_XML_NODE(L"c:dispEq")
+				{
+					CP_XML_ATTR (L"val" , (bool)trendline->fEquation);	
+				}
+			}
+		}
+		
+		if (err_bars)
+		{
+			//todooo
+			//CP_XML_NODE(L"c:errBars")
+			//{
+			//}
+		}
+	}
+
+	return 0;
+}
 } // namespace XLS
 

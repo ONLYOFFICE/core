@@ -82,6 +82,7 @@ typedef enum CF_RECORD_TYPE
 	rt_Intl						= 0x0061,
 	rt_ObjProtect				= 0x0063,
 	rt_ColInfo					= 0x007d,
+	rt_IMDATA					= 0x007f,
 	rt_Guts						= 0x0080,
 	rt_WsBool					= 0x0081,
 	rt_GridSet					= 0x0082,

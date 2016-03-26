@@ -25,10 +25,10 @@ public:
 
 //-----------------------------
 	Boolean<unsigned short> fReadOnlyRec;
-	unsigned short wResPassNum;
-	BIFF_BSTR wResPass;
-	_UINT16 iNoResPass;
-	XLUnicodeString stUNUsername;
+	unsigned short			wResPassNum;
+	BIFF_BSTR				wResPass;
+	_UINT16					iNoResPass;
+	XLUnicodeString			stUNUsername;
 
 };
 

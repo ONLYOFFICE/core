@@ -22,37 +22,37 @@ public:
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-	BIFF_DWORD lt;		// SourceType
-	BIFF_DWORD idList;
-	BIFF_DWORD crwHeader;
-	BIFF_DWORD crwTotals;
-	BIFF_DWORD idFieldNext;
-	BIFF_DWORD cbFSData;
+	_UINT32	lt;		// SourceType
+	_UINT32	idList;
+	_UINT32	crwHeader;
+	_UINT32	crwTotals;
+	_UINT32	idFieldNext;
+	_UINT32	cbFSData;
 	_UINT16 rupBuild;
 
-	BIFF_BYTE fAutoFilter;
-	BIFF_BYTE fPersistAutoFilter;
-	BIFF_BYTE fShowInsertRow;
-	BIFF_BYTE fInsertRowInsCells;
-	BIFF_BYTE fLoadPldwIdDeleted;
-	BIFF_BYTE fShownTotalRow;
-	BIFF_BYTE fNeedsCommit;
-	BIFF_BYTE fSingleCell;
-	BIFF_BYTE fApplyAutoFilter;
-	BIFF_BYTE fForceInsertToBeVis;
-	BIFF_BYTE fCompressedXml;
-	BIFF_BYTE fLoadCSPName;
-	BIFF_BYTE fLoadPldwIdChanged;
-	BIFF_BYTE verXL;
-	BIFF_BYTE fLoadEntryId;
-	BIFF_BYTE fLoadPllstclInvalid;
-	BIFF_BYTE fGoodRupBld;
-	BIFF_BYTE fPublished;
+	unsigned char	fAutoFilter;
+	unsigned char	fPersistAutoFilter;
+	unsigned char	fShowInsertRow;
+	unsigned char	fInsertRowInsCells;
+	unsigned char	fLoadPldwIdDeleted;
+	unsigned char	fShownTotalRow;
+	unsigned char	fNeedsCommit;
+	unsigned char	fSingleCell;
+	unsigned char	fApplyAutoFilter;
+	unsigned char	fForceInsertToBeVis;
+	unsigned char	fCompressedXml;
+	unsigned char	fLoadCSPName;
+	unsigned char	fLoadPldwIdChanged;
+	unsigned char	verXL;
+	unsigned char	fLoadEntryId;
+	unsigned char	fLoadPllstclInvalid;
+	unsigned char	fGoodRupBld;
+	unsigned char	fPublished;
 	
-	BIFF_DWORD lPosStmCache;
-	BIFF_DWORD cbStmCache;
-	BIFF_DWORD cchStmCache;
-	BIFF_DWORD lem;		// LEMMode
+	_UINT32	lPosStmCache;
+	_UINT32	cbStmCache;
+	_UINT32	cchStmCache;
+	_UINT32	lem;		// LEMMode
 
 	XLUnicodeString rgbName;
 	_UINT16 cFieldData;

@@ -26,8 +26,8 @@ public:
 
 	int serialize(std::wostream & stream);
 //-----------------------------
-	BIFF_BYTE ct;
-	BIFF_BYTE cp;
+	unsigned char	ct;
+	unsigned char	cp;
 	
 	DXFN rgbdxf;
 	

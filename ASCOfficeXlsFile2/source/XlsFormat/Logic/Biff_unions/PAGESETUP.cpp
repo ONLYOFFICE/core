@@ -1,5 +1,6 @@
 
 #include "PAGESETUP.h"
+
 #include <Logic/Biff_records/Header.h>
 #include <Logic/Biff_records/Footer.h>
 #include <Logic/Biff_records/HCenter.h>
@@ -11,7 +12,7 @@
 #include <Logic/Biff_records/Pls.h>
 #include <Logic/Biff_records/Continue.h>
 #include <Logic/Biff_records/Setup.h>
-#include <Logic/Biff_records/HeaderFooter.h> // Moved from WorksheetSubstream
+#include <Logic/Biff_records/HeaderFooter.h> 
 
 namespace XLS
 {
@@ -58,47 +59,72 @@ BaseObjectPtr PAGESETUP::clone()
 // PAGESETUP = Header Footer HCenter VCenter [LeftMargin] [RightMargin] [TopMargin] [BottomMargin] [Pls *Continue] Setup
 const bool PAGESETUP::loadContent(BinProcessor& proc)
 {
-	if(!proc.mandatory<Header>())
+	while (true)
 	{
-		return false;
-	}
-	proc.mandatory<Footer>();
-	proc.mandatory<HCenter>();
-	proc.mandatory<VCenter>();
-	
-	proc.optional<BottomMargin>();// OpenOffice Calc stored files workaround
-	proc.optional<TopMargin>();// OpenOffice Calc stored files workaround
-	proc.optional<LeftMargin>();
-	proc.optional<RightMargin>();
-	proc.optional<TopMargin>();
-	proc.optional<BottomMargin>();
-	
-	proc.optional<Parenthesis_PAGESETUP_1>();
+		CFRecordType::TypeId type = proc.getNextRecordType();
+		
+		if (type == rt_NONE) break;
 
-    Pls pls(proc.getParent());
-    proc.optional(pls); // OpenOffice Calc stored files workaround ?????????
-	
-	if (proc.mandatory<Setup>())
-	{
-		m_Setup = elements_.back();
-		elements_.pop_back();
+		switch(type)
+		{
+			case rt_Header:			
+			{
+				if (proc.optional<Header>())
+				{
+					m_Header = elements_.back();
+					elements_.pop_back();
+				}
+			}break;
+			case rt_Footer:
+			{
+				if (proc.optional<Footer>())
+				{
+					m_Footer = elements_.back();
+					elements_.pop_back();
+				}
+			}break;
+			
+			case rt_HCenter:		proc.optional<HCenter>();			break;
+			case rt_VCenter:		proc.optional<VCenter>();			break;
+			
+			case rt_BottomMargin:	proc.optional<BottomMargin>();		break;
+			case rt_TopMargin:		proc.optional<TopMargin>();			break;
+			case rt_LeftMargin:		proc.optional<LeftMargin>();		break;
+			case rt_RightMargin:	proc.optional<RightMargin>();		break;
+			case rt_Pls:			proc.optional<Pls>();				break;
+			case rt_Setup:
+			{
+				if (proc.optional<Setup>())
+				{
+					m_Setup = elements_.back();
+					elements_.pop_back();
+				}
+			}break;
+			case rt_HeaderFooter:
+			{
+				if (proc.optional<HeaderFooter>())
+				{
+					m_HeaderFooter = elements_.back();
+					elements_.pop_back();
+				}
+			}break;
+			default:
+				return true;
+		}
 	}
-	
-	if (proc.optional<HeaderFooter>())
-	{
-		m_HeaderFooter = elements_.back();
-		elements_.pop_back();
-	}
-
-
 	return true;
 }
 
 int PAGESETUP::serialize(std::wostream & stream)
 {
+	if (elements_.empty() && !m_Setup && !m_Header && !m_Footer) return 0;
+	
 	Setup * setup = dynamic_cast<Setup*>(m_Setup.get());
 
-	bool headerFooter = false;
+	bool header = false;
+	bool footer = false;
+	bool b = false, t = false, l = false, r = false ;
+
 	CP_XML_WRITER(stream)    
     {
 		CP_XML_NODE(L"pageMargins")
@@ -108,16 +134,15 @@ int PAGESETUP::serialize(std::wostream & stream)
 				if (setup->numHdr.value())
 				{
 					CP_XML_ATTR(L"header", setup->numHdr);
-					headerFooter = true;
+					header = true;
 				}
 
 				if (setup->numFtr.value())
 				{
 					CP_XML_ATTR(L"footer", setup->numFtr);
-					headerFooter = true;
+					footer = true;
 				}
 			}
-			bool b = false, t = false, l = false, r = false ;
 			for (std::list<XLS::BaseObjectPtr>::iterator it = elements_.begin(); it != elements_.end(); it++)
 			{
 				switch((*it)->get_type())
@@ -150,22 +175,42 @@ int PAGESETUP::serialize(std::wostream & stream)
 					}break;		
 				}
 			}
-			if (headerFooter)
-			{
-				if (!t)CP_XML_ATTR(L"top", 1);
-				if (!b)CP_XML_ATTR(L"bottom", 1);
-				if (!l)CP_XML_ATTR(L"left", 0.75);
-				if (!r)CP_XML_ATTR(L"right", 0.75);
-			}
-		}
-
-		if (headerFooter)
-		{		
-			//CP_XML_NODE(L"headerFooter"){}
+			if (!header)	CP_XML_ATTR(L"header"	, 0.5);
+			if (!footer)	CP_XML_ATTR(L"footer"	, 0.5);
+			if (!t)			CP_XML_ATTR(L"top"		, 1);
+			if (!b)			CP_XML_ATTR(L"bottom"	, 1);
+			if (!l)			CP_XML_ATTR(L"left"		, 0.75);
+			if (!r)			CP_XML_ATTR(L"right"	, 0.75);
 		}
 
 		CP_XML_NODE(L"pageSetup")
 		{
+		}
+
+		if (m_Header || m_Footer)
+		{
+			CP_XML_NODE(L"headerFooter")
+			{
+				CP_XML_ATTR(L"differentFirst"	, false);
+				CP_XML_ATTR(L"differentOddEven"	, false);
+
+				if (m_Header)
+				{
+					CP_XML_NODE(L"oddHeader")
+					{
+						Header * h = dynamic_cast<Header*>(m_Header.get());
+						CP_XML_CONTENT(STR::escape_ST_Xstring(h->ast.value()));
+					}
+				}
+				if (m_Footer)
+				{
+					CP_XML_NODE(L"oddFooter")
+					{
+						Footer * f = dynamic_cast<Footer*>(m_Footer.get());
+						CP_XML_CONTENT(STR::escape_ST_Xstring(f->ast.value()));
+					}
+				}
+			}
 		}
 	}
 	return 0;

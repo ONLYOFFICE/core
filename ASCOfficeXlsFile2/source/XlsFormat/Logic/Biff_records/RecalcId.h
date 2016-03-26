@@ -24,7 +24,7 @@ public:
 
 
 //-----------------------------
-	BIFF_DWORD dwBuild;
+	_UINT32	dwBuild;
 
 };
 

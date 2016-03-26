@@ -114,6 +114,7 @@ public:
 					
 					std::wstring style = std::wstring(L"position:absolute;");
 					
+					//todooo сделать "покороче" значения .. достаточно 2 знаков после запятой
 					style += std::wstring(L"margin-left:")	+ boost::lexical_cast<std::wstring>(c.left_)	+ std::wstring(L"pt;");
 					style += std::wstring(L"margin-top:")	+ boost::lexical_cast<std::wstring>(c.top_)		+ std::wstring(L"pt;");
 					style += std::wstring(L"width:")		+ boost::lexical_cast<std::wstring>(c.width_)	+ std::wstring(L"pt;");

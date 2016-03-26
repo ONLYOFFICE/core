@@ -21,11 +21,11 @@ public:
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-	BIFF_BYTE fFirstColumn;
-	BIFF_BYTE fLastColumn;
-	BIFF_BYTE fRowStripes;
-	BIFF_BYTE fColumnStripes;
-	BIFF_BYTE fDefaultStyle;
+	unsigned char	fFirstColumn;
+	unsigned char	fLastColumn;
+	unsigned char	fRowStripes;
+	unsigned char	fColumnStripes;
+	unsigned char	fDefaultStyle;
 	XLUnicodeString stListStyleName;
 };
 

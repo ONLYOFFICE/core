@@ -32,7 +32,7 @@ public:
 	bool fUserSet;
 	bool fBestFit;
 	bool fPhonetic;
-	BIFF_BYTE iOutLevel;
+	unsigned char	iOutLevel;
 	bool fCollapsed;
 };
 

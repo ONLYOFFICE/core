@@ -46,7 +46,8 @@ void ColInfo::readFields(CFRecord& record)
 	iOutLevel	= GETBITS(flags, 8, 10);
 	fCollapsed	= GETBIT(flags, 12);
 	
-	record.skipNunBytes(2); // unused
+	record.skipNunBytes(record.getDataSize() - record.getRdPtr()); // unused
+	//0x0600 - 2 bytes; lower - 1 byte
 }
 
 } // namespace XLS

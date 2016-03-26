@@ -29,8 +29,18 @@ void WriteAccess::writeFields(CFRecord& record)
 
 void WriteAccess::readFields(CFRecord& record)
 {
-	record >> userName;
-	record.skipNunBytes(112 - userName.getStructSize()); // unused
+	if (record.getGlobalWorkbookInfo()->Version < 0x0600)
+	{
+		ShortXLAnsiString name;
+		record >> name;
+
+		userName = name;
+	}
+	else
+	{
+		record >> userName;
+	}
+	record.skipNunBytes(record.getDataSize() - record.getRdPtr()); // unused
 }
 
 } // namespace XLS

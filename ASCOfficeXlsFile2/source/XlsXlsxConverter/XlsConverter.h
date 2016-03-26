@@ -38,6 +38,7 @@ namespace XLS
 	class LBL;
 	class OBJECTS;
 	class MSODRAWINGGROUP;
+	class IMDATA;
 
 	class Note;
 	class TxO;
@@ -83,6 +84,7 @@ public:
 	void convert(XLS::MSODRAWINGGROUP			* mso_drawing);
 	void convert(XLS::TxO						* text_obj);
 	void convert(XLS::Note						* note);
+	void convert(XLS::IMDATA					* imadata);
 
 	void convert(ODRAW::OfficeArtRecord			* art);
 	void convert(ODRAW::OfficeArtBStoreContainer* art_bstore);
@@ -95,8 +97,10 @@ public:
 	bool isError();
 	bool is_older_version;
 
+	std::wstring WriteMediaFile	(char *data, int size, std::wstring type_ext, int id = -1);
 private:	
-	void convert_chart_sheet	(XLS::ChartSheetSubstream * chart);
+	void convert_old			(XLS::OBJECTS				* objects, XLS::WorksheetSubstream * sheet);
+	void convert_chart_sheet	(XLS::ChartSheetSubstream	* chart);
 
 	void convert_shape			(std::vector<ODRAW::OfficeArtFOPTEPtr> & fort);
 	void convert_group_shape	(std::vector<ODRAW::OfficeArtFOPTEPtr> & fort);
@@ -108,8 +112,6 @@ private:
 	void convert_line_style		(std::vector<ODRAW::OfficeArtFOPTEPtr> & fort);
 	void convert_shadow			(std::vector<ODRAW::OfficeArtFOPTEPtr> & fort);
 	void convert_transform		(std::vector<ODRAW::OfficeArtFOPTEPtr> & fort);
-
-	std::wstring WriteMediaFile	(char *data, int size, std::wstring type_ext, int id = -1);
 
 	bool UpdateProgress(long nComplete);
 	

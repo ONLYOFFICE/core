@@ -20,7 +20,6 @@ void FormatRun::store(CFRecord& record)
 void FormatRun::load(CFRecord& record)
 {
 	record >> ich >> ifnt;
-	unsigned short _ich = ich;
 }
 
 

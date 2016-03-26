@@ -38,6 +38,7 @@
 #include <Logic/Biff_records/CrtLine.h>
 #include <Logic/Biff_records/Dat.h>
 #include <Logic/Biff_records/Chart.h>
+#include <Logic/Biff_records/ExternSheet.h>
 
 #include <Logic/Biff_unions/PAGESETUP.h>
 #include <Logic/Biff_unions/BACKGROUND.h>
@@ -84,103 +85,171 @@ BaseObjectPtr ChartSheetSubstream::clone()
 
 
 /*
+CHARTSHEET = BOF CHARTSHEETCONTENT
 CHARTSHEETCONTENT = [WriteProtect] [SheetExt] [WebPub] *HFPicture PAGESETUP PrintSize [HeaderFooter] 
 					[BACKGROUND] *Fbi *Fbi2 [ClrtClient] [PROTECTION] [Palette] [SXViewLink] 
 					[PivotChartBits] [SBaseRef] [MsoDrawingGroup] OBJECTS Units CHARTFOMATS SERIESDATA 
 					*WINDOW *CUSTOMVIEW [CodeName] [CRTMLFRT] EOF 
-CHARTSHEET = BOF CHARTSHEETCONTENT
 */
 const bool ChartSheetSubstream::loadContent(BinProcessor& proc)
 {
 	pGlobalWorkbookInfo = proc.getGlobalWorkbookInfo();
 	
+	int count = 0 ;
+
 	if(!proc.mandatory<BOF>())
 	{
 		return false;
     }
-	int count = 0 ;
 	
-	proc.optional<WriteProtect>();
-	proc.optional<SheetExt>();
-    proc.optional<WebPub>();
-	proc.repeated<HFPicture>(0, 0);
-	proc.mandatory<PAGESETUP>();
-	proc.mandatory<PrintSize>();
-	proc.optional<HeaderFooter>();
-
-	if (proc.optional<BACKGROUND>())
+	while (true)
 	{
-		m_BACKGROUND = elements_.back();
-		elements_.pop_back();
-	}
-
-	count = proc.repeated<Fbi>(0, 0);
-	while(count > 0)
-	{
-		m_arFbi.insert(m_arFbi.begin(), elements_.back());
-		elements_.pop_back();
-		count--;
-	}
-	count = proc.repeated<Fbi2>(0, 0);
-
-	while(count > 0 && m_arFbi.empty())//??? разделить
-	{
-		m_arFbi.insert(m_arFbi.begin(), elements_.back());
-		elements_.pop_back();
-		count--;
-	}
-
-	proc.optional<ClrtClient>();
-	proc.optional<PROTECTION_COMMON>();
-	proc.optional<Palette>();
-	proc.optional<SXViewLink>();
-	proc.optional<PivotChartBits>();
-	proc.optional<SBaseRef>();
-
-    MsoDrawingGroup mso_drawing_group(true);
-    proc.optional(mso_drawing_group);
-
-    OBJECTS objects(true);
-    if (proc.mandatory(objects))
-	{
-		m_OBJECTSCHART = elements_.back(); 
-		elements_.pop_back();
-	}
-
-	proc.mandatory<Units>();
-	if ( proc.mandatory<CHARTFORMATS>() )
-	{
-		m_CHARTFORMATS = elements_.back();
-		elements_.pop_back();
-
-		recalc((CHARTFORMATS*)m_CHARTFORMATS.get());
-	}
-	if ( proc.mandatory<SERIESDATA>() )
-	{
-		m_SERIESDATA = elements_.back();
-		elements_.pop_back();
+		CFRecordType::TypeId type = proc.getNextRecordType();
 		
-		recalc((SERIESDATA*)m_SERIESDATA.get());
-	}
+		if (type == rt_NONE) break;
+		if (type == rt_EOF) 
+		{
+			proc.mandatory<EOF_T>();
+			break;
+		}
 
-	count = proc.repeated<WINDOW>(0, 0);
-	while(count > 0)
-	{
-		m_arWINDOW.insert(m_arWINDOW.begin(), elements_.back());
-		elements_.pop_back();
-		count--;
-	}
+		switch(type)
+		{
+			case rt_WriteProtect:		proc.optional<WriteProtect>();	break;
+			case rt_SheetExt:			proc.optional<SheetExt>();		break;
+			case rt_WebPub:				proc.optional<WebPub>();		break;
+			case rt_HFPicture:			proc.repeated<HFPicture>(0, 0);	break;
+		
+			case rt_Header:
+			case rt_Footer:		
+			case rt_BottomMargin:
+			case rt_TopMargin:
+			case rt_LeftMargin:
+			case rt_RightMargin:
+										proc.mandatory<PAGESETUP>();	break;
+			
+			case rt_PrintSize:			proc.mandatory<PrintSize>();	break;
+			case rt_HeaderFooter:		proc.optional<HeaderFooter>();	break;
+			
+			case rt_BkHim:
+			{
+				if (proc.optional<BACKGROUND>())
+				{
+					m_BACKGROUND = elements_.back();
+					elements_.pop_back();
+				}
+			}break;
+			case rt_Fbi:
+			{
+				count = proc.repeated<Fbi>(0, 0);
+				while(count > 0)
+				{
+					m_arFbi.insert(m_arFbi.begin(), elements_.back());
+					elements_.pop_back();
+					count--;
+				}
+			}break;
+			case rt_Fbi2:
+			{
+				count = proc.repeated<Fbi2>(0, 0);
+				while(count > 0 && m_arFbi.empty())//??? разделить
+				{
+					m_arFbi.insert(m_arFbi.begin(), elements_.back());
+					elements_.pop_back();
+					count--;
+				}
+			}
 
-	count = proc.repeated<CUSTOMVIEW>(0, 0);
-	while(count > 0)
-	{
-		m_arCUSTOMVIEW.insert(m_arCUSTOMVIEW.begin(), elements_.back());
-		elements_.pop_back();
-		count--;
+			case rt_ClrtClient:			proc.optional<ClrtClient>();		break;
+			
+			case rt_Protect:	
+			case rt_ScenarioProtect:
+			case rt_ObjProtect:
+			case rt_Password:
+										proc.optional<PROTECTION_COMMON>();	break;
+			
+			case rt_Palette:			proc.optional<Palette>();			break;
+			case rt_SXViewLink:			proc.optional<SXViewLink>();		break;
+			case rt_PivotChartBits:		proc.optional<PivotChartBits>();	break;
+			case rt_SBaseRef:			proc.optional<SBaseRef>();			break;
+
+			case rt_Obj:
+			case rt_MsoDrawing:
+			{
+				MsoDrawingGroup mso_drawing_group(true);
+				proc.optional(mso_drawing_group);
+
+				OBJECTS objects(true);
+				if (proc.mandatory(objects))
+				{
+					m_OBJECTSCHART = elements_.back(); 
+					elements_.pop_back();
+				}
+			}break;
+			
+			case rt_ExternSheet:
+			{
+				if (proc.optional<ExternSheet>())
+				{
+				}
+			}break;
+			case rt_Units:			proc.mandatory<Units>();	break;		
+			case rt_Chart:
+			{
+				if ( proc.mandatory<CHARTFORMATS>() )
+				{
+					m_CHARTFORMATS = elements_.back();
+					elements_.pop_back();
+
+					recalc((CHARTFORMATS*)m_CHARTFORMATS.get());
+				}
+			}break;
+			case rt_Dimensions:
+			case rt_SIIndex:
+			{
+				if ( proc.mandatory<SERIESDATA>() )
+				{
+					m_SERIESDATA = elements_.back();
+					elements_.pop_back();
+					
+					recalc((SERIESDATA*)m_SERIESDATA.get());
+				}
+			}break;
+
+			case rt_Window2:
+			{
+				count = proc.repeated<WINDOW>(0, 0);
+				while(count > 0)
+				{
+					m_arWINDOW.insert(m_arWINDOW.begin(), elements_.back());
+					elements_.pop_back();
+					count--;
+				}
+			}break;
+
+			case rt_UserSViewBegin:
+			{
+				count = proc.repeated<CUSTOMVIEW>(0, 0);
+				while(count > 0)
+				{
+					m_arCUSTOMVIEW.insert(m_arCUSTOMVIEW.begin(), elements_.back());
+					elements_.pop_back();
+					count--;
+				}
+			}break;
+			
+			case rt_CodeName:			proc.optional<CodeName>();	break;
+			case rt_CrtMlFrt:			proc.optional<CRTMLFRT>();	break;
+
+			default://unknown .... skip					
+			{
+				proc.SkipRecord();	
+			}break;
+		}
 	}
 	
-	proc.optional<CodeName>();
-	proc.optional<CRTMLFRT>();
+
+
 
 #pragma message("####################### Some trash records may be skipped here")
 	proc.SeekToEOF(); // Thus we skip problems with the trash at the end of the stream (found in Domens.xls)
@@ -196,6 +265,8 @@ void ChartSheetSubstream::recalc(CHARTFORMATS* charts)
 
 	AXISPARENT* parent0 = dynamic_cast<AXISPARENT*>(charts->m_arAXISPARENT[0].get());
 
+	int iCrt = -1;
+
 	for (int i = 0 ; i < charts->m_arSERIESFORMAT.size(); i++)
 	{
 		SERIESFORMAT * series = dynamic_cast<SERIESFORMAT *>(charts->m_arSERIESFORMAT[i].get());
@@ -203,13 +274,23 @@ void ChartSheetSubstream::recalc(CHARTFORMATS* charts)
 
 		SerToCrt * serCrt = dynamic_cast<SerToCrt *>(series->m_SerToCrt.get());
 
-		if (serCrt == NULL) continue;
-
-		int iCrt = serCrt->id;
-
-		if (iCrt > parent0->m_arCRT.size())
+		if ( serCrt == NULL)
+		{
+			//для доп линий может и не существовать - брать предыдущий  - и объеденить!!!
+			std::map<int,std::vector<int>>::iterator it = m_mapTypeChart.find(iCrt);
+			if (it != m_mapTypeChart.end())
+			{
+				SERIESFORMAT * series_prev = dynamic_cast<SERIESFORMAT *>(charts->m_arSERIESFORMAT[it->second.back()].get());
+				if (series_prev)
+				{
+					series_prev->m_SERIESFORMAT_ext = charts->m_arSERIESFORMAT[i];	
+				}
+			}
 			continue;
+		}
 
+		if (iCrt > parent0->m_arCRT.size() && iCrt < 0)
+			continue;
 		CRT * crt = dynamic_cast<CRT*>(parent0->m_arCRT[iCrt].get());
 		
 		std::map<int,std::vector<int>>::iterator it = m_mapTypeChart.find(iCrt);
@@ -416,8 +497,14 @@ int ChartSheetSubstream::serialize_title (std::wostream & _stream)
     BaseObjectPtr   attached_label	= chart_formats->find_label(1, 0xffff);
     //BaseObjectPtr   dft_text		= chart_formats->find_default_text(2);
 
-	if (attached_label == NULL) return 0;
-
+	ATTACHEDLABEL * title_label = dynamic_cast<ATTACHEDLABEL *>(attached_label.get());
+	if (title_label == NULL) return 0;	
+	
+	AI* title_text = dynamic_cast<AI *>(title_label->m_AI.get());
+	if (title_text == NULL) return 0;	
+	
+	if (!title_text->m_SeriesText) return 0; // если не выкидывать будет рисоваться placeholder
+	
 	CP_XML_WRITER(_stream)    
 	{
 		CP_XML_NODE(L"c:title")
@@ -575,8 +662,9 @@ int ChartSheetSubstream::serialize_plot_area (std::wostream & _stream)
 							{
 								serialize_ser(L"c:cat", CP_XML_STREAM(), series_id, series->m_arAI[2], ser->sdtX, ser->cValx);
 								serialize_ser(L"c:val", CP_XML_STREAM(), series_id, series->m_arAI[1], ser->sdtY, ser->cValy);
-							}
-							
+							}							
+//-----------------------------------------------------------------------------------------------------------------------------------------
+							series->serialize_parent(CP_XML_STREAM());
 //-----------------------------------------------------------------------------------------------------------------------------------------
 							std::wstringstream stream_dLbls;
 							serialize_dLbls(stream_dLbls, it->second[i], crt);
@@ -901,11 +989,10 @@ int ChartSheetSubstream::serialize_ser (std::wstring sNodeSer, std::wostream & _
 // 2 - cat || xVal
 // 3 - bubble size
 	SERIESDATA * series_data = dynamic_cast<SERIESDATA *>(m_SERIESDATA.get());
-
-	SIIndex * series_cash = NULL;
+	SIIndex		* series_cash = NULL;
 
 	int type_val = 0;
-	for (int i = 0; i < series_data->m_arSIIndex.size(); i++)
+	for (int i = 0; (series_data) && (i < series_data->m_arSIIndex.size()); i++)
 	{
 		SIIndex * si_in = dynamic_cast<SIIndex *>(series_data->m_arSIIndex[i].get());
 

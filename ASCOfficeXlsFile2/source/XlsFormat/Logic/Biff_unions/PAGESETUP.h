@@ -25,6 +25,8 @@ public:
 	BaseObjectPtr m_HeaderFooter;
 	BaseObjectPtr m_Setup;
 
+	BaseObjectPtr m_Header;
+	BaseObjectPtr m_Footer;
 };
 
 } // namespace XLS

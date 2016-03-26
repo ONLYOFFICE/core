@@ -24,13 +24,13 @@ public:
 	static const ElementType	type = typeSerAuxTrend;
 
 //-----------------------------
-	BIFF_BYTE regt;
-	BIFF_BYTE ordUser;
-	ChartNumNillable numIntercept;
-	Boolean<unsigned char> fEquation;
-	Boolean<unsigned char> fRSquared;
-	BIFF_DOUBLE numForecast;
-	BIFF_DOUBLE numBackcast;
+	unsigned char			regt;
+	unsigned char			ordUser;
+	ChartNumNillable		numIntercept;
+	unsigned char			fEquation;
+	unsigned char			fRSquared;
+	BIFF_DOUBLE				numForecast;
+	BIFF_DOUBLE				numBackcast;
 
 };
 

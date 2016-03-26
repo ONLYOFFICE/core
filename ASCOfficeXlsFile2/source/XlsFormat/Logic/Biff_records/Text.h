@@ -25,14 +25,16 @@ public:
 
 	int serialize(std::wostream & _stream);
 
-	BIFF_BYTE	at;
-	BIFF_BYTE	vat;
-	_UINT16	wBkgMode;
-	LongRGB		rgbText;
-	BIFF_LONG	x;
-	BIFF_LONG	y;
-	BIFF_LONG	dx;
-	BIFF_LONG	dy;
+	unsigned char	at;
+	unsigned char	vat;
+
+	_UINT16			wBkgMode;
+	LongRGB			rgbText;
+
+	_INT32			x;
+	_INT32			y;
+	_INT32			dx;
+	_INT32			dy;
 
 	bool fAutoColor;
 	bool fShowKey;
@@ -46,15 +48,13 @@ public:
 	bool fShowBubbleSizes;
 	bool fShowLabel;
 
-	Icv			icvText;
-	BIFF_BYTE	dlp;
-	BIFF_BYTE	iReadingOrder;
-	_UINT16		trot;
+	Icv				icvText;
+	unsigned char	dlp;
+	unsigned char	iReadingOrder;
+	_UINT16			trot;
 
 //-----------------------------
 	bool is_area;
-
-	int rot;
 };
 
 } // namespace XLS

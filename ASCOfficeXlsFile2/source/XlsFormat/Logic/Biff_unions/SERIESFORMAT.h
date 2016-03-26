@@ -5,6 +5,7 @@
 namespace XLS
 {
 
+class CHARTFORMATS;
 
 // Logical representation of SERIESFORMAT union of records 
 class SERIESFORMAT: public CompositeObject
@@ -21,7 +22,7 @@ public:
 	static const ElementType	type = typeSERIESFORMAT;
 
 	int serialize_legend(std::wostream & _stream, int idx);
-	int serialize_parent(std::wostream & _stream, bool ext = false);
+	int serialize_parent(std::wostream & _stream, CHARTFORMATS* chart_formats, bool ext = false);
 
 	BaseObjectPtr				m_SS;
 	std::vector<BaseObjectPtr>	m_arPtSS;

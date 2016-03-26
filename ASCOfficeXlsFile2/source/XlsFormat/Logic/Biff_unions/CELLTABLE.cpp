@@ -195,7 +195,7 @@ int CELL_GROUP::serialize(std::wostream & stream)
 									CP_XML_ATTR(L"ht", row->miyRw / 20.);
 									CP_XML_ATTR(L"customHeight", true);
 								}
-								if ((row->iOutLevel.value()) && (row->iOutLevel > 0))
+								if (row->iOutLevel > 0)
 								{
 									CP_XML_ATTR(L"outlineLevel", row->iOutLevel);
 								}
@@ -277,7 +277,7 @@ int CELL_GROUP::serialize(std::wostream & stream)
 						CP_XML_ATTR(L"ht", row->miyRw / 20.);
 						CP_XML_ATTR(L"customHeight", true);
 					}
-					if ((row->iOutLevel.value()) && (row->iOutLevel > 0))
+					if (row->iOutLevel > 0)
 					{
 						CP_XML_ATTR(L"outlineLevel", row->iOutLevel);
 					}

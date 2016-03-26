@@ -96,7 +96,7 @@ public:
 	static const ElementType	type = typePls;
 //-----------------------------
 	DEVMODE		rgb;	
-	BIFF_LONG	bin_data_id;
+	_INT32		bin_data_id;
 
 };
 

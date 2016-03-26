@@ -20,11 +20,11 @@ public:
 	virtual void store(CFRecord& record);
 
 
-	BIFF_BYTE	fDefault;
-	BIFF_BYTE	fHelp;
-	BIFF_BYTE	fCancel;
-	BIFF_BYTE	fDismiss;
-	_UINT16		accel1;
+	unsigned char	fDefault;
+	unsigned char	fHelp;
+	unsigned char	fCancel;
+	unsigned char	fDismiss;
+	_UINT16			accel1;
 };
 
 } // namespace XLS

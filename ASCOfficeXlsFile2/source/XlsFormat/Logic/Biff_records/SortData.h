@@ -27,7 +27,7 @@ public:
 	bool			fCol;
 	bool			fCaseSensitive;
 	bool			fAltMethod;
-	BIFF_BYTE		sfp;
+	unsigned char	sfp;
 
 	BIFF_DWORD		cconditions;
 	BIFF_DWORD		idParent;

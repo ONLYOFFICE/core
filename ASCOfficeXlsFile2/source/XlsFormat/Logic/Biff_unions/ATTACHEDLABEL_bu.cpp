@@ -122,21 +122,41 @@ const bool ATTACHEDLABEL::loadContent(BinProcessor& proc)
 
 int ATTACHEDLABEL::serialize_txPr(std::wostream & _stream)
 {
-	FontX *font = dynamic_cast<FontX*>(m_FontX.get());
+	FontX *font			= dynamic_cast<FontX*>(m_FontX.get());
+	Text * textProps	= dynamic_cast<Text*>(m_TextProperties.get());
 
 	if (font == NULL) return 0;
+
+	bool rtl = false;
+	if((textProps) && (textProps->iReadingOrder == (unsigned char)2)) rtl = true;
 
 	CP_XML_WRITER(_stream)    
 	{
 		CP_XML_NODE(L"c:txPr")
 		{
-			CP_XML_NODE(L"a:bodyPr");
+			CP_XML_NODE(L"a:bodyPr")
+			{
+				if (textProps)
+				{
+					if (textProps->trot == (_UINT16)0xff)	
+					{
+						CP_XML_ATTR(L"rot", 0);
+						CP_XML_ATTR(L"vert", L"wordArtVert");	
+					}
+					else
+					{
+						if (textProps->trot > 90)	CP_XML_ATTR(L"rot", (textProps->trot - 90)	* 60000);						
+						else						CP_XML_ATTR(L"rot",	-textProps->trot		* 60000);
+						CP_XML_ATTR(L"vert", L"horz");	
+					}
+				}
+			}
 			CP_XML_NODE(L"a:lstStyle");
 			CP_XML_NODE(L"a:p")
 			{
 				CP_XML_NODE(L"a:pPr")
 				{
-					serialize_rPr(CP_XML_STREAM(),font->iFont, false, true);
+					serialize_rPr(CP_XML_STREAM(),font->iFont, rtl, true);
 				}
 				CP_XML_NODE(L"a:endParaRPr");
 			}
@@ -184,20 +204,18 @@ int ATTACHEDLABEL::serialize(std::wostream & _stream, bool isPosition)
 					{
 						if (textProps)
 						{
-							//if (textProps->trot != 0)
+
+							if (textProps->trot == (_UINT16)0xff)	
 							{
-								if (textProps->trot == (_UINT16)0xff)	
-								{
-									CP_XML_ATTR(L"rot", 0);
-									CP_XML_ATTR(L"vert", L"wordArtVert");	
-								}
-								else
-								{
-									if (textProps->trot > 90)	CP_XML_ATTR(L"rot", (textProps->trot - 90)	* 60000);						
-									else						CP_XML_ATTR(L"rot",	-textProps->trot		* 60000);
-									CP_XML_ATTR(L"vert", L"horz");	
-								}
-							}							
+								CP_XML_ATTR(L"rot", 0);
+								CP_XML_ATTR(L"vert", L"wordArtVert");	
+							}
+							else
+							{
+								if (textProps->trot > 90)	CP_XML_ATTR(L"rot", (textProps->trot - 90)	* 60000);						
+								else						CP_XML_ATTR(L"rot",	-textProps->trot		* 60000);
+								CP_XML_ATTR(L"vert", L"horz");	
+							}						
 						}
 					}
 					CP_XML_NODE(L"a:p")
@@ -290,19 +308,33 @@ int ATTACHEDLABEL::serialize_rPr (std::wostream & _stream, int iFmt, bool rtl, b
 
 	Text * text_props = dynamic_cast<Text*>(m_TextProperties.get());
 	
-	_CP_OPT(_UINT16) color;
-
+	_CP_OPT(_UINT16)		color;
+	_CP_OPT(FillInfoExt)	color_ext;
 	if (font)
 	{	
-		if (text_props)
+		color		= font->icv;
+		color_ext	= font->color_ext;	
+		
+		if ((text_props) && (!text_props->fAutoColor))
 		{
-			color = font->icv;
-			font->icv = text_props->icvText;
+
+			if (text_props->icvText != 0xff)
+			{
+				font->icv = text_props->icvText; //biff8
+			}
+			else
+			{
+				font->color_ext.enabled		= true;
+				font->color_ext.xclrType	= 2;
+				font->color_ext.xclrValue	= (text_props->rgbText.red << 16) + 
+							(text_props->rgbText.green << 8) + (text_props->rgbText.blue);
+			}
 		}
 
 		font->serialize_rPr(_stream, rtl, defRPr);
 		
-		if (color)font->icv = *color;
+		font->icv		= *color;
+		font->color_ext = *color_ext;
 	}
 	
 	return 0;

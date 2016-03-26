@@ -289,6 +289,8 @@ void ChartSheetSubstream::recalc(CHARTFORMATS* charts)
 			continue;
 		}
 
+		iCrt = serCrt->id;
+
 		if (iCrt > parent0->m_arCRT.size() && iCrt < 0)
 			continue;
 		CRT * crt = dynamic_cast<CRT*>(parent0->m_arCRT[iCrt].get());
@@ -664,7 +666,7 @@ int ChartSheetSubstream::serialize_plot_area (std::wostream & _stream)
 								serialize_ser(L"c:val", CP_XML_STREAM(), series_id, series->m_arAI[1], ser->sdtY, ser->cValy);
 							}							
 //-----------------------------------------------------------------------------------------------------------------------------------------
-							series->serialize_parent(CP_XML_STREAM());
+							series->serialize_parent(CP_XML_STREAM(), chart_formats);
 //-----------------------------------------------------------------------------------------------------------------------------------------
 							std::wstringstream stream_dLbls;
 							serialize_dLbls(stream_dLbls, it->second[i], crt);
@@ -858,10 +860,11 @@ int ChartSheetSubstream::serialize_dLbls (std::wostream & _stream, int id, CRT *
 
 	CP_XML_WRITER(_stream)
 	{
-		Text * text = NULL;
-		AttachedLabel * att_label = dynamic_cast<AttachedLabel*>(series_ss->m_AttachedLabel.get());
-		ATTACHEDLABEL* AT_LABEL = dynamic_cast<ATTACHEDLABEL*>(chart_formats->find_label(4, id).get());
-		if (AT_LABEL) text = dynamic_cast<Text*> (AT_LABEL->m_TextProperties.get());
+		Text			* text		= NULL;
+		AttachedLabel	* att_label = dynamic_cast<AttachedLabel*>(series_ss->m_AttachedLabel.get());
+		ATTACHEDLABEL	* AT_LABEL	= dynamic_cast<ATTACHEDLABEL*>(chart_formats->find_label(4, id).get());
+		
+		if (AT_LABEL)	text = dynamic_cast<Text*> (AT_LABEL->m_TextProperties.get());
 		
 		if (att_label)
 		{

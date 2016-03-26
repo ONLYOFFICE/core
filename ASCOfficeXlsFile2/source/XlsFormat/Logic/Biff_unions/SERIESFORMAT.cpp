@@ -10,11 +10,13 @@
 #include <Logic/Biff_records/End.h>
 #include <Logic/Biff_records/SerAuxTrend.h>
 #include <Logic/Biff_records/SerAuxErrBar.h>
+#include <Logic/Biff_records/AttachedLabel.h>
 
 #include <Logic/Biff_unions/AI.h>
 #include <Logic/Biff_unions/SS.h>
 #include <Logic/Biff_unions/ATTACHEDLABEL.h>
 #include <Logic/Biff_unions/TEXTPROPS.h>
+#include <Logic/Biff_unions/CHARTFOMATS.h>
 
 namespace XLS
 {
@@ -225,7 +227,7 @@ int SERIESFORMAT::serialize_legend(std::wostream & _stream, int idx)
 	return 0;
 }
 
-int SERIESFORMAT::serialize_parent(std::wostream & _stream, bool ext)
+int SERIESFORMAT::serialize_parent(std::wostream & _stream, CHARTFORMATS* chart_formats, bool ext)
 {
 	if (m_SerParent == NULL)
 	{
@@ -233,12 +235,19 @@ int SERIESFORMAT::serialize_parent(std::wostream & _stream, bool ext)
 		{
 			SERIESFORMAT * series_ext = dynamic_cast<SERIESFORMAT *>(m_SERIESFORMAT_ext.get());
 			if (series_ext)
-				return series_ext->serialize_parent(_stream, true/*, series_id, crt*/);
+				return series_ext->serialize_parent(_stream, chart_formats, true/*, series_id, crt*/);
 		}
 		return 0;
 	}
-	SerParent *ser_parent = dynamic_cast<SerParent*>(m_SerParent.get());
+	SerParent		*ser_parent = dynamic_cast<SerParent*>(m_SerParent.get());
 	if (ser_parent == NULL) return 0;
+
+	int id = ser_parent->series;
+
+	SS				*series_ss	= dynamic_cast<SS *>(m_SS.get());	
+
+	AttachedLabel	*att_label	= dynamic_cast<AttachedLabel*>(series_ss->m_AttachedLabel.get());
+	ATTACHEDLABEL	*AT_LABEL	= dynamic_cast<ATTACHEDLABEL*>(chart_formats->find_label(4, id).get());
 
 	CP_XML_WRITER(_stream)    
 	{
@@ -249,7 +258,16 @@ int SERIESFORMAT::serialize_parent(std::wostream & _stream, bool ext)
 		{
 			CP_XML_NODE(L"c:trendline")
 			{
-				//<c:spPr><a:ln w="25400"><a:solidFill><a:srgbClr val="000000"/></a:solidFill><a:prstDash val="solid"/></a:ln></c:spPr>
+				if (series_ss)
+				{
+					series_ss->serialize(CP_XML_STREAM(), CHART_TYPE_Bar);
+					//тут не надо рисовать маркеры .. а вот fill можно - он просто отбрасывается - по "првильному" нужно выделить отдельный тип чисто линий
+				}
+				//CP_XML_NODE(L"c:spPr")
+				//{
+				//<a:ln w="25400"><a:solidFill><a:srgbClr val="000000"/></a:solidFill><a:prstDash val="solid"/></a:ln>
+				//}
+
 				CP_XML_NODE(L"c:trendlineType")
 				{
 					switch(trendline->regt)
@@ -270,6 +288,25 @@ int SERIESFORMAT::serialize_parent(std::wostream & _stream, bool ext)
 				CP_XML_NODE(L"c:dispEq")
 				{
 					CP_XML_ATTR (L"val" , (bool)trendline->fEquation);	
+				}
+
+				if ((AT_LABEL) && ((AT_LABEL->m_FRAME) || (AT_LABEL->m_FontX)))
+				{
+					CP_XML_NODE(L"c:trendlineLbl")
+					{
+						//CP_XML_NODE(L"c:layout")
+						//{
+						//}
+						//CP_XML_NODE(L"c:numFmt")
+						//{
+						//}
+						if (AT_LABEL->m_FRAME)
+							AT_LABEL->m_FRAME->serialize(CP_XML_STREAM());
+		
+						if (AT_LABEL->m_FontX)
+							AT_LABEL->serialize_txPr(CP_XML_STREAM());
+
+					}
 				}
 			}
 		}

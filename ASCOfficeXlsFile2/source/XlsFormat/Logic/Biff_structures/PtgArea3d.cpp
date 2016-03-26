@@ -77,10 +77,17 @@ void PtgArea3d::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool f
 
 		std::wstring range_ref = range.toString();
 		
-		if (ixals == 0xffff)//current sheet
-			ptg_stack.push(XMLSTUFF::make3dRef(global_info->current_sheet - 1, range_ref, global_info->sheets_names, full_ref));
+		if (ixals == 0xffff)
+		{
+			std::wstring prefix = XMLSTUFF::xti_indexes2sheet_name(itabFirst, itabLast, global_info->sheets_names);
+			if (!prefix.empty()) prefix += L"!";
+
+			ptg_stack.push(prefix + range_ref);		
+		}
 		else
+		{//external !!
 			ptg_stack.push(XMLSTUFF::make3dRef(ixals, range_ref, global_info->xti_parsed, full_ref));
+		}
 	}
 	else
 	{

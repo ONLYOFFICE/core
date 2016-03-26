@@ -77,9 +77,16 @@ void PtgRef3d::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool fu
 		std::wstring range_ref = cell.toString();
 		
 		if (ixals == 0xffff)
-			ptg_stack.push(XMLSTUFF::make3dRef(global_info->current_sheet - 1, range_ref, global_info->sheets_names, full_ref));
+		{
+			std::wstring prefix = XMLSTUFF::xti_indexes2sheet_name(itabFirst, itabLast, global_info->sheets_names);
+			if (!prefix.empty()) prefix += L"!";
+
+			ptg_stack.push(prefix + range_ref);
+		}
 		else
-			ptg_stack.push(XMLSTUFF::make3dRef(ixals, range_ref, global_info->xti_parsed, full_ref));
+		{
+			ptg_stack.push(XMLSTUFF::make3dRef(ixals, range_ref, global_info->xti_parsed, full_ref)); // from External !
+		}
 	}
 	else
 	{

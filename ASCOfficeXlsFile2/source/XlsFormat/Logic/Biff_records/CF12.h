@@ -31,8 +31,8 @@ public:
 	int serialize(std::wostream & stream);
 	FrtRefHeader			frtRefHeader;
 
-	BIFF_BYTE				ct;
-	BIFF_BYTE				cp;
+	unsigned char			ct;
+	unsigned char			cp;
 
 	DXFN12					dxf;
 
@@ -40,8 +40,8 @@ public:
 	CFParsedFormulaNoCCE	rgce2;
 
 	CFParsedFormula			fmlaActive;
-	_UINT16				ipriority;
-	_UINT16				icfTemplate;
+	_UINT16					ipriority;
+	_UINT16					icfTemplate;
 	CFExTemplateParams		rgbTemplateParms;
 
 	BiffStructurePtr		rgbCT;

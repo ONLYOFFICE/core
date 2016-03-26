@@ -29,16 +29,16 @@ public:
 	
 	_UINT16		miyRw;
 
-	BIFF_BYTE	iOutLevel;
-	bool		fCollapsed;
-	bool		fDyZero;
-	bool		fUnsynced;
-	bool		fGhostDirty;
+	unsigned char	iOutLevel;
+	bool			fCollapsed;
+	bool			fDyZero;
+	bool			fUnsynced;
+	bool			fGhostDirty;
 	
-	_UINT16		ixfe_val;
-	bool		fExAsc;
-	bool		fExDes;
-	bool		fPhonetic;
+	_UINT16			ixfe_val;
+	bool			fExAsc;
+	bool			fExDes;
+	bool			fPhonetic;
 	
 	BackwardOnlyParam<_UINT32> in_block_position;
 };

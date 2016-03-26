@@ -289,7 +289,6 @@ int SS::serialize_default(std::wostream & _stream, int series_type, int ind )
 
 int SS::serialize(std::wostream & _stream, int series_type, int indPt)
 {
-
 	DataFormat	*series_data_format = dynamic_cast<DataFormat *>(m_DataFormat.get());
 	SerFmt		*series_format		= dynamic_cast<SerFmt *>	(m_SerFmt.get());
 

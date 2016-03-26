@@ -46,7 +46,7 @@ public:
 	BaseObjectPtr								find_label	( _UINT16 link_id, unsigned short ex);
 	std::vector<std::pair<int, BaseObjectPtr>>	find_labels ( _UINT16 link_id, unsigned short ser);
 	
-		BaseObjectPtr find_default_text	( _UINT16 link_id);
+	BaseObjectPtr	find_default_text	( _UINT16 link_id);
 };
 
 } // namespace XLS

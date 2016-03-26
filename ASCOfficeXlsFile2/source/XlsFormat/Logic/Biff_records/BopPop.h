@@ -25,16 +25,16 @@ public:
 	int serialize(std::wostream & _stream);
 
 //-----------------------------
-	BIFF_BYTE		pst;
-	Boolean<unsigned char> fAutoSplit;
-	_UINT16		split;
-	_INT16		iSplitPos;
-	_INT16		pcSplitPercent;
-	_INT16		pcPie2Size;
-	_INT16		pcGap;
+	unsigned char	pst;
+	unsigned char	fAutoSplit;
+	_UINT16			split;
+	_INT16			iSplitPos;
+	_INT16			pcSplitPercent;
+	_INT16			pcPie2Size;
+	_INT16			pcGap;
 	BIFF_DOUBLE		numSplitValue;
 	
-	bool		fHasShadow;
+	bool			fHasShadow;
 
 
 	BaseObjectPtr	m_Custom;

@@ -32,7 +32,7 @@ public:
 	bool			fHidden;
 	bool			fCustom;
 
-	BIFF_BYTE		iCategory;
+	unsigned char	iCategory;
 	BuiltInStyle	builtInData;
 	LPWideString	stName;
 	XFProps			xfProps;

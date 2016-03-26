@@ -26,7 +26,7 @@ public:
 //-----------------------------
 	ForwardOnlyParam<_UINT32>	lbPlyPos;
 	std::wstring				hsState;
-	BIFF_BYTE					dt;
+	unsigned char				dt;
 	ShortXLUnicodeString		stName;
 };
 

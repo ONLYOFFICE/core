@@ -39,12 +39,12 @@ public:
 
 	GlobalWorkbookInfoPtr	pGlobalWorkbookInfoPtr;
 
-	BIFF_BYTE				hAlignment;
-	BIFF_BYTE				vAlignment;
+	unsigned char			hAlignment;
+	unsigned char			vAlignment;
 
-	BIFF_BYTE				fLockText;
-	BIFF_BYTE				fJustLast;
-	BIFF_BYTE				fSecretEdit;
+	unsigned char			fLockText;
+	unsigned char			fJustLast;
+	unsigned char			fSecretEdit;
 
 	_UINT16					rot;
 

@@ -132,16 +132,16 @@ static void serialize_val_prop(std::wostream & stream, const std::wstring & name
     {
 		CP_XML_NODE(name)
 		{
-			BIFF_DWORD	* dword = dynamic_cast<BIFF_DWORD*>(val.get());
+			BIFF_DWORD* dword = dynamic_cast<BIFF_DWORD*>(val.get());
 			if (dword)	CP_XML_ATTR(L"val", dword->value());
 
-			BIFF_WORD * word = dynamic_cast<BIFF_WORD*>(val.get());
+			BIFF_WORD*	word = dynamic_cast<BIFF_WORD*>(val.get());
 			if (word)	CP_XML_ATTR(L"val", word->value());
 
-			BIFF_BYTE *byte_ = dynamic_cast<BIFF_BYTE*>(val.get());
+			BIFF_BYTE*	byte_ = dynamic_cast<BIFF_BYTE*>(val.get());
 			if (byte_)	CP_XML_ATTR(L"val", byte_->value());
 
-			LPWideString * str_ = dynamic_cast<LPWideString*>(val.get());
+			LPWideString* str_ = dynamic_cast<LPWideString*>(val.get());
 			if (str_)	CP_XML_ATTR(L"val", xml::utils::replace_text_to_xml(str_->value()));
 		}
 	}

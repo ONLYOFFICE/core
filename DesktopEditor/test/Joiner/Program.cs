@@ -23,17 +23,17 @@ namespace Joiner
                 if (nType == 0)
                 {
                     sPathConfig = sPathBase + "sdk_configs/webword.json";
-                    sDstFile = sPathBase + "../../Word/sdk-all.js";
+                    sDstFile = sPathBase + "../../word/sdk-all.js";
                 }
                 else if (nType == 1)
                 {
                     sPathConfig = sPathBase + "sdk_configs/webexcel.json";
-                    sDstFile = sPathBase + "../../Excel/sdk-all.js";
+                    sDstFile = sPathBase + "../../cell/sdk-all.js";
                 }
                 else
                 {
                     sPathConfig = sPathBase + "sdk_configs/webpowerpoint.json";
-                    sDstFile = sPathBase + "../../PowerPoint/sdk-all.js";
+                    sDstFile = sPathBase + "../../slide/sdk-all.js";
                 }
 
                 Dictionary<string, bool> map_files = new Dictionary<string, bool>();
@@ -52,7 +52,7 @@ namespace Joiner
                 int nStart = 0;
 
                 nStart = 0;
-                while ((nStart = sConfigSource.IndexOf("/Common/", nStart + 1)) >= 0)
+                while ((nStart = sConfigSource.IndexOf("/common/", nStart + 1)) >= 0)
                 {
                     int nFind = sConfigSource.IndexOf('\"', nStart);
                     arCommon.Add(nStart);
@@ -67,7 +67,7 @@ namespace Joiner
                 }
 
                 nStart = 0;
-                while ((nStart = sConfigSource.IndexOf("/Word/", nStart + 1)) >= 0)
+                while ((nStart = sConfigSource.IndexOf("/word/", nStart + 1)) >= 0)
                 {
                     int nFind = sConfigSource.IndexOf('\"', nStart);
                     arWord.Add(nStart);
@@ -82,7 +82,7 @@ namespace Joiner
                 }
 
                 nStart = 0;
-                while ((nStart = sConfigSource.IndexOf("/PowerPoint/", nStart + 1)) >= 0)
+                while ((nStart = sConfigSource.IndexOf("/slide/", nStart + 1)) >= 0)
                 {
                     int nFind = sConfigSource.IndexOf('\"', nStart);
                     arWord.Add(nStart);
@@ -97,7 +97,7 @@ namespace Joiner
                 }
 
                 nStart = 0;
-                while ((nStart = sConfigSource.IndexOf("/Excel/", nStart + 1)) >= 0)
+                while ((nStart = sConfigSource.IndexOf("/cell/", nStart + 1)) >= 0)
                 {
                     int nFind = sConfigSource.IndexOf('\"', nStart);
                     arExcel.Add(nStart);
@@ -138,7 +138,8 @@ namespace Joiner
                 for (int i = 0; i < nLengthFilesCheck; i++)
                 {
                     string sFileCandidate = _filesResult[i];
-                    if ((sFileCandidate.IndexOf("/Build/") >= 0) ||
+                    if ((sFileCandidate.IndexOf("/build/") >= 0) ||
+                        (sFileCandidate.IndexOf("/Build/") >= 0) ||
                         (sFileCandidate.IndexOf("3rdparty") >= 0) ||
                         (sFileCandidate.IndexOf("-all.js") >= 0) ||
                         (sFileCandidate.IndexOf("apiExport.js") >= 0) ||

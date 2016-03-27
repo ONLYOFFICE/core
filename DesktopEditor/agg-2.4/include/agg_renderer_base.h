@@ -281,6 +281,28 @@ namespace agg
             m_ren->blend_solid_hspan(x, y, len, c, covers);
         }
 
+        void blend_solid_hspan_subpix(int x, int y, int len,
+                               const color_type& c,
+                               const cover_type* covers)
+        {
+            if(y > ymax()) return;
+            if(y < ymin()) return;
+
+            if(x < xmin())
+            {
+                len -= xmin() - x;
+                if(len <= 0) return;
+                covers += ((xmin() - x) * 3);
+                x = xmin();
+            }
+            if(x + len > xmax())
+            {
+                len = xmax() - x + 1;
+                if(len <= 0) return;
+            }
+            m_ren->blend_solid_hspan_subpix(x, y, len, c, covers);
+        }
+
         //--------------------------------------------------------------------
         void blend_solid_vspan(int x, int y, int len, 
                                const color_type& c, 

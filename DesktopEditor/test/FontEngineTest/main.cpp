@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
     double dWidthMM = 25.4 * nRasterW / 96;
     double dHeightMM = 25.4 * nRasterH / 96;
 
-    if (true)
+    if (false)
     {
         nRasterW *= 2;
         nRasterH *= 2;
@@ -30,6 +30,7 @@ int main(int argc, char *argv[])
     oFrame.put_Data(pDataRaster);
 
     CFontManager* pManager = oFonts.GenerateFontManager();
+    pManager->SetSubpixelRendering(true, false);
     CImageFilesCache* pCache = new CImageFilesCache();
 
     CGraphicsRenderer oRenderer;

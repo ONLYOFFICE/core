@@ -1177,7 +1177,7 @@ INT CFontFile::GetString2(CGlyphString& oString)
 			oSizes.oMetrics.fWidth        = (float)(pFace->glyph->metrics.width        >> 6);
 
             pCurGlyph->bBitmap  = true;
-            if (FT_Render_Glyph(pCurentGliph, REND_MODE))
+            if (FT_Render_Glyph(pCurentGliph, (FT_Render_Mode)m_pFontManager->m_nRENDER_MODE))
                 return FALSE;
 
 			TGlyphBitmap *pBitmap = &(pCurGlyph->oBitmap);
@@ -1457,7 +1457,7 @@ INT CFontFile::GetString2C(CGlyphString& oString)
 		oSizes.oMetrics.fWidth        = (float)(pFace->glyph->metrics.width        >> 6);
 
         pCurGlyph->bBitmap  = true;
-        if (FT_Render_Glyph(pCurentGliph, REND_MODE))
+        if (FT_Render_Glyph(pCurentGliph, (FT_Render_Mode)m_pFontManager->m_nRENDER_MODE))
             return FALSE;
 
 		TGlyphBitmap *pBitmap = &(pCurGlyph->oBitmap);

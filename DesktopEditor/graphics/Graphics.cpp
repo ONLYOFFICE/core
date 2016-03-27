@@ -1,5 +1,6 @@
 ﻿#include "Graphics.h"
 #include <algorithm>
+#include "../fontengine/FontFile.h"
 
 namespace Aggplus
 {
@@ -33,6 +34,8 @@ namespace Aggplus
 #endif
 
         m_dDpiTile = -1;
+
+        m_nTextRenderMode = FT_RENDER_MODE_NORMAL;
 	}
 
 	CGraphics::CGraphics(int dwWidth, int dwHeight, int stride, BYTE* pBuffer) : m_dwConfigFlags(0)
@@ -968,6 +971,7 @@ namespace Aggplus
 		oM1.TransformPoint(_x, _y);
 		
 		pFont->SetTextMatrix((float)mass[0], (float)mass[1], (float)mass[2], (float)mass[3], (float)mass[4], (float)mass[5]);
+        m_nTextRenderMode = pFont->m_nRENDER_MODE;
 
 		pFont->LoadString2(strText, (float)_x, (float)_y);
 		float fX = 0;
@@ -1012,6 +1016,7 @@ namespace Aggplus
         oM1.TransformPoint(_x, _y);
 
         pFont->SetTextMatrix((float)mass[0], (float)mass[1], (float)mass[2], (float)mass[3], (float)mass[4], (float)mass[5]);
+        m_nTextRenderMode = pFont->m_nRENDER_MODE;
 
         pFont->LoadString2(pGids, nGidsCount, (float)_x, (float)_y);
         float fX = 0;
@@ -1902,7 +1907,15 @@ namespace Aggplus
 		typedef agg::renderer_scanline_aa_solid<base_renderer_type> solid_renderer_type;
 		solid_renderer_type ren_fine(m_frame_buffer.ren_base());
 		ren_fine.color(clr.GetAggColor());
-		ren_fine.render(lWidth, lHeight, pData, nX, nY);
+
+        if (m_nTextRenderMode == FT_RENDER_MODE_LCD)
+        {
+            ren_fine.render_subpix(lWidth / 3, lHeight, pData, nX, nY);
+        }
+        else
+        {
+            ren_fine.render(lWidth, lHeight, pData, nX, nY);
+        }
 		return 0;
 	}
 

@@ -153,6 +153,21 @@ namespace agg
             p[Order::B] = (value_type)(((cb - b) * alpha + (b << base_shift)) >> base_shift);
             p[Order::A] = (value_type)((alpha + a) - ((alpha * a + base_mask) >> base_shift));
         }
+
+        static AGG_INLINE void blend_pix_subpix(value_type* p,
+                                         unsigned cr, unsigned cg, unsigned cb,
+                                         unsigned* covers,
+                                         unsigned cover=0)
+        {
+            calc_type r = p[Order::R];
+            calc_type g = p[Order::G];
+            calc_type b = p[Order::B];
+            //calc_type a = p[Order::A];
+            p[Order::R] = (value_type)(((cr - r) * covers[Order::R] + (r << base_shift)) >> base_shift);
+            p[Order::G] = (value_type)(((cg - g) * covers[Order::G] + (g << base_shift)) >> base_shift);
+            p[Order::B] = (value_type)(((cb - b) * covers[Order::B] + (b << base_shift)) >> base_shift);
+            //p[Order::A] = (value_type)((alpha + a) - ((alpha * a + base_mask) >> base_shift));
+        }
     };
 
     //=========================================================blender_rgba_pre
@@ -2020,6 +2035,28 @@ namespace agg
                     }
                     p += 4;
                     ++covers;
+                }
+                while(--len);
+            }
+        }
+
+        void blend_solid_hspan_subpix(int x, int y,
+                               unsigned len,
+                               const color_type& c,
+                               const int8u* covers)
+        {
+            if (c.a)
+            {
+                value_type* p = (value_type*)m_rbuf->row_ptr(x, y, len) + (x << 2);
+
+                calc_type covers_alpha[4];
+                do
+                {
+                    covers_alpha[order_type::R] = (calc_type(c.a) * (calc_type(*covers++) + 1)) >> 8;
+                    covers_alpha[order_type::G] = (calc_type(c.a) * (calc_type(*covers++) + 1)) >> 8;
+                    covers_alpha[order_type::B] = (calc_type(c.a) * (calc_type(*covers++) + 1)) >> 8;
+                    blender_type::blend_pix_subpix(p, c.r, c.g, c.b, covers_alpha, *covers);
+                    p += 4;
                 }
                 while(--len);
             }

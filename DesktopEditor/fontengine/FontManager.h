@@ -116,6 +116,7 @@ public:
     int m_lLineHeight;
 
     int m_nLOAD_MODE;
+    int m_nRENDER_MODE;
 
 	CApplicationFonts*	m_pApplication;
 	CFontsCache*		m_pOwnerCache;
@@ -169,6 +170,8 @@ public:
 
 	std::wstring GetFontType() const;
 	unsigned int GetNameIndex(const std::wstring& wsName) const;
+
+    void SetSubpixelRendering(const bool& hmul, const bool& vmul);
 	
 public:
 	static CFontFile* LoadFontFile(FT_Library library, CFontStream* pStream, LONG lFaceIndex);

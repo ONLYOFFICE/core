@@ -35,7 +35,27 @@ void PtgAreaN::storeFields(CFRecord& record)
 
 void PtgAreaN::loadFields(CFRecord& record)
 {
-	record >> area;
+	if (record.getGlobalWorkbookInfo()->Version < 0x600)
+	{
+		unsigned char	colFirst, colLast;
+		_UINT16			rwFirst, rwLast;
+
+		record >> rwFirst >> rwLast >> colFirst >> colLast;
+
+		area.rowFirstRelative		= rwFirst & 0x8000;
+		area.columnFirstRelative	= rwFirst & 0x4000;
+		
+		area.columnFirst			= colFirst;
+		area.rowFirst				= rwFirst & 0x3FFF;
+
+		area.rowLastRelative	= rwLast & 0x8000;
+		area.columnLastRelative	= rwLast & 0x4000;
+		
+		area.columnLast			= colLast;
+		area.rowLast			= rwLast & 0x3FFF;
+	}
+	else
+		record >> area;
 }
 
 

@@ -34,10 +34,6 @@ public:
 	unsigned short			ixals;
 	unsigned short			itabFirst;
 	unsigned short			itabLast;
-	unsigned short			grbitRwFirst;
-	unsigned short			grbitRwLast;
-	unsigned char			colFirst;
-	unsigned char			colLast;
 };
 
 } // namespace XLS

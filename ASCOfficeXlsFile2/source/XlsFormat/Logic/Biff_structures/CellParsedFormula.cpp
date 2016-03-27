@@ -33,11 +33,11 @@ void CellParsedFormula::load(CFRecord& record)
 	unsigned short cce;
 	record >> cce;
 	
-	if (record.getGlobalWorkbookInfo()->Version < 0x0600)
-	{
-		record.skipNunBytes(record.getDataSize() - record.getRdPtr());
-	}
-	else
+	//if (record.getGlobalWorkbookInfo()->Version < 0x0600)
+	//{
+	//	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
+	//}
+	//else
 	{
 		rgce.load(record, cce);
 		rgcb.load(record, rgce.getPtgs(), is_part_of_a_revision_);

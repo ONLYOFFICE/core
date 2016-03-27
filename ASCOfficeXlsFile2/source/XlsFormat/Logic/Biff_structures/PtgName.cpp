@@ -35,6 +35,15 @@ void PtgName::loadFields(CFRecord& record)
 {
 	record >> nameindex;
 	
+	if (record.getGlobalWorkbookInfo()->Version < 0x0600)
+	{
+		record.skipNunBytes(12);
+	}
+	else
+	{
+		record.skipNunBytes(2);
+	}
+	
 	global_info = record.getGlobalWorkbookInfo();
 }
 

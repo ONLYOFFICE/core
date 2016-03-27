@@ -34,8 +34,6 @@ private:
 	_UINT16					ixals;
 	_UINT16					itabFirst;
 	_UINT16					itabLast;
-	_UINT16					grbitRw;
-	unsigned char			col;
 
 	GlobalWorkbookInfoPtr	global_info;
 

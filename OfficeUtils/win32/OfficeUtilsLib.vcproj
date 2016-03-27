@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1251"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="8,00"
 	Name="OfficeUtilsLib"
 	ProjectGUID="{F8274B05-168E-4D6E-B843-AA7510725363}"
 	RootNamespace="OfficeUtilsLib"
@@ -10,6 +10,9 @@
 	<Platforms>
 		<Platform
 			Name="Win32"
+		/>
+		<Platform
+			Name="x64"
 		/>
 	</Platforms>
 	<ToolFiles>
@@ -40,6 +43,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
+				AdditionalIncludeDirectories="&quot;..\src\zlib-1.2\&quot;;&quot;..\src\zlib-1.2.3\contrib\minizip\&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -99,6 +103,131 @@
 			/>
 			<Tool
 				Name="VCMIDLTool"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
+				RuntimeLibrary="2"
+				UsePrecompiledHeader="0"
+				WarningLevel="3"
+				Detect64BitPortabilityProblems="true"
+				DebugInformationFormat="3"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLibrarianTool"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+		</Configuration>
+		<Configuration
+			Name="Debug|x64"
+			OutputDirectory="$(SolutionDir)$(PlatformName)\$(ConfigurationName)"
+			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
+			ConfigurationType="4"
+			CharacterSet="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				TargetEnvironment="3"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="0"
+				AdditionalIncludeDirectories="&quot;..\src\zlib-1.2\&quot;;&quot;..\src\zlib-1.2.3\contrib\minizip\&quot;"
+				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
+				MinimalRebuild="true"
+				BasicRuntimeChecks="3"
+				RuntimeLibrary="3"
+				UsePrecompiledHeader="0"
+				WarningLevel="3"
+				Detect64BitPortabilityProblems="true"
+				DebugInformationFormat="3"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLibrarianTool"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+		</Configuration>
+		<Configuration
+			Name="Release|x64"
+			OutputDirectory="$(SolutionDir)$(PlatformName)\$(ConfigurationName)"
+			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
+			ConfigurationType="4"
+			CharacterSet="1"
+			WholeProgramOptimization="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				TargetEnvironment="3"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -244,6 +373,62 @@
 				RelativePath="..\src\zlib-1.2.3\zutil.h"
 				>
 			</File>
+			<Filter
+				Name="minizip"
+				>
+				<File
+					RelativePath="..\src\zlib-1.2.3\contrib\minizip\crypt.h"
+					>
+				</File>
+				<File
+					RelativePath="..\src\zlib-1.2.3\contrib\minizip\ioapi.c"
+					>
+				</File>
+				<File
+					RelativePath="..\src\zlib-1.2.3\contrib\minizip\ioapi.h"
+					>
+				</File>
+				<File
+					RelativePath="..\src\zlib-1.2.3\contrib\minizip\iowin32.c"
+					>
+				</File>
+				<File
+					RelativePath="..\src\zlib-1.2.3\contrib\minizip\iowin32.h"
+					>
+				</File>
+				<File
+					RelativePath="..\src\zlib-1.2.3\contrib\minizip\miniunz.c"
+					>
+				</File>
+				<File
+					RelativePath="..\src\zlib-1.2.3\contrib\minizip\minizip.c"
+					>
+				</File>
+				<File
+					RelativePath="..\src\zlib-1.2.3\contrib\minizip\mztools.c"
+					>
+				</File>
+				<File
+					RelativePath="..\src\zlib-1.2.3\contrib\minizip\mztools.h"
+					>
+				</File>
+				<File
+					RelativePath="..\src\zlib-1.2.3\contrib\minizip\unzip.c"
+					>
+				</File>
+				<File
+					RelativePath="..\src\zlib-1.2.3\contrib\minizip\unzip.h"
+					>
+				</File>
+				<File
+					RelativePath="..\src\zlib-1.2.3\contrib\minizip\zip.c"
+					>
+				</File>
+				<File
+					RelativePath="..\src\zlib-1.2.3\contrib\minizip\zip.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<File
 			RelativePath="..\src\OfficeUtils.cpp"

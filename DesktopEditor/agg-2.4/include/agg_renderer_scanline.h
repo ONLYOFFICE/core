@@ -149,6 +149,16 @@ namespace agg
 				pMemory += lWidth;
 			}
 		}
+
+                inline void render_subpix(int lWidth, int lHeight, unsigned char* pData, int x, int y)
+                {
+            unsigned char* pMemory = pData;
+                        for (int j = 0; j < lHeight; ++j)
+                        {
+                                m_ren->blend_solid_hspan_subpix(x, y + j, lWidth, m_color, pMemory);
+                                pMemory += lWidth * 3;
+                        }
+                }
         
     private:
         base_ren_type* m_ren;

@@ -2,6 +2,7 @@
 #include "../common/File.h"
 #include <stdio.h>
 #include "ftsnames.h"
+#include FT_LCD_FILTER_H
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 CFontStream::CFontStream()
@@ -205,6 +206,7 @@ CFontManager::CFontManager()
 {
 	m_pLibrary = NULL;
 	FT_Init_FreeType(&m_pLibrary);
+	FT_Library_SetLcdFilter(m_pLibrary, FT_LCD_FILTER_DEFAULT);
 
 	m_pFont = NULL;
 	m_pApplication = NULL;
@@ -213,6 +215,8 @@ CFontManager::CFontManager()
 	m_bStringGID = FALSE;
 	m_nLOAD_MODE = 40968;
 	m_lRef = 1;
+
+	m_nRENDER_MODE = FT_RENDER_MODE_NORMAL;
 
     m_bUseDefaultFont = FALSE;
     m_fCharSpacing = 0;
@@ -703,4 +707,14 @@ unsigned int CFontManager::GetNameIndex(const std::wstring& wsName) const
 		return 0;
 
 	return m_pFont->GetNameIndex(wsName);
+}
+
+void CFontManager::SetSubpixelRendering(const bool& hmul, const bool& vmul)
+{
+    if (hmul)
+        m_nRENDER_MODE = FT_RENDER_MODE_LCD;
+    else if (vmul)
+        m_nRENDER_MODE = FT_RENDER_MODE_LCD_V;
+    else
+        m_nRENDER_MODE = FT_RENDER_MODE_NORMAL;
 }

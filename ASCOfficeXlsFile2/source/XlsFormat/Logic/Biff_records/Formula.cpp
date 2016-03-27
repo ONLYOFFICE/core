@@ -50,12 +50,12 @@ void Formula::readFields(CFRecord& record)
 	fShrFmla		= GETBIT(flags, 3);
 	fClearErrors	= GETBIT(flags, 5);
 	
-	if (record.getGlobalWorkbookInfo()->Version < 0x0600)
-	{	
-		//_UINT16 chn = 0;
-		//record >> chn;
-	}
-	else
+	//if (record.getGlobalWorkbookInfo()->Version < 0x0600)
+	//{	
+	//	_UINT16 chn = 0;
+	//	record >> chn;
+	//}
+	//else
 	{
 		_UINT32 chn = 0;
 		record >> chn;

@@ -24,7 +24,7 @@ public:
 
 	static const unsigned short fixed_id = 0x03;
 
-	_UINT32 nameindex;
+	_UINT16 nameindex;
 private:
 	GlobalWorkbookInfoPtr global_info;
 };

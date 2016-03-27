@@ -25,23 +25,20 @@ public:
 	void operator+=(const CellRef& appended_ref);
 	void operator-=(const CellRef& subtracted_ref);
 
-private:
     virtual void load(CFRecord& record) {}
     virtual void store(CFRecord& record) {}
 
-public:
     const int	getRow() const;
     const int	getColumn() const;
 	const bool	getRowRelative() const;
 	const bool	getColumnRelative() const;
 
-protected:
     int		row;
     int		column;
 	bool	rowRelative;
 	bool	colRelative;
+protected:
 	bool	fQuoted;
-
 	mutable std::wstring to_string_cache;
 
 };

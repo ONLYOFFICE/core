@@ -33,7 +33,20 @@ void PtgNameX::storeFields(CFRecord& record)
 
 void PtgNameX::loadFields(CFRecord& record)
 {
-	record >> ixti >> nameindex;
+	record >> ixti;
+	
+	if (record.getGlobalWorkbookInfo()->Version < 0x0600)
+	{
+		record.skipNunBytes(8);
+		
+		_UINT16 val;
+		record >> val;
+
+		nameindex = val;
+		record.skipNunBytes(12);
+	}
+	else
+		record >> nameindex;
 	
 	global_info = record.getGlobalWorkbookInfo();
 }

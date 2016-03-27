@@ -43,9 +43,25 @@ void PtgArea3d::loadFields(CFRecord& record)
 	
 	if (global_info->Version < 0x0600)
 	{
+		unsigned short	rwFirst, rwLast;
+		unsigned char	colFirst, colLast;
+
 		record >> ixals;
 		record .skipNunBytes(8);
-		record >> itabFirst >> itabLast >> grbitRwFirst >> grbitRwLast >> colFirst >> colLast;
+		record >> itabFirst >> itabLast >> rwFirst >> rwLast >> colFirst >> colLast;
+
+		area.rowFirstRelative	= rwFirst & 0x8000;
+		area.columnLastRelative	= rwFirst & 0x4000;
+		
+		area.columnFirst		= colFirst;
+		area.rowFirst			= rwFirst & 0x3FFF;
+
+		area.rowLastRelative	= rwLast & 0x8000;
+		area.columnLastRelative	= rwLast & 0x4000;
+		
+		area.columnLast			= colLast;
+		area.rowLast			= rwLast & 0x3FFF;
+
 	}
 	else
 	{
@@ -67,16 +83,10 @@ void PtgArea3d::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool f
 		extra_data.pop();
 		return;
 	}
+	std::wstring range_ref = area.toString();
 
 	if (global_info->Version < 0x0600)
 	{
-		CellRef cell1(grbitRwFirst, colFirst,  false, false);
-		CellRef cell2(grbitRwLast, colLast, false, false);
-
-		CellRangeRef range(cell1, cell2);
-
-		std::wstring range_ref = range.toString();
-		
 		if (ixals == 0xffff)
 		{
 			std::wstring prefix = XMLSTUFF::xti_indexes2sheet_name(itabFirst, itabLast, global_info->sheets_names);
@@ -91,7 +101,6 @@ void PtgArea3d::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool f
 	}
 	else
 	{
-		std::wstring range_ref = area.toString();
 		ptg_stack.push(XMLSTUFF::make3dRef(ixti, range_ref, global_info->xti_parsed, full_ref));
 	}
 

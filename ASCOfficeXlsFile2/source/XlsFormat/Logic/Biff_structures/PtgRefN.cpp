@@ -35,7 +35,20 @@ void PtgRefN::storeFields(CFRecord& record)
 
 void PtgRefN::loadFields(CFRecord& record)
 {
-	record >> loc;
+	if (record.getGlobalWorkbookInfo()->Version < 0x0600)
+	{
+		unsigned char	col;
+		_UINT16			rw;
+		record >> rw >> col;
+
+		loc.rowRelative	= rw & 0x8000;
+		loc.colRelative	= rw & 0x4000;
+
+		loc.column	= col;
+		loc.row		= GETBITS(rw, 0, 13);
+	}
+	else
+		record >> loc;
 }
 
 

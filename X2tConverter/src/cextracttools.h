@@ -1,15 +1,15 @@
 ﻿#ifndef CEXTRACTTOOLS_H
 #define CEXTRACTTOOLS_H
 
-#include "../../../ServerComponents/Common/OfficeFileErrorDescription.h"
-#include "../../../ServerComponents/Common/OfficeFileFormatChecker.h"
-#include "../../../ServerComponents/Common/DocxFormat/Source/SystemUtility/SystemUtility.h"
-#include "../../../ServerComponents/Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"
-#include "../../../ServerComponents/Common/DocxFormat/Source/XML/stringcommon.h"
-#include "../../../ServerComponents/Common/DocxFormat/Source/XML/xmlutils.h"
-#include "../../../ServerComponents/DesktopEditor/doctrenderer/doctrenderer.h"
-#include "../../../ServerComponents/DesktopEditor/common/StringBuilder.h"
-#include "../../../ServerComponents/DesktopEditor/common/Path.h"
+#include "../../Common/OfficeFileErrorDescription.h"
+#include "../../Common/OfficeFileFormatChecker.h"
+#include "../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h"
+#include "../../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"
+#include "../../Common/DocxFormat/Source/XML/stringcommon.h"
+#include "../../Common/DocxFormat/Source/XML/xmlutils.h"
+#include "../../DesktopEditor/doctrenderer/doctrenderer.h"
+#include "../../DesktopEditor/common/StringBuilder.h"
+#include "../../DesktopEditor/common/Path.h"
 
 #include <iostream>
 #include <fstream>

@@ -5,7 +5,7 @@
 #include "./Reader/PPTFileReader.h"
 #include "./PPTXWriter/Converter.h"
 
-#include "../../../ASCOfficeUtils/ASCOfficeUtilsLib/OfficeUtils.h"
+#include "../../../OfficeUtils/src/OfficeUtils.h"
 
 #ifndef READMODE
     #define READMODE 1

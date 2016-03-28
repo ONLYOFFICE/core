@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include "Record.h"
-#include "../../../ASCOfficeUtils/ASCOfficeUtilsLib/OfficeUtils.h"
+#include "../../../OfficeUtils/src/OfficeUtils.h"
 #include "../../../Common/DocxFormat/Source/Base/Types_32.h"
 
 

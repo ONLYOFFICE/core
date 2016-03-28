@@ -1,8 +1,8 @@
 #include "cextracttools.h"
-#include "../../../ServerComponents/DesktopEditor/common/StringBuilder.h"
-#include "../../../ServerComponents/DesktopEditor/common/Directory.h"
-#include "../../../ServerComponents/DesktopEditor/common/Path.h"
-#include "../../../ServerComponents/ASCOfficeUtils/ASCOfficeUtilsLib/OfficeUtils.h"
+#include "../../DesktopEditor/common/StringBuilder.h"
+#include "../../DesktopEditor/common/Directory.h"
+#include "../../DesktopEditor/common/Path.h"
+#include "../../OfficeUtils/src/OfficeUtils.h"
 
 namespace NExtractTools
 {

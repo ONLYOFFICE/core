@@ -1,7 +1,7 @@
 
 #include "OfficeArtBStoreContainerFileBlock.h"
 
-#include "../../../ASCOfficeUtils/ASCOfficeUtilsLib/OfficeUtils.h"
+#include "../../../OfficeUtils/src/OfficeUtils.h"
 
 namespace ODRAW
 {

@@ -21,7 +21,7 @@ namespace NSBinPptxRW
 //    }
 //#endif
 
-#include "../../../ASCOfficeUtils/ASCOfficeUtilsLib/OfficeUtils.h"
+#include "../../../OfficeUtils/src/OfficeUtils.h"
 #include "../../../Common/OfficeDefines.h"
 
 #include "../../../Common/DocxFormat/Source/SystemUtility/File.h"

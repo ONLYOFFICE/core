@@ -41,7 +41,7 @@ namespace BinXlsxRW {
         bool saveToFile(const CString& sSrcFileName, const CString& sDstPath, const CString& sXMLOptions);
 		
 		bool loadChart(CString& sChartPath, NSBinPptxRW::CBinaryFileWriter& oBufferedStream, long& lDataSize);
-		bool saveChart(NSBinPptxRW::CBinaryFileReader& oBufferedStream, long lLength, CString& sFilename, CString& sContentTypePath, CString** sContentTypeElement, const LONG& lChartNumber);
+        bool saveChart(NSBinPptxRW::CBinaryFileReader& oBufferedStream, long lLength, CString& sFilename, CString& sContentTypePath, CString** sContentTypeElement, const long& lChartNumber);
 		
 		void setFontDir(CString& sFontDir);
 		void setEmbeddedFontsDir(CString& sEmbeddedFontsDir);

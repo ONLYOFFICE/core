@@ -67,6 +67,8 @@ namespace Aggplus
 #endif
 
         m_dDpiTile = -1;
+		
+		m_nTextRenderMode = FT_RENDER_MODE_NORMAL;
 	}
 
 	CGraphics::CGraphics(CImage* pImage) : m_dwConfigFlags(0)
@@ -103,6 +105,8 @@ namespace Aggplus
 #endif
 
         m_dDpiTile = -1;
+		
+		m_nTextRenderMode = FT_RENDER_MODE_NORMAL;
 	}
 
 	CGraphics::~CGraphics()
@@ -1062,6 +1066,7 @@ namespace Aggplus
 		oM1.TransformPoint(_x, _y);
 		
 		pFont->SetTextMatrix((float)mass[0], (float)mass[1], (float)mass[2], (float)mass[3], (float)mass[4], (float)mass[5]);
+		m_nTextRenderMode = pFont->m_nRENDER_MODE;
 
 		pFont->LoadString2C(lText, (float)_x, (float)_y);
 		float fX = 0;

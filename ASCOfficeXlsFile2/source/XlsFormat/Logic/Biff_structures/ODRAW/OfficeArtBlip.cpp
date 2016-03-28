@@ -2,7 +2,7 @@
 #include "OfficeArtBlip.h"
 #include <Binary/CFRecord.h>
 
-#include "../../../ASCOfficeUtils/ASCOfficeUtilsLib/OfficeUtils.h"
+#include "../../../OfficeUtils/src/OfficeUtils.h"
 
 namespace ODRAW
 {

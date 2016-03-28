@@ -6,7 +6,7 @@
 #include "../BinWriter/BinWriters.h"
 #include "../BinReader/Readers.h"
 #include "../../ASCOfficePPTXFile/Editor/FontPicker.h"
-#include "../../ASCOfficeUtils/ASCOfficeUtilsLib/OfficeUtils.h"
+#include "../../OfficeUtils/src/OfficeUtils.h"
 
 int BinDocxRW::g_nCurFormatVersion = 0;
 

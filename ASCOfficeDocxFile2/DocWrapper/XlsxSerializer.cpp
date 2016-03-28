@@ -143,7 +143,7 @@ namespace BinXlsxRW{
 		}
 		return bRes;
 	}
-	bool CXlsxSerializer::saveChart(NSBinPptxRW::CBinaryFileReader& oBufferedStream, long lLength, CString& sFilepath, CString& sContentTypePath, CString** sContentTypeElement, const LONG& lChartNumber)
+    bool CXlsxSerializer::saveChart(NSBinPptxRW::CBinaryFileReader& oBufferedStream, long lLength, CString& sFilepath, CString& sContentTypePath, CString** sContentTypeElement, const long& lChartNumber)
 	{
 		bool bRes = false;
 		*sContentTypeElement = NULL;

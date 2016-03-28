@@ -4,7 +4,7 @@
 //#include "../DocxDocConverter/FileConverter.h"
 
 #include "../../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"
-#include "../../ASCOfficeUtils/ASCOfficeUtilsLib/OfficeUtils.h"
+#include "../../OfficeUtils/src/OfficeUtils.h"
 
 HRESULT COfficeDocFile::LoadFromFile(std::wstring bsDocFile, std::wstring bsDocxDirectory, ProgressCallback *ffCallBack )
 {

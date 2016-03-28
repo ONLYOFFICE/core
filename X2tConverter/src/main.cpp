@@ -2,8 +2,8 @@
 #include "cextracttools.h"
 #include "ASCConverters.h"
 
-#include "../../../ServerComponents/Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"
-#include "../../../ServerComponents/DesktopEditor/common/Directory.h"
+#include "../../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"
+#include "../../DesktopEditor/common/Directory.h"
 
 //#include <iostream>
 

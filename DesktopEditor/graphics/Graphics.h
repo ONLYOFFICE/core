@@ -287,6 +287,8 @@ public:
     double m_dDpiTile;
 
     CGraphics_ClipState m_oClipState;
+	
+	int m_nTextRenderMode;
 
 public:
 

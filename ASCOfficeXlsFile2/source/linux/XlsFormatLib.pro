@@ -1772,7 +1772,9 @@ HEADERS +=  \
     ../XlsXlsxConverter/ConvertShapes/XmlWriter.h \
     ../XlsXlsxConverter/ConvertShapes/CustomShape.h \
     ../XlsFormat/Logic/Biff_structures/AFDOperBoolErr.h \
-    ../XlsFormat/Logic/Biff_structures/AFDOperXNum.h
+    ../XlsFormat/Logic/Biff_structures/AFDOperXNum.h \
+    ../XlsFormat/Logic/Biff_unions/IMDATAOBJECT.h \
+    ../XlsFormat/Logic/Biff_records/IMDATA.h
 
 
 
@@ -1781,3 +1783,7 @@ unix {
     target.path = /usr/lib
     INSTALLS += target
 }
+
+SOURCES += \
+    ../XlsFormat/Logic/Biff_unions/IMDATAOBJECT.cpp \
+    ../XlsFormat/Logic/Biff_records/IMDATA.cpp

@@ -344,7 +344,12 @@ SOURCES += \
 
 SOURCES += \
     ../formulasconvert/formulasconvert_odf.cpp \
-    ../formulasconvert/formulasconvert_oox.cpp
+    ../formulasconvert/formulasconvert_oox.cpp \
+    ../src/odf/math_elementaries.cpp \
+    ../src/odf/math_layout_elements.cpp \
+    ../src/odf/math_limit_elements.cpp \
+    ../src/odf/math_table_elements.cpp \
+    ../src/odf/math_token_elements.cpp
 
 HEADERS += \
     ../formulasconvert/formulasconvert.h \
@@ -606,7 +611,12 @@ HEADERS += \
     ../include/cpdoccore/xml/xmlchar.h \
     ../include/cpdoccore/xml/xmlelement.h \
     ../src/ConvertOO2OOX.h \
-    ../src/odf/math_elements.h
+    ../src/odf/math_elements.h \
+    ../src/odf/math_elementaries.h \
+    ../src/odf/math_layout_elements.h \
+    ../src/odf/math_limit_elements.h \
+    ../src/odf/math_table_elements.h \
+    ../src/odf/math_token_elements.h
 unix {
     target.path = /usr/lib
     INSTALLS += target

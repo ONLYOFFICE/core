@@ -1777,6 +1777,9 @@ void xlsx_drawing_context::set_flag_old_version(_UINT16 val, _UINT16 val2)
 	{
 		flips_flag = val;
 	}
+	if (current_drawing_states->back()->shape_id == MSOSPT::msosptTextBox)
+	{
+	}
 	if (current_drawing_states->back()->shape_id == MSOSPT::msosptLine)
 	{
 		unsigned char nArrowType = GETBITS(val,  0,  3);

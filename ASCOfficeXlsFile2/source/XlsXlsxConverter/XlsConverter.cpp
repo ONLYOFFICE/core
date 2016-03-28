@@ -1635,19 +1635,33 @@ void XlsConverter::convert(XLS::TxO * text_obj)
 
 	if (rot > 0)
 	{
-		xlsx_context->get_drawing_context().set_text_align		(text_obj->vAlignment);
-		if (rot==3)
+		switch(rot)
+		{
+		case 1: //text appears top to bottom; letters are upright
+		{
+			xlsx_context->get_drawing_context().set_text_vertical(5);		
+		}break;
+		case 2: //text is rotated 90 degrees counterclockwise
 		{
 			if		(text_obj->hAlignment == (unsigned char)1) text_obj->hAlignment = 3;
 			else if (text_obj->hAlignment == (unsigned char)3) text_obj->hAlignment = 1;
+
+			xlsx_context->get_drawing_context().set_text_vertical(2);	
+		}break;
+		case 3: //text is rotated 90 degrees clockwise
+		{
+			if		(text_obj->vAlignment == (unsigned char)1) text_obj->vAlignment = 3;
+			else if (text_obj->vAlignment == (unsigned char)3) text_obj->vAlignment = 1;
+		
+			xlsx_context->get_drawing_context().set_text_vertical(3);
+		}break;
 		}
-		xlsx_context->get_drawing_context().set_text_vert_align	(text_obj->hAlignment);
+
 	}
-	else
-	{
-		xlsx_context->get_drawing_context().set_text_align		(text_obj->hAlignment);
-		xlsx_context->get_drawing_context().set_text_vert_align	(text_obj->vAlignment);
-	}
+
+	xlsx_context->get_drawing_context().set_text_align		(text_obj->hAlignment);
+	xlsx_context->get_drawing_context().set_text_vert_align	(text_obj->vAlignment);
+	
 	xlsx_context->get_drawing_context().set_text(strm.str());
 }
 

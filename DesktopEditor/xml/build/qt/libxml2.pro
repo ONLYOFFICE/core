@@ -15,7 +15,7 @@ DEFINES += HAVE_VA_COPY
 CONFIG += c++11
 
 ############### destination path ###############
-DESTINATION_SDK_PATH = $$PWD/../../../../SDK/lib
+DESTINATION_SDK_PATH = $$PWD/../../../../build/lib
 
 # WINDOWS
 win32:contains(QMAKE_TARGET.arch, x86_64):{

@@ -94,11 +94,17 @@ bool COfficeFileFormatChecker::isXlsFormatFile	(POLE::Storage * storage)
 {
 	if (storage == NULL) return false;
 
-	POLE::Stream stream(storage, "Workbook");
+    unsigned char buffer[10];
+
+    POLE::Stream stream(storage, "Workbook");
 	
-	unsigned char buffer[10];
 	if (stream.read(buffer,10) >0)
 		return true;
+
+    POLE::Stream stream2(storage, "Book");
+
+    if (stream2.read(buffer,10) >0)
+        return true;
 
 	return false;
 }

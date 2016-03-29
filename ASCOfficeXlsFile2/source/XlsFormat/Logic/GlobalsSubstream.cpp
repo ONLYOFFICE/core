@@ -161,7 +161,7 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 			case rt_BuiltInFnGroupCount:proc.optional<FNGROUPS>();		break;
 			case rt_OleObjectSize:		proc.optional<OleObjectSize>();	break;
 			case rt_WinProtect:			proc.optional<PROTECTION>();	break;
-			case rt_FileSharing:		proc.optional<CodePage>();		break;
+			case rt_FileSharing:		proc.optional<FileSharing>();	break;
 			case rt_CodePage:
 			{
 				if (proc.optional<CodePage>())

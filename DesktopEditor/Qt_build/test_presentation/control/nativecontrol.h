@@ -19,7 +19,7 @@ public:
        CNativeCtrl::initializeGL();
        QString qsBasePath = QApplication::applicationDirPath();
        QString qsFontsPath = qsBasePath + "/../../../../fonts/owner";
-       QString qsSDKPath   = qsBasePath + "/../../../../test_mobile/script.bin";
+       QString qsSDKPath   = qsBasePath + "/../../../../../sdkjs/slide/sdk-all.js";
        QString qsFilePath  = qsBasePath + "/../../../../test_mobile/Editor2.bin";
 
        CApplicationFontsWorker *pWorker = new CApplicationFontsWorker();

@@ -102,6 +102,7 @@ BaseObjectPtr AXES::clone()
 // AXES = [IVAXIS DVAXIS [SERIESAXIS] / DVAXIS DVAXIS] *3ATTACHEDLABEL [PlotArea FRAME]
 const bool AXES::loadContent(BinProcessor& proc)
 {
+	bool res = false;
 	if (proc.optional<Parenthesis_AXES_1>())
 	{
 		int count = elements_.size();
@@ -159,6 +160,7 @@ const bool AXES::loadContent(BinProcessor& proc)
 			elements_.pop_front();
 			count--;
 		}
+		res = true;
 	}
 
 	int count = proc.repeated<ATTACHEDLABEL>(0, 3);
@@ -180,7 +182,7 @@ const bool AXES::loadContent(BinProcessor& proc)
 		elements_.pop_back();
 	}
 
-	return true;
+	return res;
 }
 
 int AXES::serialize(std::wostream & _stream)

@@ -285,16 +285,6 @@ void Obj::readFields(CFRecord& record)
 
 			}
 		}
-		//else if ( OBJ_Chart == cmo.ot)
-		//{
-		//	record.skipNunBytes(18);
-		//	if (nNameLen > 0)
-		//	{
-		//		record >> old_version.name;
-		//	}
-		//	record.skipNunBytes(nMacrosSize);
-		//}
-
 		else if(OBJ_Text == cmo.ot)
 		{
 			TxO * txO = new TxO(mso_drawing_);

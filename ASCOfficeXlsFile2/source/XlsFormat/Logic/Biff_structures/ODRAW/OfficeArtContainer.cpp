@@ -131,6 +131,11 @@ void OfficeArtContainer::loadFields(XLS::CFRecord& record)
 			case TertiaryFOPT:
 				art_record = OfficeArtRecordPtr(new OfficeArtTertiaryFOPT);
 				break;
+			default:
+				{
+					Log::warning(std::wstring(L"Unknown OfficeArt record of type 0x") + 
+						STR::int2hex_wstr(rh_child.recType, sizeof(rh_child.recType)));
+				}break;
 
 		}
 		if(art_record)

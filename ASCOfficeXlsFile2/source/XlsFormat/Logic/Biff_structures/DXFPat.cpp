@@ -67,13 +67,8 @@ int DXFPat::serialize(std::wostream & stream)
 						case 16: CP_XML_ATTR(L"patternType", L"thinDiagCross");			break; //Thin diagonal crosshatch
 						case 17: CP_XML_ATTR(L"patternType", L"gray125");				break; //12.5% gray
 						case 18: CP_XML_ATTR(L"patternType", L"gray0625");				break; //6.25% gray
-					}
-				}
-				if (!parent->icvBNinch)
-				{
-					CP_XML_NODE(L"bgColor")
-					{				
-						CP_XML_ATTR(L"indexed", icvBackground);
+						default:
+							CP_XML_ATTR(L"patternType", L"solid");
 					}
 				}
 				if (!parent->icvFNinch)
@@ -83,7 +78,15 @@ int DXFPat::serialize(std::wostream & stream)
 					{				
 						CP_XML_ATTR(L"indexed", icvForeground);
 					}
+				}	
+				if (!parent->icvBNinch)
+				{
+					CP_XML_NODE(L"bgColor")
+					{				
+						CP_XML_ATTR(L"indexed", icvBackground);
+					}
 				}
+
 			}
 		}
 	}

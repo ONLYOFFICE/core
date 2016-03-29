@@ -48,23 +48,54 @@ const bool SERIESAXIS::loadContent(BinProcessor& proc)
 	m_Axis = elements_.back();
 	elements_.pop_back();
 
-	proc.mandatory<Begin>();				elements_.pop_back();
-	
-	if (proc.optional<CatSerRange>())
+	while (true)
 	{
-		m_CatSerRange = elements_.back();
-		elements_.pop_back();
-	}
-	
-	if (proc.mandatory<AXS>())
-	{
-		m_AXS = elements_.back();
-		elements_.pop_back();
-	}
+		CFRecordType::TypeId type = proc.getNextRecordType();
+		
+		if (type == rt_NONE) break;
+		if (type == rt_End) 
+		{
+			if (proc.mandatory<End>())
+				elements_.pop_back();
+			break;
+		}
 
-	proc.optional<CRTMLFRT>();
-	proc.mandatory<End>();					elements_.pop_back();
-
+		switch(type)
+		{
+			case rt_Begin:
+			{
+				if (proc.optional<Begin>())
+					elements_.pop_back();
+			}break;
+			case rt_CatSerRange:
+			{
+				if (proc.optional<CatSerRange>())
+				{
+					m_CatSerRange = elements_.back();
+					elements_.pop_back();
+				}
+			}break;
+			case rt_IFmtRecord:
+			case rt_Tick:
+			case rt_FontX:
+			case rt_AxisLine:
+			{
+				if (proc.mandatory<AXS>())
+				{
+					m_AXS = elements_.back();
+					elements_.pop_back();
+				}
+			}break;
+			case rt_CrtMlFrt:		
+			{
+				proc.optional<CRTMLFRT>();		
+			}break;
+			default:
+			{
+				proc.SkipRecord();	
+			}break;
+		}
+	}
 	return true;
 }
 int SERIESAXIS::serialize(std::wostream & _stream)

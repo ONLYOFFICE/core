@@ -150,8 +150,18 @@ void Lbl::readFields(CFRecord& record)
 
 	record.skipNunBytes(4);
 	
-	Name_bin.setSize(cch); // this is to process built-in string values
-	record >> Name_bin;
+	if (record.getGlobalWorkbookInfo()->Version < 0x600)
+	{
+		LPAnsiStringNoCch s;
+		s.setSize(cch);
+		record >> s;
+		Name_bin = s;
+	}
+	else
+	{
+		Name_bin.setSize(cch); // this is to process built-in string values
+		record >> Name_bin;
+	}
 	
 	rgce.load(record, cce);
 

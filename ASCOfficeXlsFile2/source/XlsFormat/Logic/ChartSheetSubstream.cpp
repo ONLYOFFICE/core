@@ -263,7 +263,8 @@ void ChartSheetSubstream::recalc(CHARTFORMATS* charts)
 {
 	if (charts == NULL) return;
 
-	AXISPARENT* parent0 = dynamic_cast<AXISPARENT*>(charts->m_arAXISPARENT[0].get());
+	int ind_AXIS = 0;
+	AXISPARENT* parent0 = dynamic_cast<AXISPARENT*>(charts->m_arAXISPARENT[ind_AXIS].get());
 
 	int iCrt = -1;
 
@@ -291,8 +292,15 @@ void ChartSheetSubstream::recalc(CHARTFORMATS* charts)
 
 		iCrt = serCrt->id;
 
-		if (iCrt > parent0->m_arCRT.size() && iCrt < 0)
+		while ((parent0->m_arCRT.size() <= iCrt) && (ind_AXIS < charts->m_arAXISPARENT.size()) && (charts->m_arAXISPARENT.size() > 1))
+		{
+			parent0 = dynamic_cast<AXISPARENT*>(charts->m_arAXISPARENT[++ind_AXIS].get());
+
+		}
+
+		if (iCrt >= parent0->m_arCRT.size() || iCrt < 0)
 			continue;
+
 		CRT * crt = dynamic_cast<CRT*>(parent0->m_arCRT[iCrt].get());
 		
 		std::map<int,std::vector<int>>::iterator it = m_mapTypeChart.find(iCrt);
@@ -409,8 +417,11 @@ int ChartSheetSubstream::serialize_3D (std::wostream & _stream)
 			}
 
 			AXES * axes = dynamic_cast<AXES*> (parent->m_AXES.get());
-			wallSpPr	= axes->m_Wall_FRAME;
-			floorSpPr	= axes->m_Floor_FRAME;
+			if (axes)
+			{
+				wallSpPr	= axes->m_Wall_FRAME;
+				floorSpPr	= axes->m_Floor_FRAME;
+			}
 		}
 	}
 	if (!chart3D) return 0;
@@ -714,15 +725,17 @@ int ChartSheetSubstream::serialize_plot_area (std::wostream & _stream)
 					}
 
 					AXES * axes = dynamic_cast<AXES*>(parent->m_AXES.get());
-
-					for (int a = 0 ; a < axes->m_arAxesId.size(); a++)
+					if (axes)
 					{
-						CP_XML_NODE(L"c:axId")
+						for (int a = 0 ; a < axes->m_arAxesId.size(); a++)
 						{
-							CP_XML_ATTR(L"val", axes->m_arAxesId[a].first);
+							CP_XML_NODE(L"c:axId")
+							{
+								CP_XML_ATTR(L"val", axes->m_arAxesId[a].first);
+							}
 						}
 					}
-
+					//else error complex_29s.xls
 				}
 			}
 
@@ -733,7 +746,11 @@ int ChartSheetSubstream::serialize_plot_area (std::wostream & _stream)
 				AXES*		axes		= dynamic_cast<AXES*>		(parent->m_AXES.get());
 
 				bool secondary = ax_parent->iax;
-				axes->serialize(CP_XML_STREAM(), secondary);
+				if (axes)
+				{
+					axes->serialize(CP_XML_STREAM(), secondary);
+				}
+				//else error complex_29s.xls
 			}
 
 			if (PlotAreaFRAME)

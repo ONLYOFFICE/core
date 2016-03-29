@@ -46,13 +46,14 @@ const bool AXISPARENT::loadContent(BinProcessor& proc)
 		elements_.pop_back(); 
 	}
 
-	if (proc.optional<AXES>())
+	int count = proc.repeated<AXES>(0, 0);
+	if (count > 0)
 	{
 		m_AXES = elements_.back();
 		elements_.pop_back(); 
 	}
 	
-	int count  = proc.repeated<CRT>(1, 4);
+	count  = proc.repeated<CRT>(1, 4);
 
 	while(count > 0 && !elements_.empty())
 	{

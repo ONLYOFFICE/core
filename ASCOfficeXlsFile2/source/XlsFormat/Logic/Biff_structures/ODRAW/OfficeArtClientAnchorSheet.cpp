@@ -88,10 +88,10 @@ void OfficeArtClientAnchorSheet::calculate()
 
 	if (sheet_info.customColumnsWidth.find(colR) != sheet_info.customColumnsWidth.end())
 	{
-		column_width = sheet_info.customColumnsWidth[colR];		
+		column_width = sheet_info.customColumnsWidth[colR] / 1024.;		
 	}
 	else 
-		column_width = sheet_info.defaultColumnWidth;
+		column_width = sheet_info.defaultColumnWidth / 1024.;	
 
 	width = (double)(((256. * column_width + (int)(128. / Digit_Width)) / 256.) * Digit_Width) * 72 / 96.;
 	

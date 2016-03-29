@@ -207,6 +207,8 @@ void XFProp::serialize_attr(CP_ATTR_NODE)
 			case 16: CP_XML_ATTR(L"patternType", L"thinDiagCross");			break; //Thin diagonal crosshatch
 			case 17: CP_XML_ATTR(L"patternType", L"gray125");				break; //12.5% gray
 			case 18: CP_XML_ATTR(L"patternType", L"gray0625");				break; //6.25% gray
+			default:
+						CP_XML_ATTR(L"patternType", L"solid");		
 		}
 	}
 	if (xfPropType == 3)

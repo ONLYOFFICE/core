@@ -176,6 +176,7 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 			case rt_Protect:		proc.optional<PROTECTION_COMMON>();	break;
 			case rt_ScenMan:		proc.optional<SCENARIOS>();			break;	
 			case rt_Sort:
+			case rt_AutoFilterInfo:
 			{
 				if (proc.optional<SORTANDFILTER>())// Let it be optional
 				{

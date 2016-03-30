@@ -600,7 +600,7 @@ const std::wstring tab2sheet_name(const short tabid, std::vector<std::wstring>& 
 	{
 		return sheets_names[tabid];
 	}
-	return L"#REF!";
+	return L"#REF";
 }
 
 //
@@ -617,7 +617,7 @@ const std::wstring xti_indexes2sheet_name(const short itabFirst, const short ita
 {
 	if(-1 == itabFirst)
 	{
-		return L"#REF!";
+		return L"#REF";
 	}
 	static boost::wregex correct_sheet_name(L"^\\'.+?\\'$");
     static boost::wregex test_sheet_name(L"[\\s)(\\':.-]+");

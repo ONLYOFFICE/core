@@ -30,8 +30,9 @@ void XTI::load(CFRecord& record)
 	}
 	else
 	{
-		record.getGlobalWorkbookInfo()->xti_parsed.push_back(
-			XMLSTUFF::xti_indexes2sheet_name(itabFirst, itabLast, record.getGlobalWorkbookInfo()->sheets_names));
+		std::wstring name = XMLSTUFF::xti_indexes2sheet_name(itabFirst, itabLast, record.getGlobalWorkbookInfo()->sheets_names);
+		if (name == L"#REF") name += L"!";
+		record.getGlobalWorkbookInfo()->xti_parsed.push_back( name );
 	}
 }
 

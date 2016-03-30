@@ -139,6 +139,16 @@ int AUTOFILTER::serialize(std::wostream & stream)
 				ref.erase(0, pos + 1);
 		}
 	}
+	sheet_name = L"#REF";
+	{
+		int pos = ref.find(sheet_name);
+		if (pos >= 0)
+		{
+			pos = ref.find(L"!");
+			if (pos >= 0)
+				ref.erase(0, pos + 1);
+		}
+	}
 
 	CP_XML_WRITER(stream)    
     {

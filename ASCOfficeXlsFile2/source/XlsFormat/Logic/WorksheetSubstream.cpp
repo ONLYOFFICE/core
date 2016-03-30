@@ -93,7 +93,8 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 	{
 		CFRecordType::TypeId type = proc.getNextRecordType();
 		
-		if (type == rt_NONE) break;
+		if (type == rt_NONE || type == rt_BOF) //следующий пошел??
+			break;
 		if (type == rt_EOF) 
 		{
 			proc.mandatory<EOF_T>();
@@ -209,7 +210,11 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 				OBJECTS objects(false);
 				if (proc.optional(objects))
 				{
-					m_OBJECTS = elements_.back();
+					if (!m_OBJECTS) m_OBJECTS = elements_.back();
+					else
+					{
+						Log::warning(L"Double set OBJECTS!!!");
+					}
 					elements_.pop_back();
 				}
 			}break;

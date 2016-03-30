@@ -28,6 +28,9 @@ public:
 	OfficeArtClientAnchorType			anchor_type_;
 	std::vector<OfficeArtRecordPtr>		child_records;
 
+private:
+	OfficeArtRecordPtr CreateOfficeArt(unsigned short type);
+
 };
 
 typedef boost::shared_ptr<OfficeArtContainer> OfficeArtContainerPtr;

@@ -59,6 +59,10 @@
 #include <Logic/Biff_records/BOF.h>
 #include <Logic/Biff_records/MDTInfo.h>
 #include <Logic/Biff_records/ExternSheet.h>
+#include <Logic/Biff_records/XFExt.h>
+#include <Logic/Biff_records/XFCRC.h>
+#include <Logic/Biff_records/DXF.h>
+#include <Logic/Biff_unions/STYLES.h>
 
 namespace XLS
 {;
@@ -327,6 +331,36 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 			case rt_Compat12:			proc.optional<Compat12>();				break;
 			case rt_GUIDTypeLib:		proc.optional<GUIDTypeLib>();			break;
 
+			//case rt_XFCRC:
+			//{//не по спецификации !!! Calculadora.xls
+			//	if(proc.optional<XFCRC>())
+			//	{
+			//		elements_.pop_back(); // Crc не нужен
+
+			//		count = proc.repeated<XFExt>(0, 0);//(16, 4050);
+			//		while (count > 0)
+			//		{
+			//			//перенести в FORMATING/XFS ?? - тогда нужен пересчет там !!
+			//			//if (elements_.empty()) break;
+			//			//XFExt* ext = dynamic_cast<XFExt*>(elements_.back().get());
+			//			//m_arXFext.push_back(elements_.front());
+			//			elements_.pop_front();
+			//			count--;
+			//		}
+			//	}
+			//	count = proc.repeated<DXF>(0, 0);
+			//	while(count > 0)
+			//	{
+			//		//m_arDXF.insert(m_arDXF.begin(), elements_.back());
+			//		elements_.pop_back();
+			//		count--;
+			//	}
+			//	if (proc.optional<STYLES>())
+			//	{
+			//		//m_Styles = elements_.back();
+			//		elements_.pop_back();
+			//	}	
+			//}break;
 			default://skip					
 			{
 				proc.SkipRecord();	

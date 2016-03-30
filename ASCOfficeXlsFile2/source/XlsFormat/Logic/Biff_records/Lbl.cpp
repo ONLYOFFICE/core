@@ -8,7 +8,7 @@ const wchar_t* const AutoFilterDefineNames[] =
 {
     L"_FilterDatabase",			// English
     L"_FilterDatenbank",		// German
-    L"_ФильтрБазыДанных"		// Russian 
+    L"_Р¤РёР»СЊС‚СЂР‘Р°Р·С‹Р”Р°РЅРЅС‹С…"		// Russian
 
 };
 

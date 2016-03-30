@@ -50,7 +50,7 @@ const bool LBL::loadContent(BinProcessor& proc)
 	if (lbl->fBuiltin)	name = lbl->Name.value().get_value_or(L"");	
 	if (name.empty())	name = lbl->Name_bin.value();
 
-	std::wstring value = lbl->rgce.getAssembledFormula(lbl->itab == 0 ? true : false);
+	std::wstring value = lbl->rgce.getAssembledFormula(lbl->fWorkbookParam/*lbl->itab == 0 ? true : false*/);
 	
     NameCmt namecmt(name);
     if (proc.optional(namecmt))

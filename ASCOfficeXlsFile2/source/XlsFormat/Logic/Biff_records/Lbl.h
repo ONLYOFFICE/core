@@ -4,6 +4,7 @@
 #include <Logic/Biff_structures/BiffString.h>
 #include <Logic/Biff_structures/NameParsedFormula.h>
 
+
 namespace XLS
 {
 

@@ -4,6 +4,15 @@
 namespace XLS
 {
 
+const wchar_t* const AutoFilterDefineNames[] =
+{
+    L"_FilterDatabase",			// English
+    L"_FilterDatenbank",		// German
+    L"_‘ильтрЅазыƒанных"		// Russian 
+
+};
+
+
 Lbl::Lbl()
 :	rgce(false)
 {
@@ -168,6 +177,16 @@ void Lbl::readFields(CFRecord& record)
 	if(!fBuiltin)
 	{
 		Name = Name_bin.getEscaped_ST_Xstring();
+		
+		for (int i = 0 ; i < 3; i++)
+		{
+			int res = Name_bin.value().find(AutoFilterDefineNames[i]);
+			if (res >=0)
+			{
+				Name = Name_bin = (L"_xlnm._FilterDatabase");
+				break;
+			}
+		}
 	}
 	else
 	{

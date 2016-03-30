@@ -567,13 +567,12 @@ std::wstring XlsConverter::WriteMediaFile(char *data, int size, std::wstring typ
 
 			biSizeImage = size - offset;
 			
-			bPNG = true;
-			if (stride < header->biWidth)
+			if (-stride >= header_core->bcWidth && header_core->bcBitCount >=24 )
 			{
-				bPNG = false;
+				bPNG = true;
 			}
 		}
-		else if (header->biBitCount >=24)
+		else
 		{
 			offset = 40; //sizeof(BITMAPINFOHEADER)
 
@@ -587,10 +586,9 @@ std::wstring XlsConverter::WriteMediaFile(char *data, int size, std::wstring typ
 			
 			int stride = (size - offset) / header->biHeight;
 
-			bPNG = true;
-			if (stride < header->biWidth)
+			if (stride >= header->biWidth && header->biBitCount >= 24)
 			{
-				bPNG = false;
+				bPNG = true;
 			}
 			frame.put_Stride	(stride/*header->biBitCount * header->biWidth /8*/);
 			

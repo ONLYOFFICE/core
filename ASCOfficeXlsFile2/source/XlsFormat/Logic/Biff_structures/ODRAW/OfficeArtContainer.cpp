@@ -28,6 +28,106 @@ OfficeArtContainer::OfficeArtContainer(const unsigned char recVer, const unsigne
 {
 }
 
+OfficeArtRecordPtr OfficeArtContainer::CreateOfficeArt(unsigned short type)
+{
+	OfficeArtRecordPtr art_record;
+	switch (type)
+	{
+		case DgContainer:
+			art_record = OfficeArtRecordPtr(new OfficeArtDgContainer(anchor_type_));
+			break;
+
+		case FDG:
+			art_record = OfficeArtRecordPtr(new OfficeArtFDG);
+			break;
+
+		case FRITContainer:
+			art_record = OfficeArtRecordPtr(new OfficeArtFRITContainer);
+			break;
+
+		case SpgrContainer:
+			art_record = OfficeArtRecordPtr(new OfficeArtSpgrContainer(anchor_type_));
+			break;
+
+		case SpContainer:
+			art_record = OfficeArtRecordPtr(new OfficeArtSpContainer(anchor_type_));
+			break;
+
+		case SolverContainer:
+			art_record = OfficeArtRecordPtr(new OfficeArtSolverContainer);
+			break;
+
+		case FSPGR:
+			art_record = OfficeArtRecordPtr(new OfficeArtFSPGR);
+			break;
+
+		case FSP:
+			art_record = OfficeArtRecordPtr(new OfficeArtFSP);
+			break;
+
+		case FOPT:
+			art_record = OfficeArtRecordPtr(new OfficeArtFOPT);
+			break;
+
+		case ChildAnchor:
+			art_record = OfficeArtRecordPtr(new OfficeArtChildAnchor);
+			break;
+
+		case ClientAnchor:
+			switch(anchor_type_)
+			{
+				case CA_Chart:
+					art_record = OfficeArtRecordPtr(new OfficeArtClientAnchorChart);
+					break;
+
+				case CA_Sheet:
+					art_record = OfficeArtRecordPtr(new OfficeArtClientAnchorSheet);
+					break;
+
+				case CA_HF:
+					art_record = OfficeArtRecordPtr(new OfficeArtClientAnchorHF);
+					break;					
+			}
+			break;
+
+		case ClientData:
+			art_record = OfficeArtRecordPtr(new OfficeArtClientData);
+			break;
+
+		case FConnectorRule:
+			art_record = OfficeArtRecordPtr(new OfficeArtFConnectorRule);
+			break;
+
+		case ClientTextbox:
+			art_record = OfficeArtRecordPtr(new OfficeArtClientTextbox);
+			break;
+
+		case FDGGBlock:
+			art_record = OfficeArtRecordPtr(new OfficeArtFDGGBlock);
+			break;
+
+		case ColorMRUContainer:
+			art_record = OfficeArtRecordPtr(new OfficeArtColorMRUContainer);
+			break;
+
+		case SplitMenuColorContainer:
+			art_record = OfficeArtRecordPtr(new OfficeArtSplitMenuColorContainer);
+			break;
+		case BStoreContainer:
+			art_record = OfficeArtRecordPtr(new OfficeArtBStoreContainer);
+			break;
+		case TertiaryFOPT:
+			art_record = OfficeArtRecordPtr(new OfficeArtTertiaryFOPT);
+			break;
+		default:
+			{
+				Log::warning(std::wstring(L"Unknown OfficeArt record of type 0x") + 
+					STR::int2hex_wstr(type, sizeof(type)));
+			}break;
+	}
+	return art_record;
+}
+
 void OfficeArtContainer::loadFields(XLS::CFRecord& record)
 {
 	size_t container_beginning_ptr = record.getRdPtr();
@@ -42,102 +142,8 @@ void OfficeArtContainer::loadFields(XLS::CFRecord& record)
 		size_t child_beginning_ptr = record.getRdPtr();
 		record.RollRdPtrBack(rh_child.size());
 
-		OfficeArtRecordPtr art_record;
-		switch (rh_child.recType)
-		{
-			case DgContainer:
-				art_record = OfficeArtRecordPtr(new OfficeArtDgContainer(anchor_type_));
-				break;
-
-			case FDG:
-				art_record = OfficeArtRecordPtr(new OfficeArtFDG);
-				break;
-
-			case FRITContainer:
-				art_record = OfficeArtRecordPtr(new OfficeArtFRITContainer);
-				break;
-
-			case SpgrContainer:
-				art_record = OfficeArtRecordPtr(new OfficeArtSpgrContainer(anchor_type_));
-				break;
-
-			case SpContainer:
-				art_record = OfficeArtRecordPtr(new OfficeArtSpContainer(anchor_type_));
-				break;
-
-			case SolverContainer:
-				art_record = OfficeArtRecordPtr(new OfficeArtSolverContainer);
-				break;
-
-			case FSPGR:
-				art_record = OfficeArtRecordPtr(new OfficeArtFSPGR);
-				break;
-
-			case FSP:
-				art_record = OfficeArtRecordPtr(new OfficeArtFSP);
-				break;
-
-			case FOPT:
-				art_record = OfficeArtRecordPtr(new OfficeArtFOPT);
-				break;
-
-			case ChildAnchor:
-				art_record = OfficeArtRecordPtr(new OfficeArtChildAnchor);
-				break;
-
-			case ClientAnchor:
-				switch(anchor_type_)
-				{
-					case CA_Chart:
-						art_record = OfficeArtRecordPtr(new OfficeArtClientAnchorChart);
-						break;
-
-					case CA_Sheet:
-						art_record = OfficeArtRecordPtr(new OfficeArtClientAnchorSheet);
-						break;
-
-					case CA_HF:
-						art_record = OfficeArtRecordPtr(new OfficeArtClientAnchorHF);
-						break;					
-				}
-				break;
-
-			case ClientData:
-				art_record = OfficeArtRecordPtr(new OfficeArtClientData);
-				break;
-
-			case FConnectorRule:
-				art_record = OfficeArtRecordPtr(new OfficeArtFConnectorRule);
-				break;
-
-			case ClientTextbox:
-				art_record = OfficeArtRecordPtr(new OfficeArtClientTextbox);
-				break;
-
-			case FDGGBlock:
-				art_record = OfficeArtRecordPtr(new OfficeArtFDGGBlock);
-				break;
-
-			case ColorMRUContainer:
-				art_record = OfficeArtRecordPtr(new OfficeArtColorMRUContainer);
-				break;
-
-			case SplitMenuColorContainer:
-				art_record = OfficeArtRecordPtr(new OfficeArtSplitMenuColorContainer);
-				break;
-			case BStoreContainer:
-				art_record = OfficeArtRecordPtr(new OfficeArtBStoreContainer);
-				break;
-			case TertiaryFOPT:
-				art_record = OfficeArtRecordPtr(new OfficeArtTertiaryFOPT);
-				break;
-			default:
-				{
-					Log::warning(std::wstring(L"Unknown OfficeArt record of type 0x") + 
-						STR::int2hex_wstr(rh_child.recType, sizeof(rh_child.recType)));
-				}break;
-
-		}
+		OfficeArtRecordPtr art_record = CreateOfficeArt(rh_child.recType);
+		
 		if(art_record)
 		{
 			record >> *art_record;
@@ -159,7 +165,29 @@ void OfficeArtContainer::loadFields(XLS::CFRecord& record)
 					Log::warning(std::wstring(L"Wrong data parsed in OfficeArt record of type 0x") + 
 						STR::int2hex_wstr(rh_child.recType, sizeof(rh_child.recType)));
 
-					record.RollRdPtrBack( record.getRdPtr() - (child_beginning_ptr + rh_child.recLen));
+					//Calculadora.xls
+					//test next record !!!
+					size_t record_pos = record.getRdPtr();
+					OfficeArtRecordHeader rh_test;
+					record >> rh_test;
+					record.RollRdPtrBack(8);//sizeof(OfficeArtRecordHeader)
+
+					OfficeArtRecordPtr test_officeArt = CreateOfficeArt(rh_test.recType);
+					if (!test_officeArt)
+					{
+						record.RollRdPtrBack( record_pos - (child_beginning_ptr + rh_child.recLen));
+
+						record >> rh_test;
+						record.RollRdPtrBack(8);//sizeof(OfficeArtRecordHeader)
+						
+						OfficeArtRecordPtr test_officeArt = CreateOfficeArt(rh_test.recType);
+						if (!test_officeArt)
+						{
+							//упс ... и где начало верное???
+							record.skipNunBytes(record.getDataSize() - record.getRdPtr());
+							return;
+						}
+					}
 				}
 			}
 		}

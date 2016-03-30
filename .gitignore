@@ -1,2 +1,5 @@
 build/
 LicenceManager/
+Common/boost_1_58_0
+**/Release
+**/Debug

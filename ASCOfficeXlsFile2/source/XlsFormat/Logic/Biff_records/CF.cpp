@@ -63,6 +63,9 @@ void CF::readFields(CFRecord& record)
 
 int CF::serialize(std::wostream & stream)
 {
+	if (ct != 1 && ct != 2 && ct !=6) 
+		return 0;
+	
 	CP_XML_WRITER(stream)    
     {
 		CP_XML_NODE(L"cfRule")

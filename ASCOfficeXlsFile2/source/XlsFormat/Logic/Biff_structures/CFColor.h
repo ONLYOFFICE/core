@@ -22,11 +22,11 @@ public:
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-	XColorType xclrType;
-	ColorICV icv;
-	LongRGBA rgb;
-	ColorTheme theme;
-	double numTint;
+	XColorType	xclrType;
+	ColorICV	icv;
+	LongRGBA	rgb;
+	ColorTheme	theme;
+	double		numTint;
 };
 
 } // namespace XLS

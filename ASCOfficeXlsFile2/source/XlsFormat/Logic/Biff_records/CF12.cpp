@@ -1,6 +1,7 @@
 
 #include "CF12.h"
 #include <Logic/Biff_structures/CFMultistate.h>
+#include <Logic/Biff_structures/CFDatabar.h>
 #include <utils.h>
 
 namespace XLS
@@ -64,20 +65,14 @@ void CF12::readFields(CFRecord& record)
 	switch(ct)
 	{
 		case 0x03:
-#pragma message("####################### CFGradient structure is not implemented")
-			Log::info("CFGradient structure is not implemented.");
 			//rgbCT = BiffStructurePtr(new CFGradient);
 			//rgbCT->load(record);
 			break;
 		case 0x04:
-#pragma message("####################### CFDatabar structure is not implemented")
-			Log::info("CFDatabar structure is not implemented.");
-			//rgbCT = BiffStructurePtr(new CFDatabar);
-			//rgbCT->load(record);
+			rgbCT = BiffStructurePtr(new CFDatabar);
+			rgbCT->load(record);
 			break;
 		case 0x05:
-#pragma message("####################### CFFilter structure is not implemented")
-			Log::info("CFFilter structure is not implemented.");
 			//rgbCT = BiffStructurePtr(new CFFilter);
 			//rgbCT->load(record);
 			break;
@@ -103,9 +98,10 @@ int CF12::serialize(std::wostream & stream)
 			{
 				case 1:	CP_XML_ATTR(L"type", L"cellIs");		break;
 				case 2:	CP_XML_ATTR(L"type", L"expression");	break;
+				case 4:	CP_XML_ATTR(L"type", L"dataBar");		break;
 				case 6:	CP_XML_ATTR(L"type", L"iconSet");		break;
 			}
-			if (ct == (unsigned char)1)
+			if (ct == 1)
 			{
 				switch(cp)
 				{
@@ -122,16 +118,54 @@ int CF12::serialize(std::wostream & stream)
 			CP_XML_ATTR(L"priority", ipriority_);
 			CP_XML_ATTR(L"stopIfTrue", fStopIfTrue);
 
-			CP_XML_ATTR(L"dxfId", dxfId_);	
+			CP_XML_ATTR(L"dxfId", dxfId_);
+
+			if (ct == 4)
+			{
+				CFDatabar *dataBar = dynamic_cast<CFDatabar*>(rgbCT.get());
+
+				CP_XML_NODE(L"dataBar")
+				{
+					CP_XML_NODE(L"cfvo")
+					{
+						if (dataBar->iPercentMin > 0)
+							CP_XML_ATTR(L"percent", dataBar->iPercentMin);
+						else
+							CP_XML_ATTR(L"type", L"min");
+					}
+					CP_XML_NODE(L"cfvo")
+					{
+						if (dataBar->iPercentMax < 100)
+							CP_XML_ATTR(L"percent", dataBar->iPercentMax);
+						else
+							CP_XML_ATTR(L"type", L"max");
+					}
+					CP_XML_NODE(L"color")
+					{
+						switch(dataBar->color.xclrType.type)
+						{
+						case 1: CP_XML_ATTR(L"indexed",	dataBar->color.icv);			break;
+						case 2:	CP_XML_ATTR(L"rgb",		dataBar->color.rgb.strARGB);	break;
+						case 3: CP_XML_ATTR(L"theme",	dataBar->color.theme);
+								CP_XML_ATTR(L"tint",	dataBar->color.numTint);		break;
+						default: CP_XML_ATTR(L"auto", true);
+						}
+					}
+				}
+			}
 
 			std::wstring s1 = rgce1.getAssembledFormula();
 			std::wstring s2 = rgce1.getAssembledFormula();
-			CP_XML_NODE(L"formula")
+			
+			if (!s1.empty() || !s2.empty())
 			{
-				if (!s1.empty()) 
-					CP_XML_STREAM() << xml::utils::replace_text_to_xml(s1);
-				else if(!s2.empty()) 
-					CP_XML_STREAM() << xml::utils::replace_text_to_xml(s2);
+				CP_XML_NODE(L"formula")
+				{
+					if (!s1.empty()) 
+						CP_XML_STREAM() << xml::utils::replace_text_to_xml(s1);
+					else if(!s2.empty()) 
+						CP_XML_STREAM() << xml::utils::replace_text_to_xml(s2);
+				}
 			}
 		}
 	}

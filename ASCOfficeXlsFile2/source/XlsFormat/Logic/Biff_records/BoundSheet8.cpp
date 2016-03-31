@@ -42,6 +42,8 @@ void BoundSheet8::writeFields(CFRecord& record)
 	{
 		throw;// EXCEPT::LE::AttributeDataWrong(L"hsState", record.getTypeString().c_str(), hsState);
 	}
+	ShortXLUnicodeString stName = name_;
+
 	SETBITS(flags, 0, 1, hsState_num);
 	SETBITS(flags, 8, 15, dt);
 	record << flags << stName;
@@ -55,13 +57,15 @@ void BoundSheet8::readFields(CFRecord& record)
 	
 	if (record.getGlobalWorkbookInfo()->Version < 0x0600)
 	{
-		ShortXLAnsiString name;
-		record >> name;
-		stName = name;
+		ShortXLAnsiString stName;
+		record >> stName;
+		name_ = stName.value();
 	}
 	else
 	{
+		ShortXLUnicodeString stName;
 		record >> stName;
+		name_ = stName.value();
 	}
 
 	switch(GETBITS(flags, 0, 1))
@@ -76,7 +80,13 @@ void BoundSheet8::readFields(CFRecord& record)
 			hsState = std::wstring (L"hidden");//(L"veryHidden");
 			break;
 	}
-	record.getGlobalWorkbookInfo()->sheets_names.push_back(stName);
+	if (name_.length() > 31)
+	{
+		name_ = name_.substr(0, 31);
+		//cell_links_broken.xls
+	}
+	
+	record.getGlobalWorkbookInfo()->sheets_names.push_back(name_);
 	record.getGlobalWorkbookInfo()->sheets_state.push_back(hsState);
 	
 	dt = GETBITS(flags, 8, 15);

@@ -19,10 +19,9 @@ public:
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-private:
-	unsigned char cfvoType;
-	CFVOParsedFormula fmla;
-	double numValue;
+	unsigned char		cfvoType;
+	CFVOParsedFormula	fmla;
+	double				numValue;
 };
 
 typedef boost::shared_ptr<CFVO> CFVOPtr;

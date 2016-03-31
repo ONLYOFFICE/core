@@ -67,7 +67,8 @@ const bool CONDFMT12::loadContent(BinProcessor& proc)
 }
 int CONDFMT12::serialize(std::wostream & stream)
 {
-	if (!m_CondFmt12) return 0;
+	if (!m_CondFmt12)			return 0;
+	if (m_arCF12.size() < 1)	return 0;
 
 	CP_XML_WRITER(stream)    
     {

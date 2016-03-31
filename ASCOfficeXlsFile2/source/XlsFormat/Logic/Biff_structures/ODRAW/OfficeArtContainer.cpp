@@ -120,10 +120,7 @@ OfficeArtRecordPtr OfficeArtContainer::CreateOfficeArt(unsigned short type)
 			art_record = OfficeArtRecordPtr(new OfficeArtTertiaryFOPT);
 			break;
 		default:
-			{
-				Log::warning(std::wstring(L"Unknown OfficeArt record of type 0x") + 
-					STR::int2hex_wstr(type, sizeof(type)));
-			}break;
+			break;
 	}
 	return art_record;
 }
@@ -151,28 +148,32 @@ void OfficeArtContainer::loadFields(XLS::CFRecord& record)
 
 			if(record.getRdPtr() != child_beginning_ptr + rh_child.recLen)
 			{
+				size_t record_pos = record.getRdPtr();
+				OfficeArtRecordHeader rh_test;
+				record >> rh_test;
+				record.RollRdPtrBack(8);//sizeof(OfficeArtRecordHeader)
+
+				OfficeArtRecordPtr test_officeArt = CreateOfficeArt(rh_test.recType);	
+				
 				if(record.getRdPtr() < child_beginning_ptr + rh_child.recLen)
 				{
-					Log::warning(STR::int2wstr(child_beginning_ptr + rh_child.recLen  - record.getRdPtr(), 10) + 
-						L" unsigned chars were not processed while reading from OfficeArt record of type 0x" + 
-						STR::int2hex_wstr(rh_child.recType, sizeof(rh_child.recType)));
-					record.skipNunBytes(child_beginning_ptr + rh_child.recLen  - record.getRdPtr());
+					if (record_pos + 8 < child_beginning_ptr + rh_child.recLen)
+					{
+						Log::warning(STR::int2wstr(child_beginning_ptr + rh_child.recLen  - record_pos, 10) + 
+							L" unsigned chars were not processed while reading from OfficeArt record of type 0x" + 
+							STR::int2hex_wstr(rh_child.recType, sizeof(rh_child.recType)));
+					}
+					if (child_beginning_ptr + rh_child.recLen  - record_pos == 8 && test_officeArt)
+						record.skipNunBytes(8);
 				}
 				else if(record.getRdPtr() > child_beginning_ptr + rh_child.recLen)
 				{
-					 //throw EXCEPT::RT::WrongBiffRecord("Wrong data parsed in OfficeArt record of type 0x" + 
-						//STR::int2hex_wstr(rh_child.recType, sizeof(rh_child.recType)), record.getTypeString());
 					Log::warning(std::wstring(L"Wrong data parsed in OfficeArt record of type 0x") + 
 						STR::int2hex_wstr(rh_child.recType, sizeof(rh_child.recType)));
 
 					//Calculadora.xls
 					//test next record !!!
-					size_t record_pos = record.getRdPtr();
-					OfficeArtRecordHeader rh_test;
-					record >> rh_test;
-					record.RollRdPtrBack(8);//sizeof(OfficeArtRecordHeader)
 
-					OfficeArtRecordPtr test_officeArt = CreateOfficeArt(rh_test.recType);
 					if (!test_officeArt)
 					{
 						record.RollRdPtrBack( record_pos - (child_beginning_ptr + rh_child.recLen));

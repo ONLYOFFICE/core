@@ -23,7 +23,7 @@ BaseObjectPtr SXAddl::clone()
 void SXAddl::writeFields(CFRecord& record)
 {
 #pragma message("####################### SXAddl record is not implemented")
-	Log::error("SXAddl record is not implemented.");
+	//Log::error("SXAddl record is not implemented.");
 	//record << some_value;
 }
 
@@ -31,7 +31,7 @@ void SXAddl::writeFields(CFRecord& record)
 void SXAddl::readFields(CFRecord& record)
 {
 #pragma message("####################### SXAddl record is not implemented")
-	Log::error("SXAddl record is not implemented.");
+	//Log::error("SXAddl record is not implemented.");
 	//record >> some_value;
 	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
 }

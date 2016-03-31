@@ -374,7 +374,25 @@ v8::Handle<v8::ObjectTemplate> CreateNativeControlTemplateBuilder(v8::Isolate* i
 }
 // --------------------------
 
-void enableTypedArrays()
+void CV8Worker::Initialize()
 {
-    v8::V8::SetArrayBufferAllocator(new MallocArrayBufferAllocator());
+    if (NULL == CV8Worker::m_pInitializer)
+        CV8Worker::m_pInitializer = new CV8Initializer();
 }
+
+void CV8Worker::Dispose()
+{
+    if (NULL != CV8Worker::m_pInitializer)
+        delete CV8Worker::m_pInitializer;
+    CV8Worker::m_pInitializer = NULL;
+}
+
+CV8Initializer* CV8Worker::getInitializer()
+{
+    if (NULL == CV8Worker::m_pInitializer)
+        CV8Worker::m_pInitializer = new CV8Initializer();
+    return CV8Worker::m_pInitializer;
+}
+
+CV8Initializer* CV8Worker::m_pInitializer = NULL;
+// --------------------------

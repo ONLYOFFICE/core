@@ -318,8 +318,6 @@ public:
     }
 };
 
-void enableTypedArrays();
-
 class CChangesWorker
 {
 private:
@@ -850,5 +848,64 @@ private:
 void CreateNativeObject(const v8::FunctionCallbackInfo<v8::Value>& args);
 void CreateNativeObjectBuilder(const v8::FunctionCallbackInfo<v8::Value>& args);
 void CreateNativeMemoryStream(const v8::FunctionCallbackInfo<v8::Value>& args);
+
+//////////////////////////////////////////////////////////////////////////////
+class CV8Initializer
+{
+private:
+    v8::Platform* m_platform;
+    MallocArrayBufferAllocator m_oAllocator;
+
+public:
+    CV8Initializer() : m_oAllocator()
+    {
+        m_platform = v8::platform::CreateDefaultPlatform();
+        v8::V8::InitializePlatform(m_platform);
+
+        v8::V8::Initialize();
+        v8::V8::InitializeICU();
+
+#ifndef NEW_V8_ENGINE
+        v8::V8::SetArrayBufferAllocator(&m_oAllocator);
+#endif
+    }
+    ~CV8Initializer()
+    {
+        v8::V8::Dispose();
+        v8::V8::ShutdownPlatform();
+        delete m_platform;
+    }
+
+    v8::ArrayBuffer::Allocator* getAllocator()
+    {
+        return &m_oAllocator;
+    }
+
+    v8::Isolate* CreateNew()
+    {
+#ifdef NEW_V8_ENGINE
+        v8::Isolate::CreateParams create_params;
+        create_params.array_buffer_allocator = &m_oAllocator;
+        return v8::Isolate::New(create_params);
+#else
+        return v8::Isolate::New();
+#endif
+    }
+};
+
+class CV8Worker
+{
+private:
+    static CV8Initializer* m_pInitializer;
+
+public:
+    CV8Worker() {}
+    ~CV8Worker() {}
+
+    static void Initialize();
+    static void Dispose();
+
+    static CV8Initializer* getInitializer();
+};
 
 #endif // NATIVECONTROL

@@ -1,5 +1,4 @@
 ﻿#include "docbuilder.h"
-//#include "nativecontrol.h"
 
 #include "../xml/include/xmlutils.h"
 #include <iostream>
@@ -37,30 +36,6 @@ public:
     CScopeWrapper(v8::Isolate* isolate) : m_handler(isolate) {}
 };
 
-class CV8Initializer
-{
-private:
-    v8::Platform* m_platform;
-
-public:
-    CV8Initializer()
-    {
-        m_platform = v8::platform::CreateDefaultPlatform();
-        v8::V8::InitializePlatform(m_platform);
-
-        v8::V8::Initialize();
-        v8::V8::InitializeICU();
-
-        enableTypedArrays();
-    }
-    ~CV8Initializer()
-    {
-        v8::V8::Dispose();
-        v8::V8::ShutdownPlatform();
-        delete m_platform;
-    }
-};
-
 class CV8RealTimeWorker
 {
 public:
@@ -75,18 +50,12 @@ public:
     int m_nFileType;
 
 public:
-    static CV8Initializer* m_pInitializer;
-
-public:
 
     CV8RealTimeWorker()
     {
-        if (NULL == m_pInitializer)
-            NSDoctRenderer::CDocBuilder::Initialize();
-
         m_nFileType = -1;
 
-        m_isolate = v8::Isolate::New();
+        m_isolate = CV8Worker::getInitializer()->CreateNew();
 
         m_isolate_scope = new v8::Isolate::Scope(m_isolate);
         m_isolate_locker = new v8::Locker(m_isolate);
@@ -295,8 +264,6 @@ public:
         return !bIsBreak;
     }
 };
-
-CV8Initializer* CV8RealTimeWorker::m_pInitializer = NULL;
 
 #ifdef CreateFile
 #undef CreateFile
@@ -1189,14 +1156,11 @@ namespace NSDoctRenderer
 
     void CDocBuilder::Initialize()
     {
-        if (NULL == CV8RealTimeWorker::m_pInitializer)
-            CV8RealTimeWorker::m_pInitializer = new CV8Initializer();
+        CV8Worker::Initialize();
     }
 
     void CDocBuilder::Dispose()
     {
-        if (NULL != CV8RealTimeWorker::m_pInitializer)
-            delete CV8RealTimeWorker::m_pInitializer;
-        CV8RealTimeWorker::m_pInitializer = NULL;
+        CV8Worker::Dispose();
     }
 }

@@ -86,7 +86,7 @@ win32 {
         LIBXML_READER_ENABLED
 
 INCLUDEPATH += ../../../Common/DocxFormat/Source/XML/libxml2/XML/include\
-INCLUDEPATH += ../../../ASCOfficeUtils/ZLIB/zlib-1.2.3
+INCLUDEPATH += ../../../OfficeUtils/src/zlib-1.2.3
 }
 #################### WINDOWS #####################
 
@@ -110,7 +110,7 @@ mac {
         LIBXML_READER_ENABLED
 
 INCLUDEPATH += ../../../Common/DocxFormat/Source/XML/libxml2/XML/include\
-INCLUDEPATH += ../../../ASCOfficeUtils/ZLIB/zlib-1.2.3
+INCLUDEPATH += ../../../OfficeUtils/src/zlib-1.2.3
 }
 #################### LINUX ########################
 
@@ -126,8 +126,8 @@ DEPENDPATH += $$PWD/../../../ASCOfficePPTXFile/
 INCLUDEPATH += $$PWD/../../../ASCOfficePPTXFile/Editor/
 DEPENDPATH += $$PWD/../../../ASCOfficePPTXFile/Editor/
 
-INCLUDEPATH += $$PWD/../../../ASCOfficeUtils/ASCOfficeUtils
-DEPENDPATH += $$PWD/../../../ASCOfficeUtils/ASCOfficeUtils
+INCLUDEPATH += $$PWD/../../../OfficeUtils/src
+DEPENDPATH += $$PWD/../../../OfficeUtils/src
 
 INCLUDEPATH += $$PWD/../../../ASCOfficeDocxFile2
 DEPENDPATH += $$PWD/../../../ASCOfficeDocxFile2
@@ -145,8 +145,8 @@ HEADERS += ../../src/cextracttools.h \
 ###############################################################################################################
 
 ############### destination path ###############
-DESTINATION_SDK_PATH = $$PWD/../../../SDK/lib
-DESTINATION_BIN_PATH = $$PWD/../../../SDK/bin
+DESTINATION_SDK_PATH = $$PWD/../../../build/lib
+DESTINATION_BIN_PATH = $$PWD/../../../build/bin
 
 win32:contains(QMAKE_TARGET.arch, x86_64):{
     message(win64)

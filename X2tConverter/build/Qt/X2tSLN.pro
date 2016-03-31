@@ -49,7 +49,7 @@ X2tConverter.depends = \
     XlsFormatLib
 
 ############### destination path ###############
-DESTINATION_SDK_PATH = $$PWD/../../../SDK/lib
+DESTINATION_SDK_PATH = $$PWD/../../../build/lib
 DESTINATION_ICU = $$PWD/../../../UnicodeConverter/icubuilds
 
 win32:contains(QMAKE_TARGET.arch, x86_64):{

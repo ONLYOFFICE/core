@@ -25,15 +25,13 @@ BiffStructurePtr CFColor::clone()
 
 void CFColor::store(CFRecord& record)
 {
-#pragma message("####################### CFColor record has no BiffStructure::store() implemented")
-	Log::error(" Error!!! CFColor record has no BiffStructure::store() implemented.");
-	//record << something;
 }
 
 
 void CFColor::load(CFRecord& record)
 {
 	record >> xclrType;
+	
 	switch(xclrType.type)
 	{
 		case XColorType::XCLRINDEXED:
@@ -50,7 +48,6 @@ void CFColor::load(CFRecord& record)
 			record.skipNunBytes(4); // ignored
 			break;
 		default:
-			throw;// EXCEPT::RT::WrongBiffRecord("Unsupported type of XColorType.", record.getTypeString());
 			break;
 	}
 	record >> numTint;

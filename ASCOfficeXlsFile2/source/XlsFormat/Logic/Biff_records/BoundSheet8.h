@@ -23,11 +23,11 @@ public:
 
 	static const ElementType	type = typeBoundSheet8;
 
-//-----------------------------
 	ForwardOnlyParam<_UINT32>	lbPlyPos;
 	std::wstring				hsState;
 	unsigned char				dt;
-	ShortXLUnicodeString		stName;
+//-----------------------------
+	std::wstring				name_;
 };
 
 } // namespace XLS

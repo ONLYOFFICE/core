@@ -1,4 +1,5 @@
 ﻿#include "doctrenderer.h"
+#include "docbuilder.h"
 
 #ifdef BOOL
 #undef BOOL
@@ -209,8 +210,6 @@ namespace NSDoctRenderer
         std::wstring m_strEditorType;
         std::wstring m_strFilePath;
 
-        bool m_bIsInitTypedArrays;
-
         std::vector<std::wstring> m_arImagesInChanges;
 
         std::wstring m_sConsoleLogFile;
@@ -219,8 +218,6 @@ namespace NSDoctRenderer
     public:
         CDoctRenderer_Private(const std::wstring& sAllFontsPath = L"")
         {
-            m_bIsInitTypedArrays = false;
-
             m_strConfigDir = NSFile::GetProcessDirectory() + L"/";
             m_strConfigPath = m_strConfigDir + L"DoctRenderer.config";
 
@@ -515,20 +512,8 @@ namespace NSDoctRenderer
 
         bool ExecuteScript(const std::string& strScript, std::wstring& strError, std::wstring& strReturnParams)
         {
-            v8::Platform* platform = v8::platform::CreateDefaultPlatform();
-            v8::V8::InitializePlatform(platform);
-
-            v8::V8::Initialize();
-            v8::V8::InitializeICU();
-
-            if (!m_bIsInitTypedArrays)
-            {
-                enableTypedArrays();
-                m_bIsInitTypedArrays = true;
-            }
-
             bool bIsBreak = false;
-            v8::Isolate* isolate = v8::Isolate::New();
+            v8::Isolate* isolate = CV8Worker::getInitializer()->CreateNew();
             if (true)
             {
                 v8::Isolate::Scope isolate_cope(isolate);
@@ -909,10 +894,8 @@ namespace NSDoctRenderer
             }
 
             isolate->Dispose();
-            v8::V8::Dispose();
 
-            v8::V8::ShutdownPlatform();
-            delete platform;
+            CV8Worker::Dispose();
 
             return bIsBreak ? false : true;
         }

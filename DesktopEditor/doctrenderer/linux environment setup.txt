@@ -28,6 +28,9 @@ fetch v8
 cd v8
 // make native
 CFLAGS="-fPIC" CXXFLAGS="-fPIC" make native
+
+#mac:
+CFLAGS="-fPIC" CXXFLAGS="-fPIC -stdlib=libc++" LDFLAGS="-stdlib=libc++"  make native
 # or ---------------------------------------------------------------------------------------------------
 sudo apt-get install git
 git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git

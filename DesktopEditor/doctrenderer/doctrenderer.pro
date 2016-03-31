@@ -17,7 +17,7 @@ CONFIG += plugin
 CONFIG += c++11
 
 ############### destination path ###############
-DESTINATION_SDK_PATH = $$PWD/../../SDK/lib
+DESTINATION_SDK_PATH = $$PWD/../../build/lib
 
 # WINDOWS
 win32:contains(QMAKE_TARGET.arch, x86_64):{
@@ -66,7 +66,10 @@ linux-g++ | linux-g++-64 | linux-g++-32 {
 }
 
 mac {
-    V8_CHECKOUT_PATH = /Users/Oleg/Desktop/activex/v8
+    DEFINES += NEW_V8_ENGINE
+
+    #V8_CHECKOUT_PATH = /Users/Oleg/Desktop/GIT/v8_mac_work/v8
+    V8_CHECKOUT_PATH = /Users/Oleg/Desktop/GIT/v8_mac/v8
 }
 
 win32 {
@@ -164,7 +167,8 @@ mac {
     MAC \
     QT_MAC
 
-    LIBS += -L$$V8_CHECKOUT_PATH/out/native -lv8_base -lv8_libbase -lv8_libplatform -lv8_nosnapshot -lv8_snapshot
+    #LIBS += -L$$V8_CHECKOUT_PATH/out/native -lv8_base -lv8_libbase -lv8_libplatform -lv8_nosnapshot -lv8_snapshot
+    LIBS += -L$$V8_CHECKOUT_PATH/out/native -lv8_base -lv8_libbase -lv8_libplatform -lv8_nosnapshot -lv8_external_snapshot
     LIBS += -L$$V8_CHECKOUT_PATH/out/native -licui18n -licuuc -licudata
 
     message(mac)

@@ -111,17 +111,17 @@ CString OOXDocumentWriter::CreateXmlEnd( )
 	if( false == sTempParaDef.IsEmpty() || false == sTempCharDef.IsEmpty() )
 	{
 		sStyles += _T("<w:docDefaults>");
-		if( false == sTempParaDef.IsEmpty() )
-		{
-			sStyles += _T("<w:pPrDefault><w:pPr>");
-			sStyles +=  sTempParaDef;
-			sStyles += _T("</w:pPr></w:pPrDefault>");
-		}
 		if( false == sTempCharDef.IsEmpty() )
 		{
 			sStyles += _T("<w:rPrDefault><w:rPr>");
 			sStyles += sTempCharDef ;
 			sStyles += _T("</w:rPr></w:rPrDefault>");
+		}	
+		if( false == sTempParaDef.IsEmpty() )
+		{
+			sStyles += _T("<w:pPrDefault><w:pPr>");
+			sStyles +=  sTempParaDef;
+			sStyles += _T("</w:pPr></w:pPrDefault>");
 		}
 		sStyles.Append(_T("</w:docDefaults>"));
 	}

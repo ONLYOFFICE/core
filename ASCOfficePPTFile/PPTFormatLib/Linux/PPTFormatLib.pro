@@ -21,7 +21,7 @@ win32 {
     QMAKE_CXXFLAGS += -std=c++11 -Wall -Wno-ignored-qualifiers
 }
 ############### destination path ###############
-DESTINATION_SDK_PATH = $$PWD/../../../SDK/lib
+DESTINATION_SDK_PATH = $$PWD/../../../build/lib
 
 # WINDOWS
 win32:contains(QMAKE_TARGET.arch, x86_64):{
@@ -75,7 +75,7 @@ win32 {
     DEFINES += \
         LIBXML_READER_ENABLED
 
-INCLUDEPATH += ../../../ASCOfficeUtils/ZLIB/zlib-1.2.3
+INCLUDEPATH += ../../../OfficeUtils/src/zlib-1.2.3
 INCLUDEPATH += ../../../Common/DocxFormat/Source/XML/libxml2/XML/include
 }
 #################### WINDOWS #####################

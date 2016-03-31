@@ -19,7 +19,7 @@ win32 {
     QMAKE_CXXFLAGS += -std=c++11 -Wall -Wno-ignored-qualifiers
 }
 ############### destination path ###############
-DESTINATION_SDK_PATH = $$PWD/../../SDK/lib
+DESTINATION_SDK_PATH = $$PWD/../../build/lib
 
 # WINDOWS
 win32:contains(QMAKE_TARGET.arch, x86_64):{
@@ -56,7 +56,7 @@ DEFINES +=  UNICODE \
             USE_LITE_READER
 
 INCLUDEPATH += ../include
-INCLUDEPATH += ../../../ServerComponents/DesktopEditor/freetype-2.5.2/include
+INCLUDEPATH += ../../DesktopEditor/freetype-2.5.2/include
 
 CONFIG(debug, debug|release){
 DEFINES +=  _DEBUG

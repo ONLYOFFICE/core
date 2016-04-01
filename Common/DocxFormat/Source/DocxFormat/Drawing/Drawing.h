@@ -363,6 +363,151 @@ namespace OOX
 			nullable<SimpleTypes::CPositionOffset<>	> m_oPosOffset;
 			nullable<SimpleTypes::CPercentage		>	m_oPctOffset;
 		};
+
+		class CSizeRelH : public WritingElement
+		{
+		public:
+			WritingElement_AdditionConstructors(CSizeRelH)
+			CSizeRelH()
+			{
+			}
+			virtual ~CSizeRelH()
+			{
+			}
+
+		public:
+
+			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			{
+				// TO DO: Реализовать
+			}
+			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					CString sName = oReader.GetName();
+					if ( _T("wp14:pctWidth") == sName )
+					{
+						m_oPctWidth = oReader.GetText2().GetString();
+					}
+				}
+			}
+			virtual CString      toXML() const
+			{
+				CString sResult = _T("<wp14:sizeRelH ");
+
+				if ( m_oRelativeFrom.IsInit() )
+					sResult += _T("relativeFrom=\"") + m_oRelativeFrom->ToString() + _T("\">");
+				else
+					sResult += _T(">");
+
+				if (m_oPctWidth.IsInit())
+					sResult += _T("<wp14:pctWidth>") + m_oPctWidth->ToStringDecimalNumber() + _T("</wp14:pctWidth>");
+
+
+				sResult += _T("</wp14:sizeRelH>");
+
+				return sResult;
+			}
+			virtual EElementType getType() const
+			{
+				return OOX::et_wp_sizeRelH;
+			}
+
+		private:
+
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				// Читаем атрибуты
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_ReadSingle( oReader, _T("relativeFrom"), m_oRelativeFrom )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+		public:
+			// Attributes
+			nullable<SimpleTypes::CSizeRelFromH<>      > m_oRelativeFrom;
+
+			// Childs
+			nullable<SimpleTypes::CPercentage		>	m_oPctWidth;
+		};
+		class CSizeRelV : public WritingElement
+		{
+		public:
+			WritingElement_AdditionConstructors(CSizeRelV)
+			CSizeRelV()
+			{
+			}
+			virtual ~CSizeRelV()
+			{
+			}
+
+		public:
+
+			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			{
+				// TO DO: Реализовать
+			}
+			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					CString sName = oReader.GetName();
+					if ( _T("wp14:pctHeight") == sName )
+					{
+						m_oPctHeight = oReader.GetText2().GetString();
+					}
+				}
+			}
+			virtual CString      toXML() const
+			{
+				CString sResult = _T("<wp14:sizeRelV ");
+
+				if ( m_oRelativeFrom.IsInit() )
+					sResult += _T("relativeFrom=\"") + m_oRelativeFrom->ToString() + _T("\">");
+				else
+					sResult += _T(">");
+
+				if (m_oPctHeight.IsInit())
+					sResult += _T("<wp14:pctHeight>") + m_oPctHeight->ToStringDecimalNumber() + _T("</wp14:pctHeight>");
+
+
+				sResult += _T("</wp14:sizeRelV>");
+
+				return sResult;
+			}
+			virtual EElementType getType() const
+			{
+				return OOX::et_wp_sizeRelH;
+			}
+
+		private:
+
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				// Читаем атрибуты
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_ReadSingle( oReader, _T("relativeFrom"), m_oRelativeFrom )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+		public:
+			// Attributes
+			nullable<SimpleTypes::CSizeRelFromV<>      > m_oRelativeFrom;
+
+			// Childs
+			nullable<SimpleTypes::CPercentage		>	m_oPctHeight;
+		};
 		//--------------------------------------------------------------------------------
 		// CWrapNone 20.4.2.15 (Part 1)
 		//--------------------------------------------------------------------------------	
@@ -859,6 +1004,10 @@ namespace OOX
 						m_oPositionV = oReader;
 					else if ( _T("wp:simplePos") == sName )
 						m_oSimplePos = oReader;
+					else if ( _T("wp14:sizeRelH") == sName )
+						m_oSizeRelH = oReader;
+					else if ( _T("wp14:sizeRelV") == sName )
+						m_oSizeRelV = oReader;
 					else if ( _T("mc:AlternateContent") == sName )
 					//ПРИВЛЕЧЕНИЕ СРЕДСТВ ИЗ МЕСТНЫХ ИСТОЧНИКОВ.docx
 					//вариативность на разные версии офиса части параметров - кстати ... это может встретиться в ЛЮБОМ месте 
@@ -1082,6 +1231,8 @@ namespace OOX
 			nullable<OOX::Drawing::CGraphic                        > m_oGraphic;
 			nullable<OOX::Drawing::CPosH                           > m_oPositionH;
 			nullable<OOX::Drawing::CPosV                           > m_oPositionV;
+			nullable<OOX::Drawing::CSizeRelH                       > m_oSizeRelH;
+			nullable<OOX::Drawing::CSizeRelV                       > m_oSizeRelV;
 			nullable<ComplexTypes::Drawing::CPoint2D               > m_oSimplePos;
 			nullable<OOX::Drawing::CWrapNone                       > m_oWrapNone;
 			nullable<OOX::Drawing::CWrapSquare                     > m_oWrapSquare;

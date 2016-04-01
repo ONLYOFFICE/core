@@ -5298,6 +5298,22 @@ namespace BinDocxRW
 						WriteSimplePos(pAnchor.m_oSimplePos.get());
 						m_oBcw.WriteItemWithLengthEnd(nCurPos);
 					}
+					if(pAnchor.m_oSizeRelH.IsInit())
+					{
+						m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::SizeRelH);
+						m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+						nCurPos = m_oBcw.WriteItemWithLengthStart();
+						WriteSizeRelH(pAnchor.m_oSizeRelH.get());
+						m_oBcw.WriteItemWithLengthEnd(nCurPos);
+					}
+					if(pAnchor.m_oSizeRelV.IsInit())
+					{
+						m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::SizeRelV);
+						m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+						nCurPos = m_oBcw.WriteItemWithLengthStart();
+						WriteSizeRelV(pAnchor.m_oSizeRelV.get());
+						m_oBcw.WriteItemWithLengthEnd(nCurPos);
+					}
 					if(pAnchor.m_oWrapNone.IsInit())
 					{
 						m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::WrapNone);
@@ -5420,6 +5436,36 @@ namespace BinDocxRW
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPosHV::PctOffset);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Double);
 				m_oBcw.m_oStream.WriteDouble(oPosV.m_oPctOffset->GetValue());
+			}
+		}
+		void WriteSizeRelH(const OOX::Drawing::CSizeRelH& oSizeRelH)
+		{
+			if(oSizeRelH.m_oRelativeFrom.IsInit())
+			{
+				m_oBcw.m_oStream.WriteBYTE(c_oSerSizeRelHV::RelativeFrom);
+				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+				m_oBcw.m_oStream.WriteBYTE((BYTE)oSizeRelH.m_oRelativeFrom->GetValue());
+			}
+			if(oSizeRelH.m_oPctWidth.IsInit())
+			{
+				m_oBcw.m_oStream.WriteBYTE(c_oSerSizeRelHV::Pct);
+				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Double);
+				m_oBcw.m_oStream.WriteDouble(oSizeRelH.m_oPctWidth->GetValue());
+			}
+		}
+		void WriteSizeRelV(const OOX::Drawing::CSizeRelV& oSizeRelV)
+		{
+			if(oSizeRelV.m_oRelativeFrom.IsInit())
+			{
+				m_oBcw.m_oStream.WriteBYTE(c_oSerSizeRelHV::RelativeFrom);
+				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+				m_oBcw.m_oStream.WriteBYTE((BYTE)oSizeRelV.m_oRelativeFrom->GetValue());
+			}
+			if(oSizeRelV.m_oPctHeight.IsInit())
+			{
+				m_oBcw.m_oStream.WriteBYTE(c_oSerSizeRelHV::Pct);
+				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Double);
+				m_oBcw.m_oStream.WriteDouble(oSizeRelV.m_oPctHeight->GetValue());
 			}
 		}
 		void WriteSimplePos(const ComplexTypes::Drawing::CPoint2D& oSimplePos)

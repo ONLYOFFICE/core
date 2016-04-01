@@ -1901,6 +1901,8 @@ public:
 	double SimplePosY;
 	CDrawingPropertyWrap DrawingPropertyWrap;
 	CString sChartRels;
+	CString sSizeRelH;
+	CString sSizeRelV;
 	int m_nDocPr;
 
 	bool bDataPos;
@@ -2180,7 +2182,19 @@ public:
 					if(bChart)
                         sXml.AppendFormat(_T("<wp:docPr id=\"%d\" name=\"Chart %d\"/><wp:cNvGraphicFramePr/><a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\"><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/chart\"><c:chart xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" r:id=\"%ls\"/></a:graphicData></a:graphic>"), m_nDocPr, m_nDocPr, (const TCHAR *) sChartRels);
 					else
+					{
 						sXml.AppendFormat(_T("<wp:docPr id=\"%d\" name=\"\"/>"), m_nDocPr);
+						sXml.Append(_T("<wp:cNvGraphicFramePr/>"));
+					}
+
+					if(!sSizeRelH.IsEmpty())
+					{
+						sXml.Append(sSizeRelH);
+					}
+					if(!sSizeRelV.IsEmpty())
+					{
+						sXml.Append(sSizeRelV);
+					}
 
 					sXml.Append(_T("</wp:anchor>"));
 

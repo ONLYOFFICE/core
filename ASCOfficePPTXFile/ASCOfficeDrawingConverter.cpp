@@ -3915,6 +3915,7 @@ HRESULT CDrawingConverter::SaveObject(LONG lStart, LONG lLength, const CString& 
 
 	bool bIsInline = false;
 	CString strMainProps = (CString)bsMainProps;
+	CString strMainPropsTail;
 	int nIndexF = strMainProps.Find(_T("</wp:inline>"));
 	if (-1 != nIndexF)
 	{
@@ -3930,13 +3931,20 @@ HRESULT CDrawingConverter::SaveObject(LONG lStart, LONG lLength, const CString& 
 	if (-1 == nIndexF)
 		return S_FALSE;
 
+	int nIndexTail = (std::min)(strMainProps.Find(_T("<wp14:sizeRelH")), strMainProps.Find(_T("<wp14:sizeRelV")));
+	if(-1 != nIndexTail)
+	{
+		strMainPropsTail = strMainProps.Right(strMainProps.GetLength() - nIndexTail);
+		strMainProps = strMainProps.Mid(0, nIndexTail);
+	}
+
 	/*
 	CString strId = _T("");
 	strId.Format(_T("<wp:docPr id=\"%d\" name=\"\"/>"), m_pReader->GenerateNextId());
 	strMainProps += strId;
 	*/
 
-	strMainProps += _T("<wp:cNvGraphicFramePr/>");
+	//strMainProps += _T("<wp:cNvGraphicFramePr/>");
 
 	m_pReader->Seek(lStart);
 	
@@ -4042,7 +4050,8 @@ HRESULT CDrawingConverter::SaveObject(LONG lStart, LONG lLength, const CString& 
 		oElem.toXmlWriter(&oXmlWriter);
 		oXmlWriter.WriteString(_T("</a:graphicData>\
 	</a:graphic>"));	
-		
+
+		oXmlWriter.WriteString(strMainPropsTail);
 		oXmlWriter.WriteString(bIsInline ? _T("</wp:inline>") : _T("</wp:anchor>"));
 		oXmlWriter.WriteString(_T("</w:drawing>"));
 

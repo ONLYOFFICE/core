@@ -689,6 +689,8 @@ namespace OOX
 		et_wp_inline, // <wp:inline>
 		et_wp_positionH, // <wp:positionH>
 		et_wp_positionV, // <wp:positionV>
+		et_wp_sizeRelH, // <wp14:sizeRelH>
+		et_wp_sizeRelV, // <wp14:sizeRelV>
 		et_wp_wrapNone, // <wp:wrapNone>
         et_wp_wrapPolygon, // <wp:wrapPolygon>
 		et_wp_wrapSquare, // <wp:wrapSquare>

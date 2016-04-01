@@ -6238,6 +6238,18 @@ public:
 		{
 			res = Read2(length, &Binary_DocumentTableReader::ReadSimplePos, this, poResult);
 		}
+		else if ( c_oSerImageType2::SizeRelH == type )
+		{
+			OOX::Drawing::CSizeRelH oSizeRelH;
+			res = Read2(length, &Binary_DocumentTableReader::ReadSizeRelH, this, &oSizeRelH);
+			pDrawingProperty->sSizeRelH = oSizeRelH.toXML();
+		}
+		else if ( c_oSerImageType2::SizeRelV == type )
+		{
+			OOX::Drawing::CSizeRelV oSizeRelV;
+			res = Read2(length, &Binary_DocumentTableReader::ReadSizeRelV, this, &oSizeRelV);
+			pDrawingProperty->sSizeRelV = oSizeRelV.toXML();
+		}
 		else if ( c_oSerImageType2::WrapNone == type )
 		{
 			pDrawingProperty->bDrawingPropertyWrap = true;
@@ -6391,6 +6403,42 @@ public:
 		{
 			pDrawingProperty->bSimplePosY = true;
 			pDrawingProperty->SimplePosY = m_oBufferedStream.GetDouble();
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int ReadSizeRelH(BYTE type, long length, void* poResult)
+	{
+		int res = c_oSerConstants::ReadOk;
+		OOX::Drawing::CSizeRelH* pSizeRelH = static_cast<OOX::Drawing::CSizeRelH*>(poResult);
+		if ( c_oSerSizeRelHV::RelativeFrom == type )
+		{
+			pSizeRelH->m_oRelativeFrom.Init();
+			pSizeRelH->m_oRelativeFrom->SetValue((SimpleTypes::ESizeRelFromH)m_oBufferedStream.GetUChar());
+		}
+		else if ( c_oSerSizeRelHV::Pct == type )
+		{
+			pSizeRelH->m_oPctWidth.Init();
+			pSizeRelH->m_oPctWidth->SetValue(m_oBufferedStream.GetDouble());
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int ReadSizeRelV(BYTE type, long length, void* poResult)
+	{
+		int res = c_oSerConstants::ReadOk;
+		OOX::Drawing::CSizeRelV* pSizeRelV = static_cast<OOX::Drawing::CSizeRelV*>(poResult);
+		if ( c_oSerSizeRelHV::RelativeFrom == type )
+		{
+			pSizeRelV->m_oRelativeFrom.Init();
+			pSizeRelV->m_oRelativeFrom->SetValue((SimpleTypes::ESizeRelFromV)m_oBufferedStream.GetUChar());
+		}
+		else if ( c_oSerSizeRelHV::Pct == type )
+		{
+			pSizeRelV->m_oPctHeight.Init();
+			pSizeRelV->m_oPctHeight->SetValue(m_oBufferedStream.GetDouble());
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;

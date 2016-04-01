@@ -1976,6 +1976,13 @@ namespace SimpleTypes
 
             return sResult;
         }
+		virtual CString ToStringDecimalNumber  () const
+		{
+			CString sResult;
+			sResult.Format( _T("%d"), int(m_dValue * 1000.0) );
+
+			return sResult;
+		}
 
         SimpleType_FromString2    (double)
         SimpleType_Operator_Equal (CPercentage)
@@ -6055,8 +6062,99 @@ namespace SimpleTypes
 		SimpleType_Operator_Equal (CRelFromV)
 	};
 
+	enum ESizeRelFromH
+	{
+		sizerelfromhMargin     = 0,
+		sizerelfromhPage        = 1,
+		sizerelfromhLeftMargin    = 2,
+		sizerelfromhRightMargin   = 3,
+		sizerelfromhInsideMargin  = 4,
+		sizerelfromhOutsideMargin = 5
+	};
 
+	template<ESizeRelFromH eDefValue = sizerelfromhPage>
+	class CSizeRelFromH : public CSimpleType<ESizeRelFromH, eDefValue>
+	{
+	public:
 
+		CSizeRelFromH() {}
+
+		virtual ESizeRelFromH FromString(CString &sValue)
+		{
+			if       ( _T("margin")     == sValue ) this->m_eValue = sizerelfromhMargin;
+			else if  ( _T("page")        == sValue ) this->m_eValue = sizerelfromhPage;
+			else if  ( _T("leftMargin")  == sValue ) this->m_eValue = sizerelfromhLeftMargin;
+			else if  ( _T("rightMargin")    == sValue ) this->m_eValue = sizerelfromhRightMargin;
+			else if  ( _T("insideMargin")        == sValue ) this->m_eValue = sizerelfromhInsideMargin;
+			else if  ( _T("outsideMargin") == sValue ) this->m_eValue = sizerelfromhOutsideMargin;
+			else                                       this->m_eValue = eDefValue;
+
+			return this->m_eValue;
+		}
+
+		virtual CString   ToString() const
+		{
+			switch(this->m_eValue)
+			{
+			case sizerelfromhMargin     : return _T("margin");
+			case sizerelfromhPage        : return _T("page");
+			case sizerelfromhLeftMargin  : return _T("leftMargin");
+			case sizerelfromhRightMargin    : return _T("rightMargin");
+			case sizerelfromhInsideMargin        : return _T("insideMargin");
+			case sizerelfromhOutsideMargin : return _T("outsideMargin");
+			}
+		}
+
+		SimpleType_FromString     (ESizeRelFromH)
+		SimpleType_Operator_Equal (CSizeRelFromH)
+	};
+
+	enum ESizeRelFromV
+	{
+		sizerelfromvMargin     = 0,
+		sizerelfromvPage        = 1,
+		sizerelfromvTopMargin    = 2,
+		sizerelfromvBottomMargin   = 3,
+		sizerelfromvInsideMargin  = 4,
+		sizerelfromvOutsideMargin = 5
+	};
+
+	template<ESizeRelFromV eDefValue = sizerelfromvPage>
+	class CSizeRelFromV : public CSimpleType<ESizeRelFromV, eDefValue>
+	{
+	public:
+
+		CSizeRelFromV() {}
+
+		virtual ESizeRelFromV FromString(CString &sValue)
+		{
+			if       ( _T("margin")     == sValue ) this->m_eValue = sizerelfromvMargin;
+			else if  ( _T("page")        == sValue ) this->m_eValue = sizerelfromvPage;
+			else if  ( _T("topMargin")  == sValue ) this->m_eValue = sizerelfromvTopMargin;
+			else if  ( _T("bottomMargin")    == sValue ) this->m_eValue = sizerelfromvBottomMargin;
+			else if  ( _T("insideMargin")        == sValue ) this->m_eValue = sizerelfromvInsideMargin;
+			else if  ( _T("outsideMargin") == sValue ) this->m_eValue = sizerelfromvOutsideMargin;
+			else                                       this->m_eValue = eDefValue;
+
+			return this->m_eValue;
+		}
+
+		virtual CString   ToString() const
+		{
+			switch(this->m_eValue)
+			{
+			case sizerelfromvMargin     : return _T("margin");
+			case sizerelfromvPage        : return _T("page");
+			case sizerelfromvTopMargin  : return _T("topMargin");
+			case sizerelfromvBottomMargin    : return _T("bottomMargin");
+			case sizerelfromvInsideMargin        : return _T("insideMargin");
+			case sizerelfromvOutsideMargin : return _T("outsideMargin");
+			}
+		}
+
+		SimpleType_FromString     (ESizeRelFromV)
+		SimpleType_Operator_Equal (CSizeRelFromV)
+	};
 
 	//--------------------------------------------------------------------------------
 	// WrapDistance 10.4.3.6 (Part 1)

@@ -492,7 +492,10 @@ extern int g_nCurFormatVersion;
 		WrapTopAndBottom = 22,
 		Chart = 23,
 		ChartImg = 24,
-		Chart2 = 25
+		Chart2 = 25,
+		CachedImage = 26,
+		SizeRelH = 27,
+		SizeRelV = 28
 	};}
 	namespace c_oSerEffectExtent{enum c_oSerEffectExtent
 	{
@@ -512,6 +515,11 @@ extern int g_nCurFormatVersion;
 		Align			= 1,
 		PosOffset		= 2,
 		PctOffset		= 3
+	};}
+	namespace c_oSerSizeRelHV{enum c_oSerSizeRelHV
+	{
+		RelativeFrom	= 0,
+		Pct				= 1
 	};}
 	namespace c_oSerSimplePos{enum c_oSerSimplePos
 	{

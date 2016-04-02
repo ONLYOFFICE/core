@@ -1021,7 +1021,8 @@ namespace NSDoctRenderer
             strScript += "\n\n";
         }
 
-        strScript += m_pInternal->ReadScriptFile(sResourceFile);
+        //strScript += m_pInternal->ReadScriptFile(sResourceFile);
+        strScript += ("(function(){" + m_pInternal->ReadScriptFile(sResourceFile) + "})();");
         if (m_pInternal->m_strEditorType == L"spreadsheet")
             strScript += "\n$.ready();";
 

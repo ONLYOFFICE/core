@@ -1,0 +1,70 @@
+1) install git: 
+
+windows:
+http://msysgit.github.io/
+
+linux:
+sudo apt-get install git
+
+2) create folder for work 
+example: 
+
+mkdir build_v8
+cd build_v8
+
+3)
+git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+
+add PATH to depot_tools
+linux/mac: 
+export PATH=`pwd`/depot_tools:"$PATH"
+
+4)
+gclient
+
+windows:
+add to PATH variable ...build_v8/depot_tools/python276_bin;
+
+5)
+
+под виндоус есть баг. может в будущем исправят. пока нужно ДО fetch вызвать
+set DEPOT_TOOLS_WIN_TOOLCHAIN=0
+
+fetch v8
+cd v8
+
+6) build
+
+linux:
+CFLAGS="-fPIC" CXXFLAGS="-fPIC" make native
+
+mac:
+CFLAGS="-fPIC" CXXFLAGS="-fPIC -stdlib=libc++" LDFLAGS="-stdlib=libc++"  make native
+
+windows:
+generate visual studio project
+32bit: python build/gyp_v8
+64bit: python build/gyp_v8 -Dtarget_arch=x64
+
+build project in visual studio (не из-под админа, иначе переменные среды тоже для админа надо)
+a) open all.sln
+b) select projects:
+icui18n
+icuuc
+mksnapshot
+v8_base_0
+v8_base_1
+v8_base_2
+v8_base_3
+v8_libbase
+v8_libplatform
+v8_nosnapshot
+v8_external_snapshot
+с) Project Properies -> Configuration Properties -> C/C++ ->Code Generation
+for Debug Configuration change "Runtime Library" to "Multi-threaded Debug DLL (/MDd)"
+for Release Configuration change "Runtime Library" to "Multi-threaded DLL(/MD)"
+
+Rebuild All
+
+7) Rebuild doctrenderer project
+

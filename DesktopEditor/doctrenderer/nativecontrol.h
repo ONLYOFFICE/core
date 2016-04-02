@@ -5,6 +5,7 @@
 #include <map>
 #include "../fontengine/ApplicationFonts.h"
 #include <iostream>
+#include "../../graphics/Timer.h"
 
 // string convert
 std::wstring to_cstring(v8::Local<v8::Value> v);
@@ -848,6 +849,29 @@ private:
 void CreateNativeObject(const v8::FunctionCallbackInfo<v8::Value>& args);
 void CreateNativeObjectBuilder(const v8::FunctionCallbackInfo<v8::Value>& args);
 void CreateNativeMemoryStream(const v8::FunctionCallbackInfo<v8::Value>& args);
+
+#if 0
+class CLoggerSpeed
+{
+public:
+    DWORD m_dwTime;
+
+public:
+    CLoggerSpeed()
+    {
+        m_dwTime = NSTimers::GetTickCount();
+    }
+    void Lap(const std::string& details)
+    {
+        DWORD dwCur = NSTimers::GetTickCount();
+        FILE* f = fopen("D:\\doctrenderer.speed", "a+");
+        std::string sTmp = details + ": %d\n";
+        fprintf(f, sTmp.c_str(), (int)(dwCur - m_dwTime));
+        fclose(f);
+        m_dwTime = dwCur;
+    }
+};
+#endif
 
 //////////////////////////////////////////////////////////////////////////////
 class CV8Initializer

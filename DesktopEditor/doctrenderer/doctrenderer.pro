@@ -58,17 +58,14 @@ static_link_libstd {
 }
 
 win32 {
-    V8_CHECKOUT_PATH = $$PWD/v8_windows/v8
+    V8_CHECKOUT_PATH = D:/GIT/v8/v8
 }
 
 linux-g++ | linux-g++-64 | linux-g++-32 {
-    V8_CHECKOUT_PATH = /home/oleg/v8
+    V8_CHECKOUT_PATH = /home/oleg/v8_build/v8
 }
 
 mac {
-    DEFINES += NEW_V8_ENGINE
-
-    #V8_CHECKOUT_PATH = /Users/Oleg/Desktop/GIT/v8_mac_work/v8
     V8_CHECKOUT_PATH = /Users/Oleg/Desktop/GIT/v8_mac/v8
 }
 
@@ -100,6 +97,8 @@ INCLUDEPATH += \
     $$V8_CHECKOUT_PATH \
     $$V8_CHECKOUT_PATH/include
 
+DEFINES += NEW_V8_ENGINE
+
 #################### WINDOWS #####################
 DESKTOPEDITOR_PATH = ..
 include(../Qt_build/graphics/project/graphics_fonts.pri)
@@ -113,10 +112,10 @@ include(../../OfficeUtils/OfficeUtils.pri)
 win32:contains(QMAKE_TARGET.arch, x86_64):{
 
 CONFIG(debug, debug|release) {
-    LIBS += -L$$V8_CHECKOUT_PATH/build/Debug/lib -lv8_base -lv8_libbase -lv8_libplatform -lv8_nosnapshot -lv8_snapshot
+    LIBS += -L$$V8_CHECKOUT_PATH/build/Debug/lib -lv8_base_0 -lv8_base_1 -lv8_base_2 -lv8_base_3 -lv8_libbase -lv8_libplatform -lv8_nosnapshot -lv8_external_snapshot
     LIBS += -L$$V8_CHECKOUT_PATH/build/Debug/lib -licui18n -licuuc
 } else {
-    LIBS += -L$$V8_CHECKOUT_PATH/build/Release/lib -lv8_base -lv8_libbase -lv8_libplatform -lv8_nosnapshot -lv8_snapshot
+    LIBS += -L$$V8_CHECKOUT_PATH/build/Release/lib -lv8_base_0 -lv8_base_1 -lv8_base_2 -lv8_base_3 -lv8_libbase -lv8_libplatform -lv8_nosnapshot -lv8_external_snapshot
     LIBS += -L$$V8_CHECKOUT_PATH/build/Release/lib -licui18n -licuuc
 }
 
@@ -125,10 +124,10 @@ CONFIG(debug, debug|release) {
 win32:!contains(QMAKE_TARGET.arch, x86_64):{
 
 CONFIG(debug, debug|release) {
-    LIBS += -L$$V8_CHECKOUT_PATH/build/Debug/lib -lv8_base -lv8_libbase -lv8_libplatform -lv8_nosnapshot -lv8_snapshot
+    LIBS += -L$$V8_CHECKOUT_PATH/build/Debug/lib -lv8_base_0 -lv8_base_1 -lv8_base_2 -lv8_base_3 -lv8_libbase -lv8_libplatform -lv8_nosnapshot -lv8_external_snapshot
     LIBS += -L$$V8_CHECKOUT_PATH/build/Debug/lib -licui18n -licuuc
 } else {
-    LIBS += -L$$V8_CHECKOUT_PATH/build/Release/lib -lv8_base -lv8_libbase -lv8_libplatform -lv8_nosnapshot -lv8_snapshot
+    LIBS += -L$$V8_CHECKOUT_PATH/build/Release/lib -lv8_base_0 -lv8_base_1 -lv8_base_2 -lv8_base_3 -lv8_libbase -lv8_libplatform -lv8_nosnapshot -lv8_external_snapshot
     LIBS += -L$$V8_CHECKOUT_PATH/build/Release/lib -licui18n -licuuc
 }
 
@@ -144,7 +143,7 @@ linux-g++ | linux-g++-64 | linux-g++-32 {
         _LINUX \
         _LINUX_QT \
 
-    LIBS += -L$$V8_CHECKOUT_PATH/out/native/obj.target/tools/gyp -lv8_base -lv8_libbase -lv8_libplatform -lv8_nosnapshot -lv8_snapshot
+    LIBS += -L$$V8_CHECKOUT_PATH/out/native/obj.target/tools/gyp -lv8_base -lv8_libbase -lv8_libplatform -lv8_nosnapshot -lv8_external_snapshot
     LIBS += -L$$V8_CHECKOUT_PATH/out/native/obj.target/third_party/icu -licui18n -licuuc -licudata
 }
 
@@ -167,7 +166,6 @@ mac {
     MAC \
     QT_MAC
 
-    #LIBS += -L$$V8_CHECKOUT_PATH/out/native -lv8_base -lv8_libbase -lv8_libplatform -lv8_nosnapshot -lv8_snapshot
     LIBS += -L$$V8_CHECKOUT_PATH/out/native -lv8_base -lv8_libbase -lv8_libplatform -lv8_nosnapshot -lv8_external_snapshot
     LIBS += -L$$V8_CHECKOUT_PATH/out/native -licui18n -licuuc -licudata
 

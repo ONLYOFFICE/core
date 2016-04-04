@@ -409,7 +409,7 @@ namespace PPTX
 						case 2:
 						{
 							tile = new PPTX::Logic::Tile();
-							pReader->SkipRecord();
+							tile->fromPPTY(pReader);
 							break;
 						}
 						case 3:

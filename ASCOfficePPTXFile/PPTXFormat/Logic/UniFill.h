@@ -388,7 +388,7 @@ namespace PPTX
 									case 2:
 									{
 										pFill->tile = new PPTX::Logic::Tile();
-										pReader->SkipRecord();
+										pFill->tile->fromPPTY(pReader);
 										break;
 									}
 									case 3:

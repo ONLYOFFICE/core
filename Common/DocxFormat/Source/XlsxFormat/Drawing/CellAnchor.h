@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #ifndef OOX_CELLANCHOR_FILE_INCLUDE_H_
 #define OOX_CELLANCHOR_FILE_INCLUDE_H_
 
@@ -101,11 +101,11 @@ namespace OOX
 						if ((m_oGraphicFrame.IsInit())  &&	(m_oGraphicFrame->m_oChartGraphic.IsInit()) && 
 															(m_oGraphicFrame->m_oChartGraphic->m_oGraphicData.IsInit()))
 						{
-							//вытащим выше ссылку на объект (для удобства)
+							//РІС‹С‚Р°С‰РёРј РІС‹С€Рµ СЃСЃС‹Р»РєСѓ РЅР° РѕР±СЉРµРєС‚ (РґР»СЏ СѓРґРѕР±СЃС‚РІР°)
 							m_sSpId = m_oGraphicFrame->m_oChartGraphic->m_oGraphicData->m_sSpId;
 						}
 					}
-	//Так читать правильнее ... но для совместимости нужно хранить и все xml !!!!
+	//РўР°Рє С‡РёС‚Р°С‚СЊ РїСЂР°РІРёР»СЊРЅРµРµ ... РЅРѕ РґР»СЏ СЃРѕРІРјРµСЃС‚РёРјРѕСЃС‚Рё РЅСѓР¶РЅРѕ С…СЂР°РЅРёС‚СЊ Рё РІСЃРµ xml !!!!
 					//else if (_T("pic") == sName )
 					//	m_oPicture = oReader;
 					//else if (_T("sp") == sName)
@@ -121,7 +121,7 @@ namespace OOX
 						m_oXml = oReader.GetOuterXml();
 						{
 							XmlUtils::CXmlLiteReader oShapeReader;
-							//сформируем полноценную xml-строку
+							//СЃС„РѕСЂРјРёСЂСѓРµРј РїРѕР»РЅРѕС†РµРЅРЅСѓСЋ xml-СЃС‚СЂРѕРєСѓ
                             CString xmlString;// = L"<?xml version=\"1.0\"?>";// encoding=\"UTF-8\"
 							xmlString += L"<root ";
 								xmlString += L"xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" ";
@@ -141,19 +141,20 @@ namespace OOX
 							if (_T("pic") == sName)
 								m_oPicture = oShapeReader;
 							else if (_T("sp") == sName)
-							{	//тут может быть не полноценный объект, а ссылка на него, следовательно и xml что выше для
-								// pptx:DrawingObjectConverter будет не правильная - сотрем ее
+							{	//С‚СѓС‚ РјРѕР¶РµС‚ Р±С‹С‚СЊ РЅРµ РїРѕР»РЅРѕС†РµРЅРЅС‹Р№ РѕР±СЉРµРєС‚, Р° СЃСЃС‹Р»РєР° РЅР° РЅРµРіРѕ, СЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕ Рё xml С‡С‚Рѕ РІС‹С€Рµ РґР»СЏ
+								// pptx:DrawingObjectConverter Р±СѓРґРµС‚ РЅРµ РїСЂР°РІРёР»СЊРЅР°СЏ - СЃРѕС‚СЂРµРј РµРµ
 								m_oShape = oShapeReader;
 								if ((m_oShape.IsInit()) && (m_oShape->m_oNvSpPr.IsInit()) && 
 									(m_oShape->m_oNvSpPr->m_oCNvPr.IsInit()) && (m_oShape->m_oNvSpPr->m_oCNvPr->m_oExtLst.IsInit()))
 								{
 									for (int i=0; i < m_oShape->m_oNvSpPr->m_oCNvPr->m_oExtLst->m_arrExt.size();i++)
 									{
-										if (m_oShape->m_oNvSpPr->m_oCNvPr->m_oExtLst->m_arrExt[i]->m_sSpId.IsInit())
+										OOX::Drawing::COfficeArtExtension* pExt = m_oShape->m_oNvSpPr->m_oCNvPr->m_oExtLst->m_arrExt[i];
+										if (pExt->m_oCompatExt.IsInit() && pExt->m_oCompatExt->m_sSpId.IsInit())
 										{
-											//собственно это и есть ссылка на обеъект -> переложим ее "повыше" (для удобства)
+											//СЃРѕР±СЃС‚РІРµРЅРЅРѕ СЌС‚Рѕ Рё РµСЃС‚СЊ СЃСЃС‹Р»РєР° РЅР° РѕР±РµСЉРµРєС‚ -> РїРµСЂРµР»РѕР¶РёРј РµРµ "РїРѕРІС‹С€Рµ" (РґР»СЏ СѓРґРѕР±СЃС‚РІР°)
 											m_oXml.reset();
-											m_sSpId = m_oShape->m_oNvSpPr->m_oCNvPr->m_oExtLst->m_arrExt[i]->m_sSpId;
+											m_sSpId = pExt->m_oCompatExt->m_sSpId;
 										}
 									}
 								}
@@ -167,8 +168,8 @@ namespace OOX
 					else if ( _T("AlternateContent") == sName)
 					{			
 						//Demo-2010WinterOlympics2.xlsx
-						//вариативность на разные версии офиса части параметров - кстати ... это может встретиться в ЛЮБОМ месте 
-						//todooo сделать чтение не обязательно fallback, по выбору версии нужной нам (a14, ..)
+						//РІР°СЂРёР°С‚РёРІРЅРѕСЃС‚СЊ РЅР° СЂР°Р·РЅС‹Рµ РІРµСЂСЃРёРё РѕС„РёСЃР° С‡Р°СЃС‚Рё РїР°СЂР°РјРµС‚СЂРѕРІ - РєСЃС‚Р°С‚Рё ... СЌС‚Рѕ РјРѕР¶РµС‚ РІСЃС‚СЂРµС‚РёС‚СЊСЃСЏ РІ Р›Р®Р‘РћРњ РјРµСЃС‚Рµ 
+						//todooo СЃРґРµР»Р°С‚СЊ С‡С‚РµРЅРёРµ РЅРµ РѕР±СЏР·Р°С‚РµР»СЊРЅРѕ fallback, РїРѕ РІС‹Р±РѕСЂСѓ РІРµСЂСЃРёРё РЅСѓР¶РЅРѕР№ РЅР°Рј (a14, ..)
 						{
 							nCurDepth++;
 							while( oReader.ReadNextSiblingNode( nCurDepth ) )
@@ -242,10 +243,10 @@ namespace OOX
 			nullable<OOX::Spreadsheet::CShape>				m_oShape;
 			nullable<OOX::Spreadsheet::CConnShape>			m_oConnShape;
 
-			// для pptx:ObjectDrawingConverter
+			// РґР»СЏ pptx:ObjectDrawingConverter
 			nullable<CString>								m_oXml;
 
-			//для удобства
+			//РґР»СЏ СѓРґРѕР±СЃС‚РІР°
 			nullable<CString>								m_sSpId;
 		};
 	} //Spreadsheet

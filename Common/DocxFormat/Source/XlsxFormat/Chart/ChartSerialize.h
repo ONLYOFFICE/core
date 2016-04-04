@@ -420,6 +420,9 @@ namespace OOX{
 		class AlternateContentChoice;
 		class AlternateContentFallback;
 		class CTextProperties;
+
+		bool FromXml_ST_DispBlanksAs(CString& val, ST_DispBlanksAs& eOut);
+		bool ToXml_ST_DispBlanksAs(ST_DispBlanksAs& val, CString& sOut);
 	///////////////////////////////////////////////////
 		class CT_extLst
 		{

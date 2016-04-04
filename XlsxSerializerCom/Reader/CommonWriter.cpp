@@ -1,4 +1,4 @@
-//#include "stdafx.h"
+п»ї//#include "stdafx.h"
 #include "CommonWriter.h"
 #include "../Common/BinReaderWriterDefines.h"
 
@@ -18,7 +18,7 @@ namespace BinXlsxRW {
 	}
 	int BinaryCommonWriter::WriteItemWithLengthStart()
 	{
-		//Запоминаем позицию чтобы в конце записать туда длину
+		//Р—Р°РїРѕРјРёРЅР°РµРј РїРѕР·РёС†РёСЋ С‡С‚РѕР±С‹ РІ РєРѕРЅС†Рµ Р·Р°РїРёСЃР°С‚СЊ С‚СѓРґР° РґР»РёРЅСѓ
 		int nStartPos = m_oStream.GetPosition();
 		m_oStream.Skip(4);	
 		return nStartPos;
@@ -31,7 +31,7 @@ namespace BinXlsxRW {
 		m_oStream.WriteLONG(nEnd - nStart - 4);
 		m_oStream.SetPosition(nEnd);
 	}
-	void BinaryCommonWriter::WriteColor(const OOX::Spreadsheet::CColor& color, OOX::Spreadsheet::CIndexedColors* pIndexedColors, OOX::CTheme* theme)
+	void BinaryCommonWriter::WriteColor(const OOX::Spreadsheet::CColor& color, OOX::Spreadsheet::CIndexedColors* pIndexedColors)
 	{
 		if(color.m_oAuto.IsInit() && color.m_oAuto->ToBool())
 		{

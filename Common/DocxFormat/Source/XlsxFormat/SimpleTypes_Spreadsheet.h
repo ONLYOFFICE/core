@@ -2283,5 +2283,77 @@ namespace SimpleTypes
 			SimpleType_Operator_Equal (ST_CfvoType)
 		};
 
+        enum ESparklineType
+        {
+            Line					= 0,
+            Column					= 1,
+            Stacked					= 2
+        };
+        template<ESparklineType eDefValue = Line>
+        class ST_SparklineType : public CSimpleType<ESparklineType, eDefValue>
+        {
+        public:
+            ST_SparklineType() {}
+
+            virtual ESparklineType FromString(CString &sValue)
+            {
+                if(_T("line") == sValue)			this->m_eValue = Line;
+                else if(_T("column") == sValue)		this->m_eValue = Column;
+                else if(_T("stacked") == sValue)	this->m_eValue = Stacked;
+                else 								this->m_eValue = eDefValue;
+                return this->m_eValue;
+            }
+
+            virtual CString     ToString  () const
+            {
+                switch(this->m_eValue)
+                {
+                    case Line:	return _T("line");		break;
+                    case Column:	return _T("column");			break;
+                    case Stacked:	return _T("stacked");			break;
+                    default		:	return _T("line");
+                }
+            }
+
+            SimpleType_FromString     (ESparklineType)
+            SimpleType_Operator_Equal (ST_SparklineType)
+        };
+
+        enum ESparklineAxisMinMax
+        {
+            Individual					= 0,
+            Group					= 1,
+            Custom					= 2
+        };
+        template<ESparklineAxisMinMax eDefValue = Individual>
+        class ST_SparklineAxisMinMax : public CSimpleType<ESparklineAxisMinMax, eDefValue>
+        {
+        public:
+            ST_SparklineAxisMinMax() {}
+
+            virtual ESparklineAxisMinMax FromString(CString &sValue)
+            {
+                if(_T("individual") == sValue)			this->m_eValue = Individual;
+                else if(_T("group") == sValue)		this->m_eValue = Group;
+                else if(_T("custom") == sValue)	this->m_eValue = Custom;
+                else 								this->m_eValue = eDefValue;
+                return this->m_eValue;
+            }
+
+            virtual CString     ToString  () const
+            {
+                switch(this->m_eValue)
+                {
+                    case Individual: return _T("individual");		break;
+                    case Group:	return _T("group");			break;
+                    case Custom: return _T("custom");			break;
+                    default: return _T("individual");
+                }
+            }
+
+            SimpleType_FromString     (ESparklineAxisMinMax)
+            SimpleType_Operator_Equal (ST_SparklineAxisMinMax)
+        };
+
 	};// Spreadsheet
 } // SimpleTypes

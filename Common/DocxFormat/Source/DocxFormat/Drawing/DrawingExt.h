@@ -7,8 +7,62 @@
 
 namespace OOX
 {
+	namespace Spreadsheet
+	{
+		class CSparklineGroups;
+	}
 	namespace Drawing
 	{
+		class CCompatExt : public WritingElement
+		{
+		public:
+			WritingElement_AdditionConstructors(CCompatExt)
+			CCompatExt()
+			{
+			}
+			virtual ~CCompatExt()
+			{
+			}
+
+		public:
+
+			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			{
+                //todo
+			}
+			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+
+				if ( !oReader.IsEmptyNode() )
+					oReader.ReadTillEnd();
+			}
+			virtual CString      toXML() const
+			{
+				return _T("");
+			}
+			virtual EElementType getType() const
+			{
+				return OOX::et_a_compatExt;
+			}
+
+		private:
+
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				// Читаем атрибуты
+				WritingElement_ReadAttributes_Start_No_NS( oReader )
+				WritingElement_ReadAttributes_Read_if( oReader, _T("spid"), m_sSpId )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+
+		public:
+
+			// Attributes
+			nullable<CString> m_sSpId;
+
+			// Childs
+		};
 		//--------------------------------------------------------------------------------
 		// COfficeArtExtension 20.1.2.2.14 (Part 1)
 		//--------------------------------------------------------------------------------	
@@ -29,47 +83,9 @@ namespace OOX
 			{
 				oNode.ReadAttributeBase( _T("uri"), m_oUri );
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
-
-				if ((m_oUri.IsInit()) && (*m_oUri == _T("{63B3BB69-23CF-44E3-9099-C40C66FF867C}")))//2.2.6.2 Legacy Object Wrapper
-				{
-					int nCurDepth = oReader.GetDepth();
-					while( oReader.ReadNextSiblingNode( nCurDepth ) )
-					{
-						CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
-						if (sName == _T("compatExt"))//2.3.1.2 compatExt
-						{	//attributes spid -https://msdn.microsoft.com/en-us/library/hh657207(v=office.12).aspx
-
-							ReadAttributes( oReader );
-						}
-					}
-				
-				}
-				else
-				{
-					if ( !oReader.IsEmptyNode() )
-						oReader.ReadTillEnd();
-				}
-			}
-			virtual CString      toXML() const
-			{
-				CString sResult = _T("<a:ext ");
-				
-				if ( m_oUri.IsInit() )
-				{
-					sResult += _T("uri=\"");
-					sResult += m_oUri->GetString();
-					sResult += _T("\">");
-				}
-				else
-					sResult += _T(">");
-
-				sResult += _T("</a:ext>");
-
-				return sResult;
-			}
+			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual CString      toXML() const;
+            CString toXMLWithNS(const CString& sNamespace) const;
 			virtual EElementType getType() const
 			{
 				return OOX::et_a_ext;
@@ -82,7 +98,6 @@ namespace OOX
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start_No_NS( oReader )
 				WritingElement_ReadAttributes_Read_if( oReader, _T("uri"), m_oUri )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("spid"), m_sSpId )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -90,9 +105,11 @@ namespace OOX
 
 			// Attributes
 			nullable<CString> m_oUri;
-			nullable<CString> m_sSpId;
+            CString m_sAdditionalNamespace;
 
 			// Childs
+			nullable<CCompatExt> m_oCompatExt;
+			nullable<OOX::Spreadsheet::CSparklineGroups> m_oSparklineGroups;
 		};
 		//--------------------------------------------------------------------------------
 		// COfficeArtExtensionList 20.1.2.2.15 (Part 1)
@@ -128,8 +145,8 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-                    CString sName = oReader.GetName();
-					if ( _T("a:ext") == sName )
+                    CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+                    if ( _T("ext") == sName )
 					{
 						OOX::Drawing::COfficeArtExtension *oExt = new OOX::Drawing::COfficeArtExtension(oReader);
                         if (oExt) m_arrExt.push_back( oExt );
@@ -137,16 +154,24 @@ namespace OOX
 				}
 			}
 			virtual CString      toXML() const
+            {
+                return toXMLWithNS(_T("a:"));
+            }
+            CString toXMLWithNS(const CString& sNamespace) const
 			{
-				CString sResult = _T("<a:extLst>");
+                CString sResult = _T("<");
+                sResult += sNamespace;
+                sResult += _T("extLst>");
 				
                 for ( unsigned int nIndex = 0; nIndex < m_arrExt.size(); nIndex++ )
 				{
 					if (m_arrExt[nIndex])
-						sResult += m_arrExt[nIndex]->toXML();
+                        sResult += m_arrExt[nIndex]->toXMLWithNS(sNamespace);
 				}
 
-				sResult += _T("</a:extLst>");
+                sResult += _T("</");
+                sResult += sNamespace;
+                sResult += _T("extLst>");
 
 				return sResult;
 			}

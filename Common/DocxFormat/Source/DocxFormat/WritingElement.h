@@ -163,6 +163,7 @@ namespace OOX
 		et_a_effectRef, // <a:effectRef>
 		et_a_effectStyle, // <a:effectStyle>
 		et_a_effectStyleLst, // <a:effectStyleLst>
+		et_a_compatExt,
 		et_a_ext, // <a:ext>
 		et_a_extLst, // <a:extLst>
 		et_a_extraClrScheme, // <a:extraClrScheme>

@@ -124,6 +124,8 @@ namespace OOX
 								m_oLegacyDrawingWorksheet = oReader;
 							else if (_T("sheetPr") == sName)
 								m_oSheetPr = oReader;
+                            else if (_T("extLst") == sName)
+                                m_oExtLst = oReader;
 						}
 					}
 					if(m_oLegacyDrawingWorksheet.IsInit() && m_oLegacyDrawingWorksheet->m_oId.IsInit())
@@ -336,6 +338,8 @@ namespace OOX
 					m_oLegacyDrawingWorksheet->toXML(sXml);
 				if(m_oTableParts.IsInit())
 					m_oTableParts->toXML(sXml);
+                if(m_oExtLst.IsInit())
+                    sXml.WriteString(m_oExtLst->toXMLWithNS(_T("")));
 				sXml.WriteString(_T("</worksheet>"));
 
 				CDirectory::SaveToFile( oPath.GetPath(), sXml.GetData() );
@@ -503,6 +507,8 @@ namespace OOX
 			std::map<CString, CCommentItem*>						m_mapComments;
 			std::vector<OOX::Spreadsheet::CConditionalFormatting*>	m_arrConditionalFormatting;
 			nullable<OOX::Spreadsheet::CSheetPr>					m_oSheetPr;
+
+			nullable<OOX::Drawing::COfficeArtExtensionList>			m_oExtLst;
 		};
 	} //Spreadsheet
 } // namespace OOX

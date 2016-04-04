@@ -4,6 +4,7 @@
 
 #include "../../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"
 #include "../../DesktopEditor/common/Directory.h"
+#include "../../DesktopEditor/doctrenderer/docbuilder.h"
 
 //#include <iostream>
 
@@ -412,6 +413,9 @@ int main(int argc, char *argv[])
 
 	// delete temp dir
     NSDirectory::DeleteDirectory(sTempDir);
+
+	//clean up v8
+	NSDoctRenderer::CDocBuilder::Dispose();
 
     return getReturnErrorCode(result);
 }

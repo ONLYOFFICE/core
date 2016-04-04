@@ -57,6 +57,41 @@ namespace PPTX
 					return 8;
 				return 7;
 			}
+			virtual void SetBYTECode(const BYTE& src)
+			{
+				switch (src)
+				{
+				case 0:
+					m_strValue = _T("b");
+					break;
+				case 1:
+					m_strValue = _T("bl");
+					break;
+				case 2:
+					m_strValue = _T("br");
+					break;
+				case 3:
+					m_strValue = _T("ctr");
+					break;
+				case 4:
+					m_strValue = _T("l");
+					break;
+				case 5:
+					m_strValue = _T("r");
+					break;
+				case 6:
+					m_strValue = _T("t");
+					break;
+				case 7:
+					m_strValue = _T("tl");
+					break;
+				case 8:
+					m_strValue = _T("tr");
+					break;
+				default:
+					break;
+				}
+			}
 		};
 	} // namespace Limit
 } // namespace PPTX

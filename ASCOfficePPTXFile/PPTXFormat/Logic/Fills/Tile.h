@@ -81,6 +81,59 @@ namespace PPTX
 				pWriter->WriteLimit2(5, flip);
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+
+				pReader->Skip(1); // start attributes
+
+				while (true)
+				{
+					BYTE _at = pReader->GetUChar_TypeNode();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+
+					switch (_at)
+					{
+						case 0:
+						{
+							sx = pReader->GetLong();
+							break;
+						}
+						case 1:
+						{
+							sy = pReader->GetLong();
+							break;
+						}
+						case 2:
+						{
+							tx = pReader->GetLong();
+							break;
+						}
+						case 3:
+						{
+							ty = pReader->GetLong();
+							break;
+						}
+						case 4:
+						{
+							algn = new Limit::RectAlign();
+							algn->SetBYTECode(pReader->GetUChar());
+							break;
+						}
+						case 5:
+						{
+							flip = new Limit::Flip();
+							flip->SetBYTECode(pReader->GetUChar());
+							break;
+						}
+						default:
+							break;
+					}
+				}
+
+				pReader->Seek(_end_rec);
+			}
 
 		public:
 			nullable_limit<Limit::RectAlign>	algn;

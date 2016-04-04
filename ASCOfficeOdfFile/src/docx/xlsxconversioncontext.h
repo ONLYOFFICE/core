@@ -66,14 +66,13 @@ public:
     void start_span(const std::wstring & styleName);
     void end_span();
 
-    bool start_table(const std::wstring & tableName, const std::wstring & tableStyleName);
+    bool start_table(std::wstring tableName,std::wstring tableStyleName);
     void end_table();
 
-
-    void start_table_column(unsigned int repeated, const std::wstring & defaultCellStyleName, int & cMin, int & cMax);
-    void table_column_last_width(double w);
-    double table_column_last_width() const;
-    void end_table_column();
+    void	start_table_column(unsigned int repeated, const std::wstring & defaultCellStyleName, int & cMin, int & cMax);
+    void	table_column_last_width(double w);
+    double	table_column_last_width() const;
+    void	end_table_column();
 
 	void set_table_row_group(int count, bool collapsed, int level);
     void start_table_row(const std::wstring & styleName, const std::wstring & defaultCellStyleName);

@@ -84,38 +84,28 @@ void table_table_row::xlsx_convert(oox::xlsx_conversion_context & Context)
 
     odf_read_context & odfContext = Context.root()->odf_context();
 
-    do 
-    {        
-        odf_reader::style_instance * rowStyle = odfContext.styleContainer().style_by_name(rowStyleName, odf_types::style_family::TableRow,false/*false*/);
-        if (!rowStyle)
-            break;
-
-        if (!rowStyle->content())
-            break;
-
-        const odf_reader::style_table_row_properties * prop = rowStyle->content()->get_style_table_row_properties();
-        if (!prop)
-            break;
-
-        if (const _CP_OPT(odf_types::length) & height = prop->style_table_row_properties_attlist_.style_row_height_)
-        {
-            row_height = height->get_value_unit(odf_types::length::pt);
+    odf_reader::style_instance * rowStyle = odfContext.styleContainer().style_by_name(rowStyleName, odf_types::style_family::TableRow,false/*false*/);
+    if ((rowStyle) && (rowStyle->content()))
+	{
+		const odf_reader::style_table_row_properties * prop = rowStyle->content()->get_style_table_row_properties();
+		if ((prop) && (prop->style_table_row_properties_attlist_.style_row_height_))
+		{
+			row_height = prop->style_table_row_properties_attlist_.style_row_height_->get_value_unit(odf_types::length::pt);
 
 			if ((prop->style_table_row_properties_attlist_.style_use_optimal_row_height_) && 
 						(*prop->style_table_row_properties_attlist_.style_use_optimal_row_height_==true))
 			{
 				//автоматическая подстройка высоты.
+				//нету в оох
+				//todooo высилить по текущему шрифту размер у (двойной) и сравнить с заданным - перебить !!!
 			}
-			else
-			{
-				std::wstringstream ht_s;
-				ht_s.precision(3);
-				ht_s << std::fixed << row_height;
-				ht = ht_s.str();
-			}
-        }
-    }
-    while (0); 
+
+			std::wstringstream ht_s;
+			ht_s.precision(3);
+			ht_s << std::fixed << row_height;
+			ht = ht_s.str();    
+		}
+	}
 
     bool hidden = table_table_row_attlist_.table_visibility_.get_type() == table_visibility::Collapse;
 
@@ -131,22 +121,22 @@ void table_table_row::xlsx_convert(oox::xlsx_conversion_context & Context)
                 {
                     CP_XML_ATTR(L"r", Context.current_table_row() + 1);
 
-					if (Context.get_table_context().state().group_row_.enabled)
+					if (Context.get_table_context().state()->group_row_.enabled)
 					{
-						//std::wstring str_spans = boost::lexical_cast<std::wstring>(Context.get_table_context().state().group_row_.count);
+						//std::wstring str_spans = boost::lexical_cast<std::wstring>(Context.get_table_context().state()->group_row_.count);
 						//str_spans = str_spans + L":";
 						std::wstring str_spans = L"1:" + boost::lexical_cast<std::wstring>(Context.get_table_context().columns_count());
 						ht = L"";
 
-						CP_XML_ATTR(L"collapsed",	Context.get_table_context().state().group_row_.collapsed);
-						CP_XML_ATTR(L"outlineLevel", Context.get_table_context().state().group_row_.level); 
+						CP_XML_ATTR(L"collapsed",	Context.get_table_context().state()->group_row_.collapsed);
+						CP_XML_ATTR(L"outlineLevel", Context.get_table_context().state()->group_row_.level); 
 						CP_XML_ATTR(L"spans", str_spans);						
 						
-						if (Context.get_table_context().state().group_row_.collapsed)hidden = false;
-						Context.get_table_context().state().group_row_.count--;
+						if (Context.get_table_context().state()->group_row_.collapsed)hidden = false;
+						Context.get_table_context().state()->group_row_.count--;
 
-						if (Context.get_table_context().state().group_row_.count<1)
-							Context.get_table_context().state().group_row_.enabled = false;
+						if (Context.get_table_context().state()->group_row_.count<1)
+							Context.get_table_context().state()->group_row_.enabled = false;
 					}					
 
                     if (hidden)

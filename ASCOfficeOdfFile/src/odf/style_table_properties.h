@@ -130,9 +130,9 @@ public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
     
 public:
-    _CP_OPT(odf_types::length) style_column_width_;
-    _CP_OPT(odf_types::length) style_rel_column_width_;
-    _CP_OPT(bool) style_use_optimal_column_width_;
+    _CP_OPT(odf_types::length)		style_column_width_;
+    _CP_OPT(odf_types::length)		style_rel_column_width_;
+    _CP_OPT(bool)					style_use_optimal_column_width_;
     odf_types::common_break_attlist common_break_attlist_;
 
 };
@@ -175,12 +175,12 @@ public:
     void pptx_convert(oox::pptx_conversion_context & Context);
 
 public:
-    _CP_OPT(odf_types::length) style_row_height_;
-    _CP_OPT(odf_types::length) style_min_row_height_;
-    _CP_OPT(bool) style_use_optimal_row_height_;
-    odf_types::common_background_color_attlist common_background_color_attlist_;
-    odf_types::common_break_attlist common_break_attlist_;
-    _CP_OPT(odf_types::keep_together) fo_keep_together_;        
+    _CP_OPT(odf_types::length)					style_row_height_;
+    _CP_OPT(odf_types::length)					style_min_row_height_;
+    _CP_OPT(bool)								style_use_optimal_row_height_;
+    odf_types::common_background_color_attlist	common_background_color_attlist_;
+    odf_types::common_break_attlist				common_break_attlist_;
+    _CP_OPT(odf_types::keep_together)			fo_keep_together_;        
 
 };
 
@@ -204,8 +204,8 @@ private:
     virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
 
 public:
-    style_table_row_properties_attlist style_table_row_properties_attlist_;
-    office_element_ptr style_background_image_;
+    style_table_row_properties_attlist	style_table_row_properties_attlist_;
+    office_element_ptr					style_background_image_;
         
 };
 

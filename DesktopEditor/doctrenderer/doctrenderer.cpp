@@ -895,7 +895,8 @@ namespace NSDoctRenderer
 
             isolate->Dispose();
 
-            CV8Worker::Dispose();
+            // теперь вызываем это в x2t
+            //CV8Worker::Dispose();
 
             return bIsBreak ? false : true;
         }

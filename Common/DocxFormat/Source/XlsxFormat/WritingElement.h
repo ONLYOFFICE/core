@@ -322,7 +322,12 @@ namespace Spreadsheet
 		et_ConnectionNonVisualGraphicFrameProps,
 		et_GraphicChart,
 		et_ChartTextProperties,
-		et_ChartRichText
+		et_ChartRichText,
+
+		et_SparklineGroups,
+		et_SparklineGroup,
+		et_Sparklines,
+		et_Sparkline
 
 	};
 	class WritingElement

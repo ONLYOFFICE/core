@@ -694,7 +694,7 @@ namespace BinXlsxRW {
 				m_oBcw.m_oStream.WriteBYTE(c_oSerBorderPropTypes::Color);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
 				nCurPos = m_oBcw.WriteItemWithLengthStart();
-				m_oBcw.WriteColor(borderProp.m_oColor.get(), pIndexedColors, pTheme);
+				m_oBcw.WriteColor(borderProp.m_oColor.get(), pIndexedColors);
 				m_oBcw.WriteItemWithLengthEnd(nCurPos);
 			}
 			//Style
@@ -934,7 +934,7 @@ namespace BinXlsxRW {
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSerFillTypes::PatternFill);
 				int nCurPos2 = m_oBcw.WriteItemStart(c_oSerFillTypes::PatternFillBgColor);
-				m_oBcw.WriteColor(*pColor, pIndexedColors, pTheme);
+				m_oBcw.WriteColor(*pColor, pIndexedColors);
 				m_oBcw.WriteItemEnd(nCurPos2);
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
@@ -966,7 +966,7 @@ namespace BinXlsxRW {
 				m_oBcw.m_oStream.WriteBYTE(c_oSerFontTypes::Color);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
 				nCurPos = m_oBcw.WriteItemWithLengthStart();
-				m_oBcw.WriteColor(font.m_oColor.get(), pIndexedColors, theme);
+				m_oBcw.WriteColor(font.m_oColor.get(), pIndexedColors);
 				m_oBcw.WriteItemWithLengthEnd(nCurPos);
 			}
 			//Italic
@@ -1349,7 +1349,7 @@ namespace BinXlsxRW {
 				m_oBcw.m_oStream.WriteBYTE(c_oSerFontTypes::Color);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
 				nCurPos = m_oBcw.WriteItemWithLengthStart();
-				m_oBcw.WriteColor(rPr.m_oColor.get(), pIndexedColors, pTheme);
+				m_oBcw.WriteColor(rPr.m_oColor.get(), pIndexedColors);
 				m_oBcw.WriteItemWithLengthEnd(nCurPos);
 			}
 			//Italic
@@ -1786,6 +1786,19 @@ namespace BinXlsxRW {
 				WriteSheetPr(oWorksheet.m_oSheetPr.get());
 				m_oBcw.WriteItemWithLengthEnd(nCurPos);
 			}
+            if (oWorksheet.m_oExtLst.IsInit())
+            {
+                for(size_t i = 0; i < oWorksheet.m_oExtLst->m_arrExt.size(); ++i)
+                {
+                    OOX::Drawing::COfficeArtExtension* pExt = oWorksheet.m_oExtLst->m_arrExt[i];
+                    if(pExt->m_oSparklineGroups.IsInit())
+                    {
+                        nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::SparklineGroups);
+                        WriteSparklineGroups(pExt->m_oSparklineGroups.get());
+                        m_oBcw.WriteItemWithLengthEnd(nCurPos);
+                    }
+                }
+            }
 		};
 		void WriteWorksheetProp(OOX::Spreadsheet::CSheet& oSheet)
 		{
@@ -2889,7 +2902,7 @@ namespace BinXlsxRW {
 			if (oSheetPr.m_oTabColor.IsInit())
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_SheetPr::TabColor);
-				m_oBcw.WriteColor(oSheetPr.m_oTabColor.get(), m_pIndexedColors, m_pTheme);
+				m_oBcw.WriteColor(oSheetPr.m_oTabColor.get(), m_pIndexedColors);
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
 		}
@@ -3080,7 +3093,7 @@ namespace BinXlsxRW {
 				if (NULL != pColor)
 				{
 					nCurPos = m_oBcw.WriteItemStart(c_oSer_ConditionalFormattingRuleColorScale::Color);
-					m_oBcw.WriteColor(*pColor, m_pIndexedColors, m_pTheme);
+					m_oBcw.WriteColor(*pColor, m_pIndexedColors);
 					m_oBcw.WriteItemEnd(nCurPos);
 					continue;
 				}
@@ -3111,7 +3124,7 @@ namespace BinXlsxRW {
 			if (oDataBar.m_oColor.IsInit())
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_ConditionalFormattingDataBar::Color);
-				m_oBcw.WriteColor(oDataBar.m_oColor.get(), m_pIndexedColors, m_pTheme);
+				m_oBcw.WriteColor(oDataBar.m_oColor.get(), m_pIndexedColors);
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
 
@@ -3179,6 +3192,207 @@ namespace BinXlsxRW {
 				m_oBcw.m_oStream.WriteStringW(oCFVO.m_oVal.get2());
 			}
 		}
+        void WriteSparklineGroups(const OOX::Spreadsheet::CSparklineGroups& oSparklineGroups)
+        {
+            int nCurPos = 0;
+            for(size_t i = 0; i < oSparklineGroups.m_arrItems.size(); ++i)
+            {
+                OOX::Spreadsheet::CSparklineGroup* pSparklineGroup = oSparklineGroups.m_arrItems[i];
+                nCurPos = m_oBcw.WriteItemStart(c_oSer_Sparkline::SparklineGroup);
+                WriteSparklineGroup(*pSparklineGroup);
+                m_oBcw.WriteItemEnd(nCurPos);
+            }
+        }
+        void WriteSparklineGroup(const OOX::Spreadsheet::CSparklineGroup& oSparklineGroup)
+        {
+            int nCurPos = 0;
+            if (oSparklineGroup.m_oManualMax.IsInit())
+            {
+                nCurPos = m_oBcw.WriteItemStart(c_oSer_Sparkline::ManualMax);
+                m_oBcw.m_oStream.WriteDoubleReal(oSparklineGroup.m_oManualMax->GetValue());
+                m_oBcw.WriteItemEnd(nCurPos);
+
+            }
+            if (oSparklineGroup.m_oManualMin.IsInit())
+            {
+                nCurPos = m_oBcw.WriteItemStart(c_oSer_Sparkline::ManualMin);
+                m_oBcw.m_oStream.WriteDoubleReal(oSparklineGroup.m_oManualMin->GetValue());
+                m_oBcw.WriteItemEnd(nCurPos);
+            }
+            if (oSparklineGroup.m_oLineWeight.IsInit())
+            {
+                nCurPos = m_oBcw.WriteItemStart(c_oSer_Sparkline::LineWeight);
+                m_oBcw.m_oStream.WriteDoubleReal(oSparklineGroup.m_oLineWeight->GetValue());
+                m_oBcw.WriteItemEnd(nCurPos);
+            }
+            if (oSparklineGroup.m_oType.IsInit())
+            {
+                nCurPos = m_oBcw.WriteItemStart(c_oSer_Sparkline::Type);
+                m_oBcw.m_oStream.WriteBYTE(oSparklineGroup.m_oType->GetValue());
+                m_oBcw.WriteItemEnd(nCurPos);
+            }
+            if (oSparklineGroup.m_oDateAxis.IsInit())
+            {
+                nCurPos = m_oBcw.WriteItemStart(c_oSer_Sparkline::DateAxis);
+                m_oBcw.m_oStream.WriteBOOL(oSparklineGroup.m_oDateAxis->ToBool());
+                m_oBcw.WriteItemEnd(nCurPos);
+            }
+            if (oSparklineGroup.m_oDisplayEmptyCellsAs.IsInit())
+            {
+                nCurPos = m_oBcw.WriteItemStart(c_oSer_Sparkline::DisplayEmptyCellsAs);
+                m_oBcw.m_oStream.WriteBYTE(*oSparklineGroup.m_oDisplayEmptyCellsAs);
+                m_oBcw.WriteItemEnd(nCurPos);
+            }
+            if (oSparklineGroup.m_oMarkers.IsInit())
+            {
+                nCurPos = m_oBcw.WriteItemStart(c_oSer_Sparkline::Markers);
+                m_oBcw.m_oStream.WriteBOOL(oSparklineGroup.m_oMarkers->ToBool());
+                m_oBcw.WriteItemEnd(nCurPos);
+            }
+            if (oSparklineGroup.m_oHigh.IsInit())
+            {
+                nCurPos = m_oBcw.WriteItemStart(c_oSer_Sparkline::High);
+                m_oBcw.m_oStream.WriteBOOL(oSparklineGroup.m_oHigh->ToBool());
+                m_oBcw.WriteItemEnd(nCurPos);
+            }
+            if (oSparklineGroup.m_oLow.IsInit())
+            {
+                nCurPos = m_oBcw.WriteItemStart(c_oSer_Sparkline::Low);
+                m_oBcw.m_oStream.WriteBOOL(oSparklineGroup.m_oLow->ToBool());
+                m_oBcw.WriteItemEnd(nCurPos);
+            }
+            if (oSparklineGroup.m_oFirst.IsInit())
+            {
+                nCurPos = m_oBcw.WriteItemStart(c_oSer_Sparkline::First);
+                m_oBcw.m_oStream.WriteBOOL(oSparklineGroup.m_oFirst->ToBool());
+                m_oBcw.WriteItemEnd(nCurPos);
+            }
+            if (oSparklineGroup.m_oLast.IsInit())
+            {
+                nCurPos = m_oBcw.WriteItemStart(c_oSer_Sparkline::Last);
+                m_oBcw.m_oStream.WriteBOOL(oSparklineGroup.m_oLast->ToBool());
+                m_oBcw.WriteItemEnd(nCurPos);
+            }
+            if (oSparklineGroup.m_oNegative.IsInit())
+            {
+                nCurPos = m_oBcw.WriteItemStart(c_oSer_Sparkline::Negative);
+                m_oBcw.m_oStream.WriteBOOL(oSparklineGroup.m_oNegative->ToBool());
+                m_oBcw.WriteItemEnd(nCurPos);
+            }
+            if (oSparklineGroup.m_oDisplayXAxis.IsInit())
+            {
+                nCurPos = m_oBcw.WriteItemStart(c_oSer_Sparkline::DisplayXAxis);
+                m_oBcw.m_oStream.WriteBOOL(oSparklineGroup.m_oDisplayXAxis->ToBool());
+                m_oBcw.WriteItemEnd(nCurPos);
+            }
+            if (oSparklineGroup.m_oDisplayHidden.IsInit())
+            {
+                nCurPos = m_oBcw.WriteItemStart(c_oSer_Sparkline::DisplayHidden);
+                m_oBcw.m_oStream.WriteBOOL(oSparklineGroup.m_oDisplayHidden->ToBool());
+                m_oBcw.WriteItemEnd(nCurPos);
+            }
+            if (oSparklineGroup.m_oMinAxisType.IsInit())
+            {
+                nCurPos = m_oBcw.WriteItemStart(c_oSer_Sparkline::MinAxisType);
+                m_oBcw.m_oStream.WriteBYTE(oSparklineGroup.m_oMinAxisType->GetValue());
+                m_oBcw.WriteItemEnd(nCurPos);
+            }
+            if (oSparklineGroup.m_oMaxAxisType.IsInit())
+            {
+                nCurPos = m_oBcw.WriteItemStart(c_oSer_Sparkline::MaxAxisType);
+                m_oBcw.m_oStream.WriteBYTE(oSparklineGroup.m_oMaxAxisType->GetValue());
+                m_oBcw.WriteItemEnd(nCurPos);
+            }
+            if (oSparklineGroup.m_oRightToLeft.IsInit())
+            {
+                nCurPos = m_oBcw.WriteItemStart(c_oSer_Sparkline::RightToLeft);
+                m_oBcw.m_oStream.WriteBOOL(oSparklineGroup.m_oRightToLeft->ToBool());
+                m_oBcw.WriteItemEnd(nCurPos);
+            }
+            if (oSparklineGroup.m_oColorSeries.IsInit())
+            {
+                nCurPos = m_oBcw.WriteItemStart(c_oSer_Sparkline::ColorSeries);
+                m_oBcw.WriteColor(oSparklineGroup.m_oColorSeries.get(), m_pIndexedColors);
+                m_oBcw.WriteItemEnd(nCurPos);
+            }
+			if (oSparklineGroup.m_oColorNegative.IsInit())
+			{
+                nCurPos = m_oBcw.WriteItemStart(c_oSer_Sparkline::ColorNegative);
+                m_oBcw.WriteColor(oSparklineGroup.m_oColorNegative.get(), m_pIndexedColors);
+                m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if (oSparklineGroup.m_oColorAxis.IsInit())
+			{
+                nCurPos = m_oBcw.WriteItemStart(c_oSer_Sparkline::ColorAxis);
+                m_oBcw.WriteColor(oSparklineGroup.m_oColorAxis.get(), m_pIndexedColors);
+                m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if (oSparklineGroup.m_oColorMarkers.IsInit())
+			{
+                nCurPos = m_oBcw.WriteItemStart(c_oSer_Sparkline::ColorMarkers);
+                m_oBcw.WriteColor(oSparklineGroup.m_oColorMarkers.get(), m_pIndexedColors);
+                m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if (oSparklineGroup.m_oColorFirst.IsInit())
+			{
+                nCurPos = m_oBcw.WriteItemStart(c_oSer_Sparkline::ColorFirst);
+                m_oBcw.WriteColor(oSparklineGroup.m_oColorFirst.get(), m_pIndexedColors);
+                m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if (oSparklineGroup.m_oColorLast.IsInit())
+			{
+                nCurPos = m_oBcw.WriteItemStart(c_oSer_Sparkline::ColorLast);
+                m_oBcw.WriteColor(oSparklineGroup.m_oColorLast.get(), m_pIndexedColors);
+                m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if (oSparklineGroup.m_oColorHigh.IsInit())
+			{
+                nCurPos = m_oBcw.WriteItemStart(c_oSer_Sparkline::ColorHigh);
+                m_oBcw.WriteColor(oSparklineGroup.m_oColorHigh.get(), m_pIndexedColors);
+                m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if (oSparklineGroup.m_oColorLow.IsInit())
+			{
+                nCurPos = m_oBcw.WriteItemStart(c_oSer_Sparkline::ColorLow);
+                m_oBcw.WriteColor(oSparklineGroup.m_oColorLow.get(), m_pIndexedColors);
+                m_oBcw.WriteItemEnd(nCurPos);
+			}
+            if (oSparklineGroup.m_oRef.IsInit())
+            {
+                m_oBcw.m_oStream.WriteBYTE(c_oSer_Sparkline::Ref);
+				m_oBcw.m_oStream.WriteStringW(oSparklineGroup.m_oRef.get());
+            }
+            if (oSparklineGroup.m_oSparklines.IsInit())
+            {
+                nCurPos = m_oBcw.WriteItemStart(c_oSer_Sparkline::Sparklines);
+                WriteSparklines(oSparklineGroup.m_oSparklines.get());
+                m_oBcw.WriteItemEnd(nCurPos);
+            }
+        }
+        void WriteSparklines(const OOX::Spreadsheet::CSparklines& oSparklines)
+        {
+            int nCurPos = 0;
+            for(size_t i = 0; i < oSparklines.m_arrItems.size(); ++i)
+            {
+                nCurPos = m_oBcw.WriteItemStart(c_oSer_Sparkline::Sparkline);
+                WriteSparkline(*oSparklines.m_arrItems[i]);
+                m_oBcw.WriteItemEnd(nCurPos);
+            }
+        }
+        void WriteSparkline(const OOX::Spreadsheet::CSparkline& oSparkline)
+        {
+            int nCurPos = 0;
+            if (oSparkline.m_oRef.IsInit())
+            {
+				m_oBcw.m_oStream.WriteBYTE(c_oSer_Sparkline::SparklineRef);
+				m_oBcw.m_oStream.WriteStringW(oSparkline.m_oRef.get());
+            }
+            if (oSparkline.m_oSqRef.IsInit())
+            {
+				m_oBcw.m_oStream.WriteBYTE(c_oSer_Sparkline::SparklineSqRef);
+				m_oBcw.m_oStream.WriteStringW(oSparkline.m_oSqRef.get());
+            }
+        }
 	};
 	class BinaryCalcChainTableWriter
 	{

@@ -5,6 +5,7 @@
 #include "../../Common/ATLDefine.h"
 
 #include "../../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"
+#include "../../Common/DocxFormat/Source/XlsxFormat/Worksheets/Sparkline.h"
 #include "../../DesktopEditor/common/Path.h"
 
 #include "../Common/BinReaderWriterDefines.h"
@@ -1999,6 +2000,19 @@ namespace BinXlsxRW {
 				m_pCurWorksheet->m_oTableParts->m_oCount.Init();
 				m_pCurWorksheet->m_oTableParts->m_oCount->SetValue(m_pCurWorksheet->m_oTableParts->m_arrItems.size());
 			}
+            else if(c_oSerWorksheetsTypes::SparklineGroups == type)
+            {
+                OOX::Drawing::COfficeArtExtension* pOfficeArtExtension = new OOX::Drawing::COfficeArtExtension();
+                pOfficeArtExtension->m_oSparklineGroups.Init();
+
+                res = Read1(length, &BinaryWorksheetsTableReader::ReadSparklineGroups, this, pOfficeArtExtension->m_oSparklineGroups.GetPointer());
+
+                pOfficeArtExtension->m_oUri.Init();
+                pOfficeArtExtension->m_oUri->Append(_T("{05C60535-1F16-4fd2-B633-F4F36F0B64E0}"));
+                pOfficeArtExtension->m_sAdditionalNamespace = _T(" xmlns:x14=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main\"");
+                m_pCurWorksheet->m_oExtLst.Init();
+                m_pCurWorksheet->m_oExtLst->m_arrExt.push_back(pOfficeArtExtension);
+            }
 			else
 				res = c_oSerConstants::ReadUnknown;
 			return res;
@@ -2856,6 +2870,195 @@ namespace BinXlsxRW {
 				res = c_oSerConstants::ReadUnknown;
 			return res;
 		};
+        int ReadSparklineGroups(BYTE type, long length, void* poResult)
+        {
+            OOX::Spreadsheet::CSparklineGroups* pSparklineGroups = static_cast<OOX::Spreadsheet::CSparklineGroups*>(poResult);
+            int res = c_oSerConstants::ReadOk;
+            if(c_oSer_Sparkline::SparklineGroup == type)
+            {
+                OOX::Spreadsheet::CSparklineGroup* pSparklineGroup = new OOX::Spreadsheet::CSparklineGroup();
+                res = Read1(length, &BinaryWorksheetsTableReader::ReadSparklineGroup, this, pSparklineGroup);
+                pSparklineGroups->m_arrItems.push_back(pSparklineGroup);
+            }
+            else
+                res = c_oSerConstants::ReadUnknown;
+            return res;
+        };
+        int ReadSparklineGroup(BYTE type, long length, void* poResult)
+        {
+            OOX::Spreadsheet::CSparklineGroup* pSparklineGroup = static_cast<OOX::Spreadsheet::CSparklineGroup*>(poResult);
+            int res = c_oSerConstants::ReadOk;
+            if(c_oSer_Sparkline::ManualMax == type)
+            {
+                pSparklineGroup->m_oManualMax.Init();
+                pSparklineGroup->m_oManualMax->SetValue(m_oBufferedStream.GetDoubleReal());
+            }
+            else if(c_oSer_Sparkline::ManualMin == type)
+            {
+                pSparklineGroup->m_oManualMin.Init();
+                pSparklineGroup->m_oManualMin->SetValue(m_oBufferedStream.GetDoubleReal());
+            }
+            else if(c_oSer_Sparkline::LineWeight == type)
+            {
+                pSparklineGroup->m_oLineWeight.Init();
+                pSparklineGroup->m_oLineWeight->SetValue(m_oBufferedStream.GetDoubleReal());
+            }
+            else if(c_oSer_Sparkline::Type == type)
+            {
+                pSparklineGroup->m_oType.Init();
+                pSparklineGroup->m_oType->SetValue((SimpleTypes::Spreadsheet::ESparklineType)m_oBufferedStream.GetChar());
+            }
+            else if(c_oSer_Sparkline::DateAxis == type)
+            {
+                pSparklineGroup->m_oDateAxis.Init();
+                pSparklineGroup->m_oDateAxis->FromBool(m_oBufferedStream.GetBool());
+            }
+            else if(c_oSer_Sparkline::DisplayEmptyCellsAs == type)
+            {
+                pSparklineGroup->m_oDisplayEmptyCellsAs.Init();
+				pSparklineGroup->m_oDisplayEmptyCellsAs.get2() = (OOX::Spreadsheet::ST_DispBlanksAs)m_oBufferedStream.GetChar();
+            }
+            else if(c_oSer_Sparkline::Markers == type)
+            {
+                pSparklineGroup->m_oMarkers.Init();
+                pSparklineGroup->m_oMarkers->FromBool(m_oBufferedStream.GetBool());
+            }
+            else if(c_oSer_Sparkline::High == type)
+            {
+                pSparklineGroup->m_oHigh.Init();
+                pSparklineGroup->m_oHigh->FromBool(m_oBufferedStream.GetBool());
+            }
+            else if(c_oSer_Sparkline::Low == type)
+            {
+                pSparklineGroup->m_oLow.Init();
+                pSparklineGroup->m_oLow->FromBool(m_oBufferedStream.GetBool());
+            }
+            else if(c_oSer_Sparkline::First == type)
+            {
+                pSparklineGroup->m_oFirst.Init();
+                pSparklineGroup->m_oFirst->FromBool(m_oBufferedStream.GetBool());
+            }
+            else if(c_oSer_Sparkline::Last == type)
+            {
+                pSparklineGroup->m_oLast.Init();
+                pSparklineGroup->m_oLast->FromBool(m_oBufferedStream.GetBool());
+            }
+            else if(c_oSer_Sparkline::Negative == type)
+            {
+                pSparklineGroup->m_oNegative.Init();
+                pSparklineGroup->m_oNegative->FromBool(m_oBufferedStream.GetBool());
+            }
+            else if(c_oSer_Sparkline::DisplayXAxis == type)
+            {
+                pSparklineGroup->m_oDisplayXAxis.Init();
+                pSparklineGroup->m_oDisplayXAxis->FromBool(m_oBufferedStream.GetBool());
+            }
+            else if(c_oSer_Sparkline::DisplayHidden == type)
+            {
+                pSparklineGroup->m_oDisplayHidden.Init();
+                pSparklineGroup->m_oDisplayHidden->FromBool(m_oBufferedStream.GetBool());
+            }
+            else if(c_oSer_Sparkline::MinAxisType == type)
+            {
+                pSparklineGroup->m_oMinAxisType.Init();
+                pSparklineGroup->m_oMinAxisType->SetValue((SimpleTypes::Spreadsheet::ESparklineAxisMinMax)m_oBufferedStream.GetChar());
+            }
+            else if(c_oSer_Sparkline::MaxAxisType == type)
+            {
+                pSparklineGroup->m_oMaxAxisType.Init();
+                pSparklineGroup->m_oMaxAxisType->SetValue((SimpleTypes::Spreadsheet::ESparklineAxisMinMax)m_oBufferedStream.GetChar());
+            }
+            else if(c_oSer_Sparkline::RightToLeft == type)
+            {
+                pSparklineGroup->m_oRightToLeft.Init();
+                pSparklineGroup->m_oRightToLeft->FromBool(m_oBufferedStream.GetBool());
+            }
+            else if(c_oSer_Sparkline::ColorSeries == type)
+            {
+                pSparklineGroup->m_oColorSeries.Init();
+                res = Read2(length, &BinaryWorksheetsTableReader::ReadColor, this, pSparklineGroup->m_oColorSeries.GetPointer());
+            }
+            else if(c_oSer_Sparkline::ColorNegative == type)
+            {
+                pSparklineGroup->m_oColorNegative.Init();
+                res = Read2(length, &BinaryWorksheetsTableReader::ReadColor, this, pSparklineGroup->m_oColorNegative.GetPointer());
+            }
+            else if(c_oSer_Sparkline::ColorAxis == type)
+            {
+                pSparklineGroup->m_oColorAxis.Init();
+                res = Read2(length, &BinaryWorksheetsTableReader::ReadColor, this, pSparklineGroup->m_oColorAxis.GetPointer());
+            }
+            else if(c_oSer_Sparkline::ColorMarkers == type)
+            {
+                pSparklineGroup->m_oColorMarkers.Init();
+                res = Read2(length, &BinaryWorksheetsTableReader::ReadColor, this, pSparklineGroup->m_oColorMarkers.GetPointer());
+            }
+            else if(c_oSer_Sparkline::ColorFirst == type)
+            {
+                pSparklineGroup->m_oColorFirst.Init();
+                res = Read2(length, &BinaryWorksheetsTableReader::ReadColor, this, pSparklineGroup->m_oColorFirst.GetPointer());
+            }
+            else if(c_oSer_Sparkline::ColorLast == type)
+            {
+                pSparklineGroup->m_oColorLast.Init();
+                res = Read2(length, &BinaryWorksheetsTableReader::ReadColor, this, pSparklineGroup->m_oColorLast.GetPointer());
+            }
+            else if(c_oSer_Sparkline::ColorHigh == type)
+            {
+                pSparklineGroup->m_oColorHigh.Init();
+                res = Read2(length, &BinaryWorksheetsTableReader::ReadColor, this, pSparklineGroup->m_oColorHigh.GetPointer());
+            }
+            else if(c_oSer_Sparkline::ColorLow == type)
+            {
+                pSparklineGroup->m_oColorLow.Init();
+                res = Read2(length, &BinaryWorksheetsTableReader::ReadColor, this, pSparklineGroup->m_oColorLow.GetPointer());
+            }
+            else if(c_oSer_Sparkline::Ref == type)
+            {
+                pSparklineGroup->m_oRef.Init();
+                pSparklineGroup->m_oRef->Append(m_oBufferedStream.GetString3(length));
+            }
+            else if(c_oSer_Sparkline::Sparklines == type)
+            {
+                pSparklineGroup->m_oSparklines.Init();
+                res = Read1(length, &BinaryWorksheetsTableReader::ReadSparklines, this, pSparklineGroup->m_oSparklines.GetPointer());
+            }
+            else
+                res = c_oSerConstants::ReadUnknown;
+            return res;
+        };
+        int ReadSparklines(BYTE type, long length, void* poResult)
+        {
+            OOX::Spreadsheet::CSparklines* pSparklines = static_cast<OOX::Spreadsheet::CSparklines*>(poResult);
+            int res = c_oSerConstants::ReadOk;
+            if(c_oSer_Sparkline::Sparkline == type)
+            {
+                OOX::Spreadsheet::CSparkline* pSparkline = new OOX::Spreadsheet::CSparkline();
+                res = Read1(length, &BinaryWorksheetsTableReader::ReadSparkline, this, pSparkline);
+                pSparklines->m_arrItems.push_back(pSparkline);
+            }
+            else
+                res = c_oSerConstants::ReadUnknown;
+            return res;
+        };
+        int ReadSparkline(BYTE type, long length, void* poResult)
+        {
+            OOX::Spreadsheet::CSparkline* pSparkline = static_cast<OOX::Spreadsheet::CSparkline*>(poResult);
+            int res = c_oSerConstants::ReadOk;
+            if(c_oSer_Sparkline::SparklineRef == type)
+            {
+                pSparkline->m_oRef.Init();
+                pSparkline->m_oRef->Append(m_oBufferedStream.GetString3(length));
+            }
+            else if(c_oSer_Sparkline::SparklineSqRef == type)
+            {
+                pSparkline->m_oSqRef.Init();
+                pSparkline->m_oSqRef->Append(m_oBufferedStream.GetString3(length));
+            }
+            else
+                res = c_oSerConstants::ReadUnknown;
+            return res;
+        };
 
 		void AddLineBreak(OOX::Spreadsheet::CSi& oSi)
 		{

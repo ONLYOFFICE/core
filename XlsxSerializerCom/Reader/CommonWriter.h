@@ -1,4 +1,4 @@
-#ifndef COMMON_WRITER
+﻿#ifndef COMMON_WRITER
 #define COMMON_WRITER
 
 #include "../../ASCOfficePPTXFile/Editor/BinaryFileReaderWriter.h"
@@ -14,7 +14,7 @@ namespace BinXlsxRW {
 		void WriteItemEnd(int nStart);
 		int WriteItemWithLengthStart();
 		void WriteItemWithLengthEnd(int nStart);
-		void WriteColor(const OOX::Spreadsheet::CColor& color, OOX::Spreadsheet::CIndexedColors* pIndexedColors, OOX::CTheme* theme);
+		void WriteColor(const OOX::Spreadsheet::CColor& color, OOX::Spreadsheet::CIndexedColors* pIndexedColors);
 		void WriteBytesArray(BYTE* pData, long nDataSize);
 	};
 }

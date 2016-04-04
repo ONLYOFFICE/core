@@ -200,7 +200,8 @@ namespace BinXlsxRW
 		ConditionalFormatting = 21,
 		SheetViews = 22,
 		SheetView = 23,
-		SheetPr = 24
+		SheetPr = 24,
+ 		SparklineGroups = 25
 	};}
 	namespace c_oSerWorksheetPropTypes{enum c_oSerWorksheetPropTypes
 	{
@@ -726,6 +727,41 @@ namespace BinXlsxRW
 
 		TabColor = 9
 	};}
+
+    namespace c_oSer_Sparkline{enum c_oSer_Sparkline
+    {
+        SparklineGroup = 0,
+        ManualMax = 1,
+        ManualMin = 2,
+        LineWeight = 3,
+        Type = 4,
+        DateAxis = 5,
+        DisplayEmptyCellsAs = 6,
+        Markers = 7,
+        High = 8,
+        Low = 9,
+        First = 10,
+        Last = 11,
+        Negative = 12,
+        DisplayXAxis = 13,
+        DisplayHidden = 14,
+        MinAxisType = 15,
+        MaxAxisType = 16,
+        RightToLeft = 17,
+        ColorSeries = 18,
+        ColorNegative = 19,
+        ColorAxis = 20,
+        ColorMarkers = 21,
+        ColorFirst = 22,
+        ColorLast = 23,
+        ColorHigh = 24,
+        ColorLow = 25,
+        Ref = 26,
+        Sparklines = 27,
+        Sparkline = 28,
+        SparklineRef = 29,
+        SparklineSqRef = 30
+    };}
 }
 
 #endif //

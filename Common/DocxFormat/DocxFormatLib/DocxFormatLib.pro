@@ -150,7 +150,8 @@ SOURCES += docxformatlib.cpp \
     ../Source/Utility/DateTime.cpp \
     ../Source/Utility/TxtFile.cpp \
     ../Source/Base/unicode_util.cpp \
-    ../../3dParty/pole/pole.cpp
+    ../../3dParty/pole/pole.cpp \
+    ../Source/DocxFormat/Drawing/DrawingExt.cpp
 
 HEADERS += docxformatlib.h \
     ../Source/Base/Base.h \
@@ -347,7 +348,8 @@ HEADERS += docxformatlib.h \
     ../Source/MathEquation/Types.h \
     ../Source/Base/unicode_util.h \
     ../Source/XlsxFormat/ExternalLinks/ExternalLinkPath.h \
-    ../Source/XlsxFormat/ExternalLinks/ExternalLinks.h
+    ../Source/XlsxFormat/ExternalLinks/ExternalLinks.h \
+    ../Source/XlsxFormat/Worksheets/Sparkline.h
 unix {
     target.path = /usr/lib
     INSTALLS += target

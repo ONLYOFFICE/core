@@ -16,10 +16,10 @@ class xlsx_text_context;
 class xlsx_table_context
 {
 public:
-    xlsx_table_context(xlsx_conversion_context & Context, xlsx_text_context & textCotnext);
+    xlsx_table_context(xlsx_conversion_context * Context, xlsx_text_context & textCotnext);
 
 public:
-    void start_table(const std::wstring & tableName, const std::wstring & tableStyleName);
+    void start_table(std::wstring tableName, std::wstring tableStyleName);
     void end_table();
 
     std::wstring get_current_table_name() const;
@@ -70,8 +70,8 @@ public:
     void table_column_last_width(double w);
     double table_column_last_width() const;
 
-    xlsx_table_state & state();
-    const xlsx_table_state & state() const;
+    xlsx_table_state_ptr		& state();
+    const xlsx_table_state_ptr	& state()	const;
 
     void start_hyperlink();
 	std::wstring end_hyperlink(std::wstring const & ref, std::wstring const & href, std::wstring const & display);
@@ -80,9 +80,9 @@ public:
    void serialize_hyperlinks(std::wostream & _Wostream);
 
 private:
-    xlsx_conversion_context		& context_;
-    xlsx_text_context			& xlsx_text_context_;
-    std::list<xlsx_table_state> table_state_stack_;
+    xlsx_conversion_context			*	context_;
+    xlsx_text_context				&	xlsx_text_context_;
+    std::list<xlsx_table_state_ptr>		table_state_stack_;
 };
 
 

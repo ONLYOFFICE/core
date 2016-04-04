@@ -1,23 +1,29 @@
-#include "xlsx_table_state.h"
+#include <cpdoccore/odf/odf_document.h>
+#include <cpdoccore/xml/simple_xml_writer.h>
 
 #include "logging.h"
+#include "xlsx_table_state.h"
+
 #include "xlsxconversioncontext.h"
 
-#include <cpdoccore/xml/simple_xml_writer.h>
+#include "../odf/odfcontext.h"
+#include "../odf/style_table_properties.h"
+#include "../odf/datatypes/stylefamily.h"
+
 
 namespace cpdoccore {
 namespace oox {
 
-xlsx_table_state::xlsx_table_state(xlsx_conversion_context & Context, const std::wstring & StyleName, const std::wstring & tableName)
-  : context_(Context),
-    table_style_(StyleName),
-    tableName_(tableName),
-    current_table_column_(-1),
-    current_table_row_(-1),
-    columns_spanned_num_(0),
-    columns_count_(0),
-    xlsx_drawing_context_(Context.get_drawing_context_handle()),
-    xlsx_comments_context_(Context.get_comments_context_handle()),
+xlsx_table_state::xlsx_table_state(xlsx_conversion_context * Context, std::wstring styleName, std::wstring tableName)
+  : context_				(Context),
+    table_style_			(styleName),
+    tableName_				(tableName),
+    current_table_column_	(-1),
+    current_table_row_		(-1),
+    columns_spanned_num_	(0),
+    columns_count_			(0),
+    xlsx_drawing_context_	(Context->get_drawing_context_handle()),
+    xlsx_comments_context_	(Context->get_comments_context_handle()),
     table_column_last_width_(0.0)
 {        
 	memset(&group_row_,0,sizeof(_group_row));
@@ -225,6 +231,7 @@ double charsToSize(unsigned int charsCount, double maxDigitSize)
 
 void xlsx_table_state::serialize_table_format(std::wostream & _Wostream)
 {
+	odf_reader::odf_read_context & odfContext = context_->root()->odf_context();
 	CP_XML_WRITER(_Wostream)
 	{
 		CP_XML_NODE(L"sheetView")
@@ -234,32 +241,26 @@ void xlsx_table_state::serialize_table_format(std::wostream & _Wostream)
 			//	-rightToLeft
 			//	-zoomScale
 		} 
-		CP_XML_NODE(L"sheetFormatPr")
+
+		double default_height = (2 * context_->getMaxDigitSize().second * 72. / 96. * 100.) /100.;//in point size.
+		
+		odf_reader::style_instance * rowDefStyle = odfContext.styleContainer().style_default_by_type(odf_types::style_family::TableRow);
+		if ((rowDefStyle) && (rowDefStyle->content()))
 		{
-			double default_height = (context_.getMaxDigitSize().second * 72. / 96. * 100.) /100.;//in point size.
+			const odf_reader::style_table_row_properties * prop = rowDefStyle->content()->get_style_table_row_properties();
+
+			if ( (prop) &&  (prop->style_table_row_properties_attlist_.style_row_height_))
+			{
+				default_height = prop->style_table_row_properties_attlist_.style_row_height_->get_value_unit(odf_types::length::pt);
+			}
+			std::wstringstream ht_s;
+			ht_s.precision(3);
+			ht_s << std::fixed << default_height;
 			
-			//odf::style_instance * rowStyle = odfContext.styleContainer().style_by_name(styleName, odf_types::style_family::TableRow,false/*false*/);
-			//if (!rowStyle)
-			//	break;
-
-			//if (!rowStyle->content())
-			//	break;
-
-			//const odf_reader::style_table_row_properties * prop = rowStyle->content()->get_style_table_row_properties();
-			//if (!prop)
-			//	break;
-			//if (const _CP_OPT(odf_types::length) & height = prop->style_table_row_properties_attlist_.style_row_height_)
-			//{
-			//	row_height = height->get_value_unit(odf_types::length::pt);
-			//	std::wstringstream ht_s;
-			//	ht_s.precision(3);
-			//	ht_s << std::fixed << row_height;
-			//	ht = ht_s.str();
-			//}
-
-			//CP_XML_ATTR(L"defaultColWidth", merges_.size());
-			
-			CP_XML_ATTR(L"defaultRowHeight",default_height);
+			CP_XML_NODE(L"sheetFormatPr")
+			{
+				CP_XML_ATTR(L"defaultRowHeight", ht_s.str());	
+			}
 		}  
 	}
 

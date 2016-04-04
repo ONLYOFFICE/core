@@ -37,34 +37,7 @@ style_instance::style_instance(
     parent_ = Container->style_by_name(parent_name_, style_type_,false);
 
 }
-
-std::wostream & style_instance::dbg_dump(std::wostream & _Wostream)
-{
-    _Wostream << L"[STYLE]\n";
-    _Wostream << L"\tname: '" << name() << L"'\n";
-    _Wostream << L"\ttype: '" << style_family(type()) << L"'\n";
-    _Wostream << L"\tcontent: '" << content() << L"'\n";
-    _Wostream << L"\tparent: '" << parent() << L"'\n";
-    _Wostream << L"\tparent_name: '" << parent_name() << L"'\n";
-    _Wostream << L"\tnext: '" << next() << L"'\n";
-    _Wostream << L"\tnext_name: '" << next_name() << L"'\n";
-    _Wostream << L"\tauto: '" << is_automatic() << L"'\n";
-    _Wostream << L"\tdefault: '" << is_default() << L"'\n";
-    _Wostream << L"\n";
-
-    return _Wostream;
-    
-}
-
-std::wostream & styles_container::dbg_dump(std::wostream & _Wostream)
-{
-    BOOST_FOREACH(style_instance_ptr & elm, instances_)
-    {
-        elm->dbg_dump(_Wostream);        
-    }
-    return _Wostream;
-}
-    
+   
 style_instance * styles_container::hyperlink_style()
 {
     if (hyperlink_style_pos_ > 0)

@@ -18,53 +18,52 @@ namespace odf_reader {
 class styles_container;
 class style_instance;
 
-typedef boost::shared_ptr<style_instance> style_instance_ptr;
+typedef boost::shared_ptr<style_instance>	style_instance_ptr;
 typedef boost::shared_ptr<styles_container> styles_container_ptr;
 
 class style_instance
 {
 public:
     style_instance(
-        styles_container *	Container,
-        const std::wstring & Name,
-        odf_types::style_family::type Type,
-        style_content * Content,
-        bool IsAutomatic,
-        bool IsDefault,
-        const std::wstring & ParentStyleName,
-        const std::wstring & NextStyleName,
-        const std::wstring & DataStyleName
+        styles_container				* Container,
+        const std::wstring				& Name,
+        odf_types::style_family::type	Type,
+        style_content					* Content,
+        bool							IsAutomatic,
+        bool							IsDefault,
+        const std::wstring				& ParentStyleName,
+        const std::wstring				& NextStyleName,
+        const std::wstring				& DataStyleName
         );
 
 
-    const std::wstring & name() const;
-    odf_types::style_family::type type() const;
-    style_content * content() const;
-    style_instance * parent() const;
-    const std::wstring & parent_name() const;
-    style_instance * next() const;
-    const std::wstring & next_name() const;
-    bool is_automatic() const;
-    bool is_default() const;
-    const styles_container * container() const { return container_; }
-    const std::wstring & data_style_name() const;
-
-    std::wostream & dbg_dump(std::wostream & _Wostream);
+    const std::wstring				& name()		const;
+    odf_types::style_family::type	type()			const;
+    style_content					* content()		const;
+    style_instance					* parent()		const;
+    const std::wstring				& parent_name()	const;
+    style_instance					* next()		const;
+    const std::wstring				& next_name()	const;
+     const styles_container			* container()	const { return container_; }
+    const std::wstring				& data_style_name() const;
+ 
+	bool							is_automatic()	const;
+    bool							is_default()	const;
 
 private:
-    styles_container * container_;
-    std::wstring name_;
-    odf_types::style_family::type style_type_;
-    style_content * content_;
+    styles_container				* container_;
+    std::wstring					name_;
+    odf_types::style_family::type	style_type_;
+    style_content					* content_;
 
-    bool is_automatic_;    
-    bool is_default_;
+    bool							is_automatic_;    
+    bool							is_default_;
 
-    std::wstring parent_name_;
-    std::wstring next_name_;
-    mutable style_instance * parent_;
-    mutable style_instance * next_;   
-    std::wstring data_style_name_;
+    std::wstring					parent_name_;
+    std::wstring					next_name_;
+    mutable style_instance			* parent_;
+    mutable style_instance			* next_;   
+    std::wstring					data_style_name_;
 };
 
 class presentation_layouts_instance
@@ -107,14 +106,14 @@ public:
 
     typedef std::vector<style_instance_ptr> instances_array;
     
-	void add_style(const std::wstring & Name,
-        odf_types::style_family::type Type,
-        style_content * Content,
-        bool IsAutomatic,
-        bool IsDefault,
-        const std::wstring & ParentStyleName,
-        const std::wstring & NextStyleName,
-        const std::wstring & DataStyleName);
+	void add_style(const std::wstring	& Name,
+        odf_types::style_family::type	 Type,
+        style_content					* Content,
+        bool							IsAutomatic,
+        bool							IsDefault,
+        const std::wstring				& ParentStyleName,
+        const std::wstring				& NextStyleName,
+        const std::wstring				& DataStyleName);
 
     void add_master_page_name(const std::wstring & StyleName, const std::wstring & MasterPageName);
 
@@ -125,8 +124,6 @@ public:
 	const std::wstring master_page_name_by_name(const std::wstring & StyleName) const;
 
     instances_array & instances() { return instances_; } 
-
-    std::wostream & dbg_dump(std::wostream & _Wostream);
 
 	presentation_layouts_instance & presentation_layouts() { return presentation_layouts_; } 
 	presentation_masters_instance & presentation_masters() { return presentation_masters_; } 

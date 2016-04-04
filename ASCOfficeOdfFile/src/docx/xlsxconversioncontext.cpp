@@ -34,7 +34,7 @@ xlsx_conversion_context(::cpdoccore::oox::package::xlsx_document * outputDocumen
                         ::cpdoccore::odf_reader::odf_document * odfDocument): output_document_(outputDocument),
 	odf_document_(odfDocument),
 	xlsx_text_context_(odf_document_->odf_context().styleContainer()),
-	xlsx_table_context_(*this, xlsx_text_context_),
+	xlsx_table_context_(this, xlsx_text_context_),
 	
 	maxDigitSize_ (std::pair<float,float>(-1.0, -1.0) ),
 	default_style_( (std::numeric_limits<size_t>::max)() ),
@@ -244,7 +244,7 @@ void xlsx_conversion_context::create_new_sheet(std::wstring const & name)
 {
     sheets_.push_back(xlsx_xml_worksheet::create(name));
 }
-bool xlsx_conversion_context::start_table(const std::wstring & tableName, const std::wstring & tableStyleName)
+bool xlsx_conversion_context::start_table(std::wstring tableName, std::wstring tableStyleName)
 {
     // TODO : nested tables forbidden
     if (get_table_context().depth() > 0)

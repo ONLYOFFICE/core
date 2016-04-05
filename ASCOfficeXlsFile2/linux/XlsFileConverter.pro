@@ -40,7 +40,7 @@ SOURCES += \
 
 
 ############### destination path ###############
-DESTINATION_SDK_PATH = $$PWD/../../SDK/lib
+DESTINATION_SDK_PATH = $$PWD/../../build/lib
 
 # WINDOWS
 win32:contains(QMAKE_TARGET.arch, x86_64):{
@@ -71,22 +71,22 @@ linux-g++ | linux-g++-64 | linux-g++-32:contains(QMAKE_HOST.arch, x86_64):{
 
     message(64 bit)
 
-    unix:!macx: LIBS += -L$$PWD/../../SDK/lib/linux_64/ -lXlsFormatLib
-    unix:!macx: PRE_TARGETDEPS += $$PWD/../../SDK/lib/linux_64/libXlsFormatLib.a
+    unix:!macx: LIBS += -L$$PWD/../../build/lib/linux_64/ -lXlsFormatLib
+    unix:!macx: PRE_TARGETDEPS += $$PWD/../../build/lib/linux_64/libXlsFormatLib.a
 
-    LIBS += -L$$PWD/../../SDK/lib/linux_64/ -lgraphics
-    LIBS += -L$$PWD/../../SDK/lib/linux_64/ -lASCOfficeUtilsLib
+    LIBS += -L$$PWD/../../build/lib/linux_64/ -lgraphics
+    LIBS += -L$$PWD/../../build/lib/linux_64/ -lASCOfficeUtilsLib
   }
 
 else{
 
     message(32 bit)
 
-    unix:!macx: LIBS += -L$$PWD/../../SDK/lib/linux_32/ -lXlsFormatLib
-    unix:!macx: PRE_TARGETDEPS += $$PWD/../../SDK/lib/linux_32/libXlsFormatLib.a
+    unix:!macx: LIBS += -L$$PWD/../../build/lib/linux_32/ -lXlsFormatLib
+    unix:!macx: PRE_TARGETDEPS += $$PWD/../../build/lib/linux_32/libXlsFormatLib.a
 
-    LIBS += -L$$PWD/../../SDK/lib/linux_32/ -lgraphics
-    LIBS += -L$$PWD/../../SDK/lib/linux_32/ -lASCOfficeUtilsLib
+    LIBS += -L$$PWD/../../build/lib/linux_32/ -lgraphics
+    LIBS += -L$$PWD/../../build/lib/linux_32/ -lASCOfficeUtilsLib
 }
 
 LIBS += -lboost_regex

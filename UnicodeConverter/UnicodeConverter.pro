@@ -22,7 +22,7 @@ linux-g++ | linux-g++-64 | linux-g++-32 {
 }
 
 ############### destination path ###############
-DESTINATION_SDK_PATH = $$PWD/../SDK/lib
+DESTINATION_SDK_PATH = $$PWD/../build/lib
 ICU_BUILDS_PLATFORM = mac
 
 # WINDOWS

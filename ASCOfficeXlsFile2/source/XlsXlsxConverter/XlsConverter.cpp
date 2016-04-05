@@ -913,7 +913,7 @@ void XlsConverter::convert(XLS::OBJECTS* objects, XLS::WorksheetSubstream * shee
 			else //сюда попадать не должно !!!!
 				continue;
 		}
-		if ((group_objects.back().spgr ) && ( group_objects.back().ind < group_objects.back().count))
+		if ((group_objects.size() > 0) && (group_objects.back().spgr ) && ( group_objects.back().ind < group_objects.back().count))
 		{
 			sp	= dynamic_cast<ODRAW::OfficeArtSpContainer*>(group_objects.back().spgr->child_records[group_objects.back().ind++].get());
 		}	
@@ -924,7 +924,7 @@ void XlsConverter::convert(XLS::OBJECTS* objects, XLS::WorksheetSubstream * shee
 
 			if ((!sp) || (!sp->m_OfficeArtAnchor))
 			{
-				if ((group_objects.back().spgr ) && ( group_objects.back().ind < group_objects.back().count))
+				if ((group_objects.size() > 0) && (group_objects.back().spgr ) && ( group_objects.back().ind < group_objects.back().count))
 				{
 					sp	= dynamic_cast<ODRAW::OfficeArtSpContainer*>(group_objects.back().spgr->child_records[group_objects.back().ind++].get());
 				}

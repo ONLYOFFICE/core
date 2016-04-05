@@ -10,6 +10,16 @@ void OfficeArtFConnectorRule::loadFields(XLS::CFRecord& record)
 	record >> ruid >> spidA >> spidB >> spidC >> cptiA >> cptiB;
 }
 	
+void OfficeArtFArcRule::loadFields(XLS::CFRecord& record)
+{
+	record >> ruid >> spid;
+}
+
+void OfficeArtFCalloutRule::loadFields(XLS::CFRecord& record)
+{
+	record >> ruid >> spid;
+}
+
 void OfficeArtClientTextbox::loadFields(XLS::CFRecord& record)
 {
 	if (rh_own.recLen > 0)

@@ -196,7 +196,7 @@ $(XLSFORMATLIB): $(XLSFORMATLIB_DEP)
 $(DJVUFILE): $(DJVUFILE_DEP)
 
 %.build/Makefile: %.pro
-	mkdir -p $(dir $@) && cd $(dir $@) && qmake $<
+	mkdir -p $(dir $@) && cd $(dir $@) && qmake -r -spec linux-g++ $<
 
 clean:
 	rm -rf $(TARGETS) $(PROS)

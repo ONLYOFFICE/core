@@ -398,11 +398,12 @@ private:
 class docx_conversion_context : boost::noncopyable
 {
 public:
-    docx_conversion_context(package::docx_document * OutputDocument, odf_reader::odf_document * OdfDocument);
+    docx_conversion_context(odf_reader::odf_document * OdfDocument);
 
 	~docx_conversion_context();
 
-    void set_font_directory(std::wstring pathFonts);
+	void set_output_document	(package::docx_document * document);
+    void set_font_directory		(std::wstring pathFonts);
 	
 	std::wostream & output_stream()
     {

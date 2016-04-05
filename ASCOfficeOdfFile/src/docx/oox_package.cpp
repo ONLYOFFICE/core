@@ -46,27 +46,44 @@ static std::wstring get_mime_type(const std::wstring & extension)
 	return L"";
 }
 
+//----------------------------------------------------------------
+
+void element::set_main_document(document * _document) 
+{ 
+	document_ = _document; 
+}
+document *	element::get_main_document()						
+{
+	return document_; 
+}
+
 content_types_file::content_types_file() : filename_(L"[Content_Types].xml") 
 {}
 
 void content_types_file::write(const std::wstring & RootPath)
 {
     std::wstringstream resStream;
-    content_type_.xml_to_stream(resStream);
+    
+	content_type_content_.xml_to_stream(resStream);
     std::wstring res = resStream.str(); 
 
     simple_element elm(filename_, resStream.str());
     elm.write(RootPath);
 }
 
+content_type_content * content_types_file::content()
+{ 
+	return &content_type_content_;
+}
+
 bool content_types_file::add_or_find_default(const std::wstring & extension)
 {
-	for (int i = 0 ; i < content_type_.get_default().size(); i++)
+	for (int i = 0 ; i < content_type_content_.get_default().size(); i++)
 	{
-		if (content_type_.get_default()[i].extension() == extension)
+		if (content_type_content_.get_default()[i].extension() == extension)
 			return true;
 	}
-	content_type_.add_default(extension, get_mime_type(extension));
+	content_type_content_.add_default(extension, get_mime_type(extension));
 	return true;
 }
 void content_types_file::set_media(mediaitems & _Mediaitems)

@@ -52,7 +52,7 @@ private:
     
 };
 
-class docx_table_context : boost::noncopyable
+class docx_table_context
 {
 public:
     docx_table_context(docx_conversion_context & Context) : context_(Context)

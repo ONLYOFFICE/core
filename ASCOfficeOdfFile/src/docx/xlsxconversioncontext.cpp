@@ -29,20 +29,25 @@ namespace package
     class xlsx_document;
 }
 
-xlsx_conversion_context::
-xlsx_conversion_context(::cpdoccore::oox::package::xlsx_document * outputDocument,
-                        ::cpdoccore::odf_reader::odf_document * odfDocument): output_document_(outputDocument),
-	odf_document_(odfDocument),
-	xlsx_text_context_(odf_document_->odf_context().styleContainer()),
-	xlsx_table_context_(this, xlsx_text_context_),
+xlsx_conversion_context::xlsx_conversion_context(odf_reader::odf_document * odfDocument) : 
+	odf_document_		(odfDocument),
+	output_document_	(NULL),
+	xlsx_text_context_	(odf_document_->odf_context().styleContainer()),
+	xlsx_table_context_	(this, xlsx_text_context_),
 	
-	maxDigitSize_ (std::pair<float,float>(-1.0, -1.0) ),
-	default_style_( (std::numeric_limits<size_t>::max)() ),
-	mediaitems_(odf_document_->get_folder()),
+	maxDigitSize_	(std::pair<float,float>(-1.0, -1.0) ),
+	default_style_	( (std::numeric_limits<size_t>::max)() ),
+	mediaitems_		(odf_document_->get_folder()),
 	xlsx_drawing_context_handle_(mediaitems_)
 {
      applicationFonts_ = new CApplicationFonts();
 }
+
+void xlsx_conversion_context::set_output_document (package::xlsx_document * document)
+{
+	output_document_ = document;
+}
+
 xlsx_conversion_context::~xlsx_conversion_context()
 {
     if (applicationFonts_)
@@ -199,7 +204,7 @@ void xlsx_conversion_context::end_document()
 
         output_document_->get_xl_files().set_workbook( package::simple_element::create(L"workbook.xml", strm_workbook.str()) );
 
-		output_document_->content_type().set_media(get_mediaitems());
+		output_document_->get_content_types_file().set_media(get_mediaitems());
         output_document_->get_xl_files().set_media(get_mediaitems(), applicationFonts_);
 
         package::xl_drawings_ptr drawings = package::xl_drawings::create(xlsx_drawing_context_handle_.content());

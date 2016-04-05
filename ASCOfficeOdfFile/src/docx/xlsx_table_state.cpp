@@ -254,7 +254,7 @@ void xlsx_table_state::serialize_table_format(std::wostream & _Wostream)
 				default_height = prop->style_table_row_properties_attlist_.style_row_height_->get_value_unit(odf_types::length::pt);
 			}
 			std::wstringstream ht_s;
-			ht_s.precision(3);
+			ht_s.precision(1);
 			ht_s << std::fixed << default_height;
 			
 			CP_XML_NODE(L"sheetFormatPr")

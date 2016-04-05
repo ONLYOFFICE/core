@@ -55,8 +55,8 @@ public:
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////
-/// \class content_type
-class content_type : public xml::element_impl<content_type>
+/// \class content_type_content
+class content_type_content : public xml::element_impl<content_type_content>
 {
 public:
     static const wchar_t * ns;
@@ -85,12 +85,12 @@ public:
         add_override(override_content_type(PartName, contentType));    
     }
 
-    std::vector<default_content_type> & get_default() { return default_; };
-    std::vector<override_content_type> & get_override() { return override_; };
+    std::vector<default_content_type>	& get_default()		{ return default_; };
+    std::vector<override_content_type>	& get_override()	{ return override_; };
 
 private:
-    std::vector<default_content_type> default_;
-    std::vector<override_content_type> override_;
+    std::vector<default_content_type>	default_;
+    std::vector<override_content_type>	override_;
 
 };
 

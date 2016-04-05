@@ -33,7 +33,7 @@ public:
     const std::wstring & get_folder() const { return base_folder_; }
    
 	const	office_element * get_content() const;
-			office_element * get_content();
+		office_element * get_content();
 
 	long get_office_mime_type() {return office_mime_type_;}
 

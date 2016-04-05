@@ -41,10 +41,11 @@ namespace package
 class xlsx_conversion_context : boost::noncopyable
 {
 public:
-    xlsx_conversion_context(cpdoccore::oox::package::xlsx_document * outputDocument, cpdoccore::odf_reader::odf_document * odfDocument);
+    xlsx_conversion_context(cpdoccore::odf_reader::odf_document * odfDocument);
     ~xlsx_conversion_context();
 
-    void set_font_directory(std::wstring pathFonts);
+	void set_output_document(package::xlsx_document * document);
+    void set_font_directory	(std::wstring pathFonts);
 
     void start_document();
     void end_document();

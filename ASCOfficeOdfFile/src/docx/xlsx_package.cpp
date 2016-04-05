@@ -14,21 +14,21 @@ namespace package {
 
 xlsx_content_types_file::xlsx_content_types_file()
 {
-    content_type_.add_default(L"rels",  L"application/vnd.openxmlformats-package.relationships+xml");
-    content_type_.add_default(L"xml",   L"application/xml");
+    content()->add_default(L"rels",  L"application/vnd.openxmlformats-package.relationships+xml");
+    content()->add_default(L"xml",   L"application/xml");
 
-    content_type_.add_default(L"jpg",     L"image/jpeg");
-    content_type_.add_default(L"png",     L"image/png");
+    content()->add_default(L"jpg",     L"image/jpeg");
+    content()->add_default(L"png",     L"image/png");
 
-    content_type_.add_default(L"vml",    L"application/vnd.openxmlformats-officedocument.vmlDrawing");
+    content()->add_default(L"vml",    L"application/vnd.openxmlformats-officedocument.vmlDrawing");
  
-	content_type_.add_override(L"/_rels/.rels",                  L"application/vnd.openxmlformats-package.relationships+xml");
-    content_type_.add_override(L"/xl/_rels/workbook.xml.rels",   L"application/vnd.openxmlformats-package.relationships+xml");
-    content_type_.add_override(L"/xl/sharedStrings.xml",         L"application/vnd.openxmlformats-officedocument.spreadsheetml.sharedStrings+xml");
-    content_type_.add_override(L"/xl/workbook.xml",              L"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml");
-    content_type_.add_override(L"/xl/styles.xml",                L"application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml");
-    content_type_.add_override(L"/docProps/app.xml",             L"application/vnd.openxmlformats-officedocument.extended-properties+xml");
-    content_type_.add_override(L"/docProps/core.xml",            L"application/vnd.openxmlformats-package.core-properties+xml");
+	content()->add_override(L"/_rels/.rels",                  L"application/vnd.openxmlformats-package.relationships+xml");
+    content()->add_override(L"/xl/_rels/workbook.xml.rels",   L"application/vnd.openxmlformats-package.relationships+xml");
+    content()->add_override(L"/xl/sharedStrings.xml",         L"application/vnd.openxmlformats-officedocument.spreadsheetml.sharedStrings+xml");
+    content()->add_override(L"/xl/workbook.xml",              L"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml");
+    content()->add_override(L"/xl/styles.xml",                L"application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml");
+    content()->add_override(L"/docProps/app.xml",             L"application/vnd.openxmlformats-officedocument.extended-properties+xml");
+    content()->add_override(L"/docProps/core.xml",            L"application/vnd.openxmlformats-package.core-properties+xml");
 }
 
 xlsx_document::xlsx_document()
@@ -45,10 +45,10 @@ xlsx_document::xlsx_document()
 
 void xlsx_document::write(const std::wstring & RootPath)
 {
-    xl_files_.write(RootPath);
-    docProps_files_.write(RootPath);
-    content_type_.write(RootPath);
-    rels_files_.write(RootPath);
+    xl_files_.write			(RootPath);
+    docProps_files_.write	(RootPath);
+    rels_files_.write		(RootPath);
+    content_type_file_.write(RootPath);
 }
 
 ////////////////////////////////////////////
@@ -97,10 +97,11 @@ void sheets_files::write(const std::wstring & RootPath)
         if (item)
         {
             count++;
-            const std::wstring fileName = std::wstring(L"sheet") + boost::lexical_cast<std::wstring>(count) + L".xml";
-            content_type & contentTypes = this->get_main_document()->content_type().get_content_type();
-            static const std::wstring kWSConType = L"application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml";
-            contentTypes.add_override(std::wstring(L"/xl/worksheets/") + fileName, kWSConType);
+            const std::wstring fileName		= std::wstring(L"sheet") + boost::lexical_cast<std::wstring>(count) + L".xml";
+			const std::wstring kWSConType	= L"application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml";
+            
+			content_type_content * contentTypes = this->get_main_document()->get_content_types_file().content();
+            contentTypes->add_override(std::wstring(L"/xl/worksheets/") + fileName, kWSConType);
 
             if (rels_)
             {
@@ -247,10 +248,10 @@ void xl_charts_files::write(const std::wstring & RootPath)
         {
             count++;
             const std::wstring fileName = std::wstring(L"chart") + boost::lexical_cast<std::wstring>(count) + L".xml";
-            content_type & contentTypes = this->get_main_document()->content_type().get_content_type();
+            content_type_content * contentTypes = this->get_main_document()->get_content_types_file().content();
            
 			static const std::wstring kWSConType = L"application/vnd.openxmlformats-officedocument.drawingml.chart+xml";
-            contentTypes.add_override(std::wstring(L"/xl/charts/") + fileName, kWSConType);
+            contentTypes->add_override(std::wstring(L"/xl/charts/") + fileName, kWSConType);
 
             package::simple_element(fileName, item->str()).write(path);
         }
@@ -274,16 +275,14 @@ void xl_drawings::write(const std::wstring & RootPath)
         rels_files relFiles;
         rels_file_ptr r = rels_file::create(e.filename + L".rels");
         e.drawings->dump_rels(r->get_rels());
-               
                 
         relFiles.add_rel_file(r);
         relFiles.write(path);
-        
 
-        content_type & contentTypes = this->get_main_document()->content_type().get_content_type();
+        content_type_content * contentTypes = this->get_main_document()->get_content_types_file().content();
 
         const std::wstring kDrawingCT = L"application/vnd.openxmlformats-officedocument.drawing+xml";
-        contentTypes.add_override(L"/xl/drawings/" + e.filename, kDrawingCT);
+        contentTypes->add_override(L"/xl/drawings/" + e.filename, kDrawingCT);
     }
 }
 
@@ -300,10 +299,10 @@ void xl_comments::write(const std::wstring & RootPath)
    
 	BOOST_FOREACH(comment_elm const & e, comments_)
     {
-		content_type & contentTypes = this->get_main_document()->content_type().get_content_type();
+		content_type_content * contentTypes = this->get_main_document()->get_content_types_file().content();
 
 		static const std::wstring kWSConType = L"application/vnd.openxmlformats-officedocument.spreadsheetml.comments+xml";
-        contentTypes.add_override(std::wstring(L"/xl/") + e.filename, kWSConType);
+        contentTypes->add_override(std::wstring(L"/xl/") + e.filename, kWSConType);
 			
 		package::simple_element(e.filename, e.content).write(RootPath);        
 		package::simple_element(e.vml_filename, e.vml_content).write(vml_path);        

@@ -30,9 +30,8 @@ namespace package
     class pptx_document;
 }
 
-pptx_conversion_context::pptx_conversion_context(cpdoccore::oox::package::pptx_document * outputDocument,
-													cpdoccore::odf_reader::odf_document * odfDocument): 
-	output_document_(outputDocument)
+pptx_conversion_context::pptx_conversion_context( odf_reader::odf_document * odfDocument): 
+	output_document_(NULL)
 	,odf_document_(odfDocument)
 	,pptx_text_context_(odf_document_->odf_context(),*this)
 	,pptx_table_context_(*this)
@@ -43,11 +42,18 @@ pptx_conversion_context::pptx_conversion_context(cpdoccore::oox::package::pptx_d
 {
     applicationFonts_ = new CApplicationFonts();
 }
+
 pptx_conversion_context::~pptx_conversion_context()
 {
     if (applicationFonts_)
         delete applicationFonts_;
 }
+
+void pptx_conversion_context::set_output_document(package::pptx_document * document)
+{
+	output_document_ = document;
+}
+
 void pptx_conversion_context::set_font_directory(std::wstring pathFonts)
 {
     if (applicationFonts_ )
@@ -274,14 +280,13 @@ void pptx_conversion_context::end_document()
 	
 	}
     package::ppt_comments_files_ptr comments = package::ppt_comments_files::create(comments_context_handle_.content());
-    output_document_->get_ppt_files().set_comments(comments);
-
-	output_document_->get_ppt_files().set_presentation(presentation_);
-       
-	output_document_->content_type().set_media(get_mediaitems());
+    
+	output_document_->get_ppt_files().set_presentation(presentation_);       
+	output_document_->get_ppt_files().set_comments(comments);
+	output_document_->get_ppt_files().set_authors_comments(authors_comments_);
 	output_document_->get_ppt_files().set_media(get_mediaitems(), applicationFonts_);
 
-	output_document_->get_ppt_files().set_authors_comments(authors_comments_);
+	output_document_->get_content_types_file().set_media(get_mediaitems());
 }
 
 void pptx_conversion_context::start_body()

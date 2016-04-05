@@ -25,10 +25,7 @@ namespace cpdoccore {
 namespace oox {
    
 
-docx_conversion_context::docx_conversion_context(package::docx_document * OutputDocument, odf_reader::odf_document * OdfDocument) : 
-	streams_man_( streams_man::create(temp_stream_) ), 
-	output_document_	(OutputDocument), 
-	odf_document_		(OdfDocument),
+docx_conversion_context::docx_conversion_context(odf_reader::odf_document * OdfDocument) : 
 	mediaitems_			(OdfDocument->get_folder() ),
 	current_run_			(false),
 	page_break_after_		(false),
@@ -37,6 +34,7 @@ docx_conversion_context::docx_conversion_context(package::docx_document * Output
 	in_automatic_style_		(false),
 	in_paragraph_			(false),
 	table_context_			(*this),
+	output_document_		(NULL),
 	section_properties_in_table_(NULL),
 	process_note_			(noNote),
 	new_list_style_number_	(0),	
@@ -44,14 +42,20 @@ docx_conversion_context::docx_conversion_context(package::docx_document * Output
 	delayed_converting_		(false),
 	process_headers_footers_(false),
 	process_comment_		(false),
-	process_math_formula_	(false)
+	process_math_formula_	(false),
+	odf_document_			(OdfDocument)
 {
-    applicationFonts_ = new CApplicationFonts();
+	streams_man_		= streams_man::create(temp_stream_);
+	applicationFonts_	= new CApplicationFonts();
 }
 docx_conversion_context::~docx_conversion_context()
 {
     if (applicationFonts_)
         delete applicationFonts_;
+}
+void docx_conversion_context::set_output_document(package::docx_document * document)
+{
+	output_document_ = document;
 }
 void docx_conversion_context::set_font_directory(std::wstring pathFonts)
 {
@@ -266,13 +270,15 @@ void docx_conversion_context::start_document()
 void docx_conversion_context::end_document()
 {
     output_stream() << L"</w:document>";
-    output_document_->get_word_files().set_document( package::simple_element::create(L"document.xml", document_xml_.str()) );
 
-	output_document_->content_type().set_media(mediaitems_);
-    output_document_->get_word_files().set_media( mediaitems_, applicationFonts_);
-    output_document_->get_word_files().set_headers_footers(headers_footers_);
-	output_document_->get_word_files().set_comments(comments_context_);
-	output_document_->get_word_files().set_settings(package::simple_element::create(L"settings.xml",dump_settings_document()));
+    output_document_->get_word_files().set_document	( package::simple_element::create(L"document.xml", document_xml_.str()) );
+	output_document_->get_word_files().set_settings	( package::simple_element::create(L"settings.xml",dump_settings_document()));
+	output_document_->get_word_files().set_media	( mediaitems_, applicationFonts_);
+	output_document_->get_word_files().set_comments	( comments_context_);
+    output_document_->get_word_files().set_headers_footers( headers_footers_);
+
+	package::content_types_file	& content_file_ = output_document_->get_content_types_file();
+	content_file_.set_media( mediaitems_);
 
 ////////////////////////////////////////////////////////////////////////////
 	dump_hyperlinks (notes_context_.footnotesRels(), hyperlinks::footnote_place);

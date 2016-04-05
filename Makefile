@@ -50,7 +50,7 @@ TARGETS += $(XPSFILE)
 TARGETS += $(HTMLFILE)
 TARGETS += $(UNICODECONVERTER)
 
-X2T_PRO := $(abspath X2tConverter/X2tConverter.pro)
+X2T_PRO := $(abspath X2tConverter/build/Qt/X2tConverter.pro)
 HTMLFILEINTERNAL_PRO := $(abspath HtmlFile/Internal/Internal.pro)
 ALLFONTSGEN_PRO := $(abspath DesktopEditor/AllFontsGen/AllFontsGen.pro)
 XLSFORMATLIB_PRO := $(abspath ASCOfficeXlsFile2/source/linux/XlsFormatLib.pro)
@@ -171,7 +171,7 @@ $$(value $(1)): $$(value $(1)_MAKE)
 	cd $$(dir $$(value $(1)_MAKE)) && make
 endef
 
-.PHONY : all bin clean install uninstall clean-bin
+.PHONY : all bin clean
 
 all: bin
 

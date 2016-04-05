@@ -173,9 +173,11 @@ endef
 
 .PHONY : all bin clean
 
-all: bin
+all: lib bin
 
 bin: $(X2T) $(HTMLFILEINTERNAL) $(ALLFONTSGEN)
+
+lib: $(PDFWRITER) $(DOCTRENDERER) $(HTMLRENDERER) $(PDFREADER) $(DJVUFILE) $(XPSFILE) $(HTMLFILE) $(UNICODECONVERTER)
 
 $(foreach proj, $(QT_PROJ), $(eval $(call build_proj_tmpl, $(proj))))
 

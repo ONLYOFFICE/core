@@ -1,4 +1,5 @@
 build/
+dictionaries/
 LicenceManager/
 Common/boost_1_58_0
 **/Release

@@ -169,11 +169,14 @@ CONFIG(debug, debug|release) {
 
 linux-g++ | linux-g++-64 | linux-g++-32:contains(QMAKE_HOST.arch, x86_64):{
     message(linuX)
+    
+    LIBS += $$PWD/$$DESTINATION_BIN_PATH/icu/linux_64/libicuuc.so.55
+    LIBS += $$PWD/$$DESTINATION_BIN_PATH/icu/linux_64/libicudata.so.55
+    
     DESTINATION_SDK_PATH = $$DESTINATION_SDK_PATH/linux_64
 	DESTINATION_BIN_PATH = $$DESTINATION_BIN_PATH/linux
 
-    LIBS += $$PWD/../../../UnicodeConverter/icubuilds/linux64/usr/local/lib/libicuuc.so.55
-    LIBS += $$PWD/../../../UnicodeConverter/icubuilds/linux64/usr/local/lib/libicudata.so.55
+
 }
 linux-g++ | linux-g++-64 | linux-g++-32:!contains(QMAKE_HOST.arch, x86_64):{
     DESTINATION_SDK_PATH = $$DESTINATION_SDK_PATH/linux_32

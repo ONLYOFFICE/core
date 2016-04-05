@@ -33,12 +33,11 @@ namespace package
 class pptx_conversion_context : boost::noncopyable
 {
 public:
-    pptx_conversion_context(cpdoccore::oox::package::pptx_document * outputDocument,
-								cpdoccore::odf_reader::odf_document * odfDocument);
-
+    pptx_conversion_context(odf_reader::odf_document * odfDocument);
 	~pptx_conversion_context();
 
-    void set_font_directory(std::wstring pathFonts);
+	void set_output_document(package::pptx_document * document);
+    void set_font_directory	(std::wstring pathFonts);
 
 	void start_document();
     void end_document();

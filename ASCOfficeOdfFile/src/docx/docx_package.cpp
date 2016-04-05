@@ -10,21 +10,20 @@ namespace package {
 
 docx_content_types_file::docx_content_types_file()
 {
-    content_type_.add_default(L"rels",    L"application/vnd.openxmlformats-package.relationships+xml");
-    content_type_.add_default(L"xml",     L"application/xml");
+    content()->add_default(L"rels",    L"application/vnd.openxmlformats-package.relationships+xml");
+    content()->add_default(L"xml",     L"application/xml");
 	//
-    content_type_.add_default(L"jpg",     L"image/jpeg");
-    content_type_.add_default(L"png",     L"image/png");
+    content()->add_default(L"jpg",     L"image/jpeg");
+    content()->add_default(L"png",     L"image/png");
 	//
-
-    content_type_.add_override(L"/_rels/.rels",                  L"application/vnd.openxmlformats-package.relationships+xml");
-    content_type_.add_override(L"/word/_rels/document.xml.rels", L"application/vnd.openxmlformats-package.relationships+xml");
-    content_type_.add_override(L"/word/document.xml",            L"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml");
-	content_type_.add_override(L"/word/settings.xml",            L"application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml");
-    content_type_.add_override(L"/word/styles.xml",              L"application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml");
-    content_type_.add_override(L"/word/fontTable.xml",           L"application/vnd.openxmlformats-officedocument.wordprocessingml.fontTable+xml");
-    content_type_.add_override(L"/docProps/app.xml",             L"application/vnd.openxmlformats-officedocument.extended-properties+xml");
-    content_type_.add_override(L"/docProps/core.xml",            L"application/vnd.openxmlformats-package.core-properties+xml");
+    content()->add_override(L"/_rels/.rels",                  L"application/vnd.openxmlformats-package.relationships+xml");
+    content()->add_override(L"/word/_rels/document.xml.rels", L"application/vnd.openxmlformats-package.relationships+xml");
+    content()->add_override(L"/word/document.xml",            L"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml");
+	content()->add_override(L"/word/settings.xml",            L"application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml");
+    content()->add_override(L"/word/styles.xml",              L"application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml");
+    content()->add_override(L"/word/fontTable.xml",           L"application/vnd.openxmlformats-officedocument.wordprocessingml.fontTable+xml");
+    content()->add_override(L"/docProps/app.xml",             L"application/vnd.openxmlformats-officedocument.extended-properties+xml");
+    content()->add_override(L"/docProps/core.xml",            L"application/vnd.openxmlformats-package.core-properties+xml");
 }
 
 
@@ -144,14 +143,14 @@ bool word_files::has_numbering()
 void word_files::set_headers_footers(headers_footers & HeadersFooters)
 {
     headers_footers_elements * elm = new headers_footers_elements(HeadersFooters); 
-    elm->set_main_document( this->get_main_document() );
+    elm->set_main_document( get_main_document() );
     headers_footers_ = element_ptr( elm );
 }
 
 void word_files::set_notes(notes_context & notesContext)
 {
     notes_elements * elm = new notes_elements(notesContext); 
-    elm->set_main_document( this->get_main_document() );
+    elm->set_main_document( get_main_document() );
     notes_ = element_ptr( elm );
 }
 void word_files::set_comments(comments_context & commentsContext)
@@ -159,7 +158,7 @@ void word_files::set_comments(comments_context & commentsContext)
 	if (commentsContext.comments_.size()<1)return;
 
     comments_elements * elm = new comments_elements(commentsContext); 
-    elm->set_main_document( this->get_main_document() );
+    elm->set_main_document( get_main_document() );
     comments_ = element_ptr( elm );
 }
 ///////////////////
@@ -180,10 +179,10 @@ void docx_charts_files::write(const std::wstring & RootPath)
         {
             count++;
             const std::wstring fileName = std::wstring(L"chart") + boost::lexical_cast<std::wstring>(count) + L".xml";
-            content_type & contentTypes = this->get_main_document()->content_type().get_content_type();
+			const std::wstring kWSConType = L"application/vnd.openxmlformats-officedocument.drawingml.chart+xml";
            
-			static const std::wstring kWSConType = L"application/vnd.openxmlformats-officedocument.drawingml.chart+xml";
-            contentTypes.add_override(std::wstring(L"/word/charts/") + fileName, kWSConType);
+			content_type_content * contentTypes = get_main_document()->get_content_types_file().content();           
+            contentTypes->add_override(std::wstring(L"/word/charts/") + fileName, kWSConType);
 
             package::simple_element(fileName, item->str()).write(path);
         }
@@ -212,7 +211,7 @@ void headers_footers_elements::write(const std::wstring & RootPath)
                     L"application/vnd.openxmlformats-officedocument.wordprocessingml.header+xml" : 
                     L"application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml";
 
-                    doc->content_type().get_content_type().add_override(std::wstring(L"/word/") + inst->name_, ContentType);
+                    doc->get_content_types_file().content()->add_override(std::wstring(L"/word/") + inst->name_, ContentType);
             }
 			//нужно сформировать релсы с объектов
 			if (!inst->rels_.empty())
@@ -283,7 +282,9 @@ namespace
 			simple_element(Name, content.str()).write(RootPath);
 	        
 			if (doc)
-				doc->content_type().get_content_type().add_override(std::wstring(L"/word/") + Name, ContentType);
+			{
+				doc->get_content_types_file().content()->add_override(std::wstring(L"/word/") + Name, ContentType);
+			}
 
 			if (Rels.relationships().size() > 0)
 			{
@@ -357,7 +358,7 @@ void comments_elements::write(const std::wstring & RootPath)
         simple_element(L"comments.xml", content.str()).write(RootPath);
         
         if (get_main_document())
-            get_main_document()->content_type().get_content_type().add_override(L"/word/comments.xml", L"application/vnd.openxmlformats-officedocument.wordprocessingml.comments+xml");
+            get_main_document()->get_content_types_file().content()->add_override(L"/word/comments.xml", L"application/vnd.openxmlformats-officedocument.wordprocessingml.comments+xml");
     }
 	if (!comments_context_.get_rels().empty())
 	{
@@ -377,8 +378,10 @@ void comments_elements::write(const std::wstring & RootPath)
 
 docx_document::docx_document()
 {
+	this->set_main_document(this);
     word_files_.set_main_document(this);
-    rels_file_ptr relFile = rels_file_ptr( new rels_file(L".rels") );
+    
+	rels_file_ptr relFile = rels_file_ptr( new rels_file(L".rels") );
     relFile->get_rels().relationships().push_back( 
         relationship(L"rId1", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties", L"docProps/app.xml" ) 
         );
@@ -398,14 +401,14 @@ void docx_document::write(const std::wstring & RootPath)
 
     if (word_files_.has_numbering())
     {
-        content_type_.get_content_type().get_override().push_back( override_content_type(L"/word/numbering.xml",
-        L"application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml") );
+        content_type_file_.content()->get_override().push_back( override_content_type(L"/word/numbering.xml",
+				L"application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml") );
     }
 
-    word_files_.write(RootPath);
-    rels_files_.write(RootPath);
-    docProps_files_.write(RootPath);
-    content_type_.write(RootPath);
+    word_files_.write		(RootPath);
+    rels_files_.write		(RootPath);
+    docProps_files_.write	(RootPath);
+    content_type_file_.write(RootPath);
 }
 
 

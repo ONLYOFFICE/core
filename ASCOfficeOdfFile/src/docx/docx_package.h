@@ -93,17 +93,17 @@ public:
 public:
     virtual void write(const std::wstring & RootPath);
     
-	void set_styles(element_ptr Element);
-    void set_document(element_ptr Element);
-    void update_rels(docx_conversion_context & Context);
-    void set_fontTable(element_ptr Element);
-    void set_numbering(element_ptr Element);
-    void set_settings(element_ptr Element);
-    bool has_numbering();
-    void set_media(mediaitems & _Mediaitems, CApplicationFonts *pAppFonts);
-    void set_headers_footers(headers_footers & HeadersFooters);
-    void set_notes(notes_context & notesContext);
-    void set_comments(comments_context & commentsContext);
+	void set_styles		(element_ptr Element);
+    void set_document	(element_ptr Element);
+    void update_rels	(docx_conversion_context & Context);
+    void set_fontTable	(element_ptr Element);
+    void set_numbering	(element_ptr Element);
+    void set_settings	(element_ptr Element);
+    bool has_numbering	();
+    void set_media			(mediaitems			& _Mediaitems, CApplicationFonts *pAppFonts);
+    void set_headers_footers(headers_footers	& HeadersFooters);
+    void set_notes			(notes_context		& notesContext);
+    void set_comments		(comments_context	& commentsContext);
 
 	void add_charts(chart_content_ptr chart);
 
@@ -131,14 +131,13 @@ class docx_document : public document
 public:
     docx_document();
 
-public:
-			word_files			& get_word_files()	{ return word_files_; }
-    virtual content_types_file	& content_type()	{ return content_type_; }
+			word_files			& get_word_files()			{ return word_files_; }
+    virtual content_types_file	& get_content_types_file()	{ return content_type_file_; }
    
 	virtual void write(const std::wstring & RootPath);
 
 private:
-    docx_content_types_file	content_type_;
+    docx_content_types_file	content_type_file_;
     word_files				word_files_;
     rels_files				rels_files_;
     docProps_files			docProps_files_;

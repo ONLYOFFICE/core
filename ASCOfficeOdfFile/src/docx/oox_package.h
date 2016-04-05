@@ -32,10 +32,9 @@ class element
 {
 public:
     virtual ~element() = 0;
-    void set_main_document(document * _document) { document_ = _document; }
-    document * get_main_document() { return document_; }
+    void		set_main_document(document * _document);
+    document *	get_main_document();
 
-public:
     virtual void write(const std::wstring & RootPath) = 0;
 
 private:
@@ -48,17 +47,15 @@ inline element::~element()
 class content_types_file : public element
 {
 public:
-    content_types_file();
-    virtual void write(const std::wstring & RootPath);
-    content_type & get_content_type() { return content_type_; }
-	bool add_or_find_default(const std::wstring & extension);
-	void set_media(mediaitems & _Mediaitems);
-
-protected:
-    content_type content_type_;
+							content_types_file	();
+	void					write				(const std::wstring & RootPath);
+	bool					add_or_find_default	(const std::wstring & extension);
+	void					set_media			(mediaitems & _Mediaitems);
+    content_type_content *	content				();
 
 private:
-    std::wstring filename_;
+    content_type_content	content_type_content_;
+    std::wstring			filename_;
 };
 
 class simple_element : public element
@@ -90,14 +87,14 @@ public:
 public:
     virtual void write(const std::wstring & RootPath);
 
-    rels & get_rels() { return rels_; }
-    const rels & get_rels() const { return rels_; }
+			rels & get_rels() { return rels_; }
+    const	rels & get_rels() const { return rels_; }
 
     bool empty() { return rels_.empty(); }
 
 private:
-    std::wstring filename_;
-    rels rels_;
+    std::wstring	filename_;
+    rels			rels_;
 };
 
 /// \class rels_files
@@ -141,7 +138,7 @@ private:
 class document : public element
 {
 public:
-    virtual content_types_file & content_type() = 0; 
+    virtual content_types_file & get_content_types_file() = 0; 
 };
 
 class core_file : public element

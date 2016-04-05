@@ -33,11 +33,12 @@ class slide_content : noncopyable
 public:
     slide_content();
     std::wostream & content() { return content_; }
-    void add_rel(relationship const & r);
-	void add_rels(rels & r);
-    rels_file_ptr get_rel_file() { return rels_; }
-    std::wstring str() { return content_.str(); }
-    static _CP_PTR(slide_content) create();
+    void			add_rel(relationship const & r);
+	void			add_rels(rels & r);
+    rels_file_ptr	get_rel_file() { return rels_; }
+    std::wstring	str() { return content_.str(); }
+    
+	static _CP_PTR(slide_content) create();
 
 private:
     std::wstringstream content_;
@@ -216,15 +217,15 @@ public:
 
 public:
     virtual void write(const std::wstring & RootPath);
-    virtual content_types_file & content_type() { return content_type_; }
-    ppt_files & get_ppt_files() { return ppt_files_; }
+
+    virtual content_types_file	& get_content_types_file()	{ return content_type_file_; }
+    ppt_files					& get_ppt_files()			{ return ppt_files_; }
 
 private:
-    pptx_content_types_file content_type_;
-   
-	ppt_files ppt_files_;
-    docProps_files docProps_files_;
-    rels_files rels_files_;
+    pptx_content_types_file content_type_file_;   
+	ppt_files				ppt_files_;
+    docProps_files			docProps_files_;
+    rels_files				rels_files_;
 
 };
 

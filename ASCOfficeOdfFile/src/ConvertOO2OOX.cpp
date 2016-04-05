@@ -16,9 +16,10 @@
 HRESULT ConvertOds2Xlsx(cpdoccore::odf_reader::odf_document & inputOdf, const std::wstring & dstPath, const std::wstring & fontsPath)
 {
     cpdoccore::oox::package::xlsx_document outputXlsx;
-	cpdoccore::oox::xlsx_conversion_context conversionContext(&outputXlsx, &inputOdf);
+	cpdoccore::oox::xlsx_conversion_context conversionContext( &inputOdf);
    
-	conversionContext.set_font_directory(fontsPath);
+	conversionContext.set_output_document	(&outputXlsx);
+	conversionContext.set_font_directory	(fontsPath);
 	
 	if (inputOdf.xlsx_convert(conversionContext) == false) return S_FALSE;
     
@@ -28,9 +29,10 @@ HRESULT ConvertOds2Xlsx(cpdoccore::odf_reader::odf_document & inputOdf, const st
 HRESULT ConvertOdt2Docx(cpdoccore::odf_reader::odf_document & inputOdf, const std::wstring & dstPath, const std::wstring & fontsPath)
 {
     cpdoccore::oox::package::docx_document	outputDocx;
-    cpdoccore::oox::docx_conversion_context conversionContext(&outputDocx, &inputOdf);
+    cpdoccore::oox::docx_conversion_context conversionContext(&inputOdf);
    
-	conversionContext.set_font_directory(fontsPath);
+	conversionContext.set_output_document	(&outputDocx);
+	conversionContext.set_font_directory	(fontsPath);
 
 	if (inputOdf.docx_convert(conversionContext) == false) return S_FALSE;
 		
@@ -41,9 +43,10 @@ HRESULT ConvertOdt2Docx(cpdoccore::odf_reader::odf_document & inputOdf, const st
 HRESULT ConvertOdp2Pptx(cpdoccore::odf_reader::odf_document & inputOdf, const std::wstring & dstPath, const std::wstring & fontsPath)
 {
     cpdoccore::oox::package::pptx_document	outputPptx;
-    cpdoccore::oox::pptx_conversion_context conversionContext(&outputPptx, &inputOdf);
+    cpdoccore::oox::pptx_conversion_context conversionContext(&inputOdf);
 	
-	conversionContext.set_font_directory(fontsPath);
+	conversionContext.set_output_document	(&outputPptx);
+	conversionContext.set_font_directory	(fontsPath);
     
 	if (inputOdf.pptx_convert(conversionContext) == false) return S_FALSE;
     outputPptx.write(dstPath);

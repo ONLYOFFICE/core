@@ -24,11 +24,6 @@ const wchar_t * default_content_type::name = L"Default";
             CP_XML_ATTR(L"ContentType", content_type());        
         }    
     }
-
-    //_Wostream << L"<Default ";
-    //CP_XML_SERIALIZE_ATTR(L"Extension", extension());
-    //CP_XML_SERIALIZE_ATTR(L"ContentType", content_type());
-    //_Wostream << L" />";
     return _Wostream;
 }
 
@@ -45,18 +40,13 @@ const wchar_t * override_content_type::name = L"Override";
             CP_XML_ATTR(L"ContentType", content_type());
         }
     }
-
-    //_Wostream << L"<Override ";
-    //CP_XML_SERIALIZE_ATTR(L"PartName", part_name());
-    //CP_XML_SERIALIZE_ATTR(L"ContentType", content_type());
-    //_Wostream << L" />";
     return _Wostream;
 }
 
-const wchar_t * content_type::ns = L"";
-const wchar_t * content_type::name = L"Types";
+const wchar_t * content_type_content::ns = L"";
+const wchar_t * content_type_content::name = L"Types";
 
-::std::wostream & content_type::xml_to_stream(::std::wostream & _Wostream) const
+::std::wostream & content_type_content::xml_to_stream(::std::wostream & _Wostream) const
 {
     CP_XML_WRITER(_Wostream)
     {
@@ -77,21 +67,6 @@ const wchar_t * content_type::name = L"Types";
         }
     }
 
-    //_Wostream << L"<Types ";
-    //CP_XML_SERIALIZE_ATTR(L"xmlns", xmlns::types.value);
-    //_Wostream << L">";
-
-    //BOOST_FOREACH(const xml::element_wc & elm, default_)
-    //{
-    //    elm.xml_to_stream(_Wostream);        
-    //}
-
-    //BOOST_FOREACH(const xml::element_wc & elm, override_)
-    //{
-    //    elm.xml_to_stream(_Wostream);        
-    //}
-
-    //_Wostream << L"</Types>";
     return _Wostream;
 }
 

@@ -179,7 +179,7 @@ bin: $(X2T) $(HTMLFILEINTERNAL) $(ALLFONTSGEN)
 
 $(foreach proj, $(QT_PROJ), $(eval $(call build_proj_tmpl, $(proj))))
 
-$(X2T): $(X2T_DEP)
+#$(X2T): $(X2T_DEP)
 
 $(HTMLFILEINTERNAL): $(HTMLFILEINTERNAL_DEP)
 

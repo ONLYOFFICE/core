@@ -6,7 +6,7 @@ CONFIG -= qt
 CONFIG += c++11
 
 ############### destination path ###############
-DESTDIR = $$PWD/../../SDK/bin/AllFontsGen
+DESTDIR = $$PWD/../../build/bin/AllFontsGen
 
 # WINDOWS
 win32:contains(QMAKE_TARGET.arch, x86_64):{
@@ -30,7 +30,7 @@ mac {
 ################################################
 
 ################# dependencies #################
-DESTINATION_SDK_PATH = $$PWD/../../SDK/lib
+DESTINATION_SDK_PATH = $$PWD/../../build/lib
 win32:contains(QMAKE_TARGET.arch, x86_64):{
 CONFIG(debug, debug|release) {
     DESTINATION_SDK_PATH = $$DESTINATION_SDK_PATH/win_64/DEBUG

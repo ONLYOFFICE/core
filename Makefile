@@ -50,7 +50,7 @@ TARGETS += $(XPSFILE)
 TARGETS += $(HTMLFILE)
 TARGETS += $(UNICODECONVERTER)
 
-X2T_PRO := $(abspath X2tConverter/build/Qt/X2tConverter.pro)
+X2T_PRO := $(abspath X2tConverter/build/Qt/X2tSLN.pro)
 HTMLFILEINTERNAL_PRO := $(abspath HtmlFile/Internal/Internal.pro)
 ALLFONTSGEN_PRO := $(abspath DesktopEditor/AllFontsGen/AllFontsGen.pro)
 XLSFORMATLIB_PRO := $(abspath ASCOfficeXlsFile2/source/linux/XlsFormatLib.pro)

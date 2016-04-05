@@ -77,6 +77,7 @@ class OfficeArtFConnectorRule : public OfficeArtRecord
 public:
 	OfficeArtFConnectorRule() : OfficeArtRecord(0, FConnectorRule) {}
 	XLS::BiffStructurePtr clone() { return XLS::BiffStructurePtr(new OfficeArtFConnectorRule(*this)); }
+	
 	virtual void loadFields(XLS::CFRecord& record);
 	virtual void storeFields(XLS::CFRecord& record) {}
 
@@ -88,7 +89,38 @@ public:
 	_UINT32 spidC;
 	_UINT32 cptiA;
 	_UINT32 cptiB;
+};
 
+class OfficeArtFCalloutRule : public OfficeArtRecord
+{
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(OfficeArtFCalloutRule)
+public:
+	OfficeArtFCalloutRule() : OfficeArtRecord(0, FCalloutRule) {}
+	XLS::BiffStructurePtr clone() { return XLS::BiffStructurePtr(new OfficeArtFCalloutRule(*this)); }
+	
+	virtual void loadFields(XLS::CFRecord& record);
+	virtual void storeFields(XLS::CFRecord& record) {}
+
+	static const XLS::ElementType	type = XLS::typeOfficeArtClientData;//FCalloutRule
+
+	_UINT32 ruid;
+	_UINT32 spid;
+};
+
+class OfficeArtFArcRule : public OfficeArtRecord
+{
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(OfficeArtFArcRule)
+public:
+	OfficeArtFArcRule() : OfficeArtRecord(0, FArcRule) {}
+	XLS::BiffStructurePtr clone() { return XLS::BiffStructurePtr(new OfficeArtFArcRule(*this)); }
+	
+	virtual void loadFields(XLS::CFRecord& record);
+	virtual void storeFields(XLS::CFRecord& record) {}
+
+	static const XLS::ElementType	type = XLS::typeOfficeArtClientData;//FArcRule
+
+	_UINT32 ruid;
+	_UINT32 spid;
 };
 
 class OfficeArtClientTextbox : public OfficeArtRecord

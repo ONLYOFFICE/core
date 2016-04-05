@@ -34,90 +34,69 @@ OfficeArtRecordPtr OfficeArtContainer::CreateOfficeArt(unsigned short type)
 	switch (type)
 	{
 		case DgContainer:
-			art_record = OfficeArtRecordPtr(new OfficeArtDgContainer(anchor_type_));
-			break;
-
+			art_record = OfficeArtRecordPtr(new OfficeArtDgContainer(anchor_type_));	break;
 		case FDG:
-			art_record = OfficeArtRecordPtr(new OfficeArtFDG);
-			break;
-
+			art_record = OfficeArtRecordPtr(new OfficeArtFDG);							break;
 		case FRITContainer:
-			art_record = OfficeArtRecordPtr(new OfficeArtFRITContainer);
-			break;
-
+			art_record = OfficeArtRecordPtr(new OfficeArtFRITContainer);				break;
 		case SpgrContainer:
-			art_record = OfficeArtRecordPtr(new OfficeArtSpgrContainer(anchor_type_));
-			break;
-
+			art_record = OfficeArtRecordPtr(new OfficeArtSpgrContainer(anchor_type_));	break;
 		case SpContainer:
-			art_record = OfficeArtRecordPtr(new OfficeArtSpContainer(anchor_type_));
-			break;
-
+			art_record = OfficeArtRecordPtr(new OfficeArtSpContainer(anchor_type_));	break;
 		case SolverContainer:
-			art_record = OfficeArtRecordPtr(new OfficeArtSolverContainer);
-			break;
-
+			art_record = OfficeArtRecordPtr(new OfficeArtSolverContainer);				break;
 		case FSPGR:
-			art_record = OfficeArtRecordPtr(new OfficeArtFSPGR);
-			break;
-
+			art_record = OfficeArtRecordPtr(new OfficeArtFSPGR);						break;
 		case FSP:
-			art_record = OfficeArtRecordPtr(new OfficeArtFSP);
-			break;
-
+			art_record = OfficeArtRecordPtr(new OfficeArtFSP);							break;
 		case FOPT:
-			art_record = OfficeArtRecordPtr(new OfficeArtFOPT);
-			break;
-
+			art_record = OfficeArtRecordPtr(new OfficeArtFOPT);							break;
 		case ChildAnchor:
-			art_record = OfficeArtRecordPtr(new OfficeArtChildAnchor);
-			break;
-
+			art_record = OfficeArtRecordPtr(new OfficeArtChildAnchor);					break;
 		case ClientAnchor:
 			switch(anchor_type_)
 			{
 				case CA_Chart:
-					art_record = OfficeArtRecordPtr(new OfficeArtClientAnchorChart);
-					break;
-
+					art_record = OfficeArtRecordPtr(new OfficeArtClientAnchorChart);	break;
 				case CA_Sheet:
-					art_record = OfficeArtRecordPtr(new OfficeArtClientAnchorSheet);
-					break;
-
+					art_record = OfficeArtRecordPtr(new OfficeArtClientAnchorSheet);	break;
 				case CA_HF:
-					art_record = OfficeArtRecordPtr(new OfficeArtClientAnchorHF);
-					break;					
+					art_record = OfficeArtRecordPtr(new OfficeArtClientAnchorHF);		break;					
 			}
 			break;
-
 		case ClientData:
-			art_record = OfficeArtRecordPtr(new OfficeArtClientData);
-			break;
-
+			art_record = OfficeArtRecordPtr(new OfficeArtClientData);					break;
 		case FConnectorRule:
-			art_record = OfficeArtRecordPtr(new OfficeArtFConnectorRule);
-			break;
-
+			art_record = OfficeArtRecordPtr(new OfficeArtFConnectorRule);				break;
+		case FArcRule:
+			art_record = OfficeArtRecordPtr(new OfficeArtFArcRule);						break;
+		case FCalloutRule:
+			art_record = OfficeArtRecordPtr(new OfficeArtFCalloutRule);					break;
 		case ClientTextbox:
-			art_record = OfficeArtRecordPtr(new OfficeArtClientTextbox);
-			break;
-
+			art_record = OfficeArtRecordPtr(new OfficeArtClientTextbox);				break;
 		case FDGGBlock:
-			art_record = OfficeArtRecordPtr(new OfficeArtFDGGBlock);
-			break;
-
+			art_record = OfficeArtRecordPtr(new OfficeArtFDGGBlock);					break;
 		case ColorMRUContainer:
-			art_record = OfficeArtRecordPtr(new OfficeArtColorMRUContainer);
-			break;
-
+			art_record = OfficeArtRecordPtr(new OfficeArtColorMRUContainer);			break;
 		case SplitMenuColorContainer:
-			art_record = OfficeArtRecordPtr(new OfficeArtSplitMenuColorContainer);
-			break;
+			art_record = OfficeArtRecordPtr(new OfficeArtSplitMenuColorContainer);		break;
 		case BStoreContainer:
-			art_record = OfficeArtRecordPtr(new OfficeArtBStoreContainer);
-			break;
+			art_record = OfficeArtRecordPtr(new OfficeArtBStoreContainer);				break;
 		case TertiaryFOPT:
-			art_record = OfficeArtRecordPtr(new OfficeArtTertiaryFOPT);
+			art_record = OfficeArtRecordPtr(new OfficeArtTertiaryFOPT);					break;
+		case SecondaryFOPT:
+		
+		case FPSPL:
+		case FDGSL:
+		case FBSE:
+		case BlipJPEG_clone:
+		case BlipDIB:
+		case BlipTIFF:
+		case BlipEMF:
+		case BlipWMF:
+		case BlipPICT:
+		case BlipJPEG:
+		case BlipPNG:
 			break;
 		default:
 			break;

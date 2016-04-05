@@ -36,29 +36,24 @@ public:
 	enum OfficeArtRecordType
 	{
 		DggContainer	= 0xF000,
-		BStoreContainer	= 0xF001, // Implemented
-		DgContainer		= 0xF002, // Implemented
-		SpgrContainer	= 0xF003, // Implemented
-		SpContainer		= 0xF004, // Implemented
+		BStoreContainer	= 0xF001, 
+		DgContainer		= 0xF002, 
+		SpgrContainer	= 0xF003,
+		SpContainer		= 0xF004,
 		SolverContainer	= 0xF005,
-		FDGGBlock		= 0xF006, // Implemented
-		FBSE			= 0xF007, // Implemented
-		FDG				= 0xF008, // Implemented
-		FSPGR			= 0xF009, // Implemented
-		FSP				= 0xF00A, // Implemented
-		FOPT			= 0xF00B, // Implemented
-
-		ClientTextbox	= 0xF00D, // Implemented
-
-		ChildAnchor		= 0xF00F, // Implemented
-		ClientAnchor	= 0xF010, // Implemented
-		ClientData		= 0xF011, // Implemented
+		FDGGBlock		= 0xF006,
+		FBSE			= 0xF007, 
+		FDG				= 0xF008, 
+		FSPGR			= 0xF009,
+		FSP				= 0xF00A, 
+		FOPT			= 0xF00B, 
+		ClientTextbox	= 0xF00D, 
+		ChildAnchor		= 0xF00F, 
+		ClientAnchor	= 0xF010, 
+		ClientData		= 0xF011, 
 		FConnectorRule	= 0xF012,
-
 		FArcRule		= 0xF014,
-
 		FCalloutRule	= 0xF017,
-
 		BlipEMF			= 0xF01A,
 		BlipWMF			= 0xF01B,
 		BlipPICT		= 0xF01C,
@@ -67,14 +62,13 @@ public:
 		BlipDIB			= 0xF01F,
 		BlipTIFF		= 0xF020,
 		BlipJPEG_clone	= 0xF02A,
-
-		FRITContainer			= 0xF118, // Implemented
-		FDGSL					= 0xF119, // Omitted (This record SHOULD<4> be ignored)
-		ColorMRUContainer		= 0xF11A, // Implemented
+		FRITContainer			= 0xF118, 
+		FDGSL					= 0xF119,
+		ColorMRUContainer		= 0xF11A,
 		FPSPL					= 0xF11D,
-		SplitMenuColorContainer	= 0xF11E, // Implemented
+		SplitMenuColorContainer	= 0xF11E,
 		SecondaryFOPT			= 0xF121,
-		TertiaryFOPT			= 0xF122, // Implemented	
+		TertiaryFOPT			= 0xF122, 
 
 
 	};

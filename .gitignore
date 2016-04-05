@@ -4,3 +4,13 @@ LicenceManager/
 Common/boost_1_58_0
 **/Release
 **/Debug
+*.user
+*.ncb
+*.suo
+ASCOfficeXlsFile2/win32/_ASCOfficeXlsFile2.idl
+ASCOfficeXlsFile2/win32/_ASCOfficeXlsFile2.tlb
+ASCOfficeXlsFile2/win32/_ASCOfficeXlsFile2.h
+ASCOfficeXlsFile2/win32/_ASCOfficeXlsFile2_i.c
+ASCOfficeXlsFile2/win32/_ASCOfficeXlsFile2_p.c
+ASCOfficeXlsFile2/win32/dlldata.c
+OfficeUtils/win32/OfficeUtilsLib/OfficeUtilsLib/ReadMe.txt

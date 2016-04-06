@@ -15,7 +15,7 @@ CONFIG   -= app_bundle
 TEMPLATE = app
 
 ############### destination path ###############
-DESTINATION_SDK_PATH = $$PWD/../../../SDK/lib
+DESTINATION_SDK_PATH = $$PWD/../../../build/lib
 
 # WINDOWS
 win32:contains(QMAKE_TARGET.arch, x86_64):{
@@ -49,6 +49,10 @@ CONFIG(debug, debug|release) {
 ################################################
 
 LIBS += -L$$DESTINATION_SDK_PATH_DOCTRENDERER -ldoctrenderer
+
+linux-g++ {
+LIBS += -ldl
+}
 
 #################### PDF ######################
 #DEFINES += USE_PDF_RENDERER

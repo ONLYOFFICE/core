@@ -143,7 +143,7 @@ linux-g++ | linux-g++-64 | linux-g++-32 {
         _LINUX \
         _LINUX_QT \
 
-    LIBS += -L$$V8_CHECKOUT_PATH/out/native/obj.target/tools/gyp -lv8_base -lv8_libbase -lv8_libplatform -lv8_nosnapshot -lv8_external_snapshot
+    LIBS += -L$$V8_CHECKOUT_PATH/out/native/obj.target/tools/gyp -lv8_base -lv8_libplatform -lv8_libbase -lv8_nosnapshot -lv8_external_snapshot
     LIBS += -L$$V8_CHECKOUT_PATH/out/native/obj.target/third_party/icu -licui18n -licuuc -licudata
 }
 

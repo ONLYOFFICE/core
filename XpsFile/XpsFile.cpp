@@ -8,7 +8,7 @@
 #include "../DesktopEditor/graphics/GraphicsRenderer.h"
 #include "../PdfWriter/PdfRenderer.h"
 
-#include "../ASCOfficeUtils/ASCOfficeUtilsLib/OfficeUtils.h"
+#include "../OfficeUtils/src/OfficeUtils.h"
 
 using namespace XPS;
 

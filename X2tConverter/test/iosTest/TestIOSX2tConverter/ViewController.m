@@ -19,6 +19,8 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+   
+    [self testDOCX];
     [self testXLSX];
 }
 
@@ -44,7 +46,7 @@
     X2tConverter* conv2 = [[X2tConverter alloc]init];
     [conv2 sdk_doct_bin2docx:fullFileNameTo nsTo:docxOut nsTemp:outTemp nsFontPath:fontsPath fromChanges:@(NO) nsThemeDir:@""];
     
-    NSLog(@"%@",fullFileNameTo);
+    NSLog(@"DOCX - BIN: %@",fullFileNameTo);
 }
 - (void)testXLSX {
     NSString *path = [[NSBundle mainBundle] pathForResource:@"price" ofType:@"xlsx"];
@@ -57,7 +59,7 @@
     X2tConverter* conv = [[X2tConverter alloc]init];
     [conv sdk_xlsx2xlst_bin:fullFileName nsTo:fullFileNameTo nsTemp:tempDir nsFontPath:fontsPath];    
   
-    NSLog(@"%@",fullFileNameTo);
+    NSLog(@"XLSX - BIN : %@",fullFileNameTo);
 }
 
 - (void)didReceiveMemoryWarning

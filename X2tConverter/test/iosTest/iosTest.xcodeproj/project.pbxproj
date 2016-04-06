@@ -17,20 +17,20 @@
 		17DAB6891ACC371F005AF479 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 17DAB6881ACC371F005AF479 /* Images.xcassets */; };
 		17DAB68C1ACC371F005AF479 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 17DAB68A1ACC371F005AF479 /* LaunchScreen.xib */; };
 		17DAB70E1ACC3B96005AF479 /* Demo-Hayden-Management-v2.docx in Resources */ = {isa = PBXBuildFile; fileRef = 17DAB70D1ACC3B90005AF479 /* Demo-Hayden-Management-v2.docx */; };
-		690597621CA137E500000D4D /* libX2tConverter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6905975E1CA1377C00000D4D /* libX2tConverter.a */; };
+		694149741CB5048C003E771B /* libX2tConverter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 694149711CB5047F003E771B /* libX2tConverter.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		6905975D1CA1377C00000D4D /* PBXContainerItemProxy */ = {
+		694149701CB5047F003E771B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 690597581CA1377B00000D4D /* X2tConverter.xcodeproj */;
+			containerPortal = 6941496B1CB5047F003E771B /* X2tConverter.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 17C8DED01ACD696100902C85;
 			remoteInfo = X2tConverter;
 		};
-		690597601CA137DD00000D4D /* PBXContainerItemProxy */ = {
+		694149721CB50485003E771B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 690597581CA1377B00000D4D /* X2tConverter.xcodeproj */;
+			containerPortal = 6941496B1CB5047F003E771B /* X2tConverter.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 17C8DEC11ACD696100902C85;
 			remoteInfo = X2tConverter;
@@ -52,8 +52,8 @@
 		17DAB6881ACC371F005AF479 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		17DAB68B1ACC371F005AF479 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		17DAB70D1ACC3B90005AF479 /* Demo-Hayden-Management-v2.docx */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Demo-Hayden-Management-v2.docx"; sourceTree = "<group>"; };
-		690597581CA1377B00000D4D /* X2tConverter.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = X2tConverter.xcodeproj; path = /Volumes/trunk/ServerComponents/X2tConverter/build/Mac/TestMacX2tConverter/../X2tConverter/X2tConverter.xcodeproj; sourceTree = "<absolute>"; };
 		6905975F1CA137D000000D4D /* X2tConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = X2tConverter.h; path = ../../../build/Mac/X2tConverter/X2tConverter/X2tConverter.h; sourceTree = "<group>"; };
+		6941496B1CB5047F003E771B /* X2tConverter.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = X2tConverter.xcodeproj; path = /Volumes/GIT/components/X2tConverter/build/Mac/TestMacX2tConverter/../X2tConverter/X2tConverter.xcodeproj; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,7 +61,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				690597621CA137E500000D4D /* libX2tConverter.a in Frameworks */,
+				694149741CB5048C003E771B /* libX2tConverter.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -79,7 +79,7 @@
 		17DAB66F1ACC371E005AF479 = {
 			isa = PBXGroup;
 			children = (
-				690597581CA1377B00000D4D /* X2tConverter.xcodeproj */,
+				6941496B1CB5047F003E771B /* X2tConverter.xcodeproj */,
 				17DAB67A1ACC371E005AF479 /* iosTest */,
 				17DAB6791ACC371E005AF479 /* Products */,
 			);
@@ -131,10 +131,10 @@
 			name = Files;
 			sourceTree = "<group>";
 		};
-		690597591CA1377B00000D4D /* Products */ = {
+		6941496C1CB5047F003E771B /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				6905975E1CA1377C00000D4D /* libX2tConverter.a */,
+				694149711CB5047F003E771B /* libX2tConverter.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -153,7 +153,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				690597611CA137DD00000D4D /* PBXTargetDependency */,
+				694149731CB50485003E771B /* PBXTargetDependency */,
 			);
 			name = iosTest;
 			productName = TestIOSX2tConverter;
@@ -166,7 +166,7 @@
 		17DAB6701ACC371E005AF479 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0620;
+				LastUpgradeCheck = 0730;
 				ORGANIZATIONNAME = "Ascensio System SIA";
 				TargetAttributes = {
 					17DAB6771ACC371E005AF479 = {
@@ -187,8 +187,8 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = 690597591CA1377B00000D4D /* Products */;
-					ProjectRef = 690597581CA1377B00000D4D /* X2tConverter.xcodeproj */;
+					ProductGroup = 6941496C1CB5047F003E771B /* Products */;
+					ProjectRef = 6941496B1CB5047F003E771B /* X2tConverter.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -199,11 +199,11 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		6905975E1CA1377C00000D4D /* libX2tConverter.a */ = {
+		694149711CB5047F003E771B /* libX2tConverter.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
 			path = libX2tConverter.a;
-			remoteRef = 6905975D1CA1377C00000D4D /* PBXContainerItemProxy */;
+			remoteRef = 694149701CB5047F003E771B /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -239,10 +239,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		690597611CA137DD00000D4D /* PBXTargetDependency */ = {
+		694149731CB50485003E771B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = X2tConverter;
-			targetProxy = 690597601CA137DD00000D4D /* PBXContainerItemProxy */;
+			targetProxy = 694149721CB50485003E771B /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -286,6 +286,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -357,6 +358,7 @@
 					"-lxml2",
 					"-lz",
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.onlyoffice.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = iosTest;
 			};
 			name = Debug;
@@ -374,6 +376,7 @@
 					"-lxml2",
 					"-lz",
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.onlyoffice.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = iosTest;
 			};
 			name = Release;

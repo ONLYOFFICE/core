@@ -47,50 +47,10 @@
 		17C1FEF81ACC4A67006B99B3 /* IRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D9133C1AC58F000096D788 /* IRenderer.h */; };
 		17C1FEF91ACC4A67006B99B3 /* GlyphString.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D913701AC58F400096D788 /* GlyphString.h */; };
 		17C1FEFA1ACC4A67006B99B3 /* Graphics.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D913311AC58F000096D788 /* Graphics.h */; };
-		17D913431AC58F000096D788 /* AggPlusEnums.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D913241AC58F000096D788 /* AggPlusEnums.h */; };
-		17D913441AC58F000096D788 /* aggplustypes.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D913251AC58F000096D788 /* aggplustypes.h */; };
-		17D913451AC58F000096D788 /* ArrowHead.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17D913261AC58F000096D788 /* ArrowHead.cpp */; };
-		17D913461AC58F000096D788 /* ArrowHead.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D913271AC58F000096D788 /* ArrowHead.h */; };
-		17D913471AC58F000096D788 /* BaseThread.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D913281AC58F000096D788 /* BaseThread.h */; };
-		17D913481AC58F000096D788 /* Brush.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17D913291AC58F000096D788 /* Brush.cpp */; };
-		17D913491AC58F000096D788 /* Brush.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D9132A1AC58F000096D788 /* Brush.h */; };
-		17D9134A1AC58F000096D788 /* Clip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17D9132B1AC58F000096D788 /* Clip.cpp */; };
-		17D9134B1AC58F000096D788 /* Clip.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D9132C1AC58F000096D788 /* Clip.h */; };
-		17D9134C1AC58F000096D788 /* Color.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D9132D1AC58F000096D788 /* Color.h */; };
-		17D9134E1AC58F000096D788 /* Defines.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D9132F1AC58F000096D788 /* Defines.h */; };
-		17D9134F1AC58F000096D788 /* Graphics.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17D913301AC58F000096D788 /* Graphics.cpp */; };
-		17D913501AC58F000096D788 /* Graphics.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D913311AC58F000096D788 /* Graphics.h */; };
-		17D913511AC58F000096D788 /* GraphicsPath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17D913351AC58F000096D788 /* GraphicsPath.cpp */; };
-		17D913521AC58F000096D788 /* GraphicsPath.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D913361AC58F000096D788 /* GraphicsPath.h */; };
-		17D913531AC58F000096D788 /* GraphicsRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17D913371AC58F000096D788 /* GraphicsRenderer.cpp */; };
-		17D913541AC58F000096D788 /* GraphicsRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D913381AC58F000096D788 /* GraphicsRenderer.h */; };
-		17D913551AC58F000096D788 /* Image.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17D913391AC58F000096D788 /* Image.cpp */; };
-		17D913561AC58F000096D788 /* Image.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D9133A1AC58F000096D788 /* Image.h */; };
-		17D913571AC58F000096D788 /* ImageFilesCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D9133B1AC58F000096D788 /* ImageFilesCache.h */; };
-		17D913581AC58F000096D788 /* IRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D9133C1AC58F000096D788 /* IRenderer.h */; };
-		17D913591AC58F000096D788 /* Matrix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17D9133D1AC58F000096D788 /* Matrix.cpp */; };
-		17D9135A1AC58F000096D788 /* Matrix.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D9133E1AC58F000096D788 /* Matrix.h */; };
-		17D9135B1AC58F000096D788 /* structures.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D9133F1AC58F000096D788 /* structures.h */; };
-		17D9135C1AC58F000096D788 /* TemporaryCS.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17D913401AC58F000096D788 /* TemporaryCS.cpp */; };
-		17D9135D1AC58F000096D788 /* TemporaryCS.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D913411AC58F000096D788 /* TemporaryCS.h */; };
-		17D9135E1AC58F000096D788 /* Timer.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D913421AC58F000096D788 /* Timer.h */; };
-		17D913711AC58F400096D788 /* ApplicationFonts.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17D913601AC58F400096D788 /* ApplicationFonts.cpp */; };
-		17D913721AC58F400096D788 /* ApplicationFonts.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D913611AC58F400096D788 /* ApplicationFonts.h */; };
-		17D913741AC58F400096D788 /* ApplicationFontsWorker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17D913631AC58F400096D788 /* ApplicationFontsWorker.cpp */; };
-		17D913751AC58F400096D788 /* ApplicationFontsWorker.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D913641AC58F400096D788 /* ApplicationFontsWorker.h */; };
-		17D913771AC58F400096D788 /* FontFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17D913691AC58F400096D788 /* FontFile.cpp */; };
-		17D913781AC58F400096D788 /* FontFile.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D9136A1AC58F400096D788 /* FontFile.h */; };
-		17D913791AC58F400096D788 /* FontManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17D9136B1AC58F400096D788 /* FontManager.cpp */; };
-		17D9137A1AC58F400096D788 /* FontManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D9136C1AC58F400096D788 /* FontManager.h */; };
-		17D9137B1AC58F400096D788 /* FontPath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17D9136D1AC58F400096D788 /* FontPath.cpp */; };
-		17D9137C1AC58F400096D788 /* FontPath.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D9136E1AC58F400096D788 /* FontPath.h */; };
-		17D9137D1AC58F400096D788 /* GlyphString.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17D9136F1AC58F400096D788 /* GlyphString.cpp */; };
-		17D9137E1AC58F400096D788 /* GlyphString.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D913701AC58F400096D788 /* GlyphString.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		17C1FEFE1ACC4A67006B99B3 /* libgraphics_ios.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libgraphics_ios.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		17D913151AC58E750096D788 /* libgraphics.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libgraphics.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		17D913241AC58F000096D788 /* AggPlusEnums.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AggPlusEnums.h; path = ../../../graphics/AggPlusEnums.h; sourceTree = "<group>"; };
 		17D913251AC58F000096D788 /* aggplustypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = aggplustypes.h; path = ../../../graphics/aggplustypes.h; sourceTree = "<group>"; };
 		17D913261AC58F000096D788 /* ArrowHead.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ArrowHead.cpp; path = ../../../graphics/ArrowHead.cpp; sourceTree = "<group>"; };
@@ -141,13 +101,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		17D913121AC58E750096D788 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -162,7 +115,6 @@
 		17D913161AC58E750096D788 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				17D913151AC58E750096D788 /* libgraphics.a */,
 				17C1FEFE1ACC4A67006B99B3 /* libgraphics_ios.a */,
 			);
 			name = Products;
@@ -258,43 +210,12 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		17D913131AC58E750096D788 /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				17D913721AC58F400096D788 /* ApplicationFonts.h in Headers */,
-				17D913521AC58F000096D788 /* GraphicsPath.h in Headers */,
-				17D9134C1AC58F000096D788 /* Color.h in Headers */,
-				17D9135B1AC58F000096D788 /* structures.h in Headers */,
-				17D913441AC58F000096D788 /* aggplustypes.h in Headers */,
-				17D913781AC58F400096D788 /* FontFile.h in Headers */,
-				17D9135D1AC58F000096D788 /* TemporaryCS.h in Headers */,
-				17D913751AC58F400096D788 /* ApplicationFontsWorker.h in Headers */,
-				17D9137A1AC58F400096D788 /* FontManager.h in Headers */,
-				17D9135A1AC58F000096D788 /* Matrix.h in Headers */,
-				17D913471AC58F000096D788 /* BaseThread.h in Headers */,
-				17D9134B1AC58F000096D788 /* Clip.h in Headers */,
-				17D913431AC58F000096D788 /* AggPlusEnums.h in Headers */,
-				17D9134E1AC58F000096D788 /* Defines.h in Headers */,
-				17D913461AC58F000096D788 /* ArrowHead.h in Headers */,
-				17D9135E1AC58F000096D788 /* Timer.h in Headers */,
-				17D913541AC58F000096D788 /* GraphicsRenderer.h in Headers */,
-				17D913571AC58F000096D788 /* ImageFilesCache.h in Headers */,
-				17D913491AC58F000096D788 /* Brush.h in Headers */,
-				17D9137C1AC58F400096D788 /* FontPath.h in Headers */,
-				17D913561AC58F000096D788 /* Image.h in Headers */,
-				17D913581AC58F000096D788 /* IRenderer.h in Headers */,
-				17D9137E1AC58F400096D788 /* GlyphString.h in Headers */,
-				17D913501AC58F000096D788 /* Graphics.h in Headers */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		17C1FECF1ACC4A67006B99B3 /* graphics_ios */ = {
+		17C1FECF1ACC4A67006B99B3 /* graphics */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 17C1FEFB1ACC4A67006B99B3 /* Build configuration list for PBXNativeTarget "graphics_ios" */;
+			buildConfigurationList = 17C1FEFB1ACC4A67006B99B3 /* Build configuration list for PBXNativeTarget "graphics" */;
 			buildPhases = (
 				17C1FED01ACC4A67006B99B3 /* Sources */,
 				17C1FEE11ACC4A67006B99B3 /* Frameworks */,
@@ -304,26 +225,9 @@
 			);
 			dependencies = (
 			);
-			name = graphics_ios;
-			productName = graphics;
-			productReference = 17C1FEFE1ACC4A67006B99B3 /* libgraphics_ios.a */;
-			productType = "com.apple.product-type.library.static";
-		};
-		17D913141AC58E750096D788 /* graphics */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 17D913201AC58E750096D788 /* Build configuration list for PBXNativeTarget "graphics" */;
-			buildPhases = (
-				17D913111AC58E750096D788 /* Sources */,
-				17D913121AC58E750096D788 /* Frameworks */,
-				17D913131AC58E750096D788 /* Headers */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
 			name = graphics;
 			productName = graphics;
-			productReference = 17D913151AC58E750096D788 /* libgraphics.a */;
+			productReference = 17C1FEFE1ACC4A67006B99B3 /* libgraphics_ios.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
@@ -334,11 +238,6 @@
 			attributes = {
 				LastUpgradeCheck = 0710;
 				ORGANIZATIONNAME = "Ascensio System SIA";
-				TargetAttributes = {
-					17D913141AC58E750096D788 = {
-						CreatedOnToolsVersion = 6.2;
-					};
-				};
 			};
 			buildConfigurationList = 17D913101AC58E750096D788 /* Build configuration list for PBXProject "graphics" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -352,8 +251,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				17D913141AC58E750096D788 /* graphics */,
-				17C1FECF1ACC4A67006B99B3 /* graphics_ios */,
+				17C1FECF1ACC4A67006B99B3 /* graphics */,
 			);
 		};
 /* End PBXProject section */
@@ -379,28 +277,6 @@
 				17C1FEDE1ACC4A67006B99B3 /* ArrowHead.cpp in Sources */,
 				17C1FEDF1ACC4A67006B99B3 /* TemporaryCS.cpp in Sources */,
 				17C1FEE01ACC4A67006B99B3 /* GraphicsRenderer.cpp in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		17D913111AC58E750096D788 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				17D913591AC58F000096D788 /* Matrix.cpp in Sources */,
-				17D913711AC58F400096D788 /* ApplicationFonts.cpp in Sources */,
-				17D913771AC58F400096D788 /* FontFile.cpp in Sources */,
-				17D913741AC58F400096D788 /* ApplicationFontsWorker.cpp in Sources */,
-				17D9134A1AC58F000096D788 /* Clip.cpp in Sources */,
-				17D9137B1AC58F400096D788 /* FontPath.cpp in Sources */,
-				17D913481AC58F000096D788 /* Brush.cpp in Sources */,
-				17D9134F1AC58F000096D788 /* Graphics.cpp in Sources */,
-				17D913511AC58F000096D788 /* GraphicsPath.cpp in Sources */,
-				17D913551AC58F000096D788 /* Image.cpp in Sources */,
-				17D9137D1AC58F400096D788 /* GlyphString.cpp in Sources */,
-				17D913791AC58F400096D788 /* FontManager.cpp in Sources */,
-				17D913451AC58F000096D788 /* ArrowHead.cpp in Sources */,
-				17D9135C1AC58F000096D788 /* TemporaryCS.cpp in Sources */,
-				17D913531AC58F000096D788 /* GraphicsRenderer.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -540,58 +416,10 @@
 			};
 			name = Release;
 		};
-		17D913211AC58E750096D788 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				EXECUTABLE_PREFIX = lib;
-				GCC_ENABLE_CPP_EXCEPTIONS = YES;
-				GCC_ENABLE_CPP_RTTI = YES;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					UNICODE,
-					_UNICODE,
-					CXIMAGE_DONT_DECLARE_TCHAR,
-					unix,
-				);
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"$(PROJECT_DIR)/../../agg-2.4/include",
-					"$(PROJECT_DIR)/../../freetype-2.5.2/include",
-				);
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Debug;
-		};
-		17D913221AC58E750096D788 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				EXECUTABLE_PREFIX = lib;
-				GCC_ENABLE_CPP_EXCEPTIONS = YES;
-				GCC_ENABLE_CPP_RTTI = YES;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					UNICODE,
-					_UNICODE,
-					CXIMAGE_DONT_DECLARE_TCHAR,
-					unix,
-				);
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"$(PROJECT_DIR)/../../agg-2.4/include",
-					"$(PROJECT_DIR)/../../freetype-2.5.2/include",
-				);
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		17C1FEFB1ACC4A67006B99B3 /* Build configuration list for PBXNativeTarget "graphics_ios" */ = {
+		17C1FEFB1ACC4A67006B99B3 /* Build configuration list for PBXNativeTarget "graphics" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				17C1FEFC1ACC4A67006B99B3 /* Debug */,
@@ -605,15 +433,6 @@
 			buildConfigurations = (
 				17D9131E1AC58E750096D788 /* Debug */,
 				17D9131F1AC58E750096D788 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		17D913201AC58E750096D788 /* Build configuration list for PBXNativeTarget "graphics" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				17D913211AC58E750096D788 /* Debug */,
-				17D913221AC58E750096D788 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

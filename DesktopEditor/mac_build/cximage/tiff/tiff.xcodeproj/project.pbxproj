@@ -7,57 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		175CC1071AC94D88007D7DEC /* t4.h in Headers */ = {isa = PBXBuildFile; fileRef = 175CC0C51AC94D88007D7DEC /* t4.h */; };
-		175CC10B1AC94D88007D7DEC /* tif_aux.c in Sources */ = {isa = PBXBuildFile; fileRef = 175CC0C91AC94D88007D7DEC /* tif_aux.c */; };
-		175CC10C1AC94D88007D7DEC /* tif_close.c in Sources */ = {isa = PBXBuildFile; fileRef = 175CC0CA1AC94D88007D7DEC /* tif_close.c */; };
-		175CC10D1AC94D88007D7DEC /* tif_codec.c in Sources */ = {isa = PBXBuildFile; fileRef = 175CC0CB1AC94D88007D7DEC /* tif_codec.c */; };
-		175CC10E1AC94D88007D7DEC /* tif_color.c in Sources */ = {isa = PBXBuildFile; fileRef = 175CC0CC1AC94D88007D7DEC /* tif_color.c */; };
-		175CC10F1AC94D88007D7DEC /* tif_compress.c in Sources */ = {isa = PBXBuildFile; fileRef = 175CC0CD1AC94D88007D7DEC /* tif_compress.c */; };
-		175CC1101AC94D88007D7DEC /* tif_config.h in Headers */ = {isa = PBXBuildFile; fileRef = 175CC0CE1AC94D88007D7DEC /* tif_config.h */; };
-		175CC1111AC94D88007D7DEC /* tif_config.wince.h in Headers */ = {isa = PBXBuildFile; fileRef = 175CC0CF1AC94D88007D7DEC /* tif_config.wince.h */; };
-		175CC1121AC94D88007D7DEC /* tif_dir.c in Sources */ = {isa = PBXBuildFile; fileRef = 175CC0D01AC94D88007D7DEC /* tif_dir.c */; };
-		175CC1131AC94D88007D7DEC /* tif_dir.h in Headers */ = {isa = PBXBuildFile; fileRef = 175CC0D11AC94D88007D7DEC /* tif_dir.h */; };
-		175CC1141AC94D88007D7DEC /* tif_dirinfo.c in Sources */ = {isa = PBXBuildFile; fileRef = 175CC0D21AC94D88007D7DEC /* tif_dirinfo.c */; };
-		175CC1151AC94D88007D7DEC /* tif_dirread.c in Sources */ = {isa = PBXBuildFile; fileRef = 175CC0D31AC94D88007D7DEC /* tif_dirread.c */; };
-		175CC1161AC94D88007D7DEC /* tif_dirwrite.c in Sources */ = {isa = PBXBuildFile; fileRef = 175CC0D41AC94D88007D7DEC /* tif_dirwrite.c */; };
-		175CC1171AC94D88007D7DEC /* tif_dumpmode.c in Sources */ = {isa = PBXBuildFile; fileRef = 175CC0D51AC94D88007D7DEC /* tif_dumpmode.c */; };
-		175CC1181AC94D88007D7DEC /* tif_error.c in Sources */ = {isa = PBXBuildFile; fileRef = 175CC0D61AC94D88007D7DEC /* tif_error.c */; };
-		175CC1191AC94D88007D7DEC /* tif_extension.c in Sources */ = {isa = PBXBuildFile; fileRef = 175CC0D71AC94D88007D7DEC /* tif_extension.c */; };
-		175CC11A1AC94D88007D7DEC /* tif_fax3.c in Sources */ = {isa = PBXBuildFile; fileRef = 175CC0D81AC94D88007D7DEC /* tif_fax3.c */; };
-		175CC11B1AC94D88007D7DEC /* tif_fax3.h in Headers */ = {isa = PBXBuildFile; fileRef = 175CC0D91AC94D88007D7DEC /* tif_fax3.h */; };
-		175CC11C1AC94D88007D7DEC /* tif_fax3sm.c in Sources */ = {isa = PBXBuildFile; fileRef = 175CC0DA1AC94D88007D7DEC /* tif_fax3sm.c */; };
-		175CC11D1AC94D88007D7DEC /* tif_flush.c in Sources */ = {isa = PBXBuildFile; fileRef = 175CC0DB1AC94D88007D7DEC /* tif_flush.c */; };
-		175CC11E1AC94D88007D7DEC /* tif_getimage.c in Sources */ = {isa = PBXBuildFile; fileRef = 175CC0DC1AC94D88007D7DEC /* tif_getimage.c */; };
-		175CC11F1AC94D88007D7DEC /* tif_jbig.c in Sources */ = {isa = PBXBuildFile; fileRef = 175CC0DD1AC94D88007D7DEC /* tif_jbig.c */; };
-		175CC1201AC94D88007D7DEC /* tif_jpeg.c in Sources */ = {isa = PBXBuildFile; fileRef = 175CC0DE1AC94D88007D7DEC /* tif_jpeg.c */; };
-		175CC1211AC94D88007D7DEC /* tif_luv.c in Sources */ = {isa = PBXBuildFile; fileRef = 175CC0DF1AC94D88007D7DEC /* tif_luv.c */; };
-		175CC1221AC94D88007D7DEC /* tif_lzw.c in Sources */ = {isa = PBXBuildFile; fileRef = 175CC0E01AC94D88007D7DEC /* tif_lzw.c */; };
-		175CC1241AC94D88007D7DEC /* tif_next.c in Sources */ = {isa = PBXBuildFile; fileRef = 175CC0E21AC94D88007D7DEC /* tif_next.c */; };
-		175CC1251AC94D88007D7DEC /* tif_ojpeg.c in Sources */ = {isa = PBXBuildFile; fileRef = 175CC0E31AC94D88007D7DEC /* tif_ojpeg.c */; };
-		175CC1261AC94D88007D7DEC /* tif_open.c in Sources */ = {isa = PBXBuildFile; fileRef = 175CC0E41AC94D88007D7DEC /* tif_open.c */; };
-		175CC1271AC94D88007D7DEC /* tif_packbits.c in Sources */ = {isa = PBXBuildFile; fileRef = 175CC0E51AC94D88007D7DEC /* tif_packbits.c */; };
-		175CC1281AC94D88007D7DEC /* tif_pixarlog.c in Sources */ = {isa = PBXBuildFile; fileRef = 175CC0E61AC94D88007D7DEC /* tif_pixarlog.c */; };
-		175CC1291AC94D88007D7DEC /* tif_predict.c in Sources */ = {isa = PBXBuildFile; fileRef = 175CC0E71AC94D88007D7DEC /* tif_predict.c */; };
-		175CC12A1AC94D88007D7DEC /* tif_predict.h in Headers */ = {isa = PBXBuildFile; fileRef = 175CC0E81AC94D88007D7DEC /* tif_predict.h */; };
-		175CC12B1AC94D88007D7DEC /* tif_print.c in Sources */ = {isa = PBXBuildFile; fileRef = 175CC0E91AC94D88007D7DEC /* tif_print.c */; };
-		175CC12C1AC94D88007D7DEC /* tif_read.c in Sources */ = {isa = PBXBuildFile; fileRef = 175CC0EA1AC94D88007D7DEC /* tif_read.c */; };
-		175CC12D1AC94D88007D7DEC /* tif_stream.cxx in Sources */ = {isa = PBXBuildFile; fileRef = 175CC0EB1AC94D88007D7DEC /* tif_stream.cxx */; };
-		175CC12E1AC94D88007D7DEC /* tif_strip.c in Sources */ = {isa = PBXBuildFile; fileRef = 175CC0EC1AC94D88007D7DEC /* tif_strip.c */; };
-		175CC12F1AC94D88007D7DEC /* tif_swab.c in Sources */ = {isa = PBXBuildFile; fileRef = 175CC0ED1AC94D88007D7DEC /* tif_swab.c */; };
-		175CC1301AC94D88007D7DEC /* tif_thunder.c in Sources */ = {isa = PBXBuildFile; fileRef = 175CC0EE1AC94D88007D7DEC /* tif_thunder.c */; };
-		175CC1311AC94D88007D7DEC /* tif_tile.c in Sources */ = {isa = PBXBuildFile; fileRef = 175CC0EF1AC94D88007D7DEC /* tif_tile.c */; };
-		175CC1331AC94D88007D7DEC /* tif_version.c in Sources */ = {isa = PBXBuildFile; fileRef = 175CC0F11AC94D88007D7DEC /* tif_version.c */; };
-		175CC1341AC94D88007D7DEC /* tif_warning.c in Sources */ = {isa = PBXBuildFile; fileRef = 175CC0F21AC94D88007D7DEC /* tif_warning.c */; };
-		175CC1371AC94D88007D7DEC /* tif_write.c in Sources */ = {isa = PBXBuildFile; fileRef = 175CC0F51AC94D88007D7DEC /* tif_write.c */; };
-		175CC1381AC94D88007D7DEC /* tif_zip.c in Sources */ = {isa = PBXBuildFile; fileRef = 175CC0F61AC94D88007D7DEC /* tif_zip.c */; };
-		175CC1391AC94D88007D7DEC /* tiff.h in Headers */ = {isa = PBXBuildFile; fileRef = 175CC0FC1AC94D88007D7DEC /* tiff.h */; };
-		175CC13A1AC94D88007D7DEC /* tiffconf.h in Headers */ = {isa = PBXBuildFile; fileRef = 175CC0FF1AC94D88007D7DEC /* tiffconf.h */; };
-		175CC13C1AC94D88007D7DEC /* tiffio.h in Headers */ = {isa = PBXBuildFile; fileRef = 175CC1011AC94D88007D7DEC /* tiffio.h */; };
-		175CC13D1AC94D88007D7DEC /* tiffio.hxx in Headers */ = {isa = PBXBuildFile; fileRef = 175CC1021AC94D88007D7DEC /* tiffio.hxx */; };
-		175CC13E1AC94D88007D7DEC /* tiffiop.h in Headers */ = {isa = PBXBuildFile; fileRef = 175CC1031AC94D88007D7DEC /* tiffiop.h */; };
-		175CC13F1AC94D88007D7DEC /* tiffvers.h in Headers */ = {isa = PBXBuildFile; fileRef = 175CC1041AC94D88007D7DEC /* tiffvers.h */; };
-		175CC1401AC94D88007D7DEC /* uvcode.h in Headers */ = {isa = PBXBuildFile; fileRef = 175CC1051AC94D88007D7DEC /* uvcode.h */; };
-		175CC1D11AC95CA1007D7DEC /* tif_unix.c in Sources */ = {isa = PBXBuildFile; fileRef = 175CC1D01AC95CA1007D7DEC /* tif_unix.c */; };
 		17C1019B1ACC4F45006B99B3 /* tif_packbits.c in Sources */ = {isa = PBXBuildFile; fileRef = 175CC0E51AC94D88007D7DEC /* tif_packbits.c */; };
 		17C1019C1ACC4F45006B99B3 /* tif_write.c in Sources */ = {isa = PBXBuildFile; fileRef = 175CC0F51AC94D88007D7DEC /* tif_write.c */; };
 		17C1019D1ACC4F45006B99B3 /* tif_getimage.c in Sources */ = {isa = PBXBuildFile; fileRef = 175CC0DC1AC94D88007D7DEC /* tif_getimage.c */; };
@@ -112,7 +61,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		175CC0B61AC94D64007D7DEC /* libtiff.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libtiff.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		175CC0C51AC94D88007D7DEC /* t4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = t4.h; path = ../../../../cximage/tiff/t4.h; sourceTree = "<group>"; };
 		175CC0C91AC94D88007D7DEC /* tif_aux.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tif_aux.c; path = ../../../../cximage/tiff/tif_aux.c; sourceTree = "<group>"; };
 		175CC0CA1AC94D88007D7DEC /* tif_close.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tif_close.c; path = ../../../../cximage/tiff/tif_close.c; sourceTree = "<group>"; };
@@ -168,13 +116,6 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		175CC0B31AC94D64007D7DEC /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		17C101C11ACC4F45006B99B3 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -196,7 +137,6 @@
 		175CC0B71AC94D64007D7DEC /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				175CC0B61AC94D64007D7DEC /* libtiff.a */,
 				17C101D31ACC4F45006B99B3 /* libtiff_ios.a */,
 			);
 			name = Products;
@@ -263,26 +203,6 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		175CC0B41AC94D64007D7DEC /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				175CC1131AC94D88007D7DEC /* tif_dir.h in Headers */,
-				175CC1111AC94D88007D7DEC /* tif_config.wince.h in Headers */,
-				175CC1101AC94D88007D7DEC /* tif_config.h in Headers */,
-				175CC13C1AC94D88007D7DEC /* tiffio.h in Headers */,
-				175CC1071AC94D88007D7DEC /* t4.h in Headers */,
-				175CC1391AC94D88007D7DEC /* tiff.h in Headers */,
-				175CC12A1AC94D88007D7DEC /* tif_predict.h in Headers */,
-				175CC13D1AC94D88007D7DEC /* tiffio.hxx in Headers */,
-				175CC1401AC94D88007D7DEC /* uvcode.h in Headers */,
-				175CC13E1AC94D88007D7DEC /* tiffiop.h in Headers */,
-				175CC13F1AC94D88007D7DEC /* tiffvers.h in Headers */,
-				175CC11B1AC94D88007D7DEC /* tif_fax3.h in Headers */,
-				175CC13A1AC94D88007D7DEC /* tiffconf.h in Headers */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		17C101C21ACC4F45006B99B3 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -306,26 +226,9 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		175CC0B51AC94D64007D7DEC /* tiff */ = {
+		17C101991ACC4F45006B99B3 /* tiff */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 175CC0C11AC94D64007D7DEC /* Build configuration list for PBXNativeTarget "tiff" */;
-			buildPhases = (
-				175CC0B21AC94D64007D7DEC /* Sources */,
-				175CC0B31AC94D64007D7DEC /* Frameworks */,
-				175CC0B41AC94D64007D7DEC /* Headers */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = tiff;
-			productName = tiff;
-			productReference = 175CC0B61AC94D64007D7DEC /* libtiff.a */;
-			productType = "com.apple.product-type.library.static";
-		};
-		17C101991ACC4F45006B99B3 /* tiff_ios */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 17C101D01ACC4F45006B99B3 /* Build configuration list for PBXNativeTarget "tiff_ios" */;
+			buildConfigurationList = 17C101D01ACC4F45006B99B3 /* Build configuration list for PBXNativeTarget "tiff" */;
 			buildPhases = (
 				17C1019A1ACC4F45006B99B3 /* Sources */,
 				17C101C11ACC4F45006B99B3 /* Frameworks */,
@@ -335,7 +238,7 @@
 			);
 			dependencies = (
 			);
-			name = tiff_ios;
+			name = tiff;
 			productName = tiff;
 			productReference = 17C101D31ACC4F45006B99B3 /* libtiff_ios.a */;
 			productType = "com.apple.product-type.library.static";
@@ -348,11 +251,6 @@
 			attributes = {
 				LastUpgradeCheck = 0700;
 				ORGANIZATIONNAME = "Ascensio System SIA";
-				TargetAttributes = {
-					175CC0B51AC94D64007D7DEC = {
-						CreatedOnToolsVersion = 6.2;
-					};
-				};
 			};
 			buildConfigurationList = 175CC0B11AC94D62007D7DEC /* Build configuration list for PBXProject "tiff" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -366,58 +264,12 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				175CC0B51AC94D64007D7DEC /* tiff */,
-				17C101991ACC4F45006B99B3 /* tiff_ios */,
+				17C101991ACC4F45006B99B3 /* tiff */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		175CC0B21AC94D64007D7DEC /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				175CC1271AC94D88007D7DEC /* tif_packbits.c in Sources */,
-				175CC1371AC94D88007D7DEC /* tif_write.c in Sources */,
-				175CC11E1AC94D88007D7DEC /* tif_getimage.c in Sources */,
-				175CC1251AC94D88007D7DEC /* tif_ojpeg.c in Sources */,
-				175CC11D1AC94D88007D7DEC /* tif_flush.c in Sources */,
-				175CC1281AC94D88007D7DEC /* tif_pixarlog.c in Sources */,
-				175CC10F1AC94D88007D7DEC /* tif_compress.c in Sources */,
-				175CC12E1AC94D88007D7DEC /* tif_strip.c in Sources */,
-				175CC1171AC94D88007D7DEC /* tif_dumpmode.c in Sources */,
-				175CC10B1AC94D88007D7DEC /* tif_aux.c in Sources */,
-				175CC1151AC94D88007D7DEC /* tif_dirread.c in Sources */,
-				175CC1311AC94D88007D7DEC /* tif_tile.c in Sources */,
-				175CC12B1AC94D88007D7DEC /* tif_print.c in Sources */,
-				175CC10C1AC94D88007D7DEC /* tif_close.c in Sources */,
-				175CC12F1AC94D88007D7DEC /* tif_swab.c in Sources */,
-				175CC1381AC94D88007D7DEC /* tif_zip.c in Sources */,
-				175CC1261AC94D88007D7DEC /* tif_open.c in Sources */,
-				175CC1121AC94D88007D7DEC /* tif_dir.c in Sources */,
-				175CC1211AC94D88007D7DEC /* tif_luv.c in Sources */,
-				175CC11A1AC94D88007D7DEC /* tif_fax3.c in Sources */,
-				175CC10D1AC94D88007D7DEC /* tif_codec.c in Sources */,
-				175CC10E1AC94D88007D7DEC /* tif_color.c in Sources */,
-				175CC1201AC94D88007D7DEC /* tif_jpeg.c in Sources */,
-				175CC1141AC94D88007D7DEC /* tif_dirinfo.c in Sources */,
-				175CC1301AC94D88007D7DEC /* tif_thunder.c in Sources */,
-				175CC1181AC94D88007D7DEC /* tif_error.c in Sources */,
-				175CC12D1AC94D88007D7DEC /* tif_stream.cxx in Sources */,
-				175CC1221AC94D88007D7DEC /* tif_lzw.c in Sources */,
-				175CC1341AC94D88007D7DEC /* tif_warning.c in Sources */,
-				175CC1331AC94D88007D7DEC /* tif_version.c in Sources */,
-				175CC1161AC94D88007D7DEC /* tif_dirwrite.c in Sources */,
-				175CC1291AC94D88007D7DEC /* tif_predict.c in Sources */,
-				175CC12C1AC94D88007D7DEC /* tif_read.c in Sources */,
-				175CC1D11AC95CA1007D7DEC /* tif_unix.c in Sources */,
-				175CC11F1AC94D88007D7DEC /* tif_jbig.c in Sources */,
-				175CC1191AC94D88007D7DEC /* tif_extension.c in Sources */,
-				175CC1241AC94D88007D7DEC /* tif_next.c in Sources */,
-				175CC11C1AC94D88007D7DEC /* tif_fax3sm.c in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		17C1019A1ACC4F45006B99B3 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -541,38 +393,6 @@
 			};
 			name = Release;
 		};
-		175CC0C21AC94D64007D7DEC /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				EXECUTABLE_PREFIX = lib;
-				GCC_ENABLE_CPP_EXCEPTIONS = YES;
-				GCC_ENABLE_CPP_RTTI = YES;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					HAVE_UNISTD_H,
-					_LINUX,
-				);
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Debug;
-		};
-		175CC0C31AC94D64007D7DEC /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				EXECUTABLE_PREFIX = lib;
-				GCC_ENABLE_CPP_EXCEPTIONS = YES;
-				GCC_ENABLE_CPP_RTTI = YES;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					HAVE_UNISTD_H,
-					_LINUX,
-				);
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Release;
-		};
 		17C101D11ACC4F45006B99B3 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -621,16 +441,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		175CC0C11AC94D64007D7DEC /* Build configuration list for PBXNativeTarget "tiff" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				175CC0C21AC94D64007D7DEC /* Debug */,
-				175CC0C31AC94D64007D7DEC /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		17C101D01ACC4F45006B99B3 /* Build configuration list for PBXNativeTarget "tiff_ios" */ = {
+		17C101D01ACC4F45006B99B3 /* Build configuration list for PBXNativeTarget "tiff" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				17C101D11ACC4F45006B99B3 /* Debug */,

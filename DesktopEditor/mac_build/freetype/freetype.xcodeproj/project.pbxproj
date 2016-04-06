@@ -72,77 +72,10 @@
 		17C100841ACC4BC4006B99B3 /* ftmodule.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D914171AC59CE60096D788 /* ftmodule.h */; };
 		17C100851ACC4BC4006B99B3 /* ftoption.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D914181AC59CE60096D788 /* ftoption.h */; };
 		17C100861ACC4BC4006B99B3 /* ftbase.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D914F41AC59CFB0096D788 /* ftbase.h */; };
-		17D9146F1AC59CE70096D788 /* ftconfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D914151AC59CE60096D788 /* ftconfig.h */; };
-		17D914701AC59CE70096D788 /* ftheader.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D914161AC59CE60096D788 /* ftheader.h */; };
-		17D914711AC59CE70096D788 /* ftmodule.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D914171AC59CE60096D788 /* ftmodule.h */; };
-		17D914721AC59CE70096D788 /* ftoption.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D914181AC59CE60096D788 /* ftoption.h */; };
-		17D914731AC59CE70096D788 /* ftstdlib.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D914191AC59CE60096D788 /* ftstdlib.h */; };
-		17D914751AC59CE70096D788 /* ft2build.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D9141B1AC59CE60096D788 /* ft2build.h */; };
-		17D916BE1AC59CFD0096D788 /* autofit.c in Sources */ = {isa = PBXBuildFile; fileRef = 17D914EA1AC59CFB0096D788 /* autofit.c */; };
-		17D916C01AC59CFD0096D788 /* basepic.c in Sources */ = {isa = PBXBuildFile; fileRef = 17D914EF1AC59CFB0096D788 /* basepic.c */; };
-		17D916C11AC59CFD0096D788 /* basepic.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D914F01AC59CFB0096D788 /* basepic.h */; };
-		17D916C21AC59CFD0096D788 /* ftadvanc.c in Sources */ = {isa = PBXBuildFile; fileRef = 17D914F11AC59CFB0096D788 /* ftadvanc.c */; };
-		17D916C31AC59CFD0096D788 /* ftapi.c in Sources */ = {isa = PBXBuildFile; fileRef = 17D914F21AC59CFB0096D788 /* ftapi.c */; };
-		17D916C41AC59CFD0096D788 /* ftbase.c in Sources */ = {isa = PBXBuildFile; fileRef = 17D914F31AC59CFB0096D788 /* ftbase.c */; };
-		17D916C51AC59CFD0096D788 /* ftbase.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D914F41AC59CFB0096D788 /* ftbase.h */; };
-		17D916C61AC59CFD0096D788 /* ftbbox.c in Sources */ = {isa = PBXBuildFile; fileRef = 17D914F51AC59CFB0096D788 /* ftbbox.c */; };
-		17D916C71AC59CFD0096D788 /* ftbdf.c in Sources */ = {isa = PBXBuildFile; fileRef = 17D914F61AC59CFB0096D788 /* ftbdf.c */; };
-		17D916C81AC59CFD0096D788 /* ftbitmap.c in Sources */ = {isa = PBXBuildFile; fileRef = 17D914F71AC59CFB0096D788 /* ftbitmap.c */; };
-		17D916C91AC59CFD0096D788 /* ftcalc.c in Sources */ = {isa = PBXBuildFile; fileRef = 17D914F81AC59CFB0096D788 /* ftcalc.c */; };
-		17D916CA1AC59CFD0096D788 /* ftcid.c in Sources */ = {isa = PBXBuildFile; fileRef = 17D914F91AC59CFB0096D788 /* ftcid.c */; };
-		17D916CB1AC59CFD0096D788 /* ftdbgmem.c in Sources */ = {isa = PBXBuildFile; fileRef = 17D914FA1AC59CFB0096D788 /* ftdbgmem.c */; };
-		17D916CC1AC59CFD0096D788 /* ftdebug.c in Sources */ = {isa = PBXBuildFile; fileRef = 17D914FB1AC59CFB0096D788 /* ftdebug.c */; };
-		17D916CD1AC59CFD0096D788 /* ftfstype.c in Sources */ = {isa = PBXBuildFile; fileRef = 17D914FC1AC59CFB0096D788 /* ftfstype.c */; };
-		17D916CE1AC59CFD0096D788 /* ftgasp.c in Sources */ = {isa = PBXBuildFile; fileRef = 17D914FD1AC59CFB0096D788 /* ftgasp.c */; };
-		17D916CF1AC59CFD0096D788 /* ftgloadr.c in Sources */ = {isa = PBXBuildFile; fileRef = 17D914FE1AC59CFB0096D788 /* ftgloadr.c */; };
-		17D916D01AC59CFD0096D788 /* ftglyph.c in Sources */ = {isa = PBXBuildFile; fileRef = 17D914FF1AC59CFB0096D788 /* ftglyph.c */; };
-		17D916D11AC59CFD0096D788 /* ftgxval.c in Sources */ = {isa = PBXBuildFile; fileRef = 17D915001AC59CFB0096D788 /* ftgxval.c */; };
-		17D916D21AC59CFD0096D788 /* ftinit.c in Sources */ = {isa = PBXBuildFile; fileRef = 17D915011AC59CFB0096D788 /* ftinit.c */; };
-		17D916D31AC59CFD0096D788 /* ftlcdfil.c in Sources */ = {isa = PBXBuildFile; fileRef = 17D915021AC59CFB0096D788 /* ftlcdfil.c */; };
-		17D916D41AC59CFD0096D788 /* ftmac.c in Sources */ = {isa = PBXBuildFile; fileRef = 17D915031AC59CFB0096D788 /* ftmac.c */; };
-		17D916D51AC59CFD0096D788 /* ftmm.c in Sources */ = {isa = PBXBuildFile; fileRef = 17D915041AC59CFB0096D788 /* ftmm.c */; };
-		17D916D71AC59CFD0096D788 /* ftotval.c in Sources */ = {isa = PBXBuildFile; fileRef = 17D915061AC59CFB0096D788 /* ftotval.c */; };
-		17D916D81AC59CFD0096D788 /* ftoutln.c in Sources */ = {isa = PBXBuildFile; fileRef = 17D915071AC59CFB0096D788 /* ftoutln.c */; };
-		17D916D91AC59CFD0096D788 /* ftpatent.c in Sources */ = {isa = PBXBuildFile; fileRef = 17D915081AC59CFB0096D788 /* ftpatent.c */; };
-		17D916DA1AC59CFD0096D788 /* ftpfr.c in Sources */ = {isa = PBXBuildFile; fileRef = 17D915091AC59CFB0096D788 /* ftpfr.c */; };
-		17D916DB1AC59CFD0096D788 /* ftpic.c in Sources */ = {isa = PBXBuildFile; fileRef = 17D9150A1AC59CFB0096D788 /* ftpic.c */; };
-		17D916DC1AC59CFD0096D788 /* ftrfork.c in Sources */ = {isa = PBXBuildFile; fileRef = 17D9150B1AC59CFB0096D788 /* ftrfork.c */; };
-		17D916DD1AC59CFD0096D788 /* ftsnames.c in Sources */ = {isa = PBXBuildFile; fileRef = 17D9150C1AC59CFB0096D788 /* ftsnames.c */; };
-		17D916DE1AC59CFD0096D788 /* ftstream.c in Sources */ = {isa = PBXBuildFile; fileRef = 17D9150D1AC59CFB0096D788 /* ftstream.c */; };
-		17D916DF1AC59CFD0096D788 /* ftstroke.c in Sources */ = {isa = PBXBuildFile; fileRef = 17D9150E1AC59CFB0096D788 /* ftstroke.c */; };
-		17D916E01AC59CFD0096D788 /* ftsynth.c in Sources */ = {isa = PBXBuildFile; fileRef = 17D9150F1AC59CFB0096D788 /* ftsynth.c */; };
-		17D916E11AC59CFD0096D788 /* ftsystem.c in Sources */ = {isa = PBXBuildFile; fileRef = 17D915101AC59CFB0096D788 /* ftsystem.c */; };
-		17D916E21AC59CFD0096D788 /* fttrigon.c in Sources */ = {isa = PBXBuildFile; fileRef = 17D915111AC59CFB0096D788 /* fttrigon.c */; };
-		17D916E31AC59CFD0096D788 /* fttype1.c in Sources */ = {isa = PBXBuildFile; fileRef = 17D915121AC59CFB0096D788 /* fttype1.c */; };
-		17D916E41AC59CFD0096D788 /* ftutil.c in Sources */ = {isa = PBXBuildFile; fileRef = 17D915131AC59CFB0096D788 /* ftutil.c */; };
-		17D916E51AC59CFD0096D788 /* ftwinfnt.c in Sources */ = {isa = PBXBuildFile; fileRef = 17D915141AC59CFB0096D788 /* ftwinfnt.c */; };
-		17D916E61AC59CFD0096D788 /* ftxf86.c in Sources */ = {isa = PBXBuildFile; fileRef = 17D915151AC59CFB0096D788 /* ftxf86.c */; };
-		17D916E81AC59CFD0096D788 /* md5.c in Sources */ = {isa = PBXBuildFile; fileRef = 17D915171AC59CFB0096D788 /* md5.c */; };
-		17D916E91AC59CFD0096D788 /* md5.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D915181AC59CFB0096D788 /* md5.h */; };
-		17D916EA1AC59CFD0096D788 /* bdf.c in Sources */ = {isa = PBXBuildFile; fileRef = 17D9151B1AC59CFB0096D788 /* bdf.c */; };
-		17D916F11AC59CFD0096D788 /* ftbzip2.c in Sources */ = {isa = PBXBuildFile; fileRef = 17D915261AC59CFB0096D788 /* ftbzip2.c */; };
-		17D916F31AC59CFD0096D788 /* ftcache.c in Sources */ = {isa = PBXBuildFile; fileRef = 17D9152A1AC59CFB0096D788 /* ftcache.c */; };
-		17D9171A1AC59CFD0096D788 /* cff.c in Sources */ = {isa = PBXBuildFile; fileRef = 17D915531AC59CFB0096D788 /* cff.c */; };
-		17D9173A1AC59CFD0096D788 /* type1cid.c in Sources */ = {isa = PBXBuildFile; fileRef = 17D915781AC59CFB0096D788 /* type1cid.c */; };
-		17D9175C1AC59CFD0096D788 /* ftgzip.c in Sources */ = {isa = PBXBuildFile; fileRef = 17D9159F1AC59CFC0096D788 /* ftgzip.c */; };
-		17D9176D1AC59CFD0096D788 /* ftlzw.c in Sources */ = {isa = PBXBuildFile; fileRef = 17D915B21AC59CFC0096D788 /* ftlzw.c */; };
-		17D917811AC59CFD0096D788 /* pcf.c in Sources */ = {isa = PBXBuildFile; fileRef = 17D915CC1AC59CFC0096D788 /* pcf.c */; };
-		17D9178B1AC59CFD0096D788 /* pfr.c in Sources */ = {isa = PBXBuildFile; fileRef = 17D915DA1AC59CFC0096D788 /* pfr.c */; };
-		17D9179D1AC59CFD0096D788 /* psaux.c in Sources */ = {isa = PBXBuildFile; fileRef = 17D915EF1AC59CFC0096D788 /* psaux.c */; };
-		17D917AE1AC59CFD0096D788 /* pshinter.c in Sources */ = {isa = PBXBuildFile; fileRef = 17D916031AC59CFC0096D788 /* pshinter.c */; };
-		17D917B71AC59CFD0096D788 /* psmodule.c in Sources */ = {isa = PBXBuildFile; fileRef = 17D9160F1AC59CFC0096D788 /* psmodule.c */; };
-		17D917C41AC59CFD0096D788 /* raster.c in Sources */ = {isa = PBXBuildFile; fileRef = 17D9161F1AC59CFC0096D788 /* raster.c */; };
-		17D917CE1AC59CFD0096D788 /* sfnt.c in Sources */ = {isa = PBXBuildFile; fileRef = 17D9162D1AC59CFC0096D788 /* sfnt.c */; };
-		17D917EA1AC59CFD0096D788 /* smooth.c in Sources */ = {isa = PBXBuildFile; fileRef = 17D9164C1AC59CFC0096D788 /* smooth.c */; };
-		17D917F31AC59CFD0096D788 /* truetype.c in Sources */ = {isa = PBXBuildFile; fileRef = 17D916671AC59CFD0096D788 /* truetype.c */; };
-		17D918141AC59CFD0096D788 /* type1.c in Sources */ = {isa = PBXBuildFile; fileRef = 17D9168B1AC59CFD0096D788 /* type1.c */; };
-		17D9181E1AC59CFD0096D788 /* type42.c in Sources */ = {isa = PBXBuildFile; fileRef = 17D916981AC59CFD0096D788 /* type42.c */; };
-		17D918211AC59CFD0096D788 /* winfnt.c in Sources */ = {isa = PBXBuildFile; fileRef = 17D9169E1AC59CFD0096D788 /* winfnt.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		17C1008A1ACC4BC4006B99B3 /* libfreetype_ios.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libfreetype_ios.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		17D914051AC59C860096D788 /* libfreetype.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libfreetype.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		17D914151AC59CE60096D788 /* ftconfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ftconfig.h; sourceTree = "<group>"; };
 		17D914161AC59CE60096D788 /* ftheader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ftheader.h; sourceTree = "<group>"; };
 		17D914171AC59CE60096D788 /* ftmodule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ftmodule.h; sourceTree = "<group>"; };
@@ -219,13 +152,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		17D914021AC59C860096D788 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -240,7 +166,6 @@
 		17D914061AC59C860096D788 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				17D914051AC59C860096D788 /* libfreetype.a */,
 				17C1008A1ACC4BC4006B99B3 /* libfreetype_ios.a */,
 			);
 			name = Products;
@@ -532,28 +457,12 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		17D914031AC59C860096D788 /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				17D916E91AC59CFD0096D788 /* md5.h in Headers */,
-				17D914751AC59CE70096D788 /* ft2build.h in Headers */,
-				17D9146F1AC59CE70096D788 /* ftconfig.h in Headers */,
-				17D914731AC59CE70096D788 /* ftstdlib.h in Headers */,
-				17D916C11AC59CFD0096D788 /* basepic.h in Headers */,
-				17D914701AC59CE70096D788 /* ftheader.h in Headers */,
-				17D914711AC59CE70096D788 /* ftmodule.h in Headers */,
-				17D914721AC59CE70096D788 /* ftoption.h in Headers */,
-				17D916C51AC59CFD0096D788 /* ftbase.h in Headers */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		17C100411ACC4BC4006B99B3 /* freetype_ios */ = {
+		17C100411ACC4BC4006B99B3 /* freetype */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 17C100871ACC4BC4006B99B3 /* Build configuration list for PBXNativeTarget "freetype_ios" */;
+			buildConfigurationList = 17C100871ACC4BC4006B99B3 /* Build configuration list for PBXNativeTarget "freetype" */;
 			buildPhases = (
 				17C100421ACC4BC4006B99B3 /* Sources */,
 				17C1007C1ACC4BC4006B99B3 /* Frameworks */,
@@ -563,26 +472,9 @@
 			);
 			dependencies = (
 			);
-			name = freetype_ios;
-			productName = freetype;
-			productReference = 17C1008A1ACC4BC4006B99B3 /* libfreetype_ios.a */;
-			productType = "com.apple.product-type.library.static";
-		};
-		17D914041AC59C860096D788 /* freetype */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 17D914101AC59C860096D788 /* Build configuration list for PBXNativeTarget "freetype" */;
-			buildPhases = (
-				17D914011AC59C860096D788 /* Sources */,
-				17D914021AC59C860096D788 /* Frameworks */,
-				17D914031AC59C860096D788 /* Headers */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
 			name = freetype;
 			productName = freetype;
-			productReference = 17D914051AC59C860096D788 /* libfreetype.a */;
+			productReference = 17C1008A1ACC4BC4006B99B3 /* libfreetype_ios.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
@@ -593,11 +485,6 @@
 			attributes = {
 				LastUpgradeCheck = 0700;
 				ORGANIZATIONNAME = "Ascensio System SIA";
-				TargetAttributes = {
-					17D914041AC59C860096D788 = {
-						CreatedOnToolsVersion = 6.2;
-					};
-				};
 			};
 			buildConfigurationList = 17D914001AC59C860096D788 /* Build configuration list for PBXProject "freetype" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -611,8 +498,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				17D914041AC59C860096D788 /* freetype */,
-				17C100411ACC4BC4006B99B3 /* freetype_ios */,
+				17C100411ACC4BC4006B99B3 /* freetype */,
 			);
 		};
 /* End PBXProject section */
@@ -678,70 +564,6 @@
 				17C100791ACC4BC4006B99B3 /* type42.c in Sources */,
 				17C1007A1ACC4BC4006B99B3 /* psmodule.c in Sources */,
 				17C1007B1ACC4BC4006B99B3 /* ftgzip.c in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		17D914011AC59C860096D788 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				17D918141AC59CFD0096D788 /* type1.c in Sources */,
-				17D916C31AC59CFD0096D788 /* ftapi.c in Sources */,
-				17D917811AC59CFD0096D788 /* pcf.c in Sources */,
-				17D916C01AC59CFD0096D788 /* basepic.c in Sources */,
-				17D916E51AC59CFD0096D788 /* ftwinfnt.c in Sources */,
-				17D916BE1AC59CFD0096D788 /* autofit.c in Sources */,
-				17D916E81AC59CFD0096D788 /* md5.c in Sources */,
-				17D917AE1AC59CFD0096D788 /* pshinter.c in Sources */,
-				17D916D41AC59CFD0096D788 /* ftmac.c in Sources */,
-				17D916E31AC59CFD0096D788 /* fttype1.c in Sources */,
-				17D916EA1AC59CFD0096D788 /* bdf.c in Sources */,
-				17D916F11AC59CFD0096D788 /* ftbzip2.c in Sources */,
-				17D916C71AC59CFD0096D788 /* ftbdf.c in Sources */,
-				17D917EA1AC59CFD0096D788 /* smooth.c in Sources */,
-				17D916D71AC59CFD0096D788 /* ftotval.c in Sources */,
-				17D916E01AC59CFD0096D788 /* ftsynth.c in Sources */,
-				17D916DD1AC59CFD0096D788 /* ftsnames.c in Sources */,
-				17D916DA1AC59CFD0096D788 /* ftpfr.c in Sources */,
-				17D916D21AC59CFD0096D788 /* ftinit.c in Sources */,
-				17D9173A1AC59CFD0096D788 /* type1cid.c in Sources */,
-				17D916DB1AC59CFD0096D788 /* ftpic.c in Sources */,
-				17D9176D1AC59CFD0096D788 /* ftlzw.c in Sources */,
-				17D916E11AC59CFD0096D788 /* ftsystem.c in Sources */,
-				17D916CB1AC59CFD0096D788 /* ftdbgmem.c in Sources */,
-				17D916D51AC59CFD0096D788 /* ftmm.c in Sources */,
-				17D916C61AC59CFD0096D788 /* ftbbox.c in Sources */,
-				17D918211AC59CFD0096D788 /* winfnt.c in Sources */,
-				17D9171A1AC59CFD0096D788 /* cff.c in Sources */,
-				17D916C21AC59CFD0096D788 /* ftadvanc.c in Sources */,
-				17D916D91AC59CFD0096D788 /* ftpatent.c in Sources */,
-				17D916DE1AC59CFD0096D788 /* ftstream.c in Sources */,
-				17D916DC1AC59CFD0096D788 /* ftrfork.c in Sources */,
-				17D916C91AC59CFD0096D788 /* ftcalc.c in Sources */,
-				17D9178B1AC59CFD0096D788 /* pfr.c in Sources */,
-				17D917F31AC59CFD0096D788 /* truetype.c in Sources */,
-				17D916C81AC59CFD0096D788 /* ftbitmap.c in Sources */,
-				17D916D11AC59CFD0096D788 /* ftgxval.c in Sources */,
-				17D916C41AC59CFD0096D788 /* ftbase.c in Sources */,
-				17D916D81AC59CFD0096D788 /* ftoutln.c in Sources */,
-				17D916CD1AC59CFD0096D788 /* ftfstype.c in Sources */,
-				17D9179D1AC59CFD0096D788 /* psaux.c in Sources */,
-				17D916DF1AC59CFD0096D788 /* ftstroke.c in Sources */,
-				17D916CC1AC59CFD0096D788 /* ftdebug.c in Sources */,
-				17D916D01AC59CFD0096D788 /* ftglyph.c in Sources */,
-				17D916E41AC59CFD0096D788 /* ftutil.c in Sources */,
-				17D916CA1AC59CFD0096D788 /* ftcid.c in Sources */,
-				17D916CF1AC59CFD0096D788 /* ftgloadr.c in Sources */,
-				17D916E21AC59CFD0096D788 /* fttrigon.c in Sources */,
-				17D916D31AC59CFD0096D788 /* ftlcdfil.c in Sources */,
-				17D917CE1AC59CFD0096D788 /* sfnt.c in Sources */,
-				17D917C41AC59CFD0096D788 /* raster.c in Sources */,
-				17D916F31AC59CFD0096D788 /* ftcache.c in Sources */,
-				17D916CE1AC59CFD0096D788 /* ftgasp.c in Sources */,
-				17D916E61AC59CFD0096D788 /* ftxf86.c in Sources */,
-				17D9181E1AC59CFD0096D788 /* type42.c in Sources */,
-				17D917B71AC59CFD0096D788 /* psmodule.c in Sources */,
-				17D9175C1AC59CFD0096D788 /* ftgzip.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -869,46 +691,10 @@
 			};
 			name = Release;
 		};
-		17D914111AC59C860096D788 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				EXECUTABLE_PREFIX = lib;
-				GCC_ENABLE_CPP_EXCEPTIONS = YES;
-				GCC_ENABLE_CPP_RTTI = YES;
-				GCC_PREPROCESSOR_DEFINITIONS = FT2_BUILD_LIBRARY;
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"$(PROJECT_DIR)/../../freetype-2.5.2/include",
-				);
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Debug;
-		};
-		17D914121AC59C860096D788 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				EXECUTABLE_PREFIX = lib;
-				GCC_ENABLE_CPP_EXCEPTIONS = YES;
-				GCC_ENABLE_CPP_RTTI = YES;
-				GCC_PREPROCESSOR_DEFINITIONS = FT2_BUILD_LIBRARY;
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"$(PROJECT_DIR)/../../freetype-2.5.2/include",
-				);
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		17C100871ACC4BC4006B99B3 /* Build configuration list for PBXNativeTarget "freetype_ios" */ = {
+		17C100871ACC4BC4006B99B3 /* Build configuration list for PBXNativeTarget "freetype" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				17C100881ACC4BC4006B99B3 /* Debug */,
@@ -922,15 +708,6 @@
 			buildConfigurations = (
 				17D9140E1AC59C860096D788 /* Debug */,
 				17D9140F1AC59C860096D788 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		17D914101AC59C860096D788 /* Build configuration list for PBXNativeTarget "freetype" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				17D914111AC59C860096D788 /* Debug */,
-				17D914121AC59C860096D788 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

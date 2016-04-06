@@ -2,7 +2,7 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:/Volumes/trunk/ServerComponents/X2tConverter/test/iosTest/iosTest.xcodeproj">
+      location = "group:../../test/iosTest/iosTest.xcodeproj">
    </FileRef>
    <FileRef
       location = "group:TestMacX2tConverter/../X2tConverter/X2tConverter.xcodeproj">

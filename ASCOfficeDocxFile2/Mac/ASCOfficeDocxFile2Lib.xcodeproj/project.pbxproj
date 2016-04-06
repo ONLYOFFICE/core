@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		17A765281B0F3DC30046BC0B /* DefaultThemeWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17A765271B0F3DC30046BC0B /* DefaultThemeWriter.h */; };
 		17A765291B0F3DC30046BC0B /* DefaultThemeWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17A765271B0F3DC30046BC0B /* DefaultThemeWriter.h */; };
 		17C1FE961ACC42C4006B99B3 /* Common.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E17F1E1AC4549B00BEA2EA /* Common.cpp */; };
 		17C1FE971ACC42C4006B99B3 /* ChartFromToBinary.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E17F221AC4549B00BEA2EA /* ChartFromToBinary.cpp */; };
@@ -44,85 +43,15 @@
 		17C1FEBC1ACC42C4006B99B3 /* DocxSerializer.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17F0F1AC4546100BEA2EA /* DocxSerializer.h */; };
 		17C1FEBD1ACC42C4006B99B3 /* FileWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EF21AC4544900BEA2EA /* FileWriter.h */; };
 		17C1FEBE1ACC42C4006B99B3 /* CSVWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17F301AC4549B00BEA2EA /* CSVWriter.h */; };
-		17C1FEC81ACC42FD006B99B3 /* libDocxFormatLib_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 17C1FEC51ACC42C4006B99B3 /* libDocxFormatLib_ios.a */; };
-		17D913C11AC5968B0096D788 /* libDocxFormatLib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 17D913B11AC596190096D788 /* libDocxFormatLib.a */; };
-		17E17EFC1AC4544900BEA2EA /* ChartWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EEB1AC4544900BEA2EA /* ChartWriter.h */; };
-		17E17EFD1AC4544900BEA2EA /* CommentsWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EEC1AC4544900BEA2EA /* CommentsWriter.h */; };
-		17E17EFE1AC4544900BEA2EA /* ContentTypesWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EED1AC4544900BEA2EA /* ContentTypesWriter.h */; };
-		17E17F011AC4544900BEA2EA /* DocumentRelsWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EF01AC4544900BEA2EA /* DocumentRelsWriter.h */; };
-		17E17F021AC4544900BEA2EA /* DocumentWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EF11AC4544900BEA2EA /* DocumentWriter.h */; };
-		17E17F031AC4544900BEA2EA /* FileWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EF21AC4544900BEA2EA /* FileWriter.h */; };
-		17E17F041AC4544900BEA2EA /* fontTableWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EF31AC4544900BEA2EA /* fontTableWriter.h */; };
-		17E17F051AC4544900BEA2EA /* HeaderFooterWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EF41AC4544900BEA2EA /* HeaderFooterWriter.h */; };
-		17E17F061AC4544900BEA2EA /* MediaWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EF51AC4544900BEA2EA /* MediaWriter.h */; };
-		17E17F071AC4544900BEA2EA /* NumberingWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EF61AC4544900BEA2EA /* NumberingWriter.h */; };
-		17E17F081AC4544900BEA2EA /* ReaderClasses.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EF71AC4544900BEA2EA /* ReaderClasses.h */; };
-		17E17F091AC4544900BEA2EA /* Readers.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EF81AC4544900BEA2EA /* Readers.h */; };
-		17E17F0A1AC4544900BEA2EA /* SettingWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EF91AC4544900BEA2EA /* SettingWriter.h */; };
-		17E17F0B1AC4544900BEA2EA /* StylesWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EFA1AC4544900BEA2EA /* StylesWriter.h */; };
-		17E17F0C1AC4544900BEA2EA /* webSettingsWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EFB1AC4544900BEA2EA /* webSettingsWriter.h */; };
-		17E17F141AC4546100BEA2EA /* DocxSerializer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E17F0E1AC4546100BEA2EA /* DocxSerializer.cpp */; };
-		17E17F151AC4546100BEA2EA /* DocxSerializer.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17F0F1AC4546100BEA2EA /* DocxSerializer.h */; };
-		17E17F161AC4546100BEA2EA /* FontProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E17F101AC4546100BEA2EA /* FontProcessor.cpp */; };
-		17E17F171AC4546100BEA2EA /* FontProcessor.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17F111AC4546100BEA2EA /* FontProcessor.h */; };
-		17E17F181AC4546100BEA2EA /* XlsxSerializer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E17F121AC4546100BEA2EA /* XlsxSerializer.cpp */; };
-		17E17F191AC4546100BEA2EA /* XlsxSerializer.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17F131AC4546100BEA2EA /* XlsxSerializer.h */; };
-		17E17F3A1AC4549B00BEA2EA /* BinReaderWriterDefines.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17F1D1AC4549B00BEA2EA /* BinReaderWriterDefines.h */; };
-		17E17F3B1AC4549B00BEA2EA /* Common.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E17F1E1AC4549B00BEA2EA /* Common.cpp */; };
-		17E17F3C1AC4549B00BEA2EA /* Common.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17F1F1AC4549B00BEA2EA /* Common.h */; };
-		17E17F3D1AC4549B00BEA2EA /* BinaryWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17F211AC4549B00BEA2EA /* BinaryWriter.h */; };
-		17E17F3E1AC4549B00BEA2EA /* ChartFromToBinary.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E17F221AC4549B00BEA2EA /* ChartFromToBinary.cpp */; };
-		17E17F3F1AC4549B00BEA2EA /* ChartFromToBinary.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17F231AC4549B00BEA2EA /* ChartFromToBinary.h */; };
-		17E17F401AC4549B00BEA2EA /* CommonWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E17F241AC4549B00BEA2EA /* CommonWriter.cpp */; };
-		17E17F411AC4549B00BEA2EA /* CommonWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17F251AC4549B00BEA2EA /* CommonWriter.h */; };
-		17E17F421AC4549B00BEA2EA /* CSVReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E17F261AC4549B00BEA2EA /* CSVReader.cpp */; };
-		17E17F431AC4549B00BEA2EA /* CSVReader.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17F271AC4549B00BEA2EA /* CSVReader.h */; };
-		17E17F481AC4549B00BEA2EA /* BinaryCommonReader.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17F2D1AC4549B00BEA2EA /* BinaryCommonReader.h */; };
-		17E17F491AC4549B00BEA2EA /* BinaryReader.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17F2E1AC4549B00BEA2EA /* BinaryReader.h */; };
-		17E17F4A1AC4549B00BEA2EA /* CSVWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E17F2F1AC4549B00BEA2EA /* CSVWriter.cpp */; };
-		17E17F4B1AC4549B00BEA2EA /* CSVWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17F301AC4549B00BEA2EA /* CSVWriter.h */; };
-		69F181AE1C77274E00B2952B /* FileDownloader.h in Headers */ = {isa = PBXBuildFile; fileRef = 69F181AD1C77274E00B2952B /* FileDownloader.h */; };
+		69414A301CB51666003E771B /* ChartWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 69414A2E1CB51666003E771B /* ChartWriter.cpp */; };
+		69414A311CB51666003E771B /* ChartWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 69414A2F1CB51666003E771B /* ChartWriter.h */; };
 		69F181AF1C77274E00B2952B /* FileDownloader.h in Headers */ = {isa = PBXBuildFile; fileRef = 69F181AD1C77274E00B2952B /* FileDownloader.h */; };
-		69F181B41C77276D00B2952B /* FileDownloader_curl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 69F181B31C77276D00B2952B /* FileDownloader_curl.cpp */; };
 		69F181B51C77276D00B2952B /* FileDownloader_curl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 69F181B31C77276D00B2952B /* FileDownloader_curl.cpp */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXContainerItemProxy section */
-		17C1FEC41ACC42C4006B99B3 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 17D913AB1AC596180096D788 /* DocxFormatLib.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 17C1FC9C1ACC4250006B99B3;
-			remoteInfo = DocxFormatLib_ios;
-		};
-		17C1FEC61ACC42EC006B99B3 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 17D913AB1AC596180096D788 /* DocxFormatLib.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 17C1FB8E1ACC4250006B99B3;
-			remoteInfo = DocxFormatLib_ios;
-		};
-		17D913B01AC596190096D788 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 17D913AB1AC596180096D788 /* DocxFormatLib.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 17E69FDC1AC4259800F28F8B;
-			remoteInfo = DocxFormatLib;
-		};
-		17D913BF1AC5967E0096D788 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 17D913AB1AC596180096D788 /* DocxFormatLib.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 17E69FDB1AC4259800F28F8B;
-			remoteInfo = DocxFormatLib;
-		};
-/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		17A765271B0F3DC30046BC0B /* DefaultThemeWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DefaultThemeWriter.h; sourceTree = "<group>"; };
 		17C1FEC21ACC42C4006B99B3 /* libASCOfficeDocxFile2Lib_ios.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libASCOfficeDocxFile2Lib_ios.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		17D913AB1AC596180096D788 /* DocxFormatLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = DocxFormatLib.xcodeproj; path = ../../Common/DocxFormat/Mac/DocxFormatLib.xcodeproj; sourceTree = "<group>"; };
-		17E17EDC1AC453F800BEA2EA /* libASCOfficeDocxFile2Lib.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libASCOfficeDocxFile2Lib.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		17E17EEB1AC4544900BEA2EA /* ChartWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChartWriter.h; sourceTree = "<group>"; };
 		17E17EEC1AC4544900BEA2EA /* CommentsWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommentsWriter.h; sourceTree = "<group>"; };
 		17E17EED1AC4544900BEA2EA /* ContentTypesWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContentTypesWriter.h; sourceTree = "<group>"; };
@@ -158,6 +87,8 @@
 		17E17F2E1AC4549B00BEA2EA /* BinaryReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BinaryReader.h; sourceTree = "<group>"; };
 		17E17F2F1AC4549B00BEA2EA /* CSVWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSVWriter.cpp; sourceTree = "<group>"; };
 		17E17F301AC4549B00BEA2EA /* CSVWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSVWriter.h; sourceTree = "<group>"; };
+		69414A2E1CB51666003E771B /* ChartWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ChartWriter.cpp; sourceTree = "<group>"; };
+		69414A2F1CB51666003E771B /* ChartWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChartWriter.h; sourceTree = "<group>"; };
 		69F181AD1C77274E00B2952B /* FileDownloader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FileDownloader.h; path = ../../../Common/FileDownloader/FileDownloader.h; sourceTree = "<group>"; };
 		69F181B31C77276D00B2952B /* FileDownloader_curl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FileDownloader_curl.cpp; path = ../../../Common/FileDownloader/FileDownloader_curl.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -167,34 +98,15 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				17C1FEC81ACC42FD006B99B3 /* libDocxFormatLib_ios.a in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		17E17ED91AC453F800BEA2EA /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				17D913C11AC5968B0096D788 /* libDocxFormatLib.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		17D913AC1AC596180096D788 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				17D913B11AC596190096D788 /* libDocxFormatLib.a */,
-				17C1FEC51ACC42C4006B99B3 /* libDocxFormatLib_ios.a */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		17E17ED31AC453F800BEA2EA = {
 			isa = PBXGroup;
 			children = (
-				17D913AB1AC596180096D788 /* DocxFormatLib.xcodeproj */,
 				17E17EDE1AC453F800BEA2EA /* ASCOfficeDocxFile2Lib */,
 				17E17EDD1AC453F800BEA2EA /* Products */,
 			);
@@ -203,7 +115,6 @@
 		17E17EDD1AC453F800BEA2EA /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				17E17EDC1AC453F800BEA2EA /* libASCOfficeDocxFile2Lib.a */,
 				17C1FEC21ACC42C4006B99B3 /* libASCOfficeDocxFile2Lib_ios.a */,
 			);
 			name = Products;
@@ -247,6 +158,8 @@
 		17E17F0D1AC4546100BEA2EA /* DocWrapper */ = {
 			isa = PBXGroup;
 			children = (
+				69414A2E1CB51666003E771B /* ChartWriter.cpp */,
+				69414A2F1CB51666003E771B /* ChartWriter.h */,
 				17E17F0E1AC4546100BEA2EA /* DocxSerializer.cpp */,
 				17E17F0F1AC4546100BEA2EA /* DocxSerializer.h */,
 				17E17F101AC4546100BEA2EA /* FontProcessor.cpp */,
@@ -340,6 +253,7 @@
 				17C1FEB11ACC42C4006B99B3 /* Common.h in Headers */,
 				17C1FEB21ACC42C4006B99B3 /* XlsxSerializer.h in Headers */,
 				17C1FEB31ACC42C4006B99B3 /* CSVReader.h in Headers */,
+				69414A311CB51666003E771B /* ChartWriter.h in Headers */,
 				17C1FEB41ACC42C4006B99B3 /* ContentTypesWriter.h in Headers */,
 				17C1FEB51ACC42C4006B99B3 /* HeaderFooterWriter.h in Headers */,
 				17C1FEB61ACC42C4006B99B3 /* webSettingsWriter.h in Headers */,
@@ -352,48 +266,12 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		17E17EDA1AC453F800BEA2EA /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				17E17F041AC4544900BEA2EA /* fontTableWriter.h in Headers */,
-				17A765281B0F3DC30046BC0B /* DefaultThemeWriter.h in Headers */,
-				17E17F3F1AC4549B00BEA2EA /* ChartFromToBinary.h in Headers */,
-				17E17F061AC4544900BEA2EA /* MediaWriter.h in Headers */,
-				17E17F411AC4549B00BEA2EA /* CommonWriter.h in Headers */,
-				17E17F071AC4544900BEA2EA /* NumberingWriter.h in Headers */,
-				17E17F3A1AC4549B00BEA2EA /* BinReaderWriterDefines.h in Headers */,
-				17E17F3D1AC4549B00BEA2EA /* BinaryWriter.h in Headers */,
-				17E17F021AC4544900BEA2EA /* DocumentWriter.h in Headers */,
-				17E17F171AC4546100BEA2EA /* FontProcessor.h in Headers */,
-				17E17F0B1AC4544900BEA2EA /* StylesWriter.h in Headers */,
-				17E17F091AC4544900BEA2EA /* Readers.h in Headers */,
-				17E17EFC1AC4544900BEA2EA /* ChartWriter.h in Headers */,
-				17E17F011AC4544900BEA2EA /* DocumentRelsWriter.h in Headers */,
-				17E17EFD1AC4544900BEA2EA /* CommentsWriter.h in Headers */,
-				69F181AE1C77274E00B2952B /* FileDownloader.h in Headers */,
-				17E17F481AC4549B00BEA2EA /* BinaryCommonReader.h in Headers */,
-				17E17F3C1AC4549B00BEA2EA /* Common.h in Headers */,
-				17E17F191AC4546100BEA2EA /* XlsxSerializer.h in Headers */,
-				17E17F431AC4549B00BEA2EA /* CSVReader.h in Headers */,
-				17E17EFE1AC4544900BEA2EA /* ContentTypesWriter.h in Headers */,
-				17E17F051AC4544900BEA2EA /* HeaderFooterWriter.h in Headers */,
-				17E17F0C1AC4544900BEA2EA /* webSettingsWriter.h in Headers */,
-				17E17F0A1AC4544900BEA2EA /* SettingWriter.h in Headers */,
-				17E17F081AC4544900BEA2EA /* ReaderClasses.h in Headers */,
-				17E17F491AC4549B00BEA2EA /* BinaryReader.h in Headers */,
-				17E17F151AC4546100BEA2EA /* DocxSerializer.h in Headers */,
-				17E17F031AC4544900BEA2EA /* FileWriter.h in Headers */,
-				17E17F4B1AC4549B00BEA2EA /* CSVWriter.h in Headers */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		17C1FE921ACC42C4006B99B3 /* ASCOfficeDocxFile2Lib_ios */ = {
+		17C1FE921ACC42C4006B99B3 /* ASCOfficeDocxFile2Lib */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 17C1FEBF1ACC42C4006B99B3 /* Build configuration list for PBXNativeTarget "ASCOfficeDocxFile2Lib_ios" */;
+			buildConfigurationList = 17C1FEBF1ACC42C4006B99B3 /* Build configuration list for PBXNativeTarget "ASCOfficeDocxFile2Lib" */;
 			buildPhases = (
 				17C1FE951ACC42C4006B99B3 /* Sources */,
 				17C1FE9E1ACC42C4006B99B3 /* Frameworks */,
@@ -402,29 +280,10 @@
 			buildRules = (
 			);
 			dependencies = (
-				17C1FEC71ACC42EC006B99B3 /* PBXTargetDependency */,
-			);
-			name = ASCOfficeDocxFile2Lib_ios;
-			productName = ASCOfficeDocxFile2Lib;
-			productReference = 17C1FEC21ACC42C4006B99B3 /* libASCOfficeDocxFile2Lib_ios.a */;
-			productType = "com.apple.product-type.library.static";
-		};
-		17E17EDB1AC453F800BEA2EA /* ASCOfficeDocxFile2Lib */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 17E17EE71AC453F800BEA2EA /* Build configuration list for PBXNativeTarget "ASCOfficeDocxFile2Lib" */;
-			buildPhases = (
-				17E17ED81AC453F800BEA2EA /* Sources */,
-				17E17ED91AC453F800BEA2EA /* Frameworks */,
-				17E17EDA1AC453F800BEA2EA /* Headers */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				17D913C01AC5967E0096D788 /* PBXTargetDependency */,
 			);
 			name = ASCOfficeDocxFile2Lib;
 			productName = ASCOfficeDocxFile2Lib;
-			productReference = 17E17EDC1AC453F800BEA2EA /* libASCOfficeDocxFile2Lib.a */;
+			productReference = 17C1FEC21ACC42C4006B99B3 /* libASCOfficeDocxFile2Lib_ios.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
@@ -435,11 +294,6 @@
 			attributes = {
 				LastUpgradeCheck = 0710;
 				ORGANIZATIONNAME = "Ascensio System SIA";
-				TargetAttributes = {
-					17E17EDB1AC453F800BEA2EA = {
-						CreatedOnToolsVersion = 6.2;
-					};
-				};
 			};
 			buildConfigurationList = 17E17ED71AC453F800BEA2EA /* Build configuration list for PBXProject "ASCOfficeDocxFile2Lib" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -451,36 +305,12 @@
 			mainGroup = 17E17ED31AC453F800BEA2EA;
 			productRefGroup = 17E17EDD1AC453F800BEA2EA /* Products */;
 			projectDirPath = "";
-			projectReferences = (
-				{
-					ProductGroup = 17D913AC1AC596180096D788 /* Products */;
-					ProjectRef = 17D913AB1AC596180096D788 /* DocxFormatLib.xcodeproj */;
-				},
-			);
 			projectRoot = "";
 			targets = (
-				17E17EDB1AC453F800BEA2EA /* ASCOfficeDocxFile2Lib */,
-				17C1FE921ACC42C4006B99B3 /* ASCOfficeDocxFile2Lib_ios */,
+				17C1FE921ACC42C4006B99B3 /* ASCOfficeDocxFile2Lib */,
 			);
 		};
 /* End PBXProject section */
-
-/* Begin PBXReferenceProxy section */
-		17C1FEC51ACC42C4006B99B3 /* libDocxFormatLib_ios.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libDocxFormatLib_ios.a;
-			remoteRef = 17C1FEC41ACC42C4006B99B3 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		17D913B11AC596190096D788 /* libDocxFormatLib.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libDocxFormatLib.a;
-			remoteRef = 17D913B01AC596190096D788 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-/* End PBXReferenceProxy section */
 
 /* Begin PBXSourcesBuildPhase section */
 		17C1FE951ACC42C4006B99B3 /* Sources */ = {
@@ -494,41 +324,13 @@
 				17C1FE991ACC42C4006B99B3 /* DocxSerializer.cpp in Sources */,
 				17C1FE9A1ACC42C4006B99B3 /* CommonWriter.cpp in Sources */,
 				17C1FE9B1ACC42C4006B99B3 /* CSVWriter.cpp in Sources */,
+				69414A301CB51666003E771B /* ChartWriter.cpp in Sources */,
 				17C1FE9C1ACC42C4006B99B3 /* XlsxSerializer.cpp in Sources */,
 				17C1FE9D1ACC42C4006B99B3 /* FontProcessor.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		17E17ED81AC453F800BEA2EA /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				69F181B41C77276D00B2952B /* FileDownloader_curl.cpp in Sources */,
-				17E17F3B1AC4549B00BEA2EA /* Common.cpp in Sources */,
-				17E17F3E1AC4549B00BEA2EA /* ChartFromToBinary.cpp in Sources */,
-				17E17F421AC4549B00BEA2EA /* CSVReader.cpp in Sources */,
-				17E17F141AC4546100BEA2EA /* DocxSerializer.cpp in Sources */,
-				17E17F401AC4549B00BEA2EA /* CommonWriter.cpp in Sources */,
-				17E17F4A1AC4549B00BEA2EA /* CSVWriter.cpp in Sources */,
-				17E17F181AC4546100BEA2EA /* XlsxSerializer.cpp in Sources */,
-				17E17F161AC4546100BEA2EA /* FontProcessor.cpp in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		17C1FEC71ACC42EC006B99B3 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = DocxFormatLib_ios;
-			targetProxy = 17C1FEC61ACC42EC006B99B3 /* PBXContainerItemProxy */;
-		};
-		17D913C01AC5967E0096D788 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = DocxFormatLib;
-			targetProxy = 17D913BF1AC5967E0096D788 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		17C1FEC01ACC42C4006B99B3 /* Debug */ = {
@@ -676,74 +478,10 @@
 			};
 			name = Release;
 		};
-		17E17EE81AC453F800BEA2EA /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				EXECUTABLE_PREFIX = lib;
-				GCC_ENABLE_CPP_EXCEPTIONS = YES;
-				GCC_ENABLE_CPP_RTTI = YES;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					UNICODE,
-					_UNICODE,
-					NODOCX,
-					_USE_XMLLITE_READER_,
-					USE_LITE_READER,
-					USE_ATL_CSTRING,
-					USE_AVSOFFICESTUDIO_XMLUTILS,
-					SOLUTION_ASCOFFICEDOCXFILE2,
-					_USE_LIBXML2_READER_,
-					LIBXML_READER_ENABLED,
-					MAC,
-					unix,
-				);
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					/usr/include/libxml2,
-					"$(PROJECT_DIR)/../../DesktopEditor/freetype-2.5.2/include",
-				);
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Debug;
-		};
-		17E17EE91AC453F800BEA2EA /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				EXECUTABLE_PREFIX = lib;
-				GCC_ENABLE_CPP_EXCEPTIONS = YES;
-				GCC_ENABLE_CPP_RTTI = YES;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					UNICODE,
-					_UNICODE,
-					NODOCX,
-					_USE_XMLLITE_READER_,
-					USE_LITE_READER,
-					USE_ATL_CSTRING,
-					USE_AVSOFFICESTUDIO_XMLUTILS,
-					SOLUTION_ASCOFFICEDOCXFILE2,
-					_USE_LIBXML2_READER_,
-					LIBXML_READER_ENABLED,
-					MAC,
-					unix,
-				);
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					/usr/include/libxml2,
-					"$(PROJECT_DIR)/../../DesktopEditor/freetype-2.5.2/include",
-				);
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		17C1FEBF1ACC42C4006B99B3 /* Build configuration list for PBXNativeTarget "ASCOfficeDocxFile2Lib_ios" */ = {
+		17C1FEBF1ACC42C4006B99B3 /* Build configuration list for PBXNativeTarget "ASCOfficeDocxFile2Lib" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				17C1FEC01ACC42C4006B99B3 /* Debug */,
@@ -757,15 +495,6 @@
 			buildConfigurations = (
 				17E17EE51AC453F800BEA2EA /* Debug */,
 				17E17EE61AC453F800BEA2EA /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		17E17EE71AC453F800BEA2EA /* Build configuration list for PBXNativeTarget "ASCOfficeDocxFile2Lib" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				17E17EE81AC453F800BEA2EA /* Debug */,
-				17E17EE91AC453F800BEA2EA /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

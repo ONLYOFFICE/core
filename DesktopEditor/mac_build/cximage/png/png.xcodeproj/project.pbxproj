@@ -7,29 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		175CC1AF1AC956B4007D7DEC /* png.c in Sources */ = {isa = PBXBuildFile; fileRef = 175CC18F1AC956B4007D7DEC /* png.c */; };
-		175CC1B01AC956B4007D7DEC /* png.h in Headers */ = {isa = PBXBuildFile; fileRef = 175CC1921AC956B4007D7DEC /* png.h */; };
-		175CC1B11AC956B4007D7DEC /* pngconf.h in Headers */ = {isa = PBXBuildFile; fileRef = 175CC1971AC956B4007D7DEC /* pngconf.h */; };
-		175CC1B21AC956B4007D7DEC /* pngdebug.h in Headers */ = {isa = PBXBuildFile; fileRef = 175CC1981AC956B4007D7DEC /* pngdebug.h */; };
-		175CC1B31AC956B4007D7DEC /* pngerror.c in Sources */ = {isa = PBXBuildFile; fileRef = 175CC1991AC956B4007D7DEC /* pngerror.c */; };
-		175CC1B41AC956B4007D7DEC /* pngget.c in Sources */ = {isa = PBXBuildFile; fileRef = 175CC19A1AC956B4007D7DEC /* pngget.c */; };
-		175CC1B51AC956B4007D7DEC /* pnginfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 175CC19B1AC956B4007D7DEC /* pnginfo.h */; };
-		175CC1B61AC956B4007D7DEC /* pnglibconf.h in Headers */ = {isa = PBXBuildFile; fileRef = 175CC19C1AC956B4007D7DEC /* pnglibconf.h */; };
-		175CC1B71AC956B4007D7DEC /* pngmem.c in Sources */ = {isa = PBXBuildFile; fileRef = 175CC19D1AC956B4007D7DEC /* pngmem.c */; };
-		175CC1B81AC956B4007D7DEC /* pngpread.c in Sources */ = {isa = PBXBuildFile; fileRef = 175CC19F1AC956B4007D7DEC /* pngpread.c */; };
-		175CC1B91AC956B4007D7DEC /* pngpriv.h in Headers */ = {isa = PBXBuildFile; fileRef = 175CC1A01AC956B4007D7DEC /* pngpriv.h */; };
-		175CC1BA1AC956B4007D7DEC /* pngread.c in Sources */ = {isa = PBXBuildFile; fileRef = 175CC1A11AC956B4007D7DEC /* pngread.c */; };
-		175CC1BB1AC956B4007D7DEC /* pngrio.c in Sources */ = {isa = PBXBuildFile; fileRef = 175CC1A21AC956B4007D7DEC /* pngrio.c */; };
-		175CC1BC1AC956B4007D7DEC /* pngrtran.c in Sources */ = {isa = PBXBuildFile; fileRef = 175CC1A31AC956B4007D7DEC /* pngrtran.c */; };
-		175CC1BD1AC956B4007D7DEC /* pngrutil.c in Sources */ = {isa = PBXBuildFile; fileRef = 175CC1A41AC956B4007D7DEC /* pngrutil.c */; };
-		175CC1BE1AC956B4007D7DEC /* pngset.c in Sources */ = {isa = PBXBuildFile; fileRef = 175CC1A51AC956B4007D7DEC /* pngset.c */; };
-		175CC1BF1AC956B4007D7DEC /* pngstruct.h in Headers */ = {isa = PBXBuildFile; fileRef = 175CC1A61AC956B4007D7DEC /* pngstruct.h */; };
-		175CC1C01AC956B4007D7DEC /* pngtest.c in Sources */ = {isa = PBXBuildFile; fileRef = 175CC1A71AC956B4007D7DEC /* pngtest.c */; };
-		175CC1C11AC956B4007D7DEC /* pngtrans.c in Sources */ = {isa = PBXBuildFile; fileRef = 175CC1A91AC956B4007D7DEC /* pngtrans.c */; };
-		175CC1C31AC956B4007D7DEC /* pngwio.c in Sources */ = {isa = PBXBuildFile; fileRef = 175CC1AB1AC956B4007D7DEC /* pngwio.c */; };
-		175CC1C41AC956B4007D7DEC /* pngwrite.c in Sources */ = {isa = PBXBuildFile; fileRef = 175CC1AC1AC956B4007D7DEC /* pngwrite.c */; };
-		175CC1C51AC956B4007D7DEC /* pngwtran.c in Sources */ = {isa = PBXBuildFile; fileRef = 175CC1AD1AC956B4007D7DEC /* pngwtran.c */; };
-		175CC1C61AC956B4007D7DEC /* pngwutil.c in Sources */ = {isa = PBXBuildFile; fileRef = 175CC1AE1AC956B4007D7DEC /* pngwutil.c */; };
 		17C101E01ACC4FB7006B99B3 /* pngtrans.c in Sources */ = {isa = PBXBuildFile; fileRef = 175CC1A91AC956B4007D7DEC /* pngtrans.c */; };
 		17C101E11ACC4FB7006B99B3 /* pngwio.c in Sources */ = {isa = PBXBuildFile; fileRef = 175CC1AB1AC956B4007D7DEC /* pngwio.c */; };
 		17C101E21ACC4FB7006B99B3 /* pngerror.c in Sources */ = {isa = PBXBuildFile; fileRef = 175CC1991AC956B4007D7DEC /* pngerror.c */; };
@@ -56,7 +33,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		175CC1811AC9569C007D7DEC /* libpng.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libpng.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		175CC18F1AC956B4007D7DEC /* png.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = png.c; path = ../../../../cximage/png/png.c; sourceTree = "<group>"; };
 		175CC1921AC956B4007D7DEC /* png.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = png.h; path = ../../../../cximage/png/png.h; sourceTree = "<group>"; };
 		175CC1971AC956B4007D7DEC /* pngconf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pngconf.h; path = ../../../../cximage/png/pngconf.h; sourceTree = "<group>"; };
@@ -84,13 +60,6 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		175CC17E1AC9569C007D7DEC /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		17C101F01ACC4FB7006B99B3 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -112,7 +81,6 @@
 		175CC1821AC9569C007D7DEC /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				175CC1811AC9569C007D7DEC /* libpng.a */,
 				17C101FC1ACC4FB7006B99B3 /* libpng_ios.a */,
 			);
 			name = Products;
@@ -151,20 +119,6 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		175CC17F1AC9569C007D7DEC /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				175CC1B51AC956B4007D7DEC /* pnginfo.h in Headers */,
-				175CC1B21AC956B4007D7DEC /* pngdebug.h in Headers */,
-				175CC1B61AC956B4007D7DEC /* pnglibconf.h in Headers */,
-				175CC1BF1AC956B4007D7DEC /* pngstruct.h in Headers */,
-				175CC1B11AC956B4007D7DEC /* pngconf.h in Headers */,
-				175CC1B01AC956B4007D7DEC /* png.h in Headers */,
-				175CC1B91AC956B4007D7DEC /* pngpriv.h in Headers */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		17C101F11ACC4FB7006B99B3 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -182,26 +136,9 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		175CC1801AC9569C007D7DEC /* png */ = {
+		17C101DE1ACC4FB7006B99B3 /* png */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 175CC18C1AC9569D007D7DEC /* Build configuration list for PBXNativeTarget "png" */;
-			buildPhases = (
-				175CC17D1AC9569C007D7DEC /* Sources */,
-				175CC17E1AC9569C007D7DEC /* Frameworks */,
-				175CC17F1AC9569C007D7DEC /* Headers */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = png;
-			productName = png;
-			productReference = 175CC1811AC9569C007D7DEC /* libpng.a */;
-			productType = "com.apple.product-type.library.static";
-		};
-		17C101DE1ACC4FB7006B99B3 /* png_ios */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 17C101F91ACC4FB7006B99B3 /* Build configuration list for PBXNativeTarget "png_ios" */;
+			buildConfigurationList = 17C101F91ACC4FB7006B99B3 /* Build configuration list for PBXNativeTarget "png" */;
 			buildPhases = (
 				17C101DF1ACC4FB7006B99B3 /* Sources */,
 				17C101F01ACC4FB7006B99B3 /* Frameworks */,
@@ -211,7 +148,7 @@
 			);
 			dependencies = (
 			);
-			name = png_ios;
+			name = png;
 			productName = png;
 			productReference = 17C101FC1ACC4FB7006B99B3 /* libpng_ios.a */;
 			productType = "com.apple.product-type.library.static";
@@ -224,11 +161,6 @@
 			attributes = {
 				LastUpgradeCheck = 0700;
 				ORGANIZATIONNAME = "Ascensio System SIA";
-				TargetAttributes = {
-					175CC1801AC9569C007D7DEC = {
-						CreatedOnToolsVersion = 6.2;
-					};
-				};
 			};
 			buildConfigurationList = 175CC17C1AC9569C007D7DEC /* Build configuration list for PBXProject "png" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -242,36 +174,12 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				175CC1801AC9569C007D7DEC /* png */,
-				17C101DE1ACC4FB7006B99B3 /* png_ios */,
+				17C101DE1ACC4FB7006B99B3 /* png */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		175CC17D1AC9569C007D7DEC /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				175CC1C11AC956B4007D7DEC /* pngtrans.c in Sources */,
-				175CC1C31AC956B4007D7DEC /* pngwio.c in Sources */,
-				175CC1B31AC956B4007D7DEC /* pngerror.c in Sources */,
-				175CC1C41AC956B4007D7DEC /* pngwrite.c in Sources */,
-				175CC1B71AC956B4007D7DEC /* pngmem.c in Sources */,
-				175CC1BB1AC956B4007D7DEC /* pngrio.c in Sources */,
-				175CC1AF1AC956B4007D7DEC /* png.c in Sources */,
-				175CC1C01AC956B4007D7DEC /* pngtest.c in Sources */,
-				175CC1BE1AC956B4007D7DEC /* pngset.c in Sources */,
-				175CC1C61AC956B4007D7DEC /* pngwutil.c in Sources */,
-				175CC1B81AC956B4007D7DEC /* pngpread.c in Sources */,
-				175CC1B41AC956B4007D7DEC /* pngget.c in Sources */,
-				175CC1C51AC956B4007D7DEC /* pngwtran.c in Sources */,
-				175CC1BA1AC956B4007D7DEC /* pngread.c in Sources */,
-				175CC1BD1AC956B4007D7DEC /* pngrutil.c in Sources */,
-				175CC1BC1AC956B4007D7DEC /* pngrtran.c in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		17C101DF1ACC4FB7006B99B3 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -373,40 +281,6 @@
 			};
 			name = Release;
 		};
-		175CC18D1AC9569D007D7DEC /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				EXECUTABLE_PREFIX = lib;
-				GCC_ENABLE_CPP_EXCEPTIONS = YES;
-				GCC_ENABLE_CPP_RTTI = YES;
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"$(PROJECT_DIR)/../../../cximage/zlib/",
-				);
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Debug;
-		};
-		175CC18E1AC9569D007D7DEC /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				EXECUTABLE_PREFIX = lib;
-				GCC_ENABLE_CPP_EXCEPTIONS = YES;
-				GCC_ENABLE_CPP_RTTI = YES;
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"$(PROJECT_DIR)/../../../cximage/zlib/",
-				);
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Release;
-		};
 		17C101FA1ACC4FB7006B99B3 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -457,16 +331,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		175CC18C1AC9569D007D7DEC /* Build configuration list for PBXNativeTarget "png" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				175CC18D1AC9569D007D7DEC /* Debug */,
-				175CC18E1AC9569D007D7DEC /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		17C101F91ACC4FB7006B99B3 /* Build configuration list for PBXNativeTarget "png_ios" */ = {
+		17C101F91ACC4FB7006B99B3 /* Build configuration list for PBXNativeTarget "png" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				17C101FA1ACC4FB7006B99B3 /* Debug */,

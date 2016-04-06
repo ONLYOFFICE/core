@@ -11,15 +11,10 @@
 		17C1FF021ACC4AB0006B99B3 /* BgraFrame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17D913EB1AC59BD60096D788 /* BgraFrame.cpp */; };
 		17C1FF051ACC4AB0006B99B3 /* BgraFrame.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D913EC1AC59BD60096D788 /* BgraFrame.h */; };
 		17C1FF061ACC4AB0006B99B3 /* ImageFileFormatChecker.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D913EE1AC59BD60096D788 /* ImageFileFormatChecker.h */; };
-		17D913EF1AC59BD60096D788 /* BgraFrame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17D913EB1AC59BD60096D788 /* BgraFrame.cpp */; };
-		17D913F01AC59BD60096D788 /* BgraFrame.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D913EC1AC59BD60096D788 /* BgraFrame.h */; };
-		17D913F11AC59BD60096D788 /* ImageFileFormatChecker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17D913ED1AC59BD60096D788 /* ImageFileFormatChecker.cpp */; };
-		17D913F21AC59BD60096D788 /* ImageFileFormatChecker.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D913EE1AC59BD60096D788 /* ImageFileFormatChecker.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		17C1FF0A1ACC4AB0006B99B3 /* libraster_ios.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libraster_ios.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		17D913DD1AC59B6F0096D788 /* libraster.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libraster.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		17D913EB1AC59BD60096D788 /* BgraFrame.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BgraFrame.cpp; path = ../../../raster/BgraFrame.cpp; sourceTree = "<group>"; };
 		17D913EC1AC59BD60096D788 /* BgraFrame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BgraFrame.h; path = ../../../raster/BgraFrame.h; sourceTree = "<group>"; };
 		17D913ED1AC59BD60096D788 /* ImageFileFormatChecker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ImageFileFormatChecker.cpp; path = ../../../raster/ImageFileFormatChecker.cpp; sourceTree = "<group>"; };
@@ -28,13 +23,6 @@
 
 /* Begin PBXFrameworksBuildPhase section */
 		17C1FF031ACC4AB0006B99B3 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		17D913DA1AC59B6F0096D788 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -55,7 +43,6 @@
 		17D913DE1AC59B6F0096D788 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				17D913DD1AC59B6F0096D788 /* libraster.a */,
 				17C1FF0A1ACC4AB0006B99B3 /* libraster_ios.a */,
 			);
 			name = Products;
@@ -84,21 +71,12 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		17D913DB1AC59B6F0096D788 /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				17D913F01AC59BD60096D788 /* BgraFrame.h in Headers */,
-				17D913F21AC59BD60096D788 /* ImageFileFormatChecker.h in Headers */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		17C1FEFF1ACC4AB0006B99B3 /* raster_ios */ = {
+		17C1FEFF1ACC4AB0006B99B3 /* raster */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 17C1FF071ACC4AB0006B99B3 /* Build configuration list for PBXNativeTarget "raster_ios" */;
+			buildConfigurationList = 17C1FF071ACC4AB0006B99B3 /* Build configuration list for PBXNativeTarget "raster" */;
 			buildPhases = (
 				17C1FF001ACC4AB0006B99B3 /* Sources */,
 				17C1FF031ACC4AB0006B99B3 /* Frameworks */,
@@ -108,26 +86,9 @@
 			);
 			dependencies = (
 			);
-			name = raster_ios;
-			productName = raster;
-			productReference = 17C1FF0A1ACC4AB0006B99B3 /* libraster_ios.a */;
-			productType = "com.apple.product-type.library.static";
-		};
-		17D913DC1AC59B6F0096D788 /* raster */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 17D913E81AC59B6F0096D788 /* Build configuration list for PBXNativeTarget "raster" */;
-			buildPhases = (
-				17D913D91AC59B6F0096D788 /* Sources */,
-				17D913DA1AC59B6F0096D788 /* Frameworks */,
-				17D913DB1AC59B6F0096D788 /* Headers */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
 			name = raster;
 			productName = raster;
-			productReference = 17D913DD1AC59B6F0096D788 /* libraster.a */;
+			productReference = 17C1FF0A1ACC4AB0006B99B3 /* libraster_ios.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
@@ -138,11 +99,6 @@
 			attributes = {
 				LastUpgradeCheck = 0710;
 				ORGANIZATIONNAME = "Ascensio System SIA";
-				TargetAttributes = {
-					17D913DC1AC59B6F0096D788 = {
-						CreatedOnToolsVersion = 6.2;
-					};
-				};
 			};
 			buildConfigurationList = 17D913D81AC59B6E0096D788 /* Build configuration list for PBXProject "raster" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -156,8 +112,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				17D913DC1AC59B6F0096D788 /* raster */,
-				17C1FEFF1ACC4AB0006B99B3 /* raster_ios */,
+				17C1FEFF1ACC4AB0006B99B3 /* raster */,
 			);
 		};
 /* End PBXProject section */
@@ -169,15 +124,6 @@
 			files = (
 				17C1FF011ACC4AB0006B99B3 /* ImageFileFormatChecker.cpp in Sources */,
 				17C1FF021ACC4AB0006B99B3 /* BgraFrame.cpp in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		17D913D91AC59B6F0096D788 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				17D913F11AC59BD60096D788 /* ImageFileFormatChecker.cpp in Sources */,
-				17D913EF1AC59BD60096D788 /* BgraFrame.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -195,6 +141,7 @@
 					UNICODE,
 					_UNICODE,
 					CXIMAGE_DONT_USE_LOAD_SAVE,
+					_IOS,
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
@@ -214,6 +161,7 @@
 					UNICODE,
 					_UNICODE,
 					CXIMAGE_DONT_USE_LOAD_SAVE,
+					_IOS,
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
@@ -297,44 +245,10 @@
 			};
 			name = Release;
 		};
-		17D913E91AC59B6F0096D788 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				EXECUTABLE_PREFIX = lib;
-				GCC_ENABLE_CPP_EXCEPTIONS = YES;
-				GCC_ENABLE_CPP_RTTI = YES;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					UNICODE,
-					_UNICODE,
-					CXIMAGE_DONT_USE_LOAD_SAVE,
-				);
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Debug;
-		};
-		17D913EA1AC59B6F0096D788 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				EXECUTABLE_PREFIX = lib;
-				GCC_ENABLE_CPP_EXCEPTIONS = YES;
-				GCC_ENABLE_CPP_RTTI = YES;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					UNICODE,
-					_UNICODE,
-					CXIMAGE_DONT_USE_LOAD_SAVE,
-				);
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		17C1FF071ACC4AB0006B99B3 /* Build configuration list for PBXNativeTarget "raster_ios" */ = {
+		17C1FF071ACC4AB0006B99B3 /* Build configuration list for PBXNativeTarget "raster" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				17C1FF081ACC4AB0006B99B3 /* Debug */,
@@ -348,15 +262,6 @@
 			buildConfigurations = (
 				17D913E61AC59B6F0096D788 /* Debug */,
 				17D913E71AC59B6F0096D788 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		17D913E81AC59B6F0096D788 /* Build configuration list for PBXNativeTarget "raster" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				17D913E91AC59B6F0096D788 /* Debug */,
-				17D913EA1AC59B6F0096D788 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -7,27 +7,17 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		175CC16D1AC95633007D7DEC /* libdcr.c in Sources */ = {isa = PBXBuildFile; fileRef = 175CC1681AC95633007D7DEC /* libdcr.c */; };
-		175CC16E1AC95633007D7DEC /* libdcr.h in Headers */ = {isa = PBXBuildFile; fileRef = 175CC16A1AC95633007D7DEC /* libdcr.h */; };
 		17C101D61ACC4F80006B99B3 /* libdcr.c in Sources */ = {isa = PBXBuildFile; fileRef = 175CC1681AC95633007D7DEC /* libdcr.c */; };
 		17C101D91ACC4F80006B99B3 /* libdcr.h in Headers */ = {isa = PBXBuildFile; fileRef = 175CC16A1AC95633007D7DEC /* libdcr.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		175CC1551AC95610007D7DEC /* libraw.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libraw.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		175CC1681AC95633007D7DEC /* libdcr.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = libdcr.c; path = ../../../../cximage/raw/libdcr.c; sourceTree = "<group>"; };
 		175CC16A1AC95633007D7DEC /* libdcr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = libdcr.h; path = ../../../../cximage/raw/libdcr.h; sourceTree = "<group>"; };
 		17C101DD1ACC4F80006B99B3 /* libraw_ios.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libraw_ios.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		175CC1521AC95610007D7DEC /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		17C101D71ACC4F80006B99B3 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -49,7 +39,6 @@
 		175CC1561AC95610007D7DEC /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				175CC1551AC95610007D7DEC /* libraw.a */,
 				17C101DD1ACC4F80006B99B3 /* libraw_ios.a */,
 			);
 			name = Products;
@@ -67,14 +56,6 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		175CC1531AC95610007D7DEC /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				175CC16E1AC95633007D7DEC /* libdcr.h in Headers */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		17C101D81ACC4F80006B99B3 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -86,26 +67,9 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		175CC1541AC95610007D7DEC /* raw */ = {
+		17C101D41ACC4F80006B99B3 /* raw */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 175CC1601AC95611007D7DEC /* Build configuration list for PBXNativeTarget "raw" */;
-			buildPhases = (
-				175CC1511AC95610007D7DEC /* Sources */,
-				175CC1521AC95610007D7DEC /* Frameworks */,
-				175CC1531AC95610007D7DEC /* Headers */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = raw;
-			productName = raw;
-			productReference = 175CC1551AC95610007D7DEC /* libraw.a */;
-			productType = "com.apple.product-type.library.static";
-		};
-		17C101D41ACC4F80006B99B3 /* raw_ios */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 17C101DA1ACC4F80006B99B3 /* Build configuration list for PBXNativeTarget "raw_ios" */;
+			buildConfigurationList = 17C101DA1ACC4F80006B99B3 /* Build configuration list for PBXNativeTarget "raw" */;
 			buildPhases = (
 				17C101D51ACC4F80006B99B3 /* Sources */,
 				17C101D71ACC4F80006B99B3 /* Frameworks */,
@@ -115,7 +79,7 @@
 			);
 			dependencies = (
 			);
-			name = raw_ios;
+			name = raw;
 			productName = raw;
 			productReference = 17C101DD1ACC4F80006B99B3 /* libraw_ios.a */;
 			productType = "com.apple.product-type.library.static";
@@ -128,11 +92,6 @@
 			attributes = {
 				LastUpgradeCheck = 0700;
 				ORGANIZATIONNAME = "Ascensio System SIA";
-				TargetAttributes = {
-					175CC1541AC95610007D7DEC = {
-						CreatedOnToolsVersion = 6.2;
-					};
-				};
 			};
 			buildConfigurationList = 175CC1501AC9560E007D7DEC /* Build configuration list for PBXProject "raw" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -146,21 +105,12 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				175CC1541AC95610007D7DEC /* raw */,
-				17C101D41ACC4F80006B99B3 /* raw_ios */,
+				17C101D41ACC4F80006B99B3 /* raw */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		175CC1511AC95610007D7DEC /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				175CC16D1AC95633007D7DEC /* libdcr.c in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		17C101D51ACC4F80006B99B3 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -247,30 +197,6 @@
 			};
 			name = Release;
 		};
-		175CC1611AC95611007D7DEC /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				EXECUTABLE_PREFIX = lib;
-				GCC_ENABLE_CPP_EXCEPTIONS = YES;
-				GCC_ENABLE_CPP_RTTI = YES;
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Debug;
-		};
-		175CC1621AC95611007D7DEC /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				EXECUTABLE_PREFIX = lib;
-				GCC_ENABLE_CPP_EXCEPTIONS = YES;
-				GCC_ENABLE_CPP_RTTI = YES;
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Release;
-		};
 		17C101DB1ACC4F80006B99B3 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -311,16 +237,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		175CC1601AC95611007D7DEC /* Build configuration list for PBXNativeTarget "raw" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				175CC1611AC95611007D7DEC /* Debug */,
-				175CC1621AC95611007D7DEC /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		17C101DA1ACC4F80006B99B3 /* Build configuration list for PBXNativeTarget "raw_ios" */ = {
+		17C101DA1ACC4F80006B99B3 /* Build configuration list for PBXNativeTarget "raw" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				17C101DB1ACC4F80006B99B3 /* Debug */,

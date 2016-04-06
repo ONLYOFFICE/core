@@ -7,16 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		175CBEB21AC945DB007D7DEC /* jbig_tab.c in Sources */ = {isa = PBXBuildFile; fileRef = 175CBEA91AC945DB007D7DEC /* jbig_tab.c */; };
-		175CBEB31AC945DB007D7DEC /* jbig.c in Sources */ = {isa = PBXBuildFile; fileRef = 175CBEAD1AC945DB007D7DEC /* jbig.c */; };
-		175CBEB41AC945DB007D7DEC /* jbig.h in Headers */ = {isa = PBXBuildFile; fileRef = 175CBEB11AC945DB007D7DEC /* jbig.h */; };
 		17C100F11ACC4DCC006B99B3 /* jbig_tab.c in Sources */ = {isa = PBXBuildFile; fileRef = 175CBEA91AC945DB007D7DEC /* jbig_tab.c */; };
 		17C100F21ACC4DCC006B99B3 /* jbig.c in Sources */ = {isa = PBXBuildFile; fileRef = 175CBEAD1AC945DB007D7DEC /* jbig.c */; };
 		17C100F51ACC4DCC006B99B3 /* jbig.h in Headers */ = {isa = PBXBuildFile; fileRef = 175CBEB11AC945DB007D7DEC /* jbig.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		175CBE9B1AC9458E007D7DEC /* libjbig.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libjbig.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		175CBEA91AC945DB007D7DEC /* jbig_tab.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = jbig_tab.c; path = ../../../../cximage/jbig/jbig_tab.c; sourceTree = "<group>"; };
 		175CBEAD1AC945DB007D7DEC /* jbig.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = jbig.c; path = ../../../../cximage/jbig/jbig.c; sourceTree = "<group>"; };
 		175CBEB11AC945DB007D7DEC /* jbig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = jbig.h; path = ../../../../cximage/jbig/jbig.h; sourceTree = "<group>"; };
@@ -24,13 +20,6 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		175CBE981AC9458E007D7DEC /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		17C100F31ACC4DCC006B99B3 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -52,7 +41,6 @@
 		175CBE9C1AC9458E007D7DEC /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				175CBE9B1AC9458E007D7DEC /* libjbig.a */,
 				17C100F91ACC4DCC006B99B3 /* libjbig_ios.a */,
 			);
 			name = Products;
@@ -71,14 +59,6 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		175CBE991AC9458E007D7DEC /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				175CBEB41AC945DB007D7DEC /* jbig.h in Headers */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		17C100F41ACC4DCC006B99B3 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -90,26 +70,9 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		175CBE9A1AC9458E007D7DEC /* jbig */ = {
+		17C100EF1ACC4DCC006B99B3 /* jbig */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 175CBEA61AC9458E007D7DEC /* Build configuration list for PBXNativeTarget "jbig" */;
-			buildPhases = (
-				175CBE971AC9458E007D7DEC /* Sources */,
-				175CBE981AC9458E007D7DEC /* Frameworks */,
-				175CBE991AC9458E007D7DEC /* Headers */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = jbig;
-			productName = jbig;
-			productReference = 175CBE9B1AC9458E007D7DEC /* libjbig.a */;
-			productType = "com.apple.product-type.library.static";
-		};
-		17C100EF1ACC4DCC006B99B3 /* jbig_ios */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 17C100F61ACC4DCC006B99B3 /* Build configuration list for PBXNativeTarget "jbig_ios" */;
+			buildConfigurationList = 17C100F61ACC4DCC006B99B3 /* Build configuration list for PBXNativeTarget "jbig" */;
 			buildPhases = (
 				17C100F01ACC4DCC006B99B3 /* Sources */,
 				17C100F31ACC4DCC006B99B3 /* Frameworks */,
@@ -119,7 +82,7 @@
 			);
 			dependencies = (
 			);
-			name = jbig_ios;
+			name = jbig;
 			productName = jbig;
 			productReference = 17C100F91ACC4DCC006B99B3 /* libjbig_ios.a */;
 			productType = "com.apple.product-type.library.static";
@@ -132,11 +95,6 @@
 			attributes = {
 				LastUpgradeCheck = 0700;
 				ORGANIZATIONNAME = "Ascensio System SIA";
-				TargetAttributes = {
-					175CBE9A1AC9458E007D7DEC = {
-						CreatedOnToolsVersion = 6.2;
-					};
-				};
 			};
 			buildConfigurationList = 175CBE961AC9458E007D7DEC /* Build configuration list for PBXProject "jbig" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -150,22 +108,12 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				175CBE9A1AC9458E007D7DEC /* jbig */,
-				17C100EF1ACC4DCC006B99B3 /* jbig_ios */,
+				17C100EF1ACC4DCC006B99B3 /* jbig */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		175CBE971AC9458E007D7DEC /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				175CBEB21AC945DB007D7DEC /* jbig_tab.c in Sources */,
-				175CBEB31AC945DB007D7DEC /* jbig.c in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		17C100F01ACC4DCC006B99B3 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -253,40 +201,6 @@
 			};
 			name = Release;
 		};
-		175CBEA71AC9458E007D7DEC /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				EXECUTABLE_PREFIX = lib;
-				GCC_ENABLE_CPP_EXCEPTIONS = YES;
-				GCC_ENABLE_CPP_RTTI = YES;
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"$(PROJECT_DIR)/../../../cximage/zlib/",
-				);
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Debug;
-		};
-		175CBEA81AC9458E007D7DEC /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				EXECUTABLE_PREFIX = lib;
-				GCC_ENABLE_CPP_EXCEPTIONS = YES;
-				GCC_ENABLE_CPP_RTTI = YES;
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"$(PROJECT_DIR)/../../../cximage/zlib/",
-				);
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Release;
-		};
 		17C100F71ACC4DCC006B99B3 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -339,16 +253,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		175CBEA61AC9458E007D7DEC /* Build configuration list for PBXNativeTarget "jbig" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				175CBEA71AC9458E007D7DEC /* Debug */,
-				175CBEA81AC9458E007D7DEC /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		17C100F61ACC4DCC006B99B3 /* Build configuration list for PBXNativeTarget "jbig_ios" */ = {
+		17C100F61ACC4DCC006B99B3 /* Build configuration list for PBXNativeTarget "jbig" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				17C100F71ACC4DCC006B99B3 /* Debug */,

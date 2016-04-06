@@ -24,7 +24,25 @@
 		177C43321AD7C0EF00055DD7 /* libcurl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 177C432F1AD7C0D100055DD7 /* libcurl.a */; };
 		17C8DEC71ACD696100902C85 /* X2tConverter.mm in Sources */ = {isa = PBXBuildFile; fileRef = 17C27A191AC2DB3D00E1D003 /* X2tConverter.mm */; };
 		17C8DECC1ACD696100902C85 /* X2tConverter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17C27A171AC2DB3D00E1D003 /* X2tConverter.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		17C8DEDD1ACD6A3D00902C85 /* libASCOfficeDocxFile2Lib_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 17C1FECB1ACC4305006B99B3 /* libASCOfficeDocxFile2Lib_ios.a */; };
+		69415F271CB51C37003E771B /* libOfficeUtils.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69415F241CB51C2A003E771B /* libOfficeUtils.a */; };
+		69415F301CB51D39003E771B /* libPPTXFormatLib_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69415F2D1CB51D2A003E771B /* libPPTXFormatLib_ios.a */; };
+		69415F311CB51D41003E771B /* libASCOfficeDocxFile2Lib_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 17E17F5B1AC457CD00BEA2EA /* libASCOfficeDocxFile2Lib_ios.a */; };
+		69415F6A1CB51DDB003E771B /* libDocxFormatLib_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69415F671CB51DCF003E771B /* libDocxFormatLib_ios.a */; };
+		69415F8D1CB51E37003E771B /* libgraphics_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69415F8A1CB51E29003E771B /* libgraphics_ios.a */; };
+		69415F901CB51E43003E771B /* libraster_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69415F841CB51E24003E771B /* libraster_ios.a */; };
+		69415F931CB51E4C003E771B /* libfontengine_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69415F7E1CB51E1F003E771B /* libfontengine_ios.a */; };
+		69415F961CB51E5A003E771B /* libagg_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69415F781CB51E1B003E771B /* libagg_ios.a */; };
+		69415F971CB51E69003E771B /* libmetafile_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69415F701CB51E0C003E771B /* libmetafile_ios.a */; };
+		69415FAC1CB51ED5003E771B /* libcximage_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69415FA91CB51EC9003E771B /* libcximage_ios.a */; };
+		69415FAD1CB51F4F003E771B /* libfreetype.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69415F9E1CB51E86003E771B /* libfreetype.a */; };
+		69415FE01CB52455003E771B /* libmng_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69415FD41CB5243F003E771B /* libmng_ios.a */; };
+		69415FE31CB52461003E771B /* libpng_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69415FD71CB5243F003E771B /* libpng_ios.a */; };
+		69415FE61CB52470003E771B /* libraw_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69415FDA1CB5243F003E771B /* libraw_ios.a */; };
+		69415FE91CB5247A003E771B /* libtiff_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69415FDD1CB5243F003E771B /* libtiff_ios.a */; };
+		69415FEC1CB52485003E771B /* liblibpsd_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69415FD11CB5243F003E771B /* liblibpsd_ios.a */; };
+		69415FEF1CB5248F003E771B /* libjpeg_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69415FCE1CB5243F003E771B /* libjpeg_ios.a */; };
+		69415FF21CB5249A003E771B /* libjbig_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69415FCB1CB5243F003E771B /* libjbig_ios.a */; };
+		69415FF51CB524A3003E771B /* libjasper_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69415FC81CB5243F003E771B /* libjasper_ios.a */; };
 		698AF4C31C0745980080D889 /* libicu.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 698AF4C01C0740960080D889 /* libicu.a */; };
 /* End PBXBuildFile section */
 
@@ -43,13 +61,6 @@
 			remoteGlobalIDString = CD8AE2B316187F770095DC1B;
 			remoteInfo = curl;
 		};
-		17C1FECA1ACC4305006B99B3 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 17E17F561AC457CD00BEA2EA /* ASCOfficeDocxFile2Lib.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 17C1FEC21ACC42C4006B99B3;
-			remoteInfo = ASCOfficeDocxFile2Lib_ios;
-		};
 		17C8DEDB1ACD6A3900902C85 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 17E17F561AC457CD00BEA2EA /* ASCOfficeDocxFile2Lib.xcodeproj */;
@@ -63,6 +74,258 @@
 			proxyType = 2;
 			remoteGlobalIDString = 17E17EDC1AC453F800BEA2EA;
 			remoteInfo = ASCOfficeDocxFile2Lib;
+		};
+		69415F231CB51C2A003E771B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69415F1F1CB51C29003E771B /* OfficeUtils.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 69676CA91CA58B7400D7A1D1;
+			remoteInfo = OfficeUtils;
+		};
+		69415F251CB51C32003E771B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69415F1F1CB51C29003E771B /* OfficeUtils.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 69676CA81CA58B7400D7A1D1;
+			remoteInfo = OfficeUtils;
+		};
+		69415F2C1CB51D2A003E771B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69415F281CB51D2A003E771B /* PPTXFormatLib.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 17C1FE8B1ACC429D006B99B3;
+			remoteInfo = PPTXFormatLib;
+		};
+		69415F2E1CB51D34003E771B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69415F281CB51D2A003E771B /* PPTXFormatLib.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 17C1FCA31ACC429D006B99B3;
+			remoteInfo = PPTXFormatLib;
+		};
+		69415F661CB51DCF003E771B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69415F621CB51DCF003E771B /* DocxFormatLib.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 17C1FC9C1ACC4250006B99B3;
+			remoteInfo = DocxFormatLib;
+		};
+		69415F681CB51DD7003E771B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69415F621CB51DCF003E771B /* DocxFormatLib.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 17C1FB8E1ACC4250006B99B3;
+			remoteInfo = DocxFormatLib;
+		};
+		69415F6F1CB51E0C003E771B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69415F6B1CB51E0B003E771B /* metafile.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 17A762DB1B0F355E0046BC0B;
+			remoteInfo = metafile;
+		};
+		69415F711CB51E13003E771B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69415F6B1CB51E0B003E771B /* metafile.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 17A762D41B0F355E0046BC0B;
+			remoteInfo = metafile;
+		};
+		69415F771CB51E1B003E771B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69415F731CB51E1B003E771B /* agg.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 17C1FFC91ACC4B21006B99B3;
+			remoteInfo = agg;
+		};
+		69415F7D1CB51E1F003E771B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69415F791CB51E1F003E771B /* fontengine.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 17C1FF201ACC4AF7006B99B3;
+			remoteInfo = fontengine;
+		};
+		69415F831CB51E24003E771B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69415F7F1CB51E24003E771B /* raster.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 17C1FF0A1ACC4AB0006B99B3;
+			remoteInfo = raster;
+		};
+		69415F891CB51E29003E771B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69415F851CB51E29003E771B /* graphics.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 17C1FEFE1ACC4A67006B99B3;
+			remoteInfo = graphics;
+		};
+		69415F8B1CB51E33003E771B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69415F851CB51E29003E771B /* graphics.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 17C1FECF1ACC4A67006B99B3;
+			remoteInfo = graphics;
+		};
+		69415F8E1CB51E3D003E771B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69415F7F1CB51E24003E771B /* raster.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 17C1FEFF1ACC4AB0006B99B3;
+			remoteInfo = raster;
+		};
+		69415F911CB51E48003E771B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69415F791CB51E1F003E771B /* fontengine.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 17C1FF0B1ACC4AF7006B99B3;
+			remoteInfo = fontengine;
+		};
+		69415F941CB51E54003E771B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69415F731CB51E1B003E771B /* agg.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 17C1FF211ACC4B21006B99B3;
+			remoteInfo = agg;
+		};
+		69415F9D1CB51E86003E771B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69415F981CB51E86003E771B /* freetype.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 17D914051AC59C860096D788;
+			remoteInfo = freetype;
+		};
+		69415FA11CB51E8F003E771B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69415F981CB51E86003E771B /* freetype.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 17C100411ACC4BC4006B99B3;
+			remoteInfo = freetype_ios;
+		};
+		69415FA81CB51EC9003E771B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69415FA41CB51EC8003E771B /* cximage.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 17C100221ACC4B40006B99B3;
+			remoteInfo = cximage;
+		};
+		69415FAA1CB51ED0003E771B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69415FA41CB51EC8003E771B /* cximage.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 17C1FFCA1ACC4B40006B99B3;
+			remoteInfo = cximage;
+		};
+		69415FC71CB5243F003E771B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69415FC31CB5243F003E771B /* jasper.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 17C100EE1ACC4D64006B99B3;
+			remoteInfo = jasper;
+		};
+		69415FCA1CB5243F003E771B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69415FC01CB5243F003E771B /* jbig.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 17C100F91ACC4DCC006B99B3;
+			remoteInfo = jbig;
+		};
+		69415FCD1CB5243F003E771B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69415FBD1CB5243F003E771B /* jpeg.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 17C101511ACC4DFA006B99B3;
+			remoteInfo = jpeg;
+		};
+		69415FD01CB5243F003E771B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69415FBA1CB5243F003E771B /* libpsd.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 17C101981ACC4EF9006B99B3;
+			remoteInfo = libpsd;
+		};
+		69415FD31CB5243F003E771B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69415FAE1CB5243F003E771B /* mng.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 17C1022D1ACC4FE0006B99B3;
+			remoteInfo = mng;
+		};
+		69415FD61CB5243F003E771B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69415FB11CB5243F003E771B /* png.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 17C101FC1ACC4FB7006B99B3;
+			remoteInfo = png;
+		};
+		69415FD91CB5243F003E771B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69415FB41CB5243F003E771B /* raw.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 17C101DD1ACC4F80006B99B3;
+			remoteInfo = raw;
+		};
+		69415FDC1CB5243F003E771B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69415FB71CB5243F003E771B /* tiff.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 17C101D31ACC4F45006B99B3;
+			remoteInfo = tiff;
+		};
+		69415FDE1CB5244D003E771B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69415FAE1CB5243F003E771B /* mng.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 17C101FD1ACC4FE0006B99B3;
+			remoteInfo = mng;
+		};
+		69415FE11CB5245A003E771B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69415FB11CB5243F003E771B /* png.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 17C101DE1ACC4FB7006B99B3;
+			remoteInfo = png;
+		};
+		69415FE41CB5246B003E771B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69415FB41CB5243F003E771B /* raw.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 17C101D41ACC4F80006B99B3;
+			remoteInfo = raw;
+		};
+		69415FE71CB52475003E771B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69415FB71CB5243F003E771B /* tiff.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 17C101991ACC4F45006B99B3;
+			remoteInfo = tiff;
+		};
+		69415FEA1CB52480003E771B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69415FBA1CB5243F003E771B /* libpsd.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 17C101521ACC4EF9006B99B3;
+			remoteInfo = libpsd;
+		};
+		69415FED1CB5248B003E771B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69415FBD1CB5243F003E771B /* jpeg.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 17C100FA1ACC4DFA006B99B3;
+			remoteInfo = jpeg;
+		};
+		69415FF01CB52495003E771B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69415FC01CB5243F003E771B /* jbig.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 17C100EF1ACC4DCC006B99B3;
+			remoteInfo = jbig;
+		};
+		69415FF31CB5249E003E771B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69415FC31CB5243F003E771B /* jasper.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 17C100911ACC4D64006B99B3;
+			remoteInfo = jasper;
 		};
 		698AF4BF1C0740960080D889 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -86,6 +349,24 @@
 		17C27A191AC2DB3D00E1D003 /* X2tConverter.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = X2tConverter.mm; sourceTree = "<group>"; };
 		17C8DED01ACD696100902C85 /* libX2tConverter.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libX2tConverter.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		17E17F561AC457CD00BEA2EA /* ASCOfficeDocxFile2Lib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ASCOfficeDocxFile2Lib.xcodeproj; path = ../../../../ASCOfficeDocxFile2/Mac/ASCOfficeDocxFile2Lib.xcodeproj; sourceTree = "<group>"; };
+		69415F1F1CB51C29003E771B /* OfficeUtils.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = OfficeUtils.xcodeproj; path = ../../../../OfficeUtils/OfficeUtils.xcodeproj; sourceTree = "<group>"; };
+		69415F281CB51D2A003E771B /* PPTXFormatLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = PPTXFormatLib.xcodeproj; path = /Volumes/GIT/components/Common/DocxFormat/Mac/../../../ASCOfficePPTXFile/PPTXLib/Mac/PPTXFormatLib.xcodeproj; sourceTree = "<absolute>"; };
+		69415F621CB51DCF003E771B /* DocxFormatLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = DocxFormatLib.xcodeproj; path = /Volumes/GIT/components/ASCOfficeDocxFile2/Mac/../../Common/DocxFormat/Mac/DocxFormatLib.xcodeproj; sourceTree = "<absolute>"; };
+		69415F6B1CB51E0B003E771B /* metafile.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = metafile.xcodeproj; path = /Volumes/GIT/components/ASCOfficePPTXFile/PPTXLib/Mac/../../../DesktopEditor/mac_build/metafile/metafile.xcodeproj; sourceTree = "<absolute>"; };
+		69415F731CB51E1B003E771B /* agg.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = agg.xcodeproj; path = /Volumes/GIT/components/ASCOfficePPTXFile/PPTXLib/Mac/../../../DesktopEditor/mac_build/agg/agg.xcodeproj; sourceTree = "<absolute>"; };
+		69415F791CB51E1F003E771B /* fontengine.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = fontengine.xcodeproj; path = /Volumes/GIT/components/ASCOfficePPTXFile/PPTXLib/Mac/../../../DesktopEditor/mac_build/fontengine/fontengine.xcodeproj; sourceTree = "<absolute>"; };
+		69415F7F1CB51E24003E771B /* raster.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = raster.xcodeproj; path = /Volumes/GIT/components/ASCOfficePPTXFile/PPTXLib/Mac/../../../DesktopEditor/mac_build/raster/raster.xcodeproj; sourceTree = "<absolute>"; };
+		69415F851CB51E29003E771B /* graphics.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = graphics.xcodeproj; path = /Volumes/GIT/components/ASCOfficePPTXFile/PPTXLib/Mac/../../../DesktopEditor/mac_build/graphics/graphics.xcodeproj; sourceTree = "<absolute>"; };
+		69415F981CB51E86003E771B /* freetype.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = freetype.xcodeproj; path = /Volumes/GIT/components/DesktopEditor/mac_build/fontengine/../freetype/freetype.xcodeproj; sourceTree = "<absolute>"; };
+		69415FA41CB51EC8003E771B /* cximage.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = cximage.xcodeproj; path = /Volumes/GIT/components/ASCOfficePPTXFile/PPTXLib/Mac/../../../DesktopEditor/mac_build/cximage/cximage.xcodeproj; sourceTree = "<absolute>"; };
+		69415FAE1CB5243F003E771B /* mng.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = mng.xcodeproj; path = ../../../../DesktopEditor/mac_build/cximage/mng/mng.xcodeproj; sourceTree = "<group>"; };
+		69415FB11CB5243F003E771B /* png.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = png.xcodeproj; path = ../../../../DesktopEditor/mac_build/cximage/png/png.xcodeproj; sourceTree = "<group>"; };
+		69415FB41CB5243F003E771B /* raw.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = raw.xcodeproj; path = ../../../../DesktopEditor/mac_build/cximage/raw/raw.xcodeproj; sourceTree = "<group>"; };
+		69415FB71CB5243F003E771B /* tiff.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = tiff.xcodeproj; path = ../../../../DesktopEditor/mac_build/cximage/tiff/tiff.xcodeproj; sourceTree = "<group>"; };
+		69415FBA1CB5243F003E771B /* libpsd.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = libpsd.xcodeproj; path = ../../../../DesktopEditor/mac_build/cximage/libpsd/libpsd.xcodeproj; sourceTree = "<group>"; };
+		69415FBD1CB5243F003E771B /* jpeg.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = jpeg.xcodeproj; path = ../../../../DesktopEditor/mac_build/cximage/jpeg/jpeg.xcodeproj; sourceTree = "<group>"; };
+		69415FC01CB5243F003E771B /* jbig.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = jbig.xcodeproj; path = ../../../../DesktopEditor/mac_build/cximage/jbig/jbig.xcodeproj; sourceTree = "<group>"; };
+		69415FC31CB5243F003E771B /* jasper.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = jasper.xcodeproj; path = ../../../../DesktopEditor/mac_build/cximage/jasper/jasper.xcodeproj; sourceTree = "<group>"; };
 		698AF4BB1C0740960080D889 /* icu.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = icu.xcodeproj; path = ../../../../UnicodeConverter/icubuilds/mac/icu/icu.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -94,9 +375,27 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				69415FF51CB524A3003E771B /* libjasper_ios.a in Frameworks */,
+				69415FF21CB5249A003E771B /* libjbig_ios.a in Frameworks */,
+				69415FEF1CB5248F003E771B /* libjpeg_ios.a in Frameworks */,
+				69415FEC1CB52485003E771B /* liblibpsd_ios.a in Frameworks */,
+				69415FE91CB5247A003E771B /* libtiff_ios.a in Frameworks */,
+				69415FE61CB52470003E771B /* libraw_ios.a in Frameworks */,
+				69415FE31CB52461003E771B /* libpng_ios.a in Frameworks */,
+				69415FE01CB52455003E771B /* libmng_ios.a in Frameworks */,
+				69415FAD1CB51F4F003E771B /* libfreetype.a in Frameworks */,
+				69415FAC1CB51ED5003E771B /* libcximage_ios.a in Frameworks */,
+				69415F971CB51E69003E771B /* libmetafile_ios.a in Frameworks */,
+				69415F961CB51E5A003E771B /* libagg_ios.a in Frameworks */,
+				69415F931CB51E4C003E771B /* libfontengine_ios.a in Frameworks */,
+				69415F901CB51E43003E771B /* libraster_ios.a in Frameworks */,
+				69415F8D1CB51E37003E771B /* libgraphics_ios.a in Frameworks */,
+				69415F6A1CB51DDB003E771B /* libDocxFormatLib_ios.a in Frameworks */,
+				69415F311CB51D41003E771B /* libASCOfficeDocxFile2Lib_ios.a in Frameworks */,
+				69415F301CB51D39003E771B /* libPPTXFormatLib_ios.a in Frameworks */,
+				69415F271CB51C37003E771B /* libOfficeUtils.a in Frameworks */,
 				698AF4C31C0745980080D889 /* libicu.a in Frameworks */,
 				177C43321AD7C0EF00055DD7 /* libcurl.a in Frameworks */,
-				17C8DEDD1ACD6A3D00902C85 /* libASCOfficeDocxFile2Lib_ios.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -114,9 +413,27 @@
 		17C27A0B1AC2DB3C00E1D003 = {
 			isa = PBXGroup;
 			children = (
+				69415FAE1CB5243F003E771B /* mng.xcodeproj */,
+				69415FB11CB5243F003E771B /* png.xcodeproj */,
+				69415FB41CB5243F003E771B /* raw.xcodeproj */,
+				69415FB71CB5243F003E771B /* tiff.xcodeproj */,
+				69415FBA1CB5243F003E771B /* libpsd.xcodeproj */,
+				69415FBD1CB5243F003E771B /* jpeg.xcodeproj */,
+				69415FC01CB5243F003E771B /* jbig.xcodeproj */,
+				69415FC31CB5243F003E771B /* jasper.xcodeproj */,
+				69415FA41CB51EC8003E771B /* cximage.xcodeproj */,
+				69415F981CB51E86003E771B /* freetype.xcodeproj */,
+				69415F851CB51E29003E771B /* graphics.xcodeproj */,
+				69415F7F1CB51E24003E771B /* raster.xcodeproj */,
+				69415F791CB51E1F003E771B /* fontengine.xcodeproj */,
+				69415F731CB51E1B003E771B /* agg.xcodeproj */,
+				69415F6B1CB51E0B003E771B /* metafile.xcodeproj */,
 				698AF4BB1C0740960080D889 /* icu.xcodeproj */,
 				177C432A1AD7C0D000055DD7 /* libcurl.xcodeproj */,
 				17E17F561AC457CD00BEA2EA /* ASCOfficeDocxFile2Lib.xcodeproj */,
+				69415F621CB51DCF003E771B /* DocxFormatLib.xcodeproj */,
+				69415F281CB51D2A003E771B /* PPTXFormatLib.xcodeproj */,
+				69415F1F1CB51C29003E771B /* OfficeUtils.xcodeproj */,
 				17C27A161AC2DB3C00E1D003 /* SDK */,
 				17C27A151AC2DB3C00E1D003 /* Products */,
 			);
@@ -143,8 +460,151 @@
 		17E17F571AC457CD00BEA2EA /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				17E17F5B1AC457CD00BEA2EA /* libASCOfficeDocxFile2Lib.a */,
-				17C1FECB1ACC4305006B99B3 /* libASCOfficeDocxFile2Lib_ios.a */,
+				17E17F5B1AC457CD00BEA2EA /* libASCOfficeDocxFile2Lib_ios.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		69415F201CB51C29003E771B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				69415F241CB51C2A003E771B /* libOfficeUtils.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		69415F291CB51D2A003E771B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				69415F2D1CB51D2A003E771B /* libPPTXFormatLib_ios.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		69415F631CB51DCF003E771B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				69415F671CB51DCF003E771B /* libDocxFormatLib_ios.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		69415F6C1CB51E0B003E771B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				69415F701CB51E0C003E771B /* libmetafile_ios.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		69415F741CB51E1B003E771B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				69415F781CB51E1B003E771B /* libagg_ios.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		69415F7A1CB51E1F003E771B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				69415F7E1CB51E1F003E771B /* libfontengine_ios.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		69415F801CB51E24003E771B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				69415F841CB51E24003E771B /* libraster_ios.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		69415F861CB51E29003E771B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				69415F8A1CB51E29003E771B /* libgraphics_ios.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		69415F991CB51E86003E771B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				69415F9E1CB51E86003E771B /* libfreetype.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		69415FA51CB51EC8003E771B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				69415FA91CB51EC9003E771B /* libcximage_ios.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		69415FAF1CB5243F003E771B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				69415FD41CB5243F003E771B /* libmng_ios.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		69415FB21CB5243F003E771B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				69415FD71CB5243F003E771B /* libpng_ios.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		69415FB51CB5243F003E771B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				69415FDA1CB5243F003E771B /* libraw_ios.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		69415FB81CB5243F003E771B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				69415FDD1CB5243F003E771B /* libtiff_ios.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		69415FBB1CB5243F003E771B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				69415FD11CB5243F003E771B /* liblibpsd_ios.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		69415FBE1CB5243F003E771B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				69415FCE1CB5243F003E771B /* libjpeg_ios.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		69415FC11CB5243F003E771B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				69415FCB1CB5243F003E771B /* libjbig_ios.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		69415FC41CB5243F003E771B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				69415FC81CB5243F003E771B /* libjasper_ios.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -171,9 +631,9 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		17C8DEC11ACD696100902C85 /* X2tConverter */ = {
+		17C8DEC11ACD696100902C85 /* x2tconverter */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 17C8DECD1ACD696100902C85 /* Build configuration list for PBXNativeTarget "X2tConverter" */;
+			buildConfigurationList = 17C8DECD1ACD696100902C85 /* Build configuration list for PBXNativeTarget "x2tconverter" */;
 			buildPhases = (
 				17C8DEC61ACD696100902C85 /* Sources */,
 				17C8DEC81ACD696100902C85 /* Frameworks */,
@@ -182,11 +642,29 @@
 			buildRules = (
 			);
 			dependencies = (
+				69415FF41CB5249E003E771B /* PBXTargetDependency */,
+				69415FF11CB52495003E771B /* PBXTargetDependency */,
+				69415FEE1CB5248B003E771B /* PBXTargetDependency */,
+				69415FEB1CB52480003E771B /* PBXTargetDependency */,
+				69415FE81CB52475003E771B /* PBXTargetDependency */,
+				69415FE51CB5246B003E771B /* PBXTargetDependency */,
+				69415FE21CB5245A003E771B /* PBXTargetDependency */,
+				69415FDF1CB5244D003E771B /* PBXTargetDependency */,
+				69415FAB1CB51ED0003E771B /* PBXTargetDependency */,
+				69415FA21CB51E8F003E771B /* PBXTargetDependency */,
+				69415F951CB51E54003E771B /* PBXTargetDependency */,
+				69415F921CB51E48003E771B /* PBXTargetDependency */,
+				69415F8F1CB51E3D003E771B /* PBXTargetDependency */,
+				69415F8C1CB51E33003E771B /* PBXTargetDependency */,
+				69415F721CB51E13003E771B /* PBXTargetDependency */,
+				69415F691CB51DD7003E771B /* PBXTargetDependency */,
+				69415F2F1CB51D34003E771B /* PBXTargetDependency */,
+				69415F261CB51C32003E771B /* PBXTargetDependency */,
 				698AF4C21C0745930080D889 /* PBXTargetDependency */,
 				177C43311AD7C0E400055DD7 /* PBXTargetDependency */,
 				17C8DEDC1ACD6A3900902C85 /* PBXTargetDependency */,
 			);
-			name = X2tConverter;
+			name = x2tconverter;
 			productName = X2tConverter;
 			productReference = 17C8DED01ACD696100902C85 /* libX2tConverter.a */;
 			productType = "com.apple.product-type.library.static";
@@ -212,21 +690,93 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
+					ProductGroup = 69415F741CB51E1B003E771B /* Products */;
+					ProjectRef = 69415F731CB51E1B003E771B /* agg.xcodeproj */;
+				},
+				{
 					ProductGroup = 17E17F571AC457CD00BEA2EA /* Products */;
 					ProjectRef = 17E17F561AC457CD00BEA2EA /* ASCOfficeDocxFile2Lib.xcodeproj */;
+				},
+				{
+					ProductGroup = 69415FA51CB51EC8003E771B /* Products */;
+					ProjectRef = 69415FA41CB51EC8003E771B /* cximage.xcodeproj */;
+				},
+				{
+					ProductGroup = 69415F631CB51DCF003E771B /* Products */;
+					ProjectRef = 69415F621CB51DCF003E771B /* DocxFormatLib.xcodeproj */;
+				},
+				{
+					ProductGroup = 69415F7A1CB51E1F003E771B /* Products */;
+					ProjectRef = 69415F791CB51E1F003E771B /* fontengine.xcodeproj */;
+				},
+				{
+					ProductGroup = 69415F991CB51E86003E771B /* Products */;
+					ProjectRef = 69415F981CB51E86003E771B /* freetype.xcodeproj */;
+				},
+				{
+					ProductGroup = 69415F861CB51E29003E771B /* Products */;
+					ProjectRef = 69415F851CB51E29003E771B /* graphics.xcodeproj */;
 				},
 				{
 					ProductGroup = 698AF4BC1C0740960080D889 /* Products */;
 					ProjectRef = 698AF4BB1C0740960080D889 /* icu.xcodeproj */;
 				},
 				{
+					ProductGroup = 69415FC41CB5243F003E771B /* Products */;
+					ProjectRef = 69415FC31CB5243F003E771B /* jasper.xcodeproj */;
+				},
+				{
+					ProductGroup = 69415FC11CB5243F003E771B /* Products */;
+					ProjectRef = 69415FC01CB5243F003E771B /* jbig.xcodeproj */;
+				},
+				{
+					ProductGroup = 69415FBE1CB5243F003E771B /* Products */;
+					ProjectRef = 69415FBD1CB5243F003E771B /* jpeg.xcodeproj */;
+				},
+				{
 					ProductGroup = 177C432B1AD7C0D000055DD7 /* Products */;
 					ProjectRef = 177C432A1AD7C0D000055DD7 /* libcurl.xcodeproj */;
+				},
+				{
+					ProductGroup = 69415FBB1CB5243F003E771B /* Products */;
+					ProjectRef = 69415FBA1CB5243F003E771B /* libpsd.xcodeproj */;
+				},
+				{
+					ProductGroup = 69415F6C1CB51E0B003E771B /* Products */;
+					ProjectRef = 69415F6B1CB51E0B003E771B /* metafile.xcodeproj */;
+				},
+				{
+					ProductGroup = 69415FAF1CB5243F003E771B /* Products */;
+					ProjectRef = 69415FAE1CB5243F003E771B /* mng.xcodeproj */;
+				},
+				{
+					ProductGroup = 69415F201CB51C29003E771B /* Products */;
+					ProjectRef = 69415F1F1CB51C29003E771B /* OfficeUtils.xcodeproj */;
+				},
+				{
+					ProductGroup = 69415FB21CB5243F003E771B /* Products */;
+					ProjectRef = 69415FB11CB5243F003E771B /* png.xcodeproj */;
+				},
+				{
+					ProductGroup = 69415F291CB51D2A003E771B /* Products */;
+					ProjectRef = 69415F281CB51D2A003E771B /* PPTXFormatLib.xcodeproj */;
+				},
+				{
+					ProductGroup = 69415F801CB51E24003E771B /* Products */;
+					ProjectRef = 69415F7F1CB51E24003E771B /* raster.xcodeproj */;
+				},
+				{
+					ProductGroup = 69415FB51CB5243F003E771B /* Products */;
+					ProjectRef = 69415FB41CB5243F003E771B /* raw.xcodeproj */;
+				},
+				{
+					ProductGroup = 69415FB81CB5243F003E771B /* Products */;
+					ProjectRef = 69415FB71CB5243F003E771B /* tiff.xcodeproj */;
 				},
 			);
 			projectRoot = "";
 			targets = (
-				17C8DEC11ACD696100902C85 /* X2tConverter */,
+				17C8DEC11ACD696100902C85 /* x2tconverter */,
 				17C1E3E41AD40E2E001E3D18 /* X2tConverter_framework */,
 			);
 		};
@@ -240,18 +790,137 @@
 			remoteRef = 177C432E1AD7C0D100055DD7 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		17C1FECB1ACC4305006B99B3 /* libASCOfficeDocxFile2Lib_ios.a */ = {
+		17E17F5B1AC457CD00BEA2EA /* libASCOfficeDocxFile2Lib_ios.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
 			path = libASCOfficeDocxFile2Lib_ios.a;
-			remoteRef = 17C1FECA1ACC4305006B99B3 /* PBXContainerItemProxy */;
+			remoteRef = 17E17F5A1AC457CD00BEA2EA /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		17E17F5B1AC457CD00BEA2EA /* libASCOfficeDocxFile2Lib.a */ = {
+		69415F241CB51C2A003E771B /* libOfficeUtils.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
-			path = libASCOfficeDocxFile2Lib.a;
-			remoteRef = 17E17F5A1AC457CD00BEA2EA /* PBXContainerItemProxy */;
+			path = libOfficeUtils.a;
+			remoteRef = 69415F231CB51C2A003E771B /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		69415F2D1CB51D2A003E771B /* libPPTXFormatLib_ios.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libPPTXFormatLib_ios.a;
+			remoteRef = 69415F2C1CB51D2A003E771B /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		69415F671CB51DCF003E771B /* libDocxFormatLib_ios.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libDocxFormatLib_ios.a;
+			remoteRef = 69415F661CB51DCF003E771B /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		69415F701CB51E0C003E771B /* libmetafile_ios.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libmetafile_ios.a;
+			remoteRef = 69415F6F1CB51E0C003E771B /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		69415F781CB51E1B003E771B /* libagg_ios.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libagg_ios.a;
+			remoteRef = 69415F771CB51E1B003E771B /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		69415F7E1CB51E1F003E771B /* libfontengine_ios.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libfontengine_ios.a;
+			remoteRef = 69415F7D1CB51E1F003E771B /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		69415F841CB51E24003E771B /* libraster_ios.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libraster_ios.a;
+			remoteRef = 69415F831CB51E24003E771B /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		69415F8A1CB51E29003E771B /* libgraphics_ios.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libgraphics_ios.a;
+			remoteRef = 69415F891CB51E29003E771B /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		69415F9E1CB51E86003E771B /* libfreetype.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libfreetype.a;
+			remoteRef = 69415F9D1CB51E86003E771B /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		69415FA91CB51EC9003E771B /* libcximage_ios.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libcximage_ios.a;
+			remoteRef = 69415FA81CB51EC9003E771B /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		69415FC81CB5243F003E771B /* libjasper_ios.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libjasper_ios.a;
+			remoteRef = 69415FC71CB5243F003E771B /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		69415FCB1CB5243F003E771B /* libjbig_ios.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libjbig_ios.a;
+			remoteRef = 69415FCA1CB5243F003E771B /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		69415FCE1CB5243F003E771B /* libjpeg_ios.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libjpeg_ios.a;
+			remoteRef = 69415FCD1CB5243F003E771B /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		69415FD11CB5243F003E771B /* liblibpsd_ios.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = liblibpsd_ios.a;
+			remoteRef = 69415FD01CB5243F003E771B /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		69415FD41CB5243F003E771B /* libmng_ios.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libmng_ios.a;
+			remoteRef = 69415FD31CB5243F003E771B /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		69415FD71CB5243F003E771B /* libpng_ios.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libpng_ios.a;
+			remoteRef = 69415FD61CB5243F003E771B /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		69415FDA1CB5243F003E771B /* libraw_ios.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libraw_ios.a;
+			remoteRef = 69415FD91CB5243F003E771B /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		69415FDD1CB5243F003E771B /* libtiff_ios.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libtiff_ios.a;
+			remoteRef = 69415FDC1CB5243F003E771B /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		698AF4C01C0740960080D889 /* libicu.a */ = {
@@ -275,7 +944,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "SIMULATOR_LIBRARY_PATH=\"${BUILD_DIR}/${CONFIGURATION}-iphonesimulator/lib${PROJECT_NAME}.a\" &&\nDEVICE_LIBRARY_PATH=\"${BUILD_DIR}/${CONFIGURATION}-iphoneos/lib${PROJECT_NAME}.a\" &&\nUNIVERSAL_LIBRARY_DIR=\"${BUILD_DIR}/${CONFIGURATION}-iphoneuniversal\" &&\nFRAMEWORK=\"/Volumes/Storage/SDK/${PROJECT_NAME}.framework\" &&\n\n# Create framework directory structure.\nrm -rf \"${FRAMEWORK}\" &&\nmkdir -p \"${UNIVERSAL_LIBRARY_DIR}\" &&\n\n# Generate universal binary for the device and simulator.\nlipo \"${SIMULATOR_LIBRARY_PATH}\" \"${DEVICE_LIBRARY_PATH}\" -create -output \"${FRAMEWORK}\"\n\ncp ${PROJECT_DIR}/X2tConverter/X2tConverter.h ${PROJECT_DIR}/../../../ServerComponents/SDK/include/X2tConverter.h";
+			shellScript = "SIMULATOR_LIBRARY_PATH=\"${BUILD_DIR}/${CONFIGURATION}-iphonesimulator/lib${PROJECT_NAME}.a\" &&\nDEVICE_LIBRARY_PATH=\"${BUILD_DIR}/${CONFIGURATION}-iphoneos/lib${PROJECT_NAME}.a\" &&\nUNIVERSAL_LIBRARY_DIR=\"${BUILD_DIR}/${CONFIGURATION}-iphoneuniversal\" &&\nFRAMEWORK=\"${BUILD_DIR}/${CONFIGURATION}-iphoneuniversal/${PROJECT_NAME}.framework\" &&\n\n# Create framework directory structure.\nrm -rf \"${FRAMEWORK}\" &&\nmkdir -p \"${UNIVERSAL_LIBRARY_DIR}\" &&\n\n# Generate universal binary for the device and simulator.\nlipo \"${SIMULATOR_LIBRARY_PATH}\" \"${DEVICE_LIBRARY_PATH}\" -create -output \"${FRAMEWORK}\"";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -300,6 +969,96 @@
 			isa = PBXTargetDependency;
 			name = ASCOfficeDocxFile2Lib_ios;
 			targetProxy = 17C8DEDB1ACD6A3900902C85 /* PBXContainerItemProxy */;
+		};
+		69415F261CB51C32003E771B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = OfficeUtils;
+			targetProxy = 69415F251CB51C32003E771B /* PBXContainerItemProxy */;
+		};
+		69415F2F1CB51D34003E771B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = PPTXFormatLib;
+			targetProxy = 69415F2E1CB51D34003E771B /* PBXContainerItemProxy */;
+		};
+		69415F691CB51DD7003E771B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = DocxFormatLib;
+			targetProxy = 69415F681CB51DD7003E771B /* PBXContainerItemProxy */;
+		};
+		69415F721CB51E13003E771B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = metafile;
+			targetProxy = 69415F711CB51E13003E771B /* PBXContainerItemProxy */;
+		};
+		69415F8C1CB51E33003E771B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = graphics;
+			targetProxy = 69415F8B1CB51E33003E771B /* PBXContainerItemProxy */;
+		};
+		69415F8F1CB51E3D003E771B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = raster;
+			targetProxy = 69415F8E1CB51E3D003E771B /* PBXContainerItemProxy */;
+		};
+		69415F921CB51E48003E771B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = fontengine;
+			targetProxy = 69415F911CB51E48003E771B /* PBXContainerItemProxy */;
+		};
+		69415F951CB51E54003E771B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = agg;
+			targetProxy = 69415F941CB51E54003E771B /* PBXContainerItemProxy */;
+		};
+		69415FA21CB51E8F003E771B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = freetype_ios;
+			targetProxy = 69415FA11CB51E8F003E771B /* PBXContainerItemProxy */;
+		};
+		69415FAB1CB51ED0003E771B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = cximage;
+			targetProxy = 69415FAA1CB51ED0003E771B /* PBXContainerItemProxy */;
+		};
+		69415FDF1CB5244D003E771B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = mng;
+			targetProxy = 69415FDE1CB5244D003E771B /* PBXContainerItemProxy */;
+		};
+		69415FE21CB5245A003E771B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = png;
+			targetProxy = 69415FE11CB5245A003E771B /* PBXContainerItemProxy */;
+		};
+		69415FE51CB5246B003E771B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = raw;
+			targetProxy = 69415FE41CB5246B003E771B /* PBXContainerItemProxy */;
+		};
+		69415FE81CB52475003E771B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = tiff;
+			targetProxy = 69415FE71CB52475003E771B /* PBXContainerItemProxy */;
+		};
+		69415FEB1CB52480003E771B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = libpsd;
+			targetProxy = 69415FEA1CB52480003E771B /* PBXContainerItemProxy */;
+		};
+		69415FEE1CB5248B003E771B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = jpeg;
+			targetProxy = 69415FED1CB5248B003E771B /* PBXContainerItemProxy */;
+		};
+		69415FF11CB52495003E771B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = jbig;
+			targetProxy = 69415FF01CB52495003E771B /* PBXContainerItemProxy */;
+		};
+		69415FF41CB5249E003E771B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = jasper;
+			targetProxy = 69415FF31CB5249E003E771B /* PBXContainerItemProxy */;
 		};
 		698AF4C21C0745930080D889 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -498,7 +1257,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		17C8DECD1ACD696100902C85 /* Build configuration list for PBXNativeTarget "X2tConverter" */ = {
+		17C8DECD1ACD696100902C85 /* Build configuration list for PBXNativeTarget "x2tconverter" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				17C8DECE1ACD696100902C85 /* Debug */,

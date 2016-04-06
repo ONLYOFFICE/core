@@ -32,7 +32,7 @@ CONFIG(debug, debug|release) {
 } else {
     DESTDIR = $$DESTINATION_SDK_PATH/win_64
 }
-ICU_BUILDS_PLATFORM = win64
+ICU_BUILDS_PLATFORM = win_64
 }
 win32:!contains(QMAKE_TARGET.arch, x86_64):{
 CONFIG(debug, debug|release) {
@@ -40,16 +40,16 @@ CONFIG(debug, debug|release) {
 } else {
     DESTDIR = $$DESTINATION_SDK_PATH/win_32
 }
-ICU_BUILDS_PLATFORM = win32
+ICU_BUILDS_PLATFORM = win_32
 }
 
 linux-g++ | linux-g++-64 | linux-g++-32:contains(QMAKE_HOST.arch, x86_64):{
     DESTDIR = $$DESTINATION_SDK_PATH/linux_64
-    ICU_BUILDS_PLATFORM = linux64
+    ICU_BUILDS_PLATFORM = linux_64
 }
 linux-g++ | linux-g++-64 | linux-g++-32:!contains(QMAKE_HOST.arch, x86_64):{
     DESTDIR = $$DESTINATION_SDK_PATH/linux_32
-    ICU_BUILDS_PLATFORM = linux32
+    ICU_BUILDS_PLATFORM = linux_32
 }
 
 mac {
@@ -79,8 +79,8 @@ linux-g++ | linux-g++-64 | linux-g++-32 {
     TARGET_EXT = .so
 
     INCLUDEPATH += $$PWD/icubuilds/$$ICU_BUILDS_PLATFORM/usr/local/include
-    LIBS        += $$PWD/icubuilds/$$ICU_BUILDS_PLATFORM/usr/local/lib/libicuuc.so.55
-    LIBS        += $$PWD/icubuilds/$$ICU_BUILDS_PLATFORM/usr/local/lib/libicudata.so.55
+    LIBS        += $$PWD/../build/bin/icu/$$ICU_BUILDS_PLATFORM/libicuuc.so.55
+    LIBS        += $$PWD/../build/bin/icu/$$ICU_BUILDS_PLATFORM/libicudata.so.55
     message(linux)
 }
 

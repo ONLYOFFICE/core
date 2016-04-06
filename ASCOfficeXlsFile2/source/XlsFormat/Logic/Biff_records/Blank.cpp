@@ -39,18 +39,16 @@ const CellRef Blank::getLocation() const
 
 int Blank::serialize(std::wostream & stream)
 {
-	CP_XML_WRITER(stream)    
-    {
-		int row = cell.rw;
-			
-		std::wstring ref = cell.getLocation().toString();// getColRowRef(i, row);
-		CP_XML_NODE(L"c")
-		{
-			CP_XML_ATTR(L"r", ref);
-
-			int st = (int)cell.ixfe - global_info_->cellStyleXfs_count;
-			if (cell.ixfe > global_info_->cellStyleXfs_count)
+	int row = cell.rw;
+	int st = (int)cell.ixfe - global_info_->cellStyleXfs_count;
+	
+	if (cell.ixfe > global_info_->cellStyleXfs_count)
+	{
+		CP_XML_WRITER(stream)    
+		{	
+			CP_XML_NODE(L"c")
 			{
+				CP_XML_ATTR(L"r", cell.getLocation().toString());
 				CP_XML_ATTR(L"s", cell.ixfe - global_info_->cellStyleXfs_count);
 			}
 		}			

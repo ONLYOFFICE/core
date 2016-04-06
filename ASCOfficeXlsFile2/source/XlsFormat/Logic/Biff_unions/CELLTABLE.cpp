@@ -42,7 +42,7 @@ public:
 		
 			while(count > 0)
 			{
-				Row* row = dynamic_cast<Row*>(elements_.back().get());
+				Row* row = dynamic_cast<Row*>(elements_.front().get());
 				if (row)
 				{
 					if (row->miyRw > 0 && std::abs(row->miyRw/20. - sheet_info.defaultRowHeight) > 0.001)
@@ -50,8 +50,8 @@ public:
 						sheet_info.customRowsHeight.insert(std::pair<int, double>(row->rw, row->miyRw / 20.));
 					}
 				}
-				m_rows.insert(m_rows.begin(), elements_.back());
-				elements_.pop_back();
+				m_rows.push_back(elements_.front());
+				elements_.pop_front();
 				count--;				
 			}
 		}	
@@ -59,10 +59,30 @@ public:
 		//------------------------------------------------------------------------------------------------------------------
         CELL cell(shared_formulas_locations_ref_);
 
-        int count_cells = proc.repeated(cell, 0, 0);
+        int count_cells = count = proc.repeated(cell, 0, 0);
 
-
-		count = proc.repeated<DBCell>(0, 0); // OpenOffice Calc stored files workaround (DBCell must be present at least once according to [MS-XLS])
+		while(count > 0)
+		{
+			CELL * cell = dynamic_cast<CELL *>(elements_.front().get());
+			if (cell)
+			{
+				std::map<int, std::list<BaseObjectPtr>>::iterator it = m_cells.find(cell->RowNumber);
+				if (it == m_cells.end())
+				{
+					std::list<BaseObjectPtr> c;
+					c.push_back(elements_.front());
+					m_cells.insert(std::pair<int, std::list<BaseObjectPtr>>(cell->RowNumber, c));
+				}
+				else
+				{
+					it->second.push_back(elements_.front());
+				}
+			}
+			elements_.pop_front();
+			count--;				
+		}
+		count = proc.repeated<DBCell>(0, 0); 
+		// OpenOffice Calc stored files workaround (DBCell must be present at least once according to [MS-XLS])
 		while(count > 0)
 		{
 			m_DBCells.insert(m_DBCells.begin(), elements_.back());
@@ -71,12 +91,15 @@ public:
 		}	
 		if (count_cells > 0 || count_row > 0)	return true;
 		else									return false;
-	};
+	}
+	
 	int serialize(std::wostream & stream);
 	static const ElementType	type = typeCELL_GROUP;
 
-	std::list<BaseObjectPtr>	m_rows;
-	std::list<BaseObjectPtr>	m_DBCells;
+//---------------------------------------------------------------------------
+	std::map<int, std::list<BaseObjectPtr>> m_cells;
+	std::list<BaseObjectPtr>				m_rows;
+	std::list<BaseObjectPtr>				m_DBCells;
 
 private:
 	std::vector<CellRangeRef>& shared_formulas_locations_ref_;
@@ -125,154 +148,45 @@ int CELL_GROUP::serialize(std::wostream & stream)
 	XLS::GlobalWorkbookInfo::_sheet_size_info & sheet_info = global_info_->current_sheet >=0 ? 
 										global_info_->sheet_size_info[global_info_->current_sheet - 1] : zero;
 	
-	elements_.sort(CompareRowCell);//пока так .. todooo  сделать мап(rownumb, list<cells> - и там смотреть нужно ли сортировать €чейки)
-	
 	CP_XML_WRITER(stream)    
-    {
-		std::list<XLS::BaseObjectPtr>::iterator current_cell_start	= elements_.begin();
-		std::list<XLS::BaseObjectPtr>::iterator current_row			= m_rows.begin();
-
-		int current_row_number = 0;
-
-		while(current_row_number == 0)
+    {	
+		std::list<XLS::BaseObjectPtr>::iterator current_row = m_rows.begin();
+		
+		for (std::map<int, std::list<BaseObjectPtr>>::iterator it_row = m_cells.begin(); it_row != m_cells.end(); it_row++)
 		{
-			CP_XML_NODE(L"row")
-			{	
-				std::list<XLS::BaseObjectPtr>::iterator it_cell = current_cell_start;
-				while(true)
-				{
-					if (it_cell == elements_.end())
-					{
-						current_cell_start = it_cell;
-						current_row_number = -1;
-						break;
-					}
-					CELL * cell = dynamic_cast<CELL *>(it_cell->get());
+			it_row->second.sort(CompareColumCell);
+			
+			Row * row = NULL;
+			if (current_row != m_rows.end())
+			{
+				row = dynamic_cast<Row *>(current_row->get());
 
-					if (cell == NULL)
-					{
-						it_cell++;
-						continue;
-					}
-
-					if (current_row_number < 1)  //нова€ строка
-					{
-						current_row_number = cell->RowNumber + 1; // номер из €чейки
-					
-						bool skip_cells = false;
-
-						if (current_row != m_rows.end())
-						{
-							Row * row = dynamic_cast<Row *>(current_row->get());
-						
-							int row_n = row->rw;
-							if (row->rw + 1  < current_row_number)
-							{
-								current_row_number = row->rw + 1;
-								skip_cells = true;
-							}
-							CP_XML_ATTR(L"r", current_row_number);
-							
-							if (row->rw + 1  == current_row_number)
-							{
-								bool xf_set = true;
-								if (row->fGhostDirty == false) xf_set = false;
-								
-								if (row->ixfe_val && xf_set)
-								{
-									if (row->ixfe_val > global_info_->cellStyleXfs_count)
-									{
-										CP_XML_ATTR(L"s", row->ixfe_val - global_info_->cellStyleXfs_count);
-									}
-									else
-									{
-										CP_XML_ATTR(L"s", row->ixfe_val);
-									}
-									CP_XML_ATTR(L"customFormat", true);
-								}
-								if (row->miyRw > 0/* && std::abs(row->miyRw/20. - sheet_info.defaultRowHeight) > 0.01*/)
-								{
-									CP_XML_ATTR(L"ht", row->miyRw / 20.);
-									CP_XML_ATTR(L"customHeight", true);
-								}
-								if (row->iOutLevel > 0)
-								{
-									CP_XML_ATTR(L"outlineLevel", row->iOutLevel);
-								}
-								if (row->fCollapsed)
-								{
-									CP_XML_ATTR(L"collapsed", row->fCollapsed);
-								}
-								if (row->fExAsc)
-								{
-									CP_XML_ATTR(L"thickTop", true);
-								}
-								if (row->fExDes)
-								{
-									CP_XML_ATTR(L"thickBot", true);
-								}
-								if (row->fDyZero)
-								{
-									CP_XML_ATTR(L"hidden", true);
-								}
-							}
-							if (row->rw + 1  <= current_row_number)
-							{								
-								current_row++;
-							}
-						}											
-						else
-						{
-							CP_XML_ATTR(L"r", current_row_number);
-						}
-						if (skip_cells)
-						{
-							current_row_number = 0;
-							break;
-						}
-					}
-					if (cell->RowNumber + 1 > current_row_number)
-					{
-						current_cell_start = it_cell;
-						current_row_number = 0;
-						break;
-					}
-					cell->serialize(CP_XML_STREAM());
-					it_cell++;
+				while ((row) && (row->rw < it_row->first))
+				{//skip cells
+					row->serialize(stream);
+					current_row++;
+					row = dynamic_cast<Row *>(current_row->get());
 				}
 			}
-		}
-		if ( current_row != m_rows.end())
-		{
-			for (std::list<XLS::BaseObjectPtr>::iterator it_row = current_row; it_row != m_rows.end(); it_row++)
-			{
-				Row * row = dynamic_cast<Row *>(it_row->get());
-				
-				if (row == NULL) continue;
-
-				CP_XML_NODE(L"row")
-				{		
-					current_row_number = row->rw + 1;
-					
-					CP_XML_ATTR(L"r", current_row_number);
-					
+			CP_XML_NODE(L"row")
+			{	
+				CP_XML_ATTR(L"r", it_row->first + 1);
+				if ((row) && (row->rw  == it_row->first))
+				{
 					bool xf_set = true;
 					if (row->fGhostDirty == false) xf_set = false;
 					
-					if (xf_set)
+					if (row->ixfe_val && xf_set)
 					{
-						if (row->ixfe_val > global_info_->cellStyleXfs_count)
+						int xf = ixfe_val > global_info_->cellStyleXfs_count ? row->ixfe_val - global_info_->cellStyleXfs_count : row->ixfe_val;
+						
+						if (xf < global_info_->cellXfs_count)
 						{
-							CP_XML_ATTR(L"s", row->ixfe_val - global_info_->cellStyleXfs_count);
+							CP_XML_ATTR(L"s", xf);
+							CP_XML_ATTR(L"customFormat", true);
 						}
-						else
-						{
-							CP_XML_ATTR(L"s", row->ixfe_val);
-						}
-						CP_XML_ATTR(L"customFormat", true);
 					}
-
-					if (row->miyRw > 0 /*&& std::abs(row->miyRw/20. - sheet_info.defaultRowHeight) > 0.01*/)
+					if (row->miyRw > 0/* && std::abs(row->miyRw/20. - sheet_info.defaultRowHeight) > 0.01*/)
 					{
 						CP_XML_ATTR(L"ht", row->miyRw / 20.);
 						CP_XML_ATTR(L"customHeight", true);
@@ -285,10 +199,39 @@ int CELL_GROUP::serialize(std::wostream & stream)
 					{
 						CP_XML_ATTR(L"collapsed", row->fCollapsed);
 					}
+					if (row->fExAsc)
+					{
+						CP_XML_ATTR(L"thickTop", true);
+					}
+					if (row->fExDes)
+					{
+						CP_XML_ATTR(L"thickBot", true);
+					}
+					if (row->fDyZero)
+					{
+						CP_XML_ATTR(L"hidden", true);
+					}
+					
+					row = NULL;
+					current_row++;
+					if (current_row != m_rows.end())
+						row = dynamic_cast<Row *>(current_row->get());
+
+				}
+				for ( std::list<BaseObjectPtr>::iterator it_cell = it_row->second.begin(); it_cell != it_row->second.end(); it_cell++)
+				{
+					(*it_cell)->serialize(CP_XML_STREAM());
 				}
 			}
+
 		}
+		while (current_row != m_rows.end())
+		{//skip cells ... last rows
+			(*current_row)->serialize(stream);
+			current_row++;
+		}	
 	}
+
 	return 0;
 }
 

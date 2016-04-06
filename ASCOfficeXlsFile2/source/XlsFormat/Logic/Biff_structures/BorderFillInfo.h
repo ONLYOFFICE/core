@@ -70,7 +70,7 @@ struct BorderInfo
 	FillInfoExt topFillInfo_;
 	FillInfoExt bottomFillInfo_;
 
-	BorderInfo(){}
+	BorderInfo() : dgLeft(0), dgRight(0), dgTop(0), dgBottom(0),  dgDiag(0), grbitDiag(0) {}
 
 	BorderInfo(	const unsigned char dgLeft_set, const unsigned char dgRight_set, const unsigned char dgTop_set, 
 			const unsigned char dgBottom_set, const unsigned char dgDiag_set, const unsigned char grbitDiag_set, 

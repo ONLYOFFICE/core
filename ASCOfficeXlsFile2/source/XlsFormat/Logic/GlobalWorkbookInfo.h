@@ -85,6 +85,7 @@ public:
 	int Version;
 
 	int											cmt_rules;
+	int											cellXfs_count;
 	int											cellStyleXfs_count;
 	int											cellStyleDxfs_count;
 

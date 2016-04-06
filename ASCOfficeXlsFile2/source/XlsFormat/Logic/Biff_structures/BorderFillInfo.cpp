@@ -145,17 +145,16 @@ int FillInfo::serialize(std::wostream & stream)
 bool BorderInfo::operator == (const BorderInfo & rVal) const
 {
     const bool res =     
-		dgBottom	== rVal.dgBottom	&&
-		dgDiag		== rVal.dgDiag		&&
-		dgLeft		== rVal.dgLeft		&&
-		dgRight		== rVal.dgRight		&&
-		dgTop		== rVal.dgTop		&&
-		grbitDiag	== rVal.grbitDiag	&&
-		icvBottom	== rVal.icvBottom	&&
-		icvDiag		== rVal.icvDiag		&&
-		icvLeft		== rVal.icvLeft		&&
-		icvRight	== rVal.icvRight	&&
-		icvTop		== rVal.icvTop;
+		((dgBottom	== rVal.dgBottom	&& icvBottom	== rVal.icvBottom)	|| (dgBottom	== 0 && rVal.dgBottom == 0))&&
+		((dgLeft	== rVal.dgLeft		&& icvLeft		== rVal.icvLeft)	|| (dgLeft		== 0 && rVal.dgLeft == 0))	&&
+		((dgRight	== rVal.dgRight		&& icvRight		== rVal.icvRight)	|| (dgRight		== 0 && rVal.dgRight == 0))	&&
+		((dgTop		== rVal.dgTop		&& icvTop		== rVal.icvTop)		|| (dgTop		== 0 && rVal.dgTop == 0))	&&
+		
+		((	dgDiag		== rVal.dgDiag		&&
+			grbitDiag	== rVal.grbitDiag	&& icvDiag	== rVal.icvDiag) || 
+												(dgDiag	== 0 && rVal.dgDiag == 0 && grbitDiag == 0 && rVal.grbitDiag== 0))
+	
+		;
 
     return res;
 }
@@ -184,15 +183,15 @@ static std::wstring border_type[]=
 
 void serialize1(std::wostream & _stream, unsigned char type, unsigned color, const std::wstring & name)
 {
-    if (type < 1 || type > 13) return;
+    if (type < 0 || type > 13) return;
     
 	CP_XML_WRITER(_stream)
     {
         CP_XML_NODE(name)
         {
-			CP_XML_ATTR(L"style", border_type[type]);
+			if (type > 0) CP_XML_ATTR(L"style", border_type[type]);
 
-            if (color > 0)
+            if (color > 0 && type > 0)
 			{
 				CP_XML_NODE(L"color")
 				{              
@@ -204,15 +203,15 @@ void serialize1(std::wostream & _stream, unsigned char type, unsigned color, con
 }
 void serialize1(std::wostream & _stream, unsigned char type, FillInfoExt & color, const std::wstring & name)
 {
-    if (type < 1 || type > 13) return;
+    if (type < 0 || type > 13) return;
     
 	CP_XML_WRITER(_stream)
     {
         CP_XML_NODE(name)
         {
-			CP_XML_ATTR(L"style", border_type[type]);
+			if (type > 0) CP_XML_ATTR(L"style", border_type[type]);
 
-            if (color.enabled)
+            if (color.enabled && type > 0)
 			{
 				CP_XML_NODE(L"color")
 				{              

@@ -20,7 +20,11 @@ public:
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
 
+	int serialize(std::wostream & stream);
+
 	static const ElementType	type = typeRow;
+
+	GlobalWorkbookInfoPtr global_info_;
 
 //-----------------------------
 	Rw			rw;

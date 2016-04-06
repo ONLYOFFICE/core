@@ -53,6 +53,7 @@ void Row::writeFields(CFRecord& record)
 
 void Row::readFields(CFRecord& record)
 {
+	global_info_ = record.getGlobalWorkbookInfo();
 	record >> rw >> colMic >> colMac >> miyRw;
 
 	record.skipNunBytes(4); // reserved / unused
@@ -72,6 +73,58 @@ void Row::readFields(CFRecord& record)
 	fExAsc		= GETBIT(flags, 12);
 	fExDes		= GETBIT(flags, 13);
 	fPhonetic	= GETBIT(flags, 14);
+}
+
+int Row::serialize(std::wostream &stream)
+{
+	CP_XML_WRITER(stream)    
+    {
+		CP_XML_NODE(L"row")
+		{	
+			CP_XML_ATTR(L"r", rw + 1);
+
+			bool xf_set = true;
+			if (fGhostDirty == false) xf_set = false;
+			
+			if (ixfe_val && xf_set)
+			{
+				int xf = ixfe_val > global_info_->cellStyleXfs_count ? ixfe_val - global_info_->cellStyleXfs_count : ixfe_val;
+				
+				if (xf < global_info_->cellXfs_count)
+				{
+					CP_XML_ATTR(L"s", xf);
+					CP_XML_ATTR(L"customFormat", true);
+				}
+			}
+			if (miyRw > 0/* && std::abs(miyRw/20. - sheet_info.defaultRowHeight) > 0.01*/)
+			{
+				CP_XML_ATTR(L"ht", miyRw / 20.);
+				CP_XML_ATTR(L"customHeight", true);
+			}
+			if (iOutLevel > 0)
+			{
+				CP_XML_ATTR(L"outlineLevel", iOutLevel);
+			}
+			if (fCollapsed)
+			{
+				CP_XML_ATTR(L"collapsed", fCollapsed);
+			}
+			if (fExAsc)
+			{
+				CP_XML_ATTR(L"thickTop", true);
+			}
+			if (fExDes)
+			{
+				CP_XML_ATTR(L"thickBot", true);
+			}
+			if (fDyZero)
+			{
+				CP_XML_ATTR(L"hidden", true);
+			}
+		}
+	}
+
+	return 0;
 }
 
 } // namespace XLS

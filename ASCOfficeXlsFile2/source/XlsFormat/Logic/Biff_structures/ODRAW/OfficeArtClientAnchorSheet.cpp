@@ -82,8 +82,8 @@ void OfficeArtClientAnchorSheet::calculate()
 	}
 	else	column_width = sheet_info.defaultColumnWidth;
 
-	//width = ((int)((column_width * Digit_Width + 5) / Digit_Width * 256 )) / 256.;
-	width = (int)(((256. * column_width/*width*/ + ((int)(128. / Digit_Width ))) / 256. ) * Digit_Width );	//in pixels
+	width = ((int)((column_width * Digit_Width + 5) / Digit_Width * 256 )) / 256.;
+	width = (int)(((256. * width + ((int)(128. / Digit_Width ))) / 256. ) * Digit_Width );	//in pixels
 	
 	_dxL = dxL / 1024. * width  * 9525. ; //9525 => pixels to emu
 
@@ -93,8 +93,8 @@ void OfficeArtClientAnchorSheet::calculate()
 	}
 	else	column_width = sheet_info.defaultColumnWidth;
 
-	//width = ((int)((column_width * Digit_Width + 5) / Digit_Width * 256 )) / 256.;
-	width = (int)(((256. * column_width/*width*/ + ((int)(128. / Digit_Width ))) / 256. ) * Digit_Width ); //in pixels
+	width = ((int)((column_width * Digit_Width + 5) / Digit_Width * 256 )) / 256.;
+	width = (int)(((256. * width + ((int)(128. / Digit_Width ))) / 256. ) * Digit_Width ); //in pixels
 	
 	_dxR = dxR / 1024. * width * 9525.; 
 //---------------------------------------------------------------------------------------------------

@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #ifndef OOX_COMMENTS_FILE_INCLUDE_H_
 #define OOX_COMMENTS_FILE_INCLUDE_H_
 
@@ -201,13 +201,16 @@ namespace OOX
 						sRes += getTextArr(pRun->m_arrItems, bFirstPar);
 					}
 					break;
+				case OOX::et_w_cr:
 				case OOX::et_w_br:
                     sRes += _T("\n");
 					break;
 				case OOX::et_w_nonBreakHyphen:
-				case OOX::et_w_softHyphen:
-                    sRes += _T("-");
-					break;
+					{
+						TCHAR oNewChar = 0x2013;
+						sRes += oNewChar;
+						break;
+					}
 				case OOX::et_w_tab:
                     sRes += _T(" ");
 					break;
@@ -235,7 +238,7 @@ namespace OOX
 
 		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
-			// Читаем атрибуты
+			// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 			WritingElement_ReadAttributes_Start( oReader )
                 WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:author"),        m_oAuthor )
                 WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:date"),          m_oDate )
@@ -359,7 +362,7 @@ namespace OOX
 	private:
 		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
-			// Читаем атрибуты
+			// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 			WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w15:paraId"),      m_oParaId )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w15:paraIdParent"), m_oParaIdParent )
@@ -480,7 +483,7 @@ namespace OOX
 	private:
 		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
-			// Читаем атрибуты
+			// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 			WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w15:providerId"),      m_oProviderId )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w15:userId"), m_oUserId )
@@ -538,7 +541,7 @@ namespace OOX
 	private:
 		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
-			// Читаем атрибуты
+			// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 			WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w15:author"),      m_oAuthor )
 				WritingElement_ReadAttributes_End( oReader )

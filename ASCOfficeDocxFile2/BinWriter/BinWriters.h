@@ -4850,7 +4850,7 @@ namespace BinDocxRW
 					}
 				case OOX::et_w_cr:
 					{
-						m_oBcw.m_oStream.WriteBYTE(c_oSerRunType::linebreak);
+						m_oBcw.m_oStream.WriteBYTE(c_oSerRunType::cr);
 						m_oBcw.m_oStream.WriteLONG(c_oSerPropLenType::Null);
 						break;
 					}
@@ -4913,7 +4913,9 @@ namespace BinDocxRW
 					break;
 				case OOX::et_w_nonBreakHyphen:
 					{
-						WriteText(CString(_T("-")));
+						m_oBcw.m_oStream.WriteBYTE(c_oSerRunType::nonBreakHyphen);
+						m_oBcw.m_oStream.WriteLONG(c_oSerPropLenType::Null);
+						break;
 					}
 					break;
 				case OOX::et_w_pgNum:
@@ -4928,7 +4930,9 @@ namespace BinDocxRW
 					break;
 				case OOX::et_w_softHyphen:
 					{
-						WriteText(CString(_T("-")));
+						m_oBcw.m_oStream.WriteBYTE(c_oSerRunType::softHyphen);
+						m_oBcw.m_oStream.WriteLONG(c_oSerPropLenType::Null);
+						break;
 					}
 					break;
 				case OOX::et_w_sym:

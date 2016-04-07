@@ -452,7 +452,10 @@ extern int g_nCurFormatVersion;
 		delText = 15,
 		del = 16,
 		ins = 17,
-		columnbreak = 18
+		columnbreak = 18,
+		cr = 19,
+		nonBreakHyphen = 20,
+		softHyphen = 21
 	};}
 	namespace c_oSerImageType{enum c_oSerImageType
 	{

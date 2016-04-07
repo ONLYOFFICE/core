@@ -176,7 +176,7 @@ define build_proj_tmpl
 PROS += $$(basename $$(value $(1)_PRO)).build
 $(1)_MAKE := $$(basename $$(value $(1)_PRO)).build/Makefile
 $$(value $(1)): $$(value $(1)_MAKE)
-	cd $$(dir $$(value $(1)_MAKE)) && make -j 4 #$$(grep processor /proc/cpuinfo | wc -l)
+	cd $$(dir $$(value $(1)_MAKE)) && make -j $$(grep processor /proc/cpuinfo | wc -l);
 endef
 
 .PHONY : all bin lib clean
@@ -209,6 +209,10 @@ $(DJVUFILE): $(DJVUFILE_DEP)
 	mkdir -p $(dir $@) && cd $(dir $@) && qmake -r -spec linux-g++ $<
 
 clean:
-	rm -rf $(TARGETS) $(PROS)
+	rm -rf $(TARGETS)
+	for i in $(PROS); do \
+		if [ -d $$i -a -f $$i/Makefile ]; then \
+			cd $$i && make distclean; \
+		fi \
+done
 
-	

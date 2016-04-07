@@ -1619,7 +1619,7 @@ namespace NExtractTools
            }
            else if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS == nFormatFrom)
            {
-               nRes = xls2xlsx_dir(sFrom, sXlsxDir, sTemp);
+               nRes = xls2xlsx_dir(sFrom, sXlsxDir, sTemp, sFontPath);
            }
            else if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS == nFormatFrom)
            {
@@ -1845,13 +1845,13 @@ namespace NExtractTools
    }
 
    // xls -> xlsx
-   int xls2xlsx (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp)
+   int xls2xlsx (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sFontPath)
    {
        std::wstring sResultDocxDir = sTemp + FILE_SEPARATOR_STR + _T("xlsx_unpacked");
 
        FileSystem::Directory::CreateDirectory(sResultDocxDir);
 
-       int nRes = xls2xlsx_dir(sFrom, sResultDocxDir, sTemp);
+       int nRes = xls2xlsx_dir(sFrom, sResultDocxDir, sFontPath, sTemp);
        if(SUCCEEDED_X2T(nRes))
        {
            COfficeUtils oCOfficeUtils(NULL);
@@ -1860,9 +1860,9 @@ namespace NExtractTools
        }
        return AVS_FILEUTILS_ERROR_CONVERT;
    }
-   int xls2xlsx_dir (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp)
+   int xls2xlsx_dir (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sFontPath)
    {
-        return S_OK == ConvertXls2Xlsx( sFrom, sTo, NULL) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+        return S_OK == ConvertXls2Xlsx( sFrom, sTo, sFontPath, NULL) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
    }
 
    // xls -> xlst
@@ -1892,7 +1892,7 @@ namespace NExtractTools
 
         FileSystem::Directory::CreateDirectory(sResultXlsxDir);
 
-        if (ConvertXls2Xlsx( sFrom, sResultXlsxDir, NULL)== S_OK)
+        if (ConvertXls2Xlsx( sFrom, sResultXlsxDir, sFontPath, NULL)== S_OK)
         {
             BinXlsxRW::CXlsxSerializer m_oCXlsxSerializer;
 

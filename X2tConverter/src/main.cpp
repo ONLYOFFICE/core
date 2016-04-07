@@ -339,7 +339,7 @@ int main(int argc, char *argv[])
     }
     else if (TCD_XLS2XLSX == conversion)
     {
-        result =  xls2xlsx (sFileFrom, sFileTo, sTempDir);
+        result =  xls2xlsx (sFileFrom, sFileTo, sTempDir, sFontPath);
     }
     else if (TCD_XLS2XLST == conversion)
     {

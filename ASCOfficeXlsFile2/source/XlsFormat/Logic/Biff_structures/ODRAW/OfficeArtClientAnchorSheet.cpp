@@ -59,6 +59,8 @@ void OfficeArtClientAnchorSheet::loadFields(XLS::CFRecord& record)
 
 void OfficeArtClientAnchorSheet::calculate()
 {
+	global_info->GetDigitFontSizePixels();
+
 	XLS::GlobalWorkbookInfo::_sheet_size_info zero;
 	XLS::GlobalWorkbookInfo::_sheet_size_info & sheet_info = global_info->current_sheet >=0 ? 
 										global_info->sheet_size_info[global_info->current_sheet - 1] : zero;
@@ -67,35 +69,34 @@ void OfficeArtClientAnchorSheet::calculate()
 	//1 inch	=	72 point
 	//1 emu		=	360000 * 2.54 inch
 
-	double kfCol	=  360000 / 72.;
-
+	//double kfCol	=  1250.;//360000 / 72. / 4.;
 	double kfRow	= ( 360000 * 2.54 / 72) / 256. ;
 
-	double Digit_Width = 8.43;
-	double column_width = 0;
+	double Digit_Width	= global_info->defaultDigitFontSize.first;
+	double Digit_Height = global_info->defaultDigitFontSize.second;
+	double width = 0 , column_width = 0;
 
 	if (sheet_info.customColumnsWidth.find(colL) != sheet_info.customColumnsWidth.end())
 	{
-		column_width = sheet_info.customColumnsWidth[colL] / 1024.;	
+			column_width = sheet_info.customColumnsWidth[colL];
 	}
-	else 
-		column_width = sheet_info.defaultColumnWidth / 1024.;	
+	else	column_width = sheet_info.defaultColumnWidth;
 
-	//double width = ((int)((column_width * Maximum_Digit_Width + 5 ) / Maximum_Digit_Width * 256. )) / 256.; //px
-	double width = (double)(((256. * column_width + (int)(128. / Digit_Width)) / 256.) * Digit_Width) * 72 / 96.;
+	//width = ((int)((column_width * Digit_Width + 5) / Digit_Width * 256 )) / 256.;
+	width = (int)(((256. * column_width/*width*/ + ((int)(128. / Digit_Width ))) / 256. ) * Digit_Width );	//in pixels
 	
-	_dxL = dxL * kfCol * width;
+	_dxL = dxL / 1024. * width  * 9525. ; //9525 => pixels to emu
 
 	if (sheet_info.customColumnsWidth.find(colR) != sheet_info.customColumnsWidth.end())
 	{
-		column_width = sheet_info.customColumnsWidth[colR] / 1024.;		
+			column_width = sheet_info.customColumnsWidth[colR];
 	}
-	else 
-		column_width = sheet_info.defaultColumnWidth / 1024.;	
+	else	column_width = sheet_info.defaultColumnWidth;
 
-	width = (double)(((256. * column_width + (int)(128. / Digit_Width)) / 256.) * Digit_Width) * 72 / 96.;
+	//width = ((int)((column_width * Digit_Width + 5) / Digit_Width * 256 )) / 256.;
+	width = (int)(((256. * column_width/*width*/ + ((int)(128. / Digit_Width ))) / 256. ) * Digit_Width ); //in pixels
 	
-	_dxR = dxR * kfCol * width;
+	_dxR = dxR / 1024. * width * 9525.; 
 //---------------------------------------------------------------------------------------------------
 	if (sheet_info.customRowsHeight.find(rwT) != sheet_info.customRowsHeight.end())
 	{
@@ -112,45 +113,45 @@ void OfficeArtClientAnchorSheet::calculate()
 		_dyB = dyB * kfRow * sheet_info.defaultRowHeight;	
 
 //----------------------------------------------------------------------------------------------------
-	for (int i = 0 ; i < colL; i++)
-	{
-		if (sheet_info.customColumnsWidth.find(i) != sheet_info.customColumnsWidth.end())
-			_x +=  256 * kfCol * sheet_info.customColumnsWidth[i];	
-		else 
-			_x +=  256 * kfCol * sheet_info.defaultColumnWidth;
-	}
-	_x += _dxL;
+	//for (int i = 0 ; i < colL; i++)
+	//{
+	//	if (sheet_info.customColumnsWidth.find(i) != sheet_info.customColumnsWidth.end())
+	//		_x +=  256 * kfCol * sheet_info.customColumnsWidth[i];	
+	//	else 
+	//		_x +=  256 * kfCol * sheet_info.defaultColumnWidth;
+	//}
+	//_x += _dxL;
 
-	for (int i = colL ; i < colR; i++)
-	{
-		if (sheet_info.customColumnsWidth.find(i) != sheet_info.customColumnsWidth.end())
-			_cx += 256 * kfCol * sheet_info.customColumnsWidth[i];	
-		else 
-			_cx += 256 * kfCol * sheet_info.defaultColumnWidth;
-	}
-	_cx += _dxR;
+	//for (int i = colL ; i < colR; i++)
+	//{
+	//	if (sheet_info.customColumnsWidth.find(i) != sheet_info.customColumnsWidth.end())
+	//		_cx += 256 * kfCol * sheet_info.customColumnsWidth[i];	
+	//	else 
+	//		_cx += 256 * kfCol * sheet_info.defaultColumnWidth;
+	//}
+	//_cx += _dxR;
 
-	for (int i = 0 ; i < rwT; i++)
-	{
-		if (sheet_info.customRowsHeight.find(i) != sheet_info.customRowsHeight.end())
-		{
-			_y += 256 * kfRow * sheet_info.customRowsHeight[i];	
-		}
-		else 
-			_y += 256 * kfRow * sheet_info.defaultRowHeight;	
-	}
-	_y += _dyT;
+	//for (int i = 0 ; i < rwT; i++)
+	//{
+	//	if (sheet_info.customRowsHeight.find(i) != sheet_info.customRowsHeight.end())
+	//	{
+	//		_y += 256 * kfRow * sheet_info.customRowsHeight[i];	
+	//	}
+	//	else 
+	//		_y += 256 * kfRow * sheet_info.defaultRowHeight;	
+	//}
+	//_y += _dyT;
 
-	for (int i = rwT ; i < rwB; i++)
-	{
-		if (sheet_info.customRowsHeight.find(i) != sheet_info.customRowsHeight.end())
-		{
-			_cy += 256 * kfRow * sheet_info.customRowsHeight[i];	
-		}
-		else 
-			_cy += 256 * kfRow * sheet_info.defaultRowHeight;	
-	}
-	_cy += _dyT;
+	//for (int i = rwT ; i < rwB; i++)
+	//{
+	//	if (sheet_info.customRowsHeight.find(i) != sheet_info.customRowsHeight.end())
+	//	{
+	//		_cy += 256 * kfRow * sheet_info.customRowsHeight[i];	
+	//	}
+	//	else 
+	//		_cy += 256 * kfRow * sheet_info.defaultRowHeight;	
+	//}
+	//_cy += _dyT;
 }
 
 

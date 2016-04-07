@@ -85,6 +85,11 @@ const int MulBlank::GetRow() const
 	return static_cast<unsigned short>(rw);
 }
 
+const int MulBlank::GetColumn() const
+{
+	return static_cast<unsigned short>(colFirst);
+}
+
 int MulBlank::serialize(std::wostream & stream)
 {
 	CP_XML_WRITER(stream)    

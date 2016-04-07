@@ -140,7 +140,7 @@ struct _CompareColumnCell
 		else
 			return false;
 	}
-}CompareColumCell;
+}CompareColumnCell;
 
 int CELL_GROUP::serialize(std::wostream & stream)
 {
@@ -154,9 +154,10 @@ int CELL_GROUP::serialize(std::wostream & stream)
 		
 		for (std::map<int, std::list<BaseObjectPtr>>::iterator it_row = m_cells.begin(); it_row != m_cells.end(); it_row++)
 		{
-			it_row->second.sort(CompareColumCell);
+			it_row->second.sort(CompareColumnCell);
 			
 			Row * row = NULL;
+
 			if (current_row != m_rows.end())
 			{
 				row = dynamic_cast<Row *>(current_row->get());
@@ -178,9 +179,9 @@ int CELL_GROUP::serialize(std::wostream & stream)
 					
 					if (row->ixfe_val && xf_set)
 					{
-						int xf = ixfe_val > global_info_->cellStyleXfs_count ? row->ixfe_val - global_info_->cellStyleXfs_count : row->ixfe_val;
+						int xf = row->ixfe_val >= global_info_->cellStyleXfs_count ? row->ixfe_val - global_info_->cellStyleXfs_count : row->ixfe_val;
 						
-						if (xf < global_info_->cellXfs_count)
+						if (xf < global_info_->cellXfs_count && xf >= 0)
 						{
 							CP_XML_ATTR(L"s", xf);
 							CP_XML_ATTR(L"customFormat", true);

@@ -475,9 +475,17 @@ void ods_conversion_context::start_image(const std::wstring & image_file_name)
 }
 double ods_conversion_context:: convert_symbol_width(double val)
 {
-	double pixels = (double)(((256. * val + (int)(128. / font_metrix_.approx_symbol_size)) / 256.) * font_metrix_.approx_symbol_size);
+	//width = ((int)((column_width * Digit_Width + 5) / Digit_Width * 256 )) / 256.;
+	//width = (int)(((256. * width + ((int)(128. / Digit_Width ))) / 256. ) * Digit_Width ); //in pixels
+	//
+	//_dxR = dxR / 1024. * width * 9525.;  // to emu
+	
+	val = ((int)((val * font_metrix_.approx_symbol_size + 5) / font_metrix_.approx_symbol_size * 256 )) / 256.;
 
-	return pixels* 72./96;
+	double pixels = (int)(((256. * val + ((int)(128. / font_metrix_.approx_symbol_size ))) / 256. ) * font_metrix_.approx_symbol_size ); //in pixels
+
+	return pixels * 4.8387; //* 9525. * 72.0 / (360000.0 * 2.54);
 }
+
 }
 }

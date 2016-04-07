@@ -39,7 +39,7 @@ std::pair<float, float> GetMaxDigitSizePixelsImpl(const std::wstring & fontName,
 	{
         if (FALSE == (hr = pFontManager->LoadFontByName(L"Arial", fontSize, fontStyle, dpi, dpi )))
 		{
-            return std::pair<float, float>(7,8);
+            return std::pair<float, float>(7, 8);
 		}
 	}
 
@@ -49,12 +49,15 @@ std::pair<float, float> GetMaxDigitSizePixelsImpl(const std::wstring & fontName,
 	float minWidth = 0xffff;
 	float minHeight = 0xffff;
 
-    for (int i = 0; i <= 9; ++i)
+   // for (int i = 0; i <= 9; ++i)
     {
-        if (FALSE == (hr = pFontManager->LoadString2( boost::lexical_cast<std::wstring>(i), 0, 0)))
-            return std::pair<float, float>(7,8);
+		//if (FALSE == (hr = pFontManager->LoadString2( boost::lexical_cast<std::wstring>(i), 0, 0)))
+		//	return std::pair<float, float>(7,8);
 
-       TBBox box;
+		if (FALSE == (hr = pFontManager->LoadString2( L"xxxxx" , 0, 0)))
+			return std::pair<float, float>(7,8);
+
+		TBBox box;
 		try
 		{
            box = pFontManager->MeasureString();
@@ -74,7 +77,7 @@ std::pair<float, float> GetMaxDigitSizePixelsImpl(const std::wstring & fontName,
         if (box.fMaxY - box.fMinY < minHeight)  minHeight = box.fMaxY - box.fMinY;
     }
 
-    return std::pair<float, float>((minWidth + 2*maxWidth)/3.f,maxHeight);
+    return std::pair<float, float>(maxWidth / 5.f, maxHeight);
 }
 
 
@@ -104,7 +107,7 @@ std::pair<float, float> GetMaxDigitSizePixels(const std::wstring & fontName, dou
     {
         // TODO: default value!
     }    
-	return std::pair<float, float>(7,8);
+	return std::pair<float, float>(7, 8);
 }
 
 }

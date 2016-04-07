@@ -10,7 +10,7 @@
 #include "../Crypt/Decryptor.h"
 
 class XlsConverter;
-
+class CApplicationFonts;
 
 namespace XLS
 {;
@@ -33,13 +33,17 @@ class GlobalWorkbookInfo
 {
 public:
 	GlobalWorkbookInfo(const unsigned short code_page, XlsConverter * xls_converter_);
+	~GlobalWorkbookInfo();
 
 	const size_t	RegisterBorderId	(const BorderInfo& border);
 	const size_t	RegisterFillId		(const FillInfo& fill);	
 	void			RegisterFontColorId	(int id, const FillInfoExt & font_color);
 	void			RegisterPaletteColor(int id, const std::wstring & argb);
+    
+	void			GetDigitFontSizePixels();
 
-	const unsigned int	GenerateAXESId();
+	unsigned int	GenerateAXESId();
+
 
 	unsigned short								CodePage;
 	CRYPT::DecryptorPtr							decryptor;
@@ -77,12 +81,15 @@ public:
 		std::map<int, double>					customRowsHeight;
 		
 		double									defaultColumnWidth;
-		double									defaultRowHeight;
-		
+		double									defaultRowHeight;		
 	};
 	std::vector<_sheet_size_info>				sheet_size_info;
 
-	int Version;
+	std::pair<float, float>						defaultDigitFontSize;
+    CApplicationFonts							*applicationFonts;
+	std::wstring								fontsDirectory;
+
+	int											Version;
 
 	int											cmt_rules;
 	int											cellXfs_count;

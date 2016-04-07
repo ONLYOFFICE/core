@@ -5713,6 +5713,18 @@ public:
 		{
 			GetRunStringWriter().WriteString(CString(_T("<w:tab/>")));
 		}
+		else if (c_oSerRunType::cr == type)
+		{
+			GetRunStringWriter().WriteString(CString(_T("<w:cr/>")));
+		}
+		else if (c_oSerRunType::nonBreakHyphen == type)
+		{
+			GetRunStringWriter().WriteString(CString(_T("<w:nonBreakHyphen/>")));
+		}
+		else if (c_oSerRunType::softHyphen == type)
+		{
+			GetRunStringWriter().WriteString(CString(_T("<w:softHyphen/>")));
+		}
 		else if (c_oSerRunType::pagenum == type)
 		{
 			GetRunStringWriter().WriteString(CString(_T("<w:fldChar w:fldCharType=\"begin\"/></w:r><w:r>")));

@@ -26,6 +26,7 @@ XPSFILE := $(LIBDIR)/libXpsFile.so
 HTMLFILE := $(LIBDIR)/libHtmlFile.so
 UNICODECONVERTER := $(LIBDIR)/libUnicodeConverter.so
 ASCDOCUMENTSCORE := $(LIBDIR)/libascdocumentscore.so
+LIBXML := $(LIBDIR)/liblibxml.a
 
 TARGETS += $(ALLFONTSGEN)
 TARGETS += $(X2T)
@@ -51,6 +52,7 @@ TARGETS += $(XPSFILE)
 TARGETS += $(HTMLFILE)
 TARGETS += $(UNICODECONVERTER)
 TARGETS += $(ASCDOCUMENTSCORE)
+TARGETS += $(LIBXML)
 
 X2T_PRO := $(abspath X2tConverter/build/Qt/X2tSLN.pro)
 HTMLFILEINTERNAL_PRO := $(abspath HtmlFile/Internal/Internal.pro)
@@ -76,6 +78,7 @@ XPSFILE_PRO := $(abspath XpsFile/XpsFile.pro)
 HTMLFILE_PRO := $(abspath HtmlFile/HtmlFile.pro)
 UNICODECONVERTER_PRO := $(abspath UnicodeConverter/UnicodeConverter.pro)
 ASCDOCUMENTSCORE_PRO := $(abspath DesktopEditor/ChromiumBasedEditors2/lib/AscDocumentsCore_linux.pro)
+LIBXML_PRO := $(abspath DesktopEditor/xml/build/qt/libxml2.pro)
 
 # PROS += $(basename $(X2T_PRO)).build
 # PROS += ALLFONTSGEN_PRO
@@ -124,6 +127,7 @@ QT_PROJ += XPSFILE
 QT_PROJ += HTMLFILE
 QT_PROJ += UNICODECONVERTER
 QT_PROJ += ASCDOCUMENTSCORE
+QT_PROJ += LIBXML
 
 # X2T_DEP += $(XLSFORMATLIB)
 # X2T_DEP += $(ODFFILEWRITERLIB)
@@ -147,7 +151,7 @@ QT_PROJ += ASCDOCUMENTSCORE
 # X2T_DEP += $(UNICODECONVERTER)
 
 HTMLFILEINTERNAL_DEP += $(GRAPHICS)
-HTMLFILEINTERNAL_DEP += $(OFFICEUTILS)
+HTMLFILEINTERNAL_DEP += $(LIBXML)
 
 XPSFILE_DEP += $(PDFWRITER)
 

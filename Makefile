@@ -1,4 +1,4 @@
-JOBS_COUNT := $(grep processor /proc/cpuinfo | wc -l)
+JOBS_COUNT := $(shell grep -c ^processor /proc/cpuinfo)
 
 LIBDIR := build/lib/linux_64
 

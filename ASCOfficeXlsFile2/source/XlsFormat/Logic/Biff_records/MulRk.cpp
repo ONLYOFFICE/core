@@ -31,8 +31,6 @@ void MulRk::readFields(CFRecord& record)
 {
 	global_info_ = record.getGlobalWorkbookInfo();
 
-	Col colFirst;
-	Col colLast;
 // A little hack to extract colLast before it is used
 	record.skipNunBytes(record.getDataSize() - sizeof(unsigned short));
 	record >> colLast;
@@ -53,6 +51,11 @@ void MulRk::readFields(CFRecord& record)
 const int MulRk::GetRow() const
 {
 	return static_cast<unsigned short>(rw);
+}
+
+const int MulRk::GetColumn() const
+{
+	return static_cast<unsigned short>(colFirst);
 }
 
 int MulRk::serialize(std::wostream & stream)

@@ -86,7 +86,7 @@ typedef struct tagBITMAPCOREHEADER {
 } BITMAPCOREHEADER;
 #endif
 
-XlsConverter::XlsConverter(const std::wstring & xls_file, const std::wstring & _xlsx_path, const ProgressCallback* CallBack) 
+XlsConverter::XlsConverter(const std::wstring & xls_file, const std::wstring & _xlsx_path, const std::wstring & fontsPath, const ProgressCallback* CallBack) 
 {
 	xlsx_path		= _xlsx_path;
 	output_document = NULL;
@@ -138,7 +138,7 @@ XlsConverter::XlsConverter(const std::wstring & xls_file, const std::wstring & _
 		}
 
 		xls_global_info = boost::shared_ptr<XLS::GlobalWorkbookInfo>(new XLS::GlobalWorkbookInfo(workbook_code_page, this));
-
+		xls_global_info->fontsDirectory = fontsPath;
 
 		XLS::CFStreamCacheReader stream_reader(cfile.getWorkbookStream(), xls_global_info);
 

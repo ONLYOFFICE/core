@@ -88,9 +88,9 @@ int Row::serialize(std::wostream &stream)
 			
 			if (ixfe_val && xf_set)
 			{
-				int xf = ixfe_val > global_info_->cellStyleXfs_count ? ixfe_val - global_info_->cellStyleXfs_count : ixfe_val;
+				int xf = ixfe_val >= global_info_->cellStyleXfs_count ? ixfe_val - global_info_->cellStyleXfs_count : ixfe_val;
 				
-				if (xf < global_info_->cellXfs_count)
+				if (xf < global_info_->cellXfs_count && xf >= 0)
 				{
 					CP_XML_ATTR(L"s", xf);
 					CP_XML_ATTR(L"customFormat", true);

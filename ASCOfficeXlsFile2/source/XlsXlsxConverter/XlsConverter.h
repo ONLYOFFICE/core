@@ -59,7 +59,7 @@ namespace ODRAW
 class XlsConverter
 {
 public:
-	XlsConverter(const std::wstring & xls_file, const std::wstring & xlsx_path, const ProgressCallback* ffCallBack);
+	XlsConverter(const std::wstring & xls_file, const std::wstring & xlsx_path, const std::wstring & fontsPath, const ProgressCallback* ffCallBack);
 	~XlsConverter() ;
 
     oox::xlsx_conversion_context	* xlsx_context;

@@ -5,9 +5,9 @@
 #include "../../../Common/OfficeFileErrorDescription.h"
 
 
-long ConvertXls2Xlsx(const std::wstring & srcFile, const std::wstring & dstPath, const ProgressCallback* pCallBack)
+long ConvertXls2Xlsx(const std::wstring & srcFile, const std::wstring & dstPath, const std::wstring & fontsPath, const ProgressCallback* pCallBack)
 {
-	XlsConverter converter(srcFile, dstPath,  pCallBack);
+	XlsConverter converter(srcFile, dstPath, fontsPath, pCallBack);
 
 	if (converter.isError())
 	{

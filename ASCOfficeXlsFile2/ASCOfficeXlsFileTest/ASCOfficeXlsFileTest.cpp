@@ -26,7 +26,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	
 	std::wstring dstTempPath	= FileSystem::Directory::CreateDirectoryWithUniqueName(outputDir);
 
-	hr = ConvertXls2Xlsx(srcFileName, dstTempPath, NULL);
+	hr = ConvertXls2Xlsx(srcFileName, dstTempPath, L"C:\\Windows\\Fonts", NULL);
 
 	if (hr != S_OK)  return hr;
    

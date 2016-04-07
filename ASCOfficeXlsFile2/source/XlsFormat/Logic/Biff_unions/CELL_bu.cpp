@@ -52,43 +52,43 @@ const bool CELL::loadContent(BinProcessor& proc)
 	}
 	else if(proc.optional(blank))
 	{
-		RowNumber = blank.getLocation().getRow();
-		ColumnNumber	= formula_union.getLocation().getColumn();
+		RowNumber		= blank.getLocation().getRow();
+		ColumnNumber	= blank.getLocation().getColumn();
 	}
 	else if(proc.optional(mulblank))
 	{
 		RowNumber		= mulblank.GetRow();
-		ColumnNumber	= formula_union.getLocation().getColumn();
+		ColumnNumber	= mulblank.GetColumn();
 	}
 	else if(proc.optional(rk))
 	{
 		RowNumber		= rk.getLocation().getRow();
-		ColumnNumber	= formula_union.getLocation().getColumn();
+		ColumnNumber	= rk.getLocation().getColumn();
 	}
 	else if(proc.optional(mulrk))
 	{
 		RowNumber		= mulrk.GetRow();
-		ColumnNumber	= formula_union.getLocation().getColumn();
+		ColumnNumber	= mulrk.GetColumn();
 	}
 	else if(proc.optional(boolerr))
 	{
 		RowNumber		= boolerr.getLocation().getRow();
-		ColumnNumber	= formula_union.getLocation().getColumn();
+		ColumnNumber	= boolerr.getLocation().getColumn();
 	}
 	else if(proc.optional(number))
 	{
 		RowNumber		= number.getLocation().getRow();
-		ColumnNumber	= formula_union.getLocation().getColumn();
+		ColumnNumber	= number.getLocation().getColumn();
 	}
 	else if(proc.optional(label))//
 	{
 		RowNumber		= label.cell.getLocation().getRow();
-		ColumnNumber	= formula_union.getLocation().getColumn();
+		ColumnNumber	= label.cell.getLocation().getColumn();
 	}
 	else if(proc.optional(labelsst))
 	{
 		RowNumber		= labelsst.getLocation().getRow();
-		ColumnNumber	= formula_union.getLocation().getColumn();
+		ColumnNumber	= labelsst.getLocation().getColumn();
 	}
 	else
 	{

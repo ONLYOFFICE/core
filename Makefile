@@ -1,3 +1,5 @@
+JOBS_COUNT := $(grep processor /proc/cpuinfo | wc -l)
+
 LIBDIR := build/lib/linux_64
 
 ALLFONTSGEN := build/bin/AllFontsGen/linux_64
@@ -176,7 +178,7 @@ define build_proj_tmpl
 PROS += $$(basename $$(value $(1)_PRO)).build
 $(1)_MAKE := $$(basename $$(value $(1)_PRO)).build/Makefile
 $$(value $(1)): $$(value $(1)_MAKE)
-	cd $$(dir $$(value $(1)_MAKE)) && make -j $$(grep processor /proc/cpuinfo | wc -l);
+	cd $$(dir $$(value $(1)_MAKE)) && make -j $(JOBS_COUNT);
 endef
 
 .PHONY : all bin lib clean

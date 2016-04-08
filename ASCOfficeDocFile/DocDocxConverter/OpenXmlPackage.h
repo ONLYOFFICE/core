@@ -7,9 +7,6 @@
 
 #include "../../Common/DocxFormat/Source/XML/xmlutils.h"
 
-//#include <fcntl.h>
-//#include <sys/stat.h>
-
 namespace DocFileFormat
 {
 	struct Relationship
@@ -69,27 +66,25 @@ namespace DocFileFormat
 
 		}
 
-		std::wstring		ext;
+		std::wstring				ext;
 		std::vector<unsigned char>	data;
-		Global::BlipType	blipType;	
+		Global::BlipType			blipType;	
 	};
 
 	struct OleObjectFileStructure
 	{
-		wstring ext;
-		wstring objectID;
-        wstring clsid;
-        //CLSID clsid;
+		std::wstring ext;
+		std::wstring objectID;
+        std::wstring clsid;
 
-		OleObjectFileStructure()
-		{
-            //this->clsid = GUID_NULL;
-		}
+		std::string	data;
+
+		OleObjectFileStructure(){}
+
 
         OleObjectFileStructure( const wstring& _ext, const wstring& _objectID, const wstring&/*REFCLSID*/ _clsid ):
-		ext(_ext), objectID(_objectID), clsid(_clsid)
-		{
-		} 
+		ext(_ext), objectID(_objectID), clsid(_clsid){}
+
 	};
 
 	class OpenXmlPackage
@@ -136,7 +131,9 @@ namespace DocFileFormat
 		void WritePackage();
 		void SaveToFile( const wstring& outputDir, const wstring& fileName, const wstring& XMLContent );
 		void SaveToFile( const wstring& outputDir, const wstring& fileName, const void* buf, unsigned int size );
-		HRESULT SaveOLEObject( const wstring& fileName, const OleObjectFileStructure& oleObjectFileStructure );
+
+		HRESULT SaveOLEObject		( const wstring& fileName, const OleObjectFileStructure& oleObjectFileStructure );
+		HRESULT SaveEmbeddedObject	( const std::wstring& fileName, const std::string& data );
 
 		int RegisterDocument();
 		int RegisterFontTable();

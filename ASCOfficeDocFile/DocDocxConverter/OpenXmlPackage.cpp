@@ -101,12 +101,16 @@ namespace DocFileFormat
 
 		}
 	}
-
+	HRESULT OpenXmlPackage::SaveEmbeddedObject( const std::wstring& fileName, const std::string& data )
+	{
+		NSFile::CFileBinary file;
+		file.CreateFileW(fileName);
+		file.WriteFile((BYTE*)data.c_str(), data.size());
+		file.CloseFile();
+		return S_OK;
+	}
 	HRESULT OpenXmlPackage::SaveOLEObject( const std::wstring& fileName, const OleObjectFileStructure& oleObjectFileStructure )
 	{
-		//std::ofstream fileOLE;
-		//fileOLE.open(fileName.c_str(), std::ios::binary|std::ios::out );
-
 		POLE::Storage *storageOut = new POLE::Storage(fileName.c_str());
 		
 		if (storageOut == NULL || docFile == NULL) return S_FALSE;
@@ -118,13 +122,11 @@ namespace DocFileFormat
 
 		POLE::Storage *storageInp = docFile->GetStorage()->GetStorage();
 
-		//if (docFile->GetStorage()->GetStorage()->enterDirectory("ObjectPool"))
 		{
 			std::string id(oleObjectFileStructure.objectID.begin(),oleObjectFileStructure.objectID.end());
 
 			POLE::Stream* oleStorage = new POLE::Stream(storageInp, id);
-				//docFile->GetStorage()->GetStorage()->stream(id);
-			//if(docFile->GetStorage()->GetStorage()->enterDirectory(id))
+
 			if (oleStorage)
 			{
 				std::string path = "ObjectPool/" + id;
@@ -153,42 +155,6 @@ namespace DocFileFormat
 					delete stream_inp;
 					delete stream_out;
 				}
-
-				//std::streamsize sz = oleStorage->size();
-				//unsigned char *b = new unsigned char[sz];
-
-				//if (b)
-				//{
-				//	sz = oleStorage->read(b,sz);
-				//	
-				//	ppstg->write(b, sz);
-				//std::vector<const POLE::DirEntry*> entries;
-			//	docFile->GetStorage()->GetStorage()->listEntries(entries);
-
-			//	for (long i=0; i <entries.size(); i++)
-			//	{
-			//		oleStorage = docFile->GetStorage()->GetStorage()->stream(entries[i]->name());
-			//		
-			//		std::streamsize sz = oleStorage->size();
-			//		unsigned char *b = new unsigned char[sz];
-			//		if (b)
-			//		{
-			//			POLE::Stream *new_stream = storageOut->add_stream(entries[i]->name(), sz);
-
-			//			//bool res = new_stream->resize(sz);
-
-			//			sz = oleStorage->read(b,sz);
-
-			//			//fileOLE.write((const char*) b, sz  );
-			//			//storageOut->write(b,sz);
-			//			sz = new_stream->write(b,sz);
-			//			delete b;
-			//		}
-			//	}
-			//	docFile->GetStorage()->GetStorage()->leaveDirectory();
-			//}
-
-			//docFile->GetStorage()->GetStorage()->leaveDirectory();
 			}
 		}
 

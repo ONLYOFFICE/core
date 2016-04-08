@@ -36,14 +36,20 @@ namespace DocFileFormat
 		static std::wstring GetTargetExt (Global::BlipType nType);
 		static std::wstring GetContentType (Global::BlipType nType);
 
+		bool							m_isEquation;
+		bool							m_isEmbedded;
+		std::string						m_embeddedData;
 	private:
 		
 		ConversionContext*				m_ctx;
 		IMapping*						m_caller;
 		int								m_nImageId;
 		std::wstring					m_ShapeId;
-		bool							m_olePreview;
+		
+		bool							m_isOlePreview;
+		
 		bool							m_isBulletPicture;
 		XMLTools::XMLElement<wchar_t>*	m_imageData;
+		
 	};
 }

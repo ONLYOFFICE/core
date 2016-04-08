@@ -9,7 +9,8 @@ namespace DocFileFormat
 	class OleObjectMapping: public AbstractOpenXmlMapping, public IMapping
 	{
 	public:
-		OleObjectMapping(XmlUtils::CXmlWriter* writer, ConversionContext* context, PictureDescriptor* pict, IMapping* caller, const wstring& shapeId) : AbstractOpenXmlMapping(writer), m_context(NULL), _pict(NULL), _caller(NULL), _shapeId(shapeId)
+		OleObjectMapping(XmlUtils::CXmlWriter* writer, ConversionContext* context, PictureDescriptor* pict, IMapping* caller, const wstring& shapeId) 
+			: AbstractOpenXmlMapping(writer), m_context(NULL), _pict(NULL), _caller(NULL), _shapeId(shapeId)
 		{
 			m_context	=	context;
 			_pict		=	pict;
@@ -22,6 +23,13 @@ namespace DocFileFormat
 
 			if ( ole != NULL )
 			{
+				if (ole->isEquation || ole->isEmbedded)
+				{
+					if (ole->isEquation)	ole->ClipboardFormat	= L"Equation";
+					if (ole->isEmbedded)	ole->ClipboardFormat	= L"MSWordDocx";
+
+					ole->Program			= L"Word.Document";
+				}
 				m_pXmlWriter->WriteNodeBegin( _T( "o:OLEObject" ), TRUE );
 
 				//type
@@ -48,7 +56,7 @@ namespace DocFileFormat
 				m_pXmlWriter->WriteAttribute( _T( "ProgID" ), ole->Program.c_str() );
 
 				//ShapeId
-				m_pXmlWriter->WriteAttribute( _T( "ShapeID" ), this->_shapeId.c_str() );
+				m_pXmlWriter->WriteAttribute( _T( "ShapeID" ), _shapeId.c_str() );
 
 				//DrawAspect
 				m_pXmlWriter->WriteAttribute( _T( "DrawAspect" ), _T( "Content" ) );
@@ -78,7 +86,14 @@ namespace DocFileFormat
 			{
 				objectExt = _T( ".ppt" );
 			}
-
+			else if ( objectType == _T( "MSWordDocx" ) )//???
+			{
+				objectExt = _T( ".docx" );
+			}
+			else if ( objectType == _T( "Equation" ) ) 
+			{
+				objectExt = _T( ".xml" );
+			}
 			return objectExt;
 		}
 
@@ -112,25 +127,28 @@ namespace DocFileFormat
 				//!!!TODO: There is issue with some Office OLE Objects. Word can't open *.xls object (Excel.Chart) with set CLSID and
 				//some Power Point Presentations, and Word Documents. Open Office CAN start this objects!!!
 
-                //CLSID clsid = GUID_NULL;
                 wstring clsid;
-
 				wstring exelChart = _T( "Excel.Chart" );
 
 				if ( search( ole->Program.begin(), ole->Program.end(), exelChart.begin(), exelChart.end() ) == ole->Program.end() )
-				{
+				{//??
 					clsid = ole->ClassId;
 				}
+				OleObjectFileStructure object_descr(OleObjectMapping::GetTargetExt( ole->ClipboardFormat ), ole->ObjectId, clsid); 
 
-				m_context->_docx->OleObjectsList.push_back( OleObjectFileStructure( OleObjectMapping::GetTargetExt( ole->ClipboardFormat ), ole->ObjectId, clsid ) );
+				if (ole->isEquation || ole->isEmbedded)
+				{
+					object_descr.data = ole->emeddedData;
+				}
+				m_context->_docx->OleObjectsList.push_back(object_descr);
 			}
 		}
 
 	private:  
 		ConversionContext*	m_context;
-		PictureDescriptor* _pict;
-		wstring _shapeId;
 
-		IMapping* _caller;
+		PictureDescriptor*	_pict;
+		std::wstring		_shapeId;
+		IMapping*			_caller;
 	};
 }

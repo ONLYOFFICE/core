@@ -20,22 +20,28 @@ namespace DocFileFormat
         OnCall = 3
       };
 
-      wstring ObjectId;
-      wstring ClassId;
-    //  CLSID ClassId;
-      /// The the value is true, the object is a linked object
-      bool fLinked;
-      /// Display name of the linked object or embedded object.
-      wstring UserType;
-      wstring ClipboardFormat;
-      wstring Link;
-      wstring Program;
-      LinkUpdateOption updateMode;
-	  wstring UpdateMode;
+	wstring ObjectId;
+	wstring ClassId;
+	//  CLSID ClassId;
+	/// The the value is true, the object is a linked object
+	bool fLinked;
+	/// Display name of the linked object or embedded object.
+	wstring UserType;
+	wstring ClipboardFormat;
+	wstring Link;
+	wstring Program;
+	LinkUpdateOption updateMode;
+	wstring UpdateMode;
 
-	  OleObject( const CharacterPropertyExceptions* chpx, StructuredStorageReader* docStorage ):
-	  fLinked(false), updateMode(NoLink)
-      {
+	bool			isEquation;
+	bool			isEmbedded;
+	std::string	emeddedData;
+
+	OleObject( const CharacterPropertyExceptions* chpx, StructuredStorageReader* docStorage )
+		: fLinked(false), updateMode(NoLink)
+	{
+		isEquation = isEmbedded = false;
+		
 		oleStorage = docStorage->GetStorage();
 		  
 		if ( ( chpx != NULL ) && ( docStorage != NULL ) )
@@ -177,9 +183,9 @@ namespace DocFileFormat
             //skip the CompObjHeader
             reader.ReadBytes( 28, false );
 
-			this->UserType = reader.ReadLengthPrefixedAnsiString();
-			this->ClipboardFormat = reader.ReadLengthPrefixedAnsiString();
-			this->Program = reader.ReadLengthPrefixedAnsiString();
+			this->UserType			= reader.ReadLengthPrefixedAnsiString();
+			this->ClipboardFormat	= reader.ReadLengthPrefixedAnsiString();
+			this->Program			= reader.ReadLengthPrefixedAnsiString();
 
 			delete pCompStream;
 		  }

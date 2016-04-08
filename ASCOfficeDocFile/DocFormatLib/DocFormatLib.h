@@ -16,29 +16,10 @@ class COfficeDocFile
 public:
 	COfficeDocFile()
 	{
-		m_strTempDirectory = L"";
-
 	}
 
 	virtual ~COfficeDocFile()
 	{
-	}
-
-private:
-
-    std::wstring m_strTempDirectory;
-	
-public:
-
-    HRESULT put_TempDirectory(std::wstring sDir)
-	{
-		m_strTempDirectory = sDir;
-		return S_OK;
-	}
-	
-    std::wstring get_TempDirectory()
-	{
-		return m_strTempDirectory;
 	}
 
     HRESULT LoadFromFile(std::wstring sSrcFileName, std::wstring sDstFileName, ProgressCallback *ffCallBack = NULL);

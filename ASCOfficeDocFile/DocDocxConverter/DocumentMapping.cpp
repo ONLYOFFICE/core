@@ -506,6 +506,7 @@ namespace DocFileFormat
 					std::wstring word		( _T( " Word" ) );
 					std::wstring equation	( _T( " Equation" ) ) ;
 					std::wstring mergeformat( _T( " MERGEFORMAT" ) );
+					std::wstring quote		( _T( " QUOTE" ) );
 
 					if ( search( f.begin(), f.end(), form.begin(), form.end() ) != f.end() )
 					{
@@ -530,9 +531,15 @@ namespace DocFileFormat
 
 						this->_fldCharCounter++;
 					}
-					else if ((	search(f.begin(), f.end(), mergeformat.begin(), mergeformat.end()) != f.end())	||
-							((	search(f.begin(), f.end(), excel.begin(), excel.end()) != f.end()				||
-								search(f.begin(), f.end(), word.begin(), word.end()) != f.end()) 
+					else if (search( f.begin(),	f.end(), quote.begin(), quote.end()) != f.end())
+					{
+						//todooo сохранить docx с формулой мс офис в doc. 
+						//todooo формула там где то храниться !! найти
+						this->_skipRuns = 3;
+					}
+					else if ((	search( f.begin(), f.end(), mergeformat.begin(),	mergeformat.end()) != f.end())	||
+							((	search( f.begin(), f.end(), excel.begin(),			excel.end()) != f.end()			||
+								search( f.begin(), f.end(), word.begin(),			word.end()) != f.end()) 
 							&& 
 							(	search(f.begin(), f.end(), embed.begin(), embed.end()) != f.end() || 
 								search( f.begin(), f.end(), link.begin(), link.end() ) != f.end())	))
@@ -549,8 +556,8 @@ namespace DocFileFormat
 
 						this->_fldCharCounter++;
 					}
-					else if (	search(f.begin(), f.end(), embed.begin(), embed.end()) != f.end()  
-							||	search( f.begin(), f.end(), link.begin(), link.end() ) != f.end())						
+					else if (	search( f.begin(),	f.end(), embed.begin(), embed.end()) != f.end()  
+							||	search( f.begin(),	f.end(), link.begin(),	link.end() ) != f.end())						
 					{
 						int cpPic		=	searchNextTextMark(m_document->Text, cpFieldStart, TextMark::Picture);
 						int cpFieldSep	=	searchNextTextMark(m_document->Text, cpFieldStart, TextMark::FieldSeparator);

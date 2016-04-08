@@ -6,10 +6,6 @@
 
 #include "../../../OfficeUtils/src/OfficeUtils.h"
 
-#include <boost/algorithm/string/case_conv.hpp>
-#include <boost/lexical_cast.hpp>
-
-#include "../../../Common/DocxFormat/Source/Base/Base.h"
 #include "../../../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"
 
 #include "../../src/ConvertOO2OOX.h"

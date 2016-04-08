@@ -24,11 +24,14 @@ namespace DocFileFormat
 	VMLPictureMapping::VMLPictureMapping(ConversionContext* ctx, XmlUtils::CXmlWriter* writer, bool olePreview, IMapping* caller, bool isBulletPicture) : PropertiesMapping(writer)
 	{
 		m_ctx				=	ctx;
-		m_olePreview		=	olePreview;
+		m_isOlePreview		=	olePreview;
 		m_imageData			=	NULL;
 		m_nImageId			=	0;
 		m_caller			=	caller;
 		m_isBulletPicture	=	isBulletPicture;
+		
+		m_isEquation		=	false;
+		m_isEmbedded		=	false;
 
 		m_imageData			=	new XMLTools::XMLElement<wchar_t>( _T( "v:imagedata" ) );
 
@@ -55,6 +58,7 @@ namespace DocFileFormat
 			//v:shapetype
 			PictureFrameType type;
 			type.SetType(shape->Instance);
+			
 			VMLShapeTypeMapping* vmlShapeTypeMapping = new VMLShapeTypeMapping( m_pXmlWriter, m_isBulletPicture );
 			type.Convert( vmlShapeTypeMapping );
 			RELEASEOBJECT( vmlShapeTypeMapping );
@@ -80,7 +84,7 @@ namespace DocFileFormat
 
 			m_pXmlWriter->WriteAttribute( _T( "id" ), m_ShapeId.c_str() );
 
-			if (m_olePreview)
+			if (m_isOlePreview)
 			{
 				m_pXmlWriter->WriteAttribute( _T( "o:ole" ), _T( "" ) );
 			}
@@ -90,38 +94,43 @@ namespace DocFileFormat
 			{
 				switch ( iter->pid )
 				{
-					//BORDERS
-
+				case wzEquationXML:
+					{
+						m_isEquation = true;
+						m_embeddedData = std::string((char*)iter->opComplex, iter->op);
+					}break;
+				case metroBlob:
+					{
+						//встроенная неведомая хуйня
+						m_isEmbedded = true;
+						m_embeddedData = std::string((char*)iter->opComplex, iter->op);
+					}break;
+//BORDERS
 				case borderBottomColor:
 					{
 						RGBColor bottomColor( (int)iter->op, RedFirst );
 						m_pXmlWriter->WriteAttribute( _T( "o:borderbottomcolor" ), ( wstring( _T( "#" ) ) + bottomColor.SixDigitHexCode ).c_str() );
 					}
 					break;
-
 				case borderLeftColor:
 					{  
 						RGBColor leftColor( (int)iter->op, RedFirst );
 						m_pXmlWriter->WriteAttribute( _T( "o:borderleftcolor" ), ( wstring( _T( "#" ) ) + leftColor.SixDigitHexCode ).c_str() );
 					}  
 					break;
-
 				case borderRightColor:
 					{  
 						RGBColor rightColor( (int)iter->op, RedFirst );
 						m_pXmlWriter->WriteAttribute( _T( "o:borderrightcolor" ), ( wstring( _T( "#" ) ) + rightColor.SixDigitHexCode ).c_str() );
 					}
 					break;
-
 				case borderTopColor:
 					{
 						RGBColor topColor( (int)iter->op, RedFirst );
 						m_pXmlWriter->WriteAttribute( _T( "o:bordertopcolor" ), ( wstring( _T( "#" ) ) + topColor.SixDigitHexCode ).c_str() );
 					}
 					break;
-
-					//CROPPING
-
+//CROPPING
 				case cropFromBottom:
 					{  
 						//cast to signed integer
@@ -129,7 +138,6 @@ namespace DocFileFormat
 						appendValueAttribute(m_imageData, _T( "cropbottom" ), ( FormatUtils::IntToWideString( cropBottom ) + wstring( _T( "f" ) ) ).c_str() );
 					}
 					break;
-
 				case cropFromLeft:
 					{  
 						//cast to signed integer
@@ -137,7 +145,6 @@ namespace DocFileFormat
 						appendValueAttribute(m_imageData, _T( "cropleft" ), ( FormatUtils::IntToWideString( cropLeft ) + wstring( _T( "f" ) ) ).c_str());
 					}
 					break;
-
 				case cropFromRight:
 					{
 						//cast to signed integer
@@ -145,7 +152,6 @@ namespace DocFileFormat
 						appendValueAttribute(m_imageData, _T( "cropright" ), ( FormatUtils::IntToWideString( cropRight ) + wstring( _T( "f" ) ) ).c_str());
 					}
 					break;
-
 				case cropFromTop:
 					{
 						//cast to signed integer

@@ -364,7 +364,14 @@ namespace DocFileFormat
 
 		return AddPart( mapping, _T( "word" ), fileName, OleObjectMapping::GetContentType( objectType ), OpenXmlRelationshipTypes::OleObject );
 	}
+	int OpenXmlPackage::RegisterPackage(const IMapping* mapping, const std::wstring& objectType)
+	{
+		std::wstring fileName = ( std::wstring( _T( "embeddings/oleObject" ) ) + FormatUtils::IntToWideString( ++_oleCounter ) + OleObjectMapping::GetTargetExt(objectType));
 
+		DocumentContentTypesFile._defaultTypes.insert( make_pair( OleObjectMapping::GetTargetExt( objectType ).erase( 0, 1 ), OleObjectMapping::GetContentType(objectType)));
+
+		return AddPart( mapping, _T( "word" ), fileName, OleObjectMapping::GetContentType( objectType ), OpenXmlRelationshipTypes::Package);
+	}
 	int OpenXmlPackage::RegisterExternalOLEObject(const IMapping* mapping, const std::wstring& objectType, const std::wstring& uri)
 	{
 		std::wstring fullUri	=	std::wstring(_T("file:///")) + uri;
@@ -377,8 +384,12 @@ namespace DocFileFormat
 
 	int OpenXmlPackage::AddPart( const std::wstring& packageDir, const std::wstring& fileName, const std::wstring& contentType, const std::wstring& relationshipType, const std::wstring& targetMode )
 	{
-		if ( ( contentType != _T( "" ) ) && ( contentType != OpenXmlContentTypes::OleObject ) && 
-			( contentType != OpenXmlContentTypes::MSExcel ) && ( contentType != OpenXmlContentTypes::MSWord ) &&
+		if (( contentType != _T( "" ) ) && 
+			( contentType != OpenXmlContentTypes::Xml )				&&
+			( contentType != OpenXmlContentTypes::MSWordDocx )		&& 
+			( contentType != OpenXmlContentTypes::OleObject )		&& 
+			( contentType != OpenXmlContentTypes::MSExcel )			&& 
+			( contentType != OpenXmlContentTypes::MSWord )			&&
 			( contentType != OpenXmlContentTypes::MSPowerpoint ) )
 		{
 			std::wstring  partOverride;

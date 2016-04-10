@@ -27,6 +27,8 @@ namespace OpenXmlContentTypes
 	static const TCHAR* OleObject				=	_T("application/vnd.openxmlformats-officedocument.oleObject");
 	static const TCHAR* Vml						=	_T("application/vnd.openxmlformats-officedocument.vmlDrawing");
 	static const TCHAR* Drawing					=	_T("application/vnd.openxmlformats-officedocument.drawing+xml");
+	
+	static const TCHAR* MSWordDocx				=	_T("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
 
 	static const TCHAR* MSExcel					=	_T("application/vnd.ms-excel");
 	static const TCHAR* MSWord					=	_T("application/msword");
@@ -124,6 +126,7 @@ namespace OpenXmlRelationshipTypes
 	static const TCHAR* Image					=	_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/image");
 	static const TCHAR* OleObject				=	_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject");
 	static const TCHAR* GlossaryDocument		=	_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/glossaryDocument");
+	static const TCHAR* Package					=	_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/package");
 }
 
 namespace MicrosoftWordRelationshipTypes

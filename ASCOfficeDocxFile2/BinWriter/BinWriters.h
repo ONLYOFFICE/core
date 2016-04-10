@@ -4975,18 +4975,37 @@ namespace BinDocxRW
 					}
 				case OOX::et_w_object:
 					{
-						int nCurPos = m_oBcw.WriteItemStart(c_oSerRunType::object);						
-						//write Picture
-
-						CString* pXml = NULL;
-
 						OOX::Logic::CObject* pObject = static_cast<OOX::Logic::CObject*>(item);
-						pXml = pObject->m_sXml.GetPointer();
+						
+						CString* pXml = pObject ? pObject->m_sXml.GetPointer() : NULL;
+						
+						CString sProgID;
+						if ((pObject) && (pObject->m_oOleObject.IsInit()))
+							sProgID = pObject->m_oOleObject->m_sProgId.get().GetString();
+						
+						int nPosObject = m_oBcw.WriteItemStart(c_oSerRunType::object);
 
-						//write equation
-						if (pObject->m_oOleObject.IsInit())
+						if ( _T("Word.Document") == sProgID)
 						{
-							CString sProgID = pObject->m_oOleObject->m_sProgId.get().GetString();
+							int nPosEmbedded = m_oBcw.WriteItemStart(c_oSerImageType2::Embedded);
+
+							OOX::Rels::CRelationShip* oRels = NULL;
+							smart_ptr<OOX::File> pFile = m_oParamsDocumentWriter.m_pRels->Find( OOX::RId(pObject->m_oOleObject->m_oId.get().GetValue()));
+
+							CString sLink;
+							if (pFile.IsInit() && OOX::FileTypes::OleObject == pFile->type())
+							{
+								OOX::HyperLink* pHyperlinkFile = static_cast<OOX::HyperLink*>(pFile.operator ->());
+								sLink = pHyperlinkFile->Uri().GetPath();
+							}
+							OOX::CPath path(sLink);
+							OOX::CDocument poDocumentEmbedded(path, path);
+							WriteDocumentContent(poDocumentEmbedded.m_arrItems);
+							m_oBcw.WriteItemEnd(nPosEmbedded);
+						}
+						else
+						{
+							//write equation
 							if ( _T("Equation.3") == sProgID)
 							{
 								OOX::Rels::CRelationShip* oRels = NULL;
@@ -5005,12 +5024,12 @@ namespace BinDocxRW
 								oReader.Parse();								
 							}
 						}
-
-						int nCurPos1 = m_oBcw.WriteItemStart(c_oSerRunType::pptxDrawing);
+						//write Picture
+						int nPosImageCache = m_oBcw.WriteItemStart(c_oSerRunType::pptxDrawing);
 						WriteDrawing(pXml, NULL, NULL);
-						m_oBcw.WriteItemEnd(nCurPos1);
-						
-						m_oBcw.WriteItemEnd(nCurPos);
+						m_oBcw.WriteItemEnd(nPosImageCache);
+
+						m_oBcw.WriteItemEnd(nPosObject);
 						break;
 					}
 				}

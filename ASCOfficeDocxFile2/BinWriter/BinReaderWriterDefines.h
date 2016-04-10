@@ -498,7 +498,8 @@ extern int g_nCurFormatVersion;
 		Chart2 = 25,
 		CachedImage = 26,
 		SizeRelH = 27,
-		SizeRelV = 28
+		SizeRelV = 28,
+		Embedded = 29
 	};}
 	namespace c_oSerEffectExtent{enum c_oSerEffectExtent
 	{

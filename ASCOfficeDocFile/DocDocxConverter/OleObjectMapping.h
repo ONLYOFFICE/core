@@ -35,7 +35,9 @@ namespace DocFileFormat
 				//type
 				if ( ole->fLinked )
 				{
-					int relID = m_context->_docx->RegisterExternalOLEObject(_caller, ole->ClipboardFormat, ole->Link);
+					int relID = -1;
+					
+					m_context->_docx->RegisterExternalOLEObject(_caller, ole->ClipboardFormat, ole->Link);
 
 					m_pXmlWriter->WriteAttribute( _T( "r:id" ), ( wstring( _T( "rId" ) ) + FormatUtils::IntToWideString( relID ) ).c_str() );
 					m_pXmlWriter->WriteAttribute( _T( "Type" ), _T( "Link" ) );
@@ -43,7 +45,11 @@ namespace DocFileFormat
 				}
 				else
 				{
-					int relID = m_context->_docx->RegisterOLEObject(_caller, ole->ClipboardFormat);
+					int relID = -1;
+					if (ole->isEquation || ole->isEmbedded)
+						relID = m_context->_docx->RegisterPackage(_caller, ole->ClipboardFormat);
+					else
+						relID = m_context->_docx->RegisterOLEObject(_caller, ole->ClipboardFormat);
 
 					m_pXmlWriter->WriteAttribute( _T( "r:id" ), ( wstring( _T( "rId" ) ) + FormatUtils::IntToWideString( relID ) ).c_str() );
 					m_pXmlWriter->WriteAttribute( _T( "Type" ), _T( "Embed" ) );
@@ -86,7 +92,7 @@ namespace DocFileFormat
 			{
 				objectExt = _T( ".ppt" );
 			}
-			else if ( objectType == _T( "MSWordDocx" ) )//???
+			else if ( objectType == _T( "MSWordDocx" ) )
 			{
 				objectExt = _T( ".docx" );
 			}
@@ -113,7 +119,14 @@ namespace DocFileFormat
 			{
 				objectContentType = OpenXmlContentTypes::MSPowerpoint;
 			}
-
+			else if ( objectType == _T( "MSWordDocx" ) )
+			{
+				objectContentType = OpenXmlContentTypes::MSWordDocx;
+			}
+			else if ( objectType == _T( "Equation" ) )
+			{
+				objectContentType = OpenXmlContentTypes::Xml;
+			}
 			return objectContentType;
 		}
 

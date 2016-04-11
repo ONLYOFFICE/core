@@ -111,7 +111,11 @@ CString RtfFootnote::RenderToOOX(RenderParameter oRenderParameter)
 		sResult.Append( _T("<w:r>") );
 		CString srPr = m_oCharProp.RenderToOOX( oRenderParameter );
 		if( false == srPr.IsEmpty() )
-            sResult.AppendFormat( _T("<w:rPr>%ls</w:rPr>"), srPr.GetBuffer() );
+		{
+			sResult.Append( _T("<w:rPr>") );
+            sResult += srPr;
+			sResult.Append( _T("/w:rPr>") );
+		}
 		sResult.AppendFormat( _T("<w:endnoteReference  w:id=\"%d\"/>"), nID );
 		sResult.Append( _T("</w:r>") );
 	}
@@ -126,7 +130,11 @@ CString RtfFootnote::RenderToOOX(RenderParameter oRenderParameter)
 		sResult.Append( _T("<w:r>") );
 		CString srPr = m_oCharProp.RenderToOOX( oRenderParameter );
 		if( false == srPr.IsEmpty() )
-            sResult.AppendFormat( _T("<w:rPr>%ls</w:rPr>"), srPr.GetBuffer() );
+		{
+			sResult.Append( _T("<w:rPr>") );
+            sResult += srPr;
+			sResult.Append( _T("/w:rPr>") );
+		}
 		sResult.AppendFormat( _T("<w:footnoteReference w:id=\"%d\"/>"), nID );
 		sResult.Append( _T("</w:r>") );
 	}

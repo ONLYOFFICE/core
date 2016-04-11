@@ -746,57 +746,57 @@ CString RtfSectionProperty::RenderToOOX(RenderParameter oRenderParameter)
 	return sResult;
 }
 CString RtfSectionProperty::SaveFile( TextItemContainerPtr oTarget, RenderParameter oRenderParameter, bool bHeader)
-	{
-		OOXWriter* poOOXWriter		= static_cast<OOXWriter*>	( oRenderParameter.poWriter );
-		RtfDocument* poRtfDocument	= static_cast<RtfDocument*> ( oRenderParameter.poDocument );
+{
+	OOXWriter* poOOXWriter		= static_cast<OOXWriter*>	( oRenderParameter.poWriter );
+	RtfDocument* poRtfDocument	= static_cast<RtfDocument*> ( oRenderParameter.poDocument );
 
-		CString sFilename;
-		if( true == bHeader )
-			sFilename.AppendFormat( _T("header%d.xml"), poRtfDocument->m_oIdGenerator.Generate_HeaderNumber() );
-		else
-			sFilename.AppendFormat( _T("footer%d.xml"), poRtfDocument->m_oIdGenerator.Generate_FooterNumber() );
+	CString sFilename;
+	if( true == bHeader )
+		sFilename.AppendFormat( _T("header%d.xml"), poRtfDocument->m_oIdGenerator.Generate_HeaderNumber() );
+	else
+		sFilename.AppendFormat( _T("footer%d.xml"), poRtfDocument->m_oIdGenerator.Generate_FooterNumber() );
 
-		CString sContent;
-		CString sRootName;
-		if( true == bHeader )
-			sRootName = _T("w:hdr");
-		else
-			sRootName = _T("w:ftr");
-		sContent.AppendFormat( _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\n") );
-        sContent.AppendFormat( _T("<%ls xmlns:ve=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\">"), sRootName.GetBuffer() );
-		
-		RenderParameter oNewParameter = oRenderParameter;
-		OOXRelsWriterPtr oNewRelsWr = OOXRelsWriterPtr( new OOXRelsWriter( sFilename, *poRtfDocument ) );
-		poOOXWriter->m_oCustomRelsWriter.push_back( oNewRelsWr );
-		oNewParameter.poRels = oNewRelsWr.get();
-		
-		sContent.Append( oTarget->RenderToOOX(oNewParameter) );
-        sContent.AppendFormat( _T("</%ls>"), sRootName.GetBuffer() );
+	CString sContent;
+	CString sRootName;
+	if( true == bHeader )
+		sRootName = _T("w:hdr");
+	else
+		sRootName = _T("w:ftr");
+	sContent.AppendFormat( _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\n") );
+    sContent.AppendFormat( _T("<%ls xmlns:ve=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\">"), sRootName.GetBuffer() );
+	
+	RenderParameter oNewParameter = oRenderParameter;
+	OOXRelsWriterPtr oNewRelsWr = OOXRelsWriterPtr( new OOXRelsWriter( sFilename, *poRtfDocument ) );
+	poOOXWriter->m_oCustomRelsWriter.push_back( oNewRelsWr );
+	oNewParameter.poRels = oNewRelsWr.get();
+	
+	sContent.Append( oTarget->RenderToOOX(oNewParameter) );
+    sContent.AppendFormat( _T("</%ls>"), sRootName.GetBuffer() );
 
 
-        std::string sXmlUTF = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sContent.GetBuffer());
-		
-		CString sFilePath = poOOXWriter->m_sTargetFolder + FILE_SEPARATOR_STR + _T("word") + FILE_SEPARATOR_STR + sFilename;
-		
-		CFile file;
-		
-        if (file.CreateFile(sFilePath) == S_OK)
-		{            
-            file.WriteFile((void*)sXmlUTF.c_str(), sXmlUTF.length());
-			file.CloseFile();
-		}
-
-		CString sContentTarget = _T("/word/")  +  sFilename;
-		CString srID;
-		if( true == bHeader )
-		{
-			poOOXWriter->m_oContentTypes.AddContent( _T("application/vnd.openxmlformats-officedocument.wordprocessingml.header+xml"), sContentTarget);
-			srID = poOOXWriter->m_oDocRels.AddRelationship( _T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/header"), sFilename );
-		}
-		else
-		{
-			poOOXWriter->m_oContentTypes.AddContent( _T("application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml"), sContentTarget);
-			srID = poOOXWriter->m_oDocRels.AddRelationship( _T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer"), sFilename );
-		}
-		return srID;
+    std::string sXmlUTF = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sContent.GetBuffer());
+	
+	CString sFilePath = poOOXWriter->m_sTargetFolder + FILE_SEPARATOR_STR + _T("word") + FILE_SEPARATOR_STR + sFilename;
+	
+	CFile file;
+	
+    if (file.CreateFile(sFilePath) == S_OK)
+	{            
+        file.WriteFile((void*)sXmlUTF.c_str(), sXmlUTF.length());
+		file.CloseFile();
 	}
+
+	CString sContentTarget = _T("/word/")  +  sFilename;
+	CString srID;
+	if( true == bHeader )
+	{
+		poOOXWriter->m_oContentTypes.AddContent( _T("application/vnd.openxmlformats-officedocument.wordprocessingml.header+xml"), sContentTarget);
+		srID = poOOXWriter->m_oDocRels.AddRelationship( _T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/header"), sFilename );
+	}
+	else
+	{
+		poOOXWriter->m_oContentTypes.AddContent( _T("application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml"), sContentTarget);
+		srID = poOOXWriter->m_oDocRels.AddRelationship( _T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer"), sFilename );
+	}
+	return srID;
+}

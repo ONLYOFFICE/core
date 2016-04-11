@@ -698,6 +698,21 @@ public:
 		
 		oDocument.m_oProperty.m_nAnsiCodePage = nKeepGlobalCodepage;
 	}
+
+	CString RemoveLastUnchar(CString str)
+	{
+		int i = 1;
+		while(true)
+		{
+			if (i > str.GetLength())
+				break;
+			if (str.GetAt(str.GetLength() - i) <= 0x20)
+				str.Delete(str.GetLength() - i , 1);
+			else
+				break;
+		}
+		return str;
+	}
     void ExecuteText(RtfDocument& oDocument, RtfReader& oReader, CString sText)
     {
         if( is_panose == m_eInternalState )
@@ -709,14 +724,20 @@ public:
             if( sText.Find(';') != -1 )
             {
                 sText.Remove(';');
-                m_oFont.m_sName += sText;
-				//todooo при добавлении могут быть повторы - убрать нннадо - goldwingSetting.rtf
-                oDocument.m_oFontTable.DirectAddItem( m_oFont );
+				if( sText.Find('&') !=0  )//todooo выясниснить что значит &;
+				{
+					//sText.Remove('&'); // 
+					m_oFont.m_sName += RemoveLastUnchar(sText);
+				}
+				
+			//todooo при добавлении могут быть повторы - убрать нннадо - goldwingSetting.rtf
+				oDocument.m_oFontTable.DirectAddItem( m_oFont );
+	
                 m_oFont.SetDefaultRtf();
             }
             else
             {
-                m_oFont.m_sName += sText;
+                m_oFont.m_sName += sText.Trim();
             }
         }
     }

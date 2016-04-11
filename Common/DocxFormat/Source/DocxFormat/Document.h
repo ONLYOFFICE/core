@@ -187,6 +187,93 @@ namespace OOX
 			CPath oRootPath;
 			read(oRootPath, oPath);
 		}
+		
+		void CreateElements(XmlUtils::CXmlLiteReader &oReader, int Depth)
+		{
+			while ( oReader.ReadNextSiblingNode( Depth ) )
+			{
+				CWCharWrapper sName = oReader.GetName();
+				
+				WritingElement *pItem = NULL;
+
+				/*if ( _T("w:altChunk") == sName )
+				pItem = new Logic::CAltChunk( oReader );
+				else*/ if ( _T("w:bookmarkEnd") == sName )
+					pItem = new Logic::CBookmarkEnd( oReader );
+				else if ( _T("w:bookmarkStart") == sName )
+					pItem = new Logic::CBookmarkStart( oReader );
+				else if ( _T("w:commentRangeEnd") == sName )
+					pItem = new Logic::CCommentRangeEnd( oReader );
+				else if ( _T("w:commentRangeStart") == sName )
+					pItem = new Logic::CCommentRangeStart( oReader );
+				//else if ( _T("w:customXml") == sName )
+				//	pItem = new Logic::CCustomXml( oReader );
+				else if ( _T("w:customXmlDelRangeEnd") == sName )
+					pItem = new Logic::CCustomXmlDelRangeEnd( oReader );
+				else if ( _T("w:customXmlDelRangeStart") == sName )
+					pItem = new Logic::CCustomXmlDelRangeStart( oReader );
+				else if ( _T("w:customXmlInsRangeEnd") == sName )
+					pItem = new Logic::CCustomXmlInsRangeEnd( oReader );
+				else if ( _T("w:customXmlInsRangeStart") == sName )
+					pItem = new Logic::CCustomXmlInsRangeStart( oReader );
+				else if ( _T("w:customXmlMoveFromRangeEnd") == sName ) 
+					pItem = new Logic::CCustomXmlMoveFromRangeEnd( oReader );
+				else if ( _T("w:customXmlMoveFromRangeStart") == sName )
+					pItem = new Logic::CCustomXmlMoveFromRangeStart( oReader );
+				else if ( _T("w:customXmlMoveToRangeEnd") == sName ) 
+					pItem = new Logic::CCustomXmlMoveToRangeEnd( oReader );
+				else if ( _T("w:customXmlMoveToRangeStart") == sName )
+					pItem = new Logic::CCustomXmlMoveToRangeStart( oReader );
+				else if ( _T("w:del") == sName )
+					pItem = new Logic::CDel( oReader );
+				else if ( _T("w:ins") == sName )
+					pItem = new Logic::CIns( oReader );
+				//else if ( _T("w:moveFrom") == sName )
+				//	pItem = new Logic::CMoveFrom( oReader );
+				else if ( _T("w:moveFromRangeEnd") == sName )
+					pItem = new Logic::CMoveToRangeEnd( oReader );
+				else if ( _T("w:moveFromRangeStart") == sName )
+					pItem = new Logic::CMoveToRangeStart( oReader );
+				//else if ( _T("w:moveTo") == sName )
+				//	pItem = new Logic::CMoveTo( oReader );
+				else if ( _T("w:moveToRangeEnd") == sName )
+					pItem = new Logic::CMoveToRangeEnd( oReader );
+				else if ( _T("w:moveToRangeStart") == sName )
+					pItem = new Logic::CMoveToRangeStart( oReader );
+				else if ( _T("m:oMath") == sName )
+					pItem = new Logic::COMath( oReader );
+				else if ( _T("m:oMathPara") == sName )
+					pItem = new Logic::COMathPara( oReader );
+				else if ( _T("w:p") == sName )
+					pItem = new Logic::CParagraph( oReader );
+				else if ( _T("w:permEnd") == sName )
+					pItem = new Logic::CPermEnd( oReader );
+				else if ( _T("w:permStart") == sName )
+					pItem = new Logic::CPermStart( oReader );
+				else if ( _T("w:proofErr") == sName )
+					pItem = new Logic::CProofErr( oReader );
+				else if ( _T("w:sdt") == sName )
+					pItem = new Logic::CSdt( oReader );
+				else if ( _T("w:sectPr") == sName )
+					m_oSectPr = oReader;
+				else if ( _T("w:tbl") == sName )
+					pItem = new Logic::CTbl( oReader );
+				else if ( _T("wx:sect") == sName && !oReader.IsEmptyNode())
+				{
+					int nWxSectDepth = oReader.GetDepth();							
+					CreateElements(oReader, nWxSectDepth);
+				}
+				else if ( _T("wx:pBdrGroup") == sName && !oReader.IsEmptyNode())
+				{
+					int nWxBdrGroupDepth = oReader.GetDepth();							
+					CreateElements(oReader, nWxBdrGroupDepth);
+				}
+
+				if ( pItem )
+					m_arrItems.push_back( pItem );
+			}
+		}
+
 		virtual void read(const CPath& oRootPath, const CPath& oPath)
 		{
 			m_oReadPath = oPath;
@@ -204,7 +291,7 @@ namespace OOX
 				return;
 
 			CWCharWrapper sName = oReader.GetName();
-			if ( _T("w:document") == sName )
+			if ( _T("w:document") == sName || _T("w:wordDocument") == sName)
 			{
 				ReadAttributes( oReader );
 
@@ -218,77 +305,8 @@ namespace OOX
 						if ( _T("w:body") == sName && !oReader.IsEmptyNode() )
 						{
 							int nBodyDepth = oReader.GetDepth();
-							while ( oReader.ReadNextSiblingNode( nBodyDepth ) )
-							{
-								sName = oReader.GetName();
-								WritingElement *pItem = NULL;
-
-								/*if ( _T("w:altChunk") == sName )
-								pItem = new Logic::CAltChunk( oReader );
-								else*/ if ( _T("w:bookmarkEnd") == sName )
-									pItem = new Logic::CBookmarkEnd( oReader );
-								else if ( _T("w:bookmarkStart") == sName )
-									pItem = new Logic::CBookmarkStart( oReader );
-								else if ( _T("w:commentRangeEnd") == sName )
-									pItem = new Logic::CCommentRangeEnd( oReader );
-								else if ( _T("w:commentRangeStart") == sName )
-									pItem = new Logic::CCommentRangeStart( oReader );
-								//else if ( _T("w:customXml") == sName )
-								//	pItem = new Logic::CCustomXml( oReader );
-								else if ( _T("w:customXmlDelRangeEnd") == sName )
-									pItem = new Logic::CCustomXmlDelRangeEnd( oReader );
-								else if ( _T("w:customXmlDelRangeStart") == sName )
-									pItem = new Logic::CCustomXmlDelRangeStart( oReader );
-								else if ( _T("w:customXmlInsRangeEnd") == sName )
-									pItem = new Logic::CCustomXmlInsRangeEnd( oReader );
-								else if ( _T("w:customXmlInsRangeStart") == sName )
-									pItem = new Logic::CCustomXmlInsRangeStart( oReader );
-								else if ( _T("w:customXmlMoveFromRangeEnd") == sName ) 
-									pItem = new Logic::CCustomXmlMoveFromRangeEnd( oReader );
-								else if ( _T("w:customXmlMoveFromRangeStart") == sName )
-									pItem = new Logic::CCustomXmlMoveFromRangeStart( oReader );
-								else if ( _T("w:customXmlMoveToRangeEnd") == sName ) 
-									pItem = new Logic::CCustomXmlMoveToRangeEnd( oReader );
-								else if ( _T("w:customXmlMoveToRangeStart") == sName )
-									pItem = new Logic::CCustomXmlMoveToRangeStart( oReader );
-								else if ( _T("w:del") == sName )
-									pItem = new Logic::CDel( oReader );
-								else if ( _T("w:ins") == sName )
-									pItem = new Logic::CIns( oReader );
-								//else if ( _T("w:moveFrom") == sName )
-								//	pItem = new Logic::CMoveFrom( oReader );
-								else if ( _T("w:moveFromRangeEnd") == sName )
-									pItem = new Logic::CMoveToRangeEnd( oReader );
-								else if ( _T("w:moveFromRangeStart") == sName )
-									pItem = new Logic::CMoveToRangeStart( oReader );
-								//else if ( _T("w:moveTo") == sName )
-								//	pItem = new Logic::CMoveTo( oReader );
-								else if ( _T("w:moveToRangeEnd") == sName )
-									pItem = new Logic::CMoveToRangeEnd( oReader );
-								else if ( _T("w:moveToRangeStart") == sName )
-									pItem = new Logic::CMoveToRangeStart( oReader );
-								else if ( _T("m:oMath") == sName )
-									pItem = new Logic::COMath( oReader );
-								else if ( _T("m:oMathPara") == sName )
-									pItem = new Logic::COMathPara( oReader );
-								else if ( _T("w:p") == sName )
-									pItem = new Logic::CParagraph( oReader );
-								else if ( _T("w:permEnd") == sName )
-									pItem = new Logic::CPermEnd( oReader );
-								else if ( _T("w:permStart") == sName )
-									pItem = new Logic::CPermStart( oReader );
-								else if ( _T("w:proofErr") == sName )
-									pItem = new Logic::CProofErr( oReader );
-								else if ( _T("w:sdt") == sName )
-									pItem = new Logic::CSdt( oReader );
-								else if ( _T("w:sectPr") == sName )
-									m_oSectPr = oReader;
-								else if ( _T("w:tbl") == sName )
-									pItem = new Logic::CTbl( oReader );
-
-								if ( pItem )
-									m_arrItems.push_back( pItem );
-							}
+							
+							CreateElements(oReader, nBodyDepth);
 						}
 						else if ( _T("w:background") == sName )
 							m_oBackground = oReader;

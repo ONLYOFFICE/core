@@ -9,7 +9,8 @@
 
 CString RtfFont::RenderToRtf(RenderParameter oRenderParameter)
 {
-	//ATLASSERT( IsValid() );
+	if ( IsValid() == false) return L"";
+
 	CString sResult;
 	if( RENDER_TO_RTF_PARAM_FONT_TBL == oRenderParameter.nType )
 	{
@@ -60,127 +61,163 @@ CString RtfFont::RenderToRtf(RenderParameter oRenderParameter)
 
 CString RtfFont::RenderToOOX(RenderParameter oRenderParameter)
 {
-	//ATLASSERT( IsValid() );
+	if( IsValid() == false) return L"";
+
 	CString sResult;
-	if( IsValid() )
+	
+	RtfDocument* poRtfDocument = static_cast<RtfDocument*>(oRenderParameter.poDocument);
+	CString sFontName = m_sName;
+
+	if ((sFontName.GetLength() > 0 ) && (sFontName[0] == 0x00b9 && m_sAltName.GetLength() > 0) )
 	{
-		RtfDocument* poRtfDocument = static_cast<RtfDocument*>(oRenderParameter.poDocument);
-		CString sFontName = m_sName;
-
-		if ((sFontName.GetLength() > 0 ) && (sFontName[0] == 0x00b9 && m_sAltName.GetLength() > 0) )
+		sFontName = m_sAltName;
+	}
+	if( sFontName.IsEmpty() )
+	{
+		if( PROP_DEF != poRtfDocument->m_oProperty.m_nDeffFont )
 		{
-			sFontName = m_sAltName;
+			RtfFont oDefFont;
+			poRtfDocument->m_oFontTable.GetFont( poRtfDocument->m_oProperty.m_nDeffFont, oDefFont );
+			sFontName = oDefFont.m_sName;
 		}
-		if( _T("") == sFontName )
+		if( sFontName.IsEmpty())
+			sFontName = _T("Arial");
+	}
+	if( RENDER_TO_OOX_PARAM_MINOR_FONT == oRenderParameter.nType )
+	{
+		CString sTag;
+		switch(m_eFontTheme)
 		{
-			if( PROP_DEF != poRtfDocument->m_oProperty.m_nDeffFont )
-			{
-				RtfFont oDefFont;
-				poRtfDocument->m_oFontTable.GetFont( poRtfDocument->m_oProperty.m_nDeffFont, oDefFont );
-				sFontName = oDefFont.m_sName;
-			}
-			if( _T("") == sFontName )
-				sFontName = _T("Arial");
+			case ft_flominor: 
+			case ft_fhiminor: sTag = _T("latin");break;
+			case ft_fdbminor: sTag = _T("ea");break;
+			case ft_fbiminor: sTag = _T("cs");break;
 		}
-		if( RENDER_TO_OOX_PARAM_MINOR_FONT == oRenderParameter.nType )
+		if( !sTag.IsEmpty() )
 		{
-			CString sTag;
-			switch(m_eFontTheme)
-			{
-				case ft_flominor: 
-				case ft_fhiminor: sTag = _T("latin");break;
-				case ft_fdbminor: sTag = _T("ea");break;
-				case ft_fbiminor: sTag = _T("cs");break;
-			}
-			if( _T("") != sTag )
-                sResult.AppendFormat(_T("<%ls typeface=\"%ls\"/>"), sTag.GetBuffer(), Utils::PrepareToXML( sFontName ).GetBuffer() );
-		}
-		else if( RENDER_TO_OOX_PARAM_MAJOR_FONT == oRenderParameter.nType )
-		{
-			CString sTag;
-			switch(m_eFontTheme)
-			{
-				case ft_flomajor: 
-				case ft_fhiminor: sTag = _T("latin");break;
-				case ft_fdbmajor: sTag = _T("ea");break;
-				case ft_fbimajor: sTag = _T("cs");break;
-			}
-			if( _T("") != sTag )
-                sResult.AppendFormat(_T("<%ls typeface=\"%ls\"/>"), sTag.GetBuffer(), Utils::PrepareToXML( sFontName ).GetBuffer());
-		}
-		else if( RENDER_TO_OOX_PARAM_FONTTABLE == oRenderParameter.nType )
-		{
-            sResult.AppendFormat(_T("<w:font w:name=\"%ls\">"), Utils::PrepareToXML( sFontName ).GetBuffer() );
-			if( _T("") != m_sAltName )
-                sResult.AppendFormat(_T("<w:altName w:val=\"%ls\" />"), Utils::PrepareToXML( m_sAltName ).GetBuffer());
-			if( _T("") != m_sPanose )
-                sResult.AppendFormat(_T("<w:panose1 w:val=\"%ls\" />"),m_sPanose.GetBuffer());
-
-			CString sFamily = _T("");
-			switch( m_eFontFamily )
-			{
-				case ff_fnil:sFamily = _T("auto");break;
-				case ff_froman:sFamily = _T("roman");break;
-				case ff_fswiss:sFamily = _T("swiss");break;
-				case ff_fmodern:sFamily = _T("modern");break;
-				case ff_fscript:sFamily = _T("script");break;
-				case ff_fdecor:sFamily = _T("decorative");break;
-				case ff_ftech:sFamily = _T("auto");break;
-				case ff_fbidi:sFamily = _T("auto");break;
-			}
-			if( _T("") != sFamily )
-                sResult.AppendFormat(_T("<w:family w:val=\"%ls\" />"),sFamily.GetBuffer());
-			if( PROP_DEF != m_nCharset )
-                sResult.AppendFormat(_T("<w:charset w:val=\"%ls\" />"), Convert::ToStringHex( m_nCharset, 2 ).GetBuffer());
-
-			if( PROP_DEF != m_nPitch )
-			{
-				CString sPitch;
-				switch( m_nPitch )
-				{
-					case 0: sPitch = _T("default");break;
-					case 1: sPitch = _T("fixed");break;
-					case 2: sPitch = _T("variable");break;
-				}
-                sResult.AppendFormat(_T("<w:pitch w:val=\"%ls\" />"),sPitch.GetBuffer());
-			}
-
-			//важно
-			sResult.AppendFormat(_T("</w:font>"));
-		}
-		else
-		{
-			RtfFont oCurFont;
-			if( true == poRtfDocument->m_oFontTable.GetFont(m_nID,oCurFont) )
-			{
-				CString sHint;
-				switch(m_nCharset)
-				{
-					case 128://Japanese
-					case 129://Korean
-					case 130://Korean
-					case 134://China
-					case 136://China
-					case 163://Vietnamese
-					case 222://Thai
-					{
-						sHint = _T(" w:hint=\"eastAsia\"/>");
-					}break;
-					case 177://Hebrew
-					case 178://Arabic
-					case 179://Arabic
-					case 180://Arabic
-					case 181://Hebrew
-					{
-						sHint = _T(" w:hint=\"cs\"/>");
-					}break;
-					//?? нужно ли описывать default??? todooo
-				}
-				sResult.AppendFormat(_T("<w:rFonts w:ascii=\"%ls\" w:eastAsia=\"%ls\" w:hAnsi=\"%ls\" w:cs=\"%ls\"%ls/>"),
-                                 sFontName.GetBuffer(), sFontName.GetBuffer(), sFontName.GetBuffer(), sFontName.GetBuffer(), sHint.GetBuffer());
-			}
+            sResult.Append(_T("<") ) ;
+			sResult += sTag;
+			sResult.Append(_T(" typeface=\""));
+			sResult += Utils::PrepareToXML( sFontName );
+			sResult.Append(_T("\"/>"));
 		}
 	}
+	else if( RENDER_TO_OOX_PARAM_MAJOR_FONT == oRenderParameter.nType )
+	{
+		CString sTag;
+		switch(m_eFontTheme)
+		{
+			case ft_flomajor: 
+			case ft_fhiminor: sTag = _T("latin");break;
+			case ft_fdbmajor: sTag = _T("ea");break;
+			case ft_fbimajor: sTag = _T("cs");break;
+		}
+		if( _T("") != sTag )
+            sResult.AppendFormat(_T("<%ls typeface=\"%ls\"/>"), sTag.GetBuffer(), Utils::PrepareToXML( sFontName ).GetBuffer());
+	}
+	else if( RENDER_TO_OOX_PARAM_FONTTABLE == oRenderParameter.nType )
+	{
+        sResult.Append(_T("<w:font w:name=\"") );
+		sResult += Utils::PrepareToXML( sFontName );
+		sResult.Append(_T("\">"));
+		
+		if( !m_sAltName.IsEmpty() )
+		{
+            sResult.Append(_T("<w:altName w:val=\""));
+			sResult += Utils::PrepareToXML( m_sAltName );
+			sResult.Append(_T("\" />"));
+		}
+		if( !m_sPanose.IsEmpty() )
+		{
+            sResult.Append(_T("<w:panose1 w:val=\""));
+			sResult += m_sPanose;
+			sResult.Append(_T("\" />"));
+		}
+
+		CString sFamily = _T("");
+		switch( m_eFontFamily )
+		{
+			case ff_fnil:sFamily = _T("auto");break;
+			case ff_froman:sFamily = _T("roman");break;
+			case ff_fswiss:sFamily = _T("swiss");break;
+			case ff_fmodern:sFamily = _T("modern");break;
+			case ff_fscript:sFamily = _T("script");break;
+			case ff_fdecor:sFamily = _T("decorative");break;
+			case ff_ftech:sFamily = _T("auto");break;
+			case ff_fbidi:sFamily = _T("auto");break;
+		}
+		if( !sFamily.IsEmpty() )
+		{
+            sResult.Append(_T("<w:family w:val=\""));
+			sResult += sFamily;
+			sResult.Append(_T("\" />"));
+		}
+		if( PROP_DEF != m_nCharset )
+		{
+            sResult.Append(_T("<w:charset w:val=\""));
+			sResult += Convert::ToStringHex( m_nCharset, 2 );
+			sResult.Append(_T("\" />"));
+		}
+
+		if( PROP_DEF != m_nPitch )
+		{
+			CString sPitch;
+			switch( m_nPitch )
+			{
+				case 0: sPitch = _T("default");break;
+				case 1: sPitch = _T("fixed");break;
+				case 2: sPitch = _T("variable");break;
+			}
+            sResult.Append(_T("<w:pitch w:val=\"") );
+			sResult += sPitch;
+			sResult.Append(_T("\" />"));
+		}
+
+		//важно
+		sResult.AppendFormat(_T("</w:font>"));
+	}
+	else
+	{
+		RtfFont oCurFont;
+		if( true == poRtfDocument->m_oFontTable.GetFont(m_nID,oCurFont) )
+		{
+			CString sHint;
+			switch(m_nCharset)
+			{
+				case 128://Japanese
+				case 129://Korean
+				case 130://Korean
+				case 134://China
+				case 136://China
+				case 163://Vietnamese
+				case 222://Thai
+				{
+					sHint = _T(" w:hint=\"eastAsia\"/>");
+				}break;
+				case 177://Hebrew
+				case 178://Arabic
+				case 179://Arabic
+				case 180://Arabic
+				case 181://Hebrew
+				{
+					sHint = _T(" w:hint=\"cs\"/>");
+				}break;
+				//?? нужно ли описывать default??? todooo
+			}
+			sResult.Append(_T("<w:rFonts w:ascii=\"") );
+			sResult += sFontName;
+			sResult.Append(_T("\" w:eastAsia=\"") );
+			sResult += sFontName;
+			sResult.Append(_T("\" w:hAnsi=\"") );
+			sResult += sFontName;
+			sResult.Append(_T("\" w:cs=\"") );
+			sResult += sFontName;
+			sResult.Append(_T("\"") );
+			sResult += sHint;
+			sResult.Append(_T("/>") );
+		}
+	}
+
 	return sResult;
 }
 
@@ -1928,21 +1965,29 @@ CString RtfParagraphProperty::RenderToOOX(RenderParameter oRenderParameter)
 	if( true == m_oBorderBox.IsValid() )
 	{
 		CString sBorderContent = m_oBorderBox.RenderToOOX(oNewParam);
-        sBorder.AppendFormat(_T("<w:left %ls />"), sBorderContent.GetBuffer() );
-        sBorder.AppendFormat(_T("<w:top %ls />"), sBorderContent.GetBuffer() );
-        sBorder.AppendFormat(_T("<w:right %ls />"), sBorderContent.GetBuffer() );
-        sBorder.AppendFormat(_T("<w:bottom %ls />"), sBorderContent.GetBuffer() );
+        sBorder.Append(_T("<w:left "));		sBorder += sBorderContent;	sBorder.Append(_T(" />"));
+        sBorder.Append(_T("<w:top "));		sBorder += sBorderContent;	sBorder.Append(_T(" />"));
+        sBorder.Append(_T("<w:right "));	sBorder += sBorderContent;	sBorder.Append(_T(" />"));
+        sBorder.Append(_T("<w:bottom "));	sBorder += sBorderContent;	sBorder.Append(_T(" />"));
 	}
 	else
 	{
 		if( true == m_oBorderTop.IsValid() )
-            sBorder.AppendFormat(_T("<w:top %ls />"), m_oBorderTop.RenderToOOX(oNewParam).GetBuffer() );
+		{
+			sBorder.Append(_T("<w:top "));		sBorder += m_oBorderTop.RenderToOOX(oNewParam);		sBorder.Append(_T(" />"));
+		}
 		if( true == m_oBorderLeft.IsValid() )
-            sBorder.AppendFormat(_T("<w:left %ls />"), m_oBorderLeft.RenderToOOX(oNewParam).GetBuffer() );
+		{
+			sBorder.Append(_T("<w:left "));		sBorder += m_oBorderLeft.RenderToOOX(oNewParam);	sBorder.Append(_T(" />"));
+		}
 		if( true == m_oBorderBottom.IsValid() )
-            sBorder.AppendFormat( _T("<w:bottom %ls />"),m_oBorderBottom.RenderToOOX(oNewParam).GetBuffer() );
+		{
+			sBorder.Append(_T("<w:bottom "));	sBorder += m_oBorderBottom.RenderToOOX(oNewParam);	sBorder.Append(_T(" />"));
+		}
 		if( true == m_oBorderRight.IsValid() )
-            sBorder.AppendFormat(_T("<w:right %ls />"), m_oBorderRight.RenderToOOX(oNewParam).GetBuffer() );
+		{
+			sBorder.Append(_T("<w:right "));	sBorder += m_oBorderRight.RenderToOOX(oNewParam);	sBorder.Append(_T(" />"));
+		}
 	}
 
 	if( true == m_oBorderBar.IsValid() )
@@ -2650,47 +2695,47 @@ CString RtfInformation::RenderToRtf(RenderParameter oRenderParameter)
 	CString sResult;
 
 	if( _T("") != m_sTitle )
-        sResult.AppendFormat( _T("{\\title %ls}"), RtfChar::renderRtfText( m_sTitle, oRenderParameter.poDocument ).GetBuffer() );
+        sResult.Append( _T("{\\title "));		sResult += RtfChar::renderRtfText( m_sTitle, oRenderParameter.poDocument );	sResult.Append( _T("}"));
 	if( _T("") != m_sSubject )
-        sResult.AppendFormat( _T("{\\subject %ls}"), RtfChar::renderRtfText( m_sSubject, oRenderParameter.poDocument ).GetBuffer() );
+        sResult.Append( _T("{\\subject "));		sResult += RtfChar::renderRtfText( m_sSubject, oRenderParameter.poDocument );	sResult.Append( _T("}"));
 	if( _T("") != m_sAuthor )
-        sResult.AppendFormat( _T("{\\author %ls}"), RtfChar::renderRtfText( m_sAuthor, oRenderParameter.poDocument ).GetBuffer() );
+        sResult.Append( _T("{\\author "));		sResult += RtfChar::renderRtfText( m_sAuthor, oRenderParameter.poDocument );	sResult.Append( _T("}"));
 	if( _T("") != m_sManager )
-        sResult.AppendFormat( _T("{\\manager %ls}"), RtfChar::renderRtfText( m_sManager, oRenderParameter.poDocument ).GetBuffer() );
+        sResult.Append( _T("{\\manager "));		sResult += RtfChar::renderRtfText( m_sManager, oRenderParameter.poDocument );	sResult.Append( _T("}"));
 	if( _T("") != m_sCompany )
-        sResult.AppendFormat( _T("{\\company %ls}"), RtfChar::renderRtfText( m_sCompany, oRenderParameter.poDocument ).GetBuffer() );
+        sResult.Append( _T("{\\company "));		sResult += RtfChar::renderRtfText( m_sCompany, oRenderParameter.poDocument );	sResult.Append( _T("}"));
 	if( _T("") != m_sOperator )
-        sResult.AppendFormat( _T("{\\operator %ls}"), RtfChar::renderRtfText( m_sOperator, oRenderParameter.poDocument ).GetBuffer() );
+        sResult.Append( _T("{\\operator "));	sResult += RtfChar::renderRtfText( m_sOperator, oRenderParameter.poDocument );	sResult.Append( _T("}"));
 	if( _T("") != m_sCategory )
-        sResult.AppendFormat( _T("{\\category %ls}"), RtfChar::renderRtfText( m_sCategory, oRenderParameter.poDocument ).GetBuffer() );
+        sResult.Append( _T("{\\category "));	sResult += RtfChar::renderRtfText( m_sCategory, oRenderParameter.poDocument );	sResult.Append( _T("}"));
 	if( _T("") != m_sKeywords )
-        sResult.AppendFormat( _T("{\\keywords %ls}"), RtfChar::renderRtfText( m_sKeywords, oRenderParameter.poDocument ).GetBuffer() );
+        sResult.Append( _T("{\\keywords "));	sResult += RtfChar::renderRtfText( m_sKeywords, oRenderParameter.poDocument );	sResult.Append( _T("}"));
 	if( _T("") != m_sComment )
-        sResult.AppendFormat( _T("{\\comment %ls}"), RtfChar::renderRtfText( m_sComment, oRenderParameter.poDocument ).GetBuffer() );
+        sResult.Append( _T("{\\comment "));		sResult += RtfChar::renderRtfText( m_sComment, oRenderParameter.poDocument );	sResult.Append( _T("}"));
 
 	if( PROP_DEF != m_nVersion )
 		sResult.AppendFormat( _T("{\\version%d}"),m_nVersion );
 
 	if( _T("") != m_sDocCom )
-        sResult.AppendFormat( _T("{\\doccomm %ls}"), RtfChar::renderRtfText( m_sDocCom, oRenderParameter.poDocument ).GetBuffer() );
+        sResult.Append( _T("{\\doccomm "));		sResult += RtfChar::renderRtfText( m_sDocCom, oRenderParameter.poDocument );	sResult.Append( _T("}"));
 	if( PROP_DEF != m_nInternalVersion )
 		sResult.AppendFormat( _T("{\\vern%d}"),m_nInternalVersion );
 	if( _T("") != m_sLinkBase )
-        sResult.AppendFormat( _T("{\\hlinkbase %ls}"), RtfChar::renderRtfText( m_sLinkBase, oRenderParameter.poDocument ).GetBuffer() );
+        sResult.Append( _T("{\\hlinkbase "));	sResult += RtfChar::renderRtfText( m_sLinkBase, oRenderParameter.poDocument );	sResult.Append( _T("}"));
 
 
 	CString sCreateTime = m_oCreateTime.RenderToRtf( oRenderParameter );
 	if( _T("") != sCreateTime )
-        sResult.AppendFormat( _T("{\\creatim%ls}"),sCreateTime.GetBuffer() );
+        sResult.Append( _T("{\\creatim"));		sResult += sCreateTime;	sResult.Append( _T("}"));
 	CString sRevTime = m_oRevTime.RenderToRtf( oRenderParameter );
 	if( _T("") != sRevTime )
-        sResult.AppendFormat( _T("{\\revtim%ls}"),sRevTime.GetBuffer() );
+		sResult.Append( _T("{\\revtim"));		sResult += sRevTime;	sResult.Append( _T("}"));
 	CString sPrintTime = m_oPrintTime.RenderToRtf( oRenderParameter );
 	if( _T("") != sPrintTime )
-        sResult.AppendFormat( _T("{\\printim%ls}"),sPrintTime.GetBuffer() );
+        sResult.Append( _T("{\\printim"));		sResult += sPrintTime;	sResult.Append( _T("}"));
 	CString sBackupTime = m_oBackupTime.RenderToRtf( oRenderParameter );
 	if( _T("") != sBackupTime )
-        sResult.AppendFormat( _T("{\\buptim%ls}"),sBackupTime.GetBuffer() );
+        sResult.Append( _T("{\\buptim"));		sResult += sBackupTime;	sResult.Append( _T("}"));
 	if( PROP_DEF != m_nEndingTime )
 		sResult.AppendFormat( _T("{\\edmins%d}"),m_nEndingTime );
 	if( PROP_DEF != m_nNumberOfPages )
@@ -2822,54 +2867,58 @@ return sResult;
 }
 CString RtfMathProperty::RenderToOOX(RenderParameter oRenderParameter)
 {
-CString sProperty;
-if( PROP_DEF != mmathFont )
-{
-RtfDocument* poDoc = static_cast<RtfDocument*>(oRenderParameter.poDocument);
-RtfFont oFont;
-if( true == poDoc->m_oFontTable.GetFont(mmathFont, oFont) )
-    sProperty.AppendFormat(_T("<m:mathFont m:val=\"%ls\"/>"), oFont.m_sName.GetBuffer());
+	CString sProperty;
+	if( PROP_DEF != mmathFont )
+	{
+		RtfDocument* poDoc = static_cast<RtfDocument*>(oRenderParameter.poDocument);
+		RtfFont oFont;
+		if( true == poDoc->m_oFontTable.GetFont(mmathFont, oFont) )
+			sProperty.AppendFormat(_T("<m:mathFont m:val=\"%ls\"/>"), oFont.m_sName.GetBuffer());
+	}
+	switch( mbrkBin )
+	{
+		case 0:sProperty.Append(_T("<m:brkBin m:val=\"before\"/>"));break;
+		case 1:sProperty.Append(_T("<m:brkBin m:val=\"after\"/>"));break;
+		case 2:sProperty.Append(_T("<m:brkBin m:val=\"repeat\"/>"));break;
+	}
+	switch( mbrkBinSub )
+	{
+		case 0:sProperty.Append(_T("<m:brkBinSub m:val=\"--\"/>"));break;
+		case 1:sProperty.Append(_T("<m:brkBinSub m:val=\"+-\"/>"));break;
+		case 2:sProperty.Append(_T("<m:brkBinSub m:val=\"-+\"/>"));break;
+	}
+	switch( mdefJc )
+	{
+		case 1:sProperty.Append(_T("<m:defJc m:val=\"centerGroup\"/>"));break;
+		case 2:sProperty.Append(_T("<m:defJc m:val=\"center\"/>"));break;
+		case 3:sProperty.Append(_T("<m:defJc m:val=\"left\"/>"));break;
+		case 4:sProperty.Append(_T("<m:defJc m:val=\"right\"/>"));break;
 
-}
-switch( mbrkBin )
-{
-case 0:sProperty.Append(_T("<m:brkBin m:val=\"before\"/>"));break;
-case 1:sProperty.Append(_T("<m:brkBin m:val=\"after\"/>"));break;
-case 2:sProperty.Append(_T("<m:brkBin m:val=\"repeat\"/>"));break;
-}
-switch( mbrkBinSub )
-{
-case 0:sProperty.Append(_T("<m:brkBinSub m:val=\"--\"/>"));break;
-case 1:sProperty.Append(_T("<m:brkBinSub m:val=\"+-\"/>"));break;
-case 2:sProperty.Append(_T("<m:brkBinSub m:val=\"-+\"/>"));break;
-}
-switch( mdefJc )
-{
-case 1:sProperty.Append(_T("<m:defJc m:val=\"centerGroup\"/>"));break;
-case 2:sProperty.Append(_T("<m:defJc m:val=\"center\"/>"));break;
-case 3:sProperty.Append(_T("<m:defJc m:val=\"left\"/>"));break;
-case 4:sProperty.Append(_T("<m:defJc m:val=\"right\"/>"));break;
-
-}
-RENDER_OOX_INT( mdispDef, sProperty, _T("m:dispDef") )
-RENDER_OOX_INT( minterSp, sProperty, _T("m:interSp") )
-RENDER_OOX_INT( mintraSp, sProperty, _T("m:intraSp") )
-RENDER_OOX_INT( mlMargin, sProperty, _T("m:lMargin") )
-RENDER_OOX_INT( mrMargin, sProperty, _T("m:rMargin") )
-switch( mnaryLim )
-{
-case 0:sProperty.Append(_T("<m:naryLim m:val=\"subSup\"/>"));break;
-case 1:sProperty.Append(_T("<m:naryLim m:val=\"undOvr\"/>"));break;
-}
-RENDER_OOX_INT( mpostSp, sProperty, _T("m:postSp") )
-RENDER_OOX_INT( mpreSp, sProperty, _T("m:preSp") )
-RENDER_OOX_INT( msmallFrac, sProperty, _T("m:smallFrac") )
-RENDER_OOX_INT( mwrapIndent, sProperty, _T("m:wrapIndent") )
-RENDER_OOX_INT( mwrapRight, sProperty, _T("m:wrapRight") )
-CString sResult;
-if( false == sProperty.IsEmpty() )
-sResult.AppendFormat( _T("<m:mathPr>%ls</m:mathPr>"), sProperty.GetBuffer() );
-return sResult;
+	}
+	RENDER_OOX_INT( mdispDef, sProperty, _T("m:dispDef") )
+	RENDER_OOX_INT( minterSp, sProperty, _T("m:interSp") )
+	RENDER_OOX_INT( mintraSp, sProperty, _T("m:intraSp") )
+	RENDER_OOX_INT( mlMargin, sProperty, _T("m:lMargin") )
+	RENDER_OOX_INT( mrMargin, sProperty, _T("m:rMargin") )
+	switch( mnaryLim )
+	{
+		case 0:sProperty.Append(_T("<m:naryLim m:val=\"subSup\"/>"));break;
+		case 1:sProperty.Append(_T("<m:naryLim m:val=\"undOvr\"/>"));break;
+	}
+	RENDER_OOX_INT( mpostSp, sProperty, _T("m:postSp") )
+	RENDER_OOX_INT( mpreSp, sProperty, _T("m:preSp") )
+	RENDER_OOX_INT( msmallFrac, sProperty, _T("m:smallFrac") )
+	RENDER_OOX_INT( mwrapIndent, sProperty, _T("m:wrapIndent") )
+	RENDER_OOX_INT( mwrapRight, sProperty, _T("m:wrapRight") )
+	
+	CString sResult;
+	if( false == sProperty.IsEmpty() )
+	{
+		sResult.Append( _T("<m:mathPr>") );
+		sResult += sProperty;
+		sResult.Append( _T("</m:mathPr>") );
+	}
+	return sResult;
 }
 CString RtfMathSpecProp::RenderToRtf(RenderParameter oRenderParameter)
 {

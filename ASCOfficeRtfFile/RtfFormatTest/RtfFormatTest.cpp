@@ -44,7 +44,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		if (S_OK != oCOfficeUtils.ExtractToDirectory(srcFileName.c_str(), dstTempPath.c_str(), NULL, 0))
 			return S_FALSE;
 		
-		rtfConvert.ConvertOOXToRtf(dstTempPath, srcFileName);
+		rtfConvert.ConvertOOXToRtf(dstFileName, dstTempPath);
 	}
 
 	FileSystem::Directory::DeleteDirectory(dstTempPath);	

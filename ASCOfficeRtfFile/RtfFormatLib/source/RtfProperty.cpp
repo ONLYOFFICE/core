@@ -2695,57 +2695,99 @@ CString RtfInformation::RenderToRtf(RenderParameter oRenderParameter)
 	CString sResult;
 
 	if( _T("") != m_sTitle )
+	{
         sResult.Append( _T("{\\title "));		sResult += RtfChar::renderRtfText( m_sTitle, oRenderParameter.poDocument );	sResult.Append( _T("}"));
+	}
 	if( _T("") != m_sSubject )
+	{
         sResult.Append( _T("{\\subject "));		sResult += RtfChar::renderRtfText( m_sSubject, oRenderParameter.poDocument );	sResult.Append( _T("}"));
+	}
 	if( _T("") != m_sAuthor )
+	{
         sResult.Append( _T("{\\author "));		sResult += RtfChar::renderRtfText( m_sAuthor, oRenderParameter.poDocument );	sResult.Append( _T("}"));
+	}
 	if( _T("") != m_sManager )
+	{
         sResult.Append( _T("{\\manager "));		sResult += RtfChar::renderRtfText( m_sManager, oRenderParameter.poDocument );	sResult.Append( _T("}"));
+	}
 	if( _T("") != m_sCompany )
+	{
         sResult.Append( _T("{\\company "));		sResult += RtfChar::renderRtfText( m_sCompany, oRenderParameter.poDocument );	sResult.Append( _T("}"));
+	}
 	if( _T("") != m_sOperator )
+	{
         sResult.Append( _T("{\\operator "));	sResult += RtfChar::renderRtfText( m_sOperator, oRenderParameter.poDocument );	sResult.Append( _T("}"));
+	}
 	if( _T("") != m_sCategory )
+	{
         sResult.Append( _T("{\\category "));	sResult += RtfChar::renderRtfText( m_sCategory, oRenderParameter.poDocument );	sResult.Append( _T("}"));
+	}
 	if( _T("") != m_sKeywords )
+	{
         sResult.Append( _T("{\\keywords "));	sResult += RtfChar::renderRtfText( m_sKeywords, oRenderParameter.poDocument );	sResult.Append( _T("}"));
+	}
 	if( _T("") != m_sComment )
+	{
         sResult.Append( _T("{\\comment "));		sResult += RtfChar::renderRtfText( m_sComment, oRenderParameter.poDocument );	sResult.Append( _T("}"));
+	}
 
 	if( PROP_DEF != m_nVersion )
 		sResult.AppendFormat( _T("{\\version%d}"),m_nVersion );
 
 	if( _T("") != m_sDocCom )
+	{
         sResult.Append( _T("{\\doccomm "));		sResult += RtfChar::renderRtfText( m_sDocCom, oRenderParameter.poDocument );	sResult.Append( _T("}"));
+	}
 	if( PROP_DEF != m_nInternalVersion )
+	{
 		sResult.AppendFormat( _T("{\\vern%d}"),m_nInternalVersion );
+	}
 	if( _T("") != m_sLinkBase )
+	{
         sResult.Append( _T("{\\hlinkbase "));	sResult += RtfChar::renderRtfText( m_sLinkBase, oRenderParameter.poDocument );	sResult.Append( _T("}"));
+	}
 
 
 	CString sCreateTime = m_oCreateTime.RenderToRtf( oRenderParameter );
 	if( _T("") != sCreateTime )
+	{
         sResult.Append( _T("{\\creatim"));		sResult += sCreateTime;	sResult.Append( _T("}"));
+	}
 	CString sRevTime = m_oRevTime.RenderToRtf( oRenderParameter );
 	if( _T("") != sRevTime )
+	{
 		sResult.Append( _T("{\\revtim"));		sResult += sRevTime;	sResult.Append( _T("}"));
+	}
 	CString sPrintTime = m_oPrintTime.RenderToRtf( oRenderParameter );
 	if( _T("") != sPrintTime )
+	{
         sResult.Append( _T("{\\printim"));		sResult += sPrintTime;	sResult.Append( _T("}"));
+	}
 	CString sBackupTime = m_oBackupTime.RenderToRtf( oRenderParameter );
 	if( _T("") != sBackupTime )
+	{
         sResult.Append( _T("{\\buptim"));		sResult += sBackupTime;	sResult.Append( _T("}"));
+	}
 	if( PROP_DEF != m_nEndingTime )
+	{
 		sResult.AppendFormat( _T("{\\edmins%d}"),m_nEndingTime );
+	}
 	if( PROP_DEF != m_nNumberOfPages )
+	{
 		sResult.AppendFormat( _T("{\\nofpages%d}"),m_nNumberOfPages );
+	}
 	if( PROP_DEF != m_nNumberOfWords )
+	{
 		sResult.AppendFormat( _T("{\\nofwords%d}"),m_nNumberOfWords );
+	}
 	if( PROP_DEF != m_nNumberOfCharactersWithSpace )
+	{
 		sResult.AppendFormat( _T("{\\nofchars%d}"),m_nNumberOfCharactersWithSpace );
+	}
 	if( PROP_DEF != m_nNumberOfCharactersWithoutSpace )
+	{
 		sResult.AppendFormat( _T("{\\nofcharsws%d}"),m_nNumberOfCharactersWithoutSpace );
+	}
 
 	if( PROP_DEF != m_nInternalId )
 		sResult.AppendFormat( _T("{\\id%d}"),m_nInternalId );

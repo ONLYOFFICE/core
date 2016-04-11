@@ -16,7 +16,12 @@ public:
 		CString sFootnote;
 		sFootnote.Append( _T("<w:footnote") );
 		if( false == sType.IsEmpty() )
-            sFootnote.AppendFormat( _T(" w:type=\"%ls\""), sType.GetBuffer() );
+		{
+			sFootnote.Append(_T(" w:type=\"") );
+			sFootnote += sType;
+			sFootnote.Append(_T("\""));
+
+		}
 		if( PROP_DEF != nID )
 			sFootnote.AppendFormat( _T(" w:id=\"%d\""), nID );
 		sFootnote.Append( _T(">") );
@@ -29,9 +34,15 @@ public:
 	{
 		m_sFootnotes.Append( _T("<w:footnote") );
 		if( false == sType.IsEmpty() )
-            m_sFootnotes.AppendFormat( _T(" w:type=\"%ls\""), sType.GetBuffer() );
+		{
+			m_sFootnotes.Append(_T(" w:type=\"") );
+			m_sFootnotes += sType;
+			m_sFootnotes.Append(_T("\""));
+		}
 		if( PROP_DEF != nID )
+		{
 			m_sFootnotes.AppendFormat( _T(" w:id=\"%d\""), nID );
+		}
 		m_sFootnotes.Append( _T(">") );
 		m_sFootnotes.Append( sText );
 		m_sFootnotes.Append(_T("</w:footnote>"));
@@ -87,7 +98,11 @@ public:
 		CString sEndnote;
 		sEndnote.Append( _T("<w:endnote") );
 		if( false == sType.IsEmpty() )
-            sEndnote.AppendFormat( _T(" w:type=\"%ls\""), sType.GetBuffer() );
+		{
+			sEndnote.Append(_T(" w:type=\"") );
+			sEndnote += sType;
+			sEndnote.Append(_T("\""));
+		}
 		if( -2 != nID )
 			sEndnote.AppendFormat( _T(" w:id=\"%d\""), nID );
 		sEndnote.Append( _T(">") );
@@ -100,7 +115,12 @@ public:
 	{
 		m_sEndnotes.Append( _T("<w:endnote") );
 		if( false == sType.IsEmpty() )
-            m_sEndnotes.AppendFormat( _T(" w:type=\"%ls\""), sType.GetBuffer() );
+		{
+			m_sEndnotes.Append(_T(" w:type=\"") );
+			m_sEndnotes += sType;
+			m_sEndnotes.Append(_T("\""));
+
+		}
 		if( -2 != nID )
 			m_sEndnotes.AppendFormat( _T(" w:id=\"%d\""), nID );
 		m_sEndnotes.Append( _T(">") );

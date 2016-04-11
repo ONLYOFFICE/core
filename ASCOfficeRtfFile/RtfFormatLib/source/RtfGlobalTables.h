@@ -115,8 +115,7 @@ public:
 			oNewParameter.nType = RENDER_TO_RTF_PARAM_COLOR_TBL;
 			for( int i = 0; i < (int)m_aArray.size(); i++ )
             {
-                CString str = m_aArray[i].RenderToRtf( oNewParameter );
-                sResult.AppendFormat(_T("%ls"), str.GetBuffer());
+                sResult += m_aArray[i].RenderToRtf( oNewParameter );
             }
 			sResult.Append(_T("}"));
 		}
@@ -352,9 +351,10 @@ public:
 			}
 			for( int i = 0; i < (int)m_aArray.size(); i++)
             {
-                CString str = m_aArray[i].RenderToRtf( oRenderParameter );
-                sResult.AppendFormat(_T("{%ls}"), str.GetBuffer() );
-            }
+				sResult.Append(_T("{"));
+				sResult.Append(m_aArray[i].RenderToRtf( oRenderParameter ));
+ 				sResult.Append(_T("}"));
+           }
 			sResult.Append(_T("}"));
 		}
 		return sResult;
@@ -382,8 +382,9 @@ public:
 				sResult.Append(_T("{\\*\\listoverridetable"));
 				for( int i = 0; i < (int)m_aArray.size(); i++)
                 {
-                    CString str = m_aArray[i].RenderToRtf( oRenderParameter );
-                    sResult.AppendFormat(_T("{%ls}"), str.GetBuffer() );
+ 					sResult.Append(_T("{"));
+                    sResult.Append(m_aArray[i].RenderToRtf( oRenderParameter ));
+					sResult.Append(_T("}"));
                 }
 				sResult.Append(_T("}"));
 			}

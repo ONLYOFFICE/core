@@ -28,35 +28,66 @@
 
 #define RENDER_OOX_BOOL( prop, sResult, sName)\
 		if( 0 == prop )\
-			sResult.AppendFormat( _T("<%ls w:val=\"false\"/>"), sName );\
+		{\
+			sResult.Append( _T("<") );\
+			sResult.Append( sName );\
+			sResult.AppendFormat( _T(" w:val=\"false\"/>"));\
+		}\
 		else if(  PROP_DEF != prop  )\
-			sResult.AppendFormat( _T("<%ls w:val=\"true\"/>"), sName );
-
-#define RENDER_OOX_BOOL_ATTRIBUTE( prop, sResult, sName)\
-		if( 0 == prop )\
-			sResult.AppendFormat( _T(" %ls=\"0\""), sName );\
-		else if(  PROP_DEF != prop  )\
-			sResult.AppendFormat( _T(" %ls=\"1\""), sName );
+		{\
+			sResult.Append( _T("<") );\
+			sResult.Append( sName );\
+			sResult.AppendFormat( _T(" w:val=\"true\"/>"));\
+		}
 
 #define RENDER_OOX_INT( prop, sResult, sName)\
 		if( PROP_DEF != prop )\
-			sResult.AppendFormat( _T("<%ls w:val=\"%d\"/>"), sName, prop );
-
+		{\
+			sResult.Append( _T("<") );\
+			sResult.Append( sName );\
+			sResult.AppendFormat( _T(" w:val=\"%d\"/>"), prop  );\
+		}
 #define RENDER_OOX_INT_ATTRIBUTE( prop, sResult, sName)\
 		if( PROP_DEF != prop )\
-		sResult.AppendFormat( _T(" %ls=\"%d\""), sName, prop );
-
+		{\
+			sResult.Append( _T(" ") );\
+			sResult.Append( sName );\
+			sResult.AppendFormat( _T("=\"%d\""), prop  );\
+		}
+#define RENDER_OOX_BOOL_ATTRIBUTE( prop, sResult, sName)\
+		if( 0 == prop )\
+		{\
+			sResult.Append( _T(" ") );\
+			sResult.Append( sName );\
+			sResult.AppendFormat( _T("=\"0\""));\
+		}\
+		else if(  PROP_DEF != prop  )\
+		{\
+			sResult.Append( _T(" ") );\
+			sResult.Append( sName );\
+			sResult.AppendFormat( _T("=\"1\""));\
+		}
 
 #define RENDER_RTF_BOOL( prop, sResult, sName)\
 		if( 0 == prop )\
-            sResult.AppendFormat( _T("\\%ls0"), sName );\
+		{\
+			sResult.Append( _T("\\") );\
+			sResult.Append( sName );\
+			sResult.Append( _T("0") );\
+		}\
 		else if(  PROP_DEF != prop  )\
-			sResult.AppendFormat( _T("\\%ls"), sName );
+		{\
+			sResult.Append( _T("\\") );\
+			sResult.Append( sName );\
+		}
 
 #define RENDER_RTF_INT( prop, sResult, sName)\
 		if( PROP_DEF != prop )\
-			sResult.AppendFormat( _T("\\%ls%d"), sName, prop );
-
+		{\
+			sResult.Append( _T("\\") );\
+			sResult.Append( sName );\
+			sResult.AppendFormat( _T("%d"), prop  );\
+		}
 
 
 class RtfFont : public IRenderableProperty

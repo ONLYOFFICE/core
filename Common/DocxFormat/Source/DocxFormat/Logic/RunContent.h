@@ -474,7 +474,7 @@ namespace OOX
 			}
 			virtual CString      toXML() const
 			{
-				return _T("<w:nonBreakHyphen />");
+				return _T("<w:noBreakHyphen />");
 			}
 
 			virtual EElementType getType() const

@@ -4911,9 +4911,9 @@ namespace BinDocxRW
 						}
 					}
 					break;
-				case OOX::et_w_nonBreakHyphen:
+				case OOX::et_w_noBreakHyphen:
 					{
-						m_oBcw.m_oStream.WriteBYTE(c_oSerRunType::nonBreakHyphen);
+						m_oBcw.m_oStream.WriteBYTE(c_oSerRunType::noBreakHyphen);
 						m_oBcw.m_oStream.WriteLONG(c_oSerPropLenType::Null);
 						break;
 					}

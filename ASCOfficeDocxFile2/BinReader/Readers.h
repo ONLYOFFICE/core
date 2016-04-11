@@ -5717,9 +5717,9 @@ public:
 		{
 			GetRunStringWriter().WriteString(CString(_T("<w:cr/>")));
 		}
-		else if (c_oSerRunType::nonBreakHyphen == type)
+		else if (c_oSerRunType::noBreakHyphen == type)
 		{
-			GetRunStringWriter().WriteString(CString(_T("<w:nonBreakHyphen/>")));
+			GetRunStringWriter().WriteString(CString(_T("<w:noBreakHyphen/>")));
 		}
 		else if (c_oSerRunType::softHyphen == type)
 		{

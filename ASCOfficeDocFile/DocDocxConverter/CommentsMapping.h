@@ -43,7 +43,8 @@ namespace DocFileFormat
 
 					m_pXmlWriter->WriteNodeBegin( _T( "w:comment" ), TRUE );
 					m_pXmlWriter->WriteAttribute( _T( "w:id" ), FormatUtils::IntToWideString( index ).c_str() );
-					m_pXmlWriter->WriteAttribute( _T( "w:author" ), m_document->AnnotationOwners->at( atrdPre10->GetAuthorIndex() ).c_str() );
+					m_pXmlWriter->WriteAttribute( _T( "w:author" ),
+						FormatUtils::XmlEncode(m_document->AnnotationOwners->at( atrdPre10->GetAuthorIndex() ) ).c_str());
 					m_pXmlWriter->WriteAttribute( _T( "w:initials" ), atrdPre10->GetUserInitials().c_str() );
 
 					//!!!TODO!!!

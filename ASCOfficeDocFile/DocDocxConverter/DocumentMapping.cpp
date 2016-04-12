@@ -319,9 +319,10 @@ namespace DocFileFormat
 			}
 			else if ( rev.Type == Inserted )
 			{
+				WideString* author = dynamic_cast<WideString*>(m_document->RevisionAuthorTable->operator[](rev.Isbt));
 				//if it's a inserted run
 				m_pXmlWriter->WriteNodeBegin(_T("w:ins"), TRUE);
-				m_pXmlWriter->WriteAttribute(_T("w:author"), dynamic_cast<WideString*>(m_document->RevisionAuthorTable->operator[](rev.Isbt))->c_str()); 
+				m_pXmlWriter->WriteAttribute(_T("w:author"), FormatUtils::XmlEncode(*author).c_str()); 
 				m_pXmlWriter->WriteNodeEnd(_T(""), TRUE, FALSE);
 				//rev.Dttm.Convert(new DateMapping(m_pXmlWriter));
 			}

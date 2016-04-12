@@ -76,9 +76,14 @@ void style_chart_properties::add_attributes( const xml::attributes_wc_ptr & Attr
     CP_APPLY_ATTR(L"chart:error-lower-limit",dVal); if (dVal)content_.push_back(_property(L"error-lower-limit",	dVal.get()));
     CP_APPLY_ATTR(L"chart:error-upper-limit",dVal); if (dVal)content_.push_back(_property(L"error-upper-limit",	dVal.get()));
 	
-   
+    CP_APPLY_ATTR(L"chart:axis-position",	strVal);	
+	if (strVal) content_.push_back(_property(L"axis-position",	*strVal));
+	
+	CP_APPLY_ATTR(L"chart:tick-mark-position",	strVal);	
+ 	if (strVal) content_.push_back(_property(L"tick-mark-position",	*strVal));
+ 
     CP_APPLY_ATTR(L"chart:interpolation",	strVal);	
-	if (iVal)content_.push_back(_property(L"interpolation",	chart_interpolation(chart_interpolation::parse(strVal.get())).get_type()));
+	if (strVal)content_.push_back(_property(L"interpolation",	chart_interpolation(chart_interpolation::parse(strVal.get())).get_type()));
   
 	CP_APPLY_ATTR(L"chart:solid-type",		strVal);	
 	if (strVal)content_.push_back(_property(L"solid-type",	chart_solid_type(chart_solid_type::parse(strVal.get())).get_type()));

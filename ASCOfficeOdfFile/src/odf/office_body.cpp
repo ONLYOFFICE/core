@@ -99,7 +99,7 @@ void office_body::docx_convert(oox::docx_conversion_context & Context)
 
 	Context.get_headers_footers().set_enable_write(true);
 
-	if (!Context.get_section_context().dump_.empty())
+	if (!Context.get_section_context().dump_.empty() && !Context.get_table_context().in_table())
 	{
 		Context.output_stream() << Context.get_section_context().dump_;
 		Context.get_section_context().dump_.clear();

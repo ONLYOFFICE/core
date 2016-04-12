@@ -109,7 +109,7 @@ public:
 
     void add_point(unsigned int rep, std::wstring const & styleName);
 	
-    void calc_cash_series(std::wstring adress, std::vector<std::wstring> & cash);
+    void calc_cache_series(std::wstring adress, std::vector<std::wstring> & cash);
 	
 	void xlsx_convert(oox::xlsx_conversion_context & Context);
 	void docx_convert(oox::docx_conversion_context & Context);
@@ -174,7 +174,8 @@ public:
 
 class process_build_chart : public base_visitor,
 	public const_visitor<office_document_content>,
-    
+ 	public visitor<office_document_content>,
+   
 	public visitor<office_body>,
     public visitor<office_chart>,    
 	public visitor<office_text>,
@@ -246,6 +247,7 @@ private:
 public:
 
 	virtual void visit(const office_document_content& val);
+	virtual void visit(office_document_content& val);
 	
 	virtual void visit(office_body	& val);
     virtual void visit(office_chart	& val);

@@ -32,13 +32,12 @@ oox_chart_context_ptr oox_chart_context::create(std::wstring const & name)
 {
     return boost::make_shared<oox_chart_context>(name);
 }
-oox_chart_context::oox_chart_context()
-					: impl_(new oox_chart_context::Impl())
+oox_chart_context::oox_chart_context() : impl_(new oox_chart_context::Impl())
 {
 }
-oox_chart_context::oox_chart_context(std::wstring const & name)
-							: impl_(new oox_chart_context::Impl(name))
+oox_chart_context::oox_chart_context(std::wstring const & name) : impl_(new oox_chart_context::Impl(name))
 {
+	
 }
 std::wostream & oox_chart_context::chartData()
 {
@@ -88,6 +87,15 @@ bool oox_chart_context::empty() const
 {
     return false;//impl_->empty();
 }
+
+void oox_chart_context::set_cache_only	(bool val)
+{
+	for (int i = 0 ; i < plot_area_.charts_.size(); i++)
+	{
+		plot_area_.charts_[i]->set_cache_only(val);
+	}
+}
+
 
 
 }

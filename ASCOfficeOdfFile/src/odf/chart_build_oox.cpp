@@ -160,6 +160,8 @@ void chart_build::docx_convert(oox::docx_conversion_context & Context)
 
 		oox_convert(chart);
 
+		chart.set_cache_only(true);
+
 		Context.end_chart();
 	}
 	else if (object_type_ == 2 && office_text_)
@@ -197,6 +199,7 @@ void chart_build::pptx_convert(oox::pptx_conversion_context & Context)
 		
 		oox_convert(chart);
 
+		chart.set_cache_only(true);
 		Context.end_chart();
 	}
 	else if (object_type_ == 2 && office_text_)
@@ -208,14 +211,14 @@ void chart_build::pptx_convert(oox::pptx_conversion_context & Context)
 		office_math_->pptx_convert(Context);
 	}
 }
-void chart_build::calc_cash_series(std::wstring adress, std::vector<std::wstring> & cash)
+void chart_build::calc_cache_series(std::wstring adress, std::vector<std::wstring> & cash)
 {
     formulasconvert::odf2oox_converter converter;
 
-	std::wstring ref_1,ref_2,table;
-	size_t col_1=0,row_1=0,col_2=0,row_2=0;
+	std::wstring ref_1, ref_2, table;
+	size_t col_1=0, row_1=0, col_2=0, row_2=0;
    
-	if (!converter.find_first_last_ref(adress,table,ref_1,ref_2))return;
+	if (!converter.find_first_last_ref(adress, table, ref_1, ref_2))return;
 	//if ((res = table.find(L"local-table"))<0)return;
 
 	oox::getCellAddressInv(ref_1,col_1,row_1);
@@ -260,7 +263,7 @@ void chart_build::oox_convert(oox::oox_chart_context & chart)
 		oox::oox_chart_ptr current = chart.get_current_chart();
 
 		if (!current) continue;
-		
+
 		current->set_properties(plot_area_.properties_);
 		current->set_additional_properties(chart_graphic_properties_);
 	
@@ -275,13 +278,13 @@ void chart_build::oox_convert(oox::oox_chart_context & chart)
 		//такое определение - редкость = todooo
 		
 		std::vector<std::wstring>				cell_cash;
-		calc_cash_series(s.cell_range_address_,	cell_cash);
+		calc_cache_series(s.cell_range_address_,	cell_cash);
 
 		if (domain_cell_range_adress_.length() > 0) 
 		{
 			std::vector<std::wstring> domain_cash;
 		
-			calc_cash_series(domain_cell_range_adress_,domain_cash);
+			calc_cache_series(domain_cell_range_adress_,domain_cash);
 			
 			if (last_set_type == chart_bubble)
 			{
@@ -309,7 +312,7 @@ void chart_build::oox_convert(oox::oox_chart_context & chart)
 		if (categories_.size() > 0)//названия 
 		{			
 			std::vector<std::wstring>			cat_cash;
-			calc_cash_series(categories_[0],	cat_cash);
+			calc_cache_series(categories_[0],	cat_cash);
 			
 			current->set_formula_series(4,categories_[0]);
 			current->set_values_series(4,cat_cash);
@@ -425,6 +428,11 @@ void process_build_chart::on_not_impl(std::string const & message)
 
 //////////////////////////////////////////////////
 void process_build_chart::visit(const office_document_content& val)
+{
+    if (val.office_body_)
+        val.office_body_->accept(*this);
+}
+void process_build_chart::visit(office_document_content& val)
 {
     if (val.office_body_)
         val.office_body_->accept(*this);

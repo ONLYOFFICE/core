@@ -52,7 +52,7 @@ namespace chart {
 		std::vector<_property> line_properties_;
 		simple equation_properties_;
 
-		treadline(){bEquation = false;bREquation = false;}
+		treadline(){bEquation = false; bREquation = false;}
 
 	};
 	struct plot_area : public simple
@@ -75,10 +75,10 @@ namespace chart {
 
 		title title_;
         
-		std::wstring dimension_;
-        std::wstring chart_name_;
-        std::wstring style_name_;
-        std::vector<grid> grids_;
+		std::wstring		dimension_;
+        std::wstring		chart_name_;
+        std::wstring		style_name_;
+        std::vector<grid>	grids_;
 		
   };
     struct series : public simple
@@ -92,26 +92,26 @@ namespace chart {
             std::wstring style_name_;
         };
 
-        std::wstring name_;
-		std::wstring cell_range_address_;
+        std::wstring		name_;
+		std::wstring		cell_range_address_;
 
-        std::wstring label_cell_address_;
-        class_type class_;
-        std::wstring attached_axis_;
-        std::wstring style_name_;  
-        std::vector<point> points_;
+        std::wstring		label_cell_address_;
+        class_type			class_;
+        std::wstring		attached_axis_;
+        std::wstring		style_name_;  
+        std::vector<point>	points_;
 		
-		simple mean_value_;
-		simple error_indicator_;
-		treadline regression_curve_;
+		simple				mean_value_;
+		simple				error_indicator_;
+		treadline			regression_curve_;
 
 		series(){}
         series(
-			 std::wstring const & rangeAddress,
-            std::wstring const & labelCell,
-            class_type classType,
-            std::wstring const & attachedAxis,
-            std::wstring const & styleName                        
+				std::wstring const & rangeAddress,
+				std::wstring const & labelCell,
+				class_type classType,
+				std::wstring const & attachedAxis,
+				std::wstring const & styleName                        
             ) : 
 				cell_range_address_(rangeAddress),
                 label_cell_address_(labelCell),

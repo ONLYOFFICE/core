@@ -24,7 +24,8 @@ public:
 		values_[3].type=L"c:bubbleSize";//заместо оси х!!!!
 		values_[4].type=L"c:cat";//подписи
 	
-		iSymbolMarkerType_ =0;
+		iSymbolMarkerType_	= 0;
+		bLocalTable_		= false;
 	}
 	~oox_chart_series(){}
  
@@ -42,8 +43,11 @@ public:
 	void setFormula(int ind, std::wstring & value);
 	void setValues(int ind, std::vector<std::wstring> & values);
 	void parse_properties();
+	
+	void set_cache_only (bool val);
 
-	int	iSymbolMarkerType_;
+	int		iSymbolMarkerType_;
+	bool	bLocalTable_;
 
 	odf_reader::chart::series content_;
 

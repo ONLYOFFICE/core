@@ -10,10 +10,20 @@
 namespace cpdoccore {
 namespace oox {
 
+void oox_chart::set_cache_only (bool val)
+{
+	for (int i = 0 ; i < series_.size(); i++)
+	{
+		series_[i]->set_cache_only(val);
+	}
+
+}
+
 void oox_chart::set_formula_series(int ind, std::wstring val)
 {
 	oox_series_ptr & current_ptr = series_.back();
 	current_ptr->setFormula(ind,val);
+
 }
 void oox_chart::set_name(std::wstring val)
 {

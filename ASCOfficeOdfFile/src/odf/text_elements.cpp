@@ -156,15 +156,18 @@ int process_paragraph_attr(const paragraph_attrs & Attr, oox::docx_conversion_co
                 const std::wstring id = Context.styles_map_.get( styleInst->name(), styleInst->type() );
 				std::wostream & _Wostream = Context.output_stream();
                 _Wostream << L"<w:pPr>";
+				if ( !Context.get_table_context().in_table())
+				{
 					_Wostream << Context.get_section_context().dump_;
 					Context.get_section_context().dump_.clear();
+				}
 					_Wostream << L"<w:pStyle w:val=\"" << id << L"\" />";
 					Context.docx_serialize_list_properties(_Wostream);
                 _Wostream << L"</w:pPr>";
 				return 2;
 			}
         }
-		else if (!Context.get_section_context().dump_.empty())
+		else if (!Context.get_section_context().dump_.empty() &&  !Context.get_table_context().in_table())
 		{
             Context.output_stream() << L"<w:pPr>";
 				Context.output_stream() << Context.get_section_context().dump_;
@@ -173,7 +176,7 @@ int process_paragraph_attr(const paragraph_attrs & Attr, oox::docx_conversion_co
 		}
 		return 3;
     }
-	else if (!Context.get_section_context().dump_.empty())
+	else if (!Context.get_section_context().dump_.empty() && !Context.get_table_context().in_table())
 	{
         Context.output_stream() << L"<w:pPr>";
 			Context.output_stream() << Context.get_section_context().dump_;

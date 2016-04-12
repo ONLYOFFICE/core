@@ -30,6 +30,8 @@ void docx_table_state::start_column(unsigned int repeated, const std::wstring & 
 
 std::wstring docx_table_state::get_default_cell_style_col(unsigned int column)
 {
+	if (columnsDefaultCellStyleName_.size() <= column) 
+		return L"";
     return columnsDefaultCellStyleName_.at(column);
 }
 

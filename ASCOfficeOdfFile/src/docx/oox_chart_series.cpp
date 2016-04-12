@@ -72,6 +72,11 @@ void oox_chart_series::setFormula(int ind, std::wstring &value)
 	}
 }
 
+void oox_chart_series::set_cache_only (bool val)
+{
+	bLocalTable_ = val;
+}
+
 void oox_chart_series::parse_properties()
 {
 	_CP_OPT(int)	iSymbolType;
@@ -100,13 +105,13 @@ void oox_chart_series::setValues(int ind, std::vector<std::wstring> & values)
 		boost::algorithm::trim(v);
 		if (ind == 4)
 		{
-			values_[ind].strRef_.str_cash.push_back(v);
-			values_[ind].strRef_.str_cash_count++;
+			values_[ind].strRef_.str_cache.push_back(v);
+			values_[ind].strRef_.str_cache_count++;
 		}
 		else
 		{
-			values_[ind].numRef_.num_cash.push_back(v);
-			values_[ind].numRef_.num_cash_count++;
+			values_[ind].numRef_.num_cache.push_back(v);
+			values_[ind].numRef_.num_cache_count++;
 		}
 	}
 }
@@ -136,7 +141,7 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 			{
 				CP_XML_NODE(values_[i].type)
 				{
-					if (values_[i].numRef_.present)
+					if (values_[i].numRef_.present && !bLocalTable_)
 					{
 						CP_XML_NODE(L"c:numRef")
 						{
@@ -145,7 +150,7 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 								CP_XML_CONTENT(values_[i].numRef_.formula);
 							}
 						
-							if (values_[i].numRef_.num_cash_count>0)
+							if (values_[i].numRef_.num_cache_count>0)
 							{
 								CP_XML_NODE(L"c:numCache")//необязательно
 								{
@@ -155,10 +160,10 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 									}
 									CP_XML_NODE(L"c:ptCount")
 									{
-										CP_XML_ATTR(L"val", values_[i].numRef_.num_cash_count);
+										CP_XML_ATTR(L"val", values_[i].numRef_.num_cache_count);
 									}
 									int j=0;
-									BOOST_FOREACH(std::wstring & v, values_[i].numRef_.num_cash)
+									BOOST_FOREACH(std::wstring & v, values_[i].numRef_.num_cache)
 									{								
 										CP_XML_NODE(L"c:pt")
 										{
@@ -177,39 +182,59 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 							}
 						}
 					}
-					//if (values_[i].strRef_.present)
-					//{
-					//	CP_XML_NODE(L"c:strRef")
-					//	{
-					//		CP_XML_NODE(L"c:f")
-					//		{
-					//			CP_XML_CONTENT(values_[i].strRef_.formula);
-					//		}
-					//	
-					//		if (values_[i].strRef_.str_cash_count>0)
-					//		{
-					//			CP_XML_NODE(L"c:strCache")//необязательно
-					//			{
-					//				CP_XML_NODE(L"c:ptCount")
-					//				{
-					//					CP_XML_ATTR(L"val", values_[i].strRef_.str_cash_count);
-					//				}
-					//				int j=0;
-					//				BOOST_FOREACH(std::wstring & v, values_[i].strRef_.str_cash)
-					//				{								
-					//					CP_XML_NODE(L"c:pt")
-					//					{
-					//						CP_XML_ATTR(L"idx", j++);
-					//						CP_XML_NODE(L"c:v")
-					//						{
-					//							CP_XML_CONTENT(v);
-					//						}
-					//					}
-					//				}
-					//			}
-					//		}
-					//	}
-					//}
+					else if (values_[i].numRef_.num_cache_count > 0)
+					{
+						CP_XML_NODE(L"c:numLit")
+						{
+							CP_XML_NODE(L"c:formatCode")
+							{
+								CP_XML_CONTENT(L"General");//????
+							}
+							CP_XML_NODE(L"c:ptCount")
+							{
+								CP_XML_ATTR(L"val", values_[i].numRef_.num_cache_count);
+							}
+							int j=0;
+							BOOST_FOREACH(std::wstring & v, values_[i].numRef_.num_cache)
+							{				
+								if (v == L"NaN") continue; 
+								CP_XML_NODE(L"c:pt")
+								{
+									CP_XML_ATTR(L"idx", j++);
+									double val = 0;
+
+									try { val = boost::lexical_cast<double>(v);}
+									catch(...){}			
+									CP_XML_NODE(L"c:v")
+									{
+										CP_XML_CONTENT(val);
+									}
+								}
+							}
+						}
+					}
+					else if (values_[i].strRef_.str_cache_count > 0)
+					{
+						CP_XML_NODE(L"c:strLit")
+						{
+							CP_XML_NODE(L"c:ptCount")
+							{
+								CP_XML_ATTR(L"val", values_[i].strRef_.str_cache_count);
+							}
+							int j=0;
+							BOOST_FOREACH(std::wstring & v, values_[i].strRef_.str_cache)
+							{								
+								CP_XML_NODE(L"c:pt")
+								{
+									CP_XML_ATTR(L"idx", j++);
+									CP_XML_NODE(L"c:v")
+									{
+										CP_XML_CONTENT(v);
+									}
+								}
+							}
+						}
+					}
 				}
 			}
 		}		

@@ -719,7 +719,8 @@ void docx_conversion_context::docx_serialize_paragraph_style(std::wostream & str
    
 	CP_XML_WRITER(strm)
 	{
-		if (get_section_context().dump_.empty() == false && (!ParentId.empty() || get_section_context().get().is_dump_))
+		if (get_section_context().dump_.empty() == false && (!ParentId.empty() || get_section_context().get().is_dump_) 
+			 && !get_table_context().in_table())
 		{//две подряд секции или если стиль определен 
 			CP_XML_NODE(L"w:pPr")
 			{
@@ -734,9 +735,11 @@ void docx_conversion_context::docx_serialize_paragraph_style(std::wostream & str
 		{		
 			CP_XML_NODE(L"w:pPr")
 			{
-				CP_XML_STREAM() << get_section_context().dump_;
-				get_section_context().dump_.clear();
-				
+				if ( !get_table_context().in_table() )
+				{
+					CP_XML_STREAM() << get_section_context().dump_;
+					get_section_context().dump_.clear();
+				}
 				if (!ParentId.empty())
 				{
 					CP_XML_NODE(L"w:pStyle")

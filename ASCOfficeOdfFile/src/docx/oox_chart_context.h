@@ -30,6 +30,7 @@ public:
     bool empty() const;
 
 	void write_to(std::wostream & strm);
+	
 	static oox_chart_context_ptr create(std::wstring const & name);
 	static oox_chart_context_ptr create();
 
@@ -83,6 +84,8 @@ public:
 		plot_area_.properties_		= prop; 
 		plot_area_.fill_			= fill; 
 	}
+
+	void set_cache_only	(bool val);
 private:
     class Impl;
     _CP_SCOPED_PTR(Impl) impl_;
@@ -91,7 +94,7 @@ private:
 	cpdoccore::oox::oox_plot_area		plot_area_;
 	cpdoccore::oox::oox_chart_legend	legend_;
 
-	std::vector<odf_reader::_property>			graphic_properties_;
+	std::vector<odf_reader::_property>	graphic_properties_;
 	_oox_fill							fill_;
               
 };

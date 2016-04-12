@@ -33,9 +33,10 @@ public:
 
 	virtual void add_series(int id){}
 	
-	void set_formula_series(int ind,std::wstring val);
-	void set_values_series(int ind, std::vector<std::wstring> & val);
-	void set_name(std::wstring val);
+	void set_cache_only		(bool val);
+	void set_formula_series	(int ind,std::wstring val);
+	void set_values_series	(int ind, std::vector<std::wstring> & val);
+	void set_name			(std::wstring val);
 	
 	//void set_showBubbleSize(bool Val){data_labels_.set_showBubbleSize(Val);}
 	//void set_showCatName(bool Val){data_labels_.set_showCatName(Val);}

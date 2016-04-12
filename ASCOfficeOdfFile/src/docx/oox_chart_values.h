@@ -29,21 +29,21 @@ struct _oox_numLit
 //};
 struct _oox_strRef
 {
-	bool present;
+	bool						present;
 
-	std::wstring formula;
-	int str_cash_count;
-	std::vector<std::wstring>str_cash;
+	std::wstring				formula;
+	int							str_cache_count;
+	std::vector<std::wstring>	str_cache;
 
 };
 struct _oox_numRef
 {
-	bool present;
+	bool						present;
 
-	std::wstring formula;
-	std::wstring formatCode;
-	int num_cash_count;
-	std::vector<std::wstring>num_cash;
+	std::wstring				formula;
+	std::wstring				formatCode;
+	int							num_cache_count;
+	std::vector<std::wstring>	num_cache;
 
 };
 //extLst (Chart Extensibility) §21.2.2.64
@@ -55,13 +55,12 @@ struct _oox_chart_values
 public:
 	_oox_chart_values()
 	{
-		numLit_.present =false;
 		numRef_.present=false;
 		numRef_.formatCode = L"General";
-		numRef_.num_cash_count=0;
+		numRef_.num_cache_count=0;
 
 		strRef_.present=false;
-		strRef_.str_cash_count=0;
+		strRef_.str_cache_count=0;
 
 		present = false;
 	}
@@ -69,7 +68,6 @@ public:
 	bool present;
 	std::wstring type;
 	
-	_oox_numLit numLit_;
 	_oox_numRef numRef_;
 	_oox_strRef strRef_;
 

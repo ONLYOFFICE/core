@@ -173,13 +173,13 @@ const bool AXES::loadContent(BinProcessor& proc)
 
 	if(proc.optional<PlotArea>())
 	{
-		//m_PlotArea = elements_.back();
 		elements_.pop_back(); //no data
 	
-		proc.mandatory<FRAME>();
-		
-		m_PlotArea_FRAME = elements_.back();
-		elements_.pop_back();
+		if (proc.mandatory<FRAME>())
+		{	
+			m_PlotArea_FRAME = elements_.back();
+			elements_.pop_back();
+		}
 	}
 
 	return res;

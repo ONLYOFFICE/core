@@ -1072,6 +1072,7 @@ void XlsConverter::convert_fill_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & pr
 				}
 			}break;
 			case NSOfficeDrawing::fillColor:
+			case NSOfficeDrawing::fillColorExt:
 			{
 				ODRAW::fillColor * fill = (ODRAW::fillColor *)(props[i].get());
 				ODRAW::OfficeArtCOLORREF color(fill->op);
@@ -1095,6 +1096,7 @@ void XlsConverter::convert_fill_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & pr
 				xlsx_context->get_drawing_context().set_fill_opacity(fixed_point->dVal);
 			}break;
 			case NSOfficeDrawing::fillBackColor:
+			case NSOfficeDrawing::fillBackColorExt:
 			{
 				ODRAW::fillColor * fill = (ODRAW::fillColor *)(props[i].get());
 				ODRAW::OfficeArtCOLORREF color(fill->op);
@@ -1180,7 +1182,6 @@ void XlsConverter::convert_fill_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & pr
 						xlsx_context->get_drawing_context().set_fill_type(0);
 				}
 			}break;
-		
 		}
 	}
 }

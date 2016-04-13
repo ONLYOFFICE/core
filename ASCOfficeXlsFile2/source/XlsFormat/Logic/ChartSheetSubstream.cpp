@@ -666,6 +666,23 @@ int ChartSheetSubstream::serialize_plot_area (std::wostream & _stream)
 	AXISPARENT* parent0 = dynamic_cast<AXISPARENT*>(chart_formats->m_arAXISPARENT[0].get());
 	if (parent0 == NULL) return 0;
 
+	FRAME	*PlotAreaFRAME	= NULL;
+	Pos		*PlotAreaPos	= NULL;
+
+	AxisParent* ax_parent	= dynamic_cast<AxisParent*>	(parent0->m_AxisParent.get());
+	AXES*		axes		= dynamic_cast<AXES*>		(parent0->m_AXES.get());
+
+	if (((bool)ax_parent->iax == false) && axes) //primary axes
+	{
+		PlotAreaFRAME	= dynamic_cast<FRAME*>	(axes->m_PlotArea_FRAME.get());
+		PlotAreaPos		= dynamic_cast<Pos*>	(parent0->m_Pos.get());
+		
+		if (PlotAreaFRAME && PlotAreaPos)
+		{
+			PlotAreaPos->m_Frame = PlotAreaFRAME->m_Frame;
+		}
+	}
+
 	ShtProps		*sht_props			= dynamic_cast<ShtProps*>(chart_formats->m_ShtProps.get());
 	std::wstringstream stream_legend_entries;
 
@@ -673,25 +690,23 @@ int ChartSheetSubstream::serialize_plot_area (std::wostream & _stream)
 	{
 		CP_XML_NODE(L"c:plotArea")
 		{
-			FRAME	*PlotAreaFRAME	= NULL;
-			Pos		*PlotAreaPos	= NULL;
 
 			for (int i = 0; i < chart_formats->m_arAXISPARENT.size(); i++)
 			{
 				AXISPARENT* parent		= dynamic_cast<AXISPARENT*>	(chart_formats->m_arAXISPARENT[i].get());
-				AxisParent* ax_parent	= dynamic_cast<AxisParent*>	(parent->m_AxisParent.get());
-				AXES*		axes		= dynamic_cast<AXES*>		(parent->m_AXES.get());
+							ax_parent	= dynamic_cast<AxisParent*>	(parent->m_AxisParent.get());
+							axes		= dynamic_cast<AXES*>		(parent->m_AXES.get());
 
-				if (((bool)ax_parent->iax == false) && axes) //primary axes
-				{
-					PlotAreaFRAME	= dynamic_cast<FRAME*>	(axes->m_PlotArea_FRAME.get());
-					PlotAreaPos		= dynamic_cast<Pos*>	(parent->m_Pos.get());
-					
-					if (PlotAreaFRAME && PlotAreaPos)
-					{
-						PlotAreaPos->m_Frame = PlotAreaFRAME->m_Frame;
-					}
-				}
+				//if (((bool)ax_parent->iax == false) && axes) //primary axes
+				//{
+				//	PlotAreaFRAME	= dynamic_cast<FRAME*>	(axes->m_PlotArea_FRAME.get());
+				//	PlotAreaPos		= dynamic_cast<Pos*>	(parent->m_Pos.get());
+				//	
+				//	if (PlotAreaFRAME && PlotAreaPos)
+				//	{
+				//		PlotAreaPos->m_Frame = PlotAreaFRAME->m_Frame;
+				//	}
+				//}
 			}
 
 			if (PlotAreaPos && (sht_props) && (sht_props->fAlwaysAutoPlotArea != false))

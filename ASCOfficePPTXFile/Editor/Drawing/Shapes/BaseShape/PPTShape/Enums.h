@@ -1134,6 +1134,8 @@ namespace NSOfficeDrawing
         fillShapeOriginX=410,
         fillShapeOriginY=411,
         fillShadeType=412,
+        fillColorExt=414,
+		fillBackColorExt=418,
         fRecolorFillAsPicture=441,
         fUseShapeAnchor=442,
         fFilled=443,

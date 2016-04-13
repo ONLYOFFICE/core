@@ -165,6 +165,7 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 									int j=0;
 									BOOST_FOREACH(std::wstring & v, values_[i].numRef_.num_cache)
 									{								
+										if (v == L"NaN") continue; 
 										CP_XML_NODE(L"c:pt")
 										{
 											CP_XML_ATTR(L"idx", j++);

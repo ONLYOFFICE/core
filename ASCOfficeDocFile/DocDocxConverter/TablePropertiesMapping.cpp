@@ -111,9 +111,11 @@ namespace DocFileFormat
 				{
 					if ( this->_isTableStyleNeeded )
 					{
-						wstring id = StyleSheetMapping::MakeStyleId( _styles->Styles->at( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ) );
+						int ind = FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize );
+						
+						std::wstring id = ind < _styles->Styles->size() ? StyleSheetMapping::MakeStyleId( _styles->Styles->at( ind ) ) : L"";
 
-						if( id != wstring( _T( "TableNormal" ) ) )
+						if( id != std::wstring( _T( "TableNormal" )) && !id.empty() )
 						{
 							appendValueElement( _tblPr, _T( "tblStyle" ), id.c_str(), true );
 						}

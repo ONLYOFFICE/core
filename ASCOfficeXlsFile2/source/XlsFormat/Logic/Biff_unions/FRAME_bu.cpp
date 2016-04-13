@@ -80,7 +80,7 @@ int FRAME::serialize(std::wostream & _stream)
 	AreaFormat * area = dynamic_cast<AreaFormat*>(m_AreaFormat.get());
 	LineFormat * line = dynamic_cast<LineFormat*>(m_LineFormat.get());
 
-	bool bArea = m_GELFRAME ? true : false;
+	bool bArea = (m_GELFRAME && (area) && (area->fAuto == false)) ? true : false;
 	if (!bArea && (area) && (area->fAuto == false)) bArea = true;
 
 	bool bLine = false;
@@ -94,7 +94,7 @@ int FRAME::serialize(std::wostream & _stream)
 		{
 			if (bArea)
 			{
-				if (m_GELFRAME)
+				if (m_GELFRAME && area->fls > 1)
 					m_GELFRAME->serialize(CP_XML_STREAM());
 				else if (m_AreaFormat) m_AreaFormat->serialize(CP_XML_STREAM());
 			}

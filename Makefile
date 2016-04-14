@@ -27,6 +27,7 @@ HTMLFILE := $(LIBDIR)/libHtmlFile.so
 UNICODECONVERTER := $(LIBDIR)/libUnicodeConverter.so
 ASCDOCUMENTSCORE := $(LIBDIR)/libascdocumentscore.so
 LIBXML := $(LIBDIR)/liblibxml.a
+LICENSEMANAGER: = $(LIBDIR)/libLicenceManager.a
 
 TARGETS += $(ALLFONTSGEN)
 TARGETS += $(X2T)
@@ -53,6 +54,7 @@ TARGETS += $(HTMLFILE)
 TARGETS += $(UNICODECONVERTER)
 TARGETS += $(ASCDOCUMENTSCORE)
 TARGETS += $(LIBXML)
+TARGETS += $(LICENSEMANAGER)
 
 X2T_PRO := $(abspath X2tConverter/build/Qt/X2tSLN.pro)
 HTMLFILEINTERNAL_PRO := $(abspath HtmlFile/Internal/Internal.pro)
@@ -79,6 +81,7 @@ HTMLFILE_PRO := $(abspath HtmlFile/HtmlFile.pro)
 UNICODECONVERTER_PRO := $(abspath UnicodeConverter/UnicodeConverter.pro)
 ASCDOCUMENTSCORE_PRO := $(abspath DesktopEditor/ChromiumBasedEditors2/lib/AscDocumentsCore_linux.pro)
 LIBXML_PRO := $(abspath DesktopEditor/xml/build/qt/libxml2.pro)
+LICENSEMANAGER_PRO := $(abspath LicenceManager/linux/LicenseManager.pro)
 
 # PROS += $(basename $(X2T_PRO)).build
 # PROS += ALLFONTSGEN_PRO
@@ -128,6 +131,7 @@ QT_PROJ += HTMLFILE
 QT_PROJ += UNICODECONVERTER
 QT_PROJ += ASCDOCUMENTSCORE
 QT_PROJ += LIBXML
+QT_PROJ += LICENSEMANAGER
 
 # X2T_DEP += $(XLSFORMATLIB)
 # X2T_DEP += $(ODFFILEWRITERLIB)
@@ -172,6 +176,8 @@ ASCDOCUMENTSCORE_DEP += $(PDFWRITER)
 ASCDOCUMENTSCORE_DEP += $(PDFREADER)
 ASCDOCUMENTSCORE_DEP += $(DJVUFILE)
 ASCDOCUMENTSCORE_DEP += $(XPSFILE)
+ASCDOCUMENTSCORE_DEP += $(LICENSEMANAGER)
+ASCDOCUMENTSCORE_DEP += $(LIBXML)
 
 #Template for next statment:
 #FOO_MAKE := $(basename $(FOO_PRO)).build/Makefile
@@ -191,7 +197,7 @@ all: lib bin
 
 bin: $(X2T) $(ALLFONTSGEN) $(HTMLFILEINTERNAL)
 
-lib: $(PDFWRITER) $(DOCTRENDERER) $(HTMLRENDERER) $(PDFREADER) $(DJVUFILE) $(XPSFILE) $(HTMLFILE) $(UNICODECONVERTER)
+lib: $(ASCDOCUMENTSCORE) $(PDFWRITER) $(DOCTRENDERER) $(HTMLRENDERER) $(PDFREADER) $(DJVUFILE) $(XPSFILE) $(HTMLFILE) $(UNICODECONVERTER)
 
 $(foreach proj, $(QT_PROJ), $(eval $(call build_proj_tmpl, $(proj))))
 

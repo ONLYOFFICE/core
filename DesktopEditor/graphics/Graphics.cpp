@@ -574,7 +574,7 @@ namespace Aggplus
 
 		if ((0 == dWidth && !m_bIntegerGrid) || dWidth < dWidthMinSize)
 		{
-			dWidth = dWidthMinSize;
+			//dWidth = dWidthMinSize;
 		}
 		
 		double dblMiterLimit = pPen->MiterLimit;

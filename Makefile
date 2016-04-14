@@ -27,7 +27,7 @@ HTMLFILE := $(LIBDIR)/libHtmlFile.so
 UNICODECONVERTER := $(LIBDIR)/libUnicodeConverter.so
 ASCDOCUMENTSCORE := $(LIBDIR)/libascdocumentscore.so
 LIBXML := $(LIBDIR)/liblibxml.a
-LICENSEMANAGER: = $(LIBDIR)/libLicenceManager.a
+LICENSEMANAGER := $(LIBDIR)/libLicenceManager.a
 
 TARGETS += $(ALLFONTSGEN)
 TARGETS += $(X2T)

@@ -217,6 +217,8 @@ $(XLSFORMATLIB): $(XLSFORMATLIB_DEP)
 
 $(DJVUFILE): $(DJVUFILE_DEP)
 
+$(ASCDOCUMENTSCORE): $(ASCDOCUMENTSCORE_DEP)
+
 %.build/Makefile: %.pro
 	mkdir -p $(dir $@) && cd $(dir $@) && qmake -r -spec linux-g++ $<
 

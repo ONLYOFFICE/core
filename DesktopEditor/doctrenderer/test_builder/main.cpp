@@ -53,11 +53,11 @@ int main(int argc, char *argv[])
 
     NSDoctRenderer::CDocBuilder::Initialize();
 
-    NSDoctRenderer::CDocBuilder oBuilder(false);
-    oBuilder.Run(sBuildFile.c_str());
-
-    NSDoctRenderer::CDocBuilder oBuilder2(false);
-    oBuilder2.Run(sBuildFile.c_str());
+    if (true)
+    {
+        NSDoctRenderer::CDocBuilder oBuilder(true);
+        oBuilder.Run(sBuildFile.c_str());
+    }
 
     NSDoctRenderer::CDocBuilder::Dispose();
 

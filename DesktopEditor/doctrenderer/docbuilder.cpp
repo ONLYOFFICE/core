@@ -92,7 +92,7 @@ public:
     bool ExecuteCommand(const std::wstring& command, bool bIsSave = true)
     {
         std::string commandA = U_TO_UTF8(command);
-        commandA = "_api." + commandA;
+        //commandA = "_api." + commandA;
 
         if (bIsSave)
             commandA += "_api.asc_Save();";
@@ -207,7 +207,7 @@ public:
 
         if (pNative != NULL)
         {
-            pNative->m_strFontsDirectory = NSFile::GetProcessDirectory() + L"/sdk/Common";
+            pNative->m_strFontsDirectory = NSFile::GetProcessDirectory() + L"/sdkjs/common";
             pNative->m_strImagesDirectory = path + L"/media";
 
             pNative->CheckFonts();
@@ -257,9 +257,9 @@ public:
         }
 
         if (!bIsBreak)
-            bIsBreak = !this->ExecuteCommand(L"asc_nativeInitBuilder();", false);
+            bIsBreak = !this->ExecuteCommand(L"_api.asc_nativeInitBuilder();", false);
         if (!bIsBreak)
-            bIsBreak = !this->ExecuteCommand(L"asc_SetSilentMode(true);", false);
+            bIsBreak = !this->ExecuteCommand(L"_api.asc_SetSilentMode(true);", false);
 
         return !bIsBreak;
     }
@@ -300,7 +300,7 @@ namespace NSDoctRenderer
 
             m_nFileType = -1;
 
-#if 0
+#if 1
             m_sX2tPath += L"/converter";
 #endif
 
@@ -321,10 +321,12 @@ namespace NSDoctRenderer
                         std::wstring strFilePath = _node.GetText();
 
                         if (std::wstring::npos != strFilePath.find(L"AllFonts.js"))
+                        {
                             m_strAllFonts = strFilePath;
 
-                        if (!NSFile::CFileBinary::Exists(m_strAllFonts) || NSFile::CFileBinary::Exists(sConfigDir + m_strAllFonts))
-                            m_strAllFonts = sConfigDir + m_strAllFonts;
+                            if (!NSFile::CFileBinary::Exists(m_strAllFonts) || NSFile::CFileBinary::Exists(sConfigDir + m_strAllFonts))
+                                m_strAllFonts = sConfigDir + m_strAllFonts;
+                        }
 
                         if (NSFile::CFileBinary::Exists(strFilePath) && !NSFile::CFileBinary::Exists(sConfigDir + strFilePath))
                             m_arrFiles.Add(strFilePath);
@@ -414,7 +416,7 @@ namespace NSDoctRenderer
 
             bool bIsEqual = NSFile::CFileBinary::Exists(strFontsSelectionBin);
 
-            if (bIsEqual && bIsCheckSystemFonts)
+            if (!bIsEqual || bIsCheckSystemFonts)
             {
                 CApplicationFonts oApplicationF;
                 CArray<std::wstring> strFontsW_Cur = oApplicationF.GetSetupFontFiles();
@@ -550,9 +552,9 @@ namespace NSDoctRenderer
             oBuilder.WriteEncodeXmlString(m_sFileDir);
             oBuilder.WriteString(L"/Editor.bin</m_sFileTo><m_nFormatTo>8192</m_nFormatTo>");
             oBuilder.WriteString(L"<m_sFontDir>");
-            oBuilder.WriteEncodeXmlString(NSFile::GetProcessDirectory() + L"/sdk/Common");
+            oBuilder.WriteEncodeXmlString(NSFile::GetProcessDirectory() + L"/sdkjs/common");
             oBuilder.WriteString(L"</m_sFontDir>");
-            oBuilder.WriteString(L"<m_sThemeDir>./sdk/presentationeditor/themes</m_sThemeDir><m_bDontSaveAdditional>true</m_bDontSaveAdditional>");
+            oBuilder.WriteString(L"<m_sThemeDir>./sdkjs/slide/themes</m_sThemeDir><m_bDontSaveAdditional>true</m_bDontSaveAdditional>");
             oBuilder.WriteString(params);
             oBuilder.WriteString(L"</TaskQueueDataConvert>");
 
@@ -709,11 +711,11 @@ namespace NSDoctRenderer
             oBuilder.WriteString(L"</m_sFileTo><m_nFormatTo>");
             oBuilder.WriteString(std::to_wstring(type));
             oBuilder.WriteString(L"</m_nFormatTo><m_sThemeDir>");
-            oBuilder.WriteEncodeXmlString(L"./sdk/presentationeditor/themes");
+            oBuilder.WriteEncodeXmlString(L"./sdkjs/slide/themes");
             oBuilder.WriteString(L"</m_sThemeDir><m_bFromChanges>true</m_bFromChanges><m_bDontSaveAdditional>true</m_bDontSaveAdditional>");
             oBuilder.WriteString(L"<m_nCsvTxtEncoding>46</m_nCsvTxtEncoding><m_nCsvDelimiter>4</m_nCsvDelimiter>");
             oBuilder.WriteString(L"<m_sFontDir>");
-            oBuilder.WriteEncodeXmlString(NSFile::GetProcessDirectory() + L"/sdk/Common");
+            oBuilder.WriteEncodeXmlString(NSFile::GetProcessDirectory() + L"/sdkjs/common");
             oBuilder.WriteString(L"</m_sFontDir>");
 
             int nDoctRendererParam = 0;
@@ -1063,6 +1065,7 @@ namespace NSDoctRenderer
                 break;
         }
 
+        std::string sJsCommands = "";
         std::wstring _builder_params[4]; // с запасом
         for (std::list<std::string>::iterator i = _commands.begin(); i != _commands.end(); i++)
         {
@@ -1090,6 +1093,14 @@ namespace NSDoctRenderer
             bool bIsNoError = true;
             if (bIsBuilder)
             {
+                if (!sJsCommands.empty())
+                {
+                    bIsNoError = this->m_pInternal->ExecuteCommand(NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)sJsCommands.c_str(), (LONG)sJsCommands.length()));
+                    sJsCommands = "";
+                    if (!bIsNoError)
+                        return false;
+                }
+
                 size_t _pos = 8;
                 while (_data[_pos] != '(')
                     ++_pos;
@@ -1144,7 +1155,8 @@ namespace NSDoctRenderer
             }
             else
             {
-                bIsNoError = this->m_pInternal->ExecuteCommand(NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)_data, (LONG)_len));
+                //bIsNoError = this->m_pInternal->ExecuteCommand(NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)_data, (LONG)_len));
+                sJsCommands += command;
             }
 
             if (!bIsNoError)

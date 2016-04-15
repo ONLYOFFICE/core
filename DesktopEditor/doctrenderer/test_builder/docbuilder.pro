@@ -17,8 +17,8 @@ CONFIG -= debug_and_release debug_and_release_target
 CONFIG += c++11
 
 ############### destination path ###############
-DESTINATION_SDK_PATH = $$PWD/../../../SDK/lib
-DESTINATION_PATH = $$PWD/../../../SDK/bin/docbuilder
+DESTINATION_SDK_PATH = $$PWD/../../../build/lib
+DESTINATION_PATH = $$PWD/../../../build/bin/docbuilder
 
 win32 {
 DEFINES += WIN32
@@ -72,7 +72,7 @@ mac {
     TARGET_PLATFORM = _mac64
 }
 
-DESTDIR = $$DESTINATION_PATH
+#DESTDIR = $$DESTINATION_PATH
 TARGET = docbuilder$$TARGET_PLATFORM
 
 ################################################

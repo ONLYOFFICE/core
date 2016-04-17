@@ -91,6 +91,8 @@ public:
 
     bool ExecuteCommand(const std::wstring& command, bool bIsSave = true)
     {
+        LOGGER_SPEED_START
+
         std::string commandA = U_TO_UTF8(command);
         //commandA = "_api." + commandA;
 
@@ -103,6 +105,8 @@ public:
 
         v8::Local<v8::String> source = v8::String::NewFromUtf8(m_isolate, commandA.c_str());
         v8::Local<v8::Script> script = v8::Script::Compile(source);
+
+        LOGGER_SPEED_LAP("compile_command")
 
         if (try_catch.HasCaught())
         {
@@ -130,17 +134,23 @@ public:
             }
         }
 
+        LOGGER_SPEED_LAP("run_command")
+
         return true;
     }
 
     bool OpenFile(const std::wstring& path, const std::string& sString)
     {
+        LOGGER_SPEED_START
+
         v8::Context::Scope context_scope(m_context);
 
         v8::TryCatch try_catch;
 
         v8::Local<v8::String> source = v8::String::NewFromUtf8(m_isolate, sString.c_str());
         v8::Local<v8::Script> script = v8::Script::Compile(source);
+
+        LOGGER_SPEED_LAP("compile")
 
         if (try_catch.HasCaught())
         {
@@ -167,6 +177,7 @@ public:
                 return false;
             }
         }
+        LOGGER_SPEED_LAP("run")
 
         CNativeControl* pNative = NULL;
         bool bIsBreak = false;
@@ -260,6 +271,8 @@ public:
             bIsBreak = !this->ExecuteCommand(L"_api.asc_nativeInitBuilder();", false);
         if (!bIsBreak)
             bIsBreak = !this->ExecuteCommand(L"_api.asc_SetSilentMode(true);", false);
+
+        LOGGER_SPEED_LAP("open")
 
         return !bIsBreak;
     }
@@ -528,6 +541,8 @@ namespace NSDoctRenderer
 
         bool OpenFile(const std::wstring& path, const std::wstring& params)
         {
+            LOGGER_SPEED_START
+
             CheckFileDir();
             NSDirectory::CreateDirectory(m_sFileDir + L"/changes");
 
@@ -672,6 +687,8 @@ namespace NSDoctRenderer
 
             NSFile::CFileBinary::Remove(sTempFileForParams);
 
+            LOGGER_SPEED_LAP("open_convert")
+
             if (0 == nReturnCode)
                 return true;
 
@@ -701,6 +718,8 @@ namespace NSDoctRenderer
                 CV8RealTimeWorker::_LOGGING_ERROR_(L"error (save)", L"file not opened!");
                 return false;
             }
+
+            LOGGER_SPEED_START
 
             NSStringUtils::CStringBuilder oBuilder;
 
@@ -841,6 +860,8 @@ namespace NSDoctRenderer
     #endif
 
             NSFile::CFileBinary::Remove(sTempFileForParams);
+
+            LOGGER_SPEED_LAP("save_convert")
 
             if (0 == nReturnCode)
                 return true;

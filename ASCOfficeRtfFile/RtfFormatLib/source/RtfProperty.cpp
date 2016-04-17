@@ -280,9 +280,13 @@ CString RtfColor::RenderToOOX(RenderParameter oRenderParameter)
 	{
         sResult.AppendFormat( _T("<w:color %ls/>"),WriteOOXAttribute(oRenderParameter.sValue).GetBuffer() );
 	}
+	else if (m_bAuto)
+	{
+        sResult.Append( _T("<w:color w:val=\"auto\"/>"));
+	}
 	else
 	{
-        sResult.AppendFormat( _T("<w:color  w:val=\"%ls\"/>"),ToHexColor().GetBuffer());
+        sResult.AppendFormat( _T("<w:color w:val=\"%ls\"/>"),ToHexColor().GetBuffer());
 	}
 	return sResult;
 }
@@ -293,18 +297,18 @@ CString RtfShadingChar::RenderToRtf(RenderParameter oRenderParameter)
 	RENDER_RTF_INT( m_nValue, sResult, _T("chshdng") )
 	switch( m_eType )
 	{
-		case st_chbghoriz:sResult.Append(_T("\\chbghoriz"));break;
-		case st_chbgvert:sResult.Append(_T("\\chbgvert"));break;
-		case st_chbgfdiag:sResult.Append(_T("\\chbgfdiag"));break;
-		case st_chbgbdiag:sResult.Append(_T("\\chbgbdiag"));break;
-		case st_chbgcross:sResult.Append(_T("\\chbgcross"));break;
-		case st_chbgdcross:sResult.Append(_T("\\chbgdcross"));break;
-		case st_chbgdkhoriz:sResult.Append(_T("\\chbgdkhoriz"));break;
-		case st_chbgdkvert:sResult.Append(_T("\\chbgdkvert"));break;
-		case st_chbgdkfdiag:sResult.Append(_T("\\chbgdkfdiag"));break;
-		case st_chbgdkbdiag:sResult.Append(_T("\\chbgdkbdiag"));break;
-		case st_chbgdkcross:sResult.Append(_T("\\chbgdkcross"));break;
-		case st_chbgdkdcross:sResult.Append(_T("\\chbgdkdcross"));break;
+		case st_chbghoriz:		sResult.Append(_T("\\chbghoriz"));	break;
+		case st_chbgvert:		sResult.Append(_T("\\chbgvert"));	break;
+		case st_chbgfdiag:		sResult.Append(_T("\\chbgfdiag"));	break;
+		case st_chbgbdiag:		sResult.Append(_T("\\chbgbdiag"));	break;
+		case st_chbgcross:		sResult.Append(_T("\\chbgcross"));	break;
+		case st_chbgdcross:		sResult.Append(_T("\\chbgdcross"));	break;
+		case st_chbgdkhoriz:	sResult.Append(_T("\\chbgdkhoriz"));break;
+		case st_chbgdkvert:		sResult.Append(_T("\\chbgdkvert"));	break;
+		case st_chbgdkfdiag:	sResult.Append(_T("\\chbgdkfdiag"));break;
+		case st_chbgdkbdiag:	sResult.Append(_T("\\chbgdkbdiag"));break;
+		case st_chbgdkcross:	sResult.Append(_T("\\chbgdkcross"));break;
+		case st_chbgdkdcross:	sResult.Append(_T("\\chbgdkdcross"));break;
 	}		
 	RENDER_RTF_INT( m_nForeColor, sResult, _T("chcfpat") )
 	RENDER_RTF_INT( m_nBackColor, sResult, _T("chcbpat") )
@@ -688,6 +692,7 @@ CString RtfCharProperty::RenderToOOX(RenderParameter oRenderParameter)
 	CString sResult;
 	RtfDocument* poRtfDocument = static_cast<RtfDocument*>(oRenderParameter.poDocument);
 	OOXWriter* poOOXWriter = static_cast<OOXWriter*>(oRenderParameter.poWriter);
+	
 	switch( m_nAnimated )
 	{
 		case 0:sResult.Append(_T("<w:effect w:val=\"none\"/>"));break;

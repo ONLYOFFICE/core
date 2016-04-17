@@ -61,14 +61,12 @@ public:
 	}
 	bool GetColor( int nId, RtfColor& oColor)
 	{
-		 //0 - ID автоцвет
-		nId--;
-		 if( nId >= 0 && nId < (int)m_aArray.size() )
-		 {
+		if( nId >= 0 && nId < (int)m_aArray.size() )
+		{
 			 oColor = m_aArray[nId];
 			 return true;
-		 }
-		 return false;
+		}
+		return false;
 	}
 	bool GetColor( RtfColor::ThemeColor oTheme, RtfColor& oColor)
 	{
@@ -87,22 +85,26 @@ public:
 		 if( true == RtfColor::GetThemeByString(sTheme,oTheme  ) )
 		 {
 			 for( int i = 0; i < (int)m_aArray.size(); i++ )
-				 if( oTheme == m_aArray[i].m_eTheme )
-				 {
-				oColor = m_aArray[i];
+			 {
+				if( oTheme == m_aArray[i].m_eTheme )
+				{
+					oColor = m_aArray[i];
 					return true;
-					}
+				}
+			 }
 		 }
 		 return false;
 	}
 	bool GetColor( RtfColor oColor , int & nId)
 	 {
 		 for( int i = 0; i < (int)m_aArray.size(); i++ )
+		 {
 			 if( m_aArray[i] == oColor )
 			 {
 				nId = i + 1;
 				return true;
 			 }
+		 }
 		 return false;
 	 }
 	CString RenderToRtf(RenderParameter oRenderParameter)

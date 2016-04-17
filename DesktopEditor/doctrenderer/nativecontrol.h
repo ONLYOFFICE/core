@@ -871,6 +871,12 @@ public:
         m_dwTime = dwCur;
     }
 };
+
+#define LOGGER_SPEED_START CLoggerSpeed __logger_speed;
+#define LOGGER_SPEED_LAP(__logger_param) __logger_speed.Lap(#__logger_param);
+#else
+#define LOGGER_SPEED_START
+#define LOGGER_SPEED_LAP(__logger_param)
 #endif
 
 //////////////////////////////////////////////////////////////////////////////

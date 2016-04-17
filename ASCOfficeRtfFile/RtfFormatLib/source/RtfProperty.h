@@ -159,22 +159,27 @@ class RtfColor : public IRenderableProperty
 public: 
 	typedef enum {TC_NONE,cmaindarkone ,cmainlightone ,cmaindarktwo ,cmainlighttwo ,caccentone ,caccenttwo ,caccentthree ,caccentfour ,caccentfive ,caccentsix ,chyperlink ,cfollowedhyperlink ,cbackgroundone ,ctextone ,cbackgroundtwo ,ctexttwo} ThemeColor;
 	
-	ThemeColor m_eTheme;
-    BYTE m_byteRed;
-    BYTE m_byteGreen;
-    BYTE m_byteBlue;
-    BYTE m_byteTint;
-    BYTE m_byteShade;
-	
+	bool		m_bAuto;
+	ThemeColor	m_eTheme;
+
+    BYTE		m_byteRed;
+    BYTE		m_byteGreen;
+    BYTE		m_byteBlue;
+
+    BYTE		m_byteTint;
+    BYTE		m_byteShade;
+
+//--------------------------------------------------------
 	RtfColor()
 	{
 		SetDefault();
 	}
-		RtfColor(int nHex)
+	
+	RtfColor(int nHex)
 	{
 		SetHEX( nHex );
 	}
-        RtfColor(BYTE r, BYTE g, BYTE b)
+	RtfColor(BYTE r, BYTE g, BYTE b)
 	{
 		SetRGB( r, g, b );
 	}
@@ -186,14 +191,19 @@ public:
 	{
 		SetDefault();
 	}
+	void SetAuto()
+	{
+		m_bAuto		= true;
+	}
 	void SetDefault()
 	{
-		m_byteRed = 0;
+		m_bAuto		= false;
+		m_byteRed	= 0;
 		m_byteGreen = 0;
-		m_byteBlue = 0;
-		m_byteTint = 255;
+		m_byteBlue	= 0;
+		m_byteTint	= 255;
 		m_byteShade = 0;
-		m_eTheme = TC_NONE;
+		m_eTheme	= TC_NONE;
 	}
     BYTE GetR()
 	{

@@ -363,26 +363,26 @@ public:
 		if( _T("plain") == sCommand )
 			oReader.m_oState->m_oCharProp.SetDefaultRtf();
 		
-		COMMAND_RTF_INT( _T("animtext"), oReader.m_oState->m_oCharProp.m_nAnimated, sCommand, hasParameter, parameter)
-		COMMAND_RTF_INT( _T("uc"), oReader.m_oState->m_nUD, sCommand, hasParameter, parameter)
-		COMMAND_RTF_BOOL( _T("b"), oReader.m_oState->m_oCharProp.m_bBold, sCommand, hasParameter, parameter)
-		COMMAND_RTF_BOOL( _T("caps"), oReader.m_oState->m_oCharProp.m_bCaps, sCommand, hasParameter, parameter)
+		COMMAND_RTF_INT( _T("animtext")	, oReader.m_oState->m_oCharProp.m_nAnimated, sCommand, hasParameter, parameter)
+		COMMAND_RTF_INT( _T("uc")		, oReader.m_oState->m_nUD, sCommand, hasParameter, parameter)
+		COMMAND_RTF_BOOL( _T("b")		, oReader.m_oState->m_oCharProp.m_bBold, sCommand, hasParameter, parameter)
+		COMMAND_RTF_BOOL( _T("caps")	, oReader.m_oState->m_oCharProp.m_bCaps, sCommand, hasParameter, parameter)
 		COMMAND_RTF_INT( _T("charscalex"), oReader.m_oState->m_oCharProp.m_nScalex, sCommand, hasParameter, parameter)
-		COMMAND_RTF_INT( _T("cs"), oReader.m_oState->m_oCharProp.m_nCharStyle, sCommand, hasParameter, parameter)
-		COMMAND_RTF_INT( _T("down"), oReader.m_oState->m_oCharProp.m_nDown, sCommand, hasParameter, parameter)
-		COMMAND_RTF_BOOL( _T("embo"), oReader.m_oState->m_oCharProp.m_bEmbo, sCommand, hasParameter, parameter)
-		COMMAND_RTF_INT( _T("expndtw"), oReader.m_oState->m_oCharProp.m_nCharacterSpacing, sCommand, hasParameter, parameter)
+		COMMAND_RTF_INT( _T("cs")		, oReader.m_oState->m_oCharProp.m_nCharStyle, sCommand, hasParameter, parameter)
+		COMMAND_RTF_INT( _T("down")		, oReader.m_oState->m_oCharProp.m_nDown, sCommand, hasParameter, parameter)
+		COMMAND_RTF_BOOL( _T("embo")	, oReader.m_oState->m_oCharProp.m_bEmbo, sCommand, hasParameter, parameter)
+		COMMAND_RTF_INT( _T("expndtw")	, oReader.m_oState->m_oCharProp.m_nCharacterSpacing, sCommand, hasParameter, parameter)
 		else if( _T("expnd") == sCommand )
 		{
 			if( true == hasParameter )
 				oReader.m_oState->m_oCharProp.m_nCharacterSpacing  = 5 * parameter; //quater -points
 		}
-		COMMAND_RTF_INT( _T("fittext"), oReader.m_oState->m_oCharProp.m_nFitText, sCommand, hasParameter, parameter)
-		COMMAND_RTF_INT( _T("f"), oReader.m_oState->m_oCharProp.m_nFont, sCommand, hasParameter, parameter)
-		COMMAND_RTF_INT( _T("fs"), oReader.m_oState->m_oCharProp.m_nFontSize, sCommand, hasParameter, parameter)
-		COMMAND_RTF_BOOL( _T("i"), oReader.m_oState->m_oCharProp.m_bItalic, sCommand, hasParameter, parameter)
-		COMMAND_RTF_BOOL( _T("impr"), oReader.m_oState->m_oCharProp.m_bImprint, sCommand, hasParameter, parameter)
-		COMMAND_RTF_INT( _T("kerning"), oReader.m_oState->m_oCharProp.m_nKerning, sCommand, hasParameter, parameter)
+		COMMAND_RTF_INT( _T("fittext")	, oReader.m_oState->m_oCharProp.m_nFitText, sCommand, hasParameter, parameter)
+		COMMAND_RTF_INT( _T("f")		, oReader.m_oState->m_oCharProp.m_nFont, sCommand, hasParameter, parameter)
+		COMMAND_RTF_INT( _T("fs")		, oReader.m_oState->m_oCharProp.m_nFontSize, sCommand, hasParameter, parameter)
+		COMMAND_RTF_BOOL( _T("i")		, oReader.m_oState->m_oCharProp.m_bItalic, sCommand, hasParameter, parameter)
+		COMMAND_RTF_BOOL( _T("impr")	, oReader.m_oState->m_oCharProp.m_bImprint, sCommand, hasParameter, parameter)
+		COMMAND_RTF_INT( _T("kerning")	, oReader.m_oState->m_oCharProp.m_nKerning, sCommand, hasParameter, parameter)
 		
 		else if( _T("ltrch") == sCommand )
 		{
@@ -392,17 +392,17 @@ public:
 				oReader.m_oState->m_oCharProp.m_bRightToLeft  = 1;
 		}
 		COMMAND_RTF_BOOL( _T("rtlch"),		oReader.m_oState->m_oCharProp.m_bRightToLeft, sCommand, hasParameter, parameter)
-		COMMAND_RTF_INT( _T("lang"),		oReader.m_oState->m_oCharProp.m_nLanguage, sCommand, hasParameter, parameter)
+		COMMAND_RTF_INT( _T("lang"),		oReader.m_oState->m_oCharProp.m_nLanguage	, sCommand, hasParameter, parameter)
 		
 		COMMAND_RTF_BOOL( _T("cs"),			oReader.m_oState->m_oCharProp.m_nComplexScript, sCommand, hasParameter, parameter)
-		COMMAND_RTF_BOOL( _T("outl"),		oReader.m_oState->m_oCharProp.m_bOutline, sCommand, hasParameter, parameter)
-		COMMAND_RTF_BOOL( _T("scaps"),		oReader.m_oState->m_oCharProp.m_bScaps, sCommand, hasParameter, parameter)
-		COMMAND_RTF_BOOL( _T("shad"),		oReader.m_oState->m_oCharProp.m_bShadow, sCommand, hasParameter, parameter)
-		COMMAND_RTF_BOOL( _T("strike"),		oReader.m_oState->m_oCharProp.m_bStrike, sCommand, hasParameter, parameter)
-		COMMAND_RTF_BOOL( _T("striked"),	oReader.m_oState->m_oCharProp.m_nStriked, sCommand, hasParameter, parameter)
-		COMMAND_RTF_BOOL( _T("sub"),		oReader.m_oState->m_oCharProp.m_bSub, sCommand, hasParameter, parameter)
-		COMMAND_RTF_BOOL( _T("super"),		oReader.m_oState->m_oCharProp.m_bSuper, sCommand, hasParameter, parameter)
-		COMMAND_RTF_INT( _T("highlight"),	oReader.m_oState->m_oCharProp.m_nHightlited, sCommand, hasParameter, parameter)
+		COMMAND_RTF_BOOL( _T("outl"),		oReader.m_oState->m_oCharProp.m_bOutline	, sCommand, hasParameter, parameter)
+		COMMAND_RTF_BOOL( _T("scaps"),		oReader.m_oState->m_oCharProp.m_bScaps		, sCommand, hasParameter, parameter)
+		COMMAND_RTF_BOOL( _T("shad"),		oReader.m_oState->m_oCharProp.m_bShadow		, sCommand, hasParameter, parameter)
+		COMMAND_RTF_BOOL( _T("strike"),		oReader.m_oState->m_oCharProp.m_bStrike		, sCommand, hasParameter, parameter)
+		COMMAND_RTF_BOOL( _T("striked"),	oReader.m_oState->m_oCharProp.m_nStriked	, sCommand, hasParameter, parameter)
+		COMMAND_RTF_BOOL( _T("sub"),		oReader.m_oState->m_oCharProp.m_bSub		, sCommand, hasParameter, parameter)
+		COMMAND_RTF_BOOL( _T("super"),		oReader.m_oState->m_oCharProp.m_bSuper		, sCommand, hasParameter, parameter)
+		COMMAND_RTF_INT( _T("highlight"),	oReader.m_oState->m_oCharProp.m_nHightlited	, sCommand, hasParameter, parameter)
 		else if( _T("cf") == sCommand )
 		{
 			if( true == hasParameter )
@@ -755,10 +755,12 @@ public:
 
 class RtfColorTableReader : public RtfAbstractReader
 {
-private: RtfColor oCurColor;
-		bool m_bIsSet;
+private: 
+	RtfColor oCurColor;
+	bool m_bIsSet;
 
-public: RtfColorTableReader()
+public: 
+		RtfColorTableReader()
 		{
 			oCurColor.SetDefaultRtf();
 			m_bIsSet = false;
@@ -819,15 +821,30 @@ public: RtfColorTableReader()
 		 }
 		void ExecuteText( RtfDocument& oDocument, RtfReader& oReader, CString oText )
 		{
+		//Romanization_Armenian.rtf
+		//{\colortbl\red0\blue159\green82;\red0\blue0\green0;\red255\blue255\green255;\red0\blue156\green90;\red169\blue86\green0;}
+		//{\colortbl;\red0\green0\blue0;\red0\green0\blue255;\red0\green255\blue255;\red0\green255\blue0;\red255\green0\blue255;
 			if( oText.Find(';') != -1)
 			{
 				if( true == m_bIsSet )
+				{
 					oDocument.m_oColorTable.DirectAddItem( oCurColor );
+				}
+				else
+				{
+					//Romanization_Armenian.rtf
+					//{\colortbl\red0\blue159\green82;\red0\blue0\green0;\red255\blue255\green255;\red0\blue156\green90;\red169\blue86\green0;}
+					//{\colortbl;\red0\green0\blue0;\red0\green0\blue255;\red0\green255\blue255;\red0\green255\blue0;\red255\green0\blue255;
+					oCurColor.SetAuto();
+					oDocument.m_oColorTable.DirectAddItem( oCurColor );
+				}
 				oCurColor.SetDefaultRtf();
 				m_bIsSet = false;
 			}
 			else
-				;//ATLASSERT(false);
+			{
+
+			}
 		}
 };
 class RtfDefCharPropReader: public RtfAbstractReader

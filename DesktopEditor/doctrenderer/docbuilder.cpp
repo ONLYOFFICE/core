@@ -300,7 +300,7 @@ namespace NSDoctRenderer
 
             m_nFileType = -1;
 
-#if 1
+#if 0
             m_sX2tPath += L"/converter";
 #endif
 
@@ -1058,8 +1058,19 @@ namespace NSDoctRenderer
             while (_currentPos < _commandsLen && (commands[_currentPos] != 0x0d && commands[_currentPos] != 0x0a))
                 ++_currentPos;
 
-            if (_currentPos > (_start + 1))
-                _commands.push_back(std::string(commands + _start, _currentPos - _start));
+            if (_currentPos > _start)
+            {
+                size_t _start2 = _start;
+                while (_start2 < _currentPos && (commands[_start2] == '\t' || commands[_start2] == ' '))
+                    ++_start2;
+
+                if (_currentPos > _start2 && (commands[_start2] != '#' && commands[_start2] != '/'))
+                {
+                    _commands.push_back(std::string(commands + _start2, _currentPos - _start2));
+                    // DEBUG
+                    //std::cout << std::string(commands + _start2, _currentPos - _start2) << std::endl;
+                }
+            }
 
             if (_currentPos >= _commandsLen)
                 break;
@@ -1072,9 +1083,6 @@ namespace NSDoctRenderer
             const std::string& command = *i;
             const char* _data = command.c_str();
             size_t _len = command.length();
-
-            if (_data[0] == '#')
-                continue;
 
             bool bIsBuilder = false;
             if (_len > 8)

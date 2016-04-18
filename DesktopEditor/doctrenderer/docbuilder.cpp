@@ -1,4 +1,5 @@
 ﻿#include "docbuilder.h"
+#include "doctrenderer.h"
 
 #include "../xml/include/xmlutils.h"
 #include <iostream>
@@ -96,8 +97,10 @@ public:
         std::string commandA = U_TO_UTF8(command);
         //commandA = "_api." + commandA;
 
+#ifndef APPLY_CHANGES_IN_BUILDER
         if (bIsSave)
             commandA += "_api.asc_Save();";
+#endif
 
         v8::Context::Scope context_scope(m_context);
 
@@ -275,6 +278,75 @@ public:
         LOGGER_SPEED_LAP("open")
 
         return !bIsBreak;
+    }
+
+    bool SaveFileWithChanges(int type, const std::wstring& _path)
+    {
+        NSDoctRenderer::DoctRendererFormat::FormatFile _formatDst = NSDoctRenderer::DoctRendererFormat::DOCT;
+        if (type & AVS_OFFICESTUDIO_FILE_PRESENTATION)
+            _formatDst = NSDoctRenderer::DoctRendererFormat::PPTT;
+        else if (type & AVS_OFFICESTUDIO_FILE_SPREADSHEET)
+            _formatDst = NSDoctRenderer::DoctRendererFormat::XLST;
+        else if (type & AVS_OFFICESTUDIO_FILE_CROSSPLATFORM)
+            _formatDst = NSDoctRenderer::DoctRendererFormat::PDF;
+
+        v8::Context::Scope context_scope(m_context);
+        v8::TryCatch try_catch;
+
+        CNativeControl* pNative = NULL;
+
+        v8::Local<v8::Object> global_js = m_context->Global();
+        v8::Handle<v8::Value> args[1];
+        args[0] = v8::Int32::New(m_isolate, 0);
+
+        // GET_NATIVE_ENGINE
+        if (true)
+        {
+            v8::Handle<v8::Value> js_func_get_native = global_js->Get(v8::String::NewFromUtf8(m_isolate, "GetNativeEngine"));
+            v8::Local<v8::Object> objNative;
+            if (js_func_get_native->IsFunction())
+            {
+                v8::Handle<v8::Function> func_get_native = v8::Handle<v8::Function>::Cast(js_func_get_native);
+                v8::Local<v8::Value> js_result2 = func_get_native->Call(global_js, 1, args);
+
+                if (try_catch.HasCaught())
+                {
+                    std::wstring strCode        = to_cstring(try_catch.Message()->GetSourceLine());
+                    std::wstring strException   = to_cstring(try_catch.Message()->Get());
+
+                    _LOGGING_ERROR_(L"run_code", strCode);
+                    _LOGGING_ERROR_(L"run", strException);
+                }
+                else
+                {
+                    objNative = js_result2->ToObject();
+                    v8::Handle<v8::External> field = v8::Handle<v8::External>::Cast(objNative->GetInternalField(0));
+
+                    pNative = static_cast<CNativeControl*>(field->Value());
+                }
+            }
+        }
+
+        if (pNative == NULL)
+            return false;
+
+        if (_formatDst == NSDoctRenderer::DoctRendererFormat::PDF)
+            this->ExecuteCommand(L"_api.asc_SetSilentMode(false);", false);
+
+        std::wstring strError;
+        bool bIsError = Doct_renderer_SaveFile_ForBuilder(_formatDst,
+                                                          _path,
+                                                          pNative,
+                                                          m_isolate,
+                                                          global_js,
+                                                          args,
+                                                          try_catch,
+                                                          strError);
+
+        if (_formatDst == NSDoctRenderer::DoctRendererFormat::PDF)
+            this->ExecuteCommand(L"_api.asc_SetSilentMode(true);", false);
+
+        return bIsError;
     }
 };
 
@@ -721,17 +793,28 @@ namespace NSDoctRenderer
 
             LOGGER_SPEED_START
 
+            std::wstring sFileBin = L"/Editor.bin";
+
+#ifdef APPLY_CHANGES_IN_BUILDER
+            this->m_pWorker->SaveFileWithChanges(type, m_sFileDir + L"/Editor2.bin");
+            sFileBin = L"/Editor2.bin";
+#endif
+
             NSStringUtils::CStringBuilder oBuilder;
 
             oBuilder.WriteString(L"<?xml version=\"1.0\" encoding=\"utf-8\"?><TaskQueueDataConvert><m_sFileFrom>");
             oBuilder.WriteEncodeXmlString(m_sFileDir);
-            oBuilder.WriteString(L"/Editor.bin</m_sFileFrom><m_sFileTo>");
+            oBuilder.WriteString(sFileBin + L"</m_sFileFrom><m_sFileTo>");
             oBuilder.WriteEncodeXmlString(path);
             oBuilder.WriteString(L"</m_sFileTo><m_nFormatTo>");
             oBuilder.WriteString(std::to_wstring(type));
             oBuilder.WriteString(L"</m_nFormatTo><m_sThemeDir>");
             oBuilder.WriteEncodeXmlString(L"./sdkjs/slide/themes");
+#ifdef APPLY_CHANGES_IN_BUILDER
+            oBuilder.WriteString(L"</m_sThemeDir><m_bDontSaveAdditional>true</m_bDontSaveAdditional>");
+#else
             oBuilder.WriteString(L"</m_sThemeDir><m_bFromChanges>true</m_bFromChanges><m_bDontSaveAdditional>true</m_bDontSaveAdditional>");
+#endif
             oBuilder.WriteString(L"<m_nCsvTxtEncoding>46</m_nCsvTxtEncoding><m_nCsvDelimiter>4</m_nCsvDelimiter>");
             oBuilder.WriteString(L"<m_sFontDir>");
             oBuilder.WriteEncodeXmlString(NSFile::GetProcessDirectory() + L"/sdkjs/common");

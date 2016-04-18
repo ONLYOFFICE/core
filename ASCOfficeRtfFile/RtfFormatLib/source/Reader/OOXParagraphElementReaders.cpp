@@ -351,7 +351,9 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 				{
 					CString sValue;
 					if ((ooxText->m_oSpace.IsInit()) && (ooxText->m_oSpace->GetValue() == SimpleTypes::xmlspacePreserve))
+					{
 						sValue = RtfUtility::Preserve(ooxText->m_sText);
+					}
 					else
 						sValue = ooxText->m_sText;
 				

@@ -228,6 +228,7 @@ bool OleReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CStrin
 {
 	if( _T("object") == sCommand )
 		return true;
+	
 	COMMAND_RTF_INT( _T("objw"), m_oOle.m_nWidth, sCommand, hasParameter, parameter )
 	COMMAND_RTF_INT( _T("objh"), m_oOle.m_nHeight, sCommand, hasParameter, parameter )
 	COMMAND_RTF_INT( _T("objemb"), m_oOle.m_eOleType, sCommand, true, RtfOle::ot_emb )
@@ -260,14 +261,19 @@ bool OleReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CStrin
 			//oStream.nCurPos = 0;
 
 			CString sOleStorageName = Utils::CreateTempFile( oReader.m_sTempFolder );
+
+			NSFile::CFileBinary file;
+			file.CreateFileW(sOleStorageName.GetBuffer());
+			file.WriteFile(pData, nSize);
+			file.CloseFile();
 			
 			POLE::Storage * piRootStorage = new POLE::Storage(string2std_string(sOleStorageName).c_str());			
 			if( piRootStorage)
 			{
 				//hRes = OleConvertOLESTREAMToIStorage( &oStream, piRootStorage, NULL );
-				//m_oOle.SetFilename( sOleStorageName );
-				//m_oOle.SetOle( piRootStorage );
-				RELEASEOBJECT( piRootStorage );
+				m_oOle.SetFilename( sOleStorageName );
+				m_oOle.SetOle( piRootStorage );
+				//RELEASEOBJECT( piRootStorage );
 				hRes = S_OK;
 			}
 

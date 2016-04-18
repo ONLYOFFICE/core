@@ -21,13 +21,13 @@ bool RtfReader::Load()
 void RtfReader::PushState()
 {
 	ReaderStatePtr psaveNew = ReaderStatePtr(new ReaderState());
-	psaveNew -> m_nUD = m_oState->m_nUD;
-	psaveNew -> m_oCharProp = m_oState->m_oCharProp;
-	psaveNew -> m_oParagraphProp = m_oState->m_oParagraphProp;
-	psaveNew -> m_oRowProperty = m_oState->m_oRowProperty;
-	psaveNew -> m_oCellProperty = m_oState->m_oCellProperty;
-	psaveNew -> m_oCurOldList = m_oState->m_oCurOldList;
-	//psaveNew -> m_oSectionProp = m_oState->m_oSectionProp;
+	psaveNew -> m_nUD				= m_oState->m_nUD;
+	psaveNew -> m_oCharProp			= m_oState->m_oCharProp;
+	psaveNew -> m_oParagraphProp	= m_oState->m_oParagraphProp;
+	psaveNew -> m_oRowProperty		= m_oState->m_oRowProperty;
+	psaveNew -> m_oCellProperty		= m_oState->m_oCellProperty;
+	psaveNew -> m_oCurOldList		= m_oState->m_oCurOldList;
+	//psaveNew -> m_oSectionProp	= m_oState->m_oSectionProp;
 	psaveNew -> psave = m_oState;
 	m_oState = psaveNew;
 

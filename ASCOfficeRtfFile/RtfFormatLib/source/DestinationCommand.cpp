@@ -1,8 +1,22 @@
 ﻿
 #include "DestinationCommand.h"
 #include "RtfOle.h"
+#include "Ole1FormatReader.h"
 
 #include "ConvertationManager.h"
+
+HRESULT ConvertOle1ToOle2(BYTE *pData, int nSize, std::wstring sOle2Name)
+{
+	HRESULT hr = S_FALSE;
+
+	Ole1FormatReader ole1Reader(pData, nSize);
+
+	NSFile::CFileBinary file;
+	file.CreateFileW(sOle2Name);
+	file.WriteFile(ole1Reader.NativeData, ole1Reader.NativeDataSize);
+	file.CloseFile();
+	return S_FALSE;
+}
 
 bool ShapeReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CString sCommand, bool hasParameter, int parameter)
 {
@@ -250,37 +264,46 @@ bool OleReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CStrin
 		if( 0 != nSize  && pData)
 		{
 			HRESULT hRes = S_FALSE;
-			//обекь для конвертации Ole1 в Ole2
-			//RtfOle1ToOle2Stream oStream;
-			//todooo тут был чисто микрософтовский вариант - переделать !!!
-			//oStream.lpstbl = new OLESTREAMVTBL();
-			//oStream.lpstbl->Get = &OleGet1;
-			//oStream.lpstbl->Put = &OlePut1;
-			//oStream.pBuffer = pData;
-			//oStream.nBufferSize = nSize;
-			//oStream.nCurPos = 0;
+
+			//конвертация Ole1 в Ole2
+#if 0//defined(_WIN32) || defined(_WIN64)
+			RtfOle1ToOle2Stream oStream;
+
+			oStream.lpstbl = new OLESTREAMVTBL();
+			oStream.lpstbl->Get = &OleGet1;
+			oStream.lpstbl->Put = &OlePut1;
+			oStream.pBuffer = pData;
+			oStream.nBufferSize = nSize;
+			oStream.nCurPos = 0;
 
 			CString sOleStorageName = Utils::CreateTempFile( oReader.m_sTempFolder );
 
-			NSFile::CFileBinary file;
-			file.CreateFileW(sOleStorageName.GetBuffer());
-			file.WriteFile(pData, nSize);
-			file.CloseFile();
+			IStorage* piMSStorage = NULL;
+			if( SUCCEEDED( StgCreateDocfile( sOleStorageName, STGM_READWRITE | STGM_CREATE | STGM_SHARE_EXCLUSIVE | STGM_TRANSACTED/* | STGM_DELETEONRELEASE*/, NULL, &piMSStorage) ) )
+			{
+				hRes = OleConvertOLESTREAMToIStorage( &oStream, piMSStorage, NULL );
+				piMSStorage->Commit( STGC_DEFAULT );
+				RELEASEINTERFACE( piMSStorage );
+			}			
+			delete oStream.lpstbl;
+#else
+			std::wstring sOleStorageName = FileSystem::Directory::CreateTempFileWithUniqueName(oReader.m_sTempFolder, _T("img"));
+
+			hRes = ConvertOle1ToOle2(pData, nSize, sOleStorageName);
 			
-			POLE::Storage * piRootStorage = new POLE::Storage(string2std_string(sOleStorageName).c_str());			
+#endif
+			delete[] pData;
+			
+			POLE::Storage * piRootStorage = new POLE::Storage(sOleStorageName.c_str());			
 			if( piRootStorage)
 			{
-				//hRes = OleConvertOLESTREAMToIStorage( &oStream, piRootStorage, NULL );
-				m_oOle.SetFilename( sOleStorageName );
+				m_oOle.SetFilename( sOleStorageName.c_str() );
 				m_oOle.SetOle( piRootStorage );
-				//RELEASEOBJECT( piRootStorage );
 				hRes = S_OK;
 			}
 
-			//delete oStream.lpstbl;
-			delete[] pData;
             if(  hRes != S_OK )
-				Utils::RemoveDirOrFile( sOleStorageName );
+				Utils::RemoveDirOrFile( sOleStorageName.c_str() );
 		}
 	}
 	else if( _T("result") == sCommand )

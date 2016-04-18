@@ -640,6 +640,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\source\Ole1FormatReader.h"
+				>
+			</File>
+			<File
 				RelativePath="..\source\RtfDefine.h"
 				>
 			</File>

@@ -139,6 +139,13 @@ public:
 	void SetSource( std::wstring sPath )
 	{
 		m_oStream.SetSource( sPath);
+
+		if (m_oStream.getSize() > m_nReadBufSize)
+		{
+			m_nReadBufSize = m_oStream.getSize() ;
+			if (m_caReadBuffer) delete []m_caReadBuffer;
+			m_caReadBuffer = new char[m_nReadBufSize];
+		}
 	}
 	void CloseSource()
 	{

@@ -57,7 +57,7 @@ public:
 		//изменяем scale в соответсявии с выходным размером
 		if( PROP_DEF != nWidth && PROP_DEF != oOutput.m_oPicture->m_nWidthGoal )
 		{
-			double dNewScale = 100 * ( 1.0 * nWidth / oOutput.m_oPicture->m_nWidthGoal );
+			double dNewScale = 100 * ( 1.0 * nWidth / oOutput.m_oPicture->m_nWidthGoal ) ;
 			oOutput.m_oPicture->m_dScaleX = dNewScale;
 		}
 		if( PROP_DEF != nHeight && PROP_DEF != oOutput.m_oPicture->m_nHeightGoal )

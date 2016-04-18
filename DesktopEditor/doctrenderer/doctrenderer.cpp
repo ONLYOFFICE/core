@@ -301,7 +301,7 @@ namespace NSDoctRenderer
 
     public:
 
-        void _LOGGING_ERROR_(const std::wstring& strType, const std::wstring& strError)
+        static void _LOGGING_ERROR_(const std::wstring& strType, const std::wstring& strError)
         {
 #if 0
             if (m_sErrorsLogFile.empty())
@@ -324,13 +324,14 @@ namespace NSDoctRenderer
             std::cerr << sT << ": " << sE << std::endl;
         }
 
-        bool Doct_renderer_SaveFile(CExecuteParams* pParams,
+        static bool Doct_renderer_SaveFile(CExecuteParams* pParams,
                                        CNativeControl* pNative,
                                        v8::Isolate* isolate,
                                        v8::Local<v8::Object>& global_js,
                                        v8::Handle<v8::Value>* args,
                                        v8::TryCatch& try_catch,
-                                       std::wstring& strError)
+                                       std::wstring& strError,
+                                       bool bIsPdfBase64 = false)
         {
             bool bIsBreak = false;
             switch (pParams->m_eDstFormat)
@@ -495,7 +496,21 @@ namespace NSDoctRenderer
                             NSFile::CFileBinary oFile;
                             if (true == oFile.CreateFileW(pParams->m_strDstFilePath))
                             {
-                                oFile.WriteFile(pData, (DWORD)pNative->m_nSaveBinaryLen);
+                                if (!bIsPdfBase64)
+                                {
+                                    oFile.WriteFile(pData, (DWORD)pNative->m_nSaveBinaryLen);
+                                }
+                                else
+                                {
+                                    char* pDataDst = NULL;
+                                    int nDataDst = 0;
+                                    if (NSFile::CBase64Converter::Encode(pData, pNative->m_nSaveBinaryLen, pDataDst, nDataDst))
+                                    {
+                                        oFile.WriteFile((BYTE*)pDataDst, (DWORD)nDataDst);
+                                        RELEASEARRAYOBJECTS(pDataDst);
+                                    }
+
+                                }
                                 oFile.CloseFile();
                             }
                         }
@@ -1047,4 +1062,20 @@ namespace NSDoctRenderer
     {
         return m_pInternal->m_arImagesInChanges;
     }
+}
+
+bool Doct_renderer_SaveFile_ForBuilder(int nFormat, const std::wstring& strDstFile,
+                               CNativeControl* pNative,
+                               v8::Isolate* isolate,
+                               v8::Local<v8::Object>& global_js,
+                               v8::Handle<v8::Value>* args,
+                               v8::TryCatch& try_catch,
+                               std::wstring& strError)
+{
+    NSDoctRenderer::CExecuteParams oParams;
+    oParams.m_eDstFormat = (NSDoctRenderer::DoctRendererFormat::FormatFile)nFormat;
+    oParams.m_strDstFilePath = strDstFile;
+
+    return NSDoctRenderer::CDoctRenderer_Private::Doct_renderer_SaveFile(&oParams,
+            pNative, isolate, global_js, args, try_catch, strError, true);
 }

@@ -850,6 +850,8 @@ void CreateNativeObject(const v8::FunctionCallbackInfo<v8::Value>& args);
 void CreateNativeObjectBuilder(const v8::FunctionCallbackInfo<v8::Value>& args);
 void CreateNativeMemoryStream(const v8::FunctionCallbackInfo<v8::Value>& args);
 
+#define APPLY_CHANGES_IN_BUILDER
+
 #if 0
 class CLoggerSpeed
 {
@@ -937,5 +939,13 @@ public:
 
     static CV8Initializer* getInitializer();
 };
+
+bool Doct_renderer_SaveFile_ForBuilder(int nFormat, const std::wstring& strDstFile,
+                               CNativeControl* pNative,
+                               v8::Isolate* isolate,
+                               v8::Local<v8::Object>& global_js,
+                               v8::Handle<v8::Value>* args,
+                               v8::TryCatch& try_catch,
+                               std::wstring& strError);
 
 #endif // NATIVECONTROL

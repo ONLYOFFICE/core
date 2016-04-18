@@ -211,10 +211,8 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" 
 				strDstChart = strDstChart.Mid(0, nPos);
 
 			strDstChart += _T("charts");
-			if (1 == m_lChartNumber)
-			{
-                FileSystem::Directory::CreateDirectory(strDstChart);
-			}
+			//на всякий случай всегда создаем, нет уверенности что 1 == m_lChartNumber для первого chart
+			FileSystem::Directory::CreateDirectory(strDstChart);
 			CString strChart = _T("");
 			strChart.Format(_T("chart%d.xml"), m_lChartNumber);
 

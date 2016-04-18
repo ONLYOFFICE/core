@@ -173,6 +173,7 @@ namespace BinXlsxRW{
 
 			if(oChartSpace.isValid())
 			{
+				//todo не делать embeddings, если пишем xlsx
 				//save xlsx
 				if(!sEmbedingPath.IsEmpty())
 				{

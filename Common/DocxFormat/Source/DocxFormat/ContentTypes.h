@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #ifndef OOX_CONTENT_TYPES_INCLUDE_H_
 #define OOX_CONTENT_TYPES_INCLUDE_H_
 
@@ -108,7 +108,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("Extension"), m_sExtension )
 				WritingElement_ReadAttributes_End( oReader )
@@ -163,7 +163,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("PartName"),    m_oPart )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("ContentType"), m_sType )
@@ -210,6 +210,7 @@ namespace OOX
 			AddDefault(OOX::CPath(_T(".emf")));
 			AddDefault(OOX::CPath(_T(".wmf")));
 			AddDefault(OOX::CPath(_T(".jpeg")));
+			AddDefault(OOX::CPath(_T(".xlsx")));
 		}
 		CContentTypes(const CPath& oPath)
 		{

@@ -4880,7 +4880,7 @@ HRESULT CDrawingConverter::GetAdditionalParam(const CString& ParamName, VARIANT*
     else if (name == _T("DocumentChartsCount"))
 	{
 		ParamValue->vt = VT_I4;
-		ParamValue->lVal = m_pReader->m_lChartNumber;
+		ParamValue->lVal = m_pReader->m_lChartNumber - 1;
 	}
 	else if (name == _T("ContentTypes"))
 	{

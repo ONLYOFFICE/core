@@ -74,7 +74,7 @@ public:
 	{
 		if (piOle == NULL) return;
 
-		m_piStorage = new POLE::Storage(*piOle);
+		m_piStorage = piOle;
 	}
 	void SetDefault()
 	{
@@ -95,18 +95,34 @@ private:
 };
 typedef boost::shared_ptr<RtfOle> RtfOlePtr;
 
-struct RtfOle1ToOle2Stream :  POLE::Stream
-{
-	BYTE* pBuffer;
 
-	long nBufferSize;
-	long nCurPos;
-};
-struct RtfOle2ToOle1Stream : POLE::Stream
-{
-	std::vector<BYTE> aBuffer;
-};
-//DWORD CALLBACK OleGet1(POLE::Stream* oStream, void FAR* pTarget, DWORD dwRead);;
-//DWORD CALLBACK OlePut1(POLE::Stream*, const void FAR*, DWORD);
-//DWORD CALLBACK OleGet2(POLE::Stream* oStream, void FAR* pTarget, DWORD dwRead);;
-//DWORD CALLBACK OlePut2(POLE::Stream*, const void FAR*, DWORD);
+#if defined (_WIN32) || defined (_WIN64)
+	struct RtfOle1ToOle2Stream : OLESTREAM
+	{
+		BYTE* pBuffer;
+		long nBufferSize;
+		long nCurPos;
+	};
+	struct RtfOle2ToOle1Stream : OLESTREAM
+	{
+		std::vector<BYTE> aBuffer;
+	};
+
+	DWORD CALLBACK OleGet1(LPOLESTREAM oStream, void FAR* pTarget, DWORD dwRead);;
+	DWORD CALLBACK OlePut1(LPOLESTREAM, const void FAR*, DWORD);
+	DWORD CALLBACK OleGet2(LPOLESTREAM oStream, void FAR* pTarget, DWORD dwRead);;
+	DWORD CALLBACK OlePut2(LPOLESTREAM, const void FAR*, DWORD);
+
+#else
+	struct RtfOle1ToOle2Stream :  POLE::Stream
+	{
+		BYTE* pBuffer;
+
+		long nBufferSize;
+		long nCurPos;
+	};
+	struct RtfOle2ToOle1Stream : POLE::Stream
+	{
+		std::vector<BYTE> aBuffer;
+	};
+#endif

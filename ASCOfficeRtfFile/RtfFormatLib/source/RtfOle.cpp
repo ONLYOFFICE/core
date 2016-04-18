@@ -18,6 +18,7 @@ CString RtfOle::RenderToOOX(RenderParameter oRenderParameter)
 	{
 		sResult.Append( _T("<w:r>") );
 		sResult.AppendFormat( _T("<w:object w:dxaOrig=\"%d\" w:dyaOrig=\"%d\">"), m_nWidth, m_nHeight );
+		
 		RenderParameter oNewRenderParameter = oRenderParameter;
 		oNewRenderParameter.nType = RENDER_TO_OOX_PARAM_SHAPE_WSHAPE2;
 		m_oResultPic->m_bIsOle = true;
@@ -71,3 +72,31 @@ CString RtfOle::RenderToOOXOnlyOle(RenderParameter oRenderParameter)
 	sResult.Append( _T("/>") );
 	return sResult;
 }
+
+#if defined(_WIN32) || defined(_WIN64)
+	DWORD CALLBACK OlePut1(LPOLESTREAM oStream, const void FAR* pTarget, DWORD dwRead)
+	{
+		return 0;
+	}
+	DWORD CALLBACK OleGet2(LPOLESTREAM oStream, void FAR* pTarget, DWORD dwRead)
+	{
+		return 0;
+	}
+	DWORD CALLBACK OleGet1(LPOLESTREAM oStream, void FAR* pTarget, DWORD dwRead)
+	{
+		RtfOle1ToOle2Stream* piStream = static_cast<RtfOle1ToOle2Stream*>(oStream);
+		if( piStream->nCurPos + (int)dwRead > piStream->nBufferSize )
+			return 0;
+		memcpy( pTarget, (piStream->pBuffer + piStream->nCurPos) , dwRead );
+		piStream->nCurPos += dwRead;
+		return dwRead;
+	}
+	DWORD CALLBACK OlePut2(LPOLESTREAM oStream, const void FAR* pTarget, DWORD dwWrite)
+	{
+		RtfOle2ToOle1Stream* piStream = static_cast<RtfOle2ToOle1Stream*>(oStream);
+		BYTE* pSource = (BYTE*)pTarget;
+		for( int i = 0; i < (int)dwWrite; i++ )
+			piStream->aBuffer.push_back( pSource[i] );
+		return dwWrite;
+	}
+#endif

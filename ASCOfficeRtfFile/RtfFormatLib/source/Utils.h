@@ -601,7 +601,8 @@ public:
 	{
 		CString sResult = sText;
 		//обрезавем лишние пробелы
-		sResult.Trim();
+		//sResult.Trim();
+
 		//удаляем дублирующие пробелы
 		while( sResult.Replace( _T("  "), _T(" ") ) > 0 )
 			;

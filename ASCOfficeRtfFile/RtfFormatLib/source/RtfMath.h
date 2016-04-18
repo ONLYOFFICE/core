@@ -113,28 +113,40 @@ public:
 	CString RenderToOOX(RenderParameter oRenderParameter)
 	{
 		CString sResult;
-	#ifdef RTF_MATH_OOX
+	//#ifdef RTF_MATH_OOX
 		RenderParameter oNewParam = oRenderParameter;
-		sResult.AppendFormat( _T("<%ls"), m_sOOXName );
+		sResult.Append( _T("<") );
+		sResult += m_sOOXName;
+		
 		oNewParam.nType = RENDER_TO_OOX_PARAM_MATH;
 		CString sVal = m_oVal.RenderToOOX( oNewParam );
+		
 		if( false == sVal.IsEmpty() )
-			sResult.AppendFormat( _T(" w:val=\"%ls\""), sVal );
+		{
+			sResult.Append( _T(" w:val=\"") );
+			sResult += sVal;
+			sResult.Append( _T("\"") );
+		}
 		sResult.Append( _T(">") );
 
 		oNewParam.nType = RENDER_TO_OOX_PARAM_TEXT;
 		sResult.Append( oProperty.RenderToOOX( oNewParam ) );
+		
 		for( int i = 0; i < (int)m_aArray.size(); i++ )
+		{
 			sResult.Append(m_aArray[i]->RenderToOOX(oNewParam));
+		}
 
-		sResult.AppendFormat(_T("</%ls>"), m_sOOXName);
+		sResult.Append(_T("</") );
+			sResult += m_sOOXName;
+		sResult.Append(_T(">"));
 
-	#else
+	//#else
 
-		if( NULL != m_oPicture )
-			sResult.Append( m_oPicture->RenderToOOX(oRenderParameter) );
+	//	if( NULL != m_oPicture )
+	//		sResult.Append( m_oPicture->RenderToOOX(oRenderParameter) );
 
-	#endif
+	//#endif
 		return sResult;
 	}
 };

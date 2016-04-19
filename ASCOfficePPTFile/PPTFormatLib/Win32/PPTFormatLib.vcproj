@@ -347,6 +347,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\ASCOfficeDocxFile2\DocWrapper\ChartWriter.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\XlsxSerializerCom\Common\Common.cpp"
 				>
 			</File>
@@ -383,6 +387,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\..\Common\FileDownloader\FileDownloader_win.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\DesktopEditor\fontengine\FontManager.cpp"
 				>
 				<FileConfiguration
@@ -396,6 +404,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\ASCOfficeDocxFile2\DocWrapper\FontProcessor.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\UnicodeConverter\UnicodeConverter.cpp"
 				>
 			</File>
 			<File

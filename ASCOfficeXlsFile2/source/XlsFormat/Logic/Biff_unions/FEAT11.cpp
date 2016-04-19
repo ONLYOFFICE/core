@@ -43,15 +43,16 @@ public:
 				return false;
 			}
 		}
-		proc.repeated<ContinueFrt11>(0, 0);
-		proc.repeated<List12>(0, 0);
+		int count = 0;
+		count = proc.repeated<ContinueFrt11>(0, 0);
+		count = proc.repeated<List12>(0, 0);
 		
 		while (proc.optional<AutoFilter12>())
 		{
-			proc.repeated<ContinueFrt12>(0, 0);
+			count = proc.repeated<ContinueFrt12>(0, 0);
 		}		
 		
-		proc.repeated<List12>(0, 0);
+		count = proc.repeated<List12>(0, 0);
 		proc.optional<SORTDATA12>();
 		return true;
 	};
@@ -73,7 +74,39 @@ const bool FEAT11::loadContent(BinProcessor& proc)
 	{
 		return false;
 	}
-	proc.repeated<Parenthesis_FEAT11_1>(0, 0);
+	m_FeatHdr11 = elements_.back();
+	elements_.pop_back();
+	
+	int count = proc.repeated<Parenthesis_FEAT11_1>(0, 0);
+
+	while(!elements_.empty())
+	{
+		if (elements_.front()->get_type() == typeFeature11 || 
+			elements_.front()->get_type() == typeFeature12 )
+		{
+			_data new_data;
+			new_data.m_Feature = elements_.front();
+
+			m_arFEAT.push_back(new_data);
+		}
+
+		if (elements_.front()->get_type() == typeList12)
+		{
+			if (m_arFEAT.back().m_AutoFilter12)
+				m_arFEAT.back().m_arList12_second.push_back(elements_.front());
+			else
+				m_arFEAT.back().m_arList12.push_back(elements_.front());
+		}
+		if (elements_.front()->get_type() == typeAutoFilter12)
+		{
+			m_arFEAT.back().m_AutoFilter12 = elements_.front();
+		}
+		if (elements_.front()->get_type() == typeSORTDATA12)
+		{
+			m_arFEAT.back().m_SORTDATA12 = elements_.front();
+		}
+		elements_.pop_front();
+	}
 	return true;
 }
 

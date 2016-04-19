@@ -283,7 +283,7 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 			case rt_CondFmt:
 			case rt_CondFmt12:
 			{				
-				if (proc.optional<CONDFMTS>())  // Let it be optional
+				if (proc.optional<CONDFMTS>())
 				{
 					m_CONDFMTS = elements_.back();
 					elements_.pop_back();

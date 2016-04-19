@@ -1962,6 +1962,7 @@ void xlsx_drawing_context::set_custom_verticles (std::vector<ODRAW::MSOPOINT> & 
 void xlsx_drawing_context::set_custom_guides (std::vector<ODRAW::MSOSG> & guides)
 {
 	if (current_drawing_states == NULL) return;
+	if (current_drawing_states->back()->shape_id == MSOSPT::msosptNotchedCircularArrow) return;
 	
 	current_drawing_states->back()->custom_guides = guides;
 }

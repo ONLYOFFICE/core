@@ -24,6 +24,7 @@ public:
 	{
 		unsigned short nElems, nElemsAlloc;
 		unsigned short cbElem;
+		
 		record >> nElems >> nElemsAlloc >> cbElem;
 		while(nElems--)
 		{
@@ -34,7 +35,8 @@ public:
 	}
 	virtual void store(XLS::CFRecord& record){}
 
-	std::vector<Type> data;
+	std::vector<Type>	data;
+	unsigned int		op;
 };
 
 

@@ -1,4 +1,4 @@
-#include "ShapeWriter.h"
+п»ї#include "ShapeWriter.h"
 #include "StylesWriter.h"
 
 #include "../../../ASCOfficeXlsFile2/source/XlsXlsxConverter/ShapeType.h"
@@ -10,7 +10,7 @@
 
 void CStylesWriter::ConvertStyleLevel(NSPresentationEditor::CTextStyleLevel& oLevel,	NSPresentationEditor::CMetricInfo& oMetricInfo,
 																		NSPresentationEditor::CStringWriter& oWriter, const int& nLevel)
-{//дублирование CTextPFRun и  CTextCFRun с ShapeWriter - todooo  - вынести отдельно
+{//РґСѓР±Р»РёСЂРѕРІР°РЅРёРµ CTextPFRun Рё  CTextCFRun СЃ ShapeWriter - todooo  - РІС‹РЅРµСЃС‚Рё РѕС‚РґРµР»СЊРЅРѕ
 	CString str1;
 	if (nLevel == 9)
 		str1 = _T("<a:defPPr");
@@ -306,16 +306,23 @@ CString	NSPresentationEditor::CShapeWriter::ConvertBrush(CBrush & brush)
 	
 	if (brush.Type == c_BrushTypeTexture)
 	{
-		CString strRid = m_pRels->WriteImage(brush.TexturePath);
-
-		brush_writer.WriteString(std::wstring(L"<a:blipFill dpi=\"0\" rotWithShape=\"1\"><a:blip r:embed=\"") + string2std_string(strRid) + _T("\"/><a:srcRect/>"));
-			
-		if (	brush.TextureMode == c_BrushTextureModeTile)
-			brush_writer.WriteString(std::wstring(L"<a:tile/>"));
+		if (m_pImageElement)//С„РѕРЅ РґР»СЏ РєР°СЂС‚РёРЅРєРё СЃ РїСЂР°Р·СЂР°С‡РЅРѕСЃС‚СЊСЋ
+		{
+			brush_writer.WriteString(std::wstring(L"<a:noFill/>"));
+		}
 		else
-			brush_writer.WriteString(std::wstring(L"<a:stretch><a:fillRect/></a:stretch>"));
+		{
+			CString strRid = m_pRels->WriteImage(brush.TexturePath);
 
-		brush_writer.WriteString(std::wstring(L"</a:blipFill>"));
+			brush_writer.WriteString(std::wstring(L"<a:blipFill dpi=\"0\" rotWithShape=\"1\"><a:blip r:embed=\"") + string2std_string(strRid) + _T("\"/><a:srcRect/>"));
+				
+			if (	brush.TextureMode == c_BrushTextureModeTile)
+				brush_writer.WriteString(std::wstring(L"<a:tile/>"));
+			else
+				brush_writer.WriteString(std::wstring(L"<a:stretch><a:fillRect/></a:stretch>"));
+
+			brush_writer.WriteString(std::wstring(L"</a:blipFill>"));
+		}
 	}
 	else if (	brush.Type == c_BrushTypeNoFill) 
 	{
@@ -350,11 +357,23 @@ CString	NSPresentationEditor::CShapeWriter::ConvertBrush(CBrush & brush)
 			brush_writer.WriteString(std::wstring(L"</a:gs>"));
 		}
 		brush_writer.WriteString(std::wstring(L"</a:gsLst>"));
-		brush_writer.WriteString(std::wstring(L"<a:lin ang=\"5400000\" scaled=\"1\"/>"));
+		brush_writer.WriteString(std::wstring(L"<a:lin ang=\""));
+		{
+			if (brush.LinearAngle < -180)	brush.LinearAngle += 180;
+			if (brush.LinearAngle > 180)	brush.LinearAngle -= 180;
+
+			int val = (90 - brush.LinearAngle) ;
+			if (val < 0)	val = 0;
+			if (val > 360)	val -= 360;
+			
+			CString str; str.Format(_T("%d"), val * 60000);
+			brush_writer.WriteString(str);
+		}
+		brush_writer.WriteString(std::wstring(L"\" scaled=\"1\"/>"));
 		brush_writer.WriteString(std::wstring(L"</a:gradFill>"));
 	}
 	else if(brush.Type == c_BrushTypePattern)
-	{//типов нету в ппт - вместо них шаблон-картинка
+	{//С‚РёРїРѕРІ РЅРµС‚Сѓ РІ РїРїС‚ - РІРјРµСЃС‚Рѕ РЅРёС… С€Р°Р±Р»РѕРЅ-РєР°СЂС‚РёРЅРєР°
 		brush_writer.WriteString(std::wstring(L"<a:pattFill prst=\"pct80\">"));
 			brush_writer.WriteString(std::wstring(L"<a:fgClr>"));
 				brush_writer.WriteString(ConvertColor(brush.Color1, brush.Alpha1));
@@ -545,7 +564,7 @@ void NSPresentationEditor::CShapeWriter::WriteImageInfo()
 	m_oWriter.WriteString(std::wstring(L"\""));
 	
 	//if (!m_pImageElement->m_sDescription.empty())
-	//{//бывает всякая разная бяка сохранена 
+	//{//Р±С‹РІР°РµС‚ РІСЃСЏРєР°СЏ СЂР°Р·РЅР°СЏ Р±СЏРєР° СЃРѕС…СЂР°РЅРµРЅР° 
 	//	m_oWriter.WriteString(std::wstring(L" descr=\""));
 	//		m_oWriter.WriteStringXML(m_pImageElement->m_sDescription);
 	//	m_oWriter.WriteString(std::wstring(L"\""));
@@ -707,7 +726,7 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 		std::wstring prstTxWarp = oox::Spt2WordArtShapeType((oox::MSOSPT)m_pShapeElement->m_lShapeType);				
 		m_oWriter.WriteString(std::wstring(L"<a:prstTxWarp"));
 			m_oWriter.WriteString(std::wstring(L" prst=\"") + prstTxWarp + _T("\">"));
-			m_oWriter.WriteString(std::wstring(L"<a:avLst>"));//модификаторы
+			m_oWriter.WriteString(std::wstring(L"<a:avLst>"));//РјРѕРґРёС„РёРєР°С‚РѕСЂС‹
 
 			CPPTShape *pPPTShape = dynamic_cast<CPPTShape *>(m_pShapeElement->m_oShape.m_pShape);
 			CString strVal;
@@ -718,7 +737,7 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 				{
 					case oox::msosptTextFadeUp:
 					{
-						double kf = 4.63; //"волшебный"
+						double kf = 4.63; //"РІРѕР»С€РµР±РЅС‹Р№"
 						strVal.Format(L"%d", (int)(kf * pPPTShape->m_arAdjustments[i]));
 						m_oWriter.WriteString(std::wstring(L"<a:gd name=\"adj\" fmla=\"val "));
 						m_oWriter.WriteString(strVal + _T("\"/>"));
@@ -806,7 +825,7 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 		CString _str2 = _T(">");
 		m_oWriter.WriteString(_str2);
 
-		double dKoef1 = 3.52777778; // :-) чё это не понятно ...
+		double dKoef1 = 3.52777778; // :-) С‡С‘ СЌС‚Рѕ РЅРµ РїРѕРЅСЏС‚РЅРѕ ...
 		if (pPF->lineSpacing.is_init())
 		{
 			LONG val = pPF->lineSpacing.get();
@@ -979,10 +998,14 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 			
 			if ((pCF->Size.is_init()) && (pCF->Size.get() > 0) && (pCF->Size.get() < 4001))
 			{
-				CString strProp = _T("");
-				strProp.Format(_T(" sz=\"%d\""), (int)(100 * pCF->Size.get()));
+				CString strProp;	strProp.Format(_T(" sz=\"%d\""), (int)(100 * pCF->Size.get()));
 				m_oWriter.WriteString(strProp);
-			}				
+			}		
+			if (pCF->BaseLineOffset.is_init())
+			{
+				CString strProp;	strProp.Format(_T(" baseline=\"%d\""), (int)(1000 * pCF->BaseLineOffset.get()));
+				m_oWriter.WriteString(strProp);
+			}
 			if (pCF->FontBold.is_init())
 			{
 				if (pCF->FontBold.get())
@@ -1015,7 +1038,7 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 			m_oWriter.WriteString(std::wstring(L">"));
 
 			if (m_bWordArt)
-			{//порядок важен - линия, заливка, тень !!!			
+			{//РїРѕСЂСЏРґРѕРє РІР°Р¶РµРЅ - Р»РёРЅРёСЏ, Р·Р°Р»РёРІРєР°, С‚РµРЅСЊ !!!			
 				if (m_pShapeElement->m_bLine)
 				{
 					m_oWriter.WriteString(ConvertLine(m_pShapeElement->m_oPen));
@@ -1156,6 +1179,9 @@ CString NSPresentationEditor::CShapeWriter::ConvertShape()
 		m_oWriter.WriteString(std::wstring(L"<a:xfrm"));	
 			if (0 != m_pShapeElement->m_dRotate)
 			{
+				if (m_pShapeElement->m_bFlipH && m_pShapeElement->m_dRotate < 180)
+					m_pShapeElement->m_dRotate += 180; //РўС–РєР±Т±СЂС‹С€С‚С‹ ТЇС€Р±Т±СЂС‹С€С‚Р°СЂРґС‹.ppt slide-7
+
 				str.Format(L" rot=\"%d\"", (int)(m_pShapeElement->m_dRotate * 60000));
 				m_oWriter.WriteString(str);
 			}
@@ -1182,12 +1208,12 @@ CString NSPresentationEditor::CShapeWriter::ConvertShape()
 		m_oWriter.WriteString(std::wstring(L"</a:xfrm>"));
 	}
 
-	if (m_pShapeElement->m_oShape.m_lDrawType & c_ShapeDrawType_Graphic)
+	if (m_pShapeElement->m_oShape.m_lDrawType & c_ShapeDrawType_Graphic || m_pShapeElement->m_oShape.m_pShape->m_bCustomShape)
 	{
 		m_pShapeElement->m_oShape.ToRenderer(dynamic_cast<IRenderer*>(this), oInfo, m_oMetricInfo, 0.0, 1.0);
 	}
 
-	if ((prstGeom.empty() == false || m_pShapeElement->m_bShapePreset) && prstTxWarp.empty())
+	if ((prstGeom.empty() == false || m_pShapeElement->m_bShapePreset) && prstTxWarp.empty() && !m_pShapeElement->m_oShape.m_pShape->m_bCustomShape)
 	{
 		if (prstGeom.empty()) prstGeom = L"rect";
 		m_oWriter.WriteString(std::wstring(L"<a:prstGeom"));
@@ -1235,7 +1261,7 @@ CString NSPresentationEditor::CShapeWriter::ConvertImage()
 	if (m_pImageElement->m_bImagePresent == false)
 	{
 		if (m_pImageElement->m_sName.empty()) return _T("");
-		//ppt_presentation.ppt - ссылка на файл на диске 
+		//ppt_presentation.ppt - СЃСЃС‹Р»РєР° РЅР° С„Р°Р№Р» РЅР° РґРёСЃРєРµ 
 
 		m_pImageElement->m_strImageFileName.clear();
 		m_pImageElement->m_bImagePresent = true;
@@ -1355,7 +1381,7 @@ HRESULT NSPresentationEditor::CShapeWriter::get_Type(LONG* lType)
 	*lType = c_nSVGConverter;
 	return S_OK;
 }
-//-------- Функции для работы со страницей --------------------------------------------------
+//-------- Р¤СѓРЅРєС†РёРё РґР»СЏ СЂР°Р±РѕС‚С‹ СЃРѕ СЃС‚СЂР°РЅРёС†РµР№ --------------------------------------------------
 HRESULT NSPresentationEditor::CShapeWriter::NewPage()
 {
 	return S_OK;
@@ -1840,7 +1866,7 @@ HRESULT NSPresentationEditor::CShapeWriter::put_EdgeDist(double val)
 	m_oEdge.Dist = val;
 	return S_OK;
 }
-//-------- Функции для вывода текста --------------------------------------------------------
+//-------- Р¤СѓРЅРєС†РёРё РґР»СЏ РІС‹РІРѕРґР° С‚РµРєСЃС‚Р° --------------------------------------------------------
 HRESULT NSPresentationEditor::CShapeWriter::CommandDrawText(const std::wstring& bsText, const double& x, const double& y, const double& w, const double& h)
 {
 	if (c_nHyperlinkType == m_lCurrentCommandType)
@@ -1909,7 +1935,7 @@ HRESULT NSPresentationEditor::CShapeWriter::CommandDrawTextEx(const std::wstring
 	}
 	return S_OK;
 }
-//-------- Маркеры для команд ---------------------------------------------------------------
+//-------- РњР°СЂРєРµСЂС‹ РґР»СЏ РєРѕРјР°РЅРґ ---------------------------------------------------------------
 HRESULT NSPresentationEditor::CShapeWriter::BeginCommand(const DWORD& lType)
 {
 	if (c_nPathType == lType)
@@ -1926,7 +1952,7 @@ HRESULT NSPresentationEditor::CShapeWriter::EndCommand(const DWORD& lType)
 	m_lCurrentCommandType = -1;
 	return S_OK;
 }
-//-------- Функции для работы с Graphics Path -----------------------------------------------
+//-------- Р¤СѓРЅРєС†РёРё РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ Graphics Path -----------------------------------------------
 HRESULT NSPresentationEditor::CShapeWriter::PathCommandMoveTo(const double& x, const double& y)
 {
 	if (c_nSimpleGraphicType == m_lCurrentCommandType)
@@ -2080,7 +2106,7 @@ HRESULT NSPresentationEditor::CShapeWriter::PathCommandTextEx(const std::wstring
 	m_oFont.StringGID = bGid;
 	return S_OK;
 }
-//-------- Функции для вывода изображений ---------------------------------------------------
+//-------- Р¤СѓРЅРєС†РёРё РґР»СЏ РІС‹РІРѕРґР° РёР·РѕР±СЂР°Р¶РµРЅРёР№ ---------------------------------------------------
 HRESULT NSPresentationEditor::CShapeWriter::DrawImage(IGrObject* pImage, const double& x, const double& y, const double& w, const double& h)
 {
 	return S_OK;

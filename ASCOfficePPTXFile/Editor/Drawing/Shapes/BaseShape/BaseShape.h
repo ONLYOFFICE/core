@@ -39,18 +39,18 @@ namespace NSPresentationEditor
 	class CBaseShape
 	{
 	public:
-		std::vector<long>		m_arAdjustments;
-		std::vector<double>	Guides;
+		std::vector<long>					m_arAdjustments;
+		std::vector<double>					m_arGuides;
 	public: 
-		LONG					m_eJoin;
-		bool					m_bConcentricFill;
-
+		LONG								m_eJoin;
+		bool								m_bConcentricFill;
+		bool								m_bCustomShape;
         std::vector<SimpleTypes::CPoint>	m_arConnectors;
-		std::vector<LONG>		m_arConnectorAngles;
+		std::vector<LONG>					m_arConnectorAngles;
 
-        std::vector<Aggplus::RECT>		m_arTextRects;
+        std::vector<Aggplus::RECT>			m_arTextRects;
 		
-		std::vector<CHandle_>	m_arHandles;
+		std::vector<CHandle_>				m_arHandles;
 
 		CString					m_strTransformXml;
 
@@ -61,9 +61,11 @@ namespace NSPresentationEditor
 		LONG					m_lLimoY;
 		
 		CPath					m_oPath;
+
 	public:
 		CBaseShape()
 		{
+			m_bCustomShape = false;
 		}
 
 		virtual bool LoadFromXML(const CString& xml)			= 0;
@@ -112,9 +114,9 @@ namespace NSPresentationEditor
 			for(int i = 0; i < Shape->m_arAdjustments.size(); i++)
 				m_arAdjustments.push_back(Shape->m_arAdjustments[i]);
 
-			Guides.clear();
-			for(int i = 0; i < Shape->Guides.size(); i++)
-				Guides.push_back(Shape->Guides[i]);
+			m_arGuides.clear();
+			for(int i = 0; i < Shape->m_arGuides.size(); i++)
+				m_arGuides.push_back(Shape->m_arGuides[i]);
 
 			m_eJoin				= Shape->m_eJoin;
 			m_bConcentricFill	= Shape->m_bConcentricFill;
@@ -154,9 +156,9 @@ namespace NSPresentationEditor
 			for(int i = 0; i < m_arAdjustments.size(); i++)
 				Shape->m_arAdjustments.push_back(m_arAdjustments[i]);
 
-			Shape->Guides.clear();
-			for(int i = 0; i < Guides.size(); i++)
-				Shape->Guides.push_back(Guides[i]);
+			Shape->m_arGuides.clear();
+			for(int i = 0; i < m_arGuides.size(); i++)
+				Shape->m_arGuides.push_back(m_arGuides[i]);
 
 			Shape->m_eJoin				= m_eJoin;
 			Shape->m_bConcentricFill	= m_bConcentricFill;

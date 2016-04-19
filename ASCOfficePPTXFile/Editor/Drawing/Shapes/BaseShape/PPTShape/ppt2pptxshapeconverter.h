@@ -2435,6 +2435,7 @@ namespace NSGuidesVML
 			switch (eParamType)
 			{
 			case ptFormula: 
+				if (bExtShape || lParam < m_arIndexDst.size())
 				{ 
 					oWriter.m_oWriter.AddCharNoCheck((WCHAR)'g');
 					oWriter.m_oWriter.AddCharNoCheck((WCHAR)'d');

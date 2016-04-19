@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 
 #include "Shape.h"
 #include "ShapeProperties.h"
@@ -28,7 +28,6 @@
 #define EMU_MM 36000.0
 #endif
 
-#define		FIXED_POINT(val) (double)((short)(val >> 16) + ((short)(val) / 65536.0))
 #define		FIXED_POINT_unsigned(val) (double)((WORD)(val >> 16) + ((WORD)(val) / 65536.0))
 
 using namespace NSOfficeDrawing;
@@ -37,6 +36,13 @@ using namespace NSPresentationEditor;
 class CPPTElement
 {
 public:
+	double FixedPointToDouble(unsigned int op)
+	{
+		short			Integral	= op >> 16;
+		unsigned short Fractional	= op - (Integral << 16);
+
+		return Integral + (Fractional / 65536.0);
+	}
 
 	bool ChangeBlack2ColorImage(std::wstring image_path, int rgbColor1, int rgbColor2)
 	{
@@ -111,7 +117,7 @@ public:
 
 		if (color.m_lSchemeIndex != -1)
 		{
-			//вытащить цвет (
+			//РІС‹С‚Р°С‰РёС‚СЊ С†РІРµС‚ (
 
 			color = pTheme->m_arColorScheme[color.m_lSchemeIndex];
 		}
@@ -274,7 +280,7 @@ public:
 			}break;
 		case rotation:
 			{
-				pElement->m_dRotate = FIXED_POINT(pProperty->m_lValue);
+				pElement->m_dRotate = FixedPointToDouble(pProperty->m_lValue);
 			}break;
 		case fFlipH:
 			{
@@ -415,13 +421,15 @@ public:
 		case fillOpacity:
 			{
                 pElement->m_oBrush.Alpha1 = (BYTE)(std::min)(255, (int)CDirectory::NormFixedPoint(pProperty->m_lValue, 255));
-				break;
-			}
+			}break;
 		case fillBackOpacity:
 			{
-                pElement->m_oBrush.Alpha2 = (BYTE)(std::min)(255, (int)CDirectory::NormFixedPoint(pProperty->m_lValue, 255));
-				break;
-			}
+                pElement->m_oBrush.Alpha2 = (BYTE)(std::min)(255, (int)CDirectory::NormFixedPoint(pProperty->m_lValue, 255));			
+			}break;
+		case fillAngle:
+			{
+				pElement->m_oBrush.LinearAngle = FixedPointToDouble(pProperty->m_lValue);
+			}break;
 		case fillRectLeft:
 			{
 				pElement->m_oBrush.Rect.X	= pProperty->m_lValue;
@@ -455,9 +463,6 @@ public:
 				bool bShadeBand		= GETBIT(pProperty->m_lValue, 28);
 				bool bShadeOneColor	= GETBIT(pProperty->m_lValue, 27);
 
-			}break;
-		case fillAngle:
-			{
 			}break;
 		case fillFocus://relative position of the last color in the shaded fill
 			{
@@ -529,7 +534,7 @@ public:
 				bool bUseShadowOk				= (0x20 == (0x20 & flag3));
 
 				//if (bUseLineOk)
-				//	pElement->m_bLine = bLineOk;//?? todooo проверить - не сраюатывает ! 1 (82).ppt
+				//	pElement->m_bLine = bLineOk;//?? todooo РїСЂРѕРІРµСЂРёС‚СЊ - РЅРµ СЃСЂР°СЋР°С‚С‹РІР°РµС‚ ! 1 (82).ppt
 
 				if (bUseFillOk)
 					bIsFilled = bFillOk;
@@ -716,11 +721,11 @@ public:
 			}break;
 		case shadowOriginX://in emu, relative from center shape
 			{
-				pElement->m_oShadow.OriginX = FIXED_POINT(pProperty->m_lValue);
+				pElement->m_oShadow.OriginX = FixedPointToDouble(pProperty->m_lValue);
 			}break;
 		case shadowOriginY:
 			{
-				pElement->m_oShadow.OriginY = FIXED_POINT(pProperty->m_lValue);
+				pElement->m_oShadow.OriginY = FixedPointToDouble(pProperty->m_lValue);
 			}break;
 		case shadowColor:
 			{
@@ -742,7 +747,7 @@ public:
 			}break;
 		case shadowHighlight:
 			{
-				//оттенок двойной тени
+				//РѕС‚С‚РµРЅРѕРє РґРІРѕР№РЅРѕР№ С‚РµРЅРё
 			}break;
 		case shadowOffsetX:
 			{
@@ -754,19 +759,19 @@ public:
 			}break;
 		case shadowScaleXToX:
 			{
-				pElement->m_oShadow.ScaleXToX = FIXED_POINT(pProperty->m_lValue);
+				pElement->m_oShadow.ScaleXToX = FixedPointToDouble(pProperty->m_lValue);
 			}break;
 		case shadowScaleYToX:
 			{
-				pElement->m_oShadow.ScaleYToX = FIXED_POINT(pProperty->m_lValue);
+				pElement->m_oShadow.ScaleYToX = FixedPointToDouble(pProperty->m_lValue);
 			}break;
 		case shadowScaleXToY:
 			{
-				pElement->m_oShadow.ScaleXToY = FIXED_POINT(pProperty->m_lValue);
+				pElement->m_oShadow.ScaleXToY = FixedPointToDouble(pProperty->m_lValue);
 			}break;
 		case shadowScaleYToY:
 			{
-				pElement->m_oShadow.ScaleYToY = FIXED_POINT(pProperty->m_lValue);
+				pElement->m_oShadow.ScaleYToY = FixedPointToDouble(pProperty->m_lValue);
 			}break;
 		case shadowPerspectiveX:
 			{
@@ -788,7 +793,7 @@ public:
 				
 				if (!fUsefShadow && fUsefshadowObscured)
 				{
-					//контурная
+					//РєРѕРЅС‚СѓСЂРЅР°СЏ
 					pElement->m_oShadow.Visible = fshadowObscured;
 				}
 			}break;
@@ -871,7 +876,7 @@ public:
 		case pibName:
 			{
 				pElement->m_sImageName = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)pProperty->m_pOptions, pProperty->m_lValue /2-1);
-				// TextMining05.ppt, слайд 20  - некорректное имя ( - todooo потом подчистить его
+				// TextMining05.ppt, СЃР»Р°Р№Рґ 20  - РЅРµРєРѕСЂСЂРµРєС‚РЅРѕРµ РёРјСЏ ( - todooo РїРѕС‚РѕРј РїРѕРґС‡РёСЃС‚РёС‚СЊ РµРіРѕ
 			}break;
 		case cropFromTop:
 			{
@@ -912,12 +917,12 @@ public:
 
 		switch (pProperty->m_ePID)
 		{
-			// здесь просто применяем проперти...
+			// Р·РґРµСЃСЊ РїСЂРѕСЃС‚Рѕ РїСЂРёРјРµРЅСЏРµРј РїСЂРѕРїРµСЂС‚Рё...
 			// geometry ----------------------------------------------------
 			// top, left, right, bottom logic
 		case NSOfficeDrawing::metroBlob:
 			{
-				//альтернатива в формате oox
+				//Р°Р»СЊС‚РµСЂРЅР°С‚РёРІР° РІ С„РѕСЂРјР°С‚Рµ oox
 				//NSFile::CFileBinary f;
 				//f.CreateFileW(L"d:\\test.zip");
 				//f.WriteFile(pProperty->m_pOptions, pProperty->m_lValue);
@@ -937,6 +942,7 @@ public:
 		case NSOfficeDrawing::shapePath:
 			{
 				pShape->m_oCustomVML.SetPath((RulesType)pProperty->m_lValue);				
+				pShape->m_bCustomShape = true;
 			}break;
 			// segmentsInfo
 		case NSOfficeDrawing::pSegmentInfo:
@@ -944,6 +950,7 @@ public:
 				if (pProperty->m_bComplex)
 				{
 					pShape->m_oCustomVML.LoadSegments(pProperty);
+					pShape->m_bCustomShape = true;
 				}				
 			}break;
 			// verticesInfo
@@ -952,12 +959,13 @@ public:
 				if (pProperty->m_bComplex)
 				{
 					pShape->m_oCustomVML.LoadVertices(pProperty);
+					pShape->m_bCustomShape = true;
 				}				
 			}break;
 		case NSOfficeDrawing::pGuides:
 			{
-				if (pProperty->m_bComplex)
-				{
+				if (pProperty->m_bComplex && pShape->m_eType != sptNotchedCircularArrow)
+				{//РўС–РєР±Т±СЂС‹С€С‚С‹ ТЇС€Р±Т±СЂС‹С€С‚Р°СЂРґС‹.ppt - slide 25
 					pShape->m_oCustomVML.LoadGuides(pProperty);
 				}				
 			}break;
@@ -1128,7 +1136,7 @@ public:
 			}
 		case NSOfficeDrawing::gtextBoolean:
 			{
-				// вот здесь - нужно единицы перевести в пикселы
+				// РІРѕС‚ Р·РґРµСЃСЊ - РЅСѓР¶РЅРѕ РµРґРёРЅРёС†С‹ РїРµСЂРµРІРµСЃС‚Рё РІ РїРёРєСЃРµР»С‹
 				BYTE flag1 = (BYTE)(pProperty->m_lValue);
 				BYTE flag2 = (BYTE)(pProperty->m_lValue >> 8);
 				BYTE flag3 = (BYTE)(pProperty->m_lValue >> 16);
@@ -1320,7 +1328,7 @@ public:
 								{
 									if (pLayout->m_arElements[nIndex]->m_bPlaceholderSet == false)
 									{
-										pElementLayout			= pLayout->m_arElements[nIndex]; //для переноса настроек
+										pElementLayout			= pLayout->m_arElements[nIndex]; //РґР»СЏ РїРµСЂРµРЅРѕСЃР° РЅР°СЃС‚СЂРѕРµРє
 										pElementLayout->m_lID	= lMasterID;
 
 										if (placeholder_id >= 0 && pLayout->m_arElements[nIndex]->m_lPlaceholderID < 0 )
@@ -1345,8 +1353,8 @@ public:
 				}
 			}
 		}
-		// раньше искался шейп - и делался дубликат. Теперь думаю это не нужно
-		// нужно ориентироваться на placeholder (type & id)						
+		// СЂР°РЅСЊС€Рµ РёСЃРєР°Р»СЃСЏ С€РµР№Рї - Рё РґРµР»Р°Р»СЃСЏ РґСѓР±Р»РёРєР°С‚. РўРµРїРµСЂСЊ РґСѓРјР°СЋ СЌС‚Рѕ РЅРµ РЅСѓР¶РЅРѕ
+		// РЅСѓР¶РЅРѕ РѕСЂРёРµРЅС‚РёСЂРѕРІР°С‚СЊСЃСЏ РЅР° placeholder (type & id)						
 		IElement* pElem = *ppElement;
 
 		if (NULL == pElem)
@@ -1363,7 +1371,7 @@ public:
 
 					CExFilesInfo oInfo;
 					CExFilesInfo oInfoDefault;
-					// по умолчанию картинка (или оле объект)
+					// РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ РєР°СЂС‚РёРЅРєР° (РёР»Рё РѕР»Рµ РѕР±СЉРµРєС‚)
 					CExFilesInfo::ExFilesType exType = CExFilesInfo::eftNone;
 					CExFilesInfo* pInfo = pMapIDs->Lock(0xFFFFFFFF, exType);
 					if (NULL != pInfo)
@@ -1443,7 +1451,7 @@ public:
 		pElem->m_lID		= oArrayShape[0]->m_nID;
 		pElem->m_lLayoutID	= lMasterID;
 
-//---------внешние ссылки 
+//---------РІРЅРµС€РЅРёРµ СЃСЃС‹Р»РєРё 
 		{
 			CExFilesInfo::ExFilesType exType		= CExFilesInfo::eftNone;
 			CExFilesInfo			* pTextureInfo	= pMapIDs->Lock(0xFFFFFFFF, exType);
@@ -1470,7 +1478,7 @@ public:
 		// placeholders
 		if (0 < oArrayPlaceHolder.size())
 		{
-			pElem->m_bLine					= false; //по умолчанию у них нет линий
+			pElem->m_bLine					= false; //РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ Сѓ РЅРёС… РЅРµС‚ Р»РёРЅРёР№
 			pElem->m_lPlaceholderID			= oArrayPlaceHolder[0]->m_nPosition;
 			pElem->m_lPlaceholderType		= oArrayPlaceHolder[0]->m_nPlacementID;
 			pElem->m_lPlaceholderSizePreset	= oArrayPlaceHolder[0]->m_nSize;
@@ -1522,7 +1530,7 @@ public:
 			if (format_data)
 			{
 				pElem->m_nFormatDate			= 1;
-				//todooo сделать форматированый вывод 
+				//todooo СЃРґРµР»Р°С‚СЊ С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅС‹Р№ РІС‹РІРѕРґ 
 			}
 			else
 			{
@@ -1530,7 +1538,7 @@ public:
 				pElem->m_nFormatDate			= 2;
 			}
 		}
-//------------- привязки ---------------------------------------------------------------------------------
+//------------- РїСЂРёРІСЏР·РєРё ---------------------------------------------------------------------------------
 		std::vector<CRecordClientAnchor*> oArrayAnchor;
 		this->GetRecordsByType(&oArrayAnchor, true, true);
 
@@ -1567,7 +1575,7 @@ public:
 			{			
 				if (oArrayShape[0]->m_bBackground)
 				{
-					// здесь background
+					// Р·РґРµСЃСЊ background
 					pElem->m_rcBoundsOriginal.left		= 0;
 					pElem->m_rcBoundsOriginal.top		= 0;
 					pElem->m_rcBoundsOriginal.right		= lSlideWidth;
@@ -1575,7 +1583,7 @@ public:
 				}
 				else
 				{
-					// не понятно...			
+					// РЅРµ РїРѕРЅСЏС‚РЅРѕ...			
 					pElem->m_rcBoundsOriginal.left		= 0;
 					pElem->m_rcBoundsOriginal.top		= 0;
 					pElem->m_rcBoundsOriginal.right		= 0;
@@ -1601,7 +1609,7 @@ public:
 			pElementLayout->m_bPlaceholderSet	= true;
 			pElementLayout->m_bBoundsEnabled	= true;
 		}
-//--------- наличие текста --------------------------------------------------------------------------
+//--------- РЅР°Р»РёС‡РёРµ С‚РµРєСЃС‚Р° --------------------------------------------------------------------------
 		CShapeElement* pShapeElem = dynamic_cast<CShapeElement*>(pElem);
 		if (NULL != pShapeElem)
 		{
@@ -1612,7 +1620,7 @@ public:
 			pShapeElem->m_oShape.m_dWidthLogic  = ShapeSizeVML;
 			pShapeElem->m_oShape.m_dHeightLogic = ShapeSizeVML;
 
-			// проверка на textheader present
+			// РїСЂРѕРІРµСЂРєР° РЅР° textheader present
 			std::vector<CRecordTextHeaderAtom*> oArrayTextHeader;
 			GetRecordsByType(&oArrayTextHeader, true, true);
 			
@@ -1629,7 +1637,7 @@ public:
 				oElementInfo.m_lMasterTextType					= NSOfficePPT::NoPresent;
 			}
 
-			// проверка на ссылку в персист
+			// РїСЂРѕРІРµСЂРєР° РЅР° СЃСЃС‹Р»РєСѓ РІ РїРµСЂСЃРёСЃС‚
 			std::vector<CRecordOutlineTextRefAtom*> oArrayTextRefs;
 			GetRecordsByType(&oArrayTextRefs, true, true);
 			
@@ -1638,7 +1646,7 @@ public:
 				oElementInfo.m_lPersistIndex = oArrayTextRefs[0]->m_nIndex;
 			}
 
-			// сам текст...
+			// СЃР°Рј С‚РµРєСЃС‚...
 			std::vector<CRecordTextBytesAtom*> oArrayTextBytes;
 			GetRecordsByType(&oArrayTextBytes, true, true);
 			if (0 < oArrayTextBytes.size() && strShapeText.empty())
@@ -1788,7 +1796,7 @@ public:
 			return;
 		}
 
-		// здесь переводим координаты, чтобы они не зависили от группы
+		// Р·РґРµСЃСЊ РїРµСЂРµРІРѕРґРёРј РєРѕРѕСЂРґРёРЅР°С‚С‹, С‡С‚РѕР±С‹ РѕРЅРё РЅРµ Р·Р°РІРёСЃРёР»Рё РѕС‚ РіСЂСѓРїРїС‹
 		long lWidthClient	= m_pGroupClientAnchor->right	- m_pGroupClientAnchor->left;
 		long lHeightClient	= m_pGroupClientAnchor->bottom	- m_pGroupClientAnchor->top;
 		
@@ -1865,17 +1873,17 @@ protected:
 	}
 	void SetUpTextStyle(std::wstring& strText, CTheme* pTheme, CLayout* pLayout, IElement* pElem, CSlideInfo* pThemeWrapper, CSlideInfo* pSlideWrapper, CSlide* pSlide, CRecordMasterTextPropAtom* master_levels)
 	{
-		// сначала проверяем на shape
-		// затем применяем все настройки по-очереди
+		// СЃРЅР°С‡Р°Р»Р° РїСЂРѕРІРµСЂСЏРµРј РЅР° shape
+		// Р·Р°С‚РµРј РїСЂРёРјРµРЅСЏРµРј РІСЃРµ РЅР°СЃС‚СЂРѕР№РєРё РїРѕ-РѕС‡РµСЂРµРґРё
 		// 1) master + TextMasterStyles
 		// 2) persist + TextMasterStyles
-		// 3) свои настройки + TextMasterStyles
-		// причем "свои настройки" - это чисто "продвинутые настройки"
-		// потому что все общие ( через проперти ) - уже установлены
-		// тут важно выставить правильный порядок.
-		// словом - важная очень функция для текста, 
-		// и, чтобы убрать всякие лишние .cpp файлы - здесь же будем учитывать 
-		// настройки слайда (т.е. структуры не будут работать со слайдами)
+		// 3) СЃРІРѕРё РЅР°СЃС‚СЂРѕР№РєРё + TextMasterStyles
+		// РїСЂРёС‡РµРј "СЃРІРѕРё РЅР°СЃС‚СЂРѕР№РєРё" - СЌС‚Рѕ С‡РёСЃС‚Рѕ "РїСЂРѕРґРІРёРЅСѓС‚С‹Рµ РЅР°СЃС‚СЂРѕР№РєРё"
+		// РїРѕС‚РѕРјСѓ С‡С‚Рѕ РІСЃРµ РѕР±С‰РёРµ ( С‡РµСЂРµР· РїСЂРѕРїРµСЂС‚Рё ) - СѓР¶Рµ СѓСЃС‚Р°РЅРѕРІР»РµРЅС‹
+		// С‚СѓС‚ РІР°Р¶РЅРѕ РІС‹СЃС‚Р°РІРёС‚СЊ РїСЂР°РІРёР»СЊРЅС‹Р№ РїРѕСЂСЏРґРѕРє.
+		// СЃР»РѕРІРѕРј - РІР°Р¶РЅР°СЏ РѕС‡РµРЅСЊ С„СѓРЅРєС†РёСЏ РґР»СЏ С‚РµРєСЃС‚Р°, 
+		// Рё, С‡С‚РѕР±С‹ СѓР±СЂР°С‚СЊ РІСЃСЏРєРёРµ Р»РёС€РЅРёРµ .cpp С„Р°Р№Р»С‹ - Р·РґРµСЃСЊ Р¶Рµ Р±СѓРґРµРј СѓС‡РёС‚С‹РІР°С‚СЊ 
+		// РЅР°СЃС‚СЂРѕР№РєРё СЃР»Р°Р№РґР° (С‚.Рµ. СЃС‚СЂСѓРєС‚СѓСЂС‹ РЅРµ Р±СѓРґСѓС‚ СЂР°Р±РѕС‚Р°С‚СЊ СЃРѕ СЃР»Р°Р№РґР°РјРё)
 
 		if (NULL == pElem)
 			return;
@@ -1889,10 +1897,10 @@ protected:
 
 		CTextAttributesEx* pTextSettings = &(pShape->m_oShape.m_oText);
 
-		// сначала применим ссылки на masterstyle (для шаблонного элемента)
-		// как узнать - просто есть ли массивы (т.к. они могли появиться пока только оттуда)
-		// - теперь этого делать не нужно - т.к. в мастере тоже вызывается эта функция - 
-		// и там все это должно уже примениться
+		// СЃРЅР°С‡Р°Р»Р° РїСЂРёРјРµРЅРёРј СЃСЃС‹Р»РєРё РЅР° masterstyle (РґР»СЏ С€Р°Р±Р»РѕРЅРЅРѕРіРѕ СЌР»РµРјРµРЅС‚Р°)
+		// РєР°Рє СѓР·РЅР°С‚СЊ - РїСЂРѕСЃС‚Рѕ РµСЃС‚СЊ Р»Рё РјР°СЃСЃРёРІС‹ (С‚.Рє. РѕРЅРё РјРѕРіР»Рё РїРѕСЏРІРёС‚СЊСЃСЏ РїРѕРєР° С‚РѕР»СЊРєРѕ РѕС‚С‚СѓРґР°)
+		// - С‚РµРїРµСЂСЊ СЌС‚РѕРіРѕ РґРµР»Р°С‚СЊ РЅРµ РЅСѓР¶РЅРѕ - С‚.Рє. РІ РјР°СЃС‚РµСЂРµ С‚РѕР¶Рµ РІС‹Р·С‹РІР°РµС‚СЃСЏ СЌС‚Р° С„СѓРЅРєС†РёСЏ - 
+		// Рё С‚Р°Рј РІСЃРµ СЌС‚Рѕ РґРѕР»Р¶РЅРѕ СѓР¶Рµ РїСЂРёРјРµРЅРёС‚СЊСЃСЏ
         bool bIsPersistPresentSettings	= false;
         bool bIsOwnPresentSettings		= false;
 
@@ -1902,7 +1910,7 @@ protected:
 
 		CShapeElement* pElementLayoutPH = NULL;
 
-		// выставим тип мастера
+		// РІС‹СЃС‚Р°РІРёРј С‚РёРї РјР°СЃС‚РµСЂР°
 		if (NULL != pSlide)
 		{
 			int ph_type		= pShape->m_lPlaceholderType;
@@ -1962,7 +1970,7 @@ protected:
 
 		if (NULL != oElemInfo.m_pStream && -1 != oElemInfo.m_lOffsetTextStyle)
 		{
-			// теперь нужно загрузить стили текста из стрима.
+			// С‚РµРїРµСЂСЊ РЅСѓР¶РЅРѕ Р·Р°РіСЂСѓР·РёС‚СЊ СЃС‚РёР»Рё С‚РµРєСЃС‚Р° РёР· СЃС‚СЂРёРјР°.
 			LONG lPosition = 0; StreamUtils::StreamPosition(lPosition, oElemInfo.m_pStream);
 
 			StreamUtils::StreamSeek(oElemInfo.m_lOffsetTextStyle - 8, oElemInfo.m_pStream);
@@ -1988,7 +1996,7 @@ protected:
 
 		//  ------------------------------------------------------------------------------
 
-		// теперь выставляем все настройки текста (стили)
+		// С‚РµРїРµСЂСЊ РІС‹СЃС‚Р°РІР»СЏРµРј РІСЃРµ РЅР°СЃС‚СЂРѕР№РєРё С‚РµРєСЃС‚Р° (СЃС‚РёР»Рё)
 		if (NULL == pSlide)
 		{
 			int nTextMasterType = (int)eTypeMaster;
@@ -2079,7 +2087,7 @@ protected:
 				//}
 			}
 
-			// теперь смотрим все остальные стили (persist и own) - просто применяем их к m_oStyles
+			// С‚РµРїРµСЂСЊ СЃРјРѕС‚СЂРёРј РІСЃРµ РѕСЃС‚Р°Р»СЊРЅС‹Рµ СЃС‚РёР»Рё (persist Рё own) - РїСЂРѕСЃС‚Рѕ РїСЂРёРјРµРЅСЏРµРј РёС… Рє m_oStyles
 			if (eTypePersist != NSOfficePPT::NoPresent && eTypePersist != eTypeMaster)
 			{
 				int nIndexType = (int)eTypePersist;
@@ -2148,7 +2156,7 @@ protected:
 				pTextSettings->m_lStyleThemeIndex = -1;
 			}
 
-			// теперь смотрим все остальные стили (persist и own) - просто применяем их к m_oStyles
+			// С‚РµРїРµСЂСЊ СЃРјРѕС‚СЂРёРј РІСЃРµ РѕСЃС‚Р°Р»СЊРЅС‹Рµ СЃС‚РёР»Рё (persist Рё own) - РїСЂРѕСЃС‚Рѕ РїСЂРёРјРµРЅСЏРµРј РёС… Рє m_oStyles
 			if (eTypePersist != NSOfficePPT::NoPresent && eTypePersist != eTypeMaster)
 			{
 				int nIndexType = (int)eTypePersist;
@@ -2181,7 +2189,7 @@ protected:
 
 		if ((_T("") != strText) && 0 == pTextSettings->m_arParagraphs.size())
 		{
-			// значит никаких своих настроек нету. Значит просто пустые свои настройки
+			// Р·РЅР°С‡РёС‚ РЅРёРєР°РєРёС… СЃРІРѕРёС… РЅР°СЃС‚СЂРѕРµРє РЅРµС‚Сѓ. Р—РЅР°С‡РёС‚ РїСЂРѕСЃС‚Рѕ РїСѓСЃС‚С‹Рµ СЃРІРѕРё РЅР°СЃС‚СЂРѕР№РєРё
 			std::vector<CTextPFRun_ppt> oArrayPF;
 			
 			CTextPFRun_ppt elm;
@@ -2203,7 +2211,7 @@ protected:
 	
 		if (NULL != oElemInfo.m_pStream && -1 != oElemInfo.m_lOffsetTextProp)
 		{
-			//языковые настройки текта
+			//СЏР·С‹РєРѕРІС‹Рµ РЅР°СЃС‚СЂРѕР№РєРё С‚РµРєС‚Р°
 			LONG lPosition = 0; StreamUtils::StreamPosition(lPosition, oElemInfo.m_pStream);
 
 			StreamUtils::StreamSeek(oElemInfo.m_lOffsetTextProp - 8, oElemInfo.m_pStream);
@@ -2229,7 +2237,7 @@ protected:
 
 		if (pShape->m_oActions.m_bPresent)
 		{
-			//todooo разобраться нужно ли менять цвет на гиперлинк - 1-(34).ppt
+			//todooo СЂР°Р·РѕР±СЂР°С‚СЊСЃСЏ РЅСѓР¶РЅРѕ Р»Рё РјРµРЅСЏС‚СЊ С†РІРµС‚ РЅР° РіРёРїРµСЂР»РёРЅРє - 1-(34).ppt
 			NSPresentationEditor::CColor oColor;
 			if ((NULL != pSlide) && !pSlide->m_bUseLayoutColorScheme)			oColor = pSlide->GetColor(11);
 			else if ((NULL != pLayout) && (!pLayout->m_bUseThemeColorScheme))	oColor = pLayout->GetColor(11);
@@ -2241,7 +2249,7 @@ protected:
 
 		CPPTShape* pPPTShape = dynamic_cast<CPPTShape*>(pShape->m_oShape.m_pShape);
 
-		if (NULL != pPPTShape)		// проверка на wordart
+		if (NULL != pPPTShape)		// РїСЂРѕРІРµСЂРєР° РЅР° wordart
 		{
 			switch (pPPTShape->m_eType)
 			{

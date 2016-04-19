@@ -24,14 +24,15 @@ public:
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
 
-public:
-	FrtHeader frtHeader;
-	_UINT16 lsd;
-	_UINT32	idList;
+	static const ElementType	type = typeList12;
 
-	List12BlockLevel rgbList12BlockLevel;
-	List12TableStyleClientInfo rgbList12TableStyleClientInfo;
-	List12DisplayName rgbList12DisplayName;
+	FrtHeader	frtHeader;
+	_UINT16		lsd;
+	_UINT32		idList;
+
+	List12BlockLevel				rgbList12BlockLevel;
+	List12TableStyleClientInfo		rgbList12TableStyleClientInfo;
+	List12DisplayName				rgbList12DisplayName;
 };
 
 } // namespace XLS

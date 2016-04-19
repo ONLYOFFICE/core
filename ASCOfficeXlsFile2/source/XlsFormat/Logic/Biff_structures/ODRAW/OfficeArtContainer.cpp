@@ -144,6 +144,8 @@ void OfficeArtContainer::loadFields(XLS::CFRecord& record)
 					}
 					if (child_beginning_ptr + rh_child.recLen  - record_pos == 8 && test_officeArt)
 						record.skipNunBytes(8);
+					else 
+						record.skipNunBytes(child_beginning_ptr + rh_child.recLen  - record_pos);
 				}
 				else if(record.getRdPtr() > child_beginning_ptr + rh_child.recLen)
 				{

@@ -521,6 +521,7 @@ void anyString::ReadComplexData(XLS::CFRecord& record)
 
 void fillShadeColors::ReadComplexData(XLS::CFRecord& record)
 {
+	fillShadeColors_complex.op = op;
 	record >> fillShadeColors_complex;
 }
 
@@ -897,6 +898,7 @@ void ADJH::load(XLS::CFRecord& record)
 //---------------------------------------------------------------------------------------------
 void PVertices::ReadComplexData(XLS::CFRecord& record)
 {
+	complex.op = op;
 	int pos = record.getRdPtr();
 
 	record >> complex;
@@ -915,6 +917,7 @@ void PVertices::ReadComplexData(XLS::CFRecord& record)
 
 void PSegmentInfo::ReadComplexData(XLS::CFRecord& record)
 {
+	complex.op = op;
 	int pos = record.getRdPtr();
 
 	record >> complex;
@@ -933,6 +936,7 @@ void PSegmentInfo::ReadComplexData(XLS::CFRecord& record)
 
 void pGuides::ReadComplexData(XLS::CFRecord& record)
 {
+	complex.op = op;
 	int pos = record.getRdPtr();
 
 	record >> complex;
@@ -950,6 +954,8 @@ void pGuides::ReadComplexData(XLS::CFRecord& record)
 }
 void pAdjustHandles::ReadComplexData(XLS::CFRecord& record)
 {
+	complex.op = op;
+
 	int pos = record.getRdPtr();
 
 	record >> complex;

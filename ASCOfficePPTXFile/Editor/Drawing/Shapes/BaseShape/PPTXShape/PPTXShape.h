@@ -250,7 +250,7 @@ public:
 
 	NSGuidesOOXML::CFormulaManager FManager;
 public:
-	CPPTXShape() : CBaseShape(), FManager(m_arAdjustments, Guides)
+	CPPTXShape() : CBaseShape(), FManager(m_arAdjustments, m_arGuides)
 	{
 		m_eType = OOXMLShapes::sptMin;
 	}

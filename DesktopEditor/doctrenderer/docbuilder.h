@@ -25,6 +25,8 @@ namespace NSDoctRenderer
         bool RunTextW(const wchar_t* commands);
         bool RunTextA(const char* commands);
 
+        void SetProperty(const char* param);
+
     public:
         static void Initialize();
         static void Dispose();

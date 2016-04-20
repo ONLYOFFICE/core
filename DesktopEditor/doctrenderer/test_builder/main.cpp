@@ -56,6 +56,18 @@ int main(int argc, char *argv[])
     if (true)
     {
         NSDoctRenderer::CDocBuilder oBuilder(true);
+
+        for (int i = 0; i < (argc - 1); ++i)
+        {
+#ifdef WIN32
+            std::wstring sW(argv[i]);
+            std::string sParam(sW.begin(), sW.end());
+#else
+            std::string sParam(argv[i]);
+#endif
+            oBuilder.SetProperty(sParam.c_str());
+        }
+
         oBuilder.Run(sBuildFile.c_str());
     }
 

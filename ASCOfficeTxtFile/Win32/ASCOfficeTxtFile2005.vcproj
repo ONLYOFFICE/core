@@ -774,6 +774,18 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\UnicodeConverter\UnicodeConverter.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
 				RelativePath=".\XmlFile.cpp"
 				>
 			</File>
@@ -814,6 +826,10 @@
 				>
 			</File>
 		</Filter>
+		<File
+			RelativePath="..\..\build\bin\icu\win_32\icuuc.lib"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

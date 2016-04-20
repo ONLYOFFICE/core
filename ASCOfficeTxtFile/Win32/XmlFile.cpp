@@ -3,7 +3,7 @@
 
 #include "../TxtXmlFormatLib/Source/TxtXmlFile.h"
 
-#include "../../ASCOfficeUtils/ASCOfficeUtilsLib/OfficeUtils.h"
+#include "../../OfficeUtils/src/OfficeUtils.h"
 
 CXmlFile::CXmlFile()
 {

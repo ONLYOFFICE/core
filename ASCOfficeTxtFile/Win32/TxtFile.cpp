@@ -3,8 +3,12 @@
 
 #include "../TxtXmlFormatLib/Source/TxtXmlFile.h"
 
-#include "../../ASCOfficeUtils/ASCOfficeUtilsLib/OfficeUtils.h"
+#include "../../OfficeUtils/src/OfficeUtils.h"
 
+namespace BinDocxRW
+{
+    int g_nCurFormatVersion = 0; //extern from ...DocxSerializer
+}
 
 CTxtFile::CTxtFile()
 {

@@ -1766,20 +1766,20 @@ namespace NExtractTools
                if(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatFrom)
                {
                    PdfReader::CPdfReader oReader(&oApplicationFonts);
-                   oReader.SetTempFolder(sTemp.c_str());
+                   oReader.SetTempDirectory(sTemp);
                    nRes = PdfDjvuXpsToRenderer<PdfReader::CPdfReader>(oReader, &pdfWriter, sFrom, nFormatFrom, sTo, sTemp, sFontPath);
                    pdfWriter.SaveToFile(sTo);
                }
                else if(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_DJVU == nFormatFrom)
                {
-                   CDjVuFile oReader;
+                   CDjVuFile oReader(&oApplicationFonts);
                    nRes = PdfDjvuXpsToRenderer<CDjVuFile>(oReader, &pdfWriter, sFrom, nFormatFrom, sTo, sTemp, sFontPath);
                    pdfWriter.SaveToFile(sTo);
                }
                else if(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_XPS == nFormatFrom)
                {
                    CXpsFile oReader(&oApplicationFonts);
-                   oReader.SetTempFolder(sTemp.c_str());
+                   oReader.SetTempDirectory(sTemp);
                    nRes = PdfDjvuXpsToRenderer<CXpsFile>(oReader, &pdfWriter, sFrom, nFormatFrom, sTo, sTemp, sFontPath);
                    pdfWriter.SaveToFile(sTo);
                }
@@ -1801,20 +1801,20 @@ namespace NExtractTools
            if(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatFrom)
            {
                PdfReader::CPdfReader oReader(&oApplicationFonts);
-               oReader.SetTempFolder(sTemp.c_str());
+               oReader.SetTempDirectory(sTemp);
                nRes = PdfDjvuXpsToRenderer<PdfReader::CPdfReader>(oReader, &oHtmlRenderer, sFrom, nFormatFrom, sTo, sTemp, sFontPath);
                oHtmlRenderer.CloseFile();
            }
            else if(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_DJVU == nFormatFrom)
            {
-               CDjVuFile oReader;
+               CDjVuFile oReader(&oApplicationFonts);
                nRes = PdfDjvuXpsToRenderer<CDjVuFile>(oReader, &oHtmlRenderer, sFrom, nFormatFrom, sTo, sTemp, sFontPath);
                oHtmlRenderer.CloseFile();
            }
            else if(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_XPS == nFormatFrom)
            {
                CXpsFile oReader(&oApplicationFonts);
-               oReader.SetTempFolder(sTemp.c_str());
+               oReader.SetTempDirectory(sTemp);
                nRes = PdfDjvuXpsToRenderer<CXpsFile>(oReader, &oHtmlRenderer, sFrom, nFormatFrom, sTo, sTemp, sFontPath);
                oHtmlRenderer.CloseFile();
            }

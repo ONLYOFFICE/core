@@ -82,7 +82,7 @@ namespace OOX
 
 			void AddRun(CRun *pRun);
 			void AddText(CString& sText);
-			void AddText(CString& sText, CRunProperty *pProperty);
+            void AddText(CString& sText, CRunProperty *pProperty);
 			void AddTab();
 			void AddTab(CRunProperty *pProperty);
 			void AddBreak(SimpleTypes::EBrType eType);

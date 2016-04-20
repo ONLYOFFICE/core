@@ -207,7 +207,8 @@ HEADERS += \
     ../source/Writer/OOXSettingsWriter.h \
     ../source/Writer/OOXStylesWriter.h \
     ../source/Writer/OOXThemeWriter.h \
-    ../source/Writer/OOXWriter.h
+    ../source/Writer/OOXWriter.h \
+    ../source/Ole1FormatReader.h
 unix {
     target.path = /usr/lib
     INSTALLS += target

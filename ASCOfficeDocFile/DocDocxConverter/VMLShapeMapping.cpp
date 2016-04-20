@@ -1259,7 +1259,7 @@ namespace DocFileFormat
 				{
 					//it's a bitmap image
 					BitmapBlip* bitBlip = static_cast<BitmapBlip*>(RecordFactory::ReadRecord(&reader, 0));
-					if (bitBlip)
+					if ((bitBlip) && (bitBlip->m_pvBits))
 					{
 						m_ctx->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(oBlip->btWin32), 
 							vector<unsigned char>(bitBlip->m_pvBits, (bitBlip->m_pvBits + bitBlip->pvBitsSize)), oBlip->btWin32));

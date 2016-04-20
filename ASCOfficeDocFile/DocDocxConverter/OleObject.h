@@ -183,10 +183,14 @@ namespace DocFileFormat
             //skip the CompObjHeader
             reader.ReadBytes( 28, false );
 
-			this->UserType			= reader.ReadLengthPrefixedAnsiString();
-			this->ClipboardFormat	= reader.ReadLengthPrefixedAnsiString();
-			this->Program			= reader.ReadLengthPrefixedAnsiString();
+			int sz_obj = reader.GetSize() - reader.GetPosition();
 
+			if (sz_obj > 4)
+			{
+				UserType		= reader.ReadLengthPrefixedAnsiString();
+				ClipboardFormat	= reader.ReadLengthPrefixedAnsiString();
+				Program			= reader.ReadLengthPrefixedAnsiString();
+			}
 			delete pCompStream;
 		  }
 	    }

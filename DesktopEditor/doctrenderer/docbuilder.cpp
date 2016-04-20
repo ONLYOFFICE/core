@@ -90,17 +90,12 @@ public:
         std::cerr << sT << ": " << sE << std::endl;
     }
 
-    bool ExecuteCommand(const std::wstring& command, bool bIsSave = true)
+    bool ExecuteCommand(const std::wstring& command)
     {
         LOGGER_SPEED_START
 
         std::string commandA = U_TO_UTF8(command);
         //commandA = "_api." + commandA;
-
-#ifndef APPLY_CHANGES_IN_BUILDER
-        if (bIsSave)
-            commandA += "_api.asc_Save();";
-#endif
 
         v8::Context::Scope context_scope(m_context);
 
@@ -271,9 +266,9 @@ public:
         }
 
         if (!bIsBreak)
-            bIsBreak = !this->ExecuteCommand(L"_api.asc_nativeInitBuilder();", false);
+            bIsBreak = !this->ExecuteCommand(L"_api.asc_nativeInitBuilder();");
         if (!bIsBreak)
-            bIsBreak = !this->ExecuteCommand(L"_api.asc_SetSilentMode(true);", false);
+            bIsBreak = !this->ExecuteCommand(L"_api.asc_SetSilentMode(true);");
 
         LOGGER_SPEED_LAP("open")
 
@@ -331,7 +326,7 @@ public:
             return false;
 
         if (_formatDst == NSDoctRenderer::DoctRendererFormat::PDF)
-            this->ExecuteCommand(L"_api.asc_SetSilentMode(false);", false);
+            this->ExecuteCommand(L"_api.asc_SetSilentMode(false);");
 
         std::wstring strError;
         bool bIsError = Doct_renderer_SaveFile_ForBuilder(_formatDst,
@@ -344,7 +339,7 @@ public:
                                                           strError);
 
         if (_formatDst == NSDoctRenderer::DoctRendererFormat::PDF)
-            this->ExecuteCommand(L"_api.asc_SetSilentMode(true);", false);
+            this->ExecuteCommand(L"_api.asc_SetSilentMode(true);");
 
         return bIsError;
     }
@@ -377,9 +372,13 @@ namespace NSDoctRenderer
         std::wstring m_sX2tPath;
 
         CV8RealTimeWorker* m_pWorker;
+
+        bool m_bIsSaveWithDoctrendererMode;
     public:
         CDocBuilder_Private(bool bIsCheckSystemFonts)
         {
+            m_bIsSaveWithDoctrendererMode = false;
+
             m_sX2tPath = NSFile::GetProcessDirectory();
             m_pWorker = NULL;
 
@@ -795,10 +794,11 @@ namespace NSDoctRenderer
 
             std::wstring sFileBin = L"/Editor.bin";
 
-#ifdef APPLY_CHANGES_IN_BUILDER
-            this->m_pWorker->SaveFileWithChanges(type, m_sFileDir + L"/Editor2.bin");
-            sFileBin = L"/Editor2.bin";
-#endif
+            if (!m_bIsSaveWithDoctrendererMode)
+            {
+                this->m_pWorker->SaveFileWithChanges(type, m_sFileDir + L"/Editor2.bin");
+                sFileBin = L"/Editor2.bin";
+            }
 
             NSStringUtils::CStringBuilder oBuilder;
 
@@ -810,11 +810,10 @@ namespace NSDoctRenderer
             oBuilder.WriteString(std::to_wstring(type));
             oBuilder.WriteString(L"</m_nFormatTo><m_sThemeDir>");
             oBuilder.WriteEncodeXmlString(L"./sdkjs/slide/themes");
-#ifdef APPLY_CHANGES_IN_BUILDER
-            oBuilder.WriteString(L"</m_sThemeDir><m_bDontSaveAdditional>true</m_bDontSaveAdditional>");
-#else
-            oBuilder.WriteString(L"</m_sThemeDir><m_bFromChanges>true</m_bFromChanges><m_bDontSaveAdditional>true</m_bDontSaveAdditional>");
-#endif
+            if (!m_bIsSaveWithDoctrendererMode)
+                oBuilder.WriteString(L"</m_sThemeDir><m_bDontSaveAdditional>true</m_bDontSaveAdditional>");
+            else
+                oBuilder.WriteString(L"</m_sThemeDir><m_bFromChanges>true</m_bFromChanges><m_bDontSaveAdditional>true</m_bDontSaveAdditional>");
             oBuilder.WriteString(L"<m_nCsvTxtEncoding>46</m_nCsvTxtEncoding><m_nCsvDelimiter>4</m_nCsvDelimiter>");
             oBuilder.WriteString(L"<m_sFontDir>");
             oBuilder.WriteEncodeXmlString(NSFile::GetProcessDirectory() + L"/sdkjs/common");
@@ -1262,6 +1261,12 @@ namespace NSDoctRenderer
                     else if (L"pdf" == _builder_params[0])
                         nFormat = AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF;
 
+                    if (m_pInternal->m_bIsSaveWithDoctrendererMode)
+                    {
+                        // перед сохранением в такой схеме нужно скинуть изменения
+                        this->ExecuteCommand(L"_api.asc_Save();");
+                    }
+
                     this->SaveFile(nFormat, _builder_params[1].c_str());
                 }
             }
@@ -1276,6 +1281,13 @@ namespace NSDoctRenderer
         }
 
         return true;
+    }
+
+    void CDocBuilder::SetProperty(const char* param)
+    {
+        std::string sParam = std::string(param);
+        if (sParam == "--use-doctrenderer-scheme")
+            m_pInternal->m_bIsSaveWithDoctrendererMode = true;
     }
 
     void CDocBuilder::Initialize()

@@ -850,8 +850,6 @@ void CreateNativeObject(const v8::FunctionCallbackInfo<v8::Value>& args);
 void CreateNativeObjectBuilder(const v8::FunctionCallbackInfo<v8::Value>& args);
 void CreateNativeMemoryStream(const v8::FunctionCallbackInfo<v8::Value>& args);
 
-#define APPLY_CHANGES_IN_BUILDER
-
 #if 0
 class CLoggerSpeed
 {

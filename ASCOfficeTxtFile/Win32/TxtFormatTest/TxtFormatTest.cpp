@@ -17,7 +17,7 @@ int _tmain(int argc, _TCHAR* argv[])
 {
 	if (argc < 3) return 0;
 
-	std::wstring sXMLOptions = _T("<Options><TXTOptions><Encoding>2</Encoding></TXTOptions></Options>");
+	std::wstring sXMLOptions = _T("<Options><TXTOptions><Encoding>1000</Encoding></TXTOptions></Options>");
 
 	std::wstring srcFileName	= argv[1];
 	std::wstring dstFileName	= argv[2];
@@ -39,7 +39,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	if (ext_1 == _T("txt"))
 	{	
 		// txt->docx
-		if (S_OK != txtFile.txt_LoadFromFile(srcFileName, dstTempPath, L""/*sXMLOptions*/))	
+		if (S_OK != txtFile.txt_LoadFromFile(srcFileName, dstTempPath, sXMLOptions))	
 			return 2;
 		
 		if (S_OK != oCOfficeUtils.CompressFileOrDirectory(dstTempPath.c_str(), dstFileName.c_str(), -1))

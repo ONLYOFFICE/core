@@ -443,7 +443,11 @@ namespace Docx2Txt
 						if ((run->m_oRunProperty) && (run->m_oRunProperty->m_oCaps.Init()) && (run->m_oRunProperty->m_oCaps->m_oVal.ToBool()))	caps = true;
 
 						std::wstring wstr;						
-						if (run->m_arrItems[j]->getType() == OOX::et_w_t)
+						if (run->m_arrItems[j]->getType() == OOX::et_w_tab)
+						{
+							wstr = L"\x09";
+						}
+						else if (run->m_arrItems[j]->getType() == OOX::et_w_t)
 						{
 							OOX::Logic::CText* text = dynamic_cast<OOX::Logic::CText*>(run->m_arrItems[j]);
 							wstr = string2std_string(text->m_sText);

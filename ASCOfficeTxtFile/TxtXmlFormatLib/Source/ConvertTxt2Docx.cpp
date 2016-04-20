@@ -118,7 +118,8 @@ namespace Txt2Docx
 						{
 							OOX::Logic::CRunProperty *rPr_	= new OOX::Logic::CRunProperty();
 							rPr_->m_oRFonts		= font;
-							paragraph->AddText(PrepareToXML(s), rPr_);
+                            CString s_ = PrepareToXML(s);
+                            paragraph->AddText(s_, rPr_);
 						}
 					}
 					paragraph->AddTab();
@@ -127,7 +128,8 @@ namespace Txt2Docx
 			
 				if (!line->empty())
 				{
-					paragraph->AddText(PrepareToXML(*line), rPr);
+                    CString s_ = PrepareToXML(*line);
+                    paragraph->AddText(s_, rPr);
 				}
 				pDocument->m_arrItems.push_back(paragraph);
 

@@ -294,7 +294,7 @@ namespace OOX
 
 			m_arrItems.push_back( pR );
 		}
-		void CParagraph::AddText(CString& sText, CRunProperty *pProperty)
+        void CParagraph::AddText(CString& sText, CRunProperty * pProperty)
 		{
 			WritingElement *pR = new CRun();
 			if ( !pR )

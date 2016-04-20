@@ -32,10 +32,11 @@ private:
 
 	std::wstring     m_wsTempDirectory;
 	GP<DjVuDocument> m_pDoc;
+    CApplicationFonts* m_pApplicationFonts;
 
 public:
 
-	CDjVuFileImplementation();
+    CDjVuFileImplementation(CApplicationFonts* pFonts);
 	~CDjVuFileImplementation();
 
 	bool         LoadFromFile(const std::wstring& wsSrcFileName, const std::wstring& wsXmlOptions = L"");
@@ -45,8 +46,8 @@ public:
 	int          GetPagesCount() const;
 	void         GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY) const;
 	void         DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak);
-	void         ConvertToRaster(CApplicationFonts* pAppFonts, int nPageIndex, const std::wstring& wsDstPath, int nImageType);
-	void         ConvertToPdf(CApplicationFonts* pAppFonts, const std::wstring& wsDstPath);
+    void         ConvertToRaster(int nPageIndex, const std::wstring& wsDstPath, int nImageType);
+    void         ConvertToPdf(const std::wstring& wsDstPath);
 
 private:
 

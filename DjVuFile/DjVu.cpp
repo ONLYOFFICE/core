@@ -1,64 +1,64 @@
 ﻿#include "DjVu.h"
 #include "DjVuFileImplementation.h"
+#include "../DesktopEditor/fontengine/ApplicationFonts.h"
 
-class CApplicationFonts;
-
-CDjVuFile::CDjVuFile()
+CDjVuFile::CDjVuFile(CApplicationFonts* pFonts)
 {
-	m_pImplementation = new CDjVuFileImplementation();
+    m_pImplementation = new CDjVuFileImplementation(pFonts);
 }
 CDjVuFile::~CDjVuFile()
 {
 	if (m_pImplementation)
 		delete m_pImplementation;
 }
-bool               CDjVuFile::LoadFromFile(const std::wstring& wsSrcFileName, const std::wstring& wsXMLOptions)
+bool CDjVuFile::LoadFromFile(const std::wstring& file, const std::wstring& options,
+                                const std::wstring& owner_password, const std::wstring& user_password)
 {
-	if (m_pImplementation)
-		return m_pImplementation->LoadFromFile(wsSrcFileName, wsXMLOptions);
+    if (m_pImplementation)
+        return m_pImplementation->LoadFromFile(file, options);
 
-	return false;
+    return false;
 }
-void               CDjVuFile::Close()
+
+void CDjVuFile::Close()
 {
 	if (m_pImplementation)
 		m_pImplementation->Close();
 }
-std::wstring       CDjVuFile::GetTempDirectory() const
-{
-	if (m_pImplementation)
-		return m_pImplementation->GetTempDirectory();
 
-	return L"";
+std::wstring CDjVuFile::GetTempDirectory()
+{
+    return m_pImplementation ? m_pImplementation->GetTempDirectory() : L"";
 }
-void               CDjVuFile::SetTempDirectory(const std::wstring& wsDirectory)
+void CDjVuFile::SetTempDirectory(const std::wstring& wsDirectory)
 {
 	if (m_pImplementation)
 		m_pImplementation->SetTempDirectory(wsDirectory);
 }
-int                CDjVuFile::GetPagesCount() const
+
+int CDjVuFile::GetPagesCount()
 {
 	if (m_pImplementation)
 		return m_pImplementation->GetPagesCount();
 	return 0;
 }
-void               CDjVuFile::GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY) const
+void CDjVuFile::GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY)
 {
 	if (m_pImplementation)
 		m_pImplementation->GetPageInfo(nPageIndex, pdWidth, pdHeight, pdDpiX, pdDpiY);
 }
-void               CDjVuFile::DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak)
+void CDjVuFile::DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak)
 {
 	if (m_pImplementation)
 		m_pImplementation->DrawPageOnRenderer(pRenderer, nPageIndex, pBreak);
 }
-void               CDjVuFile::ConvertToRaster(CApplicationFonts* pAppFonts, int nPageIndex, const std::wstring& wsDstPath, int nImageType)
+void CDjVuFile::ConvertToRaster(int nPageIndex, const std::wstring& wsDstPath, int nImageType)
 {
 	if (m_pImplementation)
-		m_pImplementation->ConvertToRaster(pAppFonts, nPageIndex, wsDstPath, nImageType);
+        m_pImplementation->ConvertToRaster(nPageIndex, wsDstPath, nImageType);
 }
-void               CDjVuFile::ConvertToPdf(CApplicationFonts* pAppFonts, const std::wstring& wsDstPath)
+void CDjVuFile::ConvertToPdf(const std::wstring& wsDstPath)
 {
 	if (m_pImplementation)
-		m_pImplementation->ConvertToPdf(pAppFonts, wsDstPath);
+        m_pImplementation->ConvertToPdf(wsDstPath);
 }

@@ -1,8 +1,5 @@
 ﻿#pragma once
 
-#include <string>
-#include "../DesktopEditor/graphics/IRenderer.h"
-
 #ifndef DJVU_USE_DYNAMIC_LIBRARY
 #define DJVU_DECL_EXPORT
 #else
@@ -10,28 +7,33 @@
 #define DJVU_DECL_EXPORT Q_DECL_EXPORT
 #endif
 
-// –аботаем через класс CDjVuFileImplementation, чтобы когда цепл¤лс¤ данный h-файл, ничего лишнего не инклюдилось
-class CDjVuFileImplementation;
-class CApplicationFonts;
+#include "../DesktopEditor/common/officedrawingfile.h"
 
-class DJVU_DECL_EXPORT CDjVuFile
+// работаем через класс CDjVuFileImplementation, чтобы когда цеплялся данный h-файл, ничего лишнего не инклюдилось
+class CDjVuFileImplementation;
+
+class DJVU_DECL_EXPORT CDjVuFile : public IOfficeDrawingFile
 {
 private:
-
 	CDjVuFileImplementation* m_pImplementation;
 
 public:
 
-	CDjVuFile();
-	~CDjVuFile();
+    CDjVuFile(CApplicationFonts* fonts);
+    virtual ~CDjVuFile();
 
-	bool         LoadFromFile(const std::wstring& wsSrcFileName, const std::wstring& wsXmlOptions = L"");
-	void         Close();
-	std::wstring GetTempDirectory() const;
-	void         SetTempDirectory(const std::wstring& wsDirectory);
-	int          GetPagesCount() const;
-	void         GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY) const;
-	void         DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak);
-	void         ConvertToRaster(CApplicationFonts* pAppFonts, int nPageIndex, const std::wstring& wsDstPath, int nImageType);
-	void         ConvertToPdf(CApplicationFonts* pAppFonts, const std::wstring& wsDstPath);
+    virtual bool LoadFromFile(const std::wstring& file, const std::wstring& options = L"",
+                                    const std::wstring& owner_password = L"", const std::wstring& user_password = L"");
+
+    virtual void Close();
+
+    virtual std::wstring GetTempDirectory();
+    virtual void SetTempDirectory(const std::wstring& directory);
+
+    virtual int GetPagesCount();
+    virtual void GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY);
+    virtual void DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak);
+    virtual void ConvertToRaster(int nPageIndex, const std::wstring& path, int nImageType);
+
+    void ConvertToPdf(const std::wstring& path);
 };

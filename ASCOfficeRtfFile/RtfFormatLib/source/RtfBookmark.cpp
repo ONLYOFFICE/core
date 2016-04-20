@@ -114,7 +114,7 @@ CString RtfFootnote::RenderToOOX(RenderParameter oRenderParameter)
 		{
 			sResult.Append( _T("<w:rPr>") );
             sResult += srPr;
-			sResult.Append( _T("/w:rPr>") );
+			sResult.Append( _T("</w:rPr>") );
 		}
 		sResult.AppendFormat( _T("<w:endnoteReference  w:id=\"%d\"/>"), nID );
 		sResult.Append( _T("</w:r>") );

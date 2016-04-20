@@ -16,10 +16,11 @@ namespace TiffCompression
 
 namespace EncodingType
 {
-	const int Utf8 = 0;
-	const int Unicode = 1;
-	const int Ansi = 2;
-	const int BigEndian = 3;
+	//from unicodeconverter_encodings.h
+	const int Utf8		= 46;
+	const int Unicode	= 50;
+	const int Ansi		= 1000;
+	const int BigEndian = 51;
 }
 
 #define PERMISSION_PRINT  ( 1 << 2 ) // Ограничение печати документа

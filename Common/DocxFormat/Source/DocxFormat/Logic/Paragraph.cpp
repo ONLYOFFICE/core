@@ -313,7 +313,10 @@ namespace OOX
 			pText->m_oSpace->SetValue( SimpleTypes::xmlspacePreserve );
 
 			if ( pProperty )
+			{
 				((CRun*)pR)->m_arrItems.push_back( (WritingElement*)pProperty );
+				((CRun*)pR)->m_oRunProperty	= pProperty;//копия для удобства
+			}
 
 			((CRun*)pR)->m_arrItems.push_back( pT );
 

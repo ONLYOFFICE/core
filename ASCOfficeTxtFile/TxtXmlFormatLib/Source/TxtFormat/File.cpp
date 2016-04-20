@@ -63,9 +63,11 @@ namespace Txt
 		//	listContentUnicode = file.readUnicodeWithOutBOM();
 		else
 		{
-            if(-1 == m_nEncoding)
+            if (-1 == m_nEncoding)
                 m_listContent = _transform(file.readAnsiOrCodePage(), Encoding::utf82unicode);
-            else
+			else if (1000 == m_nEncoding)
+                m_listContent = _transform(file.readAnsiOrCodePage(), Encoding::ansi2unicode);
+			else
                 m_listContent = _transform2(file.readAnsiOrCodePage(), m_nEncoding, Encoding::cp2unicode);
 		}
 		

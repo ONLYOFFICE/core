@@ -73,71 +73,63 @@ namespace Txt2Docx
 
 		if (!m_inputFile.m_listContent.empty() /*&& pFile.IsInit() && OOX::FileTypes::Document == pFile->type()*/)
 		{
-			//pDocument = (OOX::CDocument*)pFile.operator->();
-			//pDocument->ClearItems();
-
 			int percent = 100000;
 			int step = 800000 / m_inputFile.m_listContentSize; // !!!!!
 			bool cancel = Event.Progress(0, 100000);
 			if(cancel)
 				return;
-/*
-			OOX::Logic::ParagraphProperty pPr;
-			OOX::Logic::Spacing space;
-			space.After = 0;
-			space.Line = 240;
-			space.LineRule = "auto";			
-			pPr.Spacing = space;
 
-			OOX::Logic::RFonts rFont;
-			rFont.Ascii = "Courier New";
-			rFont.HAnsi = "Courier New";
-			rFont.Cs = "Courier New";
+			ComplexTypes::Word::CSpacing	space;
+			ComplexTypes::Word::CFonts		font;
+			
+			space.m_oAfter.Init();		space.m_oAfter->FromString(L"0");
+			space.m_oLine.Init();		space.m_oLine->FromString(L"240");			
+			space.m_oLineRule.Init();	space.m_oLineRule->SetValue(SimpleTypes::linespacingruleAuto);			
+			
+			font.m_sAscii.Init();	*font.m_sAscii	= "Courier New";
+			font.m_sHAnsi.Init();	*font.m_sHAnsi	= "Courier New";
+			font.m_sCs.Init();		*font.m_sCs		= "Courier New";
 
-			OOX::Logic::RunProperty rPr;
-			rPr.RFonts = rFont;
-
-			pPr.RunProperty = rPr;
-
-			OOX::Logic::Paragraph paragraph;
-			paragraph.Property = pPr;
-*/
 			for (std::list<std::wstring>::iterator line = m_inputFile.m_listContent.begin(); line != m_inputFile.m_listContent.end(); line++)
 			{
-				//OOX::Logic::ParagraphProperty pPr;
-				//OOX::Logic::Spacing space;
-				//space.After = 0;
-				//space.Line = 240;
-				//space.LineRule = "auto";			
-				//pPr.Spacing = space;
+				OOX::Logic::CParagraph			*paragraph	= new OOX::Logic::CParagraph();
+				OOX::Logic::CParagraphProperty	*pPr		= new OOX::Logic::CParagraphProperty();
+				OOX::Logic::CRunProperty		*rPr		= new OOX::Logic::CRunProperty();
 
-				//OOX::Logic::RFonts rFont;
-				//rFont.Ascii = "Courier New";
-				//rFont.HAnsi = "Courier New";
-				//rFont.Cs = "Courier New";
+				rPr->m_oRFonts		= font;
+				pPr->m_oSpacing		= space;
+				pPr->m_oRPr			= *rPr;
 
-				//OOX::Logic::RunProperty rPr;
-				//rPr.RFonts = rFont;
-
-				//pPr.RunProperty = rPr;
-
-				//OOX::Logic::Paragraph paragraph;
-				//paragraph.Property = pPr;
-
-				OOX::Logic::CParagraph *temp = new OOX::Logic::CParagraph();
+				paragraph->m_arrItems.push_back(pPr);
+				paragraph->m_oParagraphProperty = pPr; //копия для удобства
 				
 				while(line->find(_T("\x08")) != line->npos)
 				{
 					line->erase(line->find(_T("\x08")), 1);//, "");
 				}
-
-				if(line->length() > 0)
+				while(line->find(_T("\x09")) != line->npos)
                 {
-                    CString s = PrepareToXML(*line);
-                    temp->AddText(s);//, rPr);
+					int pos = line->find(_T("\x09"));
+					
+					if (pos > 0)
+					{
+						std::wstring s = line->substr(0, pos - 1);
+						if (!s.empty())
+						{
+							OOX::Logic::CRunProperty *rPr_	= new OOX::Logic::CRunProperty();
+							rPr_->m_oRFonts		= font;
+							paragraph->AddText(PrepareToXML(s), rPr_);
+						}
+					}
+					paragraph->AddTab();
+					line->erase(0, pos + 1);
                 }
-				
-				pDocument->m_arrItems.push_back(temp);
+			
+				if (!line->empty())
+				{
+					paragraph->AddText(PrepareToXML(*line), rPr);
+				}
+				pDocument->m_arrItems.push_back(paragraph);
 
 				percent += step;
 				cancel = Event.Progress(0, percent);

@@ -4,20 +4,28 @@
 #include "Encoding.h"
 #include "Utility.h"
 
-#if defined (_WIN32) || defined (_WIN64)
-    #include <windows.h>
-#else
-    #include <iconv.h>
-#endif
-
 #include "../../../Common/DocxFormat/Source/Base/unicode_util.h"
 #include "../../../UnicodeConverter/UnicodeConverter.h"
 #include "../../../UnicodeConverter/UnicodeConverter_Encodings.h"
 
+//#include <boost/locale.hpp>
+//#include <boost/locale/conversion.hpp>
+
+#include <locale>
 
 const std::wstring Encoding::ansi2unicode(const std::string& line)
 {
-	return std::wstring(line.begin(), line.end());//cp2unicode(line, CP_ACP);
+    if (line.empty())
+        return std::wstring();
+    
+	std::locale loc("");
+	std::ctype<wchar_t> const &facet = std::use_facet<std::ctype<wchar_t> >(loc);
+
+    std::wstring result;
+	result.resize(line.size());
+    
+    facet.widen(line.c_str(), line.c_str() + line.size(), &result[0]);
+	return result;
 }
 
 const std::wstring Encoding::cp2unicode(const std::string& sline, const unsigned int nCodepage)
@@ -89,7 +97,17 @@ const std::wstring Encoding::utf82unicode(const std::string& line)
 
 const std::string Encoding::unicode2ansi(const std::wstring& line)
 {
-    return std::string(line.begin(), line.end());
+    if (line.empty())
+        return std::string();
+    
+	std::locale loc("");
+	std::ctype<wchar_t> const &facet = std::use_facet<std::ctype<wchar_t> >(loc);
+
+    std::string result;
+	result.resize(line.size());
+    
+	facet.narrow(line.c_str(), line.c_str() + line.size(), '?', &result[0]);
+	return result;
 }
 
 const std::string Encoding::unicode2utf8(const std::wstring& line)

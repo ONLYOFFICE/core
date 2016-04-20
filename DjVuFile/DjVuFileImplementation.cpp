@@ -58,13 +58,15 @@ namespace NSDjvu
 	}
 }
 
-CDjVuFileImplementation::CDjVuFileImplementation()
+CDjVuFileImplementation::CDjVuFileImplementation(CApplicationFonts* pFonts)
 {
 	m_pDoc = NULL;
 	std::wstring wsTempPath = NSFile::CFileBinary::GetTempPath();
 	wsTempPath += L"DJVU\\";
 	m_wsTempDirectory = wsTempPath;
 	NSDirectory::CreateDirectory(m_wsTempDirectory);
+
+    m_pApplicationFonts = pFonts;
 }
 CDjVuFileImplementation::~CDjVuFileImplementation()
 {
@@ -164,11 +166,14 @@ void               CDjVuFileImplementation::DrawPageOnRenderer(IRenderer* pRende
 		// белая страница
 	}
 }
-void               CDjVuFileImplementation::ConvertToRaster(CApplicationFonts* pAppFonts, int nPageIndex, const std::wstring& wsDstPath, int nImageType)
+void               CDjVuFileImplementation::ConvertToRaster(int nPageIndex, const std::wstring& wsDstPath, int nImageType)
 {
-	CFontManager *pFontManager = pAppFonts->GenerateFontManager();
+    if (!m_pApplicationFonts)
+        return;
+
+    CFontManager *pFontManager = m_pApplicationFonts->GenerateFontManager();
 	CFontsCache* pFontCache = new CFontsCache();
-	pFontCache->SetStreams(pAppFonts->GetStreams());
+    pFontCache->SetStreams(m_pApplicationFonts->GetStreams());
 	pFontManager->SetOwnerCache(pFontCache);
 
 	CGraphicsRenderer oRenderer;
@@ -203,9 +208,9 @@ void               CDjVuFileImplementation::ConvertToRaster(CApplicationFonts* p
 	oFrame.SaveFile(wsDstPath, nImageType);
 	RELEASEINTERFACE(pFontManager);
 }
-void               CDjVuFileImplementation::ConvertToPdf(CApplicationFonts* pAppFonts, const std::wstring& wsDstPath)
+void               CDjVuFileImplementation::ConvertToPdf(const std::wstring& wsDstPath)
 {
-	CPdfRenderer oPdf(pAppFonts);
+    CPdfRenderer oPdf(m_pApplicationFonts);
 	
 	bool bBreak = false;
 	for (int nPageIndex = 0, nPagesCount = GetPagesCount(); nPageIndex < nPagesCount; nPageIndex++)

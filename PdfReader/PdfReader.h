@@ -14,12 +14,12 @@
 namespace PdfReader
 {
     class CPdfReader_Private;
-    class PDFREADER_DECL_EXPORT CPdfReader
+    class PDFREADER_DECL_EXPORT CPdfReader : public IOfficeDrawingFile
 	{
 	public:
 
         CPdfReader(CApplicationFonts* fonts);
-		~CPdfReader();
+        virtual ~CPdfReader();
 
         virtual bool LoadFromFile(const std::wstring& file, const std::wstring& options = L"",
                                         const std::wstring& owner_password = L"", const std::wstring& user_password = L"");

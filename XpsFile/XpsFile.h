@@ -11,7 +11,7 @@
 #include "../DesktopEditor/common/officedrawingfile.h"
 
 class CXpsFile_Private;
-class XPS_DECL_EXPORT CXpsFile
+class XPS_DECL_EXPORT CXpsFile : public IOfficeDrawingFile
 {
 public:
     CXpsFile(CApplicationFonts* fonts);

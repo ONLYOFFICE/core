@@ -39,6 +39,8 @@ namespace DocFileFormat
 
 		VirtualStreamReader reader(stream, fc);
 
+		int sz_stream = reader.GetSize();
+
 		int lcb = reader.ReadInt32();
 		
 		if (lcb > 10000000) 

@@ -6,15 +6,22 @@
 class RtfMath : public IDocumentElement, public ItemContainer<IDocumentElementPtr>
 {
 private: 
-	CString		m_sRtfName;
-	CString		m_sOOXName;
+	CString				m_sRtfName;
+	CString				m_sOOXName;
 public: 
-	RtfMathSpecProp oProperty;
-	RtfParagraph m_oVal;
-	RtfShapePtr m_oPicture;
+	bool				m_bHeader; //чтобы отличать заголовок от вложенных групп
+
+	bool				m_bIsVal;
+	bool				m_bIsBool;
+	
+	RtfMathSpecProp		m_oProperty;
+	RtfParagraph		m_oVal;
+	RtfShapePtr			m_oPicture;
 
 	RtfMath( )
 	{
+		m_bHeader = true;
+		m_bIsVal = m_bIsBool = false;
 	}
 	RtfMath(const RtfMath& oMath )
 	{
@@ -22,16 +29,16 @@ public:
 	}
 	RtfMath& operator=(const RtfMath& oMath )
 	{
-		m_sRtfName = oMath.m_sRtfName;
-		m_sOOXName = oMath.m_sOOXName;
+		m_bHeader	= oMath.m_bHeader;
+		m_bIsVal	= oMath.m_bIsVal;
+		m_bIsBool	= oMath.m_bIsBool;
+
+		m_sRtfName	= oMath.m_sRtfName;
+		m_sOOXName	= oMath.m_sOOXName;
+	
 		m_aArray.clear();
-		m_aArray = oMath.m_aArray;
-		//for( int i = 0; i < oMath.m_aArray.size(); i++ )
-		//{
-		//	RtfMath* oCopyMath = new RtfMath();
-		//	(*oCopyMath) = (*oMath.m_aArray[i]);
-		//	m_aArray.push_back( oCopyMath );
-		//}
+		m_aArray	= oMath.m_aArray;
+
 		return (*this);
 	}
 	bool IsEmpty()
@@ -42,9 +49,46 @@ public:
 	{
 		return (false == m_sRtfName.IsEmpty());
 	}
+	static bool IsRtfControlPropertyBool( CString sControlW )
+	{
+		const TCHAR* mc_aRtfControlWords[]		= { L"maln", L"malnScr", L"mdegHide", L"mdiff", L"mdispDef", 
+		L"mgrow", L"mhideBot", L"mhideLeft", L"mhideRight", L"mhideTop", L"mlit", L"mmaxDist", L"mnoBreak", L"mnor", 
+		L"mobjDist", L"mopEmu", L"mplcHide", L"mshow", L"msmallFracN", L"mstrikeBLTR", L"mstrikeH", L"mstrikeTLBR", 
+		L"mstrikeV", L"msubHide", L"msupHide", L"mtransp", L"mwrapRight", L"mzeroAsc", L"mzeroDesc", L"mzeroWid"};
+
+		int mc_nRtfControlWordsSize	=  sizeof( mc_aRtfControlWords ) / sizeof( TCHAR* );
+
+		//можно бинарный поиск вставить
+		for( int i = 0; i < mc_nRtfControlWordsSize; i++ )
+			if( mc_aRtfControlWords[ i ] == sControlW )
+				return true;
+		return false;
+	}
+	static bool IsRtfControlProperty( CString sControlW )
+	{
+		const TCHAR* mc_aRtfControlWords[]		= {L"margSz", L"mbaseJc", L"mbegChr", L"mbrkBin", L"mbrkBinSub", L"mcGp", 
+		L"mcGpRule", L"mchr", L"mcount", L"mcSp", L"mdefJc", L"mendChr", L"minterSp", L"mintLim", L"mintraSp", L"mmJc", 
+		L"mlimLoc", L"mlMargin", L"mmcJc", L"mnaryLim", L"mpos", L"mpostSp", L"mpreSp", L"mrMargin", L"mrSp", L"mrSpRule",
+		L"msepChr", L"mshp", L"mtype", L"mvertJc", L"mwrapIndent", L"mmathFont"};
+
+		int mc_nRtfControlWordsSize	=  sizeof( mc_aRtfControlWords ) / sizeof( TCHAR* );
+		
+		//можно бинарный поиск вставить
+		for( int i = 0; i < mc_nRtfControlWordsSize; i++ )
+			if( mc_aRtfControlWords[ i ] == sControlW )
+				return true;
+		return false;
+	}
 	static bool IsRtfControlWord( CString sControlW )
 	{
-		const TCHAR* mc_aRtfControlWords[]		= {_T("macc"),_T("maccPr"),_T("maln"),_T("malnScr"),_T("margPr"),_T("margSz"),_T("mbar"),_T("mbarPr"),_T("mbaseJc"),_T("mbegChr"),_T("mborderBox"),_T("mborderBoxPr"),_T("mbox"),_T("mboxPr"),_T("mbrkN"),_T("mbrkBinN"),_T("mbrkBinSubN"),_T("mcGpN"),_T("mcGpRuleN"),_T("mchr"),_T("mcount"),_T("mcSpN"),_T("mctrlPr"),_T("md"),_T("mdefJcN"),_T("mdeg"),_T("mdegHide"),_T("mden"),_T("mdiff"),_T("mdiffStyN"),_T("mdispDefN"),_T("mdPr"),_T("me"),_T("mendChr"),_T("meqArr"),_T("meqArrPr"),_T("mf"),_T("mfName"),_T("mfPr"),_T("mfunc"),_T("mfuncPr"),_T("mgroupChr"),_T("mgroupChrPr"),_T("mgrow"),_T("mhideBot"),_T("mhideLeft"),_T("mhideRight"),_T("mhideTop"),_T("minterSpN"),_T("mintLimN"),_T("mintraSpN"),_T("mjcN"),_T("mlim"),_T("mlimLoc"),_T("mlimLow"),_T("mlimLowPr"),_T("mlimUpp"),_T("mlimUppPr"),_T("mlit"),_T("mlMarginN"),_T("mm"),_T("mmath"),_T("mmathFontN"),_T("mmathPict"),_T("mmathPr"),_T("mmaxDist"),_T("mmc"),_T("mmcJc"),_T("mmcPr"),_T("mmcs"),_T("mmPr"),_T("mmr"),_T("mnary"),_T("mnaryLimN"),_T("mnaryPr"),_T("mnoBreak"),_T("mnor"),_T("mnum"),_T("mobjDist"),_T("moMath"),_T("moMathPara"),_T("moMathParaPr"),_T("mopEmu"),_T("mphant"),_T("mphantPr"),_T("mplcHide"),_T("mpos"),_T("mpostSpN"),_T("mpreSpN"),_T("mr"),_T("mrad"),_T("mradPr"),_T("mrMarginN"),_T("mrPr"),_T("mrSpN"),_T("mrSpRuleN"),_T("mscrN"),_T("msepChr"),_T("mshow"),_T("mshp"),_T("msmallFracN"),_T("msPre"),_T("msPrePr"),_T("msSub"),_T("msSubPr"),_T("msSubSup"),_T("msSubSupPr"),_T("msSup"),_T("msSupPr"),_T("mstrikeBLTR"),_T("mstrikeH"),_T("mstrikeTLBR"),_T("mstrikeV"),_T("mstyN"),_T("msub"),_T("msubHide"),_T("msup"),_T("msupHide"),_T("mtransp"),_T("mtype"),_T("mvertJc"),_T("mwrapIndentN"),_T("mwrapRightN"),_T("mzeroAsc"),_T("mzeroDesc"),_T("mzeroWid")};
+		const TCHAR* mc_aRtfControlWords[]		= { L"moMath", L"moMathPara", L"moMathParaPr", L"maccPr", L"macc", 
+		L"me", L"mctrlPr", L"margPr", L"mbarPr", L"mbar", L"mborderBoxPr", L"mborderBox", L"mboxPr", L"mbox"/*, L"mbrk"*/, 
+		L"mdPr", L"md", L"meqArrPr", L"meqArr", L"mfPr", L"mf", L"mfuncPr", L"mfunc", 
+		L"mgroupChrPr", L"mgroupChr", L"mlimLowPr", L"mlimLow",L"mlimUppPr", L"mlimUpp", L"mmathPr", L"mmcPr", L"mmc", 
+		L"mmcs", L"mmPr", L"mmr", L"mm", L"mnaryPr", L"mnary", L"mphantPr", L"mphant", L"mmRun", L"mmDel", 
+		L"mmIns", L"mradPr", L"mrad", /*MRPr",*/ L"msPrePr", L"msPre", L"msSubPr", L"msSub", L"msSubSupPr", 
+		L"msSubSup", L"msSupPr", L"msSup", L"msub", L"msup", L"mden", L"mlim", L"mnum", L"mdeg"/*mmText",*/, L"mfName" };
+
 		int mc_nRtfControlWordsSize	=  sizeof( mc_aRtfControlWords ) / sizeof( TCHAR* );
 		
 		//можно бинарный поиск вставить
@@ -86,7 +130,7 @@ public:
 		RenderParameter oNewParameter = oRenderParameter;
 
 		oNewParameter.nType = RENDER_TO_RTF_PARAM_UNKNOWN;
-		sResult.Append( oProperty.RenderToRtf( oNewParameter ) );
+		sResult.Append( m_oProperty.RenderToRtf( oNewParameter ) );
 
 		//if( _T("mr") == m_sRtfName )
 		//{
@@ -113,47 +157,63 @@ public:
 	CString RenderToOOX(RenderParameter oRenderParameter)
 	{
 		CString sResult;
-	//#ifdef RTF_MATH_OOX
+		CString sContent;
+		CString sProp;
+		CString sVal;
+
 		RenderParameter oNewParam = oRenderParameter;
+	
+		oNewParam.nType = RENDER_TO_OOX_PARAM_TEXT;
+		sProp			= m_oProperty.RenderToOOX( oNewParam );
+			
+		//oNewParam.nType = RENDER_TO_OOX_PARAM_PLAIN;
+		//sVal			= m_oVal.RenderToOOX( oNewParam );
+
+		if (m_bIsVal || m_bIsBool)
+		{
+			oNewParam.nType = RENDER_TO_OOX_PARAM_PLAIN;
+			for( int i = 0; i < (int)m_aArray.size(); i++ )
+			{
+				sVal += m_aArray[i]->RenderToOOX(oNewParam);
+			}
+		}
+		else
+		{
+			oNewParam.nType = RENDER_TO_OOX_PARAM_MATH;
+			for( int i = 0; i < (int)m_aArray.size(); i++ )
+			{
+				sContent += m_aArray[i]->RenderToOOX(oNewParam);
+			}
+		}
+
 		sResult.Append( _T("<") );
 		sResult += m_sOOXName;
 
-		oNewParam.nType = RENDER_TO_OOX_PARAM_TEXT;
-		CString sProp	=  oProperty.RenderToOOX( oNewParam );
-		
-		oNewParam.nType = RENDER_TO_OOX_PARAM_MATH;
-		//CString sVal	= m_oVal.RenderToOOX( oNewParam );
-		
-		//if( false == sVal.IsEmpty() )
-		//{
-		//	sResult.Append( _T(" w:val=\"") );
-		//	sResult += sVal;
-		//	sResult.Append( _T("\"") );
-		//}
+		if( false == sVal.IsEmpty() )
+		{
+			if (m_bIsBool)
+			{
+				if (sVal == L"on")	sVal = L"1";
+				else				sVal = L"0";
+			}
+			sResult.Append( _T(" m:val=\"") );
+			sResult += sVal;
+			sResult.Append( _T("\"") );
+		}
 		sResult.Append( _T(">") );
 
-		sResult.Append( sProp);
-		
-		if (m_aArray.size() == 1)
-			sResult.Append(m_aArray[0]->RenderToOOX(oNewParam));
-		else
-		{
-			for( int i = 1; i < (int)m_aArray.size(); i++ )
-			{
-				sResult.Append(m_aArray[i]->RenderToOOX(oNewParam));
-			}
-		}
+		sResult += sProp;
+
+		sResult += sContent;
 
 		sResult.Append(_T("</") );
 			sResult += m_sOOXName;
 		sResult.Append(_T(">"));
 
-	//#else
-
+//альтернативная картинка
 	//	if( NULL != m_oPicture )
 	//		sResult.Append( m_oPicture->RenderToOOX(oRenderParameter) );
 
-	//#endif
 		return sResult;
 	}
 };

@@ -16,15 +16,15 @@ RtfDocument::RtfDocument()
 	m_oDefaultParagraphProp.SetDefaultRtf();
 }
 int RtfDocument::GetType()
-	{
-		return TYPE_RTF_DOCUMENT;
-	}
+{
+	return TYPE_RTF_DOCUMENT;
+}
 
 CString RtfDocument::RenderToRtf(RenderParameter oRenderParameter)
-	{
-		return _T("");
-	}
+{
+	return _T("");
+}
 CString RtfDocument::RenderToOOX(RenderParameter oRenderParameter)
-	{
-		return _T("");
-	}
+{
+	return _T("");
+}

@@ -6,89 +6,97 @@
 
 class RtfAbsPosTab : public IDocumentElement
 {
-public: typedef enum {l_none,
-						l_ptablnone, //\ptablnone 	Absolute position tab with a blank leading (default).
-						l_ptabldot, //\ptabldot 	Absolute position tab with a leading that uses period symbols (.....).
-						l_ptablminus, //\ptablminus 	Absolute position tab with a leading that uses minus symbols (-----).
-						l_ptabluscore, //\ptabluscore 	Absolute position tab with a leading that uses underscore symbols (_____).
-						l_ptablmdot, //\ptablmdot 	Absolute position tab with a leading that uses middle dot symbols (•••••).
-						} Leader;
-public: Leader m_eLeader;
-public: typedef enum { a_none,
-						a_left,
-						a_center,
-						a_right,
-						} Alignment;
-public: Alignment m_eAlignment;
-public: typedef enum {r_none,
-						r_margin,
-						r_indent,
-						} Relative;
-public: Relative m_eRelative;
+public: 
+	enum Leader
+	{	l_none,
+		l_ptablnone, //\ptablnone 	Absolute position tab with a blank leading (default).
+		l_ptabldot, //\ptabldot 	Absolute position tab with a leading that uses period symbols (.....).
+		l_ptablminus, //\ptablminus 	Absolute position tab with a leading that uses minus symbols (-----).
+		l_ptabluscore, //\ptabluscore 	Absolute position tab with a leading that uses underscore symbols (_____).
+		l_ptablmdot, //\ptablmdot 	Absolute position tab with a leading that uses middle dot symbols (•••••).
+	} ;
+	enum Alignment
+	{	a_none,
+		a_left,
+		a_center,
+		a_right,
+	};
+ 
+	enum Relative	
+	{	r_none,
+		r_margin,
+		r_indent,
+	} ;
 
-public: RtfAbsPosTab()
+	Leader		m_eLeader;
+	Alignment	m_eAlignment;
+	Relative	m_eRelative;
+
+	RtfAbsPosTab()
+	{
+	}
+	bool IsValid()
+	{
+		return a_none != m_eAlignment && r_none != m_eRelative;
+	}
+	
+	CString RenderToRtf(RenderParameter oRenderParameter)
+	{
+		CString sResult;
+		switch( m_eLeader )
 		{
+			case l_ptablnone: sResult.Append(_T("\\ptablnone"));break;
+			case l_ptabldot: sResult.Append(_T("\\ptabldot"));break;
+			case l_ptablminus: sResult.Append(_T("\\ptablminus"));break;
+			case l_ptabluscore: sResult.Append(_T("\\ptabluscore"));break;
+			case l_ptablmdot: sResult.Append(_T("\\ptablmdo"));break;
 		}
-public: bool IsValid()
+		switch( m_eRelative )
 		{
-			return a_none != m_eAlignment && r_none != m_eRelative;
+			case r_margin: sResult.Append(_T("\\pmartabq"));break;
+			case r_indent: sResult.Append(_T("\\pindtabq"));break;
 		}
-public: CString RenderToRtf(RenderParameter oRenderParameter)
+		switch( m_eAlignment )
 		{
-			CString sResult;
-			switch( m_eLeader )
-			{
-				case l_ptablnone: sResult.Append(_T("\\ptablnone"));break;
-				case l_ptabldot: sResult.Append(_T("\\ptabldot"));break;
-				case l_ptablminus: sResult.Append(_T("\\ptablminus"));break;
-				case l_ptabluscore: sResult.Append(_T("\\ptabluscore"));break;
-				case l_ptablmdot: sResult.Append(_T("\\ptablmdo"));break;
-			}
-			switch( m_eRelative )
-			{
-				case r_margin: sResult.Append(_T("\\pmartabq"));break;
-				case r_indent: sResult.Append(_T("\\pindtabq"));break;
-			}
-			switch( m_eAlignment )
-			{
-				case a_left: sResult.Append(_T("l"));break;
-				case a_center: sResult.Append(_T("c"));break;
-				case a_right: sResult.Append(_T("r"));break;
-			}
-			if( false == sResult.IsEmpty() )
-				sResult = _T("{") + sResult + _T("}");
-			return sResult;
+			case a_left: sResult.Append(_T("l"));break;
+			case a_center: sResult.Append(_T("c"));break;
+			case a_right: sResult.Append(_T("r"));break;
 		}
-public: CString RenderToOOX(RenderParameter oRenderParameter)
+		if( false == sResult.IsEmpty() )
+			sResult = _T("{") + sResult + _T("}");
+		return sResult;
+	}
+	CString RenderToOOX(RenderParameter oRenderParameter)
+	{
+		CString sResult;
+		switch( m_eLeader )
 		{
-			CString sResult;
-			switch( m_eLeader )
-			{
-				case l_ptablnone: sResult.Append(_T(" w:leader=\"none\""));break;
-				case l_ptabldot: sResult.Append(_T(" w:leader=\"dot\""));break;
-				case l_ptablminus: sResult.Append(_T(" w:leader=\"hyphen\""));break;
-				case l_ptabluscore: sResult.Append(_T(" w:leader=\"underscore\""));break;
-				case l_ptablmdot: sResult.Append(_T(" w:leader=\"middleDot\""));break;
-			}
-			switch( m_eRelative )
-			{
-				case r_margin: sResult.Append(_T(" w:relativeTo=\"margin\""));break;
-				case r_indent: sResult.Append(_T(" w:relativeTo=\"indent\""));break;
-			}
-			switch( m_eAlignment )
-			{
-				case a_left: sResult.Append(_T(" w:alignment=\"left\""));break;
-				case a_center: sResult.Append(_T(" w:alignment=\"center\""));break;
-				case a_right: sResult.Append(_T(" w:alignment=\"right\""));break;
-			}
-			if( false == sResult.IsEmpty() )
-				sResult = _T("<w:ptab") + sResult + _T("/>");
-			return sResult;
+			case l_ptablnone: sResult.Append(_T(" w:leader=\"none\""));break;
+			case l_ptabldot: sResult.Append(_T(" w:leader=\"dot\""));break;
+			case l_ptablminus: sResult.Append(_T(" w:leader=\"hyphen\""));break;
+			case l_ptabluscore: sResult.Append(_T(" w:leader=\"underscore\""));break;
+			case l_ptablmdot: sResult.Append(_T(" w:leader=\"middleDot\""));break;
 		}
+		switch( m_eRelative )
+		{
+			case r_margin: sResult.Append(_T(" w:relativeTo=\"margin\""));break;
+			case r_indent: sResult.Append(_T(" w:relativeTo=\"indent\""));break;
+		}
+		switch( m_eAlignment )
+		{
+			case a_left: sResult.Append(_T(" w:alignment=\"left\""));break;
+			case a_center: sResult.Append(_T(" w:alignment=\"center\""));break;
+			case a_right: sResult.Append(_T(" w:alignment=\"right\""));break;
+		}
+		if( false == sResult.IsEmpty() )
+			sResult = _T("<w:ptab") + sResult + _T("/>");
+		return sResult;
+	}
 };
 class RtfCharSpecial : public IDocumentElement
 {
-public: typedef enum {
+public: 
+	typedef enum {
 			rsc_none,
 			rsc_chdate,//\chdate	Current date (as in headers).
 			rsc_chdpl,//\chdpl	Current date in long format (for example, Wednesday, February 20, 2008).
@@ -120,182 +128,171 @@ public: typedef enum {
 			rsc_zwnbo,//\zwnbo	Zero-width non-break opportunity. Used to remove break opportunity between two characters.
 			rsc_zwj,//\zwj	Zero-width joiner. This is used for ligating (joining) characters.
 			rsc_zwnj,//\zwnj	Zero-width nonjoiner. This is used for unligating a character. 
-		} RtfSpecChar;   
+	} RtfSpecChar;   
 
-public: int m_nTextWrapBreak;//\lbrN Text wrapping break of type
-public: int m_nSoftHeight;//\softlheightN	Nonrequired line height. This is emitted as a prefix to each line.
-public: RtfSpecChar m_eType;
-public: RtfCharProperty m_oProperty;
-public: RtfCharSpecial()
+	int					m_nTextWrapBreak;//\lbrN Text wrapping break of type
+	int					m_nSoftHeight;//\softlheightN	Nonrequired line height. This is emitted as a prefix to each line.
+	RtfSpecChar			m_eType;
+	RtfCharProperty		m_oProperty;
+	
+	RtfCharSpecial()
+	{
+		m_eType = rsc_none;
+		m_nTextWrapBreak = PROP_DEF;
+		m_nSoftHeight = PROP_DEF;
+	}
+	CString RenderToRtf(RenderParameter oRenderParameter)
+	{
+		CString sResult;
+		sResult.Append( _T("{") );
+		sResult.Append( m_oProperty.RenderToRtf( oRenderParameter ) );
+		switch( m_eType )
 		{
-			m_eType = rsc_none;
-			m_nTextWrapBreak = PROP_DEF;
-			m_nSoftHeight = PROP_DEF;
+			case rsc_chdate:		sResult.Append( _T("\\chdate") );		break;
+			case rsc_chdpl:			sResult.Append( _T("\\chdpl") );		break;
+			case rsc_chdpa:			sResult.Append( _T("\\chdpa") );		break;
+			case rsc_chtime:		sResult.Append( _T("\\chtime") );		break;
+			case rsc_chpgn:			sResult.Append( _T("\\chpgn") );		break;
+			case rsc_sectnum:		sResult.Append( _T("\\sectnum") );		break;
+			case rsc_chftn:			sResult.Append( _T("\\chftn") );		break;
+			case rsc_chftnEnd:		sResult.Append( _T("\\chftn") );		break;
+			case rsc_chatn:			sResult.Append( _T("\\chatn") );		break;
+			case rsc_chftnsep:		sResult.Append( _T("\\chftnsep") );		break;
+			case rsc_chftnsepc:		sResult.Append( _T("\\chftnsepc") );	break;
+			case rsc_page:			sResult.Append( _T("\\page") );			break;
+			case rsc_column:		sResult.Append( _T("\\column") );	break;
+			case rsc_line:			sResult.Append( _T("\\line") );		break;
+			case rsc_softpage:		sResult.Append( _T("\\softpage") );	break;
+			case rsc_softcol:		sResult.Append( _T("\\softcol") );	break;
+			case rsc_softline:		sResult.Append( _T("\\softline") );	break;
+			case rsc_tab:			sResult.Append( _T("\\tab") );		break;
+			case rsc_Formula:		sResult.Append( _T("\\|") );		break;
+			case rsc_OptHyphen:		sResult.Append( _T("\\-") );		break;
+			case rsc_NonBrHyphen:	sResult.Append( _T("\\_") );		break;
+			case rsc_NonBrSpace:	sResult.Append( _T("\\~") );		break;
+			case rsc_zwbo:			sResult.Append( _T("\\zwbo") );		break;
+			case rsc_zwnbo:			sResult.Append( _T("\\zwnbo") );	break;
+			case rsc_zwj:			sResult.Append( _T("\\zwj") );		break;
+			case rsc_zwnj:			sResult.Append( _T("\\zwnj") );		break;
 		}
-public: CString RenderToRtf(RenderParameter oRenderParameter)
+		if( PROP_DEF != m_nTextWrapBreak )
+			sResult.Append( _T("\\par") );
+		//switch ( m_nTextWrapBreak ) //не воспринимается word
+		//{
+		//	case 0: sResult.Append( _T("\\lbr0") );break;
+		//	case 1: sResult.Append( _T("\\lbr1") );break;
+		//	case 2: sResult.Append( _T("\\lbr2") );break;
+		//	case 3: sResult.Append( _T("\\lbr3") );break;
+		//}
+		if( PROP_DEF != m_nSoftHeight )
 		{
-			CString sResult;
-			sResult.Append( _T("{") );
-			sResult.Append( m_oProperty.RenderToRtf( oRenderParameter ) );
-			switch( m_eType )
-			{
-				case rsc_chdate:		sResult.Append( _T("\\chdate") );		break;
-				case rsc_chdpl:			sResult.Append( _T("\\chdpl") );		break;
-				case rsc_chdpa:			sResult.Append( _T("\\chdpa") );		break;
-				case rsc_chtime:		sResult.Append( _T("\\chtime") );		break;
-				case rsc_chpgn:			sResult.Append( _T("\\chpgn") );		break;
-				case rsc_sectnum:		sResult.Append( _T("\\sectnum") );		break;
-				case rsc_chftn:			sResult.Append( _T("\\chftn") );		break;
-				case rsc_chftnEnd:		sResult.Append( _T("\\chftn") );		break;
-				case rsc_chatn:			sResult.Append( _T("\\chatn") );		break;
-				case rsc_chftnsep:		sResult.Append( _T("\\chftnsep") );		break;
-				case rsc_chftnsepc:		sResult.Append( _T("\\chftnsepc") );	break;
-				case rsc_page:			sResult.Append( _T("\\page") );			break;
-				case rsc_column:		sResult.Append( _T("\\column") );	break;
-				case rsc_line:			sResult.Append( _T("\\line") );		break;
-				case rsc_softpage:		sResult.Append( _T("\\softpage") );	break;
-				case rsc_softcol:		sResult.Append( _T("\\softcol") );	break;
-				case rsc_softline:		sResult.Append( _T("\\softline") );	break;
-				case rsc_tab:			sResult.Append( _T("\\tab") );		break;
-				case rsc_Formula:		sResult.Append( _T("\\|") );		break;
-				case rsc_OptHyphen:		sResult.Append( _T("\\-") );		break;
-				case rsc_NonBrHyphen:	sResult.Append( _T("\\_") );		break;
-				case rsc_NonBrSpace:	sResult.Append( _T("\\~") );		break;
-				case rsc_zwbo:			sResult.Append( _T("\\zwbo") );		break;
-				case rsc_zwnbo:			sResult.Append( _T("\\zwnbo") );	break;
-				case rsc_zwj:			sResult.Append( _T("\\zwj") );		break;
-				case rsc_zwnj:			sResult.Append( _T("\\zwnj") );		break;
-			}
-			if( PROP_DEF != m_nTextWrapBreak )
-				sResult.Append( _T("\\par") );
-			//switch ( m_nTextWrapBreak ) //не воспринимается word
-			//{
-			//	case 0: sResult.Append( _T("\\lbr0") );break;
-			//	case 1: sResult.Append( _T("\\lbr1") );break;
-			//	case 2: sResult.Append( _T("\\lbr2") );break;
-			//	case 3: sResult.Append( _T("\\lbr3") );break;
-			//}
-			if( PROP_DEF != m_nSoftHeight )
-			{
-				sResult.AppendFormat( _T("\\softlheight%d"), m_nSoftHeight );
-			}
-			sResult.Append( _T("}") );
-			return sResult;
+			sResult.AppendFormat( _T("\\softlheight%d"), m_nSoftHeight );
 		}
-public: CString _RenderToOOX(RenderParameter oRenderParameter)
+		sResult.Append( _T("}") );
+		return sResult;
+	}
+	CString _RenderToOOX(RenderParameter oRenderParameter)
+	{
+		CString sResult;
+		switch( m_eType )
 		{
-			CString sResult;
-			switch( m_eType )
-			{
-			case rsc_chdate:			sResult.Append( _T("") );break;
-				case rsc_chdpl:			sResult.Append( _T("") );break;
-				case rsc_chdpa:			sResult.Append( _T("") );break;
-				case rsc_chtime:		sResult.Append( _T("") );break;
-				case rsc_chpgn:			sResult.Append( _T("<w:pgNum />") );break;
-				case rsc_sectnum:		sResult.Append( _T("") );break;
-				case rsc_chftn:			sResult.Append( _T("<w:footnoteRef/>") );break;
-				case rsc_chftnEnd:		sResult.Append( _T("<w:endnoteRef/>") );break;
-				case rsc_chatn:			sResult.Append( _T("<w:annotationRef />") );break;
-				case rsc_chftnsep:		sResult.Append( _T("<w:separator />") );break;
-				case rsc_chftnsepc:		sResult.Append( _T("<w:continuationSeparator/>") );break;
-				case rsc_page:			sResult.Append( _T("<w:br w:type=\"page\"/>") );break;
-				case rsc_column:		sResult.Append( _T("<w:br w:type=\"column\"/>") );break;
-				case rsc_line:			sResult.Append( _T("<w:br w:type=\"textWrapping\" w:clear=\"none\"/>") );break;
-				case rsc_softpage:		sResult.Append( _T("") );break;
-				case rsc_softcol:		sResult.Append( _T("") );break;
-				case rsc_softline:		sResult.Append( _T("") );break;
-				case rsc_tab:			sResult.Append( _T("<w:tab/>") );break;
-				case rsc_emspace:		sResult.Append( _T("") );break;
-				case rsc_qmspace:		sResult.Append( _T("") );break;
-				case rsc_Formula:		sResult.Append( _T("") );break;
-				case rsc_OptHyphen:		sResult.Append( _T("<w:t xml:space=\"preserve\">-</w:t>") );break;//<w:softHyphen/>
-				case rsc_NonBrHyphen:	sResult.Append( _T("<w:t xml:space=\"preserve\">-</w:t>") );break;//<w:nonBreakHyphen/>
-				case rsc_NonBrSpace:	sResult.Append( _T("<w:t xml:space=\"preserve\"> </w:t>") );break;
-				case rsc_zwbo:			sResult.Append( _T("") );break;
-				case rsc_zwnbo:			sResult.Append( _T("") );break;
-				case rsc_zwj:			sResult.Append( _T("") );break;
-				case rsc_zwnj:			sResult.Append( _T("") );break;
-			}
-			switch ( m_nTextWrapBreak )
-			{
-				case 0: sResult.Append( _T("<w:br w:type=\"textWrapping\" w:clear=\"none\"/>") );break;
-				case 1: sResult.Append( _T("<w:br w:type=\"textWrapping\" w:clear=\"left\"/>") );break;
-				case 2: sResult.Append( _T("<w:br w:type=\"textWrapping\" w:clear=\"right\"/>") );break;
-				case 3: sResult.Append( _T("<w:br w:type=\"textWrapping\" w:clear=\"all\"/>") );break;
-			}
-			return sResult;
+		case rsc_chdate:			sResult.Append( _T("") );break;
+			case rsc_chdpl:			sResult.Append( _T("") );break;
+			case rsc_chdpa:			sResult.Append( _T("") );break;
+			case rsc_chtime:		sResult.Append( _T("") );break;
+			case rsc_chpgn:			sResult.Append( _T("<w:pgNum />") );break;
+			case rsc_sectnum:		sResult.Append( _T("") );break;
+			case rsc_chftn:			sResult.Append( _T("<w:footnoteRef/>") );break;
+			case rsc_chftnEnd:		sResult.Append( _T("<w:endnoteRef/>") );break;
+			case rsc_chatn:			sResult.Append( _T("<w:annotationRef />") );break;
+			case rsc_chftnsep:		sResult.Append( _T("<w:separator />") );break;
+			case rsc_chftnsepc:		sResult.Append( _T("<w:continuationSeparator/>") );break;
+			case rsc_page:			sResult.Append( _T("<w:br w:type=\"page\"/>") );break;
+			case rsc_column:		sResult.Append( _T("<w:br w:type=\"column\"/>") );break;
+			case rsc_line:			sResult.Append( _T("<w:br w:type=\"textWrapping\" w:clear=\"none\"/>") );break;
+			case rsc_softpage:		sResult.Append( _T("") );break;
+			case rsc_softcol:		sResult.Append( _T("") );break;
+			case rsc_softline:		sResult.Append( _T("") );break;
+			case rsc_tab:			sResult.Append( _T("<w:tab/>") );break;
+			case rsc_emspace:		sResult.Append( _T("") );break;
+			case rsc_qmspace:		sResult.Append( _T("") );break;
+			case rsc_Formula:		sResult.Append( _T("") );break;
+			case rsc_OptHyphen:		sResult.Append( _T("<w:t xml:space=\"preserve\">-</w:t>") );break;//<w:softHyphen/>
+			case rsc_NonBrHyphen:	sResult.Append( _T("<w:t xml:space=\"preserve\">-</w:t>") );break;//<w:nonBreakHyphen/>
+			case rsc_NonBrSpace:	sResult.Append( _T("<w:t xml:space=\"preserve\"> </w:t>") );break;
+			case rsc_zwbo:			sResult.Append( _T("") );break;
+			case rsc_zwnbo:			sResult.Append( _T("") );break;
+			case rsc_zwj:			sResult.Append( _T("") );break;
+			case rsc_zwnj:			sResult.Append( _T("") );break;
 		}
-public: CString RenderToOOX(RenderParameter oRenderParameter)
+		switch ( m_nTextWrapBreak )
 		{
-			CString sResult;
-			if(RENDER_TO_OOX_PARAM_RUN == oRenderParameter.nType)
-			{
-				sResult.Append(_T("<w:r>"));
-				sResult.Append(_T("<w:rPr>"));
-				sResult.Append( m_oProperty.RenderToOOX(oRenderParameter) );
-				sResult.Append(_T("</w:rPr>"));
-				sResult.Append( _RenderToOOX(oRenderParameter) );
-				sResult.Append(_T("</w:r>"));
-			}
-			else if(RENDER_TO_OOX_PARAM_TEXT == oRenderParameter.nType || 
-					RENDER_TO_OOX_PARAM_MATH == oRenderParameter.nType ||
-					RENDER_TO_OOX_PARAM_PLAIN == oRenderParameter.nType)
-				sResult.Append( _RenderToOOX(oRenderParameter) );
-			return sResult;
+			case 0: sResult.Append( _T("<w:br w:type=\"textWrapping\" w:clear=\"none\"/>") );break;
+			case 1: sResult.Append( _T("<w:br w:type=\"textWrapping\" w:clear=\"left\"/>") );break;
+			case 2: sResult.Append( _T("<w:br w:type=\"textWrapping\" w:clear=\"right\"/>") );break;
+			case 3: sResult.Append( _T("<w:br w:type=\"textWrapping\" w:clear=\"all\"/>") );break;
 		}
+		return sResult;
+	}
+	CString RenderToOOX(RenderParameter oRenderParameter)
+	{
+		CString sResult;
+		if(RENDER_TO_OOX_PARAM_RUN == oRenderParameter.nType)
+		{
+			sResult.Append(_T("<w:r>"));
+			sResult.Append(_T("<w:rPr>"));
+			sResult.Append( m_oProperty.RenderToOOX(oRenderParameter) );
+			sResult.Append(_T("</w:rPr>"));
+			sResult.Append( _RenderToOOX(oRenderParameter) );
+			sResult.Append(_T("</w:r>"));
+		}
+		else if(RENDER_TO_OOX_PARAM_TEXT == oRenderParameter.nType || 
+				RENDER_TO_OOX_PARAM_MATH == oRenderParameter.nType ||
+				RENDER_TO_OOX_PARAM_PLAIN == oRenderParameter.nType)
+			sResult.Append( _RenderToOOX(oRenderParameter) );
+		return sResult;
+	}
 };
 typedef boost::shared_ptr<RtfCharSpecial> RtfCharSpecialPtr;
 
 class RtfChar : public IDocumentElement
 {            
-public: RtfChar()
-		{
-			m_bRtfEncode = true;
-		}
 protected: CString m_sChars;
-public: RtfCharProperty m_oProperty;
-public: bool m_bRtfEncode;
+public: 
+	RtfChar()
+	{
+		m_bRtfEncode = true;
+	}
+	RtfCharProperty m_oProperty;
+	bool m_bRtfEncode;
 
-public: int GetType()
-		{
-			return TYPE_RTF_CHAR;
-		}
-public: void AddText(CString text)
-		{
-			m_sChars.Append( text );
-		}
-public: void setText(CString text)
-		{
-			m_sChars = text;
-		}
-public: CString GetText()
-		{
-			return m_sChars;
-		}
-private: CString renderTextToXML( CString sParam )
-		{
-			CString sResult;
-			if( _T("Text") == sParam )
-            {
-                sResult.AppendFormat( _T("<w:t xml:space= \"preserve\">%ls</w:t>"), Utils::PrepareToXML( m_sChars ).GetBuffer() );
-            }
-			else if( _T("Math") == sParam )
-            {
-                sResult.AppendFormat( _T("<m:t xml:space= \"preserve\">%ls</m:t>"), Utils::PrepareToXML( m_sChars ).GetBuffer());
-            }
-			return sResult;
-		}
-public:
+	int GetType()
+	{
+		return TYPE_RTF_CHAR;
+	}
+	void AddText(CString text)
+	{
+		m_sChars.Append( text );
+	}
+	void setText(CString text)
+	{
+		m_sChars = text;
+	}
+
+	CString GetText()
+	{
+		return m_sChars;
+	}
     CString RenderToOOX(RenderParameter oRenderParameter)
     {
         CString sResult;
         if(RENDER_TO_OOX_PARAM_RUN == oRenderParameter.nType)
         {
             sResult.Append(_T("<w:r>"));
-            sResult.Append(_T("<w:rPr>"));
-            sResult.Append( m_oProperty.RenderToOOX(oRenderParameter) );
-            sResult.Append(_T("</w:rPr>"));
-            sResult.Append( renderTextToXML(_T("Text")) );
+				sResult.Append(_T("<w:rPr>"));
+					sResult.Append( m_oProperty.RenderToOOX(oRenderParameter) );
+				sResult.Append(_T("</w:rPr>"));
+				sResult.Append( renderTextToXML(_T("Text")) );
             sResult.Append(_T("</w:r>"));
         }
         else if(RENDER_TO_OOX_PARAM_TEXT == oRenderParameter.nType)
@@ -336,29 +333,50 @@ public:
         }
         return result;
     }
+private: 
+	CString renderTextToXML( CString sParam )
+	{
+		CString sResult;
+		if( _T("Text") == sParam )
+        {
+            sResult.Append( _T("<w:t xml:space= \"preserve\">"));
+				sResult += Utils::PrepareToXML( m_sChars );
+			sResult.Append( _T("</w:t>"));
+        }
+		else if( _T("Math") == sParam && !m_sChars.IsEmpty())
+        {
+			sResult.Append( _T("<m:r>"));
+				sResult.Append( _T("<m:t>"));
+					sResult += Utils::PrepareToXML( m_sChars );
+				sResult.Append( _T("</m:t>"));
+			sResult.Append( _T("</m:r>"));
+        }
+		return sResult;
+	}
 };
 class RtfCharNative : public RtfChar
 {            
-public: CString RenderToRtf(RenderParameter oRenderParameter)
+public: 
+	CString RenderToRtf(RenderParameter oRenderParameter)
+	{
+		CString result;
+		if( RENDER_TO_RTF_PARAM_CHAR ==  oRenderParameter.nType )
 		{
-			CString result;
-			if( RENDER_TO_RTF_PARAM_CHAR ==  oRenderParameter.nType )
-			{
-				result = m_sChars;
-			}
-			else
-			{
-				CString sText = m_sChars;
-				if( _T("") != sText )
-				{
-					result.Append(_T("{"));
-					result.Append( m_oProperty.RenderToRtf( oRenderParameter ) );
-					result.Append( _T(" ") + sText );
-					result.Append(_T("}"));
-				}
-			}
-			return result;
+			result = m_sChars;
 		}
+		else
+		{
+			CString sText = m_sChars;
+			if( _T("") != sText )
+			{
+				result.Append(_T("{"));
+				result.Append( m_oProperty.RenderToRtf( oRenderParameter ) );
+				result.Append( _T(" ") + sText );
+				result.Append(_T("}"));
+			}
+		}
+		return result;
+	}
 };
 typedef boost::shared_ptr<RtfCharNative> RtfCharNativePtr;
 typedef boost::shared_ptr<RtfChar> RtfCharPtr;

@@ -102,6 +102,20 @@ public:
 			for( int i = 0; i < (int)m_aArray.size(); i++ )
 				sResult.Append( m_aArray[i]->RenderToOOX(oRenderParameter) );
 		}
+		else if( RENDER_TO_OOX_PARAM_MATH == oRenderParameter.nType )
+		{
+			if (m_aArray.size() < 1)
+			{
+				sResult.Append( _T("<w:rPr>") );
+				sResult.Append( m_oProperty.m_oCharProperty.RenderToOOX(oRenderParameter) );
+				sResult.Append( _T("</w:rPr>") );
+			}
+			else
+			{
+				for( int i = 0; i < (int)m_aArray.size(); i++ )
+					sResult.Append( m_aArray[i]->RenderToOOX(oRenderParameter) );
+			}
+		}
 		else
 		{
 			bool bCanConvertToNumbering = false;

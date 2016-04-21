@@ -68,9 +68,10 @@ CString RtfFont::RenderToOOX(RenderParameter oRenderParameter)
 	RtfDocument* poRtfDocument = static_cast<RtfDocument*>(oRenderParameter.poDocument);
 	CString sFontName = m_sName;
 
-	if ((sFontName.GetLength() > 0 ) && (sFontName[0] == 0x00b9 && m_sAltName.GetLength() > 0) )
+	if ((sFontName.GetLength() > 0 ) && (sFontName[0] == 0x00b9 || sFontName[0] > 0xff00) )//fondj.rtf
 	{
-		sFontName = m_sAltName;
+		if (m_sAltName.GetLength() > 0) sFontName = m_sAltName;
+		else sFontName.Empty();
 	}
 	if( sFontName.IsEmpty() )
 	{
@@ -2890,27 +2891,27 @@ CString RtfTime::RenderToOOX(RenderParameter oRenderParameter)
 }
 CString RtfMathProperty::RenderToRtf(RenderParameter oRenderParameter)
 {
-CString sResult;
-sResult.Append(_T("{\\*\\mmathPr"));
+	CString sResult;
+	sResult.Append(_T("{\\*\\mmathPr"));
 
-RENDER_RTF_INT( mbrkBin, sResult, _T("mbrkBin") )
-RENDER_RTF_INT( mbrkBinSub, sResult, _T("mbrkBinSub") )
-RENDER_RTF_INT( mdefJc, sResult, _T("mdefJc") )
-RENDER_RTF_INT( mdispDef, sResult, _T("mdispDef") )
-RENDER_RTF_INT( minterSp, sResult, _T("minterSp") )
-RENDER_RTF_INT( mintraSp, sResult, _T("mintraSp") )
-RENDER_RTF_INT( mlMargin, sResult, _T("mlMargin") )
-RENDER_RTF_INT( mmathFont, sResult, _T("mmathFont") )
-RENDER_RTF_INT( mnaryLim, sResult, _T("mnaryLim") )
-RENDER_RTF_INT( mpostSp, sResult, _T("mpostSp") )
-RENDER_RTF_INT( mpreSp, sResult, _T("mpreSp") )
-RENDER_RTF_INT( mrMargin, sResult, _T("mrMargin") )
-RENDER_RTF_INT( msmallFrac, sResult, _T("msmallFrac") )
-RENDER_RTF_INT( mwrapIndent, sResult, _T("mwrapIndent") )
-RENDER_RTF_INT( mwrapRight, sResult, _T("mwrapRight") )
+	RENDER_RTF_INT( mbrkBin, sResult, _T("mbrkBin") )
+	RENDER_RTF_INT( mbrkBinSub, sResult, _T("mbrkBinSub") )
+	RENDER_RTF_INT( mdefJc, sResult, _T("mdefJc") )
+	RENDER_RTF_INT( mdispDef, sResult, _T("mdispDef") )
+	RENDER_RTF_INT( minterSp, sResult, _T("minterSp") )
+	RENDER_RTF_INT( mintraSp, sResult, _T("mintraSp") )
+	RENDER_RTF_INT( mlMargin, sResult, _T("mlMargin") )
+	RENDER_RTF_INT( mmathFont, sResult, _T("mmathFont") )
+	RENDER_RTF_INT( mnaryLim, sResult, _T("mnaryLim") )
+	RENDER_RTF_INT( mpostSp, sResult, _T("mpostSp") )
+	RENDER_RTF_INT( mpreSp, sResult, _T("mpreSp") )
+	RENDER_RTF_INT( mrMargin, sResult, _T("mrMargin") )
+	RENDER_RTF_INT( msmallFrac, sResult, _T("msmallFrac") )
+	RENDER_RTF_INT( mwrapIndent, sResult, _T("mwrapIndent") )
+	RENDER_RTF_INT( mwrapRight, sResult, _T("mwrapRight") )
 
-sResult.Append(_T("}"));
-return sResult;
+	sResult.Append(_T("}"));
+	return sResult;
 }
 CString RtfMathProperty::RenderToOOX(RenderParameter oRenderParameter)
 {
@@ -2969,103 +2970,103 @@ CString RtfMathProperty::RenderToOOX(RenderParameter oRenderParameter)
 }
 CString RtfMathSpecProp::RenderToRtf(RenderParameter oRenderParameter)
 {
-CString sResult;
-RENDER_RTF_INT( moMathParaPr, sResult, _T("mjc") )
-RENDER_RTF_INT( Font, sResult, _T("f") )
-RENDER_RTF_BOOL( Break, sResult, _T("mbrk") )
-RENDER_RTF_INT( RowSpacing, sResult, _T("mrSp") )
-RENDER_RTF_INT( RowSpacingRule, sResult, _T("mrSpRule") )
-RENDER_RTF_INT( CellGap, sResult, _T("mcGp") )
-RENDER_RTF_INT( CellGapRule, sResult, _T("mcGpRule") )
-RENDER_RTF_INT( CellSpacing, sResult, _T("mcSp") )
+	CString sResult;
+	RENDER_RTF_INT( moMathParaPr, sResult, _T("mjc") )
+	RENDER_RTF_INT( Font, sResult, _T("f") )
+	RENDER_RTF_BOOL( Break, sResult, _T("mbrk") )
+	RENDER_RTF_INT( RowSpacing, sResult, _T("mrSp") )
+	RENDER_RTF_INT( RowSpacingRule, sResult, _T("mrSpRule") )
+	RENDER_RTF_INT( CellGap, sResult, _T("mcGp") )
+	RENDER_RTF_INT( CellGapRule, sResult, _T("mcGpRule") )
+	RENDER_RTF_INT( CellSpacing, sResult, _T("mcSp") )
 
-RENDER_RTF_BOOL( malnScr, sResult, _T("malnScr") )
-RENDER_RTF_BOOL( HideLeft, sResult, _T("mhideLeft") )
-RENDER_RTF_BOOL( HideTop, sResult, _T("mhideTop") )
-RENDER_RTF_BOOL( HideRight, sResult, _T("mhideRight") )
-RENDER_RTF_BOOL( HideBottom, sResult, _T("mhideBot") )
+	RENDER_RTF_BOOL( malnScr, sResult, _T("malnScr") )
+	RENDER_RTF_BOOL( HideLeft, sResult, _T("mhideLeft") )
+	RENDER_RTF_BOOL( HideTop, sResult, _T("mhideTop") )
+	RENDER_RTF_BOOL( HideRight, sResult, _T("mhideRight") )
+	RENDER_RTF_BOOL( HideBottom, sResult, _T("mhideBot") )
 
-RENDER_RTF_BOOL( StrikeHor, sResult, _T("mstrikeH") )
-RENDER_RTF_BOOL( StrikeVer, sResult, _T("mstrikeV") )
-RENDER_RTF_BOOL( StrikeLR, sResult, _T("mstrikeTLBR") )
-RENDER_RTF_BOOL( StrikeRL, sResult, _T("mstrikeBLTR") )
-RENDER_RTF_BOOL( Alignment, sResult, _T("maln") )
-RENDER_RTF_BOOL( Differential, sResult, _T("mdiff") )
+	RENDER_RTF_BOOL( StrikeHor, sResult, _T("mstrikeH") )
+	RENDER_RTF_BOOL( StrikeVer, sResult, _T("mstrikeV") )
+	RENDER_RTF_BOOL( StrikeLR, sResult, _T("mstrikeTLBR") )
+	RENDER_RTF_BOOL( StrikeRL, sResult, _T("mstrikeBLTR") )
+	RENDER_RTF_BOOL( Alignment, sResult, _T("maln") )
+	RENDER_RTF_BOOL( Differential, sResult, _T("mdiff") )
 
-RENDER_RTF_BOOL( NoBreak, sResult, _T("mnoBreak") )
-RENDER_RTF_BOOL( Emulator, sResult, _T("mopEmu") )
-RENDER_RTF_BOOL( NormalText, sResult, _T("mnor") )
-RENDER_RTF_INT( mscr, sResult, _T("mscr") )
-RENDER_RTF_INT( msty, sResult, _T("msty") )
+	RENDER_RTF_BOOL( NoBreak, sResult, _T("mnoBreak") )
+	RENDER_RTF_BOOL( Emulator, sResult, _T("mopEmu") )
+	RENDER_RTF_BOOL( NormalText, sResult, _T("mnor") )
+	RENDER_RTF_INT( mscr, sResult, _T("mscr") )
+	RENDER_RTF_INT( msty, sResult, _T("msty") )
 
-RENDER_RTF_BOOL( mlit, sResult, _T("mlit") )
-RENDER_RTF_BOOL( mshow, sResult, _T("mshow") )
-RENDER_RTF_BOOL( mtransp, sResult, _T("mtransp") )
-RENDER_RTF_BOOL( mzeroAsc, sResult, _T("mzeroAsc") )
-RENDER_RTF_BOOL( mzeroDesc, sResult, _T("mzeroDesc") )
-RENDER_RTF_BOOL( mzeroWid, sResult, _T("mzeroWid") )
+	RENDER_RTF_BOOL( mlit, sResult, _T("mlit") )
+	RENDER_RTF_BOOL( mshow, sResult, _T("mshow") )
+	RENDER_RTF_BOOL( mtransp, sResult, _T("mtransp") )
+	RENDER_RTF_BOOL( mzeroAsc, sResult, _T("mzeroAsc") )
+	RENDER_RTF_BOOL( mzeroDesc, sResult, _T("mzeroDesc") )
+	RENDER_RTF_BOOL( mzeroWid, sResult, _T("mzeroWid") )
 
-if( PROP_DEF != mchr )
-sResult.AppendFormat( _T("\\u%d?"), mchr );
+	if( PROP_DEF != mchr )
+	sResult.AppendFormat( _T("\\u%d?"), mchr );
 
-sResult.Append( m_oCharProp.RenderToRtf( oRenderParameter ) );
-return sResult;
+	sResult.Append( m_oCharProp.RenderToRtf( oRenderParameter ) );
+	return sResult;
 }
 CString RtfMathSpecProp::RenderToOOX(RenderParameter oRenderParameter)
 {
-CString sResult;
-switch( moMathParaPr )
-{
-case 1:sResult.Append(_T("<m:jc m:val=\"center\"/>"));break;
-case 2:sResult.Append(_T("<m:jc m:val=\"centerGroup\"/>"));break;
-case 3:sResult.Append(_T("<m:jc m:val=\"left\"/>"));break;
-case 4:sResult.Append(_T("<m:jc m:val=\"right\"/>"));break;
-}
-RENDER_OOX_BOOL( Break, sResult, _T("m:brk") )
-RENDER_OOX_INT( RowSpacing, sResult, _T("m:rSp") )
-RENDER_OOX_INT( RowSpacingRule, sResult, _T("m:rSpRule") )
-RENDER_OOX_INT( CellGap, sResult, _T("m:cGp") )
-RENDER_OOX_INT( CellGapRule, sResult, _T("m:cGpRule") )
-RENDER_OOX_INT( CellSpacing, sResult, _T("m:cSp") )
-RENDER_OOX_BOOL( malnScr, sResult, _T("m:alnScr") )
-RENDER_OOX_BOOL( HideLeft, sResult, _T("m:hideLeft") )
-RENDER_OOX_BOOL( HideTop, sResult, _T("m:hideTop") )
-RENDER_OOX_BOOL( HideRight, sResult, _T("m:hideRight") )
-RENDER_OOX_BOOL( HideBottom, sResult, _T("m:hideBottom") )
-RENDER_OOX_BOOL( StrikeHor, sResult, _T("m:strikeH") )
-RENDER_OOX_BOOL( StrikeVer, sResult, _T("m:strikeV") )
-RENDER_OOX_BOOL( StrikeLR, sResult, _T("m:strikeTLBR") )
-RENDER_OOX_BOOL( StrikeRL, sResult, _T("m:strikeBLTR") )
-RENDER_OOX_BOOL( Alignment, sResult, _T("m:aln") )
-RENDER_OOX_BOOL( Differential, sResult, _T("m:diff") )
-RENDER_OOX_BOOL( NoBreak, sResult, _T("m:noBreak") )
-RENDER_OOX_BOOL( Emulator, sResult, _T("m:opEmu") )
-RENDER_OOX_BOOL( NormalText, sResult, _T("m:nor") )
+	CString sResult;
+	switch( moMathParaPr )
+	{
+		case 1:sResult.Append(_T("<m:jc m:val=\"center\"/>"));break;
+		case 2:sResult.Append(_T("<m:jc m:val=\"centerGroup\"/>"));break;
+		case 3:sResult.Append(_T("<m:jc m:val=\"left\"/>"));break;
+		case 4:sResult.Append(_T("<m:jc m:val=\"right\"/>"));break;
+	}
+	RENDER_OOX_BOOL( Break, sResult, _T("m:brk") )
+	RENDER_OOX_INT( RowSpacing, sResult, _T("m:rSp") )
+	RENDER_OOX_INT( RowSpacingRule, sResult, _T("m:rSpRule") )
+	RENDER_OOX_INT( CellGap, sResult, _T("m:cGp") )
+	RENDER_OOX_INT( CellGapRule, sResult, _T("m:cGpRule") )
+	RENDER_OOX_INT( CellSpacing, sResult, _T("m:cSp") )
+	RENDER_OOX_BOOL( malnScr, sResult, _T("m:alnScr") )
+	RENDER_OOX_BOOL( HideLeft, sResult, _T("m:hideLeft") )
+	RENDER_OOX_BOOL( HideTop, sResult, _T("m:hideTop") )
+	RENDER_OOX_BOOL( HideRight, sResult, _T("m:hideRight") )
+	RENDER_OOX_BOOL( HideBottom, sResult, _T("m:hideBottom") )
+	RENDER_OOX_BOOL( StrikeHor, sResult, _T("m:strikeH") )
+	RENDER_OOX_BOOL( StrikeVer, sResult, _T("m:strikeV") )
+	RENDER_OOX_BOOL( StrikeLR, sResult, _T("m:strikeTLBR") )
+	RENDER_OOX_BOOL( StrikeRL, sResult, _T("m:strikeBLTR") )
+	RENDER_OOX_BOOL( Alignment, sResult, _T("m:aln") )
+	RENDER_OOX_BOOL( Differential, sResult, _T("m:diff") )
+	RENDER_OOX_BOOL( NoBreak, sResult, _T("m:noBreak") )
+	RENDER_OOX_BOOL( Emulator, sResult, _T("m:opEmu") )
+	RENDER_OOX_BOOL( NormalText, sResult, _T("m:nor") )
 
-switch( mscr )
-{
-case 0:	sResult.Append(_T("<m:scr m:val=\"roman\"/>"));break;
-case 1:	sResult.Append(_T("<m:scr m:val=\"script\"/>"));break;
-case 2:	sResult.Append(_T("<m:scr m:val=\"fraktur\"/>"));break;
-case 3:	sResult.Append(_T("<m:scr m:val=\"double-struck\"/>"));break;
-case 4:	sResult.Append(_T("<m:scr m:val=\"sans-serif\"/>"));break;
-case 5:	sResult.Append(_T("<m:scr m:val=\"monospace\"/>"));break;
-}
-switch( msty )
-{
-case 0:	sResult.Append(_T("<m:sty m:val=\"p\"/>"));break;
-case 1:	sResult.Append(_T("<m:sty m:val=\"b\"/>"));break;
-case 2:	sResult.Append(_T("<m:sty m:val=\"i\"/>"));break;
-case 3:	sResult.Append(_T("<m:sty m:val=\"bi\"/>"));break;
-}
-RENDER_OOX_BOOL( mlit, sResult, _T("m:lit") )
-RENDER_OOX_BOOL( mshow, sResult, _T("m:lit") )
-RENDER_OOX_BOOL( mtransp, sResult, _T("m:lit") )
-RENDER_OOX_BOOL( mzeroAsc, sResult, _T("m:lit") )
-RENDER_OOX_BOOL( mzeroDesc, sResult, _T("m:lit") )
-RENDER_OOX_BOOL( mzeroWid, sResult, _T("m:lit") )
+	switch( mscr )
+	{
+		case 0:	sResult.Append(_T("<m:scr m:val=\"roman\"/>"));break;
+		case 1:	sResult.Append(_T("<m:scr m:val=\"script\"/>"));break;
+		case 2:	sResult.Append(_T("<m:scr m:val=\"fraktur\"/>"));break;
+		case 3:	sResult.Append(_T("<m:scr m:val=\"double-struck\"/>"));break;
+		case 4:	sResult.Append(_T("<m:scr m:val=\"sans-serif\"/>"));break;
+		case 5:	sResult.Append(_T("<m:scr m:val=\"monospace\"/>"));break;
+	}
+	switch( msty )
+	{
+		case 0:	sResult.Append(_T("<m:sty m:val=\"p\"/>"));break;
+		case 1:	sResult.Append(_T("<m:sty m:val=\"b\"/>"));break;
+		case 2:	sResult.Append(_T("<m:sty m:val=\"i\"/>"));break;
+		case 3:	sResult.Append(_T("<m:sty m:val=\"bi\"/>"));break;
+	}
+	RENDER_OOX_BOOL( mlit, sResult, _T("m:lit") )
+	RENDER_OOX_BOOL( mshow, sResult, _T("m:lit") )
+	RENDER_OOX_BOOL( mtransp, sResult, _T("m:lit") )
+	RENDER_OOX_BOOL( mzeroAsc, sResult, _T("m:lit") )
+	RENDER_OOX_BOOL( mzeroDesc, sResult, _T("m:lit") )
+	RENDER_OOX_BOOL( mzeroWid, sResult, _T("m:lit") )
 
-return sResult;
+	return sResult;
 }
 
 void RtfCharStyle::Merge( RtfStylePtr oStyle )
@@ -3090,24 +3091,24 @@ void RtfCharStyle::Merge( RtfStylePtr oStyle )
 
 void RtfParagraphStyle::Merge( RtfStylePtr oStyle )
 {
-RtfStyle::Merge( oStyle );
-if( TYPE_RTF_PROPERTY_STYLE_CHAR == oStyle->GetType() )
-{
-    RtfCharStylePtr oCharStyle = boost::static_pointer_cast<RtfCharStyle, RtfStyle>( oStyle );
-	m_oCharProp.Merge( oCharStyle->m_oCharProp );
-}
-else if( TYPE_RTF_PROPERTY_STYLE_PARAGRAPH == oStyle->GetType() )
-{
-    RtfParagraphStylePtr oParagraphStyle = boost::static_pointer_cast<RtfParagraphStyle, RtfStyle>( oStyle );
-	m_oParProp.Merge( oParagraphStyle->m_oParProp );
-	m_oCharProp.Merge( oParagraphStyle->m_oCharProp );
-}
-else if( TYPE_RTF_PROPERTY_STYLE_TABLE == oStyle->GetType() )
-{
-    RtfTableStylePtr oTableStyle = boost::static_pointer_cast<RtfTableStyle, RtfStyle>( oStyle );
-	m_oParProp.Merge( oTableStyle->m_oParProp );
-	m_oCharProp.Merge( oTableStyle->m_oCharProp );
-}
+	RtfStyle::Merge( oStyle );
+	if( TYPE_RTF_PROPERTY_STYLE_CHAR == oStyle->GetType() )
+	{
+		RtfCharStylePtr oCharStyle = boost::static_pointer_cast<RtfCharStyle, RtfStyle>( oStyle );
+		m_oCharProp.Merge( oCharStyle->m_oCharProp );
+	}
+	else if( TYPE_RTF_PROPERTY_STYLE_PARAGRAPH == oStyle->GetType() )
+	{
+		RtfParagraphStylePtr oParagraphStyle = boost::static_pointer_cast<RtfParagraphStyle, RtfStyle>( oStyle );
+		m_oParProp.Merge( oParagraphStyle->m_oParProp );
+		m_oCharProp.Merge( oParagraphStyle->m_oCharProp );
+	}
+	else if( TYPE_RTF_PROPERTY_STYLE_TABLE == oStyle->GetType() )
+	{
+		RtfTableStylePtr oTableStyle = boost::static_pointer_cast<RtfTableStyle, RtfStyle>( oStyle );
+		m_oParProp.Merge( oTableStyle->m_oParProp );
+		m_oCharProp.Merge( oTableStyle->m_oCharProp );
+	}
 }
 void RtfTableStyle::Merge( RtfStylePtr oStyle )
 {

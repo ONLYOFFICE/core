@@ -58,6 +58,7 @@ public:
 	{
 		 CString sResult = sInput;
 		 //&amp; («&»), &lt; («<»), &gt; («>»), &apos; («'»), и &quot; («"») 
+		 sResult.Replace(_T("\x06"), _T(""));	//ЗБ·О±Ч·Ґјіён.rtf
 		 sResult.Replace(_T("&"), _T("&amp;"));
 		 sResult.Replace(_T("<"), _T("&lt;"));
 		 sResult.Replace(_T(">"), _T("&gt;"));

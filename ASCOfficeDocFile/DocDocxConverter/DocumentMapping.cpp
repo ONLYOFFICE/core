@@ -785,7 +785,9 @@ namespace DocFileFormat
 
             if (!text.empty())
 			{
-                writeTextStart(textType);
+				//bool preserve_space = (text.find(_T("\x20")) != text.npos) ? true : false;
+
+				writeTextStart(textType, true/*preserve_space*/);
 
                 m_pXmlWriter->WriteString(text.c_str());
 
@@ -802,7 +804,9 @@ namespace DocFileFormat
 	{
 		if ( !text.empty() )
 		{
-			writeTextStart( textType );
+			//bool preserve_space = (text.find(_T("\x20")) != text.npos) ? true : false;
+			
+			writeTextStart( textType, true /*preserve_space*/ );
 
 			m_pXmlWriter->WriteString( text.c_str() );
 
@@ -810,12 +814,13 @@ namespace DocFileFormat
 		}
 	}
 
-    void DocumentMapping::writeTextStart(const std::wstring& textType)
+    void DocumentMapping::writeTextStart(const std::wstring& textType, bool preserve_space)
 	{
 		std::wstring str = ( std::wstring( _T( "w:" ) ) + textType );
 
 		m_pXmlWriter->WriteNodeBegin( str.c_str(), TRUE );
-        {
+        if (preserve_space)
+		{
             m_pXmlWriter->WriteAttribute( _T( "xml:space" ), _T( "preserve" ) );
         }
 		m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );

@@ -117,24 +117,31 @@ public:
 		RenderParameter oNewParam = oRenderParameter;
 		sResult.Append( _T("<") );
 		sResult += m_sOOXName;
-		
-		oNewParam.nType = RENDER_TO_OOX_PARAM_MATH;
-		CString sVal = m_oVal.RenderToOOX( oNewParam );
-		
-		if( false == sVal.IsEmpty() )
-		{
-			sResult.Append( _T(" w:val=\"") );
-			sResult += sVal;
-			sResult.Append( _T("\"") );
-		}
-		sResult.Append( _T(">") );
 
 		oNewParam.nType = RENDER_TO_OOX_PARAM_TEXT;
-		sResult.Append( oProperty.RenderToOOX( oNewParam ) );
+		CString sProp	=  oProperty.RenderToOOX( oNewParam );
 		
-		for( int i = 0; i < (int)m_aArray.size(); i++ )
+		oNewParam.nType = RENDER_TO_OOX_PARAM_MATH;
+		//CString sVal	= m_oVal.RenderToOOX( oNewParam );
+		
+		//if( false == sVal.IsEmpty() )
+		//{
+		//	sResult.Append( _T(" w:val=\"") );
+		//	sResult += sVal;
+		//	sResult.Append( _T("\"") );
+		//}
+		sResult.Append( _T(">") );
+
+		sResult.Append( sProp);
+		
+		if (m_aArray.size() == 1)
+			sResult.Append(m_aArray[0]->RenderToOOX(oNewParam));
+		else
 		{
-			sResult.Append(m_aArray[i]->RenderToOOX(oNewParam));
+			for( int i = 1; i < (int)m_aArray.size(); i++ )
+			{
+				sResult.Append(m_aArray[i]->RenderToOOX(oNewParam));
+			}
 		}
 
 		sResult.Append(_T("</") );

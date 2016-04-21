@@ -1762,6 +1762,11 @@ public:
 			if( true == hasParameter ) 
 				oDocument.m_oMathProp.mwrapRight = parameter;
 		}
+		else if( _T("mintLim") == sCommand )
+		{
+			if( true == hasParameter ) 
+				oDocument.m_oMathProp.mintLim = parameter;
+		}
 		else
 		{
 			return false;
@@ -1823,20 +1828,48 @@ public:
 			Skip( oDocument, oReader );
 		else 
 		{
-			if( RtfMath::IsRtfControlWord( sCommand ) == true )
+			bool isBoolMath = RtfMath::IsRtfControlPropertyBool(sCommand);
+			bool isValMath	= isBoolMath ? false : RtfMath::IsRtfControlProperty(sCommand);
+			bool isMath		= (isValMath || isBoolMath) ? false : RtfMath::IsRtfControlWord(sCommand);
+			
+			if( isMath || isValMath || isBoolMath)
 			{
-				if( m_oMath.IsEmpty() )
-					m_oMath.SetRtfName( sCommand );
+				if( true == m_oMath.m_bHeader )
+				{
+					m_oMath.m_bHeader = false;
+					if (m_oMath.IsEmpty())
+						m_oMath.SetRtfName( sCommand );
+					
+				}
 				else
 				{
 					RtfMathPtr oNewMath( new RtfMath() );
 					oNewMath->SetRtfName( sCommand );
+					
+					oNewMath->m_bIsVal	= isValMath;
+					oNewMath->m_bIsBool	= isBoolMath;
+
 					RtfMathReader oSubMathReader( *oNewMath );
 					StartSubReader( oSubMathReader, oDocument, oReader );
+					
 					if( RtfParagraphProperty::pa_none != oSubMathReader.m_eParAlign )
 						m_eParAlign = oSubMathReader.m_eParAlign;
 					if( oNewMath->IsValid() == true )
-						m_oMath.AddItem( oNewMath );
+					{
+						if (m_oMath.m_bIsVal || m_oMath.m_bIsBool)
+						{
+							IDocumentElementPtr item;
+							oNewMath->GetItem( item, 0);
+							if ((item) && (TYPE_RTF_PARAGRAPH == item->GetType()))
+							{
+								m_oMath.m_oVal = *((RtfParagraph*)(item.get()));
+							}
+						}
+						else
+						{
+							m_oMath.AddItem( oNewMath );
+						}
+					}
 				}
 			}
 			else if( RtfCharPropCommand::ExecuteCommand(oDocument, oReader, sCommand, hasParameter, parameter ) == true )

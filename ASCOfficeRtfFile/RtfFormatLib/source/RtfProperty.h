@@ -3040,81 +3040,85 @@ public:
 
 class RtfMathProperty: public IRenderableProperty
 {
-public: int mbrkBin;
-		int mbrkBinSub;
-		int mdefJc;
-		int mdispDef;
-		int minterSp;
-		int mintraSp;
-		int mlMargin;
-		int mmathFont;
-		int mnaryLim;
-		int mpostSp;
-		int mpreSp;
-		int mrMargin;
-		int msmallFrac;
-		int mwrapIndent;
-		int mwrapRight;
-		RtfMathProperty()
-		{
-			SetDefault();
-		}
+public: 
+	int mbrkBin;
+	int mbrkBinSub;
+	int mdefJc;
+	int mdispDef;
+	int minterSp;
+	int mintraSp;
+	int mlMargin;
+	int mmathFont;
+	int mnaryLim;
+	int mpostSp;
+	int mpreSp;
+	int mrMargin;
+	int msmallFrac;
+	int mwrapIndent;
+	int mwrapRight;
+	int mintLim;
 
-//		bool IsValid()
-//		{
-//			return PROP_DEF != mbrkBin || PROP_DEF != mbrkBinSub || PROP_DEF != mdispDef || PROP_DEF != minterSp ||
-//					 PROP_DEF != mintraSp || PROP_DEF != mlMargin || PROP_DEF != mmathFont || PROP_DEF != mnaryLim ||
-//					  PROP_DEF != mpostSp || PROP_DEF != mpreSp || PROP_DEF != mrMargin || PROP_DEF != msmallFrac ||
-//					   PROP_DEF != mwrapIndent || PROP_DEF != mwrapRight ;
-//		}
-		void SetDefaultRtf()
-		{
-			SetDefault();
-		}
-		void SetDefaultOOX()
-		{
-			SetDefault();
-		}
-		void SetDefault()
-		{
-			DEFAULT_PROPERTY( mbrkBin )
-			DEFAULT_PROPERTY( mbrkBinSub )
-			mdefJc = 1; //centered as a group 
-			DEFAULT_PROPERTY( mdispDef )
-			DEFAULT_PROPERTY( minterSp )
-			DEFAULT_PROPERTY( mintraSp )
-			DEFAULT_PROPERTY( mlMargin )
-			DEFAULT_PROPERTY( mmathFont )
-			DEFAULT_PROPERTY( mnaryLim )
-			DEFAULT_PROPERTY( mpostSp )
-			DEFAULT_PROPERTY( mpreSp )
-			DEFAULT_PROPERTY( mrMargin )
-			DEFAULT_PROPERTY( msmallFrac )
-			DEFAULT_PROPERTY( mwrapIndent )
-			DEFAULT_PROPERTY( mwrapRight )
-		}
-		CString RenderToRtf(RenderParameter oRenderParameter);
-		CString RenderToOOX(RenderParameter oRenderParameter);
+	RtfMathProperty()
+	{
+		SetDefault();
+	}
+
+	//bool IsValid()
+	//{
+	//	return PROP_DEF != mbrkBin || PROP_DEF != mbrkBinSub || PROP_DEF != mdispDef || PROP_DEF != minterSp ||
+	//			 PROP_DEF != mintraSp || PROP_DEF != mlMargin || PROP_DEF != mmathFont || PROP_DEF != mnaryLim ||
+	//			  PROP_DEF != mpostSp || PROP_DEF != mpreSp || PROP_DEF != mrMargin || PROP_DEF != msmallFrac ||
+	//			   PROP_DEF != mwrapIndent || PROP_DEF != mwrapRight ;
+	//}
+	void SetDefaultRtf()
+	{
+		SetDefault();
+	}
+	void SetDefaultOOX()
+	{
+		SetDefault();
+	}
+	void SetDefault()
+	{
+		DEFAULT_PROPERTY( mintLim )
+		DEFAULT_PROPERTY( mbrkBin )
+		DEFAULT_PROPERTY( mbrkBinSub )
+		mdefJc = 1; //centered as a group 
+		DEFAULT_PROPERTY( mdispDef )
+		DEFAULT_PROPERTY( minterSp )
+		DEFAULT_PROPERTY( mintraSp )
+		DEFAULT_PROPERTY( mlMargin )
+		DEFAULT_PROPERTY( mmathFont )
+		DEFAULT_PROPERTY( mnaryLim )
+		DEFAULT_PROPERTY( mpostSp )
+		DEFAULT_PROPERTY( mpreSp )
+		DEFAULT_PROPERTY( mrMargin )
+		DEFAULT_PROPERTY( msmallFrac )
+		DEFAULT_PROPERTY( mwrapIndent )
+		DEFAULT_PROPERTY( mwrapRight )
+	}
+	CString RenderToRtf(RenderParameter oRenderParameter);
+	CString RenderToOOX(RenderParameter oRenderParameter);
 };
 class RtfMathSpecProp: public IRenderableProperty
 {
-//moMathParaPr  
-public: int moMathParaPr;
-//moMath 
-		int Font;
-//mboxPr 
-		int Break;
-//meqArrPr 
-		int RowSpacing;
-		int RowSpacingRule;
-//mmPr 
+
+public: 
+	int moMathParaPr;//moMathParaPr  
+
+		int Font;		//moMath 
+		int Break;		//mboxPr 
+
+		int RowSpacing;		//meqArrPr 
+		int RowSpacingRule;	//mmPr 
+
 		int CellGap;
 		int CellGapRule;
 		int CellSpacing;
-//msSubSupPr 
-		int malnScr;
-//borderBoxPrp
-		int HideLeft;
+ 
+		int malnScr;	//msSubSupPr
+
+		int HideLeft;	//borderBoxPrp
 		int HideTop;
 		int HideRight;
 		int HideBottom;
@@ -3122,26 +3126,26 @@ public: int moMathParaPr;
 		int StrikeVer;
 		int StrikeLR;
 		int StrikeRL;
-//boxPrp
-		int Alignment;
+
+		int Alignment;		//boxPrp
 		int Differential;
 		int NoBreak;
 		int Emulator;
-//mrPr
-		int NormalText;
+
+		int NormalText;		//mrPr
 		int mscr;
 		int msty;
 		int mlit;
-//phantPrp
-		int mshow;
+
+		int mshow;			//phantPrp
 		int mtransp;
 		int mzeroAsc;
 		int mzeroDesc;
 		int mzeroWid;
-//mchr
-		int mchr;
-//charProp
-		RtfCharProperty m_oCharProp;
+
+		int mchr;			//mchr
+
+		RtfCharProperty m_oCharProp;	//charProp
 
 		RtfMathSpecProp()
 		{

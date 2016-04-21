@@ -84,6 +84,8 @@ std::wstring DetectTypeDocument(const std::wstring & pathOOX)
 
 int _tmain(int argc, _TCHAR* argv[])
 {
+	if (argc < 3) return 0;
+
 	HRESULT hr = S_OK;
     boost::timer t1;
 //////////////////////////////////////////////////////////////////////////

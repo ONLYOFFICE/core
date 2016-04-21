@@ -61,7 +61,7 @@ namespace DocFileFormat
 		/// Writes the given text to the document
 		void writeText( vector<wchar_t>* chars, int initialCp, CharacterPropertyExceptions* chpx, bool writeDeletedText );
 		void writeTextElement( const wstring& text, const wstring& textType );
-        void writeTextStart( const wstring& textType);
+        void writeTextStart( const wstring& textType, bool preserve_space);
 		void writeTextEnd( const wstring& textType );
 		/// Searches for bookmarks in the list of characters.
 		vector<int> searchBookmarks( vector<wchar_t>* chars, int initialCp );

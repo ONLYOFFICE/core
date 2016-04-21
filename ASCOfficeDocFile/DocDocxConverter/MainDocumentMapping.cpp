@@ -93,12 +93,6 @@ namespace DocFileFormat
 				m_pXmlWriter->WriteNodeBegin( _T( "w:p" ) );
 				//start run
 				m_pXmlWriter->WriteNodeBegin( _T( "w:r" ) );
-				//open a new w:t element
-				m_pXmlWriter->WriteNodeBegin( _T( "w:t" ), TRUE );
-				m_pXmlWriter->WriteAttribute( _T( "xml:space" ), _T( "preserve" ) ); 
-				m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
-
-				// Write text
 				
 				int fc						=	m_document->FindFileCharPos(0);
 				int fcEnd					=	m_document->FindFileCharPos(countTextRel);
@@ -106,7 +100,18 @@ namespace DocFileFormat
 				// Read the chars
 				vector<wchar_t>* chpxChars	=	m_document->m_PieceTable->GetEncodingChars (fc, fcEnd, m_document->WordDocumentStream);		//<! NEED OPTIMIZE
 				wstring text (chpxChars->begin(), chpxChars->end());
+				
+				//open a new w:t element
+				m_pXmlWriter->WriteNodeBegin( _T( "w:t" ), TRUE );
+				//if (text.find(_T("\x20")) != text.npos)
+				{
+					m_pXmlWriter->WriteAttribute( _T( "xml:space" ), _T( "preserve" ) ); 
+				}
+				m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
+
+				// Write text
 				m_pXmlWriter->WriteString(text.c_str());
+
 				RELEASEOBJECT(chpxChars);
 
 				//close previous w:t ...

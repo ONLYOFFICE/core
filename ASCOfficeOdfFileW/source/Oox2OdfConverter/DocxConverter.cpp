@@ -972,7 +972,7 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool r
 
     //oox_section_pr = last_section_properties;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	if (!continuous/* || root*/)
+	if (!continuous || (root && odt_context->page_layout_context()->last_master() == NULL))
 	{
 		odt_context->page_layout_context()->start_master_page(root ? L"Standard" : L"");
 	}
@@ -1194,7 +1194,10 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool r
 	}
 
 	if (!continuous)	odt_context->page_layout_context()->end_master_page(); // для добавления автогенераций
-	if (root)			odt_context->page_layout_context()->set_current_master_page_base();
+	if (root)
+	{
+		odt_context->page_layout_context()->set_current_master_page_base();
+	}
 
     last_section_properties = oox_section_pr;
 }

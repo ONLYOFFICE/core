@@ -3,6 +3,7 @@
 
 #include "RtfGlobalTables.h"
 #include "RtfSection.h"
+#include "RtfMath.h"
 
 class RtfDocument :public ItemContainer<RtfSectionPtr>
 {
@@ -18,7 +19,7 @@ public:
 
 	RtfParagraphProperty	m_oDefaultParagraphProp;
 	RtfCharProperty			m_oDefaultCharProp;
-	RtfMathProperty			m_oMathProp;
+	RtfMath					m_oMathProp;
 
 	TextItemContainerPtr	m_oFootnoteSep;
 	TextItemContainerPtr	m_oFootnoteCon;

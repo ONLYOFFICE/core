@@ -353,7 +353,7 @@
 						Name="Math"
 						>
 						<File
-							RelativePath="..\source\Reader\OOXMathPropReader.h"
+							RelativePath="..\source\Reader\OOXMathReader.cpp"
 							>
 						</File>
 						<File
@@ -693,6 +693,10 @@
 			</File>
 			<File
 				RelativePath="..\source\RtfGlobalTables.h"
+				>
+			</File>
+			<File
+				RelativePath="..\source\RtfMath.cpp"
 				>
 			</File>
 			<File

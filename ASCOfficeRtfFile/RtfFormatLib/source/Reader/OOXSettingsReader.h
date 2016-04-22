@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "OOXFontReader.h"
-#include "OOXMathPropReader.h"
+#include "OOXMathReader.h"
 #include "../Utils.h"
 
 class OOXSettingsReader
@@ -16,14 +16,13 @@ public:
 	bool Parse( ReaderParameter oParam )
 	{
 		//oParam.oRtf->m_oColorSchemeMapping.SetDefaultOOX();
-		oParam.oRtf->m_oMathProp.SetDefaultOOX();
 
 		if (m_ooxSettings == NULL) return false;
 		
 		if (m_ooxSettings->m_oMathPr.IsInit())
 		{
-			OOXMathPropReader oMathProp(m_ooxSettings->m_oMathPr.GetPointer());
-			oMathProp.Parse( oParam );
+			OOXMathReader oMathProp(m_ooxSettings->m_oMathPr.GetPointer());
+			oMathProp.Parse( oParam, oParam.oRtf->m_oMathProp );
 		}
 
 		if (m_ooxSettings->m_oDoNotHyphenateCaps.IsInit())

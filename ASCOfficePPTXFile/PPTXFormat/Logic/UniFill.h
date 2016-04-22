@@ -48,6 +48,11 @@ namespace PPTX
 					m_type = pattFill;
 					Fill.reset(new Logic::PattFill(node));
 				}
+				else if(name == _T("grpFill"))
+				{
+					m_type = grpFill;
+					Fill.reset(new Logic::GrpFill(node));
+				}
 				else
 				{
 					m_type = notInit;
@@ -98,7 +103,12 @@ namespace PPTX
 							Fill.reset(new Logic::PattFill(oNode));
 							return;
 						}
-
+						if (_T("grpFill") == strName)
+						{
+							m_type = grpFill;
+							Fill.reset(new Logic::GrpFill(oNode));
+							return;
+						}
 					}
 				}
 
@@ -573,6 +583,12 @@ namespace PPTX
 							Fill = new PPTX::Logic::NoFill();
 							break;
 						}
+						case FILL_TYPE_GRP:
+						{
+							m_type = grpFill;
+							Fill = new PPTX::Logic::GrpFill();
+							break;
+						}
 					}
 				}
 
@@ -628,7 +644,7 @@ namespace PPTX
 			smart_ptr<WrapperWritingElement>	Fill;
 			enum Type {notInit, noFill, solidFill, gradFill, blipFill, pattFill, grpFill};
 			Type								m_type;
-//grpFill (Group Fill)  §20.1.8.35 
+
 		protected:
 			virtual void FillParentPointersForChilds()
 			{

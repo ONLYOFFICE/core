@@ -122,6 +122,7 @@ void               CDjVuFileImplementation::GetPageInfo(int nPageIndex, double* 
 		*pdDpiY = 96;
 	}
 
+#if 0
 	GP<DjVuImage> pPage = m_pDoc->get_page(nPageIndex);
 
 	pPage->wait_for_complete_decode();
@@ -132,6 +133,15 @@ void               CDjVuFileImplementation::GetPageInfo(int nPageIndex, double* 
 
 	*pdDpiX = pPage->get_dpi();
 	*pdDpiY = pPage->get_dpi();
+#endif
+    int nW = 0;
+    int nH = 0;
+    int nDpi = 0;
+    m_pDoc->ReadPageInfo(nPageIndex, nW, nH, nDpi);
+    *pdWidth = nW;
+    *pdHeight = nH;
+    *pdDpiX = nDpi;
+    *pdDpiY = nDpi;
 }
 void               CDjVuFileImplementation::DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak)
 {

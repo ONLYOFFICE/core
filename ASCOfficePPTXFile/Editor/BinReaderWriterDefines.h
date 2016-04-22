@@ -66,6 +66,7 @@ namespace NSBinPptxRW
 #define FILL_TYPE_SOLID		3
 #define FILL_TYPE_GRAD		4
 #define FILL_TYPE_PATT		5
+#define FILL_TYPE_GRP		6
 
 #define EFFECT_TYPE_NONE				0
 #define EFFECT_TYPE_OUTERSHDW			1

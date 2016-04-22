@@ -52,6 +52,50 @@ namespace PPTX
 		protected:
 			virtual void FillParentPointersForChilds(){};
 		};
+
+		class GrpFill : public WrapperWritingElement
+		{
+		public:
+			PPTX_LOGIC_BASE(GrpFill)
+
+			GrpFill& operator=(const GrpFill& oSrc)
+			{
+				parentFile		= oSrc.parentFile;
+				parentElement	= oSrc.parentElement;
+
+				m_namespace = oSrc.m_namespace;
+				return *this;
+			}
+
+		public:
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+				m_namespace = XmlUtils::GetNamespace(node.GetName());
+			}
+			virtual CString toXML() const
+			{
+				if (_T("") == m_namespace)
+					return _T("<grpFill/>");
+				return _T("<") + m_namespace + _T(":grpFill/>");
+			}
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+			{
+				if (XMLWRITER_DOC_TYPE_WORDART == pWriter->m_lDocType)
+					pWriter->WriteString(_T("<w14:grpFill/>"));
+				else
+					pWriter->WriteString(_T("<a:grpFill/>"));
+			}
+
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+			{
+				pWriter->StartRecord(FILL_TYPE_GRP);
+				pWriter->EndRecord();
+			}
+		public:
+			CString m_namespace;
+		protected:
+			virtual void FillParentPointersForChilds(){};
+		};
 	} // namespace Logic
 } // namespace PPTX
 

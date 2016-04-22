@@ -289,7 +289,7 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 				OOX::Logic::COMathPara * pMathPara = dynamic_cast<OOX::Logic::COMathPara*>(m_ooxElement->m_arrItems[i]);
 				
 				RtfMathPtr oNewMath( new RtfMath() );
-				oNewMath->SetOOXName(_T("m:oMathPara") );
+				oNewMath->SetOOXType( OOX::et_m_oMathPara );
 				
 				OOXMathReader oMathRreader(pMathPara);
 				if(true == oMathRreader.Parse( oParam, (*oNewMath) ) )

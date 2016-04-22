@@ -89,7 +89,7 @@ CString OOXDocumentWriter::CreateXmlEnd( )
 	oNewParam.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
 	poSettingsWriter->AddContent( m_oDocument.m_oProperty.RenderToOOX(oNewParam) );
 	//poSettingsWriter->AddContent( m_oDocument.m_oColorSchemeMapping.RenderToOOX(oNewParam) );
-	poSettingsWriter->AddContent( m_oDocument.m_oMathProp.RenderToOOX(oNewParam) );
+	//poSettingsWriter->AddContent( m_oDocument.m_oMathProp.RenderToOOX(oNewParam) );
 
 	//numbering.xml
 	OOXNumberingWriter* poNumberingWriter = static_cast<OOXNumberingWriter*>( m_oWriter.m_poNumberingWriter );

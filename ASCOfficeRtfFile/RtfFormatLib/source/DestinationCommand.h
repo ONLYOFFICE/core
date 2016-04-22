@@ -1677,104 +1677,6 @@ public:
 	}
 };
 
-class RtfMathPropReader : public RtfAbstractReader
-{
-public:
-	RtfMathPropReader(  )
-	{
-	}
-	bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CString sCommand, bool hasParameter, int parameter)
-	{
-		if( _T("mmathPr") == sCommand )
-			return true;
-		else if( _T("mbrkBin") == sCommand )
-		{
-			if( true == hasParameter ) 
-				oDocument.m_oMathProp.mbrkBin = parameter;
-		}
-		else if( _T("mbrkBinSub") == sCommand )
-		{
-			if( true == hasParameter ) 
-				oDocument.m_oMathProp.mbrkBinSub = parameter;
-		}
-		else if( _T("mdefJc") == sCommand )
-		{
-			if( true == hasParameter ) 
-				oDocument.m_oMathProp.mdefJc = parameter;
-		}
-		else if( _T("mdispDef") == sCommand )
-		{
-			if( true == hasParameter ) 
-				oDocument.m_oMathProp.mdispDef = parameter;
-		}
-		else if( _T("minterSp") == sCommand )
-		{
-			if( true == hasParameter ) 
-				oDocument.m_oMathProp.minterSp = parameter;
-		}
-		else if( _T("mintraSp") == sCommand )
-		{
-			if( true == hasParameter ) 
-				oDocument.m_oMathProp.mintraSp = parameter;
-		}
-		else if( _T("mlMargin") == sCommand )
-		{
-			if( true == hasParameter ) 
-				oDocument.m_oMathProp.mlMargin = parameter;
-		}
-		else if( _T("mmathFont") == sCommand )
-		{
-			if( true == hasParameter ) 
-				oDocument.m_oMathProp.mmathFont = parameter;
-		}
-		else if( _T("mnaryLim") == sCommand )
-		{
-			if( true == hasParameter ) 
-				oDocument.m_oMathProp.mnaryLim = parameter;
-		}
-		else if( _T("mpostSp") == sCommand )
-		{
-			if( true == hasParameter ) 
-				oDocument.m_oMathProp.mpostSp = parameter;
-		}
-		else if( _T("mpreSp") == sCommand )
-		{
-			if( true == hasParameter ) 
-				oDocument.m_oMathProp.mpreSp = parameter;
-		}
-		else if( _T("mrMargin") == sCommand )
-		{
-			if( true == hasParameter ) 
-				oDocument.m_oMathProp.mrMargin = parameter;
-		}
-		else if( _T("msmallFrac") == sCommand )
-		{
-			if( true == hasParameter ) 
-				oDocument.m_oMathProp.msmallFrac = parameter;
-		}
-		else if( _T("mwrapIndent") == sCommand )
-		{
-			if( true == hasParameter ) 
-				oDocument.m_oMathProp.mwrapIndent = parameter;
-		}
-		else if( _T("mwrapRight") == sCommand )
-		{
-			if( true == hasParameter ) 
-				oDocument.m_oMathProp.mwrapRight = parameter;
-		}
-		else if( _T("mintLim") == sCommand )
-		{
-			if( true == hasParameter ) 
-				oDocument.m_oMathProp.mintLim = parameter;
-		}
-		else
-		{
-			return false;
-		}
-		return true;
-	}
-};
-
 class RtfMathReader: public RtfAbstractReader
 {
 private: 
@@ -1790,33 +1692,7 @@ public:
 
 	bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CString sCommand, bool hasParameter, int parameter)
 	{
-		if( _T("mmath") == sCommand )
-		{//ставим выравнивание параграфа по default свойствам Math
-			if( PROP_DEF != oDocument.m_oMathProp.mdefJc )
-			{
-				switch( oDocument.m_oMathProp.mdefJc )
-				{
-					case 1: m_eParAlign = RtfParagraphProperty::pa_qc;break;
-					case 2: m_eParAlign = RtfParagraphProperty::pa_qc;break;
-					case 3: m_eParAlign = RtfParagraphProperty::pa_ql;break;
-					case 4: m_eParAlign = RtfParagraphProperty::pa_qr;break;
-				}
-			}
-		}
-		else if( _T("mjc") == sCommand  )
-		{
-			if( true == hasParameter )
-			{
-				switch( parameter )
-				{
-					case 1: m_eParAlign = RtfParagraphProperty::pa_qc;break;
-					case 2: m_eParAlign = RtfParagraphProperty::pa_qc;break;
-					case 3: m_eParAlign = RtfParagraphProperty::pa_ql;break;
-					case 4: m_eParAlign = RtfParagraphProperty::pa_qr;break;
-				}
-			}
-		}
-		else if( _T("mmathPict") == sCommand  )
+		if( _T("mmathPict") == sCommand  )
 			;
 		else if( _T("shppict") == sCommand )
 		{
@@ -1828,9 +1704,9 @@ public:
 			Skip( oDocument, oReader );
 		else 
 		{
-			bool isBoolMath = RtfMath::IsRtfControlPropertyBool(sCommand);
-			bool isValMath	= isBoolMath ? false : RtfMath::IsRtfControlProperty(sCommand);
-			bool isMath		= (isValMath || isBoolMath) ? false : RtfMath::IsRtfControlWord(sCommand);
+			bool isBoolMath = m_oMath.IsRtfControlPropertyBool(sCommand);
+			bool isValMath	= isBoolMath ? false : m_oMath.IsRtfControlProperty(sCommand);
+			bool isMath		= (isValMath || isBoolMath) ? false : m_oMath.IsRtfControlWord(sCommand);
 			
 			if( isMath || isValMath || isBoolMath)
 			{
@@ -3401,11 +3277,11 @@ public:
 			//	RtfDefParPropReader oDefParPropReader;
 			//	return StartSubReader( oDefParPropReader, oDocument, oReader );
 			//}
-			else if( _T("mmathPr") == sCommand )
-			{
-				RtfMathPropReader oMathPropReader;
-				return StartSubReader( oMathPropReader, oDocument, oReader );
-			}
+			//else if( _T("mmathPr") == sCommand )
+			//{
+			//	RtfMathPropReader oMathPropReader;
+			//	return StartSubReader( oMathPropReader, oDocument, oReader );
+			//}
             else if( _T("ftnsep") == sCommand || _T("ftnsepc") == sCommand ||
                     _T("aftnsep")== sCommand || _T("aftnsepc") == sCommand )
 			{

@@ -63,18 +63,17 @@ bool OOXMathReader::ParseElement(ReaderParameter oParam , OOX::WritingElement * 
 				rtfMath->m_oVal.AddItem( oChar );
 			}
 		}break;
-		//case OOX::et_m_t:
-		//{
-		//	OOX::Logic::CMText *ooxTextMath = dynamic_cast<OOX::Logic::CMText *>(m_ooxElem->m_arrItems[i]);
-		//	if (ooxTextMath)
-		//	{
-		//		RtfCharPtr oChar = RtfCharPtr(new RtfChar);
-		//		
-		//		oChar->m_oProperty = oCurrentProp;
-		//		oChar->setText( ooxTextMath->m_sText );
-		//		rtfMath->m_oVal.AddItem( oChar );
-		//	}
-		//}break;
+		case OOX::et_m_t:
+		{//??? не нужно ващето ...
+			OOX::Logic::CMText *ooxTextMath = dynamic_cast<OOX::Logic::CMText *>(ooxMath);
+			if (ooxTextMath)
+			{
+				RtfCharPtr oChar = RtfCharPtr(new RtfChar);
+				
+				oChar->setText( ooxTextMath->m_sText );
+				rtfMath->m_oVal.AddItem( oChar );
+			}
+		}break;
 		case OOX::et_m_oMathParaPr:
 		{
 			OOX::Logic::COMathParaPr *ooxSubMath = dynamic_cast<OOX::Logic::COMathParaPr *>(ooxMath);
@@ -82,10 +81,7 @@ bool OOXMathReader::ParseElement(ReaderParameter oParam , OOX::WritingElement * 
 			{
 				RtfMathPtr oSubMath;
 				if (ParseElement(oParam, ooxSubMath->m_oMJc.GetPointer(), oSubMath))
-				{
-					oSubMath->SetOOXType(OOX::et_m_jc);
 					rtfMath->AddItem(oSubMath);
-				}
 			}
 		}break;
 		case OOX::et_m_acc:
@@ -162,17 +158,11 @@ bool OOXMathReader::ParseElement(ReaderParameter oParam , OOX::WritingElement * 
 			{
 				RtfMathPtr oSubMath;
 				if (ParseElement(oParam, ooxSubMath->m_oBegChr.GetPointer(), oSubMath))
-				{
-					oSubMath->SetOOXType(OOX::et_m_begChr);
 					rtfMath->AddItem(oSubMath);
-				}
 				
 				oSubMath.reset();
 				if (ParseElement(oParam, ooxSubMath->m_oEndChr.GetPointer(), oSubMath))
-				{
-					oSubMath->SetOOXType(OOX::et_m_endChr);
 					rtfMath->AddItem(oSubMath);
-				}
 				
 				oSubMath.reset();
 				if (ParseElement(oParam, ooxSubMath->m_oCtrlPr.GetPointer(), oSubMath))
@@ -180,10 +170,7 @@ bool OOXMathReader::ParseElement(ReaderParameter oParam , OOX::WritingElement * 
 				
 				oSubMath.reset();
 				if (ParseElement(oParam, ooxSubMath->m_oSepChr.GetPointer(), oSubMath))
-				{
-					oSubMath->SetOOXType(OOX::et_m_sepChr);
 					rtfMath->AddItem(oSubMath);
-				}
 				
 				oSubMath.reset();
 				if (ParseElement(oParam, ooxSubMath->m_oShp.GetPointer(), oSubMath))
@@ -292,10 +279,7 @@ bool OOXMathReader::ParseElement(ReaderParameter oParam , OOX::WritingElement * 
 				
 				oSubMath.reset();
 				if (ParseElement(oParam, ooxSubMath->m_oChr.GetPointer(), oSubMath))
-				{
-					oSubMath->SetOOXType(OOX::et_m_chr);
 					rtfMath->AddItem(oSubMath);
-				}
 			}
 		}break;
 		case OOX::et_m_groupChr:
@@ -401,17 +385,11 @@ bool OOXMathReader::ParseElement(ReaderParameter oParam , OOX::WritingElement * 
 			{
 				RtfMathPtr oSubMath;
 				if (ParseElement(oParam, ooxSubMath->m_oCount.GetPointer(), oSubMath))
-				{
-					oSubMath->SetOOXType(OOX::et_m_count);
 					rtfMath->AddItem(oSubMath);
-				}
 				
 				oSubMath.reset();
 				if (ParseElement(oParam, ooxSubMath->m_oMcJc.GetPointer(), oSubMath))
-				{
-					oSubMath->SetOOXType(OOX::et_m_mcJc);
 					rtfMath->AddItem(oSubMath);
-				}
 			}
 		}break;
 		case OOX::et_m_mPr:
@@ -485,10 +463,7 @@ bool OOXMathReader::ParseElement(ReaderParameter oParam , OOX::WritingElement * 
 			{
 				RtfMathPtr oSubMath;
 				if (ParseElement(oParam, ooxSubMath->m_oChr.GetPointer(), oSubMath))
-				{
-					oSubMath->SetOOXType(OOX::et_m_chr);
 					rtfMath->AddItem(oSubMath);
-				}
 
 				oSubMath.reset();
 				if (ParseElement(oParam, ooxSubMath->m_oCtrlPr.GetPointer(), oSubMath))
@@ -496,30 +471,18 @@ bool OOXMathReader::ParseElement(ReaderParameter oParam , OOX::WritingElement * 
 				
 				oSubMath.reset();
 				if (ParseElement(oParam, ooxSubMath->m_oGrow.GetPointer(), oSubMath))
-				{
-					oSubMath->SetOOXType(OOX::et_m_grow);
 					rtfMath->AddItem(oSubMath);
-				}
 				
 				oSubMath.reset();
 				if (ParseElement(oParam, ooxSubMath->m_oLimLoc.GetPointer(), oSubMath))
-				{
-					oSubMath->SetOOXType(OOX::et_m_limLoc);
 					rtfMath->AddItem(oSubMath);
-				}
 				
 				oSubMath.reset();
 				if (ParseElement(oParam, ooxSubMath->m_oSubHide.GetPointer(), oSubMath))
-				{
-					oSubMath->SetOOXType(OOX::et_m_subHide);
 					rtfMath->AddItem(oSubMath);
-				}				
 				oSubMath.reset();
 				if (ParseElement(oParam, ooxSubMath->m_oSupHide.GetPointer(), oSubMath))
-				{
-					oSubMath->SetOOXType(OOX::et_m_supHide);
 					rtfMath->AddItem(oSubMath);
-				}
 			}
 		}break;
 		case OOX::et_m_phantPr:
@@ -533,38 +496,23 @@ bool OOXMathReader::ParseElement(ReaderParameter oParam , OOX::WritingElement * 
 
 				oSubMath.reset();
 				if (ParseElement(oParam, ooxSubMath->m_oShow.GetPointer(), oSubMath))
-				{
-					oSubMath->SetOOXType(OOX::et_m_show);
 					rtfMath->AddItem(oSubMath);
-				}
 
 				oSubMath.reset();
 				if (ParseElement(oParam, ooxSubMath->m_oTransp.GetPointer(), oSubMath))
-				{
-					oSubMath->SetOOXType(OOX::et_m_transp);
 					rtfMath->AddItem(oSubMath);
-				}
 
 				oSubMath.reset();
 				if (ParseElement(oParam, ooxSubMath->m_oZeroAsc.GetPointer(), oSubMath))
-				{
-					oSubMath->SetOOXType(OOX::et_m_zeroAsc);
 					rtfMath->AddItem(oSubMath);
-				}
 
 				oSubMath.reset();
 				if (ParseElement(oParam, ooxSubMath->m_oZeroDesc.GetPointer(), oSubMath))
-				{
-					oSubMath->SetOOXType(OOX::et_m_zeroDesc);
 					rtfMath->AddItem(oSubMath);
-				}
 
 				oSubMath.reset();
 				if (ParseElement(oParam, ooxSubMath->m_oZeroWid.GetPointer(), oSubMath))
-				{
-					oSubMath->SetOOXType(OOX::et_m_zeroWid);
 					rtfMath->AddItem(oSubMath);
-				}
 			}
 		}break;
 		case OOX::et_m_phant:
@@ -592,10 +540,7 @@ bool OOXMathReader::ParseElement(ReaderParameter oParam , OOX::WritingElement * 
 
 				oSubMath.reset();
 				if (ParseElement(oParam, ooxSubMath->m_oDegHide.GetPointer(), oSubMath))
-				{
-					oSubMath->SetOOXType(OOX::et_m_degHide);
 					rtfMath->AddItem(oSubMath);
-				}
 			}
 		}break;
 		case OOX::et_m_rad:
@@ -623,45 +568,27 @@ bool OOXMathReader::ParseElement(ReaderParameter oParam , OOX::WritingElement * 
 			{
 				RtfMathPtr oSubMath;
 				if (ParseElement(oParam, ooxSubMath->m_oAln.GetPointer(), oSubMath))
-				{
-					oSubMath->SetOOXType(OOX::et_m_aln);
 					rtfMath->AddItem(oSubMath);
-				}
 
 				oSubMath.reset();
 				if (ParseElement(oParam, ooxSubMath->m_oBrk.GetPointer(), oSubMath))
-				{
-					oSubMath->SetOOXType(OOX::et_m_brk);
 					rtfMath->AddItem(oSubMath);
-				}
 
 				oSubMath.reset();
 				if (ParseElement(oParam, ooxSubMath->m_oLit.GetPointer(), oSubMath))
-				{
-					oSubMath->SetOOXType(OOX::et_m_lit);
 					rtfMath->AddItem(oSubMath);
-				}
 
 				oSubMath.reset();
 				if (ParseElement(oParam, ooxSubMath->m_oNor.GetPointer(), oSubMath))
-				{
-					oSubMath->SetOOXType(OOX::et_m_nor);
 					rtfMath->AddItem(oSubMath);
-				}
 
 				oSubMath.reset();
 				if (ParseElement(oParam, ooxSubMath->m_oScr.GetPointer(), oSubMath))
-				{
-					oSubMath->SetOOXType(OOX::et_m_scr);
 					rtfMath->AddItem(oSubMath);
-				}
 
 				oSubMath.reset();
 				if (ParseElement(oParam, ooxSubMath->m_oSty.GetPointer(), oSubMath))
-				{
-					oSubMath->SetOOXType(OOX::et_m_sty);
 					rtfMath->AddItem(oSubMath);
-				}
 			}
 		}break;
 		case OOX::et_m_sPrePr:
@@ -812,42 +739,83 @@ bool OOXMathReader::ParseElement(ReaderParameter oParam , OOX::WritingElement * 
 			OOX::Logic::CMathBottomNodes<SimpleTypes::CInteger255<>>* ooxElemInt255 =
 							dynamic_cast<OOX::Logic::CMathBottomNodes<SimpleTypes::CInteger255<>>*>(ooxMath);
 			
+			OOX::Logic::CMathBottomNodes<SimpleTypes::CLimLoc<>>* ooxElemLim =
+							dynamic_cast<OOX::Logic::CMathBottomNodes<SimpleTypes::CLimLoc<>>*>(ooxMath);
+
+			OOX::Logic::CMathBottomNodes<SimpleTypes::CUnSignedInteger<>>* ooxElemUnSignInt =
+							dynamic_cast<OOX::Logic::CMathBottomNodes<SimpleTypes::CUnSignedInteger<>>*>(ooxMath);
+
+			OOX::Logic::CMathBottomNodes<SimpleTypes::CTopBot<>>* ooxElemTopBot =
+							dynamic_cast<OOX::Logic::CMathBottomNodes<SimpleTypes::CTopBot<>>*>(ooxMath);
+
+			OOX::Logic::CMathBottomNodes<SimpleTypes::CFType<>>* ooxElemFType =
+							dynamic_cast<OOX::Logic::CMathBottomNodes<SimpleTypes::CFType<>>*>(ooxMath);
+
+			OOX::Logic::CMathBottomNodes<SimpleTypes::CStyle<>>* ooxElemStyle =
+							dynamic_cast<OOX::Logic::CMathBottomNodes<SimpleTypes::CStyle<>>*>(ooxMath);
+
+			OOX::Logic::CMathBottomNodes<SimpleTypes::CShp<>>* ooxElemShp =
+							dynamic_cast<OOX::Logic::CMathBottomNodes<SimpleTypes::CShp<>>*>(ooxMath);
+
+			OOX::Logic::CMathBottomNodes<SimpleTypes::CScript<>>* ooxElemScript =
+							dynamic_cast<OOX::Logic::CMathBottomNodes<SimpleTypes::CScript<>>*>(ooxMath);
+
+			OOX::Logic::CMathBottomNodes<SimpleTypes::CSpacingRule<>>* ooxElemSpacingRule =
+							dynamic_cast<OOX::Logic::CMathBottomNodes<SimpleTypes::CSpacingRule<>>*>(ooxMath);
+
+			OOX::Logic::CMathBottomNodes<SimpleTypes::CXAlign<>>* ooxElemXAlign =
+							dynamic_cast<OOX::Logic::CMathBottomNodes<SimpleTypes::CXAlign<>>*>(ooxMath);
+
+			OOX::Logic::CMathBottomNodes<SimpleTypes::CMJc<>>* ooxElemMJc =
+							dynamic_cast<OOX::Logic::CMathBottomNodes<SimpleTypes::CMJc<>>*>(ooxMath);
+
+			OOX::Logic::CMathBottomNodes<SimpleTypes::CInteger2<>>* ooxElemInteger2 =
+							dynamic_cast<OOX::Logic::CMathBottomNodes<SimpleTypes::CInteger2<>>*>(ooxMath);
+
+			OOX::Logic::CMathBottomNodes<SimpleTypes::CYAlign<>>* ooxElemYAlign =
+							dynamic_cast<OOX::Logic::CMathBottomNodes<SimpleTypes::CYAlign<>>*>(ooxMath);
+
+			OOX::Logic::CMathBottomNodes<SimpleTypes::CBreakBin<>>* ooxElemBreakBin =
+							dynamic_cast<OOX::Logic::CMathBottomNodes<SimpleTypes::CBreakBin<>>*>(ooxMath);
+
+			OOX::Logic::CMathBottomNodes<SimpleTypes::CBreakBinSub<>>* ooxElemBreakBinSub =
+							dynamic_cast<OOX::Logic::CMathBottomNodes<SimpleTypes::CBreakBinSub<>>*>(ooxMath);
 
 			OOX::WritingElementWithChilds<OOX::WritingElement>* ooxElemArray = 
 							dynamic_cast<OOX::WritingElementWithChilds<OOX::WritingElement>*>(ooxMath);
+	//----------------------------------
+			nullable<CString> sVal;
+			if ((ooxElemBool) && (ooxElemBool->m_val.IsInit()))			sVal = ooxElemBool->m_val->ToString2(SimpleTypes::onofftostringOn);
+			else if ((ooxElemChar) && (ooxElemChar->m_val.IsInit()))				sVal = ooxElemChar->m_val->GetValue();
+			else if ((ooxElemMeasure) && (ooxElemMeasure->m_val.IsInit()))			sVal = ooxElemMeasure->m_val->ToString();
+			else if ((ooxElemInt255) && (ooxElemInt255->m_val.IsInit()))			sVal = ooxElemInt255->m_val->ToString();
+			else if ((ooxElemLim) && (ooxElemLim->m_val.IsInit()))					sVal = ooxElemLim->m_val->ToString();
+			else if ((ooxElemUnSignInt) && (ooxElemUnSignInt->m_val.IsInit()))		sVal = ooxElemUnSignInt->m_val->ToString();
+			else if ((ooxElemTopBot) && (ooxElemTopBot->m_val.IsInit()))			sVal = ooxElemTopBot->m_val->ToString();
+			else if ((ooxElemFType) && (ooxElemFType->m_val.IsInit())) 				sVal = ooxElemFType->m_val->ToString();
+			else if ((ooxElemStyle) && (ooxElemStyle->m_val.IsInit()))				sVal = ooxElemStyle->m_val->ToString();
+			else if ((ooxElemShp) && (ooxElemShp->m_val.IsInit()))					sVal = ooxElemShp->m_val->ToString();
+			else if ((ooxElemScript) && (ooxElemScript->m_val.IsInit()))			sVal = ooxElemScript->m_val->ToString();
+			else if ((ooxElemSpacingRule) && (ooxElemSpacingRule->m_val.IsInit()))	sVal = ooxElemSpacingRule->m_val->ToString();
+			else if ((ooxElemXAlign) && (ooxElemXAlign->m_val.IsInit()))			sVal = ooxElemXAlign->m_val->ToString();
+			else if ((ooxElemMJc) && (ooxElemMJc->m_val.IsInit()))					sVal = ooxElemMJc->m_val->ToString();
+			else if ((ooxElemInteger2) && (ooxElemInteger2->m_val.IsInit()))		sVal = ooxElemInteger2->m_val->ToString();
+			else if ((ooxElemYAlign) && (ooxElemYAlign->m_val.IsInit()))			sVal = ooxElemYAlign->m_val->ToString();
+			else if ((ooxElemBreakBin) && (ooxElemBreakBin->m_val.IsInit()))		sVal = ooxElemBreakBin->m_val->ToString();
+			else if ((ooxElemBreakBinSub) && (ooxElemBreakBinSub->m_val.IsInit()))	sVal = ooxElemBreakBinSub->m_val->ToString();
+	//----------------------------------------------		
 			
-			if ((ooxElemBool) && (ooxElemBool->m_val.IsInit()))
-			{
-				rtfMath->m_bIsVal = true;
-				RtfCharPtr oChar = RtfCharPtr(new RtfChar);
-				oChar->setText( ooxElemBool->m_val->ToString2(SimpleTypes::onofftostringOn) );
-				rtfMath->m_oVal.AddItem( oChar );
-			}
-			else if ((ooxElemChar) && (ooxElemChar->m_val.IsInit()))
-			{
-				rtfMath->m_bIsVal = true;
-				RtfCharPtr oChar = RtfCharPtr(new RtfChar);
-				oChar->setText( ooxElemChar->m_val->GetValue() );
-				rtfMath->m_oVal.AddItem( oChar );
-			}
-			else if ((ooxElemMeasure) && (ooxElemMeasure->m_val.IsInit()))
-			{
-				rtfMath->m_bIsVal = true;
-				RtfCharPtr oChar = RtfCharPtr(new RtfChar);
-				oChar->setText( ooxElemMeasure->m_val->ToString() );
-				rtfMath->m_oVal.AddItem( oChar );
-			}
-			else if (ooxElemInt255)
-			{
-				rtfMath->m_bIsVal = true;
-				RtfCharPtr oChar = RtfCharPtr(new RtfChar);
-				oChar->setText( ooxElemInt255->m_val->ToString() );
-				rtfMath->m_oVal.AddItem( oChar );
-			}
-			else if (ooxElemArray)
+			if (ooxElemArray)
 			{
 				OOXMathReader oMathReader(ooxElemArray);
 				bool res = oMathReader.Parse( oParam, (*rtfMath) );
+			}
+			else if (sVal.IsInit())
+			{
+				rtfMath->m_bIsVal = true;
+				RtfCharPtr oChar = RtfCharPtr(new RtfChar);
+				oChar->setText( *sVal );
+				rtfMath->m_oVal.AddItem( oChar );
 			}
 			else
 			{

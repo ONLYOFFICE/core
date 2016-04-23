@@ -205,69 +205,88 @@ namespace OOX
 			nullable<TMathBottomType> m_val;			
 		};
 
-		typedef	CMathBottomNodes<SimpleTypes::COnOff<>> CAln;
-		typedef CMathBottomNodes<SimpleTypes::COnOff<>> CAlnScr;
-		typedef CMathBottomNodes<SimpleTypes::CInteger2<>> CArgSz;
-		typedef CMathBottomNodes<SimpleTypes::CYAlign<>> CBaseJc;
-		typedef CMathBottomNodes<SimpleTypes::CMChar> CBegChr;
-		typedef CMathBottomNodes<SimpleTypes::CBreakBin<>> CBrkBin;
-		typedef CMathBottomNodes<SimpleTypes::CBreakBinSub<>> CBrkBinSub;
-		typedef CMathBottomNodes<SimpleTypes::CUnSignedInteger<>> CCGp;
-		typedef CMathBottomNodes<SimpleTypes::CSpacingRule<>> CCGpRule;
-		typedef CMathBottomNodes<SimpleTypes::CMChar> CChr;
-		typedef CMathBottomNodes<SimpleTypes::CInteger255<>> CCount;
-		typedef CMathBottomNodes<SimpleTypes::CUnSignedInteger<>> CCSp;
-		typedef CMathBottomNodes<SimpleTypes::CMJc<>> CDefJc;
-		typedef CMathBottomNodes<SimpleTypes::COnOff<>> CDegHide;
-		typedef CMathBottomNodes<SimpleTypes::COnOff<>> CDiff;
-		typedef CMathBottomNodes<SimpleTypes::COnOff<>> CDispDef;
-		typedef CMathBottomNodes<SimpleTypes::CMChar> CEndChr;
-		typedef CMathBottomNodes<SimpleTypes::COnOff<>> CGrow;
-		typedef CMathBottomNodes<SimpleTypes::COnOff<>> CHideBot;
-		typedef CMathBottomNodes<SimpleTypes::COnOff<>> CHideLeft;
-		typedef CMathBottomNodes<SimpleTypes::COnOff<>> CHideRight;
-		typedef CMathBottomNodes<SimpleTypes::COnOff<>> CHideTop;
-		typedef CMathBottomNodes<SimpleTypes::CTwipsMeasure> CInterSp;
-		typedef CMathBottomNodes<SimpleTypes::CLimLoc<>> CIntLim;
-		typedef CMathBottomNodes<SimpleTypes::CTwipsMeasure> CIntraSp;
-		typedef CMathBottomNodes<SimpleTypes::CMJc<>> CMJc;
-		typedef CMathBottomNodes<SimpleTypes::CLimLoc<>> CLimLoc;
-		typedef CMathBottomNodes<SimpleTypes::COnOff<>> CLit;
-		typedef CMathBottomNodes<SimpleTypes::CTwipsMeasure> CLMargin;
-		typedef CMathBottomNodes<SimpleTypes::COnOff<>> CMaxDist;
-		typedef CMathBottomNodes<SimpleTypes::CXAlign<>> CMcJc;
-		typedef CMathBottomNodes<SimpleTypes::CLimLoc<>> CNaryLim;
-		typedef CMathBottomNodes<SimpleTypes::COnOff<>> CNoBreak;
-		typedef CMathBottomNodes<SimpleTypes::COnOff<>> CNor;
-		typedef CMathBottomNodes<SimpleTypes::COnOff<>> CObjDist;
-		typedef CMathBottomNodes<SimpleTypes::COnOff<>> COpEmu;
-		typedef CMathBottomNodes<SimpleTypes::COnOff<>> CPlcHide;
-		typedef CMathBottomNodes<SimpleTypes::CTopBot<>> CPos;
-		typedef CMathBottomNodes<SimpleTypes::CTwipsMeasure> CPostSp;
-		typedef CMathBottomNodes<SimpleTypes::CTwipsMeasure> CPreSp;
-		typedef CMathBottomNodes<SimpleTypes::CTwipsMeasure> CRMargin;
-		typedef CMathBottomNodes<SimpleTypes::CUnSignedInteger<>> CRSp;
-		typedef CMathBottomNodes<SimpleTypes::CSpacingRule<>> CRSpRule;
-		typedef CMathBottomNodes<SimpleTypes::CScript<>> CScr;
-		typedef CMathBottomNodes<SimpleTypes::CMChar> CSepChr;
-		typedef CMathBottomNodes<SimpleTypes::COnOff<>> CShow;
-		typedef CMathBottomNodes<SimpleTypes::CShp<>> CShp;
-		typedef CMathBottomNodes<SimpleTypes::COnOff<>> CSmallFrac;
-		typedef CMathBottomNodes<SimpleTypes::COnOff<>> CStrikeBLTR;
-		typedef CMathBottomNodes<SimpleTypes::COnOff<>> CStrikeH;
-		typedef CMathBottomNodes<SimpleTypes::COnOff<>> CStrikeTLBR;
-		typedef CMathBottomNodes<SimpleTypes::COnOff<>> CStrikeV;
-		typedef CMathBottomNodes<SimpleTypes::CStyle<>> CSty;
-		typedef CMathBottomNodes<SimpleTypes::COnOff<>> CSubHide;
-		typedef CMathBottomNodes<SimpleTypes::COnOff<>> CSupHide;
-		typedef CMathBottomNodes<SimpleTypes::COnOff<>> CTransp;
-		typedef CMathBottomNodes<SimpleTypes::CFType<>> CType;
-		typedef CMathBottomNodes<SimpleTypes::CTopBot<>> CVertJc;
-		typedef CMathBottomNodes<SimpleTypes::CTwipsMeasure> CWrapIndent;
-		typedef CMathBottomNodes<SimpleTypes::COnOff<>> CWrapRight;
-		typedef CMathBottomNodes<SimpleTypes::COnOff<>> CZeroAsc;
-		typedef CMathBottomNodes<SimpleTypes::COnOff<>> CZeroDesc;
-		typedef CMathBottomNodes<SimpleTypes::COnOff<>> CZeroWid;
+
+		template <typename TMathBottomType, EElementType EnumType = OOX::et_Unknown>
+		class CMathBottomNodesEx : public CMathBottomNodes<TMathBottomType>
+		{
+		public:
+			CMathBottomNodesEx(XmlUtils::CXmlNode& oNode)
+			{
+				fromXML( oNode );
+			}
+			CMathBottomNodesEx(XmlUtils::CXmlLiteReader& oReader)
+			{
+				fromXML( oReader );
+			}
+			virtual EElementType getType() const
+			{
+				return EnumType;
+			}
+		};
+
+		typedef	CMathBottomNodesEx<SimpleTypes::COnOff<>,			OOX::et_m_aln>		CAln;
+		typedef CMathBottomNodesEx<SimpleTypes::COnOff<>,			OOX::et_m_alnScr>	CAlnScr;
+		typedef CMathBottomNodesEx<SimpleTypes::CInteger2<>,		OOX::et_m_argSz>	CArgSz;
+		typedef CMathBottomNodesEx<SimpleTypes::CYAlign<>,			OOX::et_m_baseJc>	CBaseJc;
+		typedef CMathBottomNodesEx<SimpleTypes::CMChar,				OOX::et_m_begChr>	CBegChr;
+		typedef CMathBottomNodesEx<SimpleTypes::CBreakBin<>,		OOX::et_m_brkBin>	CBrkBin;
+		typedef CMathBottomNodesEx<SimpleTypes::CBreakBinSub<>,		OOX::et_m_brkBinSub>CBrkBinSub;
+		typedef CMathBottomNodesEx<SimpleTypes::CUnSignedInteger<>,	OOX::et_m_cGp>		CCGp;
+		typedef CMathBottomNodesEx<SimpleTypes::CSpacingRule<>,		OOX::et_m_cGpRule>	CCGpRule;
+		typedef CMathBottomNodesEx<SimpleTypes::CMChar,				OOX::et_m_chr>		CChr;
+		typedef CMathBottomNodesEx<SimpleTypes::CInteger255<>,		OOX::et_m_count>	CCount;
+		typedef CMathBottomNodesEx<SimpleTypes::CUnSignedInteger<>,	OOX::et_m_cSp>		CCSp;
+		typedef CMathBottomNodesEx<SimpleTypes::CMJc<>,				OOX::et_m_defJc>	CDefJc;
+		typedef CMathBottomNodesEx<SimpleTypes::COnOff<>,			OOX::et_m_degHide>	CDegHide;
+		typedef CMathBottomNodesEx<SimpleTypes::COnOff<>,			OOX::et_m_diff>		CDiff;
+		typedef CMathBottomNodesEx<SimpleTypes::COnOff<>,			OOX::et_m_dispDef>	CDispDef;
+		typedef CMathBottomNodesEx<SimpleTypes::CMChar,				OOX::et_m_endChr>	CEndChr;
+		typedef CMathBottomNodesEx<SimpleTypes::COnOff<>,			OOX::et_m_grow>		CGrow;
+		typedef CMathBottomNodesEx<SimpleTypes::COnOff<>,			OOX::et_m_hideBot>	CHideBot;
+		typedef CMathBottomNodesEx<SimpleTypes::COnOff<>,			OOX::et_m_hideLeft>	CHideLeft;
+		typedef CMathBottomNodesEx<SimpleTypes::COnOff<>,			OOX::et_m_hideRight>CHideRight;
+		typedef CMathBottomNodesEx<SimpleTypes::COnOff<>,			OOX::et_m_hideTop>	CHideTop;
+		typedef CMathBottomNodesEx<SimpleTypes::CTwipsMeasure,		OOX::et_m_interSp>	CInterSp;
+		typedef CMathBottomNodesEx<SimpleTypes::CLimLoc<>,			OOX::et_m_intLim>	CIntLim;
+		typedef CMathBottomNodesEx<SimpleTypes::CTwipsMeasure,		OOX::et_m_intraSp>	CIntraSp;
+		typedef CMathBottomNodesEx<SimpleTypes::CMJc<>,				OOX::et_m_jc>		CMJc;
+		typedef CMathBottomNodesEx<SimpleTypes::CLimLoc<>,			OOX::et_m_limLoc>	CLimLoc;
+		typedef CMathBottomNodesEx<SimpleTypes::COnOff<>,			OOX::et_m_lit>		CLit;
+		typedef CMathBottomNodesEx<SimpleTypes::CTwipsMeasure,		OOX::et_m_lMargin>	CLMargin;
+		typedef CMathBottomNodesEx<SimpleTypes::COnOff<>,			OOX::et_m_maxDist>	CMaxDist;
+		typedef CMathBottomNodesEx<SimpleTypes::CXAlign<>,			OOX::et_m_mcJc>		CMcJc;
+		typedef CMathBottomNodesEx<SimpleTypes::CLimLoc<>,			OOX::et_m_naryLim>	CNaryLim;
+		typedef CMathBottomNodesEx<SimpleTypes::COnOff<>,			OOX::et_m_noBreak>	CNoBreak;
+		typedef CMathBottomNodesEx<SimpleTypes::COnOff<>,			OOX::et_m_nor>		CNor;
+		typedef CMathBottomNodesEx<SimpleTypes::COnOff<>,			OOX::et_m_objDist>	CObjDist;
+		typedef CMathBottomNodesEx<SimpleTypes::COnOff<>,			OOX::et_m_opEmu>	COpEmu;
+		typedef CMathBottomNodesEx<SimpleTypes::COnOff<>,			OOX::et_m_plcHide>	CPlcHide;
+		typedef CMathBottomNodesEx<SimpleTypes::CTopBot<>,			OOX::et_m_pos>		CPos;
+		typedef CMathBottomNodesEx<SimpleTypes::CTwipsMeasure,		OOX::et_m_postSp>	CPostSp;
+		typedef CMathBottomNodesEx<SimpleTypes::CTwipsMeasure,		OOX::et_m_preSp>	CPreSp;
+		typedef CMathBottomNodesEx<SimpleTypes::CTwipsMeasure,		OOX::et_m_rMargin>	CRMargin;
+		typedef CMathBottomNodesEx<SimpleTypes::CUnSignedInteger<>,	OOX::et_m_rSp>		CRSp;
+		typedef CMathBottomNodesEx<SimpleTypes::CSpacingRule<>,		OOX::et_m_rSpRule>	CRSpRule;
+		typedef CMathBottomNodesEx<SimpleTypes::CScript<>,			OOX::et_m_scr>		CScr;
+		typedef CMathBottomNodesEx<SimpleTypes::CMChar,				OOX::et_m_sepChr>	CSepChr;
+		typedef CMathBottomNodesEx<SimpleTypes::COnOff<>,			OOX::et_m_show>		CShow;
+		typedef CMathBottomNodesEx<SimpleTypes::CShp<>,				OOX::et_m_shp>		CShp;
+		typedef CMathBottomNodesEx<SimpleTypes::COnOff<>,			OOX::et_m_smallFrac>CSmallFrac;
+		typedef CMathBottomNodesEx<SimpleTypes::COnOff<>,			OOX::et_m_strikeBLTR>CStrikeBLTR;
+		typedef CMathBottomNodesEx<SimpleTypes::COnOff<>,			OOX::et_m_strikeH>	CStrikeH;
+		typedef CMathBottomNodesEx<SimpleTypes::COnOff<>,			OOX::et_m_strikeTLBR>CStrikeTLBR;
+		typedef CMathBottomNodesEx<SimpleTypes::COnOff<>,			OOX::et_m_strikeV>	CStrikeV;
+		typedef CMathBottomNodesEx<SimpleTypes::CStyle<>,			OOX::et_m_sty>		CSty;
+		typedef CMathBottomNodesEx<SimpleTypes::COnOff<>,			OOX::et_m_subHide>	CSubHide;
+		typedef CMathBottomNodesEx<SimpleTypes::COnOff<>,			OOX::et_m_supHide>	CSupHide;
+		typedef CMathBottomNodesEx<SimpleTypes::COnOff<>,			OOX::et_m_transp>	CTransp;
+		typedef CMathBottomNodesEx<SimpleTypes::CFType<>,			OOX::et_m_type>		CType;
+		typedef CMathBottomNodesEx<SimpleTypes::CTopBot<>,			OOX::et_m_vertJc>	CVertJc;
+		typedef CMathBottomNodesEx<SimpleTypes::CTwipsMeasure,		OOX::et_m_wrapIndent>CWrapIndent;
+		typedef CMathBottomNodesEx<SimpleTypes::COnOff<>,			OOX::et_m_wrapRight>CWrapRight;
+		typedef CMathBottomNodesEx<SimpleTypes::COnOff<>,			OOX::et_m_zeroAsc>	CZeroAsc;
+		typedef CMathBottomNodesEx<SimpleTypes::COnOff<>,			OOX::et_m_zeroDesc>	CZeroDesc;
+		typedef CMathBottomNodesEx<SimpleTypes::COnOff<>,			OOX::et_m_zeroWid>	CZeroWid;
 
 	}// Logic
 }//OOX

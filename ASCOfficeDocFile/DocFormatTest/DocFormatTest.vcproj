@@ -378,6 +378,10 @@
 				/>
 			</FileConfiguration>
 		</File>
+		<File
+			RelativePath="..\..\Common\DocxFormat\Source\XML\libxml2\libxml2.cpp"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

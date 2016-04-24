@@ -23,10 +23,10 @@ namespace DocFileFormat
 
 			if ( ole != NULL )
 			{
-				if (ole->isEquation || ole->isEmbedded)
+				if (ole->isEmbedded)
 				{
 					if (ole->isEquation)	ole->ClipboardFormat	= L"Equation";
-					if (ole->isEmbedded)	ole->ClipboardFormat	= L"MSWordDocx";
+					else					ole->ClipboardFormat	= L"MSWordDocx";
 
 					ole->Program			= L"Word.Document";
 				}
@@ -46,7 +46,8 @@ namespace DocFileFormat
 				else
 				{
 					int relID = -1;
-					if (ole->isEquation || ole->isEmbedded)
+					
+					if (ole->isEmbedded)
 						relID = m_context->_docx->RegisterPackage(_caller, ole->ClipboardFormat);
 					else
 						relID = m_context->_docx->RegisterOLEObject(_caller, ole->ClipboardFormat);

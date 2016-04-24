@@ -213,3 +213,6 @@ unix {
     target.path = /usr/lib
     INSTALLS += target
 }
+
+SOURCES += \
+    ../source/RtfMath.cpp

@@ -64,18 +64,11 @@ CString RtfMath::RenderToRtf(RenderParameter oRenderParameter)
     sResult.AppendFormat(_T("{\\%ls"), m_sRtfName.GetBuffer());
 	RenderParameter oNewParameter = oRenderParameter;
 
-	//oNewParameter.nType = RENDER_TO_RTF_PARAM_UNKNOWN;
-	//sResult.Append( m_oProperty.RenderToRtf( oNewParameter ) );
+	if (m_sRtfName == L"mctrlPr")
+	{
+		m_bIsVal = m_bIsVal;
+	}
 
-	//if( _T("mr") == m_sRtfName )
-	//{
-	//	oNewParameter.nType = RENDER_TO_RTF_PARAM_UNKNOWN;
-	//	sResult.Append( _T(" ") );
-	//	for( int i = 0; i < m_oVal.size(); i++ )
-	//	sResult.Append( _T(" ") + m_oVal[i]->RenderToRtf( oNewParameter ) );
-	//}
-	//else
-	//if (this->m_bIsVal)
 	CString sVal;
 
 	if (m_bIsVal)
@@ -119,12 +112,6 @@ CString RtfMath::RenderToOOX(RenderParameter oRenderParameter)
 	CString sVal;
 
 	RenderParameter oNewParam = oRenderParameter;
-
-	//oNewParam.nType = RENDER_TO_OOX_PARAM_TEXT;
-	//sProp			= m_oProperty.RenderToOOX( oNewParam );
-		
-	//oNewParam.nType = RENDER_TO_OOX_PARAM_PLAIN;
-	//sVal			= m_oVal.RenderToOOX( oNewParam );
 
 	if (m_bIsVal || m_bIsBool)
 	{

@@ -19,23 +19,6 @@ bool OOXMathReader::ParseElement(ReaderParameter oParam , OOX::WritingElement * 
 
 	switch(ooxTypeElement)
 	{
-		case OOX::et_w_rPr:
-		{
-			OOX::Logic::CRunProperty *ooxRPr = dynamic_cast<OOX::Logic::CRunProperty *>(ooxMath);
-			if (ooxRPr)
-			{
-				RtfCharProperty oCurrentProp;
-				oCurrentProp.SetDefaultOOX();
-				
-				OOXrPrReader orPrReader(ooxRPr);
-				orPrReader.Parse( oParam, oCurrentProp );
-
-				RtfCharPtr oChar = RtfCharPtr(new RtfChar);
-				
-				oChar->m_oProperty = oCurrentProp;
-				rtfMath->m_oVal.AddItem( oChar );
-			}
-		}break;
 		case OOX::et_m_r:
 		{
 			RtfCharProperty oCurrentProp;
@@ -720,9 +703,20 @@ bool OOXMathReader::ParseElement(ReaderParameter oParam , OOX::WritingElement * 
 			OOX::Logic::CCtrlPr *ooxSubMath = dynamic_cast<OOX::Logic::CCtrlPr *>(ooxMath);
 			if (ooxSubMath)
 			{
-				RtfMathPtr oSubMath;
-				if (ParseElement(oParam, ooxSubMath->m_oRPr.GetPointer(), oSubMath))
-					rtfMath->AddItem(oSubMath);
+				OOX::Logic::CRunProperty *ooxRPr = dynamic_cast<OOX::Logic::CRunProperty *>(ooxSubMath->m_oRPr.GetPointer());
+				if (ooxRPr)
+				{
+					RtfCharProperty oCurrentProp;
+					oCurrentProp.SetDefaultOOX();
+					
+					OOXrPrReader orPrReader(ooxRPr);
+					orPrReader.Parse( oParam, oCurrentProp );
+
+					RtfCharPtr oChar = RtfCharPtr(new RtfChar);
+					
+					oChar->m_oProperty = oCurrentProp;
+					rtfMath->AddItem( oChar );
+				}
 			}
 		}break;
 		default:

@@ -328,12 +328,20 @@ public:
                 sText = renderRtfText( m_sChars, oRenderParameter.poDocument, &m_oProperty );
             else
                 sText = m_sChars;
-            if( _T("") != sText )
+
+			CString sTextProp =  m_oProperty.RenderToRtf( oRenderParameter ) ;
+			
+			if( !sText.IsEmpty() || !sTextProp.IsEmpty())
             {
-                result.Append(_T("{"));
-                result.Append( m_oProperty.RenderToRtf( oRenderParameter ) );
-                result.Append( _T(" ") + sText );
-                result.Append(_T("}"));
+                if (oRenderParameter.nType != RENDER_TO_RTF_PARAM_NESTED)
+					result.Append( _T("{"));
+					
+					result.Append( sTextProp );
+					result.Append( _T(" "));
+					result.Append( sText );
+
+				if (oRenderParameter.nType != RENDER_TO_RTF_PARAM_NESTED)
+					result.Append( _T("}"));
             }
         }
         return result;

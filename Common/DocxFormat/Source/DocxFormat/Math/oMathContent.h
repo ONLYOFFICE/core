@@ -18,15 +18,15 @@ namespace OOX
 	// Elements 22.1.2
 	namespace Logic
 	{
-		typedef CMathArgNodes CDeg;
-		typedef CMathArgNodes CDen;
-		typedef CMathArgNodes CElement;
-		typedef CMathArgNodes CFName;
-		typedef CMathArgNodes CLim;
-		typedef CMathArgNodes CNum;
-		typedef CMathArgNodes COMath;
-		typedef CMathArgNodes CSub;
-		typedef CMathArgNodes CSup;
+		typedef CMathArgNodesEx<OOX::et_m_deg>		CDeg;
+		typedef CMathArgNodesEx<OOX::et_m_den>		CDen;
+		typedef CMathArgNodesEx<OOX::et_m_e>		CElement;
+		typedef CMathArgNodesEx<OOX::et_m_fName>	CFName;
+		typedef CMathArgNodesEx<OOX::et_m_lim>		CLim;
+		typedef CMathArgNodesEx<OOX::et_m_num>		CNum;
+		typedef CMathArgNodesEx<OOX::et_m_oMath>	COMath;
+		typedef CMathArgNodesEx<OOX::et_m_sub>		CSub;
+		typedef CMathArgNodesEx<OOX::et_m_sup>		CSup;
 		//--------------------------------------------------------------------------------
 		// CAcc 22.1.2.1  (Accent) 
 		//--------------------------------------------------------------------------------
@@ -105,7 +105,7 @@ namespace OOX
 						m_oCtrlPr = oReader;
 				}
 			}
-			virtual CString      toXML() const;		
+			virtual CString      toXML() const;
 
 			virtual EElementType getType() const
 			{
@@ -2566,59 +2566,6 @@ namespace OOX
 			// Childs
 			nullable<CMRun>								m_oRun;
 		};
-
-		//--------------------------------------------------------------------------------
-		// CRad 22.1.2.88   (Radical Object)
-		//--------------------------------------------------------------------------------
-		class CRadPr;
-		class CRad : public WritingElement
-		{
-		public:
-			WritingElement_AdditionConstructors(CRad)
-			CRad()
-			{
-			}
-			virtual ~CRad()
-			{
-			}
-
-		public:
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
-			{
-			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader) 
-			{
-				if ( oReader.IsEmptyNode() )
-					return;
-				int nParentDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nParentDepth ) )
-				{
-					CWCharWrapper sName = oReader.GetName();
-					if ( _T("m:deg") == sName )
-						m_oDeg = oReader;
-					else if ( _T("m:e") == sName )
-						m_oElement = oReader;
-					else if ( _T("m:radPr") == sName )
-						m_oRadPr = oReader;
-				}
-			}
-			virtual CString      toXML() const
-			{
-				CString sResult = _T("<m:rad>");
-
-				return sResult;
-			}
-
-			virtual EElementType getType() const
-			{
-				return et_m_rad;
-			}
-		public:				
-			//Childs
-			nullable<OOX::Logic::CDeg>				m_oDeg;
-			nullable<OOX::Logic::CElement>			m_oElement;
-			nullable<OOX::Logic::CRadPr>			m_oRadPr;
-		};		 
 		//--------------------------------------------------------------------------------
 		// CRadPr 22.1.2.89   (Radical Properties)
 		//--------------------------------------------------------------------------------
@@ -2655,6 +2602,13 @@ namespace OOX
 			{
 				CString sResult = _T("<m:radPr>");
 
+				if ( m_oCtrlPr.IsInit() )
+					sResult += m_oCtrlPr->toXML();
+
+				if ( m_oDegHide.IsInit() )
+					sResult += m_oDegHide->toXML();
+
+				sResult += _T("</m:radPr>");
 				return sResult;
 			}
 
@@ -2667,6 +2621,67 @@ namespace OOX
 			nullable<OOX::Logic::CCtrlPr>				m_oCtrlPr;
 			nullable<OOX::Logic::CDegHide>				m_oDegHide;
 		};		
+		//--------------------------------------------------------------------------------
+		// CRad 22.1.2.88   (Radical Object)
+		//--------------------------------------------------------------------------------
+		class CRad : public WritingElement
+		{
+		public:
+			WritingElement_AdditionConstructors(CRad)
+			CRad()
+			{
+			}
+			virtual ~CRad()
+			{
+			}
+
+		public:
+			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			{
+			}
+			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader) 
+			{
+				if ( oReader.IsEmptyNode() )
+					return;
+				int nParentDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nParentDepth ) )
+				{
+					CWCharWrapper sName = oReader.GetName();
+					if ( _T("m:deg") == sName )
+						m_oDeg = oReader;
+					else if ( _T("m:e") == sName )
+						m_oElement = oReader;
+					else if ( _T("m:radPr") == sName )
+						m_oRadPr = oReader;
+				}
+			}
+			virtual CString      toXML() const
+			{
+				CString sResult = _T("<m:rad>");
+
+				if ( m_oRadPr.IsInit())
+					sResult += m_oRadPr->toXML();
+
+				if ( m_oDeg.IsInit() )
+					sResult += m_oDeg->toXML();
+
+				if ( m_oElement.IsInit() )
+					sResult += m_oElement->toXML();
+
+				sResult += _T("</m:rad>");
+				return sResult;
+			}
+
+			virtual EElementType getType() const
+			{
+				return et_m_rad;
+			}
+		public:				
+			//Childs
+			nullable<OOX::Logic::CDeg>				m_oDeg;
+			nullable<OOX::Logic::CElement>			m_oElement;
+			nullable<OOX::Logic::CRadPr>			m_oRadPr;
+		};		 
 		//--------------------------------------------------------------------------------
 		// CMRPr 22.1.2.91   (Run Properties) 
 		//--------------------------------------------------------------------------------
@@ -2710,7 +2725,26 @@ namespace OOX
 			virtual CString      toXML() const
 			{
 				CString sResult = _T("<m:rPr>");
+				
+				if ( m_oAln.IsInit() )
+					sResult += m_oAln->toXML();
 
+				if ( m_oBrk.IsInit() )
+					sResult += m_oBrk->toXML();
+
+				if ( m_oLit.IsInit() )
+					sResult += m_oLit->toXML();
+
+				if ( m_oNor.IsInit() )
+					sResult += m_oNor->toXML();
+
+				if ( m_oScr.IsInit() )
+					sResult += m_oScr->toXML();
+
+				if ( m_oSty.IsInit() )
+					sResult += m_oSty->toXML();
+
+				sResult += _T("</m:rPr>");
 				return sResult;
 			}
 
@@ -2728,9 +2762,58 @@ namespace OOX
 			nullable<OOX::Logic::CSty>			m_oSty;
 		};		
 		//--------------------------------------------------------------------------------
+		// CSPrePr 22.1.2.100   (Pre-Sub-Superscript Properties)) 
+		//--------------------------------------------------------------------------------
+		class CSPrePr : public WritingElement
+		{
+		public:
+			WritingElement_AdditionConstructors(CSPrePr)
+			CSPrePr()
+			{
+			}
+			virtual ~CSPrePr()
+			{
+			}
+
+		public:
+			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			{
+			}
+			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader) 
+			{
+				if ( oReader.IsEmptyNode() )
+					return;
+				int nParentDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nParentDepth ) )
+				{
+					CWCharWrapper sName = oReader.GetName();
+					
+					if ( _T("m:ctrlPr") == sName )
+						m_oCtrlPr = oReader;
+				}
+			}
+			virtual CString      toXML() const
+			{
+				CString sResult = _T("<m:sPrePr>");
+
+				if (m_oCtrlPr.IsInit())
+					sResult += m_oCtrlPr->toXML();
+
+				sResult += _T("</m:sPrePr>");
+				return sResult;
+			}
+
+			virtual EElementType getType() const
+			{
+				return et_m_sPrePr;
+			}
+		public:				
+			//Childs
+			nullable<OOX::Logic::CCtrlPr>		m_oCtrlPr;
+		};		
+		//--------------------------------------------------------------------------------
 		// CSPre 22.1.2.99   (Pre-Sub-Superscript Object) 
 		//--------------------------------------------------------------------------------
-		class CSPrePr;
 		class CSPre : public WritingElement
 		{
 		public:
@@ -2768,6 +2851,19 @@ namespace OOX
 			{
 				CString sResult = _T("<m:sPre>");
 
+				if ( m_oSPrePr.IsInit() )
+					sResult += m_oSPrePr->toXML();
+
+				if ( m_oElement.IsInit() )
+					sResult += m_oElement->toXML();
+
+				if ( m_oSub.IsInit() )
+					sResult += m_oSub->toXML();
+
+				if ( m_oSup.IsInit() )
+					sResult += m_oSup->toXML();
+
+				sResult += _T("</m:sPre>");
 				return sResult;
 			}
 
@@ -2781,105 +2877,6 @@ namespace OOX
 			nullable<OOX::Logic::CSPrePr>		m_oSPrePr;
 			nullable<OOX::Logic::CSub>			m_oSub;
 			nullable<OOX::Logic::CSup>			m_oSup;
-		};
-
-
-		//--------------------------------------------------------------------------------
-		// CSPrePr 22.1.2.100   (Pre-Sub-Superscript Properties)) 
-		//--------------------------------------------------------------------------------
-		class CSPrePr : public WritingElement
-		{
-		public:
-			WritingElement_AdditionConstructors(CSPrePr)
-			CSPrePr()
-			{
-			}
-			virtual ~CSPrePr()
-			{
-			}
-
-		public:
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
-			{
-			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader) 
-			{
-				if ( oReader.IsEmptyNode() )
-					return;
-				int nParentDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nParentDepth ) )
-				{
-					CWCharWrapper sName = oReader.GetName();
-					if ( _T("m:ctrlPr") == sName )
-						m_oCtrlPr = oReader;
-				}
-			}
-			virtual CString      toXML() const
-			{
-				CString sResult = _T("<m:sPrePr>");
-
-				return sResult;
-			}
-
-			virtual EElementType getType() const
-			{
-				return et_m_sPrePr;
-			}
-		public:				
-			//Childs
-			nullable<OOX::Logic::CCtrlPr>		m_oCtrlPr;
-		};		
-		//--------------------------------------------------------------------------------
-		// CSSub 22.1.2.101   (Subscript Object) 
-		//--------------------------------------------------------------------------------
-		class CSSubPr;
-		class CSSub : public WritingElement
-		{
-		public:
-			WritingElement_AdditionConstructors(CSSub)
-			CSSub()
-			{
-			}
-			virtual ~CSSub()
-			{
-			}
-
-		public:
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
-			{
-			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader) 
-			{
-				if ( oReader.IsEmptyNode() )
-					return;
-				int nParentDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nParentDepth ) )
-				{
-					CWCharWrapper sName = oReader.GetName();
-					if ( _T("m:e") == sName )
-						m_oElement = oReader;
-					else if ( _T("m:sSubPr") == sName )
-						m_oSSubPr = oReader;
-					else if ( _T("m:sub") == sName )
-						m_oSub = oReader;
-				}
-			}
-			virtual CString      toXML() const
-			{
-				CString sResult = _T("<m:sSub>");
-
-				return sResult;
-			}
-
-			virtual EElementType getType() const
-			{
-				return et_m_sSub;
-			}
-		public:				
-			//Childs
-			nullable<OOX::Logic::CElement>		m_oElement;
-			nullable<OOX::Logic::CSSubPr>		m_oSSubPr;
-			nullable<OOX::Logic::CSub>			m_oSub;
 		};
 
 
@@ -2917,6 +2914,10 @@ namespace OOX
 			{
 				CString sResult = _T("<m:sSubPr>");
 
+				if (m_oCtrlPr.IsInit())
+					sResult += m_oCtrlPr->toXML();
+
+				sResult += _T("</m:sSubPr>");
 				return sResult;
 			}
 
@@ -2929,9 +2930,126 @@ namespace OOX
 			nullable<OOX::Logic::CCtrlPr>		m_oCtrlPr;
 		};		
 		//--------------------------------------------------------------------------------
+		// CSSub 22.1.2.101   (Subscript Object) 
+		//--------------------------------------------------------------------------------
+		class CSSub : public WritingElement
+		{
+		public:
+			WritingElement_AdditionConstructors(CSSub)
+			CSSub()
+			{
+			}
+			virtual ~CSSub()
+			{
+			}
+
+		public:
+			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			{
+			}
+			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader) 
+			{
+				if ( oReader.IsEmptyNode() )
+					return;
+				int nParentDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nParentDepth ) )
+				{
+					CWCharWrapper sName = oReader.GetName();
+					if ( _T("m:e") == sName )
+						m_oElement = oReader;
+					else if ( _T("m:sSubPr") == sName )
+						m_oSSubPr = oReader;
+					else if ( _T("m:sub") == sName )
+						m_oSub = oReader;
+				}
+			}
+			virtual CString      toXML() const
+			{
+				CString sResult = _T("<m:sSub>");
+
+				if (m_oSSubPr.IsInit())
+					sResult += m_oSSubPr->toXML();
+
+				if (m_oElement.IsInit())
+					sResult += m_oElement->toXML();
+
+				if (m_oSub.IsInit())
+					sResult += m_oSub->toXML();
+
+				sResult += _T("</m:sSub>");
+				return sResult;
+			}
+
+			virtual EElementType getType() const
+			{
+				return et_m_sSub;
+			}
+		public:				
+			//Childs
+			nullable<OOX::Logic::CElement>		m_oElement;
+			nullable<OOX::Logic::CSSubPr>		m_oSSubPr;
+			nullable<OOX::Logic::CSub>			m_oSub;
+		};
+
+
+		//--------------------------------------------------------------------------------
+		// CSSubSupPr 22.1.2.104   (Sub-Superscript Properties) 
+		//--------------------------------------------------------------------------------
+		class CSSubSupPr : public WritingElement
+		{
+		public:
+			WritingElement_AdditionConstructors(CSSubSupPr)
+			CSSubSupPr()
+			{
+			}
+			virtual ~CSSubSupPr()
+			{
+			}
+
+		public:
+			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			{
+			}
+			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader) 
+			{
+				if ( oReader.IsEmptyNode() )
+					return;
+				int nParentDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nParentDepth ) )
+				{
+					CWCharWrapper sName = oReader.GetName();
+					if ( _T("m:alnScr") == sName )
+						m_oAlnScr = oReader;
+					else if ( _T("m:ctrlPr") == sName )
+						m_oCtrlPr = oReader;
+				}
+			}
+			virtual CString      toXML() const
+			{
+				CString sResult = _T("<m:sSubSupPr>");
+
+				if (m_oAlnScr.IsInit())
+					sResult += m_oAlnScr->toXML();
+
+				if (m_oCtrlPr.IsInit())
+					sResult += m_oCtrlPr->toXML();
+
+				sResult += _T("</m:sSubSupPr>");
+				return sResult;
+			}
+
+			virtual EElementType getType() const
+			{
+				return et_m_sSubSupPr;
+			}
+		public:				
+			//Childs
+			nullable<OOX::Logic::CAlnScr>		m_oAlnScr;
+			nullable<OOX::Logic::CCtrlPr>		m_oCtrlPr;
+		};		
+		//--------------------------------------------------------------------------------
 		// CSSubSup 22.1.2.103   (Sub-Superscript Object)  
 		//--------------------------------------------------------------------------------
-		class CSSubSupPr;
 		class CSSubSup : public WritingElement
 		{
 		public:
@@ -2969,6 +3087,19 @@ namespace OOX
 			{
 				CString sResult = _T("<m:sSubSup>");
 
+				if (m_oSSubSupPr.IsInit())
+					sResult += m_oSSubSupPr->toXML();
+
+				if (m_oElement.IsInit())
+					sResult += m_oElement->toXML();
+
+				if (m_oSub.IsInit())
+					sResult += m_oSub->toXML();
+
+				if (m_oSup.IsInit())
+					sResult += m_oSup->toXML();
+
+				sResult += _T("</m:sSubSup>");
 				return sResult;
 			}
 
@@ -2984,16 +3115,16 @@ namespace OOX
 			nullable<OOX::Logic::CSup>			m_oSup;
 		};		
 		//--------------------------------------------------------------------------------
-		// CSSubSupPr 22.1.2.104   (Sub-Superscript Properties) 
+		// CSSupPr 22.1.2.106   (Superscript Properties)
 		//--------------------------------------------------------------------------------
-		class CSSubSupPr : public WritingElement
+		class CSSupPr : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CSSubSupPr)
-			CSSubSupPr()
+			WritingElement_AdditionConstructors(CSSupPr)
+			CSSupPr()
 			{
 			}
-			virtual ~CSSubSupPr()
+			virtual ~CSSupPr()
 			{
 			}
 
@@ -3009,32 +3140,32 @@ namespace OOX
 				while( oReader.ReadNextSiblingNode( nParentDepth ) )
 				{
 					CWCharWrapper sName = oReader.GetName();
-					if ( _T("m:alnScr") == sName )
-						m_oAlnScr = oReader;
-					else if ( _T("m:ctrlPr") == sName )
+					if ( _T("m:ctrlPr") == sName )
 						m_oCtrlPr = oReader;
 				}
 			}
 			virtual CString      toXML() const
 			{
-				CString sResult = _T("<m:sSubSupPr>");
+				CString sResult = _T("<m:sSupPr>");
 
+				if (m_oCtrlPr.IsInit())
+					sResult += m_oCtrlPr->toXML();
+
+				sResult += _T("</m:sSupPr>");
 				return sResult;
 			}
 
 			virtual EElementType getType() const
 			{
-				return et_m_sSubSupPr;
+				return et_m_sSupPr;
 			}
 		public:				
 			//Childs
-			nullable<OOX::Logic::CAlnScr>		m_oAlnScr;
 			nullable<OOX::Logic::CCtrlPr>		m_oCtrlPr;
 		};		
 		//--------------------------------------------------------------------------------
 		// CSSup 22.1.2.105   (Superscript Object)
 		//--------------------------------------------------------------------------------
-		class CSSupPr;
 		class CSSup : public WritingElement
 		{
 		public:
@@ -3070,6 +3201,16 @@ namespace OOX
 			{
 				CString sResult = _T("<m:sSup>");
 
+				if (m_oSSupPr.IsInit())
+					sResult += m_oSSupPr->toXML();
+
+				if (m_oElement.IsInit())
+					sResult += m_oElement->toXML();
+
+				if (m_oSup.IsInit())
+					sResult += m_oSup->toXML();
+
+				sResult += _T("</m:sSup>");
 				return sResult;
 			}
 
@@ -3085,51 +3226,6 @@ namespace OOX
 		};
 
 
-		//--------------------------------------------------------------------------------
-		// CSSupPr 22.1.2.106   (Superscript Properties)
-		//--------------------------------------------------------------------------------
-		class CSSupPr : public WritingElement
-		{
-		public:
-			WritingElement_AdditionConstructors(CSSupPr)
-			CSSupPr()
-			{
-			}
-			virtual ~CSSupPr()
-			{
-			}
-
-		public:
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
-			{
-			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader) 
-			{
-				if ( oReader.IsEmptyNode() )
-					return;
-				int nParentDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nParentDepth ) )
-				{
-					CWCharWrapper sName = oReader.GetName();
-					if ( _T("m:ctrlPr") == sName )
-						m_oCtrlPr = oReader;
-				}
-			}
-			virtual CString      toXML() const
-			{
-				CString sResult = _T("<m:sSupPr>");
-
-				return sResult;
-			}
-
-			virtual EElementType getType() const
-			{
-				return et_m_sSupPr;
-			}
-		public:				
-			//Childs
-			nullable<OOX::Logic::CCtrlPr>		m_oCtrlPr;
-		};		
 		//--------------------------------------------------------------------------------
 		// CMText 22.1.2.116  (Math Text) 
 		//--------------------------------------------------------------------------------	
@@ -3170,7 +3266,7 @@ namespace OOX
 				else
 					sResult = _T("<m:t>");
 
-				sResult += m_sText;
+				sResult += XmlUtils::EncodeXmlString(m_sText);
 				sResult += _T("</m:t>");
 
 				return sResult;

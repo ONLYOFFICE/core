@@ -179,6 +179,8 @@ namespace OOX
 			}
 			virtual CString      toXML() const
 			{
+				if (sNodeName.IsEmpty()) return L"";
+
 				CString sResult = _T("<") + sNodeName + _T(" m:val=\"");
 				sResult +=  m_val->ToString();
 				sResult +=  _T("\" />");
@@ -191,7 +193,6 @@ namespace OOX
 			}
 		private:
 			EElementType eType;	
-			CString sNodeName;
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -200,8 +201,79 @@ namespace OOX
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("m:val"), m_val )
 				WritingElement_ReadAttributes_End( oReader )
 			}
-
 		public:
+			CString sNodeName;
+			CString GetMathNodeName(const EElementType & enumType)  const
+			{//todooo вытащить в одно место - пересекается с MathArgNodes
+				switch(enumType)
+				{
+					case OOX::et_m_deg:				return L"m:deg";
+					case OOX::et_m_aln:				return L"m:aln";
+					case OOX::et_m_alnScr:			return L"m:alnScr";
+					case OOX::et_m_argSz:			return L"m:argSz";
+					case OOX::et_m_baseJc:			return L"m:baseJc";
+					case OOX::et_m_begChr:			return L"m:begChr";
+					case OOX::et_m_brkBin:			return L"m:brkBin";
+					case OOX::et_m_brkBinSub:		return L"m:brkBinSub";
+					case OOX::et_m_cGp:				return L"m:cGp";
+					case OOX::et_m_cGpRule:			return L"m:cGpRule";
+					case OOX::et_m_chr:				return L"m:chr";
+					case OOX::et_m_count:			return L"m:count";
+					case OOX::et_m_cSp:				return L"m:cSp";
+					case OOX::et_m_defJc:			return L"m:defJc";
+					case OOX::et_m_degHide:			return L"m:degHide";
+					case OOX::et_m_diff:			return L"m:diff";
+					case OOX::et_m_dispDef:			return L"m:dispDef";
+					case OOX::et_m_endChr:			return L"m:endChr";
+					case OOX::et_m_grow:			return L"m:grow";
+					case OOX::et_m_hideBot:			return L"m:hideBot";
+					case OOX::et_m_hideLeft:		return L"m:hideLeft";
+					case OOX::et_m_hideRight:		return L"m:hideRight";
+					case OOX::et_m_hideTop:			return L"m:hideTop";
+					case OOX::et_m_interSp:			return L"m:interSp";
+					case OOX::et_m_intLim:			return L"m:intLim";
+					case OOX::et_m_intraSp:			return L"m:intraSp";
+					case OOX::et_m_jc:				return L"m:jc";
+					case OOX::et_m_limLoc:			return L"m:limLoc";
+					case OOX::et_m_lit:				return L"m:lit";
+					case OOX::et_m_lMargin:			return L"m:lMargin";
+					case OOX::et_m_maxDist:			return L"m:maxDist";
+					case OOX::et_m_mcJc:			return L"m:mcJc";
+					case OOX::et_m_naryLim:			return L"m:naryLim";
+					case OOX::et_m_noBreak:			return L"m:noBreak";
+					case OOX::et_m_nor:				return L"m:nor";
+					case OOX::et_m_objDist:			return L"m:objDist";
+					case OOX::et_m_opEmu:			return L"m:opEmu";
+					case OOX::et_m_plcHide:			return L"m:plcHide";
+					case OOX::et_m_pos:				return L"m:pos";
+					case OOX::et_m_postSp:			return L"m:postSp";
+					case OOX::et_m_preSp:			return L"m:preSp";
+					case OOX::et_m_rMargin:			return L"m:rMargin";
+					case OOX::et_m_rSp:				return L"m:rSp";
+					case OOX::et_m_rSpRule:			return L"m:rSpRule";
+					case OOX::et_m_scr:				return L"m:scr";
+					case OOX::et_m_sepChr:			return L"m:sepChr";
+					case OOX::et_m_show:			return L"m:show";
+					case OOX::et_m_shp:				return L"m:shp";
+					case OOX::et_m_smallFrac:		return L"m:smallFrac";
+					case OOX::et_m_strikeBLTR:		return L"m:strikeBLTR";
+					case OOX::et_m_strikeH:			return L"m:strikeH";
+					case OOX::et_m_strikeTLBR:		return L"m:strikeTLBR";
+					case OOX::et_m_strikeV:			return L"m:strikeV";
+					case OOX::et_m_sty:				return L"m:sty";
+					case OOX::et_m_subHide:			return L"m:subHide";
+					case OOX::et_m_supHide:			return L"m:supHide";
+					case OOX::et_m_transp:			return L"m:transp";
+					case OOX::et_m_type:			return L"m:type";
+					case OOX::et_m_vertJc:			return L"m:vertJc";
+					case OOX::et_m_wrapIndent:		return L"m:wrapIndent";
+					case OOX::et_m_wrapRight:		return L"m:wrapRight";
+					case OOX::et_m_zeroAsc:			return L"m:zeroAsc";
+					case OOX::et_m_zeroDesc:		return L"m:zeroDesc";
+					case OOX::et_m_zeroWid:			return L"m:zeroWid";
+				}
+				return L"";
+			}
 			nullable<TMathBottomType> m_val;			
 		};
 
@@ -213,10 +285,12 @@ namespace OOX
 			CMathBottomNodesEx(XmlUtils::CXmlNode& oNode)
 			{
 				fromXML( oNode );
+				sNodeName	= GetMathNodeName(getType());
 			}
 			CMathBottomNodesEx(XmlUtils::CXmlLiteReader& oReader)
 			{
 				fromXML( oReader );
+				sNodeName	= GetMathNodeName(getType());
 			}
 			virtual EElementType getType() const
 			{

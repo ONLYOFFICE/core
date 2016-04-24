@@ -14,15 +14,17 @@ namespace OOX
 		public:
 			CMathArgNodes()
 			{
-				eType = et_Unknown;
+				eType		= et_Unknown;
 			}
 			CMathArgNodes(XmlUtils::CXmlNode &oNode)
 			{
 				fromXML( oNode );
+				sNodeName	= GetMathNodeName(getType());
 			}
 			CMathArgNodes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				fromXML( oReader );
+				sNodeName	= GetMathNodeName(getType());
 			}
 			virtual ~CMathArgNodes()
 			{
@@ -51,6 +53,8 @@ namespace OOX
 
 			virtual CString      toXML() const
 			{
+				if (sNodeName.IsEmpty()) return L"";
+
 				CString sResult = _T("<") + sNodeName + _T(">");
 
 				for ( unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
@@ -61,7 +65,7 @@ namespace OOX
 					}
 				}
 
-				sResult = _T("</") + sNodeName + _T(">");
+				sResult += _T("</") + sNodeName + _T(">");
 
 				return sResult;
 			}
@@ -71,14 +75,46 @@ namespace OOX
 				return eType;
 			}
 		private:
-			EElementType eType;
-			CString sNodeName;
-
+			EElementType	eType;
 		public:
+			CString			sNodeName;
+
+			CString GetMathNodeName(const EElementType & enumType)  const
+			{//todooo вытащить в одно место - пересекается с MathBottomNodes
+				switch(enumType)
+				{
+					case OOX::et_m_deg:		return L"m:deg";
+					case OOX::et_m_den:		return L"m:den";
+					case OOX::et_m_e:		return L"m:e";
+					case OOX::et_m_fName:	return L"m:fName";
+					case OOX::et_m_lim:		return L"m:lim";
+					case OOX::et_m_num:		return L"m:num";
+					case OOX::et_m_oMath:	return L"m:oMath";
+					case OOX::et_m_sub:		return L"m:sub";
+					case OOX::et_m_sup:		return L"m:sup";
+				}
+				return L"";
+			}
 			// Childs
 		};
 
-		
+		template <EElementType EnumType = OOX::et_Unknown>
+		class CMathArgNodesEx : public CMathArgNodes
+		{
+		public:
+			CMathArgNodesEx(XmlUtils::CXmlNode& oNode)
+			{
+				fromXML( oNode );
+			}
+			CMathArgNodesEx(XmlUtils::CXmlLiteReader& oReader)
+			{
+				fromXML( oReader );
+			}
+			virtual EElementType getType() const
+			{
+				return EnumType;
+			}
+		};		
 		
 	}//namespace Logic
 }//namespace OOX

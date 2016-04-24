@@ -5,10 +5,65 @@
 #include "OfficeDrawing/GeometryTextBooleanProperties.h"
 
 #include "../../DesktopEditor/common/String.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Document.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Document.h"
 
 
 namespace DocFileFormat
 {
+	bool ParseEmbeddedEquation( const std::string & xmlString, std::wstring & newXmlString)
+	{
+		newXmlString.clear();
+		std::wstring sTempXmlFile = FileSystem::Directory::CreateTempFileWithUniqueName(
+													FileSystem::Directory::GetTempPathW(), L"emb");
+
+		sTempXmlFile += L".xml";
+		
+		NSFile::CFileBinary file; 
+		file.CreateFileW(sTempXmlFile);
+		file.WriteFile((BYTE*)xmlString.c_str(), xmlString.size());
+		file.CloseFile();
+
+		OOX::CPath path(sTempXmlFile.c_str());
+		OOX::CDocument docEmbedded(path, path);
+
+		bool res = false;
+		for (int i = 0 ; i < docEmbedded.m_arrItems.size(); i++)
+		{
+			if (docEmbedded.m_arrItems[i]->getType() == OOX::et_w_p)
+			{
+				OOX::Logic::CParagraph *paragraph = dynamic_cast<OOX::Logic::CParagraph *>(docEmbedded.m_arrItems[i]);
+
+				for (int j = 0; (paragraph) && (j < paragraph->m_arrItems.size()); j++)
+				{
+					if (paragraph->m_arrItems[j]->getType() == OOX::et_m_oMath)
+					{
+						res = true;
+						newXmlString = paragraph->m_arrItems[j]->toXML().GetBuffer();
+						break;
+					}
+					else if (paragraph->m_arrItems[j]->getType() == OOX::et_m_oMathPara)
+					{
+						OOX::Logic::COMathPara *mathPara = dynamic_cast<OOX::Logic::COMathPara *>(paragraph->m_arrItems[j]);
+						
+						for (int k = 0; (mathPara) && (k < mathPara->m_arrItems.size()); k++)
+						{
+							if (mathPara->m_arrItems[k]->getType() == OOX::et_m_oMath)
+							{
+								res = true;
+								newXmlString = mathPara->m_arrItems[k]->toXML().GetBuffer();
+								break;
+							}
+						}
+					}
+					if (res) break;
+				}
+				if (res) break;
+			}
+		}
+		return res;
+	}
+//---------------------------------------------------------------
 	static int count_vml_objects = 0;
 	void VMLPictureMapping::appendStyleProperty(std::wstring* b, const std::wstring& propName, const std::wstring& propValue) const
 	{
@@ -42,10 +97,7 @@ namespace DocFileFormat
 	{
 		RELEASEOBJECT(m_imageData);
 	}
-}
 
-namespace DocFileFormat
-{
 	void VMLPictureMapping::Apply( IVisitable* visited  )
 	{
 		PictureDescriptor* pict = static_cast<PictureDescriptor*>(visited);
@@ -97,7 +149,14 @@ namespace DocFileFormat
 				case wzEquationXML:
 					{
 						m_isEquation = true;
+						m_isEmbedded = true;
+						
 						m_embeddedData = std::string((char*)iter->opComplex, iter->op);
+
+						if (ParseEmbeddedEquation( m_embeddedData, m_equationXml))
+						{
+							m_isEmbedded = false;
+						}
 					}break;
 				case metroBlob:
 					{

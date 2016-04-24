@@ -4,6 +4,7 @@ Microsoft Visual Studio Solution File, Format Version 9.00
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ASCOfficeDocFile", "ASCOfficeDocFile2005.vcproj", "{DA13D6D4-39B5-49DB-B5D7-D1AFDBB7C320}"
 	ProjectSection(ProjectDependencies) = postProject
 		{C5371405-338F-4B70-83BD-2A5CDF64F383} = {C5371405-338F-4B70-83BD-2A5CDF64F383}
+		{21663823-DE45-479B-91D0-B4FEF4916EF0} = {21663823-DE45-479B-91D0-B4FEF4916EF0}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DocFormatLib", "..\DocFormatLib\Win32\DocFormatLib.vcproj", "{C5371405-338F-4B70-83BD-2A5CDF64F383}"
@@ -24,6 +25,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libxml2", "..\..\Common\DocxFormat\Source\XML\libxml2\win_build\libxml2.vcproj", "{21663823-DE45-479B-91D0-B4FEF4916EF0}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DocxFormat", "..\..\Common\DocxFormat\Projects\DocxFormat2005.vcproj", "{A100103A-353E-45E8-A9B8-90B87CC5C0B0}"
+	ProjectSection(ProjectDependencies) = postProject
+		{21663823-DE45-479B-91D0-B4FEF4916EF0} = {21663823-DE45-479B-91D0-B4FEF4916EF0}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DocFormatTest", "..\DocFormatTest\DocFormatTest.vcproj", "{0F49D5D1-A8D3-4F97-8BC1-E2F65BB00C10}"
 	ProjectSection(ProjectDependencies) = postProject

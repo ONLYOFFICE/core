@@ -3026,7 +3026,14 @@ namespace SimpleTypes
 		{
 			CString sResult;
 
-			sResult.Format( _T("%fpt"), m_dValue);
+			if (m_bUnit)
+			{
+				sResult.Format( _T("%fpt"), m_dValue);
+			}
+			else
+			{
+				sResult.Format( _T("%d"), (int)(m_dValue * 2));
+			}
 
 			return sResult;
 		}

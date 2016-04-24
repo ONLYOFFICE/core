@@ -13,6 +13,8 @@
 
 namespace DocFileFormat
 {
+	bool ParseEmbeddedEquation( const std::string & xmlString, std::wstring & newXmlString );
+
 	class VMLPictureMapping: public PropertiesMapping, public IMapping
 	{
 	public:
@@ -39,6 +41,7 @@ namespace DocFileFormat
 		bool							m_isEquation;
 		bool							m_isEmbedded;
 		std::string						m_embeddedData;
+		std::wstring					m_equationXml;
 	private:
 		
 		ConversionContext*				m_ctx;

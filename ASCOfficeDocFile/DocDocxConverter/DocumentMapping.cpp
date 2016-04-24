@@ -571,22 +571,15 @@ namespace DocFileFormat
 
 							RevisionData oData = RevisionData(chpxPic);
 
-							/// <w:rPr>
-							CharacterPropertiesMapping* rPr = new CharacterPropertiesMapping(m_pXmlWriter, m_document, &oData, _lastValidPapx, false);
-							if(rPr)
-							{
-								chpxPic->Convert(rPr);
-								RELEASEOBJECT(rPr);
-							}
-
-							m_pXmlWriter->WriteNodeBegin (_T( "w:object" ), TRUE);
+							XmlUtils::CXmlWriter OleWriter;
+							OleWriter.WriteNodeBegin (_T( "w:object" ), TRUE);
 
 							//append the origin attributes
-							m_pXmlWriter->WriteAttribute( _T( "w:dxaOrig" ), FormatUtils::IntToWideString( ( pic.dxaGoal + pic.dxaOrigin ) ).c_str() ); 
-							m_pXmlWriter->WriteAttribute( _T( "w:dyaOrig" ), FormatUtils::IntToWideString( ( pic.dyaGoal + pic.dyaOrigin ) ).c_str() ); 
-							m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
+							OleWriter.WriteAttribute( _T( "w:dxaOrig" ), FormatUtils::IntToWideString( ( pic.dxaGoal + pic.dxaOrigin ) ).c_str() ); 
+							OleWriter.WriteAttribute( _T( "w:dyaOrig" ), FormatUtils::IntToWideString( ( pic.dyaGoal + pic.dyaOrigin ) ).c_str() ); 
+							OleWriter.WriteNodeEnd( _T( "" ), TRUE, FALSE );
 
-							VMLPictureMapping oVmlMapper (m_context, m_pXmlWriter, true, _caller);
+							VMLPictureMapping oVmlMapper (m_context, &OleWriter, true, _caller);
 							pic.Convert(&oVmlMapper);
 							RELEASEOBJECT(chpxs);
 
@@ -597,9 +590,9 @@ namespace DocFileFormat
 								CharacterPropertyExceptions* chpxSep = chpxs->front();
 								
 								OleObject ole ( chpxSep, m_document->GetStorage() );
-								OleObjectMapping oleObjectMapping( m_pXmlWriter, m_context, &pic, _caller, oVmlMapper.GetShapeId() );
+								OleObjectMapping oleObjectMapping( &OleWriter, m_context, &pic, _caller, oVmlMapper.GetShapeId() );
 								
-								if (oVmlMapper.m_isEquation || oVmlMapper.m_isEmbedded)
+								if (oVmlMapper.m_isEmbedded)
 								{
 									ole.isEquation		= oVmlMapper.m_isEquation;
 									ole.isEmbedded		= oVmlMapper.m_isEmbedded;
@@ -610,7 +603,22 @@ namespace DocFileFormat
 								RELEASEOBJECT( chpxs );
 							}
 
-							m_pXmlWriter->WriteNodeEnd( _T( "w:object" ) );	
+							OleWriter.WriteNodeEnd( _T( "w:object" ) );	
+
+							if (!oVmlMapper.m_isEmbedded && oVmlMapper.m_isEquation)
+							{
+								m_pXmlWriter->WriteString(oVmlMapper.m_equationXml.c_str());
+							}
+							else
+							{
+								CharacterPropertiesMapping* rPr = new CharacterPropertiesMapping(m_pXmlWriter, m_document, &oData, _lastValidPapx, false);
+								if(rPr)
+								{
+									chpxPic->Convert(rPr);
+									RELEASEOBJECT(rPr);
+								}
+								m_pXmlWriter->WriteString(OleWriter.GetXmlString());
+							}
 						}
 
 						if (search(f.begin(), f.end(), embed.begin(), embed.end()) != f.end() )
@@ -713,7 +721,7 @@ namespace DocFileFormat
 							VMLPictureMapping oVmlMapper(m_context, m_pXmlWriter, false, _caller);
 							oPicture.Convert (&oVmlMapper);
 							
-							if (oVmlMapper.m_isEquation || oVmlMapper.m_isEmbedded)
+							if (oVmlMapper.m_isEmbedded)
 							{
 								OleObject ole ( chpx, m_document->GetStorage() );
 								OleObjectMapping oleObjectMapping( m_pXmlWriter, m_context, &oPicture, _caller, oVmlMapper.GetShapeId() );

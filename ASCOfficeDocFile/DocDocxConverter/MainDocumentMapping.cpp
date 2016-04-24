@@ -31,10 +31,10 @@ namespace DocFileFormat
 		m_pXmlWriter->WriteAttribute(_T("xmlns:o"),		OpenXmlNamespaces::Office );
 		m_pXmlWriter->WriteAttribute(_T("xmlns:w10"),	OpenXmlNamespaces::OfficeWord );
 		m_pXmlWriter->WriteAttribute(_T("xmlns:r"),		OpenXmlNamespaces::Relationships );
+		m_pXmlWriter->WriteAttribute(_T("xmlns:m"),		_T("http://schemas.openxmlformats.org/officeDocument/2006/math"));
 
 		//m_pXmlWriter->WriteAttribute(_T("xmlns:wpc"),	_T("http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas"));
 		//m_pXmlWriter->WriteAttribute(_T("xmlns:mc"),	_T("http://schemas.openxmlformats.org/markup-compatibility/2006")); 
-		//m_pXmlWriter->WriteAttribute(_T("xmlns:m"),		_T("http://schemas.openxmlformats.org/officeDocument/2006/math"));
 		//m_pXmlWriter->WriteAttribute(_T("xmlns:wp14"),	_T("http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing"));
 		//m_pXmlWriter->WriteAttribute(_T("xmlns:wp"),	_T("http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"));
 		//m_pXmlWriter->WriteAttribute(_T("xmlns:w14"),	_T("http://schemas.microsoft.com/office/word/2010/wordml"));

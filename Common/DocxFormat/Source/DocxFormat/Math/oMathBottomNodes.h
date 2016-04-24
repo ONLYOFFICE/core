@@ -284,13 +284,13 @@ namespace OOX
 		public:
 			CMathBottomNodesEx(XmlUtils::CXmlNode& oNode)
 			{
-				fromXML( oNode );
-				sNodeName	= GetMathNodeName(getType());
+                CMathBottomNodes<TMathBottomType>::fromXML( oNode );
+                CMathBottomNodes<TMathBottomType>::sNodeName	= CMathBottomNodes<TMathBottomType>::GetMathNodeName(getType());
 			}
 			CMathBottomNodesEx(XmlUtils::CXmlLiteReader& oReader)
 			{
-				fromXML( oReader );
-				sNodeName	= GetMathNodeName(getType());
+                CMathBottomNodes<TMathBottomType>::fromXML( oReader );
+                CMathBottomNodes<TMathBottomType>::sNodeName	= CMathBottomNodes<TMathBottomType>::GetMathNodeName(getType());
 			}
 			virtual EElementType getType() const
 			{

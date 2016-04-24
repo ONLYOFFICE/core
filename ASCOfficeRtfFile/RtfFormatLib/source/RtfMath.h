@@ -7,16 +7,15 @@
 
 class RtfMath : public IDocumentElement, public ItemContainer<IDocumentElementPtr>
 {
-private: 
+public: 
 	CString				m_sRtfName;
 	CString				m_sOOXName;
-public: 
+
 	bool				m_bHeader; //чтобы отличать заголовок от вложенных групп
 
 	bool				m_bIsVal;
 	bool				m_bIsBool;
 	
-//RtfMathSpecProp		m_oProperty;
 	RtfParagraph		m_oVal;
 	RtfShapePtr			m_oPicture;
 
@@ -58,11 +57,12 @@ public:
 	void SetRtfName(CString sName)
 	{
 		m_sRtfName = sName;
+		
 		m_sOOXName = sName;
 		m_sOOXName.Insert(1, _T(":"));
 	}
 
-	void SetOOXType			(int type);
+	void	SetOOXType		(int type);
 	CString RenderToRtf		(RenderParameter oRenderParameter);
 	CString RenderToOOX		(RenderParameter oRenderParameter);
 };

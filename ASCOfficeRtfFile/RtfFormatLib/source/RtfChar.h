@@ -298,7 +298,12 @@ public:
         else if(RENDER_TO_OOX_PARAM_TEXT == oRenderParameter.nType)
             sResult = renderTextToXML( _T("Text") );
         else if( RENDER_TO_OOX_PARAM_MATH == oRenderParameter.nType)
-            sResult = renderTextToXML( _T("Math") );
+		{
+			sResult.Append(_T("<m:r>"));
+				sResult.Append( m_oProperty.RenderToOOX(oRenderParameter) );//w:rPr внутри
+				sResult.Append( renderTextToXML( _T("Math")) );
+			sResult.Append(_T("</m:r>"));	
+		}
         else if( RENDER_TO_OOX_PARAM_PLAIN == oRenderParameter.nType)
             sResult = m_sChars;
         return sResult;
@@ -345,11 +350,9 @@ private:
         }
 		else if( _T("Math") == sParam && !m_sChars.IsEmpty())
         {
-			sResult.Append( _T("<m:r>"));
-				sResult.Append( _T("<m:t>"));
-					sResult += Utils::PrepareToXML( m_sChars );
-				sResult.Append( _T("</m:t>"));
-			sResult.Append( _T("</m:r>"));
+			sResult.Append( _T("<m:t>"));
+				sResult += Utils::PrepareToXML( m_sChars );
+			sResult.Append( _T("</m:t>"));
         }
 		return sResult;
 	}

@@ -17,6 +17,7 @@ public:
 
     int m_nAnsiCodePage;
 	int m_nDeffFont;
+	int m_nDeffMathFont;
 	
 	int m_bRtlGutter; 
 	int m_bRtl;
@@ -133,16 +134,16 @@ public:
 		void SetDefault()
 		{
 			//todo
-			m_eCodePage = cp_ansi;
-			m_nTabWidth = 720; //todo -1
-			m_nDeffFont = PROP_DEF;
-			m_bHypCaps = PROP_DEF;
-			m_bAutoHyp = PROP_DEF;
-			m_nMaxHypen = PROP_DEF;
+			m_eCodePage			= cp_ansi;
+			m_nTabWidth			= 720; //todo -1
+			m_nDeffFont			= PROP_DEF;
+			m_nDeffMathFont		= PROP_DEF;
+			m_bHypCaps			= PROP_DEF;
+			m_bAutoHyp			= PROP_DEF;
+			m_nMaxHypen			= PROP_DEF;
 			m_nHyphenationRight = PROP_DEF;
-			m_nZoom = 100;
-
-			m_nAnsiCodePage			= CP_ACP;
+			m_nZoom				= 100;
+			m_nAnsiCodePage		= CP_ACP;
 
 			m_bDorderSurroundHeader = PROP_DEF;
 			m_bDorderSurroundFotter = PROP_DEF;

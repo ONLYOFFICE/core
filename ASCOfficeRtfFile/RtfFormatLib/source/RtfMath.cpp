@@ -41,7 +41,7 @@ bool RtfMath::IsRtfControlWord( CString sControlW )
 	L"mgroupChrPr", L"mgroupChr", L"mlimLowPr", L"mlimLow",L"mlimUppPr", L"mlimUpp", L"mmathPr", L"mmcPr", L"mmc", 
 	L"mmcs", L"mmPr", L"mmr", L"mm", L"mnaryPr", L"mnary", L"mphantPr", L"mphant", L"mmRun", L"mmDel", 
 	L"mmIns", L"mradPr", L"mrad", /*MRPr",*/ L"msPrePr", L"msPre", L"msSubPr", L"msSub", L"msSubSupPr", 
-	L"msSubSup", L"msSupPr", L"msSup", L"msub", L"msup", L"mden", L"mlim", L"mnum", L"mdeg"/*mmText",*/, L"mfName" };
+	L"msSubSup", L"msSupPr", L"msSup", L"msub", L"msup", L"mden", L"mlim", L"mnum", L"mdeg"/*mmText",*/, L"mfName", L"mscr", L"mrPr" };
 
 	int mc_nRtfControlWordsSize	=  sizeof( mc_aRtfControlWords ) / sizeof( TCHAR* );
 	
@@ -111,6 +111,8 @@ CString RtfMath::RenderToRtf(RenderParameter oRenderParameter)
 }
 CString RtfMath::RenderToOOX(RenderParameter oRenderParameter)
 {
+	if (m_sOOXName.IsEmpty()) return L"";
+
 	CString sResult;
 	CString sContent;
 	CString sProp;
@@ -130,6 +132,12 @@ CString RtfMath::RenderToOOX(RenderParameter oRenderParameter)
 		for( int i = 0; i < (int)m_aArray.size(); i++ )
 		{
 			sVal += m_aArray[i]->RenderToOOX(oNewParam);
+		}
+
+		if (sVal.IsEmpty())
+		{
+			oNewParam.nType = RENDER_TO_OOX_PARAM_PLAIN;
+			sVal = m_oVal.RenderToOOX(oNewParam);
 		}
 	}
 	else

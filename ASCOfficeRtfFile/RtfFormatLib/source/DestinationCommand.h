@@ -358,105 +358,105 @@ class RtfCharPropCommand
 {
 //bool bLookOnBorder; Надо ли читать свойства border( актуалЃEЃEдля ParagraphReader )
 public:
-	static bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CString sCommand, bool hasParameter, int parameter, bool bLookOnBorder = true)
+	static bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CString sCommand, bool hasParameter, int parameter, RtfCharProperty & ChartProperty, bool bLookOnBorder = true)
 	{
 		if( _T("plain") == sCommand )
 			oReader.m_oState->m_oCharProp.SetDefaultRtf();
 		
-		COMMAND_RTF_INT( _T("animtext")	, oReader.m_oState->m_oCharProp.m_nAnimated, sCommand, hasParameter, parameter)
+		COMMAND_RTF_INT( _T("animtext")	, ChartProperty.m_nAnimated, sCommand, hasParameter, parameter)
 		COMMAND_RTF_INT( _T("uc")		, oReader.m_oState->m_nUD, sCommand, hasParameter, parameter)
-		COMMAND_RTF_BOOL( _T("b")		, oReader.m_oState->m_oCharProp.m_bBold, sCommand, hasParameter, parameter)
-		COMMAND_RTF_BOOL( _T("caps")	, oReader.m_oState->m_oCharProp.m_bCaps, sCommand, hasParameter, parameter)
-		COMMAND_RTF_INT( _T("charscalex"), oReader.m_oState->m_oCharProp.m_nScalex, sCommand, hasParameter, parameter)
-		COMMAND_RTF_INT( _T("cs")		, oReader.m_oState->m_oCharProp.m_nCharStyle, sCommand, hasParameter, parameter)
-		COMMAND_RTF_INT( _T("down")		, oReader.m_oState->m_oCharProp.m_nDown, sCommand, hasParameter, parameter)
-		COMMAND_RTF_BOOL( _T("embo")	, oReader.m_oState->m_oCharProp.m_bEmbo, sCommand, hasParameter, parameter)
-		COMMAND_RTF_INT( _T("expndtw")	, oReader.m_oState->m_oCharProp.m_nCharacterSpacing, sCommand, hasParameter, parameter)
+		COMMAND_RTF_BOOL( _T("b")		, ChartProperty.m_bBold, sCommand, hasParameter, parameter)
+		COMMAND_RTF_BOOL( _T("caps")	, ChartProperty.m_bCaps, sCommand, hasParameter, parameter)
+		COMMAND_RTF_INT( _T("charscalex"), ChartProperty.m_nScalex, sCommand, hasParameter, parameter)
+		COMMAND_RTF_INT( _T("cs")		, ChartProperty.m_nCharStyle, sCommand, hasParameter, parameter)
+		COMMAND_RTF_INT( _T("down")		, ChartProperty.m_nDown, sCommand, hasParameter, parameter)
+		COMMAND_RTF_BOOL( _T("embo")	, ChartProperty.m_bEmbo, sCommand, hasParameter, parameter)
+		COMMAND_RTF_INT( _T("expndtw")	, ChartProperty.m_nCharacterSpacing, sCommand, hasParameter, parameter)
 		else if( _T("expnd") == sCommand )
 		{
 			if( true == hasParameter )
-				oReader.m_oState->m_oCharProp.m_nCharacterSpacing  = 5 * parameter; //quater -points
+				ChartProperty.m_nCharacterSpacing  = 5 * parameter; //quater -points
 		}
-		COMMAND_RTF_INT( _T("fittext")	, oReader.m_oState->m_oCharProp.m_nFitText, sCommand, hasParameter, parameter)
-		COMMAND_RTF_INT( _T("f")		, oReader.m_oState->m_oCharProp.m_nFont, sCommand, hasParameter, parameter)
-		COMMAND_RTF_INT( _T("fs")		, oReader.m_oState->m_oCharProp.m_nFontSize, sCommand, hasParameter, parameter)
-		COMMAND_RTF_BOOL( _T("i")		, oReader.m_oState->m_oCharProp.m_bItalic, sCommand, hasParameter, parameter)
-		COMMAND_RTF_BOOL( _T("impr")	, oReader.m_oState->m_oCharProp.m_bImprint, sCommand, hasParameter, parameter)
-		COMMAND_RTF_INT( _T("kerning")	, oReader.m_oState->m_oCharProp.m_nKerning, sCommand, hasParameter, parameter)
+		COMMAND_RTF_INT( _T("fittext")	, ChartProperty.m_nFitText, sCommand, hasParameter, parameter)
+		COMMAND_RTF_INT( _T("f")		, ChartProperty.m_nFont, sCommand, hasParameter, parameter)
+		COMMAND_RTF_INT( _T("fs")		, ChartProperty.m_nFontSize, sCommand, hasParameter, parameter)
+		COMMAND_RTF_BOOL( _T("i")		, ChartProperty.m_bItalic, sCommand, hasParameter, parameter)
+		COMMAND_RTF_BOOL( _T("impr")	, ChartProperty.m_bImprint, sCommand, hasParameter, parameter)
+		COMMAND_RTF_INT( _T("kerning")	, ChartProperty.m_nKerning, sCommand, hasParameter, parameter)
 		
 		else if( _T("ltrch") == sCommand )
 		{
 			if( false == hasParameter || 0 != parameter ) 
-				oReader.m_oState->m_oCharProp.m_bRightToLeft  = 0;
+				ChartProperty.m_bRightToLeft  = 0;
 			else
-				oReader.m_oState->m_oCharProp.m_bRightToLeft  = 1;
+				ChartProperty.m_bRightToLeft  = 1;
 		}
-		COMMAND_RTF_BOOL( _T("rtlch"),		oReader.m_oState->m_oCharProp.m_bRightToLeft, sCommand, hasParameter, parameter)
-		COMMAND_RTF_INT( _T("lang"),		oReader.m_oState->m_oCharProp.m_nLanguage	, sCommand, hasParameter, parameter)
+		COMMAND_RTF_BOOL( _T("rtlch"),		ChartProperty.m_bRightToLeft, sCommand, hasParameter, parameter)
+		COMMAND_RTF_INT( _T("lang"),		ChartProperty.m_nLanguage	, sCommand, hasParameter, parameter)
 		
-		COMMAND_RTF_BOOL( _T("cs"),			oReader.m_oState->m_oCharProp.m_nComplexScript, sCommand, hasParameter, parameter)
-		COMMAND_RTF_BOOL( _T("outl"),		oReader.m_oState->m_oCharProp.m_bOutline	, sCommand, hasParameter, parameter)
-		COMMAND_RTF_BOOL( _T("scaps"),		oReader.m_oState->m_oCharProp.m_bScaps		, sCommand, hasParameter, parameter)
-		COMMAND_RTF_BOOL( _T("shad"),		oReader.m_oState->m_oCharProp.m_bShadow		, sCommand, hasParameter, parameter)
-		COMMAND_RTF_BOOL( _T("strike"),		oReader.m_oState->m_oCharProp.m_bStrike		, sCommand, hasParameter, parameter)
-		COMMAND_RTF_BOOL( _T("striked"),	oReader.m_oState->m_oCharProp.m_nStriked	, sCommand, hasParameter, parameter)
-		COMMAND_RTF_BOOL( _T("sub"),		oReader.m_oState->m_oCharProp.m_bSub		, sCommand, hasParameter, parameter)
-		COMMAND_RTF_BOOL( _T("super"),		oReader.m_oState->m_oCharProp.m_bSuper		, sCommand, hasParameter, parameter)
-		COMMAND_RTF_INT( _T("highlight"),	oReader.m_oState->m_oCharProp.m_nHightlited	, sCommand, hasParameter, parameter)
+		COMMAND_RTF_BOOL( _T("cs"),			ChartProperty.m_nComplexScript, sCommand, hasParameter, parameter)
+		COMMAND_RTF_BOOL( _T("outl"),		ChartProperty.m_bOutline	, sCommand, hasParameter, parameter)
+		COMMAND_RTF_BOOL( _T("scaps"),		ChartProperty.m_bScaps		, sCommand, hasParameter, parameter)
+		COMMAND_RTF_BOOL( _T("shad"),		ChartProperty.m_bShadow		, sCommand, hasParameter, parameter)
+		COMMAND_RTF_BOOL( _T("strike"),		ChartProperty.m_bStrike		, sCommand, hasParameter, parameter)
+		COMMAND_RTF_BOOL( _T("striked"),	ChartProperty.m_nStriked	, sCommand, hasParameter, parameter)
+		COMMAND_RTF_BOOL( _T("sub"),		ChartProperty.m_bSub		, sCommand, hasParameter, parameter)
+		COMMAND_RTF_BOOL( _T("super"),		ChartProperty.m_bSuper		, sCommand, hasParameter, parameter)
+		COMMAND_RTF_INT( _T("highlight"),	ChartProperty.m_nHightlited	, sCommand, hasParameter, parameter)
 		else if( _T("cf") == sCommand )
 		{
 			if( true == hasParameter )
-				oReader.m_oState->m_oCharProp.m_nForeColor = parameter;
+				ChartProperty.m_nForeColor = parameter;
 			else
-				oReader.m_oState->m_oCharProp.m_nForeColor= PROP_DEF;
+				ChartProperty.m_nForeColor= PROP_DEF;
 		}
 		else if( _T("ul") == sCommand )
 		{
 			if( true == hasParameter && 0 == parameter)
-				oReader.m_oState->m_oCharProp.m_eUnderStyle = RtfCharProperty::uls_none;
+				ChartProperty.m_eUnderStyle = RtfCharProperty::uls_none;
 			else
-				oReader.m_oState->m_oCharProp.m_eUnderStyle = RtfCharProperty::uls_Single;
+				ChartProperty.m_eUnderStyle = RtfCharProperty::uls_Single;
 		}
-		//COMMAND_RTF_BOOL( _T("ul"), oReader.m_oState->m_oCharProp.m_bUnderline, sCommand, hasParameter, parameter)
-		COMMAND_RTF_INT( _T("ulc"), oReader.m_oState->m_oCharProp.m_nUnderlineColor, sCommand, hasParameter, parameter)
+		//COMMAND_RTF_BOOL( _T("ul"), ChartProperty.m_bUnderline, sCommand, hasParameter, parameter)
+		COMMAND_RTF_INT( _T("ulc"), ChartProperty.m_nUnderlineColor, sCommand, hasParameter, parameter)
 
 
-		COMMAND_RTF_INT( _T("uld"),		oReader.m_oState->m_oCharProp.m_eUnderStyle, sCommand, true, RtfCharProperty::uls_Dotted)
-		COMMAND_RTF_INT( _T("uldash"),	oReader.m_oState->m_oCharProp.m_eUnderStyle, sCommand, true, RtfCharProperty::uls_Dashed)
-		COMMAND_RTF_INT( _T("uldashd"), oReader.m_oState->m_oCharProp.m_eUnderStyle, sCommand, true, RtfCharProperty::uls_Dash_dotted)
-		COMMAND_RTF_INT( _T("uldashdd"), oReader.m_oState->m_oCharProp.m_eUnderStyle, sCommand, true, RtfCharProperty::uls_Dash_dot_dotted)
-		COMMAND_RTF_INT( _T("uldb"),	oReader.m_oState->m_oCharProp.m_eUnderStyle, sCommand, true, RtfCharProperty::uls_Double)
-		COMMAND_RTF_INT( _T("ulhwave"), oReader.m_oState->m_oCharProp.m_eUnderStyle, sCommand, true, RtfCharProperty::uls_Heavy_wave)
-		COMMAND_RTF_INT( _T("ulldash"), oReader.m_oState->m_oCharProp.m_eUnderStyle, sCommand, true, RtfCharProperty::uls_Long_dashe)
-		COMMAND_RTF_INT( _T("ulnone"), oReader.m_oState->m_oCharProp.m_eUnderStyle, sCommand, true, RtfCharProperty::uls_none)
-		COMMAND_RTF_INT( _T("ulth"),	oReader.m_oState->m_oCharProp.m_eUnderStyle, sCommand, true, RtfCharProperty::uls_Thick)
-		COMMAND_RTF_INT( _T("ulthd"),	oReader.m_oState->m_oCharProp.m_eUnderStyle, sCommand, true, RtfCharProperty::uls_Thick_dotted)
-		COMMAND_RTF_INT( _T("ulthdash"), oReader.m_oState->m_oCharProp.m_eUnderStyle, sCommand, true, RtfCharProperty::uls_Thick_dashed)
-		COMMAND_RTF_INT( _T("ulthdashd"), oReader.m_oState->m_oCharProp.m_eUnderStyle, sCommand, true, RtfCharProperty::uls_Thick_dash_dotted)
-		COMMAND_RTF_INT( _T("ulthdashdd"), oReader.m_oState->m_oCharProp.m_eUnderStyle, sCommand, true, RtfCharProperty::uls_Thick_dash_dot_dotted)
-		COMMAND_RTF_INT( _T("ulthldash"), oReader.m_oState->m_oCharProp.m_eUnderStyle, sCommand, true, RtfCharProperty::uls_Thick_long_dashed)
-		COMMAND_RTF_INT( _T("ululdbwave"), oReader.m_oState->m_oCharProp.m_eUnderStyle, sCommand, true, RtfCharProperty::uls_Double_wave)
-		COMMAND_RTF_INT( _T("ulw"), oReader.m_oState->m_oCharProp.m_eUnderStyle, sCommand, true, RtfCharProperty::uls_Word)
-		COMMAND_RTF_INT( _T("ulwave"), oReader.m_oState->m_oCharProp.m_eUnderStyle, sCommand, true, RtfCharProperty::uls_Wave)
-		COMMAND_RTF_INT( _T("up"), oReader.m_oState->m_oCharProp.m_nUp, sCommand, hasParameter, parameter)
+		COMMAND_RTF_INT( _T("uld"),		ChartProperty.m_eUnderStyle, sCommand, true, RtfCharProperty::uls_Dotted)
+		COMMAND_RTF_INT( _T("uldash"),	ChartProperty.m_eUnderStyle, sCommand, true, RtfCharProperty::uls_Dashed)
+		COMMAND_RTF_INT( _T("uldashd"), ChartProperty.m_eUnderStyle, sCommand, true, RtfCharProperty::uls_Dash_dotted)
+		COMMAND_RTF_INT( _T("uldashdd"), ChartProperty.m_eUnderStyle, sCommand, true, RtfCharProperty::uls_Dash_dot_dotted)
+		COMMAND_RTF_INT( _T("uldb"),	ChartProperty.m_eUnderStyle, sCommand, true, RtfCharProperty::uls_Double)
+		COMMAND_RTF_INT( _T("ulhwave"), ChartProperty.m_eUnderStyle, sCommand, true, RtfCharProperty::uls_Heavy_wave)
+		COMMAND_RTF_INT( _T("ulldash"), ChartProperty.m_eUnderStyle, sCommand, true, RtfCharProperty::uls_Long_dashe)
+		COMMAND_RTF_INT( _T("ulnone"), ChartProperty.m_eUnderStyle, sCommand, true, RtfCharProperty::uls_none)
+		COMMAND_RTF_INT( _T("ulth"),	ChartProperty.m_eUnderStyle, sCommand, true, RtfCharProperty::uls_Thick)
+		COMMAND_RTF_INT( _T("ulthd"),	ChartProperty.m_eUnderStyle, sCommand, true, RtfCharProperty::uls_Thick_dotted)
+		COMMAND_RTF_INT( _T("ulthdash"), ChartProperty.m_eUnderStyle, sCommand, true, RtfCharProperty::uls_Thick_dashed)
+		COMMAND_RTF_INT( _T("ulthdashd"), ChartProperty.m_eUnderStyle, sCommand, true, RtfCharProperty::uls_Thick_dash_dotted)
+		COMMAND_RTF_INT( _T("ulthdashdd"), ChartProperty.m_eUnderStyle, sCommand, true, RtfCharProperty::uls_Thick_dash_dot_dotted)
+		COMMAND_RTF_INT( _T("ulthldash"), ChartProperty.m_eUnderStyle, sCommand, true, RtfCharProperty::uls_Thick_long_dashed)
+		COMMAND_RTF_INT( _T("ululdbwave"), ChartProperty.m_eUnderStyle, sCommand, true, RtfCharProperty::uls_Double_wave)
+		COMMAND_RTF_INT( _T("ulw"), ChartProperty.m_eUnderStyle, sCommand, true, RtfCharProperty::uls_Word)
+		COMMAND_RTF_INT( _T("ulwave"), ChartProperty.m_eUnderStyle, sCommand, true, RtfCharProperty::uls_Wave)
+		COMMAND_RTF_INT( _T("up"), ChartProperty.m_nUp, sCommand, hasParameter, parameter)
 		else if( _T("nosupersub") == sCommand )
 		{
-			oReader.m_oState->m_oCharProp.m_bSub  = 0;
-			oReader.m_oState->m_oCharProp.m_bSuper  = 0;
+			ChartProperty.m_bSub  = 0;
+			ChartProperty.m_bSuper  = 0;
 		}
 		else if( _T("nosectexpand") == sCommand )
 		{
-			oReader.m_oState->m_oCharProp.m_nCharacterSpacing  = PROP_DEF;
+			ChartProperty.m_nCharacterSpacing  = PROP_DEF;
 		}
 		else
 		{
 			bool bResult ;
-			bResult = RtfShadingCharCommand::ExecuteCommand( oDocument, oReader,sCommand, hasParameter, parameter, oReader.m_oState->m_oCharProp.m_poShading);
+			bResult = RtfShadingCharCommand::ExecuteCommand( oDocument, oReader,sCommand, hasParameter, parameter, ChartProperty.m_poShading);
 			if( true == bResult )
 					return true;
 			if( true == bLookOnBorder )
 			{
-				bResult = RtfBorderCommand::ExecuteCommand( oDocument, oReader,sCommand, hasParameter, parameter, oReader.m_oState->m_oCharProp.m_poBorder);
+				bResult = RtfBorderCommand::ExecuteCommand( oDocument, oReader,sCommand, hasParameter, parameter, ChartProperty.m_poBorder);
 				if( true == bResult )
 						return true;
 			}
@@ -858,7 +858,7 @@ public: RtfCharProperty& m_oCharProp;
 			if( _T("defchp") == sCommand )
 				return true;
 			else 
-				return RtfCharPropCommand::ExecuteCommand( oDocument, oReader, sCommand, hasParameter, parameter );
+				return RtfCharPropCommand::ExecuteCommand( oDocument, oReader, sCommand, hasParameter, parameter, oReader.m_oState->m_oCharProp );
 		}
 		void ExitReader( RtfDocument& oDocument, RtfReader& oReader )
 		{
@@ -1726,36 +1726,31 @@ public:
 					oNewMath->m_bIsBool	= isBoolMath;
 
 					RtfMathReader oSubMathReader( *oNewMath );
-					StartSubReader( oSubMathReader, oDocument, oReader );
-					
-					if( RtfParagraphProperty::pa_none != oSubMathReader.m_eParAlign )
-						m_eParAlign = oSubMathReader.m_eParAlign;
+					bool resParseSub = StartSubReader( oSubMathReader, oDocument, oReader );
+
+					if (resParseSub && _T("mctrlPr") == sCommand)
+					{
+						RtfCharPropertyPtr oNewCharProp( new RtfCharProperty() );
+						oNewCharProp->Merge(oSubMathReader.m_oCharProp);
+						oNewMath->AddItem( oNewCharProp );
+					}
+
 					if( oNewMath->IsValid() == true )
 					{
-						if (m_oMath.m_bIsVal || m_oMath.m_bIsBool)
+						if ((oNewMath->m_bIsVal || oNewMath->m_bIsBool) && hasParameter)
 						{
-							IDocumentElementPtr item;
-							oNewMath->GetItem( item, 0);
-							if ((item) && (TYPE_RTF_PARAGRAPH == item->GetType()))
-							{
-								m_oMath.m_oVal = *((RtfParagraph*)(item.get()));
-							}
+							RtfCharPtr oChar = RtfCharPtr(new RtfChar);
+							CString s = ExecuteMathProp(oDocument, sCommand, parameter);
+							oChar->setText( s);
+							oNewMath->m_oVal.AddItem( oChar );
 						}
-						else
-						{
-							m_oMath.AddItem( oNewMath );
-						}
+
+						m_oMath.AddItem( oNewMath );
 					}
 				}
 			}
-			else if( RtfCharPropCommand::ExecuteCommand(oDocument, oReader, sCommand, hasParameter, parameter ) == true )
+			else if( RtfCharPropCommand::ExecuteCommand(oDocument, oReader, sCommand, hasParameter, parameter, m_oCharProp ) == true )
 			{
-				//MathItem * oNewItem = NULL;
-				//m_oTempInformation.GetItemPointer(&oNewItem);
-				//if( NULL != oNewItem )
-				//{
-				//	oNewItem->m_bCharChange = true;
-				//}
 			}
 			else
 				return false;
@@ -1768,8 +1763,67 @@ public:
 	void ExecuteText(RtfDocument& oDocument, RtfReader& oReader, CString sText)
 	{
 		RtfCharPtr oNewChar( new RtfChar() );
+		oNewChar->m_oProperty.Merge(m_oCharProp);
+
 		oNewChar->setText( sText ); 
 		m_oMath.AddItem( oNewChar );
+	}
+	CString ExecuteMathProp(RtfDocument& oDocument, CString sCommand, int parameter)
+	{//rtf math properties (int) to oox math properties (string)
+
+		CString strProp;
+
+		if( _T("mbrkBin") == sCommand )
+		{
+			switch( parameter )
+			{
+				case 0:	strProp = L"before";	break;
+				case 1:	strProp = L"after";		break;
+				case 2:	strProp = L"repeat";	break;
+			}
+		}
+		else if( _T("mbrkBinSub") == sCommand )
+		{
+			switch( parameter )
+			{
+				case 0:	strProp = L"--";	break;
+				case 1:	strProp = L"+-";	break;
+				case 2:	strProp = L"-+";	break;
+			}
+		}
+		else if( _T("mdefJc") == sCommand )
+		{
+			switch( parameter )
+			{
+				case 0:	strProp = L"centerGroup";	break;
+				case 1:	strProp = L"center";		break;
+				case 2:	strProp = L"left";			break;
+				case 3:	strProp = L"right";			break;
+			}
+		}
+		else if( _T("mnaryLim") == sCommand || _T("mintLim") == sCommand  || _T("mLim") == sCommand)
+		{
+			switch( parameter )
+			{
+				case 0:	strProp = L"subSup";	break;
+				case 1:	strProp = L"undOvr";	break;
+			}
+		}
+		else if ( _T("mmathFont") == sCommand )
+		{
+			if (oDocument.m_oProperty.m_nDeffMathFont == PROP_DEF)
+				oDocument.m_oProperty.m_nDeffMathFont = parameter;
+			
+			RtfFont oFont;
+			if( true == oDocument.m_oFontTable.GetFont(parameter, oFont) )
+				strProp = oFont.m_sName;
+		}
+		else
+		{
+			strProp.Format(L"%d", parameter);
+		}
+
+		return strProp;
 	}
 	void ExitReader2( RtfDocument& oDocument, RtfReader& oReader )
 	{
@@ -2406,7 +2460,7 @@ class StyleTableReader: public RtfAbstractReader
 					bResult = m_oParDest.ExecuteCommand( oDocument, oReader,(*this),sCommand, hasParameter, parameter );
 					if( true == bResult )
 						return true;
-					bResult = RtfCharPropCommand::ExecuteCommand( oDocument, oReader,sCommand, hasParameter, parameter/*, oReader.m_oState->m_oCharProp*/ );
+					bResult = RtfCharPropCommand::ExecuteCommand( oDocument, oReader,sCommand, hasParameter, parameter, oReader.m_oState->m_oCharProp );
 					if( true == bResult )
 						return true;
 
@@ -2555,7 +2609,7 @@ public:
 			}
 			else
 			{
-				return RtfCharPropCommand::ExecuteCommand( oDocument, oReader, sCommand, hasParameter, parameter );
+				return RtfCharPropCommand::ExecuteCommand( oDocument, oReader, sCommand, hasParameter, parameter, oReader.m_oState->m_oCharProp  );
 			}
 			return true;
 		}
@@ -3277,11 +3331,11 @@ public:
 			//	RtfDefParPropReader oDefParPropReader;
 			//	return StartSubReader( oDefParPropReader, oDocument, oReader );
 			//}
-			//else if( _T("mmathPr") == sCommand )
-			//{
-			//	RtfMathPropReader oMathPropReader;
-			//	return StartSubReader( oMathPropReader, oDocument, oReader );
-			//}
+			else if( _T("mmathPr") == sCommand )
+			{
+				RtfMathReader oMathPropReader(oDocument.m_oMathProp);
+				return StartSubReader( oMathPropReader, oDocument, oReader );
+			}
             else if( _T("ftnsep") == sCommand || _T("ftnsepc") == sCommand ||
                     _T("aftnsep")== sCommand || _T("aftnsepc") == sCommand )
 			{

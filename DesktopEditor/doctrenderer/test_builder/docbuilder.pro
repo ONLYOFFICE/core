@@ -72,11 +72,15 @@ mac {
     TARGET_PLATFORM = _mac64
 }
 
-#DESTDIR = $$DESTINATION_PATH
+DESTDIR = $$DESTINATION_PATH
 TARGET = docbuilder$$TARGET_PLATFORM
 
 ################################################
 
 LIBS += -L$$DESTINATION_SDK_PATH_DOCTRENDERER -ldoctrenderer
+
+linux-g++ {
+LIBS += -ldl
+}
 
 SOURCES += main.cpp

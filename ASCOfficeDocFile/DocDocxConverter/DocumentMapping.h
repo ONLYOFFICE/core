@@ -111,5 +111,6 @@ namespace DocFileFormat
 		bool							_writeInstrText;
 		unsigned int					_fldCharCounter;
 		IMapping*						_caller;
+		std::wstring					_writeAfterRun;
 	};
 }

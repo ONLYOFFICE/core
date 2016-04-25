@@ -7,19 +7,29 @@
 namespace CRYPT
 {
 
-RC4Crypt::RC4Crypt(const CRYPTO::RC4EncryptionHeader& header)
+	RC4Crypt::RC4Crypt(CRYPTO::RC4EncryptionHeaderPtr & header, std::wstring password)
 {
-	CopyDWORDs2Bytes(header.Salt.b1, header.Salt.b2, header.Salt.b3, header.Salt.b4, pnSalt);
-	CopyDWORDs2Bytes(header.EncryptedVerifier.b1, header.EncryptedVerifier.b2, header.EncryptedVerifier.b3, header.EncryptedVerifier.b4, pnVerifier);
-	CopyDWORDs2Bytes(header.EncryptedVerifierHash.b1, header.EncryptedVerifierHash.b2, header.EncryptedVerifierHash.b3, header.EncryptedVerifierHash.b4, pnVerifierHash);
+	m_VerifyPassword = false;
+	
+	if (!header) return;
+	
+	CopyDWORDs2Bytes(header->Salt.b1, header->Salt.b2, header->Salt.b3, header->Salt.b4, pnSalt);
+	CopyDWORDs2Bytes(header->EncryptedVerifier.b1	, header->EncryptedVerifier.b2, header->EncryptedVerifier.b3, header->EncryptedVerifier.b4, pnVerifier);
+	CopyDWORDs2Bytes(header->EncryptedVerifierHash.b1, header->EncryptedVerifierHash.b2, header->EncryptedVerifierHash.b3, header->EncryptedVerifierHash.b4, pnVerifierHash);
+	
 	mxDecoder.reset(new BiffDecoder_RCF(pnSalt, pnVerifier, pnVerifierHash));
 
-	mxDecoder->verifyPassword(L"VelvetSweatshop");
+	m_VerifyPassword = mxDecoder->verifyPassword(password);
 }
 
 void RC4Crypt::Encrypt(char* data, const size_t size)
 {
 	
+}
+
+bool RC4Crypt::IsVerify()
+{
+	return m_VerifyPassword;
 }
 
 void RC4Crypt::CopyDWORDs2Bytes(const unsigned int b1, const unsigned int b2, const unsigned int b3, const unsigned int b4, unsigned char* byte_array)

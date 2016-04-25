@@ -86,7 +86,7 @@ typedef struct tagBITMAPCOREHEADER {
 } BITMAPCOREHEADER;
 #endif
 
-XlsConverter::XlsConverter(const std::wstring & xls_file, const std::wstring & _xlsx_path, const std::wstring & fontsPath, const ProgressCallback* CallBack) 
+XlsConverter::XlsConverter(const std::wstring & xls_file, const std::wstring & _xlsx_path, const std::wstring & password, const std::wstring & fontsPath, const ProgressCallback* CallBack) 
 {
 	xlsx_path		= _xlsx_path;
 	output_document = NULL;
@@ -95,6 +95,7 @@ XlsConverter::XlsConverter(const std::wstring & xls_file, const std::wstring & _
 	pCallBack			= CallBack;
 	bUserStopConvert	= false;
 	is_older_version	= false;
+	is_encrypted		= false;
 
 	try{
 		XLS::CompoundFile cfile(xls_file, XLS::CompoundFile::cf_ReadMode);
@@ -138,15 +139,24 @@ XlsConverter::XlsConverter(const std::wstring & xls_file, const std::wstring & _
 		}
 
 		xls_global_info = boost::shared_ptr<XLS::GlobalWorkbookInfo>(new XLS::GlobalWorkbookInfo(workbook_code_page, this));
+		
 		xls_global_info->fontsDirectory = fontsPath;
+		xls_global_info->password		= password;
 
 		XLS::CFStreamCacheReader stream_reader(cfile.getWorkbookStream(), xls_global_info);
 
 		xls_document = boost::shared_ptr<XLS::WorkbookStreamObject>(new XLS::WorkbookStreamObject(workbook_code_page));
 
+		
 		XLS::BinReaderProcessor proc(stream_reader , xls_document.get() , true);
 		proc.mandatory(*xls_document.get());
 
+		if (xls_global_info->decryptor)
+		{
+			is_encrypted = true;
+			if (xls_global_info->decryptor->IsVerify() == false) return;
+
+		}	
 	}
 	catch(...)
 	{

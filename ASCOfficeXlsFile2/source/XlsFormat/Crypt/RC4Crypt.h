@@ -10,20 +10,23 @@ namespace CRYPT
 class RC4Crypt : public Crypt
 {
 public:
-	RC4Crypt(const CRYPTO::RC4EncryptionHeader& header);
+	RC4Crypt(CRYPTO::RC4EncryptionHeaderPtr & header, std::wstring password);
 
 	virtual void Encrypt(char* data, const size_t size);
 	virtual void Decrypt(char* data, const size_t size, const unsigned long stream_pos);
 
+	virtual bool IsVerify();
+
 private:
 	void CopyDWORDs2Bytes(const unsigned int b1, const unsigned int b2, const unsigned int b3, const unsigned int b4, unsigned char* byte_array);
 
-private:
 	unsigned char pnSalt[16];
 	unsigned char pnVerifier[16];
 	unsigned char pnVerifierHash[16];
 
 	BiffDecoderRef mxDecoder;
+	
+	bool m_VerifyPassword;
 };
 
 

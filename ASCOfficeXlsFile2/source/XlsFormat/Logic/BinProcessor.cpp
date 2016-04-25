@@ -106,6 +106,11 @@ const bool BinReaderProcessor::readChild(BaseObject& object, const bool is_manda
 		ret_val = object.read(reader_, parent_, is_mandatory /* log warning if mandatory tag absent*/);
 		if(!ret_val && is_mandatory)
 		{
+			if (global_info_->decryptor)
+			{
+				if (global_info_->decryptor->IsVerify() == false)
+					return false;
+			}
 			// We don't update ret_val here because we are reading to the copy of the object.
 			// And the real object will remain uninitialized
 			wanted_objects.push_back(object.clone()); // store the copy of the object that was not found (this line is here to take another chance to be read after some trash processed)			

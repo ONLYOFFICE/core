@@ -457,37 +457,37 @@ namespace DocFileFormat
 			unsigned char flag8 = 0;
 
 			//read the FIB base
-			this->m_FibBase.wIdent = reader.ReadUInt16(); //0
-			this->m_FibBase.nFib = (FibVersion)reader.ReadUInt16(); //2
+			this->m_FibBase.wIdent			= reader.ReadUInt16(); //0
+			this->m_FibBase.nFib			= (FibVersion)reader.ReadUInt16(); //2
 			reader.ReadBytes( 2, false ); //4
-			this->m_FibBase.lid = reader.ReadUInt16(); //6
-			this->m_FibBase.pnNext = reader.ReadInt16(); //8
+			this->m_FibBase.lid				= reader.ReadUInt16(); //6
+			this->m_FibBase.pnNext			= reader.ReadInt16(); //8
 			flag16 = reader.ReadUInt16(); //10
-			this->m_FibBase.fDot = FormatUtils::BitmaskToBool((int)flag16, 0x0001);
-			this->m_FibBase.fGlsy = FormatUtils::BitmaskToBool((int)flag16, 0x0002);
-			this->m_FibBase.fComplex = FormatUtils::BitmaskToBool((int)flag16, 0x0002);
-			this->m_FibBase.fHasPic = FormatUtils::BitmaskToBool((int)flag16, 0x0008);
-			this->m_FibBase.cQuickSaves = (WORD)(((int)flag16 & 0x00F0) >> 4);
-			this->m_FibBase.fEncrypted = FormatUtils::BitmaskToBool((int)flag16, 0x0100);
-			this->m_FibBase.fWhichTblStm = FormatUtils::BitmaskToBool((int)flag16, 0x0200);
+			this->m_FibBase.fDot			= FormatUtils::BitmaskToBool((int)flag16, 0x0001);
+			this->m_FibBase.fGlsy			= FormatUtils::BitmaskToBool((int)flag16, 0x0002);
+			this->m_FibBase.fComplex		= FormatUtils::BitmaskToBool((int)flag16, 0x0002);
+			this->m_FibBase.fHasPic			= FormatUtils::BitmaskToBool((int)flag16, 0x0008);
+			this->m_FibBase.cQuickSaves		= (WORD)(((int)flag16 & 0x00F0) >> 4);
+			this->m_FibBase.fEncrypted		= FormatUtils::BitmaskToBool((int)flag16, 0x0100);
+			this->m_FibBase.fWhichTblStm	= FormatUtils::BitmaskToBool((int)flag16, 0x0200);
 			this->m_FibBase.fReadOnlyRecommended = FormatUtils::BitmaskToBool((int)flag16, 0x0400);
 			this->m_FibBase.fWriteReservation = FormatUtils::BitmaskToBool((int)flag16, 0x0800);
-			this->m_FibBase.fExtChar = FormatUtils::BitmaskToBool((int)flag16, 0x1000);
-			this->m_FibBase.fLoadOverwrite = FormatUtils::BitmaskToBool((int)flag16, 0x2000);
-			this->m_FibBase.fFarEast = FormatUtils::BitmaskToBool((int)flag16, 0x4000);
-			this->m_FibBase.fCrypto = FormatUtils::BitmaskToBool((int)flag16, 0x8000);
-			this->m_FibBase.nFibBack = reader.ReadUInt16(); //12
-			this->m_FibBase.lKey = reader.ReadInt32(); //14
-			this->m_FibBase.envr = reader.ReadByte(); //18
+			this->m_FibBase.fExtChar		= FormatUtils::BitmaskToBool((int)flag16, 0x1000);
+			this->m_FibBase.fLoadOverwrite	= FormatUtils::BitmaskToBool((int)flag16, 0x2000);
+			this->m_FibBase.fFarEast		= FormatUtils::BitmaskToBool((int)flag16, 0x4000);
+			this->m_FibBase.fCrypto			= FormatUtils::BitmaskToBool((int)flag16, 0x8000);
+			this->m_FibBase.nFibBack		= reader.ReadUInt16(); //12
+			this->m_FibBase.lKey			= reader.ReadInt32(); //14
+			this->m_FibBase.envr			= reader.ReadByte(); //18
 			flag8 = reader.ReadByte(); //19
-			this->m_FibBase.fMac = FormatUtils::BitmaskToBool((int)flag8, 0x01);
-			this->m_FibBase.fEmptySpecial = FormatUtils::BitmaskToBool((int)flag8, 0x02);
+			this->m_FibBase.fMac			= FormatUtils::BitmaskToBool((int)flag8, 0x01);
+			this->m_FibBase.fEmptySpecial	= FormatUtils::BitmaskToBool((int)flag8, 0x02);
 			this->m_FibBase.fLoadOverridePage = FormatUtils::BitmaskToBool((int)flag8, 0x04);
 			this->m_FibBase.fFutureSavedUndo = FormatUtils::BitmaskToBool((int)flag8, 0x08);
-			this->m_FibBase.fWord97Saved = FormatUtils::BitmaskToBool((int)flag8, 0x10);
+			this->m_FibBase.fWord97Saved	= FormatUtils::BitmaskToBool((int)flag8, 0x10);
 			reader.ReadBytes( 4, false ); //20
-			this->m_FibBase.fcMin = reader.ReadInt32(); //24
-			this->m_FibBase.fcMac = reader.ReadInt32(); //28
+			this->m_FibBase.fcMin			= reader.ReadInt32(); //24
+			this->m_FibBase.fcMac			= reader.ReadInt32(); //28
 
 			this->csw = reader.ReadUInt16(); //32
 

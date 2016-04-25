@@ -15,7 +15,7 @@ namespace DocFileFormat
 	{
 		newXmlString.clear();
 		std::wstring sTempXmlFile = FileSystem::Directory::CreateTempFileWithUniqueName(
-													FileSystem::Directory::GetTempPathW(), L"emb");
+                                                    FileSystem::Directory::GetTempPath(), L"emb");
 
 		sTempXmlFile += L".xml";
 		

@@ -215,4 +215,5 @@ unix {
 }
 
 SOURCES += \
-    ../source/RtfMath.cpp
+    ../source/RtfMath.cpp \
+    ../source/Reader/OOXMathReader.cpp

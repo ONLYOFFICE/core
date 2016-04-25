@@ -72,10 +72,11 @@ int main(int argc, char *argv[])
 
         return getReturnErrorCode(AVS_FILEUTILS_ERROR_CONVERT_PARAMS);
     }
-	std::wstring sArg1, sExePath;
-	InputParams oInputParams;
-	TConversionDirection conversion = TCD_AUTO;
-    std::wstring sXmlOptions;
+    std::wstring            sArg1, sExePath;
+    InputParams             oInputParams;
+    TConversionDirection    conversion = TCD_AUTO;
+    std::wstring            sXmlOptions;
+    std::wstring            sPassword;
 
 #if !defined(_WIN32) && !defined (_WIN64)
     sExePath    = utf8_to_unicode(argv [0]);
@@ -89,8 +90,9 @@ int main(int argc, char *argv[])
     if(sXmlExt == sArg1.substr(sArg1.length() - sXmlExt.length(), sXmlExt.length()))
 	{
 		oInputParams.FromXmlFile(sArg1);
-        conversion = oInputParams.getConversionDirection();
+        conversion  = oInputParams.getConversionDirection();
         sXmlOptions = oInputParams.getXmlOptions();
+        sPassword   = oInputParams.getPassword();
 	}
 	else
 	{
@@ -339,15 +341,15 @@ int main(int argc, char *argv[])
     }
     else if (TCD_XLS2XLSX == conversion)
     {
-        result =  xls2xlsx (sFileFrom, sFileTo, sTempDir, sFontPath);
+        result =  xls2xlsx (sFileFrom, sFileTo, sPassword, sTempDir, sFontPath);
     }
     else if (TCD_XLS2XLST == conversion)
     {
-        result = xls2xlst (sFileFrom, sFileTo, sTempDir, sFontPath, sXmlOptions);
+        result = xls2xlst (sFileFrom, sFileTo, sPassword, sTempDir, sFontPath, sXmlOptions);
     }
     else if (TCD_XLS2XLST_BIN == conversion)
     {
-        result = xls2xlst_bin (sFileFrom, sFileTo, sTempDir, sFontPath, sXmlOptions);
+        result = xls2xlst_bin (sFileFrom, sFileTo, sPassword, sTempDir, sFontPath, sXmlOptions);
     }
     else if (TCD_ODF2OOX == conversion)
     {
@@ -379,7 +381,7 @@ int main(int argc, char *argv[])
     }
     else if (TCD_SPREADSHEET2 == conversion)
     {
-        result = fromSpreadsheet(sFileFrom, nFormatFrom, sFileTo, nFormatTo, sTempDir, sFontPath, sXmlOptions, sThemeDir, bFromChanges, bPaid, oInputParams);
+        result = fromSpreadsheet(sFileFrom, nFormatFrom, sFileTo, nFormatTo, sPassword, sTempDir, sFontPath, sXmlOptions, sThemeDir, bFromChanges, bPaid, oInputParams);
     }
     else if (TCD_PRESENTATION2 == conversion)
     {

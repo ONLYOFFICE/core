@@ -59,7 +59,7 @@ namespace ODRAW
 class XlsConverter
 {
 public:
-	XlsConverter(const std::wstring & xls_file, const std::wstring & xlsx_path, const std::wstring & fontsPath, const ProgressCallback* ffCallBack);
+	XlsConverter(const std::wstring & xls_file, const std::wstring & xlsx_path, const std::wstring & password, const std::wstring & fontsPath, const ProgressCallback* ffCallBack);
 	~XlsConverter() ;
 
     oox::xlsx_conversion_context	* xlsx_context;
@@ -95,6 +95,7 @@ public:
 	std::wstring GetTargetMoniker(XLS::BiffStructure *moniker);
 
 	bool isError();
+	bool is_encrypted;
 	bool is_older_version;
 
 	std::wstring WriteMediaFile	(char *data, int size, std::wstring type_ext, int id = -1);

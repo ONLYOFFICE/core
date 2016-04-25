@@ -28,10 +28,11 @@ public:
 
 //-----------------------------
 	Boolean<unsigned short> wEncryptionType;
-	XORObfuscation key;
-	_UINT16 majorVer;
-	CRYPTO::RC4EncryptionHeader rc4Header;
-	CRYPTO::RC4CryptoAPIEncryptionHeader rc4CryptoAPIHeader;
+	XORObfuscation			key;
+	_UINT16					majorVer;
+	
+	CRYPTO::RC4EncryptionHeaderPtr			rc4HeaderPtr;
+	CRYPTO::RC4CryptoAPIEncryptionHeader	rc4CryptoAPIHeader;
 
 };
 

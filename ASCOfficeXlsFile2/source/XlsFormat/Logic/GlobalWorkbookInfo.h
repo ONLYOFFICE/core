@@ -47,6 +47,7 @@ public:
 
 	unsigned short								CodePage;
 	CRYPT::DecryptorPtr							decryptor;
+	std::wstring								password;
 	
 	std::vector<std::wstring>					sheets_state;
 	std::vector<std::wstring>					sheets_names;

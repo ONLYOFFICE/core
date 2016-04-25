@@ -45,8 +45,13 @@ void FilePass::readFields(CFRecord& record)
 		majorVer = *record.getCurData<unsigned short>();
 		if(0x0001 == majorVer) // RC4 encryption header structure
 		{
-			record >> rc4Header;
-			record.getGlobalWorkbookInfo()->decryptor = CRYPT::DecryptorPtr(new CRYPT::Decryptor(rc4Header));
+			rc4HeaderPtr = CRYPTO::RC4EncryptionHeaderPtr(new CRYPTO::RC4EncryptionHeader());
+
+			rc4HeaderPtr->load (record);
+
+			record.getGlobalWorkbookInfo()->decryptor = 
+				CRYPT::DecryptorPtr(new CRYPT::Decryptor(rc4HeaderPtr, record.getGlobalWorkbookInfo()->password));
+			
 			Log::info("Encryption type: RC4 Standard");
 		}
 		else // RC4 CryptoAPI encryption header structuren

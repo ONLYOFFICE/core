@@ -144,7 +144,17 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 				}
 			}break;
 			case rt_WriteProtect:	proc.optional<WriteProtect>();	break;
-			case rt_FilePass:		proc.optional<FilePass>();		break;
+			case rt_FilePass:		
+			{
+				if (proc.optional<FilePass>())
+				{					
+					if (( proc.getGlobalWorkbookInfo()->decryptor)  &&
+						( proc.getGlobalWorkbookInfo()->decryptor->IsVerify() == false))
+					{
+						return false;
+					}
+				}
+			}break;
 			case rt_Template:
 			{
 				if (proc.optional<Template>())

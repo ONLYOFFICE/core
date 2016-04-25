@@ -8,16 +8,31 @@
 namespace CRYPT
 {
 
-Decryptor::Decryptor(const CRYPTO::RC4EncryptionHeader& header)
-:	crypt(new RC4Crypt(header)),
-	type(Crypt::RC4)
-{
-}
+	Decryptor::Decryptor(CRYPTO::RC4EncryptionHeaderPtr & header, std::wstring password) :
+							crypt	(new RC4Crypt(header, password)),
+							type	(Crypt::RC4)
+	{
+		crypt_header = header;
+	}
 
-void Decryptor::Decrypt(char* data, const size_t size, const unsigned long stream_pos)
-{
-	crypt->Decrypt(data, size, stream_pos);
-}
+	void Decryptor::Decrypt(char* data, const size_t size, const unsigned long stream_pos)
+	{
+		crypt->Decrypt(data, size, stream_pos);
+	}
+
+	bool Decryptor::IsVerify()
+	{
+		return crypt->IsVerify();
+	}
+
+	bool Decryptor::SetPassword(std::wstring password)
+	{
+		crypt.reset();
+		crypt = CryptPtr(new RC4Crypt(crypt_header, password));
+		
+		if (crypt)	return crypt->IsVerify();
+		else		return false;
+	}
 
 };
 

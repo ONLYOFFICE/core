@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string>
 #include <boost/shared_ptr.hpp>
 
 namespace CRYPT
@@ -18,6 +19,8 @@ public:
 		RC4CryptoAPI,
 		XOR
 	} crypt_type;
+
+	virtual bool IsVerify() = 0;
 
 };
 

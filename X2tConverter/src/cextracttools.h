@@ -337,6 +337,11 @@ namespace NExtractTools
 			}
 			return true;
 		}
+        std::wstring getPassword()
+        {
+            return L"";
+        }
+
         std::wstring getXmlOptions()
 		{
 			CString sRes;

@@ -382,6 +382,12 @@ namespace DocFileFormat
 			{
 				m_pXmlWriter->WriteNodeEnd(_T("w:ins"));
 			}
+
+			if (!_writeAfterRun.empty())
+			{
+				m_pXmlWriter->WriteString(_writeAfterRun.c_str());
+				_writeAfterRun.clear();
+			}
 		}
 		else
 		{
@@ -571,6 +577,12 @@ namespace DocFileFormat
 
 							RevisionData oData = RevisionData(chpxPic);
 
+							CharacterPropertiesMapping* rPr = new CharacterPropertiesMapping(m_pXmlWriter, m_document, &oData, _lastValidPapx, false);
+							if(rPr)
+							{
+								chpxPic->Convert(rPr);
+								RELEASEOBJECT(rPr);
+							}
 							XmlUtils::CXmlWriter OleWriter;
 							OleWriter.WriteNodeBegin (_T( "w:object" ), TRUE);
 
@@ -607,16 +619,12 @@ namespace DocFileFormat
 
 							if (!oVmlMapper.m_isEmbedded && oVmlMapper.m_isEquation)
 							{
-								m_pXmlWriter->WriteString(oVmlMapper.m_equationXml.c_str());
+								//нельзя в Run писать oMath
+								//m_pXmlWriter->WriteString(oVmlMapper.m_equationXml.c_str());
+								_writeAfterRun = oVmlMapper.m_equationXml;
 							}
 							else
 							{
-								CharacterPropertiesMapping* rPr = new CharacterPropertiesMapping(m_pXmlWriter, m_document, &oData, _lastValidPapx, false);
-								if(rPr)
-								{
-									chpxPic->Convert(rPr);
-									RELEASEOBJECT(rPr);
-								}
 								m_pXmlWriter->WriteString(OleWriter.GetXmlString());
 							}
 						}

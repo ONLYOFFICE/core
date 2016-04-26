@@ -9,6 +9,8 @@
 #include "Document.h"
 #include "../../DesktopEditor/fontengine/FontConverter.h"
 
+#include "../../DesktopEditor/ChromiumBasedEditors2/lib/src/Logger.h"
+
 namespace NSHtmlRenderer
 {
     static double	__g_matrix_eps	= 0.0001;
@@ -1239,6 +1241,8 @@ namespace NSHtmlRenderer
         bool					m_bIsClipping;
         bool					m_bIsSimpleGraphics;
 
+        bool                    m_bIsOnlyTextMode;
+
     public:
         CWriter()
         {
@@ -1272,6 +1276,8 @@ namespace NSHtmlRenderer
             m_bIsClipping = false;
             m_bIsSimpleGraphics = false;
             m_lTilingCounter = 0;
+
+            m_bIsOnlyTextMode = false;
         }
 
         void SetApplicationFonts(CApplicationFonts* pFonts)
@@ -1514,8 +1520,35 @@ namespace NSHtmlRenderer
             m_arrPages[m_arrPages.size() - 1].m_lEnd = m_lCurrentDumpSize + m_oPage.GetPosition();
             m_lCurrentDumpSize += m_oPage.GetPosition();
 
-            m_oFileWriter.WriteFile(m_oPage.GetData(), m_oPage.GetPosition());
+            if (!m_bIsOnlyTextMode)
+                m_oFileWriter.WriteFile(m_oPage.GetData(), m_oPage.GetPosition());
+
             m_oPage.Clear();
+        }
+
+        void GetLastPageInfo(int& paragraphs, int& words, int& symbols, int& spaces, std::string& sBase64Data)
+        {
+            m_oSmartText.ClosePage();
+
+            paragraphs = (int)m_oSmartText.m_lCountParagraphs;
+            words = (int)m_oSmartText.m_lCountWords;
+            spaces = (int)m_oSmartText.m_lCountSpaces;
+            symbols = (int)m_oSmartText.m_lCountSymbols;
+            sBase64Data = "";
+
+            if (m_lPagesCount > 0)
+            {
+                char* pDst = NULL;
+                int nDst = 0;
+                NSFile::CBase64Converter::Encode(m_oPage.GetData(), (int)m_oPage.GetPosition(), pDst, nDst, NSBase64::B64_BASE64_FLAG_NOCRLF);
+
+                if (0 < nDst)
+                    sBase64Data = std::string(pDst);
+
+                sBase64Data = std::to_string((int)m_oPage.GetPosition()) + ";" + sBase64Data;
+
+                RELEASEARRAYOBJECTS(pDst);
+            }
         }
 
         inline void CheckVectorGraphics()
@@ -2070,15 +2103,19 @@ namespace NSHtmlRenderer
             m_strDstDirectoryFiles	= m_strDstDirectory + L"/" + strFileName;// + _T("_files");
             m_strFileName			= strFileName;
 
-            NSDirectory::CreateDirectory(m_strDstDirectoryFiles);
+            if (!m_bIsOnlyTextMode)
+                NSDirectory::CreateDirectory(m_strDstDirectoryFiles);
             m_strDstMedia = m_strDstDirectoryFiles + L"/media";
-            NSDirectory::CreateDirectory(m_strDstMedia);
+            if (!m_bIsOnlyTextMode)
+                NSDirectory::CreateDirectory(m_strDstMedia);
 
             std::wstring strFileFonts = m_strDstDirectoryFiles + L"/fonts";
-            NSDirectory::CreateDirectory(strFileFonts);
+            if (!m_bIsOnlyTextMode)
+                NSDirectory::CreateDirectory(strFileFonts);
 
             std::wstring strDocRendererS = m_strDstDirectoryFiles + L"/document_temp.bin";
-            m_oFileWriter.CreateFileW(strDocRendererS);
+            if (!m_bIsOnlyTextMode)
+                m_oFileWriter.CreateFileW(strDocRendererS);
 
             m_oPage.Clear();
             m_arrPages.clear();

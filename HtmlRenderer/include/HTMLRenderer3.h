@@ -2,6 +2,7 @@
 #define _ASC_HTMLRENDERER3_H_
 
 #include "../../DesktopEditor/graphics/IRenderer.h"
+#include "../../DesktopEditor/common/officedrawingfile.h"
 
 #ifndef HTMLRENDERER_USE_DYNAMIC_LIBRARY
 #define HTMLRENDERER_DECL_EXPORT
@@ -145,11 +146,16 @@ namespace NSHtmlRenderer
         virtual HRESULT get_Mode(LONG *plMode);
         virtual HRESULT put_Mode(LONG lMode);
 
-        virtual HRESULT CreateOfficeFile(std::wstring bsFileName);
+        virtual HRESULT CreateOfficeFile(std::wstring bsFileName, const std::wstring& fontsDir = L"");
         virtual HRESULT CloseFile();
 
         virtual HRESULT SetAdditionalParam(std::string sParamName, int nValue);
         virtual HRESULT SetAdditionalParam(std::string sParamName, const std::wstring& sParam);
+
+        bool GetOnlyTextMode();
+        void SetOnlyTextMode(const bool& enabled);
+
+        void GetLastPageInfo(int& paragraphs, int& words, int& symbols, int& spaces, std::string& sBase64Data);
 
     protected:
         CASCHTMLRenderer3_Private* m_pInternal;

@@ -48,10 +48,14 @@ namespace NSHtmlRenderer
         int                         m_nTempUnicodesAlloc;
         int                         m_nTempUnicodesLen;
 
+        bool                        m_bIsOnlyTextMode;
+        bool                        m_bDisablePageEnd;
+
     public:
         CASCHTMLRenderer3_Private()
         {
-            m_oApplicationFonts.Initialize();
+            // initialize move to CreateOfficeFile (custom directory support)
+            //m_oApplicationFonts.Initialize();
             m_oApplicationFonts.GetCache()->SetCacheSize(16);
 
             m_lLastSavedPage = 0;
@@ -79,6 +83,11 @@ namespace NSHtmlRenderer
             m_nTempUnicodesAlloc = 100;
             m_pTempUnicodes = new int[m_nTempUnicodesAlloc];
             m_nTempUnicodesLen = 0;
+
+            m_bIsOnlyTextMode = false;
+            m_bPageOpened = false;
+
+            m_bDisablePageEnd = false;
         }
         ~CASCHTMLRenderer3_Private()
         {
@@ -172,7 +181,7 @@ namespace NSHtmlRenderer
         void EndPage()
         {
             m_oWriter.EndPage();
-            m_bPageOpened = FALSE;
+            m_bPageOpened = false;
         }
 
         void _SetFont()
@@ -750,6 +759,12 @@ namespace NSHtmlRenderer
     //-------- Маркеры для команд ---------------------------------------------------------------
     HRESULT CASCHTMLRenderer3::BeginCommand(const DWORD& lType)
     {
+        if (m_pInternal->m_bIsOnlyTextMode)
+        {
+            m_pInternal->m_lCurrentCommandType = lType;
+            return S_OK;
+        }
+
         if (m_pInternal->m_bIsGraphicsDumperMode && lType != c_nPDFTilingFill)
             return m_pInternal->m_oDumper.BeginCommand(lType);
 
@@ -780,10 +795,20 @@ namespace NSHtmlRenderer
     }
     HRESULT CASCHTMLRenderer3::EndCommand(const DWORD& lType)
     {
+        if (m_pInternal->m_bIsOnlyTextMode)
+        {
+            if (c_nPageType == lType && !m_pInternal->m_bDisablePageEnd)
+            {
+                m_pInternal->EndPage();
+            }
+            m_pInternal->m_lCurrentCommandType = -1;
+            return S_OK;
+        }
+
         if (m_pInternal->m_bIsGraphicsDumperMode && lType != c_nPDFTilingFill)
             return m_pInternal->m_oDumper.EndCommand(lType);
 
-        if (c_nPageType == lType)
+        if (c_nPageType == lType && !m_pInternal->m_bDisablePageEnd)
         {
             m_pInternal->EndPage();
         }
@@ -833,6 +858,9 @@ namespace NSHtmlRenderer
     //-------- Функции для работы с Graphics Path -----------------------------------------------
     HRESULT CASCHTMLRenderer3::PathCommandMoveTo(const double& x, const double& y)
     {
+        if (m_pInternal->m_bIsOnlyTextMode)
+            return S_OK;
+
         if (m_pInternal->m_bIsGraphicsDumperMode)
             return m_pInternal->m_oDumper.PathCommandMoveTo(x, y);
 
@@ -849,6 +877,9 @@ namespace NSHtmlRenderer
     }
     HRESULT CASCHTMLRenderer3::PathCommandLineTo(const double& x, const double& y)
     {
+        if (m_pInternal->m_bIsOnlyTextMode)
+            return S_OK;
+
         if (m_pInternal->m_bIsGraphicsDumperMode)
             return m_pInternal->m_oDumper.PathCommandLineTo(x, y);
 
@@ -865,6 +896,9 @@ namespace NSHtmlRenderer
     }
     HRESULT CASCHTMLRenderer3::PathCommandLinesTo(double* points, const int& count)
     {
+        if (m_pInternal->m_bIsOnlyTextMode)
+            return S_OK;
+
         if (m_pInternal->m_bIsGraphicsDumperMode)
             return m_pInternal->m_oDumper.PathCommandLinesTo(points, count);
 
@@ -873,6 +907,9 @@ namespace NSHtmlRenderer
     }
     HRESULT CASCHTMLRenderer3::PathCommandCurveTo(const double& x1, const double& y1, const double& x2, const double& y2, const double& x3, const double& y3)
     {
+        if (m_pInternal->m_bIsOnlyTextMode)
+            return S_OK;
+
         if (m_pInternal->m_bIsGraphicsDumperMode)
             return m_pInternal->m_oDumper.PathCommandCurveTo(x1, y1, x2, y2, x3, y3);
 
@@ -889,6 +926,9 @@ namespace NSHtmlRenderer
     }
     HRESULT CASCHTMLRenderer3::PathCommandCurvesTo(double* points, const int& count)
     {
+        if (m_pInternal->m_bIsOnlyTextMode)
+            return S_OK;
+
         if (m_pInternal->m_bIsGraphicsDumperMode)
             return m_pInternal->m_oDumper.PathCommandCurvesTo(points, count);
 
@@ -897,6 +937,9 @@ namespace NSHtmlRenderer
     }
     HRESULT CASCHTMLRenderer3::PathCommandArcTo(const double& x, const double& y, const double& w, const double& h, const double& startAngle, const double& sweepAngle)
     {
+        if (m_pInternal->m_bIsOnlyTextMode)
+            return S_OK;
+
         if (m_pInternal->m_bIsGraphicsDumperMode)
             return m_pInternal->m_oDumper.PathCommandArcTo(x, y, w, h, startAngle, sweepAngle);
 
@@ -905,6 +948,9 @@ namespace NSHtmlRenderer
     }
     HRESULT CASCHTMLRenderer3::PathCommandClose()
     {
+        if (m_pInternal->m_bIsOnlyTextMode)
+            return S_OK;
+
         if (m_pInternal->m_bIsGraphicsDumperMode)
             return m_pInternal->m_oDumper.PathCommandClose();
 
@@ -921,6 +967,9 @@ namespace NSHtmlRenderer
     }
     HRESULT CASCHTMLRenderer3::PathCommandEnd()
     {
+        if (m_pInternal->m_bIsOnlyTextMode)
+            return S_OK;
+
         if (m_pInternal->m_bIsGraphicsDumperMode)
             return m_pInternal->m_oDumper.PathCommandEnd();
 
@@ -937,6 +986,9 @@ namespace NSHtmlRenderer
     }
     HRESULT CASCHTMLRenderer3::DrawPath(const LONG& nType)
     {
+        if (m_pInternal->m_bIsOnlyTextMode)
+            return S_OK;
+
         if (m_pInternal->m_bIsGraphicsDumperMode)
             return m_pInternal->m_oDumper.DrawPath(nType);
 
@@ -945,6 +997,9 @@ namespace NSHtmlRenderer
     }
     HRESULT CASCHTMLRenderer3::PathCommandStart()
     {
+        if (m_pInternal->m_bIsOnlyTextMode)
+            return S_OK;
+
         if (m_pInternal->m_bIsGraphicsDumperMode)
             return m_pInternal->m_oDumper.PathCommandStart();
 
@@ -962,11 +1017,17 @@ namespace NSHtmlRenderer
     }
     HRESULT CASCHTMLRenderer3::PathCommandGetCurrentPoint(double* x, double* y)
     {
+        if (m_pInternal->m_bIsOnlyTextMode)
+            return S_OK;
+
         m_pInternal->m_oSimpleGraphicsConverter.PathCommandGetCurrentPoint(x, y);
         return S_OK;
     }
     HRESULT CASCHTMLRenderer3::PathCommandTextCHAR(const LONG& c, const double& x, const double& y, const double& w, const double& h)
     {
+        if (m_pInternal->m_bIsOnlyTextMode)
+            return S_OK;
+
         if (m_pInternal->m_bIsGraphicsDumperMode)
             return m_pInternal->m_oDumper.PathCommandTextCHAR(c, x, y, w, h);
 
@@ -978,6 +1039,9 @@ namespace NSHtmlRenderer
     }
     HRESULT CASCHTMLRenderer3::PathCommandText(const std::wstring& bsText, const double& x, const double& y, const double& w, const double& h)
     {
+        if (m_pInternal->m_bIsOnlyTextMode)
+            return S_OK;
+
         if (m_pInternal->m_bIsGraphicsDumperMode)
             return m_pInternal->m_oDumper.PathCommandText(bsText, x, y, w, h);
 
@@ -990,6 +1054,9 @@ namespace NSHtmlRenderer
     }
     HRESULT CASCHTMLRenderer3::PathCommandTextExCHAR(const LONG& c, const LONG& gid, const double& x, const double& y, const double& w, const double& h)
     {
+        if (m_pInternal->m_bIsOnlyTextMode)
+            return S_OK;
+
         if (m_pInternal->m_bIsGraphicsDumperMode)
             return m_pInternal->m_oDumper.PathCommandTextExCHAR(c, gid, x, y, w, h);
 
@@ -1003,6 +1070,9 @@ namespace NSHtmlRenderer
     }
     HRESULT CASCHTMLRenderer3::PathCommandTextEx(const std::wstring& bsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& x, const double& y, const double& w, const double& h)
     {
+        if (m_pInternal->m_bIsOnlyTextMode)
+            return S_OK;
+
         if (m_pInternal->m_bIsGraphicsDumperMode)
             return m_pInternal->m_oDumper.PathCommandTextEx(bsUnicodeText, pGids, nGidsCount, x, y, w, h);
 
@@ -1015,6 +1085,9 @@ namespace NSHtmlRenderer
     //-------- Функции для вывода изображений ---------------------------------------------------
     HRESULT CASCHTMLRenderer3::DrawImage(IGrObject* pImage, const double& x, const double& y, const double& w, const double& h)
     {
+        if (m_pInternal->m_bIsOnlyTextMode)
+            return S_OK;
+
         if (m_pInternal->m_bIsGraphicsDumperMode)
             return m_pInternal->m_oDumper.DrawImage(pImage, x, y, w, h);
 
@@ -1027,6 +1100,9 @@ namespace NSHtmlRenderer
 
     HRESULT CASCHTMLRenderer3::DrawImageFromFile(const std::wstring& sPath, const double& x, const double& y, const double& w, const double& h, const BYTE& lAlpha)
     {
+        if (m_pInternal->m_bIsOnlyTextMode)
+            return S_OK;
+
         if (m_pInternal->m_bIsGraphicsDumperMode)
             return m_pInternal->m_oDumper.DrawImageFromFile(sPath, x, y, w, h, lAlpha);
 
@@ -1109,8 +1185,13 @@ namespace NSHtmlRenderer
         return S_OK;
     }
 
-    HRESULT CASCHTMLRenderer3::CreateOfficeFile(std::wstring bsFileName)
+    HRESULT CASCHTMLRenderer3::CreateOfficeFile(std::wstring bsFileName, const std::wstring& fontsDir)
     {
+        if (fontsDir.empty())
+            m_pInternal->m_oApplicationFonts.Initialize();
+        else
+            m_pInternal->m_oApplicationFonts.InitializeFromFolder(fontsDir);
+
         m_pInternal->m_strDstFile = bsFileName;
 
         size_t pos1 = m_pInternal->m_strDstFile.find_last_of(wchar_t('/'));
@@ -1178,6 +1259,14 @@ namespace NSHtmlRenderer
     }
     HRESULT CASCHTMLRenderer3::SetAdditionalParam(std::string sParamName, const std::wstring& sParam)
     {
+        if ("DisablePageEnd" == sParamName)
+        {
+            m_pInternal->m_bDisablePageEnd = L"yes" == sParam;
+        }
+
+        if (m_pInternal->m_bIsOnlyTextMode)
+            return S_OK;
+
         if ("TilingHtmlPattern" == sParamName)
         {
             if (1 == m_pInternal->m_oWriter.m_lTilingCounter)
@@ -1199,5 +1288,21 @@ namespace NSHtmlRenderer
             }
         }
         return S_OK;
+    }
+
+    bool CASCHTMLRenderer3::GetOnlyTextMode()
+    {
+        return m_pInternal->m_bIsOnlyTextMode;
+    }
+
+    void CASCHTMLRenderer3::SetOnlyTextMode(const bool& enabled)
+    {
+        m_pInternal->m_oWriter.m_bIsOnlyTextMode = enabled;
+        m_pInternal->m_bIsOnlyTextMode = enabled;
+    }
+
+    void CASCHTMLRenderer3::GetLastPageInfo(int& paragraphs, int& words, int& symbols, int& spaces, std::string& sBase64Data)
+    {
+        m_pInternal->m_oWriter.GetLastPageInfo(paragraphs, words, symbols, spaces, sBase64Data);
     }
 }

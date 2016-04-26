@@ -381,7 +381,8 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
     {
 		if (Context.get_page_break())
 		{
-			_Wostream << L"<w:lastRenderedPageBreak/>";
+			if (Context.process_headers_footers_ == false) 
+				_Wostream << L"<w:lastRenderedPageBreak/>";
 			Context.set_page_break(false);
 		}
         elm->docx_convert(Context); 
@@ -448,6 +449,9 @@ void paragraph::pptx_convert(oox::pptx_conversion_context & Context)
 ///////////////////////////////////////////
 void soft_page_break::docx_convert(oox::docx_conversion_context & Context)
 {
+	if (Context.process_headers_footers_) 
+		return;
+	
 	if (!Context.get_page_break_after() && !Context.get_page_break_before())
 	{
 		Context.output_stream() << L"<w:lastRenderedPageBreak/>";

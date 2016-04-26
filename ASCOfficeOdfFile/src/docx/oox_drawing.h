@@ -9,6 +9,8 @@
 #include "mediaitems.h"
 #include "oox_drawing_fills.h"
 
+#include "../../../common/docxformat/source/base/types_32.h"
+
 static const int _odf_to_oox_ShapeType[]=
 { 4,4,4,34,};
 
@@ -45,8 +47,8 @@ namespace oox {
 
         std::wstring name;
 
-        size_t x, y;
-        size_t cx, cy;
+        _INT32 x, y;
+        _INT32 cx, cy;
 
         _oox_fill fill;
 

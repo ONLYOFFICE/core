@@ -857,6 +857,15 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, const unio
 
 	drawing.cx = get_value_emu(attlists_.rel_size_.common_draw_size_attlist_.svg_width_);
     drawing.cy = get_value_emu(attlists_.rel_size_.common_draw_size_attlist_.svg_height_);
+
+	if (drawing.cx < 0)	//frame textbox int WORD_EXAMPLE.odt = 45 inch !!!!
+	{
+		drawing.cx = -drawing.cx;
+		drawing.additional.push_back(_property(L"fit-to-size",	true));
+	}
+ 
+	if (drawing.cy < 0)
+		drawing.cy = 0;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 	if ((drawing.styleWrap) && (drawing.styleWrap->get_type() == style_wrap::Dynamic))	//автоподбор
 	{
@@ -1231,25 +1240,27 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
         std::wstring objectPath = folderPath +FILE_SEPARATOR_STR + href;
 
 		//normalize path ??? todooo
+		boost::algorithm::replace_all(objectPath, FILE_SEPARATOR_STR + std::wstring(L"./"), FILE_SEPARATOR_STR);
 
-        cpdoccore::odf_reader::odf_document objectSubDoc(objectPath,NULL);    
+        cpdoccore::odf_reader::odf_document objectSubDoc(objectPath ,NULL);    
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //функциональная часть
-		office_element *contentSubDoc = objectSubDoc.get_impl()->get_content();
-		if (!contentSubDoc)
-			return;
-
-		chart_build objectBuild;
-		process_build_chart process_build_object_(objectBuild, objectSubDoc.odf_context().styleContainer(), objectSubDoc.odf_context().drawStyles());
-        contentSubDoc->accept(process_build_object_); 
-
-		objectBuild.docx_convert(Context);		
+		office_element	*contentSubDoc	= objectSubDoc.get_impl()->get_content();
+		draw_frame		*frame			= NULL;
+		chart_build		objectBuild;
 		
-		draw_frame * frame = Context.get_drawing_context().get_current_frame();//owner
-		if (!frame)
-			return;
+		if (contentSubDoc)//Diagramma.odt - кривые ссылки на объекты
+		{
+			process_build_chart process_build_object_(objectBuild, objectSubDoc.odf_context().styleContainer(), objectSubDoc.odf_context().drawStyles());
+			contentSubDoc->accept(process_build_object_); 
+
+			objectBuild.docx_convert(Context);		
+			
+			frame = Context.get_drawing_context().get_current_frame();//owner
+		}		
+
 //------------------------------------------------------------------------------------------------------------
-		if (objectBuild.object_type_ == 1 ) //диаграмма
+		if (objectBuild.object_type_ == 1  && frame) //диаграмма
 		{	
 			oox::_docx_drawing drawing = oox::_docx_drawing();
 
@@ -1278,7 +1289,7 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 			Context.set_run_state(runState);
 			Context.set_paragraph_state(pState);	
 		}
-		else if (objectBuild.object_type_ == 3) //мат формулы
+		else if (objectBuild.object_type_ == 3  && frame) //мат формулы
 		{	
 			oox::_docx_drawing drawing = oox::_docx_drawing();
 
@@ -1328,7 +1339,7 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 		}
 		else if (objectBuild.object_type_ == 0) 
 		{
-			//временно - замещающая картинка(если она конечно присутствует)
+			//замещающая картинка(если она конечно присутствует)
 
 			bool & use_image_replace = Context.get_drawing_context().get_use_image_replace();
 			use_image_replace = true;

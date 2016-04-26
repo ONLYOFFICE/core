@@ -100,6 +100,13 @@ std::wstring process_margin(const _CP_OPT(length_or_percent) & margin, double Mu
 
 void paragraph_format_properties::docx_convert(oox::docx_conversion_context & Context)
 {
+	bool drawing	= false;
+
+ 	if (Context.get_drawing_context().get_current_shape() || Context.get_drawing_context().get_current_frame())
+	{
+		drawing = true;
+	}
+
 	std::wstringstream & _pPr = Context.get_styles_context().paragraph_nodes();
  
 	CP_XML_WRITER(_pPr)
@@ -203,7 +210,8 @@ void paragraph_format_properties::docx_convert(oox::docx_conversion_context & Co
 		{
  			CP_XML_NODE(L"w:widowControl"){CP_XML_ATTR(L"w:val", bool (*fo_widows_ > 0));}
 		}
-		if (fo_border_ || fo_border_top_ || fo_border_bottom_ || fo_border_left_ || fo_border_right_)
+
+		if ((fo_border_ || fo_border_top_ || fo_border_bottom_ || fo_border_left_ || fo_border_right_) && drawing == false)
 		{
 			std::wstring w_shadow;
 	        

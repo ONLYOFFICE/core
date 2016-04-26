@@ -69,7 +69,7 @@ namespace DocFileFormat
 
 				// <w:name val="" />
 				m_pXmlWriter->WriteNodeBegin( _T( "w:name" ), TRUE );  
-				m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::XmlEncode(getStyleName( *iter )).c_str() );
+				m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::XmlEncode(getStyleName( *iter ), true ).c_str());
 				m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
 
 				// <w:basedOn val="" />

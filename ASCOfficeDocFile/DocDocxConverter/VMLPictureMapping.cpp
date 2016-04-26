@@ -140,6 +140,10 @@ namespace DocFileFormat
 			{
 				m_pXmlWriter->WriteAttribute( _T( "o:ole" ), _T( "" ) );
 			}
+			else if (m_isBulletPicture)
+			{
+				m_pXmlWriter->WriteAttribute( _T( "o:bullet" ), true );
+			}
 			
 			std::list<OptionEntry>::iterator end = options.end();
 			for (std::list<OptionEntry>::iterator iter = options.begin(); iter != end; ++iter)

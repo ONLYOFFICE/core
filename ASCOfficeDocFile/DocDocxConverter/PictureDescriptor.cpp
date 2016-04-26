@@ -46,7 +46,7 @@ namespace DocFileFormat
 		if (lcb > 10000000) 
 			return;
 
-		if (lcb > sz) 
+		if (lcb > sz && sz != 2) //bullet picture с неверным размером
 		{
 			unsigned char* bytes = reader.ReadBytes(sz - fc - 4, false);
 			if ( bytes )
@@ -56,7 +56,7 @@ namespace DocFileFormat
 			return;
 		}
 
-		if (lcb > 0)
+		if (lcb >= 10)
 		{
 			unsigned short cbHeader	=	reader.ReadUInt16();
 

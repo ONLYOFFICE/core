@@ -187,9 +187,16 @@ namespace DocFileFormat
 
 			if (sz_obj > 4)
 			{
-				UserType		= reader.ReadLengthPrefixedAnsiString();
-				ClipboardFormat	= reader.ReadLengthPrefixedAnsiString();
-				Program			= reader.ReadLengthPrefixedAnsiString();
+				//todooo сделать по нормальному CompObjHeader - psc3a.doc
+				//UserType		= reader.ReadLengthPrefixedAnsiString();
+
+				//sz_obj = reader.GetSize() - reader.GetPosition();
+				//if (sz_obj > 4)
+				//	ClipboardFormat	= reader.ReadLengthPrefixedAnsiString();
+
+				//sz_obj = reader.GetSize() - reader.GetPosition();
+				//if (sz_obj > 4)
+				//	Program			= reader.ReadLengthPrefixedAnsiString();
 			}
 			delete pCompStream;
 		  }

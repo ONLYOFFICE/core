@@ -77,22 +77,73 @@ namespace ASCDocFormatUtils
 	class FormatUtils
 	{
 	public:
-		static inline std::wstring XmlEncode(std::wstring data)
+		static inline bool IsUnicodeSymbol( wchar_t symbol )
+		{
+			bool result = false;
+
+			if ( ( 0x0009 == symbol ) || ( 0x000A == symbol ) || ( 0x000D == symbol ) ||
+				( ( 0x0020 <= symbol ) && ( 0xD7FF >= symbol ) ) || ( ( 0xE000 <= symbol ) && ( symbol <= 0xFFFD ) ) ||
+				( ( 0x10000 <= symbol ) && symbol ) )
+			{
+				result = true;
+			}
+
+			return result;		  
+		}
+		static inline std::wstring XmlEncode(std::wstring data, bool bDeleteNoUnicode = false)
 		{
 			std::wstring buffer;
 			buffer.reserve(data.size());
-			for(size_t pos = 0; pos != data.size(); ++pos)
+			
+			if(bDeleteNoUnicode)
 			{
-				switch(data[pos])
+				for(size_t pos = 0; pos != data.size(); ++pos)
 				{
-				case '&':  buffer.append(_T("&amp;"));      break;
-				case '\"': buffer.append(_T("&quot;"));     break;
-				case '\'': buffer.append(_T("&apos;"));     break;
-				case '<':  buffer.append(_T("&lt;"));       break;
-				case '>':  buffer.append(_T("&gt;"));       break;
-				default:   buffer.append(&data[pos], 1);	break;
+					switch(data[pos])
+					{
+						case '&':  buffer.append(_T("&amp;"));      break;
+						case '\"': buffer.append(_T("&quot;"));     break;
+						case '\'': buffer.append(_T("&apos;"));     break;
+						case '<':  buffer.append(_T("&lt;"));       break;
+						case '>':  buffer.append(_T("&gt;"));       break;
+						default:   
+						{
+							if ( false == IsUnicodeSymbol( data[pos] ) )
+							{
+								wchar_t symbol1 = data[pos];
+								if(0xD800 <= symbol1 && symbol1 <= 0xDFFF && pos + 1 < data.size())
+								{
+									pos++;
+									wchar_t symbol2 = data[pos];
+									if (symbol1 < 0xDC00 && symbol2 >= 0xDC00 && symbol2 <= 0xDFFF)
+									{
+										buffer.append(&data[pos-1], 2);
+									}
+								}
+							}
+							else
+								buffer.append(&data[pos], 1);	
+						}break;
+					}
 				}
 			}
+			else
+			{
+				for(size_t pos = 0; pos != data.size(); ++pos)
+				{
+					switch(data[pos])
+					{
+						case '&':  buffer.append(_T("&amp;"));      break;
+						case '\"': buffer.append(_T("&quot;"));     break;
+						case '\'': buffer.append(_T("&apos;"));     break;
+						case '<':  buffer.append(_T("&lt;"));       break;
+						case '>':  buffer.append(_T("&gt;"));       break;
+						default:   buffer.append(&data[pos], 1);	break;
+					}
+				}
+			}
+		
+
 			return buffer;
 		}
 

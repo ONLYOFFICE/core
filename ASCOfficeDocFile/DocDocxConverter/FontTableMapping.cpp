@@ -35,14 +35,14 @@ namespace DocFileFormat
 			FontFamilyName* font = dynamic_cast<FontFamilyName*>( *iter );
 
 			m_pXmlWriter->WriteNodeBegin( _T( "w:font" ), TRUE );
-			m_pXmlWriter->WriteAttribute( _T( "w:name" ), FormatUtils::XmlEncode(font->xszFtn).c_str() );
+			m_pXmlWriter->WriteAttribute( _T( "w:name" ), FormatUtils::XmlEncode(font->xszFtn, true).c_str());
 			m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
 
 			//alternative name
 			if ( ( font->xszAlt != wstring( _T( "" ) ) ) && ( font->xszAlt.length() > 0 ) )
 			{
 				m_pXmlWriter->WriteNodeBegin( _T( "w:altName" ), TRUE );
-				m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::XmlEncode(font->xszAlt).c_str() );
+				m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::XmlEncode(font->xszAlt, true).c_str() );
 				m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
 				m_pXmlWriter->WriteNodeEnd( _T( "w:altName" ) );
 			}

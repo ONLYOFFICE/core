@@ -41,6 +41,8 @@ namespace DocFileFormat
 			// Path
 			if (!pShape->Path.empty())
 				m_pXmlWriter->WriteAttribute( _T("path"), pShape->Path.c_str() );
+			else if (_isBulletPicture)
+				m_pXmlWriter->WriteAttribute( _T("path"), _T("m@4@5l@4@11@9@11@9@5xe"));
 
 
 			//Default fill / stroke
@@ -86,6 +88,16 @@ namespace DocFileFormat
 				}
 
 				m_pXmlWriter->WriteNodeEnd( _T( "v:formulas" ) );
+			}
+			else if (_isBulletPicture)
+			{
+				m_pXmlWriter->WriteString(_T("<v:formulas><v:f eqn=\"if lineDrawn pixelLineWidth 0\"/>\
+											 <v:f eqn=\"sum @0 1 0\"/><v:f eqn=\"sum 0 0 @1\"/>\
+											 <v:f eqn=\"prod @2 1 2\"/><v:f eqn=\"prod @3 21600 pixelWidth\"/>\
+											 <v:f eqn=\"prod @3 21600 pixelHeight\"/><v:f eqn=\"sum @0 0 1\"/>\
+											 <v:f eqn=\"prod @6 1 2\"/><v:f eqn=\"prod @7 21600 pixelWidth\"/>\
+											 <v:f eqn=\"sum @8 21600 0\"/><v:f eqn=\"prod @7 21600 pixelHeight\"/>\
+											 <v:f eqn=\"sum @10 21600 0\"/></v:formulas>"));
 			}
 
 			// Path

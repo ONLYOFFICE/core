@@ -1797,7 +1797,7 @@ namespace NExtractTools
                NSFile::CFileBinary::Copy(sFrom, sOrigin);
            }
            NSHtmlRenderer::CASCHTMLRenderer3 oHtmlRenderer;
-           oHtmlRenderer.CreateOfficeFile(sToDir);
+           oHtmlRenderer.CreateOfficeFile(sToDir, sFontPath);
            if(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatFrom)
            {
                PdfReader::CPdfReader oReader(&oApplicationFonts);

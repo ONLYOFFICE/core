@@ -5,6 +5,7 @@
 
 #include <cpdoccore/xml/xmlchar.h>
 #include <cpdoccore/xml/attributes.h>
+#include <cpdoccore/xml/simple_xml_writer.h>
 
 
 namespace cpdoccore { 
@@ -30,7 +31,7 @@ void math_msub::add_child_element( xml::sax * Reader, const ::std::wstring & Ns,
 }
 
 void math_msub::docx_convert(oox::docx_conversion_context & Context) 
-{
+{//2 elements
 	if (content_.size() != 2)
 	{
 		return;//todooo
@@ -64,7 +65,7 @@ void math_msup::add_child_element( xml::sax * Reader, const ::std::wstring & Ns,
 }
 
 void math_msup::docx_convert(oox::docx_conversion_context & Context) 
-{
+{//2 elements
 	if (content_.size() != 2)
 	{
 		return;//todooo
@@ -99,8 +100,24 @@ void math_msubsup::add_child_element( xml::sax * Reader, const ::std::wstring & 
 }
 
 void math_msubsup::docx_convert(oox::docx_conversion_context & Context) 
-{
+{//3 elements
+    std::wostream & strm = Context.output_stream();
+	
+	strm << L"<m:sSubSup>";
 
+		strm << L"<m:e>";
+			content_[0]->docx_convert(Context);
+		strm << L"</m:e>";
+		
+		strm << L"<m:sub>";
+			content_[1]->docx_convert(Context);
+		strm << L"</m:sub>";
+
+		strm << L"<m:sup>";
+			content_[2]->docx_convert(Context);
+		strm << L"</m:sup>";
+
+	strm << L"</m:sSubSup>";
 }
 //---------------------------------------------------------------
 const wchar_t * math_none::ns = L"math";
@@ -154,7 +171,7 @@ void math_mmultiscripts::add_child_element( xml::sax * Reader, const ::std::wstr
 }
 
 void math_mmultiscripts::docx_convert(oox::docx_conversion_context & Context) 
-{
+{//1* elements
 
 }
 //---------------------------------------------------------------
@@ -172,8 +189,71 @@ void math_munderover::add_child_element( xml::sax * Reader, const ::std::wstring
 }
 
 void math_munderover::docx_convert(oox::docx_conversion_context & Context) 
-{
+{//3 elements (+1)
+	if (content_.size() < 4)
+	{
+		return;
+	}
+	std::wstringstream strmTemp; 
+	strmTemp.clear();
+	content_[0]->text_to_stream(strmTemp);
 
+	std::wstring sBase = strmTemp.str();
+
+	std::wostream & strm = Context.output_stream();
+
+	if (sBase.size() < 3)
+	{	
+		strm << L"<m:nary>";
+
+			strm << L"<m:naryPr>";
+			{
+				strm << L"<m:chr m:val=\"";
+					content_[0]->text_to_stream(strm);
+				strm << L"\"/>";
+			}
+			strm << L"</m:naryPr>";
+			strm << L"<m:sub>";
+			{
+				content_[2]->docx_convert(Context);
+			}
+			strm << L"</m:sub>";
+			
+			strm << L"<m:sup>";
+			{
+				content_[1]->docx_convert(Context);
+			}
+			strm << L"</m:sup>";
+
+			strm << L"<m:e>";
+			{
+				content_[3]->docx_convert(Context);
+			}
+			strm << L"</m:e>";
+		strm << L"</m:nary>";
+	}
+	else if (sBase == L"lim")
+	{
+		strm << L"<m:limUpp>";
+		strm << L"<m:limUppPr/>";
+			strm << L"<m:e>";
+				strm << L"<m:limLow>";	
+					strm << L"<m:limLowPr/>";
+					strm << L"<m:e>";
+						content_[0]->docx_convert(Context);
+					strm << L"</m:e>";
+					strm << L"<m:lim>";
+						content_[1]->docx_convert(Context);
+					strm << L"</m:lim>";
+				strm << L"</m:limLow>";
+			strm << L"</m:e>";
+			strm << L"<m:lim>";
+				content_[2]->docx_convert(Context);
+			strm << L"</m:lim>";
+		strm << L"</m:limUpp>";
+	
+		content_[3]->docx_convert(Context);
+	}
 }
 //---------------------------------------------------------------
 const wchar_t * math_mover::ns = L"math";
@@ -190,8 +270,18 @@ void math_mover::add_child_element( xml::sax * Reader, const ::std::wstring & Ns
 }
 
 void math_mover::docx_convert(oox::docx_conversion_context & Context) 
-{
+{//2 elements
+	std::wostream & strm = Context.output_stream();
 
+	strm << L"<m:limUpp>";	
+		strm << L"<m:limUppPr/>";
+		strm << L"<m:e>";
+			content_[0]->docx_convert(Context);
+		strm << L"</m:e>";
+		strm << L"<m:lim>";
+			content_[1]->docx_convert(Context);
+		strm << L"</m:lim>";
+	strm << L"</m:limUpp>";
 }
 //---------------------------------------------------------------
 const wchar_t * math_munder::ns = L"math";
@@ -208,8 +298,18 @@ void math_munder::add_child_element( xml::sax * Reader, const ::std::wstring & N
 }
 
 void math_munder::docx_convert(oox::docx_conversion_context & Context) 
-{
+{//2 elements
+	std::wostream & strm = Context.output_stream();
 
+	strm << L"<m:limLow>";	
+		strm << L"<m:limLowPr/>";
+		strm << L"<m:e>";
+			content_[0]->docx_convert(Context);
+		strm << L"</m:e>";
+		strm << L"<m:lim>";
+			content_[1]->docx_convert(Context);
+		strm << L"</m:lim>";
+	strm << L"</m:limLow>";
 }
 }
 }

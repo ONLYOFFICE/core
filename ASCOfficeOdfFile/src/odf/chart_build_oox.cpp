@@ -453,7 +453,7 @@ void process_build_chart::visit(office_text& val)
 }
 void process_build_chart::visit(office_math& val)
 {
-	chart_build_.object_type_ = 0;//3; //временно замещающая картинка
+	chart_build_.object_type_ = 3; //0;//временно замещающая картинка
 	chart_build_.office_math_ = &val;//конвертация будет уровнем выше
 }
 

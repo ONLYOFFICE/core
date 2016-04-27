@@ -1,5 +1,6 @@
 
 #include "math_layout_elements.h"
+#include "math_token_elements.h"
 
 #include <boost/foreach.hpp>
 
@@ -17,22 +18,84 @@ namespace odf_reader {
 const wchar_t * math_mrow::ns = L"math";
 const wchar_t * math_mrow::name = L"mrow";
 //----------------------------------------------------------------------------------------------------
+math_mrow::math_mrow()
+{
+	next_element_to_prev_ = false;
+}
 void math_mrow::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
 
 }
 
 void math_mrow::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
-{
-	CP_CREATE_ELEMENT(content_);
+{//0* elements
+	if (next_element_to_prev_)
+	{
+		content_.back()->add_child_element(Reader, Ns, Name);
+		next_element_to_prev_ = false;
+	}
+	else
+	{
+		CP_CREATE_ELEMENT(content_);
+	}
+	
+	if ( Name == L"munderover" )
+		next_element_to_prev_ = true;
 }
 
 void math_mrow::docx_convert(oox::docx_conversion_context & Context) 
 {
-	BOOST_FOREACH(const office_element_ptr & elm, content_)
-    {
-        elm->docx_convert(Context);
-    }
+	if (content_.size() < 1) return; 
+	
+	int i_start = 0, i_end = content_.size();
+
+	math_mo* mo_test_first	= dynamic_cast<math_mo*>(content_[i_start].get());
+	math_mo* mo_test_last	= dynamic_cast<math_mo*>(content_[i_end-1].get());
+
+	bool bDPr = false;
+	if ((mo_test_first) && (mo_test_first->fence_) && (*mo_test_first->fence_))
+	{
+		i_start++; 
+		bDPr = true;
+	}
+	
+	if ((mo_test_last) && (mo_test_last->fence_) && (*mo_test_last->fence_))
+	{
+		i_end--;
+		bDPr = true;
+	}
+
+	if (bDPr)
+	{
+		Context.output_stream() << L"<m:d>";
+		
+		Context.output_stream() << L"<m:dPr>";
+			if ((mo_test_first) && (mo_test_first->fence_) && (*mo_test_first->fence_))
+			{
+				Context.output_stream() << L"<m:begChr m:val=\"";
+					mo_test_first->text_to_stream(Context.output_stream());
+				Context.output_stream() << L"\"/>";
+			}
+			if ((mo_test_last) && (mo_test_last->fence_) && (*mo_test_last->fence_))
+			{
+				Context.output_stream() << L"<m:endChr m:val=\"";
+					mo_test_last->text_to_stream(Context.output_stream());
+				Context.output_stream() << L"\"/>";
+			}
+		Context.output_stream() << L"</m:dPr>";
+			Context.output_stream() << L"<m:e>";
+	}
+	
+			for (int i = i_start; i < i_end ; i++)
+			{
+				content_[i]->docx_convert(Context);
+			}
+
+	if (bDPr)
+	{
+			Context.output_stream() << L"</m:e>";
+		Context.output_stream() << L"</m:d>";
+	}
 }
 //---------------------------------------------------------------
 const wchar_t * math_mfrac::ns = L"math";
@@ -49,7 +112,7 @@ void math_mfrac::add_child_element( xml::sax * Reader, const ::std::wstring & Ns
 }
 
 void math_mfrac::docx_convert(oox::docx_conversion_context & Context) 
-{
+{//2 elements
 	if (content_.size() != 2)
 	{
 		return;
@@ -80,11 +143,23 @@ void math_msqrt::add_child_element( xml::sax * Reader, const ::std::wstring & Ns
 }
 
 void math_msqrt::docx_convert(oox::docx_conversion_context & Context) 
-{
-	BOOST_FOREACH(const office_element_ptr & elm, content_)
-    {
-        elm->docx_convert(Context);
-    }
+{//1* elements
+	std::wostream & strm = Context.output_stream();
+
+	strm << L"<m:rad>";
+		strm << L"<m:radPr>";
+			strm << L"<m:degHide m:val=\"1\"/>";
+		strm << L"</m:radPr>";
+
+		strm << L"<m:deg/>";
+		
+		strm << L"<m:e>";		
+			BOOST_FOREACH(const office_element_ptr & elm, content_)
+			{
+				elm->docx_convert(Context);
+			}
+		strm << L"</m:e>";
+	strm << L"</m:rad>";
 }
 //---------------------------------------------------------------
 const wchar_t * math_mroot::ns = L"math";
@@ -101,8 +176,22 @@ void math_mroot::add_child_element( xml::sax * Reader, const ::std::wstring & Ns
 }
 
 void math_mroot::docx_convert(oox::docx_conversion_context & Context) 
-{
+{//2 elements
+	std::wostream & strm = Context.output_stream();
 
+	strm << L"<m:rad>";
+
+		strm << L"<m:radPr/>";
+		
+		strm << L"<m:deg>";
+			content_[1]->docx_convert(Context);
+		strm << L"</m:deg>";
+
+		strm << L"<m:e>";		
+			content_[0]->docx_convert(Context);
+		strm << L"</m:e>";		
+
+	strm << L"</m:rad>";
 }
 //---------------------------------------------------------------
 const wchar_t * math_mstyle::ns = L"math";
@@ -148,7 +237,7 @@ void math_menclose::add_child_element( xml::sax * Reader, const ::std::wstring &
 }
 
 void math_menclose::docx_convert(oox::docx_conversion_context & Context) 
-{
+{//0* elements
 	//BOOST_FOREACH(const office_element_ptr & elm, content_)
 	//{
 	//	elm->docx_convert(Context);
@@ -173,7 +262,7 @@ void math_mfenced::add_child_element( xml::sax * Reader, const ::std::wstring & 
 }
 
 void math_mfenced::docx_convert(oox::docx_conversion_context & Context) 
-{
+{//0* elements
 	//BOOST_FOREACH(const office_element_ptr & elm, content_)
 	//{
 	//	elm->docx_convert(Context);
@@ -198,7 +287,7 @@ void math_mpadded::add_child_element( xml::sax * Reader, const ::std::wstring & 
 }
 
 void math_mpadded::docx_convert(oox::docx_conversion_context & Context) 
-{
+{//1* elements
 
 }
 }

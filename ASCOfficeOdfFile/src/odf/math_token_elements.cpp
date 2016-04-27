@@ -33,6 +33,13 @@ void math_mi::add_text(const std::wstring & Text)
     text_ = Text;
 }
 
+std::wostream & math_mi::text_to_stream(::std::wostream & _strm) const
+{
+	if (text_) 
+		_strm << *text_;
+    return _strm;
+}
+
 void math_mi::docx_convert(oox::docx_conversion_context & Context) 
 {
 	if (!text_) return;
@@ -65,7 +72,8 @@ const wchar_t * math_mo::name = L"mo";
 //----------------------------------------------------------------------------------------------------
 void math_mo::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-
+	CP_APPLY_ATTR(L"stretchy",		stretchy_);
+	CP_APPLY_ATTR(L"fence",			fence_);
 }
 
 void math_mo::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
@@ -78,6 +86,12 @@ void math_mo::add_text(const std::wstring & Text)
     text_ = Text;
 }
 
+std::wostream & math_mo::text_to_stream(::std::wostream & _strm) const
+{
+	if (text_) 
+		_strm << *text_;
+    return _strm;
+}
 
 void math_mo::docx_convert(oox::docx_conversion_context & Context) 
 {

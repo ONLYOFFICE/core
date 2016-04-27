@@ -29,8 +29,15 @@ void math_mtable::add_child_element( xml::sax * Reader, const ::std::wstring & N
 }
 
 void math_mtable::docx_convert(oox::docx_conversion_context & Context) 
-{
-
+{//0* elements
+	std::wostream & strm = Context.output_stream();
+	
+	strm << L"<m:m>";		
+		BOOST_FOREACH(const office_element_ptr & elm, content_)
+		{
+			elm->docx_convert(Context);
+		}
+	strm << L"</m:m>";
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -49,8 +56,15 @@ void math_mtr::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, 
 }
 
 void math_mtr::docx_convert(oox::docx_conversion_context & Context) 
-{
+{//0* elements
+	std::wostream & strm = Context.output_stream();
 
+	strm << L"<m:mr>";		
+		BOOST_FOREACH(const office_element_ptr & elm, content_)
+		{
+			elm->docx_convert(Context);
+		}
+	strm << L"</m:mr>";
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -90,7 +104,14 @@ void math_mtd::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, 
 
 void math_mtd::docx_convert(oox::docx_conversion_context & Context) 
 {
+	std::wostream & strm = Context.output_stream();
 
+	strm << L"<m:e>";		
+		BOOST_FOREACH(const office_element_ptr & elm, content_)
+		{
+			elm->docx_convert(Context);
+		}
+	strm << L"</m:e>";
 }
 
 //----------------------------------------------------------------------------------------------------

@@ -101,7 +101,10 @@ shared {
 }
 ################################################
 
-DEFINES += PDFREADER_LIBRARY
+DEFINES += PDFREADER_LIBRARY \
+    HTMLRENDERER_USE_DYNAMIC_LIBRARY
+LIBS += -L$$DESTDIR -lHtmlRenderer
+
 
 linux-g++ | linux-g++-64 | linux-g++-32 {
     DEFINES += \

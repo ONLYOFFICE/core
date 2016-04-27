@@ -253,6 +253,8 @@ namespace PdfReader
 
 		bool                          m_bTransparentGroupSoftMask;
 		unsigned char*                m_pTransparentGroupSoftMask;
+
+        bool                          m_bDrawOnlyText; // Special option for html-renderer
 	};
 }
 

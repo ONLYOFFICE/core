@@ -11,12 +11,18 @@
 #include "../include/ASCSVGWriter.h"
 #include "../../DesktopEditor/raster/Metafile/MetaFile.h"
 
+//#define METAFILE_TEST
+//#define ONLINE_WORD_TO_PDF
+//#define TO_PDF
+#define TO_HTML_RENDERER
+#define ONLY_TEXT
+
 int main(int argc, char *argv[])
 {
     CApplicationFonts oFonts;
     oFonts.Initialize();
 
-#if 1
+#ifdef METAFILE_TEST
 
     NSHtmlRenderer::CASCSVGWriter oWriterSVG;
     oWriterSVG.SetFontManager(oFonts.GenerateFontManager());
@@ -45,79 +51,92 @@ int main(int argc, char *argv[])
 
 #endif
 
-
-    //QCoreApplication a(argc, argv);
-#ifdef WIN32
-    //std::wstring sFile = L"\\\\KIRILLOV8\\_Office\\PDF\\Android intro(2p).pdf";
-    //std::wstring sFile = L"D:\\activex\\Pi(1p).pdf";
-    //std::wstring sFile = L"\\\\192.168.3.208\\allusers\\Files\\PDF\\AllPDF\\asia.pdf";
-    //std::wstring sFile = L"D:\\knut.djvu";
-    std::wstring sFile = L"D:\\bankomats.xps";
-    std::wstring sDst = L"D:\\test\\Document";
-#else
-    //std::wstring sFile = L"/home/oleg/activex/Android intro(2p).pdf";
-    //std::wstring sFile = L"/home/oleg/activex/Pi(1p).pdf";
-    std::wstring sFile = L"/home/oleg/activex/knut.djvu";
-    //std::wstring sFile = L"/home/oleg/activex/bankomats.xps";
-    std::wstring sDst = L"/home/oleg/activex/1";
-#endif    
-
-#if 1
+#ifdef ONLINE_WORD_TO_PDF
     CPdfRenderer oPdfW(&oFonts);
     oPdfW.SetTempFolder(sDst);
     oPdfW.OnlineWordToPdf(L"D:\\test\\123.txt", L"D:\\test\\123.pdf");
     return 0;
 #endif
 
-#if 0
-    PdfReader::CPdfReader oReader(&oFonts);
-    oReader.SetTempFolder(sDst.c_str());
-#endif
 
-#if 1
-    CDjVuFile oReader;
-#endif
+    //std::wstring sFile = L"\\\\KIRILLOV8\\_Office\\PDF\\Android intro(2p).pdf";
+    //std::wstring sFile = L"D:\\activex\\Pi(1p).pdf";
+    //std::wstring sFile = L"\\\\192.168.3.208\\allusers\\Files\\PDF\\AllPDF\\asia.pdf";
+    //std::wstring sFile = L"D:\\knut.djvu";
+    //std::wstring sFile = L"D:\\bankomats.xps";
+    //std::wstring sFile = L"\\\\kirillov8\\_Office\\DJVU\\Основы разработки приложений на платформе Microsoft .NET Framework. Учебный курс Microsoft экзамен 70-536.djvu";
+    //std::wstring sFile = L"D:\\TESTFILES\\Алгоритмы - построение и анализ.djvu";
+    std::wstring sFile = L"D:\\TESTFILES\\PDF 1-7 (756p).pdf";
+    std::wstring sDst = L"D:\\test\\Document";
 
-#if 0
-    CXpsFile oReader(&oFonts);
-    oReader.SetTempFolder(sDst.c_str());
-#endif
+    //std::wstring sFile = L"/home/oleg/activex/Android intro(2p).pdf";
+    //std::wstring sFile = L"/home/oleg/activex/Pi(1p).pdf";
+    //std::wstring sFile = L"/home/oleg/activex/knut.djvu";
+    //std::wstring sFile = L"/home/oleg/activex/bankomats.xps";
+    //std::wstring sDst = L"/home/oleg/activex/1";
 
-    bool bResult = oReader.LoadFromFile(sFile.c_str());
+    IOfficeDrawingFile* pReader = NULL;
+    pReader = new PdfReader::CPdfReader(&oFonts);
+    //pReader = new CDjVuFile(&oFonts);
+    //pReader = new CXpsFile(&oFonts);
 
-#if 1
-    NSHtmlRenderer::CASCHTMLRenderer3 oHtmlRenderer;
-    oHtmlRenderer.CreateOfficeFile(sDst);
+    pReader->SetTempDirectory(sDst);
+    pReader->LoadFromFile(sFile);
+
+#ifdef TO_HTML_RENDERER
+    NSHtmlRenderer::CASCHTMLRenderer3 oRenderer;
+#ifdef ONLY_TEXT
+    oRenderer.SetOnlyTextMode(true);
+    oRenderer.CreateOfficeFile(L"temp/temp");
 #else
-    CPdfRenderer oHtmlRenderer(&oFonts);
-    oHtmlRenderer.SetTempFolder(sDst);
+    oRenderer.CreateOfficeFile(sDst);
+#endif
+#else
+    CPdfRenderer oRenderer(&oFonts);
+    oRenderer.SetTempFolder(sDst);
 #endif
 
-    int nPagesCount = oReader.GetPagesCount();
+    int nPagesCount = pReader->GetPagesCount();
     for (int i = 0; i < nPagesCount; ++i)
     {
-        oHtmlRenderer.NewPage();
-        oHtmlRenderer.BeginCommand(c_nPageType);
+        oRenderer.NewPage();
+        oRenderer.BeginCommand(c_nPageType);
 
         double dPageDpiX, dPageDpiY;
         double dWidth, dHeight;
-        oReader.GetPageInfo(i, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
+        pReader->GetPageInfo(i, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
 
         dWidth  *= 25.4 / dPageDpiX;
         dHeight *= 25.4 / dPageDpiY;
 
-        oHtmlRenderer.put_Width(dWidth);
-        oHtmlRenderer.put_Height(dHeight);
+        oRenderer.put_Width(dWidth);
+        oRenderer.put_Height(dHeight);
 
-        oReader.DrawPageOnRenderer(&oHtmlRenderer, i, NULL);
+#ifdef ONLY_TEXT
+        oRenderer.SetAdditionalParam("DisablePageEnd", L"yes");
+#endif
+        pReader->DrawPageOnRenderer(&oRenderer, i, NULL);
 
-        oHtmlRenderer.EndCommand(c_nPageType);
+#ifdef ONLY_TEXT
+        oRenderer.SetAdditionalParam("DisablePageEnd", L"no");
+
+        int paragraphs = 0;
+        int words = 0;
+        int symbols = 0;
+        int spaces = 0;
+        std::string info;
+        oRenderer.GetLastPageInfo(paragraphs, words, symbols, spaces, info);
+#endif
+
+        oRenderer.EndCommand(c_nPageType);
     }
 
-#if 1
-    oHtmlRenderer.CloseFile();
+#ifdef TO_HTML_RENDERER
+#ifndef ONLY_TEXT
+    oRenderer.CloseFile();
+#endif
 #else
-    oHtmlRenderer.SaveToFile(L"/home/oleg/activex/1/1.pdf");
+    oRenderer.SaveToFile(L"/home/oleg/activex/1/1.pdf");
 #endif
 
     return 0;

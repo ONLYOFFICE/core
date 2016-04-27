@@ -16,6 +16,8 @@
 #include "../../DesktopEditor/common/Array.h"
 #include "../../DesktopEditor/graphics/BaseThread.h"
 
+#include "../../HtmlRenderer/include/HTMLRenderer3.h"
+
 #include "../../PdfWriter/PdfRenderer.h"
 
 // TODO: 1. Реализовать по-нормальному градиентные заливки (Axial и Radial) 
@@ -312,6 +314,8 @@ namespace PdfReader
 		m_bTransparentGroupSoftMask = false;
 		m_pTransparentGroupSoftMask = NULL;
 
+        m_bDrawOnlyText = false;
+
 		//m_oFontList.LoadFromFile( m_pGlobalParams->GetTempFolder() );
 		//// Тестовый пример
 		//m_pRenderer->NewPage();
@@ -422,6 +426,11 @@ namespace PdfReader
 		if (m_pTransparentGroupSoftMask)
 			delete[]m_pTransparentGroupSoftMask;
 		m_pTransparentGroupSoftMask = NULL;
+
+        if (c_nHtmlRendrerer2 == m_lRendererType)
+            m_bDrawOnlyText = ((NSHtmlRenderer::CASCHTMLRenderer3*)m_pRenderer)->GetOnlyTextMode();
+        else
+            m_bDrawOnlyText = false;
 	}
 	void RendererOutputDev::EndPage()
 	{
@@ -985,7 +994,7 @@ namespace PdfReader
 				}
 
 				// Записываем файл с кодировкой. (Специально для перезаписи в PDF)
-				if (c_nPDFWriter == m_lRendererType)
+                if (c_nPDFWriter == m_lRendererType)
 				{
 					std::wstring wsExt;
 					if (!pFont->IsCIDFont())
@@ -2396,6 +2405,9 @@ namespace PdfReader
 	}
 	void RendererOutputDev::Stroke(GrState *pGState)
 	{
+        if (m_bDrawOnlyText)
+            return;
+
 		if (m_bTransparentGroup)
 			return;
 
@@ -2406,6 +2418,9 @@ namespace PdfReader
 	}
 	void RendererOutputDev::Fill(GrState *pGState)
 	{
+        if (m_bDrawOnlyText)
+            return;
+
 		if (m_bTransparentGroup)
 			return;
 
@@ -2416,6 +2431,9 @@ namespace PdfReader
 	}
 	void RendererOutputDev::EoFill(GrState *pGState)
 	{
+        if (m_bDrawOnlyText)
+            return;
+
 		if (m_bTransparentGroup)
 			return;
 
@@ -2426,6 +2444,9 @@ namespace PdfReader
 	}
 	void RendererOutputDev::FillStroke(GrState *pGState)
 	{
+        if (m_bDrawOnlyText)
+            return;
+
 		if (m_bTransparentGroup)
 			return;
 
@@ -2436,6 +2457,9 @@ namespace PdfReader
 	}
 	void RendererOutputDev::EoFillStroke(GrState *pGState)
 	{
+        if (m_bDrawOnlyText)
+            return;
+
 		if (m_bTransparentGroup)
 			return;
 
@@ -2450,11 +2474,17 @@ namespace PdfReader
 	}
 	void RendererOutputDev::StartTilingFill(GrState *pGState)
 	{
+        if (m_bDrawOnlyText)
+            return;
+
 		m_pRenderer->BeginCommand(c_nComplexFigureType);
 		m_bTiling = true;
 	}
 	void RendererOutputDev::EndTilingFill()
 	{
+        if (m_bDrawOnlyText)
+            return;
+
 		m_pRenderer->EndCommand(c_nComplexFigureType);
 		m_bTiling = false;
 	}
@@ -2641,22 +2671,37 @@ namespace PdfReader
 	}
 	void RendererOutputDev::StartShadedFill(GrState *pGState)
 	{
+        if (m_bDrawOnlyText)
+            return;
+
 		m_pRenderer->BeginCommand(c_nComplexFigureType);
 	}
 	void RendererOutputDev::EndShadedFill()
 	{
+        if (m_bDrawOnlyText)
+            return;
+
 		m_pRenderer->EndCommand(c_nComplexFigureType);
 	}
 	void RendererOutputDev::StartTilingFillIteration()
 	{
+        if (m_bDrawOnlyText)
+            return;
+
 		m_pRenderer->BeginCommand(c_nPDFTilingFillIteration);
 	}
 	void RendererOutputDev::EndTilingFillIteration()
 	{
+        if (m_bDrawOnlyText)
+            return;
+
 		m_pRenderer->EndCommand(c_nPDFTilingFillIteration);
 	}
 	void RendererOutputDev::StartSimpleTilingFill(GrState *pGState, int  nX0, int nY0, int nX1, int nY1, double dStepX, double dStepY, double dXMin, double dYMin, double dXMax, double dYMax, double* pMatrix)
 	{
+        if (m_bDrawOnlyText)
+            return;
+
 		this->ClipAttack(pGState);
 
 		m_pRenderer->BeginCommand(c_nPDFTilingFill);
@@ -2692,22 +2737,37 @@ namespace PdfReader
 	}
 	void RendererOutputDev::EndSimpleTilingFill()
 	{
+        if (m_bDrawOnlyText)
+            return;
+
 		m_pRenderer->EndCommand(c_nPDFTilingFill);
 	}
 	void RendererOutputDev::Clip(GrState *pGState)
 	{
+        if (m_bDrawOnlyText)
+            return;
+
 		UpdateClip(pGState);
 	}
 	void RendererOutputDev::EoClip(GrState *pGState)
 	{
+        if (m_bDrawOnlyText)
+            return;
+
 		UpdateClip(pGState);
 	}
 	void RendererOutputDev::ClipToStrokePath(GrState *pGState)
 	{
+        if (m_bDrawOnlyText)
+            return;
+
 		UpdateClip(pGState);
 	}
 	void RendererOutputDev::ClipToPath(GrState *pGState, GrPath *pPath, double *pMatrix, bool bEO)
 	{
+        if (m_bDrawOnlyText)
+            return;
+
 		if (m_bTransparentGroup)
 			return;
 
@@ -2722,6 +2782,9 @@ namespace PdfReader
 	}
 	void RendererOutputDev::ClipToText(const std::wstring& wsFontName, const std::wstring& wsFontPath, double dFontSize, int nFontStyle, double *pMatrix, const std::wstring& wsText, double dX, double dY, double dWidth, double dHeight, double dBaseLineOffset)
 	{
+        if (m_bDrawOnlyText)
+            return;
+
 		if (m_bTransparentGroup)
 			return;
 
@@ -3078,6 +3141,9 @@ namespace PdfReader
 	}
 	void RendererOutputDev::DrawImageMask(GrState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, bool bInvert, bool bInlineImage)
 	{
+        if (m_bDrawOnlyText)
+            return;
+
 		if (pGState->GetFillColorSpace()->IsNonMarking())
 		{
 			return;
@@ -3142,6 +3208,9 @@ namespace PdfReader
 	}
 	void RendererOutputDev::DrawImage(GrState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GrImageColorMap *pColorMap, int *pMaskColors, bool bInlineImg)
 	{
+        if (m_bDrawOnlyText)
+            return;
+
 		double dPageHeight = pGState->GetPageHeight();
 
 		int nBufferSize = 4 * nWidth * nHeight;
@@ -3199,6 +3268,9 @@ namespace PdfReader
 	}
 	void RendererOutputDev::DrawMaskedImage(GrState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GrImageColorMap *pColorMap, Stream *pMaskStream, int nMaskWidth, int nMaskHeight, bool bMaskInvert)
 	{
+        if (m_bDrawOnlyText)
+            return;
+
 		// Вообще, размеры маски и самой картинки могут не совпадать (в этом случае мы должны срезайзить до размеров картинки)
 		// TO DO: Сделать, когда появится файл
 		if (nWidth != nMaskWidth || nHeight != nMaskHeight)
@@ -3268,6 +3340,9 @@ namespace PdfReader
 	}
 	void RendererOutputDev::DrawSoftMaskedImage(GrState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GrImageColorMap *pColorMap, Stream *pMaskStream, int nMaskWidth, int nMaskHeight, GrImageColorMap *pMaskColorMap)
 	{
+        if (m_bDrawOnlyText)
+            return;
+
 		double dPageHeight = pGState->GetPageHeight();
 
 		int nBufferSize = 4 * nWidth * nHeight;
@@ -3490,6 +3565,9 @@ namespace PdfReader
 	}
 	void RendererOutputDev::DoPath(GrState *pGState, GrPath *pPath, double dPageHeight, double *pCTM)
 	{
+        if (m_bDrawOnlyText)
+            return;
+
 		if (m_bTransparentGroup)
 			return;
 
@@ -3539,6 +3617,9 @@ namespace PdfReader
 	}
 	void RendererOutputDev::UpdateClip(GrState *pGState)
 	{
+        if (m_bDrawOnlyText)
+            return;
+
 		if (m_bTransparentGroup)
 			return;
 

@@ -28,7 +28,7 @@ void math_mstack::add_child_element( xml::sax * Reader, const ::std::wstring & N
 }
 
 void math_mstack::docx_convert(oox::docx_conversion_context & Context) 
-{
+{//0* elements
 
 }
 
@@ -85,7 +85,7 @@ void math_msgroup::add_child_element( xml::sax * Reader, const ::std::wstring & 
 }
 
 void math_msgroup::docx_convert(oox::docx_conversion_context & Context) 
-{
+{//0* elements
 
 }
 
@@ -104,7 +104,7 @@ void math_mlongdiv::add_child_element( xml::sax * Reader, const ::std::wstring &
 }
 
 void math_mlongdiv::docx_convert(oox::docx_conversion_context & Context) 
-{
+{//3* elements
 
 }
 
@@ -142,7 +142,7 @@ void math_mscarries::add_child_element( xml::sax * Reader, const ::std::wstring 
 }
 
 void math_mscarries::docx_convert(oox::docx_conversion_context & Context) 
-{
+{//0* elements
 
 }
 //---------------------------------------------------------------

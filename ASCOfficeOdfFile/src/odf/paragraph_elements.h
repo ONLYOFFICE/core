@@ -347,7 +347,7 @@ public:
     reference_mark_end() {};
     reference_mark_end(const ::std::wstring & Name) : text_name_(Name){};
 
-    const ::std::wstring & attr_name() const { return text_name_; }
+    const std::wstring & attr_name() const { return text_name_; }
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
@@ -378,7 +378,7 @@ public:
     virtual void pptx_convert(oox::pptx_conversion_context & Context) ;
 
 public:
-    virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(::std::wostream & _Wostream) const;
 public:
     span() {}
    
@@ -425,13 +425,13 @@ private:
 private:
 	odf_types::common_xlink_attlist common_xlink_attlist_;
 
-    std::wstring office_name_;
-    _CP_OPT(odf_types::target_frame_name) office_target_frame_name_;
+    std::wstring							office_name_;
+    _CP_OPT(odf_types::target_frame_name)	office_target_frame_name_;
 
-    odf_types::style_ref text_style_name_;
-    odf_types::style_ref text_visited_style_name_;
+    odf_types::style_ref					text_style_name_;
+    odf_types::style_ref					text_visited_style_name_;
 
-    office_element_ptr_array paragraph_content_;
+    office_element_ptr_array				paragraph_content_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(a);

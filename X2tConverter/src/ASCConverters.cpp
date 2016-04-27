@@ -21,6 +21,7 @@
 #include "../../DesktopEditor/doctrenderer/doctrenderer.h"
 #include "../../DesktopEditor/fontengine/ApplicationFonts.h"
 #include "../../PdfReader/PdfReader.h"
+#include "../../PdfReader/Src/ErrorConstants.h"
 #include "../../DjVuFile/DjVu.h"
 #include "../../XpsFile/XpsFile.h"
 #include "../../HtmlRenderer/include/HTMLRenderer3.h"
@@ -1337,36 +1338,77 @@ namespace NExtractTools
        }
        return nRes;
    }
-   template<typename T>
-   int PdfDjvuXpsToRenderer(T& oReader, IRenderer* pRenderer, const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sFontPath)
+   int PdfDjvuXpsToRenderer(IOfficeDrawingFile** ppReader, IRenderer* pRenderer, const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sFontPath, const InputParams& params, CApplicationFonts* pApplicationFonts)
    {
-      int nRes = 0;
-           bool bResult = oReader.LoadFromFile(sFrom.c_str());
-           if(!bResult)
+       int nRes = 0;
+       IOfficeDrawingFile* pReader = NULL;
+       if(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatFrom)
+       {
+           pReader = new PdfReader::CPdfReader(pApplicationFonts);
+       }
+       else if(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_DJVU == nFormatFrom)
+       {
+           pReader = new CDjVuFile(pApplicationFonts);
+       }
+       else if(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_XPS == nFormatFrom)
+       {
+           pReader = new CXpsFile(pApplicationFonts);
+       }
+       else
+           nRes = AVS_FILEUTILS_ERROR_CONVERT;
+       if(SUCCEEDED_X2T(nRes))
+       {
+           *ppReader = pReader;
+           pReader->SetTempDirectory(sTemp);
+
+           std::wstring sPassword = params.getPassword();
+
+           bool bResult = pReader->LoadFromFile(sFrom.c_str(), L"", sPassword, sPassword);
+           if(bResult)
            {
-               return AVS_FILEUTILS_ERROR_CONVERT;
-           }
+               int nPagesCount = pReader->GetPagesCount();
+               for (int i = 0; i < nPagesCount; ++i)
+               {
+                   pRenderer->NewPage();
+                   pRenderer->BeginCommand(c_nPageType);
 
-           int nPagesCount = oReader.GetPagesCount();
-           for (int i = 0; i < nPagesCount; ++i)
+                   double dPageDpiX, dPageDpiY;
+                   double dWidth, dHeight;
+                   pReader->GetPageInfo(i, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
+
+                   dWidth  *= 25.4 / dPageDpiX;
+                   dHeight *= 25.4 / dPageDpiY;
+
+                   pRenderer->put_Width(dWidth);
+                   pRenderer->put_Height(dHeight);
+
+                   pReader->DrawPageOnRenderer(pRenderer, i, NULL);
+
+                   pRenderer->EndCommand(c_nPageType);
+               }
+
+           }
+           else
            {
-               pRenderer->NewPage();
-               pRenderer->BeginCommand(c_nPageType);
-
-               double dPageDpiX, dPageDpiY;
-               double dWidth, dHeight;
-               oReader.GetPageInfo(i, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
-
-               dWidth  *= 25.4 / dPageDpiX;
-               dHeight *= 25.4 / dPageDpiY;
-
-               pRenderer->put_Width(dWidth);
-               pRenderer->put_Height(dHeight);
-
-               oReader.DrawPageOnRenderer(pRenderer, i, NULL);
-
-               pRenderer->EndCommand(c_nPageType);
+               nRes = AVS_FILEUTILS_ERROR_CONVERT;
+               if(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatFrom)
+               {
+                   PdfReader::CPdfReader* pPdfReader = static_cast<PdfReader::CPdfReader*>(pReader);
+                   if(PdfReader::errorEncrypted == pPdfReader->GetError())
+                   {
+                       if(sPassword.empty())
+                       {
+                           copyOrigin(sFrom, *params.m_sFileTo);
+                           nRes = AVS_FILEUTILS_ERROR_CONVERT_DRM;
+                       }
+                       else
+                       {
+                           nRes = AVS_FILEUTILS_ERROR_CONVERT_PASSWORD;
+                       }
+                   }
+               }
            }
+       }
        return nRes;
    }
 
@@ -1584,7 +1626,7 @@ namespace NExtractTools
            nRes = AVS_FILEUTILS_ERROR_CONVERT;
        return nRes;
    }
-   int fromSpreadsheet(const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sPassword, const std::wstring &sTemp, const std::wstring &sFontPath, const std::wstring &sXmlOptions, const std::wstring &sThemeDir, bool bFromChanges, bool bPaid, const InputParams& params)
+   int fromSpreadsheet(const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sFontPath, const std::wstring &sXmlOptions, const std::wstring &sThemeDir, bool bFromChanges, bool bPaid, const InputParams& params)
    {
        int nRes = 0;
        if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV == nFormatFrom)
@@ -1616,7 +1658,7 @@ namespace NExtractTools
            }
            else if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS == nFormatFrom)
            {
-               nRes = xls2xlsx_dir(sFrom, sXlsxDir, sPassword, sTemp, sFontPath);
+               nRes = xls2xlsx_dir(sFrom, sXlsxDir, sTemp, sFontPath, params);
            }
            else if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS == nFormatFrom)
            {
@@ -1763,28 +1805,10 @@ namespace NExtractTools
            {
                CPdfRenderer pdfWriter(&oApplicationFonts);
                pdfWriter.SetTempFolder(sTemp);
-               if(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatFrom)
-               {
-                   PdfReader::CPdfReader oReader(&oApplicationFonts);
-                   oReader.SetTempDirectory(sTemp);
-                   nRes = PdfDjvuXpsToRenderer<PdfReader::CPdfReader>(oReader, &pdfWriter, sFrom, nFormatFrom, sTo, sTemp, sFontPath);
-                   pdfWriter.SaveToFile(sTo);
-               }
-               else if(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_DJVU == nFormatFrom)
-               {
-                   CDjVuFile oReader(&oApplicationFonts);
-                   nRes = PdfDjvuXpsToRenderer<CDjVuFile>(oReader, &pdfWriter, sFrom, nFormatFrom, sTo, sTemp, sFontPath);
-                   pdfWriter.SaveToFile(sTo);
-               }
-               else if(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_XPS == nFormatFrom)
-               {
-                   CXpsFile oReader(&oApplicationFonts);
-                   oReader.SetTempDirectory(sTemp);
-                   nRes = PdfDjvuXpsToRenderer<CXpsFile>(oReader, &pdfWriter, sFrom, nFormatFrom, sTo, sTemp, sFontPath);
-                   pdfWriter.SaveToFile(sTo);
-               }
-               else
-                   nRes = AVS_FILEUTILS_ERROR_CONVERT;
+               IOfficeDrawingFile* pReader = NULL;
+               nRes = PdfDjvuXpsToRenderer(&pReader, &pdfWriter, sFrom, nFormatFrom, sTo, sTemp, sFontPath, params, &oApplicationFonts);
+               pdfWriter.SaveToFile(sTo);
+               RELEASEOBJECT(pReader);
            }
        }
        else if(AVS_OFFICESTUDIO_FILE_CANVAS_WORD == nFormatTo)
@@ -1798,28 +1822,10 @@ namespace NExtractTools
            }
            NSHtmlRenderer::CASCHTMLRenderer3 oHtmlRenderer;
            oHtmlRenderer.CreateOfficeFile(sToDir, sFontPath);
-           if(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatFrom)
-           {
-               PdfReader::CPdfReader oReader(&oApplicationFonts);
-               oReader.SetTempDirectory(sTemp);
-               nRes = PdfDjvuXpsToRenderer<PdfReader::CPdfReader>(oReader, &oHtmlRenderer, sFrom, nFormatFrom, sTo, sTemp, sFontPath);
-               oHtmlRenderer.CloseFile();
-           }
-           else if(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_DJVU == nFormatFrom)
-           {
-               CDjVuFile oReader(&oApplicationFonts);
-               nRes = PdfDjvuXpsToRenderer<CDjVuFile>(oReader, &oHtmlRenderer, sFrom, nFormatFrom, sTo, sTemp, sFontPath);
-               oHtmlRenderer.CloseFile();
-           }
-           else if(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_XPS == nFormatFrom)
-           {
-               CXpsFile oReader(&oApplicationFonts);
-               oReader.SetTempDirectory(sTemp);
-               nRes = PdfDjvuXpsToRenderer<CXpsFile>(oReader, &oHtmlRenderer, sFrom, nFormatFrom, sTo, sTemp, sFontPath);
-               oHtmlRenderer.CloseFile();
-           }
-           else
-               nRes = AVS_FILEUTILS_ERROR_CONVERT;
+           IOfficeDrawingFile* pReader = NULL;
+           nRes = PdfDjvuXpsToRenderer(&pReader, &oHtmlRenderer, sFrom, nFormatFrom, sTo, sTemp, sFontPath, params, &oApplicationFonts);
+           oHtmlRenderer.CloseFile();
+           RELEASEOBJECT(pReader);
        }
        else
        {
@@ -1842,13 +1848,13 @@ namespace NExtractTools
    }
 
    // xls -> xlsx
-   int xls2xlsx (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sPassword, const std::wstring &sTemp, const std::wstring &sFontPath)
+   int xls2xlsx (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sFontPath, const InputParams& params)
    {
        std::wstring sResultDocxDir = sTemp + FILE_SEPARATOR_STR + _T("xlsx_unpacked");
 
        FileSystem::Directory::CreateDirectory(sResultDocxDir);
 
-       int nRes = xls2xlsx_dir(sFrom, sResultDocxDir, sPassword, sFontPath, sTemp);
+       int nRes = xls2xlsx_dir(sFrom, sResultDocxDir, sFontPath, sTemp, params);
        if(SUCCEEDED_X2T(nRes))
        {
            COfficeUtils oCOfficeUtils(NULL);
@@ -1857,9 +1863,19 @@ namespace NExtractTools
        }
        return AVS_FILEUTILS_ERROR_CONVERT;
    }
-   int xls2xlsx_dir (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sPassword, const std::wstring &sTemp, const std::wstring &sFontPath)
+   int xls2xlsx_dir (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sFontPath, const InputParams& params)
    {
-        return S_OK == ConvertXls2Xlsx( sFrom, sTo, sPassword, sFontPath, NULL) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+       long hRes = ConvertXls2Xlsx( sFrom, sTo, params.getPassword(), sFontPath, NULL);
+       if (AVS_ERROR_DRM == hRes)
+       {
+          copyOrigin(sFrom, *params.m_sFileTo);
+          return AVS_FILEUTILS_ERROR_CONVERT_DRM;
+       }
+       else if (AVS_ERROR_PASSWORD == hRes)
+       {
+          return AVS_FILEUTILS_ERROR_CONVERT_PASSWORD;
+       }
+       return 0 == hRes ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
    }
 
    // xls -> xlst

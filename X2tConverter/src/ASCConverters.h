@@ -63,8 +63,8 @@ namespace NExtractTools
     int doc2doct_bin    (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sFontPath);
     int docx_dir2doc    (const std::wstring &sDocxDir, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sFontPath);
 
-    int xls2xlsx		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sPassword, const std::wstring &sTemp, const std::wstring &sFontPath);
-    int xls2xlsx_dir    (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sPassword, const std::wstring &sTemp, const std::wstring &sFontPath);
+    int xls2xlsx		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sFontPath, const InputParams& params);
+    int xls2xlsx_dir    (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sFontPath, const InputParams& params);
     int xls2xlst        (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sPassword, const std::wstring &sTemp, const std::wstring &sFontPath, const std::wstring &sXmlOptions);
     int xls2xlst_bin    (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sPassword, const std::wstring &sTemp, const std::wstring &sFontPath, const std::wstring &sXmlOptions);
 
@@ -95,7 +95,7 @@ namespace NExtractTools
 
     int fromXlsxDir     (const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sFontPath, const std::wstring &sXmlOptions, const std::wstring &sThemeDir, bool bFromChanges, bool bPaid, const InputParams& params);
     int fromXlstBin     (const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sFontPath, const std::wstring &sXmlOptions, const std::wstring &sThemeDir, bool bFromChanges, bool bPaid, const InputParams& params);
-    int fromSpreadsheet (const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sPassword, const std::wstring &sTemp, const std::wstring &sFontPath, const std::wstring &sXmlOptions, const std::wstring &sThemeDir, bool bFromChanges, bool bPaid, const InputParams& params);
+    int fromSpreadsheet (const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sFontPath, const std::wstring &sXmlOptions, const std::wstring &sThemeDir, bool bFromChanges, bool bPaid, const InputParams& params);
 
     int fromPptxDir     (const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sFontPath, const std::wstring &sXmlOptions, const std::wstring &sThemeDir, bool bFromChanges, bool bPaid, const InputParams& params);
     int fromPpttBin     (const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sFontPath, const std::wstring &sXmlOptions, const std::wstring &sThemeDir, bool bFromChanges, bool bPaid, const InputParams& params);

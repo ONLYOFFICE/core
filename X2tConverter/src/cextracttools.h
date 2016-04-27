@@ -123,7 +123,13 @@ namespace NExtractTools
         TCSVD_COMMA = 4,
         TCSVD_SPACE = 5
     } TCsvDelimiter;
-	
+
+    static bool copyOrigin(const std::wstring& sFileFrom, const std::wstring& sFileTo)
+    {
+        size_t nIndex = sFileFrom.rfind('.');
+        return NSFile::CFileBinary::Copy(sFileFrom, NSSystemPath::GetDirectoryName(sFileTo) + FILE_SEPARATOR_STR + _T("origin") + sFileFrom.substr(nIndex));
+    }
+
     class InputParamsMailMerge
     {
     public:
@@ -235,6 +241,7 @@ namespace NExtractTools
         InputParamsMailMerge* m_oMailMergeSend;
 		int* m_nDoctParams;
 		std::wstring* m_sHtmlFileInternalPath;
+		std::wstring* m_sPassword;
 	public:
 		InputParams()
 		{
@@ -254,6 +261,7 @@ namespace NExtractTools
             m_oMailMergeSend = NULL;
 			m_nDoctParams = NULL;
 			m_sHtmlFileInternalPath = NULL;
+			m_sPassword = NULL;
 		}
 		~InputParams()
 		{
@@ -273,6 +281,7 @@ namespace NExtractTools
             RELEASEOBJECT(m_oMailMergeSend);
 			RELEASEOBJECT(m_nDoctParams);
 			RELEASEOBJECT(m_sHtmlFileInternalPath);
+			RELEASEOBJECT(m_sPassword);
 		}
 		
 		bool FromXmlFile(std::wstring sFilename)
@@ -329,6 +338,8 @@ namespace NExtractTools
                                         m_nDoctParams = new int(XmlUtils::GetInteger(sValue));
                                     else if(_T("m_sHtmlFileInternalPath") == sName)
                                         m_sHtmlFileInternalPath = new std::wstring(sValue);
+                                    else if(_T("m_sPassword") == sName)
+                                        m_sPassword = new std::wstring(sValue);
                                 }
                             }
 						}
@@ -337,9 +348,9 @@ namespace NExtractTools
 			}
 			return true;
 		}
-        std::wstring getPassword()
+		std::wstring getPassword() const
         {
-            return L"";
+            return (NULL != m_sPassword) ? (*m_sPassword) : L"";
         }
 
         std::wstring getXmlOptions()
@@ -445,8 +456,7 @@ namespace NExtractTools
                 {
                     if(!getDontSaveAdditional())
                     {
-                        size_t nIndex = m_sFileFrom->rfind('.');
-                        NSFile::CFileBinary::Copy(*m_sFileFrom, NSSystemPath::GetDirectoryName(*m_sFileTo) + FILE_SEPARATOR_STR + _T("origin") + m_sFileFrom->substr(nIndex));
+                        copyOrigin(*m_sFileFrom, *m_sFileTo);
                     }
                     eRes = TCD_ERROR;
                 }
@@ -467,8 +477,7 @@ namespace NExtractTools
                     oBuilder.WriteString(_T("}"));
                     std::wstring sFilePath = NSSystemPath::GetDirectoryName(*m_sFileTo) + FILE_SEPARATOR_STR + _T("settings.json");
                     NSFile::CFileBinary::SaveToFile(sFilePath, oBuilder.GetData());
-                    size_t nIndex = m_sFileFrom->rfind('.');
-                    NSFile::CFileBinary::Copy(*m_sFileFrom, NSSystemPath::GetDirectoryName(*m_sFileTo) + FILE_SEPARATOR_STR + _T("origin") + m_sFileFrom->substr(nIndex));
+                    copyOrigin(*m_sFileFrom, *m_sFileTo);
                 }
                 eRes = TCD_ERROR;
             }

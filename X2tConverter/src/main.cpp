@@ -341,7 +341,7 @@ int main(int argc, char *argv[])
     }
     else if (TCD_XLS2XLSX == conversion)
     {
-        result =  xls2xlsx (sFileFrom, sFileTo, sPassword, sTempDir, sFontPath);
+        result =  xls2xlsx (sFileFrom, sFileTo, sTempDir, sFontPath, oInputParams);
     }
     else if (TCD_XLS2XLST == conversion)
     {
@@ -381,7 +381,7 @@ int main(int argc, char *argv[])
     }
     else if (TCD_SPREADSHEET2 == conversion)
     {
-        result = fromSpreadsheet(sFileFrom, nFormatFrom, sFileTo, nFormatTo, sPassword, sTempDir, sFontPath, sXmlOptions, sThemeDir, bFromChanges, bPaid, oInputParams);
+        result = fromSpreadsheet(sFileFrom, nFormatFrom, sFileTo, nFormatTo, sTempDir, sFontPath, sXmlOptions, sThemeDir, bFromChanges, bPaid, oInputParams);
     }
     else if (TCD_PRESENTATION2 == conversion)
     {

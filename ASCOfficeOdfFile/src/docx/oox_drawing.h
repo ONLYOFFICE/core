@@ -9,7 +9,7 @@
 #include "mediaitems.h"
 #include "oox_drawing_fills.h"
 
-#include "../../../common/docxformat/source/base/types_32.h"
+#include "../../../Common/DocxFormat/Source/Base/Types_32.h"
 
 static const int _odf_to_oox_ShapeType[]=
 { 4,4,4,34,};

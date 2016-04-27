@@ -220,7 +220,7 @@ $(DJVUFILE): $(DJVUFILE_DEP)
 $(ASCDOCUMENTSCORE): $(ASCDOCUMENTSCORE_DEP)
 
 %.build/Makefile: %.pro
-	mkdir -p $(dir $@) && cd $(dir $@) && qmake -r -spec linux-g++ $<
+	mkdir -p $(dir $@) && cd $(dir $@) && qmake -r -spec linux-g++ CONGIG+=build_fast $<
 
 clean:
 	rm -rf $(TARGETS)

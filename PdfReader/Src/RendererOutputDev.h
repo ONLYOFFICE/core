@@ -98,19 +98,31 @@ namespace PdfReader
 			return true;
 		}
 		virtual bool UseTilingPatternFill()
-		{
+        {
+            if (m_bDrawOnlyText)
+                return true;
+
 			return false;
 		}
 		virtual bool UseFunctionalShadedFills()
 		{
-			return false;
+            if (m_bDrawOnlyText)
+                return true;
+
+            return false;
 		}
 		virtual bool UseAxialShadedFills()
 		{
+            if (m_bDrawOnlyText)
+                return true;
+
 			return m_bUseAxialShaded;
 		}
 		virtual bool UseRadialShadedFills()
 		{
+            if (m_bDrawOnlyText)
+                return true;
+
 			return m_bUseRadialShaded;
 		}
 		virtual bool UseClipTo()

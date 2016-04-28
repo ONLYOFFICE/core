@@ -4978,36 +4978,32 @@ namespace BinDocxRW
 						OOX::Logic::CObject* pObject = static_cast<OOX::Logic::CObject*>(item);
 						
 						CString* pXml = pObject ? pObject->m_sXml.GetPointer() : NULL;
-						
-						CString sProgID;
-						if ((pObject) && (pObject->m_oOleObject.IsInit()))
-							sProgID = pObject->m_oOleObject->m_sProgId.get().GetString();
-						
 						int nPosObject = m_oBcw.WriteItemStart(c_oSerRunType::object);
 
-						if ( _T("Word.Document") == sProgID)
+						if(pObject && pObject->m_oOleObject.IsInit() && pObject->m_oOleObject->m_sProgId.IsInit() && pObject->m_oOleObject->m_oId.IsInit())
 						{
-							int nPosEmbedded = m_oBcw.WriteItemStart(c_oSerImageType2::Embedded);
-
-							OOX::Rels::CRelationShip* oRels = NULL;
-							smart_ptr<OOX::File> pFile = m_oParamsDocumentWriter.m_pRels->Find( OOX::RId(pObject->m_oOleObject->m_oId.get().GetValue()));
-
-							CString sLink;
-							if (pFile.IsInit() && OOX::FileTypes::OleObject == pFile->type())
+							CString sProgID = pObject->m_oOleObject->m_sProgId.get().GetString();
+							if ( _T("Word.Document") == sProgID)
 							{
-								OOX::HyperLink* pHyperlinkFile = static_cast<OOX::HyperLink*>(pFile.operator ->());
-								sLink = pHyperlinkFile->Uri().GetPath();
+								int nPosEmbedded = m_oBcw.WriteItemStart(c_oSerImageType2::Embedded);
+
+								OOX::Rels::CRelationShip* oRels = NULL;
+								smart_ptr<OOX::File> pFile = m_oParamsDocumentWriter.m_pRels->Find( OOX::RId(pObject->m_oOleObject->m_oId.get().GetValue()));
+
+								CString sLink;
+								if (pFile.IsInit() && OOX::FileTypes::OleObject == pFile->type())
+								{
+									OOX::HyperLink* pHyperlinkFile = static_cast<OOX::HyperLink*>(pFile.operator ->());
+									sLink = pHyperlinkFile->Uri().GetPath();
+								}
+								OOX::CPath path(sLink);
+								OOX::CDocument poDocumentEmbedded(path, path);
+								WriteDocumentContent(poDocumentEmbedded.m_arrItems);
+								m_oBcw.WriteItemEnd(nPosEmbedded);
 							}
-							OOX::CPath path(sLink);
-							OOX::CDocument poDocumentEmbedded(path, path);
-							WriteDocumentContent(poDocumentEmbedded.m_arrItems);
-							m_oBcw.WriteItemEnd(nPosEmbedded);
-						}
-						else
-						{
-							//write equation
-							if ( _T("Equation.3") == sProgID)
+							else if ( _T("Equation.3") == sProgID)
 							{
+								//write equation
 								OOX::Rels::CRelationShip* oRels = NULL;
 								smart_ptr<OOX::File> pFile = m_oParamsDocumentWriter.m_pRels->Find( OOX::RId(pObject->m_oOleObject->m_oId.get().GetValue()));
 
@@ -5021,7 +5017,7 @@ namespace BinDocxRW
 
 								MathEquation::CEquationReader oReader(sLink);
 								oReader.SetOutputDev(&oBinEqWriter);
-								oReader.Parse();								
+								oReader.Parse();
 							}
 						}
 						//write Picture

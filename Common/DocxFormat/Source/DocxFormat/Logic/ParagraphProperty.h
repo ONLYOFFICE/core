@@ -998,6 +998,18 @@ namespace OOX
 				}
 				m_arrTabs.clear();
 			}
+			CTabs(const CTabs& oSrc)
+			{
+				*this = oSrc;
+			}
+			const CTabs& operator =(const CTabs &oTabs)
+			{
+				for(size_t i = 0; i < oTabs.m_arrTabs.size(); ++i)
+				{
+					m_arrTabs.push_back(new ComplexTypes::Word::CTabStop(*oTabs.m_arrTabs[i]));
+				}
+				return *this;
+			}
 		public:
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)

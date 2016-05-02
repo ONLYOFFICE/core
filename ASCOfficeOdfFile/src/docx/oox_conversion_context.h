@@ -23,6 +23,7 @@ public:
     std::wstringstream & paragraph_attr();
     std::wstringstream & table_style();
     std::wstringstream & list_style();
+	std::wstringstream & math_text_style();
 
     void docx_serialize_text_style(std::wostream & strm, std::wstring parenStyleId);
     void docx_serialize_table_style(std::wostream & strm);
@@ -38,6 +39,7 @@ public:
 
 private:
 	const odf_reader::style_instance *	current_processed_style_;
+	
 	std::wstring				extern_node_;
 	std::wstring				hlinkClick_;
 
@@ -46,6 +48,7 @@ private:
     std::wstringstream			paragraph_nodes_;
     std::wstringstream			paragraph_attr_;
     std::wstringstream			table_style_;
+	std::wstringstream			math_text_style_;
 };
 
 

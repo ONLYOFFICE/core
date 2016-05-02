@@ -7,6 +7,8 @@
 
 #include "office_elements_create.h"
 
+#include "datatypes/common_attlists.h"
+
 namespace cpdoccore { 
 namespace odf_reader {
 
@@ -26,11 +28,13 @@ public:
 
 	virtual std::wostream & text_to_stream(::std::wostream & _Wostream) const;
 private:
-    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
-    virtual void add_text(const std::wstring & Text);
+    virtual void add_attributes		( const xml::attributes_wc_ptr & Attributes );
+    virtual void add_child_element	( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_text			(const std::wstring & Text);
 
-    office_element_ptr_array    content_;
+	odf_types::common_math_style_attlist	common_attlist_;
+   
+	office_element_ptr_array    content_;
 	_CP_OPT(std::wstring)		text_;
 };
 
@@ -60,7 +64,9 @@ private:
     virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_text(const std::wstring & Text);
 
-    office_element_ptr_array    content_;
+	odf_types::common_math_style_attlist	common_attlist_;
+
+	office_element_ptr_array    content_;
 	_CP_OPT(std::wstring)		text_;
 };
 
@@ -86,7 +92,9 @@ private:
     virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_text(const std::wstring & Text);
 
-    office_element_ptr_array    content_;
+	odf_types::common_math_style_attlist	common_attlist_;
+
+	office_element_ptr_array    content_;
 	_CP_OPT(std::wstring)		text_;
 };
 
@@ -112,7 +120,9 @@ private:
     virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_text(const std::wstring & Text);
 
-    office_element_ptr_array    content_;
+	odf_types::common_math_style_attlist	common_attlist_;
+
+	office_element_ptr_array    content_;
 	_CP_OPT(std::wstring)		text_;
 };
 
@@ -138,7 +148,9 @@ private:
     virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_text(const std::wstring & Text);
 
-    office_element_ptr_array    content_;
+	odf_types::common_math_style_attlist	common_attlist_;
+
+	office_element_ptr_array    content_;
 	_CP_OPT(std::wstring)		text_;
 };
 
@@ -164,7 +176,9 @@ private:
     virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_text(const std::wstring & Text);
 
-    office_element_ptr_array    content_;
+ 	odf_types::common_math_style_attlist	common_attlist_;
+
+	office_element_ptr_array    content_;
 	_CP_OPT(std::wstring)		text_;
 };
 
@@ -190,7 +204,9 @@ private:
     virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_text(const std::wstring & Text);
 
-    office_element_ptr_array    content_;
+	odf_types::common_math_style_attlist	common_attlist_;
+
+	office_element_ptr_array    content_;
 	_CP_OPT(std::wstring)		text_;
 };
 

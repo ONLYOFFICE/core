@@ -11,7 +11,7 @@
 #include "style_chart_properties.h"
 #include "style_text_properties.h"
 
-#include "odfcontext.h"
+#include "office_settings.h"
 
 #include "draw_common.h"
 
@@ -174,20 +174,27 @@ void chart_build::docx_convert(oox::docx_conversion_context & Context)
 		
 		std::wstringstream temp_stream(Context.get_drawing_context().get_text_stream_frame());
 		Context.set_stream_man( boost::shared_ptr<oox::streams_man>( new oox::streams_man(temp_stream) ));	
+		
 		bool runState = Context.get_run_state();
 		Context.set_run_state(false);
 
 		bool pState = Context.get_paragraph_state();
 		Context.set_paragraph_state(false);		
-		
-		bool graphic_parent=false;
+
+		style_text_properties textProperty;
+		textProperty.content().style_font_name_ = L"Cambria Math";
+		textProperty.content().fo_font_size_	= odf_types::length(baseFontHeight_, odf_types::length::pt);
+		Context.push_text_properties(&textProperty);
 		
 		office_math_->docx_convert(Context);
 
+		Context.pop_text_properties();
+
 		Context.get_drawing_context().get_text_stream_frame() = temp_stream.str();
-		Context.set_stream_man(prev);
-		Context.set_run_state(runState);
-		Context.set_paragraph_state(pState);	
+		
+		Context.set_stream_man		(prev);
+		Context.set_run_state		(runState);
+		Context.set_paragraph_state	(pState);	
 	}
 }
 void chart_build::pptx_convert(oox::pptx_conversion_context & Context)
@@ -362,6 +369,27 @@ void chart_build::oox_convert(oox::oox_chart_context & chart)
 
 		chart.add_axis(type);
 		chart.set_content_axis(a);
+	}
+}
+//----------------------------------------------------------------------------------------
+process_build_chart::process_build_chart(chart_build & chartBuild, odf_read_context & context) :	
+						 stop_			(false)
+						,chart_build_	(chartBuild)
+						,styles_		(context.styleContainer())
+						,settings_		(context.Settings())
+						,draw_styles_	(context.drawStyles())
+{
+	office_element_ptr		sett_elm	= settings_.find_by_style_name(L"BaseFontHeight");
+	settings_config_item*	sett		= dynamic_cast<settings_config_item*>(sett_elm.get());
+	if (sett)
+	{
+		try
+		{
+			chart_build_.baseFontHeight_ =  boost::lexical_cast<int>(sett->content_);
+		}
+		catch(...)
+		{
+		}
 	}
 }
 void process_build_chart::ApplyChartProperties(std::wstring style,std::vector<_property> & propertiesOut)

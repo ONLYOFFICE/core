@@ -10,6 +10,7 @@
 #include "datatypes/common_attlists.h"
 #include "datatypes/fontstyle.h"
 #include "datatypes/fontweight.h"
+#include "datatypes/fontsize.h"
 
 namespace cpdoccore { 
 	
@@ -140,6 +141,9 @@ private:
 
     office_element_ptr_array    content_;
 
+	common_math_style_attlist	common_attlist_;
+	_CP_OPT(font_size)			mathsize_;
+	_CP_OPT(color)				color_;
 	_CP_OPT(font_weight)		fontweight_;
 };
 CP_REGISTER_OFFICE_ELEMENT2(math_mstyle);

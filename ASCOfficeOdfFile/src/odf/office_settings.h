@@ -21,14 +21,12 @@ public:
     static const ElementType type = typeOfficeSettings;
     CPDOCCORE_DEFINE_VISITABLE();
 
+    office_element_ptr_array content_;
+
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
-	virtual void add_text(const std::wstring & Text){}
-
-private:
-    office_element_ptr_array content_;
-   
+	virtual void add_text(const std::wstring & Text){} 
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(office_settings);
@@ -44,15 +42,14 @@ public:
     static const ElementType type = typeOfficeSettingsConfigItemSet;
     CPDOCCORE_DEFINE_VISITABLE();
 
+	std::wstring				config_name_;
+    office_element_ptr_array	content_;
+
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
 	virtual void add_text(const std::wstring & Text){}
-
-private:
-    office_element_ptr_array content_;
-
-    
+   
 };
 CP_REGISTER_OFFICE_ELEMENT2(settings_config_item_set);
 
@@ -67,15 +64,13 @@ public:
     static const ElementType type = typeOfficeSettingsConfigItem;
     CPDOCCORE_DEFINE_VISITABLE();
 
+	std::wstring	config_name_;
+ 	std::wstring	config_type_;
+	std::wstring	content_;
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
-	virtual void add_text(const std::wstring & Text){}
-
-private:
-    office_element_ptr_array content_;
-
-    
+	virtual void add_text(const std::wstring & Text){	content_ = Text;	}
 };
 CP_REGISTER_OFFICE_ELEMENT2(settings_config_item);
 

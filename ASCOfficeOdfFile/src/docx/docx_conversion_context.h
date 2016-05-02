@@ -430,9 +430,9 @@ public:
 
     std::wstring add_mediaitem(const std::wstring & uri, mediaitems::Type type, bool & isInternal, std::wstring & ref);
     
-	void dump_mediaitems(rels & Rels);
-    void dump_headers_footers(rels & Rels) const;
-    void dump_notes(rels & Rels) const;
+	void dump_mediaitems		(rels & Rels);
+    void dump_headers_footers	(rels & Rels) const;
+    void dump_notes				(rels & Rels) const;
 
  	bool next_dump_page_properties_;
 	bool next_dump_section_;
@@ -556,8 +556,8 @@ public:
 	bool process_math_formula_;
 
 	void set_process_headers_footers(bool Val) { process_headers_footers_ = Val; }
-    headers_footers & get_headers_footers() { return headers_footers_; }
-	header_footer_context & get_header_footer_context() { return header_footer_context_; }
+    headers_footers			& get_headers_footers() { return headers_footers_; }
+	header_footer_context	& get_header_footer_context() { return header_footer_context_; }
 	bool process_headers_footers_;
 
 	drop_cap_context & get_drop_cap_context(){return drop_cap_context_;}

@@ -30,6 +30,7 @@
 #include "officevaluetype.h"
 #include "fillimagerefpoint.h"
 #include "borderstyle.h"
+#include "mathvariant.h"
 
 #define _CP_APPLY_PROP(A, B) \
     if (B) \
@@ -115,6 +116,20 @@ public:
     _CP_OPT(length_or_percent) fo_margin_;
 
     friend class style_page_layout_properties_attlist;
+};
+
+//  common-math_style_attlist
+class common_math_style_attlist
+{
+public:
+    void add_attributes( const xml::attributes_wc_ptr & Attributes );
+    void apply_from(const common_math_style_attlist & Other);
+
+	void serialize(CP_ATTR_NODE);
+
+public:
+    _CP_OPT(math_variant) mathvariant_;
+
 };
 
 // common-break-attlist

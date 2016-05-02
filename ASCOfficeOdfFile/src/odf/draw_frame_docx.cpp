@@ -1251,7 +1251,7 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 		
 		if (contentSubDoc)//Diagramma.odt - кривые ссылки на объекты
 		{
-			process_build_chart process_build_object_(objectBuild, objectSubDoc.odf_context().styleContainer(), objectSubDoc.odf_context().drawStyles());
+			process_build_chart process_build_object_(objectBuild, objectSubDoc.odf_context());
 			contentSubDoc->accept(process_build_object_); 
 
 			objectBuild.docx_convert(Context);		

@@ -19,8 +19,32 @@ bool operator== (const color & c1, const color & c2)
     if (c1.get_hex_value() == c2.get_hex_value())return true;
     else return false;
 }
+
+std::wstring html4_colors[16][2] = 
+{	{L"aqua"	, L"#00ffff"},
+	{L"black"	, L"#000000"}, 
+	{L"blue"	, L"#0000ff"}, 
+	{L"fuchsia"	, L"#ff00ff"}, 
+	{L"gray"	, L"#808080"}, 
+	{L"green"	, L"#008000"}, 
+	{L"lime"	, L"#00ff00"}, 
+	{L"maroon"	, L"#800000"}, 
+	{L"navy"	, L"#000080"},
+	{L"olive"	, L"#808000"}, 
+	{L"purple"	, L"#800080"}, 
+	{L"red"		, L"#ff0000"}, 
+	{L"silver"	, L"#c0c0c0"}, 
+	{L"teal"	, L"#008080"}, 
+	{L"white"	, L"#FFFFFF"}, 
+	{L"yellow"	, L"#ffff00"}
+};
 color color::parse(const std::wstring & Str)
 {
+	for (int i = 0 ; i < 16; i++)
+	{
+		if (Str == html4_colors[i][0])
+			return color(html4_colors[i][1]);
+	}
     return color(Str);
 }
 

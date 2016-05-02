@@ -1,7 +1,10 @@
 
 #include "math_token_elements.h"
+#include "style_text_properties.h"
 
 #include <boost/foreach.hpp>
+
+#include <cpdoccore/odf/odf_document.h>
 
 #include <cpdoccore/xml/xmlchar.h>
 #include <cpdoccore/xml/attributes.h>
@@ -20,7 +23,7 @@ const wchar_t * math_mi::name = L"mi";
 //----------------------------------------------------------------------------------------------------
 void math_mi::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-
+	common_attlist_.add_attributes(Attributes);
 }
 
 void math_mi::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
@@ -44,19 +47,51 @@ void math_mi::docx_convert(oox::docx_conversion_context & Context)
 {
 	if (!text_) return;
 
-	std::wostream & strm = Context.output_stream();
-   
-	CP_XML_WRITER(strm)
+
+	CP_XML_WRITER(Context.output_stream())
     {
 		CP_XML_NODE(L"m:r")
 		{
+		
+			Context.get_styles_context().start();
+			Context.current_text_properties()->docx_convert(Context);
+		
+			if (common_attlist_.mathvariant_)
+			{
+				std::wstring m_sty_val;
+				if (common_attlist_.mathvariant_->style_.bold)	m_sty_val += L"b";
+				if (common_attlist_.mathvariant_->style_.italic)m_sty_val += L"i";
+
+				CP_XML_NODE(L"m:rPr")
+				{
+					if (!m_sty_val.empty())
+					{
+						CP_XML_NODE(L"m:sty")
+						{
+							CP_XML_ATTR(L"m:val", m_sty_val);
+						}
+					}
+					if (common_attlist_.mathvariant_->style_.type > 0)
+					{
+						CP_XML_NODE(L"m:scr")
+						{
+							switch(common_attlist_.mathvariant_->style_.type)
+							{
+								case 1: CP_XML_ATTR(L"m:val", L"double-struck");	break;
+								case 2: CP_XML_ATTR(L"m:val", L"fraktur");			break;
+								case 3: CP_XML_ATTR(L"m:val", L"script");			break;
+								case 4: CP_XML_ATTR(L"m:val", L"sans-serif");		break;
+								case 5: CP_XML_ATTR(L"m:val", L"monospace");		break;
+							}
+						}
+					}
+				}
+			}
+
 			CP_XML_NODE(L"w:rPr")
 			{
-				CP_XML_NODE(L"w:rFonts")
-				{
-					CP_XML_ATTR(L"w:hAnsi", L"Cambria Math");
-					CP_XML_ATTR(L"w:ascii", L"Cambria Math");
-				}
+				CP_XML_STREAM() << Context.get_styles_context().text_style().str();
+			
 			}
 			CP_XML_NODE(L"m:t")
 			{
@@ -72,6 +107,7 @@ const wchar_t * math_mo::name = L"mo";
 //----------------------------------------------------------------------------------------------------
 void math_mo::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
+	common_attlist_.add_attributes(Attributes);
 	CP_APPLY_ATTR(L"stretchy",		stretchy_);
 	CP_APPLY_ATTR(L"fence",			fence_);
 }
@@ -96,20 +132,18 @@ std::wostream & math_mo::text_to_stream(::std::wostream & _strm) const
 void math_mo::docx_convert(oox::docx_conversion_context & Context) 
 {
 	if (!text_) return;
-
-    std::wostream & strm = Context.output_stream();
    
-	CP_XML_WRITER(strm)
+	CP_XML_WRITER(Context.output_stream())
     {
 		CP_XML_NODE(L"m:r")
         {
+			// + доп стили текста ... todoooo
+			Context.get_styles_context().start();
+			Context.current_text_properties()->docx_convert(Context);
+
 			CP_XML_NODE(L"w:rPr")
 			{
-				CP_XML_NODE(L"w:rFonts")
-				{
-					CP_XML_ATTR(L"w:hAnsi", L"Cambria Math");
-					CP_XML_ATTR(L"w:ascii", L"Cambria Math");
-				}
+				CP_XML_STREAM() << Context.get_styles_context().text_style().str();
 			}	
 			CP_XML_NODE(L"m:t")
 			{
@@ -125,6 +159,7 @@ const wchar_t * math_mn::name = L"mn";
 //----------------------------------------------------------------------------------------------------
 void math_mn::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
+	common_attlist_.add_attributes(Attributes);
 
 }
 
@@ -143,20 +178,18 @@ void math_mn::docx_convert(oox::docx_conversion_context & Context)
 {
 	if (!text_) return;
 
-	std::wostream & strm = Context.output_stream();
-   
-	CP_XML_WRITER(strm)
+	CP_XML_WRITER(Context.output_stream())
     {
 		CP_XML_NODE(L"m:r")
 		{
+			// + доп стили текста ... todoooo
+			Context.get_styles_context().start();
+			Context.current_text_properties()->docx_convert(Context);
+
 			CP_XML_NODE(L"w:rPr")
 			{
-				CP_XML_NODE(L"w:rFonts")
-				{
-					CP_XML_ATTR(L"w:hAnsi", L"Cambria Math");
-					CP_XML_ATTR(L"w:ascii", L"Cambria Math");
-				}
-			}
+				CP_XML_STREAM() << Context.get_styles_context().text_style().str();
+			}	
 			CP_XML_NODE(L"m:t")
 			{
 				//CP_XML_ATTR(L"xml:space", L"preserve");
@@ -171,6 +204,7 @@ const wchar_t * math_ms::name = L"ms";
 //----------------------------------------------------------------------------------------------------
 void math_ms::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
+	common_attlist_.add_attributes(Attributes);
 
 }
 
@@ -219,6 +253,7 @@ const wchar_t * math_mtext::name = L"mtext";
 //----------------------------------------------------------------------------------------------------
 void math_mtext::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
+	common_attlist_.add_attributes(Attributes);
 
 }
 
@@ -243,6 +278,7 @@ const wchar_t * math_mglyph::name = L"mglyph";
 //----------------------------------------------------------------------------------------------------
 void math_mglyph::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
+	common_attlist_.add_attributes(Attributes);
 
 }
 

@@ -91,24 +91,24 @@ void docx_conversion_context::add_element_to_run(std::wstring parenStyleId)
     if (!current_run_)
     {
         current_run_ = true;
-	output_stream() << L"<w:r>";
+		output_stream() << L"<w:r>";
 
-    if (!text_properties_stack_.empty() || parenStyleId.length() > 0)
-    {
-		if (!text_properties_stack_.empty())
+		if (!text_properties_stack_.empty() || parenStyleId.length() > 0)
 		{
-			odf_reader::style_text_properties_ptr textProp = this->current_text_properties();
-			get_styles_context().start();
+			if (!text_properties_stack_.empty())
+			{
+				odf_reader::style_text_properties_ptr textProp = this->current_text_properties();
+				get_styles_context().start();
 
 
-			if(( textProp) && (textProp->content().r_style_))parenStyleId = _T("");
-			textProp->content().docx_convert(*this);
+				if(( textProp) && (textProp->content().r_style_))parenStyleId = _T("");
+				textProp->content().docx_convert(*this);
+			}
+	        
+			get_styles_context().docx_serialize_text_style( output_stream(), parenStyleId);
 		}
-        
-		get_styles_context().docx_serialize_text_style( output_stream(), parenStyleId);
-    }
 
-}
+	}
 }
 
 void docx_conversion_context::start_paragraph()

@@ -47,6 +47,11 @@ std::wstringstream & styles_context::text_style()
     return text_style_;
 }
 
+std::wstringstream & styles_context::math_text_style()
+{
+    return math_text_style_;
+}
+
 std::wstringstream & styles_context::paragraph_nodes()
 {
     return paragraph_nodes_;

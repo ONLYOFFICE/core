@@ -23,6 +23,7 @@
 #include "office_text.h"
 #include "math_elements.h"
 #include "table.h"
+#include "odfcontext.h"
 
 namespace cpdoccore { 
 
@@ -82,7 +83,8 @@ public:
 		columns_count_(0),
 		object_type_(0),
 		office_text_(NULL),
-		office_math_(NULL)
+		office_math_(NULL),
+		baseFontHeight_(12)
     {
 	}
 	
@@ -122,11 +124,14 @@ public:
 	int			object_type_;
 	office_text *office_text_;
  	office_math	*office_math_;
+
+	int baseFontHeight_;
  
-	std::wstring str_class_;  
-	chart::class_type class_;  
-	std::wstring style_name_;
- 	std::wstring name_;
+//---------------------------------------------------------------
+	std::wstring		str_class_;  
+	chart::class_type	class_;  
+	std::wstring		style_name_;
+ 	std::wstring		name_;
   
 	bool in_axis_;
     std::vector<chart::axis>	axises_;
@@ -135,13 +140,12 @@ public:
 
 	std::wstring domain_cell_range_adress_;
 
-	chart::title title_;
-	office_element_ptr_array title_odf_context_;
+	chart::title				title_;
+	office_element_ptr_array	title_odf_context_;
 
-	chart::title sub_title_;
-	chart::simple legend_;
-
-	chart::plot_area plot_area_;
+	chart::title				sub_title_;
+	chart::simple				legend_;
+	chart::plot_area			plot_area_;
 
 	chart::simple wall_;
 	chart::simple floor_;
@@ -226,13 +230,7 @@ class process_build_chart : public base_visitor,
 {
 public:
 
-    process_build_chart(chart_build & chartBuild, styles_container & styles, styles_lite_container & draw_styles):	
-	 stop_(false)
-	,chart_build_(chartBuild)
-	,styles_(styles)
-	,draw_styles_(draw_styles)
-    {
-    }
+	process_build_chart(chart_build & chartBuild, odf_read_context & context);
 
 private:
 	void ApplyChartProperties(std::wstring style,std::vector<_property> & propertiesOut);
@@ -297,7 +295,9 @@ private:
     bool stop_;
     
 	chart_build				& chart_build_;
+
 	styles_container		& styles_;
+	styles_lite_container	& settings_;
 	styles_lite_container	& draw_styles_;
 
 

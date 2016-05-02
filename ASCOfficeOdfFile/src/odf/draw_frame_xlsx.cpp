@@ -232,7 +232,7 @@ void draw_object::xlsx_convert(oox::xlsx_conversion_context & Context)
 		
 		if (contentSubDoc)
 		{
-			process_build_chart process_build_object_(objectBuild, objectSubDoc.odf_context().styleContainer(), objectSubDoc.odf_context().drawStyles() );
+			process_build_chart process_build_object_(objectBuild, objectSubDoc.odf_context());
 			contentSubDoc->accept(process_build_object_); 
 		}
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

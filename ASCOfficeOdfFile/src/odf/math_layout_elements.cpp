@@ -1,6 +1,7 @@
 
 #include "math_layout_elements.h"
 #include "math_token_elements.h"
+#include "style_text_properties.h"
 
 #include <boost/foreach.hpp>
 
@@ -82,14 +83,15 @@ void math_mrow::docx_convert(oox::docx_conversion_context & Context)
 					mo_test_last->text_to_stream(Context.output_stream());
 				Context.output_stream() << L"\"/>";
 			}
+			Context.output_stream() << Context.get_styles_context().math_text_style().str();
 		Context.output_stream() << L"</m:dPr>";
 			Context.output_stream() << L"<m:e>";
 	}
 	
-			for (int i = i_start; i < i_end ; i++)
-			{
-				content_[i]->docx_convert(Context);
-			}
+	for (int i = i_start; i < i_end ; i++)
+	{
+		content_[i]->docx_convert(Context);
+	}
 
 	if (bDPr)
 	{
@@ -149,6 +151,7 @@ void math_msqrt::docx_convert(oox::docx_conversion_context & Context)
 	strm << L"<m:rad>";
 		strm << L"<m:radPr>";
 			strm << L"<m:degHide m:val=\"1\"/>";
+			strm << Context.get_styles_context().math_text_style().str();
 		strm << L"</m:radPr>";
 
 		strm << L"<m:deg/>";
@@ -181,7 +184,9 @@ void math_mroot::docx_convert(oox::docx_conversion_context & Context)
 
 	strm << L"<m:rad>";
 
-		strm << L"<m:radPr/>";
+		strm << L"<m:radPr>";
+			strm << Context.get_styles_context().math_text_style().str();
+		strm << L"</m:radPr>";
 		
 		strm << L"<m:deg>";
 			content_[1]->docx_convert(Context);
@@ -199,11 +204,16 @@ const wchar_t * math_mstyle::name = L"mstyle";
 //----------------------------------------------------------------------------------------------------
 void math_mstyle::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
+	common_attlist_.add_attributes(Attributes);
 // ver 2	
     CP_APPLY_ATTR(L"math:fontweight", fontweight_);
-    
+	CP_APPLY_ATTR(L"math:mathsize", mathsize_);
+	CP_APPLY_ATTR(L"math:color", color_);
+   
 // ver 3	
-	if (!fontweight_) CP_APPLY_ATTR( L"fontweight", fontweight_);
+	if (!fontweight_)	CP_APPLY_ATTR( L"fontweight", fontweight_);
+	if (!mathsize_)	CP_APPLY_ATTR(L"mathsize", mathsize_);
+	if (!color_)		CP_APPLY_ATTR(L"color", color_);
 }
 
 void math_mstyle::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
@@ -213,9 +223,69 @@ void math_mstyle::add_child_element( xml::sax * Reader, const ::std::wstring & N
 
 void math_mstyle::docx_convert(oox::docx_conversion_context & Context) 
 {
+	style_text_properties textProperty;
+	
+	if (mathsize_)
+		textProperty.content().fo_font_size_ = mathsize_;
+	if (color_)
+		textProperty.content().fo_color_ = color_;
+	if (common_attlist_.mathvariant_)
+	{
+		if (common_attlist_.mathvariant_->style_.bold)
+			textProperty.content().fo_font_weight_ = odf_types::font_weight(odf_types::font_weight::WBold);
+		if (common_attlist_.mathvariant_->style_.italic)
+			textProperty.content().fo_font_style_ = odf_types::font_style(odf_types::font_style::Italic);
+	}
+
+	Context.push_text_properties(&textProperty);
+//--------------------------------------------------
+	{
+		std::wstringstream & strm = Context.get_styles_context().math_text_style();
+		strm.str( std::wstring() );
+		strm.clear();
+
+		CP_XML_WRITER(strm)
+		{ 
+			CP_XML_NODE(L"m:ctrlPr")
+			{
+				Context.get_styles_context().start();
+				Context.current_text_properties()->docx_convert(Context);
+
+				CP_XML_NODE(L"w:rPr")
+				{
+					CP_XML_STREAM() << Context.get_styles_context().text_style().str();
+				}	
+			}
+		}
+	}
+
 	BOOST_FOREACH(const office_element_ptr & elm, content_)
 	{
 		elm->docx_convert(Context);
+	}
+	
+	Context.pop_text_properties();
+
+// reset style ... todooo גûםוסעט מעהוכüםמ..
+
+	{
+		std::wstringstream & strm = Context.get_styles_context().math_text_style();
+		strm.str( std::wstring() );
+		strm.clear();
+
+		CP_XML_WRITER(strm)
+		{ 
+			CP_XML_NODE(L"m:ctrlPr")
+			{
+				Context.get_styles_context().start();
+				Context.current_text_properties()->docx_convert(Context);
+
+				CP_XML_NODE(L"w:rPr")
+				{
+					CP_XML_STREAM() << Context.get_styles_context().text_style().str();
+				}	
+			}
+		}
 	}
 }
 //---------------------------------------------------------------

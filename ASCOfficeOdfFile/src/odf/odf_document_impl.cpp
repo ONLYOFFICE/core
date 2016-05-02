@@ -105,6 +105,9 @@ odf_document::Impl::Impl(const std::wstring & folderPath, const ProgressCallback
     _CP_LOG << L"[info] parse manifest" << std::endl;
     parse_manifests();
 
+    _CP_LOG << L"[info] parse settings" << std::endl;
+    parse_settings();
+
 	UpdateProgress(400000);
 }
 bool odf_document::Impl::UpdateProgress(long nComplete)
@@ -198,7 +201,8 @@ void odf_document::Impl::parse_manifests()
 	if (!manifest_xml_)return;
 
     office_document_base * document = dynamic_cast<office_document_base *>( manifest_xml_->get_content() );
-    if (!document)return;
+    
+	if (!document)return;
 
 	int res =-1;
 	BOOST_FOREACH(office_element_ptr & elm, document->manifests_)
@@ -224,6 +228,34 @@ void odf_document::Impl::parse_manifests()
 			if (res>=0)
 			{
 				office_mime_type_ = 3;
+			}
+		}
+	}
+}
+
+void odf_document::Impl::parse_settings()
+{
+	if (!settings_xml_)return;
+   
+	office_document_base * document = dynamic_cast<office_document_base *>( settings_xml_->get_content() );
+	if (!document)	return;
+
+	office_settings * settings = dynamic_cast<office_settings*>(document->office_settings_.get());
+	if (!settings)	return;
+
+	BOOST_FOREACH(office_element_ptr & elm, settings->content_)
+    {
+		settings_config_item_set * item_set = dynamic_cast<settings_config_item_set *>(elm.get());
+		if (!item_set)continue;
+
+		if (item_set->config_name_ == L"ooo:configuration-settings")
+		{
+			BOOST_FOREACH(office_element_ptr & elm_sett, item_set->content_)
+			{		
+				settings_config_item * sett = dynamic_cast<settings_config_item *>(elm_sett.get());
+				if (!sett)continue;
+
+				context_->Settings().add(sett->config_name_, elm_sett);
 			}
 		}
 	}
@@ -683,5 +715,6 @@ office_element * odf_document::Impl::get_content()
 {
     return content_xml_->get_content();
 }
+
 }
 }

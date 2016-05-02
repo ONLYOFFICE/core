@@ -674,6 +674,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\odf\datatypes\mathvariant.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\odf\datatypes\mathvariant.h"
+				>
+			</File>
+			<File
 				RelativePath="..\src\odf\datatypes\noteclass.cpp"
 				>
 			</File>

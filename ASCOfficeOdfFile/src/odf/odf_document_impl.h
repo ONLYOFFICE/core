@@ -46,9 +46,11 @@ private:
 	short bUserStopConvert;
    
 	odf_read_context_ptr context_;
-    void parse_styles();
+    
+	void parse_styles();
     void parse_fonts();
 	void parse_manifests();
+    void parse_settings();
 
 private:
     content_xml_t_ptr content_xml_;

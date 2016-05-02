@@ -175,6 +175,22 @@ void common_margin_attlist::apply_from(const common_margin_attlist & Other)
     // TODO
     _CP_APPLY_PROP(fo_margin_, Other.fo_margin_);
 }
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void common_math_style_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+	CP_APPLY_ATTR(L"math:mathvariant", mathvariant_);
+	
+	if (!mathvariant_)	CP_APPLY_ATTR(L"mathvariant", mathvariant_);
+}
+void common_math_style_attlist::serialize(CP_ATTR_NODE)
+{
+    CP_XML_ATTR_OPT(L"mathvariant", mathvariant_);
+}
+void common_math_style_attlist::apply_from(const common_math_style_attlist & Other)
+{
+    // TODO
+    _CP_APPLY_PROP(mathvariant_, Other.mathvariant_);
+}
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 void common_break_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )

@@ -63,9 +63,12 @@ namespace DocFileFormat
 
         //read the number text
 		short strLen = reader->ReadInt16();
-		bytes = reader->ReadBytes( ( strLen * 2 ), true );
-		FormatUtils::GetSTLCollectionFromBytes<wstring>( &(this->xst), bytes, ( strLen * 2 ), ENCODING_UNICODE );
-		RELEASEARRAYOBJECTS( bytes );
+		if (strLen > 0)//file(14).doc
+		{
+			bytes = reader->ReadBytes( ( strLen * 2 ), true );
+			FormatUtils::GetSTLCollectionFromBytes<wstring>( &(this->xst), bytes, ( strLen * 2 ), ENCODING_UNICODE );
+			RELEASEARRAYOBJECTS( bytes );
+		}
 
 		long endPos = reader->GetPosition();
         reader->Seek( startPos, 0/*STREAM_SEEK_SET*/ );

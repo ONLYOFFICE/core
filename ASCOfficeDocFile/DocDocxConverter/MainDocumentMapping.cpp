@@ -65,6 +65,7 @@ namespace DocFileFormat
 		while (cp < countText)
 		{
 			fc = m_document->FindFileCharPos(cp);
+			if (fc < 0) break;
 
 			papx = findValidPapx(fc);
 
@@ -96,6 +97,8 @@ namespace DocFileFormat
 				
 				int fc						=	m_document->FindFileCharPos(0);
 				int fcEnd					=	m_document->FindFileCharPos(countTextRel);
+
+				if (fc < 0 || fcEnd < 0) break;
 				
 				// Read the chars
 				vector<wchar_t>* chpxChars	=	m_document->m_PieceTable->GetEncodingChars (fc, fcEnd, m_document->WordDocumentStream);		//<! NEED OPTIMIZE

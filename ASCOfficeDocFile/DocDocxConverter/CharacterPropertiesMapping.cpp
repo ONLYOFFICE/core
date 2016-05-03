@@ -256,7 +256,8 @@ namespace DocFileFormat
 					if( nIndex < _doc->FontTable->cData )
 					{
 						FontFamilyName* ffn = static_cast<FontFamilyName*>( _doc->FontTable->operator [] ( nIndex ) );
-						this->m_sDefaultFont = ffn->xszFtn;
+						if (ffn)
+							this->m_sDefaultFont = ffn->xszFtn;
 					}
 				}break;
 			case sprmCHpsBi :

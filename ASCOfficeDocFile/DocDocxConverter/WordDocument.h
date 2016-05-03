@@ -72,7 +72,8 @@ namespace DocFileFormat
 
 		inline int FindFileCharPos(int cp)
 		{
-			return m_PieceTable->FileCharacterPositions->find(cp)->second;
+			std::map<int, int>::iterator it = m_PieceTable->FileCharacterPositions->find(cp);
+			return (it != m_PieceTable->FileCharacterPositions->end()) ? it->second : -1;
 		}
 
 	private:

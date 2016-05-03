@@ -443,6 +443,8 @@ namespace DocFileFormat
 			int fc		=	m_document->FindFileCharPos(iter->second);
 			int fcEnd	=	m_document->FindFileCharPos(iter->second + 1);
 
+			if (fc < 0 || fcEnd < 0 ) break;
+
 			list<CharacterPropertyExceptions*>* chpxs = m_document->GetCharacterPropertyExceptions(fc, fcEnd);
 
 			if ((chpxs != NULL) && (!chpxs->empty()))

@@ -126,6 +126,9 @@ namespace DocFileFormat
 		int		cp							=	initialCp;
 		int		fc							=	m_document->FindFileCharPos(cp); 
 		int		fcEnd						=	m_document->FindFileCharPos(cpEnd);
+
+		if (fc < 0 || fcEnd < 0) 
+			return 0;
 		
 		ParagraphPropertyExceptions* papx	=	findValidPapx(fc);
 
@@ -515,6 +518,7 @@ namespace DocFileFormat
 					std::wstring mergeformat( _T( " MERGEFORMAT" ) );
 					std::wstring quote		( _T( " QUOTE" ) );
 					std::wstring chart		( _T( "Chart" ) );
+					std::wstring PBrush		( _T( " PBrush" ) );
 
 					if ( search( f.begin(), f.end(), form.begin(), form.end() ) != f.end() )
 					{
@@ -1039,6 +1043,7 @@ namespace DocFileFormat
 		TableInfo tai( papx );
 
 		int fcRowEnd = findRowEndFc( cp, cp, nestingLevel );
+		ParagraphPropertyExceptions* papx_prev = NULL;
 
 		while ( tai.fInTable )
 		{
@@ -1073,6 +1078,10 @@ namespace DocFileFormat
 			papx = findValidPapx( fcRowEnd );
 			tai = TableInfo( papx );
 			fcRowEnd = findRowEndFc( cp, cp, nestingLevel );
+
+			if (papx_prev && papx_prev == papx )
+				break;//file(12).doc
+			papx_prev = papx;
 		}
 
 		//build the grid based on the boundaries
@@ -1123,8 +1132,12 @@ namespace DocFileFormat
 			//Search the "table trailer paragraph"
 			while ( ( tai.fTtp == false ) && ( tai.fInTable == true ) )
 			{
-				while ( m_document->Text->at( cp ) != TextMark::CellOrRowMark )
+				while ( true )
 				{
+					if (cp >= m_document->Text->size())
+						break;
+					if (m_document->Text->at( cp ) == TextMark::CellOrRowMark)
+						break;
 					cp++;
 				}
 

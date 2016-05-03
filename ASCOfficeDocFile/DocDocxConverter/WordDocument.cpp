@@ -179,7 +179,10 @@ namespace DocFileFormat
 		}
 
 		if (FIB->m_FibBase.fEncrypted)
+		{
+			Clear();
 			return AVS_ERROR_DRM;
+		}
 
 		// Get the streams
 		if (FIB->m_FibBase.fWhichTblStm)

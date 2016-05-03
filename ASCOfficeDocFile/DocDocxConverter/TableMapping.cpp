@@ -264,6 +264,7 @@ namespace DocFileFormat
 	bool Table::IsCellMarker(int _cp)
 	{
 		int fc = documentMapping->m_document->FindFileCharPos(_cp);
+		if (fc < 0) return false;
 
 		ParagraphPropertyExceptions* papx = NULL;
 
@@ -280,6 +281,7 @@ namespace DocFileFormat
 	bool Table::IsRowMarker( int _cp )
 	{
 		int fc = documentMapping->m_document->FindFileCharPos(_cp);
+		if (fc < 0) return false;
 
 		ParagraphPropertyExceptions* papx = NULL;
 
@@ -296,6 +298,7 @@ namespace DocFileFormat
 	bool Table::IsParagraphMarker( int _cp )
 	{
 		int fc = documentMapping->m_document->FindFileCharPos(_cp);
+		if (fc < 0) return false;
 
 		ParagraphPropertyExceptions* papx = NULL;
 
@@ -318,6 +321,7 @@ namespace DocFileFormat
 			SectionPropertyExceptions* sepxBackup = this->documentMapping->_lastValidSepx;
 
 			int fc = documentMapping->m_document->FindFileCharPos(_cp);
+			if (fc < 0) return;
 
 			ParagraphPropertyExceptions* papx = NULL;
 
@@ -331,6 +335,7 @@ namespace DocFileFormat
 			do
 			{
 				fc = documentMapping->m_document->FindFileCharPos(_cp);
+				if (fc < 0) break;
 
 				papx = this->documentMapping->findValidPapx( fc );
 
@@ -345,6 +350,7 @@ namespace DocFileFormat
 					_cp = innerTable.GetCPEnd();
 
 					fc = documentMapping->m_document->FindFileCharPos(_cp);
+					if (fc < 0) break;
 
 					papx = this->documentMapping->findValidPapx( fc );
 

@@ -37,6 +37,8 @@ namespace DocFileFormat
 		while ( cp < cpMax )
 		{
 			int fc = m_document->FindFileCharPos(cp);
+			if (fc < 0) break;
+
 			ParagraphPropertyExceptions* papx = findValidPapx( fc );
 			TableInfo tai( papx );
 

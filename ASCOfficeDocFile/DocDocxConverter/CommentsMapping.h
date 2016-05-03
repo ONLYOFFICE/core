@@ -61,6 +61,7 @@ namespace DocFileFormat
 					while ( ( cp - m_document->FIB->m_RgLw97.ccpText - m_document->FIB->m_RgLw97.ccpFtn - m_document->FIB->m_RgLw97.ccpHdr ) < (*m_document->IndividualCommentsPlex)[index + 1] )
 					{
 						int fc = m_document->FindFileCharPos(cp);
+						if (fc < 0) break;
 
 						ParagraphPropertyExceptions* papx = findValidPapx(fc);
 						TableInfo tai(papx);

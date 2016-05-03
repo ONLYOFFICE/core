@@ -27,7 +27,7 @@ public:
 	{
 		unsigned short rdUShort = 0;
 
-		if ( stream != NULL )
+		if (( stream != NULL ) && (position + 2 < stream->size()))
 		{		
 			stream->seek( position );
 			stream->read((unsigned char*)(&rdUShort), sizeof( rdUShort ));
@@ -42,7 +42,7 @@ public:
 	{
 		short rdShort = 0;
 
-		if ( stream != NULL )
+		if (( stream != NULL ) && (position + 2 < stream->size()))
 		{
 			stream->seek( position );
 			stream->read((unsigned char*)(&rdShort), sizeof( rdShort ));
@@ -57,7 +57,7 @@ public:
 	{
 		int rdInt = 0;
 
-		if ( stream != NULL )
+		if (( stream != NULL ) && (position + 4 < stream->size()))
 		{
 			stream->seek( position );
 			stream->read( (unsigned char*) &rdInt, sizeof( rdInt ) );
@@ -72,7 +72,7 @@ public:
 	{
 		int rdUInt = 0;
 
-		if ( stream != NULL )
+		if (( stream != NULL ) && (position + 4 < stream->size()))
 		{
 			stream->seek( position );
 			stream->read((unsigned char*) &rdUInt, sizeof( rdUInt ) );
@@ -87,7 +87,7 @@ public:
 	{
 		unsigned char rdByte = 0;
 
-		if ( this->stream != NULL )
+		if (( stream != NULL ) && (position + 1 < stream->size()))
 		{
 			stream->seek( position);
 			stream->read( (unsigned char*)&rdByte, sizeof( rdByte ) );
@@ -105,6 +105,11 @@ public:
 
 		if ( ( stream != NULL ) && ( count > 0 ) && isResultNeeded )
 		{
+			if (position + count > stream->size())
+			{
+				if (position > stream->size())	count = 0;
+				else							count = stream->size() - position;
+			}
 			rdBytes = new unsigned char[count];
 
 			if ( rdBytes != NULL )

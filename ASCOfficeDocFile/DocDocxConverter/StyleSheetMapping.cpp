@@ -43,7 +43,7 @@ namespace DocFileFormat
 		m_pXmlWriter->WriteNodeEnd( _T( "w:docDefaults" ) );
 
 		//write the default styles
-		if ( sheet->Styles->at( 11 ) == NULL )
+		if ( (sheet->Styles->size() < 12) || (sheet->Styles->at( 11 ) == NULL ))
 		{
 			//NormalTable
 			writeNormalTableStyle();
@@ -210,16 +210,20 @@ namespace DocFileFormat
 		m_pXmlWriter->WriteNodeBegin( _T( "w:rFonts" ), TRUE );
 
 		FontFamilyName* ffnAscii = static_cast<FontFamilyName*>( m_document->FontTable->operator [] ( sheet->stshi->rgftcStandardChpStsh[0] ) );
-		m_pXmlWriter->WriteAttribute( _T( "w:ascii" ), FormatUtils::XmlEncode(ffnAscii->xszFtn).c_str() );
+		if (ffnAscii)
+			m_pXmlWriter->WriteAttribute( _T( "w:ascii" ), FormatUtils::XmlEncode(ffnAscii->xszFtn).c_str() );
 
 		FontFamilyName* ffnAsia = static_cast<FontFamilyName*>( m_document->FontTable->operator [] ( sheet->stshi->rgftcStandardChpStsh[1] ) );
-		m_pXmlWriter->WriteAttribute( _T( "w:eastAsia" ), FormatUtils::XmlEncode(ffnAsia->xszFtn).c_str() );
+		if (ffnAsia)
+			m_pXmlWriter->WriteAttribute( _T( "w:eastAsia" ), FormatUtils::XmlEncode(ffnAsia->xszFtn).c_str() );
 
 		FontFamilyName* ffnAnsi = static_cast<FontFamilyName*>( m_document->FontTable->operator [] ( sheet->stshi->rgftcStandardChpStsh[2] ) );
-		m_pXmlWriter->WriteAttribute( _T( "w:hAnsi" ), FormatUtils::XmlEncode(ffnAnsi->xszFtn).c_str() );
+		if (ffnAnsi)
+			m_pXmlWriter->WriteAttribute( _T( "w:hAnsi" ), FormatUtils::XmlEncode(ffnAnsi->xszFtn).c_str() );
 
 		FontFamilyName* ffnComplex = static_cast<FontFamilyName*>( m_document->FontTable->operator [] ( sheet->stshi->rgftcStandardChpStsh[3] ) );
-		m_pXmlWriter->WriteAttribute( _T( "w:cs" ), FormatUtils::XmlEncode(ffnComplex->xszFtn).c_str() );
+		if (ffnComplex)
+			m_pXmlWriter->WriteAttribute( _T( "w:cs" ), FormatUtils::XmlEncode(ffnComplex->xszFtn).c_str() );
 
 		m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
 		m_pXmlWriter->WriteNodeEnd( _T( "w:rFonts" ) );

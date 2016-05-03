@@ -45,6 +45,8 @@ namespace DocFileFormat
 					while ( ( cp - m_document->FIB->m_RgLw97.ccpText ) < (*m_document->IndividualFootnotesPlex)[id + 1] )
 					{
 						int fc =  m_document->FindFileCharPos(cp);
+						if (fc < 0) break;
+
 						ParagraphPropertyExceptions* papx = findValidPapx( fc );
 						TableInfo tai( papx );
 

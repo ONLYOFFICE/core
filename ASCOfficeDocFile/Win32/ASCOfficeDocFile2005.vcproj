@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="8,00"
 	Name="ASCOfficeDocFile"
-	ProjectGUID="{da13d6d4-39b5-49db-b5d7-d1afdbb7c320}"
+	ProjectGUID="{DA13D6D4-39B5-49DB-B5D7-D1AFDBB7C320}"
 	RootNamespace="ASCOfficeDocFile"
 	Keyword="AtlProj"
 	>

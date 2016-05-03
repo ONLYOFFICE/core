@@ -24,14 +24,14 @@ int _tmain(int argc, _TCHAR* argv[])
 	
 	HRESULT hRes = docFile.LoadFromFile( sSrcDoc, dstTempPath, NULL);
 	
-	if (hRes != S_OK)return 2;
-	
-	COfficeUtils oCOfficeUtils(NULL);
-	if (S_OK != oCOfficeUtils.CompressFileOrDirectory(dstTempPath.c_str(), sDstDocx, -1))
-        return 1;
+	if (hRes == S_OK)
+	{
+		COfficeUtils oCOfficeUtils(NULL);
+		hRes = oCOfficeUtils.CompressFileOrDirectory(dstTempPath.c_str(), sDstDocx, -1);
+	}
 	
 	FileSystem::Directory::DeleteDirectory(dstTempPath);
 
-	return 0;
+	return hRes;
 }
 

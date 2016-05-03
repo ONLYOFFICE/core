@@ -123,7 +123,7 @@ namespace DocFileFormat
 				}
 
 				//Parse the OfficeDrawing Stuff
-				shapeContainer	=	static_cast<ShapeContainer*>(RecordFactory::ReadRecord(&reader, 0));
+				shapeContainer	=	dynamic_cast<ShapeContainer*>(RecordFactory::ReadRecord(&reader, 0));
 
 				long pos = reader.GetPosition();
 

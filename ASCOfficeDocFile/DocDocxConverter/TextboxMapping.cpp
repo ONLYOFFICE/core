@@ -83,10 +83,16 @@ namespace DocFileFormat
 
 			if (typeid(*_caller) == typeid(MainDocumentMapping))
 			{
-				bkd					=	static_cast<Tbkd*>(m_document->TextboxBreakPlex->Elements[m_nTBIndex]);
-				
-				cp					=	txtbxSubdocStart + m_document->TextboxBreakPlex->CharacterPositions[m_nTBIndex];
-				cpEnd				=	txtbxSubdocStart + m_document->TextboxBreakPlex->CharacterPositions[m_nTBIndex + 1];				
+				if (m_nTBIndex < m_document->TextboxBreakPlex->Elements.size() )//file(21).doc
+				{
+					bkd				=	static_cast<Tbkd*>(m_document->TextboxBreakPlex->Elements[m_nTBIndex]);
+				}
+
+				if (m_nTBIndex < m_document->TextboxBreakPlex->CharacterPositions.size() - 1)
+				{				
+					cp					=	txtbxSubdocStart + m_document->TextboxBreakPlex->CharacterPositions[m_nTBIndex];
+					cpEnd				=	txtbxSubdocStart + m_document->TextboxBreakPlex->CharacterPositions[m_nTBIndex + 1];
+				}
 			}
 			else if ((typeid(*_caller) == typeid(HeaderMapping)) || (typeid(*_caller) == typeid(FooterMapping)))
 			{
@@ -101,11 +107,17 @@ namespace DocFileFormat
 			//convert the textbox text
 			_lastValidPapx = (*(m_document->AllPapxFkps->begin()))->grppapx[0];
 
+			ParagraphPropertyExceptions* papx_prev = NULL;
 			while (cp < cpEnd)
 			{
 				int fc = m_document->FindFileCharPos(cp);
+				if (fc < 0) break;
 
 				ParagraphPropertyExceptions* papx = findValidPapx( fc );
+				if (papx_prev && papx_prev == papx)//file(21).doc
+					break;
+				papx_prev = papx;
+
 				TableInfo tai( papx );
 
 				if ( tai.fInTable )

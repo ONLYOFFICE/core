@@ -383,7 +383,7 @@ void XlsConverter::convert(XLS::WorksheetSubstream* sheet)
 	{
 		for (int i = 0 ; i < sheet->m_arNote.size(); i++)
 		{
-			convert((XLS::Note*)sheet->m_arNote[i].get());
+			convert(dynamic_cast<XLS::Note*>(sheet->m_arNote[i].get()));
 		}
 	}
 

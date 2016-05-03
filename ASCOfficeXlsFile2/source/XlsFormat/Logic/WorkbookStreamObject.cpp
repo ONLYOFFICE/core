@@ -47,14 +47,15 @@ const bool WorkbookStreamObject::loadContent(BinProcessor& proc)
 {
 	bool to_continue = true;
 
-	unsigned short substream_type;
 	bool GlobalsSubstream_found = false;
 	bool WorksheetSubstream_found = false;
 	size_t ws_index = 0;
 
 	// Find all substreams in this stream
-	while(proc.getNextSubstreamType(substream_type))
+	while(to_continue)
 	{
+		unsigned short substream_type = 0;
+		to_continue = proc.getNextSubstreamType(substream_type);
 
 		switch(substream_type)
 		{

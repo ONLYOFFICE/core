@@ -61,6 +61,10 @@ CFStreamPtr CompoundFile::getWorkbookStream()
 
 	if (stream == NULL) 
 		stream = getNamedStream("Book");
+	if (stream == NULL) 
+		stream = getNamedStream("BOOK");//file(6).xls
+	if (stream == NULL) 
+		stream = getNamedStream("book");
 	return stream;
 }
 

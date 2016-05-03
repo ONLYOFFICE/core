@@ -1,6 +1,7 @@
 
 #include "BoundSheet8.h"
-//#include <Exception/AttributeDataWrong.h>
+#include <boost/lexical_cast.hpp>
+
 
 namespace XLS
 {
@@ -84,6 +85,10 @@ void BoundSheet8::readFields(CFRecord& record)
 	{
 		name_ = name_.substr(0, 31);
 		//cell_links_broken.xls
+	}
+	if (name_.empty())
+	{//file(6).xls
+		name_ = L"Sheet_" + boost::lexical_cast<std::wstring>(record.getGlobalWorkbookInfo()->current_sheet + 1);
 	}
 	
 	record.getGlobalWorkbookInfo()->sheets_names.push_back(name_);

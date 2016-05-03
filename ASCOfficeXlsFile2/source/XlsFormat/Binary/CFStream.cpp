@@ -34,13 +34,13 @@ void CFStream::read(void* buf, const size_t size)
 {
 	if(NULL == buf || stream_ == NULL)
 	{
-		throw;// EXCEPT::RT::CompoundFileFormatError("Wrong buffer pointer (NULL)");
-	}
+		return;//throw;EXCEPT::RT::CompoundFileFormatError("Wrong buffer pointer (NULL)");
+	} 
 	POLE::uint64 num_read = stream_->read((unsigned char*)buf, size);
 
 	if(num_read < size)
 	{
-		throw;// EXCEPT::RT::EndOfStreamReached(stream_->fullName(), num_read, size);
+		return;//throw; EXCEPT::RT::EndOfStreamReached(stream_->fullName(), num_read, size);
 	}
 	// Tipa successful
 }

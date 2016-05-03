@@ -371,6 +371,7 @@ CFRecordTypeValues[] =
 	{"GelFrame",				rt_GelFrame},
 	{"BopPopCustom",			rt_BopPopCustom},
 	{"Fbi2",					rt_Fbi2},
+	{"CommentText",				rt_CommentText},
 	{"ANY_TYPE",				rt_ANY_TYPE}
 };
 

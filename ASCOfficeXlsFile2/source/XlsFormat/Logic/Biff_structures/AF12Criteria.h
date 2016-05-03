@@ -16,7 +16,6 @@ public:
 	AF12Criteria();
 	~AF12Criteria();
 
-
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
@@ -25,7 +24,7 @@ public:
 	AFDOper doper;
 	XLUnicodeStringNoCch str;
 	
-	BIFF_BSTR _str;
+	std::wstring _str;
 };
 
 typedef boost::shared_ptr<AF12Criteria> AF12CriteriaPtr;

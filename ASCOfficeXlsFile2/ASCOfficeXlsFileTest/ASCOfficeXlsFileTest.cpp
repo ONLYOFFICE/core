@@ -28,16 +28,16 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	hr = ConvertXls2Xlsx(srcFileName, dstTempPath, L"password1", L"C:\\Windows\\Fonts", NULL);
 
-	if (hr != S_OK)  return hr;
-   
-	COfficeUtils oCOfficeUtils(NULL);
-	if (S_OK != oCOfficeUtils.CompressFileOrDirectory(dstTempPath.c_str(), dstPath.c_str(), -1))
-        return hr;
+	if (hr == S_OK) 
+	{
+		COfficeUtils oCOfficeUtils(NULL);
+		hr = oCOfficeUtils.CompressFileOrDirectory(dstTempPath.c_str(), dstPath.c_str(), -1);
+	}
 	
 	FileSystem::Directory::DeleteDirectory(dstTempPath);
 
 ////////////////////////////////////////////////////////////////////////
     std::cout << "\n\nTime : " << t1.elapsed() << "\n";   
-	return 0;
-	return 0;
+
+	return hr;
 }

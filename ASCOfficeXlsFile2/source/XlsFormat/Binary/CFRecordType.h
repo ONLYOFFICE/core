@@ -230,6 +230,7 @@ typedef enum CF_RECORD_TYPE
 	rt_DefaultRowHeight			= 0x0225,
 	rt_Table					= 0x0236,
 	rt_Window2					= 0x023e,
+	rt_CommentText				= 0x027d,//??
 	rt_RK						= 0x027e,
 	rt_Style					= 0x0293,
 	rt_BigName					= 0x0418,

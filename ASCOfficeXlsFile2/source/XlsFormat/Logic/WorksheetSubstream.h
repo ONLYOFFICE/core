@@ -49,6 +49,7 @@ public:
 	std::vector<BaseObjectPtr>	m_arNote;
 	std::vector<BaseObjectPtr>	m_arHLINK;
 	std::vector<BaseObjectPtr>	m_arSORT;
+	std::vector<BaseObjectPtr>	m_arLabel;
 };
 
 } // namespace XLS

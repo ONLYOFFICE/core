@@ -18,6 +18,7 @@
 #include <Logic/Biff_records/EOF.h>
 #include <Logic/Biff_records/BOF.h>
 #include <Logic/Biff_records/DefaultRowHeight.h>
+#include <Logic/Biff_records/Label.h>
 
 #include <Logic/Biff_unions/BACKGROUND.h>
 #include <Logic/Biff_unions/BIGNAME.h>
@@ -185,9 +186,10 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 					elements_.pop_back();
 				}	
 			}break;
+			case rt_Label://file(6).xls
 			case rt_Row:
 			{
-				CELLTABLE        cell_table(shared_formulas_locations);
+				CELLTABLE cell_table(shared_formulas_locations);
 				if (proc.optional(cell_table))
 				{
 					m_CELLTABLE = elements_.back();
@@ -219,6 +221,18 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 				}
 			}break;
 			case rt_HFPicture:		proc.repeated<HFPicture>(0, 0);		break;
+
+			case rt_CommentText:
+				{
+					count = proc.repeated<CommentText>(0, 0);
+					while(count > 0)
+					{
+						m_arNote.insert(m_arNote.begin(), elements_.back());
+						elements_.pop_back();
+						count--;
+					}
+				}break;
+
 			case rt_Note:
 			{
 				count = proc.repeated<Note>(0, 0);

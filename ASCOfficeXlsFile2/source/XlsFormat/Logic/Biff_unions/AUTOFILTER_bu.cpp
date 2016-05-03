@@ -195,7 +195,7 @@ int AUTOFILTER::serialize(std::wostream & stream)
 
 									CP_XML_NODE(L"filter")
 									{									
-										CP_XML_ATTR(L"val", *af12Criteria->_str.value());
+										CP_XML_ATTR(L"val", af12Criteria->_str);
 									}
 								}
 							}

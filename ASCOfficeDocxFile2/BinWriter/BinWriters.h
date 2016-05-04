@@ -577,7 +577,7 @@ namespace BinDocxRW
 					}
 				}
 				//FontSize
-				if(false != rPr.m_oSz.IsInit())
+                if((false != rPr.m_oSz.IsInit()) && (false != rPr.m_oSz.get().m_oVal.IsInit()))
 				{
 					m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rPrType::FontSize);
 					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);

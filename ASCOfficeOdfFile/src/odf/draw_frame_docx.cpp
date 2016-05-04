@@ -1298,31 +1298,19 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 			drawing.name	= Context.get_drawing_context().get_current_object_name();
 		
 			common_draw_docx_convert(Context, frame->common_draw_attlists_, drawing);
+			
 			const std::wstring & content = Context.get_drawing_context().get_text_stream_frame();
 
+			bool in_frame	= !drawing.isInline;
 			bool runState	= Context.get_run_state();
 			bool pState		= Context.get_paragraph_state();
 			
-			if (drawing.isInline)
+			if (drawing.fill.type > 0)
+				in_frame = true;
+			if (in_frame)
 			{
-				if (runState) Context.finish_run();
-				if (pState == false)
-				{
-					Context.output_stream() << L"<m:oMathPara>";
-					Context.output_stream() << L"<m:oMathParaPr/>";
-				}
-				Context.output_stream() << content;
-
-				if (pState == false)
-				{
-					Context.output_stream() << L"</m:oMathPara>";
-				}
-				if (runState) Context.add_new_run(_T(""));
-			}
-			else
-			{//in frame				
-				drawing.additional.push_back(_property(L"text-content",std::wstring(L"<w:p>") + content + L"</w:p>"));
-
+				drawing.additional.push_back(_property(L"text-content",	std::wstring(L"<w:p><m:oMathPara><m:oMathParaPr/>") + 
+																	content + std::wstring(L"</m:oMathPara></w:p>")));
 				Context.set_run_state(false);	
 				Context.set_paragraph_state(false);					
 				
@@ -1334,6 +1322,22 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 				
 				Context.set_run_state(runState);
 				Context.set_paragraph_state(pState);
+			}
+			else
+			{//in text			
+				if (runState) Context.finish_run();
+				//if (pState == false)
+				{
+					Context.output_stream() << L"<m:oMathPara>";
+					Context.output_stream() << L"<m:oMathParaPr/>";
+				}
+				Context.output_stream() << content;
+
+				//if (pState == false)
+				{
+					Context.output_stream() << L"</m:oMathPara>";
+				}
+				if (runState) Context.add_new_run(_T(""));
 			}
 			Context.get_drawing_context().clear_stream_frame();						
 		}

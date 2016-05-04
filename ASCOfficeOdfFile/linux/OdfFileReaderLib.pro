@@ -349,7 +349,8 @@ SOURCES += \
     ../src/odf/math_layout_elements.cpp \
     ../src/odf/math_limit_elements.cpp \
     ../src/odf/math_table_elements.cpp \
-    ../src/odf/math_token_elements.cpp
+    ../src/odf/math_token_elements.cpp \
+    ../src/odf/datatypes/mathvariant.cpp
 
 HEADERS += \
     ../formulasconvert/formulasconvert.h \
@@ -616,7 +617,8 @@ HEADERS += \
     ../src/odf/math_layout_elements.h \
     ../src/odf/math_limit_elements.h \
     ../src/odf/math_table_elements.h \
-    ../src/odf/math_token_elements.h
+    ../src/odf/math_token_elements.h \
+    ../src/odf/datatypes/mathvariant.h
 unix {
     target.path = /usr/lib
     INSTALLS += target

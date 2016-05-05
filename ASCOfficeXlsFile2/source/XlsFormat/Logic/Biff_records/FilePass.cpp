@@ -33,16 +33,23 @@ void FilePass::writeFields(CFRecord& record)
 
 void FilePass::readFields(CFRecord& record)
 {
+	bool bEnabled = false;
+	
 	record >> wEncryptionType;
+	
 	if(!wEncryptionType)
 	{
 		record >> key;
 		Log::info("FilePass: Encryption type: XOR");
-		throw;// EXCEPT::STOP::FileIsEncrypted();
+		//throw EXCEPT::STOP::FileIsEncrypted();
+		return;
 	}
 	else
 	{
+		bEnabled = true;
+
 		majorVer = *record.getCurData<unsigned short>();
+		
 		if(0x0001 == majorVer) // RC4 encryption header structure
 		{
 			rc4HeaderPtr = CRYPTO::RC4EncryptionHeaderPtr(new CRYPTO::RC4EncryptionHeader());
@@ -58,9 +65,11 @@ void FilePass::readFields(CFRecord& record)
 		{
 			record >> rc4CryptoAPIHeader;
 			Log::info("FilePass: Encryption type: RC4 Non-Standard");
-			throw;// EXCEPT::STOP::FileIsEncrypted();
 		}
 	}
+
+	if (bEnabled == false && record.getGlobalWorkbookInfo()->decryptor)
+		record.getGlobalWorkbookInfo()->decryptor.reset();
 
 }
 

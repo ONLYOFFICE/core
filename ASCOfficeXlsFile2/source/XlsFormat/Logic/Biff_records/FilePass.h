@@ -26,14 +26,12 @@ public:
 
 	static const ElementType	type = typeFilePass;
 
-//-----------------------------
 	Boolean<unsigned short> wEncryptionType;
 	XORObfuscation			key;
 	_UINT16					majorVer;
 	
 	CRYPTO::RC4EncryptionHeaderPtr			rc4HeaderPtr;
 	CRYPTO::RC4CryptoAPIEncryptionHeader	rc4CryptoAPIHeader;
-
 };
 
 } // namespace XLS

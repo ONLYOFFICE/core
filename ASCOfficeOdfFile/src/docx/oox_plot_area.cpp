@@ -56,6 +56,35 @@ void oox_plot_area::add_chart(int type)
 	}
 	charts_.push_back(chart);
 }
+
+void oox_plot_area::add_axis(int type, odf_reader::chart::axis & content)
+{
+	oox_axis_content_ptr ax=oox_axis_content::create(type);
+	ax->content_ = content;
+
+	axis_.push_back(ax);
+}
+
+void oox_plot_area::reset_cross_axis()//обязательно после всех добавлений
+{
+	BOOST_FOREACH(oox_axis_content_ptr const & ax, axis_)
+	{
+		BOOST_FOREACH(oox_chart_ptr const & ch, charts_)
+		{
+			ch->add_axis(ax->get_Id());		
+		}
+	}
+	
+	BOOST_FOREACH(oox_axis_content_ptr const & a, axis_)
+	{
+		int curr_id = a->get_Id();
+		BOOST_FOREACH(oox_axis_content_ptr const & b, axis_)
+		{
+			if (b->get_Id()==curr_id)continue;
+			b->add_CrossedId(curr_id);
+		}
+	}
+}
 void oox_plot_area::oox_serialize(std::wostream & _Wostream)
 {
 	reset_cross_axis();
@@ -67,7 +96,7 @@ void oox_plot_area::oox_serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE(L"c:plotArea")
         {
-			CP_XML_NODE(L"c:layout"){}
+			//CP_XML_NODE(L"c:layout"){}
 			
 			BOOST_FOREACH(oox_chart_ptr const & ch, charts_)
 			{

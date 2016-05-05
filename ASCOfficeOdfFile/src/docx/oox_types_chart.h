@@ -23,7 +23,8 @@ public:
 
 	oox_chart()
 	{
-		grouping_ = L"standard";
+		grouping_	= L"standard";
+		is3D_		= false;
 	}
 	~oox_chart(){}
  
@@ -37,6 +38,7 @@ public:
 	void set_formula_series	(int ind,std::wstring val);
 	void set_values_series	(int ind, std::vector<std::wstring> & val);
 	void set_name			(std::wstring val);
+	void set_content_series	(odf_reader::chart::series & content);
 	
 	//void set_showBubbleSize(bool Val){data_labels_.set_showBubbleSize(Val);}
 	//void set_showCatName(bool Val){data_labels_.set_showCatName(Val);}
@@ -53,15 +55,14 @@ public:
 
 	oox_data_labels data_labels_;//dLbls (Data Labels) §21.2.2.49
 
-
-
-	std::vector<int> axisId_;//axId (Axis ID) §21.2.2.9
-	std::wstring grouping_;	//	clustered | percentStacked | stacked | standard 
+	bool							is3D_;
+	std::vector<int>				axisId_;	//axId (Axis ID) §21.2.2.9
+	std::wstring					grouping_;	//	clustered | percentStacked | stacked | standard 
+	std::vector<oox_series_ptr>		series_;	//ser (Bar Chart Series) §21.2.2.170
 
 	virtual void set_properties(std::vector<odf_reader::_property> g);
 	virtual void set_additional_properties(std::vector<odf_reader::_property> g){}
 
-	std::vector<oox_series_ptr> series_;	//ser (Bar Chart Series) §21.2.2.170
 
 	//extLst (Chart Extensibility) §21.2.2.64
 };

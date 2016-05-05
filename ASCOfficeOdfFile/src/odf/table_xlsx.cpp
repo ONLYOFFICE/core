@@ -619,9 +619,9 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
 
 		office_value_type::type odf_value_type = office_value_type::Custom;
 
-        if (table_table_cell_attlist_.common_value_and_type_attlist_)
+        //if (table_table_cell_attlist_.common_value_and_type_attlist_)
         {
-            const common_value_and_type_attlist & attr = *table_table_cell_attlist_.common_value_and_type_attlist_;
+            const common_value_and_type_attlist & attr = table_table_cell_attlist_.common_value_and_type_attlist_;
 			if (attr.office_value_type_)
 				odf_value_type = attr.office_value_type_->get_type();
 			

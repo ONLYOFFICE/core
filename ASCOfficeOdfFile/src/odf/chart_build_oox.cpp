@@ -72,10 +72,11 @@ void chart_build::set_style_name(std::wstring const & val)
 void chart_build::start_axis(std::wstring const & dimensionName, std::wstring const & name, std::wstring const & styleName)
 {
     in_axis_ = true;
+	
 	axis ax;
-	ax.dimension_=dimensionName;
-	ax.chart_name_= name;
-	ax.style_name_=styleName;
+	ax.dimension_	= dimensionName;
+	ax.chart_name_	= name;
+	ax.style_name_	= styleName;
 
 	axises_.push_back(ax);
 }
@@ -113,7 +114,7 @@ void chart_build::add_series(std::wstring const & cellRangeAddress,
         std::wstring const & styleName)
 {
 	if (class_ == chart_ring) classType = chart_ring; 
-	if (class_ == chart_stock) classType = chart_stock; 
+	//if (class_ == chart_stock) classType = chart_stock; 
 
     series_.push_back(series(cellRangeAddress,labelCell, classType, attachedAxis, styleName));
 }
@@ -156,11 +157,11 @@ void chart_build::docx_convert(oox::docx_conversion_context & Context)
 	if (object_type_ == 1) 
 	{
 		Context.start_chart(L"");
-		oox::oox_chart_context & chart = Context.current_chart();
+		oox::oox_chart_context & chart_context = Context.current_chart();
 
-		oox_convert(chart);
+		oox_convert(chart_context);
 
-		chart.set_cache_only(true);
+		chart_context.set_cache_only(true);
 
 		Context.end_chart();
 	}
@@ -202,11 +203,11 @@ void chart_build::pptx_convert(oox::pptx_conversion_context & Context)
 	if (object_type_ == 1) 
 	{
 		Context.start_chart(L"");
-		oox::oox_chart_context & chart = Context.current_chart();
+		oox::oox_chart_context & chart_context = Context.current_chart();
 		
-		oox_convert(chart);
+		oox_convert(chart_context);
 
-		chart.set_cache_only(true);
+		chart_context.set_cache_only(true);
 		Context.end_chart();
 	}
 	else if (object_type_ == 2 && office_text_)
@@ -220,6 +221,8 @@ void chart_build::pptx_convert(oox::pptx_conversion_context & Context)
 }
 void chart_build::calc_cache_series(std::wstring adress, std::vector<std::wstring> & cash)
 {
+	if (adress.empty()) return;
+
     formulasconvert::odf2oox_converter converter;
 
 	std::wstring ref_1, ref_2, table;
@@ -228,8 +231,8 @@ void chart_build::calc_cache_series(std::wstring adress, std::vector<std::wstrin
 	if (!converter.find_first_last_ref(adress, table, ref_1, ref_2))return;
 	//if ((res = table.find(L"local-table"))<0)return;
 
-	oox::getCellAddressInv(ref_1,col_1,row_1);
-	oox::getCellAddressInv(ref_2,col_2,row_2);
+	oox::getCellAddressInv(ref_1, col_1,row_1);
+	oox::getCellAddressInv(ref_2, col_2,row_2);
 
 	BOOST_FOREACH(_cell & val,cash_values)
 	{
@@ -240,34 +243,45 @@ void chart_build::calc_cache_series(std::wstring adress, std::vector<std::wstrin
 		}
 	}
 }
-void chart_build::oox_convert(oox::oox_chart_context & chart)
+//----------------------------------------------------------------------------------------
+struct axises_sort
 {
-	chart.set_title(title_);
-	chart.set_wall(wall_);
-	chart.set_floor(floor_);
-	chart.set_legend(legend_);
-	chart.set_plot_area_properties(plot_area_.properties_, plot_area_.fill_);
-	//chart.set_footer(footer_);
-	chart.set_chart_graphic_properties(chart_graphic_properties_, chart_fill_);
-	//chart.set_chart_properties(chart_graphic_properties_);
+    inline bool operator() (const chart::axis& a1, const chart::axis& a2)
+    {
+        return (a1.type_ < a2.type_);
+    }
+};
 
-	class_type last_set_type=chart_unknown; 
+void chart_build::oox_convert(oox::oox_chart_context & chart_context)
+{
+	chart_context.set_title		(title_);
+	chart_context.set_wall		(wall_);
+	chart_context.set_floor		(floor_);
+	chart_context.set_legend	(legend_);
+	
+	chart_context.set_plot_area_properties		(plot_area_.properties_, plot_area_.fill_);
+	chart_context.set_chart_graphic_properties	(chart_graphic_properties_, chart_fill_);
+	
+	//chart_context.set_footer(footer_);
+	//chart_context.set_chart_properties(chart_graphic_properties_);
+
+	class_type last_set_type = chart_unknown; 
 
 	int series_id =0;
 
 	if (series_.empty())
 	{
-		chart.add_chart(class_);
+		chart_context.add_chart(class_);
 	}
 
 	BOOST_FOREACH(series & s, series_)
 	{
-		if (s.class_ != last_set_type)
-		{//разные типы серий в диаграмме - например бар и лини€.
-			chart.add_chart(s.class_);
+		if (s.class_ != last_set_type)			//разные типы серий в диаграмме - например бар и лини€.
+		{
+			chart_context.add_chart(s.class_);
 			last_set_type = s.class_;
 		}
-		oox::oox_chart_ptr current = chart.get_current_chart();
+		oox::oox_chart_ptr current = chart_context.get_current_chart();
 
 		if (!current) continue;
 
@@ -276,101 +290,109 @@ void chart_build::oox_convert(oox::oox_chart_context & chart)
 	
 		current->add_series(series_id++);
 		
-		if (s.cell_range_address_.length() <1 ) 
+		if (s.cell_range_address_.empty() ) 
 			s.cell_range_address_ = plot_area_.cell_range_address_; //SplitByColumn	(ind_ser,range);
 																	//SplitByRow	(ind_ser,range);
+		if (s.cell_range_address_.empty())
+			s.cell_range_address_ = domain_cell_range_adress2_;
+		
 		//тут данные нужно поделить по столбцам или строкам - так как в плот-ареа общий диапазон
 		//первый столбец-строка ћќ∆≈т использоватьс€ дл€ подписей
 		//кажда€ сери€ берет каждый последующий диапазрн
 		//такое определение - редкость = todooo
 		
-		std::vector<std::wstring>				cell_cash;
-		calc_cache_series(s.cell_range_address_,	cell_cash);
+		std::vector<std::wstring>		domain_cash;
+		std::vector<std::wstring>		cell_cash;
+		std::vector<std::wstring>		cat_cash;
 
-		if (domain_cell_range_adress_.length() > 0) 
+		calc_cache_series (domain_cell_range_adress_,	domain_cash);
+		calc_cache_series (s.cell_range_address_,		cell_cash);
+		calc_cache_series (categories_[0],				cat_cash);
+
+		if (domain_cell_range_adress_.empty() == false) 
 		{
-			std::vector<std::wstring> domain_cash;
-		
-			calc_cache_series(domain_cell_range_adress_,domain_cash);
-			
 			if (last_set_type == chart_bubble)
 			{
-				current->set_formula_series(2, domain_cell_range_adress_);//bubble
-				current->set_formula_series(3, s.cell_range_address_);//y		
+				current->set_formula_series(4, domain_cell_range_adress_);	//bubble(x)
+				current->set_values_series (4, domain_cash);				//bubble(x)
 
-				current->set_values_series (2, domain_cash);//x
+				current->set_formula_series(3, s.cell_range_address_);		//y		
 				current->set_values_series (3, cell_cash);
 			}
 			else
 			{
-				current->set_formula_series(1, domain_cell_range_adress_);//x
-				current->set_formula_series(2, s.cell_range_address_);//y		
-			
-				current->set_values_series (1, domain_cash);//x
-				current->set_values_series (2, cell_cash);
+				current->set_formula_series(2, domain_cell_range_adress_);	//x
+				current->set_values_series (2, domain_cash);				//x
+				
+				current->set_formula_series(3, s.cell_range_address_);		//y		
+				current->set_values_series (3, cell_cash);					//y
 			}
 		}
 		else
 		{
-			current->set_formula_series(0, s.cell_range_address_);//common
-			current->set_values_series(0, cell_cash);//common
+			current->set_formula_series(1, s.cell_range_address_);	//common
+			current->set_values_series(1, cell_cash);				//common
 		}
 
-		if (categories_.size() > 0)//названи€ 
+		if (categories_.empty() == false)//названи€ 
 		{			
-			std::vector<std::wstring>			cat_cash;
-			calc_cache_series(categories_[0],	cat_cash);
-			
-			current->set_formula_series(4,categories_[0]);
-			current->set_values_series(4,cat_cash);
+			current->set_formula_series(0, categories_[0]);
+			current->set_values_series(0, cat_cash);
 		}
 		current->set_name(s.name_);
-		chart.set_content_series(s);
+		
+		current->set_content_series(s);
 	}
+
+	std::sort(axises_.begin(), axises_.end(), axises_sort());//file_1_ (1).odp
+	
 	bool x_enabled = false;
 	bool y_enabled = false;
 	bool z_enabled = false;
-	BOOST_FOREACH(axis & a, axises_)
+	
+	for (int i = 0; i < axises_.size(); i++)
 	{
+		axis & a  = axises_[i];
+
 		if	(a.dimension_ == L"x" && x_enabled)continue;
 		if	(a.dimension_ == L"y" && y_enabled)continue;
 		if	(a.dimension_ == L"z" && z_enabled)continue;
 
-		int type =3;
-		if		(a.dimension_ == L"x")
-		{
-			//могут быть типы 1, 2, 3, 4
-			type=1;
+		if	(a.dimension_ == L"x")//могут быть типы 1, 2, 3, 4
+		{			
 			if (last_set_type == chart_scatter ||
-				last_set_type == chart_bubble)type = 2;
+					last_set_type == chart_bubble) a.type_ = 2;
 
-			//if (last_set_type == chart_stock)type = 4; //шкала дат.
+			if (class_ == chart_stock && a.type_ == 3 )		
+				a.type_ = 4; //шкала дат.
+			
 			x_enabled = true;
 		}
 		else if (a.dimension_ == L"y")
 		{
-			type=2;
+			a.type_ = 2;
 			if (last_set_type ==  chart_bar)
 			{
 				//вот нахрена свойства относ€щиес€ к серии и самому чарту воткнули в оси ???? (ооо писали идиеты???)
 				//или это банальна€ ошибка которую так никогда и не исправили???
 				//overlap & gap-width
-				oox::oox_chart_ptr current = chart.get_current_chart();
+				oox::oox_chart_ptr current = chart_context.get_current_chart();
 				current->set_additional_properties(a.properties_);
 			}
 			y_enabled = true;
 		}
 		else if (a.dimension_ == L"z")
 		{
-			type=2;
-			z_enabled = true;
+			chart_context.set_3D_chart (true);
 			continue;
+			a.type_ = 2;
+			z_enabled = true;
 		}
 
-		chart.add_axis(type);
-		chart.set_content_axis(a);
+		chart_context.add_axis(a.type_, a);
 	}
 }
+
 //----------------------------------------------------------------------------------------
 process_build_chart::process_build_chart(chart_build & chartBuild, odf_read_context & context) :	
 						 stop_			(false)
@@ -576,8 +598,8 @@ void process_build_chart::visit(const chart_plot_area& val)
 void process_build_chart::visit(const chart_axis& val)
 {
     chart_build_.start_axis(val.chart_axis_attlist_.chart_dimension_.get_value_or(L""),
-        val.chart_axis_attlist_.chart_name_.get_value_or(L""),
-        val.chart_axis_attlist_.common_attlist_.chart_style_name_.get_value_or(L""));
+							val.chart_axis_attlist_.chart_name_.get_value_or(L""),
+							val.chart_axis_attlist_.common_attlist_.chart_style_name_.get_value_or(L""));
 
     ACCEPT_ALL_CONTENT_CONST(val.content_);
 
@@ -612,7 +634,10 @@ void process_build_chart::visit(const chart_series& val)
 
 void process_build_chart::visit(const chart_domain& val)
 {
-	chart_build_.domain_cell_range_adress_ = val.table_cell_range_address_.get_value_or(L"");
+	if (chart_build_.domain_cell_range_adress_.empty())	
+		chart_build_.domain_cell_range_adress_	= val.table_cell_range_address_.get_value_or(L"");
+	else
+		chart_build_.domain_cell_range_adress2_ = val.table_cell_range_address_.get_value_or(L"");
 }
 void process_build_chart::visit(const chart_grid& val)
 {
@@ -679,7 +704,14 @@ void process_build_chart::visit(const chart_equation & val)
 }
 void process_build_chart::visit(const chart_categories& val)
 {     
-	if (val.table_cell_range_address_)  chart_build_.add_categories(*val.table_cell_range_address_);
+	if (chart_build_.in_axis_)
+	{
+		chart_build_.axises_.back().type_ = 1;
+		chart_build_.axises_.back().bCategories_ = true;
+	}
+
+	if (val.table_cell_range_address_) 
+		chart_build_.add_categories(*val.table_cell_range_address_);
 }    
 void process_build_chart::visit(const table_table& val)
 {        
@@ -750,13 +782,28 @@ void process_build_chart::visit(const table_rows_no_group& val)
 }
 void process_build_chart::visit(const table_table_cell& val)
 {
+	const table_table_cell_attlist & attlist = val.table_table_cell_attlist_;
+
     unsigned int repeated = val.table_table_cell_attlist_.table_number_columns_repeated_;
   
 	std::wstringstream  wstream_temp;	
    
 	val.table_table_cell_content_.text_to_stream(wstream_temp);
+	std::wstring cell_cash = wstream_temp.str();
 
-	chart_build::_cell cell_={chart_build_.current_table_column_,chart_build_.current_table_row_,wstream_temp.str()};
+	std::wstring cell_val;
+
+	if (attlist.common_value_and_type_attlist_.office_value_) 				cell_val = *attlist.common_value_and_type_attlist_.office_value_;
+	else if (attlist.common_value_and_type_attlist_.office_currency_)		cell_val = *attlist.common_value_and_type_attlist_.office_currency_;
+	else if (attlist.common_value_and_type_attlist_.office_date_value_)		cell_val = *attlist.common_value_and_type_attlist_.office_date_value_;
+	else if (attlist.common_value_and_type_attlist_.office_time_value_)		cell_val = *attlist.common_value_and_type_attlist_.office_time_value_;
+	else if (attlist.common_value_and_type_attlist_.office_boolean_value_)	cell_val = *attlist.common_value_and_type_attlist_.office_boolean_value_;
+	else if (attlist.common_value_and_type_attlist_.office_string_value_)	cell_val = *attlist.common_value_and_type_attlist_.office_string_value_;
+
+	if (cell_cash.empty())
+		cell_cash = cell_val;
+
+	chart_build::_cell cell_={chart_build_.current_table_column_, chart_build_.current_table_row_, cell_cash};
 
 	chart_build_.cash_values.push_back(cell_);
 	

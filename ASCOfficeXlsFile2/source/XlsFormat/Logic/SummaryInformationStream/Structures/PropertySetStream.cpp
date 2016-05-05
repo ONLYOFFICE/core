@@ -15,7 +15,18 @@ PropertySetStream::PropertySetStream(XLS::CFStreamPtr stream)
 	unsigned int	NumPropertySets=0;
 	_GUID_			Clsid={};
 	
-	*stream >> ByteOrder >> Version >> SystemIdentifier >> Clsid >> NumPropertySets;
+	*stream >> ByteOrder >> Version >> SystemIdentifier;
+
+	if (ByteOrder != 0xFFFE) //file (53).xls
+		return;
+
+	if (Version != 0x01 && Version != 0x00) 
+		return;
+
+	*stream >> SystemIdentifier >> Clsid >> NumPropertySets;
+
+	if (NumPropertySets != 0x01 && NumPropertySets != 0x02) 
+		return;
 
 	std::vector<unsigned int> property_sets_offsets;
 	for(unsigned int i = 0; i < NumPropertySets; ++i)
@@ -23,7 +34,9 @@ PropertySetStream::PropertySetStream(XLS::CFStreamPtr stream)
 		_GUID_ FMTID;
 		unsigned int Offset;
 		*stream >> FMTID >> Offset;
-		property_sets_offsets.push_back(Offset);
+		
+		if (Offset > 0)
+			property_sets_offsets.push_back(Offset);
 	}
 
 	for(unsigned int i = 0; i < NumPropertySets; ++i)

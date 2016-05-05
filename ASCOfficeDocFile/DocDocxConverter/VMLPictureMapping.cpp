@@ -142,7 +142,7 @@ namespace DocFileFormat
 			}
 			else if (m_isBulletPicture)
 			{
-				m_pXmlWriter->WriteAttribute( _T( "o:bullet" ), true );
+                m_pXmlWriter->WriteAttribute( _T( "o:bullet" ), _T( "1" ) );
 			}
 			
 			std::list<OptionEntry>::iterator end = options.end();

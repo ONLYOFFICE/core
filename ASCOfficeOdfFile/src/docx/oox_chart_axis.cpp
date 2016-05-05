@@ -57,10 +57,10 @@ void oox_axis_content::oox_serialize(std::wostream & _Wostream)
 			CP_XML_NODE(L"c:valAx")
 			{	
 				oox_serialize_content(CP_XML_STREAM());
-				//CP_XML_NODE(L"c:crossBetween")
-				//{
-				//	CP_XML_ATTR(L"val", L"between");
-				//}
+				CP_XML_NODE(L"c:crossBetween")
+				{
+					CP_XML_ATTR(L"val", L"between");
+				}
 				//CP_XML_NODE(L"c:numFmt")
 				//{
 				//	CP_XML_ATTR(L"sourceLinked", 1);
@@ -89,7 +89,7 @@ void oox_axis_content::oox_serialize(std::wostream & _Wostream)
 }
 void oox_axis_content::oox_serialize_content(std::wostream & _Wostream)
 {
-	//odf::_variant Val;
+	oox_chart_shape shape;
 	_CP_OPT(bool) boolVal;
 	
 	oox_title title;
@@ -100,10 +100,6 @@ void oox_axis_content::oox_serialize_content(std::wostream & _Wostream)
 		CP_XML_NODE(L"c:axId")
         {
 			CP_XML_ATTR(L"val", id_);
-		}
-		CP_XML_NODE(L"c:delete")//visible item
-		{
-			CP_XML_ATTR(L"val", 0);
 		}
 		CP_XML_NODE(L"c:scaling")
 		{
@@ -128,11 +124,20 @@ void oox_axis_content::oox_serialize_content(std::wostream & _Wostream)
 				}
 			}
 		}
+		CP_XML_NODE(L"c:delete")//visible item
+		{
+			CP_XML_ATTR(L"val", 0);
+		}
+		CP_XML_NODE(L"c:axPos")
+        {
+			if (content_.dimension_ == L"x")
+				CP_XML_ATTR(L"val",L"b");//  "b" | "l" |  "r" |  "t"// == bottom left right top
+				
+			if (content_.dimension_ == L"y")
+				CP_XML_ATTR(L"val",L"l");//  "b" | "l" |  "r" |  "t"// == bottom left right top
+		}
 		//oox_serialize_ln(_Wostream,content_.graphic_properties_);
 
-		oox_chart_shape shape;
-		shape.set(content_.graphic_properties_,content_.fill_) ;
-		shape.oox_serialize(_Wostream);
 		BOOST_FOREACH(odf_reader::chart::axis::grid  & g, content_.grids_)
 		{
 			_oox_fill fill_null;
@@ -169,26 +174,9 @@ void oox_axis_content::oox_serialize_content(std::wostream & _Wostream)
 				}			
 			}
 		}
-		BOOST_FOREACH(int const & ii, cross_id_)
-		{
-			CP_XML_NODE(L"c:crossAx")
-			{
-				CP_XML_ATTR(L"val", ii);
-			}
-		}
-		CP_XML_NODE(L"c:axPos")
-        {
-			if (content_.dimension_ == L"x")
-				CP_XML_ATTR(L"val",L"b");//  "b" | "l" |  "r" |  "t"// == bottom left right top
-				
-			if (content_.dimension_ == L"y")
-				CP_XML_ATTR(L"val",L"l");//  "b" | "l" |  "r" |  "t"// == bottom left right top
-		}
-//////////////////////////////////////////////////////
-		CP_XML_NODE(L"c:crosses")
-        {
-			CP_XML_ATTR(L"val", L"autoZero"); //""autoZero" | "max" | "min"
-		}		
+		
+		title.oox_serialize(_Wostream);
+		
 		odf_reader::GetProperty(content_.properties_,L"display_label",boolVal);
 		if ((boolVal == true) && (boolVal.get()==true))
 		{
@@ -196,8 +184,24 @@ void oox_axis_content::oox_serialize_content(std::wostream & _Wostream)
 			{
 				CP_XML_ATTR(L"val",L"nextTo");//"high" | "low" |  "nextTo" |  "none"
 			}
+		}		
+		
+		shape.set(content_.graphic_properties_,content_.fill_) ;
+		shape.oox_serialize(_Wostream);
+		
+		BOOST_FOREACH(int const & ii, cross_id_)
+		{
+			CP_XML_NODE(L"c:crossAx")
+			{
+				CP_XML_ATTR(L"val", ii);
+			}
 		}
-		title.oox_serialize(_Wostream);
+
+//////////////////////////////////////////////////////
+		CP_XML_NODE(L"c:crosses")
+        {
+			CP_XML_ATTR(L"val", L"autoZero"); //""autoZero" | "max" | "min"
+		}
 	}
 }
 

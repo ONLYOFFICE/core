@@ -55,16 +55,12 @@ void table_table_row_attlist::add_attributes( const xml::attributes_wc_ptr & Att
 void table_table_cell_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
     CP_APPLY_ATTR(L"table:number-columns-repeated", table_number_columns_repeated_, (unsigned int)1/*0*/);
-    CP_APPLY_ATTR(L"table:style-name", table_style_name_);
+    CP_APPLY_ATTR(L"table:style-name",				table_style_name_);
     CP_APPLY_ATTR(L"table:content-validation-name", table_content_validation_name_);
-    CP_APPLY_ATTR(L"table:formula", table_formula_);
+    CP_APPLY_ATTR(L"table:formula",					table_formula_);
+    CP_APPLY_ATTR(L"table:protect",					table_protect_, (bool)table_protect_);
 
-    common_value_and_type_attlist tmp;
-    if (tmp.add_attributes(Attributes))
-        common_value_and_type_attlist_ = tmp;
-
-    CP_APPLY_ATTR(L"table:protect", table_protect_, (bool)table_protect_);
-
+    common_value_and_type_attlist_.add_attributes(Attributes);
 }
 
 // table-table-cell-attlist-extra

@@ -60,6 +60,12 @@ void oox_chart_context::write_to(std::wostream & strm)
 			}
 			CP_XML_NODE(L"c:chart")
 			{
+				if (plot_area_.current_chart_->is3D_)
+				{
+					//CP_XML_NODE(L"c:view3D");
+					CP_XML_NODE(L"c:floor");
+					CP_XML_NODE(L"c:backWall");
+				}
 				title_.oox_serialize(CP_XML_STREAM());
 				plot_area_.oox_serialize(CP_XML_STREAM());
 				legend_.oox_serialize(CP_XML_STREAM());
@@ -68,6 +74,14 @@ void oox_chart_context::write_to(std::wostream & strm)
 				{
 					CP_XML_ATTR(L"val",1);
 				}	
+				CP_XML_NODE(L"c:dispBlanksAs")
+				{
+					CP_XML_ATTR(L"val", L"zero");
+				}
+				CP_XML_NODE(L"c:showDLblsOverMax")
+				{
+					CP_XML_ATTR(L"val",1);
+				}
 			}
 			oox_chart_shape shape;
 			shape.set(graphic_properties_,fill_);

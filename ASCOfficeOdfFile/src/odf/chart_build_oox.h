@@ -113,10 +113,10 @@ public:
 	
     void calc_cache_series(std::wstring adress, std::vector<std::wstring> & cash);
 	
-	void xlsx_convert(oox::xlsx_conversion_context & Context);
-	void docx_convert(oox::docx_conversion_context & Context);
-	void oox_convert(oox::oox_chart_context & chart);
-	void pptx_convert(oox::pptx_conversion_context & Context);
+	void xlsx_convert	(oox::xlsx_conversion_context & Context);
+	void docx_convert	(oox::docx_conversion_context & Context);
+	void oox_convert	(oox::oox_chart_context & chart);
+	void pptx_convert	(oox::pptx_conversion_context & Context);
 
     double width_pt_;
     double height_pt_;
@@ -139,6 +139,7 @@ public:
 	std::vector<std::wstring>	categories_;
 
 	std::wstring domain_cell_range_adress_;
+	std::wstring domain_cell_range_adress2_;
 
 	chart::title				title_;
 	office_element_ptr_array	title_odf_context_;
@@ -147,29 +148,30 @@ public:
 	chart::simple				legend_;
 	chart::plot_area			plot_area_;
 
-	chart::simple wall_;
-	chart::simple floor_;
+	chart::simple				wall_;
+	chart::simple				floor_;
 	
-	chart::simple footer_;
+	chart::simple				footer_;
 
-	std::vector<_property>	chart_properties_;
-	std::vector<_property>	chart_graphic_properties_;
-	oox::_oox_fill			chart_fill_;
+	std::vector<_property>		chart_properties_;
+	std::vector<_property>		chart_graphic_properties_;
+	oox::_oox_fill				chart_fill_;
 
 	std::vector<_cell> cash_values;
-public:
-	std::wstring target_table_;
 
-	std::wstring table_name_;
+//---------------------------------------
+	std::wstring				target_table_;
+	std::wstring				table_name_;
    
-	int current_table_column_;
-    int current_table_row_;
+	int							current_table_column_;
+    int							current_table_row_;
 
-	unsigned int columns_spanned_num_;
-    std::vector<oox::xlsx_row_spanned> rows_spanned_;
+	std::vector<unsigned int>	columns_;
+    unsigned int				columns_count_;
+
+	unsigned int						columns_spanned_num_;
+    std::vector<oox::xlsx_row_spanned>	rows_spanned_;
    
-	std::vector<unsigned int> columns_;
-    unsigned int columns_count_;
 
 ///////////////////////////////////////////
 

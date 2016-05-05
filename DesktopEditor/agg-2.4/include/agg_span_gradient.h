@@ -287,10 +287,13 @@ namespace agg
 			double c1 = -(projects[iMin].x * m_cos + projects[iMin].y * m_sin);
 			double c2 = -(projects[iMax].x * m_cos + projects[iMax].y * m_sin);
 
-			m_factor.x = m_cos / dFactor;
-			m_factor.y = m_sin / dFactor;
-			m_offset.x = c1 / dFactor;
-			m_offset.y = c2 / dFactor;
+			if (abs(dFactor) > FLT_EPSILON)
+			{
+				m_factor.x = m_cos / dFactor;
+				m_factor.y = m_sin / dFactor;
+				m_offset.x = c1 / dFactor;
+				m_offset.y = c2 / dFactor;
+			}
 		}
 
 	private:

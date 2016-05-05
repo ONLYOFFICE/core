@@ -38,17 +38,16 @@ public:
 	{
 		title_.set_content(t);
 	}
-	void add_axis(int type)
+	void add_axis(int type, odf_reader::chart::axis & content)
 	{
-		plot_area_.add_axis(type);
+		plot_area_.add_axis(type, content);
 	}
-	void set_content_axis(odf_reader::chart::axis & content)
+	void set_3D_chart(bool val)
 	{
-		plot_area_.set_content_axis(content);
-	}
-	void set_content_series(odf_reader::chart::series & content)
-	{
-		plot_area_.set_content_series(content);
+		for (int i = 0 ; i < plot_area_.charts_.size(); i++)
+		{
+			plot_area_.charts_[i]->is3D_ = val;
+		}
 	}
 	void add_chart(int type)
 	{

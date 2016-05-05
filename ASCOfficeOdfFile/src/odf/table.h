@@ -67,7 +67,7 @@ public:
     _CP_OPT(std::wstring)			table_content_validation_name_;
     _CP_OPT(std::wstring)			table_formula_;
 
-    _CP_OPT(odf_types::common_value_and_type_attlist) common_value_and_type_attlist_;
+    odf_types::common_value_and_type_attlist common_value_and_type_attlist_;
 
     bool table_protect_; // default false
         

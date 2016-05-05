@@ -45,7 +45,17 @@ public:
 		}
 	}
 };
+oox_chart_series::oox_chart_series()
+{
+	values_[0].type	= L"c:cat";//подписи
+	values_[1].type	= L"c:val";
+	values_[2].type	= L"c:xVal";
+	values_[3].type	= L"c:yVal";
+	values_[4].type	= L"c:bubbleSize";//заместо оси х!!!!
 
+	iSymbolMarkerType_	= 0;
+	bLocalTable_		= false;
+}
 void oox_chart_series::setName(std::wstring &value)
 {
 	name_=value;
@@ -55,20 +65,20 @@ void oox_chart_series::setFormula(int ind, std::wstring &value)
 {
 	formulasconvert::odf2oox_converter converter;
 
-	if (ind == 4)
+	if (ind == 0)
 	{
 		long res = value.find(L"local-table");
 		if (res >=0) return;
 		
-		values_[ind].strRef_.formula=converter.convert_chart_distance(value);
-		values_[ind].strRef_.present = true;
-		values_[ind].present = true;
+		values_[ind].strRef_.formula	= converter.convert_chart_distance(value);
+		values_[ind].strRef_.present	= true;
+		values_[ind].present			= true;
 	}
 	else
 	{
-		values_[ind].numRef_.formula=converter.convert_chart_distance(value);
-		values_[ind].numRef_.present = true;
-		values_[ind].present = true;
+		values_[ind].numRef_.formula	= converter.convert_chart_distance(value);
+		values_[ind].numRef_.present	= true;
+		values_[ind].present			= true;
 	}
 }
 
@@ -97,13 +107,13 @@ void oox_chart_series::setValues(int ind, std::vector<std::wstring> & values)
 {
 	values_[ind].present = true;
 
-	if (ind == 4)values_[ind].strRef_.present = true;
-	else values_[ind].numRef_.present = true;
+	if (ind == 0)	values_[ind].strRef_.present = true;
+	else			values_[ind].numRef_.present = true;
 
 	BOOST_FOREACH(std::wstring & v, values)
 	{
 		boost::algorithm::trim(v);
-		if (ind == 4)
+		if (ind == 0)
 		{
 			values_[ind].strRef_.str_cache.push_back(v);
 			values_[ind].strRef_.str_cache_count++;
@@ -135,7 +145,7 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 		}
 		shape.oox_serialize(_Wostream);
 
-		for (int i=0; i < 4; i++)
+		for (int i=0; i < 5; i++)
 		{
 			if (values_[i].present)
 			{
@@ -147,12 +157,15 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 						{
 							CP_XML_NODE(L"c:f")
 							{
-								CP_XML_CONTENT(values_[i].numRef_.formula);
+								if (values_[i].numRef_.formula.empty())
+									CP_XML_CONTENT(L"label");
+								else
+									CP_XML_CONTENT(values_[i].numRef_.formula);
 							}
 						
 							if (values_[i].numRef_.num_cache_count>0)
 							{
-								CP_XML_NODE(L"c:numCache")//необязательно
+								CP_XML_NODE(L"c:numCache")
 								{
 									CP_XML_NODE(L"c:formatCode")
 									{
@@ -209,6 +222,38 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 									CP_XML_NODE(L"c:v")
 									{
 										CP_XML_CONTENT(val);
+									}
+								}
+							}
+						}
+					}
+					else if (values_[i].strRef_.present > 0 && !bLocalTable_)
+					{
+						CP_XML_NODE(L"c:strRef")
+						{
+							CP_XML_NODE(L"c:f")
+							{
+								if (values_[i].strRef_.formula.empty())
+									CP_XML_CONTENT(L"label");
+								else
+									CP_XML_CONTENT(values_[i].strRef_.formula);
+							}
+							CP_XML_NODE(L"c:strCache")
+							{
+								CP_XML_NODE(L"c:ptCount")
+								{
+									CP_XML_ATTR(L"val", values_[i].strRef_.str_cache_count);
+								}
+								int j=0;
+								BOOST_FOREACH(std::wstring & v, values_[i].strRef_.str_cache)
+								{								
+									CP_XML_NODE(L"c:pt")
+									{
+										CP_XML_ATTR(L"idx", j++);
+										CP_XML_NODE(L"c:v")
+										{
+											CP_XML_CONTENT(v);
+										}
 									}
 								}
 							}
@@ -342,7 +387,8 @@ _CP_PTR(oox_chart_series) oox_pie_series::create()
 }
 void oox_pie_series::oox_serialize(std::wostream & _Wostream)
 {
-	content_.graphic_properties_.clear(); //авто подбор цветов
+	content_.fill_.clear();		//авто подбор цветов
+
 	CP_XML_WRITER(_Wostream)
     {
 		CP_XML_NODE(L"c:ser")
@@ -353,11 +399,11 @@ void oox_pie_series::oox_serialize(std::wostream & _Wostream)
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-_CP_PTR(oox_chart_series) xlsx_scatter_series::create()
+_CP_PTR(oox_chart_series) oox_scatter_series::create()
 {
-    return boost::make_shared<xlsx_scatter_series>();
+    return boost::make_shared<oox_scatter_series>();
 }
-void xlsx_scatter_series::oox_serialize(std::wostream & _Wostream)
+void oox_scatter_series::oox_serialize(std::wostream & _Wostream)
 {
     CP_XML_WRITER(_Wostream)
     {
@@ -371,11 +417,11 @@ void xlsx_scatter_series::oox_serialize(std::wostream & _Wostream)
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-_CP_PTR(oox_chart_series) xlsx_bubble_series::create()
+_CP_PTR(oox_chart_series) oox_bubble_series::create()
 {
-    return boost::make_shared<xlsx_bubble_series>();
+    return boost::make_shared<oox_bubble_series>();
 }
-void xlsx_bubble_series::oox_serialize(std::wostream & _Wostream)
+void oox_bubble_series::oox_serialize(std::wostream & _Wostream)
 {
     CP_XML_WRITER(_Wostream)
     {

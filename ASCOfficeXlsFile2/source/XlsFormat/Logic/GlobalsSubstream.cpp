@@ -151,7 +151,11 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 					if (( proc.getGlobalWorkbookInfo()->decryptor)  &&
 						( proc.getGlobalWorkbookInfo()->decryptor->IsVerify() == false))
 					{
-						return false;
+						if (proc.getGlobalWorkbookInfo()->password.empty())
+						{
+							if (!proc.getGlobalWorkbookInfo()->decryptor->SetPassword(L"VelvetSweatshop"))
+								return false;
+						}else return false;
 					}
 				}
 			}break;

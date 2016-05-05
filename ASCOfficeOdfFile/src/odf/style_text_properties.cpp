@@ -230,10 +230,9 @@ double text_format_properties_content::process_font_size_impl(const _CP_OPT(font
 {
     font_size usedFontSize = (!FontSize) ? font_size(percent(100)) : *FontSize;
 
-    if (usedFontSize.get_type() == font_size::Length && 
-        usedFontSize.get_length().get_unit() == length::pt)
+    if (usedFontSize.get_type() == font_size::Length)
     {
-        const double w_val = 2.0 * Mul * usedFontSize.get_length().get_value();
+		const double w_val = 2.0 * Mul * usedFontSize.get_length().get_value_unit(length::pt);
         return w_val;
     } 
     else if (usedFontSize.get_type() == font_size::Percent)
@@ -257,7 +256,7 @@ double text_format_properties_content::process_font_size_impl(const _CP_OPT(font
     }
     else
     {
-        _CP_LOG << L"[docx_convert] convert font_size error (" << FontSize << ")\n";
+        //_CP_LOG << L"[docx_convert] convert font_size error (" << FontSize << ")\n";
     }
 
     return -1.0;
@@ -1197,9 +1196,9 @@ void text_format_properties_content::apply_from(const text_format_properties_con
 void text_format_properties_content::apply_to(std::vector<_property> & properties)
 {
 	if (fo_font_weight_)	properties.push_back(_property(L"font-weight",	fo_font_weight_.get().get_type()) );
-	if (fo_font_family_)	properties.push_back(_property(L"font-family",fo_font_family_.get()) );
-	if (style_font_name_)	properties.push_back(_property(L"font-name",style_font_name_.get()) );
-	if (fo_font_size_)		properties.push_back(_property(L"font-size",	fo_font_size_.get().get_length().get_value()) );
+	if (fo_font_family_)	properties.push_back(_property(L"font-family",	fo_font_family_.get()) );
+	if (style_font_name_)	properties.push_back(_property(L"font-name",	style_font_name_.get()) );
+	if (fo_font_size_)		properties.push_back(_property(L"font-size",	fo_font_size_.get().get_length().get_value_unit(length::pt)) );
 	if (fo_font_style_)		properties.push_back(_property(L"font-style",	fo_font_style_.get().get_type()) );
 	if (fo_color_)			properties.push_back(_property(L"font-color",	fo_color_.get().get_hex_value()) );
 

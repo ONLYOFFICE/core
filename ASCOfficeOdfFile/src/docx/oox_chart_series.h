@@ -16,38 +16,25 @@ typedef _CP_PTR(oox_chart_series) oox_series_ptr;
 class oox_chart_series
 {
 public:
-	oox_chart_series()
-	{
-		values_[0].type=L"c:val";
-		values_[1].type=L"c:xVal";
-		values_[2].type=L"c:yVal";
-		values_[3].type=L"c:bubbleSize";//заместо оси х!!!!
-		values_[4].type=L"c:cat";//подписи
-	
-		iSymbolMarkerType_	= 0;
-		bLocalTable_		= false;
-	}
+	oox_chart_series();
 	~oox_chart_series(){}
  
     void oox_serialize_common(std::wostream & _Wostream);
 	virtual void oox_serialize(std::wostream & _Wostream){}
 	    
-	_oox_chart_values		values_[5]; //common,x, y, bubble, cat(labels)
-
-	int id_;
-
-	std::wstring name_;	//tx (Series Text) §21.2.2.215
+	_oox_chart_values		values_[5]; //cat(labels), common, x, y, bubble, 
+	int						id_;
+	std::wstring			name_;	//tx (Series Text) §21.2.2.215
+	int						iSymbolMarkerType_;
+	bool					bLocalTable_;
 	
 	void setName(std::wstring &value);
 	
-	void setFormula(int ind, std::wstring & value);
-	void setValues(int ind, std::vector<std::wstring> & values);
+	void setFormula	(int ind, std::wstring & value);
+	void setValues	(int ind, std::vector<std::wstring> & values);
 	void parse_properties();
 	
 	void set_cache_only (bool val);
-
-	int		iSymbolMarkerType_;
-	bool	bLocalTable_;
 
 	odf_reader::chart::series content_;
 
@@ -121,14 +108,14 @@ public:
 	//explosion (Explosion) §21.2.2.61
 	//val (Values) §21.2.2.224
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////class oox_pie_series;
-class xlsx_bubble_series;
-typedef _CP_PTR(xlsx_bubble_series) xlsx_bubble_series_ptr;
+class oox_bubble_series;
+typedef _CP_PTR(oox_bubble_series) oox_bubble_series_ptr;
 
-class xlsx_bubble_series : public oox_chart_series
+class oox_bubble_series : public oox_chart_series
 {
 public:
-	xlsx_bubble_series(){}
-	~xlsx_bubble_series(){}
+	oox_bubble_series(){}
+	~oox_bubble_series(){}
 	
 	static oox_series_ptr create();
 
@@ -144,14 +131,14 @@ public:
 	//yVal (Y Values)
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-class xlsx_scatter_series;
-typedef _CP_PTR(xlsx_scatter_series) xlsx_scatter_series_ptr;
+class oox_scatter_series;
+typedef _CP_PTR(oox_scatter_series) oox_scatter_series_ptr;
 
-class xlsx_scatter_series : public oox_chart_series
+class oox_scatter_series : public oox_chart_series
 {
 public:
-	xlsx_scatter_series(){}
-	~xlsx_scatter_series(){}
+	oox_scatter_series(){}
+	~oox_scatter_series(){}
 	
 	static oox_series_ptr create();
 

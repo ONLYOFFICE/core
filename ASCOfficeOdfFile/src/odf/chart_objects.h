@@ -63,22 +63,24 @@ namespace chart {
 	};
 	struct axis: public simple
     {
+		axis() : bCategories_(false), type_(3) {}
         struct grid
         {
             enum grid_type {major, minor};
 
-            grid_type type_;
-            std::wstring style_name_;
+            grid_type		type_;
+            std::wstring	style_name_;
  			
 			std::vector<_property> graphic_properties_;
        };
-
+		bool				bCategories_;
 		title title_;
         
 		std::wstring		dimension_;
         std::wstring		chart_name_;
         std::wstring		style_name_;
         std::vector<grid>	grids_;
+		int					type_;
 		
   };
     struct series : public simple

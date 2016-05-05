@@ -1248,8 +1248,11 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 		office_element	*contentSubDoc	= objectSubDoc.get_impl()->get_content();
 		draw_frame		*frame			= NULL;
 		chart_build		objectBuild;
+
+		//if (!contentSubDoc)//Diagramma.odt - кривые ссылки на объекты
+		//	return;
 		
-		if (contentSubDoc)//Diagramma.odt - кривые ссылки на объекты
+		if (contentSubDoc)
 		{
 			process_build_chart process_build_object_(objectBuild, objectSubDoc.odf_context());
 			contentSubDoc->accept(process_build_object_); 

@@ -17,60 +17,26 @@ public:
 	oox_plot_area(){}
 	~oox_plot_area(){}
  
-    std::vector<oox_chart_ptr> charts_;
-	oox_chart_ptr current_chart_;   
+    std::vector<oox_chart_ptr>			charts_;
+	oox_chart_ptr						current_chart_;   
+	std::vector<oox_axis_content_ptr>	axis_;
 	
-	std::vector<odf_reader::_property> graphic_properties_;
-	std::vector<odf_reader::_property> properties_;
-	_oox_fill					fill_; 
+	std::vector<odf_reader::_property>	graphic_properties_;
+	std::vector<odf_reader::_property>	properties_;
+	_oox_fill							fill_; 
 	
 	//std::vector<odf_reader::_property> wall_graphic_properties_;
 	
 	void oox_serialize(std::wostream & _Wostream);
 
-	void add_chart(int type);
+	void add_chart	(int type);
+	void add_axis	(int type,	odf_reader::chart::axis & content);
 
- 	void add_series(int id)
-	{
-		current_chart_->add_series(id);
-	}
-	
-	std::vector<oox_axis_content_ptr> axis_;
+ 	//void set_content_series	(odf_reader::chart::series & content);
 
-	void add_axis(int type)
-	{
-		oox_axis_content_ptr ax=oox_axis_content::create(type);
+private:
+	void reset_cross_axis();//обязательно после всех добавлений
 
-		axis_.push_back(ax);
-	}
-	void set_content_axis(odf_reader::chart::axis & content)
-	{
-		axis_.back()->content_=content;
-	}
-	void set_content_series(odf_reader::chart::series & content)
-	{
-		current_chart_->series_.back()->content_=content;
-	}
-	void reset_cross_axis()//обязательно после всех добавлений
-	{
-		BOOST_FOREACH(oox_axis_content_ptr const & ax, axis_)
-		{
-			BOOST_FOREACH(oox_chart_ptr const & ch, charts_)
-			{
-				ch->add_axis(ax->get_Id());		
-			}
-		}
-		
-		BOOST_FOREACH(oox_axis_content_ptr const & a, axis_)
-		{
-			int curr_id = a->get_Id();
-			BOOST_FOREACH(oox_axis_content_ptr const & b, axis_)
-			{
-				if (b->get_Id()==curr_id)continue;
-				b->add_CrossedId(curr_id);
-			}
-		}
-	}
 
 //variable charts 
 //catAx (Category Axis Data) §21.2.2.25

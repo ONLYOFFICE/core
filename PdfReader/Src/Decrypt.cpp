@@ -284,7 +284,7 @@ namespace PdfReader
 				}
 				AESDecryptBlock(&m_oState.oAES, sIn, m_pStream->LookChar() == EOF);
 			}
-			if (m_oState.oAES.nBufferIndex == 16)
+            if (m_oState.oAES.nBufferIndex >= 16)
 			{
 				nChar = EOF;
 			}

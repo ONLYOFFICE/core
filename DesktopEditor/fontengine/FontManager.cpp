@@ -655,6 +655,9 @@ INT CFontManager::LoadFontFromFile(const std::wstring& sPath, const int& lFaceIn
 	CFontsCache* pCache		= (m_pOwnerCache != NULL) ? m_pOwnerCache : m_pApplication->GetCache();
 	
 	m_pFont = pCache->LockFont(m_pLibrary, sPath, lFaceIndex, dSize);
+        if (NULL == m_pFont)
+            return FALSE;
+
 	m_pFont->m_pFontManager = this;
 	m_pFont->SetSizeAndDpi(dSize, (UINT)dDpiX, (UINT)dDpiY);
 

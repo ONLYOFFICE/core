@@ -772,6 +772,8 @@ namespace PdfReader
 		if (!bLimited || unStart + unLength > m_unStart + m_unLength)
 		{
 			unNewLength = m_unStart + m_unLength - unStart;
+            if (unStart >= m_unLength)
+                unNewLength = 0;
 		}
 		else
 		{

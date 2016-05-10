@@ -1398,7 +1398,10 @@ namespace NExtractTools
                    {
                        if(sPassword.empty())
                        {
-                           copyOrigin(sFrom, *params.m_sFileTo);
+                           if(!params.getDontSaveAdditional())
+                           {
+                               copyOrigin(sFrom, *params.m_sFileTo);
+                           }
                            nRes = AVS_FILEUTILS_ERROR_CONVERT_DRM;
                        }
                        else
@@ -1817,8 +1820,7 @@ namespace NExtractTools
            if(!params.getDontSaveAdditional())
            {
                //save origin to print
-               std::wstring sOrigin = sToDir + FILE_SEPARATOR_STR + _T("origin");
-               NSFile::CFileBinary::Copy(sFrom, sOrigin);
+               copyOrigin(sFrom, *params.m_sFileTo);
            }
            NSHtmlRenderer::CASCHTMLRenderer3 oHtmlRenderer;
            oHtmlRenderer.CreateOfficeFile(sToDir, sFontPath);
@@ -1868,8 +1870,11 @@ namespace NExtractTools
        long hRes = ConvertXls2Xlsx( sFrom, sTo, params.getPassword(), sFontPath, NULL);
        if (AVS_ERROR_DRM == hRes)
        {
-          copyOrigin(sFrom, *params.m_sFileTo);
-          return AVS_FILEUTILS_ERROR_CONVERT_DRM;
+           if(!params.getDontSaveAdditional())
+           {
+               copyOrigin(sFrom, *params.m_sFileTo);
+           }
+           return AVS_FILEUTILS_ERROR_CONVERT_DRM;
        }
        else if (AVS_ERROR_PASSWORD == hRes)
        {

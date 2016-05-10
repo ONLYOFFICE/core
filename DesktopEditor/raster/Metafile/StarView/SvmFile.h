@@ -49,7 +49,6 @@ class CSvmFile : virtual public IMetaFileBase
 	}	
 	TRect* GetDCBounds()
 	{
-		//if (m_oHeader.mapMode.isSimple)
 		if (m_pDC->m_oMapMode.isSimple)
 		{
 			m_oDCRect  = m_oBoundingBox;
@@ -57,6 +56,7 @@ class CSvmFile : virtual public IMetaFileBase
 		}
 		else
 		{
+			m_oDCRect  = m_oHeader.boundRect;
 			return &m_oHeader.boundRect;
 		}
 	}
@@ -199,6 +199,8 @@ class CSvmFile : virtual public IMetaFileBase
 	void Read_META_SECTRECTCLIPREGION();
 	void Read_META_SECTREGIONCLIPREGION();
 
+	void Read_META_LAYOUTMODE();
+
 	void Read_META_STRETCHTEXT();
 
 	void Read_META_POLYPOLYGON(std::vector<TSvmPolygon> & polygons, std::vector<TSvmPolygon> & complexPolygons);
@@ -211,12 +213,13 @@ class CSvmFile : virtual public IMetaFileBase
 	}
 	void TranslatePoint(int nX, int nY, double& dX, double &dY)
 	{
-		if (m_pDC->m_oMapMode.isSimple ) return;
+		if (m_pDC->m_oMapMode.isSimple ) 
+			return;
 		//TSvmWindow* pWindow		= m_pDC->GetWindow();
 		//TSvmWindow* pViewport	= m_pDC->GetViewport();
 
-		dX = (double)(nX) * m_pDC->m_dPixelWidth ;
-		dY = (double)(nY) * m_pDC->m_dPixelHeight ;
+		//dX = (double)(nX) * m_pDC->m_dPixelWidth ;
+		//dY = (double)(nY) * m_pDC->m_dPixelHeight ;
 
 		//dX = (double)((double)(nX - pWindow->lX) * m_pDC->m_dPixelWidth) + pViewport->lX;
 		//dY = (double)((double)(nY - pWindow->lY) * m_pDC->m_dPixelHeight) + pViewport->lY;

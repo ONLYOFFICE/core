@@ -152,10 +152,8 @@ void CSvmFile::PlayMetaFile()
 			case META_TRANSPARENT_ACTION:		Read_META_TRANSPARENT();		break;	
 			case META_FLOATTRANSPARENT_ACTION:	Read_META_FLOATTRANSPARENT();	break;
 
-			case META_ISECTRECTCLIPREGION_ACTION:	Read_META_SECTRECTCLIPREGION();		break;
-			case META_ISECTREGIONCLIPREGION_ACTION:	Read_META_SECTREGIONCLIPREGION();	break;
-
-			case META_LAYOUTMODE_ACTION:			Read_META_LAYOUTMODE();				break;
+			case META_ISECTRECTCLIPREGION_ACTION:	Read_META_SECTRECTCLIPREGION(); break;
+			case META_ISECTREGIONCLIPREGION_ACTION:	Read_META_SECTREGIONCLIPREGION(); break;
 
 			case META_ROUNDRECT_ACTION:
 			case META_ELLIPSE_ACTION:
@@ -177,13 +175,13 @@ void CSvmFile::PlayMetaFile()
 			case META_MOVECLIPREGION_ACTION:
 			case META_EPS_ACTION:
 			case META_REFPOINT_ACTION:
+			case META_LAYOUTMODE_ACTION:
 			case META_OVERLINECOLOR_ACTION:
 			case META_RENDERGRAPHIC_ACTION:				
 			case META_COMMENT_ACTION:
 
 			case META_NULL_ACTION:
 			default:
-				m_unRecordPos = m_unRecordPos;
 			break;
         }
 
@@ -193,7 +191,7 @@ void CSvmFile::PlayMetaFile()
 		m_oStream.Skip(need_skip);
 
 #ifdef _DEBUG
-		if (100 <= actionType && actionType <= META_LAST_ACTION && need_skip != 0 && !m_pOutput)
+		if (100 <= actionType && actionType <= META_LAST_ACTION && need_skip > 0 && !m_pOutput)
 		{
 			std::wstring name = actionNames[actionType - 99].actionName;
 
@@ -220,7 +218,7 @@ void CSvmFile::Read_META_LINE()
 		CSvmPen *last_pen = dynamic_cast<CSvmPen *>(m_oPlayer.GetLastObject(SVM_OBJECT_PEN));
 		if (last_pen)
 		{
-			last_pen->Width = line_info.width / (m_oPlayer.GetDC()->m_dPixelWidth * 2);
+			last_pen->Width = line_info.width;
 
 			switch(line_info.style)
 			{
@@ -252,12 +250,12 @@ void CSvmFile::Read_SVM_HEADER()
 	m_pDC->SetMapMode(m_oHeader.mapMode, true);
 	
 	m_oBoundingBox			 = m_oHeader.boundRect;
-	m_oBoundingBox.nRight	*= m_pDC->m_dPixelWidthPrefered  * 2; 
+	m_oBoundingBox.nRight	*= m_pDC->m_dPixelWidthPrefered * 2; 
 	m_oBoundingBox.nBottom	*= m_pDC->m_dPixelHeightPrefered * 2; 
 		
-	m_oBoundingBox.nLeft	*= m_pDC->m_dPixelWidthPrefered; 
-	m_oBoundingBox.nTop		*= m_pDC->m_dPixelHeightPrefered;
-		//???? *2 ради повышения качества картинки (если в векторе насамом деле растр - сментся на растровые размеры ниже
+	m_oBoundingBox.nLeft	*= m_pDC->m_dPixelWidthPrefered * 2; 
+	m_oBoundingBox.nTop		*= m_pDC->m_dPixelHeightPrefered * 2;
+		// *2 ради повышения качества картинки (если в векторе насамом деле растр - сментся на растровые размеры ниже
 	m_bFirstPoint = true;
 }
 void CSvmFile::Read_META_POLYLINE()
@@ -273,7 +271,7 @@ void CSvmFile::Read_META_POLYLINE()
 		CSvmPen *last_pen = dynamic_cast<CSvmPen *>(m_oPlayer.GetLastObject(SVM_OBJECT_PEN));
 		if (last_pen)
 		{
-			last_pen->Width = line_info.width / (m_oPlayer.GetDC()->m_dPixelWidth * 2);
+			last_pen->Width = line_info.width;
 
 			switch(line_info.style)
 			{
@@ -285,15 +283,11 @@ void CSvmFile::Read_META_POLYLINE()
 
 	if (m_currentActionVersion >= 3)
 	{
-		unsigned int	tmp1;
-		unsigned short	tmp2;
 		unsigned char bHasPolyFlags = 0;
 		m_oStream >> bHasPolyFlags;
 		if ( bHasPolyFlags )
 		{
-			m_oStream >> tmp1 >> tmp2;
 		}
-		bHasPolyFlags = bHasPolyFlags;
 		//read flags
 //enum PolyFlags
 //{
@@ -425,15 +419,6 @@ void CSvmFile::Read_META_SETMAPMODE()
 	UpdateOutputDC();
 }
 
-void CSvmFile::Read_META_LAYOUTMODE()
-{
-	unsigned int	textLayputMode;
-	
-	m_oStream >> textLayputMode;
-
-	UpdateOutputDC();
-}
-
 void CSvmFile::Read_META_STRETCHTEXT()
 {
 	std::wstring sText;
@@ -502,7 +487,6 @@ void CSvmFile::Read_META_TEXT()
 void CSvmFile::Read_META_ARRAYTEXT()
 {
 	std::wstring sText;
-	std::wstring sText2;
 	TSvmPoint   startPoint;
 
 	m_oStream >> startPoint;
@@ -545,8 +529,6 @@ void CSvmFile::Read_META_ARRAYTEXT()
 			m_oStream >> nTemp;
 			tempBuffer += (wchar_t)nTemp;
 		}
-
-		sText2 = tempBuffer;
 	}
 	DrawText(sText, sText.length(), startPoint.x, startPoint.y, mpDXAry);
 

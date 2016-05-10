@@ -464,49 +464,49 @@ void CSvmDC::SetMapMode(TSvmMapMode & mapMode, bool prefered )
 	{
 	case MAP_MM:	// 1 unit = 1 mm
 	{
-		dPixel = 1. * 96 / 25.4;
+		dPixel = 1. * 72 / 25.4;
 		SetPixelWidth(dPixel);
 		SetPixelHeight(dPixel);		
 	}break;
 	case MAP_CM:	// 1 unit = 1 cm = 10 mm
 	{
-		dPixel = 10. * 96 / 25.4;
+		dPixel = 10. * 72 / 25.4;
 		SetPixelWidth(dPixel);
 		SetPixelHeight(dPixel);		
 	}break;
 	case MAP_100TH_MM:
 	{
-		dPixel = 1. * 96 / 2540.;
+		dPixel = 1. * 72 / 2540.;
 		SetPixelWidth(dPixel);
 		SetPixelHeight(dPixel);	
 	}break;
 	case MAP_10TH_MM:
 	{
-		dPixel = 1. * 96 / 254.;
+		dPixel = 1. * 72 / 254.;
 		SetPixelWidth(dPixel);
 		SetPixelHeight(dPixel);	
 	}break;
 	case MAP_1000TH_INCH:
 	{	
-		dPixel = 1. * 96 / 1000.;
+		dPixel = 1. * 72 / 1000.;
 		SetPixelWidth(dPixel);
 		SetPixelHeight(dPixel);	
 	}break;
 	case MAP_100TH_INCH:
 	{
-		dPixel = 1.* 96 / 100.;
+		dPixel = 1.* 72 / 100.;
 		SetPixelWidth(dPixel);
 		SetPixelHeight(dPixel);	
 	}break;
 	case MAP_10TH_INCH:
 	{
-		dPixel = 1. * 96 / 10.;
+		dPixel = 1. * 72 / 10.;
 		SetPixelWidth(dPixel);
 		SetPixelHeight(dPixel);	
 	}break;
 	case MAP_INCH:	// 1 unit = 1 inch
 	{
-		dPixel = 1. * 96;
+		dPixel = 1. * 72;
 		SetPixelWidth(dPixel);
 		SetPixelHeight(dPixel);		
 	}break;
@@ -522,7 +522,7 @@ void CSvmDC::SetMapMode(TSvmMapMode & mapMode, bool prefered )
 	}break;
 	case MAP_PIXEL:
 	{
-		dPixel = 0.5;// /96.; //todooo
+		dPixel = 0.5;// /72.; //todooo
 		SetPixelWidth(dPixel);
 		SetPixelHeight(dPixel);		
 	}break;

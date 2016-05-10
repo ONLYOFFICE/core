@@ -24,7 +24,7 @@ CONFIG += c++11
 TEMPLATE = app
 
 ############### destination path ###############
-DESTINATION_SDK_PATH = $$PWD/../../SDK/lib
+DESTINATION_SDK_PATH = $$PWD/../../build/lib
 
 # WINDOWS
 win32:contains(QMAKE_TARGET.arch, x86_64):{
@@ -56,8 +56,8 @@ LIBS += -L$$DESTINATION_SDK_PATH -lgraphics
 linux-g++ | linux-g++-64 | linux-g++-32 {
     QMAKE_LFLAGS += -Wl,--rpath=./
 
-    LIBS        += $$PWD/../../UnicodeConverter/icubuilds/linux64/usr/local/lib/libicuuc.so.55
-    LIBS        += $$PWD/../../UnicodeConverter/icubuilds/linux64/usr/local/lib/libicudata.so.55
+    LIBS        += $$PWD/../../build/bin/icu/linux_64/libicuuc.so.55
+    LIBS        += $$PWD/../../build/bin/icu/linux_64/libicudata.so.55
     message(linux)
 }
 

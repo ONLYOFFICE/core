@@ -203,9 +203,9 @@ namespace NSDoctRenderer
         std::wstring m_strConfigPath;
         CArray<std::wstring> m_arrFiles;
 
-        std::wstring m_strDoctSDK;
-        std::wstring m_strPpttSDK;
-        std::wstring m_strXlstSDK;
+        std::vector<std::wstring> m_arDoctSDK;
+        std::vector<std::wstring> m_arPpttSDK;
+        std::vector<std::wstring> m_arXlstSDK;
 
         std::wstring m_strEditorType;
         std::wstring m_strFilePath;
@@ -250,30 +250,17 @@ namespace NSDoctRenderer
                 }
             }
 
-            m_strDoctSDK = L"";
-            m_strPpttSDK = L"";
-            m_strXlstSDK = L"";
-
             XmlUtils::CXmlNode oNodeSdk = oNode.ReadNode(L"DoctSdk");
             if (oNodeSdk.IsValid())
-                m_strDoctSDK = oNodeSdk.GetText();
+                LoadSDK_scripts(oNodeSdk, m_arDoctSDK);
 
             oNodeSdk = oNode.ReadNode(L"PpttSdk");
             if (oNodeSdk.IsValid())
-                m_strPpttSDK = oNodeSdk.GetText();
+                LoadSDK_scripts(oNodeSdk, m_arPpttSDK);
 
             oNodeSdk = oNode.ReadNode(L"XlstSdk");
             if (oNodeSdk.IsValid())
-                m_strXlstSDK = oNodeSdk.GetText();
-
-            if (!NSFile::CFileBinary::Exists(m_strDoctSDK))
-                m_strDoctSDK = m_strConfigDir + m_strDoctSDK;
-
-            if (!NSFile::CFileBinary::Exists(m_strPpttSDK))
-                m_strPpttSDK = m_strConfigDir + m_strPpttSDK;
-
-            if (!NSFile::CFileBinary::Exists(m_strXlstSDK))
-                m_strXlstSDK = m_strConfigDir + m_strXlstSDK;
+                LoadSDK_scripts(oNodeSdk, m_arXlstSDK);
 
             m_sConsoleLogFile = L"";
             m_sErrorsLogFile = L"";
@@ -297,6 +284,37 @@ namespace NSDoctRenderer
         ~CDoctRenderer_Private()
         {
 
+        }
+
+        void LoadSDK_scripts(XmlUtils::CXmlNode& oNode, std::vector<std::wstring>& _files)
+        {
+            XmlUtils::CXmlNodes oNodes;
+            if (oNode.GetNodes(L"file", oNodes))
+            {
+                int nCount = oNodes.GetCount();
+                XmlUtils::CXmlNode _node;
+                for (int i = 0; i < nCount; ++i)
+                {
+                    oNodes.GetAt(i, _node);
+                    std::wstring strFilePath = _node.GetText();
+
+                    if (NSFile::CFileBinary::Exists(strFilePath) &&
+                        !NSFile::CFileBinary::Exists(m_strConfigDir + strFilePath))
+                        _files.push_back(strFilePath);
+                    else
+                        _files.push_back(m_strConfigDir + strFilePath);
+                }
+            }
+            else
+            {
+                std::wstring strFilePath = oNode.GetText();
+
+                if (NSFile::CFileBinary::Exists(strFilePath) &&
+                    !NSFile::CFileBinary::Exists(m_strConfigDir + strFilePath))
+                    _files.push_back(strFilePath);
+                else
+                    _files.push_back(m_strConfigDir + strFilePath);
+            }
         }
 
     public:
@@ -960,7 +978,7 @@ namespace NSDoctRenderer
         m_pInternal->m_oParams.FromXml(strXml);
         m_pInternal->m_arImagesInChanges.clear();
 
-        std::wstring sResourceFile;
+        std::vector<std::wstring>* arSdkFiles = NULL;
         switch (m_pInternal->m_oParams.m_eSrcFormat)
         {
         case DoctRendererFormat::DOCT:
@@ -971,7 +989,7 @@ namespace NSDoctRenderer
                 case DoctRendererFormat::PDF:
                 case DoctRendererFormat::HTML:
                     {
-                        sResourceFile = m_pInternal->m_strDoctSDK;
+                        arSdkFiles = &m_pInternal->m_arDoctSDK;
                         m_pInternal->m_strEditorType = L"document";
                         break;
                     }
@@ -987,7 +1005,7 @@ namespace NSDoctRenderer
                 case DoctRendererFormat::PPTT:
                 case DoctRendererFormat::PDF:
                     {
-                        sResourceFile = m_pInternal->m_strPpttSDK;
+                        arSdkFiles = &m_pInternal->m_arPpttSDK;
                         m_pInternal->m_strEditorType = L"presentation";
                         break;
                     }
@@ -1003,7 +1021,7 @@ namespace NSDoctRenderer
                 case DoctRendererFormat::XLST:
                 case DoctRendererFormat::PDF:
                     {
-                        sResourceFile = m_pInternal->m_strXlstSDK;
+                        arSdkFiles = &m_pInternal->m_arXlstSDK;
                         m_pInternal->m_strEditorType = L"spreadsheet";
                         break;
                     }
@@ -1037,9 +1055,15 @@ namespace NSDoctRenderer
             strScript += "\n\n";
         }
 
-        // теперь оборачиваем сами
-        //strScript += ("(function(){" + m_pInternal->ReadScriptFile(sResourceFile) + "})();");
-        strScript += m_pInternal->ReadScriptFile(sResourceFile);
+        if (NULL != arSdkFiles)
+        {
+            for (std::vector<std::wstring>::iterator i = arSdkFiles->begin(); i != arSdkFiles->end(); i++)
+            {
+                strScript += m_pInternal->ReadScriptFile(*i);
+                strScript += "\n\n";
+            }
+        }
+
         if (m_pInternal->m_strEditorType == L"spreadsheet")
             strScript += "\n$.ready();";
 

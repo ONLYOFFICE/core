@@ -117,13 +117,36 @@ static void GetScriptsPath(NSStringUtils::CStringBuilder& oBuilder)
         }
     }
 
-    std::wstring sPath = oNode.ReadValueString(L"DoctSdk");
-    if (!NSFile::CFileBinary::Exists(sPath) || NSFile::CFileBinary::Exists(sProcess + sPath))
-        sPath = sProcess + sPath;
+    XmlUtils::CXmlNode oNodeSdk = oNode.ReadNode(L"DoctSdk");
+    XmlUtils::CXmlNodes oNodes;
+    if (oNodeSdk.GetNodes(L"file", oNodes))
+    {
+        int nCount = oNodes.GetCount();
+        XmlUtils::CXmlNode _node;
+        for (int i = 0; i < nCount; ++i)
+        {
+            oNodes.GetAt(i, _node);
+            std::wstring sPath = _node.GetText();
 
-    oBuilder.WriteString(L"<sdk>");
-    oBuilder.WriteEncodeXmlString(CorrectHtmlPath(sPath));
-    oBuilder.WriteString(L"</sdk>");
+            if (!NSFile::CFileBinary::Exists(sPath) || NSFile::CFileBinary::Exists(sProcess + sPath))
+                sPath = sProcess + sPath;
+
+            oBuilder.WriteString(L"<sdk>");
+            oBuilder.WriteEncodeXmlString(CorrectHtmlPath(sPath));
+            oBuilder.WriteString(L"</sdk>");
+        }
+    }
+    else
+    {
+        std::wstring sPath = oNodeSdk.GetText();
+
+        if (!NSFile::CFileBinary::Exists(sPath) || NSFile::CFileBinary::Exists(sProcess + sPath))
+            sPath = sProcess + sPath;
+
+        oBuilder.WriteString(L"<sdk>");
+        oBuilder.WriteEncodeXmlString(CorrectHtmlPath(sPath));
+        oBuilder.WriteString(L"</sdk>");
+    }
 }
 
 int CHtmlFile::Convert(const std::vector<std::wstring>& arFiles, const std::wstring& sDstfolder, const std::wstring& sPathInternal)
@@ -214,10 +237,30 @@ int CHtmlFile::Convert(const std::vector<std::wstring>& arFiles, const std::wstr
                                NULL, NULL, TRUE, CREATE_UNICODE_ENVIRONMENT, (LPVOID)pCommandLineEnv, NULL, &sturtupinfo, &processinfo);
 #else
 
+    HANDLE ghJob = CreateJobObject(NULL, NULL);
+
+    if (ghJob)
+    {
+        JOBOBJECT_EXTENDED_LIMIT_INFORMATION jeli = { 0 };
+
+        // Configure all child processes associated with the job to terminate when the
+        jeli.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
+        if ( 0 == SetInformationJobObject( ghJob, JobObjectExtendedLimitInformation, &jeli, sizeof(jeli)))
+        {
+            CloseHandle(ghJob);
+            ghJob = NULL;
+        }
+    }
+
     PROCESS_INFORMATION processinfo;
     ZeroMemory(&processinfo,sizeof(PROCESS_INFORMATION));
     BOOL bResult = CreateProcessW(sInternal.c_str(), pCommandLine,
                                NULL, NULL, TRUE, NULL, NULL, NULL, &sturtupinfo, &processinfo);
+
+    if (bResult && ghJob)
+    {
+        AssignProcessToJobObject(ghJob, processinfo.hProcess);
+    }
 
 #endif
 

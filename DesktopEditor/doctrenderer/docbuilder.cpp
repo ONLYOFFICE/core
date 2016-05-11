@@ -356,9 +356,9 @@ namespace NSDoctRenderer
     public:
         CArray<std::wstring> m_arrFiles;
 
-        std::wstring m_strDoctSDK;
-        std::wstring m_strPpttSDK;
-        std::wstring m_strXlstSDK;
+        std::vector<std::wstring> m_arDoctSDK;
+        std::vector<std::wstring> m_arPpttSDK;
+        std::vector<std::wstring> m_arXlstSDK;
 
         std::wstring m_strEditorType;
         std::wstring m_strFilePath;
@@ -420,30 +420,17 @@ namespace NSDoctRenderer
                 }
             }
 
-            m_strDoctSDK = L"";
-            m_strPpttSDK = L"";
-            m_strXlstSDK = L"";
-
             XmlUtils::CXmlNode oNodeSdk = oNode.ReadNode(L"DoctSdk");
             if (oNodeSdk.IsValid())
-                m_strDoctSDK = oNodeSdk.GetText();
+                LoadSDK_scripts(oNodeSdk, m_arDoctSDK, sConfigDir);
 
             oNodeSdk = oNode.ReadNode(L"PpttSdk");
             if (oNodeSdk.IsValid())
-                m_strPpttSDK = oNodeSdk.GetText();
+                LoadSDK_scripts(oNodeSdk, m_arPpttSDK, sConfigDir);
 
             oNodeSdk = oNode.ReadNode(L"XlstSdk");
             if (oNodeSdk.IsValid())
-                m_strXlstSDK = oNodeSdk.GetText();
-
-            if (!NSFile::CFileBinary::Exists(m_strDoctSDK))
-                m_strDoctSDK = sConfigDir + m_strDoctSDK;
-
-            if (!NSFile::CFileBinary::Exists(m_strPpttSDK))
-                m_strPpttSDK = sConfigDir + m_strPpttSDK;
-
-            if (!NSFile::CFileBinary::Exists(m_strXlstSDK))
-                m_strXlstSDK = sConfigDir + m_strXlstSDK;
+                LoadSDK_scripts(oNodeSdk, m_arXlstSDK, sConfigDir);
 
             CheckFonts(bIsCheckSystemFonts);
 
@@ -457,6 +444,37 @@ namespace NSDoctRenderer
         ~CDocBuilder_Private()
         {
             CloseFile();
+        }
+
+        void LoadSDK_scripts(XmlUtils::CXmlNode& oNode, std::vector<std::wstring>& _files, const std::wstring& strConfigDir)
+        {
+            XmlUtils::CXmlNodes oNodes;
+            if (oNode.GetNodes(L"file", oNodes))
+            {
+                int nCount = oNodes.GetCount();
+                XmlUtils::CXmlNode _node;
+                for (int i = 0; i < nCount; ++i)
+                {
+                    oNodes.GetAt(i, _node);
+                    std::wstring strFilePath = _node.GetText();
+
+                    if (NSFile::CFileBinary::Exists(strFilePath) &&
+                        !NSFile::CFileBinary::Exists(strConfigDir + strFilePath))
+                        _files.push_back(strFilePath);
+                    else
+                        _files.push_back(strConfigDir + strFilePath);
+                }
+            }
+            else
+            {
+                std::wstring strFilePath = oNode.GetText();
+
+                if (NSFile::CFileBinary::Exists(strFilePath) &&
+                    !NSFile::CFileBinary::Exists(strConfigDir + strFilePath))
+                    _files.push_back(strFilePath);
+                else
+                    _files.push_back(strConfigDir + strFilePath);
+            }
         }
 
         void CheckFonts(bool bIsCheckSystemFonts)
@@ -975,22 +993,24 @@ namespace NSDoctRenderer
 
         std::string GetScript()
         {
+            std::vector<std::wstring>* arSdkFiles = NULL;
+
             std::wstring sResourceFile;
             switch (m_nFileType)
             {
             case 0:
                 {
-                    sResourceFile = m_strDoctSDK;
+                    arSdkFiles = &m_arDoctSDK;
                     break;
                 }
             case 1:
                 {
-                    sResourceFile = m_strPpttSDK;
+                    arSdkFiles = &m_arPpttSDK;
                     break;
                 }
             case 2:
                 {
-                    sResourceFile = m_strXlstSDK;
+                    arSdkFiles = &m_arXlstSDK;
                     break;
                 }
             default:
@@ -1004,7 +1024,14 @@ namespace NSDoctRenderer
                 strScript += "\n\n";
             }
 
-            strScript += ReadScriptFile(sResourceFile);
+            if (NULL != arSdkFiles)
+            {
+                for (std::vector<std::wstring>::iterator i = arSdkFiles->begin(); i != arSdkFiles->end(); i++)
+                {
+                    strScript += ReadScriptFile(*i);
+                    strScript += "\n\n";
+                }
+            }
 
             if (m_nFileType == 2)
                 strScript += "\n$.ready();";

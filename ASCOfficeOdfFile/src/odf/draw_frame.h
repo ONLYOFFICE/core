@@ -164,8 +164,6 @@ class draw_g_attlist
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
-public:
-
 };
 
 
@@ -188,10 +186,10 @@ private:
     virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
 
 public:
-	odf_types::union_common_draw_attlists  common_draw_attlists_;  
-    draw_g_attlist draw_g_attlist_;
+	odf_types::union_common_draw_attlists	common_draw_attlists_;  
+    draw_g_attlist							draw_g_attlist_;
 
-    office_element_ptr_array content_;
+    office_element_ptr_array				content_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(draw_g);

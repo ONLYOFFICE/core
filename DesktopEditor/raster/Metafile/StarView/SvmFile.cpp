@@ -1,16 +1,16 @@
-﻿
-#include "SvmFile.h"
+﻿#include <string>
 
-#include <string>
-
+#include "../../../graphics/GraphicsRenderer.h"
 #include "../Common/MetaFileTypes.h"
 #include "../Common/MetaFileRenderer.h"
 
+#include "../../../../Common/DocxFormat/Source/Base/Types_32.h"
 #include "../../../../OfficeUtils/src/OfficeUtils.h"
 #ifdef _DEBUG
 	#include <iostream>
 #endif
 
+#include "SvmFile.h"
 #include "SvmEnums.h"
 #include "SvmObjects.h"
 
@@ -191,7 +191,7 @@ void CSvmFile::PlayMetaFile()
 		m_oStream.Skip(need_skip);
 
 #ifdef _DEBUG
-		if (100 <= actionType && actionType <= META_LAST_ACTION && need_skip > 0 && !m_pOutput)
+		if (/*100 <= actionType &&*/ actionType <= META_LAST_ACTION && /*need_skip > 0 &&*/ !m_pOutput)
 		{
 			std::wstring name = actionNames[actionType - 99].actionName;
 
@@ -201,6 +201,15 @@ void CSvmFile::PlayMetaFile()
  }
 	if (m_pOutput)
 		m_pOutput->End();
+}
+
+void CSvmFile::Read_META_LAYOUTMODE()
+{
+    unsigned int    textLayputMode;
+    
+    m_oStream >> textLayputMode;
+
+    UpdateOutputDC();
 }
 
 void CSvmFile::Read_META_LINE()
@@ -218,7 +227,7 @@ void CSvmFile::Read_META_LINE()
 		CSvmPen *last_pen = dynamic_cast<CSvmPen *>(m_oPlayer.GetLastObject(SVM_OBJECT_PEN));
 		if (last_pen)
 		{
-			last_pen->Width = line_info.width;
+			last_pen->Width = line_info.width / (m_oPlayer.GetDC()->m_dPixelWidth * 2);
 
 			switch(line_info.style)
 			{
@@ -227,8 +236,8 @@ void CSvmFile::Read_META_LINE()
 			}
 		}
 	}
-	MoveTo(start.x, start.y);
-	LineTo(end.x, end.y);
+	MoveTo(start.x + m_oCurrnetOffset.x, start.y + m_oCurrnetOffset.y);
+	LineTo(end.x + m_oCurrnetOffset.x, end.y + m_oCurrnetOffset.y);
 }
 void CSvmFile::Read_META_RECTANGLE()
 {
@@ -249,13 +258,16 @@ void CSvmFile::Read_SVM_HEADER()
 
 	m_pDC->SetMapMode(m_oHeader.mapMode, true);
 	
-	m_oBoundingBox			 = m_oHeader.boundRect;
-	m_oBoundingBox.nRight	*= m_pDC->m_dPixelWidthPrefered * 2; 
-	m_oBoundingBox.nBottom	*= m_pDC->m_dPixelHeightPrefered * 2; 
+	if (m_bMainStream)
+	{	
+		m_oBoundingBox			 = m_oHeader.boundRect;
+		m_oBoundingBox.nRight	*= m_pDC->m_dPixelWidthPrefered		* 2; 
+		m_oBoundingBox.nBottom	*= m_pDC->m_dPixelHeightPrefered	* 2; 
+			
+		m_oBoundingBox.nLeft	*= m_pDC->m_dPixelWidthPrefered		* 2; 
+		m_oBoundingBox.nTop		*= m_pDC->m_dPixelHeightPrefered	* 2;
+	}// *2 ради повышения качества картинки (если в векторе насамом деле растр - сментся на растровые размеры ниже
 		
-	m_oBoundingBox.nLeft	*= m_pDC->m_dPixelWidthPrefered * 2; 
-	m_oBoundingBox.nTop		*= m_pDC->m_dPixelHeightPrefered * 2;
-		// *2 ради повышения качества картинки (если в векторе насамом деле растр - сментся на растровые размеры ниже
 	m_bFirstPoint = true;
 }
 void CSvmFile::Read_META_POLYLINE()
@@ -271,13 +283,16 @@ void CSvmFile::Read_META_POLYLINE()
 		CSvmPen *last_pen = dynamic_cast<CSvmPen *>(m_oPlayer.GetLastObject(SVM_OBJECT_PEN));
 		if (last_pen)
 		{
-			last_pen->Width = line_info.width;
+			last_pen->Width = line_info.width / (m_oPlayer.GetDC()->m_dPixelWidth * 2);
 
 			switch(line_info.style)
 			{
 				case LINE_SOLID:	last_pen->PenStyle = PS_SOLID ; break;
 				case LINE_DASH:		last_pen->PenStyle = PS_DASH ; break;
 			}
+
+			if (last_pen->Width < 1)
+				last_pen->Width = 20;
 		}
 	}
 
@@ -300,11 +315,11 @@ void CSvmFile::Read_META_POLYLINE()
 
 	if (polygon.points.size() < 1) return;
 
-	MoveTo(polygon.points[0].x, polygon.points[0].y);
+	MoveTo(polygon.points[0].x + m_oCurrnetOffset.x, polygon.points[0].y + m_oCurrnetOffset.y);
 
 	for (int i = 1; i < polygon.points.size(); i++)
 	{
-		LineTo(polygon.points[i].x, polygon.points[i].y);
+		LineTo(polygon.points[i].x + m_oCurrnetOffset.x, polygon.points[i].y + m_oCurrnetOffset.y);
 	}
 	ClosePath();
 	DrawPath(true, false);
@@ -318,11 +333,11 @@ void CSvmFile::Read_META_POLYGON()
 
 	if (polygon.points.size() < 1) return;
 
-	MoveTo(polygon.points[0].x, polygon.points[0].y);
+	MoveTo(polygon.points[0].x + m_oCurrnetOffset.x, polygon.points[0].y + m_oCurrnetOffset.y);
 
 	for (int i = 1; i < polygon.points.size(); i++)
 	{
-		LineTo(polygon.points[i].x, polygon.points[i].y);
+		LineTo(polygon.points[i].x + m_oCurrnetOffset.x, polygon.points[i].y + m_oCurrnetOffset.y);
 	}
 	ClosePath();
 	DrawPath(true, true);
@@ -384,10 +399,10 @@ void CSvmFile::Read_META_POLYPOLYGON()
 			if (ushPointsCount <= 0)
 				continue;
 
-			MoveTo(polygons[ushPolygonIndex].points[0].x, polygons[ushPolygonIndex].points[0].y);
+			MoveTo(polygons[ushPolygonIndex].points[0].x + m_oCurrnetOffset.x, polygons[ushPolygonIndex].points[0].y + m_oCurrnetOffset.y);
 			for (int i = 1; i < ushPointsCount; i++)
 			{
-				LineTo(polygons[ushPolygonIndex].points[i].x, polygons[ushPolygonIndex].points[i].y);
+				LineTo(polygons[ushPolygonIndex].points[i].x + m_oCurrnetOffset.x, polygons[ushPolygonIndex].points[i].y + m_oCurrnetOffset.y);
 			}
 			ClosePath();
 		}
@@ -398,10 +413,10 @@ void CSvmFile::Read_META_POLYPOLYGON()
 		//	if (ushPointsCount <= 0)
 		//		continue;
 
-		//	MoveTo(complexPolygons[ushPolygonIndex].points[0].x, complexPolygons[ushPolygonIndex].points[0].y);
+		//	MoveTo(complexPolygons[ushPolygonIndex].points[0].x + m_oCurrnetOffset.x, complexPolygons[ushPolygonIndex].points[0].y);
 		//	for (int i = 1; i < ushPointsCount; i++)
 		//	{
-		//		LineTo(complexPolygons[ushPolygonIndex].points[i].x, complexPolygons[ushPolygonIndex].points[i].y);
+		//		LineTo(complexPolygons[ushPolygonIndex].points[i].x + m_oCurrnetOffset.x, complexPolygons[ushPolygonIndex].points[i].y);
 		//	}
 		//	ClosePath();
 		//}
@@ -415,6 +430,8 @@ void CSvmFile::Read_META_SETMAPMODE()
 	m_oStream >> mapMode;
 	
 	m_pDC->SetMapMode(mapMode);
+
+	m_oCurrnetOffset = mapMode.origin;
 
 	UpdateOutputDC();
 }
@@ -450,7 +467,7 @@ void CSvmFile::Read_META_STRETCHTEXT()
 		}
 		sText = buf;
 	}
-	DrawText(sText, sText.length(), startPoint.x, startPoint.y);
+	DrawText(sText, sText.length(), startPoint.x + m_oCurrnetOffset.x, startPoint.y + m_oCurrnetOffset.y);
 }
 
 
@@ -482,7 +499,7 @@ void CSvmFile::Read_META_TEXT()
 	//	}
 	//	sText = buf;
 	//}
-	DrawText(sText, sText.length(), startPoint.x, startPoint.y);
+	DrawText(sText, sText.length(), startPoint.x + m_oCurrnetOffset.x, startPoint.y + m_oCurrnetOffset.y);
 }
 void CSvmFile::Read_META_ARRAYTEXT()
 {
@@ -530,7 +547,7 @@ void CSvmFile::Read_META_ARRAYTEXT()
 			tempBuffer += (wchar_t)nTemp;
 		}
 	}
-	DrawText(sText, sText.length(), startPoint.x, startPoint.y, mpDXAry);
+	DrawText(sText, sText.length(), startPoint.x + m_oCurrnetOffset.x, startPoint.y + m_oCurrnetOffset.y, mpDXAry);
 
 	if (mpDXAry)
 		delete []mpDXAry;
@@ -704,10 +721,10 @@ void CSvmFile::Read_META_TRANSPARENT()
 			if (ushPointsCount <= 0)
 				continue;
 
-			MoveTo(polygons[ushPolygonIndex].points[0].x, polygons[ushPolygonIndex].points[0].y);
+			MoveTo(polygons[ushPolygonIndex].points[0].x + m_oCurrnetOffset.x, polygons[ushPolygonIndex].points[0].y + m_oCurrnetOffset.y);
 			for (int i = 1; i < ushPointsCount; i++)
 			{
-				LineTo(polygons[ushPolygonIndex].points[i].x, polygons[ushPolygonIndex].points[i].y);
+				LineTo(polygons[ushPolygonIndex].points[i].x + m_oCurrnetOffset.x, polygons[ushPolygonIndex].points[i].y + m_oCurrnetOffset.y);
 			}
 
 			m_pOutput->ClosePath();
@@ -719,12 +736,15 @@ void CSvmFile::Read_META_TRANSPARENT()
 
 void CSvmFile::Read_META_FLOATTRANSPARENT()
 {
+	return;
 	// тут возможен также вариант svg
-	CSvmFile metaFile(m_oStream.GetCurPtr() , m_unRecordSize);
-	metaFile.SetOutputDevice(m_pOutput);
-	metaFile.PlayMetaFile();
+	CSvmFile subMetaFile(m_oStream.GetCurPtr() , m_unRecordSize);
 	
-	int skip_size = metaFile.m_oStream.Tell();
+	subMetaFile.m_bMainStream = false;
+	subMetaFile.SetFontManager(GetFontManager());
+
+	subMetaFile.PlayMetaFile();
+	int skip_size = subMetaFile.m_oStream.Tell();
 
 	m_oStream.Skip( skip_size);
 
@@ -739,19 +759,17 @@ void CSvmFile::Read_META_FLOATTRANSPARENT()
 	if (!pBrush)
 		return SetError();
 
-	m_oStream >> pBrush->BrushBounds;
-	
 	TSvmGradient gradient;
 	m_oStream >> gradient;
 
 	switch((ESvmGradientStyle)gradient.style)
 	{
-	case GRADIENT_LINEAR:		pBrush->BrushStyle	= BS_LINEARGRADIENT;	break;
-	case GRADIENT_AXIAL:		pBrush->BrushStyle	= BS_AXIALGRADIENT;		break;
-	case GRADIENT_RADIAL:		pBrush->BrushStyle	= BS_RADIALGRADIENT;	break;
-	case GRADIENT_ELLIPTICAL:	pBrush->BrushStyle	= BS_RADIALGRADIENT;	break;
-	case GRADIENT_SQUARE:		pBrush->BrushStyle	= BS_LINEARGRADIENT;	break;
-	case GRADIENT_RECT:			pBrush->BrushStyle	= BS_RECTGRADIENT;		break;
+		case GRADIENT_LINEAR:		pBrush->BrushStyle	= BS_LINEARGRADIENT;	break;
+		case GRADIENT_AXIAL:		pBrush->BrushStyle	= BS_AXIALGRADIENT;		break;
+		case GRADIENT_RADIAL:		pBrush->BrushStyle	= BS_RADIALGRADIENT;	break;
+		case GRADIENT_ELLIPTICAL:	pBrush->BrushStyle	= BS_RADIALGRADIENT;	break;
+		case GRADIENT_SQUARE:		pBrush->BrushStyle	= BS_LINEARGRADIENT;	break;
+		case GRADIENT_RECT:			pBrush->BrushStyle	= BS_RECTGRADIENT;		break;
 	}
 	
 	pBrush->Color.Set(gradient.color1.r>>8, gradient.color1.g>>8, gradient.color1.b>>8);
@@ -760,6 +778,65 @@ void CSvmFile::Read_META_FLOATTRANSPARENT()
 	pBrush->BrushStyleEx = 90 + gradient.angle % 3600; //проверить на разных
 
 	m_oPlayer.RegisterObject((CSvmObjectBase*)pBrush);
+
+//---------------------------------------------------------
+	CSvmBrush* pBrushCopy = new CSvmBrush(*pBrush);
+	subMetaFile.m_oPlayer.RegisterObject((CSvmObjectBase*)pBrushCopy);
+	
+//---------------------------------------------------------
+	subMetaFile.m_oStream.SeekToStart();
+	
+	//CGraphicsRenderer oRenderer;	
+
+	//TRect *rect = subMetaFile.GetBounds();
+	//
+	//int nW = rect->nRight - rect->nLeft;
+	//int nH = rect->nBottom - rect->nTop;
+	//
+	//double dWidth  = nW;
+	//double dHeight = nH;
+
+	//BYTE* pBgraData = new BYTE[nW * nH * 4];
+	//if (!pBgraData)
+	//	return;
+
+ //   _UINT32 alfa = 0xffffff;
+	////дефолтный тон должен быть прозрачным, а не белым 
+	////memset(pBgraData, 0xff, nWidth * nHeight * 4);
+	//for (int i = 0; i < nW * nH; i++)
+	//{
+ //       ((_UINT32*)pBgraData)[i] = alfa;
+	//}
+	//CBgraFrame oFrame;
+	//oFrame.put_Data(pBgraData);
+	//oFrame.put_Width(nW);
+	//oFrame.put_Height(nH);
+	//oFrame.put_Stride(-4 * nW);
+
+	//oRenderer.CreateFromBgraFrame(&oFrame);
+	//oRenderer.SetSwapRGB(false);
+	//oRenderer.put_Width(dWidth);
+	//oRenderer.put_Height(dHeight);
+	//
+	//CMetaFileRenderer oSvmOut(&subMetaFile, &oRenderer, 0, 0, dWidth, dHeight);
+	subMetaFile.SetOutputDevice(m_pOutput);//&oSvmOut);
+	
+	subMetaFile.PlayMetaFile();
+	
+	double dX = point.x, dY = point.y, dR = point.x + size.cx, dB = point.y + size.cy;
+	
+	TranslatePoint(point.x, point.y, dX, dY);
+	TranslatePoint(point.x + size.cx, point.y + size.cy, dR, dB);
+	
+	//if (m_pOutput)
+	//{
+	//	LONG width, height;
+	//	BYTE* bytes = oRenderer.GetPixels(width, height);
+	//	m_pOutput->DrawBitmap(dX, dY, dR - dX, dB - dY, bytes, width, height);
+	//	oFrame.SaveFile(NSFile::CFileBinary::CreateTempFileWithUniqueName(L"d:\\test\\_svm", L"svm"), 1);
+
+	//}
+
 }
 
 void CSvmFile::Read_META_GRADIENT()
@@ -843,6 +920,17 @@ void CSvmFile::Read_META_RASTEROP()
 	m_oStream >> tmp; 
 	
 	m_oPlayer.SetRasterOp(tmp);
+
+	//ROP_OVERPAINT, ROP_XOR, ROP_0, ROP_1, ROP_INVERT 
+
+	//switch(tmp)
+	//{
+	//case 0: if ( m_pOutput)	m_pOutput->EndClipPath(0);			break;
+	//case 1: if ( m_pOutput)	m_pOutput->StartClipPath(RGN_AND);	break;
+	//case 2: if ( m_pOutput)	m_pOutput->StartClipPath(RGN_OR);	break;
+	//case 3: if ( m_pOutput)	m_pOutput->StartClipPath(RGN_DIFF);	break;
+	//}
+
 	
 }
 
@@ -967,7 +1055,7 @@ void CSvmFile::Read_META_BMPSCALE()
 	{
 		if ( m_pOutput)
 		{
-			m_pOutput->DrawBitmap( point.x, point.y, size.cx, size.cy, pBgraBuffer, bitmap_info.nWidth, bitmap_info.nHeight);
+			m_pOutput->DrawBitmap( point.x + m_oCurrnetOffset.x, point.y + m_oCurrnetOffset.y, size.cx, size.cy, pBgraBuffer, bitmap_info.nWidth, bitmap_info.nHeight);
 		}
 
 		delete []pBgraBuffer;

@@ -112,7 +112,7 @@ public:
  		current_level_++;
         objects_count_++; 
 
-		_frame_ fr = {drawFrame,L"",objects_count_,false};
+		_frame_ fr = {drawFrame, L"", objects_count_, false};
    
 		frames_.push_back(fr);
 	}
@@ -124,6 +124,14 @@ public:
 		current_shape_id_ = objects_count_;
         current_object_name_ = L"";
         current_shape_ = drawShape;
+    }
+    void start_group() 
+    { 
+		current_level_++;
+        objects_count_++; 
+		
+		current_shape_id_ = objects_count_;
+		groups_.push_back(current_level_);
     }
     void add_name_object(const std::wstring & name) 
     { 
@@ -146,10 +154,8 @@ public:
 	bool & get_use_image_replace()
 	{
 		bool res = false;
-		if (frames_.size()>0)
-			return frames_.back().use_image_replace;
-		else
-			return res;
+		if (frames_.size()>0)	return frames_.back().use_image_replace;
+		else					return res;
 	}
 
 	std::wstring & get_text_stream_shape()
@@ -172,17 +178,20 @@ public:
 		shape_text_content_=L"";
 		current_shape_id_ =0;
 	}
-    int get_current_level() const { return current_level_; }
+	void stop_group()
+	{
+		current_level_--;
+		groups_.pop_back();
+	}
 	
 	int get_current_frame_id() const 
 	{
-		if (frames_.size()>0)
-			return frames_.back().id; 
-		else 
-			return 0;
-
+		if (frames_.size()>0)	return frames_.back().id; 
+		else					return 0;
 	}
- 	int get_current_shape_id() const { return current_shape_id_; }
+	bool	in_group()						{ return groups_.size() > 0; }
+    int		get_current_level()		const	{ return current_level_; }
+ 	int		get_current_shape_id()	const	{ return current_shape_id_; }
 	
 	const std::wstring & get_current_object_name() const { return current_object_name_; }
    
@@ -194,19 +203,20 @@ public:
 	odf_reader::draw_shape * get_current_shape() const { return current_shape_; }
 	
 private:
-	std::wstring shape_text_content_;
+	std::wstring			shape_text_content_;
 
-	std::wstring current_object_name_;
-    unsigned int objects_count_;
+	std::wstring			current_object_name_;
+    unsigned int			objects_count_;
 	
-	int current_level_;
+	int						current_level_;
 	
-	std::vector<_frame_> frames_; 
+	std::vector<int>		groups_;
+	std::vector<_frame_>	frames_; 
    
 	odf_reader::draw_shape * current_shape_; 
-	size_t current_shape_id_;
+	size_t					current_shape_id_;
 
-	std::wstring zero_string_;
+	std::wstring			zero_string_;
 
 };
 

@@ -940,9 +940,9 @@ void draw_shape::docx_convert(oox::docx_conversion_context & Context)
 	oox::_docx_drawing drawing = oox::_docx_drawing();
 
 	drawing.type	= oox::mediaitems::typeShape;
-
 	drawing.id		= Context.get_drawing_context().get_current_shape_id();
 	drawing.name	= Context.get_drawing_context().get_current_object_name();
+	drawing.inGroup	= Context.get_drawing_context().in_group();
 
 	drawing.sub_type	= sub_type_;
 	drawing.additional	= additional_;//сюда могут добавиться свойства ...
@@ -970,7 +970,8 @@ void draw_shape::docx_convert(oox::docx_conversion_context & Context)
 	Context.set_paragraph_state(false);		
 	
 	bool new_run = true;
-	if (pState == false && Context.get_drawing_context().get_current_level() == 1)
+	
+	if ((pState == false && Context.get_drawing_context().get_current_level() == 1) || (Context.get_drawing_context().in_group()))
 	{
 		new_run = false;
 	}
@@ -1026,10 +1027,12 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 	oox::_docx_drawing drawing = oox::_docx_drawing();
-	drawing.type = oox::mediaitems::typeImage;
 
-	drawing.id = Context.get_drawing_context().get_current_frame_id();
-	drawing.name = Context.get_drawing_context().get_current_object_name();
+	drawing.type	= oox::mediaitems::typeImage;
+	drawing.id		= Context.get_drawing_context().get_current_frame_id();
+	drawing.name	= Context.get_drawing_context().get_current_object_name();
+	drawing.inGroup	= Context.get_drawing_context().in_group();
+
 //////////////////////////////////////////////////////////////////////////////////////////////////
 	oox::hyperlinks::_ref hyperlink = Context.last_hyperlink();
 	//нужно еще систему конроля - могут придте уже "использованные" линки с картинок - из колонтитулов (но на них уже использовали релсы)
@@ -1082,9 +1085,13 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 	pState = Context.get_paragraph_state();
 	Context.set_paragraph_state(false);
 
-	Context.add_new_run(_T(""));
+	if (!Context.get_drawing_context().in_group())
+		Context.add_new_run(_T(""));
+	
 	docx_serialize(strm,drawing);
-    Context.finish_run();
+ 	
+	if (!Context.get_drawing_context().in_group())
+		Context.finish_run();
 
 	Context.set_paragraph_state(pState);
 
@@ -1130,10 +1137,10 @@ void draw_text_box::docx_convert(oox::docx_conversion_context & Context)
 		return;
 	oox::_docx_drawing drawing = oox::_docx_drawing();
 
-	drawing.type = oox::mediaitems::typeShape;
-
-	drawing.id = Context.get_drawing_context().get_current_frame_id();
-	drawing.name = Context.get_drawing_context().get_current_object_name();
+	drawing.type	= oox::mediaitems::typeShape;
+	drawing.id		= Context.get_drawing_context().get_current_frame_id();
+	drawing.name	= Context.get_drawing_context().get_current_object_name();
+	drawing.inGroup	= Context.get_drawing_context().in_group();
 
 	drawing.sub_type = 1;	//textBox
 
@@ -1188,23 +1195,81 @@ void draw_text_box::docx_convert(oox::docx_conversion_context & Context)
 	pState = Context.get_paragraph_state();
 	Context.set_paragraph_state(false);		
    
-	Context.add_new_run(_T(""));    
+	if (!Context.get_drawing_context().in_group())
+		Context.add_new_run(_T(""));    
+	
 	docx_serialize(strm, drawing);
-	Context.finish_run();
+	
+	if (!Context.get_drawing_context().in_group())
+		Context.finish_run();
 
 	Context.set_paragraph_state(pState);		
 }
 void draw_g::docx_convert(oox::docx_conversion_context & Context)
 {
-    BOOST_FOREACH(const office_element_ptr & elm, content_)
+	if ((!Context.get_paragraph_state() && !Context.get_drawing_context().in_group()) && !Context.delayed_converting_)
+    {
+        Context.add_delayed_element(this);
+        return;
+    }
+	oox::_docx_drawing drawing = oox::_docx_drawing();
+
+	drawing.id		= Context.get_drawing_context().get_current_shape_id();
+	drawing.type	= oox::mediaitems::typeGroup;
+	drawing.inGroup	= Context.get_drawing_context().in_group();
+
+	Context.get_drawing_context().start_group();
+/////////
+	common_draw_docx_convert(Context, common_draw_attlists_, drawing);
+/////////
+	oox::docx_conversion_context::StreamsManPtr prev = Context.get_stream_man();
+	
+	std::wstringstream temp_stream(drawing.content_group_);
+	Context.set_stream_man( boost::shared_ptr<oox::streams_man>( new oox::streams_man(temp_stream) ));	
+	bool runState = Context.get_run_state();
+	Context.set_run_state(false);
+
+	bool pState = Context.get_paragraph_state();
+	Context.set_paragraph_state(false);		
+		
+	BOOST_FOREACH(const office_element_ptr & elm, content_)
     {
 		ElementType type = elm->get_type();
         elm->docx_convert(Context);
     }
+
+	if (drawing.cx < 1 || drawing.cy < 1 && content_.size() > 0)
+	{//в оо такое бывает - размеры должны подстраиваться ...
+		draw_frame* frame = dynamic_cast<draw_frame*>(content_[0].get());
+		if (frame)
+		{
+			drawing.cx = get_value_emu(frame->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_);
+			drawing.cy = get_value_emu(frame->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_height_);
+		}
+		else
+		{
+			draw_shape* shape = dynamic_cast<draw_shape*>(content_[0].get());
+			if (shape)
+			{
+				drawing.cx = get_value_emu(shape->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_);
+				drawing.cy = get_value_emu(shape->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_height_);
+			}
+		}
+	}
+
+	drawing.content_group_ = temp_stream.str();
+	
+	Context.set_stream_man(prev);
+	Context.set_run_state(runState);
+	Context.set_paragraph_state(pState);
+
+	docx_serialize(Context.output_stream(), drawing);
+	
+	Context.get_drawing_context().stop_group();
 }
 void draw_frame::docx_convert(oox::docx_conversion_context & Context)
 {
-	if (!Context.get_paragraph_state() && !Context.delayed_converting_)
+	if ((!Context.get_paragraph_state() && !Context.get_drawing_context().in_group()) && !Context.delayed_converting_)
     {
         Context.add_delayed_element(this);
         return;
@@ -1271,6 +1336,7 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 			
 			drawing.id		= Context.get_drawing_context().get_current_frame_id();
 			drawing.name	= Context.get_drawing_context().get_current_object_name();
+			drawing.inGroup	= Context.get_drawing_context().in_group();
 			
 			bool isMediaInternal = true;        
 			drawing.chartId = Context.add_mediaitem(href, drawing.type, isMediaInternal, href);
@@ -1283,11 +1349,13 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 			Context.set_run_state(false);	
 			Context.set_paragraph_state(false);	
 			
-			Context.add_new_run(_T(""));
+			if (!Context.get_drawing_context().in_group())
+				Context.add_new_run(_T(""));
 			
 			docx_serialize(Context.output_stream(), drawing);
 			
-			Context.finish_run();
+			if (!Context.get_drawing_context().in_group())
+				Context.finish_run();
 			
 			Context.set_run_state(runState);
 			Context.set_paragraph_state(pState);	
@@ -1299,6 +1367,7 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 			drawing.type	= oox::mediaitems::typeShape;			
 			drawing.id		= Context.get_drawing_context().get_current_frame_id();
 			drawing.name	= Context.get_drawing_context().get_current_object_name();
+			drawing.inGroup	= Context.get_drawing_context().in_group();
 		
 			common_draw_docx_convert(Context, frame->common_draw_attlists_, drawing);
 			
@@ -1310,6 +1379,7 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 			
 			if (drawing.fill.type > 0)
 				in_frame = true;
+			
 			if (in_frame)
 			{
 				drawing.additional.push_back(_property(L"text-content",	std::wstring(L"<w:p><m:oMathPara><m:oMathParaPr/>") + 
@@ -1317,11 +1387,13 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 				Context.set_run_state(false);	
 				Context.set_paragraph_state(false);					
 				
-				Context.add_new_run(_T(""));
+				if (!Context.get_drawing_context().in_group())
+					Context.add_new_run(_T(""));
 				
 				docx_serialize(Context.output_stream(), drawing);
 				
-				Context.finish_run();
+				if (!Context.get_drawing_context().in_group())
+					Context.finish_run();
 				
 				Context.set_run_state(runState);
 				Context.set_paragraph_state(pState);

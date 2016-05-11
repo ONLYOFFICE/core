@@ -41,15 +41,12 @@ private:
 
 	typedef std::map < unsigned int, CSvmObjectBase* > CSvmObjectMap;
 
-	CSvmDC*					m_pDC;
-	std::vector<CSvmDC*>	m_vDCStack;
-	CSvmFile*				m_pFile;
-	CSvmObjectMap			m_mObjects;
-	int						m_nFlags;
-	ESvnRasterOp			m_eRasterOp;
-
-	typedef std::map <unsigned int, CWmfObjectBase*> CWmfObjectMap;
-
+	CSvmDC*						m_pDC;
+	std::vector<CSvmDC*>		m_vDCStack;
+	CSvmFile*					m_pFile;
+	CSvmObjectMap				m_mObjects;
+	int							m_nFlags;
+	ESvnRasterOp				m_eRasterOp;
 	unsigned short              m_ushIndex;
 	std::vector<unsigned short> m_vAvailableIndexes;
 

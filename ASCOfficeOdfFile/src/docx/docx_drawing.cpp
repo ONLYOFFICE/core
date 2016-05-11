@@ -179,101 +179,114 @@ void docx_serialize_text(std::wostream & strm, const std::vector<odf_reader::_pr
 	oox_serialize_bodyPr(strm, properties, L"wps");
 }
 
-void docx_serialize_image(std::wostream & strm, _docx_drawing & val)
+//--------------------------------------------------------------------
+void docx_serialize_image_child(std::wostream & strm, _docx_drawing & val)
 {
     CP_XML_WRITER(strm)    
     {
-		CP_XML_NODE(L"wp:docPr")
+		CP_XML_NODE(L"pic:pic")
 		{
-			CP_XML_ATTR(L"name",val.name);
-			CP_XML_ATTR(L"id",	val.id+1);
-			oox_serialize_hlink(CP_XML_STREAM(),val.hlinks);
-		}
-
-		CP_XML_NODE(L"wp:cNvGraphicFramePr")
-		{
-			CP_XML_NODE(L"a:graphicFrameLocks")
+			CP_XML_ATTR(L"xmlns:pic",L"http://schemas.openxmlformats.org/drawingml/2006/picture");
 			{
-				CP_XML_ATTR(L"xmlns:a",L"http://schemas.openxmlformats.org/drawingml/2006/main");
-				CP_XML_ATTR(L"noChangeAspect",1);
-			}
-		}
-		CP_XML_NODE(L"a:graphic")
-		{
-			CP_XML_ATTR(L"xmlns:a",L"http://schemas.openxmlformats.org/drawingml/2006/main");
-			CP_XML_NODE(L"a:graphicData")
-			{
-				CP_XML_ATTR(L"uri",L"http://schemas.openxmlformats.org/drawingml/2006/picture");
-				CP_XML_NODE(L"pic:pic")
+				CP_XML_NODE(L"pic:nvPicPr")
 				{
-					CP_XML_ATTR(L"xmlns:pic",L"http://schemas.openxmlformats.org/drawingml/2006/picture");
+					CP_XML_NODE(L"pic:cNvPr")
 					{
-						CP_XML_NODE(L"pic:nvPicPr")
-						{
-							CP_XML_NODE(L"pic:cNvPr")
-							{
-								//CP_XML_ATTR(L"desc text",L"");
-								CP_XML_ATTR(L"id",val.id);
-								CP_XML_ATTR(L"name",val.name);
-							}
-							CP_XML_NODE(L"pic:cNvPicPr")
-							{
-								CP_XML_NODE(L"a:picLocks") CP_XML_ATTR(L"noChangeAspect",1);
-							}
-						}    
+						//CP_XML_ATTR(L"desc text",L"");
+						CP_XML_ATTR(L"id",val.id);
+						CP_XML_ATTR(L"name",val.name);
 					}
-					val.fill.bitmap->name_space = L"pic";
-					oox_serialize_fill(CP_XML_STREAM(), val.fill);
- 
-					CP_XML_NODE(L"pic:spPr")
+					CP_XML_NODE(L"pic:cNvPicPr")
 					{
-						oox_serialize_xfrm(CP_XML_STREAM(), val);
-
-						CP_XML_NODE(L"a:prstGeom")
-						{
-							CP_XML_ATTR(L"prst",L"rect");
-							CP_XML_NODE(L"a:avLst");
-						}
-
-						oox_serialize_ln(CP_XML_STREAM(),val.additional);
+						CP_XML_NODE(L"a:picLocks") CP_XML_ATTR(L"noChangeAspect",1);
 					}
+				}    
+			}
+			val.fill.bitmap->name_space = L"pic";
+			oox_serialize_fill(CP_XML_STREAM(), val.fill);
+
+			CP_XML_NODE(L"pic:spPr")
+			{
+				oox_serialize_xfrm(CP_XML_STREAM(), val);
+
+				CP_XML_NODE(L"a:prstGeom")
+				{
+					CP_XML_ATTR(L"prst",L"rect");
+					CP_XML_NODE(L"a:avLst");
 				}
+
+				oox_serialize_ln(CP_XML_STREAM(),val.additional);
 			}
 		}
 	}
 }
+void docx_serialize_shape_child(std::wostream & strm, _docx_drawing & val)
+{
+	CP_XML_WRITER(strm)    
+    {
+		CP_XML_NODE(L"wps:wsp")
+		{
+			CP_XML_NODE(L"wps:cNvSpPr")
+			{
+				if (val.sub_type==1 || val.sub_type==0)//frame
+				{
+					CP_XML_ATTR(L"txBox", 1);
+				}
+				CP_XML_NODE(L"a:spLocks")
+				{
+					CP_XML_ATTR(L"noChangeAspect", 1);
+				}
+			}
 
-void docx_serialize_chart(std::wostream & strm, _docx_drawing & val)
+			CP_XML_NODE(L"wps:spPr")
+			{
+				oox_serialize_xfrm(CP_XML_STREAM(),val);
+
+				oox_serialize_shape(CP_XML_STREAM(),val);
+
+				oox_serialize_ln(CP_XML_STREAM(), val.additional);
+			} 
+			docx_serialize_text(CP_XML_STREAM(),val.additional);
+		}
+	}
+}
+void docx_serialize_group_child(std::wostream & strm, _docx_drawing & val)
+{
+	CP_XML_WRITER(strm)    
+    {
+		CP_XML_NODE(L"wpg:wgp")
+		{
+			CP_XML_NODE(L"wpg:cNvGrpSpPr")
+			{
+				CP_XML_NODE(L"a:spLocks")
+				{
+					CP_XML_ATTR(L"noChangeAspect", 1);
+				}
+			}
+
+			CP_XML_NODE(L"wpg:grpSpPr")
+			{
+				oox_serialize_xfrm(CP_XML_STREAM(),val);
+
+			} 
+			CP_XML_STREAM() << val.content_group_;
+		}
+	}
+}
+void docx_serialize_chart_child(std::wostream & strm, _docx_drawing & val)
 {	 
 	CP_XML_WRITER(strm)    
     {
-		CP_XML_NODE(L"wp:docPr")
+		CP_XML_NODE(L"c:chart")
 		{
-			CP_XML_ATTR(L"name",val.name);
-			CP_XML_ATTR(L"id",	val.id+1);
-			//oox_serialize_hlink(CP_XML_STREAM(),val.hlink);
+			CP_XML_ATTR(L"xmlns:c", L"http://schemas.openxmlformats.org/drawingml/2006/chart");
+			CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
+			CP_XML_ATTR(L"r:id", val.chartId);
 		}
-
-		CP_XML_NODE(L"wp:cNvGraphicFramePr");
-
-        CP_XML_NODE(L"a:graphic")
-        {        
-			CP_XML_ATTR(L"xmlns:a",L"http://schemas.openxmlformats.org/drawingml/2006/main");
-            CP_XML_NODE(L"a:graphicData")
-			{
-				CP_XML_ATTR(L"uri", L"http://schemas.openxmlformats.org/drawingml/2006/chart");
-				CP_XML_NODE(L"c:chart")
-				{
-					CP_XML_ATTR(L"xmlns:c", L"http://schemas.openxmlformats.org/drawingml/2006/chart");
-					CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
-					CP_XML_ATTR(L"r:id", val.chartId);
-				}
-			}
-		}               
 	}
 }
 
-void docx_serialize_shape(std::wostream & strm, _docx_drawing & val)
+void docx_serialize_common(std::wostream & strm, _docx_drawing & val)
 {
 	CP_XML_WRITER(strm)    
     {
@@ -297,39 +310,55 @@ void docx_serialize_shape(std::wostream & strm, _docx_drawing & val)
 			CP_XML_ATTR(L"xmlns:a",L"http://schemas.openxmlformats.org/drawingml/2006/main");
 			CP_XML_NODE(L"a:graphicData")
 			{
-				CP_XML_ATTR(L"uri",L"http://schemas.microsoft.com/office/word/2010/wordprocessingShape");
-				
-				CP_XML_NODE(L"wps:wsp")
+				if (val.type == mediaitems::typeShape)
 				{
-					CP_XML_NODE(L"wps:cNvSpPr")
-					{
-						if (val.sub_type==1 || val.sub_type==0)//frame
-						{
-							CP_XML_ATTR(L"txBox", 1);
-						}
-						CP_XML_NODE(L"a:spLocks")
-						{
-							CP_XML_ATTR(L"noChangeAspect", 1);
-						}
-					}
-
-					CP_XML_NODE(L"wps:spPr")
-					{
-						oox_serialize_xfrm(CP_XML_STREAM(),val);
-
-						oox_serialize_shape(CP_XML_STREAM(),val);
-		
-						oox_serialize_ln(CP_XML_STREAM(), val.additional);
-					} 
-					docx_serialize_text(CP_XML_STREAM(),val.additional);
+					CP_XML_ATTR(L"uri",L"http://schemas.microsoft.com/office/word/2010/wordprocessingShape");
+					docx_serialize_shape_child(CP_XML_STREAM(), val);
 				}
+				else if (val.type == mediaitems::typeImage)
+				{
+					CP_XML_ATTR(L"uri",L"http://schemas.openxmlformats.org/drawingml/2006/picture");
+					docx_serialize_image_child(CP_XML_STREAM(), val);
+				}
+				else if (val.type == mediaitems::typeChart)
+				{
+					CP_XML_ATTR(L"uri", L"http://schemas.openxmlformats.org/drawingml/2006/chart");
+					docx_serialize_chart_child(CP_XML_STREAM(), val);
+				}
+				else if (val.type == mediaitems::typeGroup)
+				{
+					CP_XML_ATTR(L"uri", L"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup");
+					docx_serialize_group_child(CP_XML_STREAM(), val);
+				}				
 	        } 
 		}
+	}
+}
+void docx_serialize_child(std::wostream & strm, _docx_drawing & val)
+{
+	if (val.type == mediaitems::typeShape)
+	{
+		docx_serialize_shape_child(strm,val);
+	}
+	else if (val.type == mediaitems::typeImage)
+	{
+		docx_serialize_image_child(strm,val);
+	}
+	else if (val.type == mediaitems::typeChart)
+	{
+		docx_serialize_chart_child(strm,val);
+	}
+	else if (val.type == mediaitems::typeGroup)
+	{
+		docx_serialize_group_child(strm,val);
 	}
 }
 
 void docx_serialize(std::wostream & strm, _docx_drawing & val)
 {
+	if (val.inGroup)
+		return docx_serialize_child(strm, val);
+	
 	CP_XML_WRITER(strm)    
     {
 		CP_XML_NODE(L"w:drawing")
@@ -426,18 +455,7 @@ void docx_serialize(std::wostream & strm, _docx_drawing & val)
 					serialize_wrap(CP_XML_STREAM(), val);
 				}
 					
-				if (val.type == mediaitems::typeShape)
-				{
-					docx_serialize_shape(CP_XML_STREAM(),val);
-				}
-				else if (val.type == mediaitems::typeImage)
-				{
-					docx_serialize_image(CP_XML_STREAM(),val);
-				}
-				else if (val.type == mediaitems::typeChart)
-				{
-					docx_serialize_chart(CP_XML_STREAM(),val);
-				}
+				docx_serialize_common(CP_XML_STREAM(), val);
 			}
 		}
 	}

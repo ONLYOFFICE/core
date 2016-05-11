@@ -37,6 +37,81 @@ void DUMP_MESSAGE_TO_FILE(const char* strMessage)
 	fclose(file);
 }
 
+static void GetColorWithEffect(const std::wstring& sColor, const int& R, const int& G, const int& B,
+                               int& resR, int& resG, int& resB)
+{
+    resR = R;
+    resG = G;
+    resB = B;
+
+    double param = 0;
+    std::wstring::size_type pos1 = sColor.find('(');
+    std::wstring::size_type pos2 = sColor.find(')');
+    if (pos1 == std::wstring::npos || pos2 == std::wstring::npos)
+        return;
+    if (pos2 < (pos1 + 2))
+        return;
+
+    param = std::stod(sColor.substr(pos1 + 1, pos2 - pos1 - 1));
+    bool isEffect = false;
+
+    if (0 == sColor.find(L"darken"))
+    {
+        resR = (int)(R * param / 255);
+        resG = (int)(G * param / 255);
+        resB = (int)(B * param / 255);
+        isEffect = true;
+    }
+    else if (0 == sColor.find(L"lighten"))
+    {
+        resR = 255 - (int)((255 - R) * param / 255);
+        resG = 255 - (int)((255 - G) * param / 255);
+        resB = 255 - (int)((255 - B) * param / 255);
+        isEffect = true;
+    }
+    else if (0 == sColor.find(L"add"))
+    {
+        resR = R + (int)param;
+        resG = G + (int)param;
+        resB = B + (int)param;
+        isEffect = true;
+    }
+    else if (0 == sColor.find(L"subtract"))
+    {
+        resR = R - (int)param;
+        resG = G - (int)param;
+        resB = B - (int)param;
+        isEffect = true;
+    }
+    else if (0 == sColor.find(L"reversesubtract"))
+    {
+        resR = (int)param - R;
+        resG = (int)param - G;
+        resB = (int)param - B;
+        isEffect = true;
+    }
+    else if (0 == sColor.find(L"blackwhite"))
+    {
+        int nparam = (int)nparam;
+        resR = (R < nparam) ? 0 : 255;
+        resG = (G < nparam) ? 0 : 255;
+        resB = (B < nparam) ? 0 : 255;
+        isEffect = true;
+    }
+
+    if (isEffect)
+    {
+        resR = (resR < 0) ? 0 : resR;
+        resR = (resR > 255) ? 255 : resR;
+
+        resG = (resG < 0) ? 0 : resG;
+        resG = (resG > 255) ? 255 : resG;
+
+        resB = (resB < 0) ? 0 : resB;
+        resB = (resB > 255) ? 255 : resB;
+    }
+}
+
 namespace NS_DWC_Common
 {
 	void CorrentCropString(CString& s)
@@ -1674,6 +1749,9 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 			//pShape->TextBoxBodyPr->wrap = new PPTX::Limit::TextWrap();
 			//pShape->TextBoxBodyPr->wrap->set(_T("none"));
 
+            // TODO:
+            // тут утечки памяти. И вообще надо переписать. все намешано
+            // нужно с комментами прояснить всю конвертацию
 			XmlUtils::CXmlNodes oChilds;
 			if (oNodeShape.GetNodes(_T("*"), oChilds))
 			{
@@ -1700,6 +1778,10 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 				int nAngle = 90;
 				bool bColors = false;
 
+                int R = 255;
+                int G = 255;
+                int B = 255;
+
 				nullable_string sFillColor;
 				oNodeShape.ReadAttributeBase(L"fillcolor", sFillColor);
 				if (sFillColor.is_init())
@@ -1712,9 +1794,30 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 					pSolid->Color.Color->SetRGB(color.R, color.G, color.B);					
 					arColors.push_back(&pSolid->Color);
 					arPos.push_back(0);
+
+                    R = color.R;
+                    G = color.G;
+                    B = color.B;
 				}
 				else
 					eFillType = etNoFill;
+
+                if (eFillType == etNoFill)
+                {
+                    // default color for vml = white
+                    nullable_string sFilled;
+                    oNodeShape.ReadAttributeBase(L"filled", sFilled);
+                    if (!sFilled.is_init() || (*sFilled != _T("false") && *sFilled != _T("f")))
+                    {
+                        eFillType = etSolidFill;
+                        PPTX::Logic::SolidFill* pSolid = new PPTX::Logic::SolidFill();
+                        pSolid->m_namespace = _T("a");
+                        pSolid->Color.Color = new PPTX::Logic::SrgbClr();
+                        pSolid->Color.Color->SetRGB(R, G, B);
+                        arColors.push_back(&pSolid->Color);
+                        arPos.push_back(0);
+                    }
+                }
 
 				for (LONG k = 0; k < lChildsCount; k++)
 				{
@@ -1725,6 +1828,8 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 					if (_T("textpath") == strNameP)
 					{
 						strString = oNodeP.GetAttribute(_T("string"));
+                        // мы используем его в хмл
+                        CorrectXmlString(strString);
 
 						CString strStyle = oNodeP.GetAttribute(_T("style"));
 						PPTX::CCSS oCSSParser;
@@ -1739,8 +1844,17 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 						if (pPair != oCSSParser.m_mapSettings.end())
 						{
 							nFontSize = _wtoi(pPair->second.GetBuffer()) * 2;
-						}
-						
+                        }
+
+                        if (true)
+                        {
+                            nullable_string sFitPath;
+                            oNodeP.ReadAttributeBase(L"fitpath", sFitPath);
+                            if (sFitPath.is_init() && (*sFitPath == _T("true") || *sFitPath == _T("t")))
+                            {
+                                nFontSize = 2;
+                            }
+                        }
 
 					}
 					else if (_T("fill") == strNameP)
@@ -1790,10 +1904,29 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 							if (etSolidFill == eFillType)
 								eFillType = etGradFill;
 
-							NSPresentationEditor::CColor color = NS_DWC_Common::getColorFromString(*sColor2);
+                            NSPresentationEditor::CColor color;
+                            if (sColor2->Find(L"fill") != -1)
+                            {
+                                std::wstring sColorEffect = string2std_string(*sColor2);
+                                if (sColorEffect.length() > 5)
+                                    sColorEffect = sColorEffect.substr(5);
+
+                                int resR, resG, resB;
+                                GetColorWithEffect(sColorEffect, R, G, B, resR, resG, resB);
+
+                                color.R = resR;
+                                color.G = resG;
+                                color.B = resB;
+                            }
+                            else
+                            {
+                                color = NS_DWC_Common::getColorFromString(*sColor2);
+                            }
+
 							PPTX::Logic::UniColor *oColor = new PPTX::Logic::UniColor();
 							oColor->Color = new PPTX::Logic::SrgbClr();
 							oColor->Color->SetRGB(color.R, color.G, color.B);
+
 							if (bOpacity2)
 								oColor->Color->Modifiers.push_back(oMod2);
 
@@ -1801,10 +1934,9 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 								arColors.push_back(oColor);
 							else
 							{
-								NSPresentationEditor::CColor color1 = NS_DWC_Common::getColorFromString(_T("white"));
 								PPTX::Logic::UniColor *oColor1 = new PPTX::Logic::UniColor();
 								oColor1->Color = new PPTX::Logic::SrgbClr();
-								oColor1->Color->SetRGB(color1.R, color1.G, color1.B);
+                                oColor1->Color->SetRGB(color.R, color.G, color.B);
 
 								arColors.push_back(oColor1);
 								arPos.push_back(0);
@@ -1818,9 +1950,10 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 							{
 								eFillType = etGradFill;
 							}
-							else if (*sType == _T("gradientradial"))
+                            else if (*sType == _T("gradientradial") || *sType == _T("gradientRadial"))
 							{
-
+                                // TODO: дописать радиальный!!!
+                                eFillType = etGradFill;
 							}
 						}
 						if (sAngle.is_init())
@@ -2043,7 +2176,7 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 				strStrokeW.Format(_T("%d"), (int)Pt_To_Emu(m_dValue));
 				srPr += _T("<w14:textOutline w14:w=\"") + strStrokeW + _T("\">");
 
-				PPTX::Logic::SolidFill* pSolid = new PPTX::Logic::SolidFill();
+                smart_ptr<PPTX::Logic::SolidFill> pSolid = new PPTX::Logic::SolidFill();
 				pSolid->m_namespace = _T("a");
 				pSolid->Color.Color = new PPTX::Logic::SrgbClr();
 				NSPresentationEditor::CColor color;
@@ -2072,11 +2205,17 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 				srPr += _T("</w14:textOutline>");			
 
 				//srPr += _T("</w:rPr>");
-				sParaRun += _T("<w:rPr>") + srPr + _T("</w:rPr>") + _T("<w:t>") + strString + _T("</w:t></w:r>");
+                sParaRun += _T("<w:rPr>") + srPr + _T("</w:rPr>") + _T("<w:t>") + strString + _T("</w:t></w:r>");
 				sTxbxContent += _T("<w:pPr><w:rPr>") + srPr + _T("</w:rPr></w:pPr>") + sParaRun + _T("</w:p></w:txbxContent>");
 				pShape->TextBoxShape = sTxbxContent;
 			}
 			strXmlPPTX = _T("<a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom>");
+
+            // у старого wordArt никаких отступов
+            pShape->TextBoxBodyPr->lIns = 0;
+            pShape->TextBoxBodyPr->tIns = 0;
+            pShape->TextBoxBodyPr->rIns = 0;
+            pShape->TextBoxBodyPr->bIns = 0;
 		}
 		else
 		{
@@ -3242,6 +3381,10 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem& oElem, XmlUtils
 {
 	PPTX::Logic::Shape* pShape = (PPTX::Logic::Shape*)dynamic_cast<PPTX::Logic::Shape*>(oElem.GetElem().operator ->());
 
+    int R = 255;
+    int G = 255;
+    int B = 255;
+
 	nullable_string sFillColor;
 	oNode.ReadAttributeBase(L"fillcolor", sFillColor);
 	if (sFillColor.is_init() && !pPPTShape->IsWordArt())
@@ -3253,8 +3396,18 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem& oElem, XmlUtils
 		pSolid->Color.Color = new PPTX::Logic::SrgbClr();
 		pSolid->Color.Color->SetRGB(color.R, color.G, color.B);
 
-		pShape->spPr.Fill.Fill = pSolid;		
+        pShape->spPr.Fill.Fill = pSolid;
 	}
+    else if (!pPPTShape->IsWordArt())
+    {
+        // default fillcolor in vml = white
+        PPTX::Logic::SolidFill* pSolid = new PPTX::Logic::SolidFill();
+        pSolid->m_namespace = _T("a");
+        pSolid->Color.Color = new PPTX::Logic::SrgbClr();
+        pSolid->Color.Color->SetRGB(R, G, B);
+
+        pShape->spPr.Fill.Fill = pSolid;
+    }
 
 	nullable_string sFilled;
 	oNode.ReadAttributeBase(L"filled", sFilled);
@@ -3345,7 +3498,7 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem& oElem, XmlUtils
 		nullable_string sFocus;
 		oNodeFill.ReadAttributeBase(L"focus", sFocus);
 		//
-		if (sType.is_init() && (*sType == _T("gradient") || *sType == _T("gradientradial")))
+        if (sType.is_init() && (*sType == _T("gradient") || *sType == _T("gradientradial") || *sType == _T("gradientRadial")))
 		{
 			PPTX::Logic::GradFill* pGradFill = new PPTX::Logic::GradFill();
 			pGradFill->m_namespace = _T("a");
@@ -3360,15 +3513,25 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem& oElem, XmlUtils
 
 				Gs_.pos = 0;
 				pGradFill->GsLst.push_back( Gs_ );
+
+                R = color.R;
+                G = color.G;
+                B = color.B;
 			}
 			if (sColor2.is_init())
 			{
 				PPTX::Logic::Gs Gs_;
 				Gs_.color.Color = new PPTX::Logic::SrgbClr();
-				if (sColor2->Find(L"fill") != -1)
+                if (sColor2->Find(L"fill") != -1)
 				{
-					//todooo
-					Gs_.color.Color->SetRGB(0xff, 0xff, 0xff);
+                    std::wstring sColorEffect = string2std_string(*sColor2);
+                    if (sColorEffect.length() > 5)
+                        sColorEffect = sColorEffect.substr(5);
+
+                    int resR, resG, resB;
+                    GetColorWithEffect(sColorEffect, R, G, B, resR, resG, resB);
+
+                    Gs_.color.Color->SetRGB(resR, resG, resB);
 				}
 				else
 				{

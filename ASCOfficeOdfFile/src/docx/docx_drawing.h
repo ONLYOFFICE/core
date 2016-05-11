@@ -14,8 +14,8 @@ namespace cpdoccore {
 namespace oox {
 
 struct _docx_drawing : _oox_drawing
-{
-	_docx_drawing():_oox_drawing(),parallel(0),isInline(false),number_wrapped_paragraphs(0),posOffsetV(0),posOffsetH(0)
+{ 
+	_docx_drawing():_oox_drawing(), parallel(0), isInline(false), inGroup(false), number_wrapped_paragraphs(0), posOffsetV(0), posOffsetH(0)
 	{
 	}
     unsigned int parallel;
@@ -28,6 +28,7 @@ struct _docx_drawing : _oox_drawing
 
 	_CP_OPT(odf_types::style_wrap)  styleWrap;
 
+	bool inGroup;
 	bool isInline;
 	int number_wrapped_paragraphs;
 
@@ -42,6 +43,8 @@ struct _docx_drawing : _oox_drawing
  //   std::wstring distT;
  //   std::wstring distL;
  //   std::wstring distR;
+
+	std::wstring content_group_;
 
     friend void docx_serialize(std::wostream & _Wostream, _docx_drawing & val);    
 };

@@ -542,9 +542,7 @@ void CSvmDC::SetMapMode(TSvmMapMode & mapMode, bool prefered )
 	{
 		m_dPixelHeightPrefered	= m_dPixelHeight;
 		m_dPixelWidthPrefered	= m_dPixelWidth;
-
 	}
-
 }
 
 TXForm* CSvmDC::GetTransform()

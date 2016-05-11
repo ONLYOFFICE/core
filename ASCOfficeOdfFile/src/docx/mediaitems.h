@@ -11,7 +11,7 @@ class rels;
 class mediaitems
 {
 public:
-    enum Type { typeUnknown = 0, typeImage, typeChart, typeShape, typeTable, typeHyperlink, typeComment, typeMedia};
+    enum Type { typeUnknown = 0, typeImage, typeChart, typeShape, typeTable, typeHyperlink, typeComment, typeMedia, typeGroup};
 
     mediaitems(const std::wstring & odfPacket) : odf_packet_(odfPacket)
     {

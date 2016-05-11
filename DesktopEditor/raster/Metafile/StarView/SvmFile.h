@@ -17,6 +17,7 @@ class CSvmFile : virtual public IMetaFileBase
 		 m_currentActionVersion = 0;
 		 m_currentCharset		= 0;
 		 m_currentActionType	= 0;
+		 m_bMainStream			= true;
 	 };
 	 CSvmFile(BYTE *Data, int DataSize): m_oPlayer(this)
 	 {
@@ -26,6 +27,7 @@ class CSvmFile : virtual public IMetaFileBase
 		 m_currentActionVersion = 0;
 		 m_currentCharset		= 0;
 		 m_currentActionType	= 0;
+		 m_bMainStream			= true;
 	 }
 
 	 ~CSvmFile()
@@ -151,10 +153,12 @@ class CSvmFile : virtual public IMetaFileBase
 	}
 
  private:
+	TSvmPoint			m_oCurrnetOffset;
 	BYTE*				m_pBufferData;
 	CSvmDC*				m_pDC;
 	CSvmPlayer          m_oPlayer;
 	SvmHeader			m_oHeader;
+	bool				m_bMainStream;
 
 	unsigned short		m_currentActionVersion;
 	unsigned short		m_currentCharset;
@@ -195,6 +199,7 @@ class CSvmFile : virtual public IMetaFileBase
 	void Read_META_GRADIENTEX();
 	void Read_META_TRANSPARENT();
 	void Read_META_FLOATTRANSPARENT();
+	void Read_META_LAYOUTMODE();
 
 	void Read_META_SECTRECTCLIPREGION();
 	void Read_META_SECTREGIONCLIPREGION();
@@ -215,8 +220,8 @@ class CSvmFile : virtual public IMetaFileBase
 		//TSvmWindow* pWindow		= m_pDC->GetWindow();
 		//TSvmWindow* pViewport	= m_pDC->GetViewport();
 
-		dX = (double)(nX) * m_pDC->m_dPixelWidth ;
-		dY = (double)(nY) * m_pDC->m_dPixelHeight ;
+		//dX = (double)(nX) * m_pDC->m_dPixelWidth ;
+		//dY = (double)(nY) * m_pDC->m_dPixelHeight ;
 
 		//dX = (double)((double)(nX - pWindow->lX) * m_pDC->m_dPixelWidth) + pViewport->lX;
 		//dY = (double)((double)(nY - pWindow->lY) * m_pDC->m_dPixelHeight) + pViewport->lY;

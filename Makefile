@@ -179,6 +179,8 @@ ASCDOCUMENTSCORE_DEP += $(XPSFILE)
 ASCDOCUMENTSCORE_DEP += $(LICENSEMANAGER)
 ASCDOCUMENTSCORE_DEP += $(LIBXML)
 
+PDFREADER_DEP += $(HTMLRENDERER)
+
 #Template for next statment:
 #FOO_MAKE := $(basename $(FOO_PRO)).build/Makefile
 #$(FOO): $(FOO_MAKE)
@@ -218,6 +220,8 @@ $(XLSFORMATLIB): $(XLSFORMATLIB_DEP)
 $(DJVUFILE): $(DJVUFILE_DEP)
 
 $(ASCDOCUMENTSCORE): $(ASCDOCUMENTSCORE_DEP)
+
+$(PDFREADER): $(PDFREADER_DEP)
 
 %.build/Makefile: %.pro
 	mkdir -p $(dir $@) && cd $(dir $@) && qmake -r -spec linux-g++ "CONGIG+=build_fast" $<

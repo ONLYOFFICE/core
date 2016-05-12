@@ -53,7 +53,8 @@ DEFINES += \
     MNG_SUPPORT_WRITE \
     MNG_ACCESS_CHUNKS \
     MNG_STORE_CHUNKS\
-    MNG_ERROR_TELLTALE
+    MNG_ERROR_TELLTALE \
+    _USE_MATH_DEFINES
 
 linux-g++ | linux-g++-64 | linux-g++-32 {
     DEFINES += \

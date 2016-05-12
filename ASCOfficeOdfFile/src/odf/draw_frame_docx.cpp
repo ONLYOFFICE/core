@@ -853,6 +853,8 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, const unio
 		std::wstring transformStr = attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_draw_transform_attlist_.draw_transform_.get();
 		oox_convert_transforms(transformStr,drawing.additional);
 	}
+	drawing.x = get_value_emu(attlists_.position_.svg_x_);
+    drawing.y = get_value_emu(attlists_.position_.svg_y_);
 
 
 	drawing.cx = get_value_emu(attlists_.rel_size_.common_draw_size_attlist_.svg_width_);
@@ -932,6 +934,20 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, const unio
 		drawing.y = val >=0 ? val : 0; //??? todooo отрицательные величины ...
 	}
 
+	if (drawing.inGroup && drawing.type != oox::mediaitems::typeGroup)
+	{
+		Context.get_drawing_context().set_position_child_group(drawing.x, drawing.y);
+		Context.get_drawing_context().set_size_child_group(drawing.cx + drawing.x, drawing.cy + drawing.y);
+
+		// ваще то тут "несовсем" всерно ... нужно сначала все стартовые позиции добавить ..
+		INT32 x_group_offset, y_group_offset;
+		Context.get_drawing_context().get_position_group(x_group_offset, y_group_offset);
+
+		drawing.x -= x_group_offset;
+		drawing.y -= y_group_offset;
+
+	}
+
 }
 void draw_shape::docx_convert(oox::docx_conversion_context & Context)
 {
@@ -1001,7 +1017,7 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 
 	if (pos_replaicement >=0 && !Context.get_drawing_context().get_use_image_replace())
 		return;//заменяемый объект
-
+//--------------------------------------------------
 	//тут может быть не только текст , но и таблицы, другие объекты ...
  	oox::docx_conversion_context::StreamsManPtr prev = Context.get_stream_man();
 	
@@ -1024,8 +1040,7 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 
 	Context.get_drawing_context().get_text_stream_frame() = temp_stream.str();
 	Context.set_stream_man(prev);
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////
+//--------------------------------------------------
 	oox::_docx_drawing drawing = oox::_docx_drawing();
 
 	drawing.type	= oox::mediaitems::typeImage;
@@ -1033,7 +1048,7 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 	drawing.name	= Context.get_drawing_context().get_current_object_name();
 	drawing.inGroup	= Context.get_drawing_context().in_group();
 
-//////////////////////////////////////////////////////////////////////////////////////////////////
+//--------------------------------------------------
 	oox::hyperlinks::_ref hyperlink = Context.last_hyperlink();
 	//нужно еще систему конроля - могут придте уже "использованные" линки с картинок - из колонтитулов (но на них уже использовали релсы)
 	//дыра осталась если картинка в картинке - линк продублируется с внутренней на внешнюю 
@@ -1088,7 +1103,7 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 	if (!Context.get_drawing_context().in_group())
 		Context.add_new_run(_T(""));
 	
-	docx_serialize(strm,drawing);
+	docx_serialize(strm, drawing);
  	
 	if (!Context.get_drawing_context().in_group())
 		Context.finish_run();
@@ -1212,16 +1227,27 @@ void draw_g::docx_convert(oox::docx_conversion_context & Context)
         Context.add_delayed_element(this);
         return;
     }
+	
 	oox::_docx_drawing drawing = oox::_docx_drawing();
+	
+	drawing.inGroup	= Context.get_drawing_context().in_group();
+	drawing.type	= oox::mediaitems::typeGroup;
+	
+	Context.get_drawing_context().start_group();
+	
+    const _CP_OPT(std::wstring) name = 
+        common_draw_attlists_.shape_with_text_and_styles_.
+        common_draw_shape_with_styles_attlist_.
+        common_draw_name_attlist_.draw_name_;
+	
+	Context.get_drawing_context().add_name_object(name.get_value_or(L"Group"));
 
 	drawing.id		= Context.get_drawing_context().get_current_shape_id();
-	drawing.type	= oox::mediaitems::typeGroup;
-	drawing.inGroup	= Context.get_drawing_context().in_group();
+	drawing.name	= Context.get_drawing_context().get_current_object_name();
 
-	Context.get_drawing_context().start_group();
-/////////
+//--------------------------------------------------
 	common_draw_docx_convert(Context, common_draw_attlists_, drawing);
-/////////
+//--------------------------------------------------
 	oox::docx_conversion_context::StreamsManPtr prev = Context.get_stream_man();
 	
 	std::wstringstream temp_stream(drawing.content_group_);
@@ -1237,35 +1263,56 @@ void draw_g::docx_convert(oox::docx_conversion_context & Context)
 		ElementType type = elm->get_type();
         elm->docx_convert(Context);
     }
-
-	if (drawing.cx < 1 || drawing.cy < 1 && content_.size() > 0)
-	{//в оо такое бывает - размеры должны подстраиваться ...
-		draw_frame* frame = dynamic_cast<draw_frame*>(content_[0].get());
-		if (frame)
-		{
-			drawing.cx = get_value_emu(frame->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_);
-			drawing.cy = get_value_emu(frame->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_height_);
-		}
-		else
-		{
-			draw_shape* shape = dynamic_cast<draw_shape*>(content_[0].get());
-			if (shape)
-			{
-				drawing.cx = get_value_emu(shape->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_);
-				drawing.cy = get_value_emu(shape->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_height_);
-			}
-		}
-	}
-
 	drawing.content_group_ = temp_stream.str();
 	
 	Context.set_stream_man(prev);
 	Context.set_run_state(runState);
 	Context.set_paragraph_state(pState);
-
-	docx_serialize(Context.output_stream(), drawing);
+//--------------------------------------------------
+	Context.get_drawing_context().get_size_group	(drawing.cx	, drawing.cy);
+	Context.get_drawing_context().get_position_group(drawing.x	, drawing.y);
 	
-	Context.get_drawing_context().stop_group();
+	drawing.cx -= drawing.x;
+	drawing.cy -= drawing.y;	
+	
+	Context.get_drawing_context().stop_group();    	
+	
+	if (drawing.inGroup)
+	{
+		Context.get_drawing_context().set_position_child_group	(drawing.x, drawing.y);
+		Context.get_drawing_context().set_size_child_group		(drawing.cx + drawing.x, drawing.cy + drawing.y);
+
+		// ваще то тут "несовсем" всерно ... нужно сначала все стартовые позиции добавить ..
+		INT32 x_group_offset, y_group_offset;
+		Context.get_drawing_context().get_position_group(x_group_offset, y_group_offset);
+
+		drawing.x -= x_group_offset;
+		drawing.y -= y_group_offset;
+	}
+	else
+	{
+		drawing.posOffsetH = drawing.x;
+		drawing.posOffsetV = drawing.y;
+
+		drawing.x = drawing.y = 0;
+	}
+	
+//--------------------------------------------------
+    std::wostream & strm = Context.output_stream();
+
+	pState = Context.get_paragraph_state();
+	Context.set_paragraph_state(false);
+
+	if (!Context.get_drawing_context().in_group())
+		Context.add_new_run(_T(""));
+	
+	docx_serialize(strm, drawing);
+ 	
+	if (!Context.get_drawing_context().in_group())
+		Context.finish_run();
+
+	Context.set_paragraph_state(pState);
+//--------------------------------------------------
 }
 void draw_frame::docx_convert(oox::docx_conversion_context & Context)
 {
@@ -1286,7 +1333,7 @@ void draw_frame::docx_convert(oox::docx_conversion_context & Context)
     BOOST_FOREACH(const office_element_ptr & elm, content_)
     {
 		ElementType type = elm->get_type();
-        Context.get_drawing_context().add_name_object(name.get_value_or(L""));
+        Context.get_drawing_context().add_name_object(name.get_value_or(L"Object"));
         elm->docx_convert(Context);
     }
 

@@ -96,7 +96,7 @@ void serialize_wrap_extent(std::wostream & strm, _docx_drawing const & val)
 					_CP_OPT(int) iVal;
 					if (odf_reader::GetProperty(val.additional,L"border_width_left",iVal))		CP_XML_ATTR(L"l",iVal.get());
 					if (odf_reader::GetProperty(val.additional,L"border_width_top",iVal))		CP_XML_ATTR(L"t",iVal.get());
-					if (odf_reader::GetProperty(val.additional,L"border_width_right",iVal))	CP_XML_ATTR(L"r",iVal.get());
+					if (odf_reader::GetProperty(val.additional,L"border_width_right",iVal))		CP_XML_ATTR(L"r",iVal.get());
 					if (odf_reader::GetProperty(val.additional,L"border_width_bottom",iVal))	CP_XML_ATTR(L"b",iVal.get());   
 				}				
 			}break;
@@ -156,8 +156,10 @@ void serialize_wrap(std::wostream & strm, _docx_drawing const & val)
 	}
 }
 
-void docx_serialize_text(std::wostream & strm, const std::vector<odf_reader::_property> & properties)
+void docx_serialize_text(std::wostream & strm, _docx_drawing  & val)
 {
+	const std::vector<odf_reader::_property> & properties = val.additional;
+
 	_CP_OPT(std::wstring) strTextContent;
 	odf_reader::GetProperty(properties,L"text-content",strTextContent);
 
@@ -176,7 +178,7 @@ void docx_serialize_text(std::wostream & strm, const std::vector<odf_reader::_pr
 		}
 	}	
 
-	oox_serialize_bodyPr(strm, properties, L"wps");
+	oox_serialize_bodyPr(strm, val, L"wps");
 }
 
 //--------------------------------------------------------------------
@@ -226,18 +228,25 @@ void docx_serialize_shape_child(std::wostream & strm, _docx_drawing & val)
     {
 		CP_XML_NODE(L"wps:wsp")
 		{
+			CP_XML_NODE(L"wps:cNvPr")
+			{
+				CP_XML_ATTR(L"id",	val.id + 1);
+				CP_XML_ATTR(L"name",val.name);
+			}
 			CP_XML_NODE(L"wps:cNvSpPr")
 			{
 				if (val.sub_type==1 || val.sub_type==0)//frame
 				{
 					CP_XML_ATTR(L"txBox", 1);
 				}
-				CP_XML_NODE(L"a:spLocks")
+				if (val.inGroup == false)
 				{
-					CP_XML_ATTR(L"noChangeAspect", 1);
+					CP_XML_NODE(L"a:spLocks")
+					{
+						CP_XML_ATTR(L"noChangeAspect", 1);
+					}
 				}
-			}
-
+			}		
 			CP_XML_NODE(L"wps:spPr")
 			{
 				oox_serialize_xfrm(CP_XML_STREAM(),val);
@@ -246,22 +255,22 @@ void docx_serialize_shape_child(std::wostream & strm, _docx_drawing & val)
 
 				oox_serialize_ln(CP_XML_STREAM(), val.additional);
 			} 
-			docx_serialize_text(CP_XML_STREAM(),val.additional);
+			docx_serialize_text(CP_XML_STREAM(),val);
 		}
 	}
 }
 void docx_serialize_group_child(std::wostream & strm, _docx_drawing & val)
 {
+	std::wstring	name_node = L"wpg:wgp";
+	if (val.inGroup)name_node = L"wpg:grpSp";
+	
 	CP_XML_WRITER(strm)    
     {
-		CP_XML_NODE(L"wpg:wgp")
+		CP_XML_NODE(name_node)
 		{
 			CP_XML_NODE(L"wpg:cNvGrpSpPr")
 			{
-				CP_XML_NODE(L"a:spLocks")
-				{
-					CP_XML_ATTR(L"noChangeAspect", 1);
-				}
+				CP_XML_ATTR(L"bwMode", L"auto");
 			}
 
 			CP_XML_NODE(L"wpg:grpSpPr")
@@ -299,11 +308,11 @@ void docx_serialize_common(std::wostream & strm, _docx_drawing & val)
 
 		CP_XML_NODE(L"wp:cNvGraphicFramePr")
 		{
-			CP_XML_NODE(L"a:graphicFrameLocks")
-			{
-				CP_XML_ATTR(L"xmlns:a",L"http://schemas.openxmlformats.org/drawingml/2006/main");
-				CP_XML_ATTR(L"noChangeAspect",1);
-			}
+			//CP_XML_NODE(L"a:graphicFrameLocks")
+			//{
+			//	CP_XML_ATTR(L"xmlns:a",L"http://schemas.openxmlformats.org/drawingml/2006/main");
+			//	CP_XML_ATTR(L"noChangeAspect",1);
+			//}
 		}
 		CP_XML_NODE(L"a:graphic")
 		{
@@ -371,11 +380,10 @@ void docx_serialize(std::wostream & strm, _docx_drawing & val)
 				{
 					CP_XML_NODE(L"wp:extent")
 					{
-						CP_XML_ATTR(L"cx",val.cx);
-						CP_XML_ATTR(L"cy",val.cy);
+						CP_XML_ATTR(L"cx", val.cx);
+						CP_XML_ATTR(L"cy", val.cy);
 
 						serialize_null_extent(CP_XML_STREAM());
-
 					}
 				}
 				else//anchor

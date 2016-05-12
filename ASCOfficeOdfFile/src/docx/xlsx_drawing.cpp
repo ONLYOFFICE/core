@@ -21,10 +21,10 @@ std::wostream & operator << (std::wostream & strm, xlsx_drawing_position::type_t
 }
 
 }
-void xlsx_serialize_text(std::wostream & strm, const std::vector<odf_reader::_property> & properties)
+void xlsx_serialize_text(std::wostream & strm, _xlsx_drawing & val )
 {
 	_CP_OPT(std::wstring) strTextContent;
-	odf_reader::GetProperty(properties,L"text-content",strTextContent);
+	odf_reader::GetProperty ( val.additional ,L"text-content", strTextContent);
 
 	if (!strTextContent)return;
 	if (strTextContent.get().length()<1)return;
@@ -33,7 +33,7 @@ void xlsx_serialize_text(std::wostream & strm, const std::vector<odf_reader::_pr
     {
 		CP_XML_NODE(L"xdr:txBody")
 		{  
-			oox_serialize_bodyPr(CP_XML_STREAM(),properties);
+			oox_serialize_bodyPr(CP_XML_STREAM(), val);
 			CP_XML_NODE(L"a:lstStyle");
 			if (strTextContent)
 			{				
@@ -112,9 +112,9 @@ void xlsx_serialize_image(std::wostream & strm, _xlsx_drawing & val)
                     CP_XML_ATTR(L"prst", L"rect");
                     CP_XML_NODE(L"a:avLst");
                 }
-				oox_serialize_ln(CP_XML_STREAM(),val.additional);
+				oox_serialize_ln(CP_XML_STREAM(), val.additional);
             } 			
-			xlsx_serialize_text(CP_XML_STREAM(),val.additional);
+			xlsx_serialize_text(CP_XML_STREAM(), val);
         } 
     }  // CP_XML_WRITER  
 }
@@ -153,7 +153,7 @@ void xlsx_serialize_shape(std::wostream & strm, _xlsx_drawing & val)
 				oox_serialize_ln(CP_XML_STREAM(),val.additional, draw_always);
             } // xdr:spPr
 			
-			xlsx_serialize_text(CP_XML_STREAM(),val.additional);
+			xlsx_serialize_text(CP_XML_STREAM(), val);
         } 
     }  // CP_XML_WRITER  
 }

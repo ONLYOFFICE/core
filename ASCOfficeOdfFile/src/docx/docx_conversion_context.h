@@ -96,12 +96,22 @@ private:
 class drawing_context : boost::noncopyable
 {
 public:
-	struct _frame_
+	struct _group
+	{
+		_group() : cx(0), cy(0), x(0x7fffffff), y(0x7fffffff) {}
+
+		_INT32 x;
+		_INT32 y;
+
+		_INT32 cx;
+		_INT32 cy;
+	};
+	struct _frame
 	{
 		odf_reader::draw_frame *ptr;
-		std::wstring text_content;
-		size_t id;
-		bool use_image_replace;
+		std::wstring			text_content;
+		size_t					id;
+		bool					use_image_replace;
 	};
 
     drawing_context() : objects_count_(0),  current_shape_(NULL),shape_text_content_(L""),zero_string_(L""),current_level_(0),current_shape_id_ (0){}
@@ -112,7 +122,7 @@ public:
  		current_level_++;
         objects_count_++; 
 
-		_frame_ fr = {drawFrame, L"", objects_count_, false};
+		_frame fr = {drawFrame, L"", objects_count_, false};
    
 		frames_.push_back(fr);
 	}
@@ -121,23 +131,54 @@ public:
 		current_level_++;
         objects_count_++; 
 		
-		current_shape_id_ = objects_count_;
-        current_object_name_ = L"";
-        current_shape_ = drawShape;
+		current_shape_id_		= objects_count_;
+        current_object_name_	= L"";
+        current_shape_			= drawShape;
     }
     void start_group() 
     { 
 		current_level_++;
         objects_count_++; 
 		
-		current_shape_id_ = objects_count_;
-		groups_.push_back(current_level_);
+		current_shape_id_		= objects_count_;
+        current_object_name_	= L"";
+		
+		groups_.push_back(_group());
     }
     void add_name_object(const std::wstring & name) 
     { 
         current_object_name_ = name;
     }
+	void set_position_child_group(_INT32 x, _INT32 y)
+	{
+		if (groups_.size() < 1) return;
 
+		if (groups_.back().x > x)	groups_.back().x = x;
+		if (groups_.back().y > y)	groups_.back().y = y;
+	}	
+	void set_size_child_group(_INT32 cx, _INT32 cy)
+	{
+		if (groups_.size() < 1) return;
+
+		if (groups_.back().cx < cx)	groups_.back().cx = cx;
+		if (groups_.back().cy < cy)	groups_.back().cy = cy;
+	}
+	void get_position_group(_INT32 & x, _INT32 & y)
+	{
+		x = y = 0;
+		if (groups_.size() < 1) return;
+
+		x = groups_.back().x;
+		y = groups_.back().y;
+	}
+	void get_size_group(_INT32 & cx, _INT32 & cy)
+	{
+		cx = cy = 0;
+		if (groups_.size() < 1) return;
+
+		cx = groups_.back().cx;
+		cy = groups_.back().cy;
+	}
 	void stop_frame()
 	{
 		current_level_--;
@@ -210,8 +251,8 @@ private:
 	
 	int						current_level_;
 	
-	std::vector<int>		groups_;
-	std::vector<_frame_>	frames_; 
+	std::vector<_group>		groups_;
+	std::vector<_frame>		frames_; 
    
 	odf_reader::draw_shape * current_shape_; 
 	size_t					current_shape_id_;

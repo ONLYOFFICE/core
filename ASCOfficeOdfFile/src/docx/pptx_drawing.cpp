@@ -21,16 +21,16 @@ static const std::wstring _docxShapeType[]=
 	L"custGeom"
 };
 
-void pptx_serialize_text(std::wostream & strm, const std::vector<odf_reader::_property> & properties)
+void pptx_serialize_text(std::wostream & strm, _pptx_drawing & val)
 {
 	_CP_OPT(std::wstring) strTextContent;
-	odf_reader::GetProperty(properties,L"text-content",strTextContent);
+	odf_reader::GetProperty ( val.additional, L"text-content", strTextContent);
 
 	CP_XML_WRITER(strm)
     {
 		CP_XML_NODE(L"p:txBody")
 		{  
-			oox_serialize_bodyPr(CP_XML_STREAM(), properties);
+			oox_serialize_bodyPr(CP_XML_STREAM(), val);
 			if (strTextContent)
 			{	
 				CP_XML_STREAM() << strTextContent.get();
@@ -141,10 +141,10 @@ void pptx_serialize_shape(std::wostream & strm, _pptx_drawing & val)
 					oox_serialize_xfrm(CP_XML_STREAM(),val);
 
 					oox_serialize_shape(CP_XML_STREAM(),val);
-					oox_serialize_ln(CP_XML_STREAM(),val.additional);
+					oox_serialize_ln(CP_XML_STREAM(), val.additional);
 				}
 			}
-			pptx_serialize_text(CP_XML_STREAM(),val.additional);
+			pptx_serialize_text(CP_XML_STREAM(), val);
 		}
     }  // CP_XML_WRITER  
 }

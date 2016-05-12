@@ -198,8 +198,10 @@ void oox_serialize_aLst(std::wostream & strm, const std::vector<odf_reader::_pro
 		}
 	}
 }
-void oox_serialize_bodyPr(std::wostream & strm, const std::vector<odf_reader::_property> & prop, const std::wstring & namespace_)
+void oox_serialize_bodyPr(std::wostream & strm, _oox_drawing & val, const std::wstring & namespace_)
 {
+	const std::vector<odf_reader::_property> & prop = val.additional;
+
 	_CP_OPT(bool)	bWordArt;
 	odf_reader::GetProperty(prop,L"wordArt", bWordArt);
 
@@ -218,9 +220,12 @@ void oox_serialize_bodyPr(std::wostream & strm, const std::vector<odf_reader::_p
 			if (dPaddingTop)	CP_XML_ATTR(L"tIns", (int)(*dPaddingTop));
 			if (dPaddingBottom)	CP_XML_ATTR(L"bIns", (int)(*dPaddingBottom));
 
-			_CP_OPT(int)	iWrap;
-			odf_reader::GetProperty(prop,L"text-wrap"	, iWrap);
-			if ((iWrap) && (*iWrap == 0))CP_XML_ATTR(L"wrap", L"none");
+			if (val.inGroup == false)
+			{
+				_CP_OPT(int)	iWrap;
+				odf_reader::GetProperty(prop,L"text-wrap"	, iWrap);
+				if ((iWrap) && (*iWrap == 0))CP_XML_ATTR(L"wrap", L"none");
+			}
 
 			_CP_OPT(int) iAlign;
 			odf_reader::GetProperty(prop,L"textarea-vertical_align",iAlign);
@@ -360,7 +365,7 @@ void oox_serialize_shape(std::wostream & strm, _oox_drawing & val)
 	}
 }
 
-void oox_serialize_xfrm(std::wostream & strm, _oox_drawing & val, std::wstring name_space)
+void oox_serialize_xfrm(std::wostream & strm, _oox_drawing & val, const std::wstring name_space)
 {
 	CP_XML_WRITER(strm)
     {
@@ -419,6 +424,20 @@ void oox_serialize_xfrm(std::wostream & strm, _oox_drawing & val, std::wstring n
 			{
                 _CP_LOG << L"[error!!!] not set size object\n";
 			}
+			
+			//if (val.type == mediaitems::typeGroup)
+			//{		
+			//	CP_XML_NODE(L"a:chOff")
+			//	{
+			//		CP_XML_ATTR(L"x", 0);
+			//		CP_XML_ATTR(L"y", 0);
+			//	}
+			//	CP_XML_NODE(L"a:chExt")
+			//	{
+			//		CP_XML_ATTR(L"cx", val.cx);
+			//		CP_XML_ATTR(L"cy", val.cy);
+			//	}
+			//}
 		}
     }
 }

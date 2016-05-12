@@ -40,7 +40,7 @@ void draw_shape::common_docx_convert(oox::docx_conversion_context & Context)
         common_draw_shape_with_styles_attlist_.
         common_draw_name_attlist_.draw_name_;
 	
-	Context.get_drawing_context().add_name_object(name.get_value_or(L""));
+	Context.get_drawing_context().add_name_object(name.get_value_or(L"Shape"));
 
 //////////////////////////////на другом контексте
 

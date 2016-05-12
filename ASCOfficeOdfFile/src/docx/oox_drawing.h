@@ -38,12 +38,13 @@ namespace oox {
     };
     struct _oox_drawing
     {
-        _oox_drawing():type(mediaitems::typeUnknown),id(0),x(0),y(0),cx(0),cy(0),sub_type(0),name(L"object")
+        _oox_drawing() : type(mediaitems::typeUnknown), id(0), x(0), y(0), cx(0), cy(0), sub_type(0), inGroup(false), name(L"object")
         {
         }
         mediaitems::Type type;
 
-        size_t id;
+ 		bool inGroup;
+		size_t id;
 
         std::wstring name;
 
@@ -60,11 +61,11 @@ namespace oox {
         std::vector<odf_reader::_property> additional;
 
     };
-    void oox_serialize_xfrm		(std::wostream & strm, _oox_drawing & val,std::wstring name_space = L"a");
+    void oox_serialize_xfrm		(std::wostream & strm, _oox_drawing & val, const std::wstring namespace_ = L"a");
     void oox_serialize_shape	(std::wostream & strm, _oox_drawing & val);
     void oox_serialize_ln		(std::wostream & strm, const std::vector<odf_reader::_property> & val, bool always_draw = false);
     void oox_serialize_hlink	(std::wostream & strm, const std::vector<_hlink_desc> & val);
-	void oox_serialize_bodyPr	(std::wostream & strm, const std::vector<odf_reader::_property> & val, const std::wstring & namespace_ = L"a");
+	void oox_serialize_bodyPr	(std::wostream & strm, _oox_drawing & val, const std::wstring & namespace_ = L"a");
 	void oox_serialize_aLst		(std::wostream & strm, const std::vector<odf_reader::_property> & val);
 }
 }

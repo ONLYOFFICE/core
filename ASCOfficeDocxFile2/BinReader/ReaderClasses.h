@@ -1982,9 +1982,21 @@ public:
 					__int64 emuWidth = (__int64)(g_dKoef_mm_to_emu * Width);
 					__int64 emuHeight = (__int64)(g_dKoef_mm_to_emu * Height);
 					if(false == bChart)
-						sXml.AppendFormat(_T("<wp:inline xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\"><wp:extent cx=\"%lld\" cy=\"%lld\"/><wp:docPr id=\"%d\" name=\"\"/></wp:inline>"), emuWidth, emuHeight, m_nDocPr);
+						sXml.AppendFormat(_T("<wp:inline xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\"><wp:extent cx=\"%lld\" cy=\"%lld\"/>"), emuWidth, emuHeight);
 					else
-                        sXml.AppendFormat(_T("<w:drawing><wp:inline distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\"><wp:extent cx=\"%lld\" cy=\"%lld\"/><wp:effectExtent l=\"0\" t=\"0\" r=\"0\" b=\"0\"/><wp:docPr id=\"%d\" name=\"Chart %d\"/><wp:cNvGraphicFramePr/><a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\"><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/chart\"><c:chart xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" r:id=\"%ls\"/></a:graphicData></a:graphic></wp:inline></w:drawing>"), emuWidth, emuHeight, m_nDocPr, m_nDocPr, (const TCHAR *) sChartRels);
+						sXml.AppendFormat(_T("<w:drawing><wp:inline distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\"><wp:extent cx=\"%lld\" cy=\"%lld\"/>"), emuWidth, emuHeight);
+					if(bEffectExtentL && bEffectExtentT && bEffectExtentR && bEffectExtentB)
+					{
+						__int64 emuEffectExtentL = (__int64)(g_dKoef_mm_to_emu * EffectExtentL);
+						__int64 emuEffectExtentT = (__int64)(g_dKoef_mm_to_emu * EffectExtentT);
+						__int64 emuEffectExtentR = (__int64)(g_dKoef_mm_to_emu * EffectExtentR);
+						__int64 emuEffectExtentB = (__int64)(g_dKoef_mm_to_emu * EffectExtentB);
+						sXml.AppendFormat(_T("<wp:effectExtent l=\"%lld\" t=\"%lld\" r=\"%lld\" b=\"%lld\"/>"), emuEffectExtentL, emuEffectExtentT, emuEffectExtentR, emuEffectExtentB);
+					}
+					if(false == bChart)
+						sXml.AppendFormat(_T("<wp:docPr id=\"%d\" name=\"\"/></wp:inline>"), m_nDocPr);
+					else
+						sXml.AppendFormat(_T("<wp:docPr id=\"%d\" name=\"Chart %d\"/><wp:cNvGraphicFramePr/><a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\"><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/chart\"><c:chart xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" r:id=\"%ls\"/></a:graphicData></a:graphic></wp:inline></w:drawing>"), m_nDocPr, m_nDocPr, (const TCHAR *) sChartRels);
 				}
 			}
 			else

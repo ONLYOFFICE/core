@@ -5203,6 +5203,15 @@ namespace BinDocxRW
 						nCurPos = m_oBcw.WriteItemWithLengthStart();
 						WriteExtent(pInline.m_oExtent.get());
 						m_oBcw.WriteItemWithLengthEnd(nCurPos);
+						//EffectExtent
+						if(pInline.m_oEffectExtent.IsInit())
+						{
+							m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::EffectExtent);
+							m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+							nCurPos = m_oBcw.WriteItemWithLengthStart();
+							WriteEffectExtent(pInline.m_oEffectExtent.get());
+							m_oBcw.WriteItemWithLengthEnd(nCurPos);
+						}
 					}
 				}
 				else if(img.m_oAnchor.IsInit() )

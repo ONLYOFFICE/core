@@ -1682,6 +1682,8 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 		if (!pShape->TextBoxBodyPr.is_init())
 			pShape->TextBoxBodyPr = new PPTX::Logic::BodyPr();
 
+        bool bIsTrimTextPath = false;
+
 		if (pPPTShape->IsWordArt())
 		{
 			enum EFilltype
@@ -1853,6 +1855,20 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
                             if (sFitPath.is_init() && (*sFitPath == _T("true") || *sFitPath == _T("t")))
                             {
                                 nFontSize = 2;
+                            }
+
+                            nullable_string sFitShape;
+                            oNodeP.ReadAttributeBase(L"fitshape", sFitShape);
+                            if (sFitShape.is_init() && (*sFitShape == _T("true") || *sFitShape == _T("t")))
+                            {
+                                nFontSize = 2;
+                            }
+
+                            nullable_string sTrim;
+                            oNodeP.ReadAttributeBase(L"trim", sTrim);
+                            if (sTrim.is_init() && (*sTrim == _T("true") || *sTrim == _T("t")))
+                            {
+                                bIsTrimTextPath = true;
                             }
                         }
 
@@ -2216,6 +2232,13 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
             pShape->TextBoxBodyPr->tIns = 0;
             pShape->TextBoxBodyPr->rIns = 0;
             pShape->TextBoxBodyPr->bIns = 0;
+
+            if (!bIsTrimTextPath)
+            {
+                // нужно для данного размера шейпа выставить отступы сверху и снизу
+                // top: Ascent - CapHeight
+                // bottom: Descent
+            }
 		}
 		else
 		{

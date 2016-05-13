@@ -99,9 +99,11 @@ namespace DocFileFormat
 
 		WordDocument*					m_document;
 		ConversionContext*				m_context;
+		IMapping*						_caller;
 		
 		ParagraphPropertyExceptions*	_lastValidPapx;
 		SectionPropertyExceptions*		_lastValidSepx;
+
 		int								_skipRuns;
 		int								_sectionNr;
 		int								_footnoteNr;
@@ -109,8 +111,8 @@ namespace DocFileFormat
 		int								_commentNr;
 		int								_isSectionPageBreak; //0 - not set, 1 -page break, 2 - continues
 		bool							_writeInstrText;
+		bool							_writeWebHidden;
 		unsigned int					_fldCharCounter;
-		IMapping*						_caller;
 		std::wstring					_writeAfterRun;
 	};
 }

@@ -29,7 +29,8 @@ namespace DocFileFormat
 		void Apply( IVisitable* chpx );
 		bool CheckIsSymbolFont();
 
-		bool _isRTL;
+		bool	_webHidden;
+		bool	_isRTL;
 	private:
 		void convertSprms( list<SinglePropertyModifier>* sprms, XMLTools::XMLElement<wchar_t>* parent );
 		list<CharacterPropertyExceptions*> buildHierarchy( const StyleSheet* styleSheet, unsigned short istdStart );
@@ -42,17 +43,17 @@ namespace DocFileFormat
 		virtual void appendFlagElement( XMLTools::XMLElement<wchar_t>* node, const SinglePropertyModifier& sprm, const wchar_t* elementName, bool unique );
 
 	private:
+		XmlUtils::CXmlWriter			pRunPr;
 
-		WordDocument* _doc;
-		XMLTools::XMLElement<wchar_t>* _rPr; 
-		unsigned short _currentIstd;
-		RevisionData* _revisionData;
-		bool _styleChpx;
+		WordDocument*					_doc;
+		XMLTools::XMLElement<wchar_t>*	_rPr; 
+		unsigned short					_currentIstd;
+		RevisionData*					_revisionData;
+		bool							_styleChpx;
 
-		XmlUtils::CXmlWriter pRunPr;
 
-		ParagraphPropertyExceptions* _currentPapx;
-		list<CharacterPropertyExceptions*> _hierarchy;
+		ParagraphPropertyExceptions*		_currentPapx;
+		list<CharacterPropertyExceptions*>	_hierarchy;
 
 		bool _isRunStyleNeeded;
 		bool _isOwnRPr;

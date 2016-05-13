@@ -6,7 +6,7 @@
 
 QT       -= core gui
 
-VERSION = 1.0.0.3
+VERSION = 1.0.0.4
 TARGET = PdfReader
 TEMPLATE = lib
 

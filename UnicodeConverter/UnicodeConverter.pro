@@ -6,7 +6,7 @@
 
 QT       -= core gui
 
-VERSION = 1.0.0.1
+VERSION = 1.0.0.3
 TARGET = UnicodeConverter
 TEMPLATE = lib
 
@@ -89,7 +89,7 @@ win32 {
     TARGET_EXT = .dll
 
     INCLUDEPATH += $$PWD/icubuilds/$$ICU_BUILDS_PLATFORM/include
-    LIBS        += -L$$PWD/icubuilds/$$ICU_BUILDS_PLATFORM/lib -licuuc
+    LIBS        += -L$$PWD/../build/bin/icu/$$ICU_BUILDS_PLATFORM -licuuc
     message(windows)
 }
 

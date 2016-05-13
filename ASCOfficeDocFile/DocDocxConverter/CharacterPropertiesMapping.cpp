@@ -6,23 +6,25 @@ namespace DocFileFormat
 	CharacterPropertiesMapping::CharacterPropertiesMapping( XmlUtils::CXmlWriter* writer, WordDocument* doc, RevisionData* rev, ParagraphPropertyExceptions* currentPapx, bool styleChpx, bool isRunStyleNeeded)
 		: PropertiesMapping( writer ), _isRunStyleNeeded(isRunStyleNeeded), _isOwnRPr(true), _isRTL(false)
 	{
-		this->_doc = doc;
-		this->_rPr = new XMLTools::XMLElement<wchar_t>( _T( "w:rPr" ) );
-		this->_revisionData = rev;
-		this->_currentPapx = currentPapx;
-		this->_styleChpx = styleChpx;
-		this->_currentIstd = USHRT_MAX;
+		_doc			= doc;
+		_rPr			= new XMLTools::XMLElement<wchar_t>( _T( "w:rPr" ) );
+		_revisionData	= rev;
+		_currentPapx	= currentPapx;
+		_styleChpx		= styleChpx;
+		_currentIstd	= USHRT_MAX;
+		_webHidden		= false;
 	}
 
 	CharacterPropertiesMapping::CharacterPropertiesMapping( XMLTools::XMLElement<wchar_t>* rPr, WordDocument* doc, RevisionData* rev, ParagraphPropertyExceptions* currentPapx, bool styleChpx, bool isRunStyleNeeded )
 		: PropertiesMapping( NULL ), _isRunStyleNeeded(isRunStyleNeeded), _isOwnRPr(false), _isRTL(false)   
 	{
-		this->_doc = doc;
-		this->_rPr = rPr;
-		this->_revisionData = rev;
-		this->_currentPapx = currentPapx;
-		this->_styleChpx = styleChpx;
-		this->_currentIstd = USHRT_MAX;
+		_doc			= doc;
+		_rPr			= rPr;
+		_revisionData	= rev;
+		_currentPapx	= currentPapx;
+		_styleChpx		= styleChpx;
+		_currentIstd	= USHRT_MAX;
+		_webHidden		= false;
 	}
 
 	CharacterPropertiesMapping::~CharacterPropertiesMapping()
@@ -89,6 +91,12 @@ namespace DocFileFormat
 		XMLTools::XMLAttribute<wchar_t>	* colorVal	= new XMLTools::XMLAttribute<wchar_t>( _T( "w:val" ) );
 		XMLTools::XMLElement<wchar_t>	* lang		= new XMLTools::XMLElement<wchar_t>	( _T( "w:lang" ) );
 
+		if (_webHidden)
+		{
+			XMLTools::XMLElement<wchar_t>	* webHidden		= new XMLTools::XMLElement<wchar_t>	( _T( "w:webHidden" ) );
+			parent->AppendChild( *webHidden );
+			RELEASEOBJECT( webHidden );
+		}
 		std::list<SinglePropertyModifier>::iterator end = sprms->end();
 		for (std::list<SinglePropertyModifier>::iterator iter = sprms->begin(); iter != end; ++iter)
 		{
@@ -96,7 +104,7 @@ namespace DocFileFormat
 			{				
 			case 0x4A30 :	//	style id 
 				{
-					if (_isRunStyleNeeded)
+					if (_isRunStyleNeeded && !_webHidden)
 					{
 						_currentIstd = FormatUtils::BytesToUInt16( iter->Arguments, 0, iter->argumentsSize );
 						if (_currentIstd < this->_doc->Styles->Styles->size())

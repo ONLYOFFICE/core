@@ -940,7 +940,7 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, const unio
 		Context.get_drawing_context().set_size_child_group(drawing.cx + drawing.x, drawing.cy + drawing.y);
 
 		// ваще то тут "несовсем" всерно ... нужно сначала все стартовые позиции добавить ..
-		INT32 x_group_offset, y_group_offset;
+        _INT32 x_group_offset, y_group_offset;
 		Context.get_drawing_context().get_position_group(x_group_offset, y_group_offset);
 
 		drawing.x -= x_group_offset;
@@ -1282,8 +1282,8 @@ void draw_g::docx_convert(oox::docx_conversion_context & Context)
 		Context.get_drawing_context().set_position_child_group	(drawing.x, drawing.y);
 		Context.get_drawing_context().set_size_child_group		(drawing.cx + drawing.x, drawing.cy + drawing.y);
 
-		// ваще то тут "несовсем" всерно ... нужно сначала все стартовые позиции добавить ..
-		INT32 x_group_offset, y_group_offset;
+        // ваще то тут "несовсем" верно ... нужно сначала все стартовые позиции добавить ..
+        _INT32 x_group_offset, y_group_offset;
 		Context.get_drawing_context().get_position_group(x_group_offset, y_group_offset);
 
 		drawing.x -= x_group_offset;

@@ -2176,7 +2176,8 @@ namespace SimpleTypes
 			notContainsText			= 13,
 			timePeriod				= 14,
 			top10					= 15,
-			uniqueValues			= 16
+			uniqueValues			= 16,
+			endsWith				= 17
 		};
 		template<ECfType eDefValue = dataBar>
 		class ST_CfType : public CSimpleType<ECfType, eDefValue>
@@ -2203,6 +2204,7 @@ namespace SimpleTypes
                 else if(_T("timePeriod") == sValue)			this->m_eValue = timePeriod;
                 else if(_T("top10") == sValue)				this->m_eValue = top10;
                 else if(_T("uniqueValues") == sValue)		this->m_eValue = uniqueValues;
+                else if(_T("endsWith") == sValue)			this->m_eValue = endsWith;
                 else 										this->m_eValue = eDefValue;
                 return this->m_eValue;
 			}
@@ -2228,6 +2230,7 @@ namespace SimpleTypes
 					case timePeriod			:	return _T("timePeriod");		break;
 					case top10				:	return _T("top10");				break;
 					case uniqueValues		:	return _T("uniqueValues");		break;
+					case endsWith			:	return _T("endsWith");			break;
 					default					:	return _T("dataBar");
 				}
 			}

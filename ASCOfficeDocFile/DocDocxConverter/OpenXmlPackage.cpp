@@ -81,7 +81,6 @@ namespace DocFileFormat
 
 
 	void OpenXmlPackage::SaveToFile( const std::wstring& outputDir, const std::wstring& fileName, const void* buf, unsigned int size )
-
 	{
 		if ( buf != NULL )
 		{

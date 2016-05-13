@@ -4,6 +4,8 @@
 #include "../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h"
 #include "../../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"
 
+#include "../../DesktopEditor/raster/BgraFrame.h"
+
 namespace ImageHelper
 {
 	inline static int CompareStrings (const wchar_t* str1, const wchar_t* str2)
@@ -16,92 +18,34 @@ namespace ImageHelper
 
 		return 1;
 	}
-	//inline static void GetEncoderCLSID (const wchar_t* pFormat, CLSID* pClsid)
-	//{
-	//	// variables
-	//	UINT nEncoders = 0;
-	//	UINT nSize = 0;
-	//	Gdiplus::ImageCodecInfo* pImageCodecInfo = 0;
+	inline bool SaveImageToFileFromDIB(unsigned char* buffer, int size, const std::wstring& file)
+	{
+		bool result = false;
+		const BITMAPINFOHEADER* info =	(BITMAPINFOHEADER*)buffer;
 
-	//	// retrieve encoders info
-	//	Gdiplus::GetImageEncodersSize(&nEncoders, &nSize);
+		if (NULL != info && info->biSize == 40)
+		{
+			unsigned char* pBgraData = buffer + sizeof(BITMAPINFOHEADER);
+			
+			int nWidth	= info->biWidth;
+			int nHeight = info->biHeight;
 
-	//	// check for valid encoders
-	//	if (!nSize)
-	//		throw 0;
+			CBgraFrame oFrame;
+			oFrame.put_Data		(pBgraData);
+			oFrame.put_Width	(nWidth);
+			oFrame.put_Height	(nHeight);
 
-	//	// create encoders info structure of necessary size
-	//	pImageCodecInfo = (Gdiplus::ImageCodecInfo*)(malloc(nSize));
+			int nStride = info->biSizeImage / nHeight;
+			oFrame.put_Stride( -nStride );
 
-	//	// check for valid encoder
-	//	if (!pImageCodecInfo)
-	//		throw 0;
+			result = oFrame.SaveFile(file, 4);
 
-	//	// retrieve all encoders
-	//	Gdiplus::GetImageEncoders(nEncoders, nSize, pImageCodecInfo);
+			oFrame.put_Data(NULL);
 
-	//	// locate necessary encoder
-	//	for (UINT nEncoder = 0; nEncoder < nEncoders; ++nEncoder)
-	//	{
-	//		// compare MIME strings
-	//		if (CompareStrings(pImageCodecInfo[nEncoder].MimeType, pFormat) == 0)
-	//		{
-	//			// save CLSID
-	//			*pClsid = pImageCodecInfo[nEncoder].Clsid;
+		}
 
-	//			// clear memory
-	//			free(pImageCodecInfo);
-
-	//			// all ok
-	//			return;
-	//		}    
-	//	}
-
-	//	// clear memory
-	//	free(pImageCodecInfo);
-
-	//	// codec not found
-	//	throw 0;
-	//}
-	//inline bool SaveImageToFileFromDIB(unsigned char* buffer, const std::wstring& file)
-	//{
-	//	const BITMAPFILEHEADER* bmfh	=	(BITMAPFILEHEADER*)buffer;
-	//	const BITMAPINFO* info			=	(BITMAPINFO*)buffer;
-
-	//	if (NULL != bmfh && NULL != info)
-	//	{
-	//		HDC hdc = GetDC(NULL);
-	//		if (hdc)
-	//		{
-	//			HBITMAP hbm = ::CreateDIBitmap(hdc, &info->bmiHeader, CBM_INIT, (buffer + sizeof(BITMAPINFO)), info, DIB_RGB_COLORS);
-	//			if (hbm)
-	//			{
-	//				Gdiplus::Bitmap oBitmap (hbm, NULL);
-	//				if (Gdiplus::Ok == oBitmap.GetLastStatus()) 
-	//				{
-	//					CLSID guid;
-	//					GetEncoderCLSID (L"image/png", &guid);
-
-	//					if (Gdiplus::Ok == oBitmap.Save (file.c_str(), &guid))
-	//					{
-	//						oBitmap.Save(file.c_str(), &guid);
-
-	//						DeleteObject(hbm);
-	//						ReleaseDC(NULL, hdc);
-
-	//						return (Gdiplus::Ok == oBitmap.GetLastStatus());
-	//					}						
-	//				}
-
-	//				DeleteObject(hbm);
-	//			}
-
-	//			ReleaseDC(NULL, hdc);
-	//		}
-	//	}
-
-	//	return false;
-	//}
+		return result;
+	}
 }
 
 namespace DocFileFormat
@@ -154,18 +98,13 @@ namespace DocFileFormat
 					copy(iter->data.begin(), iter->data.end(), bytes);
 
 					if (Global::msoblipDIB == iter->blipType)
-					{
-						std::wstring file = string2std_string(pathMedia.GetPath()) + FILE_SEPARATOR_STR + _T("image") + FormatUtils::IntToWideString(i++) + iter->ext;
-						//ImageHelper::SaveImageToFileFromDIB(bytes, file);
-
-						//todooo ... переписать универсально под any system
+					{//user_manual_v52.doc						
+						std::wstring file_name = string2std_string(pathMedia.GetPath()) + FILE_SEPARATOR_STR + _T("image") + FormatUtils::IntToWideString(i++) + iter->ext;
+						ImageHelper::SaveImageToFileFromDIB(bytes, iter->data.size(), file_name);
 					}
 					else
 					{
-
-
 						SaveToFile(string2std_string(pathMedia.GetPath()), std::wstring(_T("image" )) + FormatUtils::IntToWideString(i++) + iter->ext, (void*)bytes, (unsigned int)iter->data.size());
-		
 					}
 					
 					RELEASEARRAYOBJECTS(bytes);

@@ -608,13 +608,20 @@ int ChartSheetSubstream::serialize_title (std::wostream & _stream)
 	AI* title_text = dynamic_cast<AI *>(title_label->m_AI.get());
 	if (title_text == NULL) return 0;	
 	
-	if (!title_text->m_SeriesText) return 0; // если не выкидывать будет рисоваться placeholder
+	if (!title_text->m_SeriesText && !title_text->m_BRAI) return 0; // если не выкидывать будет рисоваться placeholder
 	
 	CP_XML_WRITER(_stream)    
 	{
 		CP_XML_NODE(L"c:title")
 		{
 			attached_label->serialize(CP_XML_STREAM()); 
+		}
+		if (!title_text->m_SeriesText)
+		{
+			CP_XML_NODE(L"c:autoTitleDeleted")
+			{
+				CP_XML_ATTR (L"val" , 0); 
+			}
 		}
 	}
 	return 0;

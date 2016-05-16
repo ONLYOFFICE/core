@@ -41,7 +41,7 @@ void DXFNum::store(CFRecord& record)
 
 void DXFNum::load(CFRecord& record)
 {
-	if(is_user_defined_)
+	if ((is_user_defined_) && (*is_user_defined_))
 	{
 		record >> user_defined;
 	}

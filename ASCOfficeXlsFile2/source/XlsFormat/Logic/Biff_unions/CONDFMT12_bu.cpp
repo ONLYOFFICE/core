@@ -69,7 +69,7 @@ int CONDFMT12::serialize(std::wostream & stream)
 {
 	if (!m_CondFmt12)			return 0;
 	if (m_arCF12.size() < 1)	return 0;
-
+	
 	CP_XML_WRITER(stream)    
     {
 		CP_XML_NODE(L"conditionalFormatting")

@@ -1,5 +1,7 @@
 
 #include "CF.h"
+#include "CFEx.h"
+
 #include <utils.h>
 
 namespace XLS
@@ -66,6 +68,11 @@ int CF::serialize(std::wostream & stream)
 	if (ct != 1 && ct != 2 && ct !=6) 
 		return 0;
 	
+	CFEx * cfEx = dynamic_cast<CFEx *>(m_CFEx.get());
+	if (cfEx)
+	{
+	}
+
 	CP_XML_WRITER(stream)    
     {
 		CP_XML_NODE(L"cfRule")
@@ -91,12 +98,23 @@ int CF::serialize(std::wostream & stream)
 					case 8:	CP_XML_ATTR(L"operator", L"lessThanOrEqual");	break;
 				}
 			}
-			CP_XML_ATTR(L"priority", ipriority_);
+
+			CP_XML_ATTR(L"priority", cfEx ? cfEx->content.ipriority_ : ipriority_);
+			
 			CP_XML_ATTR(L"stopIfTrue", 1);
-			CP_XML_ATTR(L"dxfId", dxfId_);	
+
+			if ((cfEx) && (cfEx->content.fHasDXF))
+			{
+				cfEx->content.dxf.serialize(CP_XML_STREAM());
+			}
+			else
+			{
+				CP_XML_ATTR(L"dxfId", dxfId_);	
+			}
 
 			std::wstring s1 = rgce1.getAssembledFormula();
 			std::wstring s2 = rgce2.getAssembledFormula();
+			
 			CP_XML_NODE(L"formula")
 			{
 				if (!s1.empty()) 

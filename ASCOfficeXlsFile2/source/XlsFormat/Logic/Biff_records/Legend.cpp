@@ -107,8 +107,8 @@ int Legend::serialize(std::wostream & _stream, int size)
 					if (fAutoPosX == false)	CP_XML_NODE(L"c:x")		{CP_XML_ATTR(L"val", x / 4000.);}
 					if (fAutoPosY == false)	CP_XML_NODE(L"c:y")		{CP_XML_ATTR(L"val", y / 4000.);}
 
-					if (fAutoPosX == false)	CP_XML_NODE(L"c:w")		{CP_XML_ATTR(L"val", (dx )/ 4000. + 0.01);}
-					if (fAutoPosY == false) CP_XML_NODE(L"c:h")		{CP_XML_ATTR(L"val", (dy )/ 4000. + 0.01);}
+					if (fAutoPosX == false)	CP_XML_NODE(L"c:w")		{CP_XML_ATTR(L"val", (dx )/ 4000. /*+ 0.01*/);}
+					if (fAutoPosY == false) CP_XML_NODE(L"c:h")		{CP_XML_ATTR(L"val", (dy )/ 4000. /*+ 0.01*/);}
 				}
 			}
 			CP_XML_NODE(L"c:overlay") {CP_XML_ATTR(L"val", 0);}

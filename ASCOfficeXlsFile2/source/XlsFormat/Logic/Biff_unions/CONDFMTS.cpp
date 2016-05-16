@@ -4,6 +4,9 @@
 #include <Logic/Biff_unions/CONDFMT12.h>
 #include <Logic/Biff_records/CFEx.h>
 #include <Logic/Biff_records/CF12.h>
+#include <Logic/Biff_records/CF.h>
+#include <Logic/Biff_records/CondFmt.h>
+#include <Logic/Biff_records/CondFmt12.h>
 
 namespace XLS
 {
@@ -85,6 +88,46 @@ const bool CONDFMTS::loadContent(BinProcessor& proc)
 		elements_.pop_back();
 		count--;
 	}	
+
+	for (int i = 0 ; i < m_arCFEx.size(); i++)
+	{
+		if (!m_arCFEx[i]) continue;
+
+		CFEx * cfEx = dynamic_cast<CFEx *>(m_arCFEx[i].get());
+		if (cfEx)
+		{
+			int ind_cf = cfEx->content.icf;
+
+			for (int j = 0 ; j < m_arCONDFMT.size(); j++)
+			{
+				CONDFMT * CONDFMT_ = dynamic_cast<CONDFMT *>(m_arCONDFMT[j].get());
+				if (CONDFMT_/* && cfEx->fIsCF12 == 0*/)
+				{
+					CondFmt *condFmt = dynamic_cast<CondFmt *>(CONDFMT_->m_CondFmt.get());
+					if ((condFmt->nID == cfEx->nID) && (ind_cf < CONDFMT_->m_arCF.size()))
+					{
+						CF* cf = dynamic_cast<CF *>(CONDFMT_->m_arCF[ind_cf].get());
+						if (cf)
+							cf->m_CFEx = m_arCFEx[i];
+					}
+
+				}
+				CONDFMT12 * CONDFMT12_ = dynamic_cast<CONDFMT12 *>(m_arCONDFMT[j].get());
+				if (CONDFMT12_ /*&& cfEx->fIsCF12 != 0*/)
+				{
+					CondFmt12 *condFmt12 = dynamic_cast<CondFmt12 *>(CONDFMT12_->m_CondFmt12.get());
+					if ((condFmt12->mainCF.nID == cfEx->nID) && (ind_cf < CONDFMT12_->m_arCF12.size()))
+					{
+						CF12* cf = dynamic_cast<CF12 *>(CONDFMT12_->m_arCF12[ind_cf].get());
+						if (cf)
+							cf->m_CFEx = m_arCFEx[i];
+					}
+				}
+			}
+		}
+	}
+
+
 	return res;
 }
 

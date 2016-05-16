@@ -23,11 +23,13 @@ void CFExNonCF12::store(CFRecord& record)
 void CFExNonCF12::load(CFRecord& record)
 {
 	unsigned char flags;
-	record >> icf >> cp >> icfTemplate >> ipriority >> flags;
-	fActive = GETBIT(flags, 0);
+	record >> icf >> cp >> icfTemplate >> ipriority_ >> flags;
+	
+	fActive		= GETBIT(flags, 0);
 	fStopIfTrue = GETBIT(flags, 1);
 
 	record >> fHasDXF;
+	
 	if(fHasDXF)
 	{
 		record >> dxf;

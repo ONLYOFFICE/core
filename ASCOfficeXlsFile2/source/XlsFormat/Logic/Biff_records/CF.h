@@ -28,15 +28,16 @@ public:
 //-----------------------------
 	unsigned char	ct;
 	unsigned char	cp;
+
+	int				dxfId_;
+	int				ipriority_;
 	
-	DXFN rgbdxf;
+	DXFN			rgbdxf;
 	
 	CFParsedFormulaNoCCE rgce1;
 	CFParsedFormulaNoCCE rgce2;
 
-	int dxfId_;
-	int ipriority_;
-
+	BaseObjectPtr	m_CFEx;
 };
 
 typedef boost::shared_ptr<CF> CFPtr;

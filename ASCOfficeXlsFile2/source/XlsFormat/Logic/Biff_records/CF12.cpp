@@ -1,5 +1,7 @@
 
 #include "CF12.h"
+#include "CFEx.h"
+
 #include <Logic/Biff_structures/CFMultistate.h>
 #include <Logic/Biff_structures/CFDatabar.h>
 #include <utils.h>
@@ -90,6 +92,10 @@ void CF12::readFields(CFRecord& record)
 }
 int CF12::serialize(std::wostream & stream)
 {
+	CFEx * cfEx = dynamic_cast<CFEx *>(m_CFEx.get());
+	if (cfEx)
+	{
+	}
 	CP_XML_WRITER(stream)    
     {
 		CP_XML_NODE(L"cfRule")
@@ -154,9 +160,10 @@ int CF12::serialize(std::wostream & stream)
 					}
 				}
 			}
-
+			//что использовать зависит от типа ... todooo
+			std::wstring s	= fmlaActive.getAssembledFormula();
 			std::wstring s1 = rgce1.getAssembledFormula();
-			std::wstring s2 = rgce1.getAssembledFormula();
+			std::wstring s2 = rgce2.getAssembledFormula();
 			
 			if (!s1.empty() || !s2.empty())
 			{

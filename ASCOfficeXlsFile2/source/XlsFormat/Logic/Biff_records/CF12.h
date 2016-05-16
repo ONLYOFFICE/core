@@ -29,6 +29,7 @@ public:
 	static const ElementType	type = typeCF12;
 
 	int serialize(std::wostream & stream);
+
 	FrtRefHeader			frtRefHeader;
 
 	unsigned char			ct;
@@ -47,11 +48,11 @@ public:
 	BiffStructurePtr		rgbCT;
 
 //-----------------------------
-	bool fStopIfTrue;
+	bool					fStopIfTrue;
+	int						ipriority_;
+	int						dxfId_;
 
-	int ipriority_;
-
-	int dxfId_;
+	BaseObjectPtr			m_CFEx;
 };
 
 typedef boost::shared_ptr<CF12> CF12Ptr;

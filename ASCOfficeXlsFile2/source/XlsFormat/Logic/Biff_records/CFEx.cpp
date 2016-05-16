@@ -32,14 +32,8 @@ void CFEx::readFields(CFRecord& record)
 	record >> fIsCF12 >> nID;
 	if(!fIsCF12)
 	{
-		record >> rgbContent;
+		record >> content;
 	}
-}
-
-
-const unsigned short CFEx::getID() const
-{
-	return nID;
 }
 
 } // namespace XLS

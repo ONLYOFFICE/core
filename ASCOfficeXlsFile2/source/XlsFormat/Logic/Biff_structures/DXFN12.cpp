@@ -38,16 +38,19 @@ void DXFN12::load(CFRecord& record)
 	
 	if(cbDxf)
 	{
-		const size_t end_of_struct_pos = record.getRdPtr() + cbDxf;
+		const size_t start_of_struct_pos	= record.getRdPtr();
+		const size_t end_of_struct_pos		= record.getRdPtr() + cbDxf;
 		
 		dxfn = DXFNPtr(new DXFN);
 		record >> *dxfn;
-		
+
 		if(record.getRdPtr() < end_of_struct_pos)
 		{
 			xfext = XFExtNoFRTPtr(new XFExtNoFRT);
 			record >> *xfext;
 		}
+		record.resetPointerToBegin	(); // file (42).xls (sheet2)
+		record.skipNunBytes			(end_of_struct_pos);
 	}
 	else
 	{
@@ -63,15 +66,17 @@ int DXFN12::serialize(std::wostream & stream)
 	}
 	else
 	{
-		CP_XML_WRITER(stream)    
-		{			
-			CP_XML_NODE(L"dxf")
-			{
-				if (xfext)
-				{
-				}
-			}
-		}
+		dxfn->serialize(stream);
+	//todoooo - file (42).xls
+		//CP_XML_WRITER(stream)    
+		//{	
+		//	CP_XML_NODE(L"dxf")
+		//	{
+		//		if (xfext)
+		//		{
+		//		}
+		//	}
+		//}
 	}
 	return 0;
 }

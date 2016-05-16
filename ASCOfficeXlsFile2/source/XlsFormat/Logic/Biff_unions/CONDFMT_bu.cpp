@@ -81,10 +81,10 @@ int CONDFMT::serialize(std::wostream & stream)
 			CP_XML_ATTR(L"sqref", condFmt->sqref.sqref);
 			//condition_id
 			//condition_pos
-
 			for (int i = 0; i < m_arCF.size(); i++)
 			{
 				if (m_arCF[i] == NULL) continue;
+
 				m_arCF[i]->serialize(CP_XML_STREAM());
 			}
 		}

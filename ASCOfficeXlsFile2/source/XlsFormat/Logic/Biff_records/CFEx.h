@@ -23,13 +23,12 @@ public:
 	void readFields(CFRecord& record);
 
 	static const ElementType	type = typeCFEx;
-
-	const unsigned short getID() const;
+	
 //-----------------------------
-	FrtRefHeaderU frtRefHeaderU;
-	Boolean<unsigned int> fIsCF12;
-	_UINT16 nID;
-	CFExNonCF12 rgbContent;
+	FrtRefHeaderU	frtRefHeaderU;
+	unsigned int	fIsCF12;
+	_UINT16			nID;
+	CFExNonCF12		content;
 };
 
 } // namespace XLS

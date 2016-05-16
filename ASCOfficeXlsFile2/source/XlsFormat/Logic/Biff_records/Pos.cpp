@@ -55,15 +55,15 @@ void Pos::readFields(CFRecord& record)
 
 int Pos::serialize(std::wostream & _stream)
 {
-	bool bPosition	= true;
-	bool bSize		= true;
+	bool bAutoPosition	= true;
+	bool bAutoSize		= true;
 
 	if (m_Frame)
 	{
 		Frame* Frame_ = dynamic_cast<Frame*>(m_Frame.get());
 
-		bPosition	= !Frame_->fAutoPosition;
-		bSize		= !Frame_->fAutoSize;
+		bAutoPosition	= !Frame_->fAutoPosition;
+		bAutoSize		= !Frame_->fAutoSize;
 	}
 	double x = x1 / 4000.;
 	double y = y1 / 4000.;
@@ -75,12 +75,15 @@ int Pos::serialize(std::wostream & _stream)
 	{
 		CP_XML_NODE(L"c:layout")
 		{
-			if (bPosition || bSize)
+			if (bAutoSize && bAutoPosition)
+			{
+			}
+			else
 			{
 				CP_XML_NODE(L"c:manualLayout")
 				{
-					if (m_iLinkObject == 1) x += 0.5	+ (w > 0 ? w : 0);
-					if (m_iLinkObject == 2) x += 0.5	+ (w > 0 ? w : 0);
+					//if (m_iLinkObject == 1) x += 0.5	+ (w > 0 ? w : 0);
+					//if (m_iLinkObject == 2) x += 0.5	+ (w > 0 ? w : 0);
 					if (m_iLinkObject == 3) y += 0		+ (h > 0 ? h : 0);
 
 					CP_XML_NODE(L"c:xMode")	{CP_XML_ATTR(L"val", L"edge");}
@@ -89,13 +92,13 @@ int Pos::serialize(std::wostream & _stream)
 					//if (x < 0) x = 0;
 					//if (y < 0) y = 0;
 					
-					if (bPosition)
+					if (!bAutoPosition)
 					{
 						if (x >= 0 && x < 1) CP_XML_NODE(L"c:x")		{CP_XML_ATTR(L"val", x);}
 						if (y >= 0 && y < 1) CP_XML_NODE(L"c:y")		{CP_XML_ATTR(L"val", y);}
 					}
 					
-					if (bSize && m_iLinkObject != 1 && m_iLinkObject != 2 && m_iLinkObject != 3) 
+					if (!bAutoSize && m_iLinkObject != 1 && m_iLinkObject != 2 && m_iLinkObject != 3) 
 						//title, axis title vert, axis title horiz
 					{
 						if (w > 0 && w < 1) CP_XML_NODE(L"c:w")		{CP_XML_ATTR(L"val", w);}

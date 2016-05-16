@@ -1,6 +1,7 @@
 
 #include "XFProps.h"
 #include <Binary/CFRecord.h>
+#include <Logic/Biff_structures/BitMarkedStructs.h>
 
 namespace XLS
 {
@@ -33,8 +34,14 @@ void XFProps::load(CFRecord& record)
 		XFProp prop;
 		record >> prop;
 
-		if		(prop.xfPropType >=  0 && prop.xfPropType <=  3)							arXFPropFill.push_back(prop);
-		else if (prop.xfPropType == 4)														arXFPropGradient.push_back(prop);
+		if	(prop.xfPropType >=  0 && prop.xfPropType <=  3)
+		{
+			arXFPropFill.push_back(prop);
+		}
+		else if (prop.xfPropType == 4)		
+		{
+			arXFPropGradient.push_back(prop);
+		}
 		else if (prop.xfPropType >=  6 && prop.xfPropType <= 14)
 		{
 			arXFPropBorder.is_present = true;
@@ -48,10 +55,36 @@ void XFProps::load(CFRecord& record)
 					arXFPropBorder.other.push_back(prop);
 			}
 		}
-		else if (prop.xfPropType >= 15 && prop.xfPropType <= 22 || prop.xfPropType == 42)	arXFPropAlignment.push_back(prop);
-		else if	(prop.xfPropType >= 24 && prop.xfPropType <= 37 || prop.xfPropType ==  5)	arXFPropFont.push_back(prop);
-		else if (prop.xfPropType >= 38 && prop.xfPropType <= 41)							arXFPropNumFmt.push_back(prop);	
-		else if (prop.xfPropType >= 43 && prop.xfPropType <= 44)							arXFPropProtection.push_back(prop);		
+		else if (prop.xfPropType >= 15 && prop.xfPropType <= 22 || prop.xfPropType == 42)	
+		{
+			arXFPropAlignment.push_back(prop);
+		}
+		else if	(prop.xfPropType >= 24 && prop.xfPropType <= 37 || prop.xfPropType ==  5)	
+		{
+			arXFPropFont.push_back(prop);
+		}
+		else if (prop.xfPropType >= 38 && prop.xfPropType <= 41)
+		{
+			bool skip_codes = false;
+			if (prop.xfPropType == 0x0029)
+			{
+				BIFF_WORD* word = dynamic_cast<BIFF_WORD*>(prop.xfPropDataBlob.get());
+				if ((word) && (word->value() == (_UINT16)30))
+				{
+					skip_codes = true;
+				}
+
+			}
+			if (!skip_codes)
+				arXFPropNumFmt.push_back(prop);	
+		}
+		else if (prop.xfPropType >= 43 && prop.xfPropType <= 44)	
+		{
+			arXFPropProtection.push_back(prop);		
+		}
+		else
+		{
+		}
 	}
 }
 int XFProps::serialize(std::wostream & stream)

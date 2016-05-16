@@ -20,18 +20,18 @@ public:
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-	unsigned short icf;
-	unsigned char cp;
-	unsigned char icfTemplate;
-	unsigned short ipriority;
+	unsigned short	icf;
+	unsigned char	cp;
+	unsigned char	icfTemplate;
+	unsigned short	ipriority_;
 
-	bool fActive;
-	bool fStopIfTrue;
+	bool			fActive;
+	bool			fStopIfTrue;
 
-	Boolean<unsigned char> fHasDXF;
+	unsigned char	fHasDXF;
 
-	DXFN12 dxf;
-	CFExTemplateParams rgbTemplateParms;
+	DXFN12				dxf;
+	CFExTemplateParams	rgbTemplateParms;
 };
 
 } // namespace XLS

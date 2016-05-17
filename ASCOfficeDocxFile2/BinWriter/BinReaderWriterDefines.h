@@ -390,7 +390,8 @@ extern int g_nCurFormatVersion;
 		hdrftrelem = 5,
 		pageNumType = 6,
 		sectPrChange = 7,
-		cols = 8
+		cols = 8,
+		pgBorders = 9
 	};}
 	namespace c_oSerProp_secPrSettingsType{enum c_oSerProp_secPrSettingsType
 	{
@@ -881,6 +882,24 @@ extern int g_nCurFormatVersion;
 		Column = 4,
 		ColumnSpace = 5,
 		ColumnW = 6
+	};}
+	namespace c_oSerPageBorders{enum c_oSerPageBorders
+	{
+		Display = 0,
+		OffsetFrom = 1,
+		ZOrder = 2,
+		Bottom = 3,
+		Left = 4,
+		Right = 5,
+		Top = 6,
+		Color = 7,
+		Frame = 8,
+		Id = 9,
+		Shadow = 10,
+		Space = 11,
+		Sz = 12,
+		ColorTheme = 13,
+		Val = 16
 	};}
 }
 

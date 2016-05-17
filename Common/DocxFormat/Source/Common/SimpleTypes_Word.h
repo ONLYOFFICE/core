@@ -1860,7 +1860,7 @@ namespace SimpleTypes
 	//--------------------------------------------------------------------------------		
 
 	template<int nDefValue = 0>
-	class CEighthPointMeasure : CSimpleType<int, nDefValue>
+	class CEighthPointMeasure : public CSimpleType<int, nDefValue>
 	{
 	public:
 		CEighthPointMeasure() {}
@@ -2617,6 +2617,31 @@ namespace SimpleTypes
 			case hexcolorRGB  : 
 			{
 				CString sResult =_T("00");//alfa
+				if(m_unR > 0x0f)
+					sResult.AppendFormat(_T("%X"), m_unR);
+				else
+					sResult.AppendFormat(_T("0%X"), m_unR);
+				if(m_unG > 0x0f)
+					sResult.AppendFormat(_T("%X"), m_unG);
+				else
+					sResult.AppendFormat(_T("0%X"), m_unG);
+				if(m_unB > 0x0f)
+					sResult.AppendFormat(_T("%X"), m_unB);
+				else
+					sResult.AppendFormat(_T("0%X"), m_unB);
+				return sResult;
+			}
+			default           : return _T("auto");
+			}
+		}
+		virtual CString   ToStringNoAlpha  () const
+		{
+			switch(this->m_eValue)
+			{
+			case hexcolorAuto : return _T("auto");
+			case hexcolorRGB  :
+			{
+				CString sResult =_T("");//alfa
 				if(m_unR > 0x0f)
 					sResult.AppendFormat(_T("%X"), m_unR);
 				else

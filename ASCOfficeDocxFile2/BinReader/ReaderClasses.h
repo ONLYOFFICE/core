@@ -24,6 +24,7 @@ public:
 	int PageNumStart;
 	CString sectPrChange;
 	CString cols;
+	CString pgBorders;
 
 	bool bHeader;
 	bool bFooter;
@@ -89,6 +90,8 @@ public:
 		if(bFooter)
 			sRes.AppendFormat(_T(" w:footer=\"%d\""), nMFooter);
 		sRes.Append(_T("/>"));
+		if(!pgBorders.IsEmpty())
+			sRes.Append(pgBorders);
 		if(bPageNumStart)
 			sRes.AppendFormat(_T("<w:pgNumType w:start=\"%d\"/>"), PageNumStart);
 		if(!cols.IsEmpty())

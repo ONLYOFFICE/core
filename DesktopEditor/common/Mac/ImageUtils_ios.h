@@ -9,11 +9,11 @@
 #ifndef _IMAGE_UTILS_H_
 #define _IMAGE_UTILS_H_
 
+#if defined(_IOS) || defined(DEBUG)
+
 #import <Foundation/Foundation.h>
 #import <GLKit/GLKView.h>
 #import <UIKit/UIKit.h>
-
-#include "BgraFrame.h"
 
 namespace ImageUtils_IOS
 {
@@ -56,5 +56,7 @@ namespace ImageUtils_IOS
         return ret;
     }
 }
+
+#endif
 
 #endif

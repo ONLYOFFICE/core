@@ -1171,6 +1171,12 @@ public:
 			res = Read1(length, &Binary_pPrReader::ReadCols, this, &oCols);
 			pSectPr->cols = oCols.toXML();
 		}
+		else if( c_oSerProp_secPrType::pgBorders == type )
+		{
+			OOX::Logic::CPageBorders pgBorders;
+			res = Read1(length, &Binary_pPrReader::ReadPageBorders, this, &pgBorders);
+			pSectPr->pgBorders = pgBorders.toXML();
+		}
 		else
 			res = c_oSerConstants::ReadUnknown;
 		return res;
@@ -1376,6 +1382,117 @@ public:
 		{
 			pCol->m_oW.Init();
 			pCol->m_oW->FromTwips(m_oBufferedStream.GetLong());
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int ReadPageBorders(BYTE type, long length, void* poResult)
+	{
+		OOX::Logic::CPageBorders* pPageBorders = static_cast<OOX::Logic::CPageBorders*>(poResult);
+		int res = c_oSerConstants::ReadOk;
+		if( c_oSerPageBorders::Display == type )
+		{
+			pPageBorders->m_oDisplay.Init();
+			pPageBorders->m_oDisplay->SetValue((SimpleTypes::EPageBorderDisplay)m_oBufferedStream.GetChar());
+		}
+		else if( c_oSerPageBorders::OffsetFrom == type )
+		{
+			pPageBorders->m_oOffsetFrom.Init();
+			pPageBorders->m_oOffsetFrom->SetValue((SimpleTypes::EPageBorderOffset)m_oBufferedStream.GetChar());
+		}
+		else if( c_oSerPageBorders::ZOrder == type )
+		{
+			pPageBorders->m_oZOrder.Init();
+			pPageBorders->m_oZOrder->SetValue((SimpleTypes::EPageBorderZOrder)m_oBufferedStream.GetChar());
+		}
+		else if( c_oSerPageBorders::Bottom == type )
+		{
+			pPageBorders->m_oBottom.Init();
+			res = Read2(length, &Binary_pPrReader::ReadPageBorder, this, pPageBorders->m_oBottom.GetPointer());
+		}
+		else if( c_oSerPageBorders::Left == type )
+		{
+			pPageBorders->m_oLeft.Init();
+			res = Read2(length, &Binary_pPrReader::ReadPageBorder, this, pPageBorders->m_oLeft.GetPointer());
+		}
+		else if( c_oSerPageBorders::Right == type )
+		{
+			pPageBorders->m_oRight.Init();
+			res = Read2(length, &Binary_pPrReader::ReadPageBorder, this, pPageBorders->m_oRight.GetPointer());
+		}
+		else if( c_oSerPageBorders::Top == type )
+		{
+			pPageBorders->m_oTop.Init();
+			res = Read2(length, &Binary_pPrReader::ReadPageBorder, this, pPageBorders->m_oTop.GetPointer());
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int ReadPageBorder(BYTE type, long length, void* poResult)
+	{
+		ComplexTypes::Word::CPageBorder* pPageBorder = static_cast<ComplexTypes::Word::CPageBorder*>(poResult);
+		int res = c_oSerConstants::ReadOk;
+		if( c_oSerPageBorders::Color == type )
+		{
+			docRGB color = oBinary_CommonReader2.ReadColor();
+			pPageBorder->m_oColor.Init();
+			pPageBorder->m_oColor->SetValue(SimpleTypes::hexcolorRGB);
+			pPageBorder->m_oColor->Set_R(color.R);
+			pPageBorder->m_oColor->Set_G(color.G);
+			pPageBorder->m_oColor->Set_B(color.B);
+		}
+		else if( c_oSerPageBorders::ColorTheme == type )
+		{
+			CThemeColor themeColor;
+			oBinary_CommonReader2.ReadThemeColor(length, themeColor);
+			if(themeColor.Auto)
+			{
+				pPageBorder->m_oColor.Init();
+				pPageBorder->m_oColor->SetValue(SimpleTypes::hexcolorAuto);
+			}
+			if(themeColor.bColor)
+			{
+				pPageBorder->m_oThemeColor.Init();
+				pPageBorder->m_oThemeColor->SetValue((SimpleTypes::EThemeColor)themeColor.Color);
+			}
+			if(themeColor.bShade)
+			{
+				pPageBorder->m_oThemeShade.Init();
+				pPageBorder->m_oThemeShade->SetValue(themeColor.Shade);
+			}
+			if(themeColor.bTint)
+			{
+				pPageBorder->m_oThemeTint.Init();
+				pPageBorder->m_oThemeTint->SetValue(themeColor.Tint);
+			}
+
+		}
+		else if( c_oSerPageBorders::Space == type )
+		{
+			pPageBorder->m_oSpace.Init();
+			pPageBorder->m_oSpace->SetValue(m_oBufferedStream.GetLong());
+		}
+		else if( c_oSerPageBorders::Sz == type )
+		{
+			pPageBorder->m_oSz.Init();
+			pPageBorder->m_oSz->SetValue(m_oBufferedStream.GetLong());
+		}
+		else if( c_oSerPageBorders::Val == type )
+		{
+			pPageBorder->m_oVal.Init();
+			pPageBorder->m_oVal->SetValue((SimpleTypes::EBorder)m_oBufferedStream.GetLong());
+		}
+		else if( c_oSerPageBorders::Frame == type )
+		{
+			pPageBorder->m_oFrame.Init();
+			pPageBorder->m_oFrame->FromBool(m_oBufferedStream.GetBool());
+		}
+		else if( c_oSerPageBorders::Shadow == type )
+		{
+			pPageBorder->m_oShadow.Init();
+			pPageBorder->m_oShadow->FromBool(m_oBufferedStream.GetBool());
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;

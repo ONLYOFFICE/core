@@ -404,14 +404,14 @@ namespace ComplexTypes
 				if ( m_oColor.IsInit() )
 				{
 					sResult += _T("w:color=\"");
-					sResult += m_oColor->ToString();
+					sResult += m_oColor->ToStringNoAlpha();
 					sResult += _T("\" ");
 				}
 
 				if ( m_oFrame.IsInit() )
 				{
 					sResult += _T("w:frame=\"");
-					sResult += m_oFrame->ToString();
+					sResult += m_oFrame->ToString2(SimpleTypes::onofftostring1);
 					sResult += _T("\" ");
 				}
 				if ( m_oId.IsInit() )
@@ -424,7 +424,7 @@ namespace ComplexTypes
 				if ( m_oShadow.IsInit() )
 				{
 					sResult += _T("w:shadow=\"");
-					sResult += m_oShadow->ToString();
+					sResult += m_oShadow->ToString2(SimpleTypes::onofftostring1);
 					sResult += _T("\" ");
 				}
 
@@ -561,14 +561,14 @@ namespace ComplexTypes
 				if ( m_oColor.IsInit() )
 				{
 					sResult += _T("w:color=\"");
-					sResult += m_oColor->ToString();
+					sResult += m_oColor->ToStringNoAlpha();
 					sResult += _T("\" ");
 				}
 
 				if ( m_oFrame.IsInit() )
 				{
 					sResult += _T("w:frame=\"");
-					sResult += m_oFrame->ToString();
+					sResult += m_oFrame->ToString2(SimpleTypes::onofftostring1);
 					sResult += _T("\" ");
 				}
 				if ( m_oId.IsInit() )
@@ -581,7 +581,7 @@ namespace ComplexTypes
 				if ( m_oShadow.IsInit() )
 				{
 					sResult += _T("w:shadow=\"");
-					sResult += m_oShadow->ToString();
+					sResult += m_oShadow->ToString2(SimpleTypes::onofftostring1);
 					sResult += _T("\" ");
 				}
 
@@ -700,14 +700,14 @@ namespace ComplexTypes
 				if ( m_oColor.IsInit() )
 				{
 					sResult += _T("w:color=\"");
-					sResult += m_oColor->ToString();
+					sResult += m_oColor->ToStringNoAlpha();
 					sResult += _T("\" ");
 				}
 
 				if ( m_oFrame.IsInit() )
 				{
 					sResult += _T("w:frame=\"");
-					sResult += m_oFrame->ToString();
+					sResult += m_oFrame->ToString2(SimpleTypes::onofftostring1);
 					sResult += _T("\" ");
 				}
 				if ( m_oId.IsInit() )
@@ -720,7 +720,7 @@ namespace ComplexTypes
 				if ( m_oShadow.IsInit() )
 				{
 					sResult += _T("w:shadow=\"");
-					sResult += m_oShadow->ToString();
+					sResult += m_oShadow->ToString2(SimpleTypes::onofftostring1);
 					sResult += _T("\" ");
 				}
 

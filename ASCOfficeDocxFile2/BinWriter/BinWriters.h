@@ -1297,6 +1297,12 @@ namespace BinDocxRW
 					WriteColumns(pSectPr->m_oCols.get());
 					m_oBcw.WriteItemEnd(nCurPos);
 				}
+				if(pSectPr->m_oPgBorders.IsInit())
+				{
+					nCurPos = m_oBcw.WriteItemStart(c_oSerProp_secPrType::pgBorders);
+					WritePageBorders(pSectPr->m_oPgBorders.get());
+					m_oBcw.WriteItemEnd(nCurPos);
+				}
 			};
 			void WritePageSettings(OOX::Logic::CSectionProperty* pSectPr)
 			{
@@ -1517,6 +1523,92 @@ namespace BinDocxRW
 					m_oBcw.WriteItemWithLengthEnd(nCurPos);
 				}
 			}
+			void WritePageBorders(const OOX::Logic::CPageBorders& PageBorders)
+			{
+				int nCurPos = 0;
+				if(PageBorders.m_oDisplay.IsInit())
+				{
+					nCurPos = m_oBcw.WriteItemStart(c_oSerPageBorders::Display);
+					m_oBcw.m_oStream.WriteBYTE(PageBorders.m_oDisplay->GetValue());
+					m_oBcw.WriteItemWithLengthEnd(nCurPos);
+				}
+				if(PageBorders.m_oOffsetFrom.IsInit())
+				{
+					nCurPos = m_oBcw.WriteItemStart(c_oSerPageBorders::OffsetFrom);
+					m_oBcw.m_oStream.WriteBYTE(PageBorders.m_oOffsetFrom->GetValue());
+					m_oBcw.WriteItemWithLengthEnd(nCurPos);
+				}
+				if(PageBorders.m_oZOrder.IsInit())
+				{
+					nCurPos = m_oBcw.WriteItemStart(c_oSerPageBorders::ZOrder);
+					m_oBcw.m_oStream.WriteBYTE(PageBorders.m_oZOrder->GetValue());
+					m_oBcw.WriteItemWithLengthEnd(nCurPos);
+				}
+				if(PageBorders.m_oBottom.IsInit())
+				{
+					nCurPos = m_oBcw.WriteItemStart(c_oSerPageBorders::Bottom);
+					WritePageBorder(PageBorders.m_oBottom.get());
+					m_oBcw.WriteItemWithLengthEnd(nCurPos);
+				}
+				if(PageBorders.m_oLeft.IsInit())
+				{
+					nCurPos = m_oBcw.WriteItemStart(c_oSerPageBorders::Left);
+					WritePageBorder(PageBorders.m_oLeft.get());
+					m_oBcw.WriteItemWithLengthEnd(nCurPos);
+				}
+				if(PageBorders.m_oRight.IsInit())
+				{
+					nCurPos = m_oBcw.WriteItemStart(c_oSerPageBorders::Right);
+					WritePageBorder(PageBorders.m_oRight.get());
+					m_oBcw.WriteItemWithLengthEnd(nCurPos);
+				}
+				if(PageBorders.m_oTop.IsInit())
+				{
+					nCurPos = m_oBcw.WriteItemStart(c_oSerPageBorders::Top);
+					WritePageBorder(PageBorders.m_oTop.get());
+					m_oBcw.WriteItemWithLengthEnd(nCurPos);
+				}
+			};
+			void WritePageBorder(const ComplexTypes::Word::CPageBorder& pageBorder)
+			{
+				int nCurPos = 0;
+				if(pageBorder.m_oColor.IsInit())
+				{
+					m_oBcw.WriteColor(c_oSerPageBorders::Color, pageBorder.m_oColor.get());
+				}
+				m_oBcw.WriteThemeColor(c_oSerPageBorders::ColorTheme, pageBorder.m_oColor, pageBorder.m_oThemeColor, pageBorder.m_oThemeTint, pageBorder.m_oThemeShade);
+				if(pageBorder.m_oSpace.IsInit())
+				{
+					m_oBcw.m_oStream.WriteBYTE(c_oSerPageBorders::Space);
+					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
+					m_oBcw.m_oStream.WriteLONG(pageBorder.m_oSpace->GetValue());
+				}
+				if(pageBorder.m_oSz.IsInit())
+				{
+					m_oBcw.m_oStream.WriteBYTE(c_oSerPageBorders::Sz);
+					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
+					m_oBcw.m_oStream.WriteLONG(pageBorder.m_oSz->GetValue());
+				}
+				if(pageBorder.m_oVal.IsInit())
+				{
+					m_oBcw.m_oStream.WriteBYTE(c_oSerPageBorders::Val);
+					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
+					m_oBcw.m_oStream.WriteLONG(pageBorder.m_oVal.get().GetValue());
+				}
+				if(pageBorder.m_oFrame.IsInit())
+				{
+					m_oBcw.m_oStream.WriteBYTE(c_oSerPageBorders::Frame);
+					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+					m_oBcw.m_oStream.WriteBOOL(pageBorder.m_oFrame->ToBool());
+				}
+				if(pageBorder.m_oShadow.IsInit())
+				{
+					m_oBcw.m_oStream.WriteBYTE(c_oSerPageBorders::Shadow);
+					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+					m_oBcw.m_oStream.WriteBOOL(pageBorder.m_oShadow->ToBool());
+				}
+				//todo id
+			};
 	};
 	class Binary_tblPrWriter
 	{

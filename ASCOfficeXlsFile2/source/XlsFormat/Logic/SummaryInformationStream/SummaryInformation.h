@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Binary/BinSmartPointers.h>
+#include "../../Binary/BinSmartPointers.h"
 #include "Structures/PropertySetStream.h"
 
 namespace OLEPS

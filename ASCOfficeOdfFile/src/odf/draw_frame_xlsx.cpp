@@ -37,14 +37,9 @@ namespace odf_reader {
 
 void draw_g::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-	int i=0;
-	int size = content_.size();
-	while(true)
+	for (int i = 0 ; i < content_.size(); i++)
     {
-		if (i>=size)break;
-		office_element_ptr const & elm = content_[i];
-        elm->xlsx_convert(Context);
-		i++;
+        content_[i]->xlsx_convert(Context);
     }
 }
 void draw_frame::xlsx_convert(oox::xlsx_conversion_context & Context)

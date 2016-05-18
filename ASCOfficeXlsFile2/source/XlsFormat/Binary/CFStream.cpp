@@ -16,7 +16,7 @@ CFStream::CFStream(POLE::Stream* stream)
 {
 	if(NULL == stream)
 	{
-		throw;// EXCEPT::RT::CompoundFileFormatError("Wrong IStream pointer (NULL)");
+		return; // throw;EXCEPT::RT::CompoundFileFormatError("Wrong IStream pointer (NULL)");
 	}
 	stream_ = stream;
 }

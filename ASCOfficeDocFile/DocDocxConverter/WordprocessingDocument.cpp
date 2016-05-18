@@ -8,6 +8,21 @@
 
 namespace ImageHelper
 {
+	typedef struct ___tagBITMAPINFOHEADER 
+	{
+		DWORD      biSize;
+		LONG       biWidth;
+		LONG       biHeight;
+		WORD       biPlanes;
+		WORD       biBitCount;
+		DWORD      biCompression;
+		DWORD      biSizeImage;
+		LONG       biXPelsPerMeter;
+		LONG       biYPelsPerMeter;
+		DWORD      biClrUsed;
+		DWORD      biClrImportant;
+	} ___BITMAPINFOHEADER;
+
 	inline static int CompareStrings (const wchar_t* str1, const wchar_t* str2)
 	{
 		CString cstr1; cstr1 = str1;
@@ -21,11 +36,11 @@ namespace ImageHelper
 	inline bool SaveImageToFileFromDIB(unsigned char* buffer, int size, const std::wstring& file)
 	{
 		bool result = false;
-		const BITMAPINFOHEADER* info =	(BITMAPINFOHEADER*)buffer;
+		const ___BITMAPINFOHEADER* info =	(___BITMAPINFOHEADER*)buffer;
 
 		if (NULL != info && info->biSize == 40)
 		{
-			unsigned char* pBgraData = buffer + sizeof(BITMAPINFOHEADER);
+			unsigned char* pBgraData = buffer + sizeof(___BITMAPINFOHEADER);
 			
 			int nWidth	= info->biWidth;
 			int nHeight = info->biHeight;

@@ -307,7 +307,9 @@ void chart_build::oox_convert(oox::oox_chart_context & chart_context)
 
 		calc_cache_series (domain_cell_range_adress_,	domain_cash);
 		calc_cache_series (s.cell_range_address_,		cell_cash);
-		calc_cache_series (categories_[0],				cat_cash);
+		
+		if (categories_.size() >0)
+			calc_cache_series (categories_[0],	cat_cash);
 
 		if (domain_cell_range_adress_.empty() == false) 
 		{

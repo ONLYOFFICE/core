@@ -25,16 +25,7 @@
 		17C8DEC71ACD696100902C85 /* X2tConverter.mm in Sources */ = {isa = PBXBuildFile; fileRef = 17C27A191AC2DB3D00E1D003 /* X2tConverter.mm */; };
 		17C8DECC1ACD696100902C85 /* X2tConverter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17C27A171AC2DB3D00E1D003 /* X2tConverter.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		69415F271CB51C37003E771B /* libOfficeUtils.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69415F241CB51C2A003E771B /* libOfficeUtils.a */; };
-		69415F301CB51D39003E771B /* libPPTXFormatLib_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69415F2D1CB51D2A003E771B /* libPPTXFormatLib_ios.a */; };
 		69415F311CB51D41003E771B /* libASCOfficeDocxFile2Lib_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 17E17F5B1AC457CD00BEA2EA /* libASCOfficeDocxFile2Lib_ios.a */; };
-		69415F6A1CB51DDB003E771B /* libDocxFormatLib_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69415F671CB51DCF003E771B /* libDocxFormatLib_ios.a */; };
-		69415F8D1CB51E37003E771B /* libgraphics_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69415F8A1CB51E29003E771B /* libgraphics_ios.a */; };
-		69415F901CB51E43003E771B /* libraster_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69415F841CB51E24003E771B /* libraster_ios.a */; };
-		69415F931CB51E4C003E771B /* libfontengine_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69415F7E1CB51E1F003E771B /* libfontengine_ios.a */; };
-		69415F961CB51E5A003E771B /* libagg_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69415F781CB51E1B003E771B /* libagg_ios.a */; };
-		69415F971CB51E69003E771B /* libmetafile_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69415F701CB51E0C003E771B /* libmetafile_ios.a */; };
-		69415FAC1CB51ED5003E771B /* libcximage_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69415FA91CB51EC9003E771B /* libcximage_ios.a */; };
-		69415FAD1CB51F4F003E771B /* libfreetype.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69415F9E1CB51E86003E771B /* libfreetype.a */; };
 		69415FE01CB52455003E771B /* libmng_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69415FD41CB5243F003E771B /* libmng_ios.a */; };
 		69415FE31CB52461003E771B /* libpng_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69415FD71CB5243F003E771B /* libpng_ios.a */; };
 		69415FE61CB52470003E771B /* libraw_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69415FDA1CB5243F003E771B /* libraw_ios.a */; };
@@ -44,6 +35,15 @@
 		69415FF21CB5249A003E771B /* libjbig_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69415FCB1CB5243F003E771B /* libjbig_ios.a */; };
 		69415FF51CB524A3003E771B /* libjasper_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69415FC81CB5243F003E771B /* libjasper_ios.a */; };
 		698AF4C31C0745980080D889 /* libicu.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 698AF4C01C0740960080D889 /* libicu.a */; };
+		69DA32F11CEE100E00E10AF0 /* libagg_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DA323D1CEE092A00E10AF0 /* libagg_ios.a */; };
+		69DA32F21CEE100E00E10AF0 /* libcximage_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DA322B1CEE087D00E10AF0 /* libcximage_ios.a */; };
+		69DA32F31CEE100E00E10AF0 /* libDocxFormatLib_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DA325B1CEE099000E10AF0 /* libDocxFormatLib_ios.a */; };
+		69DA32F41CEE100E00E10AF0 /* libfontengine_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DA32431CEE094300E10AF0 /* libfontengine_ios.a */; };
+		69DA32F51CEE100E00E10AF0 /* libfreetype_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DA32551CEE095900E10AF0 /* libfreetype_ios.a */; };
+		69DA32F61CEE100E00E10AF0 /* libgraphics_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DA324F1CEE095100E10AF0 /* libgraphics_ios.a */; };
+		69DA32F71CEE100E00E10AF0 /* libmetafile_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DA32311CEE08DD00E10AF0 /* libmetafile_ios.a */; };
+		69DA32F81CEE100E00E10AF0 /* libPPTXFormatLib_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DA32611CEE09BB00E10AF0 /* libPPTXFormatLib_ios.a */; };
+		69DA32F91CEE100E00E10AF0 /* libraster_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DA32491CEE094A00E10AF0 /* libraster_ios.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -88,132 +88,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 69676CA81CA58B7400D7A1D1;
 			remoteInfo = OfficeUtils;
-		};
-		69415F2C1CB51D2A003E771B /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 69415F281CB51D2A003E771B /* PPTXFormatLib.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 17C1FE8B1ACC429D006B99B3;
-			remoteInfo = PPTXFormatLib;
-		};
-		69415F2E1CB51D34003E771B /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 69415F281CB51D2A003E771B /* PPTXFormatLib.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 17C1FCA31ACC429D006B99B3;
-			remoteInfo = PPTXFormatLib;
-		};
-		69415F661CB51DCF003E771B /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 69415F621CB51DCF003E771B /* DocxFormatLib.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 17C1FC9C1ACC4250006B99B3;
-			remoteInfo = DocxFormatLib;
-		};
-		69415F681CB51DD7003E771B /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 69415F621CB51DCF003E771B /* DocxFormatLib.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 17C1FB8E1ACC4250006B99B3;
-			remoteInfo = DocxFormatLib;
-		};
-		69415F6F1CB51E0C003E771B /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 69415F6B1CB51E0B003E771B /* metafile.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 17A762DB1B0F355E0046BC0B;
-			remoteInfo = metafile;
-		};
-		69415F711CB51E13003E771B /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 69415F6B1CB51E0B003E771B /* metafile.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 17A762D41B0F355E0046BC0B;
-			remoteInfo = metafile;
-		};
-		69415F771CB51E1B003E771B /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 69415F731CB51E1B003E771B /* agg.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 17C1FFC91ACC4B21006B99B3;
-			remoteInfo = agg;
-		};
-		69415F7D1CB51E1F003E771B /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 69415F791CB51E1F003E771B /* fontengine.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 17C1FF201ACC4AF7006B99B3;
-			remoteInfo = fontengine;
-		};
-		69415F831CB51E24003E771B /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 69415F7F1CB51E24003E771B /* raster.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 17C1FF0A1ACC4AB0006B99B3;
-			remoteInfo = raster;
-		};
-		69415F891CB51E29003E771B /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 69415F851CB51E29003E771B /* graphics.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 17C1FEFE1ACC4A67006B99B3;
-			remoteInfo = graphics;
-		};
-		69415F8B1CB51E33003E771B /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 69415F851CB51E29003E771B /* graphics.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 17C1FECF1ACC4A67006B99B3;
-			remoteInfo = graphics;
-		};
-		69415F8E1CB51E3D003E771B /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 69415F7F1CB51E24003E771B /* raster.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 17C1FEFF1ACC4AB0006B99B3;
-			remoteInfo = raster;
-		};
-		69415F911CB51E48003E771B /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 69415F791CB51E1F003E771B /* fontengine.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 17C1FF0B1ACC4AF7006B99B3;
-			remoteInfo = fontengine;
-		};
-		69415F941CB51E54003E771B /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 69415F731CB51E1B003E771B /* agg.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 17C1FF211ACC4B21006B99B3;
-			remoteInfo = agg;
-		};
-		69415F9D1CB51E86003E771B /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 69415F981CB51E86003E771B /* freetype.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 17D914051AC59C860096D788;
-			remoteInfo = freetype;
-		};
-		69415FA11CB51E8F003E771B /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 69415F981CB51E86003E771B /* freetype.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 17C100411ACC4BC4006B99B3;
-			remoteInfo = freetype_ios;
-		};
-		69415FA81CB51EC9003E771B /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 69415FA41CB51EC8003E771B /* cximage.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 17C100221ACC4B40006B99B3;
-			remoteInfo = cximage;
-		};
-		69415FAA1CB51ED0003E771B /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 69415FA41CB51EC8003E771B /* cximage.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 17C1FFCA1ACC4B40006B99B3;
-			remoteInfo = cximage;
 		};
 		69415FC71CB5243F003E771B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -341,6 +215,132 @@
 			remoteGlobalIDString = 1732417F1BBECF8400E67992;
 			remoteInfo = icu;
 		};
+		69DA322A1CEE087D00E10AF0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69DA32261CEE087D00E10AF0 /* cximage.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 17C100221ACC4B40006B99B3;
+			remoteInfo = cximage;
+		};
+		69DA32301CEE08DD00E10AF0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69DA322C1CEE08DC00E10AF0 /* metafile.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 17A762DB1B0F355E0046BC0B;
+			remoteInfo = metafile;
+		};
+		69DA323C1CEE092A00E10AF0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69DA32381CEE092900E10AF0 /* agg.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 17C1FFC91ACC4B21006B99B3;
+			remoteInfo = agg;
+		};
+		69DA32421CEE094300E10AF0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69DA323E1CEE094300E10AF0 /* fontengine.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 17C1FF201ACC4AF7006B99B3;
+			remoteInfo = fontengine;
+		};
+		69DA32481CEE094A00E10AF0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69DA32441CEE094A00E10AF0 /* raster.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 17C1FF0A1ACC4AB0006B99B3;
+			remoteInfo = raster;
+		};
+		69DA324E1CEE095100E10AF0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69DA324A1CEE095000E10AF0 /* graphics.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 17C1FEFE1ACC4A67006B99B3;
+			remoteInfo = graphics;
+		};
+		69DA32541CEE095900E10AF0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69DA32501CEE095900E10AF0 /* freetype.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 17C1008A1ACC4BC4006B99B3;
+			remoteInfo = freetype;
+		};
+		69DA325A1CEE099000E10AF0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69DA32561CEE099000E10AF0 /* DocxFormatLib.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 17C1FC9C1ACC4250006B99B3;
+			remoteInfo = DocxFormatLib;
+		};
+		69DA32601CEE09BB00E10AF0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69DA325C1CEE09BB00E10AF0 /* PPTXFormatLib.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 17C1FE8B1ACC429D006B99B3;
+			remoteInfo = PPTXFormatLib;
+		};
+		69DA32D61CEE0FF300E10AF0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69DA324A1CEE095000E10AF0 /* graphics.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 17C1FECF1ACC4A67006B99B3;
+			remoteInfo = graphics;
+		};
+		69DA32E11CEE0FF600E10AF0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69DA32441CEE094A00E10AF0 /* raster.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 17C1FEFF1ACC4AB0006B99B3;
+			remoteInfo = raster;
+		};
+		69DA32E31CEE0FF800E10AF0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69DA323E1CEE094300E10AF0 /* fontengine.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 17C1FF0B1ACC4AF7006B99B3;
+			remoteInfo = fontengine;
+		};
+		69DA32E51CEE0FFB00E10AF0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69DA32381CEE092900E10AF0 /* agg.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 17C1FF211ACC4B21006B99B3;
+			remoteInfo = agg;
+		};
+		69DA32E71CEE0FFD00E10AF0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69DA322C1CEE08DC00E10AF0 /* metafile.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 17A762D41B0F355E0046BC0B;
+			remoteInfo = metafile;
+		};
+		69DA32E91CEE0FFF00E10AF0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69DA32261CEE087D00E10AF0 /* cximage.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 17C1FFCA1ACC4B40006B99B3;
+			remoteInfo = cximage;
+		};
+		69DA32EB1CEE100200E10AF0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69DA32501CEE095900E10AF0 /* freetype.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 17C100411ACC4BC4006B99B3;
+			remoteInfo = freetype;
+		};
+		69DA32ED1CEE100400E10AF0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69DA325C1CEE09BB00E10AF0 /* PPTXFormatLib.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 17C1FCA31ACC429D006B99B3;
+			remoteInfo = PPTXFormatLib;
+		};
+		69DA32EF1CEE100700E10AF0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69DA32561CEE099000E10AF0 /* DocxFormatLib.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 17C1FB8E1ACC4250006B99B3;
+			remoteInfo = DocxFormatLib;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -350,15 +350,6 @@
 		17C8DED01ACD696100902C85 /* libX2tConverter.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libX2tConverter.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		17E17F561AC457CD00BEA2EA /* ASCOfficeDocxFile2Lib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ASCOfficeDocxFile2Lib.xcodeproj; path = ../../../../ASCOfficeDocxFile2/Mac/ASCOfficeDocxFile2Lib.xcodeproj; sourceTree = "<group>"; };
 		69415F1F1CB51C29003E771B /* OfficeUtils.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = OfficeUtils.xcodeproj; path = ../../../../OfficeUtils/OfficeUtils.xcodeproj; sourceTree = "<group>"; };
-		69415F281CB51D2A003E771B /* PPTXFormatLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = PPTXFormatLib.xcodeproj; path = /Volumes/GIT/components/Common/DocxFormat/Mac/../../../ASCOfficePPTXFile/PPTXLib/Mac/PPTXFormatLib.xcodeproj; sourceTree = "<absolute>"; };
-		69415F621CB51DCF003E771B /* DocxFormatLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = DocxFormatLib.xcodeproj; path = /Volumes/GIT/components/ASCOfficeDocxFile2/Mac/../../Common/DocxFormat/Mac/DocxFormatLib.xcodeproj; sourceTree = "<absolute>"; };
-		69415F6B1CB51E0B003E771B /* metafile.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = metafile.xcodeproj; path = /Volumes/GIT/components/ASCOfficePPTXFile/PPTXLib/Mac/../../../DesktopEditor/mac_build/metafile/metafile.xcodeproj; sourceTree = "<absolute>"; };
-		69415F731CB51E1B003E771B /* agg.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = agg.xcodeproj; path = /Volumes/GIT/components/ASCOfficePPTXFile/PPTXLib/Mac/../../../DesktopEditor/mac_build/agg/agg.xcodeproj; sourceTree = "<absolute>"; };
-		69415F791CB51E1F003E771B /* fontengine.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = fontengine.xcodeproj; path = /Volumes/GIT/components/ASCOfficePPTXFile/PPTXLib/Mac/../../../DesktopEditor/mac_build/fontengine/fontengine.xcodeproj; sourceTree = "<absolute>"; };
-		69415F7F1CB51E24003E771B /* raster.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = raster.xcodeproj; path = /Volumes/GIT/components/ASCOfficePPTXFile/PPTXLib/Mac/../../../DesktopEditor/mac_build/raster/raster.xcodeproj; sourceTree = "<absolute>"; };
-		69415F851CB51E29003E771B /* graphics.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = graphics.xcodeproj; path = /Volumes/GIT/components/ASCOfficePPTXFile/PPTXLib/Mac/../../../DesktopEditor/mac_build/graphics/graphics.xcodeproj; sourceTree = "<absolute>"; };
-		69415F981CB51E86003E771B /* freetype.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = freetype.xcodeproj; path = /Volumes/GIT/components/DesktopEditor/mac_build/fontengine/../freetype/freetype.xcodeproj; sourceTree = "<absolute>"; };
-		69415FA41CB51EC8003E771B /* cximage.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = cximage.xcodeproj; path = /Volumes/GIT/components/ASCOfficePPTXFile/PPTXLib/Mac/../../../DesktopEditor/mac_build/cximage/cximage.xcodeproj; sourceTree = "<absolute>"; };
 		69415FAE1CB5243F003E771B /* mng.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = mng.xcodeproj; path = ../../../../DesktopEditor/mac_build/cximage/mng/mng.xcodeproj; sourceTree = "<group>"; };
 		69415FB11CB5243F003E771B /* png.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = png.xcodeproj; path = ../../../../DesktopEditor/mac_build/cximage/png/png.xcodeproj; sourceTree = "<group>"; };
 		69415FB41CB5243F003E771B /* raw.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = raw.xcodeproj; path = ../../../../DesktopEditor/mac_build/cximage/raw/raw.xcodeproj; sourceTree = "<group>"; };
@@ -368,6 +359,15 @@
 		69415FC01CB5243F003E771B /* jbig.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = jbig.xcodeproj; path = ../../../../DesktopEditor/mac_build/cximage/jbig/jbig.xcodeproj; sourceTree = "<group>"; };
 		69415FC31CB5243F003E771B /* jasper.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = jasper.xcodeproj; path = ../../../../DesktopEditor/mac_build/cximage/jasper/jasper.xcodeproj; sourceTree = "<group>"; };
 		698AF4BB1C0740960080D889 /* icu.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = icu.xcodeproj; path = ../../../../UnicodeConverter/icubuilds/mac/icu/icu.xcodeproj; sourceTree = "<group>"; };
+		69DA32261CEE087D00E10AF0 /* cximage.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = cximage.xcodeproj; path = ../../../../DesktopEditor/mac_build/cximage/cximage.xcodeproj; sourceTree = "<group>"; };
+		69DA322C1CEE08DC00E10AF0 /* metafile.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = metafile.xcodeproj; path = ../../../../DesktopEditor/mac_build/metafile/metafile.xcodeproj; sourceTree = "<group>"; };
+		69DA32381CEE092900E10AF0 /* agg.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = agg.xcodeproj; path = ../../../../DesktopEditor/mac_build/agg/agg.xcodeproj; sourceTree = "<group>"; };
+		69DA323E1CEE094300E10AF0 /* fontengine.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = fontengine.xcodeproj; path = ../../../../DesktopEditor/mac_build/fontengine/fontengine.xcodeproj; sourceTree = "<group>"; };
+		69DA32441CEE094A00E10AF0 /* raster.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = raster.xcodeproj; path = ../../../../DesktopEditor/mac_build/raster/raster.xcodeproj; sourceTree = "<group>"; };
+		69DA324A1CEE095000E10AF0 /* graphics.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = graphics.xcodeproj; path = ../../../../DesktopEditor/mac_build/graphics/graphics.xcodeproj; sourceTree = "<group>"; };
+		69DA32501CEE095900E10AF0 /* freetype.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = freetype.xcodeproj; path = ../../../../DesktopEditor/mac_build/freetype/freetype.xcodeproj; sourceTree = "<group>"; };
+		69DA32561CEE099000E10AF0 /* DocxFormatLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = DocxFormatLib.xcodeproj; path = ../../../../Common/DocxFormat/Mac/DocxFormatLib.xcodeproj; sourceTree = "<group>"; };
+		69DA325C1CEE09BB00E10AF0 /* PPTXFormatLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = PPTXFormatLib.xcodeproj; path = ../../../../ASCOfficePPTXFile/PPTXLib/Mac/PPTXFormatLib.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -375,6 +375,15 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				69DA32F11CEE100E00E10AF0 /* libagg_ios.a in Frameworks */,
+				69DA32F21CEE100E00E10AF0 /* libcximage_ios.a in Frameworks */,
+				69DA32F31CEE100E00E10AF0 /* libDocxFormatLib_ios.a in Frameworks */,
+				69DA32F41CEE100E00E10AF0 /* libfontengine_ios.a in Frameworks */,
+				69DA32F51CEE100E00E10AF0 /* libfreetype_ios.a in Frameworks */,
+				69DA32F61CEE100E00E10AF0 /* libgraphics_ios.a in Frameworks */,
+				69DA32F71CEE100E00E10AF0 /* libmetafile_ios.a in Frameworks */,
+				69DA32F81CEE100E00E10AF0 /* libPPTXFormatLib_ios.a in Frameworks */,
+				69DA32F91CEE100E00E10AF0 /* libraster_ios.a in Frameworks */,
 				69415FF51CB524A3003E771B /* libjasper_ios.a in Frameworks */,
 				69415FF21CB5249A003E771B /* libjbig_ios.a in Frameworks */,
 				69415FEF1CB5248F003E771B /* libjpeg_ios.a in Frameworks */,
@@ -383,16 +392,7 @@
 				69415FE61CB52470003E771B /* libraw_ios.a in Frameworks */,
 				69415FE31CB52461003E771B /* libpng_ios.a in Frameworks */,
 				69415FE01CB52455003E771B /* libmng_ios.a in Frameworks */,
-				69415FAD1CB51F4F003E771B /* libfreetype.a in Frameworks */,
-				69415FAC1CB51ED5003E771B /* libcximage_ios.a in Frameworks */,
-				69415F971CB51E69003E771B /* libmetafile_ios.a in Frameworks */,
-				69415F961CB51E5A003E771B /* libagg_ios.a in Frameworks */,
-				69415F931CB51E4C003E771B /* libfontengine_ios.a in Frameworks */,
-				69415F901CB51E43003E771B /* libraster_ios.a in Frameworks */,
-				69415F8D1CB51E37003E771B /* libgraphics_ios.a in Frameworks */,
-				69415F6A1CB51DDB003E771B /* libDocxFormatLib_ios.a in Frameworks */,
 				69415F311CB51D41003E771B /* libASCOfficeDocxFile2Lib_ios.a in Frameworks */,
-				69415F301CB51D39003E771B /* libPPTXFormatLib_ios.a in Frameworks */,
 				69415F271CB51C37003E771B /* libOfficeUtils.a in Frameworks */,
 				698AF4C31C0745980080D889 /* libicu.a in Frameworks */,
 				177C43321AD7C0EF00055DD7 /* libcurl.a in Frameworks */,
@@ -421,18 +421,18 @@
 				69415FBD1CB5243F003E771B /* jpeg.xcodeproj */,
 				69415FC01CB5243F003E771B /* jbig.xcodeproj */,
 				69415FC31CB5243F003E771B /* jasper.xcodeproj */,
-				69415FA41CB51EC8003E771B /* cximage.xcodeproj */,
-				69415F981CB51E86003E771B /* freetype.xcodeproj */,
-				69415F851CB51E29003E771B /* graphics.xcodeproj */,
-				69415F7F1CB51E24003E771B /* raster.xcodeproj */,
-				69415F791CB51E1F003E771B /* fontengine.xcodeproj */,
-				69415F731CB51E1B003E771B /* agg.xcodeproj */,
-				69415F6B1CB51E0B003E771B /* metafile.xcodeproj */,
+				69DA324A1CEE095000E10AF0 /* graphics.xcodeproj */,
+				69DA32441CEE094A00E10AF0 /* raster.xcodeproj */,
+				69DA323E1CEE094300E10AF0 /* fontengine.xcodeproj */,
+				69DA32381CEE092900E10AF0 /* agg.xcodeproj */,
+				69DA322C1CEE08DC00E10AF0 /* metafile.xcodeproj */,
+				69DA32261CEE087D00E10AF0 /* cximage.xcodeproj */,
 				698AF4BB1C0740960080D889 /* icu.xcodeproj */,
 				177C432A1AD7C0D000055DD7 /* libcurl.xcodeproj */,
 				17E17F561AC457CD00BEA2EA /* ASCOfficeDocxFile2Lib.xcodeproj */,
-				69415F621CB51DCF003E771B /* DocxFormatLib.xcodeproj */,
-				69415F281CB51D2A003E771B /* PPTXFormatLib.xcodeproj */,
+				69DA32501CEE095900E10AF0 /* freetype.xcodeproj */,
+				69DA325C1CEE09BB00E10AF0 /* PPTXFormatLib.xcodeproj */,
+				69DA32561CEE099000E10AF0 /* DocxFormatLib.xcodeproj */,
 				69415F1F1CB51C29003E771B /* OfficeUtils.xcodeproj */,
 				17C27A161AC2DB3C00E1D003 /* SDK */,
 				17C27A151AC2DB3C00E1D003 /* Products */,
@@ -469,78 +469,6 @@
 			isa = PBXGroup;
 			children = (
 				69415F241CB51C2A003E771B /* libOfficeUtils.a */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		69415F291CB51D2A003E771B /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				69415F2D1CB51D2A003E771B /* libPPTXFormatLib_ios.a */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		69415F631CB51DCF003E771B /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				69415F671CB51DCF003E771B /* libDocxFormatLib_ios.a */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		69415F6C1CB51E0B003E771B /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				69415F701CB51E0C003E771B /* libmetafile_ios.a */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		69415F741CB51E1B003E771B /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				69415F781CB51E1B003E771B /* libagg_ios.a */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		69415F7A1CB51E1F003E771B /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				69415F7E1CB51E1F003E771B /* libfontengine_ios.a */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		69415F801CB51E24003E771B /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				69415F841CB51E24003E771B /* libraster_ios.a */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		69415F861CB51E29003E771B /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				69415F8A1CB51E29003E771B /* libgraphics_ios.a */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		69415F991CB51E86003E771B /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				69415F9E1CB51E86003E771B /* libfreetype.a */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		69415FA51CB51EC8003E771B /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				69415FA91CB51EC9003E771B /* libcximage_ios.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -617,6 +545,78 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		69DA32271CEE087D00E10AF0 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				69DA322B1CEE087D00E10AF0 /* libcximage_ios.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		69DA322D1CEE08DC00E10AF0 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				69DA32311CEE08DD00E10AF0 /* libmetafile_ios.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		69DA32391CEE092900E10AF0 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				69DA323D1CEE092A00E10AF0 /* libagg_ios.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		69DA323F1CEE094300E10AF0 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				69DA32431CEE094300E10AF0 /* libfontengine_ios.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		69DA32451CEE094A00E10AF0 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				69DA32491CEE094A00E10AF0 /* libraster_ios.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		69DA324B1CEE095000E10AF0 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				69DA324F1CEE095100E10AF0 /* libgraphics_ios.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		69DA32511CEE095900E10AF0 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				69DA32551CEE095900E10AF0 /* libfreetype_ios.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		69DA32571CEE099000E10AF0 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				69DA325B1CEE099000E10AF0 /* libDocxFormatLib_ios.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		69DA325D1CEE09BB00E10AF0 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				69DA32611CEE09BB00E10AF0 /* libPPTXFormatLib_ios.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -642,6 +642,15 @@
 			buildRules = (
 			);
 			dependencies = (
+				69DA32F01CEE100700E10AF0 /* PBXTargetDependency */,
+				69DA32EE1CEE100400E10AF0 /* PBXTargetDependency */,
+				69DA32EC1CEE100200E10AF0 /* PBXTargetDependency */,
+				69DA32EA1CEE0FFF00E10AF0 /* PBXTargetDependency */,
+				69DA32E81CEE0FFD00E10AF0 /* PBXTargetDependency */,
+				69DA32E61CEE0FFB00E10AF0 /* PBXTargetDependency */,
+				69DA32E41CEE0FF800E10AF0 /* PBXTargetDependency */,
+				69DA32E21CEE0FF600E10AF0 /* PBXTargetDependency */,
+				69DA32D71CEE0FF300E10AF0 /* PBXTargetDependency */,
 				69415FF41CB5249E003E771B /* PBXTargetDependency */,
 				69415FF11CB52495003E771B /* PBXTargetDependency */,
 				69415FEE1CB5248B003E771B /* PBXTargetDependency */,
@@ -650,15 +659,6 @@
 				69415FE51CB5246B003E771B /* PBXTargetDependency */,
 				69415FE21CB5245A003E771B /* PBXTargetDependency */,
 				69415FDF1CB5244D003E771B /* PBXTargetDependency */,
-				69415FAB1CB51ED0003E771B /* PBXTargetDependency */,
-				69415FA21CB51E8F003E771B /* PBXTargetDependency */,
-				69415F951CB51E54003E771B /* PBXTargetDependency */,
-				69415F921CB51E48003E771B /* PBXTargetDependency */,
-				69415F8F1CB51E3D003E771B /* PBXTargetDependency */,
-				69415F8C1CB51E33003E771B /* PBXTargetDependency */,
-				69415F721CB51E13003E771B /* PBXTargetDependency */,
-				69415F691CB51DD7003E771B /* PBXTargetDependency */,
-				69415F2F1CB51D34003E771B /* PBXTargetDependency */,
 				69415F261CB51C32003E771B /* PBXTargetDependency */,
 				698AF4C21C0745930080D889 /* PBXTargetDependency */,
 				177C43311AD7C0E400055DD7 /* PBXTargetDependency */,
@@ -690,32 +690,32 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = 69415F741CB51E1B003E771B /* Products */;
-					ProjectRef = 69415F731CB51E1B003E771B /* agg.xcodeproj */;
+					ProductGroup = 69DA32391CEE092900E10AF0 /* Products */;
+					ProjectRef = 69DA32381CEE092900E10AF0 /* agg.xcodeproj */;
 				},
 				{
 					ProductGroup = 17E17F571AC457CD00BEA2EA /* Products */;
 					ProjectRef = 17E17F561AC457CD00BEA2EA /* ASCOfficeDocxFile2Lib.xcodeproj */;
 				},
 				{
-					ProductGroup = 69415FA51CB51EC8003E771B /* Products */;
-					ProjectRef = 69415FA41CB51EC8003E771B /* cximage.xcodeproj */;
+					ProductGroup = 69DA32271CEE087D00E10AF0 /* Products */;
+					ProjectRef = 69DA32261CEE087D00E10AF0 /* cximage.xcodeproj */;
 				},
 				{
-					ProductGroup = 69415F631CB51DCF003E771B /* Products */;
-					ProjectRef = 69415F621CB51DCF003E771B /* DocxFormatLib.xcodeproj */;
+					ProductGroup = 69DA32571CEE099000E10AF0 /* Products */;
+					ProjectRef = 69DA32561CEE099000E10AF0 /* DocxFormatLib.xcodeproj */;
 				},
 				{
-					ProductGroup = 69415F7A1CB51E1F003E771B /* Products */;
-					ProjectRef = 69415F791CB51E1F003E771B /* fontengine.xcodeproj */;
+					ProductGroup = 69DA323F1CEE094300E10AF0 /* Products */;
+					ProjectRef = 69DA323E1CEE094300E10AF0 /* fontengine.xcodeproj */;
 				},
 				{
-					ProductGroup = 69415F991CB51E86003E771B /* Products */;
-					ProjectRef = 69415F981CB51E86003E771B /* freetype.xcodeproj */;
+					ProductGroup = 69DA32511CEE095900E10AF0 /* Products */;
+					ProjectRef = 69DA32501CEE095900E10AF0 /* freetype.xcodeproj */;
 				},
 				{
-					ProductGroup = 69415F861CB51E29003E771B /* Products */;
-					ProjectRef = 69415F851CB51E29003E771B /* graphics.xcodeproj */;
+					ProductGroup = 69DA324B1CEE095000E10AF0 /* Products */;
+					ProjectRef = 69DA324A1CEE095000E10AF0 /* graphics.xcodeproj */;
 				},
 				{
 					ProductGroup = 698AF4BC1C0740960080D889 /* Products */;
@@ -742,8 +742,8 @@
 					ProjectRef = 69415FBA1CB5243F003E771B /* libpsd.xcodeproj */;
 				},
 				{
-					ProductGroup = 69415F6C1CB51E0B003E771B /* Products */;
-					ProjectRef = 69415F6B1CB51E0B003E771B /* metafile.xcodeproj */;
+					ProductGroup = 69DA322D1CEE08DC00E10AF0 /* Products */;
+					ProjectRef = 69DA322C1CEE08DC00E10AF0 /* metafile.xcodeproj */;
 				},
 				{
 					ProductGroup = 69415FAF1CB5243F003E771B /* Products */;
@@ -758,12 +758,12 @@
 					ProjectRef = 69415FB11CB5243F003E771B /* png.xcodeproj */;
 				},
 				{
-					ProductGroup = 69415F291CB51D2A003E771B /* Products */;
-					ProjectRef = 69415F281CB51D2A003E771B /* PPTXFormatLib.xcodeproj */;
+					ProductGroup = 69DA325D1CEE09BB00E10AF0 /* Products */;
+					ProjectRef = 69DA325C1CEE09BB00E10AF0 /* PPTXFormatLib.xcodeproj */;
 				},
 				{
-					ProductGroup = 69415F801CB51E24003E771B /* Products */;
-					ProjectRef = 69415F7F1CB51E24003E771B /* raster.xcodeproj */;
+					ProductGroup = 69DA32451CEE094A00E10AF0 /* Products */;
+					ProjectRef = 69DA32441CEE094A00E10AF0 /* raster.xcodeproj */;
 				},
 				{
 					ProductGroup = 69415FB51CB5243F003E771B /* Products */;
@@ -802,69 +802,6 @@
 			fileType = archive.ar;
 			path = libOfficeUtils.a;
 			remoteRef = 69415F231CB51C2A003E771B /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		69415F2D1CB51D2A003E771B /* libPPTXFormatLib_ios.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libPPTXFormatLib_ios.a;
-			remoteRef = 69415F2C1CB51D2A003E771B /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		69415F671CB51DCF003E771B /* libDocxFormatLib_ios.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libDocxFormatLib_ios.a;
-			remoteRef = 69415F661CB51DCF003E771B /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		69415F701CB51E0C003E771B /* libmetafile_ios.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libmetafile_ios.a;
-			remoteRef = 69415F6F1CB51E0C003E771B /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		69415F781CB51E1B003E771B /* libagg_ios.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libagg_ios.a;
-			remoteRef = 69415F771CB51E1B003E771B /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		69415F7E1CB51E1F003E771B /* libfontengine_ios.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libfontengine_ios.a;
-			remoteRef = 69415F7D1CB51E1F003E771B /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		69415F841CB51E24003E771B /* libraster_ios.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libraster_ios.a;
-			remoteRef = 69415F831CB51E24003E771B /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		69415F8A1CB51E29003E771B /* libgraphics_ios.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libgraphics_ios.a;
-			remoteRef = 69415F891CB51E29003E771B /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		69415F9E1CB51E86003E771B /* libfreetype.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libfreetype.a;
-			remoteRef = 69415F9D1CB51E86003E771B /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		69415FA91CB51EC9003E771B /* libcximage_ios.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libcximage_ios.a;
-			remoteRef = 69415FA81CB51EC9003E771B /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		69415FC81CB5243F003E771B /* libjasper_ios.a */ = {
@@ -930,6 +867,69 @@
 			remoteRef = 698AF4BF1C0740960080D889 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		69DA322B1CEE087D00E10AF0 /* libcximage_ios.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libcximage_ios.a;
+			remoteRef = 69DA322A1CEE087D00E10AF0 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		69DA32311CEE08DD00E10AF0 /* libmetafile_ios.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libmetafile_ios.a;
+			remoteRef = 69DA32301CEE08DD00E10AF0 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		69DA323D1CEE092A00E10AF0 /* libagg_ios.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libagg_ios.a;
+			remoteRef = 69DA323C1CEE092A00E10AF0 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		69DA32431CEE094300E10AF0 /* libfontengine_ios.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libfontengine_ios.a;
+			remoteRef = 69DA32421CEE094300E10AF0 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		69DA32491CEE094A00E10AF0 /* libraster_ios.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libraster_ios.a;
+			remoteRef = 69DA32481CEE094A00E10AF0 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		69DA324F1CEE095100E10AF0 /* libgraphics_ios.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libgraphics_ios.a;
+			remoteRef = 69DA324E1CEE095100E10AF0 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		69DA32551CEE095900E10AF0 /* libfreetype_ios.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libfreetype_ios.a;
+			remoteRef = 69DA32541CEE095900E10AF0 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		69DA325B1CEE099000E10AF0 /* libDocxFormatLib_ios.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libDocxFormatLib_ios.a;
+			remoteRef = 69DA325A1CEE099000E10AF0 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		69DA32611CEE09BB00E10AF0 /* libPPTXFormatLib_ios.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libPPTXFormatLib_ios.a;
+			remoteRef = 69DA32601CEE09BB00E10AF0 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 /* End PBXReferenceProxy section */
 
 /* Begin PBXShellScriptBuildPhase section */
@@ -975,51 +975,6 @@
 			name = OfficeUtils;
 			targetProxy = 69415F251CB51C32003E771B /* PBXContainerItemProxy */;
 		};
-		69415F2F1CB51D34003E771B /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = PPTXFormatLib;
-			targetProxy = 69415F2E1CB51D34003E771B /* PBXContainerItemProxy */;
-		};
-		69415F691CB51DD7003E771B /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = DocxFormatLib;
-			targetProxy = 69415F681CB51DD7003E771B /* PBXContainerItemProxy */;
-		};
-		69415F721CB51E13003E771B /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = metafile;
-			targetProxy = 69415F711CB51E13003E771B /* PBXContainerItemProxy */;
-		};
-		69415F8C1CB51E33003E771B /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = graphics;
-			targetProxy = 69415F8B1CB51E33003E771B /* PBXContainerItemProxy */;
-		};
-		69415F8F1CB51E3D003E771B /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = raster;
-			targetProxy = 69415F8E1CB51E3D003E771B /* PBXContainerItemProxy */;
-		};
-		69415F921CB51E48003E771B /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = fontengine;
-			targetProxy = 69415F911CB51E48003E771B /* PBXContainerItemProxy */;
-		};
-		69415F951CB51E54003E771B /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = agg;
-			targetProxy = 69415F941CB51E54003E771B /* PBXContainerItemProxy */;
-		};
-		69415FA21CB51E8F003E771B /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = freetype_ios;
-			targetProxy = 69415FA11CB51E8F003E771B /* PBXContainerItemProxy */;
-		};
-		69415FAB1CB51ED0003E771B /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = cximage;
-			targetProxy = 69415FAA1CB51ED0003E771B /* PBXContainerItemProxy */;
-		};
 		69415FDF1CB5244D003E771B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = mng;
@@ -1064,6 +1019,51 @@
 			isa = PBXTargetDependency;
 			name = icu;
 			targetProxy = 698AF4C11C0745930080D889 /* PBXContainerItemProxy */;
+		};
+		69DA32D71CEE0FF300E10AF0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = graphics;
+			targetProxy = 69DA32D61CEE0FF300E10AF0 /* PBXContainerItemProxy */;
+		};
+		69DA32E21CEE0FF600E10AF0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = raster;
+			targetProxy = 69DA32E11CEE0FF600E10AF0 /* PBXContainerItemProxy */;
+		};
+		69DA32E41CEE0FF800E10AF0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = fontengine;
+			targetProxy = 69DA32E31CEE0FF800E10AF0 /* PBXContainerItemProxy */;
+		};
+		69DA32E61CEE0FFB00E10AF0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = agg;
+			targetProxy = 69DA32E51CEE0FFB00E10AF0 /* PBXContainerItemProxy */;
+		};
+		69DA32E81CEE0FFD00E10AF0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = metafile;
+			targetProxy = 69DA32E71CEE0FFD00E10AF0 /* PBXContainerItemProxy */;
+		};
+		69DA32EA1CEE0FFF00E10AF0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = cximage;
+			targetProxy = 69DA32E91CEE0FFF00E10AF0 /* PBXContainerItemProxy */;
+		};
+		69DA32EC1CEE100200E10AF0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = freetype;
+			targetProxy = 69DA32EB1CEE100200E10AF0 /* PBXContainerItemProxy */;
+		};
+		69DA32EE1CEE100400E10AF0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = PPTXFormatLib;
+			targetProxy = 69DA32ED1CEE100400E10AF0 /* PBXContainerItemProxy */;
+		};
+		69DA32F01CEE100700E10AF0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = DocxFormatLib;
+			targetProxy = 69DA32EF1CEE100700E10AF0 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

@@ -11,19 +11,16 @@
 #include <iostream>
 #include <fstream>
 
-#include "../../../../ServerComponents/Common/DocxFormat/Source/SystemUtility/SystemUtility.h"
-#include "../../../../ServerComponents/ASCOfficeDocxFile2/DocWrapper/DocxSerializer.h"
-#include "../../../../ServerComponents/ASCOfficeDocxFile2/DocWrapper/XlsxSerializer.h"
-#include "../../../../ServerComponents/ASCOfficePPTXFile/ASCOfficePPTXFile.h"
-#include "../../../../ServerComponents/ASCOfficeUtils/ASCOfficeUtilsLib/OfficeUtils.h"
-#include "../../../../ServerComponents/Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"
-#include "../../../../ServerComponents/Common/DocxFormat/Source/XML/stringcommon.h"
-#include "../../../../ServerComponents/Common/DocxFormat/Source/XML/xmlutils.h"
-#include "../../../../ServerComponents/Common/OfficeFileErrorDescription.h"
-#include "../../../../ServerComponents/Common/OfficeFileFormats.h"
-//#include "../../../../ServerComponents/DesktopEditor/doctrenderer/doctrenderer.h"
-
-//#include "../../../../ServerComponents/ASCOfficePDFWriter/PdfWriterLib/PdfWriterLib.h"
+#include "../../../../core/Common/DocxFormat/Source/SystemUtility/SystemUtility.h"
+#include "../../../../core/ASCOfficeDocxFile2/DocWrapper/DocxSerializer.h"
+#include "../../../../core/ASCOfficeDocxFile2/DocWrapper/XlsxSerializer.h"
+#include "../../../../core/ASCOfficePPTXFile/ASCOfficePPTXFile.h"
+#include "../../../../core/OfficeUtils/src/OfficeUtils.h"
+#include "../../../../core/Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"
+#include "../../../../core/Common/DocxFormat/Source/XML/stringcommon.h"
+#include "../../../../core/Common/DocxFormat/Source/XML/xmlutils.h"
+#include "../../../../core/Common/OfficeFileErrorDescription.h"
+#include "../../../../core/Common/OfficeFileFormats.h"
 
 namespace NExtractTools
 {

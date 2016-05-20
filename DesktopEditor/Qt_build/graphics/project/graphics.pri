@@ -17,6 +17,7 @@ linux-g++ | linux-g++-64 | linux-g++-32 {
     _LINUX_QT
 
     CONFIG += c++11
+    QMAKE_CXXFLAGS += -Wno-narrowing
 
     message(linux)
 }

@@ -285,6 +285,8 @@ void oox_doughnut_chart::set_properties(std::vector<odf_reader::_property> g)
 }
 void oox_doughnut_chart::oox_serialize(std::wostream & _Wostream)
 {
+	grouping_.clear();
+
     CP_XML_WRITER(_Wostream)
     {
 		CP_XML_NODE(L"c:doughnutChart")

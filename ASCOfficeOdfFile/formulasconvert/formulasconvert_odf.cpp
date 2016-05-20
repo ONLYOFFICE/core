@@ -7,95 +7,129 @@
 namespace cpdoccore {
 namespace formulasconvert {
 
-class odf2oox_converter::Impl
-{
-public:
-    std::wstring convert(const std::wstring& expr);
-	std::wstring convert_chart_distance(const std::wstring& expr);
-    void replace_cells_range(std::wstring& expr);
-    bool check_formula(std::wstring& expr);
-    void replace_semicolons(std::wstring& expr);
-    void replace_vertical(std::wstring& expr);
-    void replace_space(std::wstring& expr);
-
-    void replace_named_ref(std::wstring & expr);
-    bool find_first_ref(std::wstring const & expr, std::wstring & table,  std::wstring & ref);
-	bool find_first_last_ref(std::wstring const & expr, std::wstring & table, std::wstring & ref_first,std::wstring & ref_last);
-};
-bool odf2oox_converter::Impl::find_first_last_ref(std::wstring const & expr, std::wstring & table,std::wstring & ref_first,std::wstring & ref_last)
-{	
-	std::vector< std::wstring > splitted;
-    
-	boost::algorithm::split(splitted, expr, boost::algorithm::is_any_of(L".:"), boost::algorithm::token_compress_on);
-    
-	if (splitted.size()==3)
+	class odf2oox_converter::Impl
 	{
-		table	= splitted[0];	
-		ref_first = splitted[1];
-		ref_last = splitted[2];
-		return true;
+	public:
+		std::wstring convert(const std::wstring& expr);
+		std::wstring convert_chart_distance(const std::wstring& expr);
+		void replace_cells_range(std::wstring& expr);
+		bool check_formula(std::wstring& expr);
+		void replace_semicolons(std::wstring& expr);
+		void replace_vertical(std::wstring& expr);
+		void replace_space(std::wstring& expr);
+
+		void replace_named_ref(std::wstring & expr);
+		bool find_first_ref(std::wstring const & expr, std::wstring & table,  std::wstring & ref);
+		bool find_first_last_ref(std::wstring const & expr, std::wstring & table, std::wstring & ref_first,std::wstring & ref_last);
+	};
+	bool odf2oox_converter::Impl::find_first_last_ref(std::wstring const & expr, std::wstring & table,std::wstring & ref_first,std::wstring & ref_last)
+	{	
+		std::vector< std::wstring > splitted;
+	    
+		boost::algorithm::split(splitted, expr, boost::algorithm::is_any_of(L".:"), boost::algorithm::token_compress_on);
+	    
+		if (splitted.size()==3)
+		{
+			table	= splitted[0];	
+			ref_first = splitted[1];
+			ref_last = splitted[2];
+			return true;
+		}
+		if (splitted.size()==4)
+		{
+			table	= splitted[0];	
+			ref_first = splitted[1];
+			ref_last = splitted[3];
+			return true;
+		}
+		return false;
 	}
-	if (splitted.size()==4)
+
+	bool odf2oox_converter::Impl::find_first_ref(std::wstring const & expr, std::wstring & table, std::wstring & ref)
 	{
-		table	= splitted[0];	
-		ref_first = splitted[1];
-		ref_last = splitted[3];
-		return true;
+		boost::wregex re(L"\\[(?:\\$)?([^\\.]+?){0,1}\\.([a-zA-Z\\$]+\\d+)(?::\\.([a-zA-Z]+\\d+)){0,1}\\]");
+		boost::wsmatch result;
+		bool b = boost::regex_search(expr, result, re);
+
+		size_t sz = result.size();
+		if (sz == 4 && !result[1].matched)
+		{
+			table = L"";
+			ref =  result[2].str();        
+			return true;
+		}
+		else if (sz == 4 && result[1].matched)
+		{
+			table = result[1].str();
+			boost::algorithm::replace_all(table, L"$", L"");
+			boost::algorithm::replace_all(table, L"'", L"");
+			ref =  result[2].str();                
+			return true;
+		}
+		return false;
 	}
-	return false;
-}
 
-bool odf2oox_converter::Impl::find_first_ref(std::wstring const & expr, std::wstring & table, std::wstring & ref)
-{
-    boost::wregex re(L"\\[(?:\\$)?([^\\.]+?){0,1}\\.([a-zA-Z\\$]+\\d+)(?::\\.([a-zA-Z]+\\d+)){0,1}\\]");
-    boost::wsmatch result;
-    bool b = boost::regex_search(expr, result, re);
+	std::wstring replace_cell_range_formater(boost::wsmatch const & what)
+	{
+		const size_t sz = what.size();
+		if (sz == 4 && !what[1].matched)
+		{
+			const std::wstring c1 = what[2].str(); 
+			const std::wstring c2 = what[3].str(); 
+			const std::wstring s =  c1 + (c2.empty() ? L"" : (L":" + c2) );
+			return s;
+		}
+		else if (sz == 4 && what[1].matched)
+		{
+			std::wstring sheet1 = what[1].str();
+			boost::algorithm::replace_all(sheet1, L"$", L"");
 
-    size_t sz = result.size();
-    if (sz == 4 && !result[1].matched)
-    {
-        table = L"";
-        ref =  result[2].str();        
-        return true;
-    }
-    else if (sz == 4 && result[1].matched)
-    {
-        table = result[1].str();
-        boost::algorithm::replace_all(table, L"$", L"");
-        boost::algorithm::replace_all(table, L"'", L"");
-        ref =  result[2].str();                
-        return true;
-    }
-    return false;
-}
+			const std::wstring c1 = what[2].str(); 
+			std::wstring c2 = what[3].str(); 
+			if (c2.empty()) c2 = what[4].str(); 
+			const std::wstring s =  sheet1 + L"!" + c1 + (c2.empty() ? L"" : (L":" + c2) );
+			return s;
+		}
+		return L"";
+	}
 
-namespace 
-{
+	std::wstring replace_named_ref_formater(boost::wsmatch const & what)
+	{
+		const size_t sz = what.size();
 
-std::wstring replace_cell_range_formater(boost::wsmatch const & what)
-{
-    const size_t sz = what.size();
-    if (sz == 4 && !what[1].matched)
-    {
-        const std::wstring c1 = what[2].str(); 
-        const std::wstring c2 = what[3].str(); 
-        const std::wstring s =  c1 + (c2.empty() ? L"" : (L":" + c2) );
-        return s;
-    }
-    else if (sz == 4 && what[1].matched)
-    {
-        std::wstring sheet1 = what[1].str();
-        boost::algorithm::replace_all(sheet1, L"$", L"");
+		if (sz == 4 && !what[1].matched)
+		{
+			const std::wstring c1 = what[2].str(); 
+			const std::wstring c2 = what[3].str(); 
+			const std::wstring s =  c1 + (c2.empty() ? L"" : (L":" + c2) );
+			return s;
+		}
+		else if (sz == 4 && what[1].matched)
+		{
+			std::wstring sheet1 = what[1].str();
+			boost::algorithm::replace_all(sheet1, L"$", L"");
 
-        const std::wstring c1 = what[2].str(); 
-        const std::wstring c2 = what[3].str(); 
-        const std::wstring s =  sheet1 + L"!" + c1 + (c2.empty() ? L"" : (L":" + c2) );
-        return s;
-    }
-    return L"";
-}
+			const std::wstring c1 = what[2].str(); 
+			const std::wstring c2 = what[3].str(); 
+			const std::wstring s =  sheet1 + L"!" + c1 + (c2.empty() ? L"" : (L":" + c2) );
+			return s;
+		}
+		return L"";
+	}
+	std::wstring replace_named_ref_formater1(boost::wsmatch const & what)
+	{
+		boost::wregex complexRef(L"\\$([^\\.]+?){0,1}\\.(\\$[a-zA-Z]+\\$\\d+)(?::\\.(\\$[a-zA-Z]+\\$\\d+)){0,1}");
 
-}
+		std::wstring expr = what[1].str();
+		const std::wstring res = boost::regex_replace(
+			expr,
+			complexRef,
+			&replace_named_ref_formater,
+			boost::match_default | boost::format_all);
+		expr = res; 
+
+		return expr;
+	}
 
 
 // заменяем формат адресации ячеек
@@ -107,7 +141,8 @@ std::wstring replace_cell_range_formater(boost::wsmatch const & what)
 void odf2oox_converter::Impl::replace_cells_range(std::wstring& expr)
 {
     //boost::wregex simpleRef(L"\\[\\.([a-zA-Z]+\\d+)(?::\\.([a-zA-Z]+\\d+)){0,1}\\]");
-    boost::wregex complexRef(L"\\[(?:\\$)?([^\\.]+?){0,1}\\.([a-zA-Z\\$]+\\d+)(?::\\.([a-zA-Z]+\\d+)){0,1}\\]");
+    //boost::wregex complexRef(L"\\[(?:\\$)?([^\\.]+?){0,1}\\.([a-zA-Z\\$]+\\d+)(?::\\.([a-zA-Z]+\\d+)){0,1}\\]");
+	boost::wregex complexRef(L"\\[(.*?)\\]");
     /*
                                  [     $   Sheet2          . A1                  :  . B5                    ]
 
@@ -116,38 +151,13 @@ void odf2oox_converter::Impl::replace_cells_range(std::wstring& expr)
     const std::wstring res = boost::regex_replace(
         expr,
         complexRef,
-        &replace_cell_range_formater,
+        &replace_named_ref_formater1,
         boost::match_default | boost::format_all);
     expr = res;
 }
 
-namespace {
 
-std::wstring replace_named_ref_formater(boost::wsmatch const & what)
-{
-    const size_t sz = what.size();
 
-    if (sz == 4 && !what[1].matched)
-    {
-        const std::wstring c1 = what[2].str(); 
-        const std::wstring c2 = what[3].str(); 
-        const std::wstring s =  c1 + (c2.empty() ? L"" : (L":" + c2) );
-        return s;
-    }
-    else if (sz == 4 && what[1].matched)
-    {
-        std::wstring sheet1 = what[1].str();
-        boost::algorithm::replace_all(sheet1, L"$", L"");
-
-        const std::wstring c1 = what[2].str(); 
-        const std::wstring c2 = what[3].str(); 
-        const std::wstring s =  sheet1 + L"!" + c1 + (c2.empty() ? L"" : (L":" + c2) );
-        return s;
-    }
-    return L"";
-}
-
-}
 void odf2oox_converter::Impl::replace_named_ref(std::wstring & expr)
 {
     boost::wregex complexRef(L"\\$([^\\.]+?){0,1}\\.(\\$[a-zA-Z]+\\$\\d+)(?::\\.(\\$[a-zA-Z]+\\$\\d+)){0,1}");
@@ -289,9 +299,14 @@ std::wstring odf2oox_converter::Impl::convert(const std::wstring& expr)
 {
     if (is_forbidden(expr))
         return L"NULLFORMULA()";
+	
 
     std::wstring workstr = expr;
-    check_formula(workstr);
+ 	
+	boost::algorithm::replace_all(workstr, L" ", L"PROBEL");
+	boost::algorithm::replace_all(workstr, L"'", L"APOSTROF");
+   
+	check_formula(workstr);
     replace_cells_range(workstr);
     replace_semicolons(workstr);
     replace_vertical(workstr);
@@ -303,6 +318,8 @@ std::wstring odf2oox_converter::Impl::convert(const std::wstring& expr)
 		//todooo
 
 	}
+ 	boost::algorithm::replace_all(workstr, L"PROBEL", L" ");
+	boost::algorithm::replace_all(workstr, L"APOSTROF", L"'");
     return workstr;
 }
 

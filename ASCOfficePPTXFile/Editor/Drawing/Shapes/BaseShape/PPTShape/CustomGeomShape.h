@@ -713,7 +713,7 @@ namespace NSCustomVML
 						if (lMaxF > m_arVertices[nV].y )	nGuideIndex_y = (DWORD)m_arVertices[nV].y - (DWORD)lMinF;	
 
 						CString str = _T("");
-						if (nGuideIndex_x >= 0 )
+						if (nGuideIndex_x >= 0 && nGuideIndex_x < m_arGuides.size())
 						{
 							str.Format(_T("%d,"), m_arGuides[nGuideIndex_x].m_param_value1);
 							strPath += str;
@@ -723,7 +723,7 @@ namespace NSCustomVML
 							str.Format(_T("%d,"), m_arVertices[nV].x);
 							strPath += str;
 						}
-						if (nGuideIndex_y >= 0)
+						if (nGuideIndex_y >= 0 && nGuideIndex_y < m_arGuides.size())
 						{
 							str.Format(_T("%d,"), m_arGuides[nGuideIndex_y].m_param_value1);
 							strPath += str;

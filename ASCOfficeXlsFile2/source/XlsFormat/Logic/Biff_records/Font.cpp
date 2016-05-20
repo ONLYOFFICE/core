@@ -289,7 +289,7 @@ int Font::serialize_properties(std::wostream & stream, bool isRPr)
             }            
         }
 
-        if (bCharSet.value())
+        if (bCharSet)
         {
             CP_XML_NODE(L"charset")
             {
@@ -341,7 +341,7 @@ int Font::serialize_properties(std::wostream & stream, bool isRPr)
             }
         }
 
-        if (bFamily.value())
+        if (bFamily)
         {
             CP_XML_NODE(L"family")
             {
@@ -415,7 +415,7 @@ int Font::serialize_properties(std::wostream & stream, bool isRPr)
             }
         }
 
-        if ((uls.value()) && (*uls.value() > 0))
+        if (uls > 0)
         {
             CP_XML_NODE(L"u")
             {

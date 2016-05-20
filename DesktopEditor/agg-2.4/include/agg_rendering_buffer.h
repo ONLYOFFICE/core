@@ -78,9 +78,11 @@ namespace agg
         }
 
         //--------------------------------------------------------------------
-		AGG_INLINE       T* row_ptr(int, int y, unsigned) 
+		AGG_INLINE       T* row_ptr(int x, int y, unsigned len) 
         { 
-            return m_start + y * m_stride; 
+			if (m_stride < 0 && m_start - m_buf < -y * m_stride) 
+				return NULL;
+			return m_start + y * m_stride; 
         }
 		AGG_INLINE       T* row_ptr(int y)       { return m_start + y * m_stride; }
 		AGG_INLINE const T* row_ptr(int y) const { return m_start + y * m_stride; }

@@ -2018,7 +2018,9 @@ namespace agg
         {
             if (c.a)
             {
-                value_type* p = (value_type*)m_rbuf->row_ptr(x, y, len) + (x << 2);
+                value_type* p = (value_type*)m_rbuf->row_ptr(x, y, len);
+				if (p == NULL) return;
+				p += (x << 2);
                 do 
                 {
                     calc_type alpha = (calc_type(c.a) * (calc_type(*covers) + 1)) >> 8;

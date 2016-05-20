@@ -42,8 +42,10 @@ namespace NExtractTools
 			}
 			else
 			{
-				// dir -> zip
-				return TCD_ZIPDIR;
+                // dir ( ??? файл без расширения???) -> zip
+
+                if (NSDirectory::Exists(sFile1))
+                        return TCD_ZIPDIR;
 			}
 		}
 		else if (bIsFile2Directory)

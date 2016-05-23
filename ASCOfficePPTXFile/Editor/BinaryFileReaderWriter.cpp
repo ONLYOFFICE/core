@@ -34,6 +34,9 @@
 
 namespace NSBinPptxRW
 {
+	template <typename T,unsigned S>
+	inline unsigned arraysize(const T (&v)[S]) { return S; }
+
 	inline _INT32 __strlen(const char* str)
 	{
 		const char* s = str;
@@ -142,7 +145,7 @@ namespace NSBinPptxRW
 		}
 		return nRes;
 	}
-	CImageManager2Info CImageManager2::GenerateImage(const CString& strInput, CString strBase64Image)
+	CImageManager2Info CImageManager2::GenerateImage(const CString& strInput, const CString& oleData, CString strBase64Image)
 	{
 		if (IsNeedDownload(strInput))
 			return DownloadImage(strInput);
@@ -158,7 +161,6 @@ namespace NSBinPptxRW
 			strExts = strInput.Mid(nIndexExt);
 
 		CString strOleImage = _T("");
-		CString strOleImageProperty = _T("");
 		CString strImage = strInput;
 		int nDisplayType = IsDisplayedImage(strInput);
 		if (0 != nDisplayType)
@@ -192,12 +194,9 @@ namespace NSBinPptxRW
 				CString strOle = strFolder + strFileName + _T(".bin");
 				if (OOX::CSystemUtility::IsFileExist(strOle))
 					strOleImage = strOle;
-				CString strOleProperty = strFolder + strFileName + _T(".txt");
-				if (OOX::CSystemUtility::IsFileExist(strOleProperty))
-					strOleImageProperty = strOleProperty;
 			}
 		}
-		CImageManager2Info oImageManagerInfo = GenerateImageExec(strImage, strExts, strOleImage, strOleImageProperty);
+		CImageManager2Info oImageManagerInfo = GenerateImageExec(strImage, strExts, strOleImage, oleData);
 
 		if (_T("") == strBase64Image)
 			m_mapImages[strInput] = oImageManagerInfo;
@@ -205,7 +204,41 @@ namespace NSBinPptxRW
 			m_mapImages [strBase64Image] = oImageManagerInfo;
 		return oImageManagerInfo;
 	}
-	CImageManager2Info CImageManager2::GenerateImageExec(const CString& strInput, const CString& sExts, const CString& strOleImage, const CString& strOleImageProperty)
+	bool CImageManager2::WriteOleData(const std::wstring& sFilePath, const std::wstring& sData)
+	{
+		bool bRes = false;
+		//EncodingMode.unparsed https://github.com/tonyqus/npoi/blob/master/main/POIFS/FileSystem/Ole10Native.cs
+		POLE::Storage oStorage(sFilePath.c_str());
+		if(oStorage.open(true, true))
+		{
+			//CompObj Stream
+			BYTE dataCompObj[] = {0x01,0x00,0xfe,0xff,0x03,0x0a,0x00,0x00,0xff,0xff,0xff,0xff,0x0c,0x00,0x03,0x00,0x00,0x00,0x00,0x00,0xc0,0x00,0x00,0x00,0x00,0x00,0x00,0x46,0x0c,0x00,0x00,0x00,0x4f,0x4c,0x45,0x20,0x50,0x61,0x63,0x6b,0x61,0x67,0x65,0x00,0x00,0x00,0x00,0x00,0x08,0x00,0x00,0x00,0x50,0x61,0x63,0x6b,0x61,0x67,0x65,0x00,0xf4,0x39,0xb2,0x71,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
+			POLE::Stream oStream1(&oStorage, "\001CompObj", true, arraysize(dataCompObj));
+			oStream1.write(dataCompObj, arraysize(dataCompObj));
+			oStream1.flush();
+			//ObjInfo Stream
+			BYTE dataObjInfo[] = {0x00,0x00,0x03,0x00,0x0d,0x00};
+			POLE::Stream oStream2(&oStorage, "\003ObjInfo", true, arraysize(dataObjInfo));
+			oStream2.write(dataObjInfo, arraysize(dataObjInfo));
+			oStream2.flush();
+			//Ole10Native Stream
+			std::string sDataUtf8 = NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(sData.c_str(), sData.size());
+			BYTE head[] = {0x00,0x00,0x00,0x00};
+			//LittleEndian
+			unsigned char* aData = (unsigned char*)sDataUtf8.c_str();
+			uint32_t nDataSize = sDataUtf8.size();
+			memcpy(head, &nDataSize, sizeof(uint32_t));
+			POLE::Stream oStream(&oStorage, "\001Ole10Native", true, arraysize(head) + nDataSize);
+			oStream.write(head, arraysize(head));
+			oStream.write(aData, nDataSize);
+			oStream.flush();
+
+			oStorage.close();
+			bRes = true;
+		}
+		return bRes;
+	}
+	CImageManager2Info CImageManager2::GenerateImageExec(const CString& strInput, const CString& sExts, const CString& strOleImage, const CString& oleData)
 	{
 		CImageManager2Info oImageManagerInfo;
 		CString strExts = sExts;
@@ -230,26 +263,26 @@ namespace NSBinPptxRW
 		else
 			strImage  = _T("media/") + strImage + strExts;
 
-		if (_T("") != strOleImage)
+		if (!strOleImage.IsEmpty() || !oleData.IsEmpty() )
 		{
 			CString strImageOle;
 			strImageOle.Format(_T("oleObject%d.bin"), m_lIndexNextOle++);
 			OOX::CPath pathOutputOle = m_strDstEmbed + FILE_SEPARATOR_STR + strImageOle;
 			CString strOleImageOut = pathOutputOle.GetPath();
-			CDirectory::CopyFile(strOleImage, strOleImageOut, NULL, NULL);
+			if(!oleData.IsEmpty())
+			{
+				WriteOleData(string2std_string(strOleImageOut), string2std_string(oleData));
+			}
+			else
+			{
+				CDirectory::CopyFile(strOleImage, strOleImageOut, NULL, NULL);
+			}
 
 			if (!m_bIsWord)
 				strImageOle = _T("../embeddings/") + strImageOle;
 			else
 				strImageOle = _T("embeddings/") + strImageOle;
 			oImageManagerInfo.m_sOlePath = strImageOle;
-
-			if(!strOleImageProperty.IsEmpty())
-			{
-				std::wstring sOleProperty;
-				NSFile::CFileBinary::ReadAllTextUtf8(string2std_string(strOleImageProperty), sOleProperty);
-				oImageManagerInfo.m_sOleProperty = std_string2string(sOleProperty);
-			}
 		}
 
 		oImageManagerInfo.m_sImagePath = strImage;
@@ -296,7 +329,6 @@ namespace NSBinPptxRW
 
 		CString strImage;
 		CString strOleImage;
-		CString strOleImageProperty;
 		int nDisplayType = IsDisplayedImage(strUrl);
 		if(0 != nDisplayType)
 		{
@@ -306,7 +338,6 @@ namespace NSBinPptxRW
 			if(0 != (nDisplayType & 4))
 			{
 				strOleImage = DownloadImageExec(strInputMetafile + _T(".bin"));
-				strOleImageProperty = DownloadImageExec(strInputMetafile + _T(".txt"));
 			}
 
 			if(0 != (nDisplayType & 1))
@@ -327,13 +358,11 @@ namespace NSBinPptxRW
 		CImageManager2Info oImageManagerInfo;
 		if (!strImage.IsEmpty())
 		{
-			oImageManagerInfo = GenerateImageExec(strImage, strExts, strOleImage, strOleImageProperty);
+			oImageManagerInfo = GenerateImageExec(strImage, strExts, strOleImage, L"");
 			CDirectory::DeleteFile(strImage);
 		}
 		if (!strOleImage.IsEmpty())
 			CDirectory::DeleteFile(strOleImage);
-		if (!strOleImageProperty.IsEmpty())
-			CDirectory::DeleteFile(strOleImageProperty);
 
 		m_mapImages[strUrl] = oImageManagerInfo;
 		return oImageManagerInfo;
@@ -1312,9 +1341,9 @@ namespace NSBinPptxRW
 		oFile.CloseFile();
 	}
 
-	CRelsGeneratorInfo CRelsGenerator::WriteImage(const CString& strImagePath, CString strBase64Image = _T(""))
+	CRelsGeneratorInfo CRelsGenerator::WriteImage(const CString& strImagePath, const CString& oleData, CString strBase64Image = _T(""))
 	{
-		CImageManager2Info oImageManagerInfo = m_pManager->GenerateImage(strImagePath, strBase64Image);
+		CImageManager2Info oImageManagerInfo = m_pManager->GenerateImage(strImagePath, oleData, strBase64Image);
 		CString strImage = oImageManagerInfo.m_sImagePath;
 		std::map<CString, CRelsGeneratorInfo>::iterator pPair = m_mapImages.find(strImage);
 
@@ -1335,7 +1364,6 @@ namespace NSBinPptxRW
 		if(!oImageManagerInfo.m_sOlePath.IsEmpty())
 		{
 			oRelsGeneratorInfo.m_nOleRId = m_lNextRelsID++;
-			oRelsGeneratorInfo.m_sOleProperty = oImageManagerInfo.m_sOleProperty;
 
 			CString strRid = _T("");
 			strRid.Format(_T("rId%d"), oRelsGeneratorInfo.m_nOleRId);

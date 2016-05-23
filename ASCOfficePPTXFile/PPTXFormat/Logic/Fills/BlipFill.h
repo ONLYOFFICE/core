@@ -365,7 +365,7 @@ namespace PPTX
 											strUrl = pathUrl.GetPath();
 										}
 
-										NSBinPptxRW::CRelsGeneratorInfo oRelsGeneratorInfo = pReader->m_pRels->WriteImage(strUrl, strOrigBase64);
+										NSBinPptxRW::CRelsGeneratorInfo oRelsGeneratorInfo = pReader->m_pRels->WriteImage(strUrl, oleData, strOrigBase64);
 
 										// -------------------
 										if (strTempFile != _T(""))
@@ -381,9 +381,7 @@ namespace PPTX
 
 										if(oRelsGeneratorInfo.m_nOleRId > 0)
 										{
-											blip->oleInfo.Init();
-											blip->oleInfo->m_sOleProperty = oRelsGeneratorInfo.m_sOleProperty;
-											blip->oleInfo->m_sRid = PPTX::RId((size_t)oRelsGeneratorInfo.m_nOleRId).get();
+											blip->oleRid = PPTX::RId((size_t)oRelsGeneratorInfo.m_nOleRId).get();
 										}
 
 										pReader->Skip(1); // end attribute
@@ -439,6 +437,8 @@ namespace PPTX
 			nullable_bool		rotWithShape;
 
 			mutable CString m_namespace;
+			//internal
+			CString oleData;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{

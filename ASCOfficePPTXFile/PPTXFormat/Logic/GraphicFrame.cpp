@@ -1,4 +1,4 @@
-//#include "./stdafx.h"
+п»ї//#include "./stdafx.h"
 
 #include "GraphicFrame.h"
 #include "SpTree.h"
@@ -62,7 +62,14 @@ namespace PPTX
 							XmlUtils::CXmlNode oNode2 = oNodeData.ReadNodeNoNS(_T("oleObj"));
 							if (oNode2.IsValid())
 							{
+								fromXMLOle(oNode2);
 								oNode2.ReadAttributeBase(L"spid", spid);
+								pic = oNode2.ReadNode(_T("p:pic"));
+
+								if (pic.is_init())
+								{
+									xfrm.Merge(pic->spPr.xfrm);
+								}
 								return;
 							}
 							XmlUtils::CXmlNode oNode3 = oNodeData.ReadNodeNoNS(_T("AlternateContent"));
@@ -84,6 +91,7 @@ namespace PPTX
 									XmlUtils::CXmlNode oNodeO;
 									if (oNodeFallback.GetNode(_T("p:oleObj"), oNodeO))
 									{
+										fromXMLOle(oNodeO);
 										pic = oNodeO.ReadNode(_T("p:pic"));
 
 										if (pic.is_init())
@@ -112,8 +120,29 @@ namespace PPTX
 					}
 				}
 			}
+			if(pic.IsInit() && oleObject.IsInit())
+			{
+				pic->oleObject = oleObject;
+				pic->blipFill.blip->oleRid = oleObject->m_oId.get().ToString();
+			}
 			
 			FillParentPointersForChilds();
+		}
+		void GraphicFrame::fromXMLOle(XmlUtils::CXmlNode& node)
+		{
+			oleObject.Init();
+			node.ReadAttributeBase(L"progId", oleObject->m_sProgId);
+			node.ReadAttributeBase(L"r:id", oleObject->m_oId);
+			int imgW = node.GetAttributeInt(L"imgW", 0);
+			if(imgW > 0)
+			{
+				oleObject->m_oDxaOrig = Emu_To_Twips(imgW);
+			}
+			int imgH = node.GetAttributeInt(L"imgH", 0);
+			if(imgH > 0)
+			{
+				oleObject->m_oDyaOrig = Emu_To_Twips(imgH);
+			}
 		}
 
 		void GraphicFrame::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
@@ -215,7 +244,7 @@ namespace PPTX
 					dst->flipV = src->flipV;
 					dst->rot = src->rot;
 
-					//удалим индекс плейсхолдера если он есть(p:nvPr) - он будет лишний так как будет имплементация объекта
+					//СѓРґР°Р»РёРј РёРЅРґРµРєСЃ РїР»РµР№СЃС…РѕР»РґРµСЂР° РµСЃР»Рё РѕРЅ РµСЃС‚СЊ(p:nvPr) - РѕРЅ Р±СѓРґРµС‚ Р»РёС€РЅРёР№ С‚Р°Рє РєР°Рє Р±СѓРґРµС‚ РёРјРїР»РµРјРµРЅС‚Р°С†РёСЏ РѕР±СЉРµРєС‚Р°
 					if (smartArt->m_diag->nvGrpSpPr.nvPr.ph.IsInit())
 					{
 						if(smartArt->m_diag->nvGrpSpPr.nvPr.ph->idx.IsInit())
@@ -354,7 +383,7 @@ namespace PPTX
 			//			XML::Write(nvGraphicFramePr) +
 			//			XML::Write(xfrm) +
 			//			XML::XElement(ns.a + "graphic",
-			//				XML::XElement(ns.a + "graphicData", //Возможно, здесь надо добавить ури
+			//				XML::XElement(ns.a + "graphicData", //Р’РѕР·РјРѕР¶РЅРѕ, Р·РґРµСЃСЊ РЅР°РґРѕ РґРѕР±Р°РІРёС‚СЊ СѓСЂРё
 			//					XML::XElement(ns.dgm + "relIds",
 			//						XML::XNamespace(ns.dgm) +
 			//						XML::XNamespace(ns.r) +

@@ -55,14 +55,12 @@ namespace NSBinPptxRW
 	public:
 		CString m_sImagePath;
 		CString m_sOlePath;
-		CString m_sOleProperty;
 	};
 	class CRelsGeneratorInfo
 	{
 	public:
 		int m_nImageRId;
 		int m_nOleRId;
-		CString m_sOleProperty;
 		CRelsGeneratorInfo()
 		{
 			m_nImageRId = -1;
@@ -173,8 +171,8 @@ namespace NSBinPptxRW
 		}
 
 	public:
-		CImageManager2Info GenerateImage(const CString& strInput, CString strBase64Image = _T(""));
-		CImageManager2Info GenerateImageExec(const CString& strInput, const CString& strExts, const CString& strOleImage, const CString& strOleImageProperty);
+		CImageManager2Info GenerateImage(const CString& strInput, const CString& oleData, CString strBase64Image);
+		CImageManager2Info GenerateImageExec(const CString& strInput, const CString& strExts, const CString& strOleImage, const CString& oleData);
 
 		void SaveImageAsPng(const CString& strFileSrc, const CString& strFileDst);
 
@@ -183,6 +181,7 @@ namespace NSBinPptxRW
 		bool IsNeedDownload(const CString& strFile);
 		CImageManager2Info DownloadImage(const CString& strFile);
 		CString DownloadImageExec(const CString& strFile);
+		bool WriteOleData(const std::wstring& sFilePath, const std::wstring& sData);
 	};
 
 	class CBinaryFileWriter
@@ -412,7 +411,7 @@ namespace NSBinPptxRW
 		void AddRels(const CString& strRels);
 		void SaveRels(const CString& strFile);
 
-		CRelsGeneratorInfo WriteImage(const CString& strImagePath, CString strBase64Image);
+		CRelsGeneratorInfo WriteImage(const CString& strImagePath, const CString& oleData, CString strBase64Image);
 		int WriteChart(int nChartNumber, _INT32 lDocType);
 
 		int WriteRels(const CString& bsType, const CString& bsTarget, const CString& bsTargetMode);

@@ -374,20 +374,7 @@ namespace PPTX
 				lW = spPr.xfrm->extX.get_value_or(43200);
 				lH = spPr.xfrm->extY.get_value_or(43200);
 			}
-			NSShapeImageGen::COleInfo oOleInfo;
 			bool bOle = false;
-			CString sOleProgID;
-			CString sOleNodeName;
-			Blip* pBlip = NULL;
-			if(this->spPr.Fill.Fill.is<PPTX::Logic::BlipFill>())
-			{
-				PPTX::Logic::BlipFill& oBlipFill = this->spPr.Fill.Fill.as<PPTX::Logic::BlipFill>();
-				if(oBlipFill.blip.IsInit())
-					pBlip = oBlipFill.blip.GetPointer();
-			}
-			if(NULL != pBlip)
-				pBlip->writeOleStart(pWriter, oOleInfo, bOle, sOleProgID, sOleNodeName);
-			
 #ifdef AVS_USE_CONVERT_PPTX_TOCUSTOM_VML
 			spPr.Geometry.ConvertToCustomVML(pWriter->m_pOOXToVMLRenderer, strPath, strTextRect, lW, lH);
 #endif
@@ -633,10 +620,6 @@ namespace PPTX
 
 				pWriter->EndNode(_T("v:shape"));
 			}
-
-			if(NULL != pBlip)
-				pBlip->writeOleEnd(pWriter, oOleInfo, strId, sOleProgID, sOleNodeName);
-
 		}
 	} // namespace Logic
 } // namespace PPTX

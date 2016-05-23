@@ -1258,7 +1258,7 @@ rIns=\"91440\" bIns=\"45720\" numCol=\"1\" spcCol=\"0\" rtlCol=\"0\" fromWordArt
 					LONG lChildsCount = oChilds.GetCount();
                     bool bIsFound = false;
 					PPTX::Logic::SpTreeElem* pElem = NULL;
-					OOX::VmlOffice::COLEObject* pOle = NULL;
+					PPTX::Logic::COLEObject* pOle = NULL;
 					for (LONG k = 0; k < lChildsCount; k++)
 					{
 						XmlUtils::CXmlNode oNodeP;
@@ -1287,7 +1287,8 @@ rIns=\"91440\" bIns=\"45720\" numCol=\"1\" spcCol=\"0\" rtlCol=\"0\" fromWordArt
 						}
 						else if (_T("OLEObject") == strNameP)
 						{
-							pOle = new OOX::VmlOffice::COLEObject( oNodeP );
+							pOle = new PPTX::Logic::COLEObject();
+							pOle->fromXML(oNodeP);
 						}
 						else if (_T("group") == strNameP)
 						{
@@ -1326,22 +1327,20 @@ rIns=\"91440\" bIns=\"45720\" numCol=\"1\" spcCol=\"0\" rtlCol=\"0\" fromWordArt
 								const PPTX::Logic::BlipFill& oBlipFill = pShape->spPr.Fill.Fill.as<PPTX::Logic::BlipFill>();
 								if(oBlipFill.blip.IsInit())
 								{
-									int dxaOrig = 0;
-									int dyaOrig = 0;
+									oBlipFill.blip->oleRid = pOle->m_oId.get().ToString();
 									if(strName == _T("object"))
 									{
-										dxaOrig = oParseNode.ReadAttributeInt(_T("w:dxaOrig"));
-										dyaOrig = oParseNode.ReadAttributeInt(_T("w:dyaOrig"));
+										pOle->m_oDxaOrig = oParseNode.ReadAttributeInt(_T("w:dxaOrig"));
+										pOle->m_oDyaOrig = oParseNode.ReadAttributeInt(_T("w:dyaOrig"));
 									}
-									oBlipFill.blip->oleInfo.Init();
-									oBlipFill.blip->oleInfo->m_sOleProperty.Format(_T("%d|%d|%s"), dxaOrig, dyaOrig, pOle->m_sProgId.get());
-									oBlipFill.blip->oleInfo->m_sRid = pOle->m_oId->GetValue();
 
 									PPTX::Logic::Pic *newElem = new PPTX::Logic::Pic();
-									
+
 									newElem->blipFill	= oBlipFill;
 									newElem->spPr		= pShape->spPr;
 									newElem->style		= pShape->style;
+									newElem->oleObject.reset(pOle);
+									pOle = NULL;
 
 									pElem->InitElem(newElem);
 								}
@@ -4158,24 +4157,12 @@ HRESULT CDrawingConverter::SaveObject(LONG lStart, LONG lLength, const CString& 
 
 	oElem.fromPPTY(m_pReader);
 	bool bOle = false;
-	if (oElem.is<PPTX::Logic::Shape>())
-	{
-		PPTX::Logic::Shape& oShape = oElem.as<PPTX::Logic::Shape>();
-		if(oShape.spPr.Fill.Fill.is<PPTX::Logic::BlipFill>())
-		{
-			PPTX::Logic::BlipFill& oBlipFill = oShape.spPr.Fill.Fill.as<PPTX::Logic::BlipFill>();
-			if(oBlipFill.blip.IsInit() && oBlipFill.blip->oleInfo.IsInit())
-				bOle = true;
-		}
-	}
-	else if (oElem.is<PPTX::Logic::Pic>())
+	if (oElem.is<PPTX::Logic::Pic>())
 	{
 		PPTX::Logic::Pic& oPic = oElem.as<PPTX::Logic::Pic>();
-		if(oPic.spPr.Fill.Fill.is<PPTX::Logic::BlipFill>())
+		if(oPic.oleObject.IsInit())
 		{
-			PPTX::Logic::BlipFill& oBlipFill = oPic.spPr.Fill.Fill.as<PPTX::Logic::BlipFill>();
-			if(oBlipFill.blip.IsInit() && oBlipFill.blip->oleInfo.IsInit())
-				bOle = true;
+			bOle = oPic.oleObject->isValid();
 		}
 	}
 	
@@ -4197,14 +4184,7 @@ HRESULT CDrawingConverter::SaveObject(LONG lStart, LONG lLength, const CString& 
 #endif
 	if(bOle)
 	{
-		if (oElem.is<PPTX::Logic::Shape>())
-		{
-			ConvertShapeVML(oElem, bsMainProps, oXmlWriter);
-		}
-		else
-		{
-			ConvertPicVML(oElem, bsMainProps, oXmlWriter);
-		}
+		ConvertPicVML(oElem, bsMainProps, oXmlWriter);
 	}
 	else
 	{

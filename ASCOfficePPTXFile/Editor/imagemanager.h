@@ -123,14 +123,6 @@ namespace NSShapeImageGen
 		}
 	};
 
-	class COleInfo
-	{
-	public:
-		CString m_sRid;
-		CString m_sFilename;
-		CString m_sOleProperty;
-	};
-
 	class CImageManager
 	{
 	public:
@@ -259,7 +251,7 @@ namespace NSShapeImageGen
 			
             return GenerateImageID(punkImage, (std::max)(1.0, width), (std::max)(1.0, height));
 		}
-		CImageInfo WriteImage(const CString& strFile, COleInfo* pOle, double& x, double& y, double& width, double& height)
+		CImageInfo WriteImage(const CString& strFile, const CString& strOleFile, double& x, double& y, double& width, double& height)
 		{
 			bool bIsDownload = false;
 			int n1 = strFile.Find(_T("www"));
@@ -300,7 +292,7 @@ namespace NSShapeImageGen
 
 #endif
 
-                return GenerateImageID(strDownload, strFile1, pOle, (std::max)(1.0, width), (std::max)(1.0, height));
+				return GenerateImageID(strDownload, strFile1, strOleFile, (std::max)(1.0, width), (std::max)(1.0, height));
 
 
 			}
@@ -313,8 +305,8 @@ namespace NSShapeImageGen
 			oFile.CloseFile();
 
 			if (-1 == width && -1 == height)
-				return GenerateImageID(strFile, CString(L""), pOle, width, height);
-            return GenerateImageID(strFile, CString(L""), pOle, (std::max)(1.0, width), (std::max)(1.0, height));
+				return GenerateImageID(strFile, CString(L""), strOleFile, width, height);
+			return GenerateImageID(strFile, CString(L""), strOleFile, (std::max)(1.0, width), (std::max)(1.0, height));
 		}
 		void SetFontManager(CFontManager* pFontManager)
 		{
@@ -472,13 +464,13 @@ namespace NSShapeImageGen
 			return oInfo;
 		}
 
-		CImageInfo GenerateImageID(const CString& strFileName, const CString & strUrl, COleInfo* pOle, double dWidth, double dHeight)
+		CImageInfo GenerateImageID(const CString& strFileName, const CString & strUrl, const CString& strOleFile, double dWidth, double dHeight)
 		{
 			CString sMapKey = strFileName;
 			if(!strUrl.IsEmpty())
 				sMapKey = strUrl;
-			if(NULL != pOle)
-				sMapKey += pOle->m_sFilename;
+			if(!strOleFile.IsEmpty())
+				sMapKey += strOleFile;
 			CImageInfo oInfo;
 			std::map<CString, CImageInfo>::iterator pPair = m_mapImagesFile.find(sMapKey);
 
@@ -492,7 +484,7 @@ namespace NSShapeImageGen
 
 				LONG lImageType = m_oImageExt.GetImageType(strFileName);
 				bool bVector = (1 == lImageType || 2 == lImageType);
-				bool bOle = NULL != pOle;
+				bool bOle = !strOleFile.IsEmpty();
 				if(bVector)
 					oInfo.m_eType = (1 == lImageType) ? itWMF : itEMF;
 				oInfo.SetNameModificator(oInfo.m_eType, bOle);
@@ -504,9 +496,7 @@ namespace NSShapeImageGen
 				if(bOle)
 				{
 					CString sCopyOlePath = std_string2string(strSaveItemWE) + _T(".bin");
-					CDirectory::CopyFile(pOle->m_sFilename, sCopyOlePath, NULL, NULL);
-					std::wstring sCopyOleProgPath = strSaveItemWE + _T(".txt");
-					NSFile::CFileBinary::SaveToFile(sCopyOleProgPath, string2std_string(pOle->m_sOleProperty), false);
+					CDirectory::CopyFile(strOleFile, sCopyOlePath, NULL, NULL);
 				}
 
 				if (bVector)

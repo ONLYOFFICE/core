@@ -149,6 +149,7 @@ namespace NSBinPptxRW
 #define SPTREE_TYPE_CXNSP				3
 #define SPTREE_TYPE_SPTREE				4
 #define SPTREE_TYPE_GRFRAME				5
+#define SPTREE_TYPE_OLE					6
 
 static BYTE SchemeClr_GetBYTECode(const CString& sValue)
 {

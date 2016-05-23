@@ -266,6 +266,7 @@ namespace PPTX
 					m_elem.reset(p);
 					break;
 				}
+			case SPTREE_TYPE_OLE:
 			case SPTREE_TYPE_PIC:
 				{
 					Logic::Pic* p = new Logic::Pic();

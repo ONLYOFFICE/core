@@ -12,6 +12,177 @@ namespace PPTX
 {
 	namespace Logic
 	{
+		void COLEObject::fromXML(XmlUtils::CXmlNode& node)
+		{
+			node.ReadAttributeBase(L"DrawAspect", m_oDrawAspect);
+			node.ReadAttributeBase(L"r:id", m_oId);
+			node.ReadAttributeBase(L"ObjectID", m_sObjectId);
+			node.ReadAttributeBase(L"ProgID", m_sProgId);
+			node.ReadAttributeBase(L"ShapeID", m_sShapeId);
+			node.ReadAttributeBase(L"Type", m_oType);
+			node.ReadAttributeBase(L"UpdateMode", m_oUpdateMode);
+		}
+
+		CString COLEObject::toXML() const
+		{
+			XmlUtils::CAttribute oAttribute;
+			oAttribute.WriteLimitNullable(L"DrawAspect", m_oDrawAspect);
+			oAttribute.WriteNullable(L"r:id", m_oId);
+			oAttribute.WriteNullable(L"ObjectID", m_sObjectId);
+			oAttribute.WriteNullable(L"ProgID", m_sProgId);
+			oAttribute.WriteNullable(L"ShapeID", m_sShapeId);
+			oAttribute.WriteLimitNullable(L"Type", m_oType);
+			oAttribute.WriteLimitNullable(L"UpdateMode", m_oUpdateMode);
+
+			return XmlUtils::CreateNode(_T("o:OLEObject"), oAttribute);
+		}
+		void COLEObject::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+			CString strName = L"o:OLEObject";
+			pWriter->StartNode(strName);
+
+			pWriter->StartAttributes();
+			pWriter->WriteAttribute(L"DrawAspect", m_oDrawAspect);
+			if(m_oId.IsInit())
+			{
+				pWriter->WriteAttribute(L"r:id", m_oId->ToString());
+			}
+			pWriter->WriteAttribute(L"ObjectID", m_sObjectId);
+			pWriter->WriteAttribute(L"ProgID", m_sProgId);
+			pWriter->WriteAttribute(L"ShapeID", m_sShapeId);
+			pWriter->WriteAttribute(L"Type", m_oType);
+			pWriter->WriteAttribute(L"UpdateMode", m_oUpdateMode);
+			pWriter->EndAttributes();
+
+			pWriter->EndNode(strName);
+		}
+		void COLEObject::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+		{
+			std::wstring sData;
+			if(m_oId.IsInit() && m_sProgId.IsInit() && 0 == m_sProgId.get().Find(L"asc."))
+			{
+				FileContainer* pRels = NULL;
+				if (pWriter->m_pCommonRels->is_init())
+					pRels = pWriter->m_pCommonRels->operator ->();
+
+				CString sFilePath = this->GetFullOleName(PPTX::RId(m_oId.get()), pRels);
+				if(!sFilePath.IsEmpty())
+				{
+					sData = GetOleData(string2std_string(sFilePath));
+				}
+			}
+
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+			pWriter->WriteString2(0, m_sProgId);
+			if(!sData.empty())
+			{
+				pWriter->WriteString1Data(1, sData.c_str(), sData.length());
+			}
+			pWriter->WriteInt2(2, m_oDxaOrig);
+			pWriter->WriteInt2(3, m_oDyaOrig);
+			pWriter->WriteLimit2(4, m_oDrawAspect);
+			pWriter->WriteLimit2(5, m_oType);
+			pWriter->WriteLimit2(6, m_oUpdateMode);
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+		}
+
+		void COLEObject::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+		{
+			LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+
+			pReader->Skip(1); // start attributes
+
+			while (true)
+			{
+				BYTE _at = pReader->GetUChar_TypeNode();
+				if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+					break;
+
+				if (0 == _at)
+				{
+					m_sProgId = pReader->GetString2();
+				}
+				else if (1 == _at)
+				{
+					m_sData = pReader->GetString2();
+				}
+				else if (2 == _at)
+				{
+					m_oDxaOrig = pReader->GetLong();
+				}
+				else if (3 == _at)
+				{
+					m_oDyaOrig = pReader->GetLong();
+				}
+				else if (4 == _at)
+				{
+					m_oDrawAspect = new Limit::OLEDrawAspectType();
+					m_oDrawAspect->SetBYTECode(pReader->GetUChar());
+				}
+				else if (5 == _at)
+				{
+					m_oType = new Limit::OLEType();
+					m_oType->SetBYTECode(pReader->GetUChar());
+				}
+				else if (6 == _at)
+				{
+					m_oUpdateMode = new Limit::OLEUpdateMode();
+					m_oUpdateMode->SetBYTECode(pReader->GetUChar());
+				}
+				else
+					break;
+			}
+
+			pReader->Seek(_end_rec);
+		}
+		void COLEObject::FillParentPointersForChilds()
+		{
+		}
+		bool COLEObject::isValid()
+		{
+			return m_sProgId.IsInit() && (m_sData.IsInit() || m_oId.IsInit());
+		}
+
+		CString COLEObject::GetFullOleName(const PPTX::RId& oRId, FileContainer* pRels)const
+		{
+			if (pRels != NULL)
+			{
+				smart_ptr<PPTX::OleObject> p = pRels->oleObject(oRId);
+				if (p.is_init())
+					return p->filename().m_strFilename;
+			}
+
+			if(parentFileIs<Slide>())
+				return parentFileAs<Slide>().GetOleFromRId(oRId);
+			else if(parentFileIs<SlideLayout>())
+				return parentFileAs<SlideLayout>().GetOleFromRId(oRId);
+			else if(parentFileIs<SlideMaster>())
+				return parentFileAs<SlideMaster>().GetOleFromRId(oRId);
+			else if(parentFileIs<Theme>())
+				return parentFileAs<Theme>().GetOleFromRId(oRId);
+			return _T("");
+		}
+		std::wstring COLEObject::GetOleData(const std::wstring& sFilePath)const
+		{
+			std::wstring sRes;
+			//EncodingMode.unparsed https://github.com/tonyqus/npoi/blob/master/main/POIFS/FileSystem/Ole10Native.cs
+			POLE::Storage oStorage(sFilePath.c_str());
+			if(oStorage.open(false, false))
+			{
+				POLE::Stream oStream(&oStorage, "Ole10Native");
+				if(oStream.size() > 4)
+				{
+					BYTE head[] = {0x00, 0x00, 0x00, 0x00};
+					oStream.read(head, 4);
+					uint32_t nDataSize = (uint32_t)((head[0]<< 0) | ((head[1]) << 8) | ((head[2]) << 16) | ((head[3]) << 24));
+					BYTE* aData = new BYTE[nDataSize];
+					oStream.read(aData, nDataSize);
+					sRes = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(aData, nDataSize);
+					RELEASEARRAYOBJECTS(aData);
+				}
+			}
+			return sRes;
+		}
 
 		Pic::Pic()
 		{
@@ -87,7 +258,7 @@ namespace PPTX
 			oValue.Write(blipFill);
 			oValue.Write(spPr);
 			oValue.WriteNullable(style);
-			
+
 			return XmlUtils::CreateNode(_T("p:pic"), oValue);
 		}
 
@@ -287,19 +458,24 @@ namespace PPTX
 			smart_ptr<PPTX::Theme> oTheme = _oTheme.smart_dynamic_cast<PPTX::Theme>();
 			smart_ptr<PPTX::Logic::ClrMap> oClrMap = oTheme.smart_dynamic_cast<PPTX::Logic::ClrMap>();
 
-			NSShapeImageGen::COleInfo oOleInfo;
-			bool bOle = false;
-			CString sOleProgID;
+			bool bOle = oleObject.IsInit() && oleObject->isValid();
 			CString sOleNodeName;
-			Blip* pBlip = NULL;
-			if(this->spPr.Fill.Fill.is<PPTX::Logic::BlipFill>())
+			if(bOle && oleObject->m_oDxaOrig.IsInit() && oleObject->m_oDyaOrig.IsInit())
 			{
-				PPTX::Logic::BlipFill& oBlipFill = this->spPr.Fill.Fill.as<PPTX::Logic::BlipFill>();
-				if(oBlipFill.blip.IsInit())
-					pBlip = oBlipFill.blip.GetPointer();
+				sOleNodeName = L"w:object";
+				pWriter->StartNode(sOleNodeName);
+				pWriter->StartAttributes();
+				pWriter->WriteAttribute(_T("w:dxaOrig"), oleObject->m_oDxaOrig);
+				pWriter->WriteAttribute(_T("w:dyaOrig"), oleObject->m_oDyaOrig);
+				pWriter->EndAttributes();
 			}
-			if(NULL != pBlip)
-				pBlip->writeOleStart(pWriter, oOleInfo, bOle, sOleProgID, sOleNodeName);
+			else
+			{
+				sOleNodeName = L"w:pict";
+				pWriter->StartNode(sOleNodeName);
+				pWriter->StartAttributes();
+				pWriter->EndAttributes();
+			}
 
 			int dL = 0;
 			int dT = 0;
@@ -307,9 +483,11 @@ namespace PPTX
 			int dH = 0;
 
 			CString strId = _T("");
-			strId.Format(_T("picture %d"), pWriter->m_lObjectIdVML);
+			strId.Format(_T("_x0000_i%04d"), pWriter->m_lObjectIdVML);
 			CString strSpid = _T("");
 			strSpid.Format(_T("_x%04d_s%04d"), 0xFFFF & (pWriter->m_lObjectIdVML >> 16), 0xFFFF & pWriter->m_lObjectIdVML);
+			CString strObjectid = _T("");
+			strObjectid.Format(_T("_152504%04d"), pWriter->m_lObjectIdVML);
 			pWriter->m_lObjectIdVML++;
 
 			NSBinPptxRW::CXmlWriter oStylesWriter;
@@ -401,7 +579,10 @@ namespace PPTX
 					pWriter->WriteString(pWriter->m_strAttributesMain);
 					pWriter->m_strAttributesMain = _T("");
 				}
-
+				if(bOle)
+				{
+					pWriter->WriteAttribute(_T("filled"), (CString)L"f");
+				}
 				CString strNodeVal = _T("");
 				if (!spPr.ln.is_init())
 				{
@@ -411,7 +592,7 @@ namespace PPTX
 				{
 					CString strPenAttr = _T("");
 					nullable<ShapeStyle> pShapeStyle;
-					CalculateLine(spPr, pShapeStyle, _oTheme, _oClrMap, strPenAttr, strNodeVal);
+					CalculateLine(spPr, pShapeStyle, _oTheme, _oClrMap, strPenAttr, strNodeVal, bOle);
 					pWriter->WriteString(strPenAttr);
 				}
 
@@ -452,6 +633,11 @@ namespace PPTX
 				{
 					pWriter->WriteAttribute(_T("style"), pWriter->m_strStyleMain + oStylesWriter.GetXmlString());
 				}
+				if(bOle)
+				{
+					pWriter->WriteAttribute(_T("filled"), L"f");
+					pWriter->WriteAttribute(_T("stroked"), L"f");
+				}
 
 				pWriter->EndAttributes();
 
@@ -469,8 +655,13 @@ namespace PPTX
 			}
 			pWriter->m_strStyleMain = _T("");
 
-			if(NULL != pBlip)
-				pBlip->writeOleEnd(pWriter, oOleInfo, strId, sOleProgID, sOleNodeName);
+			if(bOle)
+			{
+				oleObject->m_sShapeId = strId;
+				oleObject->m_sObjectId = strObjectid;
+				oleObject->toXmlWriter(pWriter);
+			}
+			pWriter->EndNode(sOleNodeName);
 		}
 	} // namespace Logic
 } // namespace PPTX

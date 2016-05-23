@@ -2,7 +2,7 @@
 #include "ApplicationFontsWorker.h"
 #include "../common/File.h"
 #include "../common/Directory.h"
-#include "../editor/MemoryStream.h"
+#include "./MemoryStream.h"
 
 namespace NSFontsApplication
 {

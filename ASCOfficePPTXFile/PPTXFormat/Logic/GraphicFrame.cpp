@@ -133,12 +133,12 @@ namespace PPTX
 			oleObject.Init();
 			node.ReadAttributeBase(L"progId", oleObject->m_sProgId);
 			node.ReadAttributeBase(L"r:id", oleObject->m_oId);
-			int imgW = node.GetAttributeInt(L"imgW", 0);
+			int imgW = node.GetAttributeInt(CString(L"imgW"), 0);
 			if(imgW > 0)
 			{
 				oleObject->m_oDxaOrig = Emu_To_Twips(imgW);
 			}
-			int imgH = node.GetAttributeInt(L"imgH", 0);
+			int imgH = node.GetAttributeInt(CString(L"imgH"), 0);
 			if(imgH > 0)
 			{
 				oleObject->m_oDyaOrig = Emu_To_Twips(imgH);

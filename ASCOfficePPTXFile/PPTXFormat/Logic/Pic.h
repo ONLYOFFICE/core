@@ -158,8 +158,8 @@ namespace PPTX
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 			virtual void FillParentPointersForChilds();
 			bool isValid();
-			CString COLEObject::GetFullOleName(const PPTX::RId& oRId, FileContainer* pRels)const;
-			std::wstring COLEObject::GetOleData(const std::wstring& sFilePath)const;
+			CString GetFullOleName(const PPTX::RId& oRId, FileContainer* pRels)const;
+			std::wstring GetOleData(const std::wstring& sFilePath)const;
 
 		public:
 			// Attributes

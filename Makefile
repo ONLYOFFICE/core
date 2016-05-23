@@ -79,7 +79,7 @@ DJVUFILE_PRO := $(abspath DjVuFile/DjVuFile.pro)
 XPSFILE_PRO := $(abspath XpsFile/XpsFile.pro)
 HTMLFILE_PRO := $(abspath HtmlFile/HtmlFile.pro)
 UNICODECONVERTER_PRO := $(abspath UnicodeConverter/UnicodeConverter.pro)
-ASCDOCUMENTSCORE_PRO := $(abspath DesktopEditor/ChromiumBasedEditors2/lib/AscDocumentsCore_linux.pro)
+ASCDOCUMENTSCORE_PRO := $(abspath ../core-ext/DesktopEditor/ChromiumBasedEditors2/lib/AscDocumentsCore_linux.pro)
 LIBXML_PRO := $(abspath DesktopEditor/xml/build/qt/libxml2.pro)
 LICENSEMANAGER_PRO := $(abspath LicenceManager/linux/LicenseManager.pro)
 
@@ -199,7 +199,9 @@ all: lib bin
 
 bin: $(X2T) $(ALLFONTSGEN) $(HTMLFILEINTERNAL)
 
-lib: $(ASCDOCUMENTSCORE) $(PDFWRITER) $(DOCTRENDERER) $(HTMLRENDERER) $(PDFREADER) $(DJVUFILE) $(XPSFILE) $(HTMLFILE) $(UNICODECONVERTER)
+lib: $(PDFWRITER) $(DOCTRENDERER) $(HTMLRENDERER) $(PDFREADER) $(DJVUFILE) $(XPSFILE) $(HTMLFILE) $(UNICODECONVERTER)
+
+ext: $(ASCDOCUMENTSCORE)
 
 $(foreach proj, $(QT_PROJ), $(eval $(call build_proj_tmpl, $(proj))))
 

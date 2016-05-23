@@ -246,6 +246,10 @@ namespace DocFileFormat
 				std::list<OptionEntry>::const_iterator end = options.end();
 				for (std::list<OptionEntry>::const_iterator iter = options.begin(); iter != end; ++iter)
 				{
+					//mso-position-horizontal:absolute
+					//mso-position-horizontal-relative:margin
+					//mso-position-vertical:absolute
+					//mso-position-vertical-relative:margin
 					switch (iter->pid)
 					{
 			//BOOLEANS
@@ -1357,9 +1361,9 @@ namespace DocFileFormat
 			//	appendStyleProperty( style, _T( "position" ), _T( "static" ) );
 			//}
 			//else
-			{
+			//{
 				appendStyleProperty( style, _T( "position" ), _T( "absolute" ) );
-			}
+			//}
 
 			TwipsValue left	 (pSpa->xaLeft);
 			TwipsValue top	 (pSpa->yaTop);
@@ -1428,81 +1432,18 @@ namespace DocFileFormat
 	{
 		switch ( anchor )
 		{
-		case 0:
-			{
-				//msoanchorTop
+			case 0:	return _T("top");
+			case 1:	return _T("middle");
+			case 2:	return _T("bottom");
+			case 3:	return _T("top-center");
+			case 4:	return _T("middle-center");
+			case 5:	return _T("bottom-center");
+			case 6:	return _T("top-baseline");
+			case 7:	return _T("bottom-baseline");
+			case 8:	return _T("top-center-baseline");
+			case 9:	return _T("bottom-center-baseline");
+			default:
 				return _T("top");
-			}
-			break;
-
-		case 1:
-			{
-				//msoanchorMiddle
-				return _T("middle");
-			}
-			break;
-
-		case 2:
-			{
-				//msoanchorBottom
-				return _T("bottom");
-			}
-			break;
-
-		case 3:
-			{
-				//msoanchorTopCentered
-				return _T("top-center");
-			}
-			break;
-
-		case 4:
-			{
-				//msoanchorMiddleCentered
-				return _T("middle-center");
-			}
-			break;
-
-		case 5:
-			{
-				//msoanchorBottomCentered
-				return _T("bottom-center");
-			}
-			break;
-
-		case 6:
-			{
-				//msoanchorTopBaseline
-				return _T("top-baseline");
-			}
-			break;
-
-		case 7:
-			{
-				//msoanchorBottomBaseline
-				return _T("bottom-baseline");
-			}
-			break;
-
-		case 8:
-			{
-				//msoanchorTopCenteredBaseline
-				return _T("top-center-baseline");
-			}
-			break;
-
-		case 9:
-			{
-				//msoanchorBottomCenteredBaseline
-				return _T("bottom-center-baseline");
-			}
-			break;
-
-		default:
-			{
-				return _T("top");
-			}
-			break;
 		}
 	}
 
@@ -1510,83 +1451,28 @@ namespace DocFileFormat
 	{
 		switch ( vPos )
 		{
-			/*case msopvAbs:
-			{
-			return _T( "absolute" );
-			}
-			break;*/
-
-		case msopvTop:
-			{
-				return _T( "top" );
-			}
-			break;
-
-		case msopvCenter:
-			{
-				return _T( "center" );
-			}
-			break;
-
-		case msopvBottom:
-			{
-				return _T( "bottom" );
-			}
-			break;
-
-		case msopvInside:
-			{
-				return _T( "inside" );
-			}
-			break;
-
-		case msopvOutside:
-			{
-				return _T( "outside" );
-			}
-			break;
-
-		default:
-			{
+			/*case msopvAbs:	return _T( "absolute" );*/
+			case msopvTop:		return _T( "top" );
+			case msopvCenter:	return _T( "center" );
+			case msopvBottom:	return _T( "bottom" );
+			case msopvInside:	return _T( "inside" );
+			case msopvOutside:	return _T( "outside" );
+			default:
 				return _T( "absolute" );
-			}
-			break;
 		}
 	}
 
-	std::wstring VMLShapeMapping::mapVerticalPositionRelative(PositionVerticalRelative vRel) const
+	std::wstring VMLShapeMapping::mapVerticalPositionRelative(int vRel_) const
 	{
+		PositionVerticalRelative vRel = (PositionVerticalRelative)vRel_;
 		switch ( vRel )
 		{
-		case msoprvMargin:
-			{
+			case msoprvMargin:	return _T( "margin" );
+			case msoprvPage:	return _T( "page" );
+			case msoprvText:	return _T( "text" );
+			case msoprvLine:	return _T( "line" );
+			default:
 				return _T( "margin" );
-			}
-			break;
-
-		case msoprvPage:
-			{
-				return _T( "page" );
-			}
-			break;
-
-		case msoprvText:
-			{
-				return _T( "text" );
-			}
-			break;
-
-		case msoprvLine:
-			{
-				return _T( "line" );
-			}
-			break;
-
-		default:
-			{
-				return _T( "margin" );
-			}
-			break;
 		}
 	}
 
@@ -1594,88 +1480,36 @@ namespace DocFileFormat
 	{
 		switch ( hPos )
 		{
-			/*case msophAbs:
-			{
-			return _T( "absolute" );
-			}
-			break;*/
-
-		case msophLeft:
-			{
-				return _T( "left" );
-			}
-			break;
-
-		case msophCenter:
-			{
-				return _T( "center" );
-			}
-			break;
-
-		case msophRight:
-			{
-				return _T( "right" );
-			}
-			break;
-
-		case msophInside:
-			{
-				return _T( "inside" );
-			}
-			break;
-
-		case msophOutside:
-			{
-				return _T( "outside" );
-			}
-			break;
-
-		default:
-			{
+			/*case msophAbs:	return _T( "absolute" );*/
+			case msophLeft:		return _T( "left" );
+			case msophCenter:	return _T( "center" );
+			case msophRight:	return _T( "right" );
+			case msophInside:	return _T( "inside" );
+			case msophOutside:	return _T( "outside" );
+			default:
 				return _T( "absolute" );
-			}
-			break;
 		}
 	}
 
-	std::wstring VMLShapeMapping::mapHorizontalPositionRelative( PositionHorizontalRelative hRel ) const
+	std::wstring VMLShapeMapping::mapHorizontalPositionRelative( int hRel_ ) const
 	{
+		PositionHorizontalRelative hRel = (PositionHorizontalRelative )hRel_;
 		switch ( hRel ) 
 		{
-		case msoprhMargin:
-			{
+			case msoprhMargin:	return _T( "margin" );
+			case msoprhPage:	return _T( "page" );
+			case msoprhText:	return _T( "text" );
+			case msoprhChar:	return _T( "char" );
+			default:
 				return _T( "margin" );
-			}
-			break;
-
-		case msoprhPage:
-			{
-				return _T( "page" );
-			}
-			break;
-
-		case msoprhText:
-			{
-				return _T( "text" );
-			}
-			break;
-
-		case msoprhChar:
-			{
-				return _T( "char" );
-			}
-			break;
-
-		default:
-			{
-				return _T( "margin" );
-			}
-			break;
 		}
 	}
 
 	void VMLShapeMapping::AppendOptionsToStyle (std::wstring* oStyle, const std::list<OptionEntry>& options) const
 	{
+		bool bRelH = false;
+		bool bRelV = false;
+
 		std::list<OptionEntry>::const_iterator end = options.end();
 		for (std::list<OptionEntry>::const_iterator iter = options.begin(); iter != end; ++iter)
 		{
@@ -1691,6 +1525,7 @@ namespace DocFileFormat
 			case posrelh:
 				{
 					appendStyleProperty(oStyle, _T("mso-position-horizontal-relative"), mapHorizontalPositionRelative((PositionHorizontalRelative)iter->op));
+					bRelH = true;
 				}
 				break;
 
@@ -1703,6 +1538,7 @@ namespace DocFileFormat
 			case posrelv:
 				{
 					appendStyleProperty(oStyle, _T("mso-position-vertical-relative"), mapVerticalPositionRelative((PositionVerticalRelative)iter->op));
+					bRelV = true;
 				}
 				break;
 
@@ -1774,6 +1610,15 @@ namespace DocFileFormat
 				}
 				break;
 			}
+		}
+		
+		if (!bRelH && m_pSpa)
+		{
+			appendStyleProperty(oStyle, _T("mso-position-horizontal-relative"), mapHorizontalPositionRelative(m_pSpa->bx));
+		}
+		if (!bRelV && m_pSpa)
+		{
+			appendStyleProperty(oStyle, _T("mso-position-vertical-relative"), mapVerticalPositionRelative(m_pSpa->bx));
 		}
 	}
 
@@ -1877,41 +1722,12 @@ namespace DocFileFormat
 	{
 		switch (p)
 		{
-		case 0:
-			{
-				return _T( "single" );
-			}
-			break;
-
-		case 1:
-			{
-				return _T( "thinThin" );
-			}
-			break;
-
-		case 2:
-			{
-				return _T( "thinThick" );
-			}
-			break;
-
-		case 3:
-			{
-				return _T( "thickThin" );
-			}
-			break;
-
-		case 4:
-			{
-				return _T( "thickBetweenThin" );
-			}
-			break;
-
-		default:
-			{
-				return _T( "single" );
-			}
-			break;
+			case 0:		return _T( "single" );
+			case 1:		return _T( "thinThin" );
+			case 2:		return _T( "thinThick" );
+			case 3:		return _T( "thickThin" );
+			case 4:		return _T( "thickBetweenThin" );
+			default:	return _T( "single" );
 		}
 	}
 
@@ -1919,47 +1735,12 @@ namespace DocFileFormat
 	{
 		switch ( op )
 		{
-		default:
-			{
-				//msolineNoEnd
-				return _T( "none" );
-			}
-			break;
-
-		case 1:
-			{
-				//msolineArrowEnd
-				return _T( "block" );
-			}
-			break;
-
-		case 2:
-			{
-				//msolineArrowStealthEnd
-				return _T( "classic" );
-			}
-			break;
-
-		case 3:
-			{
-				//msolineArrowDiamondEnd
-				return _T( "diamond" );
-			}
-			break;
-
-		case 4:
-			{
-				//msolineArrowOvalEnd
-				return _T( "oval" );
-			}
-			break;
-
-		case 5:
-			{
-				//msolineArrowOpenEnd
-				return _T( "open" );
-			}
-			break;
+			default:	return _T( "none" );
+			case 1:		return _T( "block" );
+			case 2:		return _T( "classic" );
+			case 3:		return _T( "diamond" );
+			case 4:		return _T( "oval" );
+			case 5:		return _T( "open" );
 		}
 	}
 
@@ -1967,26 +1748,9 @@ namespace DocFileFormat
 	{
 		switch ( op )
 		{
-		default:
-			{
-				//msolineShortArrow
-				return _T( "short" );
-			}
-			break;
-
-		case 1:
-			{
-				//msolineMediumLengthArrow
-				return _T( "medium" );
-			}
-			break;
-
-		case 2:
-			{
-				//msolineLongArrow
-				return _T( "long" );
-			}
-			break;
+			default:	return _T( "short" );
+			case 1:		return _T( "medium" );
+			case 2:		return _T( "long" );
 		}
 	}
 
@@ -1994,26 +1758,9 @@ namespace DocFileFormat
 	{
 		switch ( op )
 		{
-		default:
-			{
-				//msolineNarrowArrow
-				return _T( "narrow" );
-			}
-			break;
-
-		case 1:
-			{
-				//msolineMediumWidthArrow
-				return _T( "medium" );
-			}
-			break;
-
-		case 2:
-			{
-				//msolineWideArrow
-				return _T( "wide" );
-			}
-			break;
+			default:	return _T( "narrow" );
+			case 1:		return _T( "medium" );
+			case 2:		return _T( "wide" );
 		}
 	}
 

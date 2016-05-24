@@ -10,7 +10,16 @@
 #include "oox_chart_series.h"
 #include "oox_data_labels.h"
 
-                    
+#define CHART_TYPE_LINE			1
+#define CHART_TYPE_AREA			2
+#define CHART_TYPE_PIE			3
+#define CHART_TYPE_DOUGHNUT		4
+#define CHART_TYPE_SCATTER		5
+#define CHART_TYPE_RADAR		6
+#define CHART_TYPE_BAR			7
+#define CHART_TYPE_STOCK		8
+#define CHART_TYPE_BUBBLE		9
+
 namespace cpdoccore {
 namespace oox {
 
@@ -25,6 +34,7 @@ public:
 	{
 		grouping_	= L"standard";
 		is3D_		= false;
+		type_		= 0;
 	}
 	~oox_chart(){}
  
@@ -53,8 +63,9 @@ public:
 		axisId_.push_back(id);
 	}
 
-	oox_data_labels data_labels_;//dLbls (Data Labels) §21.2.2.49
+	oox_data_labels					data_labels_;//dLbls (Data Labels) §21.2.2.49
 
+	int								type_;
 	bool							is3D_;
 	std::vector<int>				axisId_;	//axId (Axis ID) §21.2.2.9
 	std::wstring					grouping_;	//	clustered | percentStacked | stacked | standard 
@@ -75,7 +86,8 @@ class oox_bar_chart: public oox_chart
 	public:
 	oox_bar_chart()
 	{
-		grouping_ = L"clustered";
+		type_		= CHART_TYPE_BAR;
+		grouping_	= L"clustered";
 	}
 	~oox_bar_chart(){}
  	
@@ -108,6 +120,7 @@ class oox_line_chart: public oox_chart
 	public:
 	oox_line_chart()
 	{
+		type_	= CHART_TYPE_LINE;
 	}
 	~oox_line_chart(){}
  	
@@ -137,6 +150,7 @@ class oox_area_chart: public oox_chart
 	public:
 	oox_area_chart()
 	{
+		type_		= CHART_TYPE_AREA;
 		//grouping_ = L"clustered";
 	}
 	~oox_area_chart(){}
@@ -159,7 +173,8 @@ class oox_bubble_chart: public oox_chart
 	public:
 	oox_bubble_chart()
 	{
-		grouping_ = L"";
+		type_		= CHART_TYPE_BUBBLE;
+		grouping_	= L"";
 	}
 	~oox_bubble_chart(){}
  	
@@ -185,6 +200,7 @@ class oox_doughnut_chart: public oox_chart
 	public:
 	oox_doughnut_chart()
 	{
+		type_	= CHART_TYPE_DOUGHNUT;
 	}
 	~oox_doughnut_chart(){}
  	
@@ -208,6 +224,7 @@ class oox_pie_chart: public oox_chart
 	public:
 	oox_pie_chart()
 	{
+		type_	= CHART_TYPE_PIE;
 	}
 	~oox_pie_chart(){}
  	
@@ -229,7 +246,8 @@ class oox_radar_chart: public oox_chart
 	public:
 	oox_radar_chart(std::wstring style)
 	{
-		grouping_ = L"";
+		type_		= CHART_TYPE_RADAR;
+		grouping_	= L"";
 		radarStyle_ = style;
 	}
 	~oox_radar_chart(){}
@@ -253,7 +271,8 @@ class oox_scatter_chart: public oox_chart
 	public:
 	oox_scatter_chart()
 	{
-		grouping_ = L"";
+		type_		= CHART_TYPE_SCATTER;
+		grouping_	= L"";
 	}
 	~oox_scatter_chart(){}
  	
@@ -277,7 +296,8 @@ class oox_stock_chart: public oox_chart
 	public:
 	oox_stock_chart()
 	{
-		grouping_ = L"";
+		type_		= CHART_TYPE_STOCK;
+		grouping_	= L"";
 	}
 	~oox_stock_chart(){}
  	

@@ -5,7 +5,8 @@
 #include "../odf/chart_objects.h"
 
 #include "oox_chart_values.h"
-                 
+#include "oox_data_labels.h"
+              
 namespace cpdoccore {
 namespace oox {
 
@@ -21,12 +22,13 @@ public:
  
     void oox_serialize_common(std::wostream & _Wostream);
 	virtual void oox_serialize(std::wostream & _Wostream){}
-	    
-	_oox_chart_values		values_[5]; //cat(labels), common, x, y, bubble, 
-	int						id_;
-	std::wstring			name_;	//tx (Series Text) §21.2.2.215
-	int						iSymbolMarkerType_;
-	bool					bLocalTable_;
+	
+	_oox_chart_values			values_[5]; //cat(labels), common, x, y, bubble, 
+	int							id_;
+	std::wstring				name_;	//tx (Series Text) §21.2.2.215
+	int							iSymbolMarkerType_;
+	bool						bLocalTable_;
+	_CP_OPT(oox_data_labels)	data_labels_;
 	
 	void setName(std::wstring &value);
 	
@@ -38,7 +40,6 @@ public:
 
 	odf_reader::chart::series content_;
 
-	//dLbls (Data Labels) §21.2.2.49
 	//dPt (Data Point) §21.2.2.52
 	//extLst (Chart Extensibility) §21.2.2.64
 	//idx (Index) §21.2.2.84

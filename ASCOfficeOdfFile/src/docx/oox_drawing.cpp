@@ -72,8 +72,6 @@ void oox_serialize_ln(std::wostream & strm, const std::vector<odf_reader::_prope
 
 	if ((!strStrokeColor && !iStroke && !dStrokeWidth) && !always_draw)return;
 
-	if ((iStroke) && (*iStroke==0)) return; //none
-
 	CP_XML_WRITER(strm)
     {
         CP_XML_NODE(L"a:ln")
@@ -88,9 +86,12 @@ void oox_serialize_ln(std::wostream & strm, const std::vector<odf_reader::_prope
 				else dash_style =  _ooxDashStyle[iStroke.get()];	
 			}
 			
-			if ((dStrokeWidth) && (dStrokeWidth.get()>= 0))
+			if ((dStrokeWidth) && (dStrokeWidth.get()>= 0) && fill != L"a:noFill")
 			{
-				CP_XML_ATTR(L"w",static_cast<size_t>(dStrokeWidth.get() * 12700));//in emu (1 pt = 12700)
+				int val = dStrokeWidth.get() * 12700;	//in emu (1 pt = 12700)
+				if (val < 10)	val = 12700;
+				
+				CP_XML_ATTR(L"w", val);
 				if (color.length()<1)color = L"729FCF";
 			}
 		
@@ -98,31 +99,36 @@ void oox_serialize_ln(std::wostream & strm, const std::vector<odf_reader::_prope
 			{ 			
 				if (fill != L"a:noFill")
 				{
-					if (color.length()<1 && always_draw) color = L"000000";
-					else if (color.length()<1) color = L"ffffff";
+					if		(color.length()<1 && always_draw)	color = L"000000";
+					else if (color.length()<1)					color = L"ffffff";
+					
 					CP_XML_NODE(L"a:srgbClr")
 					{
 						CP_XML_ATTR(L"val",color);
+						
 						if (strStrokeOpacity)CP_XML_NODE(L"a:alpha"){CP_XML_ATTR(L"val",strStrokeOpacity.get());}
 
 					}
 				}
 			}
-			_CP_OPT(std::wstring)	strVal;
+			if (fill != L"a:noFill")
+			{
+				_CP_OPT(std::wstring)	strVal;
 
-			if (dash_style.length() >0 && dash_style != L"solid")
-			{
-				CP_XML_NODE(L"a:prstDash"){CP_XML_ATTR(L"val", dash_style);}	
-			}
-			odf_reader::GetProperty(prop,L"marker-start", strVal);	
-			if (strVal)
-			{
-				CP_XML_NODE(L"a:headEnd"){CP_XML_ATTR(L"type", strVal.get());}
-			}
-			odf_reader::GetProperty(prop,L"marker-end",strVal);	
-			if (strVal)
-			{
-				CP_XML_NODE(L"a:tailEnd"){CP_XML_ATTR(L"type",strVal.get());}
+				if (dash_style.length() >0 && dash_style != L"solid")
+				{
+					CP_XML_NODE(L"a:prstDash"){CP_XML_ATTR(L"val", dash_style);}	
+				}
+				odf_reader::GetProperty(prop,L"marker-start", strVal);	
+				if (strVal)
+				{
+					CP_XML_NODE(L"a:headEnd"){CP_XML_ATTR(L"type", strVal.get());}
+				}
+				odf_reader::GetProperty(prop,L"marker-end",strVal);	
+				if (strVal)
+				{
+					CP_XML_NODE(L"a:tailEnd"){CP_XML_ATTR(L"type",strVal.get());}
+				}
 			}
 		}
     }
@@ -425,19 +431,19 @@ void oox_serialize_xfrm(std::wostream & strm, _oox_drawing & val, const std::wst
                 _CP_LOG << L"[error!!!] not set size object\n";
 			}
 			
-			//if (val.type == mediaitems::typeGroup)
-			//{		
-			//	CP_XML_NODE(L"a:chOff")
-			//	{
-			//		CP_XML_ATTR(L"x", 0);
-			//		CP_XML_ATTR(L"y", 0);
-			//	}
-			//	CP_XML_NODE(L"a:chExt")
-			//	{
-			//		CP_XML_ATTR(L"cx", val.cx);
-			//		CP_XML_ATTR(L"cy", val.cy);
-			//	}
-			//}
+			if (val.type == mediaitems::typeGroup)
+			{		
+				CP_XML_NODE(L"a:chOff")
+				{
+					CP_XML_ATTR(L"x", 0);
+					CP_XML_ATTR(L"y", 0);
+				}
+				CP_XML_NODE(L"a:chExt")
+				{
+					CP_XML_ATTR(L"cx", val.cx);
+					CP_XML_ATTR(L"cy", val.cy);
+				}
+			}
 		}
     }
 }

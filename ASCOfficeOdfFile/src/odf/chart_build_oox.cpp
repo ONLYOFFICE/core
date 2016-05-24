@@ -96,7 +96,7 @@ void chart_build::add_grid(std::wstring const & className, std::wstring const & 
     if (!axises_.empty())
     {
 		axis::grid gr;
-		gr.type_= (className == L"major" ? axis::grid::minor : axis::grid::major); // default: major
+		gr.type_= (className == L"major" ? axis::grid::major : axis::grid::minor); // default: major
 		gr.style_name_ = styleName;         
 		axises_.back().grids_.push_back(gr);
 
@@ -119,11 +119,11 @@ void chart_build::add_series(std::wstring const & cellRangeAddress,
     series_.push_back(series(cellRangeAddress,labelCell, classType, attachedAxis, styleName));
 }
 
-void chart_build::add_point(unsigned int rep, std::wstring const & styleName)
+void chart_build::add_point(unsigned int rep)
 {
     if (!series_.empty())
     {
-		series_.back().points_.push_back(series::point(rep, styleName));                    
+		series_.back().points_.push_back(series::point(rep));                    
     }
     else
     {
@@ -259,8 +259,8 @@ void chart_build::oox_convert(oox::oox_chart_context & chart_context)
 	chart_context.set_floor		(floor_);
 	chart_context.set_legend	(legend_);
 	
-	chart_context.set_plot_area_properties		(plot_area_.properties_, plot_area_.fill_);
-	chart_context.set_chart_graphic_properties	(chart_graphic_properties_, chart_fill_);
+	chart_context.set_plot_area_properties		(plot_area_.properties_		, plot_area_.fill_);
+	chart_context.set_chart_graphic_properties	(chart_graphic_properties_	, chart_fill_);
 	
 	//chart_context.set_footer(footer_);
 	//chart_context.set_chart_properties(chart_graphic_properties_);
@@ -548,6 +548,7 @@ void process_build_chart::visit(const chart_title& val)
         t.pos_x = val.chart_title_attlist_.common_draw_position_attlist_.svg_x_->get_value_unit(length::pt);
 		t.pos_y = val.chart_title_attlist_.common_draw_position_attlist_.svg_y_->get_value_unit(length::pt);
 	}
+	t.bEnabled = true;
 	
 	if (chart_build_.in_axis_)
 		chart_build_.axises_.back().title_ = t; 
@@ -568,11 +569,14 @@ void process_build_chart::visit(const chart_subtitle & val)
         t.pos_x = val.chart_title_attlist_.common_draw_position_attlist_.svg_x_->get_value_unit(length::pt);
 		t.pos_y = val.chart_title_attlist_.common_draw_position_attlist_.svg_y_->get_value_unit(length::pt);
 	}
+	t.bEnabled = true;
 	chart_build_.sub_title_ = t;
 }
 
 void process_build_chart::visit(const chart_footer& val)
 {
+	chart_build_.footer_.bEnabled = true;
+
 	ApplyChartProperties	(val.common_attlist_.chart_style_name_.get_value_or(L""),	chart_build_.footer_.properties_);
 	ApplyGraphicProperties	(val.common_attlist_.chart_style_name_.get_value_or(L""),	chart_build_.footer_.graphic_properties_, chart_build_.footer_.fill_);
 	ApplyTextProperties		(val.common_attlist_.chart_style_name_.get_value_or(L""),	chart_build_.footer_.text_properties_);
@@ -580,6 +584,8 @@ void process_build_chart::visit(const chart_footer& val)
 
 void process_build_chart::visit(const chart_legend& val)
 {
+	chart_build_.legend_.bEnabled = true;
+	
 	ApplyChartProperties	(val.chart_legend_attlist_.common_attlist_.chart_style_name_.get_value_or(L""),	chart_build_.legend_.properties_);
 	ApplyGraphicProperties	(val.chart_legend_attlist_.common_attlist_.chart_style_name_.get_value_or(L""),	chart_build_.legend_.graphic_properties_,chart_build_.legend_.fill_);
 	ApplyTextProperties		(val.chart_legend_attlist_.common_attlist_.chart_style_name_.get_value_or(L""),	chart_build_.legend_.text_properties_);
@@ -653,6 +659,8 @@ void process_build_chart::visit(const chart_grid& val)
  }
 void process_build_chart::visit(const chart_wall& val)
 {      
+	chart_build_.wall_.bEnabled = true;
+
 	ApplyChartProperties	(val.chart_wall_attlist_.common_attlist_.chart_style_name_.get_value_or(L""),	chart_build_.wall_.properties_);
 	ApplyGraphicProperties	(val.chart_wall_attlist_.common_attlist_.chart_style_name_.get_value_or(L""),	chart_build_.wall_.graphic_properties_,chart_build_.wall_.fill_);
 	ApplyTextProperties		(val.chart_wall_attlist_.common_attlist_.chart_style_name_.get_value_or(L""),	chart_build_.wall_.text_properties_);
@@ -660,6 +668,8 @@ void process_build_chart::visit(const chart_wall& val)
 
 void process_build_chart::visit(const chart_floor& val)
 {   
+	chart_build_.floor_.bEnabled = true;
+
 	ApplyChartProperties	(val.common_attlist_.chart_style_name_.get_value_or(L""),	chart_build_.floor_.properties_);
 	ApplyGraphicProperties	(val.common_attlist_.chart_style_name_.get_value_or(L""),	chart_build_.floor_.graphic_properties_,chart_build_.floor_.fill_);
 	ApplyTextProperties		(val.common_attlist_.chart_style_name_.get_value_or(L""),	chart_build_.floor_.text_properties_);
@@ -667,14 +677,20 @@ void process_build_chart::visit(const chart_floor& val)
 
 void process_build_chart::visit(const chart_data_point & val)
 {
-	chart_build_.add_point(	val.chart_data_point_attlist_.chart_repeated_.get_value_or(0/*1*/),
-							val.chart_data_point_attlist_.common_attlist_.chart_style_name_.get_value_or(L"")
-        );
+	chart_build_.add_point(	val.chart_data_point_attlist_.chart_repeated_.get_value_or(1));
+
+	if (val.chart_data_point_attlist_.common_attlist_.chart_style_name_)
+	{
+		ApplyGraphicProperties	(val.chart_data_point_attlist_.common_attlist_.chart_style_name_.get_value_or(L""),	
+										chart_build_.series_.back().points_.back().graphic_properties_, 
+										chart_build_.series_.back().points_.back().fill_);
+	}
+
 }
 void process_build_chart::visit(const chart_mean_value & val)
 {
 	ApplyChartProperties	(val.common_attlist_.chart_style_name_.get_value_or(L""),	chart_build_.series_.back().mean_value_.properties_);
-	ApplyGraphicProperties	(val.common_attlist_.chart_style_name_.get_value_or(L""),	chart_build_.series_.back().mean_value_.graphic_properties_,chart_build_.series_.back().mean_value_.fill_);
+	ApplyGraphicProperties	(val.common_attlist_.chart_style_name_.get_value_or(L""),	chart_build_.series_.back().mean_value_.graphic_properties_, chart_build_.series_.back().mean_value_.fill_);
 }
 void process_build_chart::visit(const chart_error_indicator & val)
 {

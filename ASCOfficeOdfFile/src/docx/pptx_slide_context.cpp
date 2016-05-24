@@ -171,7 +171,7 @@ void pptx_slide_context::default_set()
 {
     impl_->object_description_.xlink_href_ = L"";
 
-    impl_->object_description_.draw_name_ = L"";
+    impl_->object_description_.name_ = L"";
   
 	impl_->object_description_.additional_.clear();
 	impl_->object_description_.anchor_ =L"";
@@ -203,8 +203,7 @@ void pptx_slide_context::set_placeHolder_idx(int idx)
 
 void pptx_slide_context::set_rect(double width_pt, double height_pt, double x_pt, double y_pt)
 {
-	_rect r = {width_pt,height_pt,x_pt,y_pt};
-	impl_->object_description_.svg_rect_= r;
+	impl_->object_description_.svg_rect_ = _rect(width_pt, height_pt, x_pt, y_pt);
 }
 
 void pptx_slide_context::set_rotate(double angle)
@@ -226,11 +225,10 @@ void pptx_slide_context::set_translate(double x_pt, double y_pt)
 {
 	if (impl_->object_description_.svg_rect_)
 	{
-		_rect r = impl_->object_description_.svg_rect_.get();
-		r.x_+=x_pt;
-		r.y_+=y_pt;
-
-		impl_->object_description_.svg_rect_= r;
+		_rect & r = impl_->object_description_.svg_rect_.get();
+		
+		r.x += x_pt;
+		r.y += y_pt;
 	}
 }
 
@@ -238,11 +236,10 @@ void pptx_slide_context::set_scale(double cx_pt, double cy_pt)
 {
 	if (impl_->object_description_.svg_rect_)
 	{
-		_rect r = impl_->object_description_.svg_rect_.get();
-		r.x_*=cx_pt;
-		r.y_*=cy_pt;
-
-		impl_->object_description_.svg_rect_= r;
+		_rect & r = impl_->object_description_.svg_rect_.get();
+		
+		r.x *= cx_pt;
+		r.y *= cy_pt;
 	}
 }
 
@@ -303,24 +300,25 @@ void pptx_slide_context::add_background(_oox_fill & fill)
 
 void pptx_slide_context::set_name(std::wstring const & name)
 {
-	impl_->object_description_.draw_name_ = name;
+	impl_->object_description_.name_ = name;
 
 }
 
 void pptx_slide_context::start_shape(int type)
 {
-	impl_->object_description_.type_ = type; //2,3... 
+	impl_->object_description_.type_		= mediaitems::typeShape;
+	impl_->object_description_.shape_type_	= type; //2,3... 
 }
 
 void pptx_slide_context::start_image(std::wstring const & path)
 {
-	impl_->object_description_.xlink_href_ = path; 
-	impl_->object_description_.type_ = 0; //frame 
+	impl_->object_description_.type_		= mediaitems::typeImage;
+	impl_->object_description_.xlink_href_	= path; 
 }
 
 void pptx_slide_context::start_table()
 {
-	impl_->object_description_.type_ = 0; //frame 
+	impl_->object_description_.type_		= mediaitems::typeTable;
 }
 
 void pptx_slide_context::set_use_image_replacement()
@@ -334,8 +332,8 @@ void pptx_slide_context::start_object_ole()
 
 void pptx_slide_context::start_chart(std::wstring const & path)
 {
-	impl_->object_description_.xlink_href_ = path; 
-	impl_->object_description_.type_ = 0; //frame 
+	impl_->object_description_.type_		= mediaitems::typeChart;
+	impl_->object_description_.xlink_href_	= path; 
 }
 void pptx_slide_context::end_object_ole()
 {
@@ -387,12 +385,16 @@ void pptx_slide_context::process_images()
 		
 		if ((pos_replaicement <0 && pos_preview <0) || pic.use_image_replace_)//оригинал, а не заменяемый объект (при наличии объекта)
 		{
-			_pptx_drawing drawing=_pptx_drawing();
+			_pptx_drawing drawing	=_pptx_drawing();
 		
+			drawing.type			= pic.type_;			
+			drawing.name			= pic.name_;
+			drawing.id				= impl_->next_rId();			
+			
 			process_common_properties(pic,drawing);
 			
-			drawing.fill.bitmap = oox_bitmap_fill::create();
-			drawing.fill.type = 2;
+			drawing.fill.bitmap		= oox_bitmap_fill::create();
+			drawing.fill.type		= 2;
 			
 			_CP_OPT(std::wstring) sTextContent;
 			GetProperty(pic.additional_,L"text-content",sTextContent);
@@ -401,11 +403,7 @@ void pptx_slide_context::process_images()
 				drawing.type = mediaitems::typeShape;
 				drawing.sub_type = 2;//rect
 			}
-			else
-				drawing.type = mediaitems::typeImage;
 			
-			drawing.id = impl_->next_rId();			
-			drawing.name = pic.draw_name_;
 
 			std::wstring fileName = impl_->odfPacket_ + FILE_SEPARATOR_STR + pic.xlink_href_;			
 			drawing.fill.bitmap->bCrop  = odf_reader::parse_clipping(pic.clipping_string_,fileName,drawing.fill.bitmap->cropRect);
@@ -438,12 +436,12 @@ void pptx_slide_context::process_charts()
     BOOST_FOREACH(drawing_object_description & pic, impl_->charts_)
     {	
 		_pptx_drawing drawing=_pptx_drawing();
-		
-		process_common_properties(pic,drawing);
 
-		drawing.type = mediaitems::typeChart;
-        drawing.name = pic.draw_name_;
-		drawing.id = impl_->next_rId();
+		drawing.type			= pic.type_;			
+		drawing.name			= pic.name_;
+		drawing.id				= impl_->next_rId();			
+
+		process_common_properties(pic,drawing);
 
 ////////////////////////////////////////////////////////////////
         std::wstring ref;
@@ -459,11 +457,13 @@ void pptx_slide_context::process_tables()
     {	
 		_pptx_drawing drawing=_pptx_drawing();
 		
+		drawing.type			= pic.type_;			
+		drawing.name			= pic.name_;
+		drawing.id				= impl_->next_rId();			
+		
 		process_common_properties(pic,drawing);
 
-		drawing.type = mediaitems::typeTable;
-        drawing.name = pic.draw_name_;
-		drawing.id = impl_->next_rId();
+
 
 ////////////////////////////////////////////////////////////////
         std::wstring ref;
@@ -478,16 +478,16 @@ void pptx_slide_context::process_common_properties(drawing_object_description & 
 	if (pic.svg_rect_)
 	{
 		//todooo непонятки с отрицательными значениями
-		int val = (int)(0.5 + odf_types::length(pic.svg_rect_.get().x_, odf_types::length::pt).get_value_unit(odf_types::length::emu));
+		int val = (int)(0.5 + odf_types::length(pic.svg_rect_->x, odf_types::length::pt).get_value_unit(odf_types::length::emu));
 		if (val >= 0) drawing.x = val;
 		
-		val = (int)(0.5 + odf_types::length(pic.svg_rect_.get().y_, odf_types::length::pt).get_value_unit(odf_types::length::emu));
+		val = (int)(0.5 + odf_types::length(pic.svg_rect_->y, odf_types::length::pt).get_value_unit(odf_types::length::emu));
 		if (val >= 0) drawing.y = val;
 
-		val = (int)(0.5 + odf_types::length(pic.svg_rect_.get().width_, odf_types::length::pt).get_value_unit(odf_types::length::emu));
+		val = (int)(0.5 + odf_types::length(pic.svg_rect_->cx, odf_types::length::pt).get_value_unit(odf_types::length::emu));
 		if (val >=0) drawing.cx = val;
 		
-		val = (int)(0.5 + odf_types::length(pic.svg_rect_.get().height_, odf_types::length::pt).get_value_unit(odf_types::length::emu));
+		val = (int)(0.5 + odf_types::length(pic.svg_rect_->cy, odf_types::length::pt).get_value_unit(odf_types::length::emu));
 		if (val >=0) drawing.cy = val;
 	}
 	
@@ -505,14 +505,14 @@ void pptx_slide_context::process_shapes()
     {
 		_pptx_drawing drawing=_pptx_drawing();
 
+		drawing.type			= pic.type_;			
+		drawing.name			= pic.name_;
+		drawing.id				= impl_->next_rId();			
+
 		process_common_properties(pic,drawing);
 
 		std::wstring ref;
         bool isMediaInternal = true;
-
-		drawing.type = mediaitems::typeShape;
-		drawing.name = pic.draw_name_;
- 		drawing.id = impl_->next_rId();
 		
 		if (drawing.fill.bitmap)
 		{

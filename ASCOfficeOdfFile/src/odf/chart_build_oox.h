@@ -109,7 +109,7 @@ public:
             std::wstring const & attachedAxis,
             std::wstring const & styleName);
 
-    void add_point(unsigned int rep, std::wstring const & styleName);
+    void add_point(unsigned int rep);
 	
     void calc_cache_series(std::wstring adress, std::vector<std::wstring> & cash);
 	

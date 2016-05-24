@@ -274,9 +274,15 @@ void xlsx_text_context::Impl::write_rPr(std::wostream & strm)
 				if (dValFontSize)									{CP_XML_ATTR(L"sz", (int)(dValFontSize.get()*100));}
 				if ((iValFontStyle) && (iValFontStyle.get() >0))	{CP_XML_ATTR(L"i", "1");} //"true");} Exercícios de Aprendizagem.ods
 				if ((iValFontWeight) && (iValFontWeight.get() >0))	{CP_XML_ATTR(L"b", "1");} //"true");} Exercícios de Aprendizagem.ods				
-				if (sValFontFamily)									{CP_XML_ATTR(L"typeface", sValFontFamily.get());} 
+				if (sValFontColor)
+				{
+					CP_XML_NODE(L"a:solidFill")	{CP_XML_NODE(L"a:srgbClr"){CP_XML_ATTR(L"val", sValFontColor.get());}}
+				}
+				if (sValFontFamily)									
+				{
+					CP_XML_NODE(L"a:latin"){CP_XML_ATTR(L"typeface", sValFontFamily.get());}
+				} 
 				
-				if (sValFontColor){CP_XML_NODE(L"a:solidFill")	{CP_XML_NODE(L"a:srgbClr"){CP_XML_ATTR(L"val", sValFontColor.get());}}}
 
 				if (hyperlink_hId.length()>0)
 				{

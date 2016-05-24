@@ -76,6 +76,9 @@ void oox_chart_series::setFormula(int ind, std::wstring &value)
 	}
 	else
 	{
+		long res = value.find(L"local-table");
+		if (res >=0 && !bLocalTable_ ) return; //в xlsx низя .... нужно сделать тогда отдельную  table.xml
+
 		values_[ind].numRef_.formula	= converter.convert_chart_distance(value);
 		values_[ind].numRef_.present	= true;
 		values_[ind].present			= true;
@@ -89,18 +92,40 @@ void oox_chart_series::set_cache_only (bool val)
 
 void oox_chart_series::parse_properties()
 {
-	_CP_OPT(int)	iSymbolType;
-	odf_reader::GetProperty(content_.properties_, L"symbol-type",iSymbolType);   //    noneSymbol,    autoSymbol,     namedSymbol
+	_CP_OPT(int)			intVal;
+	_CP_OPT(bool)			boolVal;
+	_CP_OPT(std::wstring)	strVal;
+	odf_reader::GetProperty(content_.properties_, L"symbol-type", intVal);   //    noneSymbol,    autoSymbol,     namedSymbol
 
-	if (iSymbolType)
+	if (intVal)
 	{
-		iSymbolMarkerType_ = iSymbolType.get() ;
+		iSymbolMarkerType_ = intVal.get() ;
 		if (iSymbolMarkerType_ == 2)
 		{
-			odf_reader::GetProperty(content_.properties_, L"symbol-name",iSymbolType);   //    квадратики, звездочки ...
-			if (iSymbolType)iSymbolMarkerType_ = iSymbolType.get() ;
-			else iSymbolMarkerType_ = 0;//выключим
+			odf_reader::GetProperty(content_.properties_, L"symbol-name", intVal);   //    квадратики, звездочки ...
+			
+			if (intVal)	iSymbolMarkerType_	= intVal.get() ;
+			else		iSymbolMarkerType_	= 0;//выключим
 		}
+	}
+	//odf_reader::GetProperty(content_.properties_, L"data-label-symbol", boolVal);
+	//if (boolVal)
+	//{
+	//	if (!data_labels) data_labels_ = oox_data_labels();
+	//	//data_labels_->
+	//}
+	odf_reader::GetProperty(content_.properties_, L"data-label-text", boolVal);
+	if (boolVal)
+	{
+		if (!data_labels_) data_labels_ = oox_data_labels();
+		data_labels_->set_showCatName(*boolVal); 
+	}
+	odf_reader::GetProperty(content_.properties_, L"data-label-number", intVal);
+	if (intVal)
+	{
+		if (!data_labels_) data_labels_ = oox_data_labels();
+		if (*intVal == 1)	data_labels_->set_showVal(true); 
+		if (*intVal == 2)	data_labels_->set_showPercent(true); 		
 	}
 }
 void oox_chart_series::setValues(int ind, std::vector<std::wstring> & values)
@@ -326,6 +351,28 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 				shape.oox_serialize(CP_XML_STREAM());
 
 
+			}
+		}
+		if (data_labels_)
+			data_labels_->oox_serialize(_Wostream);
+
+		int indPoint = 0;
+		for (int i = 0 ; i < content_.points_.size(); i++)
+		{
+			for (int j = 0 ; j < content_.points_[i].repeated_; j++)
+			{
+				CP_XML_NODE(L"c:dPt")
+				{
+					CP_XML_NODE(L"c:idx")
+					{
+						CP_XML_ATTR(L"val", indPoint++);
+					}
+					if (content_.points_[i].graphic_properties_.size() > 0 && content_.points_[i].fill_.type >= 0)
+					{
+						shape.set( content_.points_[i].graphic_properties_, content_.points_[i].fill_);
+						shape.oox_serialize(CP_XML_STREAM());
+					}
+				}
 			}
 		}
 	}

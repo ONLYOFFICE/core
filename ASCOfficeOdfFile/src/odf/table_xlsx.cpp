@@ -738,6 +738,16 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
                         {
                             CP_XML_NODE(L"f")
                             {
+								if (table_table_cell_attlist_extra_.table_number_matrix_columns_spanned_ && table_table_cell_attlist_extra_.table_number_matrix_rows_spanned_)
+								{
+									std::wstring ref = oox::getCellAddress(Context.current_table_column(), Context.current_table_row());
+									ref += L":";
+									ref += oox::getCellAddress(Context.current_table_column() + *table_table_cell_attlist_extra_.table_number_matrix_columns_spanned_ - 1,
+										 Context.current_table_row() + *table_table_cell_attlist_extra_.table_number_matrix_rows_spanned_ - 1);
+									CP_XML_ATTR(L"ref", ref);
+									CP_XML_ATTR(L"t", L"array");
+									CP_XML_ATTR(L"aca", false);
+								}
                                 //CP_XML_CONTENT(xml::utils::replace_lt_gt(xlsxFormula));
                                 CP_XML_CONTENT(xlsxFormula);
                             }

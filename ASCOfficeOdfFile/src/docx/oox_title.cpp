@@ -11,8 +11,9 @@ namespace oox {
 
 void oox_title::oox_serialize(std::wostream & _Wostream)
 {
-	if (content_.content_.length()<1)return;
-    CP_XML_WRITER(_Wostream)
+	if (content_.content_.length()<1)	return;
+    
+	CP_XML_WRITER(_Wostream)
     {
 		CP_XML_NODE(L"c:title")
         {

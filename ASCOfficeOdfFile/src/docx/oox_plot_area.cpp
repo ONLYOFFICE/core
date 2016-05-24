@@ -97,14 +97,21 @@ void oox_plot_area::oox_serialize(std::wostream & _Wostream)
 		CP_XML_NODE(L"c:plotArea")
         {
 			//CP_XML_NODE(L"c:layout"){}
+			bool axisPresent = true;
 			
 			BOOST_FOREACH(oox_chart_ptr const & ch, charts_)
 			{
 				ch->oox_serialize(CP_XML_STREAM());
+
+				if (ch->type_ == CHART_TYPE_PIE || 
+					ch->type_ == CHART_TYPE_DOUGHNUT) axisPresent = false;
 			}
-			BOOST_FOREACH(oox_axis_content_ptr const & a, axis_)
+			if (axisPresent)
 			{
-				a->oox_serialize(CP_XML_STREAM());
+				BOOST_FOREACH(oox_axis_content_ptr const & a, axis_)
+				{
+					a->oox_serialize(CP_XML_STREAM());
+				}
 			}
 			shape.oox_serialize(CP_XML_STREAM());
 		}

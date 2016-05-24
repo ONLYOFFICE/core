@@ -118,7 +118,7 @@ namespace formulasconvert {
 	}
 	std::wstring replace_named_ref_formater1(boost::wsmatch const & what)
 	{
-		boost::wregex complexRef(L"\\$([^\\.]+?){0,1}\\.(\\$[a-zA-Z]+\\$\\d+)(?::\\.(\\$[a-zA-Z]+\\$\\d+)){0,1}");
+		boost::wregex complexRef(L"\\$([^\\.]+?){0,1}\\.(\\$[a-zA-Z]+\\${0,1}\\d+)(?::\\.(\\$[a-zA-Z]+\\${0,1}\\d+)){0,1}");
 
 		std::wstring expr = what[1].str();
 		const std::wstring res = boost::regex_replace(
@@ -141,8 +141,8 @@ namespace formulasconvert {
 void odf2oox_converter::Impl::replace_cells_range(std::wstring& expr)
 {
     //boost::wregex simpleRef(L"\\[\\.([a-zA-Z]+\\d+)(?::\\.([a-zA-Z]+\\d+)){0,1}\\]");
-    //boost::wregex complexRef(L"\\[(?:\\$)?([^\\.]+?){0,1}\\.([a-zA-Z\\$]+\\d+)(?::\\.([a-zA-Z]+\\d+)){0,1}\\]");
-	boost::wregex complexRef(L"\\[(.*?)\\]");
+    boost::wregex complexRef(L"\\[(?:\\$)?([^\\.]+?){0,1}\\.(\\${0,1}[a-zA-Z]+\\${0,1}\\d+)(?::\\.(\\${0,1}[a-zA-Z]+\\${0,1}\\d+)){0,1}\\]");
+	//boost::wregex complexRef(L"\\[(.*?)\\]");
     /*
                                  [     $   Sheet2          . A1                  :  . B5                    ]
 
@@ -151,7 +151,7 @@ void odf2oox_converter::Impl::replace_cells_range(std::wstring& expr)
     const std::wstring res = boost::regex_replace(
         expr,
         complexRef,
-        &replace_named_ref_formater1,
+        &replace_named_ref_formater,
         boost::match_default | boost::format_all);
     expr = res;
 }
@@ -160,7 +160,7 @@ void odf2oox_converter::Impl::replace_cells_range(std::wstring& expr)
 
 void odf2oox_converter::Impl::replace_named_ref(std::wstring & expr)
 {
-    boost::wregex complexRef(L"\\$([^\\.]+?){0,1}\\.(\\$[a-zA-Z]+\\$\\d+)(?::\\.(\\$[a-zA-Z]+\\$\\d+)){0,1}");
+	boost::wregex complexRef(L"\\$([^\\.]+?){0,1}\\.(\\$[a-zA-Z]+\\${0,1}\\d+)(?::\\.(\\$[a-zA-Z]+\\${0,1}\\d+)){0,1}");
 
     const std::wstring res = boost::regex_replace(
         expr,

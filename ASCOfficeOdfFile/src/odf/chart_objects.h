@@ -31,26 +31,31 @@ namespace chart {
 
 	struct title
 	{
-		std::wstring content_;
-		std::vector<_property> text_properties_;
+		title() : bEnabled(false), pos_x(0), pos_y(0) {}
+		bool					bEnabled;
 		
-		double pos_x;
-		double pos_y;
+		std::wstring			content_;
+		std::vector<_property>	text_properties_;
+		
+		double					pos_x;
+		double					pos_y;
 		
 	} ; 
 	struct simple
 	{
-		std::vector<_property> properties_; 
- 		std::vector<_property> text_properties_;
-		std::vector<_property> graphic_properties_;
-		oox::_oox_fill fill_;
+		simple() : bEnabled(false) {}
+		bool					bEnabled;
+		std::vector<_property>	properties_; 
+ 		std::vector<_property>	text_properties_;
+		std::vector<_property>	graphic_properties_;
+		oox::_oox_fill			fill_;
 	};
 	struct treadline
 	{
-		bool bEquation;
-		bool bREquation;
-		std::vector<_property> line_properties_;
-		simple equation_properties_;
+		bool					bEquation;
+		bool					bREquation;
+		std::vector<_property>	line_properties_;
+		simple					equation_properties_;
 
 		treadline(){bEquation = false; bREquation = false;}
 
@@ -68,12 +73,13 @@ namespace chart {
         {
             enum grid_type {major, minor};
 
-            grid_type		type_;
-            std::wstring	style_name_;
+            grid_type				type_;
+            std::wstring			style_name_;
  			
-			std::vector<_property> graphic_properties_;
+			std::vector<_property>	graphic_properties_;
        };
 		bool				bCategories_;
+		
 		title title_;
         
 		std::wstring		dimension_;
@@ -87,11 +93,12 @@ namespace chart {
     {
         struct point
         {
-            point(unsigned int rep, std::wstring const & styleName) : repeated_(rep), style_name_(styleName)
-            {}
+			point(unsigned int rep/*, std::wstring const & styleName*/) : repeated_(rep)/*, style_name_(styleName)*/{}
 
-            unsigned int repeated_;
-            std::wstring style_name_;
+            unsigned int			repeated_;
+			std::vector<_property>	graphic_properties_;
+			oox::_oox_fill			fill_;
+
         };
 
         std::wstring		name_;

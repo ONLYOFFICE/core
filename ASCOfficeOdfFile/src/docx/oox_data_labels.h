@@ -10,7 +10,7 @@
 namespace cpdoccore {
 namespace oox {
 
-class oox_data_labels: boost::noncopyable
+class oox_data_labels
 {
 public:
 	oox_data_labels();
@@ -18,13 +18,13 @@ public:
  
     void oox_serialize(std::wostream & _Wostream);
 
-	void set_showBubbleSize(bool Val){showBubbleSize_ = Val;}
-	void set_showCatName(bool Val){showCatName_ = Val;}
+	void set_showBubbleSize	(bool Val){showBubbleSize_	= Val;}
+	void set_showCatName	(bool Val){showCatName_		= Val;}
 	void set_showLeaderLines(bool Val){showLeaderLines_ = Val;}
-	void set_showLegendKey(bool Val){showLegendKey_ = Val;}
-	void set_showPercent(bool Val){showPercent_ = Val;}
-	void set_showSerName(bool Val){showSerName_ = Val;}
-	void set_showVal(bool Val){showVal_ = Val;}
+	void set_showLegendKey	(bool Val){showLegendKey_	= Val;}
+	void set_showPercent	(bool Val){showPercent_		= Val;}
+	void set_showSerName	(bool Val){showSerName_		= Val;}
+	void set_showVal		(bool Val){showVal_			= Val;}
 
    
 private:

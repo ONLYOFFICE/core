@@ -25,8 +25,15 @@ struct xlsx_drawing_position
 
 struct _xlsx_drawing : _oox_drawing
 {
-    xlsx_drawing_position from;
-    xlsx_drawing_position to;
+	_xlsx_drawing() : _oox_drawing(), type_anchor(1) {}
+	
+	int type_anchor;
+    
+	xlsx_drawing_position	from_;
+    xlsx_drawing_position	to_;
+
+	std::wstring			content_group_;
+
     
     friend void xlsx_serialize(std::wostream & _Wostream, _xlsx_drawing & val);    
 };

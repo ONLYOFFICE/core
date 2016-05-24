@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
     oRenderer.put_Width(dWidthMM);
     oRenderer.put_Height(dHeightMM);
 
-    oRenderer.put_FontPath(L"D:\\activex\\AVS\\Sources\\TeamlabOffice\\trunk\\ServerComponents\\DesktopEditor\\ChromiumBasedEditors2\\app\\test\\src\\build\\win64\\Debug\\fonts\\fonts\\truetype\\xmind\\Lobster-Regular.ttf");
+    oRenderer.put_FontPath(L"Lobster-Regular.ttf");
     oRenderer.put_FontFaceIndex(0);
     oRenderer.put_FontSize(18);
 

@@ -9,8 +9,6 @@
 #include "Document.h"
 #include "../../DesktopEditor/fontengine/FontConverter.h"
 
-#include "../../DesktopEditor/ChromiumBasedEditors2/lib/src/Logger.h"
-
 namespace NSHtmlRenderer
 {
     static double	__g_matrix_eps	= 0.0001;

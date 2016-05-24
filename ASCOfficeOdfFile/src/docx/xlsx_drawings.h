@@ -18,9 +18,9 @@ struct drawing_elm
         : filename(_filename), content(_content), drawings(_drawings)
     {}
     
-    std::wstring filename;
-    std::wstring content;
-    xlsx_drawings_ptr drawings;
+    std::wstring		filename;
+    std::wstring		content;
+    xlsx_drawings_ptr	drawings;
 };
 
 struct _xlsx_drawing;
@@ -29,28 +29,18 @@ class rels;
 class xlsx_drawings
 {
 public:
-    xlsx_drawings();
-    ~xlsx_drawings();
-    static xlsx_drawings_ptr create();
+    xlsx_drawings	(bool inGroup_);
+    ~xlsx_drawings	();
+    static xlsx_drawings_ptr create(bool inGroup);
 
 public:
-    void add(_xlsx_drawing const & d,
-        bool isInternal,
-        std::wstring const & rid,
-        std::wstring const & ref,
-		mediaitems::Type type
-        );
-    void add(/**/
-        bool isInternal,
-        std::wstring const & rid,
-        std::wstring const & ref,
-		mediaitems::Type type
-        );
-    bool empty() const;
+    void add	(_xlsx_drawing const & d, bool isInternal, std::wstring const & rid, std::wstring const & ref, mediaitems::Type type);
+    void add	(bool isInternal, std::wstring const & rid, std::wstring const & ref, mediaitems::Type type );
+    
+	bool empty		() const;
+    void dump_rels	(rels & Rels);
 
-    void dump_rels(rels & Rels);
     friend void xlsx_serialize(std::wostream & _Wostream, xlsx_drawings const & val);    
-
 private:
     class Impl;
     _CP_SCOPED_PTR(Impl) impl_;

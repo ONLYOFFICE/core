@@ -37,10 +37,50 @@ namespace odf_reader {
 
 void draw_g::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-	for (int i = 0 ; i < content_.size(); i++)
+	common_draw_shape_with_styles_attlist common_draw_attlist_ = common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_;
+
+    const int z_index = common_draw_attlist_.common_draw_z_index_attlist_.draw_z_index_.get_value_or(0);
+
+    const std::wstring name = common_draw_attlist_.common_draw_name_attlist_.draw_name_.get_value_or(L"");
+
+ //////////////////////////////////////////////////////////////////////////
+	Context.get_drawing_context().start_group( name);
+	
+	//const _CP_OPT(length) svg_widthVal =  common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_;    
+ //   const _CP_OPT(length) svg_heightVal = common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_height_;
+
+	//if (svg_widthVal && svg_heightVal)
+	//{
+	//	const double width_pt = svg_widthVal.get_value_or(length(0)).get_value_unit(length::pt);
+	//	const double height_pt = svg_heightVal.get_value_or(length(0)).get_value_unit(length::pt);
+
+	//	const double x_pt = common_draw_attlists_.position_.svg_x_.get_value_or(length(0)).get_value_unit(length::pt);
+	//	const double y_pt = common_draw_attlists_.position_.svg_y_.get_value_or(length(0)).get_value_unit(length::pt);
+
+	//	Context.get_drawing_context().set_rect(width_pt, height_pt, x_pt, y_pt);
+	//}
+
+////////////////////////////////////////
+	std::wstring Anchor;
+	if (common_draw_attlist_.common_text_spreadsheet_shape_attlist_.table_end_cell_address_)
+	{
+		Anchor = common_draw_attlist_.common_text_spreadsheet_shape_attlist_.table_end_cell_address_.get();
+		const double a_x_pt = common_draw_attlist_.common_text_spreadsheet_shape_attlist_.table_end_x_.get_value_or(length(0)).get_value_unit(length::pt);
+		const double a_y_pt = common_draw_attlist_.common_text_spreadsheet_shape_attlist_.table_end_y_.get_value_or(length(0)).get_value_unit(length::pt);
+
+		Context.get_drawing_context().set_anchor(Anchor, a_x_pt, a_y_pt, true);
+	}
+
+////////////////////////////////////////////////
+
+	for (int i = 0; i < content_.size(); i++)
     {
-        content_[i]->xlsx_convert(Context);
+		office_element_ptr const & elm = content_[i];
+        elm->xlsx_convert(Context);
     }
+
+    Context.get_drawing_context().end_group();    
+	Context.get_drawing_context().clear();
 }
 void draw_frame::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
@@ -83,10 +123,11 @@ void draw_frame::xlsx_convert(oox::xlsx_conversion_context & Context)
 	if (common_draw_attlist_.common_text_spreadsheet_shape_attlist_.table_end_cell_address_)
 	{
 		Anchor = common_draw_attlist_.common_text_spreadsheet_shape_attlist_.table_end_cell_address_.get();
+		
 		const double a_x_pt = common_draw_attlist_.common_text_spreadsheet_shape_attlist_.table_end_x_.get_value_or(length(0)).get_value_unit(length::pt);
 		const double a_y_pt = common_draw_attlist_.common_text_spreadsheet_shape_attlist_.table_end_y_.get_value_or(length(0)).get_value_unit(length::pt);
 
-		Context.get_drawing_context().set_anchor(Anchor,a_x_pt,a_y_pt);
+		Context.get_drawing_context().set_anchor(Anchor, a_x_pt, a_y_pt);
 	}
 //////////////////////////////////////////////
 	std::vector<const odf_reader::style_instance *> instances;
@@ -120,20 +161,14 @@ void draw_frame::xlsx_convert(oox::xlsx_conversion_context & Context)
 																	Context.root()->odf_context().drawStyles() ,fill);	
 	Context.get_drawing_context().set_fill(fill);
 ////////////////////////////////////////////////
-    //BOOST_FOREACH(office_element_ptr const & elm, content_)
-    //{
-    //    elm->xlsx_convert(Context);
-    //}
-	int i=0;
-	int size = content_.size();
-	while(true)
+	for (int i = 0 ; i < content_.size(); i++)
     {
-		if (i>=size)break;
 		office_element_ptr const & elm = content_[i];
         elm->xlsx_convert(Context);
-		i++;
     }
     Context.get_drawing_context().end_drawing();    
+
+	Context.get_drawing_context().clear();
 }
 
 void draw_image::xlsx_convert(oox::xlsx_conversion_context & Context)
@@ -143,13 +178,9 @@ void draw_image::xlsx_convert(oox::xlsx_conversion_context & Context)
 ////////////////////////////////////в принципе достаточно обща€ часть ...	
 	Context.get_text_context().start_drawing_content();//...  если в объекте есть текст он прив€жетс€ к объекту - иначе к €чейке
 
-	int i=0;
-	int size = content_.size();
-	while(true)
+	for (int i = 0 ; i < content_.size(); i++)
     {
-		if (i>=size)break;
 		content_[i]->xlsx_convert(Context);
-		i++;
     }
 	std::wstring text_content_ = Context.get_text_context().end_drawing_content();
 
@@ -165,17 +196,9 @@ void draw_chart::xlsx_convert(oox::xlsx_conversion_context & Context)
     const std::wstring href = common_xlink_attlist_.href_.get_value_or(L"");
     Context.get_drawing_context().start_chart(href);
 
-    //BOOST_FOREACH(office_element_ptr const & elm, content_)
-    //{
-    //     elm->xlsx_convert(Context);
-    //}
-	int i=0;
-	int size = content_.size();
-	while(true)
+ 	for (int i = 0 ; i < content_.size(); i++)
     {
-		if (i>=size)break;
 		content_[i]->xlsx_convert(Context);
-		i++;
     }
     Context.get_drawing_context().end_chart();
 }
@@ -184,25 +207,18 @@ void draw_text_box::xlsx_convert(oox::xlsx_conversion_context & Context)
 	Context.get_drawing_context().start_shape(2);//rect с наваротами
 	Context.get_text_context().start_drawing_content();
 
-    //BOOST_FOREACH(office_element_ptr const & elm, content_)
-    //{
-    //    elm->xlsx_convert(Context);
-    //}
-	int i=0;
-	int size = content_.size();
-	while(true)
+	for (int i = 0 ; i < content_.size(); i++)
     {
-		if (i>=size)break;
 		content_[i]->xlsx_convert(Context);
-		i++;
     }
+
 	std::wstring text_content_ = Context.get_text_context().end_drawing_content();
 
 	if (text_content_.length()>0)
 	{
 		Context.get_drawing_context().set_property(_property(L"text-content",text_content_));
 	}
-    Context.get_drawing_context().end_shape();    
+    Context.get_drawing_context().end_shape();  
 }
 void draw_object::xlsx_convert(oox::xlsx_conversion_context & Context)
 {

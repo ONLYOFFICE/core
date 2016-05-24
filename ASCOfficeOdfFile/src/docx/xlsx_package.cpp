@@ -274,7 +274,8 @@ void xl_drawings::write(const std::wstring & RootPath)
 
         rels_files relFiles;
         rels_file_ptr r = rels_file::create(e.filename + L".rels");
-        e.drawings->dump_rels(r->get_rels());
+        
+		e.drawings->dump_rels(r->get_rels());
                 
         relFiles.add_rel_file(r);
         relFiles.write(path);

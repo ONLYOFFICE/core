@@ -235,13 +235,13 @@ public:
 	void serialize(CP_ATTR_NODE);
 
 public:
-    _CP_OPT(office_value_type) office_value_type_;
-    _CP_OPT(std::wstring) office_value_;
-    _CP_OPT(std::wstring) office_currency_;
-    _CP_OPT(std::wstring) office_date_value_;
-    _CP_OPT(std::wstring) office_time_value_;
-    _CP_OPT(std::wstring) office_boolean_value_;
-    _CP_OPT(std::wstring) office_string_value_;
+    _CP_OPT(office_value_type)	office_value_type_;
+    _CP_OPT(std::wstring)		office_value_;
+    _CP_OPT(std::wstring)		office_currency_;
+    _CP_OPT(std::wstring)		office_date_value_;
+    _CP_OPT(std::wstring)		office_time_value_;
+    _CP_OPT(std::wstring)		office_boolean_value_;
+    _CP_OPT(std::wstring)		office_string_value_;
 
 };
 

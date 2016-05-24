@@ -56,6 +56,8 @@ void oox_chart_legend::oox_serialize_default_text(std::wostream & _Wostream)
 
 void oox_chart_legend::oox_serialize(std::wostream & _Wostream)
 {
+	if (content_.bEnabled ==false) return;
+
 	oox_chart_shape shape;
 
 	CP_XML_WRITER(_Wostream)

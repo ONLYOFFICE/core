@@ -62,12 +62,13 @@ public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
 public:
-    unsigned int					table_number_columns_repeated_; // default 1
-    _CP_OPT(odf_types::style_ref)	table_style_name_;
-    _CP_OPT(std::wstring)			table_content_validation_name_;
-    _CP_OPT(std::wstring)			table_formula_;
+    unsigned int								table_number_columns_repeated_; // default 1
+    _CP_OPT(odf_types::style_ref)				table_style_name_;
+    _CP_OPT(std::wstring)						table_content_validation_name_;
+    _CP_OPT(std::wstring)						table_formula_;
 
-    odf_types::common_value_and_type_attlist common_value_and_type_attlist_;
+    odf_types::common_value_and_type_attlist	common_value_and_type_attlist_;
+
 
     bool table_protect_; // default false
         
@@ -80,10 +81,11 @@ public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
 public:
-    unsigned int table_number_columns_spanned_; // default 1
-    unsigned int table_number_rows_spanned_; // default 1
-    _CP_OPT(unsigned int) table_number_matrix_columns_spanned_;
-    _CP_OPT(unsigned int) table_number_matrix_rows_spanned_;
+    unsigned int			table_number_columns_spanned_; // default 1
+    unsigned int			table_number_rows_spanned_; // default 1
+
+    _CP_OPT(unsigned int)	table_number_matrix_columns_spanned_;
+    _CP_OPT(unsigned int)	table_number_matrix_rows_spanned_;
 
 };
 

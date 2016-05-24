@@ -43,8 +43,8 @@ namespace oox {
         }
         mediaitems::Type type;
 
- 		bool inGroup;
-		size_t id;
+ 		bool	inGroup;
+		size_t	id;
 
         std::wstring name;
 

@@ -157,6 +157,30 @@ void xlsx_serialize_shape(std::wostream & strm, _xlsx_drawing & val)
         } 
     }  // CP_XML_WRITER  
 }
+void xlsx_serialize_group(std::wostream & strm, _xlsx_drawing & val)
+{
+	CP_XML_WRITER(strm)    
+    {
+		CP_XML_NODE(L"xdr:grpSp")
+		{
+            CP_XML_NODE(L"xdr:nvGrpSpPr")
+            {
+                CP_XML_NODE(L"xdr:cNvPr")
+                {
+                    CP_XML_ATTR(L"id", val.id);
+                    CP_XML_ATTR(L"name", val.name);
+                }
+				CP_XML_NODE(L"xdr:cNvGrpSpPr");
+            }
+			CP_XML_NODE(L"xdr:grpSpPr")
+			{
+				oox_serialize_xfrm(CP_XML_STREAM(),val);
+
+			} 
+			CP_XML_STREAM() << val.content_group_;
+		}
+	}
+}
 
 void xlsx_serialize_chart(std::wostream & strm, _xlsx_drawing & val)
 {
@@ -194,31 +218,65 @@ void xlsx_serialize_chart(std::wostream & strm, _xlsx_drawing & val)
 		} // xdr:graphicFrame
     }  // CP_XML_WRITER  
 }
-
+void xlsx_serialize_object(std::wostream & strm, _xlsx_drawing & val)
+{
+	if (val.type == mediaitems::typeShape)
+	{
+		xlsx_serialize_shape(strm, val);
+	}
+	else if (val.type == mediaitems::typeImage)
+	{
+		xlsx_serialize_image(strm, val);
+	}
+	else if (val.type == mediaitems::typeChart)
+	{
+		xlsx_serialize_chart(strm, val);
+	}
+	else if (val.type == mediaitems::typeGroup)
+	{
+		xlsx_serialize_group(strm, val);
+	}
+}
 void xlsx_serialize(std::wostream & strm, _xlsx_drawing & val)
 {
-     CP_XML_WRITER(strm)    
+	if (val.inGroup) return xlsx_serialize_object(strm, val);
+	
+	CP_XML_WRITER(strm)    
     {
-		CP_XML_NODE(L"xdr:twoCellAnchor")
-        {
-			CP_XML_ATTR(L"editAs", L"oneCell");//"absolute");
+		if (val.type_anchor == 1)
+		{
+			CP_XML_NODE(L"xdr:twoCellAnchor")
+			{
+				//CP_XML_ATTR(L"editAs", L"absolute");//"absolute");oneCell
 
-			xlsx_serialize(CP_XML_STREAM(), val.from);
-			xlsx_serialize(CP_XML_STREAM(), val.to);
-			
-			if (val.type == mediaitems::typeShape)
-			{
-				xlsx_serialize_shape(CP_XML_STREAM(),val);
+				xlsx_serialize			(CP_XML_STREAM(), val.from_);
+				xlsx_serialize			(CP_XML_STREAM(), val.to_);
+
+				xlsx_serialize_object	(CP_XML_STREAM(),val);
+				
+				CP_XML_NODE(L"xdr:clientData");
 			}
-			else if (val.type == mediaitems::typeImage)
+		}
+		else
+		{
+			CP_XML_NODE(L"xdr:absoluteAnchor")
 			{
-				xlsx_serialize_image(CP_XML_STREAM(),val);
+				CP_XML_NODE(L"xdr:pos")
+				{
+					CP_XML_ATTR(L"x", val.x);
+					CP_XML_ATTR(L"y", val.y);
+				}
+
+				CP_XML_NODE(L"xdr:ext")
+				{
+					CP_XML_ATTR(L"cx", val.cx);
+					CP_XML_ATTR(L"cy", val.cy);
+				}
+
+				xlsx_serialize_object	(CP_XML_STREAM(),val);
+				
+				CP_XML_NODE(L"xdr:clientData");
 			}
-			else if (val.type == mediaitems::typeChart)
-			{
-				xlsx_serialize_chart(CP_XML_STREAM(),val);
-			}
-			CP_XML_NODE(L"xdr:clientData");
 		}
 
 	 }

@@ -599,43 +599,25 @@ const wchar_t * table_shapes::name = L"shapes";
 
 void table_shapes::docx_convert(oox::docx_conversion_context & Context)
 {
-	int i=0;
-	int size = content_.size();
-	while(true)
-    {
-		if (i>=size)break;
+	for (int i = 0 ; i < content_.size(); i++)
+	{
         content_[i]->docx_convert(Context);
-		i++;
     }
 }
 void table_shapes::pptx_convert(oox::pptx_conversion_context & Context)
 {
-	int i=0;
-	int size = content_.size();
-	while(true)
-    {
-		if (i>=size)break;
+	for (int i = 0 ; i < content_.size(); i++)
+	{
         content_[i]->pptx_convert(Context);
-		i++;
     }
 }
 
 void table_shapes::xlsx_convert(oox::xlsx_conversion_context & Context) 
 {
-    Context.get_drawing_context().start_shapes();
-    //BOOST_FOREACH(office_element_ptr const & elm, content_)
-    //{
-    //    elm->xlsx_convert(Context);
-    //}
-	int i=0;
-	int size = content_.size();
-	while(true)
-    {
-		if (i>=size)break;
+	for (int i = 0 ; i < content_.size(); i++)
+	{
 		content_[i]->xlsx_convert(Context);
-		i++;
     }
-    Context.get_drawing_context().end_shapes();
 }
 
 void table_shapes::add_attributes( const xml::attributes_wc_ptr & Attributes )

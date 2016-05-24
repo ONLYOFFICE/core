@@ -12,13 +12,13 @@ namespace oox {
 oox_data_labels::oox_data_labels()//подписи на значени€х
 {
 	//пол€ какие писать у значений
-	showBubbleSize_ = false;
-	showCatName_ = false;
-	showLeaderLines_ = false;
-	showLegendKey_ = false;
-	showPercent_ = false;
-	showSerName_ = false;
-	showVal_ = false;
+	showBubbleSize_		= false;
+	showCatName_		= false;
+	showLeaderLines_	= false;
+	showLegendKey_		= false;
+	showPercent_		= false;
+	showSerName_		= false;
+	showVal_			= false;
 }
 void oox_data_labels::oox_serialize(std::wostream & _Wostream)
 {

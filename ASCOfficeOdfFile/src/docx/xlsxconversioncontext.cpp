@@ -293,9 +293,7 @@ void xlsx_conversion_context::end_table()
 
 	get_drawing_context().set_odf_packet_path(root()->get_folder());
 
-    get_drawing_context().process_charts(get_table_metrics());
-    get_drawing_context().process_images(get_table_metrics());
-    get_drawing_context().process_shapes(get_table_metrics());
+    get_drawing_context().process_objects(get_table_metrics());
 
 	if (!get_drawing_context().empty())
     {

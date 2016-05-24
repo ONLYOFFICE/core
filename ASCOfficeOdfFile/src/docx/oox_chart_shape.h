@@ -21,8 +21,8 @@ public:
     void oox_serialize(std::wostream & _Wostream);
 			
 private:
-	std::vector<odf_reader::_property> content_;
-	_oox_fill					fill_;
+	std::vector<odf_reader::_property>	content_;
+	_oox_fill							fill_;
 
     
 private:

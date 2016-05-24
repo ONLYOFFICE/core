@@ -15,24 +15,20 @@ class xlsx_drawings::Impl
     struct rel_
     { 
         rel_(bool is_internal, std::wstring const & rid, std::wstring const & ref,  mediaitems::Type type) :
-        is_internal_(is_internal),
-        rid_(rid),
-        ref_(ref),
-        type_(type)
-        {}
+				is_internal_(is_internal),
+				rid_(rid),
+				ref_(ref),
+				type_(type)
+			{}
 
-        bool is_internal_;
-        std::wstring rid_;
-        std::wstring ref_;
-        mediaitems::Type type_;
+        bool				is_internal_;
+        std::wstring		rid_;
+        std::wstring		ref_;
+        mediaitems::Type	type_;
     };
 
 public:
-    void add(_xlsx_drawing const & d,
-        bool isInternal,
-        std::wstring const & rid,
-        std::wstring const & ref,
-		mediaitems::Type type)
+    void add(_xlsx_drawing const & d, bool isInternal, std::wstring const & rid, std::wstring const & ref, mediaitems::Type type)
     {
         xlsx_drawings_.push_back(d);
 		
@@ -51,11 +47,7 @@ public:
 			xlsx_drawing_rels_.push_back(rel_(false, h.hId, h.hRef, mediaitems::typeHyperlink));
 		}
     }
-    void add(/**/
-        bool isInternal,
-        std::wstring const & rid,
-        std::wstring const & ref,
-		mediaitems::Type type)
+    void add( bool isInternal, std::wstring const & rid, std::wstring const & ref, mediaitems::Type type)
     {
 		bool present = false;
         BOOST_FOREACH(rel_ const & r, xlsx_drawing_rels_)
@@ -70,22 +62,33 @@ public:
     }
 
 
+	
 	void serialize(std::wostream & strm) 
     {
-        CP_XML_WRITER(strm)
-        {
-            CP_XML_NODE(L"xdr:wsDr")
-            {
-                CP_XML_ATTR(L"xmlns:xdr", L"http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing");
-                CP_XML_ATTR(L"xmlns:a"	, L"http://schemas.openxmlformats.org/drawingml/2006/main");
-                CP_XML_ATTR(L"xmlns:r"	, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
-
-				BOOST_FOREACH(_xlsx_drawing & d, xlsx_drawings_)
-                {
-                    xlsx_serialize(CP_XML_STREAM(), d);
-                }
+		if (inGroup)
+		{
+			BOOST_FOREACH(_xlsx_drawing & d, xlsx_drawings_)
+			{
+				xlsx_serialize(strm, d);
 			}
-        }
+		}
+		else
+		{
+			CP_XML_WRITER(strm)
+			{
+				CP_XML_NODE(L"xdr:wsDr")
+				{
+					CP_XML_ATTR(L"xmlns:xdr", L"http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing");
+					CP_XML_ATTR(L"xmlns:a"	, L"http://schemas.openxmlformats.org/drawingml/2006/main");
+					CP_XML_ATTR(L"xmlns:r"	, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
+
+					BOOST_FOREACH(_xlsx_drawing & d, xlsx_drawings_)
+					{
+						xlsx_serialize(CP_XML_STREAM(), d);
+					}
+				}
+			}
+		}
     }
     
     bool empty() const
@@ -130,37 +133,34 @@ public:
 		}
     }
 
+	bool inGroup;
+
 private:
 
-	std::vector<_xlsx_drawing> xlsx_drawings_;
-	
-	std::vector<rel_> xlsx_drawing_rels_;
+	std::vector<_xlsx_drawing>	xlsx_drawings_;	
+	std::vector<rel_>			xlsx_drawing_rels_;
 };
 
-xlsx_drawings::xlsx_drawings() : impl_( new xlsx_drawings::Impl() )
+xlsx_drawings::xlsx_drawings(bool inGroup_) : impl_( new xlsx_drawings::Impl() )
 {
+	impl_->inGroup = inGroup_;
 }
 
 xlsx_drawings::~xlsx_drawings()
 {
 }
 
-void xlsx_drawings::add(_xlsx_drawing const & d,
-        bool isInternal,
-        std::wstring const & rid,
-        std::wstring const & ref,
-        mediaitems::Type type)
+void xlsx_drawings::add(_xlsx_drawing const & d, bool isInternal, std::wstring const & rid,
+															std::wstring const & ref, mediaitems::Type type)
 {
     impl_->add(d, isInternal, rid, ref, type);
 }
-void xlsx_drawings::add(/**/
-        bool isInternal,
-        std::wstring const & rid,
-        std::wstring const & ref,
-        mediaitems::Type type)
+
+void xlsx_drawings::add( bool isInternal, std::wstring const & rid, std::wstring const & ref, mediaitems::Type type)
 {
     impl_->add(isInternal, rid, ref, type);
 }
+
 void xlsx_serialize(std::wostream & _Wostream, xlsx_drawings const & val)
 {
     val.impl_->serialize(_Wostream);
@@ -176,9 +176,9 @@ void xlsx_drawings::dump_rels(rels & Rels)
     return impl_->dump_rels(Rels);
 }
 
-xlsx_drawings_ptr xlsx_drawings::create()
+xlsx_drawings_ptr xlsx_drawings::create(bool inGroup)
 {
-    return boost::make_shared<xlsx_drawings>();
+    return boost::make_shared<xlsx_drawings>(inGroup);
 }
 
 }

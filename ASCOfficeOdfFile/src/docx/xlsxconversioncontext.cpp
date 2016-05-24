@@ -269,19 +269,24 @@ void xlsx_conversion_context::end_table()
     {
         unsigned int cMin = get_table_context().columns_count() + 1;
         unsigned int cMax = (std::max)((unsigned int)1024, get_table_context().columns_count() + 100);
-        CP_XML_WRITER(current_sheet().cols())
-        {
-            CP_XML_NODE(L"col")
-            {
-				//CP_XML_ATTR(L"collapsed", L"false");            
-				//CP_XML_ATTR(L"hidden", L"false");            
-                CP_XML_ATTR(L"max", cMax);
-                CP_XML_ATTR(L"min", cMin);
-                //CP_XML_ATTR(L"style", 0);
-                CP_XML_ATTR(L"width", lastWidht);
-                CP_XML_ATTR(L"customWidth", 0);
-            }
-        }
+
+		if (cMin < 16384)
+		{
+			if (cMax > 16384) cMax = 16384;
+			CP_XML_WRITER(current_sheet().cols())
+			{
+				CP_XML_NODE(L"col")
+				{
+					//CP_XML_ATTR(L"collapsed", L"false");            
+					//CP_XML_ATTR(L"hidden", L"false");            
+					CP_XML_ATTR(L"max", cMax);
+					CP_XML_ATTR(L"min", cMin);
+					//CP_XML_ATTR(L"style", 0);
+					CP_XML_ATTR(L"width", lastWidht);
+					CP_XML_ATTR(L"customWidth", 0);
+				}
+			}
+		}
     }    
     current_sheet().cols() << L"</cols>";
     

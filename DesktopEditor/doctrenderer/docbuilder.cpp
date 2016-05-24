@@ -5,7 +5,7 @@
 #include <iostream>
 
 #define ASC_APPLICATION_FONTS_NO_THUMBNAILS
-#include "../ChromiumBasedEditors2/lib/src/application_generate_fonts.h"
+#include "../fontengine/application_generate_fonts.h"
 
 #include "../common/File.h"
 #include "../common/Directory.h"

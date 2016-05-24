@@ -60,7 +60,7 @@ void oox_serialize_ln(std::wostream & strm, const std::vector<odf_reader::_prope
 	_CP_OPT(std::wstring)	strStrokeColor; 
 	_CP_OPT(int)			iStroke;
 	_CP_OPT(double)			dStrokeWidth;
-	_CP_OPT(std::wstring)	strStrokeOpacity; 
+	_CP_OPT(double)	dStrokeOpacity; 
 	_CP_OPT(bool)			bWordArt;
 	
 	odf_reader::GetProperty(prop, L"wordArt", bWordArt);
@@ -68,7 +68,7 @@ void oox_serialize_ln(std::wostream & strm, const std::vector<odf_reader::_prope
 	odf_reader::GetProperty(prop, L"stroke-color"	, strStrokeColor);	
 	odf_reader::GetProperty(prop, L"stroke"			, iStroke);	
 	odf_reader::GetProperty(prop, L"stroke-width"	, dStrokeWidth);
-	odf_reader::GetProperty(prop, L"stroke-opacity"	, strStrokeOpacity);
+	odf_reader::GetProperty(prop, L"stroke-opacity"	, dStrokeOpacity);
 
 	if ((!strStrokeColor && !iStroke && !dStrokeWidth) && !always_draw)return;
 
@@ -78,7 +78,7 @@ void oox_serialize_ln(std::wostream & strm, const std::vector<odf_reader::_prope
         { 
 			std::wstring color, dash_style, fill = L"a:solidFill" ;
 
-			if (strStrokeColor) color = strStrokeColor.get();
+			if (strStrokeColor) color = *strStrokeColor;
 
 			if (iStroke)
 			{
@@ -86,7 +86,7 @@ void oox_serialize_ln(std::wostream & strm, const std::vector<odf_reader::_prope
 				else dash_style =  _ooxDashStyle[iStroke.get()];	
 			}
 			
-			if ((dStrokeWidth) && (dStrokeWidth.get()>= 0) && fill != L"a:noFill")
+			if ((dStrokeWidth) && (*dStrokeWidth >= 0) && fill != L"a:noFill")
 			{
 				int val = dStrokeWidth.get() * 12700;	//in emu (1 pt = 12700)
 				if (val < 10)	val = 12700;
@@ -99,14 +99,14 @@ void oox_serialize_ln(std::wostream & strm, const std::vector<odf_reader::_prope
 			{ 			
 				if (fill != L"a:noFill")
 				{
-					if		(color.length()<1 && always_draw)	color = L"000000";
-					else if (color.length()<1)					color = L"ffffff";
+					if		(color.length() < 1 && always_draw)	color = L"000000";
+					else if (color.length() <1 )				color = L"ffffff";
 					
 					CP_XML_NODE(L"a:srgbClr")
 					{
 						CP_XML_ATTR(L"val",color);
 						
-						if (strStrokeOpacity)CP_XML_NODE(L"a:alpha"){CP_XML_ATTR(L"val",strStrokeOpacity.get());}
+						if (dStrokeOpacity)	CP_XML_NODE(L"a:alpha"){CP_XML_ATTR(L"val", *dStrokeOpacity);}
 
 					}
 				}
@@ -115,7 +115,7 @@ void oox_serialize_ln(std::wostream & strm, const std::vector<odf_reader::_prope
 			{
 				_CP_OPT(std::wstring)	strVal;
 
-				if (dash_style.length() >0 && dash_style != L"solid")
+				if (dash_style.length() > 0 && dash_style != L"solid")
 				{
 					CP_XML_NODE(L"a:prstDash"){CP_XML_ATTR(L"val", dash_style);}	
 				}

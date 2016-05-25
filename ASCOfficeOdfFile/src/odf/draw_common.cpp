@@ -333,7 +333,7 @@ void Compute_GradientFill(draw_gradient * image_style,oox::oox_gradient_fill_ptr
 
 void Compute_GraphicFill(const common_draw_fill_attlist & props, const office_element_ptr & style_image, styles_lite_container &styles, oox::_oox_fill & fill)
 {
-	if (fill.type<1)fill.type = 0; 
+	if (fill.type < 1)	fill.type = 0; 
 
 	if (props.draw_opacity_) fill.opacity = props.draw_opacity_->get_value();
 	if (props.draw_opacity_name_)
@@ -438,6 +438,7 @@ void Compute_GraphicFill(const common_draw_fill_attlist & props, const office_el
 		{
 			if (draw_gradient * image_style = dynamic_cast<draw_gradient *>(style.get()))
 			{			
+				fill.type	= 3;
 				fill.gradient = oox::oox_gradient_fill::create();
 
 				Compute_GradientFill(image_style, fill.gradient);
@@ -451,6 +452,7 @@ void Compute_GraphicFill(const common_draw_fill_attlist & props, const office_el
 		{
 			if (draw_hatch * image_style = dynamic_cast<draw_hatch *>(style.get()))
 			{			
+				fill.type	= 4;
 				fill.hatch = oox::oox_hatch_fill::create();
 
 				Compute_HatchFill(image_style, fill.hatch);
@@ -461,7 +463,8 @@ void Compute_GraphicFill(const common_draw_fill_attlist & props, const office_el
 			fill.hatch->color_back_ref = props.draw_fill_color_->get_hex_value();
 		}	
 	}
-	if (props.draw_fill_)fill.type = props.draw_fill_->get_type();
+	if (props.draw_fill_)
+		fill.type = props.draw_fill_->get_type();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

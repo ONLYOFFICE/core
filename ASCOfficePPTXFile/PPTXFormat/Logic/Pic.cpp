@@ -174,7 +174,7 @@ namespace PPTX
 				{
 					BYTE head[] = {0x00, 0x00, 0x00, 0x00};
 					oStream.read(head, 4);
-					uint32_t nDataSize = (uint32_t)((head[0]<< 0) | ((head[1]) << 8) | ((head[2]) << 16) | ((head[3]) << 24));
+					_UINT32 nDataSize = (_UINT32)((head[0]<< 0) | ((head[1]) << 8) | ((head[2]) << 16) | ((head[3]) << 24));
 					BYTE* aData = new BYTE[nDataSize];
 					oStream.read(aData, nDataSize);
 					sRes = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(aData, nDataSize);

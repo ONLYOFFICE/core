@@ -356,8 +356,18 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 		if (data_labels_)
 			data_labels_->oox_serialize(_Wostream);
 
-		int indPoint = 0;
+		bool bEmpty_dPt = true;
 		for (int i = 0 ; i < content_.points_.size(); i++)
+		{
+			if (content_.points_[i].graphic_properties_.size() > 0 || 
+				content_.points_[i].fill_.type >= 0)
+			{
+				bEmpty_dPt = false;
+			}
+		}
+
+		int indPoint = 0;
+		for (int i = 0 ; !bEmpty_dPt && i < content_.points_.size(); i++)
 		{
 			for (int j = 0 ; j < content_.points_[i].repeated_; j++)
 			{

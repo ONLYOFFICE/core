@@ -44,6 +44,25 @@ mac {
     DESTDIR = $$DESTINATION_SDK_PATH/mac_64
 }
 
+linux-g++ | linux-g++-64 | linux-g++-32 {
+    DEFINES += \
+    LINUX \
+    _LINUX
+}
+
+mac {
+    DEFINES += \
+    _LINUX \
+    _MAC \
+    MAC
+}
+
+win32 {
+    DEFINES += \
+    WIN32 \
+    _WIN32
+}
+
 ################################################
 
 INCLUDEPATH += \

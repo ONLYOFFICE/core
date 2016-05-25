@@ -233,6 +233,20 @@ std::wstring replace_vertical_formater(boost::wsmatch const & what)
     else if (what[3].matched)
         return what[3].str();
 }
+std::wstring replace_space_PROBEL(boost::wsmatch const & what)
+{
+    if (what[1].matched)
+    {
+        std::wstring inner = what[1].str();
+        boost::algorithm::replace_all(inner, L" ", L"PROBEL");
+        return inner;
+    }    
+    else if (what[2].matched)
+        return what[2].str();
+    else if (what[3].matched)
+        return what[3].str();
+}
+
 std::wstring replace_space_formater(boost::wsmatch const & what)
 {
     if (what[1].matched)
@@ -332,16 +346,24 @@ std::wstring odf2oox_converter::Impl::convert_chart_distance(const std::wstring&
     if (is_forbidden(expr))
         return L"NULLFORMULA()";
 
-    //std::wstring workstr = expr;
+    std::wstring workstr = expr;
     //replace_space(workstr);
     //return workstr;
+	boost::wregex complexRef(L"('(?!\\s\\'){0,1}.*?')");
+//	boost::wregex complexRef(L"(\\'(.*?)\\')"); // поиск того что в апострофах и замена там пробелов на PROBEL
 
+    workstr = boost::regex_replace(
+        expr,
+        complexRef,
+        &replace_space_PROBEL,
+        boost::match_default | boost::format_all);
+    
 	//распарсить по диапазонам - одф-пробел, ик-эль-зап€та€
 
 	std::vector<std::wstring> distance_inp;
 	std::vector<std::wstring> distance_out;
 
-	boost::algorithm::split(distance_inp,expr, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
+	boost::algorithm::split(distance_inp, workstr, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
 
 	BOOST_FOREACH(std::wstring &d,distance_inp)
 	{
@@ -367,21 +389,23 @@ std::wstring odf2oox_converter::Impl::convert_chart_distance(const std::wstring&
 		int res1 = sheet.find(L"-");
 		int res2 = sheet.find(L"'");
 		
-		if (res1>=0 && !(res2==0))
+		if (res1 >= 0 && !(res2 == 0))
 		{
 			sheet = L"'" + sheet + L"'";
 		}
 
-		distance_out.push_back(sheet+L"!"+cells_out.substr(0, cells_out.size()-1));
+		distance_out.push_back(sheet+L"!" + cells_out.substr(0, cells_out.size()-1));
 	}
 	std::wstring result;
 
-	BOOST_FOREACH(std::wstring &d,distance_out)
+	BOOST_FOREACH(std::wstring &d, distance_out)
 	{
 		result.append(d);
 		result.append(L",");
 	}
-	return result.substr(0, result.size()-1);
+ 	boost::algorithm::replace_all(result, L"PROBEL", L" ");
+	
+	return result.substr(0, result.size()-1);// минус последн€€ лишн€€ зап€та€
 }
 odf2oox_converter::odf2oox_converter(): impl_(new odf2oox_converter::Impl)
 {

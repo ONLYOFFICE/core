@@ -226,8 +226,8 @@ namespace NSBinPptxRW
 			BYTE head[] = {0x00,0x00,0x00,0x00};
 			//LittleEndian
 			unsigned char* aData = (unsigned char*)sDataUtf8.c_str();
-			uint32_t nDataSize = sDataUtf8.size();
-			memcpy(head, &nDataSize, sizeof(uint32_t));
+			_UINT32 nDataSize = sDataUtf8.size();
+			memcpy(head, &nDataSize, sizeof(_UINT32));
 			POLE::Stream oStream(&oStorage, "\001Ole10Native", true, arraysize(head) + nDataSize);
 			oStream.write(head, arraysize(head));
 			oStream.write(aData, nDataSize);

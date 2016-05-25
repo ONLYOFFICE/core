@@ -57,7 +57,7 @@ TARGETS += $(LIBXML)
 TARGETS += $(LICENSEMANAGER)
 
 X2T_PRO := $(abspath X2tConverter/build/Qt/X2tSLN.pro)
-HTMLFILEINTERNAL_PRO := $(abspath HtmlFile/Internal/Internal.pro)
+HTMLFILEINTERNAL_PRO := $(abspath ../core-ext/HtmlFile/Internal/Internal.pro)
 ALLFONTSGEN_PRO := $(abspath DesktopEditor/AllFontsGen/AllFontsGen.pro)
 XLSFORMATLIB_PRO := $(abspath ASCOfficeXlsFile2/source/linux/XlsFormatLib.pro)
 ODFFILEWRITERLIB_PRO := $(abspath ASCOfficeOdfFileW/linux/OdfFileWriterLib.pro)
@@ -197,11 +197,11 @@ endef
 
 all: lib bin
 
-bin: $(X2T) $(ALLFONTSGEN) $(HTMLFILEINTERNAL)
+bin: $(X2T) $(ALLFONTSGEN)
 
 lib: $(PDFWRITER) $(DOCTRENDERER) $(HTMLRENDERER) $(PDFREADER) $(DJVUFILE) $(XPSFILE) $(HTMLFILE) $(UNICODECONVERTER)
 
-ext: $(ASCDOCUMENTSCORE)
+ext: $(ASCDOCUMENTSCORE) $(HTMLFILEINTERNAL)
 
 $(foreach proj, $(QT_PROJ), $(eval $(call build_proj_tmpl, $(proj))))
 

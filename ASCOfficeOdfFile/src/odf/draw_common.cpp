@@ -21,7 +21,7 @@
 
 /////////////////////////////////////////////////////////////////////////////////
 #include "../../../DesktopEditor/raster/BgraFrame.h"
-#include "../../../DesktopEditor/raster/MetaFile/MetaFile.h"
+#include "../../../DesktopEditor/raster/Metafile/MetaFile.h"
 
 extern double getSystemDPI();
 

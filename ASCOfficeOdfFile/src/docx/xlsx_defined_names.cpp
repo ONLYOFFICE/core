@@ -15,7 +15,7 @@ namespace oox {
 class xlsx_defined_names::Impl
 {
 public:
-    void add(std::wstring const & name, std::wstring const & ref)
+    void add(std::wstring const & name, std::wstring const & ref, bool formula)
     {
 		int is_file_link = 0;
 
@@ -23,8 +23,17 @@ public:
 		if ((is_file_link = ref.find(L"/")) >=0) return;
 	 
         formulasconvert::odf2oox_converter converter;
-        std::wstring const f = converter.convert_named_ref(ref);
-        name_and_ref_.push_back(name_and_ref(name, f));
+        std::wstring res;
+		
+		if (formula)
+		{
+			res = converter.convert_named_expr(ref);
+		}
+		else
+		{
+			res = converter.convert_named_ref(ref);
+		}
+        name_and_ref_.push_back(name_and_ref(name, res));
     }
 
     void xlsx_serialize(std::wostream & _Wostream)
@@ -61,9 +70,9 @@ xlsx_defined_names::~xlsx_defined_names()
 {
 }
 
-void xlsx_defined_names::add(std::wstring const & name, std::wstring const & ref)
+void xlsx_defined_names::add(std::wstring const & name, std::wstring const & ref, bool formula)
 {
-    return impl_->add(name, ref);        
+    return impl_->add(name, ref, formula);        
 }
 
 void xlsx_defined_names::xlsx_serialize(std::wostream & _Wostream)

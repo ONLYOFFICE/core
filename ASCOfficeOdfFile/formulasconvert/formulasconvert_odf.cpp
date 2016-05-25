@@ -429,7 +429,28 @@ std::wstring odf2oox_converter::convert_named_ref(const std::wstring& expr)
     impl_->replace_named_ref(workstr);
     return workstr;
 }
+std::wstring odf2oox_converter::convert_named_expr(const std::wstring& expr)
+{
+    std::wstring workstr = expr;
+ 	
+	boost::algorithm::replace_all(workstr, L" ", L"PROBEL");
+	boost::algorithm::replace_all(workstr, L"'", L"APOSTROF");
+   
+    impl_->replace_cells_range(workstr);
+    impl_->replace_semicolons(workstr);
+    impl_->replace_vertical(workstr);
 
+	int res_find=0;
+	if ((res_find = workstr.find(L"CONCATINATE")) > 0)
+	{
+		//могут быть частично заданы диапазоны
+		//todooo
+
+	}
+ 	boost::algorithm::replace_all(workstr, L"PROBEL", L" ");
+	boost::algorithm::replace_all(workstr, L"APOSTROF", L"'");
+    return workstr;
+}
 
 std::wstring odf2oox_converter::convert_ref(std::wstring const & expr)
 {

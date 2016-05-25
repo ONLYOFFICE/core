@@ -467,7 +467,7 @@ void xlsx_drawing_context::process_image(drawing_object_description & obj,_xlsx_
 	}
 	std::wstring fileName = odf_packet_path_ + FILE_SEPARATOR_STR +  obj.xlink_href_;			
 	
-	drawing.fill.bitmap->bCrop		= odf_reader::parse_clipping(obj.clipping_string_, fileName, drawing.fill.bitmap->cropRect);
+	drawing.fill.bitmap->bCrop		= odf_reader::parse_clipping(obj.clipping_string_, fileName, drawing.fill.bitmap->cropRect, NULL/*applicationFonts_*/);
 	drawing.fill.bitmap->bStretch	= true;
 
 	std::wstring ref;/// это ссылка на выходной внешний объект

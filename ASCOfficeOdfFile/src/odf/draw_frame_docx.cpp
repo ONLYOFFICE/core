@@ -1091,7 +1091,7 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 			
 			std::wstring fileName = Context.root()->get_folder() + FILE_SEPARATOR_STR+ href;
 			
-			drawing.fill.bitmap->bCrop = parse_clipping(strRectClip,fileName,drawing.fill.bitmap->cropRect);
+			drawing.fill.bitmap->bCrop = parse_clipping(strRectClip,fileName,drawing.fill.bitmap->cropRect, NULL/*Context.applicationFonts_*/);
 		}        
 	}
  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

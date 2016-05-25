@@ -30,18 +30,7 @@ void table_named_expressions::add_child_element(xml::sax * Reader,
                                                 const ::std::wstring & Ns,
                                                 const ::std::wstring & Name)
 {
-    if CP_CHECK_NAME(L"table", L"named-range")
-    {
-        CP_CREATE_ELEMENT(named_range_);
-    }
-    else if CP_CHECK_NAME(L"table", L"named-expression")
-    {
-        CP_CREATE_ELEMENT(named_expression_);    
-    }
-    else
-    {
-        CP_NOT_APPLICABLE_ELM();
-    }
+    CP_CREATE_ELEMENT(content_);
 }
 
 void table_named_expressions::docx_convert(oox::docx_conversion_context & Context)
@@ -50,7 +39,7 @@ void table_named_expressions::docx_convert(oox::docx_conversion_context & Contex
 
 void table_named_expressions::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-    BOOST_FOREACH(office_element_ptr const & elm, named_range_)
+    BOOST_FOREACH(office_element_ptr const & elm, content_)
     {
         elm->xlsx_convert(Context);
     }
@@ -99,6 +88,11 @@ void table_named_expression::docx_convert(oox::docx_conversion_context & Context
 
 void table_named_expression::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
+    if (table_expression_ && table_name_)
+    {
+        oox::xlsx_defined_names & ctx = Context.get_xlsx_defined_names();
+        ctx.add(table_name_.get(), table_expression_.get(), true);
+    }
 }
 
 void table_named_expression::add_attributes(xml::attributes_wc_ptr const & Attributes)

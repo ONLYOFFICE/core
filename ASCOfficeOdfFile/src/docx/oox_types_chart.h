@@ -38,7 +38,7 @@ public:
 	}
 	~oox_chart(){}
  
-	virtual void oox_serialize(std::wostream & _Wostream){}
+	virtual void oox_serialize(std::wostream & _Wostream) = 0;
 	
 	void oox_serialize_common(std::wostream & _Wostream);
 
@@ -200,7 +200,8 @@ class oox_doughnut_chart: public oox_chart
 	public:
 	oox_doughnut_chart()
 	{
-		type_	= CHART_TYPE_DOUGHNUT;
+		type_		= CHART_TYPE_DOUGHNUT;
+		grouping_	= L"";
 	}
 	~oox_doughnut_chart(){}
  	
@@ -224,7 +225,8 @@ class oox_pie_chart: public oox_chart
 	public:
 	oox_pie_chart()
 	{
-		type_	= CHART_TYPE_PIE;
+		type_		= CHART_TYPE_PIE;
+		grouping_	= L"";
 	}
 	~oox_pie_chart(){}
  	

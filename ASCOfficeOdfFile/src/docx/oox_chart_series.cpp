@@ -451,6 +451,18 @@ void oox_pie_series::oox_serialize(std::wostream & _Wostream)
 		CP_XML_NODE(L"c:ser")
 		{
 			oox_serialize_common(CP_XML_STREAM());
+
+			_CP_OPT(int) iVal;
+			odf_reader::GetProperty(content_.properties_, L"pie-offset", iVal); 
+			
+			if (iVal)
+			{
+				CP_XML_NODE(L"c:explosion")
+				{
+					CP_XML_ATTR(L"val", *iVal);			
+				}
+			}
+			
 		}
 	}
 }

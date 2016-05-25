@@ -49,7 +49,15 @@ public:
                         CP_XML_NODE(L"definedName")
                         {
                             CP_XML_ATTR(L"name", elm.first);
-                            CP_XML_CONTENT(elm.second);
+							
+							int pos;
+							if ( (pos = elm.second.find(L"#REF!")) >= 0 )
+							{
+								CP_XML_ATTR(L"comment", elm.second);
+								CP_XML_CONTENT(L"#REF!");
+							}
+							else
+								CP_XML_CONTENT(elm.second);
                         }
                     }
                 }

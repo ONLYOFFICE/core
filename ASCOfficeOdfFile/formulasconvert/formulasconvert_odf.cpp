@@ -142,10 +142,8 @@ void odf2oox_converter::Impl::replace_cells_range(std::wstring& expr)
 {
     //boost::wregex simpleRef(L"\\[\\.([a-zA-Z]+\\d+)(?::\\.([a-zA-Z]+\\d+)){0,1}\\]");
     boost::wregex complexRef(L"\\[(?:\\$)?([^\\.]+?){0,1}\\.(\\${0,1}[a-zA-Z]+\\${0,1}\\d+)(?::\\.(\\${0,1}[a-zA-Z]+\\${0,1}\\d+)){0,1}\\]");
-	//boost::wregex complexRef(L"\\[(.*?)\\]");
     /*
                                  [     $   Sheet2          . A1                  :  . B5                    ]
-
     */
 
     const std::wstring res = boost::regex_replace(
@@ -246,7 +244,19 @@ std::wstring replace_space_PROBEL(boost::wsmatch const & what)
     else if (what[3].matched)
         return what[3].str();
 }
-
+std::wstring replace_point_ТОСHKA(boost::wsmatch const & what)
+{
+    if (what[1].matched)
+    {
+        std::wstring inner = what[1].str();
+        boost::algorithm::replace_all(inner, L".", L"ТОСHKA");
+        return inner;
+    }    
+    else if (what[2].matched)
+        return what[2].str();
+    else if (what[3].matched)
+        return what[3].str();
+}
 std::wstring replace_space_formater(boost::wsmatch const & what)
 {
     if (what[1].matched)
@@ -314,9 +324,14 @@ std::wstring odf2oox_converter::Impl::convert(const std::wstring& expr)
     if (is_forbidden(expr))
         return L"NULLFORMULA()";
 	
+	boost::wregex complexRef(L"('(?!\\s\\'){0,1}.*?')");// поиск того что в апострофах и замена там точек на ТОСHKA
 
-    std::wstring workstr = expr;
- 	
+    std::wstring workstr = boost::regex_replace(
+        expr,
+        complexRef,
+        &replace_point_ТОСHKA,
+        boost::match_default | boost::format_all);	
+
 	boost::algorithm::replace_all(workstr, L" ", L"PROBEL");
 	boost::algorithm::replace_all(workstr, L"'", L"APOSTROF");
    
@@ -332,8 +347,9 @@ std::wstring odf2oox_converter::Impl::convert(const std::wstring& expr)
 		//todooo
 
 	}
- 	boost::algorithm::replace_all(workstr, L"PROBEL", L" ");
-	boost::algorithm::replace_all(workstr, L"APOSTROF", L"'");
+ 	boost::algorithm::replace_all(workstr, L"PROBEL"	, L" ");
+	boost::algorithm::replace_all(workstr, L"APOSTROF"	, L"'");
+	boost::algorithm::replace_all(workstr, L"TOCHKA"	, L".");
     return workstr;
 }
 
@@ -347,10 +363,7 @@ std::wstring odf2oox_converter::Impl::convert_chart_distance(const std::wstring&
         return L"NULLFORMULA()";
 
     std::wstring workstr = expr;
-    //replace_space(workstr);
-    //return workstr;
-	boost::wregex complexRef(L"('(?!\\s\\'){0,1}.*?')");
-//	boost::wregex complexRef(L"(\\'(.*?)\\')"); // поиск того что в апострофах и замена там пробелов на PROBEL
+	boost::wregex complexRef(L"('(?!\\s\\'){0,1}.*?')");// поиск того что в апострофах и замена там пробелов на PROBEL
 
     workstr = boost::regex_replace(
         expr,
@@ -425,15 +438,35 @@ std::wstring odf2oox_converter::convert_chart_distance(const std::wstring& expr)
 }
 std::wstring odf2oox_converter::convert_named_ref(const std::wstring& expr)
 {
-    std::wstring workstr = expr;
-    impl_->replace_named_ref(workstr);
+	boost::wregex complexRef(L"('(?!\\s\\'){0,1}.*?')");// поиск того что в апострофах и замена там точек на ТОСHKA
+
+    std::wstring workstr = boost::regex_replace(
+        expr,
+        complexRef,
+        &replace_point_ТОСHKA,
+        boost::match_default | boost::format_all);	
+	
+	boost::algorithm::replace_all(workstr, L" ", L"PROBEL");		
+	boost::algorithm::replace_all(workstr, L"'", L"APOSTROF");
+
+	impl_->replace_named_ref(workstr);
+
+	boost::algorithm::replace_all(workstr, L"PROBEL"	, L" ");
+	boost::algorithm::replace_all(workstr, L"APOSTROF"	, L"'");
+	boost::algorithm::replace_all(workstr, L"TOCHKA"	, L".");
     return workstr;
 }
 std::wstring odf2oox_converter::convert_named_expr(const std::wstring& expr)
 {
-    std::wstring workstr = expr;
- 	
-	boost::algorithm::replace_all(workstr, L" ", L"PROBEL");
+	boost::wregex complexRef(L"('(?!\\s\\'){0,1}.*?')");// поиск того что в апострофах и замена там точек на ТОСHKA
+
+    std::wstring workstr = boost::regex_replace(
+        expr,
+        complexRef,
+        &replace_point_ТОСHKA,
+        boost::match_default | boost::format_all);	
+	
+	boost::algorithm::replace_all(workstr, L" ", L"PROBEL");		
 	boost::algorithm::replace_all(workstr, L"'", L"APOSTROF");
    
     impl_->replace_cells_range(workstr);
@@ -447,9 +480,10 @@ std::wstring odf2oox_converter::convert_named_expr(const std::wstring& expr)
 		//todooo
 
 	}
- 	boost::algorithm::replace_all(workstr, L"PROBEL", L" ");
-	boost::algorithm::replace_all(workstr, L"APOSTROF", L"'");
-    return workstr;
+ 	boost::algorithm::replace_all(workstr, L"PROBEL"	, L" ");
+	boost::algorithm::replace_all(workstr, L"APOSTROF"	, L"'");
+	boost::algorithm::replace_all(workstr, L"TOCHKA"	, L".");
+	return workstr;
 }
 
 std::wstring odf2oox_converter::convert_ref(std::wstring const & expr)

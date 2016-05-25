@@ -13,9 +13,7 @@
 namespace cpdoccore { 
 namespace odf_reader {
 
-/// \class  table_named_expressions
-/// \brief  table:named-expressions
-///         table-named-expressions
+//  table:named-expressions
 class table_named_expressions : public office_element_impl<table_named_expressions>
 {
 public:
@@ -34,16 +32,13 @@ private:
     virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
 
 private:
-    office_element_ptr_array named_range_;
-    office_element_ptr_array named_expression_;
+    office_element_ptr_array content_;
 
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(table_named_expressions);
 
-/// \class  table_named_range
-/// \brief  table:named-range
-///         table-named-range
+//  table:named-range
 class table_named_range : public office_element_impl<table_named_range>
 {
 public:
@@ -71,9 +66,7 @@ private:
 CP_REGISTER_OFFICE_ELEMENT2(table_named_range);
 
 
-/// \class  table_named_expression
-/// \brief  table:named-expression
-///         table-named-expression
+//  table:named-expression
 class table_named_expression : public office_element_impl<table_named_expression>
 {
 public:
@@ -97,10 +90,7 @@ private:
     _CP_OPT(std::wstring) table_base_cell_address_;
 
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(table_named_expression);
-
-
 
 }
 }

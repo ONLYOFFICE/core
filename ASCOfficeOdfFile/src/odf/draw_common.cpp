@@ -21,49 +21,35 @@
 
 /////////////////////////////////////////////////////////////////////////////////
 #include "../../../DesktopEditor/raster/BgraFrame.h"
-
-#if defined(_WIN32) || defined(_WIN64)
-	#include <Windows.h>
-	#include <gdiplus.h>
-	#pragma comment(lib, "gdiplus.lib")
-#endif
+#include "../../../DesktopEditor/raster/MetaFile/MetaFile.h"
 
 extern double getSystemDPI();
 
 namespace _image_file_
 {
-    bool GetResolution(const wchar_t* fileName, int & Width, int &Height)
+    bool GetResolution(const wchar_t* fileName, int & Width, int &Height, CApplicationFonts	* appFonts)
 	{
-		bool result =false;
-
 		CBgraFrame image;
-		if (result = image.OpenFile(fileName, 0 ))
+		MetaFile::CMetaFile meta_file(appFonts);
+
+		if ( meta_file.LoadFromFile(fileName))
+		{
+			double dX = 0, dY = 0, dW = 0, dH = 0;
+			meta_file.GetBounds(&dX, &dY, &dW, &dH);
+			
+			Width  = dW;
+			Height = dH;
+		}
+		else if ( image.OpenFile(fileName, 0 ))
 		{
 			Width  = image.get_Width();
 			Height = image.get_Height();
 
-			result = true;
+			return true;
 		}
-		else
-		{
-#if defined(_WIN32) || defined(_WIN64)
-			Gdiplus::GdiplusStartupInput gdiplusStartupInput;
-			ULONG_PTR gdiplusToken=0;
-			Gdiplus::GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
 
-			Gdiplus::Bitmap *file = new Gdiplus::Bitmap(fileName,false);
-			if ((file) && (file->GetLastStatus()==Gdiplus::Ok))
-			{
-				Height = file->GetHeight();
-				Width  = file->GetWidth();
-				
-				result = true;
-				delete file;
-			}
-			Gdiplus::GdiplusShutdown(gdiplusToken);
-#endif
-		}
-		return result;
+
+		return false;
 	}
 };
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -83,28 +69,36 @@ int get_value_emu(double pt)
 {
     return static_cast<int>((pt* 360000 * 2.54) / 72);
 } 
-bool parse_clipping(std::wstring strClipping,std::wstring fileName, double_4 & clip_rect)
+bool parse_clipping(std::wstring strClipping,std::wstring fileName, double_4 & clip_rect, CApplicationFonts	* appFonts)
 {
     memset(clip_rect, 0, 4*sizeof(double));
 
 	if (strClipping.length() <1 || fileName.length()<1)return false;
 		
-	int fileWidth=0,fileHeight=0;
+	//<top>, <right>, <bottom>, <left> - http://www.w3.org/TR/2001/REC-xsl-20011015/xslspec.html#clip
 
-	if (!_image_file_::GetResolution(fileName.data(),fileWidth,fileHeight) || fileWidth<1 || fileHeight<1)return false;
+	bool bEnableCrop = false;
 
-
-	std::vector<std::wstring> Points;
-	std::vector<length> Points_pt;
+	std::vector<std::wstring>	Points;
+	std::vector<length>			Points_pt;
 	
 	boost::algorithm::split(Points,strClipping, boost::algorithm::is_any_of(L" ,"), boost::algorithm::token_compress_on);
-
-	//<top>, <right>, <bottom>, <left> - http://www.w3.org/TR/2001/REC-xsl-20011015/xslspec.html#clip
 	BOOST_FOREACH(std::wstring const & p, Points)
 	{
 		Points_pt.push_back(length::parse(p) );
+		
+		if (Points_pt.back().get_value() > 0.00001) bEnableCrop = true;
 	}
-	if (Points_pt.size()>3)//если другое количество точек .. попозже
+
+	if (!bEnableCrop) return false;
+
+	int fileWidth=0,fileHeight=0;
+
+	if (!_image_file_::GetResolution(fileName.data(), fileWidth, fileHeight, appFonts) || fileWidth<1 || fileHeight<1)	return false;
+
+
+
+	if (Points_pt.size() > 3)//если другое количество точек .. попозже
 	{
 		float dpi_ = 96.;///getSystemDPI();
 		clip_rect[0] = dpi_ * Points_pt[3].get_value_unit(length::inch);

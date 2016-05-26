@@ -1,4 +1,4 @@
-#include "formulasconvert.h"
+п»ї#include "formulasconvert.h"
 
 #include <boost/algorithm/string.hpp>
 #include <boost/regex.hpp>
@@ -132,7 +132,7 @@ namespace formulasconvert {
 	}
 
 
-// заменяем формат адресации ячеек
+// Р·Р°РјРµРЅСЏРµРј С„РѕСЂРјР°С‚ Р°РґСЂРµСЃР°С†РёРё СЏС‡РµРµРє
 // [.A1] -> A1
 // [.A1:.B5] -> A1:B5
 // [Sheet2.A1:B5] -> Sheet2!A1:B5
@@ -168,7 +168,7 @@ void odf2oox_converter::Impl::replace_named_ref(std::wstring & expr)
     expr = res;    
 }
 
-// распознаем и заменяем формат формулы
+// СЂР°СЃРїРѕР·РЅР°РµРј Рё Р·Р°РјРµРЅСЏРµРј С„РѕСЂРјР°С‚ С„РѕСЂРјСѓР»С‹
 // of:=(Formula) -> (Formula)
 bool odf2oox_converter::Impl::check_formula(std::wstring& expr)
 {
@@ -202,8 +202,8 @@ std::wstring replace_semicolons_formater(boost::wsmatch const & what)
 }
 
 // TODO
-// заменить точки с запятой во всех вхождениях кроме находящихся в кавычках --*и в фигурных скобках*--
-// TODO: проверить как сохраняются кавычки в строке
+// Р·Р°РјРµРЅРёС‚СЊ С‚РѕС‡РєРё СЃ Р·Р°РїСЏС‚РѕР№ РІРѕ РІСЃРµС… РІС…РѕР¶РґРµРЅРёСЏС… РєСЂРѕРјРµ РЅР°С…РѕРґСЏС‰РёС…СЃСЏ РІ РєР°РІС‹С‡РєР°С… --*Рё РІ С„РёРіСѓСЂРЅС‹С… СЃРєРѕР±РєР°С…*--
+// TODO: РїСЂРѕРІРµСЂРёС‚СЊ РєР°Рє СЃРѕС…СЂР°РЅСЏСЋС‚СЃСЏ РєР°РІС‹С‡РєРё РІ СЃС‚СЂРѕРєРµ
 void odf2oox_converter::Impl::replace_semicolons(std::wstring& expr)
 {
      const std::wstring res = boost::regex_replace(
@@ -244,12 +244,12 @@ std::wstring replace_space_PROBEL(boost::wsmatch const & what)
     else if (what[3].matched)
         return what[3].str();
 }
-std::wstring replace_point_ТОСHKA(boost::wsmatch const & what)
+std::wstring replace_point_РўРћРЎHKA(boost::wsmatch const & what)
 {
     if (what[1].matched)
     {
         std::wstring inner = what[1].str();
-        boost::algorithm::replace_all(inner, L".", L"ТОСHKA");
+        boost::algorithm::replace_all(inner, L".", L"РўРћРЎHKA");
         return inner;
     }    
     else if (what[2].matched)
@@ -298,7 +298,7 @@ bool is_forbidden(const std::wstring & formula)
     return false;
 }
 
-// заменить вертикальную черту во всех вхождениях в фигурных скобках, но не внутри строк
+// Р·Р°РјРµРЅРёС‚СЊ РІРµСЂС‚РёРєР°Р»СЊРЅСѓСЋ С‡РµСЂС‚Сѓ РІРѕ РІСЃРµС… РІС…РѕР¶РґРµРЅРёСЏС… РІ С„РёРіСѓСЂРЅС‹С… СЃРєРѕР±РєР°С…, РЅРѕ РЅРµ РІРЅСѓС‚СЂРё СЃС‚СЂРѕРє
 void odf2oox_converter::Impl::replace_vertical(std::wstring& expr)
 {
      const std::wstring res = boost::regex_replace(
@@ -308,7 +308,7 @@ void odf2oox_converter::Impl::replace_vertical(std::wstring& expr)
         boost::match_default | boost::format_all);
      expr = res;
 }
-// заменить пробел во всех вхождениях на запятую
+// Р·Р°РјРµРЅРёС‚СЊ РїСЂРѕР±РµР» РІРѕ РІСЃРµС… РІС…РѕР¶РґРµРЅРёСЏС… РЅР° Р·Р°РїСЏС‚СѓСЋ
 void odf2oox_converter::Impl::replace_space(std::wstring& expr)
 {
      const std::wstring res = boost::regex_replace(
@@ -324,12 +324,12 @@ std::wstring odf2oox_converter::Impl::convert(const std::wstring& expr)
     if (is_forbidden(expr))
         return L"NULLFORMULA()";
 	
-	boost::wregex complexRef(L"('(?!\\s\\'){0,1}.*?')");// поиск того что в апострофах и замена там точек на ТОСHKA
+	boost::wregex complexRef(L"('(?!\\s\\'){0,1}.*?')");// РїРѕРёСЃРє С‚РѕРіРѕ С‡С‚Рѕ РІ Р°РїРѕСЃС‚СЂРѕС„Р°С… Рё Р·Р°РјРµРЅР° С‚Р°Рј С‚РѕС‡РµРє РЅР° РўРћРЎHKA
 
     std::wstring workstr = boost::regex_replace(
         expr,
         complexRef,
-        &replace_point_ТОСHKA,
+        &replace_point_РўРћРЎHKA,
         boost::match_default | boost::format_all);	
 
 	boost::algorithm::replace_all(workstr, L" ", L"PROBEL");
@@ -343,7 +343,7 @@ std::wstring odf2oox_converter::Impl::convert(const std::wstring& expr)
 	int res_find=0;
 	if ((res_find = workstr.find(L"CONCATINATE")) > 0)
 	{
-		//могут быть частично заданы диапазоны
+		//РјРѕРіСѓС‚ Р±С‹С‚СЊ С‡Р°СЃС‚РёС‡РЅРѕ Р·Р°РґР°РЅС‹ РґРёР°РїР°Р·РѕРЅС‹
 		//todooo
 
 	}
@@ -355,7 +355,7 @@ std::wstring odf2oox_converter::Impl::convert(const std::wstring& expr)
 
 
 //Sheet2.C3:Sheet2.C19 Sheet2.L29:Sheet2.L36
-//в
+//РІ
 //Sheet2!C3:C19,Sheet2!L27:L34
 std::wstring odf2oox_converter::Impl::convert_chart_distance(const std::wstring& expr)
 {
@@ -363,7 +363,7 @@ std::wstring odf2oox_converter::Impl::convert_chart_distance(const std::wstring&
         return L"NULLFORMULA()";
 
     std::wstring workstr = expr;
-	boost::wregex complexRef(L"('(?!\\s\\'){0,1}.*?')");// поиск того что в апострофах и замена там пробелов на PROBEL
+	boost::wregex complexRef(L"('(?!\\s\\'){0,1}.*?')");// РїРѕРёСЃРє С‚РѕРіРѕ С‡С‚Рѕ РІ Р°РїРѕСЃС‚СЂРѕС„Р°С… Рё Р·Р°РјРµРЅР° С‚Р°Рј РїСЂРѕР±РµР»РѕРІ РЅР° PROBEL
 
     workstr = boost::regex_replace(
         expr,
@@ -371,7 +371,7 @@ std::wstring odf2oox_converter::Impl::convert_chart_distance(const std::wstring&
         &replace_space_PROBEL,
         boost::match_default | boost::format_all);
     
-	//распарсить по диапазонам - одф-пробел, ик-эль-запятая
+	//СЂР°СЃРїР°СЂСЃРёС‚СЊ РїРѕ РґРёР°РїР°Р·РѕРЅР°Рј - РѕРґС„-РїСЂРѕР±РµР», РёРє-СЌР»СЊ-Р·Р°РїСЏС‚Р°СЏ
 
 	std::vector<std::wstring> distance_inp;
 	std::vector<std::wstring> distance_out;
@@ -418,7 +418,7 @@ std::wstring odf2oox_converter::Impl::convert_chart_distance(const std::wstring&
 	}
  	boost::algorithm::replace_all(result, L"PROBEL", L" ");
 	
-	return result.substr(0, result.size()-1);// минус последняя лишняя запятая
+	return result.substr(0, result.size()-1);// РјРёРЅСѓСЃ РїРѕСЃР»РµРґРЅСЏСЏ Р»РёС€РЅСЏСЏ Р·Р°РїСЏС‚Р°СЏ
 }
 odf2oox_converter::odf2oox_converter(): impl_(new odf2oox_converter::Impl)
 {
@@ -438,12 +438,12 @@ std::wstring odf2oox_converter::convert_chart_distance(const std::wstring& expr)
 }
 std::wstring odf2oox_converter::convert_named_ref(const std::wstring& expr)
 {
-	boost::wregex complexRef(L"('(?!\\s\\'){0,1}.*?')");// поиск того что в апострофах и замена там точек на ТОСHKA
+	boost::wregex complexRef(L"('(?!\\s\\'){0,1}.*?')");// РїРѕРёСЃРє С‚РѕРіРѕ С‡С‚Рѕ РІ Р°РїРѕСЃС‚СЂРѕС„Р°С… Рё Р·Р°РјРµРЅР° С‚Р°Рј С‚РѕС‡РµРє РЅР° РўРћРЎHKA
 
     std::wstring workstr = boost::regex_replace(
         expr,
         complexRef,
-        &replace_point_ТОСHKA,
+        &replace_point_РўРћРЎHKA,
         boost::match_default | boost::format_all);	
 	
 	boost::algorithm::replace_all(workstr, L" ", L"PROBEL");		
@@ -458,12 +458,12 @@ std::wstring odf2oox_converter::convert_named_ref(const std::wstring& expr)
 }
 std::wstring odf2oox_converter::convert_named_expr(const std::wstring& expr)
 {
-	boost::wregex complexRef(L"('(?!\\s\\'){0,1}.*?')");// поиск того что в апострофах и замена там точек на ТОСHKA
+	boost::wregex complexRef(L"('(?!\\s\\'){0,1}.*?')");// РїРѕРёСЃРє С‚РѕРіРѕ С‡С‚Рѕ РІ Р°РїРѕСЃС‚СЂРѕС„Р°С… Рё Р·Р°РјРµРЅР° С‚Р°Рј С‚РѕС‡РµРє РЅР° РўРћРЎHKA
 
     std::wstring workstr = boost::regex_replace(
         expr,
         complexRef,
-        &replace_point_ТОСHKA,
+        &replace_point_РўРћРЎHKA,
         boost::match_default | boost::format_all);	
 	
 	boost::algorithm::replace_all(workstr, L" ", L"PROBEL");		
@@ -476,7 +476,7 @@ std::wstring odf2oox_converter::convert_named_expr(const std::wstring& expr)
 	int res_find=0;
 	if ((res_find = workstr.find(L"CONCATINATE")) > 0)
 	{
-		//могут быть частично заданы диапазоны
+		//РјРѕРіСѓС‚ Р±С‹С‚СЊ С‡Р°СЃС‚РёС‡РЅРѕ Р·Р°РґР°РЅС‹ РґРёР°РїР°Р·РѕРЅС‹
 		//todooo
 
 	}

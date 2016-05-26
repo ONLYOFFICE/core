@@ -5,10 +5,6 @@
 
 class CApplicationFonts;
 
-
-double getSystemDPI();
-
-
 namespace cpdoccore {
 namespace utils {
 

@@ -19,8 +19,6 @@
 #include "../docx/xlsx_cell_format.h"
 #include "../formulasconvert/formulasconvert.h"
 
-extern	double getSystemDPI();
-
 namespace cpdoccore { 
 
 	using namespace odf_types;
@@ -340,7 +338,7 @@ namespace {
 
 double pixToSize(double pixels, double maxDigitSize)
 {
-	return (int((pixels-5)/maxDigitSize*100.+0.5))/100.;
+	return (int(( pixels - 5)/ maxDigitSize * 100. + 0.5)) /100. * 0.9;
 }
 double cmToChars (double cm)
 {
@@ -430,7 +428,7 @@ void table_table_column::xlsx_convert(oox::xlsx_conversion_context & Context)
                                     in_width = 0.0;
                                 }
 								
-                                const double pixDpi = in_width * getSystemDPI();                
+                                const double pixDpi = in_width * 96.;                
                                 width = pixToSize(pixDpi, Context.getMaxDigitSize().first); 
 
 								//const double width = cmToChars(prop->style_table_column_properties_attlist_.style_column_width_->get_value_unit(length::cm));
@@ -782,7 +780,8 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
 		}
         else
         {
-            skip_next_cell = true;
+            if (last_cell_) // Vehicle log book.ods (row = 24 and more)
+				skip_next_cell = true;
         }
 
         Context.end_table_cell();

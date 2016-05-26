@@ -19,7 +19,6 @@ public:
 
 	odf_reader::chart::simple content_;  
 private:
-	void oox_serialize_default_text(std::wostream & _Wostream);
 	
 	cpdoccore::oox::oox_layout layout_;	//layout (Layout) §21.2.2.88
 

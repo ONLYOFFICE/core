@@ -11,7 +11,11 @@ namespace oox {
 
 void oox_title::oox_serialize(std::wostream & _Wostream)
 {
-	if (content_.content_.length()<1)	return;
+	if (content_.content_.length() < 1)
+	{
+		//возможен шаблон txPr
+		return;
+	}
     
 	CP_XML_WRITER(_Wostream)
     {

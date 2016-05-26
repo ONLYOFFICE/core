@@ -359,10 +359,10 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 		bool bEmpty_dPt = true;
 		for (int i = 0 ; i < content_.points_.size(); i++)
 		{
-			if (content_.points_[i].graphic_properties_.size() > 0 || 
-				content_.points_[i].fill_.type >= 0)
+			if (content_.points_[i].bEnabled)
 			{
 				bEmpty_dPt = false;
+				break;
 			}
 		}
 
@@ -382,6 +382,8 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 						shape.set( content_.points_[i].graphic_properties_, content_.points_[i].fill_);
 						shape.oox_serialize(CP_XML_STREAM());
 					}
+					
+					oox_serialize_default_text(CP_XML_STREAM(), content_.points_[i].text_properties_);
 				}
 			}
 		}

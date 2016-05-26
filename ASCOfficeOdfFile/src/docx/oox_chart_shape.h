@@ -10,6 +10,9 @@
 namespace cpdoccore {
 namespace oox {
 
+void oox_serialize_default_text(std::wostream & _Wostream, std::vector<odf_reader::_property>& properties);
+
+
 class oox_chart_shape: boost::noncopyable
 {
 public:

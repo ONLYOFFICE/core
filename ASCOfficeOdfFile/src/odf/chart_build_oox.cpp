@@ -681,9 +681,12 @@ void process_build_chart::visit(const chart_data_point & val)
 
 	if (val.chart_data_point_attlist_.common_attlist_.chart_style_name_)
 	{
-		ApplyGraphicProperties	(val.chart_data_point_attlist_.common_attlist_.chart_style_name_.get_value_or(L""),	
-										chart_build_.series_.back().points_.back().graphic_properties_, 
-										chart_build_.series_.back().points_.back().fill_);
+		chart_build_.series_.back().points_.back().bEnabled = true;
+		std::wstring style_name = val.chart_data_point_attlist_.common_attlist_.chart_style_name_.get_value_or(L"");
+		
+		ApplyGraphicProperties	(style_name,	chart_build_.series_.back().points_.back().graphic_properties_, 
+												chart_build_.series_.back().points_.back().fill_);
+		ApplyTextProperties		(style_name,	chart_build_.series_.back().points_.back().text_properties_);
 	}
 
 }

@@ -1,4 +1,4 @@
-#include "formulasconvert.h"
+п»ї#include "formulasconvert.h"
 
 #include <boost/algorithm/string.hpp>
 #include <boost/regex.hpp>
@@ -107,7 +107,7 @@ public:
 //}
 //
 
-// заменяем формат адресации ячеек НАОБОРОТ
+// Р·Р°РјРµРЅСЏРµРј С„РѕСЂРјР°С‚ Р°РґСЂРµСЃР°С†РёРё СЏС‡РµРµРє РќРђРћР‘РћР РћРў
 // [.A1] -> A1
 // [.A1:.B5] -> A1:B5
 // [Sheet2.A1:B5] -> Sheet2!A1:B5
@@ -218,7 +218,7 @@ std::wstring oox2odf_converter::Impl::replace_cells_range_formater2(boost::wsmat
 //
 //}
 
-  // Лист1!$A$1 -> $Лист1.$A$1 
+  // Р›РёСЃС‚1!$A$1 -> $Р›РёСЃС‚1.$A$1 
 
 void oox2odf_converter::Impl::replace_named_ref(std::wstring & expr)
 {
@@ -289,8 +289,8 @@ std::wstring replace_semicolons_formater(boost::wsmatch const & what)
 }
 
 // TODO
-// заменить запятые на точки с запятой во всех вхождениях кроме находящихся в кавычках --*и в фигурных скобках*--
-// TODO: проверить как сохраняются кавычки в строке
+// Р·Р°РјРµРЅРёС‚СЊ Р·Р°РїСЏС‚С‹Рµ РЅР° С‚РѕС‡РєРё СЃ Р·Р°РїСЏС‚РѕР№ РІРѕ РІСЃРµС… РІС…РѕР¶РґРµРЅРёСЏС… РєСЂРѕРјРµ РЅР°С…РѕРґСЏС‰РёС…СЃСЏ РІ РєР°РІС‹С‡РєР°С… --*Рё РІ С„РёРіСѓСЂРЅС‹С… СЃРєРѕР±РєР°С…*--
+// TODO: РїСЂРѕРІРµСЂРёС‚СЊ РєР°Рє СЃРѕС…СЂР°РЅСЏСЋС‚СЃСЏ РєР°РІС‹С‡РєРё РІ СЃС‚СЂРѕРєРµ
 void oox2odf_converter::Impl::replace_semicolons(std::wstring& expr)
 {
      const std::wstring res = boost::regex_replace(
@@ -368,7 +368,7 @@ bool is_forbidden1(const std::wstring & formula)
 //        boost::match_default | boost::format_all);
 //     expr = res;
 //}
-// заменить вертикальную черту во всех вхождениях в фигурных скобках, но не внутри строк
+// Р·Р°РјРµРЅРёС‚СЊ РІРµСЂС‚РёРєР°Р»СЊРЅСѓСЋ С‡РµСЂС‚Сѓ РІРѕ РІСЃРµС… РІС…РѕР¶РґРµРЅРёСЏС… РІ С„РёРіСѓСЂРЅС‹С… СЃРєРѕР±РєР°С…, РЅРѕ РЅРµ РІРЅСѓС‚СЂРё СЃС‚СЂРѕРє
 void oox2odf_converter::Impl::replace_vertical(std::wstring& expr)
 {
      const std::wstring res = boost::regex_replace(
@@ -378,7 +378,7 @@ void oox2odf_converter::Impl::replace_vertical(std::wstring& expr)
         boost::match_default | boost::format_all);
      expr = res;
 }
-// заменить запятую во всех вхождениях на пробел 
+// Р·Р°РјРµРЅРёС‚СЊ Р·Р°РїСЏС‚СѓСЋ РІРѕ РІСЃРµС… РІС…РѕР¶РґРµРЅРёСЏС… РЅР° РїСЂРѕР±РµР» 
 void oox2odf_converter::Impl::replace_space(std::wstring& expr)
 {
      const std::wstring res = boost::regex_replace(
@@ -579,7 +579,7 @@ std::wstring oox2odf_converter::Impl::convert_conditional_formula(const std::wst
 
 }
 //Sheet2!C3:C19,Sheet2!L27:L34
-//в
+//РІ
 //Sheet2.C3:Sheet2.C19 Sheet2.L29:Sheet2.L36
 //todooo
 std::wstring oox2odf_converter::Impl::convert_chart_distance(const std::wstring& expr1)
@@ -591,7 +591,7 @@ std::wstring oox2odf_converter::Impl::convert_chart_distance(const std::wstring&
 	res= expr.rfind(L")");
 	if (res ==expr.size()-2) expr = expr.substr(0, res);
 
-	//распарсить по диапазонам - одф-пробел, ик-эль-запятая
+	//СЂР°СЃРїР°СЂСЃРёС‚СЊ РїРѕ РґРёР°РїР°Р·РѕРЅР°Рј - РѕРґС„-РїСЂРѕР±РµР», РёРє-СЌР»СЊ-Р·Р°РїСЏС‚Р°СЏ
 
 	std::vector<std::wstring> distance_inp;
 	std::vector<std::wstring> distance_out;

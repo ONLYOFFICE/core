@@ -188,6 +188,8 @@ public:
 
     void docx_convert(oox::docx_conversion_context & Context);
     void pptx_convert(oox::pptx_conversion_context & Context);
+    
+	void xlsx_convert(std::wostream & strm, bool in_draw);
 
     // 15.5.1 fo:line-height
     _CP_OPT(odf_types::line_width) fo_line_height_;                 // +

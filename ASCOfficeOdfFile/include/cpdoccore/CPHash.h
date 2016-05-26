@@ -1,13 +1,10 @@
-#ifndef _CPDOCCORE_HASH_H_
-#define _CPDOCCORE_HASH_H_
+#pragma once
 
 #include "../../include/cpdoccore/CPOptional.h"
 
 namespace boost 
 {
-
-template< class T > struct hash;
-
+	template< class T > struct hash;
 }
 
 namespace cpdoccore {
@@ -25,4 +22,3 @@ std::size_t hash_value(typename optional<T>::Type const & val)
 
 }
 
-#endif

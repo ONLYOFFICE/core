@@ -12,6 +12,7 @@
 
 #include "../odf/odfcontext.h"
 #include "../odf/style_text_properties.h"
+#include "../odf/style_paragraph_properties.h"
 #include "../odf/calcs_styles.h"
 
 
@@ -52,7 +53,8 @@ public:
 
     void write_shared_strings(std::wostream & strm);
 	
-	void ApplyTextProperties(std::wstring style, odf_reader::text_format_properties_content & propertiesOut, odf_types::style_family::type Type);
+	void ApplyTextProperties		(std::wstring style, odf_reader::text_format_properties_content & propertiesOut, odf_types::style_family::type Type);
+	void ApplyParagraphProperties	(std::wstring style, odf_reader::paragraph_format_properties & propertiesOut, odf_types::style_family::type Type);
 
 	void set_local_styles_container(odf_reader::styles_container*  local_styles_);//это если стили объектов содержатся в другом документе
 
@@ -76,15 +78,16 @@ private:
 
     std::wstring dump_text();
     void write_rPr(std::wostream & strm);
-   
+	void write_pPr(std::wostream & strm);
+  
 	size_t paragraphs_cout_; //???? тока из за начала отсчета?
    
 	std::wstringstream	text_;
     std::wstringstream	output_;
     xlsx_shared_strings xlsx_shared_strings_;
    
-	std::wstring paragraph_style_name_;//был вектор ... не нужен, так как в один момент времени может быть тока один стиль параграфа,текста,объекта при приходе нового - дампится
-    std::wstring span_style_name_;
+	std::wstring		paragraph_style_name_;//был вектор ... не нужен, так как в один момент времени может быть тока один стиль параграфа,текста,объекта при приходе нового - дампится
+    std::wstring		span_style_name_;
 
 };
 
@@ -184,8 +187,29 @@ void xlsx_text_context::Impl::end_hyperlink(std::wstring hId)
 {
 	hyperlink_hId = hId;
 }
+void xlsx_text_context::Impl::ApplyParagraphProperties	(std::wstring style, odf_reader::paragraph_format_properties & propertiesOut, odf_types::style_family::type Type)
+{
+	std::vector<const odf_reader::style_instance *> instances;
 
-void xlsx_text_context::Impl::ApplyTextProperties(std::wstring style,odf_reader::text_format_properties_content & propertiesOut, odf_types::style_family::type Type)
+	if (local_styles_ptr_)
+	{
+		odf_reader::style_instance * defaultStyle = local_styles_ptr_->style_default_by_type(Type);
+		if (defaultStyle)instances.push_back(defaultStyle);
+
+		odf_reader::style_instance* styleInst = local_styles_ptr_->style_by_name(style, Type,false/*process_headers_footers_*/);
+		if(styleInst)instances.push_back(styleInst);
+	}
+	else
+	{
+		odf_reader::style_instance * defaultStyle = styles_.style_default_by_type(Type);
+		if (defaultStyle)instances.push_back(defaultStyle);
+
+		odf_reader::style_instance* styleInst = styles_.style_by_name(style, Type,false/*process_headers_footers_*/);
+		if(styleInst)instances.push_back(styleInst);
+	}
+	propertiesOut.apply_from(calc_paragraph_properties_content(instances));
+}
+void xlsx_text_context::Impl::ApplyTextProperties(std::wstring style, odf_reader::text_format_properties_content & propertiesOut, odf_types::style_family::type Type)
 {
 	std::vector<const odf_reader::style_instance *> instances;
 
@@ -213,11 +237,38 @@ void xlsx_text_context::Impl::set_cell_text_properties(odf_reader::text_format_p
 	text_properties_cell_ = text_properties;
 }
 
+void xlsx_text_context::Impl::write_pPr	(std::wostream & strm)
+{
+	if (paragraph_style_name_.empty())return;
+
+	odf_reader::paragraph_format_properties		paragraph_format_properties_;	
+	
+	ApplyParagraphProperties	(paragraph_style_name_,	paragraph_format_properties_	, odf_types::style_family::Paragraph);
+	paragraph_format_properties_.xlsx_convert(strm, in_draw);
+
+	//CP_XML_WRITER(strm)
+ //   {
+	//	if (in_draw)
+	//	{
+	//		CP_XML_NODE(L"a:pPr")
+	//		{
+
+	//		}
+	//	}
+	//	else
+	//	{
+	//		CP_XML_NODE(L"rPr")
+	//		{
+	//		}
+	//	}
+	//}
+}
+
 void xlsx_text_context::Impl::write_rPr(std::wostream & strm)
 {
-	if (paragraph_style_name_.length()<1 && span_style_name_.length()<1 
-			&& !(hyperlink_hId.length()>0	&& in_draw) 
-			&& !(text_properties_cell_		&& in_cell_content))return;
+	if (paragraph_style_name_.empty() && span_style_name_.empty() 
+			&& !(!hyperlink_hId.empty()	&& in_draw) 
+			&& !(text_properties_cell_	&& in_cell_content))return;
 
 	odf_reader::text_format_properties_content		text_properties_paragraph_;	
 	odf_reader::text_format_properties_content		text_properties_span_;
@@ -298,11 +349,13 @@ void xlsx_text_context::Impl::write_rPr(std::wostream & strm)
 		{
 			CP_XML_NODE(L"rPr")
 			{
-				if (sValFontFamily)							{CP_XML_NODE(L"rFont")	{CP_XML_ATTR(L"val", sValFontFamily.get());}}
-				if (dValFontSize)							{CP_XML_NODE(L"sz")		{CP_XML_ATTR(L"val", (int)(dValFontSize.get()));}}
-				if (sValFontColor)							{CP_XML_NODE(L"color")	{CP_XML_ATTR(L"rgb", sValFontColor.get());}}
-				if ((iValFontStyle) && (iValFontStyle.get() >0))  {CP_XML_NODE(L"i")		{CP_XML_ATTR(L"val", "true");}}
-				if ((iValFontWeight) && (iValFontWeight.get() >0)){CP_XML_NODE(L"b")		{CP_XML_ATTR(L"val", "true");}}
+				if (sValFontFamily)				{CP_XML_NODE(L"rFont")	{CP_XML_ATTR(L"val", sValFontFamily.get());}}
+				if (dValFontSize)				{CP_XML_NODE(L"sz")		{CP_XML_ATTR(L"val", (int)(dValFontSize.get()));}}
+				if (sValFontColor)				{CP_XML_NODE(L"color")	{CP_XML_ATTR(L"rgb", sValFontColor.get());}}
+				if ((iValFontStyle) &&
+					(iValFontStyle.get() >0))	{CP_XML_NODE(L"i")		{CP_XML_ATTR(L"val", "true");}}
+				if ((iValFontWeight) && 
+					(iValFontWeight.get() >0))	{CP_XML_NODE(L"b")		{CP_XML_ATTR(L"val", "true");}}
 			}
 		}
     }

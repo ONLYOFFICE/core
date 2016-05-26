@@ -21,7 +21,7 @@ public:
 	~oox_chart_series(){}
  
     void oox_serialize_common(std::wostream & _Wostream);
-	virtual void oox_serialize(std::wostream & _Wostream){}
+	virtual void oox_serialize(std::wostream & _Wostream) = 0;
 	
 	_oox_chart_values			values_[5]; //cat(labels), common, x, y, bubble, 
 	int							id_;

@@ -77,13 +77,13 @@ private:
 
 	odf_reader::styles_container * local_styles_ptr_;
 
-    void write_rPr(std::wostream & strm);
-	void write_pPr(std::wostream & strm);
-	void write_t(std::wostream & strm);
+    void write_rPr	(std::wostream & strm);
+	void write_pPr	(std::wostream & strm);
+	void write_t	(std::wostream & strm);
    
-    std::wstring dump_paragraph();
-	void dump_run();
-	void dump_field();
+    std::wstring	dump_paragraph();
+	void			dump_run();
+	void			dump_field();
   
 	size_t paragraphs_cout_; //???? тока из за начала отсчета?
    
@@ -94,8 +94,8 @@ private:
 	std::wstring		paragraph_style_name_;
     std::wstring		span_style_name_;
 
-	std::wstring			base_style_name_;
-	odf_types::style_family::type base_style_family_;//Presentation Or SpreadSheet
+	std::wstring					base_style_name_;
+	odf_types::style_family::type	base_style_family_;//Presentation Or SpreadSheet
 /////////////lists////////////
     std::list<std::wstring> list_style_stack_;
     bool first_element_list_item_;
@@ -330,13 +330,13 @@ void pptx_text_context::Impl::write_pPr(std::wostream & strm)
 	int level = list_style_stack_.size()-1;		
 
 	odf_reader::paragraph_format_properties		paragraph_properties_;
-	ApplyParagraphProperties (paragraph_style_name_,	paragraph_properties_,odf_types::style_family::Paragraph);
 	
-	ApplyListProperties (paragraph_properties_,level);//выравнивания листа накатим на свойства параграфа
+	ApplyParagraphProperties	(paragraph_style_name_,	paragraph_properties_,odf_types::style_family::Paragraph);
+	ApplyListProperties			(paragraph_properties_,level);//выравнивания листа накатим на свойства параграфа
 
 	paragraph_properties_.pptx_convert(pptx_context_);	
 	
-	const std::wstring & paragraphAttr  =  get_styles_context().paragraph_attr().str();	
+	const std::wstring & paragraphAttr  = get_styles_context().paragraph_attr().str();	
 	const std::wstring & paragraphNodes = get_styles_context().paragraph_nodes().str();
 
 	if (level < 0 && paragraphAttr.length() <1 && paragraphNodes.length()<1) return;

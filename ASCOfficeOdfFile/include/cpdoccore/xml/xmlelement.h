@@ -1,5 +1,4 @@
-#ifndef _CPDOCCORE_XML_ELEMENT_H_
-#define _CPDOCCORE_XML_ELEMENT_H_
+#pragma once
 
 #include <string>
 #include <iosfwd>
@@ -70,5 +69,3 @@ inline std::basic_string<CharT> element<CharT>::xml_to_string() const
 
 }
 }
-
-#endif

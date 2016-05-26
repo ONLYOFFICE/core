@@ -24,7 +24,9 @@ xlsx_table_state::xlsx_table_state(xlsx_conversion_context * Context, std::wstri
     columns_count_			(0),
     xlsx_drawing_context_	(Context->get_drawing_context_handle()),
     xlsx_comments_context_	(Context->get_comments_context_handle()),
-    table_column_last_width_(0.0)
+    table_column_last_width_(0.0),
+	in_cell(false)
+
 {        
 	memset(&group_row_,0,sizeof(_group_row));
 }
@@ -142,10 +144,13 @@ void xlsx_table_state::start_cell(size_t columnsSpanned, size_t rowsSpanned)
             rows_spanned_[current_table_column_ + i].set_style_id(-1);
         }
     }
+
+	in_cell = true;
 }
 
 void xlsx_table_state::end_cell()
 {
+	in_cell = false;
 }
 
 

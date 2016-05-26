@@ -132,7 +132,7 @@ public:
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(table_table_source);
@@ -141,7 +141,7 @@ CP_REGISTER_OFFICE_ELEMENT2(table_table_source);
 class table_columns
 {
 public:
-    void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name, document_context * Context);
+    void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name, document_context * Context);
    
 	void docx_convert(oox::docx_conversion_context & Context);
     void xlsx_convert(oox::xlsx_conversion_context & Context);
@@ -164,14 +164,14 @@ public:
     ElementType type;
 
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes ) {}
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name) {}
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name) {}
     virtual void add_text(const std::wstring & Text) {}
 
     CPDOCCORE_DEFINE_VISITABLE();
 
 public:
     table_columns_no_group();
-    void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name, document_context * Context);
+    void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name, document_context * Context);
 
     void docx_convert(oox::docx_conversion_context & Context);
     void xlsx_convert(oox::xlsx_conversion_context & Context);
@@ -193,7 +193,7 @@ class table_columns_and_groups
 {
 public:
     table_columns_and_groups();
-    void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name, document_context * Context);
+    void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name, document_context * Context);
 
     void docx_convert(oox::docx_conversion_context & Context);
     void xlsx_convert(oox::xlsx_conversion_context & Context);
@@ -238,7 +238,7 @@ public:
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 public:
     table_table_column_attlist	table_table_column_attlist_;
@@ -263,7 +263,7 @@ public:
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 public:
     office_element_ptr_array	table_table_column_;
@@ -290,7 +290,7 @@ public:
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 public:
     office_element_ptr_array	table_table_column_;
@@ -331,7 +331,7 @@ public:
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 public:
     table_table_column_group_attlist	table_table_column_group_attlist_;
@@ -356,11 +356,11 @@ public:
     virtual void pptx_convert(oox::pptx_conversion_context & Context) ;
 
 public:
-    virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 public:
     table_table_row_attlist		table_table_row_attlist_;
@@ -374,17 +374,17 @@ CP_REGISTER_OFFICE_ELEMENT2(table_table_row);
 class table_table_cell_content
 {
 public:
-    ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
-    void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name, document_context * Context);
+    std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name, document_context * Context);
     
     bool	docx_convert(oox::docx_conversion_context & Context) ;
     int		xlsx_convert(oox::xlsx_conversion_context & Context, text_format_properties_content *text_properties) ;
     bool	pptx_convert(oox::pptx_conversion_context & Context) ;
 
+    office_element_ptr_array	elements_; 
 private:
     // TODO table-cell-range-source
     // TODO table-detective
-    office_element_ptr_array	text_content_; // text-content
 };
 
 
@@ -406,11 +406,11 @@ public:
     virtual void pptx_convert(oox::pptx_conversion_context & Context) ;
 
 public:
-    virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
     virtual void add_text(const std::wstring & Text);
 
 public:
@@ -442,11 +442,11 @@ public:
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context) ;
 
 public:
-    virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
     virtual void add_text(const std::wstring & Text);
 
 
@@ -480,11 +480,11 @@ public:
 	{
     }
 public:
-    virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 public:
     office_element_ptr_array	table_table_row_;
@@ -509,11 +509,11 @@ public:
     virtual void pptx_convert(oox::pptx_conversion_context & Context) ;
 
 public:
-    virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
     virtual void add_text(const std::wstring & Text);
 
 public:
@@ -527,8 +527,8 @@ CP_REGISTER_OFFICE_ELEMENT2(table_table_header_rows);
 class table_rows
 {
 public:
-    ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
-    void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name, document_context * Context);
+    std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name, document_context * Context);
   
 	void docx_convert(oox::docx_conversion_context & Context);
     void xlsx_convert(oox::xlsx_conversion_context & Context);
@@ -551,7 +551,7 @@ public:
     static const ElementType type = typeTableTableRowNoGroup;
 
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes ) {}
-	virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
     virtual void add_text(const std::wstring & Text) {}
 
     static _CP_PTR(table_rows_no_group) create();
@@ -560,8 +560,8 @@ public:
 
 public:
     table_rows_no_group();
-    ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
-    void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name, document_context * Context);
+    std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name, document_context * Context);
   
 	void docx_convert(oox::docx_conversion_context & Context);
     void xlsx_convert(oox::xlsx_conversion_context & Context);
@@ -581,8 +581,8 @@ class table_rows_and_groups
 {
 public:
     table_rows_and_groups();
-    ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
-    void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name, document_context * Context);
+    std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name, document_context * Context);
   
 	void docx_convert(oox::docx_conversion_context & Context);
     void xlsx_convert(oox::xlsx_conversion_context & Context);
@@ -623,11 +623,11 @@ public:
 	{
     }
 	virtual void xlsx_convert(oox::xlsx_conversion_context & Context) ;
-    virtual std::wostream & text_to_stream(::std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 public:
     table_table_row_group_attlist	table_table_row_group_attlist_;
@@ -654,7 +654,7 @@ public:
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 public:
     table_table_attlist			table_table_attlist_;
@@ -687,7 +687,7 @@ public:
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
     office_element_ptr_array content_;
 

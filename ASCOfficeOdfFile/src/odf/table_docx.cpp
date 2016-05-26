@@ -17,12 +17,10 @@ namespace cpdoccore {
 
 namespace odf_reader {
 
-
-
 bool table_table_cell_content::docx_convert(oox::docx_conversion_context & Context)
 {
     bool wasPar = false;
-    BOOST_FOREACH(const office_element_ptr & elm, text_content_)
+    BOOST_FOREACH(const office_element_ptr & elm, elements_)
     {
 		ElementType type = elm->get_type();
         

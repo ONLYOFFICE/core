@@ -1,10 +1,7 @@
-
-
 #include <boost/foreach.hpp>
 #include <boost/functional.hpp>
 #include <cpdoccore/CPHash.h>
 #include <cpdoccore/xml/simple_xml_writer.h>
-
 
 #include "oox_chart_shape.h"
 #include "oox_drawing.h"

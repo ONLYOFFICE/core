@@ -244,7 +244,7 @@ std::wstring replace_space_PROBEL(boost::wsmatch const & what)
     else if (what[3].matched)
         return what[3].str();
 }
-std::wstring replace_point_ТОСHKA(boost::wsmatch const & what)
+std::wstring replace_point(boost::wsmatch const & what)
 {
     if (what[1].matched)
     {
@@ -329,7 +329,7 @@ std::wstring odf2oox_converter::Impl::convert(const std::wstring& expr)
     std::wstring workstr = boost::regex_replace(
         expr,
         complexRef,
-        &replace_point_ТОСHKA,
+        &replace_point,
         boost::match_default | boost::format_all);	
 
 	boost::algorithm::replace_all(workstr, L" ", L"PROBEL");
@@ -443,7 +443,7 @@ std::wstring odf2oox_converter::convert_named_ref(const std::wstring& expr)
     std::wstring workstr = boost::regex_replace(
         expr,
         complexRef,
-        &replace_point_ТОСHKA,
+        &replace_point,
         boost::match_default | boost::format_all);	
 	
 	boost::algorithm::replace_all(workstr, L" ", L"PROBEL");		
@@ -463,7 +463,7 @@ std::wstring odf2oox_converter::convert_named_expr(const std::wstring& expr)
     std::wstring workstr = boost::regex_replace(
         expr,
         complexRef,
-        &replace_point_ТОСHKA,
+        &replace_point,
         boost::match_default | boost::format_all);	
 	
 	boost::algorithm::replace_all(workstr, L" ", L"PROBEL");		

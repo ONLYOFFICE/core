@@ -343,14 +343,14 @@ SOURCES += \
 }
 
 SOURCES += \
-    ../formulasconvert/formulasconvert_odf.cpp \
     ../formulasconvert/formulasconvert_oox.cpp \
     ../src/odf/math_elementaries.cpp \
     ../src/odf/math_layout_elements.cpp \
     ../src/odf/math_limit_elements.cpp \
     ../src/odf/math_table_elements.cpp \
     ../src/odf/math_token_elements.cpp \
-    ../src/odf/datatypes/mathvariant.cpp
+    ../src/odf/datatypes/mathvariant.cpp \
+    ../formulasconvert/formulasconvert_odf.cpp
 
 HEADERS += \
     ../formulasconvert/formulasconvert.h \

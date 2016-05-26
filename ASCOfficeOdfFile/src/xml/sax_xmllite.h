@@ -1,8 +1,5 @@
-/// Реализация интерфейса через XmlUtils::CXmlLiteReader
-
 #pragma once
 
-//#include <iosfwd>
 #include "../../include/cpdoccore/xml/sax.h"
 #include "../../include/cpdoccore/CPSharedPtr.h"
 

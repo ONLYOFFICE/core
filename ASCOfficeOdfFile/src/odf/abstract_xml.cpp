@@ -1,5 +1,3 @@
-
-
 #include "abstract_xml.h"
 
 #include "paragraph_elements.h"

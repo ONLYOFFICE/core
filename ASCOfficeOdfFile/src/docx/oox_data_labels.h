@@ -1,11 +1,13 @@
 #pragma once 
 
 #include <iosfwd>
+#include <map>
+#include <vector>
 #include <boost/noncopyable.hpp>
 
 #include <cpdoccore/CPOptional.h>
 #include <cpdoccore/CPScopedPtr.h>
-
+#include <cpdoccore/xml/attributes.h>
             
 namespace cpdoccore {
 namespace oox {
@@ -26,16 +28,20 @@ public:
 	void set_showSerName	(bool Val){showSerName_		= Val;}
 	void set_showVal		(bool Val){showVal_			= Val;}
 
+	void add_dLbl(int ind, std::vector<odf_reader::_property> & text_properties);
    
 private:
 
-	bool showBubbleSize_;// (Show Bubble Size) §21.2.2.178
-	bool showCatName_;// (Show Category Name) §21.2.2.179
-	bool showLeaderLines_;// (Show Leader Lines) §21.2.2.183
-	bool showLegendKey_;// (Show Legend Key) §21.2.2.184
-	bool showPercent_;// (Show Percent) §21.2.2.187
-	bool showSerName_;// (Show Series Name) §21.2.2.188
-	bool showVal_;// (Show Value) §21.2.2.189
+	bool showBubbleSize_;		// (Show Bubble Size) §21.2.2.178
+	bool showCatName_;			// (Show Category Name) §21.2.2.179
+	bool showLeaderLines_;		// (Show Leader Lines) §21.2.2.183
+	bool showLegendKey_;		// (Show Legend Key) §21.2.2.184
+	bool showPercent_;			// (Show Percent) §21.2.2.187
+	bool showSerName_;			// (Show Series Name) §21.2.2.188
+	bool showVal_;				// (Show Value) §21.2.2.189
+
+
+	std::map<int, std::vector<odf_reader::_property>> dLbls_;
 
 
 //delete (Delete) §21.2.2.40

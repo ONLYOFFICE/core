@@ -353,8 +353,6 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 
 			}
 		}
-		if (data_labels_)
-			data_labels_->oox_serialize(_Wostream);
 
 		bool bEmpty_dPt = true;
 		for (int i = 0 ; i < content_.points_.size(); i++)
@@ -382,11 +380,20 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 						shape.set( content_.points_[i].graphic_properties_, content_.points_[i].fill_);
 						shape.oox_serialize(CP_XML_STREAM());
 					}
-					
-					oox_serialize_default_text(CP_XML_STREAM(), content_.points_[i].text_properties_);
+
+					if (!content_.points_[i].text_properties_.empty())
+					{
+						if (!data_labels_) data_labels_ = oox_data_labels();
+
+						data_labels_->add_dLbl(indPoint - 1, content_.points_[i].text_properties_);
+					}
 				}
 			}
 		}
+		
+		if (data_labels_)
+			data_labels_->oox_serialize(_Wostream);
+
 	}
 }
 	//backward (Backward) §21.2.2.12

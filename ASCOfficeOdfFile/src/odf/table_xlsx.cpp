@@ -33,9 +33,9 @@ int table_table_cell_content::xlsx_convert(oox::xlsx_conversion_context & Contex
     Context.get_table_context().start_cell_content();
 	Context.get_text_context().set_cell_text_properties(text_properties);
     
-	for (int i = 0 ; i < text_content_.size(); i++)
+	for (int i = 0 ; i < elements_.size(); i++)
     {
-        text_content_[i]->xlsx_convert(Context);
+        elements_[i]->xlsx_convert(Context);
     }
    
 	const int sharedStrId = Context.get_table_context().end_cell_content();
@@ -152,8 +152,6 @@ void table_table_row::xlsx_convert(oox::xlsx_conversion_context & Context)
 						CP_XML_ATTR(L"customFormat", 1);
 						CP_XML_ATTR(L"s", Default_Cell_style_in_row_ );
 					}
-					else
-						CP_XML_ATTR(L"customFormat", 0);
 
 
                     CP_XML_STREAM();
@@ -691,12 +689,7 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
     
 	xfId_last_set= Context.get_style_manager().xfId(&textFormatProperties, &parFormatProperties, &cellFormatProperties, &cellFormat, num_format,false, is_style_visible);
    
-	const int sharedStringId = table_table_cell_content_.xlsx_convert(Context, &textFormatProperties);
-
-	if (t_val == oox::XlsxCellType::str && sharedStringId >=0)
-		t_val = oox::XlsxCellType::s;//в случае текста, если он есть берем кэшированное значение
-	
-	if (sharedStringId >= 0 || 
+	if ( table_table_cell_content_.elements_.size() > 0	|| 
 		!formula.empty()	||
 		(	t_val == oox::XlsxCellType::n										&& !number_val.empty()) || 
 		(	t_val == oox::XlsxCellType::b										&& bool_val) ||
@@ -710,6 +703,11 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
 												table_table_cell_attlist_extra_.table_number_rows_spanned_		- 1	);
 		Context.set_current_cell_style_id(xfId_last_set);
 		
+		const int sharedStringId = table_table_cell_content_.xlsx_convert(Context, &textFormatProperties);
+
+		if (t_val == oox::XlsxCellType::str && sharedStringId >=0)
+			t_val = oox::XlsxCellType::s;//в случае текста, если он есть берем кэшированное значение
+			
 		if (skip_next_cell)break;
 
         // пустые ячейки пропускаем.

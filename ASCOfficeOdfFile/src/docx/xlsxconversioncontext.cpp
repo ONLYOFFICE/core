@@ -437,6 +437,11 @@ void xlsx_conversion_context::start_table_cell(const std::wstring & formula, siz
     get_table_context().start_cell(formula, columnsSpanned, rowsSpanned);
 }
 
+bool xlsx_conversion_context::in_table_cell()
+{
+	return get_table_context().state()->in_cell;
+}
+
 void xlsx_conversion_context::end_table_cell()
 {
     get_table_context().end_cell();

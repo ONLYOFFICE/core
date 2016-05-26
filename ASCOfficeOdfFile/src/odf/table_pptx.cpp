@@ -22,13 +22,10 @@ namespace cpdoccore {
 namespace odf_reader {
 
 
-
-
-
 bool table_table_cell_content::pptx_convert(oox::pptx_conversion_context & Context)
 {
     bool wasPar = false;
-    BOOST_FOREACH(const office_element_ptr & elm, text_content_)
+    BOOST_FOREACH(const office_element_ptr & elm, elements_)
     {
         if (elm->get_type() == typeTextP || 
             elm->get_type() == typeTextH)

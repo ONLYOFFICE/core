@@ -1,5 +1,4 @@
-#ifndef _CPDOCCORE_ODF_ABSTRACT_XML_H_
-#define _CPDOCCORE_ODF_ABSTRACT_XML_H_
+#pragma once
 
 #include "office_elements.h"
 #include "office_elements_create.h"
@@ -36,5 +35,3 @@ CP_REGISTER_OFFICE_ELEMENT2(abstract_xml);
 
 }
 }
-
-#endif // #ifndef _CPDOCCORE_ODF_ABSTRACT_XML_H_

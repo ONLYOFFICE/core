@@ -320,12 +320,12 @@ void table_columns_and_groups::add_child_element( xml::sax * Reader, const ::std
 
 ::std::wostream & table_table_cell_content::text_to_stream(::std::wostream & _Wostream) const
 {
-    return CP_SERIALIZE_TEXT(text_content_);
+    return CP_SERIALIZE_TEXT(elements_);
 }
 
 void table_table_cell_content::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name, document_context * Context)
 {
-    CP_CREATE_ELEMENT_SIMPLE(text_content_);
+    CP_CREATE_ELEMENT_SIMPLE(elements_);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////

@@ -72,7 +72,10 @@ public:
 		int level;
 		bool collapsed;
 	}group_row_;
+
+	friend class xlsx_conversion_context;
 private:
+	bool						in_cell;
     xlsx_conversion_context *	context_;    
     std::wstring				tableName_;
 

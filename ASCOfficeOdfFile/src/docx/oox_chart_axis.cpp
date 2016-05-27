@@ -61,11 +61,6 @@ void oox_axis_content::oox_serialize(std::wostream & _Wostream)
 				{
 					CP_XML_ATTR(L"val", L"between");
 				}
-				//CP_XML_NODE(L"c:numFmt")
-				//{
-				//	CP_XML_ATTR(L"sourceLinked", 1);
-				//	CP_XML_ATTR(L"formatCode", "General");
-				//}
 			}
 			break;
 		case 3:
@@ -89,8 +84,9 @@ void oox_axis_content::oox_serialize(std::wostream & _Wostream)
 }
 void oox_axis_content::oox_serialize_content(std::wostream & _Wostream)
 {
-	oox_chart_shape shape;
-	_CP_OPT(bool) boolVal;
+	oox_chart_shape			shape;
+	_CP_OPT(bool)			boolVal;
+	_CP_OPT(std::wstring)	strVal;
 	
 	oox_title title;
 	title.set_content(content_.title_);//todo нужно задать понармальному layout
@@ -138,6 +134,18 @@ void oox_axis_content::oox_serialize_content(std::wostream & _Wostream)
 		}
 		//oox_serialize_ln(_Wostream,content_.graphic_properties_);
 
+		odf_reader::GetProperty(content_.properties_, L"num_format", strVal);
+		odf_reader::GetProperty(content_.properties_, L"link-data-style-to-source", boolVal);
+
+		if ((strVal) && (strVal->length() > 1))
+		{
+			CP_XML_NODE(L"c:numFmt")
+			{
+				CP_XML_ATTR(L"formatCode", *strVal);
+				CP_XML_ATTR(L"sourceLinked", boolVal.get_value_or(true));
+			}
+		}
+
 		BOOST_FOREACH(odf_reader::chart::axis::grid  & g, content_.grids_)
 		{
 			_oox_fill fill_null;
@@ -177,7 +185,7 @@ void oox_axis_content::oox_serialize_content(std::wostream & _Wostream)
 		
 		title.oox_serialize(_Wostream);
 		
-		odf_reader::GetProperty(content_.properties_,L"display_label",boolVal);
+		odf_reader::GetProperty(content_.properties_,L"display_label", boolVal);
 		if ((boolVal == true) && (boolVal.get()==true))
 		{
 			CP_XML_NODE(L"c:tickLblPos")
@@ -188,6 +196,8 @@ void oox_axis_content::oox_serialize_content(std::wostream & _Wostream)
 		
 		shape.set(content_.graphic_properties_,content_.fill_) ;
 		shape.oox_serialize(_Wostream);
+
+		oox_serialize_default_text(_Wostream, content_.text_properties_);
 		
 		BOOST_FOREACH(int const & ii, cross_id_)
 		{

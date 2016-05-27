@@ -45,7 +45,7 @@ public:
 	virtual void add_series(int id){}
 	
 	void set_cache_only		(bool val);
-	void set_formula_series	(int ind,std::wstring val);
+	void set_formula_series	(int ind, std::wstring val, std::wstring formatCode, bool link_to_source);
 	void set_values_series	(int ind, std::vector<std::wstring> & val);
 	void set_name			(std::wstring val);
 	void set_content_series	(odf_reader::chart::series & content);

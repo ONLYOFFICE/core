@@ -360,6 +360,22 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\odf\number_style.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|x64"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						AdditionalOptions="/bigobj"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\src\odf\number_style.h"
+				>
+			</File>
+			<File
 				RelativePath="..\src\odf\style_chart_properties.cpp"
 				>
 			</File>
@@ -1421,22 +1437,6 @@
 			</File>
 			<File
 				RelativePath="..\src\odf\note.h"
-				>
-			</File>
-			<File
-				RelativePath="..\src\odf\number_style.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|x64"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalOptions="/bigobj"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\src\odf\number_style.h"
 				>
 			</File>
 			<File

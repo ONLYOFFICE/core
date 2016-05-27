@@ -30,11 +30,11 @@ public:
 	int get_Id(){return id_;}
 	void add_CrossedId (int id){cross_id_.push_back( id);}
 
-	int id_;
-	std::vector<int> cross_id_;
+	int						id_;
+	std::vector<int>		cross_id_;
 	odf_reader::chart::axis content_;
 
-	int type_;
+	int						type_;
 };
 
 }

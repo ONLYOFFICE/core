@@ -12,6 +12,7 @@
 
 #include "serialize_elements.h"
 #include "odfcontext.h"
+#include "number_style.h"
 #include "calcs_styles.h"
 #include "search_table_cell.h"
 
@@ -671,12 +672,16 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
 
     if (!data_style.empty())
     {
-        if (office_element_ptr num_style = odfContext.numberStyles().find_by_style_name(data_style))
-        {
+        office_element_ptr elm = odfContext.numberStyles().find_by_style_name(data_style);
+		number_style_base *num_style = dynamic_cast<number_style_base*>(elm.get());
+      
+		if (num_style)
+		{
             Context.get_num_format_context().start_complex_format();
-            num_style->xlsx_convert(Context);
+				num_style->oox_convert(Context.get_num_format_context());
             Context.get_num_format_context().end_complex_format();
-            num_format = Context.get_num_format_context().get_last_format();
+            
+			num_format = Context.get_num_format_context().get_last_format();
         }
     }
 
@@ -769,7 +774,7 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
 				{
 					empty_cell_count++;
 					//Уведомление_о_вручении.ods - 13 повторов пустых с cellStyle=NULL - нужные !!!
-					if (empty_cell_count > 19 && (table_table_cell_attlist_.table_number_columns_repeated_> 299 || cellStyle == NULL)) 
+					if (empty_cell_count > 19 && last_cell_&& (table_table_cell_attlist_.table_number_columns_repeated_> 299 || cellStyle == NULL)) 
 					{//пишем простыню только если задан стиль тока для этих ячеек
 						skip_next_cell = true;
 					}

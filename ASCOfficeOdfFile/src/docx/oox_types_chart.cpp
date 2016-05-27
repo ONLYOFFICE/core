@@ -19,10 +19,10 @@ void oox_chart::set_cache_only (bool val)
 
 }
 
-void oox_chart::set_formula_series(int ind, std::wstring val)
+void oox_chart::set_formula_series(int ind, std::wstring val, std::wstring formatCode, bool link_to_source)
 {
 	oox_series_ptr & current_ptr = series_.back();
-	current_ptr->setFormula(ind,val);
+	current_ptr->setFormula(ind, val, formatCode, link_to_source);
 
 }
 void oox_chart::set_name(std::wstring val)

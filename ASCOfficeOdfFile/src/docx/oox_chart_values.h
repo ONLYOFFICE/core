@@ -2,7 +2,6 @@
 
 #include <iosfwd>
 #include <cpdoccore/CPOptional.h>
-//#include <cpdoccore/CPScopedPtr.h>
 
                  
 namespace cpdoccore {
@@ -22,11 +21,7 @@ struct _oox_numLit
 //formatCode (Format Code) §21.2.2.71
 //pt (Numeric Point) §21.2.2.150
 //ptCount (Point Count)
-//struct _xlsx_num_cash
-//{
-//	int formatCode;
-//	std::vector<std::wstring>num_cash;
-//};
+
 struct _oox_strRef
 {
 	bool						present;
@@ -42,6 +37,7 @@ struct _oox_numRef
 
 	std::wstring				formula;
 	std::wstring				formatCode;
+	bool						link_to_source;
 	int							num_cache_count;
 	std::vector<std::wstring>	num_cache;
 
@@ -55,21 +51,22 @@ struct _oox_chart_values
 public:
 	_oox_chart_values()
 	{
-		numRef_.present=false;
-		numRef_.formatCode = L"General";
-		numRef_.num_cache_count=0;
+		numRef_.present			= false;
+		numRef_.formatCode		= L"General";
+		numRef_.num_cache_count	= 0;
+		numRef_.link_to_source	= true;
 
-		strRef_.present=false;
-		strRef_.str_cache_count=0;
+		strRef_.present			= false;
+		strRef_.str_cache_count	= 0;
 
-		present = false;
+		present					= false;
 	}
 
-	bool present;
-	std::wstring type;
+	bool			present;
+	std::wstring	type;
 	
-	_oox_numRef numRef_;
-	_oox_strRef strRef_;
+	_oox_numRef		numRef_;
+	_oox_strRef		strRef_;
 
 };
 //numLit (Number Literal) §21.2.2.122

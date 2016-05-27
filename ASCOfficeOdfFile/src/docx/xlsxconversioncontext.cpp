@@ -32,6 +32,7 @@ namespace package
 xlsx_conversion_context::xlsx_conversion_context(odf_reader::odf_document * odfDocument) : 
 	odf_document_		(odfDocument),
 	output_document_	(NULL),
+	num_format_context_	(odf_document_->odf_context()),
 	xlsx_text_context_	(odf_document_->odf_context().styleContainer()),
 	xlsx_table_context_	(this, xlsx_text_context_),
 	

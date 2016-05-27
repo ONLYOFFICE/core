@@ -13,9 +13,7 @@
 namespace cpdoccore { 
 namespace odf_reader {
 
-/// \class  style_map
-/// \brief  style:map
-///         style-map
+//  style:map
 class style_map : public office_element_impl<style_map>
 {
 public:
@@ -30,10 +28,10 @@ private:
     virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
     
 public:
-    std::wstring style_condition_;
-    odf_types::style_ref style_name_;
-    std::wstring style_base_cell_address_;
-    odf_types::style_ref style_apply_style_name_;
+    std::wstring			style_condition_;
+    odf_types::style_ref	style_name_;
+    std::wstring			style_base_cell_address_;
+    odf_types::style_ref	style_apply_style_name_;
 
 };
 

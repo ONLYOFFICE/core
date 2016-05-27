@@ -61,7 +61,7 @@ void oox_chart_series::setName(std::wstring &value)
 	name_=value;
 }
 
-void oox_chart_series::setFormula(int ind, std::wstring &value)
+void oox_chart_series::setFormula(int ind, std::wstring &value, std::wstring & formatCode, bool link_to_source)
 {
 	formulasconvert::odf2oox_converter converter;
 
@@ -79,9 +79,11 @@ void oox_chart_series::setFormula(int ind, std::wstring &value)
 		long res = value.find(L"local-table");
 		if (res >=0 && !bLocalTable_ ) return; //в xlsx низя .... нужно сделать тогда отдельную  table.xml
 
-		values_[ind].numRef_.formula	= converter.convert_chart_distance(value);
-		values_[ind].numRef_.present	= true;
-		values_[ind].present			= true;
+		values_[ind].numRef_.formula		= converter.convert_chart_distance(value);
+		values_[ind].numRef_.present		= true;
+		values_[ind].numRef_.formatCode		= formatCode;
+		values_[ind].numRef_.link_to_source	= link_to_source;
+		values_[ind].present				= true;
 	}
 }
 
@@ -194,7 +196,7 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 								{
 									CP_XML_NODE(L"c:formatCode")
 									{
-										CP_XML_CONTENT(L"General");//????
+										CP_XML_CONTENT(values_[i].numRef_.formatCode);
 									}
 									CP_XML_NODE(L"c:ptCount")
 									{
@@ -227,7 +229,7 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 						{
 							CP_XML_NODE(L"c:formatCode")
 							{
-								CP_XML_CONTENT(L"General");//????
+								CP_XML_CONTENT(values_[i].numRef_.formatCode);
 							}
 							CP_XML_NODE(L"c:ptCount")
 							{

@@ -276,22 +276,22 @@ private:
     
 private:
     // attr
-    std::wstring style_name_;
-    _CP_OPT( std::wstring ) style_display_name_; // optional 
+    std::wstring	style_name_;
+    bool			style_auto_update_;				// default = false
+    
+	_CP_OPT( std::wstring ) style_display_name_; 
     odf_types::style_family style_family_;
 
-    _CP_OPT( std::wstring ) style_parent_style_name_; // optional 
-    _CP_OPT( std::wstring ) style_next_style_name_; // optional 
-    _CP_OPT( std::wstring ) style_list_style_name_; // optional, may be empty
-    _CP_OPT( std::wstring ) style_master_page_name_; // optional
-    bool style_auto_update_; // optional, default = false
-    _CP_OPT( std::wstring ) style_data_style_name_; // // optional
-    _CP_OPT( std::wstring ) style_class_; // optional
-    _CP_OPT(std::wstring) style_default_outline_level_;  // optional
-
+    _CP_OPT( std::wstring ) style_parent_style_name_; 
+    _CP_OPT( std::wstring ) style_next_style_name_;	 
+    _CP_OPT( std::wstring ) style_list_style_name_;	
+    _CP_OPT( std::wstring ) style_master_page_name_;
+    _CP_OPT( std::wstring ) style_data_style_name_;	
+    _CP_OPT( std::wstring ) style_class_;
+    _CP_OPT( std::wstring ) style_default_outline_level_;  
 private:
-    style_content style_content_;
-    office_element_ptr_array style_map_;
+    style_content				style_content_;
+    office_element_ptr_array	style_map_;
 
     friend class odf_document;
 

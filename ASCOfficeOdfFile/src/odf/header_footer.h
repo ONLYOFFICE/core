@@ -34,16 +34,17 @@ public:
     
 };
 
-/// \class  style_header_footer_properties
-///         style-header-footer-properties
+//         style:header-footer-properties
 class style_header_footer_properties : public office_element_impl<style_header_footer_properties>
 {
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
-    static const ElementType type = typeStyleHeaderFooterProperties;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
+	static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type		= typeStyleHeaderFooterProperties;
+    
+	CPDOCCORE_DEFINE_VISITABLE();
 
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);

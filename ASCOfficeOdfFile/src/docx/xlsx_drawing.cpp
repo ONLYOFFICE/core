@@ -37,10 +37,7 @@ void xlsx_serialize_text(std::wostream & strm, _xlsx_drawing & val )
 			CP_XML_NODE(L"a:lstStyle");
 			if (strTextContent)
 			{				
-				CP_XML_NODE(L"a:p")
-				{
-					CP_XML_STREAM() << strTextContent.get();
-				}
+				CP_XML_STREAM() << strTextContent.get();
 			}
 		}
     }

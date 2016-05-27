@@ -1,8 +1,12 @@
 
 #include "xlsx_num_format_context.h"
 #include "xlsx_complex_number_format.h"
+
 #include <sstream>
 #include <map>
+
+#include "..\odf\odfcontext.h"
+
 
 namespace cpdoccore {
 namespace oox {
@@ -36,7 +40,7 @@ public:
     bool in_convert_style_;
 };
 
-num_format_context::num_format_context(): impl_(new Impl()), impl2_(new Impl2())
+num_format_context::num_format_context(odf_reader::odf_read_context & odfContext): odf_context_(odfContext), impl_(new Impl()), impl2_(new Impl2())
 {
 }
 

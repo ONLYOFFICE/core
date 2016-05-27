@@ -2,7 +2,6 @@
 #include "number_style.h"
 
 #include <boost/foreach.hpp>
-#include "odfcontext.h"
 #include <cpdoccore/odf/odf_document.h>
 
 #include <cpdoccore/xml/xmlchar.h>
@@ -30,13 +29,13 @@ std::wstring number_style_base::get_style_name() const
         return L"";
 }
 
-void number_style_base::xlsx_convert_impl(oox::xlsx_conversion_context & Context) 
+void number_style_base::oox_convert_impl(oox::num_format_context & Context) 
 {
     std::wstring style_name = L"";
     if (common_data_style_attlist_.style_name_)
         style_name = common_data_style_attlist_.style_name_->style_name();
 
-    Context.get_num_format_context().start_format(style_name);
+    Context.start_format(style_name);
 
     if (style_text_properties_)
     {
@@ -47,7 +46,7 @@ void number_style_base::xlsx_convert_impl(oox::xlsx_conversion_context & Context
                 int r = 0, g = 0, b = 0;
                 if (HEXStringToRGB(textProp->content().fo_color_->get_hex_value(), r, g, b))
                 {
-                    std::wostream & strm = Context.get_num_format_context().output();
+                    std::wostream & strm = Context.output();
                     strm << L"[" << RGBToString(r, g, b) << L"]";
                 }
             }
@@ -56,12 +55,16 @@ void number_style_base::xlsx_convert_impl(oox::xlsx_conversion_context & Context
 
     BOOST_FOREACH(const office_element_ptr & elm, content_)
     {
-        elm->xlsx_convert(Context);
+		number_style_base	*number_style_		= dynamic_cast<number_style_base *>	(elm.get());
+  		number_element		*number_element_	= dynamic_cast<number_element *>	(elm.get());
+		
+		if (number_style_)		number_style_->oox_convert(Context);
+		if (number_element_)	number_element_->oox_convert(Context);
     }
-    Context.get_num_format_context().end_format();
+    Context.end_format();
 }
 
-void number_style_base::xlsx_convert(oox::xlsx_conversion_context & Context)
+void number_style_base::oox_convert(oox::num_format_context & Context)
 {
     if (!style_map_.empty())
     {
@@ -69,30 +72,63 @@ void number_style_base::xlsx_convert(oox::xlsx_conversion_context & Context)
         {
             if (const style_map * styleMap = dynamic_cast<const style_map *>(elm.get()))
             {
-                const std::wstring applyStyleName = styleMap->style_apply_style_name_.style_name();
-                const std::wstring condition = styleMap->style_condition_;
+                const std::wstring applyStyleName	= styleMap->style_apply_style_name_.style_name();
+                const std::wstring condition		= styleMap->style_condition_;
 
-                odf_read_context & odfContext = Context.root()->odf_context();
-                if (office_element_ptr num_style = odfContext.numberStyles().find_by_style_name(applyStyleName))
+				if (office_element_ptr num_style = Context.odf_context_.numberStyles().find_by_style_name(applyStyleName))
                 {
                     if (number_style_base * concrete_num_style = dynamic_cast<number_style_base *>(num_style.get()))
                     {
-                        concrete_num_style->xlsx_convert_impl(Context);
+                        concrete_num_style->oox_convert_impl(Context);
 
-                        const std::wstring num_format = Context.get_num_format_context().get_last_format();
-                        Context.get_num_format_context().add_format(condition, num_format);
+                        const std::wstring num_format = Context.get_last_format();
+                        Context.add_format(condition, num_format);
                     }
                 }
             }
         }
     }
 
-    this->xlsx_convert_impl(Context);
-    const std::wstring num_format = Context.get_num_format_context().get_last_format();
-    Context.get_num_format_context().add_format(L"", num_format);
+    oox_convert_impl(Context);
+    const std::wstring num_format = Context.get_last_format();
+    Context.add_format(L"", num_format);
 
 }
 
+
+//void number_style_base::xlsx_convert(oox::xlsx_conversion_context & Context)
+//{
+//    if (!style_map_.empty())
+//    {
+//        BOOST_FOREACH(const office_element_ptr & elm, style_map_)
+//        {
+//            if (const style_map * styleMap = dynamic_cast<const style_map *>(elm.get()))
+//            {
+//                const std::wstring applyStyleName	= styleMap->style_apply_style_name_.style_name();
+//                const std::wstring condition		= styleMap->style_condition_;
+//
+//                odf_read_context & odfContext = Context.root()->odf_context();
+//                
+//				if (office_element_ptr num_style = odfContext.numberStyles().find_by_style_name(applyStyleName))
+//                {
+//                    if (number_style_base * concrete_num_style = dynamic_cast<number_style_base *>(num_style.get()))
+//                    {
+//                        concrete_num_style->oox_convert_impl(Context.get_num_format_context());
+//
+//                        const std::wstring num_format = Context.get_num_format_context().get_last_format();
+//                        Context.get_num_format_context().add_format(condition, num_format);
+//                    }
+//                }
+//            }
+//        }
+//    }
+//
+//    this->oox_convert_impl(Context);
+//    const std::wstring num_format = Context.get_num_format_context().get_last_format();
+//    Context.get_num_format_context().add_format(L"", num_format);
+//
+//}
+//
 void number_style_base::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
     common_data_style_attlist_.add_attributes(Attributes);
@@ -124,7 +160,9 @@ void number_style_base::add_child_element( xml::sax * Reader, const ::std::wstri
         CP_CREATE_ELEMENT(content_);
     }
 }
-
+void number_style_base::add_text(const std::wstring & Text)
+{
+}
 // number:number-style
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * number_number_style::ns = L"number";
@@ -170,7 +208,9 @@ void number_embedded_text::add_text(const std::wstring & Text)
     office_element_ptr elm = text::text::create(Text) ;
     text_.push_back( elm );
 }
-
+void number_embedded_text::oox_convert(oox::num_format_context & Context)
+{
+}
 // number:number
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * number_number::ns = L"number";
@@ -241,9 +281,9 @@ void number_currency_symbol::add_text(const std::wstring & Text)
     text_.push_back(Text);
 }
 
-void number_currency_symbol::xlsx_convert(oox::xlsx_conversion_context & Context)
+void number_currency_symbol::oox_convert(oox::num_format_context & Context)
 {
-    std::wostream & strm = Context.get_num_format_context().output();
+    std::wostream & strm = Context.output();
     strm << L"[$";//xml::utils::replace_text_to_xml(L"\"");
     BOOST_FOREACH(const std::wstring & t, text_)
     {
@@ -276,6 +316,10 @@ void number_text_content::add_text(const std::wstring & Text)
 {
     office_element_ptr elm = text::text::create(Text) ;
     text_.push_back( elm );
+}
+
+void number_text_content::oox_convert(oox::num_format_context & Context)
+{
 }
 
 // number:text-style
@@ -325,9 +369,9 @@ void format_number_number(
 }
 }
 
-void number_number::xlsx_convert(oox::xlsx_conversion_context & Context)
+void number_number::oox_convert(oox::num_format_context & Context)
 {
-    std::wostream & strm = Context.get_num_format_context().output();
+    std::wostream & strm = Context.output();
 
     format_number_number(
         strm,
@@ -337,9 +381,9 @@ void number_number::xlsx_convert(oox::xlsx_conversion_context & Context)
         );
 }
 
-void number_text::xlsx_convert(oox::xlsx_conversion_context & Context)
+void number_text::oox_convert(oox::num_format_context & Context)
 {
-    std::wostream & strm = Context.get_num_format_context().output();
+    std::wostream & strm = Context.output();
     
     BOOST_FOREACH(const office_element_ptr & elm, text_)
     {
@@ -363,10 +407,12 @@ void number_day::add_child_element( xml::sax * Reader, const ::std::wstring & Ns
 {
     CP_NOT_APPLICABLE_ELM();
 }
-
-void number_day::xlsx_convert(oox::xlsx_conversion_context & Context)
+void number_day::add_text(const std::wstring & Text)
 {
-    std::wostream & strm = Context.get_num_format_context().output();
+}
+void number_day::oox_convert(oox::num_format_context & Context)
+{
+    std::wostream & strm = Context.output();
     if (number_style_.get_value_or(L"short") == L"long")
     {
         strm << L"DD";
@@ -393,10 +439,13 @@ void number_day_of_week::add_child_element( xml::sax * Reader, const ::std::wstr
 {
     CP_NOT_APPLICABLE_ELM();
 }
-
-void number_day_of_week::xlsx_convert(oox::xlsx_conversion_context & Context)
+void number_day_of_week::add_text(const std::wstring & Text)
 {
-    std::wostream & strm = Context.get_num_format_context().output();
+}
+
+void number_day_of_week::oox_convert(oox::num_format_context & Context)
+{
+    std::wostream & strm = Context.output();
     if (number_style_.get_value_or(L"short") == L"long")
     {
         strm << L"DDDD";
@@ -423,9 +472,13 @@ void number_quarter::add_child_element( xml::sax * Reader, const ::std::wstring 
     CP_NOT_APPLICABLE_ELM();
 }
 
-void number_quarter::xlsx_convert(oox::xlsx_conversion_context & Context) 
+void number_quarter::add_text(const std::wstring & Text)
 {
-    std::wostream & strm = Context.get_num_format_context().output();
+}
+
+void number_quarter::oox_convert(oox::num_format_context & Context) 
+{
+    std::wostream & strm = Context.output();
     if (number_style_.get_value_or(L"short") == L"long")
     {
         // TODO: ??
@@ -455,10 +508,12 @@ void number_month::add_child_element( xml::sax * Reader, const ::std::wstring & 
 {
     CP_NOT_APPLICABLE_ELM();
 }
-
-void number_month::xlsx_convert(oox::xlsx_conversion_context & Context) 
+void number_month::add_text(const std::wstring & Text)
 {
-    std::wostream & strm = Context.get_num_format_context().output();
+}
+void number_month::oox_convert(oox::num_format_context & Context) 
+{
+    std::wostream & strm = Context.output();
     if (!number_textual_.get_value_or(false))
     {
         if (number_style_.get_value_or(L"short") == L"long")
@@ -498,10 +553,12 @@ void number_year::add_child_element( xml::sax * Reader, const ::std::wstring & N
 {
     CP_NOT_APPLICABLE_ELM();
 }
-
-void number_year::xlsx_convert(oox::xlsx_conversion_context & Context)
+void number_year::add_text(const std::wstring & Text)
 {
-    std::wostream & strm = Context.get_num_format_context().output();
+}
+void number_year::oox_convert(oox::num_format_context & Context)
+{
+    std::wostream & strm = Context.output();
     if (number_style_.get_value_or(L"short") == L"long")
     {
         strm << L"YYYY";
@@ -537,10 +594,13 @@ void number_hours::add_child_element( xml::sax * Reader, const ::std::wstring & 
 {
     CP_NOT_APPLICABLE_ELM();
 }
-
-void number_hours::xlsx_convert(oox::xlsx_conversion_context & Context) 
+void number_hours::add_text(const std::wstring & Text)
 {
-    std::wostream & strm = Context.get_num_format_context().output();
+}
+
+void number_hours::oox_convert(oox::num_format_context & Context) 
+{
+    std::wostream & strm = Context.output();
     if (number_style_.get_value_or(L"short") == L"long")
     {
         strm << L"HH";
@@ -567,10 +627,12 @@ void number_minutes::add_child_element( xml::sax * Reader, const ::std::wstring 
 {
     CP_NOT_APPLICABLE_ELM();
 }
-
-void number_minutes::xlsx_convert(oox::xlsx_conversion_context & Context)
+void number_minutes::add_text(const std::wstring & Text)
 {
-    std::wostream & strm = Context.get_num_format_context().output();
+}
+void number_minutes::oox_convert(oox::num_format_context & Context)
+{
+    std::wostream & strm = Context.output();
     if (number_style_.get_value_or(L"short") == L"long")
     {
         strm << L"MM";
@@ -598,10 +660,12 @@ void number_seconds::add_child_element( xml::sax * Reader, const ::std::wstring 
 {
     CP_NOT_APPLICABLE_ELM();
 }
-
-void number_seconds::xlsx_convert(oox::xlsx_conversion_context & Context) 
+void number_seconds::add_text(const std::wstring & Text)
 {
-    std::wostream & strm = Context.get_num_format_context().output();
+}
+void number_seconds::oox_convert(oox::num_format_context & Context) 
+{
+    std::wostream & strm = Context.output();
     if (number_style_.get_value_or(L"short") == L"long")
     {
         strm << L"SS";
@@ -632,17 +696,19 @@ void number_am_pm::add_child_element( xml::sax * Reader, const ::std::wstring & 
 {
     CP_NOT_APPLICABLE_ELM();
 }
-
-void number_am_pm::xlsx_convert(oox::xlsx_conversion_context & Context) 
+void number_am_pm::add_text(const std::wstring & Text)
 {
-    std::wostream & strm = Context.get_num_format_context().output();
+}
+void number_am_pm::oox_convert(oox::num_format_context & Context) 
+{
+    std::wostream & strm = Context.output();
     strm << L"AM/PM";
 }
 
 // number:fraction
 //////////////////////////////////////////////////////////////////////////////////////////////////
-const wchar_t * number_fraction::ns = L"number";
-const wchar_t * number_fraction::name = L"fraction";
+const wchar_t * number_fraction::ns		= L"number";
+const wchar_t * number_fraction::name	= L"fraction";
 
 void number_fraction::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
@@ -658,10 +724,12 @@ void number_fraction::add_child_element( xml::sax * Reader, const ::std::wstring
 {
     CP_NOT_APPLICABLE_ELM();
 }
-
-void number_fraction::xlsx_convert(oox::xlsx_conversion_context & Context) 
+void number_fraction::add_text(const std::wstring & Text)
 {
-    std::wostream & strm = Context.get_num_format_context().output();
+}
+void number_fraction::oox_convert(oox::num_format_context & Context) 
+{
+    std::wostream & strm = Context.output();
 
     format_number_number(strm, 
         number_grouping_.get_value_or(false),
@@ -682,9 +750,13 @@ void number_fraction::xlsx_convert(oox::xlsx_conversion_context & Context)
     }
 }
 
-void number_scientific_number::xlsx_convert(oox::xlsx_conversion_context & Context) 
+void number_scientific_number::add_text(const std::wstring & Text)
 {
-    std::wostream & strm = Context.get_num_format_context().output();
+}
+
+void number_scientific_number::oox_convert(oox::num_format_context & Context) 
+{
+    std::wostream & strm = Context.output();
     format_number_number(
         strm,
         number_grouping_.get_value_or(false),

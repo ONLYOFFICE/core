@@ -32,7 +32,7 @@ public:
 	
 	void setName(std::wstring &value);
 	
-	void setFormula	(int ind, std::wstring & value);
+	void setFormula	(int ind, std::wstring & value, std::wstring & formatCode, bool link_to_source);
 	void setValues	(int ind, std::vector<std::wstring> & values);
 	void parse_properties();
 	

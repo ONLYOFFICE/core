@@ -87,9 +87,9 @@ private:
   
 	size_t paragraphs_cout_; //???? тока из за начала отсчета?
    
-	std::wstringstream text_; //приходящий текст
-    std::wstringstream paragraph_; //перманенто скидываемые параграфы
-    std::wstringstream run_; //перманенто скидываемые куски с быть может разными свойствами
+	std::wstringstream text_;		//приходящий текст
+    std::wstringstream paragraph_;	//перманенто скидываемые параграфы
+    std::wstringstream run_;		//перманенто скидываемые куски с быть может разными свойствами
    
 	std::wstring		paragraph_style_name_;
     std::wstring		span_style_name_;
@@ -158,8 +158,8 @@ void pptx_text_context::Impl::start_paragraph(const std::wstring & styleName)
 		text_.str(std::wstring());
 		field_value_.str(std::wstring());
 	}
-	paragraph_style_name_ = styleName;
-	in_paragraph = true;
+	paragraph_style_name_	= styleName;
+	in_paragraph			= true;
 }
 
 void pptx_text_context::Impl::end_paragraph()
@@ -515,8 +515,7 @@ void pptx_text_context::Impl::dump_run()
 	//if (content.length() <1 &&  span_style_name_.length()<1) return ;      ... провеить с пустыми строками нужны ли  ...
 
 	if (content .length() > 0)
-	{
-		
+	{		
 		CP_XML_WRITER(run_)
 		{
 			CP_XML_NODE(L"a:r")
@@ -649,7 +648,8 @@ std::wstring pptx_text_context::Impl::current_list_style()
 std::wstring pptx_text_context::Impl::find_list_rename(const std::wstring & ListStyleName)
 {
     std::wstring name = ListStyleName;
-    while (list_style_renames_.count(name) > 0)
+    
+	while (list_style_renames_.count(name) > 0)
         name = list_style_renames_.at(name);
 
     return name;
@@ -658,6 +658,7 @@ std::wstring pptx_text_context::Impl::find_list_rename(const std::wstring & List
 void pptx_text_context::Impl::end_list_item()
 {
 	dump_paragraph();
+	
 	paragraphs_cout_--;
 	paragraph_style_name_ = L"";
 
@@ -722,9 +723,6 @@ void pptx_text_context::Impl::write_list_styles(std::wostream & strm)//defaults 
 
 	list_style_stack_.clear();
 }
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 

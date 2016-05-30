@@ -812,7 +812,7 @@ namespace NSDoctRenderer
 
             std::wstring sFileBin = L"/Editor.bin";
 
-            if (!m_bIsSaveWithDoctrendererMode)
+            if (!m_bIsSaveWithDoctrendererMode && m_pWorker)
             {
                 this->m_pWorker->SaveFileWithChanges(type, m_sFileDir + L"/Editor2.bin");
                 sFileBin = L"/Editor2.bin";

@@ -270,7 +270,6 @@ void table_table::xlsx_convert(oox::xlsx_conversion_context & Context)
 		} 
 
 	}
-    //office-dde-sourcetable_linked_source_attlist
     Context.start_table(tableName, tableStyleName);
 
 	table_columns_and_groups_.xlsx_convert(Context);
@@ -279,7 +278,10 @@ void table_table::xlsx_convert(oox::xlsx_conversion_context & Context)
     if (table_shapes_)
         table_shapes_->xlsx_convert(Context);
 
-    Context.end_table();
+ 	if (conditional_formats_)
+		conditional_formats_->xlsx_convert(Context);
+
+	Context.end_table();
 }
 
 void table_columns::xlsx_convert(oox::xlsx_conversion_context & Context) 

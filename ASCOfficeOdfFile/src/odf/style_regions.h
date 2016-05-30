@@ -1,5 +1,4 @@
-#ifndef _CPDOCCORE_ODF_STYLE_REGIONS_H_
-#define _CPDOCCORE_ODF_STYLE_REGIONS_H_
+#pragma once
 
 #include <cpdoccore/CPOptional.h>
 #include <cpdoccore/xml/xmlelement.h>
@@ -10,8 +9,7 @@
 namespace cpdoccore { 
 namespace odf_reader {
 
-/// \class  style_region_left
-/// \brief  style:region-left
+//  style:region-left
 class style_region_left : public office_element_impl<style_region_left>
 {
 public:
@@ -36,8 +34,7 @@ private:
 
 CP_REGISTER_OFFICE_ELEMENT2(style_region_left);
 
-/// \class  style_region_right
-/// \brief  style:region-right
+//  style:region-right
 class style_region_right : public office_element_impl<style_region_right>
 {
 public:
@@ -63,8 +60,7 @@ private:
 CP_REGISTER_OFFICE_ELEMENT2(style_region_right);
 
 
-/// \class  style_region_center
-/// \brief  style:region-center
+//  style:region-center
 class style_region_center : public office_element_impl<style_region_center>
 {
 public:
@@ -92,5 +88,3 @@ CP_REGISTER_OFFICE_ELEMENT2(style_region_center);
 }
 }
 
-
-#endif

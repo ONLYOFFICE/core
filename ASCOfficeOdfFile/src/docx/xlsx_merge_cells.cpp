@@ -40,19 +40,10 @@ public:
                         CP_XML_NODE(L"mergeCell")
                         {
                             CP_XML_ATTR(L"ref", getCellAddress(m.c, m.r) + L":" + getCellAddress(m.c + m.cols, m.r + m.rows));
-                        } // L"mergeCell"
+                        } 
                     }
-                } // L"mergeCells"            
+                }          
             }
-
-            //_Wostream << L"<mergeCells count=\"" << merges_.size() << L"\">";
-            //BOOST_FOREACH(const merge & m, merges_)
-            //{
-            //    _Wostream << L"<mergeCell ref=\"" 
-            //        << getCellAddress(m.c, m.r) << L":" 
-            //        << getCellAddress(m.c + m.cols, m.r + m.rows) << L"\" />";
-            //}
-            //_Wostream << L"</mergeCells>";
         }
     }
 

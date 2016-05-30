@@ -1,5 +1,4 @@
-#ifndef _CPDOCCORE_DOCUMENT_CONTEXT_H_
-#define _CPDOCCORE_DOCUMENT_CONTEXT_H_
+#pragma once
 
 namespace cpdoccore { 
 namespace odf_reader {
@@ -27,5 +26,3 @@ private:
 
 }
 }
-
-#endif

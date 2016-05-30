@@ -118,7 +118,7 @@ namespace formulasconvert {
 	}
 	std::wstring replace_named_ref_formater1(boost::wsmatch const & what)
 	{
-		boost::wregex complexRef(L"\\$([^\\.]+?){0,1}\\.(\\$[a-zA-Z]+\\${0,1}\\d+)(?::\\.(\\$[a-zA-Z]+\\${0,1}\\d+)){0,1}");
+		boost::wregex complexRef(L"\\${0,1}([^\\.]+?){0,1}\\.(\\${0,1}[a-zA-Z]+\\${0,1}\\d+)(?::\\.(\\${0,1}[a-zA-Z]+\\${0,1}\\d+)){0,1}");
 
 		std::wstring expr = what[1].str();
 		const std::wstring res = boost::regex_replace(
@@ -158,7 +158,7 @@ void odf2oox_converter::Impl::replace_cells_range(std::wstring& expr)
 
 void odf2oox_converter::Impl::replace_named_ref(std::wstring & expr)
 {
-	boost::wregex complexRef(L"\\$([^\\.]+?){0,1}\\.(\\$[a-zA-Z]+\\${0,1}\\d+)(?::\\.(\\$[a-zA-Z]+\\${0,1}\\d+)){0,1}");
+	boost::wregex complexRef(L"\\${0,1}([^\\.]+?){0,1}\\.(\\${0,1}[a-zA-Z]+\\${0,1}\\d+)(?::\\.(\\${0,1}[a-zA-Z]+\\${0,1}\\d+)){0,1}");
 
     const std::wstring res = boost::regex_replace(
         expr,

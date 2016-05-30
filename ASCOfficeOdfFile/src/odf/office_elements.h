@@ -83,7 +83,6 @@ inline office_element::~office_element()
 {
 }
 
-/// \class  office_element_impl
 template <class Element>
 class office_element_impl : public virtual office_element
 {

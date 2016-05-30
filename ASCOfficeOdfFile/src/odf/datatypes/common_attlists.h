@@ -314,7 +314,6 @@ public:
 
 };
 
-/// \class  common_num_format_attlist
 ///         common-num-format-attlist
 class common_num_format_attlist
 {
@@ -329,7 +328,6 @@ public:
 
 };
 
-/// \class  common_num_format_prefix_suffix_attlist
 ///         common-num-format-prefix-suffix-attlist
 class common_num_format_prefix_suffix_attlist
 {
@@ -344,7 +342,6 @@ public:
 };
 
 
-/// \class  common_text_align
 ///         common-text-align
 class common_text_align
 {
@@ -357,7 +354,6 @@ public:
     _CP_OPT(text_align) fo_text_align_;
 };
 
-/// \class  common_draw_size_attlist
 ///         common-draw-size-attlist
 class common_draw_size_attlist
 {
@@ -408,7 +404,6 @@ public:
 };
 
 
-/// \class  common_draw_rel_size_attlist
 ///         common-draw-rel-size-attlist
 class common_draw_rel_size_attlist
 {
@@ -423,7 +418,6 @@ public:
     _CP_OPT(percent_or_scale) style_rel_height_;
 };
 
-/// \class  common_vertical_rel_attlist
 ///         common-vertical-rel-attlist
 class common_vertical_rel_attlist 
 {
@@ -437,7 +431,6 @@ public:
 
 };
 
-/// \class  common_horizontal_rel_attlist
 ///         common-horizontal-rel-attlist
 class common_horizontal_rel_attlist 
 {
@@ -451,7 +444,6 @@ public:
 
 };
 
-/// \class  common_vertical_pos_attlist
 ///         common-vertical-pos-attlist
 class common_vertical_pos_attlist
 {
@@ -466,7 +458,6 @@ public:
 
 };
 
-/// \class  common_horizontal_pos_attlist
 ///         common-horizontal-pos-attlist
 class common_horizontal_pos_attlist
 {
@@ -482,7 +473,6 @@ public:
 
 };
 
-/// \class  common_draw_style_name_attlist
 ///         common-draw-style-name-attlist
 class common_draw_style_name_attlist
 {

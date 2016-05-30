@@ -29,8 +29,7 @@ private:
 	odf_types::common_xlink_attlist common_xlink_attlist_;
 };
 
-/// \class  svg_font_face_uri
-/// \brief  svg:font-face-uri
+//  svg:font-face-uri
 class svg_font_face_uri : public office_element_impl<svg_font_face_uri>
 {
 public:
@@ -55,10 +54,6 @@ private:
 
 };
 
-CP_REGISTER_OFFICE_ELEMENT2(svg_font_face_uri);
-
-/// \class  svg_font_face_format
-/// \brief  svg:font-face-format
 class svg_font_face_format : public office_element_impl<svg_font_face_format>
 {
 public:
@@ -83,8 +78,7 @@ private:
 
 CP_REGISTER_OFFICE_ELEMENT2(svg_font_face_format);
 
-/// \class  svg_font_face_name
-/// \brief  svg:font-face-name
+//  svg:font-face-name
 class svg_font_face_name : public office_element_impl<svg_font_face_name>
 {
 public:
@@ -110,8 +104,7 @@ private:
 
 CP_REGISTER_OFFICE_ELEMENT2(svg_font_face_name);
 
-/// \class  svg_definition_src
-/// \brief  svg:definition-src
+//  svg:definition-src
 class svg_definition_src : public office_element_impl<svg_definition_src>
 {
 public:
@@ -134,8 +127,7 @@ private:
 CP_REGISTER_OFFICE_ELEMENT2(svg_definition_src);
 
 
-/// \class  style_font_face
-/// \brief  style:font-face
+//  style:font-face
 class style_font_face : public office_element_impl<style_font_face>
 {
 public:
@@ -208,8 +200,7 @@ private:
 
 CP_REGISTER_OFFICE_ELEMENT2(style_font_face);
 
-/// \class  office_font_face_decls
-/// \brief  office-font-face-decls
+//  office-font-face-decls
 class office_font_face_decls : public office_element_impl<office_font_face_decls>
 {
 public:

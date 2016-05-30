@@ -1,5 +1,4 @@
-#ifndef _CPDOCCORE_ODF_OFFCIE_ELEMENTS_CREATE_H_
-#define _CPDOCCORE_ODF_OFFCIE_ELEMENTS_CREATE_H_
+#pragma once
 
 #include <string>
 #include <map>
@@ -102,7 +101,7 @@ template<class T> int RegisterElement<T>::class_registered_		= 0; //with namespa
 template<class T> int RegisterElement<T>::class_registered_1_	= 0; //without namespace
 
 
-/// \brief  Создать элемент и в случае успеха прочитать его содержимое из SAX, поместить в shared_ptr
+//  Создать элемент и в случае успеха прочитать его содержимое из SAX, поместить в shared_ptr
 bool create_element_and_read(xml::sax * Reader,
                              const ::std::wstring & Ns,
                              const ::std::wstring & Name,
@@ -110,7 +109,7 @@ bool create_element_and_read(xml::sax * Reader,
                              document_context * Context,
                              bool isRoot = false);
 
-/// \brief  Создать элемент и в случае успеха прочитать его содержимое из SAX, поместить в array
+//  Создать элемент и в случае успеха прочитать его содержимое из SAX, поместить в array
 bool create_element_and_read(xml::sax * Reader,
                              const ::std::wstring & Ns,
                              const ::std::wstring & Name,
@@ -141,5 +140,3 @@ void not_applicable_element(const std::wstring & Current, const std::wstring & N
 
 }
 }
-
-#endif // #ifndef _CPDOCCORE_ODF_OFFCIE_ELEMENTS_CREATE_H_

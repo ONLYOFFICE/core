@@ -4,7 +4,6 @@
 #include <boost/make_shared.hpp>
 #include <cpdoccore/xml/xmlchar.h>
 #include <cpdoccore/xml/attributes.h>
-#include <cpdoccore/xml/attributes.h>
 
 #include "serialize_elements.h"
 #include "odfcontext.h"

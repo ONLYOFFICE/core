@@ -43,7 +43,7 @@ private:
 class rels;
 typedef _CP_PTR(rels) rels_ptr;
 
-/// \class rels
+// rels
 class rels : public xml::element_impl<rels>
 {
 public:

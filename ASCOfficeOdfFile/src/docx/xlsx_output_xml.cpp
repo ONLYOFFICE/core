@@ -6,7 +6,7 @@
 namespace cpdoccore {
 namespace oox {
 
-/// \class  xlsx_xml_worksheet::Impl
+//  xlsx_xml_worksheet::Impl
 class xlsx_xml_worksheet::Impl
 {
 public:
@@ -20,6 +20,8 @@ public:
     std::wstringstream  drawing_;
     std::wstringstream  hyperlinks_;
     std::wstringstream  comments_;
+    std::wstringstream	sort_;
+    std::wstringstream	autofilter_;
 
 	rels hyperlinks_rels_;
 
@@ -70,7 +72,14 @@ std::wostream & xlsx_xml_worksheet::mergeCells()
 {
     return impl_->mergeCells_;
 }
-
+std::wostream & xlsx_xml_worksheet::sort()
+{
+    return impl_->sort_;
+}
+std::wostream & xlsx_xml_worksheet::autofilter()
+{
+    return impl_->autofilter_;
+}
 std::wostream & xlsx_xml_worksheet::drawing()
 {
     return impl_->drawing_;
@@ -111,8 +120,14 @@ void xlsx_xml_worksheet::write_to(std::wostream & strm)
 			//объединенные €чейки раньше чем гиперлинки !!!
            
 			CP_XML_STREAM() << impl_->mergeCells_.str();
+			
+			CP_XML_STREAM() << impl_->sort_.str();
 
-            if (!impl_->hyperlinks_.str().empty())
+			//autofilters 
+
+			//conditional formats
+
+			if (!impl_->hyperlinks_.str().empty())
             {
                 CP_XML_NODE(L"hyperlinks")
                 {
@@ -120,7 +135,7 @@ void xlsx_xml_worksheet::write_to(std::wostream & strm)
                 }
             }
 
-            CP_XML_STREAM() << impl_->drawing_.str();
+			CP_XML_STREAM() << impl_->drawing_.str();
 			if (impl_->commentsId_.length()>0)
 			{
 				CP_XML_NODE(L"legacyDrawing")

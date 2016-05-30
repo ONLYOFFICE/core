@@ -1,5 +1,4 @@
-#ifndef _CPDOCCORE_TABLE_NAMED_EXPRESSIONS_H_
-#define _CPDOCCORE_TABLE_NAMED_EXPRESSIONS_H_
+#pragma once
 
 #include <iosfwd>
 #include <cpdoccore/CPOptional.h>
@@ -94,5 +93,3 @@ CP_REGISTER_OFFICE_ELEMENT2(table_named_expression);
 
 }
 }
-
-#endif

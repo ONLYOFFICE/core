@@ -1,4 +1,5 @@
 #pragma once
+
 #include <cpdoccore/xml/attributes.h>
 #include "../docx/oox_drawing_fills.h"
 //описание всяких графических объектов ( вложенная мелочевка) которые используются в xlsx & odf_reader - 

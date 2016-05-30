@@ -5,7 +5,7 @@
 #include <sstream>
 #include <map>
 
-#include "..\odf\odfcontext.h"
+#include "../odf/odfcontext.h"
 
 
 namespace cpdoccore {

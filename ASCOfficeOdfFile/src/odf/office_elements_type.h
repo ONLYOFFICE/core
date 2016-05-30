@@ -1,5 +1,4 @@
-#ifndef _CPDOCCORE_ODF_OFFCIE_ELEMENTS_TYPE_H_
-#define _CPDOCCORE_ODF_OFFCIE_ELEMENTS_TYPE_H_
+#pragma once
 
 namespace cpdoccore { 
 namespace odf_reader {
@@ -144,11 +143,15 @@ enum ElementType
 
     typeOfficeBinaryData,
 
-    typeTableTableSource,
     typeTableNamedExpressions,
     typeTableNamedExpression,
     typeTableNamedRange,
-    typeTableTable,
+	typeTableDatabaseRanges,
+	typeTableDatabaseRange,
+	typeTableSort,
+	typeTableSortBy,
+
+	typeTableTable,
     typeTableTableColumn,
     typeTableTableColumns,
     typeTableTableHeaderColumns,
@@ -160,6 +163,7 @@ enum ElementType
     typeTableTableHeaderRows,
     typeTableTableRowGroup,
 	typeTableTableRowNoGroup,
+    typeTableTableSource,
         
     typeOfficeBody,
     typeOfficeText,
@@ -332,7 +336,17 @@ enum ElementType
 
 	typeStyleRegionCenter,
     typeStyleRegionRight,
-	typeStyleChartProperties
+	typeStyleChartProperties,
+
+	typeCalcextColorScaleEntry,
+	typeCalcextFormattingEntry,
+	typeCalcextIconSet,
+	typeCalcextDataBar,
+	typeCalcextColorScale,
+	typeCalcextDateIs,
+	typeCalcextCondition,
+	typeCalcextConditionalFormat,
+	typeCalcextConditionalFormats
 
 };
 
@@ -340,4 +354,3 @@ enum ElementType
 }
 }
 
-#endif // #ifndef _CPDOCCORE_ODF_OFFCIE_ELEMENTS_TYPE_H_

@@ -10,7 +10,7 @@
 namespace cpdoccore { 
 namespace odf_reader {
 
-/// \brief  office:presentation
+//  office:presentation
 class office_presentation : public office_element_impl<office_presentation>
 {
 public:

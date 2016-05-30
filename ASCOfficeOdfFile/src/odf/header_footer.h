@@ -12,7 +12,6 @@
 namespace cpdoccore { 
 namespace odf_reader {
 
-/// \class  style_header_footer_properties_attlist
 ///         style-header-footer-properties-attlist
 class style_header_footer_properties_attlist
 {
@@ -56,8 +55,7 @@ public:
 CP_REGISTER_OFFICE_ELEMENT2(style_header_footer_properties);
 
 
-/// \class  common_style_header_footer_attlist
-///         common-style-header-footer-attlist
+// common-style-header-footer-attlist
 class common_style_header_footer_attlist
 {
 public:
@@ -67,9 +65,7 @@ private:
     bool style_display_; // default true
     
 };
-
-/// \class  header_footer_content
-///         header-footer-content
+// header-footer-content
 class header_footer_content
 {
 public:

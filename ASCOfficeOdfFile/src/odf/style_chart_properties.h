@@ -23,8 +23,7 @@
 namespace cpdoccore { 
 namespace odf_reader {
 
-/// \class  style_chart_properties
-///         style:chart-properties
+//         style:chart-properties
 class style_chart_properties : public office_element_impl<style_chart_properties>//стили чарта не наследуются
 {
 public:

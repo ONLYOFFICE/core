@@ -7,6 +7,7 @@
 #include <cpdoccore/xml/attributes.h>
 
 #include "serialize_elements.h"
+
 #include "odfcontext.h"
 #include <cpdoccore/odf/odf_document.h>
 
@@ -139,7 +140,11 @@ void table_table::add_child_element( xml::sax * Reader, const ::std::wstring & N
     {
         CP_CREATE_ELEMENT(table_shapes_);    
     }
-    else
+	else if CP_CHECK_NAME(L"calcext", L"conditional-formats")
+    {
+        CP_CREATE_ELEMENT(conditional_formats_);    
+    }
+	else 
         CP_NOT_APPLICABLE_ELM();
 }
 

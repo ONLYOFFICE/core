@@ -18,7 +18,7 @@ namespace oox {
 
 class xlsx_cell_format;
 
-/// \class  class xlsx_style_manager
+//  class xlsx_style_manager
 class xlsx_style_manager
 {
 public:

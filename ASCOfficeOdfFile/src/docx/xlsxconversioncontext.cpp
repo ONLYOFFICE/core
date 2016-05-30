@@ -293,9 +293,11 @@ void xlsx_conversion_context::end_table()
     
 	get_table_context().serialize_table_format(current_sheet().sheetFormat());
 
-    get_table_context().serialize_merge_cells(current_sheet().mergeCells());
-    get_table_context().serialize_hyperlinks(current_sheet().hyperlinks());
-	get_table_context().dump_rels_hyperlinks(current_sheet().hyperlinks_rels());
+    get_table_context().serialize_autofilter	(current_sheet().autofilter());
+    get_table_context().serialize_sort			(current_sheet().sort());
+    get_table_context().serialize_merge_cells	(current_sheet().mergeCells());
+    get_table_context().serialize_hyperlinks	(current_sheet().hyperlinks());
+	get_table_context().dump_rels_hyperlinks	(current_sheet().hyperlinks_rels());
 
 	get_drawing_context().set_odf_packet_path(root()->get_folder());
 

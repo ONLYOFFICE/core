@@ -30,7 +30,7 @@ public:
 	_CP_OPT(std::wstring)		use_footer_name_;
 	_CP_OPT(std::wstring)		use_date_time_name_;
 };
-/// \class  draw_page
+//  draw_page
 class draw_page : public office_element_impl<draw_page>
 {
 public:

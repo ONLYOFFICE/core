@@ -10,8 +10,7 @@
 namespace cpdoccore { 
 namespace odf_reader {
 
-/// \class  office_spreadsheet
-/// \brief  office:spreadsheet
+//  office:spreadsheet
 class office_spreadsheet : public office_element_impl<office_spreadsheet>
 {
 public:
@@ -35,6 +34,8 @@ public:
     //  TODO: text-tracked-changes
     //  TODO: text-decls
     //  TODO: table-decls
+
+	office_element_ptr_array table_database_ranges_;
 
     office_element_ptr_array content_;
     // TODO: text-page-sequence

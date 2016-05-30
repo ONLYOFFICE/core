@@ -271,7 +271,7 @@ public:
 class style_text_properties;
 typedef shared_ptr<style_text_properties>::Type style_text_properties_ptr;
 
-/// \class  style_text_properties
+
 ///         style:text-properties
 class style_text_properties : public office_element_impl<style_text_properties>
 {

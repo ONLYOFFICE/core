@@ -1,5 +1,4 @@
-#ifndef _CPDOCCORE_ODF_OFFICE_BODY_H_
-#define _CPDOCCORE_ODF_OFFICE_BODY_H_
+#pragma once
 
 #include <iosfwd>
 #include <cpdoccore/CPOptional.h>
@@ -14,8 +13,7 @@ namespace odf_reader {
 class office_body;
 typedef shared_ptr<office_body>::Type office_body_ptr;
 
-/// \class  office_body
-/// \brief  office:body
+//  office:body
 class office_body : public office_element_impl<office_body>
 {
 public:
@@ -51,5 +49,3 @@ CP_REGISTER_OFFICE_ELEMENT2(office_body);
 
 }
 }
-
-#endif

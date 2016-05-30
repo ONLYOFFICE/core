@@ -8,7 +8,7 @@ namespace cpdoccore {
 namespace oox {
 
 ///////////////////////////////////////////////////////////////////////////////////////    
-/// \class default_content_type
+// default_content_type
 class default_content_type : public xml::element_impl<default_content_type>
 {
 public:
@@ -31,7 +31,7 @@ private:
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////
-/// \class override_content_type
+
 class override_content_type : public xml::element_impl<override_content_type>
 {
 public:
@@ -55,7 +55,7 @@ public:
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////
-/// \class content_type_content
+// content_type_content
 class content_type_content : public xml::element_impl<content_type_content>
 {
 public:

@@ -45,7 +45,7 @@ private:
     rels_file_ptr rels_;
 };
 
-/// \class  slides_files
+//  slides_files
 class slides_files  : public element
 {
 public:
@@ -66,7 +66,7 @@ public:
     rels_files * rels_;
 
 };
-/// \class  slideLayouts_files
+//  slideLayouts_files
 class slideLayouts_files  : public element
 {
 public:
@@ -94,7 +94,7 @@ private:
 };
 /////////////////////////////////////////////////////////////////////////////////////////
 
-/// \class  slideMasters_files
+//  slideMasters_files
 class slideMasters_files  : public element
 {
 public:
@@ -118,7 +118,7 @@ public:
 class ppt_comments_files;
 typedef _CP_PTR(ppt_comments_files) ppt_comments_files_ptr;
 
-/// \class ppt_comments
+// ppt_comments
 class ppt_comments_files: public element
 {
 public:
@@ -136,7 +136,7 @@ private:
 };
 
 //////////////////////////////////////////////////////////////////////////////
-/// \class  ppt_charts_files
+//  ppt_charts_files
 class ppt_charts_files  : public element
 {
 public:
@@ -149,7 +149,7 @@ public:
 
 };
 //////////////////////////////////////////////////////////////////////////////
-/// \class  ppt_theme_files
+//  ppt_theme_files
 class ppt_themes_files  : public element
 {
 public:
@@ -209,7 +209,7 @@ private:
     element_ptr			media_;
 };
 
-/// \class  xlsx_document
+//  xlsx_document
 class pptx_document : public document
 {
 public:

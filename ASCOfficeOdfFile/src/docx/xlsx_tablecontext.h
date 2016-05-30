@@ -9,10 +9,22 @@
 namespace cpdoccore {
 namespace oox {
 
+struct _database_range
+{
+	_database_range() : byRow(true), filter(false), withHeader(false) {}
+
+	std::wstring	table_name;
+	std::wstring	ref;
+	bool			byRow;
+	bool			filter;
+	bool			withHeader;
+
+	std::vector<std::pair<int, bool>> bySort;  //field + order
+};
+
 class xlsx_conversion_context;
 class xlsx_text_context;
 
-/// \class xlsx_table_context
 class xlsx_table_context
 {
 public:
@@ -37,7 +49,7 @@ public:
     void end_covered_cell();
 
     void start_cell_content();    
-    int end_cell_content();
+    int	end_cell_content();
 
     void set_current_cell_style_id(unsigned int xfId);
     int get_current_cell_style_id();
@@ -57,9 +69,10 @@ public:
 
     unsigned int columns_count();
 
-    void serialize_merge_cells(std::wostream & _Wostream);
-
-	void serialize_table_format(std::wostream & _Wostream);
+	void serialize_sort			(std::wostream & _Wostream);
+	void serialize_autofilter	(std::wostream & _Wostream);
+    void serialize_merge_cells	(std::wostream & _Wostream);
+	void serialize_table_format	(std::wostream & _Wostream);
 
 	xlsx_table_metrics & get_table_metrics();
   
@@ -67,22 +80,34 @@ public:
 
     xlsx_comments_context & get_comments_context();
 	
-    void table_column_last_width(double w);
-    double table_column_last_width() const;
+    void table_column_last_width	(double w);
+    double table_column_last_width	() const;
 
     xlsx_table_state_ptr		& state();
     const xlsx_table_state_ptr	& state()	const;
 
-    void start_hyperlink();
-	std::wstring end_hyperlink(std::wstring const & ref, std::wstring const & href, std::wstring const & display);
+	void			start_hyperlink();
+	std::wstring	end_hyperlink(std::wstring const & ref, std::wstring const & href, std::wstring const & display);
 
-   void dump_rels_hyperlinks(rels & Rels);
-   void serialize_hyperlinks(std::wostream & _Wostream);
+	void dump_rels_hyperlinks(rels & Rels);
+	
+	void serialize_hyperlinks(std::wostream & _Wostream);
+	
+	void start_database_range(std::wstring table_name, std::wstring ref);
+		void set_database_orientation	(bool val);
+		void set_database_header		(bool val);
+		void set_database_filter		(bool val);
+		
+		void add_database_sort	(int field_number, int order);
+	void end_database_range();
+
 
 private:
-    xlsx_conversion_context			*	context_;
-    xlsx_text_context				&	xlsx_text_context_;
-    std::list<xlsx_table_state_ptr>		table_state_stack_;
+    xlsx_conversion_context				*	context_;
+    xlsx_text_context					&	xlsx_text_context_;
+    std::vector<xlsx_table_state_ptr>		table_state_stack_;
+	
+	std::vector<_database_range>			databaseRanges_;
 };
 
 

@@ -44,10 +44,10 @@ private:
     virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
 
 private:
-    draw_image_attlist draw_image_attlist_;
+    draw_image_attlist				draw_image_attlist_;
 	odf_types::common_xlink_attlist common_xlink_attlist_;
-    office_element_ptr office_binary_data_;
-    office_element_ptr_array content_;
+    office_element_ptr				office_binary_data_;
+    office_element_ptr_array		content_;
 
     friend class odf_document;
 };
@@ -173,7 +173,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
-    static const ElementType type = typeDrawG;
+    static const ElementType type		= typeDrawG;
     CPDOCCORE_DEFINE_VISITABLE();
 
     virtual void docx_convert(oox::docx_conversion_context & Context);
@@ -199,7 +199,6 @@ class draw_text_box_attlist
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
-public:
     _CP_OPT(std::wstring)					draw_chain_next_name_;
 	_CP_OPT(odf_types::length)				draw_corner_radius_;
     _CP_OPT(odf_types::length_or_percent)	fo_min_width_;
@@ -216,7 +215,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
-    static const ElementType type = typeDrawTextBox;
+    static const ElementType type		= typeDrawTextBox;
     CPDOCCORE_DEFINE_VISITABLE();
 
     virtual void docx_convert(oox::docx_conversion_context & Context);

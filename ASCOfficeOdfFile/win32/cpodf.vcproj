@@ -1216,6 +1216,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\odf\calcext_elements.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\odf\calcext_elements.h"
+				>
+			</File>
+			<File
 				RelativePath="..\src\odf\chart_build_oox.cpp"
 				>
 				<FileConfiguration
@@ -1641,6 +1649,14 @@
 			</File>
 			<File
 				RelativePath="..\src\odf\table_calculation_settings.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\odf\table_database_ranges.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\odf\table_database_ranges.h"
 				>
 			</File>
 			<File

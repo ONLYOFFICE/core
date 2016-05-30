@@ -8,6 +8,8 @@
 #include "office_elements_create.h"
 
 #include "table_named_expressions.h"
+#include "table_database_ranges.h"
+#include "calcext_elements.h"
 
 #include "datatypes/tablemode.h"
 #include "datatypes/common_attlists.h"
@@ -658,14 +660,19 @@ private:
 
 public:
     table_table_attlist			table_table_attlist_;
-    office_element_ptr			table_table_source_;		//table-table-source
+
+    table_columns_and_groups	table_columns_and_groups_;
+    table_rows_and_groups		table_rows_and_groups_;
+
+    office_element_ptr			table_table_source_;	
+
+	office_element_ptr			conditional_formats_;
+
+    office_element_ptr			table_shapes_;
+
     //office-dde-source
     //table-scenario
     //office-forms
-    office_element_ptr			table_shapes_;
-    table_columns_and_groups	table_columns_and_groups_;	//table-columns-and-groups
-    table_rows_and_groups		table_rows_and_groups_;
-
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(table_table);

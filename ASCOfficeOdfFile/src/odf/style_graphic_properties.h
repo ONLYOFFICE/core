@@ -107,7 +107,6 @@ public:
         
 };
 
-/// \class  style_graphic_properties
 ///         style:graphic-properties
 class style_graphic_properties : public office_element_impl<style_graphic_properties>
 {

@@ -10,6 +10,8 @@
 #include "../odf/style_table_properties.h"
 #include "../odf/datatypes/stylefamily.h"
 
+#include "../formulasconvert/formulasconvert.h"
+
 
 namespace cpdoccore {
 namespace oox {
@@ -153,7 +155,6 @@ void xlsx_table_state::end_cell()
 	in_cell = false;
 }
 
-
 void xlsx_table_state::set_current_cell_style_id(unsigned int xfId)
 {
     for (size_t i = 0; i <= columns_spanned_num_; ++i)
@@ -293,6 +294,9 @@ void xlsx_table_state::start_hyperlink()
 {
     return xlsx_hyperlinks_.add(ref, href, display);
 }
+
+
+
 
 }
 }

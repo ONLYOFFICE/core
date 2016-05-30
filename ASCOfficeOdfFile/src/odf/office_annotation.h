@@ -32,7 +32,7 @@ public:
 	 _CP_OPT(odf_types::style_ref) draw_style_name_;
 };
 
-/// \brief  dc:date
+//  dc:date
 class dc_date : public office_element_impl<dc_date>
 {
 public:
@@ -54,7 +54,7 @@ private:
 };
 CP_REGISTER_OFFICE_ELEMENT2(dc_date);
 
-/// \brief  dc:creator
+//  dc:creator
 class dc_creator : public office_element_impl<dc_creator>
 {
 public:
@@ -77,7 +77,7 @@ private:
 };
 CP_REGISTER_OFFICE_ELEMENT2(dc_creator);
 
-/// \brief  office:annotation 
+//  office:annotation 
 class office_annotation : public office_element_impl<office_annotation>
 {
 public:

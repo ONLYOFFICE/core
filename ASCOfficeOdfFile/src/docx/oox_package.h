@@ -27,7 +27,7 @@ typedef std::vector<element_ptr> element_ptr_array;
 class document;
 
 
-/// \class  element
+//  element
 class element
 {
 public:
@@ -76,7 +76,7 @@ private:
 class rels_file;
 typedef boost::shared_ptr<rels_file> rels_file_ptr;
 
-/// \class rels_file
+// rels_file
 class rels_file : public element
 {
 public:
@@ -97,7 +97,7 @@ private:
     rels			rels_;
 };
 
-/// \class rels_files
+// rels_files
 class rels_files : public element
 {
 public:

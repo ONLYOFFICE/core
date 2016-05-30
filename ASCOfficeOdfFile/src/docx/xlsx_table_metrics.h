@@ -9,7 +9,7 @@ namespace cpdoccore {
 namespace oox 
 {
 
-/// \class  xlsx_table_metrics
+//  xlsx_table_metrics
 class xlsx_table_metrics
 {
 public:

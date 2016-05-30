@@ -12,7 +12,7 @@
 namespace cpdoccore { 
 namespace odf_reader {
 
-/// \brief  office:event-listeners
+//  office:event-listeners
 class office_event_listeners : public office_element_impl<office_event_listeners>
 {
 public:
@@ -56,7 +56,7 @@ public:
 	//presentation:effect
 };
 
-/// \brief  presentation:event-listeners_
+//  presentation:event-listeners_
 class presentation_event_listener : public office_element_impl<presentation_event_listener>
 {
 public:
@@ -83,7 +83,7 @@ private:
 CP_REGISTER_OFFICE_ELEMENT2(presentation_event_listener);
 
 
-/// \brief  script:event-listeners_
+//  script:event-listeners_
 class script_event_listener : public office_element_impl<presentation_event_listener>
 {
 public:

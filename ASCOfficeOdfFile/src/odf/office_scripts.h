@@ -4,14 +4,14 @@
 #include <cpdoccore/CPOptional.h>
 #include <cpdoccore/xml/xmlelement.h>
 #include <cpdoccore/xml/nodetype.h>
+
 #include "office_elements.h"
 #include "office_elements_create.h"
 
 namespace cpdoccore { 
 namespace odf_reader {
 
-/// \class  office_scripts
-/// \brief  office:scripts
+//  office:scripts
 class office_scripts : public office_element_impl<office_scripts>
 {
 public:
@@ -35,8 +35,7 @@ private:
 
 CP_REGISTER_OFFICE_ELEMENT2(office_scripts);
 
-/// \class  office_script
-/// \brief  office:script
+//  office:script
 class office_script : public office_element_impl<office_script>
 {
 public:

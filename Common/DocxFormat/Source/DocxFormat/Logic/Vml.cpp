@@ -1,4 +1,4 @@
-#include "Vml.h"
+п»ї#include "Vml.h"
 #include "VmlOfficeDrawing.h"
 
 #include "Paragraph.h"
@@ -14,7 +14,7 @@
 
 namespace OOX
 {
-// TO DO: Нехватающие классы:
+// TO DO: РќРµС…РІР°С‚Р°СЋС‰РёРµ РєР»Р°СЃСЃС‹:
 	//        <w:altChunk>
 	//        <w:customXml>
 	//        <w:moveFrom>
@@ -26,7 +26,7 @@ namespace OOX
 		//--------------------------------------------------------------------------------	
 		void CTxbxContent::fromXML(XmlUtils::CXmlNode& oNode)
 		{
-			// TO DO: Реализовать CTxbxContent::fromXML(XmlUtils::CXmlNode& oNode)
+			// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CTxbxContent::fromXML(XmlUtils::CXmlNode& oNode)
 		}
 		void CTxbxContent::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
@@ -279,11 +279,11 @@ namespace OOX
 
 		void CVmlCommonElements::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
-			// Выставляем значения по умолчанию
+			// Р’С‹СЃС‚Р°РІР»СЏРµРј Р·РЅР°С‡РµРЅРёСЏ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
 			m_oHrPct.SetValue( 0 );
 			m_oSpt.SetValue( 0 );
 
-			// Читаем атрибуты
+			// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 			if ( oReader.GetAttributesCount() <= 0 )
 				return;
 			
@@ -555,7 +555,7 @@ namespace OOX
 		//--------------------------------------------------------------------------------	
 		void CGroup::fromXML(XmlUtils::CXmlNode& oNode)
 		{
-			// TO DO: Реализовать CGroup::fromXML(XmlUtils::CXmlNode& oNode)
+			// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CGroup::fromXML(XmlUtils::CXmlNode& oNode)
 		}
 		void CGroup::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
@@ -899,7 +899,7 @@ namespace OOX
 			if ( m_oPath.IsInit() )
 				sResult += _T("path=\"") + m_oPath->ToString() + _T("\" ");
 
-			// TO DO: сделать запись o:gfxdata
+			// TO DO: СЃРґРµР»Р°С‚СЊ Р·Р°РїРёСЃСЊ o:gfxdata
 
 			if ( m_sEquationXML.IsInit() )
 			{
@@ -949,7 +949,7 @@ namespace OOX
 
 		void CClientData::fromXML(XmlUtils::CXmlNode& oNode)
 		{
-			// TO DO: Реализовать CShapeType::fromXML(XmlUtils::CXmlNode& oNode)
+			// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CShapeType::fromXML(XmlUtils::CXmlNode& oNode)
 		}
 		void CClientData::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
@@ -977,9 +977,13 @@ namespace OOX
 		}
 		CString CClientData::toXML() const
 		{
-			CString sResult = _T("<x:ClientData ");
+			CString sResult = _T("<x:ClientData");
 			if(m_oObjectType.IsInit())
+			{
+				sResult += L" ObjectType=\"";
 				sResult += m_oObjectType->ToString();
+				sResult += L"\"";
+			}
 			sResult += _T(">");
 			if(m_oMoveWithCells.IsInit() && true == m_oMoveWithCells->ToBool())
 				sResult += _T("<x:MoveWithCells/>");
@@ -1000,7 +1004,7 @@ namespace OOX
                 CString sColumn;sColumn.Format(_T("<x:Column>%d</x:Column>"), m_oColumn.get().GetValue());
 				sResult += sColumn;
 			}
-			sResult = _T("</x:ClientData>");
+			sResult += _T("</x:ClientData>");
 			return sResult;
 		}
 	} // Vml

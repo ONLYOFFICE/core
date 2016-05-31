@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 
 #include "math.h"
 #include "../Common/Unit.h"
@@ -7,8 +7,8 @@
 
 namespace SimpleTypes
 {
-	// TO DO: В будущем надо улучшить функции FromString. Надо отказаться от сравнения
-	//        строк, вместо этого высчитываем хэш и сравниваем по его значению.
+	// TO DO: Р’ Р±СѓРґСѓС‰РµРј РЅР°РґРѕ СѓР»СѓС‡С€РёС‚СЊ С„СѓРЅРєС†РёРё FromString. РќР°РґРѕ РѕС‚РєР°Р·Р°С‚СЊСЃСЏ РѕС‚ СЃСЂР°РІРЅРµРЅРёСЏ
+	//        СЃС‚СЂРѕРє, РІРјРµСЃС‚Рѕ СЌС‚РѕРіРѕ РІС‹СЃС‡РёС‚С‹РІР°РµРј С…СЌС€ Рё СЃСЂР°РІРЅРёРІР°РµРј РїРѕ РµРіРѕ Р·РЅР°С‡РµРЅРёСЋ.
 
 #define SimpleType_FromString(Enum) \
 	virtual Enum FromString(const BSTR &bsValue)\
@@ -231,7 +231,7 @@ namespace SimpleTypes
 				return;
 			}
 
-			// Проверим последние два символа
+			// РџСЂРѕРІРµСЂРёРј РїРѕСЃР»РµРґРЅРёРµ РґРІР° СЃРёРјРІРѕР»Р°
 			CString sUnit = sValue.Mid( sValue.GetLength() - 2, 2 );
 			m_bUnit = true;
 
@@ -282,11 +282,11 @@ namespace SimpleTypes
 	protected:
 
 		bool   m_bUnit;  
-		double m_dValue; // Значение в пунктах
+		double m_dValue; // Р—РЅР°С‡РµРЅРёРµ РІ РїСѓРЅРєС‚Р°С…
 	};
 
 	//--------------------------------------------------------------------------------
-	// Класс наследуемый от CUniversalMeasure, для которого обычные значения - пункты.
+	// РљР»Р°СЃСЃ РЅР°СЃР»РµРґСѓРµРјС‹Р№ РѕС‚ CUniversalMeasure, РґР»СЏ РєРѕС‚РѕСЂРѕРіРѕ РѕР±С‹С‡РЅС‹Рµ Р·РЅР°С‡РµРЅРёСЏ - РїСѓРЅРєС‚С‹.
 	//--------------------------------------------------------------------------------	
 	class CPoint : public CUniversalMeasure
 	{
@@ -360,7 +360,7 @@ namespace SimpleTypes
 
 
 	//--------------------------------------------------------------------------------
-	// Класс наследуемый от CUniversalMeasure, для которого обычные значения - emu.
+	// РљР»Р°СЃСЃ РЅР°СЃР»РµРґСѓРµРјС‹Р№ РѕС‚ CUniversalMeasure, РґР»СЏ РєРѕС‚РѕСЂРѕРіРѕ РѕР±С‹С‡РЅС‹Рµ Р·РЅР°С‡РµРЅРёСЏ - emu.
 	//--------------------------------------------------------------------------------	
 	class CEmu : public CUniversalMeasure
 	{
@@ -398,6 +398,11 @@ namespace SimpleTypes
 			m_dValue = Emu_To_Pt(dValue);
 			return  m_dValue;
 		}
+		virtual double FromPx(double dValue)
+		{
+			m_dValue = Px_To_Pt(dValue);
+			return  m_dValue;
+		}
   		virtual double ToMm()
 		{
 			return  Pt_To_Mm(m_dValue);
@@ -405,6 +410,10 @@ namespace SimpleTypes
 		virtual __int64 ToEmu()
 		{
 			return  (__int64)Pt_To_Emu(m_dValue);
+		}
+		virtual long ToPx()
+		{
+			return  (long)Pt_To_Px(m_dValue);
 		}
 		void SetValue(double dValue)
 		{
@@ -421,7 +430,7 @@ namespace SimpleTypes
 
 
 	//--------------------------------------------------------------------------------
-	// Класс читающий double
+	// РљР»Р°СЃСЃ С‡РёС‚Р°СЋС‰РёР№ double
 	//--------------------------------------------------------------------------------	
 	class CDouble
 	{

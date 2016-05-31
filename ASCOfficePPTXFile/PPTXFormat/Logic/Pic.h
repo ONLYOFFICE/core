@@ -154,6 +154,7 @@ namespace PPTX
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual CString toXML() const;
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			void toXmlWriterXlsx(NSBinPptxRW::CXmlWriter* pWriter) const;
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 			virtual void FillParentPointersForChilds();
@@ -173,6 +174,9 @@ namespace PPTX
 
 			//internal
 			nullable_string						m_sData;
+			nullable_string						m_sFilepathBin;
+			nullable_string						m_sFilepathImg;
+			nullable<PPTX::RId>					m_oIdImg;
 			nullable_int						m_oDxaOrig;
 			nullable_int						m_oDyaOrig;
 		};
@@ -356,6 +360,9 @@ namespace PPTX
 				if(blipFill.blip.IsInit() && !blipFill.blip->oleRid.IsEmpty() && oleObject.IsInit())
 				{
 					oleObject->m_oId = PPTX::RId(blipFill.blip->oleRid);
+					oleObject->m_sFilepathBin = blipFill.blip->oleFilepathBin;
+					oleObject->m_sFilepathImg = blipFill.blip->oleFilepathImg;
+					oleObject->m_oIdImg = PPTX::RId(blipFill.blip->oleRidImg);
 				}
 
 				pReader->Seek(_end_rec);

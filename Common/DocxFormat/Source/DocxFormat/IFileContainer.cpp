@@ -1,4 +1,4 @@
-#include "IFileContainer.h"
+ï»¿#include "IFileContainer.h"
 #include "Rels.h"
 #include "FileFactory.h"
 #include "ContentTypes.h"
@@ -20,10 +20,10 @@ namespace OOX
 
 	void IFileContainer::Read (const OOX::CPath& oRootPath, const OOX::CPath& oPath)
 	{
-		// Íàõîäèì ñâÿçè(ðåëüñû) ñ äàííûì ôàéëîì
+		// ÐÐ°Ñ…Ð¾Ð´Ð¸Ð¼ ÑÐ²ÑÐ·Ð¸(Ñ€ÐµÐ»ÑŒÑÑ‹) Ñ Ð´Ð°Ð½Ð½Ñ‹Ð¼ Ñ„Ð°Ð¹Ð»Ð¾Ð¼
 		OOX::CRels oRels( oPath );
 
-		// ×èòàåì âñå ôàéëû ïî ðåëüñàì
+		// Ð§Ð¸Ñ‚Ð°ÐµÐ¼ Ð²ÑÐµ Ñ„Ð°Ð¹Ð»Ñ‹ Ð¿Ð¾ Ñ€ÐµÐ»ÑŒÑÐ°Ð¼
 		Read( oRels, oRootPath, oPath.GetDirectory() );
 	}
 
@@ -65,6 +65,8 @@ namespace OOX
 			{
 				OOX::CPath oDefDir = pFile->DefaultDirectory();
 				OOX::CPath oName   = pFile->DefaultFileName();
+				if(false == pFile->m_sOutputFilename.IsEmpty())
+					oName.SetName(pFile->m_sOutputFilename, false);
 		
 				std::map<CString, size_t>::const_iterator pNamePair = mNamePair.find( oName.m_strFilename );
 				if ( pNamePair == mNamePair.end())

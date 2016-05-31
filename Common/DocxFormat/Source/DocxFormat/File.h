@@ -26,7 +26,7 @@ namespace OOX
 		virtual const OOX::FileType type() const                                                        = 0;
 		virtual const CPath DefaultDirectory() const                                                    = 0;
 		virtual const CPath DefaultFileName() const                                                     = 0;
-		CString m_sFilename;
+		CString m_sOutputFilename;
 		bool m_bDoNotAddRels;
 	};
 	class FileGlobalEnumerated : public File

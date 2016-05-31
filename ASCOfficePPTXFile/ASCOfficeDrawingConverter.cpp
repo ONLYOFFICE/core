@@ -1319,7 +1319,7 @@ rIns=\"91440\" bIns=\"45720\" numCol=\"1\" spcCol=\"0\" rtlCol=\"0\" fromWordArt
 					}
 					if(NULL != pElem)
 					{
-						if(NULL != pOle && pOle->m_oId.IsInit() && pOle->m_sProgId.IsInit())
+						if(NULL != pOle && pOle->m_sProgId.IsInit() && (pOle->m_oId.IsInit() || pOle->m_sFilepathBin.IsInit()))
 						{
 							PPTX::Logic::Shape* pShape = dynamic_cast<PPTX::Logic::Shape*>(pElem->GetElem().operator ->());
 							if(NULL != pShape && pShape->spPr.Fill.Fill.IsInit())
@@ -1327,11 +1327,23 @@ rIns=\"91440\" bIns=\"45720\" numCol=\"1\" spcCol=\"0\" rtlCol=\"0\" fromWordArt
 								const PPTX::Logic::BlipFill& oBlipFill = pShape->spPr.Fill.Fill.as<PPTX::Logic::BlipFill>();
 								if(oBlipFill.blip.IsInit())
 								{
-									oBlipFill.blip->oleRid = pOle->m_oId.get().ToString();
+									if (pOle->m_sFilepathBin.IsInit())
+									{
+										oBlipFill.blip->oleFilepathBin = pOle->m_sFilepathBin.get();
+									}
+									else if (pOle->m_oId.IsInit())
+									{
+										oBlipFill.blip->oleRid = pOle->m_oId.get().ToString();
+									}
 									if(strName == _T("object"))
 									{
-										pOle->m_oDxaOrig = oParseNode.ReadAttributeInt(_T("w:dxaOrig"));
-										pOle->m_oDyaOrig = oParseNode.ReadAttributeInt(_T("w:dyaOrig"));
+										int nDxaOrig = oParseNode.ReadAttributeInt(_T("w:dxaOrig"));
+										int nDyaOrig = oParseNode.ReadAttributeInt(_T("w:dyaOrig"));
+										if (nDxaOrig > 0 && nDyaOrig > 0)
+										{
+											pOle->m_oDxaOrig = nDxaOrig;
+											pOle->m_oDyaOrig = nDyaOrig;
+										}
 									}
 
 									PPTX::Logic::Pic *newElem = new PPTX::Logic::Pic();
@@ -4291,6 +4303,15 @@ HRESULT CDrawingConverter::SaveObjectEx(LONG lStart, LONG lLength, const CString
 	m_pReader->m_lDocumentType = lDocType;
 
 	oElem.fromPPTY(m_pReader);
+	bool bOle = false;
+	if (oElem.is<PPTX::Logic::Pic>())
+	{
+		PPTX::Logic::Pic& oPic = oElem.as<PPTX::Logic::Pic>();
+		if(oPic.oleObject.IsInit())
+		{
+			bOle = oPic.oleObject->isValid();
+		}
+	}
 	
 	m_pReader->m_lDocumentType = XMLWRITER_DOC_TYPE_PPTX;
 
@@ -4302,12 +4323,29 @@ HRESULT CDrawingConverter::SaveObjectEx(LONG lStart, LONG lLength, const CString
 
 	oXmlWriter.m_bIsTop = (1 == m_nCurrentIndexObject) ? true : false;
 
-	oElem.toXmlWriter(&oXmlWriter);
+#if defined(BUILD_CONFIG_FULL_VERSION) && defined(AVS_USE_CONVERT_PPTX_TOCUSTOM_VML)
+	if (NULL == m_pOOXToVMLRenderer)
+		m_pOOXToVMLRenderer = new COOXToVMLGeometry();
+	oXmlWriter.m_pOOXToVMLRenderer = m_pOOXToVMLRenderer;
+#endif
+
+	if(bOle)
+	{
+		ConvertPicVML(oElem, bsMainProps, oXmlWriter);
+	}
+	else
+	{
+		oElem.toXmlWriter(&oXmlWriter);
+	}
 
 	--m_nCurrentIndexObject;
 
 	m_pXmlWriter->m_lObjectIdVML = oXmlWriter.m_lObjectIdVML;
 	m_pXmlWriter->m_lObjectIdOle = oXmlWriter.m_lObjectIdOle;
+	if (XMLWRITER_DOC_TYPE_XLSX == lDocType)
+	{
+		m_pXmlWriter->m_strOleXlsx = oXmlWriter.m_strOleXlsx;
+	}
 
 	CString ret = oXmlWriter.GetXmlString();
 	*bsXml = new CString();
@@ -5008,7 +5046,11 @@ HRESULT CDrawingConverter::SetAdditionalParam(const CString& ParamName, VARIANT 
 	else if (name == _T("DocumentChartsCount") && ParamValue.vt == VT_I4)
 	{
 		m_pReader->m_lChartNumber = ParamValue.lVal + 1;
-	}		
+	}
+	else if (name == _T("ObjectIdVML") && ParamValue.vt == VT_I4)
+	{
+		m_pXmlWriter->m_lObjectIdVML = ParamValue.lVal;
+	}
 	return S_OK;
 }
 HRESULT CDrawingConverter::GetAdditionalParam(const CString& ParamName, BYTE **pArray, size_t& szCount)
@@ -5058,6 +5100,20 @@ HRESULT CDrawingConverter::GetAdditionalParam(const CString& ParamName, VARIANT*
 	{
 		ParamValue->vt = VT_I4;
 		ParamValue->lVal = m_pReader->m_lChartNumber - 1;
+	}
+	else if (name == _T("ObjectIdVML"))
+	{
+		ParamValue->vt = VT_I4;
+		ParamValue->lVal = m_pXmlWriter->m_lObjectIdVML;
+	}
+	else if (name == _T("OleXlsx"))
+	{
+		ParamValue->vt = VT_BSTR;
+#if defined(_WIN32) || defined (_WIN64)
+		ParamValue->bstrVal = m_pXmlWriter->m_strOleXlsx.AllocSysString();
+#else
+		ParamValue->bstrVal = m_pXmlWriter->m_strOleXlsx;
+#endif
 	}
 	else if (name == _T("ContentTypes"))
 	{

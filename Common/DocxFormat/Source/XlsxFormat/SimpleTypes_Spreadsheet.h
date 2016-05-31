@@ -2357,6 +2357,70 @@ namespace SimpleTypes
             SimpleType_FromString     (ESparklineAxisMinMax)
             SimpleType_Operator_Equal (ST_SparklineAxisMinMax)
         };
+		enum EDvAspect
+		{
+			Content					= 0,
+			Icon					= 1
+		};
+		template<EDvAspect eDefValue = Icon>
+		class ST_DvAspect : public CSimpleType<EDvAspect, eDefValue>
+		{
+		public:
+			ST_DvAspect() {}
+
+			virtual EDvAspect FromString(CString &sValue)
+			{
+				if(_T("DVASPECT_CONTENT") == sValue)			this->m_eValue = Content;
+				else if(_T("DVASPECT_ICON") == sValue)		this->m_eValue = Icon;
+				else 								this->m_eValue = eDefValue;
+				return this->m_eValue;
+			}
+
+			virtual CString	 ToString  () const
+			{
+				switch(this->m_eValue)
+				{
+					case Content: return _T("DVASPECT_CONTENT");		break;
+					case Icon:	return _T("DVASPECT_ICON");			break;
+					default: return _T("DVASPECT_CONTENT");
+				}
+			}
+
+			SimpleType_FromString	 (EDvAspect)
+			SimpleType_Operator_Equal (ST_DvAspect)
+		};
+		enum EOleUpdate
+		{
+			Always					= 0,
+			OnCall					= 1
+		};
+		template<EOleUpdate eDefValue = Always>
+		class ST_OleUpdate : public CSimpleType<EOleUpdate, eDefValue>
+		{
+		public:
+			ST_OleUpdate() {}
+
+			virtual EOleUpdate FromString(CString &sValue)
+			{
+				if(_T("OLEUPDATE_ALWAYS") == sValue)			this->m_eValue = Always;
+				else if(_T("OLEUPDATE_ONCALL") == sValue)		this->m_eValue = OnCall;
+				else 								this->m_eValue = eDefValue;
+				return this->m_eValue;
+			}
+
+			virtual CString	 ToString  () const
+			{
+				switch(this->m_eValue)
+				{
+					case Always: return _T("OLEUPDATE_ALWAYS");		break;
+					case OnCall:	return _T("OLEUPDATE_ONCALL");			break;
+					default: return _T("OLEUPDATE_ALWAYS");
+				}
+			}
+
+			SimpleType_FromString	 (EOleUpdate)
+			SimpleType_Operator_Equal (ST_OleUpdate)
+		};
 
 	};// Spreadsheet
 } // SimpleTypes

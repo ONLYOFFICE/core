@@ -513,8 +513,8 @@
 #define c_oAscFill_FILL_TYPE_BLIP				1
 #define c_oAscFill_FILL_TYPE_NOFILL				2
 #define c_oAscFill_FILL_TYPE_SOLID				3
-#define c_oAscFill_FILL_TYPE_PATT				4
-#define c_oAscFill_FILL_TYPE_GRAD				5
+#define c_oAscFill_FILL_TYPE_GRAD				4
+#define c_oAscFill_FILL_TYPE_PATT				5
 
 #define c_oAscFillGradType_GRAD_LINEAR			1
 #define c_oAscFillGradType_GRAD_PATH			2

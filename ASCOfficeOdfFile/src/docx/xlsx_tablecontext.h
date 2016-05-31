@@ -1,26 +1,13 @@
 #pragma once
 
 #include <string>
-#include <list>
+#include <map>
 
 #include "ooxtablerowspanned.h"
 #include "xlsx_table_state.h"
 
 namespace cpdoccore {
 namespace oox {
-
-struct _database_range
-{
-	_database_range() : byRow(true), filter(false), withHeader(false) {}
-
-	std::wstring	table_name;
-	std::wstring	ref;
-	bool			byRow;
-	bool			filter;
-	bool			withHeader;
-
-	std::vector<std::pair<int, bool>> bySort;  //field + order
-};
 
 class xlsx_conversion_context;
 class xlsx_text_context;
@@ -65,7 +52,7 @@ public:
 
     void start_column(unsigned int repeated, const std::wstring & defaultCellStyleName);
 
-    size_t depth() const { return table_state_stack_.size(); }
+    size_t depth() const { return xlsx_table_states_.size(); }
 
     unsigned int columns_count();
 
@@ -98,16 +85,19 @@ public:
 		void set_database_header		(bool val);
 		void set_database_filter		(bool val);
 		
-		void add_database_sort	(int field_number, int order);
+	void add_database_sort	(int field_number, int order);
 	void end_database_range();
 
 
 private:
-    xlsx_conversion_context				*	context_;
-    xlsx_text_context					&	xlsx_text_context_;
-    std::vector<xlsx_table_state_ptr>		table_state_stack_;
+    xlsx_conversion_context				*xlsx_conversion_context_;
+    xlsx_text_context					&xlsx_text_context_;
 	
-	std::vector<_database_range>			databaseRanges_;
+	std::vector<xlsx_table_state_ptr>	 xlsx_table_states_;
+	std::vector<xlsx_data_range_ptr>	 xlsx_data_ranges_;
+	
+	std::multimap<std::wstring, int>	 xlsx_data_ranges_map_;		
+
 };
 
 

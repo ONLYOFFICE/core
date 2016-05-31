@@ -2,8 +2,8 @@
 #include "xlsx_tablecontext.h"
 #include "xlsx_textcontext.h"
 #include "xlsxconversioncontext.h"
-#include "xlsx_utils.h"
 #include "xlsx_table_state.h"
+#include "xlsx_utils.h"
 
 #include "../formulasconvert/formulasconvert.h"
 
@@ -19,19 +19,16 @@
 namespace cpdoccore {
 namespace oox {
 
-/**/
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//-----------------------------------------------------------------------------------------------------------------------
 
 xlsx_table_state_ptr & xlsx_table_context::state()
 {
-    return table_state_stack_.back();
+    return xlsx_table_states_.back();
 }
 
 const xlsx_table_state_ptr & xlsx_table_context::state() const
 {
-    return table_state_stack_.back();
+    return xlsx_table_states_.back();
 }
 
 void xlsx_table_context::start_database_range(std::wstring tableName, std::wstring ref)
@@ -41,10 +38,13 @@ void xlsx_table_context::start_database_range(std::wstring tableName, std::wstri
 
 	std::wstring ref1, ref2;
 	int pos = ref.find(L":");
+
+	std::wstring xlsx_table_name;
+
 	if (pos >= 0)
 	{
-		_database_range range;
-		databaseRanges_.push_back(range);
+		xlsx_data_ranges_.push_back(xlsx_data_range_ptr(new xlsx_data_range()));
+		xlsx_data_ranges_.back()->table_name = tableName;
 		
 		ref1 = ref.substr(0, pos );
 		ref2 = ref.substr(pos + 1);
@@ -52,33 +52,48 @@ void xlsx_table_context::start_database_range(std::wstring tableName, std::wstri
 		pos = ref1.find(L"!");							
 		if (pos > 0)
 		{
-			databaseRanges_.back().table_name = ref1.substr(0, pos);
+			xlsx_table_name = ref1.substr(0, pos);
 			ref1 = ref1.substr(pos + 1);
 		}
 		
 		pos = ref2.find(L"!");
 		if (pos > 0) ref2 = ref2.substr(pos + 1);
 	
-		databaseRanges_.back().ref = ref1 + L":" + ref2;
+		xlsx_data_ranges_.back()->ref = ref1 + L":" + ref2;
+
+		size_t col, row;
+		
+		getCellAddressInv(ref1, col, row);
+		xlsx_data_ranges_.back()->cell_start = std::pair<int, int>(col,row);
+
+		getCellAddressInv(ref2, col, row);
+		xlsx_data_ranges_.back()->cell_end = std::pair<int, int>(col,row);
 	}
+
+	if (!xlsx_table_name.empty())
+	{
+		boost::algorithm::replace_all(xlsx_table_name, L"'", L"");
+		xlsx_data_ranges_map_.insert(std::pair<std::wstring, int> (xlsx_table_name, xlsx_data_ranges_.size() - 1));
+	}
+
 }
 void xlsx_table_context::set_database_orientation (bool val)
 {
-	if (databaseRanges_.empty()) return;
+	if (xlsx_data_ranges_.empty()) return;
 
-	databaseRanges_.back().byRow = val;
+	xlsx_data_ranges_.back()->byRow = val;
 }
 void xlsx_table_context::set_database_header (bool val)
 {
-	if (databaseRanges_.empty()) return;
+	if (xlsx_data_ranges_.empty()) return;
 
-	databaseRanges_.back().withHeader = val;
+	xlsx_data_ranges_.back()->withHeader = val;
 }
 void xlsx_table_context::set_database_filter (bool val)
 {
-	if (databaseRanges_.empty()) return;
+	if (xlsx_data_ranges_.empty()) return;
 
-	databaseRanges_.back().filter = val;
+	xlsx_data_ranges_.back()->filter = val;
 }
 void xlsx_table_context::end_database_range()
 {
@@ -86,25 +101,25 @@ void xlsx_table_context::end_database_range()
 
 void xlsx_table_context::add_database_sort(int field_number, int order)
 {
-	databaseRanges_.back().bySort.push_back(std::pair<int, bool>(field_number, order == 1 ? false : true ));
+	xlsx_data_ranges_.back()->bySort.push_back(std::pair<int, bool>(field_number, order == 1 ? false : true ));
 }
 
 
 xlsx_table_context::
-xlsx_table_context(xlsx_conversion_context * Context, xlsx_text_context & textContext): context_(Context),
+xlsx_table_context(xlsx_conversion_context * Context, xlsx_text_context & textContext): xlsx_conversion_context_(Context),
 xlsx_text_context_(textContext)
 {        
 }
 
 void xlsx_table_context::start_table(std::wstring tableName, std::wstring tableStyleName)
 {
-	xlsx_table_state_ptr  state = boost::make_shared<xlsx_table_state>(context_, tableStyleName, tableName);
-    table_state_stack_.push_back( state);
+	xlsx_table_state_ptr  state = boost::make_shared<xlsx_table_state>(xlsx_conversion_context_, tableStyleName, tableName);
+    xlsx_table_states_.push_back( state);
 }
 
 void xlsx_table_context::end_table()
 {
-    table_state_stack_.pop_back();
+    xlsx_table_states_.pop_back();
 }
 
 std::wstring xlsx_table_context::get_current_table_name() const
@@ -205,77 +220,65 @@ int xlsx_table_context::current_row() const
     return state()->current_row();
 }
 
+
 void xlsx_table_context::serialize_sort(std::wostream & _Wostream)
 {
-	if (databaseRanges_.size() < 1) return;
+	if (xlsx_data_ranges_.empty()) return;
 
-	CP_XML_WRITER(_Wostream)
+	std::pair<std::multimap<std::wstring, int>::iterator, std::multimap<std::wstring, int>::iterator> range;
+
+	range = xlsx_data_ranges_map_.equal_range(state()->tableName_);
+
+	for (std::multimap<std::wstring, int>::iterator it = range.first; it != range.second; it++)
 	{
-		for (int j = 0 ; j < databaseRanges_.size(); j++)
-		{
-			if (databaseRanges_[j].table_name != state()->tableName_)
-				continue;
-
-			CP_XML_NODE(L"sortState")
-			{
-				CP_XML_ATTR(L"ref", databaseRanges_[j].ref);
-
-				if (!databaseRanges_[j].byRow)
-					CP_XML_ATTR(L"columnSort", true);
-
-				for (int i = 0 ; i < databaseRanges_[j].bySort.size(); i++)
-				{
-					bool in_range = true;
-					std::wstring ref1, ref2;
-					size_t col_1, row_1, col_2, row_2;
-
-					int pos = databaseRanges_[j].ref.find(L":");
-					if (pos >= 0)
-					{
-						ref1 = databaseRanges_[j].ref.substr(0, pos );
-						ref2 = databaseRanges_[j].ref.substr(pos + 1);
-					}
-					getCellAddressInv(ref1, col_1, row_1);
-					getCellAddressInv(ref2, col_2, row_2);
-
-					if (databaseRanges_[j].byRow)
-					{
-						if (databaseRanges_[j].bySort[i].first < col_1 || 
-							databaseRanges_[j].bySort[i].first > col_2 )	in_range = false;
-
-						ref1 = getCellAddress(databaseRanges_[j].bySort[i].first + 
-											( databaseRanges_[j].withHeader ? 1 : 0), row_1);
-						ref2 = getCellAddress(databaseRanges_[j].bySort[i].first + 
-											( databaseRanges_[j].withHeader ? 1 : 0), row_2);
-					}
-					else
-					{
-						if (databaseRanges_[j].bySort[i].first < row_1 || 
-							databaseRanges_[j].bySort[i].first > row_2 )	in_range = false;
-
-						ref1 = getCellAddress(col_1, databaseRanges_[j].bySort[i].first + 
-											( databaseRanges_[j].withHeader ? 1 : 0));
-						ref2 = getCellAddress(col_2, databaseRanges_[j].bySort[i].first + 
-											( databaseRanges_[j].withHeader ? 1 : 0));
-					}
-					if (in_range)
-					{
-						CP_XML_NODE(L"sortCondition")
-						{
-							CP_XML_ATTR(L"ref", ref1 + L":" + ref2);	
-
-							if (databaseRanges_[j].bySort[i].second)
-								CP_XML_ATTR(L"descending", 1);	
-						}
-
-					}
-				}
-			} 
-		}
+		xlsx_data_ranges_[it->second]->serialize_sort(_Wostream);
 	}
 }
 void xlsx_table_context::serialize_autofilter(std::wostream & _Wostream)
 {
+	if (xlsx_data_ranges_.empty()) return;
+
+	std::wstring ref;
+
+	std::pair<int, int> cell_start	(-1, -1);
+	std::pair<int, int> cell_end	(-1, -1);
+
+	std::pair<std::multimap<std::wstring, int>::iterator, std::multimap<std::wstring, int>::iterator> range;
+
+	range = xlsx_data_ranges_map_.equal_range(state()->tableName_);
+
+	for (std::multimap<std::wstring, int>::iterator it = range.first; it != range.second; it++)
+	{
+		if (xlsx_data_ranges_[it->second]->filter)
+		{
+			if (cell_start.first < 0 || xlsx_data_ranges_[it->second]->cell_start.first < cell_start.first )
+				cell_start.first = xlsx_data_ranges_[it->second]->cell_start.first;
+			
+			if (cell_start.second < 0 || xlsx_data_ranges_[it->second]->cell_start.second < cell_start.second )
+				cell_start.second = xlsx_data_ranges_[it->second]->cell_start.second;
+			
+			if (cell_end.first < 0 || xlsx_data_ranges_[it->second]->cell_end.first > cell_end.first )
+				cell_end.first = xlsx_data_ranges_[it->second]->cell_end.first;
+			
+			if (cell_end.second < 0 || xlsx_data_ranges_[it->second]->cell_end.second > cell_end.second )
+				cell_end.second = xlsx_data_ranges_[it->second]->cell_end.second;	
+
+			ref = xlsx_data_ranges_[it->second]->ref + L";";
+		}
+	}
+	if (cell_end.first < 0  || cell_start.first < 0) return;
+
+	ref.erase(ref.size() - 1, 1);
+
+	CP_XML_WRITER(_Wostream)
+	{			
+		CP_XML_NODE(L"autoFilter")
+		{
+			//в автофильтре тока простые диапазоны .. для сложных нужно выделять tablePart - todooo
+			CP_XML_ATTR(L"ref", getCellAddress(cell_start.first, cell_start.second) + L":" + getCellAddress(cell_end.first, cell_end.second));
+			//CP_XML_ATTR(L"ref", ref);
+		}
+	}
 }
 void xlsx_table_context::serialize_merge_cells(std::wostream & _Wostream)
 {

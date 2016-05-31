@@ -25,10 +25,11 @@ namespace OOX
 		public:
 			virtual CString      toXML() const
 			{
-				return _T("");
+				return _T("<xdr:cNvGraphicFramePr/>");
 			}
 			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
+				writer.WriteString(_T("<xdr:cNvGraphicFramePr/>"));
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -92,9 +93,11 @@ namespace OOX
 			{
 				writer.WriteString(_T("<xdr:nvGraphicFramePr>"));
 
-				if (m_oCNvGraphicFramePr.IsInit())	m_oCNvGraphicFramePr->toXML(writer);
 				if (m_oCNvPr.IsInit())				m_oCNvPr->toXML(writer);
 				else								writer.WriteString(_T("<xdr:cNvPr id=\"1\" name=\"diagram\"/>"));
+
+				if (m_oCNvGraphicFramePr.IsInit())	m_oCNvGraphicFramePr->toXML(writer);
+				
 				writer.WriteString(_T("</xdr:nvGraphicFramePr>"));
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)

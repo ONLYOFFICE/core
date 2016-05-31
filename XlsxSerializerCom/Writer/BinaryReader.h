@@ -1799,6 +1799,8 @@ namespace BinXlsxRW {
 		const CString& m_sMediaDir;
 		SaveParams& m_oSaveParams;
 		NSBinPptxRW::CDrawingConverter* m_pOfficeDrawingConverter;
+		
+		int m_nNextObjectId;
 	public:
 		BinaryWorksheetsTableReader(NSBinPptxRW::CBinaryFileReader& oBufferedStream, OOX::Spreadsheet::CWorkbook& oWorkbook,
 			OOX::Spreadsheet::CSharedStrings* pSharedStrings, std::map<CString, OOX::Spreadsheet::CWorksheet*>& mapWorksheets,
@@ -1810,7 +1812,8 @@ namespace BinXlsxRW {
 			m_pCurWorksheet = NULL;
 			m_pCurDrawing = NULL;
 			m_pOfficeDrawingConverter = pOfficeDrawingConverter;
-		}
+			m_nNextObjectId = 0xfffff; // в CDrawingConverter своя нумерация .. 
+		} 
 		int Read()
 		{
 			m_oWorkbook.m_oSheets.Init();
@@ -2540,6 +2543,9 @@ namespace BinXlsxRW {
 					pCellAnchor->m_oGraphicFrame->m_oNvGraphicFramePr->m_oCNvPr->m_eType = OOX::et_xdr_cNvPr;
 					pCellAnchor->m_oGraphicFrame->m_oNvGraphicFramePr->m_oCNvPr->m_sName.Init();
 					pCellAnchor->m_oGraphicFrame->m_oNvGraphicFramePr->m_oCNvPr->m_sName->Append(sName);
+					pCellAnchor->m_oGraphicFrame->m_oNvGraphicFramePr->m_oCNvPr->m_oId.Init();
+					pCellAnchor->m_oGraphicFrame->m_oNvGraphicFramePr->m_oCNvPr->m_oId->SetValue(m_nNextObjectId++);
+					pCellAnchor->m_oGraphicFrame->m_oNvGraphicFramePr->m_oCNvGraphicFramePr.Init();
 
 				}
 			}		

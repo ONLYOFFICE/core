@@ -118,12 +118,12 @@ void xlsx_xml_worksheet::write_to(std::wostream & strm)
             }
 			//оказываетс€ пор€док нахождени€ элементов важен !!! (дл€ office 2010)
 			//объединенные €чейки раньше чем гиперлинки !!!
-           
+			
+			CP_XML_STREAM() << impl_->autofilter_.str(); //автофильтры перед merge !!!
+			
 			CP_XML_STREAM() << impl_->mergeCells_.str();
 			
 			CP_XML_STREAM() << impl_->sort_.str();
-
-			//autofilters 
 
 			//conditional formats
 

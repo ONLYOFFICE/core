@@ -2,8 +2,9 @@
 #include <cpdoccore/xml/simple_xml_writer.h>
 
 #include "logging.h"
-#include "xlsx_table_state.h"
 
+#include "xlsx_table_state.h"
+#include "xlsx_utils.h"
 #include "xlsxconversioncontext.h"
 
 #include "../odf/odfcontext.h"
@@ -15,6 +16,77 @@
 
 namespace cpdoccore {
 namespace oox {
+
+void xlsx_data_range::serialize_autofilter (std::wostream & _Wostream)
+{
+	if (!filter) return;
+
+	CP_XML_WRITER(_Wostream)
+	{			
+		CP_XML_NODE(L"autoFilter")
+		{
+			CP_XML_ATTR(L"ref", ref);
+		}
+	}
+}
+void xlsx_data_range::serialize_sort (std::wostream & _Wostream)
+{
+	if (bySort.empty()) return;
+
+	CP_XML_WRITER(_Wostream)
+	{			
+		CP_XML_NODE(L"sortState")
+		{
+			CP_XML_ATTR(L"ref", ref);
+
+			if (!byRow)
+				CP_XML_ATTR(L"columnSort", true);
+
+			for (int i = 0 ; i < bySort.size(); i++)
+			{
+				bool in_range = true;
+				std::wstring ref1, ref2;
+				size_t col_1, row_1, col_2, row_2;
+
+				int pos = ref.find(L":");
+				if (pos >= 0)
+				{
+					ref1 = ref.substr(0, pos );
+					ref2 = ref.substr(pos + 1);
+				}
+				getCellAddressInv(ref1, col_1, row_1);
+				getCellAddressInv(ref2, col_2, row_2);
+
+				if (byRow)
+				{
+					if (bySort[i].first < col_1 || bySort[i].first > col_2 )	in_range = false;
+
+					ref1 = getCellAddress(bySort[i].first + ( withHeader ? 1 : 0), row_1);
+					ref2 = getCellAddress(bySort[i].first + ( withHeader ? 1 : 0), row_2);
+				}
+				else
+				{
+					if (bySort[i].first < row_1 || bySort[i].first > row_2 )	in_range = false;
+
+					ref1 = getCellAddress(col_1, bySort[i].first + ( withHeader ? 1 : 0));
+					ref2 = getCellAddress(col_2, bySort[i].first + ( withHeader ? 1 : 0));
+				}
+				if (in_range)
+				{
+					CP_XML_NODE(L"sortCondition")
+					{
+						CP_XML_ATTR(L"ref", ref1 + L":" + ref2);	
+
+						if (bySort[i].second)
+							CP_XML_ATTR(L"descending", 1);	
+					}
+
+				}
+			}
+		}	
+	}
+}
+//-------------------------------------------------------------------------------------------------------------------------
 
 xlsx_table_state::xlsx_table_state(xlsx_conversion_context * Context, std::wstring styleName, std::wstring tableName)
   : context_				(Context),

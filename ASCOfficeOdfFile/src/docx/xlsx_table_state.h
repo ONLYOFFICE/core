@@ -18,6 +18,31 @@ class xlsx_table_context;
 class xlsx_table_state;
 typedef _CP_PTR(xlsx_table_state) xlsx_table_state_ptr;
 
+class xlsx_data_range;
+typedef _CP_PTR(xlsx_data_range) xlsx_data_range_ptr;
+
+
+class xlsx_data_range
+{
+public:
+	xlsx_data_range() : byRow(true), filter(false), withHeader(false), cell_start(0,0), cell_end(0,0) {}
+
+	std::wstring	table_name;
+	
+	std::wstring	ref;
+	
+	std::pair<int, int> cell_start;
+	std::pair<int, int> cell_end;
+
+	bool			byRow;
+	bool			filter;
+	bool			withHeader;
+
+	std::vector<std::pair<int, bool>> bySort;  //field + order
+	
+	void serialize_sort			(std::wostream & _Wostream);
+	void serialize_autofilter	(std::wostream & _Wostream);
+};
 
 class xlsx_table_state
 {

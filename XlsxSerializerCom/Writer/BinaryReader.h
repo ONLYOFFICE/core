@@ -1928,7 +1928,10 @@ namespace BinXlsxRW {
 				oBinaryCommentReader.Read(length, poResult);
 				if(m_pCurWorksheet->m_mapComments.size() > 0)
 				{
-					OOX::CVmlDrawing* pVmlDrawing = new OOX::CVmlDrawing();
+					OOX::CPath pathDrawingsDir = m_sDestinationDir  + FILE_SEPARATOR_STR + _T("xl")  + FILE_SEPARATOR_STR + _T("drawings");
+					OOX::CSystemUtility::CreateDirectories(pathDrawingsDir.GetPath());
+					
+					OOX::CVmlDrawing* pVmlDrawing = new OOX::CVmlDrawing(true);
 					
 					pVmlDrawing->m_mapComments = &m_pCurWorksheet->m_mapComments;
 					NSCommon::smart_ptr<OOX::File> pVmlDrawingFile(pVmlDrawing);

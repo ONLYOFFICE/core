@@ -66,6 +66,10 @@ namespace OOX
 			const FileType ExternalLinkPath(L"", L"", 
 												_T(""), 
 												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/externalLinkPath"));
+			
+			const FileType VmlDrawing(L"../drawings", L"vmlDrawing.vml",
+												_T(""),
+												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/vmlDrawing"), true, true);
 		} // namespace FileTypes
 	}
 } // namespace OOX

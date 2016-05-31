@@ -1,4 +1,4 @@
-//#include "stdafx.h"
+ï»¿//#include "stdafx.h"
 #include "CommonInclude.h"
 
 #include "IFileContainer_Spreadsheet.h"
@@ -21,11 +21,11 @@ namespace OOX
 
 		void IFileContainer::Read (const OOX::CPath& oRootPath, const OOX::CPath& oPath)
 		{
-			// Íàõîäèì ñâÿçè(ðåëüñû) ñ äàííûì ôàéëîì
+			// ÐÐ°Ñ…Ð¾Ð´Ð¸Ð¼ ÑÐ²ÑÐ·Ð¸(Ñ€ÐµÐ»ÑŒÑÑ‹) Ñ Ð´Ð°Ð½Ð½Ñ‹Ð¼ Ñ„Ð°Ð¹Ð»Ð¾Ð¼
 			RELEASEOBJECT(m_pCurRels);
 			m_pCurRels = new OOX::CRels(oPath);
 
-			// ×èòàåì âñå ôàéëû ïî ðåëüñàì
+			// Ð§Ð¸Ñ‚Ð°ÐµÐ¼ Ð²ÑÐµ Ñ„Ð°Ð¹Ð»Ñ‹ Ð¿Ð¾ Ñ€ÐµÐ»ÑŒÑÐ°Ð¼
 			Read( *m_pCurRels, oRootPath, oPath.GetDirectory() );
 		}
 
@@ -61,14 +61,14 @@ namespace OOX
 				{
 					OOX::CPath oDefDir = pFile->DefaultDirectory();
 					OOX::CPath oName   = pFile->DefaultFileName();
-					if(false == pFile->m_sFilename.IsEmpty())
-						oName.SetName(pFile->m_sFilename, false);
+					if(false == pFile->m_sOutputFilename.IsEmpty())
+						oName.SetName(pFile->m_sOutputFilename, false);
 
 					OOX::CSystemUtility::CreateDirectories( oCurrent / oDefDir );
 					pFile->write( oCurrent / oDefDir / oName, oDir / oDefDir, oContent );
 					if(true != pFile->m_bDoNotAddRels)
                     {
-                        if (oDefDir.GetPath().GetLength() > 0)//todooo ïåðåíåñòè â CPath
+                        if (oDefDir.GetPath().GetLength() > 0)//todooo Ð¿ÐµÑ€ÐµÐ½ÐµÑÑ‚Ð¸ Ð² CPath
                             oRels.Registration( pPair->first, pFile->type(), oDefDir / oName );
                         else
                             oRels.Registration( pPair->first, pFile->type(), oName );
@@ -269,7 +269,7 @@ namespace OOX
 					CString sDigit;sDigit.Format(_T("%d"), nIndex);
 					sPath.Insert(nDotIndex, sDigit);
 				}
-				pFile->m_sFilename = sPath;
+				pFile->m_sOutputFilename = sPath;
 				if(true == bEnumeratedGlobal)
 					m_mapEnumeratedGlobal [pFile->type().OverrideType()] = nIndex;
 				else

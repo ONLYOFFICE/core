@@ -6,6 +6,7 @@
 
 #include "../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Drawing/DrawingColors.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Media/OleObject.h"
 #include "../../Common/OfficeFileFormats.h"
 #include "../../Common/Base64.h"
 
@@ -1737,7 +1738,7 @@ namespace BinXlsxRW {
 					m_pOfficeDrawingConverter->SetRelsPath(sDrawingRelsPath);
 					
 					nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::Drawings);
-					WriteDrawings(pDrawing, sDrawingRelsPath, currentVmlDrawing);
+					WriteDrawings(oWorksheet, pDrawing, sDrawingRelsPath, currentVmlDrawing);
 					m_oBcw.WriteItemWithLengthEnd(nCurPos);
 
 					m_pOfficeDrawingConverter->SetRelsPath(sOldRelsPath);
@@ -2382,22 +2383,109 @@ namespace BinXlsxRW {
 			}
 		};
 
-		void WriteDrawings(OOX::Spreadsheet::CDrawing* pDrawing, CString& sDrawingRelsPath, OOX::CVmlDrawing *pVmlDrawing = NULL)
+		void WriteDrawings(const OOX::Spreadsheet::CWorksheet& oWorksheet, OOX::Spreadsheet::CDrawing* pDrawing, CString& sDrawingRelsPath, OOX::CVmlDrawing *pVmlDrawing = NULL)
 		{
 			int nCurPos;
 			for(int i = 0, length = pDrawing->m_arrItems.size(); i  < length ; ++i)
 			{
 				OOX::Spreadsheet::CCellAnchor& pCellAnchor = *pDrawing->m_arrItems[i];
-				if(pCellAnchor.isValid())
+				//OleObject пишутся в новом drawing и старом legacyDrawing, мы используем legacyDrawing, поэтому пропускаем shape из drawing
+				bool bShapeOle = false;
+				if(oWorksheet.m_oOleObjects.IsInit() && pCellAnchor.m_oShape.IsInit() && pCellAnchor.m_oShape->m_oNvSpPr.IsInit() &&
+						pCellAnchor.m_oShape->m_oNvSpPr->m_oCNvPr.IsInit() && pCellAnchor.m_oShape->m_oNvSpPr->m_oCNvPr->m_oId.IsInit() )
+				{
+					int id = pCellAnchor.m_oShape->m_oNvSpPr->m_oCNvPr->m_oId->GetValue();
+					std::map<int, COleObject*>::const_iterator itFind = oWorksheet.m_oOleObjects->m_mapOleObjects.find(id);
+					if(itFind != oWorksheet.m_oOleObjects->m_mapOleObjects.end())
+					{
+						bShapeOle = true;
+					}
+				}
+				if(!bShapeOle && pCellAnchor.isValid())
 				{
 					//Drawing
 					nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::Drawing);
-					WriteDrawing(pDrawing, pCellAnchor, sDrawingRelsPath, pVmlDrawing);
+					WriteDrawing(oWorksheet, pDrawing, pCellAnchor, sDrawingRelsPath, pVmlDrawing);
 					m_oBcw.WriteItemEnd(nCurPos);
 				}
 			}
+			//OleObjects
+			if(NULL != pVmlDrawing && oWorksheet.m_oOleObjects.IsInit())
+			{
+				for (std::map<int, COleObject*>::const_iterator it = oWorksheet.m_oOleObjects->m_mapOleObjects.begin(); it != oWorksheet.m_oOleObjects->m_mapOleObjects.end(); ++it)
+				{
+					OOX::Spreadsheet::COleObject* pOleObject = it->second;
+					if(pOleObject->m_oShapeId.IsInit())
+					{
+						CString sShapeId = _T("");
+						sShapeId.Format(_T("_x0000_s%04d"), pOleObject->m_oShapeId->GetValue());
+						std::map<CString, CString>::iterator pFind = pVmlDrawing->m_mapShapesXml.find(sShapeId);
+						if (pFind != pVmlDrawing->m_mapShapesXml.end())
+						{
+							//ищем shape как обьект, чтобы обработать ClientData
+							for(size_t i = 0; i < pVmlDrawing->m_arrItems.size(); ++i)
+							{
+								OOX::WritingElement* pElem = pVmlDrawing->m_arrItems[i];
+								if(OOX::et_v_shape == pElem->getType())
+								{
+									OOX::Vml::CShape* pShape = static_cast<OOX::Vml::CShape*>(pElem);
+									if((pShape->m_sSpId.IsInit() && sShapeId == pShape->m_sSpId.get()) ||
+									   (pShape->m_sId.IsInit() && sShapeId == pShape->m_sId.get()))
+									{
+										for(size_t j = 0; j < pShape->m_arrItems.size(); ++j)
+										{
+											OOX::WritingElement* pElemShape = pShape->m_arrItems[j];
+											if(OOX::et_v_ClientData == pElemShape->getType())
+											{
+												//преобразуем ClientData в CellAnchor
+												OOX::Vml::CClientData* pClientData = static_cast<OOX::Vml::CClientData*>(pElemShape);
+												std::vector<int> m_aAnchor;
+												pClientData->getAnchorArray(m_aAnchor);
+												if(8 == m_aAnchor.size())
+												{
+													SimpleTypes::Spreadsheet::CCellAnchorType<> eAnchorType;
+													eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorTwoCell);
+													OOX::Spreadsheet::CCellAnchor oCellAnchor = OOX::Spreadsheet::CCellAnchor(eAnchorType);
+													oCellAnchor.m_sSpId.Init();
+													oCellAnchor.m_sSpId->Append(sShapeId);
+													oCellAnchor.m_oFrom.Init();
+													oCellAnchor.m_oFrom->m_oCol.Init();
+													oCellAnchor.m_oFrom->m_oCol->SetValue(m_aAnchor[0]);
+													oCellAnchor.m_oFrom->m_oColOff.Init();
+													oCellAnchor.m_oFrom->m_oColOff->FromPx(m_aAnchor[1]);
+													oCellAnchor.m_oFrom->m_oRow.Init();
+													oCellAnchor.m_oFrom->m_oRow->SetValue(m_aAnchor[2]);
+													oCellAnchor.m_oFrom->m_oRowOff.Init();
+													oCellAnchor.m_oFrom->m_oRowOff->FromPx(m_aAnchor[3]);
+													oCellAnchor.m_oTo.Init();
+													oCellAnchor.m_oTo->m_oCol.Init();
+													oCellAnchor.m_oTo->m_oCol->SetValue(m_aAnchor[4]);
+													oCellAnchor.m_oTo->m_oColOff.Init();
+													oCellAnchor.m_oTo->m_oColOff->FromPx(m_aAnchor[5]);
+													oCellAnchor.m_oTo->m_oRow.Init();
+													oCellAnchor.m_oTo->m_oRow->SetValue(m_aAnchor[6]);
+													oCellAnchor.m_oTo->m_oRowOff.Init();
+													oCellAnchor.m_oTo->m_oRowOff->FromPx(m_aAnchor[7]);
+
+													nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::Drawing);
+													WriteDrawing(oWorksheet, pDrawing, oCellAnchor, sDrawingRelsPath, pVmlDrawing, pOleObject);
+													m_oBcw.WriteItemEnd(nCurPos);
+												}
+												break;
+											}
+										}
+										break;
+									}
+								}
+							}
+
+						}
+					}
+
+				}
+			}
 		};
-		void WriteDrawing(OOX::Spreadsheet::CDrawing* pDrawing, OOX::Spreadsheet::CCellAnchor& pCellAnchor, CString& sDrawingRelsPath, OOX::CVmlDrawing *pVmlDrawing = NULL)
+		void WriteDrawing(const OOX::Spreadsheet::CWorksheet& oWorksheet, OOX::Spreadsheet::CDrawing* pDrawing, OOX::Spreadsheet::CCellAnchor& pCellAnchor, CString& sDrawingRelsPath, OOX::CVmlDrawing *pVmlDrawing = NULL, OOX::Spreadsheet::COleObject* pOleObject = NULL)
 		{
 			//Type
 			int nCurPos;
@@ -2438,7 +2526,7 @@ namespace BinXlsxRW {
 			{
 				bstrXml = *pCellAnchor.m_oXml;
 			}
-			else if (pCellAnchor.m_sSpId.IsInit()  && pVmlDrawing)
+			else if (pCellAnchor.m_sSpId.IsInit() && pVmlDrawing)
 			{
 				std::map<CString, CString>::iterator pFind = pVmlDrawing->m_mapShapesXml.find(pCellAnchor.m_sSpId.get2());
 				if (pFind != pVmlDrawing->m_mapShapesXml.end())
@@ -2449,10 +2537,24 @@ namespace BinXlsxRW {
 
 					CString temp = _T("<v:object>");
 					temp.Append(pFind->second);
+					if (NULL != pOleObject)
+					{
+						//ищем физический файл, потому что rId относительно sheet.xml, а SetRelsPath(pVmlDrawing
+						smart_ptr<OOX::File> pFile = oWorksheet.Find(OOX::RId(pOleObject->m_oRid->GetValue()));
+						if (pFile.IsInit() && OOX::FileTypes::OleObject == pFile->type())
+						{
+							OOX::OleObject* pOleObjectFile = static_cast<OOX::OleObject*>(pFile.operator->());
+							XmlUtils::CStringWriter writer;
+							pOleObject->m_oFilepathBin.Init();
+							pOleObject->m_oFilepathBin->Append(pOleObjectFile->filename().GetPath());
+							pOleObject->toXMLPptx(writer, L"");
+							temp.Append(writer.GetData());
+						}
+					}
 					temp.Append(_T("</v:object>"));
 
 					CString keepRels = m_pOfficeDrawingConverter->GetRelsPath();
-					m_pOfficeDrawingConverter->SetRelsPath(pVmlDrawing->m_sFilename);
+					m_pOfficeDrawingConverter->SetRelsPath(pVmlDrawing->GetReadPath().GetPath());
 
 					HRESULT hRes = m_pOfficeDrawingConverter->AddObject(temp, &bstrOutputXml);
 					m_oBcw.WriteItemWithLengthEnd(nCurPos);

@@ -27,7 +27,7 @@ namespace OOX
 		public:
 			virtual void write(const CPath& filename, const CPath& directory, CContentTypes& content) const
 			{
-				content.Registration(type().RelationType(), directory, filename.GetFilename());
+				//content.Registration(type().RelationType(), directory, filename.GetFilename());
 			}
 
 		public:

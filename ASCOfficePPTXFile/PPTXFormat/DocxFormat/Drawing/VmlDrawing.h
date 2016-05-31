@@ -19,8 +19,6 @@ namespace PPTX
 		VmlDrawing(const OOX::CPath& filename, FileMap& map)
 		{
 			read( filename, map);
-
-			m_sFilename = filename.GetPath();
 		}
 		virtual ~VmlDrawing()
 		{
@@ -29,6 +27,7 @@ namespace PPTX
 	public:
 		virtual void read(const OOX::CPath& filename, FileMap& map)
 		{
+			m_filename = filename;
 			//FileContainer::read(filename, map);
 
 			//так как это не совсем xml - поправим
@@ -95,12 +94,15 @@ namespace PPTX
 		{
 			return type().DefaultFileName();
 		}
+		const OOX::CPath filename() const
+		{
+			return m_filename;
+		}
 
-		CString							m_sFilename;
 		std::map<CString,CString>		m_mapShapesXml; //связь id (_x0000_s1025) с  xml для OfficeDrawing
 
 	private:
-	
+		OOX::CPath	m_filename;
 		void replace_all(std::wstring& subject, const std::wstring search, const std::wstring replace)
 		{
 			size_t pos = 0;

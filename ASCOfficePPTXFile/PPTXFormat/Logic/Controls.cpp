@@ -1,4 +1,4 @@
-#include "Controls.h"
+п»ї#include "Controls.h"
 #include "../../ASCOfficeDrawingConverter.h"
 
 #include "../Slide.h"
@@ -14,23 +14,23 @@ namespace PPTX
 			if(parentFileIs<PPTX::Slide>() && parentFileAs<PPTX::Slide>().Vml.IsInit())
 			{
 				xml		= parentFileAs<PPTX::Slide>().GetVmlXmlBySpid(spid);
-				rels	= parentFileAs<PPTX::Slide>().Vml->m_sFilename;
+				rels	= parentFileAs<PPTX::Slide>().Vml->filename().GetPath();
 			}
 			else if(parentFileIs<PPTX::SlideLayout>() && parentFileAs<PPTX::SlideLayout>().Vml.IsInit())
 			{
 				xml= parentFileAs<PPTX::SlideLayout>().GetVmlXmlBySpid(spid);
-				rels	= parentFileAs<PPTX::SlideLayout>().Vml->m_sFilename;
+				rels	= parentFileAs<PPTX::SlideLayout>().Vml->filename().GetPath();
 			}
 			else if(parentFileIs<PPTX::SlideMaster>() && parentFileAs<PPTX::SlideMaster>().Vml.IsInit())
 			{
 				xml = parentFileAs<PPTX::SlideMaster>().GetVmlXmlBySpid(spid);
-				rels	= parentFileAs<PPTX::SlideMaster>().Vml->m_sFilename;
+				rels	= parentFileAs<PPTX::SlideMaster>().Vml->filename().GetPath();
 			}
 
 			return xml;
 		}
 		void Control::AddObjectTo (const std::vector<SpTreeElem> *spTreeElements, NSShapeImageGen::CImageManager* pImageManager) const
-		{//проблема переноса картинок !!!
+		{//РїСЂРѕР±Р»РµРјР° РїРµСЂРµРЅРѕСЃР° РєР°СЂС‚РёРЅРѕРє !!!
 			if (spid.IsInit() == false) return;
 
 			CString s = *spid;

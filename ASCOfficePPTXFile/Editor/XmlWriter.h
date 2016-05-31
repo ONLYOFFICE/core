@@ -278,7 +278,7 @@ namespace NSBinPptxRW
 		CString m_strNodes;
 		IRenderer* m_pOOXToVMLRenderer;
 		bool m_bIsTop;
-	
+		CString m_strOleXlsx;
 	public:
 
 		CXmlWriter() : m_oWriter()
@@ -298,6 +298,7 @@ namespace NSBinPptxRW
 
 			m_pOOXToVMLRenderer = NULL;
 			m_bIsTop = false;
+			m_strOleXlsx = L"";
 		}
 		~CXmlWriter()
 		{

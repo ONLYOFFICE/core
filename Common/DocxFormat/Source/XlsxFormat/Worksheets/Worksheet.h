@@ -19,6 +19,7 @@
 #include "../Chart/Chart.h"
 #include "../Table/Table.h"
 #include "../Comments/Comments.h"
+#include "../Ole/OleObjects.h"
 
 namespace OOX
 {
@@ -122,6 +123,8 @@ namespace OOX
 								m_oTableParts = oReader;
 							else if ( _T("legacyDrawing") == sName )
 								m_oLegacyDrawingWorksheet = oReader;
+							else if ( _T("oleObjects") == sName )
+								m_oOleObjects = oReader;
 							else if (_T("sheetPr") == sName)
 								m_oSheetPr = oReader;
                             else if (_T("extLst") == sName)
@@ -202,29 +205,18 @@ namespace OOX
 									CCommentItem* pCommentItem = pPair->second;
 									if(pShape->m_oGfxData.IsInit())
 										pCommentItem->m_sGfxdata = pShape->m_oGfxData.get2();
-									if(pClientData->m_oAnchor.IsInit())
+									std::vector<int> m_aAnchor;
+									pClientData->getAnchorArray(m_aAnchor);
+									if(8 == m_aAnchor.size())
 									{
-										const CString& sAnchor = pClientData->m_oAnchor.get();
-										std::vector<int> m_aAnchor;
-										int nTokenPos = 0;
-										CString strToken = sAnchor.Tokenize(_T(","), nTokenPos);
-										while (!strToken.IsEmpty())
-										{
-											strToken.Trim();
-											m_aAnchor.push_back(_wtoi(strToken));
-											strToken = sAnchor.Tokenize(_T(","), nTokenPos);
-										}
-										if(8 == m_aAnchor.size())
-										{
-											pCommentItem->m_nLeft = m_aAnchor[0];
-											pCommentItem->m_nLeftOffset = m_aAnchor[1];
-											pCommentItem->m_nTop = m_aAnchor[2];
-											pCommentItem->m_nTopOffset = m_aAnchor[3];
-											pCommentItem->m_nRight = m_aAnchor[4];
-											pCommentItem->m_nRightOffset = m_aAnchor[5];
-											pCommentItem->m_nBottom = m_aAnchor[6];
-											pCommentItem->m_nBottomOffset = m_aAnchor[7];
-										}
+										pCommentItem->m_nLeft = m_aAnchor[0];
+										pCommentItem->m_nLeftOffset = m_aAnchor[1];
+										pCommentItem->m_nTop = m_aAnchor[2];
+										pCommentItem->m_nTopOffset = m_aAnchor[3];
+										pCommentItem->m_nRight = m_aAnchor[4];
+										pCommentItem->m_nRightOffset = m_aAnchor[5];
+										pCommentItem->m_nBottom = m_aAnchor[6];
+										pCommentItem->m_nBottomOffset = m_aAnchor[7];
 									}
 
 									if(pClientData->m_oMoveWithCells.IsInit())
@@ -336,6 +328,8 @@ namespace OOX
 					m_oDrawing->toXML(sXml);
 				if(m_oLegacyDrawingWorksheet.IsInit())
 					m_oLegacyDrawingWorksheet->toXML(sXml);
+				if(m_oOleObjects.IsInit())
+					m_oOleObjects->toXML(sXml);
 				if(m_oTableParts.IsInit())
 					m_oTableParts->toXML(sXml);
                 if(m_oExtLst.IsInit())
@@ -358,7 +352,7 @@ namespace OOX
 			{
 				return type().DefaultFileName();
 			}
-			const CPath& GetReadPath()
+			const CPath& GetReadPath() const
 			{
 				return m_oReadPath;
 			}
@@ -504,6 +498,7 @@ namespace OOX
 			nullable<OOX::Spreadsheet::CAutofilter>					m_oAutofilter;
 			nullable<OOX::Spreadsheet::CTableParts>					m_oTableParts;
 			nullable<OOX::Spreadsheet::CLegacyDrawingWorksheet>		m_oLegacyDrawingWorksheet;
+			nullable<OOX::Spreadsheet::COleObjects>					m_oOleObjects;
 			std::map<CString, CCommentItem*>						m_mapComments;
 			std::vector<OOX::Spreadsheet::CConditionalFormatting*>	m_arrConditionalFormatting;
 			nullable<OOX::Spreadsheet::CSheetPr>					m_oSheetPr;

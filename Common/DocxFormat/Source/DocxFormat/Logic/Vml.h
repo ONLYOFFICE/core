@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #ifndef OOX_VML_INCLUDE_H_
 #define OOX_VML_INCLUDE_H_
 
@@ -121,7 +121,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать CArc::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CArc::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -154,7 +154,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				if ( oReader.GetAttributesCount() <= 0 )
 					return;
 				
@@ -204,7 +204,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать CCurve::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CCurve::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -238,7 +238,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				if ( oReader.GetAttributesCount() <= 0 )
 					return;
 				
@@ -300,7 +300,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать CF::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CF::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -323,7 +323,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				if ( oReader.GetAttributesCount() <= 0 )
 					return;
 				
@@ -348,7 +348,7 @@ namespace OOX
 				}
 				oReader.MoveToElement();
 
-				// TO DO: Сделать парсер формул ( или использовать уже сделанный парсер в OfficeDrawing\Shapes)
+				// TO DO: РЎРґРµР»Р°С‚СЊ РїР°СЂСЃРµСЂ С„РѕСЂРјСѓР» ( РёР»Рё РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ СѓР¶Рµ СЃРґРµР»Р°РЅРЅС‹Р№ РїР°СЂСЃРµСЂ РІ OfficeDrawing\Shapes)
 			}
 
 		public:
@@ -375,7 +375,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать CFill::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CFill::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -417,7 +417,7 @@ namespace OOX
 				if ( SimpleTypes::imageaspectIgnore != m_oAspect.GetValue() )
 					sResult += _T("aspect=\"") + m_oAspect.ToString() + _T("\" ");
 
-				// TO DO: Сделать запись m_arrColors
+				// TO DO: РЎРґРµР»Р°С‚СЊ Р·Р°РїРёСЃСЊ m_arrColors
 
 				ComplexTypes_WriteAttribute ( _T("angle=\""),         m_oAngle );
 
@@ -469,13 +469,13 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Выставляем значения по умолчанию
+				// Р’С‹СЃС‚Р°РІР»СЏРµРј Р·РЅР°С‡РµРЅРёСЏ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
 				m_oFocus.SetValue( 0 );
 				m_oFocusPosition.SetValue( 0.0, 0.0 );
 				m_oFocusSize.SetValue( 0.0, 0.0 );
 
 				CString sColors;
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				if ( oReader.GetAttributesCount() <= 0 )
 					return;
 				
@@ -553,7 +553,7 @@ namespace OOX
 				}
 				oReader.MoveToElement();
 
-				// TO DO: сделать парсер цветов CFill::m_arrColors
+				// TO DO: СЃРґРµР»Р°С‚СЊ РїР°СЂСЃРµСЂ С†РІРµС‚РѕРІ CFill::m_arrColors
 			}
 
 		public:
@@ -615,7 +615,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать CBackground::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CBackground::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -665,7 +665,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				if ( oReader.GetAttributesCount() <= 0 )
 					return;
 				
@@ -739,7 +739,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать CFormulas::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CFormulas::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -801,7 +801,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать CH::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CH::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -853,7 +853,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Выставляем значения по умолчанию
+				// Р’С‹СЃС‚Р°РІР»СЏРµРј Р·РЅР°С‡РµРЅРёСЏ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
 				m_oMap.SetValue( 0, 1000 );
 				m_oPosition.SetConstantX( 0 );
 				m_oPosition.SetConstantY( 0 );
@@ -861,7 +861,7 @@ namespace OOX
 				m_oXRange.SetValue( 0, 0 );
 				m_oYRange.SetValue( 0, 0 );
 
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				if ( oReader.GetAttributesCount() <= 0 )
 					return;
 				
@@ -943,7 +943,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать CHandles::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CHandles::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -1000,7 +1000,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать CImage::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CImage::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -1061,7 +1061,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Выставляем значения по умолчанию
+				// Р’С‹СЃС‚Р°РІР»СЏРµРј Р·РЅР°С‡РµРЅРёСЏ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
 				m_oBlackLevel.SetValue( 0.0 );
 				m_oCropLeft.SetValue( 0.0 );
 				m_oCropRight.SetValue( 0.0 );
@@ -1070,7 +1070,7 @@ namespace OOX
 				m_oGain.SetValue( 1.0 );
 				m_oGamma.SetValue( 1.0 );
 
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				if ( oReader.GetAttributesCount() <= 0 )
 					return;
 				
@@ -1147,7 +1147,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать CImageData::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CImageData::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -1213,12 +1213,12 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Выставляем значения по умолчанию
+				// Р’С‹СЃС‚Р°РІР»СЏРµРј Р·РЅР°С‡РµРЅРёСЏ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
 				m_oBlackLevel.SetValue( 0.0 );
 				m_oGain.SetValue( 1.0 );
 				m_oGamma.SetValue( 1.0 );
 
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				if ( oReader.GetAttributesCount() <= 0 )
 					return;
 				
@@ -1350,7 +1350,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать CLine::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CLine::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -1382,11 +1382,11 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Выставляем значения по умолчанию
+				// Р’С‹СЃС‚Р°РІР»СЏРµРј Р·РЅР°С‡РµРЅРёСЏ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
 				m_oFrom.SetValue( 0, 0 );
 				m_oTo.SetValue( 10, 10 );
 
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				if ( oReader.GetAttributesCount() <= 0 )
 					return;
 				
@@ -1436,7 +1436,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать COval::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ COval::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -1481,7 +1481,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать CPath::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CPath::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -1545,9 +1545,9 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Выставляем значения по умолчанию
+				// Р’С‹СЃС‚Р°РІР»СЏРµРј Р·РЅР°С‡РµРЅРёСЏ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
 				m_oLimo.SetValue( 0, 0 );
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				if ( oReader.GetAttributesCount() <= 0 )
 					return;
 				
@@ -1621,7 +1621,7 @@ namespace OOX
 				}
 				oReader.MoveToElement();
 
-				// TO DO: Сделать парсер параметров connectangles, connectlocs
+				// TO DO: РЎРґРµР»Р°С‚СЊ РїР°СЂСЃРµСЂ РїР°СЂР°РјРµС‚СЂРѕРІ connectangles, connectlocs
 			}
 
 		public:
@@ -1671,10 +1671,10 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Выставляем значения по умолчанию
+				// Р’С‹СЃС‚Р°РІР»СЏРµРј Р·РЅР°С‡РµРЅРёСЏ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
 				m_oPoints.SetDelimiter( ' ' );
 
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				if ( oReader.GetAttributesCount() <= 0 )
 					return;
 				
@@ -1719,7 +1719,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать CRect::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CRect::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -1759,7 +1759,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать CRoundRect::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CRoundRect::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -1790,10 +1790,10 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Выставляем значения по умолчанию
+				// Р’С‹СЃС‚Р°РІР»СЏРµРј Р·РЅР°С‡РµРЅРёСЏ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
 				m_oArcSize.SetPercentage( 20 );
 
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				if ( oReader.GetAttributesCount() <= 0 )
 					return;
 				
@@ -1843,7 +1843,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать CShadow::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CShadow::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -1898,14 +1898,14 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Выставляем значения по умолчанию
+				// Р’С‹СЃС‚Р°РІР»СЏРµРј Р·РЅР°С‡РµРЅРёСЏ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
 				m_oColor.SetRGB( 128, 128, 128 );
 				m_oColor2.SetRGB( 203, 203, 203 );
 				m_oOffset.SetValue_Points( 2, 2 );
 				m_oOffset2.SetValue_Points( -2, -2 );
 				m_oOrigin.SetValue( 0, 0 );
 
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				if ( oReader.GetAttributesCount() <= 0 )
 					return;
 				
@@ -1997,7 +1997,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				if ( oReader.GetAttributesCount() <= 0 )
 					return;
 				
@@ -2034,7 +2034,7 @@ namespace OOX
 				}
 				oReader.MoveToElement();
 
-				// TO DO: Сделать парсер Adj
+				// TO DO: РЎРґРµР»Р°С‚СЊ РїР°СЂСЃРµСЂ Adj
 			}
 
 		public:
@@ -2075,7 +2075,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				if ( oReader.GetAttributesCount() <= 0 )
 					return;
 				
@@ -2108,7 +2108,7 @@ namespace OOX
 				}
 				oReader.MoveToElement();
 
-				// TO DO: Сделать парсер Adj
+				// TO DO: РЎРґРµР»Р°С‚СЊ РїР°СЂСЃРµСЂ Adj
 			}
 
 		public:
@@ -2137,12 +2137,28 @@ namespace OOX
 			{
 				return OOX::et_v_ClientData;
 			}
+			virtual void getAnchorArray(std::vector<int>& aAnchor) const
+			{
+				aAnchor.clear();
+				if(m_oAnchor.IsInit())
+				{
+					const CString& sAnchor = m_oAnchor.get();
+					int nTokenPos = 0;
+					CString strToken = sAnchor.Tokenize(_T(","), nTokenPos);
+					while (!strToken.IsEmpty())
+					{
+						strToken.Trim();
+						aAnchor.push_back(_wtoi(strToken));
+						strToken = sAnchor.Tokenize(_T(","), nTokenPos);
+					}
+				}
+			}
 
 		private:
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("ObjectType"),      m_oObjectType )
@@ -2179,7 +2195,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать CStroke::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CStroke::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -2313,9 +2329,9 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Выставляем значения по умолчанию
+				// Р’С‹СЃС‚Р°РІР»СЏРµРј Р·РЅР°С‡РµРЅРёСЏ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
 
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				if ( oReader.GetAttributesCount() <= 0 )
 					return;
 				
@@ -2390,7 +2406,7 @@ namespace OOX
 				}
 				oReader.MoveToElement();
 
-				// TO DO: Сделать парсер формул ( или использовать уже сделанный парсер в OfficeDrawing\Shapes)
+				// TO DO: РЎРґРµР»Р°С‚СЊ РїР°СЂСЃРµСЂ С„РѕСЂРјСѓР» ( РёР»Рё РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ СѓР¶Рµ СЃРґРµР»Р°РЅРЅС‹Р№ РїР°СЂСЃРµСЂ РІ OfficeDrawing\Shapes)
 			}
 
 		public:
@@ -2452,7 +2468,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать CTextbox::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CTextbox::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -2503,10 +2519,10 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Выставляем значения по умолчанию
+				// Р’С‹СЃС‚Р°РІР»СЏРµРј Р·РЅР°С‡РµРЅРёСЏ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
 				m_oInset.Set(7.2, 3.6, 7.2, 3.6 );
 				
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				if ( oReader.GetAttributesCount() <= 0 )
 					return;
 				
@@ -2570,7 +2586,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать CTextPath::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CTextPath::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -2615,7 +2631,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{				
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				if ( oReader.GetAttributesCount() <= 0 )
 					return;
 				
@@ -2695,10 +2711,10 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Выставляем значения по умолчанию
+				// Р’С‹СЃС‚Р°РІР»СЏРµРј Р·РЅР°С‡РµРЅРёСЏ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
 				m_oHrPct.SetValue( 0 );
 
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				if ( oReader.GetAttributesCount() <= 0 )
 					return;
 				
@@ -2888,7 +2904,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать CShapeDefaults::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CShapeDefaults::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -2993,7 +3009,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{				
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				if ( oReader.GetAttributesCount() <= 0 )
 					return;
 				

@@ -20,9 +20,10 @@ namespace OOX
 	class CVmlDrawing : public OOX::WritingElementWithChilds<OOX::WritingElement>, public OOX::FileGlobalEnumerated, public OOX::IFileContainer
 	{
 	public:
-		CVmlDrawing()
+		CVmlDrawing(bool bSpreadsheet_ = false)
 		{
-			m_mapComments = NULL;
+			bSpreadsheet	= bSpreadsheet_;
+			m_mapComments	= NULL;
 		}
 		CVmlDrawing(const CPath& oRootPath, const CPath& oPath)
 		{
@@ -350,7 +351,8 @@ namespace OOX
 		}
 		virtual const OOX::FileType type() const
 		{
-			return OOX::FileTypes::VmlDrawing;
+			if (bSpreadsheet)	return OOX::Spreadsheet::FileTypes::VmlDrawing;
+			else				return OOX::FileTypes::VmlDrawing;
 		}
 		virtual const CPath DefaultDirectory() const
 		{
@@ -369,6 +371,8 @@ namespace OOX
 		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
 		}
+
+		bool bSpreadsheet;
 
 	public:
 		std::map<CString, OOX::Spreadsheet::CCommentItem*>*		m_mapComments;

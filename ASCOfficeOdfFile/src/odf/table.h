@@ -669,7 +669,7 @@ public:
 	office_element_ptr			conditional_formats_;
 
     office_element_ptr			table_shapes_;
-
+	office_element_ptr_array	table_named_;
     //office-dde-source
     //table-scenario
     //office-forms

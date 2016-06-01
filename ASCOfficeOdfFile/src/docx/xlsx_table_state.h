@@ -47,7 +47,7 @@ public:
 class xlsx_table_state
 {
 public:
-    xlsx_table_state(xlsx_conversion_context * Context, std::wstring styleName, std::wstring tableName);
+    xlsx_table_state(xlsx_conversion_context * Context, std::wstring styleName, std::wstring tableName, int tableId);
     
 	std::wstring current_style() const { return table_style_; }
     
@@ -94,8 +94,8 @@ public:
     void serialize_hyperlinks	(std::wostream & _Wostream);
     void dump_rels_hyperlinks	(rels & Rels);
 
-    std::wstring get_current_table_name() const { return tableName_; }
-
+    std::wstring get_table_name()	const { return tableName_; }
+	int			 get_table_id()		const { return tableId_; }
 	struct _group_row
 	{
 		bool enabled;
@@ -111,6 +111,7 @@ private:
 	bool						in_cell;
     xlsx_conversion_context *	context_;    
     std::wstring				tableName_;
+	int							tableId_;
 
     std::wstring				table_style_;
     std::wstring				table_row_style_;

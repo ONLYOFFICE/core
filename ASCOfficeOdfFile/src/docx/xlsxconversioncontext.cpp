@@ -35,6 +35,7 @@ xlsx_conversion_context::xlsx_conversion_context(odf_reader::odf_document * odfD
 	num_format_context_	(odf_document_->odf_context()),
 	xlsx_text_context_	(odf_document_->odf_context().styleContainer()),
 	xlsx_table_context_	(this, xlsx_text_context_),
+	xlsx_style_			(this),
 	
 	maxDigitSize_	(std::pair<float,float>(-1.0, -1.0) ),
 	default_style_	( (std::numeric_limits<size_t>::max)() ),
@@ -252,12 +253,8 @@ void xlsx_conversion_context::create_new_sheet(std::wstring const & name)
 }
 bool xlsx_conversion_context::start_table(std::wstring tableName, std::wstring tableStyleName)
 {
-    // TODO : nested tables forbidden
-    if (get_table_context().depth() > 0)
-        return false;
-
     create_new_sheet(tableName);
-    get_table_context().start_table(tableName, tableStyleName);
+	get_table_context().start_table(tableName, tableStyleName, sheets_.size() - 1);
 
 	current_sheet().cols() << L"<cols>";
     return true;
@@ -343,14 +340,6 @@ void xlsx_conversion_context::end_table()
     get_table_context().end_table();
 }
 
-void xlsx_conversion_context::dump_sheet()
-{    
-    if (!sheets_.empty())
-    {
-        sheets_.pop_back();
-    }
-}
-
 void xlsx_conversion_context::start_table_column(unsigned int repeated, const std::wstring & defaultCellStyleName, int & cMin, int & cMax)
 {
     cMin = get_table_context().columns_count();
@@ -377,7 +366,7 @@ void xlsx_conversion_context::non_empty_row()
     return get_table_context().non_empty_row();
 }
 
-bool xlsx_conversion_context::is_empty_row() const
+bool xlsx_conversion_context::is_empty_row() 
 {
     return get_table_context().is_empty_row();
 }
@@ -387,17 +376,17 @@ void xlsx_conversion_context::end_table_row()
     get_table_context().end_row();
 }
 
-int xlsx_conversion_context::current_table_column() const
+int xlsx_conversion_context::current_table_column()
 {
     return xlsx_table_context_.current_column();
 }
 
-int xlsx_conversion_context::current_table_row() const
+int xlsx_conversion_context::current_table_row()
 {
     return xlsx_table_context_.current_row();
 }
 
-std::wstring xlsx_conversion_context::current_cell_address() const
+std::wstring xlsx_conversion_context::current_cell_address()
 {
     return oox::getCellAddress(current_table_column(), current_table_row());
 }
@@ -538,7 +527,7 @@ void xlsx_conversion_context::table_column_last_width(double w)
     return get_table_context().table_column_last_width(w);
 }
 
-double xlsx_conversion_context::table_column_last_width() const
+double xlsx_conversion_context::table_column_last_width()
 {
     return get_table_context().table_column_last_width();
 }

@@ -22,9 +22,6 @@ namespace odf_reader {
 
 void table_format_properties::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    CP_APPLY_ATTR(L"style:width", style_width_);
-    CP_APPLY_ATTR(L"style:rel-width", style_rel_width_);
-    CP_APPLY_ATTR(L"table:align", table_align_);
     common_horizontal_margin_attlist_.add_attributes(Attributes);
     common_vertical_margin_attlist_.add_attributes(Attributes);
     common_margin_attlist_.add_attributes(Attributes);
@@ -33,10 +30,16 @@ void table_format_properties::add_attributes( const xml::attributes_wc_ptr & Att
     common_background_color_attlist_.add_attributes(Attributes);
     common_shadow_attlist_.add_attributes(Attributes);
     common_keep_with_next_attlist_.add_attributes(Attributes);
-    CP_APPLY_ATTR(L"style:may-break-between-rows", style_may_break_between_rows_);
-    CP_APPLY_ATTR(L"table:border-model", table_border_model_);
     common_writing_mode_attlist_.add_attributes(Attributes);
-    CP_APPLY_ATTR(L"table:display", table_display_);
+   
+	CP_APPLY_ATTR(L"style:width",					style_width_);
+    CP_APPLY_ATTR(L"style:rel-width",				style_rel_width_);
+    CP_APPLY_ATTR(L"style:may-break-between-rows",	style_may_break_between_rows_);
+    
+	CP_APPLY_ATTR(L"table:align",			table_align_);
+    CP_APPLY_ATTR(L"table:border-model",	table_border_model_);
+    CP_APPLY_ATTR(L"table:display",			table_display_);
+	CP_APPLY_ATTR(L"tableooo:tab-color",	tableooo_tab_color_);			
 }
 
 bool table_format_properties::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name, document_context * Context)

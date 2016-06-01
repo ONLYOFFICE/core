@@ -281,6 +281,11 @@ void table_table::xlsx_convert(oox::xlsx_conversion_context & Context)
  	if (conditional_formats_)
 		conditional_formats_->xlsx_convert(Context);
 
+	for (int i = 0 ; i < table_named_.size(); i++)
+	{
+		table_named_[i]->xlsx_convert(Context);
+	}
+
 	Context.end_table();
 }
 

@@ -2,9 +2,6 @@
 #include "xlsx_defined_names.h"
 
 #include <vector>
-#include <boost/foreach.hpp>
-#include <boost/functional.hpp>
-#include <boost/unordered_set.hpp>
 #include <cpdoccore/xml/simple_xml_writer.h>
 
 #include "../formulasconvert/formulasconvert.h"
@@ -15,49 +12,62 @@ namespace oox {
 class xlsx_defined_names::Impl
 {
 public:
-    void add(std::wstring const & name, std::wstring const & ref, bool formula)
+    void add(std::wstring const & name, std::wstring const & ref, bool formula, int tableId)
     {
 		int is_file_link = 0;
 
-		if ((is_file_link = ref.find(L"\\")) >=0) return;
-		if ((is_file_link = ref.find(L"/")) >=0) return;
-	 
+		if (!formula)
+		{
+			if ((is_file_link = ref.find(L"\\")) >=0) return;
+			if ((is_file_link = ref.find(L"/")) >=0) return;
+		}
         formulasconvert::odf2oox_converter converter;
-        std::wstring res;
+        std::wstring oox_ref;
 		
 		if (formula)
 		{
-			res = converter.convert_named_expr(ref);
+			oox_ref = converter.convert_named_expr(ref);
 		}
 		else
 		{
-			res = converter.convert_named_ref(ref);
+			oox_ref = converter.convert_named_ref(ref);
 		}
-        name_and_ref_.push_back(name_and_ref(name, res));
+        content_.push_back(name_and_ref());
+		
+		content_.back().name	= name;
+		content_.back().ref		= oox_ref;
+		content_.back().tableId	= tableId;
     }
 
     void xlsx_serialize(std::wostream & _Wostream)
     {
-        if (name_and_ref_.size() > 0)
+        if (content_.size() > 0)
         {
             CP_XML_WRITER(_Wostream)
             {
                 CP_XML_NODE(L"definedNames")
                 {
-                    BOOST_FOREACH(name_and_ref const & elm, name_and_ref_)
+                    for (int i = 0 ; i < content_.size(); i++)
                     {
                         CP_XML_NODE(L"definedName")
                         {
-                            CP_XML_ATTR(L"name", elm.first);
+                            CP_XML_ATTR(L"name", content_[i].name);
+							
+							if (content_[i].tableId >= 0)
+							{
+								CP_XML_ATTR(L"localSheetId", content_[i].tableId);
+							}	
 							
 							int pos;
-							if ( (pos = elm.second.find(L"#REF!")) >= 0 )
+							if ( (pos = content_[i].ref.find(L"#REF!")) >= 0 )
 							{
-								CP_XML_ATTR(L"comment", elm.second);
+								CP_XML_ATTR(L"comment", content_[i].ref);
 								CP_XML_CONTENT(L"#REF!");
 							}
 							else
-								CP_XML_CONTENT(elm.second);
+								CP_XML_CONTENT(content_[i].ref);
+
+
                         }
                     }
                 }
@@ -66,8 +76,15 @@ public:
     }
 
 private:
-    typedef std::pair<std::wstring, std::wstring> name_and_ref;
-    std::vector<name_and_ref> name_and_ref_;
+	struct name_and_ref
+	{
+		name_and_ref() : tableId(-1) {}
+
+		std::wstring	name;
+		std::wstring	ref;
+		int				tableId;
+	};
+	std::vector<name_and_ref> content_;
 };
 
 xlsx_defined_names::xlsx_defined_names() : impl_(new xlsx_defined_names::Impl())
@@ -78,9 +95,9 @@ xlsx_defined_names::~xlsx_defined_names()
 {
 }
 
-void xlsx_defined_names::add(std::wstring const & name, std::wstring const & ref, bool formula)
+void xlsx_defined_names::add(std::wstring const & name, std::wstring const & ref, bool formula, int tableId)
 {
-    return impl_->add(name, ref, formula);        
+    return impl_->add(name, ref, formula, tableId);        
 }
 
 void xlsx_defined_names::xlsx_serialize(std::wostream & _Wostream)

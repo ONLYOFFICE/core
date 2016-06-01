@@ -58,16 +58,21 @@ void table_named_range::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
     if (table_cell_range_address_ && table_name_)
     {
+		int tableId = -1;
+		if (Context.get_table_context().state())
+		{
+			tableId = Context.get_table_context().state()->get_table_id();
+		}
         oox::xlsx_defined_names & ctx = Context.get_xlsx_defined_names();
-        ctx.add(table_name_.get(), table_cell_range_address_.get());
+        ctx.add(table_name_.get(), table_cell_range_address_.get(), false, tableId);
     }
 }
 
 void table_named_range::add_attributes(xml::attributes_wc_ptr const & Attributes)
 {
-    CP_APPLY_ATTR(L"table:name", table_name_);
-    CP_APPLY_ATTR(L"table:cell-range-address", table_cell_range_address_);
-    CP_APPLY_ATTR(L"table:base-cell-address", table_base_cell_address_);
+    CP_APPLY_ATTR(L"table:name",				table_name_);
+    CP_APPLY_ATTR(L"table:cell-range-address",	table_cell_range_address_);
+    CP_APPLY_ATTR(L"table:base-cell-address",	table_base_cell_address_);
 }
 
 void table_named_range::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
@@ -89,8 +94,13 @@ void table_named_expression::xlsx_convert(oox::xlsx_conversion_context & Context
 {
     if (table_expression_ && table_name_)
     {
-        oox::xlsx_defined_names & ctx = Context.get_xlsx_defined_names();
-        ctx.add(table_name_.get(), table_expression_.get(), true);
+ 		int tableId = -1;
+		if (Context.get_table_context().state())
+		{
+			tableId = Context.get_table_context().state()->get_table_id();
+		}
+		oox::xlsx_defined_names & ctx = Context.get_xlsx_defined_names();
+        ctx.add(table_name_.get(), table_expression_.get(), true, tableId);
     }
 }
 

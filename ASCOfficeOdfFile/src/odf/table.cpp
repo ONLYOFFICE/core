@@ -140,6 +140,11 @@ void table_table::add_child_element( xml::sax * Reader, const ::std::wstring & N
     {
         CP_CREATE_ELEMENT(table_shapes_);    
     }
+	else if (	CP_CHECK_NAME(L"table", L"named-expressions") || 
+				CP_CHECK_NAME(L"table", L"named-range") )
+	{
+        CP_CREATE_ELEMENT(table_named_);    
+	}
 	else if CP_CHECK_NAME(L"calcext", L"conditional-formats")
     {
         CP_CREATE_ELEMENT(conditional_formats_);    

@@ -22,6 +22,11 @@ oox_data_labels::oox_data_labels()//подписи на значениях
 	showVal_			= false;
 }
 
+void oox_data_labels::set_common_dLbl ( std::vector<odf_reader::_property> & text_properties)
+{
+	textPr_ = text_properties;
+}
+
 void oox_data_labels::add_dLbl(int ind, std::vector<odf_reader::_property> & text_properties)
 {
 	dLbls_.insert(std::pair<int, std::vector<odf_reader::_property>>(ind, text_properties));
@@ -33,6 +38,8 @@ void oox_data_labels::oox_serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE(L"c:dLbls")
         {
+			oox_serialize_default_text(CP_XML_STREAM(), textPr_);
+	
 			for (std::map<int, std::vector<odf_reader::_property>>::iterator it = dLbls_.begin(); it != dLbls_.end(); it++)
 			{
 				CP_XML_NODE(L"c:dLbl")

@@ -476,6 +476,10 @@ std::wstring xlsx_text_context::Impl::end_comment_content()
   
 	paragraphs_cout_ = 0;
     
+	run_.str(std::wstring());
+	paragraph_.str(std::wstring());
+    text_.str(std::wstring());
+
 	paragraph_style_name_	= L"";
     span_style_name_		= L"";
 

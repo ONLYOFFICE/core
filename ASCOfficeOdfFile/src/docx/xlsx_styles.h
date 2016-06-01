@@ -5,36 +5,35 @@
 #include <cpdoccore/CPScopedPtr.h>
 
 namespace cpdoccore {
-
 namespace odf_reader {
 
-class text_format_properties_content;
-class paragraph_format_properties;
-class style_table_cell_properties_attlist;
-
+	class text_format_properties_content;
+	class paragraph_format_properties;
+	class style_table_cell_properties_attlist;
 }
 
 namespace oox {
 
-class xlsx_cell_format;
+	class xlsx_cell_format;
+	class xlsx_conversion_context;
 
-//  class xlsx_style_manager
 class xlsx_style_manager
 {
 public:
-    xlsx_style_manager();
+    xlsx_style_manager(xlsx_conversion_context *context);
     size_t size() const;
-    size_t xfId(const odf_reader::text_format_properties_content * textProp,
-        const odf_reader::paragraph_format_properties * parProp,
-        const odf_reader::style_table_cell_properties_attlist * cellProp,
-        const xlsx_cell_format * xlxsCellFormat,
-        const std::wstring &num_format,  bool  default_set,bool & is_visible);
+    
+	size_t xfId(const odf_reader::text_format_properties_content * textProp,
+				const odf_reader::paragraph_format_properties * parProp,
+				const odf_reader::style_table_cell_properties_attlist * cellProp,
+				const xlsx_cell_format * xlxsCellFormat,
+				const std::wstring &num_format,  bool  default_set,bool & is_visible);
 
     size_t xfId(const odf_reader::text_format_properties_content * textProp,
-        const odf_reader::paragraph_format_properties * parProp,
-        const odf_reader::style_table_cell_properties_attlist * cellProp,
-        const xlsx_cell_format * xlxsCellFormat,
-        const std::wstring &num_format, bool  default_set);
+				const odf_reader::paragraph_format_properties * parProp,
+				const odf_reader::style_table_cell_properties_attlist * cellProp,
+				const xlsx_cell_format * xlxsCellFormat,
+				const std::wstring &num_format, bool  default_set);
 
 
     void xlsx_serialize(std::wostream & _Wostream);

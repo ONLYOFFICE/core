@@ -35,6 +35,9 @@ __interface IASCDocBuilder : IDispatch
 	[id(107)] HRESULT RunText([in] BSTR commands, [out, retval] VARIANT_BOOL* result);
 	[id(108)] HRESULT SetProperty([in] BSTR sproperty);
 
+	[id(201)] HRESULT Initialize(void);
+	[id(202)] HRESULT Dispose(void);
+
 	[id(1001)] HRESULT SetAdditionalParam([in] BSTR ParamName, [in] VARIANT ParamValue);
 	[id(1002)] HRESULT GetAdditionalParam([in] BSTR ParamName, [out, retval] VARIANT* ParamValue);
 };
@@ -131,7 +134,7 @@ public:
 		if (NULL == m_pBuilder)
 			return S_FALSE;
 
-		bool bRet = m_pBuilder->Run(commands);
+		bool bRet = m_pBuilder->RunTextW(commands);
 		*result = bRet ? VARIANT_TRUE : VARIANT_FALSE;
 		return S_OK;
 	}
@@ -155,12 +158,12 @@ public:
 		return S_OK;
 	}
 
-	static HRESULT Initialize()
+	STDMETHOD(Initialize)()
 	{
 		NSDoctRenderer::CDocBuilder::Initialize();
 		return S_OK;
 	}
-	static HRESULT Dispose()
+	STDMETHOD(Dispose)()
 	{
 		NSDoctRenderer::CDocBuilder::Dispose();
 		return S_OK;

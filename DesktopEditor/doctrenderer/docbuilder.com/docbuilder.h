@@ -154,4 +154,15 @@ public:
 	{
 		return S_OK;
 	}
+
+	static HRESULT Initialize()
+	{
+		NSDoctRenderer::CDocBuilder::Initialize();
+		return S_OK;
+	}
+	static HRESULT Dispose()
+	{
+		NSDoctRenderer::CDocBuilder::Dispose();
+		return S_OK;
+	}
 };

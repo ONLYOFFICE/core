@@ -18,71 +18,71 @@ namespace docbuilder_net
 		return (wchar_t*)System::Runtime::InteropServices::Marshal::StringToHGlobalUni(param).ToPointer();
 	}
 
-	ref class CWrapper_Private
+	ref class CDocBuilder_Private
 	{
 	public:
 		NSDoctRenderer::CDocBuilder* m_pBuilder;
 
-		CWrapper_Private(bool bIsCheckSystemFonts)
+		CDocBuilder_Private(bool bIsCheckSystemFonts)
 		{
 			m_pBuilder = new NSDoctRenderer::CDocBuilder(bIsCheckSystemFonts);
 		}
-		~CWrapper_Private()
+		~CDocBuilder_Private()
 		{
 			delete m_pBuilder;
 		}
 	};
 
 
-	CWrapper::CWrapper(bool bIsCheckSystemFonts)
+	CDocBuilder::CDocBuilder(bool bIsCheckSystemFonts)
 	{
-		m_pInternal = gcnew CWrapper_Private(bIsCheckSystemFonts);
+		m_pInternal = gcnew CDocBuilder_Private(bIsCheckSystemFonts);
 	}
-	CWrapper::~CWrapper()
+	CDocBuilder::~CDocBuilder()
 	{
 		delete m_pInternal;
 	}
 
-	bool CWrapper::OpenFile(String^ path, String^ params)
+	bool CDocBuilder::OpenFile(String^ path, String^ params)
 	{		
 		return m_pInternal->m_pBuilder->OpenFile(StringToStdString(path), StringToStdString(params));
 	}
-	bool CWrapper::CreateFile(int type)
+	bool CDocBuilder::CreateFile(int type)
 	{
 		return m_pInternal->m_pBuilder->CreateFile(type);
 	}
-	void CWrapper::SetTmpFolder(String^ folder)
+	void CDocBuilder::SetTmpFolder(String^ folder)
 	{
 		m_pInternal->m_pBuilder->SetTmpFolder(StringToStdString(folder));
 	}
-	bool CWrapper::SaveFile(int type, String^ path)
+	bool CDocBuilder::SaveFile(int type, String^ path)
 	{
 		return m_pInternal->m_pBuilder->SaveFile(type, StringToStdString(path));
 	}
-	void CWrapper::CloseFile()
+	void CDocBuilder::CloseFile()
 	{
 		m_pInternal->m_pBuilder->CloseFile();
 	}
-	bool CWrapper::ExecuteCommand(String^ command)
+	bool CDocBuilder::ExecuteCommand(String^ command)
 	{
 		return m_pInternal->m_pBuilder->ExecuteCommand(StringToStdString(command));
 	}
 
-	bool CWrapper::Run(String^ path)
+	bool CDocBuilder::Run(String^ path)
 	{
 		return m_pInternal->m_pBuilder->Run(StringToStdString(path));
 	}
 
-	bool CWrapper::RunText(String^ text)
+	bool CDocBuilder::RunText(String^ text)
 	{
 		return m_pInternal->m_pBuilder->RunTextW(StringToStdString(text));
 	}
 
-	void CWrapper::Initialize()
+	void CDocBuilder::Initialize()
 	{
 		NSDoctRenderer::CDocBuilder::Initialize();
 	}
-	void CWrapper::Destroy()
+	void CDocBuilder::Destroy()
 	{
 		NSDoctRenderer::CDocBuilder::Dispose();
 	}

@@ -6,12 +6,12 @@ using namespace System;
 
 namespace docbuilder_net
 {
-	ref class CWrapper_Private;
-	public ref class CWrapper
+	ref class CDocBuilder_Private;
+	public ref class CDocBuilder
 	{
 	public:
-		CWrapper(bool bIsCheckSystemFonts);
-		~CWrapper();
+		CDocBuilder(bool bIsCheckSystemFonts);
+		~CDocBuilder();
 
 		bool OpenFile(String^ path, String^ params);
 		bool CreateFile(int type);
@@ -27,6 +27,6 @@ namespace docbuilder_net
 		static void Destroy();
 		
 	private:
-		CWrapper_Private^ m_pInternal;
+		CDocBuilder_Private^ m_pInternal;
 	};
 }

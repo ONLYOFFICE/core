@@ -6,6 +6,7 @@
 #include "../DocxFormat/Theme/Theme.h"
 #include "../DocxFormat/Theme/ThemeOverride.h"
 #include "../DocxFormat/VmlDrawing.h"
+#include "../DocxFormat/Media/OleObject.h"
 
 
 #include "SharedStrings/SharedStrings.h"
@@ -63,6 +64,8 @@ namespace OOX
 				return smart_ptr<OOX::File>(new CExternalLink( oRootPath, oFileName ));
 			else if ( oRelation.Type() == FileTypes::ExternalLinkPath)
 				return smart_ptr<OOX::File>(new ExternalLinkPath( oRelation.Target()));
+			else if (  oRelation.Type() == FileTypes::OleObject)
+				return smart_ptr<OOX::File>(new OOX::OleObject( oFileName ));
 
 			return smart_ptr<OOX::File>( new UnknowTypeFile() );
 		}
@@ -109,6 +112,8 @@ namespace OOX
 				return smart_ptr<OOX::File>(new CExternalLink( oRootPath, oFileName ));
 			else if (  pRelation->Type() == FileTypes::ExternalLinkPath)
 				return smart_ptr<OOX::File>(new ExternalLinkPath( oRelationFilename ));
+			else if (  pRelation->Type() == FileTypes::OleObject)
+				return smart_ptr<OOX::File>(new OOX::OleObject( oFileName ));
 
 			return smart_ptr<OOX::File>( new UnknowTypeFile() );
 		}

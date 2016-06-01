@@ -371,6 +371,9 @@ namespace PPTX
 													if(oRelsGeneratorInfo.m_nOleRId > 0)
 													{
 														pFill->blip->oleRid = PPTX::RId((size_t)oRelsGeneratorInfo.m_nOleRId).get();
+														pFill->blip->oleFilepathBin = oRelsGeneratorInfo.m_sFilepathBin;
+														pFill->blip->oleFilepathImg = oRelsGeneratorInfo.m_sFilepathImg;
+														pFill->blip->oleRidImg = pFill->blip->embed->get();
 													}
 
 													pReader->Skip(1); // end attribute

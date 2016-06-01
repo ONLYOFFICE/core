@@ -38,7 +38,7 @@ private:
     rels_file_ptr rels_;
 };
 
-/// \class  sheets_files
+//  sheets_files
 class sheets_files  : public element
 {
 public:
@@ -59,7 +59,7 @@ public:
 
 };
 
-/// \class  xl_charts_files
+//  xl_charts_files
 class xl_charts_files  : public element
 {
 public:
@@ -76,7 +76,7 @@ public:
 class xl_comments;
 typedef _CP_PTR(xl_comments) xl_comments_ptr;
 
-/// \class xl_comments
+// xl_comments
 class xl_comments: public element
 {
 public:
@@ -96,7 +96,7 @@ private:
 class xl_drawings;
 typedef _CP_PTR(xl_drawings) xl_drawings_ptr;
 
-/// \class xl_drawings
+// xl_drawings
 class xl_drawings: public element
 {
 public:
@@ -118,7 +118,7 @@ private:
 
 };
 
-/// \class  xl_files
+//  xl_files
 class xl_files : public element
 {
 public:
@@ -153,7 +153,7 @@ private:
 
 };
 
-/// \class  xlsx_document
+//  xlsx_document
 class xlsx_document : public document
 {
 public:

@@ -99,7 +99,6 @@ private:
        
 };
 
-/// \class  style_table_properties
 ///         style:table-properties
 class style_table_properties : public office_element_impl<style_table_properties>
 {
@@ -137,8 +136,6 @@ public:
 
 };
 
-/// \class  style_table_column_properties
-///         style-table-column-properties
 ///         style:table-column-properties
 class style_table_column_properties : public office_element_impl<style_table_column_properties>
 {
@@ -184,8 +181,6 @@ public:
 
 };
 
-/// \class  style_table_row_properties
-///         style-table-row-properties
 ///         style:table-row-properties
 class style_table_row_properties : public office_element_impl<style_table_row_properties>
 {
@@ -301,8 +296,7 @@ private:
     
 };
 
-/// \class  style_table_cell_properties
-///         style-table-cell-properties
+
 ///         style:table-cell-properties
 class style_table_cell_properties : public office_element_impl<style_table_cell_properties>
 {

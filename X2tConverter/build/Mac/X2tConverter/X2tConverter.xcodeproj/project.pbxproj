@@ -1193,7 +1193,7 @@
 				PRODUCT_NAME = X2tConverter;
 				PUBLIC_HEADERS_FOLDER_PATH = ../include;
 				SDKROOT = iphoneos;
-				VALID_ARCHS = "arm64 armv7 armv7s";
+				VALID_ARCHS = "arm64 armv7 armv7s i386 x86_64";
 			};
 			name = Debug;
 		};
@@ -1232,7 +1232,7 @@
 				PRODUCT_NAME = X2tConverter;
 				PUBLIC_HEADERS_FOLDER_PATH = ../include;
 				SDKROOT = iphoneos;
-				VALID_ARCHS = "arm64 armv7 armv7s";
+				VALID_ARCHS = "arm64 armv7 armv7s i386 x86_64";
 			};
 			name = Release;
 		};

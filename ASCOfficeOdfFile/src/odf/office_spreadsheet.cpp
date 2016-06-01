@@ -19,7 +19,12 @@ const wchar_t * office_spreadsheet::name = L"spreadsheet";
 
 void office_spreadsheet::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
 {
-    CP_CREATE_ELEMENT(content_);
+	if CP_CHECK_NAME(L"table", L"database-ranges")
+    {
+        CP_CREATE_ELEMENT(table_database_ranges_);    
+    }
+	else
+		CP_CREATE_ELEMENT(content_);
 }
 
 void office_spreadsheet::add_text(const std::wstring & Text)
@@ -45,7 +50,12 @@ void office_spreadsheet::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
     Context.start_office_spreadsheet(this);
     _CP_LOG << L"[info][xlsx] process spreadsheet (" << content_.size() << L" elmements)" << std::endl;
-    BOOST_FOREACH(const office_element_ptr & elm, content_)
+   
+	BOOST_FOREACH(const office_element_ptr & elm, table_database_ranges_)
+    {
+        elm->xlsx_convert(Context);
+    }
+	BOOST_FOREACH(const office_element_ptr & elm, content_)
     {
         elm->xlsx_convert(Context);
     }

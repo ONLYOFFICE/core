@@ -1,4 +1,3 @@
-
 #include "../../include/cpdoccore/CPString.h"
 #include "../../../DesktopEditor/common/File.h"
 

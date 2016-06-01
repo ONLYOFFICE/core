@@ -87,7 +87,7 @@ private:
 
 };
 
-/// \class  default_style
+//  default_style
 ///         style:default-style
 class default_style : public office_element_impl<default_style>
 {
@@ -122,7 +122,7 @@ CP_REGISTER_OFFICE_ELEMENT2(default_style);
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
-/// \class  style_draw_gradient
+//  style_draw_gradient
 class draw_gradient : public office_element_impl<draw_gradient>
 {
 public:
@@ -160,7 +160,7 @@ private:
 };
 CP_REGISTER_OFFICE_ELEMENT2(draw_gradient);
 /////////////////////////////////////////////////////////////////////////////////////////////////
-/// \class  style_draw_hatch
+//  style_draw_hatch
 class draw_hatch : public office_element_impl<draw_hatch>
 {
 public:
@@ -189,7 +189,7 @@ private:
 };
 CP_REGISTER_OFFICE_ELEMENT2(draw_hatch);
 /////////////////////////////////////////////////////////////////////////////////////////////////
-/// \class  style_draw_gradient
+//  style_draw_gradient
 class draw_opacity : public office_element_impl<draw_opacity>
 {
 public:
@@ -220,7 +220,7 @@ private:
     friend class odf_document;
 };
 CP_REGISTER_OFFICE_ELEMENT2(draw_opacity);
-/// \class  style_draw_fill_image
+//  style_draw_fill_image
 class draw_fill_image : public office_element_impl<draw_fill_image>
 {
 public:
@@ -252,7 +252,7 @@ typedef weak_ptr<style>::Type style_weak_ptr;
 typedef ::std::vector< style_weak_ptr > style_weak_ptr_array;
 typedef ::std::vector< style_ptr > style_ptr_array;
 
-/// \class  style
+//  style
 ///         style:style
 class style : public office_element_impl<style>
 {
@@ -276,22 +276,22 @@ private:
     
 private:
     // attr
-    std::wstring style_name_;
-    _CP_OPT( std::wstring ) style_display_name_; // optional 
+    std::wstring	style_name_;
+    bool			style_auto_update_;				// default = false
+    
+	_CP_OPT( std::wstring ) style_display_name_; 
     odf_types::style_family style_family_;
 
-    _CP_OPT( std::wstring ) style_parent_style_name_; // optional 
-    _CP_OPT( std::wstring ) style_next_style_name_; // optional 
-    _CP_OPT( std::wstring ) style_list_style_name_; // optional, may be empty
-    _CP_OPT( std::wstring ) style_master_page_name_; // optional
-    bool style_auto_update_; // optional, default = false
-    _CP_OPT( std::wstring ) style_data_style_name_; // // optional
-    _CP_OPT( std::wstring ) style_class_; // optional
-    _CP_OPT(std::wstring) style_default_outline_level_;  // optional
-
+    _CP_OPT( std::wstring ) style_parent_style_name_; 
+    _CP_OPT( std::wstring ) style_next_style_name_;	 
+    _CP_OPT( std::wstring ) style_list_style_name_;	
+    _CP_OPT( std::wstring ) style_master_page_name_;
+    _CP_OPT( std::wstring ) style_data_style_name_;	
+    _CP_OPT( std::wstring ) style_class_;
+    _CP_OPT( std::wstring ) style_default_outline_level_;  
 private:
-    style_content style_content_;
-    office_element_ptr_array style_map_;
+    style_content				style_content_;
+    office_element_ptr_array	style_map_;
 
     friend class odf_document;
 
@@ -299,7 +299,7 @@ private:
 
 CP_REGISTER_OFFICE_ELEMENT2(style);
 
-/// \class  styles
+//  styles
 class styles
 {
 public:
@@ -350,8 +350,7 @@ private:
     friend class odf_document;
 };
 
-/// \class  office_automatic_styles
-/// \brief  office:automatic-styles
+//  office:automatic-styles
 class office_automatic_styles : public office_element_impl<office_automatic_styles>
 {
 public:
@@ -377,8 +376,7 @@ private:
 
 CP_REGISTER_OFFICE_ELEMENT2(office_automatic_styles);
 
-/// \class  office_master_styles
-/// \brief  office:master-styles
+//  office:master-styles
 class office_master_styles : public office_element_impl<office_master_styles>
 {
 public:
@@ -408,8 +406,7 @@ private:
 
 CP_REGISTER_OFFICE_ELEMENT2(office_master_styles);
 
-/// \class class style_master_page_attlist
-/// \brief style-master-page-attlist
+// style-master-page-attlist
 class style_master_page_attlist
 {
 public:
@@ -424,8 +421,7 @@ public:
     _CP_OPT(odf_types::style_ref)		style_next_style_name_;
 };
 
-/// \class  style_master_page
-/// \brief  style:master-page
+//  style:master-page
 class style_master_page;
 typedef boost::shared_ptr<style_master_page> style_master_page_ptr;
 
@@ -468,8 +464,7 @@ public:
 
 CP_REGISTER_OFFICE_ELEMENT2(style_master_page);
 
-/// \class  office_styles
-/// \brief  office:styles
+//  office:styles
 class office_styles : public office_element_impl<office_styles>
 {
 public:
@@ -522,9 +517,7 @@ private:
 
 };
 
-/// \class  style_header
-///         style:header
-///         style-header
+//         style:header
 class style_header : public office_element_impl<style_header>, public header_footer_impl
 {
 public:
@@ -547,9 +540,7 @@ public:
 
 CP_REGISTER_OFFICE_ELEMENT2(style_header);
 
-/// \class  style_footer
 ///         style:footer
-///         style-header
 class style_footer : public office_element_impl<style_footer>, public header_footer_impl
 {
 public:
@@ -571,9 +562,8 @@ public:
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(style_footer);
-/// \class  style_header_first
+
 ///         style:header-first
-///         style-header
 class style_header_first : public office_element_impl<style_header_first>, public header_footer_impl
 {
 public:
@@ -596,9 +586,7 @@ public:
 
 CP_REGISTER_OFFICE_ELEMENT2(style_header_first);
 
-/// \class  style_footer_first
 ///         style:footer_first
-///         style-header
 class style_footer_first : public office_element_impl<style_footer_first>, public header_footer_impl
 {
 public:
@@ -619,10 +607,7 @@ public:
 
 };
 
-CP_REGISTER_OFFICE_ELEMENT2(style_footer_first);
-/// \class  style_header_left
 ///         style:header-left
-///         style-header-left
 class style_header_left : public office_element_impl<style_header_left>, public header_footer_impl
 {
 public:
@@ -645,9 +630,7 @@ public:
 
 CP_REGISTER_OFFICE_ELEMENT2(style_header_left);
 
-/// \class  style_footer_left
 ///         style:footer-left
-///         style-footer-left
 class style_footer_left : public office_element_impl<style_footer_left>, public header_footer_impl
 {
 public:
@@ -750,8 +733,7 @@ public:
 
 CP_REGISTER_OFFICE_ELEMENT2(style_column_sep);
 
-/// \class  style_section_properties
-///         style-section-properties
+
 ///         style:section-properties
 class style_section_properties : public office_element_impl<style_section_properties>
 {
@@ -785,7 +767,6 @@ public:
 
 CP_REGISTER_OFFICE_ELEMENT2(style_section_properties);
 
-/// \class  style_page_layout_attlist
 ///         style-page-layout-attlist
 class style_page_layout_attlist
 {
@@ -799,9 +780,7 @@ private:
         
 };
 
-/// \class style_header_style
 /// style:header-style
-/// style-header-style
 class style_header_style : public office_element_impl<style_header_style>
 {
 public:
@@ -825,9 +804,7 @@ public:
 
 CP_REGISTER_OFFICE_ELEMENT2(style_header_style);
 
-/// \class style_footer_style
 /// style:footer-style
-/// style-footer-style
 class style_footer_style : public office_element_impl<style_header_style>
 {
 public:
@@ -851,9 +828,7 @@ public:
 
 CP_REGISTER_OFFICE_ELEMENT2(style_footer_style);
 
-/// \class style_page_layout
 /// style:page-layout
-/// style-page-layout
 class style_page_layout : public office_element_impl<style_page_layout>
 {
 public:
@@ -975,8 +950,6 @@ private:
                 
 };
 
-// \class   style_footnote_sep
-//          style-footnote-sep
 //          style:footnote-sep
 class style_footnote_sep : public office_element_impl<style_footnote_sep>
 {
@@ -1013,8 +986,6 @@ public:
 
 };
 
-// \class   style_page_layout_properties
-//          style-page-layout-properties
 //          style:page-layout-properties
 class style_page_layout_properties : public office_element_impl<style_page_layout_properties>
 {
@@ -1046,8 +1017,6 @@ public:
 
 CP_REGISTER_OFFICE_ELEMENT2(style_page_layout_properties);
 
-// \class   text_notes_configuration
-//          text-notes-configuration
 //          text:notes-configuration
 class text_notes_configuration : public office_element_impl<text_notes_configuration>
 {
@@ -1082,7 +1051,6 @@ public:
 
 CP_REGISTER_OFFICE_ELEMENT2(text_notes_configuration);
 
-/// \class style_page_layout
 /// style:presentation-page-layout
 
 class style_presentation_page_layout;

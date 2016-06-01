@@ -343,14 +343,16 @@ SOURCES += \
 }
 
 SOURCES += \
-    ../formulasconvert/formulasconvert_odf.cpp \
     ../formulasconvert/formulasconvert_oox.cpp \
     ../src/odf/math_elementaries.cpp \
     ../src/odf/math_layout_elements.cpp \
     ../src/odf/math_limit_elements.cpp \
     ../src/odf/math_table_elements.cpp \
     ../src/odf/math_token_elements.cpp \
-    ../src/odf/datatypes/mathvariant.cpp
+    ../src/odf/datatypes/mathvariant.cpp \
+    ../formulasconvert/formulasconvert_odf.cpp \
+    ../src/odf/calcext_elements.cpp \
+    ../src/odf/table_database_ranges.cpp
 
 HEADERS += \
     ../formulasconvert/formulasconvert.h \
@@ -618,7 +620,9 @@ HEADERS += \
     ../src/odf/math_limit_elements.h \
     ../src/odf/math_table_elements.h \
     ../src/odf/math_token_elements.h \
-    ../src/odf/datatypes/mathvariant.h
+    ../src/odf/datatypes/mathvariant.h \
+    ../src/odf/calcext_elements.h \
+    ../src/odf/table_database_ranges.h
 unix {
     target.path = /usr/lib
     INSTALLS += target

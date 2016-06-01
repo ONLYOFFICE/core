@@ -132,6 +132,8 @@ void xlsx_drawing_context::clear()
     impl_->object_description_.xlink_href_			= L"";
     impl_->object_description_.name_				= L"";
 	impl_->object_description_.anchor_				= L"";
+	impl_->object_description_.anchor_x_			= 0;
+	impl_->object_description_.anchor_y_			= 0;
 	impl_->object_description_.clipping_string_		= L"";
  	impl_->object_description_.svg_rect_			= boost::none;
 	impl_->object_description_.use_image_replace_	= false;
@@ -189,8 +191,8 @@ void xlsx_drawing_context::end_group()
 		if (group_rect.x > objct_rect.x)	group_rect.x = objct_rect.x;
 		if (group_rect.y > objct_rect.y)	group_rect.y = objct_rect.y;
 
-		if (group_rect.cx < objct_rect.cx + objct_rect.x)	group_rect.cx = objct_rect.cx + group_rect.x;
-		if (group_rect.cy < objct_rect.cy + objct_rect.y)	group_rect.cy = objct_rect.cy + group_rect.y;
+		if (group_rect.cx < objct_rect.cx + objct_rect.x)	group_rect.cx = objct_rect.cx + objct_rect.x;
+		if (group_rect.cy < objct_rect.cy + objct_rect.y)	group_rect.cy = objct_rect.cy + objct_rect.y;
 	}
 	else
 		impl_->groups_.pop_back();
@@ -223,8 +225,8 @@ void xlsx_drawing_context::end_drawing()
 		if (group_rect.x > objct_rect.x)	group_rect.x = objct_rect.x;
 		if (group_rect.y > objct_rect.y)	group_rect.y = objct_rect.y;
 
-		if (group_rect.cx < objct_rect.cx + objct_rect.x)	group_rect.cx = objct_rect.cx + group_rect.x;
-		if (group_rect.cy < objct_rect.cy + objct_rect.y)	group_rect.cy = objct_rect.cy + group_rect.y;
+		if (group_rect.cx < objct_rect.cx + objct_rect.x)	group_rect.cx = objct_rect.cx + objct_rect.x;
+		if (group_rect.cy < objct_rect.cy + objct_rect.y)	group_rect.cy = objct_rect.cy + objct_rect.y;
 	}
 }
 
@@ -318,6 +320,7 @@ void xlsx_drawing_context::set_anchor(std::wstring anchor, double x_pt, double y
 		impl_->object_description_.anchor_x_	= x_pt;
 		impl_->object_description_.anchor_y_	= y_pt;
 	}
+
 }
 void xlsx_drawing_context::set_property(odf_reader::_property p)
 {
@@ -408,12 +411,12 @@ void xlsx_drawing_context::process_common_properties(drawing_object_description 
 }
 void xlsx_drawing_context::process_position_properties(drawing_object_description & obj, xlsx_table_metrics & table_metrics,xlsx_table_position & from,xlsx_table_position & to)
 {
-	size_t last_col=0, last_row=0;
+	size_t column_anchor = 0, row_anchor = 0;
 
 	std::vector<std::wstring> distance;
 	boost::algorithm::split(distance, obj.anchor_, boost::algorithm::is_any_of(L" ."), boost::algorithm::token_compress_on);
 
-	double x=0,y=0,cx=0,cy=0;
+	double x = 0, y = 0, cx = 0, cy = 0;
 
 	if (obj.svg_rect_)
 	{
@@ -422,20 +425,23 @@ void xlsx_drawing_context::process_position_properties(drawing_object_descriptio
 		cx = obj.svg_rect_->cx;
 		cy = obj.svg_rect_->cy;
 	}
-	to = table_metrics.calc(x + cx, y + cy);
+	to		= table_metrics.calc(x + cx, y + cy);
+	from	= table_metrics.calc(x, y);
 
-	if (distance.size() > 1)
+	if (distance.size() > 0 && !obj.anchor_.empty())
 	{
-		//атрибуты размера игнорируются
-		int ind_cell=distance.size()-1;
-		getCellAddressInv(distance[ind_cell],last_col,last_row);
+		int ind_cell = distance.size()-1;
+		getCellAddressInv(distance[ind_cell], column_anchor, row_anchor);
 
-		xlsx_table_position to_anchor = table_metrics.calc(last_col,last_row,obj.anchor_x_,obj.anchor_y_); //-можно и не считать :) , но проверим ...
+		xlsx_table_position pos_anchor = table_metrics.calc(column_anchor, row_anchor, obj.anchor_x_, obj.anchor_y_); //-можно и не считать :) , но проверим ...
 
-		table_metrics.update_pt(last_col,last_row, obj.anchor_x_, obj.anchor_y_);
+		table_metrics.update_pt(column_anchor, row_anchor, obj.anchor_x_, obj.anchor_y_);
 
 		x = obj.anchor_x_ - cx;
 		y = obj.anchor_y_ - cy;
+
+		to		= pos_anchor;
+		from	= table_metrics.calc(x, y);
 
 		if (obj.svg_rect_)
 		{
@@ -443,10 +449,7 @@ void xlsx_drawing_context::process_position_properties(drawing_object_descriptio
 			
 			obj.svg_rect_= _rect (cx, cy, x, y);	
 		}
-
-		to = to_anchor;
 	}
-	from = table_metrics.calc(x, y);
 }
 
 
@@ -467,7 +470,7 @@ void xlsx_drawing_context::process_image(drawing_object_description & obj,_xlsx_
 	}
 	std::wstring fileName = odf_packet_path_ + FILE_SEPARATOR_STR +  obj.xlink_href_;			
 	
-	drawing.fill.bitmap->bCrop		= odf_reader::parse_clipping(obj.clipping_string_, fileName, drawing.fill.bitmap->cropRect);
+	drawing.fill.bitmap->bCrop		= odf_reader::parse_clipping(obj.clipping_string_, fileName, drawing.fill.bitmap->cropRect, NULL/*applicationFonts_*/);
 	drawing.fill.bitmap->bStretch	= true;
 
 	std::wstring ref;/// это ссылка на выходной внешний объект

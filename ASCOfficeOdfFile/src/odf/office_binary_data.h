@@ -11,8 +11,7 @@
 namespace cpdoccore { 
 namespace odf_reader {
 
-/// \class  office_binary_data
-/// \brief  office:binary-data
+//  office:binary-data
 class office_binary_data : public office_element_impl<office_binary_data>
 {
 public:

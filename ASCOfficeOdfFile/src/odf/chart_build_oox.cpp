@@ -1,10 +1,8 @@
-
-
 #include "../docx/xlsx_textcontext.h"
+#include "../docx/xlsx_num_format_context.h"
 
 #include "serialize_elements.h"
 #include <cpdoccore/odf/odf_document.h>
-
 #include "../formulasconvert/formulasconvert.h"
 
 #include "style_graphic_properties.h"
@@ -15,6 +13,7 @@
 
 #include "draw_common.h"
 
+#include "number_style.h"
 #include "calcs_styles.h"
 #include "chart_build_oox.h"
 
@@ -311,34 +310,46 @@ void chart_build::oox_convert(oox::oox_chart_context & chart_context)
 		if (categories_.size() >0)
 			calc_cache_series (categories_[0],	cat_cash);
 
+		std::wstring			formatCode	= L"General";
+		_CP_OPT(std::wstring)	strVal;
+		_CP_OPT(bool)			boolVal;
+		
+		odf_reader::GetProperty(s.properties_, L"num_format", strVal);
+		odf_reader::GetProperty(s.properties_, L"link-data-style-to-source", boolVal);
+
+		if ((strVal) && (strVal->length() > 1))
+		{
+			formatCode = *strVal;
+		}
+		
 		if (domain_cell_range_adress_.empty() == false) 
 		{
 			if (last_set_type == chart_bubble)
-			{
-				current->set_formula_series(4, domain_cell_range_adress_);	//bubble(x)
-				current->set_values_series (4, domain_cash);				//bubble(x)
-
-				current->set_formula_series(3, s.cell_range_address_);		//y		
+			{	//bubble(x)
+				current->set_formula_series(4, domain_cell_range_adress_, formatCode, boolVal.get_value_or(true));	
+				current->set_values_series (4, domain_cash);
+				//y	
+				current->set_formula_series(3, s.cell_range_address_, formatCode, boolVal.get_value_or(true));			
 				current->set_values_series (3, cell_cash);
 			}
 			else
-			{
-				current->set_formula_series(2, domain_cell_range_adress_);	//x
-				current->set_values_series (2, domain_cash);				//x
-				
-				current->set_formula_series(3, s.cell_range_address_);		//y		
-				current->set_values_series (3, cell_cash);					//y
+			{	//x
+				current->set_formula_series(2, domain_cell_range_adress_, formatCode, boolVal.get_value_or(true));	
+				current->set_values_series (2, domain_cash);						
+				//y
+				current->set_formula_series(3, s.cell_range_address_, formatCode, boolVal.get_value_or(true));				
+				current->set_values_series (3, cell_cash);								
 			}
 		}
 		else
-		{
-			current->set_formula_series(1, s.cell_range_address_);	//common
-			current->set_values_series(1, cell_cash);				//common
+		{	//common
+			current->set_formula_series(1, s.cell_range_address_, formatCode, boolVal.get_value_or(true));	
+			current->set_values_series(1, cell_cash);
 		}
 
 		if (categories_.empty() == false)//названия 
 		{			
-			current->set_formula_series(0, categories_[0]);
+			current->set_formula_series(0, categories_[0], L"General", true);
 			current->set_values_series(0, cat_cash);
 		}
 		current->set_name(s.name_);
@@ -397,11 +408,13 @@ void chart_build::oox_convert(oox::oox_chart_context & chart_context)
 
 //----------------------------------------------------------------------------------------
 process_build_chart::process_build_chart(chart_build & chartBuild, odf_read_context & context) :	
-						 stop_			(false)
-						,chart_build_	(chartBuild)
-						,styles_		(context.styleContainer())
-						,settings_		(context.Settings())
-						,draw_styles_	(context.drawStyles())
+						 stop_				(false)
+						,chart_build_		(chartBuild)
+						,styles_			(context.styleContainer())
+						,settings_			(context.Settings())
+						,draw_styles_		(context.drawStyles())
+						,number_styles_		(context.numberStyles())
+						,num_format_context_(context)
 {
 	office_element_ptr		sett_elm	= settings_.find_by_style_name(L"BaseFontHeight");
 	settings_config_item*	sett		= dynamic_cast<settings_config_item*>(sett_elm.get());
@@ -416,13 +429,33 @@ process_build_chart::process_build_chart(chart_build & chartBuild, odf_read_cont
 		}
 	}
 }
-void process_build_chart::ApplyChartProperties(std::wstring style,std::vector<_property> & propertiesOut)
+void process_build_chart::ApplyChartProperties(std::wstring style, std::vector<_property> & propertiesOut)
 {
-	style_instance* styleInst = styles_.style_by_name(style, odf_types::style_family::Chart,false);
+	style_instance* styleInst = styles_.style_by_name(style, odf_types::style_family::Chart, false);
     if(styleInst)
 	{
-		const style_content * Content = styleInst->content();
-		const style_chart_properties *properties = Content->get_style_chart_properties();
+		const style_content * Content				= styleInst->content();
+		const style_chart_properties *properties	= Content->get_style_chart_properties();
+
+		std::wstring data_style_name = styleInst->data_style_name();
+		
+		if (!data_style_name.empty())
+		{
+			office_element_ptr elm = number_styles_.find_by_style_name(data_style_name);
+			number_style_base *number_style = dynamic_cast<number_style_base*>(elm.get());
+
+			if (number_style)
+			{
+				num_format_context_.start_complex_format();
+				number_style->oox_convert(num_format_context_);
+				num_format_context_.end_complex_format();
+				
+				std::wstring num_format = num_format_context_.get_last_format();
+ 				
+				_property p(L"num_format", num_format); 
+				propertiesOut.push_back(p);		
+			}
+		}
 
 		if (!properties)return;
 
@@ -434,7 +467,7 @@ void process_build_chart::ApplyChartProperties(std::wstring style,std::vector<_p
 }
 void process_build_chart::ApplyTextProperties(std::wstring style,std::vector<_property> & propertiesOut)
 {
-	style_instance* styleInst = styles_.style_by_name(style, odf_types::style_family::Chart,false/*Context.process_headers_footers_*/);
+	style_instance* styleInst = styles_.style_by_name(style, odf_types::style_family::Chart, false/*Context.process_headers_footers_*/);
     if(styleInst)
 	{
 		text_format_properties_content properties = calc_text_properties_content(styleInst);
@@ -611,9 +644,11 @@ void process_build_chart::visit(const chart_axis& val)
 
     ACCEPT_ALL_CONTENT_CONST(val.content_);
 
-	ApplyChartProperties	(val.chart_axis_attlist_.common_attlist_.chart_style_name_.get_value_or(L""),chart_build_.axises_.back().properties_);
-	ApplyGraphicProperties	(val.chart_axis_attlist_.common_attlist_.chart_style_name_.get_value_or(L""),chart_build_.axises_.back().graphic_properties_,chart_build_.axises_.back().fill_);
-	ApplyTextProperties		(val.chart_axis_attlist_.common_attlist_.chart_style_name_.get_value_or(L""),chart_build_.axises_.back().text_properties_);
+	std::wstring style_name	= val.chart_axis_attlist_.common_attlist_.chart_style_name_.get_value_or(L"");
+
+	ApplyChartProperties	(style_name, chart_build_.axises_.back().properties_);
+	ApplyGraphicProperties	(style_name, chart_build_.axises_.back().graphic_properties_, chart_build_.axises_.back().fill_);
+	ApplyTextProperties		(style_name, chart_build_.axises_.back().text_properties_);
 
     chart_build_.end_axis();        
 }
@@ -681,9 +716,12 @@ void process_build_chart::visit(const chart_data_point & val)
 
 	if (val.chart_data_point_attlist_.common_attlist_.chart_style_name_)
 	{
-		ApplyGraphicProperties	(val.chart_data_point_attlist_.common_attlist_.chart_style_name_.get_value_or(L""),	
-										chart_build_.series_.back().points_.back().graphic_properties_, 
-										chart_build_.series_.back().points_.back().fill_);
+		chart_build_.series_.back().points_.back().bEnabled = true;
+		std::wstring style_name = val.chart_data_point_attlist_.common_attlist_.chart_style_name_.get_value_or(L"");
+		
+		ApplyGraphicProperties	(style_name,	chart_build_.series_.back().points_.back().graphic_properties_, 
+												chart_build_.series_.back().points_.back().fill_);
+		ApplyTextProperties		(style_name,	chart_build_.series_.back().points_.back().text_properties_);
 	}
 
 }

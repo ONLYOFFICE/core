@@ -79,111 +79,111 @@ public:
     void start_table(const std::wstring & StyleName)
     {
 		output_stream_.str(std::wstring(L""));
-        table_state_stack_.push_back(pptx_table_state(context_, StyleName));     
+        table_states_.push_back(pptx_table_state(context_, StyleName));     
     }
 
     void end_table()
     {
-        table_state_stack_.pop_back();        
+        table_states_.pop_back();        
     }
 
     std::wstring current_style() const
     {
-        return table_state_stack_.back().current_style();    
+        return table_states_.back().current_style();    
     }
 
     size_t in_table() const
     {
-        return table_state_stack_.size();
+        return table_states_.size();
     }
 
     void start_column(unsigned int repeated, const std::wstring & defaultCellStyleName)
     {
-        return table_state_stack_.back().start_column(repeated, defaultCellStyleName);
+        return table_states_.back().start_column(repeated, defaultCellStyleName);
     }
 
     void start_row(const std::wstring & StyleName, const std::wstring & defaultCellStyleName)
     {
-        return table_state_stack_.back().start_row(StyleName, defaultCellStyleName);
+        return table_states_.back().start_row(StyleName, defaultCellStyleName);
     }
 
     void end_row()
     {
-        return table_state_stack_.back().end_row();
+        return table_states_.back().end_row();
     }
 
     std::wstring current_row_style() const
     {
-        return table_state_stack_.back().current_row_style();
+        return table_states_.back().current_row_style();
     }
 
     void start_cell()
     {
-        return table_state_stack_.back().start_cell();
+        return table_states_.back().start_cell();
     }
 
     void end_cell()
     {
-        return table_state_stack_.back().end_cell();
+        return table_states_.back().end_cell();
     }
 
     bool start_covered_cell(pptx_conversion_context & Context)
     {
-        return table_state_stack_.back().start_covered_cell(Context);
+        return table_states_.back().start_covered_cell(Context);
     }
 
     void end_covered_cell()
     {
-        return table_state_stack_.back().end_covered_cell();
+        return table_states_.back().end_covered_cell();
     }
 
     int current_column() const
     {
-        return table_state_stack_.back().current_column();
+        return table_states_.back().current_column();
     }
 
     void set_columns_spanned(unsigned int Val)
     {
-        return table_state_stack_.back().set_columns_spanned(Val);
+        return table_states_.back().set_columns_spanned(Val);
     }
 
     unsigned int current_columns_spaned() const
     {
-        return table_state_stack_.back().current_columns_spaned();
+        return table_states_.back().current_columns_spaned();
     }
 
     void set_rows_spanned(unsigned int Column, unsigned int Val, unsigned int ColumnsSpanned, const std::wstring & Style)
     {
-        return table_state_stack_.back().set_rows_spanned(Column, Val, ColumnsSpanned, Style);
+        return table_states_.back().set_rows_spanned(Column, Val, ColumnsSpanned, Style);
     }
 
     unsigned int current_rows_spanned(unsigned int Column) const
     {
-        return table_state_stack_.back().current_rows_spanned(Column);
+        return table_states_.back().current_rows_spanned(Column);
     }
 
     std::wstring get_default_cell_style_col(unsigned int column)
     {
-        return table_state_stack_.back().get_default_cell_style_col(column);
+        return table_states_.back().get_default_cell_style_col(column);
     }
 
     std::wstring get_default_cell_style_row()
     {
-        return table_state_stack_.back().get_default_cell_style_row();
+        return table_states_.back().get_default_cell_style_row();
     }
 
 	void set_default_cell_style(std::wstring style_name)
 	{
-		table_state_stack_.back().default_cell_style_name_ = style_name;
+		table_states_.back().default_cell_style_name_ = style_name;
 	}
 	std::wstring get_default_cell_style()
 	{
-		return table_state_stack_.back().default_cell_style_name_;
+		return table_states_.back().default_cell_style_name_;
 	}
 private:
-	std::wstringstream output_stream_;
-    pptx_conversion_context & context_;
-    std::list<pptx_table_state> table_state_stack_;
+	std::wstringstream			output_stream_;
+    pptx_conversion_context &	context_;
+    std::list<pptx_table_state> table_states_;
 };
 
 void oox_serialize_tcPr(std::wostream & strm, std::vector<const odf_reader::style_instance *> & style_inst, oox::pptx_conversion_context & Context);

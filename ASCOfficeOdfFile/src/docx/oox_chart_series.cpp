@@ -61,7 +61,7 @@ void oox_chart_series::setName(std::wstring &value)
 	name_=value;
 }
 
-void oox_chart_series::setFormula(int ind, std::wstring &value)
+void oox_chart_series::setFormula(int ind, std::wstring &value, std::wstring & formatCode, bool link_to_source)
 {
 	formulasconvert::odf2oox_converter converter;
 
@@ -79,9 +79,11 @@ void oox_chart_series::setFormula(int ind, std::wstring &value)
 		long res = value.find(L"local-table");
 		if (res >=0 && !bLocalTable_ ) return; //в xlsx низя .... нужно сделать тогда отдельную  table.xml
 
-		values_[ind].numRef_.formula	= converter.convert_chart_distance(value);
-		values_[ind].numRef_.present	= true;
-		values_[ind].present			= true;
+		values_[ind].numRef_.formula		= converter.convert_chart_distance(value);
+		values_[ind].numRef_.present		= true;
+		values_[ind].numRef_.formatCode		= formatCode;
+		values_[ind].numRef_.link_to_source	= link_to_source;
+		values_[ind].present				= true;
 	}
 }
 
@@ -194,7 +196,7 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 								{
 									CP_XML_NODE(L"c:formatCode")
 									{
-										CP_XML_CONTENT(L"General");//????
+										CP_XML_CONTENT(values_[i].numRef_.formatCode);
 									}
 									CP_XML_NODE(L"c:ptCount")
 									{
@@ -227,7 +229,7 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 						{
 							CP_XML_NODE(L"c:formatCode")
 							{
-								CP_XML_CONTENT(L"General");//????
+								CP_XML_CONTENT(values_[i].numRef_.formatCode);
 							}
 							CP_XML_NODE(L"c:ptCount")
 							{
@@ -353,11 +355,19 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 
 			}
 		}
-		if (data_labels_)
-			data_labels_->oox_serialize(_Wostream);
+
+		bool bEmpty_dPt = true;
+		for (int i = 0 ; i < content_.points_.size(); i++)
+		{
+			if (content_.points_[i].bEnabled)
+			{
+				bEmpty_dPt = false;
+				break;
+			}
+		}
 
 		int indPoint = 0;
-		for (int i = 0 ; i < content_.points_.size(); i++)
+		for (int i = 0 ; !bEmpty_dPt && i < content_.points_.size(); i++)
 		{
 			for (int j = 0 ; j < content_.points_[i].repeated_; j++)
 			{
@@ -372,9 +382,20 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 						shape.set( content_.points_[i].graphic_properties_, content_.points_[i].fill_);
 						shape.oox_serialize(CP_XML_STREAM());
 					}
+
+					if (!content_.points_[i].text_properties_.empty())
+					{
+						if (!data_labels_) data_labels_ = oox_data_labels();
+
+						data_labels_->add_dLbl(indPoint - 1, content_.points_[i].text_properties_);
+					}
 				}
 			}
 		}
+		
+		if (data_labels_)
+			data_labels_->oox_serialize(_Wostream);
+
 	}
 }
 	//backward (Backward) §21.2.2.12
@@ -441,6 +462,18 @@ void oox_pie_series::oox_serialize(std::wostream & _Wostream)
 		CP_XML_NODE(L"c:ser")
 		{
 			oox_serialize_common(CP_XML_STREAM());
+
+			_CP_OPT(int) iVal;
+			odf_reader::GetProperty(content_.properties_, L"pie-offset", iVal); 
+			
+			if (iVal)
+			{
+				CP_XML_NODE(L"c:explosion")
+				{
+					CP_XML_ATTR(L"val", *iVal);			
+				}
+			}
+			
 		}
 	}
 }

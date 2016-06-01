@@ -1,5 +1,4 @@
-#ifndef CPDOCCORE_ODF_CONTENT_XML_H_
-#define CPDOCCORE_ODF_CONTENT_XML_H_
+#pragma once
 
 #include <cpdoccore/common/readdocelement.h>
 #include "office_elements.h"
@@ -44,5 +43,3 @@ private:
 
 }
 }
-
-#endif

@@ -32,6 +32,7 @@ namespace package
 xlsx_conversion_context::xlsx_conversion_context(odf_reader::odf_document * odfDocument) : 
 	odf_document_		(odfDocument),
 	output_document_	(NULL),
+	num_format_context_	(odf_document_->odf_context()),
 	xlsx_text_context_	(odf_document_->odf_context().styleContainer()),
 	xlsx_table_context_	(this, xlsx_text_context_),
 	
@@ -292,9 +293,11 @@ void xlsx_conversion_context::end_table()
     
 	get_table_context().serialize_table_format(current_sheet().sheetFormat());
 
-    get_table_context().serialize_merge_cells(current_sheet().mergeCells());
-    get_table_context().serialize_hyperlinks(current_sheet().hyperlinks());
-	get_table_context().dump_rels_hyperlinks(current_sheet().hyperlinks_rels());
+    get_table_context().serialize_autofilter	(current_sheet().autofilter());
+    get_table_context().serialize_sort			(current_sheet().sort());
+    get_table_context().serialize_merge_cells	(current_sheet().mergeCells());
+    get_table_context().serialize_hyperlinks	(current_sheet().hyperlinks());
+	get_table_context().dump_rels_hyperlinks	(current_sheet().hyperlinks_rels());
 
 	get_drawing_context().set_odf_packet_path(root()->get_folder());
 
@@ -437,6 +440,11 @@ void xlsx_conversion_context::start_table_cell(const std::wstring & formula, siz
     get_table_context().start_cell(formula, columnsSpanned, rowsSpanned);
 }
 
+bool xlsx_conversion_context::in_table_cell()
+{
+	return get_table_context().state()->in_cell;
+}
+
 void xlsx_conversion_context::end_table_cell()
 {
     get_table_context().end_cell();
@@ -492,7 +500,7 @@ std::pair<float,float> xlsx_conversion_context::getMaxDigitSize()
 		else
 			font_size =10;
 		
-        maxDigitSize_ = utils::GetMaxDigitSizePixels(font_name.c_str(), font_size, getSystemDPI(), 0, applicationFonts_);
+        maxDigitSize_ = utils::GetMaxDigitSizePixels(font_name.c_str(), font_size, 96., 0, applicationFonts_);
     }    
     return maxDigitSize_;
 }

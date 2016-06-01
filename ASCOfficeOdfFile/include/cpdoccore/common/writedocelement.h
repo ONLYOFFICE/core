@@ -1,9 +1,4 @@
-#ifndef _CPDOCCORE_WRITEDOCELEMENT_H_
-#define _CPDOCCORE_WRITEDOCELEMENT_H_
-
-#ifdef _MSC_VER
 #pragma once
-#endif
 
 #include <iosfwd>
 
@@ -34,5 +29,3 @@ inline write_doc_element::~write_doc_element()
 
 }
 }
-
-#endif // #ifndef _CPDOCCORE_WRITEDOCELEMENT_H_

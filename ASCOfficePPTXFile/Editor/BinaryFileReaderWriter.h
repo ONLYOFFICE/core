@@ -55,12 +55,16 @@ namespace NSBinPptxRW
 	public:
 		CString m_sImagePath;
 		CString m_sOlePath;
+		CString m_sFilepathBin;
+		CString m_sFilepathImg;
 	};
 	class CRelsGeneratorInfo
 	{
 	public:
 		int m_nImageRId;
 		int m_nOleRId;
+		CString m_sFilepathBin;
+		CString m_sFilepathImg;
 		CRelsGeneratorInfo()
 		{
 			m_nImageRId = -1;

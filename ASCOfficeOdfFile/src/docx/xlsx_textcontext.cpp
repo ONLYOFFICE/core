@@ -12,6 +12,7 @@
 
 #include "../odf/odfcontext.h"
 #include "../odf/style_text_properties.h"
+#include "../odf/style_paragraph_properties.h"
 #include "../odf/calcs_styles.h"
 
 
@@ -52,7 +53,8 @@ public:
 
     void write_shared_strings(std::wostream & strm);
 	
-	void ApplyTextProperties(std::wstring style, odf_reader::text_format_properties_content & propertiesOut, odf_types::style_family::type Type);
+	void ApplyTextProperties		(std::wstring style, odf_reader::text_format_properties_content & propertiesOut, odf_types::style_family::type Type);
+	void ApplyParagraphProperties	(std::wstring style, odf_reader::paragraph_format_properties & propertiesOut, odf_types::style_family::type Type);
 
 	void set_local_styles_container(odf_reader::styles_container*  local_styles_);//это если стили объектов содержатся в другом документе
 
@@ -74,17 +76,22 @@ private:
 	odf_reader::text_format_properties_content	* text_properties_cell_;
 	odf_reader::styles_container				* local_styles_ptr_;
 
-    std::wstring dump_text();
+    std::wstring	dump_paragraph();
+	std::wstring	dump_run();
+
     void write_rPr(std::wostream & strm);
-   
+	void write_pPr(std::wostream & strm);
+  
 	size_t paragraphs_cout_; //???? тока из за начала отсчета?
    
-	std::wstringstream	text_;
-    std::wstringstream	output_;
+ 	std::wstringstream	text_;		//приходящий текст
+    std::wstringstream	paragraph_;	//перманенто скидываемые параграфы
+    std::wstringstream	run_;		//перманенто скидываемые куски с быть может разными свойствами
+  
     xlsx_shared_strings xlsx_shared_strings_;
-   
-	std::wstring paragraph_style_name_;//был вектор ... не нужен, так как в один момент времени может быть тока один стиль параграфа,текста,объекта при приходе нового - дампится
-    std::wstring span_style_name_;
+	
+	std::wstring		paragraph_style_name_;//был вектор ... не нужен, так как в один момент времени может быть тока один стиль параграфа,текста,объекта при приходе нового - дампится
+    std::wstring		span_style_name_;
 
 };
 
@@ -105,7 +112,7 @@ void xlsx_text_context::Impl::add_text(const std::wstring & text)
     text_ << text;
 	
 	if (!in_comment && !in_draw)
-		dump_text();
+		dump_run();
 }
 
 void xlsx_text_context::Impl::set_local_styles_container(odf_reader::styles_container * local_styles_)
@@ -117,9 +124,15 @@ void xlsx_text_context::Impl::start_paragraph(const std::wstring & styleName)
 {
     if (paragraphs_cout_++ > 0)
     {	
-		if (paragraph_style_name_ != styleName)
+		if ( in_comment == true )
 		{
-			dump_text();
+		// конец предыдущего абзаца и начало следующего
+		//text_ << L"&#10;";
+			text_ << L"\n"; 
+		}
+		else/* (paragraph_style_name_ != styleName)*/
+		{
+			dump_paragraph();
 		}
 	}else
 	{
@@ -133,7 +146,7 @@ void xlsx_text_context::Impl::end_paragraph()
 {
     if (!in_comment && !in_draw)
 	{
-		dump_text();
+		dump_run();
 		paragraph_style_name_ = L"";
 	}
 	in_paragraph = false;
@@ -141,27 +154,32 @@ void xlsx_text_context::Impl::end_paragraph()
 
 void xlsx_text_context::Impl::start_span(const std::wstring & styleName)//кусок текста в абзаце(параграфе) со своими свойствами - этто может быть и 1 буква
 {
-     if (!in_comment && !in_draw)
+ 	int text_size = text_.str().length();
+
+	if (in_comment || in_draw)
 	 {
-		 text_.str(std::wstring());
+		if (( span_style_name_ != styleName && text_size > 0 ) || in_span)
+		{
+			dump_run();
+		}
+
+		if (in_draw && !in_paragraph)
+			start_paragraph(L"");
 	 }
 	 else
 	 {
-		if (span_style_name_ !=styleName || in_span)
-		{
-			dump_text();
-		}
+		text_.str(std::wstring());
 	 }
-	 span_style_name_ = styleName;
-	 in_span=true;
+	 span_style_name_	= styleName;
+	 in_span			= true;
 }
 
 void xlsx_text_context::Impl::end_span() //odf корявенько написан - возможны повторы стилей в последовательных кусках текста
 //пока с анализом стилей тока комменты - остальные текстовые куски как есть.. с охрененным возможно дубляжом
 {
-     if (!in_comment && !in_draw)
+     if (!in_comment)
 	 {
-		dump_text();
+		dump_run();
 		span_style_name_=L"";
 	 }
 	 in_span=false;
@@ -169,15 +187,16 @@ void xlsx_text_context::Impl::end_span() //odf корявенько написа
 
 std::wstring xlsx_text_context::Impl::end_span2()
 {
-    const std::wstring content = dump_text();
+    const std::wstring content = dump_run();
     span_style_name_ = L"";
 	
 	in_span = false;
     return content;
 }
+
 void xlsx_text_context::Impl::start_hyperlink()
 {
-	dump_text();
+	dump_run();
 }
 
 void xlsx_text_context::Impl::end_hyperlink(std::wstring hId)
@@ -185,7 +204,29 @@ void xlsx_text_context::Impl::end_hyperlink(std::wstring hId)
 	hyperlink_hId = hId;
 }
 
-void xlsx_text_context::Impl::ApplyTextProperties(std::wstring style,odf_reader::text_format_properties_content & propertiesOut, odf_types::style_family::type Type)
+void xlsx_text_context::Impl::ApplyParagraphProperties	(std::wstring style, odf_reader::paragraph_format_properties & propertiesOut, odf_types::style_family::type Type)
+{
+	std::vector<const odf_reader::style_instance *> instances;
+
+	if (local_styles_ptr_)
+	{
+		odf_reader::style_instance * defaultStyle = local_styles_ptr_->style_default_by_type(Type);
+		if (defaultStyle)instances.push_back(defaultStyle);
+
+		odf_reader::style_instance* styleInst = local_styles_ptr_->style_by_name(style, Type,false/*process_headers_footers_*/);
+		if(styleInst)instances.push_back(styleInst);
+	}
+	else
+	{
+		odf_reader::style_instance * defaultStyle = styles_.style_default_by_type(Type);
+		if (defaultStyle)instances.push_back(defaultStyle);
+
+		odf_reader::style_instance* styleInst = styles_.style_by_name(style, Type,false/*process_headers_footers_*/);
+		if(styleInst)instances.push_back(styleInst);
+	}
+	propertiesOut.apply_from(calc_paragraph_properties_content(instances));
+}
+void xlsx_text_context::Impl::ApplyTextProperties(std::wstring style, odf_reader::text_format_properties_content & propertiesOut, odf_types::style_family::type Type)
 {
 	std::vector<const odf_reader::style_instance *> instances;
 
@@ -213,11 +254,21 @@ void xlsx_text_context::Impl::set_cell_text_properties(odf_reader::text_format_p
 	text_properties_cell_ = text_properties;
 }
 
+void xlsx_text_context::Impl::write_pPr	(std::wostream & strm)
+{
+	if (paragraph_style_name_.empty())return;
+
+	odf_reader::paragraph_format_properties		paragraph_format_properties_;	
+	
+	ApplyParagraphProperties	(paragraph_style_name_,	paragraph_format_properties_	, odf_types::style_family::Paragraph);
+	paragraph_format_properties_.xlsx_convert(strm, in_draw);
+}
+
 void xlsx_text_context::Impl::write_rPr(std::wostream & strm)
 {
-	if (paragraph_style_name_.length()<1 && span_style_name_.length()<1 
-			&& !(hyperlink_hId.length()>0	&& in_draw) 
-			&& !(text_properties_cell_		&& in_cell_content))return;
+	if (paragraph_style_name_.empty() && span_style_name_.empty() 
+			&& !(!hyperlink_hId.empty()	&& in_draw) 
+			&& !(text_properties_cell_	&& in_cell_content))return;
 
 	odf_reader::text_format_properties_content		text_properties_paragraph_;	
 	odf_reader::text_format_properties_content		text_properties_span_;
@@ -298,27 +349,61 @@ void xlsx_text_context::Impl::write_rPr(std::wostream & strm)
 		{
 			CP_XML_NODE(L"rPr")
 			{
-				if (sValFontFamily)							{CP_XML_NODE(L"rFont")	{CP_XML_ATTR(L"val", sValFontFamily.get());}}
-				if (dValFontSize)							{CP_XML_NODE(L"sz")		{CP_XML_ATTR(L"val", (int)(dValFontSize.get()));}}
-				if (sValFontColor)							{CP_XML_NODE(L"color")	{CP_XML_ATTR(L"rgb", sValFontColor.get());}}
-				if ((iValFontStyle) && (iValFontStyle.get() >0))  {CP_XML_NODE(L"i")		{CP_XML_ATTR(L"val", "true");}}
-				if ((iValFontWeight) && (iValFontWeight.get() >0)){CP_XML_NODE(L"b")		{CP_XML_ATTR(L"val", "true");}}
+				if (sValFontFamily)				{CP_XML_NODE(L"rFont")	{CP_XML_ATTR(L"val", sValFontFamily.get());}}
+				if (dValFontSize)				{CP_XML_NODE(L"sz")		{CP_XML_ATTR(L"val", (int)(dValFontSize.get()));}}
+				if (sValFontColor)				{CP_XML_NODE(L"color")	{CP_XML_ATTR(L"rgb", sValFontColor.get());}}
+				if ((iValFontStyle) &&
+					(iValFontStyle.get() >0))	{CP_XML_NODE(L"i")		{CP_XML_ATTR(L"val", "true");}}
+				if ((iValFontWeight) && 
+					(iValFontWeight.get() >0))	{CP_XML_NODE(L"b")		{CP_XML_ATTR(L"val", "true");}}
 			}
 		}
     }
 }
 
-std::wstring xlsx_text_context::Impl::dump_text()
+
+std::wstring xlsx_text_context::Impl::dump_paragraph(/*bool last*/)
+{				
+	if (!in_draw) return L""; 
+
+	end_span();
+
+    std::wstring str_run = run_.str();
+
+	if (str_run.length() > 0 || paragraph_style_name_.length() > 0)
+	{
+		CP_XML_WRITER(paragraph_)
+		{
+			CP_XML_NODE(L"a:p")
+			{
+				write_pPr(CP_XML_STREAM());
+
+				if (str_run.length() > 0)
+				{
+					CP_XML_STREAM() << run_.str();
+				}
+				else
+				{
+					CP_XML_NODE(L"a:endParaRPr");
+				}
+			}
+		}
+		run_.str(std::wstring());
+	}
+	return paragraph_.str();
+}
+
+std::wstring xlsx_text_context::Impl::dump_run()
 {
     const std::wstring content = xml::utils::replace_text_to_xml(text_.str());
 
 	if (content.length()<1) 
-		return content;
+		return L"";
 
 	std::wstring	prefix_draw;
 	if (in_draw)	prefix_draw=L"a:";
    
-	CP_XML_WRITER(output_)
+	CP_XML_WRITER(run_)
     {
         if (!content.empty())
         {
@@ -345,81 +430,81 @@ void xlsx_text_context::Impl::start_cell_content()
     paragraphs_cout_ = 0;
  	local_styles_ptr_ =NULL;
    
-	output_.str(std::wstring());//строка дампа
+	run_.str(std::wstring());
+	paragraph_.str(std::wstring());
+    text_.str(std::wstring());
     
-	text_.str(std::wstring()); //приходящие куски текста
-    
-	paragraph_style_name_ = L"";
-    span_style_name_ = L"";
+	paragraph_style_name_	= L"";
+    span_style_name_		= L"";
 
-	in_cell_content = true;
+	in_cell_content			= true;
 	
-	text_properties_cell_ = NULL;
+	text_properties_cell_	= NULL;
 }
 
 void xlsx_text_context::Impl::start_comment_content()
 {
     paragraphs_cout_ = 0;
    
-	output_.str(std::wstring());
+	run_.str(std::wstring());
+	paragraph_.str(std::wstring());
     text_.str(std::wstring());
     
-	paragraph_style_name_ = L"";
-    span_style_name_ = L"";
+	paragraph_style_name_	= L"";
+    span_style_name_		= L"";
 
-	in_comment = true;
+	in_comment				= true;
 }
 void xlsx_text_context::Impl::start_drawing_content()
 {
     paragraphs_cout_ = 0;
    
-	output_.str(std::wstring());
+	run_.str(std::wstring());
+	paragraph_.str(std::wstring());
     text_.str(std::wstring());
     
-	paragraph_style_name_ = L"";
-    span_style_name_ = L"";
+	paragraph_style_name_	= L"";
+    span_style_name_		= L"";
 
-	in_draw = true;
+	in_draw					= true;
 }
 std::wstring xlsx_text_context::Impl::end_comment_content()
 {
-	dump_text();//если в комменте куча абзацев со одним стилем - сдампится здесь - иначе дампится по мере прихода каждого нового стиля
+	dump_run();//если в комменте куча абзацев со одним стилем - сдампится здесь - иначе дампится по мере прихода каждого нового стиля
 
-	std::wstring comment= output_.str();
+	std::wstring comment= run_.str();
   
 	paragraphs_cout_ = 0;
     
-	output_.str(std::wstring());
-    text_.str(std::wstring());
-	
-	paragraph_style_name_ = L"";
-    span_style_name_=L"";
+	paragraph_style_name_	= L"";
+    span_style_name_		= L"";
 
-	in_comment = false;
+	in_comment				= false;
 	return comment;
 }
 std::wstring xlsx_text_context::Impl::end_drawing_content()
 {
-	dump_text();//если в draw куча абзацев со одним стилем - сдампится здесь - иначе дампится по мере прихода каждого нового стиля
+	dump_paragraph();//если в draw куча абзацев со одним стилем - сдампится здесь - иначе дампится по мере прихода каждого нового стиля
 
-	std::wstring draw= output_.str();
+	std::wstring draw = paragraph_.str();
   
-	paragraphs_cout_ = 0;
-    
-	output_.str(std::wstring());
-    text_.str(std::wstring());
+	paragraphs_cout_ = 0;    
 	
-	paragraph_style_name_ = L"";
-    span_style_name_=L"";
+	run_.str(std::wstring());
+	paragraph_.str(std::wstring());
+    text_.str(std::wstring());
+
+	paragraph_style_name_	= L"";
+    span_style_name_		= L"";
 
 	in_draw = false;
 	return draw;
 }
 int xlsx_text_context::Impl::end_cell_content()
 {
-	dump_text();
+	dump_run();
 
-	const int sharedStrId = output_.str().empty() ? (-1) :  static_cast<int>(xlsx_shared_strings_.add(output_.str()));
+	const int sharedStrId = run_.str().empty() ? (-1) :  static_cast<int>(xlsx_shared_strings_.add(run_.str()));
 	//???? нужно ли здесь очищать все ????? - проверить стили на кучках - и проверить как меняются стили внутри одной ячейки - то есть здешнее переопределение внешнего стиля
 	in_cell_content = false;   
 	return sharedStrId;

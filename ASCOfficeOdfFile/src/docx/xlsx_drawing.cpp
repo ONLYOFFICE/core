@@ -37,10 +37,7 @@ void xlsx_serialize_text(std::wostream & strm, _xlsx_drawing & val )
 			CP_XML_NODE(L"a:lstStyle");
 			if (strTextContent)
 			{				
-				CP_XML_NODE(L"a:p")
-				{
-					CP_XML_STREAM() << strTextContent.get();
-				}
+				CP_XML_STREAM() << strTextContent.get();
 			}
 		}
     }
@@ -247,7 +244,7 @@ void xlsx_serialize(std::wostream & strm, _xlsx_drawing & val)
 		{
 			CP_XML_NODE(L"xdr:twoCellAnchor")
 			{
-				//CP_XML_ATTR(L"editAs", L"absolute");//"absolute");oneCell
+				CP_XML_ATTR(L"editAs", L"oneCell");//"absolute");oneCell
 
 				xlsx_serialize			(CP_XML_STREAM(), val.from_);
 				xlsx_serialize			(CP_XML_STREAM(), val.to_);

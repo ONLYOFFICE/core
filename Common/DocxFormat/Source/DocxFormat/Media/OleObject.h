@@ -3,15 +3,16 @@
 #define OOX_OLE_OBJECT_INCLUDE_H_
 
 #include "Media.h"
-
+#include "../../XlsxFormat/FileTypes_Spreadsheet.h"
 
 namespace OOX
 {
 	class OleObject : public Media
 	{
 	public:
-		OleObject()
+		OleObject(bool bSpreadsheet_ = false)
 		{
+			bSpreadsheet	= bSpreadsheet_;
 		}
 		OleObject(const OOX::CPath& filename)
 		{
@@ -37,7 +38,8 @@ namespace OOX
 	public:
 		virtual const FileType type() const
 		{
-			return FileTypes::OleObject;
+			if (bSpreadsheet)	return OOX::Spreadsheet::FileTypes::OleObject;
+			else				return OOX::FileTypes::OleObject;
 		}
 		virtual const CPath DefaultDirectory() const
 		{
@@ -47,6 +49,8 @@ namespace OOX
 		{
 			return m_filename.GetFilename();
 		}
+	private:
+		bool bSpreadsheet;
 	};
 } // namespace OOX
 

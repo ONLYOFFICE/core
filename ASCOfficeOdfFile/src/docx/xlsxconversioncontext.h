@@ -82,6 +82,8 @@ public:
     bool is_empty_row() const;
     void set_current_row_height(size_t height_pt);    
 
+	bool in_table_cell();
+
     void start_table_cell(const std::wstring & formula, size_t columnsSpanned, size_t rowsSpanned);
     void end_table_cell();
     

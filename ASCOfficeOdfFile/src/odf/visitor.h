@@ -1,6 +1,4 @@
-#ifndef _CPDOCCORE_VISITOR_H_INCLUDED_
-#define _CPDOCCORE_VISITOR_H_INCLUDED_
-
+#pragma once
 /*
 
 Ñץולא נאבמעû ס visitor:
@@ -139,5 +137,3 @@ namespace cpdoccore {
     }
 
 }
-
-#endif

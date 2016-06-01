@@ -10,7 +10,7 @@
 namespace cpdoccore { 
 namespace odf_reader {
 
-/// \class  office_document_base
+//  office_document_base
 class office_document_base  : public office_element
 {
 public:
@@ -55,7 +55,7 @@ public:
 };
 
 
-/// \class  office_document 
+//  office_document 
 class office_document : public office_document_base
 {
 public:
@@ -72,7 +72,7 @@ public:
 
 CP_REGISTER_OFFICE_ELEMENT2(office_document);
 
-/// \class office_document_content
+// office_document_content
 class office_document_content : public office_document_base
 {
 public:
@@ -88,7 +88,7 @@ public:
 
 CP_REGISTER_OFFICE_ELEMENT2(office_document_content);
 
-/// \class office_document_styles
+// office_document_styles
 class office_document_styles : public office_document_base
 {
 public:
@@ -107,7 +107,7 @@ private:
 
 CP_REGISTER_OFFICE_ELEMENT2(office_document_styles);
 
-/// \class office_document_meta
+// office_document_meta
 class office_document_meta : public office_document_base
 {
 public:
@@ -123,7 +123,7 @@ public:
 
 CP_REGISTER_OFFICE_ELEMENT2(office_document_meta);
 
-/// \class office_document_settings
+// office_document_settings
 class office_document_settings : public office_document_base
 {
 public:
@@ -140,7 +140,7 @@ public:
 CP_REGISTER_OFFICE_ELEMENT2(office_document_settings);
 
 
-/// \class manifest:manifest
+// manifest:manifest
 class manifest_manifest : public office_document_base
 {
 public:
@@ -156,7 +156,7 @@ public:
 
 CP_REGISTER_OFFICE_ELEMENT2(manifest_manifest);
 
-/// \class manifest:file-entry
+// manifest:file-entry
 class manifest_entry  : public office_element
 {
 public:
@@ -182,7 +182,7 @@ public:
 CP_REGISTER_OFFICE_ELEMENT2(manifest_entry);
 
 
-/// \class manifest:encryption-data
+// manifest:encryption-data
 class manifest_encryption_data  : public office_element
 {
 public:

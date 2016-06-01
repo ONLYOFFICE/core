@@ -77,25 +77,25 @@ private:
 
 	odf_reader::styles_container * local_styles_ptr_;
 
-    void write_rPr(std::wostream & strm);
-	void write_pPr(std::wostream & strm);
-	void write_t(std::wostream & strm);
+    void write_rPr	(std::wostream & strm);
+	void write_pPr	(std::wostream & strm);
+	void write_t	(std::wostream & strm);
    
-    std::wstring dump_paragraph();
-	void dump_run();
-	void dump_field();
+    std::wstring	dump_paragraph();
+	void			dump_run();
+	void			dump_field();
   
 	size_t paragraphs_cout_; //???? тока из за начала отсчета?
    
-	std::wstringstream text_; //приходящий текст
-    std::wstringstream paragraph_; //перманенто скидываемые параграфы
-    std::wstringstream run_; //перманенто скидываемые куски с быть может разными свойствами
+	std::wstringstream text_;		//приходящий текст
+    std::wstringstream paragraph_;	//перманенто скидываемые параграфы
+    std::wstringstream run_;		//перманенто скидываемые куски с быть может разными свойствами
    
 	std::wstring		paragraph_style_name_;
     std::wstring		span_style_name_;
 
-	std::wstring			base_style_name_;
-	odf_types::style_family::type base_style_family_;//Presentation Or SpreadSheet
+	std::wstring					base_style_name_;
+	odf_types::style_family::type	base_style_family_;//Presentation Or SpreadSheet
 /////////////lists////////////
     std::list<std::wstring> list_style_stack_;
     bool first_element_list_item_;
@@ -158,8 +158,8 @@ void pptx_text_context::Impl::start_paragraph(const std::wstring & styleName)
 		text_.str(std::wstring());
 		field_value_.str(std::wstring());
 	}
-	paragraph_style_name_ = styleName;
-	in_paragraph = true;
+	paragraph_style_name_	= styleName;
+	in_paragraph			= true;
 }
 
 void pptx_text_context::Impl::end_paragraph()
@@ -330,13 +330,13 @@ void pptx_text_context::Impl::write_pPr(std::wostream & strm)
 	int level = list_style_stack_.size()-1;		
 
 	odf_reader::paragraph_format_properties		paragraph_properties_;
-	ApplyParagraphProperties (paragraph_style_name_,	paragraph_properties_,odf_types::style_family::Paragraph);
 	
-	ApplyListProperties (paragraph_properties_,level);//выравнивания листа накатим на свойства параграфа
+	ApplyParagraphProperties	(paragraph_style_name_,	paragraph_properties_,odf_types::style_family::Paragraph);
+	ApplyListProperties			(paragraph_properties_,level);//выравнивания листа накатим на свойства параграфа
 
 	paragraph_properties_.pptx_convert(pptx_context_);	
 	
-	const std::wstring & paragraphAttr  =  get_styles_context().paragraph_attr().str();	
+	const std::wstring & paragraphAttr  = get_styles_context().paragraph_attr().str();	
 	const std::wstring & paragraphNodes = get_styles_context().paragraph_nodes().str();
 
 	if (level < 0 && paragraphAttr.length() <1 && paragraphNodes.length()<1) return;
@@ -515,8 +515,7 @@ void pptx_text_context::Impl::dump_run()
 	//if (content.length() <1 &&  span_style_name_.length()<1) return ;      ... провеить с пустыми строками нужны ли  ...
 
 	if (content .length() > 0)
-	{
-		
+	{		
 		CP_XML_WRITER(run_)
 		{
 			CP_XML_NODE(L"a:r")
@@ -649,7 +648,8 @@ std::wstring pptx_text_context::Impl::current_list_style()
 std::wstring pptx_text_context::Impl::find_list_rename(const std::wstring & ListStyleName)
 {
     std::wstring name = ListStyleName;
-    while (list_style_renames_.count(name) > 0)
+    
+	while (list_style_renames_.count(name) > 0)
         name = list_style_renames_.at(name);
 
     return name;
@@ -658,6 +658,7 @@ std::wstring pptx_text_context::Impl::find_list_rename(const std::wstring & List
 void pptx_text_context::Impl::end_list_item()
 {
 	dump_paragraph();
+	
 	paragraphs_cout_--;
 	paragraph_style_name_ = L"";
 
@@ -722,9 +723,6 @@ void pptx_text_context::Impl::write_list_styles(std::wostream & strm)//defaults 
 
 	list_style_stack_.clear();
 }
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 

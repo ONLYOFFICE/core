@@ -1,5 +1,4 @@
-#ifndef _CPDOCCORE_ODF_TABLE_CALCULATION_SETTINGS_H_
-#define _CPDOCCORE_ODF_TABLE_CALCULATION_SETTINGS_H_
+#pragma once
 
 #include <iosfwd>
 #include <cpdoccore/CPOptional.h>
@@ -11,8 +10,7 @@
 namespace cpdoccore { 
 namespace odf_reader {
 
-/// \class  table_calculation_settings
-/// \brief  table:calculation-settings
+//  table:calculation-settings
 class table_calculation_settings : public office_element_impl<table_calculation_settings>
 {
 public:
@@ -28,12 +26,12 @@ private:
     virtual void add_text(const std::wstring & Text);
 
 private:
-    _CP_OPT(bool) table_case_sensitive_;
-    _CP_OPT(bool) table_precision_as_shown_;
-    _CP_OPT(bool) table_search_criteria_must_apply_to_whole_cell_;
-    _CP_OPT(bool) table_automatic_find_labels_;
-    _CP_OPT(bool) table_use_regular_expressions_;
-    _CP_OPT(unsigned int) table_null_year_;
+    _CP_OPT(bool)			table_case_sensitive_;
+    _CP_OPT(bool)			table_precision_as_shown_;
+    _CP_OPT(bool)			table_search_criteria_must_apply_to_whole_cell_;
+    _CP_OPT(bool)			table_automatic_find_labels_;
+    _CP_OPT(bool)			table_use_regular_expressions_;
+    _CP_OPT(unsigned int)	table_null_year_;
 
     office_element_ptr table_null_date_;
             
@@ -41,8 +39,7 @@ private:
 
 CP_REGISTER_OFFICE_ELEMENT2(table_calculation_settings);
 
-/// \class  table_null_date
-/// \brief  table:null-date
+//  table:null-date
 class table_null_date : public office_element_impl<table_null_date>
 {
 public:
@@ -64,9 +61,7 @@ private:
 
 CP_REGISTER_OFFICE_ELEMENT2(table_null_date);
 
-/// \class  table_iteration
-/// \brief  table:iteration
-/// table-iteration
+//  table:iteration
 class table_iteration : public office_element_impl<table_iteration>
 {
 public:
@@ -82,14 +77,12 @@ private:
     virtual void add_text(const std::wstring & Text);
 
 private:
-    _CP_OPT(std::wstring) table_status_;
-    _CP_OPT(unsigned int) table_steps_;
-    _CP_OPT(double) table_maximum_difference_;
+    _CP_OPT(std::wstring)	table_status_;
+    _CP_OPT(unsigned int)	table_steps_;
+    _CP_OPT(double)			table_maximum_difference_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(table_iteration);
 
 }
 }
-
-#endif

@@ -1,4 +1,4 @@
-#include "formulasconvert.h"
+п»ї#include "formulasconvert.h"
 
 #include <boost/algorithm/string.hpp>
 #include <boost/regex.hpp>
@@ -118,7 +118,7 @@ namespace formulasconvert {
 	}
 	std::wstring replace_named_ref_formater1(boost::wsmatch const & what)
 	{
-		boost::wregex complexRef(L"\\$([^\\.]+?){0,1}\\.(\\$[a-zA-Z]+\\${0,1}\\d+)(?::\\.(\\$[a-zA-Z]+\\${0,1}\\d+)){0,1}");
+		boost::wregex complexRef(L"\\${0,1}([^\\.]+?){0,1}\\.(\\${0,1}[a-zA-Z]+\\${0,1}\\d+)(?::\\.(\\${0,1}[a-zA-Z]+\\${0,1}\\d+)){0,1}");
 
 		std::wstring expr = what[1].str();
 		const std::wstring res = boost::regex_replace(
@@ -132,7 +132,7 @@ namespace formulasconvert {
 	}
 
 
-// заменяем формат адресации ячеек
+// Р·Р°РјРµРЅСЏРµРј С„РѕСЂРјР°С‚ Р°РґСЂРµСЃР°С†РёРё СЏС‡РµРµРє
 // [.A1] -> A1
 // [.A1:.B5] -> A1:B5
 // [Sheet2.A1:B5] -> Sheet2!A1:B5
@@ -142,10 +142,8 @@ void odf2oox_converter::Impl::replace_cells_range(std::wstring& expr)
 {
     //boost::wregex simpleRef(L"\\[\\.([a-zA-Z]+\\d+)(?::\\.([a-zA-Z]+\\d+)){0,1}\\]");
     boost::wregex complexRef(L"\\[(?:\\$)?([^\\.]+?){0,1}\\.(\\${0,1}[a-zA-Z]+\\${0,1}\\d+)(?::\\.(\\${0,1}[a-zA-Z]+\\${0,1}\\d+)){0,1}\\]");
-	//boost::wregex complexRef(L"\\[(.*?)\\]");
     /*
                                  [     $   Sheet2          . A1                  :  . B5                    ]
-
     */
 
     const std::wstring res = boost::regex_replace(
@@ -160,7 +158,7 @@ void odf2oox_converter::Impl::replace_cells_range(std::wstring& expr)
 
 void odf2oox_converter::Impl::replace_named_ref(std::wstring & expr)
 {
-	boost::wregex complexRef(L"\\$([^\\.]+?){0,1}\\.(\\$[a-zA-Z]+\\${0,1}\\d+)(?::\\.(\\$[a-zA-Z]+\\${0,1}\\d+)){0,1}");
+	boost::wregex complexRef(L"\\${0,1}([^\\.]+?){0,1}\\.(\\${0,1}[a-zA-Z]+\\${0,1}\\d+)(?::\\.(\\${0,1}[a-zA-Z]+\\${0,1}\\d+)){0,1}");
 
     const std::wstring res = boost::regex_replace(
         expr,
@@ -170,7 +168,7 @@ void odf2oox_converter::Impl::replace_named_ref(std::wstring & expr)
     expr = res;    
 }
 
-// распознаем и заменяем формат формулы
+// СЂР°СЃРїРѕР·РЅР°РµРј Рё Р·Р°РјРµРЅСЏРµРј С„РѕСЂРјР°С‚ С„РѕСЂРјСѓР»С‹
 // of:=(Formula) -> (Formula)
 bool odf2oox_converter::Impl::check_formula(std::wstring& expr)
 {
@@ -204,8 +202,8 @@ std::wstring replace_semicolons_formater(boost::wsmatch const & what)
 }
 
 // TODO
-// заменить точки с запятой во всех вхождениях кроме находящихся в кавычках --*и в фигурных скобках*--
-// TODO: проверить как сохраняются кавычки в строке
+// Р·Р°РјРµРЅРёС‚СЊ С‚РѕС‡РєРё СЃ Р·Р°РїСЏС‚РѕР№ РІРѕ РІСЃРµС… РІС…РѕР¶РґРµРЅРёСЏС… РєСЂРѕРјРµ РЅР°С…РѕРґСЏС‰РёС…СЃСЏ РІ РєР°РІС‹С‡РєР°С… --*Рё РІ С„РёРіСѓСЂРЅС‹С… СЃРєРѕР±РєР°С…*--
+// TODO: РїСЂРѕРІРµСЂРёС‚СЊ РєР°Рє СЃРѕС…СЂР°РЅСЏСЋС‚СЃСЏ РєР°РІС‹С‡РєРё РІ СЃС‚СЂРѕРєРµ
 void odf2oox_converter::Impl::replace_semicolons(std::wstring& expr)
 {
      const std::wstring res = boost::regex_replace(
@@ -227,6 +225,32 @@ std::wstring replace_vertical_formater(boost::wsmatch const & what)
         std::wstring inner = what[1].str();
         boost::algorithm::replace_all(inner, L"|", L";");
         return L"{" + inner + L"}";
+    }    
+    else if (what[2].matched)
+        return what[2].str();
+    else if (what[3].matched)
+        return what[3].str();
+}
+std::wstring replace_space_PROBEL(boost::wsmatch const & what)
+{
+    if (what[1].matched)
+    {
+        std::wstring inner = what[1].str();
+        boost::algorithm::replace_all(inner, L" ", L"PROBEL");
+        return inner;
+    }    
+    else if (what[2].matched)
+        return what[2].str();
+    else if (what[3].matched)
+        return what[3].str();
+}
+std::wstring replace_point(boost::wsmatch const & what)
+{
+    if (what[1].matched)
+    {
+        std::wstring inner = what[1].str();
+        boost::algorithm::replace_all(inner, L".", L"РўРћРЎHKA");
+        return inner;
     }    
     else if (what[2].matched)
         return what[2].str();
@@ -274,7 +298,7 @@ bool is_forbidden(const std::wstring & formula)
     return false;
 }
 
-// заменить вертикальную черту во всех вхождениях в фигурных скобках, но не внутри строк
+// Р·Р°РјРµРЅРёС‚СЊ РІРµСЂС‚РёРєР°Р»СЊРЅСѓСЋ С‡РµСЂС‚Сѓ РІРѕ РІСЃРµС… РІС…РѕР¶РґРµРЅРёСЏС… РІ С„РёРіСѓСЂРЅС‹С… СЃРєРѕР±РєР°С…, РЅРѕ РЅРµ РІРЅСѓС‚СЂРё СЃС‚СЂРѕРє
 void odf2oox_converter::Impl::replace_vertical(std::wstring& expr)
 {
      const std::wstring res = boost::regex_replace(
@@ -284,7 +308,7 @@ void odf2oox_converter::Impl::replace_vertical(std::wstring& expr)
         boost::match_default | boost::format_all);
      expr = res;
 }
-// заменить пробел во всех вхождениях на запятую
+// Р·Р°РјРµРЅРёС‚СЊ РїСЂРѕР±РµР» РІРѕ РІСЃРµС… РІС…РѕР¶РґРµРЅРёСЏС… РЅР° Р·Р°РїСЏС‚СѓСЋ
 void odf2oox_converter::Impl::replace_space(std::wstring& expr)
 {
      const std::wstring res = boost::regex_replace(
@@ -300,9 +324,14 @@ std::wstring odf2oox_converter::Impl::convert(const std::wstring& expr)
     if (is_forbidden(expr))
         return L"NULLFORMULA()";
 	
+	boost::wregex complexRef(L"('(?!\\s\\'){0,1}.*?')");// РїРѕРёСЃРє С‚РѕРіРѕ С‡С‚Рѕ РІ Р°РїРѕСЃС‚СЂРѕС„Р°С… Рё Р·Р°РјРµРЅР° С‚Р°Рј С‚РѕС‡РµРє РЅР° РўРћРЎHKA
 
-    std::wstring workstr = expr;
- 	
+    std::wstring workstr = boost::regex_replace(
+        expr,
+        complexRef,
+        &replace_point,
+        boost::match_default | boost::format_all);	
+
 	boost::algorithm::replace_all(workstr, L" ", L"PROBEL");
 	boost::algorithm::replace_all(workstr, L"'", L"APOSTROF");
    
@@ -314,34 +343,40 @@ std::wstring odf2oox_converter::Impl::convert(const std::wstring& expr)
 	int res_find=0;
 	if ((res_find = workstr.find(L"CONCATINATE")) > 0)
 	{
-		//могут быть частично заданы диапазоны
+		//РјРѕРіСѓС‚ Р±С‹С‚СЊ С‡Р°СЃС‚РёС‡РЅРѕ Р·Р°РґР°РЅС‹ РґРёР°РїР°Р·РѕРЅС‹
 		//todooo
 
 	}
- 	boost::algorithm::replace_all(workstr, L"PROBEL", L" ");
-	boost::algorithm::replace_all(workstr, L"APOSTROF", L"'");
+ 	boost::algorithm::replace_all(workstr, L"PROBEL"	, L" ");
+	boost::algorithm::replace_all(workstr, L"APOSTROF"	, L"'");
+	boost::algorithm::replace_all(workstr, L"TOCHKA"	, L".");
     return workstr;
 }
 
 
 //Sheet2.C3:Sheet2.C19 Sheet2.L29:Sheet2.L36
-//в
+//РІ
 //Sheet2!C3:C19,Sheet2!L27:L34
 std::wstring odf2oox_converter::Impl::convert_chart_distance(const std::wstring& expr)
 {
     if (is_forbidden(expr))
         return L"NULLFORMULA()";
 
-    //std::wstring workstr = expr;
-    //replace_space(workstr);
-    //return workstr;
+    std::wstring workstr = expr;
+	boost::wregex complexRef(L"('(?!\\s\\'){0,1}.*?')");// РїРѕРёСЃРє С‚РѕРіРѕ С‡С‚Рѕ РІ Р°РїРѕСЃС‚СЂРѕС„Р°С… Рё Р·Р°РјРµРЅР° С‚Р°Рј РїСЂРѕР±РµР»РѕРІ РЅР° PROBEL
 
-	//распарсить по диапазонам - одф-пробел, ик-эль-запятая
+    workstr = boost::regex_replace(
+        expr,
+        complexRef,
+        &replace_space_PROBEL,
+        boost::match_default | boost::format_all);
+    
+	//СЂР°СЃРїР°СЂСЃРёС‚СЊ РїРѕ РґРёР°РїР°Р·РѕРЅР°Рј - РѕРґС„-РїСЂРѕР±РµР», РёРє-СЌР»СЊ-Р·Р°РїСЏС‚Р°СЏ
 
 	std::vector<std::wstring> distance_inp;
 	std::vector<std::wstring> distance_out;
 
-	boost::algorithm::split(distance_inp,expr, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
+	boost::algorithm::split(distance_inp, workstr, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
 
 	BOOST_FOREACH(std::wstring &d,distance_inp)
 	{
@@ -367,21 +402,23 @@ std::wstring odf2oox_converter::Impl::convert_chart_distance(const std::wstring&
 		int res1 = sheet.find(L"-");
 		int res2 = sheet.find(L"'");
 		
-		if (res1>=0 && !(res2==0))
+		if (res1 >= 0 && !(res2 == 0))
 		{
 			sheet = L"'" + sheet + L"'";
 		}
 
-		distance_out.push_back(sheet+L"!"+cells_out.substr(0, cells_out.size()-1));
+		distance_out.push_back(sheet+L"!" + cells_out.substr(0, cells_out.size()-1));
 	}
 	std::wstring result;
 
-	BOOST_FOREACH(std::wstring &d,distance_out)
+	BOOST_FOREACH(std::wstring &d, distance_out)
 	{
 		result.append(d);
 		result.append(L",");
 	}
-	return result.substr(0, result.size()-1);
+ 	boost::algorithm::replace_all(result, L"PROBEL", L" ");
+	
+	return result.substr(0, result.size()-1);// РјРёРЅСѓСЃ РїРѕСЃР»РµРґРЅСЏСЏ Р»РёС€РЅСЏСЏ Р·Р°РїСЏС‚Р°СЏ
 }
 odf2oox_converter::odf2oox_converter(): impl_(new odf2oox_converter::Impl)
 {
@@ -401,11 +438,53 @@ std::wstring odf2oox_converter::convert_chart_distance(const std::wstring& expr)
 }
 std::wstring odf2oox_converter::convert_named_ref(const std::wstring& expr)
 {
-    std::wstring workstr = expr;
-    impl_->replace_named_ref(workstr);
+	boost::wregex complexRef(L"('(?!\\s\\'){0,1}.*?')");// РїРѕРёСЃРє С‚РѕРіРѕ С‡С‚Рѕ РІ Р°РїРѕСЃС‚СЂРѕС„Р°С… Рё Р·Р°РјРµРЅР° С‚Р°Рј С‚РѕС‡РµРє РЅР° РўРћРЎHKA
+
+    std::wstring workstr = boost::regex_replace(
+        expr,
+        complexRef,
+        &replace_point,
+        boost::match_default | boost::format_all);	
+	
+	boost::algorithm::replace_all(workstr, L" ", L"PROBEL");		
+	boost::algorithm::replace_all(workstr, L"'", L"APOSTROF");
+
+	impl_->replace_named_ref(workstr);
+
+	boost::algorithm::replace_all(workstr, L"PROBEL"	, L" ");
+	boost::algorithm::replace_all(workstr, L"APOSTROF"	, L"'");
+	boost::algorithm::replace_all(workstr, L"TOCHKA"	, L".");
     return workstr;
 }
+std::wstring odf2oox_converter::convert_named_expr(const std::wstring& expr)
+{
+	boost::wregex complexRef(L"('(?!\\s\\'){0,1}.*?')");// РїРѕРёСЃРє С‚РѕРіРѕ С‡С‚Рѕ РІ Р°РїРѕСЃС‚СЂРѕС„Р°С… Рё Р·Р°РјРµРЅР° С‚Р°Рј С‚РѕС‡РµРє РЅР° РўРћРЎHKA
 
+    std::wstring workstr = boost::regex_replace(
+        expr,
+        complexRef,
+        &replace_point,
+        boost::match_default | boost::format_all);	
+	
+	boost::algorithm::replace_all(workstr, L" ", L"PROBEL");		
+	boost::algorithm::replace_all(workstr, L"'", L"APOSTROF");
+   
+    impl_->replace_cells_range(workstr);
+    impl_->replace_semicolons(workstr);
+    impl_->replace_vertical(workstr);
+
+	int res_find=0;
+	if ((res_find = workstr.find(L"CONCATINATE")) > 0)
+	{
+		//РјРѕРіСѓС‚ Р±С‹С‚СЊ С‡Р°СЃС‚РёС‡РЅРѕ Р·Р°РґР°РЅС‹ РґРёР°РїР°Р·РѕРЅС‹
+		//todooo
+
+	}
+ 	boost::algorithm::replace_all(workstr, L"PROBEL"	, L" ");
+	boost::algorithm::replace_all(workstr, L"APOSTROF"	, L"'");
+	boost::algorithm::replace_all(workstr, L"TOCHKA"	, L".");
+	return workstr;
+}
 
 std::wstring odf2oox_converter::convert_ref(std::wstring const & expr)
 {

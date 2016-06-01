@@ -1,10 +1,4 @@
-/*
-Copyright (C) 2010, Ferruccio Barletta (ferruccio.barletta@gmail.com)
-*/
-
-
-#ifndef XML_WRITER_HPP
-#define XML_WRITER_HPP
+#pragma once
 
 #include <string>
 #include <iostream>
@@ -299,5 +293,3 @@ typedef xml::writer::element<wchar_t> xml_element;
 #define CP_XML_NODE_SIMPLE() std::wstring NS_NAME = std::wstring(ns) + std::wstring(L":") + std::wstring(name); CP_XML_NODE(NS_NAME)
 
 }
-
-#endif

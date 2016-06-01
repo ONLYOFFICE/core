@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #ifndef OOX_VMLDRAWING_FILE_INCLUDE_H_
 #define OOX_VMLDRAWING_FILE_INCLUDE_H_
 
@@ -15,21 +15,21 @@
 namespace OOX
 {
 
-//в файле VmlDrawing могут быть как отобразительная часть комментариев Xlsx, так и просто обычные объекты 
+//РІ С„Р°Р№Р»Рµ VmlDrawing РјРѕРіСѓС‚ Р±С‹С‚СЊ РєР°Рє РѕС‚РѕР±СЂР°Р·РёС‚РµР»СЊРЅР°СЏ С‡Р°СЃС‚СЊ РєРѕРјРјРµРЅС‚Р°СЂРёРµРІ Xlsx, С‚Р°Рє Рё РїСЂРѕСЃС‚Рѕ РѕР±С‹С‡РЅС‹Рµ РѕР±СЉРµРєС‚С‹ 
 
 	class CVmlDrawing : public OOX::WritingElementWithChilds<OOX::WritingElement>, public OOX::FileGlobalEnumerated, public OOX::IFileContainer
 	{
 	public:
-		CVmlDrawing()
+		CVmlDrawing(bool bSpreadsheet_ = false)
 		{
-			m_mapComments = NULL;
+			bSpreadsheet	= bSpreadsheet_;
+			m_mapComments	= NULL;
+			m_lObjectIdVML = 0;
 		}
 		CVmlDrawing(const CPath& oRootPath, const CPath& oPath)
 		{
 			m_mapComments = NULL;
 			read( oRootPath, oPath );
-
-			m_sFilename = oPath.GetPath();
 		}
 		virtual ~CVmlDrawing()
 		{
@@ -65,7 +65,7 @@ namespace OOX
 				ReadAttributes( oReader );
 
 				CString elementContent;
-				bool bReadyElement = false;//собираем все до нахождения собственно элемента
+				bool bReadyElement = false;//СЃРѕР±РёСЂР°РµРј РІСЃРµ РґРѕ РЅР°С…РѕР¶РґРµРЅРёСЏ СЃРѕР±СЃС‚РІРµРЅРЅРѕ СЌР»РµРјРµРЅС‚Р°
 
 				if ( !oReader.IsEmptyNode() )
 				{
@@ -79,7 +79,7 @@ namespace OOX
 								strXml.Append(NodeContent);
 								strXml.Append(_T("</xml>"));
 								
-						XmlUtils::CXmlLiteReader oSubReader;//нам нужны xml и сами объекты 
+						XmlUtils::CXmlLiteReader oSubReader;//РЅР°Рј РЅСѓР¶РЅС‹ xml Рё СЃР°РјРё РѕР±СЉРµРєС‚С‹ 
 						
 						if (oSubReader.FromString(strXml) == false) continue;						
 						oSubReader.ReadNextNode();
@@ -90,7 +90,7 @@ namespace OOX
 						while ( oSubReader.ReadNextSiblingNode( nStylesDepth1 ) )//
 						{
 							CWCharWrapper sName = oSubReader.GetName();
-							switch (sName[0])// вынесены только объекты .. 
+							switch (sName[0])// РІС‹РЅРµСЃРµРЅС‹ С‚РѕР»СЊРєРѕ РѕР±СЉРµРєС‚С‹ .. 
 							{
 							case 'v':
 								{
@@ -223,9 +223,10 @@ namespace OOX
 		}
 		virtual void read(const CPath& oRootPath, const CPath& oPath)
 		{
+			m_oReadPath = oPath;
 			IFileContainer::Read( oRootPath, oPath );
 
-			//так как это не совсем xml - поправим
+			//С‚Р°Рє РєР°Рє СЌС‚Рѕ РЅРµ СЃРѕРІСЃРµРј xml - РїРѕРїСЂР°РІРёРј
 
 			CFile file;
 			if (file.OpenFile(oPath.GetPath()) != S_OK) return;
@@ -244,12 +245,12 @@ namespace OOX
 
 			if (fileContent.length() > 0)
 			{
-				// элементы вида <br> без </br>
+				// СЌР»РµРјРµРЅС‚С‹ РІРёРґР° <br> Р±РµР· </br>
 				// test_vml4.xlsx
 				replace_all(fileContent, _T("<br>"), _T(""));
 
 
-				// элементы вида <![if ...]>, <![endif]>
+				// СЌР»РµРјРµРЅС‚С‹ РІРёРґР° <![if ...]>, <![endif]>
 				// Zigmunds.pptx
 				while(true)
 				{
@@ -269,14 +270,19 @@ namespace OOX
 		virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 		{
 			//for Comment SpreadsheetML only
-			if(NULL != m_mapComments && m_mapComments->size() > 0)
+			if((NULL != m_mapComments && m_mapComments->size() > 0) || m_aXml.size() > 0)
 			{
 				XmlUtils::CStringWriter sXml;
 				sXml.WriteString(_T("<xml xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:x=\"urn:schemas-microsoft-com:office:excel\"><o:shapelayout v:ext=\"edit\"><o:idmap v:ext=\"edit\" data=\"1\"/></o:shapelayout><v:shapetype id=\"_x0000_t202\" coordsize=\"21600,21600\" o:spt=\"202\" path=\"m,l,21600r21600,l21600,xe\"><v:stroke joinstyle=\"miter\"/><v:path gradientshapeok=\"t\" o:connecttype=\"rect\"/></v:shapetype>"));
-				int nIndex = 1025;
-
-				for (std::map<CString, OOX::Spreadsheet::CCommentItem*>::const_iterator it = m_mapComments->begin(); it != m_mapComments->end(); ++it)
+				for (size_t i = 0; i < m_aXml.size(); ++i)
 				{
+					sXml.WriteString(m_aXml[i]);
+				}
+				long nIndex = m_lObjectIdVML;
+				if(NULL != m_mapComments && m_mapComments->size() > 0)
+				{
+					for (std::map<CString, OOX::Spreadsheet::CCommentItem*>::const_iterator it = m_mapComments->begin(); it != m_mapComments->end(); ++it)
+					{
 						OOX::Spreadsheet::CCommentItem* comment = it->second;
 						CString sStyle;
 						if(comment->m_dLeftMM.IsInit())
@@ -331,7 +337,7 @@ namespace OOX
 						if(comment->m_sGfxdata.IsInit())
 							sGfxdata.Format(_T("o:gfxdata=\"%ls\""), comment->m_sGfxdata.get2());
 						CString sShape; 
-						sShape.Format(_T("<v:shape id=\"_x0000_s%d\" type=\"#_x0000_t202\" style='position:absolute;"),nIndex);
+						sShape.Format(_T("<v:shape id=\"_x0000_s%04d\" type=\"#_x0000_t202\" style='position:absolute;"), nIndex++);
 						sShape.Append(sStyle);
 						sShape.Append(_T("z-index:4;visibility:hidden' "));
 						sShape.Append(sGfxdata);
@@ -339,7 +345,7 @@ namespace OOX
 						sShape.Append(sClientData);
 						sShape.Append(_T("</v:shape>"));
 						sXml.WriteString(sShape);
-						nIndex++;
+					}
 				}
 				sXml.WriteString(_T("</xml>"));
 
@@ -350,7 +356,8 @@ namespace OOX
 		}
 		virtual const OOX::FileType type() const
 		{
-			return OOX::FileTypes::VmlDrawing;
+			if (bSpreadsheet)	return OOX::Spreadsheet::FileTypes::VmlDrawing;
+			else				return OOX::FileTypes::VmlDrawing;
 		}
 		virtual const CPath DefaultDirectory() const
 		{
@@ -362,7 +369,7 @@ namespace OOX
 		}
 		const CPath GetReadPath()
 		{
-			return m_sFilename;
+			return m_oReadPath;
 		}
 	private:
 	
@@ -370,10 +377,16 @@ namespace OOX
 		{
 		}
 
+		bool bSpreadsheet;
+
 	public:
+		CPath m_oReadPath;
+
 		std::map<CString, OOX::Spreadsheet::CCommentItem*>*		m_mapComments;
-		std::map<CString, int>									m_mapShapes; //связь id (_x0000_s1025) с номером объекта  для комментов
-		std::map<CString,CString>								m_mapShapesXml; //связь id (_x0000_s1025) с  xml для OfficeDrawing
+		std::map<CString, int>									m_mapShapes; //СЃРІСЏР·СЊ id (_x0000_s1025) СЃ РЅРѕРјРµСЂРѕРј РѕР±СЉРµРєС‚Р°  РґР»СЏ РєРѕРјРјРµРЅС‚РѕРІ
+		std::map<CString,CString>								m_mapShapesXml; //СЃРІСЏР·СЊ id (_x0000_s1025) СЃ  xml РґР»СЏ OfficeDrawing
+		std::vector<CString>									m_aXml;
+		long													m_lObjectIdVML;
 	};
 } // namespace OOX
 

@@ -12,14 +12,13 @@
 
 #include "serialize_elements.h"
 #include "odfcontext.h"
+#include "number_style.h"
 #include "calcs_styles.h"
 #include "search_table_cell.h"
 
 #include "../docx/xlsx_utils.h"
 #include "../docx/xlsx_cell_format.h"
 #include "../formulasconvert/formulasconvert.h"
-
-extern	double getSystemDPI();
 
 namespace cpdoccore { 
 
@@ -35,9 +34,9 @@ int table_table_cell_content::xlsx_convert(oox::xlsx_conversion_context & Contex
     Context.get_table_context().start_cell_content();
 	Context.get_text_context().set_cell_text_properties(text_properties);
     
-	for (int i = 0 ; i < text_content_.size(); i++)
+	for (int i = 0 ; i < elements_.size(); i++)
     {
-        text_content_[i]->xlsx_convert(Context);
+        elements_[i]->xlsx_convert(Context);
     }
    
 	const int sharedStrId = Context.get_table_context().end_cell_content();
@@ -154,8 +153,6 @@ void table_table_row::xlsx_convert(oox::xlsx_conversion_context & Context)
 						CP_XML_ATTR(L"customFormat", 1);
 						CP_XML_ATTR(L"s", Default_Cell_style_in_row_ );
 					}
-					else
-						CP_XML_ATTR(L"customFormat", 0);
 
 
                     CP_XML_STREAM();
@@ -273,7 +270,6 @@ void table_table::xlsx_convert(oox::xlsx_conversion_context & Context)
 		} 
 
 	}
-    //office-dde-sourcetable_linked_source_attlist
     Context.start_table(tableName, tableStyleName);
 
 	table_columns_and_groups_.xlsx_convert(Context);
@@ -282,7 +278,10 @@ void table_table::xlsx_convert(oox::xlsx_conversion_context & Context)
     if (table_shapes_)
         table_shapes_->xlsx_convert(Context);
 
-    Context.end_table();
+ 	if (conditional_formats_)
+		conditional_formats_->xlsx_convert(Context);
+
+	Context.end_table();
 }
 
 void table_columns::xlsx_convert(oox::xlsx_conversion_context & Context) 
@@ -340,7 +339,7 @@ namespace {
 
 double pixToSize(double pixels, double maxDigitSize)
 {
-	return (int((pixels-5)/maxDigitSize*100.+0.5))/100.;
+	return (int(( pixels - 5)/ maxDigitSize * 100. + 0.5)) /100. * 0.9;
 }
 double cmToChars (double cm)
 {
@@ -430,7 +429,7 @@ void table_table_column::xlsx_convert(oox::xlsx_conversion_context & Context)
                                     in_width = 0.0;
                                 }
 								
-                                const double pixDpi = in_width * getSystemDPI();                
+                                const double pixDpi = in_width * 96.;                
                                 width = pixToSize(pixDpi, Context.getMaxDigitSize().first); 
 
 								//const double width = cmToChars(prop->style_table_column_properties_attlist_.style_column_width_->get_value_unit(length::cm));
@@ -675,12 +674,16 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
 
     if (!data_style.empty())
     {
-        if (office_element_ptr num_style = odfContext.numberStyles().find_by_style_name(data_style))
-        {
+        office_element_ptr elm = odfContext.numberStyles().find_by_style_name(data_style);
+		number_style_base *num_style = dynamic_cast<number_style_base*>(elm.get());
+      
+		if (num_style)
+		{
             Context.get_num_format_context().start_complex_format();
-            num_style->xlsx_convert(Context);
+				num_style->oox_convert(Context.get_num_format_context());
             Context.get_num_format_context().end_complex_format();
-            num_format = Context.get_num_format_context().get_last_format();
+            
+			num_format = Context.get_num_format_context().get_last_format();
         }
     }
 
@@ -693,12 +696,7 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
     
 	xfId_last_set= Context.get_style_manager().xfId(&textFormatProperties, &parFormatProperties, &cellFormatProperties, &cellFormat, num_format,false, is_style_visible);
    
-	const int sharedStringId = table_table_cell_content_.xlsx_convert(Context, &textFormatProperties);
-
-	if (t_val == oox::XlsxCellType::str && sharedStringId >=0)
-		t_val = oox::XlsxCellType::s;//в случае текста, если он есть берем кэшированное значение
-	
-	if (sharedStringId >= 0 || 
+	if ( table_table_cell_content_.elements_.size() > 0	|| 
 		!formula.empty()	||
 		(	t_val == oox::XlsxCellType::n										&& !number_val.empty()) || 
 		(	t_val == oox::XlsxCellType::b										&& bool_val) ||
@@ -712,6 +710,11 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
 												table_table_cell_attlist_extra_.table_number_rows_spanned_		- 1	);
 		Context.set_current_cell_style_id(xfId_last_set);
 		
+		const int sharedStringId = table_table_cell_content_.xlsx_convert(Context, &textFormatProperties);
+
+		if (t_val == oox::XlsxCellType::str && sharedStringId >=0)
+			t_val = oox::XlsxCellType::s;//в случае текста, если он есть берем кэшированное значение
+			
 		if (skip_next_cell)break;
 
         // пустые €чейки пропускаем.
@@ -773,7 +776,7 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
 				{
 					empty_cell_count++;
 					//”ведомление_о_вручении.ods - 13 повторов пустых с cellStyle=NULL - нужные !!!
-					if (empty_cell_count > 19 && (table_table_cell_attlist_.table_number_columns_repeated_> 299 || cellStyle == NULL)) 
+					if (empty_cell_count > 19 && last_cell_&& (table_table_cell_attlist_.table_number_columns_repeated_> 299 || cellStyle == NULL)) 
 					{//пишем простыню только если задан стиль тока дл€ этих €чеек
 						skip_next_cell = true;
 					}
@@ -782,7 +785,8 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
 		}
         else
         {
-            skip_next_cell = true;
+            if (last_cell_) // Vehicle log book.ods (row = 24 and more)
+				skip_next_cell = true;
         }
 
         Context.end_table_cell();

@@ -1,4 +1,5 @@
 #pragma once
+
 #include <cpdoccore/xml/attributes.h>
 #include "../docx/oox_drawing_fills.h"
 //описание всяких графических объектов ( вложенная мелочевка) которые используются в xlsx & odf_reader - 
@@ -91,14 +92,11 @@ namespace chart {
   };
     struct series : public simple
     {
-        struct point
+		struct point : public simple
         {
 			point(unsigned int rep/*, std::wstring const & styleName*/) : repeated_(rep)/*, style_name_(styleName)*/{}
 
-            unsigned int			repeated_;
-			std::vector<_property>	graphic_properties_;
-			oox::_oox_fill			fill_;
-
+            unsigned int	repeated_;
         };
 
         std::wstring		name_;

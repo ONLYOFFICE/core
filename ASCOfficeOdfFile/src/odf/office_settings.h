@@ -10,8 +10,7 @@
 namespace cpdoccore { 
 namespace odf_reader {
 
-/// \class  office_settings
-/// \brief  office:settings
+//  office:settings
 class office_settings : public office_element_impl<office_settings>
 {
 public:
@@ -31,8 +30,7 @@ private:
 
 CP_REGISTER_OFFICE_ELEMENT2(office_settings);
 
-/// \class  config_item_set
-/// \brief  config:config-item-set
+//  config:config-item-set
 class settings_config_item_set : public office_element_impl<settings_config_item_set>
 {
 public:
@@ -53,8 +51,7 @@ private:
 };
 CP_REGISTER_OFFICE_ELEMENT2(settings_config_item_set);
 
-/// \class  config_item
-/// \brief  config:config-item
+//  config:config-item
 class settings_config_item : public office_element_impl<settings_config_item>
 {
 public:
@@ -74,8 +71,7 @@ private:
 };
 CP_REGISTER_OFFICE_ELEMENT2(settings_config_item);
 
-/// \class  config_item_map_indexed
-/// \brief  config:config-item_map_indexed
+//  config:config-item_map_indexed
 class settings_config_item_map_indexed : public office_element_impl<settings_config_item_map_indexed>
 {
 public:
@@ -97,8 +93,7 @@ private:
 };
 CP_REGISTER_OFFICE_ELEMENT2(settings_config_item_map_indexed);
 
-/// \class  config_item_map_named
-/// \brief  config:config-item_map_named
+//  config:config-item_map_named
 class settings_config_item_map_named : public office_element_impl<settings_config_item_map_named>
 {
 public:
@@ -120,8 +115,7 @@ private:
 };
 CP_REGISTER_OFFICE_ELEMENT2(settings_config_item_map_named);
 
-/// \class  config_item
-/// \brief  config:config-item
+//  config:config-item
 class settings_config_item_map_entry : public office_element_impl<settings_config_item_map_entry>
 {
 public:

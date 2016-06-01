@@ -61,16 +61,15 @@ void draw_g::xlsx_convert(oox::xlsx_conversion_context & Context)
 	//}
 
 ////////////////////////////////////////
-	std::wstring Anchor;
 	if (common_draw_attlist_.common_text_spreadsheet_shape_attlist_.table_end_cell_address_)
 	{
-		Anchor = common_draw_attlist_.common_text_spreadsheet_shape_attlist_.table_end_cell_address_.get();
+		std::wstring Anchor = common_draw_attlist_.common_text_spreadsheet_shape_attlist_.table_end_cell_address_.get();
+		
 		const double a_x_pt = common_draw_attlist_.common_text_spreadsheet_shape_attlist_.table_end_x_.get_value_or(length(0)).get_value_unit(length::pt);
 		const double a_y_pt = common_draw_attlist_.common_text_spreadsheet_shape_attlist_.table_end_y_.get_value_or(length(0)).get_value_unit(length::pt);
 
 		Context.get_drawing_context().set_anchor(Anchor, a_x_pt, a_y_pt, true);
 	}
-
 ////////////////////////////////////////////////
 
 	for (int i = 0; i < content_.size(); i++)

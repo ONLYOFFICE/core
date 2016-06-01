@@ -92,6 +92,154 @@ std::wstring process_margin(const _CP_OPT(length_or_percent) & margin, length::u
 
 }
 
+void paragraph_format_properties::xlsx_convert(std::wostream & strm, bool in_draw)
+{
+	CP_XML_WRITER(strm)
+    {
+		std::wstring	node_name = L"pPr";
+		if (in_draw)	node_name = L"a:pPr";
+		
+		CP_XML_NODE(node_name)
+		{
+			if (fo_text_align_)
+			{
+				std::wstring jc;
+				switch(fo_text_align_->get_type())
+				{
+				case text_align::Start:
+				case text_align::Left:
+					jc = L"l";		break;
+				case text_align::End:
+				case text_align::Right:
+					jc = L"r";		break;
+				case text_align::Center:	
+					jc = L"ctr";	break;
+				case text_align::Justify:
+					jc = L"just";	break;
+				}
+				if (!jc.empty()) CP_XML_ATTR(L"algn", jc);
+			}
+			if (fo_margin_left_ || fo_margin_right_ || fo_text_indent_ )
+			{
+				// TODO auto indent
+				std::wstring w_left, w_right, w_firstLine;
+
+				w_left = process_margin(fo_margin_left_, length::emu, 1.);
+				w_right = process_margin(fo_margin_right_, length::emu, 1.);
+				w_firstLine = process_margin(fo_text_indent_,length::emu, 1.);
+
+				//if (w_left.empty())		w_left = L"0";
+				//if (w_right.empty())		w_right = L"0";
+				//if (w_firstLine.empty())	w_hanging = L"0";
+		                
+				if (!w_left.empty())		CP_XML_ATTR(L"marL",  w_left);
+				if (!w_right.empty())		CP_XML_ATTR(L"marR",  w_right);     
+				if (!w_firstLine.empty())	CP_XML_ATTR(L"indent",  w_firstLine);
+			}
+			if (style_vertical_align_)
+			{
+				std::wstring w_val;
+				switch(style_vertical_align_->get_type())
+				{
+					case vertical_align::Baseline:		w_val = L"base";break;
+					case vertical_align::Top:			w_val = L"t";		break;
+					case vertical_align::Middle:		w_val = L"ctr";	break;
+					case vertical_align::Bottom:        w_val = L"b";	break;
+					case vertical_align::Auto:          w_val = L"auto";	break;
+				}
+
+				if (!w_val.empty())		CP_XML_ATTR(L"fontAlgn",  w_val);
+			}
+			if (style_line_height_at_least_ || fo_line_height_ || style_line_spacing_)
+			{
+				std::wstring w_line, w_lineRule;
+				if (fo_line_height_)
+				{
+					if (fo_line_height_->get_type() == line_width::Percent)
+					{
+						double percent = fo_line_height_->get_percent().get_value();
+						w_line = boost::lexical_cast<std::wstring>( (int)( 0.5 + percent *1000. ) );
+						w_lineRule = L"a:spcPct";
+					}
+					//else if(fo_line_height_->get_type() == line_width::Normal) 
+					//{
+					//}
+					else if (fo_line_height_->get_type() == line_width::PositiveLength)
+					{
+						w_line = boost::lexical_cast<std::wstring>((int)(0.5 + 100.0 * fo_line_height_->get_positive_length().get_value_unit(length::pt)));
+						w_lineRule = L"a:spcPts";
+					}
+				}
+				else if (style_line_height_at_least_)
+				{
+					w_lineRule = L"a:spcPts";
+					w_line = boost::lexical_cast<std::wstring>((int)(0.5 + 100.0 * style_line_height_at_least_->get_value_unit(length::pt)));
+				} 
+				else if (style_line_spacing_)
+				{
+					w_lineRule = L"a:spcPts";
+					w_line = boost::lexical_cast<std::wstring>( (int)(0.5 + 240.0 + 100.0 * style_line_spacing_->get_value_unit(length::pt)) );
+			
+				}
+				CP_XML_NODE(L"a:lnSpc")
+				{
+					CP_XML_NODE(w_lineRule)
+					{
+						CP_XML_ATTR(L"val",w_line);
+					}
+				}	
+			}
+			if (fo_margin_top_/* || fo_margin_*/)
+			{
+				CP_XML_NODE(L"a:spcBef")
+				{
+					if (fo_margin_bottom_->get_type() == length_or_percent::Length)
+					{
+						std::wstring w_before = process_margin(fo_margin_top_, length::pt, 100.0);
+						CP_XML_NODE(L"a:spcPts")
+						{
+							CP_XML_ATTR(L"val",w_before);
+						}
+					}
+					else
+					{
+						std::wstringstream s;
+						s << fo_margin_top_;
+						CP_XML_NODE(L"a:spcPct")
+						{
+							CP_XML_ATTR(L"val", s.str());
+						}
+					}
+				}
+			}
+			if (fo_margin_bottom_/* || fo_margin_*/)
+			{
+				CP_XML_NODE(L"a:spcAft")
+				{
+					if (fo_margin_bottom_->get_type() == length_or_percent::Length)
+					{
+						std::wstring w_after = process_margin(fo_margin_bottom_, length::pt, 100.0);
+						CP_XML_NODE(L"a:spcPts")
+						{
+							CP_XML_ATTR(L"val",w_after);
+						}
+					}
+					else
+					{
+						std::wstringstream s;
+						s << fo_margin_bottom_;
+						CP_XML_NODE(L"a:spcPct")
+						{
+							CP_XML_ATTR(L"val", s.str());
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+
 void paragraph_format_properties::pptx_convert(oox::pptx_conversion_context & Context)
 {
 	std::wstringstream & _pPr = Context.get_text_context().get_styles_context().paragraph_attr();
@@ -149,6 +297,7 @@ void paragraph_format_properties::pptx_convert(oox::pptx_conversion_context & Co
 
 		if (!w_val.empty())
 			_pPr << L"fontAlgn=\""  << w_val << "\" ";
+
 	}
 	//if (style_writing_mode_)
 	//{

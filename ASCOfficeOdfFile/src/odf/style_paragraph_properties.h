@@ -52,7 +52,7 @@ namespace oox{
 
 namespace odf_reader {
 
-/// \class  style_tab_stop
+//  style_tab_stop
 class style_tab_stop : public office_element_impl<style_tab_stop>
 {
 public:
@@ -89,7 +89,7 @@ private:
 
 CP_REGISTER_OFFICE_ELEMENT2(style_tab_stop);
 
-/// \class  style_tab_stops
+//  style_tab_stops
 class style_tab_stops : public office_element_impl<style_tab_stops>
 {
 public:
@@ -118,7 +118,7 @@ private:
 
 CP_REGISTER_OFFICE_ELEMENT2(style_tab_stops);
 
-/// \class  style_drop_cap
+//  style_drop_cap
 class style_drop_cap : public office_element_impl<style_drop_cap>
 {
 public:
@@ -147,7 +147,6 @@ private:
 
 CP_REGISTER_OFFICE_ELEMENT2(style_drop_cap);
 
-/// \class  style_background_image
 ///         style:background-image
 class style_background_image : public office_element_impl<style_background_image>
 {
@@ -177,7 +176,7 @@ public:
 
 CP_REGISTER_OFFICE_ELEMENT2(style_background_image);
 
-/// \class  paragraph_format_properties
+//  paragraph_format_properties
 class paragraph_format_properties : public oox::conversion_element
 {
 public:
@@ -188,6 +187,8 @@ public:
 
     void docx_convert(oox::docx_conversion_context & Context);
     void pptx_convert(oox::pptx_conversion_context & Context);
+    
+	void xlsx_convert(std::wostream & strm, bool in_draw);
 
     // 15.5.1 fo:line-height
     _CP_OPT(odf_types::line_width) fo_line_height_;                 // +
@@ -309,7 +310,7 @@ public:
     _CP_OPT(bool) style_join_border_;
 };
 
-/// \class  style_paragraph_properties
+//  style_paragraph_properties
 class style_paragraph_properties : public office_element_impl<style_paragraph_properties>
 {
 public:

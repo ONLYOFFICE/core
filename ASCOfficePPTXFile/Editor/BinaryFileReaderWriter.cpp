@@ -226,8 +226,8 @@ namespace NSBinPptxRW
 			BYTE head[] = {0x00,0x00,0x00,0x00};
 			//LittleEndian
 			unsigned char* aData = (unsigned char*)sDataUtf8.c_str();
-			uint32_t nDataSize = sDataUtf8.size();
-			memcpy(head, &nDataSize, sizeof(uint32_t));
+			_UINT32 nDataSize = sDataUtf8.size();
+			memcpy(head, &nDataSize, sizeof(_UINT32));
 			POLE::Stream oStream(&oStorage, "\001Ole10Native", true, arraysize(head) + nDataSize);
 			oStream.write(head, arraysize(head));
 			oStream.write(aData, nDataSize);
@@ -244,9 +244,10 @@ namespace NSBinPptxRW
 		CString strExts = sExts;
 		CString strImage;
 		strImage.Format(_T("image%d"), m_lIndexNextImage++);
+		OOX::CPath pathOutput;
 		if ((_T(".jpg") == strExts) || (_T(".jpeg") == strExts) || (_T(".png") == strExts) || (_T(".emf") == strExts) || (_T(".wmf") == strExts))
 		{
-            OOX::CPath pathOutput = m_strDstMedia + FILE_SEPARATOR_STR + strImage + strExts;
+			pathOutput = m_strDstMedia + FILE_SEPARATOR_STR + strImage + strExts;
 			// теперь нужно скопировать картинку
             if (pathOutput.GetPath() != strInput)
                 CDirectory::CopyFile(strInput, pathOutput.GetPath(), NULL, NULL);
@@ -255,9 +256,10 @@ namespace NSBinPptxRW
 		{
 			// content types!!!
 			strExts = _T(".png");
-            OOX::CPath pathOutput = m_strDstMedia + FILE_SEPARATOR_STR + strImage + strExts;
+			pathOutput = m_strDstMedia + FILE_SEPARATOR_STR + strImage + strExts;
             SaveImageAsPng(strInput, pathOutput.GetPath());
 		}
+		oImageManagerInfo.m_sFilepathImg = pathOutput.GetPath();;
 		if (!m_bIsWord)
 			strImage  = _T("../media/") + strImage + strExts;
 		else
@@ -283,6 +285,7 @@ namespace NSBinPptxRW
 			else
 				strImageOle = _T("embeddings/") + strImageOle;
 			oImageManagerInfo.m_sOlePath = strImageOle;
+			oImageManagerInfo.m_sFilepathBin = strOleImageOut;
 		}
 
 		oImageManagerInfo.m_sImagePath = strImage;
@@ -1352,6 +1355,7 @@ namespace NSBinPptxRW
 			return pPair->second;				
 		}
 		CRelsGeneratorInfo oRelsGeneratorInfo;
+		oRelsGeneratorInfo.m_sFilepathImg = oImageManagerInfo.m_sFilepathImg;
 		oRelsGeneratorInfo.m_nImageRId = m_lNextRelsID++;
 		CString strRid = _T("");
 		strRid.Format(_T("rId%d"), oRelsGeneratorInfo.m_nImageRId);
@@ -1364,6 +1368,7 @@ namespace NSBinPptxRW
 		if(!oImageManagerInfo.m_sOlePath.IsEmpty())
 		{
 			oRelsGeneratorInfo.m_nOleRId = m_lNextRelsID++;
+			oRelsGeneratorInfo.m_sFilepathBin = oImageManagerInfo.m_sFilepathBin;
 
 			CString strRid = _T("");
 			strRid.Format(_T("rId%d"), oRelsGeneratorInfo.m_nOleRId);

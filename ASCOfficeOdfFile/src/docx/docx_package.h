@@ -73,7 +73,7 @@ private:
 
 };
 
-/// \class  xl_charts_files
+//  xl_charts_files
 class docx_charts_files  : public element
 {
 public:

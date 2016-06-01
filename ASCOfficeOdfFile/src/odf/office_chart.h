@@ -14,9 +14,7 @@
 namespace cpdoccore {
 namespace odf_reader {
 
-/// \class  office_chart
-/// \brief  office:chart
-/// office-chart
+//  office:chart
 class office_chart : public office_element_impl<office_chart>
 {
 public:
@@ -61,9 +59,7 @@ public:
     _CP_OPT(std::wstring)				chart_row_mapping_;
 };
 
-/// \class  chart_chart
-/// \brief  chart:chart
-///         chart-chart
+//  chart:chart
 class chart_chart : public office_element_impl<chart_chart>
 {
 public:
@@ -97,9 +93,7 @@ public:
 
 };
 
-/// \class  chart_title
-/// \brief  chart:title
-///         chart-title
+//  chart:title
 class chart_title : public office_element_impl<chart_title>
 {
 public: 
@@ -120,9 +114,7 @@ public:
 
 CP_REGISTER_OFFICE_ELEMENT2(chart_title);
 
-/// \class  chart_subtitle
-/// \brief  chart:subtitle
-///         chart-subtitle
+//  chart:subtitle
 class chart_subtitle : public office_element_impl<chart_subtitle>
 {
 public:
@@ -144,9 +136,7 @@ public:
 
 CP_REGISTER_OFFICE_ELEMENT2(chart_subtitle);
 
-/// \class  chart_footer
-/// \brief  chart:footer
-///         chart-footer
+//  chart:footer
 class chart_footer : public office_element_impl<chart_footer>
 {
 public:
@@ -183,9 +173,7 @@ public:
 
 };
 
-/// \class  chart_legend
-/// \brief  chart:legend
-///         chart-legend
+//  chart:legend
 class chart_legend : public office_element_impl<chart_legend>
 {
 public:
@@ -223,9 +211,7 @@ public:
     // common-dr3d-transform-attlist
 };
 
-/// \class  chart_plot_area
-/// \brief  chart:plot-area
-///         chart-plot-area
+//  chart:plot-area
 class chart_plot_area : public office_element_impl<chart_plot_area>
 {
 public:
@@ -278,9 +264,7 @@ public:
 CP_REGISTER_OFFICE_ELEMENT2(chart_wall);
 
 
-/// \class  chart_floor
-/// \brief  chart:floor
-///         chart-floor
+//  chart:floor
 class chart_floor : public office_element_impl<chart_floor>
 {
 public:
@@ -312,9 +296,7 @@ public:
     common_chart_attlist		common_attlist_;
 };
 
-/// \class  chart_axis
-/// \brief  chart:axis
-///         chart-axis
+//  chart:axis
 class chart_axis : public office_element_impl<chart_axis>
 {
 public:
@@ -348,9 +330,7 @@ public:
     
 };
 
-/// \class  chart_grid
-/// \brief  chart:grid
-///         chart-grid
+//  chart:grid
 class chart_grid : public office_element_impl<chart_grid>
 {
 public:
@@ -371,9 +351,7 @@ public:
 
 CP_REGISTER_OFFICE_ELEMENT2(chart_grid);
 
-/// \class  chart_categories
-/// \brief  chart:categories
-///         chart-categories
+//  chart:categories
 class chart_categories : public office_element_impl<chart_categories>
 {
 public:
@@ -408,9 +386,7 @@ public:
 
 };
 
-/// \class  chart_series
-/// \brief  chart:series
-///         chart-series
+//  chart:series
 class chart_series : public office_element_impl<chart_series>
 {
 public:
@@ -433,9 +409,7 @@ public:
 
 CP_REGISTER_OFFICE_ELEMENT2(chart_series);
 
-/// \class  chart_domain
-/// \brief  chart:domain
-///         chart-domain
+//  chart:domain
 class chart_domain : public office_element_impl<chart_domain>
 {
 public:
@@ -466,9 +440,7 @@ public:
     common_chart_attlist		common_attlist_;
 };
 
-/// \class  chart_data_point
-/// \brief  chart:data-point
-///         chart-data-point
+//  chart:data-point
 class chart_data_point : public office_element_impl<chart_data_point>
 {
 public:
@@ -489,9 +461,7 @@ public:
 
 CP_REGISTER_OFFICE_ELEMENT2(chart_data_point);
 
-/// \class  chart_mean_value
-/// \brief  chart:mean-value
-///         chart-mean-value
+//  chart:mean-value
 class chart_mean_value : public office_element_impl<chart_mean_value>
 {
 public:
@@ -512,9 +482,7 @@ public:
 
 CP_REGISTER_OFFICE_ELEMENT2(chart_mean_value);
 
-/// \class  chart_error_indicator
-/// \brief  chart:error-indicator
-///         chart-error-indicator
+//  chart:error-indicator
 class chart_error_indicator : public office_element_impl<chart_error_indicator>
 {
 public:
@@ -581,9 +549,7 @@ public:
 CP_REGISTER_OFFICE_ELEMENT2(chart_regression_curve);
 
 
-/// \class  chart_stock_gain_marker
-/// \brief  chart:stock-gain-marker
-///         chart-stock-gain-marker
+//  chart:stock-gain-marker
 class chart_stock_gain_marker : public office_element_impl<chart_stock_gain_marker>
 {
 public:
@@ -605,9 +571,7 @@ public:
 
 CP_REGISTER_OFFICE_ELEMENT2(chart_stock_gain_marker);
 
-/// \class  chart_stock_loss_marker
-/// \brief  chart:stock-loss-marker
-///         chart-stock-loss-marker
+//  chart:stock-loss-marker
 class chart_stock_loss_marker : public office_element_impl<chart_stock_loss_marker>
 {
 public:
@@ -629,9 +593,7 @@ public:
 
 CP_REGISTER_OFFICE_ELEMENT2(chart_stock_loss_marker);
 
-/// \class  chart_stock_range_line
-/// \brief  chart:stock-range-line
-///         chart-stock-range-line
+//  chart:stock-range-line
 class chart_stock_range_line : public office_element_impl<chart_stock_range_line>
 {
 public:

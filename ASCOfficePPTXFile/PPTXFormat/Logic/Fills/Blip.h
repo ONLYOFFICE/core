@@ -29,6 +29,10 @@ namespace PPTX
 
 				m_namespace	= oSrc.m_namespace;
 				oleRid = oSrc.oleRid;
+				oleFilepathBin = oSrc.oleFilepathBin;
+				oleFilepathImg = oSrc.oleFilepathImg;
+				oleRidImg = oSrc.oleRidImg;
+
 				return *this;
 			}
 
@@ -101,7 +105,11 @@ namespace PPTX
 
 
 				CString olePath;
-				if(!oleRid.IsEmpty())
+				if(!oleFilepathBin.IsEmpty())
+				{
+					olePath = oleFilepathBin;
+				}
+				else if(!oleRid.IsEmpty())
 				{
 					olePath= this->GetFullOleName(PPTX::RId(oleRid), pRels);
 				}
@@ -132,6 +140,9 @@ namespace PPTX
 			CString m_namespace;
 		//internal
 			CString oleRid;
+			CString oleFilepathBin;
+			CString oleFilepathImg;
+			CString oleRidImg;
 		protected:
 			virtual void FillParentPointersForChilds();
 		};

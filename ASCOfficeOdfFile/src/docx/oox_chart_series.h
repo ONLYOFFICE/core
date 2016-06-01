@@ -21,7 +21,7 @@ public:
 	~oox_chart_series(){}
  
     void oox_serialize_common(std::wostream & _Wostream);
-	virtual void oox_serialize(std::wostream & _Wostream){}
+	virtual void oox_serialize(std::wostream & _Wostream) = 0;
 	
 	_oox_chart_values			values_[5]; //cat(labels), common, x, y, bubble, 
 	int							id_;
@@ -32,7 +32,7 @@ public:
 	
 	void setName(std::wstring &value);
 	
-	void setFormula	(int ind, std::wstring & value);
+	void setFormula	(int ind, std::wstring & value, std::wstring & formatCode, bool link_to_source);
 	void setValues	(int ind, std::vector<std::wstring> & values);
 	void parse_properties();
 	

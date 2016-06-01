@@ -299,10 +299,12 @@ private:
 	chart_build				& chart_build_;
 
 	styles_container		& styles_;
+	
 	styles_lite_container	& settings_;
 	styles_lite_container	& draw_styles_;
+	styles_lite_container	& number_styles_;
 
-
+	oox::num_format_context num_format_context_;
 };
 
 

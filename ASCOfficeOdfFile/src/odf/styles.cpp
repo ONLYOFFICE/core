@@ -410,12 +410,12 @@ void styles::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, co
         CP_CREATE_ELEMENT_SIMPLE(text_list_style_);
     }
     else if (
-        CP_CHECK_NAME(L"number", L"number-style") ||
-        CP_CHECK_NAME(L"number", L"currency-style") ||
+        CP_CHECK_NAME(L"number", L"number-style")	||
         CP_CHECK_NAME(L"number", L"currency-style") ||
         CP_CHECK_NAME(L"number", L"percentage-style") ||
-        CP_CHECK_NAME(L"number", L"date-style") ||
-        CP_CHECK_NAME(L"number", L"time-style") ||
+        CP_CHECK_NAME(L"number", L"date-style")		||
+        CP_CHECK_NAME(L"number", L"time-style")		||
+        CP_CHECK_NAME(L"number", L"text-style")		||
         CP_CHECK_NAME(L"number", L"number-boolean-style")
         )
     {

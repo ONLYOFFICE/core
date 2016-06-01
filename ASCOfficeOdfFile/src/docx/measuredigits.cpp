@@ -8,17 +8,6 @@
 #include "../../DesktopEditor/fontengine/FontManager.h"
 #include "../../DesktopEditor/fontengine/ApplicationFonts.h"
 
-double getSystemDPI()
-{
-	//При запросе системных настроек-проблема в linux без графического интерфейса.
-    //Используется в GetMaxDigitSizePixels для измерения символов, можно указывать любой dpi,
-    //потому что после измерения pix переводятся обратно в метрические величины.
-    //Используется для конвертации картинок с процентными размерами oox->odf. Из редактора никогда не приходят относительные размеры,
-    //думаю тут несущественнен dpi.
-	return 96.;
-}
-
-
 namespace cpdoccore {
 namespace utils {
 
@@ -77,7 +66,8 @@ std::pair<float, float> GetMaxDigitSizePixelsImpl(const std::wstring & fontName,
         if (box.fMaxY - box.fMinY < minHeight)  minHeight = box.fMaxY - box.fMinY;
     }
 
-    return std::pair<float, float>(maxWidth / 5.f, maxHeight);
+	double width = (minWidth + 2 * maxWidth) /3. /5.;
+	return std::pair<float, float>(width, maxHeight);
 }
 
 

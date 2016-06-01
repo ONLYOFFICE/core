@@ -1,16 +1,15 @@
-#ifndef _CPDOCCORE_ODF_OFFCIE_SKIP_ELEMENT_
-#define _CPDOCCORE_ODF_OFFCIE_SKIP_ELEMENT_
+#pragma once
 
 #include <cpdoccore/xml/xmlelement.h>
 #include <cpdoccore/xml/nodetype.h>
+
 #include "office_elements.h"
 #include "office_elements_create.h"
-
 
 namespace cpdoccore { 
 namespace odf_reader {
 
-/// \class  _skip_element
+//  _skip_element
 class _skip_element : public office_element_impl<_skip_element>
 {
 public:
@@ -33,5 +32,3 @@ public:
 
 }
 }
-
-#endif

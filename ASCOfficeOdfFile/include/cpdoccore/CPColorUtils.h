@@ -1,5 +1,4 @@
-#ifndef CPDOCCORE_COLOR_UTILS_H_
-#define CPDOCCORE_COLOR_UTILS_H_
+#pragma once
 
 namespace cpdoccore { 
 
@@ -12,4 +11,3 @@ bool HEXStringToRGB(std::wstring const & str, int &r, int &g, int &b);
 
 }
 
-#endif

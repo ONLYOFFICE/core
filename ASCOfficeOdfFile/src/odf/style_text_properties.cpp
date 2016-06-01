@@ -832,7 +832,7 @@ void text_format_properties_content::docx_convert(oox::docx_conversion_context &
         if (style_text_position_->has_font_size() && !noNeedSize)
         {
             const double mul = style_text_position_->font_size().get_value() / 100.0;
-            if (fontSizeVal > 0)
+            if (fontSizeVal > 0 && mul > 0)
             {
                 const std::wstring fontSize = boost::lexical_cast<std::wstring>((int)(fontSizeVal * mul + 0.5));
                 if (!fontSize.empty())

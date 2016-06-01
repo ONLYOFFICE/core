@@ -12,7 +12,6 @@
 namespace cpdoccore { 
 namespace odf_reader {
 
-/// \class  style_header_footer_properties_attlist
 ///         style-header-footer-properties-attlist
 class style_header_footer_properties_attlist
 {
@@ -34,16 +33,17 @@ public:
     
 };
 
-/// \class  style_header_footer_properties
-///         style-header-footer-properties
+//         style:header-footer-properties
 class style_header_footer_properties : public office_element_impl<style_header_footer_properties>
 {
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
-    static const ElementType type = typeStyleHeaderFooterProperties;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
+	static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type		= typeStyleHeaderFooterProperties;
+    
+	CPDOCCORE_DEFINE_VISITABLE();
 
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
@@ -55,8 +55,7 @@ public:
 CP_REGISTER_OFFICE_ELEMENT2(style_header_footer_properties);
 
 
-/// \class  common_style_header_footer_attlist
-///         common-style-header-footer-attlist
+// common-style-header-footer-attlist
 class common_style_header_footer_attlist
 {
 public:
@@ -66,9 +65,7 @@ private:
     bool style_display_; // default true
     
 };
-
-/// \class  header_footer_content
-///         header-footer-content
+// header-footer-content
 class header_footer_content
 {
 public:

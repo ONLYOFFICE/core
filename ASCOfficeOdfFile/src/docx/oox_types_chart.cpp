@@ -19,10 +19,10 @@ void oox_chart::set_cache_only (bool val)
 
 }
 
-void oox_chart::set_formula_series(int ind, std::wstring val)
+void oox_chart::set_formula_series(int ind, std::wstring val, std::wstring formatCode, bool link_to_source)
 {
 	oox_series_ptr & current_ptr = series_.back();
-	current_ptr->setFormula(ind,val);
+	current_ptr->setFormula(ind, val, formatCode, link_to_source);
 
 }
 void oox_chart::set_name(std::wstring val)
@@ -66,7 +66,7 @@ void oox_chart::oox_serialize_common(std::wostream & _Wostream)
 {
     CP_XML_WRITER(_Wostream)
     {
-		if (grouping_.length()>1)
+		if (!grouping_.empty())
 		{
 			CP_XML_NODE(L"c:grouping")
 			{	
@@ -285,8 +285,6 @@ void oox_doughnut_chart::set_properties(std::vector<odf_reader::_property> g)
 }
 void oox_doughnut_chart::oox_serialize(std::wostream & _Wostream)
 {
-	grouping_.clear();
-
     CP_XML_WRITER(_Wostream)
     {
 		CP_XML_NODE(L"c:doughnutChart")
@@ -327,7 +325,7 @@ void oox_pie_chart::oox_serialize(std::wostream & _Wostream)
   	std::wstring	strNode = L"c:pieChart";
 	if (is3D_)		strNode = L"c:pie3DChart";
 
-    CP_XML_WRITER(_Wostream)
+	CP_XML_WRITER(_Wostream)
     {
 		CP_XML_NODE(strNode)
         {
@@ -355,7 +353,7 @@ void oox_radar_chart::set_properties(std::vector<odf_reader::_property> g)
 }
 void oox_radar_chart::oox_serialize(std::wostream & _Wostream)
 {
-    CP_XML_WRITER(_Wostream)
+	CP_XML_WRITER(_Wostream)
     {
 		CP_XML_NODE(L"c:radarChart")
         {	

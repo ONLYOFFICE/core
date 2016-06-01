@@ -1,5 +1,3 @@
-//Абстрактный интерфейс Simple XML
-
 #pragma once
 
 

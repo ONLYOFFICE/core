@@ -13,8 +13,36 @@ namespace cpdoccore {
 namespace oox {
 
 class xlsx_conversion_context;
+class xlsx_table_context;
+
 class xlsx_table_state;
 typedef _CP_PTR(xlsx_table_state) xlsx_table_state_ptr;
+
+class xlsx_data_range;
+typedef _CP_PTR(xlsx_data_range) xlsx_data_range_ptr;
+
+
+class xlsx_data_range
+{
+public:
+	xlsx_data_range() : byRow(true), filter(false), withHeader(false), cell_start(0,0), cell_end(0,0) {}
+
+	std::wstring	table_name;
+	
+	std::wstring	ref;
+	
+	std::pair<int, int> cell_start;
+	std::pair<int, int> cell_end;
+
+	bool			byRow;
+	bool			filter;
+	bool			withHeader;
+
+	std::vector<std::pair<int, bool>> bySort;  //field + order
+	
+	void serialize_sort			(std::wostream & _Wostream);
+	void serialize_autofilter	(std::wostream & _Wostream);
+};
 
 class xlsx_table_state
 {
@@ -22,12 +50,15 @@ public:
     xlsx_table_state(xlsx_conversion_context * Context, std::wstring styleName, std::wstring tableName);
     
 	std::wstring current_style() const { return table_style_; }
-    void start_column(unsigned int repeated, const std::wstring & defaultCellStyleName);
+    
+	void start_column(unsigned int repeated, const std::wstring & defaultCellStyleName);
     void start_row(const std::wstring & StyleName, const std::wstring & defaultCellStyleName);
-    void non_empty_row();
+    
+	void non_empty_row();
     bool is_empty_row() const;
     void end_row();
-    std::wstring current_row_style() const;
+    
+	std::wstring current_row_style() const;
     std::wstring default_row_cell_style() const;
     std::wstring default_column_cell_style() const;
 
@@ -39,7 +70,7 @@ public:
     void end_covered_cell();
 
     void set_current_cell_style_id(unsigned int xfId);
-    int get_current_cell_style_id();
+    int  get_current_cell_style_id();
 
     int current_column() const;
     int current_row() const;
@@ -72,7 +103,12 @@ public:
 		int level;
 		bool collapsed;
 	}group_row_;
-private:
+
+	friend class xlsx_conversion_context;
+	friend class xlsx_table_context;
+
+private:	
+	bool						in_cell;
     xlsx_conversion_context *	context_;    
     std::wstring				tableName_;
 
@@ -82,12 +118,12 @@ private:
     std::vector<std::wstring>	column_default_cell_style_name_;
     std::wstring				row_default_cell_style_name_;
    
-	int				current_table_column_;
-    int				current_table_row_;
-	bool			empty_row_;
+	int							current_table_column_;
+    int							current_table_row_;
+	bool						empty_row_;
 
-    unsigned int	columns_spanned_num_;
-    std::wstring	columns_spanned_style_;
+    unsigned int				columns_spanned_num_;
+    std::wstring				columns_spanned_style_;
    
 	std::vector<xlsx_row_spanned>	rows_spanned_;
     std::vector<unsigned int>		columns_;

@@ -19,7 +19,6 @@ typedef shared_ptr<odf_read_context>::Type odf_read_context_ptr;
 class content_xml_t;
 typedef shared_ptr<content_xml_t>::Type content_xml_t_ptr;
 
-/// \class  odf_document::Impl
 class odf_document::Impl
 {
 public:

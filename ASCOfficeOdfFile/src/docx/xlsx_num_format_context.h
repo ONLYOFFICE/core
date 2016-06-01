@@ -1,5 +1,4 @@
-#ifndef _CPDOCCORE_XLSX_NUM_FORMAT_CONTEXT_H_
-#define _CPDOCCORE_XLSX_NUM_FORMAT_CONTEXT_H_
+#pragma once
 
 #include <string>
 #include <iosfwd>
@@ -7,12 +6,16 @@
 #include <cpdoccore/CPScopedPtr.h>
 
 namespace cpdoccore {
+	namespace odf_reader
+	{
+		class odf_read_context;
+	}
 namespace oox {
 
 class num_format_context : boost::noncopyable
 {
 public:
-    num_format_context();
+	num_format_context(odf_reader::odf_read_context & odfContext);
     ~num_format_context();
 
 public:
@@ -27,7 +30,7 @@ public:
     void end_complex_format();
 
 	//std::wstring default_data_style(int type);
-
+	odf_reader::odf_read_context & odf_context_;
 private:
     class Impl;
     _CP_SCOPED_PTR(Impl) impl_;
@@ -38,5 +41,3 @@ private:
 
 }
 }
-
-#endif

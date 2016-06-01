@@ -10,7 +10,6 @@
 namespace cpdoccore {
 namespace oox {
 
-
 class oox_chart_series;
 typedef _CP_PTR(oox_chart_series) oox_series_ptr;
 
@@ -21,6 +20,8 @@ public:
 	~oox_chart_series(){}
  
     void oox_serialize_common(std::wostream & _Wostream);
+	void oox_serialize_marker(std::wostream & _Wostream);
+	
 	virtual void oox_serialize(std::wostream & _Wostream) = 0;
 	
 	_oox_chart_values			values_[5]; //cat(labels), common, x, y, bubble, 
@@ -40,11 +41,9 @@ public:
 
 	odf_reader::chart::series content_;
 
-	//dPt (Data Point) §21.2.2.52
 	//extLst (Chart Extensibility) §21.2.2.64
 	//idx (Index) §21.2.2.84
 	//order (Order) §21.2.2.128
-	//spPr (Shape Properties) §21.2.2.197
 
 };
 ////////////////////////////////////////////////////////////////////////////////////////////////////////

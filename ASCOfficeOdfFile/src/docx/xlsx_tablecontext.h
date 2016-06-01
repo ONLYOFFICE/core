@@ -18,19 +18,17 @@ public:
     xlsx_table_context(xlsx_conversion_context * Context, xlsx_text_context & textCotnext);
 
 public:
-    void start_table(std::wstring tableName, std::wstring tableStyleName);
+    void start_table(std::wstring tableName, std::wstring tableStyleName, int id);
     void end_table();
 
-    std::wstring get_current_table_name() const;
-    
     void start_cell(const std::wstring & formula,
                     size_t columnsSpanned,
                     size_t rowsSpanned);
 
     void end_cell();
 
-    std::wstring default_row_cell_style() const;
-    std::wstring default_column_cell_style() const;
+    std::wstring default_row_cell_style();
+    std::wstring default_column_cell_style();
 
     void start_covered_cell();
     void end_covered_cell();
@@ -41,20 +39,18 @@ public:
     void set_current_cell_style_id(unsigned int xfId);
     int get_current_cell_style_id();
 
-    int current_column() const;
-    int current_row() const;
+    int current_column();
+    int current_row();
 
 	void set_table_row_group(int count, bool collapsed, int level);
     void start_row(const std::wstring & StyleName, const std::wstring & defaultCellStyleName);
     void non_empty_row();
-    bool is_empty_row() const;
+    bool is_empty_row();
     void end_row();
 
     void start_column(unsigned int repeated, const std::wstring & defaultCellStyleName);
 
-    size_t depth() const { return xlsx_table_states_.size(); }
-
-    unsigned int columns_count();
+	unsigned int columns_count();
 
 	void serialize_sort			(std::wostream & _Wostream);
 	void serialize_autofilter	(std::wostream & _Wostream);
@@ -68,10 +64,9 @@ public:
     xlsx_comments_context & get_comments_context();
 	
     void table_column_last_width	(double w);
-    double table_column_last_width	() const;
+    double table_column_last_width	();
 
-    xlsx_table_state_ptr		& state();
-    const xlsx_table_state_ptr	& state()	const;
+    xlsx_table_state_ptr state();
 
 	void			start_hyperlink();
 	std::wstring	end_hyperlink(std::wstring const & ref, std::wstring const & href, std::wstring const & display);

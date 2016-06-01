@@ -72,14 +72,14 @@ public:
 
     void	start_table_column(unsigned int repeated, const std::wstring & defaultCellStyleName, int & cMin, int & cMax);
     void	table_column_last_width(double w);
-    double	table_column_last_width() const;
+    double	table_column_last_width();
     void	end_table_column();
 
 	void set_table_row_group(int count, bool collapsed, int level);
     void start_table_row(const std::wstring & styleName, const std::wstring & defaultCellStyleName);
     void non_empty_row();
     void end_table_row();
-    bool is_empty_row() const;
+    bool is_empty_row();
     void set_current_row_height(size_t height_pt);    
 
 	bool in_table_cell();
@@ -93,13 +93,13 @@ public:
     void start_table_covered_cell();
     void end_table_covered_cell();
 
-    int current_table_column() const;
-    int current_table_row() const;
+    int current_table_column();
+    int current_table_row();
 
     void start_hyperlink(const std::wstring & styleName);
     void end_hyperlink(std::wstring const & href);
 
-    std::wstring current_cell_address() const;
+    std::wstring current_cell_address();
 
     odf_reader::odf_document * root()
     {
@@ -130,7 +130,6 @@ public:
 
 private:
     void create_new_sheet(std::wstring const & name);
-    void dump_sheet();   
 
     package::xlsx_document				*output_document_;
     const odf_reader::office_element	*spreadsheet_;

@@ -1,5 +1,3 @@
-#ifndef _CPDOCCORE_XLSX_ALIGNMENT_H_INCLUDED_
-#define _CPDOCCORE_XLSX_ALIGNMENT_H_INCLUDED_
 #pragma once
 
 #include <iosfwd>
@@ -9,9 +7,9 @@
 namespace cpdoccore { 
 namespace odf_reader {
 
-class text_format_properties_content;
-class paragraph_format_properties;
-class style_table_cell_properties_attlist;
+	class text_format_properties_content;
+	class paragraph_format_properties;
+	class style_table_cell_properties_attlist;
 
 }
 }
@@ -19,7 +17,8 @@ class style_table_cell_properties_attlist;
 namespace cpdoccore {
 namespace oox {
 
-/// \struct xlsx_alignment
+	class xlsx_conversion_context;
+
 struct xlsx_alignment
 {
     _CP_OPT(std::wstring)	horizontal;
@@ -40,11 +39,10 @@ struct xlsx_alignment
     friend std::size_t hash_value(xlsx_alignment const & val);
 };
 
-xlsx_alignment OdfProperties2XlsxAlignment(const odf_reader::text_format_properties_content		 * textProp, 
-                                           const odf_reader::paragraph_format_properties		 * parProp,
-                                           const odf_reader::style_table_cell_properties_attlist * cellProp);
+xlsx_alignment OdfProperties2XlsxAlignment( xlsx_conversion_context									* context,
+											const odf_reader::text_format_properties_content		* textProp, 
+											const odf_reader::paragraph_format_properties			* parProp,
+											const odf_reader::style_table_cell_properties_attlist	* cellProp);
 
 }
 }
-
-#endif

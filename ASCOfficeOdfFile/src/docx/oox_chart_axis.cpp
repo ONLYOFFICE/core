@@ -120,9 +120,13 @@ void oox_axis_content::oox_serialize_content(std::wostream & _Wostream)
 				}
 			}
 		}
+		
 		CP_XML_NODE(L"c:delete")//visible item
 		{
-			CP_XML_ATTR(L"val", 0);
+			odf_reader::GetProperty(content_.properties_, L"visible", boolVal);
+			
+			if ((boolVal) && (*boolVal == false))	CP_XML_ATTR(L"val", 1);			
+			else									CP_XML_ATTR(L"val", 0);
 		}
 		CP_XML_NODE(L"c:axPos")
         {

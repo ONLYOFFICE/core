@@ -35,67 +35,26 @@ public:
    
 	void docx_convert(oox::docx_conversion_context & Context);
 
-private:
-    // 15.8.1 style:width
-    optional<odf_types::length>::Type style_width_;
-    // style:rel-width
-    optional<odf_types::percent>::Type style_rel_width_;
-
-    // 15.8.2 table:align
-    optional<odf_types::table_align>::Type table_align_;
-
-    // 15.8.3 common-horizontal-margin-attlist
-    // fo:margin-left
-    // fo:margin-right
 	odf_types::common_horizontal_margin_attlist common_horizontal_margin_attlist_;
+    odf_types::common_vertical_margin_attlist	common_vertical_margin_attlist_;
+    odf_types::common_margin_attlist			common_margin_attlist_;
 
-    // 15.8.4 common-vertical-margin-attlist
-    // fo:margin-top
-    // fo:margin-bottom
-    odf_types::common_vertical_margin_attlist common_vertical_margin_attlist_;
+    odf_types::common_page_number_attlist		common_page_number_attlist_;
+    odf_types::common_break_attlist				common_break_attlist_;
+    odf_types::common_background_color_attlist	common_background_color_attlist_;
+    odf_types::common_shadow_attlist			common_shadow_attlist_;
+    odf_types::common_keep_with_next_attlist	common_keep_with_next_attlist_;
+    odf_types::common_writing_mode_attlist		common_writing_mode_attlist_;
+   
+    _CP_OPT(odf_types::length)			style_width_;
+    _CP_OPT(odf_types::percent)			style_rel_width_;
+	office_element_ptr					style_background_image_;
+    _CP_OPT(bool)						style_may_break_between_rows_;
 
-    // 15.8.5 common-margin-attlist
-    // fo:margin
-    odf_types::common_margin_attlist common_margin_attlist_;
-
-    // 15.8.6 common-page-number-attlist
-    // style:page-number
-    odf_types::common_page_number_attlist common_page_number_attlist_;
-    
-    // 15.8.7 common-break-attlist
-    // fo:break-before
-    // fo:break-after
-    odf_types::common_break_attlist common_break_attlist_;
-
-    // 15.8.8
-    // common-background-color-attlist
-    odf_types::common_background_color_attlist common_background_color_attlist_;
-    office_element_ptr style_background_image_;
-    
-    // 15.8.9
-    // common-shadow-attlist
-    // style:shadow
-    odf_types::common_shadow_attlist common_shadow_attlist_;
-
-    // 15.8.10
-    // common-keep-with-next-attlist
-    odf_types::common_keep_with_next_attlist common_keep_with_next_attlist_;
-
-    // 15.8.11
-    // style:may-break-between-rows
-    optional<bool>::Type style_may_break_between_rows_;
-
-    // 15.8.12
-    // table:border-model
-    optional<odf_types::border_model>::Type table_border_model_;
-
-    // 15.8.13
-    // common-writing-mode-attlist
-    odf_types::common_writing_mode_attlist common_writing_mode_attlist_;
-
-    // 15.8.14
-    // table:display
-    optional<bool>::Type table_display_;
+    _CP_OPT(odf_types::border_model)	table_border_model_;
+    _CP_OPT(odf_types::table_align)		table_align_;
+    _CP_OPT(bool)						table_display_;	
+	_CP_OPT(odf_types::color)			tableooo_tab_color_;
        
 };
 
@@ -111,11 +70,12 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
     virtual void docx_convert(oox::docx_conversion_context & Context) ;
 
+	table_format_properties & content() {return table_format_properties_;}
+
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
  
-private:
     table_format_properties table_format_properties_;
 
 };
@@ -128,7 +88,6 @@ class style_table_column_properties_attlist
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
     
-public:
     _CP_OPT(odf_types::length)		style_column_width_;
     _CP_OPT(odf_types::length)		style_rel_column_width_;
     _CP_OPT(bool)					style_use_optimal_column_width_;
@@ -218,70 +177,29 @@ public:
     void apply_from(const style_table_cell_properties_attlist & Other);
 
 public:
-    // 15.11.1
-    _CP_OPT(odf_types::vertical_align) style_vertical_align_;
-    
-    // 15.11.2 style:text-align-source
-    _CP_OPT(odf_types::text_align_source) style_text_align_source_;
-    
-    // 15.11.3 style:direction
-    _CP_OPT(odf_types::direction) style_direction_;
-
-    // 15.11.4 style:glyph-orientation-vertical
-    _CP_OPT(std::wstring) style_glyph_orientation_vertical_;
-    
-    // 15.11.5 
-    odf_types::common_shadow_attlist common_shadow_attlist_;
-
-    // 15.11.6
-    odf_types::common_background_color_attlist common_background_color_attlist_;
-
-    // 15.11.7
-    odf_types::common_border_attlist common_border_attlist_;
-
-    // 15.11.8
-    _CP_OPT(std::wstring) style_diagonal_tl_br_;
-    _CP_OPT(odf_types::border_widths) style_diagonal_tl_br_widths_;
-    _CP_OPT(std::wstring) style_diagonal_bl_tr_;
-    _CP_OPT(odf_types::border_widths) style_diagonal_bl_tr_widths_;
-
-    // 15.11.9
-    // common-border-line-width-attlist
+    odf_types::common_shadow_attlist			common_shadow_attlist_;
+    odf_types::common_background_color_attlist	common_background_color_attlist_;
+    odf_types::common_border_attlist			common_border_attlist_;
     odf_types::common_border_line_width_attlist common_border_line_width_attlist_;
-    
-    // 15.11.10
-    odf_types::common_padding_attlist common_padding_attlist_;
-    
-    // 15.11.11
-    // fo:wrap-option
-    _CP_OPT(odf_types::wrap_option) fo_wrap_option_;
+    odf_types::common_padding_attlist			common_padding_attlist_;
+    odf_types::common_rotation_angle_attlist	common_rotation_angle_attlist_;
 
-    // 15.11.12
-    odf_types::common_rotation_angle_attlist common_rotation_angle_attlist_;
-    
-    // 15.11.13
-    // style:rotation-align
-    _CP_OPT(odf_types::rotation_align) style_rotation_align_;    
-
-    // 15.11.14
-    // style:cell-protect
-    _CP_OPT(std::wstring) style_cell_protect_;
-
-    // 15.11.15 
-    // style:print-content
-    _CP_OPT(bool) style_print_content_;
-
-    // 15.11.16
-    // style:decimal-places
-    _CP_OPT(unsigned int) style_decimal_places_;
-
-    // 15.11.17
-    // style:repeat-content
+    _CP_OPT(odf_types::vertical_align)		style_vertical_align_;
+    _CP_OPT(odf_types::text_align_source)	style_text_align_source_;
+    _CP_OPT(odf_types::direction)			style_direction_;
+    _CP_OPT(std::wstring)					style_glyph_orientation_vertical_;
+    _CP_OPT(std::wstring)					style_diagonal_tl_br_;
+    _CP_OPT(odf_types::border_widths)		style_diagonal_tl_br_widths_;
+    _CP_OPT(std::wstring)					style_diagonal_bl_tr_;
+    _CP_OPT(odf_types::border_widths)		style_diagonal_bl_tr_widths_;
+    _CP_OPT(odf_types::rotation_align)		style_rotation_align_;    
+    _CP_OPT(std::wstring)					style_cell_protect_;
+    _CP_OPT(bool)							style_print_content_;
+    _CP_OPT(unsigned int)					style_decimal_places_;
     _CP_OPT(bool) style_repeat_content_;
-    
-    // 15.11.18
     _CP_OPT(bool) style_shrink_to_fit_;
 
+    _CP_OPT(odf_types::wrap_option)			fo_wrap_option_;
 };
 
 // style-table-cell-properties-elements

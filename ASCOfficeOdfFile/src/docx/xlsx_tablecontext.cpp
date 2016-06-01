@@ -21,14 +21,12 @@ namespace oox {
 
 //-----------------------------------------------------------------------------------------------------------------------
 
-xlsx_table_state_ptr & xlsx_table_context::state()
+xlsx_table_state_ptr xlsx_table_context::state()
 {
-    return xlsx_table_states_.back();
-}
-
-const xlsx_table_state_ptr & xlsx_table_context::state() const
-{
-    return xlsx_table_states_.back();
+	if (!xlsx_table_states_.empty())
+		return xlsx_table_states_.back();
+	else 
+		return xlsx_table_state_ptr();
 }
 
 void xlsx_table_context::start_database_range(std::wstring tableName, std::wstring ref)
@@ -111,20 +109,15 @@ xlsx_text_context_(textContext)
 {        
 }
 
-void xlsx_table_context::start_table(std::wstring tableName, std::wstring tableStyleName)
+void xlsx_table_context::start_table(std::wstring tableName, std::wstring tableStyleName, int id)
 {
-	xlsx_table_state_ptr  state = boost::make_shared<xlsx_table_state>(xlsx_conversion_context_, tableStyleName, tableName);
+	xlsx_table_state_ptr  state = boost::make_shared<xlsx_table_state>(xlsx_conversion_context_, tableStyleName, tableName, id);
     xlsx_table_states_.push_back( state);
 }
 
 void xlsx_table_context::end_table()
 {
     xlsx_table_states_.pop_back();
-}
-
-std::wstring xlsx_table_context::get_current_table_name() const
-{
-    return state()->get_current_table_name();
 }
 
 void xlsx_table_context::start_cell(const std::wstring & formula, size_t columnsSpanned, size_t rowsSpanned)
@@ -180,7 +173,7 @@ void xlsx_table_context::non_empty_row()
     return state()->non_empty_row();
 }
 
-bool xlsx_table_context::is_empty_row() const
+bool xlsx_table_context::is_empty_row()
 {
     return state()->is_empty_row();
 }
@@ -200,22 +193,22 @@ unsigned int xlsx_table_context::columns_count()
     return state()->columns_count();    
 }
 
-std::wstring xlsx_table_context::default_row_cell_style() const
+std::wstring xlsx_table_context::default_row_cell_style()
 {
     return state()->default_row_cell_style();
 }
 
-std::wstring xlsx_table_context::default_column_cell_style() const
+std::wstring xlsx_table_context::default_column_cell_style()
 {
     return state()->default_column_cell_style();
 }
 
-int xlsx_table_context::current_column() const
+int xlsx_table_context::current_column()
 {
     return state()->current_column();
 }
 
-int xlsx_table_context::current_row() const
+int xlsx_table_context::current_row()
 {
     return state()->current_row();
 }
@@ -316,7 +309,7 @@ void xlsx_table_context::table_column_last_width(double w)
     return state()->table_column_last_width(w);
 }
 
-double xlsx_table_context::table_column_last_width() const
+double xlsx_table_context::table_column_last_width()
 {
     return state()->table_column_last_width();
 }

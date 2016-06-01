@@ -88,10 +88,11 @@ void xlsx_data_range::serialize_sort (std::wostream & _Wostream)
 }
 //-------------------------------------------------------------------------------------------------------------------------
 
-xlsx_table_state::xlsx_table_state(xlsx_conversion_context * Context, std::wstring styleName, std::wstring tableName)
+xlsx_table_state::xlsx_table_state(xlsx_conversion_context * Context, std::wstring styleName, std::wstring tableName, int tableId)
   : context_				(Context),
     table_style_			(styleName),
     tableName_				(tableName),
+	tableId_				(tableId),
     current_table_column_	(-1),
     current_table_row_		(-1),
     columns_spanned_num_	(0),
@@ -312,6 +313,28 @@ void xlsx_table_state::serialize_table_format(std::wostream & _Wostream)
 	odf_reader::odf_read_context & odfContext = context_->root()->odf_context();
 	CP_XML_WRITER(_Wostream)
 	{
+		odf_reader::style_table_properties	* table_prop = NULL;
+		odf_reader::style_instance			* tableStyle = odfContext.styleContainer().style_by_name(table_style_, odf_types::style_family::Table, false);
+		
+		if ((tableStyle) && (tableStyle->content()))
+			table_prop = tableStyle->content()->get_style_table_properties();
+
+		if (table_prop)
+		{
+			CP_XML_NODE(L"sheetPr")
+			{
+				//at filterMode="false">
+				if (table_prop->content().tableooo_tab_color_)
+				{
+					CP_XML_NODE(L"tabColor")
+					{
+						CP_XML_ATTR(L"rgb", table_prop->content().tableooo_tab_color_->get_hex_value());	
+					}
+				}
+				//<pageSetUpPr fitToPage="true"/>
+			}
+		}
+		//<dimension ref="B1:T65536"/>
 		CP_XML_NODE(L"sheetView")
 		{
 			//	-showGridLines

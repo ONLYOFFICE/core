@@ -29,6 +29,7 @@ public:
 	void set_showVal		(bool Val){showVal_			= Val;}
 
 	void add_dLbl(int ind, std::vector<odf_reader::_property> & text_properties);
+	void set_common_dLbl ( std::vector<odf_reader::_property> & text_properties);
    
 private:
 
@@ -40,12 +41,11 @@ private:
 	bool showSerName_;			// (Show Series Name) §21.2.2.188
 	bool showVal_;				// (Show Value) §21.2.2.189
 
-
-	std::map<int, std::vector<odf_reader::_property>> dLbls_;
+	std::vector<odf_reader::_property>					textPr_;
+	std::map<int, std::vector<odf_reader::_property>>	dLbls_;
 
 
 //delete (Delete) §21.2.2.40
-//dLbl (Data Label) §21.2.2.47 - точно такая же еще раз вложенная хрень
 //dLblPos (Data Label Position) §21.2.2.48
 //extLst (Chart Extensibility) §21.2.2.64
 //leaderLines (Leader Lines) §21.2.2.92

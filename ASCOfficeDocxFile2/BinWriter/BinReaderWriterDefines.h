@@ -500,7 +500,8 @@ extern int g_nCurFormatVersion;
 		CachedImage = 26,
 		SizeRelH = 27,
 		SizeRelV = 28,
-		Embedded = 29
+		Embedded = 29,
+		GraphicFramePr = 30
 	};}
 	namespace c_oSerEffectExtent{enum c_oSerEffectExtent
 	{
@@ -900,6 +901,15 @@ extern int g_nCurFormatVersion;
 		Sz = 12,
 		ColorTheme = 13,
 		Val = 16
+	};}
+	namespace c_oSerGraphicFramePr{enum c_oSerGraphicFramePr
+	{
+		NoChangeAspect = 0,
+		NoDrilldown = 1,
+		NoGrp = 2,
+		NoMove	= 3,
+		NoResize = 4,
+		NoSelect = 5
 	};}
 }
 

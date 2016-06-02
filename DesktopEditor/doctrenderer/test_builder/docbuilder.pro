@@ -77,7 +77,7 @@ TARGET = docbuilder$$TARGET_PLATFORM
 
 ################################################
 
-LIBS += -L$$DESTINATION_SDK_PATH_DOCTRENDERER -ldoctrenderer
+LIBS += -L$$DESTINATION_SDK_PATH_DOCTRENDERER/docbuilder -ldoctrenderer
 
 linux-g++ {
 LIBS += -ldl

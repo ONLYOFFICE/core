@@ -914,35 +914,35 @@ void XlsxConverter::convert_styles()
 	OOX::Spreadsheet::CStyles * xlsx_styles = xlsx_document->GetStyles();
 	
 	if (!xlsx_styles)return;
-
+//todooo ?? стоит ли обращать на параметр Count ??
 ////////////форматы данных
-	for (unsigned int i=0; xlsx_styles->m_oNumFmts.IsInit() && i< xlsx_styles->m_oNumFmts->m_oCount->GetValue(); i++)
+	for (unsigned int i = 0; xlsx_styles->m_oNumFmts.IsInit() && i < xlsx_styles->m_oNumFmts->m_arrItems.size(); i++)
 	{
 		convert(xlsx_styles->m_oNumFmts->m_arrItems[i]);
 	}
 /////////////стили ячеек
-	for (unsigned int i=0; xlsx_styles->m_oCellStyleXfs.IsInit() && i< xlsx_styles->m_oCellStyleXfs->m_oCount->GetValue(); i++)
+	for (unsigned int i = 0; xlsx_styles->m_oCellStyleXfs.IsInit() && i < xlsx_styles->m_oCellStyleXfs->m_arrItems.size(); i++)
 	{
 		//automatical, root - noname - они тока для named
 		convert(xlsx_styles->m_oCellStyleXfs->m_arrItems[i] , i, true, true);
 	}
-	for (unsigned int i=0; xlsx_styles->m_oCellStyles.IsInit() && i< xlsx_styles->m_oCellStyles->m_oCount->GetValue(); i++)//styles.xml
+	for (unsigned int i = 0; xlsx_styles->m_oCellStyles.IsInit() && i < xlsx_styles->m_oCellStyles->m_arrItems.size(); i++)//styles.xml
 	{
 		//non automatical, root - named 
 		convert(xlsx_styles->m_oCellStyles->m_arrItems[i]); 
 	}	
 	
 	//кастомные стили ячеек
-	for (unsigned int i=0; xlsx_styles->m_oCellXfs.IsInit() && i< xlsx_styles->m_oCellXfs->m_oCount->GetValue(); i++)
+	for (unsigned int i = 0; xlsx_styles->m_oCellXfs.IsInit() && i < xlsx_styles->m_oCellXfs->m_arrItems.size(); i++)
 	{
 		//automatical, non root
-		convert(xlsx_styles->m_oCellXfs->m_arrItems[i],i, true,false);
+		convert(xlsx_styles->m_oCellXfs->m_arrItems[i], i, true, false);
 	}	
 
 ////////////стили условного форматирования 
-	for (unsigned int i=0; xlsx_styles->m_oDxfs.IsInit() && i< xlsx_styles->m_oDxfs->m_oCount->GetValue(); i++)
+	for (unsigned int i=0; xlsx_styles->m_oDxfs.IsInit() && i < xlsx_styles->m_oDxfs->m_arrItems.size(); i++)
 	{
-		convert(xlsx_styles->m_oDxfs->m_arrItems[i],i); 
+		convert(xlsx_styles->m_oDxfs->m_arrItems[i], i); 
 	}
 }
 
@@ -1287,9 +1287,10 @@ void XlsxConverter::convert(OOX::Spreadsheet::CColor *color, _CP_OPT(odf_types::
 		ucA = color->m_oRgb->Get_A(); 
 		result = true;
 	}
-	if(color->m_oThemeColor.IsInit())
+	
+	OOX::CTheme * xlsx_theme= xlsx_document->GetTheme();
+	if(color->m_oThemeColor.IsInit() && xlsx_theme)
 	{
-		OOX::CTheme * xlsx_theme= xlsx_document->GetTheme();
 		int theme_ind = color->m_oThemeColor->GetValue();
 		switch(theme_ind)
 		{

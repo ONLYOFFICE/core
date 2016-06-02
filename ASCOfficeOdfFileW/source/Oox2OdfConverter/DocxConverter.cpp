@@ -1161,34 +1161,37 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool r
 	{
 		odt_context->add_section(continuous);
 		
-		double default_space_pt = -1;
-		if (oox_section_pr->m_oCols->m_oSpace.IsInit())	default_space_pt = oox_section_pr->m_oCols->m_oSpace->ToPoints();
-		
-		bool separator = oox_section_pr->m_oCols->m_oSep.IsInit() && oox_section_pr->m_oCols->m_oSep->ToBool();
-		
-		odt_context->add_section_columns(num_columns, 
-			oox_section_pr->m_oCols->m_arrColumns.size() > 0 ? -1 : default_space_pt , separator );
-
-		std::vector<std::pair<double,double>> width_space;
-		
-		for (unsigned int i =0; i< oox_section_pr->m_oCols->m_arrColumns.size(); i++)
+		if (oox_section_pr->m_oCols.IsInit())
 		{
-			if (oox_section_pr->m_oCols->m_arrColumns[i] == NULL) continue;
-			double space = default_space_pt;
-			if (oox_section_pr->m_oCols->m_arrColumns[i]->m_oSpace.IsInit())
-				space = oox_section_pr->m_oCols->m_arrColumns[i]->m_oSpace->ToPoints();
-		
-			double w = -1; 
-			if (oox_section_pr->m_oCols->m_arrColumns[i]->m_oW.IsInit())
-				w = oox_section_pr->m_oCols->m_arrColumns[i]->m_oW->ToPoints();
+			double default_space_pt = -1;
+			if (oox_section_pr->m_oCols->m_oSpace.IsInit())	default_space_pt = oox_section_pr->m_oCols->m_oSpace->ToPoints();
 			
-			width_space.push_back(std::pair<double,double>(w, space));
+			bool separator = oox_section_pr->m_oCols->m_oSep.IsInit() && oox_section_pr->m_oCols->m_oSep->ToBool();
+			
+			odt_context->add_section_columns(num_columns, 
+				oox_section_pr->m_oCols->m_arrColumns.size() > 0 ? -1 : default_space_pt , separator );
+
+			std::vector<std::pair<double,double>> width_space;
+			
+			for (unsigned int i =0; i< oox_section_pr->m_oCols->m_arrColumns.size(); i++)
+			{
+				if (oox_section_pr->m_oCols->m_arrColumns[i] == NULL) continue;
+				double space = default_space_pt;
+				if (oox_section_pr->m_oCols->m_arrColumns[i]->m_oSpace.IsInit())
+					space = oox_section_pr->m_oCols->m_arrColumns[i]->m_oSpace->ToPoints();
+			
+				double w = -1; 
+				if (oox_section_pr->m_oCols->m_arrColumns[i]->m_oW.IsInit())
+					w = oox_section_pr->m_oCols->m_arrColumns[i]->m_oW->ToPoints();
+				
+				width_space.push_back(std::pair<double,double>(w, space));
+			}
+			//for (unsigned int i= oox_section_pr->m_oCols->m_arrColumns.size(); i< num_columns; i ++)
+			//{
+			//	width_space.push_back(std::pair<double,double>(-1, default_space_pt));
+			//}
+			odt_context->add_section_column(width_space);
 		}
-		//for (unsigned int i= oox_section_pr->m_oCols->m_arrColumns.size(); i< num_columns; i ++)
-		//{
-		//	width_space.push_back(std::pair<double,double>(-1, default_space_pt));
-		//}
-		odt_context->add_section_column(width_space);
 
 		if (root) odt_context->flush_section();
 	}

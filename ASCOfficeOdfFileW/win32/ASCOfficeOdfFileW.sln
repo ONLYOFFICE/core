@@ -659,8 +659,8 @@ Global
 		{C739151F-5384-41DF-A1A6-F089E2C1AD56}.Unicode Release|Win32.Build.0 = Release|Win32
 		{C739151F-5384-41DF-A1A6-F089E2C1AD56}.Unicode Release|x64.ActiveCfg = Release|x64
 		{C739151F-5384-41DF-A1A6-F089E2C1AD56}.Unicode Release|x64.Build.0 = Release|x64
-		{78B079BD-9FC7-4B9E-B4A6-96DA0F00248B}.Debug Multithreaded|Win32.ActiveCfg = Debug Multithreaded|Win32
-		{78B079BD-9FC7-4B9E-B4A6-96DA0F00248B}.Debug Multithreaded|Win32.Build.0 = Debug Multithreaded|Win32
+		{78B079BD-9FC7-4B9E-B4A6-96DA0F00248B}.Debug Multithreaded|Win32.ActiveCfg = Debug Multithreaded|x64
+		{78B079BD-9FC7-4B9E-B4A6-96DA0F00248B}.Debug Multithreaded|Win32.Build.0 = Debug Multithreaded|x64
 		{78B079BD-9FC7-4B9E-B4A6-96DA0F00248B}.Debug Multithreaded|x64.ActiveCfg = Debug Multithreaded|x64
 		{78B079BD-9FC7-4B9E-B4A6-96DA0F00248B}.Debug Multithreaded|x64.Build.0 = Debug Multithreaded|x64
 		{78B079BD-9FC7-4B9E-B4A6-96DA0F00248B}.Debug Singlethreaded|Win32.ActiveCfg = Debug Singlethreaded|Win32

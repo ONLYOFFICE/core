@@ -10,7 +10,7 @@ namespace docbuilder_net
 	public ref class CDocBuilder
 	{
 	public:
-		CDocBuilder(bool bIsCheckSystemFonts);
+		CDocBuilder();
 		~CDocBuilder();
 
 		bool OpenFile(String^ path, String^ params);
@@ -19,6 +19,7 @@ namespace docbuilder_net
 		bool SaveFile(int type, String^ path);
 		void CloseFile();
 		bool ExecuteCommand(String^ command);
+		void SetProperty(String^ key, String^ value);
 
 		bool Run(String^ path);
 		bool RunText(String^ text_commands);

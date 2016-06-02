@@ -33,7 +33,7 @@ __interface IASCDocBuilder : IDispatch
 	[id(105)] HRESULT ExecuteCommand([in] BSTR command, [out, retval] VARIANT_BOOL* result);
 	[id(106)] HRESULT Run([in] BSTR path, [out, retval] VARIANT_BOOL* result);
 	[id(107)] HRESULT RunText([in] BSTR commands, [out, retval] VARIANT_BOOL* result);
-	[id(108)] HRESULT SetProperty([in] BSTR sproperty);
+	[id(108)] HRESULT SetProperty([in] BSTR key, [in] BSTR value);
 
 	[id(201)] HRESULT Initialize(void);
 	[id(202)] HRESULT Dispose(void);
@@ -66,7 +66,7 @@ public:
 		if (NULL != m_pBuilder)
 			delete m_pBuilder;
 
-		m_pBuilder = new NSDoctRenderer::CDocBuilder((VARIANT_TRUE == checkFonts) ? true : false);
+		m_pBuilder = new NSDoctRenderer::CDocBuilder();
 		return S_OK;
 	}
 	STDMETHOD(OpenFile)(BSTR path, BSTR params, VARIANT_BOOL* result)
@@ -138,14 +138,12 @@ public:
 		*result = bRet ? VARIANT_TRUE : VARIANT_FALSE;
 		return S_OK;
 	}
-	STDMETHOD(SetProperty)(BSTR sproperty)
+	STDMETHOD(SetProperty)(BSTR key, BSTR value)
 	{
 		if (NULL == m_pBuilder)
 			return S_FALSE;
 		
-		std::wstring sData(sproperty);
-		std::string sDataA = U_TO_UTF8(sData);
-		m_pBuilder->SetProperty(sDataA.c_str());
+		m_pBuilder->SetPropertyW(key, value);
 		return S_OK;
 	}
 

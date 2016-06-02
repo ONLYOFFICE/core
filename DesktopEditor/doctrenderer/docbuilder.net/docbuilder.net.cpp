@@ -23,9 +23,9 @@ namespace docbuilder_net
 	public:
 		NSDoctRenderer::CDocBuilder* m_pBuilder;
 
-		CDocBuilder_Private(bool bIsCheckSystemFonts)
+		CDocBuilder_Private()
 		{
-			m_pBuilder = new NSDoctRenderer::CDocBuilder(bIsCheckSystemFonts);
+			m_pBuilder = new NSDoctRenderer::CDocBuilder();
 		}
 		~CDocBuilder_Private()
 		{
@@ -34,9 +34,9 @@ namespace docbuilder_net
 	};
 
 
-	CDocBuilder::CDocBuilder(bool bIsCheckSystemFonts)
+	CDocBuilder::CDocBuilder()
 	{
-		m_pInternal = gcnew CDocBuilder_Private(bIsCheckSystemFonts);
+		m_pInternal = gcnew CDocBuilder_Private();
 	}
 	CDocBuilder::~CDocBuilder()
 	{
@@ -76,6 +76,11 @@ namespace docbuilder_net
 	bool CDocBuilder::RunText(String^ text)
 	{
 		return m_pInternal->m_pBuilder->RunTextW(StringToStdString(text));
+	}
+
+	void CDocBuilder::SetProperty(String^ key, String^ value)
+	{		
+		m_pInternal->m_pBuilder->SetPropertyW(StringToStdString(key), StringToStdString(value));
 	}
 
 	void CDocBuilder::Initialize()

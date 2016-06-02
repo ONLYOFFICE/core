@@ -185,6 +185,7 @@ SOURCES += \
 
 HEADERS += doctrenderer.h \
     docbuilder.h \
+    docbuilder_p.h \
     memorystream.h \
     nativecontrol.h
 

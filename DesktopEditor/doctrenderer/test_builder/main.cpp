@@ -55,7 +55,10 @@ int main(int argc, char *argv[])
 
     if (true)
     {
-        NSDoctRenderer::CDocBuilder oBuilder(true);
+        NSDoctRenderer::CDocBuilder oBuilder;
+        oBuilder.SetProperty("--check-fonts", L"");
+        //oBuilder.SetProperty("--use-doctrenderer-scheme", L"");
+        //oBuilder.SetProperty("--work-directory", L"builder");
 
         for (int i = 0; i < (argc - 1); ++i)
         {
@@ -65,7 +68,7 @@ int main(int argc, char *argv[])
 #else
             std::string sParam(argv[i]);
 #endif
-            oBuilder.SetProperty(sParam.c_str());
+            oBuilder.SetProperty(sParam.c_str(), L"");
         }
 
         oBuilder.Run(sBuildFile.c_str());

@@ -2590,76 +2590,12 @@ namespace BinXlsxRW {
 			{
 				res = Read1(length, &BinaryWorksheetsTableReader::ReadPic, this, poResult);
 			}
-			else if(c_oSer_DrawingType::GraphicFrame == type)
-			{
-				res = Read1(length, &BinaryWorksheetsTableReader::ReadChart, this, poResult);
-			}
 			else if(c_oSer_DrawingType::pptxDrawing == type)
 			{
 				pTransport->m_nPos = m_oBufferedStream.GetPos();
 				pTransport->m_nLength = length;
 				res = c_oSerConstants::ReadUnknown;
 			}
-			else
-				res = c_oSerConstants::ReadUnknown;
-			return res;
-		};
-		int ReadChart(BYTE type, long length, void* poResult)
-		{
-			OOX::Spreadsheet::CCellAnchor* pCellAnchor = static_cast<OOX::Spreadsheet::CCellAnchor*>(poResult);
-			int res = c_oSerConstants::ReadOk;
-			if(c_oSer_DrawingType::Chart2 == type)
-			{
-				//создаем папку для rels
-                OOX::CPath pathChartsDir = m_sDestinationDir + FILE_SEPARATOR_STR  + _T("xl")  + FILE_SEPARATOR_STR + _T("charts");
-				OOX::CSystemUtility::CreateDirectories(pathChartsDir.GetPath());
-
-                OOX::CPath pathChartsRelsDir = pathChartsDir + FILE_SEPARATOR_STR  + _T("_rels");
-				OOX::CSystemUtility::CreateDirectories(pathChartsRelsDir.GetPath());
-				
-				m_pOfficeDrawingConverter->SetDstContentRels();
-
-				OOX::Spreadsheet::CChartSpace* pChartSpace = new OOX::Spreadsheet::CChartSpace();
-				BinaryChartReader oBinaryChartReader(m_oBufferedStream, m_oSaveParams, m_pOfficeDrawingConverter);
-				oBinaryChartReader.ReadCT_ChartSpace(length, &pChartSpace->m_oChartSpace);
-				
-				NSCommon::smart_ptr<OOX::File> pChartFile(pChartSpace);
-				pChartFile->m_bDoNotAddRels = true;
-				m_pCurDrawing->Add(pChartFile);
-
-				OOX::CPath pathChartsRels = pathChartsRelsDir.GetPath() + FILE_SEPARATOR_STR + pChartFile->m_sOutputFilename + _T(".rels");
-				m_pOfficeDrawingConverter->SaveDstContentRels(pathChartsRels.GetPath());
-
-				long rId;
-				CString sNewImgRel;
-				sNewImgRel.Format(_T("../charts/%ls"), pChartFile->m_sOutputFilename);
-				m_pOfficeDrawingConverter->WriteRels(CString(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart")), sNewImgRel, CString(), &rId);
-				CString sNewRid;
-				sNewRid.Format(_T("rId%d"), rId);
-
-				pCellAnchor->m_oGraphicFrame.Init();
-				pCellAnchor->m_oGraphicFrame->m_oChartGraphic.Init();
-				pCellAnchor->m_oGraphicFrame->m_oChartGraphic->m_oGraphicData.Init();
-				pCellAnchor->m_oGraphicFrame->m_oChartGraphic->m_oGraphicData->m_oChart.Init();
-				pCellAnchor->m_oGraphicFrame->m_oChartGraphic->m_oGraphicData->m_oChart->m_oRId.Init();
-				pCellAnchor->m_oGraphicFrame->m_oChartGraphic->m_oGraphicData->m_oChart->m_oRId->SetValue(sNewRid);
-			}
-			else if(c_oSer_DrawingType::ObjectName == type)
-			{
-				CString sName(m_oBufferedStream.GetString3(length));
-				if (pCellAnchor->m_oGraphicFrame.IsInit())
-				{
-					pCellAnchor->m_oGraphicFrame->m_oNvGraphicFramePr.Init();
-					pCellAnchor->m_oGraphicFrame->m_oNvGraphicFramePr->m_oCNvPr.Init();
-					pCellAnchor->m_oGraphicFrame->m_oNvGraphicFramePr->m_oCNvPr->m_eType = OOX::et_xdr_cNvPr;
-					pCellAnchor->m_oGraphicFrame->m_oNvGraphicFramePr->m_oCNvPr->m_sName.Init();
-					pCellAnchor->m_oGraphicFrame->m_oNvGraphicFramePr->m_oCNvPr->m_sName->Append(sName);
-					pCellAnchor->m_oGraphicFrame->m_oNvGraphicFramePr->m_oCNvPr->m_oId.Init();
-					pCellAnchor->m_oGraphicFrame->m_oNvGraphicFramePr->m_oCNvPr->m_oId->SetValue(m_nNextObjectId++);
-					pCellAnchor->m_oGraphicFrame->m_oNvGraphicFramePr->m_oCNvGraphicFramePr.Init();
-
-				}
-			}		
 			else
 				res = c_oSerConstants::ReadUnknown;
 			return res;

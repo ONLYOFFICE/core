@@ -1907,6 +1907,7 @@ public:
 	CString sSizeRelH;
 	CString sSizeRelV;
 	int m_nDocPr;
+	CString sGraphicFramePr;
 
 	bool bDataPos;
 	bool bDataLength;
@@ -1996,10 +1997,31 @@ public:
 						__int64 emuEffectExtentB = (__int64)(g_dKoef_mm_to_emu * EffectExtentB);
 						sXml.AppendFormat(_T("<wp:effectExtent l=\"%lld\" t=\"%lld\" r=\"%lld\" b=\"%lld\"/>"), emuEffectExtentL, emuEffectExtentT, emuEffectExtentR, emuEffectExtentB);
 					}
-					if(false == bChart)
-						sXml.AppendFormat(_T("<wp:docPr id=\"%d\" name=\"\"/></wp:inline>"), m_nDocPr);
+
+					if(bChart)
+					{
+						sXml.AppendFormat(_T("<wp:docPr id=\"%d\" name=\"Chart %d\"/>"), m_nDocPr, m_nDocPr);
+					}
 					else
-						sXml.AppendFormat(_T("<wp:docPr id=\"%d\" name=\"Chart %d\"/><wp:cNvGraphicFramePr/><a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\"><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/chart\"><c:chart xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" r:id=\"%ls\"/></a:graphicData></a:graphic></wp:inline></w:drawing>"), m_nDocPr, m_nDocPr, (const TCHAR *) sChartRels);
+					{
+						sXml.AppendFormat(_T("<wp:docPr id=\"%d\" name=\"\"/>"), m_nDocPr);
+					}
+					if(!sGraphicFramePr.IsEmpty())
+					{
+						sXml.Append(sGraphicFramePr);
+					}
+					else
+					{
+						sXml.Append(_T("<wp:cNvGraphicFramePr/>"));
+					}
+					if(bChart)
+					{
+						sXml.AppendFormat(_T("<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\"><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/chart\"><c:chart xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" r:id=\"%ls\"/></a:graphicData></a:graphic></wp:inline></w:drawing>"), (const TCHAR *) sChartRels);
+					}
+					else
+					{
+						sXml.Append(_T("</wp:inline>"));
+					}
 				}
 			}
 			else
@@ -2195,11 +2217,24 @@ public:
 						sXml.Append(_T("<wp:wrapNone/>"));
 
 					if(bChart)
-                        sXml.AppendFormat(_T("<wp:docPr id=\"%d\" name=\"Chart %d\"/><wp:cNvGraphicFramePr/><a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\"><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/chart\"><c:chart xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" r:id=\"%ls\"/></a:graphicData></a:graphic>"), m_nDocPr, m_nDocPr, (const TCHAR *) sChartRels);
+					{
+						sXml.AppendFormat(_T("<wp:docPr id=\"%d\" name=\"Chart %d\"/>"), m_nDocPr, m_nDocPr);
+					}
 					else
 					{
 						sXml.AppendFormat(_T("<wp:docPr id=\"%d\" name=\"\"/>"), m_nDocPr);
+					}
+					if(!sGraphicFramePr.IsEmpty())
+					{
+						sXml.Append(sGraphicFramePr);
+					}
+					else
+					{
 						sXml.Append(_T("<wp:cNvGraphicFramePr/>"));
+					}
+					if(bChart)
+					{
+						sXml.AppendFormat(_T("<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\"><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/chart\"><c:chart xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" r:id=\"%ls\"/></a:graphicData></a:graphic>"), (const TCHAR *) sChartRels);
 					}
 
 					if(!sSizeRelH.IsEmpty())

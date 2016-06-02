@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #ifndef OOX_LOGIC_DRAWING_CORE_INFO_INCLUDE_H_
 #define OOX_LOGIC_DRAWING_CORE_INFO_INCLUDE_H_
 
@@ -49,7 +49,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("preferRelativeResize"), m_oPreferRelativeResize )
 				WritingElement_ReadAttributes_End( oReader )
@@ -98,7 +98,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("descr"),  m_sDescr )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("hidden"), m_oHidden )
@@ -142,7 +142,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -161,14 +161,31 @@ namespace OOX
 			}
 			virtual CString      toXML() const
 			{
-				CString sResult = _T("<a:graphicFrameLocks ");
-				
-				sResult += _T("noChangeAspect=\"") + m_oNoChangeAspect.ToString() + _T("\" ");
-				sResult += _T("noDrilldown=\"")    + m_oNoDrilldown.ToString()    + _T("\" ");
-				sResult += _T("noGrp=\"")          + m_oNoGrp.ToString()          + _T("\" ");
-				sResult += _T("noMove=\"")         + m_oNoMove.ToString()         + _T("\" ");
-				sResult += _T("noResize=\"")       + m_oNoResize.ToString()       + _T("\" ");
-				sResult += _T("noSelect=\"")       + m_oNoSelect.ToString()       + _T("\" ");
+				CString sResult = _T("<a:graphicFrameLocks xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" ");
+				if (m_oNoChangeAspect.IsInit())
+				{
+					sResult += _T("noChangeAspect=\"") + m_oNoChangeAspect->ToString2(SimpleTypes::onofftostring1) + _T("\" ");
+				}
+				if (m_oNoDrilldown.IsInit())
+				{
+					sResult += _T("noDrilldown=\"")    + m_oNoDrilldown->ToString2(SimpleTypes::onofftostring1)    + _T("\" ");
+				}
+				if (m_oNoGrp.IsInit())
+				{
+					sResult += _T("noGrp=\"")          + m_oNoGrp->ToString2(SimpleTypes::onofftostring1)          + _T("\" ");
+				}
+				if (m_oNoMove.IsInit())
+				{
+					sResult += _T("noMove=\"")         + m_oNoMove->ToString2(SimpleTypes::onofftostring1)         + _T("\" ");
+				}
+				if (m_oNoResize.IsInit())
+				{
+					sResult += _T("noResize=\"")       + m_oNoResize->ToString2(SimpleTypes::onofftostring1)       + _T("\" ");
+				}
+				if (m_oNoSelect.IsInit())
+				{
+					sResult += _T("noSelect=\"")       + m_oNoSelect->ToString2(SimpleTypes::onofftostring1)       + _T("\" ");
+				}
 
 				sResult += _T(">");
 				
@@ -188,7 +205,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("noChangeAspect"), m_oNoChangeAspect )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("noDrilldown"),    m_oNoDrilldown )
@@ -202,12 +219,12 @@ namespace OOX
 		public:
 
 			// Attributes
-			SimpleTypes::COnOff<SimpleTypes::onoffFalse   > m_oNoChangeAspect;
-			SimpleTypes::COnOff<SimpleTypes::onoffFalse   > m_oNoDrilldown;
-			SimpleTypes::COnOff<SimpleTypes::onoffFalse   > m_oNoGrp;
-			SimpleTypes::COnOff<SimpleTypes::onoffFalse   > m_oNoMove;
-			SimpleTypes::COnOff<SimpleTypes::onoffFalse   > m_oNoResize;
-			SimpleTypes::COnOff<SimpleTypes::onoffFalse   > m_oNoSelect;
+			nullable<SimpleTypes::COnOff<SimpleTypes::onoffFalse   >> m_oNoChangeAspect;
+			nullable<SimpleTypes::COnOff<SimpleTypes::onoffFalse   >> m_oNoDrilldown;
+			nullable<SimpleTypes::COnOff<SimpleTypes::onoffFalse   >> m_oNoGrp;
+			nullable<SimpleTypes::COnOff<SimpleTypes::onoffFalse   >> m_oNoMove;
+			nullable<SimpleTypes::COnOff<SimpleTypes::onoffFalse   >> m_oNoResize;
+			nullable<SimpleTypes::COnOff<SimpleTypes::onoffFalse   >> m_oNoSelect;
 
 			// Childs
 			nullable<OOX::Drawing::COfficeArtExtensionList> m_oExtLst;
@@ -242,7 +259,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("action"),         m_sAction )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("endSnd"),         m_oEndSnd )
@@ -300,7 +317,7 @@ namespace OOX
 				m_eDashType   = linedashtypeUnknown;
 				m_eJoinType   = linejointypeUnknown;
 
-				// TO DO: Реализовать CLineProperties::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CLineProperties::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -514,7 +531,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("algn"), m_oAlgn )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("cap"),  m_oCap )
@@ -525,7 +542,7 @@ namespace OOX
 
 		public:
 
-			EElementType                                      m_eType;       // Тип ноды
+			EElementType                                      m_eType;       // РўРёРї РЅРѕРґС‹
 
 			// Attributes
 			nullable<SimpleTypes::CPenAlignment<>>            m_oAlgn;
@@ -534,17 +551,17 @@ namespace OOX
 			nullable<SimpleTypes::CLineWidth<>>               m_oW;
 
 			// Childs
-			EFillType                                         m_eFillType;   // Тип заливки
+			EFillType                                         m_eFillType;   // РўРёРї Р·Р°Р»РёРІРєРё
 			nullable<OOX::Drawing::CGradientFillProperties>   m_oGradFill;
 			nullable<OOX::Drawing::CNoFillProperties>         m_oNoFill;
 			nullable<OOX::Drawing::CPatternFillProperties>    m_oPattFill;
 			nullable<OOX::Drawing::CSolidColorFillProperties> m_oSolidFill;
 
-			ELineDashType                                     m_eDashType;   // Тип штриха
+			ELineDashType                                     m_eDashType;   // РўРёРї С€С‚СЂРёС…Р°
 			nullable<OOX::Drawing::CDashStopList>             m_oCustDash;
 			nullable<OOX::Drawing::CPresetLineDashProperties> m_oPrstDash;
 
-			ELineJoinType                                     m_eJoinType;   // Тип соединения линий
+			ELineJoinType                                     m_eJoinType;   // РўРёРї СЃРѕРµРґРёРЅРµРЅРёСЏ Р»РёРЅРёР№
 			nullable<OOX::Drawing::CLineJoinBevel>            m_oBevel;
 			nullable<OOX::Drawing::CLineJoinMiterProperties>  m_oMiter;
 			nullable<OOX::Drawing::CLineJoinRound>            m_oRound;
@@ -571,7 +588,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO : Реализовать
+				// TO DO : Р РµР°Р»РёР·РѕРІР°С‚СЊ
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -646,7 +663,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("noAdjustHandles"), m_oNoAdjustHandles )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("noChangeArrowheads"), m_oNoChangeArrowheads )
@@ -736,7 +753,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("r:embed"), m_oEmbed )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("name"), m_sName )
@@ -776,7 +793,7 @@ namespace OOX
 				m_eGeomType   = geomtypeUnknown;
 				m_eEffectType = effecttypeUnknown;
 
-				// TO DO: Реализовать CShapeProperties::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CShapeProperties::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -1022,7 +1039,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("bwMode"), m_oBwMode )
 				WritingElement_ReadAttributes_End( oReader )
@@ -1030,13 +1047,13 @@ namespace OOX
 
 		public:
 
-			EElementType                                      m_eType;       // Тип ноды
+			EElementType                                      m_eType;       // РўРёРї РЅРѕРґС‹
 
 			// Attributes
 			nullable<SimpleTypes::CBlackWhiteMode<>>          m_oBwMode;
 
 			// Childs
-			EFillType                                         m_eFillType;   // Тип заливки
+			EFillType                                         m_eFillType;   // РўРёРї Р·Р°Р»РёРІРєРё
 			nullable<OOX::Drawing::CBlipFillProperties>       m_oBlipFill;
 			nullable<OOX::Drawing::CGradientFillProperties>   m_oGradFill;
 			nullable<OOX::Drawing::CGroupFillProperties>      m_oGrpFill;
@@ -1044,11 +1061,11 @@ namespace OOX
 			nullable<OOX::Drawing::CPatternFillProperties>    m_oPattFill;
 			nullable<OOX::Drawing::CSolidColorFillProperties> m_oSolidFill;
 
-			EGeomType                                         m_eGeomType;   // Тип графики
+			EGeomType                                         m_eGeomType;   // РўРёРї РіСЂР°С„РёРєРё
 			nullable<OOX::Drawing::CCustomGeometry2D>         m_oCustGeom;
 			nullable<OOX::Drawing::CPresetGeometry2D>         m_oPrstGeom;
 
-			EEffectType                                       m_eEffectType; // Тип контейнера эффектов
+			EEffectType                                       m_eEffectType; // РўРёРї РєРѕРЅС‚РµР№РЅРµСЂР° СЌС„С„РµРєС‚РѕРІ
 			nullable<OOX::Drawing::CEffectContainer>          m_oEffectDag;
 			nullable<OOX::Drawing::CEffectList>               m_oEffectList;
 
@@ -1092,7 +1109,7 @@ namespace OOX
 				m_eFillType   = filltypeUnknown;
 				m_eEffectType = effecttypeUnknown;
 
-				// TO DO: Реализовать CShapeProperties::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CShapeProperties::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -1191,10 +1208,10 @@ namespace OOX
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
-			EElementType                                      m_eType;       // Тип ноды
+			EElementType                                      m_eType;       // РўРёРї РЅРѕРґС‹
 
 			// Childs
-			EFillType                                         m_eFillType;   // Тип заливки
+			EFillType                                         m_eFillType;   // РўРёРї Р·Р°Р»РёРІРєРё
 			nullable<OOX::Drawing::CBlipFillProperties>       m_oBlipFill;
 			nullable<OOX::Drawing::CGradientFillProperties>   m_oGradFill;
 			nullable<OOX::Drawing::CGroupFillProperties>      m_oGrpFill;
@@ -1202,7 +1219,7 @@ namespace OOX
 			nullable<OOX::Drawing::CPatternFillProperties>    m_oPattFill;
 			nullable<OOX::Drawing::CSolidColorFillProperties> m_oSolidFill;
 
-			EEffectType                                       m_eEffectType; // Тип контейнера эффектов
+			EEffectType                                       m_eEffectType; // РўРёРї РєРѕРЅС‚РµР№РЅРµСЂР° СЌС„С„РµРєС‚РѕРІ
 			nullable<OOX::Drawing::CEffectContainer>          m_oEffectDag;
 			nullable<OOX::Drawing::CEffectList>               m_oEffectList;
 
@@ -1228,7 +1245,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать CShapeStyle::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CShapeStyle::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{			
@@ -1266,7 +1283,7 @@ namespace OOX
 			{
 				return et_a_style;
 			}
-			//todooo сделать расширение до разных namespaсe
+			//todooo СЃРґРµР»Р°С‚СЊ СЂР°СЃС€РёСЂРµРЅРёРµ РґРѕ СЂР°Р·РЅС‹С… namespaСЃe
 
 		public:
 

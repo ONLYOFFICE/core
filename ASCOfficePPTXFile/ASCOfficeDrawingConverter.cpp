@@ -1411,19 +1411,6 @@ rIns=\"91440\" bIns=\"45720\" numCol=\"1\" spcCol=\"0\" rtlCol=\"0\" fromWordArt
 
 				break;
 			}
-			else if (strName == _T("graphicFrame") && strFullName == _T("xdr:graphicFrame"))
-			{
-                CString __strXml = _T("<drawing \
-xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" \
-xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" \
-xmlns:pic=\"http://schemas.openxmlformats.org/drawingml/2006/picture\" \
-xmlns:xdr=\"http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing\"><anchor>");
-
-                __strXml += oParseNode.ReadNodeNoNS(_T("graphic")).GetXml() + _T("</anchor></drawing>");
-				oParseNode.FromXmlString(__strXml);
-				strName = _T("drawing");
-				continue;
-			}
 			else
 			{
 				PPTX::Logic::SpTreeElem oElem;

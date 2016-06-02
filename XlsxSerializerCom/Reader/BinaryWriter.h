@@ -2562,17 +2562,9 @@ namespace BinXlsxRW {
 					m_pOfficeDrawingConverter->SetRelsPath(keepRels);
 				}
 			}
-			else if(pCellAnchor.m_oGraphicFrame.IsInit())
+			else if(pCellAnchor.m_oGraphicFrame.IsInit() && pCellAnchor.m_oGraphicFrame->m_sXml.IsInit())
 			{
-				if(pCellAnchor.m_oGraphicFrame->m_oChartGraphic.IsInit() && pCellAnchor.m_oGraphicFrame->m_oChartGraphic->m_oGraphicData.IsInit()
-					&& pCellAnchor.m_oGraphicFrame->m_oChartGraphic->m_oGraphicData->m_oChart.IsInit())
-				{
-					nCurPos = m_oBcw.WriteItemStart(c_oSer_DrawingType::GraphicFrame);
-					WriteGraphicFrame(pDrawing, pCellAnchor.m_oGraphicFrame.get(), sDrawingRelsPath);
-					m_oBcw.WriteItemEnd(nCurPos);
-				}
-				else if(pCellAnchor.m_oGraphicFrame->m_sXml.IsInit())
-					bstrXml = *pCellAnchor.m_oGraphicFrame->m_sXml;
+				bstrXml = *pCellAnchor.m_oGraphicFrame->m_sXml;
 			}
 			if(!bstrXml.IsEmpty())
 			{
@@ -2647,35 +2639,6 @@ namespace BinXlsxRW {
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_DrawingExtType::Cy);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Double);
 				m_oBcw.m_oStream.WriteDoubleReal(oExt.m_oCy->ToMm());
-			}
-		};
-		void WriteGraphicFrame(OOX::Spreadsheet::CDrawing* pDrawing, const OOX::Spreadsheet::CGraphicFrame& oGraphicFrame, CString& sDrawingRelsPath)
-		{
-			if(oGraphicFrame.m_oChartGraphic.IsInit() && oGraphicFrame.m_oChartGraphic->m_oGraphicData.IsInit() &&
-				oGraphicFrame.m_oChartGraphic->m_oGraphicData->m_oChart.IsInit() && oGraphicFrame.m_oChartGraphic->m_oGraphicData->m_oChart->m_oRId.IsInit())
-			{
-				smart_ptr<OOX::File> pFile = pDrawing->Find( OOX::RId(oGraphicFrame.m_oChartGraphic->m_oGraphicData->m_oChart->m_oRId->GetValue()));
-				if (pFile.IsInit() && OOX::FileTypes::Chart == pFile->type())
-				{
-					OOX::Spreadsheet::CChartSpace* pChartFile = static_cast<OOX::Spreadsheet::CChartSpace*>(pFile.operator ->());
-					CString sOldRelsPath = m_pOfficeDrawingConverter->GetRelsPath();
-					CString sChartPath = pChartFile->GetReadPath().GetPath();
-					m_pOfficeDrawingConverter->SetRelsPath(sChartPath);
-
-					int nCurPos = m_oBcw.WriteItemStart(c_oSer_DrawingType::Chart2);
-						BinaryChartWriter oBinaryChartWriter(m_oBcw.m_oStream, m_pOfficeDrawingConverter);
-						oBinaryChartWriter.WriteCT_ChartSpace(*pChartFile);
-
-					m_oBcw.WriteItemEnd(nCurPos);
-
-					if ((oGraphicFrame.m_oNvGraphicFramePr.IsInit()) && (oGraphicFrame.m_oNvGraphicFramePr->m_oCNvPr.IsInit()) && (oGraphicFrame.m_oNvGraphicFramePr->m_oCNvPr->m_sName.IsInit()))
-					{
-						nCurPos = m_oBcw.WriteItemStart(c_oSer_DrawingType::ObjectName);
-						m_oBcw.m_oStream.WriteStringW3(oGraphicFrame.m_oNvGraphicFramePr->m_oCNvPr->m_sName.get());
-						m_oBcw.WriteItemEnd(nCurPos);
-					}
-					m_pOfficeDrawingConverter->SetRelsPath(sOldRelsPath);
-				}
 			}
 		};
 		void WriteComments(std::map<CString, OOX::Spreadsheet::CCommentItem*>& mapComments)

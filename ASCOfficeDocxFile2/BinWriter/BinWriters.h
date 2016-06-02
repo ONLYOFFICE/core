@@ -5304,6 +5304,14 @@ namespace BinDocxRW
 							WriteEffectExtent(pInline.m_oEffectExtent.get());
 							m_oBcw.WriteItemWithLengthEnd(nCurPos);
 						}
+						if(pInline.m_oCNvGraphicFramePr.IsInit())
+						{
+							m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::GraphicFramePr);
+							m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+							nCurPos = m_oBcw.WriteItemWithLengthStart();
+							WriteNvGraphicFramePr(pInline.m_oCNvGraphicFramePr.get());
+							m_oBcw.WriteItemWithLengthEnd(nCurPos);
+						}
 					}
 				}
 				else if(img.m_oAnchor.IsInit() )
@@ -5471,11 +5479,62 @@ namespace BinDocxRW
 						WriteWrapTopBottom(pAnchor.m_oWrapTopAndBottom.get());
 						m_oBcw.WriteItemWithLengthEnd(nCurPos);
 					}
+					if(pAnchor.m_oCNvGraphicFramePr.IsInit())
+					{
+						m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::GraphicFramePr);
+						m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+						nCurPos = m_oBcw.WriteItemWithLengthStart();
+						WriteNvGraphicFramePr(pAnchor.m_oCNvGraphicFramePr.get());
+						m_oBcw.WriteItemWithLengthEnd(nCurPos);
+					}
 				}
 			}
 			if(bDeleteDrawing)
 				RELEASEOBJECT(pDrawing);
 		};
+		void WriteNvGraphicFramePr(const OOX::Drawing::CNonVisualGraphicFrameProperties& oGraphicFramePr)
+		{
+			if(oGraphicFramePr.m_oGraphicFrameLocks.IsInit())
+			{
+				const OOX::Drawing::CGraphicalObjectFrameLocking& oLocks = oGraphicFramePr.m_oGraphicFrameLocks.get();
+				if(oLocks.m_oNoChangeAspect.IsInit())
+				{
+					m_oBcw.m_oStream.WriteBYTE(c_oSerGraphicFramePr::NoChangeAspect);
+					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+					m_oBcw.m_oStream.WriteBOOL(oLocks.m_oNoChangeAspect->ToBool());
+				}
+				if(oLocks.m_oNoDrilldown.IsInit())
+				{
+					m_oBcw.m_oStream.WriteBYTE(c_oSerGraphicFramePr::NoDrilldown);
+					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+					m_oBcw.m_oStream.WriteBOOL(oLocks.m_oNoDrilldown->ToBool());
+				}
+				if(oLocks.m_oNoGrp.IsInit())
+				{
+					m_oBcw.m_oStream.WriteBYTE(c_oSerGraphicFramePr::NoGrp);
+					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+					m_oBcw.m_oStream.WriteBOOL(oLocks.m_oNoGrp->ToBool());
+				}
+				if(oLocks.m_oNoMove.IsInit())
+				{
+					m_oBcw.m_oStream.WriteBYTE(c_oSerGraphicFramePr::NoMove);
+					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+					m_oBcw.m_oStream.WriteBOOL(oLocks.m_oNoMove->ToBool());
+				}
+				if(oLocks.m_oNoResize.IsInit())
+				{
+					m_oBcw.m_oStream.WriteBYTE(c_oSerGraphicFramePr::NoResize);
+					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+					m_oBcw.m_oStream.WriteBOOL(oLocks.m_oNoResize->ToBool());
+				}
+				if(oLocks.m_oNoSelect.IsInit())
+				{
+					m_oBcw.m_oStream.WriteBYTE(c_oSerGraphicFramePr::NoSelect);
+					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+					m_oBcw.m_oStream.WriteBOOL(oLocks.m_oNoSelect->ToBool());
+				}
+			}
+		}
 		void WriteEffectExtent(const OOX::Drawing::CEffectExtent& oEffectExtent)
 		{
 			m_oBcw.m_oStream.WriteBYTE(c_oSerEffectExtent::Left);

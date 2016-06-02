@@ -6413,6 +6413,52 @@ public:
 			pDrawingProperty->DrawingPropertyWrap.WrappingType = type;
 			res = Read2(length, &Binary_DocumentTableReader::ReadEmptyWrap, this, poResult);
 		}
+		else if ( c_oSerImageType2::GraphicFramePr == type )
+		{
+			OOX::Drawing::CGraphicalObjectFrameLocking* pLocking = new OOX::Drawing::CGraphicalObjectFrameLocking();
+			res = Read2(length, &Binary_DocumentTableReader::ReadNvGraphicFramePr, this, pLocking);
+			OOX::Drawing::CNonVisualGraphicFrameProperties oGraphicFramePr;
+			oGraphicFramePr.m_oGraphicFrameLocks.reset(pLocking);
+			pDrawingProperty->sGraphicFramePr = oGraphicFramePr.toXML();
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int ReadNvGraphicFramePr(BYTE type, long length, void* poResult)
+	{
+		int res = c_oSerConstants::ReadOk;
+		OOX::Drawing::CGraphicalObjectFrameLocking* pLocking = static_cast<OOX::Drawing::CGraphicalObjectFrameLocking*>(poResult);
+		if ( c_oSerGraphicFramePr::NoChangeAspect == type )
+		{
+			pLocking->m_oNoChangeAspect.Init();
+			pLocking->m_oNoChangeAspect->FromBool(m_oBufferedStream.GetBool());
+		}
+		else if ( c_oSerGraphicFramePr::NoDrilldown == type )
+		{
+			pLocking->m_oNoDrilldown.Init();
+			pLocking->m_oNoDrilldown->FromBool(m_oBufferedStream.GetBool());
+		}
+		else if ( c_oSerGraphicFramePr::NoGrp == type )
+		{
+			pLocking->m_oNoGrp.Init();
+			pLocking->m_oNoGrp->FromBool(m_oBufferedStream.GetBool());
+		}
+		else if ( c_oSerGraphicFramePr::NoMove == type )
+		{
+			pLocking->m_oNoMove.Init();
+			pLocking->m_oNoMove->FromBool(m_oBufferedStream.GetBool());
+		}
+		else if ( c_oSerGraphicFramePr::NoResize == type )
+		{
+			pLocking->m_oNoResize.Init();
+			pLocking->m_oNoResize->FromBool(m_oBufferedStream.GetBool());
+		}
+		else if ( c_oSerGraphicFramePr::NoSelect == type )
+		{
+			pLocking->m_oNoSelect.Init();
+			pLocking->m_oNoSelect->FromBool(m_oBufferedStream.GetBool());
+		}
 		else
 			res = c_oSerConstants::ReadUnknown;
 		return res;

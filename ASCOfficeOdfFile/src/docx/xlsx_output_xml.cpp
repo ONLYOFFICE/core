@@ -22,6 +22,7 @@ public:
     std::wstringstream  comments_;
     std::wstringstream	sort_;
     std::wstringstream	autofilter_;
+	std::wstringstream	conditionalFormatting_;
 
 	rels hyperlinks_rels_;
 
@@ -71,6 +72,10 @@ std::wostream & xlsx_xml_worksheet::sheetData()
 std::wostream & xlsx_xml_worksheet::mergeCells()
 {
     return impl_->mergeCells_;
+}
+std::wostream & xlsx_xml_worksheet::conditionalFormatting()
+{
+    return impl_->conditionalFormatting_;
 }
 std::wostream & xlsx_xml_worksheet::sort()
 {
@@ -125,7 +130,7 @@ void xlsx_xml_worksheet::write_to(std::wostream & strm)
 			
 			CP_XML_STREAM() << impl_->sort_.str();
 
-			//conditional formats
+			CP_XML_STREAM() << impl_->conditionalFormatting_.str();
 
 			if (!impl_->hyperlinks_.str().empty())
             {

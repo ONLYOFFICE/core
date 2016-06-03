@@ -81,7 +81,7 @@ public:
         pptx_comments_->add(d);
     }
 
-    void write_comments(std::wostream & strm)
+    void serialize(std::wostream & strm)
     {
         pptx_serialize(strm, *pptx_comments_);
     }
@@ -146,9 +146,9 @@ bool pptx_comments_context::empty() const
     return impl_->empty();
 }
 
-void pptx_comments_context::write_comments(std::wostream & strm)
+void pptx_comments_context::serialize(std::wostream & strm)
 {
-    impl_->write_comments(strm);    
+    impl_->serialize(strm);    
 	impl_->clear();
 }
 pptx_comments_ptr pptx_comments_context::get_comments()

@@ -1,9 +1,10 @@
-
 #include "xlsx_fill.h"
+
+#include "../odf/style_table_properties.h"
+#include "../odf/style_graphic_properties.h"
 
 #include <cpdoccore/xml/simple_xml_writer.h>
 
-#include <boost/foreach.hpp>
 #include <boost/functional/hash/hash.hpp>
 
 namespace cpdoccore {
@@ -11,9 +12,9 @@ namespace oox {
 
 bool xlsx_patternFill::operator == (const xlsx_patternFill & rVal) const
 {
-    return fgColor == rVal.fgColor &&
-        bgColor == rVal.bgColor && 
-        patternType == rVal.patternType;
+    return	fgColor == rVal.fgColor &&
+			bgColor == rVal.bgColor && 
+		patternType == rVal.patternType;
 }
 
 bool xlsx_patternFill::operator != (const xlsx_patternFill & rVal) const
@@ -50,7 +51,7 @@ std::size_t hash_value(xlsx_patternFill const & val)
 
 void xlsx_serialize(std::wostream & _Wostream, const xlsx_gradientFill & gradientFill)
 {
-    // TODO    
+    // todooo  
 }
 
 std::size_t hash_value(xlsx_gradientFill const & val)
@@ -70,27 +71,19 @@ bool xlsx_gradientFill::operator != (const xlsx_gradientFill & rVal) const
 
 void xlsx_serialize(std::wostream & _Wostream, const xlsx_fill & fill)
 {
+	if (!fill.patternFill && !fill.gradientFill) return;
+
     CP_XML_WRITER(_Wostream)
     {
         CP_XML_NODE(L"fill")
         {
             if (fill.patternFill)
-                xlsx_serialize(CP_XML_STREAM(), fill.patternFill.get());
+                xlsx_serialize(CP_XML_STREAM(), *fill.patternFill);
 
             if (fill.gradientFill)
-                xlsx_serialize(CP_XML_STREAM(), fill.gradientFill.get());
+                xlsx_serialize(CP_XML_STREAM(), *fill.gradientFill);
         }
     }
-
-    //_Wostream << L"<fill>";
-    //if (fill.patternFill)
-    //    xlsx_serialize(_Wostream, fill.patternFill.get());
-
-    //if (fill.gradientFill)
-    //    xlsx_serialize(_Wostream, fill.gradientFill.get());
-    //
-
-    //_Wostream << L"</fill>";
 }
 
 std::size_t hash_value(xlsx_fill const & val)
@@ -103,13 +96,39 @@ std::size_t hash_value(xlsx_fill const & val)
 }
 bool xlsx_fill::operator == (const xlsx_fill & rVal) const
 {
-    return patternFill == rVal.patternFill &&
-        gradientFill == rVal.gradientFill;
+    return	patternFill	== rVal.patternFill &&
+			gradientFill == rVal.gradientFill;
 }
 
 bool xlsx_fill::operator != (const xlsx_fill & rVal) const
 {
     return !(this->operator ==(rVal));
+}
+
+xlsx_fill::xlsx_fill(	const odf_reader::graphic_format_properties				* graphProp,
+						const odf_reader::style_table_cell_properties_attlist	* cellProp)
+{
+	bEnabled = false;
+	bDefault = false;
+	if (cellProp)
+	{
+		if (_CP_OPT(odf_types::background_color) bgClr = cellProp->common_background_color_attlist_.fo_background_color_)
+		{
+			if (bgClr->get_type() != odf_types::background_color::Transparent)
+			{
+				bEnabled = true;
+
+				xlsx_color color;
+				// alfa + rgb
+				color.rgb = L"ff" + bgClr->get_color().get_hex_value();
+				
+				patternFill = xlsx_patternFill();
+				patternFill->bgColor		= color;
+				patternFill->fgColor		= color;
+				patternFill->patternType = L"solid";
+			}
+		}
+	}
 }
 
 }

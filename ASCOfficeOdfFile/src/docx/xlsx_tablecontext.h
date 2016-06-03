@@ -52,10 +52,11 @@ public:
 
 	unsigned int columns_count();
 
-	void serialize_sort			(std::wostream & _Wostream);
-	void serialize_autofilter	(std::wostream & _Wostream);
-    void serialize_merge_cells	(std::wostream & _Wostream);
-	void serialize_table_format	(std::wostream & _Wostream);
+	void serialize_sort					(std::wostream & _Wostream);
+	void serialize_autofilter			(std::wostream & _Wostream);
+    void serialize_merge_cells			(std::wostream & _Wostream);
+	void serialize_table_format			(std::wostream & _Wostream);
+	void serialize_conditionalFormatting(std::wostream & _Wostream);
 
 	xlsx_table_metrics & get_table_metrics();
   

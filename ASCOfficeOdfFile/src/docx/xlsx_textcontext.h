@@ -51,7 +51,7 @@ public:
 
 	void add_text(const std::wstring & text);
 
-    void write_shared_strings(std::wostream & strm);
+    void serialize_shared_strings(std::wostream & strm);
 
 	bool is_drawing_context();
 

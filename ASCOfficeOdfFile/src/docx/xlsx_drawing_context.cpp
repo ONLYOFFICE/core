@@ -94,7 +94,7 @@ public:
 
 	mediaitems & get_mediaitems() { return handle_.impl_->get_mediaitems(); }
 
-    void write_drawing(std::wostream & strm)
+    void serialize(std::wostream & strm)
     {
         xlsx_serialize(strm, *xlsx_drawings_);
     }
@@ -581,9 +581,9 @@ void xlsx_drawing_context::process_objects(std::vector<drawing_object_descriptio
 	}
 }
 
-void xlsx_drawing_context::write_drawing(std::wostream & strm)
+void xlsx_drawing_context::serialize(std::wostream & strm)
 {
-    impl_->write_drawing(strm);    
+    impl_->serialize(strm);    
 }
 
 

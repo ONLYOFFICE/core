@@ -1,9 +1,8 @@
 
 #include "xlsx_merge_cells.h"
 #include "xlsx_utils.h"
-#include <ostream>
+
 #include <vector>
-#include <boost/foreach.hpp>
 #include <cpdoccore/xml/simple_xml_writer.h>
 
 namespace cpdoccore {
@@ -35,8 +34,10 @@ public:
                 {
                     CP_XML_ATTR(L"count", merges_.size());
 
-                    BOOST_FOREACH(const merge & m, merges_)
+                    for (int i = 0 ; i < merges_.size(); i++)
                     {
+						merge & m = merges_[i];
+
                         CP_XML_NODE(L"mergeCell")
                         {
                             CP_XML_ATTR(L"ref", getCellAddress(m.c, m.r) + L":" + getCellAddress(m.c + m.cols, m.r + m.rows));

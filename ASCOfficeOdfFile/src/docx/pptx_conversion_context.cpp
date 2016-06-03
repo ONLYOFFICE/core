@@ -267,7 +267,7 @@ void pptx_conversion_context::end_document()
 		count++;
 		package::chart_content_ptr content = package::chart_content::create();
 
-		chart->write_to(content->content());
+		chart->serialize(content->content());
 
 		output_document_->get_ppt_files().add_charts(content);
 	
@@ -487,7 +487,7 @@ void pptx_conversion_context::end_page()
 	if (!get_comments_context().empty())
     {
         std::wstringstream strm;
-        get_comments_context().write_comments(strm);        
+        get_comments_context().serialize(strm);        
 		
 		const std::pair<std::wstring, std::wstring> commentsName =
             comments_context_handle_.add_comments_xml(strm.str(), get_comments_context().get_comments() );

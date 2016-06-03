@@ -168,7 +168,7 @@ public:
         }
     };
 
-    void xlsx_serialize(std::wostream & _Wostream)
+    void serialize(std::wostream & _Wostream)
     {
         std::vector<xlsx_border> inst_array;
 
@@ -212,9 +212,9 @@ size_t xlsx_borders::borderId(const odf_reader::style_table_cell_properties_attl
     return impl_->borderId(cellProp, is_default);
 }
 
-void xlsx_borders::xlsx_serialize(std::wostream & _Wostream)
+void xlsx_borders::serialize(std::wostream & _Wostream)
 {
-    return impl_->xlsx_serialize(_Wostream);
+    return impl_->serialize(_Wostream);
 }
 
 xlsx_borders::xlsx_borders(): impl_(new Impl())
@@ -223,11 +223,6 @@ xlsx_borders::xlsx_borders(): impl_(new Impl())
 
 xlsx_borders::~xlsx_borders()
 {
-}
-
-void xlsx_serialize(std::wostream & _Wostream, xlsx_borders & borders)
-{    
-    return borders.xlsx_serialize(_Wostream);
 }
 
 }

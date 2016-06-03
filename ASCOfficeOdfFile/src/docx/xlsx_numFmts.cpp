@@ -41,7 +41,7 @@ size_t xlsx_num_fmts::num_format_id(const std::wstring & format_code)
     return impl_->num_format_id(format_code);
 }
 
-void xlsx_num_fmts::xlsx_serialize(std::wostream & _Wostream) const
+void xlsx_num_fmts::serialize(std::wostream & _Wostream) const
 {
     _Wostream << L"<numFmts count=\"" << impl_->formats_.size() << L"\">";
     for (size_t i = 0; i < impl_->formats_.size(); ++i)
@@ -53,10 +53,7 @@ void xlsx_num_fmts::xlsx_serialize(std::wostream & _Wostream) const
     _Wostream << L"</numFmts>";
 }
 
-void xlsx_serialize(std::wostream & _Wostream, const xlsx_num_fmts & numFmts)
-{
-    return numFmts.xlsx_serialize(_Wostream);
-}
+
    
 }
 }

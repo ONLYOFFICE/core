@@ -29,7 +29,7 @@ public:
 
     bool empty() const;
 
-	void write_to(std::wostream & strm);
+	void serialize(std::wostream & strm);
 	
 	static oox_chart_context_ptr create(std::wstring const & name);
 	static oox_chart_context_ptr create();

@@ -93,11 +93,11 @@ public:
         xlsx_comments_->add(d);
     }
 
-    void write_comments(std::wostream & strm)
+    void serialize(std::wostream & strm)
     {
         xlsx_serialize(strm, *xlsx_comments_);
     }
-    void write_comments_vml(std::wostream & strm)
+    void serialize_vml(std::wostream & strm)
     {
         xlsx_serialize_vml(strm, *xlsx_comments_);
     }
@@ -166,13 +166,13 @@ bool xlsx_comments_context::empty() const
     return impl_->empty();
 }
 
-void xlsx_comments_context::write_comments(std::wostream & strm)
+void xlsx_comments_context::serialize(std::wostream & strm)
 {
-    impl_->write_comments(strm);    
+    impl_->serialize(strm);    
 }
-void xlsx_comments_context::write_comments_vml(std::wostream & strm)
+void xlsx_comments_context::serialize_vml(std::wostream & strm)
 {
-	impl_->write_comments_vml(strm);    
+	impl_->serialize_vml(strm);    
 }
 
 xlsx_comments_ptr xlsx_comments_context::get_comments()

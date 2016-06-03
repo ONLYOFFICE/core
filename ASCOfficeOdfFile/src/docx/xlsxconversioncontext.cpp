@@ -166,7 +166,7 @@ void xlsx_conversion_context::end_document()
 		count++;
 		package::chart_content_ptr content = package::chart_content::create();
 
-		chart->write_to(content->content());
+		chart->serialize(content->content());
 
 		output_document_->get_xl_files().add_charts(content);
 	
@@ -175,7 +175,7 @@ void xlsx_conversion_context::end_document()
 
     {
         std::wstringstream strm;
-        xlsx_text_context_.write_shared_strings(strm);
+        xlsx_text_context_.serialize_shared_strings(strm);
         output_document_->get_xl_files().set_sharedStrings( package::simple_element::create(L"sharedStrings.xml", strm.str()) );
     }
 
@@ -288,13 +288,13 @@ void xlsx_conversion_context::end_table()
     }    
     current_sheet().cols() << L"</cols>";
     
-	get_table_context().serialize_table_format(current_sheet().sheetFormat());
-
-    get_table_context().serialize_autofilter	(current_sheet().autofilter());
-    get_table_context().serialize_sort			(current_sheet().sort());
-    get_table_context().serialize_merge_cells	(current_sheet().mergeCells());
-    get_table_context().serialize_hyperlinks	(current_sheet().hyperlinks());
-	get_table_context().dump_rels_hyperlinks	(current_sheet().hyperlinks_rels());
+	get_table_context().serialize_table_format			(current_sheet().sheetFormat());
+	get_table_context().serialize_conditionalFormatting	(current_sheet().conditionalFormatting());
+    get_table_context().serialize_autofilter			(current_sheet().autofilter());
+    get_table_context().serialize_sort					(current_sheet().sort());
+    get_table_context().serialize_merge_cells			(current_sheet().mergeCells());
+    get_table_context().serialize_hyperlinks			(current_sheet().hyperlinks());
+	get_table_context().dump_rels_hyperlinks			(current_sheet().hyperlinks_rels());
 
 	get_drawing_context().set_odf_packet_path(root()->get_folder());
 
@@ -303,7 +303,7 @@ void xlsx_conversion_context::end_table()
 	if (!get_drawing_context().empty())
     {
         std::wstringstream strm;
-        get_drawing_context().write_drawing(strm);
+        get_drawing_context().serialize(strm);
         
         const std::pair<std::wstring, std::wstring> drawingName 
             = xlsx_drawing_context_handle_.add_drawing_xml(strm.str(), get_drawing_context().get_drawings() );
@@ -322,10 +322,10 @@ void xlsx_conversion_context::end_table()
 	if (!get_comments_context().empty())
     {
         std::wstringstream strm;
-        get_comments_context().write_comments(strm);
+        get_comments_context().serialize(strm);
         
         std::wstringstream vml_strm;
-        get_comments_context().write_comments_vml(vml_strm);
+        get_comments_context().serialize_vml(vml_strm);
 		
 		const std::pair<std::wstring, std::wstring> commentsName 
             = xlsx_comments_context_handle_.add_comments_xml(strm.str(), vml_strm.str(),get_comments_context().get_comments() );
@@ -555,6 +555,40 @@ void xlsx_conversion_context::end_hyperlink(std::wstring const & href)
 		xlsx_text_context_.end_span2();
 	}
 }
+
+void xlsx_conversion_context::start_conditional_format(std::wstring ref)
+{
+	get_table_context().state()->get_conditionalFormatting_context().add(ref);
+}
+void xlsx_conversion_context::start_conditional_format_rule(int type)
+{
+	get_table_context().state()->get_conditionalFormatting_context().add_rule(type);
+}
+void xlsx_conversion_context::set_conditional_format_formula (std::wstring f)
+{
+	get_table_context().state()->get_conditionalFormatting_context().set_formula(f);
+}
+void xlsx_conversion_context::set_conditional_format_dxf (int dxfId)
+{
+	get_table_context().state()->get_conditionalFormatting_context().set_dxf(dxfId);
+}
+void xlsx_conversion_context::add_conditional_format_entry (int type, std::wstring value)
+{
+	get_table_context().state()->get_conditionalFormatting_context().add_sfv(type, value);
+}
+void xlsx_conversion_context::set_conditional_format_showval (bool val)
+{
+	get_table_context().state()->get_conditionalFormatting_context().set_showVal(val);
+}
+void xlsx_conversion_context::add_conditional_format_color (std::wstring col)
+{
+	get_table_context().state()->get_conditionalFormatting_context().add_color(col);
+}
+void xlsx_conversion_context::set_conditional_format_dataBar (_CP_OPT(int) min, _CP_OPT(int) max)
+{
+	get_table_context().state()->get_conditionalFormatting_context().set_dataBar(min, max);
+}
+
 
 }
 }

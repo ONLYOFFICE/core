@@ -6,6 +6,7 @@
 #include "xlsxconversioncontext.h"
 #include "xlsx_fonts.h"
 #include "xlsx_xf.h"
+#include "xlsx_dxfs.h"
 #include "xlsx_borders.h"
 #include "xlsx_fills.h"
 #include "xlsx_cell_format.h"
@@ -21,34 +22,41 @@ namespace oox {
 class xlsx_style_manager::Impl
 {
 public:
-    //typedef std::vector<xlsx_xf> xlsx_xf_array;
     typedef boost::unordered_set<xlsx_xf, boost::hash<xlsx_xf> > xlsx_xf_array;
 
-public:
     Impl(xlsx_conversion_context * context);
-    size_t size() const;
-    size_t xfId(const odf_reader::text_format_properties_content * textProp,
-        const odf_reader::paragraph_format_properties * parProp,
-        const odf_reader::style_table_cell_properties_attlist * cellProp,
-        const xlsx_cell_format * xlxsCellFormat,
-        const std::wstring &num_format, bool  default_set, bool & is_visible);
+   
+	size_t size() const;
+   
+	size_t xfId(	const odf_reader::text_format_properties_content		* textProp,
+					const odf_reader::paragraph_format_properties			* parProp,
+					const odf_reader::style_table_cell_properties_attlist	* cellProp,
+					const xlsx_cell_format * xlxsCellFormat,
+					const std::wstring &num_format, bool  default_set, bool & is_visible);
+	
+	size_t dxfId(	const odf_reader::text_format_properties_content		* textProp,
+					const odf_reader::graphic_format_properties				* graphProp,
+					const odf_reader::style_table_cell_properties_attlist	* cellProp);
 
-    void xlsx_serialize(std::wostream & _Wostream);
-    void xlsx_serialize_xf(std::wostream & _Wostream, const xlsx_xf_array & xfArray, const std::wstring & nodeName);
-
-private:
-    xlsx_fonts			fonts_;
-    xlsx_borders		borders_;
-    xlsx_fills			fills_;
-    xlsx_xf_array		cellXfs_;
-
-    xlsx_cell_styles	cellStyles_;
-    xlsx_xf_array		cellStyleXfs_;
-    xlsx_num_fmts		numFmts_;
+    void serialize		(std::wostream & _Wostream);
+    void serialize_xf	(std::wostream & _Wostream, const xlsx_xf_array & xfArray, const std::wstring & nodeName);
 
 private:
-	xlsx_conversion_context *context;
-    size_t next_index_;
+    xlsx_fonts				fonts_;
+    xlsx_borders			borders_;
+    xlsx_fills				fills_;
+    xlsx_num_fmts			numFmts_;
+    
+	xlsx_xf_array			cellXfs_;
+
+    xlsx_cell_styles		cellStyles_;
+    xlsx_xf_array			cellStyleXfs_;
+    
+	xlsx_dxfs				dxfs_;
+
+//-------------------------------------------------
+	xlsx_conversion_context		*context;
+    size_t						next_index_;
 
     void insert(xlsx_xf const & xf)
     {
@@ -70,6 +78,13 @@ xlsx_style_manager::Impl::Impl(xlsx_conversion_context *context_) : next_index_(
 size_t xlsx_style_manager::Impl::size() const
 {
     return cellXfs_.size();
+}
+
+size_t xlsx_style_manager::Impl::dxfId(	const odf_reader::text_format_properties_content	* textProp,
+										const odf_reader::graphic_format_properties			* graphProp,
+										const odf_reader::style_table_cell_properties_attlist	* cellProp)
+{
+	return dxfs_.dxfId(textProp, graphProp, cellProp);
 }
 
 size_t xlsx_style_manager::Impl::xfId(const odf_reader::text_format_properties_content		* textProp,
@@ -116,12 +131,12 @@ size_t xlsx_style_manager::Impl::xfId(const odf_reader::text_format_properties_c
         xfRecord.numFmtId = numFmts_.num_format_id(num_format);
     }
     else
-    if (xlxsCellFormat && 
-        xlxsCellFormat->get_cell_type() != XlsxCellType::null)
-    {
-        xfRecord.applyNumberForm = true;
-        xfRecord.numFmtId = xlxsCellFormat->get_num_format();
-    }
+		if (xlxsCellFormat && 
+			xlxsCellFormat->get_cell_type() != XlsxCellType::null)
+	{
+		xfRecord.applyNumberForm = true;
+		xfRecord.numFmtId = xlxsCellFormat->get_num_format();
+	}
 
     xfRecord.xfId = 0;
     xfRecord.alignment = alignment;
@@ -140,19 +155,21 @@ size_t xlsx_style_manager::Impl::xfId(const odf_reader::text_format_properties_c
     return id;
 }
 
-void xlsx_style_manager::Impl::xlsx_serialize(std::wostream & _Wostream)
+void xlsx_style_manager::Impl::serialize(std::wostream & _Wostream)
 {
     _Wostream << L"<styleSheet xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\">";
 
-    cpdoccore::oox::xlsx_serialize(_Wostream, numFmts_);
-    cpdoccore::oox::xlsx_serialize(_Wostream, fonts_);
-    cpdoccore::oox::xlsx_serialize(_Wostream, fills_);
-    cpdoccore::oox::xlsx_serialize(_Wostream, borders_);
+	numFmts_.serialize	(_Wostream);
+    fonts_.serialize	(_Wostream);
+	fills_.serialize	(_Wostream);
+	borders_.serialize	(_Wostream);
 
+    serialize_xf(_Wostream, cellStyleXfs_	, L"cellStyleXfs");
+    serialize_xf(_Wostream, cellXfs_		, L"cellXfs");
     
-    xlsx_serialize_xf(_Wostream, cellStyleXfs_, L"cellStyleXfs");
-    xlsx_serialize_xf(_Wostream, cellXfs_, L"cellXfs");
-    cellStyles_.xlsx_serialize(_Wostream);
+	cellStyles_.serialize(_Wostream);
+
+	dxfs_.serialize(_Wostream);
     
 
     _Wostream << L"</styleSheet>";
@@ -169,7 +186,7 @@ namespace
     };
 }
 
-void xlsx_style_manager::Impl::xlsx_serialize_xf(std::wostream & _Wostream, const xlsx_xf_array & xfArray, const std::wstring & nodeName)
+void xlsx_style_manager::Impl::serialize_xf(std::wostream & _Wostream, const xlsx_xf_array & xfArray, const std::wstring & nodeName)
 {
     std::vector<xlsx_xf> xfs_;
             
@@ -198,9 +215,9 @@ size_t xlsx_style_manager::size() const
     return impl_->size();
 }
 
-size_t xlsx_style_manager::xfId(const odf_reader::text_format_properties_content * textProp,
-                                const odf_reader::paragraph_format_properties * parProp,
-                                const odf_reader::style_table_cell_properties_attlist * cellProp,
+size_t xlsx_style_manager::xfId(const odf_reader::text_format_properties_content		* textProp,
+                                const odf_reader::paragraph_format_properties			* parProp,
+                                const odf_reader::style_table_cell_properties_attlist	* cellProp,
                                 const xlsx_cell_format * xlxsCellFormat,
                                 const std::wstring &num_format, bool  default_set)
 {
@@ -208,18 +225,24 @@ size_t xlsx_style_manager::xfId(const odf_reader::text_format_properties_content
     return impl_->xfId(textProp, parProp, cellProp, xlxsCellFormat, num_format,default_set, is_visible);
 }
 
-size_t xlsx_style_manager::xfId(const odf_reader::text_format_properties_content * textProp,
-                                const odf_reader::paragraph_format_properties * parProp,
-                                const odf_reader::style_table_cell_properties_attlist * cellProp,
+size_t xlsx_style_manager::xfId(const odf_reader::text_format_properties_content		* textProp,
+                                const odf_reader::paragraph_format_properties			* parProp,
+                                const odf_reader::style_table_cell_properties_attlist	* cellProp,
                                 const xlsx_cell_format * xlxsCellFormat,
                                 const std::wstring &num_format, bool  default_set, bool & is_visible)
 {
     return impl_->xfId(textProp, parProp, cellProp, xlxsCellFormat, num_format, default_set,is_visible);
 }
+size_t xlsx_style_manager::dxfId(const odf_reader::text_format_properties_content		* textProp,
+								 const odf_reader::graphic_format_properties			* graphProp,
+								 const odf_reader::style_table_cell_properties_attlist	* cellProp)
+{
+	return impl_->dxfId(textProp, graphProp, cellProp);
+}
 
 void xlsx_style_manager::xlsx_serialize(std::wostream & _Wostream)
 {
-    return impl_->xlsx_serialize(_Wostream);
+    return impl_->serialize(_Wostream);
 }
 
 xlsx_style_manager::~xlsx_style_manager()

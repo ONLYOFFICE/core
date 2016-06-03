@@ -54,8 +54,8 @@ public:
 
     bool empty() const;
 
-    void write_comments(std::wostream & strm);
-    void write_comments_vml(std::wostream & strm);
+    void serialize		(std::wostream & strm);
+    void serialize_vml	(std::wostream & strm);
     xlsx_comments_ptr get_comments();
 
 private:

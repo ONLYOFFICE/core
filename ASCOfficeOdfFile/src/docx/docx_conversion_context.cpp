@@ -292,7 +292,7 @@ void docx_conversion_context::end_document()
 		count++;
 		package::chart_content_ptr content = package::chart_content::create();
 
-		chart->write_to(content->content());
+		chart->serialize(content->content());
 
 		output_document_->get_word_files().add_charts(content);
 	

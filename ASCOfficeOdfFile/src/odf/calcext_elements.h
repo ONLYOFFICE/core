@@ -23,9 +23,11 @@ class calcext_data_bar_attr
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
-	_CP_OPT(odf_types::color) calcext_axis_color_;
-	_CP_OPT(odf_types::color) calcext_positive_color_;
-	_CP_OPT(odf_types::color) calcext_negative_color_;
+	_CP_OPT(odf_types::color)	calcext_axis_color_;
+	_CP_OPT(odf_types::color)	calcext_positive_color_;
+	_CP_OPT(odf_types::color)	calcext_negative_color_;
+	_CP_OPT(int)				calcext_max_length_;
+	_CP_OPT(int)				calcext_min_length_;
 };
 
 class calcext_condition_attr
@@ -33,9 +35,9 @@ class calcext_condition_attr
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
-	_CP_OPT(std::wstring)				calcext_base_cell_address_;
-	_CP_OPT(odf_types::style_ref)		calcext_apply_style_name_;
-	_CP_OPT(std::wstring)				calcext_value_;
+	_CP_OPT(std::wstring)		calcext_base_cell_address_;
+	_CP_OPT(std::wstring)		calcext_apply_style_name_;
+	_CP_OPT(std::wstring)		calcext_value_;
 
 };
 
@@ -44,7 +46,7 @@ class calcext_icon_set_attr
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
-	_CP_OPT(odf_types::iconset_type) calcext_icon_set_type_;
+	_CP_OPT(odf_types::iconset_type)	calcext_icon_set_type_;
 
 };
 
@@ -117,10 +119,9 @@ public:
 
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
 	
-	calcext_icon_set_attr calcext_icon_set_attr_;
-
-private:
-    office_element_ptr_array content_;//entries
+	_CP_OPT(bool)				calcext_show_value_;
+	calcext_icon_set_attr		calcext_icon_set_attr_;
+    office_element_ptr_array	content_;
 
 };
 CP_REGISTER_OFFICE_ELEMENT2(calcext_icon_set);
@@ -140,10 +141,9 @@ public:
 
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
 	
-	calcext_data_bar_attr calcext_data_bar_attr_;
-
-private:
-    office_element_ptr_array content_;//entries
+	_CP_OPT(bool)				calcext_show_value_;
+	calcext_data_bar_attr		calcext_data_bar_attr_;
+    office_element_ptr_array	content_;
 };
 CP_REGISTER_OFFICE_ELEMENT2(calcext_data_bar)
 
@@ -162,7 +162,6 @@ public:
 
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
 
-private:
     office_element_ptr_array content_;//color_scale_entries
 };
 CP_REGISTER_OFFICE_ELEMENT2(calcext_color_scale)
@@ -222,7 +221,6 @@ public:
 	
 	_CP_OPT(std::wstring) calcext_target_range_address_;
 
-private:
     office_element_ptr_array content_;
 
 };
@@ -243,8 +241,6 @@ public:
 
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
 	
-
-private:
     office_element_ptr_array content_;
 
 };

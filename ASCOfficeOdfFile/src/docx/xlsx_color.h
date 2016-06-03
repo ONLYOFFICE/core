@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include <iosfwd>
@@ -11,11 +10,11 @@ namespace oox {
 
 struct xlsx_color
 {
-    _CP_OPT(bool) autoVal;
-    _CP_OPT(unsigned int) indexed;
-    _CP_OPT(std::wstring) rgb;
-    _CP_OPT(unsigned int) theme;
-    _CP_OPT(double) tint;
+    _CP_OPT(bool)			autoVal;
+    _CP_OPT(unsigned int)	indexed;
+    _CP_OPT(std::wstring)	rgb;
+    _CP_OPT(unsigned int)	theme;
+    _CP_OPT(double)			tint;
 
     bool operator == (const xlsx_color & rVal) const;
     bool operator != (const xlsx_color & rVal) const;

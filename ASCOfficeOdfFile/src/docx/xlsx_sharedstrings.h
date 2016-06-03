@@ -15,8 +15,8 @@ public:
     ~xlsx_shared_strings();
 
 public:
-    void xlsx_serialize(std::wostream & _Wostream) const;
-    size_t add(const std::wstring & content);
+    void	serialize(std::wostream & _Wostream) const;
+    size_t	add(const std::wstring & content);
 
 private:
     class Impl;

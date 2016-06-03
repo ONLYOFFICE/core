@@ -50,9 +50,9 @@ class xlsx_comments
 public:
     xlsx_comments();
     ~xlsx_comments();
-    static xlsx_comments_ptr create();
+    
+	static xlsx_comments_ptr create();
 
-public:
     void add(_xlsx_comment & d);
     bool empty() const;
 

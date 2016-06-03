@@ -1,9 +1,12 @@
-
 #include "xlsx_font.h"
-#include <boost/foreach.hpp>
+
+#include "../odf/style_text_properties.h"
+#include "../odf/style_table_properties.h"
+#include "../odf/style_paragraph_properties.h"
+
 #include <boost/functional.hpp>
 #include <cpdoccore/xml/simple_xml_writer.h>
-#include "../odf/style_text_properties.h"
+
 
 namespace cpdoccore {
 namespace oox {
@@ -177,56 +180,6 @@ void xlsx_serialize(std::wostream & _Wostream, const xlsx_font & font)
             
         }
     }
-
-    /*
-    _Wostream << L"<font>";
-    if (font.bold)
-        _Wostream << L"<b val=\"" << (int)(*font.bold) << "\" />";
-
-    if (font.charset)
-        _Wostream << L"<charset val=\"" << *font.charset << "\" />";
-
-    if (font.color)
-        xlsx_serialize(_Wostream, *font.color);
-
-    if (font.condense)
-        _Wostream << L"<condense val=\"" << (int)(*font.condense) << "\" />";
-
-    if (font.extend)
-        _Wostream << L"<extend val=\"" << (int)(*font.extend) << "\" />";
-
-    if (font.family)
-        _Wostream << L"<family val=\"" << (int)(*font.family) << "\" />";
-
-    if (font.i)
-        _Wostream << L"<i val=\"" << (int)(*font.i) << "\" />";
-
-    if (font.name)
-        _Wostream << L"<name val=\"" << *font.name << "\" />";
-
-    if (font.outline)
-        _Wostream << L"<outline val=\"" << (int)(*font.outline) << "\" />";
-
-    if (font.scheme)
-        _Wostream << L"<scheme val=\"" << *font.scheme << "\" />";
-
-    if (font.shadow)
-        _Wostream << L"<shadow val=\"" << (int)(*font.shadow) << "\" />";
-
-    if (font.strike)
-        _Wostream << L"<strike val=\"" << (int)(*font.strike) << "\" />";
-
-    if (font.sz)
-        _Wostream << L"<sz val=\"" << *font.sz << "\" />";
-
-    if (font.u)
-        _Wostream << L"<u val=\"" << *font.u << "\" />";
-
-    if (font.vertAlign)
-        _Wostream << L"<vertAlign val=\"" << *font.vertAlign << "\" />";
-
-    _Wostream << L"</font>";
-    */
 }
 
 bool xlsx_font::operator == (const xlsx_font & rVal) const
@@ -276,5 +229,113 @@ std::size_t hash_value(xlsx_font const & val)
     boost::hash_combine(seed, val.vertAlign.get_value_or(vertAlignBaseline));
     return seed;
 }
+
+//----------------------------------------------------------------------------------
+
+XlsxFontCharset GetXlsxFontCharset(const odf_reader::text_format_properties_content * textProp)
+{
+    // TODO
+    return XCHARSET_EMPTY;    
+}
+
+XlsxFontFamily GetXlsxFontFamily(const odf_reader::text_format_properties_content * textProp)
+{
+    // TODO
+    return XFAMILY_EMPTY;
+}
+
+xlsx_font::xlsx_font (	const odf_reader::text_format_properties_content		* textProp,
+						const odf_reader::paragraph_format_properties			* parProp,
+						const odf_reader::style_table_cell_properties_attlist	* cellProp)
+{
+	bEnabled = false;
+	if (!textProp) return;
+
+	bEnabled = true;
+    if (textProp->fo_font_weight_)
+    {
+        if (textProp->fo_font_weight_.get().get_type() == odf_types::font_weight::WBold)
+            bold = true;
+        else
+            bold = false;
+    }
+
+    if (textProp->fo_font_style_)
+    {
+        if (textProp->fo_font_style_.get().get_type() == odf_types::font_style::Italic)
+            i = true;
+        else
+            i = false;
+    }
+
+    XlsxFontCharset charset_ = GetXlsxFontCharset(textProp);
+    if (charset_ != XCHARSET_EMPTY)
+    {
+        charset = (unsigned int)charset_;
+    }
+
+    XlsxFontFamily family_ = GetXlsxFontFamily(textProp);
+    if (family_ != XFAMILY_EMPTY)
+    {
+        family = family_;
+    }
+
+    if (textProp->style_font_name_)
+    {
+        name = textProp->style_font_name_.get();            
+    }
+
+    if (textProp->fo_font_size_)
+    {
+        sz = textProp->fo_font_size_->get_length().get_value_unit(odf_types::length::pt);
+    }
+    //else
+    //{
+    //    sz = 10.;//kDefaultFontSize;        //todooo ... вытащить как в math
+    //}
+
+    if (textProp->style_text_underline_type_ &&
+        textProp->style_text_underline_type_->get_type() != odf_types::line_type::Non ||
+    
+        textProp->style_text_underline_style_ &&
+        textProp->style_text_underline_style_->get_type() != odf_types::line_style::None        
+        )
+    {
+        if (textProp->style_text_underline_type_ &&
+            textProp->style_text_underline_type_->get_type() == odf_types::line_type::Double)
+            u = XUNDERLINE_DOUBLE;
+        else
+            u = XUNDERLINE_SINGLE;
+    }
+
+    if (textProp->style_text_line_through_type_ &&
+        textProp->style_text_line_through_type_->get_type() != odf_types::line_type::Non ||
+
+        textProp->style_text_line_through_style_ &&
+        textProp->style_text_line_through_style_->get_type() != odf_types::line_style::None)
+    {
+        strike = true;
+    }
+
+    if (textProp->fo_text_shadow_)
+    {
+        if (textProp->fo_text_shadow_->get_type() == odf_types::shadow_type::Enable)
+            shadow = true;
+        else
+            shadow = false;
+    }
+
+	bool default_color = false;
+	if (textProp->style_use_window_font_color_)
+		default_color = true;
+   
+	if (textProp->fo_color_ && !default_color)
+    {
+		color = xlsx_color();
+        color->rgb = L"ff" + textProp->fo_color_->get_hex_value();
+
+    }
+}
+
 }
 }

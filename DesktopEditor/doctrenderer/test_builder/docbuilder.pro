@@ -16,6 +16,11 @@ TEMPLATE = app
 CONFIG -= debug_and_release debug_and_release_target
 CONFIG += c++11
 
+linux-g++ | linux-g++-64 | linux-g++-32 {
+    QMAKE_LFLAGS += -Wl,--rpath=./
+    QMAKE_LFLAGS += -static-libstdc++ -static-libgcc
+}
+
 ############### destination path ###############
 DESTINATION_SDK_PATH = $$PWD/../../../build/lib
 DESTINATION_PATH = $$PWD/../../../build/bin/docbuilder
@@ -77,7 +82,7 @@ TARGET = docbuilder$$TARGET_PLATFORM
 
 ################################################
 
-LIBS += -L$$DESTINATION_SDK_PATH_DOCTRENDERER -ldoctrenderer
+LIBS += -L$$DESTINATION_SDK_PATH_DOCTRENDERER/docbuilder -ldoctrenderer
 
 linux-g++ {
 LIBS += -ldl

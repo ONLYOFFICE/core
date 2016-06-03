@@ -503,7 +503,7 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 								if ((oFile.IsInit() && (OOX::FileTypes::OleObject == oFile->type())))
 								{
 									OOX::OleObject* pO = (OOX::OleObject*)oFile.operator->();
-									sRelativePath = pO->m_sFilename;
+                                    sRelativePath = pO->filename().m_strFilename;
 								}
 							}
 							//todooo проверить что тут за путь ..

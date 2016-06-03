@@ -6451,6 +6451,12 @@ namespace BinDocxRW
 				WriteMathPr(oSettings.m_oMathPr.get());
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
+			if(oSettings.m_oTrackRevisions.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_SettingsType::TrackRevisions);
+				m_oBcw.m_oStream.WriteBOOL(oSettings.m_oTrackRevisions->m_oVal.ToBool());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
 		};
 		void WriteMathPr(const OOX::Logic::CMathPr &pMathPr)
 		{

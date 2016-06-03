@@ -652,7 +652,8 @@ extern int g_nCurFormatVersion;
 	{
 		ClrSchemeMapping = 0,
 		DefaultTabStop = 1,
-		MathPr = 2
+		MathPr = 2,
+		TrackRevisions = 3
 	};}
 	namespace c_oSer_MathPrType{enum c_oSer_SettingsType
 	{

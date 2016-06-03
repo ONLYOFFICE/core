@@ -2967,6 +2967,18 @@ public:
 			res = Read1(length, &Binary_SettingsTableReader::ReadMathPr, this, poResult);
 			m_oFileWriter.m_oSettingWriter.AddSetting(_T("</m:mathPr>"));
 		}
+		else if ( c_oSer_SettingsType::TrackRevisions == type )
+		{
+			bool bTrackRevisions = m_oBufferedStream.GetBool();
+			if (bTrackRevisions)
+			{
+				m_oFileWriter.m_oSettingWriter.AddSetting(L"<w:trackRevisions/>");
+			}
+			else
+			{
+				m_oFileWriter.m_oSettingWriter.AddSetting(L"<w:trackRevisions w:val=\"false\"/>");
+			}
+		}
 		else
 			res = c_oSerConstants::ReadUnknown;
 		return res;

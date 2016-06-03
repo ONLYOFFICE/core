@@ -88,7 +88,7 @@ public:
 	bool empty() const;
 	void clear();
 
-    void write_drawing(std::wostream & strm);
+    void serialize(std::wostream & strm);
 	std::wstring dump_path(std::vector<svg_path::_polyline> & path, double w,double h);
 
     xlsx_drawings_ptr get_drawings();

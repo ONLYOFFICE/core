@@ -273,6 +273,10 @@ void xlsx_table_context::serialize_autofilter(std::wostream & _Wostream)
 		}
 	}
 }
+void xlsx_table_context::serialize_conditionalFormatting(std::wostream & _Wostream)
+{
+    return state()->serialize_conditionalFormatting(_Wostream);
+}
 void xlsx_table_context::serialize_merge_cells(std::wostream & _Wostream)
 {
     return state()->serialize_merge_cells(_Wostream);

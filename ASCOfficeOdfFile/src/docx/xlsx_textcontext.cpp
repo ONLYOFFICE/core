@@ -51,7 +51,7 @@ public:
 	void			start_drawing_content();
 	std::wstring	end_drawing_content(); 
 
-    void write_shared_strings(std::wostream & strm);
+    void serialize_shared_strings(std::wostream & strm);
 	
 	void ApplyTextProperties		(std::wstring style, odf_reader::text_format_properties_content & propertiesOut, odf_types::style_family::type Type);
 	void ApplyParagraphProperties	(std::wstring style, odf_reader::paragraph_format_properties & propertiesOut, odf_types::style_family::type Type);
@@ -95,9 +95,9 @@ private:
 
 };
 
-void xlsx_text_context::Impl::write_shared_strings(std::wostream & strm)
+void xlsx_text_context::Impl::serialize_shared_strings(std::wostream & strm)
 {
-    xlsx_shared_strings_.xlsx_serialize(strm);    
+    xlsx_shared_strings_.serialize(strm);    
 }
 
 
@@ -603,9 +603,9 @@ std::wstring xlsx_text_context::end_drawing_content()
 {
 	return impl_->end_drawing_content();
 }
-void xlsx_text_context::write_shared_strings(std::wostream & strm)
+void xlsx_text_context::serialize_shared_strings(std::wostream & strm)
 {
-    return impl_->write_shared_strings(strm);
+    return impl_->serialize_shared_strings(strm);
 }
 
     

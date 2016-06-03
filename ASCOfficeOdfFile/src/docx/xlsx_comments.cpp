@@ -1,9 +1,9 @@
 
 #include "xlsx_comments.h"
-#include <boost/foreach.hpp>
+#include "docx_rels.h"
+
 #include <vector>
 #include <cpdoccore/xml/simple_xml_writer.h>
-#include "docx_rels.h"
 
 namespace cpdoccore {
 namespace oox {
@@ -31,8 +31,9 @@ public:
 
 				CP_XML_NODE(L"authors")
 				{
-					BOOST_FOREACH(std::wstring const & a, author_list_)
+					for (int i = 0 ; i < author_list_.size(); i++)
 					{
+						const std::wstring & a = author_list_[i];
 						CP_XML_NODE(L"author")
 						{
 							CP_XML_STREAM() << a;
@@ -42,8 +43,10 @@ public:
 
 				CP_XML_NODE(L"commentList")
 				{
-					BOOST_FOREACH(_xlsx_comment const & c, xlsx_comment_)
+					for (int i = 0 ; i < xlsx_comment_.size(); i++)
 					{
+						const _xlsx_comment & c = xlsx_comment_[i];
+
 						CP_XML_NODE(L"comment")
 						{
 							CP_XML_ATTR(L"ref", c.ref_);

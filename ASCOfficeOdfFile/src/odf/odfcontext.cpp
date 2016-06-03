@@ -46,14 +46,15 @@ style_instance * styles_container::hyperlink_style()
         return NULL;
 }
 
-void styles_container::add_style(const std::wstring & Name,
-               style_family::type Type,
-               style_content * Content,
-               bool IsAutomatic,
-               bool IsDefault,
-               const std::wstring & ParentStyleName_,
-               const std::wstring & NextStyleName,
-               const std::wstring & DataStyleName)
+void styles_container::add_style(	const std::wstring & Name,
+									const std::wstring & DisplayName,
+									style_family::type Type,
+									style_content * Content,
+									bool IsAutomatic,
+									bool IsDefault,
+									const std::wstring & ParentStyleName_,
+									const std::wstring & NextStyleName,
+									const std::wstring & DataStyleName)
 {
 	std::wstring ParentStyleName = ParentStyleName_;
 
@@ -79,8 +80,13 @@ void styles_container::add_style(const std::wstring & Name,
         //if ( boost::algorithm::contains(lName, L"internet_20_link") )
         if (lName == L"internet_20_link")///???????????????
             hyperlink_style_pos_ = pos;
-
     }
+
+	if (!DisplayName.empty())
+	{
+        std::wstring n = DisplayName + L":" + boost::lexical_cast<std::wstring>( style_family(Type) );
+        map2_[n] = pos;
+	}
 
     if (IsDefault)
         default_map_[Type] = pos;
@@ -152,7 +158,8 @@ style_instance * styles_container::style_by_name(const std::wstring & Name, styl
     std::wstring n = L"";
 	if (object_in_styles) n = L"common:";
 	n = n + Name + L":" + boost::lexical_cast<std::wstring>( style_family(Type) );
-    map_wstring_int_t::const_iterator res = map_.find(n);
+   
+	map_wstring_int_t::const_iterator res = map_.find(n);
     
     if (res != map_.end())
     {
@@ -162,7 +169,22 @@ style_instance * styles_container::style_by_name(const std::wstring & Name, styl
     else
         return NULL;
 }
-
+style_instance * styles_container::style_by_display_name(const std::wstring & Name, style_family::type Type,bool object_in_styles) const
+{
+    std::wstring n = L"";
+	if (object_in_styles) n = L"common:";
+	n = n + Name + L":" + boost::lexical_cast<std::wstring>( style_family(Type) );
+    
+	map_wstring_int_t::const_iterator res = map2_.find(n);
+    
+    if (res != map2_.end())
+    {
+		int index = res->second;
+        return instances_[index].get();
+    }
+    else
+        return NULL;
+}
 void styles_container::add_master_page_name(const std::wstring & StyleName, const std::wstring & MasterPageName)
 {
     master_page_name_[StyleName] = MasterPageName;

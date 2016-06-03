@@ -106,20 +106,24 @@ public:
 
     typedef std::vector<style_instance_ptr> instances_array;
     
-	void add_style(const std::wstring	& Name,
-        odf_types::style_family::type	 Type,
-        style_content					* Content,
-        bool							IsAutomatic,
-        bool							IsDefault,
-        const std::wstring				& ParentStyleName,
-        const std::wstring				& NextStyleName,
-        const std::wstring				& DataStyleName);
+	void add_style(	const std::wstring				& Name,
+					const std::wstring				& DisplayName,
+					odf_types::style_family::type	 Type,
+					style_content					* Content,
+					bool							IsAutomatic,
+					bool							IsDefault,
+					const std::wstring				& ParentStyleName,
+					const std::wstring				& NextStyleName,
+					const std::wstring				& DataStyleName);
 
     void add_master_page_name(const std::wstring & StyleName, const std::wstring & MasterPageName);
 
     style_instance * hyperlink_style();
-    style_instance * style_by_name(const std::wstring & Name, odf_types::style_family::type Type,bool object_in_styles) const;
-	style_instance * style_default_by_type(odf_types::style_family::type Type) const;
+    
+	style_instance * style_by_name			(const std::wstring & Name, odf_types::style_family::type Type,bool object_in_styles) const;
+	style_instance * style_by_display_name	(const std::wstring & Name, odf_types::style_family::type Type,bool object_in_styles) const;
+
+	style_instance * style_default_by_type	(odf_types::style_family::type Type) const;
     
 	const std::wstring master_page_name_by_name(const std::wstring & StyleName) const;
 
@@ -135,14 +139,17 @@ private:
 	instances_array instances_;
     
     typedef boost::unordered_map<std::wstring, int> map_wstring_int_t;
-    map_wstring_int_t map_;
+   
+	map_wstring_int_t map_;		//by style name
+    map_wstring_int_t map2_;	//by style display name
 
     typedef boost::unordered_map<std::wstring, std::wstring> map_wstring_wstring;
     map_wstring_wstring master_page_name_;
 
     typedef boost::unordered_map<odf_types::style_family::type, int> map_style_family_int;
     map_style_family_int default_map_;
-    int hyperlink_style_pos_;
+   
+	int hyperlink_style_pos_;
 };
 
 class page_layout_instance;

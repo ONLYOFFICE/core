@@ -1,5 +1,3 @@
-#ifndef _CPDOCCORE_XLSX_FONT_H_INCLUDED
-#define _CPDOCCORE_XLSX_FONT_H_INCLUDED
 #pragma once
 
 #include <iosfwd>
@@ -8,6 +6,15 @@
 #include <vector>
 
 #include "xlsx_color.h"
+
+namespace cpdoccore { 
+namespace odf_reader {
+
+    class text_format_properties_content;
+    class paragraph_format_properties;
+    class style_table_cell_properties_attlist;
+}
+}
 
 namespace cpdoccore {
 namespace oox {
@@ -65,20 +72,27 @@ namespace oox {
 
     struct xlsx_font
     {
-        _CP_OPT(bool) bold;
-        _CP_OPT(unsigned int) charset;
-        _CP_OPT(xlsx_color) color;
-        _CP_OPT(bool) condense;
-        _CP_OPT(bool) extend;
+		xlsx_font () {};
+		xlsx_font (	const odf_reader::text_format_properties_content		* textProp,
+					const odf_reader::paragraph_format_properties			* parProp,
+					const odf_reader::style_table_cell_properties_attlist	* cellProp);
+
+		bool					bEnabled;
+
+        _CP_OPT(bool)			bold;
+        _CP_OPT(unsigned int)	charset;
+        _CP_OPT(xlsx_color)		color;
+        _CP_OPT(bool)			condense;
+        _CP_OPT(bool)			extend;
         _CP_OPT(XlsxFontFamily) family;
-        _CP_OPT(bool) i; ///< italic
-        _CP_OPT(std::wstring) name;
-        _CP_OPT(bool) outline;
-        _CP_OPT(std::wstring) scheme;
-        _CP_OPT(bool) shadow;
-        _CP_OPT(bool) strike;
-        _CP_OPT(double) sz;
-        _CP_OPT(XlsxUnderline) u;
+        _CP_OPT(bool)			i; ///< italic
+        _CP_OPT(std::wstring)	name;
+        _CP_OPT(bool)			outline;
+        _CP_OPT(std::wstring)	scheme;
+        _CP_OPT(bool)			shadow;
+        _CP_OPT(bool)			strike;
+        _CP_OPT(double)			sz;
+        _CP_OPT(XlsxUnderline)	u;
         _CP_OPT(xlsx_vertAlign) vertAlign;
 
         mutable std::size_t index;
@@ -90,8 +104,6 @@ namespace oox {
     };
 
     void xlsx_serialize(std::wostream & _Wostream, const xlsx_font & font);
-
 }
 }
 
-#endif

@@ -5,7 +5,6 @@
 #include <cpdoccore/xml/attributes.h>
 #include <cpdoccore/CPOptional.h>
 
-
 #include "office_elements.h"
 #include "office_elements_create.h"
 
@@ -34,13 +33,8 @@
 #include "datatypes/styleposition.h"
 #include "datatypes/borderwidths.h"
 
-//#include "common_draw_data.h"
 #include "office_binary_data.h"
 #include "datatypes/common_attlists.h"
-
-//#include "office_elements.h"
-//#include "office_elements_create.h"
-
 
 namespace cpdoccore{
 

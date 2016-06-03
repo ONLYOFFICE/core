@@ -1,5 +1,4 @@
-#ifndef _CPDOCCORE_XLSX_CELL_STYLES_
-#define _CPDOCCORE_XLSX_CELL_STYLES_
+#pragma once
 
 #include <cpdoccore/CPScopedPtr.h>
 
@@ -13,7 +12,7 @@ public:
     ~xlsx_cell_styles();
 
 public:
-    void xlsx_serialize(std::wostream & _Wostream) const;
+    void serialize(std::wostream & _Wostream) const;
 
 private:
     class Impl;
@@ -22,5 +21,3 @@ private:
 
 }
 }
-
-#endif

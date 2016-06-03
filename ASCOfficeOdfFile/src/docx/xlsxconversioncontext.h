@@ -101,6 +101,22 @@ public:
 
     std::wstring current_cell_address();
 
+//------------------------------------------------------------------------------------
+	void start_conditional_format			(std::wstring ref);
+	void end_conditional_format				(){}
+
+	void start_conditional_format_rule		(int type);
+	void end_conditional_format_rule		(){}
+
+	void set_conditional_format_formula		(std::wstring f);
+	void set_conditional_format_dxf			(int dxfId);
+	void set_conditional_format_showval		(bool val);
+
+	void add_conditional_format_color		(std::wstring col);
+	void add_conditional_format_entry		(int type, std::wstring value);
+	void set_conditional_format_dataBar		(_CP_OPT(int) min, _CP_OPT(int) max);
+//------------------------------------------------------------------------------------
+
     odf_reader::odf_document * root()
     {
         return odf_document_;

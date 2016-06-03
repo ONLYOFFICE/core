@@ -52,7 +52,7 @@ public:
 
     bool empty() const;
 
-    void write_comments(std::wostream & strm);
+    void serialize(std::wostream & strm);
     
 	pptx_comments_ptr get_comments();
 

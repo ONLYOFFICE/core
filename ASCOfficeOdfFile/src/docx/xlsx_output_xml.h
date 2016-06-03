@@ -13,7 +13,6 @@ namespace oox {
 class xlsx_xml_worksheet;
 typedef _CP_PTR(xlsx_xml_worksheet) xlsx_xml_worksheet_ptr;
 
-//  xlsx_xml_worksheet
 class xlsx_xml_worksheet: noncopyable
 {
 public:
@@ -30,6 +29,7 @@ public:
     std::wostream & drawing(); 
     std::wostream & comments();
 	std::wostream & autofilter();
+	std::wostream & conditionalFormatting();
 	std::wostream & sort();
 	
 	rels & hyperlinks_rels();

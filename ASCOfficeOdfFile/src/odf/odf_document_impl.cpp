@@ -311,14 +311,16 @@ void odf_document::Impl::parse_styles()
                     continue;
                 }
 
-				context_->styleContainer().add_style(L"common:" + styleInst->style_name_,
-                    styleInst->style_family_.get_type(),
-                    &(styleInst->style_content_),
-                    true,
-                    false,
-                    styleInst->style_parent_style_name_.get_value_or(L""),
-                    styleInst->style_next_style_name_.get_value_or(L""),
-                    styleInst->style_data_style_name_.get_value_or(L"")
+				context_->styleContainer().add_style
+					(	L"common:" + styleInst->style_name_,
+						styleInst->style_display_name_.get_value_or(L""),
+						styleInst->style_family_.get_type(),
+						&(styleInst->style_content_),
+						true,
+						false,
+						styleInst->style_parent_style_name_.get_value_or(L""),
+						styleInst->style_next_style_name_.get_value_or(L""),
+						styleInst->style_data_style_name_.get_value_or(L"")
                     );
             }
             // list styles
@@ -384,6 +386,7 @@ void odf_document::Impl::parse_styles()
                 }
 
                 context_->styleContainer().add_style(L"",
+					L"",
                     styleInst->style_family_.get_type(), 
                     &(styleInst->style_content_),
                     false,
@@ -416,6 +419,7 @@ void odf_document::Impl::parse_styles()
                     context_->styleContainer().add_master_page_name(styleInst->style_name_, *styleInst->style_master_page_name_);
 
                 context_->styleContainer().add_style(styleInst->style_name_,
+					styleInst->style_display_name_.get_value_or(L""),
                     styleInst->style_family_.get_type(),
                     &(styleInst->style_content_),
                     false,
@@ -547,6 +551,7 @@ void odf_document::Impl::parse_styles()
                     context_->styleContainer().add_master_page_name(styleInst->style_name_, *styleInst->style_master_page_name_);
 
                 context_->styleContainer().add_style(styleInst->style_name_,
+					styleInst->style_display_name_.get_value_or(L""),
                     styleInst->style_family_.get_type(),
                     &(styleInst->style_content_),
                     true,

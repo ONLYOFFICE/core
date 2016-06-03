@@ -44,7 +44,7 @@ std::wostream & oox_chart_context::chartData()
     return impl_->chartData_;
 }
 
-void oox_chart_context::write_to(std::wostream & strm)
+void oox_chart_context::serialize(std::wostream & strm)
 {
 	CP_XML_WRITER(strm)
 	{

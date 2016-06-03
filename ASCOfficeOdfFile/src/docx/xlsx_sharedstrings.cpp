@@ -12,14 +12,14 @@ namespace oox {
 class xlsx_shared_strings::Impl
 {
 public:
-    void xlsx_serialize(std::wostream & _Wostream) const;
+    void serialize(std::wostream & _Wostream) const;
     size_t add(const std::wstring & content);
 
 private:
     std::vector<std::wstring> strings_;
 };
 
-void xlsx_shared_strings::Impl::xlsx_serialize(std::wostream & _Wostream) const
+void xlsx_shared_strings::Impl::serialize(std::wostream & _Wostream) const
 {
     _Wostream << L"<sst xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" count=\"" << 
         strings_.size() << "\" uniqueCount=\"" << strings_.size() << "\">";
@@ -48,9 +48,9 @@ xlsx_shared_strings::~xlsx_shared_strings()
 {
 }
 
-void xlsx_shared_strings::xlsx_serialize(std::wostream & _Wostream) const
+void xlsx_shared_strings::serialize(std::wostream & _Wostream) const
 {
-    return impl_->xlsx_serialize(_Wostream);
+    return impl_->serialize(_Wostream);
 }
 
 size_t xlsx_shared_strings::add(const std::wstring & content)

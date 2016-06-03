@@ -183,7 +183,7 @@ void xlsx_table_state::start_cell(size_t columnsSpanned, size_t rowsSpanned)
 
     // в случае если объединение имеет место добавляем запись о нем
     if (columnsSpanned != 0 || rowsSpanned != 0)
-        merge_cells_.add_merge(current_table_column_, current_table_row_, columnsSpanned, rowsSpanned);
+        xlsx_merge_cells_.add_merge(current_table_column_, current_table_row_, columnsSpanned, rowsSpanned);
 
     if ( current_columns_spaned() > 0 )
     {
@@ -368,14 +368,17 @@ void xlsx_table_state::serialize_table_format(std::wostream & _Wostream)
 }
 void xlsx_table_state::serialize_merge_cells(std::wostream & _Wostream)
 {
-    return merge_cells_.xlsx_serialize(_Wostream);
+    return xlsx_merge_cells_.xlsx_serialize(_Wostream);
 }
 
 void xlsx_table_state::serialize_hyperlinks(std::wostream & _Wostream)
 {
     return xlsx_hyperlinks_.xlsx_serialize(_Wostream);
 }
-
+void xlsx_table_state::serialize_conditionalFormatting(std::wostream & _Wostream)
+{
+    return xlsx_conditionalFormatting_context_.serialize(_Wostream);
+}
 void xlsx_table_state::dump_rels_hyperlinks(rels & Rels)
 {
     return xlsx_hyperlinks_.dump_rels(Rels);

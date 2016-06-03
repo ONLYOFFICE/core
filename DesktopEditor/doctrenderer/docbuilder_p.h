@@ -411,7 +411,7 @@ namespace NSDoctRenderer
 
             m_nFileType = -1;
 
-            m_sTmpFolder = NSFile::CFileBinary::CreateTempFileWithUniqueName(NSFile::CFileBinary::GetTempPath(), L"DTB");
+            m_sTmpFolder = NSFile::CFileBinary::GetTempPath();
 
             // под линуксом предыдущая функция создает файл!!!
             if (NSFile::CFileBinary::Exists(m_sTmpFolder))

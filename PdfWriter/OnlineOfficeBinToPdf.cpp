@@ -314,6 +314,10 @@ namespace NSOnlineOfficeBinToPdf
 				{
 					pPdf->NewPage();
 					pPdf->BeginCommand(c_nPageType);
+
+                    // TODO:
+                    pPdf->put_PenLineStartCap(Aggplus::LineCapFlat);
+                    pPdf->put_PenLineEndCap(Aggplus::LineCapFlat);
 					break;
 				}
 				case ctPageEnd:

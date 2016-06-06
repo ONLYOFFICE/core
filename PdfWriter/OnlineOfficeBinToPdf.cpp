@@ -346,6 +346,28 @@ namespace NSOnlineOfficeBinToPdf
 					pPdf->put_PenSize(ReadInt(current, curindex) / 100000.0);
 					break;
 				}
+                case ctPenDashStyle:
+                {
+                    BYTE nDashType = *current++;
+                    curindex++;
+                    switch (nDashType)
+                    {
+                    case Aggplus::DashStyleCustom:
+                    {
+                        int nCountDash = ReadInt(current, curindex);
+                        double pDash = new double(nCountDash);
+                        for (int nDash = 0; nDash < nCountDash; ++nDash)
+                        {
+                            pDash[nDash] = ReadInt(current, curindex) / 100000.0;
+                        }
+                        pPdf->PenDashPattern(pDash, nCountDash);
+                    }
+                    default:
+                        pPdf->put_PenDashStyle(nDashType);
+                    }
+
+                    break;
+                }
 				case ctPenLineJoin:
 				{
 					pPdf->put_PenLineJoin(*current);

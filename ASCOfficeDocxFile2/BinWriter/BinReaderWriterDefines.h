@@ -248,7 +248,8 @@ extern int g_nCurFormatVersion;
 		Style = 10,
 		tblpPr2 = 11,
 		Layout = 12,
-		tblPrChange = 13
+		tblPrChange = 13,
+		TableCellSpacing = 14
 	};}
 	namespace c_oSer_tblpPrType{enum c_oSer_tblpPrType
 	{

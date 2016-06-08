@@ -1706,6 +1706,20 @@ namespace BinDocxRW
 					WriteTblPrChange(tblPr.m_oTblPrChange.get());
 					m_oBcw.WriteItemEnd(nCurPos);
 				}
+				if(tblPr.m_oTblCellSpacing.IsInit())
+				{
+					const ComplexTypes::Word::CTblWidth& cs = tblPr.m_oTblCellSpacing.get();
+					if(cs.m_oW.IsInit() && false == cs.m_oW->IsPercent() &&
+						cs.m_oType.IsInit() && SimpleTypes::tblwidthDxa == cs.m_oType->GetValue())
+					{
+						SimpleTypes::CPoint oPoint;
+						oPoint.FromTwips(cs.m_oW->GetValue());
+
+						nCurPos = m_oBcw.WriteItemStart(c_oSerProp_tblPrType::TableCellSpacing);
+						m_oBcw.m_oStream.WriteDouble(oPoint.ToMm() * 2);//Умножаем на 2 из-за разного понимания cellSpacing
+						m_oBcw.WriteItemEnd(nCurPos);
+					}
+				}
 			};
 			void WriteTblMar(const OOX::Logic::CTblCellMar& cellMar)
 			{

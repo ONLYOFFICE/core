@@ -1629,6 +1629,13 @@ public:
 			res = Read1(length, &Binary_tblPrReader::ReadTblPrChange, this, &tblPrChange);
 			pWiterTblPr->tblPrChange = tblPrChange.ToString(_T("w:tblPrChange"));
 		}
+		else if( c_oSerProp_tblPrType::TableCellSpacing == type )
+		{
+			double dSpacing = m_oBufferedStream.GetDouble();
+			dSpacing /=2;
+			long nSpacing = SerializeCommon::Round( g_dKoef_mm_to_twips * dSpacing);
+			pWiterTblPr->TableCellSpacing.Format(_T("<w:tblCellSpacing w:w=\"%d\" w:type=\"dxa\"/>"), nSpacing);
+		}
 		else
 			res = c_oSerConstants::ReadUnknown;
 		return res;

@@ -2270,9 +2270,10 @@ public:
 	CString Look;
 	CString Layout;
 	CString tblPrChange;
+	CString TableCellSpacing;
 	bool IsEmpty()
 	{
-		return Jc.IsEmpty() && TableInd.IsEmpty() && TableW.IsEmpty() && TableCellMar.IsEmpty() && TableBorders.IsEmpty() && Shd.IsEmpty() && tblpPr.IsEmpty()&& Style.IsEmpty() && Look.IsEmpty() && tblPrChange.IsEmpty();
+		return Jc.IsEmpty() && TableInd.IsEmpty() && TableW.IsEmpty() && TableCellMar.IsEmpty() && TableBorders.IsEmpty() && Shd.IsEmpty() && tblpPr.IsEmpty()&& Style.IsEmpty() && Look.IsEmpty() && tblPrChange.IsEmpty() && TableCellSpacing.IsEmpty();
 	}
 	CString Write(bool bBandSize, bool bLayout)
 	{
@@ -2288,6 +2289,8 @@ public:
 			sRes.Append(TableW);
 		if(false == Jc.IsEmpty())
 			sRes.Append(Jc);
+		if(false == TableCellSpacing.IsEmpty())
+			sRes.Append(TableCellSpacing);
 		if(false == TableInd.IsEmpty())
 			sRes.Append(TableInd);
 		if(false == TableBorders.IsEmpty())

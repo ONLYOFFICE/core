@@ -26,6 +26,7 @@ public:
 	static std::wstring replace_cells_range_formater2(boost::wsmatch const & what);
 	static std::wstring replace_arguments(boost::wsmatch const & what);
 	static std::wstring convert_scobci(boost::wsmatch const & what);
+	
 	std::wstring  replace_arguments1(std::wstring & workstr);
 
     void replace_named_ref(std::wstring & expr);

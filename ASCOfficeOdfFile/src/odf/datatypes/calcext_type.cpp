@@ -51,9 +51,10 @@ calcext_type calcext_type::parse(const std::wstring & Str)
         return calcext_type( Maximum );
     else if (tmp == L"minimum")
         return calcext_type( Minimum );
+    else if (tmp == L"formula")
+        return calcext_type( Formula );
 	else
     {
-        BOOST_THROW_EXCEPTION( errors::invalid_attribute() );        
         return calcext_type( Number );
     }
 }

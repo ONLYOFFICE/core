@@ -457,7 +457,9 @@ extern int g_nCurFormatVersion;
 		columnbreak = 18,
 		cr = 19,
 		noBreakHyphen = 20,
-		softHyphen = 21
+		softHyphen = 21,
+		separator = 22,
+		continuationSeparator = 23
 	};}
 	namespace c_oSerImageType{enum c_oSerImageType
 	{

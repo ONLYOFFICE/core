@@ -5073,6 +5073,18 @@ namespace BinDocxRW
 						m_oBcw.m_oStream.WriteLONG(c_oSerPropLenType::Null);
 					}
 					break;
+				case OOX::et_w_separator:
+					{
+						m_oBcw.m_oStream.WriteBYTE(c_oSerRunType::separator);
+						m_oBcw.m_oStream.WriteLONG(c_oSerPropLenType::Null);
+					}
+					break;
+				case OOX::et_w_continuationSeparator:
+					{
+						m_oBcw.m_oStream.WriteBYTE(c_oSerRunType::continuationSeparator);
+						m_oBcw.m_oStream.WriteLONG(c_oSerPropLenType::Null);
+					}
+					break;
 				case OOX::et_w_commentReference:
 					{
 						OOX::Logic::CCommentReference* pCommentReference = static_cast<OOX::Logic::CCommentReference*>(item);

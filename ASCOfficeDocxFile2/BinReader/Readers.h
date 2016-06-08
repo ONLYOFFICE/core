@@ -5979,6 +5979,14 @@ public:
 		{
 			res = Read1(length, &Binary_DocumentTableReader::ReadObject, this, poResult);
 		}
+		else if ( c_oSerRunType::separator == type)
+		{
+			GetRunStringWriter().WriteString(CString(_T("<w:separator/>")));
+		}
+		else if ( c_oSerRunType::continuationSeparator == type)
+		{
+			GetRunStringWriter().WriteString(CString(_T("<w:continuationSeparator/>")));
+		}
 		else
 			res = c_oSerConstants::ReadUnknown;
 		return res;

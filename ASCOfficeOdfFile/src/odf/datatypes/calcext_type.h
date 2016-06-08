@@ -17,7 +17,8 @@ public:
         Maximum,
         Minimum,
         AutoMaximum,
-        AutoMinimum
+        AutoMinimum,
+		Formula
     };
 
     calcext_type() {}

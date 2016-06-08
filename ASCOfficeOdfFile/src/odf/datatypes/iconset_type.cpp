@@ -72,43 +72,42 @@ iconset_type iconset_type::parse(const std::wstring & Str)
     std::wstring tmp = Str;
     boost::algorithm::to_lower(tmp);
 
-	if (tmp == L"3Arrows")
+	if (tmp == L"3arrows")
         return iconset_type( Arrows3 );
-	else     if (tmp == L"3ArrowsGray")
+	else     if (tmp == L"3arrowsgray")
         return iconset_type( Arrows3Gray );
-	else     if (tmp == L"3Flags")
+	else     if (tmp == L"3flags")
         return iconset_type( Flags3 );
-	else     if (tmp == L"3Signs")
+	else     if (tmp == L"3signs")
         return iconset_type( Signs3 );
-	else     if (tmp == L"3Symbols")
+	else     if (tmp == L"3symbols")
         return iconset_type( Symbols3 );
-	else	if (tmp == L"3Symbols2")
+	else	if (tmp == L"3symbols2")
         return iconset_type( Symbols3_2 );
-	else     if (tmp == L"3TrafficLights1")
+	else     if (tmp == L"3trafficlights1")
         return iconset_type( Traffic3Lights1 );
-    else	if (tmp == L"3TrafficLights2")
+    else	if (tmp == L"3trafficlights2")
         return iconset_type( Traffic3Lights2 );
-    else	if (tmp == L"4Arrows")
+    else	if (tmp == L"4arrows")
         return iconset_type( Arrows4 );
-	else	if (tmp == L"4ArrowsGray")
+	else	if (tmp == L"4arrowsgray")
         return iconset_type( Arrows4Gray );
 	else	if (tmp == L"4Rating")
         return iconset_type( Rating4 );
-	else	if (tmp == L"4RedToBlack")
+	else	if (tmp == L"4redtoblack")
         return iconset_type( RedToBlack4 );
-	else	if (tmp == L"4TrafficLights")
+	else	if (tmp == L"4trafficlights")
         return iconset_type( Traffic4Lights );
-	else	if (tmp == L"5Arrows")
+	else	if (tmp == L"5arrows")
         return iconset_type( Arrows5 );
-	else    if (tmp == L"5ArrowsGray")
+	else    if (tmp == L"5arrowsgray")
         return iconset_type( Arrows5Gray );
-	else	if (tmp == L"5Quarters")
+	else	if (tmp == L"5quarters")
         return iconset_type( Quarters5 );
-	else	if (tmp == L"5Rating")
+	else	if (tmp == L"5rating")
         return iconset_type( Rating5 );
 	else
     {
-        BOOST_THROW_EXCEPTION( errors::invalid_attribute() );        
         return iconset_type( Arrows3 );
     }
 }

@@ -171,6 +171,7 @@ namespace NSStringExt
 					if (nTrailing >= 0xDC00 && nTrailing <= 0xDFFF)
 					{
 						*pCur = (wchar_t)(((nLeading & 0x03FF) << 10) | (nTrailing & 0x03FF));
+						*pCur += 0x10000;
 						pCur++;
 					}
 				}

@@ -85,7 +85,12 @@ void draw_shape::common_docx_convert(oox::docx_conversion_context & Context)
 void draw_rect::docx_convert(oox::docx_conversion_context & Context)
 {
 	//if (Context.get_drawing_context().get_current_level() >0 )return;
-
+ 	if (Context.get_drawing_context().get_current_level() > 0 && !Context.get_drawing_context().in_group() )
+	{ 
+		if(Context.delayed_converting_ == false)
+			Context.add_delayed_element(this);
+		return;
+	}
 	common_docx_convert(Context);
 	//...
 	draw_shape::docx_convert(Context);
@@ -94,7 +99,12 @@ void draw_rect::docx_convert(oox::docx_conversion_context & Context)
 void draw_ellipse::docx_convert(oox::docx_conversion_context & Context)
 {
 	//if (Context.get_drawing_context().get_current_level() >0 )return;
-
+ 	if (Context.get_drawing_context().get_current_level() > 0 && !Context.get_drawing_context().in_group() )
+	{ 
+		if(Context.delayed_converting_ == false)
+			Context.add_delayed_element(this);
+		return;
+	}
 	common_docx_convert(Context);
 	//...
 	draw_shape::docx_convert(Context);
@@ -102,7 +112,12 @@ void draw_ellipse::docx_convert(oox::docx_conversion_context & Context)
 void draw_circle::docx_convert(oox::docx_conversion_context & Context)
 {
 	//if (Context.get_drawing_context().get_current_level() >0 )return;
-
+ 	if (Context.get_drawing_context().get_current_level() > 0 && !Context.get_drawing_context().in_group() )
+	{ 
+		if(Context.delayed_converting_ == false)
+			Context.add_delayed_element(this);
+		return;
+	}
 	common_docx_convert(Context);
 	//...
 	draw_shape::docx_convert(Context);
@@ -121,7 +136,12 @@ void draw_line::docx_convert(oox::docx_conversion_context & Context)
 void draw_path::docx_convert(oox::docx_conversion_context & Context)
 {
 	//if (Context.get_drawing_context().get_current_level() >0 )return;
-
+ 	if (Context.get_drawing_context().get_current_level() > 0 && !Context.get_drawing_context().in_group() )
+	{ 
+		if(Context.delayed_converting_ == false)
+			Context.add_delayed_element(this);
+		return;
+	}
 	common_docx_convert(Context);
 	//...
 	reset_svg_path();
@@ -140,7 +160,12 @@ void draw_connector::docx_convert(oox::docx_conversion_context & Context)
 void draw_polygon::docx_convert(oox::docx_conversion_context & Context)
 {
 	//if (Context.get_drawing_context().get_current_level() >0 )return;
-
+ 	if (Context.get_drawing_context().get_current_level() > 0 && !Context.get_drawing_context().in_group() )
+	{ 
+		if(Context.delayed_converting_ == false)
+			Context.add_delayed_element(this);
+		return;
+	}
 	common_docx_convert(Context);
 	//...
 	reset_polygon_path();
@@ -158,7 +183,12 @@ void draw_polyline::docx_convert(oox::docx_conversion_context & Context)
 void draw_custom_shape::docx_convert(oox::docx_conversion_context & Context)
 {
 	//if (Context.get_drawing_context().get_current_level() >0 )return;
-
+ 	if (Context.get_drawing_context().get_current_level() > 0 && !Context.get_drawing_context().in_group() )
+	{ 
+		if(Context.delayed_converting_ == false)
+			Context.add_delayed_element(this);
+		return;
+	}
 	common_docx_convert(Context);
 	//...
 	draw_shape::docx_convert(Context);
@@ -166,7 +196,12 @@ void draw_custom_shape::docx_convert(oox::docx_conversion_context & Context)
 void draw_caption::docx_convert(oox::docx_conversion_context & Context)
 {
 	//if (Context.get_drawing_context().get_current_level() >0 )return;
-
+ 	if (Context.get_drawing_context().get_current_level() > 0 && !Context.get_drawing_context().in_group() )
+	{ 
+		if(Context.delayed_converting_ == false)
+			Context.add_delayed_element(this);
+		return;
+	}
 	common_docx_convert(Context);
 	//...
 	draw_shape::docx_convert(Context);

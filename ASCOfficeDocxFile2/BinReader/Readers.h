@@ -1520,7 +1520,17 @@ public:
 	{
 		int res = c_oSerConstants::ReadOk;
 		CWiterTblPr* pWiterTblPr = static_cast<CWiterTblPr*>(poResult);
-		if( c_oSerProp_tblPrType::Jc == type )
+		if( c_oSerProp_tblPrType::RowBandSize == type )
+		{
+			long nRowBandSize = m_oBufferedStream.GetLong();
+			pWiterTblPr->RowBandSize.Format(_T("<w:tblStyleRowBandSize w:val=\"%d\"/>"), nRowBandSize);
+		}
+		else if( c_oSerProp_tblPrType::ColBandSize == type )
+		{
+			long nColBandSize = m_oBufferedStream.GetLong();
+			pWiterTblPr->ColBandSize.Format(_T("<w:tblStyleColBandSize w:val=\"%d\"/>"), nColBandSize);
+		}
+		else if( c_oSerProp_tblPrType::Jc == type )
 		{
 			BYTE jc = m_oBufferedStream.GetUChar();
 			switch(jc)

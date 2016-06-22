@@ -3,6 +3,8 @@
 #include "object_package.h"
 
 #include "odf_style_context.h"
+#include "odf_settings_context.h"
+
 #include "odf_page_layout_context.h"
 
 #include "odf_drawing_context.h"
@@ -24,14 +26,16 @@ class odf_conversion_context : boost::noncopyable
 {
 	struct _object
 	{
-		std::wstring					 name;
+		std::wstring						name;
 
-		office_element_ptr				 content;
-		std::vector<office_element_ptr>  content_styles;
-		std::vector<office_element_ptr>  styles;	
+		office_element_ptr					content;
+		std::vector<office_element_ptr>		content_styles;
+		std::vector<office_element_ptr>		styles;	
+		office_element_ptr					settings;	
 	
-		odf_style_context_ptr			 style_context;	
-		_mediaitems						 mediaitems;
+		odf_style_context_ptr				style_context;	
+		odf_settings_context_ptr			settings_context;
+		_mediaitems							mediaitems;
 	};
 
 public:
@@ -85,12 +89,13 @@ public:
 private:
 	odf_element_state temporary_;
 
-	std::vector<_object>	objects_;//"0" = root
+	std::vector<_object>		objects_;//"0" = root
 
-	odf_chart_context		chart_context_;
-	odf_page_layout_context	page_layout_context_;	
+	odf_chart_context			chart_context_;
+	odf_page_layout_context		page_layout_context_;	
 
-	void process_styles(_object & object, bool isRoot);
+	void process_styles		(_object & object, bool isRoot);
+	void process_settings	(_object & object, bool isRoot);
 	
 	int	 current_object_;
 

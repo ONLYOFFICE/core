@@ -80,14 +80,15 @@ void odf_conversion_context::end_document()
 	for (long i=0; i< objects_.size(); i++)
 	{
 		_object & object = objects_[i];
-		bool isRoot = (i==0? true : false);
+		bool isRoot = (i == 0 ? true : false);
 	
 		if (object.content == NULL)continue;
 
-		process_styles(object,isRoot);
+		process_styles	(object, isRoot);
+		process_settings(object, isRoot);
 
 		package::content_content_ptr content_root_ = package::content_content::create();		
-		object.content->serialize(content_root_->content());		
+		object.content->serialize(content_root_->content());	
 		BOOST_FOREACH(const office_element_ptr & elm, object.content_styles)
 		{
 			elm->serialize(content_root_->styles());
@@ -99,6 +100,8 @@ void odf_conversion_context::end_document()
 
 			elm->serialize(content_style_->content());
 		}
+		package::content_simple_ptr content_settings_ = package::content_simple::create();
+		object.settings->serialize(content_settings_->content());
 ////////////////////////////
 		package::object_files *object_files =  new package::object_files();
 		if (object_files)
@@ -107,7 +110,8 @@ void odf_conversion_context::end_document()
 			object_files->set_styles	(content_style_);
 			object_files->set_media		(object.mediaitems);
 			object_files->set_pictures	(object.mediaitems);
-
+			object_files->set_settings	(content_settings_);
+			
 			if (!isRoot)object_files->local_path = object.name + L"/";
 			
 			object.mediaitems.dump_rels(rels_,object_files->local_path);
@@ -115,6 +119,7 @@ void odf_conversion_context::end_document()
 			rels_.add(relationship(std::wstring(L"text/xml"), object_files->local_path + L"styles.xml"));
 			rels_.add(relationship(std::wstring(L"text/xml"), object_files->local_path + L"content.xml"));
 			rels_.add(relationship(std::wstring(L"text/xml"), object_files->local_path + L"meta.xml"));
+			rels_.add(relationship(std::wstring(L"text/xml"), object_files->local_path + L"settings.xml"));
 
 			if (isRoot)object_files->local_path = L"/";
 			rels_.add(relationship(std::wstring(L"application/vnd.oasis.opendocument.") + object.content->get_name(), object_files->local_path));
@@ -148,9 +153,13 @@ void odf_conversion_context::create_object()
 {
 	_object obj;
 	
-	obj.style_context = boost::make_shared<odf_style_context>();
-	obj.style_context->set_odf_context(this);
+	obj.style_context		= boost::make_shared<odf_style_context>();
+	obj.settings_context	= boost::make_shared<odf_settings_context>();
+	
 	obj.name = get_next_name_object();
+	
+	obj.style_context->set_odf_context(this);
+	obj.settings_context->set_odf_context(this);
 	
 	objects_.push_back(obj);
 
@@ -185,31 +194,42 @@ std::wstring odf_conversion_context::get_next_name_object()
 {
 	return std::wstring(L"Object ") + boost::lexical_cast<std::wstring>(objects_.size());
 }
+void odf_conversion_context::process_settings(_object & object, bool isRoot)
+{
+	create_element(L"office", L"settings", object.settings, this, true);
+	
+	object.settings_context->process_office_settings(object.settings);
+	
+	if (isRoot)
+	{	
+	}
+
+}
 
 void odf_conversion_context::process_styles(_object & object, bool isRoot)
 {
-	create_element(L"office", L"styles", object.styles, this,true);//общие стили
+	create_element(L"office", L"styles", object.styles, this, true);//общие стили
 	object.style_context->process_office_styles(object.styles.back());
 	page_layout_context()->process_office_styles(object.styles.back());
 	
 	if (isRoot)
 	{	
-		create_element(L"office", L"font-face-decls", object.styles, this,true);
+		create_element(L"office", L"font-face-decls", object.styles, this, true);
 		
-		create_element(L"office", L"automatic-styles", object.styles, this,true);
+		create_element(L"office", L"automatic-styles", object.styles, this, true);
 		object.style_context->process_automatic_for_styles(object.styles.back());
 		page_layout_context()->process_automatic_for_styles(object.styles.back());
 
-		create_element(L"office", L"master-styles", object.styles, this,true);
+		create_element(L"office", L"master-styles", object.styles, this, true);
 		page_layout_context()->process_master_styles(object.styles.back());
 		
-		create_element(L"office", L"font-face-decls", object.content_styles, this,true);
+		create_element(L"office", L"font-face-decls", object.content_styles, this, true);
 	}
 
-	create_element(L"office", L"automatic-styles", object.content_styles, this,true);
+	create_element(L"office", L"automatic-styles", object.content_styles, this, true);
 	object.style_context->process_automatic_styles(object.content_styles.back());
-
 }
+
 office_element_ptr odf_conversion_context::start_tabs()
 {
 	create_element(L"style", L"tab-stops", temporary_.elm, this,true);

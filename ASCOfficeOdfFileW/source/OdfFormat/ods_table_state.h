@@ -256,10 +256,10 @@ public:
 	office_element_ptr & current_row_element();
 	office_element_ptr & current_cell_element();
 
-	bool	is_cell_hyperlink();
-    int	is_cell_hyperlink(int col, int row);
-	bool	is_cell_comment();
-    int	is_cell_comment(int col, int row, short repeate_col = 1);
+	bool	is_cell_hyperlink	();
+    int		is_cell_hyperlink	(int col, int row);
+	bool	is_cell_comment		();
+    int		is_cell_comment		(int col, int row, short repeate_col = 1);
 
 	ods_hyperlink_state & current_hyperlink();
 
@@ -276,11 +276,11 @@ public:
 
 	odf_drawing_context   *	drawing_context(){return  &drawing_context_;}
 
+	std::wstring		office_table_name_;
 private:
 
     odf_conversion_context * context_;   
 	
-	std::wstring		office_table_name_;
 	office_element_ptr	office_table_;
 	style*				office_table_style_;//??? может хранить как office_element_ptr ???
 	office_element_ptr	table_defined_expressions_;

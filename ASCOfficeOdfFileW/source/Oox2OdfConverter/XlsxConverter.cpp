@@ -777,25 +777,30 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSheetViews *oox_sheet_views)
 {
 	if (!oox_sheet_views)return;
 
+
 	for (unsigned long i =0; i < oox_sheet_views->m_arrItems.size(); i++)
 	{
-		if (oox_sheet_views->m_arrItems[i])
-		{
-			if (oox_sheet_views->m_arrItems[i]->m_oWorkbookViewId.IsInit())
-			{}
+		if (!oox_sheet_views->m_arrItems[i]) continue;
+
+		int view_id = -1;
+
+		if (oox_sheet_views->m_arrItems[i]->m_oWorkbookViewId.IsInit())
+			view_id = oox_sheet_views->m_arrItems[i]->m_oWorkbookViewId->GetValue();
+
+		ods_context->start_table_view(ods_context->current_table().office_table_name_, view_id);
+
 			if (oox_sheet_views->m_arrItems[i]->m_oRightToLeft.IsInit() && oox_sheet_views->m_arrItems[i]->m_oRightToLeft->GetValue()==1)
 				ods_context->current_table().set_table_rtl(true);
 
-			if (oox_sheet_views->m_arrItems[i]->m_oShowGridLines.IsInit() && oox_sheet_views->m_arrItems[i]->m_oShowGridLines->GetValue()==0)
-			{
-				//ods_context->set_settings_show_gridlines(false);
-			}
+				if (oox_sheet_views->m_arrItems[i]->m_oShowGridLines.IsInit() && oox_sheet_views->m_arrItems[i]->m_oShowGridLines->GetValue()==0)
+				{
+					//ods_context->set_settings_show_gridlines(false);
+				}
 
-			if (oox_sheet_views->m_arrItems[i]->m_oView.IsInit())
-			{
-				//сохранить только для активной странице .. 
-				//ods_context->set_settings_table_viewtype(oox_sheet_views->m_arrItems[i]->m_oView->GetValue());
-			}
+				if (oox_sheet_views->m_arrItems[i]->m_oView.IsInit())
+				{
+					//ods_context->set_settings_table_viewtype(oox_sheet_views->m_arrItems[i]->m_oView->GetValue());
+				}
 
 				//nullable<CPane>										m_oPane;
 
@@ -817,7 +822,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSheetViews *oox_sheet_views)
 				//nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oZoomScaleNormal;
 				//nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oZoomScalePageLayoutView;
 				//nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oZoomScaleSheetLayoutView;		
-		}
+		ods_context->end_table_view();
 	}
 }
 

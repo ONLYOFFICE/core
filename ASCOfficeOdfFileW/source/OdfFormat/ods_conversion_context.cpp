@@ -11,6 +11,7 @@
 
 #include "odf_text_context.h"
 #include "paragraph_elements.h"
+#include "odf_settings_context.h"
 
 
 namespace cpdoccore { 
@@ -44,7 +45,7 @@ void calculate_size_font_symbols(_font_metrix & metrix, CApplicationFonts *appFo
 ods_conversion_context::ods_conversion_context(package::odf_document * outputDocument) 
 		: odf_conversion_context(outputDocument), table_context_(*this), current_text_context_(NULL)
 {
-	font_metrix_ = _font_metrix();
+	font_metrix_		= _font_metrix();
 }
 
 
@@ -473,7 +474,7 @@ void ods_conversion_context::start_image(const std::wstring & image_file_name)
 
 	current_table().drawing_context()->start_image(odf_ref_name);
 }
-double ods_conversion_context:: convert_symbol_width(double val)
+double ods_conversion_context::convert_symbol_width(double val)
 {
 	//width = ((int)((column_width * Digit_Width + 5) / Digit_Width * 256 )) / 256.;
 	//width = (int)(((256. * width + ((int)(128. / Digit_Width ))) / 256. ) * Digit_Width ); //in pixels
@@ -486,6 +487,15 @@ double ods_conversion_context:: convert_symbol_width(double val)
 
 	return pixels * 0.75; //* 9525. * 72.0 / (360000.0 * 2.54);
 }
+
+void ods_conversion_context::start_table_view(std::wstring table_name, int view_id)
+{
+}
+
+void ods_conversion_context::end_table_view()
+{
+}
+
 
 }
 }

@@ -216,10 +216,15 @@ namespace odf_writer
 		{
 			styles_.set_content(_content);
 		}
+		void object_files::set_settings(content_simple_ptr & _content)
+		{
+			settings_.set_content(_content);
+		}
 		void object_files::write(const std::wstring & RootPath)
 		{
 			content_.write(RootPath);		
 			styles_.write(RootPath);
+			settings_.write(RootPath);
 			
 			if (meta_)		meta_->write(RootPath);
 
@@ -389,6 +394,30 @@ namespace odf_writer
 			}
 		    
 			simple_element elm(L"styles.xml", resStream.str());
+			elm.write(RootPath);
+		}
+		void settings_file::write(const std::wstring & RootPath)
+		{
+			std::wstringstream resStream;
+			CP_XML_WRITER(resStream)
+			{
+				CP_XML_NODE(L"office:document-settings")
+				{  
+					//CP_XML_ATTR(L"office:version",	L"1.2" );
+					CP_XML_ATTR(L"xmlns:ooo",		L"http://openoffice.org/2004/office" );
+					CP_XML_ATTR(L"xmlns:config",	L"urn:oasis:names:tc:opendocument:xmlns:config:1.0" ); 
+					CP_XML_ATTR(L"xmlns:xlink",		L"http://www.w3.org/1999/xlink" ); 
+					CP_XML_ATTR(L"xmlns:office",	L"urn:oasis:names:tc:opendocument:xmlns:office:1.0" );
+					
+					if (content_)
+					{
+						CP_XML_STREAM() << content_->str();
+					}
+					
+				}
+			}
+		    
+			simple_element elm(L"settings.xml", resStream.str());
 			elm.write(RootPath);
 		}
 	}

@@ -54,12 +54,12 @@ private:
 	std::vector<office_element_ptr>	styles_elments;
 
 //////////////////
-	void create_number_style(number_format_state & state, office_element_ptr & root_elm);
-	void create_currency_style(number_format_state & state, office_element_ptr & root_elm);
-	void create_date_style(number_format_state & state, office_element_ptr & root_elm);
-	void create_time_style(number_format_state & state, office_element_ptr & root_elm);
-	void create_boolean_style(number_format_state & state, office_element_ptr & root_elm);
-	void create_text_style(number_format_state & state, office_element_ptr & root_elm);
+	void create_number_style	(number_format_state & state, office_element_ptr & root_elm);
+	void create_currency_style	(number_format_state & state, office_element_ptr & root_elm);
+	void create_date_style		(number_format_state & state, office_element_ptr & root_elm);
+	void create_time_style		(number_format_state & state, office_element_ptr & root_elm);
+	void create_boolean_style	(number_format_state & state, office_element_ptr & root_elm);
+	void create_text_style		(number_format_state & state, office_element_ptr & root_elm);
 	void create_percentage_style(number_format_state & state, office_element_ptr & root_elm);
 
 	void create_numbers(number_format_state & state, office_element_ptr & elm);

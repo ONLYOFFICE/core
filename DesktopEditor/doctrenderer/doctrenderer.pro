@@ -65,7 +65,7 @@ win32 {
 }
 
 linux-g++ | linux-g++-64 | linux-g++-32 {
-    V8_CHECKOUT_PATH = /home/oleg/v8_build/v8
+    V8_CHECKOUT_PATH = ../../../../v8
 }
 
 mac {

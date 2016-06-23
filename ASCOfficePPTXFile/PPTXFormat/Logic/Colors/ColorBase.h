@@ -189,7 +189,7 @@ namespace PPTX
 							break;
 						}
 						break;
-					case 'с':
+					case 'c':
 						//comp
 						break;
 					case 'g':

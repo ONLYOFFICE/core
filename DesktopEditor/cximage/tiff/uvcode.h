@@ -1,4 +1,4 @@
-/* Version 1.0 generated April 7, 1997 by Greg Ward Larson, SGI */
+﻿/* Version 1.0 generated April 7, 1997 by Greg Ward Larson, SGI */
 #define UV_SQSIZ	(float)0.003500
 #define UV_NDIVS	16289
 #define UV_VSTART	(float)0.016940

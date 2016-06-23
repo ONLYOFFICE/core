@@ -1,4 +1,4 @@
-/*
+﻿/*
  * transupp.h
  *
  * Copyright (C) 1997-2009, Thomas G. Lane, Guido Vollbeding.

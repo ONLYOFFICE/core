@@ -1,4 +1,4 @@
-#ifndef _HUNSPELL_VISIBILITY_H_
+﻿#ifndef _HUNSPELL_VISIBILITY_H_
 #define _HUNSPELL_VISIBILITY_H_
 
 #if defined(HUNSPELL_STATIC)

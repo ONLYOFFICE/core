@@ -1,4 +1,4 @@
-#include "Types.h"
+﻿#include "Types.h"
 #include "Reader.h"
 
 namespace Jpeg2000

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Summary: string dictionnary
  * Description: dictionary of reusable strings, just used to avoid allocation
  *         and freeing operations.

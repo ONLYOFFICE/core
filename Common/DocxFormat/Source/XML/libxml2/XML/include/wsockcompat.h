@@ -1,4 +1,4 @@
-/* include/wsockcompat.h
+﻿/* include/wsockcompat.h
  * Windows -> Berkeley Sockets compatibility things.
  */
 

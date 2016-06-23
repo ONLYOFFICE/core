@@ -1,4 +1,4 @@
-#ifndef HEADER_CURL_PARSEDATE_H
+﻿#ifndef HEADER_CURL_PARSEDATE_H
 #define HEADER_CURL_PARSEDATE_H
 /***************************************************************************
  *                                  _   _ ____  _

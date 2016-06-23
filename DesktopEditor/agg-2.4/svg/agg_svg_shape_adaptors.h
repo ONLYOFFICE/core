@@ -1,4 +1,4 @@
-#ifndef AGG_SVG_SHAPE_ADAPTORS_INCLUDED
+﻿#ifndef AGG_SVG_SHAPE_ADAPTORS_INCLUDED
 #define AGG_SVG_SHAPE_ADAPTORS_INCLUDED
 
 #include "agg_bezier_arc.h"

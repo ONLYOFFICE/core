@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Summary: Internal Interfaces for memory buffers in libxml2
  * Description: this module describes most of the new xmlBuf buffer
  *              entry points, those are private routines, with a

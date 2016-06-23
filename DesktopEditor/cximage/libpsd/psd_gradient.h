@@ -1,4 +1,4 @@
-#ifndef __PSD_GRADIENT_H__
+﻿#ifndef __PSD_GRADIENT_H__
 #define __PSD_GRADIENT_H__
 
 #ifdef __cplusplus

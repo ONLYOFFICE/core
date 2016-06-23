@@ -1,4 +1,4 @@
-#ifndef HEADER_TOOL_STRDUP_H
+﻿#ifndef HEADER_TOOL_STRDUP_H
 #define HEADER_TOOL_STRDUP_H
 /***************************************************************************
  *                                  _   _ ____  _

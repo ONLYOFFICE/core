@@ -1,4 +1,4 @@
-#if !defined (L_BIG_ENDIAN) && !defined (L_LITTLE_ENDIAN)
+﻿#if !defined (L_BIG_ENDIAN) && !defined (L_LITTLE_ENDIAN)
 # if 0
 #  ifdef __BIG_ENDIAN__
 #   define L_BIG_ENDIAN

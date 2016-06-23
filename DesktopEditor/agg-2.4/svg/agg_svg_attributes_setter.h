@@ -1,4 +1,4 @@
-#ifndef AGG_SVG_ATTRIBUTES_SETTER_INCLUDE
+﻿#ifndef AGG_SVG_ATTRIBUTES_SETTER_INCLUDE
 #define AGG_SVG_ATTRIBUTES_SETTER_INCLUDE
 //-----------------------------------------------------------------------------
 #include "agg_svg_dom_storage.h"

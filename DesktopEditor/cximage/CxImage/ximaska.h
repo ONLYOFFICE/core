@@ -1,4 +1,4 @@
-/*
+﻿/*
  * File:	ximaska.h
  * Purpose:	SKA Image Class Loader and Writer
  */

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2016
  *
  * This program is a free software product. You can redistribute it and/or
@@ -110,7 +110,7 @@ namespace PPTX
 
 			nullable<PPTX::Logic::Pic>						pic;
 /// todooo
-//extLst (Extension List) §19.2.1.12
+//extLst (Extension List) ยง19.2.1.12
 		protected:			
 
 			virtual void FillParentPointersForChilds()

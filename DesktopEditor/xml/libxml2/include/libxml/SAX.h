@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Summary: Old SAX version 1 handler, deprecated
  * Description: DEPRECATED set of SAX version 1 interfaces used to
  *              build the DOM tree.

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * File:	ximajas.cpp
  * Purpose:	Platform Independent JasPer Image Class Loader and Writer
  * 12/Apr/2003 Davide Pizzolato - www.xdp.it

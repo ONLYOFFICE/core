@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Summary: interface for the I/O interfaces used by the parser
  * Description: interface for the I/O interfaces used by the parser
  *

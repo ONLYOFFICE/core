@@ -1,4 +1,4 @@
-#ifndef __CURL_MPRINTF_H
+﻿#ifndef __CURL_MPRINTF_H
 #define __CURL_MPRINTF_H
 /***************************************************************************
  *                                  _   _ ____  _

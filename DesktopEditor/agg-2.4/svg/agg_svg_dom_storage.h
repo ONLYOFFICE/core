@@ -1,4 +1,4 @@
-#ifndef AGG_SVG_DOM_STORAGE_INCLUDE
+﻿#ifndef AGG_SVG_DOM_STORAGE_INCLUDE
 #define AGG_SVG_DOM_STORAGE_INCLUDE
 //-----------------------------------------------------------------------------
 #include "agg_svg_defines.h"

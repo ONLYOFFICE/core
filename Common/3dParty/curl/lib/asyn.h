@@ -1,4 +1,4 @@
-#ifndef HEADER_CURL_ASYN_H
+﻿#ifndef HEADER_CURL_ASYN_H
 #define HEADER_CURL_ASYN_H
 /***************************************************************************
  *                                  _   _ ____  _

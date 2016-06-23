@@ -1,4 +1,4 @@
-#ifndef HEADER_CURL_TOOL_WRITEENV_H
+﻿#ifndef HEADER_CURL_TOOL_WRITEENV_H
 #define HEADER_CURL_TOOL_WRITEENV_H
 /***************************************************************************
  *                                  _   _ ____  _

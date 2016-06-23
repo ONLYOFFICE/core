@@ -1,4 +1,4 @@
-#ifndef AGG_CONFIG_INCLUDED
+﻿#ifndef AGG_CONFIG_INCLUDED
 #define AGG_CONFIG_INCLUDED
 
 // This file can be used to redefine certain data types.

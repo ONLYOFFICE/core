@@ -1,4 +1,4 @@
-#ifndef HEADER_CURL_TOOL_OPERHLP_H
+﻿#ifndef HEADER_CURL_TOOL_OPERHLP_H
 #define HEADER_CURL_TOOL_OPERHLP_H
 /***************************************************************************
  *                                  _   _ ____  _

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2016
  *
  * This program is a free software product. You can redistribute it and/or
@@ -54,8 +54,8 @@ namespace PPTX
 			virtual void fromXML(const XmlUtils::CXmlNode& node);
 			virtual CString toXML() const;
 		public:
-			//tnLst (Time Node List)  §19.5.87 
-			//bldLst (Build List)  §19.5.14 
+			//tnLst (Time Node List)  ยง19.5.87 
+			//bldLst (Build List)  ยง19.5.14 
 		protected:
 			virtual void FillParentPointersForChilds(){};
 		};

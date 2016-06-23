@@ -1,4 +1,4 @@
-#ifndef __PSD_TYPES_H__
+﻿#ifndef __PSD_TYPES_H__
 #define __PSD_TYPES_H__
 
 #include <stddef.h>

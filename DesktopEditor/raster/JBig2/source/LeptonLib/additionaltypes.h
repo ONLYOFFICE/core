@@ -1,4 +1,4 @@
-#ifndef _ADD_TYPES_H
+﻿#ifndef _ADD_TYPES_H
 #define _ADD_TYPES_H
 
 typedef unsigned char  uint8_t;

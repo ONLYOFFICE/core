@@ -1,4 +1,4 @@
-/* POLE - Portable library to access OLE Storage 
+﻿/* POLE - Portable library to access OLE Storage 
    Copyright (C) 2002-2005 Ariya Hidayat <ariya@kde.org>
 
    Redistribution and use in source and binary forms, with or without 

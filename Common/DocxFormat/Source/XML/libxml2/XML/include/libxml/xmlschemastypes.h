@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Summary: implementation of XML Schema Datatypes
  * Description: module providing the XML Schema Datatypes implementation
  *              both definition and validity checking

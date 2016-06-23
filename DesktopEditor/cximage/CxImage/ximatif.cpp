@@ -1,4 +1,4 @@
-/*
+﻿/*
  * File:	ximatif.cpp
  * Purpose:	Platform Independent TIFF Image Class Loader and Writer
  * 07/Aug/2001 Davide Pizzolato - www.xdp.it

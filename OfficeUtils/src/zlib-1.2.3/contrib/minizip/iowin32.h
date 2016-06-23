@@ -1,4 +1,4 @@
-/* iowin32.h -- IO base function header for compress/uncompress .zip
+﻿/* iowin32.h -- IO base function header for compress/uncompress .zip
    files using zlib + zip or unzip API
    This IO API version uses the Win32 API (for Microsoft Windows)
 

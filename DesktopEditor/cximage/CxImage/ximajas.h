@@ -1,4 +1,4 @@
-/*
+﻿/*
  * File:	ximajas.h
  * Purpose:	Jasper Image Class Loader and Writer
  */

@@ -1,4 +1,4 @@
-/* Header describing internals of libintl library.
+﻿/* Header describing internals of libintl library.
    Copyright (C) 1995-1999, 2000-2007 Free Software Foundation, Inc.
    Written by Ulrich Drepper <drepper@cygnus.com>, 1995.
 

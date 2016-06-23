@@ -1,4 +1,4 @@
-#ifndef AGG_SVG_PERCENT_INCLUDE
+﻿#ifndef AGG_SVG_PERCENT_INCLUDE
 #define AGG_SVG_PERCENT_INCLUDE
 //-----------------------------------------------------------------------------
 namespace agg

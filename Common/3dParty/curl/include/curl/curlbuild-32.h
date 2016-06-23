@@ -1,4 +1,4 @@
-/* include/curl/curlbuild.h.  Generated from curlbuild.h.in by configure.  */
+﻿/* include/curl/curlbuild.h.  Generated from curlbuild.h.in by configure.  */
 #ifndef __CURL_CURLBUILD_H
 #define __CURL_CURLBUILD_H
 /***************************************************************************

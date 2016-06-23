@@ -1,4 +1,4 @@
-/*
+﻿/*
  * File:	ximamng.cpp
  * Purpose:	Platform Independent MNG Image Class Loader and Writer
  * Author:	07/Aug/2001 Davide Pizzolato - www.xdp.it

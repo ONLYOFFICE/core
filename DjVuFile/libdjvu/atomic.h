@@ -1,4 +1,4 @@
-/* -*- C -*-
+﻿/* -*- C -*-
 // -------------------------------------------------------------------
 // MiniLock - a quick user space lock 
 // Copyright (c) 2008  Leon Bottou. All rights reserved

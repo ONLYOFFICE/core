@@ -1,4 +1,4 @@
-//
+﻿//
 //  rbbiscan.h
 //
 //  Copyright (C) 2002-2008, International Business Machines Corporation and others.

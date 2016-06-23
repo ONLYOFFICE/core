@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2016
  *
  * This program is a free software product. You can redistribute it and/or
@@ -274,7 +274,7 @@ namespace PPTX
 		public:
 			UniFill						Fill;
 			nullable<PrstDash>			prstDash;
-			//custDash (Custom Dash)  §20.1.8.21 
+			//custDash (Custom Dash)  ยง20.1.8.21 
 			LineJoin					Join;
 			nullable<LineEnd>			headEnd;
 			nullable<LineEnd>			tailEnd;

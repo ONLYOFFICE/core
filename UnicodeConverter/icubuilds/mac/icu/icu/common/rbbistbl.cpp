@@ -1,4 +1,4 @@
-//
+﻿//
 //  file:  rbbistbl.cpp    Implementation of the ICU RBBISymbolTable class
 //
 /*

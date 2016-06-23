@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Summary: interfaces for tree manipulation
  * Description: this module describes the structures found in an tree resulting
  *              from an XML or HTML parsing, as well as the API provided for

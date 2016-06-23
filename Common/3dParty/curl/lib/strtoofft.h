@@ -1,4 +1,4 @@
-#ifndef HEADER_CURL_STRTOOFFT_H
+﻿#ifndef HEADER_CURL_STRTOOFFT_H
 #define HEADER_CURL_STRTOOFFT_H
 /***************************************************************************
  *                                  _   _ ____  _

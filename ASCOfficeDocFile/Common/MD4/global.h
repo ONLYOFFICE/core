@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 /* GLOBAL.H - RSAREF types and constants
  */
 

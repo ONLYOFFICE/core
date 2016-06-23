@@ -1,4 +1,4 @@
-/*
+﻿/*
  *
  * Copyright (c) 1997
  * Christian Michelsen Research AS

@@ -1,4 +1,4 @@
-#ifndef _MYSPELLMGR_H_
+﻿#ifndef _MYSPELLMGR_H_
 #define _MYSPELLMGR_H_
 
 #include "hunvisapi.h"

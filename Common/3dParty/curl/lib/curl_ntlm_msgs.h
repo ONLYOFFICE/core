@@ -1,4 +1,4 @@
-#ifndef HEADER_CURL_NTLM_MSGS_H
+﻿#ifndef HEADER_CURL_NTLM_MSGS_H
 #define HEADER_CURL_NTLM_MSGS_H
 /***************************************************************************
  *                                  _   _ ____  _

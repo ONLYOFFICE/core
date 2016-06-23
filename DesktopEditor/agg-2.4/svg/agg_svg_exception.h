@@ -1,4 +1,4 @@
-#ifndef AGG_SVG_EXCEPTION_INCLUDED
+﻿#ifndef AGG_SVG_EXCEPTION_INCLUDED
 #define AGG_SVG_EXCEPTION_INCLUDED
 
 #include <stdio.h>

@@ -1,4 +1,4 @@
-// JBig2File.cpp : Implementation of CJBig2File
+﻿// JBig2File.cpp : Implementation of CJBig2File
 
 
 #include "JBig2File.h"

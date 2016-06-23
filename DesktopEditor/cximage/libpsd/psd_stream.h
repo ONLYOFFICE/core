@@ -1,4 +1,4 @@
-#ifndef __PSD_STREAM_H__
+﻿#ifndef __PSD_STREAM_H__
 #define __PSD_STREAM_H__
 
 #ifdef __cplusplus

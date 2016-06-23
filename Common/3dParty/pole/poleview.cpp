@@ -1,4 +1,4 @@
-/* POLEView - Graphical utility to view structure storage 
+﻿/* POLEView - Graphical utility to view structure storage 
    Copyright (C) 2005 Ariya Hidayat <ariya@kde.org>
 
    Redistribution and use in source and binary forms, with or without 

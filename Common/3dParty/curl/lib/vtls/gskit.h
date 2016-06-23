@@ -1,4 +1,4 @@
-#ifndef HEADER_CURL_GSKIT_H
+﻿#ifndef HEADER_CURL_GSKIT_H
 #define HEADER_CURL_GSKIT_H
 /***************************************************************************
  *                                  _   _ ____  _

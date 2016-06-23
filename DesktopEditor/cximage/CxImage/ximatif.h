@@ -1,4 +1,4 @@
-/*
+﻿/*
  * File:	ximatif.h
  * Purpose:	TIFF Image Class Loader and Writer
  */

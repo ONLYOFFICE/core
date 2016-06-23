@@ -1,4 +1,4 @@
-#ifndef HEADER_CURL_MEMRCHR_H
+﻿#ifndef HEADER_CURL_MEMRCHR_H
 #define HEADER_CURL_MEMRCHR_H
 /***************************************************************************
  *                                  _   _ ____  _

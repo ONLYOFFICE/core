@@ -1,4 +1,4 @@
-#ifndef AGG_SVG_BASICS_INCLUDED
+﻿#ifndef AGG_SVG_BASICS_INCLUDED
 #define AGG_SVG_BASICS_INCLUDED
 
 #include <stdio.h>

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2016
  *
  * This program is a free software product. You can redistribute it and/or
@@ -114,8 +114,8 @@ namespace PPTX
 
 		public:
 			// Childs
-			//effect (Effect)  §20.1.4.2.7 
-			//effectRef (Effect Reference)  §20.1.4.2.8 
+			//effect (Effect)  ยง20.1.4.2.7 
+			//effectRef (Effect Reference)  ยง20.1.4.2.8 
 			nullable<FillStyle>	fill;
 			nullable<StyleRef>	fillRef;
 

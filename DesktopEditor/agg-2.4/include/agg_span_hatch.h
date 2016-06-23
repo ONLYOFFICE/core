@@ -1,4 +1,4 @@
-#ifndef AGG_SPAN_HATCH_INCLUDED
+﻿#ifndef AGG_SPAN_HATCH_INCLUDED
 #define AGG_SPAN_HATCH_INCLUDED
 
 #include <stdlib.h>

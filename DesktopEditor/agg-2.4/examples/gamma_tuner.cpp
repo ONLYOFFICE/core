@@ -1,4 +1,4 @@
-#include <stdio.h>
+﻿#include <stdio.h>
 #include "agg_trans_affine.h"
 #include "agg_conv_stroke.h"
 #include "agg_rasterizer_scanline_aa.h"

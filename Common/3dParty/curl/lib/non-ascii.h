@@ -1,4 +1,4 @@
-#ifndef HEADER_CURL_NON_ASCII_H
+﻿#ifndef HEADER_CURL_NON_ASCII_H
 #define HEADER_CURL_NON_ASCII_H
 /***************************************************************************
  *                                  _   _ ____  _

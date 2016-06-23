@@ -1,4 +1,4 @@
-/*
+﻿/*
  * File:	ximapsd.cpp
  * Purpose:	Platform Independent PSD Image Class Loader
  * Dec/2010 Davide Pizzolato - www.xdp.it

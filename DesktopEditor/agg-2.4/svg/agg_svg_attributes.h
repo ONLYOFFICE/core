@@ -1,4 +1,4 @@
-#ifndef AGG_SVG_ATTRIBUTES_INCLUDED
+﻿#ifndef AGG_SVG_ATTRIBUTES_INCLUDED
 #define AGG_SVG_ATTRIBUTES_INCLUDED
 
 #include "agg_conv_stroke.h"

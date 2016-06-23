@@ -1,4 +1,4 @@
-#if !defined(__xmemfile_h)
+﻿#if !defined(__xmemfile_h)
 #define __xmemfile_h
 
 #include "xfile.h"

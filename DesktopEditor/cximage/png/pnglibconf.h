@@ -1,4 +1,4 @@
-
+﻿
 /* libpng STANDARD API DEFINITION */
 
 /* pnglibconf.h - library build configuration */

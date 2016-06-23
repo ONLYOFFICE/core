@@ -1,4 +1,4 @@
-// ximainfo.cpp : main attributes
+﻿// ximainfo.cpp : main attributes
 /* 03/10/2004 v1.00 - Davide Pizzolato - www.xdp.it
  * CxImage version 7.0.2 07/Feb/2011
  */

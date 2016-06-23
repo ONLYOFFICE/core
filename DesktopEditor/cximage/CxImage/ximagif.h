@@ -1,4 +1,4 @@
-/*
+﻿/*
  * File:	ximagif.h
  * Purpose:	GIF Image Class Loader and Writer
  */

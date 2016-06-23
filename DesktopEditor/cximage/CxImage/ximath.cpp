@@ -1,4 +1,4 @@
-#include "ximage.h"
+﻿#include "ximage.h"
 #include "ximath.h"
 #include <math.h>
 

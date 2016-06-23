@@ -1,4 +1,4 @@
-#ifndef HEADER_CURL_STREQUAL_H
+﻿#ifndef HEADER_CURL_STREQUAL_H
 #define HEADER_CURL_STREQUAL_H
 /***************************************************************************
  *                                  _   _ ____  _

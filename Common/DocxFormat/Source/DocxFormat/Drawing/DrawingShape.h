@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2016
  *
  * This program is a free software product. You can redistribute it and/or
@@ -300,7 +300,7 @@ namespace OOX
 			nullable<OOX::Drawing::CShapeStyle>				m_oShapeStyle;
 			nullable<OOX::Drawing::CTxSp>					m_oTxSp;	
 
-//extLst (Extension List) §20.1.2.2.15
+//extLst (Extension List) ยง20.1.2.2.15
 
 		};
 
@@ -380,7 +380,7 @@ namespace OOX
 			nullable<OOX::Drawing::CShapeProperties>			m_oSpPr;
 			nullable<OOX::Drawing::CTxSp>						m_oTxSp;	
 
-//extLst (Extension List) §20.1.2.2.15
+//extLst (Extension List) ยง20.1.2.2.15
 
 		};
 

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Summary: Unicode character range checking
  * Description: this module exports interfaces for the character
  *               range validation APIs

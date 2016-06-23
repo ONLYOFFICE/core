@@ -1,4 +1,4 @@
-#ifndef HEADER_CURL_TOOL_SLEEP_H
+﻿#ifndef HEADER_CURL_TOOL_SLEEP_H
 #define HEADER_CURL_TOOL_SLEEP_H
 /***************************************************************************
  *                                  _   _ ____  _

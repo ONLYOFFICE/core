@@ -1,4 +1,4 @@
-#ifndef HEADER_CURL_SERVER_GETPART_H
+﻿#ifndef HEADER_CURL_SERVER_GETPART_H
 #define HEADER_CURL_SERVER_GETPART_H
 /***************************************************************************
  *                                  _   _ ____  _

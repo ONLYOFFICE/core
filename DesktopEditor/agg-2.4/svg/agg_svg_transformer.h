@@ -1,4 +1,4 @@
-#ifndef AGG_SVG_TRANSFORMER_INCLUDED
+﻿#ifndef AGG_SVG_TRANSFORMER_INCLUDED
 #define AGG_SVG_TRANSFORMER_INCLUDED
 
 #include "agg_trans_affine.h"

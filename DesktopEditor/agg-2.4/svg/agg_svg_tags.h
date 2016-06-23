@@ -1,4 +1,4 @@
-#ifndef AGG_SVG_TAGS_INCLUDE
+﻿#ifndef AGG_SVG_TAGS_INCLUDE
 #define AGG_SVG_TAGS_INCLUDE
 
 namespace agg

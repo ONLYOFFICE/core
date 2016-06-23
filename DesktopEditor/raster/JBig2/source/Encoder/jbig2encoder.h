@@ -1,4 +1,4 @@
-#ifndef _JBIG2_ENCODER_H
+﻿#ifndef _JBIG2_ENCODER_H
 #define _JBIG2_ENCODER_H
 
 #include <vector>

@@ -1,4 +1,4 @@
-#ifndef HEADER_CURL_STRERROR_H
+﻿#ifndef HEADER_CURL_STRERROR_H
 #define HEADER_CURL_STRERROR_H
 /***************************************************************************
  *                                  _   _ ____  _

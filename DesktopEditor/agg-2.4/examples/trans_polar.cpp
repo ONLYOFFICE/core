@@ -1,4 +1,4 @@
-#include "agg_basics.h"
+﻿#include "agg_basics.h"
 #include "agg_rendering_buffer.h"
 #include "agg_rasterizer_scanline_aa.h"
 #include "agg_scanline_u.h"

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * File:	ximapcx.h
  * Purpose:	PCX Image Class Loader and Writer
  */

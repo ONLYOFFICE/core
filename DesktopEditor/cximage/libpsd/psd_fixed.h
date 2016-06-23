@@ -1,4 +1,4 @@
-#ifndef __PSD_FIXED_H__
+﻿#ifndef __PSD_FIXED_H__
 #define __PSD_FIXED_H__
 
 #ifdef __cplusplus

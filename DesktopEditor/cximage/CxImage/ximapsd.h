@@ -1,4 +1,4 @@
-/*
+﻿/*
  * File:	ximapsd.h
  * Purpose:	PSD Image Class Loader and Writer
  */

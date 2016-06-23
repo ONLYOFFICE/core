@@ -1,4 +1,4 @@
-#ifndef __STDC_HEADERS_H
+﻿#ifndef __STDC_HEADERS_H
 #define __STDC_HEADERS_H
 /***************************************************************************
  *                                  _   _ ____  _

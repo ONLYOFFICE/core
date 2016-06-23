@@ -1,4 +1,4 @@
-/**
+﻿/**
  * libpsd - Photoshop file formats (*.psd) decode library
  * Copyright (C) 2004-2007 Graphest Software.
  *

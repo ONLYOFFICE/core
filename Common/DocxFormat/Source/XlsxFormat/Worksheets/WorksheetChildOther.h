@@ -512,7 +512,7 @@ namespace OOX
 				}
 				if (m_oActiveCellId.IsInit())
 				{
-					CString sVal; sVal.Format(_T(" activeCellId=\"%d\""), m_oActiveCellId.get());
+					CString sVal; sVal.Format(_T(" activeCellId=\"%d\""), m_oActiveCellId->GetValue());
 					writer.WriteString(sVal);
 				}
 				if (m_oSqref.IsInit())

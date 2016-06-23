@@ -409,7 +409,6 @@ namespace OOX
 				nullable<SimpleTypes::COnOff<>>					m_oThickTop;
 				nullable<SimpleTypes::COnOff<>>					m_oZeroHeight;
 		};
-
 		class CPane : public WritingElement
 		{
 		public:
@@ -487,10 +486,84 @@ namespace OOX
 			nullable<SimpleTypes::CDouble>	m_oYSplit;
 		};
 
+		class CSelection : public WritingElement
+		{
+		public:
+			WritingElementSpreadsheet_AdditionConstructors(CSelection)
+			CSelection()
+			{
+			}
+			virtual ~CSelection()
+			{
+			}
+
+		public:
+			virtual CString      toXML() const
+			{
+				return _T("");
+			}
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			{
+				writer.WriteString(_T("<selection"));
+				if (m_oActiveCell.IsInit())
+				{
+					CString sVal; sVal.Format(_T(" activeCell=\"%ls\""), m_oActiveCell.get());
+					writer.WriteString(sVal);
+				}
+				if (m_oActiveCellId.IsInit())
+				{
+					CString sVal; sVal.Format(_T(" activeCellId=\"%d\""), m_oActiveCellId.get());
+					writer.WriteString(sVal);
+				}
+				if (m_oSqref.IsInit())
+				{
+					CString sVal; sVal.Format(_T(" sqref=\"%ls\""), m_oSqref.get());
+					writer.WriteString(sVal);
+				}
+				if (m_oPane.IsInit())
+				{
+					CString sVal; sVal.Format(_T(" pane=\"%ls\""), m_oPane.get());
+					writer.WriteString(sVal);
+				}
+				writer.WriteString(_T("/>"));
+			}
+			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+
+				if ( !oReader.IsEmptyNode() )
+					oReader.ReadTillEnd();
+			}
+
+			virtual EElementType getType () const
+			{
+				return et_Selection;
+			}
+
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				// Читаем атрибуты
+				WritingElement_ReadAttributes_Start( oReader )
+
+				WritingElement_ReadAttributes_Read_if     ( oReader, _T("activeCell")	, m_oActiveCell)
+				WritingElement_ReadAttributes_Read_if     ( oReader, _T("activeCellId")	, m_oActiveCellId)
+				WritingElement_ReadAttributes_Read_if     ( oReader, _T("sqref")		, m_oSqref)
+				WritingElement_ReadAttributes_Read_if     ( oReader, _T("pane")			, m_oPane)
+
+				WritingElement_ReadAttributes_End( oReader )
+			}
+
+		public:
+			nullable<CString>									m_oActiveCell;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oActiveCellId;
+			nullable<CString>									m_oSqref;
+			nullable<CString>									m_oPane;	//bottomLeft, bottomRight, topLeft, topRight
+		};
+
 		//необработано:
 		//<extLst>
 		//<pivotSelection>
-		//<selection>
 		class CSheetView : public WritingElement
 		{
 		public:
@@ -609,6 +682,9 @@ namespace OOX
 
 				if (m_oPane.IsInit())
 					m_oPane->toXML(writer);
+				
+				if (m_oSelection.IsInit())
+					m_oSelection->toXML(writer);
 
 				writer.WriteString(_T("</sheetView>"));
 			}
@@ -626,7 +702,8 @@ namespace OOX
 
 					if (_T("pane") == sName)
 						m_oPane = oReader;
-				}
+					if (_T("selection") == sName)
+						m_oSelection = oReader;				}
 			}
 
 			virtual EElementType getType () const
@@ -666,6 +743,7 @@ namespace OOX
 
 		public:
 				nullable<CPane>										m_oPane;
+				nullable<CSelection>								m_oSelection;
 
 				nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oColorId;
 				nullable<SimpleTypes::COnOff<>>						m_oDefaultGridColor;

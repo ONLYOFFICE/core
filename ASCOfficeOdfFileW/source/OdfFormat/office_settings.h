@@ -88,7 +88,7 @@ public:
 
 	virtual void serialize(std::wostream & _Wostream);
 
-	std::wstring				config_name_;
+	_CP_OPT(std::wstring)		config_name_;
 	office_element_ptr_array	content_;
 };
 CP_REGISTER_OFFICE_ELEMENT2(settings_config_item_map_indexed);
@@ -108,7 +108,7 @@ public:
 
 	virtual void serialize(std::wostream & _Wostream);
 
-	std::wstring				config_name_;
+	_CP_OPT(std::wstring)		config_name_;
 	office_element_ptr_array	content_;
 };
 CP_REGISTER_OFFICE_ELEMENT2(settings_config_item_map_named);
@@ -128,7 +128,8 @@ public:
 
 	virtual void serialize(std::wostream & _Wostream);
 
-    office_element_ptr_array content_;
+	_CP_OPT(std::wstring)		config_name_;
+    office_element_ptr_array	content_;
 };
 CP_REGISTER_OFFICE_ELEMENT2(settings_config_item_map_entry);
 

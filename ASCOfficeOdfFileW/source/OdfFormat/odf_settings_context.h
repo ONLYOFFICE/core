@@ -26,15 +26,33 @@ public:
 
 	void process_office_settings(office_element_ptr root );
 
+	void start_view	();
+	void end_view	();
+	void set_current_view(int id);
+
+	void start_table(std::wstring name);
+	void end_table	();
+
+	void add_property(std::wstring name, std::wstring type, std::wstring value);
 private:
-	struct views
+	struct _table
 	{
-		std::map<std::wstring, std::vector<office_element_ptr>> tables;
-		std::vector<office_element_ptr>							content;
-	}views_;
+		std::wstring name;
+		std::vector<office_element_ptr> content;
+	};
+	struct _view
+	{
+		std::vector<_table>				tables;
+		std::vector<office_element_ptr>	content;
+	};
+
+	std::vector<_view>				views_;
 
 	std::vector<office_element_ptr>	config_content_;
 	odf_conversion_context*			odf_context_;
+
+	int								current_table_;
+	int								current_view_;
 
 };
 

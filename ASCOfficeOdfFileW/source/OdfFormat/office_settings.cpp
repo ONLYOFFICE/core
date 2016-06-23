@@ -112,10 +112,7 @@ void settings_config_item_map_indexed::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         {
-			if (!config_name_.empty()) 
-			{
-				CP_XML_ATTR( L"config:name", config_name_);
-			}
+			CP_XML_ATTR_OPT( L"config:name", config_name_);
 
 			BOOST_FOREACH(const office_element_ptr & elm, content_)
 			{
@@ -144,10 +141,8 @@ void settings_config_item_map_named::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         {
-			if (!config_name_.empty()) 
-			{
-				CP_XML_ATTR( L"config:name", config_name_);
-			}
+			CP_XML_ATTR_OPT( L"config:name", config_name_);
+
 			BOOST_FOREACH(const office_element_ptr & elm, content_)
 			{
 				elm->serialize(CP_XML_STREAM());
@@ -175,6 +170,8 @@ void settings_config_item_map_entry::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         {
+			CP_XML_ATTR_OPT( L"config:name", config_name_);
+
 			BOOST_FOREACH(const office_element_ptr & elm, content_)
 			{
 				elm->serialize(CP_XML_STREAM());

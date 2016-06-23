@@ -304,6 +304,7 @@ namespace Spreadsheet
 		et_SheetPr,
 		et_Pane,
 		et_ExternalBook,
+		et_Selection,
 
 		et_PictureNonVisual,
 		et_NonVisualDrawingProperties,

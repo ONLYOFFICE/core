@@ -1,4 +1,4 @@
-﻿#ifndef _ASCVARIANT_H_
+#ifndef _ASCVARIANT_H_
 #define _ASCVARIANT_H_
 
 #include "Types.h"

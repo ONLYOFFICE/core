@@ -209,7 +209,7 @@ void style_table_column_properties::docx_convert(oox::docx_conversion_context & 
 		//_CP_OPT(int) iUnormalWidth;
 		//if (odf_reader::GetProperty(Context.get_settings_properties(),L"UnormalWidthPage",iUnormalWidth))
 		{
-			//kf_max_width_ms = 31680./iUnormalWidth.get();//эквивалент 22"
+			//kf_max_width_ms = 31680./iUnormalWidth.get();//СЌРєРІРёРІР°Р»РµРЅС‚ 22"
 		}
 
 

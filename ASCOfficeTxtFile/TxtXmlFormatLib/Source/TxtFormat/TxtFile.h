@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #ifndef UTILITY_TXT_FILE_INCLUDE_H_
 #define UTILITY_TXT_FILE_INCLUDE_H_
 

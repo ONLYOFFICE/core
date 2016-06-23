@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #ifndef OOX_CELLANCHOR_FILE_INCLUDE_H_
 #define OOX_CELLANCHOR_FILE_INCLUDE_H_
 

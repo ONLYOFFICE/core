@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "Basic.h"
 #include "RtfChar.h"
 #include "RtfWriter.h"

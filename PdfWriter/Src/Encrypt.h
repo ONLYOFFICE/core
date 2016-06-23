@@ -1,4 +1,4 @@
-﻿#ifndef _PDF_WRITER_SRC_ENCRYPT_H
+#ifndef _PDF_WRITER_SRC_ENCRYPT_H
 #define _PDF_WRITER_SRC_ENCRYPT_H
 
 #include "Utils.h"

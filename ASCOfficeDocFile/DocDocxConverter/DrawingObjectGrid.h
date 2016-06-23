@@ -16,13 +16,13 @@ namespace DocFileFormat
       /// Height of each grid square
       short dyaGrid;
       /// The number of grid squares (in the y direction) between each 
-      /// gridline drawn on the screen. 0 means don‘t display any 
+      /// gridline drawn on the screen. 0 means donâ€˜t display any 
       /// gridlines in the y direction.
       short dyGridDisplay;
       /// Suppress display of gridlines
       bool fTurnItOff;
       /// The number of grid squares (in the x direction) between each 
-      /// gridline drawn on the screen. 0 means don‘t display any 
+      /// gridline drawn on the screen. 0 means donâ€˜t display any 
       /// gridlines in the y direction.
       short dxGridDisplay;
       /// If true, the grid will start at the left and top margins and 

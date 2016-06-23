@@ -1,4 +1,4 @@
-﻿#ifndef _PDF_WRITER_SRC_OBJECTS_H
+#ifndef _PDF_WRITER_SRC_OBJECTS_H
 #define _PDF_WRITER_SRC_OBJECTS_H
 
 #include <string>

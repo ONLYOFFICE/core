@@ -1,4 +1,4 @@
-﻿#ifndef _XPS_FILE_H
+#ifndef _XPS_FILE_H
 #define _XPS_FILE_H
 
 #ifndef XPS_USE_DYNAMIC_LIBRARY

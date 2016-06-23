@@ -1,4 +1,4 @@
-﻿#ifndef _PDF_READER_PARSER_H
+#ifndef _PDF_READER_PARSER_H
 #define _PDF_READER_PARSER_H
 
 #include "Lexer.h"

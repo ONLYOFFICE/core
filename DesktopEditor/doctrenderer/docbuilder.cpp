@@ -1,4 +1,4 @@
-﻿#include "docbuilder_p.h"
+#include "docbuilder_p.h"
 
 namespace NSDoctRenderer
 {

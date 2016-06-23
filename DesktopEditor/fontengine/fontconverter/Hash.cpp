@@ -1,4 +1,4 @@
-﻿#include "MemoryUtils.h"
+#include "MemoryUtils.h"
 #include "StringExt.h"
 #include "Hash.h"
 #include "Utils.h"

@@ -1,4 +1,4 @@
-﻿#ifndef ASCSTRING_H
+#ifndef ASCSTRING_H
 #define ASCSTRING_H
 
 // Avoid multiple inclusion

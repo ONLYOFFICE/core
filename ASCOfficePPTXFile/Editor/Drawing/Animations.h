@@ -370,11 +370,11 @@ namespace NSPresentationEditor
 					{
 						Effect.Format ( _T("<animateRotate %s />"), FormatXml ());
 					}
-					else if (9 == pEffect->m_nEffectID || 35 == pEffect->m_nEffectID)	//	Blink - 36 - ÏË„‡ÌËÂ
+					else if (9 == pEffect->m_nEffectID || 35 == pEffect->m_nEffectID)	//	Blink - 36 - –º–∏–≥–∞–Ω–∏–µ
 					{						
 						Effect.Format ( _T("<animateAlpha %s />"), FormatXml ());
 					}
-					else if (26	== pEffect->m_nEffectID)	// FlashBulb Effect ( œÛÎ¸Ò‡ˆËˇ )
+					else if (26	== pEffect->m_nEffectID)	// FlashBulb Effect ( –ü—É–ª—å—Å–∞—Ü–∏—è )
 					{
 						Effect.Format ( _T("<animateAlpha %s />"), FormatXml ());
 						Source	+=	Effect;
@@ -384,7 +384,7 @@ namespace NSPresentationEditor
 
 						continue;
 					}
-					else if (27 == pEffect->m_nEffectID		//	Flicker (÷‚ÂÚÓ‚‡ˇ ÔÛÎ¸Ò‡ˆËˇ)
+					else if (27 == pEffect->m_nEffectID		//	Flicker (√∑–≤–µ—Ç–æ–≤–∞—è –ø—É–ª—å—Å–∞—Ü–∏—è)
 						|| 1 ==	pEffect->m_nEffectID		//	ChangeFillColor	-	fill color
 						|| 3 ==	pEffect->m_nEffectID		//	ChangeFillColor	-	font color
 						|| 7 == pEffect->m_nEffectID		//	ChangeFillColor	-	fill lines

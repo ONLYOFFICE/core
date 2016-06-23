@@ -130,16 +130,16 @@ void pptx_xml_slideLayout::write_to(std::wostream & strm)
 				{
 					CP_XML_STREAM() << slideLayoutData_.str();
 
-//โ slideLayoutData_
-//contentPart (Content Part) ง19.3.1.14
-//cxnSp (Connection Shape) ง19.3.1.19
-//extLst (Extension List with Modification Flag) ง19.3.1.20
-//graphicFrame (Graphic Frame) ง19.3.1.2
-//grpSp (Group Shape) ง19.3.1.22
-//grpSpPr (Group Shape Properties) ง19.3.1.23
-//nvGrpSpPr (Non-Visual Properties for a Group Shape) ง19.3.1.31
-//pic (Picture) ง19.3.1.37
-//sp (Shape) ง19.3.1.43
+//ะฒ slideLayoutData_
+//contentPart (Content Part) ยง19.3.1.14
+//cxnSp (Connection Shape) ยง19.3.1.19
+//extLst (Extension List with Modification Flag) ยง19.3.1.20
+//graphicFrame (Graphic Frame) ยง19.3.1.2
+//grpSp (Group Shape) ยง19.3.1.22
+//grpSpPr (Group Shape Properties) ยง19.3.1.23
+//nvGrpSpPr (Non-Visual Properties for a Group Shape) ยง19.3.1.31
+//pic (Picture) ยง19.3.1.37
+//sp (Shape) ยง19.3.1.43
 
 				}
             }

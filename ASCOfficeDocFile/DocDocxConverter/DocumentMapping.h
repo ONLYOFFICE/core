@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "ContentTypes.h"
 #include "RevisionData.h"

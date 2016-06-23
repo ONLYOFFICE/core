@@ -3,7 +3,7 @@
 
 class CRecordAnimationInfoAtom : public CUnknownRecord
 {
-	// поля...
+	// РїРѕР»СЏ...
 
 public:
 	

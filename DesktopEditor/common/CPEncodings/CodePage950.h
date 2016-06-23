@@ -6,7 +6,7 @@ namespace NSStringExt
 	//-- CP950 Encoding -----------------------------------------------------------------------------
 
 #define MSCP950_UNDEFINED 0x0000
-#define MSCP950_LEAD_CHAR 0xFFFF // Символ, который означает, что данный код - старший байт
+#define MSCP950_LEAD_CHAR 0xFFFF // вЂ”РёРјРІРѕР», РєРѕС‚РѕСЂС‹Р№ РѕР·РЅР°С‡Р°РµС‚, С‡С‚Рѕ РґР°РЅРЅС‹Р№ РєРѕРґ - СЃС‚Р°СЂС€РёР№ Р±Р°Р№С‚
 
 	static const unsigned short  c_anUnicodeMapCP950[] =
 	{
@@ -13549,7 +13549,7 @@ namespace NSStringExt
 		{ 0xF9FC, 0x2570 }, //BOX DRAWINGS LIGHT ARC UP AND RIGHT
 		{ 0xF9FD, 0x256F }, //BOX DRAWINGS LIGHT ARC UP AND LEFT
 		{ 0xF9FE, 0x2593 }, //DARK SHADE
-		{ 0xFFFF, 0xFFFF }  //Обозначаем конец списка
+		{ 0xFFFF, 0xFFFF }  //РћР±РѕР·РЅР°С‡Р°РµРј РєРѕРЅРµС† СЃРїРёСЃРєР°
 	};
 }
 #endif // _BUILD_CPENCODINGS_CODEPAGE950_CROSSPLATFORM_H_

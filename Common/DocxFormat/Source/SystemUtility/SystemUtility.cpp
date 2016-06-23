@@ -42,7 +42,7 @@ namespace OOX
     CPath::CPath(const CPath& oSrc)
     {
         *this = oSrc;
-		//считаем вызывать ли Normalize решает oSrc
+		//СЃС‡РёС‚Р°РµРј РІС‹Р·С‹РІР°С‚СЊ Р»Рё Normalize СЂРµС€Р°РµС‚ oSrc
 		//Normalize();
     }
 
@@ -50,7 +50,7 @@ namespace OOX
     {
         m_strFilename = oSrc.m_strFilename;
 		m_bIsRoot = oSrc.m_bIsRoot;
-		//считаем вызывать ли Normalize решает oSrc
+		//СЃС‡РёС‚Р°РµРј РІС‹Р·С‹РІР°С‚СЊ Р»Рё Normalize СЂРµС€Р°РµС‚ oSrc
 		//Normalize();
         return *this;
     }

@@ -30,7 +30,7 @@ struct drawing_object_description
 	std::vector<_hlink_desc>				hlinks_;
 	std::vector<odf_reader::_property>		additional_;	//shape properties
 	
-	std::wstring							xlink_href_;	//ссылка на внешний объект
+	std::wstring							xlink_href_;	//СЃСЃС‹Р»РєР° РЅР° РІРЅРµС€РЅРёР№ РѕР±СЉРµРєС‚
 	std::wstring							clipping_string_;
 
 	_oox_fill								fill_;

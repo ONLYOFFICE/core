@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "OOXColorSchemeReader.h"
 #include "OOXFontSchemeReader.h"
 #include "../Utils.h"

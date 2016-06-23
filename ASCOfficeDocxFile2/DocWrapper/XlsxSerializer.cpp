@@ -1,4 +1,4 @@
-﻿#include "XlsxSerializer.h"
+#include "XlsxSerializer.h"
 
 #include "../../DesktopEditor/common/Directory.h"
 #include "../../DesktopEditor/common/File.h"

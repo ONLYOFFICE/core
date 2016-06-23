@@ -1,4 +1,4 @@
-﻿#ifndef _PDF_READER_FONT_FILE_TYPE1C_H
+#ifndef _PDF_READER_FONT_FILE_TYPE1C_H
 #define _PDF_READER_FONT_FILE_TYPE1C_H
 
 #include "FontFileBase.h"

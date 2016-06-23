@@ -60,7 +60,7 @@ void oox_chart::set_properties(std::vector<odf_reader::_property> g)
 	{
 		grouping_ = L"percentStacked";	
 	}
-	//solid-type - трехмерные
+	//solid-type - С‚СЂРµС…РјРµСЂРЅС‹Рµ
 }
 void oox_chart::oox_serialize_common(std::wostream & _Wostream)
 {
@@ -385,7 +385,7 @@ void oox_scatter_chart::set_properties(std::vector<odf_reader::_property> g)
 	oox_chart::set_properties(g);
 
 	odf_reader::GetProperty(g, L"regression-type",iRegressionType);// none, linear, logarithmic, exponential, power
-	//в xl похоже этого нет
+	//РІ xl РїРѕС…РѕР¶Рµ СЌС‚РѕРіРѕ РЅРµС‚
 
 
 }
@@ -438,7 +438,7 @@ void oox_stock_chart::oox_serialize(std::wostream & _Wostream)
         {
 			oox_serialize_common(CP_XML_STREAM());
 			
-			//CP_XML_NODE(L"c:hiLowLines")//hiLowLines (High Low Lines) §21.2.2.80
+			//CP_XML_NODE(L"c:hiLowLines")//hiLowLines (High Low Lines) В§21.2.2.80
 			//{
 			//	//shape.oox_serialize(CP_XML_STREAM());
 			//}
@@ -448,7 +448,7 @@ void oox_stock_chart::oox_serialize(std::wostream & _Wostream)
 				{
 					CP_XML_ATTR(L"val", 150);
 				}
-				CP_XML_NODE(L"c:upBars")//upDownBars (Up/Down Bars) §21.2.2.218
+				CP_XML_NODE(L"c:upBars")//upDownBars (Up/Down Bars) В§21.2.2.218
 				{
 					//shape.oox_serialize(CP_XML_STREAM());
 				}
@@ -457,7 +457,7 @@ void oox_stock_chart::oox_serialize(std::wostream & _Wostream)
 					//shape.oox_serialize(CP_XML_STREAM());
 				}
 			}
-		}//dropLines (Drop Lines) §21.2.2.53
+		}//dropLines (Drop Lines) В§21.2.2.53
     }
 }
 _CP_PTR(oox_chart) oox_stock_chart::create()

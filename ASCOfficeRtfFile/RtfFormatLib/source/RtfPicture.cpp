@@ -1,4 +1,4 @@
-﻿#include "RtfPicture.h"
+#include "RtfPicture.h"
 #include "Writer/OOXWriter.h"
 #include "Utils.h"
 

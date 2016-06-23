@@ -65,7 +65,7 @@ public:
 
 };
 
- //объект рисования не нужен .. нужно только место для фрэйма - сам чарт в другом месте
+ //РѕР±СЉРµРєС‚ СЂРёСЃРѕРІР°РЅРёСЏ РЅРµ РЅСѓР¶РµРЅ .. РЅСѓР¶РЅРѕ С‚РѕР»СЊРєРѕ РјРµСЃС‚Рѕ РґР»СЏ С„СЂСЌР№РјР° - СЃР°Рј С‡Р°СЂС‚ РІ РґСЂСѓРіРѕРј РјРµСЃС‚Рµ
 class draw_chart : public office_element_impl<draw_chart>
 {
 public:
@@ -143,7 +143,7 @@ public:
     office_element_ptr_array				content_;
 
     office_element_ptr						office_event_listeners_; 
-			// в content перенести нельзя - иначе событи будет добавляться не к этому объекту а следующему
+			// РІ content РїРµСЂРµРЅРµСЃС‚Рё РЅРµР»СЊР·СЏ - РёРЅР°С‡Рµ СЃРѕР±С‹С‚Рё Р±СѓРґРµС‚ РґРѕР±Р°РІР»СЏС‚СЊСЃСЏ РЅРµ Рє СЌС‚РѕРјСѓ РѕР±СЉРµРєС‚Сѓ Р° СЃР»РµРґСѓСЋС‰РµРјСѓ
     office_element_ptr						draw_glue_point_;
     office_element_ptr						draw_image_map_;
     //office_element_ptr draw_chart_map_;

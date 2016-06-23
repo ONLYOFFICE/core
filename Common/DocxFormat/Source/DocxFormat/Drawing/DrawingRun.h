@@ -32,7 +32,7 @@ namespace OOX
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				m_eType = et_Unknown;
-				// TO DO: Реализовать CTextFont::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CTextFont::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -92,7 +92,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				if ( oReader.GetAttributesCount() <= 0 )
 					return;
 				

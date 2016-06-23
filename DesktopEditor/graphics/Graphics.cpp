@@ -1,4 +1,4 @@
-﻿#include "Graphics.h"
+#include "Graphics.h"
 #include <algorithm>
 #include "../fontengine/FontFile.h"
 

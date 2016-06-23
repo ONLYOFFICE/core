@@ -1,4 +1,4 @@
-﻿
+
 #include "FontFamilyName.h"
 
 namespace DocFileFormat

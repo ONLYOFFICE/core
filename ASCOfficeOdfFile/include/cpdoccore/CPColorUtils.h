@@ -2,11 +2,11 @@
 
 namespace cpdoccore { 
 
-// поиск ближайшего цвета из 
+// РїРѕРёСЃРє Р±Р»РёР¶Р°Р№С€РµРіРѕ С†РІРµС‚Р° РёР· 
 // Black, Green, White, Blue, Magenta, Yellow, Cyan, Red
 std::wstring RGBToString(int r, int g, int b);
 
-// разбор HEX-строки с цветом
+// СЂР°Р·Р±РѕСЂ HEX-СЃС‚СЂРѕРєРё СЃ С†РІРµС‚РѕРј
 bool HEXStringToRGB(std::wstring const & str, int &r, int &g, int &b);
 
 }

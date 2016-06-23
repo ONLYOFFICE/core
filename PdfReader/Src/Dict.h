@@ -1,4 +1,4 @@
-﻿#ifndef _PDF_READER_DICT_H
+#ifndef _PDF_READER_DICT_H
 #define _PDF_READER_DICT_H
 
 #include "Object.h"

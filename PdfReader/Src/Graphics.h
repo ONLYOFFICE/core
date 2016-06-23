@@ -1,4 +1,4 @@
-﻿#ifndef _PDF_READER_GRAPHICS_H
+#ifndef _PDF_READER_GRAPHICS_H
 #define _PDF_READER_GRAPHICS_H
 
 #include "GlobalParams.h"

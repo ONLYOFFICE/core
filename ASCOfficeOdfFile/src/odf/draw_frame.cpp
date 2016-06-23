@@ -152,8 +152,8 @@ void draw_frame::add_attributes( const xml::attributes_wc_ptr & Attributes )
 void draw_frame::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
 {
     if (CP_CHECK_NAME(L"draw", L"text-box") ||
-        CP_CHECK_NAME(L"draw", L"image") ||//копия объекта в виде картинки ну.. или просто картинка
-        CP_CHECK_NAME(L"draw", L"object") ||//месторасположение embedded объекта
+        CP_CHECK_NAME(L"draw", L"image") ||//РєРѕРїРёСЏ РѕР±СЉРµРєС‚Р° РІ РІРёРґРµ РєР°СЂС‚РёРЅРєРё РЅСѓ.. РёР»Рё РїСЂРѕСЃС‚Рѕ РєР°СЂС‚РёРЅРєР°
+        CP_CHECK_NAME(L"draw", L"object") ||//РјРµСЃС‚РѕСЂР°СЃРїРѕР»РѕР¶РµРЅРёРµ embedded РѕР±СЉРµРєС‚Р°
         CP_CHECK_NAME(L"draw", L"object-ole") ||
         CP_CHECK_NAME(L"draw", L"applet") ||
         CP_CHECK_NAME(L"draw", L"floating-frame") ||

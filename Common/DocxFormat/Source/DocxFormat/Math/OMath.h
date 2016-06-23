@@ -80,7 +80,7 @@ namespace OOX
 			CString			sNodeName;
 
 			CString GetMathNodeName(const EElementType & enumType)  const
-			{//todooo вытащить в одно место - пересекается с MathBottomNodes
+			{//todooo РІС‹С‚Р°С‰РёС‚СЊ РІ РѕРґРЅРѕ РјРµСЃС‚Рѕ - РїРµСЂРµСЃРµРєР°РµС‚СЃСЏ СЃ MathBottomNodes
 				switch(enumType)
 				{
 					case OOX::et_m_deg:		return L"m:deg";

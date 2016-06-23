@@ -447,7 +447,7 @@ private:
 				wchar_t* pRealloc = (wchar_t*)realloc(m_pData, m_lSize * sizeof(wchar_t));
 				if (NULL != pRealloc)
 				{
-					// реаллок сработал
+					// СЂРµР°Р»Р»РѕРє СЃСЂР°Р±РѕС‚Р°Р»
 					m_pData		= pRealloc;
 					m_pDataCur	= m_pData + m_lSizeCur;
 				}
@@ -564,9 +564,9 @@ public:
 	{
 		RELEASEOBJECT(m_pSimpleGraphicsConverter);
 	}
-// тип рендерера-----------------------------------------------------------------------------
+// С‚РёРї СЂРµРЅРґРµСЂРµСЂР°-----------------------------------------------------------------------------
 	virtual HRESULT get_Type(LONG* lType){ return S_OK; }
-//-------- Функции для работы со страницей --------------------------------------------------
+//-------- Р¤СѓРЅРєС†РёРё РґР»СЏ СЂР°Р±РѕС‚С‹ СЃРѕ СЃС‚СЂР°РЅРёС†РµР№ --------------------------------------------------
 	virtual HRESULT NewPage(){ return S_OK; }
 	virtual HRESULT get_Height(double* dHeight){ return S_OK; }
 	virtual HRESULT put_Height(const double& dHeight)
@@ -654,14 +654,14 @@ public:
 	virtual HRESULT get_FontFaceIndex(int* lFaceIndex){ return S_OK; }
 	virtual HRESULT put_FontFaceIndex(const int& lFaceIndex){ return S_OK; }
 
-//-------- Функции для вывода текста --------------------------------------------------------
+//-------- Р¤СѓРЅРєС†РёРё РґР»СЏ РІС‹РІРѕРґР° С‚РµРєСЃС‚Р° --------------------------------------------------------
     virtual HRESULT CommandDrawTextCHAR(const LONG& c, const double& x, const double& y, const double& w, const double& h) { return S_OK; }
     virtual HRESULT CommandDrawText(const std::wstring& bsText, const double& x, const double& y, const double& w, const double& h) { return S_OK; }
 
     virtual HRESULT CommandDrawTextExCHAR(const LONG& c, const LONG& gid, const double& x, const double& y, const double& w, const double& h) { return S_OK; }
     virtual HRESULT CommandDrawTextEx(const std::wstring& bsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& x, const double& y, const double& w, const double& h) { return S_OK; }
 
-//-------- Маркеры для команд ---------------------------------------------------------------
+//-------- РњР°СЂРєРµСЂС‹ РґР»СЏ РєРѕРјР°РЅРґ ---------------------------------------------------------------
 	virtual HRESULT BeginCommand(const DWORD& lType)
 	{
 		m_lCurrentCommandType = lType;
@@ -691,7 +691,7 @@ public:
 		return S_OK; 
 	}
 
-//-------- Функции для работы с Graphics Path -----------------------------------------------
+//-------- Р¤СѓРЅРєС†РёРё РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ Graphics Path -----------------------------------------------
 	virtual HRESULT PathCommandMoveTo(const double& x, const double& y)
 	{
 		if (c_nSimpleGraphicType == m_lCurrentCommandType)
@@ -773,7 +773,7 @@ public:
     virtual HRESULT PathCommandTextExCHAR(const LONG& c, const LONG& gid, const double& x, const double& y, const double& w, const double& h) { return S_OK; }
     virtual HRESULT PathCommandTextEx(const std::wstring& sText, const unsigned int* pGids, const unsigned int nGidsCount, const double& x, const double& y, const double& w, const double& h) { return S_OK; }
 
-//-------- Функции для вывода изображений ---------------------------------------------------
+//-------- Р¤СѓРЅРєС†РёРё РґР»СЏ РІС‹РІРѕРґР° РёР·РѕР±СЂР°Р¶РµРЅРёР№ ---------------------------------------------------
 	virtual HRESULT DrawImage(IGrObject* pImage, const double& x, const double& y, const double& w, const double& h){ return S_OK; }
 	virtual HRESULT DrawImageFromFile(const std::wstring&, const double& x, const double& y, const double& w, const double& h, const BYTE& lAlpha = 255){ return S_OK; }	
 
@@ -816,7 +816,7 @@ private:
 
 	_CStringWriter m_oWriter;
 
-	LONG m_lCurrentCommandType;	// текущая команда
+	LONG m_lCurrentCommandType;	// С‚РµРєСѓС‰Р°СЏ РєРѕРјР°РЅРґР°
 	
 	inline void MoveTo(const double& dX, const double& dY)
 	{
@@ -868,7 +868,7 @@ private:
 	{
 		if (1 >= m_lCountPathCommands)
 		{
-			// 2007 office имеет проблемы с путями вида moveto-close.
+			// 2007 office РёРјРµРµС‚ РїСЂРѕР±Р»РµРјС‹ СЃ РїСѓС‚СЏРјРё РІРёРґР° moveto-close.
 			return;
 		}
 

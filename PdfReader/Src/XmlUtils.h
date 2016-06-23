@@ -1,4 +1,4 @@
-﻿#ifndef _PDF_READER_XML_UTILS_H
+#ifndef _PDF_READER_XML_UTILS_H
 #define _PDF_READER_XML_UTILS_H
 
 #include <string>

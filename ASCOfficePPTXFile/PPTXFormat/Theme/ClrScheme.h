@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #ifndef PPTX_THEME_CLRSCHEME_INCLUDE_H_
 #define PPTX_THEME_CLRSCHEME_INCLUDE_H_
 

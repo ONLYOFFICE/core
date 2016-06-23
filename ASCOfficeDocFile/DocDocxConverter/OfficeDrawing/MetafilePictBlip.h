@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "Record.h"
 #include "../../../OfficeUtils/src/OfficeUtils.h"

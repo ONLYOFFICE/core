@@ -127,7 +127,7 @@ namespace OOX
 		};
 		//--------------------------------------------------------------------------------
 		// 20.4.2.28 cNvSpPr (Non-Visual Drawing Properties for a Shape)
-		// одно и тоже в 2-х namespace - wps & xdr (todooo - объекдинить)
+		// РѕРґРЅРѕ Рё С‚РѕР¶Рµ РІ 2-С… namespace - wps & xdr (todooo - РѕР±СЉРµРєРґРёРЅРёС‚СЊ)
 		//--------------------------------------------------------------------------------	
 		class CConnectionNonVisualShapeProps : public WritingElement
 		{
@@ -200,7 +200,7 @@ namespace OOX
 		};
 		//--------------------------------------------------------------------------------
 		// 20.4.2.26 cNvGrpSpPr (Non-Visual Group Shape Drawing Properties)
-		// одно и тоже в 2-х namespace - wps & xdr (todooo - объекдинить)
+		// РѕРґРЅРѕ Рё С‚РѕР¶Рµ РІ 2-С… namespace - wps & xdr (todooo - РѕР±СЉРµРєРґРёРЅРёС‚СЊ)
 		//--------------------------------------------------------------------------------	
 		class CNonVisualGroupShapeDrawingProps : public WritingElement
 		{
@@ -273,7 +273,7 @@ namespace OOX
 		
 		//--------------------------------------------------------------------------------
 		// 20.4.2.23 cNvCnPr (Non-Visual Connector Shape Drawing Properties)
-		// одно и тоже в 2-х namespace - wps & xdr (todooo - объекдинить)
+		// РѕРґРЅРѕ Рё С‚РѕР¶Рµ РІ 2-С… namespace - wps & xdr (todooo - РѕР±СЉРµРєРґРёРЅРёС‚СЊ)
 		//--------------------------------------------------------------------------------	
 		class CConnectionNonVisualConnShapeProps : public WritingElement
 		{

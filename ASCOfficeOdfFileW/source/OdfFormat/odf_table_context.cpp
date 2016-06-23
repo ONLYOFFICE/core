@@ -85,10 +85,10 @@ public:
 	odf_conversion_context *odf_context_; 
 
 	double default_column_width;
-	std::wstring default_cell_properties; // для предустановки ..
+	std::wstring default_cell_properties; // РґР»СЏ РїСЂРµРґСѓСЃС‚Р°РЅРѕРІРєРё ..
 
 private:
-	std::vector<odf_table_state> tables_;//типо current level ... для вложенных таблиц
+	std::vector<odf_table_state> tables_;//С‚РёРїРѕ current level ... РґР»СЏ РІР»РѕР¶РµРЅРЅС‹С… С‚Р°Р±Р»РёС†
 
 };
 
@@ -140,7 +140,7 @@ void odf_table_context::start_table(office_element_ptr &elm, bool styled)
 }
 void odf_table_context::end_table()
 {
-	//последние объединенные по вертикали ячейки .. 
+	//РїРѕСЃР»РµРґРЅРёРµ РѕР±СЉРµРґРёРЅРµРЅРЅС‹Рµ РїРѕ РІРµСЂС‚РёРєР°Р»Рё СЏС‡РµР№РєРё ..
 	for (long i =0 ; i < impl_->current_table().columns.size(); i++)
 	{
 		impl_->current_table().current_column = i+1;
@@ -195,7 +195,7 @@ void odf_table_context::end_row()
 	
 	//for (int i = impl_->current_table().current_column ; i< impl_->current_table().columns.size() ; i++)
 	//{
-	//	office_element_ptr cell; //потом на default ???
+	//	office_element_ptr cell; //РїРѕС‚РѕРј РЅР° default ???
 	//	create_element(L"table", L"table-cell",cell , impl_->odf_context_);
 	//	start_cell(cell,false);
 	//	end_cell();

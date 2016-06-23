@@ -45,7 +45,7 @@ void OoxConverter::convert(OOX::Diagram::CShape *oox_shape)
 	
 		if (type < 0 && oox_shape->m_oSpPr->m_oCustGeom.IsInit())
 		{
-			type = 1000;//6??? - poligon, path нужно пересчитывать
+			type = 1000;//6??? - poligon, path РЅСѓР¶РЅРѕ РїРµСЂРµСЃС‡РёС‚С‹РІР°С‚СЊ
 		}
 		//if (oox_shape->m_oNvSpPr.IsInit() && oox_shape->m_oNvSpPr->m_oCNvSpPr.IsInit() && ?????
 		//											oox_shape->m_oNvSpPr->m_oCNvSpPr->m_otxBox.GetValue() == 1) type = 2000; //textBox
@@ -64,7 +64,7 @@ void OoxConverter::convert(OOX::Diagram::CShape *oox_shape)
 		odf_context()->drawing_context()->start_shape(type);
 		
 		convert(oox_shape->m_oSpPr.GetPointer(), oox_shape->m_oShapeStyle.GetPointer());
-	//имя, описалово, номер ...	
+	//РёРјСЏ, РѕРїРёСЃР°Р»РѕРІРѕ, РЅРѕРјРµСЂ ...	
 		//if (oox_shape->m_oNvSpPr.IsInit())
 		//	convert(oox_shape->m_oNvSpPr->m_oCNvPr.GetPointer());	
 
@@ -78,7 +78,7 @@ void OoxConverter::convert(OOX::Diagram::CShape *oox_shape)
 			}
 			odf_context()->drawing_context()->set_text( odf_context()->text_context());
 			
-			//наложим внешние настройки для текста
+			//РЅР°Р»РѕР¶РёРј РІРЅРµС€РЅРёРµ РЅР°СЃС‚СЂРѕР№РєРё РґР»СЏ С‚РµРєСЃС‚Р°
 			convert(oox_shape->m_oTxBody->m_oBodyPr.GetPointer());			
 			
 			if (oox_shape->m_oShapeStyle.IsInit() && oox_shape->m_oShapeStyle->m_oFontRef.getType() == OOX::et_a_fontRef)

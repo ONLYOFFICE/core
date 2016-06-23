@@ -222,7 +222,7 @@ namespace OOX
 			nullable<SimpleTypes::CDouble>											m_oSz;
 			nullable<SimpleTypes::CUnderline<SimpleTypes::underlineNone>>			m_oUnderline;
 			nullable<SimpleTypes::CPercentage>										m_oBaseline;
-			nullable<SimpleTypes::CPoint>											m_oSpace;//на самом деле нужно - 20.1.10.74 ST_TextPoint (Text Point)
+			nullable<SimpleTypes::CPoint>											m_oSpace;//РЅР° СЃР°РјРѕРј РґРµР»Рµ РЅСѓР¶РЅРѕ - 20.1.10.74 ST_TextPoint (Text Point)
 			nullable<SimpleTypes::CLang>											m_oLanguage;
 			nullable<SimpleTypes::COnOff<SimpleTypes::onoffFalse>>					m_oKumimoji;
 			nullable<SimpleTypes::COnOff<SimpleTypes::onoffFalse>>					m_oNormalizeH;
@@ -236,7 +236,7 @@ namespace OOX
 			//strike//20.1.10.79
 
 			// Childs
-			EFillType                                         m_eFillType;   // Тип заливки
+			EFillType                                         m_eFillType;   // РўРёРї Р·Р°Р»РёРІРєРё
 			nullable<OOX::Drawing::CBlipFillProperties>       m_oBlipFill;
 			nullable<OOX::Drawing::CGradientFillProperties>   m_oGradFill;
 			nullable<OOX::Drawing::CGroupFillProperties>      m_oGrpFill;
@@ -253,13 +253,13 @@ namespace OOX
 			nullable<OOX::Drawing::CEffectList>				  m_oEffectList;
 			nullable<OOX::Drawing::COfficeArtExtensionList>	  m_oExtensionList;
 			
-			//highlight (Highlight Color) §21.1.2.3.4
-			//hlinkMouseOver (Mouse-Over Hyperlink) §21.1.2.3.6
-			//rtl (Right to Left Run) §21.1.2.2.8
-			//uFill (Underline Fill) §21.1.2.3.12
-			//uFillTx (Underline Fill Properties Follow Text) §21.1.2.3.13
-			//uLn (Underline Stroke) §21.1.2.3.14
-			//uLnTx (Underline Follows Text) §21.1.2.3.15
+			//highlight (Highlight Color) В§21.1.2.3.4
+			//hlinkMouseOver (Mouse-Over Hyperlink) В§21.1.2.3.6
+			//rtl (Right to Left Run) В§21.1.2.2.8
+			//uFill (Underline Fill) В§21.1.2.3.12
+			//uFillTx (Underline Fill Properties Follow Text) В§21.1.2.3.13
+			//uLn (Underline Stroke) В§21.1.2.3.14
+			//uLnTx (Underline Follows Text) В§21.1.2.3.15
 		};
 
 		//--------------------------------------------------------------------------------
@@ -494,19 +494,19 @@ namespace OOX
 			nullable<CLineSpacing>											m_oBeforeSpacing;
 			nullable<OOX::Drawing::COfficeArtExtensionList>					m_oExtLst;			
 
-			//buAutoNum //(Auto-Numbered Bullet) §21.1.2.4.1
-			//buBlip //(Picture Bullet) §21.1.2.4.2
-			//buChar //(Character Bullet) §21.1.2.4.3
-			//buClr //(Color Specified) §21.1.2.4.4
-			//buClrTx //(Follow Text) §21.1.2.4.5
-			//buFont //(Specified) §21.1.2.4.6
-			//buFontTx //(Follow text) §21.1.2.4.7
-			//buNone //(No Bullet) §21.1.2.4.8
-			//buSzPct //(Bullet Size Percentage) §21.1.2.4.9
-			//buSzPts //(Bullet Size Points) §21.1.2.4.10
-			//buSzTx //(Bullet Size Follows Text) §21.1.2.4.11
+			//buAutoNum //(Auto-Numbered Bullet) В§21.1.2.4.1
+			//buBlip //(Picture Bullet) В§21.1.2.4.2
+			//buChar //(Character Bullet) В§21.1.2.4.3
+			//buClr //(Color Specified) В§21.1.2.4.4
+			//buClrTx //(Follow Text) В§21.1.2.4.5
+			//buFont //(Specified) В§21.1.2.4.6
+			//buFontTx //(Follow text) В§21.1.2.4.7
+			//buNone //(No Bullet) В§21.1.2.4.8
+			//buSzPct //(Bullet Size Percentage) В§21.1.2.4.9
+			//buSzPts //(Bullet Size Points) В§21.1.2.4.10
+			//buSzTx //(Bullet Size Follows Text) В§21.1.2.4.11
 
-			//tabLst //(Tab List) §21.1.2.2.14
+			//tabLst //(Tab List) В§21.1.2.2.14
 		};
 
 		//--------------------------------------------------------------------------------

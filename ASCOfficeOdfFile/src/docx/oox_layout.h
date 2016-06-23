@@ -16,7 +16,7 @@ namespace odf_reader
 namespace cpdoccore {
 namespace oox {
 
-class oox_layout //расположение и формат(бордюрчики к примеру) любой хрени в документе
+class oox_layout //СЂР°СЃРїРѕР»РѕР¶РµРЅРёРµ Рё С„РѕСЂРјР°С‚(Р±РѕСЂРґСЋСЂС‡РёРєРё Рє РїСЂРёРјРµСЂСѓ) Р»СЋР±РѕР№ С…СЂРµРЅРё РІ РґРѕРєСѓРјРµРЅС‚Рµ
 {
 public:
 	oox_layout(){}

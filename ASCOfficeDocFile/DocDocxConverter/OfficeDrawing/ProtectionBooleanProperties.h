@@ -4,7 +4,7 @@
 
 namespace DocFileFormat
 {
-	// 2.3.20.1 Protection Boolean Properties 	-	[MS-ODRAW] — v20130726
+	// 2.3.20.1 Protection Boolean Properties 	-	[MS-ODRAW] â€” v20130726
 
 	class ProtectionBooleanProperties
 	{

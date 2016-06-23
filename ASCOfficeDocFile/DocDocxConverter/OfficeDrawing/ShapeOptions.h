@@ -470,7 +470,7 @@ namespace DocFileFormat
 		colSpan=1991
 	} PropertyId;
 
-	//!!!TODO: Реальные значения не соответствуют значениям из спецификации!!!
+	//!!!TODO: Р РµР°Р»СЊРЅС‹Рµ Р·РЅР°С‡РµРЅРёСЏ РЅРµ СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‚ Р·РЅР°С‡РµРЅРёСЏРј РёР· СЃРїРµС†РёС„РёРєР°С†РёРё!!!
 	typedef enum _PositionHorizontal
 	{
 		//msophAbs = 0x1,
@@ -489,7 +489,7 @@ namespace DocFileFormat
 		msoprhChar
 	} PositionHorizontalRelative;
 
-	//!!!TODO: Реальные значения не соответствуют значениям из спецификации!!!
+	//!!!TODO: Р РµР°Р»СЊРЅС‹Рµ Р·РЅР°С‡РµРЅРёСЏ РЅРµ СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‚ Р·РЅР°С‡РµРЅРёСЏРј РёР· СЃРїРµС†РёС„РёРєР°С†РёРё!!!
 	typedef enum _PositionVertical
 	{
 		//msopvAbs = 0x1,
@@ -597,7 +597,7 @@ namespace DocFileFormat
 				if (Options[i].fComplex)
 				{
 					int read_size =  (int)Options[i].op + 6 ; //???? 	
-					//todooo !!!! проверить все остальные !! тут размер в зависимости от типа Complex!!!		
+					//todooo !!!! РїСЂРѕРІРµСЂРёС‚СЊ РІСЃРµ РѕСЃС‚Р°Р»СЊРЅС‹Рµ !! С‚СѓС‚ СЂР°Р·РјРµСЂ РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ С‚РёРїР° Complex!!!		
 					switch(Options[i].pid)
 					{
 					case PropertyId::gtextUNICODE:

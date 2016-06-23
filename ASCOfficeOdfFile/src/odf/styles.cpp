@@ -379,7 +379,7 @@ void style::add_attributes( const xml::attributes_wc_ptr & Attributes )
     CP_APPLY_ATTR(L"style:auto-update", style_auto_update_, false);
     CP_APPLY_ATTR(L"style:data-style-name", style_data_style_name_);
     CP_APPLY_ATTR(L"style:class", style_class_);
-    CP_APPLY_ATTR(L"style:default-outline-level", style_default_outline_level_);//было int .. error
+    CP_APPLY_ATTR(L"style:default-outline-level", style_default_outline_level_);//Р±С‹Р»Рѕ int .. error
 }
 
 void style::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
@@ -1197,7 +1197,7 @@ bool style_page_layout_properties::docx_back_serialize(std::wostream & strm, oox
 	if (!style_page_layout_properties_attlist_.common_background_color_attlist_.fo_background_color_)return false;
 
     if (style_page_layout_properties_attlist_.common_background_color_attlist_.fo_background_color_->get_type() == background_color::Transparent) return true;
-    //прозрачный фон
+    //РїСЂРѕР·СЂР°С‡РЅС‹Р№ С„РѕРЅ
 	CP_XML_WRITER(strm)
 	{
 		CP_XML_NODE(L"w:background")
@@ -1212,7 +1212,7 @@ void style_page_layout_properties::docx_convert_serialize(std::wostream & strm, 
 {
 	if (Context.get_table_context().in_table())
     {
-        // мы находимся внутри таблицы, устанавливаем специальное значение
+        // РјС‹ РЅР°С…РѕРґРёРјСЃСЏ РІРЅСѓС‚СЂРё С‚Р°Р±Р»РёС†С‹, СѓСЃС‚Р°РЅР°РІР»РёРІР°РµРј СЃРїРµС†РёР°Р»СЊРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ
         Context.section_properties_in_table(this);
         return;
     }
@@ -1236,7 +1236,7 @@ void style_page_layout_properties::docx_convert_serialize(std::wostream & strm, 
 				}
 			}			
 
-			std::wstring masterPageName = Context.get_master_page_name();//выдавался последний по document.xml!!!
+			std::wstring masterPageName = Context.get_master_page_name();//РІС‹РґР°РІР°Р»СЃСЏ РїРѕСЃР»РµРґРЅРёР№ РїРѕ document.xml!!!
 			bool res = Context.get_headers_footers().write_sectPr(masterPageName, strm);
 			if (res == false)
 			{
@@ -1253,7 +1253,7 @@ void style_page_layout_properties::docx_convert_serialize(std::wostream & strm, 
 			oox::section_context::_section & section = Context.get_section_context().get();
 
 			style_page_layout_properties_attlist_.docx_convert_serialize(strm, Context, section.margin_left_, section.margin_right_);
-			//todooo при появлении еще накладок - переписать !!
+			//todooo РїСЂРё РїРѕСЏРІР»РµРЅРёРё РµС‰Рµ РЅР°РєР»Р°РґРѕРє - РїРµСЂРµРїРёСЃР°С‚СЊ !!
 		}
 	}
 }

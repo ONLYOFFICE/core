@@ -13,7 +13,7 @@
 #include "../Math/OMath.h"
 
 
-// TO DO: Нехватающие классы:
+// TO DO: РќРµС…РІР°С‚Р°СЋС‰РёРµ РєР»Р°СЃСЃС‹:
 //        <w:customXml>
 //        <w:moveFrom>
 //        <w:moveTo>

@@ -1,4 +1,4 @@
-﻿#include "Image.h"
+#include "Image.h"
 
 #include "../raster/BgraFrame.h"
 

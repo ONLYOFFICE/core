@@ -202,7 +202,7 @@ void odf_table_styles_context::get_table_cell_properties (int col, int row, styl
 	bool first_row = (row == 1)? true: false;
 	bool first_col = (col == 1)? true: false;
 
-	bool odd_row = ((row+row_shift)%2 != 0) ? true : false;//нечетные
+	bool odd_row = ((row+row_shift)%2 != 0) ? true : false;//РЅРµС‡РµС‚РЅС‹Рµ
 	bool odd_col = ((col+col_shift)%2 != 0) ? true : false;
 
 	bool last_row = (row == current_used_.back().table_row_count_) ? true: false; 
@@ -214,7 +214,7 @@ void odf_table_styles_context::get_table_cell_properties (int col, int row, styl
 	bool se = (row == current_used_.back().table_row_count_ && col == current_used_.back().table_col_count_) ? true: false; //bottom right cell
 	bool sw = (row == current_used_.back().table_row_count_ && col == 1) ? true: false;						//bottom left cell.
 //----------------------------------------------------------------------------------------------------------------------------------
-//порядок рассмотрения - main, odd, even first, last, ne, .... col, row
+//РїРѕСЂСЏРґРѕРє СЂР°СЃСЃРјРѕС‚СЂРµРЅРёСЏ - main, odd, even first, last, ne, .... col, row
 					cell_props->apply_from(dynamic_cast<style_table_cell_properties *>(state.table_.table_cell_props.get()));
 
 	if (current_used_.back().cols)
@@ -276,7 +276,7 @@ void odf_table_styles_context::get_text_properties (int col, int row, style_text
 	bool first_row = (row == 1)? true: false;
 	bool first_col = (col == 1)? true: false;
 
-	bool odd_row = ((row+row_shift)%2 != 0) ? true : false;//нечетные
+	bool odd_row = ((row+row_shift)%2 != 0) ? true : false;//РЅРµС‡РµС‚РЅС‹Рµ
 	bool odd_col = ((col+col_shift)%2 != 0) ? true : false;
 
 	bool last_row = (row == current_used_.back().table_row_count_) ? true: false; 
@@ -288,7 +288,7 @@ void odf_table_styles_context::get_text_properties (int col, int row, style_text
 	bool se = (row == current_used_.back().table_row_count_ && col == current_used_.back().table_col_count_) ? true: false; //bottom right cell
 	bool sw = (row == current_used_.back().table_row_count_ && col == 1) ? true: false;						//bottom left cell
 //----------------------------------------------------------------------------------------------------------------------------------
-//порядок рассмотрения - main, odd, even first, last, ne, ....
+//РїРѕСЂСЏРґРѕРє СЂР°СЃСЃРјРѕС‚СЂРµРЅРёСЏ - main, odd, even first, last, ne, ....
 					text_props->apply_from(dynamic_cast<style_text_properties *>(state.table_.text_props.get()));
 
 	if (current_used_.back().cols)
@@ -331,7 +331,7 @@ void odf_table_styles_context::get_paragraph_properties (int col, int row, style
 	bool first_row = (row == 1)? true: false;
 	bool first_col = (col == 1)? true: false;
 
-	bool odd_row = ((row+row_shift)%2 != 0) ? true : false;//нечетные
+	bool odd_row = ((row+row_shift)%2 != 0) ? true : false;//РЅРµС‡РµС‚РЅС‹Рµ
 	bool odd_col = ((col+col_shift)%2 != 0) ? true : false;
 
 	bool last_row = (row == current_used_.back().table_row_count_) ? true: false; 

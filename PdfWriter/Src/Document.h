@@ -1,4 +1,4 @@
-﻿#ifndef _PDF_WRITER_SRC_DOCUMENT_H
+#ifndef _PDF_WRITER_SRC_DOCUMENT_H
 #define _PDF_WRITER_SRC_DOCUMENT_H
 
 #include <vector>

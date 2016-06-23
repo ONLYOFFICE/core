@@ -1,4 +1,4 @@
-﻿#ifndef _PDF_READER_CMAP_H
+#ifndef _PDF_READER_CMAP_H
 #define _PDF_READER_CMAP_H
 
 #include "CharTypes.h"

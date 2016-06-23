@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #ifndef PPTX_LOGIC_BLIPFILL_INCLUDE_H_
 #define PPTX_LOGIC_BLIPFILL_INCLUDE_H_
 
@@ -332,7 +332,7 @@ namespace PPTX
 											oTempFile.WriteFile((void*)pDstBuffer, (DWORD)dstLen);
 											oTempFile.CloseFile();
 											
-											strUrl = strTempFile =pathTemp.GetPath(); // strTempFile дл¤ удалени¤
+											strUrl = strTempFile =pathTemp.GetPath(); // strTempFile для удаления
 											if (bBase64)
 											{
 												RELEASEARRAYOBJECTS(pDstBuffer);

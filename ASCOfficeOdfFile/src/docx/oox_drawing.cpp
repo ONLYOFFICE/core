@@ -166,8 +166,8 @@ void oox_serialize_aLst(std::wostream & strm, const std::vector<odf_reader::_pro
 				std::vector< std::wstring > values;
 				boost::algorithm::split(values, strVal.get(), boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
 
-				if( count_values >0 && values.size()>0 && count_values < 3)//âðåìåííîå îãðàíèå÷åíèå .. õç êàê òàì ñâîéñòâà ïóòàþòñÿ
-				{//åñëè íå çàäàíû äîï ñâîéñòâà - íåôèã ìó÷èòñÿ
+				if( count_values >0 && values.size()>0 && count_values < 3)//Ð²Ñ€ÐµÐ¼ÐµÐ½Ð½Ð¾Ðµ Ð¾Ð³Ñ€Ð°Ð½Ð¸ÐµÑ‡ÐµÐ½Ð¸Ðµ .. Ñ…Ð· ÐºÐ°Ðº Ñ‚Ð°Ð¼ ÑÐ²Ð¾Ð¹ÑÑ‚Ð²Ð° Ð¿ÑƒÑ‚Ð°ÑŽÑ‚ÑÑ
+				{//ÐµÑÐ»Ð¸ Ð½Ðµ Ð·Ð°Ð´Ð°Ð½Ñ‹ Ð´Ð¾Ð¿ ÑÐ²Ð¾Ð¹ÑÑ‚Ð²Ð° - Ð½ÐµÑ„Ð¸Ð³ Ð¼ÑƒÑ‡Ð¸Ñ‚ÑÑ
 					int i=1;
 
 					_CP_OPT(int) iMax,iMin;
@@ -354,7 +354,7 @@ void oox_serialize_shape(std::wostream & strm, _oox_drawing & val)
 		}
 		else
 		{
-			CP_XML_NODE(L"a:prstGeom")//àâòîôèãóðà
+			CP_XML_NODE(L"a:prstGeom")//Ð°Ð²Ñ‚Ð¾Ñ„Ð¸Ð³ÑƒÑ€Ð°
 			{        
 				CP_XML_ATTR(L"prst", shapeType);
 				if (!bWordArt) oox_serialize_aLst(CP_XML_STREAM(), val.additional);

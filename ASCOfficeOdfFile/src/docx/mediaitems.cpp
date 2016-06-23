@@ -30,7 +30,7 @@ mediaitems::item::item(	std::wstring const & _href,
                        outputName(_outputName),
                        mediaInternal(_mediaInternal),
 					   Id(_Id),
-                       valid(true) //вообще говоря даже если файл покоцанный то мы все равно обязаны перенести "объект"
+                       valid(true) //РІРѕРѕР±С‰Рµ РіРѕРІРѕСЂСЏ РґР°Р¶Рµ РµСЃР»Рё С„Р°Р№Р» РїРѕРєРѕС†Р°РЅРЅС‹Р№ С‚Рѕ РјС‹ РІСЃРµ СЂР°РІРЅРѕ РѕР±СЏР·Р°РЅС‹ РїРµСЂРµРЅРµСЃС‚Рё "РѕР±СЉРµРєС‚"
 {    
 	count_add = 1;
 	count_used = 0;
@@ -65,7 +65,7 @@ std::wstring mediaitems::create_file_name(const std::wstring & uri, mediaitems::
 	if (n>0) sExt = uri.substr(n);
 	else if (n==0)
 	{
-		//тута скорее всего OleReplacement
+		//С‚СѓС‚Р° СЃРєРѕСЂРµРµ РІСЃРµРіРѕ OleReplacement
 		n = uri.find(L"ObjectReplacements");
 		if (n>=0)
 		{
@@ -88,7 +88,7 @@ std::wstring mediaitems::create_file_name(const std::wstring & uri, mediaitems::
 
 		}
 	}
-	//todooo проверить
+	//todooo РїСЂРѕРІРµСЂРёС‚СЊ
    
 	return get_default_file_name(type) + boost::lexical_cast<std::wstring>(Num) + sExt;
 }
@@ -173,7 +173,7 @@ void mediaitems::dump_rels(rels & Rels)
     size_t i = 0;
     BOOST_FOREACH(item & elm, items_)
     {
-		if (elm.count_used > elm.count_add)continue; // уже использовали этот релс выше(колонтитул ....)
+		if (elm.count_used > elm.count_add)continue; // СѓР¶Рµ РёСЃРїРѕР»СЊР·РѕРІР°Р»Рё СЌС‚РѕС‚ СЂРµР»СЃ РІС‹С€Рµ(РєРѕР»РѕРЅС‚РёС‚СѓР» ....)
         Rels.add( relationship(
                 elm.Id, 
                 utils::media::get_rel_type(elm.type), 

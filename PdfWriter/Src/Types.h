@@ -1,4 +1,4 @@
-﻿#ifndef _PDF_WRITER_SRC_TYPES_H
+#ifndef _PDF_WRITER_SRC_TYPES_H
 #define _PDF_WRITER_SRC_TYPES_H
 
 #include "Consts.h"

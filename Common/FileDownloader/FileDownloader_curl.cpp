@@ -1,4 +1,4 @@
-﻿#include "FileDownloader.h"
+#include "FileDownloader.h"
 
 #include <iostream>
 #include <unistd.h>

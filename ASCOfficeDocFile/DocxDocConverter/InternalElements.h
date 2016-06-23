@@ -41,10 +41,10 @@ namespace DOCXTODOC
 
 		inline bool UpdateRunPrls (const PrlList& arRun)
 		{
-			if (0 == arRun.size())		//	не дополняем стиль
+			if (0 == arRun.size())		//	РЅРµ РґРѕРїРѕР»РЅСЏРµРј СЃС‚РёР»СЊ
 				return FALSE;
 
-			if (0 == m_arRun.size())	//	стиль не имеет параметров для символов
+			if (0 == m_arRun.size())	//	СЃС‚РёР»СЊ РЅРµ РёРјРµРµС‚ РїР°СЂР°РјРµС‚СЂРѕРІ РґР»СЏ СЃРёРјРІРѕР»РѕРІ
 			{
 				m_arRun	= arRun;
 				return TRUE;

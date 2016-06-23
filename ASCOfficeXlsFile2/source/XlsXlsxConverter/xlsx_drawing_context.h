@@ -156,7 +156,7 @@ public:
 			margins.left = margins.right = 0x00016530;
 			margins.top = margins.bottom = 0x0000b298;
 		}
-		std::wstring	content;	//c форматированием
+		std::wstring	content;	//c С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёРµРј
 		int				wrap;
 		int				align;
 		int				vert_align;

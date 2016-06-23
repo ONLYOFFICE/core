@@ -1,4 +1,4 @@
-﻿#ifndef _PDFREADER_GFONT_H
+#ifndef _PDFREADER_GFONT_H
 #define _PDFREADER_GFONT_H
 
 #include "StringExt.h"

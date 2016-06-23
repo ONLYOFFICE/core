@@ -1,4 +1,4 @@
-﻿
+
 #include "ListLevel.h"
 
 namespace DocFileFormat

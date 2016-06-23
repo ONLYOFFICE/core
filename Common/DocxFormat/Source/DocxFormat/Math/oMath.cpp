@@ -1,6 +1,6 @@
 #include "oMathPara.h"
 
-// TO DO: Нехватающие классы:
+// TO DO: РќРµС…РІР°С‚Р°СЋС‰РёРµ РєР»Р°СЃСЃС‹:
 //        <w:moveFrom>
 //        <w:moveTo>
 

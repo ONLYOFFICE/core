@@ -7,7 +7,7 @@
 namespace cpdoccore {
 namespace odf_types { 
 
-	// это  не только для text_align но и для horizontal_align подходит. .. нет надобности плодить лишнее 
+	// СЌС‚Рѕ  РЅРµ С‚РѕР»СЊРєРѕ РґР»СЏ text_align РЅРѕ Рё РґР»СЏ horizontal_align РїРѕРґС…РѕРґРёС‚. .. РЅРµС‚ РЅР°РґРѕР±РЅРѕСЃС‚Рё РїР»РѕРґРёС‚СЊ Р»РёС€РЅРµРµ 
 class text_align
 {
 public:

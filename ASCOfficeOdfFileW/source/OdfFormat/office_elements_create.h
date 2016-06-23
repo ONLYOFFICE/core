@@ -29,10 +29,10 @@ public:
     typedef boost::function< office_element_ptr () > CreateFuncImpl;
         
 public:
-    // Зарегестрировать элемент
+    // Р—Р°СЂРµРіРµСЃС‚СЂРёСЂРѕРІР°С‚СЊ СЌР»РµРјРµРЅС‚
     bool register_element(const std::wstring &ns, const std::wstring & name, CreateFuncImpl f);
 
-    // Создать элемент по имени
+    // РЎРѕР·РґР°С‚СЊ СЌР»РµРјРµРЅС‚ РїРѕ РёРјРµРЅРё
     office_element_ptr create(const ::std::wstring & ns, const ::std::wstring & name, odf_conversion_context * Context = NULL, bool isRoot = false) const;
 
 private:
@@ -40,7 +40,7 @@ private:
     MapType map_; 
             
 public:
-    // Обеспечение синглтона
+    // РћР±РµСЃРїРµС‡РµРЅРёРµ СЃРёРЅРіР»С‚РѕРЅР°
     static office_element_creator * get();
 
 private:
@@ -48,7 +48,7 @@ private:
     static office_element_creator * instance_;
 };
 
-/// Класс, обеспечивающий регистрацию элементов
+/// РљР»Р°СЃСЃ, РѕР±РµСЃРїРµС‡РёРІР°СЋС‰РёР№ СЂРµРіРёСЃС‚СЂР°С†РёСЋ СЌР»РµРјРµРЅС‚РѕРІ
 template <class T>
 class RegisterElement
 {
@@ -82,7 +82,7 @@ private:
 
 template<class T> int RegisterElement<T>::class_registered_ = 0;
 
-/// \brief  Создать элемент
+/// \brief  РЎРѕР·РґР°С‚СЊ СЌР»РµРјРµРЅС‚
 bool create_element(const std::wstring & Ns,
                     const std::wstring & Name,
                     office_element_ptr & _Element,

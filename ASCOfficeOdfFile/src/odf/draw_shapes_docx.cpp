@@ -42,15 +42,15 @@ void draw_shape::common_docx_convert(oox::docx_conversion_context & Context)
 	
 	Context.get_drawing_context().add_name_object(name.get_value_or(L"Shape"));
 
-//////////////////////////////на другом контексте
+//////////////////////////////РЅР° РґСЂСѓРіРѕРј РєРѕРЅС‚РµРєСЃС‚Рµ
 
-	//тут может быть не только текст , но и таблицы, другие объекты ...
+	//С‚СѓС‚ РјРѕР¶РµС‚ Р±С‹С‚СЊ РЅРµ С‚РѕР»СЊРєРѕ С‚РµРєСЃС‚ , РЅРѕ Рё С‚Р°Р±Р»РёС†С‹, РґСЂСѓРіРёРµ РѕР±СЉРµРєС‚С‹ ...
  	oox::docx_conversion_context::StreamsManPtr prev = Context.get_stream_man();
 	
 	std::wstringstream temp_stream(Context.get_drawing_context().get_text_stream_shape());
 	Context.set_stream_man( boost::shared_ptr<oox::streams_man>( new oox::streams_man(temp_stream) ));
 
-//сначала элементы графики  потом все остальное	
+//СЃРЅР°С‡Р°Р»Р° СЌР»РµРјРµРЅС‚С‹ РіСЂР°С„РёРєРё  РїРѕС‚РѕРј РІСЃРµ РѕСЃС‚Р°Р»СЊРЅРѕРµ	
 	BOOST_FOREACH(const office_element_ptr & elm, content_)
     {
 		ElementType type = elm->get_type();

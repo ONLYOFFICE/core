@@ -1,4 +1,4 @@
-﻿#ifndef _PDF_READER_UNICODE_MAP_TABLES_H
+#ifndef _PDF_READER_UNICODE_MAP_TABLES_H
 #define _PDF_READER_UNICODE_MAP_TABLES_H
 
 namespace PdfReader

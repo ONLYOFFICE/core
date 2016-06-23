@@ -78,7 +78,7 @@ void BiffString::load(CFRecord& record, const size_t cch1, const bool is_wide1)
 	
 	if (record.checkFitRead(raw_length)==false)
 	{
-		//ОШИБКА - нехватило Continue records - нужно найти место где именно и подзагрузить
+		//РћРЋРР‘В Рђ - РЅРµС…РІР°С‚РёР»Рѕ Continue records - РЅСѓР¶РЅРѕ РЅР°Р№С‚Рё РјРµСЃС‚Рѕ РіРґРµ РёРјРµРЅРЅРѕ Рё РїРѕРґР·Р°РіСЂСѓР·РёС‚СЊ
 		return;
 	}
 

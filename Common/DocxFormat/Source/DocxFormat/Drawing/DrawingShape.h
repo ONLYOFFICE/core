@@ -269,7 +269,7 @@ namespace OOX
 			nullable<OOX::Drawing::CShapeStyle>				m_oShapeStyle;
 			nullable<OOX::Drawing::CTxSp>					m_oTxSp;	
 
-//extLst (Extension List) ง20.1.2.2.15
+//extLst (Extension List) ยง20.1.2.2.15
 
 		};
 
@@ -349,7 +349,7 @@ namespace OOX
 			nullable<OOX::Drawing::CShapeProperties>			m_oSpPr;
 			nullable<OOX::Drawing::CTxSp>						m_oTxSp;	
 
-//extLst (Extension List) ง20.1.2.2.15
+//extLst (Extension List) ยง20.1.2.2.15
 
 		};
 

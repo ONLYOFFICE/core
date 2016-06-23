@@ -1,4 +1,4 @@
-﻿#include "StaticResources.h"
+#include "StaticResources.h"
 
 #include "../../DesktopEditor/xml/include/xmlutils.h"
 #include "../../DesktopEditor/graphics/IRenderer.h"

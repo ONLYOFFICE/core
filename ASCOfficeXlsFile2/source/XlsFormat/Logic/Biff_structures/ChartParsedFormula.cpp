@@ -57,7 +57,7 @@ void ChartParsedFormula::load(CFRecord& record)
 				if (sheet.size()<1)
 					sheet=c.substr(0, colon);
 			}
-			//todoooo âåðíóòü ëèñòû !!
+			//todoooo Ð²ÐµÑ€Ð½ÑƒÑ‚ÑŒ Ð»Ð¸ÑÑ‚Ñ‹ !!
 
 			CellRef ref(arCells[0]);
 			if (arCells.size() > 1)

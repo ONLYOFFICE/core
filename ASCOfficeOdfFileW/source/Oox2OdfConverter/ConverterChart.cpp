@@ -117,7 +117,7 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_Legend* ct_legend)
 		convert(ct_legend->m_oTxPr.GetPointer());
 		if (ct_legend->m_legendEntry.size() > 0)
 		{
-			convert(ct_legend->m_legendEntry[0]); // в odf_writer нет в легенде множественности стилей
+			convert(ct_legend->m_legendEntry[0]); // РІ odf_writer РЅРµС‚ РІ Р»РµРіРµРЅРґРµ РјРЅРѕР¶РµСЃС‚РІРµРЅРЅРѕСЃС‚Рё СЃС‚РёР»РµР№
 		}
 	//////////////////////
 	odf_context()->chart_context()->end_element();
@@ -1055,7 +1055,7 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_Surface* ct_surface, int type, b
 	{
 		convert(ct_surface->m_oSpPr.GetPointer());
 	}
-	else if (chart3D)//тока для 3D так - хз почему
+	else if (chart3D)//С‚РѕРєР° РґР»СЏ 3D С‚Р°Рє - С…Р· РїРѕС‡РµРјСѓ
 	{
 		odf_context()->chart_context()->set_no_fill(true);
 	}
@@ -1064,7 +1064,7 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_Surface* ct_surface, int type, b
 void OoxConverter::convert(OOX::Spreadsheet::CT_ExternalData *external_data)
 {
 	if (external_data == NULL)return;
-	//данные для диаграммы внутренние !!!
+	//РґР°РЅРЅС‹Рµ РґР»СЏ РґРёР°РіСЂР°РјРјС‹ РІРЅСѓС‚СЂРµРЅРЅРёРµ !!!
 
 	if (external_data->m_id == NULL)return;
 
@@ -1073,12 +1073,12 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_ExternalData *external_data)
 	//unpack
 
 	//get/check Format - xlsx
-	//конверт sheets -> table:table
+	//РєРѕРЅРІРµСЂС‚ sheets -> table:table
 
-	//или
+	//РёР»Рё
 	//convert xlsx -> ods & read tables???
 
-	odf_context()->chart_context()->set_local_table(true);//пока пользуем кэш ....
+	odf_context()->chart_context()->set_local_table(true);//РїРѕРєР° РїРѕР»СЊР·СѓРµРј РєСЌС€ ....
 }
 void OoxConverter::convert(OOX::Spreadsheet::CT_NumData	*num_data)
 {

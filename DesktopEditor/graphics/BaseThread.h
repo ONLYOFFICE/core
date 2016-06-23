@@ -1,4 +1,4 @@
-﻿#ifndef _BUILD_BASETHREAD_H_
+#ifndef _BUILD_BASETHREAD_H_
 #define _BUILD_BASETHREAD_H_
 
 #include "../common/Types.h"

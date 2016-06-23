@@ -1,4 +1,4 @@
-﻿#ifndef _METAFILE_WMF_WMFFILE_H
+#ifndef _METAFILE_WMF_WMFFILE_H
 #define _METAFILE_WMF_WMFFILE_H
 
 #include "../../../common/String.h"

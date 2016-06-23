@@ -40,7 +40,7 @@ void AutoFilter12::readFields(CFRecord& record)
 	_UINT32 _cDateGroupings = cDateGroupings;
 	_UINT32 _idList = idList;	
 
-	// TODO доделать
+	// TODO РґРѕРґРµР»Р°С‚СЊ
 	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
 
 	std::list<CFRecordPtr>& recs = continue_records[rt_ContinueFrt12];

@@ -25,14 +25,14 @@ void OoxConverter::convert(OOX::Vml::CShapeType *vml_shape_type)
 	//custom shape 
 
 	
-	//m_oPreferRelative//типо можно менять размер 
+	//m_oPreferRelative//С‚РёРїРѕ РјРѕР¶РЅРѕ РјРµРЅСЏС‚СЊ СЂР°Р·РјРµСЂ 
 
 	for (unsigned int i=0 ; i < vml_shape_type->m_arrItems.size();i++)
 	{
 		convert(vml_shape_type->m_arrItems[i]);
 	}
 
-	if (vml_shape_type->m_oAdj.IsInit())//настройка дл фигуры заданной формулами
+	if (vml_shape_type->m_oAdj.IsInit())//РЅР°СЃС‚СЂРѕР№РєР° РґР» С„РёРіСѓСЂС‹ Р·Р°РґР°РЅРЅРѕР№ С„РѕСЂРјСѓР»Р°РјРё
 	{
 	}
 
@@ -251,7 +251,7 @@ void OoxConverter::convert(OOX::Vml::CImageData *vml_image_data)
 		pathImage = find_link_by_id(sID,1);
 	}
 		
-	//что именно нужно заливка объекта или картинка - разрулится внутри drawing_context
+	//С‡С‚Рѕ РёРјРµРЅРЅРѕ РЅСѓР¶РЅРѕ Р·Р°Р»РёРІРєР° РѕР±СЉРµРєС‚Р° РёР»Рё РєР°СЂС‚РёРЅРєР° - СЂР°Р·СЂСѓР»РёС‚СЃСЏ РІРЅСѓС‚СЂРё drawing_context
 	if (pathImage.GetLength() < 1)return;
     _graphics_utils_::GetResolution(pathImage, Width, Height);
 
@@ -571,7 +571,7 @@ void OoxConverter::convert(OOX::Vml::CTextbox *vml_textbox)
 }
 void OoxConverter::convert(OOX::Vml::CTextPath *vml_textpath)
 {
-	if (vml_textpath == NULL) return; //это типо фигурный текст
+	if (vml_textpath == NULL) return; //СЌС‚Рѕ С‚РёРїРѕ С„РёРіСѓСЂРЅС‹Р№ С‚РµРєСЃС‚
 	if (vml_textpath->m_sString.IsInit()==false) return;
 
 	//DocxConverter *docx_converter = dynamic_cast<DocxConverter*>(this);
@@ -753,7 +753,7 @@ void OoxConverter::convert(OOX::Vml::CGroup *vml_group)
 			}
 			
 			OOX::Vml::CVmlCommonElements * vml_common = dynamic_cast<OOX::Vml::CVmlCommonElements*>(vml_group->m_arrItems[i]);
-			if (vml_common == NULL) continue; // не элемент
+			if (vml_common == NULL) continue; // РЅРµ СЌР»РµРјРµРЅС‚
 
 			odf_context()->drawing_context()->start_drawing();						
 			

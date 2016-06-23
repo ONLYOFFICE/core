@@ -123,12 +123,12 @@ namespace NSPresentationEditor
 		int					m_lPlaceholderUserStr;
 		int					m_nFormatDate;
 
-		// метрика
+		// РјРµС‚СЂРёРєР°
 		CMetricInfo			m_oMetric;
 
-		double				m_dRotate;			// угол поворота в градусах
-		bool				m_bFlipH;			// симметричное отражение относительно горизонтальной оси
-		bool				m_bFlipV;			// симметричное отражение относительно вертикальной оси
+		double				m_dRotate;			// СѓРіРѕР» РїРѕРІРѕСЂРѕС‚Р° РІ РіСЂР°РґСѓСЃР°С…
+		bool				m_bFlipH;			// СЃРёРјРјРµС‚СЂРёС‡РЅРѕРµ РѕС‚СЂР°Р¶РµРЅРёРµ РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ РіРѕСЂРёР·РѕРЅС‚Р°Р»СЊРЅРѕР№ РѕСЃРё
+		bool				m_bFlipV;			// СЃРёРјРјРµС‚СЂРёС‡РЅРѕРµ РѕС‚СЂР°Р¶РµРЅРёРµ РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ РІРµСЂС‚РёРєР°Р»СЊРЅРѕР№ РѕСЃРё
 
 		bool				m_bLine;
 
@@ -136,7 +136,7 @@ namespace NSPresentationEditor
 		bool				m_bHaveAnchor;	
 		bool				m_bHidden;
 
-		bool				m_bIsChangeable;	// можно ли редактировать элемент
+		bool				m_bIsChangeable;	// РјРѕР¶РЅРѕ Р»Рё СЂРµРґР°РєС‚РёСЂРѕРІР°С‚СЊ СЌР»РµРјРµРЅС‚
 
 		CElementProperties	m_oProperties;
 

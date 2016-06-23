@@ -33,26 +33,26 @@ public:
    
 private:
 
-	bool showBubbleSize_;		// (Show Bubble Size) ง21.2.2.178
-	bool showCatName_;			// (Show Category Name) ง21.2.2.179
-	bool showLeaderLines_;		// (Show Leader Lines) ง21.2.2.183
-	bool showLegendKey_;		// (Show Legend Key) ง21.2.2.184
-	bool showPercent_;			// (Show Percent) ง21.2.2.187
-	bool showSerName_;			// (Show Series Name) ง21.2.2.188
-	bool showVal_;				// (Show Value) ง21.2.2.189
+	bool showBubbleSize_;		// (Show Bubble Size) ยง21.2.2.178
+	bool showCatName_;			// (Show Category Name) ยง21.2.2.179
+	bool showLeaderLines_;		// (Show Leader Lines) ยง21.2.2.183
+	bool showLegendKey_;		// (Show Legend Key) ยง21.2.2.184
+	bool showPercent_;			// (Show Percent) ยง21.2.2.187
+	bool showSerName_;			// (Show Series Name) ยง21.2.2.188
+	bool showVal_;				// (Show Value) ยง21.2.2.189
 
 	std::vector<odf_reader::_property>					textPr_;
 	std::map<int, std::vector<odf_reader::_property>>	dLbls_;
 
 
-//delete (Delete) ง21.2.2.40
-//dLblPos (Data Label Position) ง21.2.2.48
-//extLst (Chart Extensibility) ง21.2.2.64
-//leaderLines (Leader Lines) ง21.2.2.92
-//numFmt (Number Format) ง21.2.2.121
-//separator (Separator) ง21.2.2.166
-//spPr (Shape Properties) ง21.2.2.197
-//txPr (Text Properties) ง21.2.2.216
+//delete (Delete) ยง21.2.2.40
+//dLblPos (Data Label Position) ยง21.2.2.48
+//extLst (Chart Extensibility) ยง21.2.2.64
+//leaderLines (Leader Lines) ยง21.2.2.92
+//numFmt (Number Format) ยง21.2.2.121
+//separator (Separator) ยง21.2.2.166
+//spPr (Shape Properties) ยง21.2.2.197
+//txPr (Text Properties) ยง21.2.2.216
 };
 
 }

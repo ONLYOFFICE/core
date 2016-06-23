@@ -1,4 +1,4 @@
-﻿#include "GraphicsRenderer.h"
+#include "GraphicsRenderer.h"
 #include <algorithm>
 #include "../raster/Metafile/MetaFile.h"
 

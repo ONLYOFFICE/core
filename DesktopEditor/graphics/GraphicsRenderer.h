@@ -1,4 +1,4 @@
-﻿#ifndef _BUILD_GRAPHICS_RENDERER_H_
+#ifndef _BUILD_GRAPHICS_RENDERER_H_
 #define _BUILD_GRAPHICS_RENDERER_H_
 
 #include "IRenderer.h"

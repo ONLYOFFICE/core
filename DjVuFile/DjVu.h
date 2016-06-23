@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #ifndef DJVU_USE_DYNAMIC_LIBRARY
 #define DJVU_DECL_EXPORT

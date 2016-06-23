@@ -176,8 +176,8 @@ void draw_frame::serialize(std::wostream & _Wostream)
 void draw_frame::create_child_element(  const ::std::wstring & Ns, const ::std::wstring & Name)
 {
     if (CP_CHECK_NAME(L"draw", L"text-box") ||
-        CP_CHECK_NAME(L"draw", L"image") ||//копия чарта в виде картинки ну.. или просто картинка
-        CP_CHECK_NAME(L"draw", L"object") ||//месторасположение чарта
+        CP_CHECK_NAME(L"draw", L"image") ||//РєРѕРїРёСЏ С‡Р°СЂС‚Р° РІ РІРёРґРµ РєР°СЂС‚РёРЅРєРё РЅСѓ.. РёР»Рё РїСЂРѕСЃС‚Рѕ РєР°СЂС‚РёРЅРєР°
+        CP_CHECK_NAME(L"draw", L"object") ||//РјРµСЃС‚РѕСЂР°СЃРїРѕР»РѕР¶РµРЅРёРµ С‡Р°СЂС‚Р°
         CP_CHECK_NAME(L"draw", L"object-ole") ||
         CP_CHECK_NAME(L"draw", L"applet") ||
         CP_CHECK_NAME(L"draw", L"floating-frame") ||

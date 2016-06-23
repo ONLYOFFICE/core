@@ -1,4 +1,4 @@
-﻿#include "RtfDocument.h"
+#include "RtfDocument.h"
 #include "RtfWriter.h"
 #include "Writer/OOXWriter.h"
 #include "RtfProperty.h"

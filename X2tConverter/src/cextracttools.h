@@ -1,4 +1,4 @@
-﻿#ifndef CEXTRACTTOOLS_H
+#ifndef CEXTRACTTOOLS_H
 #define CEXTRACTTOOLS_H
 
 #include "../../Common/OfficeFileErrorDescription.h"

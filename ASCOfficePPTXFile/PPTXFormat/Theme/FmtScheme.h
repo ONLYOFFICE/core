@@ -81,7 +81,7 @@ namespace PPTX
 				pWriter->WriteArray(_T("a:fillStyleLst"), fillStyleLst);
 				pWriter->WriteArray(_T("a:lnStyleLst"), lnStyleLst);
 				//pWriter->WriteArray(_T("a:effectStyleLst"), effectStyleLst);
-				// âîò òàêîé ïîóåðïîèíò (ýôôåêòû ïîêà íå ÷èòàåì - à îíè íóæíû. äàæå åñëè è íå èñïîëüçóþòñÿ íèãäå)
+				// Ð²Ð¾Ñ‚ Ñ‚Ð°ÐºÐ¾Ð¹ Ð¿Ð¾ÑƒÐµÑ€Ð¿Ð¾Ð¸Ð½Ñ‚ (ÑÑ„Ñ„ÐµÐºÑ‚Ñ‹ Ð¿Ð¾ÐºÐ° Ð½Ðµ Ñ‡Ð¸Ñ‚Ð°ÐµÐ¼ - Ð° Ð¾Ð½Ð¸ Ð½ÑƒÐ¶Ð½Ñ‹. Ð´Ð°Ð¶Ðµ ÐµÑÐ»Ð¸ Ð¸ Ð½Ðµ Ð¸ÑÐ¿Ð¾Ð»ÑŒÐ·ÑƒÑŽÑ‚ÑÑ Ð½Ð¸Ð³Ð´Ðµ)
 				pWriter->WriteString(_T("<a:effectStyleLst><a:effectStyle><a:effectLst>\
 <a:outerShdw blurRad=\"40000\" dist=\"20000\" dir=\"5400000\" rotWithShape=\"0\"><a:srgbClr val=\"000000\"><a:alpha val=\"38000\"/></a:srgbClr></a:outerShdw>\
 </a:effectLst></a:effectStyle><a:effectStyle><a:effectLst><a:outerShdw blurRad=\"40000\" dist=\"23000\" dir=\"5400000\" rotWithShape=\"0\">\

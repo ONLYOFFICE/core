@@ -1,4 +1,4 @@
-﻿#ifndef _PDF_WRITER_SRC_STREAMS_H
+#ifndef _PDF_WRITER_SRC_STREAMS_H
 #define _PDF_WRITER_SRC_STREAMS_H
 
 #include "Types.h"

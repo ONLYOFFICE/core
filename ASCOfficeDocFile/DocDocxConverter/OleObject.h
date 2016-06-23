@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "IVisitable.h"
 #include "StructuredStorageReader.h"

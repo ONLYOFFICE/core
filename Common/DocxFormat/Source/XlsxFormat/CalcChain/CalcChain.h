@@ -43,7 +43,7 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("a"),      m_oArray )
@@ -63,7 +63,7 @@ namespace OOX
 			nullable<SimpleTypes::COnOff<>>					m_oChildChain;
 			nullable<SimpleTypes::COnOff<>>					m_oNewThread;
 		};
-		//необработанные child:
+		//РЅРµРѕР±СЂР°Р±РѕС‚Р°РЅРЅС‹Рµ child:
 		//<extLst>
 		class CCalcChain : public OOX::File, public OOX::Spreadsheet::IFileContainer
 		{

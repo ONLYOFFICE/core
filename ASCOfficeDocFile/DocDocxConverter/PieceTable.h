@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "PieceDescriptor.h"
 #include "FileInformationBlock.h"

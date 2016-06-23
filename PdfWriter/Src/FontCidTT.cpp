@@ -1,4 +1,4 @@
-﻿#include "FontCidTT.h"
+#include "FontCidTT.h"
 #include "Document.h"
 #include "Streams.h"
 #include "Utils.h"

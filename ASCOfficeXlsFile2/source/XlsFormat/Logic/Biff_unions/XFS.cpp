@@ -41,7 +41,7 @@ const bool XFS::loadContent(BinProcessor& proc)
 	int ind = 0;
 	while (count > 0 && elements_.size() > 0)
 	{
-		//разделить style & complex
+		//СЂР°Р·РґРµР»РёС‚СЊ style & complex
 		XF* xfs = dynamic_cast<XF*>(elements_.front().get());
 
 		xfs->ind_xf = ind++;
@@ -63,7 +63,7 @@ const bool XFS::loadContent(BinProcessor& proc)
 	
 	if(proc.optional<XFCRC>())
 	{
-		elements_.pop_back(); // Crc не нужен
+		elements_.pop_back(); // Crc РЅРµ РЅСѓР¶РµРЅ
 
 		count = proc.repeated<XFExt>(16, 4050);
 		while (count > 0)

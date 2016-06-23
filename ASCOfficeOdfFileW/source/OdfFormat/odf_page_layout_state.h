@@ -65,7 +65,7 @@ public:
 	void			set_name(std::wstring & name);
 	std::wstring	get_name();	
 
-	style_page_layout_properties	*get_properties();//пока не красиво ... лучше хранить прямую ссыль нежели искать
+	style_page_layout_properties	*get_properties();//РїРѕРєР° РЅРµ РєСЂР°СЃРёРІРѕ ... Р»СѓС‡С€Рµ С…СЂР°РЅРёС‚СЊ РїСЂСЏРјСѓСЋ СЃСЃС‹Р»СЊ РЅРµР¶РµР»Рё РёСЃРєР°С‚СЊ
 	style_header_footer_properties	*get_header_properties();//-''-
 	style_header_footer_properties	*get_footer_properties();//-''-
 

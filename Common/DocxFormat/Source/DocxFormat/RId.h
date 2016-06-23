@@ -33,8 +33,8 @@ namespace OOX
 		//}		
 		const RId& operator= (const CString& rid)
 		{
-			//Ó÷èòûâàåò òîëüêî rid íà÷èíàþùèåñÿ ñ rId, îñòàëüíûå ñîõðàíÿåì òàê êàê åñòü
-			//Òîãäà íå áóäåò ïðîáëåì ñ äîáàâëåíèå íîâûé id, ìû âñåãäà áóäåì ãåíåðèðîâàòü èõ ñ ïðåôèêñîì rId
+			//Ð£Ñ‡Ð¸Ñ‚Ñ‹Ð²Ð°ÐµÑ‚ Ñ‚Ð¾Ð»ÑŒÐºÐ¾ rid Ð½Ð°Ñ‡Ð¸Ð½Ð°ÑŽÑ‰Ð¸ÐµÑÑ Ñ rId, Ð¾ÑÑ‚Ð°Ð»ÑŒÐ½Ñ‹Ðµ ÑÐ¾Ñ…Ñ€Ð°Ð½ÑÐµÐ¼ Ñ‚Ð°Ðº ÐºÐ°Ðº ÐµÑÑ‚ÑŒ
+			//TÐ¾Ð³Ð´Ð° Ð½Ðµ Ð±ÑƒÐ´ÐµÑ‚ Ð¿Ñ€Ð¾Ð±Ð»ÐµÐ¼ Ñ Ð´Ð¾Ð±Ð°Ð²Ð»ÐµÐ½Ð¸Ðµ Ð½Ð¾Ð²Ñ‹Ð¹ id, Ð¼Ñ‹ Ð²ÑÐµÐ³Ð´Ð° Ð±ÑƒÐ´ÐµÐ¼ Ð³ÐµÐ½ÐµÑ€Ð¸Ñ€Ð¾Ð²Ð°Ñ‚ÑŒ Ð¸Ñ… Ñ Ð¿Ñ€ÐµÑ„Ð¸ÐºÑÐ¾Ð¼ rId
 			CString sFindString(_T("rId"));
 			int nFindStringLength = sFindString.GetLength();
 			if(0 == rid.Find(sFindString) && rid.GetLength() > nFindStringLength && 0 != isdigit(rid[nFindStringLength]))

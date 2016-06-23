@@ -49,7 +49,7 @@ namespace OOX
 		}
 		void CBlip::fromXML(XmlUtils::CXmlNode& oNode)
 		{
-			// TO DO: Реализовать
+			// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ
 		}
 		void CBlip::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
@@ -188,7 +188,7 @@ namespace OOX
 		void CBlipFillProperties::fromXML(XmlUtils::CXmlNode& oNode)
 		{
 			m_eType = et_Unknown;
-			// TO DO: Реализовать CBlipFillProperties::fromXML(XmlUtils::CXmlNode& oNode)
+			// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CBlipFillProperties::fromXML(XmlUtils::CXmlNode& oNode)
 		}
 		void CBlipFillProperties::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
@@ -332,7 +332,7 @@ namespace OOX
 		{
 			m_eType = et_Unknown;
 
-			// TO DO: Реализовать CEffectContainer::fromXML(XmlUtils::CXmlNode& oNode)
+			// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CEffectContainer::fromXML(XmlUtils::CXmlNode& oNode)
 		}
 		void CEffectContainer::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
@@ -569,7 +569,7 @@ namespace OOX
 		}
 		void CEffectList::fromXML(XmlUtils::CXmlNode& oNode)
 		{
-			// TO DO: Реализовать CEffectList::fromXML(XmlUtils::CXmlNode& oNode)
+			// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CEffectList::fromXML(XmlUtils::CXmlNode& oNode)
 		}
 		void CEffectList::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
@@ -666,7 +666,7 @@ namespace OOX
 		void CGradientFillProperties::fromXML(XmlUtils::CXmlNode& oNode)
 		{
 			m_eGradType = gradfilltypeUnknown;
-			// TO DO: Реализовать CGradientFillProperties::fromXML(XmlUtils::CXmlNode& oNode)
+			// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CGradientFillProperties::fromXML(XmlUtils::CXmlNode& oNode)
 		}
 		void CGradientFillProperties::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{

@@ -1,4 +1,4 @@
-﻿
+
 #include "xlsx_textcontext.h"
 #include "xlsx_conversion_context.h"
 

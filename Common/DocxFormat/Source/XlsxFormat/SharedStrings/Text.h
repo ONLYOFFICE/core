@@ -9,7 +9,7 @@ namespace OOX
 {
 	namespace Spreadsheet
 	{
-		//необработано:
+		//РЅРµРѕР±СЂР°Р±РѕС‚Р°РЅРѕ:
 		class CText : public WritingElement
 		{
 		public:
@@ -54,7 +54,7 @@ namespace OOX
 				m_sText.Replace(_T("\t"), _T(""));
 				if(!(m_oSpace.IsInit() && SimpleTypes::xmlspacePreserve == m_oSpace->GetValue()))
 				{
-					//убираем пробелы и переносы строк в начале и в конце
+					//СѓР±РёСЂР°РµРј РїСЂРѕР±РµР»С‹ Рё РїРµСЂРµРЅРѕСЃС‹ СЃС‚СЂРѕРє РІ РЅР°С‡Р°Р»Рµ Рё РІ РєРѕРЅС†Рµ
 					int nLength = m_sText.GetLength();
 					int nStartIndex = 0;
 					int nEndIndex = nLength - 1;

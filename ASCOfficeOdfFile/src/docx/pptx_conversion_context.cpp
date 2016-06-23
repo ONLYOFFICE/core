@@ -63,16 +63,16 @@ void pptx_conversion_context::set_font_directory(std::wstring pathFonts)
 //void pptx_conversion_context::start_chart(std::wstring const & name)
 //{
 //	charts_.push_back(oox_chart_context::create(name));
-//	//добавляем новую форму для диаграммы
-//	 //в ней будет информационная часть - и она пишется каждый раз в свою xml (их - по числу диаграмм)
-//	//этот контекст нужно передавать в файл
+//	//РґРѕР±Р°РІР»СЏРµРј РЅРѕРІСѓСЋ С„РѕСЂРјСѓ РґР»СЏ РґРёР°РіСЂР°РјРјС‹
+//	 //РІ РЅРµР№ Р±СѓРґРµС‚ РёРЅС„РѕСЂРјР°С†РёРѕРЅРЅР°СЏ С‡Р°СЃС‚СЊ - Рё РѕРЅР° РїРёС€РµС‚СЃСЏ РєР°Р¶РґС‹Р№ СЂР°Р· РІ СЃРІРѕСЋ xml (РёС… - РїРѕ С‡РёСЃР»Сѓ РґРёР°РіСЂР°РјРј)
+//	//СЌС‚РѕС‚ РєРѕРЅС‚РµРєСЃС‚ РЅСѓР¶РЅРѕ РїРµСЂРµРґР°РІР°С‚СЊ РІ С„Р°Р№Р»
 //
 //}
 //
 //void pptx_conversion_context::end_chart()
 //{
 //	//current_chart().set_drawing_link(current_sheet().get_drawing_link());
-//	//излишняя инфа
+//	//РёР·Р»РёС€РЅСЏСЏ РёРЅС„Р°
 //}
 
 void pptx_conversion_context::process_layouts()
@@ -81,7 +81,7 @@ void pptx_conversion_context::process_layouts()
 
 	get_text_context().set_process_layouts(true);
 
-	//актуальные
+	//Р°РєС‚СѓР°Р»СЊРЅС‹Рµ
 	for (int layout_index =0; layout_index < layouts.content.size(); layout_index++)
 	{
 		start_layout(layout_index);
@@ -93,7 +93,7 @@ void pptx_conversion_context::process_layouts()
 		{
 			layout->pptx_convert(*this);
 		}
-		//нужно вытащить footers 
+		//РЅСѓР¶РЅРѕ РІС‹С‚Р°С‰РёС‚СЊ footers 
 		odf_reader::style_master_page * master = 
 			root()->odf_context().pageLayoutContainer().master_page_by_name(layouts.content[layout_index].master_name);
 
@@ -133,7 +133,7 @@ void pptx_conversion_context::process_master_pages()
 	process_masters_ = true;
 	get_text_context().set_process_layouts(true);
 
-	//берем только актуальные
+	//Р±РµСЂРµРј С‚РѕР»СЊРєРѕ Р°РєС‚СѓР°Р»СЊРЅС‹Рµ
 	for (int master_index =0; master_index < masters.content.size();master_index++)
 	{
 		start_master(master_index);
@@ -243,7 +243,7 @@ void pptx_conversion_context::end_document()
         output_document_->get_ppt_files().add_slideLayout(content);//slideMaster.xml
 	}
 //////////////////////////////////////////////////////////////////////////////////////////////////
-	//размеры страниц в презентации
+	//СЂР°Р·РјРµСЂС‹ СЃС‚СЂР°РЅРёС† РІ РїСЂРµР·РµРЅС‚Р°С†РёРё
     odf_reader::odf_read_context & context =  root()->odf_context();
     odf_reader::page_layout_container & pageLayouts = context.pageLayoutContainer();
 	if ((pageLayouts.master_pages().size()>0) && (pageLayouts.master_pages()[0]->style_master_page_attlist_.style_name_))//default
@@ -259,7 +259,7 @@ void pptx_conversion_context::end_document()
 	pptx_serialize_size(current_presentation().notesSlidesSize(),6858000,9144000,L"p:notesSz");
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	//добавляем диаграммы
+	//РґРѕР±Р°РІР»СЏРµРј РґРёР°РіСЂР°РјРјС‹
 
 	count = 0;
     BOOST_FOREACH(const oox_chart_context_ptr& chart, charts_)
@@ -273,7 +273,7 @@ void pptx_conversion_context::end_document()
 	
 	}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	//добавляем темы
+	//РґРѕР±Р°РІР»СЏРµРј С‚РµРјС‹
 	for (int i=0; i < themes_.size();i++)
     {
 		output_document_->get_ppt_files().add_theme(themes_[i]);
@@ -415,7 +415,7 @@ bool pptx_conversion_context::start_layout(int layout_index)
 
 		//
 	}
-	else//общий шаблон (насильно пропишем к темам несоответствующие шалоны)
+	else//РѕР±С‰РёР№ С€Р°Р±Р»РѕРЅ (РЅР°СЃРёР»СЊРЅРѕ РїСЂРѕРїРёС€РµРј Рє С‚РµРјР°Рј РЅРµСЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РёРµ С€Р°Р»РѕРЅС‹)
 	{
 	}
 
@@ -471,7 +471,7 @@ bool pptx_conversion_context::start_master(int master_index)
 	current_master_page_name_ = L"";
 	current_layout_page_name_ = L"";
 	
-	process_theme(masters.content[master_index].master_name);//add default theme - одинаковые но под разными именами
+	process_theme(masters.content[master_index].master_name);//add default theme - РѕРґРёРЅР°РєРѕРІС‹Рµ РЅРѕ РїРѕРґ СЂР°Р·РЅС‹РјРё РёРјРµРЅР°РјРё
 	current_master().add_theme(current_theme().id(), L"tId1");	
 
 	for (long i=0;i<masters.content[master_index].layouts.size();i++)
@@ -550,16 +550,16 @@ void pptx_conversion_context::end_office_presentation()
 void pptx_conversion_context::start_chart(std::wstring const & name)
 {
 	charts_.push_back(oox_chart_context::create(name));
-	//добавляем новую форму для диаграммы
-	 //в ней будет информационная часть - и она пишется каждый раз в свою xml (их - по числу диаграмм)
-	//этот контекст нужно передавать в файл
+	//РґРѕР±Р°РІР»СЏРµРј РЅРѕРІСѓСЋ С„РѕСЂРјСѓ РґР»СЏ РґРёР°РіСЂР°РјРјС‹
+	 //РІ РЅРµР№ Р±СѓРґРµС‚ РёРЅС„РѕСЂРјР°С†РёРѕРЅРЅР°СЏ С‡Р°СЃС‚СЊ - Рё РѕРЅР° РїРёС€РµС‚СЃСЏ РєР°Р¶РґС‹Р№ СЂР°Р· РІ СЃРІРѕСЋ xml (РёС… - РїРѕ С‡РёСЃР»Сѓ РґРёР°РіСЂР°РјРј)
+	//СЌС‚РѕС‚ РєРѕРЅС‚РµРєСЃС‚ РЅСѓР¶РЅРѕ РїРµСЂРµРґР°РІР°С‚СЊ РІ С„Р°Р№Р»
 
 }
 
 void pptx_conversion_context::end_chart()
 {
 	//current_chart().set_drawing_link(current_sheet().get_drawing_link());
-	//излишняя инфа
+	//РёР·Р»РёС€РЅСЏСЏ РёРЅС„Р°
 }
 
 }

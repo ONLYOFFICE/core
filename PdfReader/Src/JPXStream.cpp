@@ -1,4 +1,4 @@
-﻿#include "MemoryUtils.h"
+#include "MemoryUtils.h"
 #include "JPXStream.h"
 #include "File.h"
 

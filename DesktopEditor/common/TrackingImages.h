@@ -1,4 +1,4 @@
-﻿//
+//
 //  TrackingImages.h
 //  UTILS
 //

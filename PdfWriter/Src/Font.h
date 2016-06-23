@@ -1,4 +1,4 @@
-﻿#ifndef _PDF_WRITER_SRC_FONT_H
+#ifndef _PDF_WRITER_SRC_FONT_H
 #define _PDF_WRITER_SRC_FONT_H
 
 #include "Objects.h"

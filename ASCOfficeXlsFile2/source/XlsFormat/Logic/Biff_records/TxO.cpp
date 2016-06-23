@@ -173,7 +173,7 @@ int TxO::serialize (std::wostream & _stream)
 
 					if (run->formatRun.ich > str_.length())
 					{
-						//îøèáêà
+						//Ð¾ÑˆÐ¸Ð±ÐºÐ°
 						run->formatRun.ich = 0;
 					}
 

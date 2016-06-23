@@ -8,7 +8,7 @@ namespace OOX
 {
 	namespace Spreadsheet
 	{
-		//нереализован:
+		//РЅРµСЂРµР°Р»РёР·РѕРІР°РЅ:
 		//<extLst>
 		class CCellStyle : public WritingElement
 		{
@@ -67,7 +67,7 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("builtinId"),      m_oBuiltinId )
@@ -142,7 +142,7 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 
 					WritingElement_ReadAttributes_ReadSingle ( oReader, _T("count"),      m_oCount )

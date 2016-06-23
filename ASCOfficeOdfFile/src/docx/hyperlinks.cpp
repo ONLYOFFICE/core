@@ -36,7 +36,7 @@ void hyperlinks::dump_rels(rels & Rels, _type_place type)
     size_t i = 0;
     BOOST_FOREACH(_ref & elm, hrefs_)
     {
- 		if (elm.used_rels)continue; // уже использовали этот релс
+ 		if (elm.used_rels)continue; // СѓР¶Рµ РёСЃРїРѕР»СЊР·РѕРІР°Р»Рё СЌС‚РѕС‚ СЂРµР»СЃ
 
 		if (elm.type_place == type)
 		{

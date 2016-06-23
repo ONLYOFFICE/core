@@ -1,4 +1,4 @@
-﻿#ifndef _BUILD_ARROW_HEAD_H_
+#ifndef _BUILD_ARROW_HEAD_H_
 #define _BUILD_ARROW_HEAD_H_
 
 #include "GraphicsPath.h"

@@ -6,7 +6,7 @@
     #include <shellapi.h>
     #include <shlobj.h>
     #include <shlwapi.h>
-    #pragma comment( lib, "shell32.lib" ) // добавить shell32.lib
+    #pragma comment( lib, "shell32.lib" ) // РґРѕР±Р°РІРёС‚СЊ shell32.lib
 #else
 #endif
 
@@ -345,14 +345,14 @@ HRESULT CPPTXFile::OpenDirectoryToPPTY(BSTR bsInput, BSTR bsOutput)
 	return S_OK;
 }
 
-HRESULT CPPTXFile::ConvertPPTYToPPTX(BSTR bsInput, BSTR bsOutput, BSTR bsThemesFolder)//bsOutput и файл и директория может быть 
+HRESULT CPPTXFile::ConvertPPTYToPPTX(BSTR bsInput, BSTR bsOutput, BSTR bsThemesFolder)//bsOutput Рё С„Р°Р№Р» Рё РґРёСЂРµРєС‚РѕСЂРёСЏ РјРѕР¶РµС‚ Р±С‹С‚СЊ 
 {
 	OOX::CPath pathLocalTempDirectory;
 	
-	if (m_fCallbackCompress)//если компрессора нет - конвертим в назначеную директорию 
+	if (m_fCallbackCompress)//РµСЃР»Рё РєРѕРјРїСЂРµСЃСЃРѕСЂР° РЅРµС‚ - РєРѕРЅРІРµСЂС‚РёРј РІ РЅР°Р·РЅР°С‡РµРЅСѓСЋ РґРёСЂРµРєС‚РѕСЂРёСЋ 
 		pathLocalTempDirectory = m_strTempDir ;
 	else
-		pathLocalTempDirectory = bsOutput; //выходной файл - папка
+		pathLocalTempDirectory = bsOutput; //РІС‹С…РѕРґРЅРѕР№ С„Р°Р№Р» - РїР°РїРєР°
 
 #ifdef _DEBUG
 	#if defined(_WIN32) || defined (_WIN64)

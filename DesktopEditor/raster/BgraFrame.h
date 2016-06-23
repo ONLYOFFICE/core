@@ -1,4 +1,4 @@
-﻿#ifndef _BUILD_BGRA_FRAME_
+#ifndef _BUILD_BGRA_FRAME_
 #define _BUILD_BGRA_FRAME_
 
 #include <string>

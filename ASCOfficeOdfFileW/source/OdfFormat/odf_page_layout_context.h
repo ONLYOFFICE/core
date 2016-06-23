@@ -37,12 +37,12 @@ public:
 
 	void process_master_styles			(office_element_ptr root );
 	void process_automatic_for_styles	(office_element_ptr root );
-	void process_office_styles			(office_element_ptr root );//картинки, шрифты, ... для мастер пэйджей и шаблонов
+	void process_office_styles			(office_element_ptr root );//РєР°СЂС‚РёРЅРєРё, С€СЂРёС„С‚С‹, ... РґР»СЏ РјР°СЃС‚РµСЂ РїСЌР№РґР¶РµР№ Рё С€Р°Р±Р»РѕРЅРѕРІ
 
     odf_layout_state * last_layout();
     odf_master_state * last_master();
 
-	odf_style_context* get_local_styles_context() //для автоматических стилей самих стилей
+	odf_style_context* get_local_styles_context() //РґР»СЏ Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєРёС… СЃС‚РёР»РµР№ СЃР°РјРёС… СЃС‚РёР»РµР№
 		{return local_style_context_.get();}
 
 	void set_page_margin(_CP_OPT(double) top, _CP_OPT(double) left, _CP_OPT(double) bottom, _CP_OPT(double) right, _CP_OPT(double) header, _CP_OPT(double) footer);

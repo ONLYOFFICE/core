@@ -37,21 +37,21 @@ namespace SerializeCommon
 		CStringA sUnicode((char*)pUtf8, nUtf8Size);
 		RELEASEARRAYOBJECTS(pUtf8);
 
-		//Убираем "data:image/jpg;base64,"
+		//РЈР±РёСЂР°РµРј "data:image/jpg;base64,"
 		int nShift = 0;
 		int nIndex = sUnicode.Find("base64,");
 		if(-1 != nIndex)
 		{
 			nShift = nIndex + 7;
 		}
-		// Получаем размер файла
+		// РџРѕР»СѓС‡Р°РµРј СЂР°Р·РјРµСЂ С„Р°Р№Р»Р°
 		LONG lFileSize = sUnicode.GetLength () - nShift;
 		INT nDstLength = lFileSize;
 		BYTE *pBuffer = new BYTE [lFileSize];
 		memset(pBuffer, 0, lFileSize);
 		Base64::Base64Decode ((LPCSTR)sUnicode.GetBuffer () + nShift, lFileSize, pBuffer, &nDstLength);
 
-		// Пишем в файл
+		// РџРёС€РµРј РІ С„Р°Р№Р»
 		oFile.WriteFile(pBuffer, nDstLength);
 
 		RELEASEARRAYOBJECTS (pBuffer);
@@ -95,7 +95,7 @@ namespace SerializeCommon
 			CWCharWrapper sName = oReader.GetName();
 			if (_T("fileOptions") == sName)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start(oReader)
 				WritingElement_ReadAttributes_Read_if (oReader, _T("fileType"), fileType)
 				WritingElement_ReadAttributes_Read_else_if (oReader, _T("codePage"), codePage)

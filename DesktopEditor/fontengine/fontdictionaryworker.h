@@ -1,4 +1,4 @@
-﻿#ifndef _FONT_DICTIONARY_WORKER_H
+#ifndef _FONT_DICTIONARY_WORKER_H
 
 #include "../freetype_names/FontMaps/FontDictionary.h"
 #include "../common/File.h"

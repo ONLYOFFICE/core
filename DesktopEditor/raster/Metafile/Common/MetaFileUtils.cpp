@@ -1,4 +1,4 @@
-﻿#include "MetaFileUtils.h"
+#include "MetaFileUtils.h"
 
 #include "../../ImageFileFormatChecker.h"
 #include "../../BgraFrame.h"

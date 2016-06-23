@@ -1,4 +1,4 @@
-﻿#ifndef _BUILD_COLOR_H_ 
+#ifndef _BUILD_COLOR_H_ 
 #define _BUILD_COLOR_H_
 
 #include "AggPlusEnums.h"

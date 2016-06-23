@@ -13,7 +13,7 @@ void oox_title::oox_serialize(std::wostream & _Wostream)
 {
 	if (content_.content_.length() < 1)
 	{
-		//возможен шаблон txPr
+		//РІРѕР·РјРѕР¶РµРЅ С€Р°Р±Р»РѕРЅ txPr
 		return;
 	}
     

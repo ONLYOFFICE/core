@@ -92,7 +92,7 @@ public:
 };
 /// \class  style_chart_properties
 ///         style:chart-properties
-class style_chart_properties : public office_element_impl<style_chart_properties>//стили чарта не наследуются
+class style_chart_properties : public office_element_impl<style_chart_properties>//СЃС‚РёР»Рё С‡Р°СЂС‚Р° РЅРµ РЅР°СЃР»РµРґСѓСЋС‚СЃСЏ
 {
 public:
     static const wchar_t * ns;

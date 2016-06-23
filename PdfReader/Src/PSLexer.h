@@ -1,4 +1,4 @@
-﻿#ifndef _PDF_READER_PS_LEXER_H
+#ifndef _PDF_READER_PS_LEXER_H
 #define _PDF_READER_PS_LEXER_H
 
 namespace PdfReader

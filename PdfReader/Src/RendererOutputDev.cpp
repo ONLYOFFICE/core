@@ -1,4 +1,4 @@
-﻿#include "GState.h"
+#include "GState.h"
 #include "GFont.h"
 #include "File.h"
 #include "CMap.h"

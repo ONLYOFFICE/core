@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "OOXTextItemReader.h"
 #include "../../../../Common/DocxFormat/Source/DocxFormat/Document.h"

@@ -1,4 +1,4 @@
-﻿#include "Vml.h"
+#include "Vml.h"
 #include "VmlOfficeDrawing.h"
 
 #include "Paragraph.h"

@@ -19,8 +19,8 @@ namespace FontConstants
 }
 
 
-#define UNKNOWN_CHARSET 3 // äëÿ ñëó÷àåâ, êîãäà çàäàíî çíà÷åíèå DEFAULT_CHARSET, íî 
-                          // íà ñàìîì äåëå charset íå ó÷èòûâàåòñÿ
+#define UNKNOWN_CHARSET 3 // Ð´Ð»Ñ ÑÐ»ÑƒÑ‡Ð°ÐµÐ², ÐºÐ¾Ð³Ð´Ð° Ð·Ð°Ð´Ð°Ð½Ð¾ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ DEFAULT_CHARSET, Ð½Ð¾ 
+                          // Ð½Ð° ÑÐ°Ð¼Ð¾Ð¼ Ð´ÐµÐ»Ðµ charset Ð½Ðµ ÑƒÑ‡Ð¸Ñ‚Ñ‹Ð²Ð°ÐµÑ‚ÑÑ
 
 //---------------------------------------------------------------------------------------------------
 
@@ -158,11 +158,11 @@ static int  GetDefaultCharset(BOOL bUseDefCharset = TRUE)
 
 static void GetCodePageByCharset(unsigned char unCharset, unsigned long *pulBit, unsigned int *punLongIndex)
 {
-	// Äàííàÿ ôóíêöèÿ âîçâðàùàåò ïàðàìåòðû, êîòîðûå íóæíî ïîñûëàòü íà âõîä 
-	// ôóíêöèè AVSFontManager::IsUnicodeRangeAvailable
+	// Ð”Ð°Ð½Ð½Ð°Ñ Ñ„ÑƒÐ½ÐºÑ†Ð¸Ñ Ð²Ð¾Ð·Ð²Ñ€Ð°Ñ‰Ð°ÐµÑ‚ Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ñ‹, ÐºÐ¾Ñ‚Ð¾Ñ€Ñ‹Ðµ Ð½ÑƒÐ¶Ð½Ð¾ Ð¿Ð¾ÑÑ‹Ð»Ð°Ñ‚ÑŒ Ð½Ð° Ð²Ñ…Ð¾Ð´ 
+	// Ñ„ÑƒÐ½ÐºÑ†Ð¸Ð¸ AVSFontManager::IsUnicodeRangeAvailable
 
 
-	// Ñîîòâåòñòâèå Charset -> Codepage: http://support.microsoft.com/kb/165478
+	// Ð¡Ð¾Ð¾Ñ‚Ð²ÐµÑ‚ÑÑ‚Ð²Ð¸Ðµ Charset -> Codepage: http://support.microsoft.com/kb/165478
 	// http://msdn.microsoft.com/en-us/library/cc194829.aspx
 
 	//  Charset Name       Charset Value(hex)  Codepage number
@@ -188,7 +188,7 @@ static void GetCodePageByCharset(unsigned char unCharset, unsigned long *pulBit,
 	//  VIETNAMESE_CHARSET      163 (xA3)            1258
 	//  MAC_CHARSET              77 (x4D)            
 
-	// Ñîîòâåòñâèå CodePage -> ulCodePageRange1 : http://www.microsoft.com/Typography/otspec/os2.htm#cpr
+	// Ð¡Ð¾Ð¾Ñ‚Ð²ÐµÑ‚ÑÐ²Ð¸Ðµ CodePage -> ulCodePageRange1 : http://www.microsoft.com/Typography/otspec/os2.htm#cpr
 
 	if ( punLongIndex )
 		*punLongIndex = 4;

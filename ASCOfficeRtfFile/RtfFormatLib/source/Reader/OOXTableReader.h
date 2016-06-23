@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "../../../../Common/DocxFormat/Source/DocxFormat/Logic/Table.h"
 #include "../RtfTable.h"

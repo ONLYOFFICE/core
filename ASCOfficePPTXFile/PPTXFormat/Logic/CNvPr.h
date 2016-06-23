@@ -155,7 +155,7 @@ namespace PPTX
 					}
 				}
 
-				// TODO: ïîêà áåç ãèïåğññûëîê
+				// TODO: Ğ¿Ğ¾ĞºĞ° Ğ±ĞµĞ· Ğ³Ğ¸Ğ¿ĞµÑ€ÑÑÑ‹Ğ»Ğ¾Ğº
 
 				pReader->Seek(_end_rec);
 			}

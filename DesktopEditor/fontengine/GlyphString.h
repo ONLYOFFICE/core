@@ -1,4 +1,4 @@
-﻿#ifndef _BUILD_GLYPH_STRING_H
+#ifndef _BUILD_GLYPH_STRING_H
 #define _BUILD_GLYPH_STRING_H
 
 #include "../common/Types.h"

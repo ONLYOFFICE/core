@@ -122,7 +122,7 @@ namespace ASCDocFileFormat
 				FormatUtils::SetBytes( this->bytes, (short)std.Size()/*SizeWithoutPadding()*/ );
 
 				memcpy( ( this->bytes + sizeof(short) ), (unsigned char*)std, std.Size() );
-				// заполняем поле bchUpe StdfBase
+				// Р·Р°РїРѕР»РЅСЏРµРј РїРѕР»Рµ bchUpe StdfBase
 				FormatUtils::SetBytes( this->bytes + sizeof(short) + 6, (short)std.Size() );
 			}
 		}

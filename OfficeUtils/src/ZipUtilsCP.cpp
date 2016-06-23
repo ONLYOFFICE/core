@@ -1,4 +1,4 @@
-﻿#include "ZipUtilsCP.h"
+#include "ZipUtilsCP.h"
 #include <memory>
 #include <algorithm>
 #include "CSLocker.h"

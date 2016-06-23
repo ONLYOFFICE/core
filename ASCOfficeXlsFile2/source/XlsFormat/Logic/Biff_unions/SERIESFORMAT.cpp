@@ -139,7 +139,7 @@ const bool SERIESFORMAT::loadContent(BinProcessor& proc)
 		elements_.pop_back();
 		count--;
 	}
-	//доп серии
+	//РґРѕРї СЃРµСЂРёРё
 	if (proc.mandatory<Parenthesis_SERIESFORMAT_1>())
 	{
 		count = elements_.size();
@@ -166,7 +166,7 @@ const bool SERIESFORMAT::loadContent(BinProcessor& proc)
 		}
 	}
 
-	count = proc.repeated<Parenthesis_SERIESFORMAT_2>(0, 0); // это типо "нормальных"
+	count = proc.repeated<Parenthesis_SERIESFORMAT_2>(0, 0); // СЌС‚Рѕ С‚РёРїРѕ "РЅРѕСЂРјР°Р»СЊРЅС‹С…"
 
 	count = elements_.size();
 	while(count > 0)
@@ -214,7 +214,7 @@ int SERIESFORMAT::serialize_legend(std::wostream & _stream, int idx)
 		{
 			CP_XML_NODE(L"c:idx")
 			{
-				CP_XML_ATTR(L"val", idx); //legendException->iss = oxffff легенда для серий
+				CP_XML_ATTR(L"val", idx); //legendException->iss = oxffff Р»РµРіРµРЅРґР° РґР»СЏ СЃРµСЂРёР№
 			}
 			if (att)
 			{
@@ -261,7 +261,7 @@ int SERIESFORMAT::serialize_parent(std::wostream & _stream, CHARTFORMATS* chart_
 				if (series_ss)
 				{
 					series_ss->serialize(CP_XML_STREAM(), CHART_TYPE_Bar);
-					//тут не надо рисовать маркеры .. а вот fill можно - он просто отбрасывается - по "првильному" нужно выделить отдельный тип чисто линий
+					//С‚СѓС‚ РЅРµ РЅР°РґРѕ СЂРёСЃРѕРІР°С‚СЊ РјР°СЂРєРµСЂС‹ .. Р° РІРѕС‚ fill РјРѕР¶РЅРѕ - РѕРЅ РїСЂРѕСЃС‚Рѕ РѕС‚Р±СЂР°СЃС‹РІР°РµС‚СЃСЏ - РїРѕ "РїСЂРІРёР»СЊРЅРѕРјСѓ" РЅСѓР¶РЅРѕ РІС‹РґРµР»РёС‚СЊ РѕС‚РґРµР»СЊРЅС‹Р№ С‚РёРї С‡РёСЃС‚Рѕ Р»РёРЅРёР№
 				}
 				//CP_XML_NODE(L"c:spPr")
 				//{

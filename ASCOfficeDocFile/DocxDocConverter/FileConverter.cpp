@@ -1,4 +1,4 @@
-﻿
+
 
 #include "ParagraphItem.h"
 #include "DocxToDocUtils.h"

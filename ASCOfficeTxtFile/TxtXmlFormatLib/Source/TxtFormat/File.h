@@ -26,8 +26,8 @@ namespace Txt
 		
         const bool isValid	(const std::wstring& filename) const;
 		
-		std::list<std::wstring>		m_listContent;			//unicode  (ранее было utf8)
-		int							m_listContentSize;		//для вывода процентов конвертации
+		std::list<std::wstring>		m_listContent;			//unicode  (СЂР°РЅРµРµ Р±С‹Р»Рѕ utf8)
+		int							m_listContentSize;		//РґР»СЏ РІС‹РІРѕРґР° РїСЂРѕС†РµРЅС‚РѕРІ РєРѕРЅРІРµСЂС‚Р°С†РёРё
 		int							m_nEncoding;
 	private:
 		void correctUnicode(std::list<std::wstring>& oList);

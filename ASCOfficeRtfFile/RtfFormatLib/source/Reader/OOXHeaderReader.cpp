@@ -1,4 +1,4 @@
-﻿#include "OOXHeaderReader.h"
+#include "OOXHeaderReader.h"
 #include "OOXTextItemReader.h"
 #include "OOXRelsReader.h"
 

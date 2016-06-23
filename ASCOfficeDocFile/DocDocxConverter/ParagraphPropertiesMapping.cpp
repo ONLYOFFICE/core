@@ -386,15 +386,15 @@ namespace DocFileFormat
 
 				//numbering
 			case sprmPIlvl:
-				//Если numbering.xml пустой, то не пищем свойство
+				//Р•СЃР»Рё numbering.xml РїСѓСЃС‚РѕР№, С‚Рѕ РЅРµ РїРёС‰РµРј СЃРІРѕР№СЃС‚РІРѕ
 				if(NULL != m_document->listTable && false == m_document->listTable->listData.empty())
 					appendValueElement( &numPr, _T( "ilvl" ), iter->Arguments[0], true );
 				break;
 
 			case sprmPIlfo:
 				{
-					//Если numbering.xml пустой, то не пищем свойство
-					//Todo разобраться с закоментированным кодом
+					//Р•СЃР»Рё numbering.xml РїСѓСЃС‚РѕР№, С‚Рѕ РЅРµ РїРёС‰РµРј СЃРІРѕР№СЃС‚РІРѕ
+					//Todo СЂР°Р·РѕР±СЂР°С‚СЊСЃСЏ СЃ Р·Р°РєРѕРјРµРЅС‚РёСЂРѕРІР°РЅРЅС‹Рј РєРѕРґРѕРј
 					if(NULL != m_document->listTable && false == m_document->listTable->listData.empty())
 						appendValueElement( &numPr, _T( "numId" ), FormatUtils::BytesToUInt16( iter->Arguments, 0, iter->argumentsSize ), true );
 
@@ -561,7 +561,7 @@ namespace DocFileFormat
 
 			if (sectionPropertiesMapping->get_section_type() == L"nextPage")
 			{
-				//в этом параграфе уже есть разрыв страницы - br на page не нужен
+				//РІ СЌС‚РѕРј РїР°СЂР°РіСЂР°С„Рµ СѓР¶Рµ РµСЃС‚СЊ СЂР°Р·СЂС‹РІ СЃС‚СЂР°РЅРёС†С‹ - br РЅР° page РЅРµ РЅСѓР¶РµРЅ
 				//Vinci_Customer_Case_Study.doc
 				_isSectionPageBreak = 1;
 			}

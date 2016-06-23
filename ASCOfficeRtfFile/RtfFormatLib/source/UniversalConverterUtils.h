@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #define BUFSIZE 2048
 #include <time.h>
 
@@ -57,8 +57,8 @@ public:
 	static  CString PrepareToXML( const CString & sInput)
 	{
 		 CString sResult = sInput;
-		 //&amp; («&»), &lt; («<»), &gt; («>»), &apos; («'»), и &quot; («"») 
-		 sResult.Replace(_T("\x06"), _T(""));	//ЗБ·О±Ч·Ґјіён.rtf
+		 //&amp; («&И), &lt; («<И), &gt; («>И), &apos; («'И), и &quot; («"И)
+		 sResult.Replace(_T("\x06"), _T(""));	//ЗБ·О±Ч·ҐАіЮн.rtf
 		 sResult.Replace(_T("&"), _T("&amp;"));
 		 sResult.Replace(_T("<"), _T("&lt;"));
 		 sResult.Replace(_T(">"), _T("&gt;"));

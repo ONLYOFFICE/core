@@ -205,7 +205,7 @@ namespace DocFileFormat
 						else if (0x0F == icoBack) { cvBack = RGB2 (0x80, 0x80, 0x80); }
 						else if (0x10 == icoBack) { cvBack = RGB2 (0xC0, 0xC0, 0xC0); }
 
-						// TODO : если будут документы с такими цветовыми палитрами
+						// TODO : РµСЃР»Рё Р±СѓРґСѓС‚ РґРѕРєСѓРјРµРЅС‚С‹ СЃ С‚Р°РєРёРјРё С†РІРµС‚РѕРІС‹РјРё РїР°Р»РёС‚СЂР°РјРё
 
 						//if ((cvFore == 0) && (icoFore == 0x0) && (cvBack == 0) && (icoBack == 0x0) && (ipat == Automatic))
 						//{

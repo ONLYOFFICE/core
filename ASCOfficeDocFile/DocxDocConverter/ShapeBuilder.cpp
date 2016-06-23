@@ -50,9 +50,9 @@ namespace ASCDocFileFormat
 			COArtImage* pImage	=	new COArtImage(strFileName, pStorage->GenID (m_nLocation));
 			if (pImage)
 			{
-				CShapeRun oShapeRun (pImage, pImage->GetID(), pStorage->GetOffSetSpa(m_nLocation));	//	смещение берем от предыдущего элемента
-				oShapeRun.UpdateSizes	(*oXml.style);																		//	размеры
-				oShapeRun.SetWrap		(oXml.Wrap);																		//	обтекание
+				CShapeRun oShapeRun (pImage, pImage->GetID(), pStorage->GetOffSetSpa(m_nLocation));	//	СЃРјРµС‰РµРЅРёРµ Р±РµСЂРµРј РѕС‚ РїСЂРµРґС‹РґСѓС‰РµРіРѕ СЌР»РµРјРµРЅС‚Р°
+				oShapeRun.UpdateSizes	(*oXml.style);																		//	СЂР°Р·РјРµСЂС‹
+				oShapeRun.SetWrap		(oXml.Wrap);																		//	РѕР±С‚РµРєР°РЅРёРµ
 				//oShapeRun.SetAnchor	((bool)(oXml.anchorlock.is_init()));
 				oShapeRun.SetUseBehind	(*oXml.style);													
 
@@ -77,7 +77,7 @@ namespace ASCDocFileFormat
 			COArtImage* pImage	=	new COArtImage(oXml.GetPath(), pStorage->GenID (m_nLocation));
 			if (pImage)
 			{
-				CShapeRun oShapeRun (pImage, pImage->GetID(), pStorage->GetOffSetSpa(m_nLocation));	//	смещение берем от предыдущего элемента
+				CShapeRun oShapeRun (pImage, pImage->GetID(), pStorage->GetOffSetSpa(m_nLocation));	//	СЃРјРµС‰РµРЅРёРµ Р±РµСЂРµРј РѕС‚ РїСЂРµРґС‹РґСѓС‰РµРіРѕ СЌР»РµРјРµРЅС‚Р°
 				((CImageSettings*)(pImage->GetSettings()))->SetWrapDist(oXml2.Inline);				
 
 				pImage->SetRotationImage(oXml2);
@@ -208,14 +208,14 @@ namespace ASCDocFileFormat
 		{
 			COArtStorage* pStorage	=	COArtStorage::Instance();
 
-			CShapeRun oShapeRun (pShape, pShape->GetID(), pStorage->GetOffSetSpa(m_nLocation));	//	смещение берем от предыдущего элемента
-			oShapeRun.UpdateSizes	(*oXmlShape.style);																	//	размеры
-			oShapeRun.SetWrap		(oXmlShape.Wrap);																	//	обтекание
+			CShapeRun oShapeRun (pShape, pShape->GetID(), pStorage->GetOffSetSpa(m_nLocation));	//	СЃРјРµС‰РµРЅРёРµ Р±РµСЂРµРј РѕС‚ РїСЂРµРґС‹РґСѓС‰РµРіРѕ СЌР»РµРјРµРЅС‚Р°
+			oShapeRun.UpdateSizes	(*oXmlShape.style);																	//	СЂР°Р·РјРµСЂС‹
+			oShapeRun.SetWrap		(oXmlShape.Wrap);																	//	РѕР±С‚РµРєР°РЅРёРµ
 			oShapeRun.SetAnchor		((bool)(oXmlShape.anchorlock.is_init()));
 			oShapeRun.SetUseBehind	(*oXmlShape.style);	
 			oShapeRun.UpdateAnchorPosition (*oXmlShape.style);
 
-			if (typeid(T) == typeid(OOX::Logic::Line))	//	для DOC файла точки начала и конца линии устанавливаются в структуре SPA
+			if (typeid(T) == typeid(OOX::Logic::Line))	//	РґР»СЏ DOC С„Р°Р№Р»Р° С‚РѕС‡РєРё РЅР°С‡Р°Р»Р° Рё РєРѕРЅС†Р° Р»РёРЅРёРё СѓСЃС‚Р°РЅР°РІР»РёРІР°СЋС‚СЃСЏ РІ СЃС‚СЂСѓРєС‚СѓСЂРµ SPA
 			{
 				OOX::Logic::Line* pLine = (OOX::Logic::Line*)(&oXmlShape);
 				if (pLine)
@@ -237,7 +237,7 @@ namespace ASCDocFileFormat
 				}
 			}
 
-			if (oXmlShape.textbox.is_init())		// Привязка текста к автофигуры 
+			if (oXmlShape.textbox.is_init())		// РџСЂРёРІСЏР·РєР° С‚РµРєСЃС‚Р° Рє Р°РІС‚РѕС„РёРіСѓСЂС‹ 
 			{
 				m_pLastTbRef = pStorage->GenTbRef(m_nLocation);
 				if (m_pLastTbRef)
@@ -266,7 +266,7 @@ namespace ASCDocFileFormat
 			if (pShape)
 			{
 				int nType	=	oInnerRef.m_nType;
-				if (nType == OfficeArt::Enumerations::msosptTextStop)		//	пока не понятно что делать с такими фигурами
+				if (nType == OfficeArt::Enumerations::msosptTextStop)		//	РїРѕРєР° РЅРµ РїРѕРЅСЏС‚РЅРѕ С‡С‚Рѕ РґРµР»Р°С‚СЊ СЃ С‚Р°РєРёРјРё С„РёРіСѓСЂР°РјРё
 					nType	=	0;
 
 				pShape->SetShapeType (nType);
@@ -314,7 +314,7 @@ namespace ASCDocFileFormat
 					if (oInnerRef.m_strAdjustValues.length())
 						pShape->GetSettings()->GetGeometryStyle().SetAdjustValues(oInnerRef.m_strAdjustValues);
 
-					if (typeid(T) == typeid(OOX::Logic::Roundrect))		//	для DOC файла велична арки пишется в adjust свойство
+					if (typeid(T) == typeid(OOX::Logic::Roundrect))		//	РґР»СЏ DOC С„Р°Р№Р»Р° РІРµР»РёС‡РЅР° Р°СЂРєРё РїРёС€РµС‚СЃСЏ РІ adjust СЃРІРѕР№СЃС‚РІРѕ
 					{
 						OOX::Logic::Roundrect* roundrect = (OOX::Logic::Roundrect*)(&oXmlShape);
 						if (roundrect)
@@ -329,7 +329,7 @@ namespace ASCDocFileFormat
 					pShape->GetSettings()->SetWrapDist (oXmlShape.style);
 				}
 
-				// имеет место быть заливка картинкой
+				// РёРјРµРµС‚ РјРµСЃС‚Рѕ Р±С‹С‚СЊ Р·Р°Р»РёРІРєР° РєР°СЂС‚РёРЅРєРѕР№
 
 				if (m_strTextureFile.length())
 				{

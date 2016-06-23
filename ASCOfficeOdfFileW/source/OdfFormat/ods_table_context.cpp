@@ -63,7 +63,7 @@ void ods_table_context::add_defined_range(const std::wstring & name, const std::
 
 	formulasconvert::oox2odf_converter formulas_converter;
 
-	std::wstring odf_range = formulas_converter.convert_named_ref(cell_range);//todo - разделить конвертацию диапазонов/рэнжей на c [] и без
+	std::wstring odf_range = formulas_converter.convert_named_ref(cell_range);//todo - СЂР°Р·РґРµР»РёС‚СЊ РєРѕРЅРІРµСЂС‚Р°С†РёСЋ РґРёР°РїР°Р·РѕРЅРѕРІ/СЂСЌРЅР¶РµР№ РЅР° c [] Рё Р±РµР·
 	boost::algorithm::replace_all(odf_range, L"[", L"");
 	boost::algorithm::replace_all(odf_range, L"]", L"");
 	std::wstring odf_base_cell = formulas_converter.find_base_cell(cell_range);
@@ -163,8 +163,8 @@ void ods_table_context::start_table(office_element_ptr & elm)
 	state().set_table_style(style);
 	state().set_table_hidden(false);
 
-	//для свойств страницы, а не таблицы - нужно создать master-page c page layout и связать по имени со стилем таблицы
-	//причем здесь, т.к. с другой стороны это ВСЕ еще свойства листа. то есть совйства листа разделить на свйства страницы и таблицы ..
+	//РґР»СЏ СЃРІРѕР№СЃС‚РІ СЃС‚СЂР°РЅРёС†С‹, Р° РЅРµ С‚Р°Р±Р»РёС†С‹ - РЅСѓР¶РЅРѕ СЃРѕР·РґР°С‚СЊ master-page c page layout Рё СЃРІСЏР·Р°С‚СЊ РїРѕ РёРјРµРЅРё СЃРѕ СЃС‚РёР»РµРј С‚Р°Р±Р»РёС†С‹
+	//РїСЂРёС‡РµРј Р·РґРµСЃСЊ, С‚.Рє. СЃ РґСЂСѓРіРѕР№ СЃС‚РѕСЂРѕРЅС‹ СЌС‚Рѕ Р’РЎР• РµС‰Рµ СЃРІРѕР№СЃС‚РІР° Р»РёСЃС‚Р°. С‚Рѕ РµСЃС‚СЊ СЃРѕРІР№СЃС‚РІР° Р»РёСЃС‚Р° СЂР°Р·РґРµР»РёС‚СЊ РЅР° СЃРІР№СЃС‚РІР° СЃС‚СЂР°РЅРёС†С‹ Рё С‚Р°Р±Р»РёС†С‹ ..
 	//todooo
 	//????
 }

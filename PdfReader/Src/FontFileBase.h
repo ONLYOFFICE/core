@@ -1,4 +1,4 @@
-﻿#ifndef _PDF_READER_FONT_FILE_BASE_H
+#ifndef _PDF_READER_FONT_FILE_BASE_H
 #define _PDF_READER_FONT_FILE_BASE_H
 
 namespace PdfReader

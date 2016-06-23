@@ -12,14 +12,14 @@ struct _oox_numLit
 	bool present;
 
 };
-//extLst (Chart Extensibility) ง21.2.2.64
-//formatCode (Format Code) ง21.2.2.71
-//pt (Numeric Point) ง21.2.2.150
+//extLst (Chart Extensibility) ยง21.2.2.64
+//formatCode (Format Code) ยง21.2.2.71
+//pt (Numeric Point) ยง21.2.2.150
 //ptCount (Point Count)
 
-//extLst (Chart Extensibility) ง21.2.2.64
-//formatCode (Format Code) ง21.2.2.71
-//pt (Numeric Point) ง21.2.2.150
+//extLst (Chart Extensibility) ยง21.2.2.64
+//formatCode (Format Code) ยง21.2.2.71
+//pt (Numeric Point) ยง21.2.2.150
 //ptCount (Point Count)
 
 struct _oox_strRef
@@ -42,8 +42,8 @@ struct _oox_numRef
 	std::vector<std::wstring>	num_cache;
 
 };
-//extLst (Chart Extensibility) ง21.2.2.64
-//f (Formula) ง21.2.2.65
+//extLst (Chart Extensibility) ยง21.2.2.64
+//f (Formula) ยง21.2.2.65
 //numCache (Number Cache)
 
 struct _oox_chart_values
@@ -69,7 +69,7 @@ public:
 	_oox_strRef		strRef_;
 
 };
-//numLit (Number Literal) ง21.2.2.122
-//numRef (Number Reference) ง21.2.2.123
+//numLit (Number Literal) ยง21.2.2.122
+//numRef (Number Reference) ยง21.2.2.123
 }
 }

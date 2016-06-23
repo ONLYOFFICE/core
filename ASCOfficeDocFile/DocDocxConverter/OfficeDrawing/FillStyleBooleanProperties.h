@@ -2,7 +2,7 @@
 
 namespace DocFileFormat
 {
-	// 2.3.7.43 Fill Style Boolean Properties	-	[MS-ODRAW] — v20130726
+	// 2.3.7.43 Fill Style Boolean Properties	-	[MS-ODRAW] â€” v20130726
 
 	class FillStyleBooleanProperties
 	{

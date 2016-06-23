@@ -1,4 +1,4 @@
-﻿#ifndef _PDF_WRITER_SRC_PAGES_H
+#ifndef _PDF_WRITER_SRC_PAGES_H
 #define _PDF_WRITER_SRC_PAGES_H
 
 #include "Objects.h"

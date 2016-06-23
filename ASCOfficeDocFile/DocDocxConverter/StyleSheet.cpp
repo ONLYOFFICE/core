@@ -1,4 +1,4 @@
-﻿
+
 #include "StyleSheet.h"
 
 namespace DocFileFormat

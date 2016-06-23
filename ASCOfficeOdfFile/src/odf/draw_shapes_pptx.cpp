@@ -88,14 +88,14 @@ void draw_shape::common_pptx_convert(oox::pptx_conversion_context & Context)
 	odf_reader::style_instance* baseStyleInst = 
 		Context.root()->odf_context().styleContainer().style_by_name(baseStyleName, odf_types::style_family::Presentation,Context.process_masters_);
 
-	if (baseStyleInst)//векторная фигура презентаций
+	if (baseStyleInst)//РІРµРєС‚РѕСЂРЅР°СЏ С„РёРіСѓСЂР° РїСЂРµР·РµРЅС‚Р°С†РёР№
 	{
 		style_instance * defaultStyle = Context.root()->odf_context().styleContainer().style_default_by_type(odf_types::style_family::Presentation);
 		if (defaultStyle)instances.push_back(defaultStyle);
 
 		instances.push_back(baseStyleInst);
 	}
-	else if (grStyleInst)//обычная векторная фигура
+	else if (grStyleInst)//РѕР±С‹С‡РЅР°СЏ РІРµРєС‚РѕСЂРЅР°СЏ С„РёРіСѓСЂР°
 	{		
 		style_instance * defaultStyle = Context.root()->odf_context().styleContainer().style_default_by_type(odf_types::style_family::Graphic);
 		if (defaultStyle)instances.push_back(defaultStyle);
@@ -217,7 +217,7 @@ void draw_caption::pptx_convert(oox::pptx_conversion_context & Context)
 {
 	//const std::wstring style = common_draw_text_style_name_attlist_.draw_text_style_name_.get_value_or(style_ref(L"")).style_name();
 
-	Context.get_slide_context().start_shape(sub_type_);//rect с наваротами-атрибутами .. а-ля TextBox
+	Context.get_slide_context().start_shape(sub_type_);//rect СЃ РЅР°РІР°СЂРѕС‚Р°РјРё-Р°С‚СЂРёР±СѓС‚Р°РјРё .. Р°-Р»СЏ TextBox
 	
 	common_pptx_convert(Context);
 
@@ -262,7 +262,7 @@ void draw_connector::pptx_convert(oox::pptx_conversion_context & Context)
 
 	common_pptx_convert(Context);
 	
-//перебъем заливку .. 
+//РїРµСЂРµР±СЉРµРј Р·Р°Р»РёРІРєСѓ .. 
 	oox::_oox_fill fill;
 	fill.type = 0;
 	Context.get_slide_context().set_fill(fill);

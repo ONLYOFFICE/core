@@ -1,4 +1,4 @@
-﻿#ifndef _PDF_READER_PDF_DOC_H
+#ifndef _PDF_READER_PDF_DOC_H
 #define _PDF_READER_PDF_DOC_H
 
 #include <stdio.h>

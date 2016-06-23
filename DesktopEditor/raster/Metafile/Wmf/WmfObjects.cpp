@@ -50,7 +50,7 @@ namespace MetaFile
 		BYTE* pBufferPtr = new BYTE[ulBufferSize];
 		oImage.Create(pBufferPtr, ulWidth, ulHeight, 4 * ulWidth);
 
-		// Пишем данные в pBufferPtr
+		// РџРёС€РµРј РґР°РЅРЅС‹Рµ РІ pBufferPtr
 		for (unsigned int ulIndex = 0; ulIndex < ulBufferSize; ulIndex += 4)
 		{
 			pBufferPtr[0] = (unsigned char)pBuffer[ulIndex + 0];

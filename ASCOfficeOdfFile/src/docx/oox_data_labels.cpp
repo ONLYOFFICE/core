@@ -11,7 +11,7 @@
 namespace cpdoccore {
 namespace oox {
 
-oox_data_labels::oox_data_labels()//подписи на значениях
+oox_data_labels::oox_data_labels()//РїРѕРґРїРёСЃРё РЅР° Р·РЅР°С‡РµРЅРёСЏС…
 {
 	showBubbleSize_		= false;
 	showCatName_		= false;

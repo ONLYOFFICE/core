@@ -155,7 +155,7 @@ namespace NSPresentationEditor
 		{
 			size_t nCount = m_arParts.size();
 
-			// нормализуем для начала
+			// РЅРѕСЂРјР°Р»РёР·СѓРµРј РґР»СЏ РЅР°С‡Р°Р»Р°
 			for (size_t i = 0; i < nCount; ++i)
 			{
 				CAudioPart* pPart = &m_arParts[i];
@@ -176,7 +176,7 @@ namespace NSPresentationEditor
 				}
 			}
 
-			// пересчет
+			// РїРµСЂРµСЃС‡РµС‚
 			for (size_t i = 0; i < nCount; ++i)
 			{
 				CAudioPart* pPart = &m_arParts[i];
@@ -185,7 +185,7 @@ namespace NSPresentationEditor
 				{
 					if (pPart->m_bStop)
 					{
-						// нужно остановить всю музыку до этого
+						// РЅСѓР¶РЅРѕ РѕСЃС‚Р°РЅРѕРІРёС‚СЊ РІСЃСЋ РјСѓР·С‹РєСѓ РґРѕ СЌС‚РѕРіРѕ
 						for (size_t j = 0; j < nCount; ++j)
 						{
 							if (j == i)
@@ -200,7 +200,7 @@ namespace NSPresentationEditor
 					}
 					if (pPart->m_bLoop)
 					{
-						// зацикливаем до первого встречания аудио
+						// Р·Р°С†РёРєР»РёРІР°РµРј РґРѕ РїРµСЂРІРѕРіРѕ РІСЃС‚СЂРµС‡Р°РЅРёСЏ Р°СѓРґРёРѕ
 
 						double dMin = m_dAllDuration;
 						for (size_t j = 0; j < nCount; ++j)

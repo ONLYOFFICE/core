@@ -57,13 +57,13 @@ namespace PPTX
 			}
 
 			Parse();
-			// todooo .. разбить строку и создать структуру <a:p>...</a:p><a:p>...</a:p>...<a:p>...</a:p>  
-			// щас используется 'нулевой' вариант
-			// незабыть поменять в doc_LoadShape (ASCOfficeDrawingConvert.cpp)
+			// todooo .. СЂР°Р·Р±РёС‚СЊ СЃС‚СЂРѕРєСѓ Рё СЃРѕР·РґР°С‚СЊ СЃС‚СЂСѓРєС‚СѓСЂСѓ <a:p>...</a:p><a:p>...</a:p>...<a:p>...</a:p>  
+			// С‰Р°СЃ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ 'РЅСѓР»РµРІРѕР№' РІР°СЂРёР°РЅС‚
+			// РЅРµР·Р°Р±С‹С‚СЊ РїРѕРјРµРЅСЏС‚СЊ РІ doc_LoadShape (ASCOfficeDrawingConvert.cpp)
 		}
 		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, PPTX::ContentTypes::File& content)const
 		{
-			//старье на запись не поддерживаем
+			//СЃС‚Р°СЂСЊРµ РЅР° Р·Р°РїРёСЃСЊ РЅРµ РїРѕРґРґРµСЂР¶РёРІР°РµРј
 			content.registration(type().OverrideType(), directory, filename);
 		}
 		
@@ -272,7 +272,7 @@ namespace PPTX
 			else
                 Bulleted	= false;
 		}
-//todooo протестировано тока align
+//todooo РїСЂРѕС‚РµСЃС‚РёСЂРѕРІР°РЅРѕ С‚РѕРєР° align
 		if (bulletChar_)
 		{
 			Logic::BuChar *buChar = new Logic::BuChar();
@@ -442,7 +442,7 @@ namespace PPTX
 		bool bIsFontStylePresent = (hasBold || hasItalic || hasUnderline || hasShadow || 
 			hasFehint || hasKimi || hasEmboss || hasStyle != 0);
 		
-//todooo протестировано тока sz, color
+//todooo РїСЂРѕС‚РµСЃС‚РёСЂРѕРІР°РЅРѕ С‚РѕРєР° sz, color
 		if (bIsFontStylePresent)
 		{
 			WORD fontStyle = *(_UINT16*)(Data + pos); pos += 2;
@@ -514,7 +514,7 @@ namespace PPTX
 			int BaseLineOffset = (double)(*(_UINT16*)(Data + pos)); pos += 2;
 		}
 
-		// или два последних наоборот????
+		// РёР»Рё РґРІР° РїРѕСЃР»РµРґРЅРёС… РЅР°РѕР±РѕСЂРѕС‚????
 
 		return pos;
 	}

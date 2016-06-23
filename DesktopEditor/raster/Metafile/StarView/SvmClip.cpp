@@ -1,4 +1,4 @@
-﻿#include "SvmClip.h"
+#include "SvmClip.h"
 
 namespace MetaFile
 {

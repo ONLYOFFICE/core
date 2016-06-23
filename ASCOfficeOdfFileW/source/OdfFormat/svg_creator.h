@@ -27,7 +27,7 @@ namespace svg_path
 	struct _polyline
 	{
 		std::wstring command;
-		std::vector<_point> points; //будем бить строку пути по количеству точек в буковках
+		std::vector<_point> points; //Р±СѓРґРµРј Р±РёС‚СЊ СЃС‚СЂРѕРєСѓ РїСѓС‚Рё РїРѕ РєРѕР»РёС‡РµСЃС‚РІСѓ С‚РѕС‡РµРє РІ Р±СѓРєРѕРІРєР°С…
 
 	};
 	//m - 1 point

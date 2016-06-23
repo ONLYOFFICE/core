@@ -172,7 +172,7 @@ namespace DocFileFormat
 				{
 					wchar_t xchBullet = lvl->xst[0];
 
-					// Â ñèìâîëüíîì øðèôòå îáðåçàòü íàäî, â äðóãèõ ñëó÷àÿõ - íåò
+					// Ð’ ÑÐ¸Ð¼Ð²Ð¾Ð»ÑŒÐ½Ð¾Ð¼ ÑˆÑ€Ð¸Ñ„Ñ‚Ðµ Ð¾Ð±Ñ€ÐµÐ·Ð°Ñ‚ÑŒ Ð½Ð°Ð´Ð¾, Ð² Ð´Ñ€ÑƒÐ³Ð¸Ñ… ÑÐ»ÑƒÑ‡Ð°ÑÑ… - Ð½ÐµÑ‚
 					if (true == bIsSymbol && (xchBullet & 0xF000) != 0)
 					{
 						xchBullet &= 0x0FFF;
@@ -357,7 +357,7 @@ namespace DocFileFormat
 	{
 		if (lvl)
 		{
-			XmlUtils::CXmlWriter oWriterTemp;	//Âðåìåííûé writer,÷òî íå íàðóøàòü ïîñëåäîâàòåëüíîñòü çàïèñè
+			XmlUtils::CXmlWriter oWriterTemp;	//Ð’Ñ€ÐµÐ¼ÐµÐ½Ð½Ñ‹Ð¹ writer,Ñ‡Ñ‚Ð¾ Ð½Ðµ Ð½Ð°Ñ€ÑƒÑˆÐ°Ñ‚ÑŒ Ð¿Ð¾ÑÐ»ÐµÐ´Ð¾Ð²Ð°Ñ‚ÐµÐ»ÑŒÐ½Ð¾ÑÑ‚ÑŒ Ð·Ð°Ð¿Ð¸ÑÐ¸
 
 			//rPr
 
@@ -365,7 +365,7 @@ namespace DocFileFormat
 			CharacterPropertiesMapping cpMapping(&oWriterTemp, m_document, &rev, lvl->grpprlPapx, false);
 			lvl->grpprlChpx->Convert(&cpMapping);
 
-			// Ïðîâåðÿåì øðèôò
+			// ÐŸÑ€Ð¾Ð²ÐµÑ€ÑÐµÐ¼ ÑˆÑ€Ð¸Ñ„Ñ‚
 
 			m_pXmlWriter->WriteNodeBegin( _T( "w:lvl" ), TRUE );
 			m_pXmlWriter->WriteAttribute( _T( "w:ilvl" ), FormatUtils::IntToWideString(level).c_str());
@@ -428,7 +428,7 @@ namespace DocFileFormat
 			ParagraphPropertiesMapping oppMapping(m_pXmlWriter, m_context, m_document, NULL, isBidi);
 			lvl->grpprlPapx->Convert(&oppMapping);
 
-			// ïèøåì rPr
+			// Ð¿Ð¸ÑˆÐµÐ¼ rPr
 
 			m_pXmlWriter->WriteString(oWriterTemp.GetXmlString());
 

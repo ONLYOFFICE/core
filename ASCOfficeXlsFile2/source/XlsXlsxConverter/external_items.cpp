@@ -54,7 +54,7 @@ std::wstring static get_default_file_name(external_items::Type type)
 //	{
 //
 //	}
-//	//todooo проверить
+//	//todooo РїСЂРѕРІРµСЂРёС‚СЊ
 //   
 //	return get_default_file_name(type) + boost::lexical_cast<std::wstring>(Num) + sExt;
 //}

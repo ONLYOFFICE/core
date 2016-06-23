@@ -90,7 +90,7 @@ namespace OOX
 			}
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: –Â‡ÎËÁÓ‚‡Ú¸ fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: –†–µ–∞–ª–∏–∑–æ–≤–∞—Ç—å fromXML(XmlUtils::CXmlNode& oNode)
 			}
 		public:
 			virtual CString      toXML() const
@@ -133,9 +133,9 @@ namespace OOX
 			}
 		public:
 			nullable<OOX::Drawing::CTxBody>		m_oTxBody;
-//extLst (Extension List) ß20.1.2.2.15
-//useSpRect (Use Shape Text Rectangle) ß20.1.2.2.42
-//xfrm (2D Transform for Individual Objects) ß20.1.7.6
+//extLst (Extension List) –Ü20.1.2.2.15
+//useSpRect (Use Shape Text Rectangle) –Ü20.1.2.2.42
+//xfrm (2D Transform for Individual Objects) –Ü20.1.7.6
 		};
 	} // namespace Drawing
 } // namespace OOX

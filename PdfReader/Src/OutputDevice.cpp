@@ -1,4 +1,4 @@
-﻿#include <stddef.h>
+#include <stddef.h>
 #include "Object.h"
 #include "Stream.h"
 #include "GState.h"

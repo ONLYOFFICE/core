@@ -1,4 +1,4 @@
-﻿#ifndef PPTX_LOGIC_NV_PROPERTIES_INCLUDE_H_
+#ifndef PPTX_LOGIC_NV_PROPERTIES_INCLUDE_H_
 #define PPTX_LOGIC_NV_PROPERTIES_INCLUDE_H_
 
 #include "./../WrapperWritingElement.h"

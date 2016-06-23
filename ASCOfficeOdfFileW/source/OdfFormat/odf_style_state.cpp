@@ -120,7 +120,7 @@ void odf_style_state::set_automatic(bool val)
 {
 	automatic_ = val;
 }
-void odf_style_state::set_root(bool val)//метка того что в файле styles, а не content
+void odf_style_state::set_root(bool val)//РјРµС‚РєР° С‚РѕРіРѕ С‡С‚Рѕ РІ С„Р°Р№Р»Рµ styles, Р° РЅРµ content
 {
 	root_ = val;
 }

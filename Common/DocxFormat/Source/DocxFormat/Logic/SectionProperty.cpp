@@ -1,4 +1,4 @@
-﻿#include "SectionProperty.h"
+#include "SectionProperty.h"
 
 namespace OOX
 {

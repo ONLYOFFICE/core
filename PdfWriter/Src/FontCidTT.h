@@ -1,4 +1,4 @@
-﻿#ifndef _PDF_WRITER_SRC_FONTCIDTT_H
+#ifndef _PDF_WRITER_SRC_FONTCIDTT_H
 #define _PDF_WRITER_SRC_FONTCIDTT_H
 
 #include "Font.h"

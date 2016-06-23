@@ -76,11 +76,11 @@ namespace OOX
                 bool Write(const CPath& oFilePath)
 		{
 
-			// TO DO: Запись надо править. Она НЕ РАБОТАЕТ!!!! Проблемы в IFileContainer.
+			// TO DO: Р—Р°РїРёСЃСЊ РЅР°РґРѕ РїСЂР°РІРёС‚СЊ. РћРЅР° РќР• Р РђР‘РћРўРђР•Рў!!!! РџСЂРѕР±Р»РµРјС‹ РІ IFileContainer.
 
             //return false;
 
-			// Создаем папку
+			// РЎРѕР·РґР°РµРј РїР°РїРєСѓ
 #if defined(_WIN32) || defined (_WIN64)
 			CreateDirectoryW( oFilePath.GetPath(), NULL );
 #else
@@ -177,13 +177,13 @@ namespace OOX
 		OOX::CApp       *m_pApp;
 		OOX::CCore      *m_pCore;
 
-		OOX::CDocument  *m_pDocument;   // Основной документ word/document.xml
-		OOX::CFontTable *m_pFontTable;  // Таблица шрифтов   word/fonttable.xml
-		OOX::CNumbering *m_pNumbering;  // Нумерации         word/numbering.xml
-		OOX::CStyles    *m_pStyles;     // Стили             word/styles.xml
-		OOX::CFootnotes *m_pFootnotes;  // Сноски            word/footnotes.xml
-		OOX::CEndnotes  *m_pEndnotes;   // Сноски            word/endnotes.xml
-		OOX::CSettings  *m_pSettings;   // Настройки         word/settings.xml
+		OOX::CDocument  *m_pDocument;   // РћСЃРЅРѕРІРЅРѕР№ РґРѕРєСѓРјРµРЅС‚ word/document.xml
+		OOX::CFontTable *m_pFontTable;  // РўР°Р±Р»РёС†Р° С€СЂРёС„С‚РѕРІ   word/fonttable.xml
+		OOX::CNumbering *m_pNumbering;  // РќСѓРјРµСЂР°С†РёРё         word/numbering.xml
+		OOX::CStyles    *m_pStyles;     // РЎС‚РёР»Рё             word/styles.xml
+		OOX::CFootnotes *m_pFootnotes;  // РЎРЅРѕСЃРєРё            word/footnotes.xml
+		OOX::CEndnotes  *m_pEndnotes;   // РЎРЅРѕСЃРєРё            word/endnotes.xml
+		OOX::CSettings  *m_pSettings;   // РќР°СЃС‚СЂРѕР№РєРё         word/settings.xml
 		OOX::CComments  *m_pComments;   //			         word/comments.xml
 		OOX::CCommentsExt *m_pCommentsExt;//		         word/commentsExtended.xml
 		OOX::CPeople	*m_pPeople;		//				     word/people.xml

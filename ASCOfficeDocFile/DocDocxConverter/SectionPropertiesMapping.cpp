@@ -87,7 +87,7 @@ namespace DocFileFormat
 			WriteSectionStory (pTable->GetFirstFooters (m_nSelectProperties), std::wstring(L"footerReference"), std::wstring(L"first"));
 		}
 
-		//MUST be ignored if the section does not have page number restart enabled.([MS-DOC] — v20101113. стр 152)
+		//MUST be ignored if the section does not have page number restart enabled.([MS-DOC] Р§ v20101113. СЃС‚СЂ 152)
 		bool bWasSprmSFPgnRestart = false;
 		wstring wsSprmSPgnStart;
 

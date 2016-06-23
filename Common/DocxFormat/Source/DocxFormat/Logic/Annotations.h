@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #ifndef OOX_LOGIC_RANGE_MURKUP_ELEMENTS_INCLUDE_H_
 #define OOX_LOGIC_RANGE_MURKUP_ELEMENTS_INCLUDE_H_

@@ -1,4 +1,4 @@
-﻿#include "Document.h"
+#include "Document.h"
 #include "StaticResources.h"
 
 #include "../../DesktopEditor/xml/include/xmlutils.h"

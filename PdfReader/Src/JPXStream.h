@@ -1,4 +1,4 @@
-﻿#ifndef _PDF_READER_JPXSTREAM_H
+#ifndef _PDF_READER_JPXSTREAM_H
 #define _PDF_READER_JPXSTREAM_H
 
 #include "Object.h"

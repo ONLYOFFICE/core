@@ -68,7 +68,7 @@ bool office_element_creator::register_element(const std::wstring &ns, const std:
     }
     else
     {
-        // TODO: ıëåìåíò óæå åñòü, íåïîíÿòíî ÷òî äåëàòü
+        // TODO: ÑĞ»ĞµĞ¼ĞµĞ½Ñ‚ ÑƒĞ¶Ğµ ĞµÑÑ‚ÑŒ, Ğ½ĞµĞ¿Ğ¾Ğ½ÑÑ‚Ğ½Ğ¾ Ñ‡Ñ‚Ğ¾ Ğ´ĞµĞ»Ğ°Ñ‚ÑŒ
         i->second = f;
     }
     return true;

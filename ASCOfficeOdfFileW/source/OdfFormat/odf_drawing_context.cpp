@@ -204,14 +204,14 @@ public:
 		width = height = x = y = 0;
 		is_header_ = false;
 		is_footer_ = false;
-	  //некоторые свойства для объектов графики не поддерживаюися в редакторах Liber && OpenOffice.net
-									//в MS Office и в нашем - проблем таких нет.
+	  //РЅРµРєРѕС‚РѕСЂС‹Рµ СЃРІРѕР№СЃС‚РІР° РґР»СЏ РѕР±СЉРµРєС‚РѕРІ РіСЂР°С„РёРєРё РЅРµ РїРѕРґРґРµСЂР¶РёРІР°СЋРёСЃСЏ РІ СЂРµРґР°РєС‚РѕСЂР°С… Liber && OpenOffice.net
+									//РІ MS Office Рё РІ РЅР°С€РµРј - РїСЂРѕР±Р»РµРј С‚Р°РєРёС… РЅРµС‚.
 	} 
 	
 	odf_drawing_state				current_drawing_state_;
 	_drawing_part					current_drawing_part_;
 	
-	std::vector<office_element_ptr> current_level_;//постоянно меняющийся список уровней наследования
+	std::vector<office_element_ptr> current_level_;//РїРѕСЃС‚РѕСЏРЅРЅРѕ РјРµРЅСЏСЋС‰РёР№СЃСЏ СЃРїРёСЃРѕРє СѓСЂРѕРІРЅРµР№ РЅР°СЃР»РµРґРѕРІР°РЅРёСЏ
 
 	odf_style_context			*styles_context_;
 	odf_conversion_context		*odf_context_;
@@ -231,8 +231,8 @@ public:
 	graphic_format_properties		preset_graphic_format_properties;
 
 	odf_group_state_ptr					current_group_;
-	std::vector<odf_group_state_ptr>	group_list_; //группы
-	std::vector<odf_drawing_state>		drawing_list_;	//все элементы(кроме групп) .. для удобства разделение по "топам"
+	std::vector<odf_group_state_ptr>	group_list_; //РіСЂСѓРїРїС‹
+	std::vector<odf_drawing_state>		drawing_list_;	//РІСЃРµ СЌР»РµРјРµРЅС‚С‹(РєСЂРѕРјРµ РіСЂСѓРїРї) .. РґР»СЏ СѓРґРѕР±СЃС‚РІР° СЂР°Р·РґРµР»РµРЅРёРµ РїРѕ "С‚РѕРїР°Рј"
 
 	office_element_ptr root_element_;
 	
@@ -276,7 +276,7 @@ void odf_drawing_context::check_anchor()
 	if ((impl_->is_footer_ || impl_->is_header_) && (impl_->anchor_settings_.run_through_) && (impl_->anchor_settings_.run_through_->get_type() == run_through::Background))
 	{
 		set_anchor(anchor_type::Char);
-		//подозрительно на подложку страницы
+		//РїРѕРґРѕР·СЂРёС‚РµР»СЊРЅРѕ РЅР° РїРѕРґР»РѕР¶РєСѓ СЃС‚СЂР°РЅРёС†С‹
 		impl_->anchor_settings_.style_wrap_ = style_wrap(style_wrap::RunThrough);
 		impl_->anchor_settings_.run_through_ = run_through(run_through::Background);
 
@@ -305,7 +305,7 @@ void odf_drawing_context::start_group()
 	
 	if (group== NULL)return;
 
-	//если группа топовая - то данные если не записать - сотруться
+	//РµСЃР»Рё РіСЂСѓРїРїР° С‚РѕРїРѕРІР°СЏ - С‚Рѕ РґР°РЅРЅС‹Рµ РµСЃР»Рё РЅРµ Р·Р°РїРёСЃР°С‚СЊ - СЃРѕС‚СЂСѓС‚СЊСЃСЏ
 	if (impl_->current_drawing_state_.name_.length() > 0)
 		group->common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_draw_name_attlist_.draw_name_ = impl_->current_drawing_state_.name_;
 	if (impl_->current_drawing_state_.z_order_ >= 0)
@@ -438,7 +438,7 @@ void odf_drawing_context::end_drawing()
 
 			}
 			strTransform += std::wstring(L"rotate(") + boost::lexical_cast<std::wstring>(impl_->current_drawing_state_.rotateAngle.get()) + std::wstring(L")");
-			//так как вращения все в мс относительно центра фигуры, а не от начала координат - убираем смещение
+			//С‚Р°Рє РєР°Рє РІСЂР°С‰РµРЅРёСЏ РІСЃРµ РІ РјСЃ РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ С†РµРЅС‚СЂР° С„РёРіСѓСЂС‹, Р° РЅРµ РѕС‚ РЅР°С‡Р°Р»Р° РєРѕРѕСЂРґРёРЅР°С‚ - СѓР±РёСЂР°РµРј СЃРјРµС‰РµРЅРёРµ
 
 			if (impl_->current_drawing_state_.svg_x_ && impl_->current_drawing_state_.svg_y_)
 			{
@@ -489,7 +489,7 @@ void odf_drawing_context::end_drawing()
 		}
 	}else
 	{
-		//не поддерживается :( - нужно считать искажения на простейшие фигуры - линии, ректы, эллипсы 
+		//РЅРµ РїРѕРґРґРµСЂР¶РёРІР°РµС‚СЃСЏ :( - РЅСѓР¶РЅРѕ СЃС‡РёС‚Р°С‚СЊ РёСЃРєР°Р¶РµРЅРёСЏ РЅР° РїСЂРѕСЃС‚РµР№С€РёРµ С„РёРіСѓСЂС‹ - Р»РёРЅРёРё, СЂРµРєС‚С‹, СЌР»Р»РёРїСЃС‹ 
 	}
 
 
@@ -616,11 +616,11 @@ void odf_drawing_context::start_shape(int type)
 	}
 	else if (type == 1000)
 	{
-		impl_->create_draw_base(7);//пока кастом .. потом переделать на path, что правильнее
+		impl_->create_draw_base(7);//РїРѕРєР° РєР°СЃС‚РѕРј .. РїРѕС‚РѕРј РїРµСЂРµРґРµР»Р°С‚СЊ РЅР° path, С‡С‚Рѕ РїСЂР°РІРёР»СЊРЅРµРµ
 	}
 	else if (type == 1001)
 	{
-		impl_->create_draw_base(6);//пока кастом .. потом переделать на path, что правильнее
+		impl_->create_draw_base(6);//РїРѕРєР° РєР°СЃС‚РѕРј .. РїРѕС‚РѕРј РїРµСЂРµРґРµР»Р°С‚СЊ РЅР° path, С‡С‚Рѕ РїСЂР°РІРёР»СЊРЅРµРµ
 	}
 	else if (type == 2000)
 	{
@@ -656,7 +656,7 @@ bool odf_drawing_context::change_text_box_2_wordart()
 	int sz_state = impl_->current_drawing_state_.elements_.size();
 	if (sz_state < 2) return false;
 
-	if (sz > 2) //в группе ??
+	if (sz > 2) //РІ РіСЂСѓРїРїРµ ??
 	{
 		draw_base* draw_old = dynamic_cast<draw_base*>(impl_->current_level_[sz-2].get());
 		if (draw_old)
@@ -691,7 +691,7 @@ void odf_drawing_context::end_shape()
 
 	if (impl_->current_drawing_state_.oox_shape_preset == 2000) return end_text_box();
 	if (impl_->current_drawing_state_.oox_shape_preset == 3000) return end_image();
-	//вторичные, вычисляемые свойства шейпов
+	//РІС‚РѕСЂРёС‡РЅС‹Рµ, РІС‹С‡РёСЃР»СЏРµРјС‹Рµ СЃРІРѕР№СЃС‚РІР° С€РµР№РїРѕРІ
 
 	bool line_always_present = false;
 
@@ -765,7 +765,7 @@ void odf_drawing_context::end_shape()
 		{
 			sub_type = Shape_Types_Mapping[impl_->current_drawing_state_.oox_shape_preset].first;
 		}
-		else if (impl_->current_drawing_state_.oox_shape_preset > 2000 && impl_->current_drawing_state_.oox_shape_preset < 3000)// 3000 - все равно сюда не попадет
+		else if (impl_->current_drawing_state_.oox_shape_preset > 2000 && impl_->current_drawing_state_.oox_shape_preset < 3000)// 3000 - РІСЃРµ СЂР°РІРЅРѕ СЃСЋРґР° РЅРµ РїРѕРїР°РґРµС‚
 		{
 			text_shape = true;
 		}
@@ -827,7 +827,7 @@ void odf_drawing_context::end_shape()
 					{
 						enhanced->draw_enhanced_geometry_attlist_.draw_modifiers_ = impl_->current_drawing_state_.modifiers_;
 					}
-					else // обязательно нужны дефолтовые
+					else // РѕР±СЏР·Р°С‚РµР»СЊРЅРѕ РЅСѓР¶РЅС‹ РґРµС„РѕР»С‚РѕРІС‹Рµ
 						enhanced->draw_enhanced_geometry_attlist_.draw_modifiers_ = shape_define->modifiers;
 
 					enhanced->draw_enhanced_geometry_attlist_.draw_enhanced_path_ = shape_define->enhanced_path;
@@ -1028,7 +1028,7 @@ void odf_drawing_context::set_solid_fill(std::wstring hexColor)
 		impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_					= draw_fill::solid;
 		impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_color_				= hexColor;
 		impl_->current_graphic_properties->content().common_background_color_attlist_.fo_background_color_	= color(hexColor);
-		//последнее нужно - что если будут вводить текст - под текстом будет цвет фона (или он поменяется в полях текста)
+		//РїРѕСЃР»РµРґРЅРµРµ РЅСѓР¶РЅРѕ - С‡С‚Рѕ РµСЃР»Рё Р±СѓРґСѓС‚ РІРІРѕРґРёС‚СЊ С‚РµРєСЃС‚ - РїРѕРґ С‚РµРєСЃС‚РѕРј Р±СѓРґРµС‚ С†РІРµС‚ С„РѕРЅР° (РёР»Рё РѕРЅ РїРѕРјРµРЅСЏРµС‚СЃСЏ РІ РїРѕР»СЏС… С‚РµРєСЃС‚Р°)
 		break;
 	case Line:
 		impl_->current_graphic_properties->content().svg_stroke_color_ =  hexColor;
@@ -1055,7 +1055,7 @@ void odf_drawing_context::set_path(std::wstring path_string)
 {
 	//boost::replace_all(path_string, L",,", L" 0 ");
 	//boost::replace_all(path_string, L" -", L"-");
-	//boost::replace_all(path_string, L",", L"0"); // нужен разбор
+	//boost::replace_all(path_string, L",", L"0"); // РЅСѓР¶РµРЅ СЂР°Р·Р±РѕСЂ
 	//impl_->current_drawing_state_.path_ = path_string;
 }
 void odf_drawing_context::add_path_element(std::wstring command, std::wstring & strE)
@@ -1119,9 +1119,9 @@ void odf_drawing_context::set_rotate(double dVal)
 	double dRotate = dVal / 180. * 3.14159265358979323846;
 	impl_->current_drawing_state_.rotateAngle = dRotate;
 }
-void odf_drawing_context::set_drawings_rect(_CP_OPT(double) x_pt, _CP_OPT(double) y_pt, _CP_OPT(double) width_pt, _CP_OPT(double) height_pt)// "- 1" не задано
+void odf_drawing_context::set_drawings_rect(_CP_OPT(double) x_pt, _CP_OPT(double) y_pt, _CP_OPT(double) width_pt, _CP_OPT(double) height_pt)// "- 1" РЅРµ Р·Р°РґР°РЅРѕ
 {
-	//хороший тон сохранить все размеры в см (хотя можно и в другой системе)
+	//С…РѕСЂРѕС€РёР№ С‚РѕРЅ СЃРѕС…СЂР°РЅРёС‚СЊ РІСЃРµ СЂР°Р·РјРµСЂС‹ РІ СЃРј (С…РѕС‚СЏ РјРѕР¶РЅРѕ Рё РІ РґСЂСѓРіРѕР№ СЃРёСЃС‚РµРјРµ)
 	if (x_pt)
 	{
 		impl_->x = *x_pt;
@@ -1590,7 +1590,7 @@ std::wstring odf_drawing_context::add_marker_style(int type)
 	if (impl_->styles_context_->find_odf_style(str_types[type],style_family::Marker,style_)) return str_types[type];
 	
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
-//	генерация типа маркера
+//	РіРµРЅРµСЂР°С†РёСЏ С‚РёРїР° РјР°СЂРєРµСЂР°
 	odf_writer::office_element_ptr marker_element;
 
 	odf_writer::create_element(L"draw",L"marker", marker_element, impl_->odf_context_);
@@ -1633,7 +1633,7 @@ void odf_drawing_context::set_line_dash_preset(int style)
 {
 	if (!impl_->current_graphic_properties)return;
 
-	switch(style)	//+создать стиль, привзать имена
+	switch(style)	//+СЃРѕР·РґР°С‚СЊ СЃС‚РёР»СЊ, РїСЂРёРІР·Р°С‚СЊ РёРјРµРЅР°
 	{
 		case 0://presetlinedashvalDash    
 		case 7://presetlinedashvalSysDash     
@@ -1725,7 +1725,7 @@ void odf_drawing_context::set_textarea_fontcolor(std::wstring hexColor)
 }
 void odf_drawing_context::set_textarea_writing_mode(int mode)
 {
-	if (mode == 1) return;//незачем
+	if (mode == 1) return;//РЅРµР·Р°С‡РµРј
 	if (impl_->current_drawing_state_.elements_.size() < 1)return;
 
 	if (!impl_->current_paragraph_properties)
@@ -1751,7 +1751,7 @@ void odf_drawing_context::set_textarea_writing_mode(int mode)
 		else
 		{
 			std::wstring style_name = draw->common_draw_attlists_.shape_with_text_and_styles_.common_draw_text_style_name_attlist_.draw_text_style_name_->style_name();
-			//найти
+			//РЅР°Р№С‚Рё
 		}
 		if (style_ && !paragraph_properties)
 		{
@@ -1764,7 +1764,7 @@ void odf_drawing_context::set_textarea_writing_mode(int mode)
 	{
 		case 5://textverticaltypeWordArtVert:
 		case 6://textverticaltypeWordArtVertRtl:
-		case 4://SimpleTypes::textverticaltypeVert270: //нужно отзеркалить по горизонтали текст
+		case 4://SimpleTypes::textverticaltypeVert270: //РЅСѓР¶РЅРѕ РѕС‚Р·РµСЂРєР°Р»РёС‚СЊ РїРѕ РіРѕСЂРёР·РѕРЅС‚Р°Р»Рё С‚РµРєСЃС‚
 		case 3://SimpleTypes::textverticaltypeVert: 
 		case 2://SimpleTypes::textverticaltypeMongolianVert:
 			paragraph_properties->content().style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::TbRl);	
@@ -1796,7 +1796,7 @@ void odf_drawing_context::set_textarea_padding(double left,double top, double ri
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//вложенные элементы
+//РІР»РѕР¶РµРЅРЅС‹Рµ СЌР»РµРјРµРЅС‚С‹
 void odf_drawing_context::start_image(std::wstring odf_path)
 {	
 	if (impl_->is_footer_ || impl_->is_header_)
@@ -1817,7 +1817,7 @@ void odf_drawing_context::start_image(std::wstring odf_path)
 	
 	start_frame();
 
-	//добавить в стиль ссыль на базовый стиль Frame - зачемто нужно :(
+	//РґРѕР±Р°РІРёС‚СЊ РІ СЃС‚РёР»СЊ СЃСЃС‹Р»СЊ РЅР° Р±Р°Р·РѕРІС‹Р№ СЃС‚РёР»СЊ Frame - Р·Р°С‡РµРјС‚Рѕ РЅСѓР¶РЅРѕ :(
 	style* style_ = dynamic_cast<style*>(impl_->current_drawing_state_.elements_.back().style_elm.get());
 	if (style_)
 	{
@@ -1908,8 +1908,8 @@ void odf_drawing_context::set_text_box_min_size(double w_pt, double h_pt)
 void odf_drawing_context::set_text_box_parent_style(std::wstring style_name)
 {
 	if (impl_->current_drawing_state_.elements_.size() < 1) return;
-	//добавить в стиль ссыль на базовый стиль Frame - зачемто нужно для таблиц которые не инлайн 
-	style* style_ = dynamic_cast<style*>(impl_->current_drawing_state_.elements_[0].style_elm.get()); // на "головной" элекмент
+	//РґРѕР±Р°РІРёС‚СЊ РІ СЃС‚РёР»СЊ СЃСЃС‹Р»СЊ РЅР° Р±Р°Р·РѕРІС‹Р№ СЃС‚РёР»СЊ Frame - Р·Р°С‡РµРјС‚Рѕ РЅСѓР¶РЅРѕ РґР»СЏ С‚Р°Р±Р»РёС† РєРѕС‚РѕСЂС‹Рµ РЅРµ РёРЅР»Р°Р№РЅ 
+	style* style_ = dynamic_cast<style*>(impl_->current_drawing_state_.elements_[0].style_elm.get()); // РЅР° "РіРѕР»РѕРІРЅРѕР№" СЌР»РµРєРјРµРЅС‚
 	
 	if (style_)
 	{
@@ -1999,7 +1999,7 @@ bool odf_drawing_context::is_exist_content()
 	return (impl_->drawing_list_.size()>0 ? true : false);
 }
 
-void odf_drawing_context::finalize(office_element_ptr & root_elm)//для привязки 
+void odf_drawing_context::finalize(office_element_ptr & root_elm)//РґР»СЏ РїСЂРёРІСЏР·РєРё 
 {
 	for (int i=0; i< impl_->group_list_.size(); i++)
 	{
@@ -2037,7 +2037,7 @@ void odf_drawing_context::set_text(odf_text_context* text_context)
 
 	if (impl_->current_graphic_properties)
 	{
-		//автоувеличение при добавлении текста
+		//Р°РІС‚РѕСѓРІРµР»РёС‡РµРЅРёРµ РїСЂРё РґРѕР±Р°РІР»РµРЅРёРё С‚РµРєСЃС‚Р°
 		impl_->current_graphic_properties->content().draw_auto_grow_height_ = false;
 		impl_->current_graphic_properties->content().draw_auto_grow_width_ = false;
 		//impl_->current_graphic_properties->content().draw_fit_to_size_ = false;//???
@@ -2046,7 +2046,7 @@ void odf_drawing_context::set_text(odf_text_context* text_context)
 
 	if (impl_->current_drawing_state_.oox_shape_preset > 2000 && impl_->current_drawing_state_.oox_shape_preset < 3000)
 	{
-		//настройки цвета - перетащить в линии и заливки - так уж нужно wordart-у оо
+		//РЅР°СЃС‚СЂРѕР№РєРё С†РІРµС‚Р° - РїРµСЂРµС‚Р°С‰РёС‚СЊ РІ Р»РёРЅРёРё Рё Р·Р°Р»РёРІРєРё - С‚Р°Рє СѓР¶ РЅСѓР¶РЅРѕ wordart-Сѓ РѕРѕ
 		style_text_properties *text_properties_ = text_context->get_text_properties();
 		
 		if (text_properties_)

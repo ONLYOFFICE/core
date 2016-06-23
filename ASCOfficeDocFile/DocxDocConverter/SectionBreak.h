@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "ITextItem.h"
 #include "../Common/TextMark.h"

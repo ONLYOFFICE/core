@@ -1,4 +1,4 @@
-﻿#include "nativecontrol.h"
+#include "nativecontrol.h"
 
 std::wstring to_cstring(v8::Local<v8::Value> v)
 {

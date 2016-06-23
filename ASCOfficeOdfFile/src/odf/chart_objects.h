@@ -2,7 +2,7 @@
 
 #include <cpdoccore/xml/attributes.h>
 #include "../docx/oox_drawing_fills.h"
-//описание всяких графических объектов ( вложенная мелочевка) которые используются в xlsx & odf_reader - 
+//РѕРїРёСЃР°РЅРёРµ РІСЃСЏРєРёС… РіСЂР°С„РёС‡РµСЃРєРёС… РѕР±СЉРµРєС‚РѕРІ ( РІР»РѕР¶РµРЅРЅР°СЏ РјРµР»РѕС‡РµРІРєР°) РєРѕС‚РѕСЂС‹Рµ РёСЃРїРѕР»СЊР·СѓСЋС‚СЃСЏ РІ xlsx & odf_reader - 
 
 namespace cpdoccore { 
 namespace odf_reader {

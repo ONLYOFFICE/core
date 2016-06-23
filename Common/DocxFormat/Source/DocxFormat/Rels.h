@@ -73,7 +73,7 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				CString sTempTarget;
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("Id"),         m_rId )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("Target"),     sTempTarget )
@@ -81,7 +81,7 @@ namespace OOX
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("TargetMode"), m_sMode )
 				WritingElement_ReadAttributes_End( oReader )
 
-				//External rels не нормализуем, иначе искажаются пути в гиперссылках.
+				//External rels РЅРµ РЅРѕСЂРјР°Р»РёР·СѓРµРј, РёРЅР°С‡Рµ РёСЃРєР°Р¶Р°СЋС‚СЃСЏ РїСѓС‚Рё РІ РіРёРїРµСЂСЃСЃС‹Р»РєР°С….
 				if(IsExternal())
 					m_oTarget.SetName(sTempTarget, false);
 				else

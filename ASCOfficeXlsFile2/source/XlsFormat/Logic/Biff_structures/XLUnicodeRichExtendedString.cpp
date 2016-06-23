@@ -77,7 +77,7 @@ BiffStructurePtr XLUnicodeRichExtendedString::clone()
 int XLUnicodeRichExtendedString::serialize (std::wostream & _stream)
 {
 	int start_string = 0;
-	int Fmt = 0; //форматы со сдвигом !!! .. первый - тот что определен в ячейке.
+	int Fmt = 0; //С„РѕСЂРјР°С‚С‹ СЃРѕ СЃРґРІРёРіРѕРј !!! .. РїРµСЂРІС‹Р№ - С‚РѕС‚ С‡С‚Рѕ РѕРїСЂРµРґРµР»РµРЅ РІ СЏС‡РµР№РєРµ.
 	
 	CP_XML_WRITER(_stream)    
 	{

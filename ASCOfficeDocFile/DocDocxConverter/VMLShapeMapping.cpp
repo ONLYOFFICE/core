@@ -707,13 +707,13 @@ namespace DocFileFormat
 						switch(iter->op)
 						{
 						case 0:
-						case 4://обычный 							
+						case 4://РѕР±С‹С‡РЅС‹Р№ 							
 							break;
 						case 1:
-						case 5://верт (склони голову направо)						
+						case 5://РІРµСЂС‚ (СЃРєР»РѕРЅРё РіРѕР»РѕРІСѓ РЅР°РїСЂР°РІРѕ)						
 							appendStyleProperty(&sTextboxStyle, L"layout-flow", L"vertical");
 							break;
-						case 2://верт (склони голову налево)	
+						case 2://РІРµСЂС‚ (СЃРєР»РѕРЅРё РіРѕР»РѕРІСѓ РЅР°Р»РµРІРѕ)	
 							appendStyleProperty(&sTextboxStyle, L"layout-flow", L"vertical");
 							appendStyleProperty(&sTextboxStyle, L"mso-layout-flow-alt", L"bottom-to-top");
 							break;
@@ -789,7 +789,7 @@ namespace DocFileFormat
 					}
 				}
 
-				if (false == bHavePath)		//	фигура может быть задана только наборами вершин и индексов
+				if (false == bHavePath)		//	С„РёРіСѓСЂР° РјРѕР¶РµС‚ Р±С‹С‚СЊ Р·Р°РґР°РЅР° С‚РѕР»СЊРєРѕ РЅР°Р±РѕСЂР°РјРё РІРµСЂС€РёРЅ Рё РёРЅРґРµРєСЃРѕРІ
 				{
 					std::wstring path	=	ParsePath(options);
 
@@ -1134,8 +1134,8 @@ namespace DocFileFormat
 
 	std::wstring VMLShapeMapping::GetLineFrom(const ChildAnchor* pAnchor) const
 	{
-		//Если линия находится в группе, то координаты должны быть в Twips
-		//Если линия находится в группе, то координаты должны быть в других единицах измерения (например в twips)
+		//Р•СЃР»Рё Р»РёРЅРёСЏ РЅР°С…РѕРґРёС‚СЃСЏ РІ РіСЂСѓРїРїРµ, С‚Рѕ РєРѕРѕСЂРґРёРЅР°С‚С‹ РґРѕР»Р¶РЅС‹ Р±С‹С‚СЊ РІ Twips
+		//Р•СЃР»Рё Р»РёРЅРёСЏ РЅР°С…РѕРґРёС‚СЃСЏ РІ РіСЂСѓРїРїРµ, С‚Рѕ РєРѕРѕСЂРґРёРЅР°С‚С‹ РґРѕР»Р¶РЅС‹ Р±С‹С‚СЊ РІ РґСЂСѓРіРёС… РµРґРёРЅРёС†Р°С… РёР·РјРµСЂРµРЅРёСЏ (РЅР°РїСЂРёРјРµСЂ РІ twips)
 
 		std::wstring strXmlFrom;
 
@@ -1161,8 +1161,8 @@ namespace DocFileFormat
 
 	std::wstring VMLShapeMapping::GetLineTo(const ChildAnchor* pAnchor) const
 	{
-		//Если линия находится в группе, то координаты должны быть в Twips
-		//Если линия находится в группе, то координаты должны быть в других единицах измерения (например в twips)
+		//Р•СЃР»Рё Р»РёРЅРёСЏ РЅР°С…РѕРґРёС‚СЃСЏ РІ РіСЂСѓРїРїРµ, С‚Рѕ РєРѕРѕСЂРґРёРЅР°С‚С‹ РґРѕР»Р¶РЅС‹ Р±С‹С‚СЊ РІ Twips
+		//Р•СЃР»Рё Р»РёРЅРёСЏ РЅР°С…РѕРґРёС‚СЃСЏ РІ РіСЂСѓРїРїРµ, С‚Рѕ РєРѕРѕСЂРґРёРЅР°С‚С‹ РґРѕР»Р¶РЅС‹ Р±С‹С‚СЊ РІ РґСЂСѓРіРёС… РµРґРёРЅРёС†Р°С… РёР·РјРµСЂРµРЅРёСЏ (РЅР°РїСЂРёРјРµСЂ РІ twips)
 
 		std::wstring strXmlTo;
 
@@ -1680,7 +1680,7 @@ namespace DocFileFormat
 		}
 		else
 		{
-			//если не написать тип позиции, то будет inline
+			//РµСЃР»Рё РЅРµ РЅР°РїРёСЃР°С‚СЊ С‚РёРї РїРѕР·РёС†РёРё, С‚Рѕ Р±СѓРґРµС‚ inline
 			if ( anchor != NULL )
 			{
 				appendStyleProperty( &style, _T( "position" ), _T( "absolute" ) );
@@ -1688,7 +1688,7 @@ namespace DocFileFormat
 			else if (m_pSpa)
 			{
 				//append size and position ...
-				//if (m_pSpa->fAnchorLock)//это возможность смены привязки , а не ее тип
+				//if (m_pSpa->fAnchorLock)//СЌС‚Рѕ РІРѕР·РјРѕР¶РЅРѕСЃС‚СЊ СЃРјРµРЅС‹ РїСЂРёРІСЏР·РєРё , Р° РЅРµ РµРµ С‚РёРї
 
 				//if (m_pSpa->bx == TEXT && m_pSpa->by == TEXT)
 				//{
@@ -2037,7 +2037,7 @@ namespace DocFileFormat
 	
 		std::vector<CString> rectangles;
 
-		if (16 != cb) return rectangles; // TODO: доделать
+		if (16 != cb) return rectangles; // TODO: РґРѕРґРµР»Р°С‚СЊ
 
 		int count = (inscribe.op) / 16;
 

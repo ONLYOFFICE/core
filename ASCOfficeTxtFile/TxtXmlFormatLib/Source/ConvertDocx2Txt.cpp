@@ -258,7 +258,7 @@ namespace Docx2Txt
 				//}
 				else
 				{
-					//todoooo  проверить - это общий случай - вместо CSdt ... да и Tbl тож
+					//todoooo  РїСЂРѕРІРµСЂРёС‚СЊ - СЌС‚Рѕ РѕР±С‰РёР№ СЃР»СѓС‡Р°Р№ - РІРјРµСЃС‚Рѕ CSdt ... РґР° Рё Tbl С‚РѕР¶
 					OOX::WritingElementWithChilds<OOX::WritingElement> *item_with_items = dynamic_cast<OOX::WritingElementWithChilds<OOX::WritingElement>*>(item);
 					if (item_with_items)
 					{
@@ -358,7 +358,7 @@ namespace Docx2Txt
 					Lists[start + level]++;
 					
 					int ind_level = -1;
-					for (long i=0; i< abstractNum->m_arrLvl.size(); i++)//??? стоит ли???
+					for (long i=0; i< abstractNum->m_arrLvl.size(); i++)//??? СЃС‚РѕРёС‚ Р»Рё???
 					{
 						if ((abstractNum->m_arrLvl[i]) && (abstractNum->m_arrLvl[i]->m_oIlvl.IsInit()) && (abstractNum->m_arrLvl[i]->m_oIlvl->GetValue() == level))
 						{
@@ -378,7 +378,7 @@ namespace Docx2Txt
 
 							if (abstractNum->m_arrLvl[ind_level]->m_oNumFmt->m_oVal->GetValue() == SimpleTypes::numberformatBullet)
 							{
-								//всли символ более-менее корректный 
+								//РІСЃР»Рё СЃРёРјРІРѕР» Р±РѕР»РµРµ-РјРµРЅРµРµ РєРѕСЂСЂРµРєС‚РЅС‹Р№ 
 								if ((strLevelText.length() > 0) && (IsUnicodeSymbol(strLevelText[0]))) line += strLevelText + _T(" ");
 								else line += _T("* ");
 							}
@@ -492,7 +492,7 @@ namespace Docx2Txt
 			}
 			else
 			{
-				//придумать для всех остальных что ли перевод в текст .. 
+				//РїСЂРёРґСѓРјР°С‚СЊ РґР»СЏ РІСЃРµС… РѕСЃС‚Р°Р»СЊРЅС‹С… С‡С‚Рѕ Р»Рё РїРµСЂРµРІРѕРґ РІ С‚РµРєСЃС‚ .. 
 				//line += pItem.toTxt();
 			}
 		}

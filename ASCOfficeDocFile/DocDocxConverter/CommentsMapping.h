@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "TableMapping.h"
 #include "DocumentMapping.h"

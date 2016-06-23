@@ -243,7 +243,7 @@ namespace PPTX
 		public:
 			UniFill						Fill;
 			nullable<PrstDash>			prstDash;
-			//custDash (Custom Dash)  ง20.1.8.21 
+			//custDash (Custom Dash)  ยง20.1.8.21 
 			LineJoin					Join;
 			nullable<LineEnd>			headEnd;
 			nullable<LineEnd>			tailEnd;

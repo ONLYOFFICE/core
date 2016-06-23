@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "../pole/pole.h"
 #include "../../DesktopEditor/common/Types.h"

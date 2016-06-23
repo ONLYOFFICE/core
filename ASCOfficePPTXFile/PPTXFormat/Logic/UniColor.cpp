@@ -216,28 +216,28 @@ namespace PPTX
 		{
 			if(is_init())
 				return Color->GetRGBA(RGBA);
-			return 0; //return 0; - заменить на просмотр настроек по умолчанию
+			return 0; //return 0; - Р·Р°РјРµРЅРёС‚СЊ РЅР° РїСЂРѕСЃРјРѕС‚СЂ РЅР°СЃС‚СЂРѕРµРє РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
 		}
 
 		DWORD UniColor::GetARGB(DWORD ARGB)const
 		{
 			if(is_init())
 				return Color->GetARGB(ARGB);
-			return 0; //return 0; - заменить на просмотр настроек по умолчанию
+			return 0; //return 0; - Р·Р°РјРµРЅРёС‚СЊ РЅР° РїСЂРѕСЃРјРѕС‚СЂ РЅР°СЃС‚СЂРѕРµРє РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
 		}
 
 		DWORD UniColor::GetBGRA(DWORD BGRA)const
 		{
 			if(is_init())
 				return Color->GetBGRA(BGRA);
-			return 0; //return 0; - заменить на просмотр настроек по умолчанию
+			return 0; //return 0; - Р·Р°РјРµРЅРёС‚СЊ РЅР° РїСЂРѕСЃРјРѕС‚СЂ РЅР°СЃС‚СЂРѕРµРє РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
 		}
 
 		DWORD UniColor::GetABGR(DWORD ABGR)const
 		{
 			if(is_init())
 				return Color->GetABGR(ABGR);
-			return 0; //return 0; - заменить на просмотр настроек по умолчанию
+			return 0; //return 0; - Р·Р°РјРµРЅРёС‚СЊ РЅР° РїСЂРѕСЃРјРѕС‚СЂ РЅР°СЃС‚СЂРѕРµРє РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
 		}
 
 	} // namespace Logic

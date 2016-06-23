@@ -263,7 +263,7 @@ namespace svg_path
                     bRelative = true;
                     // FALLTHROUGH intended
                 }
-                case 'H' ://горизонт линия
+                case 'H' ://РіРѕСЂРёР·РѕРЅС‚ Р»РёРЅРёСЏ
                 {
 					aCurrPoly.command=L"a:lnTo";
                     nPos++;
@@ -296,7 +296,7 @@ namespace svg_path
                     bRelative = true;
                     // FALLTHROUGH intended
                 }
-                case 'V' ://вертикальная линия
+                case 'V' ://РІРµСЂС‚РёРєР°Р»СЊРЅР°СЏ Р»РёРЅРёСЏ
                 {
 					aCurrPoly.command =L"a:lnTo";
                     nPos++;
@@ -748,7 +748,7 @@ namespace svg_path
         Polyline.clear();
 
         _polyline aCurrPoly;
-		aCurrPoly.command = L"a:moveTo"; //первая точка сдвиг - остальные линия
+		aCurrPoly.command = L"a:moveTo"; //РїРµСЂРІР°СЏ С‚РѕС‡РєР° СЃРґРІРёРі - РѕСЃС‚Р°Р»СЊРЅС‹Рµ Р»РёРЅРёСЏ
 
  		std::vector<std::wstring> points_str;
 		
@@ -772,7 +772,7 @@ namespace svg_path
 		}
 		if (Polyline.size()>2 && closed)
 		{
-			//замкнем
+			//Р·Р°РјРєРЅРµРј
 			Polyline.push_back(Polyline[0]);
 			Polyline.back().command = L"a:lnTo";
 		}

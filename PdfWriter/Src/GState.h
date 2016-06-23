@@ -1,4 +1,4 @@
-﻿#ifndef _PDF_WRITER_SRC_GSTATE_H
+#ifndef _PDF_WRITER_SRC_GSTATE_H
 #define _PDF_WRITER_SRC_GSTATE_H
 
 #include "Types.h"

@@ -1,4 +1,4 @@
-﻿#include "RunProperty.h"
+#include "RunProperty.h"
 
 namespace OOX
 {

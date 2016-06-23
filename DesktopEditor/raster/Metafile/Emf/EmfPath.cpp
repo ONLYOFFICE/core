@@ -157,7 +157,7 @@ namespace MetaFile
 				pOutput->EndClipPath(unClipMode);
 		}
 
-		// При клипе пат не очищаем
+		// РџСЂРё РєР»РёРїРµ РїР°С‚ РЅРµ РѕС‡РёС‰Р°РµРј
 		if (-1 == unClipMode)
 			Clear();
 	}

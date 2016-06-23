@@ -1,4 +1,4 @@
-﻿#ifndef _PDF_READER_OUTPUT_DEVICE_H
+#ifndef _PDF_READER_OUTPUT_DEVICE_H
 #define _PDF_READER_OUTPUT_DEVICE_H
 
 #include "CharTypes.h"

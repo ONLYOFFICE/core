@@ -1,4 +1,4 @@
-﻿#include "DocFormatLib.h"
+#include "DocFormatLib.h"
 
 #include "../DocDocxConverter/Converter.h"
 //#include "../DocxDocConverter/FileConverter.h"

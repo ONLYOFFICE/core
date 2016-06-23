@@ -29,8 +29,8 @@ public:
     ~odf_text_context();
 public:
 	void				clear_params();
-	void				set_styles_context(odf_style_context*  styles_context);//для embedded 
- 	odf_style_context*	get_styles_context();//для embedded 
+	void				set_styles_context(odf_style_context*  styles_context);//РґР»СЏ embedded
+ 	odf_style_context*	get_styles_context();//РґР»СЏ embedded
    
 	void add_text_style(office_element_ptr & style_elm, std::wstring style_name);
 
@@ -71,8 +71,8 @@ public:
 	int current_outline_;
 	bool in_field_;
 
-	std::vector<odf_element_state>	current_level_;//постоянно меняющийся список уровней наследования
-	std::vector<odf_element_state>	text_elements_list_;//параграфы, списки , ... 
+	std::vector<odf_element_state>	current_level_;//РїРѕСЃС‚РѕСЏРЅРЅРѕ РјРµРЅСЏСЋС‰РёР№СЃСЏ СЃРїРёСЃРѕРє СѓСЂРѕРІРЅРµР№ РЅР°СЃР»РµРґРѕРІР°РЅРёСЏ
+	std::vector<odf_element_state>	text_elements_list_;//РїР°СЂР°РіСЂР°С„С‹, СЃРїРёСЃРєРё , ... 
 
 	void set_parent_paragraph_style	(std::wstring & style_name);
 	void set_parent_span_style		(std::wstring & style_name);
@@ -99,8 +99,8 @@ private:
 	_CP_OPT(odf_types::fo_break) need_break_; 
 
 	bool single_paragraph_;
-	style_paragraph_properties	*paragraph_properties_;//хранилка-опознавалка что свойства приписаны другому, не текстовому, объекту
-	style_text_properties		*text_properties_;//хранилка-опознавалка что свойства приписаны другому, не текстовому, объекту
+	style_paragraph_properties	*paragraph_properties_;//С…СЂР°РЅРёР»РєР°-РѕРїРѕР·РЅР°РІР°Р»РєР° С‡С‚Рѕ СЃРІРѕР№СЃС‚РІР° РїСЂРёРїРёСЃР°РЅС‹ РґСЂСѓРіРѕРјСѓ, РЅРµ С‚РµРєСЃС‚РѕРІРѕРјСѓ, РѕР±СЉРµРєС‚Сѓ
+	style_text_properties		*text_properties_;//С…СЂР°РЅРёР»РєР°-РѕРїРѕР·РЅР°РІР°Р»РєР° С‡С‚Рѕ СЃРІРѕР№СЃС‚РІР° РїСЂРёРїРёСЃР°РЅС‹ РґСЂСѓРіРѕРјСѓ, РЅРµ С‚РµРєСЃС‚РѕРІРѕРјСѓ, РѕР±СЉРµРєС‚Сѓ
 	
 
 	odf_style_context * styles_context_;

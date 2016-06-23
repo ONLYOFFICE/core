@@ -50,7 +50,7 @@ namespace NSPresentationEditor
 			}
 		}
 
-		// работа с темами
+		// СЂР°Р±РѕС‚Р° СЃ С‚РµРјР°РјРё
 		inline void ClearThemes()
 		{
 			m_arThemes.clear();
@@ -66,7 +66,7 @@ namespace NSPresentationEditor
 
 			m_arThemes[nIndex] = oTheme;
 		}
-		// работа со слайдом
+		// СЂР°Р±РѕС‚Р° СЃРѕ СЃР»Р°Р№РґРѕРј
 		inline void ClearSlides()
 		{
 			for (int i = 0 ; i < m_arSlides.size(); i++)
@@ -82,7 +82,7 @@ namespace NSPresentationEditor
 
 	public:
 
-		// функция производит расчет по теме и слайдам
+		// С„СѓРЅРєС†РёСЏ РїСЂРѕРёР·РІРѕРґРёС‚ СЂР°СЃС‡РµС‚ РїРѕ С‚РµРјРµ Рё СЃР»Р°Р№РґР°Рј
 		CString GetXmlSlideTransition ( CSlide& oSlide/*, CAudioOverlay& oAudioOverlay*/ )
 		{
 			CString Source	=	CString ( _T("") );
@@ -94,12 +94,12 @@ namespace NSPresentationEditor
 			{
 			case 0 : // Cut 
 				{
-					// Отрабатывается выше ( выкидывать слайд, или вставлять на несколько ms )
+					// РћС‚СЂР°Р±Р°С‚С‹РІР°РµС‚СЃСЏ РІС‹С€Рµ ( РІС‹РєРёРґС‹РІР°С‚СЊ СЃР»Р°Р№Рґ, РёР»Рё РІСЃС‚Р°РІР»СЏС‚СЊ РЅР° РЅРµСЃРєРѕР»СЊРєРѕ ms )
 				}
 				break;
 			case 1 : // Random	//
 				{
-					// рандом вставить
+					// СЂР°РЅРґРѕРј РІСЃС‚Р°РІРёС‚СЊ
 					EffectID	=	1;							//	Fade Solid Smal
 				}
 				break;
@@ -122,7 +122,7 @@ namespace NSPresentationEditor
 			case  4 : // Cover 
 				{
 					//0x00  Left 
-		#pragma message ("TODO : Cover - добавить такой эффект в ImageStudio")	
+		#pragma message ("TODO : Cover - РґРѕР±Р°РІРёС‚СЊ С‚Р°РєРѕР№ СЌС„С„РµРєС‚ РІ ImageStudio")	
 					//0x01  Up 
 					//0x02  Right 
 					//0x03  Down 
@@ -134,7 +134,7 @@ namespace NSPresentationEditor
 				break;
 			case  5 : // Dissolve 
 				{
-		#pragma message ("TODO : Dissolve - добавить такой эффект в ImageStudio")
+		#pragma message ("TODO : Dissolve - РґРѕР±Р°РІРёС‚СЊ С‚Р°РєРѕР№ СЌС„С„РµРєС‚ РІ ImageStudio")
 				
 					EffectID	=	1;							//	Fade Solid Smal
 				}
@@ -146,7 +146,7 @@ namespace NSPresentationEditor
 				break;
 			case  7 : // Uncover 
 				{
-		#pragma message ("TODO : Uncover - добавить такой эффект в ImageStudio")	
+		#pragma message ("TODO : Uncover - РґРѕР±Р°РІРёС‚СЊ С‚Р°РєРѕР№ СЌС„С„РµРєС‚ РІ ImageStudio")	
 					//0x00  Left 
 					//0x01  Up 
 					//0x02  Right 
@@ -201,12 +201,12 @@ namespace NSPresentationEditor
 				{
 					if ( 0x00 == lEffectDirection )	//	Horizontally out	//	Split, Horizontal
 						EffectID	=	5324;
-		#pragma message ("TODO : Split Horizontal In - добавить такой эффект в ImageStudio")	
+		#pragma message ("TODO : Split Horizontal In - РґРѕР±Р°РІРёС‚СЊ С‚Р°РєРѕР№ СЌС„С„РµРєС‚ РІ ImageStudio")	
 					if ( 0x01 == lEffectDirection )	//	Horizontally in		//	
 						EffectID	=	5324;					
 					if ( 0x02 == lEffectDirection )	//	Vertically out		//	Split, Vertical
 						EffectID	=	5325;
-		#pragma message ("TODO : Split Vertical In - добавить такой эффект в ImageStudio")
+		#pragma message ("TODO : Split Vertical In - РґРѕР±Р°РІРёС‚СЊ С‚Р°РєРѕР№ СЌС„С„РµРєС‚ РІ ImageStudio")
 					if ( 0x03 == lEffectDirection )	//	Vertically in		//	
 						EffectID	=	5325;						
 				}
@@ -242,7 +242,7 @@ namespace NSPresentationEditor
 				{
 					if ( 0x00 == lEffectDirection )	//	Horizontal			//	MosaicStrips
 						EffectID	=	103;
-		#pragma message ("TODO : MosaicStrips Vertical - добавить такой эффект в ImageStudio")
+		#pragma message ("TODO : MosaicStrips Vertical - РґРѕР±Р°РІРёС‚СЊ С‚Р°РєРѕР№ СЌС„С„РµРєС‚ РІ ImageStudio")
 					if ( 0x01 == lEffectDirection )	//	Vertical			//	MosaicStrips
 						EffectID	=	103;
 				}
@@ -348,9 +348,9 @@ namespace NSPresentationEditor
 				}
 				if (0 == dSlideDuration)
 				{
-					// решено сделать так: если время слайда не выставлено - то берем максимальную
-					// длительность видео, лежащего на нем. Если таких нет - то дефолтовая длительность,
-					// впрочем она уже выставлена
+					// СЂРµС€РµРЅРѕ СЃРґРµР»Р°С‚СЊ С‚Р°Рє: РµСЃР»Рё РІСЂРµРјСЏ СЃР»Р°Р№РґР° РЅРµ РІС‹СЃС‚Р°РІР»РµРЅРѕ - С‚Рѕ Р±РµСЂРµРј РјР°РєСЃРёРјР°Р»СЊРЅСѓСЋ
+					// РґР»РёС‚РµР»СЊРЅРѕСЃС‚СЊ РІРёРґРµРѕ, Р»РµР¶Р°С‰РµРіРѕ РЅР° РЅРµРј. Р•СЃР»Рё С‚Р°РєРёС… РЅРµС‚ - С‚Рѕ РґРµС„РѕР»С‚РѕРІР°СЏ РґР»РёС‚РµР»СЊРЅРѕСЃС‚СЊ,
+					// РІРїСЂРѕС‡РµРј РѕРЅР° СѓР¶Рµ РІС‹СЃС‚Р°РІР»РµРЅР°
 
 					size_t nSize = pSlide->m_arElements.size();
 					for (size_t j = 0; j < nSize; ++j)
@@ -421,7 +421,7 @@ namespace NSPresentationEditor
 
 						if (NULL != pAudioElem)
 						{
-							// а другого и быть не может
+							// Р° РґСЂСѓРіРѕРіРѕ Рё Р±С‹С‚СЊ РЅРµ РјРѕР¶РµС‚
 							if (pAudioElem->m_bWithVideo)
 							{
 								pElement->m_dStartTime	= dStartTime;
@@ -486,7 +486,7 @@ namespace NSPresentationEditor
 
 		void CalculateEditor(const NSPresentationEditor::CMetricInfo& oInfo, bool bIsPlaceholderSetUp = false)
 		{
-			// автозамены и поля настраиваем тут во избежания путаницы
+			// Р°РІС‚РѕР·Р°РјРµРЅС‹ Рё РїРѕР»СЏ РЅР°СЃС‚СЂР°РёРІР°РµРј С‚СѓС‚ РІРѕ РёР·Р±РµР¶Р°РЅРёСЏ РїСѓС‚Р°РЅРёС†С‹
 
 			m_oInfo = oInfo;
 

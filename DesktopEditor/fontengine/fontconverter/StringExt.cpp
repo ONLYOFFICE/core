@@ -1,4 +1,4 @@
-﻿#include <stdlib.h>
+#include <stdlib.h>
 #include <stddef.h>
 #include <string.h>
 #include <ctype.h>
@@ -254,7 +254,7 @@ namespace NSFontConverter
                 }
                 else
                 {
-                    // –азбираем форматированную строку
+                    // Разбираем форматированную строку
                     if ( !(*pCur >= '0' && *pCur <= '9') )
                         break;
                     nIndex = *pCur - '0';
@@ -442,7 +442,7 @@ namespace NSFontConverter
                         nWidth = uArg.iValue;
                         break;
                     }
-                    // ƒобавл¤ем аргумент в нужном формате, с нужным прилеганием
+                    // Добавляем аргумент в нужном формате, с нужным прилеганием
                     if ( !bReverseAlign && nLen < nWidth )
                     {
                         for (int nCounter = nLen; nCounter < nWidth; ++nCounter )

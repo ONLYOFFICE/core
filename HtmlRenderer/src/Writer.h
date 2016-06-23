@@ -1,4 +1,4 @@
-﻿#ifndef _ASC_HTMLRENDERER_WRITER_H_
+#ifndef _ASC_HTMLRENDERER_WRITER_H_
 #define _ASC_HTMLRENDERER_WRITER_H_
 
 #include "SVGWriter2.h"

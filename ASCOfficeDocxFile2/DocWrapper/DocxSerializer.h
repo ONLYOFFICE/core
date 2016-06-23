@@ -1,4 +1,4 @@
-﻿#ifndef DOCX_SERIALIZER
+#ifndef DOCX_SERIALIZER
 #define DOCX_SERIALIZER
 
 #if defined(_WIN32) || defined (_WIN64)

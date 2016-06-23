@@ -1,4 +1,4 @@
-﻿
+
 #include "DestinationCommand.h"
 #include "RtfOle.h"
 #include "Ole1FormatReader.h"

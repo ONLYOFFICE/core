@@ -346,7 +346,7 @@ std::wstring xlsx_drawing_context::add_hyperlink(std::wstring const & href,bool 
 	std::wstring href_correct = xml::utils::replace_text_to_xml(href);
     boost::algorithm::replace_all(href_correct, L" .", L".");//1 (130).odt
 
-	_hlink_desc desc = {hId, href_correct, object}; //ÍÓÂÍÚÌÓÒÚ¸ Ì‡ÔËÒ‡ÌËˇ ÒÒ˚ÎÍË ‚‡ÊÌ‡ ‰Îˇ ms office Ë ÌÂ ‚‡ÊÌ‡ ‰Îˇ open office ->
+	_hlink_desc desc = {hId, href_correct, object}; //–∫–æ—Ä—Ä–µ–∫—Ç–Ω–æ—Å—Ç—å –Ω–∞–ø–∏—Å–∞–Ω–∏—è —Å—Å—ã–ª–∫–∏ –≤–∞–∂–Ω–∞ –¥–ª—è ms office –∏ –Ω–µ –≤–∞–∂–Ω–∞ –¥–ª—è open office ->
 	//todooo 
 	impl_->object_description_.hlinks_.push_back(desc);
 
@@ -392,7 +392,7 @@ void xlsx_drawing_context::process_common_properties(drawing_object_description 
 	{
 		_rect & r = obj.svg_rect_.get();
 
-		//todooo ÌÂÔÓÌˇÚÌÓ ˜ÚÓ ‰ÂÎ‡Ú¸ Ò ÓÚËˆ‡ÚÂÎ¸Ì˚ÏË ÁÌ‡˜ÂÌËˇÏË
+		//todooo –Ω–µ–ø–æ–Ω—è—Ç–Ω–æ —á—Ç–æ –¥–µ–ª–∞—Ç—å —Å –æ—Ç—Ä–∏—Ü–∞—Ç–µ–ª—å–Ω—ã–º–∏ –∑–Ω–∞—á–µ–Ω–∏—è–º–∏
 		int val = 0.5 + odf_types::length(obj.svg_rect_->x, odf_types::length::pt).get_value_unit(odf_types::length::emu);
 		if (val >=0)	drawing.x = val;
 		
@@ -433,7 +433,7 @@ void xlsx_drawing_context::process_position_properties(drawing_object_descriptio
 		int ind_cell = distance.size()-1;
 		getCellAddressInv(distance[ind_cell], column_anchor, row_anchor);
 
-		xlsx_table_position pos_anchor = table_metrics.calc(column_anchor, row_anchor, obj.anchor_x_, obj.anchor_y_); //-ÏÓÊÌÓ Ë ÌÂ Ò˜ËÚ‡Ú¸ :) , ÌÓ ÔÓ‚ÂËÏ ...
+		xlsx_table_position pos_anchor = table_metrics.calc(column_anchor, row_anchor, obj.anchor_x_, obj.anchor_y_); //-–º–æ–∂–Ω–æ –∏ –Ω–µ —Å—á–∏—Ç–∞—Ç—å :) , –Ω–æ –ø—Ä–æ–≤–µ—Ä–∏–º ...
 
 		table_metrics.update_pt(column_anchor, row_anchor, obj.anchor_x_, obj.anchor_y_);
 
@@ -463,7 +463,7 @@ void xlsx_drawing_context::process_image(drawing_object_description & obj,_xlsx_
 	_CP_OPT(std::wstring) sTextContent;
 	GetProperty(obj.additional_,L"text-content",sTextContent);
 
-	if (sTextContent)//‚ ms office Ì‡ Í‡ÚËÌÍÂ ÌÂÎ¸Áˇ Ò‰ÂÎ‡Ú¸ Ì‡‰ÔËÒ¸ - ÏÂÌˇÂÏ ÚËÔ Ì‡ ÂÍÚ Ò Á‡ÎË‚ÍÓÈ Í‡ÚËÌÍÓÈ
+	if (sTextContent)//–≤ ms office –Ω–∞ –∫–∞—Ä—Ç–∏–Ω–∫–µ –Ω–µ–ª—å–∑—è —Å–¥–µ–ª–∞—Ç—å –Ω–∞–¥–ø–∏—Å—å - –º–µ–Ω—è–µ–º —Ç–∏–ø –Ω–∞ —Ä–µ–∫—Ç —Å –∑–∞–ª–∏–≤–∫–æ–π –∫–∞—Ä—Ç–∏–Ω–∫–æ–π
 	{
 		drawing.type		= mediaitems::typeShape;
 		drawing.sub_type	= 2;//rect
@@ -473,26 +473,26 @@ void xlsx_drawing_context::process_image(drawing_object_description & obj,_xlsx_
 	drawing.fill.bitmap->bCrop		= odf_reader::parse_clipping(obj.clipping_string_, fileName, drawing.fill.bitmap->cropRect, NULL/*applicationFonts_*/);
 	drawing.fill.bitmap->bStretch	= true;
 
-	std::wstring ref;/// ˝ÚÓ ÒÒ˚ÎÍ‡ Ì‡ ‚˚ıÓ‰ÌÓÈ ‚ÌÂ¯ÌËÈ Ó·˙ÂÍÚ
+	std::wstring ref;/// —ç—Ç–æ —Å—Å—ã–ª–∫–∞ –Ω–∞ –≤—ã—Ö–æ–¥–Ω–æ–π –≤–Ω–µ—à–Ω–∏–π –æ–±—ä–µ–∫—Ç
 	bool isMediaInternal = false;
 
 	drawing.fill.bitmap->rId = impl_->get_mediaitems().add_or_find(obj.xlink_href_, mediaitems::typeImage, isMediaInternal, ref);		
 
 	if (drawing.type == mediaitems::typeShape)
 	{
-		impl_->get_drawings()->add(isMediaInternal, drawing.fill.bitmap->rId, ref, mediaitems::typeImage);//ÒÓ·ÒÚ‚ÂÌÌÓ ˝ÚÓ ÌÂ Ó·˙ÂÍÚ, ‡ ‰ÓÔ ÂÎ Ë ref Ó·˙ÂÍÚ‡
+		impl_->get_drawings()->add(isMediaInternal, drawing.fill.bitmap->rId, ref, mediaitems::typeImage);//—Å–æ–±—Å—Ç–≤–µ–Ω–Ω–æ —ç—Ç–æ –Ω–µ –æ–±—ä–µ–∫—Ç, –∞ –¥–æ–ø —Ä–µ–ª –∏ ref –æ–±—ä–µ–∫—Ç–∞
 	
 		isMediaInternal=true;
 		std::wstring rId = impl_->get_mediaitems().add_or_find(L"", mediaitems::typeShape, isMediaInternal, ref);
 		
-		xlsx_drawings_->add(drawing, isMediaInternal, rId, ref, mediaitems::typeShape);//Ó·˙ÂÍÚ
+		xlsx_drawings_->add(drawing, isMediaInternal, rId, ref, mediaitems::typeShape);//–æ–±—ä–µ–∫—Ç
 
 	}else
 	{
-		xlsx_drawings_->add(drawing, isMediaInternal, drawing.fill.bitmap->rId , ref, mediaitems::typeImage);//Ó·˙ÂÍÚ
+		xlsx_drawings_->add(drawing, isMediaInternal, drawing.fill.bitmap->rId , ref, mediaitems::typeImage);//–æ–±—ä–µ–∫—Ç
 		
 		if (drawing.inGroup)
-			impl_->get_drawings()->add(isMediaInternal, drawing.fill.bitmap->rId, ref, obj.type_); // ÌÂ Ó·˙ÂÍÚ
+			impl_->get_drawings()->add(isMediaInternal, drawing.fill.bitmap->rId, ref, obj.type_); // –Ω–µ –æ–±—ä–µ–∫—Ç
 	}
 }
 
@@ -505,7 +505,7 @@ void xlsx_drawing_context::process_chart(drawing_object_description & obj,_xlsx_
     xlsx_drawings_->add(drawing, isMediaInternal, drawing.chartId, ref, obj.type_);
 	
 	if (drawing.inGroup)
-		impl_->get_drawings()->add(isMediaInternal, drawing.chartId, ref, obj.type_); // ÌÂ Ó·˙ÂÍÚ
+		impl_->get_drawings()->add(isMediaInternal, drawing.chartId, ref, obj.type_); // –Ω–µ –æ–±—ä–µ–∫—Ç
 }
 
 void xlsx_drawing_context::process_shape(drawing_object_description & obj,_xlsx_drawing & drawing, xlsx_drawings_ptr xlsx_drawings_)
@@ -548,7 +548,7 @@ void xlsx_drawing_context::process_objects(std::vector<drawing_object_descriptio
 		drawing_object_description & obj = objects[i];
 
 		int pos_replaicement = obj.xlink_href_.find(L"ObjectReplacements");	
-		if (pos_replaicement >= 0 && !obj.use_image_replace_)continue;	//Ó·˙ÂÍÚ
+		if (pos_replaicement >= 0 && !obj.use_image_replace_)continue;	//–æ–±—ä–µ–∫—Ç
 
 		_xlsx_drawing drawing	=_xlsx_drawing();
 
@@ -566,7 +566,7 @@ void xlsx_drawing_context::process_objects(std::vector<drawing_object_descriptio
 			bool isMediaInternal = true;
 			
 			drawing.fill.bitmap->rId = impl_->get_mediaitems().add_or_find(drawing.fill.bitmap->xlink_href_, mediaitems::typeImage, isMediaInternal, ref);
-			impl_->get_drawings()->add(isMediaInternal, drawing.fill.bitmap->rId, ref, mediaitems::typeImage);//ÒÓ·ÒÚ‚ÂÌÌÓ ˝ÚÓ ÌÂ Ó·˙ÂÍÚ, ‡ ‰ÓÔ ÂÎ Ë ref Ó·˙ÂÍÚ‡
+			impl_->get_drawings()->add(isMediaInternal, drawing.fill.bitmap->rId, ref, mediaitems::typeImage);//—Å–æ–±—Å—Ç–≤–µ–Ω–Ω–æ —ç—Ç–æ –Ω–µ –æ–±—ä–µ–∫—Ç, –∞ –¥–æ–ø —Ä–µ–ª –∏ ref –æ–±—ä–µ–∫—Ç–∞
 		}
 	   
 		process_common_properties(obj, drawing, table_metrics);

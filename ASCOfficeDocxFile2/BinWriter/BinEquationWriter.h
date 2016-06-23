@@ -370,7 +370,7 @@ namespace MathEquation
 			}
 			int WriteItemWithLengthStart()
 			{
-				//Запоминаем позицию чтобы в конце записать туда длину
+				//Р—Р°РїРѕРјРёРЅР°РµРј РїРѕР·РёС†РёСЋ С‡С‚РѕР±С‹ РІ РєРѕРЅС†Рµ Р·Р°РїРёСЃР°С‚СЊ С‚СѓРґР° РґР»РёРЅСѓ
 				int nStartPos = m_oStream.GetPosition();
 				m_oStream.Skip(4);	
 				return nStartPos;
@@ -801,7 +801,7 @@ namespace MathEquation
 							nCurPos1 = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::SSupPr);
 						}
 						break;					
-					/*case scriptalignLeft: можно сделать так, но выглядеть будет плохо
+					/*case scriptalignLeft: РјРѕР¶РЅРѕ СЃРґРµР»Р°С‚СЊ С‚Р°Рє, РЅРѕ РІС‹РіР»СЏРґРµС‚СЊ Р±СѓРґРµС‚ РїР»РѕС…Рѕ
 					{
 						nCurPos = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::SPre);
 						nCurPos1 = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::SPrePr);
@@ -947,7 +947,7 @@ namespace MathEquation
 				CString str;
 				switch(eType)
 				{		
-                //todooo проверить запись .. (BYTE)SimpleTypes::ххх
+                //todooo РїСЂРѕРІРµСЂРёС‚СЊ Р·Р°РїРёСЃСЊ .. (BYTE)SimpleTypes::С…С…С…
 					case integraltypeSingle:
 						str.Insert(0,0x222B);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);

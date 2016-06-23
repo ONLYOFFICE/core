@@ -89,7 +89,7 @@ public:
     {
         BOOST_FOREACH(rel_ const & r, pptx_drawing_rels_)
         {
-			if (r.type_ == mediaitems::typeChart)//временно - нужно потом все загнать в релс
+			if (r.type_ == mediaitems::typeChart)//РІСЂРµРјРµРЅРЅРѕ - РЅСѓР¶РЅРѕ РїРѕС‚РѕРј РІСЃРµ Р·Р°РіРЅР°С‚СЊ РІ СЂРµР»СЃ
 			{
 				Rels.add(relationship(
 							r.rid_,

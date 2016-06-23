@@ -14,7 +14,7 @@ namespace OOX
 {
 	namespace Spreadsheet
 	{
-		//необработанные child:
+		//РЅРµРѕР±СЂР°Р±РѕС‚Р°РЅРЅС‹Рµ child:
 		//<calcPr>
 		//<customWorkbookViews>
 		//<extLst>
@@ -133,7 +133,7 @@ namespace OOX
 				//WorkbookPr
 				if(false == m_oWorkbookPr.IsInit())
 					m_oWorkbookPr.Init();
-				//todo если этот параметр выставлен, то берется стандартная тема, а не из файла.
+				//todo РµСЃР»Рё СЌС‚РѕС‚ РїР°СЂР°РјРµС‚СЂ РІС‹СЃС‚Р°РІР»РµРЅ, С‚Рѕ Р±РµСЂРµС‚СЃСЏ СЃС‚Р°РЅРґР°СЂС‚РЅР°СЏ С‚РµРјР°, Р° РЅРµ РёР· С„Р°Р№Р»Р°.
 				//if(false == m_oWorkbookPr->m_oDefaultThemeVersion.IsInit())
 				//{
 				//	m_oWorkbookPr->m_oDefaultThemeVersion.Init();

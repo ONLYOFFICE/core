@@ -6,7 +6,7 @@ namespace OOX{
 		void FromString_spPr(CString *spPr, nullable<OOX::Drawing::CShapeProperties> & oSpPr)
 		{
 			XmlUtils::CXmlLiteReader oReaderLocal;
-			//сформируем полноценную xml-строку
+			//СЃС„РѕСЂРјРёСЂСѓРµРј РїРѕР»РЅРѕС†РµРЅРЅСѓСЋ xml-СЃС‚СЂРѕРєСѓ
             CString xmlString;// = L"<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 			xmlString += L"<c:chart ";
 				xmlString += L"xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" ";
@@ -30,7 +30,7 @@ namespace OOX{
 		void FromString_txPr(CString *txPr, nullable<CTextProperties> & oTxPr)
 		{
 			XmlUtils::CXmlLiteReader oReaderLocal;
-			//сформируем полноценную xml-строку
+			//СЃС„РѕСЂРјРёСЂСѓРµРј РїРѕР»РЅРѕС†РµРЅРЅСѓСЋ xml-СЃС‚СЂРѕРєСѓ
             CString xmlString ;//= L"<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 			xmlString += L"<c:txPr ";
 				xmlString += L"xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" ";
@@ -3754,7 +3754,7 @@ namespace OOX{
 					{
 						nullable<OOX::Drawing::CShapeProperties> oSpPr;
 						XmlUtils::CXmlLiteReader oReaderLocal;
-						//сформируем полноценную xml-строку
+						//СЃС„РѕСЂРјРёСЂСѓРµРј РїРѕР»РЅРѕС†РµРЅРЅСѓСЋ xml-СЃС‚СЂРѕРєСѓ
                         CString xmlString;// = L"<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 						xmlString += L"<c:rich ";
 							xmlString += L"xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" ";

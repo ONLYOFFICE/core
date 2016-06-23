@@ -1,4 +1,4 @@
-﻿#include "GState.h"
+#include "GState.h"
 
 namespace PdfWriter
 {

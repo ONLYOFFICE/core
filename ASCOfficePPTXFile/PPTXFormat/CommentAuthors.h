@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #ifndef PPTX_COMMENTS_COMMENTSAUTHORS_H_
 #define PPTX_COMMENTS_COMMENTSAUTHORS_H_
 

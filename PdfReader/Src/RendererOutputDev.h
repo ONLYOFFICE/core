@@ -1,4 +1,4 @@
-﻿#ifndef _PDF_READER_RENDERER_OUTPUTDEV_H
+#ifndef _PDF_READER_RENDERER_OUTPUTDEV_H
 #define _PDF_READER_RENDERER_OUTPUTDEV_H
 
 #include "../../DesktopEditor/graphics/IRenderer.h"

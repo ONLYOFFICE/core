@@ -1,4 +1,4 @@
-﻿#ifndef FileInformationBlock_h
+#ifndef FileInformationBlock_h
 #define FileInformationBlock_h
 
 #include "VirtualStreamReader.h"

@@ -68,7 +68,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("name"), m_sName )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("type"), m_oType )
@@ -205,7 +205,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("thresh"), m_oTresh )
 				WritingElement_ReadAttributes_End( oReader )
@@ -348,7 +348,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Релизовать CAlphaModulateEffect::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: Р РµР»РёР·РѕРІР°С‚СЊ CAlphaModulateEffect::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -425,7 +425,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("amt"), m_oAmt )
 				WritingElement_ReadAttributes_End( oReader )
@@ -478,7 +478,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("rad"), m_oRad )
 				WritingElement_ReadAttributes_End( oReader )
@@ -532,7 +532,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("a"), m_oA )
 				WritingElement_ReadAttributes_End( oReader )
@@ -661,7 +661,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("thresh"), m_oTresh )
 				WritingElement_ReadAttributes_End( oReader )
@@ -691,7 +691,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Релизовать CBlendEffect::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: Р РµР»РёР·РѕРІР°С‚СЊ CBlendEffect::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -726,7 +726,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("blend"), m_oBlend )
 				WritingElement_ReadAttributes_End( oReader )
@@ -771,7 +771,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("cstate"),  m_oCState )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("r:embed"), m_oEmbed )
@@ -845,7 +845,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("dpi"),          m_oDpi )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("rotWithShape"), m_oRotWithShape )
@@ -869,7 +869,7 @@ namespace OOX
 			nullable<OOX::Drawing::CStretchInfoProperties> m_oStretch;
 
 			//todooo extList 
-			//HD картинка
+			//HD РєР°СЂС‚РёРЅРєР°
 
 		};	
 		//-----------------------------------------------------------------------
@@ -916,7 +916,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("grow"), m_oGrow )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("rad"),  m_oRad )
@@ -1026,7 +1026,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать CColorChangeEffect::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CColorChangeEffect::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -1060,7 +1060,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("useA"), m_oUseA )
 				WritingElement_ReadAttributes_End( oReader )
@@ -1132,7 +1132,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Сделать CDashStop::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: РЎРґРµР»Р°С‚СЊ CDashStop::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -1157,7 +1157,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("d"),  m_oD )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("sp"), m_oSp )
@@ -1194,7 +1194,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: реализовать CDashStopList::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: СЂРµР°Р»РёР·РѕРІР°С‚СЊ CDashStopList::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -1256,7 +1256,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Сделать
+				// TO DO: РЎРґРµР»Р°С‚СЊ
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -1374,7 +1374,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Сделать
+				// TO DO: РЎРґРµР»Р°С‚СЊ
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -1398,7 +1398,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("ref"), m_sRef )
 				WritingElement_ReadAttributes_End( oReader )
@@ -1470,7 +1470,7 @@ namespace OOX
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				m_eType = et_Unknown;
-				// TO DO: Сделать CRelativeRect::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: РЎРґРµР»Р°С‚СЊ CRelativeRect::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -1537,13 +1537,13 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Выставляем значения по умолчанию
+				// Р’С‹СЃС‚Р°РІР»СЏРµРј Р·РЅР°С‡РµРЅРёСЏ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
 				m_oL.SetValue( 0 );
 				m_oB.SetValue( 0 );
 				m_oR.SetValue( 0 );
 				m_oT.SetValue( 0 );
 
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("b"), m_oB )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("l"), m_oL )
@@ -1607,7 +1607,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("rad"), m_oRad )
 				WritingElement_ReadAttributes_End( oReader )
@@ -1666,7 +1666,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("flip"),         m_oFlip )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("rotWithShape"), m_oRotWithShape )
@@ -1742,7 +1742,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: реализовать CGroupFillProperties::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: СЂРµР°Р»РёР·РѕРІР°С‚СЊ CGroupFillProperties::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -1778,7 +1778,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: реализовать CGradientStop::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: СЂРµР°Р»РёР·РѕРІР°С‚СЊ CGradientStop::fromXML(XmlUtils::CXmlNode& oNode)
 				CColor::fromXML( oNode );
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -1804,7 +1804,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start_No_NS( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("pos"), m_oPos )
 				WritingElement_ReadAttributes_End( oReader )
@@ -1839,7 +1839,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: реализовать CGradientStopList::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: СЂРµР°Р»РёР·РѕРІР°С‚СЊ CGradientStopList::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -1905,7 +1905,7 @@ namespace OOX
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				m_eType = et_Unknown;
-				// TO DO: Сделать CLineEndProperties::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: РЎРґРµР»Р°С‚СЊ CLineEndProperties::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -1969,7 +1969,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("len"),  m_oLen )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("type"), m_oType )
@@ -2031,7 +2031,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("hue"), m_oHue )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("lum"), m_oLum )
@@ -2089,7 +2089,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("blurRad"), m_oBlurRad )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("dir"),     m_oDir )
@@ -2165,7 +2165,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("ang"),    m_oAng )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("scaled"), m_oScaled )
@@ -2222,7 +2222,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("bright"), m_oBright )
 				WritingElement_ReadAttributes_End( oReader )
@@ -2282,7 +2282,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("lim"), m_oLim )
 				WritingElement_ReadAttributes_End( oReader )
@@ -2381,11 +2381,11 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Выствляем значения по умолчанию
+				// Р’С‹СЃС‚РІР»СЏРµРј Р·РЅР°С‡РµРЅРёСЏ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
 				m_oSx.SetValue( 100 );
 				m_oSy.SetValue( 100 );
 
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("blurRad"),      m_oBlurRad )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("dir"),          m_oDir )
@@ -2430,7 +2430,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: реализовать CPathShadeProperties::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: СЂРµР°Р»РёР·РѕРІР°С‚СЊ CPathShadeProperties::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -2479,7 +2479,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("path"), m_oPath )
 				WritingElement_ReadAttributes_End( oReader )
@@ -2512,7 +2512,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: реализовать CPatternFillProperties::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: СЂРµР°Р»РёР·РѕРІР°С‚СЊ CPatternFillProperties::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -2564,7 +2564,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("prst"), m_oPrst )
 				WritingElement_ReadAttributes_End( oReader )
@@ -2628,7 +2628,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
 				WritingElement_ReadAttributes_End( oReader )
@@ -2686,7 +2686,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("dir"),  m_oDir )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("dist"), m_oDist )
@@ -2720,7 +2720,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать CReflectionEffect::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CReflectionEffect::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -2758,7 +2758,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Выствляем значения по умолчанию
+				// Р’С‹СЃС‚РІР»СЏРµРј Р·РЅР°С‡РµРЅРёСЏ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
 				m_oStA.SetValue( 100 );
 				m_oStPos.SetValue( 0 );
 				m_oEndA.SetValue( 0 );
@@ -2766,7 +2766,7 @@ namespace OOX
 				m_oSx.SetValue( 100 );
 				m_oSy.SetValue( 100 );
 
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("blurRad"),      m_oBlurRad )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("dir"),          m_oDir )
@@ -2822,7 +2822,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать CRelativeOffsetEffect::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CRelativeOffsetEffect::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -2846,11 +2846,11 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Выствляем значения по умолчанию
+				// Р’С‹СЃС‚РІР»СЏРµРј Р·РЅР°С‡РµРЅРёСЏ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
 				m_oTx.SetValue( 0 );
 				m_oTy.SetValue( 0 );
 
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("tx"), m_oTx )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("ty"), m_oTy )
@@ -2916,7 +2916,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать CSoftEdgesEffect::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CSoftEdgesEffect::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -2940,7 +2940,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("rad"), m_oRad )
 				WritingElement_ReadAttributes_End( oReader )
@@ -3011,7 +3011,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: реализовать CStretchInfoProperties::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: СЂРµР°Р»РёР·РѕРІР°С‚СЊ CStretchInfoProperties::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -3143,7 +3143,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     (oReader, _T("algn"), m_oAlgn )
 				WritingElement_ReadAttributes_Read_else_if(oReader, _T("flip"), m_oFlip )
@@ -3210,7 +3210,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     (oReader, _T("amt"), m_oAmt )
 				WritingElement_ReadAttributes_Read_else_if(oReader, _T("hue"), m_oHue )
@@ -3241,7 +3241,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать CTransformEffect::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CTransformEffect::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -3271,13 +3271,13 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Выствляем значения по умолчанию
+				// Р’С‹СЃС‚РІР»СЏРµРј Р·РЅР°С‡РµРЅРёСЏ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
 				m_oTx.SetValue( 0 );
 				m_oTy.SetValue( 0 );
 				m_oSx.SetValue( 100 );
 				m_oSy.SetValue( 100 );
 
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("sx"), m_oSx )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("sy"), m_oSy )
@@ -3336,7 +3336,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: реализовать CFillEffect::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: СЂРµР°Р»РёР·РѕРІР°С‚СЊ CFillEffect::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -3440,7 +3440,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: реализовать CFillEffect::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: СЂРµР°Р»РёР·РѕРІР°С‚СЊ CFillEffect::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -3513,7 +3513,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("blend"), m_oBlend )
 				WritingElement_ReadAttributes_End( oReader )

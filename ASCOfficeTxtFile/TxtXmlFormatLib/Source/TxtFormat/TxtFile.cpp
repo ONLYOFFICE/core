@@ -1,4 +1,4 @@
-﻿
+
 #include "TxtFile.h"
 
 #include "../Common/Encoding.h"

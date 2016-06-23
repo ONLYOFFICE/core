@@ -1,4 +1,4 @@
-﻿#ifndef _PDF_READER_BUILTIN_FONT_TABLES_H
+#ifndef _PDF_READER_BUILTIN_FONT_TABLES_H
 #define _PDF_READER_BUILTIN_FONT_TABLES_H
 
 #include "BuiltinFont.h"

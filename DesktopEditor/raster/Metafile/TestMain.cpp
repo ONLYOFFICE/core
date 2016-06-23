@@ -1,4 +1,4 @@
-﻿//#define _CRTDBG_LEAK_CHECK_DF
+//#define _CRTDBG_LEAK_CHECK_DF
 
 #include <vector>
 

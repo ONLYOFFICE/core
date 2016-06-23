@@ -47,7 +47,7 @@ using namespace ATL;
 
 //#pragma comment(lib, "gdiplus.lib")
 
-// убрать когда перейдем на новый рендерер
+// СѓР±СЂР°С‚СЊ РєРѕРіРґР° РїРµСЂРµР№РґРµРј РЅР° РЅРѕРІС‹Р№ СЂРµРЅРґРµСЂРµСЂ
 #pragma warning(disable: 4244)
 
 

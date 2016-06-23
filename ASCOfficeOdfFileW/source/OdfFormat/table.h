@@ -547,7 +547,7 @@ public:
 
     virtual void serialize(std::wostream & _Wostream);
 
-	int get_count(){return content_.size();}//временно .. для группировок
+	int get_count(){return content_.size();}//РІСЂРµРјРµРЅРЅРѕ .. РґР»СЏ РіСЂСѓРїРїРёСЂРѕРІРѕРє
 
     office_element_ptr_array content_;
     //int type_;

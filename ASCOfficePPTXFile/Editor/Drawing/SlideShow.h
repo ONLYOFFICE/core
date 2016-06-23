@@ -6,16 +6,16 @@ namespace NSPresentationEditor
 	class CTransition
 	{
 	public:
-		bool	m_bAudioPresent;		// есть ли аудио
-		CAudioElement m_oAudio;			// аудио
+		bool	m_bAudioPresent;		// РµСЃС‚СЊ Р»Рё Р°СѓРґРёРѕ
+		CAudioElement m_oAudio;			// Р°СѓРґРёРѕ
 
-		BYTE	m_nEffectDirection;		// направление эффекта
-		BYTE	m_nEffectType;			// тип перехода
+		BYTE	m_nEffectDirection;		// РЅР°РїСЂР°РІР»РµРЅРёРµ СЌС„С„РµРєС‚Р°
+		BYTE	m_nEffectType;			// С‚РёРї РїРµСЂРµС…РѕРґР°
 
-		bool	m_bLoopSound;			// зациклить аудио
-		bool	m_bStopSound;			// перед транзишном перестать играть все аудио до этого
+		bool	m_bLoopSound;			// Р·Р°С†РёРєР»РёС‚СЊ Р°СѓРґРёРѕ
+		bool	m_bStopSound;			// РїРµСЂРµРґ С‚СЂР°РЅР·РёС€РЅРѕРј РїРµСЂРµСЃС‚Р°С‚СЊ РёРіСЂР°С‚СЊ РІСЃРµ Р°СѓРґРёРѕ РґРѕ СЌС‚РѕРіРѕ
 
-		double	m_dSpeed;				// длительность в миллисекундах
+		double	m_dSpeed;				// РґР»РёС‚РµР»СЊРЅРѕСЃС‚СЊ РІ РјРёР»Р»РёСЃРµРєСѓРЅРґР°С…
 
 	public:
 
@@ -59,12 +59,12 @@ namespace NSPresentationEditor
 	class CSlideShowInfo
 	{
 	public:
-		double	m_dSlideDuration;	// длительность слайда (без учета перехода)
-		bool	m_bHidden;			// нужно ли НЕ показывать слайд при проигрывании
+		double	m_dSlideDuration;	// РґР»РёС‚РµР»СЊРЅРѕСЃС‚СЊ СЃР»Р°Р№РґР° (Р±РµР· СѓС‡РµС‚Р° РїРµСЂРµС…РѕРґР°)
+		bool	m_bHidden;			// РЅСѓР¶РЅРѕ Р»Рё РќР• РїРѕРєР°Р·С‹РІР°С‚СЊ СЃР»Р°Р№Рґ РїСЂРё РїСЂРѕРёРіСЂС‹РІР°РЅРёРё
 
-		CTransition	m_oTransition;	// переход
+		CTransition	m_oTransition;	// РїРµСЂРµС…РѕРґ
 
-		bool	m_bOnlyClick;		// переход на следующий по щелчку
+		bool	m_bOnlyClick;		// РїРµСЂРµС…РѕРґ РЅР° СЃР»РµРґСѓСЋС‰РёР№ РїРѕ С‰РµР»С‡РєСѓ
 
 	public:
 

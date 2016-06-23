@@ -37,7 +37,7 @@ namespace ASCDocFileFormat
 		ftCosatan2		= 11,	// a * cos(atan2(c,b))
 		ftSinatan2		= 12,	// a * sin(atan2(c,b))  
 		ftSqrt			= 13,	// sqrt(a*a + b*b + c*c)
-		ftSumangle		= 14,	// a + b° - c°
+		ftSumangle		= 14,	// a + bÂ° - cÂ°
 		ftEllipse		= 15,	// c * sqrt(1-(a/b)2)  
 		ftTan			= 16,	// a * tan(b)  
 		ftVal			= 17	// a

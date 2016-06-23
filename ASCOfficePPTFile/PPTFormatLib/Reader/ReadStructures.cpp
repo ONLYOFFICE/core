@@ -245,7 +245,7 @@ void CTextPFRun_ppt::LoadFromStream(POLE::Stream* pStream, bool bIsIndentation)
 	BYTE flag3 = (BYTE)(dwFlags >> 16);
 	BYTE flag4 = (BYTE)(dwFlags >> 24);
 
-	//ôëàãè ÷òåíèÿ
+	//Ñ„Ð»Ð°Ð³Ð¸ Ñ‡Ñ‚ÐµÐ½Ð¸Ñ
 	bool hasBullet_				= (0x01 == (0x01 & flag1));
 	bool bulletHasFont_			= (0x02 == (0x02 & flag1));
 	bool bulletHasColor_		= (0x04 == (0x04 & flag1));
@@ -500,7 +500,7 @@ void CTextCFRun_ppt::LoadFromStream(POLE::Stream* pStream, bool bIsIndentation)
 	if (BaseLineOffset_)
 		m_oRun.BaseLineOffset = (double)StreamUtils::ReadSHORT(pStream);
 
-	// èëè äâà ïîñëåäíèõ íàîáîðîò????
+	// Ð¸Ð»Ð¸ Ð´Ð²Ð° Ð¿Ð¾ÑÐ»ÐµÐ´Ð½Ð¸Ñ… Ð½Ð°Ð¾Ð±Ð¾Ñ€Ð¾Ñ‚????
 }
 
 
@@ -639,7 +639,7 @@ void CMetaHeader::ToEMFHeader(Gdiplus::ENHMETAHEADER3* pHeader)
 	pHeader->rclBounds.right	= rcBounds.right;
 	pHeader->rclBounds.bottom	= rcBounds.bottom;
 
-	// íóæíî ïåðåâåñòè â ìì
+	// Ð½ÑƒÐ¶Ð½Ð¾ Ð¿ÐµÑ€ÐµÐ²ÐµÑÑ‚Ð¸ Ð² Ð¼Ð¼
 	pHeader->rclFrame.left		= rcBounds.left;
 	pHeader->rclFrame.top		= rcBounds.top;
 	pHeader->rclFrame.right		= rcBounds.right;
@@ -662,7 +662,7 @@ void CMetaHeader::ToEMFHeader(Gdiplus::ENHMETAHEADER3* pHeader)
 	pHeader->szlDevice.cx		= 200;
 	pHeader->szlDevice.cy		= 200;
 
-	// íóæíî ïåðåâåñòè â ìì
+	// Ð½ÑƒÐ¶Ð½Ð¾ Ð¿ÐµÑ€ÐµÐ²ÐµÑÑ‚Ð¸ Ð² Ð¼Ð¼
 	pHeader->szlMillimeters.cx	= 100;
 	pHeader->szlMillimeters.cy	= 100;
 }

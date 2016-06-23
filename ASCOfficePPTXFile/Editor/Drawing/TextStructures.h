@@ -666,7 +666,7 @@ namespace NSPresentationEditor
 		}
 	};
 
-	//нигде не применяется ???
+	//РЅРёРіРґРµ РЅРµ РїСЂРёРјРµРЅСЏРµС‚СЃСЏ ???
 	//class CTextFullInfo
 	//{
 	//public:

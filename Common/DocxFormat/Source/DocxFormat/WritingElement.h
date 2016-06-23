@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 //#include "NamespaceOwn.h"
 #include "../XML/xmlutils.h"

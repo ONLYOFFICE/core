@@ -115,7 +115,7 @@ void table_table::docx_convert(oox::docx_conversion_context & Context)
     std::wostream & _Wostream = Context.output_stream();
 
 	bool sub_table = table_table_attlist_.table_is_sub_table_.get_value_or(false);
-	//todooo придумать как сделать внешние границы sub-таблицы границами внешней ячейки (чтоб слияние произошло)
+	//todooo РїСЂРёРґСѓРјР°С‚СЊ РєР°Рє СЃРґРµР»Р°С‚СЊ РІРЅРµС€РЅРёРµ РіСЂР°РЅРёС†С‹ sub-С‚Р°Р±Р»РёС†С‹ РіСЂР°РЅРёС†Р°РјРё РІРЅРµС€РЅРµР№ СЏС‡РµР№РєРё (С‡С‚РѕР± СЃР»РёСЏРЅРёРµ РїСЂРѕРёР·РѕС€Р»Рѕ)
 	
 	std::wstring tableStyleName = L"";
 	if (table_table_attlist_.table_style_name_)
@@ -286,7 +286,7 @@ void table_table_cell::docx_convert(oox::docx_conversion_context & Context)
         }
         _Wostream << L"</w:tcPr>";
 
-        /// Обрабатываем стиль по умолчанию для данного столбца
+        /// РћР±СЂР°Р±Р°С‚С‹РІР°РµРј СЃС‚РёР»СЊ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ РґР»СЏ РґР°РЅРЅРѕРіРѕ СЃС‚РѕР»Р±С†Р°
         {
             const std::wstring & defaultCellStyle =
                 Context.get_table_context().get_default_cell_style_col(Context.get_table_context().current_column());
@@ -305,7 +305,7 @@ void table_table_cell::docx_convert(oox::docx_conversion_context & Context)
             }
         }
 
-        /// Стиль по умолчанию для данной строки
+        /// РЎС‚РёР»СЊ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ РґР»СЏ РґР°РЅРЅРѕР№ СЃС‚СЂРѕРєРё
         {
             const std::wstring & defaultCellStyle =
                 Context.get_table_context().get_default_cell_style_row();
@@ -324,7 +324,7 @@ void table_table_cell::docx_convert(oox::docx_conversion_context & Context)
             }
         }
 		
-        // если одержимое не содержит ниодного параграфа, то добавляем параграф, иначе word считает файл битым
+        // РµСЃР»Рё РѕРґРµСЂР¶РёРјРѕРµ РЅРµ СЃРѕРґРµСЂР¶РёС‚ РЅРёРѕРґРЅРѕРіРѕ РїР°СЂР°РіСЂР°С„Р°, С‚Рѕ РґРѕР±Р°РІР»СЏРµРј РїР°СЂР°РіСЂР°С„, РёРЅР°С‡Рµ word СЃС‡РёС‚Р°РµС‚ С„Р°Р№Р» Р±РёС‚С‹Рј
         if (!table_table_cell_content_.docx_convert(Context))
         {
             _Wostream << emptyPar;

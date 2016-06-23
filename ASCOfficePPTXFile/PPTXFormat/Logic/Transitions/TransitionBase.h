@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #ifndef PPTX_LOGIC_TRANSITIONBASE_INCLUDE_H_
 #define PPTX_LOGIC_TRANSITIONBASE_INCLUDE_H_
 

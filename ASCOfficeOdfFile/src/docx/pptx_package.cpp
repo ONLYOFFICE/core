@@ -24,7 +24,7 @@ pptx_content_types_file::pptx_content_types_file()
 	content()->add_override(L"/_rels/.rels",			L"application/vnd.openxmlformats-package.relationships+xml");
     
 	content()->add_override(L"/ppt/presentation.xml",L"application/vnd.openxmlformats-officedocument.presentationml.presentation.main+xml");
-  //  content()->add_override(L"/ppt/tableStyles.xml",	L"application/vnd.openxmlformats-officedocument.presentationml.tableStyles+xml");íåîáÿàòåëüíî
+  //  content()->add_override(L"/ppt/tableStyles.xml",	L"application/vnd.openxmlformats-officedocument.presentationml.tableStyles+xml");Ð½ÐµÐ¾Ð±ÑÐ°Ñ‚ÐµÐ»ÑŒÐ½Ð¾
   
 	content()->add_override(L"/docProps/app.xml",	L"application/vnd.openxmlformats-officedocument.extended-properties+xml");
     content()->add_override(L"/docProps/core.xml",	L"application/vnd.openxmlformats-package.core-properties+xml");
@@ -112,7 +112,7 @@ void slides_files::write(const std::wstring & RootPath)
                 rels_->add(id, kWSRel, fileRef);
             }
 
-            item->get_rel_file()->set_file_name(fileName + L".rels");//âíèòðåííèå ðåëñû
+            item->get_rel_file()->set_file_name(fileName + L".rels");//Ð²Ð½Ð¸Ñ‚Ñ€ÐµÐ½Ð½Ð¸Ðµ Ñ€ÐµÐ»ÑÑ‹
             
 			rels_files relFiles;
             relFiles.add_rel_file(item->get_rel_file());
@@ -158,7 +158,7 @@ void slideMasters_files::write(const std::wstring & RootPath)
                 rels_->add(id, kWSRel, fileRef);
             }
 
-            item->get_rel_file()->set_file_name(fileName + L".rels");//âíèòðåííèå ðåëñû
+            item->get_rel_file()->set_file_name(fileName + L".rels");//Ð²Ð½Ð¸Ñ‚Ñ€ÐµÐ½Ð½Ð¸Ðµ Ñ€ÐµÐ»ÑÑ‹
             
 			rels_files relFiles;
             relFiles.add_rel_file(item->get_rel_file());
@@ -196,7 +196,7 @@ void slideLayouts_files::write(const std::wstring & RootPath)
 			content_type_content * contentTypes = get_main_document()->get_content_types_file().content();
             contentTypes->add_override(std::wstring(L"/ppt/slideLayouts/") + fileName, kWSConType);
 
-            item->get_rel_file()->set_file_name(fileName + L".rels");//âíèòðåííèå ðåëñû
+            item->get_rel_file()->set_file_name(fileName + L".rels");//Ð²Ð½Ð¸Ñ‚Ñ€ÐµÐ½Ð½Ð¸Ðµ Ñ€ÐµÐ»ÑÑ‹
             
 			rels_files relFiles;
             relFiles.add_rel_file(item->get_rel_file());

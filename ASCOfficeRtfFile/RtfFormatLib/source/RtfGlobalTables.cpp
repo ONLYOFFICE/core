@@ -1,4 +1,4 @@
-﻿#include "RtfGlobalTables.h"
+#include "RtfGlobalTables.h"
 #include "RtfDocument.h"
 
 CString RtfFontTable::RenderToRtf(RenderParameter oRenderParameter)

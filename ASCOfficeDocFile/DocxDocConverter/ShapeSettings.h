@@ -269,7 +269,7 @@ namespace ASCDocFileFormat
 		inline CTextStyle&			GetTextStyle()			{	return m_oText;				}
 
 
-		// TODO : deprecated в классы свойств перенести
+		// TODO : deprecated РІ РєР»Р°СЃСЃС‹ СЃРІРѕР№СЃС‚РІ РїРµСЂРµРЅРµСЃС‚Рё
 
 		void SetUseBehind	(bool bUse);
 		void SetUseBehind	(const OOX::Logic::ShapeStyle& refStyle);

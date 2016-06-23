@@ -20,14 +20,14 @@ public:
 	odf_reader::chart::simple content_;  
 private:
 	
-	cpdoccore::oox::oox_layout layout_;	//layout (Layout) ง21.2.2.88
+	cpdoccore::oox::oox_layout layout_;	//layout (Layout) ยง21.2.2.88
 
-	//extLst (Chart Extensibility) ง21.2.2.64
-	//legendEntry (Legend Entry) ง21.2.2.94
-	//legendPos (Legend Position) ง21.2.2.95
-	//overlay (Overlay) ง21.2.2.132
-	//spPr (Shape Properties) ง21.2.2.197
-	//txPr (Text Properties) ง21.2.2.216
+	//extLst (Chart Extensibility) ยง21.2.2.64
+	//legendEntry (Legend Entry) ยง21.2.2.94
+	//legendPos (Legend Position) ยง21.2.2.95
+	//overlay (Overlay) ยง21.2.2.132
+	//spPr (Shape Properties) ยง21.2.2.197
+	//txPr (Text Properties) ยง21.2.2.216
 };
 
 }

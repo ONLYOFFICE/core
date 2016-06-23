@@ -1,4 +1,4 @@
-﻿#include "Info.h"
+#include "Info.h"
 #include "Utils.h"
 #include "Objects.h"
 

@@ -1,4 +1,4 @@
-﻿
+
 #include "VMLPictureMapping.h"
 
 #include "OfficeDrawing/GeometryBooleanProperties.h"

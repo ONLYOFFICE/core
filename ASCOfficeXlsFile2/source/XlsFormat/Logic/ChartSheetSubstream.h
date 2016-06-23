@@ -49,7 +49,7 @@ private:
 	void recalc(CHARTFORMATS*	charts);
 	void recalc(SERIESDATA*		data);
 
-	std::map<int, std::vector<int>> m_mapTypeChart;//тут нужен несортированый .. пока оставим этот
+	std::map<int, std::vector<int>> m_mapTypeChart;//С‚СѓС‚ РЅСѓР¶РµРЅ РЅРµСЃРѕСЂС‚РёСЂРѕРІР°РЅС‹Р№ .. РїРѕРєР° РѕСЃС‚Р°РІРёРј СЌС‚РѕС‚
 
 
 	GlobalWorkbookInfoPtr pGlobalWorkbookInfo;

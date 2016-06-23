@@ -1,4 +1,4 @@
-﻿#include "ParagraphProperty.h"
+#include "ParagraphProperty.h"
 
 namespace OOX
 {

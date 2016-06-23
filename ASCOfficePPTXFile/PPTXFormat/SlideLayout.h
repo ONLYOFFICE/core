@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #ifndef PPTX_SLIDES_SLIDELAYOUT_INCLUDE_H_
 #define PPTX_SLIDES_SLIDELAYOUT_INCLUDE_H_
 

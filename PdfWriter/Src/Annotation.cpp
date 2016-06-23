@@ -1,4 +1,4 @@
-﻿#include "Annotation.h"
+#include "Annotation.h"
 #include "Pages.h"
 
 #define BS_DEF_WIDTH 1

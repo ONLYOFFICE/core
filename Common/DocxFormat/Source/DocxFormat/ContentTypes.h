@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #ifndef OOX_CONTENT_TYPES_INCLUDE_H_
 #define OOX_CONTENT_TYPES_INCLUDE_H_
 

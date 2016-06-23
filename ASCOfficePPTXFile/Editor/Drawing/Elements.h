@@ -258,7 +258,7 @@ namespace PPTX2EditorAdvanced
 namespace NSPresentationEditor
 {
 	/**************************************************************
-				  здесь все типы элементов
+				  Р·РґРµСЃСЊ РІСЃРµ С‚РёРїС‹ СЌР»РµРјРµРЅС‚РѕРІ
 	**************************************************************/
 
 	class CImageElement : public IElement
@@ -701,7 +701,7 @@ namespace NSPresentationEditor
 			CPPTShape* pPPTShape = dynamic_cast<CPPTShape*>(m_oShape.m_pShape);
 			if (NULL == pPPTShape)
 			{
-				// такого быть не может
+				// С‚Р°РєРѕРіРѕ Р±С‹С‚СЊ РЅРµ РјРѕР¶РµС‚
 				return _T("");
 			}			
 
@@ -950,7 +950,7 @@ namespace NSPresentationEditor
 			element	+=	source;		
 
 			CString animations;
-			if(!m_oAnimations.m_arAnimations.empty())								//	для audio только "media call's" - play - pause - stop
+			if(!m_oAnimations.m_arAnimations.empty())								//	РґР»СЏ audio С‚РѕР»СЊРєРѕ "media call's" - play - pause - stop
 			{
 				m_oAnimations.m_dSlideWidth		=	m_oMetric.m_lMillimetresHor;
 				m_oAnimations.m_dSlideHeight	=	m_oMetric.m_lMillimetresVer;
@@ -1131,7 +1131,7 @@ namespace NSPresentationEditor
 			element	+=	source;		
 
 			CString animations;
-			if(!m_oAnimations.m_arAnimations.empty())								//	для audio только "media call's" - play - pause - stop
+			if(!m_oAnimations.m_arAnimations.empty())								//	РґР»СЏ audio С‚РѕР»СЊРєРѕ "media call's" - play - pause - stop
 			{
                                 m_oAnimations.m_dSlideWidth	=	m_oMetric.m_lMillimetresHor;
 				m_oAnimations.m_dSlideHeight	=	m_oMetric.m_lMillimetresVer;
@@ -1259,7 +1259,7 @@ namespace NSStrings
 				wchar_t* pRealloc = (wchar_t*)realloc(m_pData, m_lSize * sizeof(wchar_t));
 				if (NULL != pRealloc)
 				{
-					// реаллок сработал
+					// СЂРµР°Р»Р»РѕРє СЃСЂР°Р±РѕС‚Р°Р»
 					m_pData		= pRealloc;
 					m_pDataCur	= m_pData + m_lSizeCur;
 				}

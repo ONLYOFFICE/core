@@ -54,9 +54,9 @@ public:
 		r.display = display;
 		r.id = std::wstring(L"hId") + boost::lexical_cast<std::wstring>(records_.size()+1);
 
-        if (boost::algorithm::starts_with(target, "#"))//ссыль на страницу или метку в текущем документе
+        if (boost::algorithm::starts_with(target, "#"))//СЃСЃС‹Р»СЊ РЅР° СЃС‚СЂР°РЅРёС†Сѓ РёР»Рё РјРµС‚РєСѓ РІ С‚РµРєСѓС‰РµРј РґРѕРєСѓРјРµРЅС‚Рµ
         {
-			//адресация всегда на ячейку ...
+			//Р°РґСЂРµСЃР°С†РёСЏ РІСЃРµРіРґР° РЅР° СЏС‡РµР№РєСѓ ...
 			int pos =target.find(L".");
 			if (pos <0)
 			{

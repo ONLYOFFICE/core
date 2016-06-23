@@ -126,13 +126,13 @@ void xlsx_serialize_shape(std::wostream & strm, _xlsx_drawing & val)
             {
                 CP_XML_NODE(L"xdr:cNvPr")
                 {
-                    CP_XML_ATTR(L"id", val.id);//числовое значение val.rId
+                    CP_XML_ATTR(L"id", val.id);//С‡РёСЃР»РѕРІРѕРµ Р·РЅР°С‡РµРЅРёРµ val.rId
 
                     CP_XML_ATTR(L"name", val.name);
 
 					oox_serialize_hlink(CP_XML_STREAM(),val.hlinks);
                 }
-				CP_XML_NODE(L"xdr:cNvSpPr")//non visual properies (собственно тока 1 там)
+				CP_XML_NODE(L"xdr:cNvSpPr")//non visual properies (СЃРѕР±СЃС‚РІРµРЅРЅРѕ С‚РѕРєР° 1 С‚Р°Рј)
 				{
 					if (val.sub_type==1)CP_XML_ATTR(L"txBox", 1);
 				}
@@ -144,7 +144,7 @@ void xlsx_serialize_shape(std::wostream & strm, _xlsx_drawing & val)
 				oox_serialize_shape(CP_XML_STREAM(),val);
 				
 				bool draw_always = false;
-				if (val.sub_type == 5 || val.sub_type == 6)//line собственно ) - если ее нет - в свойствах будет
+				if (val.sub_type == 5 || val.sub_type == 6)//line СЃРѕР±СЃС‚РІРµРЅРЅРѕ ) - РµСЃР»Рё РµРµ РЅРµС‚ - РІ СЃРІРѕР№СЃС‚РІР°С… Р±СѓРґРµС‚
 					draw_always = true;
 
 				oox_serialize_ln(CP_XML_STREAM(),val.additional, draw_always);

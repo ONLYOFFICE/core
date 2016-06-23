@@ -37,7 +37,7 @@ CFRecordPtr CFStreamCacheReader::getNextRecord(const CFRecordType::TypeId desira
 
 		//Log::warning(rec_name);
 
-		if (desirable_type == rt_MsoDrawingGroup)	// объединяем rt_MsoDrawingGroup + rt_Continue в один блок 
+		if (desirable_type == rt_MsoDrawingGroup)	// РѕР±СЉРµРґРёРЅСЏРµРј rt_MsoDrawingGroup + rt_Continue РІ РѕРґРёРЅ Р±Р»РѕРє 
 		{
 			if (checkNextRecord(desirable_type, 1))
 			{				
@@ -91,7 +91,7 @@ CFRecordPtr CFStreamCacheReader::getNextRecord(const CFRecordType::TypeId desira
 
 	if(gen_except)
 	{
-		// теги разные
+		// С‚РµРіРё СЂР°Р·РЅС‹Рµ
 		std::string inType = XLS::CFRecordType::getStringById(desirable_type);
 		std::string outType = CFRecordType::getStringById(what_we_actually_read);		
 

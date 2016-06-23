@@ -36,7 +36,7 @@ void calculate_size_font_symbols(_font_metrix & metrix, CApplicationFonts *appFo
 	if (appr_px > 0)
 	{
 		//pixels to pt
-		metrix.approx_symbol_size = appr_px ;///1.1;//"1.2" волшебное число оО 
+		metrix.approx_symbol_size = appr_px ;///1.1;//"1.2" РІРѕР»С€РµР±РЅРѕРµ С‡РёСЃР»Рѕ РѕРћ
 		metrix.IsCalc = true;
 	}
 
@@ -225,7 +225,7 @@ void ods_conversion_context::add_hyperlink(std::wstring & ref, std::wstring & li
 	boost::algorithm::split(ref_cells,ref, boost::algorithm::is_any_of(L":"), boost::algorithm::token_compress_on);
 	if (ref_cells.size()>1)
 	{
-	//в ооx можно воткнуть на диапазон одну ссылку, в оо нельзя - ссылку вствляем, текст не меням
+	//РІ РѕРѕx РјРѕР¶РЅРѕ РІРѕС‚РєРЅСѓС‚СЊ РЅР° РґРёР°РїР°Р·РѕРЅ РѕРґРЅСѓ СЃСЃС‹Р»РєСѓ, РІ РѕРѕ РЅРµР»СЊР·СЏ - СЃСЃС‹Р»РєСѓ РІСЃС‚РІР»СЏРµРј, С‚РµРєСЃС‚ РЅРµ РјРµРЅСЏРј
 		int start_col = -1, start_row = -1;
 		int end_col = -1, end_row = -1;
 		
@@ -237,7 +237,7 @@ void ods_conversion_context::add_hyperlink(std::wstring & ref, std::wstring & li
 			for (long row = start_row; row <= end_row; row++)
 			{
 				current_table().add_hyperlink(ref,col,row,link);
-				//ссылка одна, а вот отображаемый текст - разный
+				//СЃСЃС‹Р»РєР° РѕРґРЅР°, Р° РІРѕС‚ РѕС‚РѕР±СЂР°Р¶Р°РµРјС‹Р№ С‚РµРєСЃС‚ - СЂР°Р·РЅС‹Р№
 			}
 		}
 	}
@@ -254,7 +254,7 @@ void ods_conversion_context::add_merge_cells(const std::wstring & ref)
  	std::vector<std::wstring> ref_cells;
 	boost::algorithm::split(ref_cells,ref, boost::algorithm::is_any_of(L":"), boost::algorithm::token_compress_on);
 
-	if (ref_cells.size() !=2) return;//тута однозначно .. по правилам оох
+	if (ref_cells.size() !=2) return;//С‚СѓС‚Р° РѕРґРЅРѕР·РЅР°С‡РЅРѕ .. РїРѕ РїСЂР°РІРёР»Р°Рј РѕРѕС…
 
 	int start_col = -1, start_row = -1;
 	int end_col = -1, end_row = -1;
@@ -332,8 +332,8 @@ void ods_conversion_context::start_columns()
 }
 void ods_conversion_context::end_columns()
 {
-	//add default last column  - ЕСЛИ они не прописаны в исходном (1024 - от  балды)
-	//вопрос - если и добавлять то  с каким стилем???
+	//add default last column  - Р•РЎР›Р РѕРЅРё РЅРµ РїСЂРѕРїРёСЃР°РЅС‹ РІ РёСЃС…РѕРґРЅРѕРј (1024 - РѕС‚  Р±Р°Р»РґС‹)
+	//РІРѕРїСЂРѕСЃ - РµСЃР»Рё Рё РґРѕР±Р°РІР»СЏС‚СЊ С‚Рѕ  СЃ РєР°РєРёРј СЃС‚РёР»РµРј???
 	//if (current_table().current_column() < 1 )
 	//	add_column(current_table().current_column()+1,1024,0,true);
 	//else
@@ -381,8 +381,8 @@ void ods_conversion_context::add_column(int start_column, int repeated, int leve
 	}
 	else
 	{
-		//по сути в этом стиле раличные опции ширины колонок тока .. а если свойства совпадают - можно сгенерить один, хотя выше и указано что стили разные.
-		//то есть в оо разделяют оох стиль на 2 (для колонки собственно, и описалово ячеек в колонки)
+		//РїРѕ СЃСѓС‚Рё РІ СЌС‚РѕРј СЃС‚РёР»Рµ СЂР°Р»РёС‡РЅС‹Рµ РѕРїС†РёРё С€РёСЂРёРЅС‹ РєРѕР»РѕРЅРѕРє С‚РѕРєР° .. Р° РµСЃР»Рё СЃРІРѕР№СЃС‚РІР° СЃРѕРІРїР°РґР°СЋС‚ - РјРѕР¶РЅРѕ СЃРіРµРЅРµСЂРёС‚СЊ РѕРґРёРЅ, С…РѕС‚СЏ РІС‹С€Рµ Рё СѓРєР°Р·Р°РЅРѕ С‡С‚Рѕ СЃС‚РёР»Рё СЂР°Р·РЅС‹Рµ.
+		//С‚Рѕ РµСЃС‚СЊ РІ РѕРѕ СЂР°Р·РґРµР»СЏСЋС‚ РѕРѕС… СЃС‚РёР»СЊ РЅР° 2 (РґР»СЏ РєРѕР»РѕРЅРєРё СЃРѕР±СЃС‚РІРµРЅРЅРѕ, Рё РѕРїРёСЃР°Р»РѕРІРѕ СЏС‡РµРµРє РІ РєРѕР»РѕРЅРєРё)
 		styles_context()->create_style(L"",style_family::TableColumn, true, false, -1);
 		style_elm = styles_context()->last_state()->get_office_element();
 		
@@ -446,7 +446,7 @@ void ods_conversion_context::start_cell_text()
 		text_a_->common_xlink_attlist_.type_ = xlink_type(xlink_type::Simple);
 		text_a_->common_xlink_attlist_.href_ = state.link;
 		
-		current_text_context_->start_element(text_a_elm); // может быть стоит сделать собственый???
+		current_text_context_->start_element(text_a_elm); // РјРѕР¶РµС‚ Р±С‹С‚СЊ СЃС‚РѕРёС‚ СЃРґРµР»Р°С‚СЊ СЃРѕР±СЃС‚РІРµРЅС‹Р№???
 	}
 }
 

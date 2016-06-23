@@ -1,4 +1,4 @@
-﻿#ifndef _BUILD_FONT_CONVERTER_H
+#ifndef _BUILD_FONT_CONVERTER_H
 #define _BUILD_FONT_CONVERTER_H
 
 #include <string>

@@ -1,4 +1,4 @@
-﻿#include "CSVWriter.h"
+#include "CSVWriter.h"
 #include "../../UnicodeConverter/UnicodeConverter.h"
 #include "../../UnicodeConverter/UnicodeConverter_Encodings.h"
 #include "../../DesktopEditor/common/StringBuilder.h"

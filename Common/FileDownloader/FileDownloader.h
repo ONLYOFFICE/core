@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "../../DesktopEditor/common/File.h"
 #include "../../DesktopEditor/graphics/BaseThread.h"

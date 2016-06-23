@@ -1,4 +1,4 @@
-﻿#include "DocumentMapping.h"
+#include "DocumentMapping.h"
 #include "ParagraphPropertiesMapping.h"
 #include "CommentsMapping.h"
 #include "TablePropertiesMapping.h"

@@ -57,8 +57,8 @@ namespace PPTX
 		//public:
 		public:
 			smart_ptr<ColorBase> Color;
-//hslClr (Hue, Saturation, Luminance Color Model)  ง20.1.2.3.13 
-//scrgbClr (RGB Color Model - Percentage Variant)  ง20.1.2.3.30 
+//hslClr (Hue, Saturation, Luminance Color Model)  ยง20.1.2.3.13 
+//scrgbClr (RGB Color Model - Percentage Variant)  ยง20.1.2.3.30 
 		protected:
 			virtual void FillParentPointersForChilds(){};
 		public:

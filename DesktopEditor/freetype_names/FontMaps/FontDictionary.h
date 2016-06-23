@@ -1,4 +1,4 @@
-﻿#ifndef _FONT_DICTIONARY_H
+#ifndef _FONT_DICTIONARY_H
 
 typedef struct FD_FontMapRec_
 {

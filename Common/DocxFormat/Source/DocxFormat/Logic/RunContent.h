@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "../WritingElement.h"
 #include "../../Base/Nullable.h"

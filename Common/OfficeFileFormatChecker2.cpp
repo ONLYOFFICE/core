@@ -1,4 +1,4 @@
-﻿#include <algorithm>
+#include <algorithm>
 #include "OfficeFileFormatChecker.h"
 #include "../DesktopEditor/common/File.h"
 #include "../OfficeUtils/src/OfficeUtils.h"

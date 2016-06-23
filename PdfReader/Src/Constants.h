@@ -1,4 +1,4 @@
-﻿#ifndef _PDF_READER_CONSTANTS_H
+#ifndef _PDF_READER_CONSTANTS_H
 #define _PDF_READER_CONSTANTS_H
 
 namespace PdfReader

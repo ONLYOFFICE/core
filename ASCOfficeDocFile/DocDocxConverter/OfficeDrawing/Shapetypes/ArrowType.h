@@ -263,7 +263,7 @@ namespace DocFileFormat
 		}
 	};
 
-	class BentArrow : public ShapeType			//	фигура превращается не имеет точек изменения
+	class BentArrow : public ShapeType			//	С„РёРіСѓСЂР° РїСЂРµРІСЂР°С‰Р°РµС‚СЃСЏ РЅРµ РёРјРµРµС‚ С‚РѕС‡РµРє РёР·РјРµРЅРµРЅРёСЏ
 	{
 	public:
 		BentArrow () : ShapeType(msosptBentArrow)
@@ -1096,7 +1096,7 @@ namespace DocFileFormat
 		}
 	};
 
-	class CircularArrow : public ShapeType				//	фигура превращается не имеет точек изменения
+	class CircularArrow : public ShapeType				//	С„РёРіСѓСЂР° РїСЂРµРІСЂР°С‰Р°РµС‚СЃСЏ РЅРµ РёРјРµРµС‚ С‚РѕС‡РµРє РёР·РјРµРЅРµРЅРёСЏ
 	{
 	public:
 		CircularArrow () : ShapeType(msosptCircularArrow)

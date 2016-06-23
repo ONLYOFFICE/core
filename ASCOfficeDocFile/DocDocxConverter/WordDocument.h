@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "StructuredStorageReader.h"
 #include "VirtualStreamReader.h"

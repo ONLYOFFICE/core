@@ -1,4 +1,4 @@
-﻿#ifndef _BUILD_GRAPHICSPATH_H_
+#ifndef _BUILD_GRAPHICSPATH_H_
 #define _BUILD_GRAPHICSPATH_H_
 
 #include "AggPlusEnums.h"

@@ -56,7 +56,7 @@ public:
 CP_REGISTER_OFFICE_ELEMENT2(draw_image)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
- //объект рисования не нужен .. нужно только место для фрэйма - сам чарт в другом месте
+ //РѕР±СЉРµРєС‚ СЂРёСЃРѕРІР°РЅРёСЏ РЅРµ РЅСѓР¶РµРЅ .. РЅСѓР¶РЅРѕ С‚РѕР»СЊРєРѕ РјРµСЃС‚Рѕ РґР»СЏ С„СЂСЌР№РјР° - СЃР°Рј С‡Р°СЂС‚ РІ РґСЂСѓРіРѕРј РјРµСЃС‚Рµ
 class draw_chart : public office_element_impl<draw_chart>
 {
 public:
@@ -83,7 +83,7 @@ CP_REGISTER_OFFICE_ELEMENT2(draw_chart)
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class draw_frame : public draw_base
-{    //для  draw-text-box, draw-image, draw-object, draw-object-ole, draw-applet, draw-floating-frame, draw-plugin
+{    //РґР»СЏ  draw-text-box, draw-image, draw-object, draw-object-ole, draw-applet, draw-floating-frame, draw-plugin
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
@@ -101,7 +101,7 @@ public:
   	odf_types::presentation_shape_attlist presentation_shape_attlist_;
     draw_frame_attlist draw_frame_attlist_;
 
-    office_element_ptr office_event_listeners_; // в content перенести нельзя - иначе событи будет добавляться не к этому объекту а следующему
+    office_element_ptr office_event_listeners_; // РІ content РїРµСЂРµРЅРµСЃС‚Рё РЅРµР»СЊР·СЏ - РёРЅР°С‡Рµ СЃРѕР±С‹С‚Рё Р±СѓРґРµС‚ РґРѕР±Р°РІР»СЏС‚СЊСЃСЏ РЅРµ Рє СЌС‚РѕРјСѓ РѕР±СЉРµРєС‚Сѓ Р° СЃР»РµРґСѓСЋС‰РµРјСѓ
     office_element_ptr draw_glue_point_;
     office_element_ptr draw_image_map_;
     //office_element_ptr draw_chart_map_;

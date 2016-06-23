@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "libdjvu/DjVuDocument.h"
 #include "libdjvu/DjVuImage.h"

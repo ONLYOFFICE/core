@@ -125,7 +125,7 @@ void paragraph_format_properties::docx_convert(oox::docx_conversion_context & Co
 				Context.set_rtl(false);
 			}
 		}
-		if (Context.rtl()) //может быть он установился от стиля родителя !!
+		if (Context.rtl()) //РјРѕР¶РµС‚ Р±С‹С‚СЊ РѕРЅ СѓСЃС‚Р°РЅРѕРІРёР»СЃСЏ РѕС‚ СЃС‚РёР»СЏ СЂРѕРґРёС‚РµР»СЏ !!
 		{
 			_pPr << L"<w:bidi/>";
 		}
@@ -260,8 +260,8 @@ void paragraph_format_properties::docx_convert(oox::docx_conversion_context & Co
 			w_after = process_margin(fo_margin_bottom_, 20.0);
 			w_before = process_margin(fo_margin_top_, 20.0);
 
-			// TODO :   здесь 240 берется из корневого стиля? надо не константу использовать а брать оттуда
-			//          в xsl преобразованиях так же написано 
+			// TODO :   Р·РґРµСЃСЊ 240 Р±РµСЂРµС‚СЃСЏ РёР· РєРѕСЂРЅРµРІРѕРіРѕ СЃС‚РёР»СЏ? РЅР°РґРѕ РЅРµ РєРѕРЅСЃС‚Р°РЅС‚Сѓ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ Р° Р±СЂР°С‚СЊ РѕС‚С‚СѓРґР°
+			//          РІ xsl РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏС… С‚Р°Рє Р¶Рµ РЅР°РїРёСЃР°РЅРѕ 
 			if (fo_line_height_)
 			{
 				if (fo_line_height_->get_type() == line_width::Percent)
@@ -303,7 +303,7 @@ void paragraph_format_properties::docx_convert(oox::docx_conversion_context & Co
 
 			}
 		}
-		if (fo_margin_left_ || //? + буквица
+		if (fo_margin_left_ || //? + Р±СѓРєРІРёС†Р°
 			fo_margin_right_ || 
 			(fo_text_indent_ && Context.get_drop_cap_context().state() != 1))
 		{
@@ -323,7 +323,7 @@ void paragraph_format_properties::docx_convert(oox::docx_conversion_context & Co
 				CP_XML_ATTR(L"w:left", w_left);
 				CP_XML_ATTR(L"w:right", w_right);
 		        
-				if (Context.get_drop_cap_context().state() != 1 )//состояние сразу после добавления буквицы - не нужны ни отступы, ни висячие
+				if (Context.get_drop_cap_context().state() != 1 )//СЃРѕСЃС‚РѕСЏРЅРёРµ СЃСЂР°Р·Сѓ РїРѕСЃР»Рµ РґРѕР±Р°РІР»РµРЅРёСЏ Р±СѓРєРІРёС†С‹ - РЅРµ РЅСѓР¶РЅС‹ РЅРё РѕС‚СЃС‚СѓРїС‹, РЅРё РІРёСЃСЏС‡РёРµ
 				{
 					if (!w_firstLine.empty())
 						CP_XML_ATTR(L"w:firstLine", w_firstLine);
@@ -405,7 +405,7 @@ void style_tab_stop::docx_convert(oox::docx_conversion_context & Context)
 
     _pPr << L"<w:tab ";
 
-	length def_tab =  length(1.0, length::cm);// в ms значение 0.8 не корректно оО
+	length def_tab =  length(1.0, length::cm);// РІ ms Р·РЅР°С‡РµРЅРёРµ 0.8 РЅРµ РєРѕСЂСЂРµРєС‚РЅРѕ РѕРћ
 	
 	int tab_pos = (int)( 20.0 * style_position_.get_value_unit(length::pt) ) ;
 	int min_tab_pos = (int)( 20.0 * def_tab.get_value_unit(length::pt) ) ;

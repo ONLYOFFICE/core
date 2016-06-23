@@ -1,4 +1,4 @@
-﻿#ifndef _ASC_FONTCONVERTER_STRING_EXT_H_
+#ifndef _ASC_FONTCONVERTER_STRING_EXT_H_
 #define _ASC_FONTCONVERTER_STRING_EXT_H_
 
 #include <stdarg.h>

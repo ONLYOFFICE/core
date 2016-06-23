@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "PropertiesMapping.h"
 #include "PictureDescriptor.h"

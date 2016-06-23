@@ -23,8 +23,8 @@ namespace PPTX
 			virtual void fromXML(const XmlUtils::CXmlNode& node);
 			virtual CString toXML() const;
 		public:
-			//tnLst (Time Node List)  ง19.5.87 
-			//bldLst (Build List)  ง19.5.14 
+			//tnLst (Time Node List)  ยง19.5.87 
+			//bldLst (Build List)  ยง19.5.14 
 		protected:
 			virtual void FillParentPointersForChilds(){};
 		};

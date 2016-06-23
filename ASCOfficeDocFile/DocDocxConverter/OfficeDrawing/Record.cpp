@@ -1,4 +1,4 @@
-﻿#include "Record.h"
+#include "Record.h"
 
 namespace DocFileFormat
 {

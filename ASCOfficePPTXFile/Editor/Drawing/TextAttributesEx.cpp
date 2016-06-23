@@ -19,7 +19,7 @@ namespace NSPresentationEditor
 				if( !split_paragraph && lFoundEnter >= 0 && (s_size > 1 || (s_size == 1 && m_arParagraphs[i].m_arSpans.size() > 1)))
 				{
 					split_paragraph = true;
-					// разбиваем параграф
+					// СЂР°Р·Р±РёРІР°РµРј РїР°СЂР°РіСЂР°С„
 					CParagraph oNewPar = m_arParagraphs[i];
 
 					if (lCountCFs - (j + 1) > 0)
@@ -45,7 +45,7 @@ namespace NSPresentationEditor
 				int lFoundBreak = m_arParagraphs[i].m_arSpans[j].m_strText.find((TCHAR)11);
 				if( lFoundBreak >= 0)
 				{
-					// разбиваем span
+					// СЂР°Р·Р±РёРІР°РµРј span
 					CSpan next	= m_arParagraphs[i].m_arSpans[j];
 					
 					next.m_strText								= next.m_strText.substr(lFoundBreak + 1);
@@ -245,7 +245,7 @@ namespace NSPresentationEditor
 	}
 	void CTextAttributesEx::ApplyRuler(CTheme* pTheme)
 	{
-		if (m_oRuler.tabsStops.size() > 0 || m_oRuler.DefaultTabSize.is_init())//presentacio1.ppt слайд 2
+		if (m_oRuler.tabsStops.size() > 0 || m_oRuler.DefaultTabSize.is_init())//presentacio1.ppt СЃР»Р°Р№Рґ 2
 		{
 			for (long i = 0; i < 9 ;i++)
 			{

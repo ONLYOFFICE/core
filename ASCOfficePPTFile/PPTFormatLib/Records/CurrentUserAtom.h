@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "../Records/RecordsIncluder.h"
 
 #define			NO_ENCRYPT		0xE391C05F

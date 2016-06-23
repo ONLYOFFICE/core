@@ -1,4 +1,4 @@
-﻿#include "StringExt.h"
+#include "StringExt.h"
 #include "PDFDoc.h"
 #include "Decrypt.h"
 #include "GlobalParams.h"

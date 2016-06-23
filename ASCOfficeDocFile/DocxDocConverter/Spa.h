@@ -206,7 +206,7 @@ namespace ASCDocFileFormat
 		/// 3 reserved for future use
 		AnchorType by;
 		/// Text wrapping mode
-		/// 0 like 2, but doesn‘t require absolute object
+		/// 0 like 2, but doesnРЎt require absolute object
 		/// 1 no text next to shape
 		/// 2 wrap around absolute object
 		/// 3 wrap as if no object present
@@ -233,6 +233,6 @@ namespace ASCDocFileFormat
 		/// Count of textboxes in shape (undo doc only)
 		int cTxbx;
 
-		bool	m_bFlip;		//	если объект повернут по определенному углу то нужно флипнуть RCA структуру
+		bool	m_bFlip;		//	РµСЃР»Рё РѕР±СЉРµРєС‚ РїРѕРІРµСЂРЅСѓС‚ РїРѕ РѕРїСЂРµРґРµР»РµРЅРЅРѕРјСѓ СѓРіР»Сѓ С‚Рѕ РЅСѓР¶РЅРѕ С„Р»РёРїРЅСѓС‚СЊ RCA СЃС‚СЂСѓРєС‚СѓСЂСѓ
 	};
 }

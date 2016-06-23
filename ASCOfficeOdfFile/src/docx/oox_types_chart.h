@@ -63,19 +63,19 @@ public:
 		axisId_.push_back(id);
 	}
 
-	oox_data_labels					data_labels_;//dLbls (Data Labels) §21.2.2.49
+	oox_data_labels					data_labels_;//dLbls (Data Labels) В§21.2.2.49
 
 	int								type_;
 	bool							is3D_;
-	std::vector<int>				axisId_;	//axId (Axis ID) §21.2.2.9
+	std::vector<int>				axisId_;	//axId (Axis ID) В§21.2.2.9
 	std::wstring					grouping_;	//	clustered | percentStacked | stacked | standard 
-	std::vector<oox_series_ptr>		series_;	//ser (Bar Chart Series) §21.2.2.170
+	std::vector<oox_series_ptr>		series_;	//ser (Bar Chart Series) В§21.2.2.170
 
 	virtual void set_properties(std::vector<odf_reader::_property> g);
 	virtual void set_additional_properties(std::vector<odf_reader::_property> g){}
 
 
-	//extLst (Chart Extensibility) §21.2.2.64
+	//extLst (Chart Extensibility) В§21.2.2.64
 };
 
 class oox_bar_chart;
@@ -99,15 +99,15 @@ class oox_bar_chart: public oox_chart
 
 	static _CP_PTR(oox_chart) create();
 
-	_CP_OPT(bool)	bVertical;	//barDir (Bar Direction) §21.2.2.17
+	_CP_OPT(bool)	bVertical;	//barDir (Bar Direction) В§21.2.2.17
 	_CP_OPT(bool)	bConnectBars;
 	_CP_OPT(int)	iGapWidth;
 	_CP_OPT(int)	iOverlap;
 
  
-	//gapWidth (Gap Width) §21.2.2.75
-	//overlap (Overlap) §21.2.2.131
-	//serLines (Series Lines) §21.2.2.176
+	//gapWidth (Gap Width) В§21.2.2.75
+	//overlap (Overlap) В§21.2.2.131
+	//serLines (Series Lines) В§21.2.2.176
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -133,11 +133,11 @@ class oox_line_chart: public oox_chart
 	/*odf_reader::chart_interpolation::type*/_CP_OPT(int) iInterpolation;
 	_CP_OPT(bool)bLines;
 
-	//dropLines (Drop Lines) §21.2.2.53
-	//hiLowLines (High Low Lines) §21.2.2.80
-	//marker (Show Marker) §21.2.2.105
-	//smooth (Smoothing) §21.2.2.194
-	//upDownBars (Up/Down Bars) §21.2.2.218
+	//dropLines (Drop Lines) В§21.2.2.53
+	//hiLowLines (High Low Lines) В§21.2.2.80
+	//marker (Show Marker) В§21.2.2.105
+	//smooth (Smoothing) В§21.2.2.194
+	//upDownBars (Up/Down Bars) В§21.2.2.218
 
 };
 
@@ -161,8 +161,8 @@ class oox_area_chart: public oox_chart
 
 	static _CP_PTR(oox_chart) create();
 
-	//dropLines (Drop Lines) §21.2.2.53
-	//ser (Area Chart Series) §21.2.2.168
+	//dropLines (Drop Lines) В§21.2.2.53
+	//ser (Area Chart Series) В§21.2.2.168
 };
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 class oox_bubble_chart;
@@ -179,17 +179,17 @@ class oox_bubble_chart: public oox_chart
 	~oox_bubble_chart(){}
  	
 	virtual void oox_serialize(std::wostream & _Wostream);
-	virtual void add_series(int id);//тип серии чотко соответствует типу самого чарта - если нужны смешанные типы - нужно добавлять свой чарт.
+	virtual void add_series(int id);//С‚РёРї СЃРµСЂРёРё С‡РѕС‚РєРѕ СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓРµС‚ С‚РёРїСѓ СЃР°РјРѕРіРѕ С‡Р°СЂС‚Р° - РµСЃР»Рё РЅСѓР¶РЅС‹ СЃРјРµС€Р°РЅРЅС‹Рµ С‚РёРїС‹ - РЅСѓР¶РЅРѕ РґРѕР±Р°РІР»СЏС‚СЊ СЃРІРѕР№ С‡Р°СЂС‚.
 	virtual void set_properties(std::vector<odf_reader::_property> g);
-	// то есть первична серия - в отличии от одф
+	// С‚Рѕ РµСЃС‚СЊ РїРµСЂРІРёС‡РЅР° СЃРµСЂРёСЏ - РІ РѕС‚Р»РёС‡РёРё РѕС‚ РѕРґС„
 
 	static _CP_PTR(oox_chart) create();
 
-	//bubble3D (3D Bubble) §21.2.2.19
-	//bubbleScale (Bubble Scale) §21.2.2.21
-	//ser (Bubble Chart Series) §21.2.2.174
-	//showNegBubbles (Show Negative Bubbles) §21.2.2.185
-	//sizeRepresents (Size Represents) §21.2.2.193
+	//bubble3D (3D Bubble) В§21.2.2.19
+	//bubbleScale (Bubble Scale) В§21.2.2.21
+	//ser (Bubble Chart Series) В§21.2.2.174
+	//showNegBubbles (Show Negative Bubbles) В§21.2.2.185
+	//sizeRepresents (Size Represents) В§21.2.2.193
 };
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 class oox_doughnut_chart;
@@ -211,9 +211,9 @@ class oox_doughnut_chart: public oox_chart
 
 	static _CP_PTR(oox_chart) create();
 
-	//firstSliceAng (First Slice Angle) §21.2.2.68
-	//holeSize (Hole Size) §21.2.2.82
-	//ser (Pie Chart Series) §21.2.2.172
+	//firstSliceAng (First Slice Angle) В§21.2.2.68
+	//holeSize (Hole Size) В§21.2.2.82
+	//ser (Pie Chart Series) В§21.2.2.172
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -236,8 +236,8 @@ class oox_pie_chart: public oox_chart
 
 	static _CP_PTR(oox_chart) create();
 
-	//firstSliceAng (First Slice Angle) §21.2.2.68
-	//ser (Pie Chart Series) §21.2.2.172
+	//firstSliceAng (First Slice Angle) В§21.2.2.68
+	//ser (Pie Chart Series) В§21.2.2.172
 };
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 class oox_radar_chart;
@@ -261,8 +261,8 @@ class oox_radar_chart: public oox_chart
 	static _CP_PTR(oox_chart) create(std::wstring radarStyle = L"marker");
 
 	std::wstring radarStyle_;
-	//radarStyle (Radar Style) §21.2.2.154
-	//ser (Radar Chart Series) §21.2.2.169
+	//radarStyle (Radar Style) В§21.2.2.154
+	//ser (Radar Chart Series) В§21.2.2.169
 };
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 class oox_scatter_chart;
@@ -286,8 +286,8 @@ class oox_scatter_chart: public oox_chart
 
 	_CP_OPT(int)			iRegressionType;
 
-	//scatterStyle (Scatter Style) §21.2.2.162
-	//ser (Scatter Chart Series) §21.2.2.167
+	//scatterStyle (Scatter Style) В§21.2.2.162
+	//ser (Scatter Chart Series) В§21.2.2.167
 };
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 class oox_stock_chart;
@@ -321,20 +321,20 @@ class oox_stock_chart: public oox_chart
 
 	_oox_fill					fill_;
 
-	//dropLines (Drop Lines) §21.2.2.53
-	//hiLowLines (High Low Lines) §21.2.2.80
-	//ser (Line Chart Series) §21.2.2.171
-	//upDownBars (Up/Down Bars) §21.2.2.218
+	//dropLines (Drop Lines) В§21.2.2.53
+	//hiLowLines (High Low Lines) В§21.2.2.80
+	//ser (Line Chart Series) В§21.2.2.171
+	//upDownBars (Up/Down Bars) В§21.2.2.218
 
 };
 
 }
 }
 ////////////////////////////////////////
-//area3DChart (3D Area Charts) §21.2.2.4
-//bar3DChart (3D Bar Charts) §21.2.2.15
-//line3DChart (3D Line Charts) §21.2.2.96
-//surface3DChart (3D Surface Charts) §21.2.2.203
-//pie3DChart (3D Pie Charts) §21.2.2.140
-//ofPieChart (Pie of Pie or Bar of Pie Charts) §21.2.2.126
-//surfaceChart (Surface Charts) §21.2.2.204
+//area3DChart (3D Area Charts) В§21.2.2.4
+//bar3DChart (3D Bar Charts) В§21.2.2.15
+//line3DChart (3D Line Charts) В§21.2.2.96
+//surface3DChart (3D Surface Charts) В§21.2.2.203
+//pie3DChart (3D Pie Charts) В§21.2.2.140
+//ofPieChart (Pie of Pie or Bar of Pie Charts) В§21.2.2.126
+//surfaceChart (Surface Charts) В§21.2.2.204

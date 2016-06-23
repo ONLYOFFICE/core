@@ -27,16 +27,16 @@ namespace OOX
 		//--------------------------------------------------------------------------------	
 		enum EGraphicType
 		{
-			// Согласно спецификации Docx стр.3456 (20.4) элементами графики могут быть только
-			graphictypePicture      = 0, // Картинки		20.2
-			graphictypeLockedCanvas = 1, // Канвы			20.3
-			graphictypeChart        = 2, // Графики			21.2
-			graphictypeDiagram      = 3, // Диаграммы		21.4
-			graphictypeShape	    = 4, // Шейпы			20.4
-			graphictypeGroupShape   = 5, // Группы Шейпов	20.4
+			// РЎРѕРіР»Р°СЃРЅРѕ СЃРїРµС†РёС„РёРєР°С†РёРё Docx СЃС‚СЂ.3456 (20.4) СЌР»РµРјРµРЅС‚Р°РјРё РіСЂР°С„РёРєРё РјРѕРіСѓС‚ Р±С‹С‚СЊ С‚РѕР»СЊРєРѕ
+			graphictypePicture      = 0, // РљР°СЂС‚РёРЅРєРё		20.2
+			graphictypeLockedCanvas = 1, // РљР°РЅРІС‹			20.3
+			graphictypeChart        = 2, // Р“СЂР°С„РёРєРё			21.2
+			graphictypeDiagram      = 3, // Р”РёР°РіСЂР°РјРјС‹		21.4
+			graphictypeShape	    = 4, // РЁРµР№РїС‹			20.4
+			graphictypeGroupShape   = 5, // Р“СЂСѓРїРїС‹ РЁРµР№РїРѕРІ	20.4
 		};
 
-		class CGraphic : public WritingElementWithChilds<WritingElement> //в данном случае псевдо - так как ДОЛЖЕН быть тока 1 элемент
+		class CGraphic : public WritingElementWithChilds<WritingElement> //РІ РґР°РЅРЅРѕРј СЃР»СѓС‡Р°Рµ РїСЃРµРІРґРѕ - С‚Р°Рє РєР°Рє Р”РћР›Р–Р•Рќ Р±С‹С‚СЊ С‚РѕРєР° 1 СЌР»РµРјРµРЅС‚
 		{
 		public:
 			WritingElement_AdditionConstructors(CGraphic)
@@ -50,7 +50,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать CGraphic::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CGraphic::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -115,7 +115,7 @@ namespace OOX
 			}
 			virtual CString      toXML() const
 			{
-				// TO DO: Реализовать CGraphic::toXML()
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CGraphic::toXML()
 				return _T("");
 			}
 			virtual EElementType getType() const
@@ -127,7 +127,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("uri"), m_sUri )
 				WritingElement_ReadAttributes_End( oReader )

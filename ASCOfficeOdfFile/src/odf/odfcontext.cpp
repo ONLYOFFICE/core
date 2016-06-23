@@ -60,7 +60,7 @@ void styles_container::add_style(	const std::wstring & Name,
 
 	if (Name == ParentStyleName)
 	{
-		ParentStyleName = L"";//иначе в коде возможно зацикливание.
+		ParentStyleName = L"";//РёРЅР°С‡Рµ РІ РєРѕРґРµ РІРѕР·РјРѕР¶РЅРѕ Р·Р°С†РёРєР»РёРІР°РЅРёРµ.
 	}
     style_instance_ptr newStyle = style_instance_ptr( 
         new style_instance(this, Name, Type, Content, IsAutomatic, IsDefault, ParentStyleName, NextStyleName, DataStyleName) 
@@ -74,7 +74,7 @@ void styles_container::add_style(	const std::wstring & Name,
         std::wstring n = Name + L":" + boost::lexical_cast<std::wstring>( style_family(Type) );
         map_[n] = pos;
 
-        // TODO: как правильно??
+        // TODO: РєР°Рє РїСЂР°РІРёР»СЊРЅРѕ??
         std::wstring lName = Name;
         boost::algorithm::to_lower(lName);
         //if ( boost::algorithm::contains(lName, L"internet_20_link") )

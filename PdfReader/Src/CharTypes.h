@@ -1,4 +1,4 @@
-﻿#ifndef _PDF_READER_CHARTYPES_H
+#ifndef _PDF_READER_CHARTYPES_H
 #define _PDF_READER_CHARTYPES_H
 
 namespace PdfReader
@@ -6,10 +6,10 @@ namespace PdfReader
 	// Unicode-символы.
 	typedef unsigned int Unicode;
 
-	// ƒл¤ элементов CID.
+	// Для элементов CID.
 	typedef unsigned int CID;
 
-	// ќбщий тип, рассчитан наодин из следюущих вариантов:
+	// Общий тип, рассчитан наодин из следюущих вариантов:
 	// - 8-битные символы
 	// - 16-битный CID
 	// - Unicode

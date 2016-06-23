@@ -105,7 +105,7 @@ void odf_conversion_context::end_document()
 
 		package::content_simple_ptr content_style_ = package::content_simple::create();
 		BOOST_FOREACH(const office_element_ptr & elm, object.styles)
-		{// ìàñòåð-ïåéäæû, çàäàííûå çàëèâêè (ãðàäèåíòû, áèòìàïû), äåôîëòíûå ñòèëè, êîëîíòèòóëû, ðàçìåòêè, çàìåòêè,...
+		{// Ð¼Ð°ÑÑ‚ÐµÑ€-Ð¿ÐµÐ¹Ð´Ð¶Ñ‹, Ð·Ð°Ð´Ð°Ð½Ð½Ñ‹Ðµ Ð·Ð°Ð»Ð¸Ð²ÐºÐ¸ (Ð³Ñ€Ð°Ð´Ð¸ÐµÐ½Ñ‚Ñ‹, Ð±Ð¸Ñ‚Ð¼Ð°Ð¿Ñ‹), Ð´ÐµÑ„Ð¾Ð»Ñ‚Ð½Ñ‹Ðµ ÑÑ‚Ð¸Ð»Ð¸, ÐºÐ¾Ð»Ð¾Ð½Ñ‚Ð¸Ñ‚ÑƒÐ»Ñ‹, Ñ€Ð°Ð·Ð¼ÐµÑ‚ÐºÐ¸, Ð·Ð°Ð¼ÐµÑ‚ÐºÐ¸,...
 
 			elm->serialize(content_style_->content());
 		}
@@ -217,7 +217,7 @@ void odf_conversion_context::process_settings(_object & object, bool isRoot)
 
 void odf_conversion_context::process_styles(_object & object, bool isRoot)
 {
-	create_element(L"office", L"styles", object.styles, this, true);//îáùèå ñòèëè
+	create_element(L"office", L"styles", object.styles, this, true);//Ð¾Ð±Ñ‰Ð¸Ðµ ÑÑ‚Ð¸Ð»Ð¸
 	object.style_context->process_office_styles(object.styles.back());
 	page_layout_context()->process_office_styles(object.styles.back());
 	

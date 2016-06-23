@@ -160,7 +160,7 @@ int CF12::serialize(std::wostream & stream)
 					}
 				}
 			}
-			//что использовать зависит от типа ... todooo
+			//С‡С‚Рѕ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ Р·Р°РІРёСЃРёС‚ РѕС‚ С‚РёРїР° ... todooo
 			std::wstring s	= fmlaActive.getAssembledFormula();
 			std::wstring s1 = rgce1.getAssembledFormula();
 			std::wstring s2 = rgce2.getAssembledFormula();

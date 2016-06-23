@@ -112,7 +112,7 @@ namespace OOX
 		public:
 			virtual void         fromXML(XmlUtils::CXmlNode &oNode)
 			{
-				// TO DO: Реализовать CPicture::fromXML(XmlUtils::CXmlNode &oNode)
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CPicture::fromXML(XmlUtils::CXmlNode &oNode)
 			}
 
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -121,9 +121,9 @@ namespace OOX
 					return;
                 
                 m_sXml.Init();
-                m_sXml->Append(oReader.GetOuterXml());	//для pptx dll
+                m_sXml->Append(oReader.GetOuterXml());	//РґР»СЏ pptx dll
                 
-                //альтернатива pptx
+                //Р°Р»СЊС‚РµСЂРЅР°С‚РёРІР° pptx
                 //				CString sXml;
                 //				sXml.Format(_T("<root xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\">%ls</root>"), m_sXml.get());
                 
@@ -396,7 +396,7 @@ namespace OOX
 			
 			nullable<OOX::Vml::CShape>		m_oShape;
 			
-			// TO DO: Добавить класс, читающий movie
+			// TO DO: Р”РѕР±Р°РІРёС‚СЊ РєР»Р°СЃСЃ, С‡РёС‚Р°СЋС‰РёР№ movie
 		};
 
 
@@ -422,10 +422,10 @@ namespace OOX
 					return;
 
 				m_sXml.Init();
-				m_sXml->Append(oReader.GetOuterXml());	//для pptx dll
+				m_sXml->Append(oReader.GetOuterXml());	//РґР»СЏ pptx dll
 
-				//альтернатива pptx
-				CString sXml; //??? + ole наверно что то (лень ...) 
+				//Р°Р»СЊС‚РµСЂРЅР°С‚РёРІР° pptx
+				CString sXml; //??? + ole РЅР°РІРµСЂРЅРѕ С‡С‚Рѕ С‚Рѕ (Р»РµРЅСЊ ...) 
 				sXml.Append(_T("<root xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\">"));
 				sXml.Append(m_sXml.get());
 				sXml.Append(_T("</root>"));
@@ -501,7 +501,7 @@ namespace OOX
 
 								break;
 
-							case 'O':// собственно это и есть самый главный под-объект
+							case 'O':// СЃРѕР±СЃС‚РІРµРЅРЅРѕ СЌС‚Рѕ Рё РµСЃС‚СЊ СЃР°РјС‹Р№ РіР»Р°РІРЅС‹Р№ РїРѕРґ-РѕР±СЉРµРєС‚
 								if ( _T("o:OLEObject") == sName )
 									m_oOleObject = oSubReader ;
 								break;
@@ -610,7 +610,7 @@ namespace OOX
 			// Childs
 			nullable<OOX::Logic::CControl>			m_oControl;
 //top childs
-			nullable<OOX::Vml::CShapeType>			m_oShapeType;//?? нужен ли отдельно тута???
+			nullable<OOX::Vml::CShapeType>			m_oShapeType;//?? РЅСѓР¶РµРЅ Р»Рё РѕС‚РґРµР»СЊРЅРѕ С‚СѓС‚Р°???
 			nullable<OOX::VmlOffice::COLEObject>	m_oOleObject;
 			
 			nullable<OOX::Vml::CShape>				m_oShape;

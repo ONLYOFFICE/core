@@ -1,4 +1,4 @@
-﻿#ifndef BIN_WRITERS
+#ifndef BIN_WRITERS
 #define BIN_WRITERS
 
 #include "BinReaderWriterDefines.h"

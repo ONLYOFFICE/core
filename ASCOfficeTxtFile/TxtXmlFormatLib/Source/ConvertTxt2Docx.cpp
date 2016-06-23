@@ -19,7 +19,7 @@ namespace Txt2Docx
 		static  CString PrepareToXML( const std::wstring & sInput)
 		{
 			 CString sResult = std_string2string(sInput);
-			 //&amp; («&»), &lt; («<»), &gt; («>»), &apos; («'»), è &quot; («"») 
+			 //&amp; (Â«&Ð˜), &lt; (Â«<Ð˜), &gt; (Â«>Ð˜), &apos; (Â«'Ð˜), Ð¸ &quot; (Â«"Ð˜)
 			 sResult.Replace(_T("&"), _T("&amp;"));
 			 sResult.Replace(_T("<"), _T("&lt;"));
 			 sResult.Replace(_T(">"), _T("&gt;"));
@@ -101,7 +101,7 @@ namespace Txt2Docx
 				pPr->m_oRPr			= *rPr;
 
 				paragraph->m_arrItems.push_back(pPr);
-				paragraph->m_oParagraphProperty = pPr; //êîïèÿ äëÿ óäîáñòâà
+				paragraph->m_oParagraphProperty = pPr; //ÐºÐ¾Ð¿Ð¸Ñ Ð´Ð»Ñ ÑƒÐ´Ð¾Ð±ÑÑ‚Ð²Ð°
 				
 				while(line->find(_T("\x08")) != line->npos)
 				{

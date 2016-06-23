@@ -20,10 +20,10 @@
 #include <Shlobj.h>
 
 
-// ВНИМАНИЕ:    значение 1 используется для тестирования, на выходе получаем заархивированный файл xlsx или docx
-//              значение 0 используется для релиза, так как на выходе по спецификации нам требуется распакованный package
+// Р’РќРРњРђРќРР•:    Р·РЅР°С‡РµРЅРёРµ 1 РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РґР»СЏ С‚РµСЃС‚РёСЂРѕРІР°РЅРёСЏ, РЅР° РІС‹С…РѕРґРµ РїРѕР»СѓС‡Р°РµРј Р·Р°Р°СЂС…РёРІРёСЂРѕРІР°РЅРЅС‹Р№ С„Р°Р№Р» xlsx РёР»Рё docx
+//              Р·РЅР°С‡РµРЅРёРµ 0 РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РґР»СЏ СЂРµР»РёР·Р°, С‚Р°Рє РєР°Рє РЅР° РІС‹С…РѕРґРµ РїРѕ СЃРїРµС†РёС„РёРєР°С†РёРё РЅР°Рј С‚СЂРµР±СѓРµС‚СЃСЏ СЂР°СЃРїР°РєРѕРІР°РЅРЅС‹Р№ package
 #ifndef STANDALONE_USE
-	#define STANDALONE_USE 0// что получаем на выходе: файл (1) или папку (0)
+	#define STANDALONE_USE 0// С‡С‚Рѕ РїРѕР»СѓС‡Р°РµРј РЅР° РІС‹С…РѕРґРµ: С„Р°Р№Р» (1) РёР»Рё РїР°РїРєСѓ (0)
 #endif
 
 
@@ -71,8 +71,8 @@ HRESULT COfficeOdfFile::LoadFromFile(BSTR sSrcFileName, BSTR sDstPath, BSTR sXML
 	std::wstring outputDir = sDstPath;
 #endif
 
-    // временная директория, в которую распакуем исходный файл,
-    // создаем её в директории куда запишем результат
+    // РІСЂРµРјРµРЅРЅР°СЏ РґРёСЂРµРєС‚РѕСЂРёСЏ, РІ РєРѕС‚РѕСЂСѓСЋ СЂР°СЃРїР°РєСѓРµРј РёСЃС…РѕРґРЅС‹Р№ С„Р°Р№Р»,
+    // СЃРѕР·РґР°РµРј РµС‘ РІ РґРёСЂРµРєС‚РѕСЂРёРё РєСѓРґР° Р·Р°РїРёС€РµРј СЂРµР·СѓР»СЊС‚Р°С‚
 
 	std::wstring srcTempPath = FileSystem::Directory::CreateDirectoryWithUniqueName(outputDir);
     
@@ -89,7 +89,7 @@ HRESULT COfficeOdfFile::LoadFromFile(BSTR sSrcFileName, BSTR sDstPath, BSTR sXML
     {
         FileSystem::Directory::CreateDirectory(srcTempPath);
 #if defined(STANDALONE_USE) && (STANDALONE_USE == 1)
-        // создаем временную директорию для результирующих файлов
+        // СЃРѕР·РґР°РµРј РІСЂРµРјРµРЅРЅСѓСЋ РґРёСЂРµРєС‚РѕСЂРёСЋ РґР»СЏ СЂРµР·СѓР»СЊС‚РёСЂСѓСЋС‰РёС… С„Р°Р№Р»РѕРІ
 		FileSystem::Directory::CreateDirectory(dstTempPath);
 #endif
 		std::wstring fontsPath = GetDefWinFontDirectory();
@@ -104,7 +104,7 @@ HRESULT COfficeOdfFile::LoadFromFile(BSTR sSrcFileName, BSTR sDstPath, BSTR sXML
         hr = E_FAIL;
     }
 
-    // стираем временную директорию с распакованным исходником
+    // СЃС‚РёСЂР°РµРј РІСЂРµРјРµРЅРЅСѓСЋ РґРёСЂРµРєС‚РѕСЂРёСЋ СЃ СЂР°СЃРїР°РєРѕРІР°РЅРЅС‹Рј РёСЃС…РѕРґРЅРёРєРѕРј
     try
     {
 		FileSystem::Directory::DeleteDirectory(srcTempPath);
@@ -114,7 +114,7 @@ HRESULT COfficeOdfFile::LoadFromFile(BSTR sSrcFileName, BSTR sDstPath, BSTR sXML
     }
 
 #if defined(STANDALONE_USE) && (STANDALONE_USE == 1)
-    // в случае если на выходе файл — стираем временную директорию (мы сами ее создали)
+    // РІ СЃР»СѓС‡Р°Рµ РµСЃР»Рё РЅР° РІС‹С…РѕРґРµ С„Р°Р№Р» Р§ СЃС‚РёСЂР°РµРј РІСЂРµРјРµРЅРЅСѓСЋ РґРёСЂРµРєС‚РѕСЂРёСЋ (РјС‹ СЃР°РјРё РµРµ СЃРѕР·РґР°Р»Рё)
     try 
     {
 		FileSystem::Directory::DeleteDirectory(dstTempPath);
@@ -135,7 +135,7 @@ HRESULT COfficeOdfFile::LoadFromFileImpl(const std::wstring & srcFileName,
 {
     HRESULT hr = AVS_ERROR_UNEXPECTED;    
         
-    // распаковываем исходник во временную директорию
+    // СЂР°СЃРїР°РєРѕРІС‹РІР°РµРј РёСЃС…РѕРґРЅРёРє РІРѕ РІСЂРµРјРµРЅРЅСѓСЋ РґРёСЂРµРєС‚РѕСЂРёСЋ
 	COfficeUtils oCOfficeUtils(NULL);
     if (S_OK != oCOfficeUtils.ExtractToDirectory(srcFileName.c_str(), srcTempPath.c_str(), NULL, 0))
 		return hr;

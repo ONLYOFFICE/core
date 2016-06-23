@@ -1,4 +1,4 @@
-﻿#ifndef _PDF_READER_GSTATE_H
+#ifndef _PDF_READER_GSTATE_H
 #define _PDF_READER_GSTATE_H
 
 #include "../../DesktopEditor/common/Types.h"

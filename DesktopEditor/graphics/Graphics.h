@@ -1,4 +1,4 @@
-﻿#ifndef _BUILD_GRAPHICS_H_
+#ifndef _BUILD_GRAPHICS_H_
 #define _BUILD_GRAPHICS_H_
 
 //#define _WINDOWS_GDIPLUS_USE_

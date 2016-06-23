@@ -30,28 +30,28 @@ private:
     
 private:
 
-	//grpFill (Group Fill) ง20.1.8.35
-	//pattFill (Pattern Fill) ง20.1.8.47	
-	//noFill (No Fill) ง20.1.8.44
-	//blipFill (Picture Fill) ง20.1.8.14
-	//solidFill (Solid Fill) ง20.1.8.54
-	//gradFill (Gradient Fill) ง20.1.8.33
-	//ln (Outline) ง20.1.2.2.24
+	//grpFill (Group Fill) ยง20.1.8.35
+	//pattFill (Pattern Fill) ยง20.1.8.47	
+	//noFill (No Fill) ยง20.1.8.44
+	//blipFill (Picture Fill) ยง20.1.8.14
+	//solidFill (Solid Fill) ยง20.1.8.54
+	//gradFill (Gradient Fill) ยง20.1.8.33
+	//ln (Outline) ยง20.1.2.2.24
 
 
 
     //friend void xlsx_serialize(std::wostream & _Wostream, const oox_chart_shape & legend_);
 
 
-	//custGeom (Custom Geometry) ง20.1.9.8
-	//effectDag (Effect Container) ง20.1.8.25
-	//effectLst (Effect Container) ง20.1.8.26
-	//extLst (Extension List) ง20.1.2.2.15
+	//custGeom (Custom Geometry) ยง20.1.9.8
+	//effectDag (Effect Container) ยง20.1.8.25
+	//effectLst (Effect Container) ยง20.1.8.26
+	//extLst (Extension List) ยง20.1.2.2.15
 
-	//prstGeom (Preset geometry) ง20.1.9.18
-	//scene3d (3D Scene Properties) ง20.1.4.1.26
-	//sp3d (Apply 3D shape properties) ง20.1.5.12
-	//xfrm (2D Transform for Individual Objects) ง20.1.7.6
+	//prstGeom (Preset geometry) ยง20.1.9.18
+	//scene3d (3D Scene Properties) ยง20.1.4.1.26
+	//sp3d (Apply 3D shape properties) ยง20.1.5.12
+	//xfrm (2D Transform for Individual Objects) ยง20.1.7.6
 };
 
 }

@@ -1,4 +1,4 @@
-﻿//#include <QCoreApplication>
+//#include <QCoreApplication>
 
 #include "../../DesktopEditor/fontengine/ApplicationFonts.h"
 

@@ -1,4 +1,4 @@
-﻿#ifndef _BUILD_TIMER_H_
+#ifndef _BUILD_TIMER_H_
 #define _BUILD_TIMER_H_
 
 #include "BaseThread.h"

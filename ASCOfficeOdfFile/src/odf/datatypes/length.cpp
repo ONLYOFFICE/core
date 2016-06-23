@@ -1,4 +1,4 @@
-﻿
+
 #include "length.h"
 
 #include <iostream>

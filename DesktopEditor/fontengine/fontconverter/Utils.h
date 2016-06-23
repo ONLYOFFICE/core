@@ -1,4 +1,4 @@
-﻿#ifndef _ASC_FONT_CONVERTER_UTILS_H_
+#ifndef _ASC_FONT_CONVERTER_UTILS_H_
 #define _ASC_FONT_CONVERTER_UTILS_H_
 
 // FreeType

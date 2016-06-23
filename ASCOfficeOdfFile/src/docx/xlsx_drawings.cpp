@@ -100,7 +100,7 @@ public:
     {
         BOOST_FOREACH(rel_ const & r, xlsx_drawing_rels_)
         {
-			if (r.type_ == mediaitems::typeChart)//временно - нужно потом все загнать в релс
+			if (r.type_ == mediaitems::typeChart)//РІСЂРµРјРµРЅРЅРѕ - РЅСѓР¶РЅРѕ РїРѕС‚РѕРј РІСЃРµ Р·Р°РіРЅР°С‚СЊ РІ СЂРµР»СЃ
 			{
 				Rels.add(relationship(
 							r.rid_,
@@ -120,8 +120,8 @@ public:
 							) 
 					);
 			}
-			//typeShape внутренний рисованый объект - релсов нет
- 			else if (r.type_ == mediaitems::typeHyperlink)//заместо гипрелинка пользуем неизвестный ... поменять ... временно .. сделать красиво
+			//typeShape РІРЅСѓС‚СЂРµРЅРЅРёР№ СЂРёСЃРѕРІР°РЅС‹Р№ РѕР±СЉРµРєС‚ - СЂРµР»СЃРѕРІ РЅРµС‚
+ 			else if (r.type_ == mediaitems::typeHyperlink)//Р·Р°РјРµСЃС‚Рѕ РіРёРїСЂРµР»РёРЅРєР° РїРѕР»СЊР·СѓРµРј РЅРµРёР·РІРµСЃС‚РЅС‹Р№ ... РїРѕРјРµРЅСЏС‚СЊ ... РІСЂРµРјРµРЅРЅРѕ .. СЃРґРµР»Р°С‚СЊ РєСЂР°СЃРёРІРѕ
 			{
 				Rels.add(relationship(
 							r.rid_,

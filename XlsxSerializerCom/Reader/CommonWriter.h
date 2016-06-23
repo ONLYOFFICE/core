@@ -1,4 +1,4 @@
-﻿#ifndef COMMON_WRITER
+#ifndef COMMON_WRITER
 #define COMMON_WRITER
 
 #include "../../ASCOfficePPTXFile/Editor/BinaryFileReaderWriter.h"

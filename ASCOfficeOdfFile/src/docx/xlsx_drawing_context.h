@@ -47,7 +47,7 @@ public:
     xlsx_drawing_context(xlsx_drawing_context_handle & h);
     ~xlsx_drawing_context();
 
-	void set_odf_packet_path(std::wstring path){odf_packet_path_ = path;}//для анализа картинок
+	void set_odf_packet_path(std::wstring path){odf_packet_path_ = path;}//РґР»СЏ Р°РЅР°Р»РёР·Р° РєР°СЂС‚РёРЅРѕРє
 
 	void start_drawing(std::wstring const & name);
 	void end_drawing();
@@ -62,7 +62,7 @@ public:
     void end_chart();
 
 	void start_shape(int type);
-	//...пока тока общие свойства ... частные для каждого объекта пооозже
+	//...РїРѕРєР° С‚РѕРєР° РѕР±С‰РёРµ СЃРІРѕР№СЃС‚РІР° ... С‡Р°СЃС‚РЅС‹Рµ РґР»СЏ РєР°Р¶РґРѕРіРѕ РѕР±СЉРµРєС‚Р° РїРѕРѕРѕР·Р¶Рµ
     void end_shape();
 
 	void start_object_ole();

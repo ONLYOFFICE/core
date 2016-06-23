@@ -291,7 +291,7 @@ xlsx_font::xlsx_font (	const odf_reader::text_format_properties_content		* textP
     }
     //else
     //{
-    //    sz = 10.;//kDefaultFontSize;        //todooo ... âûòàùèòü êàê â math
+    //    sz = 10.;//kDefaultFontSize;        //todooo ... Ð²Ñ‹Ñ‚Ð°Ñ‰Ð¸Ñ‚ÑŒ ÐºÐ°Ðº Ð² math
     //}
 
     if (textProp->style_text_underline_type_ &&

@@ -89,7 +89,7 @@ void oox_axis_content::oox_serialize_content(std::wostream & _Wostream)
 	_CP_OPT(std::wstring)	strVal;
 	
 	oox_title title;
-	title.set_content(content_.title_);//todo нужно задать понармальному layout
+	title.set_content(content_.title_);//todo РЅСѓР¶РЅРѕ Р·Р°РґР°С‚СЊ РїРѕРЅР°СЂРјР°Р»СЊРЅРѕРјСѓ layout
   
 	CP_XML_WRITER(_Wostream)
     {

@@ -1,4 +1,4 @@
-﻿#ifndef _BUILD_MATRIX_H_
+#ifndef _BUILD_MATRIX_H_
 #define _BUILD_MATRIX_H_
 
 #include "AggPlusEnums.h"

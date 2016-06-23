@@ -18,7 +18,7 @@ namespace DocFileFormat
 				unsigned short nElemsAlloc	=	FormatUtils::BytesToUInt16(pSegmentInfo, 2, pSegmentInfoSize);
 				unsigned short cb			=	FormatUtils::BytesToUInt16(pSegmentInfo, 4, pSegmentInfoSize);
 				
-				// âèäèìî áåç øàïêè ñðàçó ïèøóòñÿ âñå ýëåìåíòû
+				// Ð²Ð¸Ð´Ð¸Ð¼Ð¾ Ð±ÐµÐ· ÑˆÐ°Ð¿ÐºÐ¸ ÑÑ€Ð°Ð·Ñƒ Ð¿Ð¸ÑˆÑƒÑ‚ÑÑ Ð²ÑÐµ ÑÐ»ÐµÐ¼ÐµÐ½Ñ‚Ñ‹
 				bool headerIs = ((0xfff0 != cb) && (cb > 8) || nElems > nElemsAlloc);
 				if (headerIs)
 				{	
@@ -62,7 +62,7 @@ namespace DocFileFormat
 							m_arSegments.push_back (oSegment);
 						}
 
-						if ((long)pSegmentInfoSize < (long)(cb*nElems))		// Åñòü íåñêîëüêî ôàéëîâ ñ ìóñîðîì âìåñòî äàííûõ
+						if ((long)pSegmentInfoSize < (long)(cb*nElems))		// Ð•ÑÑ‚ÑŒ Ð½ÐµÑÐºÐ¾Ð»ÑŒÐºÐ¾ Ñ„Ð°Ð¹Ð»Ð¾Ð² Ñ Ð¼ÑƒÑÐ¾Ñ€Ð¾Ð¼ Ð²Ð¼ÐµÑÑ‚Ð¾ Ð´Ð°Ð½Ð½Ñ‹Ñ…
 							m_arSegments.clear();
 					}
 				}

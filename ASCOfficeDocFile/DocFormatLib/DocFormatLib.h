@@ -1,4 +1,4 @@
-﻿#ifndef DOC_FORMAT_LIB
+#ifndef DOC_FORMAT_LIB
 #define DOC_FORMAT_LIB
 
 #include <string>

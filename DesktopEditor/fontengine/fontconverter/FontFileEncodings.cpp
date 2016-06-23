@@ -1,4 +1,4 @@
-﻿#include "FontFileEncodings.h"
+#include "FontFileEncodings.h"
 #include "../../common/File.h"
 
 namespace NSFontConverter

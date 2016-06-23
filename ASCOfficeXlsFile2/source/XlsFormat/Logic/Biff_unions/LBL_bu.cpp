@@ -103,7 +103,7 @@ const bool LBL::loadContent(BinProcessor& proc)
 					name = L"_xludf." + name;
 		}
 	}
-	global_info_->arDefineNames.push_back(name);// ‰Îˇ ËÏÂÌ ÙÛÌÍˆËÈ - todooo ... ÌÂ ‚ÒÂ ÙÛÌÍˆËË ÍÓÂÍÚÌ˚ !! ¡ƒ» !!
+	global_info_->arDefineNames.push_back(name);// –¥–ª—è –∏–º–µ–Ω —Ñ—É–Ω–∫—Ü–∏–π - todooo ... –Ω–µ –≤—Å–µ —Ñ—É–Ω–∫—Ü–∏–∏ –∫–æ—Ä—Ä–µ–∫—Ç–Ω—ã !! –ë–î–ò !!
 	return true;
 }
 int LBL::serialize(std::wostream & stream)

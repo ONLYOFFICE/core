@@ -261,7 +261,7 @@ namespace DocFileFormat
 		BookmarkStartPlex					=	new Plex<BookmarkFirst>		(BookmarkFirst::STRUCTURE_SIZE,		TableStream, FIB->m_FibWord97.fcPlcfBkf,		FIB->m_FibWord97.lcbPlcfBkf);
 		BookmarkEndPlex						=	new Plex<EmptyStructure>	(EmptyStructure::STRUCTURE_SIZE,	TableStream, FIB->m_FibWord97.fcPlcfBkl,		FIB->m_FibWord97.lcbPlcfBkl);
 
-		// только для тестов
+		// С‚РѕР»СЊРєРѕ РґР»СЏ С‚РµСЃС‚РѕРІ
 		//m_arFTBXS	=	new Plex<FTXBXS> (FTXBXS::STRUCTURE_SIZE, TableStream, FIB->m_FibWord97.fcPlcftxbxTxt,	FIB->m_FibWord97.lcbPlcftxbxTxt);
 
 		//#ifdef _DEBUG

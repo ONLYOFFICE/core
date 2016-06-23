@@ -60,7 +60,7 @@ chart::class_type static get_series_class_type(std::wstring const & str)
         if (p.class_type_str_ == str)
             return p.class_type_;
     }
-    return chart::chart_bar; //лучше хоть какой назначить чем никакой !!
+    return chart::chart_bar; //Р»СѓС‡С€Рµ С…РѕС‚СЊ РєР°РєРѕР№ РЅР°Р·РЅР°С‡РёС‚СЊ С‡РµРј РЅРёРєР°РєРѕР№ !!
 }
 
 }
@@ -176,7 +176,7 @@ public:
 ///////////////////////////////////////////
 
 };
-// Класс для обхода всех элеменов office:object для построения диаграммы
+// РљР»Р°СЃСЃ РґР»СЏ РѕР±С…РѕРґР° РІСЃРµС… СЌР»РµРјРµРЅРѕРІ office:object РґР»СЏ РїРѕСЃС‚СЂРѕРµРЅРёСЏ РґРёР°РіСЂР°РјРјС‹
 
 class process_build_chart : public base_visitor,
 	public const_visitor<office_document_content>,

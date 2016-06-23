@@ -251,7 +251,7 @@ namespace NSCustomShapesConvert
 				return;
 
 			oManager.Clear();
-			// сначала заполним формулы
+			// СЃРЅР°С‡Р°Р»Р° Р·Р°РїРѕР»РЅРёРј С„РѕСЂРјСѓР»С‹
 			for (size_t nIndex = 0; nIndex < m_arGuides.size(); ++nIndex)
 			{
 				NSCustomShapesConvert::CFormula oF;

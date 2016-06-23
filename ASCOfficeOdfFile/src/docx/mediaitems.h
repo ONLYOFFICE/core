@@ -49,7 +49,7 @@ public:
 	size_t count_shape;
 	size_t count_tables;
 
-    std::wstring add_or_find(const std::wstring & href, Type type, bool & isInternal);//возможны ссылки на один и тот же объект
+    std::wstring add_or_find(const std::wstring & href, Type type, bool & isInternal);//РІРѕР·РјРѕР¶РЅС‹ СЃСЃС‹Р»РєРё РЅР° РѕРґРёРЅ Рё С‚РѕС‚ Р¶Рµ РѕР±СЉРµРєС‚
     std::wstring add_or_find(const std::wstring & href, Type type, bool & isInternal, std::wstring & ref);
     
 	void dump_rels(rels & Rels);

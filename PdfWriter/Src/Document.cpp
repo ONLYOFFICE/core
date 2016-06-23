@@ -1,4 +1,4 @@
-﻿#include "Document.h"
+#include "Document.h"
 #include "Info.h"
 #include "Catalog.h"
 #include "Streams.h"

@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "../PPTXFormat/PPTX.h"
 
 #include "BinWriters.h"

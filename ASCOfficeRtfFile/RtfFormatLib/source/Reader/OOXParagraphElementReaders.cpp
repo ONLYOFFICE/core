@@ -1,4 +1,4 @@
-﻿
+
 #include "OOXParagraphReader.h"
 
 #include "OOXpPrFrameReader.h"

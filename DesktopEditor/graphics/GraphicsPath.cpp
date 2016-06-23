@@ -1,4 +1,4 @@
-﻿#include "GraphicsPath.h"
+#include "GraphicsPath.h"
 #include <algorithm>
 
 namespace Aggplus

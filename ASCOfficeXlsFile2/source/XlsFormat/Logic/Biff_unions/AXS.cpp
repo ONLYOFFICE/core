@@ -195,7 +195,7 @@ int AXS::serialize(std::wostream & _stream)
 								else
 								{
 									CP_XML_ATTR(L"rot",	-tick->trot			* 60000);
-									CP_XML_ATTR(L"vert", L"horz");		//(1-333.xls) .. todoooo может тут нужно проверять гоизонт ось или нет
+									CP_XML_ATTR(L"vert", L"horz");		//(1-333.xls) .. todoooo РјРѕР¶РµС‚ С‚СѓС‚ РЅСѓР¶РЅРѕ РїСЂРѕРІРµСЂСЏС‚СЊ РіРѕРёР·РѕРЅС‚ РѕСЃСЊ РёР»Рё РЅРµС‚
 								}
 								
 

@@ -1,4 +1,4 @@
-﻿#ifndef _ASC_HTMLRENDERER_COMMON2_H_
+#ifndef _ASC_HTMLRENDERER_COMMON2_H_
 #define _ASC_HTMLRENDERER_COMMON2_H_
 
 #include "Common.h"

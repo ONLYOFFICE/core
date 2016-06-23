@@ -190,7 +190,7 @@ void oox_serialize_gradient_fill(std::wostream & strm, const _oox_fill & val)
 				}break;
 			}
 		}
-//tileRect (Tile Rectangle) §20.1.8.59
+//tileRect (Tile Rectangle) Â§20.1.8.59
 	}
 }
 void oox_serialize_hatch_fill(std::wostream & strm, const _oox_fill & val)
@@ -201,7 +201,7 @@ void oox_serialize_hatch_fill(std::wostream & strm, const _oox_fill & val)
 		CP_XML_NODE(L"a:pattFill")
 		{
 			CP_XML_ATTR(L"prst",val.hatch->preset);
-			CP_XML_NODE(L"a:fgClr")//îïÿòü äëÿ ms âàæíî ÷òî ýòîò öâåò ïåðåä back
+			CP_XML_NODE(L"a:fgClr")//Ð¾Ð¿ÑÑ‚ÑŒ Ð´Ð»Ñ ms Ð²Ð°Ð¶Ð½Ð¾ Ñ‡Ñ‚Ð¾ ÑÑ‚Ð¾Ñ‚ Ñ†Ð²ÐµÑ‚ Ð¿ÐµÑ€ÐµÐ´ back
 			{
 				oox_serialize_srgb(CP_XML_STREAM(),val.hatch->color_ref,val.opacity);
 			}	

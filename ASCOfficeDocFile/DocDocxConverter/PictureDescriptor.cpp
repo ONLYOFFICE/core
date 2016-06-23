@@ -46,7 +46,7 @@ namespace DocFileFormat
 		if (lcb > 10000000) 
 			return;
 
-		if (lcb > sz && sz != 2) //bullet picture с неверным размером
+		if (lcb > sz && sz != 2) //bullet picture СЃ РЅРµРІРµСЂРЅС‹Рј СЂР°Р·РјРµСЂРѕРј
 		{
 			unsigned char* bytes = reader.ReadBytes(sz - fc - 4, false);
 			if ( bytes )

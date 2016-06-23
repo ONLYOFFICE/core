@@ -83,14 +83,14 @@ private:
 	std::wstring	odf_style_name_;
 	std::wstring	oox_style_name_;
 
-//инфа для описания ячеек
+//РёРЅС„Р° РґР»СЏ РѕРїРёСЃР°РЅРёСЏ СЏС‡РµРµРє
 	int				style_oox_id_;
 	int				num_fmt_id_; //default =0 (general) 
 ///////	
 	bool automatic_;
 	bool root_;
-	bool default_; // это для тех стилей что в root
-	bool conditional_; //стили накладываемые по условию
+	bool default_; // СЌС‚Рѕ РґР»СЏ С‚РµС… СЃС‚РёР»РµР№ С‡С‚Рѕ РІ root
+	bool conditional_; //СЃС‚РёР»Рё РЅР°РєР»Р°РґС‹РІР°РµРјС‹Рµ РїРѕ СѓСЃР»РѕРІРёСЋ
 
 	bool writable_;
 

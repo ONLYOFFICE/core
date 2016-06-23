@@ -1,4 +1,4 @@
-﻿#include "MathEquation.h"
+#include "MathEquation.h"
 #include "OutputDev.h"
 
 using namespace MathEquation;

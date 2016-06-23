@@ -339,7 +339,7 @@ namespace DocFileFormat
         // Compatibility option: when set to true, expand character
         // spaces on the line ending SHIFT+RETURN
 		bool fExpShRtn;
-        // Compatibility option: when set to true, don?ˆ?t underline trailing spaces
+        // Compatibility option: when set to true, don?â‚¬?t underline trailing spaces
 		bool fDntULTrlSpc;
         // Compatibility option: when set to true, dont balance SBCS and DBCS characters
 		bool fDntBlnSbDbWid;
@@ -405,7 +405,7 @@ namespace DocFileFormat
         // shading not displaying correctly for cells using conditional formatting.
 		bool fUseWord2002TableStyleRules;
         // Compatibility option:
-        // Allow tables set to autofit to contents – to extend into the margins when in Print Layout.
+        // Allow tables set to autofit to contents â€“ to extend into the margins when in Print Layout.
         // Word 2003 does not allow this by default.
 		bool fGrowAutofit;
 		//Specifies whether to not automatically apply the list paragraph style to bulleted or numbered text.

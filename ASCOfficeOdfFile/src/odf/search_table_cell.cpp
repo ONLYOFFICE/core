@@ -37,7 +37,7 @@ typedef shared_ptr<const office_element>::Type office_element_ptr_const;
             if (elm) \
                 elm->accept(*this); \
         }
-// обход таблицы
+// РѕР±С…РѕРґ С‚Р°Р±Р»РёС†С‹
 class table_round : public base_visitor, 
     public const_visitor<office_body>,
     public const_visitor<office_spreadsheet>,

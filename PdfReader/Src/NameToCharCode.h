@@ -1,4 +1,4 @@
-﻿#ifndef _PDF_READER_NAME_TO_CHAR_CODE_H
+#ifndef _PDF_READER_NAME_TO_CHAR_CODE_H
 #define _PDF_READER_NAME_TO_CHAR_CODE_H
 
 #include "CharTypes.h"

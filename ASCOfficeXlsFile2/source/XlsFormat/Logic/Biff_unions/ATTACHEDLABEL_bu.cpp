@@ -228,7 +228,7 @@ int ATTACHEDLABEL::serialize(std::wostream & _stream, bool isPosition)
 								serialize_rPr (CP_XML_STREAM(),font->iFont, rtl, true);
 							}
 						}
-						if (seriesText)//todoooo ñäåëàòü âàðèàíò ñ DFTTEXT
+						if (seriesText)//todoooo ÑÐ´ÐµÐ»Ð°Ñ‚ÑŒ Ð²Ð°Ñ€Ð¸Ð°Ð½Ñ‚ Ñ DFTTEXT
 						{	
 							std::wstring & str_ = seriesText->stText.value();
 
@@ -267,7 +267,7 @@ int ATTACHEDLABEL::serialize(std::wostream & _stream, bool isPosition)
 										{		
 											if (run->ich > str_.length())
 											{
-												//îøèáêà
+												//Ð¾ÑˆÐ¸Ð±ÐºÐ°
 												run->ich = 0;
 											}
 

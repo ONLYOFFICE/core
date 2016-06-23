@@ -1,4 +1,4 @@
-﻿#include "Pattern.h"
+#include "Pattern.h"
 #include "Image.h"
 #include "Streams.h"
 

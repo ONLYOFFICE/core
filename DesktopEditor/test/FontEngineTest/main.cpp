@@ -1,4 +1,4 @@
-﻿//#include <QCoreApplication>
+//#include <QCoreApplication>
 
 #include "../../fontengine/ApplicationFonts.h"
 #include "../../graphics/GraphicsRenderer.h"

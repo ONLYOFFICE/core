@@ -1,4 +1,4 @@
-﻿#include <stdlib.h>
+#include <stdlib.h>
 #include <limits.h>
 #include "List.h"
 #include "JArithmeticDecoder.h"

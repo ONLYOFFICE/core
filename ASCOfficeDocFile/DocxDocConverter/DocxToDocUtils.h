@@ -400,7 +400,7 @@ namespace DOCX
 
 		unsigned int ToPerspective(double dNumber)
 		{
-			static const double WEIGHT	=	256.0;		//	если сохраням матрицу как это делает Office 2010 (через свойства Shadow), то вес по умолчанию 0x00000100
+			static const double WEIGHT	=	256.0;		//	РµСЃР»Рё СЃРѕС…СЂР°РЅСЏРј РјР°С‚СЂРёС†Сѓ РєР°Рє СЌС‚Рѕ РґРµР»Р°РµС‚ Office 2010 (С‡РµСЂРµР· СЃРІРѕР№СЃС‚РІР° Shadow), С‚Рѕ РІРµСЃ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ 0x00000100
 
 			if (dNumber < 0.0)
 			{		

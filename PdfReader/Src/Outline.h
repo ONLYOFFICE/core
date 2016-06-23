@@ -1,4 +1,4 @@
-﻿#ifndef _PDF_READER_OUTLINE_H
+#ifndef _PDF_READER_OUTLINE_H
 #define _PDF_READER_OUTLINE_H
 
 #include "Object.h"

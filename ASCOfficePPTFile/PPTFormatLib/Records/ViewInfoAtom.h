@@ -33,7 +33,7 @@ public:
 		m_bZoomToFit = StreamUtils::ReadBYTE(pStream);
 		m_bDraftMode = StreamUtils::ReadBYTE(pStream);
 
-		// 2 байта зарезервированы...
+		// 2 Р±Р°Р№С‚Р° Р·Р°СЂРµР·РµСЂРІРёСЂРѕРІР°РЅС‹...
 		StreamUtils::StreamSkip(2, pStream);
 	}
 

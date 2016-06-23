@@ -80,7 +80,7 @@ namespace ComplexTypes
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:val"),    m_oVal )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:target"), m_oTarget )
@@ -107,7 +107,7 @@ namespace ComplexTypes
 
 namespace OOX
 {
-	// TO DO: Доделать данный класс
+	// TO DO: Р”РѕРґРµР»Р°С‚СЊ РґР°РЅРЅС‹Р№ РєР»Р°СЃСЃ
 
 	//--------------------------------------------------------------------------------
 	// CWebSettings 17.11.15

@@ -1,4 +1,4 @@
-﻿#ifndef _GRAPHICS_ARRAY_H
+#ifndef _GRAPHICS_ARRAY_H
 #define _GRAPHICS_ARRAY_H
 
 #include "Types.h"

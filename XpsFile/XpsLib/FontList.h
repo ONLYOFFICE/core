@@ -1,4 +1,4 @@
-﻿#ifndef _XPS_XPSLIB_FONTLIST_H
+#ifndef _XPS_XPSLIB_FONTLIST_H
 #define _XPS_XPSLIB_FONTLIST_H
 
 #include <map>

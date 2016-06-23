@@ -14,11 +14,11 @@ namespace NSPresentationEditor
 		CSlideShowInfo			m_oSlideShow;
 		std::multimap<int,int>	m_mapPlaceholders;
 
-		// размеры в миллиметрах
+		// СЂР°Р·РјРµСЂС‹ РІ РјРёР»Р»РёРјРµС‚СЂР°С…
 		long					m_lWidth;   
 		long					m_lHeight; 
 
-		// а вот эти - "настоящие" (в логической системе координат), чтобы масштабировать
+		// Р° РІРѕС‚ СЌС‚Рё - "РЅР°СЃС‚РѕСЏС‰РёРµ" (РІ Р»РѕРіРёС‡РµСЃРєРѕР№ СЃРёСЃС‚РµРјРµ РєРѕРѕСЂРґРёРЅР°С‚), С‡С‚РѕР±С‹ РјР°СЃС€С‚Р°Р±РёСЂРѕРІР°С‚СЊ
 		long					m_lOriginalWidth;
 		long					m_lOriginalHeight;
 

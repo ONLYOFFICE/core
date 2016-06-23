@@ -9,7 +9,7 @@ namespace OOX
 {
 	namespace Spreadsheet
 	{
-		//необработано:
+		//РЅРµРѕР±СЂР°Р±РѕС‚Р°РЅРѕ:
 		//<extLst>
 		class CConditionalFormatValueObject : public WritingElement
 		{
@@ -64,7 +64,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start(oReader)
 
 				WritingElement_ReadAttributes_Read_if		(oReader, _T("gte")		, m_oGte)
@@ -207,7 +207,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start(oReader)
 
 				WritingElement_ReadAttributes_Read_if		(oReader, _T("maxLength")	, m_oMaxLength)
@@ -337,7 +337,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start(oReader)
 
 				WritingElement_ReadAttributes_Read_if		(oReader, _T("iconSet")		, m_oIconSet)
@@ -355,7 +355,7 @@ namespace OOX
 			nullable<SimpleTypes::COnOff<>>						m_oShowValue;
 		};
 
-		//необработано:
+		//РЅРµРѕР±СЂР°Р±РѕС‚Р°РЅРѕ:
 		//<extLst>
 		class CConditionalFormattingRule : public WritingElementWithChilds<WritingElement>
 		{
@@ -467,7 +467,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start(oReader)
 
 				WritingElement_ReadAttributes_Read_if		(oReader, _T("aboveAverage")	, m_oAboveAverage)
@@ -499,11 +499,11 @@ namespace OOX
 			nullable<SimpleTypes::CDecimalNumber<>>				m_oStdDev;
 			nullable<SimpleTypes::COnOff<>>						m_oStopIfTrue;
 			nullable<CString>									m_oText;
-			nullable<CString>									m_oTimePeriod;	// ToDo переделать на тип ST_TimePeriod (18.18.82)
+			nullable<CString>									m_oTimePeriod;	// ToDo РїРµСЂРµРґРµР»Р°С‚СЊ РЅР° С‚РёРї ST_TimePeriod (18.18.82)
 			nullable<SimpleTypes::Spreadsheet::ST_CfType<>>		m_oType;	
 		};
 
-		//необработано:
+		//РЅРµРѕР±СЂР°Р±РѕС‚Р°РЅРѕ:
 		//<extLst>
 		class CConditionalFormatting  : public WritingElementWithChilds<CConditionalFormattingRule>
 		{
@@ -567,7 +567,7 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start(oReader)
 
 				WritingElement_ReadAttributes_Read_if		(oReader, _T("sqref")	, m_oSqRef)
@@ -577,7 +577,7 @@ namespace OOX
 			}
 		public:
 			nullable<SimpleTypes::COnOff<>>			m_oPivot;
-			nullable<SimpleTypes::CRelationshipId >	m_oSqRef; // ToDo переделать на тип "sqref" (18.18.76) - последовательность "ref", разделенные пробелом
+			nullable<SimpleTypes::CRelationshipId >	m_oSqRef; // ToDo РїРµСЂРµРґРµР»Р°С‚СЊ РЅР° С‚РёРї "sqref" (18.18.76) - РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ "ref", СЂР°Р·РґРµР»РµРЅРЅС‹Рµ РїСЂРѕР±РµР»РѕРј
 		};
 	} //Spreadsheet
 } // namespace OOX

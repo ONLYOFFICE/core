@@ -143,13 +143,13 @@ void pptx_slide_context::start_slide_animation()
 
 	impl_->transition_.Dir			= boost::none;
 	impl_->transition_.Param		= boost::none;
-	//speed & onClick выставляются ранее
+	//speed & onClick РІС‹СЃС‚Р°РІР»СЏСЋС‚СЃСЏ СЂР°РЅРµРµ
 }
 
 void pptx_slide_context::set_transitionFilter(std::wstring & type,_CP_OPT(std::wstring) & dir,_CP_OPT(std::wstring) & dop,_CP_OPT(int) & time)
 {
 	impl_->transition_.Type	= type;
-	impl_->transition_.Time = time; // не путать длительность перехода с длительностью эффекта перехода (в oo его нет)
+	impl_->transition_.Time = time; // РЅРµ РїСѓС‚Р°С‚СЊ РґР»РёС‚РµР»СЊРЅРѕСЃС‚СЊ РїРµСЂРµС…РѕРґР° СЃ РґР»РёС‚РµР»СЊРЅРѕСЃС‚СЊСЋ СЌС„С„РµРєС‚Р° РїРµСЂРµС…РѕРґР° (РІ oo РµРіРѕ РЅРµС‚)
 	impl_->transition_.Dir = dir;
 	impl_->transition_.Param =	dop;
 }
@@ -212,7 +212,7 @@ void pptx_slide_context::set_rotate(double angle)
 	
 	if (impl_->object_description_.svg_rect_)
 	{
-		//вращение в open office от центральной точки
+		//РІСЂР°С‰РµРЅРёРµ РІ open office РѕС‚ С†РµРЅС‚СЂР°Р»СЊРЅРѕР№ С‚РѕС‡РєРё
 		_rect r = impl_->object_description_.svg_rect_.get();
 		//r.x_-=r.width_;
 		//r.y_-=r.height_;
@@ -383,7 +383,7 @@ void pptx_slide_context::process_images()
 		pos_replaicement = pic.xlink_href_.find(L"ObjectReplacements");
 		pos_preview = pic.xlink_href_.find(L"TablePreview");
 		
-		if ((pos_replaicement <0 && pos_preview <0) || pic.use_image_replace_)//оригинал, а не заменяемый объект (при наличии объекта)
+		if ((pos_replaicement <0 && pos_preview <0) || pic.use_image_replace_)//РѕСЂРёРіРёРЅР°Р», Р° РЅРµ Р·Р°РјРµРЅСЏРµРјС‹Р№ РѕР±СЉРµРєС‚ (РїСЂРё РЅР°Р»РёС‡РёРё РѕР±СЉРµРєС‚Р°)
 		{
 			_pptx_drawing drawing	=_pptx_drawing();
 		
@@ -398,7 +398,7 @@ void pptx_slide_context::process_images()
 			
 			_CP_OPT(std::wstring) sTextContent;
 			GetProperty(pic.additional_,L"text-content",sTextContent);
-			if (sTextContent)//в ms office на картинке нельзя сделать надпись - меняем тип на рект с заливкой картинкой
+			if (sTextContent)//РІ ms office РЅР° РєР°СЂС‚РёРЅРєРµ РЅРµР»СЊР·СЏ СЃРґРµР»Р°С‚СЊ РЅР°РґРїРёСЃСЊ - РјРµРЅСЏРµРј С‚РёРї РЅР° СЂРµРєС‚ СЃ Р·Р°Р»РёРІРєРѕР№ РєР°СЂС‚РёРЅРєРѕР№
 			{
 				drawing.type = mediaitems::typeShape;
 				drawing.sub_type = 2;//rect
@@ -410,22 +410,22 @@ void pptx_slide_context::process_images()
 			drawing.fill.bitmap->bStretch = true;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////			
-			std::wstring ref;/// это ссылка на выходной внешний объект
+			std::wstring ref;/// СЌС‚Рѕ СЃСЃС‹Р»РєР° РЅР° РІС‹С…РѕРґРЅРѕР№ РІРЅРµС€РЅРёР№ РѕР±СЉРµРєС‚
 			bool isMediaInternal = false;
 			
 			drawing.fill.bitmap->rId = impl_->get_mediaitems().add_or_find(pic.xlink_href_, mediaitems::typeImage, isMediaInternal, ref);
 			
 			if (drawing.type == mediaitems::typeShape)
 			{
-				impl_->add_additional_rels(isMediaInternal, drawing.fill.bitmap->rId, ref, mediaitems::typeImage);//собственно это не объект, а доп рел и ref объекта
+				impl_->add_additional_rels(isMediaInternal, drawing.fill.bitmap->rId, ref, mediaitems::typeImage);//СЃРѕР±СЃС‚РІРµРЅРЅРѕ СЌС‚Рѕ РЅРµ РѕР±СЉРµРєС‚, Р° РґРѕРї СЂРµР» Рё ref РѕР±СЉРµРєС‚Р°
 			
 				isMediaInternal=true;
 				std::wstring rId = impl_->get_mediaitems().add_or_find(L"", mediaitems::typeShape, isMediaInternal, ref);
-				impl_->add_drawing(drawing, isMediaInternal, rId, ref, mediaitems::typeShape);//объект
+				impl_->add_drawing(drawing, isMediaInternal, rId, ref, mediaitems::typeShape);//РѕР±СЉРµРєС‚
 
 			}else
 			{
-				impl_->add_drawing(drawing, isMediaInternal, drawing.fill.bitmap->rId , ref, drawing.type);//объект
+				impl_->add_drawing(drawing, isMediaInternal, drawing.fill.bitmap->rId , ref, drawing.type);//РѕР±СЉРµРєС‚
 			}
 			
 		}
@@ -477,7 +477,7 @@ void pptx_slide_context::process_common_properties(drawing_object_description & 
 {
 	if (pic.svg_rect_)
 	{
-		//todooo непонятки с отрицательными значениями
+		//todooo РЅРµРїРѕРЅСЏС‚РєРё СЃ РѕС‚СЂРёС†Р°С‚РµР»СЊРЅС‹РјРё Р·РЅР°С‡РµРЅРёСЏРјРё
 		int val = (int)(0.5 + odf_types::length(pic.svg_rect_->x, odf_types::length::pt).get_value_unit(odf_types::length::emu));
 		if (val >= 0) drawing.x = val;
 		
@@ -633,7 +633,7 @@ void pptx_slide_context::serialize_animations(std::wostream & strm)
 				//p:sndAc
 			}
 		}
-		//CP_XML_NODE(L"p:timing")- последовательности p:par
+		//CP_XML_NODE(L"p:timing")- РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё p:par
 		//{
 		//}
 	}
@@ -661,7 +661,7 @@ void pptx_slide_context::serialize_objects(std::wostream & strm)
 
     CP_XML_WRITER(strm)
     {
-// дефолтную обязательную noGroup пока воткнем сюда
+// РґРµС„РѕР»С‚РЅСѓСЋ РѕР±СЏР·Р°С‚РµР»СЊРЅСѓСЋ noGroup РїРѕРєР° РІРѕС‚РєРЅРµРј СЃСЋРґР°
 		CP_XML_NODE(L"p:nvGrpSpPr")
 		{
 			CP_XML_NODE(L"p:cNvPr")

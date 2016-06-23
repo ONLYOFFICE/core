@@ -83,8 +83,8 @@ namespace PPTX
 
 		public:
 			// Childs
-			//effect (Effect)  ง20.1.4.2.7 
-			//effectRef (Effect Reference)  ง20.1.4.2.8 
+			//effect (Effect)  ยง20.1.4.2.7 
+			//effectRef (Effect Reference)  ยง20.1.4.2.8 
 			nullable<FillStyle>	fill;
 			nullable<StyleRef>	fillRef;
 

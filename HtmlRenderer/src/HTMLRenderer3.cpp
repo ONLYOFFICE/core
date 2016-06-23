@@ -1,4 +1,4 @@
-﻿#include "../include/HTMLRenderer3.h"
+#include "../include/HTMLRenderer3.h"
 #include "./Common.h"
 #include "./Document.h"
 #include "./Writer.h"

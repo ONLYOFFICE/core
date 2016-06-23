@@ -1,4 +1,4 @@
-﻿#include "AlternateContent.h"
+#include "AlternateContent.h"
 #include "Run.h"
 
 namespace OOX

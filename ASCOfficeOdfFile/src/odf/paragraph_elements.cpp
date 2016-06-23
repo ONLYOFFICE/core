@@ -556,7 +556,7 @@ void note::add_text(const std::wstring & Text)
 }
 void note::pptx_convert(oox::pptx_conversion_context & Context)
 {
-	//ñì presentation:notes
+	//ÑÐ¼ presentation:notes
 }
 void note::docx_convert(oox::docx_conversion_context & Context)
 {
@@ -979,7 +979,7 @@ void text_page_count::docx_convert(oox::docx_conversion_context & Context)
 }
 void text_page_count::pptx_convert(oox::pptx_conversion_context & Context)
 {
-	//ïîñêîëüêó òàêîãî ïîëÿ â ms íåò - êîíâåðòèì êàê îáû÷íûé òåêñò
+	//Ð¿Ð¾ÑÐºÐ¾Ð»ÑŒÐºÑƒ Ñ‚Ð°ÐºÐ¾Ð³Ð¾ Ð¿Ð¾Ð»Ñ Ð² ms Ð½ÐµÑ‚ - ÐºÐ¾Ð½Ð²ÐµÑ€Ñ‚Ð¸Ð¼ ÐºÐ°Ðº Ð¾Ð±Ñ‹Ñ‡Ð½Ñ‹Ð¹ Ñ‚ÐµÐºÑÑ‚
     BOOST_FOREACH(const office_element_ptr & elm, text_)
     {
         elm->pptx_convert(Context);

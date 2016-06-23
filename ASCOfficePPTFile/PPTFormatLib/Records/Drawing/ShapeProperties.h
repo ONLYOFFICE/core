@@ -29,8 +29,8 @@ public:
 		m_oProperties.FromStream(pStream, m_oHeader.RecInstance);
 		DWORD dwLen = m_oProperties.GetLen();
 
-		// это на всякий случай, может там напридумывают проперти с complex - 
-		// которые мы не поддерживаем...
+		// СЌС‚Рѕ РЅР° РІСЃСЏРєРёР№ СЃР»СѓС‡Р°Р№, РјРѕР¶РµС‚ С‚Р°Рј РЅР°РїСЂРёРґСѓРјС‹РІР°СЋС‚ РїСЂРѕРїРµСЂС‚Рё СЃ complex - 
+		// РєРѕС‚РѕСЂС‹Рµ РјС‹ РЅРµ РїРѕРґРґРµСЂР¶РёРІР°РµРј...
 		StreamUtils::StreamSeek(lPosition + m_oHeader.RecLen, pStream);
 	}
 };

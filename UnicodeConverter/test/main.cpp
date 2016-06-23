@@ -1,4 +1,4 @@
-﻿#include "../UnicodeConverter.h"
+#include "../UnicodeConverter.h"
 #include "../../DesktopEditor/common/File.h"
 
 int main(int argc, char *argv[])

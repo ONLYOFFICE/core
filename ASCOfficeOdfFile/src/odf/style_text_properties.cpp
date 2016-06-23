@@ -350,7 +350,7 @@ void text_format_properties_content::pptx_convert_as_list(oox::pptx_conversion_c
 				if (font == NULL)font = fonts.font_by_style_name(w_cs);
 				if (font)w_font = font->name();
 
-				//'Arial' глючит
+				//'Arial' РіР»СЋС‡РёС‚
 				removeCharsFromString(w_font, _T("'"));
 			}
 
@@ -684,7 +684,7 @@ void text_format_properties_content::docx_convert(oox::docx_conversion_context &
             style_text_underline_style_ && style_text_underline_style_->get_type() == line_style::None        
             )
         {
-            // подчеркивание выключено 
+            // РїРѕРґС‡РµСЂРєРёРІР°РЅРёРµ РІС‹РєР»СЋС‡РµРЅРѕ 
             underline = L"none";
         }
         else if (style_text_underline_type_ && 
@@ -797,7 +797,7 @@ void text_format_properties_content::docx_convert(oox::docx_conversion_context &
     // 17.3.2.42
 	if (Context.get_drop_cap_context().state()==2)
 	{
-		_rPr << L"<w:position w:val=\"-" << (2+Context.get_drop_cap_context().Scale*2-3)*2 << "\"/> ";//формула ачуметь !! - подбор вручную
+		_rPr << L"<w:position w:val=\"-" << (2+Context.get_drop_cap_context().Scale*2-3)*2 << "\"/> ";//С„РѕСЂРјСѓР»Р° Р°С‡СѓРјРµС‚СЊ !! - РїРѕРґР±РѕСЂ РІСЂСѓС‡РЅСѓСЋ
 	}
 	else if (style_text_position_)
     {
@@ -863,7 +863,7 @@ void text_format_properties_content::docx_convert(oox::docx_conversion_context &
          int fontSize=0;
 		 if (Context.get_drop_cap_context().state()==2)
 			 fontSize = process_font_size(fo_font_size_, Context.get_styles_context().get_current_processed_style(),false,
-				 Context.get_drop_cap_context().Scale + (Context.get_drop_cap_context().Scale-1) * 0.7);//вместо 1 ДОЛЖНОБЫТЬ коэфф. межстрочного интервала!!!
+				 Context.get_drop_cap_context().Scale + (Context.get_drop_cap_context().Scale-1) * 0.7);//РІРјРµСЃС‚Рѕ 1 Р”РћР›Р–РќРћР‘Р«РўР¬ РєРѕСЌС„С„. РјРµР¶СЃС‚СЂРѕС‡РЅРѕРіРѕ РёРЅС‚РµСЂРІР°Р»Р°!!!
 		 else
 			 fontSize = process_font_size(fo_font_size_, Context.get_styles_context().get_current_processed_style());
        
@@ -983,7 +983,7 @@ void text_format_properties_content::docx_convert(oox::docx_conversion_context &
 		odf_reader::draw_shape *shape = Context.get_drawing_context().get_current_shape();
 
 		if (shape->word_art_)
-		{//взять из графических ствойст цвет текста .. 
+		{//РІР·СЏС‚СЊ РёР· РіСЂР°С„РёС‡РµСЃРєРёС… СЃС‚РІРѕР№СЃС‚ С†РІРµС‚ С‚РµРєСЃС‚Р° .. 
 			const _CP_OPT(style_ref) & styleRef = shape->common_draw_attlists_.shape_with_text_and_styles_.
 				common_draw_shape_with_styles_attlist_.common_draw_style_name_attlist_.draw_style_name_;
 

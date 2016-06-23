@@ -1,4 +1,4 @@
-﻿#include "measuredigits.h"
+#include "measuredigits.h"
 
 #include <boost/lexical_cast.hpp>
 #include <logging.h>

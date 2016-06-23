@@ -6,7 +6,7 @@ namespace NSStringExt
 	//-- CP932 Encoding -----------------------------------------------------------------------------
 
 #define MSCP932_UNDEFINED 0x0000
-#define MSCP932_LEAD_CHAR 0xFFFF // Символ, который означает, что данный код - старший байт
+#define MSCP932_LEAD_CHAR 0xFFFF // вЂ”РёРјРІРѕР», РєРѕС‚РѕСЂС‹Р№ РѕР·РЅР°С‡Р°РµС‚, С‡С‚Рѕ РґР°РЅРЅС‹Р№ РєРѕРґ - СЃС‚Р°СЂС€РёР№ Р±Р°Р№С‚
 
 	static const unsigned short  c_anUnicodeMapCP932[] =
 	{
@@ -7770,7 +7770,7 @@ namespace NSStringExt
 		{ 0xFC49, 0xFA2D }, //CJK COMPATIBILITY IDEOGRAPH
 		{ 0xFC4A, 0x9E19 }, //CJK UNIFIED IDEOGRAPH
 		{ 0xFC4B, 0x9ED1 }, //CJK UNIFIED IDEOGRAPH
-		{ 0xFFFF, 0xFFFF }  //Обозначаем конец списка
+		{ 0xFFFF, 0xFFFF }  //РћР±РѕР·РЅР°С‡Р°РµРј РєРѕРЅРµС† СЃРїРёСЃРєР°
 	};
 }
 #endif // _BUILD_CPENCODINGS_CODEPAGE932_CROSSPLATFORM_H_

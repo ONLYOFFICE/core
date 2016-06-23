@@ -79,7 +79,7 @@ namespace PPTX
 
 			nullable<PPTX::Logic::Pic>						pic;
 /// todooo
-//extLst (Extension List) ง19.2.1.12
+//extLst (Extension List) ยง19.2.1.12
 		protected:			
 
 			virtual void FillParentPointersForChilds()

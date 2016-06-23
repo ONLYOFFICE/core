@@ -99,7 +99,7 @@ namespace OOX
 
 		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
-			// Читаем атрибуты
+			// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 			WritingElement_ReadAttributes_Start( oReader )
 			WritingElement_ReadAttributes_Read_if     ( oReader, _T("SelectedStyle"), m_sSelectedStyle )
 			WritingElement_ReadAttributes_Read_else_if( oReader, _T("StyleName"),     m_sStyleName )
@@ -116,7 +116,7 @@ namespace OOX
 
 		// Childs
 
-		// TO DO: Реализовать полное чтение библиографии
+		// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ РїРѕР»РЅРѕРµ С‡С‚РµРЅРёРµ Р±РёР±Р»РёРѕРіСЂР°С„РёРё
 	};
 } // namespace OOX
 

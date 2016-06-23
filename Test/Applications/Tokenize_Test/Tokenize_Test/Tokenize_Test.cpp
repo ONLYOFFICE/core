@@ -120,7 +120,7 @@ bool DoTokenizeTests ()
 		assert (bRes);
 		bRes = tokenizeTest("vjdhsfuibyc7qwybr78tr67wtcg78w6rt78tyoi8yrh7wqetrgq876rt87wq", "78");
 		assert (bRes);
-		bRes = tokenizeTest("bvcxnылвормвлоругпрукгшпругкрпкгшупирптлпгоькшп", "гш");
+		bRes = tokenizeTest("bvcxnС‹Р»РІРѕСЂРјРІР»РѕСЂСѓРіРїСЂСѓРєРіС€РїСЂСѓРіРєСЂРїРєРіС€СѓРїРёСЂРїС‚Р»РїРіРѕСЊРєС€Рї", "РіС€");
 		assert (bRes);	
 		bRes = tokenizeTest("bvcxn1234567890-1234567890-123456789012345678901234567890", " ");
 		assert (bRes);	

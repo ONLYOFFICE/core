@@ -1,4 +1,4 @@
-﻿#ifndef DOCTRENDERER_H
+#ifndef DOCTRENDERER_H
 #define DOCTRENDERER_H
 
 #include <string>

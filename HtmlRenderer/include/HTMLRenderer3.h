@@ -1,4 +1,4 @@
-﻿#ifndef _ASC_HTMLRENDERER3_H_
+#ifndef _ASC_HTMLRENDERER3_H_
 #define _ASC_HTMLRENDERER3_H_
 
 #include "../../DesktopEditor/graphics/IRenderer.h"

@@ -97,7 +97,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	int nCount = m_pList->GetFonts()->GetLength();
 
-	// теперь строим массив всех шрифтов по имени
+	// С‚РµРїРµСЂСЊ СЃС‚СЂРѕРёРј РјР°СЃСЃРёРІ РІСЃРµС… С€СЂРёС„С‚РѕРІ РїРѕ РёРјРµРЅРё
 	CAtlMap<CString, CFontInfoJS> mapFonts;
 	CAtlMap<CString, CFontInfoJS> mapFontsUnicodes;
 	CAtlArray<CString> arrFonts;
@@ -356,7 +356,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	}
 	// -------------------------------------------
 
-	// теперь сортируем шрифты по имени ----------
+	// С‚РµРїРµСЂСЊ СЃРѕСЂС‚РёСЂСѓРµРј С€СЂРёС„С‚С‹ РїРѕ РёРјРµРЅРё ----------
 	size_t nCountFonts = arrFonts.GetCount();
 	for (size_t i = 0; i < nCountFonts; ++i)
 	{

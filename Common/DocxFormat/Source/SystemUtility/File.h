@@ -7,7 +7,7 @@
 #include "../Base/unicode_util.h"
 #include "../Base/Types_32.h"
 
-//по аналогии с /DesktopEditor/common/File.h только для CString
+//РїРѕ Р°РЅР°Р»РѕРіРёРё СЃ /DesktopEditor/common/File.h С‚РѕР»СЊРєРѕ РґР»СЏ CString
 
 #ifndef COINIT_MULTITHREADED
 	#define COINIT_MULTITHREADED 0				//for win64 .... oO

@@ -1,4 +1,4 @@
-﻿// J2kFile.h : Declaration of the CJ2kFile
+// J2kFile.h : Declaration of the CJ2kFile
 
 #pragma once
 

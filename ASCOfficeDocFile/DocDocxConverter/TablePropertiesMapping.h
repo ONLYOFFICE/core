@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "../Common/XmlTools.h"
 #include "BorderCode.h"

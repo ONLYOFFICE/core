@@ -155,7 +155,7 @@ int CUSTOMVIEW::serialize(std::wostream & stream)
 				if (m_arSelection[i] == NULL) continue;
 				m_arSelection[i]->serialize(CP_XML_STREAM());
 			}
-			//todooo пока не понятно как там определяется ref
+			//todooo РїРѕРєР° РЅРµ РїРѕРЅСЏС‚РЅРѕ РєР°Рє С‚Р°Рј РѕРїСЂРµРґРµР»СЏРµС‚СЃСЏ ref
 			//if (m_AUTOFILTER)
 			//	m_AUTOFILTER->serialize(CP_XML_STREAM());
 		}

@@ -6,7 +6,7 @@ namespace NSStringExt
 	//-- CP936 Encoding -----------------------------------------------------------------------------
 
 #define MSCP936_UNDEFINED 0x0000
-#define MSCP936_LEAD_CHAR 0xFFFF // Символ, который означает, что данный код - старший байт
+#define MSCP936_LEAD_CHAR 0xFFFF // вЂ”РёРјРІРѕР», РєРѕС‚РѕСЂС‹Р№ РѕР·РЅР°С‡Р°РµС‚, С‡С‚Рѕ РґР°РЅРЅС‹Р№ РєРѕРґ - СЃС‚Р°СЂС€РёР№ Р±Р°Р№С‚
 
 	static const unsigned short  c_anUnicodeMapCP936[] =
 	{
@@ -21837,7 +21837,7 @@ namespace NSStringExt
 		{ 0xFE4D, 0xFA27 }, //CJK COMPATIBILITY IDEOGRAPH
 		{ 0xFE4E, 0xFA28 }, //CJK COMPATIBILITY IDEOGRAPH
 		{ 0xFE4F, 0xFA29 }, //CJK COMPATIBILITY IDEOGRAPH
-		{ 0xFFFF, 0xFFFF }  //Обозначаем конец списка
+		{ 0xFFFF, 0xFFFF }  //РћР±РѕР·РЅР°С‡Р°РµРј РєРѕРЅРµС† СЃРїРёСЃРєР°
 	};
 }
 #endif // _BUILD_CPENCODINGS_CODEPAGE936_CROSSPLATFORM_H_

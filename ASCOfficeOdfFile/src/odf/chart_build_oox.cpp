@@ -44,7 +44,7 @@ typedef shared_ptr<const office_element>::Type office_element_ptr_const;
         }
 
 
-// Класс для конструирования чартов
+// В Р»Р°СЃСЃ РґР»СЏ РєРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°РЅРёСЏ С‡Р°СЂС‚РѕРІ
 using namespace chart;
 
 void chart_build::set_width(double valPt)
@@ -275,7 +275,7 @@ void chart_build::oox_convert(oox::oox_chart_context & chart_context)
 
 	BOOST_FOREACH(series & s, series_)
 	{
-		if (s.class_ != last_set_type)			//разные типы серий в диаграмме - например бар и линия.
+		if (s.class_ != last_set_type)			//СЂР°Р·РЅС‹Рµ С‚РёРїС‹ СЃРµСЂРёР№ РІ РґРёР°РіСЂР°РјРјРµ - РЅР°РїСЂРёРјРµСЂ Р±Р°СЂ Рё Р»РёРЅРёСЏ.
 		{
 			chart_context.add_chart(s.class_);
 			last_set_type = s.class_;
@@ -295,10 +295,10 @@ void chart_build::oox_convert(oox::oox_chart_context & chart_context)
 		if (s.cell_range_address_.empty())
 			s.cell_range_address_ = domain_cell_range_adress2_;
 		
-		//тут данные нужно поделить по столбцам или строкам - так как в плот-ареа общий диапазон
-		//первый столбец-строка МОЖЕт использоваться для подписей
-		//каждая серия берет каждый последующий диапазрн
-		//такое определение - редкость = todooo
+		//С‚СѓС‚ РґР°РЅРЅС‹Рµ РЅСѓР¶РЅРѕ РїРѕРґРµР»РёС‚СЊ РїРѕ СЃС‚РѕР»Р±С†Р°Рј РёР»Рё СЃС‚СЂРѕРєР°Рј - С‚Р°Рє РєР°Рє РІ РїР»РѕС‚-Р°СЂРµР° РѕР±С‰РёР№ РґРёР°РїР°Р·РѕРЅ
+		//РїРµСЂРІС‹Р№ СЃС‚РѕР»Р±РµС†-СЃС‚СЂРѕРєР° РњРћР–Р•С‚ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊСЃСЏ РґР»СЏ РїРѕРґРїРёСЃРµР№
+		//РєР°Р¶РґР°СЏ СЃРµСЂРёСЏ Р±РµСЂРµС‚ РєР°Р¶РґС‹Р№ РїРѕСЃР»РµРґСѓСЋС‰РёР№ РґРёР°РїР°Р·СЂРЅ
+		//С‚Р°РєРѕРµ РѕРїСЂРµРґРµР»РµРЅРёРµ - СЂРµРґРєРѕСЃС‚СЊ = todooo
 		
 		std::vector<std::wstring>		domain_cash;
 		std::vector<std::wstring>		cell_cash;
@@ -347,7 +347,7 @@ void chart_build::oox_convert(oox::oox_chart_context & chart_context)
 			current->set_values_series(1, cell_cash);
 		}
 
-		if (categories_.empty() == false)//названия 
+		if (categories_.empty() == false)//РЅР°Р·РІР°РЅРёСЏ
 		{			
 			current->set_formula_series(0, categories_[0], L"General", true);
 			current->set_values_series(0, cat_cash);
@@ -371,13 +371,13 @@ void chart_build::oox_convert(oox::oox_chart_context & chart_context)
 		if	(a.dimension_ == L"y" && y_enabled)continue;
 		if	(a.dimension_ == L"z" && z_enabled)continue;
 
-		if	(a.dimension_ == L"x")//могут быть типы 1, 2, 3, 4
+		if	(a.dimension_ == L"x")//РјРѕРіСѓС‚ Р±С‹С‚СЊ С‚РёРїС‹ 1, 2, 3, 4
 		{			
 			if (last_set_type == chart_scatter ||
 					last_set_type == chart_bubble) a.type_ = 2;
 
 			if (class_ == chart_stock && a.type_ == 3 )		
-				a.type_ = 4; //шкала дат.
+				a.type_ = 4; //С€РєР°Р»Р° РґР°С‚.
 			
 			x_enabled = true;
 		}
@@ -386,8 +386,8 @@ void chart_build::oox_convert(oox::oox_chart_context & chart_context)
 			a.type_ = 2;
 			if (last_set_type ==  chart_bar)
 			{
-				//вот нахрена свойства относящиеся к серии и самому чарту воткнули в оси ???? (ооо писали идиеты???)
-				//или это банальная ошибка которую так никогда и не исправили???
+				//РІРѕС‚ РЅР°С…СЂРµРЅР° СЃРІРѕР№СЃС‚РІР° РѕС‚РЅРѕСЃСЏС‰РёРµСЃСЏ Рє СЃРµСЂРёРё Рё СЃР°РјРѕРјСѓ С‡Р°СЂС‚Сѓ РІРѕС‚РєРЅСѓР»Рё РІ РѕСЃРё ???? (РѕРѕРѕ РїРёСЃР°Р»Рё РёРґРёРµС‚С‹???)
+				//РёР»Рё СЌС‚Рѕ Р±Р°РЅР°Р»СЊРЅР°СЏ РѕС€РёР±РєР° РєРѕС‚РѕСЂСѓСЋ С‚Р°Рє РЅРёРєРѕРіРґР° Рё РЅРµ РёСЃРїСЂР°РІРёР»Рё???
 				//overlap & gap-width
 				oox::oox_chart_ptr current = chart_context.get_current_chart();
 				current->set_additional_properties(a.properties_);
@@ -534,12 +534,12 @@ void process_build_chart::visit(office_chart& val)
 void process_build_chart::visit(office_text& val)
 {
 	chart_build_.object_type_ = 2;
-	chart_build_.office_text_ = &val;//конвертация будет уровнем выше
+	chart_build_.office_text_ = &val;//РєРѕРЅРІРµСЂС‚Р°С†РёСЏ Р±СѓРґРµС‚ СѓСЂРѕРІРЅРµРј РІС‹С€Рµ
 }
 void process_build_chart::visit(office_math& val)
 {
-	chart_build_.object_type_ = 3; //0;//временно замещающая картинка
-	chart_build_.office_math_ = &val;//конвертация будет уровнем выше
+	chart_build_.object_type_ = 3; //0;//РІСЂРµРјРµРЅРЅРѕ Р·Р°РјРµС‰Р°СЋС‰Р°СЏ РєР°СЂС‚РёРЅРєР°
+	chart_build_.office_math_ = &val;//РєРѕРЅРІРµСЂС‚Р°С†РёСЏ Р±СѓРґРµС‚ СѓСЂРѕРІРЅРµРј РІС‹С€Рµ
 }
 
 void process_build_chart::visit(const chart_chart& val)

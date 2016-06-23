@@ -1,4 +1,4 @@
-﻿#include "../HtmlFile.h"
+#include "../HtmlFile.h"
 #include "../../DesktopEditor/common/File.h"
 #include "../../DesktopEditor/graphics/BaseThread.h"
 #include "../../DesktopEditor/graphics/TemporaryCS.h"

@@ -78,8 +78,8 @@ bool docx_table_state::start_covered_cell(docx_conversion_context & Context)
     std::wostream & _Wostream = context_.output_stream();
     current_table_column_++;
 
-    // обновляем вектор, в котором хранятся информация об объединении строк
-    // добавляем в него новый столбец
+    // РѕР±РЅРѕРІР»СЏРµРј РІРµРєС‚РѕСЂ, РІ РєРѕС‚РѕСЂРѕРј С…СЂР°РЅСЏС‚СЃСЏ РёРЅС„РѕСЂРјР°С†РёСЏ РѕР± РѕР±СЉРµРґРёРЅРµРЅРёРё СЃС‚СЂРѕРє
+    // РґРѕР±Р°РІР»СЏРµРј РІ РЅРµРіРѕ РЅРѕРІС‹Р№ СЃС‚РѕР»Р±РµС†
 
     if (current_table_column_ >= (int)(rows_spanned_.size()))
         rows_spanned_.push_back(table_row_spanned());
@@ -106,8 +106,8 @@ bool docx_table_state::start_covered_cell(docx_conversion_context & Context)
         _Wostream << L"</w:tcPr>";
     }
 
-    // использовали текущую ячейку, уменьшаем счетчики оставшихся объединенных ячеек
-    // для столбцов и строк
+    // РёСЃРїРѕР»СЊР·РѕРІР°Р»Рё С‚РµРєСѓС‰СѓСЋ СЏС‡РµР№РєСѓ, СѓРјРµРЅСЊС€Р°РµРј СЃС‡РµС‚С‡РёРєРё РѕСЃС‚Р°РІС€РёС…СЃСЏ РѕР±СЉРµРґРёРЅРµРЅРЅС‹С… СЏС‡РµРµРє
+    // РґР»СЏ СЃС‚РѕР»Р±С†РѕРІ Рё СЃС‚СЂРѕРє
 
     if (columns_spanned_num_ > 0)
         columns_spanned_num_--;
@@ -115,7 +115,7 @@ bool docx_table_state::start_covered_cell(docx_conversion_context & Context)
     if (rows_spanned_[current_table_column_].num() > 0)
         rows_spanned_[current_table_column_].decrease();                                
 
-    // устанавливаем флаг что ячейка была открыта, записан тег <w:tc>
+    // СѓСЃС‚Р°РЅР°РІР»РёРІР°РµРј С„Р»Р°Рі С‡С‚Рѕ СЏС‡РµР№РєР° Р±С‹Р»Р° РѕС‚РєСЂС‹С‚Р°, Р·Р°РїРёСЃР°РЅ С‚РµРі <w:tc>
     close_table_covered_cell_ = closeTag;
     return closeTag;
 }
@@ -125,7 +125,7 @@ void docx_table_state::end_covered_cell()
     std::wostream & _Wostream = context_.output_stream();
     if (close_table_covered_cell_)
     {
-        // закрываем открытую ячейку
+        // Р·Р°РєСЂС‹РІР°РµРј РѕС‚РєСЂС‹С‚СѓСЋ СЏС‡РµР№РєСѓ
         _Wostream << L"</w:tc>";
         close_table_covered_cell_ = false;
     }

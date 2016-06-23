@@ -71,7 +71,7 @@ namespace ASCDocFileFormat
 				vector<unsigned int> runOffsets;
 				vector<Chpx> paragraphItemChpxs = (*oIter)->GetRunProperties(&runOffsets);
 				
-				if (1 == paragraphItemChpxs.size() && paragraphItems.size() > 1)		// пустых данных не должно быть в конце списка (todo: потестить на документах)
+				if (1 == paragraphItemChpxs.size() && paragraphItems.size() > 1)		// РїСѓСЃС‚С‹С… РґР°РЅРЅС‹С… РЅРµ РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ РІ РєРѕРЅС†Рµ СЃРїРёСЃРєР° (todo: РїРѕС‚РµСЃС‚РёС‚СЊ РЅР° РґРѕРєСѓРјРµРЅС‚Р°С…)
 				{
 					if ((0 == paragraphItemChpxs[0].GetPrlSize()) && (nInd == paragraphItems.size() - 1))
 						break;

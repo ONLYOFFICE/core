@@ -15,10 +15,10 @@ public:
     ~complex_number_format();
     void reset();
 
-    // получить результирующий формат
+    // РїРѕР»СѓС‡РёС‚СЊ СЂРµР·СѓР»СЊС‚РёСЂСѓСЋС‰РёР№ С„РѕСЂРјР°С‚
     std::wstring result_value();
 
-    // добавить условный формат числа
+    // РґРѕР±Р°РІРёС‚СЊ СѓСЃР»РѕРІРЅС‹Р№ С„РѕСЂРјР°С‚ С‡РёСЃР»Р°
     void add_format(std::wstring const & condition, std::wstring const & format);
 
 private:

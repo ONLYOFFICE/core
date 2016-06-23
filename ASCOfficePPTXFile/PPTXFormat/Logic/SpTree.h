@@ -196,7 +196,7 @@ namespace PPTX
 							{
 								pReader->Skip(1); // type (0)
 								LONG nElemLength = pReader->GetLong(); // len
-								//SpTreeElem::fromPPTY ñðàçó äåëàåò GetChar, à toPPTY íè÷åãî íå ïèøåò åñëè íå èíèöèàëèçèðîâàí
+								//SpTreeElem::fromPPTY ÑÑ€Ð°Ð·Ñƒ Ð´ÐµÐ»Ð°ÐµÑ‚ GetChar, Ð° toPPTY Ð½Ð¸Ñ‡ÐµÐ³Ð¾ Ð½Ðµ Ð¿Ð¸ÑˆÐµÑ‚ ÐµÑÐ»Ð¸ Ð½Ðµ Ð¸Ð½Ð¸Ñ†Ð¸Ð°Ð»Ð¸Ð·Ð¸Ñ€Ð¾Ð²Ð°Ð½
 								if(nElemLength > 0)
 								{
 									SpTreeElem elm;

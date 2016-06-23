@@ -1,4 +1,4 @@
-﻿#ifndef _PDF_READER_ARRAY_H
+#ifndef _PDF_READER_ARRAY_H
 #define _PDF_READER_ARRAY_H
 
 #include "Object.h"

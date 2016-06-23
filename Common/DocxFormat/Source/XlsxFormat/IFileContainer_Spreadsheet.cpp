@@ -1,4 +1,4 @@
-﻿//#include "stdafx.h"
+//#include "stdafx.h"
 #include "CommonInclude.h"
 
 #include "IFileContainer_Spreadsheet.h"

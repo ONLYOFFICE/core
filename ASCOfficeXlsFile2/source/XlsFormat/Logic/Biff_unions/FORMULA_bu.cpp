@@ -178,7 +178,7 @@ int FORMULA::serialize(std::wostream & stream)
 			}
 
 			//if (formula_cash.empty())
-			//{ todooo неверно читается - general_formulas.xls
+			//{ todooo РЅРµРІРµСЂРЅРѕ С‡РёС‚Р°РµС‚СЃСЏ - general_formulas.xls
 			//	if (m_Cash)
 			//	
 			//		String * str = dynamic_cast<String*>(m_Cash.get());

@@ -74,7 +74,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:anchor"),      m_sAnchor )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:docLocation"), m_sDocLocation )

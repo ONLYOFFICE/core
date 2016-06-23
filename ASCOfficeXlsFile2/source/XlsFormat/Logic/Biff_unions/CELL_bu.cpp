@@ -8,7 +8,7 @@
 #include <Logic/Biff_records/BoolErr.h>
 #include <Logic/Biff_records/Number.h>
 #include <Logic/Biff_records/LabelSst.h>
-#include <Logic/Biff_records/Label.h> // γλώχνϋι τΰιλ SchetPrintForm.xls
+#include <Logic/Biff_records/Label.h> // Π³Π»ΡΡ‡Π½Ρ‹ΠΉ Ρ„Π°ΠΉΠ» SchetPrintForm.xls
 
 namespace XLS
 {

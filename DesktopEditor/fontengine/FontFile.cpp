@@ -1,4 +1,4 @@
-﻿#include "FontManager.h"
+#include "FontManager.h"
 #include "internal/internal.h"
 #include "internal/ftobjs.h"
 #include "../common/Types.h"

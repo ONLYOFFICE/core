@@ -1,4 +1,4 @@
-﻿#ifndef _ASC_HTMLRENDERER_FM_H_
+#ifndef _ASC_HTMLRENDERER_FM_H_
 #define _ASC_HTMLRENDERER_FM_H_
 
 #include "FontManagerBase.h"

@@ -1,4 +1,4 @@
-﻿
+
 #include "RevisionData.h"
 #include "../../DesktopEditor/common/Types.h"
 

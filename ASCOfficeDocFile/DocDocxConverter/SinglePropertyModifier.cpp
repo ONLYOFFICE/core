@@ -1,4 +1,4 @@
-﻿
+
 #include "SinglePropertyModifier.h"
 
 #include "../Common/FormatUtils.h"

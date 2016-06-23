@@ -95,12 +95,12 @@ namespace OfficeArt
 
 				std::ifstream xfile(m_sFile.c_str(), std::ios::binary);
 
-				//узнаем размер файла, и выделяем память в строке
+				//СѓР·РЅР°РµРј СЂР°Р·РјРµСЂ С„Р°Р№Р»Р°, Рё РІС‹РґРµР»СЏРµРј РїР°РјСЏС‚СЊ РІ СЃС‚СЂРѕРєРµ
 				xfile.seekg( 0, std::ios_base::end );
 				xstr.resize( xfile.tellg() );
 				xfile.seekg( 0, std::ios_base::beg );
 
-				//копируем данные
+				//РєРѕРїРёСЂСѓРµРј РґР°РЅРЅС‹Рµ
 				xfile.read(const_cast<char*>( xstr.data() ), (std::streamsize)xstr.size());
 
 				if ( !xstr.empty() )
@@ -112,9 +112,9 @@ namespace OfficeArt
 						|| extension == std::wstring(L"tiff")
 						|| extension == std::wstring(L"tif") )
 					{
-						//	MS WORD конвертит исходник в PNG формат ( UUID берет их исходника GIF файла )
-						//	MS WORD конвертит исходник в PNG формат ( UUID берет их исходника TIFF файла )
-						//	MS WORD конвертит исходник в PNG формат ( UUID берет их исходника BMP файла )
+						//	MS WORD РєРѕРЅРІРµСЂС‚РёС‚ РёСЃС…РѕРґРЅРёРє РІ PNG С„РѕСЂРјР°С‚ ( UUID Р±РµСЂРµС‚ РёС… РёСЃС…РѕРґРЅРёРєР° GIF С„Р°Р№Р»Р° )
+						//	MS WORD РєРѕРЅРІРµСЂС‚РёС‚ РёСЃС…РѕРґРЅРёРє РІ PNG С„РѕСЂРјР°С‚ ( UUID Р±РµСЂРµС‚ РёС… РёСЃС…РѕРґРЅРёРєР° TIFF С„Р°Р№Р»Р° )
+						//	MS WORD РєРѕРЅРІРµСЂС‚РёС‚ РёСЃС…РѕРґРЅРёРє РІ PNG С„РѕСЂРјР°С‚ ( UUID Р±РµСЂРµС‚ РёС… РёСЃС…РѕРґРЅРёРєР° BMP С„Р°Р№Р»Р° )
 
 						m_sOriginalData		=	xstr;
 						officeArtBlip		=	GetBlipWithPngTransform();
@@ -200,12 +200,12 @@ namespace OfficeArt
 
 				std::ifstream xfile(m_sFile.c_str(), std::ios::binary);
 
-				//узнаем размер файла, и выделяем память в строке
+				//СѓР·РЅР°РµРј СЂР°Р·РјРµСЂ С„Р°Р№Р»Р°, Рё РІС‹РґРµР»СЏРµРј РїР°РјСЏС‚СЊ РІ СЃС‚СЂРѕРєРµ
 				xfile.seekg( 0, std::ios_base::end );
 				xstr.resize( xfile.tellg() );
 				xfile.seekg( 0, std::ios_base::beg );
 
-				//копируем данные
+				//РєРѕРїРёСЂСѓРµРј РґР°РЅРЅС‹Рµ
 				xfile.read(const_cast<char*>(xstr.data()), (std::streamsize)xstr.size());
 
 				if ( !xstr.empty() )

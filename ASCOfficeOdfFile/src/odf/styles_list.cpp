@@ -475,13 +475,13 @@ void text_list_level_style_number::pptx_convert(oox::pptx_conversion_context & C
 	
 	CP_XML_WRITER(strm)
 	{ 	
-		if (style_text_properties * textProperties = dynamic_cast<style_text_properties *>(style_text_properties_.get()))///эти свойства относятся 
-			// к отрисовки значков !!! а не самого текста
+		if (style_text_properties * textProperties = dynamic_cast<style_text_properties *>(style_text_properties_.get()))///СЌС‚Рё СЃРІРѕР№СЃС‚РІР° РѕС‚РЅРѕСЃСЏС‚СЃСЏ 
+			// Рє РѕС‚СЂРёСЃРѕРІРєРё Р·РЅР°С‡РєРѕРІ !!! Р° РЅРµ СЃР°РјРѕРіРѕ С‚РµРєСЃС‚Р°
 	    {
 	        textProperties->content().pptx_convert_as_list(Context);
 			strm << Context.get_text_context().get_styles_context().text_style().str();
 	    }
-		CP_XML_NODE(L"a:buAutoNum")//ms козлы !! для них оказыается ВАЖЕН порядок .. если записать это поле первым, а потом свойства - нихера в мс2010 не отображается верно !!!
+		CP_XML_NODE(L"a:buAutoNum")//ms РєРѕР·Р»С‹ !! РґР»СЏ РЅРёС… РѕРєР°Р·С‹Р°РµС‚СЃСЏ Р’РђР–Р•Рќ РїРѕСЂСЏРґРѕРє .. РµСЃР»Рё Р·Р°РїРёСЃР°С‚СЊ СЌС‚Рѕ РїРѕР»Рµ РїРµСЂРІС‹Рј, Р° РїРѕС‚РѕРј СЃРІРѕР№СЃС‚РІР° - РЅРёС…РµСЂР° РІ РјСЃ2010 РЅРµ РѕС‚РѕР±СЂР°Р¶Р°РµС‚СЃСЏ РІРµСЂРЅРѕ !!!
 		{
 			CP_XML_ATTR(L"startAt",text_list_level_style_number_attr_.text_start_value_);
 			CP_XML_ATTR(L"type", num_format);
@@ -635,8 +635,8 @@ void text_list_level_style_bullet::pptx_convert(oox::pptx_conversion_context & C
 		style_text_properties * textProperties = dynamic_cast<style_text_properties *>(style_text_properties_.get());
 		wchar_t bullet = text_list_level_style_bullet_attr_.text_bullet_char_.get_value_or(L'\x2022');
 	    
-		if (textProperties)///эти свойства относятся 
-			// к отрисовки значков !!! а не самого текста
+		if (textProperties)///СЌС‚Рё СЃРІРѕР№СЃС‚РІР° РѕС‚РЅРѕСЃСЏС‚СЃСЏ 
+			// Рє РѕС‚СЂРёСЃРѕРІРєРё Р·РЅР°С‡РєРѕРІ !!! Р° РЅРµ СЃР°РјРѕРіРѕ С‚РµРєСЃС‚Р°
 	    {
 	        textProperties->content().pptx_convert_as_list(Context);
 			strm << Context.get_text_context().get_styles_context().text_style().str();
@@ -773,8 +773,8 @@ void text_list_level_style_image::pptx_convert(oox::pptx_conversion_context & Co
 		style_text_properties * textProperties = dynamic_cast<style_text_properties *>(style_text_properties_.get());
 		wchar_t bullet = L'\x2022';
 	    
-		if (textProperties)///эти свойства относятся 
-			// к отрисовки значков !!! а не самого текста
+		if (textProperties)///СЌС‚Рё СЃРІРѕР№СЃС‚РІР° РѕС‚РЅРѕСЃСЏС‚СЃСЏ 
+			// Рє РѕС‚СЂРёСЃРѕРІРєРё Р·РЅР°С‡РєРѕРІ !!! Р° РЅРµ СЃР°РјРѕРіРѕ С‚РµРєСЃС‚Р°
 	    {
 	        textProperties->content().pptx_convert_as_list(Context);
 			strm << Context.get_text_context().get_styles_context().text_style().str();

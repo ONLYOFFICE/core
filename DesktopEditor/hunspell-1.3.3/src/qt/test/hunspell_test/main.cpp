@@ -1,4 +1,4 @@
-﻿#include <QCoreApplication>
+#include <QCoreApplication>
 #include <QString>
 
 #include "../../../../src/hunspell/hunspell.h"

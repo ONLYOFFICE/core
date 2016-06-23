@@ -1,4 +1,4 @@
-﻿#include "Catalog.h"
+#include "Catalog.h"
 #include "Destination.h"
 #include "Pages.h"
 #include "Utils.h"

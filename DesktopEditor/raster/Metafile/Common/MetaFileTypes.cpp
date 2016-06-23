@@ -1,4 +1,4 @@
-﻿#include "MetaFileTypes.h"
+#include "MetaFileTypes.h"
 #include "../Emf/EmfTypes.h"
 #include "../Wmf/WmfTypes.h"
 

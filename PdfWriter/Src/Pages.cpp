@@ -1,4 +1,4 @@
-﻿#include "Objects.h"
+#include "Objects.h"
 #include "Pages.h"
 #include "Utils.h"
 #include "GState.h"

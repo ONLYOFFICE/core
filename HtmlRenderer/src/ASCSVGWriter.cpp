@@ -1,4 +1,4 @@
-﻿#include "../include/ASCSVGWriter.h"
+#include "../include/ASCSVGWriter.h"
 
 #include "../../DesktopEditor/graphics/GraphicsPath.h"
 #include "VectorGraphicsWriter2.h"

@@ -20,7 +20,7 @@ const wchar_t * style_chart_properties::name = L"chart-properties";
 
 void style_chart_properties::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-	_CP_OPT(bool) bVal;//потом можно и это разделение убрать - заменить вариант
+	_CP_OPT(bool) bVal;//РїРѕС‚РѕРј РјРѕР¶РЅРѕ Рё СЌС‚Рѕ СЂР°Р·РґРµР»РµРЅРёРµ СѓР±СЂР°С‚СЊ - Р·Р°РјРµРЅРёС‚СЊ РІР°СЂРёР°РЅС‚
 
 	CP_APPLY_ATTR(L"chart:scale-text",			bVal);		if (bVal)content_.push_back(_property(L"scale-text",			bVal.get()));
     CP_APPLY_ATTR(L"chart:three-dimensional",	bVal);		if (bVal)content_.push_back(_property(L"three-dimensional",		bVal.get()));

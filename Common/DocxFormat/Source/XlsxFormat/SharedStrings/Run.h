@@ -11,7 +11,7 @@ namespace OOX
 {
 	namespace Spreadsheet
 	{
-		//необработано:
+		//РЅРµРѕР±СЂР°Р±РѕС‚Р°РЅРѕ:
 		class CRun : public WritingElementWithChilds<CText>
 		{
 		public:

@@ -1,4 +1,4 @@
-﻿#include "File.h"
+#include "File.h"
 #include "../Common/Utility.h"
 #include "TxtFile.h"
 

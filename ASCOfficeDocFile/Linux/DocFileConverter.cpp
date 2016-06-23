@@ -1,4 +1,4 @@
-﻿#include "../DocFormatLib/DocFormatLib.h"
+#include "../DocFormatLib/DocFormatLib.h"
 
 #include "../Win32/ASCOfficeCriticalSection.h"
 

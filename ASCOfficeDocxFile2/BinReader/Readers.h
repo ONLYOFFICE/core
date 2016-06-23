@@ -1,4 +1,4 @@
-﻿#ifndef READERS
+#ifndef READERS
 #define READERS
 
 #include "FileWriter.h"

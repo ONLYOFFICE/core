@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "OOXStyleReader.h"
 #include "OOXDocDefaultsReader.h"
 

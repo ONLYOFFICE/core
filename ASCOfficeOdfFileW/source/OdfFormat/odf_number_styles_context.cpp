@@ -280,7 +280,7 @@ void odf_number_styles_context::create_default(int oox_num_fmt, std::wstring for
 	case 49:	formatCode = L"@";		state.ods_type =office_value_type::String; break;
 
 	default:
-/////////////////////////////////// с неопределенным formatCode .. он задается в файле
+/////////////////////////////////// СЃ РЅРµРѕРїСЂРµРґРµР»РµРЅРЅС‹Рј formatCode .. РѕРЅ Р·Р°РґР°РµС‚СЃСЏ РІ С„Р°Р№Р»Рµ
 		if (oox_num_fmt >=5  && oox_num_fmt <=8)state.ods_type =office_value_type::Currency; 
 		if (oox_num_fmt >=43 && oox_num_fmt <=44)state.ods_type =office_value_type::Currency; 
 		
@@ -410,7 +410,7 @@ void odf_number_styles_context::create_numbers(number_format_state & state, offi
 		}
 		else
 		{
-			//формат не определен .. дефолтный
+			//С„РѕСЂРјР°С‚ РЅРµ РѕРїСЂРµРґРµР»РµРЅ .. РґРµС„РѕР»С‚РЅС‹Р№
 			min_digit =1;
 		}
 
@@ -510,7 +510,7 @@ void odf_number_styles_context::create_date_style(number_format_state & state, o
 	boost::wregex re(L"([a-zA-Z]+)(\\W+)");//(L"(\\w+)");
 	std::list<std::wstring> result;
 	bool b = boost::regex_split(std::back_inserter(result),s, re);
-	result.push_back(s);//последний ..выносится - так уж работает boost.regex_split
+	result.push_back(s);//РїРѕСЃР»РµРґРЅРёР№ ..РІС‹РЅРѕСЃРёС‚СЃСЏ - С‚Р°Рє СѓР¶ СЂР°Р±РѕС‚Р°РµС‚ boost.regex_split
 	int res;
 	int sz=0;
 	for (std::list<std::wstring>::iterator i=result.begin(); i!=result.end(); ++i)
@@ -561,10 +561,10 @@ void odf_number_styles_context::create_date_style(number_format_state & state, o
 			}
 		}
 		else
-		{	//////////////////// делитель ////////////////////	
+		{	//////////////////// РґРµР»РёС‚РµР»СЊ ////////////////////	
 			if(sz>1) 
 			{
-				//выкинем "лишние" слэши
+				//РІС‹РєРёРЅРµРј "Р»РёС€РЅРёРµ" СЃР»СЌС€Рё
 				boost::algorithm::replace_all(s, L"\\", L"");
 			}
 			create_element(L"number", L"text", elm, odf_context_);
@@ -591,7 +591,7 @@ void odf_number_styles_context::create_time_style(number_format_state & state, o
 	boost::wregex re(L"([a-zA-Z]+)(\\W+)");//(L"(\\w+)");
 	std::list<std::wstring> result;
 	bool b = boost::regex_split(std::back_inserter(result),s, re);
-	if (b)result.push_back(s);//последний ..выносится - так уж работает boost.regex_split
+	if (b)result.push_back(s);//РїРѕСЃР»РµРґРЅРёР№ ..РІС‹РЅРѕСЃРёС‚СЃСЏ - С‚Р°Рє СѓР¶ СЂР°Р±РѕС‚Р°РµС‚ boost.regex_split
 
 	int res;
 	int sz=0;
@@ -610,7 +610,7 @@ void odf_number_styles_context::create_time_style(number_format_state & state, o
 				if (sz == 2)number_hours_->number_style_ = L"long";
 			}
 		}
-		else if ((res=s.find(L"am")) >=0/* || (res=s.find(L"pm")) >=0*/)  //излишнее .. 
+		else if ((res=s.find(L"am")) >=0/* || (res=s.find(L"pm")) >=0*/)  //РёР·Р»РёС€РЅРµРµ .. 
 		{
 			create_element(L"number", L"am-pm", elm, odf_context_);
 		}
@@ -635,12 +635,12 @@ void odf_number_styles_context::create_time_style(number_format_state & state, o
 				//number_decimal_places_
 			}
 		}
-		else if((res=s.find(L"pm")) <0)//так уж формат делится .. а этот текст нам не нужен
+		else if((res=s.find(L"pm")) <0)//С‚Р°Рє СѓР¶ С„РѕСЂРјР°С‚ РґРµР»РёС‚СЃСЏ .. Р° СЌС‚РѕС‚ С‚РµРєСЃС‚ РЅР°Рј РЅРµ РЅСѓР¶РµРЅ
 		{
-		//////////////////// делитель ////////////////////	
+		//////////////////// РґРµР»РёС‚РµР»СЊ ////////////////////	
 			if(sz>1) 
 			{
-				//выкинем "лишние" слэши
+				//РІС‹РєРёРЅРµРј "Р»РёС€РЅРёРµ" СЃР»СЌС€Рё
 				boost::algorithm::replace_all(s, L"\\", L"");
 			}
 			create_element(L"number", L"text", elm, odf_context_);
@@ -705,7 +705,7 @@ void odf_number_styles_context::detect_format(number_format_state & state)
 			if (b)state.format_code[0] = boost::regex_replace( state.format_code[0],re,L"");
 			return;
 		}
-		if ((res=tmp.find(L"y"))>=0 || (res=tmp.find(L"d"))>=0 || (res=tmp.find(L"m"))>=0)//minutes отсеялись выше
+		if ((res=tmp.find(L"y"))>=0 || (res=tmp.find(L"d"))>=0 || (res=tmp.find(L"m"))>=0)//minutes РѕС‚СЃРµСЏР»РёСЃСЊ РІС‹С€Рµ
 		{
 			state.ods_type = office_value_type::Date;
 

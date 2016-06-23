@@ -1,4 +1,4 @@
-﻿#include "./UnicodeConverter.h"
+#include "./UnicodeConverter.h"
 
 #include "unicode/utypes.h"   /* Basic ICU data types */
 #include "unicode/ucnv.h"     /* C   Converter API    */

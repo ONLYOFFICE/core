@@ -1,4 +1,4 @@
-﻿#include "RtfMath.h"
+#include "RtfMath.h"
 
 #include "../../../Common/DocxFormat/Source/DocxFormat/WritingElement.h"
 

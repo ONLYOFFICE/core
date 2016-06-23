@@ -43,7 +43,7 @@ struct FillInfo
 
 	int serialize(std::wostream & stream);
 
-//additional (сравнение по базовому, расширения тока пишем)
+//additional (СЃСЂР°РІРЅРµРЅРёРµ РїРѕ Р±Р°Р·РѕРІРѕРјСѓ, СЂР°СЃС€РёСЂРµРЅРёСЏ С‚РѕРєР° РїРёС€РµРј)
 
 	FillInfoExt foreFillInfo_;
 	FillInfoExt backFillInfo_;

@@ -1,4 +1,4 @@
-﻿//#include "stdafx.h"
+//#include "stdafx.h"
 #include "FontProcessor.h"
 
 #include "../../Common/DocxFormat/Source/XlsxFormat/Xlsx.h"

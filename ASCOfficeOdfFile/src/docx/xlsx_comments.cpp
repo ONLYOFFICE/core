@@ -106,7 +106,7 @@ public:
 					if( hex_string_to_int(str_fill_color_) !=0 )
 					{
 						CP_XML_ATTR(L"fillcolor", std::wstring(L"#") + str_fill_color_);
-					}//иначе это полная прозрачность
+					}//РёРЅР°С‡Рµ СЌС‚Рѕ РїРѕР»РЅР°СЏ РїСЂРѕР·СЂР°С‡РЅРѕСЃС‚СЊ
 
 					CP_XML_ATTR(L"id", L"shape_0");
 					
@@ -144,7 +144,7 @@ public:
 							CP_XML_ATTR(L"color", std::wstring(L"#") + str_fill_color_);
 							CP_XML_ATTR(L"color2", std::wstring(L"#") + str_fill_color_);
 							CP_XML_ATTR(L"type", L"solid");
-						}//иначе это полная прозрачность
+						}//РёРЅР°С‡Рµ СЌС‚Рѕ РїРѕР»РЅР°СЏ РїСЂРѕР·СЂР°С‡РЅРѕСЃС‚СЊ
 						//if (odf_reader::GetProperty(c.graphicProperties_,L"opacity",dVal))
 						//{
 						//	CP_XML_ATTR(L"opacity", (dVal.get())/100.);
@@ -157,7 +157,7 @@ public:
 						if (odf_reader::GetProperty(c.graphicProperties_,L"stroke-color",strVal))
 							CP_XML_ATTR(L"color", std::wstring(L"#") + strVal.get());
 						else
-							CP_XML_ATTR(L"color",L"#3465af");	//синенький
+							CP_XML_ATTR(L"color",L"#3465af");	//СЃРёРЅРµРЅСЊРєРёР№
 
 						if (odf_reader::GetProperty(c.graphicProperties_,L"stroke-opacity",dVal))
 						{

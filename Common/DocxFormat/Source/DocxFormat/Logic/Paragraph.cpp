@@ -12,7 +12,7 @@
 #include "../Math/oMathPara.h"
 #include "../Math/OMath.h"
 
-// TO DO: Нехватающие классы:
+// TO DO: РќРµС…РІР°С‚Р°СЋС‰РёРµ РєР»Р°СЃСЃС‹:
 //        <w:customXml>
 //        <w:moveFrom>
 //        <w:moveTo>
@@ -204,7 +204,7 @@ namespace OOX
 					pItem = new CPermStart( oReader );
 				else if ( _T("w:pPr") == sName )
 				{
-					pItem = m_oParagraphProperty = new CParagraphProperty( oReader );// c копией  .. для быстрого доступа/анализа
+					pItem = m_oParagraphProperty = new CParagraphProperty( oReader );// c РєРѕРїРёРµР№  .. РґР»СЏ Р±С‹СЃС‚СЂРѕРіРѕ РґРѕСЃС‚СѓРїР°/Р°РЅР°Р»РёР·Р°
 				}
 				else if ( _T("w:proofErr") == sName )
 					pItem = new CProofErr( oReader );
@@ -254,7 +254,7 @@ namespace OOX
 
 		void    CParagraph::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
-			// Читаем атрибуты
+			// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 			WritingElement_ReadAttributes_Start( oReader )
 
 			WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:rsidDel"),      m_oRsidDel )
@@ -315,7 +315,7 @@ namespace OOX
 			if ( pProperty )
 			{
 				((CRun*)pR)->m_arrItems.push_back( (WritingElement*)pProperty );
-				((CRun*)pR)->m_oRunProperty	= pProperty;//копия для удобства
+				((CRun*)pR)->m_oRunProperty	= pProperty;//РєРѕРїРёСЏ РґР»СЏ СѓРґРѕР±СЃС‚РІР°
 			}
 
 			((CRun*)pR)->m_arrItems.push_back( pT );

@@ -65,7 +65,7 @@ void list_item::add_child_element( xml::sax * Reader, const ::std::wstring & Ns,
 void list_item::docx_convert(oox::docx_conversion_context & Context)
 {
     bool restart = false;
-    // TODO - надо сделать так чтобы не только с 1
+    // TODO - РЅР°РґРѕ СЃРґРµР»Р°С‚СЊ С‚Р°Рє С‡С‚РѕР±С‹ РЅРµ С‚РѕР»СЊРєРѕ СЃ 1
     if (text_start_value_)
     {
         restart = true;                    
@@ -84,7 +84,7 @@ void list_item::docx_convert(oox::docx_conversion_context & Context)
 void list_item::pptx_convert(oox::pptx_conversion_context & Context)
 {
     bool restart = false;
-    // TODO - надо сделать так чтобы не только с 1
+    // TODO - РЅР°РґРѕ СЃРґРµР»Р°С‚СЊ С‚Р°Рє С‡С‚РѕР±С‹ РЅРµ С‚РѕР»СЊРєРѕ СЃ 1
     if (text_start_value_)
     {
         restart = true;                    
@@ -107,7 +107,7 @@ const wchar_t * list_header::name = L"list-header";
 
 void list_header::docx_convert(oox::docx_conversion_context & Context)
 {
-	//заголовок это не элемент списка
+	//Р·Р°РіРѕР»РѕРІРѕРє СЌС‚Рѕ РЅРµ СЌР»РµРјРµРЅС‚ СЃРїРёСЃРєР°
 
 	std::wstring s = Context.current_list_style();
 	Context.end_list();
@@ -123,7 +123,7 @@ void list_header::pptx_convert(oox::pptx_conversion_context & Context)
 {
     bool restart = false;
 
-	//заголовок это не элемент списка
+	//Р·Р°РіРѕР»РѕРІРѕРє СЌС‚Рѕ РЅРµ СЌР»РµРјРµРЅС‚ СЃРїРёСЃРєР°
 
     BOOST_FOREACH(const office_element_ptr & elm, content_)
     {

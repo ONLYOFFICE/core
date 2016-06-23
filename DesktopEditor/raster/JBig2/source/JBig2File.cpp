@@ -40,7 +40,7 @@ bool CJBig2File::MemoryToJBig2(unsigned char* pBufferBGRA ,int BufferSize, int n
 
 	for ( int nY = 0; nY < nHeight; nY++ )
 	{
-		for ( int nX = 0; nX < nWidth; nX++, pSourceBuffer += 3 )//todooo ñäåëàòü 3 ? 4
+		for ( int nX = 0; nX < nWidth; nX++, pSourceBuffer += 3 )//todooo ÑÐ´ÐµÐ»Ð°Ñ‚ÑŒ 3 ? 4
 		{
 			pixSetRGBPixel( pSource, nX, nY, pSourceBuffer[ 2 ], pSourceBuffer[ 1 ], pSourceBuffer[ 0 ] );
 		}
@@ -49,10 +49,10 @@ bool CJBig2File::MemoryToJBig2(unsigned char* pBufferBGRA ,int BufferSize, int n
 
 	jbig2ctx *pContext = jbig2_init( m_dTreshold, 0.5, 0, 0, ! m_bPDFMode,  m_bRefine ? 10 : -1 );
 
-	// Ïîêà ñäåëàåì çàïèñü îäíîé êàðòèíêè â JBig2
-	// TO DO: íàäî áóäåò ñäåëàòü çàïèñü íåñêîëüêèõ êàðòèíîê â 1 JBig2 ôàéë
+	// ÐŸÐ¾ÐºÐ° ÑÐ´ÐµÐ»Ð°ÐµÐ¼ Ð·Ð°Ð¿Ð¸ÑÑŒ Ð¾Ð´Ð½Ð¾Ð¹ ÐºÐ°Ñ€Ñ‚Ð¸Ð½ÐºÐ¸ Ð² JBig2
+	// TO DO: Ð½Ð°Ð´Ð¾ Ð±ÑƒÐ´ÐµÑ‚ ÑÐ´ÐµÐ»Ð°Ñ‚ÑŒ Ð·Ð°Ð¿Ð¸ÑÑŒ Ð½ÐµÑÐºÐ¾Ð»ÑŒÐºÐ¸Ñ… ÐºÐ°Ñ€Ñ‚Ð¸Ð½Ð¾Ðº Ð² 1 JBig2 Ñ„Ð°Ð¹Ð»
 
-	// Óáèðàåì ColorMap
+	// Ð£Ð±Ð¸Ñ€Ð°ÐµÐ¼ ColorMap
 	PIX *pPixL = NULL;
 	if ( NULL == ( pPixL = pixRemoveColormap( pSource, REMOVE_CMAP_BASED_ON_SRC ) ) ) 
 	{
@@ -119,7 +119,7 @@ bool CJBig2File::MemoryToJBig2(unsigned char* pBufferBGRA ,int BufferSize, int n
 		} 
 		if ( !pPixT ) 
 		{
-			// Íè÷åãî íå äåëàåì
+			// ÐÐ¸Ñ‡ÐµÐ³Ð¾ Ð½Ðµ Ð´ÐµÐ»Ð°ÐµÐ¼
 			return true;
 		}
 	}

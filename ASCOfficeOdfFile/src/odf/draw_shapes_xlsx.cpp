@@ -218,7 +218,7 @@ void draw_caption::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
 	//const std::wstring style = common_draw_text_style_name_attlist_.draw_text_style_name_.get_value_or(style_ref(L"")).style_name();
 
-	Context.get_drawing_context().start_shape(1);//rect с наваротами-атрибутами .. а-ля TextBox
+	Context.get_drawing_context().start_shape(1);//rect СЃ РЅР°РІР°СЂРѕС‚Р°РјРё-Р°С‚СЂРёР±СѓС‚Р°РјРё .. Р°-Р»СЏ TextBox
 	
 	common_xlsx_convert(Context);
 

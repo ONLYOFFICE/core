@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "DWT.h"
 #include "ArithmeticCoder.h"

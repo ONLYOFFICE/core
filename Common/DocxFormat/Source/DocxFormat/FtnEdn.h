@@ -13,7 +13,7 @@
 #include "Math/oMathPara.h"
 #include "Math/OMath.h"
 
-// TO DO: Нехватающие классы:
+// TO DO: РќРµС…РІР°С‚Р°СЋС‰РёРµ РєР»Р°СЃСЃС‹:
 //        <w:altChunk>
 //        <w:customXml>
 //        <w:del>
@@ -197,7 +197,7 @@ namespace OOX
 
 	public:
 
-		OOX::EElementType                        m_eType; // <w:footnote> или <w:endnote>
+		OOX::EElementType                        m_eType; // <w:footnote> РёР»Рё <w:endnote>
 
 		// Attributes
 		nullable<SimpleTypes::CDecimalNumber<> > m_oId;
@@ -320,7 +320,7 @@ namespace OOX
 
 	public:
 
-		OOX::EElementType                        m_eType; // <w:footnote> или <w:endnote>
+		OOX::EElementType                        m_eType; // <w:footnote> РёР»Рё <w:endnote>
 
 		// Attributes
 		nullable<SimpleTypes::CDecimalNumber<> > m_oId;

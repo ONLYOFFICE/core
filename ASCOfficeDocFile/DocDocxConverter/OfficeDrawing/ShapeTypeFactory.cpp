@@ -1,4 +1,4 @@
-﻿
+
 
 #include "ShapeTypeFactory.h"
 

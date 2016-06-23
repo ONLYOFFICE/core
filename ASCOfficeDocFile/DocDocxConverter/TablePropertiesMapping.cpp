@@ -444,7 +444,7 @@ namespace DocFileFormat
 		//append the grid
 		_tblGrid = new XMLTools::XMLElement<wchar_t>( _T( "w:tblGrid" ) );
 
-		//Если _grid состоит из одних ASCDocFormatUtils::gc_nZeroWidth и layout != "fixed", значит это doc полученный нами при конвертации из html. Таблицу размеров писать не нужно
+		//Р•СЃР»Рё _grid СЃРѕСЃС‚РѕРёС‚ РёР· РѕРґРЅРёС… ASCDocFormatUtils::gc_nZeroWidth Рё layout != "fixed", Р·РЅР°С‡РёС‚ СЌС‚Рѕ doc РїРѕР»СѓС‡РµРЅРЅС‹Р№ РЅР°РјРё РїСЂРё РєРѕРЅРІРµСЂС‚Р°С†РёРё РёР· html. РўР°Р±Р»РёС†Сѓ СЂР°Р·РјРµСЂРѕРІ РїРёСЃР°С‚СЊ РЅРµ РЅСѓР¶РЅРѕ
 		bool bWriteGridCol = false;
 		if(true == bLayoutFixed)
 			bWriteGridCol = true;

@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "PICF.h"
 #include "OfficeArt/OfficeArtInlineSpContainer.h"

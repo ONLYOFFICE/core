@@ -1,4 +1,4 @@
-﻿#ifndef _BUILD_GRAPHICS_STRUCTURES_H_
+#ifndef _BUILD_GRAPHICS_STRUCTURES_H_
 #define _BUILD_GRAPHICS_STRUCTURES_H_
 
 #include "../common/Array.h"

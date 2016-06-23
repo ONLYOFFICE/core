@@ -1,4 +1,4 @@
-﻿#ifndef ASCCONVERTERS_H
+#ifndef ASCCONVERTERS_H
 #define ASCCONVERTERS_H
 
 #include <string>

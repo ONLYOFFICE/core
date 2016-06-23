@@ -5,7 +5,7 @@
 #include <sstream>
 
 #include "Logging/Log.h"
-#include "XlsElementsType.h" //шоб со строками не работать
+#include "XlsElementsType.h" //С€РѕР± СЃРѕ СЃС‚СЂРѕРєР°РјРё РЅРµ СЂР°Р±РѕС‚Р°С‚СЊ
 #include <simple_xml_writer.h>
 
 

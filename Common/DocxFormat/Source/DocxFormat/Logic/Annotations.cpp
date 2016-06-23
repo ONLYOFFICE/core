@@ -1,4 +1,4 @@
-﻿#include "Annotations.h"
+#include "Annotations.h"
 #include "Bdo.h"
 #include "Paragraph.h"
 #include "Annotations.h"

@@ -1,4 +1,4 @@
-﻿#ifndef _PDF_READER_CHARCODE_TO_UNICODE_H
+#ifndef _PDF_READER_CHARCODE_TO_UNICODE_H
 #define _PDF_READER_CHARCODE_TO_UNICODE_H
 
 #include "CharTypes.h"
@@ -27,11 +27,11 @@ namespace PdfReader
 
 		~CharCodeToUnicode();
 
-		// —читаем ссылки
+		// Считаем ссылки
 		void AddRef();
 		void Release();
 
-		// —равниваем по данному тэгу
+		// Сравниваем по данному тэгу
 		bool Match(StringExt *seTag);
 
 		void SetMapping(CharCode nCode, Unicode *pUnicode, int nLen);

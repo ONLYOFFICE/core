@@ -241,7 +241,7 @@ namespace DOCXDOCUTILS	//	Help Borders and Fill
 		{
 			 GetBrcMap ();
 
-			// параметры могут быть не правильно выставлены, поэтому стоит прочекать стили на существование
+			// РїР°СЂР°РјРµС‚СЂС‹ РјРѕРіСѓС‚ Р±С‹С‚СЊ РЅРµ РїСЂР°РІРёР»СЊРЅРѕ РІС‹СЃС‚Р°РІР»РµРЅС‹, РїРѕСЌС‚РѕРјСѓ СЃС‚РѕРёС‚ РїСЂРѕС‡РµРєР°С‚СЊ СЃС‚РёР»Рё РЅР° СЃСѓС‰РµСЃС‚РІРѕРІР°РЅРёРµ
 
 			m_bHaveBeginRow			=	oXmlTable.tblPr->firstRow;
 			m_bHaveEndRow			=	oXmlTable.tblPr->lastRow;
@@ -773,19 +773,19 @@ namespace DOCXDOCUTILS	//	Help Borders and Fill
 				int c = 0;
 			}
 
-			if (ApplyBorderFromInlineStyle(nBorder, oBorders))						//	ячейка имеет свои собственные настройки для границ (inline-стиль)
+			if (ApplyBorderFromInlineStyle(nBorder, oBorders))						//	СЏС‡РµР№РєР° РёРјРµРµС‚ СЃРІРѕРё СЃРѕР±СЃС‚РІРµРЅРЅС‹Рµ РЅР°СЃС‚СЂРѕР№РєРё РґР»СЏ РіСЂР°РЅРёС† (inline-СЃС‚РёР»СЊ)
 				return true;
 
-			if (AppleBorderFromIndeTableStyle (nBorder, oTableBorders))				//	таблица имеет свои собственные настройки для границ (inline-стиль)
+			if (AppleBorderFromIndeTableStyle (nBorder, oTableBorders))				//	С‚Р°Р±Р»РёС†Р° РёРјРµРµС‚ СЃРІРѕРё СЃРѕР±СЃС‚РІРµРЅРЅС‹Рµ РЅР°СЃС‚СЂРѕР№РєРё РґР»СЏ РіСЂР°РЅРёС† (inline-СЃС‚РёР»СЊ)
 				return true;
 
-			bool bAppend	=	ApplyBorderFromStylePropery (nBorder);				//	если у ячейки есть настройки по умолчанию
+			bool bAppend	=	ApplyBorderFromStylePropery (nBorder);				//	РµСЃР»Рё Сѓ СЏС‡РµР№РєРё РµСЃС‚СЊ РЅР°СЃС‚СЂРѕР№РєРё РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
 			
-			if (0 == m_bNoVBand)													//	контент (вертикальный набор)
+			if (0 == m_bNoVBand)													//	РєРѕРЅС‚РµРЅС‚ (РІРµСЂС‚РёРєР°Р»СЊРЅС‹Р№ РЅР°Р±РѕСЂ)
 			{
 				if (m_nIndCellX > 0 || (0 == m_bHaveBeginCol))
 				{
-					bool bValidInd	=	((m_nIndCellX - 1) / m_nBandCol) % 2 - 1;	//	смещаем, если доступен стиль у первого столбца
+					bool bValidInd	=	((m_nIndCellX - 1) / m_nBandCol) % 2 - 1;	//	СЃРјРµС‰Р°РµРј, РµСЃР»Рё РґРѕСЃС‚СѓРїРµРЅ СЃС‚РёР»СЊ Сѓ РїРµСЂРІРѕРіРѕ СЃС‚РѕР»Р±С†Р°
 					if (0 == m_bHaveBeginCol)
 						bValidInd	=	((m_nIndCellX - 1) / m_nBandCol) % 2;
 
@@ -808,13 +808,13 @@ namespace DOCXDOCUTILS	//	Help Borders and Fill
 				}
 			}
 
-			// контент (горизонтальный набор)
+			// РєРѕРЅС‚РµРЅС‚ (РіРѕСЂРёР·РѕРЅС‚Р°Р»СЊРЅС‹Р№ РЅР°Р±РѕСЂ)
 
 			if (0 == m_bNoHBand)
 			{
 				if (m_nIndCellY > 0 || (0 == m_bHaveBeginRow))
 				{
-					bool bValidInd	=	((m_nIndCellY - 1) / m_nRowBand) % 2 - 1;	//	смещаем, если доступен стиль у первой строка
+					bool bValidInd	=	((m_nIndCellY - 1) / m_nRowBand) % 2 - 1;	//	СЃРјРµС‰Р°РµРј, РµСЃР»Рё РґРѕСЃС‚СѓРїРµРЅ СЃС‚РёР»СЊ Сѓ РїРµСЂРІРѕР№ СЃС‚СЂРѕРєР°
 					if (0 == m_bHaveBeginRow)
 						bValidInd	=	((m_nIndCellY - 1) / m_nRowBand) % 2;
 
@@ -837,7 +837,7 @@ namespace DOCXDOCUTILS	//	Help Borders and Fill
 				}
 			}
 
-			// первый столбец
+			// РїРµСЂРІС‹Р№ СЃС‚РѕР»Р±РµС†
 
 			if (m_bHaveBeginCol)
 			{
@@ -851,7 +851,7 @@ namespace DOCXDOCUTILS	//	Help Borders and Fill
 				}
 			}
 
-			// последний столбец
+			// РїРѕСЃР»РµРґРЅРёР№ СЃС‚РѕР»Р±РµС†
 
 			if (m_bHaveEndCol)
 			{
@@ -865,7 +865,7 @@ namespace DOCXDOCUTILS	//	Help Borders and Fill
 				}
 			}
 
-			// первая строка
+			// РїРµСЂРІР°СЏ СЃС‚СЂРѕРєР°
 
 			if (m_bHaveBeginRow)
 			{
@@ -879,7 +879,7 @@ namespace DOCXDOCUTILS	//	Help Borders and Fill
 				}	
 			}
 
-			// последняя строка
+			// РїРѕСЃР»РµРґРЅСЏСЏ СЃС‚СЂРѕРєР°
 
 			if (m_bHaveEndRow)
 			{
@@ -900,7 +900,7 @@ namespace DOCXDOCUTILS	//	Help Borders and Fill
 
 		inline bool ApplyBorderFromInlineStyle (int nBorder, const nullable<OOX::Logic::TableCellBorders>& oBorders)
 		{
-			if (oBorders.is_init())							//	у ячейки свой стиль
+			if (oBorders.is_init())							//	Сѓ СЏС‡РµР№РєРё СЃРІРѕР№ СЃС‚РёР»СЊ
 			{
 				OOX::Logic::Border oBorder;
 				if (oBorders->GetBorder(nBorder, oBorder))
@@ -921,7 +921,7 @@ namespace DOCXDOCUTILS	//	Help Borders and Fill
 
 			if (m_bStyleBorders)
 			{
-				// внешние границы
+				// РІРЅРµС€РЅРёРµ РіСЂР°РЅРёС†С‹
 
 				if ((nBorder == TOP_BORDER) && (0 == m_nIndCellY))
 				{
@@ -933,7 +933,7 @@ namespace DOCXDOCUTILS	//	Help Borders and Fill
 					}	
 				}
 
-				// внешние границы
+				// РІРЅРµС€РЅРёРµ РіСЂР°РЅРёС†С‹
 
 				if ((nBorder == BOTTOM_BORDER) && (m_nIndCellY == m_nCellsY))
 				{
@@ -945,7 +945,7 @@ namespace DOCXDOCUTILS	//	Help Borders and Fill
 					}					
 				}
 
-				// внешние границы
+				// РІРЅРµС€РЅРёРµ РіСЂР°РЅРёС†С‹
 
 				if ((nBorder == LEFT_BORDER) && (0 == m_nIndCellX))
 				{
@@ -957,7 +957,7 @@ namespace DOCXDOCUTILS	//	Help Borders and Fill
 					}					
 				}
 
-				// внешние границы
+				// РІРЅРµС€РЅРёРµ РіСЂР°РЅРёС†С‹
 
 				if ((nBorder == RIGHT_BORDER) && (m_nIndCellX == m_nCellsX))
 				{
@@ -969,7 +969,7 @@ namespace DOCXDOCUTILS	//	Help Borders and Fill
 					}					
 				}
 
-				// внутренние горизонтальные границы 
+				// РІРЅСѓС‚СЂРµРЅРЅРёРµ РіРѕСЂРёР·РѕРЅС‚Р°Р»СЊРЅС‹Рµ РіСЂР°РЅРёС†С‹ 
 
 				if (((nBorder == TOP_BORDER) && (0 < m_nIndCellY)) || ((nBorder == BOTTOM_BORDER) && (m_nIndCellY != m_nCellsY)))
 				{
@@ -981,7 +981,7 @@ namespace DOCXDOCUTILS	//	Help Borders and Fill
 					}					
 				}
 
-				// внутренние вертикальные границы 
+				// РІРЅСѓС‚СЂРµРЅРЅРёРµ РІРµСЂС‚РёРєР°Р»СЊРЅС‹Рµ РіСЂР°РЅРёС†С‹ 
 
 				if (((nBorder == LEFT_BORDER) && (0 < m_nIndCellX)) || ((nBorder == RIGHT_BORDER) && (m_nIndCellX != m_nCellsX)))
 				{
@@ -1018,7 +1018,7 @@ namespace DOCXDOCUTILS	//	Help Borders and Fill
 		{
 			if (TOP_BORDER == nBorder)
 			{
-				if (1 == m_nRowBand)	// inside объектов нету
+				if (1 == m_nRowBand)	// inside РѕР±СЉРµРєС‚РѕРІ РЅРµС‚Сѓ
 					return false;
 
 				bool bIsOdd			=	(m_nIndCellY / m_nRowBand) % 2;
@@ -1031,7 +1031,7 @@ namespace DOCXDOCUTILS	//	Help Borders and Fill
 					if (m_bHaveBeginRow)
 						nModulo		=	(m_nIndCellY-1) % m_nRowBand;
 
-					if (0 != nModulo)	//	верх в наборе
+					if (0 != nModulo)	//	РІРµСЂС… РІ РЅР°Р±РѕСЂРµ
 						return true;
 				}					
 				else
@@ -1040,7 +1040,7 @@ namespace DOCXDOCUTILS	//	Help Borders and Fill
 					if (m_bHaveBeginRow)
 						nModulo		=	(m_nIndCellY-1) % m_nRowBand;
 
-					if (0 != nModulo)	//	верх в наборе
+					if (0 != nModulo)	//	РІРµСЂС… РІ РЅР°Р±РѕСЂРµ
 						return true;
 				}
 
@@ -1049,7 +1049,7 @@ namespace DOCXDOCUTILS	//	Help Borders and Fill
 
 			if (BOTTOM_BORDER == nBorder)
 			{
-				if (1 == m_nRowBand)	// inside объектов нету
+				if (1 == m_nRowBand)	// inside РѕР±СЉРµРєС‚РѕРІ РЅРµС‚Сѓ
 					return false;
 
 				bool bIsOdd			=	(m_nIndCellY / m_nRowBand) % 2;
@@ -1065,7 +1065,7 @@ namespace DOCXDOCUTILS	//	Help Borders and Fill
 					//if (2 == m_nIndCellX)
 					//	//ATLTRACE (L"(%d,%d) : %d, Even : %d\n", m_nIndCellX, m_nIndCellY, nModulo, bIsEven);
 
-					if (nModulo < m_nRowBand)	//	низ в наборе
+					if (nModulo < m_nRowBand)	//	РЅРёР· РІ РЅР°Р±РѕСЂРµ
 						return true;
 				}					
 				else
@@ -1077,7 +1077,7 @@ namespace DOCXDOCUTILS	//	Help Borders and Fill
 					//if (2 == m_nIndCellX)
 					//	//ATLTRACE (L"(%d,%d) : %d, Even : %d\n", m_nIndCellX, m_nIndCellY, nModulo, bIsEven);
 
-					if (nModulo < m_nRowBand)	//	низ в наборе
+					if (nModulo < m_nRowBand)	//	РЅРёР· РІ РЅР°Р±РѕСЂРµ
 						return true;
 				}
 
@@ -1211,7 +1211,7 @@ namespace DOCXDOCUTILS	//	Help Borders and Fill
 				OOX::Logic::Border oInsideH;
 				if ((true == bInside) && (m_nIndCellY > 0) && (oBorder.GetBorder(INSIDEH_BORDER, oInsideH)))
 				{
-					if (std::string("nil") == oInsideH.Bdr->Value)		//	запрет внутри таблицы на рисование границ
+					if (std::string("nil") == oInsideH.Bdr->Value)		//	Р·Р°РїСЂРµС‚ РІРЅСѓС‚СЂРё С‚Р°Р±Р»РёС†С‹ РЅР° СЂРёСЃРѕРІР°РЅРёРµ РіСЂР°РЅРёС†
 					{
 						if (IsInsideBorder(nBorder))
 							SetNilBrc (nBorder);
@@ -1253,7 +1253,7 @@ namespace DOCXDOCUTILS	//	Help Borders and Fill
 				OOX::Logic::Border oInsideH;
 				if ((true == bInside) && (m_nIndCellY != m_nCellsY) && (oBorder.GetBorder(INSIDEH_BORDER, oInsideH)))
 				{
-					if (std::string("nil") == oInsideH.Bdr->Value)		//	запрет внутри таблицы на рисование границ
+					if (std::string("nil") == oInsideH.Bdr->Value)		//	Р·Р°РїСЂРµС‚ РІРЅСѓС‚СЂРё С‚Р°Р±Р»РёС†С‹ РЅР° СЂРёСЃРѕРІР°РЅРёРµ РіСЂР°РЅРёС†
 					{
 						if (IsInsideBorder(nBorder))
 							SetNilBrc (nBorder);
@@ -1286,9 +1286,9 @@ namespace DOCXDOCUTILS	//	Help Borders and Fill
 			if (LEFT_BORDER == nBorder)
 			{
 				OOX::Logic::Border oInsideV;
-				if ((true == bInside) && (m_nIndCellX > 0) && oBorder.GetBorder(INSIDEV_BORDER, oInsideV))	// более приоритетен над стилям которые задают границу
+				if ((true == bInside) && (m_nIndCellX > 0) && oBorder.GetBorder(INSIDEV_BORDER, oInsideV))	// Р±РѕР»РµРµ РїСЂРёРѕСЂРёС‚РµС‚РµРЅ РЅР°Рґ СЃС‚РёР»СЏРј РєРѕС‚РѕСЂС‹Рµ Р·Р°РґР°СЋС‚ РіСЂР°РЅРёС†Сѓ
 				{
-					if (std::string("nil") == oInsideV.Bdr->Value)		//	запрет внутри таблицы на рисование границ
+					if (std::string("nil") == oInsideV.Bdr->Value)		//	Р·Р°РїСЂРµС‚ РІРЅСѓС‚СЂРё С‚Р°Р±Р»РёС†С‹ РЅР° СЂРёСЃРѕРІР°РЅРёРµ РіСЂР°РЅРёС†
 					{
 						if (IsInsideBorder(nBorder))
 							SetNilBrc (nBorder);
@@ -1323,7 +1323,7 @@ namespace DOCXDOCUTILS	//	Help Borders and Fill
 				OOX::Logic::Border oInsideV;
 				if ((true == bInside) && (m_nIndCellX != m_nCellsX) && oBorder.GetBorder(INSIDEV_BORDER, oInsideV))
 				{
-					if (std::string("nil") == oInsideV.Bdr->Value)		//	запрет внутри таблицы на рисование границ
+					if (std::string("nil") == oInsideV.Bdr->Value)		//	Р·Р°РїСЂРµС‚ РІРЅСѓС‚СЂРё С‚Р°Р±Р»РёС†С‹ РЅР° СЂРёСЃРѕРІР°РЅРёРµ РіСЂР°РЅРёС†
 					{
 						if (IsInsideBorder(nBorder))
 							SetNilBrc (nBorder);
@@ -1539,18 +1539,18 @@ namespace DOCXDOCUTILS	//	Help Borders and Fill
 					m_bHaveEndCol		=	0;
 			}
 
-			// TODO : кэширование стилей
+			// TODO : РєСЌС€РёСЂРѕРІР°РЅРёРµ СЃС‚РёР»РµР№
 		}
 
 		bool AddCell (int nX, int nY, int nCX, int nCY, const nullable<OOX::Logic::Shading>& oShading)
 		{	
 			/*
 
-			Приоритет заливки ячейки. 
+			РџСЂРёРѕСЂРёС‚РµС‚ Р·Р°Р»РёРІРєРё СЏС‡РµР№РєРё.
 
-			-	Параметры у самой ячейки.
-			-	Дополнительные стили у стиля таблицы по строкам и столбцам (стиль у строки, затрет стиль столбца).
-			-	Настройки по умолчанию у стиля к таблице.
+			-	РџР°СЂР°РјРµС‚СЂС‹ Сѓ СЃР°РјРѕР№ СЏС‡РµР№РєРё.
+			-	Р”РѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹Рµ СЃС‚РёР»Рё Сѓ СЃС‚РёР»СЏ С‚Р°Р±Р»РёС†С‹ РїРѕ СЃС‚СЂРѕРєР°Рј Рё СЃС‚РѕР»Р±С†Р°Рј (СЃС‚РёР»СЊ Сѓ СЃС‚СЂРѕРєРё, Р·Р°С‚СЂРµС‚ СЃС‚РёР»СЊ СЃС‚РѕР»Р±С†Р°).
+			-	РќР°СЃС‚СЂРѕР№РєРё РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ Сѓ СЃС‚РёР»СЏ Рє С‚Р°Р±Р»РёС†Рµ.
 
 			*/
 
@@ -1573,7 +1573,7 @@ namespace DOCXDOCUTILS	//	Help Borders and Fill
 			}
 			else
 			{
-				if (m_oStyle.tcPr.is_init())	//	если у ячейки есть настройки по умолчанию
+				if (m_oStyle.tcPr.is_init())	//	РµСЃР»Рё Сѓ СЏС‡РµР№РєРё РµСЃС‚СЊ РЅР°СЃС‚СЂРѕР№РєРё РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
 				{				
 					if (m_oStyle.tcPr->Shading.is_init())
 						oShd	=	GetBackGroundShading (m_oStyle.tcPr->Shading);
@@ -1581,7 +1581,7 @@ namespace DOCXDOCUTILS	//	Help Borders and Fill
 					bAppend		=	true;
 				}
 
-				// контент (вертикальный набор)
+				// РєРѕРЅС‚РµРЅС‚ (РІРµСЂС‚РёРєР°Р»СЊРЅС‹Р№ РЅР°Р±РѕСЂ)
 
 				if (0 == m_bNoVBand)
 				{
@@ -1589,7 +1589,7 @@ namespace DOCXDOCUTILS	//	Help Borders and Fill
 					{
 						bool bEven	=	(nX / nBandCol) % 2;
 						if (m_bHaveBeginRow)
-							bEven	=	((nX-1) / nBandCol) % 2;	//	смещаем, если доступен столбец заголовка
+							bEven	=	((nX-1) / nBandCol) % 2;	//	СЃРјРµС‰Р°РµРј, РµСЃР»Рё РґРѕСЃС‚СѓРїРµРЅ СЃС‚РѕР»Р±РµС† Р·Р°РіРѕР»РѕРІРєР°
 
 						if (0==bEven)
 						{
@@ -1604,7 +1604,7 @@ namespace DOCXDOCUTILS	//	Help Borders and Fill
 					}
 				}
 
-				// контент (горизонтальный набор)
+				// РєРѕРЅС‚РµРЅС‚ (РіРѕСЂРёР·РѕРЅС‚Р°Р»СЊРЅС‹Р№ РЅР°Р±РѕСЂ)
 
 				if (0 == m_bNoHBand)
 				{
@@ -1612,7 +1612,7 @@ namespace DOCXDOCUTILS	//	Help Borders and Fill
 					{
 						bool bEven	=	(nY / nRowBand) % 2;
 						if (m_bHaveBeginRow)
-							bEven	=	((nY-1) / nRowBand) % 2;	//	смещаем, если доступна строка заголовка
+							bEven	=	((nY-1) / nRowBand) % 2;	//	СЃРјРµС‰Р°РµРј, РµСЃР»Рё РґРѕСЃС‚СѓРїРЅР° СЃС‚СЂРѕРєР° Р·Р°РіРѕР»РѕРІРєР°
 
 						if (0==bEven)
 						{
@@ -1627,7 +1627,7 @@ namespace DOCXDOCUTILS	//	Help Borders and Fill
 					}
 				}
 
-				// первый столбец
+				// РїРµСЂРІС‹Р№ СЃС‚РѕР»Р±РµС†
 
 				if (m_bHaveBeginCol)
 				{
@@ -1638,7 +1638,7 @@ namespace DOCXDOCUTILS	//	Help Borders and Fill
 					}
 				}
 
-				// последний столбец
+				// РїРѕСЃР»РµРґРЅРёР№ СЃС‚РѕР»Р±РµС†
 
 				if (m_bHaveEndCol)
 				{
@@ -1649,7 +1649,7 @@ namespace DOCXDOCUTILS	//	Help Borders and Fill
 					}
 				}
 
-				// первая строка
+				// РїРµСЂРІР°СЏ СЃС‚СЂРѕРєР°
 
 				if (m_bHaveBeginRow)
 				{
@@ -1660,7 +1660,7 @@ namespace DOCXDOCUTILS	//	Help Borders and Fill
 					}	
 				}
 
-				// последняя строка
+				// РїРѕСЃР»РµРґРЅСЏСЏ СЃС‚СЂРѕРєР°
 
 				if (m_bHaveEndRow)
 				{
@@ -1671,7 +1671,7 @@ namespace DOCXDOCUTILS	//	Help Borders and Fill
 					}
 				}
 
-				// дополнительно можем форматировать угловые элементы
+				// РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅРѕ РјРѕР¶РµРј С„РѕСЂРјР°С‚РёСЂРѕРІР°С‚СЊ СѓРіР»РѕРІС‹Рµ СЌР»РµРјРµРЅС‚С‹
 
 				if (UpdateOneCellFormat(nX, nY, nCX, nCY, oShd))					
 					bAppend	=	true;					

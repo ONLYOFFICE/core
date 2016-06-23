@@ -1,4 +1,4 @@
-﻿#include "XpsFile.h"
+#include "XpsFile.h"
 #include "XpsLib/Document.h"
 
 #include "../DesktopEditor/common/File.h"

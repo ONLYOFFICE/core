@@ -56,7 +56,7 @@ namespace PPTX
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 			{
-				////проблема переноса картинок !!!
+				////РїСЂРѕР±Р»РµРјР° РїРµСЂРµРЅРѕСЃР° РєР°СЂС‚РёРЅРѕРє !!!
 				//if (controls.IsInit())
 				//{
 				//	controls->AddObjectsTo(&spTree.SpTreeElems, pWriter->m_pCommon->m_pImageManager);
@@ -67,19 +67,19 @@ namespace PPTX
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
 				pWriter->WriteRecord2(0, bg);
-				//придется расписывать полностью SpTree - так как меняет spTree.toPPTY нельязя (много где используется)
+				//РїСЂРёРґРµС‚СЃСЏ СЂР°СЃРїРёСЃС‹РІР°С‚СЊ РїРѕР»РЅРѕСЃС‚СЊСЋ SpTree - С‚Р°Рє РєР°Рє РјРµРЅСЏРµС‚ spTree.toPPTY РЅРµР»СЊСЏР·СЏ (РјРЅРѕРіРѕ РіРґРµ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ)
 
 				pWriter->StartRecord(1);
 					pWriter->StartRecord(SPTREE_TYPE_SPTREE);
 						pWriter->WriteRecord1(0, spTree.nvGrpSpPr);
 						pWriter->WriteRecord1(1, spTree.grpSpPr);						
 						
-						pWriter->StartRecord(2);		//pWriter->WriteRecordArray(2, 0, spTree.SpTreeElems);  - вручную
+						pWriter->StartRecord(2);		//pWriter->WriteRecordArray(2, 0, spTree.SpTreeElems);  - РІСЂСѓС‡РЅСѓСЋ
 							pWriter->WriteULONG((_UINT32)spTree.SpTreeElems.size() + (controls.IsInit() ? 1 : 0));
 							for(int i = 0; i < spTree.SpTreeElems.size();i++)
 								pWriter->WriteRecord1(0, spTree.SpTreeElems[i]);
 						
-							if (controls.IsInit())	controls->toPPTY(pWriter); //можно искуственно добавить controls в sptree .. и все "это" перенести туда
+							if (controls.IsInit())	controls->toPPTY(pWriter); //РјРѕР¶РЅРѕ РёСЃРєСѓСЃС‚РІРµРЅРЅРѕ РґРѕР±Р°РІРёС‚СЊ controls РІ sptree .. Рё РІСЃРµ "СЌС‚Рѕ" РїРµСЂРµРЅРµСЃС‚Рё С‚СѓРґР°
 						pWriter->EndRecord();
 					pWriter->EndRecord();
 				pWriter->EndRecord();

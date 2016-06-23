@@ -9,7 +9,7 @@ namespace SimpleTypes
             this->m_eValue = hexcolorAuto;
         else
         {
-            //В документации не написано, что цвет может приходить строкой, но в реальных докуентах встречается и word это разруливает.
+            //Р’ РґРѕРєСѓРјРµРЅС‚Р°С†РёРё РЅРµ РЅР°РїРёСЃР°РЅРѕ, С‡С‚Рѕ С†РІРµС‚ РјРѕР¶РµС‚ РїСЂРёС…РѕРґРёС‚СЊ СЃС‚СЂРѕРєРѕР№, РЅРѕ РІ СЂРµР°Р»СЊРЅС‹С… РґРѕРєСѓРµРЅС‚Р°С… РІСЃС‚СЂРµС‡Р°РµС‚СЃСЏ Рё word СЌС‚Рѕ СЂР°Р·СЂСѓР»РёРІР°РµС‚.
             //CHighlightColor<highlightcolorNone> oHighlightColor(sValue);
             CHighlightColor<> oHighlightColor(sValue);
             if(SimpleTypes::highlightcolorNone != oHighlightColor.GetValue())
@@ -44,7 +44,7 @@ namespace SimpleTypes
             this->m_eValue = hexcolorAuto;
         else
         {
-            //В документации не написано, что цвет может приходить строкой, но в реальных докуентах встречается и word это разруливает.
+            //Р’ РґРѕРєСѓРјРµРЅС‚Р°С†РёРё РЅРµ РЅР°РїРёСЃР°РЅРѕ, С‡С‚Рѕ С†РІРµС‚ РјРѕР¶РµС‚ РїСЂРёС…РѕРґРёС‚СЊ СЃС‚СЂРѕРєРѕР№, РЅРѕ РІ СЂРµР°Р»СЊРЅС‹С… РґРѕРєСѓРµРЅС‚Р°С… РІСЃС‚СЂРµС‡Р°РµС‚СЃСЏ Рё word СЌС‚Рѕ СЂР°Р·СЂСѓР»РёРІР°РµС‚.
             //CHighlightColor<highlightcolorNone> oHighlightColor(sValue);
             CHighlightColor<> oHighlightColor(sValue);
             if(SimpleTypes::highlightcolorNone != oHighlightColor.GetValue())

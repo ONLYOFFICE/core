@@ -13,7 +13,7 @@ namespace MetaFile
 	{
 		m_pAppFonts = pAppFonts;
 
-		// Создаем менеджер шрифтов с собственным кэшем
+		// РЎРѕР·РґР°РµРј РјРµРЅРµРґР¶РµСЂ С€СЂРёС„С‚РѕРІ СЃ СЃРѕР±СЃС‚РІРµРЅРЅС‹Рј РєСЌС€РµРј
 		m_pFontManager = pAppFonts->GenerateFontManager();
 		CFontsCache* pMeasurerCache = new CFontsCache();
 		pMeasurerCache->SetStreams(pAppFonts->GetStreams());
@@ -36,8 +36,8 @@ namespace MetaFile
 	}
 	bool CMetaFile::LoadFromFile(const wchar_t *wsFilePath)
 	{
-		// TODO: Сейчас при загрузке каждой новой картинки мы пересоздаем 
-		//       FontManager, потому что сейчас в нем кэш без ограничения.
+		// TODO: РЎРµР№С‡Р°СЃ РїСЂРё Р·Р°РіСЂСѓР·РєРµ РєР°Р¶РґРѕР№ РЅРѕРІРѕР№ РєР°СЂС‚РёРЅРєРё РјС‹ РїРµСЂРµСЃРѕР·РґР°РµРј 
+		//       FontManager, РїРѕС‚РѕРјСѓ С‡С‚Рѕ СЃРµР№С‡Р°СЃ РІ РЅРµРј РєСЌС€ Р±РµР· РѕРіСЂР°РЅРёС‡РµРЅРёСЏ.
 		//------------------------------------------------------
 		RELEASEINTERFACE(m_pFontManager);
 		m_pFontManager = m_pAppFonts->GenerateFontManager();
@@ -50,7 +50,7 @@ namespace MetaFile
 		//------------------------------------------------------
 
 
-		// Сначала пытаемся открыть файл как Wmf
+		// РЎРЅР°С‡Р°Р»Р° РїС‹С‚Р°РµРјСЃСЏ РѕС‚РєСЂС‹С‚СЊ С„Р°Р№Р» РєР°Рє Wmf
 		if (m_oWmfFile.OpenFromFile(wsFilePath) == true)
 		{
 			m_oWmfFile.Scan();
@@ -62,7 +62,7 @@ namespace MetaFile
 			}
 			m_oWmfFile.Close();
 		}
-		// Это не Wmf
+		// Р­С‚Рѕ РЅРµ Wmf
 		if (m_oEmfFile.OpenFromFile(wsFilePath) == true)
 		{
 			m_oEmfFile.Scan();
@@ -75,7 +75,7 @@ namespace MetaFile
 
 			m_oEmfFile.Close();
 		}
-		// Это не Emf
+		// Р­С‚Рѕ РЅРµ Emf
 		if (m_oSvmFile.OpenFromFile(wsFilePath) == true)
 		{
 			m_oSvmFile.Scan();
@@ -196,7 +196,7 @@ namespace MetaFile
 			return;
 
         _UINT32 alfa = 0xffffff;
-		//дефолтный тон должен быть прозрачным, а не белым 
+		//РґРµС„РѕР»С‚РЅС‹Р№ С‚РѕРЅ РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ РїСЂРѕР·СЂР°С‡РЅС‹Рј, Р° РЅРµ Р±РµР»С‹Рј 
 		//memset(pBgraData, 0xff, nWidth * nHeight * 4);
 		for (int i = 0; i < nWidth * nHeight; i++)
 		{

@@ -1,4 +1,4 @@
-﻿#ifndef _ASC_FONTCONVERTER_HASH_H_
+#ifndef _ASC_FONTCONVERTER_HASH_H_
 #define _ASC_FONTCONVERTER_HASH_H_
 
 namespace NSFontConverter

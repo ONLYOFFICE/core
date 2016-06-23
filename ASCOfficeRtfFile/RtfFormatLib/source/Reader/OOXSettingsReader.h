@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "OOXFontReader.h"
 #include "OOXMathReader.h"
 #include "../Utils.h"

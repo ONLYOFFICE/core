@@ -72,7 +72,7 @@ namespace NSFontCutter
 			if (pPair != m_mapPicks.end())
 				return pPair->second;
 
-			//подбор перенесен в js
+			//РїРѕРґР±РѕСЂ РїРµСЂРµРЅРµСЃРµРЅ РІ js
 			m_mapPicks.insert(std::pair<CString,CString>(sFind, sFind));
 			return sFind;
 

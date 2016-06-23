@@ -177,11 +177,11 @@ namespace MetaFile
 					case EMR_SETWORLDTRANSFORM: Read_EMR_SETWORLDTRANSFORM(); break;
 					case EMR_MODIFYWORLDTRANSFORM: Read_EMR_MODIFYWORLDTRANSFORM(); break;
 						//-----------------------------------------------------------
-						// Неподдерживаемые записи
+						// РќРµРїРѕРґРґРµСЂР¶РёРІР°РµРјС‹Рµ Р·Р°РїРёСЃРё
 						//-----------------------------------------------------------
 					case EMR_GDICOMMENT: Read_EMR_UNKNOWN(); break;
 						//-----------------------------------------------------------
-						// Неизвестные записи
+						// РќРµРёР·РІРµСЃС‚РЅС‹Рµ Р·Р°РїРёСЃРё
 						//-----------------------------------------------------------
 					default:
 					{
@@ -317,8 +317,8 @@ namespace MetaFile
 			dX = (double)((double)(nX - pWindow->lX) * m_pDC->GetPixelWidth()) + pViewport->lX;
 			dY = (double)((double)(nY - pWindow->lY) * m_pDC->GetPixelHeight()) + pViewport->lY;
 
-			// Координаты приходят уже с примененной матрицей. Поэтому сначала мы умножаем на матрицу преобразования, 
-			// вычитаем начальные координаты и умножаем на обратную матрицу преобразования.
+			// РљРѕРѕСЂРґРёРЅР°С‚С‹ РїСЂРёС…РѕРґСЏС‚ СѓР¶Рµ СЃ РїСЂРёРјРµРЅРµРЅРЅРѕР№ РјР°С‚СЂРёС†РµР№. РџРѕСЌС‚РѕРјСѓ СЃРЅР°С‡Р°Р»Р° РјС‹ СѓРјРЅРѕР¶Р°РµРј РЅР° РјР°С‚СЂРёС†Сѓ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏ, 
+			// РІС‹С‡РёС‚Р°РµРј РЅР°С‡Р°Р»СЊРЅС‹Рµ РєРѕРѕСЂРґРёРЅР°С‚С‹ Рё СѓРјРЅРѕР¶Р°РµРј РЅР° РѕР±СЂР°С‚РЅСѓСЋ РјР°С‚СЂРёС†Сѓ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏ.
 			TRect* pBounds = GetDCBounds();
 			double dT = pBounds->nTop;
 			double dL = pBounds->nLeft;
@@ -342,7 +342,7 @@ namespace MetaFile
 			unsigned int ulBitsSize   = cbBits;
 			if (ulHeaderSize <= 0 || ulBitsSize <= 0 || lHeaderOffset < 0 || lBitsOffset < 0)
 			{
-				// TODO: Если попали сюда, значит надо смотреть BitBltRasterOperation
+				// TODO: Р•СЃР»Рё РїРѕРїР°Р»Рё СЃСЋРґР°, Р·РЅР°С‡РёС‚ РЅР°РґРѕ СЃРјРѕС‚СЂРµС‚СЊ BitBltRasterOperation
 				if (lHeaderOffset > 0)
 					m_oStream.Skip(lHeaderOffset);
 
@@ -480,7 +480,7 @@ namespace MetaFile
 				m_pOutput->ArcTo(dL, dT, dR, dB, dStart, dSweep);
 			}
 
-			// Пересчет текущей позиции делается в каждой функции отдельно после вызова данной
+			// РџРµСЂРµСЃС‡РµС‚ С‚РµРєСѓС‰РµР№ РїРѕР·РёС†РёРё РґРµР»Р°РµС‚СЃСЏ РІ РєР°Р¶РґРѕР№ С„СѓРЅРєС†РёРё РѕС‚РґРµР»СЊРЅРѕ РїРѕСЃР»Рµ РІС‹Р·РѕРІР° РґР°РЅРЅРѕР№
 		}
 		void DrawPath(bool bStroke, bool bFill)
 		{
@@ -551,7 +551,7 @@ namespace MetaFile
 			NSStringExt::CConverter::ESingleByteEncoding eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_DEFAULT;
 			if (pFont)
 			{
-				// Соответствие Charset -> Codepage: http://support.microsoft.com/kb/165478
+				// РЎРѕРѕС‚РІРµС‚СЃС‚РІРёРµ Charset -> Codepage: http://support.microsoft.com/kb/165478
 				// http://msdn.microsoft.com/en-us/library/cc194829.aspx
 				//  Charset Name       Charset Value(hex)  Codepage number
 				//  ------------------------------------------------------
@@ -610,7 +610,7 @@ namespace MetaFile
 					{
 						pDx[unIndex] = oText.OutputDx[unIndex];
 
-						// Пропускаем сдвиги по Y если они есть
+						// РџСЂРѕРїСѓСЃРєР°РµРј СЃРґРІРёРіРё РїРѕ Y РµСЃР»Рё РѕРЅРё РµСЃС‚СЊ
 						if (oText.Options & ETO_PDY)
 							unIndex++;
 					}
@@ -633,7 +633,7 @@ namespace MetaFile
 			int* pDx = NULL;
 			if (oText.OutputDx && oText.Chars)
 			{
-				// Здесь мы эмулируем конвертацию Utf16 в Utf32, чтобы правильно получить массив pDx
+				// Р—РґРµСЃСЊ РјС‹ СЌРјСѓР»РёСЂСѓРµРј РєРѕРЅРІРµСЂС‚Р°С†РёСЋ Utf16 РІ Utf32, С‡С‚РѕР±С‹ РїСЂР°РІРёР»СЊРЅРѕ РїРѕР»СѓС‡РёС‚СЊ РјР°СЃСЃРёРІ pDx
 				pDx = new int[oText.Chars];
 				unLen = 0;
 
@@ -650,7 +650,7 @@ namespace MetaFile
 					}
 					else if (wLeading >= 0xDC00)
 					{
-						// Такого не должно быть
+						// РўР°РєРѕРіРѕ РЅРµ РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ
 						continue;
 					}
 					else
@@ -659,7 +659,7 @@ namespace MetaFile
 						wTrailing = pUtf16[unPos++];
 						if (wTrailing < 0xDC00 || wTrailing > 0xDFFF)
 						{
-							// Такого не должно быть
+							// РўР°РєРѕРіРѕ РЅРµ РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ
 							continue;
 						}
 						else
@@ -667,12 +667,12 @@ namespace MetaFile
 							pDx[unLen++] = oText.OutputDx[unPos - 2] + oText.OutputDx[unPos - 1];
 						}
 
-						// Пропускаем сдвиги по Y если они есть
+						// РџСЂРѕРїСѓСЃРєР°РµРј СЃРґРІРёРіРё РїРѕ Y РµСЃР»Рё РѕРЅРё РµСЃС‚СЊ
 						if (oText.Options & ETO_PDY)
 							unPos++;
 					}
 
-					// Пропускаем сдвиги по Y если они есть
+					// РџСЂРѕРїСѓСЃРєР°РµРј СЃРґРІРёРіРё РїРѕ Y РµСЃР»Рё РѕРЅРё РµСЃС‚СЊ
 					if (oText.Options & ETO_PDY)
 						unPos++;
 				}
@@ -711,7 +711,7 @@ namespace MetaFile
 			if (ENHMETA_SIGNATURE != m_oHeader.ulSignature || 0x00010000 != m_oHeader.ulVersion)
 				return SetError();
 
-			// Пропускаем остальную часть заголовка, т.к. она нас пока не интересует
+			// РџСЂРѕРїСѓСЃРєР°РµРј РѕСЃС‚Р°Р»СЊРЅСѓСЋ С‡Р°СЃС‚СЊ Р·Р°РіРѕР»РѕРІРєР°, С‚.Рє. РѕРЅР° РЅР°СЃ РїРѕРєР° РЅРµ РёРЅС‚РµСЂРµСЃСѓРµС‚
 			unsigned int ulRemaining = m_ulRecordSize - 80; // sizeof(TEmfHeader)
 			m_oStream.Skip(ulRemaining);
 
@@ -728,7 +728,7 @@ namespace MetaFile
 			int nR = (int)floor(dW + 0.5) + nL;
 			int nB = (int)floor(dH + 0.5) + nT;
 
-			// По логике мы должны получать рект, точно такой же как и oBounds, но есть файлы, где это не так.
+			// РџРѕ Р»РѕРіРёРєРµ РјС‹ РґРѕР»Р¶РЅС‹ РїРѕР»СѓС‡Р°С‚СЊ СЂРµРєС‚, С‚РѕС‡РЅРѕ С‚Р°РєРѕР№ Р¶Рµ РєР°Рє Рё oBounds, РЅРѕ РµСЃС‚СЊ С„Р°Р№Р»С‹, РіРґРµ СЌС‚Рѕ РЅРµ С‚Р°Рє.
 			m_oHeader.oFrameToBounds.nLeft   = nL;
 			m_oHeader.oFrameToBounds.nRight  = nR;
 			m_oHeader.oFrameToBounds.nTop    = nT;
@@ -817,7 +817,7 @@ namespace MetaFile
 			{
 				if (0x00000042 == oBitmap.BitBltRasterOperation) // BLACKNESS
 				{
-					// Делаем все черным цветом
+					// Р”РµР»Р°РµРј РІСЃРµ С‡РµСЂРЅС‹Рј С†РІРµС‚РѕРј
 					pBgraBuffer = new BYTE[4];
 					pBgraBuffer[0] = 0x00;
 					pBgraBuffer[1] = 0x00;
@@ -829,7 +829,7 @@ namespace MetaFile
 				}
 				if (0x00FF0062 == oBitmap.BitBltRasterOperation) // WHITENESS
 				{
-					// Делаем все черным цветом
+					// Р”РµР»Р°РµРј РІСЃРµ С‡РµСЂРЅС‹Рј С†РІРµС‚РѕРј
 					pBgraBuffer = new BYTE[4];
 					pBgraBuffer[0] = 0xff;
 					pBgraBuffer[1] = 0xff;
@@ -844,7 +844,7 @@ namespace MetaFile
 					CEmfLogBrushEx* pBrush = m_pDC->GetBrush();
 					if (pBrush)
 					{					
-						// Делаем цветом кисти
+						// Р”РµР»Р°РµРј С†РІРµС‚РѕРј РєРёСЃС‚Рё
 						pBgraBuffer = new BYTE[4];
 						pBgraBuffer[0] = pBrush->Color.b;
 						pBgraBuffer[1] = pBrush->Color.g;
@@ -860,7 +860,7 @@ namespace MetaFile
 					CEmfLogBrushEx* pBrush = m_pDC->GetBrush();
 					if (pBrush)
 					{
-						// Делаем цветом кисти
+						// Р”РµР»Р°РµРј С†РІРµС‚РѕРј РєРёСЃС‚Рё
 						pBgraBuffer = new BYTE[4];
                         pBgraBuffer[0] = pBrush->Color.b;
 						pBgraBuffer[1] = pBrush->Color.g;
@@ -876,7 +876,7 @@ namespace MetaFile
 					CEmfLogBrushEx* pBrush = m_pDC->GetBrush();
 					if (pBrush)
 					{
-						// Делаем цветом кисти
+						// Р”РµР»Р°РµРј С†РІРµС‚РѕРј РєРёСЃС‚Рё
 						pBgraBuffer = new BYTE[4];
 						pBgraBuffer[0] = pBrush->Color.b;
 						pBgraBuffer[1] = pBrush->Color.g;
@@ -904,7 +904,7 @@ namespace MetaFile
 			unsigned int ulWidth, ulHeight;
 			if (ReadImage(oBitmap.offBmiSrc, oBitmap.cbBmiSrc, oBitmap.offBitsSrc, oBitmap.cbBitsSrc, sizeof(TEmfSetDiBitsToDevice) + 8, &pBgraBuffer, &ulWidth, &ulHeight))
 			{
-				// TODO: Нужно реализовать обрезку картинки по параметрам oBitmap.iStartScan и oBitmap.cScans
+				// TODO: РќСѓР¶РЅРѕ СЂРµР°Р»РёР·РѕРІР°С‚СЊ РѕР±СЂРµР·РєСѓ РєР°СЂС‚РёРЅРєРё РїРѕ РїР°СЂР°РјРµС‚СЂР°Рј oBitmap.iStartScan Рё oBitmap.cScans
 				DrawImage(oBitmap.Bounds.lLeft, oBitmap.Bounds.lTop, oBitmap.Bounds.lRight - oBitmap.Bounds.lLeft, oBitmap.Bounds.lBottom - oBitmap.Bounds.lTop, pBgraBuffer, ulWidth, ulHeight);
 			}
 
@@ -924,7 +924,7 @@ namespace MetaFile
 		}
 		void Read_EMR_UNKNOWN()
 		{
-			// Неизвестные и нереализованные записи мы пропускаем
+			// РќРµРёР·РІРµСЃС‚РЅС‹Рµ Рё РЅРµСЂРµР°Р»РёР·РѕРІР°РЅРЅС‹Рµ Р·Р°РїРёСЃРё РјС‹ РїСЂРѕРїСѓСЃРєР°РµРј
 			m_oStream.Skip(m_ulRecordSize);
 		}
 		void Read_EMR_SAVEDC()
@@ -1082,7 +1082,7 @@ namespace MetaFile
 				pPen->StyleEntry = NULL;
 			}
 
-			// Пропускаем часть с картинкой, если она была
+			// РџСЂРѕРїСѓСЃРєР°РµРј С‡Р°СЃС‚СЊ СЃ РєР°СЂС‚РёРЅРєРѕР№, РµСЃР»Рё РѕРЅР° Р±С‹Р»Р°
 			m_oStream.Skip(m_ulRecordSize);
 
 			m_oPlayer.RegisterObject(ulPenIndex, (CEmfObjectBase*)pPen);
@@ -1117,7 +1117,7 @@ namespace MetaFile
 			if (!m_pPath)
 				SetError();
 
-			// Иногда MoveTo идет до BeginPath
+			// РРЅРѕРіРґР° MoveTo РёРґРµС‚ РґРѕ BeginPath
 			TEmfPointL oPoint = m_pDC->GetCurPos();
 			double dX, dY;
 			TranslatePoint(oPoint, dX, dY);
@@ -1125,7 +1125,7 @@ namespace MetaFile
 		}
 		void Read_EMR_ENDPATH()
 		{
-			// Ничего не делаем
+			// РќРёС‡РµРіРѕ РЅРµ РґРµР»Р°РµРј
 		}
 		void Read_EMR_CLOSEFIGURE()
 		{
@@ -1137,11 +1137,11 @@ namespace MetaFile
 		}
 		void Read_EMR_FLATTENPATH()
 		{
-			// Ничего не делаем
+			// РќРёС‡РµРіРѕ РЅРµ РґРµР»Р°РµРј
 		}
 		void Read_EMR_WIDENPATH()
 		{
-			// TODO: реализовать
+			// TODO: СЂРµР°Р»РёР·РѕРІР°С‚СЊ
 		}
 		void Read_EMR_ABORTPATH()
 		{
@@ -1162,7 +1162,7 @@ namespace MetaFile
 			unsigned int unDirection;
 			m_oStream >> unDirection;
 			m_pDC->SetArcDirection(unDirection);
-			// Здесь не обновляем DC у Output, т.к. этот параметр разруливается внутри данного класса.
+			// Р—РґРµСЃСЊ РЅРµ РѕР±РЅРѕРІР»СЏРµРј DC Сѓ Output, С‚.Рє. СЌС‚РѕС‚ РїР°СЂР°РјРµС‚СЂ СЂР°Р·СЂСѓР»РёРІР°РµС‚СЃСЏ РІРЅСѓС‚СЂРё РґР°РЅРЅРѕРіРѕ РєР»Р°СЃСЃР°.
 		}
 		void Read_EMR_FILLPATH()
 		{
@@ -1259,14 +1259,14 @@ namespace MetaFile
 		}
 		void Read_EMR_EXCLUDECLIPRECT()
 		{
-			// TODO: Проверить как найдется файл
+			// TODO: РџСЂРѕРІРµСЂРёС‚СЊ РєР°Рє РЅР°Р№РґРµС‚СЃСЏ С„Р°Р№Р»
 			TEmfRectL oClip;
 			m_oStream >> oClip;
 
 			TRectD oClipRect, oBB;
 
-			// Поскольку мы реализовываем данный тип клипа с помощью разницы внешнего ректа и заданного, и
-			// пересечением с полученной областью, то нам надо вычесть границу заданного ректа.
+			// РџРѕСЃРєРѕР»СЊРєСѓ РјС‹ СЂРµР°Р»РёР·РѕРІС‹РІР°РµРј РґР°РЅРЅС‹Р№ С‚РёРї РєР»РёРїР° СЃ РїРѕРјРѕС‰СЊСЋ СЂР°Р·РЅРёС†С‹ РІРЅРµС€РЅРµРіРѕ СЂРµРєС‚Р° Рё Р·Р°РґР°РЅРЅРѕРіРѕ, Рё
+			// РїРµСЂРµСЃРµС‡РµРЅРёРµРј СЃ РїРѕР»СѓС‡РµРЅРЅРѕР№ РѕР±Р»Р°СЃС‚СЊСЋ, С‚Рѕ РЅР°Рј РЅР°РґРѕ РІС‹С‡РµСЃС‚СЊ РіСЂР°РЅРёС†Сѓ Р·Р°РґР°РЅРЅРѕРіРѕ СЂРµРєС‚Р°.
 			if (oClip.lLeft < oClip.lRight)
 			{
 				oClip.lLeft--;
@@ -1306,8 +1306,8 @@ namespace MetaFile
 
 			m_oStream.Skip(m_ulRecordSize - 8);
 
-			// Тут просто сбрасываем текущий клип. Ничего не добавляем в клип, т.е. реализовать регионы с
-		    // текущим интерфейсом рендерера невозможно.
+			// РўСѓС‚ РїСЂРѕСЃС‚Рѕ СЃР±СЂР°СЃС‹РІР°РµРј С‚РµРєСѓС‰РёР№ РєР»РёРї. РќРёС‡РµРіРѕ РЅРµ РґРѕР±Р°РІР»СЏРµРј РІ РєР»РёРї, С‚.Рµ. СЂРµР°Р»РёР·РѕРІР°С‚СЊ СЂРµРіРёРѕРЅС‹ СЃ
+		    // С‚РµРєСѓС‰РёРј РёРЅС‚РµСЂС„РµР№СЃРѕРј СЂРµРЅРґРµСЂРµСЂР° РЅРµРІРѕР·РјРѕР¶РЅРѕ.
 			m_pDC->GetClip()->Reset();
 		}
 		void Read_EMR_SETMETARGN()
@@ -1341,7 +1341,7 @@ namespace MetaFile
 		}
 		void Read_EMR_REALIZEPALETTE()
 		{
-			// TODO: Реализовать
+			// TODO: Р РµР°Р»РёР·РѕРІР°С‚СЊ
 		}
 		void Read_EMR_INTERSECTCLIPRECT()
 		{
@@ -1358,18 +1358,18 @@ namespace MetaFile
 			unsigned int ulLayoutMode;
 			m_oStream >> ulLayoutMode;
 
-			// TODO: реализовать
+			// TODO: СЂРµР°Р»РёР·РѕРІР°С‚СЊ
 		}
 		void Read_EMR_SETBRUSHORGEX()
 		{
 			TEmfPointL oOrigin;
 			m_oStream >> oOrigin;
 
-			// TODO: реализовать
+			// TODO: СЂРµР°Р»РёР·РѕРІР°С‚СЊ
 		}		
 		void Read_EMR_ANGLEARC()
 		{
-			// TODO: Как найдутся файлы проверить данную запись.
+			// TODO: РљР°Рє РЅР°Р№РґСѓС‚СЃСЏ С„Р°Р№Р»С‹ РїСЂРѕРІРµСЂРёС‚СЊ РґР°РЅРЅСѓСЋ Р·Р°РїРёСЃСЊ.
 			TEmfPointL oCenter;
 			unsigned int unRadius;
 			double dStartAngle, dSweepAngle;
@@ -1385,11 +1385,11 @@ namespace MetaFile
 			dStartAngle = GetEllipseAngle(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, oStart.x, oStart.y);
 			dSweepAngle = GetEllipseAngle(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, oEnd.x, oEnd.y) - dStartAngle;
 
-			// TODO: Проверить здесь
+			// TODO: РџСЂРѕРІРµСЂРёС‚СЊ Р·РґРµСЃСЊ
 			if (dSweepAngle < 0.001)
 				dSweepAngle += 360;
 
-			// TODO: Проверить здесь
+			// TODO: РџСЂРѕРІРµСЂРёС‚СЊ Р·РґРµСЃСЊ
 			if (AD_COUNTERCLOCKWISE != m_pDC->GetArcDirection())
 			{
 				dSweepAngle = dSweepAngle - 360;
@@ -1408,7 +1408,7 @@ namespace MetaFile
 		}
 		void Read_EMR_ARCTO()
 		{
-			// TODO: Как найдутся файлы проверить данную запись.
+			// TODO: РљР°Рє РЅР°Р№РґСѓС‚СЃСЏ С„Р°Р№Р»С‹ РїСЂРѕРІРµСЂРёС‚СЊ РґР°РЅРЅСѓСЋ Р·Р°РїРёСЃСЊ.
 			TEmfRectL oBox;
 			TEmfPointL oStart, oEnd;
 			double dStartAngle, dSweep;
@@ -1418,7 +1418,7 @@ namespace MetaFile
 		}
 		void Read_EMR_CHORD()
 		{
-			// TODO: Как найдутся файлы проверить данную запись.
+			// TODO: РљР°Рє РЅР°Р№РґСѓС‚СЃСЏ С„Р°Р№Р»С‹ РїСЂРѕРІРµСЂРёС‚СЊ РґР°РЅРЅСѓСЋ Р·Р°РїРёСЃСЊ.
 			TEmfRectL oBox;
 			TEmfPointL oStart, oEnd;
 			double dStartAngle, dSweep;
@@ -1438,7 +1438,7 @@ namespace MetaFile
 		}
 		void Read_EMR_EXTTEXTOUTA()
 		{
-			// TODO: Как найдутся файлы проверить данную запись.
+			// TODO: РљР°Рє РЅР°Р№РґСѓС‚СЃСЏ С„Р°Р№Р»С‹ РїСЂРѕРІРµСЂРёС‚СЊ РґР°РЅРЅСѓСЋ Р·Р°РїРёСЃСЊ.
 			TEmfExtTextoutA oText;
 			m_oStream >> oText;	
 
@@ -1458,7 +1458,7 @@ namespace MetaFile
 		}
 		void Read_EMR_PIE()
 		{
-			// TODO: Как найдутся файлы проверить данную запись.
+			// TODO: РљР°Рє РЅР°Р№РґСѓС‚СЃСЏ С„Р°Р№Р»С‹ РїСЂРѕРІРµСЂРёС‚СЊ РґР°РЅРЅСѓСЋ Р·Р°РїРёСЃСЊ.
 			TEmfRectL oBox;
 			TEmfPointL oStart, oEnd;
 			double dStartAngle, dSweep;
@@ -1536,7 +1536,7 @@ namespace MetaFile
 		}
 		template<typename T>void Read_EMR_POLYDRAW_BASE()
 		{
-			// TODO: Как найдутся файлы проверить данную запись.
+			// TODO: РљР°Рє РЅР°Р№РґСѓС‚СЃСЏ С„Р°Р№Р»С‹ РїСЂРѕРІРµСЂРёС‚СЊ РґР°РЅРЅСѓСЋ Р·Р°РїРёСЃСЊ.
 			TEmfRectL oBounds;
 			m_oStream >> oBounds;
 
@@ -1812,7 +1812,7 @@ namespace MetaFile
 		}
 		void Read_EMR_POLYTEXTOUTA()
 		{
-			// TODO: Как найдутся файлы проверить данную запись.
+			// TODO: РљР°Рє РЅР°Р№РґСѓС‚СЃСЏ С„Р°Р№Р»С‹ РїСЂРѕРІРµСЂРёС‚СЊ РґР°РЅРЅСѓСЋ Р·Р°РїРёСЃСЊ.
 			TEmfPolyTextoutA oText;
 			m_oStream >> oText;
 			
@@ -1829,7 +1829,7 @@ namespace MetaFile
 		}
 		void Read_EMR_POLYTEXTOUTW()
 		{
-			// TODO: Как найдутся файлы проверить данную запись.
+			// TODO: РљР°Рє РЅР°Р№РґСѓС‚СЃСЏ С„Р°Р№Р»С‹ РїСЂРѕРІРµСЂРёС‚СЊ РґР°РЅРЅСѓСЋ Р·Р°РїРёСЃСЊ.
 			TEmfPolyTextoutW oText;
 			m_oStream >> oText;
 
@@ -1914,7 +1914,7 @@ namespace MetaFile
 			m_oStream >> oPoint;
 			m_oStream >> oColor;
 
-			// Делаем цветом кисти
+			// Р”РµР»Р°РµРј С†РІРµС‚РѕРј РєРёСЃС‚Рё
 			BYTE pBgraBuffer[4];
             pBgraBuffer[0] = oColor.b;
 			pBgraBuffer[1] = oColor.g;
@@ -1928,7 +1928,7 @@ namespace MetaFile
 			TEmfSmallTextout oText;
 			m_oStream >> oText;
 
-			// Переводим oText в TEmfEmrText
+			// РџРµСЂРµРІРѕРґРёРј oText РІ TEmfEmrText
 			TEmfEmrText oEmrText;
 			oEmrText.Chars        = oText.cChars;
 			oEmrText.offDx        = 0;
@@ -1939,7 +1939,7 @@ namespace MetaFile
 			oEmrText.Reference.y  = oText.y;
 			oEmrText.OutputDx     = NULL;
 
-			// Запись не документированна нормально, остается несколько байт в конце, непонятно почему.
+			// Р—Р°РїРёСЃСЊ РЅРµ РґРѕРєСѓРјРµРЅС‚РёСЂРѕРІР°РЅРЅР° РЅРѕСЂРјР°Р»СЊРЅРѕ, РѕСЃС‚Р°РµС‚СЃСЏ РЅРµСЃРєРѕР»СЊРєРѕ Р±Р°Р№С‚ РІ РєРѕРЅС†Рµ, РЅРµРїРѕРЅСЏС‚РЅРѕ РїРѕС‡РµРјСѓ.
 			unsigned int unSize = oText.GetSize();
 			if (m_ulRecordSize - unSize > 0)
 				m_oStream.Skip(m_ulRecordSize - unSize);
@@ -1948,8 +1948,8 @@ namespace MetaFile
 
 			DrawTextW(oEmrText);
 
-			// Поскольку мы просто скопировали ссылку на строку, а не скопировали сами строку обнуляем здесь, потому 
-			// что на деструкторе структуры освобождается память.
+			// РџРѕСЃРєРѕР»СЊРєСѓ РјС‹ РїСЂРѕСЃС‚Рѕ СЃРєРѕРїРёСЂРѕРІР°Р»Рё СЃСЃС‹Р»РєСѓ РЅР° СЃС‚СЂРѕРєСѓ, Р° РЅРµ СЃРєРѕРїРёСЂРѕРІР°Р»Рё СЃР°РјРё СЃС‚СЂРѕРєСѓ РѕР±РЅСѓР»СЏРµРј Р·РґРµСЃСЊ, РїРѕС‚РѕРјСѓ 
+			// С‡С‚Рѕ РЅР° РґРµСЃС‚СЂСѓРєС‚РѕСЂРµ СЃС‚СЂСѓРєС‚СѓСЂС‹ РѕСЃРІРѕР±РѕР¶РґР°РµС‚СЃСЏ РїР°РјСЏС‚СЊ.
 			oEmrText.OutputString = NULL;
 		}
 		void Read_EMR_STROKEANDFILLPATH()

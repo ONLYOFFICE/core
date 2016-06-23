@@ -1,4 +1,4 @@
-﻿#include "RtfParagraph.h"
+#include "RtfParagraph.h"
 #include "Writer/OOXWriter.h"
 
 CString RtfOldList::RenderToRtf(RenderParameter oRenderParameter)

@@ -291,7 +291,7 @@ public:
    
 	office_element_ptr_array paragraph_content_;
     
-	_CP_OPT(odf_types::style_ref)	text_style_name_;//ваще то это такой элемент где стиль должОн быть всегда
+	_CP_OPT(odf_types::style_ref)	text_style_name_;//РІР°С‰Рµ С‚Рѕ СЌС‚Рѕ С‚Р°РєРѕР№ СЌР»РµРјРµРЅС‚ РіРґРµ СЃС‚РёР»СЊ РґРѕР»Р¶РћРЅ Р±С‹С‚СЊ РІСЃРµРіРґР°
     odf_types::style_ref_array		text_class_names_;
 
     virtual void add_text(const std::wstring & Text);

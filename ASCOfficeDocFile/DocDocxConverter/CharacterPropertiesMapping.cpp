@@ -74,8 +74,8 @@ namespace DocFileFormat
 
 	bool CharacterPropertiesMapping::CheckIsSymbolFont()
 	{
-		//Todo сделать определение симольного шрифта через fontManager
-		//Заглушка под Google Docs, они пишут bullet в Arial
+		//Todo СЃРґРµР»Р°С‚СЊ РѕРїСЂРµРґРµР»РµРЅРёРµ СЃРёРјРѕР»СЊРЅРѕРіРѕ С€СЂРёС„С‚Р° С‡РµСЂРµР· fontManager
+		//Р—Р°РіР»СѓС€РєР° РїРѕРґ Google Docs, РѕРЅРё РїРёС€СѓС‚ bullet РІ Arial
 		if (-1 != this->m_sAsciiFont.find (_T("Arial")) && -1 != this->m_sEastAsiaFont.find (_T("Arial")) && -1 != this->m_shAnsiFont.find (_T("Arial")))
 			return false;
 
@@ -364,7 +364,7 @@ namespace DocFileFormat
 						std::map<int, int>::iterator it = _doc->PictureBulletsCPsMap.find(nIndex);
 						if (it != _doc->PictureBulletsCPsMap.end())
 						{
-							//добавить
+							//РґРѕР±Р°РІРёС‚СЊ
 						}
 					}
 				}break;

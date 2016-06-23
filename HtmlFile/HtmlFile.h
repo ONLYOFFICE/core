@@ -1,4 +1,4 @@
-﻿#ifndef _HTMLFILE_HTMLFILE_H_
+#ifndef _HTMLFILE_HTMLFILE_H_
 #define _HTMLFILE_HTMLFILE_H_
 
 #include <string>

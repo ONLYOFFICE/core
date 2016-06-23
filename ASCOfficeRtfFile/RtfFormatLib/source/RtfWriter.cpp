@@ -1,4 +1,4 @@
-﻿
+
 #include "RtfWriter.h"
 #include "RtfDocument.h"
 

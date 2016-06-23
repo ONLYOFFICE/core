@@ -165,7 +165,7 @@ void OfficeArtContainer::loadFields(XLS::CFRecord& record)
 						OfficeArtRecordPtr test_officeArt = CreateOfficeArt(rh_test.recType);
 						if (!test_officeArt)
 						{
-							//упс ... и где начало верное???
+							//СѓРїСЃ ... Рё РіРґРµ РЅР°С‡Р°Р»Рѕ РІРµСЂРЅРѕРµ???
 							record.skipNunBytes(record.getDataSize() - record.getRdPtr());
 							return;
 						}

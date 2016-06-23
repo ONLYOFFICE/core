@@ -10,8 +10,8 @@ namespace NSPresentationEditor
 	class CTheme
 	{
 	public:
-		std::map<_UINT64, LONG>			m_mapGeomToLayout;// типовые шаблоны
-		std::map<DWORD, LONG>			m_mapTitleLayout; // заголовочные шаблоны
+		std::map<_UINT64, LONG>			m_mapGeomToLayout;// С‚РёРїРѕРІС‹Рµ С€Р°Р±Р»РѕРЅС‹
+		std::map<DWORD, LONG>			m_mapTitleLayout; // Р·Р°РіРѕР»РѕРІРѕС‡РЅС‹Рµ С€Р°Р±Р»РѕРЅС‹
 		
 		std::multimap<int,int>			m_mapPlaceholders;
 
@@ -94,7 +94,7 @@ namespace NSPresentationEditor
 			m_bIsBackground		= oSrc.m_bIsBackground;
 			m_oBackground		= oSrc.m_oBackground;
 
-			// теперь сделаем копию всех элементов layout'ов
+			// С‚РµРїРµСЂСЊ СЃРґРµР»Р°РµРј РєРѕРїРёСЋ РІСЃРµС… СЌР»РµРјРµРЅС‚РѕРІ layout'РѕРІ
 			size_t nCount = m_arLayouts.size();
 			for (size_t i = 0; i < nCount; ++i)
 			{
@@ -120,7 +120,7 @@ namespace NSPresentationEditor
 
 		void CreateDublicateElements()
 		{
-			// просто из всех своих элементов делаем дубликата
+			// РїСЂРѕСЃС‚Рѕ РёР· РІСЃРµС… СЃРІРѕРёС… СЌР»РµРјРµРЅС‚РѕРІ РґРµР»Р°РµРј РґСѓР±Р»РёРєР°С‚Р°
 			size_t nCount = m_arElements.size();
 			for (size_t nIndex = 0; nIndex < nCount; ++nIndex)
 			{
@@ -242,7 +242,7 @@ namespace NSPresentationEditor
 		{
 			LONG lCountColors = (LONG)pTheme->m_arColorScheme.size();
 
-			// пока здесь расчитываются только цвета
+			// РїРѕРєР° Р·РґРµСЃСЊ СЂР°СЃС‡РёС‚С‹РІР°СЋС‚СЃСЏ С‚РѕР»СЊРєРѕ С†РІРµС‚Р°
 			size_t nLevels = 10;
 			for (size_t i = 0; i < nLevels; ++i)
 			{

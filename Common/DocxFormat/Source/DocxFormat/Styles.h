@@ -68,7 +68,7 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:locked"),         m_oLocked )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:name"),           m_sName )
@@ -214,7 +214,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:type"), m_oType )
 				WritingElement_ReadAttributes_End( oReader )
@@ -465,7 +465,7 @@ namespace OOX
 
 		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
-			// Читаем атрибуты
+			// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 			WritingElement_ReadAttributes_Start( oReader )
 			WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:count"),             m_oCount )
 			WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:defLockedState"),    m_oDefLockedState )
@@ -684,7 +684,7 @@ namespace OOX
 
 		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
-			// Читаем атрибуты
+			// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 			WritingElement_ReadAttributes_Start( oReader )
 			WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:customStyle"), m_oCustomStyle )
 			WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:default"),     m_oDefault )

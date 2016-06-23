@@ -196,7 +196,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("m:val"), m_val )
 				WritingElement_ReadAttributes_End( oReader )
@@ -204,7 +204,7 @@ namespace OOX
 		public:
 			CString sNodeName;
 			CString GetMathNodeName(const EElementType & enumType)  const
-			{//todooo вытащить в одно место - пересекается с MathArgNodes
+			{//todooo РІС‹С‚Р°С‰РёС‚СЊ РІ РѕРґРЅРѕ РјРµСЃС‚Рѕ - РїРµСЂРµСЃРµРєР°РµС‚СЃСЏ СЃ MathArgNodes
 				switch(enumType)
 				{
 					case OOX::et_m_deg:				return L"m:deg";

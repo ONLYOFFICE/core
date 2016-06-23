@@ -1,4 +1,4 @@
-﻿#include "RtfChar.h"
+#include "RtfChar.h"
 #include "RtfDocument.h"
 
 CString RtfChar::renderRtfText( CString& sText, void* poDocument, RtfCharProperty* oCharProperty  )

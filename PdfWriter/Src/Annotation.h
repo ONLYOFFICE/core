@@ -1,4 +1,4 @@
-﻿#ifndef _PDF_WRITER_SRC_ANNOTATION_H
+#ifndef _PDF_WRITER_SRC_ANNOTATION_H
 #define _PDF_WRITER_SRC_ANNOTATION_H
 
 #include "Objects.h"

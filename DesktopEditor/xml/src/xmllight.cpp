@@ -1,4 +1,4 @@
-﻿#include "../include/xmlutils.h"
+#include "../include/xmlutils.h"
 #include "./xmllight_private.h"
 
 namespace XmlUtils

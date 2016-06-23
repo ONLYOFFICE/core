@@ -1,4 +1,4 @@
-﻿#include "Streams.h"
+#include "Streams.h"
 #include "Utils.h"
 #include "Encrypt.h"
 #include "Objects.h"

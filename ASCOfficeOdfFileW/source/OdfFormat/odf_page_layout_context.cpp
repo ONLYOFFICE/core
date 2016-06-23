@@ -110,7 +110,7 @@ void odf_page_layout_context::end_master_page()
 
 		f_header = true;
 	}	
-	//Так как лажовый Libra и Apach Оо не воспринимают бланковые колонтитулы только первых страниц - городим велосипед на остальные страницы
+	//РўР°Рє РєР°Рє Р»Р°Р¶РѕРІС‹Р№ Libra Рё Apach РћРѕ РЅРµ РІРѕСЃРїСЂРёРЅРёРјР°СЋС‚ Р±Р»Р°РЅРєРѕРІС‹Рµ РєРѕР»РѕРЅС‚РёС‚СѓР»С‹ С‚РѕР»СЊРєРѕ РїРµСЂРІС‹С… СЃС‚СЂР°РЅРёС† - РіРѕСЂРѕРґРёРј РІРµР»РѕСЃРёРїРµРґ РЅР° РѕСЃС‚Р°Р»СЊРЅС‹Рµ СЃС‚СЂР°РЅРёС†С‹
 	if (!header && (f_header || l_header))
 	{
 		add_header(0);
@@ -144,7 +144,7 @@ void odf_page_layout_context::process_master_styles(office_element_ptr root )
 		}
 		catch(...)
 		{
-			//почему то нет страницы
+			//РїРѕС‡РµРјСѓ С‚Рѕ РЅРµС‚ СЃС‚СЂР°РЅРёС†С‹
 		}
 	}
 }
@@ -238,12 +238,12 @@ void odf_page_layout_context::set_page_gutter(_CP_OPT(length) length_)
 	//	props->style_page_layout_properties_attlist_.common_horizontal_margin_attlist_.fo_margin_left_= length(length_->get_value_unit(length::cm),length::cm);
 
 }
-void odf_page_layout_context::set_footer_size(_CP_OPT(length) length_)//тут собственно не footer а размер после колонтитула
+void odf_page_layout_context::set_footer_size(_CP_OPT(length) length_)//С‚СѓС‚ СЃРѕР±СЃС‚РІРµРЅРЅРѕ РЅРµ footer Р° СЂР°Р·РјРµСЂ РїРѕСЃР»Рµ РєРѕР»РѕРЅС‚РёС‚СѓР»Р°
 {
 	if (layout_state_list_.size() < 1) return;
 
 	layout_state_list_.back().footer_size_ = length_;
-	//собственно в layout встроим позднее - по факту наличия хоть одного колонтитула
+	//СЃРѕР±СЃС‚РІРµРЅРЅРѕ РІ layout РІСЃС‚СЂРѕРёРј РїРѕР·РґРЅРµРµ - РїРѕ С„Р°РєС‚Сѓ РЅР°Р»РёС‡РёСЏ С…РѕС‚СЊ РѕРґРЅРѕРіРѕ РєРѕР»РѕРЅС‚РёС‚СѓР»Р°
 	return;
 }
 void odf_page_layout_context::set_header_size(_CP_OPT(length) length_)
@@ -301,7 +301,7 @@ bool odf_page_layout_context::add_footer(int type)
 	master_state_list_.back().add_footer(elm);
 
 /////////////////////////////////////////////////////////////////////
-//настраить нужно 1 раз
+//РЅР°СЃС‚СЂР°РёС‚СЊ РЅСѓР¶РЅРѕ 1 СЂР°Р·
 	if (!layout_state_list_.back().footer_size_) return true;
 
 	style_header_footer_properties * footer_props = get_footer_properties();
@@ -355,7 +355,7 @@ bool odf_page_layout_context::add_header(int type)
 	
 	master_state_list_.back().add_header(elm);
 ////////////////////////////////////////////////////////////////////////
-//настроить нужно один раз
+//РЅР°СЃС‚СЂРѕРёС‚СЊ РЅСѓР¶РЅРѕ РѕРґРёРЅ СЂР°Р·
 	if (!layout_state_list_.back().header_size_) return true;
 	
 	style_header_footer_properties * header_props = get_header_properties();

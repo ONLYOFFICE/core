@@ -1,4 +1,4 @@
-﻿
+
 #include "ASCOfficeDrawingConverter.h"
 
 #include "./PPTXFormat/Logic/SpTreeElem.h"

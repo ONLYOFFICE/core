@@ -35,19 +35,19 @@ public:
  	//void set_content_series	(odf_reader::chart::series & content);
 
 private:
-	void reset_cross_axis();//обязательно после всех добавлений
+	void reset_cross_axis();//РѕР±СЏР·Р°С‚РµР»СЊРЅРѕ РїРѕСЃР»Рµ РІСЃРµС… РґРѕР±Р°РІР»РµРЅРёР№
 
 
 //variable charts 
-//catAx (Category Axis Data) §21.2.2.25
-//dateAx (Date Axis) §21.2.2.39
-//serAx (Series Axis) §21.2.2.175
-//valAx (Value Axis) §21.2.2.226
+//catAx (Category Axis Data) В§21.2.2.25
+//dateAx (Date Axis) В§21.2.2.39
+//serAx (Series Axis) В§21.2.2.175
+//valAx (Value Axis) В§21.2.2.226
 
-//extLst (Chart Extensibility) §21.2.2.64
-//layout (Layout) §21.2.2.88
-//spPr (Shape Properties) §21.2.2.197
-//dTable (Data Table) §21.2.2.54
+//extLst (Chart Extensibility) В§21.2.2.64
+//layout (Layout) В§21.2.2.88
+//spPr (Shape Properties) В§21.2.2.197
+//dTable (Data Table) В§21.2.2.54
 
 };
 

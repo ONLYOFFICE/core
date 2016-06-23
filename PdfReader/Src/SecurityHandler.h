@@ -1,4 +1,4 @@
-﻿#ifndef _PDF_READER_SECURITY_HANDLER_H
+#ifndef _PDF_READER_SECURITY_HANDLER_H
 #define _PDF_READER_SECURITY_HANDLER_H
 
 #include "Object.h"

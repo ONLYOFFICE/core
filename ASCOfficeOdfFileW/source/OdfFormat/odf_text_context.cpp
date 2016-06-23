@@ -73,7 +73,7 @@ void odf_text_context::set_single_object(bool val, style_paragraph_properties *p
 	paragraph_properties_ = para_props;
 	text_properties_ = text_props;
 
-	//if (paragraph_properties_)//??? а могут ли быть разрывы после-до диаграммы??? 
+	//if (paragraph_properties_)//??? Р° РјРѕРіСѓС‚ Р»Рё Р±С‹С‚СЊ СЂР°Р·СЂС‹РІС‹ РїРѕСЃР»Рµ-РґРѕ РґРёР°РіСЂР°РјРјС‹??? 
 	//{
 	//	paragraph_properties_->content().fo_break_before_ = need_break_;
 	//	need_break_ = boost::none;
@@ -140,7 +140,7 @@ void odf_text_context::add_text_space(int count)
 	text_s* s = dynamic_cast<text_s*>(s_elm.get());
 	if (s)s->text_c_ = count;
 
-	//необязательно хранить..
+	//РЅРµРѕР±СЏР·Р°С‚РµР»СЊРЅРѕ С…СЂР°РЅРёС‚СЊ..
 	//int level = current_level_.size();
 	//odf_element_state state={	s_elm, L"", office_element_ptr(), level};
 	//text_elements_list_.push_back(state);
@@ -309,7 +309,7 @@ void odf_text_context::start_span(bool styled)
 			{
 				style_->style_parent_style_name_ = parent_span_style_;
 			}
-			text_properties_ = style_->style_content_.get_style_text_properties();//для  буквиц на поле
+			text_properties_ = style_->style_content_.get_style_text_properties();//РґР»СЏ  Р±СѓРєРІРёС† РЅР° РїРѕР»Рµ
 		}
 	}
 

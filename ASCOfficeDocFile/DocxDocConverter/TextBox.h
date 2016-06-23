@@ -191,7 +191,7 @@ namespace ASCDocFileFormat
 		int					reusable01;
 		int					reusable02;
 
-		short				fReusable;		//	ставим в 0 потому что один TbRef привязан к одному элементу
+		short				fReusable;		//	СЃС‚Р°РІРёРј РІ 0 РїРѕС‚РѕРјСѓ С‡С‚Рѕ РѕРґРёРЅ TbRef РїСЂРёРІСЏР·Р°РЅ Рє РѕРґРЅРѕРјСѓ СЌР»РµРјРµРЅС‚Сѓ
 		int					itxbxsDest;		//	This field MUST be ignored.
 		int					lid;			/*
 
@@ -673,7 +673,7 @@ namespace ASCDocFileFormat
 		{
 			m_oTextItems	=	oTextItems;
 			
-			// TODO : временно
+			// TODO : РІСЂРµРјРµРЅРЅРѕ
 			if (1 == oTextItems.size())
 			{
 				std::wstring strSrc = oTextItems[0]->GetAllText();

@@ -22,7 +22,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	std::wstring srcTempPath	= FileSystem::Directory::CreateDirectoryWithUniqueName(outputDir);
 	std::wstring dstTempPath	= FileSystem::Directory::CreateDirectoryWithUniqueName(outputDir);
 
-    // распаковываем исходник во временную директорию
+    // СЂР°СЃРїР°РєРѕРІС‹РІР°РµРј РёСЃС…РѕРґРЅРёРє РІРѕ РІСЂРµРјРµРЅРЅСѓСЋ РґРёСЂРµРєС‚РѕСЂРёСЋ
 	COfficeUtils oCOfficeUtils(NULL);
     if (S_OK != oCOfficeUtils.ExtractToDirectory(srcFileName.c_str(), srcTempPath.c_str(), NULL, 0))
 		return S_FALSE;

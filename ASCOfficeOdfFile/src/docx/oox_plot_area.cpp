@@ -65,7 +65,7 @@ void oox_plot_area::add_axis(int type, odf_reader::chart::axis & content)
 	axis_.push_back(ax);
 }
 
-void oox_plot_area::reset_cross_axis()//обязательно после всех добавлений
+void oox_plot_area::reset_cross_axis()//РѕР±СЏР·Р°С‚РµР»СЊРЅРѕ РїРѕСЃР»Рµ РІСЃРµС… РґРѕР±Р°РІР»РµРЅРёР№
 {
 	BOOST_FOREACH(oox_axis_content_ptr const & ax, axis_)
 	{

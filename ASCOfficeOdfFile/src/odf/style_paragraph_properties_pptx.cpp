@@ -243,7 +243,7 @@ void paragraph_format_properties::xlsx_convert(std::wostream & strm, bool in_dra
 void paragraph_format_properties::pptx_convert(oox::pptx_conversion_context & Context)
 {
 	std::wstringstream & _pPr = Context.get_text_context().get_styles_context().paragraph_attr();
- //сначала аттрибуты к самому pPr или defPPr
+ //СЃРЅР°С‡Р°Р»Р° Р°С‚С‚СЂРёР±СѓС‚С‹ Рє СЃР°РјРѕРјСѓ pPr РёР»Рё defPPr
 
 	if (fo_text_align_)
 	{
@@ -314,7 +314,7 @@ void paragraph_format_properties::pptx_convert(oox::pptx_conversion_context & Co
 	//	}
 	//}
 ////////////////////////////////////////////////////////////////////////
- //теперь nodes  к pPr или defPPr
+ //С‚РµРїРµСЂСЊ nodes  Рє pPr РёР»Рё defPPr
 	CP_XML_WRITER(Context.get_text_context().get_styles_context().paragraph_nodes())
 	{
 		//if (fo_keep_with_next_) //&& Context.get_drop_cap_context().state() != 2

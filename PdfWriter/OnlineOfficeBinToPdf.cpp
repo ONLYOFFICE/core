@@ -1,4 +1,4 @@
-﻿#include "OnlineOfficeBinToPdf.h"
+#include "OnlineOfficeBinToPdf.h"
 
 #include "../DesktopEditor/common/File.h"
 #include "../DesktopEditor/common/Directory.h"

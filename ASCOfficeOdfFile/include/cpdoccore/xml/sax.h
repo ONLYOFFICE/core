@@ -59,7 +59,7 @@ public:
 	//virtual std::wstring	value() = 0;
 	virtual bool			attrDefault() = 0;
 
-    // <element attribute="123"></element> — false
+    // <element attribute="123"></element> â€” false
     // <element attribute="123"/> - true
     virtual bool isEmptyElement() = 0;
     

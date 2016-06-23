@@ -1,4 +1,4 @@
-﻿#include "Controls.h"
+#include "Controls.h"
 #include "../../ASCOfficeDrawingConverter.h"
 
 #include "../Slide.h"

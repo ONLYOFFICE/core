@@ -32,7 +32,7 @@ public:
 
 	void serialize(std::wostream & strm)
     {
-		//std::sort(xlsx_comment_.begin(), xlsx_comment_.end(), sort_()); - излишне
+		//std::sort(xlsx_comment_.begin(), xlsx_comment_.end(), sort_()); - РёР·Р»РёС€РЅРµ
         
 		CP_XML_WRITER(strm)
         {
@@ -114,7 +114,7 @@ public:
 					
 					std::wstring style = std::wstring(L"position:absolute;");
 					
-					//todooo сделать "покороче" значения .. достаточно 2 знаков после запятой
+					//todooo СЃРґРµР»Р°С‚СЊ "РїРѕРєРѕСЂРѕС‡Рµ" Р·РЅР°С‡РµРЅРёСЏ .. РґРѕСЃС‚Р°С‚РѕС‡РЅРѕ 2 Р·РЅР°РєРѕРІ РїРѕСЃР»Рµ Р·Р°РїСЏС‚РѕР№
 					style += std::wstring(L"margin-left:")	+ boost::lexical_cast<std::wstring>(c.left_)	+ std::wstring(L"pt;");
 					style += std::wstring(L"margin-top:")	+ boost::lexical_cast<std::wstring>(c.top_)		+ std::wstring(L"pt;");
 					style += std::wstring(L"width:")		+ boost::lexical_cast<std::wstring>(c.width_)	+ std::wstring(L"pt;");

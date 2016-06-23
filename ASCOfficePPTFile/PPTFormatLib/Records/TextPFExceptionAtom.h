@@ -23,7 +23,7 @@ public:
 
 		m_oPFRun.LoadFromStream(pStream, false);
 
-		// ýòî íà âñÿêèé ñëó÷àé...
+		// ÑÑ‚Ð¾ Ð½Ð° Ð²ÑÑÐºÐ¸Ð¹ ÑÐ»ÑƒÑ‡Ð°Ð¹...
 		int current_pos = pStream->tell();
 		StreamUtils::StreamSeek(lPosition + m_oHeader.RecLen, pStream);
 	}

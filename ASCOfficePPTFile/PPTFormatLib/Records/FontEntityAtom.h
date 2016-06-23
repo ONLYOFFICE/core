@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "../Reader/Records.h"
 
 class CRecordFontEntityAtom : public CUnknownRecord

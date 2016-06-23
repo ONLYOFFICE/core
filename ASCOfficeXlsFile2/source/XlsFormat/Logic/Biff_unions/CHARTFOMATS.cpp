@@ -189,7 +189,7 @@ const bool CHARTFORMATS::loadContent(BinProcessor& proc)
 		_chart_format cf;
 
 		if ("DataLabExt" == elements_.front()->getClassName())
-		{//необязат
+		{//РЅРµРѕР±СЏР·Р°С‚
 			cf.dataLabExt = elements_.front();
 			elements_.pop_front();
 			count--;
@@ -200,7 +200,7 @@ const bool CHARTFORMATS::loadContent(BinProcessor& proc)
 			count--;
 		}
 		if ("ATTACHEDLABEL" == elements_.front()->getClassName())
-		{//обязат
+		{//РѕР±СЏР·Р°С‚
 			cf.attachedLABEL = elements_.front();
 			elements_.pop_front();
 			count--;

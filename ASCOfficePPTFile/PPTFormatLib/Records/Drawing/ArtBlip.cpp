@@ -63,7 +63,7 @@ void CRecordOfficeArtBlip::ReadFromStream(SRecordHeader & oHeader, POLE::Stream*
 				oMetaHeader.ToWMFHeader(&oWmfHeader);
 				
 				LONG lLenHeader = 22;
-				BYTE* pMetaHeader = new BYTE[lLenHeader]; // óäàëèòñÿ â oMetaFile
+				BYTE* pMetaHeader = new BYTE[lLenHeader]; // ÑƒÐ´Ð°Ð»Ð¸Ñ‚ÑÑ Ð² oMetaFile
 				memcpy(pMetaHeader, (void*)(&oWmfHeader), lLenHeader);
 
 				oMetaFile.SetHeader(pMetaHeader, lLenHeader);
@@ -84,10 +84,10 @@ void CRecordOfficeArtBlip::ReadFromStream(SRecordHeader & oHeader, POLE::Stream*
 				lOffset += 34;
 
 				oMetaFile.m_bIsValid	= TRUE;
-				oMetaFile.m_sExtension	= L".wmf";//L".pct"; - ÂÐÅÌÅÍÍÎ ïîêà íå ñäåëàíà êîíâåðòàöèÿ pct(pic) õîòü âî ÷òî íèòî  !!!
+				oMetaFile.m_sExtension	= L".wmf";//L".pct"; - Ð’Ð Ð•ÐœÐ•ÐÐÐž Ð¿Ð¾ÐºÐ° Ð½Ðµ ÑÐ´ÐµÐ»Ð°Ð½Ð° ÐºÐ¾Ð½Ð²ÐµÑ€Ñ‚Ð°Ñ†Ð¸Ñ pct(pic) Ñ…Ð¾Ñ‚ÑŒ Ð²Ð¾ Ñ‡Ñ‚Ð¾ Ð½Ð¸Ñ‚Ð¾  !!!
 				
 				CMetaHeader oMetaHeader;
-				oMetaHeader.FromStream(pStream); //îòäåëüíî âûíåñåííûé çàãîëîâîê.. "ôîðìàòíûé" íàõîäèòñÿ â áëîêå äàííûõ
+				oMetaHeader.FromStream(pStream); //Ð¾Ñ‚Ð´ÐµÐ»ÑŒÐ½Ð¾ Ð²Ñ‹Ð½ÐµÑÐµÐ½Ð½Ñ‹Ð¹ Ð·Ð°Ð³Ð¾Ð»Ð¾Ð²Ð¾Ðº.. "Ñ„Ð¾Ñ€Ð¼Ð°Ñ‚Ð½Ñ‹Ð¹" Ð½Ð°Ñ…Ð¾Ð´Ð¸Ñ‚ÑÑ Ð² Ð±Ð»Ð¾ÐºÐµ Ð´Ð°Ð½Ð½Ñ‹Ñ…
 
 				BYTE* pData = new BYTE[oHeader.RecLen - lOffset];
 				pStream->read(pData, oHeader.RecLen - lOffset); 

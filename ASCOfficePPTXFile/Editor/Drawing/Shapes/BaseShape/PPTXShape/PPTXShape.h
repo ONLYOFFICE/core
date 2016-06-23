@@ -434,8 +434,8 @@ public:
 						else 
 							oH.position += _T(" ") + oNodeH.GetAttribute(_T("gdRefY"));
 					}
-					//TODO разобраться с полярными хендлами
-					//поля:
+					//TODO СЂР°Р·РѕР±СЂР°С‚СЊСЃСЏ СЃ РїРѕР»СЏСЂРЅС‹РјРё С…РµРЅРґР»Р°РјРё
+					//РїРѕР»СЏ:
 					//polar = 10800, 10800
 					//position = gdrefR, gdrefAng (adj)
 					//radiusrange = minR, maxR

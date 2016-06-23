@@ -146,7 +146,7 @@ namespace MetaFile
 	}
 	void    CEmfPlayer::DeleteObject(unsigned int ulIndex)
 	{
-		// TODO: Ñäåëàòü ïîèñê ïî DC_BRUSH è DC_PEN
+		// TODO: Ð¡Ð´ÐµÐ»Ð°Ñ‚ÑŒ Ð¿Ð¾Ð¸ÑÐº Ð¿Ð¾ DC_BRUSH Ð¸ DC_PEN
 
 		CEmfObjectMap::const_iterator oPos = m_mObjects.find(ulIndex);
 		if (m_mObjects.end() != oPos)
@@ -180,9 +180,9 @@ namespace MetaFile
 		InitStockPen(false, 0xff, 0xff, 0xff, 0x80000006);
 		InitStockPen(false, 0x00, 0x00, 0x00, 0x80000007);
 		InitStockPen(true, 0x00, 0x00, 0x00, 0x80000008);
-		// TODO: Ñäåëàòü øðèôòû
+		// TODO: Ð¡Ð´ÐµÐ»Ð°Ñ‚ÑŒ ÑˆÑ€Ð¸Ñ„Ñ‚Ñ‹
 
-		// DC_BRUSH è DC_PEN íå íàäî âûñòàâëÿòü
+		// DC_BRUSH Ð¸ DC_PEN Ð½Ðµ Ð½Ð°Ð´Ð¾ Ð²Ñ‹ÑÑ‚Ð°Ð²Ð»ÑÑ‚ÑŒ
 	}
 	void    CEmfPlayer::InitStockBrush(bool bNull, unsigned char r, unsigned char g, unsigned char b, unsigned int ulIndex)
 	{
@@ -344,7 +344,7 @@ namespace MetaFile
 	{
 		m_oTransform.Multiply(oForm, ulMode);
 
-		// Îáíîâëÿåì îáðàòíóþ ìàòðèöó
+		// ÐžÐ±Ð½Ð¾Ð²Ð»ÑÐµÐ¼ Ð¾Ð±Ñ€Ð°Ñ‚Ð½ÑƒÑŽ Ð¼Ð°Ñ‚Ñ€Ð¸Ñ†Ñƒ
 		TEmfXForm* pT = &m_oTransform;
 		double dDet = pT->M11 * pT->M22 - pT->M12 * pT->M21;
 		if (dDet < 0.0001 && dDet > 0.0001)

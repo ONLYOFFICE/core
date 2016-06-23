@@ -38,10 +38,10 @@ void anim_par::pptx_convert(oox::pptx_conversion_context & Context)
 	if (anim_par_)
 	{
 		Context.get_slide_context().start_slide_animation();
-			anim_par_->pptx_convert(Context); // это для самого слайда (то что и нужно)
+			anim_par_->pptx_convert(Context); // СЌС‚Рѕ РґР»СЏ СЃР°РјРѕРіРѕ СЃР»Р°Р№РґР° (С‚Рѕ С‡С‚Рѕ Рё РЅСѓР¶РЅРѕ)
 		Context.get_slide_context().end_slide_animation();
 	}
-///////////////////////// последовательности .. (если один элемент - основная последовательность, иное - взаимодействующая анимация)
+///////////////////////// РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё .. (РµСЃР»Рё РѕРґРёРЅ СЌР»РµРјРµРЅС‚ - РѕСЃРЅРѕРІРЅР°СЏ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ, РёРЅРѕРµ - РІР·Р°РёРјРѕРґРµР№СЃС‚РІСѓСЋС‰Р°СЏ Р°РЅРёРјР°С†РёСЏ)
 	//slide_context().animation_context().start_sequence();
 	BOOST_FOREACH(const office_element_ptr& elm, anim_seq_array_)
     {
@@ -49,7 +49,7 @@ void anim_par::pptx_convert(oox::pptx_conversion_context & Context)
 	}
 	//slide_context().animation_context().end_sequence();
 /////////////////////////////////////////////////////////////////
-//внутренние эффекты - те что внутри одной последовательности
+//РІРЅСѓС‚СЂРµРЅРЅРёРµ СЌС„С„РµРєС‚С‹ - С‚Рµ С‡С‚Рѕ РІРЅСѓС‚СЂРё РѕРґРЅРѕР№ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё
 	BOOST_FOREACH(const office_element_ptr& elm, content_)
     {
 		elm->pptx_convert(Context);
@@ -60,7 +60,7 @@ void anim_par::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, 
 	if CP_CHECK_NAME(L"anim", L"par") 
 		CP_CREATE_ELEMENT(anim_par_);
 	else if	CP_CHECK_NAME(L"anim", L"seq") 
-		CP_CREATE_ELEMENT(anim_seq_array_);//более 1 элемента- взаимосвязанная анимация (между фигурами)
+		CP_CREATE_ELEMENT(anim_seq_array_);//Р±РѕР»РµРµ 1 СЌР»РµРјРµРЅС‚Р°- РІР·Р°РёРјРѕСЃРІСЏР·Р°РЅРЅР°СЏ Р°РЅРёРјР°С†РёСЏ (РјРµР¶РґСѓ С„РёРіСѓСЂР°РјРё)
 	else
 		CP_CREATE_ELEMENT(content_);
 }

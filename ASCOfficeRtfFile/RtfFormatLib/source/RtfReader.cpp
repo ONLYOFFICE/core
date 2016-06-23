@@ -1,4 +1,4 @@
-﻿#include "RtfReader.h"
+#include "RtfReader.h"
 #include "Writer/OOXWriter.h"
 #include "DestinationCommand.h"
 

@@ -1,11 +1,11 @@
 #pragma once
 /*
 
-Схема работы с visitor:
+РЎС…РµРјР° СЂР°Р±РѕС‚С‹ СЃ visitor:
 
-для классов, которые могут быть посещены visitor-ом:
-1. наследуем от base_visitable
-2. объявляем внутри макрос CPDOCCORE_DEFINE_VISITABLE()
+РґР»СЏ РєР»Р°СЃСЃРѕРІ, РєРѕС‚РѕСЂС‹Рµ РјРѕРіСѓС‚ Р±С‹С‚СЊ РїРѕСЃРµС‰РµРЅС‹ visitor-РѕРј:
+1. РЅР°СЃР»РµРґСѓРµРј РѕС‚ base_visitable
+2. РѕР±СЉСЏРІР»СЏРµРј РІРЅСѓС‚СЂРё РјР°РєСЂРѕСЃ CPDOCCORE_DEFINE_VISITABLE()
 
 class example_visitable_element: public base_visitable 
 {
@@ -15,16 +15,16 @@ public:
 // ... 
 };
 
-Для создания гостя:
-1. наследуем гостя от base_visitor
-2. наследуем гостя(визитор) от const_visitor<visitable_element1>/visitor<visitable_element1>, 
-                        const_visitor<visitable_element2>/visitor<visitable_element2>, и т.д.
-   для каждого из элементов, котоыре может посетить визитор
-3. объявляем для каждого из элементов метод 
+Р”Р»СЏ СЃРѕР·РґР°РЅРёСЏ РіРѕСЃС‚СЏ:
+1. РЅР°СЃР»РµРґСѓРµРј РіРѕСЃС‚СЏ РѕС‚ base_visitor
+2. РЅР°СЃР»РµРґСѓРµРј РіРѕСЃС‚СЏ(РІРёР·РёС‚РѕСЂ) РѕС‚ const_visitor<visitable_element1>/visitor<visitable_element1>,
+                        const_visitor<visitable_element2>/visitor<visitable_element2>, Рё С‚.Рґ.
+   РґР»СЏ РєР°Р¶РґРѕРіРѕ РёР· СЌР»РµРјРµРЅС‚РѕРІ, РєРѕС‚РѕС‹СЂРµ РјРѕР¶РµС‚ РїРѕСЃРµС‚РёС‚СЊ РІРёР·РёС‚РѕСЂ
+3. РѕР±СЉСЏРІР»СЏРµРј РґР»СЏ РєР°Р¶РґРѕРіРѕ РёР· СЌР»РµРјРµРЅС‚РѕРІ РјРµС‚РѕРґ
     virtual void visit(const visitable_element1& val);
     virtual void visit(const visitable_element2& val);
-    и т.д.
-    (в случае неконстатности - убираем const)
+    Рё С‚.Рґ.
+    (РІ СЃР»СѓС‡Р°Рµ РЅРµРєРѕРЅСЃС‚Р°С‚РЅРѕСЃС‚Рё - СѓР±РёСЂР°РµРј const)
 
 
 class table_round : public base_visitor, 
@@ -48,16 +48,16 @@ class table_round : public base_visitor,
     }
 };
 
-Для организации обхода:
-1. Создаем визитор
-2. Выполняем accept для корневого элемента
+Р”Р»СЏ РѕСЂРіР°РЅРёР·Р°С†РёРё РѕР±С…РѕРґР°:
+1. РЎРѕР·РґР°РµРј РІРёР·РёС‚РѕСЂ
+2. Р’С‹РїРѕР»РЅСЏРµРј accept РґР»СЏ РєРѕСЂРЅРµРІРѕРіРѕ СЌР»РµРјРµРЅС‚Р°
 
 office_element * root;
 /// ... 
 table_round tableRoundVisitor;
 root->accept(tableRoundVisitor);
 
-Внимание! Визитор САМ определяет правила обхода внутренних вершин, т.е. внутри каждой функции посещения требуется написать например
+Р’РЅРёРјР°РЅРёРµ! Р’РёР·РёС‚РѕСЂ РЎРђРњ РѕРїСЂРµРґРµР»СЏРµС‚ РїСЂР°РІРёР»Р° РѕР±С…РѕРґР° РІРЅСѓС‚СЂРµРЅРЅРёС… РІРµСЂС€РёРЅ, С‚.Рµ. РІРЅСѓС‚СЂРё РєР°Р¶РґРѕР№ С„СѓРЅРєС†РёРё РїРѕСЃРµС‰РµРЅРёСЏ С‚СЂРµР±СѓРµС‚СЃСЏ РЅР°РїРёСЃР°С‚СЊ РЅР°РїСЂРёРјРµСЂ
     
     virtual void visit(const office_body& val)
     {

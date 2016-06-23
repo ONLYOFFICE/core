@@ -24,7 +24,7 @@ public:
 
 		NSStreamReader::Read(pStream, m_oTextRuler);
 
-		// на всякий случай...
+		// РЅР° РІСЃСЏРєРёР№ СЃР»СѓС‡Р°Р№...
 		StreamUtils::StreamSeek(lOffset + m_oHeader.RecLen, pStream);
 	}
 

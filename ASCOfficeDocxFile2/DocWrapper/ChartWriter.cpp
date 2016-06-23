@@ -1,4 +1,4 @@
-﻿#include "ChartWriter.h"
+#include "ChartWriter.h"
 
 #include <algorithm>
 #include "../../Common/DocxFormat/Source/XlsxFormat/Xlsx.h"

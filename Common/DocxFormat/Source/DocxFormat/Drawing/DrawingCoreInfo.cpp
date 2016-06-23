@@ -11,7 +11,7 @@ namespace OOX
 		{
 			m_eType = et_Unknown;
 
-			// TO DO : Реализовать
+			// TO DO : Р РµР°Р»РёР·РѕРІР°С‚СЊ
 		}
 		void CNonVisualPictureProperties::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
@@ -79,7 +79,7 @@ namespace OOX
 		{
 			m_eType = et_Unknown;
 
-			// TO DO: Реализовать
+			// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ
 		}
 		void CNonVisualDrawingProps::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
@@ -191,11 +191,11 @@ namespace OOX
 		//--------------------------------------------------------------------------------	
 		void CHyperlink::fromXML(XmlUtils::CXmlNode& oNode)
 		{
-			// TO DO: Реализовать
+			// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ
 		}
 		void CHyperlink::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
-			// Определим тип текущей ноды
+			// РћРїСЂРµРґРµР»РёРј С‚РёРї С‚РµРєСѓС‰РµР№ РЅРѕРґС‹
             CString sName = oReader.GetName();
 			if ( _T("a:hlinkClick") == sName  )
 				m_eType = et_a_hlinkClick;

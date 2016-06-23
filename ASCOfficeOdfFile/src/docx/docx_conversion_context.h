@@ -443,7 +443,7 @@ public:
 	std::vector<_comment_desc> comments_;
 private:
 	int state_;
-	rels internal_rels_;//это для гиперлинков или медиа в комментариях
+	rels internal_rels_;//СЌС‚Рѕ РґР»СЏ РіРёРїРµСЂР»РёРЅРєРѕРІ РёР»Рё РјРµРґРёР° РІ РєРѕРјРјРµРЅС‚Р°СЂРёСЏС…
 };
 
 class docx_conversion_context : boost::noncopyable
@@ -678,10 +678,10 @@ private:
     headers_footers headers_footers_;
     std::wstring current_master_page_name_;
 
-    // счетчик для нумерации имен созданных в процессе конвертации стилей
+    // СЃС‡РµС‚С‡РёРє РґР»СЏ РЅСѓРјРµСЂР°С†РёРё РёРјРµРЅ СЃРѕР·РґР°РЅРЅС‹С… РІ РїСЂРѕС†РµСЃСЃРµ РєРѕРЅРІРµСЂС‚Р°С†РёРё СЃС‚РёР»РµР№
     size_t new_list_style_number_;
 
-    // цепочки переименований нумераций
+    // С†РµРїРѕС‡РєРё РїРµСЂРµРёРјРµРЅРѕРІР°РЅРёР№ РЅСѓРјРµСЂР°С†РёР№
     boost::unordered_map<std::wstring, std::wstring> list_style_renames_;
 
     bool rtl_; // right-to-left

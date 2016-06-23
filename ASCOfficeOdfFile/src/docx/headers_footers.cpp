@@ -54,7 +54,7 @@ std::wstring get_rel_type(headers_footers::Type _Type)
     
 }
 
-void headers_footers::dump_rels(rels & Rels) const//внешние релсы
+void headers_footers::dump_rels(rels & Rels) const//РІРЅРµС€РЅРёРµ СЂРµР»СЃС‹
 {
     BOOST_FOREACH(const instances_map::value_type & instAr, instances_)
     {

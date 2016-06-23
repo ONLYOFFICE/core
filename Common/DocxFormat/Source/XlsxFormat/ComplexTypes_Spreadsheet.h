@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "../Common/ComplexTypes.h"
 
 #include "SimpleTypes_Spreadsheet.h"

@@ -1,4 +1,4 @@
-﻿#ifndef _PDF_READER_STREAM_H
+#ifndef _PDF_READER_STREAM_H
 #define _PDF_READER_STREAM_H
 
 #include <stdio.h>

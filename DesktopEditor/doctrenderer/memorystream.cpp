@@ -1,4 +1,4 @@
-﻿#include "memorystream.h"
+#include "memorystream.h"
 
 // wrap_methods -------------
 CMemoryStream* unwrap_memorystream(v8::Handle<v8::Object> obj)

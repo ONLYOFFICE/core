@@ -1,4 +1,4 @@
-﻿#include "Shading.h"
+#include "Shading.h"
 
 namespace PdfWriter
 {

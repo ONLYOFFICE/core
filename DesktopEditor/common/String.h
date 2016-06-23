@@ -1,4 +1,4 @@
-﻿#ifndef _BUILD_STRING_CROSSPLATFORM_H_
+#ifndef _BUILD_STRING_CROSSPLATFORM_H_
 #define _BUILD_STRING_CROSSPLATFORM_H_
 
 #include "CPEncodings/CodePage.h"

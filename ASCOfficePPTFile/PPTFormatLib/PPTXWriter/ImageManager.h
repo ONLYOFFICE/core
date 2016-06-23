@@ -56,7 +56,7 @@ namespace NSPresentationEditor
 			std::wstring strOutput = m_strDstMedia + string2std_string(strImage) + strExts;		
 			strImage  = _T("../media/") + strImage + std_string2string(strExts);
 
-			// теперь нужно скопировать картинку
+			// С‚РµРїРµСЂСЊ РЅСѓР¶РЅРѕ СЃРєРѕРїРёСЂРѕРІР°С‚СЊ РєР°СЂС‚РёРЅРєСѓ
 			if (strOutput != strInput)
 			{
 				if (CDirectory::CopyFile(std_string2string(strInput), std_string2string(strOutput), NULL, NULL) == false)

@@ -2,7 +2,7 @@
 
 namespace DocFileFormat
 {
-	// 2.3.4.44 Group Shape Boolean Properties	-	[MS-ODRAW] — v20130726
+	// 2.3.4.44 Group Shape Boolean Properties	-	[MS-ODRAW] â€” v20130726
 
 	class GroupShapeBooleanProperties
 	{

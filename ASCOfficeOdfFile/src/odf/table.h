@@ -590,7 +590,7 @@ public:
     void xlsx_convert(oox::xlsx_conversion_context & Context);
     void pptx_convert(oox::pptx_conversion_context & Context);
 
-	int get_count(){return content_.size();}//временно .. для группировок
+	int get_count(){return content_.size();}//РІСЂРµРјРµРЅРЅРѕ .. РґР»СЏ РіСЂСѓРїРїРёСЂРѕРІРѕРє
 
 public:
     office_element_ptr_array	content_;

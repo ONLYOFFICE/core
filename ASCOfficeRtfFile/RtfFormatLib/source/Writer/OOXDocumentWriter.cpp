@@ -1,4 +1,4 @@
-﻿#include "OOXDocumentWriter.h"
+#include "OOXDocumentWriter.h"
 //#include "OOXContentTypesWriter.h"
 #include "OOXRelsWriter.h"
 #include "OOXDocumentWriter.h"

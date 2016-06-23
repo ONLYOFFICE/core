@@ -1,4 +1,4 @@
-﻿
+
 #include "../RtfFormatLib/source/ConvertationManager.h"
 #include "../../../ServerComponents/ASCOfficeUtils/ASCOfficeUtilsLib/OfficeUtils.h"
 

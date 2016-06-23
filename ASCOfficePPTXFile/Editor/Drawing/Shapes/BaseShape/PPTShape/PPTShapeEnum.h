@@ -209,7 +209,7 @@ namespace PPTShapes
 		sptCHostControl = 201,//
 		sptCTextBox = 202,//
 
-		//далее номеров не имеют и упорядочены по алфавиту
+		//РґР°Р»РµРµ РЅРѕРјРµСЂРѕРІ РЅРµ РёРјРµСЋС‚ Рё СѓРїРѕСЂСЏРґРѕС‡РµРЅС‹ РїРѕ Р°Р»С„Р°РІРёС‚Сѓ
 		sptCChartPlus = 203,
 		sptCChartStar,
 		sptCChartX,

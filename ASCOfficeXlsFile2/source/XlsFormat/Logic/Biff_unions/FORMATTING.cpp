@@ -76,7 +76,7 @@ const bool FORMATTING::loadContent(BinProcessor& proc)
 		count--;
 	}	
 
-	global_info->cellStyleDxfs_count = m_arDXF.size(); // + будут юзерские
+	global_info->cellStyleDxfs_count = m_arDXF.size(); // + Р±СѓРґСѓС‚ СЋР·РµСЂСЃРєРёРµ
 	//----------------------------------------------------------------------------------------------------	
 	if (proc.optional<STYLES>())
 	{
@@ -90,7 +90,7 @@ const bool FORMATTING::loadContent(BinProcessor& proc)
 		elements_.pop_back();
 	}
 		
-	if (proc.optional<THEME>()) // не по стандарту - china_price.xls 
+	if (proc.optional<THEME>()) // РЅРµ РїРѕ СЃС‚Р°РЅРґР°СЂС‚Сѓ - china_price.xls 
 	{
 		m_THEME = elements_.back();
 		elements_.pop_back();

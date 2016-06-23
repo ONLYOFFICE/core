@@ -2,7 +2,7 @@
 
 #include "OfficeArtBlip.h"
 
-// не используется, ms word сохраняет только в png tiff файлы
+// РЅРµ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ, ms word СЃРѕС…СЂР°РЅСЏРµС‚ С‚РѕР»СЊРєРѕ РІ png tiff С„Р°Р№Р»С‹
 
 namespace OfficeArt
 {

@@ -1,4 +1,4 @@
-﻿#include "Table.h" 
+#include "Table.h" 
 #include "Paragraph.h"
 #include "Annotations.h"
 #include "Sdt.h"

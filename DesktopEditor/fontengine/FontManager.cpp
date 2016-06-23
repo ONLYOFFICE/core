@@ -1,4 +1,4 @@
-﻿ #include "ApplicationFonts.h"
+ #include "ApplicationFonts.h"
 #include "../common/File.h"
 #include <stdio.h>
 #include "ftsnames.h"

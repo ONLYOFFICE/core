@@ -1,4 +1,4 @@
-﻿#include "BinaryFileReaderWriter.h"
+#include "BinaryFileReaderWriter.h"
 
 #include "../../Common/DocxFormat/Source/Base/Nullable.h"
 #include "BinReaderWriterDefines.h"

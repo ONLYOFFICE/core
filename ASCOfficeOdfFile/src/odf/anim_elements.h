@@ -16,7 +16,7 @@ namespace odf_reader {
 
 
 //anim:par
-class anim_par : public office_element_impl<anim_par>//Параллельные анимации
+class anim_par : public office_element_impl<anim_par>//РџР°СЂР°Р»Р»РµР»СЊРЅС‹Рµ Р°РЅРёРјР°С†РёРё
 {
 public:
     static const wchar_t * ns;
@@ -39,7 +39,7 @@ private:
 CP_REGISTER_OFFICE_ELEMENT2(anim_par);
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //anim:seq
-class anim_seq : public office_element_impl<anim_seq>//Последовательные анимации
+class anim_seq : public office_element_impl<anim_seq>//РџРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅС‹Рµ Р°РЅРёРјР°С†РёРё
 {
 public:
     static const wchar_t * ns;
@@ -61,7 +61,7 @@ private:
 CP_REGISTER_OFFICE_ELEMENT2(anim_seq);
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //anim:iterate 
-//class anim_iterate : public office_element_impl<anim_iterate>//Итеративные анимации
+//class anim_iterate : public office_element_impl<anim_iterate>//РС‚РµСЂР°С‚РёРІРЅС‹Рµ Р°РЅРёРјР°С†РёРё
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //----------------------------------------------------------------------------------------------------------------/

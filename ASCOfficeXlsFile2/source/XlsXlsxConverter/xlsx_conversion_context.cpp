@@ -81,16 +81,16 @@ void xlsx_conversion_context::set_state(const std::wstring & state)
 void xlsx_conversion_context::start_chart()
 {
 	charts_.push_back(oox_chart_context::create());
-	//добавляем новую форму для диаграммы
-	 //в ней будет информационная часть - и она пишется каждый раз в свою xml (их - по числу диаграмм)
-	//этот контекст нужно передавать в файл
+	//РґРѕР±Р°РІР»СЏРµРј РЅРѕРІСѓСЋ С„РѕСЂРјСѓ РґР»СЏ РґРёР°РіСЂР°РјРјС‹
+	 //РІ РЅРµР№ Р±СѓРґРµС‚ РёРЅС„РѕСЂРјР°С†РёРѕРЅРЅР°СЏ С‡Р°СЃС‚СЊ - Рё РѕРЅР° РїРёС€РµС‚СЃСЏ РєР°Р¶РґС‹Р№ СЂР°Р· РІ СЃРІРѕСЋ xml (РёС… - РїРѕ С‡РёСЃР»Сѓ РґРёР°РіСЂР°РјРј)
+	//СЌС‚РѕС‚ РєРѕРЅС‚РµРєСЃС‚ РЅСѓР¶РЅРѕ РїРµСЂРµРґР°РІР°С‚СЊ РІ С„Р°Р№Р»
 
 }
 
 void xlsx_conversion_context::end_chart()
 {
 	//current_chart().set_drawing_link(current_sheet().get_drawing_link());
-	//излишняя инфа
+	//РёР·Р»РёС€РЅСЏСЏ РёРЅС„Р°
 }
 
 void xlsx_conversion_context::end_table()
@@ -111,7 +111,7 @@ void xlsx_conversion_context::end_document()
 	std::wstringstream workbook_content;
 
     unsigned int count = 0;
-    // добавляем таблицы
+    // РґРѕР±Р°РІР»СЏРµРј С‚Р°Р±Р»РёС†С‹
     BOOST_FOREACH(const xlsx_xml_worksheet_ptr& sheet, sheets_)
     {
         count++;
@@ -165,7 +165,7 @@ void xlsx_conversion_context::end_document()
         }
 
     }
-	//добавляем диаграммы
+	//РґРѕР±Р°РІР»СЏРµРј РґРёР°РіСЂР°РјРјС‹
 
 	count = 0;
     BOOST_FOREACH(const oox_chart_context_ptr& chart, charts_)

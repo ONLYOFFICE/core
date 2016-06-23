@@ -1,4 +1,4 @@
-﻿
+
 #include "ASCConverters.h"
 //todo убрать ошибки компиляции если переместить include ниже
 #include "../../PdfWriter/OnlineOfficeBinToPdf.h"

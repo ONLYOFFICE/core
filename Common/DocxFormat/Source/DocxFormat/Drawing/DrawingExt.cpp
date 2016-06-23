@@ -1,4 +1,4 @@
-﻿#include "DrawingExt.h"
+#include "DrawingExt.h"
 #include "../../XlsxFormat/Worksheets/Sparkline.h"
 
 namespace OOX

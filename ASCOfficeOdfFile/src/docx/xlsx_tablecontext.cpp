@@ -267,7 +267,7 @@ void xlsx_table_context::serialize_autofilter(std::wostream & _Wostream)
 	{			
 		CP_XML_NODE(L"autoFilter")
 		{
-			//в автофильтре тока простые диапазоны .. для сложных нужно выделять tablePart - todooo
+			//РІ Р°РІС‚РѕС„РёР»СЊС‚СЂРµ С‚РѕРєР° РїСЂРѕСЃС‚С‹Рµ РґРёР°РїР°Р·РѕРЅС‹ .. РґР»СЏ СЃР»РѕР¶РЅС‹С… РЅСѓР¶РЅРѕ РІС‹РґРµР»СЏС‚СЊ tablePart - todooo
 			CP_XML_ATTR(L"ref", getCellAddress(cell_start.first, cell_start.second) + L":" + getCellAddress(cell_end.first, cell_end.second));
 			//CP_XML_ATTR(L"ref", ref);
 		}

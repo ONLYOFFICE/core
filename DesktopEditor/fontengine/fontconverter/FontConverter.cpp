@@ -1,4 +1,4 @@
-﻿#include "../FontConverter.h"
+#include "../FontConverter.h"
 
 #include "Consts.h"
 #include "Utils.h"

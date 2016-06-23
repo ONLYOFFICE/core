@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #ifndef OOX_SPARKLINE_FILE_INCLUDE_H_
 #define OOX_SPARKLINE_FILE_INCLUDE_H_
 

@@ -1,4 +1,4 @@
-﻿#include "Directory.h"
+#include "Directory.h"
 #include "../../Base/ASCString.h"
 #include "../../Base/Base.h"
 

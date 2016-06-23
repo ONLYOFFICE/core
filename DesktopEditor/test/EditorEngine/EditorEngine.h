@@ -190,7 +190,7 @@ __interface IEditorEngine : IDispatch
 	[id(100)]	HRESULT ImageTest([in] BSTR bsFileName);
 	[id(101)]	HRESULT PageTest([in] BSTR bsFileName, [in] BSTR bsTestFile, [in] double dWidth, [in] double dHeight);
 	
-//----- Äëÿ äîïîëíèòåëüíûõ ôóíêöèé ----------------------------------------------------------------
+//----- Ð”Ð»Ñ Ð´Ð¾Ð¿Ð¾Ð»Ð½Ð¸Ñ‚ÐµÐ»ÑŒÐ½Ñ‹Ñ… Ñ„ÑƒÐ½ÐºÑ†Ð¸Ð¹ ----------------------------------------------------------------
 	[id(10001)]	HRESULT SetAdditionalParam([in] BSTR ParamName, [in] VARIANT	ParamValue);
 	[id(10002)]	HRESULT GetAdditionalParam([in] BSTR ParamName, [out] VARIANT *	ParamValue);
 };
@@ -238,7 +238,7 @@ public:
 		if (FALSE)
 		{
 			CBgraFrame oFrame2;
-			oFrame2.OpenFile(L"\\\\korshul\\Exchange\\1234\\çàãðóæåííîå.png");
+			oFrame2.OpenFile(L"\\\\korshul\\Exchange\\1234\\Ð·Ð°Ð³Ñ€ÑƒÐ¶ÐµÐ½Ð½Ð¾Ðµ.png");
 
 			BYTE* pData = oFrame2.get_Data();
 			int nCount = oFrame2.get_Width() * oFrame2.get_Height() * 4;
@@ -913,7 +913,7 @@ private:
                     curindex += 4;
 
                     m1 = (*m++) / 100000.0;
-                    // â PDF ñòîèò îãðàíè÷åíèå íà ðàçìåð øðèôòà
+                    // Ð² PDF ÑÑ‚Ð¾Ð¸Ñ‚ Ð¾Ð³Ñ€Ð°Ð½Ð¸Ñ‡ÐµÐ½Ð¸Ðµ Ð½Ð° Ñ€Ð°Ð·Ð¼ÐµÑ€ ÑˆÑ€Ð¸Ñ„Ñ‚Ð°
 					pRenderer->put_FontSize(min(m1, 1000));
                     break;
 				}

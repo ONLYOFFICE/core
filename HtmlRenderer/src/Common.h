@@ -1,4 +1,4 @@
-﻿#ifndef _ASC_HTMLRENDERER_COMMON_H_
+#ifndef _ASC_HTMLRENDERER_COMMON_H_
 #define _ASC_HTMLRENDERER_COMMON_H_
 
 #include "../../DesktopEditor/common/Types.h"

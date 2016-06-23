@@ -1,4 +1,4 @@
-﻿#ifndef _PDF_WRITER_SRC_OUTLINE_H
+#ifndef _PDF_WRITER_SRC_OUTLINE_H
 #define _PDF_WRITER_SRC_OUTLINE_H
 
 #include "Objects.h"

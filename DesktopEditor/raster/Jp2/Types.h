@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "Reader.h"
 #include "../../graphics/Defines.h"
 #include <algorithm>

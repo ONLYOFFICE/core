@@ -97,18 +97,18 @@ private:
 	_oox_fill							fill_;
               
 };
-//autoTitleDeleted (Auto Title Is Deleted) ง21.2.2.7
-//backWall (Back Wall) ง21.2.2.11
-//dispBlanksAs (Display Blanks As) ง21.2.2.42
-//extLst (Chart Extensibility) ง21.2.2.64
-//floor (Floor) ง21.2.2.69
-//legend (Legend) ง21.2.2.93
-//pivotFmts (Pivot Formats) ง21.2.2.143
-//plotArea (Plot Area) ง21.2.2.145
-//plotVisOnly (Plot Visible Only) ง21.2.2.146
-//showDLblsOverMax (Show Data Labels over Maximum) ง21.2.2.180
-//sideWall (Side Wall) ง21.2.2.191
-//title (Title) ง21.2.2.210
+//autoTitleDeleted (Auto Title Is Deleted) ยง21.2.2.7
+//backWall (Back Wall) ยง21.2.2.11
+//dispBlanksAs (Display Blanks As) ยง21.2.2.42
+//extLst (Chart Extensibility) ยง21.2.2.64
+//floor (Floor) ยง21.2.2.69
+//legend (Legend) ยง21.2.2.93
+//pivotFmts (Pivot Formats) ยง21.2.2.143
+//plotArea (Plot Area) ยง21.2.2.145
+//plotVisOnly (Plot Visible Only) ยง21.2.2.146
+//showDLblsOverMax (Show Data Labels over Maximum) ยง21.2.2.180
+//sideWall (Side Wall) ยง21.2.2.191
+//title (Title) ยง21.2.2.210
 //view3D (View In 3D)
 }
 }

@@ -1,4 +1,4 @@
-﻿#include "Writer/OOXWriter.h"
+#include "Writer/OOXWriter.h"
 #include "IdGenerator.h"
 
 CString RtfDocumentProperty::RenderToRtf(RenderParameter oRenderParameter)

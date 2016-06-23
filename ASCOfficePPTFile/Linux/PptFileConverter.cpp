@@ -1,4 +1,4 @@
-﻿#include "../PPTFormatLib/PPTFormatLib.h"
+#include "../PPTFormatLib/PPTFormatLib.h"
 
 #include <iostream>
 #include "../Win32/version.h"

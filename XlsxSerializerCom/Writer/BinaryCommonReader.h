@@ -23,7 +23,7 @@ namespace BinXlsxRW {
 			if(c_oSerConstants::ReadOk != res)
 				return res;
 			long stLen = m_oBufferedStream.GetLong();
-			//Смотрим есть ли данные под всю таблицу в дальнейшем спокойно пользуемся get функциями
+			//РЎРјРѕС‚СЂРёРј РµСЃС‚СЊ Р»Рё РґР°РЅРЅС‹Рµ РїРѕРґ РІСЃСЋ С‚Р°Р±Р»РёС†Сѓ РІ РґР°Р»СЊРЅРµР№С€РµРј СЃРїРѕРєРѕР№РЅРѕ РїРѕР»СЊР·СѓРµРјСЃСЏ get С„СѓРЅРєС†РёСЏРјРё
 			res = m_oBufferedStream.Peek(stLen) == false ? c_oSerConstants::ErrorStream : c_oSerConstants::ReadOk;
 			if(c_oSerConstants::ReadOk != res)
 				return res;
@@ -44,7 +44,7 @@ namespace BinXlsxRW {
 
 				if (length + stCurPos > stLen)
 				{
-					//ОШИБКА ЧТЕНИЯ БИНАРНИКА - пропускаем элемент
+					//РћРЋРР‘В Рђ Р§TР•РќРСЏ Р‘РРќРђР РќРВ Рђ - РїСЂРѕРїСѓСЃРєР°РµРј СЌР»РµРјРµРЅС‚
 					m_oBufferedStream.Seek(start_pos + stLen);
 					return c_oSerConstants::ReadOk;
 				} 

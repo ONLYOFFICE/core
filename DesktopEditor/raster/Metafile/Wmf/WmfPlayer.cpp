@@ -101,7 +101,7 @@ namespace MetaFile
 	}
 	void    CWmfPlayer::RegisterObject(CWmfObjectBase* pObject)
 	{
-		// Найдем наименьший доступный индекс
+		// РќР°Р№РґРµРј РЅР°РёРјРµРЅСЊС€РёР№ РґРѕСЃС‚СѓРїРЅС‹Р№ РёРЅРґРµРєСЃ
 		unsigned short ushIndex = m_ushIndex;
 		int nAvailableIndex = -1;
 		if (m_vAvailableIndexes.size() > 0)
@@ -189,7 +189,7 @@ namespace MetaFile
 		{
 			if (std::find(m_vAvailableIndexes.begin(), m_vAvailableIndexes.end(), ushIndex) != m_vAvailableIndexes.end())
 			{
-				// Данный индекс уже есть в списке доступных
+				// Р”Р°РЅРЅС‹Р№ РёРЅРґРµРєСЃ СѓР¶Рµ РµСЃС‚СЊ РІ СЃРїРёСЃРєРµ РґРѕСЃС‚СѓРїРЅС‹С…
 			}
 			else
 			{

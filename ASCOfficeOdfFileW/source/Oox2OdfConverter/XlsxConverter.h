@@ -111,7 +111,7 @@ namespace Oox2Odf
 		void convert(OOX::Spreadsheet::WritingElement	*oox_unknown);
     private:		
 		OOX::Spreadsheet::CXlsx					*xlsx_document;
-		OOX::Spreadsheet::CDrawing				*xlsx_current_drawing; //пока сюда .. потом покрасивше, для внешних ссылок
+		OOX::Spreadsheet::CDrawing				*xlsx_current_drawing; //РїРѕРєР° СЃСЋРґР° .. РїРѕС‚РѕРј РїРѕРєСЂР°СЃРёРІС€Рµ, РґР»СЏ РІРЅРµС€РЅРёС… СЃСЃС‹Р»РѕРє
 		
 		odf_writer::ods_conversion_context		*ods_context;
 

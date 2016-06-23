@@ -187,7 +187,7 @@ void style_graphic_properties::add_child_element( xml::sax * Reader, const ::std
     }
 
 	//if (CP_CHECK_NAME(L"text", L"list-style") 	
-	//	styles_.add_child_element(Reader, Ns, Name, getContext()); он тут и не нужен по сути... описание есть и в другом сместе
+	//	styles_.add_child_element(Reader, Ns, Name, getContext()); РѕРЅ С‚СѓС‚ Рё РЅРµ РЅСѓР¶РµРЅ РїРѕ СЃСѓС‚Рё... РѕРїРёСЃР°РЅРёРµ РµСЃС‚СЊ Рё РІ РґСЂСѓРіРѕРј СЃРјРµСЃС‚Рµ
 }
 
 }

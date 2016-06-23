@@ -36,7 +36,7 @@ public:
 
 		if (m_oHeader.IsContainer())
 		{
-			// à ïî-äðóãîìó è áûòü íå ìîãëî...
+			// Ð° Ð¿Ð¾-Ð´Ñ€ÑƒÐ³Ð¾Ð¼Ñƒ Ð¸ Ð±Ñ‹Ñ‚ÑŒ Ð½Ðµ Ð¼Ð¾Ð³Ð»Ð¾...
 			DWORD lSymbolCount = 0;
 
 			UINT lCurLen = 0;
@@ -93,7 +93,7 @@ public:
 					if (0 > nCurrentTextHeader)
 						continue;
 
-					// çäåñü åùå íàñòîéêè êðîìå òåêñòà
+					// Ð·Ð´ÐµÑÑŒ ÐµÑ‰Ðµ Ð½Ð°ÑÑ‚Ð¾Ð¹ÐºÐ¸ ÐºÑ€Ð¾Ð¼Ðµ Ñ‚ÐµÐºÑÑ‚Ð°
 					if (NULL != pChars)
 					{
 						m_arTextPlaceHolders[nCurrentSlide][nCurrentTextHeader].m_strText = pChars->m_strText;

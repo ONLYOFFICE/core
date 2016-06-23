@@ -33,7 +33,7 @@ namespace NSOfficeDrawing
 		}
 
 	public:
-		LONG ReadLONG() // int32 подразумевается
+		LONG ReadLONG() // int32 РїРѕРґСЂР°Р·СѓРјРµРІР°РµС‚СЃСЏ
 		{
 			DWORD lOldOrigin = m_lOrigin;
 			m_lOrigin += 4;

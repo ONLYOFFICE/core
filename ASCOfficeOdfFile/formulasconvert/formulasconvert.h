@@ -7,8 +7,8 @@ namespace cpdoccore {
 namespace formulasconvert {
 
 
-// –‡·ÓÚ‡ Ò ÙÓÛÏÛÎ‡ÏË OpenOffice, ÔÂÓ·‡ÁÓ‚‡ÌËÂ.
-// œËÏÂ˚ ÒÏ. ‚ ÚÂÒÚÂ ut_formulasconvert.cpp
+// –†–∞–±–æ—Ç–∞ —Å —Ñ–æ—Ä—É–º—É–ª–∞–º–∏ OpenOffice, –ø—Ä–µ–æ–±—Ä–∞–∑–æ–≤–∞–Ω–∏–µ.
+// –ü—Ä–∏–º–µ—Ä—ã —Å–º. –≤ —Ç–µ—Å—Ç–µ ut_formulasconvert.cpp
 class odf2oox_converter
 {
 public:
@@ -18,7 +18,7 @@ public:
     // of:=SUM([.DDA1:.BA3]) -> SUM(DDA1:BA3)
     std::wstring convert(std::wstring const & expr);
     
-    // $ÀËÒÚ1.$A$1 -> ÀËÒÚ1!$A$1
+    // $–õ–∏—Å—Ç1.$A$1 -> –õ–∏—Å—Ç1!$A$1
     std::wstring convert_named_ref(std::wstring const & expr, bool withTableName = true);
 
 	//a-la convert without check formula
@@ -55,7 +55,7 @@ public:
  	
 	std::wstring convert_conditional_formula(std::wstring const & expr);
   
-    // ÀËÒÚ1!$A$1 -> $ÀËÒÚ1.$A$1 
+    // –õ–∏—Å—Ç1!$A$1 -> $–õ–∏—Å—Ç1.$A$1 
     std::wstring convert_named_ref(std::wstring const & expr);
 
 	std::wstring find_base_cell(std::wstring const & expr);

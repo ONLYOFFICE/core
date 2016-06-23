@@ -61,9 +61,9 @@ namespace ASCDocFileFormat
 			fcPlcfHdrtxbxTxt	=	618,
 			lcbPlcfHdrtxbxTxt	=	622,
 
-			fcPlcfTxbxBkd		=	754,	//	смещение в стриме для структур описывающих текст в автофигурах (main document)
+			fcPlcfTxbxBkd		=	754,	//	СЃРјРµС‰РµРЅРёРµ РІ СЃС‚СЂРёРјРµ РґР»СЏ СЃС‚СЂСѓРєС‚СѓСЂ РѕРїРёСЃС‹РІР°СЋС‰РёС… С‚РµРєСЃС‚ РІ Р°РІС‚РѕС„РёРіСѓСЂР°С… (main document)
 			lcbPlcfTxbxBkd		=	758,
-			fcPlcfTxbxHdrBkd	=	762,	//	смещение в стриме для структур описывающих текст в автофигурах (header)
+			fcPlcfTxbxHdrBkd	=	762,	//	СЃРјРµС‰РµРЅРёРµ РІ СЃС‚СЂРёРјРµ РґР»СЏ СЃС‚СЂСѓРєС‚СѓСЂ РѕРїРёСЃС‹РІР°СЋС‰РёС… С‚РµРєСЃС‚ РІ Р°РІС‚РѕС„РёРіСѓСЂР°С… (header)
 			lcbPlcfTxbxHdrBkd	=	766
 
 		};

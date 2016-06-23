@@ -65,7 +65,7 @@ public:
 				m_bExistsTransition	=	true;
 				m_oSlideShowSlideInfoAtom.ReadFromStream ( oRec, pStream );
 
-				// TODO : временно
+				// TODO : РІСЂРµРјРµРЅРЅРѕ
 				if ( 0 == m_oSlideShowSlideInfoAtom.m_nEffectType )
 					m_bExistsTransition	=	false;
 				
@@ -90,7 +90,7 @@ public:
 		}
 		if (lCurLen != m_oHeader.RecLen)
 		{
-			// нужно разобраться, что тут такое!!!
+			// РЅСѓР¶РЅРѕ СЂР°Р·РѕР±СЂР°С‚СЊСЃСЏ, С‡С‚Рѕ С‚СѓС‚ С‚Р°РєРѕРµ!!!
 			LONG lPosition = 0;
 			StreamUtils::StreamSeek(lPosition + m_oHeader.RecLen, pStream);
 		}

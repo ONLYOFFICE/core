@@ -1,4 +1,4 @@
-﻿#ifndef _METAFILE_COMMON_METAFILERENDERER_H
+#ifndef _METAFILE_COMMON_METAFILERENDERER_H
 #define _METAFILE_COMMON_METAFILERENDERER_H
 
 #include "../../../graphics/IRenderer.h"

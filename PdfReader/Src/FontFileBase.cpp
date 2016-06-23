@@ -1,4 +1,4 @@
-﻿#include <stdio.h>
+#include <stdio.h>
 #include "MemoryUtils.h"
 #include "FontFileBase.h"
 #include "../../DesktopEditor/common/File.h"

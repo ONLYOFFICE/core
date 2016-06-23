@@ -179,7 +179,7 @@ namespace NSCustomShapesConvert
 		double m_dLimoX;
 		double m_dLimoY;
 
-		// нужен для регулировки по аспекту (limo)
+		// РЅСѓР¶РµРЅ РґР»СЏ СЂРµРіСѓР»РёСЂРѕРІРєРё РїРѕ Р°СЃРїРµРєС‚Сѓ (limo)
 		CPointD m_oCurPoint;
 
 		double m_dRotate;

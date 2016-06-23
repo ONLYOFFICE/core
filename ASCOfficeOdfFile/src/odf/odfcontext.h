@@ -295,16 +295,16 @@ public:
     void add_list_style(text_list_style * textListStyle);
     void add_list_style(text_list_style * textListStyle, const std::wstring & NewName);
 
-    /// получить экземпляр по имени стиля
+    /// РїРѕР»СѓС‡РёС‚СЊ СЌРєР·РµРјРїР»СЏСЂ РїРѕ РёРјРµРЅРё СЃС‚РёР»СЏ
     text_list_style * list_style_by_name(const std::wstring & Name);
 
-    /// получить Id, которое будет использоваться в numId и abstractNumId
+    /// РїРѕР»СѓС‡РёС‚СЊ Id, РєРѕС‚РѕСЂРѕРµ Р±СѓРґРµС‚ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊСЃСЏ РІ numId Рё abstractNumId
     int id_by_name(const std::wstring & Name);
     instances_array & instances() { return instances_; }
     bool empty() const { return instances_.empty(); };
 
 private:
-    // ассоциации имени стиля и порядкового номера в массиве instances_
+    // Р°СЃСЃРѕС†РёР°С†РёРё РёРјРµРЅРё СЃС‚РёР»СЏ Рё РїРѕСЂСЏРґРєРѕРІРѕРіРѕ РЅРѕРјРµСЂР° РІ РјР°СЃСЃРёРІРµ instances_
     boost::unordered_map<std::wstring, int> list_style_names_;
     instances_array instances_;
 };

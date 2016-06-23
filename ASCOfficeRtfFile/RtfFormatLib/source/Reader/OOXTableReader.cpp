@@ -1,4 +1,4 @@
-﻿#include "OOXtblPrReader.h"
+#include "OOXtblPrReader.h"
 #include "OOXTableRowReader.h"
 #include "OOXTableReader.h"
 

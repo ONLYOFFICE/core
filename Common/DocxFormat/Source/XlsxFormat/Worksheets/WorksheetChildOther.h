@@ -85,7 +85,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("left"),      m_oLeft)
@@ -159,7 +159,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("orientation"),      m_oOrientation)
@@ -231,7 +231,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("gridLines"),      m_oGridLines)
@@ -286,7 +286,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("ref"),      m_oRef)
@@ -382,10 +382,10 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("baseColWidth"),      m_oBaseColWidth)	// ToDo Excel не воспринимает значения не uint (мы приводим к uint)
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("baseColWidth"),      m_oBaseColWidth)	// ToDo Excel РЅРµ РІРѕСЃРїСЂРёРЅРёРјР°РµС‚ Р·РЅР°С‡РµРЅРёСЏ РЅРµ uint (РјС‹ РїСЂРёРІРѕРґРёРј Рє uint)
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("customHeight"),      m_oCustomHeight )
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("defaultColWidth"),      m_oDefaultColWidth )
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("defaultRowHeight"),      m_oDefaultRowHeight )
@@ -466,7 +466,7 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("activePane")	, m_oActivePane)
@@ -480,7 +480,7 @@ namespace OOX
 
 		public:
 			nullable<CString>				m_oActivePane;
-			nullable<CString>				m_oState;	// frozen - закреплены; split - разделены на 2 одинаковые части; frozenSplit - сначала разделены, а потом закреплены (после снятия закрепления, будут снова разделены)
+			nullable<CString>				m_oState;	// frozen - Р·Р°РєСЂРµРїР»РµРЅС‹; split - СЂР°Р·РґРµР»РµРЅС‹ РЅР° 2 РѕРґРёРЅР°РєРѕРІС‹Рµ С‡Р°СЃС‚Рё; frozenSplit - СЃРЅР°С‡Р°Р»Р° СЂР°Р·РґРµР»РµРЅС‹, Р° РїРѕС‚РѕРј Р·Р°РєСЂРµРїР»РµРЅС‹ (РїРѕСЃР»Рµ СЃРЅСЏС‚РёСЏ Р·Р°РєСЂРµРїР»РµРЅРёСЏ, Р±СѓРґСѓС‚ СЃРЅРѕРІР° СЂР°Р·РґРµР»РµРЅС‹)
 			nullable<CString>				m_oTopLeftCell;
 			nullable<SimpleTypes::CDouble>	m_oXSplit;
 			nullable<SimpleTypes::CDouble>	m_oYSplit;
@@ -543,7 +543,7 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("activeCell")	, m_oActiveCell)
@@ -561,7 +561,7 @@ namespace OOX
 			nullable<CString>									m_oPane;	//bottomLeft, bottomRight, topLeft, topRight
 		};
 
-		//необработано:
+		//РЅРµРѕР±СЂР°Р±РѕС‚Р°РЅРѕ:
 		//<extLst>
 		//<pivotSelection>
 		class CSheetView : public WritingElement
@@ -715,7 +715,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("colorId"),      m_oColorId)
@@ -862,7 +862,7 @@ namespace OOX
 
 					if ( _T("tabColor") == sName )
 						m_oTabColor = oReader;
-					//необработано:
+					//РЅРµРѕР±СЂР°Р±РѕС‚Р°РЅРѕ:
 					//<outlinePr>
 					//<pageSetUpPr>
 				}
@@ -875,7 +875,7 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if		( oReader, _T("codeName"),							m_oCodeName )
 				WritingElement_ReadAttributes_Read_else_if	( oReader, _T("enableFormatConditionsCalculation"),	m_oEnableFormatConditionsCalculation )

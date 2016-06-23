@@ -74,7 +74,7 @@ void odt_conversion_context::start_document()
 
 	//current_level_.push_back(get_current_object_element());
 
-/////////////////настройки дефолтовые
+/////////////////РЅР°СЃС‚СЂРѕР№РєРё РґРµС„РѕР»С‚РѕРІС‹Рµ
 
 	root_text_->office_text_attlist_.text_use_soft_page_breaks_ = true;
 }
@@ -177,7 +177,7 @@ void odt_conversion_context::add_text_content(const std::wstring & text)
 }
 void odt_conversion_context::add_to_root()
 {
-	if (text_context_.size() >0) return; // не root element (embedded) ????
+	if (text_context_.size() >0) return; // РЅРµ root element (embedded) ????
 
 	if (comment_context_.is_started()) return;
 
@@ -254,17 +254,17 @@ void odt_conversion_context::add_page_break()
 		text_p* para = NULL;
 		style * style_ = NULL;
 		//http://docs.oasis-open.org/office/v1.2/os/OpenDocument-v1.2-os-part1.html#__RefHeading__1415190_253892949
-		//нихере не работает !! в span, ... приходится генерить разрыв вручную !!
+		//РЅРёС…РµСЂРµ РЅРµ СЂР°Р±РѕС‚Р°РµС‚ !! РІ span, ... РїСЂРёС…РѕРґРёС‚СЃСЏ РіРµРЅРµСЂРёС‚СЊ СЂР°Р·СЂС‹РІ РІСЂСѓС‡РЅСѓСЋ !!
 
 		//if (para = dynamic_cast<text_p*>(current_root_elements_.back().elm.get()))
 		//{
-		//	style_ = dynamic_cast<style*>(current_root_elements_.back().style_elm.get());//для переноса свойств параграфа
+		//	style_ = dynamic_cast<style*>(current_root_elements_.back().style_elm.get());//РґР»СЏ РїРµСЂРµРЅРѕСЃР° СЃРІРѕР№СЃС‚РІ РїР°СЂР°РіСЂР°С„Р°
 		//	end_paragraph();
 		//}	
 		//else/* if (header = dynamic_cast<text_h*>(current_root_elements_.back().elm.get()))*/
 		{
-			//тут получается что разрыв будет прописан внутри элемента (не параграфа) - так что вручную свойство запишем
-			//в случае разрыва параграфов оно запишется при старте после-разрывного параграфа
+			//С‚СѓС‚ РїРѕР»СѓС‡Р°РµС‚СЃСЏ С‡С‚Рѕ СЂР°Р·СЂС‹РІ Р±СѓРґРµС‚ РїСЂРѕРїРёСЃР°РЅ РІРЅСѓС‚СЂРё СЌР»РµРјРµРЅС‚Р° (РЅРµ РїР°СЂР°РіСЂР°С„Р°) - С‚Р°Рє С‡С‚Рѕ РІСЂСѓС‡РЅСѓСЋ СЃРІРѕР№СЃС‚РІРѕ Р·Р°РїРёС€РµРј
+			//РІ СЃР»СѓС‡Р°Рµ СЂР°Р·СЂС‹РІР° РїР°СЂР°РіСЂР°С„РѕРІ РѕРЅРѕ Р·Р°РїРёС€РµС‚СЃСЏ РїСЂРё СЃС‚Р°СЂС‚Рµ РїРѕСЃР»Рµ-СЂР°Р·СЂС‹РІРЅРѕРіРѕ РїР°СЂР°РіСЂР°С„Р°
 			text_context()->save_property_break();
 		}
 		text_context()->start_element(elm);
@@ -279,7 +279,7 @@ void odt_conversion_context::add_page_break()
 			{
 				style_paragraph_properties * new_props = NULL;
 				if (styles_context()->last_state())
-				{// нужна именно копия св-в так как будет добавочные свойства
+				{// РЅСѓР¶РЅР° РёРјРµРЅРЅРѕ РєРѕРїРёСЏ СЃРІ-РІ С‚Р°Рє РєР°Рє Р±СѓРґРµС‚ РґРѕР±Р°РІРѕС‡РЅС‹Рµ СЃРІРѕР№СЃС‚РІР°
 					new_props = styles_context()->last_state()->get_paragraph_properties();				
 					if (new_props)new_props->apply_from(style_->style_content_.get_style_paragraph_properties());
 					
@@ -318,7 +318,7 @@ void odt_conversion_context::end_hyperlink()
 	//current_level_.pop_back();
 	text_context()->end_element();
 
-	is_hyperlink_ = false; //метка .. для гиперлинков в объектах - там не будет span
+	is_hyperlink_ = false; //РјРµС‚РєР° .. РґР»СЏ РіРёРїРµСЂР»РёРЅРєРѕРІ РІ РѕР±СЉРµРєС‚Р°С… - С‚Р°Рј РЅРµ Р±СѓРґРµС‚ span
 }
 
 void odt_conversion_context::set_field_instr(std::wstring instr)
@@ -326,7 +326,7 @@ void odt_conversion_context::set_field_instr(std::wstring instr)
 	if (current_field_.enabled == false) 	return;
 
 	int res1 = instr.find(L"HYPERLINK");
-	if (res1 >=0)							//это не поле - это hyperlink
+	if (res1 >=0)							//СЌС‚Рѕ РЅРµ РїРѕР»Рµ - СЌС‚Рѕ hyperlink
 	{
 		current_field_.type = 1;
 		
@@ -346,7 +346,7 @@ void odt_conversion_context::set_field_instr(std::wstring instr)
 		current_field_.type = 3;
 	}	
 	res1 = instr.find(L"PAGEREF");
-	if (res1 >=0 && current_field_.type == 0 )	//это не поле - это bookmark
+	if (res1 >=0 && current_field_.type == 0 )	//СЌС‚Рѕ РЅРµ РїРѕР»Рµ - СЌС‚Рѕ bookmark
 	{
 		current_field_.type = 5;
 		if (instr.length() > 9)
@@ -385,7 +385,7 @@ void odt_conversion_context::start_field(bool in_span)
 
 void odt_conversion_context::set_master_page_name(std::wstring master_name)
 {
-	if (current_root_elements_.size() < 1)// return; - эффект_штурмовика.docx - 1 страница !! (и ваще - 
+	if (current_root_elements_.size() < 1)// return; - СЌС„С„РµРєС‚_С€С‚СѓСЂРјРѕРІРёРєР°.docx - 1 СЃС‚СЂР°РЅРёС†Р° !! (Рё РІР°С‰Рµ - 
 	{
 		is_paragraph_in_current_section_ = true;
 		return;
@@ -528,7 +528,7 @@ void odt_conversion_context::start_list_item(int level, std::wstring style_name 
 	//	add_to_root();
 	//	text_context()->start_list_item();
 	//}
-	level = level +1; //отсчет от 1 (а не 0)
+	level = level +1; //РѕС‚СЃС‡РµС‚ РѕС‚ 1 (Р° РЅРµ 0)
 
 	if (text_context()->list_state_.style_name != style_name && text_context()->list_state_.started_list)
 	{
@@ -549,7 +549,7 @@ void odt_conversion_context::start_list_item(int level, std::wstring style_name 
 	if (text_context()->list_state_.started_list == false)
 	{
 		text_context()->start_list(style_name);
-		//text_context()->set_list_continue(true); //??? держать в памяти все списки????
+		//text_context()->set_list_continue(true); //??? РґРµСЂР¶Р°С‚СЊ РІ РїР°РјСЏС‚Рё РІСЃРµ СЃРїРёСЃРєРё????
 		add_to_root();
 		
 	}
@@ -587,12 +587,12 @@ void odt_conversion_context::flush_section()
 		for (long i=0; i< current_root_elements_.size(); i++)
 		{
 			if ((sections_.back().continuous && i<2) || !sections_.back().continuous)
-				// при вставлении параграфа возможен искусственный разрыв в параграфах - см add_page_break
+				// РїСЂРё РІСЃС‚Р°РІР»РµРЅРёРё РїР°СЂР°РіСЂР°С„Р° РІРѕР·РјРѕР¶РµРЅ РёСЃРєСѓСЃСЃС‚РІРµРЅРЅС‹Р№ СЂР°Р·СЂС‹РІ РІ РїР°СЂР°РіСЂР°С„Р°С… - СЃРј add_page_break
 			{
 				text_soft_page_break * break_ = dynamic_cast<text_soft_page_break*>(current_root_elements_[i].elm.get());
 				if (break_)
 				{
-					//необходимо добавить в свойства предыдущего параграфа	(если он есть, если нет - следующего), что брейк не нужен
+					//РЅРµРѕР±С…РѕРґРёРјРѕ РґРѕР±Р°РІРёС‚СЊ РІ СЃРІРѕР№СЃС‚РІР° РїСЂРµРґС‹РґСѓС‰РµРіРѕ РїР°СЂР°РіСЂР°С„Р°	(РµСЃР»Рё РѕРЅ РµСЃС‚СЊ, РµСЃР»Рё РЅРµС‚ - СЃР»РµРґСѓСЋС‰РµРіРѕ), С‡С‚Рѕ Р±СЂРµР№Рє РЅРµ РЅСѓР¶РµРЅ
 					//int paragraph_break = i-1;
 					//if (paragraph_break < 0) paragraph_break = i+1;
 					//style *style_ = dynamic_cast<style*>(current_root_elements_[paragraph_break].style_elm.get());
@@ -625,7 +625,7 @@ void odt_conversion_context::start_run(bool styled)
 	
 	text_context()->start_span(styled);
 
-	if (current_field_.started== false && current_field_.type >1 && current_field_.enabled ==true && current_field_.in_span)//поле стартуется в span - нужно для сохранения стиля
+	if (current_field_.started== false && current_field_.type >1 && current_field_.enabled ==true && current_field_.in_span)//РїРѕР»Рµ СЃС‚Р°СЂС‚СѓРµС‚СЃСЏ РІ span - РЅСѓР¶РЅРѕ РґР»СЏ СЃРѕС…СЂР°РЅРµРЅРёСЏ СЃС‚РёР»СЏ
 	{
 		text_context()->start_field(current_field_.type);
 		current_field_.started = true;
@@ -662,7 +662,7 @@ bool odt_conversion_context::start_comment(int oox_comm_id)
 		odf_element_state state={comm_elm, L"", office_element_ptr(),(int)text_context()->current_level_.size()};
 		text_context()->current_level_.push_back(state);
 
-		return false; //типо новый
+		return false; //С‚РёРїРѕ РЅРѕРІС‹Р№
 	}
 	return true;
 }
@@ -712,7 +712,7 @@ void odt_conversion_context::start_image(const std::wstring & image_file_name)
 
 void odt_conversion_context::start_drop_cap(style_paragraph_properties *paragraph_properties)
 {
-	if (drop_cap_state_.enabled) end_drop_cap(); // 2 подряд ваще возможны ???
+	if (drop_cap_state_.enabled) end_drop_cap(); // 2 РїРѕРґСЂСЏРґ РІР°С‰Рµ РІРѕР·РјРѕР¶РЅС‹ ???
 
 	if (paragraph_properties == NULL) return;
 
@@ -749,7 +749,7 @@ void odt_conversion_context::end_drop_cap()
 		}
 		if (drop_cap_state_.inline_style == false)
 		{
-			//сдвинуть первую строку - так чтоб буквица вся (что поместится) была на поле
+			//СЃРґРІРёРЅСѓС‚СЊ РїРµСЂРІСѓСЋ СЃС‚СЂРѕРєСѓ - С‚Р°Рє С‡С‚РѕР± Р±СѓРєРІРёС†Р° РІСЃСЏ (С‡С‚Рѕ РїРѕРјРµСЃС‚РёС‚СЃСЏ) Р±С‹Р»Р° РЅР° РїРѕР»Рµ
 			//double indent_pt = 0;
 			//double indent_percent = 0;
 			//if (drop_cap_state_.paragraph_properties->content().fo_text_indent_)
@@ -804,7 +804,7 @@ void odt_conversion_context::add_table_column(double width)
 
 	styles_context()->create_style(L"", style_family::TableColumn, true, false, -1);
 
-	//не срабатывает ..
+	//РЅРµ СЃСЂР°Р±Р°С‚С‹РІР°РµС‚ ..
 	//std::wstring parent_name = table_context()->get_default_cell_properties();
 
 	//if (parent_name.length() > 0) 
@@ -822,7 +822,7 @@ void odt_conversion_context::add_table_column(double width)
 	table_context()->add_column(elm, true);
 		table_context()->set_column_width(width);
 
-	text_context()->start_element(elm); // для связи элментов
+	text_context()->start_element(elm); // РґР»СЏ СЃРІСЏР·Рё СЌР»РјРµРЅС‚РѕРІ
 	text_context()->end_element();
 }
 void odt_conversion_context::end_table_columns()

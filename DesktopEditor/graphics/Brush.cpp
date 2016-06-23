@@ -1,4 +1,4 @@
-﻿#include "Brush.h"
+#include "Brush.h"
 
 namespace Aggplus
 {

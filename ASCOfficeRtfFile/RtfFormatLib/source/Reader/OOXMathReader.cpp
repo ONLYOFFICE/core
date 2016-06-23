@@ -1,4 +1,4 @@
-﻿
+
 #include "OOXMathReader.h"
 #include "OOXParagraphReader.h"
 

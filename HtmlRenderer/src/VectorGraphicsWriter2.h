@@ -1,4 +1,4 @@
-﻿#ifndef _ASC_HTMLRENDERER_VGW2_H_
+#ifndef _ASC_HTMLRENDERER_VGW2_H_
 #define _ASC_HTMLRENDERER_VGW2_H_
 
 #include "Common.h"

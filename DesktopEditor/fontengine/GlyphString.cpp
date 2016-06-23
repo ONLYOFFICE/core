@@ -1,4 +1,4 @@
-﻿#include "GlyphString.h"
+#include "GlyphString.h"
 #include <stdlib.h>
 
 #ifndef max

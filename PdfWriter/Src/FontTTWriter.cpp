@@ -1,4 +1,4 @@
-﻿#include "FontTTWriter.h"
+#include "FontTTWriter.h"
 #include "../../DesktopEditor/common/File.h"
 
 #define ttcfTag 0x74746366

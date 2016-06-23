@@ -1,4 +1,4 @@
-﻿#include "Font14.h"
+#include "Font14.h"
 
 namespace PdfWriter
 {

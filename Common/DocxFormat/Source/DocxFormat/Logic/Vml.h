@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #ifndef OOX_VML_INCLUDE_H_
 #define OOX_VML_INCLUDE_H_
 

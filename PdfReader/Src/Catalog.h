@@ -1,4 +1,4 @@
-﻿#ifndef _PDF_READER_CATALOG_H
+#ifndef _PDF_READER_CATALOG_H
 #define _PDF_READER_CATALOG_H
 
 #include "GlobalParams.h"

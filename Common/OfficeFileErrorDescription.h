@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #ifdef MAKE_HRESULT
 #define AVS_ERROR_FIRST					MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0x0300)

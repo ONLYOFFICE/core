@@ -395,11 +395,11 @@ private:
     virtual void add_text(const std::wstring & Text);
 
 private:
-    office_element_ptr_array style_master_page_;	// разметки тем
-    office_element_ptr style_handout_master_;		// разметки для принтера - .. второстепенно
-    office_element_ptr draw_layer_set_;				// необязательно .. так как слои все равно не поддерживаются в мс.
-													// то есть не будут объекты объеденены по признаку слоя
-													// зы. не путать с обычной группировкой
+    office_element_ptr_array style_master_page_;	// СЂР°Р·РјРµС‚РєРё С‚РµРј
+    office_element_ptr style_handout_master_;		// СЂР°Р·РјРµС‚РєРё РґР»СЏ РїСЂРёРЅС‚РµСЂР° - .. РІС‚РѕСЂРѕСЃС‚РµРїРµРЅРЅРѕ
+    office_element_ptr draw_layer_set_;				// РЅРµРѕР±СЏР·Р°С‚РµР»СЊРЅРѕ .. С‚Р°Рє РєР°Рє СЃР»РѕРё РІСЃРµ СЂР°РІРЅРѕ РЅРµ РїРѕРґРґРµСЂР¶РёРІР°СЋС‚СЃСЏ РІ РјСЃ.
+													// С‚Рѕ РµСЃС‚СЊ РЅРµ Р±СѓРґСѓС‚ РѕР±СЉРµРєС‚С‹ РѕР±СЉРµРґРµРЅРµРЅС‹ РїРѕ РїСЂРёР·РЅР°РєСѓ СЃР»РѕСЏ
+													// Р·С‹. РЅРµ РїСѓС‚Р°С‚СЊ СЃ РѕР±С‹С‡РЅРѕР№ РіСЂСѓРїРїРёСЂРѕРІРєРѕР№
 
     friend class odf_document;
 };

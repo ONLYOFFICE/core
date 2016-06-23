@@ -86,7 +86,7 @@ namespace Diagram
 			nullable<OOX::Drawing::CShapeStyle>				m_oShapeStyle;
 			nullable<OOX::Drawing::CTxBody>					m_oTxBody;	
 
-//extLst (Extension List) §20.1.2.2.15
+//extLst (Extension List) Р†20.1.2.2.15
 
 		};
 
@@ -139,7 +139,7 @@ namespace Diagram
 	private:
 		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
-			// Читаем атрибуты
+			// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 			WritingElement_ReadAttributes_Start( oReader )
 			WritingElement_ReadAttributes_End( oReader )
 		}

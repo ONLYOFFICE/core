@@ -1,4 +1,4 @@
-﻿#include "OOXShapeReader.h"
+#include "OOXShapeReader.h"
 #include "OOXTextItemReader.h"
 
  OOXShapeReader::OOXShapeReader(OOX::WritingElementWithChilds<OOX::WritingElement> * elem)

@@ -1,4 +1,4 @@
-﻿#ifndef CHART_WRITER
+#ifndef CHART_WRITER
 #define CHART_WRITER
 
 #include "../../XlsxSerializerCom/Common/Common.h"

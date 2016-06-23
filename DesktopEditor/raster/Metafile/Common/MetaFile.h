@@ -25,7 +25,7 @@ namespace MetaFile
 		}
 		
 		virtual void         PlayMetaFile() = 0;
-		virtual void         ClearFile() {/*Нельзя делать чисто виртуальной, потому что вызывается в деструкторе*/}
+		virtual void         ClearFile() {/*РќРµР»СЊР·СЏ РґРµР»Р°С‚СЊ С‡РёСЃС‚Рѕ РІРёСЂС‚СѓР°Р»СЊРЅРѕР№, РїРѕС‚РѕРјСѓ С‡С‚Рѕ РІС‹Р·С‹РІР°РµС‚СЃСЏ РІ РґРµСЃС‚СЂСѓРєС‚РѕСЂРµ*/}
 		virtual TRect*       GetDCBounds() = 0;
 		virtual double       GetPixelHeight() = 0;
 		virtual double       GetPixelWidth() = 0;

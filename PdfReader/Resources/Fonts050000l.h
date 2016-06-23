@@ -1,4 +1,4 @@
-﻿#ifndef _PDF_READER_RESOURCE_FONT_s050000l_H
+#ifndef _PDF_READER_RESOURCE_FONT_s050000l_H
 #define _PDF_READER_RESOURCE_FONT_s050000l_H
 namespace PdfReader
 {

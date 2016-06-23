@@ -18,7 +18,7 @@ typedef shared_ptr<office_element>::Type office_element_ptr;
 
 struct number_format_state
 {
-	int oox_num_fmt;//дефолтные (по документации - номера 0-163, за исключением некоторых)
+	int oox_num_fmt;//РґРµС„РѕР»С‚РЅС‹Рµ (РїРѕ РґРѕРєСѓРјРµРЅС‚Р°С†РёРё - РЅРѕРјРµСЂР° 0-163, Р·Р° РёСЃРєР»СЋС‡РµРЅРёРµРј РЅРµРєРѕС‚РѕСЂС‹С…)
 
 	odf_types::office_value_type::type ods_type;
 

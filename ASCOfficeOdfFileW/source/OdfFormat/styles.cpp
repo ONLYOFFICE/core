@@ -32,7 +32,7 @@ using xml::xml_char_wc;
 //
 style_text_properties * style_content::get_style_text_properties() 
 {
-	//если запросили .. значит надо - создаем
+	//РµСЃР»Рё Р·Р°РїСЂРѕСЃРёР»Рё .. Р·РЅР°С‡РёС‚ РЅР°РґРѕ - СЃРѕР·РґР°РµРј
 	if (!style_text_properties_)
 		create_element(L"style", L"text-properties",style_text_properties_,Context);
 	
@@ -72,7 +72,7 @@ style_section_properties * style_content::get_style_section_properties()
 
 style_table_cell_properties * style_content::get_style_table_cell_properties()
 {
-	//если запросили .. значит надо - создаем
+	//РµСЃР»Рё Р·Р°РїСЂРѕСЃРёР»Рё .. Р·РЅР°С‡РёС‚ РЅР°РґРѕ - СЃРѕР·РґР°РµРј
 	if (!style_table_cell_properties_)
 		create_element(L"style", L"table-cell-properties",style_table_cell_properties_,Context);
     
@@ -116,7 +116,7 @@ void style_content::add_child_element( const office_element_ptr & child)
 
 	ElementType type = child->get_type();
 
-	switch(type)//перезатирать???
+	switch(type)//РїРµСЂРµР·Р°С‚РёСЂР°С‚СЊ???
 	{
 	case typeStyleTextProperties:		style_text_properties_ = child; break;
 	case typeStyleParagraphProperties:	style_paragraph_properties_ = child; break; 

@@ -88,15 +88,15 @@ namespace DOCXTODOC
 
 		template<class T> void ConvertFldSimple( const OOX::Logic::FldSimple& fldSimpleDocx, const PrlList& styleDocRunProperties, ASCDocFileFormat::Paragraph& docParagraph, wstring& runType);
 
-		// настройки страниц документа
+		// РЅР°СЃС‚СЂРѕР№РєРё СЃС‚СЂР°РЅРёС† РґРѕРєСѓРјРµРЅС‚Р°
 
 		ASCDocFileFormat::SectionProperties ConvertSectionProperties (const OOX::Logic::SectorProperty& oSection);
 		bool AddLineNumberingSettings (const OOX::Logic::SectorProperty& oSection, PrlList& arrSettings);
 
-		// верхний колонтитул
+		// РІРµСЂС…РЅРёР№ РєРѕР»РѕРЅС‚РёС‚СѓР»
 		ASCDocFileFormat::Header	ConvertHeader (const OOX::Header& oHeader);
 		
-		// нижний колонтитул
+		// РЅРёР¶РЅРёР№ РєРѕР»РѕРЅС‚РёС‚СѓР»
 		ASCDocFileFormat::Footer	ConvertFooter (const OOX::Footer& oFooter);
 
 		// Table

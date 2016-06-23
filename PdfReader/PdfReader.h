@@ -1,4 +1,4 @@
-﻿#ifndef _PDF_READER_H
+#ifndef _PDF_READER_H
 #define _PDF_READER_H
 
 #ifndef PDFREADER_USE_DYNAMIC_LIBRARY

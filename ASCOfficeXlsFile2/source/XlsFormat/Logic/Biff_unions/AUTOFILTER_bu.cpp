@@ -156,7 +156,7 @@ int AUTOFILTER::serialize(std::wostream & stream)
 		{	
 			CP_XML_ATTR(L"ref", ref);
 				
-			for (int i = 0 ; i < m_arFilters.size(); i++)//todooo ñäåëàòü íà îñòàâøèåñÿ - count_columns (hidden)
+			for (int i = 0 ; i < m_arFilters.size(); i++)//todooo ÑÐ´ÐµÐ»Ð°Ñ‚ÑŒ Ð½Ð° Ð¾ÑÑ‚Ð°Ð²ÑˆÐ¸ÐµÑÑ - count_columns (hidden)
 			{
 				AutoFilter * filter = dynamic_cast<AutoFilter*>(m_arFilters[i].get());
 				CP_XML_NODE(L"filterColumn")

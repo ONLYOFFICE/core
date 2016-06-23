@@ -12,14 +12,14 @@ namespace NSPresentationEditor
 
 		bool					m_bUseThemeColorScheme;
 
-		// "настоящие"(в логической системе координат), чтобы масштабировать
+		// "РЅР°СЃС‚РѕСЏС‰РёРµ"(РІ Р»РѕРіРёС‡РµСЃРєРѕР№ СЃРёСЃС‚РµРјРµ РєРѕРѕСЂРґРёРЅР°С‚), С‡С‚РѕР±С‹ РјР°СЃС€С‚Р°Р±РёСЂРѕРІР°С‚СЊ
 		long					m_lOriginalWidth;
 		long					m_lOriginalHeight;
 
 		bool					m_bIsBackground;
 		CBrush					m_oBackground;
 
-		// размеры в миллиметрах
+		// СЂР°Р·РјРµСЂС‹ РІ РјРёР»Р»РёРјРµС‚СЂР°С…
 		long					m_lWidth;   
 		long					m_lHeight; 	
 
@@ -124,7 +124,7 @@ namespace NSPresentationEditor
 
 		void CreateDublicateElements()
 		{
-			// просто из всех своих элементов делаем дубликата
+			// РїСЂРѕСЃС‚Рѕ РёР· РІСЃРµС… СЃРІРѕРёС… СЌР»РµРјРµРЅС‚РѕРІ РґРµР»Р°РµРј РґСѓР±Р»РёРєР°С‚Р°
 
 			for (size_t nIndex = 0; nIndex < m_arElements.size(); ++nIndex)
 			{

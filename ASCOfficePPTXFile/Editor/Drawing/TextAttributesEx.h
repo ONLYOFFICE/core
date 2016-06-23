@@ -23,10 +23,10 @@ namespace NSPresentationEditor
 		int		m_lPlaceholderType;
 		int		m_lPlaceholderID;
 
-		// граница
+		// РіСЂР°РЅРёС†Р°
         Aggplus::RECT m_oBounds;
 
-		// настройки по-умолчанию
+		// РЅР°СЃС‚СЂРѕР№РєРё РїРѕ-СѓРјРѕР»С‡Р°РЅРёСЋ
 		CTextAttributes			m_oAttributes;
 		std::vector<CParagraph>	m_arParagraphs;
 
@@ -36,13 +36,13 @@ namespace NSPresentationEditor
 		int		m_lWrapMode; // 0 - square, default; 1 - none wrap
 
 
-		// для ппт. чтобы не менять счас ничего
+		// РґР»СЏ РїРїС‚. С‡С‚РѕР±С‹ РЅРµ РјРµРЅСЏС‚СЊ СЃС‡Р°СЃ РЅРёС‡РµРіРѕ
 		CTextRuler				m_oRuler;
 
 		CTextStyles				m_oLayoutStyles;
 		CTextStyles				m_oStyles;
 
-		// из пптх
+		// РёР· РїРїС‚С…
 		bool					m_bIsSlideFontRef;
 		int						m_lFontRef;
 

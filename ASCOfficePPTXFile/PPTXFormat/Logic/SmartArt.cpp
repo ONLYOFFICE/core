@@ -1,4 +1,4 @@
-﻿//#include "stdafx.h"
+//#include "stdafx.h"
 
 #include "./SmartArt.h"
 #include "../Slide.h"

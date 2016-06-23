@@ -1,4 +1,4 @@
-﻿#ifndef BINARY_WRITER
+#ifndef BINARY_WRITER
 #define BINARY_WRITER
 
 #include "../../ASCOfficePPTXFile/Editor/BinReaderWriterDefines.h"

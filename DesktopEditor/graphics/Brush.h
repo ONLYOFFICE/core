@@ -1,4 +1,4 @@
-﻿#ifndef _BUILD_BRUSH_H_
+#ifndef _BUILD_BRUSH_H_
 #define _BUILD_BRUSH_H_
 
 #include "AggPlusEnums.h"

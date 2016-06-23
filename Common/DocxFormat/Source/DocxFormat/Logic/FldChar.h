@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #ifndef OOX_LOGIC_FLD_CHAR_INCLUDE_H_
 #define OOX_LOGIC_FLD_CHAR_INCLUDE_H_
 

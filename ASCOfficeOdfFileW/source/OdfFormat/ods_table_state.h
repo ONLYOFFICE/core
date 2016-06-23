@@ -282,7 +282,7 @@ private:
     odf_conversion_context * context_;   
 	
 	office_element_ptr	office_table_;
-	style*				office_table_style_;//??? может хранить как office_element_ptr ???
+	style*				office_table_style_;//??? РјРѕР¶РµС‚ С…СЂР°РЅРёС‚СЊ РєР°Рє office_element_ptr ???
 	office_element_ptr	table_defined_expressions_;
 	
 
@@ -297,7 +297,7 @@ private:
 	std::vector<ods_element_state> columns_;
 	std::vector<ods_element_state> rows_;
 	
-	std::vector<office_element_ptr> current_level_;//постоянно меняющийся список уровней ("0-й элемент - сама таблица)
+	std::vector<office_element_ptr> current_level_;//РїРѕСЃС‚РѕСЏРЅРЅРѕ РјРµРЅСЏСЋС‰РёР№СЃСЏ СЃРїРёСЃРѕРє СѓСЂРѕРІРЅРµР№ ("0-Р№ СЌР»РµРјРµРЅС‚ - СЃР°РјР° С‚Р°Р±Р»РёС†Р°)
 	
 	std::list<ods_cell_state>	cells_;
 	long						cells_size_;

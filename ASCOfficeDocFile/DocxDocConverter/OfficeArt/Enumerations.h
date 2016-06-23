@@ -337,7 +337,7 @@ namespace OfficeArt
 			msophOutside						=	0x00000005
 		};
 
-		enum POSRELH										// ! Значения не соотвествуют спецификации
+		enum POSRELH										// ! Р—РЅР°С‡РµРЅРёСЏ РЅРµ СЃРѕРѕС‚РІРµСЃС‚РІСѓСЋС‚ СЃРїРµС†РёС„РёРєР°С†РёРё
 		{
 			msoprhMargin						=	0x00000001,
 			msoprhPage							=	0x00000002,
@@ -355,7 +355,7 @@ namespace OfficeArt
 			msopvOutside 						=	0x00000005  
 		};
 
-		enum POSRELV										// ! Значения не соотвествуют спецификации
+		enum POSRELV										// ! Р—РЅР°С‡РµРЅРёСЏ РЅРµ СЃРѕРѕС‚РІРµСЃС‚РІСѓСЋС‚ СЃРїРµС†РёС„РёРєР°С†РёРё
 		{
 			msoprvMargin						=	0x00000001,
 			msoprvPage							=	0x00000002, 
@@ -488,7 +488,7 @@ namespace OfficeArt
 			shadowOffsetY						=	0x0206,
 
 			shadowOriginX						=	0x0210,
-			shadowOriginY						=	0x0211,	// ошибка в спецификации (id-кривой)
+			shadowOriginY						=	0x0211,	// РѕС€РёР±РєР° РІ СЃРїРµС†РёС„РёРєР°С†РёРё (id-РєСЂРёРІРѕР№)
 
 			shadowScaleXToX						=	0x209,
 			shadowScaleYToX						=	0x20A,

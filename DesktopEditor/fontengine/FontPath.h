@@ -1,4 +1,4 @@
-﻿#ifndef _PATH_H
+#ifndef _PATH_H
 #define _PATH_H
 
 #include "../common/Types.h"

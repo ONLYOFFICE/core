@@ -1,4 +1,4 @@
-﻿#include "PdfReader.h"
+#include "PdfReader.h"
 #include "../Common/OfficeDefines.h"
 #include "../DesktopEditor/raster/BgraFrame.h"
 #include "../DesktopEditor/graphics/GraphicsRenderer.h"

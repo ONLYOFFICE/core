@@ -1,4 +1,4 @@
-﻿#include "Destination.h"
+#include "Destination.h"
 #include "Pages.h"
 
 namespace PdfWriter

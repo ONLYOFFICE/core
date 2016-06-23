@@ -1,4 +1,4 @@
-﻿
+
 #include "VMLShapeTypeMapping.h"
 #include "OfficeDrawing/Shapetypes/OvalType.h"
 

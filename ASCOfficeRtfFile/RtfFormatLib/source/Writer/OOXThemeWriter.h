@@ -10,7 +10,7 @@ public:
 	OOXThemeWriter(OOXWriter& oWriter,RtfDocument& oDocument ):m_oWriter(oWriter)
 	{
 	}
-	bool Save( CString sFolder ) //todo доделать очистку поле ошибок
+	bool Save( CString sFolder ) //todo РґРѕРґРµР»Р°С‚СЊ РѕС‡РёСЃС‚РєСѓ РїРѕР»Рµ РѕС€РёР±РѕРє
 	{
 		CString pathWord = sFolder + FILE_SEPARATOR_STR + _T("word");
 		

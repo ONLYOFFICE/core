@@ -1,4 +1,4 @@
-﻿
+
 #include "Oox2OdfConverter.h"
 
 #include "Converter.h"

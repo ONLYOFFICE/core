@@ -116,8 +116,8 @@ namespace OOX
 			nullable<SimpleTypes::CLongHexNumber<> > m_oRsidRPr;
 
 			// Childs
-			CParagraphProperty *					 m_oParagraphProperty; // копия того что в m_arrItems...  - для быстрого доступа/анализа
-			// по идее нужно сделать как в Drawing::Paragraph - то есть единственные подобъекты вынести отдельно
+			CParagraphProperty *					 m_oParagraphProperty; // РєРѕРїРёСЏ С‚РѕРіРѕ С‡С‚Рѕ РІ m_arrItems...  - РґР»СЏ Р±С‹СЃС‚СЂРѕРіРѕ РґРѕСЃС‚СѓРїР°/Р°РЅР°Р»РёР·Р°
+			// РїРѕ РёРґРµРµ РЅСѓР¶РЅРѕ СЃРґРµР»Р°С‚СЊ РєР°Рє РІ Drawing::Paragraph - С‚Рѕ РµСЃС‚СЊ РµРґРёРЅСЃС‚РІРµРЅРЅС‹Рµ РїРѕРґРѕР±СЉРµРєС‚С‹ РІС‹РЅРµСЃС‚Рё РѕС‚РґРµР»СЊРЅРѕ
 		};
 	} // namespace Logic
 } // namespace OOX

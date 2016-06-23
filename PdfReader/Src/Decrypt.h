@@ -1,4 +1,4 @@
-﻿#ifndef _PDF_READER_DECRYPT_H
+#ifndef _PDF_READER_DECRYPT_H
 #define _PDF_READER_DECRYPT_H
 
 #include "StringExt.h"

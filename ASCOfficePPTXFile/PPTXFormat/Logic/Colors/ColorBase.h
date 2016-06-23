@@ -50,7 +50,7 @@ namespace PPTX
 			}
 
 		public:
-			//Эти функции возвращают цвет с учетом модификаторов
+			//Р­С‚Рё С„СѓРЅРєС†РёРё РІРѕР·РІСЂР°С‰Р°СЋС‚ С†РІРµС‚ СЃ СѓС‡РµС‚РѕРј РјРѕРґРёС„РёРєР°С‚РѕСЂРѕРІ
             virtual DWORD GetRGBA(DWORD RGBA) const
 			{
 				return ApplyModifiers(ctRGBA);
@@ -82,8 +82,8 @@ namespace PPTX
 				green = G;
 				blue = B;
 			}
-			//Надо сделать примерно также для "origin color" и setter'ы
-			//Нет, нет и нет!!! Setter'ы делать только в УниКолор, т.к. при установке цвета меняется его тип!
+			//РќР°РґРѕ СЃРґРµР»Р°С‚СЊ РїСЂРёРјРµСЂРЅРѕ С‚Р°РєР¶Рµ РґР»СЏ "origin color" Рё setter'С‹
+			//РќРµС‚, РЅРµС‚ Рё РЅРµС‚!!! Setter'С‹ РґРµР»Р°С‚СЊ С‚РѕР»СЊРєРѕ РІ РЈРЅРёРљРѕР»РѕСЂ, С‚.Рє. РїСЂРё СѓСЃС‚Р°РЅРѕРІРєРµ С†РІРµС‚Р° РјРµРЅСЏРµС‚СЃСЏ РµРіРѕ С‚РёРї!
 
 		protected:
 			//origin color
@@ -158,7 +158,7 @@ namespace PPTX
 							break;
 						}
 						break;
-					case 'с':
+					case 'СЃ':
 						//comp
 						break;
 					case 'g':
@@ -358,7 +358,7 @@ namespace PPTX
 				return 0;
 			}
 
-			//Эти функции использовать для заполнения "origin color"
+			//Р­С‚Рё С„СѓРЅРєС†РёРё РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ РґР»СЏ Р·Р°РїРѕР»РЅРµРЅРёСЏ "origin color"
 			void SetRGB2HSL()
 			{
                 int iMin = (std::min)( red, (std::min)(green, blue));
@@ -423,7 +423,7 @@ namespace PPTX
 			}
 
 
-			//Эти использовать при применении модификаторов
+			//Р­С‚Рё РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ РїСЂРё РїСЂРёРјРµРЅРµРЅРёРё РјРѕРґРёС„РёРєР°С‚РѕСЂРѕРІ
 			static void RGB2HSL(unsigned char* RGB, unsigned char* HSL)
 			{
                 int iMin = (std::min)( RGB[0], (std::min)(RGB[1], RGB[2]));

@@ -139,7 +139,7 @@ namespace MetaFile
 		unsigned char ClipPrecision;
 		unsigned char Quality;
 		unsigned char PitchAndFamily;
-		unsigned char Facename[32]; // Согласно спецификации длина имени не должна превышать 32 знака с учетом нулевого символа в конце
+		unsigned char Facename[32]; // РЎРѕРіР»Р°СЃРЅРѕ СЃРїРµС†РёС„РёРєР°С†РёРё РґР»РёРЅР° РёРјРµРЅРё РЅРµ РґРѕР»Р¶РЅР° РїСЂРµРІС‹С€Р°С‚СЊ 32 Р·РЅР°РєР° СЃ СѓС‡РµС‚РѕРј РЅСѓР»РµРІРѕРіРѕ СЃРёРјРІРѕР»Р° РІ РєРѕРЅС†Рµ
 	};
 	class CWmfPalette : public CWmfObjectBase
 	{
@@ -211,8 +211,8 @@ namespace MetaFile
 			return WMF_OBJECT_REGION;
 		}
 	public:
-		short           nextInChain; // не используется
-		short           ObjectType;  // не используется
+		short           nextInChain; // РЅРµ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ
+		short           ObjectType;  // РЅРµ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ
 		short           RegionSize;
 		short           ScanCount;
 		short           MaxScan;

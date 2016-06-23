@@ -54,7 +54,7 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-								// Читаем атрибуты
+								// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("dxfId"),      m_oDxfId )
@@ -139,7 +139,7 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-								// Читаем атрибуты
+								// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("count"),      m_oCount )
@@ -155,7 +155,7 @@ namespace OOX
 			nullable<CString>									m_oName;
 			nullable<SimpleTypes::COnOff<>>						m_oPivot;
 			nullable<SimpleTypes::COnOff<>>						m_oTable;
-			nullable<CString>									m_oDisplayName; // Используется только для дефалтовых стилей
+			nullable<CString>									m_oDisplayName; // РСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ С‚РѕР»СЊРєРѕ РґР»СЏ РґРµС„Р°Р»С‚РѕРІС‹С… СЃС‚РёР»РµР№
 		};
 		class CTableStyles : public WritingElementWithChilds<CTableStyle>
 		{
@@ -232,7 +232,7 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("count"),      m_oCount )

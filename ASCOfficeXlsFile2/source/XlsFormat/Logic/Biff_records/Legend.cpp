@@ -89,7 +89,7 @@ int Legend::serialize(std::wostream & _stream, int size)
 				}
 				else
 				{
-					//нету откровенного смещения
+					//РЅРµС‚Сѓ РѕС‚РєСЂРѕРІРµРЅРЅРѕРіРѕ СЃРјРµС‰РµРЅРёСЏ
 					CP_XML_ATTR(L"val", "l");
 					dy = dy * size;
 				}

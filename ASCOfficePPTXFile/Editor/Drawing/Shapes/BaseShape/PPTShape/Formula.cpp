@@ -54,7 +54,7 @@ LONG NSGuidesVML::CFormula::Calculate(NSGuidesVML::CFormulasManager* pManager)
 
 	try
 	{
-		// теперь нужно просто посчитать
+		// С‚РµРїРµСЂСЊ РЅСѓР¶РЅРѕ РїСЂРѕСЃС‚Рѕ РїРѕСЃС‡РёС‚Р°С‚СЊ
 		switch (m_eFormulaType)
 		{
 		case ftSum:			{ dRes = a + b - c;				break; }

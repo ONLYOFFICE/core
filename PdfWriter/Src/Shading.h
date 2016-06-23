@@ -1,4 +1,4 @@
-﻿#ifndef _PDF_WRITER_SRC_SHADING_H
+#ifndef _PDF_WRITER_SRC_SHADING_H
 #define _PDF_WRITER_SRC_STREAMS_H
 
 #include "Objects.h"

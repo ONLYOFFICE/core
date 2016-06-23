@@ -1,4 +1,4 @@
-﻿#include "Utils.h"
+#include "Utils.h"
 #include "../../DesktopEditor/common/String.h"
 #include "../../DesktopEditor/common/Types.h"
 #include "../../DesktopEditor/xml/include/xmlutils.h"

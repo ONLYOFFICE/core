@@ -5,7 +5,7 @@
 
 namespace cpdoccore
 {
-    /// внешнее объявление для Optional, используем boost::optional
+    /// РІРЅРµС€РЅРµРµ РѕР±СЉСЏРІР»РµРЅРёРµ РґР»СЏ Optional, РёСЃРїРѕР»СЊР·СѓРµРј boost::optional
 
     template <class T>
     struct optional

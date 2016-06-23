@@ -136,7 +136,7 @@ namespace OOX
 			nullable<OOX::Drawing::CNonVisualDrawingProps>	m_oCNvPr;
 		};
 
-		//"c:chart"  - нужно перенести в общую часть 
+		//"c:chart"  - РЅСѓР¶РЅРѕ РїРµСЂРµРЅРµСЃС‚Рё РІ РѕР±С‰СѓСЋ С‡Р°СЃС‚СЊ 
 		class CGraphicChart : public WritingElement
 		{
 		public:
@@ -172,7 +172,7 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("r:id"),      m_oRId )
@@ -250,7 +250,7 @@ namespace OOX
 		};
 		
 		//--------------------------------------------------------------------------------
-		// 20.1.2.2.16 graphic (Graphic Object) - тю ..это может быть не только чарт !!
+		// 20.1.2.2.16 graphic (Graphic Object) - С‚СЋ ..СЌС‚Рѕ РјРѕР¶РµС‚ Р±С‹С‚СЊ РЅРµ С‚РѕР»СЊРєРѕ С‡Р°СЂС‚ !!
 		//--------------------------------------------------------------------------------		
 		class CChartGraphic : public WritingElement
 		{

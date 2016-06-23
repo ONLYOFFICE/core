@@ -1,4 +1,4 @@
-﻿#ifndef DOC_BUILDER_PRIVATE
+#ifndef DOC_BUILDER_PRIVATE
 #define DOC_BUILDER_PRIVATE
 
 #include "docbuilder.h"

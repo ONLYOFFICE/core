@@ -27,7 +27,7 @@ public:
 
 	void set_drawings_rect(_CP_OPT(double) x_pt, _CP_OPT(double) y_pt, _CP_OPT(double) width_pt, _CP_OPT(double) height_pt);
 	void clear();
-	void set_styles_context(odf_style_context*  styles_context);//для embedded 
+	void set_styles_context(odf_style_context*  styles_context);//РґР»СЏ embedded 
 
 	void set_header_state(bool Val);
 	void set_footer_state(bool Val);
@@ -145,7 +145,7 @@ public:
 	
 	//void start_shadow_properties();
 	//void end_shadow_properties();
-// пока одной функией ..
+// РїРѕРєР° РѕРґРЅРѕР№ С„СѓРЅРєРёРµР№ ..
 	void set_shadow(int type, std::wstring hexColor, _CP_OPT(double) opacity, double dist_pt, double dist_pt_y = -1);
 
 	void set_text(odf_text_context* text_context);

@@ -168,7 +168,7 @@ int XFProps::serialize(std::wostream & stream)
 		{
 			CP_XML_NODE(L"border")
 			{	
-				//порядок важен - xfPropType - 8, 9, 6, 7 ( - DataVal_Headings.xls
+				//РїРѕСЂСЏРґРѕРє РІР°Р¶РµРЅ - xfPropType - 8, 9, 6, 7 ( - DataVal_Headings.xls
 				if (arXFPropBorder.left)	arXFPropBorder.left->serialize(CP_XML_STREAM());
 				if (arXFPropBorder.right)	arXFPropBorder.right->serialize(CP_XML_STREAM());
 				if (arXFPropBorder.top)		arXFPropBorder.top->serialize(CP_XML_STREAM());

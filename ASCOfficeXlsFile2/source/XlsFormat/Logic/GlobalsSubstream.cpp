@@ -346,15 +346,15 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 			case rt_GUIDTypeLib:		proc.optional<GUIDTypeLib>();			break;
 
 			//case rt_XFCRC:
-			//{//не по спецификации !!! Calculadora.xls
+			//{//РЅРµ РїРѕ СЃРїРµС†РёС„РёРєР°С†РёРё !!! Calculadora.xls
 			//	if(proc.optional<XFCRC>())
 			//	{
-			//		elements_.pop_back(); // Crc не нужен
+			//		elements_.pop_back(); // Crc РЅРµ РЅСѓР¶РµРЅ
 
 			//		count = proc.repeated<XFExt>(0, 0);//(16, 4050);
 			//		while (count > 0)
 			//		{
-			//			//перенести в FORMATING/XFS ?? - тогда нужен пересчет там !!
+			//			//РїРµСЂРµРЅРµСЃС‚Рё РІ FORMATING/XFS ?? - С‚РѕРіРґР° РЅСѓР¶РµРЅ РїРµСЂРµСЃС‡РµС‚ С‚Р°Рј !!
 			//			//if (elements_.empty()) break;
 			//			//XFExt* ext = dynamic_cast<XFExt*>(elements_.back().get());
 			//			//m_arXFext.push_back(elements_.front());

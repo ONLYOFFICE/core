@@ -1,4 +1,4 @@
-﻿//Generated code
+//Generated code
 //#include "stdafx.h"
 #include "ChartFromToBinary.h"
 #include "../../ASCOfficePPTXFile/Editor/BinReaderWriterDefines.h"

@@ -139,7 +139,7 @@ public:
 	{
 	}
 };
-//нигде не используется ...
+//РЅРёРіРґРµ РЅРµ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ ...
 //template< typename E, class ETraits = CElementTraits< E > >
 //class CPtrAtlArray:
 //	public CAtlArray<E, ETraits>
@@ -234,7 +234,7 @@ public:
 //		RemoveAll();
 //	}
 //};
-// то что выше нигде не используется
+// С‚Рѕ С‡С‚Рѕ РІС‹С€Рµ РЅРёРіРґРµ РЅРµ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ
 
 class CPerfomanceCounter
 {

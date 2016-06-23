@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 //#include "../../../Common/DocxFormat/Source/Base/Nullable.h"
 #include "../../../DesktopEditor/common/File.h"

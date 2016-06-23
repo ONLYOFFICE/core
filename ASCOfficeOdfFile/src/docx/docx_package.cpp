@@ -213,7 +213,7 @@ void headers_footers_elements::write(const std::wstring & RootPath)
 
                     doc->get_content_types_file().content()->add_override(std::wstring(L"/word/") + inst->name_, ContentType);
             }
-			//нужно сформировать релсы с объектов
+			//РЅСѓР¶РЅРѕ СЃС„РѕСЂРјРёСЂРѕРІР°С‚СЊ СЂРµР»СЃС‹ СЃ РѕР±СЉРµРєС‚РѕРІ
 			if (!inst->rels_.empty())
 			{
 				rels_files relFiles;
@@ -251,7 +251,7 @@ namespace
 		{
 			std::wstringstream content; 
 	        
-			// внимание! L"s - это не ошибка
+			// РІРЅРёРјР°РЅРёРµ! L"s - СЌС‚Рѕ РЅРµ РѕС€РёР±РєР°
 			content << L"<w:" << Node <<    L"s \
 								xmlns:o=\"urn:schemas-microsoft-com:office:office\" \
 								xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \

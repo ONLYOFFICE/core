@@ -1,4 +1,4 @@
-﻿#include "DocxSerializer.h"
+#include "DocxSerializer.h"
 
 #include "../../DesktopEditor/common/Directory.h"
 #include "../../DesktopEditor/common/File.h"

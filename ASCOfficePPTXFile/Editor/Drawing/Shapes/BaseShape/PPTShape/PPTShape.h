@@ -178,7 +178,7 @@ public:
 	}
 
 	virtual bool LoadFromXMLShapeType(XmlUtils::CXmlNode& oNodeShapeType) // vml object
-	{		// из за особенносей форматирования vmlDrawing могут вылезти пустые текстовые значения - value ..
+	{		// РёР· Р·Р° РѕСЃРѕР±РµРЅРЅРѕСЃРµР№ С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёСЏ vmlDrawing РјРѕРіСѓС‚ РІС‹Р»РµР·С‚Рё РїСѓСЃС‚С‹Рµ С‚РµРєСЃС‚РѕРІС‹Рµ Р·РЅР°С‡РµРЅРёСЏ - value ..
 		CString sId = oNodeShapeType.GetAttribute(_T("o:spt"));
 
 		bool bIsNeedRecalc = true;

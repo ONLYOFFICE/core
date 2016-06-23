@@ -1,4 +1,4 @@
-﻿#include "../source/XlsXlsxConverter/ConvertXls2Xlsx.h"
+#include "../source/XlsXlsxConverter/ConvertXls2Xlsx.h"
 
 #if defined(_WIN32) || defined(_WIN64)
     #include <windows.h>

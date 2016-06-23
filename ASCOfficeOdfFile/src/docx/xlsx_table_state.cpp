@@ -162,7 +162,7 @@ std::wstring xlsx_table_state::default_column_cell_style() const
 		return column_default_cell_style_name_.at(current_table_column_);
 	else
 	{
-		//непонятная хрень!! - неправильно сформирован ods???
+		//РЅРµРїРѕРЅСЏС‚РЅР°СЏ С…СЂРµРЅСЊ!! - РЅРµРїСЂР°РІРёР»СЊРЅРѕ СЃС„РѕСЂРјРёСЂРѕРІР°РЅ ods???
 		return L"";
 	}
 }
@@ -181,7 +181,7 @@ void xlsx_table_state::start_cell(size_t columnsSpanned, size_t rowsSpanned)
 {
     current_table_column_++;
 
-    // в случае если объединение имеет место добавляем запись о нем
+    // РІ СЃР»СѓС‡Р°Рµ РµСЃР»Рё РѕР±СЉРµРґРёРЅРµРЅРёРµ РёРјРµРµС‚ РјРµСЃС‚Рѕ РґРѕР±Р°РІР»СЏРµРј Р·Р°РїРёСЃСЊ Рѕ РЅРµРј
     if (columnsSpanned != 0 || rowsSpanned != 0)
         xlsx_merge_cells_.add_merge(current_table_column_, current_table_row_, columnsSpanned, rowsSpanned);
 
@@ -192,8 +192,8 @@ void xlsx_table_state::start_cell(size_t columnsSpanned, size_t rowsSpanned)
 
     columns_spanned_num_ = static_cast<int>(columnsSpanned);
 
-    // обновляем вектор, в котором хранятся информация об объединении строк
-    // добавляем в него новый столбец
+    // РѕР±РЅРѕРІР»СЏРµРј РІРµРєС‚РѕСЂ, РІ РєРѕС‚РѕСЂРѕРј С…СЂР°РЅСЏС‚СЃСЏ РёРЅС„РѕСЂРјР°С†РёСЏ РѕР± РѕР±СЉРµРґРёРЅРµРЅРёРё СЃС‚СЂРѕРє
+    // РґРѕР±Р°РІР»СЏРµРј РІ РЅРµРіРѕ РЅРѕРІС‹Р№ СЃС‚РѕР»Р±РµС†
 
     
     for (size_t i = 0; i <= columns_spanned_num_; ++i)
@@ -245,14 +245,14 @@ void xlsx_table_state::start_covered_cell()
 {
     current_table_column_++;
 
-    // обновляем вектор, в котором хранятся информация об объединении строк
-    // добавляем в него новый столбец
+    // РѕР±РЅРѕРІР»СЏРµРј РІРµРєС‚РѕСЂ, РІ РєРѕС‚РѕСЂРѕРј С…СЂР°РЅСЏС‚СЃСЏ РёРЅС„РѕСЂРјР°С†РёСЏ РѕР± РѕР±СЉРµРґРёРЅРµРЅРёРё СЃС‚СЂРѕРє
+    // РґРѕР±Р°РІР»СЏРµРј РІ РЅРµРіРѕ РЅРѕРІС‹Р№ СЃС‚РѕР»Р±РµС†
 
     if (current_table_column_ >= (int)(rows_spanned_.size()))
         rows_spanned_.push_back(xlsx_row_spanned());
 
-    // использовали текущую ячейку, уменьшаем счетчики оставшихся объединенных ячеек
-    // для столбцов и строк
+    // РёСЃРїРѕР»СЊР·РѕРІР°Р»Рё С‚РµРєСѓС‰СѓСЋ СЏС‡РµР№РєСѓ, СѓРјРµРЅСЊС€Р°РµРј СЃС‡РµС‚С‡РёРєРё РѕСЃС‚Р°РІС€РёС…СЃСЏ РѕР±СЉРµРґРёРЅРµРЅРЅС‹С… СЏС‡РµРµРє
+    // РґР»СЏ СЃС‚РѕР»Р±С†РѕРІ Рё СЃС‚СЂРѕРє
 
     if (columns_spanned_num_ > 0)
         columns_spanned_num_--;

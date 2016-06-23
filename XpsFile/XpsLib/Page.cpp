@@ -1,4 +1,4 @@
-﻿#include "Page.h"
+#include "Page.h"
 #include <stdio.h>
 #include "../../DesktopEditor/common/String.h"
 #include "../../DesktopEditor/graphics/structures.h"

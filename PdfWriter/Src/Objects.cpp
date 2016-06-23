@@ -1,4 +1,4 @@
-﻿#include "Objects.h"
+#include "Objects.h"
 #include "Utils.h"
 #include "Types.h"
 #include "Encrypt.h"

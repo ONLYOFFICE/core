@@ -1,4 +1,4 @@
-﻿#include "RtfShape.h"
+#include "RtfShape.h"
 #include "Writer/OOXWriter.h"
 #include "RtfOle.h"
 

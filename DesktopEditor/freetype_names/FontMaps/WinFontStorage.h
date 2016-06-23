@@ -1,13 +1,13 @@
 #pragma once
 #include "../../../Common/ShareMemArray.h"
 
-// Идентификаторы хранилищ
-#define ISID_DEFAULT                 0x0000 // По умолчанию
+// РРґРµРЅС‚РёС„РёРєР°С‚РѕСЂС‹ С…СЂР°РЅРёР»РёС‰
+#define ISID_DEFAULT                 0x0000 // РџРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
 
-#define ISID_WIN_FONT_STATUS_STORAGE 0x0001 // Таблица для статуса
-#define ISID_WIN_FONT_INFO_STORAGE   0x0002 // Таблица для Информации
+#define ISID_WIN_FONT_STATUS_STORAGE 0x0001 // РўР°Р±Р»РёС†Р° РґР»СЏ СЃС‚Р°С‚СѓСЃР°
+#define ISID_WIN_FONT_INFO_STORAGE   0x0002 // РўР°Р±Р»РёС†Р° РґР»СЏ РРЅС„РѕСЂРјР°С†РёРё
 
-// Макс. длина имени таблицы
+// РњР°РєСЃ. РґР»РёРЅР° РёРјРµРЅРё С‚Р°Р±Р»РёС†С‹
 #define STORAGE_TABLE_NAME_LEN	1024
 
 #define STATUS_STORAGE_NAME CString( _T("AVS_LOADED_WIN_FONTS") )
@@ -63,7 +63,7 @@ namespace NSStrings
 
 
 
-// статус таблицы установленных шрифтов
+// СЃС‚Р°С‚СѓСЃ С‚Р°Р±Р»РёС†С‹ СѓСЃС‚Р°РЅРѕРІР»РµРЅРЅС‹С… С€СЂРёС„С‚РѕРІ
 enum WinFontsTableStatus {STIF_ERROR, STIF_AVAILABLE, STIF_CREATING, STIF_BROKEN};
 
 enum StringCoding 
@@ -74,12 +74,12 @@ enum StringCoding
 };
 
 
-// Структура для определения статуса таблицы хранилища
+// РЎС‚СЂСѓРєС‚СѓСЂР° РґР»СЏ РѕРїСЂРµРґРµР»РµРЅРёСЏ СЃС‚Р°С‚СѓСЃР° С‚Р°Р±Р»РёС†С‹ С…СЂР°РЅРёР»РёС‰Р°
 struct WinFontsStatusStorage
 {
-	// Общие данные
-	WinFontsTableStatus	m_sStatus;					// Статус
-	LONG64              m_lLength;                  // Размер таблицы
+	// РћР±С‰РёРµ РґР°РЅРЅС‹Рµ
+	WinFontsTableStatus	m_sStatus;					// РЎС‚Р°С‚СѓСЃ
+	LONG64              m_lLength;                  // Р Р°Р·РјРµСЂ С‚Р°Р±Р»РёС†С‹
 
 	WinFontsStatusStorage() 
 	{
@@ -88,13 +88,13 @@ struct WinFontsStatusStorage
 
 	void Reset()
 	{
-		// Общие данные
-		m_sStatus = STIF_ERROR; // Статус
+		// РћР±С‰РёРµ РґР°РЅРЅС‹Рµ
+		m_sStatus = STIF_ERROR; // РЎС‚Р°С‚СѓСЃ
 		m_lLength = 0;
 	}
 };
 
-// Структура для определения информации
+// РЎС‚СЂСѓРєС‚СѓСЂР° РґР»СЏ РѕРїСЂРµРґРµР»РµРЅРёСЏ РёРЅС„РѕСЂРјР°С†РёРё
 struct WinFontsInfoStorage
 {
 	LONG		m_lCount;
@@ -169,16 +169,16 @@ struct WinFontsInfoStorage
 	}
 };
 
-// Класс хранилища таблицы статуса
+// РљР»Р°СЃСЃ С…СЂР°РЅРёР»РёС‰Р° С‚Р°Р±Р»РёС†С‹ СЃС‚Р°С‚СѓСЃР°
 class CWinFontsStatusStorage: public CShareMemArray<BYTE>
 {
 protected:
 
-	bool ReadStruct_unsync(WinFontsStatusStorage *aData)		// Прочитать структуру unsync
+	bool ReadStruct_unsync(WinFontsStatusStorage *aData)		// РџСЂРѕС‡РёС‚Р°С‚СЊ СЃС‚СЂСѓРєС‚СѓСЂСѓ unsync
 	{
 		__try
 		{
-			WinFontsStatusStorage *pTable = (WinFontsStatusStorage *) ( (BYTE *)m_pArray + sizeof(LONG64));	// sizeof(LONG64) - размер таблицы
+			WinFontsStatusStorage *pTable = (WinFontsStatusStorage *) ( (BYTE *)m_pArray + sizeof(LONG64));	// sizeof(LONG64) - СЂР°Р·РјРµСЂ С‚Р°Р±Р»РёС†С‹
 			memcpy(aData, pTable, sizeof(WinFontsStatusStorage)); 
 		}
 		__except(EXCEPTION_IN_PAGE_ERROR == GetExceptionCode() ? EXCEPTION_EXECUTE_HANDLER : EXCEPTION_CONTINUE_SEARCH)
@@ -190,11 +190,11 @@ protected:
 		return true;
 	}
 
-	bool WriteStruct_unsync(WinFontsStatusStorage *aData)	// Записать структуру unsync
+	bool WriteStruct_unsync(WinFontsStatusStorage *aData)	// Р—Р°РїРёСЃР°С‚СЊ СЃС‚СЂСѓРєС‚СѓСЂСѓ unsync
 	{
 		__try
 		{
-			WinFontsStatusStorage *pTable = (WinFontsStatusStorage *) ( (BYTE *)m_pArray + sizeof(LONG64));	// sizeof(LONG64) - размер таблицы
+			WinFontsStatusStorage *pTable = (WinFontsStatusStorage *) ( (BYTE *)m_pArray + sizeof(LONG64));	// sizeof(LONG64) - СЂР°Р·РјРµСЂ С‚Р°Р±Р»РёС†С‹
 			memcpy(pTable, aData, sizeof(WinFontsStatusStorage)); 
 		}
 		__except(EXCEPTION_IN_PAGE_ERROR == GetExceptionCode() ? EXCEPTION_EXECUTE_HANDLER : EXCEPTION_CONTINUE_SEARCH)
@@ -221,47 +221,47 @@ public:
 
 public:
 
-	// Получить статус индексатора (bForceControl - Попытаться стать мастером, если получится)
-	// возвращаем *bForceControl == true - вызывающий объект стал мастером
+	// РџРѕР»СѓС‡РёС‚СЊ СЃС‚Р°С‚СѓСЃ РёРЅРґРµРєСЃР°С‚РѕСЂР° (bForceControl - РџРѕРїС‹С‚Р°С‚СЊСЃСЏ СЃС‚Р°С‚СЊ РјР°СЃС‚РµСЂРѕРј, РµСЃР»Рё РїРѕР»СѓС‡РёС‚СЃСЏ)
+	// РІРѕР·РІСЂР°С‰Р°РµРј *bForceControl == true - РІС‹Р·С‹РІР°СЋС‰РёР№ РѕР±СЉРµРєС‚ СЃС‚Р°Р» РјР°СЃС‚РµСЂРѕРј
 	bool GetStatus(bool *bForceControl, WinFontsStatusStorage* aIS)
 	{
 		bool bTryToForceControl = bForceControl && (*bForceControl);
 
 		if (NULL == aIS) return false;
 
-		if (bForceControl) *bForceControl = false;	// Пока мы не можем стать мастером
+		if (bForceControl) *bForceControl = false;	// РџРѕРєР° РјС‹ РЅРµ РјРѕР¶РµРј СЃС‚Р°С‚СЊ РјР°СЃС‚РµСЂРѕРј
 
-		// Делаем все под мутексом :)
+		// Р”РµР»Р°РµРј РІСЃРµ РїРѕРґ РјСѓС‚РµРєСЃРѕРј :)
 		CSynchAccess oAccess = m_hAccessMutex;
 		
-		if (!ReadStruct_unsync(aIS)) return false;	// Не получилось прочитать статус
+		if (!ReadStruct_unsync(aIS)) return false;	// РќРµ РїРѕР»СѓС‡РёР»РѕСЃСЊ РїСЂРѕС‡РёС‚Р°С‚СЊ СЃС‚Р°С‚СѓСЃ
 
 		if ((STIF_BROKEN == aIS->m_sStatus) || (STIF_ERROR == aIS->m_sStatus))
 		{
-			// Таблица нарушена - говорим, что можно стать мастером (если нужно было)
+			// РўР°Р±Р»РёС†Р° РЅР°СЂСѓС€РµРЅР° - РіРѕРІРѕСЂРёРј, С‡С‚Рѕ РјРѕР¶РЅРѕ СЃС‚Р°С‚СЊ РјР°СЃС‚РµСЂРѕРј (РµСЃР»Рё РЅСѓР¶РЅРѕ Р±С‹Р»Рѕ)
 			if (bTryToForceControl)
 			{
-				// Сбрасываем таблицу
+				// РЎР±СЂР°СЃС‹РІР°РµРј С‚Р°Р±Р»РёС†Сѓ
 				aIS->Reset();
 				aIS->m_sStatus = STIF_CREATING;
-				*bForceControl = WriteStruct_unsync(aIS);	// пишем в память и говорим, что стали мастером
+				*bForceControl = WriteStruct_unsync(aIS);	// РїРёС€РµРј РІ РїР°РјСЏС‚СЊ Рё РіРѕРІРѕСЂРёРј, С‡С‚Рѕ СЃС‚Р°Р»Рё РјР°СЃС‚РµСЂРѕРј
 			}
 		}
 
 		return true;
 	}
-	// Установить статус, как нарушенное хранилище. Мастерство может перехватываться другими объектами
+	// РЈСЃС‚Р°РЅРѕРІРёС‚СЊ СЃС‚Р°С‚СѓСЃ, РєР°Рє РЅР°СЂСѓС€РµРЅРЅРѕРµ С…СЂР°РЅРёР»РёС‰Рµ. РњР°СЃС‚РµСЂСЃС‚РІРѕ РјРѕР¶РµС‚ РїРµСЂРµС…РІР°С‚С‹РІР°С‚СЊСЃСЏ РґСЂСѓРіРёРјРё РѕР±СЉРµРєС‚Р°РјРё
 	bool SetBroken()
 	{
 		CSynchAccess oAccess = m_hAccessMutex;
 		WinFontsStatusStorage sStor;
 		sStor.m_sStatus = STIF_BROKEN;
-		// Пишем в ш-память
+		// РџРёС€РµРј РІ С€-РїР°РјСЏС‚СЊ
 		return WriteStruct_unsync(&sStor);
 	}
 
 private:
-	// Скрываем методы работы с массивами
+	// РЎРєСЂС‹РІР°РµРј РјРµС‚РѕРґС‹ СЂР°Р±РѕС‚С‹ СЃ РјР°СЃСЃРёРІР°РјРё
 	bool Save(CAtlArray<BYTE> &aTable)
 	{
 		return false;
@@ -276,7 +276,7 @@ private:
 public:
 	CWinFontsStatusStorage(CString &aName): CShareMemArray(aName, sizeof(WinFontsStatusStorage), ISID_WIN_FONT_STATUS_STORAGE)
 	{
-		// Параметр aName должен быть AVS_LOAD_WIN_FONTS
+		// РџР°СЂР°РјРµС‚СЂ aName РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ AVS_LOAD_WIN_FONTS
 		//ATLTRACE2("CStatusStorage created;\n");
 	};	
 	~CWinFontsStatusStorage()
@@ -285,17 +285,17 @@ public:
 	};
 };
 
-// Класс хранилища таблицы информации
+// РљР»Р°СЃСЃ С…СЂР°РЅРёР»РёС‰Р° С‚Р°Р±Р»РёС†С‹ РёРЅС„РѕСЂРјР°С†РёРё
 class CWinFontsInfoStorage: public CShareMemArray<BYTE>
 {
 protected:
 
-	bool ReadStruct_unsync(WinFontsInfoStorage *aData)		// Прочитать структуру unsync
+	bool ReadStruct_unsync(WinFontsInfoStorage *aData)		// РџСЂРѕС‡РёС‚Р°С‚СЊ СЃС‚СЂСѓРєС‚СѓСЂСѓ unsync
 	{
 		__try
 		{
 			LONG64 lLength = Size();
-			aData->Load((BYTE*)m_pArray + sizeof(LONG64), lLength);	// sizeof(LONG64) - размер таблицы
+			aData->Load((BYTE*)m_pArray + sizeof(LONG64), lLength);	// sizeof(LONG64) - СЂР°Р·РјРµСЂ С‚Р°Р±Р»РёС†С‹
 		}
 		__except(EXCEPTION_IN_PAGE_ERROR == GetExceptionCode() ? EXCEPTION_EXECUTE_HANDLER : EXCEPTION_CONTINUE_SEARCH)
 		{
@@ -306,14 +306,14 @@ protected:
 		return true;
 	}
 
-	bool WriteStruct_unsync(WinFontsInfoStorage *aData)	// Записать структуру unsync
+	bool WriteStruct_unsync(WinFontsInfoStorage *aData)	// Р—Р°РїРёСЃР°С‚СЊ СЃС‚СЂСѓРєС‚СѓСЂСѓ unsync
 	{
 		__try
 		{
 			LONG64 *pSize = (LONG64*)m_pArray;	
 			*pSize = m_nSize;
 
-			aData->Save((BYTE*)m_pArray + sizeof(LONG64));	// sizeof(LONG64) - размер таблицы
+			aData->Save((BYTE*)m_pArray + sizeof(LONG64));	// sizeof(LONG64) - СЂР°Р·РјРµСЂ С‚Р°Р±Р»РёС†С‹
 		}
 		__except(EXCEPTION_IN_PAGE_ERROR == GetExceptionCode() ? EXCEPTION_EXECUTE_HANDLER : EXCEPTION_CONTINUE_SEARCH)
 		{
@@ -353,7 +353,7 @@ public:
 	}
 
 private:
-	// Скрываем методы работы с массивами
+	// РЎРєСЂС‹РІР°РµРј РјРµС‚РѕРґС‹ СЂР°Р±РѕС‚С‹ СЃ РјР°СЃСЃРёРІР°РјРё
 	bool Save(CAtlArray<BYTE> &aTable)
 	{
 		return false;

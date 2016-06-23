@@ -1,4 +1,4 @@
-﻿#ifndef _BUILD_IMAGE_H_
+#ifndef _BUILD_IMAGE_H_
 #define _BUILD_IMAGE_H_
 
 #include "AggPlusEnums.h"

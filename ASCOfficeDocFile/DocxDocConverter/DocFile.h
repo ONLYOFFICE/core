@@ -118,22 +118,22 @@ namespace ASCDocFileFormat
 		// 		
 		int WriteFibRgLw97();
 
-		int GetFibRgLw97_ccpText();					//	колличество всех символов обычного текста
-		int GetFibRgLw97_ccpTxbx();					//	колличество всех символов текстовых надписей в документе
-		int GetFibRgLw97_ccpHdrTxbx ();				//	колличество всех символов текстовых надписей в колонтитулах
+		int GetFibRgLw97_ccpText();					//	РєРѕР»Р»РёС‡РµСЃС‚РІРѕ РІСЃРµС… СЃРёРјРІРѕР»РѕРІ РѕР±С‹С‡РЅРѕРіРѕ С‚РµРєСЃС‚Р°
+		int GetFibRgLw97_ccpTxbx();					//	РєРѕР»Р»РёС‡РµСЃС‚РІРѕ РІСЃРµС… СЃРёРјРІРѕР»РѕРІ С‚РµРєСЃС‚РѕРІС‹С… РЅР°РґРїРёСЃРµР№ РІ РґРѕРєСѓРјРµРЅС‚Рµ
+		int GetFibRgLw97_ccpHdrTxbx ();				//	РєРѕР»Р»РёС‡РµСЃС‚РІРѕ РІСЃРµС… СЃРёРјРІРѕР»РѕРІ С‚РµРєСЃС‚РѕРІС‹С… РЅР°РґРїРёСЃРµР№ РІ РєРѕР»РѕРЅС‚РёС‚СѓР»Р°С…
 		
 		// OFFICE ART
 
 		int WriteFibMainTBRefs();
 		int WriteFibHeadTBRefs();
 		
-		int CalculateOffTbRefs (long nBuffPos);		//	Индексация символов
-		int WriteStrTbRefs (long nBuffPos);			//	Запись символов текста в основной поток 
+		int CalculateOffTbRefs (long nBuffPos);		//	РРЅРґРµРєСЃР°С†РёСЏ СЃРёРјРІРѕР»РѕРІ
+		int WriteStrTbRefs (long nBuffPos);			//	Р—Р°РїРёСЃСЊ СЃРёРјРІРѕР»РѕРІ С‚РµРєСЃС‚Р° РІ РѕСЃРЅРѕРІРЅРѕР№ РїРѕС‚РѕРє 
 
-		void CalculateMainSpa ();					// настройка позиций в тексте для якорей автофигур или flow картинок (MAINDOC)
-		void CalculateHeaderSpa ();					// настройка позиций в тексте для якорей автофигур или flow картинок (HEADER)
+		void CalculateMainSpa ();					// РЅР°СЃС‚СЂРѕР№РєР° РїРѕР·РёС†РёР№ РІ С‚РµРєСЃС‚Рµ РґР»СЏ СЏРєРѕСЂРµР№ Р°РІС‚РѕС„РёРіСѓСЂ РёР»Рё flow РєР°СЂС‚РёРЅРѕРє (MAINDOC)
+		void CalculateHeaderSpa ();					// РЅР°СЃС‚СЂРѕР№РєР° РїРѕР·РёС†РёР№ РІ С‚РµРєСЃС‚Рµ РґР»СЏ СЏРєРѕСЂРµР№ Р°РІС‚РѕС„РёРіСѓСЂ РёР»Рё flow РєР°СЂС‚РёРЅРѕРє (HEADER)
 
-		long WriteOfficeDrawings ();				// запись всей информации по автофигурам и flow картинкам
+		long WriteOfficeDrawings ();				// Р·Р°РїРёСЃСЊ РІСЃРµР№ РёРЅС„РѕСЂРјР°С†РёРё РїРѕ Р°РІС‚РѕС„РёРіСѓСЂР°Рј Рё flow РєР°СЂС‚РёРЅРєР°Рј
 
 		// Helpers
 
@@ -171,7 +171,7 @@ namespace ASCDocFileFormat
 
 		COArtStorage*			m_oartStorage;
 
-		// позиции якорей в тексте документа (индексы символов)
+		// РїРѕР·РёС†РёРё СЏРєРѕСЂРµР№ РІ С‚РµРєСЃС‚Рµ РґРѕРєСѓРјРµРЅС‚Р° (РёРЅРґРµРєСЃС‹ СЃРёРјРІРѕР»РѕРІ)
 		vector <unsigned int>	m_aSpaCP;
 		vector <unsigned int>	m_aHeadSpaCP;
 

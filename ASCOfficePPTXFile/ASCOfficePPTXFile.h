@@ -1,4 +1,4 @@
-﻿#ifndef ASC_OFFICE_PPTX_FILE
+#ifndef ASC_OFFICE_PPTX_FILE
 #define ASC_OFFICE_PPTX_FILE
 
 //todo

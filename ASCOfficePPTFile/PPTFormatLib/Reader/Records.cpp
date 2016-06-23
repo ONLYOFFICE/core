@@ -32,7 +32,7 @@ void CRecordsContainer::ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pS
 	}
 	if (lCurLen != m_oHeader.RecLen)
 	{
-		// нужно разобраться, что тут такое!!!
+		// РЅСѓР¶РЅРѕ СЂР°Р·РѕР±СЂР°С‚СЊСЃСЏ, С‡С‚Рѕ С‚СѓС‚ С‚Р°РєРѕРµ!!!
 		LONG lPosition = 0;
 		StreamUtils::StreamSeek(lPosition + m_oHeader.RecLen, pStream);
 	}
@@ -73,7 +73,7 @@ IRecord* CreateByType(SRecordHeader oHeader)
 	
 	CREATE_BY_TYPE(RECORD_TYPE_ORIGINALMAINMASTERID			, CRecordTripOriginalMasterId12Atom)
 	CREATE_BY_TYPE(RECORD_TYPE_COMPOSITEMASTERID			, CRecordTripCompositeMasterId12Atom)
-	//CREATE_BY_TYPE(RECORD_TYPE_ROUNDTRIPCONTENTMASTERINFO12	, CRecordRoundTripContentMasterInfo12Atom)			// ECMA-376 дубль
+	//CREATE_BY_TYPE(RECORD_TYPE_ROUNDTRIPCONTENTMASTERINFO12	, CRecordRoundTripContentMasterInfo12Atom)			// ECMA-376 РґСѓР±Р»СЊ
 	//CREATE_BY_TYPE(RECORD_TYPE_ROUNDTRIPSHAPEID12			, CRecordRoundTripShapeId12Atom)
 	CREATE_BY_TYPE(RECORD_TYPE_ROUNDTRIPHFPLACEHOLDER12		, CRecordRoundTripHFPlaceholder12Atom)
 	//CREATE_BY_TYPE(RECORD_TYPE_ROUNDTRIPCONTENTMASTERID	, CRecordRoundTripContentMasterId12Atom)
@@ -167,11 +167,11 @@ IRecord* CreateByType(SRecordHeader oHeader)
 	CREATE_BY_TYPE(RECORD_TYPE_EX_WAVAUDIOEMBEDDED			, CRecordWAVAudioEmbeddedContainer)
 	CREATE_BY_TYPE(RECORD_TYPE_EX_MIDIAUDIO					, CRecordExMIDIAudioContainer)
 
-	// интерактив
+	// РёРЅС‚РµСЂР°РєС‚РёРІ
 	CREATE_BY_TYPE(RECORD_TYPE_INTERACTIVEINFO_ATOM			, CRecordInteractiveInfoAtom)
 	CREATE_BY_TYPE(RECORD_TYPE_TXINTERACTIVEINFO_ATOM		, CRecordTextInteractiveInfoAtom)
 
-	// читаем для анимации
+	// С‡РёС‚Р°РµРј РґР»СЏ Р°РЅРёРјР°С†РёРё
 	CREATE_BY_TYPE ( RECORD_PROG_TAGS						, SlideProgTagsContainer )
 
 	CREATE_BY_TYPE(RECORD_TYPE_SOUNDCOLLECTION				, CRecordSoundCollectionContainer)

@@ -1,4 +1,4 @@
-﻿#ifndef _METAFILE_H
+#ifndef _METAFILE_H
 #define _METAFILE_H
 
 #include "../../fontengine/ApplicationFonts.h"

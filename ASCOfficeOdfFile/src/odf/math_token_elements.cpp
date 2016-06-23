@@ -137,7 +137,7 @@ void math_mo::docx_convert(oox::docx_conversion_context & Context)
     {
 		CP_XML_NODE(L"m:r")
         {
-			// + äîï ñòèëè òåêñòà ... todoooo
+			// + Ð´Ð¾Ð¿ ÑÑ‚Ð¸Ð»Ð¸ Ñ‚ÐµÐºÑÑ‚Ð° ... todoooo
 			Context.get_styles_context().start();
 			Context.current_text_properties()->docx_convert(Context);
 
@@ -182,7 +182,7 @@ void math_mn::docx_convert(oox::docx_conversion_context & Context)
     {
 		CP_XML_NODE(L"m:r")
 		{
-			// + äîï ñòèëè òåêñòà ... todoooo
+			// + Ð´Ð¾Ð¿ ÑÑ‚Ð¸Ð»Ð¸ Ñ‚ÐµÐºÑÑ‚Ð° ... todoooo
 			Context.get_styles_context().start();
 			Context.current_text_properties()->docx_convert(Context);
 

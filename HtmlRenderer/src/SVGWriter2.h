@@ -1,4 +1,4 @@
-﻿#ifndef _ASC_HTMLRENDERER_SVGWRITER2_H_
+#ifndef _ASC_HTMLRENDERER_SVGWRITER2_H_
 #define _ASC_HTMLRENDERER_SVGWRITER2_H_
 
 #include "Common2.h"
@@ -103,7 +103,7 @@ namespace NSHtmlRenderer
 		template<typename T>
 		void GetRasterData(T pPage)
 		{
-			// определ¤ем размеры картинки
+			// определяем размеры картинки
 			if (NULL == m_pFrame)
 				return;
 
@@ -267,7 +267,7 @@ namespace NSHtmlRenderer
 		BYTE*							m_pBase64Code;
 		CDoubleBounds					m_oTextClipBounds;
 
-        // переменная говорит о том, какой клип дл¤ текста записан сейчас
+        // переменная говорит о том, какой клип для текста записан сейчас
 		// если true - то послана команда ResetTextClipRect
 		// если false - то нет
 		bool							m_bIsTextClipWriteCleared;
@@ -584,7 +584,7 @@ namespace NSHtmlRenderer
 			if (fabs(m_pCoordsArray[m_lCoordsSizeCur - 2] - m_pCoordsArrayCur[0]) < 0.1 && 
 				fabs(m_pCoordsArray[m_lCoordsSizeCur - 1] - m_pCoordsArrayCur[1]) < 0.1)
 			{
-				// попали в текущую точку. не добавл¤ем
+				// попали в текущую точку. не добавляем
 				--m_pPathTypesCur;
 				--m_lPathTypesSizeCur;
 				return;
@@ -679,7 +679,7 @@ namespace NSHtmlRenderer
 			}
 
 			bool bIsNeedTransform = true;
-			// первым делом нужно пон¤ть, будем ли мы трансформировать пути
+			// первым делом нужно понять, будем ли мы трансформировать пути
 			if (nType > 0xFF && m_pBrush->Type == c_BrushTypeTexture)
 			{
 				bIsNeedTransform = false;

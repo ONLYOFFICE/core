@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "SimpleTypes_Base.h"
 #include <algorithm>

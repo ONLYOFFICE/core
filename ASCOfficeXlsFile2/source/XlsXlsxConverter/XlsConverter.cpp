@@ -1,4 +1,4 @@
-﻿#include "XlsConverter.h"
+#include "XlsConverter.h"
 
 #include "../XlsFormat/Binary/CompoundFile.h"
 #include "../XlsFormat/Binary/CFStreamCacheReader.h"

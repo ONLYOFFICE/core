@@ -209,7 +209,7 @@ bool CPPTUserInfo::ReadFromStream(CRecordUserEditAtom* pUser, POLE::Stream* pStr
 		m_arrSlidesOrder.push_back(m_oDocument.m_arSlidePersists[index].m_nSlideID);
 	}
 
-	// так... теперь берем всю инфу о ExObject -----------------------------
+	// С‚Р°Рє... С‚РµРїРµСЂСЊ Р±РµСЂРµРј РІСЃСЋ РёРЅС„Сѓ Рѕ ExObject -----------------------------
 	m_oExMedia.m_strPresentationDirectory	= strFolderMem;
 	m_oExMedia.m_strSourceDirectory			= m_strFileDirectory;
 
@@ -219,7 +219,7 @@ bool CPPTUserInfo::ReadFromStream(CRecordUserEditAtom* pUser, POLE::Stream* pStr
 	oInfo.m_dwID		= 0xFFFFFFFF;
 	m_oExMedia.m_arImages.push_back(oInfo);
 
-	// читаем все внешние объекты
+	// С‡РёС‚Р°РµРј РІСЃРµ РІРЅРµС€РЅРёРµ РѕР±СЉРµРєС‚С‹
 	std::vector<CRecordExObjListContainer*> oArrayExObjects;
 	m_oDocument.GetRecordsByType(&oArrayExObjects, false, true);
 
@@ -229,14 +229,14 @@ bool CPPTUserInfo::ReadFromStream(CRecordUserEditAtom* pUser, POLE::Stream* pStr
 	}
 	else
 	{
-		// прочитать все равно надо, так как там может быть
-		// транзишн
+		// РїСЂРѕС‡РёС‚Р°С‚СЊ РІСЃРµ СЂР°РІРЅРѕ РЅР°РґРѕ, С‚Р°Рє РєР°Рє С‚Р°Рј РјРѕР¶РµС‚ Р±С‹С‚СЊ
+		// С‚СЂР°РЅР·РёС€РЅ
 		LoadExternal(NULL);
 	}
 
 	// -------------------------------------------------------------------
 
-	// а теперь заберем всю информацию о шрифтах
+	// Р° С‚РµРїРµСЂСЊ Р·Р°Р±РµСЂРµРј РІСЃСЋ РёРЅС„РѕСЂРјР°С†РёСЋ Рѕ С€СЂРёС„С‚Р°С…
 	std::vector<CRecordFontEntityAtom*> oArrayFonts;
 	m_oDocument.GetRecordsByType(&oArrayFonts, true);
 
@@ -260,9 +260,9 @@ bool CPPTUserInfo::ReadFromStream(CRecordUserEditAtom* pUser, POLE::Stream* pStr
 	}
 
 	//FromDocument();
-	// FromDocument - должен вызываться после того, как загрузятся все (!!!) юзеры
+	// FromDocument - РґРѕР»Р¶РµРЅ РІС‹Р·С‹РІР°С‚СЊСЃСЏ РїРѕСЃР»Рµ С‚РѕРіРѕ, РєР°Рє Р·Р°РіСЂСѓР·СЏС‚СЃСЏ РІСЃРµ (!!!) СЋР·РµСЂС‹
 
-	// теперь заполним пустые картинки
+	// С‚РµРїРµСЂСЊ Р·Р°РїРѕР»РЅРёРј РїСѓСЃС‚С‹Рµ РєР°СЂС‚РёРЅРєРё
 	//std::vector<CRecordBlipStoreContainer*> oArray;
 	m_oDocument.GetRecordsByType(&m_arrBlipStore, true, true);
 	if (0 < m_arrBlipStore.size())
@@ -353,9 +353,9 @@ void CPPTUserInfo::FromDocument()
 
 		CSlide *elm = new CSlide();
 		m_arSlides.push_back(elm);
-		// тут его заполняем...
+		// С‚СѓС‚ РµРіРѕ Р·Р°РїРѕР»РЅСЏРµРј...
 
-		// если на слайде есть анимации
+		// РµСЃР»Рё РЅР° СЃР»Р°Р№РґРµ РµСЃС‚СЊ Р°РЅРёРјР°С†РёРё
 		std::map <DWORD, Animations::CSlideTimeLine*>::iterator pTimeLine		=	m_mapAnimations.find( pPair->first);
 
 		if ( m_mapAnimations.end() != pTimeLine )
@@ -395,7 +395,7 @@ void CPPTUserInfo::LoadSlide(DWORD dwSlideID, CSlide* pSlide)
 
 	if (NULL == pRecordSlide) return;
 
-	// транзишн
+	// С‚СЂР°РЅР·РёС€РЅ
 
 	CTransition* pTransition = &pSlide->m_oSlideShow.m_oTransition;
 
@@ -414,7 +414,7 @@ void CPPTUserInfo::LoadSlide(DWORD dwSlideID, CSlide* pSlide)
 		pTransition->m_bLoopSound		= pAtom->m_bLoopSound;
 		pTransition->m_bStopSound		= pAtom->m_bStopSound;
 		pTransition->m_nEffectDirection = pAtom->m_nEffectDirection;
-		pTransition->m_nEffectType		= pAtom->m_nEffectType;  // тут нужно сконвертить тип
+		pTransition->m_nEffectType		= pAtom->m_nEffectType;  // С‚СѓС‚ РЅСѓР¶РЅРѕ СЃРєРѕРЅРІРµСЂС‚РёС‚СЊ С‚РёРї
 
 		pSlide->m_oSlideShow.m_dSlideDuration = pAtom->m_nSlideTime;
 
@@ -448,7 +448,7 @@ void CPPTUserInfo::LoadSlide(DWORD dwSlideID, CSlide* pSlide)
 			AddAudioTransition (dwSlideID, pTransition, pInfo->m_strFilePath);
 	}
 
-	// анимации
+	// Р°РЅРёРјР°С†РёРё
 
 	pSlide->m_bUseLayoutColorScheme = true;
 
@@ -462,15 +462,15 @@ void CPPTUserInfo::LoadSlide(DWORD dwSlideID, CSlide* pSlide)
 	pSlideWrapper->m_parEmptyPictures	= &m_pDocumentInfo->m_arUsers[indexUser]->m_arOffsetPictures;
 	pSlideWrapper->m_mapFilePictures	= &m_pDocumentInfo->m_mapStoreImageFile;
 
-	// вот, грузим placeholder
+	// РІРѕС‚, РіСЂСѓР·РёРј placeholder
 	pSlideWrapper->m_arTextPlaceHolders = pRecordSlide->m_oPersist.m_arTextAttrs;
 
-	// записываем шрифты
+	// Р·Р°РїРёСЃС‹РІР°РµРј С€СЂРёС„С‚С‹
 	std::vector<CRecordSlideAtom*> oArraySlideAtoms;
 	pRecordSlide->GetRecordsByType(&oArraySlideAtoms, false, true);
 	if (0 == oArraySlideAtoms.size())
 	{
-		// ошибка!!!
+		// РѕС€РёР±РєР°!!!
 		return;
 	}
     bool bMasterColorScheme = oArraySlideAtoms[0]->m_bMasterScheme;
@@ -481,7 +481,7 @@ void CPPTUserInfo::LoadSlide(DWORD dwSlideID, CSlide* pSlide)
 
 	if (pPairTheme == m_mapMasterToTheme.end())
 	{
-		//????? слайду не присвоена тема !!!
+		//????? СЃР»Р°Р№РґСѓ РЅРµ РїСЂРёСЃРІРѕРµРЅР° С‚РµРјР° !!!
 		pPairTheme = m_mapMasterToTheme.begin();
 	}
 //-----------------	
@@ -495,7 +495,7 @@ void CPPTUserInfo::LoadSlide(DWORD dwSlideID, CSlide* pSlide)
 	std::map<DWORD, LONG>::iterator		pPairLayoutTitle	= pTheme->m_mapTitleLayout.find(oArraySlideAtoms[0]->m_nMasterIDRef);
 	if (pPairLayoutTitle != pTheme->m_mapTitleLayout.end())
 	{
-		//основан на заголовочном шаблоне
+		//РѕСЃРЅРѕРІР°РЅ РЅР° Р·Р°РіРѕР»РѕРІРѕС‡РЅРѕРј С€Р°Р±Р»РѕРЅРµ
 		pSlide->m_bShowMasterShapes = bMasterObjects;
 		pSlide->m_lLayoutID			= pPairLayoutTitle->second;
 		pLayout						= &pTheme->m_arLayouts[pSlide->m_lLayoutID];
@@ -503,7 +503,7 @@ void CPPTUserInfo::LoadSlide(DWORD dwSlideID, CSlide* pSlide)
 	else
 	{
 		pSlide->m_bShowMasterShapes			= true; //???
-		//основан на типовом шаблоне
+		//РѕСЃРЅРѕРІР°РЅ РЅР° С‚РёРїРѕРІРѕРј С€Р°Р±Р»РѕРЅРµ
 		std::map<_UINT64, LONG>::iterator	pPairLayoutGeom	= pTheme->m_mapGeomToLayout.find(oArraySlideAtoms[0]->m_oLayout.m_hash);
 		
 		if (pPairLayoutGeom == pTheme->m_mapGeomToLayout.end())
@@ -524,7 +524,7 @@ void CPPTUserInfo::LoadSlide(DWORD dwSlideID, CSlide* pSlide)
 	if (!pLayout->m_bUseThemeColorScheme)
 		pArrayColorScheme = &pLayout->m_arColorScheme;
 
-	// читаем цветовую схему -----------------------------------------------------------
+	// С‡РёС‚Р°РµРј С†РІРµС‚РѕРІСѓСЋ СЃС…РµРјСѓ -----------------------------------------------------------
 	pSlide->m_bUseLayoutColorScheme = true;
 	if (!bMasterColorScheme)
 	{
@@ -539,7 +539,7 @@ void CPPTUserInfo::LoadSlide(DWORD dwSlideID, CSlide* pSlide)
 				oArrayColors[i]->ToArray(&pSlide->m_arColorScheme);
 				CorrectColorScheme(pSlide->m_arColorScheme);
 
-				// проверим на совпадение
+				// РїСЂРѕРІРµСЂРёРј РЅР° СЃРѕРІРїР°РґРµРЅРёРµ
 				size_t nCountC = pSlide->m_arColorScheme.size();
 				size_t nIndexC = 0;
 				if (nCountC == pArrayColorScheme->size())
@@ -604,7 +604,7 @@ void CPPTUserInfo::LoadSlide(DWORD dwSlideID, CSlide* pSlide)
 			pSlide->m_sName = oArrayStrings[i]->m_strText;
 		}
 	}
-//------------- читаем все элементы ------------------------------------------------------------------------------------------
+//------------- С‡РёС‚Р°РµРј РІСЃРµ СЌР»РµРјРµРЅС‚С‹ ------------------------------------------------------------------------------------------
 	std::vector<CRecordShapeContainer*> oArrayShapes;
 
 	pRecordSlide->GetRecordsByType(&oArrayShapes, true);
@@ -647,13 +647,13 @@ void CPPTUserInfo::LoadSlide(DWORD dwSlideID, CSlide* pSlide)
 		}
 	}
 	
-	//даты и номера могут быть и не только в колонтитулах
-	//todooo ... возможно нужно все перенести плейсхолдеры без ID a-la как в AddLayout
+	//РґР°С‚С‹ Рё РЅРѕРјРµСЂР° РјРѕРіСѓС‚ Р±С‹С‚СЊ Рё РЅРµ С‚РѕР»СЊРєРѕ РІ РєРѕР»РѕРЅС‚РёС‚СѓР»Р°С…
+	//todooo ... РІРѕР·РјРѕР¶РЅРѕ РЅСѓР¶РЅРѕ РІСЃРµ РїРµСЂРµРЅРµСЃС‚Рё РїР»РµР№СЃС…РѕР»РґРµСЂС‹ Р±РµР· ID a-la РєР°Рє РІ AddLayout
 	
 	AddLayoutSlidePlaceholder(pSlide, MasterSlideNumber	, pLayout); 
 	AddLayoutSlidePlaceholder(pSlide, MasterDate		, pLayout);
 	
-	//-------------элементы колонтитулов
+	//-------------СЌР»РµРјРµРЅС‚С‹ РєРѕР»РѕРЅС‚РёС‚СѓР»РѕРІ
 	std::multimap<int, int>::iterator it;
 	IElement* pElement = NULL;
 	
@@ -788,7 +788,7 @@ int CPPTUserInfo::AddNewLayout(CTheme* pTheme, CRecordSlide* pRecordSlide, bool 
 	pLayout->m_strLayoutType = ConvertLayoutType(layoutRecord.m_nGeom, layoutRecord.m_pPlaceHolderID);
 
 	if (!addShapes) return ind;
-//далее только для типовых шаблонов
+//РґР°Р»РµРµ С‚РѕР»СЊРєРѕ РґР»СЏ С‚РёРїРѕРІС‹С… С€Р°Р±Р»РѕРЅРѕРІ
 	pTheme->m_mapGeomToLayout.insert(std::pair<_UINT64, LONG>(layoutRecord.m_hash, ind));
 	
 	int defObjSize = -1;
@@ -845,7 +845,7 @@ int CPPTUserInfo::AddNewLayout(CTheme* pTheme, CRecordSlide* pRecordSlide, bool 
 	}
 	//if (layoutRecord.m_nGeom==0x0F) return ind; // big object only !!!
 
-	//копируем все элементы без idx которые не были прописаны явно
+	//РєРѕРїРёСЂСѓРµРј РІСЃРµ СЌР»РµРјРµРЅС‚С‹ Р±РµР· idx РєРѕС‚РѕСЂС‹Рµ РЅРµ Р±С‹Р»Рё РїСЂРѕРїРёСЃР°РЅС‹ СЏРІРЅРѕ
 	for (std::multimap<int, int>::iterator it = pTheme->m_mapPlaceholders.begin(); it != pTheme->m_mapPlaceholders.end(); it++)
 	{		
 		if (pTheme->m_arElements[it->second]->m_lPlaceholderID >= 0) continue;
@@ -911,7 +911,7 @@ void CPPTUserInfo::LoadMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, co
 	std::map<DWORD, LONG>::iterator pPair = m_mapMasterToTheme.find(dwMasterID);
 	if (pPair != m_mapMasterToTheme.end())
 	{
-		// мастер уже загружен
+		// РјР°СЃС‚РµСЂ СѓР¶Рµ Р·Р°РіСЂСѓР¶РµРЅ
 		return;
 	}
 
@@ -919,12 +919,12 @@ void CPPTUserInfo::LoadMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, co
 
 	std::map<DWORD, CRecordSlide*>::iterator pPairMaster = m_mapMasters.find(dwMasterID);
 
-	if (m_mapMasters.end() == pPairMaster)//??? не может быть 
+	if (m_mapMasters.end() == pPairMaster)//??? РЅРµ РјРѕР¶РµС‚ Р±С‹С‚СЊ 
 		return;
 
 	CRecordSlide* pMaster = pPairMaster->second;
 
-    if (pMaster == NULL)//??? не может быть 
+    if (pMaster == NULL)//??? РЅРµ РјРѕР¶РµС‚ Р±С‹С‚СЊ 
         return; 
 
 	std::vector<CRecordSlideAtom*> oArraySlideAtoms;
@@ -935,18 +935,18 @@ void CPPTUserInfo::LoadMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, co
 	DWORD dwID				= (DWORD)oArraySlideAtoms[0]->m_nMasterIDRef;
 	if (0 != dwID)
 	{
-		// этот мастер - не main!!!
-		// сначала загрузим все main, а потом - title
-		// title нужно грузить как обычный слайд.
+		// СЌС‚РѕС‚ РјР°СЃС‚РµСЂ - РЅРµ main!!!
+		// СЃРЅР°С‡Р°Р»Р° Р·Р°РіСЂСѓР·РёРј РІСЃРµ main, Р° РїРѕС‚РѕРј - title
+		// title РЅСѓР¶РЅРѕ РіСЂСѓР·РёС‚СЊ РєР°Рє РѕР±С‹С‡РЅС‹Р№ СЃР»Р°Р№Рґ.
 		return;
 	}
 	std::vector<CRecordTripCompositeMasterId12Atom*> oArrayCompId;
 	pMaster->GetRecordsByType(&oArrayCompId, false, true);
 	if (0 != oArrayCompId.size())
 	{
-		// этот мастер - не main!!!
-		// сначала загрузим все main, а потом - title
-		// title нужно грузить как обычный слайд.
+		// СЌС‚РѕС‚ РјР°СЃС‚РµСЂ - РЅРµ main!!!
+		// СЃРЅР°С‡Р°Р»Р° Р·Р°РіСЂСѓР·РёРј РІСЃРµ main, Р° РїРѕС‚РѕРј - title
+		// title РЅСѓР¶РЅРѕ РіСЂСѓР·РёС‚СЊ РєР°Рє РѕР±С‹С‡РЅС‹Р№ СЃР»Р°Р№Рґ.
 		return;
 	}    
 	
@@ -1010,7 +1010,7 @@ void CPPTUserInfo::LoadMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, co
 	m_arMasterWrapper.push_back(slide_info);
 	CSlideInfo* pMasterWrapper = &m_arMasterWrapper[lIndexTheme];
 
-	// записываем шрифты ---------------------------------------------------------------
+	// Р·Р°РїРёСЃС‹РІР°РµРј С€СЂРёС„С‚С‹ ---------------------------------------------------------------
 	int nCountFonts = m_arrFonts.size();
 	for (int i = 0; i < nCountFonts; ++i)
 	{
@@ -1018,7 +1018,7 @@ void CPPTUserInfo::LoadMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, co
 	}
 	// ---------------------------------------------------------------------------------
 
-	// читаем цветовую схему -----------------------------------------------------------
+	// С‡РёС‚Р°РµРј С†РІРµС‚РѕРІСѓСЋ СЃС…РµРјСѓ -----------------------------------------------------------
 	std::vector<CRecordColorSchemeAtom*> oArrayColors;
 	pMaster->GetRecordsByType(&oArrayColors, false);
 
@@ -1065,7 +1065,7 @@ void CPPTUserInfo::LoadMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, co
 	pMasterWrapper->m_parEmptyPictures	= &m_pDocumentInfo->m_arUsers[indexUser]->m_arOffsetPictures;
 	pMasterWrapper->m_mapFilePictures	= &m_pDocumentInfo->m_mapStoreImageFile;
 
-	// читаем настройки текстовых стилей -----------------------------------------------
+	// С‡РёС‚Р°РµРј РЅР°СЃС‚СЂРѕР№РєРё С‚РµРєСЃС‚РѕРІС‹С… СЃС‚РёР»РµР№ -----------------------------------------------
 	std::vector<CRecordTextMasterStyleAtom*> oArrayTextMasters;
 	pMaster->GetRecordsByType(&oArrayTextMasters, true, false);
 
@@ -1089,7 +1089,7 @@ void CPPTUserInfo::LoadMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, co
 	CreateDefaultStyle(oPPTDefaultStyle, pTheme);
 	oPPTDefaultStyle.ApplyAfter(m_oDefaultTextStyle);
 
-	// выставим стили теме
+	// РІС‹СЃС‚Р°РІРёРј СЃС‚РёР»Рё С‚РµРјРµ
 	pTheme->m_pStyles[0] = oPPTDefaultStyle;
 	pTheme->m_pStyles[1] = oPPTDefaultStyle;
 	pTheme->m_pStyles[2] = oPPTDefaultStyle;
@@ -1103,13 +1103,13 @@ void CPPTUserInfo::LoadMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, co
 		pTheme->m_pStyles[3].ApplyAfter(pMasterWrapper->m_pStyles[3].get());
 
 	// ---------------------------------------------------------------------------------
-	// читаем все элементы...-----------------------------------------------------------
+	// С‡РёС‚Р°РµРј РІСЃРµ СЌР»РµРјРµРЅС‚С‹...-----------------------------------------------------------
 	std::vector<CRecordShapeContainer*> oArrayShapes;
 	pMaster->GetRecordsByType(&oArrayShapes, true);
 
 	pTheme->CalculateStyles();
 	
-	CLayout* pLayout = NULL; // ну нету тут разметок ...!!
+	CLayout* pLayout = NULL; // РЅСѓ РЅРµС‚Сѓ С‚СѓС‚ СЂР°Р·РјРµС‚РѕРє ...!!
 
 	for (int nShape = 0; nShape < oArrayShapes.size(); ++nShape)
 	{
@@ -1202,20 +1202,20 @@ void CPPTUserInfo::LoadNoMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, 
 		}
 	}
 
-	// проверяем, если это MainMaster - то его грузим как мастер
+	// РїСЂРѕРІРµСЂСЏРµРј, РµСЃР»Рё СЌС‚Рѕ MainMaster - С‚Рѕ РµРіРѕ РіСЂСѓР·РёРј РєР°Рє РјР°СЃС‚РµСЂ
 	if (0 == dwID)
 	{
-		// он уже загружен как тема !!!
+		// РѕРЅ СѓР¶Рµ Р·Р°РіСЂСѓР¶РµРЅ РєР°Рє С‚РµРјР° !!!
 		return;
 	}
 
-	// теперь аналог функции LoadSlide 
+	// С‚РµРїРµСЂСЊ Р°РЅР°Р»РѕРі С„СѓРЅРєС†РёРё LoadSlide 
 	CSlideInfo elm;
 	m_arMasterWrapper.push_back(elm);
 
 	CSlideInfo* pMasterWrapper	= &m_arMasterWrapper[m_arMasterWrapper.size() - 1];
 
-	// вот, грузим placeholder
+	// РІРѕС‚, РіСЂСѓР·РёРј placeholder
 	pMasterWrapper->m_arTextPlaceHolders	= pCurMaster->m_oPersist.m_arTextAttrs;	
 	
 	pMasterWrapper->m_parEmptyPictures		= &m_pDocumentInfo->m_arUsers[pCurMaster->m_IndexUser]->m_arOffsetPictures;
@@ -1243,7 +1243,7 @@ void CPPTUserInfo::LoadNoMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, 
 	pTheme->m_mapTitleLayout[dwMasterID] = lLayoutID;
 
 	std::vector<NSPresentationEditor::CColor>* pArrayColorScheme = &pTheme->m_arColorScheme;
-	// читаем цветовую схему -----------------------------------------------------------
+	// С‡РёС‚Р°РµРј С†РІРµС‚РѕРІСѓСЋ СЃС…РµРјСѓ -----------------------------------------------------------
 	if (!bMasterColorScheme)
 	{
 		std::vector<CRecordColorSchemeAtom*> oArrayColors;
@@ -1258,7 +1258,7 @@ void CPPTUserInfo::LoadNoMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, 
 				pLayout->m_bUseThemeColorScheme = false;
 				CorrectColorScheme(pLayout->m_arColorScheme);
 
-				// проверим на совпадение
+				// РїСЂРѕРІРµСЂРёРј РЅР° СЃРѕРІРїР°РґРµРЅРёРµ
 				size_t nCountC = pLayout->m_arColorScheme.size();
 				size_t nIndexC = 0;
 				if (nCountC == pArrayColorScheme->size())
@@ -1317,7 +1317,7 @@ void CPPTUserInfo::LoadNoMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, 
 			pLayout->m_sName = oArrayStrings[i]->m_strText;
 		}
 	}
-	// читаем все элементы...
+	// С‡РёС‚Р°РµРј РІСЃРµ СЌР»РµРјРµРЅС‚С‹...
 	std::vector<CRecordShapeContainer*> oArrayShapes;
 	pCurMaster->GetRecordsByType(&oArrayShapes, true);
 
@@ -1394,7 +1394,7 @@ void CPPTUserInfo::LoadSlideFromPrevUsers(DWORD dwSlideID)
 	std::map<DWORD, CRecordSlide*>::iterator pPairSlide = m_mapSlides.find(dwSlideID);
 	
 	if (pPairSlide != m_mapSlides.end() && pPairSlide->second)
-		return; //есть
+		return; //РµСЃС‚СЊ
 
 	size_t lUsersCount = m_pDocumentInfo->m_arUsers.size();
 		
@@ -1432,7 +1432,7 @@ void CPPTUserInfo::LoadMasterFromPrevUsers(DWORD dwMasterID)
 	std::map<DWORD, CRecordSlide*>::iterator pPairMaster = m_mapMasters.find(dwMasterID);
 
 	if (pPairMaster != m_mapMasters.end() && pPairMaster->second)
-		return;//есть
+		return;//РµСЃС‚СЊ
 
 	size_t lUsersCount = m_pDocumentInfo->m_arUsers.size();
 	
@@ -1448,12 +1448,12 @@ void CPPTUserInfo::LoadMasterFromPrevUsers(DWORD dwMasterID)
 		{
 			pSlideCur->AddRef();
 
-			//для каждого пользователя СВОИ активные картинки !!!
+			//РґР»СЏ РєР°Р¶РґРѕРіРѕ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ РЎР’РћР Р°РєС‚РёРІРЅС‹Рµ РєР°СЂС‚РёРЅРєРё !!!
 			pSlideCur->m_IndexUser = lIndexUser;
 
 			if (pPairMaster != m_mapMasters.end())
 			{
-				//был найден ранее нулевым
+				//Р±С‹Р» РЅР°Р№РґРµРЅ СЂР°РЅРµРµ РЅСѓР»РµРІС‹Рј
 				pPairMaster->second = pSlideCur;
 			}
 			else
@@ -1472,11 +1472,11 @@ void CPPTUserInfo::LoadNoteFromPrevUsers(DWORD dwSlideID)
 
 	std::map<DWORD, CRecordSlide*>::iterator pPair = m_mapNotes.find(dwSlideID);
 	if (pPair != m_mapNotes.end())
-		return; //есть
+		return; //РµСЃС‚СЊ
 	
 	size_t lUsersCount = m_pDocumentInfo->m_arUsers.size();
 	
-	// у нас чем раньше - тем больше индекс
+	// Сѓ РЅР°СЃ С‡РµРј СЂР°РЅСЊС€Рµ - С‚РµРј Р±РѕР»СЊС€Рµ РёРЅРґРµРєСЃ
 	for (size_t lIndexUser = m_lIndexThisUser + 1; lIndexUser < lUsersCount; lIndexUser++)
 	//for (size_t lIndexUser = lUsersCount - 1; lIndexUser > m_lIndexThisUser; lIndexUser--)
 	{
@@ -1498,7 +1498,7 @@ void CPPTUserInfo::LoadNoteFromPrevUsers(DWORD dwSlideID)
 
 void CPPTUserInfo::LoadExternal(CRecordExObjListContainer* pExObjects)
 {
-	// читаем SoundCollection
+	// С‡РёС‚Р°РµРј SoundCollection
 	std::vector<CRecordSoundCollectionContainer*> oArrayCollection;
 	m_oDocument.GetRecordsByType(&oArrayCollection, false, true);
 
@@ -1534,7 +1534,7 @@ void CPPTUserInfo::LoadExternal(CRecordExObjListContainer* pExObjects)
 	if (NULL == pExObjects)
 		return;
 
-	// читаем видео ----------------------------------------------
+	// С‡РёС‚Р°РµРј РІРёРґРµРѕ ----------------------------------------------
 	std::vector<CRecordExVideoContainer*> oArray;
 	pExObjects->GetRecordsByType(&oArray, true);
 
@@ -1546,7 +1546,7 @@ void CPPTUserInfo::LoadExternal(CRecordExObjListContainer* pExObjects)
 	oArray.clear();
 	// -----------------------------------------------------------
 
-	// читаем аудио ----------------------------------------------
+	// С‡РёС‚Р°РµРј Р°СѓРґРёРѕ ----------------------------------------------
 	std::vector<CRecordExCDAudioContainer*>			oArrayAudioCD;
 	std::vector<CRecordExMIDIAudioContainer*>		oArrayAudioMIDI;
 	std::vector<CRecordWAVAudioLinkContainer*>		oArrayWAVLink;
@@ -1724,7 +1724,7 @@ void CPPTUserInfo::AddAudioTransition (DWORD dwSlideID, CTransition* pTransition
 	{
 		pAudio->m_strAudioFileName	=	strFilePath;				
 	}
-	// ??? недоделка ???
+	// ??? РЅРµРґРѕРґРµР»РєР° ???
 }
 
 void CPPTUserInfo::CreateDefaultStyle(NSPresentationEditor::CTextStyles& pStyle, NSPresentationEditor::CTheme* pTheme)

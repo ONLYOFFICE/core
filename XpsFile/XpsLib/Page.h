@@ -1,4 +1,4 @@
-﻿#ifndef _XPS_XPSLIB_PAGE_H
+#ifndef _XPS_XPSLIB_PAGE_H
 #define _XPS_XPSLIB_PAGE_H
 
 #include "../../DesktopEditor/graphics/IRenderer.h"

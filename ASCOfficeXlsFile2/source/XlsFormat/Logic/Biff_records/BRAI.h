@@ -31,7 +31,7 @@ public:
 	bool			fUnlinkedIfmt;
 	unsigned short	ifmt;
 	
-	ChartParsedFormula	formula; //набор диапазонов и ячеек
+	ChartParsedFormula	formula; //РЅР°Р±РѕСЂ РґРёР°РїР°Р·РѕРЅРѕРІ Рё СЏС‡РµРµРє
 };
 
 } // namespace XLS

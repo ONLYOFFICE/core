@@ -1,4 +1,4 @@
-﻿#ifndef _PDF_READER_PDF_DOC_ENCODING_H
+#ifndef _PDF_READER_PDF_DOC_ENCODING_H
 #define _PDF_READER_PDF_DOC_ENCODING_H
 
 #include "CharTypes.h"

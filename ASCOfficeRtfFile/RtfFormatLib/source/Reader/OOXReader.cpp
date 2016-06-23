@@ -1,4 +1,4 @@
-﻿#include "OOXReader.h"
+#include "OOXReader.h"
 #include "OOXSettingsReader.h"
 #include "OOXFontTableReader.h"
 #include "OOXStyleTableReader.h"

@@ -13,10 +13,10 @@
 using namespace NSPresentationEditor;
 
 /***************************************************************
-вот, создавая автофигуру, или любой другой элемент 
-officedrawing, наследуясь от этого класса, в конструкторе
-задаем все строковые параметры, и вызываем SetProperties,
-которые придут, или NULL, но вызов этой функции - ОБЯЗАТЕЛЕН!!!
+РІРѕС‚, СЃРѕР·РґР°РІР°СЏ Р°РІС‚РѕС„РёРіСѓСЂСѓ, РёР»Рё Р»СЋР±РѕР№ РґСЂСѓРіРѕР№ СЌР»РµРјРµРЅС‚
+officedrawing, РЅР°СЃР»РµРґСѓСЏСЃСЊ РѕС‚ СЌС‚РѕРіРѕ РєР»Р°СЃСЃР°, РІ РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂРµ
+Р·Р°РґР°РµРј РІСЃРµ СЃС‚СЂРѕРєРѕРІС‹Рµ РїР°СЂР°РјРµС‚СЂС‹, Рё РІС‹Р·С‹РІР°РµРј SetProperties,
+РєРѕС‚РѕСЂС‹Рµ РїСЂРёРґСѓС‚, РёР»Рё NULL, РЅРѕ РІС‹Р·РѕРІ СЌС‚РѕР№ С„СѓРЅРєС†РёРё - РћР‘СЏР—РђTР•Р›Р•Рќ!!!
 ****************************************************************/
 
 const LONG c_ShapeDrawType_Graphic	= 0x01;
@@ -40,7 +40,7 @@ public:
 	double					m_dWidthLogic;
 	double					m_dHeightLogic;
 
-	/* в миллиметрах!!! */
+	/* РІ РјРёР»Р»РёРјРµС‚СЂР°С…!!! */
 	double					m_dTextMarginX;
 	double					m_dTextMarginY;
 	double					m_dTextMarginRight;
@@ -139,15 +139,15 @@ public:
 
 	virtual void GetTextRect(CGeomShapeInfo& oInfo)
 	{
-		// пока сделаем типо - заглушку
-		// здесь - пересчет координат, у нас пока textrect = bounds
-		// поэтому пока ничего не меняем...
+		// РїРѕРєР° СЃРґРµР»Р°РµРј С‚РёРїРѕ - Р·Р°РіР»СѓС€РєСѓ
+		// Р·РґРµСЃСЊ - РїРµСЂРµСЃС‡РµС‚ РєРѕРѕСЂРґРёРЅР°С‚, Сѓ РЅР°СЃ РїРѕРєР° textrect = bounds
+		// РїРѕСЌС‚РѕРјСѓ РїРѕРєР° РЅРёС‡РµРіРѕ РЅРµ РјРµРЅСЏРµРј...
 
 		bool bIsFound = false;
 
 #ifdef PPT_DEF
-		// не очень удобно мне пересчет ректов вести
-		// сделаю так, отдельным методом в ппт
+		// РЅРµ РѕС‡РµРЅСЊ СѓРґРѕР±РЅРѕ РјРЅРµ РїРµСЂРµСЃС‡РµС‚ СЂРµРєС‚РѕРІ РІРµСЃС‚Рё
+		// СЃРґРµР»Р°СЋ С‚Р°Рє, РѕС‚РґРµР»СЊРЅС‹Рј РјРµС‚РѕРґРѕРј РІ РїРїС‚
 		double dPercentLeft		= 0;
 		double dPercentTop		= 0;
 		double dPercentRight	= 0;
@@ -155,7 +155,7 @@ public:
 
 		if (NSBaseShape::ppt == m_pShape->GetClassType())
 		{
-			// как будто могло быть иначе
+			// РєР°Рє Р±СѓРґС‚Рѕ РјРѕРіР»Рѕ Р±С‹С‚СЊ РёРЅР°С‡Рµ
 			CPPTShape* pPPTShape = dynamic_cast<CPPTShape*>(m_pShape);
 			if (NULL != pPPTShape)
 			{
@@ -169,7 +169,7 @@ public:
 			}
 		}
 
-		// только учтем маргины
+		// С‚РѕР»СЊРєРѕ СѓС‡С‚РµРј РјР°СЂРіРёРЅС‹
 		oInfo.m_dLeft	+= m_dTextMarginX;
 		oInfo.m_dTop	+= m_dTextMarginY;
 		oInfo.m_dWidth  -= (m_dTextMarginX + m_dTextMarginRight);
@@ -208,9 +208,9 @@ public:
 
 	virtual void GetTextRect(CDoubleRect& oInfo)
 	{
-		// пока сделаем типо - заглушку
-		// здесь - пересчет координат, у нас пока textrect = bounds
-		// поэтому пока ничего не меняем...
+		// РїРѕРєР° СЃРґРµР»Р°РµРј С‚РёРїРѕ - Р·Р°РіР»СѓС€РєСѓ
+		// Р·РґРµСЃСЊ - РїРµСЂРµСЃС‡РµС‚ РєРѕРѕСЂРґРёРЅР°С‚, Сѓ РЅР°СЃ РїРѕРєР° textrect = bounds
+		// РїРѕСЌС‚РѕРјСѓ РїРѕРєР° РЅРёС‡РµРіРѕ РЅРµ РјРµРЅСЏРµРј...
 
 		double dLeft	= oInfo.left;
 		double dTop		= oInfo.top;
@@ -220,8 +220,8 @@ public:
 		bool bIsFound = false;
 
 #ifdef PPT_DEF
-		// не очень удобно мне пересчет ректов вести
-		// сделаю так, отдельным методом в ппт
+		// РЅРµ РѕС‡РµРЅСЊ СѓРґРѕР±РЅРѕ РјРЅРµ РїРµСЂРµСЃС‡РµС‚ СЂРµРєС‚РѕРІ РІРµСЃС‚Рё
+		// СЃРґРµР»Р°СЋ С‚Р°Рє, РѕС‚РґРµР»СЊРЅС‹Рј РјРµС‚РѕРґРѕРј РІ РїРїС‚
 		double dPercentLeft		= 0;
 		double dPercentTop		= 0;
 		double dPercentRight	= 0;
@@ -229,7 +229,7 @@ public:
 
 		if ((m_pShape) && (NSBaseShape::ppt == m_pShape->GetClassType()))
 		{
-			// как будто могло быть иначе
+			// РєР°Рє Р±СѓРґС‚Рѕ РјРѕРіР»Рѕ Р±С‹С‚СЊ РёРЅР°С‡Рµ
 			CPPTShape* pPPTShape = dynamic_cast<CPPTShape*>(m_pShape);
 			if (NULL != pPPTShape)
 			{
@@ -243,7 +243,7 @@ public:
 			}
 		}
 
-		// только учтем маргины
+		// С‚РѕР»СЊРєРѕ СѓС‡С‚РµРј РјР°СЂРіРёРЅС‹
 		dLeft	+= m_dTextMarginX;
 		dTop	+= m_dTextMarginY;
 		dWidth  -= (m_dTextMarginX + m_dTextMarginRight);
@@ -294,7 +294,7 @@ public:
 
 	//	m_pShape->m_oPath.SetCoordsize((LONG)m_dWidthLogic, (LONG)m_dHeightLogic);
 	//	
-	//	CBrush	brush; //копии с уровня выше нужны
+	//	CBrush	brush; //РєРѕРїРёРё СЃ СѓСЂРѕРІРЅСЏ РІС‹С€Рµ РЅСѓР¶РЅС‹
 	//	CPen	pen;
 	//	CString strDrawing = m_pShape->ToXML(oGeomInfo, pInfo, dStartTime, dEndTime, brush, pen);
 	//	if (m_lDrawType & c_ShapeDrawType_Graphic)
@@ -323,7 +323,7 @@ public:
 			//m_oPen.SetToRenderer(pRenderer);
 			//m_oBrush.SetToRenderer(pRenderer);
 			//m_oShadow.SetToRenderer(pRenderer);
-			CBrush	brush; //копии с уровня выше нужны
+			CBrush	brush; //РєРѕРїРёРё СЃ СѓСЂРѕРІРЅСЏ РІС‹С€Рµ РЅСѓР¶РЅС‹
 			CPen	pen;
 
 			m_pShape->ToRenderer(pRenderer, oGeomInfo, dStartTime, dEndTime, pen, brush, pInfo);

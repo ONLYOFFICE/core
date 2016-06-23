@@ -45,7 +45,7 @@ public:
 	void ApplyParagraphProperties(std::wstring style,odf_reader::paragraph_format_properties & propertiesOut, odf_types::style_family::type Type);
 	void ApplyListProperties(odf_reader::paragraph_format_properties & propertiesOut, int Level);
 
-	void set_local_styles_container(odf_reader::styles_container*  local_styles_);//это если стили объектов содержатся в другом документе
+	void set_local_styles_container(odf_reader::styles_container*  local_styles_);//СЌС‚Рѕ РµСЃР»Рё СЃС‚РёР»Рё РѕР±СЉРµРєС‚РѕРІ СЃРѕРґРµСЂР¶Р°С‚СЃСЏ РІ РґСЂСѓРіРѕРј РґРѕРєСѓРјРµРЅС‚Рµ
 
 	void end_hyperlink(std::wstring hId);
 	void start_hyperlink();
@@ -85,11 +85,11 @@ private:
 	void			dump_run();
 	void			dump_field();
   
-	size_t paragraphs_cout_; //???? тока из за начала отсчета?
+	size_t paragraphs_cout_; //???? С‚РѕРєР° РёР· Р·Р° РЅР°С‡Р°Р»Р° РѕС‚СЃС‡РµС‚Р°?
    
-	std::wstringstream text_;		//приходящий текст
-    std::wstringstream paragraph_;	//перманенто скидываемые параграфы
-    std::wstringstream run_;		//перманенто скидываемые куски с быть может разными свойствами
+	std::wstringstream text_;		//РїСЂРёС…РѕРґСЏС‰РёР№ С‚РµРєСЃС‚
+    std::wstringstream paragraph_;	//РїРµСЂРјР°РЅРµРЅС‚Рѕ СЃРєРёРґС‹РІР°РµРјС‹Рµ РїР°СЂР°РіСЂР°С„С‹
+    std::wstringstream run_;		//РїРµСЂРјР°РЅРµРЅС‚Рѕ СЃРєРёРґС‹РІР°РµРјС‹Рµ РєСѓСЃРєРё СЃ Р±С‹С‚СЊ РјРѕР¶РµС‚ СЂР°Р·РЅС‹РјРё СЃРІРѕР№СЃС‚РІР°РјРё
    
 	std::wstring		paragraph_style_name_;
     std::wstring		span_style_name_;
@@ -99,9 +99,9 @@ private:
 /////////////lists////////////
     std::list<std::wstring> list_style_stack_;
     bool first_element_list_item_;
-    // счетчик для нумерации имен созданных в процессе конвертации стилей
+    // СЃС‡РµС‚С‡РёРє РґР»СЏ РЅСѓРјРµСЂР°С†РёРё РёРјРµРЅ СЃРѕР·РґР°РЅРЅС‹С… РІ РїСЂРѕС†РµСЃСЃРµ РєРѕРЅРІРµСЂС‚Р°С†РёРё СЃС‚РёР»РµР№
     size_t new_list_style_number_;
-    // цепочки переименований нумераций
+    // С†РµРїРѕС‡РєРё РїРµСЂРµРёРјРµРЅРѕРІР°РЅРёР№ РЅСѓРјРµСЂР°С†РёР№
     boost::unordered_map<std::wstring, std::wstring> list_style_renames_;
    
 	void write_list_styles(std::wostream & strm);
@@ -145,7 +145,7 @@ void pptx_text_context::Impl::start_paragraph(const std::wstring & styleName)
     {	
 		if (in_list_ == false || in_comment == true)
 		{
-		// конец предыдущего абзаца и начало следующего
+		// РєРѕРЅРµС† РїСЂРµРґС‹РґСѓС‰РµРіРѕ Р°Р±Р·Р°С†Р° Рё РЅР°С‡Р°Р»Рѕ СЃР»РµРґСѓСЋС‰РµРіРѕ
 		//text_ << L"&#10;";
 			text_ << L"\n"; 
 		}
@@ -167,7 +167,7 @@ void pptx_text_context::Impl::end_paragraph()
 	in_paragraph = false;
 }
 
-void pptx_text_context::Impl::start_span(const std::wstring & styleName)//кусок текста в абзаце(параграфе) со своими свойствами - этто может быть и 1 буква
+void pptx_text_context::Impl::start_span(const std::wstring & styleName)//РєСѓСЃРѕРє С‚РµРєСЃС‚Р° РІ Р°Р±Р·Р°С†Рµ(РїР°СЂР°РіСЂР°С„Рµ) СЃРѕ СЃРІРѕРёРјРё СЃРІРѕР№СЃС‚РІР°РјРё - СЌС‚С‚Рѕ РјРѕР¶РµС‚ Р±С‹С‚СЊ Рё 1 Р±СѓРєРІР°
 {
 	int text_size = text_.str().length();
 	
@@ -199,7 +199,7 @@ std::wstring pptx_text_context::Impl::end_span2()
 }
 void pptx_text_context::Impl::start_hyperlink()
 {
-	dump_run();//проверить
+	dump_run();//РїСЂРѕРІРµСЂРёС‚СЊ
 }
 
 void pptx_text_context::Impl::end_hyperlink(std::wstring hId)
@@ -332,7 +332,7 @@ void pptx_text_context::Impl::write_pPr(std::wostream & strm)
 	odf_reader::paragraph_format_properties		paragraph_properties_;
 	
 	ApplyParagraphProperties	(paragraph_style_name_,	paragraph_properties_,odf_types::style_family::Paragraph);
-	ApplyListProperties			(paragraph_properties_,level);//выравнивания листа накатим на свойства параграфа
+	ApplyListProperties			(paragraph_properties_,level);//РІС‹СЂР°РІРЅРёРІР°РЅРёСЏ Р»РёСЃС‚Р° РЅР°РєР°С‚РёРј РЅР° СЃРІРѕР№СЃС‚РІР° РїР°СЂР°РіСЂР°С„Р°
 
 	paragraph_properties_.pptx_convert(pptx_context_);	
 	
@@ -452,7 +452,7 @@ void pptx_text_context::Impl::dump_field()
 #if !defined (_WIN32) &&  !defined (_WIN64)
                     string_id =  L"{5CC2A059-B141-45A7-B910-B096D6D06820}";
 #endif
-				//	content = L"‹#›";
+				//	content = L"Р›#Р«";
 				}
 				break;
 			case date:
@@ -495,7 +495,7 @@ void pptx_text_context::Impl::dump_field()
 			}
 			else
 			{
-				//запишем как обычный текст
+				//Р·Р°РїРёС€РµРј РєР°Рє РѕР±С‹С‡РЅС‹Р№ С‚РµРєСЃС‚
 				text_ << content;
 			}
 		}
@@ -512,7 +512,7 @@ void pptx_text_context::Impl::dump_run()
 	if (process_layouts_) return; 
 	
 	const std::wstring content = xml::utils::replace_text_to_xml(text_.str());
-	//if (content.length() <1 &&  span_style_name_.length()<1) return ;      ... провеить с пустыми строками нужны ли  ...
+	//if (content.length() <1 &&  span_style_name_.length()<1) return ;      ... РїСЂРѕРІРµРёС‚СЊ СЃ РїСѓСЃС‚С‹РјРё СЃС‚СЂРѕРєР°РјРё РЅСѓР¶РЅС‹ Р»Рё  ...
 
 	if (content .length() > 0)
 	{		
@@ -635,7 +635,7 @@ void pptx_text_context::Impl::end_list()
 {
 	in_list_ = false;
   
-	list_style_stack_.pop_back();// пока не стираем .. как сохраним в lstStyles - очистим
+	list_style_stack_.pop_back();// РїРѕРєР° РЅРµ СЃС‚РёСЂР°РµРј .. РєР°Рє СЃРѕС…СЂР°РЅРёРј РІ lstStyles - РѕС‡РёСЃС‚РёРј
 }
 
 std::wstring pptx_text_context::Impl::current_list_style()
@@ -671,7 +671,7 @@ void pptx_text_context::Impl::start_field(field_type type, const std::wstring & 
 }
 void pptx_text_context::Impl::start_comment()
 {
-	in_comment = true;//отдельная ветка - так как без форматирования
+	in_comment = true;//РѕС‚РґРµР»СЊРЅР°СЏ РІРµС‚РєР° - С‚Р°Рє РєР°Рє Р±РµР· С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёСЏ
 }
 std::wstring pptx_text_context::Impl::end_comment()
 {

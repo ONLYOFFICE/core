@@ -23,7 +23,7 @@ public:
 
 		m_oCFRun.LoadFromStream(pStream, false);
 
-		// это на всякий случай...
+		// СЌС‚Рѕ РЅР° РІСЃСЏРєРёР№ СЃР»СѓС‡Р°Р№...
 		StreamUtils::StreamSeek(lPosition + m_oHeader.RecLen, pStream);
 	}
 

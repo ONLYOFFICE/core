@@ -34,7 +34,7 @@ namespace DocFileFormat
       /// True if the level turns all inherited numbers to arabic, 
       /// false if it preserves their number format code (nfc)
       bool fLegal;
-      /// True if the level‘s number sequence is not restarted by 
+      /// True if the levelâ€˜s number sequence is not restarted by 
       /// higher (more significant) levels in the list
       bool fNoRestart;
       /// Word 6.0 compatibility option: equivalent to anld.fPrev (see ANLD)
@@ -45,7 +45,7 @@ namespace DocFileFormat
       /// If it is true, all of the Word 6.0 compatibility options become 
       /// valid otherwise they are ignored.
       bool fWord6;
-      /// Contains the character offsets into the LVL’s XST of the inherited numbers of previous levels.
+      /// Contains the character offsets into the LVLâ€™s XST of the inherited numbers of previous levels.
       /// The XST contains place holders for any paragraph numbers contained in the text of the number, 
       /// and the place holder contains the ilvl of the inherited number, 
       /// so lvl.xst[lvl.rgbxchNums[0]] == the level of the first inherited number in this level.
@@ -58,9 +58,9 @@ namespace DocFileFormat
       /// Word 6.0 compatibility option: equivalent to anld.dxaIndent (see ANLD).
       /// Unused in newer versions.
       int dxaIndent;
-      /// Length, in bytes, of the LVL‘s grpprlChpx.
+      /// Length, in bytes, of the LVLâ€˜s grpprlChpx.
       unsigned char cbGrpprlChpx;
-      /// Length, in bytes, of the LVL‘s grpprlPapx.
+      /// Length, in bytes, of the LVLâ€˜s grpprlPapx.
       unsigned char cbGrpprlPapx;
       /// Limit of levels that we restart after.
       unsigned char ilvlRestartLim;

@@ -1,4 +1,4 @@
-﻿#include "Clip.h"
+#include "Clip.h"
 
 namespace Aggplus
 {

@@ -118,7 +118,7 @@ void XlsxConverter::convertDocument()
 
 	convert_sheets();
 
-	//удалим уже ненужный документ xlsx 
+	//СѓРґР°Р»РёРј СѓР¶Рµ РЅРµРЅСѓР¶РЅС‹Р№ РґРѕРєСѓРјРµРЅС‚ xlsx 
 	if (UpdateProgress(800000))return;
 	delete xlsx_document; xlsx_document = NULL;
 
@@ -191,7 +191,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CDefinedName *oox_defined)
 		bool printable = false;
 		if (name  == L"_xlnm.Print_Area")printable = true;
 
-		if (false)//если простой - range, составной - выражение
+		if (false)//РµСЃР»Рё РїСЂРѕСЃС‚РѕР№ - range, СЃРѕСЃС‚Р°РІРЅРѕР№ - РІС‹СЂР°Р¶РµРЅРёРµ
 			ods_context->add_defined_range (name, string2std_string(oox_defined->m_oRef.get2()), sheet_id, printable);
 		else
 			ods_context->add_defined_expression (name, string2std_string(oox_defined->m_oRef.get2()), sheet_id, printable);
@@ -209,22 +209,22 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 	convert(oox_sheet->m_oSheetFormatPr.GetPointer());
 	convert(oox_sheet->m_oSheetPr.GetPointer());
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//Предобработка
-	//гиперлинки 
+//РџСЂРµРґРѕР±СЂР°Р±РѕС‚РєР°
+	//РіРёРїРµСЂР»РёРЅРєРё 
 	for (unsigned int hyp = 0; oox_sheet->m_oHyperlinks.IsInit() && hyp < oox_sheet->m_oHyperlinks->m_arrItems.size(); hyp++)
 	{
 		convert(oox_sheet->m_oHyperlinks->m_arrItems[hyp],oox_sheet);
 	}	
-	//комментарии
+	//РєРѕРјРјРµРЅС‚Р°СЂРёРё
 	std::map<CString, OOX::Spreadsheet::CCommentItem*>::iterator pos = oox_sheet->m_mapComments.begin();
 	while ( oox_sheet->m_mapComments.end() != pos )
 	{
 		convert(pos->second);
 		pos++;
 	}
-	//todooo для оптимизации - перенести мержи в начало
+	//todooo РґР»СЏ РѕРїС‚РёРјРёР·Р°С†РёРё - РїРµСЂРµРЅРµСЃС‚Рё РјРµСЂР¶Рё РІ РЅР°С‡Р°Р»Рѕ
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
-	//колонки
+	//РєРѕР»РѕРЅРєРё
 	ods_context->start_columns();
 		for (unsigned int col = 0 ; oox_sheet->m_oCols.IsInit() && col < oox_sheet->m_oCols->m_arrItems.size(); col++)
 		{
@@ -232,7 +232,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 		}
 	ods_context->end_columns();
 
-	//строки
+	//СЃС‚СЂРѕРєРё
 	if (oox_sheet->m_oSheetData.IsInit() )
 	{
 		ods_context->start_rows();
@@ -248,7 +248,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 		oox_sheet->m_oSheetData.reset();
 	}
 
-	//мержи
+	//РјРµСЂР¶Рё
 	for (unsigned int mrg = 0 ; oox_sheet->m_oMergeCells.IsInit() && mrg < oox_sheet->m_oMergeCells->m_arrItems.size(); mrg++)
 	{
 		if (oox_sheet->m_oMergeCells->m_arrItems[mrg]->m_oRef.IsInit())
@@ -264,13 +264,13 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 			convert(pDrawing);
 		}
 	}
-	////сортировки
+	////СЃРѕСЂС‚РёСЂРѕРІРєРё
 	//convert(oox_sheet->m_oSortState.GetPointer());
 	
-	//автофильтры
+	//Р°РІС‚РѕС„РёР»СЊС‚СЂС‹
 	convert(oox_sheet->m_oAutofilter.GetPointer());
 
-	//условное форматирование
+	//СѓСЃР»РѕРІРЅРѕРµ С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёРµ
 	if (oox_sheet->m_arrConditionalFormatting.size() >0)
 	{
 		ods_context->start_conditional_formats();
@@ -280,7 +280,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 		}
 		ods_context->end_conditional_formats();
 	}
-	//выносные части таблицы
+	//РІС‹РЅРѕСЃРЅС‹Рµ С‡Р°СЃС‚Рё С‚Р°Р±Р»РёС†С‹
 	if (oox_sheet->m_oTableParts.IsInit())
 	{
 		for (unsigned int i=0 ; i < oox_sheet->m_oTableParts->m_arrItems.size(); i++)
@@ -629,7 +629,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CRPr *oox_run_pr)
 			text_properties->content().style_text_position_ = odf_types::text_position(+33.); break;
 		case SimpleTypes::verticalalignrunSubscript:
 			//text_properties->content().style_text_position_ = odf_types::text_position(odf_types::text_position::Sub); break;
-			text_properties->content().style_text_position_ = odf_types::text_position(-33.); break;//по умолчанию 58% - хуже выглядит
+			text_properties->content().style_text_position_ = odf_types::text_position(-33.); break;//РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ 58% - С…СѓР¶Рµ РІС‹РіР»СЏРґРёС‚
 		}
 	}
 	if (oox_run_pr->m_oScheme.IsInit() && oox_run_pr->m_oScheme->m_oFontScheme.IsInit())
@@ -752,7 +752,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CCol *oox_column)
 	}
 	else
 	{
-		//нужно добавить дефолтный стиль для ячеек ДАННОГО листа
+		//РЅСѓР¶РЅРѕ РґРѕР±Р°РІРёС‚СЊ РґРµС„РѕР»С‚РЅС‹Р№ СЃС‚РёР»СЊ РґР»СЏ СЏС‡РµРµРє Р”РђРќРќРћР“Рћ Р»РёСЃС‚Р°
 		//???
 		style_cell_name= ods_context->styles_context()->find_odf_style_name_default(odf_types::style_family::TableCell);
 	}
@@ -888,7 +888,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSheetViews *oox_sheet_views)
 			if (oox_sheet_views->m_arrItems[i]->m_oSelection->m_oSqref.IsInit())
 			{
 				//D6:D9 I9:I12 M16:M21 C20:I24
-				//в OpenOffice этого нету
+				//РІ OpenOffice СЌС‚РѕРіРѕ РЅРµС‚Сѓ
 			}
 		}
 		if (oox_sheet_views->m_arrItems[i]->m_oPane.IsInit())
@@ -975,7 +975,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSheetFormatPr *oox_sheet_format_p
 				//nullable<SimpleTypes::COnOff<>>					m_oThickTop;
 				//nullable<SimpleTypes::COnOff<>>					m_oZeroHeight;
 //Cell default////////////////////////////
-	////пока не красиво :(  и главное НЕПРАВИЛЬНО c чегой то раз первый - то и делтный ???? - НЕФИГА - хз чё делать :(
+	////РїРѕРєР° РЅРµ РєСЂР°СЃРёРІРѕ :(  Рё РіР»Р°РІРЅРѕРµ РќР•РџР РђР’РР›Р¬РќРћ c С‡РµРіРѕР№ С‚Рѕ СЂР°Р· РїРµСЂРІС‹Р№ - С‚Рѕ Рё РґРµР»С‚РЅС‹Р№ ???? - РќР•Р¤РР“Рђ - С…Р· С‡С‘ РґРµР»Р°С‚СЊ :(
 	//odf_writer::odf_style_state_ptr default_cell_style;
 	//ods_context->styles_context()->find_odf_style_state(0,odf_types::style_family::TableCell, default_cell_style, true);
 	//if (default_cell_style)	ods_context->styles_context()->add_default(default_cell_style);
@@ -987,8 +987,8 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSheetFormatPr *oox_sheet_format_p
 ///Column///////////////////////////////////////////////////////////////////////////////////////
 	ods_context->styles_context()->create_style(L"",odf_types::style_family::TableColumn, true, false, -1);		
 	{	
-		double width = 8.1; // из приложния MS Office 2010
-		//в xlsx необязательно задавать ширину (колонок) - дефолтное по приложению. в oo - обязательно
+		double width = 8.1; // РёР· РїСЂРёР»РѕР¶РЅРёСЏ MS Office 2010
+		//РІ xlsx РЅРµРѕР±СЏР·Р°С‚РµР»СЊРЅРѕ Р·Р°РґР°РІР°С‚СЊ С€РёСЂРёРЅСѓ (РєРѕР»РѕРЅРѕРє) - РґРµС„РѕР»С‚РЅРѕРµ РїРѕ РїСЂРёР»РѕР¶РµРЅРёСЋ. РІ oo - РѕР±СЏР·Р°С‚РµР»СЊРЅРѕ
 		odf_writer::style* style = dynamic_cast<odf_writer::style*>(ods_context->styles_context()->last_state()->get_office_element().get());
 		if (style)
 		{
@@ -1023,7 +1023,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSheetFormatPr *oox_sheet_format_p
 					ods_context->current_table().defaut_row_height_ = height;//pt
 					row_properties->style_table_row_properties_attlist_.style_row_height_ = odf_types::length(odf_types::length(height,odf_types::length::pt).get_value_unit(odf_types::length::cm),odf_types::length::cm);
 				}
-				row_properties->style_table_row_properties_attlist_.style_use_optimal_row_height_ = true; //???? не знаю cтоит ли 
+				row_properties->style_table_row_properties_attlist_.style_use_optimal_row_height_ = true; //???? РЅРµ Р·РЅР°СЋ cС‚РѕРёС‚ Р»Рё 
 				row_properties->style_table_row_properties_attlist_.common_break_attlist_.fo_break_before_ = odf_types::fo_break(odf_types::fo_break::Auto);
 			}
 		}
@@ -1041,16 +1041,16 @@ void XlsxConverter::convert_styles()
 	OOX::Spreadsheet::CStyles * xlsx_styles = xlsx_document->GetStyles();
 	
 	if (!xlsx_styles)return;
-//todooo ?? стоит ли обращать на параметр Count ??
-////////////форматы данных
+//todooo ?? СЃС‚РѕРёС‚ Р»Рё РѕР±СЂР°С‰Р°С‚СЊ РЅР° РїР°СЂР°РјРµС‚СЂ Count ??
+////////////С„РѕСЂРјР°С‚С‹ РґР°РЅРЅС‹С…
 	for (unsigned int i = 0; xlsx_styles->m_oNumFmts.IsInit() && i < xlsx_styles->m_oNumFmts->m_arrItems.size(); i++)
 	{
 		convert(xlsx_styles->m_oNumFmts->m_arrItems[i]);
 	}
-/////////////стили ячеек
+/////////////СЃС‚РёР»Рё СЏС‡РµРµРє
 	for (unsigned int i = 0; xlsx_styles->m_oCellStyleXfs.IsInit() && i < xlsx_styles->m_oCellStyleXfs->m_arrItems.size(); i++)
 	{
-		//automatical, root - noname - они тока для named
+		//automatical, root - noname - РѕРЅРё С‚РѕРєР° РґР»СЏ named
 		convert(xlsx_styles->m_oCellStyleXfs->m_arrItems[i] , i, true, true);
 	}
 	for (unsigned int i = 0; xlsx_styles->m_oCellStyles.IsInit() && i < xlsx_styles->m_oCellStyles->m_arrItems.size(); i++)//styles.xml
@@ -1059,14 +1059,14 @@ void XlsxConverter::convert_styles()
 		convert(xlsx_styles->m_oCellStyles->m_arrItems[i]); 
 	}	
 	
-	//кастомные стили ячеек
+	//РєР°СЃС‚РѕРјРЅС‹Рµ СЃС‚РёР»Рё СЏС‡РµРµРє
 	for (unsigned int i = 0; xlsx_styles->m_oCellXfs.IsInit() && i < xlsx_styles->m_oCellXfs->m_arrItems.size(); i++)
 	{
 		//automatical, non root
 		convert(xlsx_styles->m_oCellXfs->m_arrItems[i], i, true, false);
 	}	
 
-////////////стили условного форматирования 
+////////////СЃС‚РёР»Рё СѓСЃР»РѕРІРЅРѕРіРѕ С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёСЏ
 	for (unsigned int i=0; xlsx_styles->m_oDxfs.IsInit() && i < xlsx_styles->m_oDxfs->m_arrItems.size(); i++)
 	{
 		convert(xlsx_styles->m_oDxfs->m_arrItems[i], i); 
@@ -1147,7 +1147,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CFont * font, odf_writer::style_te
 			text_properties->content().style_text_position_ = odf_types::text_position(+33.); break;
 		case SimpleTypes::verticalalignrunSubscript:
 			//text_properties->content().style_text_position_ = odf_types::text_position(odf_types::text_position::Sub); break;
-			text_properties->content().style_text_position_ = odf_types::text_position(-33.); break;//по умолчанию 58% - хуже выглядит
+			text_properties->content().style_text_position_ = odf_types::text_position(-33.); break;//РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ 58% - С…СѓР¶Рµ РІС‹РіР»СЏРґРёС‚
 		}
 	}
 	if (font->m_oScheme.IsInit() && font->m_oScheme->m_oFontScheme.IsInit())
@@ -1170,7 +1170,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CFont * font, odf_writer::style_te
 
 void XlsxConverter::convert(double oox_size,  _CP_OPT(odf_types::length) & odf_size)
 {
-	//нужно сделать преобразования типов oox_size
+	//РЅСѓР¶РЅРѕ СЃРґРµР»Р°С‚СЊ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏ С‚РёРїРѕРІ oox_size
 	//???
 	odf_size = odf_types::length(oox_size, odf_types::length::pt);
 }
@@ -1256,7 +1256,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CAligment *aligment, odf_writer::s
 			cell_properties->style_table_cell_properties_attlist_.common_rotation_angle_attlist_.style_rotation_angle_ = rot;
 			cell_properties->style_table_cell_properties_attlist_.style_rotation_align_= odf_types::rotation_align(odf_types::rotation_align::Bottom);
 		}
-		else if (rot == 0xff)//вертикальный текст
+		else if (rot == 0xff)//РІРµСЂС‚РёРєР°Р»СЊРЅС‹Р№ С‚РµРєСЃС‚
 			cell_properties->style_table_cell_properties_attlist_.style_direction_ = odf_types::direction(odf_types::direction::Ttb);
 
 	}
@@ -1399,7 +1399,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CBorderProp *borderProp, std::wstr
 	
 	odf_border_prop = border_style + border_color;
 }
-void XlsxConverter::convert(OOX::Spreadsheet::CColor *color, _CP_OPT(odf_types::color) & odf_color)//стоит ли сюда тащить odf_writer type???
+void XlsxConverter::convert(OOX::Spreadsheet::CColor *color, _CP_OPT(odf_types::color) & odf_color)//СЃС‚РѕРёС‚ Р»Рё СЃСЋРґР° С‚Р°С‰РёС‚СЊ odf_writer type???
 {
 	if (!color)return;
 
@@ -1515,8 +1515,8 @@ void XlsxConverter::convert(OOX::Spreadsheet::CCellStyle * cell_style)
 	//if (parent_id >=0) 
 	//	ods_context->styles_context()->last_state()->set_parent_style_name(ods_context->styles_context()->find_odf_style_name(parent_id, odf_types::style_family::TableCell,true, true));
 	
-	//фишечка либры и оо - они НЕ ЧИТАЮТ автоматические стили для стилей
-	//придется копировать свойства все .. они автоматические стили удалить (не сохранять в файл)
+	//С„РёС€РµС‡РєР° Р»РёР±СЂС‹ Рё РѕРѕ - РѕРЅРё РќР• Р§РTРђР®T Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєРёРµ СЃС‚РёР»Рё РґР»СЏ СЃС‚РёР»РµР№
+	//РїСЂРёРґРµС‚СЃСЏ РєРѕРїРёСЂРѕРІР°С‚СЊ СЃРІРѕР№СЃС‚РІР° РІСЃРµ .. РѕРЅРё Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєРёРµ СЃС‚РёР»Рё СѓРґР°Р»РёС‚СЊ (РЅРµ СЃРѕС…СЂР°РЅСЏС‚СЊ РІ С„Р°Р№Р»)
 
 	odf_writer::odf_style_state_ptr parent_style_state;
 	if (ods_context->styles_context()->find_odf_style_state(parent_id, odf_types::style_family::TableCell,parent_style_state, true, true) && parent_style_state)
@@ -1615,7 +1615,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CXfs * xfc_style, int oox_id, bool
 		odf_writer::odf_style_state_ptr parent_style_state;
 	
 		if (ods_context->styles_context()->find_odf_style_state(id_parent, odf_types::style_family::TableCell,parent_style_state, true, false) 
-			 && parent_style_state) // сначала в поименованных
+			 && parent_style_state) // СЃРЅР°С‡Р°Р»Р° РІ РїРѕРёРјРµРЅРѕРІР°РЅРЅС‹С…
 		{
 			ods_context->styles_context()->last_state()->set_parent_style_name(parent_style_state->get_name());
 
@@ -1667,7 +1667,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CCellAnchor *oox_anchor)
 	if (oox_anchor->m_oExt.IsInit())
 	{
 	}
-//собственно
+//СЃРѕР±СЃС‚РІРµРЅРЅРѕ
 	if (oox_anchor->m_oPicture.IsInit())
 	{
 		convert(oox_anchor->m_oPicture.GetPointer());
@@ -1804,12 +1804,12 @@ void XlsxConverter::convert(OOX::Spreadsheet::CShape* oox_shape)
 
 		if (oox_shape->m_oNvSpPr.IsInit())
 		{
-			OoxConverter::convert(oox_shape->m_oNvSpPr->m_oCNvPr.GetPointer());	//имя, описалово, номер ...
-			convert(oox_shape->m_oNvSpPr->m_oCNvSpPr.GetPointer());	//заблокированности  ... todooo
+			OoxConverter::convert(oox_shape->m_oNvSpPr->m_oCNvPr.GetPointer());	//РёРјСЏ, РѕРїРёСЃР°Р»РѕРІРѕ, РЅРѕРјРµСЂ ...
+			convert(oox_shape->m_oNvSpPr->m_oCNvSpPr.GetPointer());	//Р·Р°Р±Р»РѕРєРёСЂРѕРІР°РЅРЅРѕСЃС‚Рё  ... todooo
 		}
 		if (oox_shape->m_oShapeStyle.IsInit())
 		{
-			//доп эффекты
+			//РґРѕРї СЌС„С„РµРєС‚С‹
 
 		}
 		if (oox_shape->m_oTxBody.IsInit())
@@ -1855,7 +1855,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CGraphicFrame* oox_graphic_frame)
 		{
 			if (oox_graphic_frame->m_oChartGraphic->m_oGraphicData->m_oChart.IsInit() && oox_graphic_frame->m_oChartGraphic->m_oGraphicData->m_oChart->m_oRId.IsInit())
 			{
-				//диаграмма
+				//РґРёР°РіСЂР°РјРјР°
 				CString sId = oox_graphic_frame->m_oChartGraphic->m_oGraphicData->m_oChart->m_oRId->GetValue();
 				
 				smart_ptr<OOX::File> oFile = xlsx_current_drawing->Find(sId);
@@ -1878,7 +1878,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CGraphicFrame* oox_graphic_frame)
 					}
 				}
 			}
-			//могут быть и другие типы объектов
+			//РјРѕРіСѓС‚ Р±С‹С‚СЊ Рё РґСЂСѓРіРёРµ С‚РёРїС‹ РѕР±СЉРµРєС‚РѕРІ
 		}
 	}
 	ods_context->drawing_context()->end_object();	
@@ -1912,7 +1912,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CConnShape* oox_shape)
 	{		
 		OoxConverter::convert(oox_shape->m_oSpPr.GetPointer(), oox_shape->m_oShapeStyle.GetPointer());
 	
-		//частенько приплывает из стиля заполенение объекта .. а он то одномерный :)
+		//С‡Р°СЃС‚РµРЅСЊРєРѕ РїСЂРёРїР»С‹РІР°РµС‚ РёР· СЃС‚РёР»СЏ Р·Р°РїРѕР»РµРЅРµРЅРёРµ РѕР±СЉРµРєС‚Р° .. Р° РѕРЅ С‚Рѕ РѕРґРЅРѕРјРµСЂРЅС‹Р№ :)
 		odf_context()->drawing_context()->start_area_properties();
 			odf_context()->drawing_context()->set_no_fill();
 		odf_context()->drawing_context()->end_area_properties();
@@ -1938,7 +1938,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CConnShape* oox_shape)
 void XlsxConverter::convert(OOX::Spreadsheet::CPic* oox_picture)
 {
 	if (!oox_picture)return;
-	if (!oox_picture->m_oBlipFill.IsInit()) return; // невeрная структура оох
+	if (!oox_picture->m_oBlipFill.IsInit()) return; // РЅРµРІeСЂРЅР°СЏ СЃС‚СЂСѓРєС‚СѓСЂР° РѕРѕС…
 
 	ods_context->drawing_context()->start_drawing();
 

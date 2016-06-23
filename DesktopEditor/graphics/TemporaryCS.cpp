@@ -1,4 +1,4 @@
-﻿#include "TemporaryCS.h"
+#include "TemporaryCS.h"
 #include "../common/Types.h"
 
 #if defined(_WIN32) || defined(_WIN64) || defined(_WIN32_WCE)

@@ -1,4 +1,4 @@
-﻿#include "PdfRenderer.h"
+#include "PdfRenderer.h"
 
 #include "Src/Document.h"
 #include "Src/Pages.h"

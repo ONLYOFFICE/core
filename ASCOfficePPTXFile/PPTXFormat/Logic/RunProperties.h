@@ -170,11 +170,11 @@ namespace PPTX
 				if(Fill.is_init())
 					props->Fill = Fill;//.fromXML(Fill.toXML());
 	//			EffectProperties EffectList;
-				//highlight (Highlight Color)  ง21.1.2.3.4 
-				//uLn (Underline Stroke)  ง21.1.2.3.14 
-				//uLnTx (Underline Follows Text)  ง21.1.2.3.15 
-				//uFill (Underline Fill)  ง21.1.2.3.12 
-				//uFillTx (Underline Fill Properties Follow Text)  ง21.1.2.3.13 
+				//highlight (Highlight Color)  ยง21.1.2.3.4 
+				//uLn (Underline Stroke)  ยง21.1.2.3.14 
+				//uLnTx (Underline Follows Text)  ยง21.1.2.3.15 
+				//uFill (Underline Fill)  ยง21.1.2.3.12 
+				//uFillTx (Underline Fill Properties Follow Text)  ยง21.1.2.3.13 
 
 				if(latin.is_init())	latin->Merge(props->latin);
 				if(ea.is_init())	ea->Merge(props->ea);
@@ -183,7 +183,7 @@ namespace PPTX
 	/*
 				nullable_property<Hyperlink> hlinkClick;
 				nullable_property<Hyperlink> hlinkMouseOver;
-				//rtl (Right to Left Run)  ง21.1.2.2.8 
+				//rtl (Right to Left Run)  ยง21.1.2.2.8 
 	*/
 				// Attributes
 				if(altLang.is_init()) props->altLang = *altLang;
@@ -440,18 +440,18 @@ namespace PPTX
 			nullable<Ln>						ln;
 			UniFill								Fill;
 			EffectProperties					EffectList;
-			//highlight (Highlight Color)  ง21.1.2.3.4 
-			//uLn (Underline Stroke)  ง21.1.2.3.14 
-			//uLnTx (Underline Follows Text)  ง21.1.2.3.15 
-			//uFill (Underline Fill)  ง21.1.2.3.12 
-			//uFillTx (Underline Fill Properties Follow Text)  ง21.1.2.3.13 
+			//highlight (Highlight Color)  ยง21.1.2.3.4 
+			//uLn (Underline Stroke)  ยง21.1.2.3.14 
+			//uLnTx (Underline Follows Text)  ยง21.1.2.3.15 
+			//uFill (Underline Fill)  ยง21.1.2.3.12 
+			//uFillTx (Underline Fill Properties Follow Text)  ยง21.1.2.3.13 
 			nullable<TextFont>					latin;
 			nullable<TextFont>					ea;
 			nullable<TextFont>					cs;
 			nullable<TextFont>					sym;
 			nullable<Hyperlink>					hlinkClick;
 			nullable<Hyperlink>					hlinkMouseOver;
-			//rtl (Right to Left Run)  ง21.1.2.2.8 
+			//rtl (Right to Left Run)  ยง21.1.2.2.8 
 
 			// Attributes
 			nullable_string						altLang;

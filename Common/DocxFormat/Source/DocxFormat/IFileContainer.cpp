@@ -1,4 +1,4 @@
-﻿#include "IFileContainer.h"
+#include "IFileContainer.h"
 #include "Rels.h"
 #include "FileFactory.h"
 #include "ContentTypes.h"

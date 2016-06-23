@@ -1219,7 +1219,7 @@ namespace NSPresentationEditor
 			{
 				if (2 >= (nCount - nStart))
 				{
-					// по идее такого быть не может
+					// РїРѕ РёРґРµРµ С‚Р°РєРѕРіРѕ Р±С‹С‚СЊ РЅРµ РјРѕР¶РµС‚
 					for (size_t i = nStart; i < nCount; ++i)
 					{
 						oArray.push_back(arOld[i]);
@@ -1231,7 +1231,7 @@ namespace NSPresentationEditor
 				
 				if (4 == (nCount - nStart))
 				{
-					// ничего не поделаешь... делаем кривую третьего порядка
+					// РЅРёС‡РµРіРѕ РЅРµ РїРѕРґРµР»Р°РµС€СЊ... РґРµР»Р°РµРј РєСЂРёРІСѓСЋ С‚СЂРµС‚СЊРµРіРѕ РїРѕСЂСЏРґРєР°
 					oArray.push_back(arOld[nStart]);
 					oArray.push_back(arOld[nStart + 1]);
 					oArray.push_back(arOld[nStart + 2]);
@@ -1241,7 +1241,7 @@ namespace NSPresentationEditor
 					break;
 				}
 
-				// значит есть еще
+				// Р·РЅР°С‡РёС‚ РµСЃС‚СЊ РµС‰Рµ
 				CGeomShapeInfo::CPointD mem1;
 				mem1.dX = (arOld[nStart].dX + 2 * arOld[nStart + 1].dX) / 3.0;
 				mem1.dY = (arOld[nStart].dY + 2 * arOld[nStart + 1].dY) / 3.0;

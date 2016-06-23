@@ -59,7 +59,7 @@ void draw_page::add_attributes( const xml::attributes_wc_ptr & Attributes )
 void draw_page::pptx_convert_placeHolder(oox::pptx_conversion_context & Context, std::wstring styleName, presentation_class::type PresentationClass)
 {
 	office_element_ptr elm = Context.root()->odf_context().drawStyles().find_by_style_name(styleName);
-	//todooo åñëè ýòî ýëåìåíò datatime -íóæíî âûòàùèòü ôîðìàò ïîëÿ
+	//todooo ÐµÑÐ»Ð¸ ÑÑ‚Ð¾ ÑÐ»ÐµÐ¼ÐµÐ½Ñ‚ datatime -Ð½ÑƒÐ¶Ð½Ð¾ Ð²Ñ‹Ñ‚Ð°Ñ‰Ð¸Ñ‚ÑŒ Ñ„Ð¾Ñ€Ð¼Ð°Ñ‚ Ð¿Ð¾Ð»Ñ
 
 	if (!elm)return;
 
@@ -122,7 +122,7 @@ void draw_page::pptx_convert(oox::pptx_conversion_context & Context)
 																	Context.root()->odf_context().drawStyles() ,fill);
 				Context.get_slide_context().add_background(fill);
 			
-				//÷àñòü ñâîéñòâ ïåðåõîäîâ ìåæäó ñëàéäàìè òóòà
+				//Ñ‡Ð°ÑÑ‚ÑŒ ÑÐ²Ð¾Ð¹ÑÑ‚Ð² Ð¿ÐµÑ€ÐµÑ…Ð¾Ð´Ð¾Ð² Ð¼ÐµÐ¶Ð´Ñƒ ÑÐ»Ð°Ð¹Ð´Ð°Ð¼Ð¸ Ñ‚ÑƒÑ‚Ð°
 				
 				if (properties->content().presentation_transition_type_)
 				{
@@ -153,8 +153,8 @@ void draw_page::pptx_convert(oox::pptx_conversion_context & Context)
 			}
 		}
 	}
-	//ñíà÷àëà àíèìàøêè .. ïîòîìó ÷òî îáúåêòû èñïîëüçóþò àíèìàöèþ íå íàíàïðÿìóþ (êàê áû ) à ñ îáùåé êó÷è
-	//animation_context íà slide_context çàâåñòè
+	//ÑÐ½Ð°Ñ‡Ð°Ð»Ð° Ð°Ð½Ð¸Ð¼Ð°ÑˆÐºÐ¸ .. Ð¿Ð¾Ñ‚Ð¾Ð¼Ñƒ Ñ‡Ñ‚Ð¾ Ð¾Ð±ÑŠÐµÐºÑ‚Ñ‹ Ð¸ÑÐ¿Ð¾Ð»ÑŒÐ·ÑƒÑŽÑ‚ Ð°Ð½Ð¸Ð¼Ð°Ñ†Ð¸ÑŽ Ð½Ðµ Ð½Ð°Ð½Ð°Ð¿Ñ€ÑÐ¼ÑƒÑŽ (ÐºÐ°Ðº Ð±Ñ‹ ) Ð° Ñ Ð¾Ð±Ñ‰ÐµÐ¹ ÐºÑƒÑ‡Ð¸
+	//animation_context Ð½Ð° slide_context Ð·Ð°Ð²ÐµÑÑ‚Ð¸
 	if (animation_)
 	{
 		animation_->pptx_convert(Context);

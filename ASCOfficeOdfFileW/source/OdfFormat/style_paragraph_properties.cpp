@@ -258,7 +258,7 @@ void paragraph_format_properties::clear()
 	style_register_true_		= boost::none;
 	fo_margin_left_			= boost::none;
 	fo_margin_right_		= boost::none; 
-	//fo_text_indent_			= boost::none;//заточено под буквицу
+	//fo_text_indent_			= boost::none;//Р·Р°С‚РѕС‡РµРЅРѕ РїРѕРґ Р±СѓРєРІРёС†Сѓ
 	style_auto_text_indent_	= boost::none;
 	fo_margin_top_			= boost::none;
 	fo_margin_bottom_		= boost::none;

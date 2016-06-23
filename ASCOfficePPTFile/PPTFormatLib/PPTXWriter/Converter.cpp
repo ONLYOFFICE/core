@@ -551,7 +551,7 @@ void NSPresentationEditor::CPPTXWriter::WriteThemes()
 		oFile.WriteStringUTF8(oStringWriter.GetData());
 		oFile.CloseFile();
 
-		// теперь masterslide
+		// С‚РµРїРµСЂСЊ masterslide
 		CRelsGenerator oRels(&m_oManager);
 		int nCountLayouts = (int)pTheme->m_arLayouts.size();
 		
@@ -575,7 +575,7 @@ void NSPresentationEditor::CPPTXWriter::WriteThemes()
 		for (size_t nEl = 0; nEl < nElements; ++nEl)
 		{
 			if (isBodyPlaceholder(pTheme->m_arElements[nEl]->m_lPlaceholderType))
-				pTheme->m_arElements[nEl]->m_lPlaceholderType =100; //body тип прописывать !!
+				pTheme->m_arElements[nEl]->m_lPlaceholderType =100; //body С‚РёРї РїСЂРѕРїРёСЃС‹РІР°С‚СЊ !!
 
 			if (pTheme->m_arElements[nEl]->m_bBoundsEnabled == false)
 				continue;

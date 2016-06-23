@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "../DocxFormat/WritingElement.h"
 #include "../Base/Nullable.h"

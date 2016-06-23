@@ -32,12 +32,12 @@ public:
 	{
 		CRecordsContainer::ReadFromStream(oHeader, pStream);
 
-		// вот... а теперь нужно взять и узнать перерасчет системы координат
+		// РІРѕС‚... Р° С‚РµРїРµСЂСЊ РЅСѓР¶РЅРѕ РІР·СЏС‚СЊ Рё СѓР·РЅР°С‚СЊ РїРµСЂРµСЂР°СЃС‡РµС‚ СЃРёСЃС‚РµРјС‹ РєРѕРѕСЂРґРёРЅР°С‚
 		std::vector<CRecordShapeContainer*> oArrayShapes;
 		GetRecordsByType(&oArrayShapes, false, false);
 
 		if (!oArrayShapes.empty())
-			oArrayShapes[0]->bGroupShape = true;//тут описание самой группы
+			oArrayShapes[0]->bGroupShape = true;//С‚СѓС‚ РѕРїРёСЃР°РЅРёРµ СЃР°РјРѕР№ РіСЂСѓРїРїС‹
 
 		int nIndexBreak = -1;
 		for (int nIndex = 0; nIndex < oArrayShapes.size(); ++nIndex)
@@ -117,7 +117,7 @@ public:
 
 			if (bIsRecalc)
 			{
-				// здесь переводим координаты, чтобы они не зависили от группы
+				// Р·РґРµСЃСЊ РїРµСЂРµРІРѕРґРёРј РєРѕРѕСЂРґРёРЅР°С‚С‹, С‡С‚РѕР±С‹ РѕРЅРё РЅРµ Р·Р°РІРёСЃРёР»Рё РѕС‚ РіСЂСѓРїРїС‹
 				double dScaleX = (double)(lWidthClient) / (lWidthGroup);
 				double dScaleY = (double)(lHeightClient) / (lHeightGroup);
 				

@@ -1,4 +1,4 @@
-﻿#ifndef _PDF_READER_STRING_EXT_H
+#ifndef _PDF_READER_STRING_EXT_H
 #define _PDF_READER_STRING_EXT_H
 
 #include <stdarg.h>

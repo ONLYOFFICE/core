@@ -1,4 +1,4 @@
-﻿#include "DjVu.h"
+#include "DjVu.h"
 #include "DjVuFileImplementation.h"
 #include "../DesktopEditor/fontengine/ApplicationFonts.h"
 

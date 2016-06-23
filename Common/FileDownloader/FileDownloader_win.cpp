@@ -1,4 +1,4 @@
-﻿#include "FileDownloader.h"
+#include "FileDownloader.h"
 
 #include <atlbase.h>
 #include <atlstr.h>

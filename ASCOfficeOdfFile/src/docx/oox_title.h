@@ -28,11 +28,11 @@ private:
 	cpdoccore::oox::oox_layout layout_;
 	odf_reader::chart::title content_;
 
-//extLst (Chart Extensibility) ง21.2.2.64
-//layout (Layout) ง21.2.2.88
-//overlay (Overlay) ง21.2.2.132
-//spPr (Shape Properties) ง21.2.2.197
-//tx (Chart Text) ง21.2.2.214
+//extLst (Chart Extensibility) ยง21.2.2.64
+//layout (Layout) ยง21.2.2.88
+//overlay (Overlay) ยง21.2.2.132
+//spPr (Shape Properties) ยง21.2.2.197
+//tx (Chart Text) ยง21.2.2.214
 //txPr (Text Properties)
 };
 

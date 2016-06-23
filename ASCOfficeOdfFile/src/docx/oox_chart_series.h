@@ -26,7 +26,7 @@ public:
 	
 	_oox_chart_values			values_[5]; //cat(labels), common, x, y, bubble, 
 	int							id_;
-	std::wstring				name_;	//tx (Series Text) ง21.2.2.215
+	std::wstring				name_;	//tx (Series Text) ยง21.2.2.215
 	int							iSymbolMarkerType_;
 	bool						bLocalTable_;
 	_CP_OPT(oox_data_labels)	data_labels_;
@@ -41,9 +41,9 @@ public:
 
 	odf_reader::chart::series content_;
 
-	//extLst (Chart Extensibility) ง21.2.2.64
-	//idx (Index) ง21.2.2.84
-	//order (Order) ง21.2.2.128
+	//extLst (Chart Extensibility) ยง21.2.2.64
+	//idx (Index) ยง21.2.2.84
+	//order (Order) ยง21.2.2.128
 
 };
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -60,12 +60,12 @@ public:
 	
 	virtual void oox_serialize(std::wostream & _Wostream);
 };
-	//cat (Category Axis Data) ง21.2.2.24
-	//errBars (Error Bars) ง21.2.2.55
-	//invertIfNegative (Invert if Negative) ง21.2.2.86
-	//pictureOptions (Picture Options) ง21.2.2.138
-	//shape (Shape) ง21.2.2.177
-	//trendline (Trendlines) ง21.2.2.211
+	//cat (Category Axis Data) ยง21.2.2.24
+	//errBars (Error Bars) ยง21.2.2.55
+	//invertIfNegative (Invert if Negative) ยง21.2.2.86
+	//pictureOptions (Picture Options) ยง21.2.2.138
+	//shape (Shape) ยง21.2.2.177
+	//trendline (Trendlines) ยง21.2.2.211
 	//val (Values)
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -83,12 +83,12 @@ public:
 	virtual void oox_serialize(std::wostream & _Wostream);
 
 };
-	//cat (Category Axis Data) ง21.2.2.24
-	//errBars (Error Bars) ง21.2.2.55
-	//marker (Marker) ง21.2.2.106
-	//smooth (Smoothing) ง21.2.2.194
-	//trendline (Trendlines) ง21.2.2.211
-	//val (Values) ง21.2.2.224
+	//cat (Category Axis Data) ยง21.2.2.24
+	//errBars (Error Bars) ยง21.2.2.55
+	//marker (Marker) ยง21.2.2.106
+	//smooth (Smoothing) ยง21.2.2.194
+	//trendline (Trendlines) ยง21.2.2.211
+	//val (Values) ยง21.2.2.224
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 class oox_pie_series;
 typedef _CP_PTR(oox_pie_series) oox_pie_series_ptr;
@@ -104,9 +104,9 @@ public:
 	virtual void oox_serialize(std::wostream & _Wostream);
 
 };
-	//cat (Category Axis Data) ง21.2.2.24
-	//explosion (Explosion) ง21.2.2.61
-	//val (Values) ง21.2.2.224
+	//cat (Category Axis Data) ยง21.2.2.24
+	//explosion (Explosion) ยง21.2.2.61
+	//val (Values) ยง21.2.2.224
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////class oox_pie_series;
 class oox_bubble_series;
 typedef _CP_PTR(oox_bubble_series) oox_bubble_series_ptr;
@@ -122,12 +122,12 @@ public:
 	virtual void oox_serialize(std::wostream & _Wostream);
 
 };
-	//bubble3D (3D Bubble) ง21.2.2.19
-	//bubbleSize (Bubble Size) ง21.2.2.22
-	//errBars (Error Bars) ง21.2.2.55
-	//invertIfNegative (Invert if Negative) ง21.2.2.86
-	//trendline (Trendlines) ง21.2.2.211
-	//xVal (X Values) ง21.2.2.234
+	//bubble3D (3D Bubble) ยง21.2.2.19
+	//bubbleSize (Bubble Size) ยง21.2.2.22
+	//errBars (Error Bars) ยง21.2.2.55
+	//invertIfNegative (Invert if Negative) ยง21.2.2.86
+	//trendline (Trendlines) ยง21.2.2.211
+	//xVal (X Values) ยง21.2.2.234
 	//yVal (Y Values)
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -145,12 +145,12 @@ public:
 	virtual void oox_serialize(std::wostream & _Wostream);
 
 };
-	//errBars (Error Bars) ง21.2.2.55
-	//marker (Marker) ง21.2.2.106
-	//smooth (Smoothing) ง21.2.2.194
-	//trendline (Trendlines) ง21.2.2.211
-	//xVal (X Values) ง21.2.2.234
-	//yVal (Y Values) ง21.2.2.237
+	//errBars (Error Bars) ยง21.2.2.55
+	//marker (Marker) ยง21.2.2.106
+	//smooth (Smoothing) ยง21.2.2.194
+	//trendline (Trendlines) ยง21.2.2.211
+	//xVal (X Values) ยง21.2.2.234
+	//yVal (Y Values) ยง21.2.2.237
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 class oox_area_series;
@@ -167,10 +167,10 @@ public:
 	virtual void oox_serialize(std::wostream & _Wostream);
 
 };
-	//cat (Category Axis Data) ง21.2.2.24
-	//errBars (Error Bars) ง21.2.2.55
-	//pictureOptions (Picture Options) ง21.2.2.138
-	//trendline (Trendlines) ง21.2.2.211
+	//cat (Category Axis Data) ยง21.2.2.24
+	//errBars (Error Bars) ยง21.2.2.55
+	//pictureOptions (Picture Options) ยง21.2.2.138
+	//trendline (Trendlines) ยง21.2.2.211
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -187,9 +187,9 @@ public:
 
 	virtual void oox_serialize(std::wostream & _Wostream);
 };
-	//cat (Category Axis Data) ง21.2.2.24
-	//marker (Marker) ง21.2.2.106
-	//val (Values) ง21.2.2.224
+	//cat (Category Axis Data) ยง21.2.2.24
+	//marker (Marker) ยง21.2.2.106
+	//val (Values) ยง21.2.2.224
 
 }
 }

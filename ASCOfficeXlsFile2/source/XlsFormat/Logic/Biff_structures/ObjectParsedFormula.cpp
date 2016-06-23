@@ -33,7 +33,7 @@ void ObjectParsedFormula::load(CFRecord& record)
 	record >> cce;
 	cce = GETBITS(cce, 0, 14);
 
-	if (record.getRdPtr() + 4 < record.getDataSize()) //Ðàáî÷àÿ òî÷êà.xls - cce == 0
+	if (record.getRdPtr() + 4 < record.getDataSize()) //Ð Ð°Ð±Ð¾Ñ‡Ð°Ñ Ñ‚Ð¾Ñ‡ÐºÐ°.xls - cce == 0
 		record.skipNunBytes(4); // unused
 	
 	if (cce > 0) 

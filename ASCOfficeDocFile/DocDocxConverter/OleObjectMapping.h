@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "PictureDescriptor.h"
 #include "AbstractOpenXmlMapping.h"

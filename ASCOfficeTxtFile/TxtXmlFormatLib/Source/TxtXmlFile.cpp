@@ -74,7 +74,7 @@ static int ParseTxtOptions(const std::wstring & sXmlOptions)
 
 HRESULT CTxtXmlFile::txt_LoadFromFile(const std::wstring & sSrcFileName, const std::wstring & sDstPath, const std::wstring & sXMLOptions)
 {
-	//проверка на структуру xml - если что не так выкинет быстро
+	//РїСЂРѕРІРµСЂРєР° РЅР° СЃС‚СЂСѓРєС‚СѓСЂСѓ xml - РµСЃР»Рё С‡С‚Рѕ РЅРµ С‚Р°Рє РІС‹РєРёРЅРµС‚ Р±С‹СЃС‚СЂРѕ
 	//HRESULT hr = xml_LoadFromFile(sSrcFileName, sDstPath, sXMLOptions);
 	//if(hr == S_OK)
 	//	return S_OK;
@@ -218,12 +218,12 @@ void CTxtXmlFile::CreateDocxEmpty(CString strDirectory, Writers::FileWriter * pD
 	pDocxWriter->m_oNumberingWriter.Write();
 	pDocxWriter->m_oFontTableWriter.Write();
 	pDocxWriter->m_oHeaderFooterWriter.Write();
-	//Setting пишем после HeaderFooter, чтобы заполнить evenAndOddHeaders
+	//Setting РїРёС€РµРј РїРѕСЃР»Рµ HeaderFooter, С‡С‚РѕР±С‹ Р·Р°РїРѕР»РЅРёС‚СЊ evenAndOddHeaders
 	pDocxWriter->m_oSettingWriter.Write();
 	pDocxWriter->m_oWebSettingsWriter.Write();
-	//Document пишем после HeaderFooter, чтобы заполнить sectPr
+	//Document РїРёС€РµРј РїРѕСЃР»Рµ HeaderFooter, С‡С‚РѕР±С‹ Р·Р°РїРѕР»РЅРёС‚СЊ sectPr
 	pDocxWriter->m_oDocumentWriter.Write();
-	//Rels и ContentTypes пишем в конце
+	//Rels Рё ContentTypes РїРёС€РµРј РІ РєРѕРЅС†Рµ
 	pDocxWriter->m_oDocumentRelsWriter.Write();
 	pDocxWriter->m_oContentTypesWriter.Write();
 }

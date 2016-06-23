@@ -1,4 +1,4 @@
-﻿#ifndef _MATH_EQUATION_READER_H
+#ifndef _MATH_EQUATION_READER_H
 #define _MATH_EQUATION_READER_H
 
 #include "../../../3dParty/pole/pole.h"

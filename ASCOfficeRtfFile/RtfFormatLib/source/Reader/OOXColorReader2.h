@@ -1,4 +1,4 @@
-﻿
+
 #pragma once
 #include "RtfDocument.h"
 #include "RtfProperty.h"

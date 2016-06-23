@@ -22,7 +22,7 @@ bool create_element_and_read(xml::sax * Reader,
 		elm->read_sax( Reader );
         elm->afterReadContent();
         
-        if (_Element) // элемент читается повторно
+        if (_Element) // СЌР»РµРјРµРЅС‚ С‡РёС‚Р°РµС‚СЃСЏ РїРѕРІС‚РѕСЂРЅРѕ
         {
             _CP_LOG << L"[error] : duplicate element (" << Ns << L":" << Name << L")\n";
         }

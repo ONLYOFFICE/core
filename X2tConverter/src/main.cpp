@@ -1,4 +1,4 @@
-﻿
+
 #include "cextracttools.h"
 #include "ASCConverters.h"
 

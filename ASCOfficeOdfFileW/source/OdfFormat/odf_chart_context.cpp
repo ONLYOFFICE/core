@@ -35,7 +35,7 @@ namespace odf_writer
 	static const std::wstring default_MS_series_colors[] = 
 	{
         L"#355a86", L"#883533", L"#6e963c", L"#594573", L"#327a8d", L"#3d679a", L"#9d3e3b", L"#7e9945", L"#674f84", L"#398ba2", L"#cb7934",
-        //todooo - продолжить .... пока копия первых
+        //todooo - РїСЂРѕРґРѕР»Р¶РёС‚СЊ .... РїРѕРєР° РєРѕРїРёСЏ РїРµСЂРІС‹С…
         L"#355a86", L"#883533", L"#6e963c", L"#594573", L"#327a8d", L"#3d679a", L"#9d3e3b", L"#7e9945", L"#674f84", L"#398ba2", L"#cb7934",
         L"#355a86", L"#883533", L"#6e963c", L"#594573", L"#327a8d", L"#3d679a", L"#9d3e3b", L"#7e9945", L"#674f84", L"#398ba2", L"#cb7934",
         L"#355a86", L"#883533", L"#6e963c", L"#594573", L"#327a8d", L"#3d679a", L"#9d3e3b", L"#7e9945", L"#674f84", L"#398ba2", L"#cb7934",
@@ -97,7 +97,7 @@ public:
     {	
 		styles_context_ = NULL;
 		current_series_count_= 0;
-		local_table_enabled_ = true;// false; - пока тока КЭШ .. demo.docx
+		local_table_enabled_ = true;// false; - РїРѕРєР° С‚РѕРєР° РљР­РЁ .. demo.docx
 		
 	} 
 
@@ -120,8 +120,8 @@ public:
 	std::vector<odf_cash_state>				cash_;
 	bool									local_table_enabled_;
 
-	std::vector<odf_chart_level_state>	current_level_;	//постоянно меняющийся список уровней наследования
-	std::vector<odf_chart_state>		chart_list_;		//все элементы .. для удобства разделение по "топам"
+	std::vector<odf_chart_level_state>	current_level_;	//РїРѕСЃС‚РѕСЏРЅРЅРѕ РјРµРЅСЏСЋС‰РёР№СЃСЏ СЃРїРёСЃРѕРє СѓСЂРѕРІРЅРµР№ РЅР°СЃР»РµРґРѕРІР°РЅРёСЏ
+	std::vector<odf_chart_state>		chart_list_;		//РІСЃРµ СЌР»РµРјРµРЅС‚С‹ .. РґР»СЏ СѓРґРѕР±СЃС‚РІР° СЂР°Р·РґРµР»РµРЅРёРµ РїРѕ "С‚РѕРїР°Рј"
 ////////
 	void set_default_series_color();
 	void clear_current();
@@ -169,7 +169,7 @@ void odf_chart_context::Impl::clear_current()
 	cash_.clear();
 
 	current_series_count_ = 0;
-	local_table_enabled_ = true; //false; пока тока кэш - demo.docx
+	local_table_enabled_ = true; //false; РїРѕРєР° С‚РѕРєР° РєСЌС€ - demo.docx
 }
 void odf_chart_context::Impl::set_default_series_color()
 {
@@ -239,7 +239,7 @@ void odf_chart_context::start_chart(office_element_ptr & root)
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	//if (impl_->current_level_.size()>0)	impl_->current_level_.back()->add_child_element(chart_elm); не надо ... наследование через drawing
+	//if (impl_->current_level_.size()>0)	impl_->current_level_.back()->add_child_element(chart_elm); РЅРµ РЅР°РґРѕ ... РЅР°СЃР»РµРґРѕРІР°РЅРёРµ С‡РµСЂРµР· drawing
 
 	impl_->current_level_.push_back(level_state);
 
@@ -287,7 +287,7 @@ void odf_chart_context::set_chart_bar_type(int type)
 	}
 	if (type == -1)
 	{
-		//нужно вытащить свойство с уровня выше.
+		//РЅСѓР¶РЅРѕ РІС‹С‚Р°С‰РёС‚СЊ СЃРІРѕР№СЃС‚РІРѕ СЃ СѓСЂРѕРІРЅСЏ РІС‹С€Рµ.
 		int sz = impl_->current_level_.size();
 		if (sz > 1)
 			impl_->current_level_.back().chart_properties_->content().chart_solid_type_ = 
@@ -514,7 +514,7 @@ void odf_chart_context::start_series(std::wstring type)
 	chart_chart * chart = impl_->get_current_chart();
 	if (chart) 
 	{
-		//может хранить отдельно общий класс чарта??
+		//РјРѕР¶РµС‚ С…СЂР°РЅРёС‚СЊ РѕС‚РґРµР»СЊРЅРѕ РѕР±С‰РёР№ РєР»Р°СЃСЃ С‡Р°СЂС‚Р°??
 		if (type == L"radar" || (*chart->chart_chart_attlist_.chart_class_ == L"chart:stock" && type == L"line"))
 			series->chart_series_attlist_.chart_class_ = chart->chart_chart_attlist_.chart_class_;	
 	}
@@ -572,7 +572,7 @@ void odf_chart_context::add_axis_group_series(unsigned int id)
 void odf_chart_context::end_group_series()
 {
 	if (impl_->axis_.size() < 1 && impl_->categories_.size() > 0)
-	{//без осей нихера не понимает MS Office !!! - причем оси для MS должны идти обязательно перед сериями
+	{//Р±РµР· РѕСЃРµР№ РЅРёС…РµСЂР° РЅРµ РїРѕРЅРёРјР°РµС‚ MS Office !!! - РїСЂРёС‡РµРј РѕСЃРё РґР»СЏ MS РґРѕР»Р¶РЅС‹ РёРґС‚Рё РѕР±СЏР·Р°С‚РµР»СЊРЅРѕ РїРµСЂРµРґ СЃРµСЂРёСЏРјРё
 		start_axis();
 			set_axis_dimension(1);
 		end_element();
@@ -613,7 +613,7 @@ void odf_chart_context::end_group_series()
 		{
 			if (impl_->axis_[j].oox_id == impl_->axis_group_series_[i] && impl_->axis_[j].dimension ==2)
 			{
-				axis_name = impl_->axis_[j].name;//привязка оси Y
+				axis_name = impl_->axis_[j].name;//РїСЂРёРІСЏР·РєР° РѕСЃРё Y
 				break;
 			}
 		}
@@ -781,7 +781,7 @@ void odf_chart_context::end_plot_area()
 		{
 			cell_range = cell_range + impl_->data_cell_ranges_[i].ref + L" ";
 		}
-		//plot_area->chart_plot_area_attlist_.table_cell_range_address_ = cell_range; - точно для локальной диагр это лишнее!!!
+		//plot_area->chart_plot_area_attlist_.table_cell_range_address_ = cell_range; - С‚РѕС‡РЅРѕ РґР»СЏ Р»РѕРєР°Р»СЊРЅРѕР№ РґРёР°РіСЂ СЌС‚Рѕ Р»РёС€РЅРµРµ!!!
 	}
 	end_element();
 }
@@ -1156,7 +1156,7 @@ void odf_chart_context::set_axis_position(int type)
 	//	impl_->current_level_.back().chart_properties_->content().chart_axis_position_ = L"end";
 	//if (type ==1 || type ==3)
 	//	impl_->current_level_.back().chart_properties_->content().chart_axis_position_ = L"start";
-//a value of type double – the axis line is placed at the given value on the crossing axis. 
+//a value of type double вЂ“ the axis line is placed at the given value on the crossing axis. 
 //If the crossing axis is an axis displaying categories rather than values, a value of 1 indicates that the axis should be placed at the first category, a value of 2 indicates that the axis should be placed at the second category and so forth.
 }
 void odf_chart_context::set_axis_label_position(int type)
@@ -1222,7 +1222,7 @@ void odf_chart_context::start_element(office_element_ptr & elm, office_element_p
 	int level = impl_->current_level_.size();
 	
 	drawing_context()->start_element(elm, style_elm);
-	//if (impl_->current_level_.size()>0) impl_->current_level_.back()->add_child_element(elm); не надо...наследование через start_element в drawing
+	//if (impl_->current_level_.size()>0) impl_->current_level_.back()->add_child_element(elm); РЅРµ РЅР°РґРѕ...РЅР°СЃР»РµРґРѕРІР°РЅРёРµ С‡РµСЂРµР· start_element РІ drawing
 	
 	odf_element_state		state={elm, style_name, style_elm, level};
 	odf_chart_level_state	level_state = {NULL,NULL,NULL,NULL,elm};
@@ -1235,13 +1235,13 @@ void odf_chart_context::start_element(office_element_ptr & elm, office_element_p
 		style_name = style_->style_name_;
 		level_state.chart_properties_ = style_->style_content_.get_style_chart_properties();
 	}
-	impl_->current_level_.push_back(level_state);//стоит ли сюда перенести и current_chart_properties ????
+	impl_->current_level_.push_back(level_state);//СЃС‚РѕРёС‚ Р»Рё СЃСЋРґР° РїРµСЂРµРЅРµСЃС‚Рё Рё current_chart_properties ????
 
 }
 
 void odf_chart_context::end_element()
 {
-	//допричесываение элемента
+	//РґРѕРїСЂРёС‡РµСЃС‹РІР°РµРЅРёРµ СЌР»РµРјРµРЅС‚Р°
 	//if (impl_->current_level_.size()>0)
 	{
 		if (impl_->current_level_.back().paragraph_properties_)
@@ -1350,7 +1350,7 @@ void odf_chart_context::set_category_axis_formula(std::wstring oox_formula,int t
 	impl_->categories_.push_back(std::pair<std::wstring,int>(odfFormula,type));
 }
 
-void odf_chart_context::set_series_pie_explosion(int val)//или точка серии
+void odf_chart_context::set_series_pie_explosion(int val)//РёР»Рё С‚РѕС‡РєР° СЃРµСЂРёРё
 {
 	if (!impl_->current_level_.back().chart_properties_)return;
 
@@ -1491,7 +1491,7 @@ void odf_chart_context::Impl::create_local_table()
 	bool col_header = false;
 	bool row_header = false;
 	
-	//выкинем дублирующие ref
+	//РІС‹РєРёРЅРµРј РґСѓР±Р»РёСЂСѓСЋС‰РёРµ ref
 	for (long i=0; i < cash_.size(); i++)
 	{
 		for (long j=i+1; j < cash_.size(); j++)
@@ -1511,7 +1511,7 @@ void odf_chart_context::Impl::create_local_table()
         int col1 = -1, col2 = -1, row1 = -1, row2 = -1;
 
 		if (refs.size()<1) continue;
-		int r = refs[0].rfind(L".");//в имени таблички может быть точка
+		int r = refs[0].rfind(L".");//РІ РёРјРµРЅРё С‚Р°Р±Р»РёС‡РєРё РјРѕР¶РµС‚ Р±С‹С‚СЊ С‚РѕС‡РєР°
 		if (r > 0)
 		{
 			table_name = refs[0].substr (0,r);

@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "RtfPicture.h"
 
 class RtfShape: public IRenderableProperty

@@ -1,4 +1,4 @@
-﻿#include "RecordFactory.h"
+#include "RecordFactory.h"
 
 #include "Shape.h"
 #include "ShapeOptions.h"

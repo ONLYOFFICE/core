@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "./BinReaderWriterDefines.h"
 #include "./Drawing/Shapes/BaseShape/Common.h"

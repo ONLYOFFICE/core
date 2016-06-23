@@ -1,4 +1,4 @@
-﻿#ifndef _BUILD_FONT_ENGINE_FONTFILE_H_
+#ifndef _BUILD_FONT_ENGINE_FONTFILE_H_
 #define _BUILD_FONT_ENGINE_FONTFILE_H_
 
 // freetype

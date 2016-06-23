@@ -70,7 +70,7 @@ void office_body::docx_convert(oox::docx_conversion_context & Context)
 
 	const page_layout_instance * layout = Context.root()->odf_context().pageLayoutContainer().page_layout_first();
 	
-	if (layout)   //äâà ðàçà - ÷òîáû äåôîëòîâûå íàñòðîéêè âñåãäà áûëè
+	if (layout)   //Ð´Ð²Ð° Ñ€Ð°Ð·Ð° - Ñ‡Ñ‚Ð¾Ð±Ñ‹ Ð´ÐµÑ„Ð¾Ð»Ñ‚Ð¾Ð²Ñ‹Ðµ Ð½Ð°ÑÑ‚Ñ€Ð¾Ð¹ÐºÐ¸ Ð²ÑÐµÐ³Ð´Ð° Ð±Ñ‹Ð»Ð¸
 	{
 		//Context.add_page_properties(layout->name());
 		Context.add_page_properties(layout->name());

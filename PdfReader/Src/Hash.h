@@ -1,4 +1,4 @@
-﻿#ifndef _PDF_READER_HASH_H
+#ifndef _PDF_READER_HASH_H
 #define _PDF_READER_HASH_H
 
 namespace PdfReader

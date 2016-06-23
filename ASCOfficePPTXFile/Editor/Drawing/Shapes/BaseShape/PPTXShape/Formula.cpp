@@ -27,7 +27,7 @@ double NSGuidesOOXML::CFormula::Calculate(NSGuidesOOXML::CFormulaManager* pManag
 
 	try
 	{
-		// теперь нужно просто посчитать
+		// С‚РµРїРµСЂСЊ РЅСѓР¶РЅРѕ РїСЂРѕСЃС‚Рѕ РїРѕСЃС‡РёС‚Р°С‚СЊ
 		switch (m_eFormulaType)
 		{
 		case ftOOXMLSum:			{ dRes = a + b - c;						break; }
@@ -59,7 +59,7 @@ double NSGuidesOOXML::CFormula::Calculate(NSGuidesOOXML::CFormulaManager* pManag
 	if(m_lIndex < 0)
 	{
 		(*pManager->Guides)[-m_lIndex-1] = dRes;
-		// переопределим формулу
+		// РїРµСЂРµРѕРїСЂРµРґРµР»РёРј С„РѕСЂРјСѓР»Сѓ
 		pManager->mapGuides.insert(std::pair<CString, long>(m_sName, -m_lIndex-1));
 	}
 	else

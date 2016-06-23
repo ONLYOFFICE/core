@@ -1,4 +1,4 @@
-﻿#include "EncryptDictionary.h"
+#include "EncryptDictionary.h"
 #include "Encrypt.h"
 #include "Info.h"
 

@@ -255,7 +255,7 @@ int SS::serialize_default(std::wostream & _stream, int series_type, int ind )
 		//	m_MarkerFormat->serialize(_stream);
 		//else
 		//{
-		//	//генерация (series_data_format->iss)
+		//	//РіРµРЅРµСЂР°С†РёСЏ (series_data_format->iss)
 		//	//todooo
 		//}
 		if (m_PieFormat && (series_type == CHART_TYPE_Doughnut	|| 
@@ -344,7 +344,7 @@ int SS::serialize(std::wostream & _stream, int series_type, int indPt)
 				}
 				else
 				{
-					//генерация (automatic)
+					//РіРµРЅРµСЂР°С†РёСЏ (automatic)
 					if ( series_type != CHART_TYPE_Line || m_is3D == true ) //line & !3dLine
 						ind = 31; //black
 					CP_XML_NODE(L"a:ln")
@@ -352,7 +352,7 @@ int SS::serialize(std::wostream & _stream, int series_type, int indPt)
 						CP_XML_ATTR(L"w", 12700);//single
 
 						if (series_type == CHART_TYPE_Scatter || series_type == CHART_TYPE_Stock) 
-							//points only - todooo сделать дефолтовые точки ala 95 стиль & stork
+							//points only - todooo СЃРґРµР»Р°С‚СЊ РґРµС„РѕР»С‚РѕРІС‹Рµ С‚РѕС‡РєРё ala 95 СЃС‚РёР»СЊ & stork
 						{
 							CP_XML_NODE(L"a:noFill");
 						}

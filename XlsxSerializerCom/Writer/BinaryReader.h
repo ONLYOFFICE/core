@@ -1,4 +1,4 @@
-﻿#ifndef BINARY_READER
+#ifndef BINARY_READER
 #define BINARY_READER
 
 #include "../../Common/Base64.h"

@@ -1,4 +1,4 @@
-﻿#include "RtfOle.h"
+#include "RtfOle.h"
 #include "Writer/OOXWriter.h"
 #include "Writer/OOXRelsWriter.h"
 #include "RtfDocument.h"

@@ -1,4 +1,4 @@
-﻿#ifndef _PDF_WRITER_SRC_CATALOG_H
+#ifndef _PDF_WRITER_SRC_CATALOG_H
 #define _PDF_WRITER_SRC_CATALOG_H
 
 #include "Objects.h"

@@ -72,7 +72,7 @@ public:
 	void ReadPersistDirectory()
 	{
         bool bRes = SavePictures();	
-		// нужно вызывать РОВНО один раз...
+		// РЅСѓР¶РЅРѕ РІС‹Р·С‹РІР°С‚СЊ Р РћР’РќРћ РѕРґРёРЅ СЂР°Р·...
 		m_oDocumentInfo.ReadFromStream(&m_oCurrentUser, GetDocStream(), m_strMemoryForder);
 	}
 
@@ -153,7 +153,7 @@ protected:
 		ULONG nRd = 0;
 		m_lImagesCount = 0;
 
-//  удаление картинок при завершении программы
+//  СѓРґР°Р»РµРЅРёРµ РєР°СЂС‚РёРЅРѕРє РїСЂРё Р·Р°РІРµСЂС€РµРЅРёРё РїСЂРѕРіСЂР°РјРјС‹
 
 		while (TRUE)
 		{
@@ -181,7 +181,7 @@ private:
     bool						m_bIsPPTFile;
 
 public:	
-	// для картинок
+	// РґР»СЏ РєР°СЂС‚РёРЅРѕРє
 	CStringW					m_strMemoryForder;
 
     std::vector<bool>			m_arLoadImageFlags;

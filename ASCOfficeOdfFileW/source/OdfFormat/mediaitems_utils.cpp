@@ -38,7 +38,7 @@ std::wstring create_file_name(const std::wstring & uri, _mediaitems::Type type, 
  	std::wstring sExt;
 	int n = uri.rfind(L".");
 	if (n>=0) sExt = uri.substr(n);
-	//todooo проверить
+	//todooo РїСЂРѕРІРµСЂРёС‚СЊ
 	
 	return get_default_file_name(type) + boost::lexical_cast<std::wstring>(Num) + sExt;
 }

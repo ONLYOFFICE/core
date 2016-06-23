@@ -1,4 +1,4 @@
-﻿#include <string>
+#include <string>
 
 #include "../../../graphics/GraphicsRenderer.h"
 #include "../Common/MetaFileTypes.h"

@@ -1,4 +1,4 @@
-﻿#include "Outline.h"
+#include "Outline.h"
 #include "Destination.h"
 
 #define OUTLINE_CLOSED     0

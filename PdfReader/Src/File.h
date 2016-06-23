@@ -1,4 +1,4 @@
-﻿#ifndef _PDF_READER_FILE_H
+#ifndef _PDF_READER_FILE_H
 #define _PDF_READER_FILE_H
 
 #include <stdio.h>
@@ -13,7 +13,7 @@ namespace PdfReader
 {
 	static void SpitPathExt(std::wstring& wsFullPath, std::wstring* pwsFilePath, std::wstring* pwsExt)
 	{
-		// »щем '.' начина¤ с конца пути, и раздел¤ем путь на расширение и остальную часть
+		// Ищем '.' начиная с конца пути, и разделяем путь на расширение и остальную часть
 		unsigned int nPos = wsFullPath.find_last_of(L".");
 		*pwsFilePath = wsFullPath.substr(0, nPos);
 		*pwsExt      = wsFullPath.substr(nPos + 1);

@@ -18,11 +18,11 @@
 #include <Shlobj.h>
 
 #ifndef STANDALONE_USE
-	#define STANDALONE_USE 0// что на входе: файл (1) или папка (0)
+	#define STANDALONE_USE 0// С‡С‚Рѕ РЅР° РІС…РѕРґРµ: С„Р°Р№Р» (1) РёР»Рё РїР°РїРєР° (0)
 #endif 
 
 
-// имя директории - uuid
+// РёРјСЏ РґРёСЂРµРєС‚РѕСЂРёРё - uuid
 
 std::wstring bstr2wstring(BSTR str)
 {
@@ -62,7 +62,7 @@ STDMETHODIMP COfficeOdfFileW::SaveToFile(BSTR sDstFileName, BSTR sSrcPath, BSTR 
 
 	std::wstring outputDir = FileSystem::Directory::GetFolderPath(std::wstring(sDstFileName));
 
-    // создаем её в директории куда запишем результат
+    // СЃРѕР·РґР°РµРј РµС‘ РІ РґРёСЂРµРєС‚РѕСЂРёРё РєСѓРґР° Р·Р°РїРёС€РµРј СЂРµР·СѓР»СЊС‚Р°С‚
 
 	std::wstring dstTempPath = FileSystem::Directory::CreateDirectoryWithUniqueName(outputDir);
     
@@ -79,7 +79,7 @@ STDMETHODIMP COfficeOdfFileW::SaveToFile(BSTR sDstFileName, BSTR sSrcPath, BSTR 
 
 #if defined(STANDALONE_USE) && (STANDALONE_USE == 1)
         
-        FileSystem::Directory::CreateDirectory(srcTempPath); // создаем временную директорию для результирующих файлов
+        FileSystem::Directory::CreateDirectory(srcTempPath); // СЃРѕР·РґР°РµРј РІСЂРµРјРµРЅРЅСѓСЋ РґРёСЂРµРєС‚РѕСЂРёСЋ РґР»СЏ СЂРµР·СѓР»СЊС‚РёСЂСѓСЋС‰РёС… С„Р°Р№Р»РѕРІ
 #endif
         hr = SaveToFileImpl(bstr2wstring(sSrcPath),srcTempPath, dstTempPath, defaultWinFontPath, bstr2wstring(sDstFileName));
         
@@ -89,7 +89,7 @@ STDMETHODIMP COfficeOdfFileW::SaveToFile(BSTR sDstFileName, BSTR sSrcPath, BSTR 
         hr = E_FAIL;
     }
 
-    // стираем временную директорию с распакованным исходником
+    // СЃС‚РёСЂР°РµРј РІСЂРµРјРµРЅРЅСѓСЋ РґРёСЂРµРєС‚РѕСЂРёСЋ СЃ СЂР°СЃРїР°РєРѕРІР°РЅРЅС‹Рј РёСЃС…РѕРґРЅРёРєРѕРј
     try
     {
 		FileSystem::Directory::DeleteDirectory(dstTempPath);
@@ -99,7 +99,7 @@ STDMETHODIMP COfficeOdfFileW::SaveToFile(BSTR sDstFileName, BSTR sSrcPath, BSTR 
     }
 
 #if defined(STANDALONE_USE) && (STANDALONE_USE == 1)
-    // в случае если на выходе файл — стираем временную директорию (мы сами ее создали)
+    // РІ СЃР»СѓС‡Р°Рµ РµСЃР»Рё РЅР° РІС‹С…РѕРґРµ С„Р°Р№Р» Р§ СЃС‚РёСЂР°РµРј РІСЂРµРјРµРЅРЅСѓСЋ РґРёСЂРµРєС‚РѕСЂРёСЋ (РјС‹ СЃР°РјРё РµРµ СЃРѕР·РґР°Р»Рё)
     try 
     {
 		FileSystem::Directory::DeleteDirectory(srcTempPath);
@@ -121,7 +121,7 @@ HRESULT COfficeOdfFileW::SaveToFileImpl(const std::wstring & srcPath,
     HRESULT hr = E_FAIL;
 	COfficeUtils oCOfficeUtils(NULL);  
 
-    // распаковываем исходник (если он файл) во временную директорию
+    // СЂР°СЃРїР°РєРѕРІС‹РІР°РµРј РёСЃС…РѕРґРЅРёРє (РµСЃР»Рё РѕРЅ С„Р°Р№Р») РІРѕ РІСЂРµРјРµРЅРЅСѓСЋ РґРёСЂРµРєС‚РѕСЂРёСЋ
 #if defined(STANDALONE_USE) && (STANDALONE_USE == 1)
         if (S_OK != oCOfficeUtils.ExtractToDirectory(srcPath.c_str(), srcTempPath.c_str(), NULL, 0))
             return hr;

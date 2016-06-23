@@ -1,4 +1,4 @@
-﻿#ifndef DOCBUILDER_H
+#ifndef DOCBUILDER_H
 #define DOCBUILDER_H
 
 #include "../common/base_export.h"

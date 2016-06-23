@@ -61,14 +61,14 @@ namespace PPTX
 			nullable<TextParagraphPr>	m_body[10];
 			BodyPr bodyPr;
 
-			// просто указатель - он должен выставиться из темы
+			// РїСЂРѕСЃС‚Рѕ СѓРєР°Р·Р°С‚РµР»СЊ - РѕРЅ РґРѕР»Р¶РµРЅ РІС‹СЃС‚Р°РІРёС‚СЊСЃСЏ РёР· С‚РµРјС‹
 			std::vector<nullable<TextParagraphPr>*>*	m_masters;
 
 			TextFont					MajorLatin;
 			TextFont					MinorLatin;
 
 			bool						m_bIsFontRefFromSlide;
-			int							m_lMasterTextSize; // заглушка под таблицы.
+			int							m_lMasterTextSize; // Р·Р°РіР»СѓС€РєР° РїРѕРґ С‚Р°Р±Р»РёС†С‹.
 
 			bool						m_bIsSlideShape;
 

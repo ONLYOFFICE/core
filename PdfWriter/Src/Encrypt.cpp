@@ -1,4 +1,4 @@
-﻿#include "Encrypt.h"
+#include "Encrypt.h"
 #include "Objects.h"
 
 // Оптимизационные функции.

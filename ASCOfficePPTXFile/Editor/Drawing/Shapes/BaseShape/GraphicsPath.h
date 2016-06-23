@@ -37,7 +37,7 @@ namespace NSPresentationEditor
 
 	namespace NSBaseShape
 	{
-		enum ClassType {unknown, pptx, ppt, odp};// Ïåðå÷èñëåíèå ìîæíî ðàñøèðÿòü
+		enum ClassType {unknown, pptx, ppt, odp};// ÐŸÐµÑ€ÐµÑ‡Ð¸ÑÐ»ÐµÐ½Ð¸Ðµ Ð¼Ð¾Ð¶Ð½Ð¾ Ñ€Ð°ÑÑˆÐ¸Ñ€ÑÑ‚ÑŒ
 	}
 
 	enum RulesType
@@ -153,8 +153,8 @@ namespace NSPresentationEditor
 			pRenderer->put_Width((float)m_dWidthMM);
 			pRenderer->put_Height((float)m_dHeightMM);
 
-			// âîîáùå ìîæíî êàæäûé ðàç âûñòàâëÿòü pen/brush.
-			// íî ó íàñ ñåé÷àñ pen è brush âûñòàâëÿþòñÿ â shape
+			// Ð²Ð¾Ð¾Ð±Ñ‰Ðµ Ð¼Ð¾Ð¶Ð½Ð¾ ÐºÐ°Ð¶Ð´Ñ‹Ð¹ Ñ€Ð°Ð· Ð²Ñ‹ÑÑ‚Ð°Ð²Ð»ÑÑ‚ÑŒ pen/brush.
+			// Ð½Ð¾ Ñƒ Ð½Ð°Ñ ÑÐµÐ¹Ñ‡Ð°Ñ pen Ð¸ brush Ð²Ñ‹ÑÑ‚Ð°Ð²Ð»ÑÑŽÑ‚ÑÑ Ð² shape
 
 			pRenderer->SetCommandParams(m_dAngle, m_oBounds.left, m_oBounds.top, m_oBounds.GetWidth(), m_oBounds.GetHeight(), m_lFlags);
 

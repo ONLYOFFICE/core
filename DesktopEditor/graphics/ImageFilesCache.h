@@ -1,4 +1,4 @@
-﻿#ifndef _BUILD_IMAGEFILESCACHE_H_
+#ifndef _BUILD_IMAGEFILESCACHE_H_
 #define _BUILD_IMAGEFILESCACHE_H_
 
 #include "Image.h"

@@ -5,8 +5,8 @@
 #include "../../../../../../Common/DocxFormat/Source/SystemUtility/File.h"
 #include "Enums.h"
 
-// это класс, использующийся для передачи свойств объектов,
-// например - указатель на картинку... (по PID'у)
+// СЌС‚Рѕ РєР»Р°СЃСЃ, РёСЃРїРѕР»СЊР·СѓСЋС‰РёР№СЃСЏ РґР»СЏ РїРµСЂРµРґР°С‡Рё СЃРІРѕР№СЃС‚РІ РѕР±СЉРµРєС‚РѕРІ,
+// РЅР°РїСЂРёРјРµСЂ - СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РєР°СЂС‚РёРЅРєСѓ... (РїРѕ PID'Сѓ)
 
 class CProperty
 {
@@ -16,7 +16,7 @@ public:
 	bool							m_bComplex;
 	DWORD							m_lValue;
 	BYTE*							m_pOptions;
-	// чтобы не плодить классы - это value, когда m_bComplex == true
+	// С‡С‚РѕР±С‹ РЅРµ РїР»РѕРґРёС‚СЊ РєР»Р°СЃСЃС‹ - СЌС‚Рѕ value, РєРѕРіРґР° m_bComplex == true
 	bool							m_bIsTruncated;
 
 public:
@@ -36,9 +36,9 @@ public:
 	}
 	void FromStream(POLE::Stream* pStream)
 	{
-		// читаем из стрима...
-		// только пока без учета bComplex
-		// т.к. Complex - учитывается в контейнере, хранящем все проперти
+		// С‡РёС‚Р°РµРј РёР· СЃС‚СЂРёРјР°...
+		// С‚РѕР»СЊРєРѕ РїРѕРєР° Р±РµР· СѓС‡РµС‚Р° bComplex
+		// С‚.Рє. Complex - СѓС‡РёС‚С‹РІР°РµС‚СЃСЏ РІ РєРѕРЅС‚РµР№РЅРµСЂРµ, С…СЂР°РЅСЏС‰РµРј РІСЃРµ РїСЂРѕРїРµСЂС‚Рё
 		USHORT lMem = StreamUtils::ReadWORD(pStream);
 		m_ePID = (NSOfficeDrawing::PropertyId)(lMem & 0x3FFF);
 		
@@ -140,7 +140,7 @@ public:
 	{
 		CString str = _T("");
 		str.Format(_T("%d,%d,%d,%d"), (long)m_ePID, (long)m_bIsBlip, (long)m_bComplex, (long)m_lValue);
-		// не будем ничего писать - а то xml - не распознаются
+		// РЅРµ Р±СѓРґРµРј РЅРёС‡РµРіРѕ РїРёСЃР°С‚СЊ - Р° С‚Рѕ xml - РЅРµ СЂР°СЃРїРѕР·РЅР°СЋС‚СЃСЏ
 		/*if (m_bComplex)
 		{
 			CString strProp = CDirectory::BYTEArrayToString(m_pOptions, m_lValue);
@@ -154,13 +154,13 @@ public:
 	}
 };
 
-// А вот контейнер пропертей
+// Рђ РІРѕС‚ РєРѕРЅС‚РµР№РЅРµСЂ РїСЂРѕРїРµСЂС‚РµР№
 class CProperties
 {
 public:
     std::vector<CProperty> m_arProperties;
-	// по идее - это instance, но нам так удобнее,
-	// тем более это класс - не связанный с RecordHeader
+	// РїРѕ РёРґРµРµ - СЌС‚Рѕ instance, РЅРѕ РЅР°Рј С‚Р°Рє СѓРґРѕР±РЅРµРµ,
+	// С‚РµРј Р±РѕР»РµРµ СЌС‚Рѕ РєР»Р°СЃСЃ - РЅРµ СЃРІСЏР·Р°РЅРЅС‹Р№ СЃ RecordHeader
 	long m_lCount;
 
 public:
@@ -182,8 +182,8 @@ public:
             m_arProperties.push_back(elem);
 			m_arProperties[lIndex].FromStream(pStream);
 		}
-		// теперь читаем дополнительную информацию 
-		// сортировано по pid'ам (но у нас пока просто по-порядку)
+		// С‚РµРїРµСЂСЊ С‡РёС‚Р°РµРј РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅСѓСЋ РёРЅС„РѕСЂРјР°С†РёСЋ 
+		// СЃРѕСЂС‚РёСЂРѕРІР°РЅРѕ РїРѕ pid'Р°Рј (РЅРѕ Сѓ РЅР°СЃ РїРѕРєР° РїСЂРѕСЃС‚Рѕ РїРѕ-РїРѕСЂСЏРґРєСѓ)
 		for (long lIndex = 0; lIndex < m_lCount; ++lIndex)
 		{
 			m_arProperties[lIndex].ComplexFromStream(pStream);

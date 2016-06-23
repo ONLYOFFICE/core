@@ -25,7 +25,7 @@ public:
 	
 	odf_types::common_xlink_attlist		common_xlink_attlist_;
 	
-	_CP_OPT(std::wstring)		draw_id_;//используется для анимашек
+	_CP_OPT(std::wstring)		draw_id_;//РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РґР»СЏ Р°РЅРёРјР°С€РµРє
   
 
 	CPDOCCORE_DEFINE_VISITABLE();
@@ -179,7 +179,7 @@ public:
 
     draw_polygon_attlist draw_polygon_attlist_;
 
-	void reset_polygon_path();//частный случай svg - все точки соединены прямыми
+	void reset_polygon_path();//С‡Р°СЃС‚РЅС‹Р№ СЃР»СѓС‡Р°Р№ svg - РІСЃРµ С‚РѕС‡РєРё СЃРѕРµРґРёРЅРµРЅС‹ РїСЂСЏРјС‹РјРё
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(draw_polygon);
@@ -205,7 +205,7 @@ CP_REGISTER_OFFICE_ELEMENT2(draw_custom_shape);
 //draw:enhanced-geometry
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////
-class draw_equation_attlist//убрать стринги ... сделать парсинг см стр 378 оазис !!!!!!!!!!!
+class draw_equation_attlist//СѓР±СЂР°С‚СЊ СЃС‚СЂРёРЅРіРё ... СЃРґРµР»Р°С‚СЊ РїР°СЂСЃРёРЅРі СЃРј СЃС‚СЂ 378 РѕР°Р·РёСЃ !!!!!!!!!!!
 {
 public:
 	_CP_OPT(std::wstring) draw_name_;
@@ -241,7 +241,7 @@ struct draw_handle_geometry
 	int max;
 };
 //////////////////////////////////////////////////////
-class draw_handle_attlist//убрать стринги ... сделать парсинг см стр 378 оазис !!!!!!!!!!!
+class draw_handle_attlist//СѓР±СЂР°С‚СЊ СЃС‚СЂРёРЅРіРё ... СЃРґРµР»Р°С‚СЊ РїР°СЂСЃРёРЅРі СЃРј СЃС‚СЂ 378 РѕР°Р·РёСЃ !!!!!!!!!!!
 {
 public:
 	_CP_OPT(std::wstring) draw_handle_position_;
@@ -323,13 +323,13 @@ public:
 
 	typedef std::pair<std::wstring,std::wstring> pair_string_value;
 
-	std::vector<draw_handle_geometry>	draw_handle_geometry_; //параметры в удобноваримом виде
+	std::vector<draw_handle_geometry>	draw_handle_geometry_; //РїР°СЂР°РјРµС‚СЂС‹ РІ СѓРґРѕР±РЅРѕРІР°СЂРёРјРѕРј РІРёРґРµ
 	std::vector<pair_string_value>		draw_equation_array_;
 	
 	office_element_ptr_array			draw_handle_;
-	office_element_ptr_array			draw_equation_;//некоторые заданные параметры отрисовки которые используются в draw_handle - автозамена общих частей
+	office_element_ptr_array			draw_equation_;//РЅРµРєРѕС‚РѕСЂС‹Рµ Р·Р°РґР°РЅРЅС‹Рµ РїР°СЂР°РјРµС‚СЂС‹ РѕС‚СЂРёСЃРѕРІРєРё РєРѕС‚РѕСЂС‹Рµ РёСЃРїРѕР»СЊР·СѓСЋС‚СЃСЏ РІ draw_handle - Р°РІС‚РѕР·Р°РјРµРЅР° РѕР±С‰РёС… С‡Р°СЃС‚РµР№
 	
-	static int parsing(_CP_OPT(std::wstring) val);//todoooo наоборот
+	static int parsing(_CP_OPT(std::wstring) val);//todoooo РЅР°РѕР±РѕСЂРѕС‚
 
 	CPDOCCORE_DEFINE_VISITABLE();
 };

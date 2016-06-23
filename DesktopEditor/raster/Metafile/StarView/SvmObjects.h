@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "../Common/MetaFileTypes.h"
 #include "../Common/MetaFileObjects.h"

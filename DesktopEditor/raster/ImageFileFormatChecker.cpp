@@ -190,7 +190,7 @@ bool CImageFileFormatChecker::isIcoFile(BYTE* pBuffer,DWORD dwBytes)
 			image_header = (___BITMAPINFOHEADER *)(pBuffer + offset_image);
 
 			if (width == image_header->biWidth
-				/*height == image_header->biHeight*/) // ‚ ıÂ‡‰ÂÂ ÏÓÊÂÚ ·˚Ú¸ ˜ÂÂÒÚÓ˜Ì‡ˇ ‚˚ÒÓÚ‡
+				/*height == image_header->biHeight*/) // –≤ —Ö–µ–∞–¥–µ—Ä–µ –º–æ–∂–µ—Ç –±—ã—Ç—å —á–µ—Ä–µ—Å—Ç—Ä–æ—á–Ω–∞—è –≤—ã—Å–æ—Ç–∞
 					return true;
 		}
 	}

@@ -1,4 +1,4 @@
-﻿#ifndef _XPS_XPSLIB_UTILS_H
+#ifndef _XPS_XPSLIB_UTILS_H
 #define _XPS_XPSLIB_UTILS_H
 
 #include <string>

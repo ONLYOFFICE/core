@@ -1,4 +1,4 @@
-﻿#ifndef READER_CLASSES
+#ifndef READER_CLASSES
 #define READER_CLASSES
 
 #include "../../Common/ATLDefine.h"

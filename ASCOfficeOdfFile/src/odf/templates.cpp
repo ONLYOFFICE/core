@@ -25,7 +25,7 @@ void table_template_element::add_attributes( const xml::attributes_wc_ptr & Attr
 	if (table_style_name_.empty())
 		table_style_name_ = text_style_name_;
 	//http://lists.freedesktop.org/archives/libreoffice-bugs/2011-March/007109.html
-	//τΰιλ 1 (7).odp
+	//Χ¤ΧΧ™Χ› 1 (7).odp
 }
 
 const wchar_t * table_body_template::ns = L"table";

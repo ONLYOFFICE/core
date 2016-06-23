@@ -51,7 +51,7 @@ public:
 	bool find_odf_default_style_state(odf_types::style_family::type family, odf_style_state_ptr & state);
 	
 	bool find_odf_style(std::wstring style_name, odf_types::style_family::type family, style *& style_);
-	bool find_odf_style_state(std::wstring style_name, odf_types::style_family::type family, odf_style_state_ptr & state); //имена в odf_writer сделаны полностью уникальными
+	bool find_odf_style_state(std::wstring style_name, odf_types::style_family::type family, odf_style_state_ptr & state); //РёРјРµРЅР° РІ odf_writer СЃРґРµР»Р°РЅС‹ РїРѕР»РЅРѕСЃС‚СЊСЋ СѓРЅРёРєР°Р»СЊРЅС‹РјРё
 
 	odf_style_state_ptr	last_state(odf_types::style_family::type family = odf_types::style_family::None);
 
@@ -75,7 +75,7 @@ private:
    
     
 	std::vector<odf_style_state_ptr>		style_state_list_;	
-	std::vector<odf_style_state_ptr>		current_default_styles_;//для внутренней работы .. переодически очищаемый частично или полностью
+	std::vector<odf_style_state_ptr>		current_default_styles_;//РґР»СЏ РІРЅСѓС‚СЂРµРЅРЅРµР№ СЂР°Р±РѕС‚С‹ .. РїРµСЂРµРѕРґРёС‡РµСЃРєРё РѕС‡РёС‰Р°РµРјС‹Р№ С‡Р°СЃС‚РёС‡РЅРѕ РёР»Рё РїРѕР»РЅРѕСЃС‚СЊСЋ
    
 	std::wstring get_name_family(odf_types::style_family::type family);
 

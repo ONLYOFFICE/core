@@ -1,4 +1,4 @@
-﻿
+
 #include "DocumentProperties.h"
 
 namespace DocFileFormat

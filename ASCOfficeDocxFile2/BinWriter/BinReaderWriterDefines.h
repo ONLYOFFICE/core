@@ -249,7 +249,9 @@ extern int g_nCurFormatVersion;
 		tblpPr2 = 11,
 		Layout = 12,
 		tblPrChange = 13,
-		TableCellSpacing = 14
+		TableCellSpacing = 14,
+		RowBandSize = 15,
+		ColBandSize = 16
 	};}
 	namespace c_oSer_tblpPrType{enum c_oSer_tblpPrType
 	{

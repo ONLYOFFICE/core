@@ -1621,6 +1621,18 @@ namespace BinDocxRW
 			{
 				OOX::Logic::CTableProperty& tblPr = *p_tblPr;
 				int nCurPos = 0;
+				if(tblPr.m_oTblStyleRowBandSize.IsInit() && tblPr.m_oTblStyleRowBandSize->m_oVal.IsInit())
+				{
+					nCurPos = m_oBcw.WriteItemStart(c_oSerProp_tblPrType::RowBandSize);
+					m_oBcw.m_oStream.WriteLONG(tblPr.m_oTblStyleRowBandSize->m_oVal->GetValue());
+					m_oBcw.WriteItemEnd(nCurPos);
+				}
+				if(tblPr.m_oTblStyleColBandSize.IsInit() && tblPr.m_oTblStyleColBandSize->m_oVal.IsInit())
+				{
+					nCurPos = m_oBcw.WriteItemStart(c_oSerProp_tblPrType::ColBandSize);
+					m_oBcw.m_oStream.WriteLONG(tblPr.m_oTblStyleColBandSize->m_oVal->GetValue());
+					m_oBcw.WriteItemEnd(nCurPos);
+				}
 				//Jc
 				if(false != tblPr.m_oJc.IsInit() && tblPr.m_oJc->m_oVal.IsInit())
 				{

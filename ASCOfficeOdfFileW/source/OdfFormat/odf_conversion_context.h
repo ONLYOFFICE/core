@@ -51,16 +51,17 @@ public:
     CApplicationFonts       *applicationFonts_;
 
 
-	virtual odf_drawing_context		* drawing_context() = 0;
-	virtual odf_text_context		* text_context() = 0;
+	virtual odf_drawing_context		* drawing_context()		= 0;
+	virtual odf_text_context		* text_context()		= 0;
 
-	virtual void					start_text_context() = 0;
-	virtual void					end_text_context() = 0;
+	virtual void					start_text_context()	= 0;
+	virtual void					end_text_context()		= 0;
 
     virtual void start_image(const std::wstring & image_file_name) = 0;
 	
 	virtual odf_style_context		* styles_context();
-
+	
+	odf_settings_context			* settings_context();
 	odf_chart_context				* chart_context();
 	odf_page_layout_context			* page_layout_context();
 

@@ -2267,13 +2267,15 @@ public:
 	CString Shd;
 	CString tblpPr;
 	CString Style;
+	CString RowBandSize;
+	CString ColBandSize;
 	CString Look;
 	CString Layout;
 	CString tblPrChange;
 	CString TableCellSpacing;
 	bool IsEmpty()
 	{
-		return Jc.IsEmpty() && TableInd.IsEmpty() && TableW.IsEmpty() && TableCellMar.IsEmpty() && TableBorders.IsEmpty() && Shd.IsEmpty() && tblpPr.IsEmpty()&& Style.IsEmpty() && Look.IsEmpty() && tblPrChange.IsEmpty() && TableCellSpacing.IsEmpty();
+		return Jc.IsEmpty() && TableInd.IsEmpty() && TableW.IsEmpty() && TableCellMar.IsEmpty() && TableBorders.IsEmpty() && Shd.IsEmpty() && tblpPr.IsEmpty()&& Style.IsEmpty() && Look.IsEmpty() && tblPrChange.IsEmpty() && TableCellSpacing.IsEmpty() && RowBandSize.IsEmpty() && ColBandSize.IsEmpty();
 	}
 	CString Write(bool bBandSize, bool bLayout)
 	{
@@ -2283,8 +2285,10 @@ public:
 			sRes.Append(Style);
 		if(false == tblpPr.IsEmpty())
 			sRes.Append(tblpPr);
-		if(bBandSize)
-			sRes.Append(_T("<w:tblStyleRowBandSize w:val=\"1\"/><w:tblStyleColBandSize w:val=\"1\"/>"));
+		if(!RowBandSize.IsEmpty())
+			sRes.Append(RowBandSize);
+		if(!ColBandSize.IsEmpty())
+			sRes.Append(ColBandSize);
 		if(false == TableW.IsEmpty())
 			sRes.Append(TableW);
 		if(false == Jc.IsEmpty())

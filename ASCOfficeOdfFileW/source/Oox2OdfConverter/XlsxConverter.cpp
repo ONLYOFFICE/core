@@ -136,6 +136,13 @@ void XlsxConverter::convert_sheets()
 
 	std::map<CString, OOX::Spreadsheet::CWorksheet*> &arrWorksheets = xlsx_document->GetWorksheets();
 	
+	if(Workbook->m_oBookViews.IsInit())
+	{	
+		for (unsigned int i = 0; i < Workbook->m_oBookViews->m_arrItems.size(); i++)
+		{
+			convert(Workbook->m_oBookViews->m_arrItems[i]);
+		}
+	}
 	if(Workbook->m_oSheets.IsInit())
 	{				
 		for(unsigned int i = 0, length = Workbook->m_oSheets->m_arrItems.size(); i < length; ++i)
@@ -238,7 +245,6 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 				oox_sheet->m_oSheetData->m_arrItems[row] = NULL;
 			}
 		ods_context->end_rows();
-		//грохнем память .. а то на больших доках не остается ее :( - нужно переходить на х64 или делсть постраничное чтение-запись
 		oox_sheet->m_oSheetData.reset();
 	}
 
@@ -248,7 +254,6 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 		if (oox_sheet->m_oMergeCells->m_arrItems[mrg]->m_oRef.IsInit())
 			ods_context->add_merge_cells(string2std_string(oox_sheet->m_oMergeCells->m_arrItems[mrg]->m_oRef.get()));
 	}
-	//рисование - делаем ВСЕГДА привязку с таблице(странице) ... так проще 
 	if (oox_sheet->m_oDrawing.IsInit() && oox_sheet->m_oDrawing->m_oId.IsInit())
 	{
 		smart_ptr<OOX::File> oFile = oox_sheet->Find(oox_sheet->m_oDrawing->m_oId->GetValue());
@@ -773,60 +778,177 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSheetPr *oox_sheet_pr)
 		ods_context->current_table().set_table_tab_color(odf_color);
 	}
 }
+void XlsxConverter::convert(OOX::Spreadsheet::CWorkbookView *oox_book_views)
+{
+	if (!oox_book_views)return;
+	const OOX::Spreadsheet::CWorkbook *Workbook= xlsx_document->GetWorkbook();
+	if (!Workbook) return;
+
+	ods_context->settings_context()->start_view();
+
+	if (oox_book_views->m_oActiveTab.IsInit())
+	{
+		int	table_id	= oox_book_views->m_oActiveTab->GetValue() + 1;
+
+		for (int i = 0; i < Workbook->m_oSheets->m_arrItems.size(); i++)
+		{
+			OOX::Spreadsheet::CSheet* pSheet = Workbook->m_oSheets->m_arrItems[i];
+			if (!pSheet) continue;
+
+			if (pSheet->m_oSheetId.IsInit() && pSheet->m_oSheetId->GetValue() == table_id)
+			{
+				ods_context->settings_context()->add_property(L"ActiveTable", L"string", string2std_string(pSheet->m_oName.get2()));
+			}
+		}
+	}
+	if (oox_book_views->m_oShowSheetTabs.IsInit())
+	{
+		ods_context->settings_context()->add_property(L"HasSheetTabs", L"boolean", oox_book_views->m_oShowSheetTabs->ToBool() ? L"true" : L"false");
+	}
+	if ((oox_book_views->m_oShowHorizontalScroll.IsInit()) && (oox_book_views->m_oShowHorizontalScroll->ToBool()==false))
+	{
+		ods_context->settings_context()->add_property(L"HorizontalScrollbarWidth", L"int", L"0");
+	}
+	if ((oox_book_views->m_oShowVerticalScroll.IsInit()) && (oox_book_views->m_oShowVerticalScroll->ToBool()==false))
+	{
+		ods_context->settings_context()->add_property(L"VerticalScrollbarWidth", L"int",  L"0");
+	}
+	ods_context->settings_context()->add_property(L"ZoomType", L"short", L"0");
+	ods_context->settings_context()->add_property(L"ZoomValue", L"int", L"100");
+	
+	ods_context->settings_context()->end_view();
+
+	//nullable<SimpleTypes::COnOff<>>						m_oAutoFilterDateGrouping;
+	//nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oFirstSheet;
+	//nullable<SimpleTypes::COnOff<>>						m_oMinimized;
+	//nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oTabRatio;
+	//nullable<SimpleTypes::Spreadsheet::CVisibleType<>>	m_oVisibility;
+	//nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oWindowHeight;
+	//nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oWindowWidth;
+	//nullable<SimpleTypes::CDecimalNumber<>>				m_oXWindow;
+	//nullable<SimpleTypes::CDecimalNumber<>>				m_oYWindow;
+}
+
 void XlsxConverter::convert(OOX::Spreadsheet::CSheetViews *oox_sheet_views)
 {
 	if (!oox_sheet_views)return;
-
 
 	for (unsigned long i =0; i < oox_sheet_views->m_arrItems.size(); i++)
 	{
 		if (!oox_sheet_views->m_arrItems[i]) continue;
 
-		int view_id = -1;
+		int view_id = oox_sheet_views->m_arrItems[i]->m_oWorkbookViewId->GetValue();
+		if (view_id < 0) continue;
 
-		if (oox_sheet_views->m_arrItems[i]->m_oWorkbookViewId.IsInit())
-			view_id = oox_sheet_views->m_arrItems[i]->m_oWorkbookViewId->GetValue();
+		ods_context->start_table_view( view_id );
+		
+		if (oox_sheet_views->m_arrItems[i]->m_oRightToLeft.IsInit() && oox_sheet_views->m_arrItems[i]->m_oRightToLeft->GetValue()==1)
+			ods_context->current_table().set_table_rtl(true);
 
-		ods_context->start_table_view(ods_context->current_table().office_table_name_, view_id);
+		if (oox_sheet_views->m_arrItems[i]->m_oShowGridLines.IsInit() && oox_sheet_views->m_arrItems[i]->m_oShowGridLines->GetValue()==0)
+		{
+			ods_context->settings_context()->add_property(L"ShowGrid", L"boolean", L"false");
+		}
+		else
+		{
+			ods_context->settings_context()->add_property(L"ShowGrid", L"boolean", L"true");
+		}
 
-			if (oox_sheet_views->m_arrItems[i]->m_oRightToLeft.IsInit() && oox_sheet_views->m_arrItems[i]->m_oRightToLeft->GetValue()==1)
-				ods_context->current_table().set_table_rtl(true);
+		if (oox_sheet_views->m_arrItems[i]->m_oView.IsInit())
+		{
+			//ods_context->set_settings_table_viewtype(oox_sheet_views->m_arrItems[i]->m_oView->GetValue());
+		}
 
-				if (oox_sheet_views->m_arrItems[i]->m_oShowGridLines.IsInit() && oox_sheet_views->m_arrItems[i]->m_oShowGridLines->GetValue()==0)
+		ods_context->settings_context()->add_property(L"ZoomType", L"short", L"0");
+		if (oox_sheet_views->m_arrItems[i]->m_oZoomScale.IsInit())
+		{
+			ods_context->settings_context()->add_property(L"ZoomValue", L"int", oox_sheet_views->m_arrItems[i]->m_oZoomScale->ToString().GetBuffer());
+		}else
+		{
+			ods_context->settings_context()->add_property(L"ZoomValue", L"int", L"100");
+		}
+
+		if (oox_sheet_views->m_arrItems[i]->m_oColorId.IsInit() && !oox_sheet_views->m_arrItems[i]->m_oDefaultGridColor.IsInit())
+		{
+			ods_context->settings_context()->add_property(L"GridColor", L"int", oox_sheet_views->m_arrItems[i]->m_oColorId->ToString().GetBuffer());
+		}
+		if (oox_sheet_views->m_arrItems[i]->m_oSelection.IsInit())
+		{
+			if (oox_sheet_views->m_arrItems[i]->m_oSelection->m_oActiveCell.IsInit())
+			{
+				int col = -1, row = -1;
+				odf_writer::utils::parsing_ref (oox_sheet_views->m_arrItems[i]->m_oSelection->m_oActiveCell->GetBuffer(), col, row);
+
+				if (col >= 0 && row >= 0)
 				{
-					//ods_context->set_settings_show_gridlines(false);
+					ods_context->settings_context()->add_property(L"CursorPositionX", L"int", boost::lexical_cast<std::wstring>(col));
+					ods_context->settings_context()->add_property(L"CursorPositionY", L"int", boost::lexical_cast<std::wstring>(row));
 				}
-
-				if (oox_sheet_views->m_arrItems[i]->m_oView.IsInit())
-				{
-					//ods_context->set_settings_table_viewtype(oox_sheet_views->m_arrItems[i]->m_oView->GetValue());
-				}
-
-				//nullable<CPane>										m_oPane;
-
-				//nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oColorId;
-				//nullable<SimpleTypes::COnOff<>>						m_oDefaultGridColor;
-				//nullable<SimpleTypes::COnOff<>>						m_oShowFormulas;
-				//nullable<SimpleTypes::COnOff<>>						m_oShowGridLines;
-				//nullable<SimpleTypes::COnOff<>>						m_oShowOutlineSymbols;
-				//nullable<SimpleTypes::COnOff<>>						m_oShowRowColHeaders;
-				//nullable<SimpleTypes::COnOff<>>						m_oShowRuler;
-				//nullable<SimpleTypes::COnOff<>>						m_oShowWhiteSpace;
-				//nullable<SimpleTypes::COnOff<>>						m_oShowZeros;
-				//nullable<SimpleTypes::COnOff<>>						m_oTabSelected;
-				//nullable<CString>										m_oTopLeftCell;
-				//nullable<SimpleTypes::Spreadsheet::CSheetViewType<>>m_oView;
-				//nullable<SimpleTypes::COnOff<>>						m_oWindowProtection;
-				//nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oWorkbookViewId;
-				//nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oZoomScale;
-				//nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oZoomScaleNormal;
-				//nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oZoomScalePageLayoutView;
-				//nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oZoomScaleSheetLayoutView;		
+			}
+			if (oox_sheet_views->m_arrItems[i]->m_oSelection->m_oSqref.IsInit())
+			{
+				//D6:D9 I9:I12 M16:M21 C20:I24
+				//в OpenOffice этого нету
+			}
+		}
+		if (oox_sheet_views->m_arrItems[i]->m_oPane.IsInit())
+		{
+			
+			if (oox_sheet_views->m_arrItems[i]->m_oPane->m_oXSplit.IsInit())
+			{
+				std::wstring sVal = boost::lexical_cast<std::wstring>((int)oox_sheet_views->m_arrItems[i]->m_oPane->m_oXSplit->GetValue());
+				
+				ods_context->settings_context()->add_property(L"HorizontalSplitMode", L"short", L"2");
+				ods_context->settings_context()->add_property(L"HorizontalSplitPosition", L"int",  sVal);
+				ods_context->settings_context()->add_property(L"PositionLeft", L"int",  L"0");
+				ods_context->settings_context()->add_property(L"PositionRight", L"int",  sVal);
+			}
+			if (oox_sheet_views->m_arrItems[i]->m_oPane->m_oYSplit.IsInit())
+			{
+				std::wstring sVal = boost::lexical_cast<std::wstring>((int)oox_sheet_views->m_arrItems[i]->m_oPane->m_oYSplit->GetValue());
+				ods_context->settings_context()->add_property(L"VerticalSplitMode", L"short", L"2");
+				ods_context->settings_context()->add_property(L"VerticalSplitPosition", L"int", sVal);
+				ods_context->settings_context()->add_property(L"PositionTop", L"int",  L"0");
+				ods_context->settings_context()->add_property(L"PositionBottom", L"int",  sVal);
+			}
+		}
+		if (oox_sheet_views->m_arrItems[i]->m_oShowRowColHeaders.IsInit())
+		{
+			ods_context->settings_context()->add_property(L"HasColumnRowHeaders", L"boolean", oox_sheet_views->m_arrItems[i]->m_oShowRowColHeaders->ToBool() ? L"true" : L"false");
+		}
+		//if (oox_sheet_views->m_arrItems[i]->m_oTabSelected.IsInit())
+		//{
+		//	ods_context->settings_context()->add_property(L"HasSheetTabs", "boolean", oox_sheet_views->m_arrItems[i]->m_oTabSelected->ToBool() ? L"true", L"false");
+		//}
+		//if (oox_sheet_views->m_arrItems[i]->m_oShowFormulas.IsInit())
+		//{
+		//	ods_context->settings_context()->add_property(L"ShowFormulas", "boolean", oox_sheet_views->m_arrItems[i]->m_oShowFormulas->ToBool() ? L"true", L"false");
+		//}
+		if (oox_sheet_views->m_arrItems[i]->m_oShowOutlineSymbols.IsInit())
+		{
+			ods_context->settings_context()->add_property(L"IsOutlineSymbolsSet", L"boolean", oox_sheet_views->m_arrItems[i]->m_oShowOutlineSymbols->ToBool() ? L"true" : L"false");
+		}
+		if (oox_sheet_views->m_arrItems[i]->m_oShowZeros.IsInit())
+		{
+			ods_context->settings_context()->add_property(L"ShowZeroValues", L"boolean", oox_sheet_views->m_arrItems[i]->m_oShowZeros->ToBool() ? L"true" : L"false");
+		}
+		if (oox_sheet_views->m_arrItems[i]->m_oZoomScalePageLayoutView.IsInit())
+		{
+			ods_context->settings_context()->add_property(L"PageViewZoomValue", L"int", oox_sheet_views->m_arrItems[i]->m_oZoomScalePageLayoutView->ToString().GetBuffer());
+		}
+		//nullable<SimpleTypes::COnOff<>>						m_oDefaultGridColor;
+		//nullable<SimpleTypes::COnOff<>>						m_oShowRuler;
+		//nullable<SimpleTypes::COnOff<>>						m_oShowWhiteSpace;
+		//nullable<CString>										m_oTopLeftCell;
+		//nullable<SimpleTypes::Spreadsheet::CSheetViewType<>>	m_oView;
+		//nullable<SimpleTypes::COnOff<>>						m_oWindowProtection;
+		//nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oZoomScaleNormal;
+		//nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oZoomScaleSheetLayoutView;		
 		ods_context->end_table_view();
 	}
 }
 
-void XlsxConverter::convert(OOX::Spreadsheet::CPageSetup			*oox_page)
+void XlsxConverter::convert(OOX::Spreadsheet::CPageSetup *oox_page)
 {
 	if (!oox_page) return;
 
@@ -1683,7 +1805,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CShape* oox_shape)
 		if (oox_shape->m_oNvSpPr.IsInit())
 		{
 			OoxConverter::convert(oox_shape->m_oNvSpPr->m_oCNvPr.GetPointer());	//имя, описалово, номер ...
-			convert(oox_shape->m_oNvSpPr->m_oCNvSpPr.GetPointer());	//заблокированности 
+			convert(oox_shape->m_oNvSpPr->m_oCNvSpPr.GetPointer());	//заблокированности  ... todooo
 		}
 		if (oox_shape->m_oShapeStyle.IsInit())
 		{

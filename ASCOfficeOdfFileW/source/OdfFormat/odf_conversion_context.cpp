@@ -47,8 +47,15 @@ void odf_conversion_context::set_fonts_directory(std::wstring pathFonts)
 
 odf_style_context* odf_conversion_context::styles_context()
 {
-	if (objects_.size() > 0)
+	if (!objects_.empty())
 		return objects_[current_object_].style_context.get();
+	else
+		return NULL;
+}
+odf_settings_context* odf_conversion_context::settings_context()
+{
+	if (!objects_.empty())
+		return objects_[current_object_].settings_context.get();
 	else
 		return NULL;
 }
@@ -57,10 +64,12 @@ odf_page_layout_context* odf_conversion_context::page_layout_context()
 {
 	return &page_layout_context_;
 }
+
 odf_chart_context* odf_conversion_context::chart_context()
 {
 	return &chart_context_;
 }
+
 
 odf_number_styles_context* odf_conversion_context::numbers_styles_context()	
 {

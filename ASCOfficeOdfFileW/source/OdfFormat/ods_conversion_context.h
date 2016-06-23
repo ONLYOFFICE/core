@@ -83,7 +83,7 @@ public:
 	void start_conditional_formats();
 	void end_conditional_formats(){}
 
-	void start_table_view(std::wstring table_name, int view_id);
+	void start_table_view(int view_id);
 	void end_table_view();
 
 private:

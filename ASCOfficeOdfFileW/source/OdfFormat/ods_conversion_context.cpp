@@ -101,10 +101,10 @@ void ods_conversion_context::start_sheet()
 void ods_conversion_context::set_sheet_dimension(const std::wstring & ref)
 {
  	std::vector<std::wstring> ref_cells;
-	boost::algorithm::split(ref_cells,ref, boost::algorithm::is_any_of(L":"), boost::algorithm::token_compress_on);
+	boost::algorithm::split(ref_cells, ref, boost::algorithm::is_any_of(L":"), boost::algorithm::token_compress_on);
 
 	int max_col = 0, max_row = 0;
-	for (long i=0; i<ref_cells.size(); i++)
+	for (long i = 0; i < ref_cells.size(); i++)
 	{
 		int col = -1, row = -1;
 		utils::parsing_ref (ref_cells[i], col, row);
@@ -112,7 +112,7 @@ void ods_conversion_context::set_sheet_dimension(const std::wstring & ref)
 		if (col > max_col) max_col = col;
 		if (col > max_row) max_row = row;
 	}
-	current_table().set_table_dimension(max_col,max_row);
+	current_table().set_table_dimension(max_col, max_row);
 }
 
 void ods_conversion_context::end_sheet()
@@ -488,12 +488,16 @@ double ods_conversion_context::convert_symbol_width(double val)
 	return pixels * 0.75; //* 9525. * 72.0 / (360000.0 * 2.54);
 }
 
-void ods_conversion_context::start_table_view(std::wstring table_name, int view_id)
+void ods_conversion_context::start_table_view( int view_id )
 {
+	settings_context()->set_current_view(view_id);
+	settings_context()->start_table(current_table().office_table_name_);
 }
 
 void ods_conversion_context::end_table_view()
 {
+	settings_context()->end_table();
+	settings_context()->set_current_view(-1);
 }
 
 

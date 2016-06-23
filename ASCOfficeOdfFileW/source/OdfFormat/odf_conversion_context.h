@@ -52,7 +52,12 @@ class office_element;
 typedef shared_ptr<office_element>::Type office_element_ptr;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+enum _office_type_document
+{
+	TextDocument,
+	SpreadsheetDocument,
+	PresentationDocument
+};
 class odf_conversion_context : boost::noncopyable
 {
 	struct _object
@@ -70,7 +75,9 @@ class odf_conversion_context : boost::noncopyable
 	};
 
 public:
-    odf_conversion_context(package::odf_document * outputDocument);
+	const _office_type_document	type;
+
+    odf_conversion_context(_office_type_document type, package::odf_document * outputDocument);
     virtual ~odf_conversion_context();
 
     void set_fonts_directory(std::wstring pathFonts);

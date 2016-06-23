@@ -72,7 +72,8 @@ double calculate_size_font_symbols(std::wstring str_test, std::wstring font_name
 }
 }
 odt_conversion_context::odt_conversion_context(package::odf_document * outputDocument) 
-		: odf_conversion_context(outputDocument),comment_context_(this), main_text_context_(NULL),table_context_(this)	
+	:	odf_conversion_context (TextDocument, outputDocument),
+		comment_context_(this), main_text_context_(NULL),table_context_(this)	
 {
 	current_field_.enabled = false;
 	current_field_.started = false;

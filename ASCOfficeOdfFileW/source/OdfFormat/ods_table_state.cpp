@@ -60,7 +60,7 @@ int ods_table_state::current_table_row_ = 0;
 int ods_table_state::tmp_column_ =0;
 int ods_table_state::tmp_row_ =0;
 
-namespace utils//////////////////////////////////////////// ОБўАя хрень .. вытащить что ли в utils ???
+namespace utils//////////////////////////////////////////// ОБЩАЯ хрень .. вытащить что ли в utils ???
 
 {
 std::wstring convert_date(const std::wstring & oox_date)
@@ -74,7 +74,7 @@ std::wstring convert_date(const std::wstring & oox_date)
 	{
 		return oox_date;
 	}
-	//todoooo  ПЕРЕПИСАTЬ !!!!
+	//todoooo  ПЕРЕПИСАТЬ !!!!
 
 	//boost::gregorian::date date_ = boost::gregorian::date(1900, 1, 1) + boost::gregorian::date_duration(iDate-2);
 
@@ -103,7 +103,7 @@ std::wstring convert_time(const std::wstring & oox_time)
 	int hours=0, minutes=0;
 	double sec=0;
 	
-	//todooo ПЕРЕПИСАTЬ !!!
+	//todooo ПЕРЕПИСАТЬ !!!
 	//boost::posix_time::time_duration day(24, 0, 0);
 	//
 	//double millisec = day.total_milliseconds() * dTime;

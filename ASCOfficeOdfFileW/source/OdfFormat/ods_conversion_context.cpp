@@ -74,7 +74,8 @@ void calculate_size_font_symbols(_font_metrix & metrix, CApplicationFonts *appFo
 }
 }
 ods_conversion_context::ods_conversion_context(package::odf_document * outputDocument) 
-		: odf_conversion_context(outputDocument), table_context_(*this), current_text_context_(NULL)
+	:	odf_conversion_context		(SpreadsheetDocument, outputDocument), 
+		table_context_(*this), current_text_context_(NULL)
 {
 	font_metrix_		= _font_metrix();
 }

@@ -128,7 +128,15 @@ public:
     {	
 		styles_context_ = NULL;
 		current_series_count_= 0;
-		local_table_enabled_ = true;// false; - пока тока КЭШ .. demo.docx
+
+		if (odf_context->type == SpreadsheetDocument)
+		{
+			local_table_enabled_ = false;
+		}
+		else
+		{
+			local_table_enabled_ = true;
+		}
 		
 	} 
 
@@ -1441,8 +1449,6 @@ void odf_chart_context::set_cash(std::wstring format, std::vector<std::wstring> 
 
 void odf_chart_context::set_local_table (bool Val)
 {
-	if (Val == false) return;
-
 	impl_->local_table_enabled_ = Val;
 }
 

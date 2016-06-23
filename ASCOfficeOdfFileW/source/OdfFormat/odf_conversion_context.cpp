@@ -55,10 +55,10 @@ namespace odf_writer {
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-odf_conversion_context::odf_conversion_context(package::odf_document * outputDocument) : chart_context_ (this), page_layout_context_(this)
+odf_conversion_context::odf_conversion_context(_office_type_document type_, package::odf_document * outputDocument) 
+	: type (type_), chart_context_ (this), page_layout_context_(this)
 { 
 	output_document_ = outputDocument;
-
 	current_object_ =0;
 
     applicationFonts_ = new CApplicationFonts();

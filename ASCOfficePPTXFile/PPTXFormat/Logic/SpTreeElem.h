@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2016
  *
  * This program is a free software product. You can redistribute it and/or
@@ -61,7 +61,7 @@ namespace PPTX
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual CString toXML() const;
-			virtual bool is_init() const {return (m_elem.IsInit());};
+            virtual bool is_init() const {return (m_elem.IsInit());}
 
 			template<class T> AVSINLINE const bool	is() const	{ return m_elem.is<T>(); }
 			template<class T> AVSINLINE T&			as()		{ return m_elem.as<T>(); }

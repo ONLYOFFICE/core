@@ -242,9 +242,15 @@ HEADERS += \
     ../source/OdfFormat/Shapes/oox_shapeRibbons.h \
     ../source/OdfFormat/Shapes/oox_shapeSnipRoundRects.h \
     ../source/OdfFormat/Shapes/oox_shapeStars.h \
-    ../source/OdfFormat/Shapes/oox_shapeWordArt.h
+    ../source/OdfFormat/Shapes/oox_shapeWordArt.h \
+    ../source/OdfFormat/odf_settings_context.h \
+    ../source/OdfFormat/office_settings.h
 
 unix {
     target.path = /usr/lib
     INSTALLS += target
 }
+
+SOURCES += \
+    ../source/OdfFormat/odf_settings_context.cpp \
+    ../source/OdfFormat/office_settings.cpp

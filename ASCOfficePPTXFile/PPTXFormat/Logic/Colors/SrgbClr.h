@@ -34,6 +34,7 @@
 #define PPTX_LOGIC_SRGBCLR_INCLUDE_H_
 
 #include "ColorBase.h"
+#include <math.h>
 
 namespace PPTX
 {
@@ -55,8 +56,19 @@ namespace PPTX
 				Modifiers.clear();
 				node.LoadArray(_T("*"), Modifiers);
 			}
+			virtual void fromXMLScRgb(XmlUtils::CXmlNode& node)
+			{
+				int cred	= node.GetAttributeInt(CString(L"r"), 0);
+				int cgreen	= node.GetAttributeInt(CString(L"g"), 0);
+				int cblue	= node.GetAttributeInt(CString(L"g"), 0);
 
+				red		= (unsigned char)(255 * scRGB_to_sRGB(cred / 100000.0));
+				green	= (unsigned char)(255 * scRGB_to_sRGB(cgreen / 100000.0));
+				blue	= (unsigned char)(255 * scRGB_to_sRGB(cblue / 100000.0));
 
+				Modifiers.clear();
+				node.LoadArray(_T("*"), Modifiers);
+			}
 			virtual CString toXML() const
 			{
 				CString str = _T("");
@@ -123,6 +135,16 @@ namespace PPTX
 				}
 
 				pWriter->EndRecord();
+			}
+			double scRGB_to_sRGB(double value)
+			{
+				if( value < 0)
+					return 0;
+				if(value <= 0.0031308)
+					return value * 12.92;
+				if(value < 1)
+					return 1.055 * (pow(value , (1 / 2.4))) - 0.055;
+				return 1;
 			}
 
 		protected:

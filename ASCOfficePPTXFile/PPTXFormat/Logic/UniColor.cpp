@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2016
  *
  * This program is a free software product. You can redistribute it and/or
@@ -72,6 +72,12 @@ namespace PPTX
 
 			if (name == _T("a:srgbClr"))
 				Color.reset(new Logic::SrgbClr(node));
+			else if (name == _T("a:scrgbClr"))
+			{
+				Logic::SrgbClr* pSrgbClr = new Logic::SrgbClr(node);
+				pSrgbClr->fromXMLScRgb(node);
+				Color.reset(pSrgbClr);
+			}
 			else if (name == _T("a:prstClr"))
 				Color.reset(new Logic::PrstClr(node));
 			else if (name == _T("a:schemeClr"))

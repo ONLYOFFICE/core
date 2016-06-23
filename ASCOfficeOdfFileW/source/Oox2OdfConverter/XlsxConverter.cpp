@@ -801,23 +801,32 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorkbookView *oox_book_views)
 			}
 		}
 	}
+	if (oox_book_views->m_oShowSheetTabs.IsInit())
+	{
+		ods_context->settings_context()->add_property(L"HasSheetTabs", L"boolean", oox_book_views->m_oShowSheetTabs->ToBool() ? L"true" : L"false");
+	}
+	if ((oox_book_views->m_oShowHorizontalScroll.IsInit()) && (oox_book_views->m_oShowHorizontalScroll->ToBool()==false))
+	{
+		ods_context->settings_context()->add_property(L"HorizontalScrollbarWidth", L"int", L"0");
+	}
+	if ((oox_book_views->m_oShowVerticalScroll.IsInit()) && (oox_book_views->m_oShowVerticalScroll->ToBool()==false))
+	{
+		ods_context->settings_context()->add_property(L"VerticalScrollbarWidth", L"int",  L"0");
+	}
 	ods_context->settings_context()->add_property(L"ZoomType", L"short", L"0");
 	ods_context->settings_context()->add_property(L"ZoomValue", L"int", L"100");
 	
 	ods_context->settings_context()->end_view();
 
-				//nullable<SimpleTypes::COnOff<>>						m_oAutoFilterDateGrouping;
-				//nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oFirstSheet;
-				//nullable<SimpleTypes::COnOff<>>						m_oMinimized;
-				//nullable<SimpleTypes::COnOff<>>						m_oShowHorizontalScroll;
-				//nullable<SimpleTypes::COnOff<>>						m_oShowSheetTabs;
-				//nullable<SimpleTypes::COnOff<>>						m_oShowVerticalScroll;
-				//nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oTabRatio;
-				//nullable<SimpleTypes::Spreadsheet::CVisibleType<>>	m_oVisibility;
-				//nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oWindowHeight;
-				//nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oWindowWidth;
-				//nullable<SimpleTypes::CDecimalNumber<>>				m_oXWindow;
-				//nullable<SimpleTypes::CDecimalNumber<>>				m_oYWindow;
+	//nullable<SimpleTypes::COnOff<>>						m_oAutoFilterDateGrouping;
+	//nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oFirstSheet;
+	//nullable<SimpleTypes::COnOff<>>						m_oMinimized;
+	//nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oTabRatio;
+	//nullable<SimpleTypes::Spreadsheet::CVisibleType<>>	m_oVisibility;
+	//nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oWindowHeight;
+	//nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oWindowWidth;
+	//nullable<SimpleTypes::CDecimalNumber<>>				m_oXWindow;
+	//nullable<SimpleTypes::CDecimalNumber<>>				m_oYWindow;
 }
 
 void XlsxConverter::convert(OOX::Spreadsheet::CSheetViews *oox_sheet_views)
@@ -903,26 +912,43 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSheetViews *oox_sheet_views)
 				ods_context->settings_context()->add_property(L"PositionBottom", L"int",  sVal);
 			}
 		}
+		if (oox_sheet_views->m_arrItems[i]->m_oShowRowColHeaders.IsInit())
+		{
+			ods_context->settings_context()->add_property(L"HasColumnRowHeaders", L"boolean", oox_sheet_views->m_arrItems[i]->m_oShowRowColHeaders->ToBool() ? L"true" : L"false");
+		}
+		//if (oox_sheet_views->m_arrItems[i]->m_oTabSelected.IsInit())
+		//{
+		//	ods_context->settings_context()->add_property(L"HasSheetTabs", "boolean", oox_sheet_views->m_arrItems[i]->m_oTabSelected->ToBool() ? L"true", L"false");
+		//}
+		//if (oox_sheet_views->m_arrItems[i]->m_oShowFormulas.IsInit())
+		//{
+		//	ods_context->settings_context()->add_property(L"ShowFormulas", "boolean", oox_sheet_views->m_arrItems[i]->m_oShowFormulas->ToBool() ? L"true", L"false");
+		//}
+		if (oox_sheet_views->m_arrItems[i]->m_oShowOutlineSymbols.IsInit())
+		{
+			ods_context->settings_context()->add_property(L"IsOutlineSymbolsSet", L"boolean", oox_sheet_views->m_arrItems[i]->m_oShowOutlineSymbols->ToBool() ? L"true" : L"false");
+		}
+		if (oox_sheet_views->m_arrItems[i]->m_oShowZeros.IsInit())
+		{
+			ods_context->settings_context()->add_property(L"ShowZeroValues", L"boolean", oox_sheet_views->m_arrItems[i]->m_oShowZeros->ToBool() ? L"true" : L"false");
+		}
+		if (oox_sheet_views->m_arrItems[i]->m_oZoomScalePageLayoutView.IsInit())
+		{
+			ods_context->settings_context()->add_property(L"PageViewZoomValue", L"int", oox_sheet_views->m_arrItems[i]->m_oZoomScalePageLayoutView->ToString().GetBuffer());
+		}
 		//nullable<SimpleTypes::COnOff<>>						m_oDefaultGridColor;
-		//nullable<SimpleTypes::COnOff<>>						m_oShowFormulas;
-		//nullable<SimpleTypes::COnOff<>>						m_oShowOutlineSymbols;
-		//nullable<SimpleTypes::COnOff<>>						m_oShowRowColHeaders;
 		//nullable<SimpleTypes::COnOff<>>						m_oShowRuler;
 		//nullable<SimpleTypes::COnOff<>>						m_oShowWhiteSpace;
-		//nullable<SimpleTypes::COnOff<>>						m_oShowZeros;
-		//nullable<SimpleTypes::COnOff<>>						m_oTabSelected;
 		//nullable<CString>										m_oTopLeftCell;
-		//nullable<SimpleTypes::Spreadsheet::CSheetViewType<>>m_oView;
+		//nullable<SimpleTypes::Spreadsheet::CSheetViewType<>>	m_oView;
 		//nullable<SimpleTypes::COnOff<>>						m_oWindowProtection;
-		//nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oWorkbookViewId;
 		//nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oZoomScaleNormal;
-		//nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oZoomScalePageLayoutView;
 		//nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oZoomScaleSheetLayoutView;		
 		ods_context->end_table_view();
 	}
 }
 
-void XlsxConverter::convert(OOX::Spreadsheet::CPageSetup			*oox_page)
+void XlsxConverter::convert(OOX::Spreadsheet::CPageSetup *oox_page)
 {
 	if (!oox_page) return;
 

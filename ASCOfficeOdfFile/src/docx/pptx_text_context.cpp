@@ -483,7 +483,7 @@ void pptx_text_context::Impl::dump_field()
 #if !defined (_WIN32) &&  !defined (_WIN64)
                     string_id =  L"{5CC2A059-B141-45A7-B910-B096D6D06820}";
 #endif
-				//	content = L"Л#Ы";
+				//	content = L"‹#›";
 				}
 				break;
 			case date:

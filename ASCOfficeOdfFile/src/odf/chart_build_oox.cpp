@@ -75,7 +75,7 @@ typedef shared_ptr<const office_element>::Type office_element_ptr_const;
         }
 
 
-//  ласс для конструирования чартов
+// Класс для конструирования чартов
 using namespace chart;
 
 void chart_build::set_width(double valPt)

@@ -297,7 +297,7 @@ void math_mstyle::docx_convert(oox::docx_conversion_context & Context)
 	
 	Context.pop_text_properties();
 
-// reset style ... todooo גםוסעט מעהוכםמ..
+// reset style ... todooo вынести отдельно..
 
 	{
 		std::wstringstream & strm = Context.get_styles_context().math_text_style();

@@ -155,7 +155,7 @@ int process_paragraph_attr(const paragraph_attrs & Attr, oox::docx_conversion_co
 
                     Context.start_automatic_style(id);
 					
-					{//вытаскивает rtl c цепочки стилей !! - просто прописать в наследуемом НЕЛЬЗя !!
+					{//вытаскивает rtl c цепочки стилей !! - просто прописать в наследуемом НЕЛЬЗЯ !!
 						paragraph_format_properties properties = calc_paragraph_properties_content(styleInst);
 
  						if (properties.style_writing_mode_)
@@ -355,7 +355,7 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
     if (next_par_)
     {
         // проверяем не сменит ли следующий параграф свойства страницы.
-        // если да Ч устанавливаем контексту флаг на то что необходимо в конце текущего параграфа 
+        // если да — устанавливаем контексту флаг на то что необходимо в конце текущего параграфа 
         // распечатать свойства секции
 		//проверить ... не она ли основная - может быть прописан дубляж - и тогда разрыв нарисуется ненужный
         const std::wstring & styleName = next_par_->paragraph_attrs_.text_style_name_.style_name();

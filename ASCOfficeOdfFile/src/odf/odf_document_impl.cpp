@@ -641,7 +641,7 @@ bool odf_document::Impl::docx_convert(oox::docx_conversion_context & Context)
 	Context.end_document();
 
     // мы обрабатываем стили списка после того как сконвертировали документ,
-    // так как в процессе конвертации документа у нас могу добавиться стили Ч
+    // так как в процессе конвертации документа у нас могу добавиться стили — 
     // в случае если используется text:start-value (начинаем нумерацию заново)
     Context.process_list_styles();
 	if (UpdateProgress(850000)) return false;

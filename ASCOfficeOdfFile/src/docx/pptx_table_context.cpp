@@ -383,8 +383,8 @@ void oox_serialize_tcPr(std::wostream & strm, std::vector<const odf_reader::styl
 				}
 				oox::oox_serialize_fill(CP_XML_STREAM(), fill);				
 /////////////////////////////////////////////////////////////////////////////////
-//headers (Header Cells Associated With Table Cell) І21.1.3.4
-//lnBlToTr (Bottom-Left to Top-Right Border Line Properties) І21.1.3.6
+//headers (Header Cells Associated With Table Cell) §21.1.3.4
+//lnBlToTr (Bottom-Left to Top-Right Border Line Properties) §21.1.3.6
 //lnTlToBr (Top-Left to Bottom-Right Border Line Properties)
 			}
 		}

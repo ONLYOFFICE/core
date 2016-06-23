@@ -265,7 +265,7 @@ void draw_object::xlsx_convert(oox::xlsx_conversion_context & Context)
 
         cpdoccore::odf_reader::odf_document objectSubDoc(objectPath,NULL);    
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//в отдельных embd объектах чаще всего диаграммы... но МОГУT быть и обычные объекты подтипа frame!!! пример RemanejamentoOrcamentario.ods
+//в отдельных embd объектах чаще всего диаграммы... но МОГУТ быть и обычные объекты подтипа frame!!! пример RemanejamentoOrcamentario.ods
 ///////////////////////////////////////////////////////////////////////////
 //функциональная часть
 		const office_element *contentSubDoc = objectSubDoc.get_impl()->get_content();

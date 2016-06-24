@@ -5798,7 +5798,7 @@ namespace SimpleTypes
 		textdirectionLrV  = 5
 	};
 
-	template<ETextDirection eDefValue = textdirectionLr>
+	template<ETextDirection eDefValue = textdirectionTb>
 	class CTextDirection : public CSimpleType<ETextDirection, eDefValue>
 	{
 	public:
@@ -5821,13 +5821,13 @@ namespace SimpleTypes
 		{
             switch(this->m_eValue)
 			{
-			case textdirectionLr  : return _T("lr");
-			case textdirectionLrV : return _T("lrV");
-			case textdirectionRl  : return _T("rl");
-			case textdirectionRlV : return _T("rlV");
-			case textdirectionTb  : return _T("tb");
-			case textdirectionTbV : return _T("tbV");
-			default               : return _T("lr");
+			case textdirectionLr  : return _T("btLr");
+			case textdirectionLrV : return _T("tbLrV");
+			case textdirectionRl  : return _T("tbRl");
+			case textdirectionRlV : return _T("tbRlV");
+			case textdirectionTb  : return _T("lrTb");
+			case textdirectionTbV : return _T("lrTbV");
+			default               : return _T("lrTb");
 			}
 		}
 

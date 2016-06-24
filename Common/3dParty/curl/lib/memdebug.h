@@ -1,4 +1,4 @@
-#ifndef HEADER_CURL_MEMDEBUG_H
+﻿#ifndef HEADER_CURL_MEMDEBUG_H
 #define HEADER_CURL_MEMDEBUG_H
 #ifdef CURLDEBUG
 /***************************************************************************

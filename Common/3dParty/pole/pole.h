@@ -1,4 +1,4 @@
-/* POLE - Portable C++ library to access OLE Storage 
+﻿/* POLE - Portable C++ library to access OLE Storage 
    Copyright (C) 2002-2005 Ariya Hidayat <ariya@kde.org>
 
    Performance optimization, API improvements: Dmitry Fedorov 

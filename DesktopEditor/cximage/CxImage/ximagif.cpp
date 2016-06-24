@@ -1,4 +1,4 @@
-/*
+﻿/*
  * File:	ximagif.cpp
  * Purpose:	Platform Independent GIF Image Class Loader and Writer
  * 07/Aug/2001 Davide Pizzolato - www.xdp.it

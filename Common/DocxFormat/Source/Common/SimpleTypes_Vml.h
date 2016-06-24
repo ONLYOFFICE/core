@@ -1,3 +1,34 @@
+п»ї/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 #pragma once
 
 #include "SimpleTypes_Base.h"
@@ -198,7 +229,7 @@ namespace SimpleTypes
 		filltypeSolid            = 7,
 		filltypeTile             = 8
 	};
-	// Тут разделяем два типа 14.13.4 - nType = 0 и 14.2.3.14 - nType != 0
+	// РўСѓС‚ СЂР°Р·РґРµР»СЏРµРј РґРІР° С‚РёРїР° 14.13.4 - nType = 0 Рё 14.2.3.14 - nType != 0
 	template<EFillType eDefValue = filltypeSolid, int nType = 0>
 	class CFillType : public CSimpleType<EFillType, eDefValue>
 	{
@@ -2331,7 +2362,7 @@ namespace SimpleTypes
 
 } // SimpleTypes
 
-// Дополнительные простые типы, не входящие в спецификацю
+// Р”РѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹Рµ РїСЂРѕСЃС‚С‹Рµ С‚РёРїС‹, РЅРµ РІС…РѕРґСЏС‰РёРµ РІ СЃРїРµС†РёС„РёРєР°С†СЋ
 namespace SimpleTypes
 {
 	namespace Vml
@@ -2502,7 +2533,7 @@ namespace SimpleTypes
 
 			CString FromString(CString &sValue)
 			{
-				// TO DO: Сделать парсер пата Part4. 14.2.2.3
+				// TO DO: РЎРґРµР»Р°С‚СЊ РїР°СЂСЃРµСЂ РїР°С‚Р° Part4. 14.2.2.3
 				m_sValue = sValue;
 
 				return m_sValue;
@@ -3196,7 +3227,7 @@ namespace SimpleTypes
 			cssptWidth                          = 1021,
 			cssptZIndex                         = 1022,
 
-			//  Для элемента Textbox 14.1.2.22
+			//  Р”Р»СЏ СЌР»РµРјРµРЅС‚Р° Textbox 14.1.2.22
 			cssptDirection                      = 1100,
 			cssptLayoutFlow                     = 1101,
 			cssptMsoDirectionAlt                = 1102,
@@ -3208,7 +3239,7 @@ namespace SimpleTypes
 			cssptMsoTextScale                   = 1108,
 			cssptVTextAnchor                    = 1109,
 			
-			// Для элемента Textpath 14.1.2.23
+			// Р”Р»СЏ СЌР»РµРјРµРЅС‚Р° Textpath 14.1.2.23
 			cssptFont                           = 1200,
 			cssptFontFamily                     = 1201,
 			cssptFontSize                       = 1202,
@@ -3242,7 +3273,7 @@ namespace SimpleTypes
 		struct TCssUnitsValue
 		{
 			ECssUnitsType eType;
-			double        dValue; // значение в пунктах
+			double        dValue; // Р·РЅР°С‡РµРЅРёРµ РІ РїСѓРЅРєС‚Р°С…
 		};
 		enum ECssMsoPosHor
 		{
@@ -3474,7 +3505,7 @@ namespace SimpleTypes
 						return;
 					}
 
-					// Чтобы избежать большого количества сравнения строк проверим для начала по первым двум символам
+					// Р§С‚РѕР±С‹ РёР·Р±РµР¶Р°С‚СЊ Р±РѕР»СЊС€РѕРіРѕ РєРѕР»РёС‡РµСЃС‚РІР° СЃСЂР°РІРЅРµРЅРёСЏ СЃС‚СЂРѕРє РїСЂРѕРІРµСЂРёРј РґР»СЏ РЅР°С‡Р°Р»Р° РїРѕ РїРµСЂРІС‹Рј РґРІСѓРј СЃРёРјРІРѕР»Р°Рј
 					int nChar1 = sProperty.GetAt( 0 );
 					int nChar2 = sProperty.GetAt( 1 );
 
@@ -3699,7 +3730,7 @@ namespace SimpleTypes
 
 			void ReadValue_Unknown(CString& sValue)
 			{
-				// Ничего не делаем
+				// РќРёС‡РµРіРѕ РЅРµ РґРµР»Р°РµРј
 			}
 			void ReadValue_Flip(CString& sValue)
 			{
@@ -3746,11 +3777,11 @@ namespace SimpleTypes
 				}
 				else if ( -1 != ( nPos = sValue.Find( _T("em") ) ) )
 				{
-					// TO DO: Реализовать единицы 'em'
+					// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ РµРґРёРЅРёС†С‹ 'em'
 				}
 				else if ( -1 != ( nPos = sValue.Find( _T("ex") ) ) )
 				{
-					// TO DO: Реализовать единицы 'ex'
+					// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ РµРґРёРЅРёС†С‹ 'ex'
 				}
 				else if ( -1 != ( nPos = sValue.Find( _T("pt") ) ) )
 				{
@@ -4167,8 +4198,8 @@ namespace SimpleTypes
 
 		private:
 
-			double m_dX; // В пунктах
-			double m_dY; // В пунктах
+			double m_dX; // Р’ РїСѓРЅРєС‚Р°С…
+			double m_dY; // Р’ РїСѓРЅРєС‚Р°С…
 		};
 		//--------------------------------------------------------------------------------
 		// Vml_Vector2D_Percentage
@@ -4624,10 +4655,10 @@ namespace SimpleTypes
 			EVml_Vector2D_Position m_eTypeX;
 			EVml_Vector2D_Position m_eTypeY;
 
-			CString                m_sIdX;  // Значение для типа Formula иди AdjValue
+			CString                m_sIdX;  // Р—РЅР°С‡РµРЅРёРµ РґР»СЏ С‚РёРїР° Formula РёРґРё AdjValue
 			CString                m_sIdY;  //
 
-			double                 m_dX;    // Значение для типа Constant
+			double                 m_dX;    // Р—РЅР°С‡РµРЅРёРµ РґР»СЏ С‚РёРїР° Constant
 			double                 m_dY;    // 
 		};
 		//--------------------------------------------------------------------------------
@@ -4783,7 +4814,7 @@ namespace SimpleTypes
 			};
 
 			std::vector<TPoint> m_arrPoints;
-			wchar_t              m_wcDelimiter; // Разделитель, по умолчнию пробел ' '
+			wchar_t              m_wcDelimiter; // Р Р°Р·РґРµР»РёС‚РµР»СЊ, РїРѕ СѓРјРѕР»С‡РЅРёСЋ РїСЂРѕР±РµР» ' '
 		};
 		//--------------------------------------------------------------------------------
 		// Vml_1_65536_Or_Percentage 14.2.2.11 (brightness)
@@ -5227,7 +5258,7 @@ namespace SimpleTypes
 				if ( nLen <= 0 )
 					return 0;
 
-				// Разделителями могут быть запятые и пробелы
+				// Р Р°Р·РґРµР»РёС‚РµР»СЏРјРё РјРѕРіСѓС‚ Р±С‹С‚СЊ Р·Р°РїСЏС‚С‹Рµ Рё РїСЂРѕР±РµР»С‹
 				sValue.Replace( _T(","), _T(" ") );
 				while ( -1 != sValue.Find( _T("  ") ) )
 					sValue.Replace( _T("  "), _T(" ") );

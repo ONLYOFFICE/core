@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Summary: error handling
  * Description: the API used to report errors
  *

@@ -49,11 +49,14 @@ mac {
 ################################################
 
 LIBS_DESTDIR_PATH = $$DESTDIR
-#CONFIG += static_link_libstd
+# теперь всегда с libstd
+linux-g++ | linux-g++-64 | linux-g++-32 {
+    CONFIG += static_link_libstd
+}
 static_link_libstd {
     QMAKE_LFLAGS += -static-libstdc++ -static-libgcc
-    DESTDIR_POSTFIX = _static_stdlib
-    DESTDIR = $$DESTDIR$$DESTDIR_POSTFIX
+#    DESTDIR_POSTFIX = _static_stdlib
+#    DESTDIR = $$DESTDIR$$DESTDIR_POSTFIX
     message(static_link_libstd)
 }
 
@@ -62,7 +65,7 @@ win32 {
 }
 
 linux-g++ | linux-g++-64 | linux-g++-32 {
-    V8_CHECKOUT_PATH = /home/oleg/v8_build/v8
+    V8_CHECKOUT_PATH = ../../../../v8
 }
 
 mac {
@@ -185,6 +188,7 @@ SOURCES += \
 
 HEADERS += doctrenderer.h \
     docbuilder.h \
+    docbuilder_p.h \
     memorystream.h \
     nativecontrol.h
 

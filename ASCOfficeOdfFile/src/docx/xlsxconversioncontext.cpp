@@ -1,3 +1,34 @@
+ï»¿/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 
 #include "xlsxconversioncontext.h"
 
@@ -35,6 +66,7 @@ xlsx_conversion_context::xlsx_conversion_context(odf_reader::odf_document * odfD
 	num_format_context_	(odf_document_->odf_context()),
 	xlsx_text_context_	(odf_document_->odf_context().styleContainer()),
 	xlsx_table_context_	(this, xlsx_text_context_),
+	xlsx_style_			(this),
 	
 	maxDigitSize_	(std::pair<float,float>(-1.0, -1.0) ),
 	default_style_	( (std::numeric_limits<size_t>::max)() ),
@@ -65,16 +97,16 @@ void xlsx_conversion_context::set_font_directory(std::wstring pathFonts)
 void xlsx_conversion_context::start_chart(std::wstring const & name)
 {
 	charts_.push_back(oox_chart_context::create(name));
-	//äîáàâëÿåì íîâóþ ôîðìó äëÿ äèàãðàììû
-	 //â íåé áóäåò èíôîðìàöèîííàÿ ÷àñòü - è îíà ïèøåòñÿ êàæäûé ðàç â ñâîþ xml (èõ - ïî ÷èñëó äèàãðàìì)
-	//ýòîò êîíòåêñò íóæíî ïåðåäàâàòü â ôàéë
+	//Ð´Ð¾Ð±Ð°Ð²Ð»ÑÐµÐ¼ Ð½Ð¾Ð²ÑƒÑŽ Ñ„Ð¾Ñ€Ð¼Ñƒ Ð´Ð»Ñ Ð´Ð¸Ð°Ð³Ñ€Ð°Ð¼Ð¼Ñ‹
+	 //Ð² Ð½ÐµÐ¹ Ð±ÑƒÐ´ÐµÑ‚ Ð¸Ð½Ñ„Ð¾Ñ€Ð¼Ð°Ñ†Ð¸Ð¾Ð½Ð½Ð°Ñ Ñ‡Ð°ÑÑ‚ÑŒ - Ð¸ Ð¾Ð½Ð° Ð¿Ð¸ÑˆÐµÑ‚ÑÑ ÐºÐ°Ð¶Ð´Ñ‹Ð¹ Ñ€Ð°Ð· Ð² ÑÐ²Ð¾ÑŽ xml (Ð¸Ñ… - Ð¿Ð¾ Ñ‡Ð¸ÑÐ»Ñƒ Ð´Ð¸Ð°Ð³Ñ€Ð°Ð¼Ð¼)
+	//ÑÑ‚Ð¾Ñ‚ ÐºÐ¾Ð½Ñ‚ÐµÐºÑÑ‚ Ð½ÑƒÐ¶Ð½Ð¾ Ð¿ÐµÑ€ÐµÐ´Ð°Ð²Ð°Ñ‚ÑŒ Ð² Ñ„Ð°Ð¹Ð»
 
 }
 
 void xlsx_conversion_context::end_chart()
 {
 	//current_chart().set_drawing_link(current_sheet().get_drawing_link());
-	//èçëèøíÿÿ èíôà
+	//Ð¸Ð·Ð»Ð¸ÑˆÐ½ÑÑ Ð¸Ð½Ñ„Ð°
 }
 
 void xlsx_conversion_context::start_document()
@@ -103,7 +135,7 @@ void xlsx_conversion_context::end_document()
 	std::wstringstream workbook_content;
 
     unsigned int count = 0;
-    // äîáàâëÿåì òàáëèöû
+    // Ð´Ð¾Ð±Ð°Ð²Ð»ÑÐµÐ¼ Ñ‚Ð°Ð±Ð»Ð¸Ñ†Ñ‹
     BOOST_FOREACH(const xlsx_xml_worksheet_ptr& sheet, sheets_)
     {
         count++;
@@ -157,7 +189,7 @@ void xlsx_conversion_context::end_document()
         }
 
     }
-	//äîáàâëÿåì äèàãðàììû
+	//Ð´Ð¾Ð±Ð°Ð²Ð»ÑÐµÐ¼ Ð´Ð¸Ð°Ð³Ñ€Ð°Ð¼Ð¼Ñ‹
 
 	count = 0;
     BOOST_FOREACH(const oox_chart_context_ptr& chart, charts_)
@@ -165,7 +197,7 @@ void xlsx_conversion_context::end_document()
 		count++;
 		package::chart_content_ptr content = package::chart_content::create();
 
-		chart->write_to(content->content());
+		chart->serialize(content->content());
 
 		output_document_->get_xl_files().add_charts(content);
 	
@@ -174,7 +206,7 @@ void xlsx_conversion_context::end_document()
 
     {
         std::wstringstream strm;
-        xlsx_text_context_.write_shared_strings(strm);
+        xlsx_text_context_.serialize_shared_strings(strm);
         output_document_->get_xl_files().set_sharedStrings( package::simple_element::create(L"sharedStrings.xml", strm.str()) );
     }
 
@@ -252,12 +284,8 @@ void xlsx_conversion_context::create_new_sheet(std::wstring const & name)
 }
 bool xlsx_conversion_context::start_table(std::wstring tableName, std::wstring tableStyleName)
 {
-    // TODO : nested tables forbidden
-    if (get_table_context().depth() > 0)
-        return false;
-
     create_new_sheet(tableName);
-    get_table_context().start_table(tableName, tableStyleName);
+	get_table_context().start_table(tableName, tableStyleName, sheets_.size() - 1);
 
 	current_sheet().cols() << L"<cols>";
     return true;
@@ -291,13 +319,13 @@ void xlsx_conversion_context::end_table()
     }    
     current_sheet().cols() << L"</cols>";
     
-	get_table_context().serialize_table_format(current_sheet().sheetFormat());
-
-    get_table_context().serialize_autofilter	(current_sheet().autofilter());
-    get_table_context().serialize_sort			(current_sheet().sort());
-    get_table_context().serialize_merge_cells	(current_sheet().mergeCells());
-    get_table_context().serialize_hyperlinks	(current_sheet().hyperlinks());
-	get_table_context().dump_rels_hyperlinks	(current_sheet().hyperlinks_rels());
+	get_table_context().serialize_table_format			(current_sheet().sheetFormat());
+	get_table_context().serialize_conditionalFormatting	(current_sheet().conditionalFormatting());
+    get_table_context().serialize_autofilter			(current_sheet().autofilter());
+    get_table_context().serialize_sort					(current_sheet().sort());
+    get_table_context().serialize_merge_cells			(current_sheet().mergeCells());
+    get_table_context().serialize_hyperlinks			(current_sheet().hyperlinks());
+	get_table_context().dump_rels_hyperlinks			(current_sheet().hyperlinks_rels());
 
 	get_drawing_context().set_odf_packet_path(root()->get_folder());
 
@@ -306,7 +334,7 @@ void xlsx_conversion_context::end_table()
 	if (!get_drawing_context().empty())
     {
         std::wstringstream strm;
-        get_drawing_context().write_drawing(strm);
+        get_drawing_context().serialize(strm);
         
         const std::pair<std::wstring, std::wstring> drawingName 
             = xlsx_drawing_context_handle_.add_drawing_xml(strm.str(), get_drawing_context().get_drawings() );
@@ -325,10 +353,10 @@ void xlsx_conversion_context::end_table()
 	if (!get_comments_context().empty())
     {
         std::wstringstream strm;
-        get_comments_context().write_comments(strm);
+        get_comments_context().serialize(strm);
         
         std::wstringstream vml_strm;
-        get_comments_context().write_comments_vml(vml_strm);
+        get_comments_context().serialize_vml(vml_strm);
 		
 		const std::pair<std::wstring, std::wstring> commentsName 
             = xlsx_comments_context_handle_.add_comments_xml(strm.str(), vml_strm.str(),get_comments_context().get_comments() );
@@ -341,14 +369,6 @@ void xlsx_conversion_context::end_table()
     }    
 
     get_table_context().end_table();
-}
-
-void xlsx_conversion_context::dump_sheet()
-{    
-    if (!sheets_.empty())
-    {
-        sheets_.pop_back();
-    }
 }
 
 void xlsx_conversion_context::start_table_column(unsigned int repeated, const std::wstring & defaultCellStyleName, int & cMin, int & cMax)
@@ -377,7 +397,7 @@ void xlsx_conversion_context::non_empty_row()
     return get_table_context().non_empty_row();
 }
 
-bool xlsx_conversion_context::is_empty_row() const
+bool xlsx_conversion_context::is_empty_row() 
 {
     return get_table_context().is_empty_row();
 }
@@ -387,17 +407,17 @@ void xlsx_conversion_context::end_table_row()
     get_table_context().end_row();
 }
 
-int xlsx_conversion_context::current_table_column() const
+int xlsx_conversion_context::current_table_column()
 {
     return xlsx_table_context_.current_column();
 }
 
-int xlsx_conversion_context::current_table_row() const
+int xlsx_conversion_context::current_table_row()
 {
     return xlsx_table_context_.current_row();
 }
 
-std::wstring xlsx_conversion_context::current_cell_address() const
+std::wstring xlsx_conversion_context::current_cell_address()
 {
     return oox::getCellAddress(current_table_column(), current_table_row());
 }
@@ -538,7 +558,7 @@ void xlsx_conversion_context::table_column_last_width(double w)
     return get_table_context().table_column_last_width(w);
 }
 
-double xlsx_conversion_context::table_column_last_width() const
+double xlsx_conversion_context::table_column_last_width()
 {
     return get_table_context().table_column_last_width();
 }
@@ -566,6 +586,40 @@ void xlsx_conversion_context::end_hyperlink(std::wstring const & href)
 		xlsx_text_context_.end_span2();
 	}
 }
+
+void xlsx_conversion_context::start_conditional_format(std::wstring ref)
+{
+	get_table_context().state()->get_conditionalFormatting_context().add(ref);
+}
+void xlsx_conversion_context::start_conditional_format_rule(int type)
+{
+	get_table_context().state()->get_conditionalFormatting_context().add_rule(type);
+}
+void xlsx_conversion_context::set_conditional_format_formula (std::wstring f)
+{
+	get_table_context().state()->get_conditionalFormatting_context().set_formula(f);
+}
+void xlsx_conversion_context::set_conditional_format_dxf (int dxfId)
+{
+	get_table_context().state()->get_conditionalFormatting_context().set_dxf(dxfId);
+}
+void xlsx_conversion_context::add_conditional_format_entry (int type, std::wstring value)
+{
+	get_table_context().state()->get_conditionalFormatting_context().add_sfv(type, value);
+}
+void xlsx_conversion_context::set_conditional_format_showval (bool val)
+{
+	get_table_context().state()->get_conditionalFormatting_context().set_showVal(val);
+}
+void xlsx_conversion_context::add_conditional_format_color (std::wstring col)
+{
+	get_table_context().state()->get_conditionalFormatting_context().add_color(col);
+}
+void xlsx_conversion_context::set_conditional_format_dataBar (_CP_OPT(int) min, _CP_OPT(int) max)
+{
+	get_table_context().state()->get_conditionalFormatting_context().set_dataBar(min, max);
+}
+
 
 }
 }

@@ -1,4 +1,4 @@
-#ifndef HEADER_CURL_FNMATCH_H
+﻿#ifndef HEADER_CURL_FNMATCH_H
 #define HEADER_CURL_FNMATCH_H
 /***************************************************************************
  *                                  _   _ ____  _

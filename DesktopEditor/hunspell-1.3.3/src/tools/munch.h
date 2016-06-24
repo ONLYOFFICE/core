@@ -1,4 +1,4 @@
-/* munch header file */
+﻿/* munch header file */
 
 #define MAX_LN_LEN    200
 #define MAX_WD_LEN    200

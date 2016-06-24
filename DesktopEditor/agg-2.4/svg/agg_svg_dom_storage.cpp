@@ -1,4 +1,4 @@
-#include "agg_svg_dom_storage.h"
+﻿#include "agg_svg_dom_storage.h"
 #include "agg_svg_ptr_size_pair.h"
 #include "agg_svg_basics.h"
 #include "agg_svg_path_interpreter.h"

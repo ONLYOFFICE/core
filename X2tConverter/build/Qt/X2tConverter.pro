@@ -7,7 +7,7 @@
 QT       -= core
 QT       -= gui
 
-VERSION = 2.0.2.369
+VERSION = 2.0.2.375
 DEFINES += INTVER=$$VERSION
 
 mac {
@@ -46,9 +46,13 @@ win32 {
 
 CONFIG += c++11
 
-#CONFIG += static_link_libstd
+# теперь всегда с libstd
+linux-g++ | linux-g++-64 | linux-g++-32 {
+    CONFIG += static_link_libstd
+}
 static_link_libstd {
     QMAKE_LFLAGS += -static-libstdc++ -static-libgcc
+    message(static_link_libstd)
 }
 
 #CONFIG += build_for_centos6
@@ -170,8 +174,8 @@ CONFIG(debug, debug|release) {
 linux-g++ | linux-g++-64 | linux-g++-32:contains(QMAKE_HOST.arch, x86_64):{
     message(linuX)
     
-    LIBS += $$DESTINATION_BIN_PATH/icu/linux_64/libicuuc.so.55
-    LIBS += $$DESTINATION_BIN_PATH/icu/linux_64/libicudata.so.55
+    LIBS += /usr/local/lib/libicuuc.so.55
+    LIBS += /usr/local/lib/libicudata.so.55
     
     DESTINATION_SDK_PATH = $$DESTINATION_SDK_PATH/linux_64
 	DESTINATION_BIN_PATH = $$DESTINATION_BIN_PATH/linux

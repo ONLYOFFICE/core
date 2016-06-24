@@ -1,4 +1,4 @@
-/*
+﻿/*
  * File:	ximawbmp.cpp
  * Purpose:	Platform Independent WBMP Image Class Loader and Writer
  * 12/Jul/2002 Davide Pizzolato - www.xdp.it

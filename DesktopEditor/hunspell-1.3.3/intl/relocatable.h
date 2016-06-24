@@ -1,4 +1,4 @@
-/* Provide relocatable packages.
+﻿/* Provide relocatable packages.
    Copyright (C) 2003, 2005 Free Software Foundation, Inc.
    Written by Bruno Haible <bruno@clisp.org>, 2003.
 

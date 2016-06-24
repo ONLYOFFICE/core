@@ -1,4 +1,4 @@
-/*
+﻿/*
 *********************************************************************
  * File:	ximawmf.cpp
  * Purpose:	Windows Metafile Class Loader and Writer

@@ -1,4 +1,4 @@
-// xImaDsp.cpp : DSP functions
+﻿// xImaDsp.cpp : DSP functions
 /* 07/08/2001 v1.00 - Davide Pizzolato - www.xdp.it
  * CxImage version 7.0.2 07/Feb/2011
  */
@@ -3367,7 +3367,7 @@ int32_t  CxImage::OptimalThreshold(int32_t method, RECT * pBox, CxImage* pContra
 		}
 
 		//potential difference (based on Electrostatic Binarization method by J. Acharya & G. Sreechakra)
-		// L=-fabs(vdiff/vsum); � molto selettivo, sembra che L=-fabs(vdiff) o L=-(vsum)
+		// L=-fabs(vdiff/vsum); и molto selettivo, sembra che L=-fabs(vdiff) o L=-(vsum)
 		// abbiano lo stesso valore di soglia... il che semplificherebbe molto la routine
 		double vdiff = 0;
 		for (k=gray_min;k<=i;k++)

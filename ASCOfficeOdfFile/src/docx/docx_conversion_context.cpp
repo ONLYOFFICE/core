@@ -1,3 +1,34 @@
+п»ї/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 
 
 #include <boost/foreach.hpp>
@@ -170,7 +201,7 @@ void docx_conversion_context::start_chart(std::wstring const & name)
 void docx_conversion_context::end_chart()
 {
 	//current_chart().set_drawing_link(current_sheet().get_drawing_link());
-	//излишняя инфа
+	//РёР·Р»РёС€РЅСЏСЏ РёРЅС„Р°
 }
 oox_chart_context & docx_conversion_context::current_chart()
 {
@@ -263,7 +294,7 @@ void docx_conversion_context::start_document()
 
 
 	//apply page-default prop
-	//пока временно сюда воткнем обработку свойств документа в целом
+	//РїРѕРєР° РІСЂРµРјРµРЅРЅРѕ СЃСЋРґР° РІРѕС‚РєРЅРµРј РѕР±СЂР°Р±РѕС‚РєСѓ СЃРІРѕР№СЃС‚РІ РґРѕРєСѓРјРµРЅС‚Р° РІ С†РµР»РѕРј
 }
 
 
@@ -292,7 +323,7 @@ void docx_conversion_context::end_document()
 		count++;
 		package::chart_content_ptr content = package::chart_content::create();
 
-		chart->write_to(content->content());
+		chart->serialize(content->content());
 
 		output_document_->get_word_files().add_charts(content);
 	
@@ -712,7 +743,7 @@ void docx_conversion_context::end_process_style_content(bool in_styles)
 
 void docx_conversion_context::docx_serialize_paragraph_style(std::wostream & strm, const std::wstring & ParentId, bool in_styles)
  //in_styles = true -> styles.xml
-//почему то конструкция <pPr><rPr/></pPr><rPr/> "не работает" в части в rPr в ms2010 )
+//РїРѕС‡РµРјСѓ С‚Рѕ РєРѕРЅСЃС‚СЂСѓРєС†РёСЏ <pPr><rPr/></pPr><rPr/> "РЅРµ СЂР°Р±РѕС‚Р°РµС‚" РІ С‡Р°СЃС‚Рё РІ rPr РІ ms2010 )
 {
 	std::wstringstream & paragraph_style	= get_styles_context().paragraph_nodes();
  	std::wstringstream & run_style			= get_styles_context().text_style();
@@ -721,7 +752,7 @@ void docx_conversion_context::docx_serialize_paragraph_style(std::wostream & str
 	{
 		if (get_section_context().dump_.empty() == false && (!ParentId.empty() || get_section_context().get().is_dump_) 
 			 && !get_table_context().in_table())
-		{//две подряд секции или если стиль определен 
+		{//РґРІРµ РїРѕРґСЂСЏРґ СЃРµРєС†РёРё РёР»Рё РµСЃР»Рё СЃС‚РёР»СЊ РѕРїСЂРµРґРµР»РµРЅ 
 			CP_XML_NODE(L"w:pPr")
 			{
 				CP_XML_STREAM() << get_section_context().dump_;
@@ -850,7 +881,7 @@ void docx_conversion_context::remove_page_properties()
 
 	if (s.page_properties_.size() > 1)
 	{
-		//первая общая (если есть) для всего документа - оставляем ее
+		//РїРµСЂРІР°СЏ РѕР±С‰Р°СЏ (РµСЃР»Рё РµСЃС‚СЊ) РґР»СЏ РІСЃРµРіРѕ РґРѕРєСѓРјРµРЅС‚Р° - РѕСЃС‚Р°РІР»СЏРµРј РµРµ
 		s.page_properties_.erase(s.page_properties_.begin() + 1, s.page_properties_.begin() + 2);
 	}
 	else if (s.page_properties_.size() == 1)
@@ -982,8 +1013,8 @@ void docx_conversion_context::docx_convert_delayed()
 {
 	if (delayed_elements_.empty()) return;
 
-	if(delayed_converting_)return; //зацикливание иначе
-	if(get_drawing_context().get_current_level() > 0 )return; //вложенный frame
+	if(delayed_converting_)return; //Р·Р°С†РёРєР»РёРІР°РЅРёРµ РёРЅР°С‡Рµ
+	if(get_drawing_context().get_current_level() > 0 )return; //РІР»РѕР¶РµРЅРЅС‹Р№ frame
 
 	delayed_converting_ = true;
     while(!delayed_elements_.empty())
@@ -1016,8 +1047,8 @@ odf_reader::office_element * docx_conversion_context::get_section_properties_in_
 
 namespace 
 {
-    // обработка Header/Footer
-    // конвертируем содержимое header/footer и сохраняем результат в виде строки
+    // РѕР±СЂР°Р±РѕС‚РєР° Header/Footer
+    // РєРѕРЅРІРµСЂС‚РёСЂСѓРµРј СЃРѕРґРµСЂР¶РёРјРѕРµ header/footer Рё СЃРѕС…СЂР°РЅСЏРµРј СЂРµР·СѓР»СЊС‚Р°С‚ РІ РІРёРґРµ СЃС‚СЂРѕРєРё
     void process_one_header_footer(docx_conversion_context & Context,
         const std::wstring & styleName,
         odf_reader::office_element * elm,
@@ -1032,7 +1063,7 @@ namespace
         
 		const std::wstring & dbgStr = newXml->str();
        
-		//слить если есть mediaitems, добавить релсы и обнулить их для основного документа.
+		//СЃР»РёС‚СЊ РµСЃР»Рё РµСЃС‚СЊ mediaitems, РґРѕР±Р°РІРёС‚СЊ СЂРµР»СЃС‹ Рё РѕР±РЅСѓР»РёС‚СЊ РёС… РґР»СЏ РѕСЃРЅРѕРІРЅРѕРіРѕ РґРѕРєСѓРјРµРЅС‚Р°.
 		rels internal_rels;
 
 		Context.dump_mediaitems(internal_rels);
@@ -1066,7 +1097,7 @@ void docx_conversion_context::process_headers_footers()
     odf_reader::odf_read_context & context =  doc->odf_context();
     odf_reader::page_layout_container & pageLayouts = context.pageLayoutContainer();
 
-    // проходим по всем page layout
+    // РїСЂРѕС…РѕРґРёРј РїРѕ РІСЃРµРј page layout
     BOOST_FOREACH(const odf_reader::style_master_page* page, pageLayouts.master_pages())
     {
         const std::wstring & styleName = page->style_master_page_attlist_.style_name_.get_value_or( odf_types::style_ref(L"") ).style_name();
@@ -1083,7 +1114,7 @@ void docx_conversion_context::process_headers_footers()
 		if (!page->style_header_ && !page->style_footer_ && !page->style_header_first_ && !page->style_footer_first_
 			&& !page->style_header_left_ && !page->style_footer_left_)
 		{
-			//отключенные колонтитулы
+			//РѕС‚РєР»СЋС‡РµРЅРЅС‹Рµ РєРѕР»РѕРЅС‚РёС‚СѓР»С‹
 			rels rels_;
 			get_headers_footers().add(styleName, L"", headers_footers::none, rels_);
 		}

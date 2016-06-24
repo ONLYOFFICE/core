@@ -1,3 +1,34 @@
+п»ї/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 
 #include "ShapeSettings.h"
 
@@ -423,7 +454,7 @@ namespace ASCDocFileFormat
 			}
 		}
 
-		// Внимание - порядок добавления свойств очень важен ( добавляем по возрастанию ID )
+		// Р’РЅРёРјР°РЅРёРµ - РїРѕСЂСЏРґРѕРє РґРѕР±Р°РІР»РµРЅРёСЏ СЃРІРѕР№СЃС‚РІ РѕС‡РµРЅСЊ РІР°Р¶РµРЅ ( РґРѕР±Р°РІР»СЏРµРј РїРѕ РІРѕР·СЂР°СЃС‚Р°РЅРёСЋ ID )
 
 		if (0 != m_nType)
 			AppendEntry(Enumerations::fillType,				m_nType);
@@ -493,7 +524,7 @@ namespace ASCDocFileFormat
 	{
 		m_arTable.clear();
 
-		// Внимание - порядок добавления свойств очень важен ( добавляем по возрастанию ID )
+		// Р’РЅРёРјР°РЅРёРµ - РїРѕСЂСЏРґРѕРє РґРѕР±Р°РІР»РµРЅРёСЏ СЃРІРѕР№СЃС‚РІ РѕС‡РµРЅСЊ РІР°Р¶РµРЅ ( РґРѕР±Р°РІР»СЏРµРј РїРѕ РІРѕР·СЂР°СЃС‚Р°РЅРёСЋ ID )
 
 		if (0 != m_nType)
 			AppendEntry (Enumerations::fillType,				m_nType);
@@ -619,7 +650,7 @@ namespace ASCDocFileFormat
 			}
 		}
 
-		// Внимание - порядок добавления свойств очень важен ( добавляем по возрастанию ID )
+		// Р’РЅРёРјР°РЅРёРµ - РїРѕСЂСЏРґРѕРє РґРѕР±Р°РІР»РµРЅРёСЏ СЃРІРѕР№СЃС‚РІ РѕС‡РµРЅСЊ РІР°Р¶РµРЅ ( РґРѕР±Р°РІР»СЏРµРј РїРѕ РІРѕР·СЂР°СЃС‚Р°РЅРёСЋ ID )
 
 		AppendEntry (Enumerations::lineColor,						m_nColor);
 
@@ -853,7 +884,7 @@ namespace ASCDocFileFormat
 			AppendEntry (Enumerations::shadowOffsetY, m_oOffset.Y());
 		}
 
-		if (oXml.Matrix.is_init())			// данные формируются не по спецификации
+		if (oXml.Matrix.is_init())			// РґР°РЅРЅС‹Рµ С„РѕСЂРјРёСЂСѓСЋС‚СЃСЏ РЅРµ РїРѕ СЃРїРµС†РёС„РёРєР°С†РёРё
 		{
 			m_oTransform	=	DOCX::CMatrixF (oXml.Matrix);
 
@@ -1076,7 +1107,7 @@ namespace ASCDocFileFormat
 	}
 
 	//
-	void CShapeSettings::SetUseBehind	(const OOX::Logic::ShapeStyle& refStyle)		//	объект располагается за текстом
+	void CShapeSettings::SetUseBehind	(const OOX::Logic::ShapeStyle& refStyle)		//	РѕР±СЉРµРєС‚ СЂР°СЃРїРѕР»Р°РіР°РµС‚СЃСЏ Р·Р° С‚РµРєСЃС‚РѕРј
 	{
 		if (refStyle.ZIndex.is_init())
 		{
@@ -1129,7 +1160,7 @@ namespace ASCDocFileFormat
 
 	OfficeArt::OfficeArtFOPT CShapeSettings::GetPrimaryOptions()
 	{
-		// Внимание - порядок добавления свойств очень важен
+		// Р’РЅРёРјР°РЅРёРµ - РїРѕСЂСЏРґРѕРє РґРѕР±Р°РІР»РµРЅРёСЏ СЃРІРѕР№СЃС‚РІ РѕС‡РµРЅСЊ РІР°Р¶РµРЅ
 
 		m_oText.Append(m_oPrimary);
 		m_oTransform.Append(m_oPrimary);
@@ -1208,7 +1239,7 @@ namespace ASCDocFileFormat
 
 	OfficeArt::OfficeArtFOPT CImageSettings::GetPrimaryOptions()
 	{
-		// Внимание - порядок добавления свойств очень важен
+		// Р’РЅРёРјР°РЅРёРµ - РїРѕСЂСЏРґРѕРє РґРѕР±Р°РІР»РµРЅРёСЏ СЃРІРѕР№СЃС‚РІ РѕС‡РµРЅСЊ РІР°Р¶РµРЅ
 
 		m_oTransform.Append(m_oPrimary);
 		m_oBlipStyle.Append(m_oPrimary);

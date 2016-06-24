@@ -1,4 +1,4 @@
-#include <stdio.h>
+﻿#include <stdio.h>
 #include "agg_conv_gpc.h"
 #include "agg_basics.h"
 #include "agg_rendering_buffer.h"

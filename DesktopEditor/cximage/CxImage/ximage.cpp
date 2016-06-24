@@ -1,4 +1,4 @@
-// ximage.cpp : main implementation file
+﻿// ximage.cpp : main implementation file
 /* 07/08/2001 v1.00 - Davide Pizzolato - www.xdp.it
  * CxImage version 7.0.2 07/Feb/2011
  */

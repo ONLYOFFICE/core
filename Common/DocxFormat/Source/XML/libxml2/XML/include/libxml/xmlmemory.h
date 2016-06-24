@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Summary: interface for the memory allocator
  * Description: provides interfaces for the memory allocator,
  *              including debugging capabilities.

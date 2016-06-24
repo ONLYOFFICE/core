@@ -1,3 +1,34 @@
+п»ї/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 #pragma once
 
 #include "./DocxFormat/Source/SystemUtility/File.h"
@@ -7,31 +38,31 @@ namespace NFileWriter
 	//------------------------------------------------------------------------------------------------------
 	// CBufferedFileWriter
 	//------------------------------------------------------------------------------------------------------
-	// Абстрактный класс, который содержит в себе объявления функций
+	// РђР±СЃС‚СЂР°РєС‚РЅС‹Р№ РєР»Р°СЃСЃ, РєРѕС‚РѕСЂС‹Р№ СЃРѕРґРµСЂР¶РёС‚ РІ СЃРµР±Рµ РѕР±СЉСЏРІР»РµРЅРёСЏ С„СѓРЅРєС†РёР№
 	//------------------------------------------------------------------------------------------------------
 
 	class CFileWriter
 	{
 	public :
 
-		// Принимает данные на запись
+		// РџСЂРёРЅРёРјР°РµС‚ РґР°РЅРЅС‹Рµ РЅР° Р·Р°РїРёСЃСЊ
 		virtual void Write ( BYTE* lpData, LONG64 lDataLength ) = 0;
-		// Флаш ( дописываем все данные )
+		// Р¤Р»Р°С€ ( РґРѕРїРёСЃС‹РІР°РµРј РІСЃРµ РґР°РЅРЅС‹Рµ )
 		virtual void Flush () = 0;
-		// Сик на указанную позицию по файлу
+		// РЎРёРє РЅР° СѓРєР°Р·Р°РЅРЅСѓСЋ РїРѕР·РёС†РёСЋ РїРѕ С„Р°Р№Р»Сѓ
                 virtual void Seek ( LONG64 lPosition, DWORD dwFrom = 0 ) = 0;
-		// Текущая позиция 
+		// РўРµРєСѓС‰Р°СЏ РїРѕР·РёС†РёСЏ 
                 virtual void GetPosition(ULONG64& nPos) = 0;
-		// Размер записанного файла
+		// Р Р°Р·РјРµСЂ Р·Р°РїРёСЃР°РЅРЅРѕРіРѕ С„Р°Р№Р»Р°
                 virtual void GetSize(ULONG64& nLen) = 0;
 
 	public :
 
-		// Конструктор
+		// РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ
 		CFileWriter ()
 		{
 		}
-		// Виртуальный деструктор
+		// Р’РёСЂС‚СѓР°Р»СЊРЅС‹Р№ РґРµСЃС‚СЂСѓРєС‚РѕСЂ
 		virtual ~CFileWriter ()
 		{
 		}
@@ -40,7 +71,7 @@ namespace NFileWriter
 	//------------------------------------------------------------------------------------------------------
 	// CBufferedFileWriter
 	//------------------------------------------------------------------------------------------------------
-	// Класс, который занимается записью файла на диск
+	// РљР»Р°СЃСЃ, РєРѕС‚РѕСЂС‹Р№ Р·Р°РЅРёРјР°РµС‚СЃСЏ Р·Р°РїРёСЃСЊСЋ С„Р°Р№Р»Р° РЅР° РґРёСЃРє
 	//------------------------------------------------------------------------------------------------------
 
 	class CBufferedFileWriter : public CFileWriter
@@ -48,102 +79,102 @@ namespace NFileWriter
 	private :
 
 		CFile m_oFile;
-		//HANDLE m_hFile;									// Хендл на файл, в который идет запись
+		//HANDLE m_hFile;									// РҐРµРЅРґР» РЅР° С„Р°Р№Р», РІ РєРѕС‚РѕСЂС‹Р№ РёРґРµС‚ Р·Р°РїРёСЃСЊ
 
-		LONG64 m_lBufferSize;							// Размер буффера
+		LONG64 m_lBufferSize;							// Р Р°Р·РјРµСЂ Р±СѓС„С„РµСЂР°
 
-		BYTE* m_lpBuffer;								// Сам буффер
+		BYTE* m_lpBuffer;								// РЎР°Рј Р±СѓС„С„РµСЂ
 
-		LONG64 m_lWritePointer;							// Позиция для записи данных в буффер
+		LONG64 m_lWritePointer;							// РџРѕР·РёС†РёСЏ РґР»СЏ Р·Р°РїРёСЃРё РґР°РЅРЅС‹С… РІ Р±СѓС„С„РµСЂ
 
 	public :
 
-		// Конструктор ( от имени файла, сам контрол открывает файл )
+		// РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ ( РѕС‚ РёРјРµРЅРё С„Р°Р№Р»Р°, СЃР°Рј РєРѕРЅС‚СЂРѕР» РѕС‚РєСЂС‹РІР°РµС‚ С„Р°Р№Р» )
 		CBufferedFileWriter ( CString & sFileName, LONG64 lBufferSize = 10 * 1024 * 1024 ) : CFileWriter ()
 		{
 			if (m_oFile.CreateFile(sFileName) != S_OK)
-			// Если не получилось открыть файл
+			// Р•СЃР»Рё РЅРµ РїРѕР»СѓС‡РёР»РѕСЃСЊ РѕС‚РєСЂС‹С‚СЊ С„Р°Р№Р»
 			{
-				// Выдаем исключение
+				// Р’С‹РґР°РµРј РёСЃРєР»СЋС‡РµРЅРёРµ
 				throw 1;
 			}
 
-			// Копируем данные
+			// РљРѕРїРёСЂСѓРµРј РґР°РЅРЅС‹Рµ
 			m_lBufferSize		= lBufferSize;
 
-			// Обнуляем переменные
+			// РћР±РЅСѓР»СЏРµРј РїРµСЂРµРјРµРЅРЅС‹Рµ
 			m_lWritePointer		= 0;
 
-			// Выделяем буфер.
+			// Р’С‹РґРµР»СЏРµРј Р±СѓС„РµСЂ.
 			m_lpBuffer = ( BYTE* ) new BYTE[ m_lBufferSize ];
 
-			// Если буффер не выделился, возвращаем Exception
+			// Р•СЃР»Рё Р±СѓС„С„РµСЂ РЅРµ РІС‹РґРµР»РёР»СЃСЏ, РІРѕР·РІСЂР°С‰Р°РµРј Exception
 			if ( !m_lpBuffer )
 			{
-				// Выдаем исключение
+				// Р’С‹РґР°РµРј РёСЃРєР»СЋС‡РµРЅРёРµ
 				throw 1;
 			}
 
-			// Все отлично!!!
+			// Р’СЃРµ РѕС‚Р»РёС‡РЅРѕ!!!
 		}
 
-		// Деструктор
+		// Р”РµСЃС‚СЂСѓРєС‚РѕСЂ
 		virtual ~CBufferedFileWriter ()
 		{
 			Flush();
 			m_oFile.CloseFile();
 
-			// Удаляем буффер
+			// РЈРґР°Р»СЏРµРј Р±СѓС„С„РµСЂ
 			RELEASEARRAYOBJECTS(m_lpBuffer);
 		}
-		// Принимает данные на запись
+		// РџСЂРёРЅРёРјР°РµС‚ РґР°РЅРЅС‹Рµ РЅР° Р·Р°РїРёСЃСЊ
 		virtual void Write ( BYTE* lpData, LONG64 lDataLength )
 		{
-			// Пока размер данных не исчерпан
+			// РџРѕРєР° СЂР°Р·РјРµСЂ РґР°РЅРЅС‹С… РЅРµ РёСЃС‡РµСЂРїР°РЅ
 			while ( 0 < lDataLength )
 			{
-				// Размер свободной памяти в буффере
+				// Р Р°Р·РјРµСЂ СЃРІРѕР±РѕРґРЅРѕР№ РїР°РјСЏС‚Рё РІ Р±СѓС„С„РµСЂРµ
 				LONG64 lBufferFreeLength = 0;
 
-				// Цикл, пока не появится свободное место для записи
+				// Р¦РёРєР», РїРѕРєР° РЅРµ РїРѕСЏРІРёС‚СЃСЏ СЃРІРѕР±РѕРґРЅРѕРµ РјРµСЃС‚Рѕ РґР»СЏ Р·Р°РїРёСЃРё
 				while ( 0 >= ( lBufferFreeLength = m_lBufferSize - m_lWritePointer ) )
 				{
-					// Пишем данные, если не получилось, то генерируем исключение
+					// РџРёС€РµРј РґР°РЅРЅС‹Рµ, РµСЃР»Рё РЅРµ РїРѕР»СѓС‡РёР»РѕСЃСЊ, С‚Рѕ РіРµРЅРµСЂРёСЂСѓРµРј РёСЃРєР»СЋС‡РµРЅРёРµ
                                         if ( false == WriteBuffer ( m_lBufferSize ) )
 						throw 1;
 				}
 
-				// Проверяем достаточно ли места, чтобы записать весь пришедший буфер в память
+				// РџСЂРѕРІРµСЂСЏРµРј РґРѕСЃС‚Р°С‚РѕС‡РЅРѕ Р»Рё РјРµСЃС‚Р°, С‡С‚РѕР±С‹ Р·Р°РїРёСЃР°С‚СЊ РІРµСЃСЊ РїСЂРёС€РµРґС€РёР№ Р±СѓС„РµСЂ РІ РїР°РјСЏС‚СЊ
 				if ( lBufferFreeLength > lDataLength )
 					lBufferFreeLength = lDataLength;
 
-				// Копируем данные в буффер
+				// РљРѕРїРёСЂСѓРµРј РґР°РЅРЅС‹Рµ РІ Р±СѓС„С„РµСЂ
 				memcpy ( m_lpBuffer + m_lWritePointer, lpData, (size_t) lBufferFreeLength);
 
-				// Уменьшаем размер данных ровно на столько, сколько записали в буффер
+				// РЈРјРµРЅСЊС€Р°РµРј СЂР°Р·РјРµСЂ РґР°РЅРЅС‹С… СЂРѕРІРЅРѕ РЅР° СЃС‚РѕР»СЊРєРѕ, СЃРєРѕР»СЊРєРѕ Р·Р°РїРёСЃР°Р»Рё РІ Р±СѓС„С„РµСЂ
 				lDataLength -= lBufferFreeLength;
-				// Сдвигаем указатель на пришедшие данные
+				// РЎРґРІРёРіР°РµРј СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РїСЂРёС€РµРґС€РёРµ РґР°РЅРЅС‹Рµ
 				lpData = lpData + lBufferFreeLength;
-				// Сдвигаем позицию для записи данных в буффер
+				// РЎРґРІРёРіР°РµРј РїРѕР·РёС†РёСЋ РґР»СЏ Р·Р°РїРёСЃРё РґР°РЅРЅС‹С… РІ Р±СѓС„С„РµСЂ
 				m_lWritePointer += lBufferFreeLength;
 			}
 		}
-		// Флаш ( дописываем все данные )
+		// Р¤Р»Р°С€ ( РґРѕРїРёСЃС‹РІР°РµРј РІСЃРµ РґР°РЅРЅС‹Рµ )
 		virtual void Flush ()
 		{
-			// Пишем все данные, которые есть
+			// РџРёС€РµРј РІСЃРµ РґР°РЅРЅС‹Рµ, РєРѕС‚РѕСЂС‹Рµ РµСЃС‚СЊ
 			if ( 0 < m_lWritePointer )
 			{
-				// Если пришла ошибка, то генерируем исключение
+				// Р•СЃР»Рё РїСЂРёС€Р»Р° РѕС€РёР±РєР°, С‚Рѕ РіРµРЅРµСЂРёСЂСѓРµРј РёСЃРєР»СЋС‡РµРЅРёРµ
                                 if ( false == WriteBuffer ( m_lWritePointer ) )
 					throw 1;
 			}
 		}
-		// Сик на указанную позицию по файлу
+		// РЎРёРє РЅР° СѓРєР°Р·Р°РЅРЅСѓСЋ РїРѕР·РёС†РёСЋ РїРѕ С„Р°Р№Р»Сѓ
 		virtual void Seek ( LONG64 lPosition, DWORD dwFrom/* = FILE_CURRENT */)
 		{
 
-			// Допишем сначала все данные
+			// Р”РѕРїРёС€РµРј СЃРЅР°С‡Р°Р»Р° РІСЃРµ РґР°РЅРЅС‹Рµ
 			Flush ();
 
 			if (dwFrom == 1/*FILE_CURRENT*/)
@@ -155,13 +186,13 @@ namespace NFileWriter
 				throw 1;
 
 		}
-		// Текущая позиция 
+		// РўРµРєСѓС‰Р°СЏ РїРѕР·РёС†РёСЏ 
                 virtual void GetPosition(ULONG64& nPos)
 		{
 			nPos = m_oFile.GetPosition() + m_lWritePointer;
 
 		}
-		// Размер записанного файла
+		// Р Р°Р·РјРµСЂ Р·Р°РїРёСЃР°РЅРЅРѕРіРѕ С„Р°Р№Р»Р°
                 virtual void GetSize(ULONG64& nLen)
 		{
 			nLen = m_oFile.GetFileSize() + m_lWritePointer;	
@@ -169,16 +200,16 @@ namespace NFileWriter
 		}
 	private :
 
-		// Сама запись на диск
+		// РЎР°РјР° Р·Р°РїРёСЃСЊ РЅР° РґРёСЃРє
                 bool WriteBuffer ( LONG64 lSize )
 		{
-			// Пишем на диск
+			// РџРёС€РµРј РЅР° РґРёСЃРє
 			if (m_oFile.WriteFile(m_lpBuffer, ( DWORD ) lSize) != S_OK)
 			{
-				// Если что-то произошло не так, возвращаем FALSE
+				// Р•СЃР»Рё С‡С‚Рѕ-С‚Рѕ РїСЂРѕРёР·РѕС€Р»Рѕ РЅРµ С‚Р°Рє, РІРѕР·РІСЂР°С‰Р°РµРј FALSE
                                 return false;
 			}
-			// Сбрасываем в 0 указатель на позицию данных в буффере
+			// РЎР±СЂР°СЃС‹РІР°РµРј РІ 0 СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РїРѕР·РёС†РёСЋ РґР°РЅРЅС‹С… РІ Р±СѓС„С„РµСЂРµ
 			m_lWritePointer = 0;
                         return true;
 		}

@@ -1,4 +1,4 @@
-#ifndef AGG_SVG_DATA_ACCESSOR_INCLUDED
+﻿#ifndef AGG_SVG_DATA_ACCESSOR_INCLUDED
 #define AGG_SVG_DATA_ACCESSOR_INCLUDED
 
 #include "agg_svg_basics.h"

@@ -1,4 +1,4 @@
-#ifndef HEADER_CURL_GSSAPI_H
+﻿#ifndef HEADER_CURL_GSSAPI_H
 #define HEADER_CURL_GSSAPI_H
 /***************************************************************************
  *                                  _   _ ____  _

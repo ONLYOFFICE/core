@@ -1,4 +1,4 @@
-#ifndef HEADER_CURLMSG_VMS_H
+﻿#ifndef HEADER_CURLMSG_VMS_H
 #define HEADER_CURLMSG_VMS_H
 /***************************************************************************
  *                                  _   _ ____  _

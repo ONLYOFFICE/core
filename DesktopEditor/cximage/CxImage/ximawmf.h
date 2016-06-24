@@ -1,4 +1,4 @@
-/*
+﻿/*
 *********************************************************************
  * File:	ximawmf.h
  * Purpose:	Windows Metafile Class Loader and Writer

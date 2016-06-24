@@ -1,4 +1,4 @@
-/* lib/curl_config.h.  Generated from curl_config.h.in by configure.  */
+﻿/* lib/curl_config.h.  Generated from curl_config.h.in by configure.  */
 /* lib/curl_config.h.in.  Generated from configure.ac by autoheader.  */
 
 /* Location of default ca bundle */

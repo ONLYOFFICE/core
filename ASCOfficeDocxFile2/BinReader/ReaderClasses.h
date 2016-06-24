@@ -1,4 +1,35 @@
-﻿#ifndef READER_CLASSES
+﻿/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
+#ifndef READER_CLASSES
 #define READER_CLASSES
 
 #include "../../Common/ATLDefine.h"
@@ -1907,6 +1938,7 @@ public:
 	CString sSizeRelH;
 	CString sSizeRelV;
 	int m_nDocPr;
+	CString sGraphicFramePr;
 
 	bool bDataPos;
 	bool bDataLength;
@@ -1996,10 +2028,31 @@ public:
 						__int64 emuEffectExtentB = (__int64)(g_dKoef_mm_to_emu * EffectExtentB);
 						sXml.AppendFormat(_T("<wp:effectExtent l=\"%lld\" t=\"%lld\" r=\"%lld\" b=\"%lld\"/>"), emuEffectExtentL, emuEffectExtentT, emuEffectExtentR, emuEffectExtentB);
 					}
-					if(false == bChart)
-						sXml.AppendFormat(_T("<wp:docPr id=\"%d\" name=\"\"/></wp:inline>"), m_nDocPr);
+
+					if(bChart)
+					{
+						sXml.AppendFormat(_T("<wp:docPr id=\"%d\" name=\"Chart %d\"/>"), m_nDocPr, m_nDocPr);
+					}
 					else
-						sXml.AppendFormat(_T("<wp:docPr id=\"%d\" name=\"Chart %d\"/><wp:cNvGraphicFramePr/><a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\"><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/chart\"><c:chart xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" r:id=\"%ls\"/></a:graphicData></a:graphic></wp:inline></w:drawing>"), m_nDocPr, m_nDocPr, (const TCHAR *) sChartRels);
+					{
+						sXml.AppendFormat(_T("<wp:docPr id=\"%d\" name=\"\"/>"), m_nDocPr);
+					}
+					if(!sGraphicFramePr.IsEmpty())
+					{
+						sXml.Append(sGraphicFramePr);
+					}
+					else
+					{
+						sXml.Append(_T("<wp:cNvGraphicFramePr/>"));
+					}
+					if(bChart)
+					{
+						sXml.AppendFormat(_T("<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\"><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/chart\"><c:chart xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" r:id=\"%ls\"/></a:graphicData></a:graphic></wp:inline></w:drawing>"), (const TCHAR *) sChartRels);
+					}
+					else
+					{
+						sXml.Append(_T("</wp:inline>"));
+					}
 				}
 			}
 			else
@@ -2195,11 +2248,24 @@ public:
 						sXml.Append(_T("<wp:wrapNone/>"));
 
 					if(bChart)
-                        sXml.AppendFormat(_T("<wp:docPr id=\"%d\" name=\"Chart %d\"/><wp:cNvGraphicFramePr/><a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\"><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/chart\"><c:chart xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" r:id=\"%ls\"/></a:graphicData></a:graphic>"), m_nDocPr, m_nDocPr, (const TCHAR *) sChartRels);
+					{
+						sXml.AppendFormat(_T("<wp:docPr id=\"%d\" name=\"Chart %d\"/>"), m_nDocPr, m_nDocPr);
+					}
 					else
 					{
 						sXml.AppendFormat(_T("<wp:docPr id=\"%d\" name=\"\"/>"), m_nDocPr);
+					}
+					if(!sGraphicFramePr.IsEmpty())
+					{
+						sXml.Append(sGraphicFramePr);
+					}
+					else
+					{
 						sXml.Append(_T("<wp:cNvGraphicFramePr/>"));
+					}
+					if(bChart)
+					{
+						sXml.AppendFormat(_T("<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\"><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/chart\"><c:chart xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" r:id=\"%ls\"/></a:graphicData></a:graphic>"), (const TCHAR *) sChartRels);
 					}
 
 					if(!sSizeRelH.IsEmpty())
@@ -2232,12 +2298,15 @@ public:
 	CString Shd;
 	CString tblpPr;
 	CString Style;
+	CString RowBandSize;
+	CString ColBandSize;
 	CString Look;
 	CString Layout;
 	CString tblPrChange;
+	CString TableCellSpacing;
 	bool IsEmpty()
 	{
-		return Jc.IsEmpty() && TableInd.IsEmpty() && TableW.IsEmpty() && TableCellMar.IsEmpty() && TableBorders.IsEmpty() && Shd.IsEmpty() && tblpPr.IsEmpty()&& Style.IsEmpty() && Look.IsEmpty() && tblPrChange.IsEmpty();
+		return Jc.IsEmpty() && TableInd.IsEmpty() && TableW.IsEmpty() && TableCellMar.IsEmpty() && TableBorders.IsEmpty() && Shd.IsEmpty() && tblpPr.IsEmpty()&& Style.IsEmpty() && Look.IsEmpty() && tblPrChange.IsEmpty() && TableCellSpacing.IsEmpty() && RowBandSize.IsEmpty() && ColBandSize.IsEmpty();
 	}
 	CString Write(bool bBandSize, bool bLayout)
 	{
@@ -2247,12 +2316,16 @@ public:
 			sRes.Append(Style);
 		if(false == tblpPr.IsEmpty())
 			sRes.Append(tblpPr);
-		if(bBandSize)
-			sRes.Append(_T("<w:tblStyleRowBandSize w:val=\"1\"/><w:tblStyleColBandSize w:val=\"1\"/>"));
+		if(!RowBandSize.IsEmpty())
+			sRes.Append(RowBandSize);
+		if(!ColBandSize.IsEmpty())
+			sRes.Append(ColBandSize);
 		if(false == TableW.IsEmpty())
 			sRes.Append(TableW);
 		if(false == Jc.IsEmpty())
 			sRes.Append(Jc);
+		if(false == TableCellSpacing.IsEmpty())
+			sRes.Append(TableCellSpacing);
 		if(false == TableInd.IsEmpty())
 			sRes.Append(TableInd);
 		if(false == TableBorders.IsEmpty())

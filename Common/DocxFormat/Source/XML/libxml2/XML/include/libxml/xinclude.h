@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Summary: implementation of XInclude
  * Description: API to handle XInclude processing,
  * implements the

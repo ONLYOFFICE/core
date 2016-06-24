@@ -1,4 +1,35 @@
-﻿#ifndef READERS
+﻿/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
+#ifndef READERS
 #define READERS
 
 #include "FileWriter.h"
@@ -1520,7 +1551,17 @@ public:
 	{
 		int res = c_oSerConstants::ReadOk;
 		CWiterTblPr* pWiterTblPr = static_cast<CWiterTblPr*>(poResult);
-		if( c_oSerProp_tblPrType::Jc == type )
+		if( c_oSerProp_tblPrType::RowBandSize == type )
+		{
+			long nRowBandSize = m_oBufferedStream.GetLong();
+			pWiterTblPr->RowBandSize.Format(_T("<w:tblStyleRowBandSize w:val=\"%d\"/>"), nRowBandSize);
+		}
+		else if( c_oSerProp_tblPrType::ColBandSize == type )
+		{
+			long nColBandSize = m_oBufferedStream.GetLong();
+			pWiterTblPr->ColBandSize.Format(_T("<w:tblStyleColBandSize w:val=\"%d\"/>"), nColBandSize);
+		}
+		else if( c_oSerProp_tblPrType::Jc == type )
 		{
 			BYTE jc = m_oBufferedStream.GetUChar();
 			switch(jc)
@@ -1628,6 +1669,13 @@ public:
 			TrackRevision tblPrChange;
 			res = Read1(length, &Binary_tblPrReader::ReadTblPrChange, this, &tblPrChange);
 			pWiterTblPr->tblPrChange = tblPrChange.ToString(_T("w:tblPrChange"));
+		}
+		else if( c_oSerProp_tblPrType::TableCellSpacing == type )
+		{
+			double dSpacing = m_oBufferedStream.GetDouble();
+			dSpacing /=2;
+			long nSpacing = SerializeCommon::Round( g_dKoef_mm_to_twips * dSpacing);
+			pWiterTblPr->TableCellSpacing.Format(_T("<w:tblCellSpacing w:w=\"%d\" w:type=\"dxa\"/>"), nSpacing);
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -2966,6 +3014,18 @@ public:
 			m_oFileWriter.m_oSettingWriter.AddSetting(_T("<m:mathPr>"));
 			res = Read1(length, &Binary_SettingsTableReader::ReadMathPr, this, poResult);
 			m_oFileWriter.m_oSettingWriter.AddSetting(_T("</m:mathPr>"));
+		}
+		else if ( c_oSer_SettingsType::TrackRevisions == type )
+		{
+			bool bTrackRevisions = m_oBufferedStream.GetBool();
+			if (bTrackRevisions)
+			{
+				m_oFileWriter.m_oSettingWriter.AddSetting(L"<w:trackRevisions/>");
+			}
+			else
+			{
+				m_oFileWriter.m_oSettingWriter.AddSetting(L"<w:trackRevisions w:val=\"false\"/>");
+			}
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -5960,6 +6020,14 @@ public:
 		{
 			res = Read1(length, &Binary_DocumentTableReader::ReadObject, this, poResult);
 		}
+		else if ( c_oSerRunType::separator == type)
+		{
+			GetRunStringWriter().WriteString(CString(_T("<w:separator/>")));
+		}
+		else if ( c_oSerRunType::continuationSeparator == type)
+		{
+			GetRunStringWriter().WriteString(CString(_T("<w:continuationSeparator/>")));
+		}
 		else
 			res = c_oSerConstants::ReadUnknown;
 		return res;
@@ -6412,6 +6480,52 @@ public:
 			pDrawingProperty->DrawingPropertyWrap.bWrappingType = true;
 			pDrawingProperty->DrawingPropertyWrap.WrappingType = type;
 			res = Read2(length, &Binary_DocumentTableReader::ReadEmptyWrap, this, poResult);
+		}
+		else if ( c_oSerImageType2::GraphicFramePr == type )
+		{
+			OOX::Drawing::CGraphicalObjectFrameLocking* pLocking = new OOX::Drawing::CGraphicalObjectFrameLocking();
+			res = Read2(length, &Binary_DocumentTableReader::ReadNvGraphicFramePr, this, pLocking);
+			OOX::Drawing::CNonVisualGraphicFrameProperties oGraphicFramePr;
+			oGraphicFramePr.m_oGraphicFrameLocks.reset(pLocking);
+			pDrawingProperty->sGraphicFramePr = oGraphicFramePr.toXML();
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int ReadNvGraphicFramePr(BYTE type, long length, void* poResult)
+	{
+		int res = c_oSerConstants::ReadOk;
+		OOX::Drawing::CGraphicalObjectFrameLocking* pLocking = static_cast<OOX::Drawing::CGraphicalObjectFrameLocking*>(poResult);
+		if ( c_oSerGraphicFramePr::NoChangeAspect == type )
+		{
+			pLocking->m_oNoChangeAspect.Init();
+			pLocking->m_oNoChangeAspect->FromBool(m_oBufferedStream.GetBool());
+		}
+		else if ( c_oSerGraphicFramePr::NoDrilldown == type )
+		{
+			pLocking->m_oNoDrilldown.Init();
+			pLocking->m_oNoDrilldown->FromBool(m_oBufferedStream.GetBool());
+		}
+		else if ( c_oSerGraphicFramePr::NoGrp == type )
+		{
+			pLocking->m_oNoGrp.Init();
+			pLocking->m_oNoGrp->FromBool(m_oBufferedStream.GetBool());
+		}
+		else if ( c_oSerGraphicFramePr::NoMove == type )
+		{
+			pLocking->m_oNoMove.Init();
+			pLocking->m_oNoMove->FromBool(m_oBufferedStream.GetBool());
+		}
+		else if ( c_oSerGraphicFramePr::NoResize == type )
+		{
+			pLocking->m_oNoResize.Init();
+			pLocking->m_oNoResize->FromBool(m_oBufferedStream.GetBool());
+		}
+		else if ( c_oSerGraphicFramePr::NoSelect == type )
+		{
+			pLocking->m_oNoSelect.Init();
+			pLocking->m_oNoSelect->FromBool(m_oBufferedStream.GetBool());
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;

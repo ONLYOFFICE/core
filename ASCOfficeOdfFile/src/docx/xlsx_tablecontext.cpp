@@ -1,3 +1,34 @@
+ï»¿/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 
 #include "xlsx_tablecontext.h"
 #include "xlsx_textcontext.h"
@@ -21,14 +52,12 @@ namespace oox {
 
 //-----------------------------------------------------------------------------------------------------------------------
 
-xlsx_table_state_ptr & xlsx_table_context::state()
+xlsx_table_state_ptr xlsx_table_context::state()
 {
-    return xlsx_table_states_.back();
-}
-
-const xlsx_table_state_ptr & xlsx_table_context::state() const
-{
-    return xlsx_table_states_.back();
+	if (!xlsx_table_states_.empty())
+		return xlsx_table_states_.back();
+	else 
+		return xlsx_table_state_ptr();
 }
 
 void xlsx_table_context::start_database_range(std::wstring tableName, std::wstring ref)
@@ -111,20 +140,15 @@ xlsx_text_context_(textContext)
 {        
 }
 
-void xlsx_table_context::start_table(std::wstring tableName, std::wstring tableStyleName)
+void xlsx_table_context::start_table(std::wstring tableName, std::wstring tableStyleName, int id)
 {
-	xlsx_table_state_ptr  state = boost::make_shared<xlsx_table_state>(xlsx_conversion_context_, tableStyleName, tableName);
+	xlsx_table_state_ptr  state = boost::make_shared<xlsx_table_state>(xlsx_conversion_context_, tableStyleName, tableName, id);
     xlsx_table_states_.push_back( state);
 }
 
 void xlsx_table_context::end_table()
 {
     xlsx_table_states_.pop_back();
-}
-
-std::wstring xlsx_table_context::get_current_table_name() const
-{
-    return state()->get_current_table_name();
 }
 
 void xlsx_table_context::start_cell(const std::wstring & formula, size_t columnsSpanned, size_t rowsSpanned)
@@ -180,7 +204,7 @@ void xlsx_table_context::non_empty_row()
     return state()->non_empty_row();
 }
 
-bool xlsx_table_context::is_empty_row() const
+bool xlsx_table_context::is_empty_row()
 {
     return state()->is_empty_row();
 }
@@ -200,22 +224,22 @@ unsigned int xlsx_table_context::columns_count()
     return state()->columns_count();    
 }
 
-std::wstring xlsx_table_context::default_row_cell_style() const
+std::wstring xlsx_table_context::default_row_cell_style()
 {
     return state()->default_row_cell_style();
 }
 
-std::wstring xlsx_table_context::default_column_cell_style() const
+std::wstring xlsx_table_context::default_column_cell_style()
 {
     return state()->default_column_cell_style();
 }
 
-int xlsx_table_context::current_column() const
+int xlsx_table_context::current_column()
 {
     return state()->current_column();
 }
 
-int xlsx_table_context::current_row() const
+int xlsx_table_context::current_row()
 {
     return state()->current_row();
 }
@@ -274,11 +298,15 @@ void xlsx_table_context::serialize_autofilter(std::wostream & _Wostream)
 	{			
 		CP_XML_NODE(L"autoFilter")
 		{
-			//â àâòîôèëüòðå òîêà ïðîñòûå äèàïàçîíû .. äëÿ ñëîæíûõ íóæíî âûäåëÿòü tablePart - todooo
+			//Ð² Ð°Ð²Ñ‚Ð¾Ñ„Ð¸Ð»ÑŒÑ‚Ñ€Ðµ Ñ‚Ð¾ÐºÐ° Ð¿Ñ€Ð¾ÑÑ‚Ñ‹Ðµ Ð´Ð¸Ð°Ð¿Ð°Ð·Ð¾Ð½Ñ‹ .. Ð´Ð»Ñ ÑÐ»Ð¾Ð¶Ð½Ñ‹Ñ… Ð½ÑƒÐ¶Ð½Ð¾ Ð²Ñ‹Ð´ÐµÐ»ÑÑ‚ÑŒ tablePart - todooo
 			CP_XML_ATTR(L"ref", getCellAddress(cell_start.first, cell_start.second) + L":" + getCellAddress(cell_end.first, cell_end.second));
 			//CP_XML_ATTR(L"ref", ref);
 		}
 	}
+}
+void xlsx_table_context::serialize_conditionalFormatting(std::wostream & _Wostream)
+{
+    return state()->serialize_conditionalFormatting(_Wostream);
 }
 void xlsx_table_context::serialize_merge_cells(std::wostream & _Wostream)
 {
@@ -316,7 +344,7 @@ void xlsx_table_context::table_column_last_width(double w)
     return state()->table_column_last_width(w);
 }
 
-double xlsx_table_context::table_column_last_width() const
+double xlsx_table_context::table_column_last_width()
 {
     return state()->table_column_last_width();
 }

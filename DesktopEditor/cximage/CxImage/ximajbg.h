@@ -1,4 +1,4 @@
-/*
+﻿/*
  * File:	ximajbg.h
  * Purpose:	JBG Image Class Loader and Writer
  */

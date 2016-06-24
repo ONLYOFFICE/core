@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2001-2002 Michael David Adams.
  * All rights reserved.
  */

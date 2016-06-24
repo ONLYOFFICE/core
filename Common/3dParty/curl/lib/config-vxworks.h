@@ -1,4 +1,4 @@
-#ifndef HEADER_CURL_CONFIG_VXWORKS_H
+﻿#ifndef HEADER_CURL_CONFIG_VXWORKS_H
 #define HEADER_CURL_CONFIG_VXWORKS_H
 /***************************************************************************
  *                                  _   _ ____  _

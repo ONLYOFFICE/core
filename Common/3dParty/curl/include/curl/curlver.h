@@ -1,4 +1,4 @@
-#ifndef __CURL_CURLVER_H
+﻿#ifndef __CURL_CURLVER_H
 #define __CURL_CURLVER_H
 /***************************************************************************
  *                                  _   _ ____  _

@@ -1,4 +1,4 @@
-#ifndef __PSD_DESCRIPTOR_H__
+﻿#ifndef __PSD_DESCRIPTOR_H__
 #define __PSD_DESCRIPTOR_H__
 
 #ifdef __cplusplus

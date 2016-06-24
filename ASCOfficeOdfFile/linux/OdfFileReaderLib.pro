@@ -352,7 +352,9 @@ SOURCES += \
     ../src/odf/datatypes/mathvariant.cpp \
     ../formulasconvert/formulasconvert_odf.cpp \
     ../src/odf/calcext_elements.cpp \
-    ../src/odf/table_database_ranges.cpp
+    ../src/odf/table_database_ranges.cpp \
+    ../src/docx/xlsx_conditionalFormatting.cpp \
+    ../src/docx/xlsx_dxfs.cpp
 
 HEADERS += \
     ../formulasconvert/formulasconvert.h \
@@ -622,7 +624,9 @@ HEADERS += \
     ../src/odf/math_token_elements.h \
     ../src/odf/datatypes/mathvariant.h \
     ../src/odf/calcext_elements.h \
-    ../src/odf/table_database_ranges.h
+    ../src/odf/table_database_ranges.h \
+    ../src/docx/xlsx_conditionalFormatting.h \
+    ../src/docx/xlsx_dxfs.h
 unix {
     target.path = /usr/lib
     INSTALLS += target

@@ -1,3 +1,34 @@
+Ôªø/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 #pragma once
 
 #include <string>
@@ -7,8 +38,8 @@ namespace cpdoccore {
 namespace formulasconvert {
 
 
-// –‡·ÓÚ‡ Ò ÙÓÛÏÛÎ‡ÏË OpenOffice, ÔÂÓ·‡ÁÓ‚‡ÌËÂ.
-// œËÏÂ˚ ÒÏ. ‚ ÚÂÒÚÂ ut_formulasconvert.cpp
+// –†–∞–±–æ—Ç–∞ —Å —Ñ–æ—Ä—É–º—É–ª–∞–º–∏ OpenOffice, –ø—Ä–µ–æ–±—Ä–∞–∑–æ–≤–∞–Ω–∏–µ.
+// –ü—Ä–∏–º–µ—Ä—ã —Å–º. –≤ —Ç–µ—Å—Ç–µ ut_formulasconvert.cpp
 class odf2oox_converter
 {
 public:
@@ -18,11 +49,11 @@ public:
     // of:=SUM([.DDA1:.BA3]) -> SUM(DDA1:BA3)
     std::wstring convert(std::wstring const & expr);
     
-    // $ÀËÒÚ1.$A$1 -> ÀËÒÚ1!$A$1
-    std::wstring convert_named_ref(std::wstring const & expr);
+    // $–õ–∏—Å—Ç1.$A$1 -> –õ–∏—Å—Ç1!$A$1
+    std::wstring convert_named_ref(std::wstring const & expr, bool withTableName = true);
 
 	//a-la convert without check formula
-    std::wstring convert_named_expr(std::wstring const & expr);
+    std::wstring convert_named_expr(std::wstring const & expr, bool withTableName = true);
 	
 	//Sheet2.C3:Sheet2.C19 -> Sheet2!C3:C19
     std::wstring convert_chart_distance(std::wstring const & expr);
@@ -55,7 +86,7 @@ public:
  	
 	std::wstring convert_conditional_formula(std::wstring const & expr);
   
-    // ÀËÒÚ1!$A$1 -> $ÀËÒÚ1.$A$1 
+    // –õ–∏—Å—Ç1!$A$1 -> $–õ–∏—Å—Ç1.$A$1 
     std::wstring convert_named_ref(std::wstring const & expr);
 
 	std::wstring find_base_cell(std::wstring const & expr);

@@ -1,4 +1,4 @@
-#ifndef _JBIG2_UTILS_H
+﻿#ifndef _JBIG2_UTILS_H
 #define _JBIG2_UTILS_H
 
 

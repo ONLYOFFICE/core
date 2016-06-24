@@ -1,4 +1,4 @@
-#ifndef AGG_SVG_DOM_STORAGE_READ_PROTOCOL_INCLUDE
+﻿#ifndef AGG_SVG_DOM_STORAGE_READ_PROTOCOL_INCLUDE
 #define AGG_SVG_DOM_STORAGE_READ_PROTOCOL_INCLUDE
 //-----------------------------------------------------------------------------
 #include "agg_svg_basics.h"

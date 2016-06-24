@@ -1,4 +1,4 @@
-#ifndef HEADER_CURLMSG_H
+﻿#ifndef HEADER_CURLMSG_H
 #define HEADER_CURLMSG_H
 /***************************************************************************
  *                                  _   _ ____  _

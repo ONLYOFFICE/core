@@ -1,4 +1,4 @@
-#ifndef __PSD_BITMAP_H__
+﻿#ifndef __PSD_BITMAP_H__
 #define __PSD_BITMAP_H__
 
 #ifdef __cplusplus

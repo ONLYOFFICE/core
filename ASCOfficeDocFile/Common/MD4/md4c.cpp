@@ -1,4 +1,4 @@
-
+﻿
 /* MD4C.C - RSA Data Security, Inc., MD4 message-digest algorithm
  */
 

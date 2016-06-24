@@ -1,4 +1,4 @@
-#ifndef HEADER_CURL_SERVER_TFTP_H
+﻿#ifndef HEADER_CURL_SERVER_TFTP_H
 #define HEADER_CURL_SERVER_TFTP_H
 /***************************************************************************
  *                                  _   _ ____  _

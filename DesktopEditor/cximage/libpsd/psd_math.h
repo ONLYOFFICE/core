@@ -1,4 +1,4 @@
-#ifndef __PSD_MATH_H__
+﻿#ifndef __PSD_MATH_H__
 #define __PSD_MATH_H__
 
 

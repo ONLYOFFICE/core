@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  This file was autogen'd by xtractprotos, v. 1.4
  */
 #ifdef __cplusplus

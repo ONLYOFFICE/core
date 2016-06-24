@@ -1,4 +1,4 @@
-#include "agg_basics.h"
+﻿#include "agg_basics.h"
 #include "interactive_polygon.h"
 
 namespace agg

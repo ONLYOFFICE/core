@@ -1,3 +1,34 @@
+п»ї/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 #pragma once
 
 #include "../../Base/Nullable.h"
@@ -36,7 +67,7 @@ namespace OOX
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				m_eType = et_Unknown;
-				// TO DO: Реализовать CAdjPoint2D::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CAdjPoint2D::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -73,7 +104,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("x"), m_oX )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("y"), m_oY )
@@ -107,7 +138,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать CPolarAdjustHandle::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CPolarAdjustHandle::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -186,7 +217,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("gdRefAng"), m_oGdRefAng )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("gdRefR"),   m_oGdRefR )
@@ -229,7 +260,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать CXYAdjustHandle::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CXYAdjustHandle::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -308,7 +339,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("gdRefX"), m_oGdRefX )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("gdRefY"), m_oGdRefY )
@@ -351,7 +382,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать CPath2DArcTo::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CPath2DArcTo::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -378,7 +409,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("hR"),    m_oHr )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("stAng"), m_oStAng )
@@ -413,7 +444,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать CPath2DClose::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CPath2DClose::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -447,7 +478,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать CPath2DCubicBezierTo::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CPath2DCubicBezierTo::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -520,7 +551,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать CConnectionSite::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CConnectionSite::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -555,7 +586,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("ang"), m_oAng )
 				WritingElement_ReadAttributes_End( oReader )
@@ -592,7 +623,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать CConnectionSiteList::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CConnectionSiteList::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -653,7 +684,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать CGeomGuide::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CGeomGuide::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -675,7 +706,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("fmla"), m_oFmla )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("name"), m_oName )
@@ -715,7 +746,7 @@ namespace OOX
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				m_eType = et_Unknown;
-				// TO DO: Реализовать CGeomGuideList::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CGeomGuideList::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -799,7 +830,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать CPath2DLineTo::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CPath2DLineTo::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -851,7 +882,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать CPath2DMoveTo::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CPath2DMoveTo::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -903,7 +934,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать CPath2DQuadBezierTo::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CPath2DQuadBezierTo::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -997,7 +1028,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать CPath2D::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CPath2D::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -1056,7 +1087,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("extrusionOk"), m_oExtrusionOk )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("fill"),        m_oFill )
@@ -1119,7 +1150,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать CPath2DList::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CPath2DList::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -1199,7 +1230,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать CAdjustHandleList::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CAdjustHandleList::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -1280,7 +1311,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать CPresetGeometry2D::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CPresetGeometry2D::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -1318,7 +1349,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("prst"), m_oPrst )
 				WritingElement_ReadAttributes_End( oReader )
@@ -1351,7 +1382,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать CPresetTextShape::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CPresetTextShape::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -1389,7 +1420,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("prst"), m_oPrst )
 				WritingElement_ReadAttributes_End( oReader )
@@ -1422,7 +1453,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать CGeomRect::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CGeomRect::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -1448,7 +1479,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("b"), m_oB )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("l"), m_oL )
@@ -1484,7 +1515,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать CCustomGeometry2D::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CCustomGeometry2D::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{

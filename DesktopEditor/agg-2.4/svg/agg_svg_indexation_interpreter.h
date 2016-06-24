@@ -1,4 +1,4 @@
-#ifndef AGG_SVG_INDEXATION_INTERPRETER
+﻿#ifndef AGG_SVG_INDEXATION_INTERPRETER
 #define AGG_SVG_INDEXATION_INTERPRETER
 //-----------------------------------------------------------------------------
 #include "agg_svg_defines.h"

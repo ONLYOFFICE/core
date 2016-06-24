@@ -1,3 +1,34 @@
+п»ї/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 #pragma once
 #ifndef OOX_DOCX_INCLUDE_H_
 #define OOX_DOCX_INCLUDE_H_
@@ -76,11 +107,11 @@ namespace OOX
                 bool Write(const CPath& oFilePath)
 		{
 
-			// TO DO: Запись надо править. Она НЕ РАБОТАЕТ!!!! Проблемы в IFileContainer.
+			// TO DO: Р—Р°РїРёСЃСЊ РЅР°РґРѕ РїСЂР°РІРёС‚СЊ. РћРЅР° РќР• Р РђР‘РћРўРђР•Рў!!!! РџСЂРѕР±Р»РµРјС‹ РІ IFileContainer.
 
             //return false;
 
-			// Создаем папку
+			// РЎРѕР·РґР°РµРј РїР°РїРєСѓ
 #if defined(_WIN32) || defined (_WIN64)
 			CreateDirectoryW( oFilePath.GetPath(), NULL );
 #else
@@ -177,13 +208,13 @@ namespace OOX
 		OOX::CApp       *m_pApp;
 		OOX::CCore      *m_pCore;
 
-		OOX::CDocument  *m_pDocument;   // Основной документ word/document.xml
-		OOX::CFontTable *m_pFontTable;  // Таблица шрифтов   word/fonttable.xml
-		OOX::CNumbering *m_pNumbering;  // Нумерации         word/numbering.xml
-		OOX::CStyles    *m_pStyles;     // Стили             word/styles.xml
-		OOX::CFootnotes *m_pFootnotes;  // Сноски            word/footnotes.xml
-		OOX::CEndnotes  *m_pEndnotes;   // Сноски            word/endnotes.xml
-		OOX::CSettings  *m_pSettings;   // Настройки         word/settings.xml
+		OOX::CDocument  *m_pDocument;   // РћСЃРЅРѕРІРЅРѕР№ РґРѕРєСѓРјРµРЅС‚ word/document.xml
+		OOX::CFontTable *m_pFontTable;  // РўР°Р±Р»РёС†Р° С€СЂРёС„С‚РѕРІ   word/fonttable.xml
+		OOX::CNumbering *m_pNumbering;  // РќСѓРјРµСЂР°С†РёРё         word/numbering.xml
+		OOX::CStyles    *m_pStyles;     // РЎС‚РёР»Рё             word/styles.xml
+		OOX::CFootnotes *m_pFootnotes;  // РЎРЅРѕСЃРєРё            word/footnotes.xml
+		OOX::CEndnotes  *m_pEndnotes;   // РЎРЅРѕСЃРєРё            word/endnotes.xml
+		OOX::CSettings  *m_pSettings;   // РќР°СЃС‚СЂРѕР№РєРё         word/settings.xml
 		OOX::CComments  *m_pComments;   //			         word/comments.xml
 		OOX::CCommentsExt *m_pCommentsExt;//		         word/commentsExtended.xml
 		OOX::CPeople	*m_pPeople;		//				     word/people.xml

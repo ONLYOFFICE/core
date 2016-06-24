@@ -1,4 +1,4 @@
-#include "agg_svg_renderer_rgba.h"    
+﻿#include "agg_svg_renderer_rgba.h"    
 
 namespace agg
 {

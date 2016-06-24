@@ -1,3 +1,34 @@
+п»ї/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 #pragma once
 #include "Elements.h"
 
@@ -6,16 +37,16 @@ namespace NSPresentationEditor
 	class CTransition
 	{
 	public:
-		bool	m_bAudioPresent;		// есть ли аудио
-		CAudioElement m_oAudio;			// аудио
+		bool	m_bAudioPresent;		// РµСЃС‚СЊ Р»Рё Р°СѓРґРёРѕ
+		CAudioElement m_oAudio;			// Р°СѓРґРёРѕ
 
-		BYTE	m_nEffectDirection;		// направление эффекта
-		BYTE	m_nEffectType;			// тип перехода
+		BYTE	m_nEffectDirection;		// РЅР°РїСЂР°РІР»РµРЅРёРµ СЌС„С„РµРєС‚Р°
+		BYTE	m_nEffectType;			// С‚РёРї РїРµСЂРµС…РѕРґР°
 
-		bool	m_bLoopSound;			// зациклить аудио
-		bool	m_bStopSound;			// перед транзишном перестать играть все аудио до этого
+		bool	m_bLoopSound;			// Р·Р°С†РёРєР»РёС‚СЊ Р°СѓРґРёРѕ
+		bool	m_bStopSound;			// РїРµСЂРµРґ С‚СЂР°РЅР·РёС€РЅРѕРј РїРµСЂРµСЃС‚Р°С‚СЊ РёРіСЂР°С‚СЊ РІСЃРµ Р°СѓРґРёРѕ РґРѕ СЌС‚РѕРіРѕ
 
-		double	m_dSpeed;				// длительность в миллисекундах
+		double	m_dSpeed;				// РґР»РёС‚РµР»СЊРЅРѕСЃС‚СЊ РІ РјРёР»Р»РёСЃРµРєСѓРЅРґР°С…
 
 	public:
 
@@ -59,12 +90,12 @@ namespace NSPresentationEditor
 	class CSlideShowInfo
 	{
 	public:
-		double	m_dSlideDuration;	// длительность слайда (без учета перехода)
-		bool	m_bHidden;			// нужно ли НЕ показывать слайд при проигрывании
+		double	m_dSlideDuration;	// РґР»РёС‚РµР»СЊРЅРѕСЃС‚СЊ СЃР»Р°Р№РґР° (Р±РµР· СѓС‡РµС‚Р° РїРµСЂРµС…РѕРґР°)
+		bool	m_bHidden;			// РЅСѓР¶РЅРѕ Р»Рё РќР• РїРѕРєР°Р·С‹РІР°С‚СЊ СЃР»Р°Р№Рґ РїСЂРё РїСЂРѕРёРіСЂС‹РІР°РЅРёРё
 
-		CTransition	m_oTransition;	// переход
+		CTransition	m_oTransition;	// РїРµСЂРµС…РѕРґ
 
-		bool	m_bOnlyClick;		// переход на следующий по щелчку
+		bool	m_bOnlyClick;		// РїРµСЂРµС…РѕРґ РЅР° СЃР»РµРґСѓСЋС‰РёР№ РїРѕ С‰РµР»С‡РєСѓ
 
 	public:
 

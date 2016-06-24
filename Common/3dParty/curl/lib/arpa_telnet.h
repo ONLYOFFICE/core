@@ -1,4 +1,4 @@
-#ifndef HEADER_CURL_ARPA_TELNET_H
+﻿#ifndef HEADER_CURL_ARPA_TELNET_H
 #define HEADER_CURL_ARPA_TELNET_H
 /***************************************************************************
  *                                  _   _ ____  _

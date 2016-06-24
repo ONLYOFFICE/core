@@ -386,6 +386,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\OdfFormat\office_settings.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\OdfFormat\office_settings.h"
+				>
+			</File>
+			<File
 				RelativePath="..\OdfFormat\office_spreadsheet.cpp"
 				>
 			</File>
@@ -727,6 +735,14 @@
 			</File>
 			<File
 				RelativePath="..\OdfFormat\odf_drawing_context.h"
+				>
+			</File>
+			<File
+				RelativePath="..\OdfFormat\odf_settings_context.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\OdfFormat\odf_settings_context.h"
 				>
 			</File>
 			<File

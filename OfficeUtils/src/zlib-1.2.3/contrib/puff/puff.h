@@ -1,4 +1,4 @@
-/* puff.h
+﻿/* puff.h
   Copyright (C) 2002, 2003 Mark Adler, all rights reserved
   version 1.7, 3 Mar 2002
 

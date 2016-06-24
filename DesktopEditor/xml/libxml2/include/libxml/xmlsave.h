@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Summary: the XML document serializer
  * Description: API to save document or subtree of document
  *

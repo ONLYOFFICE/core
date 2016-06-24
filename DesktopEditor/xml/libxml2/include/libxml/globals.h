@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Summary: interface for all global variables of the library
  * Description: all the global variables and thread handling for
  *              those variables is handled by this module.

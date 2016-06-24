@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Summary: specific APIs to process HTML tree, especially serialization
  * Description: this module implements a few function needed to process
  *              tree in an HTML specific way.

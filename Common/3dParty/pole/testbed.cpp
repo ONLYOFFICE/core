@@ -1,4 +1,4 @@
-// testbed.cpp: Take a directory and its contents, and create a Structured Storage File from it.
+﻿// testbed.cpp: Take a directory and its contents, and create a Structured Storage File from it.
 // Written using Windows - it should be portable to other environments with relatively modest changes.
 // This was done mainly as a way to test POLE at various stages, but it has some utility on its own.
 //

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * File:	ximabmp.h
  * Purpose:	BMP Image Class Loader and Writer
  */

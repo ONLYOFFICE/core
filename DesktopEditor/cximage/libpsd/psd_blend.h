@@ -1,4 +1,4 @@
-#ifndef __PSD_BLEND_H__
+﻿#ifndef __PSD_BLEND_H__
 #define __PSD_BLEND_H__
 
 #ifdef __cplusplus

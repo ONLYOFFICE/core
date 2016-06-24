@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Summary: dynamic module loading
  * Description: basic API for dynamic module loading, used by
  *              libexslt added in 2.6.17

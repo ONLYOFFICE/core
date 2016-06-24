@@ -1,4 +1,4 @@
-#ifndef __PSD_RECT_H__
+﻿#ifndef __PSD_RECT_H__
 #define __PSD_RECT_H__
 
 #ifdef __cplusplus

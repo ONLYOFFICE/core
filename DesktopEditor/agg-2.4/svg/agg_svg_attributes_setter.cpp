@@ -1,4 +1,4 @@
-//-----------------------------------------------------------------------------
+﻿//-----------------------------------------------------------------------------
 #include "agg_svg_attributes_setter.h"
 #include "agg_svg_attributes.h"
 #include "agg_svg_rendering_interpreter.h"

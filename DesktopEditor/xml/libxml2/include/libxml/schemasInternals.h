@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Summary: internal interfaces for XML Schemas
  * Description: internal interfaces for the XML Schemas handling
  *              and schema validity checking

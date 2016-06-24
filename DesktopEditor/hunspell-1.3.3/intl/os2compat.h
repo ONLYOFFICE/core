@@ -1,4 +1,4 @@
-/* OS/2 compatibility defines.
+﻿/* OS/2 compatibility defines.
    This file is intended to be included from config.h
    Copyright (C) 2001-2002 Free Software Foundation, Inc.
 

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * File:	ximapcx.cpp
  * Purpose:	Platform Independent PCX Image Class Loader and Writer
  * 05/Jan/2002 Davide Pizzolato - www.xdp.it

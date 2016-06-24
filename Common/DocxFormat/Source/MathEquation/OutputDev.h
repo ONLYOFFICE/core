@@ -1,3 +1,34 @@
+п»ї/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 #ifndef _MATH_EQUATION_OUTPUTDEV_H
 #define _MATH_EQUATION_OUTPUTDEV_H
 
@@ -11,72 +42,72 @@ namespace MathEquation
 	{
 	public:
 
-		// Начало и конец формулы
+		// РќР°С‡Р°Р»Рѕ Рё РєРѕРЅРµС† С„РѕСЂРјСѓР»С‹
 		virtual void BeginEquation() = 0;
 		virtual void EndEquation()   = 0;
 
-		// Начало и конец блока.
+		// РќР°С‡Р°Р»Рѕ Рё РєРѕРЅРµС† Р±Р»РѕРєР°.
 		virtual void BeginBlock() = 0;
 		virtual void EndBlock()   = 0;
 
-		// Выставляем размер в текущем блоке
+		// Р’С‹СЃС‚Р°РІР»СЏРµРј СЂР°Р·РјРµСЂ РІ С‚РµРєСѓС‰РµРј Р±Р»РѕРєРµ
 		virtual void SetSize(uint16_t nSize) = 0;
 
-		// Добавляем символ. К символу могут быть добавлены разные элементы. Зачеркивание, добавление акцента и т.д.
+		// Р”РѕР±Р°РІР»СЏРµРј СЃРёРјРІРѕР». Рљ СЃРёРјРІРѕР»Сѓ РјРѕРіСѓС‚ Р±С‹С‚СЊ РґРѕР±Р°РІР»РµРЅС‹ СЂР°Р·РЅС‹Рµ СЌР»РµРјРµРЅС‚С‹. Р—Р°С‡РµСЂРєРёРІР°РЅРёРµ, РґРѕР±Р°РІР»РµРЅРёРµ Р°РєС†РµРЅС‚Р° Рё С‚.Рґ.
 		virtual void BeginChar(Unicode_t uChar, uint8_t nTypeFace, bool bSpecialSymbol) = 0;
 		virtual void AddCharEmbel(MEMBELTYPE eType) = 0;
 		virtual void EndChar() = 0;
 
-		// Матрица. Количество блоков здесь равно nRows * nCol, посылаются последовательно в обычном порядке (первая строка слева направо, вторая строка слева направо и т.д.)
+		// РњР°С‚СЂРёС†Р°. РљРѕР»РёС‡РµСЃС‚РІРѕ Р±Р»РѕРєРѕРІ Р·РґРµСЃСЊ СЂР°РІРЅРѕ nRows * nCol, РїРѕСЃС‹Р»Р°СЋС‚СЃСЏ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕ РІ РѕР±С‹С‡РЅРѕРј РїРѕСЂСЏРґРєРµ (РїРµСЂРІР°СЏ СЃС‚СЂРѕРєР° СЃР»РµРІР° РЅР°РїСЂР°РІРѕ, РІС‚РѕСЂР°СЏ СЃС‚СЂРѕРєР° СЃР»РµРІР° РЅР°РїСЂР°РІРѕ Рё С‚.Рґ.)
 		virtual void BeginMatrix(uint8_t nVAlign, MMATRIXHORALIGN eHorAlign, MMATRIXVERALIGN eVerAlign, bool bEqualRows, bool bEqualCols, uint8_t nRows, uint8_t nCols, uint8_t* pVerBorders, uint8_t* pHorBorders) = 0;
 		virtual void EndMatrix  () = 0;
 
 		virtual void StartPile(uint8_t nHAlign, uint8_t nVAlign) = 0;
 		virtual void EndPile() = 0;
 
-		// Скобки с элементом внутри
+		// РЎРєРѕР±РєРё СЃ СЌР»РµРјРµРЅС‚РѕРј РІРЅСѓС‚СЂРё
 		virtual void BeginBrackets(MBRACKETSTYPE eType, bool bOpen, bool bClose) = 0;
 		virtual void EndBrackets  (MBRACKETSTYPE eType, bool bOpen, bool bClose) = 0;
 
-		// Корень. Первый блок - основание, второй, если есть, степень.
+		// РљРѕСЂРµРЅСЊ. РџРµСЂРІС‹Р№ Р±Р»РѕРє - РѕСЃРЅРѕРІР°РЅРёРµ, РІС‚РѕСЂРѕР№, РµСЃР»Рё РµСЃС‚СЊ, СЃС‚РµРїРµРЅСЊ.
 		virtual void BeginRoot(bool bDegree) = 0;
 		virtual void EndRoot  () = 0;
 
-		// Дроби. Первый блок - числитель, второй блок - знаменатель.
+		// Р”СЂРѕР±Рё. РџРµСЂРІС‹Р№ Р±Р»РѕРє - С‡РёСЃР»РёС‚РµР»СЊ, РІС‚РѕСЂРѕР№ Р±Р»РѕРє - Р·РЅР°РјРµРЅР°С‚РµР»СЊ.
 		virtual void BeginFraction(MFRACTIONTYPES eType, bool bInline) = 0;
 		virtual void EndFraction  () = 0;
 
-		// Если bInline = true, то последовательность блоков Base, Sub, Sup
-		// Если bInline = false, то последовательность блоков  Sub, Sup, Base
+		// Р•СЃР»Рё bInline = true, С‚Рѕ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ Р±Р»РѕРєРѕРІ Base, Sub, Sup
+		// Р•СЃР»Рё bInline = false, С‚Рѕ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ Р±Р»РѕРєРѕРІ  Sub, Sup, Base
 		virtual void BeginScript(MSCRIPTALIGN eAlign, bool bBase = false, bool bSup = false, bool bSub = false, bool bInline = true) = 0;
 		virtual void EndScript  () = 0;
 
-		// Линия свеху или снизу относительно текста
+		// Р›РёРЅРёСЏ СЃРІРµС…Сѓ РёР»Рё СЃРЅРёР·Сѓ РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ С‚РµРєСЃС‚Р°
 		virtual void BeginBar(MBARTYPE eType, bool bTop) = 0;
 		virtual void EndBar  () = 0;
 
-		// Стрелка с надписью сверху или снизу (отличе от BeginBar/EndBar в том, что здесь стрелка основной 
-		// объект, а текст - это небольшая надпись, а у тех функций наоборот)
+		// РЎС‚СЂРµР»РєР° СЃ РЅР°РґРїРёСЃСЊСЋ СЃРІРµСЂС…Сѓ РёР»Рё СЃРЅРёР·Сѓ (РѕС‚Р»РёС‡Рµ РѕС‚ BeginBar/EndBar РІ С‚РѕРј, С‡С‚Рѕ Р·РґРµСЃСЊ СЃС‚СЂРµР»РєР° РѕСЃРЅРѕРІРЅРѕР№ 
+		// РѕР±СЉРµРєС‚, Р° С‚РµРєСЃС‚ - СЌС‚Рѕ РЅРµР±РѕР»СЊС€Р°СЏ РЅР°РґРїРёСЃСЊ, Р° Сѓ С‚РµС… С„СѓРЅРєС†РёР№ РЅР°РѕР±РѕСЂРѕС‚)
 		virtual void BeginArrow(MARROWTYPE eType, bool bTop) = 0;
 		virtual void EndArrow  () = 0;
 
-		// Интегралы. Последовательность блоков всегда следующая(если блок присутствует) Base, Sub, Sup
+		// РРЅС‚РµРіСЂР°Р»С‹. РџРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ Р±Р»РѕРєРѕРІ РІСЃРµРіРґР° СЃР»РµРґСѓСЋС‰Р°СЏ(РµСЃР»Рё Р±Р»РѕРє РїСЂРёСЃСѓС‚СЃС‚РІСѓРµС‚) Base, Sub, Sup
 		virtual void BeginIntegral(MINTEGRALTYPE eType) = 0;
 		virtual void EndIntegral  () = 0;
 
-		// Фигурная скобка с текстом над/под объектом. Сначала идет основной объект, потом надпись фигурной скобки.
+		// Р¤РёРіСѓСЂРЅР°СЏ СЃРєРѕР±РєР° СЃ С‚РµРєСЃС‚РѕРј РЅР°Рґ/РїРѕРґ РѕР±СЉРµРєС‚РѕРј. РЎРЅР°С‡Р°Р»Р° РёРґРµС‚ РѕСЃРЅРѕРІРЅРѕР№ РѕР±СЉРµРєС‚, РїРѕС‚РѕРј РЅР°РґРїРёСЃСЊ С„РёРіСѓСЂРЅРѕР№ СЃРєРѕР±РєРё.
 		virtual void BeginVerticalBrace(bool bTop) = 0;
 		virtual void EndVerticalBrace  () = 0;
 
-		// Сумма, произведение, копроизведение, объединение, пересечение. Последовательность блоков Base, Sub, Sup
+		// РЎСѓРјРјР°, РїСЂРѕРёР·РІРµРґРµРЅРёРµ, РєРѕРїСЂРѕРёР·РІРµРґРµРЅРёРµ, РѕР±СЉРµРґРёРЅРµРЅРёРµ, РїРµСЂРµСЃРµС‡РµРЅРёРµ. РџРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ Р±Р»РѕРєРѕРІ Base, Sub, Sup
 		virtual void BeingNArray(MNARRAYTYPE eType) = 0;
 		virtual void EndNArray  () = 0;
 
-		// Деление столбиком. С частным или без. Вначале всегда идет основание, потом если есть частное.
+		// Р”РµР»РµРЅРёРµ СЃС‚РѕР»Р±РёРєРѕРј. РЎ С‡Р°СЃС‚РЅС‹Рј РёР»Рё Р±РµР·. Р’РЅР°С‡Р°Р»Рµ РІСЃРµРіРґР° РёРґРµС‚ РѕСЃРЅРѕРІР°РЅРёРµ, РїРѕС‚РѕРј РµСЃР»Рё РµСЃС‚СЊ С‡Р°СЃС‚РЅРѕРµ.
 		virtual void BeginLongDivision(MLONGDIVISION eType) = 0;
 		virtual void EndLongDivision  () = 0;
 
-		// < | > - такой элемент
+		// < | > - С‚Р°РєРѕР№ СЌР»РµРјРµРЅС‚
 		virtual void BeginAngleBracketsWithSeparator(MANGLEBRACKETSWITHSEPARATORTYPE eType) = 0;
 		virtual void EndAngleBracketsWithSeparator  () = 0;
 

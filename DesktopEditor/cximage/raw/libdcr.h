@@ -1,4 +1,4 @@
-/*
+﻿/*
   libdcr version 0.1.8.93 03/May/2009
 
   libdcr : copyright (C) 2007-2009, Davide Pizzolato

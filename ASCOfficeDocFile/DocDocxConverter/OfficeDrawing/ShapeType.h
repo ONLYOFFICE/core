@@ -1,3 +1,34 @@
+ï»¿/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 #pragma once
 
 #include "ProtectionBooleanProperties.h"
@@ -272,30 +303,30 @@ namespace DocFileFormat
 		}
 
 	public:      
-		/// This string describes a sequence of commands that define the shape’s path.
-		/// This string describes both the pSegmentInfo array and pVertices array in the shape’s geometry properties.
+		/// This string describes a sequence of commands that define the shapeâ€™s path.
+		/// This string describes both the pSegmentInfo array and pVertices array in the shapeâ€™s geometry properties.
 		std::wstring Path;
 		/// This specifies a list of formulas whose calculated values are referenced by other properties.
 		/// Each formula is listed on a separate line. Formulas are ordered, with the first formula having index 0.
-		/// This section can be omitted if the shape doesn’t need any guides.
+		/// This section can be omitted if the shape doesnâ€™t need any guides.
 		std::list<std::wstring> Formulas;
 		/// Specifies a comma-delimited list of parameters, or adjustment values, 
 		/// used to define values for a parameterized formula.
 		/// These values represent the location of an adjust handle and may be 
 		/// referenced by the geometry of an adjust handle or as a parameter guide function.
 		std::wstring AdjustmentValues;
-		/// These values specify the location of connection points on the shape’s path.
+		/// These values specify the location of connection points on the shapeâ€™s path.
 		/// The connection points are defined by a string consisting of pairs of x and y values, delimited by commas.
 		std::wstring ConnectorLocations;
 		/// This section specifies the properties of each adjust handle on the shape.
 		/// One adjust handle is specified per line.
 		/// The properties for each handle correspond to values of the ADJH structure 
-		/// contained in the pAdjustHandles array in the shape’s geometry properties.
+		/// contained in the pAdjustHandles array in the shapeâ€™s geometry properties.
 		std::list<Handle> Handles;
 		/// Specifies one or more text boxes inscribed inside the shape.
 		/// A textbox is defined by one or more sets of numbers specifying (in order) the left, top, right, and bottom points of the rectangle.
 		/// Multiple sets are delimited by a semicolon.
-		/// If omitted, the text box is the same as the geometry’s bounding box.
+		/// If omitted, the text box is the same as the geometryâ€™s bounding box.
 		std::wstring TextBoxRectangle;
 		bool ShapeConcentricFill;
 		/// Specifies what join style the shape has.

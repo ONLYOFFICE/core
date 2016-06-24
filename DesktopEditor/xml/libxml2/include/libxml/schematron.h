@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Summary: XML Schemastron implementation
  * Description: interface to the XML Schematron validity checking.
  *

@@ -1,3 +1,34 @@
+п»ї/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 #ifndef _METAFILE_EMF_EMFTYPES_H
 #define _METAFILE_EMF_EMFTYPES_H
 
@@ -380,7 +411,7 @@ namespace MetaFile
 	//			Init();
 	//		else if (MWT_LEFTMULTIPLY == ulMode)
 	//		{
-	//			// oOther слева, текущая матрица справа
+	//			// oOther СЃР»РµРІР°, С‚РµРєСѓС‰Р°СЏ РјР°С‚СЂРёС†Р° СЃРїСЂР°РІР°
 	//			double dM11 = oOther.M11 * M11 + oOther.M12 * M21;
 	//			double dM12 = oOther.M11 * M21 + oOther.M12 * M22;
 	//			double dM21 = oOther.M21 * M11 + oOther.M22 * M21;
@@ -398,7 +429,7 @@ namespace MetaFile
 	//		}
 	//		else if (MWT_RIGHTMULTIPLY == ulMode)
 	//		{
-	//			// oOther справа, текущая матрица слева
+	//			// oOther СЃРїСЂР°РІР°, С‚РµРєСѓС‰Р°СЏ РјР°С‚СЂРёС†Р° СЃР»РµРІР°
 	//			double dM11 = M11 * oOther.M11 + M12 * oOther.M21;
 	//			double dM12 = M11 * oOther.M21 + M12 * oOther.M22;
 	//			double dM21 = M21 * oOther.M11 + M22 * oOther.M21;
@@ -437,7 +468,7 @@ namespace MetaFile
 		unsigned int  Options;
 		TEmfRectL     Rectangle;
 		unsigned int  offDx;
-		void*         OutputString; // unsinged short* либо unsigned char*
+		void*         OutputString; // unsinged short* Р»РёР±Рѕ unsigned char*
 		unsigned int* OutputDx;		
 
 		TEmfEmrText()

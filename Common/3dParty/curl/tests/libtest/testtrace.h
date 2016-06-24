@@ -1,4 +1,4 @@
-#ifndef HEADER_LIBTEST_TESTTRACE_H
+﻿#ifndef HEADER_LIBTEST_TESTTRACE_H
 #define HEADER_LIBTEST_TESTTRACE_H
 /***************************************************************************
  *                                  _   _ ____  _

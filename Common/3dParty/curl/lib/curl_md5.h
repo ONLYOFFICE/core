@@ -1,4 +1,4 @@
-#ifndef HEADER_CURL_MD5_H
+﻿#ifndef HEADER_CURL_MD5_H
 #define HEADER_CURL_MD5_H
 /***************************************************************************
  *                                  _   _ ____  _

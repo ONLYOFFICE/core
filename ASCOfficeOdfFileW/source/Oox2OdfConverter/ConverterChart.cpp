@@ -1,3 +1,34 @@
+п»ї/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 
 #include "Converter.h"
 #include "../utils.h"
@@ -117,7 +148,7 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_Legend* ct_legend)
 		convert(ct_legend->m_oTxPr.GetPointer());
 		if (ct_legend->m_legendEntry.size() > 0)
 		{
-			convert(ct_legend->m_legendEntry[0]); // в odf_writer нет в легенде множественности стилей
+			convert(ct_legend->m_legendEntry[0]); // РІ odf_writer РЅРµС‚ РІ Р»РµРіРµРЅРґРµ РјРЅРѕР¶РµСЃС‚РІРµРЅРЅРѕСЃС‚Рё СЃС‚РёР»РµР№
 		}
 	//////////////////////
 	odf_context()->chart_context()->end_element();
@@ -1055,7 +1086,7 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_Surface* ct_surface, int type, b
 	{
 		convert(ct_surface->m_oSpPr.GetPointer());
 	}
-	else if (chart3D)//тока для 3D так - хз почему
+	else if (chart3D)//С‚РѕРєР° РґР»СЏ 3D С‚Р°Рє - С…Р· РїРѕС‡РµРјСѓ
 	{
 		odf_context()->chart_context()->set_no_fill(true);
 	}
@@ -1064,7 +1095,7 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_Surface* ct_surface, int type, b
 void OoxConverter::convert(OOX::Spreadsheet::CT_ExternalData *external_data)
 {
 	if (external_data == NULL)return;
-	//данные для диаграммы внутренние !!!
+	//РґР°РЅРЅС‹Рµ РґР»СЏ РґРёР°РіСЂР°РјРјС‹ РІРЅСѓС‚СЂРµРЅРЅРёРµ !!!
 
 	if (external_data->m_id == NULL)return;
 
@@ -1073,12 +1104,12 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_ExternalData *external_data)
 	//unpack
 
 	//get/check Format - xlsx
-	//конверт sheets -> table:table
+	//РєРѕРЅРІРµСЂС‚ sheets -> table:table
 
-	//или
+	//РёР»Рё
 	//convert xlsx -> ods & read tables???
 
-	odf_context()->chart_context()->set_local_table(true);//пока пользуем кэш ....
+	odf_context()->chart_context()->set_local_table(true);//РїРѕРєР° РїРѕР»СЊР·СѓРµРј РєСЌС€ ....
 }
 void OoxConverter::convert(OOX::Spreadsheet::CT_NumData	*num_data)
 {

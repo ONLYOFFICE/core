@@ -1,4 +1,4 @@
-/* xsize.h -- Checked size_t computations.
+﻿/* xsize.h -- Checked size_t computations.
 
    Copyright (C) 2003 Free Software Foundation, Inc.
 

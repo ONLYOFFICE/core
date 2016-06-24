@@ -1,3 +1,34 @@
+ï»¿/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 
 
 #include <boost/foreach.hpp>
@@ -12,46 +43,13 @@
 namespace cpdoccore {
 namespace oox {
 
-class oox_marker_type
-{
-public:
-	static void oox_serialize(std::wostream & _Wostream,int type =0)
-	{
-		CP_XML_WRITER(_Wostream)
-		{
-			CP_XML_NODE(L"c:marker")
-			{
-				CP_XML_NODE(L"c:symbol")
-				{
-					switch (type)
-					{
-					case 11:	CP_XML_ATTR(L"val", L"star"); break;
-					case 10:	CP_XML_ATTR(L"val", L"circle"); break;
-					case 15:	CP_XML_ATTR(L"val", L"dash"); break;
-					case 3:		CP_XML_ATTR(L"val", L"diamond"); break;
-					case 14:	CP_XML_ATTR(L"val", L"dot"); break;
-					case 8:		CP_XML_ATTR(L"val", L"picture"); break;
-					case 13:	CP_XML_ATTR(L"val", L"plus"); break;
-					case 2:		CP_XML_ATTR(L"val", L"square"); break;
-					case 9:		CP_XML_ATTR(L"val", L"triangle"); break;
-					case 12:	CP_XML_ATTR(L"val", L"x"); break;
-					case 0:	//none
-					case 1:	//auto
-					default:
-						CP_XML_ATTR(L"val", L"none");			
-					}
-				}
-			}
-		}
-	}
-};
 oox_chart_series::oox_chart_series()
 {
-	values_[0].type	= L"c:cat";//ïîäïèñè
+	values_[0].type	= L"c:cat";//Ð¿Ð¾Ð´Ð¿Ð¸ÑÐ¸
 	values_[1].type	= L"c:val";
 	values_[2].type	= L"c:xVal";
 	values_[3].type	= L"c:yVal";
-	values_[4].type	= L"c:bubbleSize";//çàìåñòî îñè õ!!!!
+	values_[4].type	= L"c:bubbleSize";//Ð·Ð°Ð¼ÐµÑÑ‚Ð¾ Ð¾ÑÐ¸ Ñ…!!!!
 
 	iSymbolMarkerType_	= 0;
 	bLocalTable_		= false;
@@ -77,7 +75,7 @@ void oox_chart_series::setFormula(int ind, std::wstring &value, std::wstring & f
 	else
 	{
 		long res = value.find(L"local-table");
-		if (res >=0 && !bLocalTable_ ) return; //â xlsx íèçÿ .... íóæíî ñäåëàòü òîãäà îòäåëüíóþ  table.xml
+		if (res >=0 && !bLocalTable_ ) return; //Ð² xlsx Ð½Ð¸Ð·Ñ .... Ð½ÑƒÐ¶Ð½Ð¾ ÑÐ´ÐµÐ»Ð°Ñ‚ÑŒ Ñ‚Ð¾Ð³Ð´Ð° Ð¾Ñ‚Ð´ÐµÐ»ÑŒÐ½ÑƒÑŽ  table.xml
 
 		values_[ind].numRef_.formula		= converter.convert_chart_distance(value);
 		values_[ind].numRef_.present		= true;
@@ -104,10 +102,10 @@ void oox_chart_series::parse_properties()
 		iSymbolMarkerType_ = intVal.get() ;
 		if (iSymbolMarkerType_ == 2)
 		{
-			odf_reader::GetProperty(content_.properties_, L"symbol-name", intVal);   //    êâàäðàòèêè, çâåçäî÷êè ...
+			odf_reader::GetProperty(content_.properties_, L"symbol-name", intVal);   //    ÐºÐ²Ð°Ð´Ñ€Ð°Ñ‚Ð¸ÐºÐ¸, Ð·Ð²ÐµÐ·Ð´Ð¾Ñ‡ÐºÐ¸ ...
 			
 			if (intVal)	iSymbolMarkerType_	= intVal.get() ;
-			else		iSymbolMarkerType_	= 0;//âûêëþ÷èì
+			else		iSymbolMarkerType_	= 0;//Ð²Ñ‹ÐºÐ»ÑŽÑ‡Ð¸Ð¼
 		}
 	}
 	//odf_reader::GetProperty(content_.properties_, L"data-label-symbol", boolVal);
@@ -120,12 +118,14 @@ void oox_chart_series::parse_properties()
 	if (boolVal)
 	{
 		if (!data_labels_) data_labels_ = oox_data_labels();
+		
 		data_labels_->set_showCatName(*boolVal); 
 	}
 	odf_reader::GetProperty(content_.properties_, L"data-label-number", intVal);
 	if (intVal)
 	{
-		if (!data_labels_) data_labels_ = oox_data_labels();
+		if (!data_labels_)	data_labels_ = oox_data_labels();
+		
 		if (*intVal == 1)	data_labels_->set_showVal(true); 
 		if (*intVal == 2)	data_labels_->set_showPercent(true); 		
 	}
@@ -152,12 +152,47 @@ void oox_chart_series::setValues(int ind, std::vector<std::wstring> & values)
 		}
 	}
 }
+void oox_chart_series::oox_serialize_marker(std::wostream & _Wostream)
+{
+	CP_XML_WRITER(_Wostream)
+	{
+		CP_XML_NODE(L"c:marker")
+		{
+			CP_XML_NODE(L"c:symbol")
+			{
+				switch (iSymbolMarkerType_)
+				{
+				case 11:	CP_XML_ATTR(L"val", L"star"); break;
+				case 10:	CP_XML_ATTR(L"val", L"circle"); break;
+				case 15:	CP_XML_ATTR(L"val", L"dash"); break;
+				case 3:		CP_XML_ATTR(L"val", L"diamond"); break;
+				case 14:	CP_XML_ATTR(L"val", L"dot"); break;
+				case 8:		CP_XML_ATTR(L"val", L"picture"); break;
+				case 13:	CP_XML_ATTR(L"val", L"plus"); break;
+				case 2:		CP_XML_ATTR(L"val", L"square"); break;
+				case 9:		CP_XML_ATTR(L"val", L"triangle"); break;
+				case 12:	CP_XML_ATTR(L"val", L"x"); break;
+				case 0:	//none
+				case 1:	//auto
+				default:
+					CP_XML_ATTR(L"val", L"none");			
+				}
+			}
+			if (iSymbolMarkerType_ > 0)
+			{
+				oox_chart_shape shape;
+				
+				shape.set(content_.graphic_properties_, content_.fill_);
+				shape.oox_serialize(_Wostream);
+			}
+		}
+	}
+}
 void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 {
 	parse_properties();
 
 	oox_chart_shape shape;
-	shape.set(content_.graphic_properties_, content_.fill_);
 	
 	CP_XML_WRITER(_Wostream)
     {
@@ -170,6 +205,7 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 			CP_XML_ATTR(L"val", id_);
 
 		}
+		shape.set(content_.graphic_properties_, content_.fill_);
 		shape.oox_serialize(_Wostream);
 
 		for (int i=0; i < 5; i++)
@@ -355,6 +391,12 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 
 			}
 		}
+		if (!content_.text_properties_.empty())
+		{
+			if (!data_labels_) data_labels_ = oox_data_labels();
+
+			data_labels_->set_common_dLbl(content_.text_properties_);
+		}
 
 		bool bEmpty_dPt = true;
 		for (int i = 0 ; i < content_.points_.size(); i++)
@@ -394,21 +436,22 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 		}
 		
 		if (data_labels_)
+		{
 			data_labels_->oox_serialize(_Wostream);
+		}
 
 	}
 }
-	//backward (Backward) §21.2.2.12
-	//dispEq (Display Equation) §21.2.2.43
-	//dispRSqr (Display R Squared Value) §21.2.2.44
-	//extLst (Chart Extensibility) §21.2.2.64
-	//forward (Forward) §21.2.2.73
-	//intercept (Intercept) §21.2.2.85
-	//name (Trendline Name) §21.2.2.116
-	//order (Polynomial Trendline Order) §21.2.2.129
-	//period (Period) §21.2.2.135
-	//spPr (Shape Properties) §21.2.2.197
-	//trendlineLbl (Trendline Label) §21.2.2.212
+	//backward (Backward) Â§21.2.2.12
+	//dispEq (Display Equation) Â§21.2.2.43
+	//dispRSqr (Display R Squared Value) Â§21.2.2.44
+	//extLst (Chart Extensibility) Â§21.2.2.64
+	//forward (Forward) Â§21.2.2.73
+	//intercept (Intercept) Â§21.2.2.85
+	//name (Trendline Name) Â§21.2.2.116
+	//order (Polynomial Trendline Order) Â§21.2.2.129
+	//period (Period) Â§21.2.2.135
+	//trendlineLbl (Trendline Label) Â§21.2.2.212
 	//trendlineType (Trendline Type)
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -443,7 +486,7 @@ void oox_line_series::oox_serialize(std::wostream & _Wostream)
 		{
 			oox_serialize_common(CP_XML_STREAM());
 
-			oox_marker_type::oox_serialize(CP_XML_STREAM(),iSymbolMarkerType_);
+			oox_serialize_marker(CP_XML_STREAM());
 		}
 	}
 }
@@ -455,7 +498,7 @@ _CP_PTR(oox_chart_series) oox_pie_series::create()
 }
 void oox_pie_series::oox_serialize(std::wostream & _Wostream)
 {
-	content_.fill_.clear();		//àâòî ïîäáîð öâåòîâ
+	content_.fill_.clear();		//Ð°Ð²Ñ‚Ð¾ Ð¿Ð¾Ð´Ð±Ð¾Ñ€ Ñ†Ð²ÐµÑ‚Ð¾Ð²
 
 	CP_XML_WRITER(_Wostream)
     {
@@ -491,7 +534,7 @@ void oox_scatter_series::oox_serialize(std::wostream & _Wostream)
 		{
 			oox_serialize_common(CP_XML_STREAM());
 			
-			oox_marker_type::oox_serialize(CP_XML_STREAM(),iSymbolMarkerType_);
+			oox_serialize_marker(CP_XML_STREAM());
 		}
 	}
 }
@@ -568,7 +611,7 @@ void oox_radar_series::oox_serialize(std::wostream & _Wostream)
 		{
 			oox_serialize_common(CP_XML_STREAM());
 
-			oox_marker_type::oox_serialize(CP_XML_STREAM(),iSymbolMarkerType_);
+			oox_serialize_marker(CP_XML_STREAM());
 		}
 	}
 }

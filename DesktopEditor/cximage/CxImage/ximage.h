@@ -1,4 +1,4 @@
-/*
+﻿/*
  * File:	ximage.h
  * Purpose:	General Purpose Image Class 
  */

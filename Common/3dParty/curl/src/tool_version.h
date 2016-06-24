@@ -1,4 +1,4 @@
-#ifndef HEADER_CURL_TOOL_VERSION_H
+﻿#ifndef HEADER_CURL_TOOL_VERSION_H
 #define HEADER_CURL_TOOL_VERSION_H
 /***************************************************************************
  *                                  _   _ ____  _

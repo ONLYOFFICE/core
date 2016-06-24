@@ -1,3 +1,34 @@
+п»ї/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 
 #include "draw_frame.h"
 
@@ -548,7 +579,7 @@ int ComputeMarginY(const style_page_layout_properties_attlist & pageProperties,
         common_text_anchor_attlist_.
         type_;
 
-	//todooo пока не ясно как привязать к определеной странице в документе ...
+	//todooo РїРѕРєР° РЅРµ СЏСЃРЅРѕ РєР°Рє РїСЂРёРІСЏР·Р°С‚СЊ Рє РѕРїСЂРµРґРµР»РµРЅРѕР№ СЃС‚СЂР°РЅРёС†Рµ РІ РґРѕРєСѓРјРµРЅС‚Рµ ...
 	//const _CP_OPT(unsigned int) anchor_page_number = 
 	//	attlists_.shape_with_text_and_styles_.
 	//	common_draw_shape_with_styles_attlist_.
@@ -560,7 +591,7 @@ int ComputeMarginY(const style_page_layout_properties_attlist & pageProperties,
     _CP_OPT(vertical_pos) styleVerticallPos = graphicProperties.common_vertical_pos_attlist_.style_vertical_pos_;
 
     const _CP_OPT(length) pageHeight = pageProperties.fo_page_height_;        
-    // TODO : проверить, значения в процентах что именно означают
+    // TODO : РїСЂРѕРІРµСЂРёС‚СЊ, Р·РЅР°С‡РµРЅРёСЏ РІ РїСЂРѕС†РµРЅС‚Р°С… С‡С‚Рѕ РёРјРµРЅРЅРѕ РѕР·РЅР°С‡Р°СЋС‚
     const _CP_OPT(length) pageMarginTop = CalcResultLength(pageProperties.common_vertical_margin_attlist_.fo_margin_top_, pageHeight);
     const _CP_OPT(length) pageMarginBottom = CalcResultLength(pageProperties.common_vertical_margin_attlist_.fo_margin_bottom_, pageHeight);
 
@@ -706,7 +737,7 @@ int ComputeMarginY(const style_page_layout_properties_attlist & pageProperties,
             svgY = *attlists_.position_.svg_y_;
     }
 
-	//if (anchor_page_number && pageHeight)....так нельзя .. только в пределах текущей страницы :(
+	//if (anchor_page_number && pageHeight)....С‚Р°Рє РЅРµР»СЊР·СЏ .. С‚РѕР»СЊРєРѕ РІ РїСЂРµРґРµР»Р°С… С‚РµРєСѓС‰РµР№ СЃС‚СЂР°РЅРёС†С‹ :(
 	//{
 	//	svgY = length(svgY->get_value_unit(length::pt) + pageHeight->get_value_unit(length::pt) * (*anchor_page_number - 1), length::pt );
 	//}
@@ -783,14 +814,14 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, const unio
 	if (!drawing.isInline)
     {
 		if (!drawing.styleWrap)
-			drawing.styleWrap = style_wrap(style_wrap::Parallel);//у опен офис и мс разные дефолты
+			drawing.styleWrap = style_wrap(style_wrap::Parallel);//Сѓ РѕРїРµРЅ РѕС„РёСЃ Рё РјСЃ СЂР°Р·РЅС‹Рµ РґРµС„РѕР»С‚С‹
 
         drawing.relativeHeight = L"2";
         drawing.behindDoc = L"0";
 
         _CP_OPT(int) zIndex = attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_draw_z_index_attlist_.draw_z_index_;
        
-		if (zIndex)//порядок отрисовки объектов
+		if (zIndex)//РїРѕСЂСЏРґРѕРє РѕС‚СЂРёСЃРѕРІРєРё РѕР±СЉРµРєС‚РѕРІ
         {
             if (*zIndex < 0) 
                 drawing.relativeHeight = L"0";
@@ -869,12 +900,12 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, const unio
 	if (drawing.cy < 0)
 		drawing.cy = 0;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-	if ((drawing.styleWrap) && (drawing.styleWrap->get_type() == style_wrap::Dynamic))	//автоподбор
+	if ((drawing.styleWrap) && (drawing.styleWrap->get_type() == style_wrap::Dynamic))	//Р°РІС‚РѕРїРѕРґР±РѕСЂ
 	{
 		int max_width	= get_value_emu(pageProperties.fo_page_width_);
 		int max_height	= get_value_emu(pageProperties.fo_page_height_);
 		
-		//это бред(типо подгонка) автоподбор под размер текста ... 
+		//СЌС‚Рѕ Р±СЂРµРґ(С‚РёРїРѕ РїРѕРґРіРѕРЅРєР°) Р°РІС‚РѕРїРѕРґР±РѕСЂ РїРѕРґ СЂР°Р·РјРµСЂ С‚РµРєСЃС‚Р° ... 
 		//if (Context.process_headers_footers_ && pageLayoutInst)
 		//{
 		//	style_header_style * headerStyle = dynamic_cast<style_header_style *>(pageLayoutInst->style_page_layout_->style_header_style_.get());
@@ -924,14 +955,14 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, const unio
 	if (dVal)
 	{
 		int val = get_value_emu(dVal.get());
-		drawing.x = val >=0 ? val : 0; //??? todooo отрицательные величины ...
+		drawing.x = val >=0 ? val : 0; //??? todooo РѕС‚СЂРёС†Р°С‚РµР»СЊРЅС‹Рµ РІРµР»РёС‡РёРЅС‹ ...
 	}
 
 	GetProperty(drawing.additional,L"svg:translate_y",dVal);
 	if (dVal)
 	{
 		int val = get_value_emu(dVal.get());
-		drawing.y = val >=0 ? val : 0; //??? todooo отрицательные величины ...
+		drawing.y = val >=0 ? val : 0; //??? todooo РѕС‚СЂРёС†Р°С‚РµР»СЊРЅС‹Рµ РІРµР»РёС‡РёРЅС‹ ...
 	}
 
 	if (drawing.inGroup && drawing.type != oox::mediaitems::typeGroup)
@@ -939,7 +970,7 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, const unio
 		Context.get_drawing_context().set_position_child_group(drawing.x, drawing.y);
 		Context.get_drawing_context().set_size_child_group(drawing.cx + drawing.x, drawing.cy + drawing.y);
 
-		// ваще то тут "несовсем" всерно ... нужно сначала все стартовые позиции добавить ..
+		// РІР°С‰Рµ С‚Рѕ С‚СѓС‚ "РЅРµСЃРѕРІСЃРµРј" РІСЃРµСЂРЅРѕ ... РЅСѓР¶РЅРѕ СЃРЅР°С‡Р°Р»Р° РІСЃРµ СЃС‚Р°СЂС‚РѕРІС‹Рµ РїРѕР·РёС†РёРё РґРѕР±Р°РІРёС‚СЊ ..
         _INT32 x_group_offset, y_group_offset;
 		Context.get_drawing_context().get_position_group(x_group_offset, y_group_offset);
 
@@ -961,7 +992,7 @@ void draw_shape::docx_convert(oox::docx_conversion_context & Context)
 	drawing.inGroup	= Context.get_drawing_context().in_group();
 
 	drawing.sub_type	= sub_type_;
-	drawing.additional	= additional_;//сюда могут добавиться свойства ...
+	drawing.additional	= additional_;//СЃСЋРґР° РјРѕРіСѓС‚ РґРѕР±Р°РІРёС‚СЊСЃСЏ СЃРІРѕР№СЃС‚РІР° ...
 
 	if (drawing.sub_type !=5 )//line
 	{
@@ -973,7 +1004,7 @@ void draw_shape::docx_convert(oox::docx_conversion_context & Context)
 	common_draw_docx_convert(Context, common_draw_attlists_, drawing);
 /////////
 
-	if (drawing.fill.type < 1 && !IsExistProperty(drawing.additional,L"stroke"))//бывает что и не определено ничего 
+	if (drawing.fill.type < 1 && !IsExistProperty(drawing.additional,L"stroke"))//Р±С‹РІР°РµС‚ С‡С‚Рѕ Рё РЅРµ РѕРїСЂРµРґРµР»РµРЅРѕ РЅРёС‡РµРіРѕ 
 	{
 		drawing.fill.solid = oox::oox_solid_fill::create();
 		drawing.fill.solid->color = L"729FCF";
@@ -1016,9 +1047,9 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 		return;
 
 	if (pos_replaicement >=0 && !Context.get_drawing_context().get_use_image_replace())
-		return;//заменяемый объект
+		return;//Р·Р°РјРµРЅСЏРµРјС‹Р№ РѕР±СЉРµРєС‚
 //--------------------------------------------------
-	//тут может быть не только текст , но и таблицы, другие объекты ...
+	//С‚СѓС‚ РјРѕР¶РµС‚ Р±С‹С‚СЊ РЅРµ С‚РѕР»СЊРєРѕ С‚РµРєСЃС‚ , РЅРѕ Рё С‚Р°Р±Р»РёС†С‹, РґСЂСѓРіРёРµ РѕР±СЉРµРєС‚С‹ ...
  	oox::docx_conversion_context::StreamsManPtr prev = Context.get_stream_man();
 	
 	std::wstringstream temp_stream(Context.get_drawing_context().get_text_stream_frame());
@@ -1050,8 +1081,8 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 
 //--------------------------------------------------
 	oox::hyperlinks::_ref hyperlink = Context.last_hyperlink();
-	//нужно еще систему конроля - могут придте уже "использованные" линки с картинок - из колонтитулов (но на них уже использовали релсы)
-	//дыра осталась если картинка в картинке - линк продублируется с внутренней на внешнюю 
+	//РЅСѓР¶РЅРѕ РµС‰Рµ СЃРёСЃС‚РµРјСѓ РєРѕРЅСЂРѕР»СЏ - РјРѕРіСѓС‚ РїСЂРёРґС‚Рµ СѓР¶Рµ "РёСЃРїРѕР»СЊР·РѕРІР°РЅРЅС‹Рµ" Р»РёРЅРєРё СЃ РєР°СЂС‚РёРЅРѕРє - РёР· РєРѕР»РѕРЅС‚РёС‚СѓР»РѕРІ (РЅРѕ РЅР° РЅРёС… СѓР¶Рµ РёСЃРїРѕР»СЊР·РѕРІР°Р»Рё СЂРµР»СЃС‹)
+	//РґС‹СЂР° РѕСЃС‚Р°Р»Р°СЃСЊ РµСЃР»Рё РєР°СЂС‚РёРЅРєР° РІ РєР°СЂС‚РёРЅРєРµ - Р»РёРЅРє РїСЂРѕРґСѓР±Р»РёСЂСѓРµС‚СЃСЏ СЃ РІРЅСѓС‚СЂРµРЅРЅРµР№ РЅР° РІРЅРµС€РЅСЋСЋ 
 	if (hyperlink.drawing == true && hyperlink.used_rels == false)
 	{
 		oox::_hlink_desc desc = {hyperlink.id, hyperlink.href, true};
@@ -1121,7 +1152,7 @@ void draw_text_box::docx_convert(oox::docx_conversion_context & Context)
 		return;
 	}
 
-	//тут может быть не только текст , но и таблицы, другие объекты ...
+	//С‚СѓС‚ РјРѕР¶РµС‚ Р±С‹С‚СЊ РЅРµ С‚РѕР»СЊРєРѕ С‚РµРєСЃС‚ , РЅРѕ Рё С‚Р°Р±Р»РёС†С‹, РґСЂСѓРіРёРµ РѕР±СЉРµРєС‚С‹ ...
  	oox::docx_conversion_context::StreamsManPtr prev = Context.get_stream_man();
 	
 	std::wstringstream temp_stream(Context.get_drawing_context().get_text_stream_frame());
@@ -1165,7 +1196,7 @@ void draw_text_box::docx_convert(oox::docx_conversion_context & Context)
 	Context.get_drawing_context().clear_stream_frame();
 /////////
 	common_draw_docx_convert(Context, frame->common_draw_attlists_, drawing);
-//+ локальные 
+//+ Р»РѕРєР°Р»СЊРЅС‹Рµ 
 
 	bool auto_fit_text = false;
 
@@ -1282,7 +1313,7 @@ void draw_g::docx_convert(oox::docx_conversion_context & Context)
 		Context.get_drawing_context().set_position_child_group	(drawing.x, drawing.y);
 		Context.get_drawing_context().set_size_child_group		(drawing.cx + drawing.x, drawing.cy + drawing.y);
 
-        // ваще то тут "несовсем" верно ... нужно сначала все стартовые позиции добавить ..
+        // РІР°С‰Рµ С‚Рѕ С‚СѓС‚ "РЅРµСЃРѕРІСЃРµРј" РІРµСЂРЅРѕ ... РЅСѓР¶РЅРѕ СЃРЅР°С‡Р°Р»Р° РІСЃРµ СЃС‚Р°СЂС‚РѕРІС‹Рµ РїРѕР·РёС†РёРё РґРѕР±Р°РІРёС‚СЊ ..
         _INT32 x_group_offset, y_group_offset;
 		Context.get_drawing_context().get_position_group(x_group_offset, y_group_offset);
 
@@ -1356,12 +1387,12 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 
         cpdoccore::odf_reader::odf_document objectSubDoc(objectPath ,NULL);    
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//функциональная часть
+//С„СѓРЅРєС†РёРѕРЅР°Р»СЊРЅР°СЏ С‡Р°СЃС‚СЊ
 		office_element	*contentSubDoc	= objectSubDoc.get_impl()->get_content();
 		draw_frame		*frame			= NULL;
 		chart_build		objectBuild;
 
-		//if (!contentSubDoc)//Diagramma.odt - кривые ссылки на объекты
+		//if (!contentSubDoc)//Diagramma.odt - РєСЂРёРІС‹Рµ СЃСЃС‹Р»РєРё РЅР° РѕР±СЉРµРєС‚С‹
 		//	return;
 		
 		if (contentSubDoc)
@@ -1375,7 +1406,7 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 		}		
 
 //------------------------------------------------------------------------------------------------------------
-		if (objectBuild.object_type_ == 1  && frame) //диаграмма
+		if (objectBuild.object_type_ == 1  && frame) //РґРёР°РіСЂР°РјРјР°
 		{	
 			oox::_docx_drawing drawing = oox::_docx_drawing();
 
@@ -1407,7 +1438,7 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 			Context.set_run_state(runState);
 			Context.set_paragraph_state(pState);	
 		}
-		else if (objectBuild.object_type_ == 3  && frame) //мат формулы
+		else if (objectBuild.object_type_ == 3  && frame) //РјР°С‚ С„РѕСЂРјСѓР»С‹
 		{	
 			oox::_docx_drawing drawing = oox::_docx_drawing();
 
@@ -1465,7 +1496,7 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 		}
 		else if (objectBuild.object_type_ == 0) 
 		{
-			//замещающая картинка(если она конечно присутствует)
+			//Р·Р°РјРµС‰Р°СЋС‰Р°СЏ РєР°СЂС‚РёРЅРєР°(РµСЃР»Рё РѕРЅР° РєРѕРЅРµС‡РЅРѕ РїСЂРёСЃСѓС‚СЃС‚РІСѓРµС‚)
 
 			bool & use_image_replace = Context.get_drawing_context().get_use_image_replace();
 			use_image_replace = true;
@@ -1479,7 +1510,7 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 
 void draw_object_ole::docx_convert(oox::docx_conversion_context & Context)
 {
-	//временно - замещающая картинка(если она конечно присутствует)
+	//РІСЂРµРјРµРЅРЅРѕ - Р·Р°РјРµС‰Р°СЋС‰Р°СЏ РєР°СЂС‚РёРЅРєР°(РµСЃР»Рё РѕРЅР° РєРѕРЅРµС‡РЅРѕ РїСЂРёСЃСѓС‚СЃС‚РІСѓРµС‚)
 
 	bool & use_image_replace = Context.get_drawing_context().get_use_image_replace();
 	use_image_replace = true;

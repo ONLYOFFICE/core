@@ -1,4 +1,35 @@
-﻿#ifndef BIN_WRITERS
+﻿/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
+#ifndef BIN_WRITERS
 #define BIN_WRITERS
 
 #include "BinReaderWriterDefines.h"
@@ -1621,6 +1652,18 @@ namespace BinDocxRW
 			{
 				OOX::Logic::CTableProperty& tblPr = *p_tblPr;
 				int nCurPos = 0;
+				if(tblPr.m_oTblStyleRowBandSize.IsInit() && tblPr.m_oTblStyleRowBandSize->m_oVal.IsInit())
+				{
+					nCurPos = m_oBcw.WriteItemStart(c_oSerProp_tblPrType::RowBandSize);
+					m_oBcw.m_oStream.WriteLONG(tblPr.m_oTblStyleRowBandSize->m_oVal->GetValue());
+					m_oBcw.WriteItemEnd(nCurPos);
+				}
+				if(tblPr.m_oTblStyleColBandSize.IsInit() && tblPr.m_oTblStyleColBandSize->m_oVal.IsInit())
+				{
+					nCurPos = m_oBcw.WriteItemStart(c_oSerProp_tblPrType::ColBandSize);
+					m_oBcw.m_oStream.WriteLONG(tblPr.m_oTblStyleColBandSize->m_oVal->GetValue());
+					m_oBcw.WriteItemEnd(nCurPos);
+				}
 				//Jc
 				if(false != tblPr.m_oJc.IsInit() && tblPr.m_oJc->m_oVal.IsInit())
 				{
@@ -1705,6 +1748,20 @@ namespace BinDocxRW
 					nCurPos = m_oBcw.WriteItemStart(c_oSerProp_tblPrType::tblPrChange);
 					WriteTblPrChange(tblPr.m_oTblPrChange.get());
 					m_oBcw.WriteItemEnd(nCurPos);
+				}
+				if(tblPr.m_oTblCellSpacing.IsInit())
+				{
+					const ComplexTypes::Word::CTblWidth& cs = tblPr.m_oTblCellSpacing.get();
+					if(cs.m_oW.IsInit() && false == cs.m_oW->IsPercent() &&
+						cs.m_oType.IsInit() && SimpleTypes::tblwidthDxa == cs.m_oType->GetValue())
+					{
+						SimpleTypes::CPoint oPoint;
+						oPoint.FromTwips(cs.m_oW->GetValue());
+
+						nCurPos = m_oBcw.WriteItemStart(c_oSerProp_tblPrType::TableCellSpacing);
+						m_oBcw.m_oStream.WriteDouble(oPoint.ToMm() * 2);//Умножаем на 2 из-за разного понимания cellSpacing
+						m_oBcw.WriteItemEnd(nCurPos);
+					}
 				}
 			};
 			void WriteTblMar(const OOX::Logic::CTblCellMar& cellMar)
@@ -5059,6 +5116,18 @@ namespace BinDocxRW
 						m_oBcw.m_oStream.WriteLONG(c_oSerPropLenType::Null);
 					}
 					break;
+				case OOX::et_w_separator:
+					{
+						m_oBcw.m_oStream.WriteBYTE(c_oSerRunType::separator);
+						m_oBcw.m_oStream.WriteLONG(c_oSerPropLenType::Null);
+					}
+					break;
+				case OOX::et_w_continuationSeparator:
+					{
+						m_oBcw.m_oStream.WriteBYTE(c_oSerRunType::continuationSeparator);
+						m_oBcw.m_oStream.WriteLONG(c_oSerPropLenType::Null);
+					}
+					break;
 				case OOX::et_w_commentReference:
 					{
 						OOX::Logic::CCommentReference* pCommentReference = static_cast<OOX::Logic::CCommentReference*>(item);
@@ -5304,6 +5373,14 @@ namespace BinDocxRW
 							WriteEffectExtent(pInline.m_oEffectExtent.get());
 							m_oBcw.WriteItemWithLengthEnd(nCurPos);
 						}
+						if(pInline.m_oCNvGraphicFramePr.IsInit())
+						{
+							m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::GraphicFramePr);
+							m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+							nCurPos = m_oBcw.WriteItemWithLengthStart();
+							WriteNvGraphicFramePr(pInline.m_oCNvGraphicFramePr.get());
+							m_oBcw.WriteItemWithLengthEnd(nCurPos);
+						}
 					}
 				}
 				else if(img.m_oAnchor.IsInit() )
@@ -5471,11 +5548,62 @@ namespace BinDocxRW
 						WriteWrapTopBottom(pAnchor.m_oWrapTopAndBottom.get());
 						m_oBcw.WriteItemWithLengthEnd(nCurPos);
 					}
+					if(pAnchor.m_oCNvGraphicFramePr.IsInit())
+					{
+						m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::GraphicFramePr);
+						m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+						nCurPos = m_oBcw.WriteItemWithLengthStart();
+						WriteNvGraphicFramePr(pAnchor.m_oCNvGraphicFramePr.get());
+						m_oBcw.WriteItemWithLengthEnd(nCurPos);
+					}
 				}
 			}
 			if(bDeleteDrawing)
 				RELEASEOBJECT(pDrawing);
 		};
+		void WriteNvGraphicFramePr(const OOX::Drawing::CNonVisualGraphicFrameProperties& oGraphicFramePr)
+		{
+			if(oGraphicFramePr.m_oGraphicFrameLocks.IsInit())
+			{
+				const OOX::Drawing::CGraphicalObjectFrameLocking& oLocks = oGraphicFramePr.m_oGraphicFrameLocks.get();
+				if(oLocks.m_oNoChangeAspect.IsInit())
+				{
+					m_oBcw.m_oStream.WriteBYTE(c_oSerGraphicFramePr::NoChangeAspect);
+					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+					m_oBcw.m_oStream.WriteBOOL(oLocks.m_oNoChangeAspect->ToBool());
+				}
+				if(oLocks.m_oNoDrilldown.IsInit())
+				{
+					m_oBcw.m_oStream.WriteBYTE(c_oSerGraphicFramePr::NoDrilldown);
+					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+					m_oBcw.m_oStream.WriteBOOL(oLocks.m_oNoDrilldown->ToBool());
+				}
+				if(oLocks.m_oNoGrp.IsInit())
+				{
+					m_oBcw.m_oStream.WriteBYTE(c_oSerGraphicFramePr::NoGrp);
+					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+					m_oBcw.m_oStream.WriteBOOL(oLocks.m_oNoGrp->ToBool());
+				}
+				if(oLocks.m_oNoMove.IsInit())
+				{
+					m_oBcw.m_oStream.WriteBYTE(c_oSerGraphicFramePr::NoMove);
+					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+					m_oBcw.m_oStream.WriteBOOL(oLocks.m_oNoMove->ToBool());
+				}
+				if(oLocks.m_oNoResize.IsInit())
+				{
+					m_oBcw.m_oStream.WriteBYTE(c_oSerGraphicFramePr::NoResize);
+					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+					m_oBcw.m_oStream.WriteBOOL(oLocks.m_oNoResize->ToBool());
+				}
+				if(oLocks.m_oNoSelect.IsInit())
+				{
+					m_oBcw.m_oStream.WriteBYTE(c_oSerGraphicFramePr::NoSelect);
+					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+					m_oBcw.m_oStream.WriteBOOL(oLocks.m_oNoSelect->ToBool());
+				}
+			}
+		}
 		void WriteEffectExtent(const OOX::Drawing::CEffectExtent& oEffectExtent)
 		{
 			m_oBcw.m_oStream.WriteBYTE(c_oSerEffectExtent::Left);
@@ -6390,6 +6518,12 @@ namespace BinDocxRW
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_SettingsType::MathPr);
 				WriteMathPr(oSettings.m_oMathPr.get());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if(oSettings.m_oTrackRevisions.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_SettingsType::TrackRevisions);
+				m_oBcw.m_oStream.WriteBOOL(oSettings.m_oTrackRevisions->m_oVal.ToBool());
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
 		};

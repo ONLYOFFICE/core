@@ -1,9 +1,40 @@
+п»ї/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 #pragma once
 
 #include "SimpleTypes_Base.h"
 #include "SimpleTypes_Word.h"
 
-// Здесь представлены все простые типы SharedML из спецификации Office Open Xml (22.8)
+// Р—РґРµСЃСЊ РїСЂРµРґСЃС‚Р°РІР»РµРЅС‹ РІСЃРµ РїСЂРѕСЃС‚С‹Рµ С‚РёРїС‹ SharedML РёР· СЃРїРµС†РёС„РёРєР°С†РёРё Office Open Xml (22.8)
 namespace SimpleTypes
 {
 	//--------------------------------------------------------------------------------
@@ -49,7 +80,7 @@ namespace SimpleTypes
 
 } // SimpleTypes
 
-// Здесь представлены все простые типы SharedML из спецификации Office Open Xml (22.9)
+// Р—РґРµСЃСЊ РїСЂРµРґСЃС‚Р°РІР»РµРЅС‹ РІСЃРµ РїСЂРѕСЃС‚С‹Рµ С‚РёРїС‹ SharedML РёР· СЃРїРµС†РёС„РёРєР°С†РёРё Office Open Xml (22.9)
 namespace SimpleTypes
 {
 	//--------------------------------------------------------------------------------
@@ -266,7 +297,7 @@ namespace SimpleTypes
 
 		bool    FromString(const CWCharWrapper& wsStr)
 		{
-			// TO DO: переделать
+			// TO DO: РїРµСЂРµРґРµР»Р°С‚СЊ
 			CString sTemp( wsStr.m_cwsString );
 			return FromString( (CString &)sTemp );
 		}
@@ -432,7 +463,7 @@ namespace SimpleTypes
 	// Lang 22.9.2.6 (Part 1)
 	//--------------------------------------------------------------------------------		
 
-	// TO DO: сделать парсер языка по спецификации RFC 4646/BCP 47
+	// TO DO: СЃРґРµР»Р°С‚СЊ РїР°СЂСЃРµСЂ СЏР·С‹РєР° РїРѕ СЃРїРµС†РёС„РёРєР°С†РёРё RFC 4646/BCP 47
 	class CLang
 	{
 	public:
@@ -474,7 +505,7 @@ namespace SimpleTypes
 	// OnOff 22.9.2.7 (Part 1)
 	//--------------------------------------------------------------------------------		
 
-	// Согласно части 4 стр. 1459, значений "on" и "off" быть не должно
+	// РЎРѕРіР»Р°СЃРЅРѕ С‡Р°СЃС‚Рё 4 СЃС‚СЂ. 1459, Р·РЅР°С‡РµРЅРёР№ "on" Рё "off" Р±С‹С‚СЊ РЅРµ РґРѕР»Р¶РЅРѕ
 	enum EOnOff
 	{
 		onoffFalse = 0,
@@ -643,7 +674,7 @@ namespace SimpleTypes
 	// String 22.9.2.13 (Part 1)
 	//--------------------------------------------------------------------------------
 
-	// Ничего не делаем, используем ATL::CString
+	// РќРёС‡РµРіРѕ РЅРµ РґРµР»Р°РµРј, РёСЃРїРѕР»СЊР·СѓРµРј ATL::CString
 
 	//--------------------------------------------------------------------------------
 	// TwipsMeasure 22.9.2.14 (Part 1)
@@ -658,7 +689,7 @@ namespace SimpleTypes
 		{
 			Parse(sValue, 20);
 
-			// В данном типе только положительные числа
+			// Р’ РґР°РЅРЅРѕРј С‚РёРїРµ С‚РѕР»СЊРєРѕ РїРѕР»РѕР¶РёС‚РµР»СЊРЅС‹Рµ С‡РёСЃР»Р°
 			m_dValue = fabs( m_dValue );
 
 			return m_dValue;
@@ -911,7 +942,7 @@ namespace SimpleTypes
 
 } // SimpleTypes
 
-// Здесь представлены все простые типы SharedML из спецификации Office Open Xml (15.1.2 - part 4)
+// Р—РґРµСЃСЊ РїСЂРµРґСЃС‚Р°РІР»РµРЅС‹ РІСЃРµ РїСЂРѕСЃС‚С‹Рµ С‚РёРїС‹ SharedML РёР· СЃРїРµС†РёС„РёРєР°С†РёРё Office Open Xml (15.1.2 - part 4)
 namespace SimpleTypes
 {
 	//--------------------------------------------------------------------------------

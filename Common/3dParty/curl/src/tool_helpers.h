@@ -1,4 +1,4 @@
-#ifndef HEADER_CURL_TOOL_HELPERS_H
+﻿#ifndef HEADER_CURL_TOOL_HELPERS_H
 #define HEADER_CURL_TOOL_HELPERS_H
 /***************************************************************************
  *                                  _   _ ____  _

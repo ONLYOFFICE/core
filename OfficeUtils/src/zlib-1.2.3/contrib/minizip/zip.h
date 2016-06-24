@@ -1,4 +1,4 @@
-/* zip.h -- IO for compress .zip files using zlib
+﻿/* zip.h -- IO for compress .zip files using zlib
    Version 1.01e, February 12th, 2005
 
    Copyright (C) 1998-2005 Gilles Vollant

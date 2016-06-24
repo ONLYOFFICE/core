@@ -1,3 +1,34 @@
+п»ї/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 #pragma once
 #ifndef OOX_WORKSHEETCHILDSOTHER_FILE_INCLUDE_H_
 #define OOX_WORKSHEETCHILDSOTHER_FILE_INCLUDE_H_
@@ -85,7 +116,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("left"),      m_oLeft)
@@ -159,7 +190,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("orientation"),      m_oOrientation)
@@ -231,7 +262,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("gridLines"),      m_oGridLines)
@@ -286,7 +317,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("ref"),      m_oRef)
@@ -382,10 +413,10 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("baseColWidth"),      m_oBaseColWidth)	// ToDo Excel не воспринимает значения не uint (мы приводим к uint)
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("baseColWidth"),      m_oBaseColWidth)	// ToDo Excel РЅРµ РІРѕСЃРїСЂРёРЅРёРјР°РµС‚ Р·РЅР°С‡РµРЅРёСЏ РЅРµ uint (РјС‹ РїСЂРёРІРѕРґРёРј Рє uint)
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("customHeight"),      m_oCustomHeight )
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("defaultColWidth"),      m_oDefaultColWidth )
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("defaultRowHeight"),      m_oDefaultRowHeight )
@@ -409,7 +440,6 @@ namespace OOX
 				nullable<SimpleTypes::COnOff<>>					m_oThickTop;
 				nullable<SimpleTypes::COnOff<>>					m_oZeroHeight;
 		};
-
 		class CPane : public WritingElement
 		{
 		public:
@@ -467,7 +497,7 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("activePane")	, m_oActivePane)
@@ -481,16 +511,90 @@ namespace OOX
 
 		public:
 			nullable<CString>				m_oActivePane;
-			nullable<CString>				m_oState;	// frozen - закреплены; split - разделены на 2 одинаковые части; frozenSplit - сначала разделены, а потом закреплены (после снятия закрепления, будут снова разделены)
+			nullable<CString>				m_oState;	// frozen - Р·Р°РєСЂРµРїР»РµРЅС‹; split - СЂР°Р·РґРµР»РµРЅС‹ РЅР° 2 РѕРґРёРЅР°РєРѕРІС‹Рµ С‡Р°СЃС‚Рё; frozenSplit - СЃРЅР°С‡Р°Р»Р° СЂР°Р·РґРµР»РµРЅС‹, Р° РїРѕС‚РѕРј Р·Р°РєСЂРµРїР»РµРЅС‹ (РїРѕСЃР»Рµ СЃРЅСЏС‚РёСЏ Р·Р°РєСЂРµРїР»РµРЅРёСЏ, Р±СѓРґСѓС‚ СЃРЅРѕРІР° СЂР°Р·РґРµР»РµРЅС‹)
 			nullable<CString>				m_oTopLeftCell;
 			nullable<SimpleTypes::CDouble>	m_oXSplit;
 			nullable<SimpleTypes::CDouble>	m_oYSplit;
 		};
 
-		//необработано:
+		class CSelection : public WritingElement
+		{
+		public:
+			WritingElementSpreadsheet_AdditionConstructors(CSelection)
+			CSelection()
+			{
+			}
+			virtual ~CSelection()
+			{
+			}
+
+		public:
+			virtual CString      toXML() const
+			{
+				return _T("");
+			}
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			{
+				writer.WriteString(_T("<selection"));
+				if (m_oActiveCell.IsInit())
+				{
+					CString sVal; sVal.Format(_T(" activeCell=\"%ls\""), m_oActiveCell.get());
+					writer.WriteString(sVal);
+				}
+				if (m_oActiveCellId.IsInit())
+				{
+					CString sVal; sVal.Format(_T(" activeCellId=\"%d\""), m_oActiveCellId->GetValue());
+					writer.WriteString(sVal);
+				}
+				if (m_oSqref.IsInit())
+				{
+					CString sVal; sVal.Format(_T(" sqref=\"%ls\""), m_oSqref.get());
+					writer.WriteString(sVal);
+				}
+				if (m_oPane.IsInit())
+				{
+					CString sVal; sVal.Format(_T(" pane=\"%ls\""), m_oPane.get());
+					writer.WriteString(sVal);
+				}
+				writer.WriteString(_T("/>"));
+			}
+			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+
+				if ( !oReader.IsEmptyNode() )
+					oReader.ReadTillEnd();
+			}
+
+			virtual EElementType getType () const
+			{
+				return et_Selection;
+			}
+
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
+				WritingElement_ReadAttributes_Start( oReader )
+
+				WritingElement_ReadAttributes_Read_if     ( oReader, _T("activeCell")	, m_oActiveCell)
+				WritingElement_ReadAttributes_Read_if     ( oReader, _T("activeCellId")	, m_oActiveCellId)
+				WritingElement_ReadAttributes_Read_if     ( oReader, _T("sqref")		, m_oSqref)
+				WritingElement_ReadAttributes_Read_if     ( oReader, _T("pane")			, m_oPane)
+
+				WritingElement_ReadAttributes_End( oReader )
+			}
+
+		public:
+			nullable<CString>									m_oActiveCell;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oActiveCellId;
+			nullable<CString>									m_oSqref;
+			nullable<CString>									m_oPane;	//bottomLeft, bottomRight, topLeft, topRight
+		};
+
+		//РЅРµРѕР±СЂР°Р±РѕС‚Р°РЅРѕ:
 		//<extLst>
 		//<pivotSelection>
-		//<selection>
 		class CSheetView : public WritingElement
 		{
 		public:
@@ -609,6 +713,9 @@ namespace OOX
 
 				if (m_oPane.IsInit())
 					m_oPane->toXML(writer);
+				
+				if (m_oSelection.IsInit())
+					m_oSelection->toXML(writer);
 
 				writer.WriteString(_T("</sheetView>"));
 			}
@@ -626,7 +733,8 @@ namespace OOX
 
 					if (_T("pane") == sName)
 						m_oPane = oReader;
-				}
+					if (_T("selection") == sName)
+						m_oSelection = oReader;				}
 			}
 
 			virtual EElementType getType () const
@@ -638,7 +746,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("colorId"),      m_oColorId)
@@ -666,6 +774,7 @@ namespace OOX
 
 		public:
 				nullable<CPane>										m_oPane;
+				nullable<CSelection>								m_oSelection;
 
 				nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oColorId;
 				nullable<SimpleTypes::COnOff<>>						m_oDefaultGridColor;
@@ -784,7 +893,7 @@ namespace OOX
 
 					if ( _T("tabColor") == sName )
 						m_oTabColor = oReader;
-					//необработано:
+					//РЅРµРѕР±СЂР°Р±РѕС‚Р°РЅРѕ:
 					//<outlinePr>
 					//<pageSetUpPr>
 				}
@@ -797,7 +906,7 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if		( oReader, _T("codeName"),							m_oCodeName )
 				WritingElement_ReadAttributes_Read_else_if	( oReader, _T("enableFormatConditionsCalculation"),	m_oEnableFormatConditionsCalculation )

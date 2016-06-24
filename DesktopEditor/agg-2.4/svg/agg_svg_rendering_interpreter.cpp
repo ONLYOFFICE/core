@@ -1,4 +1,4 @@
-//-----------------------------------------------------------------------------
+﻿//-----------------------------------------------------------------------------
 #include "agg_svg_rendering_interpreter.h"
 #include "agg_svg_pipeline.h"
 #include "agg_svg_frame_buffer_rgba.h"

@@ -1,4 +1,4 @@
-#ifndef HEADER_CURL_SLIST_H
+﻿#ifndef HEADER_CURL_SLIST_H
 #define HEADER_CURL_SLIST_H
 /***************************************************************************
  *                                  _   _ ____  _

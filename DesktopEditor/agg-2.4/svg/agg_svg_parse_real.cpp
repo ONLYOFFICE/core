@@ -1,4 +1,4 @@
-#include "agg_svg_parse_real.h"
+﻿#include "agg_svg_parse_real.h"
 
 namespace agg
 {

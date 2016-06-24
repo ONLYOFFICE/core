@@ -1,4 +1,4 @@
-#ifndef HEADER_CURL_CONTENT_ENCODING_H
+﻿#ifndef HEADER_CURL_CONTENT_ENCODING_H
 #define HEADER_CURL_CONTENT_ENCODING_H
 /***************************************************************************
  *                                  _   _ ____  _

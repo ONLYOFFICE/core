@@ -1,3 +1,34 @@
+п»ї/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 #include <ostream>
 #include <sstream>
 #include <string>
@@ -96,7 +127,7 @@ bool parse_clipping(std::wstring strClipping,std::wstring fileName, double_4 & c
 
 
 
-	if (Points_pt.size() > 3)//если другое количество точек .. попозже
+	if (Points_pt.size() > 3)//РµСЃР»Рё РґСЂСѓРіРѕРµ РєРѕР»РёС‡РµСЃС‚РІРѕ С‚РѕС‡РµРє .. РїРѕРїРѕР·Р¶Рµ
 	{
 		float dpi_ = 96.;
 		clip_rect[0] = dpi_ * Points_pt[3].get_value_unit(length::inch);
@@ -104,7 +135,7 @@ bool parse_clipping(std::wstring strClipping,std::wstring fileName, double_4 & c
 		clip_rect[2] = dpi_ * Points_pt[1].get_value_unit(length::inch);
 		clip_rect[3] = dpi_ * Points_pt[2].get_value_unit(length::inch);
 
-		// в проценты
+		// РІ РїСЂРѕС†РµРЅС‚С‹
 		clip_rect[0] = clip_rect[0]*100/fileWidth;
 		clip_rect[2] = clip_rect[2]*100/fileWidth;
 		clip_rect[1] = clip_rect[1]*100/fileHeight;
@@ -304,7 +335,7 @@ void Compute_GradientFill(draw_gradient * image_style,oox::oox_gradient_fill_ptr
 	
 			fill->colors.push_back(point);
 
-			if (image_style->draw_cx_)//хохма - у мс в конвертилке из open-office перепутаны l & r !!!
+			if (image_style->draw_cx_)//С…РѕС…РјР° - Сѓ РјСЃ РІ РєРѕРЅРІРµСЂС‚РёР»РєРµ РёР· open-office РїРµСЂРµРїСѓС‚Р°РЅС‹ l & r !!!
 			{
 				fill->rect[0]=image_style->draw_cx_->get_value();
 				fill->rect[2]=100-image_style->draw_cx_->get_value();
@@ -341,7 +372,7 @@ void Compute_GraphicFill(const common_draw_fill_attlist & props, const office_el
 		{
 			if (draw_opacity * image_style = dynamic_cast<draw_opacity *>(style.get()))
 			{	
-				//увы и ах но ms  не поддерживает градиентную прозрачность - сделаем средненькую
+				//СѓРІС‹ Рё Р°С… РЅРѕ ms  РЅРµ РїРѕРґРґРµСЂР¶РёРІР°РµС‚ РіСЂР°РґРёРµРЅС‚РЅСѓСЋ РїСЂРѕР·СЂР°С‡РЅРѕСЃС‚СЊ - СЃРґРµР»Р°РµРј СЃСЂРµРґРЅРµРЅСЊРєСѓСЋ
 				if (image_style->draw_start_ && image_style->draw_end_)
 				{
 					fill.opacity = (image_style->draw_start_->get_value() + image_style->draw_end_->get_value())/2.;
@@ -359,7 +390,7 @@ void Compute_GraphicFill(const common_draw_fill_attlist & props, const office_el
 	{
 		fill.solid = oox::oox_solid_fill::create();
 		fill.solid->color = props.draw_fill_color_->get_hex_value();
-		if (fill.type==0)fill.type = 1;	//в этом случае тип может и не быть задан явно
+		if (fill.type==0)fill.type = 1;	//РІ СЌС‚РѕРј СЃР»СѓС‡Р°Рµ С‚РёРї РјРѕР¶РµС‚ Рё РЅРµ Р±С‹С‚СЊ Р·Р°РґР°РЅ СЏРІРЅРѕ
 	}
 	if (props.draw_fill_image_name_)
 	{
@@ -490,7 +521,7 @@ void draw_a::add_attributes( const xml::attributes_wc_ptr & Attributes )
 void draw_a::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
     Context.get_drawing_context().add_hyperlink(common_xlink_attlist_.href_.get_value_or(L""),true);
-				//стиль на текст не нужен ..текста то нет - ссылка с объекта
+				//СЃС‚РёР»СЊ РЅР° С‚РµРєСЃС‚ РЅРµ РЅСѓР¶РµРЅ ..С‚РµРєСЃС‚Р° С‚Рѕ РЅРµС‚ - СЃСЃС‹Р»РєР° СЃ РѕР±СЉРµРєС‚Р°
    
 	BOOST_FOREACH(const office_element_ptr & elm, content_)
     {
@@ -499,7 +530,7 @@ void draw_a::xlsx_convert(oox::xlsx_conversion_context & Context)
 }
 void draw_a::pptx_convert(oox::pptx_conversion_context & Context)
 {
-   Context.get_slide_context().add_hyperlink(common_xlink_attlist_.href_.get_value_or(L""),true);//стиль на текст не нужен ..текста то нет - ссылка с объекта
+   Context.get_slide_context().add_hyperlink(common_xlink_attlist_.href_.get_value_or(L""),true);//СЃС‚РёР»СЊ РЅР° С‚РµРєСЃС‚ РЅРµ РЅСѓР¶РµРЅ ..С‚РµРєСЃС‚Р° С‚Рѕ РЅРµС‚ - СЃСЃС‹Р»РєР° СЃ РѕР±СЉРµРєС‚Р°
    
 	BOOST_FOREACH(const office_element_ptr & elm, content_)
     {
@@ -508,7 +539,7 @@ void draw_a::pptx_convert(oox::pptx_conversion_context & Context)
 }
 void draw_a::docx_convert(oox::docx_conversion_context & Context) 
 {
-	std::wstring rId = Context.add_hyperlink(common_xlink_attlist_.href_.get_value_or(L""), true);//гиперлинк с объекта, а не с текста .. 
+	std::wstring rId = Context.add_hyperlink(common_xlink_attlist_.href_.get_value_or(L""), true);//РіРёРїРµСЂР»РёРЅРє СЃ РѕР±СЉРµРєС‚Р°, Р° РЅРµ СЃ С‚РµРєСЃС‚Р° .. 
 	
 	BOOST_FOREACH(const office_element_ptr & elm, content_)
     {
@@ -543,10 +574,10 @@ void oox_convert_transforms(std::wstring transformStr,std::vector<odf_reader::_p
 		
 		boost::algorithm::split(transform,t, boost::algorithm::is_any_of(L"("), boost::algorithm::token_compress_on);
 		
-		if (transform.size()>1)//тока с аргументами
+		if (transform.size()>1)//С‚РѕРєР° СЃ Р°СЂРіСѓРјРµРЅС‚Р°РјРё
 		{
 			int res=0;
-			if ((res = transform[0].find(L"translate"))>=0)//перемещение
+			if ((res = transform[0].find(L"translate"))>=0)//РїРµСЂРµРјРµС‰РµРЅРёРµ
 			{
 				std::vector<length> Points ;
 				parse_string_to_points(transform[1], Points);
@@ -555,14 +586,14 @@ void oox_convert_transforms(std::wstring transformStr,std::vector<odf_reader::_p
 				{
 					double x_pt = Points[0].get_value_unit(length::pt);
 					double y_pt = 0;
-					if (Points.size()>1)y_pt = Points[1].get_value_unit(length::pt);//ее может не быть
+					if (Points.size()>1)y_pt = Points[1].get_value_unit(length::pt);//РµРµ РјРѕР¶РµС‚ РЅРµ Р±С‹С‚СЊ
 
 					//Context.get_drawing_context().set_translate(x_pt,y_pt);
 					additional.push_back(_property(L"svg:translate_x",x_pt));
 					additional.push_back(_property(L"svg:translate_y",y_pt));
 				}
 			}
-			else if ((res = transform[0].find(L"scale"))>=0)//масштабирование
+			else if ((res = transform[0].find(L"scale"))>=0)//РјР°СЃС€С‚Р°Р±РёСЂРѕРІР°РЅРёРµ
 			{
 				std::vector<length> Points ;
 				parse_string_to_points(transform[1], Points);
@@ -570,14 +601,14 @@ void oox_convert_transforms(std::wstring transformStr,std::vector<odf_reader::_p
 				{
 					double x_pt = Points[0].get_value_unit(length::pt);
 					double y_pt = x_pt; 
-					if (Points.size()>1)y_pt = Points[1].get_value_unit(length::pt);//ее может не быть
+					if (Points.size()>1)y_pt = Points[1].get_value_unit(length::pt);//РµРµ РјРѕР¶РµС‚ РЅРµ Р±С‹С‚СЊ
 
 					//Context.get_drawing_context().set_scale(x_pt,y_pt);
 					additional.push_back(_property(L"svg:scale_x",x_pt));
 					additional.push_back(_property(L"svg:scale_y",y_pt));
 				}
 			}
-			else if ((res = transform[0].find(L"rotate"))>=0)//вращение
+			else if ((res = transform[0].find(L"rotate"))>=0)//РІСЂР°С‰РµРЅРёРµ
 			{
 				double angle =  boost::lexical_cast<double>(transform[1]);
 				additional.push_back(_property(L"svg:rotate",angle));
@@ -599,10 +630,10 @@ void xlsx_convert_transforms(std::wstring transformStr, oox::xlsx_conversion_con
 		std::vector<std::wstring> transform;
 		boost::algorithm::split(transform,t, boost::algorithm::is_any_of(L"("), boost::algorithm::token_compress_on);
 
-		if (transform.size()>1)//тока с аргументами
+		if (transform.size()>1)//С‚РѕРєР° СЃ Р°СЂРіСѓРјРµРЅС‚Р°РјРё
 		{
 			int res=0;
-			if ((res = transform[0].find(L"translate"))>=0)//перемещение
+			if ((res = transform[0].find(L"translate"))>=0)//РїРµСЂРµРјРµС‰РµРЅРёРµ
 			{
 				std::vector<length> Points ;
 				parse_string_to_points(transform[1], Points);
@@ -611,12 +642,12 @@ void xlsx_convert_transforms(std::wstring transformStr, oox::xlsx_conversion_con
 				{
 					double x_pt = Points[0].get_value_unit(length::pt);
 					double y_pt = 0;
-					if (Points.size()>1)y_pt = Points[1].get_value_unit(length::pt);//ее может не быть
+					if (Points.size()>1)y_pt = Points[1].get_value_unit(length::pt);//РµРµ РјРѕР¶РµС‚ РЅРµ Р±С‹С‚СЊ
 
 					Context.get_drawing_context().set_translate(x_pt,y_pt);
 				}
 			}
-			else if ((res = transform[0].find(L"scale"))>=0)//масштабирование
+			else if ((res = transform[0].find(L"scale"))>=0)//РјР°СЃС€С‚Р°Р±РёСЂРѕРІР°РЅРёРµ
 			{
 				std::vector<length> Points ;
 				parse_string_to_points(transform[1], Points);
@@ -624,21 +655,21 @@ void xlsx_convert_transforms(std::wstring transformStr, oox::xlsx_conversion_con
 				{
 					double x_pt = Points[0].get_value_unit(length::pt);
 					double y_pt = x_pt; 
-					if (Points.size()>1)y_pt = Points[1].get_value_unit(length::pt);//ее может не быть
+					if (Points.size()>1)y_pt = Points[1].get_value_unit(length::pt);//РµРµ РјРѕР¶РµС‚ РЅРµ Р±С‹С‚СЊ
 
 					Context.get_drawing_context().set_scale(x_pt,y_pt);
 				}
 			}
-			else if ((res = transform[0].find(L"rotate"))>=0)//вращение
+			else if ((res = transform[0].find(L"rotate"))>=0)//РІСЂР°С‰РµРЅРёРµ
 			{
 				Context.get_drawing_context().set_rotate(boost::lexical_cast<double>(transform[1]));
 			}
-			else if ((res = transform[0].find(L"skewX"))>=0)//сдвиг
+			else if ((res = transform[0].find(L"skewX"))>=0)//СЃРґРІРёРі
 			{
 				double angle =  boost::lexical_cast<double>(transform[1]);
 				Context.get_drawing_context().set_property(_property(L"svg:skewX",angle));
 			}
-			else if ((res = transform[0].find(L"skewY"))>=0)//сдвиг
+			else if ((res = transform[0].find(L"skewY"))>=0)//СЃРґРІРёРі
 			{
 				double angle =  boost::lexical_cast<double>(transform[1]);
 				Context.get_drawing_context().set_property(_property(L"svg:skewY",angle));
@@ -659,10 +690,10 @@ void pptx_convert_transforms(std::wstring transformStr, oox::pptx_conversion_con
 		std::vector<std::wstring> transform;
 		boost::algorithm::split(transform,t, boost::algorithm::is_any_of(L"("), boost::algorithm::token_compress_on);
 
-		if (transform.size()>1)//тока с аргументами
+		if (transform.size()>1)//С‚РѕРєР° СЃ Р°СЂРіСѓРјРµРЅС‚Р°РјРё
 		{
 			int res=0;
-			if ((res = transform[0].find(L"translate"))>=0)//перемещение
+			if ((res = transform[0].find(L"translate"))>=0)//РїРµСЂРµРјРµС‰РµРЅРёРµ
 			{
 				std::vector<length> Points ;
 				parse_string_to_points(transform[1], Points);
@@ -671,12 +702,12 @@ void pptx_convert_transforms(std::wstring transformStr, oox::pptx_conversion_con
 				{
 					double x_pt = Points[0].get_value_unit(length::pt);
 					double y_pt = 0;
-					if (Points.size()>1)y_pt = Points[1].get_value_unit(length::pt);//ее может не быть
+					if (Points.size()>1)y_pt = Points[1].get_value_unit(length::pt);//РµРµ РјРѕР¶РµС‚ РЅРµ Р±С‹С‚СЊ
 
 					Context.get_slide_context().set_translate(x_pt,y_pt);
 				}
 			}
-			else if ((res = transform[0].find(L"scale"))>=0)//масштабирование
+			else if ((res = transform[0].find(L"scale"))>=0)//РјР°СЃС€С‚Р°Р±РёСЂРѕРІР°РЅРёРµ
 			{
 				std::vector<length> Points ;
 				parse_string_to_points(transform[1], Points);
@@ -684,21 +715,21 @@ void pptx_convert_transforms(std::wstring transformStr, oox::pptx_conversion_con
 				{
 					double x_pt = Points[0].get_value_unit(length::pt);
 					double y_pt = x_pt; 
-					if (Points.size()>1)y_pt = Points[1].get_value_unit(length::pt);//ее может не быть
+					if (Points.size()>1)y_pt = Points[1].get_value_unit(length::pt);//РµРµ РјРѕР¶РµС‚ РЅРµ Р±С‹С‚СЊ
 
 					Context.get_slide_context().set_scale(x_pt,y_pt);
 				}
 			}
-			else if ((res = transform[0].find(L"rotate"))>=0)//вращение
+			else if ((res = transform[0].find(L"rotate"))>=0)//РІСЂР°С‰РµРЅРёРµ
 			{
 				Context.get_slide_context().set_rotate( boost::lexical_cast<double>(transform[1]));
 			}
-			else if ((res = transform[0].find(L"skewX"))>=0)//вращение
+			else if ((res = transform[0].find(L"skewX"))>=0)//РІСЂР°С‰РµРЅРёРµ
 			{
 				double angle =  boost::lexical_cast<double>(transform[1]);
 				Context.get_slide_context().set_property(_property(L"svg:skewX",angle));
 			}
-			else if ((res = transform[0].find(L"skewY"))>=0)//вращение
+			else if ((res = transform[0].find(L"skewY"))>=0)//РІСЂР°С‰РµРЅРёРµ
 			{
 				double angle =  boost::lexical_cast<double>(transform[1]);
 				Context.get_slide_context().set_property(_property(L"svg:skewY",angle));

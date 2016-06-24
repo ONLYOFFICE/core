@@ -1,4 +1,4 @@
-
+﻿
 #include "agg_svg_utils.h"
 #include <cstdlib> // for wcstombs
 

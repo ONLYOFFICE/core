@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Summary: the core parser module
  * Description: Interfaces, constants and types related to the XML parser
  *

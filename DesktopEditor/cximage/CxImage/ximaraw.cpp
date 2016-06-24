@@ -1,4 +1,4 @@
-/*
+﻿/*
  * File:	ximaraw.cpp
  * Purpose:	Platform Independent RAW Image Class Loader
  * 16/Dec/2007 Davide Pizzolato - www.xdp.it

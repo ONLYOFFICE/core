@@ -1,3 +1,34 @@
+п»ї/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 #pragma once
 #ifndef OOX_CONDITIONALFORMATTING_FILE_INCLUDE_H_
 #define OOX_CONDITIONALFORMATTING_FILE_INCLUDE_H_
@@ -9,7 +40,7 @@ namespace OOX
 {
 	namespace Spreadsheet
 	{
-		//необработано:
+		//РЅРµРѕР±СЂР°Р±РѕС‚Р°РЅРѕ:
 		//<extLst>
 		class CConditionalFormatValueObject : public WritingElement
 		{
@@ -64,7 +95,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start(oReader)
 
 				WritingElement_ReadAttributes_Read_if		(oReader, _T("gte")		, m_oGte)
@@ -207,7 +238,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start(oReader)
 
 				WritingElement_ReadAttributes_Read_if		(oReader, _T("maxLength")	, m_oMaxLength)
@@ -337,7 +368,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start(oReader)
 
 				WritingElement_ReadAttributes_Read_if		(oReader, _T("iconSet")		, m_oIconSet)
@@ -355,7 +386,7 @@ namespace OOX
 			nullable<SimpleTypes::COnOff<>>						m_oShowValue;
 		};
 
-		//необработано:
+		//РЅРµРѕР±СЂР°Р±РѕС‚Р°РЅРѕ:
 		//<extLst>
 		class CConditionalFormattingRule : public WritingElementWithChilds<WritingElement>
 		{
@@ -467,7 +498,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start(oReader)
 
 				WritingElement_ReadAttributes_Read_if		(oReader, _T("aboveAverage")	, m_oAboveAverage)
@@ -499,11 +530,11 @@ namespace OOX
 			nullable<SimpleTypes::CDecimalNumber<>>				m_oStdDev;
 			nullable<SimpleTypes::COnOff<>>						m_oStopIfTrue;
 			nullable<CString>									m_oText;
-			nullable<CString>									m_oTimePeriod;	// ToDo переделать на тип ST_TimePeriod (18.18.82)
+			nullable<CString>									m_oTimePeriod;	// ToDo РїРµСЂРµРґРµР»Р°С‚СЊ РЅР° С‚РёРї ST_TimePeriod (18.18.82)
 			nullable<SimpleTypes::Spreadsheet::ST_CfType<>>		m_oType;	
 		};
 
-		//необработано:
+		//РЅРµРѕР±СЂР°Р±РѕС‚Р°РЅРѕ:
 		//<extLst>
 		class CConditionalFormatting  : public WritingElementWithChilds<CConditionalFormattingRule>
 		{
@@ -567,7 +598,7 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start(oReader)
 
 				WritingElement_ReadAttributes_Read_if		(oReader, _T("sqref")	, m_oSqRef)
@@ -577,7 +608,7 @@ namespace OOX
 			}
 		public:
 			nullable<SimpleTypes::COnOff<>>			m_oPivot;
-			nullable<SimpleTypes::CRelationshipId >	m_oSqRef; // ToDo переделать на тип "sqref" (18.18.76) - последовательность "ref", разделенные пробелом
+			nullable<SimpleTypes::CRelationshipId >	m_oSqRef; // ToDo РїРµСЂРµРґРµР»Р°С‚СЊ РЅР° С‚РёРї "sqref" (18.18.76) - РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ "ref", СЂР°Р·РґРµР»РµРЅРЅС‹Рµ РїСЂРѕР±РµР»РѕРј
 		};
 	} //Spreadsheet
 } // namespace OOX

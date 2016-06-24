@@ -1,3 +1,34 @@
+п»ї/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 #pragma once
 
 #include "draw_base.h"
@@ -25,7 +56,7 @@ public:
 	
 	odf_types::common_xlink_attlist		common_xlink_attlist_;
 	
-	_CP_OPT(std::wstring)		draw_id_;//используется для анимашек
+	_CP_OPT(std::wstring)		draw_id_;//РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РґР»СЏ Р°РЅРёРјР°С€РµРє
   
 
 	CPDOCCORE_DEFINE_VISITABLE();
@@ -179,7 +210,7 @@ public:
 
     draw_polygon_attlist draw_polygon_attlist_;
 
-	void reset_polygon_path();//частный случай svg - все точки соединены прямыми
+	void reset_polygon_path();//С‡Р°СЃС‚РЅС‹Р№ СЃР»СѓС‡Р°Р№ svg - РІСЃРµ С‚РѕС‡РєРё СЃРѕРµРґРёРЅРµРЅС‹ РїСЂСЏРјС‹РјРё
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(draw_polygon);
@@ -205,7 +236,7 @@ CP_REGISTER_OFFICE_ELEMENT2(draw_custom_shape);
 //draw:enhanced-geometry
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////
-class draw_equation_attlist//убрать стринги ... сделать парсинг см стр 378 оазис !!!!!!!!!!!
+class draw_equation_attlist//СѓР±СЂР°С‚СЊ СЃС‚СЂРёРЅРіРё ... СЃРґРµР»Р°С‚СЊ РїР°СЂСЃРёРЅРі СЃРј СЃС‚СЂ 378 РѕР°Р·РёСЃ !!!!!!!!!!!
 {
 public:
 	_CP_OPT(std::wstring) draw_name_;
@@ -241,7 +272,7 @@ struct draw_handle_geometry
 	int max;
 };
 //////////////////////////////////////////////////////
-class draw_handle_attlist//убрать стринги ... сделать парсинг см стр 378 оазис !!!!!!!!!!!
+class draw_handle_attlist//СѓР±СЂР°С‚СЊ СЃС‚СЂРёРЅРіРё ... СЃРґРµР»Р°С‚СЊ РїР°СЂСЃРёРЅРі СЃРј СЃС‚СЂ 378 РѕР°Р·РёСЃ !!!!!!!!!!!
 {
 public:
 	_CP_OPT(std::wstring) draw_handle_position_;
@@ -323,13 +354,13 @@ public:
 
 	typedef std::pair<std::wstring,std::wstring> pair_string_value;
 
-	std::vector<draw_handle_geometry>	draw_handle_geometry_; //параметры в удобноваримом виде
+	std::vector<draw_handle_geometry>	draw_handle_geometry_; //РїР°СЂР°РјРµС‚СЂС‹ РІ СѓРґРѕР±РЅРѕРІР°СЂРёРјРѕРј РІРёРґРµ
 	std::vector<pair_string_value>		draw_equation_array_;
 	
 	office_element_ptr_array			draw_handle_;
-	office_element_ptr_array			draw_equation_;//некоторые заданные параметры отрисовки которые используются в draw_handle - автозамена общих частей
+	office_element_ptr_array			draw_equation_;//РЅРµРєРѕС‚РѕСЂС‹Рµ Р·Р°РґР°РЅРЅС‹Рµ РїР°СЂР°РјРµС‚СЂС‹ РѕС‚СЂРёСЃРѕРІРєРё РєРѕС‚РѕСЂС‹Рµ РёСЃРїРѕР»СЊР·СѓСЋС‚СЃСЏ РІ draw_handle - Р°РІС‚РѕР·Р°РјРµРЅР° РѕР±С‰РёС… С‡Р°СЃС‚РµР№
 	
-	static int parsing(_CP_OPT(std::wstring) val);//todoooo наоборот
+	static int parsing(_CP_OPT(std::wstring) val);//todoooo РЅР°РѕР±РѕСЂРѕС‚
 
 	CPDOCCORE_DEFINE_VISITABLE();
 };

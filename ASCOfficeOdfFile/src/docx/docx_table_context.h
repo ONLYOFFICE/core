@@ -1,3 +1,34 @@
+﻿/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 #pragma once
 
 #include <string>
@@ -60,102 +91,102 @@ public:
 
     void start_table(const std::wstring & StyleName)
     {
-        xlsx_table_states_.push_back(docx_table_state(context_, StyleName));     
+        table_states_.push_back(docx_table_state(context_, StyleName));     
     }
 
     void end_table()
     {
-        xlsx_table_states_.pop_back();        
+        table_states_.pop_back();        
     }
 
     std::wstring current_style() const
     {
-        return xlsx_table_states_.back().current_style();    
+        return table_states_.back().current_style();    
     }
 
     size_t in_table() const
     {
-        return xlsx_table_states_.size();
+        return table_states_.size();
     }
 
     void start_column(unsigned int repeated, const std::wstring & defaultCellStyleName)
     {
-        return xlsx_table_states_.back().start_column(repeated, defaultCellStyleName);
+        return table_states_.back().start_column(repeated, defaultCellStyleName);
     }
 
     void start_row(const std::wstring & StyleName, const std::wstring & defaultCellStyleName)
     {
-        return xlsx_table_states_.back().start_row(StyleName, defaultCellStyleName);
+        return table_states_.back().start_row(StyleName, defaultCellStyleName);
     }
 
     void end_row()
     {
-        return xlsx_table_states_.back().end_row();
+        return table_states_.back().end_row();
     }
 
     std::wstring current_row_style() const
     {
-        return xlsx_table_states_.back().current_row_style();
+        return table_states_.back().current_row_style();
     }
 
     void start_cell()
     {
-        return xlsx_table_states_.back().start_cell();
+        return table_states_.back().start_cell();
     }
 
     void end_cell()
     {
-        return xlsx_table_states_.back().end_cell();
+        return table_states_.back().end_cell();
     }
 
     bool start_covered_cell(docx_conversion_context & Context)
     {
-        return xlsx_table_states_.back().start_covered_cell(Context);
+        return table_states_.back().start_covered_cell(Context);
     }
 
     void end_covered_cell()
     {
-        return xlsx_table_states_.back().end_covered_cell();
+        return table_states_.back().end_covered_cell();
     }
 
     int current_column() const
     {
-        return xlsx_table_states_.back().current_column();
+        return table_states_.back().current_column();
     }
 
     void set_columns_spanned(unsigned int Val)
     {
-        return xlsx_table_states_.back().set_columns_spanned(Val);
+        return table_states_.back().set_columns_spanned(Val);
     }
 
     unsigned int current_columns_spaned() const
     {
-        return xlsx_table_states_.back().current_columns_spaned();
+        return table_states_.back().current_columns_spaned();
     }
 
     void set_rows_spanned(unsigned int Column, unsigned int Val, unsigned int ColumnsSpanned, const std::wstring & Style)
     {
-        return xlsx_table_states_.back().set_rows_spanned(Column, Val, ColumnsSpanned, Style);
+        return table_states_.back().set_rows_spanned(Column, Val, ColumnsSpanned, Style);
     }
 
     unsigned int current_rows_spanned(unsigned int Column) const
     {
-        return xlsx_table_states_.back().current_rows_spanned(Column);
+        return table_states_.back().current_rows_spanned(Column);
     }
 
     std::wstring get_default_cell_style_col(unsigned int column)
     {
-        return xlsx_table_states_.back().get_default_cell_style_col(column);
+        return table_states_.back().get_default_cell_style_col(column);
     }
 
     std::wstring get_default_cell_style_row()
     {
-        return xlsx_table_states_.back().get_default_cell_style_row();
+        return table_states_.back().get_default_cell_style_row();
     }
 
 private:
     docx_conversion_context & context_;
-    std::list<docx_table_state> xlsx_table_states_;
+    std::list<docx_table_state> table_states_;
 };
 
 

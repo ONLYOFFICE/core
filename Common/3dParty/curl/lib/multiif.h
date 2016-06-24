@@ -1,4 +1,4 @@
-#ifndef HEADER_CURL_MULTIIF_H
+﻿#ifndef HEADER_CURL_MULTIIF_H
 #define HEADER_CURL_MULTIIF_H
 /***************************************************************************
  *                                  _   _ ____  _

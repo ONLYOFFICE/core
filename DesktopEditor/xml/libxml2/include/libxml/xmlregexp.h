@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Summary: regular expressions handling
  * Description: basic API for libxml regular expressions handling used
  *              for XML Schemas and validation.

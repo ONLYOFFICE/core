@@ -1,16 +1,47 @@
+п»ї/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 #include "Docx.h"
 
 namespace OOX {
 	
         bool CDocx::Read(const CPath& oFilePath)
         {
-            // Ищем "/_rels/.rels" и читаем все файлы по рельсам
+            // РС‰РµРј "/_rels/.rels" Рё С‡РёС‚Р°РµРј РІСЃРµ С„Р°Р№Р»С‹ РїРѕ СЂРµР»СЊСЃР°Рј
             OOX::CRels oRels( oFilePath / FILE_SEPARATOR_STR );
             IFileContainer::Read( oRels, oFilePath, oFilePath );
 
-            // Выполняем дополнительные действия для более удобной работы с файлом
+            // Р’С‹РїРѕР»РЅСЏРµРј РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹Рµ РґРµР№СЃС‚РІРёСЏ РґР»СЏ Р±РѕР»РµРµ СѓРґРѕР±РЅРѕР№ СЂР°Р±РѕС‚С‹ СЃ С„Р°Р№Р»РѕРј
 
-            // Ищем основной документ
+            // РС‰РµРј РѕСЃРЅРѕРІРЅРѕР№ РґРѕРєСѓРјРµРЅС‚
             smart_ptr<OOX::File> pFile = Find(OOX::FileTypes::Document);
             if (pFile.IsInit() && OOX::FileTypes::Document == pFile->type())
                 m_pDocument = (OOX::CDocument*)pFile.operator->();
@@ -21,28 +52,28 @@ namespace OOX {
             {
                 OOX::IFileContainer* pDocumentContainer = (OOX::IFileContainer*)m_pDocument;
 
-                // Ищем таблицу шрифтов
+                // РС‰РµРј С‚Р°Р±Р»РёС†Сѓ С€СЂРёС„С‚РѕРІ
                 pFile = pDocumentContainer->Find( OOX::FileTypes::FontTable );
                 if ( pFile.IsInit() && OOX::FileTypes::FontTable == pFile->type() )
                     m_pFontTable = (OOX::CFontTable*)pFile.operator->();
                 else
                     m_pFontTable = NULL;
 
-                // Ищем таблицу нумераций
+                // РС‰РµРј С‚Р°Р±Р»РёС†Сѓ РЅСѓРјРµСЂР°С†РёР№
                 pFile = pDocumentContainer->Find( OOX::FileTypes::Numbering );
                 if ( pFile.IsInit() && OOX::FileTypes::Numbering == pFile->type() )
                     m_pNumbering = (OOX::CNumbering*)pFile.operator->();
                 else
                     m_pNumbering = NULL;
 
-                // Ищем таблицу стилей
+                // РС‰РµРј С‚Р°Р±Р»РёС†Сѓ СЃС‚РёР»РµР№
                 pFile = pDocumentContainer->Find( OOX::FileTypes::Style );
                 if ( pFile.IsInit() && OOX::FileTypes::Style == pFile->type() )
                     m_pStyles = (OOX::CStyles*)pFile.operator->();
                 else
                     m_pStyles = NULL;
 
-                // Ищем сноски для страниц
+                // РС‰РµРј СЃРЅРѕСЃРєРё РґР»СЏ СЃС‚СЂР°РЅРёС†
                 pFile = pDocumentContainer->Find( OOX::FileTypes::FootNote );
                 if ( pFile.IsInit() && OOX::FileTypes::FootNote == pFile->type() )
                     m_pFootnotes = (OOX::CFootnotes*)pFile.operator->();
@@ -55,28 +86,28 @@ namespace OOX {
                 else
                     m_pEndnotes = NULL;
 
-                // Ищем файл с наcтройками
+                // РС‰РµРј С„Р°Р№Р» СЃ РЅР°cС‚СЂРѕР№РєР°РјРё
                 pFile = pDocumentContainer->Find( OOX::FileTypes::Setting );
                 if ( pFile.IsInit() && OOX::FileTypes::Setting == pFile->type() )
                     m_pSettings = (OOX::CSettings*)pFile.operator->();
                 else
                     m_pSettings = NULL;
 
-                // Ищем файл с комментариями
+                // РС‰РµРј С„Р°Р№Р» СЃ РєРѕРјРјРµРЅС‚Р°СЂРёСЏРјРё
                 pFile = pDocumentContainer->Find( OOX::FileTypes::Comments );
                 if ( pFile.IsInit() && OOX::FileTypes::Comments == pFile->type() )
                     m_pComments = (OOX::CComments*)pFile.operator->();
                 else
                     m_pComments = NULL;
 
-                // Ищем файл с комментариями Ext
+                // РС‰РµРј С„Р°Р№Р» СЃ РєРѕРјРјРµРЅС‚Р°СЂРёСЏРјРё Ext
                 pFile = pDocumentContainer->Find( OOX::FileTypes::CommentsExt );
                 if ( pFile.IsInit() && OOX::FileTypes::CommentsExt == pFile->type() )
                     m_pCommentsExt = (OOX::CCommentsExt*)pFile.operator->();
                 else
                     m_pCommentsExt = NULL;
 
-                // Ищем файл с авторами
+                // РС‰РµРј С„Р°Р№Р» СЃ Р°РІС‚РѕСЂР°РјРё
                 pFile = pDocumentContainer->Find( OOX::FileTypes::People );
                 if ( pFile.IsInit() && OOX::FileTypes::People == pFile->type() )
                     m_pPeople = (OOX::CPeople*)pFile.operator->();
@@ -86,7 +117,7 @@ namespace OOX {
                 //OOX::CRels rels(oFilePath / m_pDocument->DefaultDirectory() / m_pDocument->DefaultFileName());
                 //IFileContainer::Read(rels, oFilePath);
 
-                // Ищем файл с темами
+                // РС‰РµРј С„Р°Р№Р» СЃ С‚РµРјР°РјРё
                 pFile = pDocumentContainer->Find(OOX::FileTypes::Theme);
                 if (pFile.IsInit() && OOX::FileTypes::Theme == pFile->type())
                     m_pTheme = (OOX::CTheme*)pFile.operator->();
@@ -94,7 +125,7 @@ namespace OOX {
                     m_pTheme = NULL;
             }
 
-            // Ищем настройки
+            // РС‰РµРј РЅР°СЃС‚СЂРѕР№РєРё
             pFile = Find( OOX::FileTypes::App );
             if ( pFile.IsInit() && OOX::FileTypes::App == pFile->type() )
                 m_pApp = (OOX::CApp*)pFile.operator->();

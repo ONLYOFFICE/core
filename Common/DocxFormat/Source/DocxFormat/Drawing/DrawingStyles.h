@@ -1,3 +1,34 @@
+п»ї/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 #pragma once
 #ifndef OOX_LOGIC_DRAWING_STYLES_INCLUDE_H_
 #define OOX_LOGIC_DRAWING_STYLES_INCLUDE_H_
@@ -189,7 +220,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать CBackgroundFillStyleList::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CBackgroundFillStyleList::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{		
@@ -292,7 +323,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("name"), m_sName )
 				WritingElement_ReadAttributes_End( oReader )
@@ -323,7 +354,7 @@ namespace OOX
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				m_eEffectType = effecttypeUnknown;
-				// TO DO: Реализовать CDefaultShapeDefinition::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CDefaultShapeDefinition::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -389,7 +420,7 @@ namespace OOX
 		public:
 
 			// Childs
-			EEffectType                                       m_eEffectType; // Тип контейнера эффектов
+			EEffectType                                       m_eEffectType; // TРёРї РєРѕРЅС‚РµР№РЅРµСЂР° СЌС„С„РµРєС‚РѕРІ
 			nullable<OOX::Drawing::CEffectContainer>          m_oEffectDag;
 			nullable<OOX::Drawing::CEffectList>               m_oEffectList;
 
@@ -424,7 +455,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать CEffectStyleList::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CEffectStyleList::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -506,7 +537,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать CFillStyleList::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CFillStyleList::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{	
@@ -579,7 +610,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать CSupplementalFont::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CSupplementalFont::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{			
@@ -602,7 +633,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				if ( oReader.GetAttributesCount() <= 0 )
 					return;
 				
@@ -661,7 +692,7 @@ namespace OOX
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				m_eType = et_Unknown;
-				// TO DO: Реализовать CDefaultShapeDefinition::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CDefaultShapeDefinition::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -738,7 +769,7 @@ namespace OOX
 			// Childs
 			OOX::Drawing::CTextBodyProperties               m_oBodyPr;
 			nullable<OOX::Drawing::COfficeArtExtensionList> m_oExtLst;
-			// TO DO: Написать класс, читающий a:lstStyle
+			// TO DO: РќР°РїРёСЃР°С‚СЊ РєР»Р°СЃСЃ, С‡РёС‚Р°СЋС‰РёР№ a:lstStyle
 			//OOX::Drawing::CTextListStyle                    m_oLstStyle;
 			OOX::Drawing::CShapeProperties                  m_oSpPr;
 			nullable<OOX::Drawing::CShapeStyle>             m_oStyle;
@@ -769,7 +800,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать CLineStyleList::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CLineStyleList::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -841,7 +872,7 @@ namespace OOX
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				m_eType = et_Unknown;
-				// TO DO: Реализовать CDefaultShapeDefinition::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CDefaultShapeDefinition::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -944,7 +975,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать CStyleMatrix::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CStyleMatrix::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -989,7 +1020,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-								// Читаем атрибуты
+								// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				if ( oReader.GetAttributesCount() <= 0 )
 					return;
 				
@@ -1041,7 +1072,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать CFontScheme::fromXML(XmlUtils::CXmlNode& oNode)
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ CFontScheme::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -1085,7 +1116,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-								// Читаем атрибуты
+								// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				if ( oReader.GetAttributesCount() <= 0 )
 					return;
 				

@@ -599,30 +599,6 @@
 				Name="xlsx"
 				>
 				<File
-					RelativePath="..\src\docx\xlsx_alignment.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\src\docx\xlsx_alignment.h"
-					>
-				</File>
-				<File
-					RelativePath="..\src\docx\xlsx_border.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\src\docx\xlsx_border.h"
-					>
-				</File>
-				<File
-					RelativePath="..\src\docx\xlsx_borders.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\src\docx\xlsx_borders.h"
-					>
-				</File>
-				<File
 					RelativePath="..\src\docx\xlsx_cell_format.cpp"
 					>
 				</File>
@@ -647,14 +623,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\src\docx\xlsx_color.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\src\docx\xlsx_color.h"
-					>
-				</File>
-				<File
 					RelativePath="..\src\docx\xlsx_comments.cpp"
 					>
 				</File>
@@ -676,6 +644,14 @@
 				</File>
 				<File
 					RelativePath="..\src\docx\xlsx_complex_number_format.h"
+					>
+				</File>
+				<File
+					RelativePath="..\src\docx\xlsx_conditionalFormatting.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\src\docx\xlsx_conditionalFormatting.h"
 					>
 				</File>
 				<File
@@ -711,38 +687,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\src\docx\xlsx_fill.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\src\docx\xlsx_fill.h"
-					>
-				</File>
-				<File
-					RelativePath="..\src\docx\xlsx_fills.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\src\docx\xlsx_fills.h"
-					>
-				</File>
-				<File
-					RelativePath="..\src\docx\xlsx_font.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\src\docx\xlsx_font.h"
-					>
-				</File>
-				<File
-					RelativePath="..\src\docx\xlsx_fonts.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\src\docx\xlsx_fonts.h"
-					>
-				</File>
-				<File
 					RelativePath="..\src\docx\xlsx_formula.h"
 					>
 				</File>
@@ -771,14 +715,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\src\docx\xlsx_numFmts.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\src\docx\xlsx_numFmts.h"
-					>
-				</File>
-				<File
 					RelativePath="..\src\docx\xlsx_output_xml.cpp"
 					>
 				</File>
@@ -792,14 +728,6 @@
 				</File>
 				<File
 					RelativePath="..\src\docx\xlsx_package.h"
-					>
-				</File>
-				<File
-					RelativePath="..\src\docx\xlsx_protection.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\src\docx\xlsx_protection.h"
 					>
 				</File>
 				<File
@@ -867,14 +795,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\src\docx\xlsx_xf.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\src\docx\xlsx_xf.h"
-					>
-				</File>
-				<File
 					RelativePath="..\src\docx\xlsxconversioncontext.cpp"
 					>
 				</File>
@@ -882,6 +802,106 @@
 					RelativePath="..\src\docx\xlsxconversioncontext.h"
 					>
 				</File>
+				<Filter
+					Name="styles"
+					>
+					<File
+						RelativePath="..\src\docx\xlsx_alignment.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\src\docx\xlsx_alignment.h"
+						>
+					</File>
+					<File
+						RelativePath="..\src\docx\xlsx_border.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\src\docx\xlsx_border.h"
+						>
+					</File>
+					<File
+						RelativePath="..\src\docx\xlsx_borders.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\src\docx\xlsx_borders.h"
+						>
+					</File>
+					<File
+						RelativePath="..\src\docx\xlsx_color.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\src\docx\xlsx_color.h"
+						>
+					</File>
+					<File
+						RelativePath="..\src\docx\xlsx_dxfs.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\src\docx\xlsx_dxfs.h"
+						>
+					</File>
+					<File
+						RelativePath="..\src\docx\xlsx_fill.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\src\docx\xlsx_fill.h"
+						>
+					</File>
+					<File
+						RelativePath="..\src\docx\xlsx_fills.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\src\docx\xlsx_fills.h"
+						>
+					</File>
+					<File
+						RelativePath="..\src\docx\xlsx_font.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\src\docx\xlsx_font.h"
+						>
+					</File>
+					<File
+						RelativePath="..\src\docx\xlsx_fonts.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\src\docx\xlsx_fonts.h"
+						>
+					</File>
+					<File
+						RelativePath="..\src\docx\xlsx_numFmts.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\src\docx\xlsx_numFmts.h"
+						>
+					</File>
+					<File
+						RelativePath="..\src\docx\xlsx_protection.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\src\docx\xlsx_protection.h"
+						>
+					</File>
+					<File
+						RelativePath="..\src\docx\xlsx_xf.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\src\docx\xlsx_xf.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="oox"

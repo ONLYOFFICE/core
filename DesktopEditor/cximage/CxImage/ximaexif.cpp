@@ -1,4 +1,4 @@
-/*
+﻿/*
  * File:	ximaexif.cpp
  * Purpose:	EXIF reader
  * 18/Aug/2002 Davide Pizzolato - www.xdp.it

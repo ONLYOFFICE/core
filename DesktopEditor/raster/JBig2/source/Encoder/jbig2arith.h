@@ -1,4 +1,4 @@
-// Copyright 2006 Google Inc. All Rights Reserved.
+﻿// Copyright 2006 Google Inc. All Rights Reserved.
 // Author: agl@imperialviolet.org (Adam Langley)
 //
 // Copyright (C) 2006 Google Inc.

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 /* MD4C.H - header file for MD4C.C
  */
 

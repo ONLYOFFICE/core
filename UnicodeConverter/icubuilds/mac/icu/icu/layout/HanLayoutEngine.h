@@ -1,4 +1,4 @@
-
+﻿
 /*
  * HanLayoutEngine.h: OpenType processing for Han fonts.
  *

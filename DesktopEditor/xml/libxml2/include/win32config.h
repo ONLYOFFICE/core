@@ -1,4 +1,4 @@
-#ifndef __LIBXML_WIN32_CONFIG__
+﻿#ifndef __LIBXML_WIN32_CONFIG__
 #define __LIBXML_WIN32_CONFIG__
 
 #define HAVE_CTYPE_H

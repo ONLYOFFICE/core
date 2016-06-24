@@ -1,4 +1,4 @@
-/*
+﻿/*
  * File:	xfile.h
  * Purpose:	General Purpose File Class 
  */

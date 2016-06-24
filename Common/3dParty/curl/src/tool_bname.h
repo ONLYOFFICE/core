@@ -1,4 +1,4 @@
-#ifndef HEADER_CURL_TOOL_BNAME_H
+﻿#ifndef HEADER_CURL_TOOL_BNAME_H
 #define HEADER_CURL_TOOL_BNAME_H
 /***************************************************************************
  *                                  _   _ ____  _

@@ -31,7 +31,7 @@
  */
 
 #include "xlsx_comments.h"
-#include "docx_rels.h"
+#include "oox_rels.h"
 
 #include <vector>
 #include <cpdoccore/xml/simple_xml_writer.h>

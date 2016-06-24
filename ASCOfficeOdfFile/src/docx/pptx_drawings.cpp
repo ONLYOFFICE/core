@@ -30,12 +30,12 @@
  *
  */
 
-
 #include <boost/foreach.hpp>
 #include <vector>
 #include <cpdoccore/xml/simple_xml_writer.h>
+
 #include "mediaitems_utils.h"
-#include "docx_rels.h"
+#include "oox_rels.h"
 
 #include "pptx_drawings.h"
 #include "pptx_drawing.h"
@@ -45,43 +45,30 @@ namespace oox {
 
 class pptx_drawings::Impl
 {
-    struct rel_
-    { 
-        rel_(bool is_internal, std::wstring const & rid, std::wstring const & ref,  mediaitems::Type type) :
-        is_internal_(is_internal),
-        rid_(rid),
-        ref_(ref),
-        type_(type)
-        {}
 
-        bool is_internal_;
-        std::wstring rid_;
-        std::wstring ref_;
-        mediaitems::Type type_;
-    };
 
 public:
     void add(_pptx_drawing const & d,
         bool isInternal,
         std::wstring const & rid,
         std::wstring const & ref,
-		mediaitems::Type type)
+		RelsType type)
     {
         pptx_drawings_.push_back(d);
 		
 		bool present = false;
-        BOOST_FOREACH(rel_ const & r, pptx_drawing_rels_)
+        BOOST_FOREACH(_rel const & r, pptx_drawing_rels_)
         {		
-			if (r.rid_ == rid && r.ref_ == ref)
+			if (r.rid == rid && r.ref == ref)
 				present = true;
 		}
 		if (!present)
 		{
-			pptx_drawing_rels_.push_back(rel_(isInternal, rid, ref, type));
+			pptx_drawing_rels_.push_back(_rel(isInternal, rid, ref, type));
 		}
         BOOST_FOREACH(_hlink_desc h, d.hlinks)
         {
-			pptx_drawing_rels_.push_back(rel_(false, h.hId, h.hRef, mediaitems::typeHyperlink));
+			pptx_drawing_rels_.push_back(_rel(false, h.hId, h.hRef, typeHyperlink));
 		}
     }
 
@@ -89,18 +76,18 @@ public:
         bool isInternal,
         std::wstring const & rid,
         std::wstring const & ref,
-		mediaitems::Type type)
+		RelsType type)
     {
 	
 		bool present = false;
-        BOOST_FOREACH(rel_ const & r, pptx_drawing_rels_)
+        BOOST_FOREACH(_rel const & r, pptx_drawing_rels_)
         {		
-			if (r.rid_ == rid && r.ref_ == ref)
+			if (r.rid == rid && r.ref == ref)
 				present = true;
 		}
 		if (!present)
 		{
-			pptx_drawing_rels_.push_back(rel_(isInternal, rid, ref, type));
+			pptx_drawing_rels_.push_back(_rel(isInternal, rid, ref, type));
 		}
     }
 	void serialize(std::wostream & strm)
@@ -118,43 +105,43 @@ public:
 
     void dump_rels(rels & Rels)
     {
-        BOOST_FOREACH(rel_ const & r, pptx_drawing_rels_)
+        BOOST_FOREACH(_rel const & r, pptx_drawing_rels_)
         {
-			if (r.type_ == mediaitems::typeChart)//временно - нужно потом все загнать в релс
+			if (r.type == typeChart)//временно - нужно потом все загнать в релс
 			{
 				Rels.add(relationship(
-							r.rid_,
-							utils::media::get_rel_type(r.type_),
-							(r.is_internal_ ? std::wstring(L"../") + r.ref_ : r.ref_),
-							(r.is_internal_ ? L"" : L"External")
+							r.rid,
+							utils::media::get_rel_type(r.type),
+							(r.is_internal ? std::wstring(L"../") + r.ref : r.ref),
+							(r.is_internal ? L"" : L"External")
 							) 
 					);
 			}
-			else if (r.type_ == mediaitems::typeImage)
+			else if (r.type == typeImage)
 			{
 				Rels.add(relationship(
-							r.rid_,
-							utils::media::get_rel_type(r.type_),
-							r.is_internal_ ? std::wstring(L"../") + r.ref_ : r.ref_,
-							(r.is_internal_ ? L"" : L"External")
+							r.rid,
+							utils::media::get_rel_type(r.type),
+							r.is_internal ? std::wstring(L"../") + r.ref : r.ref,
+							(r.is_internal ? L"" : L"External")
 							) 
 					);
 			}
- 			else if (r.type_ == mediaitems::typeHyperlink)
+ 			else if (r.type == typeHyperlink)
 			{
 				Rels.add(relationship(
-							r.rid_,
+							r.rid,
 							L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink",
-							r.ref_,
+							r.ref,
 							L"External")
 				);
 			}
-			else if (r.type_ == mediaitems::typeComment)
+			else if (r.type == typeComment)
 			{
 				Rels.add(relationship(
-							r.rid_,
+							r.rid,
 							L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/comments",
-							r.ref_)
+							r.ref)
 				);
 			}
 		}
@@ -162,9 +149,8 @@ public:
 
 private:
 
-	std::vector<_pptx_drawing> pptx_drawings_;
-	
-	std::vector<rel_> pptx_drawing_rels_;
+	std::vector<_pptx_drawing>	pptx_drawings_;	
+	std::vector<_rel>			pptx_drawing_rels_;
 };
 
 pptx_drawings::pptx_drawings() : impl_( new pptx_drawings::Impl() )
@@ -179,7 +165,7 @@ void pptx_drawings::add(_pptx_drawing const & d,
         bool isInternal,
         std::wstring const & rid,
         std::wstring const & ref,
-        mediaitems::Type type)
+        RelsType type)
 {
     impl_->add(d, isInternal, rid, ref, type);
 }
@@ -187,7 +173,7 @@ void pptx_drawings::add(/**/
         bool isInternal,
         std::wstring const & rid,
         std::wstring const & ref,
-        mediaitems::Type type)
+        RelsType type)
 {
     impl_->add(isInternal, rid, ref, type);
 }

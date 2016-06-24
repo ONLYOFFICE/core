@@ -519,14 +519,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\src\docx\docx_rels.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\src\docx\docx_rels.h"
-					>
-				</File>
-				<File
 					RelativePath="..\src\docx\docx_table_context.cpp"
 					>
 				</File>
@@ -972,6 +964,14 @@
 				</File>
 				<File
 					RelativePath="..\src\docx\oox_package.h"
+					>
+				</File>
+				<File
+					RelativePath="..\src\docx\oox_rels.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\src\docx\oox_rels.h"
 					>
 				</File>
 				<File

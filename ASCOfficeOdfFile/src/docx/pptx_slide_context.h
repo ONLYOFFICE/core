@@ -113,7 +113,7 @@ public:
 	void add_rels( bool isInternal,
         std::wstring const & rid,
         std::wstring const & ref,
-        mediaitems::Type type);
+        RelsType type);
 
 	void set_footer();
 	void set_header();

@@ -121,7 +121,7 @@ void content_types_file::set_media(mediaitems & _Mediaitems)
 {
     BOOST_FOREACH( mediaitems::item & item, _Mediaitems.items() )
     {
-		if ((item.type == mediaitems::typeImage || item.type == mediaitems::typeMedia) && item.mediaInternal)
+		if ((item.type == typeImage || item.type == typeMedia) && item.mediaInternal)
 		{
 			int n = item.outputName.rfind(L".");
 			if (n > 0)
@@ -282,7 +282,7 @@ void media::write(const std::wstring & RootPath)
 
     BOOST_FOREACH( mediaitems::item & item, mediaitems_.items() )
     {
-        if (item.mediaInternal && item.valid && item.type == mediaitems::typeImage )
+        if (item.mediaInternal && item.valid && item.type == typeImage )
         {
 			std::wstring & file_name  = item.href;
 			std::wstring file_name_out = RootPath + FILE_SEPARATOR_STR + item.outputName;

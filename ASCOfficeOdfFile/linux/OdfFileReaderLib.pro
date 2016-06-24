@@ -269,7 +269,6 @@ SOURCES += \
     ../src/docx/docx_conversion_context.cpp \
     ../src/docx/docx_drawing.cpp \
     ../src/docx/docx_package.cpp \
-    ../src/docx/docx_rels.cpp \
     ../src/docx/docx_table_context.cpp \
     ../src/docx/headers_footers.cpp \
     ../src/docx/hyperlinks.cpp \
@@ -291,6 +290,7 @@ SOURCES += \
     ../src/docx/oox_plot_area.cpp \
     ../src/docx/oox_title.cpp \
     ../src/docx/oox_types_chart.cpp \
+    ../src/docx/oox_rels.cpp \
     ../src/docx/pptx_comments.cpp \
     ../src/docx/pptx_comments_context.cpp \
     ../src/docx/pptx_conversion_context.cpp \
@@ -517,7 +517,6 @@ HEADERS += \
     ../src/docx/docx_conversion_state.h \
     ../src/docx/docx_drawing.h \
     ../src/docx/docx_package.h \
-    ../src/docx/docx_rels.h \
     ../src/docx/docx_table_context.h \
     ../src/docx/drawing_object_description.h \
     ../src/docx/headers_footers.h \
@@ -542,6 +541,7 @@ HEADERS += \
     ../src/docx/ooxtablerowspanned.h \
     ../src/docx/oox_title.h \
     ../src/docx/oox_types_chart.h \
+    ../src/docx/oox_rels.h \
     ../src/docx/pptx_comments.h \
     ../src/docx/pptx_comments_context.h \
     ../src/docx/pptx_conversion_context.h \

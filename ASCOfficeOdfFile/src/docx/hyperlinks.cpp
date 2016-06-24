@@ -31,7 +31,7 @@
  */
 
 #include "hyperlinks.h"
-#include "docx_rels.h"
+#include "oox_rels.h"
 
 #include <boost/foreach.hpp>
 #include <boost/lexical_cast.hpp>

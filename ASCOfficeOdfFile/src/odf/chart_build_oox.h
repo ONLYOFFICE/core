@@ -106,7 +106,10 @@ public:
 		std::wstring val;
 	};
 
-    chart_build() : width_pt_(0), height_pt_(0), in_axis_(false),
+	chart_build(std::wstring ref) : 
+		width_pt_(0), 
+		height_pt_(0), 
+		in_axis_(false),
         current_table_column_(0),
         current_table_row_(0),
         columns_spanned_num_(0),
@@ -115,6 +118,7 @@ public:
 		object_type_(0),
 		office_text_(NULL),
 		office_math_(NULL),
+		baseRef_(ref),
 		baseFontHeight_(12)
     {
 	}
@@ -156,8 +160,8 @@ public:
 	office_text *office_text_;
  	office_math	*office_math_;
 
-	int baseFontHeight_;
- 
+	int				baseFontHeight_;
+	std::wstring	baseRef_; 
 //---------------------------------------------------------------
 	std::wstring		str_class_;  
 	chart::class_type	class_;  

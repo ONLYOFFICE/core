@@ -69,10 +69,10 @@ namespace oox {
     };
     struct _oox_drawing
     {
-        _oox_drawing() : type(mediaitems::typeUnknown), id(0), x(0), y(0), cx(0), cy(0), sub_type(0), inGroup(false), name(L"object")
+        _oox_drawing() : type(typeUnknown), id(0), x(0), y(0), cx(0), cy(0), sub_type(0), inGroup(false), name(L"object")
         {
         }
-        mediaitems::Type type;
+        RelsType type;
 
  		bool	inGroup;
 		size_t	id;

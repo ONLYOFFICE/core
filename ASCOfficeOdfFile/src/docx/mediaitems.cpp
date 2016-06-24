@@ -39,7 +39,6 @@
 
 #include <cpdoccore/xml/utils.h>
 
-#include "docx_rels.h"
 #include "mediaitems_utils.h"
 
 #include "../../Common/DocxFormat/Source/Base/Base.h"
@@ -51,7 +50,7 @@ namespace oox {
 
 
 mediaitems::item::item(	std::wstring const & _href,
-                       Type _type,
+                       RelsType _type,
                        std::wstring const & _outputName,
 						bool _mediaInternal,
 						std::wstring const & _Id
@@ -67,27 +66,27 @@ mediaitems::item::item(	std::wstring const & _href,
 	count_used = 0;
 }
 
-std::wstring mediaitems::add_or_find(const std::wstring & href, Type type, bool & isInternal)
+std::wstring mediaitems::add_or_find(const std::wstring & href, RelsType type, bool & isInternal)
 {
     std::wstring ref;
     return add_or_find(href, type, isInternal, ref);
 }
 
-std::wstring static get_default_file_name(mediaitems::Type type)
+std::wstring static get_default_file_name(RelsType type)
 {
     switch (type)
     {
-    case mediaitems::typeImage:
+    case typeImage:
         return L"image";
-    case mediaitems::typeChart:
+    case typeChart:
         return L"chart";
-    case mediaitems::typeMedia:
+    case typeMedia:
         return L"media";
 	default:
         return L"";
     }
 }
-std::wstring mediaitems::create_file_name(const std::wstring & uri, mediaitems::Type type, size_t Num)
+std::wstring mediaitems::create_file_name(const std::wstring & uri, RelsType type, size_t Num)
 {
 	if (uri.empty()) return L"";
 
@@ -126,7 +125,7 @@ std::wstring mediaitems::create_file_name(const std::wstring & uri, mediaitems::
 
 
 
-std::wstring mediaitems::add_or_find(const std::wstring & href, Type type, bool & isInternal, std::wstring & ref)
+std::wstring mediaitems::add_or_find(const std::wstring & href, RelsType type, bool & isInternal, std::wstring & ref)
 {
     const bool isMediaInternal = utils::media::is_internal(href, odf_packet_);
   
@@ -139,14 +138,10 @@ std::wstring mediaitems::add_or_find(const std::wstring & href, Type type, bool 
 	}
 	int number=0;
 	
-	if ( type == typeChart)
-		number= count_charts+1;
-	else if ( type == typeImage)
-		number= count_image+1;
-	else if ( type == typeShape)
-		number= count_shape+1;
-	else if ( type == typeMedia)
-		number= count_media+1;
+		 if ( type == typeChart)	number= count_charts+1;
+	else if ( type == typeImage)	number= count_image+1;
+	else if ( type == typeShape)	number= count_shape+1;
+	else if ( type == typeMedia)	number= count_media+1;
 	else
 		number= items_.size()+1;
 	

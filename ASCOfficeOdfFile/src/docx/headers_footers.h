@@ -35,7 +35,7 @@
 #include <string>
 #include <boost/unordered_map.hpp>
 
-#include "docx_rels.h"
+#include "oox_rels.h"
 namespace cpdoccore { 
 
 namespace odf_reader {

@@ -364,10 +364,15 @@ void Compute_GraphicFill(const common_draw_fill_attlist & props, const office_el
 {
 	if (fill.type < 1)	fill.type = 0; 
 
-	if (props.draw_opacity_) fill.opacity = props.draw_opacity_->get_value();
+	if (props.draw_opacity_) 
+	{
+		fill.opacity = props.draw_opacity_->get_value();
+	}
+	
 	if (props.draw_opacity_name_)
 	{
 		const std::wstring style_name = L"opacity:" + *props.draw_opacity_name_;
+		
 		if (office_element_ptr style = styles.find_by_style_name(style_name))
 		{
 			if (draw_opacity * image_style = dynamic_cast<draw_opacity *>(style.get()))
@@ -392,16 +397,18 @@ void Compute_GraphicFill(const common_draw_fill_attlist & props, const office_el
 		fill.solid->color = props.draw_fill_color_->get_hex_value();
 		if (fill.type==0)fill.type = 1;	//в этом случае тип может и не быть задан явно
 	}
+	
 	if (props.draw_fill_image_name_)
 	{
 		const std::wstring style_name = L"bitmap:" + *props.draw_fill_image_name_;
+		
 		if (office_element_ptr style = styles.find_by_style_name(style_name))
 		{
 			if (draw_fill_image * fill_image = dynamic_cast<draw_fill_image *>(style.get()))
 			{			
 				fill.bitmap = oox::oox_bitmap_fill::create();
-				fill.bitmap->xlink_href_ = fill_image->xlink_attlist_.href_.get_value_or(L"");
 				fill.bitmap->bTile = true;
+				fill.bitmap->xlink_href_ = fill_image->xlink_attlist_.href_.get_value_or(L"");
 			}
 		}
 	}

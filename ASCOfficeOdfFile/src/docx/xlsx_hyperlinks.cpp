@@ -37,7 +37,7 @@
 #include <cpdoccore/xml/simple_xml_writer.h>
 
 #include "xlsx_hyperlinks.h"
-#include "docx_rels.h"
+#include "oox_rels.h"
 #include "../formulasconvert/formulasconvert.h"
 
 namespace cpdoccore {

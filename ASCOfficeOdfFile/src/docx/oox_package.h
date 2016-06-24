@@ -37,7 +37,7 @@
 #include <cpdoccore/CPNoncopyable.h>
 
 #include "docx_content_type.h"
-#include "docx_rels.h"
+#include "oox_rels.h"
 
 #include "../../../Common/DocxFormat/Source/Base/Base.h"
 #include "../../../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"

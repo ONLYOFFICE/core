@@ -36,7 +36,7 @@
 #include <cpdoccore/CPScopedPtr.h>
 #include <cpdoccore/CPNoncopyable.h>
 
-#include "docx_rels.h"
+#include "oox_rels.h"
 
 namespace cpdoccore {
 namespace oox {

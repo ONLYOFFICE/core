@@ -285,7 +285,14 @@ void xl_charts_files::write(const std::wstring & RootPath)
             contentTypes->add_override(std::wstring(L"/xl/charts/") + fileName, kWSConType);
 
             package::simple_element(fileName, item->str()).write(path);
-        }
+			
+			rels_files relFiles;
+
+			item->get_rel_file()->set_file_name(fileName + L".rels");
+			    
+			relFiles.add_rel_file(item->get_rel_file());
+			relFiles.write(path);
+       }
     }
 }
 //////////////////////////

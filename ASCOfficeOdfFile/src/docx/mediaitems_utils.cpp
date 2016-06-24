@@ -60,13 +60,13 @@ bool is_internal(const std::wstring & uri, const std::wstring & packetRoot)
 	return FileSystem::Directory::IsExist(resultPath);
 }
 
-std::wstring get_rel_type(mediaitems::Type type)
+std::wstring get_rel_type(RelsType type)
 {
     switch (type)
     {
-    case mediaitems::typeImage:
+    case typeImage:
         return L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image";
-     case mediaitems::typeChart:
+     case typeChart:
         return L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart";
    default:
         return L"";

@@ -860,7 +860,7 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, const unio
 	if ((drawing.fill.bitmap) && (drawing.fill.bitmap->rId.length() < 1))
 	{
 		std::wstring href = drawing.fill.bitmap->xlink_href_;
-		drawing.fill.bitmap->rId = Context.add_mediaitem(href, oox::mediaitems::typeImage,drawing.fill.bitmap->isInternal,href);
+		drawing.fill.bitmap->rId = Context.add_mediaitem(href, oox::typeImage, drawing.fill.bitmap->isInternal, href);
 	}
 
 ////////////////////////////////////////////////////
@@ -965,7 +965,7 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, const unio
 		drawing.y = val >=0 ? val : 0; //??? todooo отрицательные величины ...
 	}
 
-	if (drawing.inGroup && drawing.type != oox::mediaitems::typeGroup)
+	if (drawing.inGroup && drawing.type != oox::typeGroupShape)
 	{
 		Context.get_drawing_context().set_position_child_group(drawing.x, drawing.y);
 		Context.get_drawing_context().set_size_child_group(drawing.cx + drawing.x, drawing.cy + drawing.y);
@@ -986,7 +986,7 @@ void draw_shape::docx_convert(oox::docx_conversion_context & Context)
 
 	oox::_docx_drawing drawing = oox::_docx_drawing();
 
-	drawing.type	= oox::mediaitems::typeShape;
+	drawing.type	= oox::typeShape;
 	drawing.id		= Context.get_drawing_context().get_current_shape_id();
 	drawing.name	= Context.get_drawing_context().get_current_object_name();
 	drawing.inGroup	= Context.get_drawing_context().in_group();
@@ -1074,7 +1074,7 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 //--------------------------------------------------
 	oox::_docx_drawing drawing = oox::_docx_drawing();
 
-	drawing.type	= oox::mediaitems::typeImage;
+	drawing.type	= oox::typeImage;
 	drawing.id		= Context.get_drawing_context().get_current_frame_id();
 	drawing.name	= Context.get_drawing_context().get_current_object_name();
 	drawing.inGroup	= Context.get_drawing_context().in_group();
@@ -1098,7 +1098,7 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 	drawing.fill.bitmap = oox::oox_bitmap_fill::create();
 	drawing.fill.type = 2;
 	drawing.fill.bitmap->isInternal = false;
-    drawing.fill.bitmap->rId = Context.add_mediaitem(href, oox::mediaitems::typeImage,drawing.fill.bitmap->isInternal,href);
+    drawing.fill.bitmap->rId = Context.add_mediaitem(href, oox::typeImage, drawing.fill.bitmap->isInternal,href);
 	drawing.fill.bitmap->bStretch = true;
 
     const _CP_OPT(style_ref) & styleRef = frame->common_draw_attlists_.shape_with_text_and_styles_.
@@ -1183,7 +1183,7 @@ void draw_text_box::docx_convert(oox::docx_conversion_context & Context)
 		return;
 	oox::_docx_drawing drawing = oox::_docx_drawing();
 
-	drawing.type	= oox::mediaitems::typeShape;
+	drawing.type	= oox::typeShape;
 	drawing.id		= Context.get_drawing_context().get_current_frame_id();
 	drawing.name	= Context.get_drawing_context().get_current_object_name();
 	drawing.inGroup	= Context.get_drawing_context().in_group();
@@ -1262,7 +1262,7 @@ void draw_g::docx_convert(oox::docx_conversion_context & Context)
 	oox::_docx_drawing drawing = oox::_docx_drawing();
 	
 	drawing.inGroup	= Context.get_drawing_context().in_group();
-	drawing.type	= oox::mediaitems::typeGroup;
+	drawing.type	= oox::typeGroupShape;
 	
 	Context.get_drawing_context().start_group();
 	
@@ -1390,7 +1390,7 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 //функциональная часть
 		office_element	*contentSubDoc	= objectSubDoc.get_impl()->get_content();
 		draw_frame		*frame			= NULL;
-		chart_build		objectBuild;
+		chart_build		objectBuild(href);
 
 		//if (!contentSubDoc)//Diagramma.odt - кривые ссылки на объекты
 		//	return;
@@ -1410,7 +1410,7 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 		{	
 			oox::_docx_drawing drawing = oox::_docx_drawing();
 
-			drawing.type	=  oox::mediaitems::typeChart;
+			drawing.type	=  oox::typeChart;
 			
 			drawing.id		= Context.get_drawing_context().get_current_frame_id();
 			drawing.name	= Context.get_drawing_context().get_current_object_name();
@@ -1442,7 +1442,7 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 		{	
 			oox::_docx_drawing drawing = oox::_docx_drawing();
 
-			drawing.type	= oox::mediaitems::typeShape;			
+			drawing.type	= oox::typeShape;			
 			drawing.id		= Context.get_drawing_context().get_current_frame_id();
 			drawing.name	= Context.get_drawing_context().get_current_object_name();
 			drawing.inGroup	= Context.get_drawing_context().in_group();

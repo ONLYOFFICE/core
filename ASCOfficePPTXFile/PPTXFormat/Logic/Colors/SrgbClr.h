@@ -60,7 +60,7 @@ namespace PPTX
 			{
 				int cred	= node.GetAttributeInt(CString(L"r"), 0);
 				int cgreen	= node.GetAttributeInt(CString(L"g"), 0);
-				int cblue	= node.GetAttributeInt(CString(L"g"), 0);
+				int cblue	= node.GetAttributeInt(CString(L"b"), 0);
 
 				red		= (unsigned char)(255 * scRGB_to_sRGB(cred / 100000.0));
 				green	= (unsigned char)(255 * scRGB_to_sRGB(cgreen / 100000.0));

@@ -70,19 +70,19 @@ namespace PPTX
 		{
 			CString name = XmlUtils::GetNameNoNS(node.GetName());
 
-			if (name == _T("a:srgbClr"))
+			if (name == _T("srgbClr"))
 				Color.reset(new Logic::SrgbClr(node));
-			else if (name == _T("a:scrgbClr"))
+			else if (name == _T("scrgbClr"))
 			{
 				Logic::SrgbClr* pSrgbClr = new Logic::SrgbClr(node);
 				pSrgbClr->fromXMLScRgb(node);
 				Color.reset(pSrgbClr);
 			}
-			else if (name == _T("a:prstClr"))
+			else if (name == _T("prstClr"))
 				Color.reset(new Logic::PrstClr(node));
-			else if (name == _T("a:schemeClr"))
+			else if (name == _T("schemeClr"))
 				Color.reset(new Logic::SchemeClr(node));
-			else if (name == _T("a:sysClr"))
+			else if (name == _T("sysClr"))
 				Color.reset(new Logic::SysClr(node));
 			else Color.reset();
 		}
@@ -236,7 +236,17 @@ namespace PPTX
 						if (oNode.IsValid())
 							Color.reset(new Logic::SysClr(oNode));
 						else
-							Color.reset();
+						{
+							oNode = element.ReadNodeNoNS(_T("scrgbClr"));
+							if (oNode.IsValid())
+							{
+								Logic::SrgbClr* pSrgbClr = new Logic::SrgbClr(oNode);
+								pSrgbClr->fromXMLScRgb(oNode);
+								Color.reset(pSrgbClr);
+							}
+							else
+								Color.reset();
+						}
 					}
 				}
 			}

@@ -1,3 +1,34 @@
+/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 
 #include "anim_elements.h"
 
@@ -38,10 +69,10 @@ void anim_par::pptx_convert(oox::pptx_conversion_context & Context)
 	if (anim_par_)
 	{
 		Context.get_slide_context().start_slide_animation();
-			anim_par_->pptx_convert(Context); // это для самого слайда (то что и нужно)
+			anim_par_->pptx_convert(Context); // СЌС‚Рѕ РґР»СЏ СЃР°РјРѕРіРѕ СЃР»Р°Р№РґР° (С‚Рѕ С‡С‚Рѕ Рё РЅСѓР¶РЅРѕ)
 		Context.get_slide_context().end_slide_animation();
 	}
-///////////////////////// последовательности .. (если один элемент - основная последовательность, иное - взаимодействующая анимация)
+///////////////////////// РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё .. (РµСЃР»Рё РѕРґРёРЅ СЌР»РµРјРµРЅС‚ - РѕСЃРЅРѕРІРЅР°СЏ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ, РёРЅРѕРµ - РІР·Р°РёРјРѕРґРµР№СЃС‚РІСѓСЋС‰Р°СЏ Р°РЅРёРјР°С†РёСЏ)
 	//slide_context().animation_context().start_sequence();
 	BOOST_FOREACH(const office_element_ptr& elm, anim_seq_array_)
     {
@@ -49,7 +80,7 @@ void anim_par::pptx_convert(oox::pptx_conversion_context & Context)
 	}
 	//slide_context().animation_context().end_sequence();
 /////////////////////////////////////////////////////////////////
-//внутренние эффекты - те что внутри одной последовательности
+//РІРЅСѓС‚СЂРµРЅРЅРёРµ СЌС„С„РµРєС‚С‹ - С‚Рµ С‡С‚Рѕ РІРЅСѓС‚СЂРё РѕРґРЅРѕР№ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё
 	BOOST_FOREACH(const office_element_ptr& elm, content_)
     {
 		elm->pptx_convert(Context);
@@ -60,7 +91,7 @@ void anim_par::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, 
 	if CP_CHECK_NAME(L"anim", L"par") 
 		CP_CREATE_ELEMENT(anim_par_);
 	else if	CP_CHECK_NAME(L"anim", L"seq") 
-		CP_CREATE_ELEMENT(anim_seq_array_);//более 1 элемента- взаимосвязанная анимация (между фигурами)
+		CP_CREATE_ELEMENT(anim_seq_array_);//Р±РѕР»РµРµ 1 СЌР»РµРјРµРЅС‚Р°- РІР·Р°РёРјРѕСЃРІСЏР·Р°РЅРЅР°СЏ Р°РЅРёРјР°С†РёСЏ (РјРµР¶РґСѓ С„РёРіСѓСЂР°РјРё)
 	else
 		CP_CREATE_ELEMENT(content_);
 }

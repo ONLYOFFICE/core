@@ -6,7 +6,7 @@
 
 QT       -= core gui
 
-VERSION = 1.0.0.3
+VERSION = 1.0.0.4
 TARGET = UnicodeConverter
 TEMPLATE = lib
 
@@ -60,11 +60,14 @@ mac {
 ################################################
 
 LIBS_DESTDIR_PATH = $$DESTDIR
-#CONFIG += static_link_libstd
+# теперь всегда с libstd
+linux-g++ | linux-g++-64 | linux-g++-32 {
+    CONFIG += static_link_libstd
+}
 static_link_libstd {
     QMAKE_LFLAGS += -static-libstdc++ -static-libgcc
-    DESTDIR_POSTFIX = _static_stdlib
-    DESTDIR = $$DESTDIR$$DESTDIR_POSTFIX
+#    DESTDIR_POSTFIX = _static_stdlib
+#    DESTDIR = $$DESTDIR$$DESTDIR_POSTFIX
     message(static_link_libstd)
 }
 
@@ -78,9 +81,9 @@ linux-g++ | linux-g++-64 | linux-g++-32 {
     CONFIG += plugin
     TARGET_EXT = .so
 
-    INCLUDEPATH += $$PWD/icubuilds/$$ICU_BUILDS_PLATFORM/usr/local/include
-    LIBS        += $$PWD/../build/bin/icu/$$ICU_BUILDS_PLATFORM/libicuuc.so.55
-    LIBS        += $$PWD/../build/bin/icu/$$ICU_BUILDS_PLATFORM/libicudata.so.55
+    INCLUDEPATH += /usr/local/include
+    LIBS        += /usr/local/lib/libicuuc.so.55
+    LIBS        += /usr/local/lib/libicudata.so.55
     message(linux)
 }
 

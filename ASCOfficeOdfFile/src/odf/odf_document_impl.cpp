@@ -1,3 +1,34 @@
+/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 
 #include <iostream>
 
@@ -185,7 +216,7 @@ void odf_document::Impl::parse_fonts()
             context_->fontContainer().add_font( fontInstance );
             /*if  (!context_.fontContainer().font_by_name(fontStyleName))
             {
-                // два раза не добавляем?
+                // РґРІР° СЂР°Р·Р° РЅРµ РґРѕР±Р°РІР»СЏРµРј?
                 
             }
             else
@@ -278,8 +309,8 @@ void odf_document::Impl::parse_styles()
             break;
         }
        
-        // parse automatic styles - эти стили используют объекты которые в оазис находятся в этом же документе
-		//переопределяем имя - иначе при поиске может возникнуть коллизия.
+        // parse automatic styles - СЌС‚Рё СЃС‚РёР»Рё РёСЃРїРѕР»СЊР·СѓСЋС‚ РѕР±СЉРµРєС‚С‹ РєРѕС‚РѕСЂС‹Рµ РІ РѕР°Р·РёСЃ РЅР°С…РѕРґСЏС‚СЃСЏ РІ СЌС‚РѕРј Р¶Рµ РґРѕРєСѓРјРµРЅС‚Рµ
+		//РїРµСЂРµРѕРїСЂРµРґРµР»СЏРµРј РёРјСЏ - РёРЅР°С‡Рµ РїСЂРё РїРѕРёСЃРєРµ РјРѕР¶РµС‚ РІРѕР·РЅРёРєРЅСѓС‚СЊ РєРѕР»Р»РёР·РёСЏ.
         do
         {
             office_automatic_styles * automaticStyles = dynamic_cast<office_automatic_styles *>( document->office_automatic_styles_.get() );
@@ -311,14 +342,16 @@ void odf_document::Impl::parse_styles()
                     continue;
                 }
 
-				context_->styleContainer().add_style(L"common:" + styleInst->style_name_,
-                    styleInst->style_family_.get_type(),
-                    &(styleInst->style_content_),
-                    true,
-                    false,
-                    styleInst->style_parent_style_name_.get_value_or(L""),
-                    styleInst->style_next_style_name_.get_value_or(L""),
-                    styleInst->style_data_style_name_.get_value_or(L"")
+				context_->styleContainer().add_style
+					(	L"common:" + styleInst->style_name_,
+						styleInst->style_display_name_.get_value_or(L""),
+						styleInst->style_family_.get_type(),
+						&(styleInst->style_content_),
+						true,
+						false,
+						styleInst->style_parent_style_name_.get_value_or(L""),
+						styleInst->style_next_style_name_.get_value_or(L""),
+						styleInst->style_data_style_name_.get_value_or(L"")
                     );
             }
             // list styles
@@ -384,6 +417,7 @@ void odf_document::Impl::parse_styles()
                 }
 
                 context_->styleContainer().add_style(L"",
+					L"",
                     styleInst->style_family_.get_type(), 
                     &(styleInst->style_content_),
                     false,
@@ -416,6 +450,7 @@ void odf_document::Impl::parse_styles()
                     context_->styleContainer().add_master_page_name(styleInst->style_name_, *styleInst->style_master_page_name_);
 
                 context_->styleContainer().add_style(styleInst->style_name_,
+					styleInst->style_display_name_.get_value_or(L""),
                     styleInst->style_family_.get_type(),
                     &(styleInst->style_content_),
                     false,
@@ -547,6 +582,7 @@ void odf_document::Impl::parse_styles()
                     context_->styleContainer().add_master_page_name(styleInst->style_name_, *styleInst->style_master_page_name_);
 
                 context_->styleContainer().add_style(styleInst->style_name_,
+					styleInst->style_display_name_.get_value_or(L""),
                     styleInst->style_family_.get_type(),
                     &(styleInst->style_content_),
                     true,
@@ -604,9 +640,9 @@ bool odf_document::Impl::docx_convert(oox::docx_conversion_context & Context)
     
 	Context.end_document();
 
-    // мы обрабатываем стили списка после того как сконвертировали документ,
-    // так как в процессе конвертации документа у нас могу добавиться стили — 
-    // в случае если используется text:start-value (начинаем нумерацию заново)
+    // РјС‹ РѕР±СЂР°Р±Р°С‚С‹РІР°РµРј СЃС‚РёР»Рё СЃРїРёСЃРєР° РїРѕСЃР»Рµ С‚РѕРіРѕ РєР°Рє СЃРєРѕРЅРІРµСЂС‚РёСЂРѕРІР°Р»Рё РґРѕРєСѓРјРµРЅС‚,
+    // С‚Р°Рє РєР°Рє РІ РїСЂРѕС†РµСЃСЃРµ РєРѕРЅРІРµСЂС‚Р°С†РёРё РґРѕРєСѓРјРµРЅС‚Р° Сѓ РЅР°СЃ РјРѕРіСѓ РґРѕР±Р°РІРёС‚СЊСЃСЏ СЃС‚РёР»Рё Р§
+    // РІ СЃР»СѓС‡Р°Рµ РµСЃР»Рё РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ text:start-value (РЅР°С‡РёРЅР°РµРј РЅСѓРјРµСЂР°С†РёСЋ Р·Р°РЅРѕРІРѕ)
     Context.process_list_styles();
 	if (UpdateProgress(850000)) return false;
 

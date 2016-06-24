@@ -1,3 +1,34 @@
+/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 #ifndef _WIN_FONT_H
 #define _WIN_FONT_H
 
@@ -40,7 +71,7 @@ enum EFontFormat
 {
 	fontWindowsFNT = 0, // *.fon
 	fontTrueType   = 1, // *.ttf
-	fontOpenType   = 2, // *.ttf, *.otf (CFF формат)
+	fontOpenType   = 2, // *.ttf, *.otf (CFF С„РѕСЂРјР°С‚)
 	fontUnknown    = 3
 };
 
@@ -217,7 +248,7 @@ public:
 		pBuffer += g_lSizeofBOOL;
 
 		// Panose
-		lLen = *((LONG*)pBuffer); // должно быть равно 10
+		lLen = *((LONG*)pBuffer); // РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ СЂР°РІРЅРѕ 10
 		pBuffer += g_lSizeofLONG;
 
 		BYTE pPanose[10];
@@ -440,14 +471,14 @@ public:
 
 public:
 
-	CStringW     m_wsFontName;   // Имя шрифта
-	CStringW     m_wsFontPath;   // Путь к файлу с шрифтом
-	long         m_lIndex;       // Номер шрифта в файле(если в файле больше 1 шрифта)
+	CStringW     m_wsFontName;   // РРјСЏ С€СЂРёС„С‚Р°
+	CStringW     m_wsFontPath;   // РџСѓС‚СЊ Рє С„Р°Р№Р»Сѓ СЃ С€СЂРёС„С‚РѕРј
+	long         m_lIndex;       // РќРѕРјРµСЂ С€СЂРёС„С‚Р° РІ С„Р°Р№Р»Рµ(РµСЃР»Рё РІ С„Р°Р№Р»Рµ Р±РѕР»СЊС€Рµ 1 С€СЂРёС„С‚Р°)
 	CStringW     m_wsStyle;
 
 	BOOL         m_bBold;            // Bold text
 	BOOL         m_bItalic;          // Italic text
-	BOOL         m_bIsFixed;         // Моноширинный шрифт?
+	BOOL         m_bIsFixed;         // РњРѕРЅРѕС€РёСЂРёРЅРЅС‹Р№ С€СЂРёС„С‚?
 
 	BYTE         m_aPanose[10];
 	ULONG	     m_ulUnicodeRange1;  // Bits 0-31
@@ -464,12 +495,12 @@ public:
 	SHORT        m_sFamilyClass;
 	EFontFormat  m_eFontFormat;
 
-	SHORT        m_shAvgCharWidth;   // Средняя ширина символов
+	SHORT        m_shAvgCharWidth;   // РЎСЂРµРґРЅСЏСЏ С€РёСЂРёРЅР° СЃРёРјРІРѕР»РѕРІ
 	SHORT        m_shAscent;         // Ascent
 	SHORT        m_shDescent;        // Descent
-	SHORT        m_shLineGap;        // Межсимвольный интервал
-	SHORT        m_shXHeight;        // Высота буквы 'x' (в нижнем регистре)
-	SHORT        m_shCapHeight;      // Высота буквы 'H' (в верхнем регистре)
+	SHORT        m_shLineGap;        // РњРµР¶СЃРёРјРІРѕР»СЊРЅС‹Р№ РёРЅС‚РµСЂРІР°Р»
+	SHORT        m_shXHeight;        // Р’С‹СЃРѕС‚Р° Р±СѓРєРІС‹ 'x' (РІ РЅРёР¶РЅРµРј СЂРµРіРёСЃС‚СЂРµ)
+	SHORT        m_shCapHeight;      // Р’С‹СЃРѕС‚Р° Р±СѓРєРІС‹ 'H' (РІ РІРµСЂС…РЅРµРј СЂРµРіРёСЃС‚СЂРµ)
 
 	CAtlArray<CString> names;
 
@@ -530,7 +561,7 @@ public:
 
 		m_pFonts = new CList();
 
-		// Ищем директорию с фонтами (обычно это C:\Windows\Fonts)
+		// РС‰РµРј РґРёСЂРµРєС‚РѕСЂРёСЋ СЃ С„РѕРЅС‚Р°РјРё (РѕР±С‹С‡РЅРѕ СЌС‚Рѕ C:\Windows\Fonts)
 		m_wsWinFontDir[0] = '\0';
 		if ( !SHGetSpecialFolderPathW( NULL, m_wsWinFontDir, CSIDL_FONTS, FALSE ) )
 			m_wsWinFontDir[0] = '\0';
@@ -564,10 +595,10 @@ public:
 				}
 			}
 
-			// TO DO: Шрифты, которые нельзя скейлить (т.е. изменять размер 
-			// произвольно) мы не грузим. Возможно в будущем надо будет
-			// сделать, чтобы работал и такой вариант. (в Word такие шрифты
-			// не используются)
+			// TO DO: РЁСЂРёС„С‚С‹, РєРѕС‚РѕСЂС‹Рµ РЅРµР»СЊР·СЏ СЃРєРµР№Р»РёС‚СЊ (С‚.Рµ. РёР·РјРµРЅСЏС‚СЊ СЂР°Р·РјРµСЂ 
+			// РїСЂРѕРёР·РІРѕР»СЊРЅРѕ) РјС‹ РЅРµ РіСЂСѓР·РёРј. Р’РѕР·РјРѕР¶РЅРѕ РІ Р±СѓРґСѓС‰РµРј РЅР°РґРѕ Р±СѓРґРµС‚
+			// СЃРґРµР»Р°С‚СЊ, С‡С‚РѕР±С‹ СЂР°Р±РѕС‚Р°Р» Рё С‚Р°РєРѕР№ РІР°СЂРёР°РЅС‚. (РІ Word С‚Р°РєРёРµ С€СЂРёС„С‚С‹
+			// РЅРµ РёСЃРїРѕР»СЊР·СѓСЋС‚СЃСЏ)
 			if ( !( pFace->face_flags & FT_FACE_FLAG_SCALABLE ) )
 			{
 				FT_Done_Face( pFace );
@@ -667,8 +698,8 @@ public:
 
 				if ( true )
 				{
-					// Специальная ветка для случаев, когда charset может быть задан не через значения
-					// ulCodePageRange, а непосредственно через тип Cmap.
+					// РЎРїРµС†РёР°Р»СЊРЅР°СЏ РІРµС‚РєР° РґР»СЏ СЃР»СѓС‡Р°РµРІ, РєРѕРіРґР° charset РјРѕР¶РµС‚ Р±С‹С‚СЊ Р·Р°РґР°РЅ РЅРµ С‡РµСЂРµР· Р·РЅР°С‡РµРЅРёСЏ
+					// ulCodePageRange, Р° РЅРµРїРѕСЃСЂРµРґСЃС‚РІРµРЅРЅРѕ С‡РµСЂРµР· С‚РёРї Cmap.
 
 					//  Charset Name       Charset Value(hex)  Codepage number   Platform_ID   Encoding_ID   Description
 					//  -------------------------------------------------------------------------------------------------
@@ -750,10 +781,10 @@ public:
 					if ( nError = FT_New_FaceW( pLibrary, wsFilePath.GetBuffer(), 0, &pFace ) )
 						continue;
 
-					// TO DO: Шрифты, которые нельзя скейлить (т.е. изменять размер 
-					// произвольно) мы не грузим. Возможно в будущем надо будет
-					// сделать, чтобы работал и такой вариант. (в Word такие шрифты
-					// не используются)
+					// TO DO: РЁСЂРёС„С‚С‹, РєРѕС‚РѕСЂС‹Рµ РЅРµР»СЊР·СЏ СЃРєРµР№Р»РёС‚СЊ (С‚.Рµ. РёР·РјРµРЅСЏС‚СЊ СЂР°Р·РјРµСЂ 
+					// РїСЂРѕРёР·РІРѕР»СЊРЅРѕ) РјС‹ РЅРµ РіСЂСѓР·РёРј. Р’РѕР·РјРѕР¶РЅРѕ РІ Р±СѓРґСѓС‰РµРј РЅР°РґРѕ Р±СѓРґРµС‚
+					// СЃРґРµР»Р°С‚СЊ, С‡С‚РѕР±С‹ СЂР°Р±РѕС‚Р°Р» Рё С‚Р°РєРѕР№ РІР°СЂРёР°РЅС‚. (РІ Word С‚Р°РєРёРµ С€СЂРёС„С‚С‹
+					// РЅРµ РёСЃРїРѕР»СЊР·СѓСЋС‚СЃСЏ)
 					if ( !( pFace->face_flags & FT_FACE_FLAG_SCALABLE ) )
 					{
 						FT_Done_Face( pFace );
@@ -861,8 +892,8 @@ public:
 
 						if ( true )
 						{
-							// Специальная ветка для случаев, когда charset может быть задан не через значения
-							// ulCodePageRange, а непосредственно через тип Cmap.
+							// РЎРїРµС†РёР°Р»СЊРЅР°СЏ РІРµС‚РєР° РґР»СЏ СЃР»СѓС‡Р°РµРІ, РєРѕРіРґР° charset РјРѕР¶РµС‚ Р±С‹С‚СЊ Р·Р°РґР°РЅ РЅРµ С‡РµСЂРµР· Р·РЅР°С‡РµРЅРёСЏ
+							// ulCodePageRange, Р° РЅРµРїРѕСЃСЂРµРґСЃС‚РІРµРЅРЅРѕ С‡РµСЂРµР· С‚РёРї Cmap.
 
 							//  Charset Name       Charset Value(hex)  Codepage number   Platform_ID   Encoding_ID   Description
 							//  -------------------------------------------------------------------------------------------------
@@ -1018,7 +1049,7 @@ public:
 		BOOL bIsName = FALSE, bIsAltName = FALSE, bIsStyle = FALSE, bIsFixed = FALSE, bIsPanose = FALSE, bIsRanges = FALSE, bIsWeight = FALSE, bIsWidth = FALSE, bIsFamilyClass = FALSE;
 
 		BOOL bIsAvgWidth = FALSE, bIsAscent = FALSE, bIsDescent = FALSE, bIsLineGap = FALSE, bIsXHeight = FALSE, bIsCapHeight = FALSE;
-		// Считываем настройки шрифта
+		// РЎС‡РёС‚С‹РІР°РµРј РЅР°СЃС‚СЂРѕР№РєРё С€СЂРёС„С‚Р°
 		XmlUtils::CXmlNode oMainNode;
 		oMainNode.FromXmlString( sParamsXml );
 
@@ -1071,7 +1102,7 @@ public:
 						unsigned char unValue = ((unsigned char)( HexToInt( nChar1 ) << 4 )) | HexToInt( nChar2 );
 						pPanose[nIndex] = unValue;
 
-						// Если хоть одно значение не 0, то используем Panose
+						// Р•СЃР»Рё С…РѕС‚СЊ РѕРґРЅРѕ Р·РЅР°С‡РµРЅРёРµ РЅРµ 0, С‚Рѕ РёСЃРїРѕР»СЊР·СѓРµРј Panose
 						if ( 0 != unValue  )
 							bIsPanose = TRUE;
 					}
@@ -1117,13 +1148,13 @@ public:
 
 			if ( oMainNode.GetNode( _T("FontFormat"), oNode ) )
 			{
-				// Формат мы всегда сравниваем
+				// Р¤РѕСЂРјР°С‚ РјС‹ РІСЃРµРіРґР° СЃСЂР°РІРЅРёРІР°РµРј
 				eFontFormat = (EFontFormat)XmlUtils::GetInteger( oNode.GetAttribute( _T("value") ) );
 			}
 
 			if ( oMainNode.GetNode( _T("Charset"), oNode ) )
 			{
-				// Если charset не задан, то считаем его нулевым (Cp-1252)
+				// Р•СЃР»Рё charset РЅРµ Р·Р°РґР°РЅ, С‚Рѕ СЃС‡РёС‚Р°РµРј РµРіРѕ РЅСѓР»РµРІС‹Рј (Cp-1252)
 				unCharset = (unsigned char)HexToInt( oNode.GetAttribute( _T("value") ) );
 			}
 			else 
@@ -1168,8 +1199,8 @@ public:
 			}
 		}
 
-		int nMinIndex   = 0; // Номер шрифта в списке с минимальным весом
-		int nMinPenalty = 0; // Минимальный вес
+		int nMinIndex   = 0; // РќРѕРјРµСЂ С€СЂРёС„С‚Р° РІ СЃРїРёСЃРєРµ СЃ РјРёРЅРёРјР°Р»СЊРЅС‹Рј РІРµСЃРѕРј
+		int nMinPenalty = 0; // РњРёРЅРёРјР°Р»СЊРЅС‹Р№ РІРµСЃ
 
 		int nDefPenalty = INT_MAX;
 
@@ -1261,7 +1292,7 @@ public:
 				nDefPenalty = nCurPenalty;
 			}
 
-			// Нашелся шрифт, удовлетворяющий всем параметрам, дальше искать нет смысла
+			// РќР°С€РµР»СЃСЏ С€СЂРёС„С‚, СѓРґРѕРІР»РµС‚РІРѕСЂСЏСЋС‰РёР№ РІСЃРµРј РїР°СЂР°РјРµС‚СЂР°Рј, РґР°Р»СЊС€Рµ РёСЃРєР°С‚СЊ РЅРµС‚ СЃРјС‹СЃР»Р°
 			if ( 0 == nCurPenalty )
 				break;
 		}
@@ -1317,7 +1348,7 @@ public:
 					unsigned char unValue = ((unsigned char)( HexToInt( nChar1 ) << 4 )) | HexToInt( nChar2 );
 					pPanose[nIndex] = unValue;
 
-					// Если хоть одно значение не 0, то используем Panose
+					// Р•СЃР»Рё С…РѕС‚СЊ РѕРґРЅРѕ Р·РЅР°С‡РµРЅРёРµ РЅРµ 0, С‚Рѕ РёСЃРїРѕР»СЊР·СѓРµРј Panose
 					if ( 0 != unValue  )
 						bIsPanose = TRUE;
 				}
@@ -1356,8 +1387,8 @@ public:
 		}
 
 
-		int nMinIndex   = 0; // Номер шрифта в списке с минимальным весом
-		int nMinPenalty = 0; // Минимальный вес
+		int nMinIndex   = 0; // РќРѕРјРµСЂ С€СЂРёС„С‚Р° РІ СЃРїРёСЃРєРµ СЃ РјРёРЅРёРјР°Р»СЊРЅС‹Рј РІРµСЃРѕРј
+		int nMinPenalty = 0; // РњРёРЅРёРјР°Р»СЊРЅС‹Р№ РІРµСЃ
 
 		int nDefPenalty = 0;
 
@@ -1417,7 +1448,7 @@ public:
 				nDefPenalty = nCurPenalty;
 			}
 
-			// Нашелся шрифт, удовлетворяющий всем параметрам, дальше искать нет смысла
+			// РќР°С€РµР»СЃСЏ С€СЂРёС„С‚, СѓРґРѕРІР»РµС‚РІРѕСЂСЏСЋС‰РёР№ РІСЃРµРј РїР°СЂР°РјРµС‚СЂР°Рј, РґР°Р»СЊС€Рµ РёСЃРєР°С‚СЊ РЅРµС‚ СЃРјС‹СЃР»Р°
 			if ( 0 == nCurPenalty )
 				break;
 		}
@@ -1439,7 +1470,7 @@ public:
 		oWriter.WriteNodeBegin( _T("WinFontList") );
 		
 
-		// Ищем директорию с фонтами (обычно это C:\Windows\Fonts)
+		// РС‰РµРј РґРёСЂРµРєС‚РѕСЂРёСЋ СЃ С„РѕРЅС‚Р°РјРё (РѕР±С‹С‡РЅРѕ СЌС‚Рѕ C:\Windows\Fonts)
 		wchar_t wsWinFontDir[MAX_PATH];
 
 		wsWinFontDir[0] = '\0';
@@ -1475,10 +1506,10 @@ public:
 				}
 			}
 
-			// TO DO: Шрифты, которые нельзя скейлить (т.е. изменять размер 
-			// произвольно) мы не грузим. Возможно в будущем надо будет
-			// сделать, чтобы работал и такой вариант. (в Word такие шрифты
-			// не используются)
+			// TO DO: РЁСЂРёС„С‚С‹, РєРѕС‚РѕСЂС‹Рµ РЅРµР»СЊР·СЏ СЃРєРµР№Р»РёС‚СЊ (С‚.Рµ. РёР·РјРµРЅСЏС‚СЊ СЂР°Р·РјРµСЂ 
+			// РїСЂРѕРёР·РІРѕР»СЊРЅРѕ) РјС‹ РЅРµ РіСЂСѓР·РёРј. Р’РѕР·РјРѕР¶РЅРѕ РІ Р±СѓРґСѓС‰РµРј РЅР°РґРѕ Р±СѓРґРµС‚
+			// СЃРґРµР»Р°С‚СЊ, С‡С‚РѕР±С‹ СЂР°Р±РѕС‚Р°Р» Рё С‚Р°РєРѕР№ РІР°СЂРёР°РЅС‚. (РІ Word С‚Р°РєРёРµ С€СЂРёС„С‚С‹
+			// РЅРµ РёСЃРїРѕР»СЊР·СѓСЋС‚СЃСЏ)
 			if ( !( pFace->face_flags & FT_FACE_FLAG_SCALABLE ) )
 			{
 				FT_Done_Face( pFace );
@@ -1593,7 +1624,7 @@ public:
 
 	static BYTE* GetWinFontsData(FT_Library pLibrary, LONG& lDataSize)
 	{
-		// Ищем директорию с фонтами (обычно это C:\Windows\Fonts)
+		// РС‰РµРј РґРёСЂРµРєС‚РѕСЂРёСЋ СЃ С„РѕРЅС‚Р°РјРё (РѕР±С‹С‡РЅРѕ СЌС‚Рѕ C:\Windows\Fonts)
 		wchar_t wsWinFontDir[MAX_PATH];
 
 		CAtlArray<CWinFontInfo*> arrInfos;
@@ -1631,10 +1662,10 @@ public:
 				}
 			}
 
-			// TO DO: Шрифты, которые нельзя скейлить (т.е. изменять размер 
-			// произвольно) мы не грузим. Возможно в будущем надо будет
-			// сделать, чтобы работал и такой вариант. (в Word такие шрифты
-			// не используются)
+			// TO DO: РЁСЂРёС„С‚С‹, РєРѕС‚РѕСЂС‹Рµ РЅРµР»СЊР·СЏ СЃРєРµР№Р»РёС‚СЊ (С‚.Рµ. РёР·РјРµРЅСЏС‚СЊ СЂР°Р·РјРµСЂ 
+			// РїСЂРѕРёР·РІРѕР»СЊРЅРѕ) РјС‹ РЅРµ РіСЂСѓР·РёРј. Р’РѕР·РјРѕР¶РЅРѕ РІ Р±СѓРґСѓС‰РµРј РЅР°РґРѕ Р±СѓРґРµС‚
+			// СЃРґРµР»Р°С‚СЊ, С‡С‚РѕР±С‹ СЂР°Р±РѕС‚Р°Р» Рё С‚Р°РєРѕР№ РІР°СЂРёР°РЅС‚. (РІ Word С‚Р°РєРёРµ С€СЂРёС„С‚С‹
+			// РЅРµ РёСЃРїРѕР»СЊР·СѓСЋС‚СЃСЏ)
 			if ( !( pFace->face_flags & FT_FACE_FLAG_SCALABLE ) )
 			{
 				FT_Done_Face( pFace );
@@ -1848,7 +1879,7 @@ private:
 	}
 	int GetCharsetPenalty(ULONG ulCandRanges[6], unsigned char unReqCharset)
 	{
-		// Penalty = 65000 (это самый весомый параметр)
+		// Penalty = 65000 (СЌС‚Рѕ СЃР°РјС‹Р№ РІРµСЃРѕРјС‹Р№ РїР°СЂР°РјРµС‚СЂ)
 
 		if ( UNKNOWN_CHARSET == unReqCharset )
 			return 0;
@@ -1870,15 +1901,15 @@ private:
 	{
 		double dPenalty = 0;
 
-		// Для начала просматриваем сколько вообще различных пространств надо.
-		// Исходя из их общего количества, находим вес 1 пропущеного пространства.
+		// Р”Р»СЏ РЅР°С‡Р°Р»Р° РїСЂРѕСЃРјР°С‚СЂРёРІР°РµРј СЃРєРѕР»СЊРєРѕ РІРѕРѕР±С‰Рµ СЂР°Р·Р»РёС‡РЅС‹С… РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІ РЅР°РґРѕ.
+		// РСЃС…РѕРґСЏ РёР· РёС… РѕР±С‰РµРіРѕ РєРѕР»РёС‡РµСЃС‚РІР°, РЅР°С…РѕРґРёРј РІРµСЃ 1 РїСЂРѕРїСѓС‰РµРЅРѕРіРѕ РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІР°.
 
 		unsigned char arrCandidate[192], arrRequest[192];
 		memset( arrCandidate, 0x00, 192 );
 		memset( arrRequest, 0x00, 192 );
 
-		int nRangesCount = 0; // Количество необходимых пространств
-		int nAddCount    = 0; // количество дополнительных(ненужных) пространств у кандидата
+		int nRangesCount = 0; // РљРѕР»РёС‡РµСЃС‚РІРѕ РЅРµРѕР±С…РѕРґРёРјС‹С… РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІ
+		int nAddCount    = 0; // РєРѕР»РёС‡РµСЃС‚РІРѕ РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹С…(РЅРµРЅСѓР¶РЅС‹С…) РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІ Сѓ РєР°РЅРґРёРґР°С‚Р°
 
 		for ( int nIndex = 0; nIndex < 6; nIndex++ )
 		{
@@ -1921,8 +1952,8 @@ private:
 	{
 		int nPenalty = 0;
 
-		// Если запрашивается моноширинный, а кандидат не моноширинный, то вес 15000
-		// Если запрашивается не моноширинный, а кандидат моноширинный, то вес 350
+		// Р•СЃР»Рё Р·Р°РїСЂР°С€РёРІР°РµС‚СЃСЏ РјРѕРЅРѕС€РёСЂРёРЅРЅС‹Р№, Р° РєР°РЅРґРёРґР°С‚ РЅРµ РјРѕРЅРѕС€РёСЂРёРЅРЅС‹Р№, С‚Рѕ РІРµСЃ 15000
+		// Р•СЃР»Рё Р·Р°РїСЂР°С€РёРІР°РµС‚СЃСЏ РЅРµ РјРѕРЅРѕС€РёСЂРёРЅРЅС‹Р№, Р° РєР°РЅРґРёРґР°С‚ РјРѕРЅРѕС€РёСЂРёРЅРЅС‹Р№, С‚Рѕ РІРµСЃ 350
 		if ( bReqFixed && !bCandFixed )
 			nPenalty = 15000;
 		if ( !bReqFixed && bCandFixed )
@@ -1932,10 +1963,10 @@ private:
 	}
 	int GetFaceNamePenalty(CString sCandName, CString sReqName)
 	{
-		// На MSDN написано, что если имена не совпадают, то вес 10000.
-		// Мы будем сравнивать сколько совпало символов у запрашиваемого
-		// имени и с именем кандидата, без учета решистра, пробелов, запятых
-		// и тире.
+		// РќР° MSDN РЅР°РїРёСЃР°РЅРѕ, С‡С‚Рѕ РµСЃР»Рё РёРјРµРЅР° РЅРµ СЃРѕРІРїР°РґР°СЋС‚, С‚Рѕ РІРµСЃ 10000.
+		// РњС‹ Р±СѓРґРµРј СЃСЂР°РІРЅРёРІР°С‚СЊ СЃРєРѕР»СЊРєРѕ СЃРѕРІРїР°Р»Рѕ СЃРёРјРІРѕР»РѕРІ Сѓ Р·Р°РїСЂР°С€РёРІР°РµРјРѕРіРѕ
+		// РёРјРµРЅРё Рё СЃ РёРјРµРЅРµРј РєР°РЅРґРёРґР°С‚Р°, Р±РµР· СѓС‡РµС‚Р° СЂРµС€РёСЃС‚СЂР°, РїСЂРѕР±РµР»РѕРІ, Р·Р°РїСЏС‚С‹С…
+		// Рё С‚РёСЂРµ.
 
 		sCandName.Remove(' '); sReqName.Remove(' ');
 		sCandName.Remove(','); sReqName.Remove(',');
@@ -2031,13 +2062,13 @@ private:
 
 	int GetFontFormatPenalty(EFontFormat eCandFormat, EFontFormat eReqFormat)
 	{
-		// Вообще, на МSDN написано только про TrueType. Но мы будем сравнивать
-		// все типы форматов и при несовпадении даем вес = 4. Если формат не задан
-		// то по умолчанию считаем его TrueType.
+		// Р’РѕРѕР±С‰Рµ, РЅР° РњSDN РЅР°РїРёСЃР°РЅРѕ С‚РѕР»СЊРєРѕ РїСЂРѕ TrueType. РќРѕ РјС‹ Р±СѓРґРµРј СЃСЂР°РІРЅРёРІР°С‚СЊ
+		// РІСЃРµ С‚РёРїС‹ С„РѕСЂРјР°С‚РѕРІ Рё РїСЂРё РЅРµСЃРѕРІРїР°РґРµРЅРёРё РґР°РµРј РІРµСЃ = 4. Р•СЃР»Рё С„РѕСЂРјР°С‚ РЅРµ Р·Р°РґР°РЅ
+		// С‚Рѕ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ СЃС‡РёС‚Р°РµРј РµРіРѕ TrueType.
 
 		if ( eReqFormat == fontUnknown )
 		{
-			// Считаем, что когда формат не известен, значит это 100% не TrueType.
+			// РЎС‡РёС‚Р°РµРј, С‡С‚Рѕ РєРѕРіРґР° С„РѕСЂРјР°С‚ РЅРµ РёР·РІРµСЃС‚РµРЅ, Р·РЅР°С‡РёС‚ СЌС‚Рѕ 100% РЅРµ TrueType.
 			if ( eCandFormat == fontTrueType )
 				return 4;
 			else
@@ -2156,7 +2187,7 @@ private:
 
 	CList   *m_pFonts;                 // [CWinFontInfo]
 	wchar_t  m_wsWinFontDir[MAX_PATH]; //
-	long     m_lDefIndex;              // Номер стандартного шрифта (-1, если не задан)
+	long     m_lDefIndex;              // РќРѕРјРµСЂ СЃС‚Р°РЅРґР°СЂС‚РЅРѕРіРѕ С€СЂРёС„С‚Р° (-1, РµСЃР»Рё РЅРµ Р·Р°РґР°РЅ)
 
 };
 

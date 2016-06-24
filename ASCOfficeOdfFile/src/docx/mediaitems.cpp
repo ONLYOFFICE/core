@@ -1,3 +1,34 @@
+/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 
 #include "mediaitems.h"
 
@@ -30,7 +61,7 @@ mediaitems::item::item(	std::wstring const & _href,
                        outputName(_outputName),
                        mediaInternal(_mediaInternal),
 					   Id(_Id),
-                       valid(true) //вообще говоря даже если файл покоцанный то мы все равно обязаны перенести "объект"
+                       valid(true) //РІРѕРѕР±С‰Рµ РіРѕРІРѕСЂСЏ РґР°Р¶Рµ РµСЃР»Рё С„Р°Р№Р» РїРѕРєРѕС†Р°РЅРЅС‹Р№ С‚Рѕ РјС‹ РІСЃРµ СЂР°РІРЅРѕ РѕР±СЏР·Р°РЅС‹ РїРµСЂРµРЅРµСЃС‚Рё "РѕР±СЉРµРєС‚"
 {    
 	count_add = 1;
 	count_used = 0;
@@ -65,7 +96,7 @@ std::wstring mediaitems::create_file_name(const std::wstring & uri, mediaitems::
 	if (n>0) sExt = uri.substr(n);
 	else if (n==0)
 	{
-		//тута скорее всего OleReplacement
+		//С‚СѓС‚Р° СЃРєРѕСЂРµРµ РІСЃРµРіРѕ OleReplacement
 		n = uri.find(L"ObjectReplacements");
 		if (n>=0)
 		{
@@ -88,7 +119,7 @@ std::wstring mediaitems::create_file_name(const std::wstring & uri, mediaitems::
 
 		}
 	}
-	//todooo проверить
+	//todooo РїСЂРѕРІРµСЂРёС‚СЊ
    
 	return get_default_file_name(type) + boost::lexical_cast<std::wstring>(Num) + sExt;
 }
@@ -173,7 +204,7 @@ void mediaitems::dump_rels(rels & Rels)
     size_t i = 0;
     BOOST_FOREACH(item & elm, items_)
     {
-		if (elm.count_used > elm.count_add)continue; // уже использовали этот релс выше(колонтитул ....)
+		if (elm.count_used > elm.count_add)continue; // СѓР¶Рµ РёСЃРїРѕР»СЊР·РѕРІР°Р»Рё СЌС‚РѕС‚ СЂРµР»СЃ РІС‹С€Рµ(РєРѕР»РѕРЅС‚РёС‚СѓР» ....)
         Rels.add( relationship(
                 elm.Id, 
                 utils::media::get_rel_type(elm.type), 

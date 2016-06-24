@@ -1,9 +1,41 @@
-
+/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 #include "xlsx_fill.h"
+
+#include "../odf/style_table_properties.h"
+#include "../odf/style_graphic_properties.h"
 
 #include <cpdoccore/xml/simple_xml_writer.h>
 
-#include <boost/foreach.hpp>
 #include <boost/functional/hash/hash.hpp>
 
 namespace cpdoccore {
@@ -11,9 +43,9 @@ namespace oox {
 
 bool xlsx_patternFill::operator == (const xlsx_patternFill & rVal) const
 {
-    return fgColor == rVal.fgColor &&
-        bgColor == rVal.bgColor && 
-        patternType == rVal.patternType;
+    return	fgColor == rVal.fgColor &&
+			bgColor == rVal.bgColor && 
+		patternType == rVal.patternType;
 }
 
 bool xlsx_patternFill::operator != (const xlsx_patternFill & rVal) const
@@ -50,7 +82,7 @@ std::size_t hash_value(xlsx_patternFill const & val)
 
 void xlsx_serialize(std::wostream & _Wostream, const xlsx_gradientFill & gradientFill)
 {
-    // TODO    
+    // todooo  
 }
 
 std::size_t hash_value(xlsx_gradientFill const & val)
@@ -70,27 +102,19 @@ bool xlsx_gradientFill::operator != (const xlsx_gradientFill & rVal) const
 
 void xlsx_serialize(std::wostream & _Wostream, const xlsx_fill & fill)
 {
+	if (!fill.patternFill && !fill.gradientFill) return;
+
     CP_XML_WRITER(_Wostream)
     {
         CP_XML_NODE(L"fill")
         {
             if (fill.patternFill)
-                xlsx_serialize(CP_XML_STREAM(), fill.patternFill.get());
+                xlsx_serialize(CP_XML_STREAM(), *fill.patternFill);
 
             if (fill.gradientFill)
-                xlsx_serialize(CP_XML_STREAM(), fill.gradientFill.get());
+                xlsx_serialize(CP_XML_STREAM(), *fill.gradientFill);
         }
     }
-
-    //_Wostream << L"<fill>";
-    //if (fill.patternFill)
-    //    xlsx_serialize(_Wostream, fill.patternFill.get());
-
-    //if (fill.gradientFill)
-    //    xlsx_serialize(_Wostream, fill.gradientFill.get());
-    //
-
-    //_Wostream << L"</fill>";
 }
 
 std::size_t hash_value(xlsx_fill const & val)
@@ -103,13 +127,39 @@ std::size_t hash_value(xlsx_fill const & val)
 }
 bool xlsx_fill::operator == (const xlsx_fill & rVal) const
 {
-    return patternFill == rVal.patternFill &&
-        gradientFill == rVal.gradientFill;
+    return	patternFill	== rVal.patternFill &&
+			gradientFill == rVal.gradientFill;
 }
 
 bool xlsx_fill::operator != (const xlsx_fill & rVal) const
 {
     return !(this->operator ==(rVal));
+}
+
+xlsx_fill::xlsx_fill(	const odf_reader::graphic_format_properties				* graphProp,
+						const odf_reader::style_table_cell_properties_attlist	* cellProp)
+{
+	bEnabled = false;
+	bDefault = false;
+	if (cellProp)
+	{
+		if (_CP_OPT(odf_types::background_color) bgClr = cellProp->common_background_color_attlist_.fo_background_color_)
+		{
+			if (bgClr->get_type() != odf_types::background_color::Transparent)
+			{
+				bEnabled = true;
+
+				xlsx_color color;
+				// alfa + rgb
+				color.rgb = L"ff" + bgClr->get_color().get_hex_value();
+				
+				patternFill = xlsx_patternFill();
+				patternFill->bgColor		= color;
+				patternFill->fgColor		= color;
+				patternFill->patternType = L"solid";
+			}
+		}
+	}
 }
 
 }

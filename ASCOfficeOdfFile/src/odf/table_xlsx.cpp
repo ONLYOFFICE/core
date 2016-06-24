@@ -1,3 +1,34 @@
+/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 
 #include "table.h"
 
@@ -46,7 +77,7 @@ int table_table_cell_content::xlsx_convert(oox::xlsx_conversion_context & Contex
 void table_table_row::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
     std::wostream & strm = Context.current_sheet().sheetData();
-///обработка чтилей для роу - 
+///РѕР±СЂР°Р±РѕС‚РєР° С‡С‚РёР»РµР№ РґР»СЏ СЂРѕСѓ -
 	size_t Default_Cell_style_in_row_ = 0; 
 
     const std::wstring rowStyleName = table_table_row_attlist_.table_style_name_.get_value_or( style_ref(L"") ).style_name();
@@ -59,16 +90,16 @@ void table_table_row::xlsx_convert(oox::xlsx_conversion_context & Context)
 	
 	if ((instStyle_CellDefault) && (instStyle_CellDefault->content())) 
 		prop_CellDefault = instStyle_CellDefault->content()->get_style_table_cell_properties();
-//кастомные настройки стиля ячеек в данном роу
+//РєР°СЃС‚РѕРјРЅС‹Рµ РЅР°СЃС‚СЂРѕР№РєРё СЃС‚РёР»СЏ СЏС‡РµРµРє РІ РґР°РЅРЅРѕРј СЂРѕСѓ
 
-	if (prop_CellDefault) //проверим что есть вообще кастом для роу- а потом уже посчитаем стиль
+	if (prop_CellDefault) //РїСЂРѕРІРµСЂРёРј С‡С‚Рѕ РµСЃС‚СЊ РІРѕРѕР±С‰Рµ РєР°СЃС‚РѕРј РґР»СЏ СЂРѕСѓ- Р° РїРѕС‚РѕРј СѓР¶Рµ РїРѕСЃС‡РёС‚Р°РµРј СЃС‚РёР»СЊ
 	{
 		odf_reader::style_table_cell_properties_attlist	cellFormatProperties	= calc_table_cell_properties(instStyle_CellDefault);
 		Default_Cell_style_in_row_ = Context.get_style_manager().xfId(NULL,NULL, &cellFormatProperties, NULL, L"", true);	
 	}
-	else //стиля ячеек для строки нет глянем что там внутри строки в последней ячейке
+	else //СЃС‚РёР»СЏ СЏС‡РµРµРє РґР»СЏ СЃС‚СЂРѕРєРё РЅРµС‚ РіР»СЏРЅРµРј С‡С‚Рѕ С‚Р°Рј РІРЅСѓС‚СЂРё СЃС‚СЂРѕРєРё РІ РїРѕСЃР»РµРґРЅРµР№ СЏС‡РµР№РєРµ
 	{
-		//возьмем стиль из последнего cell если он повторяющийся (тогда и ячейки вхолостую ненадо писать)
+		//РІРѕР·СЊРјРµРј СЃС‚РёР»СЊ РёР· РїРѕСЃР»РµРґРЅРµРіРѕ cell РµСЃР»Рё РѕРЅ РїРѕРІС‚РѕСЂСЏСЋС‰РёР№СЃСЏ (С‚РѕРіРґР° Рё СЏС‡РµР№РєРё РІС…РѕР»РѕСЃС‚СѓСЋ РЅРµРЅР°РґРѕ РїРёСЃР°С‚СЊ)
 		int ind_last_cell = content_.size()-1;
 		table_table_cell *last_cell = NULL;
 		if (ind_last_cell > 0)
@@ -94,9 +125,9 @@ void table_table_row::xlsx_convert(oox::xlsx_conversion_context & Context)
 			if ((prop->style_table_row_properties_attlist_.style_use_optimal_row_height_) && 
 						(*prop->style_table_row_properties_attlist_.style_use_optimal_row_height_==true))
 			{
-				//автоматическая подстройка высоты.
-				//нету в оох
-				//todooo высилить по текущему шрифту размер у (двойной) и сравнить с заданным - перебить !!!
+				//Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєР°СЏ РїРѕРґСЃС‚СЂРѕР№РєР° РІС‹СЃРѕС‚С‹.
+				//РЅРµС‚Сѓ РІ РѕРѕС…
+				//todooo РІС‹СЃРёР»РёС‚СЊ РїРѕ С‚РµРєСѓС‰РµРјСѓ С€СЂРёС„С‚Сѓ СЂР°Р·РјРµСЂ Сѓ (РґРІРѕР№РЅРѕР№) Рё СЃСЂР°РІРЅРёС‚СЊ СЃ Р·Р°РґР°РЅРЅС‹Рј - РїРµСЂРµР±РёС‚СЊ !!!
 			}
 
 			std::wstringstream ht_s;
@@ -181,14 +212,14 @@ void table_table_row::xlsx_convert(oox::xlsx_conversion_context & Context)
 		{
             skip_next_row = true;  
 			if (table_table_row_attlist_.table_number_rows_repeated_ > 0xff00)
-				break;//Уведомление_о_вручении.ods (1 лист)
+				break;//РЈРІРµРґРѕРјР»РµРЅРёРµ_Рѕ_РІСЂСѓС‡РµРЅРёРё.ods (1 Р»РёСЃС‚)
 		}
 		if (content_.size() > 0 && table_table_row_attlist_.table_number_rows_repeated_ > 0xff00)
 		{
 			table_table_cell * table_cell = dynamic_cast<table_table_cell *>(content_[0].get());
 			if ((table_cell) && (table_cell->table_table_cell_attlist_.table_number_columns_repeated_ > 1000))
 			{
-				break;//Уведомление_о_вручении.ods  (2 лист)
+				break;//РЈРІРµРґРѕРјР»РµРЅРёРµ_Рѕ_РІСЂСѓС‡РµРЅРёРё.ods  (2 Р»РёСЃС‚)
 			}
 		}
     }
@@ -280,6 +311,11 @@ void table_table::xlsx_convert(oox::xlsx_conversion_context & Context)
 
  	if (conditional_formats_)
 		conditional_formats_->xlsx_convert(Context);
+
+	for (int i = 0 ; i < table_named_.size(); i++)
+	{
+		table_named_[i]->xlsx_convert(Context);
+	}
 
 	Context.end_table();
 }
@@ -380,7 +416,7 @@ void table_table_column::xlsx_convert(oox::xlsx_conversion_context & Context)
             }
             else
             {
-				//необязательно
+				//РЅРµРѕР±СЏР·Р°С‚РµР»СЊРЅРѕ
                 //CP_XML_ATTR(L"collapsed", L"false");            
                 //CP_XML_ATTR(L"hidden", L"false");            
             }
@@ -396,7 +432,7 @@ void table_table_column::xlsx_convert(oox::xlsx_conversion_context & Context)
                     if (inst->content())
                     {
 						if (const style_table_cell_properties * prop = inst->content()->get_style_table_cell_properties())
-						{//сделать проверку чтоб сюда не попал дефолтный, то  сть пустой стиль
+						{//СЃРґРµР»Р°С‚СЊ РїСЂРѕРІРµСЂРєСѓ С‡С‚РѕР± СЃСЋРґР° РЅРµ РїРѕРїР°Р» РґРµС„РѕР»С‚РЅС‹Р№, С‚Рѕ  СЃС‚СЊ РїСѓСЃС‚РѕР№ СЃС‚РёР»СЊ
 							odf_reader::style_table_cell_properties_attlist	cellFormatProperties	= calc_table_cell_properties(inst);
 							
 							bool set_default = false;
@@ -563,7 +599,7 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
 	bool	is_style_visible	= true;
 	bool	is_data_visible		= false;
 
-     // вычислить стиль для ячейки
+     // РІС‹С‡РёСЃР»РёС‚СЊ СЃС‚РёР»СЊ РґР»СЏ СЏС‡РµР№РєРё
     odf_read_context & odfContext = Context.root()->odf_context();   
 
 	style_instance *defaultCellStyle=NULL, *defaultColumnCellStyle = NULL,  *defaultRowCellStyle =NULL, *cellStyle = NULL;
@@ -585,7 +621,7 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
         Context.get_table_context().default_row_cell_style(),
         styleName);
 
-    // стили не наследуются
+    // СЃС‚РёР»Рё РЅРµ РЅР°СЃР»РµРґСѓСЋС‚СЃСЏ
     std::vector<const style_instance *> instances;
     instances.push_back(defaultCellStyle);
 
@@ -713,11 +749,11 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
 		const int sharedStringId = table_table_cell_content_.xlsx_convert(Context, &textFormatProperties);
 
 		if (t_val == oox::XlsxCellType::str && sharedStringId >=0)
-			t_val = oox::XlsxCellType::s;//в случае текста, если он есть берем кэшированное значение
+			t_val = oox::XlsxCellType::s;//РІ СЃР»СѓС‡Р°Рµ С‚РµРєСЃС‚Р°, РµСЃР»Рё РѕРЅ РµСЃС‚СЊ Р±РµСЂРµРј РєСЌС€РёСЂРѕРІР°РЅРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ
 			
 		if (skip_next_cell)break;
 
-        // пустые ячейки пропускаем.
+        // РїСѓСЃС‚С‹Рµ СЏС‡РµР№РєРё РїСЂРѕРїСѓСЃРєР°РµРј.
         if ( is_data_visible || ((cellStyle || defaultColumnCellStyle) && is_style_visible))
         {
             CP_XML_WRITER(strm)
@@ -775,9 +811,9 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
 				else
 				{
 					empty_cell_count++;
-					//Уведомление_о_вручении.ods - 13 повторов пустых с cellStyle=NULL - нужные !!!
+					//РЈРІРµРґРѕРјР»РµРЅРёРµ_Рѕ_РІСЂСѓС‡РµРЅРёРё.ods - 13 РїРѕРІС‚РѕСЂРѕРІ РїСѓСЃС‚С‹С… СЃ cellStyle=NULL - РЅСѓР¶РЅС‹Рµ !!!
 					if (empty_cell_count > 19 && last_cell_&& (table_table_cell_attlist_.table_number_columns_repeated_> 299 || cellStyle == NULL)) 
-					{//пишем простыню только если задан стиль тока для этих ячеек
+					{//РїРёС€РµРј РїСЂРѕСЃС‚С‹РЅСЋ С‚РѕР»СЊРєРѕ РµСЃР»Рё Р·Р°РґР°РЅ СЃС‚РёР»СЊ С‚РѕРєР° РґР»СЏ СЌС‚РёС… СЏС‡РµРµРє
 						skip_next_cell = true;
 					}
 				}				

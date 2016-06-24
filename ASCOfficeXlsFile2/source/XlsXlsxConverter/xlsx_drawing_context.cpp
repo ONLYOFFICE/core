@@ -1,3 +1,34 @@
+/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 
 #include <boost/lexical_cast.hpp>
 #include <boost/foreach.hpp>
@@ -130,8 +161,8 @@ _color xlsx_drawing_context::CorrectSysColor(int nColorCode, _drawing_state_ptr 
 
 	if (color.index != -1)
 	{
-		//вытащить цвет (
-		//todoooo сдлать темы !!!!!
+		//РІС‹С‚Р°С‰РёС‚СЊ С†РІРµС‚ (
+		//todoooo СЃРґР»Р°С‚СЊ С‚РµРјС‹ !!!!!
 		color.nRGB = shemeDefaultColor[color.index];
 		color.index = -1;
 		color.sRGB = STR::toRGB(color.nRGB);
@@ -218,7 +249,7 @@ _color xlsx_drawing_context::CorrectSysColor(int nColorCode, _drawing_state_ptr 
         color.SetRGB(0xff - color.GetR(), 0xff - color.GetG(), 0xff - color.GetB());
 
 	//if (color.sRGB.empty())
-	//{неверно
+	//{РЅРµРІРµСЂРЅРѕ
 	//	color.nRGB = shemeDefaultColor[nColorIndex];
 	//	color.index = -1;
 	//	color.sRGB = STR::toRGB(color.nRGB);
@@ -442,12 +473,12 @@ void xlsx_drawing_context::end_drawing(_drawing_state_ptr & drawing_state)
 	}
 	if ( drawing_state->type == external_items::typeChart )
 	{
- //функциональная часть		
+ //С„СѓРЅРєС†РёРѕРЅР°Р»СЊРЅР°СЏ С‡Р°СЃС‚СЊ		
 		context_.end_chart();
 		
 		in_chart_ = false;
 	
-//отобразительная часть
+//РѕС‚РѕР±СЂР°Р·РёС‚РµР»СЊРЅР°СЏ С‡Р°СЃС‚СЊ
 		drawing_state->type = external_items::typeChart;
 
 		bool			isIternal = true;
@@ -543,7 +574,7 @@ void xlsx_drawing_context::serialize_group()
 			for (int i = 1; i < current_drawing_states->size(); i++)
 			{
 				CP_XML_STREAM() << current_drawing_states->at(i)->shape;
-				//todooo current_drawing_states->at(i).shape.erase(); // память поэкономить
+				//todooo current_drawing_states->at(i).shape.erase(); // РїР°РјСЏС‚СЊ РїРѕСЌРєРѕРЅРѕРјРёС‚СЊ
 			}
 		}
 	}
@@ -805,7 +836,7 @@ std::wstring xlsx_drawing_context::convert_custom_shape(_drawing_state_ptr & dra
 	}
 	
 	for (int i = 0 ; i < drawing_state->custom_guides.size(); i++)
-	{//todooo объеденить/срастить !!
+	{//todooo РѕР±СЉРµРґРµРЅРёС‚СЊ/СЃСЂР°СЃС‚РёС‚СЊ !!
 		NSCustomShapesConvert::CGuide guid;
 		
 		guid.m_eType		= drawing_state->custom_guides[i].m_eType;
@@ -834,7 +865,7 @@ std::wstring xlsx_drawing_context::convert_custom_shape(_drawing_state_ptr & dra
 		shape->m_oCustomVML.addSegment(drawing_state->custom_segments[i].m_eRuler , drawing_state->custom_segments[i].m_nCount);
 	}	
 	//for (int i = 0; i < drawing_state->custom_adjustHandles.size(); i++)
-	//{//todooo - ранее этого не было ?????
+	//{//todooo - СЂР°РЅРµРµ СЌС‚РѕРіРѕ РЅРµ Р±С‹Р»Рѕ ?????
 	//	shape->m_oCustomVML.addHandle(i, *drawing_state->custom_adjustHandles[i]);
 	//}
 	for (int i = 0; i < drawing_state->custom_adjustValues.size(); i++)
@@ -1068,7 +1099,7 @@ void xlsx_drawing_context::serialize_gradient_fill(std::wostream & stream, _draw
 						{
 							CP_XML_ATTR(L"pos",  (int)(fill.colorsPosition[i].first * 100000));
 							serialize_color(CP_XML_STREAM(), fill.colorsPosition[i].second);
-							//проверить что если тут индексы то они берутся с программных а не с юзерских (см как ниже)
+							//РїСЂРѕРІРµСЂРёС‚СЊ С‡С‚Рѕ РµСЃР»Рё С‚СѓС‚ РёРЅРґРµРєСЃС‹ С‚Рѕ РѕРЅРё Р±РµСЂСѓС‚СЃСЏ СЃ РїСЂРѕРіСЂР°РјРјРЅС‹С… Р° РЅРµ СЃ СЋР·РµСЂСЃРєРёС… (СЃРј РєР°Рє РЅРёР¶Рµ)
 						}
 					}
 				}
@@ -1076,13 +1107,13 @@ void xlsx_drawing_context::serialize_gradient_fill(std::wostream & stream, _draw
 				{
 					CP_XML_NODE(L"a:gs")
 					{
-						fill.color.bScheme = false; // по общим индексам
+						fill.color.bScheme = false; // РїРѕ РѕР±С‰РёРј РёРЅРґРµРєСЃР°Рј
 						CP_XML_ATTR(L"pos", 0);
 						serialize_color(CP_XML_STREAM(), fill.color, fill.opacity);
 					}
 					CP_XML_NODE(L"a:gs")
 					{
-						fill.color2.bScheme = false; // по общим индексам
+						fill.color2.bScheme = false; // РїРѕ РѕР±С‰РёРј РёРЅРґРµРєСЃР°Рј
 						CP_XML_ATTR(L"pos", 100000);
 						serialize_color(CP_XML_STREAM(), fill.color2, fill.opacity2);
 					}
@@ -1260,7 +1291,7 @@ void xlsx_drawing_context::serialize_text(std::wostream & stream, _drawing_state
 					CP_XML_NODE(L"a:prstTxWarp")
 					{
 						CP_XML_ATTR(L"prst", prstTxWarp);
-						CP_XML_NODE(L"a:avLst");//модификаторы
+						CP_XML_NODE(L"a:avLst");//РјРѕРґРёС„РёРєР°С‚РѕСЂС‹
 					}
 				}
 				else

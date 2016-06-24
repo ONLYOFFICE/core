@@ -1,3 +1,34 @@
+/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 // OfficeOdfFileW.cpp : Implementation of COfficeOdfFileW
 #include "stdafx.h"
 
@@ -18,11 +49,11 @@
 #include <Shlobj.h>
 
 #ifndef STANDALONE_USE
-	#define STANDALONE_USE 0// что на входе: файл (1) или папка (0)
+	#define STANDALONE_USE 0// С‡С‚Рѕ РЅР° РІС…РѕРґРµ: С„Р°Р№Р» (1) РёР»Рё РїР°РїРєР° (0)
 #endif 
 
 
-// имя директории - uuid
+// РёРјСЏ РґРёСЂРµРєС‚РѕСЂРёРё - uuid
 
 std::wstring bstr2wstring(BSTR str)
 {
@@ -62,7 +93,7 @@ STDMETHODIMP COfficeOdfFileW::SaveToFile(BSTR sDstFileName, BSTR sSrcPath, BSTR 
 
 	std::wstring outputDir = FileSystem::Directory::GetFolderPath(std::wstring(sDstFileName));
 
-    // создаем её в директории куда запишем результат
+    // СЃРѕР·РґР°РµРј РµС‘ РІ РґРёСЂРµРєС‚РѕСЂРёРё РєСѓРґР° Р·Р°РїРёС€РµРј СЂРµР·СѓР»СЊС‚Р°С‚
 
 	std::wstring dstTempPath = FileSystem::Directory::CreateDirectoryWithUniqueName(outputDir);
     
@@ -79,7 +110,7 @@ STDMETHODIMP COfficeOdfFileW::SaveToFile(BSTR sDstFileName, BSTR sSrcPath, BSTR 
 
 #if defined(STANDALONE_USE) && (STANDALONE_USE == 1)
         
-        FileSystem::Directory::CreateDirectory(srcTempPath); // создаем временную директорию для результирующих файлов
+        FileSystem::Directory::CreateDirectory(srcTempPath); // СЃРѕР·РґР°РµРј РІСЂРµРјРµРЅРЅСѓСЋ РґРёСЂРµРєС‚РѕСЂРёСЋ РґР»СЏ СЂРµР·СѓР»СЊС‚РёСЂСѓСЋС‰РёС… С„Р°Р№Р»РѕРІ
 #endif
         hr = SaveToFileImpl(bstr2wstring(sSrcPath),srcTempPath, dstTempPath, defaultWinFontPath, bstr2wstring(sDstFileName));
         
@@ -89,7 +120,7 @@ STDMETHODIMP COfficeOdfFileW::SaveToFile(BSTR sDstFileName, BSTR sSrcPath, BSTR 
         hr = E_FAIL;
     }
 
-    // стираем временную директорию с распакованным исходником
+    // СЃС‚РёСЂР°РµРј РІСЂРµРјРµРЅРЅСѓСЋ РґРёСЂРµРєС‚РѕСЂРёСЋ СЃ СЂР°СЃРїР°РєРѕРІР°РЅРЅС‹Рј РёСЃС…РѕРґРЅРёРєРѕРј
     try
     {
 		FileSystem::Directory::DeleteDirectory(dstTempPath);
@@ -99,7 +130,7 @@ STDMETHODIMP COfficeOdfFileW::SaveToFile(BSTR sDstFileName, BSTR sSrcPath, BSTR 
     }
 
 #if defined(STANDALONE_USE) && (STANDALONE_USE == 1)
-    // в случае если на выходе файл — стираем временную директорию (мы сами ее создали)
+    // РІ СЃР»СѓС‡Р°Рµ РµСЃР»Рё РЅР° РІС‹С…РѕРґРµ С„Р°Р№Р» Р§ СЃС‚РёСЂР°РµРј РІСЂРµРјРµРЅРЅСѓСЋ РґРёСЂРµРєС‚РѕСЂРёСЋ (РјС‹ СЃР°РјРё РµРµ СЃРѕР·РґР°Р»Рё)
     try 
     {
 		FileSystem::Directory::DeleteDirectory(srcTempPath);
@@ -121,7 +152,7 @@ HRESULT COfficeOdfFileW::SaveToFileImpl(const std::wstring & srcPath,
     HRESULT hr = E_FAIL;
 	COfficeUtils oCOfficeUtils(NULL);  
 
-    // распаковываем исходник (если он файл) во временную директорию
+    // СЂР°СЃРїР°РєРѕРІС‹РІР°РµРј РёСЃС…РѕРґРЅРёРє (РµСЃР»Рё РѕРЅ С„Р°Р№Р») РІРѕ РІСЂРµРјРµРЅРЅСѓСЋ РґРёСЂРµРєС‚РѕСЂРёСЋ
 #if defined(STANDALONE_USE) && (STANDALONE_USE == 1)
         if (S_OK != oCOfficeUtils.ExtractToDirectory(srcPath.c_str(), srcTempPath.c_str(), NULL, 0))
             return hr;

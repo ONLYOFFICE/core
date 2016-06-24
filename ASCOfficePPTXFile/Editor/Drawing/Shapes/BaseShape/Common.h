@@ -1,3 +1,34 @@
+/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 #pragma once
 
 #include <algorithm>
@@ -447,7 +478,7 @@ private:
 				wchar_t* pRealloc = (wchar_t*)realloc(m_pData, m_lSize * sizeof(wchar_t));
 				if (NULL != pRealloc)
 				{
-					// реаллок сработал
+					// СЂРµР°Р»Р»РѕРє СЃСЂР°Р±РѕС‚Р°Р»
 					m_pData		= pRealloc;
 					m_pDataCur	= m_pData + m_lSizeCur;
 				}
@@ -564,9 +595,9 @@ public:
 	{
 		RELEASEOBJECT(m_pSimpleGraphicsConverter);
 	}
-// тип рендерера-----------------------------------------------------------------------------
+// С‚РёРї СЂРµРЅРґРµСЂРµСЂР°-----------------------------------------------------------------------------
 	virtual HRESULT get_Type(LONG* lType){ return S_OK; }
-//-------- Функции для работы со страницей --------------------------------------------------
+//-------- Р¤СѓРЅРєС†РёРё РґР»СЏ СЂР°Р±РѕС‚С‹ СЃРѕ СЃС‚СЂР°РЅРёС†РµР№ --------------------------------------------------
 	virtual HRESULT NewPage(){ return S_OK; }
 	virtual HRESULT get_Height(double* dHeight){ return S_OK; }
 	virtual HRESULT put_Height(const double& dHeight)
@@ -654,14 +685,14 @@ public:
 	virtual HRESULT get_FontFaceIndex(int* lFaceIndex){ return S_OK; }
 	virtual HRESULT put_FontFaceIndex(const int& lFaceIndex){ return S_OK; }
 
-//-------- Функции для вывода текста --------------------------------------------------------
+//-------- Р¤СѓРЅРєС†РёРё РґР»СЏ РІС‹РІРѕРґР° С‚РµРєСЃС‚Р° --------------------------------------------------------
     virtual HRESULT CommandDrawTextCHAR(const LONG& c, const double& x, const double& y, const double& w, const double& h) { return S_OK; }
     virtual HRESULT CommandDrawText(const std::wstring& bsText, const double& x, const double& y, const double& w, const double& h) { return S_OK; }
 
     virtual HRESULT CommandDrawTextExCHAR(const LONG& c, const LONG& gid, const double& x, const double& y, const double& w, const double& h) { return S_OK; }
     virtual HRESULT CommandDrawTextEx(const std::wstring& bsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& x, const double& y, const double& w, const double& h) { return S_OK; }
 
-//-------- Маркеры для команд ---------------------------------------------------------------
+//-------- РњР°СЂРєРµСЂС‹ РґР»СЏ РєРѕРјР°РЅРґ ---------------------------------------------------------------
 	virtual HRESULT BeginCommand(const DWORD& lType)
 	{
 		m_lCurrentCommandType = lType;
@@ -691,7 +722,7 @@ public:
 		return S_OK; 
 	}
 
-//-------- Функции для работы с Graphics Path -----------------------------------------------
+//-------- Р¤СѓРЅРєС†РёРё РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ Graphics Path -----------------------------------------------
 	virtual HRESULT PathCommandMoveTo(const double& x, const double& y)
 	{
 		if (c_nSimpleGraphicType == m_lCurrentCommandType)
@@ -773,7 +804,7 @@ public:
     virtual HRESULT PathCommandTextExCHAR(const LONG& c, const LONG& gid, const double& x, const double& y, const double& w, const double& h) { return S_OK; }
     virtual HRESULT PathCommandTextEx(const std::wstring& sText, const unsigned int* pGids, const unsigned int nGidsCount, const double& x, const double& y, const double& w, const double& h) { return S_OK; }
 
-//-------- Функции для вывода изображений ---------------------------------------------------
+//-------- Р¤СѓРЅРєС†РёРё РґР»СЏ РІС‹РІРѕРґР° РёР·РѕР±СЂР°Р¶РµРЅРёР№ ---------------------------------------------------
 	virtual HRESULT DrawImage(IGrObject* pImage, const double& x, const double& y, const double& w, const double& h){ return S_OK; }
 	virtual HRESULT DrawImageFromFile(const std::wstring&, const double& x, const double& y, const double& w, const double& h, const BYTE& lAlpha = 255){ return S_OK; }	
 
@@ -816,7 +847,7 @@ private:
 
 	_CStringWriter m_oWriter;
 
-	LONG m_lCurrentCommandType;	// текущая команда
+	LONG m_lCurrentCommandType;	// С‚РµРєСѓС‰Р°СЏ РєРѕРјР°РЅРґР°
 	
 	inline void MoveTo(const double& dX, const double& dY)
 	{
@@ -868,7 +899,7 @@ private:
 	{
 		if (1 >= m_lCountPathCommands)
 		{
-			// 2007 office имеет проблемы с путями вида moveto-close.
+			// 2007 office РёРјРµРµС‚ РїСЂРѕР±Р»РµРјС‹ СЃ РїСѓС‚СЏРјРё РІРёРґР° moveto-close.
 			return;
 		}
 

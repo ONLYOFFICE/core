@@ -1,3 +1,34 @@
+/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 #pragma once
 
 #include "ReadStructures.h"
@@ -245,7 +276,7 @@ void CTextPFRun_ppt::LoadFromStream(POLE::Stream* pStream, bool bIsIndentation)
 	BYTE flag3 = (BYTE)(dwFlags >> 16);
 	BYTE flag4 = (BYTE)(dwFlags >> 24);
 
-	//ôëàãè ÷òåíèÿ
+	//Ñ„Ð»Ð°Ð³Ð¸ Ñ‡Ñ‚ÐµÐ½Ð¸Ñ
 	bool hasBullet_				= (0x01 == (0x01 & flag1));
 	bool bulletHasFont_			= (0x02 == (0x02 & flag1));
 	bool bulletHasColor_		= (0x04 == (0x04 & flag1));
@@ -500,7 +531,7 @@ void CTextCFRun_ppt::LoadFromStream(POLE::Stream* pStream, bool bIsIndentation)
 	if (BaseLineOffset_)
 		m_oRun.BaseLineOffset = (double)StreamUtils::ReadSHORT(pStream);
 
-	// èëè äâà ïîñëåäíèõ íàîáîðîò????
+	// Ð¸Ð»Ð¸ Ð´Ð²Ð° Ð¿Ð¾ÑÐ»ÐµÐ´Ð½Ð¸Ñ… Ð½Ð°Ð¾Ð±Ð¾Ñ€Ð¾Ñ‚????
 }
 
 
@@ -639,7 +670,7 @@ void CMetaHeader::ToEMFHeader(Gdiplus::ENHMETAHEADER3* pHeader)
 	pHeader->rclBounds.right	= rcBounds.right;
 	pHeader->rclBounds.bottom	= rcBounds.bottom;
 
-	// íóæíî ïåðåâåñòè â ìì
+	// Ð½ÑƒÐ¶Ð½Ð¾ Ð¿ÐµÑ€ÐµÐ²ÐµÑÑ‚Ð¸ Ð² Ð¼Ð¼
 	pHeader->rclFrame.left		= rcBounds.left;
 	pHeader->rclFrame.top		= rcBounds.top;
 	pHeader->rclFrame.right		= rcBounds.right;
@@ -662,7 +693,7 @@ void CMetaHeader::ToEMFHeader(Gdiplus::ENHMETAHEADER3* pHeader)
 	pHeader->szlDevice.cx		= 200;
 	pHeader->szlDevice.cy		= 200;
 
-	// íóæíî ïåðåâåñòè â ìì
+	// Ð½ÑƒÐ¶Ð½Ð¾ Ð¿ÐµÑ€ÐµÐ²ÐµÑÑ‚Ð¸ Ð² Ð¼Ð¼
 	pHeader->szlMillimeters.cx	= 100;
 	pHeader->szlMillimeters.cy	= 100;
 }

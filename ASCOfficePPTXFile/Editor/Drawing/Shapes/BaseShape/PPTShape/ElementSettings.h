@@ -1,3 +1,34 @@
+/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 #pragma once
 
 #include "../../../../../../ASCOfficePPTFile/PPTFormatLib/Records/Drawing/ArtBlip.h"
@@ -5,8 +36,8 @@
 #include "../../../../../../Common/DocxFormat/Source/SystemUtility/File.h"
 #include "Enums.h"
 
-// это класс, использующийся для передачи свойств объектов,
-// например - указатель на картинку... (по PID'у)
+// СЌС‚Рѕ РєР»Р°СЃСЃ, РёСЃРїРѕР»СЊР·СѓСЋС‰РёР№СЃСЏ РґР»СЏ РїРµСЂРµРґР°С‡Рё СЃРІРѕР№СЃС‚РІ РѕР±СЉРµРєС‚РѕРІ,
+// РЅР°РїСЂРёРјРµСЂ - СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РєР°СЂС‚РёРЅРєСѓ... (РїРѕ PID'Сѓ)
 
 class CProperty
 {
@@ -16,7 +47,7 @@ public:
 	bool							m_bComplex;
 	DWORD							m_lValue;
 	BYTE*							m_pOptions;
-	// чтобы не плодить классы - это value, когда m_bComplex == true
+	// С‡С‚РѕР±С‹ РЅРµ РїР»РѕРґРёС‚СЊ РєР»Р°СЃСЃС‹ - СЌС‚Рѕ value, РєРѕРіРґР° m_bComplex == true
 	bool							m_bIsTruncated;
 
 public:
@@ -36,9 +67,9 @@ public:
 	}
 	void FromStream(POLE::Stream* pStream)
 	{
-		// читаем из стрима...
-		// только пока без учета bComplex
-		// т.к. Complex - учитывается в контейнере, хранящем все проперти
+		// С‡РёС‚Р°РµРј РёР· СЃС‚СЂРёРјР°...
+		// С‚РѕР»СЊРєРѕ РїРѕРєР° Р±РµР· СѓС‡РµС‚Р° bComplex
+		// С‚.Рє. Complex - СѓС‡РёС‚С‹РІР°РµС‚СЃСЏ РІ РєРѕРЅС‚РµР№РЅРµСЂРµ, С…СЂР°РЅСЏС‰РµРј РІСЃРµ РїСЂРѕРїРµСЂС‚Рё
 		USHORT lMem = StreamUtils::ReadWORD(pStream);
 		m_ePID = (NSOfficeDrawing::PropertyId)(lMem & 0x3FFF);
 		
@@ -140,7 +171,7 @@ public:
 	{
 		CString str = _T("");
 		str.Format(_T("%d,%d,%d,%d"), (long)m_ePID, (long)m_bIsBlip, (long)m_bComplex, (long)m_lValue);
-		// не будем ничего писать - а то xml - не распознаются
+		// РЅРµ Р±СѓРґРµРј РЅРёС‡РµРіРѕ РїРёСЃР°С‚СЊ - Р° С‚Рѕ xml - РЅРµ СЂР°СЃРїРѕР·РЅР°СЋС‚СЃСЏ
 		/*if (m_bComplex)
 		{
 			CString strProp = CDirectory::BYTEArrayToString(m_pOptions, m_lValue);
@@ -154,13 +185,13 @@ public:
 	}
 };
 
-// А вот контейнер пропертей
+// Рђ РІРѕС‚ РєРѕРЅС‚РµР№РЅРµСЂ РїСЂРѕРїРµСЂС‚РµР№
 class CProperties
 {
 public:
     std::vector<CProperty> m_arProperties;
-	// по идее - это instance, но нам так удобнее,
-	// тем более это класс - не связанный с RecordHeader
+	// РїРѕ РёРґРµРµ - СЌС‚Рѕ instance, РЅРѕ РЅР°Рј С‚Р°Рє СѓРґРѕР±РЅРµРµ,
+	// С‚РµРј Р±РѕР»РµРµ СЌС‚Рѕ РєР»Р°СЃСЃ - РЅРµ СЃРІСЏР·Р°РЅРЅС‹Р№ СЃ RecordHeader
 	long m_lCount;
 
 public:
@@ -182,8 +213,8 @@ public:
             m_arProperties.push_back(elem);
 			m_arProperties[lIndex].FromStream(pStream);
 		}
-		// теперь читаем дополнительную информацию 
-		// сортировано по pid'ам (но у нас пока просто по-порядку)
+		// С‚РµРїРµСЂСЊ С‡РёС‚Р°РµРј РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅСѓСЋ РёРЅС„РѕСЂРјР°С†РёСЋ 
+		// СЃРѕСЂС‚РёСЂРѕРІР°РЅРѕ РїРѕ pid'Р°Рј (РЅРѕ Сѓ РЅР°СЃ РїРѕРєР° РїСЂРѕСЃС‚Рѕ РїРѕ-РїРѕСЂСЏРґРєСѓ)
 		for (long lIndex = 0; lIndex < m_lCount; ++lIndex)
 		{
 			m_arProperties[lIndex].ComplexFromStream(pStream);

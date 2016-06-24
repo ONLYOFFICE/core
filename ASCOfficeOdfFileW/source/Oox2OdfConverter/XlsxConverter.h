@@ -1,3 +1,34 @@
+/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 #pragma once
 
 #include "Converter.h"
@@ -61,6 +92,7 @@ namespace OOX
 		class CPageSetup;
 		class CPageMargins;
 		class CSi;
+		class CWorkbookView;
 	}
 }
 
@@ -110,7 +142,7 @@ namespace Oox2Odf
 		void convert(OOX::Spreadsheet::WritingElement	*oox_unknown);
     private:		
 		OOX::Spreadsheet::CXlsx					*xlsx_document;
-		OOX::Spreadsheet::CDrawing				*xlsx_current_drawing; //пока сюда .. потом покрасивше, для внешних ссылок
+		OOX::Spreadsheet::CDrawing				*xlsx_current_drawing; //РїРѕРєР° СЃСЋРґР° .. РїРѕС‚РѕРј РїРѕРєСЂР°СЃРёРІС€Рµ, РґР»СЏ РІРЅРµС€РЅРёС… СЃСЃС‹Р»РѕРє
 		
 		odf_writer::ods_conversion_context		*ods_context;
 
@@ -140,7 +172,8 @@ namespace Oox2Odf
 		void convert(OOX::Spreadsheet::CSheetViews			*oox_sheet_views);
 		void convert(OOX::Spreadsheet::CPageSetup			*oox_page);
 		void convert(OOX::Spreadsheet::CPageMargins			*oox_page);
-		
+		void convert(OOX::Spreadsheet::CWorkbookView		*oox_book_views);
+
 		void convert(OOX::Spreadsheet::CFont				*font,		odf_writer::style_text_properties		*text_properties);		
 		void convert(OOX::Spreadsheet::CBorder				*border,	odf_writer::style_table_cell_properties *cell_properties);
 		void convert(OOX::Spreadsheet::CFill				*fill,		odf_writer::style_table_cell_properties *cell_properties);
@@ -156,16 +189,16 @@ namespace Oox2Odf
 		void convert(OOX::Spreadsheet::CNumFmt				*numFmt);
 		void convert(OOX::Spreadsheet::CDxf					*dxFmt, int oox_id);
 
-		void convert(OOX::Spreadsheet::CCellAnchor			*oox_anchor);
-		void convert(OOX::Spreadsheet::CDrawing				*oox_drawing);
+		void convert(OOX::Spreadsheet::CCellAnchor					*oox_anchor);
+		void convert(OOX::Spreadsheet::CDrawing						*oox_drawing);
 
-		void convert(OOX::Spreadsheet::CFromTo				*oox_from_to, oox_table_position * pos);
+		void convert(OOX::Spreadsheet::CFromTo						*oox_from_to, oox_table_position * pos);
 
-		void convert(OOX::Spreadsheet::CPic					*oox_picture);
-		void convert(OOX::Spreadsheet::CShape				*oox_shape);
-		void convert(OOX::Spreadsheet::CConnShape			*oox_conn_shape);
-		void convert(OOX::Spreadsheet::CGraphicFrame		*oox_graphic_frame);
-		void convert(OOX::Spreadsheet::CGroupShape			*oox_group_shape);
+		void convert(OOX::Spreadsheet::CPic							*oox_picture);
+		void convert(OOX::Spreadsheet::CShape						*oox_shape);
+		void convert(OOX::Spreadsheet::CConnShape					*oox_conn_shape);
+		void convert(OOX::Spreadsheet::CGraphicFrame				*oox_graphic_frame);
+		void convert(OOX::Spreadsheet::CGroupShape					*oox_group_shape);
 	
 		void convert(OOX::Spreadsheet::CConditionalFormatting		*oox_cond_fmt);
 		void convert(OOX::Spreadsheet::CConditionalFormattingRule	*oox_cond_rule);

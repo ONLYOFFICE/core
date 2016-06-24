@@ -1,3 +1,34 @@
+/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 
 #pragma once
 #include "Utils.h"
@@ -1089,7 +1120,7 @@ namespace XmlUtils
 	};
 };
 	
-//Расширение для сохранения в XML свойств интерфейса
+//Р Р°СЃС€РёСЂРµРЅРёРµ РґР»СЏ СЃРѕС…СЂР°РЅРµРЅРёСЏ РІ XML СЃРІРѕР№СЃС‚РІ РёРЅС‚РµСЂС„РµР№СЃР°
 namespace XmlUtils
 {
 	static LPCTSTR g_cpszSADescriptorNodeName	= _T("SADescriptor");
@@ -1156,7 +1187,7 @@ namespace XmlUtils
 		}
 	};
 
-	//Только свойства которые не имеют дополнительных параметров на вход
+	//РўРѕР»СЊРєРѕ СЃРІРѕР№СЃС‚РІР° РєРѕС‚РѕСЂС‹Рµ РЅРµ РёРјРµСЋС‚ РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹С… РїР°СЂР°РјРµС‚СЂРѕРІ РЅР° РІС…РѕРґ
         static bool GetPropertyList(IDispatch *pDisp, CDispatchPropertyList &arProp, INVOKEKIND nType)
 	{
 		if (NULL==pDisp)
@@ -1183,7 +1214,7 @@ namespace XmlUtils
 				continue;
 
 			if (0!=pFuncDesc->cParams)
-				continue;//СОХРАНЯЕМ ТОЛЬКО ТЕ СВОЙСТВА У КОТОРЫХ НЕТ ПАРАМЕТРОВ
+				continue;//РЎРћРҐР РђРќРЇР•Рњ РўРћР›Р¬РљРћ РўР• РЎР’РћР™РЎРўР’Рђ РЈ РљРћРўРћР Р«РҐ РќР•Рў РџРђР РђРњР•РўР РћР’
 			if (nType!=pFuncDesc->invkind)
 				continue;
 
@@ -1367,7 +1398,7 @@ namespace XmlUtils
 				break;
 			case VT_UNKNOWN:
 				sVal = _T("");
-				//можно сохранять пытаясь получить IDispatch интерфейс, но вроде нам он не надо
+				//РјРѕР¶РЅРѕ СЃРѕС…СЂР°РЅСЏС‚СЊ РїС‹С‚Р°СЏСЃСЊ РїРѕР»СѓС‡РёС‚СЊ IDispatch РёРЅС‚РµСЂС„РµР№СЃ, РЅРѕ РІСЂРѕРґРµ РЅР°Рј РѕРЅ РЅРµ РЅР°РґРѕ
 				break;
 			case VT_I1:
 				sVal.Format(_T("%d"), val.cVal);
@@ -1638,7 +1669,7 @@ namespace XmlUtils
 	};
 };
 	
-// Расширение для простого чтения xml через классы
+// Р Р°СЃС€РёСЂРµРЅРёРµ РґР»СЏ РїСЂРѕСЃС‚РѕРіРѕ С‡С‚РµРЅРёСЏ xml С‡РµСЂРµР· РєР»Р°СЃСЃС‹
 namespace XmlUtils
 {
 	class IXmlNode
@@ -1714,7 +1745,7 @@ namespace XmlUtils
 	};
 	class CXmlNode : public IXmlNode
 	{
-		XML::IXMLDOMDocument2Ptr	m_pXmlDocument; // для нода, созданного из строки
+		XML::IXMLDOMDocument2Ptr	m_pXmlDocument; // РґР»СЏ РЅРѕРґР°, СЃРѕР·РґР°РЅРЅРѕРіРѕ РёР· СЃС‚СЂРѕРєРё
 		XML::IXMLDOMNodePtr m_pXmlNode;
 
 		IXMLDOMNamedNodeMapPtr m_pAttributes;
@@ -2977,8 +3008,8 @@ namespace XmlUtils
 		}
                 inline bool ReadNextSiblingNode(int nDepth)
 		{
-			// Перед использованием этой функции надо проверить,
-			// пустая ли родительская нода. 
+			// РџРµСЂРµРґ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРµРј СЌС‚РѕР№ С„СѓРЅРєС†РёРё РЅР°РґРѕ РїСЂРѕРІРµСЂРёС‚СЊ,
+			// РїСѓСЃС‚Р°СЏ Р»Рё СЂРѕРґРёС‚РµР»СЊСЃРєР°СЏ РЅРѕРґР°. 
 			if ( !IsValid() )
                                 return false;
 
@@ -3008,7 +3039,7 @@ namespace XmlUtils
 			XmlNodeType eNodeType = XmlNodeType_None;
 
 			int nCurDepth = -1;
-			// У закрывающего тэга глубина на 1 больше, чем у открывающего
+			// РЈ Р·Р°РєСЂС‹РІР°СЋС‰РµРіРѕ С‚СЌРіР° РіР»СѓР±РёРЅР° РЅР° 1 Р±РѕР»СЊС€Рµ, С‡РµРј Сѓ РѕС‚РєСЂС‹РІР°СЋС‰РµРіРѕ
                         while( true )
 			{
 				if ( S_OK != m_pReader->Read( &eNodeType ) )
@@ -3070,7 +3101,7 @@ namespace XmlUtils
 			if ( !IsValid() )
 				return _T("");
 
-			// TO DO: Ускорить (убрать CString)
+			// TO DO: РЈСЃРєРѕСЂРёС‚СЊ (СѓР±СЂР°С‚СЊ CString)
 			CString sResult;
 
 			if ( m_pReader->IsEmptyElement() )
@@ -3152,7 +3183,7 @@ namespace XmlUtils
 				XmlNodeType eNodeType = XmlNodeType_None;
 
 				int nCurDepth = -1;
-				// У закрывающего тэга глубина на 1 больше, чем у открывающего
+				// РЈ Р·Р°РєСЂС‹РІР°СЋС‰РµРіРѕ С‚СЌРіР° РіР»СѓР±РёРЅР° РЅР° 1 Р±РѕР»СЊС€Рµ, С‡РµРј Сѓ РѕС‚РєСЂС‹РІР°СЋС‰РµРіРѕ
                                 while( true )
 				{
 					if ( S_OK != m_pReader->Read( &eNodeType ) )
@@ -3264,7 +3295,7 @@ namespace XmlUtils
 
 		const TXmlLiteAttribute& operator=(const TXmlLiteAttribute& oOther)
 		{
-			// Копируем ссылки, а не строки
+			// РљРѕРїРёСЂСѓРµРј СЃСЃС‹Р»РєРё, Р° РЅРµ СЃС‚СЂРѕРєРё
 			wsName  = oOther.wsName;
 			wsValue = oOther.wsValue;
 
@@ -3275,7 +3306,7 @@ namespace XmlUtils
 		wchar_t* wsValue;
 	};
 
-	// Базовый класс для элементов XML
+	// Р‘Р°Р·РѕРІС‹Р№ РєР»Р°СЃСЃ РґР»СЏ СЌР»РµРјРµРЅС‚РѕРІ XML
 	class CXmlLiteWrapper;
 	class IXmlLiteElement
 	{

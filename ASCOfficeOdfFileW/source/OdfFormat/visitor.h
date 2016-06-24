@@ -1,13 +1,44 @@
+/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 #ifndef _CPDOCCORE_VISITOR_H_INCLUDED_
 #define _CPDOCCORE_VISITOR_H_INCLUDED_
 
 /*
 
-Схема работы с visitor:
+РЎС…РµРјР° СЂР°Р±РѕС‚С‹ СЃ visitor:
 
-для классов, которые могут быть посещены visitor-ом:
-1. наследуем от base_visitable
-2. объявляем внутри макрос CPDOCCORE_DEFINE_VISITABLE()
+РґР»СЏ РєР»Р°СЃСЃРѕРІ, РєРѕС‚РѕСЂС‹Рµ РјРѕРіСѓС‚ Р±С‹С‚СЊ РїРѕСЃРµС‰РµРЅС‹ visitor-РѕРј:
+1. РЅР°СЃР»РµРґСѓРµРј РѕС‚ base_visitable
+2. РѕР±СЉСЏРІР»СЏРµРј РІРЅСѓС‚СЂРё РјР°РєСЂРѕСЃ CPDOCCORE_DEFINE_VISITABLE()
 
 class example_visitable_element: public base_visitable 
 {
@@ -17,16 +48,16 @@ public:
 // ... 
 };
 
-Для создания гостя:
-1. наследуем гостя от base_visitor
-2. наследуем гостя(визитор) от const_visitor<visitable_element1>/visitor<visitable_element1>, 
-                        const_visitor<visitable_element2>/visitor<visitable_element2>, и т.д.
-   для каждого из элементов, котоыре может посетить визитор
-3. объявляем для каждого из элементов метод 
+Р”Р»СЏ СЃРѕР·РґР°РЅРёСЏ РіРѕСЃС‚СЏ:
+1. РЅР°СЃР»РµРґСѓРµРј РіРѕСЃС‚СЏ РѕС‚ base_visitor
+2. РЅР°СЃР»РµРґСѓРµРј РіРѕСЃС‚СЏ(РІРёР·РёС‚РѕСЂ) РѕС‚ const_visitor<visitable_element1>/visitor<visitable_element1>,
+                        const_visitor<visitable_element2>/visitor<visitable_element2>, Рё С‚.Рґ.
+   РґР»СЏ РєР°Р¶РґРѕРіРѕ РёР· СЌР»РµРјРµРЅС‚РѕРІ, РєРѕС‚РѕС‹СЂРµ РјРѕР¶РµС‚ РїРѕСЃРµС‚РёС‚СЊ РІРёР·РёС‚РѕСЂ
+3. РѕР±СЉСЏРІР»СЏРµРј РґР»СЏ РєР°Р¶РґРѕРіРѕ РёР· СЌР»РµРјРµРЅС‚РѕРІ РјРµС‚РѕРґ
     virtual void visit(const visitable_element1& val);
     virtual void visit(const visitable_element2& val);
-    и т.д.
-    (в случае неконстатности - убираем const)
+    Рё С‚.Рґ.
+    (РІ СЃР»СѓС‡Р°Рµ РЅРµРєРѕРЅСЃС‚Р°С‚РЅРѕСЃС‚Рё - СѓР±РёСЂР°РµРј const)
 
 
 class table_round : public base_visitor, 
@@ -50,16 +81,16 @@ class table_round : public base_visitor,
     }
 };
 
-Для организации обхода:
-1. Создаем визитор
-2. Выполняем accept для корневого элемента
+Р”Р»СЏ РѕСЂРіР°РЅРёР·Р°С†РёРё РѕР±С…РѕРґР°:
+1. РЎРѕР·РґР°РµРј РІРёР·РёС‚РѕСЂ
+2. Р’С‹РїРѕР»РЅСЏРµРј accept РґР»СЏ РєРѕСЂРЅРµРІРѕРіРѕ СЌР»РµРјРµРЅС‚Р°
 
 office_element * root;
 /// ... 
 table_round tableRoundVisitor;
 root->accept(tableRoundVisitor);
 
-Внимание! Визитор САМ определяет правила обхода внутренних вершин, т.е. внутри каждой функции посещения требуется написать например
+Р’РЅРёРјР°РЅРёРµ! Р’РёР·РёС‚РѕСЂ РЎРђРњ РѕРїСЂРµРґРµР»СЏРµС‚ РїСЂР°РІРёР»Р° РѕР±С…РѕРґР° РІРЅСѓС‚СЂРµРЅРЅРёС… РІРµСЂС€РёРЅ, С‚.Рµ. РІРЅСѓС‚СЂРё РєР°Р¶РґРѕР№ С„СѓРЅРєС†РёРё РїРѕСЃРµС‰РµРЅРёСЏ С‚СЂРµР±СѓРµС‚СЃСЏ РЅР°РїРёСЃР°С‚СЊ РЅР°РїСЂРёРјРµСЂ
     
     virtual void visit(const office_body& val)
     {

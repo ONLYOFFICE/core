@@ -1,3 +1,34 @@
+/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 #pragma once
 #include "Structures.h"
 #include "Layout.h"
@@ -10,8 +41,8 @@ namespace NSPresentationEditor
 	class CTheme
 	{
 	public:
-		std::map<_UINT64, LONG>			m_mapGeomToLayout;// типовые шаблоны
-		std::map<DWORD, LONG>			m_mapTitleLayout; // заголовочные шаблоны
+		std::map<_UINT64, LONG>			m_mapGeomToLayout;// С‚РёРїРѕРІС‹Рµ С€Р°Р±Р»РѕРЅС‹
+		std::map<DWORD, LONG>			m_mapTitleLayout; // Р·Р°РіРѕР»РѕРІРѕС‡РЅС‹Рµ С€Р°Р±Р»РѕРЅС‹
 		
 		std::multimap<int,int>			m_mapPlaceholders;
 
@@ -94,7 +125,7 @@ namespace NSPresentationEditor
 			m_bIsBackground		= oSrc.m_bIsBackground;
 			m_oBackground		= oSrc.m_oBackground;
 
-			// теперь сделаем копию всех элементов layout'ов
+			// С‚РµРїРµСЂСЊ СЃРґРµР»Р°РµРј РєРѕРїРёСЋ РІСЃРµС… СЌР»РµРјРµРЅС‚РѕРІ layout'РѕРІ
 			size_t nCount = m_arLayouts.size();
 			for (size_t i = 0; i < nCount; ++i)
 			{
@@ -120,7 +151,7 @@ namespace NSPresentationEditor
 
 		void CreateDublicateElements()
 		{
-			// просто из всех своих элементов делаем дубликата
+			// РїСЂРѕСЃС‚Рѕ РёР· РІСЃРµС… СЃРІРѕРёС… СЌР»РµРјРµРЅС‚РѕРІ РґРµР»Р°РµРј РґСѓР±Р»РёРєР°С‚Р°
 			size_t nCount = m_arElements.size();
 			for (size_t nIndex = 0; nIndex < nCount; ++nIndex)
 			{
@@ -242,7 +273,7 @@ namespace NSPresentationEditor
 		{
 			LONG lCountColors = (LONG)pTheme->m_arColorScheme.size();
 
-			// пока здесь расчитываются только цвета
+			// РїРѕРєР° Р·РґРµСЃСЊ СЂР°СЃС‡РёС‚С‹РІР°СЋС‚СЃСЏ С‚РѕР»СЊРєРѕ С†РІРµС‚Р°
 			size_t nLevels = 10;
 			for (size_t i = 0; i < nLevels; ++i)
 			{

@@ -48,12 +48,15 @@ mac {
 DEFINES += UNICODECONVERTER_USE_DYNAMIC_LIBRARY
 LIBS += -L$$DESTDIR -lUnicodeConverter
 
-#CONFIG += static_link_libstd
-static_link_libstd {    
-    DEFINES += asc_static_link_libstd
+# теперь всегда с libstd
+linux-g++ | linux-g++-64 | linux-g++-32 {
+    CONFIG += static_link_libstd
+}
+static_link_libstd {
+	DEFINES += asc_static_link_libstd
     QMAKE_LFLAGS += -static-libstdc++ -static-libgcc
-    DESTDIR_POSTFIX = _static_stdlib
-    DESTDIR = $$DESTDIR$$DESTDIR_POSTFIX
+#    DESTDIR_POSTFIX = _static_stdlib
+#    DESTDIR = $$DESTDIR$$DESTDIR_POSTFIX
     message(static_link_libstd)
 }
 

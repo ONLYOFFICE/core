@@ -1,3 +1,34 @@
+/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 // FontConverter.h : Declaration of the CFontConverter
 
 #pragma once
@@ -27,7 +58,7 @@ __interface IFontConverter : IDispatch
 	[id(101)]	HRESULT ToOTF([in] BSTR bsInFontFile, [in] BSTR pbsFontFileOut, [in, satype("unsigned short")] SAFEARRAY *pUnicode, [in] BSTR bsName, [in] long nFlag );
 	[id(102)]	HRESULT ToOTF2([in] BSTR bsInFontFile, [in, satype("unsigned short")] SAFEARRAY *pUnicode, [in] BSTR bsName, [in] long nFlag, [in] long lSrcFaceIndex, [out, satype("BYTE")] SAFEARRAY** ppFontData);
 
-//----- Для дополнительных функций ----------------------------------------------------------------
+//----- Р”Р»СЏ РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹С… С„СѓРЅРєС†РёР№ ----------------------------------------------------------------
 
 	[id(10001)]	HRESULT SetAdditionalParam([in] BSTR ParamName, [in] VARIANT	ParamValue);
 	[id(10002)]	HRESULT GetAdditionalParam([in] BSTR ParamName, [out] VARIANT *	ParamValue);
@@ -78,18 +109,18 @@ public:
 
 		FT_Face pFace = NULL;
 
-		// открываем файл
+		// РѕС‚РєСЂС‹РІР°РµРј С„Р°Р№Р»
 		HANDLE hFile = CreateFile( (LPCWSTR)bsFontIn, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 		if (INVALID_HANDLE_VALUE == hFile)
-			return NULL; // Невозможно открыть файл
+			return NULL; // РќРµРІРѕР·РјРѕР¶РЅРѕ РѕС‚РєСЂС‹С‚СЊ С„Р°Р№Р»
 
-		// мапим этот файл в память - так быстрее читаются данные из файла
+		// РјР°РїРёРј СЌС‚РѕС‚ С„Р°Р№Р» РІ РїР°РјСЏС‚СЊ - С‚Р°Рє Р±С‹СЃС‚СЂРµРµ С‡РёС‚Р°СЋС‚СЃСЏ РґР°РЅРЅС‹Рµ РёР· С„Р°Р№Р»Р°
 		DWORD nFileSize = GetFileSize(hFile, NULL);
 		HANDLE hMapFile = CreateFileMapping(hFile, NULL, PAGE_READONLY, 0, nFileSize, NULL);
 		if (NULL == hMapFile)
 		{
 			CloseHandle( hFile );
-			return NULL; // Невозможно создать отображение файла
+			return NULL; // РќРµРІРѕР·РјРѕР¶РЅРѕ СЃРѕР·РґР°С‚СЊ РѕС‚РѕР±СЂР°Р¶РµРЅРёРµ С„Р°Р№Р»Р°
 		}
 
 		void *pBaseAddress = MapViewOfFile( hMapFile, FILE_MAP_READ, 0, 0, 0 );
@@ -119,7 +150,7 @@ public:
 
 		CString sFontFormat( FT_Get_X11_Font_Format( pFace ) );
 
-		// Проверим флаг конвертации и исходный формат шрифта
+		// РџСЂРѕРІРµСЂРёРј С„Р»Р°Рі РєРѕРЅРІРµСЂС‚Р°С†РёРё Рё РёСЃС…РѕРґРЅС‹Р№ С„РѕСЂРјР°С‚ С€СЂРёС„С‚Р°
 		bool bNeedConvert = false;
 
 		if ( nFlag == c_lFromAll || ( _T("TrueType") == sFontFormat && nFlag & c_lFromTT ) || ( _T("CFF") == sFontFormat && nFlag & c_lFromCFF ) || ( _T("Type 1") == sFontFormat && nFlag & c_lFromT1 ) )
@@ -135,18 +166,18 @@ public:
 				CFontFileType1C *pT1C = NULL;
 				if ( _T("Type 1") == sFontFormat )
 				{
-					// Сначала сконвертируем Type1 в CFF
+					// РЎРЅР°С‡Р°Р»Р° СЃРєРѕРЅРІРµСЂС‚РёСЂСѓРµРј Type1 РІ CFF
 					CFontFileType1* pT1 = CFontFileType1::LoadFromFile( bsFontIn );
 					pT1->ToCFF( &CharBufferWrite, &oCFF );
 					delete pT1;
 
-					// Конвертируем CFF в OpenTypeCFF
+					// РљРѕРЅРІРµСЂС‚РёСЂСѓРµРј CFF РІ OpenTypeCFF
 					pT1C = CFontFileType1C::LoadFromBuffer( oCFF.sBuffer, oCFF.nLen );
 				}
 				else
 				{
-					// FreeType отдает тип шрифта CFF, в случаях когда файл имеет тип OpenType(CFF).
-					// Если так оно и есть, тогда нам с файлом ничего делать на надо.
+					// FreeType РѕС‚РґР°РµС‚ С‚РёРї С€СЂРёС„С‚Р° CFF, РІ СЃР»СѓС‡Р°СЏС… РєРѕРіРґР° С„Р°Р№Р» РёРјРµРµС‚ С‚РёРї OpenType(CFF).
+					// Р•СЃР»Рё С‚Р°Рє РѕРЅРѕ Рё РµСЃС‚СЊ, С‚РѕРіРґР° РЅР°Рј СЃ С„Р°Р№Р»РѕРј РЅРёС‡РµРіРѕ РґРµР»Р°С‚СЊ РЅР° РЅР°РґРѕ.
 					pT1C = CFontFileType1C::LoadFromFile( bsFontIn );
 				}
 
@@ -171,7 +202,7 @@ public:
 
 					if ( pUnicodeArray )
 					{		
-						// Сначала составим список нужных нами GID
+						// РЎРЅР°С‡Р°Р»Р° СЃРѕСЃС‚Р°РІРёРј СЃРїРёСЃРѕРє РЅСѓР¶РЅС‹С… РЅР°РјРё GID
 						LONG lCount = pUnicodeArray->rgsabound[0].cElements;
 						unsigned short* pUnicode = (unsigned short*)pUnicodeArray->pvData;
 						unsigned short* pGIDs = new unsigned short[lCount];
@@ -198,7 +229,7 @@ public:
 
 						pUseGlyfs = new unsigned char[lGlyfsCount];
 						::memset( pUseGlyfs, 0x00, lGlyfsCount * sizeof(unsigned char) );
-						pUseGlyfs[0] = 1; // нулевой гид всегда записываем
+						pUseGlyfs[0] = 1; // РЅСѓР»РµРІРѕР№ РіРёРґ РІСЃРµРіРґР° Р·Р°РїРёСЃС‹РІР°РµРј
 						for ( int nGID = 1; nGID < lGlyfsCount; nGID++ )
 						{
 							if ( 1 != pUseGlyfs[nGID] )
@@ -213,7 +244,7 @@ public:
 									}
 								}
 
-								// Если данный символ составной (CompositeGlyf), тогда мы должны учесть все его дочерные символы (subglyfs)
+								// Р•СЃР»Рё РґР°РЅРЅС‹Р№ СЃРёРјРІРѕР» СЃРѕСЃС‚Р°РІРЅРѕР№ (CompositeGlyf), С‚РѕРіРґР° РјС‹ РґРѕР»Р¶РЅС‹ СѓС‡РµСЃС‚СЊ РІСЃРµ РµРіРѕ РґРѕС‡РµСЂРЅС‹Рµ СЃРёРјРІРѕР»С‹ (subglyfs)
 								if ( bFound && 0 == FT_Load_Glyph( pFace, nGID, FT_LOAD_NO_SCALE | FT_LOAD_NO_RECURSE ) )
 								{
 									for ( int nSubIndex = 0; nSubIndex < pFace->glyph->num_subglyphs; nSubIndex++ )
@@ -243,14 +274,14 @@ public:
 				else
 				{
 					// error parse font
-					// Просто копируем файл
+					// РџСЂРѕСЃС‚Рѕ РєРѕРїРёСЂСѓРµРј С„Р°Р№Р»
 					CopyFile( bsFontIn, bsFontOut, FALSE );
 				}
 			}
 		}
 		else
 		{
-			// Просто копируем файл
+			// РџСЂРѕСЃС‚Рѕ РєРѕРїРёСЂСѓРµРј С„Р°Р№Р»
 			CopyFile( bsFontIn, bsFontOut, FALSE );
 		}
 
@@ -266,7 +297,7 @@ public:
 
 	STDMETHOD(ToOTF2)(BSTR bsFontIn, SAFEARRAY *pUnicodeArray, BSTR bsName, long nFlag, long lFaceIndex, SAFEARRAY** ppData)
 	{
-		// функция просто скопирована и немного доработана. это все из-за нехватки времени.
+		// С„СѓРЅРєС†РёСЏ РїСЂРѕСЃС‚Рѕ СЃРєРѕРїРёСЂРѕРІР°РЅР° Рё РЅРµРјРЅРѕРіРѕ РґРѕСЂР°Р±РѕС‚Р°РЅР°. СЌС‚Рѕ РІСЃРµ РёР·-Р·Р° РЅРµС…РІР°С‚РєРё РІСЂРµРјРµРЅРё.
 
 		FT_Library pLibrary = NULL;
 		if ( FT_Init_FreeType( &pLibrary ) ) 
@@ -274,18 +305,18 @@ public:
 
 		FT_Face pFace = NULL;
 
-		// открываем файл
+		// РѕС‚РєСЂС‹РІР°РµРј С„Р°Р№Р»
 		HANDLE hFile = CreateFile( (LPCWSTR)bsFontIn, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 		if (INVALID_HANDLE_VALUE == hFile || NULL == ppData)
-			return NULL; // Невозможно открыть файл
+			return NULL; // РќРµРІРѕР·РјРѕР¶РЅРѕ РѕС‚РєСЂС‹С‚СЊ С„Р°Р№Р»
 
-		// мапим этот файл в память - так быстрее читаются данные из файла
+		// РјР°РїРёРј СЌС‚РѕС‚ С„Р°Р№Р» РІ РїР°РјСЏС‚СЊ - С‚Р°Рє Р±С‹СЃС‚СЂРµРµ С‡РёС‚Р°СЋС‚СЃСЏ РґР°РЅРЅС‹Рµ РёР· С„Р°Р№Р»Р°
 		DWORD nFileSize = GetFileSize(hFile, NULL);
 		HANDLE hMapFile = CreateFileMapping(hFile, NULL, PAGE_READONLY, 0, nFileSize, NULL);
 		if (NULL == hMapFile)
 		{
 			CloseHandle( hFile );
-			return NULL; // Невозможно создать отображение файла
+			return NULL; // РќРµРІРѕР·РјРѕР¶РЅРѕ СЃРѕР·РґР°С‚СЊ РѕС‚РѕР±СЂР°Р¶РµРЅРёРµ С„Р°Р№Р»Р°
 		}
 
 		void *pBaseAddress = MapViewOfFile( hMapFile, FILE_MAP_READ, 0, 0, 0 );
@@ -315,7 +346,7 @@ public:
 
 		CString sFontFormat( FT_Get_X11_Font_Format( pFace ) );
 
-		// Проверим флаг конвертации и исходный формат шрифта
+		// РџСЂРѕРІРµСЂРёРј С„Р»Р°Рі РєРѕРЅРІРµСЂС‚Р°С†РёРё Рё РёСЃС…РѕРґРЅС‹Р№ С„РѕСЂРјР°С‚ С€СЂРёС„С‚Р°
 		bool bNeedConvert = false;
 
 		if ( nFlag == c_lFromAll || ( _T("TrueType") == sFontFormat && nFlag & c_lFromTT ) || ( _T("CFF") == sFontFormat && nFlag & c_lFromCFF ) || ( _T("Type 1") == sFontFormat && nFlag & c_lFromT1 ) )
@@ -334,18 +365,18 @@ public:
 				CFontFileType1C *pT1C = NULL;
 				if ( _T("Type 1") == sFontFormat )
 				{
-					// Сначала сконвертируем Type1 в CFF
+					// РЎРЅР°С‡Р°Р»Р° СЃРєРѕРЅРІРµСЂС‚РёСЂСѓРµРј Type1 РІ CFF
 					CFontFileType1* pT1 = CFontFileType1::LoadFromFile( bsFontIn );
 					pT1->ToCFF( &CharBufferWrite, &oCFF );
 					delete pT1;
 
-					// Конвертируем CFF в OpenTypeCFF
+					// РљРѕРЅРІРµСЂС‚РёСЂСѓРµРј CFF РІ OpenTypeCFF
 					pT1C = CFontFileType1C::LoadFromBuffer( oCFF.sBuffer, oCFF.nLen );
 				}
 				else
 				{
-					// FreeType отдает тип шрифта CFF, в случаях когда файл имеет тип OpenType(CFF).
-					// Если так оно и есть, тогда нам с файлом ничего делать на надо.
+					// FreeType РѕС‚РґР°РµС‚ С‚РёРї С€СЂРёС„С‚Р° CFF, РІ СЃР»СѓС‡Р°СЏС… РєРѕРіРґР° С„Р°Р№Р» РёРјРµРµС‚ С‚РёРї OpenType(CFF).
+					// Р•СЃР»Рё С‚Р°Рє РѕРЅРѕ Рё РµСЃС‚СЊ, С‚РѕРіРґР° РЅР°Рј СЃ С„Р°Р№Р»РѕРј РЅРёС‡РµРіРѕ РґРµР»Р°С‚СЊ РЅР° РЅР°РґРѕ.
 					pT1C = CFontFileType1C::LoadFromFile( bsFontIn );
 				}
 
@@ -368,7 +399,7 @@ public:
 
 					if ( pUnicodeArray )
 					{		
-						// Сначала составим список нужных нами GID
+						// РЎРЅР°С‡Р°Р»Р° СЃРѕСЃС‚Р°РІРёРј СЃРїРёСЃРѕРє РЅСѓР¶РЅС‹С… РЅР°РјРё GID
 						LONG lCount = pUnicodeArray->rgsabound[0].cElements;
 						unsigned short* pUnicode = (unsigned short*)pUnicodeArray->pvData;
 						unsigned short* pGIDs = new unsigned short[lCount];
@@ -395,7 +426,7 @@ public:
 						
 						pUseGlyfs = new unsigned char[lGlyfsCount];
 						::memset( pUseGlyfs, 0x00, lGlyfsCount * sizeof(unsigned char) );
-						pUseGlyfs[0] = 1; // нулевой гид всегда записываем
+						pUseGlyfs[0] = 1; // РЅСѓР»РµРІРѕР№ РіРёРґ РІСЃРµРіРґР° Р·Р°РїРёСЃС‹РІР°РµРј
 						for ( int nGID = 1; nGID < lGlyfsCount; nGID++ )
 						{
 							if ( 1 != pUseGlyfs[nGID] )
@@ -410,7 +441,7 @@ public:
 									}
 								}
 
-								// Если данный символ составной (CompositeGlyf), тогда мы должны учесть все его дочерные символы (subglyfs)
+								// Р•СЃР»Рё РґР°РЅРЅС‹Р№ СЃРёРјРІРѕР» СЃРѕСЃС‚Р°РІРЅРѕР№ (CompositeGlyf), С‚РѕРіРґР° РјС‹ РґРѕР»Р¶РЅС‹ СѓС‡РµСЃС‚СЊ РІСЃРµ РµРіРѕ РґРѕС‡РµСЂРЅС‹Рµ СЃРёРјРІРѕР»С‹ (subglyfs)
 								if ( bFound && 0 == FT_Load_Glyph( pFace, nGID, FT_LOAD_NO_SCALE | FT_LOAD_NO_RECURSE ) )
 								{
 									for ( int nSubIndex = 0; nSubIndex < pFace->glyph->num_subglyphs; nSubIndex++ )

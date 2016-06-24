@@ -1,4 +1,35 @@
-﻿#ifndef DOCX_BIN_READER_WRITER_DEFINES
+/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
+#ifndef DOCX_BIN_READER_WRITER_DEFINES
 #define DOCX_BIN_READER_WRITER_DEFINES
 
 namespace BinDocxRW
@@ -248,7 +279,10 @@ extern int g_nCurFormatVersion;
 		Style = 10,
 		tblpPr2 = 11,
 		Layout = 12,
-		tblPrChange = 13
+		tblPrChange = 13,
+		TableCellSpacing = 14,
+		RowBandSize = 15,
+		ColBandSize = 16
 	};}
 	namespace c_oSer_tblpPrType{enum c_oSer_tblpPrType
 	{
@@ -456,7 +490,9 @@ extern int g_nCurFormatVersion;
 		columnbreak = 18,
 		cr = 19,
 		noBreakHyphen = 20,
-		softHyphen = 21
+		softHyphen = 21,
+		separator = 22,
+		continuationSeparator = 23
 	};}
 	namespace c_oSerImageType{enum c_oSerImageType
 	{
@@ -500,7 +536,8 @@ extern int g_nCurFormatVersion;
 		CachedImage = 26,
 		SizeRelH = 27,
 		SizeRelV = 28,
-		Embedded = 29
+		Embedded = 29,
+		GraphicFramePr = 30
 	};}
 	namespace c_oSerEffectExtent{enum c_oSerEffectExtent
 	{
@@ -651,7 +688,8 @@ extern int g_nCurFormatVersion;
 	{
 		ClrSchemeMapping = 0,
 		DefaultTabStop = 1,
-		MathPr = 2
+		MathPr = 2,
+		TrackRevisions = 3
 	};}
 	namespace c_oSer_MathPrType{enum c_oSer_SettingsType
 	{
@@ -900,6 +938,15 @@ extern int g_nCurFormatVersion;
 		Sz = 12,
 		ColorTheme = 13,
 		Val = 16
+	};}
+	namespace c_oSerGraphicFramePr{enum c_oSerGraphicFramePr
+	{
+		NoChangeAspect = 0,
+		NoDrilldown = 1,
+		NoGrp = 2,
+		NoMove	= 3,
+		NoResize = 4,
+		NoSelect = 5
 	};}
 }
 

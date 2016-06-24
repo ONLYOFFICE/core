@@ -1,4 +1,4 @@
-﻿#include "J2kFile.h"
+#include "J2kFile.h"
 #include "J2kIncludes.h"
 #include "Utils.h"
 

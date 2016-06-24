@@ -1,4 +1,35 @@
-﻿#ifndef BINARY_READER
+/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
+#ifndef BINARY_READER
 #define BINARY_READER
 
 #include "../../Common/Base64.h"
@@ -2590,76 +2621,12 @@ namespace BinXlsxRW {
 			{
 				res = Read1(length, &BinaryWorksheetsTableReader::ReadPic, this, poResult);
 			}
-			else if(c_oSer_DrawingType::GraphicFrame == type)
-			{
-				res = Read1(length, &BinaryWorksheetsTableReader::ReadChart, this, poResult);
-			}
 			else if(c_oSer_DrawingType::pptxDrawing == type)
 			{
 				pTransport->m_nPos = m_oBufferedStream.GetPos();
 				pTransport->m_nLength = length;
 				res = c_oSerConstants::ReadUnknown;
 			}
-			else
-				res = c_oSerConstants::ReadUnknown;
-			return res;
-		};
-		int ReadChart(BYTE type, long length, void* poResult)
-		{
-			OOX::Spreadsheet::CCellAnchor* pCellAnchor = static_cast<OOX::Spreadsheet::CCellAnchor*>(poResult);
-			int res = c_oSerConstants::ReadOk;
-			if(c_oSer_DrawingType::Chart2 == type)
-			{
-				//создаем папку для rels
-                OOX::CPath pathChartsDir = m_sDestinationDir + FILE_SEPARATOR_STR  + _T("xl")  + FILE_SEPARATOR_STR + _T("charts");
-				OOX::CSystemUtility::CreateDirectories(pathChartsDir.GetPath());
-
-                OOX::CPath pathChartsRelsDir = pathChartsDir + FILE_SEPARATOR_STR  + _T("_rels");
-				OOX::CSystemUtility::CreateDirectories(pathChartsRelsDir.GetPath());
-				
-				m_pOfficeDrawingConverter->SetDstContentRels();
-
-				OOX::Spreadsheet::CChartSpace* pChartSpace = new OOX::Spreadsheet::CChartSpace();
-				BinaryChartReader oBinaryChartReader(m_oBufferedStream, m_oSaveParams, m_pOfficeDrawingConverter);
-				oBinaryChartReader.ReadCT_ChartSpace(length, &pChartSpace->m_oChartSpace);
-				
-				NSCommon::smart_ptr<OOX::File> pChartFile(pChartSpace);
-				pChartFile->m_bDoNotAddRels = true;
-				m_pCurDrawing->Add(pChartFile);
-
-				OOX::CPath pathChartsRels = pathChartsRelsDir.GetPath() + FILE_SEPARATOR_STR + pChartFile->m_sOutputFilename + _T(".rels");
-				m_pOfficeDrawingConverter->SaveDstContentRels(pathChartsRels.GetPath());
-
-				long rId;
-				CString sNewImgRel;
-				sNewImgRel.Format(_T("../charts/%ls"), pChartFile->m_sOutputFilename);
-				m_pOfficeDrawingConverter->WriteRels(CString(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart")), sNewImgRel, CString(), &rId);
-				CString sNewRid;
-				sNewRid.Format(_T("rId%d"), rId);
-
-				pCellAnchor->m_oGraphicFrame.Init();
-				pCellAnchor->m_oGraphicFrame->m_oChartGraphic.Init();
-				pCellAnchor->m_oGraphicFrame->m_oChartGraphic->m_oGraphicData.Init();
-				pCellAnchor->m_oGraphicFrame->m_oChartGraphic->m_oGraphicData->m_oChart.Init();
-				pCellAnchor->m_oGraphicFrame->m_oChartGraphic->m_oGraphicData->m_oChart->m_oRId.Init();
-				pCellAnchor->m_oGraphicFrame->m_oChartGraphic->m_oGraphicData->m_oChart->m_oRId->SetValue(sNewRid);
-			}
-			else if(c_oSer_DrawingType::ObjectName == type)
-			{
-				CString sName(m_oBufferedStream.GetString3(length));
-				if (pCellAnchor->m_oGraphicFrame.IsInit())
-				{
-					pCellAnchor->m_oGraphicFrame->m_oNvGraphicFramePr.Init();
-					pCellAnchor->m_oGraphicFrame->m_oNvGraphicFramePr->m_oCNvPr.Init();
-					pCellAnchor->m_oGraphicFrame->m_oNvGraphicFramePr->m_oCNvPr->m_eType = OOX::et_xdr_cNvPr;
-					pCellAnchor->m_oGraphicFrame->m_oNvGraphicFramePr->m_oCNvPr->m_sName.Init();
-					pCellAnchor->m_oGraphicFrame->m_oNvGraphicFramePr->m_oCNvPr->m_sName->Append(sName);
-					pCellAnchor->m_oGraphicFrame->m_oNvGraphicFramePr->m_oCNvPr->m_oId.Init();
-					pCellAnchor->m_oGraphicFrame->m_oNvGraphicFramePr->m_oCNvPr->m_oId->SetValue(m_nNextObjectId++);
-					pCellAnchor->m_oGraphicFrame->m_oNvGraphicFramePr->m_oCNvGraphicFramePr.Init();
-
-				}
-			}		
 			else
 				res = c_oSerConstants::ReadUnknown;
 			return res;

@@ -1,3 +1,34 @@
+/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 #pragma once
 #ifndef OOX_LOGIC_DRAWING_COLORS_INCLUDE_H_
 #define OOX_LOGIC_DRAWING_COLORS_INCLUDE_H_
@@ -60,7 +91,7 @@ namespace OOX
 
 				void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 				{
-					// Читаем атрибуты
+					// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 					WritingElement_ReadAttributes_Start_No_NS( oReader )
 					WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
 					WritingElement_ReadAttributes_End( oReader )
@@ -115,7 +146,7 @@ namespace OOX
 
 				void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 				{
-					// Читаем атрибуты
+					// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 					WritingElement_ReadAttributes_Start_No_NS( oReader )
 					WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
 					WritingElement_ReadAttributes_End( oReader )
@@ -170,7 +201,7 @@ namespace OOX
 
 				void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 				{
-					// Читаем атрибуты
+					// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 					WritingElement_ReadAttributes_Start_No_NS( oReader )
 					WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
 					WritingElement_ReadAttributes_End( oReader )
@@ -225,7 +256,7 @@ namespace OOX
 
 				void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 				{
-					// Читаем атрибуты
+					// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 					WritingElement_ReadAttributes_Start_No_NS( oReader )
 					WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
 					WritingElement_ReadAttributes_End( oReader )
@@ -280,7 +311,7 @@ namespace OOX
 
 				void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 				{
-					// Читаем атрибуты
+					// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 					WritingElement_ReadAttributes_Start_No_NS( oReader )
 					WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
 					WritingElement_ReadAttributes_End( oReader )
@@ -335,7 +366,7 @@ namespace OOX
 
 				void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 				{
-					// Читаем атрибуты
+					// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 					WritingElement_ReadAttributes_Start_No_NS( oReader )
 					WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
 					WritingElement_ReadAttributes_End( oReader )
@@ -498,7 +529,7 @@ namespace OOX
 
 				void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 				{
-					// Читаем атрибуты
+					// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 					WritingElement_ReadAttributes_Start_No_NS( oReader )
 					WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
 					WritingElement_ReadAttributes_End( oReader )
@@ -553,7 +584,7 @@ namespace OOX
 
 				void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 				{
-					// Читаем атрибуты
+					// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 					WritingElement_ReadAttributes_Start_No_NS( oReader )
 					WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
 					WritingElement_ReadAttributes_End( oReader )
@@ -608,7 +639,7 @@ namespace OOX
 
 				void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 				{
-					// Читаем атрибуты
+					// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 					WritingElement_ReadAttributes_Start_No_NS( oReader )
 					WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
 					WritingElement_ReadAttributes_End( oReader )
@@ -663,7 +694,7 @@ namespace OOX
 
 				void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 				{
-					// Читаем атрибуты
+					// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 					WritingElement_ReadAttributes_Start_No_NS( oReader )
 					WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
 					WritingElement_ReadAttributes_End( oReader )
@@ -718,7 +749,7 @@ namespace OOX
 
 				void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 				{
-					// Читаем атрибуты
+					// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 					WritingElement_ReadAttributes_Start_No_NS( oReader )
 					WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
 					WritingElement_ReadAttributes_End( oReader )
@@ -773,7 +804,7 @@ namespace OOX
 
 				void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 				{
-					// Читаем атрибуты
+					// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 					WritingElement_ReadAttributes_Start_No_NS( oReader )
 					WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
 					WritingElement_ReadAttributes_End( oReader )
@@ -900,7 +931,7 @@ namespace OOX
 
 				void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 				{
-					// Читаем атрибуты
+					// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 					WritingElement_ReadAttributes_Start_No_NS( oReader )
 					WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
 					WritingElement_ReadAttributes_End( oReader )
@@ -955,7 +986,7 @@ namespace OOX
 
 				void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 				{
-					// Читаем атрибуты
+					// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 					WritingElement_ReadAttributes_Start_No_NS( oReader )
 					WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
 					WritingElement_ReadAttributes_End( oReader )
@@ -1010,7 +1041,7 @@ namespace OOX
 
 				void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 				{
-					// Читаем атрибуты
+					// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 					WritingElement_ReadAttributes_Start_No_NS( oReader )
 					WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
 					WritingElement_ReadAttributes_End( oReader )
@@ -1065,7 +1096,7 @@ namespace OOX
 
 				void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 				{
-					// Читаем атрибуты
+					// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 					WritingElement_ReadAttributes_Start_No_NS( oReader )
 					WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
 					WritingElement_ReadAttributes_End( oReader )
@@ -1120,7 +1151,7 @@ namespace OOX
 
 				void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 				{
-					// Читаем атрибуты
+					// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 					WritingElement_ReadAttributes_Start_No_NS( oReader )
 					WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
 					WritingElement_ReadAttributes_End( oReader )
@@ -1175,7 +1206,7 @@ namespace OOX
 
 				void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 				{
-					// Читаем атрибуты
+					// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 					WritingElement_ReadAttributes_Start_No_NS( oReader )
 					WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
 					WritingElement_ReadAttributes_End( oReader )
@@ -1230,7 +1261,7 @@ namespace OOX
 
 				void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 				{
-					// Читаем атрибуты
+					// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 					WritingElement_ReadAttributes_Start_No_NS( oReader )
 					WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
 					WritingElement_ReadAttributes_End( oReader )
@@ -1285,7 +1316,7 @@ namespace OOX
 
 				void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 				{
-					// Читаем атрибуты
+					// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 					WritingElement_ReadAttributes_Start_No_NS( oReader )
 					WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
 					WritingElement_ReadAttributes_End( oReader )
@@ -1340,7 +1371,7 @@ namespace OOX
 
 				void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 				{
-					// Читаем атрибуты
+					// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 					WritingElement_ReadAttributes_Start_No_NS( oReader )
 					WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
 					WritingElement_ReadAttributes_End( oReader )
@@ -1395,7 +1426,7 @@ namespace OOX
 
 				void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 				{
-					// Читаем атрибуты
+					// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 					WritingElement_ReadAttributes_Start_No_NS( oReader )
 					WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
 					WritingElement_ReadAttributes_End( oReader )
@@ -1450,7 +1481,7 @@ namespace OOX
 
 				void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 				{
-					// Читаем атрибуты
+					// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 					WritingElement_ReadAttributes_Start_No_NS( oReader )
 					WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
 					WritingElement_ReadAttributes_End( oReader )
@@ -1489,7 +1520,7 @@ namespace OOX
 
 				virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 				{
-					// TO DO: Реализовать
+					// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ
 				}
 				virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 				{
@@ -1628,7 +1659,7 @@ namespace OOX
 					m_unRawB = m_unB;
 					m_unRawA = m_unA;
 
-					// Применяем преобразования к цвету
+					// РџСЂРёРјРµРЅСЏРµРј РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏ Рє С†РІРµС‚Сѓ
 
                     unsigned int nCount = m_arrTransform.size();
 					for (unsigned  int nIndex = 0; nIndex < nCount; ++nIndex )
@@ -1721,12 +1752,12 @@ namespace OOX
 							}
 						case et_a_gamma:
 							{
-								// TO DO: Сделать
+								// TO DO: РЎРґРµР»Р°С‚СЊ
 								break;
 							}
 						case et_a_gray:
 							{
-								// TO DO: Сделать
+								// TO DO: РЎРґРµР»Р°С‚СЊ
 								break;
 							}
 						case et_a_green:
@@ -1813,7 +1844,7 @@ namespace OOX
 							}
 						case et_a_invGamma:
 							{
-								// TO DO: сделать
+								// TO DO: СЃРґРµР»Р°С‚СЊ
 								break;
 							}
 						case et_a_lum:
@@ -2031,12 +2062,12 @@ namespace OOX
 			public:
 
 				unsigned char m_unRawA; //
-				unsigned char m_unRawR; // Исходный цвет 
+				unsigned char m_unRawR; // РСЃС…РѕРґРЅС‹Р№ С†РІРµС‚
 				unsigned char m_unRawG; //
 				unsigned char m_unRawB; //
 
 				unsigned char m_unA; //
-				unsigned char m_unR; // Цвет после преобразований
+				unsigned char m_unR; // Г·РІРµС‚ РїРѕСЃР»Рµ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёР№
 				unsigned char m_unG; //
 				unsigned char m_unB; //
 
@@ -2072,7 +2103,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -2106,7 +2137,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start_No_NS( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("hue"), m_oHue )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("lum"), m_oLum )
@@ -2140,7 +2171,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -2174,7 +2205,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start_No_NS( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
 				WritingElement_ReadAttributes_End( oReader )
@@ -2203,7 +2234,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -2211,7 +2242,7 @@ namespace OOX
 
 				CColorTransform::fromXML( oReader );
 
-				// TO DO: Тут надо как-то получить информацию о темах
+				// TO DO: TСѓС‚ РЅР°РґРѕ РєР°Рє-С‚Рѕ РїРѕР»СѓС‡РёС‚СЊ РёРЅС„РѕСЂРјР°С†РёСЋ Рѕ С‚РµРјР°С…
 
 				SetRGBA( 0, 0, 0 );
 			}
@@ -2235,7 +2266,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start_No_NS( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
 				WritingElement_ReadAttributes_End( oReader )
@@ -2264,7 +2295,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -2302,7 +2333,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start_No_NS( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("b"), m_oB )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("g"), m_oG )
@@ -2335,7 +2366,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -2369,7 +2400,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start_No_NS( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
 				WritingElement_ReadAttributes_End( oReader )
@@ -2398,7 +2429,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -2432,7 +2463,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				// Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 				WritingElement_ReadAttributes_Start_No_NS( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("lastClr"), m_oLastClr )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("val"),     m_oVal )
@@ -2473,7 +2504,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать
+				// TO DO: Р РµР°Р»РёР·РѕРІР°С‚СЊ
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{

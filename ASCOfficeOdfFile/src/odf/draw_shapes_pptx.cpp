@@ -1,3 +1,34 @@
+/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 
 #include "draw_common.h"
 #include "datatypes/custom_shape_types_convert.h"
@@ -88,14 +119,14 @@ void draw_shape::common_pptx_convert(oox::pptx_conversion_context & Context)
 	odf_reader::style_instance* baseStyleInst = 
 		Context.root()->odf_context().styleContainer().style_by_name(baseStyleName, odf_types::style_family::Presentation,Context.process_masters_);
 
-	if (baseStyleInst)//векторная фигура презентаций
+	if (baseStyleInst)//РІРµРєС‚РѕСЂРЅР°СЏ С„РёРіСѓСЂР° РїСЂРµР·РµРЅС‚Р°С†РёР№
 	{
 		style_instance * defaultStyle = Context.root()->odf_context().styleContainer().style_default_by_type(odf_types::style_family::Presentation);
 		if (defaultStyle)instances.push_back(defaultStyle);
 
 		instances.push_back(baseStyleInst);
 	}
-	else if (grStyleInst)//обычная векторная фигура
+	else if (grStyleInst)//РѕР±С‹С‡РЅР°СЏ РІРµРєС‚РѕСЂРЅР°СЏ С„РёРіСѓСЂР°
 	{		
 		style_instance * defaultStyle = Context.root()->odf_context().styleContainer().style_default_by_type(odf_types::style_family::Graphic);
 		if (defaultStyle)instances.push_back(defaultStyle);
@@ -217,7 +248,7 @@ void draw_caption::pptx_convert(oox::pptx_conversion_context & Context)
 {
 	//const std::wstring style = common_draw_text_style_name_attlist_.draw_text_style_name_.get_value_or(style_ref(L"")).style_name();
 
-	Context.get_slide_context().start_shape(sub_type_);//rect с наваротами-атрибутами .. а-ля TextBox
+	Context.get_slide_context().start_shape(sub_type_);//rect СЃ РЅР°РІР°СЂРѕС‚Р°РјРё-Р°С‚СЂРёР±СѓС‚Р°РјРё .. Р°-Р»СЏ TextBox
 	
 	common_pptx_convert(Context);
 
@@ -262,7 +293,7 @@ void draw_connector::pptx_convert(oox::pptx_conversion_context & Context)
 
 	common_pptx_convert(Context);
 	
-//перебъем заливку .. 
+//РїРµСЂРµР±СЉРµРј Р·Р°Р»РёРІРєСѓ .. 
 	oox::_oox_fill fill;
 	fill.type = 0;
 	Context.get_slide_context().set_fill(fill);

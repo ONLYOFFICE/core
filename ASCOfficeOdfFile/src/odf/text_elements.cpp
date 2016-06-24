@@ -1,3 +1,34 @@
+/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 
 #include "text_elements.h"
 
@@ -90,15 +121,15 @@ void process_paragraph_drop_cap_attr(const paragraph_attrs & Attr, oox::docx_con
 	Context.get_drop_cap_context().Scale = style_drop_cap_->style_lines_;
 	
 	if (style_drop_cap_->style_distance_)
-		Context.get_drop_cap_context().Space = (int)(20.0 * (style_drop_cap_->style_distance_->get_value_unit(length::pt) + 5)+ 0.5);//формула ачуметь !! - подбор вручную
+		Context.get_drop_cap_context().Space = (int)(20.0 * (style_drop_cap_->style_distance_->get_value_unit(length::pt) + 5)+ 0.5);//С„РѕСЂРјСѓР»Р° Р°С‡СѓРјРµС‚СЊ !! - РїРѕРґР±РѕСЂ РІСЂСѓС‡РЅСѓСЋ
 
-	//font size пощитаем здесь .. так как его значение нужо в стиле параграфа (межстрочный интервал) - в (pt*20)
+	//font size РїРѕС‰РёС‚Р°РµРј Р·РґРµСЃСЊ .. С‚Р°Рє РєР°Рє РµРіРѕ Р·РЅР°С‡РµРЅРёРµ РЅСѓР¶Рѕ РІ СЃС‚РёР»Рµ РїР°СЂР°РіСЂР°С„Р° (РјРµР¶СЃС‚СЂРѕС‡РЅС‹Р№ РёРЅС‚РµСЂРІР°Р») - РІ (pt*20)
 	style_text_properties * text_properties = styleContent->get_style_text_properties();
 	if ((text_properties) && (text_properties->content().fo_font_size_))
 	{
 		Context.get_drop_cap_context().FontSize = styleContent->get_style_text_properties()->content().process_font_size(
 				text_properties->content().fo_font_size_, Context.get_styles_context().get_current_processed_style(),false,
-					 7.25 * (Context.get_drop_cap_context().Scale + (Context.get_drop_cap_context().Scale-1) * 0.7));//формула ачуметь !! - подбор вручную
+					 7.25 * (Context.get_drop_cap_context().Scale + (Context.get_drop_cap_context().Scale-1) * 0.7));//С„РѕСЂРјСѓР»Р° Р°С‡СѓРјРµС‚СЊ !! - РїРѕРґР±РѕСЂ РІСЂСѓС‡РЅСѓСЋ
 	}
 	return;
 }
@@ -124,7 +155,7 @@ int process_paragraph_attr(const paragraph_attrs & Attr, oox::docx_conversion_co
 
                     Context.start_automatic_style(id);
 					
-					{//вытаскивает rtl c цепочки стилей !! - просто прописать в наследуемом НЕЛЬЗЯ !!
+					{//РІС‹С‚Р°СЃРєРёРІР°РµС‚ rtl c С†РµРїРѕС‡РєРё СЃС‚РёР»РµР№ !! - РїСЂРѕСЃС‚Рѕ РїСЂРѕРїРёСЃР°С‚СЊ РІ РЅР°СЃР»РµРґСѓРµРјРѕРј РќР•Р›Р¬Р—СЏ !!
 						paragraph_format_properties properties = calc_paragraph_properties_content(styleInst);
 
  						if (properties.style_writing_mode_)
@@ -215,14 +246,14 @@ void paragraph::add_text(const std::wstring & Text)
 
 void paragraph::afterCreate(document_context * Context)
 {
-    // вызывается сразу после создания объекта
+    // РІС‹Р·С‹РІР°РµС‚СЃСЏ СЃСЂР°Р·Сѓ РїРѕСЃР»Рµ СЃРѕР·РґР°РЅРёСЏ РѕР±СЉРµРєС‚Р°
     if (Context)
     {
-        // выставляем у предыдущего параграфа указатель на следующий (т.е. на вновь созданный)
+        // РІС‹СЃС‚Р°РІР»СЏРµРј Сѓ РїСЂРµРґС‹РґСѓС‰РµРіРѕ РїР°СЂР°РіСЂР°С„Р° СѓРєР°Р·Р°С‚РµР»СЊ РЅР° СЃР»РµРґСѓСЋС‰РёР№ (С‚.Рµ. РЅР° РІРЅРѕРІСЊ СЃРѕР·РґР°РЅРЅС‹Р№)
         if (paragraph * prevPar = Context->get_last_paragraph())
             prevPar->set_next(this);
         
-        // запоминаем в контексте вновь созданный параграф
+        // Р·Р°РїРѕРјРёРЅР°РµРј РІ РєРѕРЅС‚РµРєСЃС‚Рµ РІРЅРѕРІСЊ СЃРѕР·РґР°РЅРЅС‹Р№ РїР°СЂР°РіСЂР°С„
         Context->set_last_paragraph(this);
     }
 }
@@ -249,8 +280,8 @@ void paragraph::drop_cap_text_docx_convert(office_element_ptr first_text_element
 	int str_start = Context.get_drop_cap_context().Length;
 	int str_size = store_str.length()-Context.get_drop_cap_context().Length;
 
-	if (str_size <0) str_size = 0;										// это если на буквы в буквице разные стили
-	if (str_start > store_str.length()) str_start = store_str.length(); // это если на буквы в буквице разные стили
+	if (str_size <0) str_size = 0;										// СЌС‚Рѕ РµСЃР»Рё РЅР° Р±СѓРєРІС‹ РІ Р±СѓРєРІРёС†Рµ СЂР°Р·РЅС‹Рµ СЃС‚РёР»Рё
+	if (str_start > store_str.length()) str_start = store_str.length(); // СЌС‚Рѕ РµСЃР»Рё РЅР° Р±СѓРєРІС‹ РІ Р±СѓРєРІРёС†Рµ СЂР°Р·РЅС‹Рµ СЃС‚РёР»Рё
 
 	str=store_str.substr(str_start, str_size);
 }
@@ -258,7 +289,7 @@ void paragraph::drop_cap_docx_convert(oox::docx_conversion_context & Context)
 {
 	if ( paragraph_content_.size()<1)return;
 
-	//в рассчет берутся только первые элементы !!! разные там break-и отменяют реэжим drop_cap!!- todooo сделать возможным множественным span
+	//РІ СЂР°СЃСЃС‡РµС‚ Р±РµСЂСѓС‚СЃСЏ С‚РѕР»СЊРєРѕ РїРµСЂРІС‹Рµ СЌР»РµРјРµРЅС‚С‹ !!! СЂР°Р·РЅС‹Рµ С‚Р°Рј break-Рё РѕС‚РјРµРЅСЏСЋС‚ СЂРµСЌР¶РёРј drop_cap!!- todooo СЃРґРµР»Р°С‚СЊ РІРѕР·РјРѕР¶РЅС‹Рј РјРЅРѕР¶РµСЃС‚РІРµРЅРЅС‹Рј span
 	if ( paragraph_content_[0]->get_type() == typeTextText)
 	{
 		drop_cap_text_docx_convert(paragraph_content_[0],Context);
@@ -284,7 +315,7 @@ void paragraph::drop_cap_docx_convert(oox::docx_conversion_context & Context)
 				}
 			}
 		}
-		//в рассчет берутся только первые элементы !!! разные там break-и отменяют реэжим drop_cap!!
+		//РІ СЂР°СЃСЃС‡РµС‚ Р±РµСЂСѓС‚СЃСЏ С‚РѕР»СЊРєРѕ РїРµСЂРІС‹Рµ СЌР»РµРјРµРЅС‚С‹ !!! СЂР°Р·РЅС‹Рµ С‚Р°Рј break-Рё РѕС‚РјРµРЅСЏСЋС‚ СЂРµСЌР¶РёРј drop_cap!!
 		if ((first_span_in_paragraph->paragraph_content_.size()>0) &&
 			 (first_span_in_paragraph->paragraph_content_[0]->get_type() == typeTextText))
 			drop_cap_text_docx_convert(first_span_in_paragraph->paragraph_content_[0],Context);
@@ -300,7 +331,7 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
 	}
 				
 	if (Context.get_paragraph_state() && (Context.get_process_note() == oox::docx_conversion_context::noNote) && !drawing )
-    {//вложеннные элементы
+    {//РІР»РѕР¶РµРЅРЅРЅС‹Рµ СЌР»РµРјРµРЅС‚С‹
 		if (paragraph_content_.size()==0)
 		{
 			Context.output_stream() << L"<w:p>";
@@ -323,10 +354,10 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
 
     if (next_par_)
     {
-        // проверяем не сменит ли следующий параграф свойства страницы. 
-        // если да — устанавливаем контексту флаг на то что необходимо в конце текущего параграфа 
-        // распечатать свойства секции
-		//проверить ... не она ли основная - может быть прописан дубляж - и тогда разрыв нарисуется ненужный
+        // РїСЂРѕРІРµСЂСЏРµРј РЅРµ СЃРјРµРЅРёС‚ Р»Рё СЃР»РµРґСѓСЋС‰РёР№ РїР°СЂР°РіСЂР°С„ СЃРІРѕР№СЃС‚РІР° СЃС‚СЂР°РЅРёС†С‹.
+        // РµСЃР»Рё РґР° Р§ СѓСЃС‚Р°РЅР°РІР»РёРІР°РµРј РєРѕРЅС‚РµРєСЃС‚Сѓ С„Р»Р°Рі РЅР° С‚Рѕ С‡С‚Рѕ РЅРµРѕР±С…РѕРґРёРјРѕ РІ РєРѕРЅС†Рµ С‚РµРєСѓС‰РµРіРѕ РїР°СЂР°РіСЂР°С„Р° 
+        // СЂР°СЃРїРµС‡Р°С‚Р°С‚СЊ СЃРІРѕР№СЃС‚РІР° СЃРµРєС†РёРё
+		//РїСЂРѕРІРµСЂРёС‚СЊ ... РЅРµ РѕРЅР° Р»Рё РѕСЃРЅРѕРІРЅР°СЏ - РјРѕР¶РµС‚ Р±С‹С‚СЊ РїСЂРѕРїРёСЃР°РЅ РґСѓР±Р»СЏР¶ - Рё С‚РѕРіРґР° СЂР°Р·СЂС‹РІ РЅР°СЂРёСЃСѓРµС‚СЃСЏ РЅРµРЅСѓР¶РЅС‹Р№
         const std::wstring & styleName = next_par_->paragraph_attrs_.text_style_name_.style_name();
         const std::wstring masterPageName = Context.root()->odf_context().styleContainer().master_page_name_by_name(styleName);
 
@@ -399,8 +430,8 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
 
     Context.finish_run();
 
-    // конвертируем в контексте параграфа элементы, которые были помещены в очередь
-	if (!Context.delayed_converting_)//иначе возможно зацикливание
+    // РєРѕРЅРІРµСЂС‚РёСЂСѓРµРј РІ РєРѕРЅС‚РµРєСЃС‚Рµ РїР°СЂР°РіСЂР°С„Р° СЌР»РµРјРµРЅС‚С‹, РєРѕС‚РѕСЂС‹Рµ Р±С‹Р»Рё РїРѕРјРµС‰РµРЅС‹ РІ РѕС‡РµСЂРµРґСЊ
+	if (!Context.delayed_converting_)//РёРЅР°С‡Рµ РІРѕР·РјРѕР¶РЅРѕ Р·Р°С†РёРєР»РёРІР°РЅРёРµ
 	{
 		Context.docx_convert_delayed();
 	}

@@ -1,3 +1,34 @@
+/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 #pragma once
 #ifndef OOX_RID_INCLUDE_H_
 #define OOX_RID_INCLUDE_H_
@@ -33,8 +64,8 @@ namespace OOX
 		//}		
 		const RId& operator= (const CString& rid)
 		{
-			//Ó÷èòûâàåò òîëüêî rid íà÷èíàþùèåñÿ ñ rId, îñòàëüíûå ñîõðàíÿåì òàê êàê åñòü
-			//Òîãäà íå áóäåò ïðîáëåì ñ äîáàâëåíèå íîâûé id, ìû âñåãäà áóäåì ãåíåðèðîâàòü èõ ñ ïðåôèêñîì rId
+			//Ð£Ñ‡Ð¸Ñ‚Ñ‹Ð²Ð°ÐµÑ‚ Ñ‚Ð¾Ð»ÑŒÐºÐ¾ rid Ð½Ð°Ñ‡Ð¸Ð½Ð°ÑŽÑ‰Ð¸ÐµÑÑ Ñ rId, Ð¾ÑÑ‚Ð°Ð»ÑŒÐ½Ñ‹Ðµ ÑÐ¾Ñ…Ñ€Ð°Ð½ÑÐµÐ¼ Ñ‚Ð°Ðº ÐºÐ°Ðº ÐµÑÑ‚ÑŒ
+			//TÐ¾Ð³Ð´Ð° Ð½Ðµ Ð±ÑƒÐ´ÐµÑ‚ Ð¿Ñ€Ð¾Ð±Ð»ÐµÐ¼ Ñ Ð´Ð¾Ð±Ð°Ð²Ð»ÐµÐ½Ð¸Ðµ Ð½Ð¾Ð²Ñ‹Ð¹ id, Ð¼Ñ‹ Ð²ÑÐµÐ³Ð´Ð° Ð±ÑƒÐ´ÐµÐ¼ Ð³ÐµÐ½ÐµÑ€Ð¸Ñ€Ð¾Ð²Ð°Ñ‚ÑŒ Ð¸Ñ… Ñ Ð¿Ñ€ÐµÑ„Ð¸ÐºÑÐ¾Ð¼ rId
 			CString sFindString(_T("rId"));
 			int nFindStringLength = sFindString.GetLength();
 			if(0 == rid.Find(sFindString) && rid.GetLength() > nFindStringLength && 0 != isdigit(rid[nFindStringLength]))

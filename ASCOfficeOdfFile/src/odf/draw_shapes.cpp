@@ -1,3 +1,34 @@
+/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 
 #include "draw_shapes.h"
 #include "datatypes/custom_shape_types_convert.h"
@@ -43,7 +74,7 @@ void draw_shape::add_child_element( xml::sax * Reader, const ::std::wstring & Ns
 }
 void draw_shape::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-	CP_APPLY_ATTR(L"draw:id",			draw_id_);//или сюда draw_shape_attlist_???
+	CP_APPLY_ATTR(L"draw:id",			draw_id_);//РёР»Рё СЃСЋРґР° draw_shape_attlist_???
 	
 	common_draw_attlists_.shape_with_text_and_styles_.add_attributes(Attributes);
     common_draw_attlists_.position_.add_attributes(Attributes);
@@ -223,7 +254,7 @@ void draw_path::reset_svg_path()
 		}
 		if (o_Polyline_pt.size()>0)
 		{
-			//сформируем xml-oox сдесь ... а то придется плодить массивы в drawing .. хоть и не красиво..
+			//СЃС„РѕСЂРјРёСЂСѓРµРј xml-oox СЃРґРµСЃСЊ ... Р° С‚Рѕ РїСЂРёРґРµС‚СЃСЏ РїР»РѕРґРёС‚СЊ РјР°СЃСЃРёРІС‹ РІ drawing .. С…РѕС‚СЊ Рё РЅРµ РєСЂР°СЃРёРІРѕ..
 			std::wstringstream output_;   
             svg_path::oox_serialize(output_, o_Polyline_pt);
 			additional_.push_back(odf_reader::_property(L"custom_path",output_.str()));
@@ -279,7 +310,7 @@ void draw_polygon::reset_polygon_path()
 		}
 		if (o_Polyline_pt.size()>0)
 		{
-			//сформируем xml-oox сдесь ... а то придется плодить массивы в drawing .. хоть и не красиво..
+			//СЃС„РѕСЂРјРёСЂСѓРµРј xml-oox СЃРґРµСЃСЊ ... Р° С‚Рѕ РїСЂРёРґРµС‚СЃСЏ РїР»РѕРґРёС‚СЊ РјР°СЃСЃРёРІС‹ РІ drawing .. С…РѕС‚СЊ Рё РЅРµ РєСЂР°СЃРёРІРѕ..
 			std::wstringstream output_;   
             svg_path::oox_serialize(output_, o_Polyline_pt);
 			additional_.push_back(odf_reader::_property(L"custom_path",output_.str()));
@@ -322,7 +353,7 @@ void draw_polyline::reset_polyline_path()
 			{
 				if (poly.points[i].x)
 				{
-					if (!start_x)//вообщето это не верно .. но из за разных точек осей поворота фигура может "улететь"
+					if (!start_x)//РІРѕРѕР±С‰РµС‚Рѕ СЌС‚Рѕ РЅРµ РІРµСЂРЅРѕ .. РЅРѕ РёР· Р·Р° СЂР°Р·РЅС‹С… С‚РѕС‡РµРє РѕСЃРµР№ РїРѕРІРѕСЂРѕС‚Р° С„РёРіСѓСЂР° РјРѕР¶РµС‚ "СѓР»РµС‚РµС‚СЊ"
 						start_x = length(poly.points[i].x.get()/1000.,length::cm).get_value_unit(length::emu); 
 					poly.points[i].x =  length(poly.points[i].x.get()/1000.,length::cm).get_value_unit(length::emu);// - *start_x; 
 				}
@@ -337,7 +368,7 @@ void draw_polyline::reset_polyline_path()
 		}
 		if (o_Polyline_pt.size()>0)
 		{
-			//сформируем xml-oox сдесь ... а то придется плодить массивы в drawing .. хоть и не красиво..
+			//СЃС„РѕСЂРјРёСЂСѓРµРј xml-oox СЃРґРµСЃСЊ ... Р° С‚Рѕ РїСЂРёРґРµС‚СЃСЏ РїР»РѕРґРёС‚СЊ РјР°СЃСЃРёРІС‹ РІ drawing .. С…РѕС‚СЊ Рё РЅРµ РєСЂР°СЃРёРІРѕ..
 			std::wstringstream output_;   
             svg_path::oox_serialize(output_, o_Polyline_pt);
 			additional_.push_back(odf_reader::_property(L"custom_path",output_.str()));
@@ -495,7 +526,7 @@ void draw_enhanced_geometry::find_draw_type_oox()
 		
 		try
 		{
-			min = parsing(handle->draw_handle_attlist_.draw_handle_range_y_minimum_);//пока статик .. и выдается только цыфровое значение
+			min = parsing(handle->draw_handle_attlist_.draw_handle_range_y_minimum_);//РїРѕРєР° СЃС‚Р°С‚РёРє .. Рё РІС‹РґР°РµС‚СЃСЏ С‚РѕР»СЊРєРѕ С†С‹С„СЂРѕРІРѕРµ Р·РЅР°С‡РµРЅРёРµ
 			if (min<0)min =parsing(handle->draw_handle_attlist_.draw_handle_range_x_minimum_);
 			if (min<0)min = parsing(handle->draw_handle_attlist_.draw_handle_radius_range_minimum_);
 		}
@@ -553,7 +584,7 @@ void draw_connector::add_attributes( const xml::attributes_wc_ptr & Attributes )
     draw_line_attlist_.add_attributes(Attributes);
 	draw_shape::add_attributes(Attributes);
 
-	sub_type_ = 5; //коннектор - линия, если ломаная (ниже определяется) - то путь
+	sub_type_ = 5; //РєРѕРЅРЅРµРєС‚РѕСЂ - Р»РёРЅРёСЏ, РµСЃР»Рё Р»РѕРјР°РЅР°СЏ (РЅРёР¶Рµ РѕРїСЂРµРґРµР»СЏРµС‚СЃСЏ) - С‚Рѕ РїСѓС‚СЊ
 	
 }
 void draw_connector::reset_svg_path()
@@ -586,7 +617,7 @@ void draw_connector::reset_svg_path()
 		if (o_Polyline_pt.size()>0)
 		{
 			sub_type_ = 6;
-			//сформируем xml-oox сдесь ... а то придется плодить массивы в drawing .. хоть и не красиво..
+			//СЃС„РѕСЂРјРёСЂСѓРµРј xml-oox СЃРґРµСЃСЊ ... Р° С‚Рѕ РїСЂРёРґРµС‚СЃСЏ РїР»РѕРґРёС‚СЊ РјР°СЃСЃРёРІС‹ РІ drawing .. С…РѕС‚СЊ Рё РЅРµ РєСЂР°СЃРёРІРѕ..
 			std::wstringstream output_;   
             svg_path::oox_serialize(output_, o_Polyline_pt);
 			additional_.push_back(odf_reader::_property(L"custom_path",output_.str()));

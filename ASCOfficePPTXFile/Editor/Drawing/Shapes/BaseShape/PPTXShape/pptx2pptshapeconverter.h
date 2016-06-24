@@ -1,3 +1,34 @@
+/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 #pragma once
 #include "Formula.h"
 #include "../Path.h"
@@ -91,7 +122,7 @@ namespace NSGuidesVML
 				ConvertGuides ( pPPTXShape->FManager.strGuides, pPPTXShape->FManager.mapGuides);
 				ConvertPath( pPPTXShape->m_strPath, pPPTXShape->FManager.strGuides, pPPTXShape->FManager.mapGuides);
 
-				//TODO текстовые поля
+				//TODO С‚РµРєСЃС‚РѕРІС‹Рµ РїРѕР»СЏ
 				//ConvertTextRects ( pPPTXShape->m_arStringTextRects );
 				ConvertHandles ( pPPTXShape->m_arHandles );
 				
@@ -106,7 +137,7 @@ namespace NSGuidesVML
 				for (int nIndex=0; nIndex<arHnd.size(); nIndex++)
 				{
 					CHandle_ oHandle;
-					//TODO переименовать названия формул и прокинуть текстовые атрибуты topleft, rightbottom в полях хендла
+					//TODO РїРµСЂРµРёРјРµРЅРѕРІР°С‚СЊ РЅР°Р·РІР°РЅРёСЏ С„РѕСЂРјСѓР» Рё РїСЂРѕРєРёРЅСѓС‚СЊ С‚РµРєСЃС‚РѕРІС‹Рµ Р°С‚СЂРёР±СѓС‚С‹ topleft, rightbottom РІ РїРѕР»СЏС… С…РµРЅРґР»Р°
 
 					pPPTShape->m_arHandles.push_back(oHandle);
 				}
@@ -122,8 +153,8 @@ namespace NSGuidesVML
 					m_arMapAdj.insert(std::pair<CString, LONG>(pPair->first, ++m_lIndexAdj));
 					pPPTShape->m_arAdjustments.push_back(arAdj[i]);
 				}
-				//это аджасменты для перевода углов  tan(angle, adj)
-				//тк все угла в формулах считаются в pptx
+				//СЌС‚Рѕ Р°РґР¶Р°СЃРјРµРЅС‚С‹ РґР»СЏ РїРµСЂРµРІРѕРґР° СѓРіР»РѕРІ  tan(angle, adj)
+				//С‚Рє РІСЃРµ СѓРіР»Р° РІ С„РѕСЂРјСѓР»Р°С… СЃС‡РёС‚Р°СЋС‚СЃСЏ РІ pptx
 				//pptx->ppt
 				pPPTShape->m_arAdjustments.push_back(3114601);
 				m_lPPTX2PPT = ++m_lIndexAdj;
@@ -155,7 +186,7 @@ namespace NSGuidesVML
 
 			void AddSizeGuides (LONG lWidth, LONG lHeight)
 			{
-				//TODO прокинуть w и h в формулах
+				//TODO РїСЂРѕРєРёРЅСѓС‚СЊ w Рё h РІ С„РѕСЂРјСѓР»Р°С…
 				NSGuidesVML::CFormula pNewFmla3;
 				pNewFmla3.m_eFormulaType = ftVal;
 				pNewFmla3.m_lIndex = ++m_lIndexDst;
@@ -190,7 +221,7 @@ namespace NSGuidesVML
 				}				
 				else if (NumFmla == m_arMapFormula.end())
 				{
-					//пришло число
+					//РїСЂРёС€Р»Рѕ С‡РёСЃР»Рѕ
 					if (NumGuides == mapGuides.end())
 					{						
 						lVal = (LONG)XmlUtils::GetInteger(strParam);
@@ -209,7 +240,7 @@ namespace NSGuidesVML
 						else
 							eType = ptValue;
 					}
-					else //пришла стандартная формула из набора, которую надо теперь добавить
+					else //РїСЂРёС€Р»Р° СЃС‚Р°РЅРґР°СЂС‚РЅР°СЏ С„РѕСЂРјСѓР»Р° РёР· РЅР°Р±РѕСЂР°, РєРѕС‚РѕСЂСѓСЋ РЅР°РґРѕ С‚РµРїРµСЂСЊ РґРѕР±Р°РІРёС‚СЊ
 					{
 						LONG lNumGuides = NumGuides->second;
 
@@ -367,7 +398,7 @@ namespace NSGuidesVML
 
 			void ConvertGuides ( std::vector<NSGuidesOOXML::CFormula> &strGuides, std::map<CString, long> &mapGuides )
 			{
-				//стандартные формулы для пптх будем добавлять, если только они встретятся
+				//СЃС‚Р°РЅРґР°СЂС‚РЅС‹Рµ С„РѕСЂРјСѓР»С‹ РґР»СЏ РїРїС‚С… Р±СѓРґРµРј РґРѕР±Р°РІР»СЏС‚СЊ, РµСЃР»Рё С‚РѕР»СЊРєРѕ РѕРЅРё РІСЃС‚СЂРµС‚СЏС‚СЃСЏ
 				for (int nIndex=32; nIndex < strGuides.size(); ++nIndex)
 				{
 					NSGuidesOOXML::CFormula pFormula = strGuides[nIndex];
@@ -413,7 +444,7 @@ namespace NSGuidesVML
 									XmlUtils::CXmlNode node;
 									if(listNode.GetAt(j, node))
 									{										
-                                                                                bool bNum = false; //управляем запятыми
+                                                                                bool bNum = false; //СѓРїСЂР°РІР»СЏРµРј Р·Р°РїСЏС‚С‹РјРё
 
 										CString strName = node.GetName();
 										if (strName == _T("moveTo"))
@@ -449,7 +480,7 @@ namespace NSGuidesVML
 											//b
 											ConvertFmla( ftVal, lParam2, eType2);
 											LONG lstAng = m_lIndexDst-3, lswAng = m_lIndexDst-2, la = m_lIndexDst-1, lb = m_lIndexDst;
-											//радиус эллипса в stAng--------------------
+											//СЂР°РґРёСѓСЃ СЌР»Р»РёРїСЃР° РІ stAng--------------------
 											//(b*cos)^2
 											ConvertFmla( ftCos, m_lIndexDst, ptFormula, m_lIndexDst-3, ptFormula);
 											ConvertFmla( ftProduct, m_lIndexDst, ptFormula, m_lIndexDst, ptFormula, 1, ptValue);
@@ -472,7 +503,7 @@ namespace NSGuidesVML
 											//endAng
 											ConvertFmla( ftSum, lstAng, ptFormula, lswAng, ptFormula, 0, ptValue);
 
-											//радиус эллипса в endAng--------------------
+											//СЂР°РґРёСѓСЃ СЌР»Р»РёРїСЃР° РІ endAng--------------------
 											//(b*cos)^2
 											ConvertFmla( ftCos, lb, ptFormula, m_lIndexDst, ptFormula);
 											ConvertFmla( ftProduct, m_lIndexDst, ptFormula, m_lIndexDst, ptFormula, 1, ptValue);
@@ -564,7 +595,7 @@ namespace NSGuidesVML
 				if (NumAdj != m_arMapAdj.end())
 				{
 					eType = ptAdjust;
-					lVal = NumAdj->second; //индекс в map ???
+					lVal = NumAdj->second; //РёРЅРґРµРєСЃ РІ map ???
 				}				
 				else if (NumFmla == m_arMapFormula.end())
 				{

@@ -1,154 +1,60 @@
+/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 
-#include "xlsx_font.h"
 #include "xlsx_fonts.h"
+#include "xlsx_font.h"
+
+#include <cpdoccore/xml/simple_xml_writer.h>
+
 #include <boost/foreach.hpp>
 #include <boost/functional.hpp>
 #include <boost/unordered_set.hpp>
 
-#include "../odf/style_text_properties.h"
-
 namespace cpdoccore {
 namespace oox {
-
-namespace 
-{
-    const double kDefaultFontSize = 10.0;
-}
-
-
-namespace 
-{
-
-XlsxFontCharset GetXlsxFontCharset(const odf_reader::text_format_properties_content * textProp)
-{
-    // TODO
-    return XCHARSET_EMPTY;    
-}
-
-XlsxFontFamily GetXlsxFontFamily(const odf_reader::text_format_properties_content * textProp)
-{
-    // TODO
-    return XFAMILY_EMPTY;
-}
-
-xlsx_font OdfFont2XlsxFont(const odf_reader::text_format_properties_content * textProp,
-    const odf_reader::paragraph_format_properties * parProp,
-    const odf_reader::style_table_cell_properties_attlist * cellProp)
-{
-    xlsx_font font;
-    if (!textProp)
-        return font;
-
-    if (textProp->fo_font_weight_)
-    {
-        if (textProp->fo_font_weight_.get().get_type() == odf_types::font_weight::WBold)
-            font.bold = true;
-        else
-            font.bold = false;
-    }
-
-    if (textProp->fo_font_style_)
-    {
-        if (textProp->fo_font_style_.get().get_type() == odf_types::font_style::Italic)
-            font.i = true;
-        else
-            font.i = false;
-    }
-
-    XlsxFontCharset charset = GetXlsxFontCharset(textProp);
-    if (charset != XCHARSET_EMPTY)
-    {
-        font.charset = (unsigned int)charset;
-    }
-
-    XlsxFontFamily family = GetXlsxFontFamily(textProp);
-    if (family != XFAMILY_EMPTY)
-    {
-        font.family = family;
-    }
-
-    if (textProp->style_font_name_)
-    {
-        font.name = textProp->style_font_name_.get();            
-    }
-
-    if (textProp->fo_font_size_)
-    {
-        font.sz = textProp->fo_font_size_->get_length().get_value_unit(odf_types::length::pt);
-    }
-    else
-    {
-        font.sz = kDefaultFontSize;        
-    }
-
-    if (textProp->style_text_underline_type_ &&
-        textProp->style_text_underline_type_->get_type() != odf_types::line_type::Non ||
-    
-        textProp->style_text_underline_style_ &&
-        textProp->style_text_underline_style_->get_type() != odf_types::line_style::None        
-        )
-    {
-        if (textProp->style_text_underline_type_ &&
-            textProp->style_text_underline_type_->get_type() == odf_types::line_type::Double)
-            font.u = XUNDERLINE_DOUBLE;
-        else
-            font.u = XUNDERLINE_SINGLE;
-    }
-
-    if (textProp->style_text_line_through_type_ &&
-        textProp->style_text_line_through_type_->get_type() != odf_types::line_type::Non ||
-
-        textProp->style_text_line_through_style_ &&
-        textProp->style_text_line_through_style_->get_type() != odf_types::line_style::None)
-    {
-        font.strike = true;
-    }
-
-    if (textProp->fo_text_shadow_)
-    {
-        if (textProp->fo_text_shadow_->get_type() == odf_types::shadow_type::Enable)
-            font.shadow = true;
-        else
-            font.shadow = false;
-    }
-
-	bool default_color = false;
-	if (textProp->style_use_window_font_color_)
-		default_color = true;
-   
-	if (textProp->fo_color_ && !default_color)
-    {
-        xlsx_color color;
-        // alfa + rgb
-        color.rgb = L"ff" + textProp->fo_color_->get_hex_value();
-		std::wstring test = color.rgb.get();
-        font.color = color;
-
-    }
-
-    return font;
-}    
-
-} // namespace
 
 class xlsx_fonts::Impl
 {
 public:
-    Impl()
-    {
-    }
+	Impl(){}
+
 
     size_t size() const;
-    size_t fontId(const odf_reader::text_format_properties_content * textProp,
-        const odf_reader::paragraph_format_properties * parProp,
-        const odf_reader::style_table_cell_properties_attlist * cellProp);
-    //const xlsx_font & getFont(size_t id) const;
-    void xlsx_serialize(std::wostream & _Wostream) const;
+    size_t fontId(	const odf_reader::text_format_properties_content		* textProp,
+					const odf_reader::paragraph_format_properties			* parProp,
+					const odf_reader::style_table_cell_properties_attlist	* cellProp);
 
-private:
-    /*int getIndex(const odf_reader::text_format_properties_content * textProp,
-        const odf_reader::paragraph_format_properties * parProp,
-        const odf_reader::style_table_cell_properties_attlist * cellProp) const;*/
+	void serialize(std::wostream & _Wostream) const;
+
     
 private:
     typedef boost::unordered_set<xlsx_font, boost::hash<xlsx_font> > fonts_array_t;
@@ -169,7 +75,7 @@ struct compare_xlsx_fonts
 
 }
 
-void xlsx_fonts::Impl::xlsx_serialize(std::wostream & _Wostream) const
+void xlsx_fonts::Impl::serialize(std::wostream & _Wostream) const
 {
     std::vector<xlsx_font> fonts;
             
@@ -180,20 +86,26 @@ void xlsx_fonts::Impl::xlsx_serialize(std::wostream & _Wostream) const
 
     std::sort(fonts.begin(), fonts.end(), compare_xlsx_fonts());
 
-    _Wostream << L"<fonts count=\"" << fonts.size() << "\">";
-
-    for (size_t i = 0; i < fonts.size(); ++i)
-        ::cpdoccore::oox::xlsx_serialize(_Wostream, fonts[i]);
-
-    _Wostream << L"</fonts>";
+    CP_XML_WRITER(_Wostream)
+    {
+        CP_XML_NODE(L"fonts")
+        {
+            CP_XML_ATTR(L"count", fonts.size());
+			for (size_t i = 0; i < fonts.size(); ++i)
+			{
+				xlsx_serialize(CP_XML_STREAM(), fonts[i]);
+			}
+		}
+	}
 }
 
-size_t xlsx_fonts::Impl::fontId(const odf_reader::text_format_properties_content * textProp,
-                          const odf_reader::paragraph_format_properties * parProp,
-                          const odf_reader::style_table_cell_properties_attlist * cellProp)
+size_t xlsx_fonts::Impl::fontId(const odf_reader::text_format_properties_content		* textProp,
+								const odf_reader::paragraph_format_properties			* parProp,
+								const odf_reader::style_table_cell_properties_attlist	* cellProp)
 {
-    xlsx_font fnt = OdfFont2XlsxFont(textProp, parProp, cellProp);
-    fonts_array_t::const_iterator i = fonts_.find(fnt);
+    xlsx_font fnt = xlsx_font(textProp, parProp, cellProp);
+   
+	fonts_array_t::const_iterator i = fonts_.find(fnt);
     if (i != fonts_.end())
         return i->index;
     else
@@ -228,12 +140,6 @@ int xlsx_fonts::Impl::getIndex(const odf_reader::text_format_properties_content 
 size_t xlsx_fonts::Impl::size() const { return fonts_.size(); }
 
 
-
-void xlsx_serialize(std::wostream & _Wostream, const xlsx_fonts & fonts)
-{
-    fonts.xlsx_serialize(_Wostream);
-}
-
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 xlsx_fonts::xlsx_fonts(): impl_(new xlsx_fonts::Impl())
@@ -249,9 +155,9 @@ size_t xlsx_fonts::size() const
     return impl_->size();
 }
 
-void xlsx_fonts::xlsx_serialize(std::wostream & _Wostream) const
+void xlsx_fonts::serialize(std::wostream & _Wostream) const
 {
-    return impl_->xlsx_serialize(_Wostream);
+    return impl_->serialize(_Wostream);
 }
 
 size_t xlsx_fonts::fontId(const odf_reader::text_format_properties_content * textProp,

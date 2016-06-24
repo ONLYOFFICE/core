@@ -1,3 +1,34 @@
+/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 
 #include "draw_common.h"
 
@@ -174,8 +205,8 @@ void draw_image::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
     const std::wstring href = common_xlink_attlist_.href_.get_value_or(L"");
     Context.get_drawing_context().start_image(href);
-////////////////////////////////////в принципе достаточно общая часть ...	
-	Context.get_text_context().start_drawing_content();//...  если в объекте есть текст он привяжется к объекту - иначе к ячейке
+////////////////////////////////////РІ РїСЂРёРЅС†РёРїРµ РґРѕСЃС‚Р°С‚РѕС‡РЅРѕ РѕР±С‰Р°СЏ С‡Р°СЃС‚СЊ ...
+	Context.get_text_context().start_drawing_content();//...  РµСЃР»Рё РІ РѕР±СЉРµРєС‚Рµ РµСЃС‚СЊ С‚РµРєСЃС‚ РѕРЅ РїСЂРёРІСЏР¶РµС‚СЃСЏ Рє РѕР±СЉРµРєС‚Сѓ - РёРЅР°С‡Рµ Рє СЏС‡РµР№РєРµ
 
 	for (int i = 0 ; i < content_.size(); i++)
     {
@@ -187,7 +218,7 @@ void draw_image::xlsx_convert(oox::xlsx_conversion_context & Context)
 	{
 		Context.get_drawing_context().set_property(_property(L"text-content",text_content_));
 	}
-////////////////////////////////////////////////////////////////////////////3 раза уже повторилась Content -> Context
+////////////////////////////////////////////////////////////////////////////3 СЂР°Р·Р° СѓР¶Рµ РїРѕРІС‚РѕСЂРёР»Р°СЃСЊ Content -> Context
     Context.get_drawing_context().end_image();
 }
 void draw_chart::xlsx_convert(oox::xlsx_conversion_context & Context)
@@ -203,7 +234,7 @@ void draw_chart::xlsx_convert(oox::xlsx_conversion_context & Context)
 }
 void draw_text_box::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-	Context.get_drawing_context().start_shape(2);//rect с наваротами
+	Context.get_drawing_context().start_shape(2);//rect СЃ РЅР°РІР°СЂРѕС‚Р°РјРё
 	Context.get_text_context().start_drawing_content();
 
 	for (int i = 0 ; i < content_.size(); i++)
@@ -234,9 +265,9 @@ void draw_object::xlsx_convert(oox::xlsx_conversion_context & Context)
 
         cpdoccore::odf_reader::odf_document objectSubDoc(objectPath,NULL);    
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//в отдельных embd объектах чаще всего диаграммы... но МОГУТ быть и обычные объекты подтипа frame!!! пример RemanejamentoOrcamentario.ods
+//РІ РѕС‚РґРµР»СЊРЅС‹С… embd РѕР±СЉРµРєС‚Р°С… С‡Р°С‰Рµ РІСЃРµРіРѕ РґРёР°РіСЂР°РјРјС‹... РЅРѕ РњРћР“РЈT Р±С‹С‚СЊ Рё РѕР±С‹С‡РЅС‹Рµ РѕР±СЉРµРєС‚С‹ РїРѕРґС‚РёРїР° frame!!! РїСЂРёРјРµСЂ RemanejamentoOrcamentario.ods
 ///////////////////////////////////////////////////////////////////////////
-//функциональная часть
+//С„СѓРЅРєС†РёРѕРЅР°Р»СЊРЅР°СЏ С‡Р°СЃС‚СЊ
 		const office_element *contentSubDoc = objectSubDoc.get_impl()->get_content();
 		chart_build objectBuild;
 		
@@ -246,28 +277,28 @@ void draw_object::xlsx_convert(oox::xlsx_conversion_context & Context)
 			contentSubDoc->accept(process_build_object_); 
 		}
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//отображательная часть	
+//РѕС‚РѕР±СЂР°Р¶Р°С‚РµР»СЊРЅР°СЏ С‡Р°СЃС‚СЊ
 
-		if (objectBuild.object_type_ == 1)//диаграмма
+		if (objectBuild.object_type_ == 1)//РґРёР°РіСЂР°РјРјР°
 		{		
 			const std::wstring href_draw = common_xlink_attlist_.href_.get_value_or(L"");
 			objectBuild.xlsx_convert(Context);
 			
-			Context.get_drawing_context().start_chart(href_draw); // в рисовательной части только место объекта, рамочки ... и релсы 
+			Context.get_drawing_context().start_chart(href_draw); // РІ СЂРёСЃРѕРІР°С‚РµР»СЊРЅРѕР№ С‡Р°СЃС‚Рё С‚РѕР»СЊРєРѕ РјРµСЃС‚Рѕ РѕР±СЉРµРєС‚Р°, СЂР°РјРѕС‡РєРё ... Рё СЂРµР»СЃС‹ 
 			Context.get_drawing_context().end_chart();		
 		}
-		else if (objectBuild.object_type_ == 2)//текст (odt text)
+		else if (objectBuild.object_type_ == 2)//С‚РµРєСЃС‚ (odt text)
 		{
 			Context.get_drawing_context().start_shape(2); 
 			Context.get_text_context().start_drawing_content();
 
-			//сменить контекст с главного на другой ... проблема со стилями!!
+			//СЃРјРµРЅРёС‚СЊ РєРѕРЅС‚РµРєСЃС‚ СЃ РіР»Р°РІРЅРѕРіРѕ РЅР° РґСЂСѓРіРѕР№ ... РїСЂРѕР±Р»РµРјР° СЃРѕ СЃС‚РёР»СЏРјРё!!
 			Context.get_text_context().set_local_styles_container(&objectSubDoc.odf_context().styleContainer());
 
 			objectBuild.xlsx_convert(Context);
 			
 			std::wstring text_content_ = Context.get_text_context().end_drawing_content();
-			Context.get_text_context().set_local_styles_container(NULL);//вытираем вручную ...
+			Context.get_text_context().set_local_styles_container(NULL);//РІС‹С‚РёСЂР°РµРј РІСЂСѓС‡РЅСѓСЋ ...
 
 			if (text_content_.length()>0)
 			{
@@ -277,7 +308,7 @@ void draw_object::xlsx_convert(oox::xlsx_conversion_context & Context)
 		}
 		else
 		{
-			//временно - замещающая картинка(если она конечно присутствует)
+			//РІСЂРµРјРµРЅРЅРѕ - Р·Р°РјРµС‰Р°СЋС‰Р°СЏ РєР°СЂС‚РёРЅРєР°(РµСЃР»Рё РѕРЅР° РєРѕРЅРµС‡РЅРѕ РїСЂРёСЃСѓС‚СЃС‚РІСѓРµС‚)
 			Context.get_drawing_context().set_use_image_replacement();
 		}
 	
@@ -289,7 +320,7 @@ void draw_object::xlsx_convert(oox::xlsx_conversion_context & Context)
 }
 void draw_object_ole::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-	//временно - замещающая картинка(если она конечно присутствует)
+	//РІСЂРµРјРµРЅРЅРѕ - Р·Р°РјРµС‰Р°СЋС‰Р°СЏ РєР°СЂС‚РёРЅРєР°(РµСЃР»Рё РѕРЅР° РєРѕРЅРµС‡РЅРѕ РїСЂРёСЃСѓС‚СЃС‚РІСѓРµС‚)
 	//Context.get_drawing_context().start_object_ole();
 
 	Context.get_drawing_context().set_use_image_replacement();

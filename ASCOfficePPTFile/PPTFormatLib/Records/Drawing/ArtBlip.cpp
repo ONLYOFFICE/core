@@ -1,3 +1,34 @@
+/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 #include "ArtBlip.h"
 
 #include "../../../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"
@@ -63,7 +94,7 @@ void CRecordOfficeArtBlip::ReadFromStream(SRecordHeader & oHeader, POLE::Stream*
 				oMetaHeader.ToWMFHeader(&oWmfHeader);
 				
 				LONG lLenHeader = 22;
-				BYTE* pMetaHeader = new BYTE[lLenHeader]; // óäàëèòñÿ â oMetaFile
+				BYTE* pMetaHeader = new BYTE[lLenHeader]; // ÑƒÐ´Ð°Ð»Ð¸Ñ‚ÑÑ Ð² oMetaFile
 				memcpy(pMetaHeader, (void*)(&oWmfHeader), lLenHeader);
 
 				oMetaFile.SetHeader(pMetaHeader, lLenHeader);
@@ -84,10 +115,10 @@ void CRecordOfficeArtBlip::ReadFromStream(SRecordHeader & oHeader, POLE::Stream*
 				lOffset += 34;
 
 				oMetaFile.m_bIsValid	= TRUE;
-				oMetaFile.m_sExtension	= L".wmf";//L".pct"; - ÂÐÅÌÅÍÍÎ ïîêà íå ñäåëàíà êîíâåðòàöèÿ pct(pic) õîòü âî ÷òî íèòî  !!!
+				oMetaFile.m_sExtension	= L".wmf";//L".pct"; - Ð’Ð Ð•ÐœÐ•ÐÐÐž Ð¿Ð¾ÐºÐ° Ð½Ðµ ÑÐ´ÐµÐ»Ð°Ð½Ð° ÐºÐ¾Ð½Ð²ÐµÑ€Ñ‚Ð°Ñ†Ð¸Ñ pct(pic) Ñ…Ð¾Ñ‚ÑŒ Ð²Ð¾ Ñ‡Ñ‚Ð¾ Ð½Ð¸Ñ‚Ð¾  !!!
 				
 				CMetaHeader oMetaHeader;
-				oMetaHeader.FromStream(pStream); //îòäåëüíî âûíåñåííûé çàãîëîâîê.. "ôîðìàòíûé" íàõîäèòñÿ â áëîêå äàííûõ
+				oMetaHeader.FromStream(pStream); //Ð¾Ñ‚Ð´ÐµÐ»ÑŒÐ½Ð¾ Ð²Ñ‹Ð½ÐµÑÐµÐ½Ð½Ñ‹Ð¹ Ð·Ð°Ð³Ð¾Ð»Ð¾Ð²Ð¾Ðº.. "Ñ„Ð¾Ñ€Ð¼Ð°Ñ‚Ð½Ñ‹Ð¹" Ð½Ð°Ñ…Ð¾Ð´Ð¸Ñ‚ÑÑ Ð² Ð±Ð»Ð¾ÐºÐµ Ð´Ð°Ð½Ð½Ñ‹Ñ…
 
 				BYTE* pData = new BYTE[oHeader.RecLen - lOffset];
 				pStream->read(pData, oHeader.RecLen - lOffset); 

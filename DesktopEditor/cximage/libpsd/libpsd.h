@@ -542,7 +542,7 @@ typedef struct _psd_path
 // Channel information, Six bytes per channel
 typedef struct _psd_channel_info
 {
-	psd_short					channel_id;		// 2 bytes for Channel ID: 0 = red, 1 = green, etc.; ®C1 = transparency mask; ®C2 = user supplied layer mask
+	psd_short					channel_id;		// 2 bytes for Channel ID: 0 = red, 1 = green, etc.; ÊØè1 = transparency mask; ÊØè2 = user supplied layer mask
 	psd_int						data_length;	// 4 bytes for length of corresponding channel data. (**PSB** 8 bytes for length of corresponding channel data.)
 	psd_bool					restricted;
 } psd_channel_info;
@@ -601,7 +601,7 @@ struct _psd_layer_record
 	psd_channel_info *			channel_info;		//Channel information
 	psd_blend_mode				blend_mode;			// Blend mode key
 	psd_uchar					opacity;			// 0 = transparent ... 255 = opaque
-	psd_bool					clipping;			// 0 = base, 1 = non®Cbase
+	psd_bool					clipping;			// 0 = base, 1 = nonÊØèbase
 	psd_bool					transparency_protected;
 	psd_bool					visible;
 	psd_bool					obsolete;
@@ -724,31 +724,31 @@ typedef struct _psd_layer_color_balance
 
 
 // HUE/SATURATION
-// Hue/Saturation settings files are loaded and saved in Photoshop°Øs Hue/Saturation dialog
+// Hue/Saturation settings files are loaded and saved in PhotoshopÔºäs Hue/Saturation dialog
 typedef struct _psd_layer_hue_saturation
 {
 	psd_uchar					hue_or_colorization;	// 0 = Use settings for hue-adjustment; 1 = Use settings for colorization.
 	psd_short					colorization_hue;		// Photoshop 5.0: The actual values are stored for the new version. Hue is - 180...180, Saturation is 0...100, and Lightness is -100...100.
-	psd_short					colorization_saturation;// Photoshop 4.0: Three psd_short integers Hue, Saturation, and Lightness from ®C100...100.
-	psd_short					colorization_lightness;	// The user interface represents hue as ®C180...180, saturation as 0...100, and Lightness as -100...1000, as the traditional HSB color wheel, with red = 0.
+	psd_short					colorization_saturation;// Photoshop 4.0: Three psd_short integers Hue, Saturation, and Lightness from ÊØè100...100.
+	psd_short					colorization_lightness;	// The user interface represents hue as ÊØè180...180, saturation as 0...100, and Lightness as -100...1000, as the traditional HSB color wheel, with red = 0.
 	psd_short					master_hue;				// Master hue, saturation and lightness values.
 	psd_short					master_saturation;
 	psd_short					master_lightness;
-	psd_short					range_values[6][4];		// For RGB and CMYK, those values apply to each of the six hextants in the HSB color wheel: those image pixels nearest to red, yellow, green, cyan, blue, or magenta. These numbers appear in the user interface from ®C60...60, however the slider will reflect each of the possible 201 values from ®C100...100.
-	psd_short					setting_values[6][3];	// For Lab, the first four of the six values are applied to image pixels in the four Lab color quadrants, yellow, green, blue, and magenta. The other two values are ignored ( = 0). The values appear in the user interface from ®C90 to 90.
+	psd_short					range_values[6][4];		// For RGB and CMYK, those values apply to each of the six hextants in the HSB color wheel: those image pixels nearest to red, yellow, green, cyan, blue, or magenta. These numbers appear in the user interface from ÊØè60...60, however the slider will reflect each of the possible 201 values from ÊØè100...100.
+	psd_short					setting_values[6][3];	// For Lab, the first four of the six values are applied to image pixels in the four Lab color quadrants, yellow, green, blue, and magenta. The other two values are ignored ( = 0). The values appear in the user interface from ÊØè90 to 90.
 	psd_uchar					lookup_table[6][360];
 } psd_layer_hue_saturation;
 
 
 // SELECTIVE  COLOR
-// Selective Color settings files are loaded and saved in Photoshop°Øs Selective Color dialog.
+// Selective Color settings files are loaded and saved in PhotoshopÔºäs Selective Color dialog.
 typedef struct _psd_layer_selective_color
 {
 	psd_ushort					correction_method;		// 0 = Apply color correction in relative mode; 1 = Apply color correction in absolute mode.
-	psd_short					cyan_correction[10];	// Amount of cyan correction. Short integer from ®C100...100.
-	psd_short					magenta_correction[10];	// Amount of magenta correction. Short integer from ®C100...100.
-	psd_short					yellow_correction[10];	// Amount of yellow correction. Short integer from ®C100...100.
-	psd_short					black_correction[10]; 	// Amount of black correction. Short integer from ®C100...100.
+	psd_short					cyan_correction[10];	// Amount of cyan correction. Short integer from ÊØè100...100.
+	psd_short					magenta_correction[10];	// Amount of magenta correction. Short integer from ÊØè100...100.
+	psd_short					yellow_correction[10];	// Amount of yellow correction. Short integer from ÊØè100...100.
+	psd_short					black_correction[10]; 	// Amount of black correction. Short integer from ÊØè100...100.
 } psd_layer_selective_color;
 
 

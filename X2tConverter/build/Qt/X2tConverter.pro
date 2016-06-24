@@ -7,7 +7,7 @@
 QT       -= core
 QT       -= gui
 
-VERSION = 2.0.2.369
+VERSION = 2.0.2.373
 DEFINES += INTVER=$$VERSION
 
 mac {
@@ -46,9 +46,13 @@ win32 {
 
 CONFIG += c++11
 
-#CONFIG += static_link_libstd
+# теперь всегда с libstd
+linux-g++ | linux-g++-64 | linux-g++-32 {
+    CONFIG += static_link_libstd
+}
 static_link_libstd {
     QMAKE_LFLAGS += -static-libstdc++ -static-libgcc
+    message(static_link_libstd)
 }
 
 #CONFIG += build_for_centos6

@@ -1,3 +1,34 @@
+/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 #ifndef _FONT_UTILS_H
 #define _FONT_UTILS_H
 
@@ -19,8 +50,8 @@ namespace FontConstants
 }
 
 
-#define UNKNOWN_CHARSET 3 // äëÿ ñëó÷àåâ, êîãäà çàäàíî çíà÷åíèå DEFAULT_CHARSET, íî 
-                          // íà ñàìîì äåëå charset íå ó÷èòûâàåòñÿ
+#define UNKNOWN_CHARSET 3 // Ð´Ð»Ñ ÑÐ»ÑƒÑ‡Ð°ÐµÐ², ÐºÐ¾Ð³Ð´Ð° Ð·Ð°Ð´Ð°Ð½Ð¾ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ DEFAULT_CHARSET, Ð½Ð¾ 
+                          // Ð½Ð° ÑÐ°Ð¼Ð¾Ð¼ Ð´ÐµÐ»Ðµ charset Ð½Ðµ ÑƒÑ‡Ð¸Ñ‚Ñ‹Ð²Ð°ÐµÑ‚ÑÑ
 
 //---------------------------------------------------------------------------------------------------
 
@@ -158,11 +189,11 @@ static int  GetDefaultCharset(BOOL bUseDefCharset = TRUE)
 
 static void GetCodePageByCharset(unsigned char unCharset, unsigned long *pulBit, unsigned int *punLongIndex)
 {
-	// Äàííàÿ ôóíêöèÿ âîçâðàùàåò ïàðàìåòðû, êîòîðûå íóæíî ïîñûëàòü íà âõîä 
-	// ôóíêöèè AVSFontManager::IsUnicodeRangeAvailable
+	// Ð”Ð°Ð½Ð½Ð°Ñ Ñ„ÑƒÐ½ÐºÑ†Ð¸Ñ Ð²Ð¾Ð·Ð²Ñ€Ð°Ñ‰Ð°ÐµÑ‚ Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ñ‹, ÐºÐ¾Ñ‚Ð¾Ñ€Ñ‹Ðµ Ð½ÑƒÐ¶Ð½Ð¾ Ð¿Ð¾ÑÑ‹Ð»Ð°Ñ‚ÑŒ Ð½Ð° Ð²Ñ…Ð¾Ð´ 
+	// Ñ„ÑƒÐ½ÐºÑ†Ð¸Ð¸ AVSFontManager::IsUnicodeRangeAvailable
 
 
-	// Ñîîòâåòñòâèå Charset -> Codepage: http://support.microsoft.com/kb/165478
+	// Ð¡Ð¾Ð¾Ñ‚Ð²ÐµÑ‚ÑÑ‚Ð²Ð¸Ðµ Charset -> Codepage: http://support.microsoft.com/kb/165478
 	// http://msdn.microsoft.com/en-us/library/cc194829.aspx
 
 	//  Charset Name       Charset Value(hex)  Codepage number
@@ -188,7 +219,7 @@ static void GetCodePageByCharset(unsigned char unCharset, unsigned long *pulBit,
 	//  VIETNAMESE_CHARSET      163 (xA3)            1258
 	//  MAC_CHARSET              77 (x4D)            
 
-	// Ñîîòâåòñâèå CodePage -> ulCodePageRange1 : http://www.microsoft.com/Typography/otspec/os2.htm#cpr
+	// Ð¡Ð¾Ð¾Ñ‚Ð²ÐµÑ‚ÑÐ²Ð¸Ðµ CodePage -> ulCodePageRange1 : http://www.microsoft.com/Typography/otspec/os2.htm#cpr
 
 	if ( punLongIndex )
 		*punLongIndex = 4;

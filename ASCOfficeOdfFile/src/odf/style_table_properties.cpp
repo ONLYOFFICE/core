@@ -1,3 +1,34 @@
+/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 
 #include <iostream>
 #include "style_table_properties.h"
@@ -22,9 +53,6 @@ namespace odf_reader {
 
 void table_format_properties::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    CP_APPLY_ATTR(L"style:width", style_width_);
-    CP_APPLY_ATTR(L"style:rel-width", style_rel_width_);
-    CP_APPLY_ATTR(L"table:align", table_align_);
     common_horizontal_margin_attlist_.add_attributes(Attributes);
     common_vertical_margin_attlist_.add_attributes(Attributes);
     common_margin_attlist_.add_attributes(Attributes);
@@ -33,10 +61,16 @@ void table_format_properties::add_attributes( const xml::attributes_wc_ptr & Att
     common_background_color_attlist_.add_attributes(Attributes);
     common_shadow_attlist_.add_attributes(Attributes);
     common_keep_with_next_attlist_.add_attributes(Attributes);
-    CP_APPLY_ATTR(L"style:may-break-between-rows", style_may_break_between_rows_);
-    CP_APPLY_ATTR(L"table:border-model", table_border_model_);
     common_writing_mode_attlist_.add_attributes(Attributes);
-    CP_APPLY_ATTR(L"table:display", table_display_);
+   
+	CP_APPLY_ATTR(L"style:width",					style_width_);
+    CP_APPLY_ATTR(L"style:rel-width",				style_rel_width_);
+    CP_APPLY_ATTR(L"style:may-break-between-rows",	style_may_break_between_rows_);
+    
+	CP_APPLY_ATTR(L"table:align",			table_align_);
+    CP_APPLY_ATTR(L"table:border-model",	table_border_model_);
+    CP_APPLY_ATTR(L"table:display",			table_display_);
+	CP_APPLY_ATTR(L"tableooo:tab-color",	tableooo_tab_color_);			
 }
 
 bool table_format_properties::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name, document_context * Context)
@@ -206,7 +240,7 @@ void style_table_column_properties::docx_convert(oox::docx_conversion_context & 
 		//_CP_OPT(int) iUnormalWidth;
 		//if (odf_reader::GetProperty(Context.get_settings_properties(),L"UnormalWidthPage",iUnormalWidth))
 		{
-			//kf_max_width_ms = 31680./iUnormalWidth.get();//˝Í‚Ë‚‡ÎÂÌÚ 22"
+			//kf_max_width_ms = 31680./iUnormalWidth.get();//—ç–∫–≤–∏–≤–∞–ª–µ–Ω—Ç 22"
 		}
 
 

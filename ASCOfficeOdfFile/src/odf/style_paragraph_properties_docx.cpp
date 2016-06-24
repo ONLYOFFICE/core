@@ -1,3 +1,34 @@
+/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 
 #include <iostream>
 
@@ -125,7 +156,7 @@ void paragraph_format_properties::docx_convert(oox::docx_conversion_context & Co
 				Context.set_rtl(false);
 			}
 		}
-		if (Context.rtl()) //может быть он установился от стиля родителя !!
+		if (Context.rtl()) //РјРѕР¶РµС‚ Р±С‹С‚СЊ РѕРЅ СѓСЃС‚Р°РЅРѕРІРёР»СЃСЏ РѕС‚ СЃС‚РёР»СЏ СЂРѕРґРёС‚РµР»СЏ !!
 		{
 			_pPr << L"<w:bidi/>";
 		}
@@ -260,8 +291,8 @@ void paragraph_format_properties::docx_convert(oox::docx_conversion_context & Co
 			w_after = process_margin(fo_margin_bottom_, 20.0);
 			w_before = process_margin(fo_margin_top_, 20.0);
 
-			// TODO :   здесь 240 берется из корневого стиля? надо не константу использовать а брать оттуда
-			//          в xsl преобразованиях так же написано 
+			// TODO :   Р·РґРµСЃСЊ 240 Р±РµСЂРµС‚СЃСЏ РёР· РєРѕСЂРЅРµРІРѕРіРѕ СЃС‚РёР»СЏ? РЅР°РґРѕ РЅРµ РєРѕРЅСЃС‚Р°РЅС‚Сѓ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ Р° Р±СЂР°С‚СЊ РѕС‚С‚СѓРґР°
+			//          РІ xsl РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏС… С‚Р°Рє Р¶Рµ РЅР°РїРёСЃР°РЅРѕ 
 			if (fo_line_height_)
 			{
 				if (fo_line_height_->get_type() == line_width::Percent)
@@ -303,7 +334,7 @@ void paragraph_format_properties::docx_convert(oox::docx_conversion_context & Co
 
 			}
 		}
-		if (fo_margin_left_ || //? + буквица
+		if (fo_margin_left_ || //? + Р±СѓРєРІРёС†Р°
 			fo_margin_right_ || 
 			(fo_text_indent_ && Context.get_drop_cap_context().state() != 1))
 		{
@@ -323,7 +354,7 @@ void paragraph_format_properties::docx_convert(oox::docx_conversion_context & Co
 				CP_XML_ATTR(L"w:left", w_left);
 				CP_XML_ATTR(L"w:right", w_right);
 		        
-				if (Context.get_drop_cap_context().state() != 1 )//состояние сразу после добавления буквицы - не нужны ни отступы, ни висячие
+				if (Context.get_drop_cap_context().state() != 1 )//СЃРѕСЃС‚РѕСЏРЅРёРµ СЃСЂР°Р·Сѓ РїРѕСЃР»Рµ РґРѕР±Р°РІР»РµРЅРёСЏ Р±СѓРєРІРёС†С‹ - РЅРµ РЅСѓР¶РЅС‹ РЅРё РѕС‚СЃС‚СѓРїС‹, РЅРё РІРёСЃСЏС‡РёРµ
 				{
 					if (!w_firstLine.empty())
 						CP_XML_ATTR(L"w:firstLine", w_firstLine);
@@ -405,7 +436,7 @@ void style_tab_stop::docx_convert(oox::docx_conversion_context & Context)
 
     _pPr << L"<w:tab ";
 
-	length def_tab =  length(1.0, length::cm);// в ms значение 0.8 не корректно оО
+	length def_tab =  length(1.0, length::cm);// РІ ms Р·РЅР°С‡РµРЅРёРµ 0.8 РЅРµ РєРѕСЂСЂРµРєС‚РЅРѕ РѕРћ
 	
 	int tab_pos = (int)( 20.0 * style_position_.get_value_unit(length::pt) ) ;
 	int min_tab_pos = (int)( 20.0 * def_tab.get_value_unit(length::pt) ) ;

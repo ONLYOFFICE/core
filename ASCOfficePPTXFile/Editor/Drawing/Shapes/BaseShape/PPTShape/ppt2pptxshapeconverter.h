@@ -1,3 +1,34 @@
+/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 #pragma once
 #include "./Formula.h"
 #include "../Path.h"
@@ -281,9 +312,9 @@ namespace NSGuidesVML
 					LONG nIndex = 0;
 					LONG nIndex1 = 0;
 					LONG nIndex2 = 0;
-					/*m_lIndexDst-1 - номер последней записанной формулы
-					m_lIndexSrc - номер последнего блока формул
-					m_arIndexDst[n] - возвращает номер последней формулы в блоке n
+					/*m_lIndexDst-1 - РЅРѕРјРµСЂ РїРѕСЃР»РµРґРЅРµР№ Р·Р°РїРёСЃР°РЅРЅРѕР№ С„РѕСЂРјСѓР»С‹
+					m_lIndexSrc - РЅРѕРјРµСЂ РїРѕСЃР»РµРґРЅРµРіРѕ Р±Р»РѕРєР° С„РѕСЂРјСѓР»
+					m_arIndexDst[n] - РІРѕР·РІСЂР°С‰Р°РµС‚ РЅРѕРјРµСЂ РїРѕСЃР»РµРґРЅРµР№ С„РѕСЂРјСѓР»С‹ РІ Р±Р»РѕРєРµ n
 					m_arIndexDst[m_lIndexSrc] = m_lIndexDst*/
 
 
@@ -366,13 +397,13 @@ namespace NSGuidesVML
 							pCurPoint1 = oSlice.m_arPoints[j+1];
 							pCurPointType1 = oSlice.m_arPointsType[j+1];
 
-							//длина сторон
+							//РґР»РёРЅР° СЃС‚РѕСЂРѕРЅ
 
 							m_lIndexSrc ++;
 							strGuidsRes += ConvertSum ( pCurPoint1.x, pCurPointType1.x, 0, ptValue, pCurPoint.x, pCurPointType.x, false, true, false);
 							strGuidsRes += ConvertSum ( pCurPoint1.y, pCurPointType1.y, 0, ptValue, pCurPoint.y, pCurPointType.y, false, true, false);
 							m_arIndexDst.push_back(m_lIndexDst-1);
-							//координаты центра
+							//РєРѕРѕСЂРґРёРЅР°С‚С‹ С†РµРЅС‚СЂР°
 							nIndex = m_arIndexDst[m_lIndexSrc];
 
 							m_lIndexSrc ++;
@@ -382,8 +413,8 @@ namespace NSGuidesVML
 							strGuidsRes += ConvertSum ( pCurPoint.x, pCurPointType.x, m_lIndexDst-2, ptFormula, 0, ptValue, false, true, true);
 							strGuidsRes += ConvertSum ( pCurPoint.y, pCurPointType.y, m_lIndexDst-2, ptFormula, 0, ptValue, false, true, true);
 							m_arIndexDst.push_back(m_lIndexDst-1);
-						//рассчет для stAng---------------------------
-							//расположение текущей точки по четвертям 3 4
+						//СЂР°СЃСЃС‡РµС‚ РґР»СЏ stAng---------------------------
+							//СЂР°СЃРїРѕР»РѕР¶РµРЅРёРµ С‚РµРєСѓС‰РµР№ С‚РѕС‡РєРё РїРѕ С‡РµС‚РІРµСЂС‚СЏРј 3 4
 							//										  2 1
 
 							pCurPoint = oSlice.m_arPoints[j+2];
@@ -396,14 +427,14 @@ namespace NSGuidesVML
 							strGuidsRes += ConvertIf ( m_lIndexDst-2, ptFormula, 1, ptValue, -1, ptValue, true, true, true);
 							strGuidsRes += ConvertIf ( m_lIndexDst-2, ptFormula, 1, ptValue, -1, ptValue, true, true, true);
 							m_arIndexDst.push_back(m_lIndexDst-1);
-							//угол между Ох и радиус-вектором к точке					
+							//СѓРіРѕР» РјРµР¶РґСѓ РћС… Рё СЂР°РґРёСѓСЃ-РІРµРєС‚РѕСЂРѕРј Рє С‚РѕС‡РєРµ					
 							nIndex = m_arIndexDst[m_lIndexSrc];							
 
 							m_lIndexSrc ++;						
 							strGuidsRes += ConvertProd ( nIndex-2, ptFormula, 1, ptValue, nIndex-3, ptFormula, true, true, true);
 							strGuidsRes += ConvertAt2 ( 1, ptValue, m_lIndexDst-1, ptFormula, true, true);					
 							m_arIndexDst.push_back(m_lIndexDst-1);
-							//радиус к точке
+							//СЂР°РґРёСѓСЃ Рє С‚РѕС‡РєРµ
 							nIndex = m_arIndexDst[m_lIndexSrc];
 							nIndex1 = m_arIndexDst[m_lIndexSrc-2];
 
@@ -422,27 +453,27 @@ namespace NSGuidesVML
 							strGuidsRes += ConvertSqrt ( m_lIndexDst-1, ptFormula, true);
 							strGuidsRes += ConvertProd ( nIndex1-3, ptFormula, nIndex1-2, ptFormula, m_lIndexDst-1, ptFormula, true, true, true);//r
 							m_arIndexDst.push_back(m_lIndexDst-1);
-							//если точка во 2 и 3 четвертях, прибавляем по 180grad
+							//РµСЃР»Рё С‚РѕС‡РєР° РІРѕ 2 Рё 3 С‡РµС‚РІРµСЂС‚СЏС…, РїСЂРёР±Р°РІР»СЏРµРј РїРѕ 180grad
 							nIndex = m_arIndexDst[m_lIndexSrc-2];							
 
 							m_lIndexSrc ++;	
 							strGuidsRes += ConvertIf ( nIndex-3, ptFormula, 0, ptValue, 10800000, ptValue, true, true, true);
 							m_arIndexDst.push_back(m_lIndexDst-1);
-							//угол до 1 точки (stAngle)
-							nIndex = m_arIndexDst[m_lIndexSrc-2];//угол между ох и радиусом
-							nIndex1 = m_arIndexDst[m_lIndexSrc-3];//расположение точки по четвертям
-							nIndex2 = m_arIndexDst[m_lIndexSrc];//прибавка 180 или 0
+							//СѓРіРѕР» РґРѕ 1 С‚РѕС‡РєРё (stAngle)
+							nIndex = m_arIndexDst[m_lIndexSrc-2];//СѓРіРѕР» РјРµР¶РґСѓ РѕС… Рё СЂР°РґРёСѓСЃРѕРј
+							nIndex1 = m_arIndexDst[m_lIndexSrc-3];//СЂР°СЃРїРѕР»РѕР¶РµРЅРёРµ С‚РѕС‡РєРё РїРѕ С‡РµС‚РІРµСЂС‚СЏРј
+							nIndex2 = m_arIndexDst[m_lIndexSrc];//РїСЂРёР±Р°РІРєР° 180 РёР»Рё 0
 
 							m_lIndexSrc ++;
-							strGuidsRes += ConvertProd ( nIndex1-1, ptFormula, nIndex1, ptFormula, 1, ptValue, true, true, true);//знак у угла
+							strGuidsRes += ConvertProd ( nIndex1-1, ptFormula, nIndex1, ptFormula, 1, ptValue, true, true, true);//Р·РЅР°Рє Сѓ СѓРіР»Р°
 							strGuidsRes += ConvertProd ( nIndex, ptFormula, -1, ptValue, 1, ptValue, true, true, true);
-							strGuidsRes += ConvertIf ( nIndex, ptFormula, nIndex, ptFormula, m_lIndexDst-1, ptFormula, true, true, true);//угол всегда положительный
+							strGuidsRes += ConvertIf ( nIndex, ptFormula, nIndex, ptFormula, m_lIndexDst-1, ptFormula, true, true, true);//СѓРіРѕР» РІСЃРµРіРґР° РїРѕР»РѕР¶РёС‚РµР»СЊРЅС‹Р№
 
-							strGuidsRes += ConvertProd ( m_lIndexDst-1, ptFormula, m_lIndexDst-3, ptFormula, 1, ptValue, true, true, true);//u с нужным знаком
+							strGuidsRes += ConvertProd ( m_lIndexDst-1, ptFormula, m_lIndexDst-3, ptFormula, 1, ptValue, true, true, true);//u СЃ РЅСѓР¶РЅС‹Рј Р·РЅР°РєРѕРј
 
 							strGuidsRes += ConvertSum ( m_lIndexDst-1, ptFormula, nIndex2, ptFormula, 0, ptValue, true, true, true);
 							m_arIndexDst.push_back(m_lIndexDst-1);
-							//координаты стартовой точки
+							//РєРѕРѕСЂРґРёРЅР°С‚С‹ СЃС‚Р°СЂС‚РѕРІРѕР№ С‚РѕС‡РєРё
 							nIndex = m_arIndexDst[m_lIndexSrc-2];
 							nIndex1 = m_arIndexDst[m_lIndexSrc-4];
 							nIndex2 = m_arIndexDst[m_lIndexSrc-5];
@@ -453,14 +484,14 @@ namespace NSGuidesVML
 							strGuidsRes += ConvertSum ( nIndex2-1, ptFormula, m_lIndexDst-1, ptFormula, 0, ptValue, true, true, true); //x
 
 							strGuidsRes += ConvertProd ( nIndex-6, ptFormula, -1, ptValue, 1, ptValue, true, true, true);
-							strGuidsRes += ConvertIf ( nIndex-6, ptFormula, nIndex-6, ptFormula, m_lIndexDst-1, ptFormula, true, true, true);//sin теперь всегда>0
+							strGuidsRes += ConvertIf ( nIndex-6, ptFormula, nIndex-6, ptFormula, m_lIndexDst-1, ptFormula, true, true, true);//sin С‚РµРїРµСЂСЊ РІСЃРµРіРґР°>0
 
 							strGuidsRes += ConvertProd ( nIndex, ptFormula, m_lIndexDst-1, ptFormula, 1, ptValue, true, true, true);//r*sin
 							strGuidsRes += ConvertProd ( nIndex1, ptFormula, m_lIndexDst-1, ptFormula, 1, ptValue, true, true, true);
 							strGuidsRes += ConvertSum ( nIndex2, ptFormula, m_lIndexDst-1, ptFormula, 0, ptValue, true, true, true);//y
 							m_arIndexDst.push_back(m_lIndexDst-1);
-						//рассчет для swAng---------------------------
-							//расположение текущей точки по четвертям 3 4
+						//СЂР°СЃСЃС‡РµС‚ РґР»СЏ swAng---------------------------
+							//СЂР°СЃРїРѕР»РѕР¶РµРЅРёРµ С‚РµРєСѓС‰РµР№ С‚РѕС‡РєРё РїРѕ С‡РµС‚РІРµСЂС‚СЏРј 3 4
 							//										  2 1
 
 							pCurPoint = oSlice.m_arPoints[j+3];
@@ -474,14 +505,14 @@ namespace NSGuidesVML
 							strGuidsRes += ConvertIf ( m_lIndexDst-2, ptFormula, 1, ptValue, -1, ptValue, true, true, true);
 							strGuidsRes += ConvertIf ( m_lIndexDst-2, ptFormula, 1, ptValue, -1, ptValue, true, true, true);
 							m_arIndexDst.push_back(m_lIndexDst-1);
-							//угол между Ох и радиус-вектором к точке					
+							//СѓРіРѕР» РјРµР¶РґСѓ РћС… Рё СЂР°РґРёСѓСЃ-РІРµРєС‚РѕСЂРѕРј Рє С‚РѕС‡РєРµ					
 							nIndex = m_arIndexDst[m_lIndexSrc];
 
 							m_lIndexSrc ++;						
 							strGuidsRes += ConvertProd ( nIndex-2, ptFormula, 1, ptValue, nIndex-3, ptFormula, true, true, true);
 							strGuidsRes += ConvertAt2 ( 1, ptValue, m_lIndexDst-1, ptFormula, true, true);
 							m_arIndexDst.push_back(m_lIndexDst-1);
-							//радиус к точке
+							//СЂР°РґРёСѓСЃ Рє С‚РѕС‡РєРµ
 							nIndex = m_arIndexDst[m_lIndexSrc];
 							nIndex1 = m_arIndexDst[m_lIndexSrc-8];
 
@@ -500,27 +531,27 @@ namespace NSGuidesVML
 							strGuidsRes += ConvertSqrt ( m_lIndexDst-1, ptFormula, true);
 							strGuidsRes += ConvertProd ( nIndex1-3, ptFormula, nIndex1-2, ptFormula, m_lIndexDst-1, ptFormula, true, true, true);
 							m_arIndexDst.push_back(m_lIndexDst-1);
-							//если точка во 2 и 3 четвертях, прибавляем по 180grad
+							//РµСЃР»Рё С‚РѕС‡РєР° РІРѕ 2 Рё 3 С‡РµС‚РІРµСЂС‚СЏС…, РїСЂРёР±Р°РІР»СЏРµРј РїРѕ 180grad
 							nIndex = m_arIndexDst[m_lIndexSrc-2];
 
 							m_lIndexSrc ++;	
 							strGuidsRes += ConvertIf ( nIndex-3, ptFormula, 0, ptValue, 10800000, ptValue, true, true, true);
 							m_arIndexDst.push_back(m_lIndexDst-1);
-							//угол до 2 точки 
-							nIndex = m_arIndexDst[m_lIndexSrc-2];//угол между ох и радиусом
-							nIndex1 = m_arIndexDst[m_lIndexSrc-3];//расположение точки по четвертям
-							nIndex2 = m_arIndexDst[m_lIndexSrc];//прибавка 180 или 0
+							//СѓРіРѕР» РґРѕ 2 С‚РѕС‡РєРё 
+							nIndex = m_arIndexDst[m_lIndexSrc-2];//СѓРіРѕР» РјРµР¶РґСѓ РѕС… Рё СЂР°РґРёСѓСЃРѕРј
+							nIndex1 = m_arIndexDst[m_lIndexSrc-3];//СЂР°СЃРїРѕР»РѕР¶РµРЅРёРµ С‚РѕС‡РєРё РїРѕ С‡РµС‚РІРµСЂС‚СЏРј
+							nIndex2 = m_arIndexDst[m_lIndexSrc];//РїСЂРёР±Р°РІРєР° 180 РёР»Рё 0
 
 							m_lIndexSrc ++;
-							strGuidsRes += ConvertProd ( nIndex1-1, ptFormula, nIndex1, ptFormula, 1, ptValue, true, true, true);//знак у угла
+							strGuidsRes += ConvertProd ( nIndex1-1, ptFormula, nIndex1, ptFormula, 1, ptValue, true, true, true);//Р·РЅР°Рє Сѓ СѓРіР»Р°
 							strGuidsRes += ConvertProd ( nIndex, ptFormula, -1, ptValue, 1, ptValue, true, true, true);
-							strGuidsRes += ConvertIf ( nIndex, ptFormula, nIndex, ptFormula, m_lIndexDst-1, ptFormula, true, true, true);//угол всегда положительный
+							strGuidsRes += ConvertIf ( nIndex, ptFormula, nIndex, ptFormula, m_lIndexDst-1, ptFormula, true, true, true);//СѓРіРѕР» РІСЃРµРіРґР° РїРѕР»РѕР¶РёС‚РµР»СЊРЅС‹Р№
 
-							strGuidsRes += ConvertProd ( m_lIndexDst-1, ptFormula, m_lIndexDst-3, ptFormula, 1, ptValue, true, true, true);//u с нужным знаком
+							strGuidsRes += ConvertProd ( m_lIndexDst-1, ptFormula, m_lIndexDst-3, ptFormula, 1, ptValue, true, true, true);//u СЃ РЅСѓР¶РЅС‹Рј Р·РЅР°РєРѕРј
 
 							strGuidsRes += ConvertSum ( m_lIndexDst-1, ptFormula, nIndex2, ptFormula, 0, ptValue, true, true, true);
 							m_arIndexDst.push_back(m_lIndexDst-1);
-							//координаты конечной точки
+							//РєРѕРѕСЂРґРёРЅР°С‚С‹ РєРѕРЅРµС‡РЅРѕР№ С‚РѕС‡РєРё
 							nIndex = m_arIndexDst[m_lIndexSrc-2];
 							nIndex1 = m_arIndexDst[m_lIndexSrc-4];
 							nIndex2 = m_arIndexDst[m_lIndexSrc-11];
@@ -531,18 +562,18 @@ namespace NSGuidesVML
 							strGuidsRes += ConvertSum ( nIndex2-1, ptFormula, m_lIndexDst-1, ptFormula, 0, ptValue, true, true, true);//x
 
 							strGuidsRes += ConvertProd ( nIndex-6, ptFormula, -1, ptValue, 1, ptValue, true, true, true);
-							strGuidsRes += ConvertIf ( nIndex-6, ptFormula, nIndex-6, ptFormula, m_lIndexDst-1, ptFormula, true, true, true);//sin теперь всегда>0
+							strGuidsRes += ConvertIf ( nIndex-6, ptFormula, nIndex-6, ptFormula, m_lIndexDst-1, ptFormula, true, true, true);//sin С‚РµРїРµСЂСЊ РІСЃРµРіРґР°>0
 
 							strGuidsRes += ConvertProd ( nIndex, ptFormula, m_lIndexDst-1, ptFormula, 1, ptValue, true, true, true);//r*sin(a)
 							strGuidsRes += ConvertProd ( nIndex1, ptFormula, m_lIndexDst-1, ptFormula, 1, ptValue, true, true, true);
 							strGuidsRes += ConvertSum ( nIndex2, ptFormula, m_lIndexDst-1, ptFormula, 0, ptValue, true, true, true);//y
 							m_arIndexDst.push_back(m_lIndexDst-1);
 							//swAngle
-							nIndex = m_arIndexDst[m_lIndexSrc-1]; //2 угол
-							nIndex1 = m_arIndexDst[m_lIndexSrc-7]; //1 угол
+							nIndex = m_arIndexDst[m_lIndexSrc-1]; //2 СѓРіРѕР»
+							nIndex1 = m_arIndexDst[m_lIndexSrc-7]; //1 СѓРіРѕР»
 
 							m_lIndexSrc ++;
-							strGuidsRes += ConvertSum ( nIndex1, ptFormula, 0, ptValue, nIndex, ptFormula, true, true, true); // (1)-(2), если отрицательный то берем его, иначе пересчитываем
+							strGuidsRes += ConvertSum ( nIndex1, ptFormula, 0, ptValue, nIndex, ptFormula, true, true, true); // (1)-(2), РµСЃР»Рё РѕС‚СЂРёС†Р°С‚РµР»СЊРЅС‹Р№ С‚Рѕ Р±РµСЂРµРј РµРіРѕ, РёРЅР°С‡Рµ РїРµСЂРµСЃС‡РёС‚С‹РІР°РµРј
 							strGuidsRes += ConvertProd ( m_lIndexDst-1, ptFormula, -1, ptValue, 1, ptValue, true, true, true);
 
 							strGuidsRes += ConvertSum ( nIndex1, ptFormula, 21600000, ptValue, nIndex, ptFormula, true, true, true);
@@ -561,7 +592,7 @@ namespace NSGuidesVML
 
 
 							//---------------------------------------------------------
-							nIndex = m_arIndexDst[m_lIndexSrc-8];//координаты стартовой точки
+							nIndex = m_arIndexDst[m_lIndexSrc-8];//РєРѕРѕСЂРґРёРЅР°С‚С‹ СЃС‚Р°СЂС‚РѕРІРѕР№ С‚РѕС‡РєРё
 							nIndex1 = m_arIndexDst[m_lIndexSrc-9];//stAng
 							nIndex2 = m_arIndexDst[m_lIndexSrc-1];//swAng
 
@@ -574,13 +605,13 @@ namespace NSGuidesVML
 								+ _T("\" /></a:") + strFrmla + _T("><a:arcTo wR=\"") + GetValue(m_lIndexDst-2, ptFormula, true) + _T("\" hR=\"") + GetValue(m_lIndexDst-1, ptFormula, true) + 
 								+ _T("\" stAng=\"") + GetValue(nIndex1, ptFormula, true) + _T("\" swAng=\"") + GetValue(nIndex2, ptFormula, true) + _T("\" />");
 
-							//старт
+							//СЃС‚Р°СЂС‚
 
 							/*LONG nIndex3 = m_arIndexDst[m_lIndexSrc-14];
 							strPathRes += _T("<a:moveTo><a:pt x=\"0\" y=\"0\" /></a:moveTo><a:lnTo><a:pt x=\"") + GetValue(nIndex3-1, ptFormula, true) + _T("\" y=\"") + GetValue(nIndex3, ptFormula, true) + 
 								+ _T("\" /></a:lnTo>");*/
 
-							//текущая точка
+							//С‚РµРєСѓС‰Р°СЏ С‚РѕС‡РєР°
 
 							nIndex = m_arIndexDst[m_lIndexSrc-2];
 							strGuidsRes += ConvertVal ( nIndex-5, ptFormula, true);
@@ -597,13 +628,13 @@ namespace NSGuidesVML
 							pCurPoint1 = oSlice.m_arPoints[j+1];
 							pCurPointType1 = oSlice.m_arPointsType[j+1];
 
-							//длина сторон
+							//РґР»РёРЅР° СЃС‚РѕСЂРѕРЅ
 
 							m_lIndexSrc ++;
 							strGuidsRes += ConvertSum ( pCurPoint1.x, pCurPointType1.x, 0, ptValue, pCurPoint.x, pCurPointType.x, false, true, false);
 							strGuidsRes += ConvertSum ( pCurPoint1.y, pCurPointType1.y, 0, ptValue, pCurPoint.y, pCurPointType.y, false, true, false);
 							m_arIndexDst.push_back(m_lIndexDst-1);
-							//координаты центра
+							//РєРѕРѕСЂРґРёРЅР°С‚С‹ С†РµРЅС‚СЂР°
 							nIndex = m_arIndexDst[m_lIndexSrc];
 
 							m_lIndexSrc ++;
@@ -613,8 +644,8 @@ namespace NSGuidesVML
 							strGuidsRes += ConvertSum ( pCurPoint.x, pCurPointType.x, m_lIndexDst-2, ptFormula, 0, ptValue, false, true, true);
 							strGuidsRes += ConvertSum ( pCurPoint.y, pCurPointType.y, m_lIndexDst-2, ptFormula, 0, ptValue, false, true, true);
 							m_arIndexDst.push_back(m_lIndexDst-1);
-						//рассчет для stAng---------------------------
-							//расположение текущей точки по четвертям 3 4
+						//СЂР°СЃСЃС‡РµС‚ РґР»СЏ stAng---------------------------
+							//СЂР°СЃРїРѕР»РѕР¶РµРЅРёРµ С‚РµРєСѓС‰РµР№ С‚РѕС‡РєРё РїРѕ С‡РµС‚РІРµСЂС‚СЏРј 3 4
 							//										  2 1
 
 							pCurPoint = oSlice.m_arPoints[j+2];
@@ -627,14 +658,14 @@ namespace NSGuidesVML
 							strGuidsRes += ConvertIf ( m_lIndexDst-2, ptFormula, 1, ptValue, -1, ptValue, true, true, true);
 							strGuidsRes += ConvertIf ( m_lIndexDst-2, ptFormula, 1, ptValue, -1, ptValue, true, true, true);
 							m_arIndexDst.push_back(m_lIndexDst-1);
-							//угол между Ох и радиус-вектором к точке					
+							//СѓРіРѕР» РјРµР¶РґСѓ РћС… Рё СЂР°РґРёСѓСЃ-РІРµРєС‚РѕСЂРѕРј Рє С‚РѕС‡РєРµ					
 							nIndex = m_arIndexDst[m_lIndexSrc];							
 
 							m_lIndexSrc ++;						
 							strGuidsRes += ConvertProd ( nIndex-2, ptFormula, 1, ptValue, nIndex-3, ptFormula, true, true, true);
 							strGuidsRes += ConvertAt2 ( 1, ptValue, m_lIndexDst-1, ptFormula, true, true);					
 							m_arIndexDst.push_back(m_lIndexDst-1);
-							//радиус к точке
+							//СЂР°РґРёСѓСЃ Рє С‚РѕС‡РєРµ
 							nIndex = m_arIndexDst[m_lIndexSrc];
 							nIndex1 = m_arIndexDst[m_lIndexSrc-2];
 
@@ -653,27 +684,27 @@ namespace NSGuidesVML
 							strGuidsRes += ConvertSqrt ( m_lIndexDst-1, ptFormula, true);
 							strGuidsRes += ConvertProd ( nIndex1-3, ptFormula, nIndex1-2, ptFormula, m_lIndexDst-1, ptFormula, true, true, true);//r
 							m_arIndexDst.push_back(m_lIndexDst-1);
-							//если точка во 2 и 3 четвертях, прибавляем по 180grad
+							//РµСЃР»Рё С‚РѕС‡РєР° РІРѕ 2 Рё 3 С‡РµС‚РІРµСЂС‚СЏС…, РїСЂРёР±Р°РІР»СЏРµРј РїРѕ 180grad
 							nIndex = m_arIndexDst[m_lIndexSrc-2];							
 
 							m_lIndexSrc ++;	
 							strGuidsRes += ConvertIf ( nIndex-3, ptFormula, 0, ptValue, 10800000, ptValue, true, true, true);
 							m_arIndexDst.push_back(m_lIndexDst-1);
-							//угол до 1 точки (stAngle)
-							nIndex = m_arIndexDst[m_lIndexSrc-2];//угол между ох и радиусом
-							nIndex1 = m_arIndexDst[m_lIndexSrc-3];//расположение точки по четвертям
-							nIndex2 = m_arIndexDst[m_lIndexSrc];//прибавка 180 или 0
+							//СѓРіРѕР» РґРѕ 1 С‚РѕС‡РєРё (stAngle)
+							nIndex = m_arIndexDst[m_lIndexSrc-2];//СѓРіРѕР» РјРµР¶РґСѓ РѕС… Рё СЂР°РґРёСѓСЃРѕРј
+							nIndex1 = m_arIndexDst[m_lIndexSrc-3];//СЂР°СЃРїРѕР»РѕР¶РµРЅРёРµ С‚РѕС‡РєРё РїРѕ С‡РµС‚РІРµСЂС‚СЏРј
+							nIndex2 = m_arIndexDst[m_lIndexSrc];//РїСЂРёР±Р°РІРєР° 180 РёР»Рё 0
 
 							m_lIndexSrc ++;
-							strGuidsRes += ConvertProd ( nIndex1-1, ptFormula, nIndex1, ptFormula, 1, ptValue, true, true, true);//знак у угла
+							strGuidsRes += ConvertProd ( nIndex1-1, ptFormula, nIndex1, ptFormula, 1, ptValue, true, true, true);//Р·РЅР°Рє Сѓ СѓРіР»Р°
 							strGuidsRes += ConvertProd ( nIndex, ptFormula, -1, ptValue, 1, ptValue, true, true, true);
-							strGuidsRes += ConvertIf ( nIndex, ptFormula, nIndex, ptFormula, m_lIndexDst-1, ptFormula, true, true, true);//угол всегда положительный
+							strGuidsRes += ConvertIf ( nIndex, ptFormula, nIndex, ptFormula, m_lIndexDst-1, ptFormula, true, true, true);//СѓРіРѕР» РІСЃРµРіРґР° РїРѕР»РѕР¶РёС‚РµР»СЊРЅС‹Р№
 
-							strGuidsRes += ConvertProd ( m_lIndexDst-1, ptFormula, m_lIndexDst-3, ptFormula, 1, ptValue, true, true, true);//u с нужным знаком
+							strGuidsRes += ConvertProd ( m_lIndexDst-1, ptFormula, m_lIndexDst-3, ptFormula, 1, ptValue, true, true, true);//u СЃ РЅСѓР¶РЅС‹Рј Р·РЅР°РєРѕРј
 
 							strGuidsRes += ConvertSum ( m_lIndexDst-1, ptFormula, nIndex2, ptFormula, 0, ptValue, true, true, true);
 							m_arIndexDst.push_back(m_lIndexDst-1);
-							//координаты стартовой точки
+							//РєРѕРѕСЂРґРёРЅР°С‚С‹ СЃС‚Р°СЂС‚РѕРІРѕР№ С‚РѕС‡РєРё
 							nIndex = m_arIndexDst[m_lIndexSrc-2];
 							nIndex1 = m_arIndexDst[m_lIndexSrc-4];
 							nIndex2 = m_arIndexDst[m_lIndexSrc-5];
@@ -684,14 +715,14 @@ namespace NSGuidesVML
 							strGuidsRes += ConvertSum ( nIndex2-1, ptFormula, m_lIndexDst-1, ptFormula, 0, ptValue, true, true, true); //x
 
 							strGuidsRes += ConvertProd ( nIndex-6, ptFormula, -1, ptValue, 1, ptValue, true, true, true);
-							strGuidsRes += ConvertIf ( nIndex-6, ptFormula, nIndex-6, ptFormula, m_lIndexDst-1, ptFormula, true, true, true);//sin теперь всегда>0
+							strGuidsRes += ConvertIf ( nIndex-6, ptFormula, nIndex-6, ptFormula, m_lIndexDst-1, ptFormula, true, true, true);//sin С‚РµРїРµСЂСЊ РІСЃРµРіРґР°>0
 
 							strGuidsRes += ConvertProd ( nIndex, ptFormula, m_lIndexDst-1, ptFormula, 1, ptValue, true, true, true);//r*sin
 							strGuidsRes += ConvertProd ( nIndex1, ptFormula, m_lIndexDst-1, ptFormula, 1, ptValue, true, true, true);
 							strGuidsRes += ConvertSum ( nIndex2, ptFormula, m_lIndexDst-1, ptFormula, 0, ptValue, true, true, true);//y
 							m_arIndexDst.push_back(m_lIndexDst-1);
-						//рассчет для swAng---------------------------
-							//расположение текущей точки по четвертям 3 4
+						//СЂР°СЃСЃС‡РµС‚ РґР»СЏ swAng---------------------------
+							//СЂР°СЃРїРѕР»РѕР¶РµРЅРёРµ С‚РµРєСѓС‰РµР№ С‚РѕС‡РєРё РїРѕ С‡РµС‚РІРµСЂС‚СЏРј 3 4
 							//										  2 1
 
 							pCurPoint = oSlice.m_arPoints[j+3];
@@ -705,14 +736,14 @@ namespace NSGuidesVML
 							strGuidsRes += ConvertIf ( m_lIndexDst-2, ptFormula, 1, ptValue, -1, ptValue, true, true, true);
 							strGuidsRes += ConvertIf ( m_lIndexDst-2, ptFormula, 1, ptValue, -1, ptValue, true, true, true);
 							m_arIndexDst.push_back(m_lIndexDst-1);
-							//угол между Ох и радиус-вектором к точке					
+							//СѓРіРѕР» РјРµР¶РґСѓ РћС… Рё СЂР°РґРёСѓСЃ-РІРµРєС‚РѕСЂРѕРј Рє С‚РѕС‡РєРµ					
 							nIndex = m_arIndexDst[m_lIndexSrc];
 
 							m_lIndexSrc ++;						
 							strGuidsRes += ConvertProd ( nIndex-2, ptFormula, 1, ptValue, nIndex-3, ptFormula, true, true, true);
 							strGuidsRes += ConvertAt2 ( 1, ptValue, m_lIndexDst-1, ptFormula, true, true);
 							m_arIndexDst.push_back(m_lIndexDst-1);
-							//радиус к точке
+							//СЂР°РґРёСѓСЃ Рє С‚РѕС‡РєРµ
 							nIndex = m_arIndexDst[m_lIndexSrc];
 							nIndex1 = m_arIndexDst[m_lIndexSrc-8];
 
@@ -731,27 +762,27 @@ namespace NSGuidesVML
 							strGuidsRes += ConvertSqrt ( m_lIndexDst-1, ptFormula, true);
 							strGuidsRes += ConvertProd ( nIndex1-3, ptFormula, nIndex1-2, ptFormula, m_lIndexDst-1, ptFormula, true, true, true);
 							m_arIndexDst.push_back(m_lIndexDst-1);
-							//если точка во 2 и 3 четвертях, прибавляем по 180grad
+							//РµСЃР»Рё С‚РѕС‡РєР° РІРѕ 2 Рё 3 С‡РµС‚РІРµСЂС‚СЏС…, РїСЂРёР±Р°РІР»СЏРµРј РїРѕ 180grad
 							nIndex = m_arIndexDst[m_lIndexSrc-2];
 
 							m_lIndexSrc ++;	
 							strGuidsRes += ConvertIf ( nIndex-3, ptFormula, 0, ptValue, 10800000, ptValue, true, true, true);
 							m_arIndexDst.push_back(m_lIndexDst-1);
-							//угол до 2 точки 
-							nIndex = m_arIndexDst[m_lIndexSrc-2];//угол между ох и радиусом
-							nIndex1 = m_arIndexDst[m_lIndexSrc-3];//расположение точки по четвертям
-							nIndex2 = m_arIndexDst[m_lIndexSrc];//прибавка 180 или 0
+							//СѓРіРѕР» РґРѕ 2 С‚РѕС‡РєРё 
+							nIndex = m_arIndexDst[m_lIndexSrc-2];//СѓРіРѕР» РјРµР¶РґСѓ РѕС… Рё СЂР°РґРёСѓСЃРѕРј
+							nIndex1 = m_arIndexDst[m_lIndexSrc-3];//СЂР°СЃРїРѕР»РѕР¶РµРЅРёРµ С‚РѕС‡РєРё РїРѕ С‡РµС‚РІРµСЂС‚СЏРј
+							nIndex2 = m_arIndexDst[m_lIndexSrc];//РїСЂРёР±Р°РІРєР° 180 РёР»Рё 0
 
 							m_lIndexSrc ++;
-							strGuidsRes += ConvertProd ( nIndex1-1, ptFormula, nIndex1, ptFormula, 1, ptValue, true, true, true);//знак у угла
+							strGuidsRes += ConvertProd ( nIndex1-1, ptFormula, nIndex1, ptFormula, 1, ptValue, true, true, true);//Р·РЅР°Рє Сѓ СѓРіР»Р°
 							strGuidsRes += ConvertProd ( nIndex, ptFormula, -1, ptValue, 1, ptValue, true, true, true);
-							strGuidsRes += ConvertIf ( nIndex, ptFormula, nIndex, ptFormula, m_lIndexDst-1, ptFormula, true, true, true);//угол всегда положительный
+							strGuidsRes += ConvertIf ( nIndex, ptFormula, nIndex, ptFormula, m_lIndexDst-1, ptFormula, true, true, true);//СѓРіРѕР» РІСЃРµРіРґР° РїРѕР»РѕР¶РёС‚РµР»СЊРЅС‹Р№
 
-							strGuidsRes += ConvertProd ( m_lIndexDst-1, ptFormula, m_lIndexDst-3, ptFormula, 1, ptValue, true, true, true);//u с нужным знаком
+							strGuidsRes += ConvertProd ( m_lIndexDst-1, ptFormula, m_lIndexDst-3, ptFormula, 1, ptValue, true, true, true);//u СЃ РЅСѓР¶РЅС‹Рј Р·РЅР°РєРѕРј
 
 							strGuidsRes += ConvertSum ( m_lIndexDst-1, ptFormula, nIndex2, ptFormula, 0, ptValue, true, true, true);
 							m_arIndexDst.push_back(m_lIndexDst-1);
-							//координаты конечной точки
+							//РєРѕРѕСЂРґРёРЅР°С‚С‹ РєРѕРЅРµС‡РЅРѕР№ С‚РѕС‡РєРё
 							nIndex = m_arIndexDst[m_lIndexSrc-2];
 							nIndex1 = m_arIndexDst[m_lIndexSrc-4];
 							nIndex2 = m_arIndexDst[m_lIndexSrc-11];
@@ -762,7 +793,7 @@ namespace NSGuidesVML
 							strGuidsRes += ConvertSum ( nIndex2-1, ptFormula, m_lIndexDst-1, ptFormula, 0, ptValue, true, true, true);//x
 
 							strGuidsRes += ConvertProd ( nIndex-6, ptFormula, -1, ptValue, 1, ptValue, true, true, true);
-							strGuidsRes += ConvertIf ( nIndex-6, ptFormula, nIndex-6, ptFormula, m_lIndexDst-1, ptFormula, true, true, true);//sin теперь всегда>0
+							strGuidsRes += ConvertIf ( nIndex-6, ptFormula, nIndex-6, ptFormula, m_lIndexDst-1, ptFormula, true, true, true);//sin С‚РµРїРµСЂСЊ РІСЃРµРіРґР°>0
 
 							strGuidsRes += ConvertProd ( nIndex, ptFormula, m_lIndexDst-1, ptFormula, 1, ptValue, true, true, true);//r*sin(a)
 							strGuidsRes += ConvertProd ( nIndex1, ptFormula, m_lIndexDst-1, ptFormula, 1, ptValue, true, true, true);
@@ -788,7 +819,7 @@ namespace NSGuidesVML
 
 
 							//---------------------------------------------------------
-							nIndex = m_arIndexDst[m_lIndexSrc-8];//координаты стартовой точки
+							nIndex = m_arIndexDst[m_lIndexSrc-8];//РєРѕРѕСЂРґРёРЅР°С‚С‹ СЃС‚Р°СЂС‚РѕРІРѕР№ С‚РѕС‡РєРё
 							nIndex1 = m_arIndexDst[m_lIndexSrc-9];//stAng
 							nIndex2 = m_arIndexDst[m_lIndexSrc-1];//swAng
 
@@ -801,7 +832,7 @@ namespace NSGuidesVML
 								+ _T("\" /></a:") + strFrmla + _T("><a:arcTo wR=\"") + GetValue(m_lIndexDst-2, ptFormula, true) + _T("\" hR=\"") + GetValue(m_lIndexDst-1, ptFormula, true) + 
 								+ _T("\" stAng=\"") + GetValue(nIndex1, ptFormula, true) + _T("\" swAng=\"") + GetValue(nIndex2, ptFormula, true) + _T("\" />");
 							
-							//текущая точка
+							//С‚РµРєСѓС‰Р°СЏ С‚РѕС‡РєР°
 
 							nIndex = m_arIndexDst[m_lIndexSrc-2];
 							strGuidsRes += ConvertVal ( nIndex-5, ptFormula, true);
@@ -939,13 +970,13 @@ namespace NSGuidesVML
 							pCurPoint1 = oSlice.m_arPoints[j+2];
 							pCurPointType1 = oSlice.m_arPointsType[j+2];
 
-							//конвертация углов в pptx формат
+							//РєРѕРЅРІРµСЂС‚Р°С†РёСЏ СѓРіР»РѕРІ РІ pptx С„РѕСЂРјР°С‚
 							m_lIndexSrc ++;
-							strGuidsRes += ConvertProd ( pCurPoint1.x, pCurPointType1.x, pow3_16, ptValue, m_oParam.m_lParam, m_oParam.m_eType, false, true, true); //1 угол
-							strGuidsRes += ConvertProd ( pCurPoint1.y, pCurPointType1.y, pow3_16, ptValue, m_oParam.m_lParam, m_oParam.m_eType, false, true, true); //2 угол
+							strGuidsRes += ConvertProd ( pCurPoint1.x, pCurPointType1.x, pow3_16, ptValue, m_oParam.m_lParam, m_oParam.m_eType, false, true, true); //1 СѓРіРѕР»
+							strGuidsRes += ConvertProd ( pCurPoint1.y, pCurPointType1.y, pow3_16, ptValue, m_oParam.m_lParam, m_oParam.m_eType, false, true, true); //2 СѓРіРѕР»
 							m_arIndexDst.push_back(m_lIndexDst-1);
 
-							//wR и hR
+							//wR Рё hR
 							nIndex = m_arIndexDst[m_lIndexSrc];
 
 							m_lIndexSrc ++;
@@ -954,7 +985,7 @@ namespace NSGuidesVML
 
 							m_arIndexDst.push_back(m_lIndexDst-1);
 
-							//stAng и swAng
+							//stAng Рё swAng
 							nIndex = m_arIndexDst[m_lIndexSrc-1];
 							
 							m_lIndexSrc ++;		
@@ -963,7 +994,7 @@ namespace NSGuidesVML
 							strGuidsRes += ConvertProd ( nIndex, ptFormula, -1, ptValue, 1, ptValue, true, true, true);//swAng
 							m_arIndexDst.push_back(m_lIndexDst-1);
 
-							//радиус до стартовой точки
+							//СЂР°РґРёСѓСЃ РґРѕ СЃС‚Р°СЂС‚РѕРІРѕР№ С‚РѕС‡РєРё
 
 							nIndex = m_arIndexDst[m_lIndexSrc]; //stang
 							nIndex1 = m_arIndexDst[m_lIndexSrc-1]; //wr hr
@@ -984,9 +1015,9 @@ namespace NSGuidesVML
 							strGuidsRes += ConvertProd ( nIndex1, ptFormula, nIndex1-1, ptFormula, m_lIndexDst-1, ptFormula, true, true, true);//r
 							m_arIndexDst.push_back(m_lIndexDst-1);
 
-							//координаты конечной точки (она же начальная для эллипса)
+							//РєРѕРѕСЂРґРёРЅР°С‚С‹ РєРѕРЅРµС‡РЅРѕР№ С‚РѕС‡РєРё (РѕРЅР° Р¶Рµ РЅР°С‡Р°Р»СЊРЅР°СЏ РґР»СЏ СЌР»Р»РёРїСЃР°)
 
-							pCurPoint1 = oSlice.m_arPoints[j];//коорд центра
+							pCurPoint1 = oSlice.m_arPoints[j];//РєРѕРѕСЂРґ С†РµРЅС‚СЂР°
 							pCurPointType1 = oSlice.m_arPointsType[j];
 
 							nIndex = m_arIndexDst[m_lIndexSrc-1]; //stang
@@ -1002,9 +1033,9 @@ namespace NSGuidesVML
 							m_arIndexDst.push_back(m_lIndexDst-1);
 							//---------------------
 
-							nIndex = m_arIndexDst[m_lIndexSrc];//текущая точка
-							nIndex1 = m_arIndexDst[m_lIndexSrc-2];//stAng и swAng
-							nIndex2 = m_arIndexDst[m_lIndexSrc-3];//wR и hR
+							nIndex = m_arIndexDst[m_lIndexSrc];//С‚РµРєСѓС‰Р°СЏ С‚РѕС‡РєР°
+							nIndex1 = m_arIndexDst[m_lIndexSrc-2];//stAng Рё swAng
+							nIndex2 = m_arIndexDst[m_lIndexSrc-3];//wR Рё hR
 
 							if (j == 0)
 								strFrmla = _T("moveTo");
@@ -1015,7 +1046,7 @@ namespace NSGuidesVML
 								+ _T("\" /></a:") + strFrmla + _T("><a:arcTo wR=\"") + GetValue(nIndex2-1, ptFormula, true) + _T("\" hR=\"") + GetValue(nIndex2, ptFormula, true) + 
 								_T("\" stAng=\"") + GetValue(nIndex1-2, ptFormula, true) + _T("\" swAng=\"") + GetValue(nIndex1, ptFormula, true) + _T("\" />");
 
-							//текущая точка
+							//С‚РµРєСѓС‰Р°СЏ С‚РѕС‡РєР°
 
 							nIndex = m_arIndexDst[m_lIndexSrc];
 
@@ -1069,7 +1100,7 @@ namespace NSGuidesVML
 		void ConvertHandle ( std::vector<CHandle_>	arHandles, std::vector<long> m_arAdj, PPTShapes::ShapeType oSType )
 		{
 			LONG nHandlesCount = arHandles.size();
-			if (oSType == 19) // в пптх не реализована функция изменения размера шейпа при изменении handle
+			if (oSType == 19) // РІ РїРїС‚С… РЅРµ СЂРµР°Р»РёР·РѕРІР°РЅР° С„СѓРЅРєС†РёСЏ РёР·РјРµРЅРµРЅРёСЏ СЂР°Р·РјРµСЂР° С€РµР№РїР° РїСЂРё РёР·РјРµРЅРµРЅРёРё handle
 				nHandlesCount = 0;
 			for (int i = 0; i < nHandlesCount; ++i)
 			{
@@ -1098,7 +1129,7 @@ namespace NSGuidesVML
 
 					if (pHnPoint.polar != _T(""))
 					{
-						//пришел полярный угол
+						//РїСЂРёС€РµР» РїРѕР»СЏСЂРЅС‹Р№ СѓРіРѕР»
 						oHandle.bRefExist.y = false;
 
 						oHandle.bRefPolarExist.y = true;
@@ -1114,7 +1145,7 @@ namespace NSGuidesVML
 
 						if (oHandle.gdRefType.y == ptAdjust )
 						{
-							//угол должен храниться в pptx формате, поэтому придётся его везде заменить
+							//СѓРіРѕР» РґРѕР»Р¶РµРЅ С…СЂР°РЅРёС‚СЊСЃСЏ РІ pptx С„РѕСЂРјР°С‚Рµ, РїРѕСЌС‚РѕРјСѓ РїСЂРёРґС‘С‚СЃСЏ РµРіРѕ РІРµР·РґРµ Р·Р°РјРµРЅРёС‚СЊ
 							CString strNewFmla = GetValue (m_lIndexDst, ptFormula, true);
 							CString strOldFmla = GetValue (oHandle.gdRef.y, oHandle.gdRefType.y, false);
 							LONG nIndex = m_lIndexDst;								
@@ -1132,7 +1163,7 @@ namespace NSGuidesVML
 								m_arAdj.SetAtIndex (oHandle.gdRef.y, lVal);
 							}
 
-							//рассчитаем координаты точки handle
+							//СЂР°СЃСЃС‡РёС‚Р°РµРј РєРѕРѕСЂРґРёРЅР°С‚С‹ С‚РѕС‡РєРё handle
 
 							m_lIndexSrc++;
 							strGuidsRes += ConvertCos (oHandle.gdRef.x, oHandle.gdRefType.x, oHandle.gdRef.y, oHandle.gdRefType.y, false, false);
@@ -1152,7 +1183,7 @@ namespace NSGuidesVML
 						}
 
 					}
-					else//если пришли обычные координаты
+					else//РµСЃР»Рё РїСЂРёС€Р»Рё РѕР±С‹С‡РЅС‹Рµ РєРѕРѕСЂРґРёРЅР°С‚С‹
 					{
 						if ((pHnPoint.xrange != _T("") && oHandle.gdRefType.x != ptAdjust && oHandle.gdRefType.y == ptAdjust) ||
 							(pHnPoint.yrange != _T("") && oHandle.gdRefType.x == ptAdjust && oHandle.gdRefType.y != ptAdjust))
@@ -1545,7 +1576,7 @@ namespace NSGuidesVML
 			if (oHnd.bRefPolarExist.y)
 				strRes += _T(" gdRefAng=\"") + GetValue(oHnd.gdRef.y, oHnd.gdRefType.y, true) + _T("\"");
 
-			//min max 1го параметра
+			//min max 1РіРѕ РїР°СЂР°РјРµС‚СЂР°
 			if (oHnd.bMinExist.x)
 			{
 				strRes += _T(" minX=\"") + GetValue(oHnd.Min.x, oHnd.MinType.x, false)+ _T("\"");
@@ -1560,7 +1591,7 @@ namespace NSGuidesVML
 				strRes += _T(" maxR=\"") + GetValue(oHnd.Max.x, oHnd.MaxType.x, false)+ _T("\"");
 			}
 
-			//min max 2го параметра
+			//min max 2РіРѕ РїР°СЂР°РјРµС‚СЂР°
 			if (oHnd.bMinExist.y)
 			{
 				strRes += _T(" minY=\"") + GetValue(oHnd.Min.y, oHnd.MinType.y, false)+ _T("\"");
@@ -1895,7 +1926,7 @@ namespace NSGuidesVML
 		int m_lMaxAdjUse;
 
 	public:
-		// все в одно не получится, формулы появляются и при конвертации path/adj и т.д.
+		// РІСЃРµ РІ РѕРґРЅРѕ РЅРµ РїРѕР»СѓС‡РёС‚СЃСЏ, С„РѕСЂРјСѓР»С‹ РїРѕСЏРІР»СЏСЋС‚СЃСЏ Рё РїСЂРё РєРѕРЅРІРµСЂС‚Р°С†РёРё path/adj Рё С‚.Рґ.
 		NSBinPptxRW::CXmlWriter m_oGuidsRes;
 		NSBinPptxRW::CXmlWriter m_oPathRes;
 		NSBinPptxRW::CXmlWriter m_oHandleRes;
@@ -2118,9 +2149,9 @@ namespace NSGuidesVML
 				{
 					CSlicePath& oSlice = m_arSlicesPath[i];
 					
-					//m_lIndexDst-1 - номер последней записанной формулы
-					//m_lIndexSrc - номер последнего блока формул
-					//m_arIndexDst[n] - возвращает номер последней формулы в блоке n
+					//m_lIndexDst-1 - РЅРѕРјРµСЂ РїРѕСЃР»РµРґРЅРµР№ Р·Р°РїРёСЃР°РЅРЅРѕР№ С„РѕСЂРјСѓР»С‹
+					//m_lIndexSrc - РЅРѕРјРµСЂ РїРѕСЃР»РµРґРЅРµРіРѕ Р±Р»РѕРєР° С„РѕСЂРјСѓР»
+					//m_arIndexDst[n] - РІРѕР·РІСЂР°С‰Р°РµС‚ РЅРѕРјРµСЂ РїРѕСЃР»РµРґРЅРµР№ С„РѕСЂРјСѓР»С‹ РІ Р±Р»РѕРєРµ n
 					//m_arIndexDst[m_lIndexSrc] = m_lIndexDst
 					
 					switch (oSlice.m_eRuler)
@@ -2205,7 +2236,7 @@ namespace NSGuidesVML
 		void ConvertHandle(const std::vector<CHandle_>& arHandles, std::vector<long>& arAdj, PPTShapes::ShapeType oSType)
 		{
 			LONG nHandlesCount = arHandles.size();
-			if (oSType == 19) // в пптх не реализована функция изменения размера шейпа при изменении handle
+			if (oSType == 19) // РІ РїРїС‚С… РЅРµ СЂРµР°Р»РёР·РѕРІР°РЅР° С„СѓРЅРєС†РёСЏ РёР·РјРµРЅРµРЅРёСЏ СЂР°Р·РјРµСЂР° С€РµР№РїР° РїСЂРё РёР·РјРµРЅРµРЅРёРё handle
 				nHandlesCount = 0;
 			for (int i = 0; i < nHandlesCount; ++i)
 			{
@@ -2236,7 +2267,7 @@ namespace NSGuidesVML
 
 					if (pHnPoint.polar != _T(""))
 					{
-						//пришел полярный угол
+						//РїСЂРёС€РµР» РїРѕР»СЏСЂРЅС‹Р№ СѓРіРѕР»
 						oHandle.bRefExist.y = false;
 
 						oHandle.bRefPolarExist.y = true;
@@ -2252,17 +2283,17 @@ namespace NSGuidesVML
 
 						if (oHandle.gdRefType.y == ptAdjust)
 						{
-							//угол должен храниться в pptx формате, поэтому придётся его везде заменить
+							//СѓРіРѕР» РґРѕР»Р¶РµРЅ С…СЂР°РЅРёС‚СЊСЃСЏ РІ pptx С„РѕСЂРјР°С‚Рµ, РїРѕСЌС‚РѕРјСѓ РїСЂРёРґС‘С‚СЃСЏ РµРіРѕ РІРµР·РґРµ Р·Р°РјРµРЅРёС‚СЊ
 							CString strNewFmla = GetValue2(m_lIndexDst, ptFormula, true);
 							CString strOldFmla = GetValue2(oHandle.gdRef.y, oHandle.gdRefType.y, false);
 							LONG nIndex = m_lIndexDst;								
 
-							// TODO: !!! тут медленный код.
+							// TODO: !!! С‚СѓС‚ РјРµРґР»РµРЅРЅС‹Р№ РєРѕРґ.
 							m_oGuidsRes.ReplaceString(strOldFmla, strNewFmla);
 							
 							m_lIndexSrc++;
 							
-							// TODO: !!! тут медленный код.
+							// TODO: !!! С‚СѓС‚ РјРµРґР»РµРЅРЅС‹Р№ РєРѕРґ.
 							NSBinPptxRW::CXmlWriter memGuidsRes;
 							ConvertProd(oHandle.gdRef.y, oHandle.gdRefType.y, m_oParam.m_lCoef, ptValue, pow3_16, ptValue, false, true, false, memGuidsRes);
 							m_oGuidsRes.m_oWriter.WriteBefore(memGuidsRes.m_oWriter);
@@ -2275,8 +2306,8 @@ namespace NSGuidesVML
 								LONG nCountAdj = arAdj.size();
 								if (oHandle.gdRef.y >= nCountAdj)
 								{
-									// дурацкий код. надо память перевыделить, а старую скопировать
-									// пока сделаю так, чтобы наверняка
+									// РґСѓСЂР°С†РєРёР№ РєРѕРґ. РЅР°РґРѕ РїР°РјСЏС‚СЊ РїРµСЂРµРІС‹РґРµР»РёС‚СЊ, Р° СЃС‚Р°СЂСѓСЋ СЃРєРѕРїРёСЂРѕРІР°С‚СЊ
+									// РїРѕРєР° СЃРґРµР»Р°СЋ С‚Р°Рє, С‡С‚РѕР±С‹ РЅР°РІРµСЂРЅСЏРєР°
 									int nNewSize = (int)oHandle.gdRef.y + 1;
 									while (arAdj.size() < nNewSize)
 										arAdj.push_back(0);
@@ -2286,7 +2317,7 @@ namespace NSGuidesVML
 								arAdj[oHandle.gdRef.y] =  lVal;
 							}
 
-							//рассчитаем координаты точки handle
+							//СЂР°СЃСЃС‡РёС‚Р°РµРј РєРѕРѕСЂРґРёРЅР°С‚С‹ С‚РѕС‡РєРё handle
 
 							m_lIndexSrc++;
 							ConvertCos(oHandle.gdRef.x, oHandle.gdRefType.x, oHandle.gdRef.y, oHandle.gdRefType.y, false, false, m_oGuidsRes);
@@ -2306,7 +2337,7 @@ namespace NSGuidesVML
 						}
 
 					}
-					else//если пришли обычные координаты
+					else//РµСЃР»Рё РїСЂРёС€Р»Рё РѕР±С‹С‡РЅС‹Рµ РєРѕРѕСЂРґРёРЅР°С‚С‹
 					{
 						if ((pHnPoint.xrange != _T("") && oHandle.gdRefType.x != ptAdjust && oHandle.gdRefType.y == ptAdjust) ||
 							(pHnPoint.yrange != _T("") && oHandle.gdRefType.x == ptAdjust && oHandle.gdRefType.y != ptAdjust))
@@ -2698,7 +2729,7 @@ namespace NSGuidesVML
 				m_oHandleRes.WriteString(_T("\""));
 			}
 
-			//min max 1го параметра
+			//min max 1РіРѕ РїР°СЂР°РјРµС‚СЂР°
 			if (oHnd.bMinExist.x)
 			{
 				m_oHandleRes.WriteString(_T(" minX=\""));
@@ -2721,7 +2752,7 @@ namespace NSGuidesVML
 				m_oHandleRes.WriteString(_T("\""));
 			}
 
-			//min max 2го параметра
+			//min max 2РіРѕ РїР°СЂР°РјРµС‚СЂР°
 			if (oHnd.bMinExist.y)
 			{
 				m_oHandleRes.WriteString(_T(" minY=\""));
@@ -2828,7 +2859,7 @@ namespace NSGuidesVML
                     return lVal;
                 else
                     return 0; //???
-                //todooo прописать все варианты правильно
+                //todooo РїСЂРѕРїРёСЃР°С‚СЊ РІСЃРµ РІР°СЂРёР°РЅС‚С‹ РїСЂР°РІРёР»СЊРЅРѕ
             }
             else
             {
@@ -3015,12 +3046,12 @@ namespace NSGuidesVML
 				pCurPoint1 = oSlice.m_arPoints[j+1];
 				pCurPointType1 = oSlice.m_arPointsType[j+1];
 
-				//длина сторон
+				//РґР»РёРЅР° СЃС‚РѕСЂРѕРЅ
 				m_lIndexSrc++;
 				ConvertSum(pCurPoint1.x, pCurPointType1.x, 0, ptValue, pCurPoint.x, pCurPointType.x, false, true, false, m_oGuidsRes);
 				ConvertSum(pCurPoint1.y, pCurPointType1.y, 0, ptValue, pCurPoint.y, pCurPointType.y, false, true, false, m_oGuidsRes);
 				m_arIndexDst.push_back(m_lIndexDst-1);
-				//координаты центра
+				//РєРѕРѕСЂРґРёРЅР°С‚С‹ С†РµРЅС‚СЂР°
 				nIndex = m_arIndexDst[m_lIndexSrc];
 
 				m_lIndexSrc++;
@@ -3030,8 +3061,8 @@ namespace NSGuidesVML
 				ConvertSum(pCurPoint.x, pCurPointType.x, m_lIndexDst-2, ptFormula, 0, ptValue, false, true, true, m_oGuidsRes);
 				ConvertSum(pCurPoint.y, pCurPointType.y, m_lIndexDst-2, ptFormula, 0, ptValue, false, true, true, m_oGuidsRes);
 				m_arIndexDst.push_back(m_lIndexDst-1);
-				//рассчет для stAng---------------------------
-				//расположение текущей точки по четвертям 3 4
+				//СЂР°СЃСЃС‡РµС‚ РґР»СЏ stAng---------------------------
+				//СЂР°СЃРїРѕР»РѕР¶РµРЅРёРµ С‚РµРєСѓС‰РµР№ С‚РѕС‡РєРё РїРѕ С‡РµС‚РІРµСЂС‚СЏРј 3 4
 				//										  2 1
 
 				pCurPoint = oSlice.m_arPoints[j+2];
@@ -3044,14 +3075,14 @@ namespace NSGuidesVML
 				ConvertIf(m_lIndexDst-2, ptFormula, 1, ptValue, -1, ptValue, true, true, true, m_oGuidsRes);
 				ConvertIf(m_lIndexDst-2, ptFormula, 1, ptValue, -1, ptValue, true, true, true, m_oGuidsRes);
 				m_arIndexDst.push_back(m_lIndexDst-1);
-				//угол между Ох и радиус-вектором к точке					
+				//СѓРіРѕР» РјРµР¶РґСѓ РћС… Рё СЂР°РґРёСѓСЃ-РІРµРєС‚РѕСЂРѕРј Рє С‚РѕС‡РєРµ					
 				nIndex = m_arIndexDst[m_lIndexSrc];							
 
 				m_lIndexSrc++;						
 				ConvertProd(nIndex-2, ptFormula, 1, ptValue, nIndex-3, ptFormula, true, true, true, m_oGuidsRes);
 				ConvertAt2(1, ptValue, m_lIndexDst-1, ptFormula, true, true, m_oGuidsRes);
 				m_arIndexDst.push_back(m_lIndexDst-1);
-				//радиус к точке
+				//СЂР°РґРёСѓСЃ Рє С‚РѕС‡РєРµ
 				nIndex = m_arIndexDst[m_lIndexSrc];
 				nIndex1 = m_arIndexDst[m_lIndexSrc-2];
 
@@ -3070,27 +3101,27 @@ namespace NSGuidesVML
 				ConvertSqrt(m_lIndexDst-1, ptFormula, true, m_oGuidsRes);
 				ConvertProd(nIndex1-3, ptFormula, nIndex1-2, ptFormula, m_lIndexDst-1, ptFormula, true, true, true, m_oGuidsRes);//r
 				m_arIndexDst.push_back(m_lIndexDst-1);
-				//если точка во 2 и 3 четвертях, прибавляем по 180grad
+				//РµСЃР»Рё С‚РѕС‡РєР° РІРѕ 2 Рё 3 С‡РµС‚РІРµСЂС‚СЏС…, РїСЂРёР±Р°РІР»СЏРµРј РїРѕ 180grad
 				nIndex = m_arIndexDst[m_lIndexSrc-2];							
 
 				m_lIndexSrc++;	
 				ConvertIf(nIndex-3, ptFormula, 0, ptValue, 10800000, ptValue, true, true, true, m_oGuidsRes);
 				m_arIndexDst.push_back(m_lIndexDst-1);
-				//угол до 1 точки (stAngle)
-				nIndex = m_arIndexDst[m_lIndexSrc-2];//угол между ох и радиусом
-				nIndex1 = m_arIndexDst[m_lIndexSrc-3];//расположение точки по четвертям
-				nIndex2 = m_arIndexDst[m_lIndexSrc];//прибавка 180 или 0
+				//СѓРіРѕР» РґРѕ 1 С‚РѕС‡РєРё (stAngle)
+				nIndex = m_arIndexDst[m_lIndexSrc-2];//СѓРіРѕР» РјРµР¶РґСѓ РѕС… Рё СЂР°РґРёСѓСЃРѕРј
+				nIndex1 = m_arIndexDst[m_lIndexSrc-3];//СЂР°СЃРїРѕР»РѕР¶РµРЅРёРµ С‚РѕС‡РєРё РїРѕ С‡РµС‚РІРµСЂС‚СЏРј
+				nIndex2 = m_arIndexDst[m_lIndexSrc];//РїСЂРёР±Р°РІРєР° 180 РёР»Рё 0
 
 				m_lIndexSrc ++;
-				ConvertProd(nIndex1-1, ptFormula, nIndex1, ptFormula, 1, ptValue, true, true, true, m_oGuidsRes);//знак у угла
+				ConvertProd(nIndex1-1, ptFormula, nIndex1, ptFormula, 1, ptValue, true, true, true, m_oGuidsRes);//Р·РЅР°Рє Сѓ СѓРіР»Р°
 				ConvertProd(nIndex, ptFormula, -1, ptValue, 1, ptValue, true, true, true, m_oGuidsRes);
-				ConvertIf(nIndex, ptFormula, nIndex, ptFormula, m_lIndexDst-1, ptFormula, true, true, true, m_oGuidsRes);//угол всегда положительный
+				ConvertIf(nIndex, ptFormula, nIndex, ptFormula, m_lIndexDst-1, ptFormula, true, true, true, m_oGuidsRes);//СѓРіРѕР» РІСЃРµРіРґР° РїРѕР»РѕР¶РёС‚РµР»СЊРЅС‹Р№
 
-				ConvertProd(m_lIndexDst-1, ptFormula, m_lIndexDst-3, ptFormula, 1, ptValue, true, true, true, m_oGuidsRes);//u с нужным знаком
+				ConvertProd(m_lIndexDst-1, ptFormula, m_lIndexDst-3, ptFormula, 1, ptValue, true, true, true, m_oGuidsRes);//u СЃ РЅСѓР¶РЅС‹Рј Р·РЅР°РєРѕРј
 
 				ConvertSum(m_lIndexDst-1, ptFormula, nIndex2, ptFormula, 0, ptValue, true, true, true, m_oGuidsRes);
 				m_arIndexDst.push_back(m_lIndexDst-1);
-				//координаты стартовой точки
+				//РєРѕРѕСЂРґРёРЅР°С‚С‹ СЃС‚Р°СЂС‚РѕРІРѕР№ С‚РѕС‡РєРё
 				nIndex = m_arIndexDst[m_lIndexSrc-2];
 				nIndex1 = m_arIndexDst[m_lIndexSrc-4];
 				nIndex2 = m_arIndexDst[m_lIndexSrc-5];
@@ -3101,14 +3132,14 @@ namespace NSGuidesVML
 				ConvertSum(nIndex2-1, ptFormula, m_lIndexDst-1, ptFormula, 0, ptValue, true, true, true, m_oGuidsRes); //x
 
 				ConvertProd(nIndex-6, ptFormula, -1, ptValue, 1, ptValue, true, true, true, m_oGuidsRes);
-				ConvertIf(nIndex-6, ptFormula, nIndex-6, ptFormula, m_lIndexDst-1, ptFormula, true, true, true, m_oGuidsRes);//sin теперь всегда>0
+				ConvertIf(nIndex-6, ptFormula, nIndex-6, ptFormula, m_lIndexDst-1, ptFormula, true, true, true, m_oGuidsRes);//sin С‚РµРїРµСЂСЊ РІСЃРµРіРґР°>0
 
 				ConvertProd(nIndex, ptFormula, m_lIndexDst-1, ptFormula, 1, ptValue, true, true, true, m_oGuidsRes);//r*sin
 				ConvertProd(nIndex1, ptFormula, m_lIndexDst-1, ptFormula, 1, ptValue, true, true, true, m_oGuidsRes);
 				ConvertSum(nIndex2, ptFormula, m_lIndexDst-1, ptFormula, 0, ptValue, true, true, true, m_oGuidsRes);//y
 				m_arIndexDst.push_back(m_lIndexDst-1);
-				//рассчет для swAng---------------------------
-				//расположение текущей точки по четвертям 3 4
+				//СЂР°СЃСЃС‡РµС‚ РґР»СЏ swAng---------------------------
+				//СЂР°СЃРїРѕР»РѕР¶РµРЅРёРµ С‚РµРєСѓС‰РµР№ С‚РѕС‡РєРё РїРѕ С‡РµС‚РІРµСЂС‚СЏРј 3 4
 				//										  2 1
 
 				pCurPoint = oSlice.m_arPoints[j+3];
@@ -3122,14 +3153,14 @@ namespace NSGuidesVML
 				ConvertIf(m_lIndexDst-2, ptFormula, 1, ptValue, -1, ptValue, true, true, true, m_oGuidsRes);
 				ConvertIf(m_lIndexDst-2, ptFormula, 1, ptValue, -1, ptValue, true, true, true, m_oGuidsRes);
 				m_arIndexDst.push_back(m_lIndexDst-1);
-				//угол между Ох и радиус-вектором к точке					
+				//СѓРіРѕР» РјРµР¶РґСѓ РћС… Рё СЂР°РґРёСѓСЃ-РІРµРєС‚РѕСЂРѕРј Рє С‚РѕС‡РєРµ					
 				nIndex = m_arIndexDst[m_lIndexSrc];
 
 				m_lIndexSrc++;
 				ConvertProd(nIndex-2, ptFormula, 1, ptValue, nIndex-3, ptFormula, true, true, true, m_oGuidsRes);
 				ConvertAt2(1, ptValue, m_lIndexDst-1, ptFormula, true, true, m_oGuidsRes);
 				m_arIndexDst.push_back(m_lIndexDst-1);
-				//радиус к точке
+				//СЂР°РґРёСѓСЃ Рє С‚РѕС‡РєРµ
 				nIndex = m_arIndexDst[m_lIndexSrc];
 				nIndex1 = m_arIndexDst[m_lIndexSrc-8];
 
@@ -3148,27 +3179,27 @@ namespace NSGuidesVML
 				ConvertSqrt(m_lIndexDst-1, ptFormula, true, m_oGuidsRes);
 				ConvertProd(nIndex1-3, ptFormula, nIndex1-2, ptFormula, m_lIndexDst-1, ptFormula, true, true, true, m_oGuidsRes);
 				m_arIndexDst.push_back(m_lIndexDst-1);
-				//если точка во 2 и 3 четвертях, прибавляем по 180grad
+				//РµСЃР»Рё С‚РѕС‡РєР° РІРѕ 2 Рё 3 С‡РµС‚РІРµСЂС‚СЏС…, РїСЂРёР±Р°РІР»СЏРµРј РїРѕ 180grad
 				nIndex = m_arIndexDst[m_lIndexSrc-2];
 
 				m_lIndexSrc++;
 				ConvertIf(nIndex-3, ptFormula, 0, ptValue, 10800000, ptValue, true, true, true, m_oGuidsRes);
 				m_arIndexDst.push_back(m_lIndexDst-1);
-				//угол до 2 точки 
-				nIndex = m_arIndexDst[m_lIndexSrc-2];//угол между ох и радиусом
-				nIndex1 = m_arIndexDst[m_lIndexSrc-3];//расположение точки по четвертям
-				nIndex2 = m_arIndexDst[m_lIndexSrc];//прибавка 180 или 0
+				//СѓРіРѕР» РґРѕ 2 С‚РѕС‡РєРё 
+				nIndex = m_arIndexDst[m_lIndexSrc-2];//СѓРіРѕР» РјРµР¶РґСѓ РѕС… Рё СЂР°РґРёСѓСЃРѕРј
+				nIndex1 = m_arIndexDst[m_lIndexSrc-3];//СЂР°СЃРїРѕР»РѕР¶РµРЅРёРµ С‚РѕС‡РєРё РїРѕ С‡РµС‚РІРµСЂС‚СЏРј
+				nIndex2 = m_arIndexDst[m_lIndexSrc];//РїСЂРёР±Р°РІРєР° 180 РёР»Рё 0
 
 				m_lIndexSrc++;
-				ConvertProd(nIndex1-1, ptFormula, nIndex1, ptFormula, 1, ptValue, true, true, true, m_oGuidsRes);//знак у угла
+				ConvertProd(nIndex1-1, ptFormula, nIndex1, ptFormula, 1, ptValue, true, true, true, m_oGuidsRes);//Р·РЅР°Рє Сѓ СѓРіР»Р°
 				ConvertProd(nIndex, ptFormula, -1, ptValue, 1, ptValue, true, true, true, m_oGuidsRes);
-				ConvertIf(nIndex, ptFormula, nIndex, ptFormula, m_lIndexDst-1, ptFormula, true, true, true, m_oGuidsRes);//угол всегда положительный
+				ConvertIf(nIndex, ptFormula, nIndex, ptFormula, m_lIndexDst-1, ptFormula, true, true, true, m_oGuidsRes);//СѓРіРѕР» РІСЃРµРіРґР° РїРѕР»РѕР¶РёС‚РµР»СЊРЅС‹Р№
 
-				ConvertProd(m_lIndexDst-1, ptFormula, m_lIndexDst-3, ptFormula, 1, ptValue, true, true, true, m_oGuidsRes);//u с нужным знаком
+				ConvertProd(m_lIndexDst-1, ptFormula, m_lIndexDst-3, ptFormula, 1, ptValue, true, true, true, m_oGuidsRes);//u СЃ РЅСѓР¶РЅС‹Рј Р·РЅР°РєРѕРј
 
 				ConvertSum(m_lIndexDst-1, ptFormula, nIndex2, ptFormula, 0, ptValue, true, true, true, m_oGuidsRes);
 				m_arIndexDst.push_back(m_lIndexDst-1);
-				//координаты конечной точки
+				//РєРѕРѕСЂРґРёРЅР°С‚С‹ РєРѕРЅРµС‡РЅРѕР№ С‚РѕС‡РєРё
 				nIndex = m_arIndexDst[m_lIndexSrc-2];
 				nIndex1 = m_arIndexDst[m_lIndexSrc-4];
 				nIndex2 = m_arIndexDst[m_lIndexSrc-11];
@@ -3179,18 +3210,18 @@ namespace NSGuidesVML
 				ConvertSum(nIndex2-1, ptFormula, m_lIndexDst-1, ptFormula, 0, ptValue, true, true, true, m_oGuidsRes);//x
 
 				ConvertProd(nIndex-6, ptFormula, -1, ptValue, 1, ptValue, true, true, true, m_oGuidsRes);
-				ConvertIf(nIndex-6, ptFormula, nIndex-6, ptFormula, m_lIndexDst-1, ptFormula, true, true, true, m_oGuidsRes);//sin теперь всегда>0
+				ConvertIf(nIndex-6, ptFormula, nIndex-6, ptFormula, m_lIndexDst-1, ptFormula, true, true, true, m_oGuidsRes);//sin С‚РµРїРµСЂСЊ РІСЃРµРіРґР°>0
 
 				ConvertProd(nIndex, ptFormula, m_lIndexDst-1, ptFormula, 1, ptValue, true, true, true, m_oGuidsRes);//r*sin(a)
 				ConvertProd(nIndex1, ptFormula, m_lIndexDst-1, ptFormula, 1, ptValue, true, true, true, m_oGuidsRes);
 				ConvertSum(nIndex2, ptFormula, m_lIndexDst-1, ptFormula, 0, ptValue, true, true, true, m_oGuidsRes);//y
 				m_arIndexDst.push_back(m_lIndexDst-1);
 				//swAngle
-				nIndex = m_arIndexDst[m_lIndexSrc-1]; //2 угол
-				nIndex1 = m_arIndexDst[m_lIndexSrc-7]; //1 угол
+				nIndex = m_arIndexDst[m_lIndexSrc-1]; //2 СѓРіРѕР»
+				nIndex1 = m_arIndexDst[m_lIndexSrc-7]; //1 СѓРіРѕР»
 
 				m_lIndexSrc++;
-				ConvertSum(nIndex1, ptFormula, 0, ptValue, nIndex, ptFormula, true, true, true, m_oGuidsRes); // (1)-(2), если отрицательный то берем его, иначе пересчитываем
+				ConvertSum(nIndex1, ptFormula, 0, ptValue, nIndex, ptFormula, true, true, true, m_oGuidsRes); // (1)-(2), РµСЃР»Рё РѕС‚СЂРёС†Р°С‚РµР»СЊРЅС‹Р№ С‚Рѕ Р±РµСЂРµРј РµРіРѕ, РёРЅР°С‡Рµ РїРµСЂРµСЃС‡РёС‚С‹РІР°РµРј
 				ConvertProd(m_lIndexDst-1, ptFormula, -1, ptValue, 1, ptValue, true, true, true, m_oGuidsRes);
 
 				ConvertSum(nIndex1, ptFormula, 21600000, ptValue, nIndex, ptFormula, true, true, true, m_oGuidsRes);
@@ -3207,7 +3238,7 @@ namespace NSGuidesVML
 				m_arIndexDst.push_back(m_lIndexDst-1);
 
 				//---------------------------------------------------------
-				nIndex = m_arIndexDst[m_lIndexSrc-8];//координаты стартовой точки
+				nIndex = m_arIndexDst[m_lIndexSrc-8];//РєРѕРѕСЂРґРёРЅР°С‚С‹ СЃС‚Р°СЂС‚РѕРІРѕР№ С‚РѕС‡РєРё
 				nIndex1 = m_arIndexDst[m_lIndexSrc-9];//stAng
 				nIndex2 = m_arIndexDst[m_lIndexSrc-1];//swAng
 
@@ -3249,14 +3280,14 @@ namespace NSGuidesVML
 					m_oPathRes.WriteString(_T("\" />"));
 				}
 
-				//старт
+				//СЃС‚Р°СЂС‚
 				/*
 				LONG nIndex3 = m_arIndexDst[m_lIndexSrc-14];
 				strPathRes += _T("<a:moveTo><a:pt x=\"0\" y=\"0\" /></a:moveTo><a:lnTo><a:pt x=\"") + GetValue(nIndex3-1, ptFormula, true) + _T("\" y=\"") + GetValue(nIndex3, ptFormula, true) + 
 					+ _T("\" /></a:lnTo>");
 				*/
 
-				//текущая точка
+				//С‚РµРєСѓС‰Р°СЏ С‚РѕС‡РєР°
 				nIndex = m_arIndexDst[m_lIndexSrc-2];
 				ConvertVal(nIndex-5, ptFormula, true, m_oGuidsRes);
 				ConvertVal(nIndex, ptFormula, true, m_oGuidsRes);							
@@ -3276,12 +3307,12 @@ namespace NSGuidesVML
 				pCurPoint1 = oSlice.m_arPoints[j+1];
 				pCurPointType1 = oSlice.m_arPointsType[j+1];
 
-				//длина сторон
+				//РґР»РёРЅР° СЃС‚РѕСЂРѕРЅ
 				m_lIndexSrc++;
 				ConvertSum(pCurPoint1.x, pCurPointType1.x, 0, ptValue, pCurPoint.x, pCurPointType.x, false, true, false, m_oGuidsRes);
 				ConvertSum(pCurPoint1.y, pCurPointType1.y, 0, ptValue, pCurPoint.y, pCurPointType.y, false, true, false, m_oGuidsRes);
 				m_arIndexDst.push_back(m_lIndexDst-1);
-				//координаты центра
+				//РєРѕРѕСЂРґРёРЅР°С‚С‹ С†РµРЅС‚СЂР°
 				nIndex = m_arIndexDst[m_lIndexSrc];
 
 				m_lIndexSrc++;
@@ -3291,8 +3322,8 @@ namespace NSGuidesVML
 				ConvertSum(pCurPoint.x, pCurPointType.x, m_lIndexDst-2, ptFormula, 0, ptValue, false, true, true, m_oGuidsRes);
 				ConvertSum(pCurPoint.y, pCurPointType.y, m_lIndexDst-2, ptFormula, 0, ptValue, false, true, true, m_oGuidsRes);
 				m_arIndexDst.push_back(m_lIndexDst-1);
-				//рассчет для stAng---------------------------
-				//расположение текущей точки по четвертям 3 4
+				//СЂР°СЃСЃС‡РµС‚ РґР»СЏ stAng---------------------------
+				//СЂР°СЃРїРѕР»РѕР¶РµРЅРёРµ С‚РµРєСѓС‰РµР№ С‚РѕС‡РєРё РїРѕ С‡РµС‚РІРµСЂС‚СЏРј 3 4
 				//										  2 1
 
 				pCurPoint = oSlice.m_arPoints[j+2];
@@ -3305,14 +3336,14 @@ namespace NSGuidesVML
 				ConvertIf(m_lIndexDst-2, ptFormula, 1, ptValue, -1, ptValue, true, true, true, m_oGuidsRes);
 				ConvertIf(m_lIndexDst-2, ptFormula, 1, ptValue, -1, ptValue, true, true, true, m_oGuidsRes);
 				m_arIndexDst.push_back(m_lIndexDst-1);
-				//угол между Ох и радиус-вектором к точке					
+				//СѓРіРѕР» РјРµР¶РґСѓ РћС… Рё СЂР°РґРёСѓСЃ-РІРµРєС‚РѕСЂРѕРј Рє С‚РѕС‡РєРµ					
 				nIndex = m_arIndexDst[m_lIndexSrc];							
 
 				m_lIndexSrc++;						
 				ConvertProd(nIndex-2, ptFormula, 1, ptValue, nIndex-3, ptFormula, true, true, true, m_oGuidsRes);
 				ConvertAt2(1, ptValue, m_lIndexDst-1, ptFormula, true, true, m_oGuidsRes);
 				m_arIndexDst.push_back(m_lIndexDst-1);
-				//радиус к точке
+				//СЂР°РґРёСѓСЃ Рє С‚РѕС‡РєРµ
 				nIndex = m_arIndexDst[m_lIndexSrc];
 				nIndex1 = m_arIndexDst[m_lIndexSrc-2];
 
@@ -3331,27 +3362,27 @@ namespace NSGuidesVML
 				ConvertSqrt(m_lIndexDst-1, ptFormula, true, m_oGuidsRes);
 				ConvertProd(nIndex1-3, ptFormula, nIndex1-2, ptFormula, m_lIndexDst-1, ptFormula, true, true, true, m_oGuidsRes);//r
 				m_arIndexDst.push_back(m_lIndexDst-1);
-				//если точка во 2 и 3 четвертях, прибавляем по 180grad
+				//РµСЃР»Рё С‚РѕС‡РєР° РІРѕ 2 Рё 3 С‡РµС‚РІРµСЂС‚СЏС…, РїСЂРёР±Р°РІР»СЏРµРј РїРѕ 180grad
 				nIndex = m_arIndexDst[m_lIndexSrc-2];							
 
 				m_lIndexSrc++;	
 				ConvertIf(nIndex-3, ptFormula, 0, ptValue, 10800000, ptValue, true, true, true, m_oGuidsRes);
 				m_arIndexDst.push_back(m_lIndexDst-1);
-				//угол до 1 точки (stAngle)
-				nIndex = m_arIndexDst[m_lIndexSrc-2];//угол между ох и радиусом
-				nIndex1 = m_arIndexDst[m_lIndexSrc-3];//расположение точки по четвертям
-				nIndex2 = m_arIndexDst[m_lIndexSrc];//прибавка 180 или 0
+				//СѓРіРѕР» РґРѕ 1 С‚РѕС‡РєРё (stAngle)
+				nIndex = m_arIndexDst[m_lIndexSrc-2];//СѓРіРѕР» РјРµР¶РґСѓ РѕС… Рё СЂР°РґРёСѓСЃРѕРј
+				nIndex1 = m_arIndexDst[m_lIndexSrc-3];//СЂР°СЃРїРѕР»РѕР¶РµРЅРёРµ С‚РѕС‡РєРё РїРѕ С‡РµС‚РІРµСЂС‚СЏРј
+				nIndex2 = m_arIndexDst[m_lIndexSrc];//РїСЂРёР±Р°РІРєР° 180 РёР»Рё 0
 
 				m_lIndexSrc++;
-				ConvertProd(nIndex1-1, ptFormula, nIndex1, ptFormula, 1, ptValue, true, true, true, m_oGuidsRes);//знак у угла
+				ConvertProd(nIndex1-1, ptFormula, nIndex1, ptFormula, 1, ptValue, true, true, true, m_oGuidsRes);//Р·РЅР°Рє Сѓ СѓРіР»Р°
 				ConvertProd(nIndex, ptFormula, -1, ptValue, 1, ptValue, true, true, true, m_oGuidsRes);
-				ConvertIf(nIndex, ptFormula, nIndex, ptFormula, m_lIndexDst-1, ptFormula, true, true, true, m_oGuidsRes);//угол всегда положительный
+				ConvertIf(nIndex, ptFormula, nIndex, ptFormula, m_lIndexDst-1, ptFormula, true, true, true, m_oGuidsRes);//СѓРіРѕР» РІСЃРµРіРґР° РїРѕР»РѕР¶РёС‚РµР»СЊРЅС‹Р№
 
-				ConvertProd ( m_lIndexDst-1, ptFormula, m_lIndexDst-3, ptFormula, 1, ptValue, true, true, true, m_oGuidsRes);//u с нужным знаком
+				ConvertProd ( m_lIndexDst-1, ptFormula, m_lIndexDst-3, ptFormula, 1, ptValue, true, true, true, m_oGuidsRes);//u СЃ РЅСѓР¶РЅС‹Рј Р·РЅР°РєРѕРј
 
 				ConvertSum ( m_lIndexDst-1, ptFormula, nIndex2, ptFormula, 0, ptValue, true, true, true, m_oGuidsRes);
 				m_arIndexDst.push_back(m_lIndexDst-1);
-				//координаты стартовой точки
+				//РєРѕРѕСЂРґРёРЅР°С‚С‹ СЃС‚Р°СЂС‚РѕРІРѕР№ С‚РѕС‡РєРё
 				nIndex = m_arIndexDst[m_lIndexSrc-2];
 				nIndex1 = m_arIndexDst[m_lIndexSrc-4];
 				nIndex2 = m_arIndexDst[m_lIndexSrc-5];
@@ -3362,14 +3393,14 @@ namespace NSGuidesVML
 				ConvertSum(nIndex2-1, ptFormula, m_lIndexDst-1, ptFormula, 0, ptValue, true, true, true, m_oGuidsRes); //x
 
 				ConvertProd(nIndex-6, ptFormula, -1, ptValue, 1, ptValue, true, true, true, m_oGuidsRes);
-				ConvertIf(nIndex-6, ptFormula, nIndex-6, ptFormula, m_lIndexDst-1, ptFormula, true, true, true, m_oGuidsRes);//sin теперь всегда>0
+				ConvertIf(nIndex-6, ptFormula, nIndex-6, ptFormula, m_lIndexDst-1, ptFormula, true, true, true, m_oGuidsRes);//sin С‚РµРїРµСЂСЊ РІСЃРµРіРґР°>0
 
 				ConvertProd(nIndex, ptFormula, m_lIndexDst-1, ptFormula, 1, ptValue, true, true, true, m_oGuidsRes);//r*sin
 				ConvertProd(nIndex1, ptFormula, m_lIndexDst-1, ptFormula, 1, ptValue, true, true, true, m_oGuidsRes);
 				ConvertSum(nIndex2, ptFormula, m_lIndexDst-1, ptFormula, 0, ptValue, true, true, true, m_oGuidsRes);//y
 				m_arIndexDst.push_back(m_lIndexDst-1);
-				//рассчет для swAng---------------------------
-				//расположение текущей точки по четвертям 3 4
+				//СЂР°СЃСЃС‡РµС‚ РґР»СЏ swAng---------------------------
+				//СЂР°СЃРїРѕР»РѕР¶РµРЅРёРµ С‚РµРєСѓС‰РµР№ С‚РѕС‡РєРё РїРѕ С‡РµС‚РІРµСЂС‚СЏРј 3 4
 				//										  2 1
 
 				pCurPoint = oSlice.m_arPoints[j+3];
@@ -3383,14 +3414,14 @@ namespace NSGuidesVML
 				ConvertIf(m_lIndexDst-2, ptFormula, 1, ptValue, -1, ptValue, true, true, true, m_oGuidsRes);
 				ConvertIf(m_lIndexDst-2, ptFormula, 1, ptValue, -1, ptValue, true, true, true, m_oGuidsRes);
 				m_arIndexDst.push_back(m_lIndexDst-1);
-				//угол между Ох и радиус-вектором к точке					
+				//СѓРіРѕР» РјРµР¶РґСѓ РћС… Рё СЂР°РґРёСѓСЃ-РІРµРєС‚РѕСЂРѕРј Рє С‚РѕС‡РєРµ					
 				nIndex = m_arIndexDst[m_lIndexSrc];
 
 				m_lIndexSrc++;						
 				ConvertProd(nIndex-2, ptFormula, 1, ptValue, nIndex-3, ptFormula, true, true, true, m_oGuidsRes);
 				ConvertAt2(1, ptValue, m_lIndexDst-1, ptFormula, true, true, m_oGuidsRes);
 				m_arIndexDst.push_back(m_lIndexDst-1);
-				//радиус к точке
+				//СЂР°РґРёСѓСЃ Рє С‚РѕС‡РєРµ
 				nIndex = m_arIndexDst[m_lIndexSrc];
 				nIndex1 = m_arIndexDst[m_lIndexSrc-8];
 
@@ -3409,27 +3440,27 @@ namespace NSGuidesVML
 				ConvertSqrt(m_lIndexDst-1, ptFormula, true, m_oGuidsRes);
 				ConvertProd(nIndex1-3, ptFormula, nIndex1-2, ptFormula, m_lIndexDst-1, ptFormula, true, true, true, m_oGuidsRes);
 				m_arIndexDst.push_back(m_lIndexDst-1);
-				//если точка во 2 и 3 четвертях, прибавляем по 180grad
+				//РµСЃР»Рё С‚РѕС‡РєР° РІРѕ 2 Рё 3 С‡РµС‚РІРµСЂС‚СЏС…, РїСЂРёР±Р°РІР»СЏРµРј РїРѕ 180grad
 				nIndex = m_arIndexDst[m_lIndexSrc-2];
 
 				m_lIndexSrc++;	
 				ConvertIf(nIndex-3, ptFormula, 0, ptValue, 10800000, ptValue, true, true, true, m_oGuidsRes);
 				m_arIndexDst.push_back(m_lIndexDst-1);
-				//угол до 2 точки 
-				nIndex = m_arIndexDst[m_lIndexSrc-2];//угол между ох и радиусом
-				nIndex1 = m_arIndexDst[m_lIndexSrc-3];//расположение точки по четвертям
-				nIndex2 = m_arIndexDst[m_lIndexSrc];//прибавка 180 или 0
+				//СѓРіРѕР» РґРѕ 2 С‚РѕС‡РєРё 
+				nIndex = m_arIndexDst[m_lIndexSrc-2];//СѓРіРѕР» РјРµР¶РґСѓ РѕС… Рё СЂР°РґРёСѓСЃРѕРј
+				nIndex1 = m_arIndexDst[m_lIndexSrc-3];//СЂР°СЃРїРѕР»РѕР¶РµРЅРёРµ С‚РѕС‡РєРё РїРѕ С‡РµС‚РІРµСЂС‚СЏРј
+				nIndex2 = m_arIndexDst[m_lIndexSrc];//РїСЂРёР±Р°РІРєР° 180 РёР»Рё 0
 
 				m_lIndexSrc ++;
-				ConvertProd(nIndex1-1, ptFormula, nIndex1, ptFormula, 1, ptValue, true, true, true, m_oGuidsRes);//знак у угла
+				ConvertProd(nIndex1-1, ptFormula, nIndex1, ptFormula, 1, ptValue, true, true, true, m_oGuidsRes);//Р·РЅР°Рє Сѓ СѓРіР»Р°
 				ConvertProd(nIndex, ptFormula, -1, ptValue, 1, ptValue, true, true, true, m_oGuidsRes);
-				ConvertIf(nIndex, ptFormula, nIndex, ptFormula, m_lIndexDst-1, ptFormula, true, true, true, m_oGuidsRes);//угол всегда положительный
+				ConvertIf(nIndex, ptFormula, nIndex, ptFormula, m_lIndexDst-1, ptFormula, true, true, true, m_oGuidsRes);//СѓРіРѕР» РІСЃРµРіРґР° РїРѕР»РѕР¶РёС‚РµР»СЊРЅС‹Р№
 
-				ConvertProd(m_lIndexDst-1, ptFormula, m_lIndexDst-3, ptFormula, 1, ptValue, true, true, true, m_oGuidsRes);//u с нужным знаком
+				ConvertProd(m_lIndexDst-1, ptFormula, m_lIndexDst-3, ptFormula, 1, ptValue, true, true, true, m_oGuidsRes);//u СЃ РЅСѓР¶РЅС‹Рј Р·РЅР°РєРѕРј
 
 				ConvertSum(m_lIndexDst-1, ptFormula, nIndex2, ptFormula, 0, ptValue, true, true, true, m_oGuidsRes);
 				m_arIndexDst.push_back(m_lIndexDst-1);
-				//координаты конечной точки
+				//РєРѕРѕСЂРґРёРЅР°С‚С‹ РєРѕРЅРµС‡РЅРѕР№ С‚РѕС‡РєРё
 				nIndex = m_arIndexDst[m_lIndexSrc-2];
 				nIndex1 = m_arIndexDst[m_lIndexSrc-4];
 				nIndex2 = m_arIndexDst[m_lIndexSrc-11];
@@ -3440,7 +3471,7 @@ namespace NSGuidesVML
 				ConvertSum(nIndex2-1, ptFormula, m_lIndexDst-1, ptFormula, 0, ptValue, true, true, true, m_oGuidsRes);//x
 
 				ConvertProd(nIndex-6, ptFormula, -1, ptValue, 1, ptValue, true, true, true, m_oGuidsRes);
-				ConvertIf(nIndex-6, ptFormula, nIndex-6, ptFormula, m_lIndexDst-1, ptFormula, true, true, true, m_oGuidsRes);//sin теперь всегда>0
+				ConvertIf(nIndex-6, ptFormula, nIndex-6, ptFormula, m_lIndexDst-1, ptFormula, true, true, true, m_oGuidsRes);//sin С‚РµРїРµСЂСЊ РІСЃРµРіРґР°>0
 
 				ConvertProd(nIndex, ptFormula, m_lIndexDst-1, ptFormula, 1, ptValue, true, true, true, m_oGuidsRes);//r*sin(a)
 				ConvertProd(nIndex1, ptFormula, m_lIndexDst-1, ptFormula, 1, ptValue, true, true, true, m_oGuidsRes);
@@ -3464,7 +3495,7 @@ namespace NSGuidesVML
 				m_arIndexDst.push_back(m_lIndexDst-1);
 
 				//---------------------------------------------------------
-				nIndex = m_arIndexDst[m_lIndexSrc-8];//координаты стартовой точки
+				nIndex = m_arIndexDst[m_lIndexSrc-8];//РєРѕРѕСЂРґРёРЅР°С‚С‹ СЃС‚Р°СЂС‚РѕРІРѕР№ С‚РѕС‡РєРё
 				nIndex1 = m_arIndexDst[m_lIndexSrc-9];//stAng
 				nIndex2 = m_arIndexDst[m_lIndexSrc-1];//swAng
 
@@ -3501,7 +3532,7 @@ namespace NSGuidesVML
 					m_oPathRes.WriteString(_T("\" />"));
 				}
 			
-				//текущая точка
+				//С‚РµРєСѓС‰Р°СЏ С‚РѕС‡РєР°
 				nIndex = m_arIndexDst[m_lIndexSrc-2];
 				ConvertVal(nIndex-5, ptFormula, true, m_oGuidsRes);
 				ConvertVal(nIndex, ptFormula, true, m_oGuidsRes);
@@ -3666,13 +3697,13 @@ namespace NSGuidesVML
 				pCurPoint1 = oSlice.m_arPoints[j+2];
 				pCurPointType1 = oSlice.m_arPointsType[j+2];
 
-				//конвертация углов в pptx формат
+				//РєРѕРЅРІРµСЂС‚Р°С†РёСЏ СѓРіР»РѕРІ РІ pptx С„РѕСЂРјР°С‚
 				m_lIndexSrc++;
-				ConvertProd(pCurPoint1.x, pCurPointType1.x, pow3_16, ptValue, m_oParam.m_lParam, m_oParam.m_eType, false, true, true, m_oGuidsRes); //1 угол
-				ConvertProd(pCurPoint1.y, pCurPointType1.y, pow3_16, ptValue, m_oParam.m_lParam, m_oParam.m_eType, false, true, true, m_oGuidsRes); //2 угол
+				ConvertProd(pCurPoint1.x, pCurPointType1.x, pow3_16, ptValue, m_oParam.m_lParam, m_oParam.m_eType, false, true, true, m_oGuidsRes); //1 СѓРіРѕР»
+				ConvertProd(pCurPoint1.y, pCurPointType1.y, pow3_16, ptValue, m_oParam.m_lParam, m_oParam.m_eType, false, true, true, m_oGuidsRes); //2 СѓРіРѕР»
 				m_arIndexDst.push_back(m_lIndexDst-1);
 
-				//wR и hR
+				//wR Рё hR
 				nIndex = m_arIndexDst[m_lIndexSrc];
 
 				m_lIndexSrc++;
@@ -3681,7 +3712,7 @@ namespace NSGuidesVML
 
 				m_arIndexDst.push_back(m_lIndexDst-1);
 
-				//stAng и swAng
+				//stAng Рё swAng
 				nIndex = m_arIndexDst[m_lIndexSrc-1];
 				
 				m_lIndexSrc++;		
@@ -3690,7 +3721,7 @@ namespace NSGuidesVML
 				ConvertProd(nIndex, ptFormula, -1, ptValue, 1, ptValue, true, true, true, m_oGuidsRes);//swAng
 				m_arIndexDst.push_back(m_lIndexDst-1);
 
-				//радиус до стартовой точки
+				//СЂР°РґРёСѓСЃ РґРѕ СЃС‚Р°СЂС‚РѕРІРѕР№ С‚РѕС‡РєРё
 
 				nIndex = m_arIndexDst[m_lIndexSrc]; //stang
 				nIndex1 = m_arIndexDst[m_lIndexSrc-1]; //wr hr
@@ -3711,9 +3742,9 @@ namespace NSGuidesVML
 				ConvertProd(nIndex1, ptFormula, nIndex1-1, ptFormula, m_lIndexDst-1, ptFormula, true, true, true, m_oGuidsRes);//r
 				m_arIndexDst.push_back(m_lIndexDst-1);
 
-				//координаты конечной точки (она же начальная для эллипса)
+				//РєРѕРѕСЂРґРёРЅР°С‚С‹ РєРѕРЅРµС‡РЅРѕР№ С‚РѕС‡РєРё (РѕРЅР° Р¶Рµ РЅР°С‡Р°Р»СЊРЅР°СЏ РґР»СЏ СЌР»Р»РёРїСЃР°)
 
-				pCurPoint1 = oSlice.m_arPoints[j];//коорд центра
+				pCurPoint1 = oSlice.m_arPoints[j];//РєРѕРѕСЂРґ С†РµРЅС‚СЂР°
 				pCurPointType1 = oSlice.m_arPointsType[j];
 
 				nIndex = m_arIndexDst[m_lIndexSrc-1]; //stang
@@ -3729,9 +3760,9 @@ namespace NSGuidesVML
 				m_arIndexDst.push_back(m_lIndexDst-1);
 				//---------------------
 
-				nIndex = m_arIndexDst[m_lIndexSrc];//текущая точка
-				nIndex1 = m_arIndexDst[m_lIndexSrc-2];//stAng и swAng
-				nIndex2 = m_arIndexDst[m_lIndexSrc-3];//wR и hR
+				nIndex = m_arIndexDst[m_lIndexSrc];//С‚РµРєСѓС‰Р°СЏ С‚РѕС‡РєР°
+				nIndex1 = m_arIndexDst[m_lIndexSrc-2];//stAng Рё swAng
+				nIndex2 = m_arIndexDst[m_lIndexSrc-3];//wR Рё hR
 
 				if (j == 0)
 					strFrmla = _T("moveTo");
@@ -3771,7 +3802,7 @@ namespace NSGuidesVML
 					m_oPathRes.WriteString(_T("\" />"));
 				}
 
-				//текущая точка
+				//С‚РµРєСѓС‰Р°СЏ С‚РѕС‡РєР°
 
 				nIndex = m_arIndexDst[m_lIndexSrc];
 

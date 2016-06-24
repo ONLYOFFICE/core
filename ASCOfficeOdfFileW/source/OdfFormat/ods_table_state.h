@@ -1,3 +1,34 @@
+/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 #pragma once
 
 #include <string>
@@ -256,10 +287,10 @@ public:
 	office_element_ptr & current_row_element();
 	office_element_ptr & current_cell_element();
 
-	bool	is_cell_hyperlink();
-    int	is_cell_hyperlink(int col, int row);
-	bool	is_cell_comment();
-    int	is_cell_comment(int col, int row, short repeate_col = 1);
+	bool	is_cell_hyperlink	();
+    int		is_cell_hyperlink	(int col, int row);
+	bool	is_cell_comment		();
+    int		is_cell_comment		(int col, int row, short repeate_col = 1);
 
 	ods_hyperlink_state & current_hyperlink();
 
@@ -276,13 +307,13 @@ public:
 
 	odf_drawing_context   *	drawing_context(){return  &drawing_context_;}
 
+	std::wstring		office_table_name_;
 private:
 
     odf_conversion_context * context_;   
 	
-	std::wstring		office_table_name_;
 	office_element_ptr	office_table_;
-	style*				office_table_style_;//??? может хранить как office_element_ptr ???
+	style*				office_table_style_;//??? РјРѕР¶РµС‚ С…СЂР°РЅРёС‚СЊ РєР°Рє office_element_ptr ???
 	office_element_ptr	table_defined_expressions_;
 	
 
@@ -297,7 +328,7 @@ private:
 	std::vector<ods_element_state> columns_;
 	std::vector<ods_element_state> rows_;
 	
-	std::vector<office_element_ptr> current_level_;//постоянно меняющийся список уровней ("0-й элемент - сама таблица)
+	std::vector<office_element_ptr> current_level_;//РїРѕСЃС‚РѕСЏРЅРЅРѕ РјРµРЅСЏСЋС‰РёР№СЃСЏ СЃРїРёСЃРѕРє СѓСЂРѕРІРЅРµР№ ("0-Р№ СЌР»РµРјРµРЅС‚ - СЃР°РјР° С‚Р°Р±Р»РёС†Р°)
 	
 	std::list<ods_cell_state>	cells_;
 	long						cells_size_;

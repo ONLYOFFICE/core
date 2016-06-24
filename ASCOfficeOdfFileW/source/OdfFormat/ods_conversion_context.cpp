@@ -1,3 +1,34 @@
+/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 
 #include <boost/algorithm/string.hpp>
 
@@ -11,6 +42,7 @@
 
 #include "odf_text_context.h"
 #include "paragraph_elements.h"
+#include "odf_settings_context.h"
 
 
 namespace cpdoccore { 
@@ -35,7 +67,7 @@ void calculate_size_font_symbols(_font_metrix & metrix, CApplicationFonts *appFo
 	if (appr_px > 0)
 	{
 		//pixels to pt
-		metrix.approx_symbol_size = appr_px ;///1.1;//"1.2" волшебное число оО 
+		metrix.approx_symbol_size = appr_px ;///1.1;//"1.2" РІРѕР»С€РµР±РЅРѕРµ С‡РёСЃР»Рѕ РѕРћ
 		metrix.IsCalc = true;
 	}
 
@@ -44,7 +76,7 @@ void calculate_size_font_symbols(_font_metrix & metrix, CApplicationFonts *appFo
 ods_conversion_context::ods_conversion_context(package::odf_document * outputDocument) 
 		: odf_conversion_context(outputDocument), table_context_(*this), current_text_context_(NULL)
 {
-	font_metrix_ = _font_metrix();
+	font_metrix_		= _font_metrix();
 }
 
 
@@ -100,10 +132,10 @@ void ods_conversion_context::start_sheet()
 void ods_conversion_context::set_sheet_dimension(const std::wstring & ref)
 {
  	std::vector<std::wstring> ref_cells;
-	boost::algorithm::split(ref_cells,ref, boost::algorithm::is_any_of(L":"), boost::algorithm::token_compress_on);
+	boost::algorithm::split(ref_cells, ref, boost::algorithm::is_any_of(L":"), boost::algorithm::token_compress_on);
 
 	int max_col = 0, max_row = 0;
-	for (long i=0; i<ref_cells.size(); i++)
+	for (long i = 0; i < ref_cells.size(); i++)
 	{
 		int col = -1, row = -1;
 		utils::parsing_ref (ref_cells[i], col, row);
@@ -111,7 +143,7 @@ void ods_conversion_context::set_sheet_dimension(const std::wstring & ref)
 		if (col > max_col) max_col = col;
 		if (col > max_row) max_row = row;
 	}
-	current_table().set_table_dimension(max_col,max_row);
+	current_table().set_table_dimension(max_col, max_row);
 }
 
 void ods_conversion_context::end_sheet()
@@ -224,7 +256,7 @@ void ods_conversion_context::add_hyperlink(std::wstring & ref, std::wstring & li
 	boost::algorithm::split(ref_cells,ref, boost::algorithm::is_any_of(L":"), boost::algorithm::token_compress_on);
 	if (ref_cells.size()>1)
 	{
-	//в ооx можно воткнуть на диапазон одну ссылку, в оо нельзя - ссылку вствляем, текст не меням
+	//РІ РѕРѕx РјРѕР¶РЅРѕ РІРѕС‚РєРЅСѓС‚СЊ РЅР° РґРёР°РїР°Р·РѕРЅ РѕРґРЅСѓ СЃСЃС‹Р»РєСѓ, РІ РѕРѕ РЅРµР»СЊР·СЏ - СЃСЃС‹Р»РєСѓ РІСЃС‚РІР»СЏРµРј, С‚РµРєСЃС‚ РЅРµ РјРµРЅСЏРј
 		int start_col = -1, start_row = -1;
 		int end_col = -1, end_row = -1;
 		
@@ -236,7 +268,7 @@ void ods_conversion_context::add_hyperlink(std::wstring & ref, std::wstring & li
 			for (long row = start_row; row <= end_row; row++)
 			{
 				current_table().add_hyperlink(ref,col,row,link);
-				//ссылка одна, а вот отображаемый текст - разный
+				//СЃСЃС‹Р»РєР° РѕРґРЅР°, Р° РІРѕС‚ РѕС‚РѕР±СЂР°Р¶Р°РµРјС‹Р№ С‚РµРєСЃС‚ - СЂР°Р·РЅС‹Р№
 			}
 		}
 	}
@@ -253,7 +285,7 @@ void ods_conversion_context::add_merge_cells(const std::wstring & ref)
  	std::vector<std::wstring> ref_cells;
 	boost::algorithm::split(ref_cells,ref, boost::algorithm::is_any_of(L":"), boost::algorithm::token_compress_on);
 
-	if (ref_cells.size() !=2) return;//тута однозначно .. по правилам оох
+	if (ref_cells.size() !=2) return;//С‚СѓС‚Р° РѕРґРЅРѕР·РЅР°С‡РЅРѕ .. РїРѕ РїСЂР°РІРёР»Р°Рј РѕРѕС…
 
 	int start_col = -1, start_row = -1;
 	int end_col = -1, end_row = -1;
@@ -331,8 +363,8 @@ void ods_conversion_context::start_columns()
 }
 void ods_conversion_context::end_columns()
 {
-	//add default last column  - ЕСЛИ они не прописаны в исходном (1024 - от  балды)
-	//вопрос - если и добавлять то  с каким стилем???
+	//add default last column  - Р•РЎР›Р РѕРЅРё РЅРµ РїСЂРѕРїРёСЃР°РЅС‹ РІ РёСЃС…РѕРґРЅРѕРј (1024 - РѕС‚  Р±Р°Р»РґС‹)
+	//РІРѕРїСЂРѕСЃ - РµСЃР»Рё Рё РґРѕР±Р°РІР»СЏС‚СЊ С‚Рѕ  СЃ РєР°РєРёРј СЃС‚РёР»РµРј???
 	//if (current_table().current_column() < 1 )
 	//	add_column(current_table().current_column()+1,1024,0,true);
 	//else
@@ -380,8 +412,8 @@ void ods_conversion_context::add_column(int start_column, int repeated, int leve
 	}
 	else
 	{
-		//по сути в этом стиле раличные опции ширины колонок тока .. а если свойства совпадают - можно сгенерить один, хотя выше и указано что стили разные.
-		//то есть в оо разделяют оох стиль на 2 (для колонки собственно, и описалово ячеек в колонки)
+		//РїРѕ СЃСѓС‚Рё РІ СЌС‚РѕРј СЃС‚РёР»Рµ СЂР°Р»РёС‡РЅС‹Рµ РѕРїС†РёРё С€РёСЂРёРЅС‹ РєРѕР»РѕРЅРѕРє С‚РѕРєР° .. Р° РµСЃР»Рё СЃРІРѕР№СЃС‚РІР° СЃРѕРІРїР°РґР°СЋС‚ - РјРѕР¶РЅРѕ СЃРіРµРЅРµСЂРёС‚СЊ РѕРґРёРЅ, С…РѕС‚СЏ РІС‹С€Рµ Рё СѓРєР°Р·Р°РЅРѕ С‡С‚Рѕ СЃС‚РёР»Рё СЂР°Р·РЅС‹Рµ.
+		//С‚Рѕ РµСЃС‚СЊ РІ РѕРѕ СЂР°Р·РґРµР»СЏСЋС‚ РѕРѕС… СЃС‚РёР»СЊ РЅР° 2 (РґР»СЏ РєРѕР»РѕРЅРєРё СЃРѕР±СЃС‚РІРµРЅРЅРѕ, Рё РѕРїРёСЃР°Р»РѕРІРѕ СЏС‡РµРµРє РІ РєРѕР»РѕРЅРєРё)
 		styles_context()->create_style(L"",style_family::TableColumn, true, false, -1);
 		style_elm = styles_context()->last_state()->get_office_element();
 		
@@ -445,7 +477,7 @@ void ods_conversion_context::start_cell_text()
 		text_a_->common_xlink_attlist_.type_ = xlink_type(xlink_type::Simple);
 		text_a_->common_xlink_attlist_.href_ = state.link;
 		
-		current_text_context_->start_element(text_a_elm); // может быть стоит сделать собственый???
+		current_text_context_->start_element(text_a_elm); // РјРѕР¶РµС‚ Р±С‹С‚СЊ СЃС‚РѕРёС‚ СЃРґРµР»Р°С‚СЊ СЃРѕР±СЃС‚РІРµРЅС‹Р№???
 	}
 }
 
@@ -473,7 +505,7 @@ void ods_conversion_context::start_image(const std::wstring & image_file_name)
 
 	current_table().drawing_context()->start_image(odf_ref_name);
 }
-double ods_conversion_context:: convert_symbol_width(double val)
+double ods_conversion_context::convert_symbol_width(double val)
 {
 	//width = ((int)((column_width * Digit_Width + 5) / Digit_Width * 256 )) / 256.;
 	//width = (int)(((256. * width + ((int)(128. / Digit_Width ))) / 256. ) * Digit_Width ); //in pixels
@@ -486,6 +518,19 @@ double ods_conversion_context:: convert_symbol_width(double val)
 
 	return pixels * 0.75; //* 9525. * 72.0 / (360000.0 * 2.54);
 }
+
+void ods_conversion_context::start_table_view( int view_id )
+{
+	settings_context()->set_current_view(view_id);
+	settings_context()->start_table(current_table().office_table_name_);
+}
+
+void ods_conversion_context::end_table_view()
+{
+	settings_context()->end_table();
+	settings_context()->set_current_view(-1);
+}
+
 
 }
 }

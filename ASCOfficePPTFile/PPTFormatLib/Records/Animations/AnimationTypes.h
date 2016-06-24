@@ -1,3 +1,34 @@
+/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 #pragma once
 
 #include <vector>
@@ -380,7 +411,7 @@ namespace Animations
 	public:
 
 		DWORD	paraBuild;			//	0	-	All paragraphs in the shape animate at the same time. 
-		//	1	-	Paragraph levels 1 to n – 1 in the shape animate separately.
+		//	1	-	Paragraph levels 1 to n вЂ“ 1 in the shape animate separately.
 		//			All paragraph levels n or greater animate at the same time. 
 		//	2	-	Applies a custom animation paragraph build type to the 
 		//			paragraphs of the shape. 
@@ -1166,7 +1197,7 @@ namespace Animations
 {
 	struct VisualShapeAtom : public IRecord
 	{
-		// Привязка анимации через этот объект к ID объекту
+		// РџСЂРёРІСЏР·РєР° Р°РЅРёРјР°С†РёРё С‡РµСЂРµР· СЌС‚РѕС‚ РѕР±СЉРµРєС‚ Рє ID РѕР±СЉРµРєС‚Сѓ
 
 		virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
 		{
@@ -2480,7 +2511,7 @@ namespace Animations
 		ClientVisualElementContainer*			clientVisualElement;
 		TimeConditionContainer*					rgBeginTimeCondition;
 
-		IRecord*								extTimeContainer;	//	в спецификации такого элемента не должно быть
+		IRecord*								extTimeContainer;	//	РІ СЃРїРµС†РёС„РёРєР°С†РёРё С‚Р°РєРѕРіРѕ СЌР»РµРјРµРЅС‚Р° РЅРµ РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ
 
         bool									haveTimePropertyList;
         bool									haveColorBehavior;
@@ -2972,7 +3003,7 @@ namespace Animations
 		{
 			double	dTime;
 			double	dDuration;
-			int		nType;			// задает тип последовательности запуска эффект ( после, параллельно, сброс и т.д. )
+			int		nType;			// Р·Р°РґР°РµС‚ С‚РёРї РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё Р·Р°РїСѓСЃРєР° СЌС„С„РµРєС‚ ( РїРѕСЃР»Рµ, РїР°СЂР°Р»Р»РµР»СЊРЅРѕ, СЃР±СЂРѕСЃ Рё С‚.Рґ. )
 		};
 
 	public:
@@ -3066,7 +3097,7 @@ namespace Animations
 			}
 
 			long m_nShapeID;
-			long m_nBuildType;		// 1	-	Paragraph levels 1 to n – 1 in the shape animate separately,	3	-	as one graphical object
+			long m_nBuildType;		// 1	-	Paragraph levels 1 to n вЂ“ 1 in the shape animate separately,	3	-	as one graphical object
 		};
 
 	public:
@@ -3198,7 +3229,7 @@ namespace Animations
 
 					FindEffectMothionPath ( pContainer );
 
-					// время старта анимации
+					// РІСЂРµРјСЏ СЃС‚Р°СЂС‚Р° Р°РЅРёРјР°С†РёРё
 					if ( pContainer->timeCondition.size() )
 					{
 						double dTime	=	static_cast<TimeConditionContainer*> ( pContainer->timeCondition[0] )->m_oTimeConditionAtom.m_nTimeDelay;
@@ -3223,11 +3254,11 @@ namespace Animations
 					if (pContainer->haveSlaveContainer)
 					{
 						SlaveContainer* pSlave	= pContainer->rgSlave;
-						if(pSlave->haveSetBehavior)				// после анимации к объекту может быть применена дополнительная анимация 
+						if(pSlave->haveSetBehavior)				// РїРѕСЃР»Рµ Р°РЅРёРјР°С†РёРё Рє РѕР±СЉРµРєС‚Сѓ РјРѕР¶РµС‚ Р±С‹С‚СЊ РїСЂРёРјРµРЅРµРЅР° РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅР°СЏ Р°РЅРёРјР°С†РёСЏ 
 						{
                             m_HaveAfterEffect					=	true;
 
-							// эффект исчезновения элемента (Appear) 
+							// СЌС„С„РµРєС‚ РёСЃС‡РµР·РЅРѕРІРµРЅРёСЏ СЌР»РµРјРµРЅС‚Р° (Appear) 
 							m_oAfterEffect.m_nDuration			=	1.0;
 							m_oAfterEffect.m_nEffectID			=	1;									
 							m_oAfterEffect.m_nEffectNodeType	=	1;
@@ -3254,8 +3285,8 @@ namespace Animations
 			if ( -1 != nID )
 			{
 				//	TODO : 
-				//	нужно из всех объектов (*Behavior) для конкретного эффекта,
-				//	который заранее прочитан в m_oTopEffect дополнять параметры из потомков
+				//	РЅСѓР¶РЅРѕ РёР· РІСЃРµС… РѕР±СЉРµРєС‚РѕРІ (*Behavior) РґР»СЏ РєРѕРЅРєСЂРµС‚РЅРѕРіРѕ СЌС„С„РµРєС‚Р°,
+				//	РєРѕС‚РѕСЂС‹Р№ Р·Р°СЂР°РЅРµРµ РїСЂРѕС‡РёС‚Р°РЅ РІ m_oTopEffect РґРѕРїРѕР»РЅСЏС‚СЊ РїР°СЂР°РјРµС‚СЂС‹ РёР· РїРѕС‚РѕРјРєРѕРІ
 
                 if ( false == m_bSaveEffect )
 				{
@@ -3297,13 +3328,13 @@ namespace Animations
 				oEffect.m_MotionPath			=	pTimeNode->timeMotionBehavior->m_VarPath.stringValue;
 			}
 
-			if (pTimeNode->haveScaleBehavior)		//	GrowAndShrinkEffect	=	6	//	простое увеличение	
+			if (pTimeNode->haveScaleBehavior)		//	GrowAndShrinkEffect	=	6	//	РїСЂРѕСЃС‚РѕРµ СѓРІРµР»РёС‡РµРЅРёРµ	
 			{
 				oEffect.m_dSX					=	pTimeNode->timeScaleBehavior->scaleBehaviorAtom.fXBy * 0.01;
 				oEffect.m_dSY					=	pTimeNode->timeScaleBehavior->scaleBehaviorAtom.fYBy * 0.01;
 			}
 
-			if (pTimeNode->haveRotationBehavior)	//	SpinEffect			=	8	//	вращение
+			if (pTimeNode->haveRotationBehavior)	//	SpinEffect			=	8	//	РІСЂР°С‰РµРЅРёРµ
 			{
 				oEffect.m_dRotateAngle			=	pTimeNode->timeRotationBehavior->rotationBehaviorAtom.fBy;
 				//oEffect.m_nRotateDirection	=	pTimeNode->timeRotationBehavior->rotationBehaviorAtom.rotationDirection;
@@ -3311,13 +3342,13 @@ namespace Animations
 
 			if (pTimeNode->haveSetBehavior)
 			{
-				if (9 == oEffect.m_nEffectID)		//	TransparencyEffect	=	9,	// временная прозрачность
+				if (9 == oEffect.m_nEffectID)		//	TransparencyEffect	=	9,	// РІСЂРµРјРµРЅРЅР°СЏ РїСЂРѕР·СЂР°С‡РЅРѕСЃС‚СЊ
 					oEffect.m_dTransparency		=	_tstof (pTimeNode->timeSetBehavior->varTo.stringValue);
 			}
 
 			if (m_ComposeEffectMothionPath.GetLength())
 			{
-				oEffect.m_MotionPath			=	m_ComposeEffectMothionPath;		//	составной эффект может иметь траекторию для движения
+				oEffect.m_MotionPath			=	m_ComposeEffectMothionPath;		//	СЃРѕСЃС‚Р°РІРЅРѕР№ СЌС„С„РµРєС‚ РјРѕР¶РµС‚ РёРјРµС‚СЊ С‚СЂР°РµРєС‚РѕСЂРёСЋ РґР»СЏ РґРІРёР¶РµРЅРёСЏ
 			}
 
 			if(pTimeNode->haveColorBehavior)
@@ -3497,8 +3528,8 @@ namespace Animations
 		{
 			m_dEffectDuration			=	pContainer->timeNodeAtom.m_nDuration;
 
-			MediumEffectDuration ( pContainer );		//	получаем для все временные интервалы данного эффекта
-			MediumEffectTimeDelay ( pContainer );		//	получаем все внутренние метки для данного эффткта
+			MediumEffectDuration ( pContainer );		//	РїРѕР»СѓС‡Р°РµРј РґР»СЏ РІСЃРµ РІСЂРµРјРµРЅРЅС‹Рµ РёРЅС‚РµСЂРІР°Р»С‹ РґР°РЅРЅРѕРіРѕ СЌС„С„РµРєС‚Р°
+			MediumEffectTimeDelay ( pContainer );		//	РїРѕР»СѓС‡Р°РµРј РІСЃРµ РІРЅСѓС‚СЂРµРЅРЅРёРµ РјРµС‚РєРё РґР»СЏ РґР°РЅРЅРѕРіРѕ СЌС„С„С‚РєС‚Р°
 
 			if (MediaCallEffect == m_oTopEffect.m_nEffectType)
 			{
@@ -3523,7 +3554,7 @@ namespace Animations
 					m_dEffectDuration	=	m_arDurations[0];
 			}
 
-			// TODO : для составных эффектов посчитаем время с помощью заглушек
+			// TODO : РґР»СЏ СЃРѕСЃС‚Р°РІРЅС‹С… СЌС„С„РµРєС‚РѕРІ РїРѕСЃС‡РёС‚Р°РµРј РІСЂРµРјСЏ СЃ РїРѕРјРѕС‰СЊСЋ Р·Р°РіР»СѓС€РµРє
 
 			if (/*	BlindsEffect		*/( m_oTopEffect.m_nEffectID ==	3	||
 				/*	BoxEffect			*/	m_oTopEffect.m_nEffectID ==	4	||
@@ -3631,7 +3662,7 @@ namespace Animations
 		}
         inline bool FindEffectMothionPath (ExtTimeNodeContainer* pContainer)
 		{
-			// сложные эффект может содержать в себе перемещение по траектории
+			// СЃР»РѕР¶РЅС‹Рµ СЌС„С„РµРєС‚ РјРѕР¶РµС‚ СЃРѕРґРµСЂР¶Р°С‚СЊ РІ СЃРµР±Рµ РїРµСЂРµРјРµС‰РµРЅРёРµ РїРѕ С‚СЂР°РµРєС‚РѕСЂРёРё
 			if (52 == m_oTopEffect.m_nEffectID)			//	ArcUp
 			{
 				if ( pContainer->haveMotionBehavior )
@@ -3652,10 +3683,10 @@ namespace Animations
 
 		inline void ReadPropertyIgnoreShape (const TimeBehaviorContainer& container)
 		{
-			if (2 == container.clientVisualElement.m_oVisualShapeAtom.m_Type)										//	указывает на то что анимация применяется к тексту
+			if (2 == container.clientVisualElement.m_oVisualShapeAtom.m_Type)										//	СѓРєР°Р·С‹РІР°РµС‚ РЅР° С‚Рѕ С‡С‚Рѕ Р°РЅРёРјР°С†РёСЏ РїСЂРёРјРµРЅСЏРµС‚СЃСЏ Рє С‚РµРєСЃС‚Сѓ
 			{
                 m_oTopEffect.m_bIgnoreShape			=	true;
-				m_oTopEffect.m_nTextSequence		=	container.clientVisualElement.m_oVisualShapeAtom.m_nData1;	//	номер параграфа - не нормальзован
+				m_oTopEffect.m_nTextSequence		=	container.clientVisualElement.m_oVisualShapeAtom.m_nData1;	//	РЅРѕРјРµСЂ РїР°СЂР°РіСЂР°С„Р° - РЅРµ РЅРѕСЂРјР°Р»СЊР·РѕРІР°РЅ
                 m_oTopEffect.m_bRemoveEmptyBlocks	=	true;
 
 				for (long i = 0; i < (long)m_arParIndexer.size(); ++i)
@@ -3714,9 +3745,9 @@ namespace Animations
 		//
 		inline void ProcessMediaCall (ExtTimeNodeContainer* pContainer)
 		{			
-			if (MediaCallEffect == m_oTopEffect.m_nEffectType)															//	если анимация применена к VIDEO или AUDIO элементу
+			if (MediaCallEffect == m_oTopEffect.m_nEffectType)															//	РµСЃР»Рё Р°РЅРёРјР°С†РёСЏ РїСЂРёРјРµРЅРµРЅР° Рє VIDEO РёР»Рё AUDIO СЌР»РµРјРµРЅС‚Сѓ
 			{
-				m_nMediaPush		=	GetAttachedShapeToVideo (pContainer);											//	если к видео добавлена картинка, надо учитывать смещение при поиск ID
+				m_nMediaPush		=	GetAttachedShapeToVideo (pContainer);											//	РµСЃР»Рё Рє РІРёРґРµРѕ РґРѕР±Р°РІР»РµРЅР° РєР°СЂС‚РёРЅРєР°, РЅР°РґРѕ СѓС‡РёС‚С‹РІР°С‚СЊ СЃРјРµС‰РµРЅРёРµ РїСЂРё РїРѕРёСЃРє ID
 
 				if (GetMediaID (pContainer))
 				{
@@ -3756,20 +3787,20 @@ namespace Animations
 
         inline bool GetAttachedShapeToVideo (ExtTimeNodeContainer* pContainer)
 		{
-			if (TL_TNT_Media == pContainer->GetNodeType ())																//	нод типа Media
+			if (TL_TNT_Media == pContainer->GetNodeType ())																//	РЅРѕРґ С‚РёРїР° Media
 			{
 				if (pContainer->clientVisualElement)
 				{
 					m_arrMedia.push_back (pContainer->clientVisualElement->m_oVisualShapeAtom.m_nObjectIdRef);
 
-					if (2 == (int)m_arrMedia.size())																//	у видео есть статическое изображение
+					if (2 == (int)m_arrMedia.size())																//	Сѓ РІРёРґРµРѕ РµСЃС‚СЊ СЃС‚Р°С‚РёС‡РµСЃРєРѕРµ РёР·РѕР±СЂР°Р¶РµРЅРёРµ
                         return true;
 				}
 			}
 
 			for (long i = 0; i < (long)pContainer->rgExtTimeNodeChildren.size(); ++i )
 			{
-				if (CNodeTiming::AfterPreviousNode == pContainer->rgExtTimeNodeChildren [i]->GetEffectNodeType ())		//	нод с описанием эффекта
+				if (CNodeTiming::AfterPreviousNode == pContainer->rgExtTimeNodeChildren [i]->GetEffectNodeType ())		//	РЅРѕРґ СЃ РѕРїРёСЃР°РЅРёРµРј СЌС„С„РµРєС‚Р°
                     return false;
 
 				if (GetAttachedShapeToVideo(pContainer->rgExtTimeNodeChildren [i]))
@@ -3814,7 +3845,7 @@ namespace Animations
 		// media
 		int					m_nMediaID;
 		int					m_nMediaShapeID;
-		int					m_nMediaPush;					//	глубина поиска
+		int					m_nMediaPush;					//	РіР»СѓР±РёРЅР° РїРѕРёСЃРєР°
 
 		std::vector <int>		m_arrMedia;
 	};

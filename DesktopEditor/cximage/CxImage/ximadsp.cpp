@@ -3367,7 +3367,7 @@ int32_t  CxImage::OptimalThreshold(int32_t method, RECT * pBox, CxImage* pContra
 		}
 
 		//potential difference (based on Electrostatic Binarization method by J. Acharya & G. Sreechakra)
-		// L=-fabs(vdiff/vsum); è molto selettivo, sembra che L=-fabs(vdiff) o L=-(vsum)
+		// L=-fabs(vdiff/vsum); Ð¸ molto selettivo, sembra che L=-fabs(vdiff) o L=-(vsum)
 		// abbiano lo stesso valore di soglia... il che semplificherebbe molto la routine
 		double vdiff = 0;
 		for (k=gray_min;k<=i;k++)

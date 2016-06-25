@@ -33,20 +33,12 @@
 
 #include "Crypt.h"
 
-namespace CRYPTO
-{
-	class RC4EncryptionHeader;
-	typedef boost::shared_ptr<RC4EncryptionHeader> RC4EncryptionHeaderPtr;
-
-} // namespace CRYPTO
-
 namespace CRYPT
 {
-
 class Decryptor
 {
 public:
-	Decryptor(CRYPTO::RC4EncryptionHeaderPtr & header, std::wstring password);
+		Decryptor(CryptRC4Data & header, std::wstring password, int type);
 
 	void Decrypt(char* data, const size_t size, const unsigned long stream_pos);
 
@@ -57,7 +49,7 @@ public:
 private:
 	CryptPtr						crypt;
 	Crypt::crypt_type				type;
-	CRYPTO::RC4EncryptionHeaderPtr	crypt_header;
+		CryptRC4Data			crypt_data;
 };
 
 typedef boost::shared_ptr<Decryptor> DecryptorPtr;

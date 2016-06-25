@@ -36,12 +36,10 @@
 
 #include "../XlsElementsType.h"
 
-#include <common.h>
-#include <Logging/Log.h>
+#include "../../../Common/common.h"
+#include "../../Logging/Log.h"
 
 #include "../../Binary/CFRecord.h"
-
-
 
 namespace XLS
 {

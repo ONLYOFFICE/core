@@ -33,9 +33,36 @@
 
 #include <string>
 #include <boost/shared_ptr.hpp>
+#include "../../../Common/DocxFormat/Source/Base/Types_32.h"
 
 namespace CRYPT
 {
+	struct CryptRC4Data
+	{
+		struct SALT_TAG 
+		{
+			_UINT32 b1;
+			_UINT32 b2;
+			_UINT32 b3;
+			_UINT32 b4;
+		} Salt;
+
+		struct ENCRYPTED_VERIFIER_TAG 
+		{
+			_UINT32 b1;
+			_UINT32 b2;
+			_UINT32 b3;
+			_UINT32 b4;
+		} EncryptedVerifier;
+
+		struct ENCRYPTED_VERIFIER_HASH_TAG 
+		{
+			_UINT32 b1;
+			_UINT32 b2;
+			_UINT32 b3;
+			_UINT32 b4;
+		} EncryptedVerifierHash;
+	};
 
 class Crypt
 {
@@ -56,6 +83,5 @@ public:
 };
 
 typedef boost::shared_ptr<Crypt> CryptPtr;
-
 
 } // namespace CRYPT

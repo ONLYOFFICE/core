@@ -34,6 +34,13 @@
 #include "OpenXmlPackage.h"
 #include "Converter.h"
 
+#include "NumberingMapping.h"
+#include "CommentsMapping.h"
+#include "EndnotesMapping.h"
+#include "FootnotesMapping.h"
+#include "FooterMapping.h"
+#include "HeaderMapping.h"
+#include "MainDocumentMapping.h"
 #include "OleObjectMapping.h"
 #include "VMLPictureMapping.h"
 

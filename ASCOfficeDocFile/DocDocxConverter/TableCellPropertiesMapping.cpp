@@ -89,7 +89,7 @@ namespace DocFileFormat
 					int cc = tdef.numberOfColumns;
 
 					this->_tGrid = tdef.rgdxaCenter;
-					this->_tcDef = tdef.rgTc80[min(_cellIndex,  (int)tdef.rgTc80.size() - 1)];	// NOTE: fix for crash
+                    this->_tcDef = tdef.rgTc80[(std::min)(_cellIndex,  (int)tdef.rgTc80.size() - 1)];	// NOTE: fix for crash
 
 					appendValueElement( this->_tcPr, _T( "textDirection" ), FormatUtils::MapValueToWideString( this->_tcDef.textFlow, &Global::TextFlowMap[0][0], 6, 6 ).c_str(), false );
 
@@ -114,8 +114,8 @@ namespace DocFileFormat
 						appendValueElement( _tcPr, _T( "noWrap" ), _T( "" ), true );
 					}
 
-					nComputedCellWidth = (short)( tdef.rgdxaCenter[(size_t)min(_cellIndex,  (int)tdef.rgTc80.size() - 1) + 1] -
-						tdef.rgdxaCenter[min(_cellIndex, (int)tdef.rgTc80.size() - 1)] );	// NOTE: fix for crash
+                    nComputedCellWidth = (short)( tdef.rgdxaCenter[(size_t)(std::min)(_cellIndex,  (int)tdef.rgTc80.size() - 1) + 1] -
+                        tdef.rgdxaCenter[(std::min)(_cellIndex, (int)tdef.rgTc80.size() - 1)] );	// NOTE: fix for crash
 
 					//borders
 					if (!IsTableBordersDefined(tapx->grpprl))

@@ -64,9 +64,9 @@ namespace DocFileFormat
 		}
 
 		StringTable( VirtualStreamReader *reader, int code_page_ ): 
-							code_page(code_page_), fExtend(false), cData(0), cbExtra(0)
+                            code_page(code_page_), fExtend(false), cbData(0), cbExtra(0)
 		{
-			parse( reader, (unsigned int)reader->GetPosition() );
+            parse( reader, (unsigned int)reader->GetPosition() );
 		}
 
 		StringTable( POLE::Stream* tableStream, unsigned int fc, unsigned int lcb, bool older ) :

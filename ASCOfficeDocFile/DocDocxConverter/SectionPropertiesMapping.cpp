@@ -404,7 +404,7 @@ namespace DocFileFormat
 			case sprmSLnc :
 				{
 					SLncOperand mode		=	(SLncOperand)FormatUtils::BytesToUChar (iter->Arguments, 0, iter->argumentsSize);
-					mode					=	(SLncOperand)min(max(mode,lncPerPage),lncContinue);
+                    mode					=	(SLncOperand)(std::min)((std::max)(mode,lncPerPage),lncContinue);
 
 					appendValueAttribute (&lnNumType, _T("w:restart"), LineNumberRestart[mode].c_str() );
 				}

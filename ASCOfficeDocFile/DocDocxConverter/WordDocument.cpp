@@ -424,7 +424,7 @@ namespace DocFileFormat
 	{
 		if (m_sTempFolder.empty())
 		{
-			m_sTempFolder = FileSystem::Directory::GetTempPathW().GetBuffer();
+            m_sTempFolder = FileSystem::Directory::GetTempPath().GetBuffer();
 		}
 		m_sTempDecryptFileName	= m_sTempFolder + FILE_SEPARATOR_STR + L"~tempFile.doc";
 		

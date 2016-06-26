@@ -92,8 +92,8 @@ QMAKE_MAC_SDK = macosx10.11
 
 SOURCES +=  \
     ../DocFormatLib.cpp \
-    ../../Common/MD4/md4c.cpp \
-    ../../../Common/3dParty/pole/pole.cpp
+     ../../../Common/3dParty/pole/pole.cpp \
+    ../../DocDocxConverter/EncryptionHeader.cpp
 
 build_fast {
 SOURCES += \
@@ -328,7 +328,8 @@ HEADERS +=  \
     ../../DocDocxConverter/OfficeDrawing/Shapetypes/SunType.h \
     ../../DocDocxConverter/OfficeDrawing/Shapetypes/TextboxType.h \
     ../../DocDocxConverter/OfficeDrawing/Shapetypes/TrapezoidType.h \
-    ../../../Common/3dParty/pole/pole.h
+    ../../../Common/3dParty/pole/pole.h \
+    ../../DocDocxConverter/EncryptionHeader.h
 
 
 

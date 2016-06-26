@@ -65,9 +65,9 @@ namespace DocFileFormat
       /// Pitch request
       unsigned char prq;
       /// Name of font
-      wstring xszFtn;
+      std::wstring xszFtn;
       /// Alternative name of the font
-      wstring xszAlt;
+      std::wstring xszAlt;
       /// Panose
       unsigned char *panose;
 	  /// Panose size

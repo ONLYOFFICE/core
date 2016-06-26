@@ -31,7 +31,10 @@
  */
 #pragma once
 
+#include "ConversionContext.h"
 #include "PictureDescriptor.h"
+#include "OleObject.h"
+
 #include "AbstractOpenXmlMapping.h"
 #include "IMapping.h"
 
@@ -40,8 +43,9 @@ namespace DocFileFormat
 	class OleObjectMapping: public AbstractOpenXmlMapping, public IMapping
 	{
 	public:
-		OleObjectMapping(XmlUtils::CXmlWriter* writer, ConversionContext* context, PictureDescriptor* pict, IMapping* caller, const wstring& shapeId) 
-			: AbstractOpenXmlMapping(writer), m_context(NULL), _pict(NULL), _caller(NULL), _shapeId(shapeId)
+		OleObjectMapping(XmlUtils::CXmlWriter* writer, ConversionContext* context, PictureDescriptor* pict, IMapping* caller, const std::wstring& shapeId) 
+			:
+		AbstractOpenXmlMapping(writer), m_context(NULL), _pict(NULL), _caller(NULL), _shapeId(shapeId)
 		{
 			m_context	=	context;
 			_pict		=	pict;
@@ -70,7 +74,7 @@ namespace DocFileFormat
 					
 					m_context->_docx->RegisterExternalOLEObject(_caller, ole->ClipboardFormat, ole->Link);
 
-					m_pXmlWriter->WriteAttribute( _T( "r:id" ), ( wstring( _T( "rId" ) ) + FormatUtils::IntToWideString( relID ) ).c_str() );
+					m_pXmlWriter->WriteAttribute( _T( "r:id" ), ( std::wstring( _T( "rId" ) ) + FormatUtils::IntToWideString( relID ) ).c_str() );
 					m_pXmlWriter->WriteAttribute( _T( "Type" ), _T( "Link" ) );
 					m_pXmlWriter->WriteAttribute( _T( "UpdateMode" ), ole->UpdateMode.c_str() );
 				}
@@ -83,7 +87,7 @@ namespace DocFileFormat
 					else
 						relID = m_context->_docx->RegisterOLEObject(_caller, ole->ClipboardFormat);
 
-					m_pXmlWriter->WriteAttribute( _T( "r:id" ), ( wstring( _T( "rId" ) ) + FormatUtils::IntToWideString( relID ) ).c_str() );
+					m_pXmlWriter->WriteAttribute( _T( "r:id" ), ( std::wstring( _T( "rId" ) ) + FormatUtils::IntToWideString( relID ) ).c_str() );
 					m_pXmlWriter->WriteAttribute( _T( "Type" ), _T( "Embed" ) );
 
 					//copy the object
@@ -108,9 +112,9 @@ namespace DocFileFormat
 			}
 		}
 
-		static wstring GetTargetExt(const wstring& objectType)
+		static std::wstring GetTargetExt(const std::wstring& objectType)
 		{
-			wstring objectExt = _T( ".bin" );
+			std::wstring objectExt = _T( ".bin" );
 
 			if ( objectType == _T( "Biff8" ) )
 			{
@@ -135,9 +139,9 @@ namespace DocFileFormat
 			return objectExt;
 		}
 
-		static wstring GetContentType(const wstring& objectType)
+		static std::wstring GetContentType(const std::wstring& objectType)
 		{
-			wstring objectContentType = OpenXmlContentTypes::OleObject;
+			std::wstring objectContentType = OpenXmlContentTypes::OleObject;
 
 			if ( objectType == _T( "Biff8" ) )
 			{
@@ -172,10 +176,10 @@ namespace DocFileFormat
 				//!!!TODO: There is issue with some Office OLE Objects. Word can't open *.xls object (Excel.Chart) with set CLSID and
 				//some Power Point Presentations, and Word Documents. Open Office CAN start this objects!!!
 
-                wstring clsid;
-				wstring exelChart = _T( "Excel.Chart" );
+				std::wstring clsid;
+				std::wstring exelChart = _T( "Excel.Chart" );
 
-				if ( search( ole->Program.begin(), ole->Program.end(), exelChart.begin(), exelChart.end() ) == ole->Program.end() )
+				if ( std::search( ole->Program.begin(), ole->Program.end(), exelChart.begin(), exelChart.end() ) == ole->Program.end() )
 				{//??
 					clsid = ole->ClassId;
 				}

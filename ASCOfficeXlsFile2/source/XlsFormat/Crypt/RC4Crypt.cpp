@@ -47,7 +47,7 @@ namespace CRYPT
 		CopyDWORDs2Bytes(data.EncryptedVerifierHash.b1, data.EncryptedVerifierHash.b2, data.EncryptedVerifierHash.b3, data.EncryptedVerifierHash.b4, pnVerifierHash);
 	
 		int BlockSize = 1024;
-		//if (type == 1) BlockSize = 256;
+		if (type == 1) BlockSize = 512;
 	
 		mxDecoder.reset(new BiffDecoder_RCF(pnSalt, pnVerifier, pnVerifierHash, BlockSize));
 

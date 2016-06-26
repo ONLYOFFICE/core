@@ -37,17 +37,19 @@
 #include "../../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"
 #include "../../OfficeUtils/src/OfficeUtils.h"
 
-HRESULT COfficeDocFile::LoadFromFile(std::wstring bsDocFile, std::wstring bsDocxDirectory, ProgressCallback *ffCallBack )
+HRESULT COfficeDocFile::LoadFromFile(const std::wstring &  docFile, const std::wstring & docxDirectory, const std::wstring & password, ProgressCallback *ffCallBack )
 {
 	HRESULT hr = S_FALSE;
 
 	DocFileFormat::Converter docToDocx;
-    hr= docToDocx.LoadAndConvert(std_string2string(bsDocFile), std_string2string(bsDocxDirectory), ffCallBack);
+	docToDocx.m_sTempFolder = m_sTempFolder;
+
+    hr= docToDocx.LoadAndConvert(docFile, docxDirectory, password, ffCallBack);
 
 	return hr;
 }
 
-HRESULT COfficeDocFile::SaveToFile (std::wstring sDstFileName, std::wstring sSrcFileName, ProgressCallback *ffCallBack )
+HRESULT COfficeDocFile::SaveToFile (const std::wstring &  sDstFileName, const std::wstring &   sSrcFileName, ProgressCallback *ffCallBack )
 {
     return S_OK;
 }

@@ -36,14 +36,14 @@
 
 namespace DocFileFormat
 {
-	class WideString: public wstring, public ByteStructure
+	class WideString: public std::wstring, public ByteStructure
 	{
 	public:
-		WideString( VirtualStreamReader reader, int length ): wstring()
+		WideString( VirtualStreamReader reader, int length ): std::wstring()
 		{
 		}
 
-		WideString(): wstring()
+		WideString(): std::wstring()
 		{
 		}
 
@@ -59,8 +59,14 @@ namespace DocFileFormat
 			bytes = reader->ReadBytes( length, true );
 
 			//It's a real string table
-			FormatUtils::GetSTLCollectionFromBytes<WideString>( newObject, bytes, length, ENCODING_UNICODE );
-
+			if (reader->olderVersion)
+			{
+				FormatUtils::GetSTLCollectionFromBytes<WideString>( newObject, bytes, length, ENCODING_WINDOWS_1250 );
+			}
+			else
+			{
+				FormatUtils::GetSTLCollectionFromBytes<WideString>( newObject, bytes, length, ENCODING_UTF16 );
+			}
 			RELEASEARRAYOBJECTS( bytes );
 
 			return static_cast<ByteStructure*>( newObject );

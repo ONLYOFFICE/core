@@ -184,12 +184,12 @@ namespace DocFileFormat
 		
 		/// An array of 16-bit signed integer that specifies horizontal distance in twips.
 		/// MUST be greater than or equal to -31680 and less than or equal to 31680.
-		vector<short> rgdxaCenter;
+		std::vector<short> rgdxaCenter;
 		
 		/// An array of TC80 that specifies the default formatting for a cell in the table.
 		/// Each TC80 in the array corresponds to the equivalent column in the table.
 		/// If there are fewer TC80s than columns, the remaining columns are formatted with the default TC80 formatting.
 		/// If there are more TC80s than columns, the excess TC80s MUST be ignored.
-		vector<TC80> rgTc80;
+		std::vector<TC80> rgTc80;
 	};
 }

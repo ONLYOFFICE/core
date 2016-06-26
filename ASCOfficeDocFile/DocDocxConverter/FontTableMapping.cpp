@@ -61,7 +61,7 @@ namespace DocFileFormat
 
 		int sz_fonts = table->Data.size();
 
-		for ( vector<ByteStructure*>::iterator iter = table->Data.begin(); iter != table->Data.end(); iter++ )
+		for ( std::vector<ByteStructure*>::iterator iter = table->Data.begin(); iter != table->Data.end(); iter++ )
 		{
 			FontFamilyName* font = dynamic_cast<FontFamilyName*>( *iter );
 
@@ -70,7 +70,7 @@ namespace DocFileFormat
 			m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
 
 			//alternative name
-			if ( ( font->xszAlt != wstring( _T( "" ) ) ) && ( font->xszAlt.length() > 0 ) )
+			if ( ( font->xszAlt != std::wstring( _T( "" ) ) ) && ( font->xszAlt.length() > 0 ) )
 			{
 				m_pXmlWriter->WriteNodeBegin( _T( "w:altName" ), TRUE );
 				m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::XmlEncode(font->xszAlt, true).c_str() );
@@ -93,7 +93,7 @@ namespace DocFileFormat
 			//panose
 			m_pXmlWriter->WriteNodeBegin( _T("w:panose1"), TRUE );
 
-			wstring wstr( _T( "" ) );
+			std::wstring wstr( _T( "" ) );
 
 			for ( unsigned int i = 0; i < font->panoseSize; i++ )
 			{
@@ -135,6 +135,6 @@ namespace DocFileFormat
 
 		m_pXmlWriter->WriteNodeEnd( _T("w:fonts") );
 
-		this->_ctx->_docx->FontTableXML = wstring( m_pXmlWriter->GetXmlString() );
+		this->_ctx->_docx->FontTableXML = std::wstring( m_pXmlWriter->GetXmlString() );
 	}
 }

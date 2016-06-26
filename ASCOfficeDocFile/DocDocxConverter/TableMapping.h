@@ -58,14 +58,14 @@ namespace DocFileFormat
 		void AddItem( const ITableCellElement& _tableCellElement );
 		bool IsEmpty() const;
 		void Clear();
-		void Convert( IMapping* mapping, TablePropertyExceptions* tapx, const vector<short>* grid, int& gridIndex, int cellIndex );
+		void Convert( IMapping* mapping, TablePropertyExceptions* tapx, const std::vector<short>* grid, int& gridIndex, int cellIndex );
 		~TableCell();
 
 	private:
 
 		int cp;
 		unsigned int depth;
-		list<ITableCellElementPtr> cellElements;
+		std::list<ITableCellElementPtr> cellElements;
 
 		DocumentMapping* documentMapping;
 	};
@@ -81,14 +81,14 @@ namespace DocFileFormat
 		void AddCell( const TableCell& _tableCell );
 		bool IsEmpty() const;
 		void Clear();
-		void Convert( IMapping* mapping, const vector<short>* grid );
+		void Convert( IMapping* mapping, const std::vector<short>* grid );
 		~TableRow();
 
 	private:
 
 		int cp;
 		unsigned int depth;
-		list<TableCell> cells;
+		std::list<TableCell> cells;
 
 		DocumentMapping* documentMapping;
 	};
@@ -148,7 +148,7 @@ namespace DocFileFormat
 		int cpStart;
 		int cpEnd;
 		unsigned int depth;
-		list<TableRow> rows;
+		std::list<TableRow> rows;
 
 		DocumentMapping* documentMapping;
 	};

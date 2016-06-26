@@ -135,8 +135,8 @@ namespace DocFileFormat
 
 		if ((pict->shapeContainer || pict->blipStoreEntry) && pict->shapeContainer->Children.size() > 0)
 		{
-			Shape* shape				=	static_cast<Shape*>(*(pict->shapeContainer->Children.begin()));
-			list<OptionEntry> options	=	pict->shapeContainer->ExtractOptions();
+			Shape* shape					=	static_cast<Shape*>(*(pict->shapeContainer->Children.begin()));
+			std::list<OptionEntry> options	=	pict->shapeContainer->ExtractOptions();
 
 			//v:shapetype
 			PictureFrameType type;
@@ -148,9 +148,9 @@ namespace DocFileFormat
 
 			//v:shape
 			m_pXmlWriter->WriteNodeBegin( _T( "v:shape" ), true );
-			m_pXmlWriter->WriteAttribute( _T( "type" ), ( wstring( _T( "#" ) ) + VMLShapeTypeMapping::GenerateTypeId( &type ) ).c_str() );
+			m_pXmlWriter->WriteAttribute( _T( "type" ), ( std::wstring( _T( "#" ) ) + VMLShapeTypeMapping::GenerateTypeId( &type ) ).c_str() );
 
-			wstring style;
+			std::wstring style;
 
 			double xScaling = pict->mx / 1000.0;
 			double yScaling = pict->my / 1000.0;
@@ -158,10 +158,10 @@ namespace DocFileFormat
 			TwipsValue width( ( pict->dxaGoal - ( pict->dxaCropLeft + pict->dxaCropRight ) ) * xScaling );
 			TwipsValue height( ( pict->dyaGoal - ( pict->dyaCropTop + pict->dyaCropBottom ) ) * yScaling );
 
-			wstring widthString = FormatUtils::DoubleToWideString( width.ToPoints() );
-			wstring heightString = FormatUtils::DoubleToWideString( height.ToPoints() );
+			std::wstring widthString = FormatUtils::DoubleToWideString( width.ToPoints() );
+			std::wstring heightString = FormatUtils::DoubleToWideString( height.ToPoints() );
 
-			style = wstring( _T( "width:" ) ) + widthString + wstring( _T( "pt;" ) ) + wstring( _T( "height:" ) ) + heightString + wstring( _T( "pt;" ) );
+			style = std::wstring( _T( "width:" ) ) + widthString + std::wstring( _T( "pt;" ) ) + std::wstring( _T( "height:" ) ) + heightString + std::wstring( _T( "pt;" ) );
 
 			m_pXmlWriter->WriteAttribute( _T( "style" ), style.c_str() );
 
@@ -203,25 +203,25 @@ namespace DocFileFormat
 				case borderBottomColor:
 					{
 						RGBColor bottomColor( (int)iter->op, RedFirst );
-						m_pXmlWriter->WriteAttribute( _T( "o:borderbottomcolor" ), ( wstring( _T( "#" ) ) + bottomColor.SixDigitHexCode ).c_str() );
+						m_pXmlWriter->WriteAttribute( _T( "o:borderbottomcolor" ), ( std::wstring( _T( "#" ) ) + bottomColor.SixDigitHexCode ).c_str() );
 					}
 					break;
 				case borderLeftColor:
 					{  
 						RGBColor leftColor( (int)iter->op, RedFirst );
-						m_pXmlWriter->WriteAttribute( _T( "o:borderleftcolor" ), ( wstring( _T( "#" ) ) + leftColor.SixDigitHexCode ).c_str() );
+						m_pXmlWriter->WriteAttribute( _T( "o:borderleftcolor" ), ( std::wstring( _T( "#" ) ) + leftColor.SixDigitHexCode ).c_str() );
 					}  
 					break;
 				case borderRightColor:
 					{  
 						RGBColor rightColor( (int)iter->op, RedFirst );
-						m_pXmlWriter->WriteAttribute( _T( "o:borderrightcolor" ), ( wstring( _T( "#" ) ) + rightColor.SixDigitHexCode ).c_str() );
+						m_pXmlWriter->WriteAttribute( _T( "o:borderrightcolor" ), ( std::wstring( _T( "#" ) ) + rightColor.SixDigitHexCode ).c_str() );
 					}
 					break;
 				case borderTopColor:
 					{
 						RGBColor topColor( (int)iter->op, RedFirst );
-						m_pXmlWriter->WriteAttribute( _T( "o:bordertopcolor" ), ( wstring( _T( "#" ) ) + topColor.SixDigitHexCode ).c_str() );
+						m_pXmlWriter->WriteAttribute( _T( "o:bordertopcolor" ), ( std::wstring( _T( "#" ) ) + topColor.SixDigitHexCode ).c_str() );
 					}
 					break;
 //CROPPING
@@ -229,28 +229,28 @@ namespace DocFileFormat
 					{  
 						//cast to signed integer
 						int cropBottom = (int)iter->op;
-						appendValueAttribute(m_imageData, _T( "cropbottom" ), ( FormatUtils::IntToWideString( cropBottom ) + wstring( _T( "f" ) ) ).c_str() );
+						appendValueAttribute(m_imageData, _T( "cropbottom" ), ( FormatUtils::IntToWideString( cropBottom ) + std::wstring( _T( "f" ) ) ).c_str() );
 					}
 					break;
 				case cropFromLeft:
 					{  
 						//cast to signed integer
 						int cropLeft = (int)iter->op;
-						appendValueAttribute(m_imageData, _T( "cropleft" ), ( FormatUtils::IntToWideString( cropLeft ) + wstring( _T( "f" ) ) ).c_str());
+						appendValueAttribute(m_imageData, _T( "cropleft" ), ( FormatUtils::IntToWideString( cropLeft ) + std::wstring( _T( "f" ) ) ).c_str());
 					}
 					break;
 				case cropFromRight:
 					{
 						//cast to signed integer
 						int cropRight = (int)iter->op;
-						appendValueAttribute(m_imageData, _T( "cropright" ), ( FormatUtils::IntToWideString( cropRight ) + wstring( _T( "f" ) ) ).c_str());
+						appendValueAttribute(m_imageData, _T( "cropright" ), ( FormatUtils::IntToWideString( cropRight ) + std::wstring( _T( "f" ) ) ).c_str());
 					}
 					break;
 				case cropFromTop:
 					{
 						//cast to signed integer
 						int cropTop = (int)iter->op;
-						appendValueAttribute(m_imageData, _T( "croptop" ), ( FormatUtils::IntToWideString( cropTop ) + wstring( _T( "f" ) ) ).c_str());
+						appendValueAttribute(m_imageData, _T( "croptop" ), ( FormatUtils::IntToWideString( cropTop ) + std::wstring( _T( "f" ) ) ).c_str());
 					}
 					break;
 				}
@@ -261,7 +261,7 @@ namespace DocFileFormat
 			if (CopyPicture(pict->blipStoreEntry))
 			{
 				//v:imageData
-				appendValueAttribute(m_imageData, _T( "r:id" ), ( wstring( _T( "rId" ) ) + FormatUtils::IntToWideString(m_nImageId) ).c_str());
+				appendValueAttribute(m_imageData, _T( "r:id" ), ( std::wstring( _T( "rId" ) ) + FormatUtils::IntToWideString(m_nImageId) ).c_str());
 				appendValueAttribute(m_imageData, _T( "o:title" ) , _T( "" ));
 				m_pXmlWriter->WriteString(m_imageData->GetXMLString().c_str());
 			}
@@ -285,7 +285,7 @@ namespace DocFileFormat
 	/// Writes a border element
 	void VMLPictureMapping::writePictureBorder( const wchar_t* name, const BorderCode* brc )
 	{
-		m_pXmlWriter->WriteNodeBegin( ( wstring( _T( "w10:" ) ) + wstring( name ) ).c_str(), true );
+		m_pXmlWriter->WriteNodeBegin( ( std::wstring( _T( "w10:" ) ) + std::wstring( name ) ).c_str(), true );
 		m_pXmlWriter->WriteAttribute( _T( "type" ), getBorderType( brc->brcType ).c_str() );
 		m_pXmlWriter->WriteAttribute( _T( "width" ), FormatUtils::IntToWideString( brc->dptLineWidth ).c_str() );
 		m_pXmlWriter->WriteNodeEnd	( _T( "" ), true );
@@ -329,7 +329,7 @@ namespace DocFileFormat
 					if (bitBlip)
 					{
 						m_ctx->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(oBlipEntry->btWin32), 
-							vector<unsigned char>(bitBlip->m_pvBits, (bitBlip->m_pvBits + bitBlip->pvBitsSize)), oBlipEntry->btWin32));
+							std::vector<unsigned char>(bitBlip->m_pvBits, (bitBlip->m_pvBits + bitBlip->pvBitsSize)), oBlipEntry->btWin32));
 					}
 				}
 				break;

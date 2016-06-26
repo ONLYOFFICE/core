@@ -60,8 +60,8 @@ namespace DocFileFormat
 		unsigned char Alpha;
 
 	public:
-		wstring SixDigitHexCode;
-		wstring EightDigitHexCode;
+		std::wstring SixDigitHexCode;
+		std::wstring EightDigitHexCode;
 
 		RGBColor( int cv, ByteOrder order )
 		{

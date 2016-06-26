@@ -175,7 +175,7 @@ namespace DocFileFormat
 		//close w:settings
 		m_oXmlWriter.WriteNodeEnd( _T( "w:settings" ) );
 
-		this->_ctx->_docx->SettingsXML = wstring( m_oXmlWriter.GetXmlString() ); 
+		this->_ctx->_docx->SettingsXML = std::wstring( m_oXmlWriter.GetXmlString() ); 
 	}
 
 	void SettingsMapping::writeRsidList()
@@ -183,7 +183,7 @@ namespace DocFileFormat
 		//convert the rsid list
 		m_oXmlWriter.WriteNodeBegin( _T( "w:rsids" ) );
 
-		for ( set<wstring>::iterator iter = this->_ctx->AllRsids.begin(); iter != this->_ctx->AllRsids.end(); iter++ )
+		for ( std::set<std::wstring>::iterator iter = this->_ctx->AllRsids.begin(); iter != this->_ctx->AllRsids.end(); iter++ )
 		{
 			m_oXmlWriter.WriteNodeBegin( _T( "w:rsid" ), TRUE );
 			m_oXmlWriter.WriteAttribute( _T( "w:val" ), iter->c_str() );

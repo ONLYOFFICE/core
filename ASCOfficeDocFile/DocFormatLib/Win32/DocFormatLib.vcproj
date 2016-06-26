@@ -324,26 +324,6 @@
 				>
 			</File>
 			<Filter
-				Name="MD4"
-				>
-				<File
-					RelativePath="..\..\Common\MD4\global.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\Common\MD4\md4.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\Common\MD4\md4c.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\Common\MD4\md4c.h"
-					>
-				</File>
-			</Filter>
-			<Filter
 				Name="pole"
 				>
 				<File
@@ -433,6 +413,14 @@
 			</File>
 			<File
 				RelativePath="..\..\DocDocxConverter\EmuValue.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\DocDocxConverter\EncryptionHeader.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\DocDocxConverter\EncryptionHeader.h"
 				>
 			</File>
 			<File
@@ -1205,6 +1193,14 @@
 				<File
 					RelativePath="..\..\DocDocxConverter\VMLPictureMapping.cpp"
 					>
+					<FileConfiguration
+						Name="Debug|x64"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							AdditionalOptions="/bigobj"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\DocDocxConverter\VMLPictureMapping.h"

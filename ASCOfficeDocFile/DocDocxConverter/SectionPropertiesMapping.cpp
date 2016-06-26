@@ -51,7 +51,7 @@ namespace DocFileFormat
 
 		_ctx				=	pContext;
 		m_nSelectProperties	=	nSelectProperties;
-		_type				=	wstring (_T("nextPage"));
+		_type				=	std::wstring (_T("nextPage"));
 	}
 
 	// Creates a new SectionPropertiesMapping which appends the properties to a given node.
@@ -70,7 +70,7 @@ namespace DocFileFormat
 
 		_ctx				=	pContext;
 		m_nSelectProperties	=	nSelectProperties;
-		_type				=	wstring (_T("nextPage"));
+		_type				=	std::wstring (_T("nextPage"));
 	}
 
 	SectionPropertiesMapping::~SectionPropertiesMapping()
@@ -118,11 +118,11 @@ namespace DocFileFormat
 			WriteSectionStory (pTable->GetFirstFooters (m_nSelectProperties), std::wstring(L"footerReference"), std::wstring(L"first"));
 		}
 
-		//MUST be ignored if the section does not have page number restart enabled.([MS-DOC] Ч v20101113. стр 152)
+		//MUST be ignored if the section does not have page number restart enabled.([MS-DOC] — v20101113. стр 152)
 		bool bWasSprmSFPgnRestart = false;
-		wstring wsSprmSPgnStart;
+		std::wstring wsSprmSPgnStart;
 
-		for (list<SinglePropertyModifier>::iterator iter = sepx->grpprl->begin(); iter != sepx->grpprl->end(); ++iter)
+		for (std::list<SinglePropertyModifier>::iterator iter = sepx->grpprl->begin(); iter != sepx->grpprl->end(); ++iter)
 		{
 			switch (iter->OpCode)
 			{
@@ -556,7 +556,7 @@ namespace DocFileFormat
 				}
 			}
 
-			AppendRef (m_pXmlNode, StoryType.c_str(), Story.c_str(), ( wstring( _T( "rId" ) ) + FormatUtils::IntToWideString(nRelID) ).c_str() );
+			AppendRef (m_pXmlNode, StoryType.c_str(), Story.c_str(), ( std::wstring( _T( "rId" ) ) + FormatUtils::IntToWideString(nRelID) ).c_str() );
 
 			return TRUE;
 		}

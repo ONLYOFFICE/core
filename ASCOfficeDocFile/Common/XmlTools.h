@@ -35,8 +35,6 @@
 #include <map>
 #include <list>
 
-using namespace std;
-
 #if defined(_WIN32) || defined(_WIN64)
     #include <atlbase.h>
     #include <atlstr.h>
@@ -67,8 +65,8 @@ namespace XMLTools
 	template <class T> class XMLAttribute
 	{
 	private:
-		basic_string<T> m_Name;
-		basic_string<T> m_Value;
+		std::basic_string<T> m_Name;
+		std::basic_string<T> m_Value;
 
 	public:
 
@@ -99,33 +97,33 @@ namespace XMLTools
 
 		void SetValue( const T* value )
 		{
-			m_Value = basic_string<T>( value );
+			m_Value = std::basic_string<T>( value );
 		}
 
 		/*========================================================================================================*/
 
-		basic_string<T> GetName() const
+		std::basic_string<T> GetName() const
 		{
 			return m_Name;
 		}
 
 		/*========================================================================================================*/
 
-		basic_string<T> GetValue() const
+		std::basic_string<T> GetValue() const
 		{
 			return m_Value;
 		}
 
 		/*========================================================================================================*/
 
-		basic_string<T> GetXMLString()
+		std::basic_string<T> GetXMLString()
 		{
-			basic_string<T> xmlString( _T( "" ) );
+			std::basic_string<T> xmlString( _T( "" ) );
 
 			xmlString += m_Name;
-			xmlString += basic_string<T>( _T( "=\"" ) );
+			xmlString += std::basic_string<T>( _T( "=\"" ) );
 			xmlString += m_Value;
-			xmlString += basic_string<T>( _T( "\"" ) );
+			xmlString += std::basic_string<T>( _T( "\"" ) );
 
 			return xmlString;
 		}
@@ -137,19 +135,19 @@ namespace XMLTools
 
 	template <class T> class XMLElement
 	{
-		typedef pair< basic_string<T>, basic_string<T> > AttributeValuePair;
+		typedef std::pair< std::basic_string<T>, std::basic_string<T> > AttributeValuePair;
 
 	private:
-		basic_string<T> m_Name;
-		basic_string<T> m_ElementText;
-		map<basic_string<T>, basic_string<T>> m_AttributeMap;
-        list<XMLElement<T>> m_Elements;
+		std::basic_string<T>									m_Name;
+		std::basic_string<T>									m_ElementText;
+		std::map<std::basic_string<T>, std::basic_string<T>>	m_AttributeMap;
+        std::list<XMLElement<T>>								m_Elements;
 
-        typedef typename list<XMLElement<T>>::iterator          ElementsIterator;
-        typedef typename list<XMLElement<T>>::const_iterator    ElementsIteratorConst;
+        typedef typename std::list<XMLElement<T>>::iterator          ElementsIterator;
+        typedef typename std::list<XMLElement<T>>::const_iterator    ElementsIteratorConst;
 
-        typedef typename map<basic_string<T>, basic_string<T>>::iterator            AttMapIterator;
-        typedef typename map<basic_string<T>, basic_string<T>>::const_iterator      AttMapIteratorConst;
+        typedef typename std::map<std::basic_string<T>, std::basic_string<T>>::iterator            AttMapIterator;
+        typedef typename std::map<std::basic_string<T>, std::basic_string<T>>::const_iterator      AttMapIteratorConst;
 
     public:
 
@@ -167,7 +165,7 @@ namespace XMLTools
 
 		/*========================================================================================================*/
 
-		XMLElement( const T* prefix, const T* localName ) : m_Name( basic_string<T>( prefix ) + basic_string<T>( _T( ":" ) ) + basic_string<T>( localName ) ), m_ElementText( _T( "" ) )
+		XMLElement( const T* prefix, const T* localName ) : m_Name( std::basic_string<T>( prefix ) + std::basic_string<T>( _T( ":" ) ) + std::basic_string<T>( localName ) ), m_ElementText( _T( "" ) )
 		{
 
 		}
@@ -183,14 +181,14 @@ namespace XMLTools
 
 		void AppendText( const T* text )
 		{
-			m_ElementText = basic_string<T>( text );
+			m_ElementText = std::basic_string<T>( text );
 		}
 
 		/*========================================================================================================*/
 
 		void AppendTextSymbol( const T symbol )
 		{
-			m_ElementText += basic_string<T>( &symbol );
+			m_ElementText += std::basic_string<T>( &symbol );
 		}
 
 		/*========================================================================================================*/
@@ -206,7 +204,7 @@ namespace XMLTools
 
 		void AppendAttribute( const T* name, const T* value )
 		{
-			AttributeValuePair p( basic_string<T>( const_cast<T*>( name ) ), basic_string<T>( const_cast<T*>( value ) ) );
+			AttributeValuePair p( std::basic_string<T>( const_cast<T*>( name ) ), std::basic_string<T>( const_cast<T*>( value ) ) );
 
 			m_AttributeMap.insert( p );
 		}
@@ -252,7 +250,7 @@ namespace XMLTools
 
             for ( ElementsIterator iter = m_Elements.begin(); iter != m_Elements.end(); iter++ )
 			{
-				if ( iter->m_Name == basic_string<T>( elementName ) )
+				if ( iter->m_Name == std::basic_string<T>( elementName ) )
 				{
 					result = true;
 
@@ -265,7 +263,7 @@ namespace XMLTools
 
 		/*========================================================================================================*/
 
-		bool RemoveChildByName( const basic_string<T>& elementName )
+		bool RemoveChildByName( const std::basic_string<T>& elementName )
 		{
 			bool result = false;
 
@@ -334,34 +332,34 @@ namespace XMLTools
 
 		/*========================================================================================================*/
 
-        basic_string<T> GetName() const
+        std::basic_string<T> GetName() const
 		{
 			return m_Name;
 		}
 
 		/*========================================================================================================*/
 
-        basic_string<T> GetXMLString()
+        std::basic_string<T> GetXMLString()
 		{
-			basic_string<T> xmlString( _T( "" ) );
+			std::basic_string<T> xmlString( _T( "" ) );
 
-            bool bIsNameExists = ( m_Name != basic_string<T>( _T( "" ) ) );
-            bool bIsTextExists = ( m_ElementText != basic_string<T>( _T( "" ) ) );
+            bool bIsNameExists = ( m_Name != std::basic_string<T>( _T( "" ) ) );
+            bool bIsTextExists = ( m_ElementText != std::basic_string<T>( _T( "" ) ) );
 
 			if ( bIsNameExists )
 			{
-                xmlString += basic_string<T>( _T( "<" ) ) + m_Name;
+                xmlString += std::basic_string<T>( _T( "<" ) ) + m_Name;
 			}
 
             if ( ( bIsNameExists ) && ( m_AttributeMap.size() > 0 ) )
 			{
                 for ( AttMapIterator iter = m_AttributeMap.begin(); iter != m_AttributeMap.end(); iter++ )
 				{
-					xmlString += basic_string<T>( _T( " " ) );
+					xmlString += std::basic_string<T>( _T( " " ) );
 					xmlString += iter->first;
-					xmlString += basic_string<T>( _T( "=\"" ) );
+					xmlString += std::basic_string<T>( _T( "=\"" ) );
 					xmlString += iter->second;
-					xmlString += basic_string<T>( _T( "\"" ) );
+					xmlString += std::basic_string<T>( _T( "\"" ) );
 				}
 			}
 
@@ -369,7 +367,7 @@ namespace XMLTools
 			{
 				if ( bIsNameExists )
 				{
-					xmlString += basic_string<T>( _T( ">" ) );
+					xmlString += std::basic_string<T>( _T( ">" ) );
 				}
 
                 for ( ElementsIterator iter = m_Elements.begin(); iter != m_Elements.end(); iter++ )
@@ -384,16 +382,16 @@ namespace XMLTools
 
 				if ( bIsNameExists )
 				{
-                    xmlString += basic_string<T>( _T( "</" ) );
+                    xmlString += std::basic_string<T>( _T( "</" ) );
 					xmlString += m_Name;
-                    xmlString += basic_string<T>( _T( ">" ) );
+                    xmlString += std::basic_string<T>( _T( ">" ) );
 				}
 			}
 			else
 			{
 				if ( bIsNameExists )
 				{
-                    xmlString += basic_string<T>( _T( "/>" ) );
+					xmlString += std::basic_string<T>( _T( "/>" ) );
 				}
 			}
 

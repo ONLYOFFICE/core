@@ -58,7 +58,7 @@ namespace DocFileFormat
 	public:	
 
 		virtual ~TableCellPropertiesMapping();
-		TableCellPropertiesMapping (XmlUtils::CXmlWriter* pWriter, const vector<short>* tableGrid, int gridIndex, int cellIndex);
+		TableCellPropertiesMapping (XmlUtils::CXmlWriter* pWriter, const std::vector<short>* tableGrid, int gridIndex, int cellIndex);
 		virtual void Apply( IVisitable* visited );
 	
 		inline int GetGridSpan() const
@@ -69,18 +69,20 @@ namespace DocFileFormat
 	private:
 
 		void apppendCellShading (unsigned char* sprmArg, int size, int cellIndex);
-		bool IsTableBordersDefined (const list<SinglePropertyModifier>* grpprl) const;
-		bool IsTableCellWidthDefined (const list<SinglePropertyModifier>* grpprl) const;
+		bool IsTableBordersDefined (const std::list<SinglePropertyModifier>* grpprl) const;
+		bool IsTableCellWidthDefined (const std::list<SinglePropertyModifier>* grpprl) const;
 	
 	private: 
 	
 		int _gridIndex;
 		int _cellIndex;
+		
 		XMLTools::XMLElement<wchar_t>* _tcPr;
 		XMLTools::XMLElement<wchar_t>* _tcMar;
 		XMLTools::XMLElement<wchar_t>* _tcBorders;
-		const vector<short>* _grid;
-		vector<short> _tGrid;
+		
+		const std::vector<short>* _grid;
+		std::vector<short>		_tGrid;
 
 		short _width;
 		Global::CellWidthType _ftsWidth;

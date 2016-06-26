@@ -32,6 +32,21 @@
 
 #include "Converter.h"
 
+#include "WordDocument.h"
+
+#include "TableMapping.h"
+
+#include "StyleSheetMapping.h"
+#include "FontTableMapping.h"
+#include "FootnotesMapping.h"
+#include "EndnotesMapping.h"
+#include "NumberingMapping.h"
+#include "CommentsMapping.h"
+#include "SettingsMapping.h"
+#include "MainDocumentMapping.h"
+#include "WordprocessingDocument.h"
+#include "ConversionContext.h"
+
 
 namespace DocFileFormat
 {
@@ -51,8 +66,11 @@ namespace DocFileFormat
 		ConversionContext context( doc, docx );
 
 		//Write numbering.xml
-		NumberingMapping numberingMapping( &context );
-		doc->listTable->Convert( &numberingMapping );
+		if (doc->listTable)
+		{
+			NumberingMapping numberingMapping( &context );
+			doc->listTable->Convert( &numberingMapping );
+		}
 
 		if ( progress != NULL )
 		{
@@ -85,8 +103,11 @@ namespace DocFileFormat
 		}
 
 		//Write styles.xml
-		StyleSheetMapping styleSheetMapping( &context );
-		doc->Styles->Convert( &styleSheetMapping );
+		if (doc->Styles)
+		{
+			StyleSheetMapping styleSheetMapping( &context );
+			doc->Styles->Convert( &styleSheetMapping );
+		}
 
 		if ( progress != NULL )
 		{
@@ -102,8 +123,11 @@ namespace DocFileFormat
 		}
 
 		//Write fontTable.xml
-		FontTableMapping fontTableMapping( &context );
-		doc->FontTable->Convert( &fontTableMapping );
+		if (doc->FontTable)
+		{
+			FontTableMapping fontTableMapping( &context );
+			doc->FontTable->Convert( &fontTableMapping );
+		}
 
 		if ( progress != NULL )
 		{
@@ -170,8 +194,11 @@ namespace DocFileFormat
 		}
 
 		//write settings.xml at last because of the rsid list
-		SettingsMapping settingsMapping( &context );
-		doc->DocProperties->Convert( &settingsMapping );
+		if (doc->DocProperties)
+		{
+			SettingsMapping settingsMapping( &context );
+			doc->DocProperties->Convert( &settingsMapping );
+		}
 
 		if ( progress != NULL )
 		{
@@ -189,16 +216,14 @@ namespace DocFileFormat
 		return S_OK;
 	}
 
-	long Converter::LoadAndConvert(const CString& strSrcFile, const CString& strDstDirectory, const ProgressCallback* progress)
+	long Converter::LoadAndConvert(const std::wstring& strSrcFile, const std::wstring& strDstDirectory, const std::wstring& password, const ProgressCallback* progress)
 	{
-
         long result = S_FALSE;
 
-
-		WordDocument			doc(strSrcFile);
+		WordDocument			doc(progress, m_sTempFolder);
 		WordprocessingDocument	docx(strDstDirectory, &doc);
 		
-		result = doc.LoadDocument(progress);
+		result = doc.LoadDocument(strSrcFile, password);
 
         if (result == S_OK)
 		{

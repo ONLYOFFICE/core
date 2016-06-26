@@ -63,8 +63,8 @@ namespace DocFileFormat
 		bool	_webHidden;
 		bool	_isRTL;
 	private:
-		void convertSprms( list<SinglePropertyModifier>* sprms, XMLTools::XMLElement<wchar_t>* parent );
-		list<CharacterPropertyExceptions*> buildHierarchy( const StyleSheet* styleSheet, unsigned short istdStart );
+		void convertSprms( std::list<SinglePropertyModifier>* sprms, XMLTools::XMLElement<wchar_t>* parent );
+		std::list<CharacterPropertyExceptions*> buildHierarchy( const StyleSheet* styleSheet, unsigned short istdStart );
 		bool applyToggleHierachy( const SinglePropertyModifier& sprm );
 		bool toogleValue( bool currentValue, unsigned char toggle );
 
@@ -82,9 +82,8 @@ namespace DocFileFormat
 		RevisionData*					_revisionData;
 		bool							_styleChpx;
 
-
-		ParagraphPropertyExceptions*		_currentPapx;
-		list<CharacterPropertyExceptions*>	_hierarchy;
+		ParagraphPropertyExceptions*			_currentPapx;
+		std::list<CharacterPropertyExceptions*>	_hierarchy;
 
 		bool _isRunStyleNeeded;
 		bool _isOwnRPr;

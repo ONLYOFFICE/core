@@ -35,7 +35,8 @@
 namespace DocFileFormat
 {
 	/// Parses the CHPX for a fcPic an loads the PictureDescriptor at this offset
-	PictureDescriptor::PictureDescriptor(CharacterPropertyExceptions* chpx, POLE::Stream* stream, int size) : 
+	PictureDescriptor::PictureDescriptor(CharacterPropertyExceptions* chpx, POLE::Stream* stream, int size, bool oldVersion) 
+		: 
 		dxaGoal(0), dyaGoal(0), mx(0), my(0), Type(jpg), Name( _T( "" ) ), mfp(), dxaCropLeft(0), dyaCropTop(0),
 		dxaCropRight(0), dyaCropBottom(0), brcTop(NULL), brcLeft(NULL), brcBottom(NULL), brcRight(NULL), dxaOrigin(0), dyaOrigin(0),
 		cProps(0), shapeContainer(NULL), blipStoreEntry(NULL)
@@ -46,7 +47,7 @@ namespace DocFileFormat
 
 		if ( fc >= 0 )
 		{
-			parse( stream, fc, size );
+			parse( stream, fc, size, oldVersion);
 		}
 	}
 
@@ -64,11 +65,11 @@ namespace DocFileFormat
 		RELEASEOBJECT(shapeContainer);
 		RELEASEOBJECT(blipStoreEntry);
 	}
-	void PictureDescriptor::parse(POLE::Stream* stream, int fc, int sz)
+	void PictureDescriptor::parse(POLE::Stream* stream, int fc, int sz, bool oldVersion)
 	{
 		Clear();
 
-		VirtualStreamReader reader(stream, fc);
+		VirtualStreamReader reader(stream, fc, oldVersion);
 
 		int sz_stream = reader.GetSize();
 
@@ -98,8 +99,8 @@ namespace DocFileFormat
 
 			if (mfp.mm > 98)
 			{
-				unsigned char* bytes			=	reader.ReadBytes(14, true);
-				rcWinMf				=	vector<unsigned char>(bytes, (bytes + 14));
+				unsigned char* bytes	=	reader.ReadBytes(14, true);
+				rcWinMf					=	std::vector<unsigned char>(bytes, (bytes + 14));
 				RELEASEARRAYOBJECTS(bytes);
 
 				//dimensions
@@ -148,7 +149,7 @@ namespace DocFileFormat
 					if ( stPicName != NULL )
 					{
 						std::wstring picName;
-						FormatUtils::GetSTLCollectionFromBytes<wstring>( &picName, stPicName, cchPicName, ENCODING_WINDOWS_1251 );
+						FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &picName, stPicName, cchPicName, ENCODING_WINDOWS_1250 );
 						RELEASEARRAYOBJECTS(stPicName);
 					}
 				}
@@ -181,7 +182,7 @@ namespace DocFileFormat
 	{
 		int ret = -1;
 
-		for ( list<SinglePropertyModifier>::const_iterator iter = chpx->grpprl->begin(); iter != chpx->grpprl->end(); iter++ )
+		for ( std::list<SinglePropertyModifier>::const_iterator iter = chpx->grpprl->begin(); iter != chpx->grpprl->end(); iter++ )
 		{
 			switch ( iter->OpCode )
 			{

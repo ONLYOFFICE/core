@@ -50,8 +50,8 @@ namespace DocFileFormat
 
     public:
 	  virtual ~FormattedDiskPageCHPX();
-      FormattedDiskPageCHPX( POLE::Stream* wordStream, int offset );
+      FormattedDiskPageCHPX( POLE::Stream* wordStream, int offset, bool oldVersion );
       /// Parses the 0Table (or 1Table) for FKP _entries containing CHPX
-      static list<FormattedDiskPageCHPX*>* GetAllCHPXFKPs( FileInformationBlock* fib, POLE::Stream* wordStream, POLE::Stream* tableStream );
+      static std::list<FormattedDiskPageCHPX*>* GetAllCHPXFKPs( FileInformationBlock* fib, POLE::Stream* wordStream, POLE::Stream* tableStream );
   };
 }

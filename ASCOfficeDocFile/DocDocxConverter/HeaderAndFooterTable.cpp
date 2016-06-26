@@ -38,9 +38,11 @@ namespace DocFileFormat
 {
 	HeaderAndFooterTable::HeaderAndFooterTable (FileInformationBlock* fib, POLE::Stream* pTableStream)
 	{
-		VirtualStreamReader tableReader (pTableStream, fib->m_FibWord97.fcPlcfHdd);
+		VirtualStreamReader tableReader (pTableStream, fib->m_FibWord97.fcPlcfHdd, fib->m_bOlderVersion);
 
-		unsigned int tableSize	=	fib->m_FibWord97.lcbPlcfHdd / 4;
+		if (fib->m_FibWord97.fcPlcfHdd > tableReader.GetSize()) return;
+
+		unsigned int tableSize	=	fib->m_FibWord97.lcbPlcfHdd / (fib->m_bOlderVersion ? 1: 4);
 
 		if ( ( tableSize > 0 ) && ( fib->m_RgLw97.ccpHdr > 0 ) )
 		{
@@ -120,6 +122,9 @@ namespace DocFileFormat
 				}
 
 				pos++;
+
+				if (pos > tableSize)
+					break;
 
 				//First Page Footers
 				if ( table[pos] == table[pos + 1] )

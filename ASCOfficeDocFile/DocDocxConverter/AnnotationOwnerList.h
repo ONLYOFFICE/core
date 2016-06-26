@@ -36,12 +36,15 @@
 
 namespace DocFileFormat
 {
-	class AnnotationOwnerList: public vector<wstring>
+	class AnnotationOwnerList: public std::vector<std::wstring>
 	{
 	public: 
-		AnnotationOwnerList(FileInformationBlock* fib, POLE::Stream* tableStream) : std::vector<wstring>()
+		AnnotationOwnerList(FileInformationBlock* fib, POLE::Stream* tableStream) : std::vector<std::wstring>()
 		{
-			VirtualStreamReader reader(tableStream, fib->m_FibWord97.fcGrpXstAtnOwners);
+			VirtualStreamReader reader(tableStream, fib->m_FibWord97.fcGrpXstAtnOwners, fib->m_bOlderVersion);
+			
+			if (fib->m_FibWord97.fcGrpXstAtnOwners > reader.GetSize()) return;
+
 			while (reader.GetPosition() < (fib->m_FibWord97.fcGrpXstAtnOwners + fib->m_FibWord97.lcbGrpXstAtnOwners))
 			{
 				push_back(reader.ReadXst());

@@ -44,16 +44,19 @@ namespace DocFileFormat
 
 	protected:
 		static const int CP_LENGTH = 4;
-		vector<int>				CharacterPositions;
-		vector<ByteStructure*>	Elements;
+		std::vector<int>				CharacterPositions;
+		std::vector<ByteStructure*>	Elements;
 		bool					m_bIsValid;
 
 	public:
-		Plex(int structureLength, POLE::Stream* stream, unsigned int fc, unsigned int lcb) : m_bIsValid(false)
+		Plex(int structureLength, POLE::Stream* stream, unsigned int fc, unsigned int lcb, bool oldVersion) 
+			: m_bIsValid(false)
 		{
 			if ((lcb > 0) && (NULL != stream))
 			{
-				VirtualStreamReader reader(stream, (ULONG)fc);
+				VirtualStreamReader reader(stream, (ULONG)fc, oldVersion);
+
+				if (fc > reader.GetSize()) return;
 
 				m_bIsValid = true;
 
@@ -92,7 +95,7 @@ namespace DocFileFormat
 
 		~Plex()
 		{
-			for (vector<ByteStructure*>::iterator iter = Elements.begin(); iter != Elements.end(); ++iter)
+			for (std::vector<ByteStructure*>::iterator iter = Elements.begin(); iter != Elements.end(); ++iter)
 			{
 				RELEASEOBJECT(*iter);
 			}

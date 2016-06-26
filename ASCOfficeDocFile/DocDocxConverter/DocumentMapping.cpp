@@ -154,7 +154,7 @@ namespace DocFileFormat
 	// Writes a Paragraph that starts at the given cpStart and 
 	// ends at the given cpEnd
 	
-	int DocumentMapping::writeParagraph (int initialCp, int cpEnd, bool sectionEnd)
+	int DocumentMapping::writeParagraph (int initialCp, int cpEnd, bool sectionEnd, bool lastBad)
 	{
 		int		cp							=	initialCp;
 		int		fc							=	m_document->FindFileCharPos(cp); 
@@ -223,18 +223,24 @@ namespace DocFileFormat
 			}
 		}
 
-		if ((chpxs != NULL) && (chpxFcs != NULL) && !chpxFcs->empty())
+		if ((chpxs != NULL) && (chpxFcs != NULL) && !chpxFcs->empty())//? второе
 		{
 			int i = 0;
 
 			// write a runs for each CHPX
+			std::list<CharacterPropertyExceptions*>::iterator cpeIter_last = chpxs->end(); cpeIter_last--;
 
 			for (std::list<CharacterPropertyExceptions*>::iterator cpeIter = chpxs->begin(); cpeIter != chpxs->end(); ++cpeIter)
 			{
 				//get the FC range for this run
 
-				int fcChpxStart	=	chpxFcs->at(i);
-				int fcChpxEnd	=	chpxFcs->at(i + 1);
+				int fcChpxStart	=	chpxFcs ? chpxFcs->at(i)		: fc;
+				int fcChpxEnd	=	chpxFcs ? chpxFcs->at(i + 1)	: fcEnd;
+
+		//?		if (lastBad && cpeIter == cpeIter_last)
+		//?		{
+		//?			fcChpxEnd = fcEnd;
+		//?		}
 
 				//it's the first chpx and it starts before the paragraph
 
@@ -253,20 +259,7 @@ namespace DocFileFormat
 				}
 
 				//read the chars that are formatted via this CHPX
-
-				std::vector<wchar_t>* chpxChars = m_document->m_PieceTable->GetChars(fcChpxStart, fcChpxEnd, cp, m_document->WordDocumentStream);
-
-#ifdef _DEBUG
-				if (0)
-				{
-					//ATLTRACE(L"fcBegin : %d, fcEnd : %d\n", fcChpxStart, fcChpxEnd);
-					for (size_t j = 0; j < chpxChars->size(); ++j)
-					{
-						//ATLTRACE (L"%c", chpxChars->operator [](j)); 
-						//ATLTRACE(L"\n");
-					}
-				}
-#endif
+				std::vector<wchar_t>* chpxChars = m_document->GetChars(fcChpxStart, fcChpxEnd, cp);
 
 				//search for bookmarks in the chars
 				std::vector<int> bookmarks = searchBookmarks(chpxChars, cp);
@@ -274,10 +267,10 @@ namespace DocFileFormat
 				//if there are bookmarks in this run, split the run into several runs
 				if (bookmarks.size())
 				{
-					std::list<vector<wchar_t>>* runs = splitCharList(chpxChars, &bookmarks);
+					std::list<std::vector<wchar_t>>* runs = splitCharList(chpxChars, &bookmarks);
 					if (runs) 
 					{
-						for (std::list<vector<wchar_t> >::iterator iter = runs->begin(); iter != runs->end(); ++iter)
+						for (std::list<std::vector<wchar_t> >::iterator iter = runs->begin(); iter != runs->end(); ++iter)
 						{
 							if (writeBookmarks(cp))
 							{
@@ -518,23 +511,39 @@ namespace DocFileFormat
 				int cpFieldStart = initialCp + i;
 				int cpFieldEnd = searchNextTextMark( m_document->Text, cpFieldStart, TextMark::FieldEndMark );
 				
-				std::wstring f( ( m_document->Text->begin() + cpFieldStart ), ( m_document->Text->begin() + cpFieldEnd + 1 ) );
-				std::wstring embed		( _T( " EMBED" ) );
-				std::wstring link		( _T( " LINK" ) );
-				std::wstring form		( _T( " FORM" ) );
-				std::wstring excel		( _T( " Excel" ) );
-				std::wstring word		( _T( " Word" ) );
-				std::wstring equation	( _T( " Equation" ) ) ;
-				std::wstring mergeformat( _T( " MERGEFORMAT" ) );
-				std::wstring quote		( _T( " QUOTE" ) );
+				std::wstring f;
+				if (cpFieldEnd < m_document->Text->size())
+					f = std::wstring( ( m_document->Text->begin() + cpFieldStart ), ( m_document->Text->begin() + cpFieldEnd + 1 ) );
+
+				std::wstring EMBED		( _T( " EMBED" ) );
+				std::wstring LINK		( _T( " LINK" ) );
+				std::wstring FORM		( _T( " FORM" ) );
+				std::wstring Excel		( _T( " Excel" ) );
+				std::wstring Word		( _T( " Word" ) );
+				std::wstring opendocument(_T( " opendocument" ) );
+				std::wstring Equation	( _T( " Equation" ) ) ;
+				std::wstring MERGEFORMAT( _T( " MERGEFORMAT" ) );
+				std::wstring QUOTE		( _T( " QUOTE" ) );
 				std::wstring chart		( _T( "Chart" ) );
 				std::wstring PBrush		( _T( " PBrush" ) );
 				std::wstring TOC		( _T( " TOC" ) );
 				std::wstring HYPERLINK	( _T( " HYPERLINK" ) );
 				std::wstring PAGEREF	( _T( " PAGEREF" ) );
-				
 
-				if ( search( f.begin(), f.end(), form.begin(), form.end() ) != f.end() )
+				bool bChart			= search( f.begin(), f.end(), chart.begin(),		chart.end())			!= f.end();
+				bool bEMBED			= search( f.begin(), f.end(), EMBED.begin(),		EMBED.end())			!= f.end();
+				bool bLINK			= search( f.begin(), f.end(), LINK.begin(),			LINK.end())				!= f.end();
+				bool bOpendocument	= search( f.begin(), f.end(), opendocument.begin(), opendocument.end())		!= f.end();
+				bool bFORM			= search( f.begin(), f.end(), FORM.begin(),			FORM.end())				!= f.end();
+				bool bMERGEFORMAT	= search( f.begin(), f.end(), MERGEFORMAT.begin(),	MERGEFORMAT.end())		!= f.end();
+				bool bExcel			= search( f.begin(), f.end(), Excel.begin(),		Excel.end())			!= f.end();
+				bool bWord			= search( f.begin(), f.end(), Word.begin(),			Word.end())				!= f.end();
+				bool bHYPERLINK		= search( f.begin(), f.end(), HYPERLINK.begin(),	HYPERLINK.end())		!= f.end();
+				bool bPAGEREF		= search( f.begin(), f.end(), PAGEREF.begin(),		PAGEREF.end())			!= f.end();
+				bool bQUOTE			= search( f.begin(), f.end(), QUOTE.begin(),		QUOTE.end())			!= f.end();
+				bool bEquation		= search( f.begin(), f.end(), Equation.begin(),		Equation.end())			!= f.end();
+			
+				if ( bFORM )
 				{
 					m_pXmlWriter->WriteNodeBegin( _T( "w:fldChar" ), TRUE );
 					m_pXmlWriter->WriteAttribute( _T( "w:fldCharType" ), _T( "begin" ) );
@@ -557,13 +566,9 @@ namespace DocFileFormat
 
 					_fldCharCounter++;
 				}
-				else if ((	search( f.begin(), f.end(), mergeformat.begin(),	mergeformat.end()) != f.end())	||
-						((	search( f.begin(), f.end(), excel.begin(),			excel.end()) != f.end()			||
-							search( f.begin(), f.end(), word.begin(),			word.end()) != f.end()) 
+				else if ( ( bMERGEFORMAT || bExcel || bWord || bOpendocument )
 						&& 
-						(	search(f.begin(), f.end(), embed.begin(), embed.end()) != f.end() || 
-							search( f.begin(), f.end(), link.begin(), link.end() ) != f.end())	&& 
-							search( f.begin(), f.end(), chart.begin(), chart.end() ) == f.end()))
+						( ( bEMBED || bLINK ) && bChart) )
 				{
 					m_pXmlWriter->WriteNodeBegin( _T( "w:fldChar" ), TRUE );
 						m_pXmlWriter->WriteAttribute( _T( "w:fldCharType" ), _T( "begin" ) );
@@ -577,8 +582,7 @@ namespace DocFileFormat
 
 					_fldCharCounter++;
 				}
-				else if (	search( f.begin(),	f.end(), HYPERLINK.begin(),	HYPERLINK.end()) != f.end() &&
-							search( f.begin(),	f.end(), PAGEREF.begin(),	PAGEREF.end()) != f.end())
+				else if ( bHYPERLINK && bPAGEREF )
 				{
 					int cpFieldSep2 = cpFieldStart, cpFieldSep1 = cpFieldStart;
 					std::vector<std::wstring> toc;
@@ -628,21 +632,19 @@ namespace DocFileFormat
 						_skipRuns = 5;
 					}
 				}
-				else if (	search( f.begin(),	f.end(), embed.begin(), embed.end()) != f.end()  
-						||	search( f.begin(),	f.end(), link.begin(),	link.end() ) != f.end()
-						||	search( f.begin(),	f.end(), quote.begin(), quote.end()) != f.end())						
+				else if (	bEMBED  ||	bLINK ||	bQUOTE)						
 				{
 					int cpPic		=	searchNextTextMark(m_document->Text, cpFieldStart, TextMark::Picture);
 					int cpFieldSep	=	searchNextTextMark(m_document->Text, cpFieldStart, TextMark::FieldSeparator);
 
 					if (cpPic < cpFieldEnd)
 					{
-						int fcPic = m_document->m_PieceTable->FileCharacterPositions->operator []( cpPic );
-						list<CharacterPropertyExceptions*>* chpxs	=	m_document->GetCharacterPropertyExceptions(fcPic, fcPic + 1); 
+						int fcPic = m_document->FindFileCharPos( cpPic );
+						std::list<CharacterPropertyExceptions*>* chpxs	=	m_document->GetCharacterPropertyExceptions(fcPic, fcPic + 1); 
 						
-						CharacterPropertyExceptions* chpxPic		=	chpxs->front();
+						CharacterPropertyExceptions* chpxPic =	chpxs->front();
 
-						PictureDescriptor pic(chpxPic, m_document->DataStream);
+						PictureDescriptor pic(chpxPic, m_document->DataStream, 0x7fffffff, m_document->FIB->m_bOlderVersion);
 
 						RevisionData oData = RevisionData(chpxPic);
 
@@ -667,7 +669,9 @@ namespace DocFileFormat
 						if ( cpFieldSep < cpFieldEnd )
 						{
 							int fcFieldSep = m_document->m_PieceTable->FileCharacterPositions->operator []( cpFieldSep );
-							list<CharacterPropertyExceptions*>* chpxs = m_document->GetCharacterPropertyExceptions( fcFieldSep, ( fcFieldSep + 1 ) ); 
+							int fcFieldSep1 = m_document->FindFileCharPos( cpFieldSep );
+							
+							std::list<CharacterPropertyExceptions*>* chpxs = m_document->GetCharacterPropertyExceptions( fcFieldSep, ( fcFieldSep + 1 ) ); 
 							CharacterPropertyExceptions* chpxSep = chpxs->front();
 							
 							OleObject ole ( chpxSep, m_document->GetStorage() );
@@ -698,10 +702,8 @@ namespace DocFileFormat
 						}
 					}
 
-					if (search(f.begin(), f.end(), embed.begin(), embed.end()) != f.end() )
-						_skipRuns = 3;
-					else
-						_skipRuns = 5;
+					if (bEMBED)	_skipRuns = 3;
+					else		_skipRuns = 5;
 				}					
 				else
 				{
@@ -782,7 +784,7 @@ namespace DocFileFormat
 			}
 			else if ((TextMark::Picture == c) && fSpec)
 			{
-				PictureDescriptor oPicture (chpx, m_document->DataStream);
+				PictureDescriptor oPicture (chpx, m_document->DataStream, 0x7fffffff, m_document->FIB->m_bOlderVersion);
 
 				if ((oPicture.mfp.mm > 98) && (NULL != oPicture.shapeContainer))
 				{
@@ -922,7 +924,7 @@ namespace DocFileFormat
 	// Searches for bookmarks in the list of characters.
 	std::vector<int> DocumentMapping::searchBookmarks(std::vector<wchar_t>* chars, int initialCp)
 	{
-		vector<int> ret;
+		std::vector<int> ret;
 
 		if (m_document->BookmarkStartPlex->IsValid())
 		{
@@ -946,8 +948,9 @@ namespace DocFileFormat
 
 	ParagraphPropertyExceptions* DocumentMapping::findValidPapx(int fc)
 	{
-		ParagraphPropertyExceptions* ret = NULL;
-		vector<int>* pVector = m_document->AllPapxVector;
+		ParagraphPropertyExceptions* ret	= NULL;
+		std::vector<int>* pVector			= m_document->AllPapxVector;
+		
 		int nMin = 0;
 		int nMax = (int)pVector->size();
 		if( nMax > 0 )
@@ -970,41 +973,30 @@ namespace DocFileFormat
 			if ( fc >= nMinVal )
 			{
 				ret = m_document->AllPapx->find(nMinVal)->second;
+//?				if (!ret && m_document->AllPapx->size() > 0)
+//?				{
+//?					map<int, ParagraphPropertyExceptions*>::iterator it = m_document->AllPapx->end();
+//?					it--;
+//?					do
+//?					{
+//?						if (it->first < nMinVal && it->second)
+//?							break;
+//?						it--;
+//?					}
+//?					while(it != m_document->AllPapx->begin());
+//?
+//?					ret = it->second;
+//?				}
 				_lastValidPapx = ret;
 			}
 		}
 		return ret;
-	
-		//map<int, ParagraphPropertyExceptions*>::const_iterator iterMin = m_document->AllPapx->begin();
-		//map<int, ParagraphPropertyExceptions*>::const_iterator iterMax = ++m_document->AllPapx->begin();
-
-		//while ( iterMax != m_document->AllPapx->end() )
-		//{
-		//  if ( ( fc >= iterMin->first ) && ( fc < iterMax->first ) )
-		//  {
-		//    ret = iterMin->second;
-		//          _lastValidPapx = ret;
-
-		//       break;
-		//  }
-
-		//  iterMin++;
-		//  iterMax++;
-		//}
-
-		//if ( fc >= iterMin->first )
-		//{
-		//  ret = iterMin->second;
-		//        _lastValidPapx = ret;
-		//}
-
-		//return ret;
 	}
 
-	std::list<vector<wchar_t> >* DocumentMapping::splitCharList(std::vector<wchar_t>* chars, std::vector<int>* splitIndices)
+	std::list<std::vector<wchar_t> >* DocumentMapping::splitCharList(std::vector<wchar_t>* chars, std::vector<int>* splitIndices)
 	{
-		list<vector<wchar_t> >* ret = new list<vector<wchar_t> >();
-		vector<wchar_t> wcharVector;
+		std::list<std::vector<wchar_t> >* ret = new std::list<std::vector<wchar_t> >();
+		std::vector<wchar_t>		wcharVector;
 
 		int startIndex = 0;
 
@@ -1016,7 +1008,7 @@ namespace DocFileFormat
 
 			if ( cch > 0 )
 			{
-				wcharVector = vector<wchar_t>( cch );
+				wcharVector = std::vector<wchar_t>( cch );
 				copy( chars->begin() + startIndex, chars->begin() + startIndex + cch, wcharVector.begin() );
 				ret->push_back( wcharVector );
 			}
@@ -1026,7 +1018,7 @@ namespace DocFileFormat
 		}
 
 		//add the last part
-		wcharVector = vector<wchar_t>( chars->size() - startIndex );
+		wcharVector = std::vector<wchar_t>( chars->size() - startIndex );
 		copy( chars->begin() + startIndex, chars->end(), wcharVector.begin() );
 		ret->push_back( wcharVector );
 		wcharVector.clear();
@@ -1038,17 +1030,18 @@ namespace DocFileFormat
 	int DocumentMapping::writeTable(int initialCp, unsigned int nestingLevel)
 	{
 		int cp = initialCp;
+		int fc2 = m_document->FindFileCharPos( cp );
 		int fc = m_document->m_PieceTable->FileCharacterPositions->operator []( cp );
 		ParagraphPropertyExceptions* papx = findValidPapx( fc );
 		TableInfo tai( papx );
 
 		//build the table grid
-		vector<short>* grid = buildTableGrid( cp, nestingLevel );
+		std::vector<short>* grid = buildTableGrid( cp, nestingLevel );
 
 		//find first row end
 		int fcRowEnd = findRowEndFc( cp, nestingLevel );
 
-		TablePropertyExceptions row1Tapx( findValidPapx( fcRowEnd ), m_document->DataStream );
+		TablePropertyExceptions row1Tapx( findValidPapx( fcRowEnd ), m_document->DataStream, m_document->FIB->m_bOlderVersion);
 
 		//start table
 		m_pXmlWriter->WriteNodeBegin( _T( "w:tbl" ) );
@@ -1068,6 +1061,7 @@ namespace DocFileFormat
 			while ( tai.iTap == nestingLevel )
 			{
 				cp = writeTableRow( cp, grid, nestingLevel );
+				//?fc = m_document->FindFileCharPos(cp );
 				fc = m_document->m_PieceTable->FileCharacterPositions->operator []( cp );
 				papx = findValidPapx( fc );
 				tai = TableInfo( papx );
@@ -1080,7 +1074,8 @@ namespace DocFileFormat
 			while ( tai.fInTable )
 			{
 				cp = writeTableRow( cp, grid, nestingLevel );
-				fc = m_document->m_PieceTable->FileCharacterPositions->operator []( cp );
+				fc = m_document->FindFileCharPos( cp );
+
 				papx = findValidPapx( fc );
 				tai = TableInfo( papx );
 			}
@@ -1103,8 +1098,8 @@ namespace DocFileFormat
 		std::vector<short>* grid = new std::vector<short>();
 		
 		int cp = initialCp;
-		int fc = m_document->m_PieceTable->FileCharacterPositions->operator []( cp );
-		
+		int fc = m_document->FindFileCharPos( cp );
+
 		ParagraphPropertyExceptions* papx = findValidPapx( fc );
 		TableInfo tai( papx );
 
@@ -1114,7 +1109,7 @@ namespace DocFileFormat
 		while ( tai.fInTable )
 		{
 			//check all SPRMs of this TAPX
-			for ( list<SinglePropertyModifier>::iterator iter = papx->grpprl->begin(); iter != papx->grpprl->end(); iter++ )
+			for ( std::list<SinglePropertyModifier>::iterator iter = papx->grpprl->begin(); iter != papx->grpprl->end(); iter++ )
 			{
 				//find the tDef SPRM
 				if ( iter->OpCode == sprmTDefTable )
@@ -1170,7 +1165,8 @@ namespace DocFileFormat
 	int DocumentMapping::findRowEndFc(int initialCp, int& rowEndCp, unsigned int nestingLevel )
 	{
 		int cp = initialCp;
-		int fc = m_document->m_PieceTable->FileCharacterPositions->operator []( cp );
+		int fc = m_document->FindFileCharPos( cp );
+
 		ParagraphPropertyExceptions* papx = findValidPapx( fc );
 		TableInfo tai( papx );
 
@@ -1185,7 +1181,8 @@ namespace DocFileFormat
 					cp++;
 				}
 
-				fc = m_document->m_PieceTable->FileCharacterPositions->operator []( cp );
+				fc = m_document->FindFileCharPos( cp );
+
 				papx = findValidPapx( fc );
 				tai = TableInfo( papx );
 
@@ -1207,7 +1204,8 @@ namespace DocFileFormat
 					cp++;
 				}
 
-				fc = m_document->m_PieceTable->FileCharacterPositions->operator []( cp );
+				fc = m_document->FindFileCharPos( cp );
+
 				papx = findValidPapx( fc );
 				tai = TableInfo( papx );
 				cp++;
@@ -1221,8 +1219,12 @@ namespace DocFileFormat
 	// Finds the FC of the next row end mark.
 	int DocumentMapping::findRowEndFc(int initialCp, unsigned int nestingLevel )
 	{
+		if ( initialCp > m_document->Text->size() - 1) 
+			return initialCp;
+
 		int cp = initialCp;
-		int fc = m_document->m_PieceTable->FileCharacterPositions->operator []( cp );
+		int fc = m_document->FindFileCharPos( cp );
+
 		ParagraphPropertyExceptions* papx = findValidPapx( fc );
 		TableInfo tai( papx );
 
@@ -1232,12 +1234,17 @@ namespace DocFileFormat
 			//Search the "inner table trailer paragraph"
 			while ( ( tai.fInnerTtp == false ) && ( tai.fInTable == true ) )
 			{
-				while ( m_document->Text->at( cp ) != TextMark::ParagraphEnd )
+				while ( true )
 				{
+					if (cp > m_document->Text->size() - 1 ) 
+						break;
+					if (m_document->Text->at( cp ) == TextMark::ParagraphEnd)
+						break;
 					cp++;
 				}
 
-				fc = m_document->m_PieceTable->FileCharacterPositions->operator []( cp );
+				fc = m_document->FindFileCharPos( cp );
+
 				papx = findValidPapx( fc );
 				tai = TableInfo( papx );
 
@@ -1250,12 +1257,17 @@ namespace DocFileFormat
 			//Search the "table trailer paragraph"
 			while ( ( tai.fTtp == false ) && ( tai.fInTable == true ) )
 			{
-				while ( m_document->Text->at( cp ) != TextMark::CellOrRowMark )
+				while (true)
 				{
+					if (cp > m_document->Text->size() - 1 ) 
+						break;
+					if (m_document->Text->at( cp ) == TextMark::CellOrRowMark)
+						break;
 					cp++;
 				}
 
-				fc = m_document->m_PieceTable->FileCharacterPositions->operator []( cp );
+				fc = m_document->FindFileCharPos( cp );
+
 				papx = findValidPapx( fc );
 				tai = TableInfo( papx );
 				cp++;
@@ -1266,10 +1278,11 @@ namespace DocFileFormat
 	}
 
 	/// Writes the table row that starts at the given cp value and ends at the next row end mark
-	int DocumentMapping::writeTableRow(int initialCp, vector<short>* grid, unsigned int nestingLevel)
+	int DocumentMapping::writeTableRow(int initialCp, std::vector<short>* grid, unsigned int nestingLevel)
 	{
 		int cp = initialCp;
-		int fc = m_document->m_PieceTable->FileCharacterPositions->operator []( cp );
+		int fc = m_document->FindFileCharPos( cp );
+
 		ParagraphPropertyExceptions* papx = findValidPapx( fc );
 		TableInfo tai( papx );
 
@@ -1278,10 +1291,12 @@ namespace DocFileFormat
 
 		//convert the properties
 		int fcRowEnd = findRowEndFc( cp, nestingLevel );
-		TablePropertyExceptions tapx( findValidPapx( fcRowEnd ), m_document->DataStream );
-		list<CharacterPropertyExceptions*>* chpxs = m_document->GetCharacterPropertyExceptions( fcRowEnd, fcRowEnd + 1 );
+		TablePropertyExceptions tapx( findValidPapx( fcRowEnd ), m_document->DataStream, m_document->FIB->m_bOlderVersion);
+
+		std::list<CharacterPropertyExceptions*>* chpxs = m_document->GetCharacterPropertyExceptions( fcRowEnd, fcRowEnd + 1 );
 		TableRowPropertiesMapping* trpMapping = new TableRowPropertiesMapping( m_pXmlWriter, *(chpxs->begin()) );
 		tapx.Convert( trpMapping );
+		
 		RELEASEOBJECT( trpMapping );
 
 		int gridIndex = 0;
@@ -1297,7 +1312,8 @@ namespace DocFileFormat
 				cellIndex++;
 
 				//each cell has it's own PAPX
-				fc = m_document->m_PieceTable->FileCharacterPositions->operator []( cp );
+				fc = m_document->FindFileCharPos(cp );
+
 				papx = findValidPapx( fc );
 				tai = TableInfo( papx );
 			}
@@ -1313,7 +1329,8 @@ namespace DocFileFormat
 				cellIndex++;
 
 				//each cell has it's own PAPX
-				fc = m_document->m_PieceTable->FileCharacterPositions->operator []( cp );
+				fc = m_document->FindFileCharPos( cp );
+
 				papx = findValidPapx( fc );
 				tai = TableInfo( papx );
 			}
@@ -1331,7 +1348,7 @@ namespace DocFileFormat
 	}
 
 	/// Writes the table cell that starts at the given cp value and ends at the next cell end mark
-	int DocumentMapping::writeTableCell(int initialCp, TablePropertyExceptions* tapx, vector<short>* grid, int& gridIndex, int cellIndex, unsigned int nestingLevel )  
+	int DocumentMapping::writeTableCell(int initialCp, TablePropertyExceptions* tapx, std::vector<short>* grid, int& gridIndex, int cellIndex, unsigned int nestingLevel )  
 	{
 		int cp = initialCp;
 
@@ -1357,7 +1374,8 @@ namespace DocFileFormat
 		while ( cp < cpCellEnd )
 		{
 			//cp = writeParagraph(cp);
-			int fc = m_document->m_PieceTable->FileCharacterPositions->operator []( cp );
+			int fc = m_document->FindFileCharPos( cp );
+
 			ParagraphPropertyExceptions* papx = findValidPapx( fc );
 			TableInfo tai( papx );
 
@@ -1395,7 +1413,8 @@ namespace DocFileFormat
 
 		if ( nestingLevel > 1 )
 		{
-			int fc = m_document->m_PieceTable->FileCharacterPositions->operator []( initialCp );
+			int fc = m_document->FindFileCharPos( initialCp );
+
 			ParagraphPropertyExceptions* papx = findValidPapx( fc );
 			TableInfo tai( papx );
 
@@ -1403,7 +1422,8 @@ namespace DocFileFormat
 			{
 				cpCellEnd++;
 
-				fc = m_document->m_PieceTable->FileCharacterPositions->operator []( cpCellEnd );
+				fc = m_document->FindFileCharPos( cpCellEnd );
+				
 				papx = findValidPapx( fc );
 				tai = TableInfo( papx );
 			}
@@ -1497,7 +1517,7 @@ namespace DocFileFormat
 		}
 		*/
 
-		for (list<SinglePropertyModifier>::iterator iter = chpx->grpprl->begin(); iter != chpx->grpprl->end(); ++iter)
+		for (std::list<SinglePropertyModifier>::iterator iter = chpx->grpprl->begin(); iter != chpx->grpprl->end(); ++iter)
 		{
 			if ((sprmCPicLocation == iter->OpCode) || (sprmCHsp == iter->OpCode))	//	PICTURE
 			{

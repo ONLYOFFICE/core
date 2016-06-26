@@ -43,7 +43,7 @@ namespace DocFileFormat
 
 		unsigned char *chars = reader->ReadBytes(18, true);
 
-		FormatUtils::GetSTLCollectionFromBytes<wstring>( &(newObject->m_UserInitials), chars, ( cch * 2 ), ENCODING_UNICODE);
+		FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &(newObject->m_UserInitials), chars, ( cch * 2 ), ENCODING_UTF16);
 
 		newObject->m_AuthorIndex = reader->ReadUInt16();
 

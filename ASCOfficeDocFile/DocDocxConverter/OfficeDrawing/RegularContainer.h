@@ -46,7 +46,7 @@ namespace DocFileFormat
 
 		virtual ~RegularContainer()
 		{
-			for (vector<Record*>::iterator iter = Children.begin(); iter != Children.end(); ++iter)
+			for (std::vector<Record*>::iterator iter = Children.begin(); iter != Children.end(); ++iter)
 			{
 				RELEASEOBJECT (*iter);
 			}
@@ -84,7 +84,7 @@ namespace DocFileFormat
 		{
 			T* firstChildWithType = NULL;
 
-			for ( vector<Record*>::const_iterator iter = this->Children.begin(); iter != this->Children.end(); iter++ )
+			for ( std::vector<Record*>::const_iterator iter = this->Children.begin(); iter != this->Children.end(); iter++ )
 			{
 				if ( (*iter != NULL) && (typeid(T) == typeid(**iter)) )
 				{
@@ -99,6 +99,6 @@ namespace DocFileFormat
 
 	public: 
 
-		vector<Record*> Children;
+		std::vector<Record*> Children;
 	};
 }

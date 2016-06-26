@@ -33,21 +33,18 @@
 
 #include "IBinaryReader.h"
 #include "../Common/FormatUtils.h"
-
 #include "../../Common/3dParty/pole/pole.h"
+#include "../../Common/DocxFormat/Source/Base/Types_32.h"
 
 class VirtualStreamReader : public IBinaryReader
 {
 public:
-	VirtualStreamReader (POLE::Stream* _stream, ULONG _position = 0) : stream(NULL), position(0)
+	VirtualStreamReader (POLE::Stream* _stream, ULONG _position , bool _olderVersion) : 
+				olderVersion(_olderVersion), stream(_stream), position(_position)
 	{
-		stream = _stream;
-		position = _position;
+		if ( stream == NULL )return;
 
-		if ( stream != NULL )
-		{
-			stream->seek(position);
-		}
+		stream->seek(position);
 	}
 
 	virtual ~VirtualStreamReader()
@@ -62,9 +59,8 @@ public:
 		{		
 			stream->seek( position );
 			stream->read((unsigned char*)(&rdUShort), sizeof( rdUShort ));
-			
-			position += sizeof( rdUShort );
 		}
+		position += sizeof( rdUShort );
 
 		return rdUShort;
 	}
@@ -78,38 +74,38 @@ public:
 			stream->seek( position );
 			stream->read((unsigned char*)(&rdShort), sizeof( rdShort ));
 			
-			position += sizeof( rdShort );
 		}
+		position += sizeof( rdShort );
 
 		return rdShort;
 	}
 
 	virtual int ReadInt32()
 	{
-		int rdInt = 0;
+		_INT32 rdInt = 0;
 
 		if (( stream != NULL ) && (position + 4 < stream->size()))
 		{
 			stream->seek( position );
 			stream->read( (unsigned char*) &rdInt, sizeof( rdInt ) );
 			
-			position += sizeof( rdInt );
 		}
+		position += sizeof( rdInt );
 
 		return rdInt;
 	}
 
 	virtual unsigned int ReadUInt32()
 	{
-		int rdUInt = 0;
+		_UINT32 rdUInt = 0;
 
 		if (( stream != NULL ) && (position + 4 < stream->size()))
 		{
 			stream->seek( position );
 			stream->read((unsigned char*) &rdUInt, sizeof( rdUInt ) );
 		
-			position += sizeof( rdUInt );
 		}
+		position += sizeof( rdUInt );
 
 		return rdUInt;
 	}
@@ -123,8 +119,8 @@ public:
 			stream->seek( position);
 			stream->read( (unsigned char*)&rdByte, sizeof( rdByte ) );
 			
-			position += sizeof( rdByte );
 		}
+		position += sizeof( rdByte );
 
 		return rdByte;
 	}
@@ -133,8 +129,7 @@ public:
 	{
 		unsigned char *rdBytes = NULL;
 
-
-		if ( ( stream != NULL ) && ( count > 0 ) && isResultNeeded )
+		if ( count > 0  && isResultNeeded)
 		{
 			if (position + count > stream->size())
 			{
@@ -142,19 +137,15 @@ public:
 				else							count = stream->size() - position;
 			}
 			rdBytes = new unsigned char[count];
-
-			if ( rdBytes != NULL )
-			{
-				stream->seek( position );
-				stream->read( rdBytes, sizeof( unsigned char )*count );
-
-				position += sizeof( unsigned char )*count;
-			}
 		}
-		else
+
+		if ( stream != NULL  && rdBytes != NULL )
 		{
-			position += sizeof( unsigned char )*count;
+			stream->seek( position );
+			stream->read( rdBytes, sizeof( unsigned char )*count );
 		}
+		
+		position += sizeof( unsigned char )*count;
 
 		return rdBytes;
 	}
@@ -205,7 +196,14 @@ public:
 			int xstzSize = FormatUtils::BytesToInt16( cch, 0, cchSize ) * 2;      
 			unsigned char* xstz = ReadBytes(xstzSize, true);
 
-			FormatUtils::GetSTLCollectionFromBytes<wstring>( &wstrResult, xstz, xstzSize, ENCODING_UNICODE );
+			if (this->olderVersion)
+			{
+				FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &wstrResult, xstz, xstzSize, ENCODING_WINDOWS_1250 );
+			}
+			else
+			{
+				FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &wstrResult, xstz, xstzSize, ENCODING_UTF16 );
+			}
 
 			RELEASEARRAYOBJECTS(xstz);
 			RELEASEARRAYOBJECTS(cch);
@@ -220,7 +218,7 @@ public:
 	/// unsigned char 5 - (cch*2)+4: Unicode characters terminated by \0
 	std::wstring ReadLengthPrefixedUnicodeString()
 	{
-		wstring result;
+		std::wstring result;
 
 		int cch = ReadInt32();
 
@@ -229,7 +227,7 @@ public:
 			//dont read the terminating zero
 			unsigned char* stringBytes = ReadBytes( ( cch * 2 ), true );
 
-			FormatUtils::GetSTLCollectionFromBytes<wstring>( &result, stringBytes, ( ( cch * 2 ) - 2 ), ENCODING_UNICODE );
+			FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &result, stringBytes, ( ( cch * 2 ) - 2 ), ENCODING_UTF16 );
 
 			RELEASEARRAYOBJECTS( stringBytes );
 		}
@@ -243,7 +241,7 @@ public:
 	/// unsigned char 5-cch+4:   ANSI characters terminated by \0
 	std::wstring ReadLengthPrefixedAnsiString()
 	{
-		wstring result;
+		std::wstring result;
 
 		int cch = this->ReadInt32();
 
@@ -252,17 +250,16 @@ public:
 			//dont read the terminating zero
 			unsigned char* stringBytes = ReadBytes( cch, true );
 
-			FormatUtils::GetSTLCollectionFromBytes<wstring>( &result, stringBytes, ( cch - 1 ), ENCODING_WINDOWS_1251 );
+			FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &result, stringBytes, ( cch - 1 ), ENCODING_WINDOWS_1250);
 
 			RELEASEARRAYOBJECTS( stringBytes );
 		}
 
 		return result;
 	}
-
+	bool			olderVersion;
 private:
 
-	POLE::uint64 position;
-	//std::streampos	position;
-	POLE::Stream*	stream;
+	POLE::uint64			position;
+	POLE::Stream*			stream;
 };

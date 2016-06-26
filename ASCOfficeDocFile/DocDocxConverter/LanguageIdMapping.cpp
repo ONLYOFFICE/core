@@ -57,7 +57,7 @@ namespace DocFileFormat
 	{
 		if ( dynamic_cast<LanguageId*>( lid )->Code != Nothing )
 		{
-			wstring langcode = getLanguageCode( dynamic_cast<LanguageId*>( lid ) );
+			std::wstring langcode = getLanguageCode( dynamic_cast<LanguageId*>( lid ) );
 
 			XMLTools::XMLAttribute<wchar_t>* att = NULL;
 
@@ -102,7 +102,7 @@ namespace DocFileFormat
 		}
 	}
 
-	wstring LanguageIdMapping::getLanguageCode( LanguageId* lid )
+	std::wstring LanguageIdMapping::getLanguageCode( LanguageId* lid )
 	{
 		int intLCID				= lid->Code;
 		std::wstring strLCID	= msLCID2wstring(intLCID);

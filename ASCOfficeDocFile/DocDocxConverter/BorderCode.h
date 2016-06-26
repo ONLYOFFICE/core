@@ -106,7 +106,7 @@ namespace DocFileFormat
 		unsigned char brcType;
 		/// The color of the Border.
 		/// Unused if cv is set.
-		wstring ico;
+		std::wstring ico;
 		/// Width of space to maintain between border and text within border
 		int dptSpace;
 		/// When true, border is drawn with shadow. Must be false when BRC is substructure of the TC
@@ -134,7 +134,7 @@ namespace DocFileFormat
 			{
 				//it's a border code of Word 2000/2003
 				this->cv = FormatUtils::BytesToInt32( bytes, 0, size );
-				this->ico = wstring( Global::ColorIdentifier[0] );
+				this->ico = std::wstring( Global::ColorIdentifier[0] );
 
 				this->dptLineWidth = bytes[4];
 				this->brcType = bytes[5];

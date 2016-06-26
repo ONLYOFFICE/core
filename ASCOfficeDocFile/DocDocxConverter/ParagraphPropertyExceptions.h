@@ -45,13 +45,12 @@ namespace DocFileFormat
       /// Creates a PAPX wich doesn't modify anything.
       /// The grpprl list is empty
     
-	  ParagraphPropertyExceptions(): 
-	  PropertyExceptions(), istd(0)
+	  ParagraphPropertyExceptions() : PropertyExceptions(), istd(0)
       {
       }
 
-	  ParagraphPropertyExceptions( const list<SinglePropertyModifier>& grpprl ): 
-	  PropertyExceptions( grpprl ), istd(0)
+	  ParagraphPropertyExceptions( const std::list<SinglePropertyModifier>& grpprl ): 
+															PropertyExceptions( grpprl ), istd(0)
       {
       }
 
@@ -60,6 +59,6 @@ namespace DocFileFormat
       }
 
       /// Parses the bytes to retrieve a PAPX
-	  ParagraphPropertyExceptions( unsigned char* bytes, int size, POLE::Stream* dataStream );
+	  ParagraphPropertyExceptions( unsigned char* bytes, int size, POLE::Stream* dataStream, bool oldVersion);
   };
 }

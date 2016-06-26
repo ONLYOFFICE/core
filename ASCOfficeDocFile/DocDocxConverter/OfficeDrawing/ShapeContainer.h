@@ -58,7 +58,7 @@ namespace DocFileFormat
 		{
 			int ret = 0;
 
-			for ( vector<Record*>::const_iterator iter = this->Children.begin(); iter != this->Children.end(); iter++ )
+			for ( std::vector<Record*>::const_iterator iter = this->Children.begin(); iter != this->Children.end(); iter++ )
 			{
 				Shape* sh = dynamic_cast<Shape*>( *iter );
 				if (sh)
@@ -80,18 +80,18 @@ namespace DocFileFormat
 		}
 
 		/// Searches all OptionEntry in the ShapeContainer and puts them into a list.
-		list<OptionEntry> ExtractOptions() const
+		std::list<OptionEntry> ExtractOptions() const
 		{
-			list<OptionEntry> ret;
+			std::list<OptionEntry> ret;
 
 			//build the list of all option entries of this shape
-			for ( vector<Record*>::const_iterator iter = this->Children.begin(); iter != this->Children.end(); iter++ )
+			for ( std::vector<Record*>::const_iterator iter = this->Children.begin(); iter != this->Children.end(); iter++ )
 			{
 				ShapeOptions* opt = dynamic_cast<ShapeOptions*>( *iter );
 
 				if ( opt != NULL )
 				{
-					for ( vector<OptionEntry>::iterator oeIter = opt->Options.begin(); oeIter != opt->Options.end(); oeIter++ )
+					for ( std::vector<OptionEntry>::iterator oeIter = opt->Options.begin(); oeIter != opt->Options.end(); oeIter++ )
 					{
 						ret.push_back( *oeIter );
 					}

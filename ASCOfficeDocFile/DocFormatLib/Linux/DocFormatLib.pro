@@ -162,9 +162,6 @@ HEADERS +=  \
     ../../Common/TextMark.h \
     ../../Common/utf8.h \
     ../../Common/XmlTools.h \
-    ../../Common/MD4/global.h \
-    ../../Common/MD4/md4.h \
-    ../../Common/MD4/md4c.h \
     ../../DocDocxConverter/AbstractOpenXmlMapping.h \
     ../../DocDocxConverter/AnnotationOwnerList.h \
     ../../DocDocxConverter/AnnotationReferenceDescriptor.h \

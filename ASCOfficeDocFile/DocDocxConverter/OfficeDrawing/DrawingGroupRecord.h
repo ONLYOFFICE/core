@@ -56,7 +56,7 @@ namespace DocFileFormat
 		unsigned int ShapesSavedCount;		//	Total number of shapes saved
 		unsigned int DrawingsSavedCount;	//	Total number of drawings saved
 
-		list<FileIdCluster> Clusters;
+		std::list<FileIdCluster> Clusters;
 
 		DrawingGroupRecord () : Record(), MaxShapeId(0), IdClustersCount(0), ShapesSavedCount(0), DrawingsSavedCount(0)
 		{

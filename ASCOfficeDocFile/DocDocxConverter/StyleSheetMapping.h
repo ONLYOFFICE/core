@@ -53,8 +53,8 @@ namespace DocFileFormat
 		StyleSheetMapping( ConversionContext* ctx );
 		void Apply( IVisitable* visited );
 		/// Generates a style id for custom style names or returns the build-in identifier for build-in styles.
-		static wstring MakeStyleId( StyleSheetDescription* std );
-		static map<std::wstring, std::wstring> m_mapStyleId;
+		static std::wstring MakeStyleId( StyleSheetDescription* std );
+		static std::map<std::wstring, std::wstring> m_mapStyleId;
 		static ASCOfficeCriticalSection m_mapStyleIdLock;
 		virtual ~StyleSheetMapping();
 
@@ -63,7 +63,7 @@ namespace DocFileFormat
 		void writeParagraphDefaults( StyleSheet* sheet );
 		/// Chooses the correct style name.
 		/// Word 2007 needs the identifier instead of the stylename for translating it into the UI language.
-		wstring getStyleName( StyleSheetDescription* std );
+		std::wstring getStyleName( StyleSheetDescription* std );
 		/// Writes the "NormalTable" default style
 		void writeNormalTableStyle();
 	};

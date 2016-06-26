@@ -51,7 +51,7 @@ namespace DocFileFormat
 		}
 
 		// Adds a new RSID to the set
-		inline void AddRsid(const wstring& rsid)
+		inline void AddRsid(const std::wstring& rsid)
 		{
 			if (AllRsids.find(rsid) == AllRsids.end())
 				AllRsids.insert(rsid);
@@ -71,6 +71,6 @@ namespace DocFileFormat
 		WordprocessingDocument*		_docx;	
 		WordDocument*				_doc;	
 		/// A set thta contains all revision ids.
-		set<wstring>				AllRsids;
+		std::set<std::wstring>		AllRsids;
 	};
 }

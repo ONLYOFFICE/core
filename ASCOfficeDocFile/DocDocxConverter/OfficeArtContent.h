@@ -59,7 +59,10 @@ namespace DocFileFormat
 
 		OfficeArtContent (const FileInformationBlock* pFIB, POLE::Stream* pStream): m_pDrawingGroupData(NULL)
 		{
-			VirtualStreamReader oStearmReader(pStream);
+			VirtualStreamReader oStearmReader(pStream, 0 , pFIB->m_bOlderVersion);
+
+			if (pFIB->m_FibWord97.fcDggInfo > oStearmReader.GetSize()) return;
+
             oStearmReader.Seek (pFIB->m_FibWord97.fcDggInfo, 0/*STREAM_SEEK_SET*/);
 
 			if (pFIB->m_FibWord97.lcbDggInfo > 0)
@@ -106,7 +109,7 @@ namespace DocFileFormat
 		{
 			RELEASEOBJECT (m_pDrawingGroupData);
 
-			for ( list<OfficeArtWordDrawing>::iterator iter = m_arrDrawings.begin(); iter != m_arrDrawings.end(); ++iter)
+			for ( std::list<OfficeArtWordDrawing>::iterator iter = m_arrDrawings.begin(); iter != m_arrDrawings.end(); ++iter)
 				RELEASEOBJECT(iter->container);  
 		}
 
@@ -114,7 +117,7 @@ namespace DocFileFormat
 		{
 			ShapeContainer* ret = NULL;
 
-			for (list<OfficeArtWordDrawing>::iterator iter = m_arrDrawings.begin(); iter != m_arrDrawings.end(); ++iter)
+			for (std::list<OfficeArtWordDrawing>::iterator iter = m_arrDrawings.begin(); iter != m_arrDrawings.end(); ++iter)
 			{
 				GroupContainer* group = iter->container->FirstChildWithType<GroupContainer>();
 				if (group)
@@ -172,7 +175,7 @@ namespace DocFileFormat
 
 	private:
 
-		DrawingGroup*				m_pDrawingGroupData;
-		list<OfficeArtWordDrawing>	m_arrDrawings;
+		DrawingGroup*					m_pDrawingGroupData;
+		std::list<OfficeArtWordDrawing>	m_arrDrawings;
 	};
 }

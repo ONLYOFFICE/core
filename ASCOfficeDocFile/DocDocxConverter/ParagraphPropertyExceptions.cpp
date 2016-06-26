@@ -34,8 +34,8 @@
 
 namespace DocFileFormat
 {
-	ParagraphPropertyExceptions::ParagraphPropertyExceptions( unsigned char* bytes, int size, POLE::Stream* dataStream ): 
-    PropertyExceptions( ( bytes + 2 ), ( size - 2 ) )
+	ParagraphPropertyExceptions::ParagraphPropertyExceptions( unsigned char* bytes, int size, POLE::Stream* dataStream, bool oldVersion): 
+				PropertyExceptions( ( bytes + 2 ), ( size - 2 ),  oldVersion)
     {
       if ( size != 0 )
       {
@@ -46,14 +46,14 @@ namespace DocFileFormat
 
       //There is a SPRM that points to an offset in the data stream, 
       //where a list of SPRM is saved.
-      for ( list<SinglePropertyModifier>::iterator iter = this->grpprl->begin(); iter != this->grpprl->end(); iter++ )
+      for ( std::list<SinglePropertyModifier>::iterator iter = this->grpprl->begin(); iter != this->grpprl->end(); iter++ )
       {
 	    SinglePropertyModifier sprm( *iter );
 		  
 		if( ( sprm.OpCode == sprmPHugePapx ) || ( (int)sprm.OpCode == 0x6646 ) )
         {
           unsigned int fc = FormatUtils::BytesToUInt32( sprm.Arguments, 0, sprm.argumentsSize );
-		  reader = new VirtualStreamReader( dataStream, (int)fc );
+		  reader = new VirtualStreamReader( dataStream, (int)fc, oldVersion);
 		  
           //parse the size of the external grpprl
 		  unsigned char* sizebytes = reader->ReadBytes( 2, true );
@@ -65,11 +65,11 @@ namespace DocFileFormat
           //parse the external grpprl
 		  unsigned char* grpprlBytes = reader->ReadBytes( grpprlsize, true );
 
-		  PropertyExceptions externalPx( grpprlBytes, grpprlsize );
+		  PropertyExceptions externalPx( grpprlBytes, grpprlsize, oldVersion );
 
           //assign the external grpprl
           RELEASEOBJECT( this->grpprl );
-		  this->grpprl = new list<SinglePropertyModifier>( *(externalPx.grpprl) );
+		  this->grpprl = new std::list<SinglePropertyModifier>( *(externalPx.grpprl) );
 
           //remove the sprmPHugePapx
 		  this->grpprl->remove( sprm );

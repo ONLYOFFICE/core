@@ -47,8 +47,6 @@
 
 #include "utf8.h"
 
-using namespace std;
-
 #if defined(_WIN32) || defined(_WIN64)
     #include <atlbase.h>
     #include <atlstr.h>
@@ -59,8 +57,10 @@ using namespace std;
 
 #include "../../DesktopEditor/common/Types.h"
 #include "../../Common/DocxFormat/Source/XML/stringcommon.h"
+#include "../../Common/DocxFormat/Source/Base/unicode_util.h"
+#include "../../UnicodeConverter/UnicodeConverter.h"
 
-namespace ASCDocFormatUtils
+namespace DocFormatUtils
 {
     typedef unsigned char   Bool8;
     typedef unsigned short  Bool16;
@@ -94,16 +94,15 @@ namespace ASCDocFormatUtils
 		}
 	};
 
-	typedef enum Encoding
-	{
-		ENCODING_INVALID_VALUE = 0x00000000,
-		ENCODING_WINDOWS_1251 = 0x00000001,
-		ENCODING_UNICODE = 0x00000002,
-	} Encoding;
 
-	typedef pair <int, int> Int_Pair;
+	typedef std::pair <int, int> Int_Pair;
 
 	static const int gc_nZeroWidth = 222;
+
+
+#define ENCODING_UTF16			1200
+#define ENCODING_WINDOWS_1250	1250
+#define ENCODING_UTF8			65001
 
 	class FormatUtils
 	{
@@ -280,46 +279,46 @@ namespace ASCDocFormatUtils
 			return ( c <= 31 ) ? ( true ) : ( false );  
 		}
 
-		static inline wstring GetXMLSymbol( const wchar_t c )
+		static inline std::wstring GetXMLSymbol( const wchar_t c )
 		{
-			wstring result;
+			std::wstring result;
 
 			switch ( c )
 			{
 			case _T( '&' ):
 				{
-					result = wstring( _T( "&amp;" ) );
+					result = std::wstring( _T( "&amp;" ) );
 				}
 				break;  
 
 			case _T( '<' ):
 				{
-					result = wstring( _T( "&lt;" ) );
+					result = std::wstring( _T( "&lt;" ) );
 				}
 				break;
 
 			case _T( '>' ):
 				{
-					result = wstring( _T( "&gt;" ) );
+					result = std::wstring( _T( "&gt;" ) );
 				}
 				break;
 
 			case _T( '\"' ):
 				{
-					result = wstring( _T( "&quot;" ) );
+					result = std::wstring( _T( "&quot;" ) );
 				}
 				break;
 
 			case _T( '\'' ):
 				{
-					result = wstring( _T( "&apos;" ) );
+					result = std::wstring( _T( "&apos;" ) );
 				}
 				break;
 
 			default:
 				{
                     wchar_t res[2] = { c, 0 };
-                    result = wstring( res );
+                    result = std::wstring( res );
 				}
 				break;
 			}
@@ -487,17 +486,108 @@ namespace ASCDocFormatUtils
 			return wcharSymbol;
 		}
 
-		template<class T> static bool GetSTLCollectionFromBytes( T *STLCollection, unsigned char *bytes, int size, Encoding encoding )
+		template<class T> static bool GetSTLCollectionFromLocale( T *STLCollection, unsigned char *bytes, int size)
 		{
 			if ( ( STLCollection == NULL ) || ( bytes == NULL ) )
 			{
 				return false;
 			}
 
-			int i = 0;
+			std::locale loc("");
+			std::ctype<wchar_t> const &facet = std::use_facet<std::ctype<wchar_t> >(loc);
 
-			if ( encoding == ENCODING_UNICODE )
+			std::wstring result;
+			result.resize(size);
+    
+			facet.widen((char*)bytes, (char*)bytes + size, &result[0]);
+			
+			for (long i=0; i < result.length(); i++)
 			{
+				STLCollection->push_back(result[i]);
+			}
+		}
+
+		template<class T> static bool GetSTLCollectionFromUtf8( T *STLCollection, unsigned char *bytes, int size)
+		{
+			if ( ( STLCollection == NULL ) || ( bytes == NULL ) )
+			{
+				return false;
+			}
+			if (sizeof(wchar_t) == 2)//utf8 -> utf16
+			{
+				unsigned int nLength = size;
+
+				UTF16 *pStrUtf16 = new UTF16 [nLength+1];
+				memset ((void *) pStrUtf16, 0, sizeof (UTF16) * (nLength+1));
+
+				UTF8 *pStrUtf8 = (UTF8 *) bytes;
+
+				// this values will be modificated
+				const UTF8 *pStrUtf8_Conv	= pStrUtf8;
+				UTF16 *pStrUtf16_Conv		= pStrUtf16;
+
+				ConversionResult eUnicodeConversionResult = ConvertUTF8toUTF16 (&pStrUtf8_Conv,	 &pStrUtf8[nLength]
+						, &pStrUtf16_Conv, &pStrUtf16 [nLength]
+						, strictConversion);
+
+				if (conversionOK != eUnicodeConversionResult)
+				{
+					delete [] pStrUtf16;
+					return GetSTLCollectionFromLocale(STLCollection, bytes,size);
+				}
+				for (long i=0; i < nLength; i++)
+				{
+					STLCollection->push_back(pStrUtf16[i]);
+				}
+				delete [] pStrUtf16;
+				return true;
+			}
+			else //utf8 -> utf32
+			{
+				unsigned int nLength = size;
+
+				UTF32 *pStrUtf32 = new UTF32 [nLength+1];
+				memset ((void *) pStrUtf32, 0, sizeof (UTF32) * (nLength+1));
+
+
+				UTF8 *pStrUtf8 = (UTF8 *) bytes;
+
+				// this values will be modificated
+				const UTF8 *pStrUtf8_Conv = pStrUtf8;
+				UTF32 *pStrUtf32_Conv = pStrUtf32;
+
+				ConversionResult eUnicodeConversionResult = ConvertUTF8toUTF32 (&pStrUtf8_Conv, &pStrUtf8[nLength]
+						, &pStrUtf32_Conv, &pStrUtf32 [nLength]
+						, strictConversion);
+
+				if (conversionOK != eUnicodeConversionResult)
+				{
+					delete [] pStrUtf32;
+					return GetSTLCollectionFromLocale(STLCollection, bytes, size);
+				}
+				for (long i=0; i < nLength; i++)
+				{
+					STLCollection->push_back(pStrUtf32[i]);
+				}
+				delete [] pStrUtf32;
+				return true;
+			}
+		}
+
+		template<class T> static bool GetSTLCollectionFromBytes( T *STLCollection, unsigned char *bytes, int size, int code_page )
+		{
+			if ( ( STLCollection == NULL ) || ( bytes == NULL ) )
+			{
+				return false;
+			}
+
+			if (code_page == ENCODING_UTF8)
+			{
+				return GetSTLCollectionFromUtf8(STLCollection, bytes, size);
+			}
+			else if (code_page == ENCODING_UTF16)
+			{
+				int i = 0;
 #if !defined(_WIN32) && !defined(_WIN64)
                size /= 2;
                ConversionResult eUnicodeConversionResult;
@@ -532,23 +622,42 @@ namespace ASCDocFormatUtils
 					i += 2;
                 }
 #endif
-				return true;
 			}
-			else if ( encoding == ENCODING_WINDOWS_1251 )
+			else if (code_page == ENCODING_WINDOWS_1250)
 			{
 				wchar_t wch = 0;
-
+				int i = 0;
 				while ( i < size )
 				{
 					wch = MapByteToWChar( bytes[i++] );
 
 					STLCollection->push_back( wch );
 				}
+			}
+			else
+			{
+				std::string sCodePage;
+				for (int i = 0; i < UNICODE_CONVERTER_ENCODINGS_COUNT; ++i)
+				{
+					if (code_page == NSUnicodeConverter::Encodings[i].WindowsCodePage)
+					{
+						sCodePage = NSUnicodeConverter::Encodings[i].Name;
+						break;
+					}
+				}
+				if (sCodePage.empty())
+					sCodePage = "CP1250"/* + std::to_string(code_page)*/;
 
-				return true;
+				NSUnicodeConverter::CUnicodeConverter oConverter;
+				std::wstring unicode_string = oConverter.toUnicode((char*)bytes, size, sCodePage.c_str());
+			
+				for (long i=0; i < unicode_string.size(); i++)
+				{
+					STLCollection->push_back(unicode_string[i]);
+				}
 			}
 
-			return false;
+			return true;
 		}
 
 		static int BitmaskToInt( int value, int mask )
@@ -556,7 +665,7 @@ namespace ASCDocFormatUtils
 			int ret = value & mask;
 
 			//shift for all trailing zeros
-			bitset<sizeof(int)*8> bits( mask );
+			std::bitset<sizeof(int)*8> bits( mask );
 
 			for ( unsigned int i = 0; i < bits.size(); i++ )
 			{
@@ -657,7 +766,7 @@ namespace ASCDocFormatUtils
 			return bytes;
 		}
 
-        static inline wstring IntToWideString(int value)
+        static inline std::wstring IntToWideString(int value)
 		{
             CString strValue;
             strValue.Format(_T("%d"), value);
@@ -673,7 +782,7 @@ namespace ASCDocFormatUtils
 			return std::wstring(src.str());
 		}
 
-		static inline string IntToString(int value, int radix = 10)
+		static inline std::string IntToString(int value, int radix = 10)
 		{
 			const int size = 33;
 
@@ -681,10 +790,10 @@ namespace ASCDocFormatUtils
 
             itoa(value, strValue, radix);
 
-			return string(strValue);
+			return std::string(strValue);
 		}
 
-		static inline string DoubleToString(double value)
+		static inline std::string DoubleToString(double value)
 		{
 			std::stringstream src;
 			
@@ -693,17 +802,17 @@ namespace ASCDocFormatUtils
 			return std::string(src.str());
 		}
 
-		static inline wstring MapValueToWideString( unsigned int value, const wchar_t* mapArray, unsigned int size1, unsigned int size2 )
+		static inline std::wstring MapValueToWideString( unsigned int value, const wchar_t* mapArray, unsigned int size1, unsigned int size2 )
 		{
-            wstring out;
+            std::wstring out;
             if ( mapArray == NULL )
 			{
-                out = wstring( _T( "" ) );
+                out = std::wstring( _T( "" ) );
 			}
 
 			if ( value < size1 )
 			{
-                out = wstring( &mapArray[size2*value] );
+                out = std::wstring( &mapArray[size2*value] );
 			}
 			else
 			{
@@ -712,7 +821,7 @@ namespace ASCDocFormatUtils
             return out;
 		}
 
-		static inline wstring IntToFormattedWideString( int value, const wchar_t* format )
+		static inline std::wstring IntToFormattedWideString( int value, const wchar_t* format )
 		{
 //			const int size = 33;
 
@@ -728,9 +837,9 @@ namespace ASCDocFormatUtils
             return string2std_string( format_str );
 		}
 
-		static inline wstring DoubleToFormattedWideString( double value, wchar_t* format )
+		static inline std::wstring DoubleToFormattedWideString( double value, wchar_t* format )
 		{
-			wstring wstr;
+			std::wstring wstr;
 
 			if ( format != NULL )
 			{
@@ -783,9 +892,9 @@ namespace ASCDocFormatUtils
 			}
 		}
 
-		static wstring UTF8Decode( const string& text )
+		static std::wstring UTF8Decode( const std::string& text )
 		{
-			wstring wstrText( text.size(), 0 );
+			std::wstring wstrText( text.size(), 0 );
 
 			utf8_decode( text.begin(), text.end(), wstrText.begin() );
 
@@ -882,4 +991,4 @@ namespace ASCDocFormatUtils
 	};
 }
 
-using namespace ASCDocFormatUtils;
+using namespace DocFormatUtils;

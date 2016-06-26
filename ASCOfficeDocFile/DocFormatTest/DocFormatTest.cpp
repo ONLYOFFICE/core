@@ -40,7 +40,13 @@
 #include "../../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"
 
 #include <string>
-#include <tchar.h>
+#include <windows.h>
+
+#if defined(_WIN64)
+	#pragma comment(lib, "../../build/bin/icu/win_64/icuuc.lib")
+#elif defined (_WIN32)
+	#pragma comment(lib, "../../build/bin/icu/win_32/icuuc.lib")
+#endif
 
 int _tmain(int argc, _TCHAR* argv[])
 {
@@ -52,8 +58,10 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	// doc->docx
 	COfficeDocFile docFile;
+
+	docFile.m_sTempFolder = outputDir;
 	
-	HRESULT hRes = docFile.LoadFromFile( sSrcDoc, dstTempPath, NULL);
+	HRESULT hRes = docFile.LoadFromFile( sSrcDoc, dstTempPath, L"password", NULL);
 	
 	if (hRes == S_OK)
 	{

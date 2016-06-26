@@ -62,7 +62,7 @@ namespace DocFileFormat
 			this->_trPr->AppendChild( del );
 		}
 
-		for ( list<SinglePropertyModifier>::iterator iter = tapx->grpprl->begin(); iter != tapx->grpprl->end(); iter++ )
+		for ( std::list<SinglePropertyModifier>::iterator iter = tapx->grpprl->begin(); iter != tapx->grpprl->end(); iter++ )
 		{
 			switch ( iter->OpCode )  
 			{

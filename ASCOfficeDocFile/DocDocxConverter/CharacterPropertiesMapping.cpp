@@ -115,7 +115,7 @@ namespace DocFileFormat
 
 	/*========================================================================================================*/
 
-	void CharacterPropertiesMapping::convertSprms( list<SinglePropertyModifier>* sprms, XMLTools::XMLElement<wchar_t>* parent )
+	void CharacterPropertiesMapping::convertSprms( std::list<SinglePropertyModifier>* sprms, XMLTools::XMLElement<wchar_t>* parent )
 	{
 		XMLTools::XMLElement<wchar_t>	* rFonts	= new XMLTools::XMLElement<wchar_t>	( _T( "w:rFonts" ) );
 		XMLTools::XMLElement<wchar_t>	* color		= new XMLTools::XMLElement<wchar_t>	( _T( "w:color" ) );
@@ -292,7 +292,7 @@ namespace DocFileFormat
 			case sprmCFtcBi :
 				{//default from FontTable
 					SHORT nIndex	=	FormatUtils::BytesToUInt16 (iter->Arguments, 0, iter->argumentsSize);
-					if( nIndex < _doc->FontTable->cData )
+					if( nIndex < _doc->FontTable->Data.size() )
 					{
 						FontFamilyName* ffn = static_cast<FontFamilyName*>( _doc->FontTable->operator [] ( nIndex ) );
 						if (ffn)
@@ -324,7 +324,7 @@ namespace DocFileFormat
 			case sprmCRgFtc0:	//	font family
 				{
 					int nIndex = FormatUtils::BytesToUInt16( iter->Arguments, 0, iter->argumentsSize );
-					if( nIndex < _doc->FontTable->cData )
+					if( nIndex < _doc->FontTable->Data.size() )
 					{
 						XMLTools::XMLAttribute<wchar_t>* ascii = new XMLTools::XMLAttribute<wchar_t>( _T( "w:ascii" ) );
 						FontFamilyName* ffn = static_cast<FontFamilyName*>( _doc->FontTable->operator [] ( nIndex ) );
@@ -337,7 +337,7 @@ namespace DocFileFormat
 			case sprmCRgFtc1:
 				{
 					int nIndex = FormatUtils::BytesToUInt16( iter->Arguments, 0, iter->argumentsSize );
-					if( nIndex>=0 && nIndex < _doc->FontTable->cData )
+					if( nIndex>=0 && nIndex < _doc->FontTable->Data.size() )
 					{
 						XMLTools::XMLAttribute<wchar_t>* eastAsia = new XMLTools::XMLAttribute<wchar_t>( _T( "w:eastAsia" ) );
 						FontFamilyName* ffn = static_cast<FontFamilyName*>( _doc->FontTable->operator [] ( nIndex ) );
@@ -352,7 +352,7 @@ namespace DocFileFormat
 			case 0x4A51:
 				{
 					int nIndex = FormatUtils::BytesToUInt16( iter->Arguments, 0, iter->argumentsSize );
-					if( nIndex>=0 && nIndex < _doc->FontTable->cData )
+					if( nIndex>=0 && nIndex < _doc->FontTable->Data.size() )
 					{
 						XMLTools::XMLAttribute<wchar_t>* ansi = new XMLTools::XMLAttribute<wchar_t>( _T( "w:hAnsi" ) );
 						FontFamilyName* ffn = static_cast<FontFamilyName*>( _doc->FontTable->operator [] ( nIndex ) );
@@ -527,9 +527,9 @@ namespace DocFileFormat
 
 	/*========================================================================================================*/
 
-	list<CharacterPropertyExceptions*> CharacterPropertiesMapping::buildHierarchy( const StyleSheet* styleSheet, unsigned short istdStart )
+	std::list<CharacterPropertyExceptions*> CharacterPropertiesMapping::buildHierarchy( const StyleSheet* styleSheet, unsigned short istdStart )
 	{
-		list<CharacterPropertyExceptions*> hierarchy;
+		std::list<CharacterPropertyExceptions*> hierarchy;
 		unsigned int istd = (unsigned int)istdStart;
 		bool goOn = true;
 

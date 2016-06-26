@@ -230,15 +230,15 @@ namespace DocFileFormat
 			case sprmPDxaLeft180:
 				{
 					short flValue = FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize );
-					wstring flName;
+					std::wstring flName;
 
 					if ( flValue >= 0 )
 					{
-						flName = wstring( _T( "w:firstLine" ) );
+						flName = std::wstring( _T( "w:firstLine" ) );
 					}
 					else
 					{
-						flName = wstring( _T( "w:hanging" ) );
+						flName = std::wstring( _T( "w:hanging" ) );
 						flValue *= -1;
 					}
 

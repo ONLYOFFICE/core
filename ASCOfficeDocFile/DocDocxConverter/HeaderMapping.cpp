@@ -90,6 +90,6 @@ namespace DocFileFormat
 
 		m_pXmlWriter->WriteNodeEnd( _T( "w:hdr" ) );
 
-		m_context->_docx->HeaderXMLList.push_back( wstring( m_pXmlWriter->GetXmlString() ) );
+		m_context->_docx->HeaderXMLList.push_back( std::wstring( m_pXmlWriter->GetXmlString() ) );
 	}
 }

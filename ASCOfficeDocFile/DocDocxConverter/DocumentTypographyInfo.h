@@ -65,9 +65,9 @@ namespace DocFileFormat
 		/// Length of rgxchLPunct
 		short cchLeadingPunct;
 		/// Array of characters that should never appear at the start of a line
-		wstring rgxchFPunct;
+		std::wstring rgxchFPunct;
 		/// Array of characters that should never appear at the end of a line
-		wstring rgxchLPunct;
+		std::wstring rgxchLPunct;
 
 	public:
 		virtual ~DocumentTypographyInfo()
@@ -103,11 +103,11 @@ namespace DocFileFormat
 
 				unsigned char fpunctBytes[202];
 				memcpy( fpunctBytes, ( bytes + 6 ), 202 );
-				FormatUtils::GetSTLCollectionFromBytes<wstring>( &(this->rgxchFPunct), fpunctBytes, 202, ENCODING_UNICODE );
+				FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &(this->rgxchFPunct), fpunctBytes, 202, ENCODING_UTF16 );
 
 				unsigned char lpunctBytes[102];
 				memcpy( lpunctBytes, ( bytes + 208 ), 102 );
-				FormatUtils::GetSTLCollectionFromBytes<wstring>( &(this->rgxchLPunct), lpunctBytes, 102, ENCODING_UNICODE );
+				FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &(this->rgxchLPunct), lpunctBytes, 102, ENCODING_UTF16 );
 			}
 			else
 			{

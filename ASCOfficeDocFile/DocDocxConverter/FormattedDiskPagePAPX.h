@@ -63,14 +63,14 @@ namespace DocFileFormat
 
     public:
       virtual ~FormattedDiskPagePAPX();
-	  FormattedDiskPagePAPX( POLE::Stream* wordStream, int offset, POLE::Stream* dataStream );
+	  FormattedDiskPagePAPX( POLE::Stream* wordStream, int offset, POLE::Stream* dataStream, bool oldVersion);
       /// Parses the 0Table (or 1Table) for FKP _entries containing PAPX
-      static list<FormattedDiskPagePAPX*>* GetAllPAPXFKPs( FileInformationBlock* fib, POLE::Stream* wordStream, POLE::Stream* tableStream, POLE::Stream* dataStream);
+      static std::list<FormattedDiskPagePAPX*>* GetAllPAPXFKPs( FileInformationBlock* fib, POLE::Stream* wordStream, POLE::Stream* tableStream, POLE::Stream* dataStream);
       /// Returns a list of all PAPX FCs between they given boundaries.
-      static list<int>* GetFileCharacterPositions( int fcMin, int fcMax, FileInformationBlock* fib, POLE::Stream* wordStream, POLE::Stream* tableStream, POLE::Stream* dataStream );
+      static std::list<int>* GetFileCharacterPositions( int fcMin, int fcMax, FileInformationBlock* fib, POLE::Stream* wordStream, POLE::Stream* tableStream, POLE::Stream* dataStream );
       /// Returnes a list of all ParagraphPropertyExceptions which correspond to text 
       /// between the given offsets.
-      static list<ParagraphPropertyExceptions*>* GetParagraphPropertyExceptions( int fcMin, int fcMax, FileInformationBlock* fib, POLE::Stream* wordStream, POLE::Stream* tableStream, POLE::Stream* dataStream );
+      static std::list<ParagraphPropertyExceptions*>* GetParagraphPropertyExceptions( int fcMin, int fcMax, FileInformationBlock* fib, POLE::Stream* wordStream, POLE::Stream* tableStream, POLE::Stream* dataStream );
   };
 }
 

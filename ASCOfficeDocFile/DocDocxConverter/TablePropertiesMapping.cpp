@@ -34,7 +34,7 @@
 
 namespace DocFileFormat
 {
-	TablePropertiesMapping::TablePropertiesMapping (XmlUtils::CXmlWriter* pWriter, StyleSheet* styles, vector<short>* grid, bool isTableStyleNeeded ):
+	TablePropertiesMapping::TablePropertiesMapping (XmlUtils::CXmlWriter* pWriter, StyleSheet* styles, std::vector<short>* grid, bool isTableStyleNeeded ):
 PropertiesMapping(pWriter), _tblPr(NULL), _tblGrid(NULL), _tblBorders(NULL), _grid(NULL),
 brcLeft(NULL), brcTop(NULL), brcBottom(NULL), brcRight(NULL), brcHorz(NULL), brcVert(NULL), _styles(NULL),
 _isTableStyleNeeded(isTableStyleNeeded)
@@ -74,7 +74,7 @@ namespace DocFileFormat
 		short marginLeft = 0;
 		short marginRight = 0;
 
-		for ( list<SinglePropertyModifier>::iterator iter = tapx->grpprl->begin(); iter != tapx->grpprl->end(); iter++ )
+		for ( std::list<SinglePropertyModifier>::iterator iter = tapx->grpprl->begin(); iter != tapx->grpprl->end(); iter++ )
 		{
 			switch( iter->OpCode )
 			{
@@ -187,7 +187,7 @@ namespace DocFileFormat
 				{
 					unsigned char grfbrc = iter->Arguments[2];
 					short wMar = FormatUtils::BytesToInt16( iter->Arguments, 4, iter->argumentsSize );
-					wstring strValue = FormatUtils::IntToWideString( wMar );
+					std::wstring strValue = FormatUtils::IntToWideString( wMar );
 
 					if ( FormatUtils::BitmaskToBool( (int)grfbrc, 0x01 ) )
 					{
@@ -228,11 +228,11 @@ namespace DocFileFormat
 				//overlap
 			case sprmTFNoAllowOverlap:
 				{
-					wstring tblOverlapVal = wstring( _T( "overlap" ) );
+					std::wstring tblOverlapVal = std::wstring( _T( "overlap" ) );
 
 					if ( iter->Arguments[0] )
 					{
-						tblOverlapVal = wstring( _T( "never" ) );
+						tblOverlapVal = std::wstring( _T( "never" ) );
 					}
 
 					appendValueElement( _tblPr, _T( "tblOverlap" ), tblOverlapVal.c_str(), true );
@@ -475,7 +475,7 @@ namespace DocFileFormat
 		//append the grid
 		_tblGrid = new XMLTools::XMLElement<wchar_t>( _T( "w:tblGrid" ) );
 
-		//Если _grid состоит из одних ASCDocFormatUtils::gc_nZeroWidth и layout != "fixed", значит это doc полученный нами при конвертации из html. Таблицу размеров писать не нужно
+		//Если _grid состоит из одних DocFormatUtils::gc_nZeroWidth и layout != "fixed", значит это doc полученный нами при конвертации из html. Таблицу размеров писать не нужно
 		bool bWriteGridCol = false;
 		if(true == bLayoutFixed)
 			bWriteGridCol = true;
@@ -483,7 +483,7 @@ namespace DocFileFormat
 		{
 			for ( unsigned int i = 0, nSize = _grid->size(); i < nSize; i++ )
 			{
-				if(_grid->at(i) % ASCDocFormatUtils::gc_nZeroWidth != 0)
+				if(_grid->at(i) % DocFormatUtils::gc_nZeroWidth != 0)
 				{
 					bWriteGridCol = true;
 					break;

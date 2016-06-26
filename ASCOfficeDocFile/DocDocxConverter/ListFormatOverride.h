@@ -58,7 +58,7 @@ namespace DocFileFormat
       /// A grfhic that specifies HTML incompatibilities.
       unsigned char grfhic;
       /// Array of all levels whose format is overridden
-      vector<ListFormatOverrideLevel*> rgLfoLvl;
+      std::vector<ListFormatOverrideLevel*> rgLfoLvl;
 
     public:
 	  /// Parses the given Stream Reader to retrieve a ListFormatOverride
@@ -76,7 +76,7 @@ namespace DocFileFormat
 
         if ( this->clfolvl != 0 )
 		{
-		  this->rgLfoLvl = vector<ListFormatOverrideLevel*>( this->clfolvl );
+		  this->rgLfoLvl = std::vector<ListFormatOverrideLevel*>( this->clfolvl );
 		}
 
         reader->Seek( startPos, 0/*STREAM_SEEK_SET*/ );
@@ -85,7 +85,7 @@ namespace DocFileFormat
 
 	  virtual ~ListFormatOverride()
 	  {
-	    for ( vector<ListFormatOverrideLevel*>::iterator iter = this->rgLfoLvl.begin(); iter != this->rgLfoLvl.end(); iter++ )
+	    for ( std::vector<ListFormatOverrideLevel*>::iterator iter = this->rgLfoLvl.begin(); iter != this->rgLfoLvl.end(); iter++ )
 		{
 		  RELEASEOBJECT( *iter );  
 		}

@@ -37,19 +37,21 @@
 
 namespace DocFileFormat
 {
-  class ListFormatOverrideTable: public vector<ListFormatOverride*>
+  class ListFormatOverrideTable: public std::vector<ListFormatOverride*>
   {
     private:
 	  static const int LFO_LENGTH = 16;
       static const int LFOLVL_LENGTH = 6;
-	  vector<unsigned int> cps;
+	  std::vector<unsigned int> cps;
 
     public:
 	  ListFormatOverrideTable( FileInformationBlock* fib, POLE::Stream* tableStream )
       {
 	    if ( fib->m_FibWord97.lcbPlfLfo > 0 )
         {
-	      VirtualStreamReader reader( tableStream, fib->m_FibWord97.fcPlfLfo );
+	      VirtualStreamReader reader( tableStream, fib->m_FibWord97.fcPlfLfo, fib->m_bOlderVersion);
+            
+		  if (fib->m_FibWord97.fcPlfLfo > reader.GetSize()) return;
             
           //read the count of LFOs
           int count = reader.ReadInt32();

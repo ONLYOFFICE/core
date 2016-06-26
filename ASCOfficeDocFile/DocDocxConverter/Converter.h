@@ -31,30 +31,25 @@
  */
 #pragma once
 
-#include "WordDocument.h"
+#include <string>
 
-#include "TableMapping.h"
-
-#include "StyleSheetMapping.h"
-#include "FontTableMapping.h"
-#include "FootnotesMapping.h"
-#include "EndnotesMapping.h"
-#include "NumberingMapping.h"
-#include "CommentsMapping.h"
-#include "SettingsMapping.h"
-#include "MainDocumentMapping.h"
-#include "WordprocessingDocument.h"
-#include "ConversionContext.h"
+struct ProgressCallback;
 
 namespace DocFileFormat
 {
+	class WordDocument;
+	class WordprocessingDocument;
+
 	class Converter
 	{
 	public:
 		Converter();	  
 		~Converter();
 
-		long LoadAndConvert(const CString& strSrcFile, const CString& strDstDirectory, const ProgressCallback* progress);
+		std::wstring m_sTempFolder;
+
+		long LoadAndConvert(const std::wstring & strSrcFile, const std::wstring &  strDstDirectory, const std::wstring & password, const ProgressCallback* progress);
+	
 	private:
 		long Convert(WordDocument* doc, WordprocessingDocument* docx, const ProgressCallback* progress);	
 	};

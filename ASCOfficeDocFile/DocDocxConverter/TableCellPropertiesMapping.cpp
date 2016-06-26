@@ -35,7 +35,8 @@
 
 namespace DocFileFormat
 {
-	TableCellPropertiesMapping::TableCellPropertiesMapping (XmlUtils::CXmlWriter* pWriter, const vector<short>* tableGrid, int gridIndex, int cellIndex) : PropertiesMapping(pWriter)
+	TableCellPropertiesMapping::TableCellPropertiesMapping (XmlUtils::CXmlWriter* pWriter, const std::vector<short>* tableGrid, int gridIndex, int cellIndex) : 
+										PropertiesMapping(pWriter)
 	{
 		_width		=	0;
 
@@ -377,7 +378,7 @@ namespace DocFileFormat
 		}
 	}
 
-	bool TableCellPropertiesMapping::IsTableBordersDefined (const list<SinglePropertyModifier>* grpprl) const
+	bool TableCellPropertiesMapping::IsTableBordersDefined (const std::list<SinglePropertyModifier>* grpprl) const
 	{
 		if (grpprl)
 		{
@@ -392,7 +393,7 @@ namespace DocFileFormat
 		return false;
 	}
 
-	bool TableCellPropertiesMapping::IsTableCellWidthDefined (const list<SinglePropertyModifier>* grpprl) const
+	bool TableCellPropertiesMapping::IsTableCellWidthDefined (const std::list<SinglePropertyModifier>* grpprl) const
 	{
 		if (grpprl)
 		{

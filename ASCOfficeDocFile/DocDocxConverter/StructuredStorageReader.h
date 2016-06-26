@@ -67,11 +67,11 @@ namespace DocFileFormat
 		{
 			if (( m_pStorage != NULL ) && ( path != NULL ))
 			{
-				*ppStream = //m_pStorage->stream(path);
-					 new POLE::Stream(m_pStorage, path);
-				//result = m_pStorage->OpenStream (path, NULL, ( STGM_READ | STGM_DIRECT | STGM_SHARE_EXCLUSIVE ), NULL, ppStream );
+				*ppStream = new POLE::Stream(m_pStorage, path);
 			}
-			if (*ppStream) return true;
+			if ((*ppStream)  && ((*ppStream)->size() > 0)) 
+				return true;
+
 			return false;
 		}
 

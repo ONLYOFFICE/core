@@ -33,6 +33,7 @@
 
 #include "Converter.h"
 #include "TextboxMapping.h"
+#include "TableMapping.h"
 
 namespace DocFileFormat
 {

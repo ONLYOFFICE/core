@@ -1,4 +1,4 @@
-#include <math.h> 
+﻿#include <math.h> 
 #include <stdio.h>
 #include "agg_basics.h"
 #include "agg_rendering_buffer.h"

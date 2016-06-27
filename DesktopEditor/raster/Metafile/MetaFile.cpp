@@ -1,3 +1,34 @@
+п»ї/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 #include "MetaFile.h"
 
 #include "../../graphics/GraphicsRenderer.h"
@@ -13,7 +44,7 @@ namespace MetaFile
 	{
 		m_pAppFonts = pAppFonts;
 
-		// Создаем менеджер шрифтов с собственным кэшем
+		// РЎРѕР·РґР°РµРј РјРµРЅРµРґР¶РµСЂ С€СЂРёС„С‚РѕРІ СЃ СЃРѕР±СЃС‚РІРµРЅРЅС‹Рј РєСЌС€РµРј
 		m_pFontManager = pAppFonts->GenerateFontManager();
 		CFontsCache* pMeasurerCache = new CFontsCache();
 		pMeasurerCache->SetStreams(pAppFonts->GetStreams());
@@ -36,8 +67,8 @@ namespace MetaFile
 	}
 	bool CMetaFile::LoadFromFile(const wchar_t *wsFilePath)
 	{
-		// TODO: Сейчас при загрузке каждой новой картинки мы пересоздаем 
-		//       FontManager, потому что сейчас в нем кэш без ограничения.
+		// TODO: РЎРµР№С‡Р°СЃ РїСЂРё Р·Р°РіСЂСѓР·РєРµ РєР°Р¶РґРѕР№ РЅРѕРІРѕР№ РєР°СЂС‚РёРЅРєРё РјС‹ РїРµСЂРµСЃРѕР·РґР°РµРј 
+		//       FontManager, РїРѕС‚РѕРјСѓ С‡С‚Рѕ СЃРµР№С‡Р°СЃ РІ РЅРµРј РєСЌС€ Р±РµР· РѕРіСЂР°РЅРёС‡РµРЅРёСЏ.
 		//------------------------------------------------------
 		RELEASEINTERFACE(m_pFontManager);
 		m_pFontManager = m_pAppFonts->GenerateFontManager();
@@ -50,7 +81,7 @@ namespace MetaFile
 		//------------------------------------------------------
 
 
-		// Сначала пытаемся открыть файл как Wmf
+		// РЎРЅР°С‡Р°Р»Р° РїС‹С‚Р°РµРјСЃСЏ РѕС‚РєСЂС‹С‚СЊ С„Р°Р№Р» РєР°Рє Wmf
 		if (m_oWmfFile.OpenFromFile(wsFilePath) == true)
 		{
 			m_oWmfFile.Scan();
@@ -62,7 +93,7 @@ namespace MetaFile
 			}
 			m_oWmfFile.Close();
 		}
-		// Это не Wmf
+		// Р­С‚Рѕ РЅРµ Wmf
 		if (m_oEmfFile.OpenFromFile(wsFilePath) == true)
 		{
 			m_oEmfFile.Scan();
@@ -75,7 +106,7 @@ namespace MetaFile
 
 			m_oEmfFile.Close();
 		}
-		// Это не Emf
+		// Р­С‚Рѕ РЅРµ Emf
 		if (m_oSvmFile.OpenFromFile(wsFilePath) == true)
 		{
 			m_oSvmFile.Scan();
@@ -196,7 +227,7 @@ namespace MetaFile
 			return;
 
         _UINT32 alfa = 0xffffff;
-		//дефолтный тон должен быть прозрачным, а не белым 
+		//РґРµС„РѕР»С‚РЅС‹Р№ С‚РѕРЅ РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ РїСЂРѕР·СЂР°С‡РЅС‹Рј, Р° РЅРµ Р±РµР»С‹Рј 
 		//memset(pBgraData, 0xff, nWidth * nHeight * 4);
 		for (int i = 0; i < nWidth * nHeight; i++)
 		{

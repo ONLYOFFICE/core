@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2000 Computing Research Labs, New Mexico State University
  * Copyright 2001-2004, 2011 Francesco Zappa Nardelli
  *

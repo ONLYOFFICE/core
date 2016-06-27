@@ -1,4 +1,4 @@
-#ifndef AGG_SVG_PIPELINE_INCLUDED
+﻿#ifndef AGG_SVG_PIPELINE_INCLUDED
 #define AGG_SVG_PIPELINE_INCLUDED
 
 #include "agg_svg_attributes.h"

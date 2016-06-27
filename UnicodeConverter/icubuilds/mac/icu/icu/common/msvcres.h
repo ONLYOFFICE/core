@@ -1,4 +1,4 @@
-//{{NO_DEPENDENCIES}}
+﻿//{{NO_DEPENDENCIES}}
 // Copyright (c) 2003-2010 International Business Machines
 // Corporation and others. All Rights Reserved.
 //

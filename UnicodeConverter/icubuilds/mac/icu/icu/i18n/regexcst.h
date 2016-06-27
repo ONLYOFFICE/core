@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------------
 //
 // Generated Header File.  Do not edit by hand.
 //    This file contains the state table for the ICU Regular Expression Pattern Parser

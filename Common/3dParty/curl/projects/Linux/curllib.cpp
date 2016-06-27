@@ -1,4 +1,4 @@
-#include "curllib.h"
+﻿#include "curllib.h"
 
 
 CurlLib::CurlLib()

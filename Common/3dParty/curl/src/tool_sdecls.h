@@ -1,4 +1,4 @@
-#ifndef HEADER_CURL_TOOL_SDECLS_H
+﻿#ifndef HEADER_CURL_TOOL_SDECLS_H
 #define HEADER_CURL_TOOL_SDECLS_H
 /***************************************************************************
  *                                  _   _ ____  _

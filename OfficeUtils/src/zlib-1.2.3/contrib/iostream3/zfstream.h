@@ -1,4 +1,4 @@
-/*
+﻿/*
  * A C++ I/O streams interface to the zlib gz* functions
  *
  * by Ludwig Schwardt <schwardt@sun.ac.za>

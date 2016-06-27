@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Header file for the portable free JBIG compression library
  *
  *  Markus Kuhn -- http://www.cl.cam.ac.uk/~mgk25/

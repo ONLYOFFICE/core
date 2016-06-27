@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * File:	ximabmp.cpp
  * Purpose:	Platform Independent BMP Image Class Loader and Writer
  * 07/Aug/2001 Davide Pizzolato - www.xdp.it
@@ -220,8 +220,8 @@ bool CxImageBMP::Decode(CxFile * hFile)
 		case 1 :
 			if (off + bf.bfOffBits < bmpHeader.biSize)
 			{
-				// ÎØÈÁÊÀ
-				// ôàéëû ïàòòåðíûõ çàëèâîê àâòîôèãóð â ppt ôàéëàõ !!!
+				// ÐžÐ¨Ð˜Ð‘ÐšÐ
+				// Ñ„Ð°Ð¹Ð»Ñ‹ Ð¿Ð°Ñ‚Ñ‚ÐµÑ€Ð½Ñ‹Ñ… Ð·Ð°Ð»Ð¸Ð²Ð¾Ðº Ð°Ð²Ñ‚Ð¾Ñ„Ð¸Ð³ÑƒÑ€ Ð² ppt Ñ„Ð°Ð¹Ð»Ð°Ñ… !!!
 			}
 			else
 			{

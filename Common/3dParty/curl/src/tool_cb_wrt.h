@@ -1,4 +1,4 @@
-#ifndef HEADER_CURL_TOOL_CB_WRT_H
+﻿#ifndef HEADER_CURL_TOOL_CB_WRT_H
 #define HEADER_CURL_TOOL_CB_WRT_H
 /***************************************************************************
  *                                  _   _ ____  _

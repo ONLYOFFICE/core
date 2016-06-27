@@ -1,4 +1,4 @@
-/* Expression parsing and evaluation for plural form selection.
+﻿/* Expression parsing and evaluation for plural form selection.
    Copyright (C) 2000-2003, 2005-2007 Free Software Foundation, Inc.
    Written by Ulrich Drepper <drepper@cygnus.com>, 2000.
 

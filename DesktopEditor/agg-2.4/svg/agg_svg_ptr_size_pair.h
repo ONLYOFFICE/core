@@ -1,4 +1,4 @@
-#ifndef AGG_SVG_PTR_SIZE_PAIR_INCLUDE
+﻿#ifndef AGG_SVG_PTR_SIZE_PAIR_INCLUDE
 #define AGG_SVG_PTR_SIZE_PAIR_INCLUDE
 //-----------------------------------------------------------------------------
 #include "agg_basics.h"

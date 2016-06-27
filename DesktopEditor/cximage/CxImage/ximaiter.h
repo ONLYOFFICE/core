@@ -1,4 +1,4 @@
-/*
+﻿/*
  * File:	ImaIter.h
  * Purpose:	Declaration of the Platform Independent Image Base Class
  * Author:	Alejandro Aguilar Sierra

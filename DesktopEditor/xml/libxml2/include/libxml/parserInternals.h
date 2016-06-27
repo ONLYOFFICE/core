@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Summary: internals routines and limits exported by the parser.
  * Description: this module exports a number of internal parsing routines
  *              they are not really all intended for applications but

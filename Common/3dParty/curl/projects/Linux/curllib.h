@@ -1,4 +1,4 @@
-#ifndef CURLLIB_H
+﻿#ifndef CURLLIB_H
 #define CURLLIB_H
 
 

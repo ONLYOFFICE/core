@@ -1,3 +1,34 @@
+﻿/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 
 #include "TableMapping.h"
 #include "TablePropertiesMapping.h"
@@ -10,7 +41,7 @@ namespace DocFileFormat
 
 	TableCell::TableCell( const TableCell& _tableCell ) : cp(_tableCell.cp), depth(_tableCell.depth), documentMapping(_tableCell.documentMapping)
 	{
-		for ( list<ITableCellElementPtr>::const_iterator iter = _tableCell.cellElements.begin(); iter != _tableCell.cellElements.end(); iter++ )
+		for ( std::list<ITableCellElementPtr>::const_iterator iter = _tableCell.cellElements.begin(); iter != _tableCell.cellElements.end(); iter++ )
 		{
 			this->AddItem( **iter );
 		}
@@ -28,7 +59,7 @@ namespace DocFileFormat
 			this->depth = _tableCell.depth;
 			this->cellElements.clear();
 
-			for ( list<ITableCellElementPtr>::const_iterator iter = _tableCell.cellElements.begin(); iter != _tableCell.cellElements.end(); iter++ )
+			for ( std::list<ITableCellElementPtr>::const_iterator iter = _tableCell.cellElements.begin(); iter != _tableCell.cellElements.end(); iter++ )
 			{
 				this->AddItem( **iter );
 			}
@@ -75,7 +106,7 @@ namespace DocFileFormat
 		this->cellElements.clear();
 	}
 
-	void TableCell::Convert(IMapping* mapping, TablePropertyExceptions* tapx, const vector<short>* grid, int& gridIndex, int nCellIndex)
+	void TableCell::Convert(IMapping* mapping, TablePropertyExceptions* tapx, const std::vector<short>* grid, int& gridIndex, int nCellIndex)
 	{
 		if (NULL != mapping)
 		{
@@ -104,7 +135,7 @@ namespace DocFileFormat
 		documentMapping->_lastValidPapx = papxBackup;
 		documentMapping->_lastValidSepx = sepxBackup;
 
-		for (list<ITableCellElementPtr>::iterator iter = cellElements.begin(); iter != cellElements.end(); ++iter)
+		for (std::list<ITableCellElementPtr>::iterator iter = cellElements.begin(); iter != cellElements.end(); ++iter)
 		{
 			(*iter)->Convert( mapping );
 		}
@@ -162,7 +193,7 @@ namespace DocFileFormat
 		this->cells.clear();
 	}
 
-	void TableRow::Convert(IMapping* mapping, const vector<short>* grid)
+	void TableRow::Convert(IMapping* mapping, const std::vector<short>* grid)
 	{
 		if ( mapping != NULL )
 		{
@@ -182,15 +213,18 @@ namespace DocFileFormat
 
 			//convert the properties
 			int fcRowEnd = documentMapping->findRowEndFc(cp, depth);
-			TablePropertyExceptions tapx( this->documentMapping->findValidPapx( fcRowEnd ), this->documentMapping->m_document->DataStream );
-			list<CharacterPropertyExceptions*>* chpxs = this->documentMapping->m_document->GetCharacterPropertyExceptions( fcRowEnd, fcRowEnd + 1 );
+			TablePropertyExceptions tapx (	documentMapping->findValidPapx( fcRowEnd ), 
+											documentMapping->m_document->DataStream,
+											documentMapping->m_document->FIB->m_bOlderVersion);
+			
+			std::list<CharacterPropertyExceptions*>* chpxs = this->documentMapping->m_document->GetCharacterPropertyExceptions( fcRowEnd, fcRowEnd + 1 );
 			TableRowPropertiesMapping trpMapping( this->documentMapping->GetXMLWriter(), *(chpxs->begin()) );
 			tapx.Convert( &trpMapping );
 
 			this->documentMapping->_lastValidPapx = papxBackup;
 			this->documentMapping->_lastValidSepx = sepxBackup;
 
-			for ( list<TableCell>::iterator iter = this->cells.begin(); iter != this->cells.end(); iter++ )
+			for ( std::list<TableCell>::iterator iter = this->cells.begin(); iter != this->cells.end(); iter++ )
 			{
 				iter->Convert( mapping, &tapx, grid, gridIndex, nCellIndex++ );
 			}
@@ -263,6 +297,8 @@ namespace DocFileFormat
 
 	bool Table::IsCellMarker(int _cp)
 	{
+		if ( _cp > documentMapping->m_document->Text->size() - 1) return false;
+		
 		int fc = documentMapping->m_document->FindFileCharPos(_cp);
 		if (fc < 0) return false;
 
@@ -272,6 +308,7 @@ namespace DocFileFormat
 
 		TableInfo tai( papx );
 
+
 		return ( ( tai.fInTable ) && ( ( ( documentMapping->m_document->Text->at( _cp ) == 0x0007 ) && ( tai.iTap <= 1 ) && 
 			( !tai.fTtp ) ) ||
 			( ( documentMapping->m_document->Text->at( _cp ) == 0x000D ) && ( tai.iTap > 1 ) && 
@@ -280,6 +317,8 @@ namespace DocFileFormat
 
 	bool Table::IsRowMarker( int _cp )
 	{
+		if ( _cp > documentMapping->m_document->Text->size() - 1) return false;
+
 		int fc = documentMapping->m_document->FindFileCharPos(_cp);
 		if (fc < 0) return false;
 
@@ -297,7 +336,10 @@ namespace DocFileFormat
 
 	bool Table::IsParagraphMarker( int _cp )
 	{
+		if ( _cp > documentMapping->m_document->Text->size() - 1) return false;
+		
 		int fc = documentMapping->m_document->FindFileCharPos(_cp);
+		
 		if (fc < 0) return false;
 
 		ParagraphPropertyExceptions* papx = NULL;
@@ -465,12 +507,14 @@ namespace DocFileFormat
 		SectionPropertyExceptions* sepxBackup	=	documentMapping->_lastValidSepx;
 
 		//build the table grid
-		vector<short>* grid = this->documentMapping->buildTableGrid( this->cpStart, this->depth );
+		std::vector<short>* grid = this->documentMapping->buildTableGrid( this->cpStart, this->depth );
 
 		//find first row end
 		int fcRowEnd = this->documentMapping->findRowEndFc( this->cpStart, this->depth );
 
-		TablePropertyExceptions row1Tapx( this->documentMapping->findValidPapx( fcRowEnd ), this->documentMapping->m_document->DataStream );
+		TablePropertyExceptions row1Tapx(	documentMapping->findValidPapx( fcRowEnd ), 
+											documentMapping->m_document->DataStream ,
+											documentMapping->m_document->FIB->m_bOlderVersion);
 
 		//start table
 		this->documentMapping->GetXMLWriter()->WriteNodeBegin( _T( "w:tbl" ) );
@@ -483,7 +527,7 @@ namespace DocFileFormat
 		this->documentMapping->_lastValidPapx = papxBackup;
 		this->documentMapping->_lastValidSepx = sepxBackup;
 
-		for ( list<TableRow>::iterator iter = this->rows.begin(); iter != this->rows.end(); iter++ )
+		for ( std::list<TableRow>::iterator iter = this->rows.begin(); iter != this->rows.end(); iter++ )
 		{
 			iter->Convert( mapping, grid );  
 		}

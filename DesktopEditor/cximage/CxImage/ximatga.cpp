@@ -1,4 +1,4 @@
-/*
+﻿/*
  * File:	ximatga.cpp
  * Purpose:	Platform Independent TGA Image Class Loader and Writer
  * 05/Jan/2001 Davide Pizzolato - www.xdp.it

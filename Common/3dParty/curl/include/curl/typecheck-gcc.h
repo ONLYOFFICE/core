@@ -1,4 +1,4 @@
-#ifndef __CURL_TYPECHECK_GCC_H
+﻿#ifndef __CURL_TYPECHECK_GCC_H
 #define __CURL_TYPECHECK_GCC_H
 /***************************************************************************
  *                                  _   _ ____  _

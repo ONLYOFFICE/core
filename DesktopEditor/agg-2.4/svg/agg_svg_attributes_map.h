@@ -1,4 +1,4 @@
-#ifndef AGG_SVG_ATTRIBUTES_MAP
+﻿#ifndef AGG_SVG_ATTRIBUTES_MAP
 #define AGG_SVG_ATTRIBUTES_MAP
 //-----------------------------------------------------------------------------
 #include "agg_svg_defines.h"

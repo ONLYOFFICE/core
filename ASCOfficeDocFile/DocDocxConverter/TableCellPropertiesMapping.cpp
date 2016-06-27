@@ -1,10 +1,42 @@
+п»ї/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 
 
 #include "TableCellPropertiesMapping.h"
 
 namespace DocFileFormat
 {
-	TableCellPropertiesMapping::TableCellPropertiesMapping (XmlUtils::CXmlWriter* pWriter, const vector<short>* tableGrid, int gridIndex, int cellIndex) : PropertiesMapping(pWriter)
+	TableCellPropertiesMapping::TableCellPropertiesMapping (XmlUtils::CXmlWriter* pWriter, const std::vector<short>* tableGrid, int gridIndex, int cellIndex) : 
+										PropertiesMapping(pWriter)
 	{
 		_width		=	0;
 
@@ -57,7 +89,7 @@ namespace DocFileFormat
 					int cc = tdef.numberOfColumns;
 
 					this->_tGrid = tdef.rgdxaCenter;
-					this->_tcDef = tdef.rgTc80[min(_cellIndex,  (int)tdef.rgTc80.size() - 1)];	// NOTE: fix for crash
+                    this->_tcDef = tdef.rgTc80[(std::min)(_cellIndex,  (int)tdef.rgTc80.size() - 1)];	// NOTE: fix for crash
 
 					appendValueElement( this->_tcPr, _T( "textDirection" ), FormatUtils::MapValueToWideString( this->_tcDef.textFlow, &Global::TextFlowMap[0][0], 6, 6 ).c_str(), false );
 
@@ -82,8 +114,8 @@ namespace DocFileFormat
 						appendValueElement( _tcPr, _T( "noWrap" ), _T( "" ), true );
 					}
 
-					nComputedCellWidth = (short)( tdef.rgdxaCenter[(size_t)min(_cellIndex,  (int)tdef.rgTc80.size() - 1) + 1] -
-						tdef.rgdxaCenter[min(_cellIndex, (int)tdef.rgTc80.size() - 1)] );	// NOTE: fix for crash
+                    nComputedCellWidth = (short)( tdef.rgdxaCenter[(size_t)(std::min)(_cellIndex,  (int)tdef.rgTc80.size() - 1) + 1] -
+                        tdef.rgdxaCenter[(std::min)(_cellIndex, (int)tdef.rgTc80.size() - 1)] );	// NOTE: fix for crash
 
 					//borders
 					if (!IsTableBordersDefined(tapx->grpprl))
@@ -137,7 +169,7 @@ namespace DocFileFormat
 				break;
 
 			case sprmTDefTableShd80:
-				if (!tapx->IsSkipShading97())	// если такой операнд единственный то учитываем его, иначе скипаем его
+				if (!tapx->IsSkipShading97())	// РµСЃР»Рё С‚Р°РєРѕР№ РѕРїРµСЂР°РЅРґ РµРґРёРЅСЃС‚РІРµРЅРЅС‹Р№ С‚Рѕ СѓС‡РёС‚С‹РІР°РµРј РµРіРѕ, РёРЅР°С‡Рµ СЃРєРёРїР°РµРј РµРіРѕ
 				{
 					apppendCellShading(iter->Arguments, iter->argumentsSize, _cellIndex);
 				}
@@ -346,7 +378,7 @@ namespace DocFileFormat
 		}
 	}
 
-	bool TableCellPropertiesMapping::IsTableBordersDefined (const list<SinglePropertyModifier>* grpprl) const
+	bool TableCellPropertiesMapping::IsTableBordersDefined (const std::list<SinglePropertyModifier>* grpprl) const
 	{
 		if (grpprl)
 		{
@@ -361,7 +393,7 @@ namespace DocFileFormat
 		return false;
 	}
 
-	bool TableCellPropertiesMapping::IsTableCellWidthDefined (const list<SinglePropertyModifier>* grpprl) const
+	bool TableCellPropertiesMapping::IsTableCellWidthDefined (const std::list<SinglePropertyModifier>* grpprl) const
 	{
 		if (grpprl)
 		{

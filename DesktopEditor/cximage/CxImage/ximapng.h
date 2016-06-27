@@ -1,4 +1,4 @@
-/*
+﻿/*
  * File:	ximapng.h
  * Purpose:	PNG Image Class Loader and Writer
  */

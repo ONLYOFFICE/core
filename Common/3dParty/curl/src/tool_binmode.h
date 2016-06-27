@@ -1,4 +1,4 @@
-#ifndef HEADER_CURL_TOOL_BINMODE_H
+﻿#ifndef HEADER_CURL_TOOL_BINMODE_H
 #define HEADER_CURL_TOOL_BINMODE_H
 /***************************************************************************
  *                                  _   _ ____  _

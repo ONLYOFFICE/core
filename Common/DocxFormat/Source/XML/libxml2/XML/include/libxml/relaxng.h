@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Summary: implementation of the Relax-NG validation
  * Description: implementation of the Relax-NG validation
  *

@@ -1,4 +1,4 @@
-#include "agg_svg_transformer.h"
+﻿#include "agg_svg_transformer.h"
 
 
 namespace agg

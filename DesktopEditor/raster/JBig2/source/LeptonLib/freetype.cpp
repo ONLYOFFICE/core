@@ -1,4 +1,4 @@
-/*====================================================================*
+﻿/*====================================================================*
  -  Copyright (C) 2008 Leptonica.  All rights reserved.
  -  This software is distributed in the hope that it will be
  -  useful, but with NO WARRANTY OF ANY KIND.

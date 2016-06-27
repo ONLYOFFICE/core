@@ -1,14 +1,45 @@
+п»ї/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 #pragma once
 #include "../Reader/Records.h"
 
 class CRecordStyleTextPropAtom : public CUnknownRecord
 {
 public:
-	// нужно еще хранить позицию в стриме, 
-	// указатель на начало
+	// РЅСѓР¶РЅРѕ РµС‰Рµ С…СЂР°РЅРёС‚СЊ РїРѕР·РёС†РёСЋ РІ СЃС‚СЂРёРјРµ, 
+	// СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РЅР°С‡Р°Р»Рѕ
 	LONG m_lOffsetInStream;
 	
-	// просто данные. будут обновляться по мере прибытия
+	// РїСЂРѕСЃС‚Рѕ РґР°РЅРЅС‹Рµ. Р±СѓРґСѓС‚ РѕР±РЅРѕРІР»СЏС‚СЊСЃСЏ РїРѕ РјРµСЂРµ РїСЂРёР±С‹С‚РёСЏ
 	// Text.Bytes/Chars.Atom
 	DWORD m_lCount; 
 
@@ -66,9 +97,9 @@ public:
 			++lCountItems;
 		}
 
-		// на всякий случай...
-		// здесь когда текст сначала другой (т.е. например - placeholder в мастере) - 
-		// то у нас неправильно выставился m_lCount...
+		// РЅР° РІСЃСЏРєРёР№ СЃР»СѓС‡Р°Р№...
+		// Р·РґРµСЃСЊ РєРѕРіРґР° С‚РµРєСЃС‚ СЃРЅР°С‡Р°Р»Р° РґСЂСѓРіРѕР№ (С‚.Рµ. РЅР°РїСЂРёРјРµСЂ - placeholder РІ РјР°СЃС‚РµСЂРµ) - 
+		// С‚Рѕ Сѓ РЅР°СЃ РЅРµРїСЂР°РІРёР»СЊРЅРѕ РІС‹СЃС‚Р°РІРёР»СЃСЏ m_lCount...
 		StreamUtils::StreamSeek(m_lOffsetInStream + m_oHeader.RecLen, pStream);
 	}
 

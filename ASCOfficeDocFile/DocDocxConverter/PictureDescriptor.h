@@ -1,4 +1,35 @@
-﻿#pragma once
+﻿/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
+#pragma once
 
 #include "BorderCode.h"
 #include "VirtualStreamReader.h"
@@ -50,17 +81,14 @@ namespace DocFileFormat
 
 	public:
 		/// Parses the CHPX for a fcPic an loads the PictureDescriptor at this offset
-		PictureDescriptor( CharacterPropertyExceptions* chpx, POLE::Stream* stream, int size = 0x7fffffff);
+		PictureDescriptor( CharacterPropertyExceptions* chpx, POLE::Stream* stream, int size, bool oldVersion);
 		virtual ~PictureDescriptor();
 
 	private: 
-
-		void parse( POLE::Stream* stream, int fc, int sz );
+		void parse( POLE::Stream* stream, int fc, int sz, bool oldVersion);
 		/// Returns the fcPic into the "data" stream, where the PIC begins.
 		/// Returns -1 if the CHPX has no fcPic.
 		static int GetFcPic( const CharacterPropertyExceptions* chpx );
-
-	private:
 
 		void Clear();
 
@@ -68,7 +96,7 @@ namespace DocFileFormat
 		static const short MM_SHAPEFILE =	0x0066;		//	Shape file
 
 		/// Rectangle for window origin and extents when metafile is stored (ignored if 0).
-		vector<unsigned char> rcWinMf;
+		std::vector<unsigned char> rcWinMf;
 		/// Horizontal measurement in twips of the rectangle the picture should be imaged within.
 		short dxaGoal;
 		/// Vertical measurement in twips of the rectangle the picture should be imaged within.
@@ -80,7 +108,7 @@ namespace DocFileFormat
 		/// The type of the picture
 		PictureType Type;
 		/// The name of the picture
-		wstring Name;
+		std::wstring Name;
 		/// The data of the windows metafile picture (WMF)
 		MetafilePicture mfp;
 		/// The amount the picture has been cropped on the left in twips

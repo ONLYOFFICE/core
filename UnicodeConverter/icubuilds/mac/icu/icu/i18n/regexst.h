@@ -1,4 +1,4 @@
-//
+﻿//
 //  regexst.h
 //
 //  Copyright (C) 2003-2010, International Business Machines Corporation and others.

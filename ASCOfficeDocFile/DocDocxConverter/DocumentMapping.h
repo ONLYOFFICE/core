@@ -1,4 +1,35 @@
-﻿#pragma once
+﻿/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
+#pragma once
 
 #include "ContentTypes.h"
 #include "RevisionData.h"
@@ -25,8 +56,8 @@ namespace DocFileFormat
 
 	struct Symbol
 	{
-		wstring FontName;
-		wstring HexValue;
+		std::wstring FontName;
+		std::wstring HexValue;
 	};
 
 	class DocumentMapping: public AbstractOpenXmlMapping, public IMapping
@@ -53,33 +84,35 @@ namespace DocFileFormat
 		int writeParagraph( int cp ); 
 		/// Writes a Paragraph that starts at the given cpStart and 
 		/// ends at the given cpEnd
-		int writeParagraph( int initialCp, int cpEnd, bool sectionEnd );
+		int writeParagraph( int initialCp, int cpEnd, bool sectionEnd, bool lastBad = false );
 		/// Writes a Paragraph RSID
 		void writeParagraphRsid( const ParagraphPropertyExceptions* papx );
 		/// Writes a run with the given characters and CHPX
-		int writeRun( vector<wchar_t>* chars, CharacterPropertyExceptions* chpx, int initialCp );
+		int writeRun( std::vector<wchar_t>* chars, CharacterPropertyExceptions* chpx, int initialCp );
 		/// Writes the given text to the document
-		void writeText( vector<wchar_t>* chars, int initialCp, CharacterPropertyExceptions* chpx, bool writeDeletedText );
-		void writeTextElement( const wstring& text, const wstring& textType );
-        void writeTextStart( const wstring& textType, bool preserve_space);
-		void writeTextEnd( const wstring& textType );
+		
+		void writeText( std::vector<wchar_t>* chars, int initialCp, CharacterPropertyExceptions* chpx, bool writeDeletedText );
+		void writeTextElement( const std::wstring& text, const std::wstring& textType );
+        void writeTextStart( const std::wstring& textType, bool preserve_space);
+		void writeTextEnd( const std::wstring& textType );
+		
 		/// Searches for bookmarks in the list of characters.
-		vector<int> searchBookmarks( vector<wchar_t>* chars, int initialCp );
+		std::vector<int> searchBookmarks( std::vector<wchar_t>* chars, int initialCp );
 		ParagraphPropertyExceptions* findValidPapx( int fc );
 		/// Splits a list of characters into several lists
-		list<vector<wchar_t> >* splitCharList( vector<wchar_t>* chars, vector<int>* splitIndices );
+		std::list<std::vector<wchar_t> >* splitCharList( std::vector<wchar_t>* chars, std::vector<int>* splitIndices );
 		/// Writes the table starts at the given cp value
 		int writeTable( int initialCp, unsigned int nestingLevel );
 		/// Builds a list that contains the width of the several columns of the table.
-		vector<short>* buildTableGrid( int initialCp, unsigned int nestingLevel );
+		std::vector<short>* buildTableGrid( int initialCp, unsigned int nestingLevel );
 		/// Finds the FC of the next row end mark.
 		int findRowEndFc( int initialCp, int& rowEndCp, unsigned int nestingLevel );
 		/// Finds the FC of the next row end mark.
 		int findRowEndFc( int initialCp, unsigned int nestingLevel );
 		/// Writes the table row that starts at the given cp value and ends at the next row end mark
-		int writeTableRow( int initialCp, vector<short>* grid, unsigned int nestingLevel );
+		int writeTableRow( int initialCp, std::vector<short>* grid, unsigned int nestingLevel );
 		/// Writes the table cell that starts at the given cp value and ends at the next cell end mark
-		int writeTableCell( int initialCp, TablePropertyExceptions* tapx, vector<short>* grid, int& gridIndex, int cellIndex, unsigned int nestingLevel );
+		int writeTableCell( int initialCp, TablePropertyExceptions* tapx, std::vector<short>* grid, int& gridIndex, int cellIndex, unsigned int nestingLevel );
 		int findCellEndCp( int initialCp, unsigned int nestingLevel );
 		bool writeBookmarks( int cp );
 		bool writeBookmarkStart( short id );
@@ -89,7 +122,7 @@ namespace DocFileFormat
 		/// Finds the SEPX that is valid for the given CP.
 		SectionPropertyExceptions* findValidSepx( int cp );
 		/// Searches the given vector for the next FieldEnd character.
-		int searchNextTextMark( vector<wchar_t>* chars, int initialCp, wchar_t mark );
+		int searchNextTextMark( std::vector<wchar_t>* chars, int initialCp, wchar_t mark );
 
 	private:
 		Symbol getSymbol( const CharacterPropertyExceptions* chpx );

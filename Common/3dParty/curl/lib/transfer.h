@@ -1,4 +1,4 @@
-#ifndef HEADER_CURL_TRANSFER_H
+﻿#ifndef HEADER_CURL_TRANSFER_H
 #define HEADER_CURL_TRANSFER_H
 /***************************************************************************
  *                                  _   _ ____  _

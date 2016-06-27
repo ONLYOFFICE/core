@@ -1,3 +1,34 @@
+Ôªø/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 
 #include "CharacterPropertiesMapping.h"
 
@@ -74,8 +105,8 @@ namespace DocFileFormat
 
 	bool CharacterPropertiesMapping::CheckIsSymbolFont()
 	{
-		//Todo Ò‰ÂÎ‡Ú¸ ÓÔÂ‰ÂÎÂÌËÂ ÒËÏÓÎ¸ÌÓ„Ó ¯ËÙÚ‡ ˜ÂÂÁ fontManager
-		//«‡„ÎÛ¯Í‡ ÔÓ‰ Google Docs, ÓÌË ÔË¯ÛÚ bullet ‚ Arial
+		//Todo —Å–¥–µ–ª–∞—Ç—å –æ–ø—Ä–µ–¥–µ–ª–µ–Ω–∏–µ —Å–∏–º–æ–ª—å–Ω–æ–≥–æ —à—Ä–∏—Ñ—Ç–∞ —á–µ—Ä–µ–∑ fontManager
+		//–ó–∞–≥–ª—É—à–∫–∞ –ø–æ–¥ Google Docs, –æ–Ω–∏ –ø–∏—à—É—Ç bullet –≤ Arial
 		if (-1 != this->m_sAsciiFont.find (_T("Arial")) && -1 != this->m_sEastAsiaFont.find (_T("Arial")) && -1 != this->m_shAnsiFont.find (_T("Arial")))
 			return false;
 
@@ -84,7 +115,7 @@ namespace DocFileFormat
 
 	/*========================================================================================================*/
 
-	void CharacterPropertiesMapping::convertSprms( list<SinglePropertyModifier>* sprms, XMLTools::XMLElement<wchar_t>* parent )
+	void CharacterPropertiesMapping::convertSprms( std::list<SinglePropertyModifier>* sprms, XMLTools::XMLElement<wchar_t>* parent )
 	{
 		XMLTools::XMLElement<wchar_t>	* rFonts	= new XMLTools::XMLElement<wchar_t>	( _T( "w:rFonts" ) );
 		XMLTools::XMLElement<wchar_t>	* color		= new XMLTools::XMLElement<wchar_t>	( _T( "w:color" ) );
@@ -261,7 +292,7 @@ namespace DocFileFormat
 			case sprmCFtcBi :
 				{//default from FontTable
 					SHORT nIndex	=	FormatUtils::BytesToUInt16 (iter->Arguments, 0, iter->argumentsSize);
-					if( nIndex < _doc->FontTable->cData )
+					if( nIndex < _doc->FontTable->Data.size() )
 					{
 						FontFamilyName* ffn = static_cast<FontFamilyName*>( _doc->FontTable->operator [] ( nIndex ) );
 						if (ffn)
@@ -293,7 +324,7 @@ namespace DocFileFormat
 			case sprmCRgFtc0:	//	font family
 				{
 					int nIndex = FormatUtils::BytesToUInt16( iter->Arguments, 0, iter->argumentsSize );
-					if( nIndex < _doc->FontTable->cData )
+					if( nIndex < _doc->FontTable->Data.size() )
 					{
 						XMLTools::XMLAttribute<wchar_t>* ascii = new XMLTools::XMLAttribute<wchar_t>( _T( "w:ascii" ) );
 						FontFamilyName* ffn = static_cast<FontFamilyName*>( _doc->FontTable->operator [] ( nIndex ) );
@@ -306,7 +337,7 @@ namespace DocFileFormat
 			case sprmCRgFtc1:
 				{
 					int nIndex = FormatUtils::BytesToUInt16( iter->Arguments, 0, iter->argumentsSize );
-					if( nIndex>=0 && nIndex < _doc->FontTable->cData )
+					if( nIndex>=0 && nIndex < _doc->FontTable->Data.size() )
 					{
 						XMLTools::XMLAttribute<wchar_t>* eastAsia = new XMLTools::XMLAttribute<wchar_t>( _T( "w:eastAsia" ) );
 						FontFamilyName* ffn = static_cast<FontFamilyName*>( _doc->FontTable->operator [] ( nIndex ) );
@@ -321,7 +352,7 @@ namespace DocFileFormat
 			case 0x4A51:
 				{
 					int nIndex = FormatUtils::BytesToUInt16( iter->Arguments, 0, iter->argumentsSize );
-					if( nIndex>=0 && nIndex < _doc->FontTable->cData )
+					if( nIndex>=0 && nIndex < _doc->FontTable->Data.size() )
 					{
 						XMLTools::XMLAttribute<wchar_t>* ansi = new XMLTools::XMLAttribute<wchar_t>( _T( "w:hAnsi" ) );
 						FontFamilyName* ffn = static_cast<FontFamilyName*>( _doc->FontTable->operator [] ( nIndex ) );
@@ -364,7 +395,7 @@ namespace DocFileFormat
 						std::map<int, int>::iterator it = _doc->PictureBulletsCPsMap.find(nIndex);
 						if (it != _doc->PictureBulletsCPsMap.end())
 						{
-							//‰Ó·‡‚ËÚ¸
+							//–¥–æ–±–∞–≤–∏—Ç—å
 						}
 					}
 				}break;
@@ -496,9 +527,9 @@ namespace DocFileFormat
 
 	/*========================================================================================================*/
 
-	list<CharacterPropertyExceptions*> CharacterPropertiesMapping::buildHierarchy( const StyleSheet* styleSheet, unsigned short istdStart )
+	std::list<CharacterPropertyExceptions*> CharacterPropertiesMapping::buildHierarchy( const StyleSheet* styleSheet, unsigned short istdStart )
 	{
-		list<CharacterPropertyExceptions*> hierarchy;
+		std::list<CharacterPropertyExceptions*> hierarchy;
 		unsigned int istd = (unsigned int)istdStart;
 		bool goOn = true;
 

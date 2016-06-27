@@ -1,10 +1,41 @@
+п»ї/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 /***************************************************************
 
 	CShareMemArray 
 
-		шаблон класса для работы с именованной 
-		Shared-памятью. Реализаваны загрузка массива
-		из памяти и сохранение в память.
+		С€Р°Р±Р»РѕРЅ РєР»Р°СЃСЃР° РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ РёРјРµРЅРѕРІР°РЅРЅРѕР№ 
+		Shared-РїР°РјСЏС‚СЊСЋ. Р РµР°Р»РёР·Р°РІР°РЅС‹ Р·Р°РіСЂСѓР·РєР° РјР°СЃСЃРёРІР°
+		РёР· РїР°РјСЏС‚Рё Рё СЃРѕС…СЂР°РЅРµРЅРёРµ РІ РїР°РјСЏС‚СЊ.
 
 ***************************************************************/
 
@@ -16,24 +47,24 @@
 
 #define AVS_USER_NAME_LEN 1024
 
-// Статус хранилища (ошибка, уже создано, новое)
+// РЎС‚Р°С‚СѓСЃ С…СЂР°РЅРёР»РёС‰Р° (РѕС€РёР±РєР°, СѓР¶Рµ СЃРѕР·РґР°РЅРѕ, РЅРѕРІРѕРµ)
 enum TSMAStatus {SMAS_ERROR, SMAS_ALREADYEXISTS, SMAS_NEW};
 
-// Хранилище
+// РҐСЂР°РЅРёР»РёС‰Рµ
 template <typename STOR_TYPE>
 class CShareMemArray
 {
 protected:
-	HANDLE		m_hAccessMutex;		// Мьютекс для безопасного доступа к Shared-Memory
-	HANDLE		m_hMapFile;			// Хендл на map таблицы
-	STOR_TYPE	*m_pArray;			// Указатель на массив
-	LONG64		m_nSize;			// Размер таблицы
-	CString		m_sMutexName;		// Имя мьютекса
-	CString		m_sMapName;			// Имя маппа
+	HANDLE		m_hAccessMutex;		// РњСЊСЋС‚РµРєСЃ РґР»СЏ Р±РµР·РѕРїР°СЃРЅРѕРіРѕ РґРѕСЃС‚СѓРїР° Рє Shared-Memory
+	HANDLE		m_hMapFile;			// РҐРµРЅРґР» РЅР° map С‚Р°Р±Р»РёС†С‹
+	STOR_TYPE	*m_pArray;			// РЈРєР°Р·Р°С‚РµР»СЊ РЅР° РјР°СЃСЃРёРІ
+	LONG64		m_nSize;			// Р Р°Р·РјРµСЂ С‚Р°Р±Р»РёС†С‹
+	CString		m_sMutexName;		// РРјСЏ РјСЊСЋС‚РµРєСЃР°
+	CString		m_sMapName;			// РРјСЏ РјР°РїРїР°
 	TSMAStatus	m_sStatus;
 
 protected:
-	// Читаем из памяти
+	// Р§РёС‚Р°РµРј РёР· РїР°РјСЏС‚Рё
 	bool ReadFromSharedMem(LONG64 nIndex, STOR_TYPE &nValue)
 	{
 		if (NULL == m_pArray)
@@ -44,7 +75,7 @@ protected:
 
 		__try
 		{
-			STOR_TYPE *pTable = (STOR_TYPE *) (((BYTE *) m_pArray) + sizeof(LONG64));	// sizeof(LONG64) - размер таблицы
+			STOR_TYPE *pTable = (STOR_TYPE *) (((BYTE *) m_pArray) + sizeof(LONG64));	// sizeof(LONG64) - СЂР°Р·РјРµСЂ С‚Р°Р±Р»РёС†С‹
 			nValue = pTable[nIndex];
 		}
 		__except(EXCEPTION_IN_PAGE_ERROR == GetExceptionCode() ? EXCEPTION_EXECUTE_HANDLER : EXCEPTION_CONTINUE_SEARCH)
@@ -56,7 +87,7 @@ protected:
 		return true;
 	}
 
-	// Пишем в память
+	// РџРёС€РµРј РІ РїР°РјСЏС‚СЊ
 	bool WriteToSharedMem(LONG64 nIndex, STOR_TYPE aValue)
 	{
 		if (NULL == m_pArray)
@@ -67,7 +98,7 @@ protected:
 
 		__try
 		{
-			STOR_TYPE *pTable = (STOR_TYPE *) (((BYTE *) m_pArray) + sizeof(LONG64));	// sizeof(LONG64) - размер таблицы
+			STOR_TYPE *pTable = (STOR_TYPE *) (((BYTE *) m_pArray) + sizeof(LONG64));	// sizeof(LONG64) - СЂР°Р·РјРµСЂ С‚Р°Р±Р»РёС†С‹
 			pTable[nIndex] = aValue;
 		}
 		__except(EXCEPTION_IN_PAGE_ERROR == GetExceptionCode() ? EXCEPTION_EXECUTE_HANDLER : EXCEPTION_CONTINUE_SEARCH)
@@ -79,24 +110,24 @@ protected:
 		return true;
 	}
 
-	// Загрузка таблицы индексов из SharedMemory
+	// Р—Р°РіСЂСѓР·РєР° С‚Р°Р±Р»РёС†С‹ РёРЅРґРµРєСЃРѕРІ РёР· SharedMemory
 	bool SaveTable_unsync(CAtlArray<STOR_TYPE> &aTable)
 	{
 		if ((NULL == m_pArray) || (NULL == m_hMapFile)) 
 		{
 			m_sStatus = SMAS_ERROR;
-			return false;	// Защита от дурака
+			return false;	// Р—Р°С‰РёС‚Р° РѕС‚ РґСѓСЂР°РєР°
 		}
 	
 		bool bRes = true;
 
-		// Защита от дурака
+		// Р—Р°С‰РёС‚Р° РѕС‚ РґСѓСЂР°РєР°
 		LONG64 nCopyCount = (m_nSize <= (LONG64) aTable.GetCount()) ? m_nSize : aTable.GetCount();
 		
-		// Сохраняем размер таблицы
+		// РЎРѕС…СЂР°РЅСЏРµРј СЂР°Р·РјРµСЂ С‚Р°Р±Р»РёС†С‹
 		Size_unsync(m_nSize);
 
-		// копируем из памяти в массив (safe)
+		// РєРѕРїРёСЂСѓРµРј РёР· РїР°РјСЏС‚Рё РІ РјР°СЃСЃРёРІ (safe)
 		for (LONG64 nIndex = 0; nIndex < nCopyCount; nIndex++)
 		{
 			bRes &= WriteToSharedMem (nIndex, aTable[nIndex]);
@@ -105,35 +136,35 @@ protected:
 		return bRes;
 	}
 
-	// Сохранение таблицы индексов из SharedMemory
+	// РЎРѕС…СЂР°РЅРµРЅРёРµ С‚Р°Р±Р»РёС†С‹ РёРЅРґРµРєСЃРѕРІ РёР· SharedMemory
 	bool LoadTable_unsync(CAtlArray<STOR_TYPE> &aTable)
 	{
 		if ((NULL == m_pArray) || (NULL == m_hMapFile)) 
 		{
 			m_sStatus = SMAS_ERROR;
-			return false;	// Защита от дурака
+			return false;	// Р—Р°С‰РёС‚Р° РѕС‚ РґСѓСЂР°РєР°
 		}
 	
 		aTable.RemoveAll();
 		
-		// Определяем размер
+		// РћРїСЂРµРґРµР»СЏРµРј СЂР°Р·РјРµСЂ
 		m_nSize = Size_unsync();
 
 		STOR_TYPE nValue;
 
-		// копируем из памяти в массив
+		// РєРѕРїРёСЂСѓРµРј РёР· РїР°РјСЏС‚Рё РІ РјР°СЃСЃРёРІ
 		for (DWORD nIndex = 0; nIndex < m_nSize; nIndex++)
 		{	
 			if (ReadFromSharedMem(nIndex, nValue))
 			{
-				// Добавляем в таблицу
+				// Р”РѕР±Р°РІР»СЏРµРј РІ С‚Р°Р±Р»РёС†Сѓ
 				aTable.Add(nValue);
 			}
 		}
 		return true;
 	}
 
-	// Размер
+	// Р Р°Р·РјРµСЂ
 	LONG64 Size_unsync()
 	{
 		LONG64 nValue = -1;
@@ -168,7 +199,7 @@ protected:
 
 		__try
 		{
-			LONG64 *pSize = (LONG64*) m_pArray;	// sizeof(LONG64) - размер таблицы
+			LONG64 *pSize = (LONG64*) m_pArray;	// sizeof(LONG64) - СЂР°Р·РјРµСЂ С‚Р°Р±Р»РёС†С‹
 			*pSize = aSize;
 		}
 		__except(EXCEPTION_IN_PAGE_ERROR == GetExceptionCode() ? EXCEPTION_EXECUTE_HANDLER : EXCEPTION_CONTINUE_SEARCH)
@@ -179,12 +210,12 @@ protected:
 	}
 
 public:
-	// aSize - размер таблицы индексации (кол-во полусекунд), 
-	// Id - дополнительный идектификатор, чтоб можно было создавать много сторейджей для одного файла
+	// aSize - СЂР°Р·РјРµСЂ С‚Р°Р±Р»РёС†С‹ РёРЅРґРµРєСЃР°С†РёРё (РєРѕР»-РІРѕ РїРѕР»СѓСЃРµРєСѓРЅРґ), 
+	// Id - РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹Р№ РёРґРµРєС‚РёС„РёРєР°С‚РѕСЂ, С‡С‚РѕР± РјРѕР¶РЅРѕ Р±С‹Р»Рѕ СЃРѕР·РґР°РІР°С‚СЊ РјРЅРѕРіРѕ СЃС‚РѕСЂРµР№РґР¶РµР№ РґР»СЏ РѕРґРЅРѕРіРѕ С„Р°Р№Р»Р°
 	CShareMemArray(CString &aFileName, LONG64 aSize, DWORD aId = ISID_DEFAULT):
 	  m_hMapFile(NULL), m_nSize(aSize), m_pArray(NULL), m_sStatus(SMAS_ERROR)
 	{
-		// "Вытаскиваем" имя файла
+		// "Р’С‹С‚Р°СЃРєРёРІР°РµРј" РёРјСЏ С„Р°Р№Р»Р°
 		TCHAR aDrive[_MAX_DRIVE];
 		TCHAR aDir[_MAX_DIR];
 		TCHAR aFName[_MAX_FNAME];
@@ -193,11 +224,11 @@ public:
 		_tsplitpath (aFileName.GetBuffer(), aDrive, aDir, aFName, aExt);
 		//_wsplitpath_s (aFileName.GetBuffer(), aDrive, _MAX_DRIVE, aDir, _MAX_DIR, aFName, _MAX_FNAME, aExt, _MAX_EXT);
 
-		// Дополнительно формируем уникальные символы для этого пути, чтобы включить в имя файла
+		// Р”РѕРїРѕР»РЅРёС‚РµР»СЊРЅРѕ С„РѕСЂРјРёСЂСѓРµРј СѓРЅРёРєР°Р»СЊРЅС‹Рµ СЃРёРјРІРѕР»С‹ РґР»СЏ СЌС‚РѕРіРѕ РїСѓС‚Рё, С‡С‚РѕР±С‹ РІРєР»СЋС‡РёС‚СЊ РІ РёРјСЏ С„Р°Р№Р»Р°
 		DWORD dwPathID = 0;
 		TCHAR tcPathIDItem = 0;
 
-		// Подсчитываем контрольную сумму для пути
+		// РџРѕРґСЃС‡РёС‚С‹РІР°РµРј РєРѕРЅС‚СЂРѕР»СЊРЅСѓСЋ СЃСѓРјРјСѓ РґР»СЏ РїСѓС‚Рё
 		for (int i = 0; i < (int) _tcslen(aDir); i++) 
 		{
 			tcPathIDItem ^= aDir[i];
@@ -205,7 +236,7 @@ public:
 			dwPathID += (DWORD) tcPathIDItem;
 		}
 
-		// Подсчитываем контрольную сумму для расширения
+		// РџРѕРґСЃС‡РёС‚С‹РІР°РµРј РєРѕРЅС‚СЂРѕР»СЊРЅСѓСЋ СЃСѓРјРјСѓ РґР»СЏ СЂР°СЃС€РёСЂРµРЅРёСЏ
 		DWORD dwExtID = 0;
 		TCHAR tcExtIDItem = 0;		
 		for (int i = 0; i < (int) _tcslen(aExt); i++) 
@@ -215,15 +246,15 @@ public:
 			 dwExtID += (DWORD) tcExtIDItem;
 		}
 		
-		// Формируем имя мутекса и мапа
-		// Этот код не работает если зашло два пользователя и каждый запускает свою копию приложения.
-		// Фича в именовании мьютекса.
-		// В начале имени мьютекса должно стоять "Global\"
-		// ШульгаИван: "Global\" не проходит на Win7, если прога запущена не под админом
+		// Р¤РѕСЂРјРёСЂСѓРµРј РёРјСЏ РјСѓС‚РµРєСЃР° Рё РјР°РїР°
+		// Р­С‚РѕС‚ РєРѕРґ РЅРµ СЂР°Р±РѕС‚Р°РµС‚ РµСЃР»Рё Р·Р°С€Р»Рѕ РґРІР° РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ Рё РєР°Р¶РґС‹Р№ Р·Р°РїСѓСЃРєР°РµС‚ СЃРІРѕСЋ РєРѕРїРёСЋ РїСЂРёР»РѕР¶РµРЅРёСЏ.
+		// Р¤РёС‡Р° РІ РёРјРµРЅРѕРІР°РЅРёРё РјСЊСЋС‚РµРєСЃР°.
+		// Р’ РЅР°С‡Р°Р»Рµ РёРјРµРЅРё РјСЊСЋС‚РµРєСЃР° РґРѕР»Р¶РЅРѕ СЃС‚РѕСЏС‚СЊ "Global\"
+		// РЁСѓР»СЊРіР°РРІР°РЅ: "Global\" РЅРµ РїСЂРѕС…РѕРґРёС‚ РЅР° Win7, РµСЃР»Рё РїСЂРѕРіР° Р·Р°РїСѓС‰РµРЅР° РЅРµ РїРѕРґ Р°РґРјРёРЅРѕРј
 		m_sMutexName.Format(_T("Local\\avs_mutex%u_%s_%06x_%06I64x_%06x"), aId, aFName, dwPathID, aSize, dwExtID);
 		m_sMapName.Format(_T("Local\\avs_storage%u_%s_%06x_%06I64x_%06x"), aId, aFName, dwPathID, aSize, dwExtID);
 
-		// добавляем имя юзера
+		// РґРѕР±Р°РІР»СЏРµРј РёРјСЏ СЋР·РµСЂР°
 		TCHAR pBufferUserName[AVS_USER_NAME_LEN];
 		DWORD dwBufferUserNameLen = AVS_USER_NAME_LEN;
 		GetUserName(pBufferUserName, &dwBufferUserNameLen);
@@ -232,13 +263,13 @@ public:
 		m_sMutexName	+= strUserName;
 		m_sMapName		+= strUserName;
 
-		// Создаем мьютекс
+		// РЎРѕР·РґР°РµРј РјСЊСЋС‚РµРєСЃ
 		m_hAccessMutex = CreateMutex(NULL, FALSE, m_sMutexName.GetBuffer());
 
-		// Далее все делаем "под мутексом" :)
+		// Р”Р°Р»РµРµ РІСЃРµ РґРµР»Р°РµРј "РїРѕРґ РјСѓС‚РµРєСЃРѕРј" :)
 		CSynchAccess oAccess = m_hAccessMutex;
 		
-		// Создаем мап
+		// РЎРѕР·РґР°РµРј РјР°Рї
 		ATLTRACE2("CShareMemArray()::CShareMemArray(): m_nSize = %d\n", m_nSize);
 
 		ULARGE_INTEGER nMappingSize;
@@ -247,21 +278,21 @@ public:
 		m_hMapFile = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, nMappingSize.HighPart, nMappingSize.LowPart, m_sMapName.GetBuffer());
 		if (NULL == m_hMapFile)
 		{
-			// Ошибка
+			// РћС€РёР±РєР°
 			ATLTRACE2("CShareMemArray::CShareMemArray():CreateFileMapping() FAILS (0x%x)!\n", GetLastError());
 			m_sStatus = SMAS_ERROR;
 		}
 		else 
 		{
-			// Все ок!
+			// Р’СЃРµ РѕРє!
 			m_sStatus = (GetLastError() == ERROR_ALREADY_EXISTS) ? SMAS_ALREADYEXISTS : SMAS_NEW;
 			ATLTRACE2 (SMAS_ALREADYEXISTS == m_sStatus ? "CShareMemArray: open existing!\n" : "CShareMemArray: create new!\n");
 
-			// создаем View of file
+			// СЃРѕР·РґР°РµРј View of file
 			m_pArray = (STOR_TYPE *) MapViewOfFile(m_hMapFile, FILE_MAP_ALL_ACCESS, 0, 0, (SIZE_T) nMappingSize.QuadPart);
 			if (NULL == m_pArray)
 			{
-				// Ошибка
+				// РћС€РёР±РєР°
 				ATLTRACE2("CShareMemArray::CShareMemArray():MapViewOfFile() FAILS (0x%x)!\n", GetLastError());
 				m_sStatus = SMAS_ERROR;
 			}
@@ -270,28 +301,28 @@ public:
 	
 	virtual ~CShareMemArray()
 	{
-		if (m_pArray) UnmapViewOfFile(m_pArray);			// удаляем view
-		if (NULL != m_hMapFile) CloseHandle(m_hMapFile);	// удаляем мап
-		if (NULL != m_hAccessMutex) CloseHandle(m_hAccessMutex);	// Удаляем мьютекс
+		if (m_pArray) UnmapViewOfFile(m_pArray);			// СѓРґР°Р»СЏРµРј view
+		if (NULL != m_hMapFile) CloseHandle(m_hMapFile);	// СѓРґР°Р»СЏРµРј РјР°Рї
+		if (NULL != m_hAccessMutex) CloseHandle(m_hAccessMutex);	// РЈРґР°Р»СЏРµРј РјСЊСЋС‚РµРєСЃ
 	}
 
 public:
 	
-	// Сохранить таблицу в шаред-мемори
+	// РЎРѕС…СЂР°РЅРёС‚СЊ С‚Р°Р±Р»РёС†Сѓ РІ С€Р°СЂРµРґ-РјРµРјРѕСЂРё
 	bool Save(CAtlArray<STOR_TYPE> &aTable)
 	{
 		CSynchAccess oAccess = m_hAccessMutex;
 		return SaveTable_unsync(aTable);
 	}
 
-	// Загрузить таблицу
+	// Р—Р°РіСЂСѓР·РёС‚СЊ С‚Р°Р±Р»РёС†Сѓ
 	bool Load(CAtlArray<STOR_TYPE> &aTable)
 	{
 		CSynchAccess oAccess = m_hAccessMutex;
 		return LoadTable_unsync(aTable);
 	}
 
-	// Размер получение
+	// Р Р°Р·РјРµСЂ РїРѕР»СѓС‡РµРЅРёРµ
 	LONG64 Size()
 	{
 		CSynchAccess oAccess = m_hAccessMutex;
@@ -304,7 +335,7 @@ public:
 		Size_unsync(aSize);
 	}*/
 
-	// Получение статуса
+	// РџРѕР»СѓС‡РµРЅРёРµ СЃС‚Р°С‚СѓСЃР°
 	TSMAStatus Status(void) const 
 	{
 		CSynchAccess oAccess = m_hAccessMutex;

@@ -81,9 +81,9 @@ linux-g++ | linux-g++-64 | linux-g++-32 {
     CONFIG += plugin
     TARGET_EXT = .so
 
-    INCLUDEPATH += $$PWD/icubuilds/$$ICU_BUILDS_PLATFORM/usr/local/include
-    LIBS        += $$PWD/../build/bin/icu/$$ICU_BUILDS_PLATFORM/libicuuc.so.55
-    LIBS        += $$PWD/../build/bin/icu/$$ICU_BUILDS_PLATFORM/libicudata.so.55
+    INCLUDEPATH += /usr/local/include
+    LIBS        += /usr/local/lib/libicuuc.so.55
+    LIBS        += /usr/local/lib/libicudata.so.55
     message(linux)
 }
 

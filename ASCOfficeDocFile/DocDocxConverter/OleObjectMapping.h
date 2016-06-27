@@ -1,6 +1,40 @@
-﻿#pragma once
+﻿/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
+#pragma once
 
+#include "ConversionContext.h"
 #include "PictureDescriptor.h"
+#include "OleObject.h"
+
 #include "AbstractOpenXmlMapping.h"
 #include "IMapping.h"
 
@@ -9,8 +43,9 @@ namespace DocFileFormat
 	class OleObjectMapping: public AbstractOpenXmlMapping, public IMapping
 	{
 	public:
-		OleObjectMapping(XmlUtils::CXmlWriter* writer, ConversionContext* context, PictureDescriptor* pict, IMapping* caller, const wstring& shapeId) 
-			: AbstractOpenXmlMapping(writer), m_context(NULL), _pict(NULL), _caller(NULL), _shapeId(shapeId)
+		OleObjectMapping(XmlUtils::CXmlWriter* writer, ConversionContext* context, PictureDescriptor* pict, IMapping* caller, const std::wstring& shapeId) 
+			:
+		AbstractOpenXmlMapping(writer), m_context(NULL), _pict(NULL), _caller(NULL), _shapeId(shapeId)
 		{
 			m_context	=	context;
 			_pict		=	pict;
@@ -39,7 +74,7 @@ namespace DocFileFormat
 					
 					m_context->_docx->RegisterExternalOLEObject(_caller, ole->ClipboardFormat, ole->Link);
 
-					m_pXmlWriter->WriteAttribute( _T( "r:id" ), ( wstring( _T( "rId" ) ) + FormatUtils::IntToWideString( relID ) ).c_str() );
+					m_pXmlWriter->WriteAttribute( _T( "r:id" ), ( std::wstring( _T( "rId" ) ) + FormatUtils::IntToWideString( relID ) ).c_str() );
 					m_pXmlWriter->WriteAttribute( _T( "Type" ), _T( "Link" ) );
 					m_pXmlWriter->WriteAttribute( _T( "UpdateMode" ), ole->UpdateMode.c_str() );
 				}
@@ -52,7 +87,7 @@ namespace DocFileFormat
 					else
 						relID = m_context->_docx->RegisterOLEObject(_caller, ole->ClipboardFormat);
 
-					m_pXmlWriter->WriteAttribute( _T( "r:id" ), ( wstring( _T( "rId" ) ) + FormatUtils::IntToWideString( relID ) ).c_str() );
+					m_pXmlWriter->WriteAttribute( _T( "r:id" ), ( std::wstring( _T( "rId" ) ) + FormatUtils::IntToWideString( relID ) ).c_str() );
 					m_pXmlWriter->WriteAttribute( _T( "Type" ), _T( "Embed" ) );
 
 					//copy the object
@@ -77,9 +112,9 @@ namespace DocFileFormat
 			}
 		}
 
-		static wstring GetTargetExt(const wstring& objectType)
+		static std::wstring GetTargetExt(const std::wstring& objectType)
 		{
-			wstring objectExt = _T( ".bin" );
+			std::wstring objectExt = _T( ".bin" );
 
 			if ( objectType == _T( "Biff8" ) )
 			{
@@ -104,9 +139,9 @@ namespace DocFileFormat
 			return objectExt;
 		}
 
-		static wstring GetContentType(const wstring& objectType)
+		static std::wstring GetContentType(const std::wstring& objectType)
 		{
-			wstring objectContentType = OpenXmlContentTypes::OleObject;
+			std::wstring objectContentType = OpenXmlContentTypes::OleObject;
 
 			if ( objectType == _T( "Biff8" ) )
 			{
@@ -141,10 +176,10 @@ namespace DocFileFormat
 				//!!!TODO: There is issue with some Office OLE Objects. Word can't open *.xls object (Excel.Chart) with set CLSID and
 				//some Power Point Presentations, and Word Documents. Open Office CAN start this objects!!!
 
-                wstring clsid;
-				wstring exelChart = _T( "Excel.Chart" );
+				std::wstring clsid;
+				std::wstring exelChart = _T( "Excel.Chart" );
 
-				if ( search( ole->Program.begin(), ole->Program.end(), exelChart.begin(), exelChart.end() ) == ole->Program.end() )
+				if ( std::search( ole->Program.begin(), ole->Program.end(), exelChart.begin(), exelChart.end() ) == ole->Program.end() )
 				{//??
 					clsid = ole->ClassId;
 				}

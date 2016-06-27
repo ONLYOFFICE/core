@@ -1,4 +1,4 @@
-/*
+﻿/*
  * File:	ximajpg.h
  * Purpose:	JPG Image Class Loader and Writer
  */

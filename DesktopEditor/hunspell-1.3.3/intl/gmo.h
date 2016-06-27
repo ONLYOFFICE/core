@@ -1,4 +1,4 @@
-/* Description of GNU message catalog format: general file layout.
+﻿/* Description of GNU message catalog format: general file layout.
    Copyright (C) 1995, 1997, 2000-2002, 2004, 2006 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify it

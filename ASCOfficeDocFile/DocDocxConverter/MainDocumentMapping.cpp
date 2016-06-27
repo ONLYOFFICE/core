@@ -1,3 +1,34 @@
+﻿/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 
 #include "MainDocumentMapping.h"
 
@@ -49,7 +80,11 @@ namespace DocFileFormat
 		m_pXmlWriter->WriteNodeBegin( _T("w:body"), FALSE );
 
 		// Convert the document
-		_lastValidPapx = (*(m_document->AllPapxFkps->begin()))->grppapx[0];
+		_lastValidPapx = NULL;
+		if (m_document->AllPapxFkps->empty() == false)
+		{
+			_lastValidPapx = (*(m_document->AllPapxFkps->begin()))->grppapx[0];
+		}
 
 		int cp = 0;
 		int fc = 0;
@@ -65,6 +100,7 @@ namespace DocFileFormat
 		while (cp < countText)
 		{
 			fc = m_document->FindFileCharPos(cp);
+				
 			if (fc < 0) break;
 
 			papx = findValidPapx(fc);
@@ -89,40 +125,15 @@ namespace DocFileFormat
 			else
 			{
 				//There are no paragraphs, only text
-
-				//start paragraph
-				m_pXmlWriter->WriteNodeBegin( _T( "w:p" ) );
-				//start run
-				m_pXmlWriter->WriteNodeBegin( _T( "w:r" ) );
-				
-				int fc						=	m_document->FindFileCharPos(0);
+				int fc						=	m_document->FindFileCharPos(cp);
 				int fcEnd					=	m_document->FindFileCharPos(countTextRel);
 
-				if (fc < 0 || fcEnd < 0) break;
-				
-				// Read the chars
-				vector<wchar_t>* chpxChars	=	m_document->m_PieceTable->GetEncodingChars (fc, fcEnd, m_document->WordDocumentStream);		//<! NEED OPTIMIZE
-				wstring text (chpxChars->begin(), chpxChars->end());
-				
-				//open a new w:t element
-				m_pXmlWriter->WriteNodeBegin( _T( "w:t" ), TRUE );
-				//if (text.find(_T("\x20")) != text.npos)
-				{
-					m_pXmlWriter->WriteAttribute( _T( "xml:space" ), _T( "preserve" ) ); 
-				}
-				m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
+				//if (fc < 0 || fcEnd < 0) break;
+				//
+				//// Read the chars
+				//std::vector<wchar_t>* chars =	m_document->GetChars (fc, fcEnd, fc);
 
-				// Write text
-				m_pXmlWriter->WriteString(text.c_str());
-
-				RELEASEOBJECT(chpxChars);
-
-				//close previous w:t ...
-				m_pXmlWriter->WriteNodeEnd( _T( "w:t" ) );
-				//close previous w:r ...
-				m_pXmlWriter->WriteNodeEnd( _T( "w:r" ) );
-				//close previous w:p ...
-				m_pXmlWriter->WriteNodeEnd( _T( "w:p" ) );
+				writeParagraph(cp, countTextRel, false, true );
 
 				cp = m_document->FIB->m_RgLw97.ccpText;
 			}
@@ -151,7 +162,7 @@ namespace DocFileFormat
 		{
 			int lastSepxCp = 0;
 
-			for (map<int, SectionPropertyExceptions*>::iterator iter = m_document->AllSepx->begin(); iter != m_document->AllSepx->end(); ++iter) 
+			for (std::map<int, SectionPropertyExceptions*>::iterator iter = m_document->AllSepx->begin(); iter != m_document->AllSepx->end(); ++iter) 
 				lastSepxCp = iter->first;
 
 			SectionPropertyExceptions* lastSepx	=	m_document->AllSepx->operator []( lastSepxCp );
@@ -167,6 +178,6 @@ namespace DocFileFormat
 		m_pXmlWriter->WriteNodeEnd( _T( "w:body" ) );
 		m_pXmlWriter->WriteNodeEnd( _T( "w:document" ) );
 
-		m_context->_docx->DocumentXML = wstring(m_pXmlWriter->GetXmlString());
+		m_context->_docx->DocumentXML = std::wstring(m_pXmlWriter->GetXmlString());
 	}
 }

@@ -1,4 +1,4 @@
-#if !defined(__ximadefs_h)
+﻿#if !defined(__ximadefs_h)
 #define __ximadefs_h
 
 #include "ximacfg.h"

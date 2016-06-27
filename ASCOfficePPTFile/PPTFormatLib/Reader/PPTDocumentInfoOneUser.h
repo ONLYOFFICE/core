@@ -1,3 +1,34 @@
+п»ї/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 #pragma once
 #include "ClassesAtom.h"
 
@@ -16,7 +47,7 @@ public:
 	std::map<DWORD, DWORD>							m_mapOffsetInPIDs;
 	CRecordDocument									m_oDocument;
 
-	//todooo при переходе на C++11 использовать НУЖНЫЙ здесь unsorted_map - m_arr .. Order уберутся
+	//todooo РїСЂРё РїРµСЂРµС…РѕРґРµ РЅР° C++11 РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ РќРЈР–РќР«Р™ Р·РґРµСЃСЊ unsorted_map - m_arr .. Order СѓР±РµСЂСѓС‚СЃСЏ
 
 	std::map<DWORD, CRecordSlide*>					m_mapSlides;
 	std::map<DWORD, CRecordSlide*>					m_mapMasters;
@@ -26,18 +57,18 @@ public:
 	std::vector<DWORD>								m_arrMastersOrder;
 	std::vector<DWORD>								m_arrNotesOrder;
 
-	// перевод id мастера в индекс темы/шаблона
+	// РїРµСЂРµРІРѕРґ id РјР°СЃС‚РµСЂР° РІ РёРЅРґРµРєСЃ С‚РµРјС‹/С€Р°Р±Р»РѕРЅР°
 	std::map<DWORD, LONG>							m_mapMasterToTheme;
 
 	// original id -> natural id
 	std::map<DWORD, DWORD>							m_mapMasterOriginalIds;
 
-	// это как бы ППТ-шная обертка над слайдом
+	// СЌС‚Рѕ РєР°Рє Р±С‹ РџРџT-С€РЅР°СЏ РѕР±РµСЂС‚РєР° РЅР°Рґ СЃР»Р°Р№РґРѕРј
 	std::vector<CSlideInfo>							m_arSlideWrapper;
 	std::vector<CSlideInfo>							m_arMasterWrapper;
 
-	// эти параметры - одни на весь документ. 
-	// чтобы поддержать нашу схему (пптх) - копируем их в темы
+	// СЌС‚Рё РїР°СЂР°РјРµС‚СЂС‹ - РѕРґРЅРё РЅР° РІРµСЃСЊ РґРѕРєСѓРјРµРЅС‚. 
+	// С‡С‚РѕР±С‹ РїРѕРґРґРµСЂР¶Р°С‚СЊ РЅР°С€Сѓ СЃС…РµРјСѓ (РїРїС‚С…) - РєРѕРїРёСЂСѓРµРј РёС… РІ С‚РµРјС‹
 	std::vector<CRecordBlipStoreContainer*>			m_arrBlipStore;
 	std::vector<CFont>								m_arrFonts;
 	NSPresentationEditor::CTextStyles				m_oDefaultTextStyle;
@@ -49,7 +80,7 @@ public:
 	bool											m_bHasFooter;
 	int												m_nFormatDate;
 
-	// чтобы загружать неизмененные элементы от других юзеров (предыдущих)
+	// С‡С‚РѕР±С‹ Р·Р°РіСЂСѓР¶Р°С‚СЊ РЅРµРёР·РјРµРЅРµРЅРЅС‹Рµ СЌР»РµРјРµРЅС‚С‹ РѕС‚ РґСЂСѓРіРёС… СЋР·РµСЂРѕРІ (РїСЂРµРґС‹РґСѓС‰РёС…)
 	CPPTDocumentInfo*								m_pDocumentInfo;
 	int												m_lIndexThisUser;
 
@@ -61,18 +92,18 @@ public:
 
 	std::map<DWORD, CSlideShowSlideInfoAtom>		m_mapTransitions;
 
-	// номера "пустых" картинок - в эти пути не будем сохранять
+	// РЅРѕРјРµСЂР° "РїСѓСЃС‚С‹С…" РєР°СЂС‚РёРЅРѕРє - РІ СЌС‚Рё РїСѓС‚Рё РЅРµ Р±СѓРґРµРј СЃРѕС…СЂР°РЅСЏС‚СЊ
     std::vector<int>								m_arOffsetPictures;
     bool											m_bIsSetupEmpty;
 
 	CString											m_strFileDirectory;
 
-	// вся инфа о ex - файлах
+	// РІСЃСЏ РёРЅС„Р° Рѕ ex - С„Р°Р№Р»Р°С…
 	CExMedia										m_oExMedia;
 
 	std::vector<CColor>								m_oSchemeColors;
 
-	nullable<WORD>									m_wLanguage;	// язык пользователя (редактора)
+	nullable<WORD>									m_wLanguage;	// СЏР·С‹Рє РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ (СЂРµРґР°РєС‚РѕСЂР°)
 	bool											m_bRtl;
 	bool											m_bShowComments;
 public:

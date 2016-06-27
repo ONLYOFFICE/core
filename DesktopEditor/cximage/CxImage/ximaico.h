@@ -1,4 +1,4 @@
-/*
+﻿/*
  * File:	ximaico.h
  * Purpose:	ICON Image Class Loader and Writer
  */

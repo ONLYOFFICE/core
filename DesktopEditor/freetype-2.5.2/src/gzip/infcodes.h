@@ -1,4 +1,4 @@
-/* infcodes.h -- header to use infcodes.c
+﻿/* infcodes.h -- header to use infcodes.c
  * Copyright (C) 1995-2002 Mark Adler
  * For conditions of distribution and use, see copyright notice in zlib.h
  */

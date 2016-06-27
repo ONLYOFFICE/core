@@ -1,4 +1,4 @@
-/*
+﻿/*
  * -*- c++ -*-
  *
  * (C) Copyright IBM Corp. and others 2015 - All Rights Reserved

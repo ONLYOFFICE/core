@@ -1,4 +1,4 @@
-/*
+﻿/*
  * elfgcchack.h: hack by Arjan van de Ven <arjanv@redhat.com> to speed
  *               up the code when using gcc for call within the library.
  *

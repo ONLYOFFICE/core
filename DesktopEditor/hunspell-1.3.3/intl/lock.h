@@ -1,4 +1,4 @@
-/* Locking in multithreaded situations.
+﻿/* Locking in multithreaded situations.
    Copyright (C) 2005-2007 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify it

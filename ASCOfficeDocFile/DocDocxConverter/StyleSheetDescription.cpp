@@ -1,3 +1,34 @@
+﻿/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 
 #include "StyleSheetDescription.h"
 
@@ -17,7 +48,8 @@ namespace DocFileFormat
 	}
 
 	/// Parses the bytes to retrieve a StyleSheetDescription
-	StyleSheetDescription::StyleSheetDescription (unsigned char* bytes, int size, int cbStdBase, POLE::Stream* dataStream) : papx(NULL), chpx(NULL), tapx(NULL)
+	StyleSheetDescription::StyleSheetDescription (unsigned char* bytes, int size, int cbStdBase, POLE::Stream* dataStream, bool oldVersion) :
+															papx(NULL), chpx(NULL), tapx(NULL)
 	{
 		//parsing the base (fix part)
 
@@ -83,20 +115,29 @@ namespace DocFileFormat
 			//rsid
 			rsid					=	FormatUtils::GetUIntFromBytesBits( bytes, size, 96, 32 );
 		}
+//parsing the variable part
+		unsigned char	*name = NULL;
+		unsigned char	characterCount = bytes[cbStdBase];
+		int				upxOffset = 0;
 
-		//parsing the variable part
-
-		//xstz
-		unsigned char characterCount = bytes[cbStdBase];
-		//characters are zero-terminated, so 1 char has 2 bytes:
-		unsigned char* name = new unsigned char[characterCount * 2];
-		memcpy( name, ( bytes + cbStdBase + 2 ), ( characterCount * 2 ) );
-		//remove zero-termination
-		FormatUtils::GetSTLCollectionFromBytes<wstring>( &(this->xstzName), name, ( characterCount * 2 ), ENCODING_UNICODE );
+		if (oldVersion)
+		{
+			name = new unsigned char[characterCount];//characters are zero-terminated, so 1 char has 2 bytes:
+			memcpy( name, ( bytes + cbStdBase + 1 ), ( characterCount  ) );
+			FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &(this->xstzName), name, ( characterCount ), ENCODING_WINDOWS_1250 );
+			upxOffset = cbStdBase + 1 + ( characterCount /** 2*/ ) + 1;
+		}
+		else
+		{
+			name = new unsigned char[characterCount * 2];//characters are zero-terminated, so 1 char has 2 bytes:
+			memcpy( name, ( bytes + cbStdBase + 2 ), ( characterCount * 2 ) );
+			//remove zero-termination
+			FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &(this->xstzName), name, ( characterCount * 2 ), ENCODING_UTF16 );
+			
+			//parse the UPX structs
+			upxOffset = cbStdBase + 1 + ( characterCount * 2 ) + 2;
+		}
 		RELEASEARRAYOBJECTS( name );
-
-		//parse the UPX structs
-		int upxOffset = cbStdBase + 1 + ( characterCount * 2 ) + 2;
 
 		for ( int i = 0; i < this->cupx; i++ )
 		{
@@ -122,22 +163,23 @@ namespace DocFileFormat
 					{
 					case 0:
 						{
-							RELEASEOBJECT( this->tapx );
-							this->tapx = new TablePropertyExceptions( upxBytes, cbUPX ); 
+							//todooo не реализовано
+							//RELEASEOBJECT( this->tapx );
+							//this->tapx = new TablePropertyExceptions( upxBytes, cbUPX,  dataStream, oldVersion); 
 						}
 						break;
 
 					case 1:
 						{
 							RELEASEOBJECT( this->papx );
-							this->papx = new ParagraphPropertyExceptions( upxBytes, cbUPX, dataStream );
+							this->papx = new ParagraphPropertyExceptions( upxBytes, cbUPX, dataStream, oldVersion);
 						}
 						break;
 
 					case 2: 
 						{
 							RELEASEOBJECT( this->chpx ); 
-							this->chpx = new CharacterPropertyExceptions( upxBytes, cbUPX ); 
+							this->chpx = new CharacterPropertyExceptions( upxBytes, cbUPX , oldVersion); 
 						}
 						break;
 					}
@@ -150,14 +192,14 @@ namespace DocFileFormat
 					case 0:
 						{  
 							RELEASEOBJECT( this->papx );
-							this->papx = new ParagraphPropertyExceptions( upxBytes, cbUPX, dataStream ); 
+							this->papx = new ParagraphPropertyExceptions( upxBytes, cbUPX, dataStream, oldVersion ); 
 						}
 						break;
 
 					case 1: 
 						{
 							RELEASEOBJECT( this->chpx );
-							this->chpx = new CharacterPropertyExceptions( upxBytes, cbUPX ); 
+							this->chpx = new CharacterPropertyExceptions( upxBytes, cbUPX, oldVersion); 
 						}
 						break;
 					}
@@ -170,7 +212,7 @@ namespace DocFileFormat
 					case 0:
 						{
 							RELEASEOBJECT( this->papx );
-							this->papx = new ParagraphPropertyExceptions( upxBytes, cbUPX, dataStream );
+							this->papx = new ParagraphPropertyExceptions( upxBytes, cbUPX, dataStream, oldVersion );
 						}
 						break;
 					}
@@ -183,7 +225,7 @@ namespace DocFileFormat
 					case 0: 
 						{  
 							RELEASEOBJECT( this->chpx );
-							this->chpx = new CharacterPropertyExceptions( upxBytes, cbUPX ); 
+							this->chpx = new CharacterPropertyExceptions( upxBytes, cbUPX, oldVersion); 
 						}
 						break;
 					}

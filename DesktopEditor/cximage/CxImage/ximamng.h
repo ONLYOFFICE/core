@@ -1,4 +1,4 @@
-/*
+﻿/*
  * File:	ximamng.h
  * Purpose:	Declaration of the MNG Image Class
  * Author:	Davide Pizzolato - www.xdp.it

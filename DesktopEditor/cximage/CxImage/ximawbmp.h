@@ -1,4 +1,4 @@
-/*
+﻿/*
  * File:	ximawbmp.h
  * Purpose:	WBMP Image Class Loader and Writer
  */

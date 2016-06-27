@@ -1,4 +1,4 @@
-/*
+﻿/*
  * File:	ximajbg.cpp
  * Purpose:	Platform Independent JBG Image Class Loader and Writer
  * 18/Aug/2002 Davide Pizzolato - www.xdp.it

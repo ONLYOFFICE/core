@@ -1,3 +1,34 @@
+п»ї/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 
 
 #include "VMLShapeMapping.h"
@@ -246,10 +277,6 @@ namespace DocFileFormat
 				std::list<OptionEntry>::const_iterator end = options.end();
 				for (std::list<OptionEntry>::const_iterator iter = options.begin(); iter != end; ++iter)
 				{
-					//mso-position-horizontal:absolute
-					//mso-position-horizontal-relative:margin
-					//mso-position-vertical:absolute
-					//mso-position-vertical-relative:margin
 					switch (iter->pid)
 					{
 			//BOOLEANS
@@ -407,7 +434,7 @@ namespace DocFileFormat
 					case lineColor:
 						{
 							RGBColor lineColor((int)iter->op, RedFirst);
-							m_pXmlWriter->WriteAttribute( _T("strokecolor"), (wstring(_T("#")) + lineColor.SixDigitHexCode).c_str());
+							m_pXmlWriter->WriteAttribute( _T("strokecolor"), (std::wstring(_T("#")) + lineColor.SixDigitHexCode).c_str());
 						}
 						break;
 
@@ -632,7 +659,7 @@ namespace DocFileFormat
 					case pibName:
 						{
 							std::wstring name;
-							FormatUtils::GetSTLCollectionFromBytes<std::wstring>(&name, iter->opComplex, iter->op, ENCODING_UNICODE);
+							FormatUtils::GetSTLCollectionFromBytes<std::wstring>(&name, iter->opComplex, iter->op, ENCODING_UTF16);
 							appendValueAttribute(&m_imagedata, _T( "o:title" ), FormatUtils::XmlEncode(name).c_str());
 						}
 						break;
@@ -707,13 +734,13 @@ namespace DocFileFormat
 						switch(iter->op)
 						{
 						case 0:
-						case 4://обычный 							
+						case 4://РѕР±С‹С‡РЅС‹Р№ 							
 							break;
 						case 1:
-						case 5://верт (склони голову направо)						
+						case 5://РІРµСЂС‚ (СЃРєР»РѕРЅРё РіРѕР»РѕРІСѓ РЅР°РїСЂР°РІРѕ)						
 							appendStyleProperty(&sTextboxStyle, L"layout-flow", L"vertical");
 							break;
-						case 2://верт (склони голову налево)	
+						case 2://РІРµСЂС‚ (СЃРєР»РѕРЅРё РіРѕР»РѕРІСѓ РЅР°Р»РµРІРѕ)	
 							appendStyleProperty(&sTextboxStyle, L"layout-flow", L"vertical");
 							appendStyleProperty(&sTextboxStyle, L"mso-layout-flow-alt", L"bottom-to-top");
 							break;
@@ -789,7 +816,7 @@ namespace DocFileFormat
 					}
 				}
 
-				if (false == bHavePath)		//	фигура может быть задана только наборами вершин и индексов
+				if (false == bHavePath)		//	С„РёРіСѓСЂР° РјРѕР¶РµС‚ Р±С‹С‚СЊ Р·Р°РґР°РЅР° С‚РѕР»СЊРєРѕ РЅР°Р±РѕСЂР°РјРё РІРµСЂС€РёРЅ Рё РёРЅРґРµРєСЃРѕРІ
 				{
 					std::wstring path	=	ParsePath(options);
 
@@ -848,7 +875,7 @@ namespace DocFileFormat
 				m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
 
 				//build shadow offsets
-				wstring offset;
+				std::wstring offset;
 
 				if ( ShadowOffsetX != 0 )
 				{
@@ -868,7 +895,7 @@ namespace DocFileFormat
 					appendValueAttribute(&m_shadow, _T( "offset" ), offset.c_str());
 				}
 
-				wstring offset2;
+				std::wstring offset2;
 
 				if ( SecondShadowOffsetX != 0 )
 				{
@@ -914,7 +941,7 @@ namespace DocFileFormat
 					//write the viewpoint
 					if ( ( ViewPointX != 0 ) || ( ViewPointY != 0 ) || ( ViewPointZ != 0 ) )
 					{
-						wstring viewPoint;
+						std::wstring viewPoint;
 
 						if ( ViewPointX != 0 )
 						{
@@ -1134,8 +1161,8 @@ namespace DocFileFormat
 
 	std::wstring VMLShapeMapping::GetLineFrom(const ChildAnchor* pAnchor) const
 	{
-		//Если линия находится в группе, то координаты должны быть в Twips
-		//Если линия находится в группе, то координаты должны быть в других единицах измерения (например в twips)
+		//Р•СЃР»Рё Р»РёРЅРёСЏ РЅР°С…РѕРґРёС‚СЃСЏ РІ РіСЂСѓРїРїРµ, С‚Рѕ РєРѕРѕСЂРґРёРЅР°С‚С‹ РґРѕР»Р¶РЅС‹ Р±С‹С‚СЊ РІ Twips
+		//Р•СЃР»Рё Р»РёРЅРёСЏ РЅР°С…РѕРґРёС‚СЃСЏ РІ РіСЂСѓРїРїРµ, С‚Рѕ РєРѕРѕСЂРґРёРЅР°С‚С‹ РґРѕР»Р¶РЅС‹ Р±С‹С‚СЊ РІ РґСЂСѓРіРёС… РµРґРёРЅРёС†Р°С… РёР·РјРµСЂРµРЅРёСЏ (РЅР°РїСЂРёРјРµСЂ РІ twips)
 
 		std::wstring strXmlFrom;
 
@@ -1161,8 +1188,8 @@ namespace DocFileFormat
 
 	std::wstring VMLShapeMapping::GetLineTo(const ChildAnchor* pAnchor) const
 	{
-		//Если линия находится в группе, то координаты должны быть в Twips
-		//Если линия находится в группе, то координаты должны быть в других единицах измерения (например в twips)
+		//Р•СЃР»Рё Р»РёРЅРёСЏ РЅР°С…РѕРґРёС‚СЃСЏ РІ РіСЂСѓРїРїРµ, С‚Рѕ РєРѕРѕСЂРґРёРЅР°С‚С‹ РґРѕР»Р¶РЅС‹ Р±С‹С‚СЊ РІ Twips
+		//Р•СЃР»Рё Р»РёРЅРёСЏ РЅР°С…РѕРґРёС‚СЃСЏ РІ РіСЂСѓРїРїРµ, С‚Рѕ РєРѕРѕСЂРґРёРЅР°С‚С‹ РґРѕР»Р¶РЅС‹ Р±С‹С‚СЊ РІ РґСЂСѓРіРёС… РµРґРёРЅРёС†Р°С… РёР·РјРµСЂРµРЅРёСЏ (РЅР°РїСЂРёРјРµСЂ РІ twips)
 
 		std::wstring strXmlTo;
 
@@ -1228,7 +1255,7 @@ namespace DocFileFormat
 		//write the blip
 		if (oBlip)
 		{
-			VirtualStreamReader reader(m_ctx->_doc->WordDocumentStream, oBlip->foDelay);
+			VirtualStreamReader reader(m_ctx->_doc->WordDocumentStream, oBlip->foDelay, m_ctx->_doc->FIB->m_bOlderVersion);
 
 			switch (oBlip->btWin32)
 			{
@@ -1246,7 +1273,7 @@ namespace DocFileFormat
 						decompressedSize = metaBlip->Decompress(&decompressed);
 						if (0 != decompressedSize && NULL != decompressed)
 						{
-							m_ctx->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(oBlip->btWin32), vector<unsigned char>(decompressed, (decompressed + decompressedSize))));
+							m_ctx->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(oBlip->btWin32), std::vector<unsigned char>(decompressed, (decompressed + decompressedSize))));
 							RELEASEARRAYOBJECTS(decompressed);
 						}
 
@@ -1266,7 +1293,7 @@ namespace DocFileFormat
 					if ((bitBlip) && (bitBlip->m_pvBits))
 					{
 						m_ctx->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(oBlip->btWin32), 
-							vector<unsigned char>(bitBlip->m_pvBits, (bitBlip->m_pvBits + bitBlip->pvBitsSize)), oBlip->btWin32));
+							std::vector<unsigned char>(bitBlip->m_pvBits, (bitBlip->m_pvBits + bitBlip->pvBitsSize)), oBlip->btWin32));
 						RELEASEOBJECT (bitBlip);
 					}
 				}
@@ -1341,8 +1368,8 @@ namespace DocFileFormat
 				height = TwipsValue( ( pict->dxaGoal - ( pict->dxaCropLeft + pict->dxaCropRight ) ) * xScaling );
 			}
 
-			wstring widthString = FormatUtils::DoubleToWideString( width.ToPoints() );
-			wstring heightString = FormatUtils::DoubleToWideString( height.ToPoints() );
+			std::wstring widthString = FormatUtils::DoubleToWideString( width.ToPoints() );
+			std::wstring heightString = FormatUtils::DoubleToWideString( height.ToPoints() );
 
 			style->operator += ( std::wstring( _T( "width:" ) ) + widthString + std::wstring( _T( "pt;" ) ) );
 			style->operator += ( std::wstring( _T( "height:" ) ) + heightString + std::wstring( _T( "pt;" ) ) );
@@ -1392,7 +1419,7 @@ namespace DocFileFormat
 	{
 		if ((style != NULL) && (anchor != NULL))
 		{
-			ASCDocFormatUtils::Rectangle bounds = anchor->rcgBounds;
+			DocFormatUtils::Rectangle bounds = anchor->rcgBounds;
 
 			if (twistDimensions)
 			{
@@ -1680,7 +1707,7 @@ namespace DocFileFormat
 		}
 		else
 		{
-			//если не написать тип позиции, то будет inline
+			//РµСЃР»Рё РЅРµ РЅР°РїРёСЃР°С‚СЊ С‚РёРї РїРѕР·РёС†РёРё, С‚Рѕ Р±СѓРґРµС‚ inline
 			if ( anchor != NULL )
 			{
 				appendStyleProperty( &style, _T( "position" ), _T( "absolute" ) );
@@ -1688,7 +1715,7 @@ namespace DocFileFormat
 			else if (m_pSpa)
 			{
 				//append size and position ...
-				//if (m_pSpa->fAnchorLock)//это возможность смены привязки , а не ее тип
+				//if (m_pSpa->fAnchorLock)//СЌС‚Рѕ РІРѕР·РјРѕР¶РЅРѕСЃС‚СЊ СЃРјРµРЅС‹ РїСЂРёРІСЏР·РєРё , Р° РЅРµ РµРµ С‚РёРї
 
 				//if (m_pSpa->bx == TEXT && m_pSpa->by == TEXT)
 				//{
@@ -2037,7 +2064,7 @@ namespace DocFileFormat
 	
 		std::vector<CString> rectangles;
 
-		if (16 != cb) return rectangles; // TODO: доделать
+		if (16 != cb) return rectangles; // TODO: РґРѕРґРµР»Р°С‚СЊ
 
 		int count = (inscribe.op) / 16;
 

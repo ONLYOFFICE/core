@@ -1,4 +1,4 @@
-/*
+﻿/*
  * File:	ximapng.cpp
  * Purpose:	Platform Independent PNG Image Class Loader and Writer
  * 07/Aug/2001 Davide Pizzolato - www.xdp.it

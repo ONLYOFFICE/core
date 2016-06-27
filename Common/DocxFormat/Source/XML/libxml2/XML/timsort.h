@@ -1,4 +1,4 @@
-/*
+﻿/*
  * taken from https://github.com/swenson/sort
  * Kept as is for the moment to be able to apply upstream patches for that
  * code, currently used only to speed up XPath node sorting, see xpath.c

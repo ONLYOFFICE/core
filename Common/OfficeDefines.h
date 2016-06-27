@@ -1,3 +1,34 @@
+п»ї/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 #ifndef _OFFICEDEFINES_H_
 #define _OFFICEDEFINES_H_
 
@@ -23,19 +54,19 @@ namespace EncodingType
 	const int BigEndian = 51;
 }
 
-#define PERMISSION_PRINT  ( 1 << 2 ) // Ограничение печати документа
-#define PERMISSION_CHANGE ( 1 << 3 ) // Ограничение на изменение содержимого документа (текст, графика, картинки)
-#define PERMISSION_COPY   ( 1 << 4 ) // Ограничение на копирование документа и его содержимого
+#define PERMISSION_PRINT  ( 1 << 2 ) // РћРіСЂР°РЅРёС‡РµРЅРёРµ РїРµС‡Р°С‚Рё РґРѕРєСѓРјРµРЅС‚Р°
+#define PERMISSION_CHANGE ( 1 << 3 ) // РћРіСЂР°РЅРёС‡РµРЅРёРµ РЅР° РёР·РјРµРЅРµРЅРёРµ СЃРѕРґРµСЂР¶РёРјРѕРіРѕ РґРѕРєСѓРјРµРЅС‚Р° (С‚РµРєСЃС‚, РіСЂР°С„РёРєР°, РєР°СЂС‚РёРЅРєРё)
+#define PERMISSION_COPY   ( 1 << 4 ) // РћРіСЂР°РЅРёС‡РµРЅРёРµ РЅР° РєРѕРїРёСЂРѕРІР°РЅРёРµ РґРѕРєСѓРјРµРЅС‚Р° Рё РµРіРѕ СЃРѕРґРµСЂР¶РёРјРѕРіРѕ
 
-//Тип печати
-const int c_nPrintTypeFit = 0; //вписывать по аспекту
-const int c_nPrintTypeStrech = 1; //растягивать
-const int c_nPrintType100 = 2; // печатать как есть
-//пример xml для функции PrintPage <PrintSettings><Mode ZoomEnable=\"0\" RotateEnable=\"0\" PrintableAreaEnable=\"0\">%d</Mode></PrintSettings>
-//enable - 0; diable - 1 ( если атрибут не задан, то он берется как 0 )
-//ZoomEnable растягивать любой документ до размеров страницы
-//RotateEnable поворачивать документ,если в повернутом состоянии он будет занимать большую площадь(например при c_nPrintType100) или если в обычном состоянии он не вписывает, а в повернутом вписывается
-//PrintableAreaEnable печать только в области печати принтера
+//РўРёРї РїРµС‡Р°С‚Рё
+const int c_nPrintTypeFit = 0; //РІРїРёСЃС‹РІР°С‚СЊ РїРѕ Р°СЃРїРµРєС‚Сѓ
+const int c_nPrintTypeStrech = 1; //СЂР°СЃС‚СЏРіРёРІР°С‚СЊ
+const int c_nPrintType100 = 2; // РїРµС‡Р°С‚Р°С‚СЊ РєР°Рє РµСЃС‚СЊ
+//РїСЂРёРјРµСЂ xml РґР»СЏ С„СѓРЅРєС†РёРё PrintPage <PrintSettings><Mode ZoomEnable=\"0\" RotateEnable=\"0\" PrintableAreaEnable=\"0\">%d</Mode></PrintSettings>
+//enable - 0; diable - 1 ( РµСЃР»Рё Р°С‚СЂРёР±СѓС‚ РЅРµ Р·Р°РґР°РЅ, С‚Рѕ РѕРЅ Р±РµСЂРµС‚СЃСЏ РєР°Рє 0 )
+//ZoomEnable СЂР°СЃС‚СЏРіРёРІР°С‚СЊ Р»СЋР±РѕР№ РґРѕРєСѓРјРµРЅС‚ РґРѕ СЂР°Р·РјРµСЂРѕРІ СЃС‚СЂР°РЅРёС†С‹
+//RotateEnable РїРѕРІРѕСЂР°С‡РёРІР°С‚СЊ РґРѕРєСѓРјРµРЅС‚,РµСЃР»Рё РІ РїРѕРІРµСЂРЅСѓС‚РѕРј СЃРѕСЃС‚РѕСЏРЅРёРё РѕРЅ Р±СѓРґРµС‚ Р·Р°РЅРёРјР°С‚СЊ Р±РѕР»СЊС€СѓСЋ РїР»РѕС‰Р°РґСЊ(РЅР°РїСЂРёРјРµСЂ РїСЂРё c_nPrintType100) РёР»Рё РµСЃР»Рё РІ РѕР±С‹С‡РЅРѕРј СЃРѕСЃС‚РѕСЏРЅРёРё РѕРЅ РЅРµ РІРїРёСЃС‹РІР°РµС‚, Р° РІ РїРѕРІРµСЂРЅСѓС‚РѕРј РІРїРёСЃС‹РІР°РµС‚СЃСЏ
+//PrintableAreaEnable РїРµС‡Р°С‚СЊ С‚РѕР»СЊРєРѕ РІ РѕР±Р»Р°СЃС‚Рё РїРµС‡Р°С‚Рё РїСЂРёРЅС‚РµСЂР°
 
 namespace TextFormatting
 {
@@ -44,7 +75,7 @@ namespace TextFormatting
   const int c_nWordProcessing = 2;
 }
 
-//additional param сохранения нескольких документов в один для IAVSOfficeFileConverter
+//additional param СЃРѕС…СЂР°РЅРµРЅРёСЏ РЅРµСЃРєРѕР»СЊРєРёС… РґРѕРєСѓРјРµРЅС‚РѕРІ РІ РѕРґРёРЅ РґР»СЏ IAVSOfficeFileConverter
 const int c_nSaveModeNone = 0;
 const int c_nSaveModeStart = 1;
 const int c_nSaveModeContinue = 2;

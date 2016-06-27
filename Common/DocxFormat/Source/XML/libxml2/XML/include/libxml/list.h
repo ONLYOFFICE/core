@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Summary: lists interfaces
  * Description: this module implement the list support used in
  * various place in the library.

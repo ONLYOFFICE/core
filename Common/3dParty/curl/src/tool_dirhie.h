@@ -1,4 +1,4 @@
-#ifndef HEADER_CURL_TOOL_DIRHIE_H
+﻿#ifndef HEADER_CURL_TOOL_DIRHIE_H
 #define HEADER_CURL_TOOL_DIRHIE_H
 /***************************************************************************
  *                                  _   _ ____  _

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Summary: Tree debugging APIs
  * Description: Interfaces to a set of routines used for debugging the tree
  *              produced by the XML parser.

@@ -1,3 +1,34 @@
+п»ї/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 #pragma once
 
 #include "../../../ASCOfficePPTXFile/Editor/Drawing/Document.h"
@@ -83,7 +114,7 @@ namespace NSPresentationEditor
 		switch (TypePPTX)
 		{
 			case 0: return _T("body");
-			case 100: return _T("body"); // для master pages  
+			case 100: return _T("body"); // РґР»СЏ master pages  
 			case 1: return _T("chart");
 			case 2: return _T("clipArt");
 			case 3: return _T("ctrTitle");
@@ -182,9 +213,9 @@ namespace NSPresentationEditor
 			CString	ConvertShadow	(CShadow	& shadow);
 			CString	ConvertBrush	(CBrush		& brush);
 	static	CString	ConvertColor	(CColor		& color, long alpha);
-// тип рендерера-----------------------------------------------------------------------------
+// С‚РёРї СЂРµРЅРґРµСЂРµСЂР°-----------------------------------------------------------------------------
 	virtual HRESULT get_Type(LONG* lType)	;
-//-------- Функции для работы со страницей --------------------------------------------------
+//-------- Р¤СѓРЅРєС†РёРё РґР»СЏ СЂР°Р±РѕС‚С‹ СЃРѕ СЃС‚СЂР°РЅРёС†РµР№ --------------------------------------------------
 	virtual HRESULT NewPage()				;
 	virtual HRESULT get_Height(double* dHeight);
 	virtual HRESULT put_Height(const double& dHeight);
@@ -256,18 +287,18 @@ namespace NSPresentationEditor
 	virtual HRESULT get_FontFaceIndex(int* lFaceIndex);
 	virtual HRESULT put_FontFaceIndex(const int& lFaceIndex);
 
-//-------- Функции для вывода текста --------------------------------------------------------
+//-------- Р¤СѓРЅРєС†РёРё РґР»СЏ РІС‹РІРѕРґР° С‚РµРєСЃС‚Р° --------------------------------------------------------
     virtual HRESULT CommandDrawTextCHAR(const LONG& c, const double& x, const double& y, const double& w, const double& h) ;
     virtual HRESULT CommandDrawText(const std::wstring& bsText, const double& x, const double& y, const double& w, const double& h) ;
 
     virtual HRESULT CommandDrawTextExCHAR(const LONG& c, const LONG& gid, const double& x, const double& y, const double& w, const double& h) ;
     virtual HRESULT CommandDrawTextEx(const std::wstring& bsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& x, const double& y, const double& w, const double& h);
 
-//-------- Маркеры для команд ---------------------------------------------------------------
+//-------- РњР°СЂРєРµСЂС‹ РґР»СЏ РєРѕРјР°РЅРґ ---------------------------------------------------------------
 	virtual HRESULT BeginCommand(const DWORD& lType);
 	virtual HRESULT EndCommand(const DWORD& lType)	;
 
-//-------- Функции для работы с Graphics Path -----------------------------------------------
+//-------- Р¤СѓРЅРєС†РёРё РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ Graphics Path -----------------------------------------------
 	virtual HRESULT PathCommandMoveTo(const double& x, const double& y);
 	virtual HRESULT PathCommandLineTo(const double& x, const double& y);
 	virtual HRESULT PathCommandLinesTo(double* points, const int& count)	;
@@ -286,7 +317,7 @@ namespace NSPresentationEditor
     virtual HRESULT PathCommandTextExCHAR(const LONG& c, const LONG& gid, const double& x, const double& y, const double& w, const double& h);
     virtual HRESULT PathCommandTextEx(const std::wstring& sText, const unsigned int* pGids, const unsigned int nGidsCount, const double& x, const double& y, const double& w, const double& h) ;
 
-//-------- Функции для вывода изображений ---------------------------------------------------
+//-------- Р¤СѓРЅРєС†РёРё РґР»СЏ РІС‹РІРѕРґР° РёР·РѕР±СЂР°Р¶РµРЅРёР№ ---------------------------------------------------
 	virtual HRESULT DrawImage(IGrObject* pImage, const double& x, const double& y, const double& w, const double& h)	;
 	virtual HRESULT DrawImageFromFile(const std::wstring&, const double& x, const double& y, const double& w, const double& h, const BYTE& lAlpha = 255);	
 
@@ -377,23 +408,23 @@ namespace NSPresentationEditor
 
 	public:
 
-		Aggplus::CGraphicsPathSimpleConverter*		m_pSimpleGraphicsConverter;		// конвертер сложных гафических путей в простые
-		CFontManager*								m_pFontManager;					// менеджер шрифтов
+		Aggplus::CGraphicsPathSimpleConverter*		m_pSimpleGraphicsConverter;		// РєРѕРЅРІРµСЂС‚РµСЂ СЃР»РѕР¶РЅС‹С… РіР°С„РёС‡РµСЃРєРёС… РїСѓС‚РµР№ РІ РїСЂРѕСЃС‚С‹Рµ
+		CFontManager*								m_pFontManager;					// РјРµРЅРµРґР¶РµСЂ С€СЂРёС„С‚РѕРІ
 
-		Aggplus::CMatrix							m_oBaseTransform;	// матрица перерасчета координатных осей (здесь: миллиметры -> пикселы)
-		Aggplus::CMatrix							m_oTransform;		// текущая матрица преобразований рендерера
-		Aggplus::CMatrix							m_oFullTransform;	// полная матрица преобразований (m_oBaseTransform * m_oTransform)
+		Aggplus::CMatrix							m_oBaseTransform;	// РјР°С‚СЂРёС†Р° РїРµСЂРµСЂР°СЃС‡РµС‚Р° РєРѕРѕСЂРґРёРЅР°С‚РЅС‹С… РѕСЃРµР№ (Р·РґРµСЃСЊ: РјРёР»Р»РёРјРµС‚СЂС‹ -> РїРёРєСЃРµР»С‹)
+		Aggplus::CMatrix							m_oTransform;		// С‚РµРєСѓС‰Р°СЏ РјР°С‚СЂРёС†Р° РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёР№ СЂРµРЅРґРµСЂРµСЂР°
+		Aggplus::CMatrix							m_oFullTransform;	// РїРѕР»РЅР°СЏ РјР°С‚СЂРёС†Р° РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёР№ (m_oBaseTransform * m_oTransform)
 
 		double							m_dTransformAngle;
 
-		LONG							m_lCurrentCommandType;	// текущая команда
+		LONG							m_lCurrentCommandType;	// С‚РµРєСѓС‰Р°СЏ РєРѕРјР°РЅРґР°
 
 		double							m_dDpiX;				
 		double							m_dDpiY;
 
 		LONG							m_lClipMode;
 
-		CPen							m_oPen;				// настройки всей графики (скопирован ашник из AVSGraphics)
+		CPen							m_oPen;				// РЅР°СЃС‚СЂРѕР№РєРё РІСЃРµР№ РіСЂР°С„РёРєРё (СЃРєРѕРїРёСЂРѕРІР°РЅ Р°С€РЅРёРє РёР· AVSGraphics)
 		CBrush							m_oBrush;
 		CFont							m_oFont;
 		CShadow							m_oShadow;

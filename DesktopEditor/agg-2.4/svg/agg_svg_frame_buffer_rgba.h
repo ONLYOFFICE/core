@@ -1,4 +1,4 @@
-#ifndef AGG_SVG_FRAME_BUFFER_RGBA_INCLUDED
+﻿#ifndef AGG_SVG_FRAME_BUFFER_RGBA_INCLUDED
 #define AGG_SVG_FRAME_BUFFER_RGBA_INCLUDED
 
 #include "agg_rendering_buffer.h"

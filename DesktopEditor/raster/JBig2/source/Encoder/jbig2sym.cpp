@@ -1,4 +1,4 @@
-#include <map>
+﻿#include <map>
 #include <algorithm>
 
 #include "jbig2arith.h"

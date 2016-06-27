@@ -1,4 +1,4 @@
-/*
+﻿/*
  * File:	ximatga.h
  * Purpose:	TARGA Image Class Loader and Writer
  */

@@ -1,4 +1,4 @@
-#ifndef HEADER_CURL_CONFIG_RISCOS_H
+﻿#ifndef HEADER_CURL_CONFIG_RISCOS_H
 #define HEADER_CURL_CONFIG_RISCOS_H
 /***************************************************************************
  *                                  _   _ ____  _

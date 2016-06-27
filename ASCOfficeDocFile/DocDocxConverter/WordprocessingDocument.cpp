@@ -1,3 +1,34 @@
+﻿/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 
 #include "WordprocessingDocument.h"
 
@@ -65,11 +96,13 @@ namespace ImageHelper
 
 namespace DocFileFormat
 {
-	WordprocessingDocument::WordprocessingDocument(const wchar_t* _pathOutput, const WordDocument* _docFile) : OpenXmlPackage( _docFile ), FontTableXML( _T( "" ) ), DocumentXML( _T( "" ) ), 
-		StyleSheetXML( _T( "" ) ), FootnotesXML ( _T( "" ) ), NumberingXML( _T( "" ) ),
-		CommentsXML( _T( "" ) ), SettingsXML( _T( "" ) ), CommandTableXML ( _T( "" ) )
+	WordprocessingDocument::WordprocessingDocument(const std::wstring & _pathOutput, const WordDocument* _docFile) : 
+		OpenXmlPackage( _docFile ), 
+		FontTableXML( _T( "" ) ),	DocumentXML( _T( "" ) ), 
+		StyleSheetXML( _T( "" ) ),	FootnotesXML ( _T( "" ) ),	NumberingXML( _T( "" ) ),
+		CommentsXML( _T( "" ) ),	SettingsXML( _T( "" ) ),	CommandTableXML ( _T( "" ) )
 	{
-		m_strOutputPath = std::wstring(_pathOutput);
+		m_strOutputPath = _pathOutput;
 	}
 
 	WordprocessingDocument::~WordprocessingDocument()
@@ -86,15 +119,15 @@ namespace DocFileFormat
 
 		//Write main content. (word directory)
 
-		SaveToFile(string2std_string(pathWord.GetPath()), wstring( _T("document.xml" ) ),		DocumentXML );
-		SaveToFile(string2std_string(pathWord.GetPath()), wstring( _T( "fontTable.xml" ) ),		FontTableXML );
-		SaveToFile(string2std_string(pathWord.GetPath()), wstring( _T( "styles.xml" ) ),		StyleSheetXML );
-		SaveToFile(string2std_string(pathWord.GetPath()), wstring( _T( "footnotes.xml" ) ),		FootnotesXML );
-		SaveToFile(string2std_string(pathWord.GetPath()), wstring( _T( "endnotes.xml" ) ),		EndnotesXML );
-		SaveToFile(string2std_string(pathWord.GetPath()), wstring( _T( "numbering.xml" ) ),		NumberingXML );
-		SaveToFile(string2std_string(pathWord.GetPath()), wstring( _T( "comments.xml" ) ),		CommentsXML );
-		SaveToFile(string2std_string(pathWord.GetPath()), wstring( _T( "settings.xml" ) ),		SettingsXML );
-		SaveToFile(string2std_string(pathWord.GetPath()), wstring( _T( "customizations.xml" ) ),CommandTableXML );
+		SaveToFile(string2std_string(pathWord.GetPath()), std::wstring( _T("document.xml" ) ),		DocumentXML );
+		SaveToFile(string2std_string(pathWord.GetPath()), std::wstring( _T( "fontTable.xml" ) ),		FontTableXML );
+		SaveToFile(string2std_string(pathWord.GetPath()), std::wstring( _T( "styles.xml" ) ),		StyleSheetXML );
+		SaveToFile(string2std_string(pathWord.GetPath()), std::wstring( _T( "footnotes.xml" ) ),		FootnotesXML );
+		SaveToFile(string2std_string(pathWord.GetPath()), std::wstring( _T( "endnotes.xml" ) ),		EndnotesXML );
+		SaveToFile(string2std_string(pathWord.GetPath()), std::wstring( _T( "numbering.xml" ) ),		NumberingXML );
+		SaveToFile(string2std_string(pathWord.GetPath()), std::wstring( _T( "comments.xml" ) ),		CommentsXML );
+		SaveToFile(string2std_string(pathWord.GetPath()), std::wstring( _T( "settings.xml" ) ),		SettingsXML );
+		SaveToFile(string2std_string(pathWord.GetPath()), std::wstring( _T( "customizations.xml" ) ),CommandTableXML );
 
 		if (!ImagesList.empty())
 		{
@@ -104,7 +137,7 @@ namespace DocFileFormat
 
 			int i = 1;
 
-			for (list<ImageFileStructure>::iterator iter = ImagesList.begin(); iter != ImagesList.end(); ++iter)
+			for (std::list<ImageFileStructure>::iterator iter = ImagesList.begin(); iter != ImagesList.end(); ++iter)
 			{
 				unsigned char* bytes = NULL;
 				bytes = new unsigned char[iter->data.size()];
@@ -134,7 +167,7 @@ namespace DocFileFormat
 			FileSystem::Directory::CreateDirectory( pathObjects.GetPath());
 
 			int i = 1;
-			for (list<OleObjectFileStructure>::iterator iter = OleObjectsList.begin(); iter != OleObjectsList.end(); ++iter)
+			for (std::list<OleObjectFileStructure>::iterator iter = OleObjectsList.begin(); iter != OleObjectsList.end(); ++iter)
 			{
 				std::wstring fileName = string2std_string(pathObjects.GetPath()) + FILE_SEPARATOR_STR  + _T( "oleObject" ) + FormatUtils::IntToWideString(i++) + iter->ext;
 
@@ -152,14 +185,14 @@ namespace DocFileFormat
 		int headersCount = 0;
 		int footersCount = 0;
 
-		for (list<wstring>::iterator iter = HeaderXMLList.begin(); iter != HeaderXMLList.end(); ++iter)
+		for (std::list<std::wstring>::iterator iter = HeaderXMLList.begin(); iter != HeaderXMLList.end(); ++iter)
 		{
-			SaveToFile(string2std_string(pathWord.GetPath()), ( wstring( _T( "header" ) ) + FormatUtils::IntToWideString(++headersCount) + wstring( _T( ".xml" ) ) ), *iter);
+			SaveToFile(string2std_string(pathWord.GetPath()), ( std::wstring( _T( "header" ) ) + FormatUtils::IntToWideString(++headersCount) + std::wstring( _T( ".xml" ) ) ), *iter);
 		}
 
-		for (list<wstring>::iterator iter = FooterXMLList.begin(); iter != FooterXMLList.end(); ++iter)
+		for (std::list<std::wstring>::iterator iter = FooterXMLList.begin(); iter != FooterXMLList.end(); ++iter)
 		{
-			SaveToFile(string2std_string(pathWord.GetPath()), ( wstring( _T( "footer" ) ) + FormatUtils::IntToWideString(++footersCount) + wstring( _T( ".xml" ) ) ), *iter);
+			SaveToFile(string2std_string(pathWord.GetPath()), ( std::wstring( _T( "footer" ) ) + FormatUtils::IntToWideString(++footersCount) + std::wstring( _T( ".xml" ) ) ), *iter);
 		}
 	}
 }

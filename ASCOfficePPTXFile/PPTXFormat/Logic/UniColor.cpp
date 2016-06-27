@@ -1,3 +1,34 @@
+п»ї/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 //#include "./stdafx.h"
 
 #include "UniColor.h"
@@ -39,13 +70,19 @@ namespace PPTX
 		{
 			CString name = XmlUtils::GetNameNoNS(node.GetName());
 
-			if (name == _T("a:srgbClr"))
+			if (name == _T("srgbClr"))
 				Color.reset(new Logic::SrgbClr(node));
-			else if (name == _T("a:prstClr"))
+			else if (name == _T("scrgbClr"))
+			{
+				Logic::SrgbClr* pSrgbClr = new Logic::SrgbClr(node);
+				pSrgbClr->fromXMLScRgb(node);
+				Color.reset(pSrgbClr);
+			}
+			else if (name == _T("prstClr"))
 				Color.reset(new Logic::PrstClr(node));
-			else if (name == _T("a:schemeClr"))
+			else if (name == _T("schemeClr"))
 				Color.reset(new Logic::SchemeClr(node));
-			else if (name == _T("a:sysClr"))
+			else if (name == _T("sysClr"))
 				Color.reset(new Logic::SysClr(node));
 			else Color.reset();
 		}
@@ -199,7 +236,17 @@ namespace PPTX
 						if (oNode.IsValid())
 							Color.reset(new Logic::SysClr(oNode));
 						else
-							Color.reset();
+						{
+							oNode = element.ReadNodeNoNS(_T("scrgbClr"));
+							if (oNode.IsValid())
+							{
+								Logic::SrgbClr* pSrgbClr = new Logic::SrgbClr(oNode);
+								pSrgbClr->fromXMLScRgb(oNode);
+								Color.reset(pSrgbClr);
+							}
+							else
+								Color.reset();
+						}
 					}
 				}
 			}
@@ -216,28 +263,28 @@ namespace PPTX
 		{
 			if(is_init())
 				return Color->GetRGBA(RGBA);
-			return 0; //return 0; - заменить на просмотр настроек по умолчанию
+			return 0; //return 0; - Р·Р°РјРµРЅРёС‚СЊ РЅР° РїСЂРѕСЃРјРѕС‚СЂ РЅР°СЃС‚СЂРѕРµРє РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
 		}
 
 		DWORD UniColor::GetARGB(DWORD ARGB)const
 		{
 			if(is_init())
 				return Color->GetARGB(ARGB);
-			return 0; //return 0; - заменить на просмотр настроек по умолчанию
+			return 0; //return 0; - Р·Р°РјРµРЅРёС‚СЊ РЅР° РїСЂРѕСЃРјРѕС‚СЂ РЅР°СЃС‚СЂРѕРµРє РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
 		}
 
 		DWORD UniColor::GetBGRA(DWORD BGRA)const
 		{
 			if(is_init())
 				return Color->GetBGRA(BGRA);
-			return 0; //return 0; - заменить на просмотр настроек по умолчанию
+			return 0; //return 0; - Р·Р°РјРµРЅРёС‚СЊ РЅР° РїСЂРѕСЃРјРѕС‚СЂ РЅР°СЃС‚СЂРѕРµРє РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
 		}
 
 		DWORD UniColor::GetABGR(DWORD ABGR)const
 		{
 			if(is_init())
 				return Color->GetABGR(ABGR);
-			return 0; //return 0; - заменить на просмотр настроек по умолчанию
+			return 0; //return 0; - Р·Р°РјРµРЅРёС‚СЊ РЅР° РїСЂРѕСЃРјРѕС‚СЂ РЅР°СЃС‚СЂРѕРµРє РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
 		}
 
 	} // namespace Logic

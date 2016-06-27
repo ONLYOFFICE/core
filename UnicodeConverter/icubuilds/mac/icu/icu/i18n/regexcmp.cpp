@@ -1,4 +1,4 @@
-//
+﻿//
 //  file:  regexcmp.cpp
 //
 //  Copyright (C) 2002-2015 International Business Machines Corporation and others.

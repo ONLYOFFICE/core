@@ -1,17 +1,54 @@
-﻿
+﻿/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
+
 
 #include "OpenXmlPackage.h"
-//#include "HeaderMapping.h"
-//#include "FooterMapping.h"
-
-//#include "MainDocumentMapping.h"
-
 #include "Converter.h"
+
+#include "NumberingMapping.h"
+#include "CommentsMapping.h"
+#include "EndnotesMapping.h"
+#include "FootnotesMapping.h"
+#include "FooterMapping.h"
+#include "HeaderMapping.h"
+#include "MainDocumentMapping.h"
+#include "OleObjectMapping.h"
+#include "VMLPictureMapping.h"
 
 #include "../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h"
 #include "../../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"
 #include "../../DesktopEditor/common/File.h"
 
+#include "../Common/XmlTools.h"
 
 
 namespace DocFileFormat
@@ -51,12 +88,12 @@ namespace DocFileFormat
 
 		this->WriteRelsFile( this->NumberingRelationshipsFile );
 
-		for ( list<RelationshipsFile>::const_iterator iter = this->HeaderRelationshipsFiles.begin(); iter != this->HeaderRelationshipsFiles.end(); iter++ )
+		for ( std::list<RelationshipsFile>::const_iterator iter = this->HeaderRelationshipsFiles.begin(); iter != this->HeaderRelationshipsFiles.end(); iter++ )
 		{
 			this->WriteRelsFile( *iter );
 		}
 
-		for ( list<RelationshipsFile>::const_iterator iter = this->FooterRelationshipsFiles.begin(); iter != this->FooterRelationshipsFiles.end(); iter++ )
+		for ( std::list<RelationshipsFile>::const_iterator iter = this->FooterRelationshipsFiles.begin(); iter != this->FooterRelationshipsFiles.end(); iter++ )
 		{
 			this->WriteRelsFile( *iter );
 		}
@@ -286,7 +323,7 @@ namespace DocFileFormat
 
 			writer.WriteNodeEnd( _T( "" ), TRUE, FALSE );
 
-			for ( list<Relationship>::const_iterator iter = relationshipsFile.Relationships.begin(); iter != relationshipsFile.Relationships.end(); iter++ )
+			for ( std::list<Relationship>::const_iterator iter = relationshipsFile.Relationships.begin(); iter != relationshipsFile.Relationships.end(); iter++ )
 			{
 				writer.WriteNodeBegin( _T( "Relationship" ), TRUE );
 				writer.WriteAttribute( _T( "Id" ), iter->Id.c_str() );
@@ -322,7 +359,7 @@ namespace DocFileFormat
 
 		writer.WriteNodeEnd( _T( "" ), TRUE, FALSE );
 
-		for ( map<wstring, std::wstring>::iterator iter = this->DocumentContentTypesFile._defaultTypes.begin(); iter != this->DocumentContentTypesFile._defaultTypes.end(); iter++ )
+		for ( std::map<std::wstring, std::wstring>::iterator iter = this->DocumentContentTypesFile._defaultTypes.begin(); iter != this->DocumentContentTypesFile._defaultTypes.end(); iter++ )
 		{
 			writer.WriteNodeBegin( _T( "Default" ), TRUE );
 			writer.WriteAttribute( _T( "Extension" ), iter->first.c_str() );
@@ -330,7 +367,7 @@ namespace DocFileFormat
 			writer.WriteNodeEnd( _T( "" ), TRUE );
 		}
 
-		for ( map<wstring, std::wstring>::iterator iter = this->DocumentContentTypesFile._partOverrides.begin(); iter != this->DocumentContentTypesFile._partOverrides.end(); iter++ )
+		for ( std::map<std::wstring, std::wstring>::iterator iter = this->DocumentContentTypesFile._partOverrides.begin(); iter != this->DocumentContentTypesFile._partOverrides.end(); iter++ )
 		{
 			writer.WriteNodeBegin( _T( "Override" ), TRUE );
 			writer.WriteAttribute( _T( "PartName" ), iter->first.c_str() );
@@ -349,8 +386,8 @@ namespace DocFileFormat
 	{
 		std::wstring fileName = ( std::wstring( _T( "media/image" ) ) + FormatUtils::IntToWideString( ++_imageCounter ) + VMLPictureMapping::GetTargetExt( blipType ) );
 
-		DocumentContentTypesFile._defaultTypes.insert( make_pair( VMLPictureMapping::GetTargetExt( blipType ).erase( 0, 1 ), VMLPictureMapping::GetContentType( blipType ) ) );
-		DocumentContentTypesFile._defaultTypes.insert( make_pair( std::wstring( _T( "vml" ) ), std::wstring( OpenXmlContentTypes::Vml ) ) );
+		DocumentContentTypesFile._defaultTypes.insert( std::make_pair( VMLPictureMapping::GetTargetExt( blipType ).erase( 0, 1 ), VMLPictureMapping::GetContentType( blipType ) ) );
+		DocumentContentTypesFile._defaultTypes.insert( std::make_pair( std::wstring( _T( "vml" ) ), std::wstring( OpenXmlContentTypes::Vml ) ) );
 
 		return AddPart( mapping, _T( "word" ), fileName, VMLPictureMapping::GetContentType( blipType ), OpenXmlRelationshipTypes::Image );
 	}
@@ -359,7 +396,7 @@ namespace DocFileFormat
 	{
 		std::wstring fileName = ( std::wstring( _T( "embeddings/oleObject" ) ) + FormatUtils::IntToWideString( ++_oleCounter ) + OleObjectMapping::GetTargetExt(objectType));
 
-		DocumentContentTypesFile._defaultTypes.insert( make_pair( OleObjectMapping::GetTargetExt( objectType ).erase( 0, 1 ), OleObjectMapping::GetContentType(objectType)));
+		DocumentContentTypesFile._defaultTypes.insert( std::make_pair( OleObjectMapping::GetTargetExt( objectType ).erase( 0, 1 ), OleObjectMapping::GetContentType(objectType)));
 
 		return AddPart( mapping, _T( "word" ), fileName, OleObjectMapping::GetContentType( objectType ), OpenXmlRelationshipTypes::OleObject );
 	}
@@ -367,7 +404,7 @@ namespace DocFileFormat
 	{
 		std::wstring fileName = ( std::wstring( _T( "embeddings/oleObject" ) ) + FormatUtils::IntToWideString( ++_oleCounter ) + OleObjectMapping::GetTargetExt(objectType));
 
-		DocumentContentTypesFile._defaultTypes.insert( make_pair( OleObjectMapping::GetTargetExt( objectType ).erase( 0, 1 ), OleObjectMapping::GetContentType(objectType)));
+		DocumentContentTypesFile._defaultTypes.insert( std::make_pair( OleObjectMapping::GetTargetExt( objectType ).erase( 0, 1 ), OleObjectMapping::GetContentType(objectType)));
 
 		return AddPart( mapping, _T( "word" ), fileName, OleObjectMapping::GetContentType( objectType ), OpenXmlRelationshipTypes::Package);
 	}
@@ -376,7 +413,7 @@ namespace DocFileFormat
 		std::wstring fullUri	=	std::wstring(_T("file:///")) + uri;
 		std::wstring fileName	=	ReplaceString(fullUri, _T(" "), _T("%20"));
 
-		DocumentContentTypesFile._defaultTypes.insert(make_pair(OleObjectMapping::GetTargetExt(objectType).erase(0, 1), OleObjectMapping::GetContentType(objectType)));
+		DocumentContentTypesFile._defaultTypes.insert(std::make_pair(OleObjectMapping::GetTargetExt(objectType).erase(0, 1), OleObjectMapping::GetContentType(objectType)));
 
 		return AddPart(mapping, _T(""), fileName, OleObjectMapping::GetContentType(objectType), OpenXmlRelationshipTypes::OleObject, _T("External"));
 	}

@@ -1,4 +1,35 @@
-﻿#pragma once
+﻿/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
+#pragma once
 
 #include "IVisitable.h"
 #include "StructuredStorageReader.h"
@@ -20,18 +51,18 @@ namespace DocFileFormat
         OnCall = 3
       };
 
-	wstring ObjectId;
-	wstring ClassId;
+	std::wstring ObjectId;
+	std::wstring ClassId;
 	//  CLSID ClassId;
 	/// The the value is true, the object is a linked object
 	bool fLinked;
 	/// Display name of the linked object or embedded object.
-	wstring UserType;
-	wstring ClipboardFormat;
-	wstring Link;
-	wstring Program;
+	std::wstring UserType;
+	std::wstring ClipboardFormat;
+	std::wstring Link;
+	std::wstring Program;
 	LinkUpdateOption updateMode;
-	wstring UpdateMode;
+	std::wstring UpdateMode;
 
 	bool			isEquation;
 	bool			isEmbedded;
@@ -86,7 +117,7 @@ namespace DocFileFormat
 	  }
 
     private:
-      void processLinkInfoStream( const string& linkStream )
+      void processLinkInfoStream( const std::string& linkStream )
       {
         try
         {
@@ -98,7 +129,7 @@ namespace DocFileFormat
 
 		  if ( pLinkStream )
 		  {
-		    VirtualStreamReader reader( pLinkStream );
+			VirtualStreamReader reader( pLinkStream, 0, false);
 
             //there are two versions of the Link string, one contains ANSI characters, the other contains
             //unicode characters.
@@ -108,7 +139,7 @@ namespace DocFileFormat
             //Read the ANSI version
             short cch = reader.ReadInt16();
             unsigned char* str = reader.ReadBytes( cch, true );
-			FormatUtils::GetSTLCollectionFromBytes<wstring>( &this->Link, str, cch, ENCODING_WINDOWS_1251 );
+			FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &this->Link, str, cch, ENCODING_WINDOWS_1250 );
 			RELEASEARRAYOBJECTS( str );
                 
             //skip the terminating zero of the ANSI string
@@ -123,7 +154,7 @@ namespace DocFileFormat
 
             cch = reader.ReadInt16();
             str = reader.ReadBytes( ( cch * 2 ), true );
-            FormatUtils::GetSTLCollectionFromBytes<wstring>( &this->Link, str, ( cch * 2 ), ENCODING_UNICODE );
+            FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &this->Link, str, ( cch * 2 ), ENCODING_UTF16 );
 			RELEASEARRAYOBJECTS( str );
 
             //skip the terminating zero of the Unicode string
@@ -137,7 +168,7 @@ namespace DocFileFormat
 		}
       }
       
-	  void processEquationNativeStream( const string& eqStream )
+	  void processEquationNativeStream( const std::string& eqStream )
       {
         try
         {
@@ -148,7 +179,7 @@ namespace DocFileFormat
 
           if ( pCompStream )
 		  {
-		    VirtualStreamReader reader( pCompStream );
+			  VirtualStreamReader reader( pCompStream, 0, false);
 
 			int sz = reader.GetSize();
 
@@ -167,46 +198,46 @@ namespace DocFileFormat
 		}
       }
 
-      void processCompObjStream( const string& compStream )
-      {
-        try
-        {
-          POLE::Stream* pCompStream = NULL;
-		  HRESULT res = S_OK;
+	void processCompObjStream( const std::string& compStream )
+	{
+		try
+		{
+			POLE::Stream* pCompStream = NULL;
+			HRESULT res = S_OK;
 
-		  pCompStream = new POLE::Stream(oleStorage, compStream);
+			pCompStream = new POLE::Stream(oleStorage, compStream);
 
-          if ( pCompStream )
-		  {
-		    VirtualStreamReader reader( pCompStream );
-
-            //skip the CompObjHeader
-            reader.ReadBytes( 28, false );
-
-			int sz_obj = reader.GetSize() - reader.GetPosition();
-
-			if (sz_obj > 4)
+			if ( pCompStream )
 			{
-				//todooo сделать по нормальному CompObjHeader - psc3a.doc
-				//UserType		= reader.ReadLengthPrefixedAnsiString();
+				VirtualStreamReader reader( pCompStream, 0, false);
 
-				//sz_obj = reader.GetSize() - reader.GetPosition();
-				//if (sz_obj > 4)
-				//	ClipboardFormat	= reader.ReadLengthPrefixedAnsiString();
+				//skip the CompObjHeader
+				reader.ReadBytes( 28, false );
 
-				//sz_obj = reader.GetSize() - reader.GetPosition();
-				//if (sz_obj > 4)
-				//	Program			= reader.ReadLengthPrefixedAnsiString();
+				int sz_obj = reader.GetSize() - reader.GetPosition();
+
+				if (sz_obj > 4)
+				{
+					//todooo сделать по нормальному CompObjHeader - psc3a.doc
+					//UserType		= reader.ReadLengthPrefixedAnsiString();
+
+					//sz_obj = reader.GetSize() - reader.GetPosition();
+					//if (sz_obj > 4)
+					//	ClipboardFormat	= reader.ReadLengthPrefixedAnsiString();
+
+					//sz_obj = reader.GetSize() - reader.GetPosition();
+					//if (sz_obj > 4)
+					//	Program			= reader.ReadLengthPrefixedAnsiString();
+				}
+				delete pCompStream;
 			}
-			delete pCompStream;
-		  }
-	    }
-        catch (...)
+		}
+		catch (...)
 		{
 		}
-      }
+	}
 
-      void processOleStream( const string& oleStreamName )
+      void processOleStream( const std::string& oleStreamName )
       {
         try
         {
@@ -217,7 +248,7 @@ namespace DocFileFormat
 
 		  if ( pOleStream )
 		  {
-		    VirtualStreamReader reader( pOleStream );
+			  VirtualStreamReader reader( pOleStream, 0, false );
 
             //skip version
             reader.ReadBytes( 4, false );
@@ -257,9 +288,9 @@ namespace DocFileFormat
 		}
       }
 
-      wstring getOleEntryName( const CharacterPropertyExceptions* chpx )
+      std::wstring getOleEntryName( const CharacterPropertyExceptions* chpx )
       {
-        wstring ret;
+        std::wstring ret;
 
 		if ( chpx != NULL )
 		{

@@ -1,3 +1,34 @@
+п»ї/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 
 
 #include "logging.h"
@@ -202,7 +233,7 @@ void odf_table_styles_context::get_table_cell_properties (int col, int row, styl
 	bool first_row = (row == 1)? true: false;
 	bool first_col = (col == 1)? true: false;
 
-	bool odd_row = ((row+row_shift)%2 != 0) ? true : false;//нечетные
+	bool odd_row = ((row+row_shift)%2 != 0) ? true : false;//РЅРµС‡РµС‚РЅС‹Рµ
 	bool odd_col = ((col+col_shift)%2 != 0) ? true : false;
 
 	bool last_row = (row == current_used_.back().table_row_count_) ? true: false; 
@@ -214,7 +245,7 @@ void odf_table_styles_context::get_table_cell_properties (int col, int row, styl
 	bool se = (row == current_used_.back().table_row_count_ && col == current_used_.back().table_col_count_) ? true: false; //bottom right cell
 	bool sw = (row == current_used_.back().table_row_count_ && col == 1) ? true: false;						//bottom left cell.
 //----------------------------------------------------------------------------------------------------------------------------------
-//порядок рассмотрения - main, odd, even first, last, ne, .... col, row
+//РїРѕСЂСЏРґРѕРє СЂР°СЃСЃРјРѕС‚СЂРµРЅРёСЏ - main, odd, even first, last, ne, .... col, row
 					cell_props->apply_from(dynamic_cast<style_table_cell_properties *>(state.table_.table_cell_props.get()));
 
 	if (current_used_.back().cols)
@@ -276,7 +307,7 @@ void odf_table_styles_context::get_text_properties (int col, int row, style_text
 	bool first_row = (row == 1)? true: false;
 	bool first_col = (col == 1)? true: false;
 
-	bool odd_row = ((row+row_shift)%2 != 0) ? true : false;//нечетные
+	bool odd_row = ((row+row_shift)%2 != 0) ? true : false;//РЅРµС‡РµС‚РЅС‹Рµ
 	bool odd_col = ((col+col_shift)%2 != 0) ? true : false;
 
 	bool last_row = (row == current_used_.back().table_row_count_) ? true: false; 
@@ -288,7 +319,7 @@ void odf_table_styles_context::get_text_properties (int col, int row, style_text
 	bool se = (row == current_used_.back().table_row_count_ && col == current_used_.back().table_col_count_) ? true: false; //bottom right cell
 	bool sw = (row == current_used_.back().table_row_count_ && col == 1) ? true: false;						//bottom left cell
 //----------------------------------------------------------------------------------------------------------------------------------
-//порядок рассмотрения - main, odd, even first, last, ne, ....
+//РїРѕСЂСЏРґРѕРє СЂР°СЃСЃРјРѕС‚СЂРµРЅРёСЏ - main, odd, even first, last, ne, ....
 					text_props->apply_from(dynamic_cast<style_text_properties *>(state.table_.text_props.get()));
 
 	if (current_used_.back().cols)
@@ -331,7 +362,7 @@ void odf_table_styles_context::get_paragraph_properties (int col, int row, style
 	bool first_row = (row == 1)? true: false;
 	bool first_col = (col == 1)? true: false;
 
-	bool odd_row = ((row+row_shift)%2 != 0) ? true : false;//нечетные
+	bool odd_row = ((row+row_shift)%2 != 0) ? true : false;//РЅРµС‡РµС‚РЅС‹Рµ
 	bool odd_col = ((col+col_shift)%2 != 0) ? true : false;
 
 	bool last_row = (row == current_used_.back().table_row_count_) ? true: false; 

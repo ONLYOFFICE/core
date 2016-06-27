@@ -1,4 +1,4 @@
-/*
+﻿/*
  * File:	ximaraw.h
  * Purpose:	RAW Image Class Loader and Writer
  */

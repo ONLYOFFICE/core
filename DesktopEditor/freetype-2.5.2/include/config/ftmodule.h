@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  This file registers the FreeType modules compiled into the library.
  *
  *  If you use GNU make, this file IS NOT USED!  Instead, it is created in

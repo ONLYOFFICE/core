@@ -1,3 +1,34 @@
+ï»¿/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 //#include "stdafx.h"
 //#include "LIBXML2_LIB/stdafx.h"
 #include "./libxml2.h"
@@ -74,7 +105,7 @@ namespace XmlUtils
 			}
 			else
 			{
-				// ıòî m_pCurrentNode
+				// ÑÑ‚Ğ¾ m_pCurrentNode
 				CXmlNodeBase* pNewBase = new CXmlNodeBase();
 				pNewBase->m_pDocument = this;
 				pNewBase->m_pDocument->AddRef();
@@ -130,7 +161,7 @@ namespace XmlUtils
 				XmlNodeType eNodeType = XmlNodeType_None;
 
 				int nCurDepth = -1;
-				// Ó çàêğûâàşùåãî òıãà ãëóáèíà íà 1 áîëüøå, ÷åì ó îòêğûâàşùåãî
+				// Ğ£ Ğ·Ğ°ĞºÑ€Ñ‹Ğ²Ğ°ÑÑ‰ĞµĞ³Ğ¾ Ñ‚ÑĞ³Ğ° Ğ³Ğ»ÑƒĞ±Ğ¸Ğ½Ğ° Ğ½Ğ° 1 Ğ±Ğ¾Ğ»ÑŒÑˆĞµ, Ñ‡ĞµĞ¼ Ñƒ Ğ¾Ñ‚ĞºÑ€Ñ‹Ğ²Ğ°ÑÑ‰ĞµĞ³Ğ¾
                 while( true )
 				{
 					if ( 1 != xmlTextReaderRead(reader) )
@@ -222,9 +253,9 @@ namespace XmlUtils
 			delete m_pDocument;
 			return false;
 		}
-		//ïğèñâàèâàåì m_pBase áåç AddRef, ÷òîáû ïğè óäàëåíèè CXmlNode íà÷àëñÿ óäàëÿòüñÿ m_pBase(ïîñëå êîíñòğóêòîğà RefCount==1, à åñëè ñäåëàòü AddRef òî íå óäàëèòñÿ)
+		//Ğ¿Ñ€Ğ¸ÑĞ²Ğ°Ğ¸Ğ²Ğ°ĞµĞ¼ m_pBase Ğ±ĞµĞ· AddRef, Ñ‡Ñ‚Ğ¾Ğ±Ñ‹ Ğ¿Ñ€Ğ¸ ÑƒĞ´Ğ°Ğ»ĞµĞ½Ğ¸Ğ¸ CXmlNode Ğ½Ğ°Ñ‡Ğ°Ğ»ÑÑ ÑƒĞ´Ğ°Ğ»ÑÑ‚ÑŒÑÑ m_pBase(Ğ¿Ğ¾ÑĞ»Ğµ ĞºĞ¾Ğ½ÑÑ‚Ñ€ÑƒĞºÑ‚Ğ¾Ñ€Ğ° RefCount==1, Ğ° ĞµÑĞ»Ğ¸ ÑĞ´ĞµĞ»Ğ°Ñ‚ÑŒ AddRef Ñ‚Ğ¾ Ğ½Ğµ ÑƒĞ´Ğ°Ğ»Ğ¸Ñ‚ÑÑ)
 		m_pBase = m_pDocument->m_pNode;
-		//ïîñëå Parse âñå Node èç m_pDocument ñäåëàëè åìó AddRef, ïîıòîìó ìîæåì âûçâàòü Release(ïîòîìó ÷òî íàïğÿìóş íèãäå åãî íå èñïîëüçóåì), à îêîí÷àòåëüíî îí óäàëèòñÿ ïîñëå óäàëåíèÿ âñåõ Node
+		//Ğ¿Ğ¾ÑĞ»Ğµ Parse Ğ²ÑĞµ Node Ğ¸Ğ· m_pDocument ÑĞ´ĞµĞ»Ğ°Ğ»Ğ¸ ĞµĞ¼Ñƒ AddRef, Ğ¿Ğ¾ÑÑ‚Ğ¾Ğ¼Ñƒ Ğ¼Ğ¾Ğ¶ĞµĞ¼ Ğ²Ñ‹Ğ·Ğ²Ğ°Ñ‚ÑŒ Release(Ğ¿Ğ¾Ñ‚Ğ¾Ğ¼Ñƒ Ñ‡Ñ‚Ğ¾ Ğ½Ğ°Ğ¿Ñ€ÑĞ¼ÑƒÑ Ğ½Ğ¸Ğ³Ğ´Ğµ ĞµĞ³Ğ¾ Ğ½Ğµ Ğ¸ÑĞ¿Ğ¾Ğ»ÑŒĞ·ÑƒĞµĞ¼), Ğ° Ğ¾ĞºĞ¾Ğ½Ñ‡Ğ°Ñ‚ĞµĞ»ÑŒĞ½Ğ¾ Ğ¾Ğ½ ÑƒĞ´Ğ°Ğ»Ğ¸Ñ‚ÑÑ Ğ¿Ğ¾ÑĞ»Ğµ ÑƒĞ´Ğ°Ğ»ĞµĞ½Ğ¸Ñ Ğ²ÑĞµÑ… Node
 		m_pDocument->Release();
 
 		return true;
@@ -251,9 +282,9 @@ namespace XmlUtils
 			delete m_pDocument;
 			return false;
 		}
-		//ïğèñâàèâàåì m_pBase áåç AddRef, ÷òîáû ïğè óäàëåíèè CXmlNode íà÷àëñÿ óäàëÿòüñÿ m_pBase(ïîñëå êîíñòğóêòîğà RefCount==1, à åñëè ñäåëàòü AddRef òî íå óäàëèòñÿ)
+		//Ğ¿Ñ€Ğ¸ÑĞ²Ğ°Ğ¸Ğ²Ğ°ĞµĞ¼ m_pBase Ğ±ĞµĞ· AddRef, Ñ‡Ñ‚Ğ¾Ğ±Ñ‹ Ğ¿Ñ€Ğ¸ ÑƒĞ´Ğ°Ğ»ĞµĞ½Ğ¸Ğ¸ CXmlNode Ğ½Ğ°Ñ‡Ğ°Ğ»ÑÑ ÑƒĞ´Ğ°Ğ»ÑÑ‚ÑŒÑÑ m_pBase(Ğ¿Ğ¾ÑĞ»Ğµ ĞºĞ¾Ğ½ÑÑ‚Ñ€ÑƒĞºÑ‚Ğ¾Ñ€Ğ° RefCount==1, Ğ° ĞµÑĞ»Ğ¸ ÑĞ´ĞµĞ»Ğ°Ñ‚ÑŒ AddRef Ñ‚Ğ¾ Ğ½Ğµ ÑƒĞ´Ğ°Ğ»Ğ¸Ñ‚ÑÑ)
 		m_pBase = m_pDocument->m_pNode;
-		//ïîñëå Parse âñå Node èç m_pDocument ñäåëàëè åìó AddRef, ïîıòîìó ìîæåì âûçâàòü Release(ïîòîìó ÷òî íàïğÿìóş íèãäå åãî íå èñïîëüçóåì), à îêîí÷àòåëüíî îí óäàëèòñÿ ïîñëå óäàëåíèÿ âñåõ Node
+		//Ğ¿Ğ¾ÑĞ»Ğµ Parse Ğ²ÑĞµ Node Ğ¸Ğ· m_pDocument ÑĞ´ĞµĞ»Ğ°Ğ»Ğ¸ ĞµĞ¼Ñƒ AddRef, Ğ¿Ğ¾ÑÑ‚Ğ¾Ğ¼Ñƒ Ğ¼Ğ¾Ğ¶ĞµĞ¼ Ğ²Ñ‹Ğ·Ğ²Ğ°Ñ‚ÑŒ Release(Ğ¿Ğ¾Ñ‚Ğ¾Ğ¼Ñƒ Ñ‡Ñ‚Ğ¾ Ğ½Ğ°Ğ¿Ñ€ÑĞ¼ÑƒÑ Ğ½Ğ¸Ğ³Ğ´Ğµ ĞµĞ³Ğ¾ Ğ½Ğµ Ğ¸ÑĞ¿Ğ¾Ğ»ÑŒĞ·ÑƒĞµĞ¼), Ğ° Ğ¾ĞºĞ¾Ğ½Ñ‡Ğ°Ñ‚ĞµĞ»ÑŒĞ½Ğ¾ Ğ¾Ğ½ ÑƒĞ´Ğ°Ğ»Ğ¸Ñ‚ÑÑ Ğ¿Ğ¾ÑĞ»Ğµ ÑƒĞ´Ğ°Ğ»ĞµĞ½Ğ¸Ñ Ğ²ÑĞµÑ… Node
 		m_pDocument->Release();
 		return true;
 	}

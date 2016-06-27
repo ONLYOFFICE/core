@@ -1,4 +1,4 @@
-
+﻿
 /* pngpriv.h - private declarations for use inside libpng
  *
  * For conditions of distribution and use, see copyright notice in png.h

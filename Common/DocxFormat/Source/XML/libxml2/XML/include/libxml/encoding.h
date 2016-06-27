@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Summary: interface for the encoding conversion functions
  * Description: interface for the encoding conversion functions needed for
  *              XML basic encoding and iconv() support.

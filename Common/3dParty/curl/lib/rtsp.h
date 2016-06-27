@@ -1,4 +1,4 @@
-#ifndef HEADER_CURL_RTSP_H
+﻿#ifndef HEADER_CURL_RTSP_H
 #define HEADER_CURL_RTSP_H
 /***************************************************************************
  *                                  _   _ ____  _

@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * File:	ximapsd.cpp
  * Purpose:	Platform Independent PSD Image Class Loader
  * Dec/2010 Davide Pizzolato - www.xdp.it
@@ -49,17 +49,17 @@ namespace MyPSD
 			//		1		Grayscale		The first value in the color data is the gray value, from 0...10000.
 			//		2		Indexed
 			//		3		RGB				The first three values in the color data are red, green, and blue.
-			//								They are full unsigned 16–bit values as in Apple’s RGBColor data
+			//								They are full unsigned 16â€“bit values as in Appleâ€™s RGBColor data
 			//								structure. Pure red=65535,0,0.
 			//		4		CMYK			The four values in the color data are cyan, magenta, yellow, and
-			//								black. They are full unsigned 16–bit values. 0=100% ink. Pure
+			//								black. They are full unsigned 16â€“bit values. 0=100% ink. Pure
 			//								cyan=0,65535,65535,65535.
 			//		7		Multichannel	// Have no idea
 			//		8		Duotone
 			//		9		Lab				The first three values in the color data are lightness, a chrominance,
 			//								and b chrominance.
-			//								Lightness is a 16–bit value from 0...100. The chromanance components
-			//								are each 16–bit values from –128...127. Gray values
+			//								Lightness is a 16â€“bit value from 0...100. The chromanance components
+			//								are each 16â€“bit values from â€“128...127. Gray values
 			//								are represented by chrominance components of 0. Pure
 			//								white=100,0,0.
 			short nChannels;
@@ -80,7 +80,7 @@ namespace MyPSD
 
 		struct IMAGE_RESOURCE
 		{
-			// Table 2–1: Image resource block
+			// Table 2â€“1: Image resource block
 			//	Type		Name	Description
 			//-------------------------------------------
 			//	OSType		Type	Photoshop always uses its signature, 8BIM
@@ -140,18 +140,18 @@ namespace MyPSD
 			//	Color-ID	Name	Description
 			//-------------------------------------------
 			//		0		RGB			The first three values in the color data are red, green, and blue.
-			//							They are full unsigned 16–bit values as in Apple’s RGBColor data
+			//							They are full unsigned 16â€“bit values as in Appleâ€™s RGBColor data
 			//							structure. Pure red=65535,0,0.
 			//		1		HSB			The first three values in the color data are hue, saturation, and
-			//							brightness. They are full unsigned 16–bit values as in Apple’s
+			//							brightness. They are full unsigned 16â€“bit values as in Appleâ€™s
 			//							HSVColor data structure. Pure red=0,65535, 65535.
 			//		2		CMYK		The four values in the color data are cyan, magenta, yellow, and
-			//							black. They are full unsigned 16–bit values. 0=100% ink. Pure
+			//							black. They are full unsigned 16â€“bit values. 0=100% ink. Pure
 			//							cyan=0,65535,65535,65535.
 			//		7		Lab			The first three values in the color data are lightness, a chrominance,
 			//							and b chrominance.
-			//							Lightness is a 16–bit value from 0...10000. The chromanance components
-			//							are each 16–bit values from –12800...12700. Gray values
+			//							Lightness is a 16â€“bit value from 0...10000. The chromanance components
+			//							are each 16â€“bit values from â€“12800...12700. Gray values
 			//							are represented by chrominance components of 0. Pure
 			//							white=10000,0,0.
 			//		8		grayscale	The first value in the color data is the gray value, from 0...10000.
@@ -171,7 +171,7 @@ namespace MyPSD
 			// thumbnail information in the same format except the data section is
 			// (blue, green, red). The Adobe Photoshop 4.0 format is at resource ID
 			// and the Adobe Photoshop 5.0 format is at resource ID 1036.
-			// Table 2–5: Thumnail resource header
+			// Table 2â€“5: Thumnail resource header
 			//	Type		Name		Description
 			//-------------------------------------------
 			//	4 bytes		format			= 1 (kJpegRGB). Also supports kRawRGB (0).
@@ -668,7 +668,7 @@ namespace MyPSD
 		// for all other modes this section is 4 bytes length, the length field is set to zero
 
 		// For indexed color images, the length will be equal to 768, and the color
-		// will contain the color table for the image, in non–interleaved order.
+		// will contain the color table for the image, in nonâ€“interleaved order.
 
 		// For duotone images, the color data will contain the duotone specification,
 		// the format of which is not documented. Other applications that read

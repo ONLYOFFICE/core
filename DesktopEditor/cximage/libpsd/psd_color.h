@@ -1,4 +1,4 @@
-#ifndef __PSD_COLOR_H__
+﻿#ifndef __PSD_COLOR_H__
 #define __PSD_COLOR_H__
 
 #ifdef __cplusplus

@@ -1,4 +1,4 @@
-#ifndef HEADER_CURL_IF2IP_H
+﻿#ifndef HEADER_CURL_IF2IP_H
 #define HEADER_CURL_IF2IP_H
 /***************************************************************************
  *                                  _   _ ____  _

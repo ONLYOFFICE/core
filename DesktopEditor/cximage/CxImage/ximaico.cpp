@@ -1,4 +1,4 @@
-/*
+﻿/*
  * File:	ximaico.cpp
  * Purpose:	Platform Independent ICON Image Class Loader and Writer (MS version)
  * 07/Aug/2001 Davide Pizzolato - www.xdp.it

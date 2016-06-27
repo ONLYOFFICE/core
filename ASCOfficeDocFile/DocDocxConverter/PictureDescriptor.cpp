@@ -1,10 +1,42 @@
+ï»¿/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 
 #include "PictureDescriptor.h"
 
 namespace DocFileFormat
 {
 	/// Parses the CHPX for a fcPic an loads the PictureDescriptor at this offset
-	PictureDescriptor::PictureDescriptor(CharacterPropertyExceptions* chpx, POLE::Stream* stream, int size) : 
+	PictureDescriptor::PictureDescriptor(CharacterPropertyExceptions* chpx, POLE::Stream* stream, int size, bool oldVersion) 
+		: 
 		dxaGoal(0), dyaGoal(0), mx(0), my(0), Type(jpg), Name( _T( "" ) ), mfp(), dxaCropLeft(0), dyaCropTop(0),
 		dxaCropRight(0), dyaCropBottom(0), brcTop(NULL), brcLeft(NULL), brcBottom(NULL), brcRight(NULL), dxaOrigin(0), dyaOrigin(0),
 		cProps(0), shapeContainer(NULL), blipStoreEntry(NULL)
@@ -15,7 +47,7 @@ namespace DocFileFormat
 
 		if ( fc >= 0 )
 		{
-			parse( stream, fc, size );
+			parse( stream, fc, size, oldVersion);
 		}
 	}
 
@@ -33,11 +65,11 @@ namespace DocFileFormat
 		RELEASEOBJECT(shapeContainer);
 		RELEASEOBJECT(blipStoreEntry);
 	}
-	void PictureDescriptor::parse(POLE::Stream* stream, int fc, int sz)
+	void PictureDescriptor::parse(POLE::Stream* stream, int fc, int sz, bool oldVersion)
 	{
 		Clear();
 
-		VirtualStreamReader reader(stream, fc);
+		VirtualStreamReader reader(stream, fc, oldVersion);
 
 		int sz_stream = reader.GetSize();
 
@@ -46,7 +78,7 @@ namespace DocFileFormat
 		if (lcb > 10000000) 
 			return;
 
-		if (lcb > sz && sz != 2) //bullet picture ñ íåâåðíûì ðàçìåðîì
+		if (lcb > sz && sz != 2) //bullet picture Ñ Ð½ÐµÐ²ÐµÑ€Ð½Ñ‹Ð¼ Ñ€Ð°Ð·Ð¼ÐµÑ€Ð¾Ð¼
 		{
 			unsigned char* bytes = reader.ReadBytes(sz - fc - 4, false);
 			if ( bytes )
@@ -67,8 +99,8 @@ namespace DocFileFormat
 
 			if (mfp.mm > 98)
 			{
-				unsigned char* bytes			=	reader.ReadBytes(14, true);
-				rcWinMf				=	vector<unsigned char>(bytes, (bytes + 14));
+				unsigned char* bytes	=	reader.ReadBytes(14, true);
+				rcWinMf					=	std::vector<unsigned char>(bytes, (bytes + 14));
 				RELEASEARRAYOBJECTS(bytes);
 
 				//dimensions
@@ -117,7 +149,7 @@ namespace DocFileFormat
 					if ( stPicName != NULL )
 					{
 						std::wstring picName;
-						FormatUtils::GetSTLCollectionFromBytes<wstring>( &picName, stPicName, cchPicName, ENCODING_WINDOWS_1251 );
+						FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &picName, stPicName, cchPicName, ENCODING_WINDOWS_1250 );
 						RELEASEARRAYOBJECTS(stPicName);
 					}
 				}
@@ -150,7 +182,7 @@ namespace DocFileFormat
 	{
 		int ret = -1;
 
-		for ( list<SinglePropertyModifier>::const_iterator iter = chpx->grpprl->begin(); iter != chpx->grpprl->end(); iter++ )
+		for ( std::list<SinglePropertyModifier>::const_iterator iter = chpx->grpprl->begin(); iter != chpx->grpprl->end(); iter++ )
 		{
 			switch ( iter->OpCode )
 			{

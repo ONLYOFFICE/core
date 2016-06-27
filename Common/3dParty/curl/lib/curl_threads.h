@@ -1,4 +1,4 @@
-#ifndef HEADER_CURL_THREADS_H
+﻿#ifndef HEADER_CURL_THREADS_H
 #define HEADER_CURL_THREADS_H
 /***************************************************************************
  *                                  _   _ ____  _

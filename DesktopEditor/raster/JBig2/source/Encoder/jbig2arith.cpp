@@ -1,4 +1,4 @@
-#include "jbig2arith.h"
+﻿#include "jbig2arith.h"
 #include <string.h>
 #include <stdio.h>
 

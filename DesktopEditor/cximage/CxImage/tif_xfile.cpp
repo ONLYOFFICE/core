@@ -1,4 +1,4 @@
-/*
+﻿/*
  * TIFF file IO, using CxFile.
  */
 

@@ -1,3 +1,34 @@
+п»ї/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 
 #include "ConvertDocx2Txt.h"
 
@@ -258,7 +289,7 @@ namespace Docx2Txt
 				//}
 				else
 				{
-					//todoooo  проверить - это общий случай - вместо CSdt ... да и Tbl тож
+					//todoooo  РїСЂРѕРІРµСЂРёС‚СЊ - СЌС‚Рѕ РѕР±С‰РёР№ СЃР»СѓС‡Р°Р№ - РІРјРµСЃС‚Рѕ CSdt ... РґР° Рё Tbl С‚РѕР¶
 					OOX::WritingElementWithChilds<OOX::WritingElement> *item_with_items = dynamic_cast<OOX::WritingElementWithChilds<OOX::WritingElement>*>(item);
 					if (item_with_items)
 					{
@@ -358,7 +389,7 @@ namespace Docx2Txt
 					Lists[start + level]++;
 					
 					int ind_level = -1;
-					for (long i=0; i< abstractNum->m_arrLvl.size(); i++)//??? стоит ли???
+					for (long i=0; i< abstractNum->m_arrLvl.size(); i++)//??? СЃС‚РѕРёС‚ Р»Рё???
 					{
 						if ((abstractNum->m_arrLvl[i]) && (abstractNum->m_arrLvl[i]->m_oIlvl.IsInit()) && (abstractNum->m_arrLvl[i]->m_oIlvl->GetValue() == level))
 						{
@@ -378,7 +409,7 @@ namespace Docx2Txt
 
 							if (abstractNum->m_arrLvl[ind_level]->m_oNumFmt->m_oVal->GetValue() == SimpleTypes::numberformatBullet)
 							{
-								//всли символ более-менее корректный 
+								//РІСЃР»Рё СЃРёРјРІРѕР» Р±РѕР»РµРµ-РјРµРЅРµРµ РєРѕСЂСЂРµРєС‚РЅС‹Р№ 
 								if ((strLevelText.length() > 0) && (IsUnicodeSymbol(strLevelText[0]))) line += strLevelText + _T(" ");
 								else line += _T("* ");
 							}
@@ -492,7 +523,7 @@ namespace Docx2Txt
 			}
 			else
 			{
-				//придумать для всех остальных что ли перевод в текст .. 
+				//РїСЂРёРґСѓРјР°С‚СЊ РґР»СЏ РІСЃРµС… РѕСЃС‚Р°Р»СЊРЅС‹С… С‡С‚Рѕ Р»Рё РїРµСЂРµРІРѕРґ РІ С‚РµРєСЃС‚ .. 
 				//line += pItem.toTxt();
 			}
 		}

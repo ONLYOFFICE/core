@@ -1,4 +1,4 @@
-#ifndef HEADER_CURL_X509ASN1_H
+﻿#ifndef HEADER_CURL_X509ASN1_H
 #define HEADER_CURL_X509ASN1_H
 
 /***************************************************************************

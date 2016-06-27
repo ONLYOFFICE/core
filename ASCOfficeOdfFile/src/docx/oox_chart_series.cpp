@@ -1,3 +1,34 @@
+п»ї/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 
 
 #include <boost/foreach.hpp>
@@ -14,11 +45,11 @@ namespace oox {
 
 oox_chart_series::oox_chart_series()
 {
-	values_[0].type	= L"c:cat";//подписи
+	values_[0].type	= L"c:cat";//РїРѕРґРїРёСЃРё
 	values_[1].type	= L"c:val";
 	values_[2].type	= L"c:xVal";
 	values_[3].type	= L"c:yVal";
-	values_[4].type	= L"c:bubbleSize";//заместо оси х!!!!
+	values_[4].type	= L"c:bubbleSize";//Р·Р°РјРµСЃС‚Рѕ РѕСЃРё С…!!!!
 
 	iSymbolMarkerType_	= 0;
 	bLocalTable_		= false;
@@ -44,7 +75,7 @@ void oox_chart_series::setFormula(int ind, std::wstring &value, std::wstring & f
 	else
 	{
 		long res = value.find(L"local-table");
-		if (res >=0 && !bLocalTable_ ) return; //в xlsx низя .... нужно сделать тогда отдельную  table.xml
+		if (res >=0 && !bLocalTable_ ) return; //РІ xlsx РЅРёР·СЏ .... РЅСѓР¶РЅРѕ СЃРґРµР»Р°С‚СЊ С‚РѕРіРґР° РѕС‚РґРµР»СЊРЅСѓСЋ  table.xml
 
 		values_[ind].numRef_.formula		= converter.convert_chart_distance(value);
 		values_[ind].numRef_.present		= true;
@@ -71,10 +102,10 @@ void oox_chart_series::parse_properties()
 		iSymbolMarkerType_ = intVal.get() ;
 		if (iSymbolMarkerType_ == 2)
 		{
-			odf_reader::GetProperty(content_.properties_, L"symbol-name", intVal);   //    квадратики, звездочки ...
+			odf_reader::GetProperty(content_.properties_, L"symbol-name", intVal);   //    РєРІР°РґСЂР°С‚РёРєРё, Р·РІРµР·РґРѕС‡РєРё ...
 			
 			if (intVal)	iSymbolMarkerType_	= intVal.get() ;
-			else		iSymbolMarkerType_	= 0;//выключим
+			else		iSymbolMarkerType_	= 0;//РІС‹РєР»СЋС‡РёРј
 		}
 	}
 	//odf_reader::GetProperty(content_.properties_, L"data-label-symbol", boolVal);
@@ -411,16 +442,16 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 
 	}
 }
-	//backward (Backward) §21.2.2.12
-	//dispEq (Display Equation) §21.2.2.43
-	//dispRSqr (Display R Squared Value) §21.2.2.44
-	//extLst (Chart Extensibility) §21.2.2.64
-	//forward (Forward) §21.2.2.73
-	//intercept (Intercept) §21.2.2.85
-	//name (Trendline Name) §21.2.2.116
-	//order (Polynomial Trendline Order) §21.2.2.129
-	//period (Period) §21.2.2.135
-	//trendlineLbl (Trendline Label) §21.2.2.212
+	//backward (Backward) В§21.2.2.12
+	//dispEq (Display Equation) В§21.2.2.43
+	//dispRSqr (Display R Squared Value) В§21.2.2.44
+	//extLst (Chart Extensibility) В§21.2.2.64
+	//forward (Forward) В§21.2.2.73
+	//intercept (Intercept) В§21.2.2.85
+	//name (Trendline Name) В§21.2.2.116
+	//order (Polynomial Trendline Order) В§21.2.2.129
+	//period (Period) В§21.2.2.135
+	//trendlineLbl (Trendline Label) В§21.2.2.212
 	//trendlineType (Trendline Type)
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -467,7 +498,7 @@ _CP_PTR(oox_chart_series) oox_pie_series::create()
 }
 void oox_pie_series::oox_serialize(std::wostream & _Wostream)
 {
-	content_.fill_.clear();		//авто подбор цветов
+	content_.fill_.clear();		//Р°РІС‚Рѕ РїРѕРґР±РѕСЂ С†РІРµС‚РѕРІ
 
 	CP_XML_WRITER(_Wostream)
     {

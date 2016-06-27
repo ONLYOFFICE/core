@@ -1,4 +1,4 @@
-#ifndef AGG_SVG_IOMEMSTREAM_INCLUDE
+﻿#ifndef AGG_SVG_IOMEMSTREAM_INCLUDE
 #define AGG_SVG_IOMEMSTREAM_INCLUDE
 //-----------------------------------------------------------------------------
 #include "agg_svg_basics.h"

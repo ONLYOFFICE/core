@@ -1,3 +1,34 @@
+п»ї/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 
 #include "logging.h"
 
@@ -29,7 +60,7 @@ int ods_table_state::current_table_row_ = 0;
 int ods_table_state::tmp_column_ =0;
 int ods_table_state::tmp_row_ =0;
 
-namespace utils//////////////////////////////////////////// ОБЩАЯ хрень .. вытащить что ли в utils ???
+namespace utils//////////////////////////////////////////// РћР‘Р©РђРЇ С…СЂРµРЅСЊ .. РІС‹С‚Р°С‰РёС‚СЊ С‡С‚Рѕ Р»Рё РІ utils ???
 
 {
 std::wstring convert_date(const std::wstring & oox_date)
@@ -43,7 +74,7 @@ std::wstring convert_date(const std::wstring & oox_date)
 	{
 		return oox_date;
 	}
-	//todoooo  ПЕРЕПИСАТЬ !!!!
+	//todoooo  РџР•Р Р•РџРРЎРђРўР¬ !!!!
 
 	//boost::gregorian::date date_ = boost::gregorian::date(1900, 1, 1) + boost::gregorian::date_duration(iDate-2);
 
@@ -72,7 +103,7 @@ std::wstring convert_time(const std::wstring & oox_time)
 	int hours=0, minutes=0;
 	double sec=0;
 	
-	//todooo ПЕРЕПИСАТЬ !!!
+	//todooo РџР•Р Р•РџРРЎРђРўР¬ !!!
 	//boost::posix_time::time_duration day(24, 0, 0);
 	//
 	//double millisec = day.total_milliseconds() * dTime;
@@ -187,7 +218,7 @@ void ods_table_state::set_table_style(office_element_ptr & elm)
 	if (table == NULL)return;
 	
 	table->table_table_attlist_.table_style_name_ = office_table_style_->style_name_;
-	//потом в принципе и по имени можно будет связать(найти)
+	//РїРѕС‚РѕРј РІ РїСЂРёРЅС†РёРїРµ Рё РїРѕ РёРјРµРЅРё РјРѕР¶РЅРѕ Р±СѓРґРµС‚ СЃРІСЏР·Р°С‚СЊ(РЅР°Р№С‚Рё)
 
 
 }
@@ -401,7 +432,7 @@ int ods_table_state::current_row() const
 
 void ods_table_state::set_row_default_cell_style(std::wstring & style_name)
 {
-	row_default_cell_style_name_= style_name;	//обязательно нужно определить default-style (table_cell)!!!
+	row_default_cell_style_name_= style_name;	//РѕР±СЏР·Р°С‚РµР»СЊРЅРѕ РЅСѓР¶РЅРѕ РѕРїСЂРµРґРµР»РёС‚СЊ default-style (table_cell)!!!
 	
 	//if (style_name.length() < 1) return;
 
@@ -500,7 +531,7 @@ void ods_table_state::set_cell_type(int type)
 	case 2:// error-type
 	case 3:// inline
 	case 5:// shared
-	case 6:// обычная строка
+	case 6:// РѕР±С‹С‡РЅР°СЏ СЃС‚СЂРѕРєР°
 		cell_type = office_value_type(office_value_type::String);
 		break;
 	}
@@ -579,10 +610,10 @@ void ods_table_state::end_comment(odf_text_context *text_context)
 
 void ods_table_state::set_merge_cells(int start_col, int start_row, int end_col, int end_row)
 {
-	//потом можно переделать (оптимизировать) - добавлять мержи при добавлении ячеек
-	//всяко выгоднее хранить данные о мержах, а не шерстить каждый раз ВСЕ ячейки для добавления фенечки
+	//РїРѕС‚РѕРј РјРѕР¶РЅРѕ РїРµСЂРµРґРµР»Р°С‚СЊ (РѕРїС‚РёРјРёР·РёСЂРѕРІР°С‚СЊ) - РґРѕР±Р°РІР»СЏС‚СЊ РјРµСЂР¶Рё РїСЂРё РґРѕР±Р°РІР»РµРЅРёРё СЏС‡РµРµРє
+	//РІСЃСЏРєРѕ РІС‹РіРѕРґРЅРµРµ С…СЂР°РЅРёС‚СЊ РґР°РЅРЅС‹Рµ Рѕ РјРµСЂР¶Р°С…, Р° РЅРµ С€РµСЂСЃС‚РёС‚СЊ РєР°Р¶РґС‹Р№ СЂР°Р· Р’РЎР• СЏС‡РµР№РєРё РґР»СЏ РґРѕР±Р°РІР»РµРЅРёСЏ С„РµРЅРµС‡РєРё
 	//todooo
-	//разобраться когда нужно писать covered_cell 
+	//СЂР°Р·РѕР±СЂР°С‚СЊСЃСЏ РєРѕРіРґР° РЅСѓР¶РЅРѕ РїРёСЃР°С‚СЊ covered_cell
 	if (end_col - start_col < 0)return;
 	if (end_row - start_row < 0)return;
 
@@ -639,7 +670,7 @@ std::wstring ods_table_state::replace_cell_row(boost::wsmatch const & what)
 	{
 		std::wstring ref_formula = what[1].str();
         int col_formula=0, row_formula=0;
-		utils::parsing_ref(ref_formula, col_formula, row_formula);col_formula--;//инче отсчет с 1
+		utils::parsing_ref(ref_formula, col_formula, row_formula);col_formula--;//РёРЅС‡Рµ РѕС‚СЃС‡РµС‚ СЃ 1
 	
 		ref_formula = utils::getColAddress(col_formula)+boost::lexical_cast<std::wstring>(row_formula+current_table_row_ -tmp_row_);
 
@@ -713,7 +744,7 @@ void ods_table_state::add_or_find_cell_shared_formula(std::wstring & formula, st
 			{
 				odf_formula = shared_formulas_[i].formula;
 
-				//поменять по ref формулу !!!
+				//РїРѕРјРµРЅСЏС‚СЊ РїРѕ ref С„РѕСЂРјСѓР»Сѓ !!!
 				if (shared_formulas_[i].moving_type == 1)
 				{
 					tmp_column_ = shared_formulas_[i].base_column;
@@ -748,7 +779,7 @@ void ods_table_state::set_cell_array_formula(std::wstring & formula, std::wstrin
 {
 	set_cell_formula(formula);
 
-	//; ??? C2:D5 или D1;F1;G; ... ???
+	//; ??? C2:D5 РёР»Рё D1;F1;G; ... ???
 
  	std::vector<std::wstring> ref_cells;
 	boost::algorithm::split(ref_cells,ref, boost::algorithm::is_any_of(L":"), boost::algorithm::token_compress_on);
@@ -790,7 +821,7 @@ void ods_table_state::add_child_element( const office_element_ptr & child_elemen
 	office_table_->add_child_element(child_element);
 }
 
-void ods_table_state::convert_position(oox_table_position & oox_pos, double & x, double & y)//c 0 отсчет
+void ods_table_state::convert_position(oox_table_position & oox_pos, double & x, double & y)//c 0 РѕС‚СЃС‡РµС‚
 {
 	double sz_col=0;
     int curr_col = 0,i;
@@ -879,7 +910,7 @@ void ods_table_state::set_cell_value(const std::wstring & value, bool need_cash)
 	{
 		cell->table_table_cell_attlist_.common_value_and_type_attlist_ = common_value_and_type_attlist();
 		cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_value_type_ = office_value_type(office_value_type::Float);
-		//временно... пока нет определялки типов
+		//РІСЂРµРјРµРЅРЅРѕ... РїРѕРєР° РЅРµС‚ РѕРїСЂРµРґРµР»СЏР»РєРё С‚РёРїРѕРІ
 	}
 	cells_.back().empty = false;
 	
@@ -911,7 +942,7 @@ void ods_table_state::set_cell_value(const std::wstring & value, bool need_cash)
 		//general !!
 	}
 	
-	//кэшированные значения 
+	//РєСЌС€РёСЂРѕРІР°РЅРЅС‹Рµ Р·РЅР°С‡РµРЅРёСЏ
 	if (value.length() >0)
 	{
 		bool need_test_cach = false;
@@ -972,7 +1003,7 @@ void ods_table_state::add_default_cell( short repeated)
     int comment_idx = is_cell_comment(current_table_column_+1 , current_table_row_, repeated);
 	if (comment_idx  >=0 && repeated >1)
 	{
-		//делим на 3 - до, с комметом, после;
+		//РґРµР»РёРј РЅР° 3 - РґРѕ, СЃ РєРѕРјРјРµС‚РѕРј, РїРѕСЃР»Рµ;
         int c = current_table_column_;
 
 		add_default_cell(comments_[comment_idx].col - c -1);
@@ -1042,7 +1073,7 @@ void ods_table_state::start_conditional_format(std::wstring ref)
 		boost::algorithm::replace_all(out,L"[",L"");
 		boost::algorithm::replace_all(out,L"]",L"");
 		cond_format->calcext_target_range_address_ = out;
-		//проверить конвертацию на диапазонах с именами листов в кавычках и с пробелами
+		//РїСЂРѕРІРµСЂРёС‚СЊ РєРѕРЅРІРµСЂС‚Р°С†РёСЋ РЅР° РґРёР°РїР°Р·РѕРЅР°С… СЃ РёРјРµРЅР°РјРё Р»РёСЃС‚РѕРІ РІ РєР°РІС‹С‡РєР°С… Рё СЃ РїСЂРѕР±РµР»Р°РјРё
 	}
 }
 void ods_table_state::end_conditional_format()
@@ -1120,7 +1151,7 @@ void ods_table_state::set_conditional_formula(std::wstring formula)
 		
 		std::wstring operator_;
 		bool s = false;
-		if (condition->calcext_condition_attr_.calcext_value_)//есть опреатор
+		if (condition->calcext_condition_attr_.calcext_value_)//РµСЃС‚СЊ РѕРїСЂРµР°С‚РѕСЂ
 		{
 			operator_ = *condition->calcext_condition_attr_.calcext_value_;
 			int f = operator_.find(L"("); 
@@ -1213,7 +1244,7 @@ void ods_table_state::set_conditional_value(int type, std::wstring value )
 				default: entry->calcext_type_ = calcext_type(calcext_type::Number);
 			}
 		}
-		///color???? - прихоодят выше уровнем !!
+		///color???? - РїСЂРёС…РѕРѕРґСЏС‚ РІС‹С€Рµ СѓСЂРѕРІРЅРµРј !!
 	}
 
 }

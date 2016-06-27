@@ -1,3 +1,34 @@
+ï»¿/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 
 #include "NumberingMapping.h"
 
@@ -48,7 +79,7 @@ namespace DocFileFormat
 
 			int i = 0;
 
-			for (list<ListData*>::iterator iter = rglst->listData.begin(); iter != rglst->listData.end(); ++iter, ++i)
+			for (std::list<ListData*>::iterator iter = rglst->listData.begin(); iter != rglst->listData.end(); ++iter, ++i)
 			{
 				//start abstractNum
 				m_pXmlWriter->WriteNodeBegin( _T( "w:abstractNum" ), TRUE );
@@ -112,7 +143,7 @@ namespace DocFileFormat
 				m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::IntToWideString( index ).c_str() );
 				m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
 
-				for (vector<ListFormatOverrideLevel*>::const_iterator iter = lfo->rgLfoLvl.begin(); iter != lfo->rgLfoLvl.end(); ++iter)
+				for (std::vector<ListFormatOverrideLevel*>::const_iterator iter = lfo->rgLfoLvl.begin(); iter != lfo->rgLfoLvl.end(); ++iter)
 				{
 					m_pXmlWriter->WriteNodeBegin( _T( "w:lvlOverride" ), TRUE );
 
@@ -140,12 +171,12 @@ namespace DocFileFormat
 		}
 	}
 
-	int NumberingMapping::FindIndexbyId(const list<ListData*>& listData, int id)
+	int NumberingMapping::FindIndexbyId(const std::list<ListData*>& listData, int id)
 	{
 		int ret = -1;
 		int i = 0;
 
-		for (list<ListData*>::const_iterator iter = listData.begin(); iter != listData.end(); ++iter, ++i)
+		for (std::list<ListData*>::const_iterator iter = listData.begin(); iter != listData.end(); ++iter, ++i)
 		{
 			if ((*iter)->lsid == id)
 			{
@@ -172,7 +203,7 @@ namespace DocFileFormat
 				{
 					wchar_t xchBullet = lvl->xst[0];
 
-					// Â ñèìâîëüíîì øðèôòå îáðåçàòü íàäî, â äðóãèõ ñëó÷àÿõ - íåò
+					// Ð’ ÑÐ¸Ð¼Ð²Ð¾Ð»ÑŒÐ½Ð¾Ð¼ ÑˆÑ€Ð¸Ñ„Ñ‚Ðµ Ð¾Ð±Ñ€ÐµÐ·Ð°Ñ‚ÑŒ Ð½Ð°Ð´Ð¾, Ð² Ð´Ñ€ÑƒÐ³Ð¸Ñ… ÑÐ»ÑƒÑ‡Ð°ÑÑ… - Ð½ÐµÑ‚
 					if (true == bIsSymbol && (xchBullet & 0xF000) != 0)
 					{
 						xchBullet &= 0x0FFF;
@@ -193,7 +224,7 @@ namespace DocFileFormat
 				std::wstring::const_iterator newResult	=	lvl->xst.begin();
 
 				newResult								=	find_if(lvl->xst.begin(), lvl->xst.end(), &NumberingMapping::IsPlaceholder);
-				ret										=	wstring(lvl->xst.begin(), newResult);
+				ret										=	std::wstring(lvl->xst.begin(), newResult);
 				result									=	newResult;
 
 				while (result != lvl->xst.end())
@@ -202,7 +233,7 @@ namespace DocFileFormat
 
 					ret += _T( "%" );
 					ret += FormatUtils::IntToWideString(*result + 1);
-					ret += wstring((result + 1), newResult);
+					ret += std::wstring((result + 1), newResult);
 					result = newResult;
 				}
 			}
@@ -357,7 +388,7 @@ namespace DocFileFormat
 	{
 		if (lvl)
 		{
-			XmlUtils::CXmlWriter oWriterTemp;	//Âðåìåííûé writer,÷òî íå íàðóøàòü ïîñëåäîâàòåëüíîñòü çàïèñè
+			XmlUtils::CXmlWriter oWriterTemp;	//Ð’Ñ€ÐµÐ¼ÐµÐ½Ð½Ñ‹Ð¹ writer,Ñ‡Ñ‚Ð¾ Ð½Ðµ Ð½Ð°Ñ€ÑƒÑˆÐ°Ñ‚ÑŒ Ð¿Ð¾ÑÐ»ÐµÐ´Ð¾Ð²Ð°Ñ‚ÐµÐ»ÑŒÐ½Ð¾ÑÑ‚ÑŒ Ð·Ð°Ð¿Ð¸ÑÐ¸
 
 			//rPr
 
@@ -365,7 +396,7 @@ namespace DocFileFormat
 			CharacterPropertiesMapping cpMapping(&oWriterTemp, m_document, &rev, lvl->grpprlPapx, false);
 			lvl->grpprlChpx->Convert(&cpMapping);
 
-			// Ïðîâåðÿåì øðèôò
+			// ÐŸÑ€Ð¾Ð²ÐµÑ€ÑÐµÐ¼ ÑˆÑ€Ð¸Ñ„Ñ‚
 
 			m_pXmlWriter->WriteNodeBegin( _T( "w:lvl" ), TRUE );
 			m_pXmlWriter->WriteAttribute( _T( "w:ilvl" ), FormatUtils::IntToWideString(level).c_str());
@@ -428,7 +459,7 @@ namespace DocFileFormat
 			ParagraphPropertiesMapping oppMapping(m_pXmlWriter, m_context, m_document, NULL, isBidi);
 			lvl->grpprlPapx->Convert(&oppMapping);
 
-			// ïèøåì rPr
+			// Ð¿Ð¸ÑˆÐµÐ¼ rPr
 
 			m_pXmlWriter->WriteString(oWriterTemp.GetXmlString());
 
@@ -438,18 +469,18 @@ namespace DocFileFormat
 
 	void NumberingMapping::PictureBulletsMapping()
 	{
-		for (map<int, int>::const_iterator iter = m_document->PictureBulletsCPsMap.begin(); iter != m_document->PictureBulletsCPsMap.end(); ++iter)
+		for (std::map<int, int>::const_iterator iter = m_document->PictureBulletsCPsMap.begin(); iter != m_document->PictureBulletsCPsMap.end(); ++iter)
 		{
 			int fc		=	m_document->FindFileCharPos(iter->second);
 			int fcEnd	=	m_document->FindFileCharPos(iter->second + 1);
 
 			if (fc < 0 || fcEnd < 0 ) break;
 
-			list<CharacterPropertyExceptions*>* chpxs = m_document->GetCharacterPropertyExceptions(fc, fcEnd);
+			std::list<CharacterPropertyExceptions*>* chpxs = m_document->GetCharacterPropertyExceptions(fc, fcEnd);
 
 			if ((chpxs != NULL) && (!chpxs->empty()))
 			{
-				PictureDescriptor pict(chpxs->front(), m_document->DataStream, fcEnd - fc);
+				PictureDescriptor pict(chpxs->front(), m_document->DataStream, fcEnd - fc, m_document->FIB->m_bOlderVersion);
 
 				if ((pict.mfp.mm > 98) && (pict.shapeContainer != NULL))
 				{
@@ -485,7 +516,7 @@ namespace DocFileFormat
 			unsigned int cp = 0;
 			bool isPictureBullet = false;
 
-			for (list<SinglePropertyModifier>::const_iterator iter = grpprlChpx->grpprl->begin(); iter != grpprlChpx->grpprl->end(); ++iter)
+			for (std::list<SinglePropertyModifier>::const_iterator iter = grpprlChpx->grpprl->begin(); iter != grpprlChpx->grpprl->end(); ++iter)
 			{
 				if ((int)(iter->OpCode) == sprmCPbiIBullet)
 				{

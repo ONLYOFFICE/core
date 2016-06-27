@@ -1,3 +1,34 @@
+п»ї/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 #pragma once
 #include "../../AVSOfficeStudio/Common/OfficeDrawing/ElementsContainer.h"
 #include "../Records/TextFullSettings.h"
@@ -37,17 +68,17 @@ public:
 
 	void SetUpTextStyle(IElement* pElem)
 	{
-		// сначала проверяем на shape
-		// затем применяем все настройки по-очереди
+		// СЃРЅР°С‡Р°Р»Р° РїСЂРѕРІРµСЂСЏРµРј РЅР° shape
+		// Р·Р°С‚РµРј РїСЂРёРјРµРЅСЏРµРј РІСЃРµ РЅР°СЃС‚СЂРѕР№РєРё РїРѕ-РѕС‡РµСЂРµРґРё
 		// 1) master + TextMasterStyles
 		// 2) persist + TextMasterStyles
-		// 3) свои настройки + TextMasterStyles
-		// причем "свои настройки" - это чисто "продвинутые настройки"
-		// потому что все общие ( через проперти ) - уже установлены
-		// тут важно выставить правильный порядок.
-		// словом - важная очень функция для текста, 
-		// и, чтобы убрать всякие лишние .cpp файлы - здесь же будем учитывать 
-		// настройки слайда (т.е. структуры не будут работать со слайдами)
+		// 3) СЃРІРѕРё РЅР°СЃС‚СЂРѕР№РєРё + TextMasterStyles
+		// РїСЂРёС‡РµРј "СЃРІРѕРё РЅР°СЃС‚СЂРѕР№РєРё" - СЌС‚Рѕ С‡РёСЃС‚Рѕ "РїСЂРѕРґРІРёРЅСѓС‚С‹Рµ РЅР°СЃС‚СЂРѕР№РєРё"
+		// РїРѕС‚РѕРјСѓ С‡С‚Рѕ РІСЃРµ РѕР±С‰РёРµ ( С‡РµСЂРµР· РїСЂРѕРїРµСЂС‚Рё ) - СѓР¶Рµ СѓСЃС‚Р°РЅРѕРІР»РµРЅС‹
+		// С‚СѓС‚ РІР°Р¶РЅРѕ РІС‹СЃС‚Р°РІРёС‚СЊ РїСЂР°РІРёР»СЊРЅС‹Р№ РїРѕСЂСЏРґРѕРє.
+		// СЃР»РѕРІРѕРј - РІР°Р¶РЅР°СЏ РѕС‡РµРЅСЊ С„СѓРЅРєС†РёСЏ РґР»СЏ С‚РµРєСЃС‚Р°, 
+		// Рё, С‡С‚РѕР±С‹ СѓР±СЂР°С‚СЊ РІСЃСЏРєРёРµ Р»РёС€РЅРёРµ .cpp С„Р°Р№Р»С‹ - Р·РґРµСЃСЊ Р¶Рµ Р±СѓРґРµРј СѓС‡РёС‚С‹РІР°С‚СЊ 
+		// РЅР°СЃС‚СЂРѕР№РєРё СЃР»Р°Р№РґР° (С‚.Рµ. СЃС‚СЂСѓРєС‚СѓСЂС‹ РЅРµ Р±СѓРґСѓС‚ СЂР°Р±РѕС‚Р°С‚СЊ СЃРѕ СЃР»Р°Р№РґР°РјРё)
 
 		if (NULL == pElem)
 			return;
@@ -59,16 +90,16 @@ public:
 		if (NULL == pShape)
 			return;
 
-		// а вот надо читать, потому что текст может быть еще не выставлен
-		//if (_T("") == pShape->m_oShape.m_oText.m_sText) // текста нету - так чего тогда тут читать??
+		// Р° РІРѕС‚ РЅР°РґРѕ С‡РёС‚Р°С‚СЊ, РїРѕС‚РѕРјСѓ С‡С‚Рѕ С‚РµРєСЃС‚ РјРѕР¶РµС‚ Р±С‹С‚СЊ РµС‰Рµ РЅРµ РІС‹СЃС‚Р°РІР»РµРЅ
+		//if (_T("") == pShape->m_oShape.m_oText.m_sText) // С‚РµРєСЃС‚Р° РЅРµС‚Сѓ - С‚Р°Рє С‡РµРіРѕ С‚РѕРіРґР° С‚СѓС‚ С‡РёС‚Р°С‚СЊ??
 		//	return;
 
 		CTextAttributesEx* pTextSettings = &(pShape->m_oShape.m_oText);
 
-		// сначала применим ссылки на masterstyle (для шаблонного элемента)
-		// как узнать - просто есть ли массивы (т.к. они могли появиться пока только оттуда)
-		// - теперь этого делать не нужно - т.к. в мастере тоже вызывается эта функция - 
-		// и там все это должно уже примениться
+		// СЃРЅР°С‡Р°Р»Р° РїСЂРёРјРµРЅРёРј СЃСЃС‹Р»РєРё РЅР° masterstyle (РґР»СЏ С€Р°Р±Р»РѕРЅРЅРѕРіРѕ СЌР»РµРјРµРЅС‚Р°)
+		// РєР°Рє СѓР·РЅР°С‚СЊ - РїСЂРѕСЃС‚Рѕ РµСЃС‚СЊ Р»Рё РјР°СЃСЃРёРІС‹ (С‚.Рє. РѕРЅРё РјРѕРіР»Рё РїРѕСЏРІРёС‚СЊСЃСЏ РїРѕРєР° С‚РѕР»СЊРєРѕ РѕС‚С‚СѓРґР°)
+		// - С‚РµРїРµСЂСЊ СЌС‚РѕРіРѕ РґРµР»Р°С‚СЊ РЅРµ РЅСѓР¶РЅРѕ - С‚.Рє. РІ РјР°СЃС‚РµСЂРµ С‚РѕР¶Рµ РІС‹Р·С‹РІР°РµС‚СЃСЏ СЌС‚Р° С„СѓРЅРєС†РёСЏ - 
+		// Рё С‚Р°Рј РІСЃРµ СЌС‚Рѕ РґРѕР»Р¶РЅРѕ СѓР¶Рµ РїСЂРёРјРµРЅРёС‚СЊСЃСЏ
 		BOOL bIsPersistPresentSettings = FALSE;
 		BOOL bIsOwnPresentSettings = FALSE;
 
@@ -94,7 +125,7 @@ public:
 		//  own properties ---------------------------------------------------------------
 		if (NULL != pShape->m_pStream)
 		{
-			// теперь нужно загрузить продвинутые настройки текста из стрима.
+			// С‚РµРїРµСЂСЊ РЅСѓР¶РЅРѕ Р·Р°РіСЂСѓР·РёС‚СЊ РїСЂРѕРґРІРёРЅСѓС‚С‹Рµ РЅР°СЃС‚СЂРѕР№РєРё С‚РµРєСЃС‚Р° РёР· СЃС‚СЂРёРјР°.
 			LONG lPosition = 0; StreamUtils::StreamPosition(lPosition, pShape->m_pStream);
 
 			if (-1 != pShape->m_lOffsetTextStyle)
@@ -142,9 +173,9 @@ public:
 
 		SetUpAllTextType(pTextSettings, eTypeMaster, eTypePersist, bIsPersistPresentSettings, eTypeOwn, bIsOwnPresentSettings);
 
-		// теперь проверим - если нету вообще разбиения на параграфы и символы - 
-		// вставим по умолчанию для такого типа текста
-		// по идее нужно еще дефолт применить
+		// С‚РµРїРµСЂСЊ РїСЂРѕРІРµСЂРёРј - РµСЃР»Рё РЅРµС‚Сѓ РІРѕРѕР±С‰Рµ СЂР°Р·Р±РёРµРЅРёСЏ РЅР° РїР°СЂР°РіСЂР°С„С‹ Рё СЃРёРјРІРѕР»С‹ - 
+		// РІСЃС‚Р°РІРёРј РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ РґР»СЏ С‚Р°РєРѕРіРѕ С‚РёРїР° С‚РµРєСЃС‚Р°
+		// РїРѕ РёРґРµРµ РЅСѓР¶РЅРѕ РµС‰Рµ РґРµС„РѕР»С‚ РїСЂРёРјРµРЅРёС‚СЊ
 
 		if (0 == pShape->m_oShape.m_oText.m_arPFs.GetCount())
 		{
@@ -171,8 +202,8 @@ public:
 			}
 		}
 
-		// теперь нужно посмотреть, является ли шейп placeholder'ом
-		// если да, то применить его настройки ДО всех остальных
+		// С‚РµРїРµСЂСЊ РЅСѓР¶РЅРѕ РїРѕСЃРјРѕС‚СЂРµС‚СЊ, СЏРІР»СЏРµС‚СЃСЏ Р»Рё С€РµР№Рї placeholder'РѕРј
+		// РµСЃР»Рё РґР°, С‚Рѕ РїСЂРёРјРµРЅРёС‚СЊ РµРіРѕ РЅР°СЃС‚СЂРѕР№РєРё Р”Рћ РІСЃРµС… РѕСЃС‚Р°Р»СЊРЅС‹С…
 		LONG lPlaceholderIndex = pShape->m_lPlaceholderPosition;
 		if (-1 != lPlaceholderIndex)
 		{
@@ -204,7 +235,7 @@ public:
 			}
 		}
 
-		// теперь нужно пересчитать все настройки в зависимости от схем слайда (только для слайда!!!)
+		// С‚РµРїРµСЂСЊ РЅСѓР¶РЅРѕ РїРµСЂРµСЃС‡РёС‚Р°С‚СЊ РІСЃРµ РЅР°СЃС‚СЂРѕР№РєРё РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ СЃС…РµРј СЃР»Р°Р№РґР° (С‚РѕР»СЊРєРѕ РґР»СЏ СЃР»Р°Р№РґР°!!!)
 		if (stSlide == m_eSlideType)
 		{
 			pShape->m_oShape.m_oText.ApplyProperties(this);
@@ -219,7 +250,7 @@ public:
 		
 		if (NULL != pPPTShape)
 		{
-			// теперь смотрим - что за фигура создана
+			// С‚РµРїРµСЂСЊ СЃРјРѕС‚СЂРёРј - С‡С‚Рѕ Р·Р° С„РёРіСѓСЂР° СЃРѕР·РґР°РЅР°
 			switch (pPPTShape->m_eType)
 			{
 			case sptTextPlainText:    
@@ -323,7 +354,7 @@ private:
 				LONG lIndentIndex = pTextAttributes->GetIndentLevelCF(nIndex);				
 				if (lIndentIndex < pStyle->m_lLevels)
 				{
-					// вот непонятно какой левел нужно брать. будем нулевой пока
+					// РІРѕС‚ РЅРµРїРѕРЅСЏС‚РЅРѕ РєР°РєРѕР№ Р»РµРІРµР» РЅСѓР¶РЅРѕ Р±СЂР°С‚СЊ. Р±СѓРґРµРј РЅСѓР»РµРІРѕР№ РїРѕРєР°
 					switch (lApplyMode)
 					{
 					case 0:
@@ -418,7 +449,7 @@ private:
 			lStartCur = lEndCur + 1;
 		}
 
-		// сначала нормализуем Ranges
+		// СЃРЅР°С‡Р°Р»Р° РЅРѕСЂРјР°Р»РёР·СѓРµРј Ranges
 		for (LONG iR = 0; iR < lCountHyper; ++iR)
 		{
 			LONG lStart = ((*pRanges)[iR]).m_lStart;
@@ -444,7 +475,7 @@ private:
 					lEndFound = iCF;
 			}
 
-			// найдены индексы ранов, в которых надо резать
+			// РЅР°Р№РґРµРЅС‹ РёРЅРґРµРєСЃС‹ СЂР°РЅРѕРІ, РІ РєРѕС‚РѕСЂС‹С… РЅР°РґРѕ СЂРµР·Р°С‚СЊ
 			if (-1 == lStartFound || -1 == lEndFound)
 				continue;
 			
@@ -454,9 +485,9 @@ private:
 			}
 			else if (lEndFound > lStartFound)
 			{
-				// по идее другого быть не могло
+				// РїРѕ РёРґРµРµ РґСЂСѓРіРѕРіРѕ Р±С‹С‚СЊ РЅРµ РјРѕРіР»Рѕ
 
-				// здесь последовательный вызов инсерта
+				// Р·РґРµСЃСЊ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅС‹Р№ РІС‹Р·РѕРІ РёРЅСЃРµСЂС‚Р°
 				InsertCF(lStart, arEnd[lStartFound], pTextAttributes->m_arCFs, arStart, arEnd, lStartFound, oColor);
 
 				LONG lPlus = (LONG)pTextAttributes->m_arCFs.GetCount() - lCountCFs;
@@ -466,7 +497,7 @@ private:
 			}
 		}
 
-		// старая версия...
+		// СЃС‚Р°СЂР°СЏ РІРµСЂСЃРёСЏ...
 		/*for (size_t i = 0; i < pTextAttributes->m_arCFs.GetCount(); ++i)
 		{
 			pTextAttributes->m_arCFs[i].hasColor	= true;

@@ -1,4 +1,4 @@
-#ifndef AGG_SVG_RASTERIZER_INCLUDED
+﻿#ifndef AGG_SVG_RASTERIZER_INCLUDED
 #define AGG_SVG_RASTERIZER_INCLUDED
 
 #include "agg_rasterizer_scanline_aa.h"

@@ -1,3 +1,34 @@
+п»ї/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 
 #include "ChartSheetSubstream.h"
 
@@ -124,7 +155,7 @@ const bool ChartSheetSubstream::loadContent(BinProcessor& proc)
 //	}
 //	count = proc.repeated<Fbi2>(0, 0);
 //
-//	while(count > 0 && m_arFbi.empty())//??? разделить
+//	while(count > 0 && m_arFbi.empty())//??? СЂР°Р·РґРµР»РёС‚СЊ
 //	{
 //		m_arFbi.insert(m_arFbi.begin(), elements_.back());
 //		elements_.pop_back();
@@ -252,7 +283,7 @@ const bool ChartSheetSubstream::loadContent(BinProcessor& proc)
 			case rt_Fbi2:
 			{
 				count = proc.repeated<Fbi2>(0, 0);
-				while(count > 0 && m_arFbi.empty())//??? разделить
+				while(count > 0 && m_arFbi.empty())//??? СЂР°Р·РґРµР»РёС‚СЊ
 				{
 					m_arFbi.insert(m_arFbi.begin(), elements_.back());
 					elements_.pop_back();
@@ -369,7 +400,7 @@ void ChartSheetSubstream::recalc(CHARTFORMATS* charts)
 
 		if ( serCrt == NULL)
 		{
-			//для доп линий может и не существовать - брать предыдущий  - и объеденить!!!
+			//РґР»СЏ РґРѕРї Р»РёРЅРёР№ РјРѕР¶РµС‚ Рё РЅРµ СЃСѓС‰РµСЃС‚РІРѕРІР°С‚СЊ - Р±СЂР°С‚СЊ РїСЂРµРґС‹РґСѓС‰РёР№  - Рё РѕР±СЉРµРґРµРЅРёС‚СЊ!!!
 			std::map<int,std::vector<int>>::iterator it = m_mapTypeChart.find(iCrt);
 			if (it != m_mapTypeChart.end())
 			{
@@ -608,7 +639,7 @@ int ChartSheetSubstream::serialize_title (std::wostream & _stream)
 	AI* title_text = dynamic_cast<AI *>(title_label->m_AI.get());
 	if (title_text == NULL) return 0;	
 	
-	if (!title_text->m_SeriesText && !title_text->m_BRAI) return 0; // если не выкидывать будет рисоваться placeholder
+	if (!title_text->m_SeriesText && !title_text->m_BRAI) return 0; // РµСЃР»Рё РЅРµ РІС‹РєРёРґС‹РІР°С‚СЊ Р±СѓРґРµС‚ СЂРёСЃРѕРІР°С‚СЊСЃСЏ placeholder
 	
 	CP_XML_WRITER(_stream)    
 	{
@@ -645,7 +676,7 @@ int ChartSheetSubstream::serialize_legend (std::wostream & _stream, const std::w
 	//	dat_ld		= dynamic_cast<LD*>(DAT_->m_LD.get());
 	//}
 	
-	//todooo разобраться с разными типами в одном чарте .. считать количество серий?? 
+	//todooo СЂР°Р·РѕР±СЂР°С‚СЊСЃСЏ СЃ СЂР°Р·РЅС‹РјРё С‚РёРїР°РјРё РІ РѕРґРЅРѕРј С‡Р°СЂС‚Рµ .. СЃС‡РёС‚Р°С‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ СЃРµСЂРёР№?? 
 	std::map< int, std::vector<int>>::iterator it = m_mapTypeChart.begin();
 	if (it != m_mapTypeChart.end())
 	{
@@ -803,7 +834,7 @@ int ChartSheetSubstream::serialize_plot_area (std::wostream & _stream)
 									CP_XML_STREAM() << stream_dLbls.str();
 								}
 							}
-							series_ss->serialize2(CP_XML_STREAM(), crt->m_iChartType); //особенности xlsx (
+							series_ss->serialize2(CP_XML_STREAM(), crt->m_iChartType); //РѕСЃРѕР±РµРЅРЅРѕСЃС‚Рё xlsx (
 						}	
 							
 						series->serialize_legend(stream_legend_entries, it->second[i]); 
@@ -878,7 +909,7 @@ int ChartSheetSubstream::serialize_plot_area (std::wostream & _stream)
 }
 int ChartSheetSubstream::serialize_scatter_style(std::wostream & _stream, CRT *crt)
 {
-	bool bMarker = true, bSmooth = false, bLine = true;//todooo  - так как есть отдельные настройки
+	bool bMarker = true, bSmooth = false, bLine = true;//todooo  - С‚Р°Рє РєР°Рє РµСЃС‚СЊ РѕС‚РґРµР»СЊРЅС‹Рµ РЅР°СЃС‚СЂРѕР№РєРё
 
 	CP_XML_WRITER(_stream)
 	{
@@ -1031,7 +1062,7 @@ int ChartSheetSubstream::serialize_dLbls (std::wostream & _stream, int id, CRT *
 				add_labels = true;
 			}
 			else if (!labels.empty())
-			{//есть лэйблы отдельных точек, а вот общие никак не обозначены
+			{//РµСЃС‚СЊ Р»СЌР№Р±Р»С‹ РѕС‚РґРµР»СЊРЅС‹С… С‚РѕС‡РµРє, Р° РІРѕС‚ РѕР±С‰РёРµ РЅРёРєР°Рє РЅРµ РѕР±РѕР·РЅР°С‡РµРЅС‹
 				need_add_labels = true;
 			}
 		}
@@ -1058,7 +1089,7 @@ int ChartSheetSubstream::serialize_dLbls (std::wostream & _stream, int id, CRT *
 			CP_XML_NODE(L"c:showCatName")	{ CP_XML_ATTR (L"val" , 0); }	
 			CP_XML_NODE(L"c:showSerName")	{ CP_XML_ATTR (L"val" , 0); }	
 		}
-	//подписи к точкам (отдельные)
+	//РїРѕРґРїРёСЃРё Рє С‚РѕС‡РєР°Рј (РѕС‚РґРµР»СЊРЅС‹Рµ)
 		for (int i = 0; i < labels.size(); i++)
 		{
 			CP_XML_NODE(L"c:dLbl")
@@ -1177,7 +1208,7 @@ int ChartSheetSubstream::serialize_ser (std::wstring sNodeSer, std::wostream & _
 
 					CP_XML_NODE(L"c:ptCount")
 					{
-						CP_XML_ATTR(L"val", count); // count_found использовать нельзя - тут должно быть максимальное всех точек отчета
+						CP_XML_ATTR(L"val", count); // count_found РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ РЅРµР»СЊР·СЏ - С‚СѓС‚ РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ РјР°РєСЃРёРјР°Р»СЊРЅРѕРµ РІСЃРµС… С‚РѕС‡РµРє РѕС‚С‡РµС‚Р°
 					}
 					CP_XML_STREAM() << _stream_cash.str();
 				
@@ -1212,7 +1243,7 @@ int ChartSheetSubstream::serialize_ser (std::wstring sNodeSer, std::wostream & _
 						{
 							CP_XML_NODE(L"c:ptCount")
 							{
-								CP_XML_ATTR(L"val", count); // count_found использовать нельзя - тут должно быть максимальное всех точек отчета
+								CP_XML_ATTR(L"val", count); // count_found РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ РЅРµР»СЊР·СЏ - С‚СѓС‚ РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ РјР°РєСЃРёРјР°Р»СЊРЅРѕРµ РІСЃРµС… С‚РѕС‡РµРє РѕС‚С‡РµС‚Р°
 							}
 							CP_XML_STREAM() << _stream_cash.str();
 						}

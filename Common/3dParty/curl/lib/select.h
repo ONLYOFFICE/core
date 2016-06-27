@@ -1,4 +1,4 @@
-#ifndef HEADER_CURL_SELECT_H
+﻿#ifndef HEADER_CURL_SELECT_H
 #define HEADER_CURL_SELECT_H
 /***************************************************************************
  *                                  _   _ ____  _

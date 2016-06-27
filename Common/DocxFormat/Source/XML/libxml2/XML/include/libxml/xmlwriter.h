@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Summary: text writing API for XML
  * Description: text writing API for XML
  *

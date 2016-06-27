@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (C) Copyright IBM Corp. 1998-2005 - All Rights Reserved 
  *
  * This file is a modification of the ICU file IndicReordering.h

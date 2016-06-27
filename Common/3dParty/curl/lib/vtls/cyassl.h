@@ -1,4 +1,4 @@
-#ifndef HEADER_CURL_CYASSL_H
+﻿#ifndef HEADER_CURL_CYASSL_H
 #define HEADER_CURL_CYASSL_H
 /***************************************************************************
  *                                  _   _ ____  _

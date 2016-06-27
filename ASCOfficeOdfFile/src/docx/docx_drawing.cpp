@@ -1,3 +1,34 @@
+﻿/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 
 #include "docx_drawing.h"
 #include <cpdoccore/xml/simple_xml_writer.h>
@@ -319,22 +350,22 @@ void docx_serialize_common(std::wostream & strm, _docx_drawing & val)
 			CP_XML_ATTR(L"xmlns:a",L"http://schemas.openxmlformats.org/drawingml/2006/main");
 			CP_XML_NODE(L"a:graphicData")
 			{
-				if (val.type == mediaitems::typeShape)
+				if (val.type == typeShape)
 				{
 					CP_XML_ATTR(L"uri",L"http://schemas.microsoft.com/office/word/2010/wordprocessingShape");
 					docx_serialize_shape_child(CP_XML_STREAM(), val);
 				}
-				else if (val.type == mediaitems::typeImage)
+				else if (val.type == typeImage)
 				{
 					CP_XML_ATTR(L"uri",L"http://schemas.openxmlformats.org/drawingml/2006/picture");
 					docx_serialize_image_child(CP_XML_STREAM(), val);
 				}
-				else if (val.type == mediaitems::typeChart)
+				else if (val.type == typeChart)
 				{
 					CP_XML_ATTR(L"uri", L"http://schemas.openxmlformats.org/drawingml/2006/chart");
 					docx_serialize_chart_child(CP_XML_STREAM(), val);
 				}
-				else if (val.type == mediaitems::typeGroup)
+				else if (val.type == typeGroupShape)
 				{
 					CP_XML_ATTR(L"uri", L"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup");
 					docx_serialize_group_child(CP_XML_STREAM(), val);
@@ -345,19 +376,19 @@ void docx_serialize_common(std::wostream & strm, _docx_drawing & val)
 }
 void docx_serialize_child(std::wostream & strm, _docx_drawing & val)
 {
-	if (val.type == mediaitems::typeShape)
+	if (val.type == typeShape)
 	{
 		docx_serialize_shape_child(strm,val);
 	}
-	else if (val.type == mediaitems::typeImage)
+	else if (val.type == typeImage)
 	{
 		docx_serialize_image_child(strm,val);
 	}
-	else if (val.type == mediaitems::typeChart)
+	else if (val.type == typeChart)
 	{
 		docx_serialize_chart_child(strm,val);
 	}
-	else if (val.type == mediaitems::typeGroup)
+	else if (val.type == typeGroupShape)
 	{
 		docx_serialize_group_child(strm,val);
 	}

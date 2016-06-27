@@ -1,4 +1,4 @@
-/*
+﻿/*
  * libxml.h: internal header only used during the compilation of libxml
  *
  * See COPYRIGHT for the status of this software

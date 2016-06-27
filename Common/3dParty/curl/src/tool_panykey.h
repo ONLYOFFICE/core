@@ -1,4 +1,4 @@
-#ifndef HEADER_CURL_TOOL_PANYKEY_H
+﻿#ifndef HEADER_CURL_TOOL_PANYKEY_H
 #define HEADER_CURL_TOOL_PANYKEY_H
 /***************************************************************************
  *                                  _   _ ____  _

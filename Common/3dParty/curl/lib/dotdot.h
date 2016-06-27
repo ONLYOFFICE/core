@@ -1,4 +1,4 @@
-#ifndef HEADER_CURL_DOTDOT_H
+﻿#ifndef HEADER_CURL_DOTDOT_H
 #define HEADER_CURL_DOTDOT_H
 /***************************************************************************
  *                                  _   _ ____  _

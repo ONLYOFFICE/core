@@ -1,4 +1,4 @@
-/*
+﻿/*
  * File:	ximaska.cpp
  * Purpose:	Platform Independent SKA Image Class Loader and Writer
  * 25/Sep/2007 Davide Pizzolato - www.xdp.it

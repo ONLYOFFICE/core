@@ -1,4 +1,4 @@
-/* File: vms_eco_level.h
+﻿/* File: vms_eco_level.h
  *
  * $Id$
  *

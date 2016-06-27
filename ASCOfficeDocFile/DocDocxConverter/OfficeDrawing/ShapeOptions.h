@@ -1,3 +1,34 @@
+п»ї/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 #pragma once
 
 #include "Record.h"
@@ -470,7 +501,7 @@ namespace DocFileFormat
 		colSpan=1991
 	} PropertyId;
 
-	//!!!TODO: Реальные значения не соответствуют значениям из спецификации!!!
+	//!!!TODO: Р РµР°Р»СЊРЅС‹Рµ Р·РЅР°С‡РµРЅРёСЏ РЅРµ СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‚ Р·РЅР°С‡РµРЅРёСЏРј РёР· СЃРїРµС†РёС„РёРєР°С†РёРё!!!
 	typedef enum _PositionHorizontal
 	{
 		//msophAbs = 0x1,
@@ -489,7 +520,7 @@ namespace DocFileFormat
 		msoprhChar
 	} PositionHorizontalRelative;
 
-	//!!!TODO: Реальные значения не соответствуют значениям из спецификации!!!
+	//!!!TODO: Р РµР°Р»СЊРЅС‹Рµ Р·РЅР°С‡РµРЅРёСЏ РЅРµ СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‚ Р·РЅР°С‡РµРЅРёСЏРј РёР· СЃРїРµС†РёС„РёРєР°С†РёРё!!!
 	typedef enum _PositionVertical
 	{
 		//msopvAbs = 0x1,
@@ -556,8 +587,8 @@ namespace DocFileFormat
 		static const unsigned short TYPE_CODE_0xF121 = 0xF121;
 		static const unsigned short TYPE_CODE_0xF122 = 0xF122;
 
-		vector<OptionEntry> Options;
-		map<PropertyId, OptionEntry> OptionsByID;
+		std::vector<OptionEntry>			Options;
+		std::map<PropertyId, OptionEntry>	OptionsByID;
 
 		ShapeOptions() : Record()
 		{
@@ -565,7 +596,7 @@ namespace DocFileFormat
 
 		virtual ~ShapeOptions()
 		{
-			for (vector<OptionEntry>::iterator iter = Options.begin(); iter != Options.end(); ++iter)
+			for (std::vector<OptionEntry>::iterator iter = Options.begin(); iter != Options.end(); ++iter)
 				RELEASEARRAYOBJECTS( iter->opComplex );
 		}
 
@@ -597,7 +628,7 @@ namespace DocFileFormat
 				if (Options[i].fComplex)
 				{
 					int read_size =  (int)Options[i].op + 6 ; //???? 	
-					//todooo !!!! проверить все остальные !! тут размер в зависимости от типа Complex!!!		
+					//todooo !!!! РїСЂРѕРІРµСЂРёС‚СЊ РІСЃРµ РѕСЃС‚Р°Р»СЊРЅС‹Рµ !! С‚СѓС‚ СЂР°Р·РјРµСЂ РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ С‚РёРїР° Complex!!!		
 					switch(Options[i].pid)
 					{
 					case PropertyId::gtextUNICODE:
@@ -608,7 +639,7 @@ namespace DocFileFormat
 					Options[i].opComplex = Reader->ReadBytes( read_size, true );
 				}
 
-				OptionsByID.insert(pair<PropertyId, OptionEntry>(Options[i].pid, Options[i]));
+				OptionsByID.insert(std::pair<PropertyId, OptionEntry>(Options[i].pid, Options[i]));
 			}
 
             Reader->Seek(( pos + size ), 0/*STREAM_SEEK_SET*/);

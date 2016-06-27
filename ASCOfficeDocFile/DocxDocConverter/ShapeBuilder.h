@@ -1,3 +1,34 @@
+п»ї/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 #pragma once
 
 #include "../Common/Singleton.h"
@@ -45,20 +76,20 @@ using namespace std;
 
 /*
 
-.	Пояснение по поводу картинок
+.	РџРѕСЏСЃРЅРµРЅРёРµ РїРѕ РїРѕРІРѕРґСѓ РєР°СЂС‚РёРЅРѕРє
 
-.	изображения (not embedded) пишутся в общий WordStream после всех символов
-.	информация об изображениях хранится в FBSE, для (not embedded) храним смещения в стриме WordStream (foDelay)
-.	привязка изображение к автофигуре идет через свойство Blip::pib
-
-...................................................................................................................
-
-.	разница между начальным индексом для объекта из MAIN DOCUMENT и HEADER должна быть 1000 
-.	иначе ворд такие документы открывает без отображения содержимого
+.	РёР·РѕР±СЂР°Р¶РµРЅРёСЏ (not embedded) РїРёС€СѓС‚СЃСЏ РІ РѕР±С‰РёР№ WordStream РїРѕСЃР»Рµ РІСЃРµС… СЃРёРјРІРѕР»РѕРІ
+.	РёРЅС„РѕСЂРјР°С†РёСЏ РѕР± РёР·РѕР±СЂР°Р¶РµРЅРёСЏС… С…СЂР°РЅРёС‚СЃСЏ РІ FBSE, РґР»СЏ (not embedded) С…СЂР°РЅРёРј СЃРјРµС‰РµРЅРёСЏ РІ СЃС‚СЂРёРјРµ WordStream (foDelay)
+.	РїСЂРёРІСЏР·РєР° РёР·РѕР±СЂР°Р¶РµРЅРёРµ Рє Р°РІС‚РѕС„РёРіСѓСЂРµ РёРґРµС‚ С‡РµСЂРµР· СЃРІРѕР№СЃС‚РІРѕ Blip::pib
 
 ...................................................................................................................
 
-.	Inline-автофигуры пишутся с дополнительными символами	-	{ SHAPE  \\* MERGEFORMAT }	//	 TODO : надо разбираться с бинарниками, в спецификации таких фигур нету
+.	СЂР°Р·РЅРёС†Р° РјРµР¶РґСѓ РЅР°С‡Р°Р»СЊРЅС‹Рј РёРЅРґРµРєСЃРѕРј РґР»СЏ РѕР±СЉРµРєС‚Р° РёР· MAIN DOCUMENT Рё HEADER РґРѕР»Р¶РЅР° Р±С‹С‚СЊ 1000 
+.	РёРЅР°С‡Рµ РІРѕСЂРґ С‚Р°РєРёРµ РґРѕРєСѓРјРµРЅС‚С‹ РѕС‚РєСЂС‹РІР°РµС‚ Р±РµР· РѕС‚РѕР±СЂР°Р¶РµРЅРёСЏ СЃРѕРґРµСЂР¶РёРјРѕРіРѕ
+
+...................................................................................................................
+
+.	Inline-Р°РІС‚РѕС„РёРіСѓСЂС‹ РїРёС€СѓС‚СЃСЏ СЃ РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹РјРё СЃРёРјРІРѕР»Р°РјРё	-	{ SHAPE  \\* MERGEFORMAT }	//	 TODO : РЅР°РґРѕ СЂР°Р·Р±РёСЂР°С‚СЊСЃСЏ СЃ Р±РёРЅР°СЂРЅРёРєР°РјРё, РІ СЃРїРµС†РёС„РёРєР°С†РёРё С‚Р°РєРёС… С„РёРіСѓСЂ РЅРµС‚Сѓ
 .	http://support.microsoft.com/kb/276862
 
 */
@@ -208,7 +239,7 @@ namespace ASCDocFileFormat
 
 			OfficeArt::OfficeArtSpContainer oOArtChShape;
 
-			// Внимание - порядок добавления объектов очень важен
+			// Р’РЅРёРјР°РЅРёРµ - РїРѕСЂСЏРґРѕРє РґРѕР±Р°РІР»РµРЅРёСЏ РѕР±СЉРµРєС‚РѕРІ РѕС‡РµРЅСЊ РІР°Р¶РµРЅ
 
 			//OfficeArt::OfficeArtChildAnchor ChildAnchor (m_nLeft, m_nRight, m_nWidth, m_nHeight);
 			oOArtChShape.PushBack (ShapeProp);
@@ -277,7 +308,7 @@ namespace ASCDocFileFormat
 		}
 
 		//
-		inline bool IsAngleBoundFlip()	// нужно только для SPA(rca)
+		inline bool IsAngleBoundFlip()	// РЅСѓР¶РЅРѕ С‚РѕР»СЊРєРѕ РґР»СЏ SPA(rca)
 		{
 			if (GetSettings ())
 				return GetSettings ()->GetTransformStyle().IsAngleBoundFlip();
@@ -341,7 +372,7 @@ namespace ASCDocFileFormat
 		}
 
 
-		// TODO : <v:textbox style="layout-flow:vertical">	-	 Направление шрифта
+		// TODO : <v:textbox style="layout-flow:vertical">	-	 РќР°РїСЂР°РІР»РµРЅРёРµ С€СЂРёС„С‚Р°
 
 		//
 		inline void SetTextureFill(bool mode, const std::wstring& textureFile)
@@ -360,9 +391,9 @@ namespace ASCDocFileFormat
 			return m_bTextureMode;
 		}
 
-		// Текстура для автофигуры или просто изображение пишутся в WORD_STREAM, а в FBSE записываем смещение картинки
+		// РўРµРєСЃС‚СѓСЂР° РґР»СЏ Р°РІС‚РѕС„РёРіСѓСЂС‹ РёР»Рё РїСЂРѕСЃС‚Рѕ РёР·РѕР±СЂР°Р¶РµРЅРёРµ РїРёС€СѓС‚СЃСЏ РІ WORD_STREAM, Р° РІ FBSE Р·Р°РїРёСЃС‹РІР°РµРј СЃРјРµС‰РµРЅРёРµ РєР°СЂС‚РёРЅРєРё
 
-		virtual void SetImageIndex(int index)	//	индекс картинки в WordStream
+		virtual void SetImageIndex(int index)	//	РёРЅРґРµРєСЃ РєР°СЂС‚РёРЅРєРё РІ WordStream
 		{
 			if (GetSettings())
 			{
@@ -399,7 +430,7 @@ namespace ASCDocFileFormat
 
 	protected:
 
-		inline void SetupInternalTb(const OOX::Logic::ShapeStyle& oStyle)		// Word портит форматирование при сохранение в (*.doc)
+		inline void SetupInternalTb(const OOX::Logic::ShapeStyle& oStyle)		// Word РїРѕСЂС‚РёС‚ С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёРµ РїСЂРё СЃРѕС…СЂР°РЅРµРЅРёРµ РІ (*.doc)
 		{
 			if (GetSettings())
 			{
@@ -417,7 +448,7 @@ namespace ASCDocFileFormat
 		OfficeArt::Enumerations::MSOSPT			m_nShapeType;
 		CShapeSettings*							m_pSettings;
 
-		bool									m_bHaveBlip;	//	привязка картинки
+		bool									m_bHaveBlip;	//	РїСЂРёРІСЏР·РєР° РєР°СЂС‚РёРЅРєРё
 
 		bool									m_bGroup;
 		bool									m_bChild;
@@ -459,7 +490,7 @@ namespace ASCDocFileFormat
 			return m_pSettings; 
 		}
 
-		virtual void SetImageIndex(int index)	//	индекс картинки в WordStream
+		virtual void SetImageIndex(int index)	//	РёРЅРґРµРєСЃ РєР°СЂС‚РёРЅРєРё РІ WordStream
 		{
 			if (GetSettings())
 			{
@@ -658,7 +689,7 @@ namespace ASCDocFileFormat
 
 			OfficeArtFSP ShapeProp (OfficeArt::Enumerations::msosptNotPrimitive, nID, FormatUtils::BytesToUInt32 (oShapeSettings.GetBytes(), 0, sizeof(unsigned int)));
 
-			// Внимание - порядок добавления объектов очень важен
+			// Р’РЅРёРјР°РЅРёРµ - РїРѕСЂСЏРґРѕРє РґРѕР±Р°РІР»РµРЅРёСЏ РѕР±СЉРµРєС‚РѕРІ РѕС‡РµРЅСЊ РІР°Р¶РµРЅ
 
 			OfficeArtSpContainer oShapeGroup;
 			oShapeGroup.PushBack (OfficeArtFSPGR((int)m_oCoordOrigin.X(),(int)m_oCoordOrigin.Y(), 
@@ -956,7 +987,7 @@ namespace ASCDocFileFormat
 		bool				m_bInline;
 	};
 
-	class CInlineShape : public IRunItem, public IOperand	//	для картинок c обтеканием вокруг текста
+	class CInlineShape : public IRunItem, public IOperand	//	РґР»СЏ РєР°СЂС‚РёРЅРѕРє c РѕР±С‚РµРєР°РЅРёРµРј РІРѕРєСЂСѓРі С‚РµРєСЃС‚Р°
 	{
 	public:
 
@@ -1032,7 +1063,7 @@ namespace ASCDocFileFormat
 			//OfficeArt::OfficeArtFBSE oBlipStoreEntry (FALSE, OfficeArt::Enumerations::msoblipJPEG, OfficeArt::Enumerations::msoblipJPEG, 0);
 			//oPicture.PushBack(oBlipStoreEntry);
 
-			int IMAGE_RATIO				=	1000;	// TODO : пересчет
+			int IMAGE_RATIO				=	1000;	// TODO : РїРµСЂРµСЃС‡РµС‚
 
 			PICMID	oBorders		(oRun.GetWidth(), oRun.GetHeight(), IMAGE_RATIO, IMAGE_RATIO, Brc80(0), Brc80(0), Brc80(0), Brc80(0));
 			PICF	oPictureInfo	(oPicture.Size(), oBorders);
@@ -1120,7 +1151,7 @@ namespace ASCDocFileFormat
 
 namespace ASCDocFileFormat
 {	
-	class COfficeArtStorage		//	формирует буфер данных из всех объектов OfficeArt
+	class COfficeArtStorage		//	С„РѕСЂРјРёСЂСѓРµС‚ Р±СѓС„РµСЂ РґР°РЅРЅС‹С… РёР· РІСЃРµС… РѕР±СЉРµРєС‚РѕРІ OfficeArt
 	{
 	private:
 		friend class COArtStorage;
@@ -1308,7 +1339,7 @@ namespace ASCDocFileFormat
 
 			if (m_arrRefImages.size())
 			{
-				m_oDrawingGroupData.PushBack(CreateImageStorage());	//	ссылки на индексы изображений пишутся в свойство Pib
+				m_oDrawingGroupData.PushBack(CreateImageStorage());	//	СЃСЃС‹Р»РєРё РЅР° РёРЅРґРµРєСЃС‹ РёР·РѕР±СЂР°Р¶РµРЅРёР№ РїРёС€СѓС‚СЃСЏ РІ СЃРІРѕР№СЃС‚РІРѕ Pib
 			}
 
 			m_oArtContent.PushBack (m_oDrawingGroupData);
@@ -1328,7 +1359,7 @@ namespace ASCDocFileFormat
 			return TRUE;
 		}
 		//
-		inline void WriteBlips ()   // Картинка пишется в WordStream, в FBSE пишем смещение Blip в этом стриме 
+		inline void WriteBlips ()   // РљР°СЂС‚РёРЅРєР° РїРёС€РµС‚СЃСЏ РІ WordStream, РІ FBSE РїРёС€РµРј СЃРјРµС‰РµРЅРёРµ Blip РІ СЌС‚РѕРј СЃС‚СЂРёРјРµ 
 		{
 			STREAMS::CSWordWriter* pBin	= STREAMS::CSWordWriter::Instance();
 			if (pBin)
@@ -1424,7 +1455,7 @@ namespace ASCDocFileFormat
 			return container;
 		}
 
-		inline OfficeArtSpgrContainer	CreateGroup (int Location)			//	пока группировка не сделана, структура будет плоской по содержанию элементов
+		inline OfficeArtSpgrContainer	CreateGroup (int Location)			//	РїРѕРєР° РіСЂСѓРїРїРёСЂРѕРІРєР° РЅРµ СЃРґРµР»Р°РЅР°, СЃС‚СЂСѓРєС‚СѓСЂР° Р±СѓРґРµС‚ РїР»РѕСЃРєРѕР№ РїРѕ СЃРѕРґРµСЂР¶Р°РЅРёСЋ СЌР»РµРјРµРЅС‚РѕРІ
 		{
 			OfficeArtSpgrContainer oGroup;									//	0xF003	-	OfficeArtSpgrContainer
 
@@ -1486,7 +1517,7 @@ namespace ASCDocFileFormat
 		}
 
 		// FBSE
-		inline OfficeArtBStoreContainer	CreateImageStorage ()	//	пишется отдельным паком
+		inline OfficeArtBStoreContainer	CreateImageStorage ()	//	РїРёС€РµС‚СЃСЏ РѕС‚РґРµР»СЊРЅС‹Рј РїР°РєРѕРј
 		{
 			OfficeArtBStoreContainer container;
 
@@ -1510,7 +1541,7 @@ namespace ASCDocFileFormat
 
 		int								m_nID;
 		int								m_nHdID;
-		int								m_nImageID;				//	Индекс картинки в OfficeArtBStoreContainer
+		int								m_nImageID;				//	РРЅРґРµРєСЃ РєР°СЂС‚РёРЅРєРё РІ OfficeArtBStoreContainer
 
 		unsigned int					m_nSize;	
 
@@ -1619,10 +1650,10 @@ namespace ASCDocFileFormat
 				COArtImage* pImage	=	new COArtImage(strFileName, pStorage->GenID (m_nLocation));
 				if (pImage)
 				{
-					CShapeRun oShapeRun		(pImage, pImage->GetID(), pStorage->GetOffSetSpa(m_nLocation));	//	смещение берем от предыдущего элемента
+					CShapeRun oShapeRun		(pImage, pImage->GetID(), pStorage->GetOffSetSpa(m_nLocation));	//	СЃРјРµС‰РµРЅРёРµ Р±РµСЂРµРј РѕС‚ РїСЂРµРґС‹РґСѓС‰РµРіРѕ СЌР»РµРјРµРЅС‚Р°
 
-					oShapeRun.UpdateSizes	(*oXml.style);													//	размеры
-					oShapeRun.SetWrap		(oXml.Wrap);													//	обтекание
+					oShapeRun.UpdateSizes	(*oXml.style);													//	СЂР°Р·РјРµСЂС‹
+					oShapeRun.SetWrap		(oXml.Wrap);													//	РѕР±С‚РµРєР°РЅРёРµ
 					oShapeRun.SetAnchor		((bool)(oXml.anchorlock.is_init()));
 					oShapeRun.SetUseBehind	(*oXml.style);													
 
@@ -1666,7 +1697,7 @@ namespace ASCDocFileFormat
 				Unit<int, Pt> nWidth (*oStyle.Size->Width);
 				Unit<int, Pt> nHeight (*oStyle.Size->Height);
 
-				if (typeid(T) == typeid(OOX::Logic::Line))	//	для DOC файла точки начала и конца линии устанавливаются в структуре SPA
+				if (typeid(T) == typeid(OOX::Logic::Line))	//	РґР»СЏ DOC С„Р°Р№Р»Р° С‚РѕС‡РєРё РЅР°С‡Р°Р»Р° Рё РєРѕРЅС†Р° Р»РёРЅРёРё СѓСЃС‚Р°РЅР°РІР»РёРІР°СЋС‚СЃСЏ РІ СЃС‚СЂСѓРєС‚СѓСЂРµ SPA
 				{
 					OOX::Logic::Line* pLine = (OOX::Logic::Line*)(&oXml);
 					if (pLine)
@@ -1704,7 +1735,7 @@ namespace ASCDocFileFormat
 			return m_nLocation;
 		}
 
-		inline CTextBoxRef* LastTbRef ()	//	если у фигуры есть внутренний контент, индексируем его (обычный список)
+		inline CTextBoxRef* LastTbRef ()	//	РµСЃР»Рё Сѓ С„РёРіСѓСЂС‹ РµСЃС‚СЊ РІРЅСѓС‚СЂРµРЅРЅРёР№ РєРѕРЅС‚РµРЅС‚, РёРЅРґРµРєСЃРёСЂСѓРµРј РµРіРѕ (РѕР±С‹С‡РЅС‹Р№ СЃРїРёСЃРѕРє)
 		{
 			CTextBoxRef* pLastTbRef	=	m_pLastTbRef;
 			m_pLastTbRef			=	NULL;
@@ -1724,7 +1755,7 @@ namespace ASCDocFileFormat
 		template<class T> CShapeRun BuildOdbflRun (const T& oXmlShape, CMapShape& oInnerRef);
 		template<class T> COArtShape* InternalBuildOArtShape (const T& oXmlShape, CMapShape& oInnerRef);
 		//
-		inline CMapShape GetRefShape (const OOX::Logic::Pict& oPicture)	//	DOCX может содержать ссылки на дубликаты shapetype
+		inline CMapShape GetRefShape (const OOX::Logic::Pict& oPicture)	//	DOCX РјРѕР¶РµС‚ СЃРѕРґРµСЂР¶Р°С‚СЊ СЃСЃС‹Р»РєРё РЅР° РґСѓР±Р»РёРєР°С‚С‹ shapetype
 		{
 			const OOX::Logic::Shape& shape	= oPicture.shape;
 
@@ -1781,7 +1812,7 @@ namespace ASCDocFileFormat
 			return oMapShape;
 		}
 
-		inline CMapShape GetRefShape (const OOX::Logic::Shape& oShape, const OOX::Logic::Group& oXmlGroup)	//	DOCX может содержать ссылки на дубликаты shapetype
+		inline CMapShape GetRefShape (const OOX::Logic::Shape& oShape, const OOX::Logic::Group& oXmlGroup)	//	DOCX РјРѕР¶РµС‚ СЃРѕРґРµСЂР¶Р°С‚СЊ СЃСЃС‹Р»РєРё РЅР° РґСѓР±Р»РёРєР°С‚С‹ shapetype
 		{
 			map <string, CMapShape>::iterator id = m_oMapShapes.find (oShape.Type);
 			if (id != m_oMapShapes.end())
@@ -1855,7 +1886,7 @@ namespace ASCDocFileFormat
 			if (pShape)
 			{
 				int nType	=	oInnerRef.m_nType;
-				if (nType == OfficeArt::Enumerations::msosptTextStop)		//	пока не понятно что делать с такими фигурами
+				if (nType == OfficeArt::Enumerations::msosptTextStop)		//	РїРѕРєР° РЅРµ РїРѕРЅСЏС‚РЅРѕ С‡С‚Рѕ РґРµР»Р°С‚СЊ СЃ С‚Р°РєРёРјРё С„РёРіСѓСЂР°РјРё
 					nType	=	0;
 
 				pShape->SetShapeType (nType);
@@ -1903,7 +1934,7 @@ namespace ASCDocFileFormat
 					if (oInnerRef.m_strAdjustValues.length())
 						pShape->GetSettings()->GetGeometryStyle().SetAdjustValues (oInnerRef.m_strAdjustValues);
 
-					if (typeid(T) == typeid(OOX::Logic::Roundrect))		//	для DOC файла велична арки пишется в adjust свойство
+					if (typeid(T) == typeid(OOX::Logic::Roundrect))		//	РґР»СЏ DOC С„Р°Р№Р»Р° РІРµР»РёС‡РЅР° Р°СЂРєРё РїРёС€РµС‚СЃСЏ РІ adjust СЃРІРѕР№СЃС‚РІРѕ
 					{
 						OOX::Logic::Roundrect* roundrect = (OOX::Logic::Roundrect*)(&oXmlShape);
 						if (roundrect)

@@ -1,3 +1,34 @@
+Ôªø/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 #pragma once
 #include "../../Base/Nullable.h"
 #include "../../Common/SimpleTypes_Drawing.h"
@@ -222,7 +253,7 @@ namespace OOX
 			nullable<SimpleTypes::CDouble>											m_oSz;
 			nullable<SimpleTypes::CUnderline<SimpleTypes::underlineNone>>			m_oUnderline;
 			nullable<SimpleTypes::CPercentage>										m_oBaseline;
-			nullable<SimpleTypes::CPoint>											m_oSpace;//Ì‡ Ò‡ÏÓÏ ‰ÂÎÂ ÌÛÊÌÓ - 20.1.10.74 ST_TextPoint (Text Point)
+			nullable<SimpleTypes::CPoint>											m_oSpace;//–Ω–∞ —Å–∞–º–æ–º –¥–µ–ª–µ –Ω—É–∂–Ω–æ - 20.1.10.74 ST_TextPoint (Text Point)
 			nullable<SimpleTypes::CLang>											m_oLanguage;
 			nullable<SimpleTypes::COnOff<SimpleTypes::onoffFalse>>					m_oKumimoji;
 			nullable<SimpleTypes::COnOff<SimpleTypes::onoffFalse>>					m_oNormalizeH;
@@ -236,7 +267,7 @@ namespace OOX
 			//strike//20.1.10.79
 
 			// Childs
-			EFillType                                         m_eFillType;   // “ËÔ Á‡ÎË‚ÍË
+			EFillType                                         m_eFillType;   // –¢–∏–ø –∑–∞–ª–∏–≤–∫–∏
 			nullable<OOX::Drawing::CBlipFillProperties>       m_oBlipFill;
 			nullable<OOX::Drawing::CGradientFillProperties>   m_oGradFill;
 			nullable<OOX::Drawing::CGroupFillProperties>      m_oGrpFill;
@@ -253,13 +284,13 @@ namespace OOX
 			nullable<OOX::Drawing::CEffectList>				  m_oEffectList;
 			nullable<OOX::Drawing::COfficeArtExtensionList>	  m_oExtensionList;
 			
-			//highlight (Highlight Color) ß21.1.2.3.4
-			//hlinkMouseOver (Mouse-Over Hyperlink) ß21.1.2.3.6
-			//rtl (Right to Left Run) ß21.1.2.2.8
-			//uFill (Underline Fill) ß21.1.2.3.12
-			//uFillTx (Underline Fill Properties Follow Text) ß21.1.2.3.13
-			//uLn (Underline Stroke) ß21.1.2.3.14
-			//uLnTx (Underline Follows Text) ß21.1.2.3.15
+			//highlight (Highlight Color) ¬ß21.1.2.3.4
+			//hlinkMouseOver (Mouse-Over Hyperlink) ¬ß21.1.2.3.6
+			//rtl (Right to Left Run) ¬ß21.1.2.2.8
+			//uFill (Underline Fill) ¬ß21.1.2.3.12
+			//uFillTx (Underline Fill Properties Follow Text) ¬ß21.1.2.3.13
+			//uLn (Underline Stroke) ¬ß21.1.2.3.14
+			//uLnTx (Underline Follows Text) ¬ß21.1.2.3.15
 		};
 
 		//--------------------------------------------------------------------------------
@@ -494,19 +525,19 @@ namespace OOX
 			nullable<CLineSpacing>											m_oBeforeSpacing;
 			nullable<OOX::Drawing::COfficeArtExtensionList>					m_oExtLst;			
 
-			//buAutoNum //(Auto-Numbered Bullet) ß21.1.2.4.1
-			//buBlip //(Picture Bullet) ß21.1.2.4.2
-			//buChar //(Character Bullet) ß21.1.2.4.3
-			//buClr //(Color Specified) ß21.1.2.4.4
-			//buClrTx //(Follow Text) ß21.1.2.4.5
-			//buFont //(Specified) ß21.1.2.4.6
-			//buFontTx //(Follow text) ß21.1.2.4.7
-			//buNone //(No Bullet) ß21.1.2.4.8
-			//buSzPct //(Bullet Size Percentage) ß21.1.2.4.9
-			//buSzPts //(Bullet Size Points) ß21.1.2.4.10
-			//buSzTx //(Bullet Size Follows Text) ß21.1.2.4.11
+			//buAutoNum //(Auto-Numbered Bullet) ¬ß21.1.2.4.1
+			//buBlip //(Picture Bullet) ¬ß21.1.2.4.2
+			//buChar //(Character Bullet) ¬ß21.1.2.4.3
+			//buClr //(Color Specified) ¬ß21.1.2.4.4
+			//buClrTx //(Follow Text) ¬ß21.1.2.4.5
+			//buFont //(Specified) ¬ß21.1.2.4.6
+			//buFontTx //(Follow text) ¬ß21.1.2.4.7
+			//buNone //(No Bullet) ¬ß21.1.2.4.8
+			//buSzPct //(Bullet Size Percentage) ¬ß21.1.2.4.9
+			//buSzPts //(Bullet Size Points) ¬ß21.1.2.4.10
+			//buSzTx //(Bullet Size Follows Text) ¬ß21.1.2.4.11
 
-			//tabLst //(Tab List) ß21.1.2.2.14
+			//tabLst //(Tab List) ¬ß21.1.2.2.14
 		};
 
 		//--------------------------------------------------------------------------------

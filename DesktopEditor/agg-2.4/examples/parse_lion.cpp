@@ -1,4 +1,4 @@
-#include <stdlib.h>
+﻿#include <stdlib.h>
 #include <ctype.h>
 #include <stdio.h>
 #include "agg_color_rgba.h"

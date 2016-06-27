@@ -1,3 +1,34 @@
+п»ї/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 
 
 #include "ods_table_context.h"
@@ -63,7 +94,7 @@ void ods_table_context::add_defined_range(const std::wstring & name, const std::
 
 	formulasconvert::oox2odf_converter formulas_converter;
 
-	std::wstring odf_range = formulas_converter.convert_named_ref(cell_range);//todo - разделить конвертацию диапазонов/рэнжей на c [] и без
+	std::wstring odf_range = formulas_converter.convert_named_ref(cell_range);//todo - СЂР°Р·РґРµР»РёС‚СЊ РєРѕРЅРІРµСЂС‚Р°С†РёСЋ РґРёР°РїР°Р·РѕРЅРѕРІ/СЂСЌРЅР¶РµР№ РЅР° c [] Рё Р±РµР·
 	boost::algorithm::replace_all(odf_range, L"[", L"");
 	boost::algorithm::replace_all(odf_range, L"]", L"");
 	std::wstring odf_base_cell = formulas_converter.find_base_cell(cell_range);
@@ -163,8 +194,8 @@ void ods_table_context::start_table(office_element_ptr & elm)
 	state().set_table_style(style);
 	state().set_table_hidden(false);
 
-	//для свойств страницы, а не таблицы - нужно создать master-page c page layout и связать по имени со стилем таблицы
-	//причем здесь, т.к. с другой стороны это ВСЕ еще свойства листа. то есть совйства листа разделить на свйства страницы и таблицы ..
+	//РґР»СЏ СЃРІРѕР№СЃС‚РІ СЃС‚СЂР°РЅРёС†С‹, Р° РЅРµ С‚Р°Р±Р»РёС†С‹ - РЅСѓР¶РЅРѕ СЃРѕР·РґР°С‚СЊ master-page c page layout Рё СЃРІСЏР·Р°С‚СЊ РїРѕ РёРјРµРЅРё СЃРѕ СЃС‚РёР»РµРј С‚Р°Р±Р»РёС†С‹
+	//РїСЂРёС‡РµРј Р·РґРµСЃСЊ, С‚.Рє. СЃ РґСЂСѓРіРѕР№ СЃС‚РѕСЂРѕРЅС‹ СЌС‚Рѕ Р’РЎР• РµС‰Рµ СЃРІРѕР№СЃС‚РІР° Р»РёСЃС‚Р°. С‚Рѕ РµСЃС‚СЊ СЃРѕРІР№СЃС‚РІР° Р»РёСЃС‚Р° СЂР°Р·РґРµР»РёС‚СЊ РЅР° СЃРІР№СЃС‚РІР° СЃС‚СЂР°РЅРёС†С‹ Рё С‚Р°Р±Р»РёС†С‹ ..
 	//todooo
 	//????
 }

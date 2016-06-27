@@ -1,3 +1,34 @@
+п»ї/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 
 #include "draw_common.h"
 
@@ -113,14 +144,14 @@ void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
 
 	if (baseStyleInst && ((!presentation_shape_attlist_.presentation_user_transformed_) || 
 						 ((presentation_shape_attlist_.presentation_user_transformed_) && 
-						 (presentation_shape_attlist_.presentation_user_transformed_->get()== false))))//векторная фигура презентаций 
+						 (presentation_shape_attlist_.presentation_user_transformed_->get()== false))))//РІРµРєС‚РѕСЂРЅР°СЏ С„РёРіСѓСЂР° РїСЂРµР·РµРЅС‚Р°С†РёР№ 
 	{
 		style_instance * defaultStyle = Context.root()->odf_context().styleContainer().style_default_by_type(odf_types::style_family::Presentation);
 		if (defaultStyle)instances.push_back(defaultStyle);
 
 		instances.push_back(baseStyleInst);
 	}
-	if (grStyleInst)//обычная векторная фигура
+	if (grStyleInst)//РѕР±С‹С‡РЅР°СЏ РІРµРєС‚РѕСЂРЅР°СЏ С„РёРіСѓСЂР°
 	{		
 		style_instance * defaultStyle = Context.root()->odf_context().styleContainer().style_default_by_type(odf_types::style_family::Graphic);
 		if (defaultStyle)instances.push_back(defaultStyle);
@@ -185,7 +216,7 @@ void draw_image::pptx_convert(oox::pptx_conversion_context & Context)
     const std::wstring href = common_xlink_attlist_.href_.get_value_or(L"");
 
     Context.get_slide_context().start_image(href);
-////////////////////////////////////в принципе достаточно общая часть ...	
+////////////////////////////////////РІ РїСЂРёРЅС†РёРїРµ РґРѕСЃС‚Р°С‚РѕС‡РЅРѕ РѕР±С‰Р°СЏ С‡Р°СЃС‚СЊ ...	
 	Context.get_text_context().start_object();
 
 	int i=0;
@@ -202,7 +233,7 @@ void draw_image::pptx_convert(oox::pptx_conversion_context & Context)
 	{
 		Context.get_slide_context().set_property(_property(L"text-content",text_content_));
 	}
-////////////////////////////////////////////////////////////////////////////3 раза уже повторилась Content -> Context
+////////////////////////////////////////////////////////////////////////////3 СЂР°Р·Р° СѓР¶Рµ РїРѕРІС‚РѕСЂРёР»Р°СЃСЊ Content -> Context
     Context.get_slide_context().end_image();
 }
 void draw_chart::pptx_convert(oox::pptx_conversion_context & Context)
@@ -222,7 +253,7 @@ void draw_chart::pptx_convert(oox::pptx_conversion_context & Context)
 }
 void draw_text_box::pptx_convert(oox::pptx_conversion_context & Context)
 {
-	Context.get_slide_context().start_shape(2);//rect с наваротами
+	Context.get_slide_context().start_shape(2);//rect СЃ РЅР°РІР°СЂРѕС‚Р°РјРё
 	Context.get_text_context().start_object();
 
 	int i=0;
@@ -256,48 +287,48 @@ void draw_object::pptx_convert(oox::pptx_conversion_context & Context)
 
         cpdoccore::odf_reader::odf_document objectSubDoc(objectPath, NULL);    
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//в отдельных embd объектах чаще всего диаграммы, уравнения... но МОГУТ быть и обычные объекты подтипа frame!!! 
-		//пример RemanejamentoOrcamentario.ods
+//РІ РѕС‚РґРµР»СЊРЅС‹С… embd РѕР±СЉРµРєС‚Р°С… С‡Р°С‰Рµ РІСЃРµРіРѕ РґРёР°РіСЂР°РјРјС‹, СѓСЂР°РІРЅРµРЅРёСЏ... РЅРѕ РњРћР“РЈРў Р±С‹С‚СЊ Рё РѕР±С‹С‡РЅС‹Рµ РѕР±СЉРµРєС‚С‹ РїРѕРґС‚РёРїР° frame!!! 
+		//РїСЂРёРјРµСЂ RemanejamentoOrcamentario.ods
 ///////////////////////////////////////////////////////////////////////////
-//функциональная часть
+//С„СѓРЅРєС†РёРѕРЅР°Р»СЊРЅР°СЏ С‡Р°СЃС‚СЊ
 		const office_element *contentSubDoc = objectSubDoc.get_impl()->get_content();
 		if (!contentSubDoc)
 		{
-			//здесь другой формат xml (не Open Office)
-			//временно - замещающая картинка(если она конечно присутствует)
+			//Р·РґРµСЃСЊ РґСЂСѓРіРѕР№ С„РѕСЂРјР°С‚ xml (РЅРµ Open Office)
+			//РІСЂРµРјРµРЅРЅРѕ - Р·Р°РјРµС‰Р°СЋС‰Р°СЏ РєР°СЂС‚РёРЅРєР°(РµСЃР»Рё РѕРЅР° РєРѕРЅРµС‡РЅРѕ РїСЂРёСЃСѓС‚СЃС‚РІСѓРµС‚)
 			Context.get_slide_context().start_object_ole();
 			return;
 		}
 
 
-		chart_build objectBuild;
+		chart_build objectBuild(href);
 
 		process_build_chart process_build_object_(objectBuild, objectSubDoc.odf_context());
         contentSubDoc->accept(process_build_object_); 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//отображательная часть	
+//РѕС‚РѕР±СЂР°Р¶Р°С‚РµР»СЊРЅР°СЏ С‡Р°СЃС‚СЊ	
 
-		if (objectBuild.object_type_ == 1)//диаграмма
+		if (objectBuild.object_type_ == 1)//РґРёР°РіСЂР°РјРјР°
 		{		
 			const std::wstring href_draw = common_xlink_attlist_.href_.get_value_or(L"");
 			objectBuild.pptx_convert(Context);
 			
-			Context.get_slide_context().start_chart(href_draw); // в рисовательной части только место объекта, рамочки ... и релсы 
+			Context.get_slide_context().start_chart(href_draw); // РІ СЂРёСЃРѕРІР°С‚РµР»СЊРЅРѕР№ С‡Р°СЃС‚Рё С‚РѕР»СЊРєРѕ РјРµСЃС‚Рѕ РѕР±СЉРµРєС‚Р°, СЂР°РјРѕС‡РєРё ... Рё СЂРµР»СЃС‹ 
 			Context.get_slide_context().end_chart();		
 		}
-		else if (objectBuild.object_type_ == 2)//odt текст
+		else if (objectBuild.object_type_ == 2)//odt С‚РµРєСЃС‚
 		{
 			Context.get_slide_context().start_shape(2); 
 			Context.get_text_context().start_object();
 
-			//сменить контекст с главного на другой ... проблема со стилями!!
+			//СЃРјРµРЅРёС‚СЊ РєРѕРЅС‚РµРєСЃС‚ СЃ РіР»Р°РІРЅРѕРіРѕ РЅР° РґСЂСѓРіРѕР№ ... РїСЂРѕР±Р»РµРјР° СЃРѕ СЃС‚РёР»СЏРјРё!!
 			Context.get_text_context().set_local_styles_container(&objectSubDoc.odf_context().styleContainer());
 
 			objectBuild.pptx_convert(Context);
 			
 			std::wstring text_content_ = Context.get_text_context().end_object();
-			Context.get_text_context().set_local_styles_container(NULL);//вытираем вручную ...
+			Context.get_text_context().set_local_styles_container(NULL);//РІС‹С‚РёСЂР°РµРј РІСЂСѓС‡РЅСѓСЋ ...
 
 			if (text_content_.length()>0)
 			{
@@ -307,7 +338,7 @@ void draw_object::pptx_convert(oox::pptx_conversion_context & Context)
 		}
 		else
 		{
-			//временно - замещающая картинка(если она конечно присутствует)
+			//РІСЂРµРјРµРЅРЅРѕ - Р·Р°РјРµС‰Р°СЋС‰Р°СЏ РєР°СЂС‚РёРЅРєР°(РµСЃР»Рё РѕРЅР° РєРѕРЅРµС‡РЅРѕ РїСЂРёСЃСѓС‚СЃС‚РІСѓРµС‚)
 			Context.get_slide_context().set_use_image_replacement();
 		}
 	
@@ -320,11 +351,11 @@ void draw_object::pptx_convert(oox::pptx_conversion_context & Context)
 
 void draw_object_ole::pptx_convert(oox::pptx_conversion_context & Context)
 {
-	//объект бин в embeddings
+	//РѕР±СЉРµРєС‚ Р±РёРЅ РІ embeddings
 	//Context.get_slide_context().start_object_ole();
-	//распознать тип по guid???
+	//СЂР°СЃРїРѕР·РЅР°С‚СЊ С‚РёРї РїРѕ guid???
 
-	//временно - замещающая картинка(если она конечно присутствует)
+	//РІСЂРµРјРµРЅРЅРѕ - Р·Р°РјРµС‰Р°СЋС‰Р°СЏ РєР°СЂС‚РёРЅРєР°(РµСЃР»Рё РѕРЅР° РєРѕРЅРµС‡РЅРѕ РїСЂРёСЃСѓС‚СЃС‚РІСѓРµС‚)
 	Context.get_slide_context().set_use_image_replacement();
 
 	//Context.get_slide_context().end_object_ole();

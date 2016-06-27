@@ -1,4 +1,4 @@
-// Copyright (C) 2009-2013, International Business Machines
+﻿// Copyright (C) 2009-2013, International Business Machines
 // Corporation and others. All Rights Reserved.
 //
 // Copyright 2001 and onwards Google Inc.

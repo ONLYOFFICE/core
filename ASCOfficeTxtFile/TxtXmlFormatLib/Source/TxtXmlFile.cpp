@@ -1,3 +1,34 @@
+п»ї/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 #include <string>
 
 #include "TxtXmlFile.h"
@@ -74,7 +105,7 @@ static int ParseTxtOptions(const std::wstring & sXmlOptions)
 
 HRESULT CTxtXmlFile::txt_LoadFromFile(const std::wstring & sSrcFileName, const std::wstring & sDstPath, const std::wstring & sXMLOptions)
 {
-	//проверка на структуру xml - если что не так выкинет быстро
+	//РїСЂРѕРІРµСЂРєР° РЅР° СЃС‚СЂСѓРєС‚СѓСЂСѓ xml - РµСЃР»Рё С‡С‚Рѕ РЅРµ С‚Р°Рє РІС‹РєРёРЅРµС‚ Р±С‹СЃС‚СЂРѕ
 	//HRESULT hr = xml_LoadFromFile(sSrcFileName, sDstPath, sXMLOptions);
 	//if(hr == S_OK)
 	//	return S_OK;
@@ -218,12 +249,12 @@ void CTxtXmlFile::CreateDocxEmpty(CString strDirectory, Writers::FileWriter * pD
 	pDocxWriter->m_oNumberingWriter.Write();
 	pDocxWriter->m_oFontTableWriter.Write();
 	pDocxWriter->m_oHeaderFooterWriter.Write();
-	//Setting пишем после HeaderFooter, чтобы заполнить evenAndOddHeaders
+	//Setting РїРёС€РµРј РїРѕСЃР»Рµ HeaderFooter, С‡С‚РѕР±С‹ Р·Р°РїРѕР»РЅРёС‚СЊ evenAndOddHeaders
 	pDocxWriter->m_oSettingWriter.Write();
 	pDocxWriter->m_oWebSettingsWriter.Write();
-	//Document пишем после HeaderFooter, чтобы заполнить sectPr
+	//Document РїРёС€РµРј РїРѕСЃР»Рµ HeaderFooter, С‡С‚РѕР±С‹ Р·Р°РїРѕР»РЅРёС‚СЊ sectPr
 	pDocxWriter->m_oDocumentWriter.Write();
-	//Rels и ContentTypes пишем в конце
+	//Rels Рё ContentTypes РїРёС€РµРј РІ РєРѕРЅС†Рµ
 	pDocxWriter->m_oDocumentRelsWriter.Write();
 	pDocxWriter->m_oContentTypesWriter.Write();
 }

@@ -1,4 +1,4 @@
-#ifndef HEADER_CURL_SHARE_H
+﻿#ifndef HEADER_CURL_SHARE_H
 #define HEADER_CURL_SHARE_H
 /***************************************************************************
  *                                  _   _ ____  _

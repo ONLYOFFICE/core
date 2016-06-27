@@ -1,4 +1,4 @@
-#ifndef HEADER_CURL_TOOL_MFILES_H
+﻿#ifndef HEADER_CURL_TOOL_MFILES_H
 #define HEADER_CURL_TOOL_MFILES_H
 /***************************************************************************
  *                                  _   _ ____  _

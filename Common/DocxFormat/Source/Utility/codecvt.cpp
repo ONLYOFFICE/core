@@ -1,3 +1,34 @@
+п»ї/*
+ * (c) Copyright Ascensio System SIA 2010-2016
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,
+ * EU, LV-1021.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 #include "codecvt.h"
 #include <algorithm>
 
@@ -11,7 +42,7 @@ ucs2_conversion::do_in(mbstate_t&,
 {
 	const int max_input = (from_end - from) & ~1;
 	const int max_output = (to_limit - to);
-    int count = std::min(max_input / 2, max_output); // TODO попробовать оптимизировать, заменив деление на сдвиг
+    int count = std::min(max_input / 2, max_output); // TODO РїРѕРїСЂРѕР±РѕРІР°С‚СЊ РѕРїС‚РёРјРёР·РёСЂРѕРІР°С‚СЊ, Р·Р°РјРµРЅРёРІ РґРµР»РµРЅРёРµ РЅР° СЃРґРІРёРі
 
 	from_next = from;
 	to_next = to;
@@ -36,7 +67,7 @@ ucs2_conversion::do_out(mbstate_t&,
 {
 	const int max_input = (from_end - from);
 	const int max_output = (to_limit - to) & ~1;
-    int count = std::min(max_input, max_output / 2);	// TODO попробовать оптимизировать, заменив деление на сдвиг
+    int count = std::min(max_input, max_output / 2);	// TODO РїРѕРїСЂРѕР±РѕРІР°С‚СЊ РѕРїС‚РёРјРёР·РёСЂРѕРІР°С‚СЊ, Р·Р°РјРµРЅРёРІ РґРµР»РµРЅРёРµ РЅР° СЃРґРІРёРі
 
 	from_next = from;
 	to_next = to;
@@ -58,7 +89,7 @@ ube_conversion::do_in(mbstate_t&,
 {
 	const int max_input = (from_end - from) & ~1;
 	const int max_output = (to_limit - to);
-    int count = std::min(max_input / 2, max_output); // TODO попробовать оптимизировать, заменив деление на сдвиг
+    int count = std::min(max_input / 2, max_output); // TODO РїРѕРїСЂРѕР±РѕРІР°С‚СЊ РѕРїС‚РёРјРёР·РёСЂРѕРІР°С‚СЊ, Р·Р°РјРµРЅРёРІ РґРµР»РµРЅРёРµ РЅР° СЃРґРІРёРі
 
 	from_next = from;
 	to_next = to;
@@ -82,7 +113,7 @@ ube_conversion::do_out(mbstate_t&,
 {
 	const int max_input = (from_end - from);
 	const int max_output = (to_limit - to) & ~1;
-    int count = std::min(max_input, max_output / 2);	// TODO попробовать оптимизировать, заменив деление на сдвиг
+    int count = std::min(max_input, max_output / 2);	// TODO РїРѕРїСЂРѕР±РѕРІР°С‚СЊ РѕРїС‚РёРјРёР·РёСЂРѕРІР°С‚СЊ, Р·Р°РјРµРЅРёРІ РґРµР»РµРЅРёРµ РЅР° СЃРґРІРёРі
 
 	from_next = from;
 	to_next = to;
@@ -129,8 +160,8 @@ utf8_conversion::do_in(mbstate_t&,
 }
 
 
-// TODO можно оптимизировать, считая что в utf8 максимальное значение байт на символ 4. 
-// И после заменив деление и умножение на сдвиги
+// TODO РјРѕР¶РЅРѕ РѕРїС‚РёРјРёР·РёСЂРѕРІР°С‚СЊ, СЃС‡РёС‚Р°СЏ С‡С‚Рѕ РІ utf8 РјР°РєСЃРёРјР°Р»СЊРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ Р±Р°Р№С‚ РЅР° СЃРёРјРІРѕР» 4. 
+// Р РїРѕСЃР»Рµ Р·Р°РјРµРЅРёРІ РґРµР»РµРЅРёРµ Рё СѓРјРЅРѕР¶РµРЅРёРµ РЅР° СЃРґРІРёРіРё
 utf8_conversion::result
 utf8_conversion::do_out(mbstate_t&,
 				  const wchar_t* from, const wchar_t* from_end, const wchar_t*& from_next,

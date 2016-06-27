@@ -1,4 +1,4 @@
-#ifndef HEADER_CURL_BUNDLES_H
+﻿#ifndef HEADER_CURL_BUNDLES_H
 #define HEADER_CURL_BUNDLES_H
 /***************************************************************************
  *                                  _   _ ____  _

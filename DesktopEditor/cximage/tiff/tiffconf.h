@@ -1,4 +1,4 @@
-/*
+﻿/*
   Configuration defines for installed libtiff.
   This file maintained for backward compatibility. Do not use definitions
   from this file in your programs.

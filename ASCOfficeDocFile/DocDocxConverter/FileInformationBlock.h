@@ -1216,10 +1216,12 @@ namespace DocFileFormat
 			m_FibBase.fcMin				= reader.ReadInt32(); //24
 			m_FibBase.fcMac				= reader.ReadInt32(); //28
 
-			csw = reader.ReadUInt16(); //32
+			if (m_FibBase.nFib  > Fib1995)
+				csw = reader.ReadUInt16(); //32
 
 			if (m_FibBase.nFib >= Fib1997 || m_FibBase.nFib == 0)
 			{	
+				
 				//read the RgW97
 				reader.ReadBytes( 26, false ); //34 
 				m_RgW97.lidFE = reader.ReadUInt16(); //60

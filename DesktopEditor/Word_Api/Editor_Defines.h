@@ -474,7 +474,7 @@
 
 #define c_oAscError_ID_OpenWarning                          500
 
-#define c_oAscError_ID_c_oAscError_ID_EvaluteJSError        -1000
+#define c_oAscError_ID_EvaluteJSError                       -1000
 
 #define c_oAscTypeSelectElement_Paragraph			0
 #define c_oAscTypeSelectElement_Table				1

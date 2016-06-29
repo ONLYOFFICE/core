@@ -8,7 +8,7 @@ Server Libs for OnlyOffice Online Editors. Conversion popular formats DOC, DOCX,
 
 Official website: [http://www.onlyoffice.org](http://onlyoffice.org "http://www.onlyoffice.org")
 
-Code repository: [https://github.com/ONLYOFFICE/core](https://github.com/ONLYOFFICE/sdkjs "https://github.com/ONLYOFFICE/core")
+Code repository: [https://github.com/ONLYOFFICE/core](https://github.com/ONLYOFFICE/сore "https://github.com/ONLYOFFICE/core")
 
 SaaS version: [http://www.onlyoffice.com](http://www.onlyoffice.com "http://www.onlyoffice.com")
 

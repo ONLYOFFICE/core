@@ -403,34 +403,78 @@
 #define c_oAscWrapStyle2_InFront		6
 
 /*Error level & ID*/
-#define c_oAscError_Level_Critical					-1
-#define c_oAscError_Level_NoCritical				0
+#define c_oAscError_Level_Critical                          -1
+#define c_oAscError_Level_NoCritical                        0
 
-#define c_oAscError_ID_ServerSaveComplete			3
-#define c_oAscError_ID_ConvertationProgress			2
-#define c_oAscError_ID_DownloadProgress				1
-#define c_oAscError_ID_No							0
-#define c_oAscError_ID_Unknown						-1
-#define c_oAscError_ID_ConvertationTimeout			-2
-#define c_oAscError_ID_ConvertationError			-3
-#define c_oAscError_ID_DownloadError				-4
-#define c_oAscError_ID_UnexpectedGuid				-5
-#define c_oAscError_ID_Database						-6
-#define c_oAscError_ID_FileRequest					-7
-#define c_oAscError_ID_FileVKey						-8
-#define c_oAscError_ID_UplImageSize					-9
-#define c_oAscError_ID_UplImageExt					-10
-#define c_oAscError_ID_UplImageFileCount			-11
-#define c_oAscError_ID_NoSupportClipdoard			-12
-#define c_oAscError_ID_SplitCellMaxRows				-13
-#define c_oAscError_ID_SplitCellMaxCols				-14
-#define c_oAscError_ID_SplitCellRowsDivider			-15
-#define c_oAscError_ID_CoAuthoringDisconnect		-18
-#define c_oAscError_ID_ConvertationPassword			-19
-#define c_oAscError_ID_VKeyEncrypt					-20
-#define c_oAscError_ID_KeyExpire					-21
-#define c_oAscError_ID_UserCountExceed				-22
-#define c_oAscError_ID_MobileUnexpectedCharCount	-23
+#define c_oAscError_ID_ServerSaveComplete                   3
+#define c_oAscError_ID_ConvertationProgress                 2
+#define c_oAscError_ID_DownloadProgress                     1
+#define c_oAscError_ID_No                                   0
+#define c_oAscError_ID_Unknown                              -1
+#define c_oAscError_ID_ConvertationTimeout                  -2
+#define c_oAscError_ID_ConvertationError                    -3
+#define c_oAscError_ID_DownloadError                        -4
+#define c_oAscError_ID_UnexpectedGuid                       -5
+#define c_oAscError_ID_Database                             -6
+#define c_oAscError_ID_FileRequest                          -7
+#define c_oAscError_ID_FileVKey                             -8
+#define c_oAscError_ID_UplImageSize                         -9
+#define c_oAscError_ID_UplImageExt                          -10
+#define c_oAscError_ID_UplImageFileCount                    -11
+#define c_oAscError_ID_NoSupportClipdoard                   -12
+#define c_oAscError_ID_UplImageUrl                          -13
+
+#define c_oAscError_ID_StockChartError                      -17
+#define c_oAscError_ID_CoAuthoringDisconnect                -18
+#define c_oAscError_ID_ConvertationPassword                 -19
+#define c_oAscError_ID_VKeyEncrypt                          -20
+#define c_oAscError_ID_KeyExpire                            -21
+#define c_oAscError_ID_UserCountExceed                      -22
+
+#define c_oAscError_ID_SplitCellMaxRows                     -30
+#define c_oAscError_ID_SplitCellMaxCols                     -31
+#define c_oAscError_ID_SplitCellRowsDivider                 -32
+#define c_oAscError_ID_MobileUnexpectedCharCount            -35
+#define c_oAscError_ID_MailMergeLoadFile                    -40
+#define c_oAscError_ID_MailMergeSaveFile                    -41
+#define c_oAscError_ID_AutoFilterDataRangeError             -50
+#define c_oAscError_ID_AutoFilterChangeFormatTableError     -51
+#define c_oAscError_ID_AutoFilterChangeError                -52
+#define c_oAscError_ID_AutoFilterMoveToHiddenRangeError     -53
+#define c_oAscError_ID_LockedAllError                       -54
+#define c_oAscError_ID_LockedWorksheetRename                -55
+#define c_oAscError_ID_FTChangeTableRangeError              -56
+#define c_oAscError_ID_FTRangeIncludedOtherTables           -57
+
+#define c_oAscError_ID_PasteMaxRangeError                   -64
+#define c_oAscError_ID_PastInMergeAreaError                 -65
+
+#define c_oAscError_ID_DataRangeError                       -72
+#define c_oAscError_ID_CannotMoveRange                      -71
+
+#define c_oAscError_ID_MaxDataSeriesError                   -80
+#define c_oAscError_ID_CannotFillRange                      -81
+
+#define c_oAscError_ID_UserDrop                             -100
+#define c_oAscError_ID_Warning                              -101
+
+#define c_oAscError_ID_FrmlWrongCountParentheses            -300
+#define c_oAscError_ID_FrmlWrongOperator                    -301
+#define c_oAscError_ID_FrmlWrongMaxArgument                 -302
+#define c_oAscError_ID_FrmlWrongCountArgument               -303
+#define c_oAscError_ID_FrmlWrongFunctionName                -304
+#define c_oAscError_ID_FrmlAnotherParsingError              -305
+#define c_oAscError_ID_FrmlWrongArgumentRange               -306
+#define c_oAscError_ID_FrmlOperandExpected                  -307
+#define c_oAscError_ID_FrmlParenthesesCorrectCount          -308
+#define c_oAscError_ID_FrmlWrongReferences                  -309
+
+#define c_oAscError_ID_InvalidReferenceOrName               -310
+#define c_oAscError_ID_LockCreateDefName                    -311
+
+#define c_oAscError_ID_OpenWarning                          500
+
+#define c_oAscError_ID_c_oAscError_ID_EvaluteJSError        -1000
 
 #define c_oAscTypeSelectElement_Paragraph			0
 #define c_oAscTypeSelectElement_Table				1

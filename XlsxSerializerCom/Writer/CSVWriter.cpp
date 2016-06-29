@@ -233,16 +233,10 @@ namespace CSVWriter
 									if (0 <= nValue && nValue < pSharedStrings->m_arrItems.size())
 									{
 										OOX::Spreadsheet::CSi *pSi = static_cast<OOX::Spreadsheet::CSi *>(pSharedStrings->m_arrItems[nValue]);
-										if (NULL != pSi && pSi->m_arrItems.size() > 0)
-											if(NULL != pSi && pSi->m_arrItems.size() > 0)
-											{
-												OOX::Spreadsheet::WritingElement* pWe = pSi->m_arrItems[0];
-												if(OOX::Spreadsheet::et_t == pWe->getType())
-												{
-													OOX::Spreadsheet::CText* pText = static_cast<OOX::Spreadsheet::CText*>(pWe);
-													sCellValue = pText->m_sText;
-												}
-											}
+										if(NULL != pSi)
+										{
+											sCellValue = pSi->ToString();
+										}
 									}
 								}
 								else 

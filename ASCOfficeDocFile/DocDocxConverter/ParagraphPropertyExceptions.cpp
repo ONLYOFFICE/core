@@ -39,14 +39,14 @@ namespace DocFileFormat
     {
       if ( size != 0 )
       {
-	    this->istd = FormatUtils::BytesToUInt16( bytes, 0, size );
+	    istd = FormatUtils::BytesToUInt16( bytes, 0, size );
       }
 
 	  VirtualStreamReader *reader = NULL;
 
       //There is a SPRM that points to an offset in the data stream, 
       //where a list of SPRM is saved.
-      for ( std::list<SinglePropertyModifier>::iterator iter = this->grpprl->begin(); iter != this->grpprl->end(); iter++ )
+      for ( std::list<SinglePropertyModifier>::iterator iter = grpprl->begin(); iter != grpprl->end(); iter++ )
       {
 	    SinglePropertyModifier sprm( *iter );
 		  
@@ -68,11 +68,11 @@ namespace DocFileFormat
 		  PropertyExceptions externalPx( grpprlBytes, grpprlsize, oldVersion );
 
           //assign the external grpprl
-          RELEASEOBJECT( this->grpprl );
-		  this->grpprl = new std::list<SinglePropertyModifier>( *(externalPx.grpprl) );
+          RELEASEOBJECT( grpprl );
+		  grpprl = new std::list<SinglePropertyModifier>( *(externalPx.grpprl) );
 
           //remove the sprmPHugePapx
-		  this->grpprl->remove( sprm );
+		  grpprl->remove( sprm );
 
 		  RELEASEARRAYOBJECTS( grpprlBytes );
 		  RELEASEOBJECT( reader )

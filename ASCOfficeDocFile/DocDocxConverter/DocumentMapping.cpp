@@ -644,7 +644,7 @@ namespace DocFileFormat
 						
 						CharacterPropertyExceptions* chpxPic =	chpxs->front();
 
-						PictureDescriptor pic(chpxPic, m_document->DataStream, 0x7fffffff, m_document->FIB->m_bOlderVersion);
+						PictureDescriptor pic(chpxPic, m_document->DataStream, 0x7fffffff, m_document->bOlderVersion);
 
 						RevisionData oData = RevisionData(chpxPic);
 
@@ -782,9 +782,9 @@ namespace DocFileFormat
 					}
 				}
 			}
-			else if ((TextMark::Picture == c) && fSpec)
+			else if ((TextMark::Picture == c) && fSpec )
 			{
-				PictureDescriptor oPicture (chpx, m_document->DataStream, 0x7fffffff, m_document->FIB->m_bOlderVersion);
+				PictureDescriptor oPicture (chpx, m_document->bOlderVersion ? m_document->WordDocumentStream : m_document->DataStream, 0x7fffffff, m_document->bOlderVersion);
 
 				if ((oPicture.mfp.mm > 98) && (NULL != oPicture.shapeContainer))
 				{
@@ -1041,7 +1041,7 @@ namespace DocFileFormat
 		//find first row end
 		int fcRowEnd = findRowEndFc( cp, nestingLevel );
 
-		TablePropertyExceptions row1Tapx( findValidPapx( fcRowEnd ), m_document->DataStream, m_document->FIB->m_bOlderVersion);
+		TablePropertyExceptions row1Tapx( findValidPapx( fcRowEnd ), m_document->DataStream, m_document->bOlderVersion);
 
 		//start table
 		m_pXmlWriter->WriteNodeBegin( _T( "w:tbl" ) );
@@ -1291,7 +1291,7 @@ namespace DocFileFormat
 
 		//convert the properties
 		int fcRowEnd = findRowEndFc( cp, nestingLevel );
-		TablePropertyExceptions tapx( findValidPapx( fcRowEnd ), m_document->DataStream, m_document->FIB->m_bOlderVersion);
+		TablePropertyExceptions tapx( findValidPapx( fcRowEnd ), m_document->DataStream, m_document->bOlderVersion);
 
 		std::list<CharacterPropertyExceptions*>* chpxs = m_document->GetCharacterPropertyExceptions( fcRowEnd, fcRowEnd + 1 );
 		TableRowPropertiesMapping* trpMapping = new TableRowPropertiesMapping( m_pXmlWriter, *(chpxs->begin()) );
@@ -1523,11 +1523,13 @@ namespace DocFileFormat
 			{
 				return true;
 			}
-			else if (sprmCSymbol == iter->OpCode)	// SYMBOL
+			else if (	sprmCSymbol		== iter->OpCode ||
+						sprmOldCSymbol	== iter->OpCode)	// SYMBOL
 			{
 				return true;
 			}
-			else if (sprmCFSpec == iter->OpCode)	//	SPECIAL OBJECT
+			else if (	sprmOldCFSpec	== iter->OpCode ||
+						sprmCFSpec		== iter->OpCode)	//	SPECIAL OBJECT
 			{
 				return ((0 != iter->Arguments[0]) ? true : false);
 			}

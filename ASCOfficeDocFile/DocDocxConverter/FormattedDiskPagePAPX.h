@@ -63,7 +63,7 @@ namespace DocFileFormat
 
     public:
       virtual ~FormattedDiskPagePAPX();
-	  FormattedDiskPagePAPX( POLE::Stream* wordStream, int offset, POLE::Stream* dataStream, bool oldVersion);
+	  FormattedDiskPagePAPX( POLE::Stream* wordStream, int offset, POLE::Stream* dataStream, bool oldVersion, bool fComplex);
       /// Parses the 0Table (or 1Table) for FKP _entries containing PAPX
       static std::list<FormattedDiskPagePAPX*>* GetAllPAPXFKPs( FileInformationBlock* fib, POLE::Stream* wordStream, POLE::Stream* tableStream, POLE::Stream* dataStream);
       /// Returns a list of all PAPX FCs between they given boundaries.

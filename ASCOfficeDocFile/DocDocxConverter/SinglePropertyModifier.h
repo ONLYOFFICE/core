@@ -48,6 +48,7 @@ namespace DocFileFormat
 	class SinglePropertyModifier
 	{
 	public:
+		bool oldVersion;
 		/// The operation code identifies the property of the 
 		/// PAP/CHP/PIC/SEP/TAP which sould be modified
 		OperationCode OpCode;
@@ -60,10 +61,11 @@ namespace DocFileFormat
 		/// The Arguments size
 		unsigned int argumentsSize;
 
-		SinglePropertyModifier();
+		SinglePropertyModifier(bool oldVersion);
 		/// parses the unsigned char to retrieve a SPRM
-		SinglePropertyModifier( unsigned char* bytes, int size );
-		SinglePropertyModifier( const SinglePropertyModifier& spm );
+		SinglePropertyModifier( unsigned char* bytes, int size, bool oldVersion );
+		SinglePropertyModifier( const SinglePropertyModifier& spm);
+		
 		bool operator == ( const SinglePropertyModifier& spm ) const;
 		bool operator != ( const SinglePropertyModifier& spm ) const;
 		SinglePropertyModifier& operator = ( const SinglePropertyModifier& spm );
@@ -71,5 +73,6 @@ namespace DocFileFormat
 		/// Get be used to get the size of the sprm's operand.
 		/// Returns 0 if the Operation failed and 255 if the size is variable
 		static unsigned char GetOperandSize( unsigned char spra );
+		static unsigned char GetOldOperandSize( unsigned char code);
 	};
 }

@@ -78,38 +78,36 @@ namespace DocFileFormat
 		std::list<SinglePropertyModifier>::const_reverse_iterator rend = tapx->grpprl->rend();
 		for (std::list<SinglePropertyModifier>::const_reverse_iterator iter = tapx->grpprl->rbegin(); iter != rend; ++iter)
 		{
-#ifdef _DEBUG
-			SinglePropertyModifier spm	= (*iter);
-#endif
 			switch (iter->OpCode)
 			{				
-			case sprmTDefTable:	// Table definition SPRM
+				case sprmOldTDefTable:	
+				case sprmTDefTable:	
 				{
 					SprmTDefTable tdef(iter->Arguments, iter->argumentsSize);
 					int cc = tdef.numberOfColumns;
 
-					this->_tGrid = tdef.rgdxaCenter;
-                    this->_tcDef = tdef.rgTc80[(std::min)(_cellIndex,  (int)tdef.rgTc80.size() - 1)];	// NOTE: fix for crash
+					_tGrid = tdef.rgdxaCenter;
+                    _tcDef = tdef.rgTc80[(std::min)(_cellIndex,  (int)tdef.rgTc80.size() - 1)];	// NOTE: fix for crash
 
-					appendValueElement( this->_tcPr, _T( "textDirection" ), FormatUtils::MapValueToWideString( this->_tcDef.textFlow, &Global::TextFlowMap[0][0], 6, 6 ).c_str(), false );
+					appendValueElement( _tcPr, _T( "textDirection" ), FormatUtils::MapValueToWideString( _tcDef.textFlow, &Global::TextFlowMap[0][0], 6, 6 ).c_str(), false );
 
-					if ( this->_tcDef.vertMerge == Global::fvmMerge )
+					if ( _tcDef.vertMerge == Global::fvmMerge )
 					{
-						appendValueElement( this->_tcPr, _T( "vMerge" ), _T( "continue" ), false );
+						appendValueElement( _tcPr, _T( "vMerge" ), _T( "continue" ), false );
 					}
-					else if ( this->_tcDef.vertMerge == Global::fvmRestart )
+					else if ( _tcDef.vertMerge == Global::fvmRestart )
 					{
-						appendValueElement( this->_tcPr, _T( "vMerge" ), _T( "restart" ), false );
+						appendValueElement( _tcPr, _T( "vMerge" ), _T( "restart" ), false );
 					}
 
-					appendValueElement( this->_tcPr, _T( "vAlign" ), FormatUtils::MapValueToWideString( this->_tcDef.vertAlign, &Global::VerticalAlignMap[0][0], 3, 7 ).c_str(), false );
+					appendValueElement( _tcPr, _T( "vAlign" ), FormatUtils::MapValueToWideString( _tcDef.vertAlign, &Global::VerticalAlignMap[0][0], 3, 7 ).c_str(), false );
 
-					if ( this->_tcDef.fFitText )
+					if ( _tcDef.fFitText )
 					{
 						appendValueElement( _tcPr, _T( "tcFitText" ), _T( "" ), false );
 					}
 
-					if ( this->_tcDef.fNoWrap )
+					if ( _tcDef.fNoWrap )
 					{
 						appendValueElement( _tcPr, _T( "noWrap" ), _T( "" ), true );
 					}
@@ -117,9 +115,9 @@ namespace DocFileFormat
                     nComputedCellWidth = (short)( tdef.rgdxaCenter[(size_t)(std::min)(_cellIndex,  (int)tdef.rgTc80.size() - 1) + 1] -
                         tdef.rgdxaCenter[(std::min)(_cellIndex, (int)tdef.rgTc80.size() - 1)] );	// NOTE: fix for crash
 
-					//borders
 					if (!IsTableBordersDefined(tapx->grpprl))
-					{
+					{											//borders
+
 						RELEASEOBJECT(_brcTop);
 						_brcTop = new BorderCode(*_tcDef.brcTop);
 
@@ -135,66 +133,65 @@ namespace DocFileFormat
 				}
 				break;
 
-				//margins
-			case sprmTCellPadding:
-				{
+				case sprmTCellPadding:
+				{							//margins
+
 					unsigned char first		=	iter->Arguments[0];
 					unsigned char lim		=	iter->Arguments[1];
 					unsigned char ftsMargin	=	iter->Arguments[3];
 					short wMargin	=	FormatUtils::BytesToInt16( iter->Arguments, 4, iter->argumentsSize );
 
-					if ( ( this->_cellIndex >= first ) && ( this->_cellIndex < lim ) )
+					if ( ( _cellIndex >= first ) && ( _cellIndex < lim ) )
 					{
 						if ( FormatUtils::GetBitFromInt( iter->Arguments[2], 0 ) == true )
 						{
-							appendDxaElement( this->_tcMar, _T( "top" ), FormatUtils::IntToWideString( wMargin ).c_str(), true );
+							appendDxaElement( _tcMar, _T( "top" ), FormatUtils::IntToWideString( wMargin ).c_str(), true );
 						}
 
 						if ( FormatUtils::GetBitFromInt( iter->Arguments[2], 1 ) == true )
 						{
-							appendDxaElement( this->_tcMar, _T( "left" ), FormatUtils::IntToWideString( wMargin ).c_str(), true );
+							appendDxaElement( _tcMar, _T( "left" ), FormatUtils::IntToWideString( wMargin ).c_str(), true );
 						}
 
 						if (  FormatUtils::GetBitFromInt( iter->Arguments[2], 2 ) == true )
 						{
-							appendDxaElement( this->_tcMar, _T( "bottom" ), FormatUtils::IntToWideString( wMargin ).c_str(), true );
+							appendDxaElement( _tcMar, _T( "bottom" ), FormatUtils::IntToWideString( wMargin ).c_str(), true );
 						}
 
 						if ( FormatUtils::GetBitFromInt( iter->Arguments[2], 3 ) == true )
 						{
-							appendDxaElement( this->_tcMar, _T( "right" ), FormatUtils::IntToWideString( wMargin ).c_str(), true );
+							appendDxaElement( _tcMar, _T( "right" ), FormatUtils::IntToWideString( wMargin ).c_str(), true );
 						}
 					}
 				}
 				break;
 
-			case sprmTDefTableShd80:
-				if (!tapx->IsSkipShading97())	// если такой операнд единственный то учитываем его, иначе скипаем его
+				case sprmTDefTableShd80:
 				{
+					if (!tapx->IsSkipShading97())	// если такой операнд единственный то учитываем его, иначе скипаем его
+					{
+						apppendCellShading(iter->Arguments, iter->argumentsSize, _cellIndex);
+					}
+				}break;
+
+				case sprmOldTDefTableShd:
+				case sprmTDefTableShd:
+				{						//	cell shading for cells 0-20
 					apppendCellShading(iter->Arguments, iter->argumentsSize, _cellIndex);
-				}
-				break;
+				}break;
 
-				//	shading
+				case sprmTDefTableShd2nd:
+				{						//	cell shading for cells 21-42
+					apppendCellShading(iter->Arguments, iter->argumentsSize, (_cellIndex - 21));
+				}break;
 
-			case sprmTDefTableShd:
-				//	cell shading for cells 0-20
-				apppendCellShading(iter->Arguments, iter->argumentsSize, _cellIndex);
-				break;
+				case sprmTDefTableShd3rd:
+				{						//	cell shading for cells 43-62
+					apppendCellShading(iter->Arguments, iter->argumentsSize, (_cellIndex - 43));
+				}break;
 
-			case sprmTDefTableShd2nd:
-				//	cell shading for cells 21-42
-				apppendCellShading(iter->Arguments, iter->argumentsSize, (_cellIndex - 21));
-				break;
-
-			case sprmTDefTableShd3rd:
-				//	cell shading for cells 43-62
-				apppendCellShading(iter->Arguments, iter->argumentsSize, (_cellIndex - 43));
-				break;
-
-				//width
-			case sprmTCellWidth:
-				{
+				case sprmTCellWidth:
+				{				//width
 					unsigned char first		=	iter->Arguments[0];
 					unsigned char lim		=	iter->Arguments[1];
 
@@ -205,10 +202,9 @@ namespace DocFileFormat
 					}
 				}
 				break;
-
-				//vertical alignment
-			case sprmTVertAlign:
-				{
+				
+				case sprmTVertAlign:
+				{							//vertical alignment
 					unsigned char first		=	iter->Arguments[0];
 					unsigned char lim		=	iter->Arguments[1];
 
@@ -219,28 +215,27 @@ namespace DocFileFormat
 				}
 				break;
 
-				//Autofit
-			case sprmTFitText:
-				{
+				case sprmTFitText:
+				{				//Autofit
 					unsigned char first = iter->Arguments[0];
 					unsigned char lim = iter->Arguments[1];
 
-					if ( ( this->_cellIndex >= first ) && ( this->_cellIndex < lim ) )
+					if ( ( _cellIndex >= first ) && ( _cellIndex < lim ) )
 					{
-						appendValueElement( this->_tcPr, _T( "tcFitText" ), FormatUtils::IntToWideString( iter->Arguments[2] ).c_str(), true );
+						appendValueElement( _tcPr, _T( "tcFitText" ), FormatUtils::IntToWideString( iter->Arguments[2] ).c_str(), true );
 					}
 				}
 				break;
 
-				//borders (cell definition)
-			case sprmTSetBrc:
-				{
+				case sprmOldTSetBrc:
+				case sprmTSetBrc:
+				{					//borders (cell definition)
 					unsigned char min = iter->Arguments[0];
 					unsigned char max = iter->Arguments[1];
 
 					int bordersToApply = (int)( iter->Arguments[2] );
 
-					if ( ( this->_cellIndex >= min ) && ( this->_cellIndex < max ) )
+					if ( ( _cellIndex >= min ) && ( _cellIndex < max ) )
 					{
 						const int brcSize = 8;
 						unsigned char brcBytes[brcSize];
@@ -248,25 +243,25 @@ namespace DocFileFormat
 
 						if( FormatUtils::BitmaskToBool( bordersToApply, 0x01 ) )
 						{
-							RELEASEOBJECT( this->_brcTop );
-							this->_brcTop = new BorderCode( brcBytes, brcSize );
+							RELEASEOBJECT( _brcTop );
+							_brcTop = new BorderCode( brcBytes, brcSize );
 						}
 
 						if( FormatUtils::BitmaskToBool( bordersToApply, 0x02 ) )
 						{
-							RELEASEOBJECT( this->_brcLeft );
-							this->_brcLeft = new BorderCode( brcBytes, brcSize );
+							RELEASEOBJECT( _brcLeft );
+							_brcLeft = new BorderCode( brcBytes, brcSize );
 						}
 
 						if ( FormatUtils::BitmaskToBool( bordersToApply, 0x04 ) )
 						{
-							RELEASEOBJECT( this->_brcBottom );
-							this->_brcBottom = new BorderCode( brcBytes, brcSize );
+							RELEASEOBJECT( _brcBottom );
+							_brcBottom = new BorderCode( brcBytes, brcSize );
 						}
 
 						if ( FormatUtils::BitmaskToBool( bordersToApply, 0x08 ) )
 						{
-							RELEASEOBJECT( this->_brcRight );
+							RELEASEOBJECT( _brcRight );
 							_brcRight = new BorderCode( brcBytes, brcSize );
 						}
 					}
@@ -284,18 +279,18 @@ namespace DocFileFormat
 		_tcPr->AppendChild( tcW );
 
 		//grid span
-		this->_gridSpan = 1;
+		_gridSpan = 1;
 
-		if ( ( this->_gridIndex < (int)this->_grid->size() ) && ( nComputedCellWidth > this->_grid->at( this->_gridIndex ) ) )
+		if ( ( _gridIndex < (int)_grid->size() ) && ( nComputedCellWidth > _grid->at( _gridIndex ) ) )
 		{
 			//check the number of merged cells
-			int w = this->_grid->at( this->_gridIndex );
+			int w = _grid->at( _gridIndex );
 
-			for ( unsigned int i = this->_gridIndex + 1; i < this->_grid->size(); i++ )
+			for ( unsigned int i = _gridIndex + 1; i < _grid->size(); i++ )
 			{
-				this->_gridSpan++;
+				_gridSpan++;
 
-				w += this->_grid->at( i );
+				w += _grid->at( i );
 
 				if ( w >= nComputedCellWidth )
 				{
@@ -303,7 +298,7 @@ namespace DocFileFormat
 				}
 			}
 
-			appendValueElement( this->_tcPr, _T( "gridSpan" ), FormatUtils::IntToWideString( this->_gridSpan ).c_str(), true );
+			appendValueElement( _tcPr, _T( "gridSpan" ), FormatUtils::IntToWideString( _gridSpan ).c_str(), true );
 		}
 
 		//append margins
@@ -337,13 +332,13 @@ namespace DocFileFormat
 		if (_brcRight)
 		{
 			XMLTools::XMLElement<wchar_t> rightBorder( _T( "w:right" ) );
-			appendBorderAttributes( this->_brcRight, &rightBorder );
-			addOrSetBorder( this->_tcBorders, &rightBorder );
+			appendBorderAttributes( _brcRight, &rightBorder );
+			addOrSetBorder( _tcBorders, &rightBorder );
 		}
 
-		if ( this->_tcBorders->GetChildCount() > 0 )
+		if ( _tcBorders->GetChildCount() > 0 )
 		{
-			this->_tcPr->AppendChild( *(this->_tcBorders) );
+			_tcPr->AppendChild( *(_tcBorders) );
 		}
 
 		//write Properties

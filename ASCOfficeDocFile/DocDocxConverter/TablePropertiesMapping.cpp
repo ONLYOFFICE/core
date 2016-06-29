@@ -35,14 +35,14 @@
 namespace DocFileFormat
 {
 	TablePropertiesMapping::TablePropertiesMapping (XmlUtils::CXmlWriter* pWriter, StyleSheet* styles, std::vector<short>* grid, bool isTableStyleNeeded ):
-PropertiesMapping(pWriter), _tblPr(NULL), _tblGrid(NULL), _tblBorders(NULL), _grid(NULL),
-brcLeft(NULL), brcTop(NULL), brcBottom(NULL), brcRight(NULL), brcHorz(NULL), brcVert(NULL), _styles(NULL),
-_isTableStyleNeeded(isTableStyleNeeded)
+			PropertiesMapping(pWriter), _tblPr(NULL), _tblGrid(NULL), _tblBorders(NULL), _grid(NULL),
+			brcLeft(NULL), brcTop(NULL), brcBottom(NULL), brcRight(NULL), brcHorz(NULL), brcVert(NULL), _styles(NULL),
+			_isTableStyleNeeded(isTableStyleNeeded)
 {
-	_styles = styles;
-	this->_tblPr = new XMLTools::XMLElement<wchar_t>( _T( "w:tblPr" ) );
-	this->_tblBorders = new XMLTools::XMLElement<wchar_t>( _T( "w:tblBorders" ) );
-	this->_grid = grid;
+	_styles		= styles;
+	_tblPr		= new XMLTools::XMLElement<wchar_t>( _T( "w:tblPr" ) );
+	_tblBorders = new XMLTools::XMLElement<wchar_t>( _T( "w:tblBorders" ) );
+	_grid		= grid;
 }
 TablePropertiesMapping::~TablePropertiesMapping()
 {
@@ -63,30 +63,32 @@ namespace DocFileFormat
 	{
 		TablePropertyExceptions* tapx = static_cast<TablePropertyExceptions*>( visited );
 
-		XMLTools::XMLElement<wchar_t> tblCellMar( _T( "w:tblCellMar" ) );
-		XMLTools::XMLElement<wchar_t> tblLayout( _T( "w:tblLayout" ) );
-		XMLTools::XMLElement<wchar_t> tblpPr( _T( "w:tblpPr" ) );
-		XMLTools::XMLAttribute<wchar_t> layoutType( _T( "w:type" ), _T( "fixed" ) );
+		XMLTools::XMLElement<wchar_t>	tblCellMar	( _T( "w:tblCellMar" ) );
+		XMLTools::XMLElement<wchar_t>	tblLayout	( _T( "w:tblLayout" ) );
+		XMLTools::XMLElement<wchar_t>	tblpPr		( _T( "w:tblpPr" ) );
+		XMLTools::XMLAttribute<wchar_t> layoutType	( _T( "w:type" ), _T( "fixed" ) );
 		bool bLayoutFixed = true;
 
-		short tblIndent = 0;
-		short gabHalf = 0;
-		short marginLeft = 0;
-		short marginRight = 0;
+		short tblIndent		= 0;
+		short gabHalf		= 0;
+		short marginLeft	= 0;
+		short marginRight	= 0;
 
 		for ( std::list<SinglePropertyModifier>::iterator iter = tapx->grpprl->begin(); iter != tapx->grpprl->end(); iter++ )
 		{
 			switch( iter->OpCode )
 			{
-			case sprmTDxaGapHalf:
+				case sprmOldTDxaGapHalf:
+				case sprmTDxaGapHalf:
 				{
 					gabHalf = FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize );
 				}
 				break;
 
-				//table definition
-			case sprmTDefTable:
-				{
+				case sprmOldTDefTable:
+				case sprmTDefTable:
+				{				//table definition
+
 					SprmTDefTable tDef( iter->Arguments, iter->argumentsSize );
 					//Workaround for retrieving the indent of the table:
 					//In some files there is a indent but no sprmTWidthIndent is set.
@@ -97,14 +99,13 @@ namespace DocFileFormat
 					tblIndent += gabHalf;
 					//If there follows a real sprmTWidthIndent, this value will be overwritten
 
-					///<<<<FIXED
                     tblIndent = (std::max)((int)tblIndent,0);
 				}
 				break;
 
-				//preferred table width
-			case sprmTTableWidth:
-				{
+				case sprmTTableWidth:
+				{				//preferred table width
+
 					unsigned char fts = iter->Arguments[0];
 					short width = FormatUtils::BytesToInt16( iter->Arguments, 1, iter->argumentsSize );
 
@@ -120,27 +121,28 @@ namespace DocFileFormat
 				}
 				break;
 
-				//justification
-			case sprmTJc:
-			case sprmTJcRow:
-				{
+				case sprmOldTJc:
+				case sprmTJc:
+				case sprmTJcRow:
+				{				//justification
+
 					appendValueElement( _tblPr, _T( "jc" ), FormatUtils::MapValueToWideString( iter->Arguments[0], &Global::JustificationCode[0][0], 10, 15 ).c_str(), true );
 				}
 				break;
 
-				//indent
-			case sprmTWidthIndent:
-				{
+				case sprmTWidthIndent:
+				{				//indent
+
 					tblIndent	=	FtsWWidth_Indent(iter->Arguments).wWidth;
 					// tblIndent	=	FormatUtils::BytesToInt16( iter->Arguments, 1, iter->argumentsSize );
 				}
 				break;
 
-				//style
-			case sprmTIstd:
-			case sprmTIstdPermute:
-				{
-					if ( this->_isTableStyleNeeded )
+				case sprmTIstd:
+				case sprmTIstdPermute:
+				{				//style
+
+					if ( _isTableStyleNeeded )
 					{
 						int ind = FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize );
 						
@@ -154,24 +156,25 @@ namespace DocFileFormat
 				}
 				break;
 
-				//bidi
-			case sprmTFBiDi:
-			case sprmTFBiDi90:
-				{
+				case sprmTFBiDi:
+				case sprmTFBiDi90:
+				{				//bidi
+
 					appendValueElement( _tblPr, _T( "bidiVisual" ), FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ), true );
 				}
 				break;
 
-				//table look
-			case sprmTTlp:
-				{
+				case sprmOldTTlp:
+				case sprmTTlp:
+				{				//table look
+
 					appendValueElement( _tblPr, _T( "tblLook" ), FormatUtils::IntToFormattedWideString( FormatUtils::BytesToInt16( iter->Arguments, 2, iter->argumentsSize ), _T( "%04x" ) ).c_str(), true );
 				}
 				break;
 
-				//autofit
-			case sprmTFAutofit:
-				{
+				case sprmTFAutofit:
+				{				//autofit
+
 					if ( iter->Arguments[0] == 1 )
 					{
 						layoutType.SetValue( _T( "auto" ) );
@@ -180,11 +183,11 @@ namespace DocFileFormat
 				}
 				break;
 
-				//default cell padding (margin)
-			case sprmTCellPadding:
-			case sprmTCellPaddingDefault:
-			case sprmTCellPaddingOuter:
-				{
+				case sprmTCellPadding:
+				case sprmTCellPaddingDefault:
+				case sprmTCellPaddingOuter:
+				{				//default cell padding (margin)
+
 					unsigned char grfbrc = iter->Arguments[2];
 					short wMar = FormatUtils::BytesToInt16( iter->Arguments, 4, iter->argumentsSize );
 					std::wstring strValue = FormatUtils::IntToWideString( wMar );
@@ -211,23 +214,23 @@ namespace DocFileFormat
 				}
 				break;
 
-				//row count
-			case sprmTCHorzBands:
-				{
+				case sprmTCHorzBands:
+				{				//row count
+
 					appendValueElement( _tblPr, _T( "tblStyleRowBandSize" ), iter->Arguments[0], true );
 				}
 				break;
 
-				//col count
-			case sprmTCVertBands:
-				{
+				case sprmTCVertBands:
+				{				//col count
+
 					appendValueElement( _tblPr, _T( "tblStyleColBandSize" ), iter->Arguments[0], true );
 				}
 				break;
 
-				//overlap
-			case sprmTFNoAllowOverlap:
-				{
+				case sprmTFNoAllowOverlap:
+				{				//overlap
+
 					std::wstring tblOverlapVal = std::wstring( _T( "overlap" ) );
 
 					if ( iter->Arguments[0] )
@@ -239,16 +242,17 @@ namespace DocFileFormat
 				}
 				break;
 
-				//shading
-			case sprmTSetShdTable:
-				{
+				case sprmOldTSetShd	:
+				case sprmTSetShdTable :
+				{				//shading
+
 					appendShading( _tblPr, ShadingDescriptor( iter->Arguments, iter->argumentsSize ) );
 				}
 				break;
 
-				//borders 80 exceptions
-			case sprmTTableBorders80:
-				{
+				case sprmTTableBorders80:
+				{				//borders 80 exceptions
+
 					const int size = 4;
 					unsigned char brc80[size];
 
@@ -285,7 +289,8 @@ namespace DocFileFormat
 				break;
 
 				//border exceptions
-			case sprmTTableBorders:
+				case sprmOldTTableBorders:
+				case sprmTTableBorders:
 				{
 					const int size = 8;
 					unsigned char brc[size];
@@ -323,7 +328,7 @@ namespace DocFileFormat
 				break;
 
 				//floating table properties
-			case sprmTPc:
+				case sprmTPc:
 				{
 					unsigned char flag = ( iter->Arguments[0] & 0x30 ) >> 4;
 
@@ -335,37 +340,37 @@ namespace DocFileFormat
 				}
 				break;
 
-			case sprmTDxaFromText:
+				case sprmTDxaFromText:
 				{
 					appendValueAttribute( &tblpPr, _T( "w:leftFromText" ), FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
 				}
 				break;
 
-			case sprmTDxaFromTextRight:
+				case sprmTDxaFromTextRight:
 				{
 					appendValueAttribute( &tblpPr, _T( "w:rightFromText" ), FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
 				}
 				break;
 
-			case sprmTDyaFromText:
+				case sprmTDyaFromText:
 				{
 					appendValueAttribute( &tblpPr, _T( "w:topFromText" ), FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
 				}
 				break;
 
-			case sprmTDyaFromTextBottom:
+				case sprmTDyaFromTextBottom:
 				{
 					appendValueAttribute( &tblpPr, _T( "w:bottomFromText" ), FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
 				}			
 				break;
 
-			case sprmTDxaAbs:
+				case sprmTDxaAbs:
 				{
 					appendValueAttribute( &tblpPr, _T( "w:tblpX" ), FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
 				}
 				break;
 
-			case sprmTDyaAbs:
+				case sprmTDyaAbs:
 				{
 					appendValueAttribute( &tblpPr, _T( "w:tblpY" ), FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
 				}

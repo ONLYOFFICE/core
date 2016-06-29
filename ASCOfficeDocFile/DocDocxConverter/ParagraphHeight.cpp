@@ -45,52 +45,60 @@ namespace DocFileFormat
 
 	ParagraphHeight::ParagraphHeight( unsigned char* bytes, int size, bool fTtpMode )
     {
-      //set default values
-      setDefaultValues();
+	//set default values
+		setDefaultValues();
 
-      if ( size == 12 )
-      {
-        // The ParagraphHeight is placed in a ParagraphProperties whose fTtp field is set, 
-        //so used another bit setting
-        if ( fTtpMode )
-        {
-		  this->fSpare = FormatUtils::BitmaskToBool( FormatUtils::BytesToInt16( bytes, 0, size ), 0x0001 );
-		  this->fUnk = FormatUtils::BitmaskToBool( FormatUtils::BytesToInt16( bytes, 0, size ), 0x0002 );
-		  this->dcpTtpNext = FormatUtils::BytesToInt16( bytes, 0, size );
-		  this->dxaCol = FormatUtils::BytesToInt32( bytes, 4, size );
-		  this->dymTableHeight = FormatUtils::BytesToInt32( bytes, 8, size );
-        }
-        else
-        {
-		  this->fVolatile = FormatUtils::BitmaskToBool( FormatUtils::BytesToInt16( bytes, 0, size ), 0x0001 );
-          this->fUnk = FormatUtils::BitmaskToBool( FormatUtils::BytesToInt16( bytes, 0, size ), 0x0002 );
-          this->fDiffLines = FormatUtils::BitmaskToBool( FormatUtils::BytesToInt16( bytes, 0, size ), 0x0004 );
-          this->clMac = FormatUtils::BytesToUInt16( bytes, 0, size ) & 0x00FF;
+	// The ParagraphHeight is placed in a ParagraphProperties whose fTtp field is set, 
+	//so used another bit setting
+		if ( size == 12 )
+		{
+			if ( fTtpMode )
+			{
+				fSpare			= FormatUtils::BitmaskToBool( FormatUtils::BytesToInt16( bytes, 0, size ), 0x0001 );
+				fUnk			= FormatUtils::BitmaskToBool( FormatUtils::BytesToInt16( bytes, 0, size ), 0x0002 );
+				dcpTtpNext		= FormatUtils::BytesToInt16( bytes, 0, size );
+				dxaCol			= FormatUtils::BytesToInt32( bytes, 4, size );
+				dymTableHeight	= FormatUtils::BytesToInt32( bytes, 8, size );
+			}
+			else
+			{
+				fVolatile	= FormatUtils::BitmaskToBool( FormatUtils::BytesToInt16( bytes, 0, size ), 0x0001 );
+				fUnk		= FormatUtils::BitmaskToBool( FormatUtils::BytesToInt16( bytes, 0, size ), 0x0002 );
+				fDiffLines	= FormatUtils::BitmaskToBool( FormatUtils::BytesToInt16( bytes, 0, size ), 0x0004 );
+				clMac		= FormatUtils::BytesToUInt16( bytes, 0, size ) & 0x00FF;
 
-          this->dxaCol = FormatUtils::BytesToInt32( bytes, 4, size );
-          this->dymLine = FormatUtils::BytesToInt32( bytes, 8, size );
-          this->dymHeight = FormatUtils::BytesToInt32( bytes, 8, size );
-        }
-      }
-      else
-      {
-        //throw new ByteParseException("Cannot parse the struct ParagraphHeight, the length of the struct doesn't match");
-      }
-    }
+				dxaCol		= FormatUtils::BytesToInt32( bytes, 4, size );
+				dymLine		= FormatUtils::BytesToInt32( bytes, 8, size );
+				dymHeight	= FormatUtils::BytesToInt32( bytes, 8, size );
+			}
+		}
+		else if (size == 6)
+		{
+			fVolatile	= FormatUtils::BitmaskToBool( FormatUtils::BytesToInt16( bytes, 0, size ), 0x0001 );
+			fUnk		= FormatUtils::BitmaskToBool( FormatUtils::BytesToInt16( bytes, 0, size ), 0x0002 );
+			fDiffLines	= FormatUtils::BitmaskToBool( FormatUtils::BytesToInt16( bytes, 0, size ), 0x0004 );
+			clMac		= FormatUtils::BytesToUChar( bytes, 0, size ) & 0x000F;
+
+			dxaCol		= FormatUtils::BytesToInt16( bytes, 2, size );
+			dymLine		= FormatUtils::BytesToInt16( bytes, 4, size );
+			dymHeight	= FormatUtils::BytesToInt16( bytes, 4, size );
+		}
+
+	}
 
 	/*========================================================================================================*/
 
 	void ParagraphHeight::setDefaultValues()
     {
-      this->clMac = 0;
-      this->dcpTtpNext = 0;
-      this->dxaCol = 0;
-      this->dymHeight = 0;
-      this->dymLine = 0;
-      this->dymTableHeight = 0;
-      this->fDiffLines = false;
-      this->fSpare = false;
-      this->fUnk = false;
-      this->fVolatile = false;
+      clMac				= 0;
+      dcpTtpNext		= 0;
+      dxaCol			= 0;
+      dymHeight			= 0;
+      dymLine			= 0;
+      dymTableHeight	= 0;
+      fDiffLines		= false;
+      fSpare			= false;
+      fUnk				= false;
+      fVolatile			= false;
     }
 }

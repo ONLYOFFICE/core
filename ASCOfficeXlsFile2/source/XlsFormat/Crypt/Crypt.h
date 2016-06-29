@@ -33,7 +33,7 @@
 
 #include <string>
 #include <boost/shared_ptr.hpp>
-#include "../../../Common/DocxFormat/Source/Base/Types_32.h"
+#include "../../../../Common/DocxFormat/Source/Base/Types_32.h"
 
 namespace CRYPT
 {

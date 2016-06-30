@@ -57,7 +57,7 @@ static const _sh_typ Shape_Types_Mapping[] = // index === OOX::Drawing::EShapeTy
 	{	L"mso-spt200"					,  7},			//	shapetypeActionButtonMovie,
 	{	L"mso-spt197"					,  7},			//	shapetypeActionButtonReturn,
 	{	L"mso-spt199"					,  7},			//	shapetypeActionButtonSound,
-	{	L""								,  7},			//	shapetypeArc,
+	{	L"ooxml-arc"					,  7},			//	shapetypeArc,
 	{	L"mso-spt91"					,  7},			//	shapetypeBentArrow,
 	{	L"mso-spt33"					,  7},			//	shapetypeBentConnector2,
 	{	L"mso-spt34"					,  7},			//	shapetypeBentConnector3,

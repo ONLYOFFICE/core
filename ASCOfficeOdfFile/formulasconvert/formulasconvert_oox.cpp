@@ -542,22 +542,25 @@ std::wstring oox2odf_converter::Impl::convert_formula(const std::wstring & expr)
 	std::wstring res1 = boost::regex_replace(
         workstr,
 		boost::wregex(L"('.*?')|(\".*?\")"),
-		&oox2odf_converter::Impl::convert_scobci,boost::match_default | boost::format_all);
+		&oox2odf_converter::Impl::convert_scobci, boost::match_default | boost::format_all);
 	
 	std::wstring res = boost::regex_replace(
 		res1,
 		boost::wregex(L"(?:(?=[()])(.*?)(?=[)]))"),
-		&oox2odf_converter::Impl::replace_arguments,boost::match_default | boost::format_all);
+		&oox2odf_converter::Impl::replace_arguments, boost::match_default | boost::format_all);
 
 	if (res1 == res)
 	{
+		boost::algorithm::replace_all(res1, L"KAVYCHKA", L"\""); //IMCONJUGATE_emb.xlsx
+	
 		res = boost::regex_replace(
 			res1,	
 			boost::wregex(L"(\\$?\\w+\\!)?([a-zA-Z$]+\\d{1,})\\:?([a-zA-Z$]+\\d{1,})?"),
 			&replace_cells_range_formater1,
 			boost::match_default | boost::format_all);
 
-		replace_vertical(res);
+		
+		replace_vertical(res);   
 		replace_semicolons(res);
 	}
 

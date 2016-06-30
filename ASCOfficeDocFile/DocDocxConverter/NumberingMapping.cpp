@@ -518,14 +518,17 @@ namespace DocFileFormat
 
 			for (std::list<SinglePropertyModifier>::const_iterator iter = grpprlChpx->grpprl->begin(); iter != grpprlChpx->grpprl->end(); ++iter)
 			{
-				if ((int)(iter->OpCode) == sprmCPbiIBullet)
+				switch(iter->OpCode)
 				{
-					cp = FormatUtils::BytesToUInt32(iter->Arguments, 0, iter->argumentsSize);
-				}
+					case sprmCPbiIBullet:
+					{
+						cp = FormatUtils::BytesToUInt32(iter->Arguments, 0, iter->argumentsSize);
+					}break;
 
-				if ((int)(iter->OpCode) == sprmCPbiGrf)
-				{
-					isPictureBullet = FormatUtils::BitmaskToBool(FormatUtils::BytesToUInt16(iter->Arguments, 0, iter->argumentsSize), 0x1);  
+					case sprmCPbiGrf:
+					{
+						isPictureBullet = FormatUtils::BitmaskToBool(FormatUtils::BytesToUInt16(iter->Arguments, 0, iter->argumentsSize), 0x1);  
+					}break;
 				}
 			}
 

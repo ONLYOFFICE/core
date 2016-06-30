@@ -136,6 +136,8 @@ namespace DocFileFormat
 		std::list<SinglePropertyModifier>::iterator end = papx->grpprl->end();
 		for (std::list<SinglePropertyModifier>::iterator iter = papx->grpprl->begin(); iter != end; ++iter)
 		{
+			int nProperty = 0; //for unknown test
+
 			switch ( iter->OpCode )
 			{
 			case sprmPIpgp:
@@ -170,10 +172,12 @@ namespace DocFileFormat
 				}
 				break;
 
+			case sprmOldPFKeep:
 			case sprmPFKeep:
 				appendFlagElement( _pPr, *iter, _T( "keepLines" ), true );
 				break;
 
+			case sprmOldPFKeepFollow:
 			case sprmPFKeepFollow:
 				appendFlagElement( _pPr, *iter, _T( "keepNext" ), true );
 				break;
@@ -215,6 +219,8 @@ namespace DocFileFormat
 				break;
 
 				//indentation
+			case sprmOldPDxaLeft:
+			case sprmOldPNest:			
 			case sprmPDxaLeft:
 			case sprmPDxaLeft80:
 			case sprmPNest:
@@ -226,6 +232,7 @@ namespace DocFileFormat
 				appendValueAttribute( &ind, _T( "w:leftChars" ), FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
 				break;
 
+			case sprmOldPDxaLeft1:
 			case sprmPDxaLeft1:
 			case sprmPDxaLeft180:
 				{
@@ -250,6 +257,7 @@ namespace DocFileFormat
 				appendValueAttribute( &ind, _T( "w:firstLineChars" ), FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
 				break;
 
+			case sprmOldPDxaRight:
 			case sprmPDxaRight:
 			case sprmPDxaRight80:
 				appendValueAttribute( &ind, _T( "w:right" ), FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
@@ -260,10 +268,12 @@ namespace DocFileFormat
 				break;
 
 				//spacing
+			case sprmOldPDyaBefore:
 			case sprmPDyaBefore:
 				appendValueAttribute( &spacing, _T( "w:before" ), FormatUtils::BytesToUInt16( iter->Arguments, 0, iter->argumentsSize ) );
 				break;
 
+			case sprmOldPDyaAfter:
 			case sprmPDyaAfter:
 				appendValueAttribute( &spacing, _T( "w:after" ), FormatUtils::BytesToUInt16( iter->Arguments, 0, iter->argumentsSize ) );
 				break;
@@ -276,6 +286,7 @@ namespace DocFileFormat
 				appendValueAttribute( &spacing, _T( "w:beforeAutospacing" ), iter->Arguments[0] );
 				break;
 
+			case sprmOldPDyaLine:
 			case sprmPDyaLine:
 				{
 					LineSpacingDescriptor lspd( iter->Arguments, iter->argumentsSize );
@@ -300,6 +311,7 @@ namespace DocFileFormat
 				break;
 
 				//justification code
+			case sprmOldPJc:
 			case sprmPJc:
 			case sprmPJc80:
 				{ 
@@ -316,6 +328,7 @@ namespace DocFileFormat
 
 				//borders
 				//case 0x461C:
+			case sprmOldPBrcTop:
 			case sprmPBrcTop:
 				//case 0x4424:
 			case sprmPBrcTop80:
@@ -331,6 +344,7 @@ namespace DocFileFormat
 				break;
 
 				//case 0x461D:
+			case sprmOldPBrcLeft:
 			case sprmPBrcLeft:
 				//case 0x4425:
 			case sprmPBrcLeft80:
@@ -346,6 +360,7 @@ namespace DocFileFormat
 				break;
 
 				//case 0x461E:
+			case sprmOldPBrcBottom:
 			case sprmPBrcBottom:
 				//case 0x4426:
 			case sprmPBrcBottom80:
@@ -361,6 +376,7 @@ namespace DocFileFormat
 				break;
 
 				//case 0x461F:
+			case sprmOldPBrcRight:
 			case sprmPBrcRight:
 				//case 0x4427:
 			case sprmPBrcRight80:
@@ -376,6 +392,7 @@ namespace DocFileFormat
 				break;
 
 				//case 0x4620:
+			case sprmOldPBrcBetween:
 			case sprmPBrcBetween:
 				//case 0x4428:
 			case sprmPBrcBetween80:
@@ -391,6 +408,7 @@ namespace DocFileFormat
 				break;
 
 				//case 0x4621:
+			case sprmOldPBrcBar:
 			case sprmPBrcBar:
 				//case 0x4629:
 			case sprmPBrcBar80:
@@ -445,6 +463,7 @@ namespace DocFileFormat
 				break;
 
 				//tabs
+			case sprmOldPChgTabs:
 			case sprmPChgTabsPapx:
 			case sprmPChgTabs:
 				{
@@ -513,6 +532,7 @@ namespace DocFileFormat
 				break;
 
 				//frame properties
+			case sprmOldPPc:
 			case sprmPPc:
 				{
 					//position code
@@ -523,14 +543,17 @@ namespace DocFileFormat
 				}
 				break;
 
+			case sprmOldPWr:
 			case sprmPWr:
 				appendValueAttribute( this->_framePr, _T( "w:wrap" ), FormatUtils::MapValueToWideString( iter->Arguments[0], &Global::TextFrameWrapping[0][0], 6, 10 ).c_str() );
 				break;
 
+			case sprmOldPDxaAbs:
 			case sprmPDxaAbs:
 				appendValueAttribute( this->_framePr, _T( "w:x" ), FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
 				break;
 
+			case sprmOldPDyaAbs:
 			case sprmPDyaAbs:
 				appendValueAttribute( this->_framePr, _T( "w:y" ), FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
 				break;
@@ -539,18 +562,22 @@ namespace DocFileFormat
 				appendValueAttribute( this->_framePr, _T( "w:h" ), FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
 				break;
 
+			case sprmOldPDxaWidth:
 			case sprmPDxaWidth:
 				appendValueAttribute( this->_framePr, _T( "w:w" ), FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
 				break;
 
+			case sprmOldPDxaFromText:
 			case sprmPDxaFromText:
 				appendValueAttribute( this->_framePr, _T( "w:hSpace" ), FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
 				break;
 
+			case sprmOldPDyaFromText:
 			case sprmPDyaFromText:
 				appendValueAttribute( this->_framePr, _T( "w:vSpace" ), FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
 				break;
 
+			case sprmOldPDcs:
 			case sprmPDcs:
 				{
 					short pDcs = FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize );
@@ -567,10 +594,13 @@ namespace DocFileFormat
 				break;
 
 			default:
+				if (iter->argumentsSize == 2)
 				{
-#ifdef _DEBUG 
-					// //ATLTRACE (_T("ParagraphPropertiesMapping - UNKNOWN SPRM : 0x%x\n"), iter->OpCode);
-#endif
+					nProperty = FormatUtils::BytesToUInt16( iter->Arguments, 0, iter->argumentsSize );
+				}else
+					if (iter->argumentsSize == 1)
+				{
+					nProperty = FormatUtils::BytesToUChar( iter->Arguments, 0, iter->argumentsSize );
 				}
 				break;
 			}

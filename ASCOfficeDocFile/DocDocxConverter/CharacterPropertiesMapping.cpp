@@ -72,26 +72,24 @@ namespace DocFileFormat
 	void CharacterPropertiesMapping::Apply( IVisitable* chpx )
 	{
 		//convert the normal SPRMS
-		convertSprms( dynamic_cast<CharacterPropertyExceptions*>( chpx )->grpprl, this->_rPr );
+		convertSprms( dynamic_cast<CharacterPropertyExceptions*>( chpx )->grpprl, _rPr );
 
 		// apend revision changes
 		if (_revisionData->Type == Changed)
 		{
 			XMLTools::XMLElement<wchar_t> rPrChange( _T( "w:rPrChange" ) );
 
-			//!!!TODO!!!
-			//date
-			//_revisionData->Dttm.Convert( new DateMapping( rPrChange ) );
+			//todooo date - _revisionData->Dttm.Convert( new DateMapping( rPrChange ) );
 
-			WideString* author_str = static_cast<WideString*>( this->_doc->RevisionAuthorTable->operator []( _revisionData->Isbt ));
+			WideString* author_str = static_cast<WideString*>( _doc->RevisionAuthorTable->operator []( _revisionData->Isbt ));
 			
 			XMLTools::XMLAttribute<wchar_t> author( _T( "w:author" ), FormatUtils::XmlEncode(*author_str).c_str());
 			rPrChange.AppendAttribute( author );
 
 			//convert revision stack
-			convertSprms( this->_revisionData->Changes, &rPrChange );
+			convertSprms( _revisionData->Changes, &rPrChange );
 
-			this->_rPr->AppendChild( rPrChange );
+			_rPr->AppendChild( rPrChange );
 		}
 
 		//write properties
@@ -107,7 +105,7 @@ namespace DocFileFormat
 	{
 		//Todo сделать определение симольного шрифта через fontManager
 		//Заглушка под Google Docs, они пишут bullet в Arial
-		if (-1 != this->m_sAsciiFont.find (_T("Arial")) && -1 != this->m_sEastAsiaFont.find (_T("Arial")) && -1 != this->m_shAnsiFont.find (_T("Arial")))
+		if (-1 != m_sAsciiFont.find (_T("Arial")) && -1 != m_sEastAsiaFont.find (_T("Arial")) && -1 != m_shAnsiFont.find (_T("Arial")))
 			return false;
 
 		return true;
@@ -117,10 +115,10 @@ namespace DocFileFormat
 
 	void CharacterPropertiesMapping::convertSprms( std::list<SinglePropertyModifier>* sprms, XMLTools::XMLElement<wchar_t>* parent )
 	{
-		XMLTools::XMLElement<wchar_t>	* rFonts	= new XMLTools::XMLElement<wchar_t>	( _T( "w:rFonts" ) );
-		XMLTools::XMLElement<wchar_t>	* color		= new XMLTools::XMLElement<wchar_t>	( _T( "w:color" ) );
-		XMLTools::XMLAttribute<wchar_t>	* colorVal	= new XMLTools::XMLAttribute<wchar_t>( _T( "w:val" ) );
-		XMLTools::XMLElement<wchar_t>	* lang		= new XMLTools::XMLElement<wchar_t>	( _T( "w:lang" ) );
+		XMLTools::XMLElement<wchar_t>	* rFonts	= new XMLTools::XMLElement<wchar_t>		( _T( "w:rFonts" ) );
+		XMLTools::XMLElement<wchar_t>	* color		= new XMLTools::XMLElement<wchar_t>		( _T( "w:color" ) );
+		XMLTools::XMLAttribute<wchar_t>	* colorVal	= new XMLTools::XMLAttribute<wchar_t>	( _T( "w:val" ) );
+		XMLTools::XMLElement<wchar_t>	* lang		= new XMLTools::XMLElement<wchar_t>		( _T( "w:lang" ) );
 
 		if (_webHidden)
 		{
@@ -131,57 +129,64 @@ namespace DocFileFormat
 		std::list<SinglePropertyModifier>::iterator end = sprms->end();
 		for (std::list<SinglePropertyModifier>::iterator iter = sprms->begin(); iter != end; ++iter)
 		{
+			int nProperty = 0; //for unknown test
+
 			switch ( (int)( iter->OpCode ) )
-			{				
-			case 0x4A30 :	//	style id 
+			{
+			case sprmOldCIstd :
+			case sprmCIstd :	//	style id 
 				{
 					if (_isRunStyleNeeded && !_webHidden)
 					{
 						_currentIstd = FormatUtils::BytesToUInt16( iter->Arguments, 0, iter->argumentsSize );
-						if (_currentIstd < this->_doc->Styles->Styles->size())
+						if (_currentIstd < _doc->Styles->Styles->size())
 						{
-							appendValueElement( parent, _T( "rStyle" ), StyleSheetMapping::MakeStyleId( this->_doc->Styles->Styles->at( _currentIstd ) ).c_str(), true );
+							appendValueElement( parent, _T( "rStyle" ), StyleSheetMapping::MakeStyleId( _doc->Styles->Styles->at( _currentIstd ) ).c_str(), true );
 						}
 					}
-				}break;				
-			case 0x085A :	//	right to left
+				}break;	
+
+			case sprmCFBiDi :
 				appendFlagElement( parent, *iter, _T( "rtl" ), true );
-				this->_isRTL = true;
+				_isRTL = true;
 				break;
 
-			case 0x0835 :
+			case sprmOldCFBold :
+			case sprmCFBold :
 				appendFlagElement( parent, *iter, _T( "b" ), true );
 				break;
 
-			case 0x085C :
+			case sprmCFBoldBi :
 				appendFlagElement( parent, *iter, _T( "bCs" ), true );
 				break;
 
-			case 0x083B :
+			case sprmOldCFCaps :
+			case sprmCFCaps :
 				appendFlagElement( parent, *iter, _T( "caps" ), true );
 				break;
 
-			case 0x0882 :
+			case sprmCFComplexScripts :
 				appendFlagElement( parent, *iter, _T( "cs" ), true );
 				break;
 
-			case 0x2A53 :
+			case sprmCFDStrike :
 				appendFlagElement( parent, *iter, _T( "dstrike" ), true );
 				break;
 
-			case 0x0858 :
+			case sprmCFEmboss :
 				appendFlagElement( parent, *iter, _T( "emboss" ), true );
 				break;
 
-			case 0x0854 :
+			case sprmCFImprint :
 				appendFlagElement( parent, *iter, _T( "imprint" ), true );
 				break;
 
-			case 0x0836 :
+			case sprmOldCFItalic :
+			case sprmCFItalic :
 				appendFlagElement( parent, *iter, _T( "i" ), true );
 				break;
 
-			case 0x085D:
+			case sprmCFItalicBi:
 				appendFlagElement( parent, *iter, _T( "iCs" ), true );
 				break;
 
@@ -189,27 +194,32 @@ namespace DocFileFormat
 				appendFlagElement( parent, *iter, _T( "noProof" ), true );
 				break;
 
-			case 0x0838:
+			case sprmOldCFOutline:
+			case sprmCFOutline:
 				appendFlagElement( parent, *iter, _T( "outline" ), true );
 				break;
 
-			case 0x0839:
+			case sprmOldCFShadow:
+			case sprmCFShadow:
 				appendFlagElement( parent, *iter, _T( "shadow" ), true );
 				break;
 
-			case 0x083A:
+			case sprmOldCFSmallCaps:
+			case sprmCFSmallCaps:
 				appendFlagElement( parent, *iter, _T( "smallCaps" ), true );
 				break;
 
-			case 0x0818:
+			case sprmCFSpecVanish:
 				appendFlagElement( parent, *iter, _T( "specVanish" ), true );
 				break;
 
-			case 0x0837:
+			case sprmOldCFStrike:
+			case sprmCFStrike:
 				appendFlagElement( parent, *iter, _T( "strike" ), true );
 				break;
 
-			case 0x083C:
+			case sprmOldCFVanish:
+			case sprmCFVanish:
 				appendFlagElement( parent, *iter, _T( "vanish" ), true );
 				break;
 
@@ -217,13 +227,14 @@ namespace DocFileFormat
 				appendFlagElement( parent, *iter, _T( "webHidden" ), true );
 				break;
 
-			case 0x2A48:
+			case sprmOldCIss:
+			case sprmCIss:
 				appendValueElement( parent, _T( "vertAlign" ), FormatUtils::MapValueToWideString( iter->Arguments[0], &SuperscriptIndex[0][0], 3, 12 ).c_str(), true );
-				break;				
-			case 0x486D://language
-			case 0x4873:
-				{
-					//latin
+				break;	
+
+			case sprmCRgLid0_80:
+			case sprmCRgLid0:
+				{	//latin					
 					LanguageId langid( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
 
 					LanguageIdMapping* langIDMapping = new LanguageIdMapping( lang, Default );
@@ -231,10 +242,12 @@ namespace DocFileFormat
 					langid.Convert( langIDMapping );
 
 					RELEASEOBJECT( langIDMapping );
-				}break;			
-			case 0x486E:
-			case 0x4874://east asia
-				{					
+				}break;	
+
+			case sprmOldCLid:
+			case sprmCRgLid1_80:
+			case sprmCRgLid1:
+				{	//east asia				
 					LanguageId langid( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
 
 					LanguageIdMapping* langIDMapping = new LanguageIdMapping( lang, EastAsian );
@@ -243,7 +256,8 @@ namespace DocFileFormat
 
 					RELEASEOBJECT( langIDMapping );
 				}break;
-			case 0x485F://bidi
+
+			case sprmCLidBi:
 				{					
 					LanguageId langid( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
 
@@ -252,43 +266,52 @@ namespace DocFileFormat
 					langid.Convert( langIDMapping );
 
 					RELEASEOBJECT( langIDMapping );
-				}break;				
-			case 0x6865://borders
-			case 0xCA72:
-				{  
+				}break;	
+
+			case sprmCBrc80:
+			case sprmCBrc:
+				{  //borders
 					XMLTools::XMLElement<wchar_t> bdr( _T( "w:bdr" ) );
 					BorderCode bc( iter->Arguments, iter->argumentsSize );
 					appendBorderAttributes( &bc, &bdr );
 					parent->AppendChild( bdr );
-				}break;				
-			case 0x4866://shading
-			case 0xCA71:
-				{  
+				}break;		
+
+			case sprmCShd80:
+			case sprmCShd:
+				{  //shading
 					ShadingDescriptor desc( iter->Arguments, iter->argumentsSize );
 
 					appendShading( parent, desc );
-				}break;								
-			case 0x2A42://color
-			case 0x4A60:
-				{
+				}break;		
+
+			case sprmOldCIco:
+			case sprmCIco:
+			case sprmCIcoBi:
+				{//color
 					colorVal->SetValue( FormatUtils::MapValueToWideString( iter->Arguments[0], &Global::ColorIdentifier[0][0], 17, 12 ).c_str() );
 				}break;
-			case 0x6870:
+
+			case sprmCCv:
 				{
                     CString rgbColor;
 
                     rgbColor.Format( _T( "%02x%02x%02x" ), /*R*/iter->Arguments[0], /*G*/iter->Arguments[1], /*B*/iter->Arguments[2] );
 
                     colorVal->SetValue( rgbColor.GetString() );
-				}break;								
-			case 0x2A0C://highlightning
+				}break;	
+
+			case sprmCHighlight:
 				{
 					appendValueElement( parent, _T( "highlight" ), FormatUtils::MapValueToWideString( iter->Arguments[0], &Global::ColorIdentifier[0][0], 17, 12 ).c_str(), true );
-				}break;			
-			case 0x8840://spacing
+				}break;	
+
+			case sprmOldCDxaSpace:
+			case sprmCDxaSpace:
 				{
 					appendValueElement( parent, _T( "spacing" ), FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ).c_str(), true );
 				}break;
+
 			case sprmCFtcBi :
 				{//default from FontTable
 					SHORT nIndex	=	FormatUtils::BytesToUInt16 (iter->Arguments, 0, iter->argumentsSize);
@@ -296,86 +319,112 @@ namespace DocFileFormat
 					{
 						FontFamilyName* ffn = static_cast<FontFamilyName*>( _doc->FontTable->operator [] ( nIndex ) );
 						if (ffn)
-							this->m_sDefaultFont = ffn->xszFtn;
+							m_sDefaultFont = ffn->xszFtn;
 					}
 				}break;
+
 			case sprmCHpsBi :
 				{
 					appendValueElement( parent, _T( "szCs" ), 
-						FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ).c_str(),
-						true );
+						FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ).c_str(), true );						
 				}
 				break;
-			case sprmCHps : // Font Size in points (2~3276) default 20-half-points
-				{  
+// Font Size in points (2~3276) default 20-half-points
+			case sprmOldCHps :
+				{
 					appendValueElement (parent, _T( "sz" ), 
-						FormatUtils::IntToWideString (FormatUtils::BytesToUInt16 (iter->Arguments, 0, iter->argumentsSize) ).c_str(),
+						FormatUtils::IntToWideString (FormatUtils::BytesToUChar (iter->Arguments, 0, iter->argumentsSize) ).c_str(),
 						true );
 				}break;
-			case sprmCHpsPos: // The vertical position, in half-points, of text relative to the normal position. (MUST be between -3168 and 3168)
-				{
+			case sprmCHps : 
+				{  
+					appendValueElement (parent, _T( "sz" ), 
+						FormatUtils::IntToWideString (FormatUtils::BytesToUInt16 (iter->Arguments, 0, iter->argumentsSize) ).c_str(), true );						
+				}break;
+
+			case sprmCMajority :
+				{	//for complex props
+				}break;
+
+			case sprmOldCHpsPos: 
+				{	// The vertical position, in half-points, of text relative to the normal position. (MUST be between -3168 and 3168)
+					short nVertPos = FormatUtils::BytesToUChar(iter->Arguments, 0, iter->argumentsSize);
+					appendValueElement (parent, _T("position"), nVertPos, true);
+				}break;
+			case sprmCHpsPos: 
+				{	// The vertical position, in half-points, of text relative to the normal position. (MUST be between -3168 and 3168)
 					short nVertPos = FormatUtils::BytesToInt16(iter->Arguments, 0, iter->argumentsSize);
 					appendValueElement (parent, _T("position"), nVertPos, true);
 				}break;
+
+			case sprmOldCHpsKern:
 			case sprmCHpsKern:
 				{
 					appendValueElement( parent, _T( "kern" ), FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ).c_str(), true );
 				}break;
-			case sprmCRgFtc0:	//	font family
-				{
+
+			case sprmOldCFtc:
+			case sprmCRgFtc0:
+				{	// font family
 					int nIndex = FormatUtils::BytesToUInt16( iter->Arguments, 0, iter->argumentsSize );
+					
 					if( nIndex < _doc->FontTable->Data.size() )
 					{
 						XMLTools::XMLAttribute<wchar_t>* ascii = new XMLTools::XMLAttribute<wchar_t>( _T( "w:ascii" ) );
 						FontFamilyName* ffn = static_cast<FontFamilyName*>( _doc->FontTable->operator [] ( nIndex ) );
-						this->m_sAsciiFont = ffn->xszFtn;
+						m_sAsciiFont = ffn->xszFtn;
 						ascii->SetValue( FormatUtils::XmlEncode(m_sAsciiFont).c_str() );
 						rFonts->AppendAttribute( *ascii );
 						RELEASEOBJECT( ascii );
 					}
 				}break;
+
 			case sprmCRgFtc1:
 				{
 					int nIndex = FormatUtils::BytesToUInt16( iter->Arguments, 0, iter->argumentsSize );
-					if( nIndex>=0 && nIndex < _doc->FontTable->Data.size() )
+					if( nIndex >= 0 && nIndex < _doc->FontTable->Data.size() )
 					{
 						XMLTools::XMLAttribute<wchar_t>* eastAsia = new XMLTools::XMLAttribute<wchar_t>( _T( "w:eastAsia" ) );
 						FontFamilyName* ffn = static_cast<FontFamilyName*>( _doc->FontTable->operator [] ( nIndex ) );
-						this->m_sEastAsiaFont = ffn->xszFtn;
-						eastAsia->SetValue( FormatUtils::XmlEncode(this->m_sEastAsiaFont).c_str() );
+						m_sEastAsiaFont = ffn->xszFtn;
+						eastAsia->SetValue( FormatUtils::XmlEncode(m_sEastAsiaFont).c_str() );
 						rFonts->AppendAttribute( *eastAsia );
 						RELEASEOBJECT( eastAsia );
 					}
 				}
 				break;
 
-			case 0x4A51:
+			case sprmCRgFtc2:
 				{
 					int nIndex = FormatUtils::BytesToUInt16( iter->Arguments, 0, iter->argumentsSize );
 					if( nIndex>=0 && nIndex < _doc->FontTable->Data.size() )
 					{
 						XMLTools::XMLAttribute<wchar_t>* ansi = new XMLTools::XMLAttribute<wchar_t>( _T( "w:hAnsi" ) );
 						FontFamilyName* ffn = static_cast<FontFamilyName*>( _doc->FontTable->operator [] ( nIndex ) );
-						this->m_shAnsiFont = ffn->xszFtn;
-						ansi->SetValue( FormatUtils::XmlEncode(this->m_shAnsiFont).c_str() );
+						m_shAnsiFont = ffn->xszFtn;
+						ansi->SetValue( FormatUtils::XmlEncode(m_shAnsiFont).c_str() );
 						rFonts->AppendAttribute( *ansi );
 						RELEASEOBJECT( ansi );
 					}
-				}break;					
-			case 0x2A3E://Underlining
-				{
+				}break;			
+
+			case sprmOldCKul:
+			case sprmCKul:
+				{	//Underlining
 					appendValueElement( parent, _T( "u" ), FormatUtils::MapValueToWideString( iter->Arguments[0], &Global::UnderlineCode[0][0], 56, 16 ).c_str(), true );
 				}
-				break;			
-			case 0x4852://char width
-				{
+				break;		
+
+			case sprmCCharScale:
+				{	//char width
 					appendValueElement( parent, _T( "w" ), FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ).c_str(), true );
 				}break;	
 							
-			case 0x2859://animation
-				{
+			case sprmCSfxText:
+				{	//animation
 					appendValueElement( parent, _T( "effect" ), FormatUtils::MapValueToWideString( iter->Arguments[0], &Global::TextAnimation[0][0], 7, 16 ).c_str(), true );
 				}break;	
+
 			case sprmCIdctHint:
 				{
 					switch(iter->Arguments[0])
@@ -387,6 +436,7 @@ namespace DocFileFormat
 					}
 
 				}break;
+
 			case sprmCPbiIBullet:
 				{
 					int nIndex = FormatUtils::BytesToInt32( iter->Arguments, 0, iter->argumentsSize );
@@ -399,19 +449,26 @@ namespace DocFileFormat
 						}
 					}
 				}break;
+
 			case sprmCPbiGrf:
 				{
 					//used picture bullet
 					int val = FormatUtils::BytesToUInt16( iter->Arguments, 0, iter->argumentsSize );
 
 				}break;
+
 			case sprmCRsidProp:
 			case sprmCRsidText:
 				break;
+
 			default:
 				if (iter->argumentsSize == 2)
 				{
-					int nIndex = FormatUtils::BytesToUInt16( iter->Arguments, 0, iter->argumentsSize );
+					nProperty = FormatUtils::BytesToUInt16( iter->Arguments, 0, iter->argumentsSize );
+				}else
+					if (iter->argumentsSize == 1)
+				{
+					nProperty = FormatUtils::BytesToUChar( iter->Arguments, 0, iter->argumentsSize );
 				}
 				break;
 			}
@@ -500,12 +557,12 @@ namespace DocFileFormat
 				//don't use the id of the chpx or the papx, use the baseOn style
 				if ( _styleChpx )
 				{
-					StyleSheetDescription* thisStyle = this->_doc->Styles->Styles->at( styleId );
+					StyleSheetDescription* thisStyle = _doc->Styles->Styles->at( styleId );
 					styleId = (unsigned short)thisStyle->istdBase;
 				}
 
 				//build the style hierarchy
-				this->_hierarchy = buildHierarchy( this->_doc->Styles, styleId );
+				_hierarchy = buildHierarchy( _doc->Styles, styleId );
 
 				//apply the toggle values to get the real value of the style
 				bool stylesVal = applyToggleHierachy( sprm ); 
@@ -575,7 +632,7 @@ namespace DocFileFormat
 		bool ret = false;
 
 		std::list<CharacterPropertyExceptions*>::const_iterator end = _hierarchy.end();
-		for (std::list<CharacterPropertyExceptions*>::const_iterator iter = this->_hierarchy.begin(); iter != end; ++iter)        
+		for (std::list<CharacterPropertyExceptions*>::const_iterator iter = _hierarchy.begin(); iter != end; ++iter)        
 		{
 			std::list<SinglePropertyModifier>::const_iterator end_grpprl = (*iter)->grpprl->end();
 			for (std::list<SinglePropertyModifier>::const_iterator grpprlIter = (*iter)->grpprl->begin(); grpprlIter != end_grpprl; ++grpprlIter)	 

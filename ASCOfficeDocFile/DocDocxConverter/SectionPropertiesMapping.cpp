@@ -127,6 +127,7 @@ namespace DocFileFormat
 			switch (iter->OpCode)
 			{
 				//page margins
+			case sprmOldSDxaLeft:
 			case sprmSDxaLeft:
 				{
 					//left margin
@@ -135,6 +136,7 @@ namespace DocFileFormat
 				}
 				break;
 
+			case sprmOldSDxaRight:
 			case sprmSDxaRight:
 				{
 					//right margin
@@ -143,32 +145,38 @@ namespace DocFileFormat
 				}
 				break;
 
+			case sprmOldSDyaTop:
 			case sprmSDyaTop:
 				//top margin
 				appendValueAttribute( &pgMar, _T( "w:top" ), FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ).c_str() );
 				break;
 
+			case sprmOldSDyaBottom:
 			case sprmSDyaBottom:
 				//bottom margin
 				appendValueAttribute( &pgMar, _T( "w:bottom" ), FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ).c_str() );
 				break;
 
+			case sprmOldSDzaGutter:
 			case sprmSDzaGutter:
 				//gutter margin
 				appendValueAttribute( &pgMar, _T( "w:gutter" ), FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ).c_str() );
 				break;
 
+			case sprmOldSDyaHdrTop:
 			case sprmSDyaHdrTop:
 				//header margin
 				appendValueAttribute( &pgMar, _T( "w:header"), FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ).c_str() );
 				break;
 
+			case sprmOldSDyaHdrBottom:
 			case sprmSDyaHdrBottom:
 				//footer margin
 				appendValueAttribute( &pgMar, _T( "w:footer" ), FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ).c_str() );
 				break;
 
 				//page size and orientation
+			case sprmOldSXaPage:
 			case sprmSXaPage:
 				{
 					//width
@@ -177,21 +185,25 @@ namespace DocFileFormat
 				}
 				break;
 
+			case sprmOldSYaPage:
 			case sprmSYaPage:
 				//height
 				appendValueAttribute( &pgSz, _T( "w:h" ), FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ).c_str() );
 				break;
 
+			case sprmOldSBOrientation:
 			case sprmSBOrientation:
 				//orientation
 				appendValueAttribute( &pgSz, _T( "w:orient" ), FormatUtils::MapValueToWideString( iter->Arguments[0], &PageOrientationMap[0][0], 3, 10 ).c_str() );
 				break;
 
 				//paper source
+			case sprmOldSDmBinFirst:
 			case sprmSDmBinFirst:
 				appendValueAttribute( &paperSrc, _T( "w:first" ), FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ).c_str() );
 				break;
 
+			case sprmOldSDmBinOther:
 			case sprmSDmBinOther:
 				appendValueAttribute( &paperSrc, _T( "w:other" ), FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ).c_str() );
 				break;
@@ -306,6 +318,7 @@ namespace DocFileFormat
 				break;
 
 				// Columns
+			case sprmOldSCcolumns:
 			case sprmSCcolumns:
 				{
 					m_nColumns				=	static_cast<int> (FormatUtils::BytesToInt16 (iter->Arguments, 0, iter->argumentsSize) + 1);
@@ -317,11 +330,13 @@ namespace DocFileFormat
 				}
 				break;
 
+			case sprmOldSDxaColumns:
 			case sprmSDxaColumns:
 				//evenly spaced columns
 				appendValueAttribute (&cols, _T( "w:space" ), FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ).c_str() );
 				break;
 
+			case sprmOldSDxaColWidth:
 			case sprmSDxaColWidth:
 				{
 					// there is at least one width set, so create the array
@@ -336,6 +351,7 @@ namespace DocFileFormat
 				}
 				break;
 
+			case sprmOldSDxaColSpacing:
 			case sprmSDxaColSpacing:
 				{
 					// there is at least one space set, so create the array
@@ -356,6 +372,7 @@ namespace DocFileFormat
 				break;
 
 				//title page
+			case sprmOldSFTitlePage:
 			case sprmSFTitlePage:
 				appendFlagElement (m_pXmlNode, *iter, _T( "titlePg" ), true );
 				break;
@@ -366,6 +383,7 @@ namespace DocFileFormat
 				break;
 
 				//type
+			case sprmOldSBkc:
 			case sprmSBkc:
 				{
 					this->_type = FormatUtils::MapValueToWideString( iter->Arguments[0], &SectionTypeMap[0][0], 5, 11 );
@@ -373,25 +391,30 @@ namespace DocFileFormat
 				break;
 
 				//align
+			case sprmOldSVjc:
 			case sprmSVjc:
 				appendValueElement (m_pXmlNode, _T( "vAlign" ), FormatUtils::MapValueToWideString( iter->Arguments[0], &TextVerticalAlignment[0][0], 4, 7 ).c_str(), true );
 				break;
 
 				//pgNumType
+			case sprmOldSNfcPgn:
 			case sprmSNfcPgn:
 				appendValueAttribute( &pgNumType, _T( "w:fmt" ), FormatUtils::MapValueToWideString( iter->Arguments[0], &PageNumberFormatCodeMap[0][0], 42, 29 ).c_str() );
 				break;
 
+			case sprmOldSPgnStart:
 			case sprmSPgnStart:
 				wsSprmSPgnStart				=	FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
 				break;
 
+			case sprmOldSFPgnRestart:
 			case sprmSFPgnRestart:
 				bWasSprmSFPgnRestart		=	true;
 				break;
 
 				//	<w:lnNumType>	-	Line Numbering Settings
 
+			case sprmOldSLnnMin :
 			case sprmSLnnMin :
 				{
 					unsigned short start	=	FormatUtils::BytesToUInt16 (iter->Arguments, 0, iter->argumentsSize);
@@ -401,6 +424,7 @@ namespace DocFileFormat
 				}
 				break;
 
+			case sprmOldSLnc :
 			case sprmSLnc :
 				{
 					SLncOperand mode		=	(SLncOperand)FormatUtils::BytesToUChar (iter->Arguments, 0, iter->argumentsSize);
@@ -410,6 +434,7 @@ namespace DocFileFormat
 				}
 				break;
 
+			case sprmOldSNLnnMod :
 			case sprmSNLnnMod :
 				{
 					short countBy			=	FormatUtils::BytesToUInt16 (iter->Arguments, 0, iter->argumentsSize);

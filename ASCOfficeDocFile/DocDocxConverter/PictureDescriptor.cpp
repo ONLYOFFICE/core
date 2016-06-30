@@ -90,14 +90,14 @@ namespace DocFileFormat
 
 		if (lcb >= 10)
 		{
-			unsigned short cbHeader	=	reader.ReadUInt16();
+			int cbHeader	=	 reader.ReadUInt16();
 
-			mfp.mm					=	reader.ReadInt16();
-			mfp.xExt				=	reader.ReadInt16();
-			mfp.yExt				=	reader.ReadInt16();
-			mfp.hMf					=	reader.ReadInt16();
+			mfp.mm			=	reader.ReadInt16();
+			mfp.xExt		=	reader.ReadInt16();
+			mfp.yExt		=	reader.ReadInt16();
+			mfp.hMf			=	reader.ReadInt16();
 
-			if (mfp.mm > 98)
+			if (mfp.mm >= 98 || oldVersion)
 			{
 				unsigned char* bytes	=	reader.ReadBytes(14, true);
 				rcWinMf					=	std::vector<unsigned char>(bytes, (bytes + 14));
@@ -154,22 +154,47 @@ namespace DocFileFormat
 					}
 				}
 
-				//Parse the OfficeDrawing Stuff
-				shapeContainer	=	dynamic_cast<ShapeContainer*>(RecordFactory::ReadRecord(&reader, 0));
-
-				long pos = reader.GetPosition();
-
-				if( pos < ( fc + lcb ))
+				if (oldVersion)
 				{
-					Record* rec = RecordFactory::ReadRecord( &reader, 0 );
+					////blipStoreEntry = new BlipStoreEntry();
 
-					if ((rec) && ( typeid(*rec) == typeid(BlipStoreEntry) ))
+					//blipStoreEntry = new BlipStoreEntry(&reader,lcb, Global::msoblipDIB,0,0);
+					//long pos = reader.GetPosition();
+
+					//unsigned char* pPicData	=	reader.ReadBytes(lcb - pos, true);
+
+					//int pos1 = 0;
+
+					//BITMAPINFOHEADER *bm = (BITMAPINFOHEADER *)(pPicData + pos1);
+
+					//NSFile::CFileBinary f;
+					//
+					//f.CreateFile(L"d:\\test.jpg");
+					//f.WriteFile(pPicData + pos1, lcb - pos - pos1);
+					//f.CloseFile();
+
+					//RELEASEARRAYOBJECTS(pPicData);
+
+				}
+				else
+				{
+					//Parse the OfficeDrawing Stuff
+					shapeContainer	=	dynamic_cast<ShapeContainer*>(RecordFactory::ReadRecord(&reader, 0));
+
+					long pos = reader.GetPosition();
+
+					if( pos < ( fc + lcb ))
 					{
-						blipStoreEntry = dynamic_cast<BlipStoreEntry*>( rec );
-					}
-					else
-					{
-						RELEASEOBJECT(rec);
+						Record* rec = RecordFactory::ReadRecord( &reader, 0 );
+
+						if ((rec) && ( typeid(*rec) == typeid(BlipStoreEntry) ))
+						{
+							blipStoreEntry = dynamic_cast<BlipStoreEntry*>( rec );
+						}
+						else
+						{
+							RELEASEOBJECT(rec);
+						}
 					}
 				}
 			}
@@ -186,6 +211,7 @@ namespace DocFileFormat
 		{
 			switch ( iter->OpCode )
 			{
+			case sprmOldCPicLocation:
 			case sprmCPicLocation:
 				ret = FormatUtils::BytesToInt32( iter->Arguments, 0, iter->argumentsSize );
 				break;
@@ -194,6 +220,7 @@ namespace DocFileFormat
 				ret = FormatUtils::BytesToInt32( iter->Arguments, 0, iter->argumentsSize );
 				break;
 
+			case sprmOldCFData:
 			case sprmCFData:
 				break;
 			}

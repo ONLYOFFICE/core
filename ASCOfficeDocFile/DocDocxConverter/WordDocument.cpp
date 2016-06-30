@@ -31,13 +31,14 @@
  */
 
 #include "WordDocument.h"
+
 #include "../../Common/OfficeFileErrorDescription.h"
 
 #include "../../ASCOfficeXlsFile2/source/XlsFormat/Logic/SummaryInformationStream/SummaryInformation.h"
 #include "../../ASCOfficeXlsFile2/source/XlsFormat/Binary/CFStream.h"
-
 #include "../../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"
 #include "../../DesktopEditor/common/File.h"
+
 
 namespace DocFileFormat
 {

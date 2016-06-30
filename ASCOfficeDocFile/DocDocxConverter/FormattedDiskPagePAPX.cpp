@@ -52,7 +52,7 @@ namespace DocFileFormat
 
 	/*========================================================================================================*/
 	
-	FormattedDiskPagePAPX::FormattedDiskPagePAPX( POLE::Stream* wordStream, int offset, POLE::Stream* dataStream, bool oldVersion): 
+	FormattedDiskPagePAPX::FormattedDiskPagePAPX( POLE::Stream* wordStream, int offset, POLE::Stream* dataStream, bool oldVersion, bool fComplex): 
 																		FormattedDiskPage(), rgbx(NULL), grppapxSize(0), grppapx(NULL)
     {
 	  Type = Paragraph;
@@ -98,54 +98,68 @@ namespace DocFileFormat
 
       unsigned char* papx = NULL;
       
-	  for ( int i = 0; i < crun; i++ )
-      {
-		memcpy( phe, ( bytes + j + 1 ), 12 );
+		for ( int i = 0; i < crun; i++ )
+		{
+			BX bx;
+			bx.wordOffset = bytes[j];
+			j++;
+		
+			if (fComplex || !oldVersion)
+			{
+				memcpy( phe, ( bytes + j), 12 );
 
-        //fill the rgbx array
-        BX bx;
-		bx.wordOffset = bytes[j];
-		bx.phe = ParagraphHeight( phe, 12, false );
+				//fill the rgbx array
+				bx.phe = ParagraphHeight( phe, 12, false );
 
-        rgbx[i] = bx;
-        j += 13;
+				j += 12;
+			}
+			else
+			{
+				memcpy( phe, ( bytes + j), 6);
 
-        if ( bx.wordOffset != 0 )
-        {
-          //read first unsigned char of PAPX
-          //PAPX is stored in a FKP; so the first unsigned char is a count of words
-          unsigned char padbyte = 0;
-          unsigned char cw = bytes[bx.wordOffset * 2];
+				//fill the rgbx array
+				bx.phe = ParagraphHeight( phe, 6, false );
 
-          //if that unsigned char is zero, it's a pad unsigned char, and the word count is the following unsigned char
-          if ( cw == 0 )
-          {
-            padbyte = 1;
-            cw = bytes[bx.wordOffset * 2 + 1];
-          }
+				j += 6;
+			}
+			rgbx[i] = bx;
 
-          if ( cw != 0 )
-          {
-            //read the bytes for papx
-            papx = new unsigned char[cw * 2];
-			memcpy( papx, ( bytes + (bx.wordOffset * 2) + padbyte + 1 ), ( cw * 2 ) );
+			if ( bx.wordOffset != 0 )
+			{
+				//read first unsigned char of PAPX
+				//PAPX is stored in a FKP; so the first unsigned char is a count of words
+				unsigned char padbyte = 0;
+				unsigned char cw = bytes[bx.wordOffset * 2];
 
-            //parse PAPX and fill grppapx
-            grppapx[i] = new ParagraphPropertyExceptions( papx, ( cw * 2 ), dataStream, oldVersion );
+				//if that unsigned char is zero, it's a pad unsigned char, and the word count is the following unsigned char
+				if ( cw == 0 )
+				{
+					padbyte = 1;
+					cw = bytes[bx.wordOffset * 2 + 1];
+				}
 
-			RELEASEARRAYOBJECTS( papx );
-          }
-        }
-        else
-        {
-          //create a PAPX which doesn't modify anything
-          grppapx[i] = new ParagraphPropertyExceptions();
-        }
-      }
+				if ( cw != 0 )
+				{
+					//read the bytes for papx
+					papx = new unsigned char[cw * 2];
+					memcpy( papx, ( bytes + (bx.wordOffset * 2) + padbyte + 1 ), ( cw * 2 ) );
 
-	  RELEASEARRAYOBJECTS( phe );
-	  RELEASEARRAYOBJECTS( bytes );
-    }
+					//parse PAPX and fill grppapx
+					grppapx[i] = new ParagraphPropertyExceptions( papx, ( cw * 2 ), dataStream, oldVersion );
+
+					RELEASEARRAYOBJECTS( papx );
+				}
+			}
+			else
+			{
+				//create a PAPX which doesn't modify anything
+				grppapx[i] = new ParagraphPropertyExceptions();
+			}
+		}
+
+		RELEASEARRAYOBJECTS( phe );
+		RELEASEARRAYOBJECTS( bytes );
+	}
 
 	/*========================================================================================================*/
 
@@ -188,7 +202,7 @@ namespace DocFileFormat
 				int offset = fkpnr * 512;
 
 				//parse the FKP and add it to the list
-				PAPXlist->push_back( new FormattedDiskPagePAPX( wordStream, offset, dataStream, fib->m_bOlderVersion) );
+				PAPXlist->push_back( new FormattedDiskPagePAPX( wordStream, offset, dataStream, fib->m_bOlderVersion, fib->m_FibBase.fComplex) );
 			}
 
 			//if (PAPXlist->back()->rgfc[PAPXlist->back()->rgfcSize-1] < last)
@@ -212,7 +226,7 @@ namespace DocFileFormat
 			int offset = fkpnr * 512;
 
 			//parse the FKP and add it to the list
-			PAPXlist->push_back( new FormattedDiskPagePAPX( wordStream, offset, dataStream, fib->m_bOlderVersion) );
+			PAPXlist->push_back( new FormattedDiskPagePAPX( wordStream, offset, dataStream, fib->m_bOlderVersion, fib->m_FibBase.fComplex) );
 		  }
 
 	  }

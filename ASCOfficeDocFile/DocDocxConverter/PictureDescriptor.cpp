@@ -32,14 +32,22 @@
 
 #include "PictureDescriptor.h"
 
+#ifndef MM_ISOTROPIC
+	#define MM_ISOTROPIC 7
+#endif
+
+#ifndef MM_ANISOTROPIC
+	#define MM_ANISOTROPIC 8
+#endif
+
 namespace DocFileFormat
 {
 	/// Parses the CHPX for a fcPic an loads the PictureDescriptor at this offset
 	PictureDescriptor::PictureDescriptor(CharacterPropertyExceptions* chpx, POLE::Stream* stream, int size, bool oldVersion) 
 		: 
-		dxaGoal(0), dyaGoal(0), mx(0), my(0), Type(jpg), Name( _T( "" ) ), mfp(), dxaCropLeft(0), dyaCropTop(0),
+		dxaGoal(0), dyaGoal(0), mx(0), my(0), Type(jpg), mfp(), dxaCropLeft(0), dyaCropTop(0),
 		dxaCropRight(0), dyaCropBottom(0), brcTop(NULL), brcLeft(NULL), brcBottom(NULL), brcRight(NULL), dxaOrigin(0), dyaOrigin(0),
-		cProps(0), shapeContainer(NULL), blipStoreEntry(NULL)
+		cProps(0), shapeContainer(NULL), blipStoreEntry(NULL), embeddedData(NULL), embeddedDataSize(0)
 	{
 		//Get start and length of the PICT
 		int fc = GetFcPic( chpx );
@@ -64,6 +72,8 @@ namespace DocFileFormat
 	
 		RELEASEOBJECT(shapeContainer);
 		RELEASEOBJECT(blipStoreEntry);
+		
+		RELEASEARRAYOBJECTS(embeddedData);
 	}
 	void PictureDescriptor::parse(POLE::Stream* stream, int fc, int sz, bool oldVersion)
 	{
@@ -90,14 +100,25 @@ namespace DocFileFormat
 
 		if (lcb >= 10)
 		{
-			int cbHeader	=	 reader.ReadUInt16();
+			int cbHeader	=	reader.ReadUInt16();
 
 			mfp.mm			=	reader.ReadInt16();
 			mfp.xExt		=	reader.ReadInt16();
 			mfp.yExt		=	reader.ReadInt16();
 			mfp.hMf			=	reader.ReadInt16();
 
-			if (mfp.mm >= 98 || oldVersion)
+			if (mfp.mm == MM_ISOTROPIC || mfp.mm == MM_ANISOTROPIC)
+			{
+				Type = wmf;
+
+				mx = my = 200;
+				dxaGoal = mfp.xExt;
+				dyaGoal	= mfp.yExt;
+
+				embeddedDataSize	=	reader.GetSize() - reader.GetPosition();	//lcb ?
+				embeddedData		=	reader.ReadBytes( embeddedDataSize, true );
+			}
+			else if (mfp.mm >= 98)
 			{
 				unsigned char* bytes	=	reader.ReadBytes(14, true);
 				rcWinMf					=	std::vector<unsigned char>(bytes, (bytes + 14));
@@ -118,7 +139,6 @@ namespace DocFileFormat
 				short brcl			=	reader.ReadInt16();
 
 				// borders
-
 				int bytesCount		=	4;
 				bytes				=	reader.ReadBytes( bytesCount, true );
 				
@@ -154,47 +174,21 @@ namespace DocFileFormat
 					}
 				}
 
-				if (oldVersion)
+				shapeContainer	=	dynamic_cast<ShapeContainer*>(RecordFactory::ReadRecord(&reader, 0));
+
+				long pos = reader.GetPosition();
+
+				if( pos < ( fc + lcb ))
 				{
-					////blipStoreEntry = new BlipStoreEntry();
+					Record* rec = RecordFactory::ReadRecord( &reader, 0 );
 
-					//blipStoreEntry = new BlipStoreEntry(&reader,lcb, Global::msoblipDIB,0,0);
-					//long pos = reader.GetPosition();
-
-					//unsigned char* pPicData	=	reader.ReadBytes(lcb - pos, true);
-
-					//int pos1 = 0;
-
-					//BITMAPINFOHEADER *bm = (BITMAPINFOHEADER *)(pPicData + pos1);
-
-					//NSFile::CFileBinary f;
-					//
-					//f.CreateFile(L"d:\\test.jpg");
-					//f.WriteFile(pPicData + pos1, lcb - pos - pos1);
-					//f.CloseFile();
-
-					//RELEASEARRAYOBJECTS(pPicData);
-
-				}
-				else
-				{
-					//Parse the OfficeDrawing Stuff
-					shapeContainer	=	dynamic_cast<ShapeContainer*>(RecordFactory::ReadRecord(&reader, 0));
-
-					long pos = reader.GetPosition();
-
-					if( pos < ( fc + lcb ))
+					if ((rec) && ( typeid(*rec) == typeid(BlipStoreEntry) ))
 					{
-						Record* rec = RecordFactory::ReadRecord( &reader, 0 );
-
-						if ((rec) && ( typeid(*rec) == typeid(BlipStoreEntry) ))
-						{
-							blipStoreEntry = dynamic_cast<BlipStoreEntry*>( rec );
-						}
-						else
-						{
-							RELEASEOBJECT(rec);
-						}
+						blipStoreEntry = dynamic_cast<BlipStoreEntry*>( rec );
+					}
+					else
+					{
+						RELEASEOBJECT(rec);
 					}
 				}
 			}

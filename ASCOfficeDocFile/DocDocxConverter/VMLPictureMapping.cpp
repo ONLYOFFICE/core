@@ -132,149 +132,153 @@ namespace DocFileFormat
 	void VMLPictureMapping::Apply( IVisitable* visited  )
 	{
 		PictureDescriptor* pict = static_cast<PictureDescriptor*>(visited);
+		if (!pict) return;
 
+		double xScaling = pict->mx / 1000.0;
+		double yScaling = pict->my / 1000.0;
+
+		TwipsValue width( ( pict->dxaGoal - ( pict->dxaCropLeft + pict->dxaCropRight ) ) * xScaling );
+		TwipsValue height( ( pict->dyaGoal - ( pict->dyaCropTop + pict->dyaCropBottom ) ) * yScaling );
+
+		std::wstring widthString = FormatUtils::DoubleToWideString( width.ToPoints() );
+		std::wstring heightString = FormatUtils::DoubleToWideString( height.ToPoints() );
+	
+		std::list<OptionEntry> options;
+		
+		PictureFrameType type;
 		if ((pict->shapeContainer || pict->blipStoreEntry) && pict->shapeContainer->Children.size() > 0)
 		{
-			Shape* shape					=	static_cast<Shape*>(*(pict->shapeContainer->Children.begin()));
-			std::list<OptionEntry> options	=	pict->shapeContainer->ExtractOptions();
+			Shape* shape	=	static_cast<Shape*>(*(pict->shapeContainer->Children.begin()));
+			options			=	pict->shapeContainer->ExtractOptions();
 
 			//v:shapetype
-			PictureFrameType type;
 			type.SetType(shape->Instance);
 			
 			VMLShapeTypeMapping* vmlShapeTypeMapping = new VMLShapeTypeMapping( m_pXmlWriter, m_isBulletPicture );
 			type.Convert( vmlShapeTypeMapping );
 			RELEASEOBJECT( vmlShapeTypeMapping );
-
-			//v:shape
-			m_pXmlWriter->WriteNodeBegin( _T( "v:shape" ), true );
-			m_pXmlWriter->WriteAttribute( _T( "type" ), ( std::wstring( _T( "#" ) ) + VMLShapeTypeMapping::GenerateTypeId( &type ) ).c_str() );
-
-			std::wstring style;
-
-			double xScaling = pict->mx / 1000.0;
-			double yScaling = pict->my / 1000.0;
-
-			TwipsValue width( ( pict->dxaGoal - ( pict->dxaCropLeft + pict->dxaCropRight ) ) * xScaling );
-			TwipsValue height( ( pict->dyaGoal - ( pict->dyaCropTop + pict->dyaCropBottom ) ) * yScaling );
-
-			std::wstring widthString = FormatUtils::DoubleToWideString( width.ToPoints() );
-			std::wstring heightString = FormatUtils::DoubleToWideString( height.ToPoints() );
-
-			style = std::wstring( _T( "width:" ) ) + widthString + std::wstring( _T( "pt;" ) ) + std::wstring( _T( "height:" ) ) + heightString + std::wstring( _T( "pt;" ) );
-
-			m_pXmlWriter->WriteAttribute( _T( "style" ), style.c_str() );
-
-			m_pXmlWriter->WriteAttribute( _T( "id" ), m_ShapeId.c_str() );
-
-			if (m_isOlePreview)
-			{
-				m_pXmlWriter->WriteAttribute( _T( "o:ole" ), _T( "" ) );
-			}
-			else if (m_isBulletPicture)
-			{
-                m_pXmlWriter->WriteAttribute( _T( "o:bullet" ), _T( "1" ) );
-			}
-			
-			std::list<OptionEntry>::iterator end = options.end();
-			for (std::list<OptionEntry>::iterator iter = options.begin(); iter != end; ++iter)
-			{
-				switch ( iter->pid )
-				{
-				case wzEquationXML:
-					{
-						m_isEquation = true;
-						m_isEmbedded = true;
-						
-						m_embeddedData = std::string((char*)iter->opComplex, iter->op);
-
-						if (ParseEmbeddedEquation( m_embeddedData, m_equationXml))
-						{
-							m_isEmbedded = false;
-						}
-					}break;
-				case metroBlob:
-					{
-						//встроенная неведомая хуйня
-						m_isEmbedded = true;
-						m_embeddedData = std::string((char*)iter->opComplex, iter->op);
-					}break;
-//BORDERS
-				case borderBottomColor:
-					{
-						RGBColor bottomColor( (int)iter->op, RedFirst );
-						m_pXmlWriter->WriteAttribute( _T( "o:borderbottomcolor" ), ( std::wstring( _T( "#" ) ) + bottomColor.SixDigitHexCode ).c_str() );
-					}
-					break;
-				case borderLeftColor:
-					{  
-						RGBColor leftColor( (int)iter->op, RedFirst );
-						m_pXmlWriter->WriteAttribute( _T( "o:borderleftcolor" ), ( std::wstring( _T( "#" ) ) + leftColor.SixDigitHexCode ).c_str() );
-					}  
-					break;
-				case borderRightColor:
-					{  
-						RGBColor rightColor( (int)iter->op, RedFirst );
-						m_pXmlWriter->WriteAttribute( _T( "o:borderrightcolor" ), ( std::wstring( _T( "#" ) ) + rightColor.SixDigitHexCode ).c_str() );
-					}
-					break;
-				case borderTopColor:
-					{
-						RGBColor topColor( (int)iter->op, RedFirst );
-						m_pXmlWriter->WriteAttribute( _T( "o:bordertopcolor" ), ( std::wstring( _T( "#" ) ) + topColor.SixDigitHexCode ).c_str() );
-					}
-					break;
-//CROPPING
-				case cropFromBottom:
-					{  
-						//cast to signed integer
-						int cropBottom = (int)iter->op;
-						appendValueAttribute(m_imageData, _T( "cropbottom" ), ( FormatUtils::IntToWideString( cropBottom ) + std::wstring( _T( "f" ) ) ).c_str() );
-					}
-					break;
-				case cropFromLeft:
-					{  
-						//cast to signed integer
-						int cropLeft = (int)iter->op;
-						appendValueAttribute(m_imageData, _T( "cropleft" ), ( FormatUtils::IntToWideString( cropLeft ) + std::wstring( _T( "f" ) ) ).c_str());
-					}
-					break;
-				case cropFromRight:
-					{
-						//cast to signed integer
-						int cropRight = (int)iter->op;
-						appendValueAttribute(m_imageData, _T( "cropright" ), ( FormatUtils::IntToWideString( cropRight ) + std::wstring( _T( "f" ) ) ).c_str());
-					}
-					break;
-				case cropFromTop:
-					{
-						//cast to signed integer
-						int cropTop = (int)iter->op;
-						appendValueAttribute(m_imageData, _T( "croptop" ), ( FormatUtils::IntToWideString( cropTop ) + std::wstring( _T( "f" ) ) ).c_str());
-					}
-					break;
-				}
-			}
-
-			m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
-
-			if (CopyPicture(pict->blipStoreEntry))
-			{
-				//v:imageData
-				appendValueAttribute(m_imageData, _T( "r:id" ), ( std::wstring( _T( "rId" ) ) + FormatUtils::IntToWideString(m_nImageId) ).c_str());
-				appendValueAttribute(m_imageData, _T( "o:title" ) , _T( "" ));
-				m_pXmlWriter->WriteString(m_imageData->GetXMLString().c_str());
-			}
-
-			//borders
-			writePictureBorder( _T( "bordertop" ), pict->brcTop );
-			writePictureBorder( _T( "borderleft" ), pict->brcLeft );
-			writePictureBorder( _T( "borderbottom" ), pict->brcBottom );
-			writePictureBorder( _T( "borderright" ), pict->brcRight );
-
-			//close v:shape
-			m_pXmlWriter->WriteNodeEnd( _T( "v:shape" ) );
 		}
+		else if (pict->embeddedData)
+		{
+			type.SetType(msosptPictureFrame);
+		}
+		m_pXmlWriter->WriteNodeBegin( _T( "v:shape" ), true );
+		
+		m_pXmlWriter->WriteAttribute( _T( "type" ), std::wstring( _T( "#" ) + VMLShapeTypeMapping::GenerateTypeId(&type)).c_str());
+
+		std::wstring style = std::wstring( _T( "width:" ) ) + widthString + std::wstring( _T( "pt;" ) ) + std::wstring( _T( "height:" ) ) + heightString + std::wstring( _T( "pt;" ) );
+
+		m_pXmlWriter->WriteAttribute( _T( "style" ), style.c_str() );
+
+		m_pXmlWriter->WriteAttribute( _T( "id" ), m_ShapeId.c_str() );
+
+		if (m_isOlePreview)
+		{
+			m_pXmlWriter->WriteAttribute( _T( "o:ole" ), _T( "" ) );
+		}
+		else if (m_isBulletPicture)
+		{
+            m_pXmlWriter->WriteAttribute( _T( "o:bullet" ), _T( "1" ) );
+		}
+		
+		std::list<OptionEntry>::iterator end = options.end();
+		for (std::list<OptionEntry>::iterator iter = options.begin(); iter != end; ++iter)
+		{
+			switch ( iter->pid )
+			{
+			case wzEquationXML:
+				{
+					m_isEquation = true;
+					m_isEmbedded = true;
+					
+					m_embeddedData = std::string((char*)iter->opComplex, iter->op);
+
+					if (ParseEmbeddedEquation( m_embeddedData, m_equationXml))
+					{
+						m_isEmbedded = false;
+					}
+				}break;
+			case metroBlob:
+				{
+					//встроенная неведомая хуйня
+					m_isEmbedded = true;
+					m_embeddedData = std::string((char*)iter->opComplex, iter->op);
+				}break;
+//BORDERS
+			case borderBottomColor:
+				{
+					RGBColor bottomColor( (int)iter->op, RedFirst );
+					m_pXmlWriter->WriteAttribute( _T( "o:borderbottomcolor" ), ( std::wstring( _T( "#" ) ) + bottomColor.SixDigitHexCode ).c_str() );
+				}
+				break;
+			case borderLeftColor:
+				{  
+					RGBColor leftColor( (int)iter->op, RedFirst );
+					m_pXmlWriter->WriteAttribute( _T( "o:borderleftcolor" ), ( std::wstring( _T( "#" ) ) + leftColor.SixDigitHexCode ).c_str() );
+				}  
+				break;
+			case borderRightColor:
+				{  
+					RGBColor rightColor( (int)iter->op, RedFirst );
+					m_pXmlWriter->WriteAttribute( _T( "o:borderrightcolor" ), ( std::wstring( _T( "#" ) ) + rightColor.SixDigitHexCode ).c_str() );
+				}
+				break;
+			case borderTopColor:
+				{
+					RGBColor topColor( (int)iter->op, RedFirst );
+					m_pXmlWriter->WriteAttribute( _T( "o:bordertopcolor" ), ( std::wstring( _T( "#" ) ) + topColor.SixDigitHexCode ).c_str() );
+				}
+				break;
+//CROPPING
+			case cropFromBottom:
+				{  
+					//cast to signed integer
+					int cropBottom = (int)iter->op;
+					appendValueAttribute(m_imageData, _T( "cropbottom" ), ( FormatUtils::IntToWideString( cropBottom ) + std::wstring( _T( "f" ) ) ).c_str() );
+				}
+				break;
+			case cropFromLeft:
+				{  
+					//cast to signed integer
+					int cropLeft = (int)iter->op;
+					appendValueAttribute(m_imageData, _T( "cropleft" ), ( FormatUtils::IntToWideString( cropLeft ) + std::wstring( _T( "f" ) ) ).c_str());
+				}
+				break;
+			case cropFromRight:
+				{
+					//cast to signed integer
+					int cropRight = (int)iter->op;
+					appendValueAttribute(m_imageData, _T( "cropright" ), ( FormatUtils::IntToWideString( cropRight ) + std::wstring( _T( "f" ) ) ).c_str());
+				}
+				break;
+			case cropFromTop:
+				{
+					//cast to signed integer
+					int cropTop = (int)iter->op;
+					appendValueAttribute(m_imageData, _T( "croptop" ), ( FormatUtils::IntToWideString( cropTop ) + std::wstring( _T( "f" ) ) ).c_str());
+				}
+				break;
+			}
+		}
+
+		m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
+		
+		if (CopyPicture(pict))
+		{
+			//v:imageData
+			appendValueAttribute(m_imageData, _T( "r:id" ), ( std::wstring( _T( "rId" ) ) + FormatUtils::IntToWideString(m_nImageId) ).c_str());
+			appendValueAttribute(m_imageData, _T( "o:title" ) , _T( "" ));
+			m_pXmlWriter->WriteString(m_imageData->GetXMLString().c_str());
+		}
+
+		//borders
+		writePictureBorder( _T( "bordertop" ),		pict->brcTop );
+		writePictureBorder( _T( "borderleft" ),		pict->brcLeft );
+		writePictureBorder( _T( "borderbottom" ),	pict->brcBottom );
+		writePictureBorder( _T( "borderright" ),	pict->brcRight );
+
+		//close v:shape
+		m_pXmlWriter->WriteNodeEnd( _T( "v:shape" ) );
 	}
 
 	std::wstring VMLPictureMapping::GetShapeId () const
@@ -283,9 +287,11 @@ namespace DocFileFormat
 	}
 
 	/// Writes a border element
-	void VMLPictureMapping::writePictureBorder( const wchar_t* name, const BorderCode* brc )
+	void VMLPictureMapping::writePictureBorder( const std::wstring & name, const BorderCode* brc )
 	{
-		m_pXmlWriter->WriteNodeBegin( ( std::wstring( _T( "w10:" ) ) + std::wstring( name ) ).c_str(), true );
+		if (!brc || name.empty()) return;
+
+		m_pXmlWriter->WriteNodeBegin( ( std::wstring( _T( "w10:" ) ) + name).c_str(), true );
 		m_pXmlWriter->WriteAttribute( _T( "type" ), getBorderType( brc->brcType ).c_str() );
 		m_pXmlWriter->WriteAttribute( _T( "width" ), FormatUtils::IntToWideString( brc->dptLineWidth ).c_str() );
 		m_pXmlWriter->WriteNodeEnd	( _T( "" ), true );
@@ -293,12 +299,20 @@ namespace DocFileFormat
 
 	/// Copies the picture from the binary stream to the zip archive 
 	/// and creates the relationships for the image.
-	bool VMLPictureMapping::CopyPicture (BlipStoreEntry* oBlipEntry)
+	bool VMLPictureMapping::CopyPicture (PictureDescriptor* pict)
 	{
+		if (!pict) return false;
 		bool result = false;
 
-		// write the blip
-		if ((oBlipEntry != NULL) && (oBlipEntry->Blip != NULL))
+		BlipStoreEntry* oBlipEntry = pict->blipStoreEntry;
+
+		if (pict->embeddedData && pict->embeddedDataSize > 0)
+		{
+			m_ctx->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(Global::msoblipWMF), std::vector<unsigned char>(pict->embeddedData, pict->embeddedData + pict->embeddedDataSize)));
+			m_nImageId	=	m_ctx->_docx->RegisterImage(m_caller, Global::msoblipWMF);
+			result		=	true;
+		}
+		else if ((oBlipEntry != NULL) && (oBlipEntry->Blip != NULL))
 		{
 			switch (oBlipEntry->btWin32)
 			{
@@ -336,9 +350,7 @@ namespace DocFileFormat
 
 			default:
 				{
-					result = false;
-
-					return result;
+					return false;
 				}
 				break;
 			}

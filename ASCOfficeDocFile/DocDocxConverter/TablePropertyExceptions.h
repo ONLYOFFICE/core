@@ -54,7 +54,7 @@ namespace DocFileFormat
 
 		/// Extracts the TAPX SPRMs out of a PAPX
 		TablePropertyExceptions (ParagraphPropertyExceptions* papx, POLE::Stream* dataStream, bool oldVersion) : 
-																											PropertyExceptions()
+																									PropertyExceptions()
 		{
 			VirtualStreamReader oBinReader(dataStream, 0, oldVersion);
 
@@ -62,7 +62,7 @@ namespace DocFileFormat
 
 			for (std::list<SinglePropertyModifier>::iterator oSpmIter = papx->grpprl->begin(); oSpmIter != papx->grpprl->end(); ++oSpmIter)
 			{
-				if (oSpmIter->OpCode == sprmTDefTableShd || oSpmIter->OpCode == sprmTDefTableShd2nd || 
+				if (oSpmIter->OpCode == sprmTDefTableShd	|| oSpmIter->OpCode == sprmTDefTableShd2nd || 
 					oSpmIter->OpCode == sprmTDefTableShd2nd || oSpmIter->OpCode == sprmTDefTableShd3rd)
 				{
 					m_bSkipShading97 = TRUE;
@@ -72,7 +72,7 @@ namespace DocFileFormat
 				{
 					grpprl->push_back(*oSpmIter);
 				}
-				else if ((int)(oSpmIter->OpCode) == sprmPTableProps)
+				else if (oSpmIter->OpCode == sprmPTableProps)
 				{
 					//there is a native TAP in the data stream
 					unsigned int fc = FormatUtils::BytesToUInt32(oSpmIter->Arguments, 0, oSpmIter->argumentsSize);

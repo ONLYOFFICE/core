@@ -56,13 +56,13 @@ namespace DocFileFormat
 
 	private:
 		/// Writes a border element
-		void writePictureBorder (const wchar_t* name, const BorderCode* brc);
+		void writePictureBorder (const std::wstring & name, const BorderCode* brc);
 		void appendStyleProperty( std::wstring* b, const std::wstring& propName, const std::wstring& propValue ) const;
 
 	protected:
 		/// Copies the picture from the binary stream to the zip archive 
 		/// and creates the relationships for the image.
-		bool CopyPicture (BlipStoreEntry* oBlipEntry);
+		bool CopyPicture (PictureDescriptor* pict);
 
 	public:
 

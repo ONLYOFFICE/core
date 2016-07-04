@@ -786,7 +786,16 @@ namespace DocFileFormat
 			{
 				PictureDescriptor oPicture (chpx, m_document->bOlderVersion ? m_document->WordDocumentStream : m_document->DataStream, 0x7fffffff, m_document->bOlderVersion);
 
-				if ((oPicture.mfp.mm > 98) && (NULL != oPicture.shapeContainer))
+				if (oPicture.embeddedData && oPicture.embeddedDataSize > 0)
+				{
+					m_pXmlWriter->WriteNodeBegin (_T("w:pict"));
+					
+					VMLPictureMapping oVmlMapper(m_context, m_pXmlWriter, false, _caller);
+					oPicture.Convert (&oVmlMapper);
+					
+					m_pXmlWriter->WriteNodeEnd	 (_T("w:pict"));
+				}
+				else if ((oPicture.mfp.mm > 98) && (NULL != oPicture.shapeContainer))
 				{
 					m_pXmlWriter->WriteNodeBegin (_T("w:pict"));
 
@@ -1112,7 +1121,7 @@ namespace DocFileFormat
 			for ( std::list<SinglePropertyModifier>::iterator iter = papx->grpprl->begin(); iter != papx->grpprl->end(); iter++ )
 			{
 				//find the tDef SPRM
-				if ( iter->OpCode == sprmTDefTable )
+				if ( iter->OpCode == sprmTDefTable ||  iter->OpCode == sprmOldTDefTable)
 				{
 					unsigned char itcMac = iter->Arguments[0];
 

@@ -902,7 +902,7 @@ namespace NExtractTools
         COfficeDocFile docFile;
 		docFile.m_sTempFolder = sTemp;
        
-		return S_OK == docFile.LoadFromFile( sFrom, sTo, NULL) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+        return S_OK == docFile.LoadFromFile( sFrom, sTo, L"", NULL) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
    }
 
    // doc -> doct
@@ -935,7 +935,7 @@ namespace NExtractTools
         COfficeDocFile docFile;
 		docFile.m_sTempFolder = sTemp;
 
-        if (docFile.LoadFromFile( sFrom, sResultDocxDir, NULL)== S_OK)
+        if (docFile.LoadFromFile( sFrom, sResultDocxDir, L"", NULL)== S_OK)
         {
             BinDocxRW::CDocxSerializer m_oCDocxSerializer;
 

@@ -57,7 +57,7 @@ std::wstring DetectTypeDocument(const std::wstring & pathOOX)
 
 	if (file.OpenFile(fileContentType) != S_OK) return sRes;
 
-	int nBufferSize = min (file.GetFileSize(), 4096);
+	int nBufferSize = min (file.GetFileSize(), 10000);
 	BYTE *pBuffer = new BYTE[nBufferSize];
 
 	file.ReadFile(pBuffer, nBufferSize);

@@ -825,7 +825,8 @@ void ods_table_state::convert_position(oox_table_position & oox_pos, double & x,
 {
 	double sz_col=0;
     int curr_col = 0,i;
-	for (i=0; i< columns_.size(); i++)
+	
+	for (i = 0; i < columns_.size(); i++)
 	{
 		if (oox_pos.col > columns_[i].repeated +  curr_col)
 		{
@@ -834,16 +835,22 @@ void ods_table_state::convert_position(oox_table_position & oox_pos, double & x,
 		else
 		{
 			sz_col += (oox_pos.col - curr_col ) * columns_[i].size;
+			curr_col += (oox_pos.col - curr_col );
 			break;
 		}
 		curr_col += columns_[i].repeated;
 	}
+	
+	if (curr_col  < oox_pos.col && columns_.size() > 0)
+	{
+		sz_col += (oox_pos.col - curr_col) * columns_[columns_.size() - 1].size;
+	}
 
-	x= sz_col + oox_pos.col_off;
+	x = sz_col + oox_pos.col_off;
 
 	double sz_row=0;
     int curr_row =0;
-	for (i=0; i< rows_.size(); i++)
+	for (i = 0; i < rows_.size(); i++)
 	{
 		if (oox_pos.row > rows_[i].repeated + curr_row)
 		{
@@ -852,12 +859,19 @@ void ods_table_state::convert_position(oox_table_position & oox_pos, double & x,
 		else
 		{
 			sz_row += (oox_pos.row - curr_row) * rows_[i].size;
+		
+			curr_row += (oox_pos.row - curr_row);
 			break;
 		}
 		curr_row += rows_[i].repeated;
 	}
 
-	y= sz_row + oox_pos.row_off;
+	if (curr_row < oox_pos.row && rows_.size() > 0)
+	{
+		sz_row += (oox_pos.row - curr_row ) * rows_[rows_.size() - 1].size;
+	}
+
+	y = sz_row + oox_pos.row_off;
 }
 
 

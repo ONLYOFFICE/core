@@ -817,14 +817,13 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorkbookView *oox_book_views)
 
 	if (oox_book_views->m_oActiveTab.IsInit())
 	{
-		int	table_id	= oox_book_views->m_oActiveTab->GetValue() + 1;
+		int	table_id	= oox_book_views->m_oActiveTab->GetValue();
 
-		for (int i = 0; i < Workbook->m_oSheets->m_arrItems.size(); i++)
+		if (table_id >=0 && table_id < Workbook->m_oSheets->m_arrItems.size())
 		{
-			OOX::Spreadsheet::CSheet* pSheet = Workbook->m_oSheets->m_arrItems[i];
-			if (!pSheet) continue;
+			OOX::Spreadsheet::CSheet* pSheet = Workbook->m_oSheets->m_arrItems[table_id];
 
-			if (pSheet->m_oSheetId.IsInit() && pSheet->m_oSheetId->GetValue() == table_id)
+			if (pSheet)
 			{
 				ods_context->settings_context()->add_property(L"ActiveTable", L"string", string2std_string(pSheet->m_oName.get2()));
 			}
@@ -901,17 +900,19 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSheetViews *oox_sheet_views)
 		{
 			ods_context->settings_context()->add_property(L"GridColor", L"int", oox_sheet_views->m_arrItems[i]->m_oColorId->ToString().GetBuffer());
 		}
+		bool bPaneX			= false;
+		bool bPaneY			= false;
+		int ActiveCellX = -1, ActiveCellY = -1;
 		if (oox_sheet_views->m_arrItems[i]->m_oSelection.IsInit())
 		{
 			if (oox_sheet_views->m_arrItems[i]->m_oSelection->m_oActiveCell.IsInit())
 			{
-				int col = -1, row = -1;
-				odf_writer::utils::parsing_ref (oox_sheet_views->m_arrItems[i]->m_oSelection->m_oActiveCell->GetBuffer(), col, row);
+				odf_writer::utils::parsing_ref (oox_sheet_views->m_arrItems[i]->m_oSelection->m_oActiveCell->GetBuffer(), ActiveCellX, ActiveCellY);
 
-				if (col >= 0 && row >= 0)
+				if (ActiveCellX >= 0 && ActiveCellY >= 0)
 				{
-					ods_context->settings_context()->add_property(L"CursorPositionX", L"int", boost::lexical_cast<std::wstring>(col));
-					ods_context->settings_context()->add_property(L"CursorPositionY", L"int", boost::lexical_cast<std::wstring>(row));
+					ods_context->settings_context()->add_property(L"CursorPositionX", L"int", boost::lexical_cast<std::wstring>(ActiveCellX));
+					ods_context->settings_context()->add_property(L"CursorPositionY", L"int", boost::lexical_cast<std::wstring>(ActiveCellY));
 				}
 			}
 			if (oox_sheet_views->m_arrItems[i]->m_oSelection->m_oSqref.IsInit())
@@ -931,6 +932,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSheetViews *oox_sheet_views)
 				ods_context->settings_context()->add_property(L"HorizontalSplitPosition", L"int",  sVal);
 				ods_context->settings_context()->add_property(L"PositionLeft", L"int",  L"0");
 				ods_context->settings_context()->add_property(L"PositionRight", L"int",  sVal);
+				bPaneX = true;
 			}
 			if (oox_sheet_views->m_arrItems[i]->m_oPane->m_oYSplit.IsInit())
 			{
@@ -939,8 +941,23 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSheetViews *oox_sheet_views)
 				ods_context->settings_context()->add_property(L"VerticalSplitPosition", L"int", sVal);
 				ods_context->settings_context()->add_property(L"PositionTop", L"int",  L"0");
 				ods_context->settings_context()->add_property(L"PositionBottom", L"int",  sVal);
+				bPaneY = true;
 			}
 		}
+		//if (!bPaneX && ActiveCellX >= 0)
+		//{
+		//	ods_context->settings_context()->add_property(L"HorizontalSplitMode", L"short", L"0");
+		//	ods_context->settings_context()->add_property(L"HorizontalSplitPosition", L"int", L"0");
+		//	ods_context->settings_context()->add_property(L"PositionLeft", L"int",  L"0");
+		//	ods_context->settings_context()->add_property(L"PositionRight", L"int", boost::lexical_cast<std::wstring>(ActiveCellX));
+		//}
+		//if (!bPaneY && ActiveCellY >= 0)
+		//{
+		//	ods_context->settings_context()->add_property(L"VerticalSplitMode", L"short", L"0");
+		//	ods_context->settings_context()->add_property(L"VerticalSplitPosition", L"int", L"0");
+		//	ods_context->settings_context()->add_property(L"PositionTop", L"int",  L"0");
+		//	ods_context->settings_context()->add_property(L"PositionBottom", L"int", boost::lexical_cast<std::wstring>(ActiveCellY));
+		//}
 		if (oox_sheet_views->m_arrItems[i]->m_oShowRowColHeaders.IsInit())
 		{
 			ods_context->settings_context()->add_property(L"HasColumnRowHeaders", L"boolean", oox_sheet_views->m_arrItems[i]->m_oShowRowColHeaders->ToBool() ? L"true" : L"false");

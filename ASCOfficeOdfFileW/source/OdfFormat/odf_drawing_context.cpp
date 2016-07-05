@@ -473,16 +473,21 @@ void odf_drawing_context::end_drawing()
 
 			if (impl_->current_drawing_state_.svg_x_ && impl_->current_drawing_state_.svg_y_)
 			{
-                odf_types::length pos_x = (impl_->current_drawing_state_.svg_x_->get_value() +
+                odf_types::length pos_x = odf_types::length(impl_->current_drawing_state_.svg_x_->get_value() +
                         (impl_->current_drawing_state_.svg_width_ ? (impl_->current_drawing_state_.svg_width_->get_value()/2.) : 0.), impl_->current_drawing_state_.svg_x_->get_unit());
-                odf_types::length pos_y = (impl_->current_drawing_state_.svg_y_->get_value() +
+                
+				odf_types::length pos_y = odf_types::length(impl_->current_drawing_state_.svg_y_->get_value() +
                         (impl_->current_drawing_state_.svg_height_ ? (impl_->current_drawing_state_.svg_height_->get_value()/2.) : 0.), impl_->current_drawing_state_.svg_y_->get_unit());
 
-                strTransform +=   std::wstring(L" translate(")  + boost::lexical_cast<std::wstring>(pos_x)
-                                + std::wstring(L",")            + boost::lexical_cast<std::wstring>(pos_y)
-                                + std::wstring(L")") ;
-				impl_->current_drawing_state_.svg_x_ = boost::none;
-				impl_->current_drawing_state_.svg_y_ = boost::none;
+				if (pos_x.get_unit() != odf_types::length::none && pos_y.get_unit() != odf_types::length::none)
+				{
+					strTransform +=   std::wstring(L" translate(")  + boost::lexical_cast<std::wstring>(pos_x)
+									+ std::wstring(L",")            + boost::lexical_cast<std::wstring>(pos_y)
+									+ std::wstring(L")") ;
+					
+					impl_->current_drawing_state_.svg_x_ = boost::none;
+					impl_->current_drawing_state_.svg_y_ = boost::none;
+				}
 			}
 
 		}
@@ -1554,7 +1559,6 @@ void odf_drawing_context::get_size( double & width_pt, double & height_pt)
 }
 void odf_drawing_context::set_size( _CP_OPT(double) & width_pt, _CP_OPT(double) & height_pt)
 {
-
 	if (impl_->current_drawing_state_.in_group)
 	{
 		if (width_pt)
@@ -1569,8 +1573,11 @@ void odf_drawing_context::set_size( _CP_OPT(double) & width_pt, _CP_OPT(double) 
 		}
 	}else
 	{
-        if (!impl_->current_drawing_state_.svg_width_   && width_pt) impl_->current_drawing_state_.svg_width_ = length(length(*width_pt,length::pt).get_value_unit(length::cm),length::cm);
-        if (!impl_->current_drawing_state_.svg_height_  && height_pt) impl_->current_drawing_state_.svg_height_= length(length(*height_pt,length::pt).get_value_unit(length::cm),length::cm);
+        if (!impl_->current_drawing_state_.svg_width_   && width_pt) 
+			impl_->current_drawing_state_.svg_width_ = length(length(*width_pt,length::pt).get_value_unit(length::cm),length::cm);
+
+        if (!impl_->current_drawing_state_.svg_height_  && height_pt) 
+			impl_->current_drawing_state_.svg_height_= length(length(*height_pt,length::pt).get_value_unit(length::cm),length::cm);
 	}
 }
 void odf_drawing_context::set_line_width(double pt)

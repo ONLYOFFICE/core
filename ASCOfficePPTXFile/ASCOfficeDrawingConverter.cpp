@@ -83,7 +83,8 @@ static void GetColorWithEffect(const std::wstring& sColor, const int& R, const i
     if (pos2 < (pos1 + 2))
         return;
 
-    param = std::stod(sColor.substr(pos1 + 1, pos2 - pos1 - 1));
+	std::wstring s = sColor.substr(pos1 + 1, pos2 - pos1 - 1); 
+	param = _wtoi(s.c_str());
     bool isEffect = false;
 
     if (0 == sColor.find(L"darken"))
@@ -1355,7 +1356,17 @@ rIns=\"91440\" bIns=\"45720\" numCol=\"1\" spcCol=\"0\" rtlCol=\"0\" fromWordArt
 							PPTX::Logic::Shape* pShape = dynamic_cast<PPTX::Logic::Shape*>(pElem->GetElem().operator ->());
 							if(NULL != pShape && pShape->spPr.Fill.Fill.IsInit())
 							{
-								const PPTX::Logic::BlipFill& oBlipFill = pShape->spPr.Fill.Fill.as<PPTX::Logic::BlipFill>();
+								bool bImageOle = false;
+
+								if (pShape->spPr.Fill.m_type == PPTX::Logic::UniFill::blipFill) bImageOle = true;
+								
+								PPTX::Logic::BlipFill oBlipFillNew;
+
+								if (!bImageOle)
+									oBlipFillNew.blip = new PPTX::Logic::Blip();
+
+								const PPTX::Logic::BlipFill& oBlipFill = bImageOle ? pShape->spPr.Fill.Fill.as<PPTX::Logic::BlipFill>() :
+																			oBlipFillNew;
 								if(oBlipFill.blip.IsInit())
 								{
 									if (pOle->m_sFilepathBin.IsInit())
@@ -1383,8 +1394,8 @@ rIns=\"91440\" bIns=\"45720\" numCol=\"1\" spcCol=\"0\" rtlCol=\"0\" fromWordArt
 									newElem->spPr		= pShape->spPr;
 									newElem->style		= pShape->style;
 									newElem->oleObject.reset(pOle);
-									pOle = NULL;
-
+									pOle = NULL;								
+									
 									pElem->InitElem(newElem);
 								}
 							}

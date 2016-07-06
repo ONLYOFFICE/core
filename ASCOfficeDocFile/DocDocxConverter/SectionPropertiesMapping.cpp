@@ -105,17 +105,28 @@ namespace DocFileFormat
 
 		if (pTable)
 		{
+			unsigned char fHF = 255; //all headers & footers
+			for (std::list<SinglePropertyModifier>::iterator iter = sepx->grpprl->begin(); iter != sepx->grpprl->end(); ++iter)
+			{
+				switch (iter->OpCode)
+				{
+					case sprmOldSGprfIhdt:
+					case sprmSGprfIhdt:
+						fHF = FormatUtils::BytesToUChar( iter->Arguments, 0, iter->argumentsSize );
+						break;
+				}
+			}
 			// Header
 
-			WriteSectionStory (pTable->GetEvenHeaders  (m_nSelectProperties), std::wstring(L"headerReference"), std::wstring(L"even"));
-			WriteSectionStory (pTable->GetOddHeaders   (m_nSelectProperties), std::wstring(L"headerReference"), std::wstring(L"default"));
-			WriteSectionStory (pTable->GetFirstHeaders (m_nSelectProperties), std::wstring(L"headerReference"), std::wstring(L"first"));
+			if (FormatUtils::GetBitFromInt(fHF, 0)) WriteSectionStory (pTable->GetEvenHeaders  (m_nSelectProperties), std::wstring(L"headerReference"), std::wstring(L"even"));
+			if (FormatUtils::GetBitFromInt(fHF, 1))	WriteSectionStory (pTable->GetOddHeaders   (m_nSelectProperties), std::wstring(L"headerReference"), std::wstring(L"default"));
+			if (FormatUtils::GetBitFromInt(fHF, 4))	WriteSectionStory (pTable->GetFirstHeaders (m_nSelectProperties), std::wstring(L"headerReference"), std::wstring(L"first"));
 
 			// Footer
 
-			WriteSectionStory (pTable->GetEvenFooters  (m_nSelectProperties), std::wstring(L"footerReference"), std::wstring(L"even"));
-			WriteSectionStory (pTable->GetOddFooters   (m_nSelectProperties), std::wstring(L"footerReference"), std::wstring(L"default"));
-			WriteSectionStory (pTable->GetFirstFooters (m_nSelectProperties), std::wstring(L"footerReference"), std::wstring(L"first"));
+			if (FormatUtils::GetBitFromInt(fHF, 2))	WriteSectionStory (pTable->GetEvenFooters  (m_nSelectProperties), std::wstring(L"footerReference"), std::wstring(L"even"));
+			if (FormatUtils::GetBitFromInt(fHF, 3))	WriteSectionStory (pTable->GetOddFooters   (m_nSelectProperties), std::wstring(L"footerReference"), std::wstring(L"default"));
+			if (FormatUtils::GetBitFromInt(fHF, 5))	WriteSectionStory (pTable->GetFirstFooters (m_nSelectProperties), std::wstring(L"footerReference"), std::wstring(L"first"));
 		}
 
 		//MUST be ignored if the section does not have page number restart enabled.([MS-DOC] — v20101113. стр 152)

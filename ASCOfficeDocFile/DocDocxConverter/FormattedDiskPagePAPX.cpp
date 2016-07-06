@@ -179,7 +179,7 @@ namespace DocFileFormat
 	
 	  //there are n offsets and n-1 fkp's in the bin table
 
-	  if (fib->m_FibBase.fComplex == false)
+	  if (fib->m_bOlderVersion && fib->m_FibBase.fComplex == false)
 	  {
 			int	n		= ( ( (int)fib->m_FibWord97.lcbPlcfBtePapx - 8 ) / 6 ) + 1;
 

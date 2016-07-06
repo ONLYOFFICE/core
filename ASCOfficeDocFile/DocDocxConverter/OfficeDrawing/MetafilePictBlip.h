@@ -300,11 +300,11 @@ typedef enum _BlipCompression
 		Record( _reader, size, typeCode, version, instance ), m_rgbUid(NULL), m_rgbUidPrimary(NULL), m_cb(0), m_cbSave(0), 
 			m_fCompression(BlipCompressionNone), m_fFilter(false), m_pvBits(NULL)
 		{
-			this->m_rgbUid = this->Reader->ReadBytes( 16, true );
+			m_rgbUid = Reader->ReadBytes( 16, true );
 
 			if ( ( instance == 0x3D5 ) || ( instance == 0x217 ) || ( instance == 0x543 ) )
 			{
-				this->m_rgbUidPrimary = this->Reader->ReadBytes( 16, true );
+				m_rgbUidPrimary = Reader->ReadBytes( 16, true );
 			}
 			
 			oMetaFile.m_bIsValid	= TRUE;
@@ -312,22 +312,22 @@ typedef enum _BlipCompression
 			
 			CMetaHeader oMetaHeader;
 			
-			this->m_cb = this->Reader->ReadInt32();
+			m_cb = Reader->ReadInt32();
 
-            this->m_rcBounds.left   = this->Reader->ReadInt32();
-            this->m_rcBounds.top    = this->Reader->ReadInt32();
-            this->m_rcBounds.right  = this->Reader->ReadInt32() + this->m_rcBounds.left;
-			this->m_rcBounds.bottom = this->Reader->ReadInt32() + this->m_rcBounds.top;
+            m_rcBounds.left   = Reader->ReadInt32();
+            m_rcBounds.top    = Reader->ReadInt32();
+            m_rcBounds.right  = Reader->ReadInt32() + m_rcBounds.left;
+			m_rcBounds.bottom = Reader->ReadInt32() + m_rcBounds.top;
 
-			this->m_ptSize.x = this->Reader->ReadInt32();
-			this->m_ptSize.y = this->Reader->ReadInt32();
+			m_ptSize.x = Reader->ReadInt32();
+			m_ptSize.y = Reader->ReadInt32();
 
-			this->m_cbSave = this->Reader->ReadInt32();
-			this->m_fCompression = (BlipCompression)this->Reader->ReadByte();
-			this->m_fFilter = ( this->Reader->ReadByte() == 1 ) ? (true) : (false);
+			m_cbSave = Reader->ReadInt32();
+			m_fCompression = (BlipCompression)Reader->ReadByte();
+			m_fFilter = ( Reader->ReadByte() == 1 ) ? (true) : (false);
 			
 			int sz = Reader->GetSize() - Reader->GetPosition();
-			this->m_pvBits = this->Reader->ReadBytes( sz/*this->m_cbSave*/, true );
+			m_pvBits = Reader->ReadBytes( sz/*m_cbSave*/, true );
 
 			oMetaHeader.rcBounds	= m_rcBounds;
 			oMetaHeader.cbSize		= m_cb;
@@ -369,9 +369,9 @@ typedef enum _BlipCompression
 
 		virtual ~MetafilePictBlip()
 		{
-			RELEASEARRAYOBJECTS( this->m_rgbUid );
-			RELEASEARRAYOBJECTS( this->m_rgbUidPrimary );
-			RELEASEARRAYOBJECTS( this->m_pvBits );
+			RELEASEARRAYOBJECTS( m_rgbUid );
+			RELEASEARRAYOBJECTS( m_rgbUidPrimary );
+			RELEASEARRAYOBJECTS( m_pvBits );
 		}
 
 		virtual Record* NewObject( IBinaryReader* _reader, unsigned int bodySize, unsigned int typeCode, unsigned int version, unsigned int instance )
@@ -386,9 +386,9 @@ typedef enum _BlipCompression
 			unsigned long uncomprLen = 0;
 
 
-			if ( this->m_fCompression == BlipCompressionDeflate )
+			if ( m_fCompression == BlipCompressionDeflate )
 			{
-				uncomprLen = this->m_cb;
+				uncomprLen = m_cb;
 				*buffer = new unsigned char[uncomprLen];
 
 				HRESULT res = S_OK;
@@ -396,19 +396,19 @@ typedef enum _BlipCompression
 
 				if (pOfficeUtils)
 				{
-					pOfficeUtils->Uncompress( *buffer, &uncomprLen, this->m_pvBits, this->m_cbSave );
+					pOfficeUtils->Uncompress( *buffer, &uncomprLen, m_pvBits, m_cbSave );
 
 					delete pOfficeUtils;
 					pOfficeUtils = NULL;
 				}
 			}
-			else if ( this->m_fCompression == BlipCompressionNone )
+			else if ( m_fCompression == BlipCompressionNone )
 
 			{
-				uncomprLen = this->m_cbSave;
+				uncomprLen = m_cbSave;
 				*buffer = new unsigned char[uncomprLen];
 
-                memcpy( *buffer, this->m_pvBits , this->m_cbSave );
+                memcpy( *buffer, m_pvBits , m_cbSave );
 			}
 
 			return uncomprLen;

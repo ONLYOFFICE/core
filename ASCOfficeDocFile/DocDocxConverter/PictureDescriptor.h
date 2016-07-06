@@ -78,14 +78,17 @@ namespace DocFileFormat
 		friend class VMLPictureMapping;
 		friend class VMLShapeMapping;
 		friend class NumberingMapping;
+		friend class OleObject;
 
 	public:
 		// Parses the CHPX for a fcPic an loads the PictureDescriptor at this offset
-		PictureDescriptor( CharacterPropertyExceptions* chpx, POLE::Stream* stream, int size, bool oldVersion);
+		PictureDescriptor ( );
+		PictureDescriptor ( CharacterPropertyExceptions* chpx, POLE::Stream* stream, int size, bool oldVersion);
 		virtual ~PictureDescriptor();
+		
+		void parse( POLE::Stream* stream, int fc, int sz, bool oldVersion);
 
 	private: 
-		void parse( POLE::Stream* stream, int fc, int sz, bool oldVersion);
 		
 		// Returns the fcPic into the "data" stream, where the PIC begins.
 		// Returns -1 if the CHPX has no fcPic.
@@ -127,6 +130,6 @@ namespace DocFileFormat
 		BlipStoreEntry	* blipStoreEntry;
 		
 		unsigned char	*embeddedData;
-		short			embeddedDataSize;						
+		int				embeddedDataSize;						
 	};
 }

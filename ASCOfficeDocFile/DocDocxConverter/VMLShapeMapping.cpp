@@ -288,7 +288,7 @@ namespace DocFileFormat
 								stroked	=	false;
 							}
 
-							if (!(booleans.fUsefFillOK && booleans.fFillOK))
+							if (booleans.fUsefFillOK && !booleans.fFillOK)
 							{
 								filled	=	false;
 							}

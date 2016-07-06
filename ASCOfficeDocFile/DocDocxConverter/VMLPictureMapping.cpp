@@ -31,6 +31,7 @@
  */
 
 #include "VMLPictureMapping.h"
+#include "OleObject.h"
 
 #include "OfficeDrawing/GeometryBooleanProperties.h"
 #include "OfficeDrawing/GeometryTextBooleanProperties.h"
@@ -39,6 +40,28 @@
 #include "../../Common/DocxFormat/Source/DocxFormat/Document.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Document.h"
 
+typedef struct
+{
+    DWORD   iType;              // Record type EMR_HEADER
+    DWORD   nSize;              // Record size in bytes.  This may be greater
+                                // than the sizeof(ENHMETAHEADER).
+    RECT   rclBounds;          // Inclusive-inclusive bounds in device units
+    RECT   rclFrame;           // Inclusive-inclusive Picture Frame .01mm unit
+    DWORD   dSignature;         // Signature.  Must be ENHMETA_SIGNATURE.
+    DWORD   nVersion;           // Version number
+    DWORD   nBytes;             // Size of the metafile in bytes
+    DWORD   nRecords;           // Number of records in the metafile
+    WORD    nHandles;           // Number of handles in the handle table
+                                // Handle index zero is reserved.
+    WORD    sReserved;          // Reserved.  Must be zero.
+    DWORD   nDescription;       // Number of chars in the unicode desc string
+                                // This is 0 if there is no description string
+    DWORD   offDescription;     // Offset to the metafile description record.
+                                // This is 0 if there is no description string
+    DWORD   nPalEntries;        // Number of entries in the metafile palette.
+    SIZE   szlDevice;          // Size of the reference device in pels
+    SIZE   szlMillimeters;     // Size of the reference device in millimeters
+} ENHMETAHEADER3;
 
 namespace DocFileFormat
 {
@@ -131,7 +154,41 @@ namespace DocFileFormat
 
 	void VMLPictureMapping::Apply( IVisitable* visited  )
 	{
-		PictureDescriptor* pict = static_cast<PictureDescriptor*>(visited);
+		PictureDescriptor* pict = dynamic_cast<PictureDescriptor*>(visited);
+		if (pict) ApplyPict(pict);
+
+		OleObject* obj = dynamic_cast<OleObject*>(visited);
+		if (obj) ApplyObj(obj);
+	}
+
+	void VMLPictureMapping::ApplyObj( OleObject* obj  )
+	{
+		if (!obj) return;
+		
+		std::wstring widthString = FormatUtils::DoubleToWideString( 100 );
+		std::wstring heightString = FormatUtils::DoubleToWideString( 100 );
+
+		m_pXmlWriter->WriteNodeBegin( _T( "v:shape" ), true );
+		
+		PictureFrameType type;
+		m_pXmlWriter->WriteAttribute( _T( "type" ), std::wstring( _T( "#" ) + VMLShapeTypeMapping::GenerateTypeId(&type)).c_str());
+
+		std::wstring style = std::wstring( _T( "width:" ) ) + widthString + std::wstring( _T( "pt;" ) ) + std::wstring( _T( "height:" ) ) + heightString + std::wstring( _T( "pt;" ) );
+
+		m_pXmlWriter->WriteAttribute( _T( "style" ), style.c_str() );
+
+		m_pXmlWriter->WriteAttribute( _T( "id" ), m_ShapeId.c_str() );
+
+		if (m_isOlePreview)
+		{
+			m_pXmlWriter->WriteAttribute( _T( "o:ole" ), _T( "" ) );
+		}
+		m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
+		m_pXmlWriter->WriteNodeEnd( _T( "v:shape" ) );
+	}
+	
+	void VMLPictureMapping::ApplyPict( PictureDescriptor* pict  )
+	{
 		if (!pict) return;
 
 		double xScaling = pict->mx / 1000.0;
@@ -277,7 +334,6 @@ namespace DocFileFormat
 		writePictureBorder( _T( "borderbottom" ),	pict->brcBottom );
 		writePictureBorder( _T( "borderright" ),	pict->brcRight );
 
-		//close v:shape
 		m_pXmlWriter->WriteNodeEnd( _T( "v:shape" ) );
 	}
 
@@ -308,6 +364,45 @@ namespace DocFileFormat
 
 		if (pict->embeddedData && pict->embeddedDataSize > 0)
 		{
+			ENHMETAHEADER3 oHeader;
+
+			int w = 0, h = 0; 
+
+			oHeader.iType				= 0x00000001;
+			oHeader.nSize				= sizeof(oHeader);
+
+			oHeader.rclBounds.left		= 0;
+			oHeader.rclBounds.top		= 0;
+			oHeader.rclBounds.right		= w;
+			oHeader.rclBounds.bottom	= h;
+
+			oHeader.rclFrame.left		= 0;
+			oHeader.rclFrame.top		= 0;
+			oHeader.rclFrame.right		= w;
+			oHeader.rclFrame.bottom		= h;
+
+			oHeader.dSignature			= 0x464D4520;
+			oHeader.nVersion			= 0x00010000;
+			oHeader.nBytes				= pict->embeddedDataSize - 176;
+
+			oHeader.nRecords			= 1;
+			oHeader.nHandles			= 0;
+
+			oHeader.sReserved			= 0;
+
+			oHeader.nDescription		= 0;
+			oHeader.offDescription		= 0;
+
+			oHeader.nPalEntries			= 0;
+
+			oHeader.szlDevice.cx		= 200;
+			oHeader.szlDevice.cy		= 200;
+
+			oHeader.szlMillimeters.cx	= 100;
+			oHeader.szlMillimeters.cy	= 100;
+			
+			memcpy(pict->embeddedData, &oHeader, sizeof(oHeader));
+
 			m_ctx->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(Global::msoblipWMF), std::vector<unsigned char>(pict->embeddedData, pict->embeddedData + pict->embeddedDataSize)));
 			m_nImageId	=	m_ctx->_docx->RegisterImage(m_caller, Global::msoblipWMF);
 			result		=	true;

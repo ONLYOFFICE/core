@@ -66,7 +66,6 @@ namespace DocFileFormat
 
 		while ( goOn )
 		{
-			//enough bytes to read?
 			if ( ( sprmStart + opCodeSize ) < size )
 			{
 				OperationCode opCode = oldVersion ? (OperationCode)FormatUtils::BytesToUChar	( bytes, sprmStart, size ) :

@@ -31,6 +31,7 @@
  */
 
 #include "PictureDescriptor.h"
+#include "OfficeDrawing/MetafilePictBlip.h"
 
 #ifndef MM_ISOTROPIC
 	#define MM_ISOTROPIC 7
@@ -52,13 +53,18 @@ namespace DocFileFormat
 		//Get start and length of the PICT
 		int fc = GetFcPic( chpx );
 
-
 		if ( fc >= 0 )
 		{
 			parse( stream, fc, size, oldVersion);
 		}
 	}
-
+	PictureDescriptor::PictureDescriptor()
+		: 
+		dxaGoal(0), dyaGoal(0), mx(0), my(0), Type(jpg), mfp(), dxaCropLeft(0), dyaCropTop(0),
+		dxaCropRight(0), dyaCropBottom(0), brcTop(NULL), brcLeft(NULL), brcBottom(NULL), brcRight(NULL), dxaOrigin(0), dyaOrigin(0),
+		cProps(0), shapeContainer(NULL), blipStoreEntry(NULL), embeddedData(NULL), embeddedDataSize(0)
+	{
+	}
 	PictureDescriptor::~PictureDescriptor()
 	{
 		Clear();
@@ -88,7 +94,7 @@ namespace DocFileFormat
 		if (lcb > 10000000) 
 			return;
 
-		if (lcb > sz && sz != 2) //bullet picture с неверным размером
+		if (lcb > sz && sz != 1 && sz != 2) //bullet picture с неверным размером
 		{
 			unsigned char* bytes = reader.ReadBytes(sz - fc - 4, false);
 			if ( bytes )
@@ -115,8 +121,14 @@ namespace DocFileFormat
 				dxaGoal = mfp.xExt;
 				dyaGoal	= mfp.yExt;
 
-				embeddedDataSize	=	reader.GetSize() - reader.GetPosition();	//lcb ?
+				embeddedDataSize	=	lcb - 20;//reader.GetSize() - reader.GetPosition();	//lcb ?
 				embeddedData		=	reader.ReadBytes( embeddedDataSize, true );
+
+				WmfPlaceableFileHeader  *header = (WmfPlaceableFileHeader  *)embeddedData;
+
+				if (header)
+				{
+				}
 			}
 			else if (mfp.mm >= 98)
 			{
@@ -199,7 +211,7 @@ namespace DocFileFormat
 	/// Returns -1 if the CHPX has no fcPic.
 	int PictureDescriptor::GetFcPic(const CharacterPropertyExceptions* chpx)
 	{
-		int ret = -1;
+		int ret = -1, ret1 = -1;
 
 		for ( std::list<SinglePropertyModifier>::const_iterator iter = chpx->grpprl->begin(); iter != chpx->grpprl->end(); iter++ )
 		{
@@ -208,6 +220,11 @@ namespace DocFileFormat
 			case sprmOldCPicLocation:
 			case sprmCPicLocation:
 				ret = FormatUtils::BytesToInt32( iter->Arguments, 0, iter->argumentsSize );
+				break;
+
+			case sprmOldCHps:
+			case sprmCHps:
+				ret1 = FormatUtils::BytesToInt32( iter->Arguments, 0, iter->argumentsSize );
 				break;
 
 			case sprmCHsp:

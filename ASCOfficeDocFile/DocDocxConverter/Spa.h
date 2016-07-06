@@ -47,7 +47,13 @@ namespace DocFileFormat
 	{
 	public:
 		friend class VMLShapeMapping;
-		static const int STRUCTURE_SIZE = 26;
+		static const int STRUCTURE_SIZE		= 26;
+		static const int STRUCTURE_SIZE_OLD = 6;
+
+		static const int GetSize(bool bOldVersion)
+		{
+			return bOldVersion ? STRUCTURE_SIZE_OLD : STRUCTURE_SIZE;
+		}
 
 		Spa()
 		{

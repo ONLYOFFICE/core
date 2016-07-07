@@ -90,6 +90,23 @@ static std::wstring CorrectHtmlPath(const std::wstring& sPath)
     return L"file:///" + sReturn;
 }
 
+static bool IsLinuxXVFB()
+{
+    std::wstring sProcess = NSFile::GetProcessDirectory() + L"/";
+    std::wstring sPathConfig = sProcess + L"DoctRenderer.config";
+    XmlUtils::CXmlNode oNode;
+    if (oNode.FromXmlFile(sPathConfig))
+    {
+        XmlUtils::CXmlNodes oNodes;
+        if (oNode.GetNodes(L"htmlnoxvfb", oNodes))
+        {
+            if (oNodes.GetCount() == 1)
+                return false;
+        }
+    }
+    return true;
+}
+
 static void GetScriptsPath(NSStringUtils::CStringBuilder& oBuilder)
 {
     std::wstring sProcess = NSFile::GetProcessDirectory() + L"/";
@@ -336,37 +353,40 @@ int CHtmlFile::Convert(const std::vector<std::wstring>& arFiles, const std::wstr
         if (std::string::npos != sProgramm.find_last_of('/'))
             sLibraryDir = "LD_LIBRARY_PATH=" + sProgramm.substr(0, sProgramm.find_last_of('/'));
 
-#ifdef asc_static_link_libstd
-        const char* nargs[2];
-        nargs[0] = sXmlA.c_str();
-        nargs[1] = NULL;
+        if (!IsLinuxXVFB())
+        {
+            const char* nargs[2];
+            nargs[0] = sXmlA.c_str();
+            nargs[1] = NULL;
 
-        const char* nenv[3];
-        nenv[0] = sLibraryDir.c_str();
-        nenv[1] = "DISPLAY=:0";
-        nenv[2] = NULL;
+            const char* nenv[3];
+            nenv[0] = sLibraryDir.c_str();
+            nenv[1] = "DISPLAY=:0";
+            nenv[2] = NULL;
 
-        execve(sProgramm.c_str(),
-               (char * const *)nargs,
-               (char * const *)nenv);
-        exit(EXIT_SUCCESS);
-#else
-        const char* nargs[6];
-        nargs[0] = "-a";
-        nargs[1] = "--auto-servernum";
-        nargs[2] = "--server-num=1";
-        nargs[3] = sProgramm.c_str();
-        nargs[4] = sXmlA.c_str();
-        nargs[5] = NULL;
+            execve(sProgramm.c_str(),
+                   (char * const *)nargs,
+                   (char * const *)nenv);
+            exit(EXIT_SUCCESS);
+        }
+        else
+        {
+            const char* nargs[6];
+            nargs[0] = "-a";
+            nargs[1] = "--auto-servernum";
+            nargs[2] = "--server-num=1";
+            nargs[3] = sProgramm.c_str();
+            nargs[4] = sXmlA.c_str();
+            nargs[5] = NULL;
 
-        const char* nenv[3];
-        nenv[0] = sLibraryDir.c_str();
-        nenv[1] = NULL;//"DISPLAY=:99";
-        nenv[2] = NULL;
+            const char* nenv[3];
+            nenv[0] = sLibraryDir.c_str();
+            nenv[1] = NULL;//"DISPLAY=:99";
+            nenv[2] = NULL;
 
-        execve("/usr/bin/xvfb-run", (char * const *)nargs, (char * const *)nenv);
-        exit(EXIT_SUCCESS);
-#endif
+            execve("/usr/bin/xvfb-run", (char * const *)nargs, (char * const *)nenv);
+            exit(EXIT_SUCCESS);
+        }
 
         break;
     }

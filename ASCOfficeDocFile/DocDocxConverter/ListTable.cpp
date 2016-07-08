@@ -72,4 +72,10 @@ namespace DocFileFormat
 			}
 		}
 	}
+
+	void ListTable::appendNumbering( const NumberingDescriptor & desc )
+	{
+		listNumbering.push_back(desc);
+	}
+
 }

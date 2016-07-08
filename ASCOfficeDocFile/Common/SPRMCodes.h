@@ -38,7 +38,7 @@ namespace DocFileFormat
 //verison 1995 and earler
 		sprmOldPIstd			=	2,
 		sprmOldPIstdPermute		=	3,
-		sprmOldPIncLv1			=	4,
+		sprmOldPIncLvl			=	4,
 		sprmOldPJc				=	5,
 		sprmOldPFSideBySide		=	6,
 		sprmOldPFKeep			=	7,

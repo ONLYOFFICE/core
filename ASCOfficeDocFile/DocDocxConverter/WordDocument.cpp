@@ -224,6 +224,11 @@ namespace DocFileFormat
 			IndividualFootnotesPlex			=	new Plex<EmptyStructure>(EmptyStructure::STRUCTURE_SIZE,			TableStream, FIB->m_FibWord97.fcPlcffndTxt, FIB->m_FibWord97.lcbPlcffndTxt, bOlderVersion);
 			FootnoteReferenceCharactersPlex	=	new Plex<FootnoteDescriptor>(FootnoteDescriptor::STRUCTURE_SIZE,	TableStream, FIB->m_FibWord97.fcPlcffndRef, FIB->m_FibWord97.lcbPlcffndRef, bOlderVersion);
 		}
+	
+		if (FIB->m_FibWord97.lcbPlcPad > 0)
+		{
+			OutlineListDescriptorPlex		=	new Plex<OutlineListDescriptor>(OutlineListDescriptor::STRUCTURE_SIZE,	TableStream, FIB->m_FibWord97.fcPlcPad, FIB->m_FibWord97.lcbPlcPad, bOlderVersion);
+		}
 
 		if (FIB->m_RgLw97.ccpEdn > 0)
 		{

@@ -49,7 +49,19 @@ namespace DocFileFormat
 
 	/// Parses the bytes to retrieve a StyleSheetDescription
 	StyleSheetDescription::StyleSheetDescription (unsigned char* bytes, int size, int cbStdBase, POLE::Stream* dataStream, bool oldVersion) :
-															papx(NULL), chpx(NULL), tapx(NULL)
+													papx(NULL), chpx(NULL), tapx(NULL),
+													fAutoRedef(false),
+													fHidden(false),
+													f97LidsSet(false),
+													fCopyLang(false),
+													fPersonalCompose(false),
+													fPersonalReply(false),
+													fPersonal(false),
+													fNoHtmlExport(false),
+													fSemiHidden(false),
+													fLocked(false),
+													fInternalUse(false)
+
 	{
 		//parsing the base (fix part)
 

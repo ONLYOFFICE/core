@@ -185,6 +185,7 @@ namespace DocFileFormat
 		Plex<Tbkd>							*TextboxBreakPlex;					// Describes the breaks inside the textbox subdocument
 		Plex<Tbkd>							*TextboxBreakPlexHeader;			// Describes the breaks inside the header textbox subdocument
 		
+		Plex<OutlineListDescriptor>			*OutlineListDescriptorPlex;
 		Plex<Spa>							*OfficeDrawingPlex;
 		Plex<Spa>							*OfficeDrawingPlexHeader;
 		

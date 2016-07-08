@@ -34,77 +34,115 @@
 
 namespace DocFileFormat
 {
-	  ListLevel::~ListLevel()
-	  {
-	    RELEASEOBJECT( this->grpprlPapx );
-        RELEASEOBJECT( this->grpprlChpx );
+	ListLevel::~ListLevel()
+	{
+		RELEASEOBJECT( grpprlPapx );
+		RELEASEOBJECT( grpprlChpx );
+	}
 
-		RELEASEARRAYOBJECTS( this->_rawBytes );
-	  }
+	ListLevel::ListLevel( VirtualStreamReader* reader, int length ):
+							grpprlPapx(NULL), grpprlChpx(NULL)
+	{
+		//parse the fix part
+		iStartAt	= reader->ReadInt32();
+		nfc			= reader->ReadByte();
+		int flag	= reader->ReadByte();
+		jc			= (unsigned char)( flag & 0x03 );
 
-	  /*========================================================================================================*/
-      
-      /// Parses the given StreamReader to retrieve a LVL struct
-	  ListLevel::ListLevel( VirtualStreamReader* reader, int length ):
-								grpprlPapx(NULL), grpprlChpx(NULL), _rawBytes(NULL)
-      {
-	    long startPos = reader->GetPosition();
+		fLegal		= FormatUtils::BitmaskToBool( flag, 0x04 );
+		fNoRestart	= FormatUtils::BitmaskToBool( flag, 0x08 );
+		fPrev		= FormatUtils::BitmaskToBool( flag, 0x10 );
+		fPrevSpace	= FormatUtils::BitmaskToBool( flag, 0x20 );
+		fWord6		= FormatUtils::BitmaskToBool( flag, 0x40 );
 
-        //parse the fix part
-        this->iStartAt = reader->ReadInt32();
-        this->nfc = reader->ReadByte();
-        int flag = reader->ReadByte();
-        this->jc = (unsigned char)( flag & 0x03 );
-		this->fLegal = FormatUtils::BitmaskToBool( flag, 0x04 );
-        this->fNoRestart = FormatUtils::BitmaskToBool( flag, 0x08 );
-        this->fPrev = FormatUtils::BitmaskToBool( flag, 0x10 );
-        this->fPrevSpace = FormatUtils::BitmaskToBool( flag, 0x20 );
-        this->fWord6 = FormatUtils::BitmaskToBool( flag, 0x40 );
-        
 		for ( int i = 0; i < 9; i++ )
-        {
+		{
 		  rgbxchNums.push_back( reader->ReadByte() );
-        }
+		}
 
-        this->ixchFollow = (FollowingChar)reader->ReadByte();
+		ixchFollow		= (FollowingChar)reader->ReadByte();
 
-        this->dxaSpace = reader->ReadInt32();
-        this->dxaIndent = reader->ReadInt32();
+		dxaSpace		= reader->ReadInt32();
+		dxaIndent		= reader->ReadInt32();
 
-        this->cbGrpprlChpx = reader->ReadByte();
-        this->cbGrpprlPapx = reader->ReadByte();
+		cbGrpprlChpx	= reader->ReadByte();
+		cbGrpprlPapx	= reader->ReadByte();
 
-        this->ilvlRestartLim = reader->ReadByte();
-        this->grfhic = reader->ReadByte();
-            
-        //parse the variable part
+		ilvlRestartLim	= reader->ReadByte();
+		grfhic = reader->ReadByte();
+		    
+		//parse the variable part
 
-        //read the group of papx sprms
-        //this papx has no istd, so use PX to parse it
-		unsigned char *bytes	= reader->ReadBytes( this->cbGrpprlPapx, true );
-       
-		PropertyExceptions* px	= new PropertyExceptions( bytes, this->cbGrpprlPapx, reader->olderVersion);
-		this->grpprlPapx		= new ParagraphPropertyExceptions( *(px->grpprl) );
-		
+		//read the group of papx sprms
+		//this papx has no istd, so use PX to parse it
+		unsigned char *bytes	= reader->ReadBytes( cbGrpprlPapx, true );
+
+		PropertyExceptions* px	= new PropertyExceptions( bytes, cbGrpprlPapx, reader->olderVersion);
+		grpprlPapx				= new ParagraphPropertyExceptions( *(px->grpprl) );
+
 		RELEASEOBJECT( px );
-        RELEASEARRAYOBJECTS( bytes );
-
-        //read the group of chpx sprms
-		bytes = reader->ReadBytes( this->cbGrpprlChpx, true );
-		this->grpprlChpx = new CharacterPropertyExceptions( bytes, this->cbGrpprlChpx, reader->olderVersion );
 		RELEASEARRAYOBJECTS( bytes );
 
-        //read the number text
+		//read the group of chpx sprms
+		bytes = reader->ReadBytes( cbGrpprlChpx, true );
+		grpprlChpx = new CharacterPropertyExceptions( bytes, cbGrpprlChpx, reader->olderVersion );
+		RELEASEARRAYOBJECTS( bytes );
+
+		//read the number text
 		short strLen = reader->ReadInt16();
 		if (strLen > 0)//file(14).doc
 		{
 			bytes = reader->ReadBytes( ( strLen * 2 ), true );
-			FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &(this->xst), bytes, ( strLen * 2 ), ENCODING_UTF16 );
+			FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &(xst), bytes, ( strLen * 2 ), ENCODING_UTF16 );
 			RELEASEARRAYOBJECTS( bytes );
 		}
+	}
 
-		long endPos = reader->GetPosition();
-        reader->Seek( startPos, 0/*STREAM_SEEK_SET*/ );
-        _rawBytes = reader->ReadBytes( (int)( endPos - startPos ), true );
-      }
+	NumberingLevelDescriptor::~NumberingLevelDescriptor()
+	{
+	}
+
+	NumberingLevelDescriptor::NumberingLevelDescriptor( unsigned char * data, int length )
+	{
+		nfc				= FormatUtils::BytesToUChar(data, 0, length);
+		cbTextBefore	= FormatUtils::BytesToUChar(data, 1, length);
+		cbTextAfter		= FormatUtils::BytesToUChar(data, 2, length);
+
+		int flag		= FormatUtils::BytesToUChar(data, 3, length);
+
+		jc				= (unsigned char)( flag & 0x03 );
+
+		fPrev			= FormatUtils::BitmaskToBool( flag, 0x04 );
+		fHang			= FormatUtils::BitmaskToBool( flag, 0x08 );
+
+		fSetBold		= FormatUtils::BitmaskToBool( flag, 0x10 );
+		fSetItalic		= FormatUtils::BitmaskToBool( flag, 0x20 );
+		fSetSmallCaps	= FormatUtils::BitmaskToBool( flag, 0x40 );
+		fSetCaps		= FormatUtils::BitmaskToBool( flag, 0x80 );
+
+		flag			= FormatUtils::BytesToUChar(data, 4, length);;
+
+		fSetStrike		= FormatUtils::BitmaskToBool( flag, 0x01 );
+		fSetKul			= FormatUtils::BitmaskToBool( flag, 0x02 );
+
+		fPrevSpace		= FormatUtils::BitmaskToBool( flag, 0x04 );
+		fBold			= FormatUtils::BitmaskToBool( flag, 0x08 );
+		fItalic			= FormatUtils::BitmaskToBool( flag, 0x10 );
+		fSmallCaps		= FormatUtils::BitmaskToBool( flag, 0x20 );
+		fCaps			= FormatUtils::BitmaskToBool( flag, 0x40 );
+		fStrike			= FormatUtils::BitmaskToBool( flag, 0x80 );
+
+		flag			= FormatUtils::BytesToUChar(data, 5, length);
+
+		kul				= FormatUtils::BitmaskToBool( flag, 0x07 );//3 bit
+		ico				= FormatUtils::BitmaskToBool( flag, 0xf1 );//5 bit
+
+		ftc				= FormatUtils::BytesToInt16 (data, 6, length);
+		hps				= FormatUtils::BytesToUInt16(data, 8, length);
+
+		iStartAt		= FormatUtils::BytesToUInt16(data, 10, length);
+		dxaIndent		= FormatUtils::BytesToUInt16(data, 12, length);
+		dxaSpace		= FormatUtils::BytesToUInt16(data, 14, length);
+	}
+            
 }

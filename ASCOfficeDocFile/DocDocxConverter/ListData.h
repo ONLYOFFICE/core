@@ -32,48 +32,124 @@
 #pragma once
 
 #include "ListLevel.h"
+#include "ByteStructure.h"
 
 namespace DocFileFormat
 {
-  class ListData
-  {
-    friend class ListTable;
-	friend class NumberingMapping;
+	class ListData
+	{
+		friend class ListTable;
+		friend class NumberingMapping;
 
-    private:
-	  /// Unique List ID
-      int lsid;
-      /// Unique template code
-      int tplc;
-      /// Array of shorts containing the istd‘s linked to each level of the list, 
-      /// or ISTD_NIL (4095) if no style is linked.
-     std::vector<short> rgistd;
-      /// True if this is a simple (one-level) list.
-      /// False if this is a multilevel (nine-level) list.
-      bool fSimpleList;
-      /// Word 6.0 compatibility option:
-      /// True if the list should start numbering over at the beginning of each section.
-      bool fRestartHdn;
-      /// To emulate Word 6.0 numbering:
-      /// True if Auto numbering
-      bool fAutoNum;
-      /// When true, this list was there before we started reading RTF.
-      bool fPreRTF;
-      /// When true, list is a hybrid multilevel/simple (UI=simple, internal=multilevel)
-      bool fHybrid;
-      /// Array of ListLevel describing the several levels of the list.
-      std::vector<ListLevel*>* rglvl;
-	  /// A grfhic that specifies HTML incompatibilities of the list.
-      unsigned char grfhic;
-	  unsigned char* _rawBytes;
+	private:
+		/// Unique List ID
+		int lsid;
+		/// Unique template code
+		int tplc;
+		/// Array of shorts containing the istd‘s linked to each level of the list, 
+		/// or ISTD_NIL (4095) if no style is linked.
+		std::vector<short> rgistd;
+		/// True if this is a simple (one-level) list.
+		/// False if this is a multilevel (nine-level) list.
+		bool fSimpleList;
+		/// Word 6.0 compatibility option:
+		/// True if the list should start numbering over at the beginning of each section.
+		bool fRestartHdn;
+		/// To emulate Word 6.0 numbering:
+		/// True if Auto numbering
+		bool fAutoNum;
+		/// When true, this list was there before we started reading RTF.
+		bool fPreRTF;
+		/// When true, list is a hybrid multilevel/simple (UI=simple, internal=multilevel)
+		bool fHybrid;
+		/// Array of ListLevel describing the several levels of the list.
+		std::vector<ListLevel*>* rglvl;
+		/// A grfhic that specifies HTML incompatibilities of the list.
+		unsigned char grfhic;
 
-    public:
-	  static const int LSTF_LENGTH = 28;
-      static const short ISTD_NIL = 4095;
-	  static const int VARIABLE_LENGTH = INT_MAX;
+	public:
+		static const int		LSTF_LENGTH		= 28;
+		static const short		ISTD_NIL		= 4095;
+		static const int		VARIABLE_LENGTH = INT_MAX;
 
-      virtual ~ListData();
-	  /// Parses the StreamReader to retrieve a ListData
-	  ListData( VirtualStreamReader* reader, int length );
-  };
+		virtual ~ListData();
+		ListData( VirtualStreamReader* reader, int length );
+	};
+
+	class NumberingDescriptor : public IVisitable
+	{
+		friend class ListTable;
+		friend class NumberingMapping;
+	
+	private:
+
+		unsigned char	nfc;
+		unsigned char	cbTextBefore;
+		unsigned char	cbTextAfter;
+		unsigned char	jc;
+
+		bool			fPrev;
+		bool			fHang;
+
+		bool			fSetBold;
+		bool			fSetItalic;
+		bool			fSetSmallCaps;
+		bool			fSetCaps;
+		bool			fSetStrike;
+		bool			fSetKul;
+
+		bool			fPrevSpace;
+		bool			fBold;
+		bool			fItalic;
+		bool			fSmallCaps;
+		bool			fCaps;
+		bool			fStrike;
+
+		unsigned char	kul;
+		unsigned char	ico;
+		short			ftc;
+		unsigned short	hps;
+		unsigned short	iStartAt;
+		unsigned short	dxaIndent;
+		unsigned short	dxaSpace;
+
+		unsigned char	fNumber1;
+		unsigned char	fNumberAcross;
+		unsigned char	fRestartHdn;
+		unsigned char	fSpareX;
+
+		std::wstring	xst; //32 chars ansi
+
+	public:
+		virtual ~NumberingDescriptor(){}
+		// Parses the given StreamReader to retrieve a ANLD struct
+		NumberingDescriptor( unsigned char * data, int length ); //cbANLD (count of bytes of ANLD) is 52 
+	};
+
+	
+	class OutlineListDescriptor : public IVisitable, public ByteStructure 
+	{
+		friend class ListTable;
+		friend class NumberingMapping;
+	
+	private:
+
+		NumberingLevelDescriptor *lvl[9];
+		
+		unsigned char	fRestartHdr;
+		unsigned char	fSpareOlst2;
+		unsigned char	fSpareOlst3;
+		unsigned char	fSpareOlst4;
+
+		std::wstring	xst; //64 chars ansi
+
+	public:
+		static const int STRUCTURE_SIZE = 212;
+		virtual ByteStructure* ConstructObject( VirtualStreamReader* reader, int length );
+		
+		virtual ~OutlineListDescriptor();
+		// Parses the given StreamReader to retrieve a OLST struct
+		OutlineListDescriptor( unsigned char * data, int length ); //cbOLST(count of bytes of OLST) is 212 
+		OutlineListDescriptor() {}
+	};
 }

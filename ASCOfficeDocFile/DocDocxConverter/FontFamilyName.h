@@ -52,6 +52,7 @@ namespace DocFileFormat
 	friend class DocumentMapping;
 	friend class FontTableMapping;
 	friend class StyleSheetMapping;
+	friend class NumberingMapping;
   
     private:
       /// When true, font is a TrueType font

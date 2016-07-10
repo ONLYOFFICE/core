@@ -31,8 +31,10 @@
  */
 #pragma once
 
-#include "VirtualStreamReader.h"
 #include "ByteStructure.h"
+#include "DrawingPrimitives.h"
+
+class VirtualStreamReader;
 
 namespace DocFileFormat
 {
@@ -47,6 +49,8 @@ namespace DocFileFormat
 	{
 	public:
 		friend class VMLShapeMapping;
+		friend class DocumentMapping;
+		
 		static const int STRUCTURE_SIZE		= 26;
 		static const int STRUCTURE_SIZE_OLD = 6;
 
@@ -55,46 +59,11 @@ namespace DocFileFormat
 			return bOldVersion ? STRUCTURE_SIZE_OLD : STRUCTURE_SIZE;
 		}
 
-		Spa()
-		{
+		Spa();
 
-		}
+		virtual ~Spa();
 
-		virtual ~Spa()
-		{
-
-		}
-
-		virtual ByteStructure* ConstructObject(VirtualStreamReader* reader, int length)
-		{
-			Spa* pSpa				=	new Spa();  
-			if (pSpa)
-			{
-				pSpa->spid			=	reader->ReadInt32();
-				pSpa->xaLeft		=	reader->ReadInt32();
-				pSpa->yaTop			=	reader->ReadInt32();
-				pSpa->xaRight		=	reader->ReadInt32();
-				pSpa->yaBottom		=	reader->ReadInt32();
-
-				unsigned short flag	=	reader->ReadUInt16();
-
-				pSpa->fHdr			=	FormatUtils::BitmaskToBool(flag, 0x0001);
-				pSpa->bx			=	(AnchorType)FormatUtils::BitmaskToInt(flag, 0x0006);
-				pSpa->by			=	(AnchorType)FormatUtils::BitmaskToInt(flag, 0x0018);
-				pSpa->wr			=	(unsigned short)FormatUtils::BitmaskToInt(flag, 0x01E0);
-				pSpa->wrk			=	(unsigned short)FormatUtils::BitmaskToInt(flag, 0x1E00);
-				pSpa->fRcaSimple	=	FormatUtils::BitmaskToBool(flag, 0x2000);
-				pSpa->fBelowText	=	FormatUtils::BitmaskToBool(flag, 0x4000);
-				pSpa->fAnchorLock	=	FormatUtils::BitmaskToBool(flag, 0x8000);
-
-				pSpa->cTxbx			=	reader->ReadInt32();
-
-				return static_cast<ByteStructure*>(pSpa);
-			}
-
-			return NULL;
-		}
-
+		virtual ByteStructure* ConstructObject(VirtualStreamReader* reader, int length);
 		inline int GetShapeID() const
 		{
 			return spid;
@@ -147,13 +116,12 @@ namespace DocFileFormat
 		/// forcing the xaLeft, xaRight, yaTop, and yaBottom fields 
 		/// to all be page relative.
 		bool fRcaSimple;
-		/// true: shape is below text
-		/// false: shape is above text
-		bool fBelowText;
-		/// true: anchor is locked
-		/// fasle: anchor is not locked
-		bool fAnchorLock;
-		/// Count of textboxes in shape (undo doc only)
-		int cTxbx;
+		bool fBelowText;	// true: shape is below text
+		bool fAnchorLock;	// true: anchor is locked
+		int cTxbx;			// Count of textboxes in shape (undo doc only)
+
+		DrawingPrimitives primitives;		
+
+		void read_primitives(Spa* pSpa, VirtualStreamReader* reader, int length);
 	};
 }

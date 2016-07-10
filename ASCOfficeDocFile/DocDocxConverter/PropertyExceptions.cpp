@@ -68,9 +68,10 @@ namespace DocFileFormat
 		{
 			if ( ( sprmStart + opCodeSize ) < size )
 			{
-				OperationCode opCode = oldVersion ? (OperationCode)FormatUtils::BytesToUChar	( bytes, sprmStart, size ) :
-													(OperationCode)FormatUtils::BytesToUInt16	( bytes, sprmStart, size ) ;
+				unsigned short code  = oldVersion ? FormatUtils::BytesToUChar	( bytes, sprmStart, size ) :
+													FormatUtils::BytesToUInt16	( bytes, sprmStart, size ) ;
 
+				OperationCode opCode = (OperationCode)code;
 				short opSize = -1;
 
 				if (oldVersion)

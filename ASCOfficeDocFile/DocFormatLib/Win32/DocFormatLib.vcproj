@@ -412,6 +412,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\DocDocxConverter\DrawingPrimitives.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\DocDocxConverter\DrawingPrimitives.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\DocDocxConverter\EmuValue.h"
 				>
 			</File>
@@ -637,6 +645,10 @@
 			</File>
 			<File
 				RelativePath="..\..\DocDocxConverter\SinglePropertyModifier.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\DocDocxConverter\Spa.cpp"
 				>
 			</File>
 			<File

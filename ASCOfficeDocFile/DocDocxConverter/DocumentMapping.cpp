@@ -34,6 +34,7 @@
 #include "CommentsMapping.h"
 #include "TablePropertiesMapping.h"
 #include "MainDocumentMapping.h"
+#include "DrawingPrimitives.h"
 
 #include "../Common/TextMark.h"
 #include "../Common/FormatUtils.h"
@@ -454,9 +455,9 @@ namespace DocFileFormat
 		//write text
 		for (unsigned int i = 0; i < chars->size(); ++i)
 		{
-			wchar_t c = chars->at(i);
+			wchar_t c = chars->at(i), code = c;
 
-			if (TextMark::Tab == c)
+			if (TextMark::Tab == code)
 			{
                 writeTextElement(text, textType);
 
@@ -466,7 +467,7 @@ namespace DocFileFormat
 
 				m_pXmlWriter->WriteString(elem.GetXMLString().c_str());
 			}
-			else if (TextMark::HardLineBreak == c)
+			else if (TextMark::HardLineBreak == code)
 			{
                 writeTextElement(text, textType);
 
@@ -478,11 +479,11 @@ namespace DocFileFormat
 
 				m_pXmlWriter->WriteString(elem.GetXMLString().c_str());
 			}
-			else if (TextMark::ParagraphEnd == c)
+			else if (TextMark::ParagraphEnd == code)
 			{
 				//do nothing
 			}
-			else if (TextMark::PageBreakOrSectionMark == c)
+			else if (TextMark::PageBreakOrSectionMark == code)
 			{
 				//write page break, section breaks are written by writeParagraph() method
 				if (/*!isSectionEnd(c)*/_isSectionPageBreak == 0)
@@ -497,7 +498,7 @@ namespace DocFileFormat
 					m_pXmlWriter->WriteString(elem.GetXMLString().c_str());
 				}
 			}
-			else if (TextMark::ColumnBreak == c)
+			else if (TextMark::ColumnBreak == code)
 			{
                 writeTextElement(text, textType);
 
@@ -508,7 +509,7 @@ namespace DocFileFormat
 
 				m_pXmlWriter->WriteString(elem.GetXMLString().c_str());
 			}
-			else if (TextMark::FieldBeginMark == c)
+			else if (TextMark::FieldBeginMark == code)
 			{
 				int cpFieldStart = initialCp + i;
 				int cpFieldEnd = searchNextTextMark( m_document->Text, cpFieldStart, TextMark::FieldEndMark );
@@ -732,7 +733,7 @@ namespace DocFileFormat
 					_fldCharCounter++;
 				}
 			}
-			else if (TextMark::FieldSeparator == c)
+			else if (TextMark::FieldSeparator == code)
 			{
 				if (_fldCharCounter > 0)
 				{
@@ -742,7 +743,7 @@ namespace DocFileFormat
 					m_pXmlWriter->WriteString( elem.GetXMLString().c_str() );
 				}
 			}
-			else if (TextMark::FieldEndMark == c)
+			else if (TextMark::FieldEndMark == code)
 			{
 				if (_fldCharCounter > 0)
 				{
@@ -764,7 +765,7 @@ namespace DocFileFormat
 					_writeInstrText	= false;
 				}
 			}
-			else if ((TextMark::Symbol == c) && fSpec)
+			else if ((TextMark::Symbol == code) && fSpec)
 			{
 				Symbol s = getSymbol( chpx );
 
@@ -773,7 +774,7 @@ namespace DocFileFormat
 				m_pXmlWriter->WriteAttribute(_T("w:char"), FormatUtils::XmlEncode(s.HexValue).c_str()); 
 				m_pXmlWriter->WriteNodeEnd(_T(""), TRUE);
 			}
-			else if ((TextMark::DrawnObject == c) && fSpec)
+			else if ((TextMark::DrawnObject == code) && fSpec)
 			{
 				Spa* pSpa	=	NULL;
 				if (typeid(*this) == typeid(MainDocumentMapping))
@@ -797,9 +798,17 @@ namespace DocFileFormat
 						pShape->Convert(&oVmlWriter);
 						m_pXmlWriter->WriteNodeEnd (_T("w:pict"));
 					}
+					
+					if (!pSpa->primitives.empty())
+					{
+						m_pXmlWriter->WriteNodeBegin (_T("w:pict"));
+						VMLShapeMapping oVmlWriter (m_context, m_pXmlWriter, pSpa, NULL,  _caller);
+						pSpa->primitives.Convert(&oVmlWriter);
+						m_pXmlWriter->WriteNodeEnd (_T("w:pict"));
+					}
 				}
 			}
-			else if ((TextMark::Picture == c) && fSpec )
+			else if ((TextMark::Picture == code) && fSpec )
 			{
 				PictureDescriptor oPicture (chpx, m_document->bOlderVersion ? m_document->WordDocumentStream : m_document->DataStream, 0x7fffffff, m_document->bOlderVersion);
 
@@ -850,7 +859,7 @@ namespace DocFileFormat
 					m_pXmlWriter->WriteNodeEnd	 (_T("w:pict"));
 				}                   
 			}
-			else if ((TextMark::AutoNumberedFootnoteReference == c) && fSpec)
+			else if ((TextMark::AutoNumberedFootnoteReference == code) && fSpec)
 			{
 				if ((m_document->FootnoteReferenceCharactersPlex != NULL) && (m_document->FootnoteReferenceCharactersPlex->IsCpExists(cp)))
 				{
@@ -876,7 +885,7 @@ namespace DocFileFormat
 					m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
 				}
 			}
-			else if (TextMark::AnnotationReference == c)
+			else if (TextMark::AnnotationReference == code)
 			{
 				if (typeid(*this) != typeid(CommentsMapping))
 				{

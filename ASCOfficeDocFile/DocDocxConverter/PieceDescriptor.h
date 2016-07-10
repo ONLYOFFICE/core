@@ -62,7 +62,7 @@ namespace DocFileFormat
 				}
 				else
 				{
-					code_page = ENCODING_UTF16;
+					code_page = (code_page == ENCODING_WINDOWS_1250 ? ENCODING_UTF16 : code_page_);
 					this->fc = fcValue;
 				}
 			}

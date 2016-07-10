@@ -31,7 +31,6 @@
  */
 
 #include "VMLPictureMapping.h"
-#include "OleObject.h"
 
 #include "OfficeDrawing/GeometryBooleanProperties.h"
 #include "OfficeDrawing/GeometryTextBooleanProperties.h"
@@ -155,40 +154,6 @@ namespace DocFileFormat
 	void VMLPictureMapping::Apply( IVisitable* visited  )
 	{
 		PictureDescriptor* pict = dynamic_cast<PictureDescriptor*>(visited);
-		if (pict) ApplyPict(pict);
-
-		OleObject* obj = dynamic_cast<OleObject*>(visited);
-		if (obj) ApplyObj(obj);
-	}
-
-	void VMLPictureMapping::ApplyObj( OleObject* obj  )
-	{
-		if (!obj) return;
-		
-		std::wstring widthString = FormatUtils::DoubleToWideString( 100 );
-		std::wstring heightString = FormatUtils::DoubleToWideString( 100 );
-
-		m_pXmlWriter->WriteNodeBegin( _T( "v:shape" ), true );
-		
-		PictureFrameType type;
-		m_pXmlWriter->WriteAttribute( _T( "type" ), std::wstring( _T( "#" ) + VMLShapeTypeMapping::GenerateTypeId(&type)).c_str());
-
-		std::wstring style = std::wstring( _T( "width:" ) ) + widthString + std::wstring( _T( "pt;" ) ) + std::wstring( _T( "height:" ) ) + heightString + std::wstring( _T( "pt;" ) );
-
-		m_pXmlWriter->WriteAttribute( _T( "style" ), style.c_str() );
-
-		m_pXmlWriter->WriteAttribute( _T( "id" ), m_ShapeId.c_str() );
-
-		if (m_isOlePreview)
-		{
-			m_pXmlWriter->WriteAttribute( _T( "o:ole" ), _T( "" ) );
-		}
-		m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
-		m_pXmlWriter->WriteNodeEnd( _T( "v:shape" ) );
-	}
-	
-	void VMLPictureMapping::ApplyPict( PictureDescriptor* pict  )
-	{
 		if (!pict) return;
 
 		double xScaling = pict->mx / 1000.0;

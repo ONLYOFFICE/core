@@ -94,6 +94,7 @@ namespace DocFileFormat
 
 	class FTXBXS : public ByteStructure
 	{
+		friend class TextboxMapping;
 	public:
 		struct FTXBXSReusable
 		{
@@ -107,7 +108,6 @@ namespace DocFileFormat
 			int cTxbxEdit;				//	This value MUST be zero and MUST be ignored.
 		};
 
-	public:
 		static const int STRUCTURE_SIZE = 22;
 
 		FTXBXS ()
@@ -123,26 +123,22 @@ namespace DocFileFormat
 	
 		virtual ByteStructure* ConstructObject (VirtualStreamReader* reader, int length)
 		{
-			FTXBXS* pFTXBXS				=	new FTXBXS();
-			if (pFTXBXS)
-			{
-				pFTXBXS->reusable01		=	reader->ReadInt32();
-				pFTXBXS->reusable02		=	reader->ReadInt32();
+			FTXBXS* pFTXBXS	=	new FTXBXS();
+			if (!pFTXBXS) return NULL;
 
-				pFTXBXS->fReusable		=	reader->ReadInt16();
+			pFTXBXS->reusable01		=	reader->ReadInt32();
+			pFTXBXS->reusable02		=	reader->ReadInt32();
 
-				pFTXBXS->itxbxsDest		=	reader->ReadInt32();
-				pFTXBXS->lid			=	reader->ReadInt32();
-				pFTXBXS->txidUndo		=	reader->ReadInt32();
+			pFTXBXS->fReusable		=	reader->ReadInt16();
 
-				return static_cast<ByteStructure*>(pFTXBXS);
-			}
+			pFTXBXS->itxbxsDest		=	reader->ReadInt32();
+			pFTXBXS->lid			=	reader->ReadInt32();
+			pFTXBXS->txidUndo		=	reader->ReadInt32();
 
-			return NULL;
+			return static_cast<ByteStructure*>(pFTXBXS);
 		}
 
 	private:
-
 		int					reusable01;
 		int					reusable02;
 

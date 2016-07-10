@@ -136,7 +136,7 @@ namespace DocFileFormat
 		{
 			name = new unsigned char[characterCount];//characters are zero-terminated, so 1 char has 2 bytes:
 			memcpy( name, ( bytes + cbStdBase + 1 ), ( characterCount  ) );
-			FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &(this->xstzName), name, ( characterCount ), ENCODING_WINDOWS_1250 );
+			FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &(xstzName), name, ( characterCount ), ENCODING_WINDOWS_1250 );
 			upxOffset = cbStdBase + 1 + ( characterCount /** 2*/ ) + 1;
 		}
 		else
@@ -144,14 +144,14 @@ namespace DocFileFormat
 			name = new unsigned char[characterCount * 2];//characters are zero-terminated, so 1 char has 2 bytes:
 			memcpy( name, ( bytes + cbStdBase + 2 ), ( characterCount * 2 ) );
 			//remove zero-termination
-			FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &(this->xstzName), name, ( characterCount * 2 ), ENCODING_UTF16 );
+			FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &(xstzName), name, ( characterCount * 2 ), ENCODING_UTF16 );
 			
 			//parse the UPX structs
 			upxOffset = cbStdBase + 1 + ( characterCount * 2 ) + 2;
 		}
 		RELEASEARRAYOBJECTS( name );
 
-		for ( int i = 0; i < this->cupx; i++ )
+		for ( int i = 0; i < cupx; i++ )
 		{
 			//find the next even unsigned char border
 			if ( ( upxOffset % 2 ) != 0 )
@@ -168,7 +168,7 @@ namespace DocFileFormat
 				unsigned char* upxBytes = new unsigned char[cbUPX];
 				memcpy( upxBytes, ( bytes + upxOffset + 2 ), cbUPX );
 
-				if ( this->stk == table_style )
+				if ( stk == table_style )
 				{
 					//first upx is TAPX; second PAPX, third CHPX
 					switch ( i )
@@ -176,68 +176,68 @@ namespace DocFileFormat
 					case 0:
 						{
 							//todooo не реализовано
-							//RELEASEOBJECT( this->tapx );
-							//this->tapx = new TablePropertyExceptions( upxBytes, cbUPX,  dataStream, oldVersion); 
+							//RELEASEOBJECT( tapx );
+							//tapx = new TablePropertyExceptions( upxBytes, cbUPX,  dataStream, oldVersion); 
 						}
 						break;
 
 					case 1:
 						{
-							RELEASEOBJECT( this->papx );
-							this->papx = new ParagraphPropertyExceptions( upxBytes, cbUPX, dataStream, oldVersion);
+							RELEASEOBJECT( papx );
+							papx = new ParagraphPropertyExceptions( upxBytes, cbUPX, dataStream, oldVersion);
 						}
 						break;
 
 					case 2: 
 						{
-							RELEASEOBJECT( this->chpx ); 
-							this->chpx = new CharacterPropertyExceptions( upxBytes, cbUPX , oldVersion); 
+							RELEASEOBJECT( chpx ); 
+							chpx = new CharacterPropertyExceptions( upxBytes, cbUPX , oldVersion); 
 						}
 						break;
 					}
 				}
-				else if ( this->stk == paragraph_style )
+				else if ( stk == paragraph_style )
 				{
 					//first upx is PAPX, second CHPX
 					switch ( i )
 					{
 					case 0:
 						{  
-							RELEASEOBJECT( this->papx );
-							this->papx = new ParagraphPropertyExceptions( upxBytes, cbUPX, dataStream, oldVersion ); 
+							RELEASEOBJECT( papx );
+							papx = new ParagraphPropertyExceptions( upxBytes, cbUPX, dataStream, oldVersion ); 
 						}
 						break;
 
 					case 1: 
 						{
-							RELEASEOBJECT( this->chpx );
-							this->chpx = new CharacterPropertyExceptions( upxBytes, cbUPX, oldVersion); 
+							RELEASEOBJECT( chpx );
+							chpx = new CharacterPropertyExceptions( upxBytes, cbUPX, oldVersion); 
 						}
 						break;
 					}
 				}
-				else if ( this->stk == numbering_style )
+				else if ( stk == numbering_style )
 				{
 					//list styles have only one PAPX
 					switch ( i )
 					{
 					case 0:
 						{
-							RELEASEOBJECT( this->papx );
-							this->papx = new ParagraphPropertyExceptions( upxBytes, cbUPX, dataStream, oldVersion );
+							RELEASEOBJECT( papx );
+							papx = new ParagraphPropertyExceptions( upxBytes, cbUPX, dataStream, oldVersion );
 						}
 						break;
 					}
 				}
-				else if ( this->stk == character_style )
+				else if ( stk == character_style )
 				{
 					//character styles have only one CHPX
 					switch ( i )
 					{
 					case 0: 
 						{  
-							RELEASEOBJECT( this->chpx );
-							this->chpx = new CharacterPropertyExceptions( upxBytes, cbUPX, oldVersion); 
+							RELEASEOBJECT( chpx );
+							chpx = new CharacterPropertyExceptions( upxBytes, cbUPX, oldVersion); 
 						}
 						break;
 					}

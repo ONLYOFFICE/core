@@ -268,7 +268,7 @@ namespace DocFileFormat
 				std::vector<int> bookmarks = searchBookmarks(chpxChars, cp);
 
 				//if there are bookmarks in this run, split the run into several runs
-				if (bookmarks.size())
+				if (!bookmarks.empty())
 				{
 					std::list<std::vector<wchar_t>>* runs = splitCharList(chpxChars, &bookmarks);
 					if (runs) 

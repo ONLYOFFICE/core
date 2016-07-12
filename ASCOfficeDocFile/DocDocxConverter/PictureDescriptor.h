@@ -129,6 +129,7 @@ namespace DocFileFormat
 		ShapeContainer	* shapeContainer;
 		BlipStoreEntry	* blipStoreEntry;
 		
+		unsigned char	*embeddedDataHeader;
 		unsigned char	*embeddedData;
 		int				embeddedDataSize;						
 	};

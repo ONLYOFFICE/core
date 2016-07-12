@@ -70,6 +70,12 @@ public:
 public:
 	CMetaHeader()
 	{
+		cbSize = cbSave = 0;
+		filter = compression = 0;
+		ptSize.x = ptSize.y = 0;
+
+		rcBounds.bottom = rcBounds.left = rcBounds.right = rcBounds.top = 0;
+
 	}
 
 

@@ -98,6 +98,7 @@ namespace DocFileFormat
 		sprmOldCChse			=	73,
 		sprmOldCSymbol			=	74,
 		sprmOldCFOle2			=	75,
+		sprmCOldHighlight		=	77,
 		sprmOldCIstd			=	80,
 		sprmOldCIstdPermute		=	81,
 		sprmOldCDefault			=	82,

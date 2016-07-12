@@ -39,7 +39,7 @@
 
 namespace ImageHelper
 {
-	typedef struct ___tagBITMAPINFOHEADER 
+	struct __BITMAPINFOHEADER 
 	{
 		DWORD      biSize;
 		LONG       biWidth;
@@ -52,44 +52,117 @@ namespace ImageHelper
 		LONG       biYPelsPerMeter;
 		DWORD      biClrUsed;
 		DWORD      biClrImportant;
-	} ___BITMAPINFOHEADER;
+	};
 
-	inline static int CompareStrings (const wchar_t* str1, const wchar_t* str2)
+	struct __BITMAPCOREHEADER
 	{
-		CString cstr1; cstr1 = str1;
-		CString cstr2; cstr2 = str2;
+        DWORD   bcSize;                 /* used to get to color table */
+        WORD    bcWidth;
+        WORD    bcHeight;
+        WORD    bcPlanes;
+        WORD    bcBitCount;
+	};
 
-		if (cstr1 == cstr2)
-			return 0;
-
-		return 1;
-	}
-	inline bool SaveImageToFileFromDIB(unsigned char* buffer, int size, const std::wstring& file)
+	inline Global::_BlipType SaveImageToFileFromDIB(unsigned char* data, int size, const std::wstring& file_name)//without ext
 	{
-		bool result = false;
-		const ___BITMAPINFOHEADER* info =	(___BITMAPINFOHEADER*)buffer;
+		Global::_BlipType result = Global::msoblipERROR;
 
-		if (NULL != info && info->biSize == 40)
+		CBgraFrame oFrame;
+		int offset = 0, biSizeImage = 0;
+
+		__BITMAPINFOHEADER * header = (__BITMAPINFOHEADER*)data;
+		if (!header) return result;
+
+		result == Global::msoblipDIB;
+
+		if (header->biWidth > 100000 || header->biHeight > 100000 || header->biSize != 40)
 		{
-			unsigned char* pBgraData = buffer + sizeof(___BITMAPINFOHEADER);
+			__BITMAPCOREHEADER * header_core = (__BITMAPCOREHEADER *)data;
+			if (header_core->bcSize != 12)
+			{
+				result = Global::msoblipWMF;
+			}
+			else
+			{
+				offset = 12; //sizeof(BITMAPCOREHEADER)			
 			
-			int nWidth	= info->biWidth;
-			int nHeight = info->biHeight;
+				oFrame.put_Height	(header_core->bcHeight );
+				oFrame.put_Width	(header_core->bcWidth );
+				
+				int sz_bitmap = header_core->bcHeight * header_core->bcWidth * header_core->bcBitCount/ 8;
+				
+				//if (header_core->bcWidth % 2 != 0 && sz_bitmap < size - offset)
+				//	header_core->bcWidth++;
+				///???? todooo непонятно .. в biff5 нужно флипать картинку, в biff8 не ясно ( - 
+				
+				int stride =  -(size - offset) / header_core->bcHeight;
+				oFrame.put_Stride	(stride/*header_core->bcBitCount * header_core->bcWidth /8 */);
 
-			CBgraFrame oFrame;
-			oFrame.put_Data		(pBgraData);
-			oFrame.put_Width	(nWidth);
-			oFrame.put_Height	(nHeight);
+				biSizeImage = size - offset;
+				
+				if (-stride >= header_core->bcWidth && header_core->bcBitCount >=24 )
+				{
+					result = Global::msoblipPNG;
+				}
+			}
+		}
+		else
+		{
+			offset = 40; //sizeof(BITMAPINFOHEADER)
 
-			int nStride = info->biSizeImage / nHeight;
-			oFrame.put_Stride( -nStride );
+			oFrame.put_Height	(header->biHeight );
+			oFrame.put_Width	(header->biWidth );
+			
+			int sz_bitmap = header->biHeight * header->biWidth * header->biBitCount/ 8;
+			
+			//if (header->biWidth % 2 != 0 && sz_bitmap < size -offset)
+			//	header->biWidth++;
+			
+			int stride = -(size - offset) / header->biHeight;
 
-			result = oFrame.SaveFile(file, 4);
+			if (-stride >= header->biWidth && header->biBitCount >= 24)
+			{
+				result = Global::msoblipPNG;
+			}
+			oFrame.put_Stride	(stride/*header->biBitCount * header->biWidth /8*/);
+			
+			biSizeImage = header->biSizeImage > 0 ? header->biSizeImage : (size - offset);
+		}
+		
+//------------------------------------------------------------------------------------------
+
+		if (result == Global::msoblipPNG)
+		{
+			oFrame.put_Data((unsigned char*)data + offset);
+			
+			if (!oFrame.SaveFile(file_name + _T(".png"), 4/*CXIMAGE_FORMAT_PNG*/))
+				result = Global::msoblipERROR;
 
 			oFrame.put_Data(NULL);
-
 		}
-
+		else if (result == Global::msoblipWMF)
+		{
+			NSFile::CFileBinary file;
+			if (file.CreateFileW(file_name + _T(".wmf")))
+			{
+				file.WriteFile((BYTE*)data, size);
+				file.CloseFile();
+			}
+		}
+		else if (biSizeImage > 0)
+		{
+			NSFile::CFileBinary file;
+			if (file.CreateFileW(file_name + _T(".bmp")))
+			{
+				WORD vtType		= 0x4D42;				file.WriteFile((BYTE*)&vtType,	2);
+				DWORD dwLen		= biSizeImage;			file.WriteFile((BYTE*)&dwLen,	4);
+				DWORD dwRes		= 0;					file.WriteFile((BYTE*)&dwRes,	4);
+				DWORD dwOffset	= 2;					file.WriteFile((BYTE*)&dwOffset, 4);
+			
+				file.WriteFile((BYTE*)data, size);
+				file.CloseFile();
+			}
+		}
 		return result;
 	}
 }
@@ -120,11 +193,11 @@ namespace DocFileFormat
 		//Write main content. (word directory)
 
 		SaveToFile(string2std_string(pathWord.GetPath()), std::wstring( _T("document.xml" ) ),		DocumentXML );
-		SaveToFile(string2std_string(pathWord.GetPath()), std::wstring( _T( "fontTable.xml" ) ),		FontTableXML );
+		SaveToFile(string2std_string(pathWord.GetPath()), std::wstring( _T( "fontTable.xml" ) ),	FontTableXML );
 		SaveToFile(string2std_string(pathWord.GetPath()), std::wstring( _T( "styles.xml" ) ),		StyleSheetXML );
-		SaveToFile(string2std_string(pathWord.GetPath()), std::wstring( _T( "footnotes.xml" ) ),		FootnotesXML );
+		SaveToFile(string2std_string(pathWord.GetPath()), std::wstring( _T( "footnotes.xml" ) ),	FootnotesXML );
 		SaveToFile(string2std_string(pathWord.GetPath()), std::wstring( _T( "endnotes.xml" ) ),		EndnotesXML );
-		SaveToFile(string2std_string(pathWord.GetPath()), std::wstring( _T( "numbering.xml" ) ),		NumberingXML );
+		SaveToFile(string2std_string(pathWord.GetPath()), std::wstring( _T( "numbering.xml" ) ),	NumberingXML );
 		SaveToFile(string2std_string(pathWord.GetPath()), std::wstring( _T( "comments.xml" ) ),		CommentsXML );
 		SaveToFile(string2std_string(pathWord.GetPath()), std::wstring( _T( "settings.xml" ) ),		SettingsXML );
 		SaveToFile(string2std_string(pathWord.GetPath()), std::wstring( _T( "customizations.xml" ) ),CommandTableXML );
@@ -147,8 +220,8 @@ namespace DocFileFormat
 
 					if (Global::msoblipDIB == iter->blipType)
 					{//user_manual_v52.doc						
-						std::wstring file_name = string2std_string(pathMedia.GetPath()) + FILE_SEPARATOR_STR + _T("image") + FormatUtils::IntToWideString(i++) + iter->ext;
-						ImageHelper::SaveImageToFileFromDIB(bytes, iter->data.size(), file_name);
+						std::wstring file_name = string2std_string(pathMedia.GetPath()) + FILE_SEPARATOR_STR + _T("image") + FormatUtils::IntToWideString(i++);
+						iter->blipType = ImageHelper::SaveImageToFileFromDIB(bytes, iter->data.size(), file_name);
 					}
 					else
 					{

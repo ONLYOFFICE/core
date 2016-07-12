@@ -121,21 +121,6 @@ namespace DocFileFormat
 
 	};
 
-	class DrawingPrimitiveCTextBox: public DrawingPrimitive
-	{
-	public:
-		DrawingPrimitiveCTextBox(VirtualStreamReader* reader, int length);
-
-	};
-
-	class DrawingPrimitiveArc: public DrawingPrimitive
-	{
-	public:
-		DrawingPrimitiveArc(VirtualStreamReader* reader, int length);
-
-		bool fLeft;
-		bool fUp;
-	};
 	class DrawingPrimitiveElipse: public DrawingPrimitive
 	{
 	public:
@@ -153,6 +138,30 @@ namespace DocFileFormat
 
 		std::vector<std::pair<short, short>> arPoints;
 	};
+
+	class DrawingPrimitiveCTextBox: public DrawingPrimitive
+	{
+	public:
+		DrawingPrimitiveCTextBox(VirtualStreamReader* reader, int length);
+		virtual ~DrawingPrimitiveCTextBox();
+		
+		unsigned short	dzaOffset;
+		unsigned short	dzaDescent;
+		unsigned short	dzaLength;
+
+		DrawingPrimitiveTextBox		*txbx;
+		DrawingPrimitivePolyline	*polyline;
+	};
+
+	class DrawingPrimitiveArc: public DrawingPrimitive
+	{
+	public:
+		DrawingPrimitiveArc(VirtualStreamReader* reader, int length);
+
+		bool fLeft;
+		bool fUp;
+	};
+
 //-------------------------------------------------------------------------------------
 	class DrawingPrimitives : public IVisitable, public std::vector<DrawingPrimitive*>
 	{

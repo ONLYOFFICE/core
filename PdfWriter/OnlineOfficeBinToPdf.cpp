@@ -390,7 +390,7 @@ namespace NSOnlineOfficeBinToPdf
                     case Aggplus::DashStyleCustom:
                     {
                         int nCountDash = ReadInt(current, curindex);
-                        double* pDash = new double(nCountDash);
+                        double* pDash = new double[nCountDash];
                         for (int nDash = 0; nDash < nCountDash; ++nDash)
                         {
                             pDash[nDash] = ReadInt(current, curindex) / 100000.0;

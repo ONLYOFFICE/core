@@ -2476,6 +2476,60 @@ namespace NSEditorApi
         {
         }
     };
+    
+    class CAscSColorScheme : public IMenuEventDataBase
+    {
+    public:
+        CAscSColorScheme()
+        {
+            
+        }
+        virtual ~CAscSColorScheme()
+        {
+            for (std::vector<CAscColor*>::iterator i = m_arColors.begin(); i != m_arColors.end(); ++i)
+            {
+                CAscColor* data = *i;
+                if (NULL != data)
+                    data->Release();
+            }
+        }
+        
+        LINK_PROPERTY_STRING_JS(Name);
+        
+        inline std::vector<CAscColor*>& GetColors() {return m_arColors;}
+        inline void AddColor(CAscColor* color) {m_arColors.push_back(color);}
+        
+    private:
+        
+        js_wrapper<std::wstring> m_sName;
+        std::vector<CAscColor*>  m_arColors;
+    };
+        
+    class CAscColorSchemes : public IMenuEventDataBase
+    {
+    public:
+        CAscColorSchemes()
+        {
+            
+        }
+        virtual ~CAscColorSchemes()
+        {
+            for (std::vector<CAscSColorScheme*>::iterator i = m_arSchemes.begin(); i != m_arSchemes.end(); ++i)
+            {
+                CAscSColorScheme* data = *i;
+                if (NULL != data)
+                    data->Release();
+            }
+        }
+        
+        inline std::vector<CAscSColorScheme*>& GetSchemes() {return m_arSchemes;}
+        inline void AddScheme(CAscSColorScheme* oScheme) {m_arSchemes.push_back(oScheme);}
+        
+    private:
+        
+        std::vector<CAscSColorScheme*> m_arSchemes;
+    };
+    
 }
 
 namespace NSEditorApi

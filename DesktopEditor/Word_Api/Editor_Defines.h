@@ -738,4 +738,9 @@
 
 #define ASC_MENU_EVENT_TYPE_ERROR                   500
 
+
+#define ASC_MENU_EVENT_TYPE_COLOR_SCHEMES           2404    //  CAscColorSchemes
+#define ASC_MENU_EVENT_TYPE_CHANGE_COLOR_SCHEME     2415    //  SET(int)
+
+
 #endif //_BUILD_EDITOR_DEFINES_CROSSPLATFORM_H_

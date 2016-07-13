@@ -119,17 +119,6 @@ namespace DocFileFormat
 		lineWeight	= reader->ReadInt16();
 		lineStyle	= reader->ReadInt16();
 	}
-	const static int shemeDefaultColor[] = 
-	{
-		0x00000000,	0x00FFFFFF,	0x00FF0000,	0x0000FF00,	0x000000FF,	0x00FFFF00,	0x00FF00FF,	0x0000FFFF,	
-		0x00000000,	0x00FFFFFF,	0x00FF0000,	0x0000FF00,	0x000000FF,	0x00FFFF00,	0x00FF00FF,	0x0000FFFF,	
-		0x00800000,	0x00008000,	0x00000080,	0x00808000,	0x00800080,	0x00008080,	0x00C0C0C0,	0x00808080,	
-		0x009999FF,	0x00993366,	0x00FFFFCC,	0x00CCFFFF,	0x00660066,	0x00FF8080,	0x000066CC,	0x00CCCCFF,	
-		0x00000080,	0x00FF00FF,	0x00FFFF00,	0x0000FFFF,	0x00800080,	0x00800000,	0x00008080,	0x000000FF,	
-		0x0000CCFF,	0x00CCFFFF,	0x00CCFFCC,	0x00FFFF99,	0x0099CCFF,	0x00FF99CC,	0x00CC99FF,	0x00FFCC99,	
-		0x003366FF,	0x0033CCCC,	0x0099CC00,	0x00FFCC00,	0x00FF9900,	0x00FF6600,	0x00666699,	0x00969696,	
-		0x00003366,	0x00339966,	0x00003300,	0x00333300,	0x00993300,	0x00993366,	0x00333399,	0x00333333
-	};
 
 	long DrawingPrimitive::read_color(VirtualStreamReader* reader)
 	{
@@ -223,6 +212,7 @@ namespace DocFileFormat
 		read_fill	(reader);
 		read_shadow	(reader);
 	}
+
 	DrawingPrimitiveTextBox::DrawingPrimitiveTextBox(VirtualStreamReader *reader, int length) : DrawingPrimitiveRect(reader, length)
 	{
 	}
@@ -253,6 +243,8 @@ namespace DocFileFormat
 
 	DrawingPrimitiveCTextBox::~DrawingPrimitiveCTextBox()
 	{
+		if (polyline)	delete polyline;
+		if (txbx)		delete txbx;
 	}
 
 	DrawingPrimitivePolyline::DrawingPrimitivePolyline(VirtualStreamReader *reader, int length) : DrawingPrimitiveLine(reader, length, false)

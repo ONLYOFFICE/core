@@ -231,218 +231,231 @@ int main(int argc, char *argv[])
     }
 
     int result = 0;
-    if (TCD_DOCX2DOCT == conversion)
-    {
-        result = docx2doct (sFileFrom, sFileTo, sTempDir, sFontPath);
-    }
-    else if (TCD_DOCT2DOCX == conversion)
-    {
-        result =  doct2docx (sFileFrom, sFileTo, sTempDir, sFontPath, bFromChanges, sThemeDir, oInputParams);
-    }
-    else if (TCD_XLSX2XLST == conversion)
-    {
-        result =  xlsx2xlst (sFileFrom, sFileTo, sTempDir, sFontPath, sXmlOptions);
-    }
-    else if (TCD_XLST2XLSX == conversion)
-    {
-        result =  xlst2xlsx (sFileFrom, sFileTo, sTempDir, sFontPath, bFromChanges, sThemeDir, oInputParams);
-    }
-    else if (TCD_PPTX2PPTT == conversion)
-    {
-        result =  pptx2pptt (sFileFrom, sFileTo, sTempDir, sFontPath);
-    }
-    else if (TCD_PPTT2PPTX == conversion)
-    {
-        result =  pptt2pptx (sFileFrom, sFileTo, sTempDir, sFontPath, bFromChanges, sThemeDir, oInputParams);
-    }
-    else if (TCD_ZIPDIR == conversion)
-    {
-        result =  dir2zip (sFileFrom, sFileTo);
-    }
-    else if (TCD_UNZIPDIR == conversion)
-    {
-        result =  zip2dir (sFileFrom, sFileTo);
-    }
-    else if (TCD_CSV2XLSX == conversion)
-    {
-        result =  csv2xlsx (sFileFrom, sFileTo, sXmlOptions, sTempDir, sFontPath);
-    }
-    else if (TCD_CSV2XLST == conversion)
-    {
-        result =  csv2xlst (sFileFrom, sFileTo, sXmlOptions, sTempDir, sFontPath);
-    }
-    else if (TCD_XLSX2CSV == conversion)
-    {
-        result =  xlsx2csv (sFileFrom, sFileTo, sXmlOptions, sTempDir, sFontPath);
-    }
-    else if (TCD_XLST2CSV == conversion)
-    {
-        result =  xlst2csv (sFileFrom, sFileTo, sXmlOptions, sTempDir, sFontPath);
-    }
-    else if (TCD_DOCX2DOCT_BIN == conversion)
-    {
-        result = docx2doct_bin (sFileFrom, sFileTo, sTempDir, sFontPath);
-    }
-    else if (TCD_DOCT_BIN2DOCX == conversion)
-    {
-        result =  doct_bin2docx (sFileFrom, sFileTo, sTempDir, sFontPath, bFromChanges, sThemeDir, oInputParams);
-    }
-    else if (TCD_XLSX2XLST_BIN == conversion)
-    {
-        result =  xlsx2xlst_bin (sFileFrom, sFileTo, sTempDir, sFontPath, sXmlOptions);
-    }
-    else if (TCD_XLST_BIN2XLSX == conversion)
-    {
-        result =  xlst_bin2xlsx (sFileFrom, sFileTo, sTempDir, sFontPath, bFromChanges, sThemeDir, oInputParams);
-    }
-    else if (TCD_PPTX2PPTT_BIN == conversion)
-    {
-        result =  pptx2pptt_bin (sFileFrom, sFileTo, sTempDir, sFontPath);
-    }
-    else if (TCD_PPTT_BIN2PPTX == conversion)
-    {
-        result =  pptt_bin2pptx (sFileFrom, sFileTo, sTempDir, sFontPath, bFromChanges, sThemeDir, oInputParams);
-    }
-    else if (TCD_BIN2PDF == conversion)
-    {
-        result =  bin2pdf (sFileFrom, sFileTo, sTempDir, sFontPath, bPaid, sThemeDir);
-    }
-    else if (TCD_BIN2T == conversion)
-    {
-        result =  dir2zip (FileSystem::Directory::GetFolderPath(sFileFrom), sFileTo);
-    }
-    else if (TCD_T2BIN == conversion)
-    {
-        result =  zip2dir (sFileFrom, FileSystem::Directory::GetFolderPath(sFileTo));
-    }
-    else if (TCD_PPSX2PPTX == conversion)
-    {
-        result =  ppsx2pptx (sFileFrom, sFileTo, sTempDir);
-    }
-    else if (TCD_PPT2PPTX == conversion)
-    {
-        result =  ppt2pptx (sFileFrom, sFileTo, sTempDir);
-    }
-    else if (TCD_PPT2PPTT == conversion)
-    {
-        result =  ppt2pptt (sFileFrom, sFileTo, sTempDir, sFontPath);
-    }
-    else if (TCD_PPT2PPTT_BIN == conversion)
-    {
-        result =  ppt2pptt_bin (sFileFrom, sFileTo, sTempDir, sFontPath);
-    }
-    else if (TCD_RTF2DOCX == conversion)
-    {
-        result =  rtf2docx (sFileFrom, sFileTo, sTempDir);
-    }
-    else if (TCD_RTF2DOCT == conversion)
-    {
-        result = rtf2doct (sFileFrom, sFileTo, sTempDir, sFontPath);
-    }
-    else if (TCD_RTF2DOCT_BIN == conversion)
-    {
-        result = rtf2doct_bin (sFileFrom, sFileTo, sTempDir, sFontPath);
-    }
-    else if (TCD_DOCX2RTF == conversion)
-    {
-        result =  docx2rtf (sFileFrom, sFileTo, sTempDir);
-    }
-    else if (TCD_DOC2DOCX == conversion)
-    {
-        result =  doc2docx (sFileFrom, sFileTo, sTempDir);
-    }
-    else if (TCD_DOCT2RTF == conversion)
-    {
-        result =  doct2rtf (sFileFrom, sFileTo, sTempDir, sFontPath, bFromChanges, sThemeDir, oInputParams);
-    }
-    else if (TCD_DOCT_BIN2RTF == conversion)
-    {
-        result =  doct_bin2rtf (sFileFrom, sFileTo, sTempDir, sFontPath, bFromChanges, sThemeDir, oInputParams);
-    }
-    else if (TCD_TXT2DOCX == conversion)
-    {
-        result =  txt2docx (sFileFrom, sFileTo, sXmlOptions, sTempDir);
-    }
-    else if (TCD_TXT2DOCT == conversion)
-    {
-        result = txt2doct (sFileFrom, sFileTo, sXmlOptions, sTempDir, sFontPath);
-    }
-    else if (TCD_TXT2DOCT_BIN == conversion)
-    {
-        result = txt2doct_bin (sFileFrom, sFileTo, sXmlOptions, sTempDir, sFontPath);
-    }
-    else if (TCD_XLS2XLSX == conversion)
-    {
-        result =  xls2xlsx (sFileFrom, sFileTo, sTempDir, sFontPath, oInputParams);
-    }
-    else if (TCD_XLS2XLST == conversion)
-    {
-        result = xls2xlst (sFileFrom, sFileTo, sPassword, sTempDir, sFontPath, sXmlOptions);
-    }
-    else if (TCD_XLS2XLST_BIN == conversion)
-    {
-        result = xls2xlst_bin (sFileFrom, sFileTo, sPassword, sTempDir, sFontPath, sXmlOptions);
-    }
-    else if (TCD_ODF2OOX == conversion)
-    {
-        result =  odf2oox (sFileFrom, sFileTo, sTempDir, sFontPath);
-    }
-    else if (TCD_ODF2OOT == conversion)
-    {
-        result = odf2oot (sFileFrom, sFileTo,  sTempDir, sFontPath);
-    }
-    else if (TCD_ODF2OOT_BIN == conversion)
-    {
-        result = odf2oot_bin (sFileFrom, sFileTo, sTempDir, sFontPath);
-    }
-    else if (TCD_DOCX2ODT == conversion)
-    {
-        result =  docx2odt (sFileFrom, sFileTo, sTempDir, sFontPath);
-    }
-    else if (TCD_XLSX2ODS == conversion)
-    {
-        result =  xlsx2ods (sFileFrom, sFileTo, sTempDir, sFontPath);
-    }
-    else if (TCD_MAILMERGE == conversion)
-    {
-        result = convertmailmerge(*oMailMerge, sFileFrom, sFileTo, sTempDir, sFontPath, bPaid, sThemeDir, oInputParams);
-    }
-    else if (TCD_DOCUMENT2 == conversion)
-    {
-        result = fromDocument(sFileFrom, nFormatFrom, sFileTo, nFormatTo, sTempDir, sFontPath, sXmlOptions, sThemeDir, bFromChanges, bPaid, oInputParams);
-    }
-    else if (TCD_SPREADSHEET2 == conversion)
-    {
-        result = fromSpreadsheet(sFileFrom, nFormatFrom, sFileTo, nFormatTo, sTempDir, sFontPath, sXmlOptions, sThemeDir, bFromChanges, bPaid, oInputParams);
-    }
-    else if (TCD_PRESENTATION2 == conversion)
-    {
-        result = fromPresentation(sFileFrom, nFormatFrom, sFileTo, nFormatTo, sTempDir, sFontPath, sXmlOptions, sThemeDir, bFromChanges, bPaid, oInputParams);
-    }
-    else if (TCD_T2 == conversion)
-    {
-        result = fromT(sFileFrom, nFormatFrom, sFileTo, nFormatTo, sTempDir, sFontPath, sXmlOptions, sThemeDir, bFromChanges, bPaid, oInputParams);
-    }
-    else if (TCD_DOCT_BIN2 == conversion)
-    {
-        result = fromDoctBin(sFileFrom, sFileTo, nFormatTo, sTempDir, sFontPath, sXmlOptions, sThemeDir, bFromChanges, bPaid, oInputParams);
-    }
-    else if (TCD_XLST_BIN2 == conversion)
-    {
-        result = fromXlstBin(sFileFrom, sFileTo, nFormatTo, sTempDir, sFontPath, sXmlOptions, sThemeDir, bFromChanges, bPaid, oInputParams);
-    }
-    else if (TCD_PPTT_BIN2 == conversion)
-    {
-        result = fromPpttBin(sFileFrom, sFileTo, nFormatTo, sTempDir, sFontPath, sXmlOptions, sThemeDir, bFromChanges, bPaid, oInputParams);
-    }
-    else if (TCD_CROSSPLATFORM2 == conversion)
-    {
-        result = fromCrossPlatform(sFileFrom, nFormatFrom, sFileTo, nFormatTo, sTempDir, sFontPath, sXmlOptions, sThemeDir, bFromChanges, bPaid, oInputParams);
-    }
-    else if (TCD_CANVAS_PDF2 == conversion)
-    {
-        result = fromCanvasPdf(sFileFrom, nFormatFrom, sFileTo, nFormatTo, sTempDir, sFontPath, sXmlOptions, sThemeDir, bFromChanges, bPaid);
-    }
+	switch(conversion)
+	{
+		case TCD_DOCX2DOCT:
+		{
+			result = docx2doct (sFileFrom, sFileTo, sTempDir, sFontPath);
+		}break;
+		case TCD_DOCT2DOCX:
+		{
+			result =  doct2docx (sFileFrom, sFileTo, sTempDir, sFontPath, bFromChanges, sThemeDir, oInputParams);
+		}break;
+		case TCD_XLSX2XLST:
+		{
+			result =  xlsx2xlst (sFileFrom, sFileTo, sTempDir, sFontPath, sXmlOptions);
+		}break;
+		case TCD_XLST2XLSX:
+		{
+			result =  xlst2xlsx (sFileFrom, sFileTo, sTempDir, sFontPath, bFromChanges, sThemeDir, oInputParams);
+		}break;
+		case TCD_PPTX2PPTT:
+		{
+			result =  pptx2pptt (sFileFrom, sFileTo, sTempDir, sFontPath);
+		}break;
+		case TCD_PPTT2PPTX:
+		{
+			result =  pptt2pptx (sFileFrom, sFileTo, sTempDir, sFontPath, bFromChanges, sThemeDir, oInputParams);
+		}break;
+		case TCD_ZIPDIR:
+		{
+			result =  dir2zip (sFileFrom, sFileTo);
+		}break;
+		case TCD_UNZIPDIR:
+		{
+			result =  zip2dir (sFileFrom, sFileTo);
+		}break;
+		case TCD_CSV2XLSX:
+		{
+			result =  csv2xlsx (sFileFrom, sFileTo, sXmlOptions, sTempDir, sFontPath);
+		}break;
+		case TCD_CSV2XLST:
+		{
+			result =  csv2xlst (sFileFrom, sFileTo, sXmlOptions, sTempDir, sFontPath);
+		}break;
+		case TCD_XLSX2CSV:
+		{
+			result =  xlsx2csv (sFileFrom, sFileTo, sXmlOptions, sTempDir, sFontPath);
+		}break;
+		case TCD_XLST2CSV:
+		{
+			result =  xlst2csv (sFileFrom, sFileTo, sXmlOptions, sTempDir, sFontPath);
+		}break;
+		case TCD_DOCX2DOCT_BIN:
+		{
+			result = docx2doct_bin (sFileFrom, sFileTo, sTempDir, sFontPath);
+		}break;
+		case TCD_DOCT_BIN2DOCX:
+		{
+			result =  doct_bin2docx (sFileFrom, sFileTo, sTempDir, sFontPath, bFromChanges, sThemeDir, oInputParams);
+		}break;
+		case TCD_XLSX2XLST_BIN:
+		{
+			result =  xlsx2xlst_bin (sFileFrom, sFileTo, sTempDir, sFontPath, sXmlOptions);
+		}break;
+		case TCD_XLST_BIN2XLSX:
+		{
+			result =  xlst_bin2xlsx (sFileFrom, sFileTo, sTempDir, sFontPath, bFromChanges, sThemeDir, oInputParams);
+		}break;
+		case TCD_PPTX2PPTT_BIN:
+		{
+			result =  pptx2pptt_bin (sFileFrom, sFileTo, sTempDir, sFontPath);
+		}break;
+		case TCD_PPTT_BIN2PPTX:
+		{
+			result =  pptt_bin2pptx (sFileFrom, sFileTo, sTempDir, sFontPath, bFromChanges, sThemeDir, oInputParams);
+		}break;
+		case TCD_BIN2PDF:
+		{
+			result =  bin2pdf (sFileFrom, sFileTo, sTempDir, sFontPath, bPaid, sThemeDir);
+		}break;
+		case TCD_BIN2T:
+		{
+			result =  dir2zip (FileSystem::Directory::GetFolderPath(sFileFrom), sFileTo);
+		}break;
+		case TCD_T2BIN:
+		{
+			result =  zip2dir (sFileFrom, FileSystem::Directory::GetFolderPath(sFileTo));
+		}break;
+		case TCD_PPSX2PPTX:
+		{
+			result =  ppsx2pptx (sFileFrom, sFileTo, sTempDir);
+		}break;
+		case TCD_PPT2PPTX:
+		{
+			result =  ppt2pptx (sFileFrom, sFileTo, sTempDir);
+		}
+		case TCD_PPT2PPTT:
+		{
+			result =  ppt2pptt (sFileFrom, sFileTo, sTempDir, sFontPath);
+		}break;
+		case TCD_PPT2PPTT_BIN:
+		{
+			result =  ppt2pptt_bin (sFileFrom, sFileTo, sTempDir, sFontPath);
+		}break;
+		case TCD_RTF2DOCX:
+		{
+			result =  rtf2docx (sFileFrom, sFileTo, sTempDir);
+		}break;
+		case TCD_RTF2DOCT:
+		{
+			result = rtf2doct (sFileFrom, sFileTo, sTempDir, sFontPath);
+		}break;
+		case TCD_RTF2DOCT_BIN:
+		{
+			result = rtf2doct_bin (sFileFrom, sFileTo, sTempDir, sFontPath);
+		}break;
+		case TCD_DOCX2RTF:
+		{
+			result =  docx2rtf (sFileFrom, sFileTo, sTempDir);
+		}break;
+		case TCD_DOC2DOCX:
+		{
+			result =  doc2docx (sFileFrom, sFileTo, sTempDir, oInputParams);
+		}break;
+		case TCD_DOCT2RTF:
+		{
+			result =  doct2rtf (sFileFrom, sFileTo, sTempDir, sFontPath, bFromChanges, sThemeDir, oInputParams);
+		}break;
+		case TCD_DOCT_BIN2RTF:
+		{
+			result =  doct_bin2rtf (sFileFrom, sFileTo, sTempDir, sFontPath, bFromChanges, sThemeDir, oInputParams);
+		}break;
+		case TCD_TXT2DOCX:
+		{
+			result =  txt2docx (sFileFrom, sFileTo, sXmlOptions, sTempDir);
+		}break;
+		case TCD_TXT2DOCT:
+		{
+			result = txt2doct (sFileFrom, sFileTo, sXmlOptions, sTempDir, sFontPath);
+		}break;
+		case TCD_TXT2DOCT_BIN:
+		{
+			result = txt2doct_bin (sFileFrom, sFileTo, sXmlOptions, sTempDir, sFontPath);
+		}break;
+		case TCD_XLS2XLSX:
+		{
+			result =  xls2xlsx (sFileFrom, sFileTo, sTempDir, sFontPath, oInputParams);
+		}break;
+		case TCD_XLS2XLST:
+		{
+			result = xls2xlst (sFileFrom, sFileTo, sPassword, sTempDir, sFontPath, sXmlOptions);
+		}break;
+		case TCD_XLS2XLST_BIN:
+		{
+			result = xls2xlst_bin (sFileFrom, sFileTo, sPassword, sTempDir, sFontPath, sXmlOptions);
+		}break;
+		case TCD_ODF2OOX:
+		{
+			result =  odf2oox (sFileFrom, sFileTo, sTempDir, sFontPath);
+		}break;
+		case TCD_ODF2OOT:
+		{
+			result = odf2oot (sFileFrom, sFileTo,  sTempDir, sFontPath);
+		}break;
+		case TCD_ODF2OOT_BIN:
+		{
+			result = odf2oot_bin (sFileFrom, sFileTo, sTempDir, sFontPath);
+		}
+		case TCD_DOCX2ODT:
+		{
+			result =  docx2odt (sFileFrom, sFileTo, sTempDir, sFontPath);
+		}break;
+		case TCD_XLSX2ODS:
+		{
+			result =  xlsx2ods (sFileFrom, sFileTo, sTempDir, sFontPath);
+		}break;
+		case TCD_MAILMERGE:
+		{
+			result = convertmailmerge(*oMailMerge, sFileFrom, sFileTo, sTempDir, sFontPath, bPaid, sThemeDir, oInputParams);
+		}break;
+		case TCD_DOCUMENT2:
+		{
+			result = fromDocument(sFileFrom, nFormatFrom, sFileTo, nFormatTo, sTempDir, sFontPath, sXmlOptions, sThemeDir, bFromChanges, bPaid, oInputParams);
+		}break;
+		case TCD_SPREADSHEET2:
+		{
+			result = fromSpreadsheet(sFileFrom, nFormatFrom, sFileTo, nFormatTo, sTempDir, sFontPath, sXmlOptions, sThemeDir, bFromChanges, bPaid, oInputParams);
+		}break;
+		case TCD_PRESENTATION2:
+		{
+			result = fromPresentation(sFileFrom, nFormatFrom, sFileTo, nFormatTo, sTempDir, sFontPath, sXmlOptions, sThemeDir, bFromChanges, bPaid, oInputParams);
+		}break;
+		case TCD_T2:
+		{
+			result = fromT(sFileFrom, nFormatFrom, sFileTo, nFormatTo, sTempDir, sFontPath, sXmlOptions, sThemeDir, bFromChanges, bPaid, oInputParams);
+		}break;
+		case TCD_DOCT_BIN2:
+		{
+			result = fromDoctBin(sFileFrom, sFileTo, nFormatTo, sTempDir, sFontPath, sXmlOptions, sThemeDir, bFromChanges, bPaid, oInputParams);
+		}break;
+		case TCD_XLST_BIN2:
+		{
+			result = fromXlstBin(sFileFrom, sFileTo, nFormatTo, sTempDir, sFontPath, sXmlOptions, sThemeDir, bFromChanges, bPaid, oInputParams);
+		}break;
+		case TCD_PPTT_BIN2:
+		{
+			result = fromPpttBin(sFileFrom, sFileTo, nFormatTo, sTempDir, sFontPath, sXmlOptions, sThemeDir, bFromChanges, bPaid, oInputParams);
+		}break;
+		case TCD_CROSSPLATFORM2:
+		{
+			result = fromCrossPlatform(sFileFrom, nFormatFrom, sFileTo, nFormatTo, sTempDir, sFontPath, sXmlOptions, sThemeDir, bFromChanges, bPaid, oInputParams);
+		}break;
+		case TCD_CANVAS_PDF2:
+		{
+			result = fromCanvasPdf(sFileFrom, nFormatFrom, sFileTo, nFormatTo, sTempDir, sFontPath, sXmlOptions, sThemeDir, bFromChanges, bPaid);
+		}break;
+		case TCD_MSCRYPT2DOCT:
+		case TCD_MSCRYPT2XLST:
+		case TCD_MSCRYPT2PPTT:
+		{
+			result = mscrypt2oot (sFileFrom, sFileTo, sTempDir, sFontPath, oInputParams);
+		}break;
+		case TCD_MSCRYPT2BIN:
+			result =  mscrypt2oot_bin (sFileFrom, sFileTo, sTempDir, sFontPath, oInputParams);
+		{
+		}break;
+	}
 
 	// delete temp dir
     NSDirectory::DeleteDirectory(sTempDir);

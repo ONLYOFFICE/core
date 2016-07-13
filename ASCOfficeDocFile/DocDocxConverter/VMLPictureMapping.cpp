@@ -67,18 +67,41 @@ typedef struct
 
 namespace DocFileFormat
 {
-	Global::BlipType GetFormatPict(unsigned char* data, int size)
+    struct __BITMAPINFOHEADER
+    {
+        DWORD      biSize;
+        LONG       biWidth;
+        LONG       biHeight;
+        WORD       biPlanes;
+        WORD       biBitCount;
+        DWORD      biCompression;
+        DWORD      biSizeImage;
+        LONG       biXPelsPerMeter;
+        LONG       biYPelsPerMeter;
+        DWORD      biClrUsed;
+        DWORD      biClrImportant;
+    };
+
+    struct __BITMAPCOREHEADER
+    {
+        DWORD   bcSize;                 /* used to get to color table */
+        WORD    bcWidth;
+        WORD    bcHeight;
+        WORD    bcPlanes;
+        WORD    bcBitCount;
+    };
+    Global::BlipType GetFormatPict(unsigned char* data, int size)
 	{
 		Global::BlipType btWin32 = Global::msoblipDIB;
 				 
 		int offset = 0, biSizeImage = 0;
 
-		BITMAPINFOHEADER * header = (BITMAPINFOHEADER*)data;
+        __BITMAPINFOHEADER * header = (__BITMAPINFOHEADER*)data;
 		if (!header) return btWin32;
 
 		if (header->biWidth > 100000 || header->biHeight > 100000 || header->biSize != 40)
 		{
-			BITMAPCOREHEADER * header_core = (BITMAPCOREHEADER *)data;	
+            __BITMAPCOREHEADER * header_core = (__BITMAPCOREHEADER *)data;
 
 			if (header_core->bcSize != 12)
 			{

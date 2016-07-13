@@ -65,8 +65,10 @@ namespace DocFileFormat
 
 	private:
 
-		void ApplyPrimitives(DrawingPrimitives	* primitives );
-		int  ApplyPrimitive	(DrawingPrimitives	* primitives, int index);
+		void ApplyPrimitives	(DrawingPrimitives	* primitives );
+		int  ApplyPrimitive		(DrawingPrimitives	* primitives, int index);
+
+		void WritePrimitiveProps(DrawingPrimitive	* primitive, bool root);
 
 		// Converts a group of shapes
 		void WriteGroup(const GroupContainer* pContainer);
@@ -135,12 +137,5 @@ namespace DocFileFormat
 		XMLTools::XMLElement<wchar_t>	m_imagedata;
 		XMLTools::XMLElement<wchar_t>	m_3dstyle; 
 		XMLTools::XMLElement<wchar_t>	m_textpath;
-
-//----------------------------------------------------------------
-		std::vector<double>				m_offset_x;
-		std::vector<double>				m_offset_y;
-
-		std::vector<double>				m_scale_x;
-		std::vector<double>				m_scale_y;
 	};
 }

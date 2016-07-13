@@ -48,7 +48,7 @@ namespace DocFileFormat
 		: 
 		dxaGoal(0), dyaGoal(0), mx(0), my(0), Type(jpg), mfp(), dxaCropLeft(0), dyaCropTop(0),
 		dxaCropRight(0), dyaCropBottom(0), brcTop(NULL), brcLeft(NULL), brcBottom(NULL), brcRight(NULL), dxaOrigin(0), dyaOrigin(0),
-		cProps(0), shapeContainer(NULL), blipStoreEntry(NULL), embeddedData(NULL), embeddedDataSize(0)
+		cProps(0), shapeContainer(NULL), blipStoreEntry(NULL), embeddedData(NULL), embeddedDataSize(0), embeddedDataHeader(NULL)
 	{
 		//Get start and length of the PICT
 		int fc = GetFcPic( chpx );
@@ -62,7 +62,7 @@ namespace DocFileFormat
 		: 
 		dxaGoal(0), dyaGoal(0), mx(0), my(0), Type(jpg), mfp(), dxaCropLeft(0), dyaCropTop(0),
 		dxaCropRight(0), dyaCropBottom(0), brcTop(NULL), brcLeft(NULL), brcBottom(NULL), brcRight(NULL), dxaOrigin(0), dyaOrigin(0),
-		cProps(0), shapeContainer(NULL), blipStoreEntry(NULL), embeddedData(NULL), embeddedDataSize(0)
+		cProps(0), shapeContainer(NULL), blipStoreEntry(NULL), embeddedData(NULL), embeddedDataSize(0), embeddedDataHeader(NULL)
 	{
 	}
 	PictureDescriptor::~PictureDescriptor()
@@ -80,6 +80,7 @@ namespace DocFileFormat
 		RELEASEOBJECT(blipStoreEntry);
 		
 		RELEASEARRAYOBJECTS(embeddedData);
+		RELEASEARRAYOBJECTS(embeddedDataHeader);
 	}
 	void PictureDescriptor::parse(POLE::Stream* stream, int fc, int sz, bool oldVersion)
 	{
@@ -90,6 +91,8 @@ namespace DocFileFormat
 		int sz_stream = reader.GetSize();
 
 		int lcb = reader.ReadInt32();
+		
+		int pos_start = reader.GetPosition();
 		
 		if (lcb > 10000000) 
 			return;
@@ -104,104 +107,111 @@ namespace DocFileFormat
 			return;
 		}
 
-		if (lcb >= 10)
+		if (lcb < 10)
+			return;
+	
+		int cbHeader	=	reader.ReadUInt16();
+
+		mfp.mm			=	reader.ReadInt16();
+		mfp.xExt		=	reader.ReadInt16();
+		mfp.yExt		=	reader.ReadInt16();
+		mfp.hMf			=	reader.ReadInt16();
+
+		unsigned char* bytes	=	reader.ReadBytes(14, true);
+		rcWinMf					=	std::vector<unsigned char>(bytes, (bytes + 14));
+		RELEASEARRAYOBJECTS(bytes);
+
+	//dimensions
+		dxaGoal				=	reader.ReadInt16();
+		dyaGoal				=	reader.ReadInt16();
+		mx					=	reader.ReadUInt16();
+		my					=	reader.ReadUInt16();
+
+	//cropping
+		dxaCropLeft			=	reader.ReadInt16();
+		dyaCropTop			=	reader.ReadInt16();
+		dxaCropRight		=	reader.ReadInt16();
+		dyaCropBottom		=	reader.ReadInt16();
+
+		int brcl			=	reader.ReadInt16();
+
+	// borders
+		int bytesCount		=	oldVersion ? 2 : 4;
+		
+		bytes				=	reader.ReadBytes( bytesCount, true );
+		brcTop				=	new BorderCode( bytes, bytesCount );
+		RELEASEARRAYOBJECTS( bytes );
+
+		bytes				=	reader.ReadBytes( bytesCount, true );
+		brcLeft				=	new BorderCode( bytes, bytesCount );
+		RELEASEARRAYOBJECTS( bytes );
+
+		bytes				=	reader.ReadBytes( bytesCount, true );
+		brcBottom			=	new BorderCode( bytes, bytesCount );
+		RELEASEARRAYOBJECTS( bytes );
+
+		bytes				=	reader.ReadBytes( bytesCount, true );
+		brcRight			=	new BorderCode( bytes, bytesCount );
+		RELEASEARRAYOBJECTS( bytes );
+
+		dxaOrigin			=	reader.ReadInt16();
+		dyaOrigin			=	reader.ReadInt16();
+
+		int pos_end = reader.GetPosition();
+		if (oldVersion)
 		{
-			int cbHeader	=	reader.ReadUInt16();
+			int flag = brcl;
 
-			mfp.mm			=	reader.ReadInt16();
-			mfp.xExt		=	reader.ReadInt16();
-			mfp.yExt		=	reader.ReadInt16();
-			mfp.hMf			=	reader.ReadInt16();
+			brcl = FormatUtils::BitmaskToBool(flag, 0x000F);
+			//(	0	single 	1	thick	2	double	3	shadow )
 
-			if (mfp.mm == MM_ISOTROPIC || mfp.mm == MM_ANISOTROPIC)
+			bool fFrameEmpty	= FormatUtils::BitmaskToBool(flag, 0x0010);//	picture consists of a single frame
+			bool fBitmap		= FormatUtils::BitmaskToBool(flag, 0x0020);//	==1, when picture is just a bitmap
+			bool fDrawHatch		= FormatUtils::BitmaskToBool(flag, 0x0040);//	==1, when picture is an active OLE object
+			bool fError			= FormatUtils::BitmaskToBool(flag, 0x0080);//	==1, when picture is just an error message
+			short bpp			= FormatUtils::BitmaskToBool(flag, 0x8000);//	bits per pixel
+				//(0 unknown 1 monochrome 4 VGA)
+
+			int sz_hdr = pos_end - pos_start;
+
+			int header_size = 114;
+
+			embeddedDataSize	=	lcb - sz_hdr - header_size;	
+			embeddedDataHeader	=	reader.ReadBytes( header_size, true);
+			embeddedData		=	reader.ReadBytes( embeddedDataSize, true );
+		}
+		else
+		{
+			cProps				=	reader.ReadInt16();
+
+			if (mfp.mm == MM_SHAPEFILE)
 			{
-				Type = wmf;
+				unsigned char cchPicName	=	reader.ReadByte();
+				unsigned char* stPicName	=	reader.ReadBytes(cchPicName, true);
 
-				mx = my = 200;
-				dxaGoal = mfp.xExt;
-				dyaGoal	= mfp.yExt;
-
-				embeddedDataSize	=	lcb - 20;//reader.GetSize() - reader.GetPosition();	//lcb ?
-				embeddedData		=	reader.ReadBytes( embeddedDataSize, true );
-
-				WmfPlaceableFileHeader  *header = (WmfPlaceableFileHeader  *)embeddedData;
-
-				if (header)
+				if ( stPicName != NULL )
 				{
+					std::wstring picName;
+					FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &picName, stPicName, cchPicName, ENCODING_WINDOWS_1250 );
+					RELEASEARRAYOBJECTS(stPicName);
 				}
-			}
-			else if (mfp.mm >= 98)
+			}					
+			
+			shapeContainer	=	dynamic_cast<ShapeContainer*>(RecordFactory::ReadRecord(&reader, 0));
+
+			long pos = reader.GetPosition();
+
+			if( pos < ( fc + lcb ))
 			{
-				unsigned char* bytes	=	reader.ReadBytes(14, true);
-				rcWinMf					=	std::vector<unsigned char>(bytes, (bytes + 14));
-				RELEASEARRAYOBJECTS(bytes);
+				Record* rec = RecordFactory::ReadRecord( &reader, 0 );
 
-				//dimensions
-				dxaGoal				=	reader.ReadInt16();
-				dyaGoal				=	reader.ReadInt16();
-				mx					=	reader.ReadUInt16();
-				my					=	reader.ReadUInt16();
-
-				//cropping
-				dxaCropLeft			=	reader.ReadInt16();
-				dyaCropTop			=	reader.ReadInt16();
-				dxaCropRight		=	reader.ReadInt16();
-				dyaCropBottom		=	reader.ReadInt16();
-
-				short brcl			=	reader.ReadInt16();
-
-				// borders
-				int bytesCount		=	4;
-				bytes				=	reader.ReadBytes( bytesCount, true );
-				
-				brcTop				=	new BorderCode( bytes, bytesCount );
-				RELEASEARRAYOBJECTS( bytes );
-
-				bytes				=	reader.ReadBytes( bytesCount, true );
-				brcLeft				=	new BorderCode( bytes, 4 );
-				RELEASEARRAYOBJECTS( bytes );
-
-				bytes				=	reader.ReadBytes( bytesCount, true );
-				brcBottom			=	new BorderCode( bytes, 4 );
-				RELEASEARRAYOBJECTS( bytes );
-
-				bytes				=	reader.ReadBytes( bytesCount, true );
-				brcRight			=	new BorderCode( bytes, 4 );
-				RELEASEARRAYOBJECTS( bytes );
-
-				dxaOrigin			=	reader.ReadInt16();
-				dyaOrigin			=	reader.ReadInt16();
-				cProps				=	reader.ReadInt16();
-
-				if (mfp.mm == MM_SHAPEFILE)
+				if ((rec) && ( typeid(*rec) == typeid(BlipStoreEntry) ))
 				{
-					unsigned char cchPicName	=	reader.ReadByte();
-					unsigned char* stPicName	=	reader.ReadBytes(cchPicName, true);
-
-					if ( stPicName != NULL )
-					{
-						std::wstring picName;
-						FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &picName, stPicName, cchPicName, ENCODING_WINDOWS_1250 );
-						RELEASEARRAYOBJECTS(stPicName);
-					}
+					blipStoreEntry = dynamic_cast<BlipStoreEntry*>( rec );
 				}
-
-				shapeContainer	=	dynamic_cast<ShapeContainer*>(RecordFactory::ReadRecord(&reader, 0));
-
-				long pos = reader.GetPosition();
-
-				if( pos < ( fc + lcb ))
+				else
 				{
-					Record* rec = RecordFactory::ReadRecord( &reader, 0 );
-
-					if ((rec) && ( typeid(*rec) == typeid(BlipStoreEntry) ))
-					{
-						blipStoreEntry = dynamic_cast<BlipStoreEntry*>( rec );
-					}
-					else
-					{
-						RELEASEOBJECT(rec);
-					}
+					RELEASEOBJECT(rec);
 				}
 			}
 		}

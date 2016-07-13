@@ -34,10 +34,13 @@
 
 #include "OfficeDrawing/GeometryBooleanProperties.h"
 #include "OfficeDrawing/GeometryTextBooleanProperties.h"
+#include "OfficeDrawing/MetafilePictBlip.h"
 
 #include "../../DesktopEditor/common/String.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Document.h"
-#include "../../Common/DocxFormat/Source/DocxFormat/Document.h"
+
+#include "../../DesktopEditor/common/File.h"
+#include "../../DesktopEditor/raster/BgraFrame.h"
 
 typedef struct
 {
@@ -64,6 +67,73 @@ typedef struct
 
 namespace DocFileFormat
 {
+    struct __BITMAPINFOHEADER
+    {
+        DWORD      biSize;
+        LONG       biWidth;
+        LONG       biHeight;
+        WORD       biPlanes;
+        WORD       biBitCount;
+        DWORD      biCompression;
+        DWORD      biSizeImage;
+        LONG       biXPelsPerMeter;
+        LONG       biYPelsPerMeter;
+        DWORD      biClrUsed;
+        DWORD      biClrImportant;
+    };
+
+    struct __BITMAPCOREHEADER
+    {
+        DWORD   bcSize;                 /* used to get to color table */
+        WORD    bcWidth;
+        WORD    bcHeight;
+        WORD    bcPlanes;
+        WORD    bcBitCount;
+    };
+    Global::BlipType GetFormatPict(unsigned char* data, int size)
+	{
+		Global::BlipType btWin32 = Global::msoblipDIB;
+				 
+		int offset = 0, biSizeImage = 0;
+
+        __BITMAPINFOHEADER * header = (__BITMAPINFOHEADER*)data;
+		if (!header) return btWin32;
+
+		if (header->biWidth > 100000 || header->biHeight > 100000 || header->biSize != 40)
+		{
+            __BITMAPCOREHEADER * header_core = (__BITMAPCOREHEADER *)data;
+
+			if (header_core->bcSize != 12)
+			{
+				btWin32 = Global::msoblipWMF;
+			}
+			else
+			{
+				offset = 12; //sizeof(BITMAPCOREHEADER)		
+				int stride =  (size - offset) / header_core->bcHeight;
+
+				biSizeImage = size - offset;
+				
+				if (stride >= header_core->bcWidth && header_core->bcBitCount >=24 )
+				{
+					btWin32 = Global::msoblipPNG;	
+				}
+			}
+		}
+		else
+		{
+			offset = 40; //sizeof(BITMAPINFOHEADER)
+			int sz_bitmap = header->biHeight * header->biWidth * header->biBitCount/ 8;
+			
+			int stride = (size - offset) / header->biHeight;
+
+			if (stride >= header->biWidth && header->biBitCount >= 24)
+			{
+				btWin32 = Global::msoblipPNG;	
+			}
+		}
+		return btWin32;
+	}
 	bool ParseEmbeddedEquation( const std::string & xmlString, std::wstring & newXmlString)
 	{
 		newXmlString.clear();
@@ -307,7 +377,6 @@ namespace DocFileFormat
 		return m_ShapeId;
 	}
 
-	/// Writes a border element
 	void VMLPictureMapping::writePictureBorder( const std::wstring & name, const BorderCode* brc )
 	{
 		if (!brc || name.empty()) return;
@@ -318,8 +387,6 @@ namespace DocFileFormat
 		m_pXmlWriter->WriteNodeEnd	( _T( "" ), true );
 	}
 
-	/// Copies the picture from the binary stream to the zip archive 
-	/// and creates the relationships for the image.
 	bool VMLPictureMapping::CopyPicture (PictureDescriptor* pict)
 	{
 		if (!pict) return false;
@@ -329,57 +396,45 @@ namespace DocFileFormat
 
 		if (pict->embeddedData && pict->embeddedDataSize > 0)
 		{
-			ENHMETAHEADER3 oHeader;
+			Global::BlipType btWin32 = GetFormatPict(pict->embeddedData, pict->embeddedDataSize); 
 
-			int w = 0, h = 0; 
+			if (btWin32 == Global::msoblipWMF)
+			{
+				CMetaHeader oMetaHeader;
+		
+				oMetaHeader.rcBounds.right  = pict->mfp.xExt ;
+				oMetaHeader.rcBounds.bottom = pict->mfp.yExt ;
 
-			oHeader.iType				= 0x00000001;
-			oHeader.nSize				= sizeof(oHeader);
+				WmfPlaceableFileHeader oWmfHeader = {};
+				oMetaHeader.ToWMFHeader(&oWmfHeader);
+				
+				int lLenHeader = 114 + 22;
 
-			oHeader.rclBounds.left		= 0;
-			oHeader.rclBounds.top		= 0;
-			oHeader.rclBounds.right		= w;
-			oHeader.rclBounds.bottom	= h;
+				unsigned char *newData = new unsigned char[pict->embeddedDataSize + lLenHeader];
+				
+				memcpy(newData, (unsigned char *)(&oWmfHeader), 22);
+				memcpy(newData + 22, pict->embeddedDataHeader, 114 );
+				
+				memcpy(newData + lLenHeader, pict->embeddedData, pict->embeddedDataSize);
 
-			oHeader.rclFrame.left		= 0;
-			oHeader.rclFrame.top		= 0;
-			oHeader.rclFrame.right		= w;
-			oHeader.rclFrame.bottom		= h;
+				pict->embeddedDataSize += lLenHeader;
+				delete []pict->embeddedData;
+				pict->embeddedData = newData;
 
-			oHeader.dSignature			= 0x464D4520;
-			oHeader.nVersion			= 0x00010000;
-			oHeader.nBytes				= pict->embeddedDataSize - 176;
-
-			oHeader.nRecords			= 1;
-			oHeader.nHandles			= 0;
-
-			oHeader.sReserved			= 0;
-
-			oHeader.nDescription		= 0;
-			oHeader.offDescription		= 0;
-
-			oHeader.nPalEntries			= 0;
-
-			oHeader.szlDevice.cx		= 200;
-			oHeader.szlDevice.cy		= 200;
-
-			oHeader.szlMillimeters.cx	= 100;
-			oHeader.szlMillimeters.cy	= 100;
+			}
+			m_ctx->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(Global::msoblipDIB), 
+					std::vector<unsigned char>(pict->embeddedData, (pict->embeddedData + pict->embeddedDataSize)), Global::msoblipDIB));
 			
-			memcpy(pict->embeddedData, &oHeader, sizeof(oHeader));
-
-			m_ctx->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(Global::msoblipWMF), std::vector<unsigned char>(pict->embeddedData, pict->embeddedData + pict->embeddedDataSize)));
-			m_nImageId	=	m_ctx->_docx->RegisterImage(m_caller, Global::msoblipWMF);
-			result		=	true;
+			m_nImageId	=	m_ctx->_docx->RegisterImage(m_caller, btWin32);
+			result	=	true;
 		}
 		else if ((oBlipEntry != NULL) && (oBlipEntry->Blip != NULL))
 		{
 			switch (oBlipEntry->btWin32)
 			{
-			case Global::msoblipEMF:
-			case Global::msoblipWMF:
+				case Global::msoblipEMF:
+				case Global::msoblipWMF:
 				{
-					//it's a meta image
 					MetafilePictBlip* metaBlip = static_cast<MetafilePictBlip*>(oBlipEntry->Blip);
 					if (metaBlip)
 					{//decompress inside MetafilePictBlip
@@ -393,11 +448,11 @@ namespace DocFileFormat
 				}
 				break;
 
-			case Global::msoblipJPEG:
-			case Global::msoblipCMYKJPEG:
-			case Global::msoblipPNG:
-			case Global::msoblipTIFF:
-			case Global::msoblipDIB:
+				case Global::msoblipJPEG:
+				case Global::msoblipCMYKJPEG:
+				case Global::msoblipPNG:
+				case Global::msoblipTIFF:
+				case Global::msoblipDIB:
 				{
 					BitmapBlip* bitBlip = static_cast<BitmapBlip*>(oBlipEntry->Blip);
 					if (bitBlip)
@@ -405,19 +460,16 @@ namespace DocFileFormat
 						m_ctx->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(oBlipEntry->btWin32), 
 							std::vector<unsigned char>(bitBlip->m_pvBits, (bitBlip->m_pvBits + bitBlip->pvBitsSize)), oBlipEntry->btWin32));
 					}
-				}
-				break;
+				}break;			
 
-			default:
+				default:
 				{
 					return false;
-				}
-				break;
+				}break;
 			}
 
 			m_nImageId	=	m_ctx->_docx->RegisterImage(m_caller, oBlipEntry->btWin32);
-
-			result		=	true;
+			result	=	true;
 		}
 
 		return result;
@@ -430,27 +482,15 @@ namespace DocFileFormat
 	{
 		switch (nType)
 		{
-			//case Global::msoblipDIB:
-			//	return std::wstring( _T( ".bmp" ) );
-
-			//case msoblipBMP:
-			//  return wstring( _T( ".bmp" ) );
+		case Global::msoblipDIB:
+			return std::wstring(_T(".bmp"));
 
 		case Global::msoblipEMF:
 			return std::wstring(_T(".emf"));
 
-			//case msoblipGIF:
-			//  return wstring( _T( ".gif" ) );
-
-			//case msoblipICON:
-			//  return wstring( _T( ".ico" ) );
-
 		case Global::msoblipJPEG:
 		case Global::msoblipCMYKJPEG:
 			return std::wstring(_T(".jpg"));
-
-			//case msoblipPCX:
-			//  return wstring( _T( ".pcx" ) );
 
 		case Global::msoblipPNG:
 			return std::wstring(_T(".png"));
@@ -470,9 +510,6 @@ namespace DocFileFormat
 	{
 		switch (nType)
 		{
-			//case msoblipBMP:
-			//  return wstring( _T( "image/bmp" ) );
-
 		case Global::msoblipEMF:
 			return std::wstring(OpenXmlContentTypes::Emf);
 
@@ -498,6 +535,9 @@ namespace DocFileFormat
 		case Global::msoblipWMF:
 			return std::wstring(OpenXmlContentTypes::Wmf);
 
+		case Global::msoblipDIB:
+			return std::wstring(OpenXmlContentTypes::Bmp);
+		
 		default:
 			return std::wstring(OpenXmlContentTypes::Png);
 		}

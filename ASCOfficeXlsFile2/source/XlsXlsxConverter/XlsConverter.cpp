@@ -657,7 +657,7 @@ std::wstring XlsConverter::WriteMediaFile(char *data, int size, std::wstring typ
 			if (file.CreateFileW(xlsx_context->get_mediaitems().media_path() + file_name))
 			{
 				WORD vtType		= 0x4D42;				file.WriteFile((BYTE*)&vtType,	2);
-				DWORD dwLen		= biSizeImage;	file.WriteFile((BYTE*)&dwLen,	4);
+				DWORD dwLen		= biSizeImage;			file.WriteFile((BYTE*)&dwLen,	4);
 				DWORD dwRes		= 0;					file.WriteFile((BYTE*)&dwRes,	4);
 				DWORD dwOffset	= 2;					file.WriteFile((BYTE*)&dwOffset, 4);
 			

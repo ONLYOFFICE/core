@@ -103,8 +103,8 @@ namespace DocFileFormat
 	
 	void DrawingPrimitive::read_fill(VirtualStreamReader* reader)
 	{
-		fillFore	= read_color(reader); 
 		fillBack	= read_color(reader); 
+		fillFore	= read_color(reader); 
 		fillPattern	= reader->ReadInt16();
 	}
 	void DrawingPrimitive::read_shadow(VirtualStreamReader* reader)
@@ -225,13 +225,34 @@ namespace DocFileFormat
 	}
 	DrawingPrimitiveTextBox::DrawingPrimitiveTextBox(VirtualStreamReader *reader, int length) : DrawingPrimitiveRect(reader, length)
 	{
-		strVmlType	= L"v:rect";
-		//strVmlType	= L"v:shape";
 	}
 
 	DrawingPrimitiveCTextBox::DrawingPrimitiveCTextBox(VirtualStreamReader *reader, int length) : DrawingPrimitive(reader, length)
 	{
-		strVmlType	= L"v:shape";
+		strVmlType	= L"v:rect";
+
+		txbx		= NULL;
+		polyline	= NULL;
+
+		unsigned short f = reader->ReadUInt16();
+		
+		dzaOffset	= reader->ReadUInt16();
+		dzaDescent	= reader->ReadUInt16();
+		dzaLength	= reader->ReadUInt16();
+
+		unsigned short dpk_txbx = reader->ReadUInt16();
+		unsigned short cb_txbx	= reader->ReadUInt16();
+
+		txbx  = new DrawingPrimitiveTextBox(reader, cb_txbx);
+		
+		unsigned short dpk_polyline = reader->ReadUInt16();
+		unsigned short cb_polyline	= reader->ReadUInt16();
+
+		polyline = new DrawingPrimitivePolyline(reader, cb_polyline);
+	}
+
+	DrawingPrimitiveCTextBox::~DrawingPrimitiveCTextBox()
+	{
 	}
 
 	DrawingPrimitivePolyline::DrawingPrimitivePolyline(VirtualStreamReader *reader, int length) : DrawingPrimitiveLine(reader, length, false)

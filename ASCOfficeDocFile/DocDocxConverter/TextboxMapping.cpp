@@ -130,7 +130,8 @@ namespace DocFileFormat
 				}
 				else if (m_nTBIndex + 1 < m_document->TextboxIndividualPlex->CharacterPositions.size())
 				{
-					cp		=	m_document->TextboxIndividualPlex->CharacterPositions[m_nTBIndex];
+					//todooo сделать чище
+					cp		=	m_document->TextboxIndividualPlex->CharacterPositions[m_nTBIndex] + 2;
 					cpEnd	=	m_document->TextboxIndividualPlex->CharacterPositions[m_nTBIndex + 1];
 				}
 			}

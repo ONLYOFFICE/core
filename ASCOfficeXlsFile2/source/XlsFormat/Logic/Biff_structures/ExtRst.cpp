@@ -73,7 +73,7 @@ void ExtRst::load(CFRecord& record)
 	size_t data_end = record.getRdPtr();
 	if(data_end - data_start != cb)
 	{
-		//ОЎИБ А - нехватило Continue records - нужно найти место где именно и подзагрузить
+		//ОШИБКА - нехватило Continue records - нужно найти место где именно и подзагрузить
 		if ((data_end - data_start)  < cb )
 			record.skipNunBytes( cb - (data_end - data_start)); // trash for unknown reason
 		else

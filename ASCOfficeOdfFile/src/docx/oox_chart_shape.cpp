@@ -40,16 +40,14 @@
 namespace cpdoccore {
 namespace oox {
 
-
 void oox_chart_shape::oox_serialize(std::wostream & _Wostream)
 {
 	CP_XML_WRITER(_Wostream)
     {
 		CP_XML_NODE(L"c:spPr")
         {
-			oox_serialize_fill(CP_XML_STREAM(),fill_);
-	
-			oox_serialize_ln(CP_XML_STREAM(),content_);
+			oox_serialize_fill(CP_XML_STREAM(), fill_);
+			oox_serialize_ln(CP_XML_STREAM(), content_);
 		}
     }
 

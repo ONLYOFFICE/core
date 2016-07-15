@@ -40,6 +40,7 @@
 #include "oox_title.h"
 #include "oox_plot_area.h"
 #include "oox_chart_legend.h"
+#include "oox_rels.h"
 
 namespace cpdoccore { 
 namespace oox {
@@ -49,22 +50,19 @@ class oox_chart_context;
 typedef _CP_PTR(oox_chart_context) oox_chart_context_ptr;
 
 
-class oox_chart_context/*: noncopyable*/
+class oox_chart_context
 {
 public:
-    oox_chart_context();
-    oox_chart_context(std::wstring const & name);
+    oox_chart_context(mediaitems & mediaitems_, std::wstring name);
     ~oox_chart_context();
 
 	std::wostream & chartData();
 
-    bool empty() const;
+	void reset_fill(oox::_oox_fill &fill_);
 
 	void serialize(std::wostream & strm);
+	void dump_rels(rels & Rels);
 	
-	static oox_chart_context_ptr create(std::wstring const & name);
-	static oox_chart_context_ptr create();
-
 	void set_title(odf_reader::chart::title & t)
 	{
 		title_.set_content(t);
@@ -91,26 +89,31 @@ public:
 	}
 	void set_wall(odf_reader::chart::simple & l)
 	{
+		reset_fill(l.fill_);
 		//plot_area_.wall_graphic_properties_	= l.graphic_properties_;
 		plot_area_.graphic_properties_	= l.graphic_properties_;
 		plot_area_.fill_	= l.fill_;
 	}
 	void set_floor(odf_reader::chart::simple & l)
 	{
+		reset_fill(l.fill_);
 		//floor_.content_= l;
 	}
 	void set_legend(odf_reader::chart::simple & l)
 	{
+		reset_fill(l.fill_);
 		legend_.content_= l;
 	}
 
 	void set_chart_graphic_properties(std::vector<odf_reader::_property> & prop, _oox_fill &fill)
 	{
+		reset_fill(fill);
 		graphic_properties_= prop;
 		fill_ = fill;
 	}
 	void set_plot_area_properties(std::vector<odf_reader::_property> & prop, _oox_fill &fill)
 	{
+		reset_fill(fill);
 		plot_area_.properties_		= prop; 
 		plot_area_.fill_			= fill; 
 	}
@@ -120,13 +123,15 @@ private:
     class Impl;
     _CP_SCOPED_PTR(Impl) impl_;
 	
+	mediaitems							&mediaitems_;
+	std::vector<_rel>					rels_;
+	
 	cpdoccore::oox::oox_title			title_;
 	cpdoccore::oox::oox_plot_area		plot_area_;
 	cpdoccore::oox::oox_chart_legend	legend_;
 
 	std::vector<odf_reader::_property>	graphic_properties_;
 	_oox_fill							fill_;
-              
 };
 //autoTitleDeleted (Auto Title Is Deleted) §21.2.2.7
 //backWall (Back Wall) §21.2.2.11

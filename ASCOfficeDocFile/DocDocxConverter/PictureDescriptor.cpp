@@ -35,7 +35,8 @@
 namespace DocFileFormat
 {
 	/// Parses the CHPX for a fcPic an loads the PictureDescriptor at this offset
-	PictureDescriptor::PictureDescriptor(CharacterPropertyExceptions* chpx, POLE::Stream* stream, int size) : 
+	PictureDescriptor::PictureDescriptor(CharacterPropertyExceptions* chpx, POLE::Stream* stream, int size, bool oldVersion) 
+		: 
 		dxaGoal(0), dyaGoal(0), mx(0), my(0), Type(jpg), Name( _T( "" ) ), mfp(), dxaCropLeft(0), dyaCropTop(0),
 		dxaCropRight(0), dyaCropBottom(0), brcTop(NULL), brcLeft(NULL), brcBottom(NULL), brcRight(NULL), dxaOrigin(0), dyaOrigin(0),
 		cProps(0), shapeContainer(NULL), blipStoreEntry(NULL)
@@ -46,7 +47,7 @@ namespace DocFileFormat
 
 		if ( fc >= 0 )
 		{
-			parse( stream, fc, size );
+			parse( stream, fc, size, oldVersion);
 		}
 	}
 
@@ -64,11 +65,11 @@ namespace DocFileFormat
 		RELEASEOBJECT(shapeContainer);
 		RELEASEOBJECT(blipStoreEntry);
 	}
-	void PictureDescriptor::parse(POLE::Stream* stream, int fc, int sz)
+	void PictureDescriptor::parse(POLE::Stream* stream, int fc, int sz, bool oldVersion)
 	{
 		Clear();
 
-		VirtualStreamReader reader(stream, fc);
+		VirtualStreamReader reader(stream, fc, oldVersion);
 
 		int sz_stream = reader.GetSize();
 
@@ -89,17 +90,17 @@ namespace DocFileFormat
 
 		if (lcb >= 10)
 		{
-			unsigned short cbHeader	=	reader.ReadUInt16();
+			int cbHeader	=	 reader.ReadUInt16();
 
-			mfp.mm					=	reader.ReadInt16();
-			mfp.xExt				=	reader.ReadInt16();
-			mfp.yExt				=	reader.ReadInt16();
-			mfp.hMf					=	reader.ReadInt16();
+			mfp.mm			=	reader.ReadInt16();
+			mfp.xExt		=	reader.ReadInt16();
+			mfp.yExt		=	reader.ReadInt16();
+			mfp.hMf			=	reader.ReadInt16();
 
-			if (mfp.mm > 98)
+			if (mfp.mm >= 98 || oldVersion)
 			{
-				unsigned char* bytes			=	reader.ReadBytes(14, true);
-				rcWinMf				=	vector<unsigned char>(bytes, (bytes + 14));
+				unsigned char* bytes	=	reader.ReadBytes(14, true);
+				rcWinMf					=	std::vector<unsigned char>(bytes, (bytes + 14));
 				RELEASEARRAYOBJECTS(bytes);
 
 				//dimensions
@@ -148,27 +149,52 @@ namespace DocFileFormat
 					if ( stPicName != NULL )
 					{
 						std::wstring picName;
-						FormatUtils::GetSTLCollectionFromBytes<wstring>( &picName, stPicName, cchPicName, ENCODING_WINDOWS_1251 );
+						FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &picName, stPicName, cchPicName, ENCODING_WINDOWS_1250 );
 						RELEASEARRAYOBJECTS(stPicName);
 					}
 				}
 
-				//Parse the OfficeDrawing Stuff
-				shapeContainer	=	dynamic_cast<ShapeContainer*>(RecordFactory::ReadRecord(&reader, 0));
-
-				long pos = reader.GetPosition();
-
-				if( pos < ( fc + lcb ))
+				if (oldVersion)
 				{
-					Record* rec = RecordFactory::ReadRecord( &reader, 0 );
+					////blipStoreEntry = new BlipStoreEntry();
 
-					if ((rec) && ( typeid(*rec) == typeid(BlipStoreEntry) ))
+					//blipStoreEntry = new BlipStoreEntry(&reader,lcb, Global::msoblipDIB,0,0);
+					//long pos = reader.GetPosition();
+
+					//unsigned char* pPicData	=	reader.ReadBytes(lcb - pos, true);
+
+					//int pos1 = 0;
+
+					//BITMAPINFOHEADER *bm = (BITMAPINFOHEADER *)(pPicData + pos1);
+
+					//NSFile::CFileBinary f;
+					//
+					//f.CreateFile(L"d:\\test.jpg");
+					//f.WriteFile(pPicData + pos1, lcb - pos - pos1);
+					//f.CloseFile();
+
+					//RELEASEARRAYOBJECTS(pPicData);
+
+				}
+				else
+				{
+					//Parse the OfficeDrawing Stuff
+					shapeContainer	=	dynamic_cast<ShapeContainer*>(RecordFactory::ReadRecord(&reader, 0));
+
+					long pos = reader.GetPosition();
+
+					if( pos < ( fc + lcb ))
 					{
-						blipStoreEntry = dynamic_cast<BlipStoreEntry*>( rec );
-					}
-					else
-					{
-						RELEASEOBJECT(rec);
+						Record* rec = RecordFactory::ReadRecord( &reader, 0 );
+
+						if ((rec) && ( typeid(*rec) == typeid(BlipStoreEntry) ))
+						{
+							blipStoreEntry = dynamic_cast<BlipStoreEntry*>( rec );
+						}
+						else
+						{
+							RELEASEOBJECT(rec);
+						}
 					}
 				}
 			}
@@ -181,10 +207,11 @@ namespace DocFileFormat
 	{
 		int ret = -1;
 
-		for ( list<SinglePropertyModifier>::const_iterator iter = chpx->grpprl->begin(); iter != chpx->grpprl->end(); iter++ )
+		for ( std::list<SinglePropertyModifier>::const_iterator iter = chpx->grpprl->begin(); iter != chpx->grpprl->end(); iter++ )
 		{
 			switch ( iter->OpCode )
 			{
+			case sprmOldCPicLocation:
 			case sprmCPicLocation:
 				ret = FormatUtils::BytesToInt32( iter->Arguments, 0, iter->argumentsSize );
 				break;
@@ -193,6 +220,7 @@ namespace DocFileFormat
 				ret = FormatUtils::BytesToInt32( iter->Arguments, 0, iter->argumentsSize );
 				break;
 
+			case sprmOldCFData:
 			case sprmCFData:
 				break;
 			}

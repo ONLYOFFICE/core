@@ -109,7 +109,7 @@ void BiffString::load(CFRecord& record, const size_t cch1, const bool is_wide1)
 	
 	if (record.checkFitRead(raw_length)==false)
 	{
-		//ОЎИБ А - нехватило Continue records - нужно найти место где именно и подзагрузить
+		//ОШИБКА - нехватило Continue records - нужно найти место где именно и подзагрузить
 		return;
 	}
 

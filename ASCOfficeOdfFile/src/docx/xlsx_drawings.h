@@ -35,7 +35,8 @@
 #include <cpdoccore/CPScopedPtr.h>
 #include <cpdoccore/CPSharedPtr.h>
 #include <cpdoccore/xml/attributes.h>
-#include "mediaitems.h"
+
+#include "oox_rels.h"
 
 namespace cpdoccore {
 namespace oox {
@@ -55,7 +56,6 @@ struct drawing_elm
 };
 
 struct _xlsx_drawing;
-class rels;
 
 class xlsx_drawings
 {
@@ -65,8 +65,8 @@ public:
     static xlsx_drawings_ptr create(bool inGroup);
 
 public:
-    void add	(_xlsx_drawing const & d, bool isInternal, std::wstring const & rid, std::wstring const & ref, mediaitems::Type type);
-    void add	(bool isInternal, std::wstring const & rid, std::wstring const & ref, mediaitems::Type type );
+    void add	(_xlsx_drawing const & d, bool isInternal, std::wstring const & rid, std::wstring const & ref, RelsType type);
+    void add	(bool isInternal, std::wstring const & rid, std::wstring const & ref, RelsType type );
     
 	bool empty		() const;
     void dump_rels	(rels & Rels);

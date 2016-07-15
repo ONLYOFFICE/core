@@ -34,7 +34,7 @@
 #include <boost/foreach.hpp>
 #include <vector>
 #include <cpdoccore/xml/simple_xml_writer.h>
-#include "docx_rels.h"
+#include "oox_rels.h"
 
 namespace cpdoccore {
 namespace oox {

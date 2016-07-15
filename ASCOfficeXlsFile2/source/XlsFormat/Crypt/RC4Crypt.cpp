@@ -38,17 +38,18 @@
 namespace CRYPT
 {
 
-	RC4Crypt::RC4Crypt(CRYPTO::RC4EncryptionHeaderPtr & header, std::wstring password)
+	RC4Crypt::RC4Crypt(CRYPT::CryptRC4Data & data, std::wstring password, int type)
 {
 	m_VerifyPassword = false;
 	
-	if (!header) return;
+		CopyDWORDs2Bytes(data.Salt.b1, data.Salt.b2, data.Salt.b3, data.Salt.b4, pnSalt);
+		CopyDWORDs2Bytes(data.EncryptedVerifier.b1	, data.EncryptedVerifier.b2, data.EncryptedVerifier.b3, data.EncryptedVerifier.b4, pnVerifier);
+		CopyDWORDs2Bytes(data.EncryptedVerifierHash.b1, data.EncryptedVerifierHash.b2, data.EncryptedVerifierHash.b3, data.EncryptedVerifierHash.b4, pnVerifierHash);
 	
-	CopyDWORDs2Bytes(header->Salt.b1, header->Salt.b2, header->Salt.b3, header->Salt.b4, pnSalt);
-	CopyDWORDs2Bytes(header->EncryptedVerifier.b1	, header->EncryptedVerifier.b2, header->EncryptedVerifier.b3, header->EncryptedVerifier.b4, pnVerifier);
-	CopyDWORDs2Bytes(header->EncryptedVerifierHash.b1, header->EncryptedVerifierHash.b2, header->EncryptedVerifierHash.b3, header->EncryptedVerifierHash.b4, pnVerifierHash);
+		int BlockSize = 1024;
+		if (type == 1) BlockSize = 512;
 	
-	mxDecoder.reset(new BiffDecoder_RCF(pnSalt, pnVerifier, pnVerifierHash));
+		mxDecoder.reset(new BiffDecoder_RCF(pnSalt, pnVerifier, pnVerifierHash, BlockSize));
 
 	m_VerifyPassword = mxDecoder->verifyPassword(password);
 }

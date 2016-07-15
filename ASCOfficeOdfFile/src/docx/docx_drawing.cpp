@@ -350,22 +350,22 @@ void docx_serialize_common(std::wostream & strm, _docx_drawing & val)
 			CP_XML_ATTR(L"xmlns:a",L"http://schemas.openxmlformats.org/drawingml/2006/main");
 			CP_XML_NODE(L"a:graphicData")
 			{
-				if (val.type == mediaitems::typeShape)
+				if (val.type == typeShape)
 				{
 					CP_XML_ATTR(L"uri",L"http://schemas.microsoft.com/office/word/2010/wordprocessingShape");
 					docx_serialize_shape_child(CP_XML_STREAM(), val);
 				}
-				else if (val.type == mediaitems::typeImage)
+				else if (val.type == typeImage)
 				{
 					CP_XML_ATTR(L"uri",L"http://schemas.openxmlformats.org/drawingml/2006/picture");
 					docx_serialize_image_child(CP_XML_STREAM(), val);
 				}
-				else if (val.type == mediaitems::typeChart)
+				else if (val.type == typeChart)
 				{
 					CP_XML_ATTR(L"uri", L"http://schemas.openxmlformats.org/drawingml/2006/chart");
 					docx_serialize_chart_child(CP_XML_STREAM(), val);
 				}
-				else if (val.type == mediaitems::typeGroup)
+				else if (val.type == typeGroupShape)
 				{
 					CP_XML_ATTR(L"uri", L"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup");
 					docx_serialize_group_child(CP_XML_STREAM(), val);
@@ -376,19 +376,19 @@ void docx_serialize_common(std::wostream & strm, _docx_drawing & val)
 }
 void docx_serialize_child(std::wostream & strm, _docx_drawing & val)
 {
-	if (val.type == mediaitems::typeShape)
+	if (val.type == typeShape)
 	{
 		docx_serialize_shape_child(strm,val);
 	}
-	else if (val.type == mediaitems::typeImage)
+	else if (val.type == typeImage)
 	{
 		docx_serialize_image_child(strm,val);
 	}
-	else if (val.type == mediaitems::typeChart)
+	else if (val.type == typeChart)
 	{
 		docx_serialize_chart_child(strm,val);
 	}
-	else if (val.type == mediaitems::typeGroup)
+	else if (val.type == typeGroupShape)
 	{
 		docx_serialize_group_child(strm,val);
 	}

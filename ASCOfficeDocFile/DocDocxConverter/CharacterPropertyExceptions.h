@@ -45,7 +45,8 @@ namespace DocFileFormat
       }
 
       /// Parses the bytes to retrieve a CHPX
-	  CharacterPropertyExceptions( unsigned char* bytes, int size ): PropertyExceptions( bytes, size )
+	  CharacterPropertyExceptions( unsigned char* bytes, int size, bool oldVersion) :
+			PropertyExceptions( bytes, size, oldVersion )
       {
       }
   };

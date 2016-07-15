@@ -31,7 +31,6 @@
  */
 
 #include "FilePass.h"
-//#include <Exception/FileIsEncrypted.h>
 #include <Crypt/Decryptor.h>
 
 namespace XLS
@@ -72,7 +71,6 @@ void FilePass::readFields(CFRecord& record)
 	{
 		record >> key;
 		Log::info("FilePass: Encryption type: XOR");
-		//throw EXCEPT::STOP::FileIsEncrypted();
 		return;
 	}
 	else
@@ -88,7 +86,7 @@ void FilePass::readFields(CFRecord& record)
 			rc4HeaderPtr->load (record);
 
 			record.getGlobalWorkbookInfo()->decryptor = 
-				CRYPT::DecryptorPtr(new CRYPT::Decryptor(rc4HeaderPtr, record.getGlobalWorkbookInfo()->password));
+				CRYPT::DecryptorPtr(new CRYPT::Decryptor(rc4HeaderPtr->RC4Data, record.getGlobalWorkbookInfo()->password, 2));
 			
 			Log::info("Encryption type: RC4 Standard");
 		}

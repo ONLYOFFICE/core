@@ -41,7 +41,8 @@ namespace DocFileFormat
 	{
 	public:
 		/// Parses the bytes to retrieve a TAPX
-		TablePropertyExceptions(unsigned char* bytes, int size) : PropertyExceptions(bytes, size), m_bSkipShading97 (FALSE)
+		TablePropertyExceptions(unsigned char* bytes, int size, bool oldVersion) : 
+							PropertyExceptions(bytes, size, oldVersion), m_bSkipShading97 (FALSE)
 		{
 			//not yet implemented
 		}
@@ -52,13 +53,14 @@ namespace DocFileFormat
 		}
 
 		/// Extracts the TAPX SPRMs out of a PAPX
-		TablePropertyExceptions (ParagraphPropertyExceptions* papx, POLE::Stream* dataStream) : PropertyExceptions()
+		TablePropertyExceptions (ParagraphPropertyExceptions* papx, POLE::Stream* dataStream, bool oldVersion) : 
+																											PropertyExceptions()
 		{
-			VirtualStreamReader oBinReader(dataStream, 0);
+			VirtualStreamReader oBinReader(dataStream, 0, oldVersion);
 
 			m_bSkipShading97	=	FALSE;
 
-			for (list<SinglePropertyModifier>::iterator oSpmIter = papx->grpprl->begin(); oSpmIter != papx->grpprl->end(); ++oSpmIter)
+			for (std::list<SinglePropertyModifier>::iterator oSpmIter = papx->grpprl->begin(); oSpmIter != papx->grpprl->end(); ++oSpmIter)
 			{
 				if (oSpmIter->OpCode == sprmTDefTableShd || oSpmIter->OpCode == sprmTDefTableShd2nd || 
 					oSpmIter->OpCode == sprmTDefTableShd2nd || oSpmIter->OpCode == sprmTDefTableShd3rd)
@@ -84,9 +86,9 @@ namespace DocFileFormat
 					unsigned char* grpprlBytes = oBinReader.ReadBytes(grpprlSize, true);
 
 					//parse the grpprl
-					PropertyExceptions externalPx(grpprlBytes, grpprlSize);
+					PropertyExceptions externalPx(grpprlBytes, grpprlSize, oldVersion);
 
-					for (list<SinglePropertyModifier>::iterator oIter = externalPx.grpprl->begin(); oIter != externalPx.grpprl->end(); ++oIter)
+					for (std::list<SinglePropertyModifier>::iterator oIter = externalPx.grpprl->begin(); oIter != externalPx.grpprl->end(); ++oIter)
 					{
 						if (oIter->Type == TAP)
 						{

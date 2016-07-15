@@ -81,17 +81,14 @@ namespace DocFileFormat
 
 	public:
 		/// Parses the CHPX for a fcPic an loads the PictureDescriptor at this offset
-		PictureDescriptor( CharacterPropertyExceptions* chpx, POLE::Stream* stream, int size = 0x7fffffff);
+		PictureDescriptor( CharacterPropertyExceptions* chpx, POLE::Stream* stream, int size, bool oldVersion);
 		virtual ~PictureDescriptor();
 
 	private: 
-
-		void parse( POLE::Stream* stream, int fc, int sz );
+		void parse( POLE::Stream* stream, int fc, int sz, bool oldVersion);
 		/// Returns the fcPic into the "data" stream, where the PIC begins.
 		/// Returns -1 if the CHPX has no fcPic.
 		static int GetFcPic( const CharacterPropertyExceptions* chpx );
-
-	private:
 
 		void Clear();
 
@@ -99,7 +96,7 @@ namespace DocFileFormat
 		static const short MM_SHAPEFILE =	0x0066;		//	Shape file
 
 		/// Rectangle for window origin and extents when metafile is stored (ignored if 0).
-		vector<unsigned char> rcWinMf;
+		std::vector<unsigned char> rcWinMf;
 		/// Horizontal measurement in twips of the rectangle the picture should be imaged within.
 		short dxaGoal;
 		/// Vertical measurement in twips of the rectangle the picture should be imaged within.
@@ -111,7 +108,7 @@ namespace DocFileFormat
 		/// The type of the picture
 		PictureType Type;
 		/// The name of the picture
-		wstring Name;
+		std::wstring Name;
 		/// The data of the windows metafile picture (WMF)
 		MetafilePicture mfp;
 		/// The amount the picture has been cropped on the left in twips

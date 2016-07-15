@@ -40,7 +40,7 @@ namespace DocFileFormat
 
 		if ( NULL != Styles )
 		{
-			for ( vector<StyleSheetDescription*>::iterator iter = Styles->begin(); iter != Styles->end(); iter++ )
+			for ( std::vector<StyleSheetDescription*>::iterator iter = Styles->begin(); iter != Styles->end(); iter++ )
 			{
 				RELEASEOBJECT( *iter );  
 			}
@@ -54,7 +54,7 @@ namespace DocFileFormat
 	/// Parses the streams to retrieve a StyleSheet.
 	StyleSheet::StyleSheet (FileInformationBlock* fib, POLE::Stream* tableStream, POLE::Stream* dataStream) : stshi(NULL), Styles(NULL)
 	{
-		VirtualStreamReader tableReader( tableStream, fib->m_FibWord97.fcStshf );
+		VirtualStreamReader tableReader( tableStream, fib->m_FibWord97.fcStshf, fib->m_bOlderVersion);
 
 		//read size of the STSHI
 		int stshiLengthBytesSize = 2;
@@ -71,7 +71,7 @@ namespace DocFileFormat
 		RELEASEARRAYOBJECTS( stshi );
 
 		//create list of STDs
-		this->Styles = new vector<StyleSheetDescription*>();
+		this->Styles = new std::vector<StyleSheetDescription*>();
 
 		for ( int i = 0; i < this->stshi->cstd; i++ )
 		{
@@ -84,7 +84,7 @@ namespace DocFileFormat
 				unsigned char* std = tableReader.ReadBytes( cbStd, true );
 
 				//parse the STD bytes
-				this->Styles->push_back( new StyleSheetDescription( std, cbStd, (int)this->stshi->cbSTDBaseInFile, dataStream ) );
+				this->Styles->push_back( new StyleSheetDescription( std, cbStd, (int)this->stshi->cbSTDBaseInFile, dataStream, fib->m_bOlderVersion) );
 
 				RELEASEARRAYOBJECTS( std );
 			}

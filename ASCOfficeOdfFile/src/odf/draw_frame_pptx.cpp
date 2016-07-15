@@ -301,7 +301,7 @@ void draw_object::pptx_convert(oox::pptx_conversion_context & Context)
 		}
 
 
-		chart_build objectBuild;
+		chart_build objectBuild(href);
 
 		process_build_chart process_build_object_(objectBuild, objectSubDoc.odf_context());
         contentSubDoc->accept(process_build_object_); 

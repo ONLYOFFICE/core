@@ -48,6 +48,6 @@ namespace DocFileFormat
 		virtual ~VMLShapeTypeMapping();
 		virtual void Apply( IVisitable* visited );
 		/// Returns the id of the referenced type
-		static wstring GenerateTypeId (const ShapeType* pShape);
+		static std::wstring GenerateTypeId (const ShapeType* pShape);
 	};
 }

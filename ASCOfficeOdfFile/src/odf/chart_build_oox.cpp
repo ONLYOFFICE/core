@@ -496,7 +496,7 @@ void process_build_chart::ApplyChartProperties(std::wstring style, std::vector<_
 		}
     }
 }
-void process_build_chart::ApplyTextProperties(std::wstring style,std::vector<_property> & propertiesOut)
+void process_build_chart::ApplyTextProperties(std::wstring style, std::vector<_property> & propertiesOut)
 {
 	style_instance* styleInst = styles_.style_by_name(style, odf_types::style_family::Chart, false/*Context.process_headers_footers_*/);
     if(styleInst)
@@ -505,14 +505,19 @@ void process_build_chart::ApplyTextProperties(std::wstring style,std::vector<_pr
 		properties.apply_to(propertiesOut);
     }
 }
-void process_build_chart::ApplyGraphicProperties(std::wstring style,std::vector<_property> & propertiesOut,oox::_oox_fill & fill)
+void process_build_chart::ApplyGraphicProperties(std::wstring style, std::vector<_property> & propertiesOut, oox::_oox_fill & fill)
 {
-	style_instance* styleInst = styles_.style_by_name(style, odf_types::style_family::Chart,false/*Context.process_headers_footers_*/);
+	style_instance* styleInst = styles_.style_by_name(style, odf_types::style_family::Chart, false/*Context.process_headers_footers_*/);
     if(styleInst)
 	{
 		graphic_format_properties properties = calc_graphic_properties_content(styleInst);
 
-		Compute_GraphicFill(properties.common_draw_fill_attlist_, properties.style_background_image_ , draw_styles_ , fill);	
+		Compute_GraphicFill(properties.common_draw_fill_attlist_, properties.style_background_image_ , draw_styles_ , fill);
+
+		if (fill.bitmap)
+		{
+			fill.bitmap->xlink_href_ = chart_build_.baseRef_ + FILE_SEPARATOR_STR + fill.bitmap->xlink_href_;
+		}
 		properties.apply_to(propertiesOut);
     }
 }	

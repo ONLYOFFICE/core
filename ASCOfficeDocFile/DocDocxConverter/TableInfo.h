@@ -49,7 +49,7 @@ namespace DocFileFormat
       {
 	    if ( papx != NULL )
 		{
-		  for ( list<SinglePropertyModifier>::iterator iter = papx->grpprl->begin(); iter != papx->grpprl->end(); iter++ )
+		  for ( std::list<SinglePropertyModifier>::iterator iter = papx->grpprl->begin(); iter != papx->grpprl->end(); iter++ )
 	      {
 	        if ( iter->OpCode == sprmPFInTable )
             {

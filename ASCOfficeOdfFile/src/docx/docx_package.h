@@ -37,7 +37,7 @@
 
 #include <cpdoccore/CPSharedPtr.h>
 
-#include "docx_rels.h"
+#include "oox_rels.h"
 #include "docx_content_type.h"
 #include "oox_package.h"
 

@@ -35,8 +35,8 @@
 
 namespace DocFileFormat
 {
-	map<std::wstring, std::wstring> StyleSheetMapping::m_mapStyleId;
-	ASCOfficeCriticalSection StyleSheetMapping::m_mapStyleIdLock;
+	std::map<std::wstring, std::wstring>	StyleSheetMapping::m_mapStyleId;
+	ASCOfficeCriticalSection				StyleSheetMapping::m_mapStyleIdLock;
 
 	StyleSheetMapping::StyleSheetMapping( ConversionContext* ctx ) : AbstractOpenXmlMapping( new XmlUtils::CXmlWriter() )
 	{
@@ -80,7 +80,7 @@ namespace DocFileFormat
 			writeNormalTableStyle();
 		}
 
-		for ( vector<StyleSheetDescription*>::iterator iter = sheet->Styles->begin(); iter != sheet->Styles->end(); iter++ )
+		for ( std::vector<StyleSheetDescription*>::iterator iter = sheet->Styles->begin(); iter != sheet->Styles->end(); iter++ )
 		{
 			if ( *iter != NULL )
 			{
@@ -170,7 +170,7 @@ namespace DocFileFormat
 				//write table properties
 				if ( (*iter)->tapx != NULL )
 				{
-					vector<short> tableGrid;
+					std::vector<short> tableGrid;
 					TablePropertiesMapping* tpMapping = new TablePropertiesMapping (m_pXmlWriter, sheet, &tableGrid, false);
 					(*iter)->tapx->Convert( tpMapping );
 					RELEASEOBJECT( tpMapping );
@@ -182,15 +182,15 @@ namespace DocFileFormat
 
 		m_pXmlWriter->WriteNodeEnd( _T( "w:styles" ) );
 
-		this->_ctx->_docx->StyleSheetXML = wstring( m_pXmlWriter->GetXmlString() );
+		this->_ctx->_docx->StyleSheetXML = std::wstring( m_pXmlWriter->GetXmlString() );
 	}
 
 	/*========================================================================================================*/
 
 	/// Generates a style id for custom style names or returns the build-in identifier for build-in styles.
-	wstring StyleSheetMapping::MakeStyleId( StyleSheetDescription* std )
+	std::wstring StyleSheetMapping::MakeStyleId( StyleSheetDescription* std )
 	{
-		wstring ret;
+		std::wstring ret;
 
 		if ( std != NULL )
 		{
@@ -199,7 +199,7 @@ namespace DocFileFormat
 				//use the identifier
 				if ( std->sti < 159 )
 				{
-					ret = wstring( StyleIdentifierMap[std->sti] );
+					ret = std::wstring( StyleIdentifierMap[std->sti] );
 				}
 				else
 				{
@@ -209,7 +209,7 @@ namespace DocFileFormat
 			else
 			{
 				//if no identifier is set, use the unique id.
-				map<std::wstring, std::wstring>::const_iterator findResult = m_mapStyleId.find(std->xstzName);
+				std::map<std::wstring, std::wstring>::const_iterator findResult = m_mapStyleId.find(std->xstzName);
 				if( findResult != m_mapStyleId.end() )
 				{
 					ret = findResult->second;
@@ -220,7 +220,7 @@ namespace DocFileFormat
 					m_mapStyleIdLock.Enter();
 					int nIndex = m_mapStyleId.size();
 					ret = _T("UserStyle_") + FormatUtils::IntToWideString( nIndex );
-					pair< std::wstring, std::wstring > p( std->xstzName, ret);
+					std::pair< std::wstring, std::wstring > p( std->xstzName, ret);
 					m_mapStyleId.insert(p);
 					m_mapStyleIdLock.Leave();
 				}
@@ -260,7 +260,7 @@ namespace DocFileFormat
 		m_pXmlWriter->WriteNodeEnd( _T( "w:rFonts" ) );
 
 		LanguageId langid(this->m_document->FIB->m_FibBase.lid);
-		wstring langcode = LanguageIdMapping::getLanguageCode( &langid );
+		std::wstring langcode = LanguageIdMapping::getLanguageCode( &langid );
 
 		m_pXmlWriter->WriteNodeBegin( _T( "w:lang" ), TRUE );
 		m_pXmlWriter->WriteAttribute( _T( "w:val" ), langcode.c_str() );
@@ -286,10 +286,10 @@ namespace DocFileFormat
 
 	/// Chooses the correct style name.
 	/// Word 2007 needs the identifier instead of the stylename for translating it into the UI language.
-	wstring StyleSheetMapping::getStyleName( StyleSheetDescription* std )
+	std::wstring StyleSheetMapping::getStyleName( StyleSheetDescription* std )
 	{
-		wstring id;
-		wstring name;
+		std::wstring id;
+		std::wstring name;
 
 		if ( std != NULL )
 		{
@@ -300,7 +300,7 @@ namespace DocFileFormat
 				//use the identifier
 				if ( std->sti < 159 )
 				{
-					id = wstring( StyleIdentifierMap[std->sti] );
+					id = std::wstring( StyleIdentifierMap[std->sti] );
 				}
 				else
 				{
@@ -310,7 +310,7 @@ namespace DocFileFormat
 			else
 			{
 				//if no identifier is set, use the unique id.
-				map<std::wstring, std::wstring>::const_iterator findResult = m_mapStyleId.find(name);
+				std::map<std::wstring, std::wstring>::const_iterator findResult = m_mapStyleId.find(name);
 				if( findResult != m_mapStyleId.end() )
 				{
 					id		= findResult->second;
@@ -321,7 +321,7 @@ namespace DocFileFormat
 					m_mapStyleIdLock.Enter();
 					int nIndex = m_mapStyleId.size();
 					id = _T("UserStyle_") + FormatUtils::IntToWideString( nIndex );
-					pair< std::wstring, std::wstring > p( name, id);
+					std::pair< std::wstring, std::wstring > p( name, id);
 					m_mapStyleId.insert(p);
 					m_mapStyleIdLock.Leave();
 				}

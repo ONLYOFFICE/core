@@ -47,10 +47,12 @@ public:
     docx_table_state(docx_conversion_context & Context, const std::wstring & StyleName);
 
     std::wstring current_style() const { return table_style_; }
-    void start_column(unsigned int repeated, const std::wstring & defaultCellStyleName);
-    std::wstring get_default_cell_style_col(unsigned int column);
+    void		start_column(unsigned int repeated, const std::wstring & defaultCellStyleName);
+    
+	std::wstring get_default_cell_style_col(unsigned int column);
     std::wstring get_default_cell_style_row();
-    void start_row(const std::wstring & StyleName, const std::wstring & defaultCellStyleName);
+    
+	void start_row(const std::wstring & StyleName, const std::wstring & defaultCellStyleName);
     void end_row();
     std::wstring current_row_style() const;
    

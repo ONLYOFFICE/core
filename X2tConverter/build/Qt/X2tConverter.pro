@@ -7,7 +7,7 @@
 QT       -= core
 QT       -= gui
 
-VERSION = 2.0.2.375
+VERSION = 2.0.2.376
 DEFINES += INTVER=$$VERSION
 
 mac {

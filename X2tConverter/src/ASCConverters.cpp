@@ -900,7 +900,9 @@ namespace NExtractTools
    int doc2docx_dir (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp)
    {
         COfficeDocFile docFile;
-        return S_OK == docFile.LoadFromFile( sFrom, sTo, NULL) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+		docFile.m_sTempFolder = sTemp;
+       
+		return S_OK == docFile.LoadFromFile( sFrom, sTo, NULL) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
    }
 
    // doc -> doct
@@ -931,6 +933,7 @@ namespace NExtractTools
         FileSystem::Directory::CreateDirectory(sResultDocxDir);
 
         COfficeDocFile docFile;
+		docFile.m_sTempFolder = sTemp;
 
         if (docFile.LoadFromFile( sFrom, sResultDocxDir, NULL)== S_OK)
         {

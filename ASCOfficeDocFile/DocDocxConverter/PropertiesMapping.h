@@ -65,16 +65,16 @@ namespace DocFileFormat
 		void appendValueElement( XMLTools::XMLElement<wchar_t>* node, const wchar_t* elementName, unsigned char elementValue, bool unique );
 		void appendBorderAttributes( BorderCode* brc, XMLTools::XMLElement<wchar_t>* border );
 		void appendShading( XMLTools::XMLElement<wchar_t>* parent, const ShadingDescriptor& desc );
-		wstring getBorderType( unsigned char type );
-		wstring getShadingPattern( const ShadingDescriptor& shd );
+		std::wstring getBorderType( unsigned char type );
+		std::wstring getShadingPattern( const ShadingDescriptor& shd );
 		void appendDxaElement( XMLTools::XMLElement<wchar_t>* node, const wchar_t* elementName, const wchar_t* elementValue, bool unique );
 		void addOrSetBorder( XMLTools::XMLElement<wchar_t>* pBdr, const XMLTools::XMLElement<wchar_t>* border );
 
 	protected:
 
 		XmlUtils::CXmlWriter* m_pXmlWriter;
-		static map<unsigned char, wstring> brcTypeMap;
-		
-		static ASCOfficeCriticalSection brcTypeMapLock;
+
+		static std::map<unsigned char, std::wstring>	brcTypeMap;		
+		static ASCOfficeCriticalSection					brcTypeMapLock;
 	};
 }

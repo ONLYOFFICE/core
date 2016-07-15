@@ -237,7 +237,7 @@ namespace ASCDocFileFormat
 		/// 3 reserved for future use
 		AnchorType by;
 		/// Text wrapping mode
-		/// 0 like 2, but doesnСt require absolute object
+		/// 0 like 2, but doesn‘t require absolute object
 		/// 1 no text next to shape
 		/// 2 wrap around absolute object
 		/// 3 wrap as if no object present

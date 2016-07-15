@@ -73,7 +73,7 @@ public:
 	void start_document();
     void end_document();
 
-    void start_chart(std::wstring const & name);
+    void start_chart(std::wstring name);
     void end_chart();
 	
 	void start_body();

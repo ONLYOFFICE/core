@@ -66,7 +66,7 @@ namespace DocFileFormat
 
 		//m_pXmlWriter->WriteAttribute(_T("xmlns:wpc"),	_T("http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas"));
 		//m_pXmlWriter->WriteAttribute(_T("xmlns:mc"),	_T("http://schemas.openxmlformats.org/markup-compatibility/2006")); 
-		//m_pXmlWriter->WriteAttribute(_T("xmlns:wp14"),	_T("http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing"));
+		//m_pXmlWriter->WriteAttribute(_T("xmlns:wp14"),_T("http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing"));
 		//m_pXmlWriter->WriteAttribute(_T("xmlns:wp"),	_T("http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"));
 		//m_pXmlWriter->WriteAttribute(_T("xmlns:w14"),	_T("http://schemas.microsoft.com/office/word/2010/wordml"));
 		//m_pXmlWriter->WriteAttribute(_T("xmlns:wpg"),	_T("http://schemas.microsoft.com/office/word/2010/wordprocessingGroup"));
@@ -80,7 +80,11 @@ namespace DocFileFormat
 		m_pXmlWriter->WriteNodeBegin( _T("w:body"), FALSE );
 
 		// Convert the document
-		_lastValidPapx = (*(m_document->AllPapxFkps->begin()))->grppapx[0];
+		_lastValidPapx = NULL;
+		if (m_document->AllPapxFkps->empty() == false)
+		{
+			_lastValidPapx = (*(m_document->AllPapxFkps->begin()))->grppapx[0];
+		}
 
 		int cp = 0;
 		int fc = 0;
@@ -96,6 +100,7 @@ namespace DocFileFormat
 		while (cp < countText)
 		{
 			fc = m_document->FindFileCharPos(cp);
+				
 			if (fc < 0) break;
 
 			papx = findValidPapx(fc);
@@ -120,40 +125,15 @@ namespace DocFileFormat
 			else
 			{
 				//There are no paragraphs, only text
-
-				//start paragraph
-				m_pXmlWriter->WriteNodeBegin( _T( "w:p" ) );
-				//start run
-				m_pXmlWriter->WriteNodeBegin( _T( "w:r" ) );
-				
-				int fc						=	m_document->FindFileCharPos(0);
+				int fc						=	m_document->FindFileCharPos(cp);
 				int fcEnd					=	m_document->FindFileCharPos(countTextRel);
 
-				if (fc < 0 || fcEnd < 0) break;
-				
-				// Read the chars
-				vector<wchar_t>* chpxChars	=	m_document->m_PieceTable->GetEncodingChars (fc, fcEnd, m_document->WordDocumentStream);		//<! NEED OPTIMIZE
-				wstring text (chpxChars->begin(), chpxChars->end());
-				
-				//open a new w:t element
-				m_pXmlWriter->WriteNodeBegin( _T( "w:t" ), TRUE );
-				//if (text.find(_T("\x20")) != text.npos)
-				{
-					m_pXmlWriter->WriteAttribute( _T( "xml:space" ), _T( "preserve" ) ); 
-				}
-				m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
+				//if (fc < 0 || fcEnd < 0) break;
+				//
+				//// Read the chars
+				//std::vector<wchar_t>* chars =	m_document->GetChars (fc, fcEnd, fc);
 
-				// Write text
-				m_pXmlWriter->WriteString(text.c_str());
-
-				RELEASEOBJECT(chpxChars);
-
-				//close previous w:t ...
-				m_pXmlWriter->WriteNodeEnd( _T( "w:t" ) );
-				//close previous w:r ...
-				m_pXmlWriter->WriteNodeEnd( _T( "w:r" ) );
-				//close previous w:p ...
-				m_pXmlWriter->WriteNodeEnd( _T( "w:p" ) );
+				writeParagraph(cp, countTextRel, false, true );
 
 				cp = m_document->FIB->m_RgLw97.ccpText;
 			}
@@ -182,7 +162,7 @@ namespace DocFileFormat
 		{
 			int lastSepxCp = 0;
 
-			for (map<int, SectionPropertyExceptions*>::iterator iter = m_document->AllSepx->begin(); iter != m_document->AllSepx->end(); ++iter) 
+			for (std::map<int, SectionPropertyExceptions*>::iterator iter = m_document->AllSepx->begin(); iter != m_document->AllSepx->end(); ++iter) 
 				lastSepxCp = iter->first;
 
 			SectionPropertyExceptions* lastSepx	=	m_document->AllSepx->operator []( lastSepxCp );
@@ -198,6 +178,6 @@ namespace DocFileFormat
 		m_pXmlWriter->WriteNodeEnd( _T( "w:body" ) );
 		m_pXmlWriter->WriteNodeEnd( _T( "w:document" ) );
 
-		m_context->_docx->DocumentXML = wstring(m_pXmlWriter->GetXmlString());
+		m_context->_docx->DocumentXML = std::wstring(m_pXmlWriter->GetXmlString());
 	}
 }

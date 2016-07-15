@@ -51,6 +51,6 @@ namespace DocFileFormat
 		/// The StyleSheetInformation of the stylesheet.
 		StyleSheetInformation*			stshi;
 		/// The list contains all styles.
-		vector<StyleSheetDescription*>*	Styles;
+		std::vector<StyleSheetDescription*>*	Styles;
 	};
 }

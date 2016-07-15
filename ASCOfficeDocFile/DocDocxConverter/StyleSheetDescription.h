@@ -387,7 +387,7 @@ namespace DocFileFormat
 
 	private:
 		/// The name of the style
-		wstring xstzName;
+		std::wstring xstzName;
 		/// Invariant style identifier 
 		StyleIdentifier sti;
 		/// spare field for any temporary use, always reset back to zero! 
@@ -455,6 +455,6 @@ namespace DocFileFormat
 		StyleSheetDescription();
 		virtual ~StyleSheetDescription();
 		/// Parses the bytes to retrieve a StyleSheetDescription
-		StyleSheetDescription( unsigned char* bytes, int size, int cbStdBase, POLE::Stream* dataStream );
+		StyleSheetDescription( unsigned char* bytes, int size, int cbStdBase, POLE::Stream* dataStream, bool older);
 	};
 }

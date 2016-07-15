@@ -47,7 +47,7 @@
 #include "../odf/datatypes/style_ref.h"
 
 #include "docx_package.h"
-#include "docx_rels.h"
+#include "oox_rels.h"
 #include "logging.h"
 
 #include "../../DesktopEditor/fontengine/ApplicationFonts.h"
@@ -193,10 +193,9 @@ void docx_conversion_context::end_math_formula()
 	process_math_formula_ = false;
 }
 
-void docx_conversion_context::start_chart(std::wstring const & name)
+void docx_conversion_context::start_chart(std::wstring  name)
 {
-	charts_.push_back(oox_chart_context::create(name));
-
+	charts_.push_back(oox_chart_context_ptr(new oox_chart_context(mediaitems_, name)));
 }
 void docx_conversion_context::end_chart()
 {
@@ -264,7 +263,7 @@ void docx_conversion_context::dump_notes(rels & Rels) const
     notes_context_.dump_rels(Rels);
 }
 
-std::wstring docx_conversion_context::add_mediaitem(const std::wstring & uri, mediaitems::Type type, bool & isInternal, std::wstring & ref)
+std::wstring docx_conversion_context::add_mediaitem(const std::wstring & uri, RelsType type, bool & isInternal, std::wstring & ref)
 {
 	return mediaitems_.add_or_find(uri, type, isInternal, ref); 
 }
@@ -324,6 +323,7 @@ void docx_conversion_context::end_document()
 		package::chart_content_ptr content = package::chart_content::create();
 
 		chart->serialize(content->content());
+		chart->dump_rels(content->get_rel_file()->get_rels());
 
 		output_document_->get_word_files().add_charts(content);
 	

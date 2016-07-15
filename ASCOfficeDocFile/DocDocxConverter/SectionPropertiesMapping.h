@@ -142,7 +142,7 @@ namespace DocFileFormat
 		lncContinue	=	0x02							//  Line numbers continue from the preceding section, or start at 1 if this is the first section of the document. 
 	};
 
-	static const wstring LineNumberRestart []	=		//	ST_LineNumberRestart
+	static const std::wstring LineNumberRestart []	=		//	ST_LineNumberRestart
 	{
 		WSTD (newPage),
 		WSTD (newSection),
@@ -183,7 +183,7 @@ namespace DocFileFormat
 		bool isOwnSectPr;
 		//int _sectNr;
 		ConversionContext* _ctx;
-		wstring _type;
+		std::wstring _type;
 
 		short _pgWidth, _marLeft, _marRight;
 	};

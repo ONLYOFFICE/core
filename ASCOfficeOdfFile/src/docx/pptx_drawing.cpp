@@ -260,19 +260,19 @@ void pptx_serialize_table(std::wostream & strm, _pptx_drawing & val)
 
 void pptx_serialize(std::wostream & strm, _pptx_drawing & val)
 {
-	if (val.type == mediaitems::typeShape)
+	if (val.type == typeShape)
 	{
 		pptx_serialize_shape(strm,val);
 	}
-	else if (val.type == mediaitems::typeImage)
+	else if (val.type == typeImage)
 	{
 		pptx_serialize_image(strm,val);
 	}
-	else if (val.type == mediaitems::typeChart)
+	else if (val.type == typeChart)
 	{
 		pptx_serialize_chart(strm,val);
 	}
-	else if (val.type == mediaitems::typeTable)
+	else if (val.type == typeTable)
 	{
 		pptx_serialize_table(strm,val);
 	}

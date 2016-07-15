@@ -53,7 +53,7 @@ namespace DocFileFormat
 		virtual ~LanguageIdMapping();
 		void Apply( IVisitable* lid );
 
-		static wstring getLanguageCode( LanguageId* lid );
+		static std::wstring getLanguageCode( LanguageId* lid );
 	
 	private: 
 		LanguageType _type;

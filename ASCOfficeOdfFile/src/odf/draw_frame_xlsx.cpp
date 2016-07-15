@@ -269,7 +269,7 @@ void draw_object::xlsx_convert(oox::xlsx_conversion_context & Context)
 ///////////////////////////////////////////////////////////////////////////
 //функциональная часть
 		const office_element *contentSubDoc = objectSubDoc.get_impl()->get_content();
-		chart_build objectBuild;
+		chart_build objectBuild(href);
 		
 		if (contentSubDoc)
 		{

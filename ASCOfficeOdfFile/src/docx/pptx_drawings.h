@@ -57,13 +57,13 @@ public:
         bool isInternal,
         std::wstring const & rid,
         std::wstring const & ref,
-		mediaitems::Type type
+		RelsType type
         );
     void add(/**/
         bool isInternal,
         std::wstring const & rid,
         std::wstring const & ref,
-		mediaitems::Type type
+		RelsType type
         );
     bool empty() const;
 

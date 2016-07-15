@@ -48,6 +48,6 @@ namespace DocFileFormat
 		virtual ~PropertyExceptions();
 		PropertyExceptions();
 		PropertyExceptions( const std::list<SinglePropertyModifier>& grpprl );
-		PropertyExceptions( unsigned char* bytes, int size );
+		PropertyExceptions( unsigned char* bytes, int size, bool oldVersion );
 	};
 }

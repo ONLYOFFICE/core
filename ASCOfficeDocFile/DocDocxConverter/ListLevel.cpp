@@ -46,7 +46,7 @@ namespace DocFileFormat
       
       /// Parses the given StreamReader to retrieve a LVL struct
 	  ListLevel::ListLevel( VirtualStreamReader* reader, int length ):
-	  grpprlPapx(NULL), grpprlChpx(NULL), _rawBytes(NULL)
+								grpprlPapx(NULL), grpprlChpx(NULL), _rawBytes(NULL)
       {
 	    long startPos = reader->GetPosition();
 
@@ -81,15 +81,17 @@ namespace DocFileFormat
 
         //read the group of papx sprms
         //this papx has no istd, so use PX to parse it
-		unsigned char *bytes = reader->ReadBytes( this->cbGrpprlPapx, true );
-        PropertyExceptions* px = new PropertyExceptions( bytes, this->cbGrpprlPapx );
-		this->grpprlPapx = new ParagraphPropertyExceptions( *(px->grpprl) );
+		unsigned char *bytes	= reader->ReadBytes( this->cbGrpprlPapx, true );
+       
+		PropertyExceptions* px	= new PropertyExceptions( bytes, this->cbGrpprlPapx, reader->olderVersion);
+		this->grpprlPapx		= new ParagraphPropertyExceptions( *(px->grpprl) );
+		
 		RELEASEOBJECT( px );
         RELEASEARRAYOBJECTS( bytes );
 
         //read the group of chpx sprms
 		bytes = reader->ReadBytes( this->cbGrpprlChpx, true );
-        this->grpprlChpx = new CharacterPropertyExceptions( bytes, this->cbGrpprlChpx );
+		this->grpprlChpx = new CharacterPropertyExceptions( bytes, this->cbGrpprlChpx, reader->olderVersion );
 		RELEASEARRAYOBJECTS( bytes );
 
         //read the number text
@@ -97,7 +99,7 @@ namespace DocFileFormat
 		if (strLen > 0)//file(14).doc
 		{
 			bytes = reader->ReadBytes( ( strLen * 2 ), true );
-			FormatUtils::GetSTLCollectionFromBytes<wstring>( &(this->xst), bytes, ( strLen * 2 ), ENCODING_UNICODE );
+			FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &(this->xst), bytes, ( strLen * 2 ), ENCODING_UTF16 );
 			RELEASEARRAYOBJECTS( bytes );
 		}
 

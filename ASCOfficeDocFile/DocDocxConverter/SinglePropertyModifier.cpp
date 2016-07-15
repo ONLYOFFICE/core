@@ -36,38 +36,51 @@
 
 namespace DocFileFormat
 {
-	SinglePropertyModifier::SinglePropertyModifier() : Arguments(NULL), OpCode(sprmPIstd), fSpec(false), Type(PAP), argumentsSize(0)
+	SinglePropertyModifier::SinglePropertyModifier( bool oldVersion_) :
+					Arguments(NULL), OpCode(sprmPIstd), fSpec(false), Type(PAP), argumentsSize(0), oldVersion (oldVersion_)
 	{
 	}
 
-	/// parses the unsigned char to retrieve a SPRM
-	SinglePropertyModifier::SinglePropertyModifier(unsigned char* bytes, int size) : Arguments(NULL), OpCode(sprmPIstd), fSpec(false), Type(PAP), argumentsSize(0)
+	SinglePropertyModifier::SinglePropertyModifier(unsigned char* bytes, int size, bool oldVersion_) : 
+					Arguments(NULL), OpCode(sprmPIstd), fSpec(false), Type(PAP), argumentsSize(0), oldVersion (oldVersion_)
 	{
-		//first 2 bytes are the operation code ...
-		this->OpCode = (OperationCode)FormatUtils::BytesToUInt16( bytes, 0, size );
-
-		//... whereof bit 9 is fSpec ...
-		unsigned int j = (unsigned int)this->OpCode << 22;
-		j = j >> 31;
-
-		if ( j == 1 )
+		unsigned char opSize		= 0;
+		unsigned char opCodeSize	= 0;
+		if (oldVersion)
 		{
-			this->fSpec = true;
+			opCodeSize = 1;
+			//first 1 byte are the operation code ...
+			OpCode = (OperationCode)FormatUtils::BytesToUChar( bytes, 0, size );
+			opSize = GetOldOperandSize( (unsigned char)OpCode );		
 		}
 		else
 		{
-			this->fSpec = false;
+			opCodeSize = 2;
+			//first 2 bytes are the operation code ...
+			OpCode = (OperationCode)FormatUtils::BytesToUInt16( bytes, 0, size );
+			//... whereof bit 9 is fSpec ...
+			unsigned int j = (unsigned int)this->OpCode << 22;
+			j = j >> 31;
+
+			if ( j == 1 )
+			{
+				fSpec = true;
+			}
+			else
+			{
+				fSpec = false;
+			}
+
+			//... and bits 10,11,12 are the type ...
+			unsigned int i = (unsigned int)OpCode << 19;
+
+			i = i >> 29;
+			Type = (SprmType)i;
+
+			//... and last 3 bits are the spra
+			unsigned char spra = (unsigned char)( (int)OpCode >> 13 );
+			opSize = GetOperandSize( spra );		
 		}
-
-		//... and bits 10,11,12 are the type ...
-		unsigned int i = (unsigned int)this->OpCode << 19;
-
-		i = i >> 29;
-		this->Type = (SprmType)i;
-
-		//... and last 3 bits are the spra
-		unsigned char spra = (unsigned char)( (int)this->OpCode >> 13 );
-		unsigned char opSize = GetOperandSize( spra );
 
 		if ( opSize == 255 )
 		{
@@ -77,31 +90,31 @@ namespace DocFileFormat
 			case sprmTDefTable10:
 				{
 					//the variable length stand in the bytes 2 and 3
-					short opSizeTable = FormatUtils::BytesToInt16( bytes, 2, size );
-					this->argumentsSize = opSizeTable-1;
+					short opSizeTable = FormatUtils::BytesToInt16( bytes, opCodeSize, size );
+					argumentsSize = opSizeTable-1;
 					//and the arguments start at the unsigned char after that (byte3)
-					this->Arguments = new unsigned char[this->argumentsSize];
+					Arguments = new unsigned char[argumentsSize];
 					//Arguments start at unsigned char 4
-					memcpy( this->Arguments, ( bytes + 4 ), this->argumentsSize );
+					memcpy( Arguments, ( bytes + opCodeSize  + 2 ), argumentsSize );
 				}
 				break;
 
 			case sprmPChgTabs:
 				{
-					this->argumentsSize = bytes[2];
-					this->Arguments = new unsigned char[this->argumentsSize];
-					memcpy( this->Arguments, ( bytes + 3 ), this->argumentsSize );
+					argumentsSize = bytes[2];
+					Arguments = new unsigned char[argumentsSize];
+					memcpy( Arguments, ( bytes + opCodeSize + 1 ), argumentsSize );
 				}
 				break;
 
 			default:
 				{
 					//the variable length stand in the unsigned char after the opcode (byte2)
-					opSize = bytes[2];
-					this->argumentsSize = opSize;
+					opSize = bytes[opCodeSize];
+					argumentsSize = opSize;
 					//and the arguments start at the unsigned char after that (byte3)
-					this->Arguments = new unsigned char[this->argumentsSize];
-					memcpy( this->Arguments, ( bytes + 3 ), this->argumentsSize );
+					Arguments = new unsigned char[argumentsSize];
+					memcpy( Arguments, ( bytes + opCodeSize + 1 ), argumentsSize );
 				}
 
 				break;
@@ -109,9 +122,9 @@ namespace DocFileFormat
 		}
 		else
 		{
-			this->argumentsSize = opSize;
-			this->Arguments = new unsigned char[this->argumentsSize];
-			memcpy( this->Arguments, ( bytes + 2 ), this->argumentsSize );
+			argumentsSize = opSize;
+			Arguments = new unsigned char[argumentsSize];
+			memcpy( Arguments, ( bytes + opCodeSize ), argumentsSize );
 		}
 	}
 
@@ -119,19 +132,20 @@ namespace DocFileFormat
 	{
 		if ( spm.Arguments != NULL )
 		{
-			this->argumentsSize = spm.argumentsSize;
-			this->Arguments = new unsigned char[this->argumentsSize];
-			memcpy( this->Arguments, spm.Arguments, this->argumentsSize );
-			this->fSpec = spm.fSpec;
-			this->OpCode = spm.OpCode;
-			this->Type = spm.Type;
+			argumentsSize = spm.argumentsSize;
+			Arguments		= new unsigned char[argumentsSize];
+			memcpy( Arguments, spm.Arguments, argumentsSize );
+			fSpec			= spm.fSpec;
+			OpCode		= spm.OpCode;
+			Type			= spm.Type;
+			oldVersion	= spm.oldVersion;
 		}
 	}
 
 	bool SinglePropertyModifier::operator == (const SinglePropertyModifier& spm) const
 	{
-		if ( ( this->argumentsSize == spm.argumentsSize ) && ( memcmp( this->Arguments, spm.Arguments, this->argumentsSize ) == 0 ) &&
-			( this->fSpec == spm.fSpec ) && ( this->OpCode == spm.OpCode ) && ( this->Type == spm.Type ) )
+		if ( ( argumentsSize == spm.argumentsSize ) && ( memcmp( Arguments, spm.Arguments, argumentsSize ) == 0 ) &&
+			( fSpec == spm.fSpec ) && ( OpCode == spm.OpCode ) && ( Type == spm.Type ) )
 		{
 			return true;
 		}
@@ -156,9 +170,11 @@ namespace DocFileFormat
 			fSpec			=	spm.fSpec;
 			Type			=	spm.Type;
 			argumentsSize	=	spm.argumentsSize;
+			oldVersion		=	spm.oldVersion;
 
 			Arguments		=	new unsigned char[argumentsSize];
-            memcpy(Arguments, spm.Arguments, spm.argumentsSize);
+           
+			memcpy(Arguments, spm.Arguments, spm.argumentsSize);
 		}
 
 		return *this;
@@ -186,5 +202,16 @@ namespace DocFileFormat
 
 		default: return 0;
 		}
+	}
+	static const unsigned char OldOperandSizeTable[] = 
+	{
+		0, 0, 2, 255, 1, 1, 1, 1, 1, 1, 1, 1, 255, 1, 1, 255, 2, 2, 2, 2, 4, 2, 2, 255, 1, 1, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 255, 2, 4, 1, 2, 3, 255, 1, 0, 0, 0, 0, 2, 255, 255, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 3, 2, 2, 1, 1, 1, 1, 1, 255, 1, 255, 255, 2, 255, 2, 2, 0, 0, 0, 0, 0, 0, 1, 1, 1, 255, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 1, 1, 255, 0, 0, 3, 3, 1, 1, 2, 2, 1, 1, 2, 2, 1, 1, 2, 2, 1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 2, 2, 1, 0, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 1, 1, 12, 255, 2, 0, 0, 4, 5, 4, 2, 4, 2, 2, 5, 4, 0, 0, 0, 0, 0, 0, 0, 0
+	};
+
+	unsigned char SinglePropertyModifier::GetOldOperandSize(unsigned char code)
+	{
+		if (code < 2 || code > 207) return -1;
+
+		return OldOperandSizeTable [code];
 	}
 }

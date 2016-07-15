@@ -90,21 +90,6 @@ void pptx_conversion_context::set_font_directory(std::wstring pathFonts)
     if (applicationFonts_ )
         applicationFonts_->InitializeFromFolder(pathFonts);
 }
-//
-//void pptx_conversion_context::start_chart(std::wstring const & name)
-//{
-//	charts_.push_back(oox_chart_context::create(name));
-//	//добавляем новую форму для диаграммы
-//	 //в ней будет информационная часть - и она пишется каждый раз в свою xml (их - по числу диаграмм)
-//	//этот контекст нужно передавать в файл
-//
-//}
-//
-//void pptx_conversion_context::end_chart()
-//{
-//	//current_chart().set_drawing_link(current_sheet().get_drawing_link());
-//	//излишняя инфа
-//}
 
 void pptx_conversion_context::process_layouts()
 {
@@ -299,6 +284,7 @@ void pptx_conversion_context::end_document()
 		package::chart_content_ptr content = package::chart_content::create();
 
 		chart->serialize(content->content());
+		chart->dump_rels(content->get_rel_file()->get_rels());
 
 		output_document_->get_ppt_files().add_charts(content);
 	
@@ -523,7 +509,7 @@ void pptx_conversion_context::end_page()
 		const std::pair<std::wstring, std::wstring> commentsName =
             comments_context_handle_.add_comments_xml(strm.str(), get_comments_context().get_comments() );
 
-		get_slide_context().add_rels(false, commentsName.second, L"../comments/" + commentsName.first,mediaitems::typeComment);
+		get_slide_context().add_rels(false, commentsName.second, L"../comments/" + commentsName.first, typeComment);
     } 
 
 	get_slide_context().serialize_background(current_slide().Background());
@@ -578,9 +564,9 @@ void pptx_conversion_context::start_office_presentation()
 void pptx_conversion_context::end_office_presentation()
 {
 }
-void pptx_conversion_context::start_chart(std::wstring const & name)
+void pptx_conversion_context::start_chart(std::wstring name)
 {
-	charts_.push_back(oox_chart_context::create(name));
+	charts_.push_back(oox_chart_context_ptr(new oox_chart_context(get_mediaitems(), name)));
 	//добавляем новую форму для диаграммы
 	 //в ней будет информационная часть - и она пишется каждый раз в свою xml (их - по числу диаграмм)
 	//этот контекст нужно передавать в файл

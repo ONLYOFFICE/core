@@ -41,7 +41,7 @@ namespace DocFileFormat
   class ListTable: public IVisitable
   {
     public: 
-	  list<ListData*> listData;
+		std::list<ListData*> listData;
 
 	  virtual ~ListTable();
 	  ListTable( FileInformationBlock* fib, POLE::Stream* tableStream );

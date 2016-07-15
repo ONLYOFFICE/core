@@ -42,6 +42,11 @@
 #include <crtdbg.h>
 #endif
 
+#if defined(_WIN64)
+	#pragma comment(lib, "../../build/bin/icu/win_64/icuuc.lib")
+#elif defined (_WIN32)
+	#pragma comment(lib, "../../build/bin/icu/win_32/icuuc.lib")
+#endif
 
 STDMETHODIMP CASCOfficeDocFile::LoadFromFile(BSTR bsDocFile, BSTR bsDocxFilePath, BSTR bsXMLOptions) 
 {
@@ -59,7 +64,7 @@ STDMETHODIMP CASCOfficeDocFile::LoadFromFile(BSTR bsDocFile, BSTR bsDocxFilePath
 	ffCallBack.OnProgressEx	= OnProgressExFunc;
 	ffCallBack.caller		= this;
 
-	HRESULT hr	=	file.LoadFromFile(bsDocFile, bsDocxFilePath,&ffCallBack);
+	HRESULT hr	=	file.LoadFromFile(bsDocFile, bsDocxFilePath, L"", &ffCallBack);
 
 #ifdef _DEBUG
 	//_CrtDumpMemoryLeaks();

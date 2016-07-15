@@ -32,17 +32,23 @@
 
 
 #include "OpenXmlPackage.h"
-//#include "HeaderMapping.h"
-//#include "FooterMapping.h"
-
-//#include "MainDocumentMapping.h"
-
 #include "Converter.h"
+
+#include "NumberingMapping.h"
+#include "CommentsMapping.h"
+#include "EndnotesMapping.h"
+#include "FootnotesMapping.h"
+#include "FooterMapping.h"
+#include "HeaderMapping.h"
+#include "MainDocumentMapping.h"
+#include "OleObjectMapping.h"
+#include "VMLPictureMapping.h"
 
 #include "../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h"
 #include "../../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"
 #include "../../DesktopEditor/common/File.h"
 
+#include "../Common/XmlTools.h"
 
 
 namespace DocFileFormat
@@ -82,12 +88,12 @@ namespace DocFileFormat
 
 		this->WriteRelsFile( this->NumberingRelationshipsFile );
 
-		for ( list<RelationshipsFile>::const_iterator iter = this->HeaderRelationshipsFiles.begin(); iter != this->HeaderRelationshipsFiles.end(); iter++ )
+		for ( std::list<RelationshipsFile>::const_iterator iter = this->HeaderRelationshipsFiles.begin(); iter != this->HeaderRelationshipsFiles.end(); iter++ )
 		{
 			this->WriteRelsFile( *iter );
 		}
 
-		for ( list<RelationshipsFile>::const_iterator iter = this->FooterRelationshipsFiles.begin(); iter != this->FooterRelationshipsFiles.end(); iter++ )
+		for ( std::list<RelationshipsFile>::const_iterator iter = this->FooterRelationshipsFiles.begin(); iter != this->FooterRelationshipsFiles.end(); iter++ )
 		{
 			this->WriteRelsFile( *iter );
 		}
@@ -317,7 +323,7 @@ namespace DocFileFormat
 
 			writer.WriteNodeEnd( _T( "" ), TRUE, FALSE );
 
-			for ( list<Relationship>::const_iterator iter = relationshipsFile.Relationships.begin(); iter != relationshipsFile.Relationships.end(); iter++ )
+			for ( std::list<Relationship>::const_iterator iter = relationshipsFile.Relationships.begin(); iter != relationshipsFile.Relationships.end(); iter++ )
 			{
 				writer.WriteNodeBegin( _T( "Relationship" ), TRUE );
 				writer.WriteAttribute( _T( "Id" ), iter->Id.c_str() );
@@ -353,7 +359,7 @@ namespace DocFileFormat
 
 		writer.WriteNodeEnd( _T( "" ), TRUE, FALSE );
 
-		for ( map<wstring, std::wstring>::iterator iter = this->DocumentContentTypesFile._defaultTypes.begin(); iter != this->DocumentContentTypesFile._defaultTypes.end(); iter++ )
+		for ( std::map<std::wstring, std::wstring>::iterator iter = this->DocumentContentTypesFile._defaultTypes.begin(); iter != this->DocumentContentTypesFile._defaultTypes.end(); iter++ )
 		{
 			writer.WriteNodeBegin( _T( "Default" ), TRUE );
 			writer.WriteAttribute( _T( "Extension" ), iter->first.c_str() );
@@ -361,7 +367,7 @@ namespace DocFileFormat
 			writer.WriteNodeEnd( _T( "" ), TRUE );
 		}
 
-		for ( map<wstring, std::wstring>::iterator iter = this->DocumentContentTypesFile._partOverrides.begin(); iter != this->DocumentContentTypesFile._partOverrides.end(); iter++ )
+		for ( std::map<std::wstring, std::wstring>::iterator iter = this->DocumentContentTypesFile._partOverrides.begin(); iter != this->DocumentContentTypesFile._partOverrides.end(); iter++ )
 		{
 			writer.WriteNodeBegin( _T( "Override" ), TRUE );
 			writer.WriteAttribute( _T( "PartName" ), iter->first.c_str() );
@@ -380,8 +386,8 @@ namespace DocFileFormat
 	{
 		std::wstring fileName = ( std::wstring( _T( "media/image" ) ) + FormatUtils::IntToWideString( ++_imageCounter ) + VMLPictureMapping::GetTargetExt( blipType ) );
 
-		DocumentContentTypesFile._defaultTypes.insert( make_pair( VMLPictureMapping::GetTargetExt( blipType ).erase( 0, 1 ), VMLPictureMapping::GetContentType( blipType ) ) );
-		DocumentContentTypesFile._defaultTypes.insert( make_pair( std::wstring( _T( "vml" ) ), std::wstring( OpenXmlContentTypes::Vml ) ) );
+		DocumentContentTypesFile._defaultTypes.insert( std::make_pair( VMLPictureMapping::GetTargetExt( blipType ).erase( 0, 1 ), VMLPictureMapping::GetContentType( blipType ) ) );
+		DocumentContentTypesFile._defaultTypes.insert( std::make_pair( std::wstring( _T( "vml" ) ), std::wstring( OpenXmlContentTypes::Vml ) ) );
 
 		return AddPart( mapping, _T( "word" ), fileName, VMLPictureMapping::GetContentType( blipType ), OpenXmlRelationshipTypes::Image );
 	}
@@ -390,7 +396,7 @@ namespace DocFileFormat
 	{
 		std::wstring fileName = ( std::wstring( _T( "embeddings/oleObject" ) ) + FormatUtils::IntToWideString( ++_oleCounter ) + OleObjectMapping::GetTargetExt(objectType));
 
-		DocumentContentTypesFile._defaultTypes.insert( make_pair( OleObjectMapping::GetTargetExt( objectType ).erase( 0, 1 ), OleObjectMapping::GetContentType(objectType)));
+		DocumentContentTypesFile._defaultTypes.insert( std::make_pair( OleObjectMapping::GetTargetExt( objectType ).erase( 0, 1 ), OleObjectMapping::GetContentType(objectType)));
 
 		return AddPart( mapping, _T( "word" ), fileName, OleObjectMapping::GetContentType( objectType ), OpenXmlRelationshipTypes::OleObject );
 	}
@@ -398,7 +404,7 @@ namespace DocFileFormat
 	{
 		std::wstring fileName = ( std::wstring( _T( "embeddings/oleObject" ) ) + FormatUtils::IntToWideString( ++_oleCounter ) + OleObjectMapping::GetTargetExt(objectType));
 
-		DocumentContentTypesFile._defaultTypes.insert( make_pair( OleObjectMapping::GetTargetExt( objectType ).erase( 0, 1 ), OleObjectMapping::GetContentType(objectType)));
+		DocumentContentTypesFile._defaultTypes.insert( std::make_pair( OleObjectMapping::GetTargetExt( objectType ).erase( 0, 1 ), OleObjectMapping::GetContentType(objectType)));
 
 		return AddPart( mapping, _T( "word" ), fileName, OleObjectMapping::GetContentType( objectType ), OpenXmlRelationshipTypes::Package);
 	}
@@ -407,7 +413,7 @@ namespace DocFileFormat
 		std::wstring fullUri	=	std::wstring(_T("file:///")) + uri;
 		std::wstring fileName	=	ReplaceString(fullUri, _T(" "), _T("%20"));
 
-		DocumentContentTypesFile._defaultTypes.insert(make_pair(OleObjectMapping::GetTargetExt(objectType).erase(0, 1), OleObjectMapping::GetContentType(objectType)));
+		DocumentContentTypesFile._defaultTypes.insert(std::make_pair(OleObjectMapping::GetTargetExt(objectType).erase(0, 1), OleObjectMapping::GetContentType(objectType)));
 
 		return AddPart(mapping, _T(""), fileName, OleObjectMapping::GetContentType(objectType), OpenXmlRelationshipTypes::OleObject, _T("External"));
 	}

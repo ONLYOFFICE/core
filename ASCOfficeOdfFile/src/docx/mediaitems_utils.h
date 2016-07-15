@@ -42,7 +42,7 @@ namespace utils {
 namespace media {
 
 	bool is_internal(const std::wstring & uri, const std::wstring & packetRoot);
-	std::wstring get_rel_type(mediaitems::Type type);
+	std::wstring get_rel_type(RelsType type);
 
 }
 }

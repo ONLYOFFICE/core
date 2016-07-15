@@ -62,9 +62,9 @@ namespace DocFileFormat
 	public: 
 		NumberingMapping(ConversionContext* ctx);
 		void Apply(IVisitable* visited);
-		static int FindIndexbyId(const list<ListData*>& listData, int id);
+		static int FindIndexbyId(const std::list<ListData*>& listData, int id);
 		/// Converts the number format code of the binary format.
-		static wstring GetNumberFormatWideString(int nfc);
+		static std::wstring GetNumberFormatWideString(int nfc);
 		virtual ~NumberingMapping();
 
 	private:

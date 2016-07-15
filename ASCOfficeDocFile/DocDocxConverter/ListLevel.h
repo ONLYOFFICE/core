@@ -80,7 +80,7 @@ namespace DocFileFormat
       /// The XST contains place holders for any paragraph numbers contained in the text of the number, 
       /// and the place holder contains the ilvl of the inherited number, 
       /// so lvl.xst[lvl.rgbxchNums[0]] == the level of the first inherited number in this level.
-      vector<unsigned char> rgbxchNums;
+      std::vector<unsigned char> rgbxchNums;
       /// The type of character following the number text for the paragraph.
       FollowingChar ixchFollow;
       /// Word 6.0 compatibility option: equivalent to anld.dxaSpace (see ANLD).
@@ -99,7 +99,7 @@ namespace DocFileFormat
       unsigned char grfhic;
 	  ParagraphPropertyExceptions* grpprlPapx;
       CharacterPropertyExceptions* grpprlChpx;
-      wstring xst;
+      std::wstring xst;
 
 	  unsigned char* _rawBytes;
 

@@ -76,18 +76,18 @@ public:
     void start_paragraph(const std::wstring & styleName);
     void end_paragraph();
 
-    void start_span(const std::wstring & styleName);
-    void end_span();
-    std::wstring end_span2();
+    void			start_span(const std::wstring & styleName);
+    void			end_span();
+    std::wstring	end_span2();
 
-	void start_comment_content();
-	std::wstring end_comment_content();
+	void			start_comment_content();
+	std::wstring	end_comment_content();
 	
 	void start_base_style(const std::wstring baseStyleName, const odf_types::style_family::type baseStyleType);
 	void end_base_style();
 
-	void start_object();
-	std::wstring end_object();
+	void			start_object();
+	std::wstring	end_object();
 
 	void start_hyperlink();
 	void end_hyperlink(std::wstring hId);

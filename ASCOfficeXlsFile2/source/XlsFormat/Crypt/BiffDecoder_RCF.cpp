@@ -35,8 +35,9 @@ namespace CRYPT
 {
 
 
-BiffDecoderBase::BiffDecoderBase() : mbValid(false)
+BiffDecoderBase::BiffDecoderBase(int BLOCKSIZE) : mbValid(false)
 {
+	RCF_BLOCKSIZE = BLOCKSIZE;
 }
 
 
@@ -63,22 +64,22 @@ void BiffDecoderBase::decode(unsigned char* pnDestData, const unsigned char* pnS
 	}
 }
 
-
 /** Returns the block index of the passed stream position for RCF decryption. */
-int lclGetRcfBlock(long nStreamPos)
+int BiffDecoderBase::lclGetRcfBlock(long nStreamPos)
 {
-	return static_cast<int>(nStreamPos / BIFF_RCF_BLOCKSIZE);
+	return static_cast<int>(nStreamPos / RCF_BLOCKSIZE);
 }
 
 /** Returns the offset of the passed stream position in a block for RCF decryption. */
-int lclGetRcfOffset(long nStreamPos)
+int BiffDecoderBase::lclGetRcfOffset(long nStreamPos)
 {
-	return static_cast<int>(nStreamPos % BIFF_RCF_BLOCKSIZE);
+	return static_cast<int>(nStreamPos % RCF_BLOCKSIZE);
 }
 
 
-BiffDecoder_RCF::BiffDecoder_RCF(unsigned char pnSalt[16], unsigned char pnVerifier[16], unsigned char pnVerifierHash[16])
-:	maPassword(16, 0),
+BiffDecoder_RCF::BiffDecoder_RCF(unsigned char pnSalt[16], unsigned char pnVerifier[16], unsigned char pnVerifierHash[16], int BlockSize)
+:	BiffDecoderBase(BlockSize),
+	maPassword(16, 0),
 	maSalt(pnSalt, pnSalt + 16),
 	maVerifier(pnVerifier, pnVerifier + 16),
 	maVerifierHash(pnVerifierHash, pnVerifierHash + 16)
@@ -120,7 +121,7 @@ void BiffDecoder_RCF::implDecode(unsigned char* pnDestData, const unsigned char*
 		maCodec.skip(lclGetRcfOffset(nCurrPos));
 
 		// decode the block
-		unsigned short nBlockLeft = static_cast<unsigned short>(BIFF_RCF_BLOCKSIZE - lclGetRcfOffset(nCurrPos));
+		unsigned short nBlockLeft = static_cast<unsigned short>(get_BLOCKSIZE() - lclGetRcfOffset(nCurrPos));
 		unsigned short nDecBytes = nBytesLeft < nBlockLeft ? nBytesLeft : nBlockLeft;
 		maCodec.decode(pnCurrDest, pnCurrSrc, static_cast<int>(nDecBytes));
 

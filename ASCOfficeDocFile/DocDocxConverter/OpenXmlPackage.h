@@ -42,16 +42,16 @@ namespace DocFileFormat
 {
 	struct Relationship
 	{
-		wstring Id;
-		wstring Type;
-		wstring Target;
-		wstring TargetMode;
+		std::wstring Id;
+		std::wstring Type;
+		std::wstring Target;
+		std::wstring TargetMode;
 
 		Relationship()
 		{
 		}
 
-		Relationship( const wstring& id,  const wstring& type, const wstring& target, const wstring& targetMode = _T( "" ) ):
+		Relationship( const std::wstring& id,  const std::wstring& type, const std::wstring& target, const std::wstring& targetMode = _T( "" ) ):
 		Id( id ), Type( type ), Target( target ), TargetMode( targetMode )
 		{
 		}
@@ -59,30 +59,30 @@ namespace DocFileFormat
 
 	struct RelationshipsFile
 	{
-		wstring FileName;
-		list<Relationship> Relationships;
-		int RelID;
+		std::wstring			FileName;
+		std::list<Relationship> Relationships;
+		int						RelID;
 
 		RelationshipsFile():
 		RelID(0)
 		{
 		}
 
-		RelationshipsFile( const wstring& fileName ):
+		RelationshipsFile( const std::wstring& fileName ):
 		RelID(0), FileName( fileName )
 		{
 		}
 
-		RelationshipsFile( int relID, const wstring& fileName, const list<Relationship>& relationships ):
-		RelID(relID), FileName( fileName ), Relationships( relationships )
+		RelationshipsFile( int relID, const std::wstring& fileName, const std::list<Relationship>& relationships ):
+					RelID(relID), FileName( fileName ), Relationships( relationships )
 		{
 		}
 	};
 
 	struct ContentTypesFile
 	{
-		map<wstring, wstring> _defaultTypes;
-		map<wstring, wstring> _partOverrides;
+		std::map<std::wstring, std::wstring> _defaultTypes;
+		std::map<std::wstring, std::wstring> _partOverrides;
 	};
 
 	struct ImageFileStructure
@@ -92,7 +92,7 @@ namespace DocFileFormat
 
 		}
 
-		ImageFileStructure(const wstring& _ext, const vector<unsigned char>& _data, Global::BlipType	_blipType = Global::msoblipUNKNOWN) : ext(_ext), data(_data), blipType(_blipType)
+		ImageFileStructure(const std::wstring& _ext, const std::vector<unsigned char>& _data, Global::BlipType	_blipType = Global::msoblipUNKNOWN) : ext(_ext), data(_data), blipType(_blipType)
 		{
 
 		}
@@ -113,7 +113,7 @@ namespace DocFileFormat
 		OleObjectFileStructure(){}
 
 
-        OleObjectFileStructure( const wstring& _ext, const wstring& _objectID, const wstring&/*REFCLSID*/ _clsid ):
+        OleObjectFileStructure( const std::wstring& _ext, const std::wstring& _objectID, const std::wstring&/*REFCLSID*/ _clsid ):
 		ext(_ext), objectID(_objectID), clsid(_clsid){}
 
 	};
@@ -128,8 +128,9 @@ namespace DocFileFormat
 		RelationshipsFile EndnotesRelationshipsFile;
 		RelationshipsFile CommentsRelationshipsFile;
 		RelationshipsFile NumberingRelationshipsFile;
-		list<RelationshipsFile> HeaderRelationshipsFiles;
-		list<RelationshipsFile> FooterRelationshipsFiles;
+		
+		std::list<RelationshipsFile> HeaderRelationshipsFiles;
+		std::list<RelationshipsFile> FooterRelationshipsFiles;
 
 		int relID;
 
@@ -140,18 +141,18 @@ namespace DocFileFormat
 
 		const WordDocument* docFile;
 
-		int AddHeaderPart( const wstring& fileName, const wstring& relationshipType = _T( "" ), const wstring& targetMode = _T( "" ) );
-		int AddFooterPart( const wstring& fileName, const wstring& relationshipType = _T( "" ), const wstring& targetMode = _T( "" ) );
-		int AddFootnotesPart( const wstring& fileName, const wstring& relationshipType = _T( "" ), const wstring& targetMode = _T( "" ) );
-		int AddEndnotesPart( const wstring& fileName, const wstring& relationshipType = _T( "" ), const wstring& targetMode = _T( "" ) );
-		int AddCommentsPart( const wstring& fileName, const wstring& relationshipType = _T( "" ), const wstring& targetMode = _T( "" ) );
-		int AddNumberingPart( const wstring& fileName, const wstring& relationshipType = _T( "" ), const wstring& targetMode = _T( "" ) );
+		int AddHeaderPart( const std::wstring& fileName, const std::wstring& relationshipType = _T( "" ), const std::wstring& targetMode = _T( "" ) );
+		int AddFooterPart( const std::wstring& fileName, const std::wstring& relationshipType = _T( "" ), const std::wstring& targetMode = _T( "" ) );
+		int AddFootnotesPart( const std::wstring& fileName, const std::wstring& relationshipType = _T( "" ), const std::wstring& targetMode = _T( "" ) );
+		int AddEndnotesPart( const std::wstring& fileName, const std::wstring& relationshipType = _T( "" ), const std::wstring& targetMode = _T( "" ) );
+		int AddCommentsPart( const std::wstring& fileName, const std::wstring& relationshipType = _T( "" ), const std::wstring& targetMode = _T( "" ) );
+		int AddNumberingPart( const std::wstring& fileName, const std::wstring& relationshipType = _T( "" ), const std::wstring& targetMode = _T( "" ) );
 
 		void WriteRelsFile( const RelationshipsFile& relationshipsFile );
 		void WriteContentTypesFile( const ContentTypesFile& contentTypesFile );
 
-		int AddPart( const wstring& packageDir, const wstring& fileName, const wstring& contentType = _T( "" ), const wstring& relationshipType = _T( "" ), const wstring& targetMode = _T( "" ) );
-		int AddPart( const IMapping* mapping, const wstring& packageDir, const wstring& fileName, const wstring& contentType = _T( "" ), const wstring& relationshipType = _T( "" ), const wstring& targetMode = _T( "" ) );
+		int AddPart( const std::wstring& packageDir, const std::wstring& fileName, const std::wstring& contentType = _T( "" ), const std::wstring& relationshipType = _T( "" ), const std::wstring& targetMode = _T( "" ) );
+		int AddPart( const IMapping* mapping, const std::wstring& packageDir, const std::wstring& fileName, const std::wstring& contentType = _T( "" ), const std::wstring& relationshipType = _T( "" ), const std::wstring& targetMode = _T( "" ) );
 
 	protected:	  
 
@@ -160,10 +161,10 @@ namespace DocFileFormat
 		OpenXmlPackage( const WordDocument* _docFile );
 
 		void WritePackage();
-		void SaveToFile( const wstring& outputDir, const wstring& fileName, const wstring& XMLContent );
-		void SaveToFile( const wstring& outputDir, const wstring& fileName, const void* buf, unsigned int size );
+		void SaveToFile( const std::wstring& outputDir, const std::wstring& fileName, const std::wstring& XMLContent );
+		void SaveToFile( const std::wstring& outputDir, const std::wstring& fileName, const void* buf, unsigned int size );
 
-		HRESULT SaveOLEObject		( const wstring& fileName, const OleObjectFileStructure& oleObjectFileStructure );
+		HRESULT SaveOLEObject		( const std::wstring& fileName, const OleObjectFileStructure& oleObjectFileStructure );
 		HRESULT SaveEmbeddedObject	( const std::wstring& fileName, const std::string& data );
 
 		int RegisterDocument();
@@ -176,9 +177,9 @@ namespace DocFileFormat
 		int RegisterFootnotes();
 		int RegisterEndnotes();
 		int RegisterComments();
-		int RegisterImage( const IMapping* mapping, Global::BlipType blipType );
-		int RegisterOLEObject( const IMapping* mapping, const wstring& objectType );
-		int RegisterPackage(const IMapping* mapping, const std::wstring& objectType);
-		int RegisterExternalOLEObject( const IMapping* mapping, const wstring& objectType, const wstring& uri );
+		int RegisterImage			( const IMapping* mapping, Global::BlipType blipType );
+		int RegisterOLEObject		( const IMapping* mapping, const std::wstring& objectType );
+		int RegisterPackage			( const IMapping* mapping, const std::wstring& objectType);
+		int RegisterExternalOLEObject( const IMapping* mapping, const std::wstring& objectType, const std::wstring& uri );
 	};
 }

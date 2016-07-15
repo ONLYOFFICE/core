@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2016
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,48 +29,26 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-// DocFormatTest.cpp : Defines the entry point for the console application.
-//
-#include "../DocFormatLib/DocFormatLib.h"
+#pragma once
 
-#include "../win32/ASCOfficeCriticalSection.h"
+#include "FileInformationBlock.h"
 
-#include "../../OfficeUtils/src/OfficeUtils.h"
+#include "IVisitable.h"
 
-#include "../../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"
-
-#include <string>
-#include <windows.h>
-
-#if defined(_WIN64)
-	#pragma comment(lib, "../../build/bin/icu/win_64/icuuc.lib")
-#elif defined (_WIN32)
-	#pragma comment(lib, "../../build/bin/icu/win_32/icuuc.lib")
-#endif
-
-int _tmain(int argc, _TCHAR* argv[])
+namespace DocFileFormat
 {
-	std::wstring sSrcDoc	= argv[1];
-    std::wstring sDstDocx	= argv[2];
+    class IVisible;
+    class FileInformationBlock;
 
-	std::wstring outputDir		= FileSystem::Directory::GetFolderPath(sDstDocx);
-	std::wstring dstTempPath	= FileSystem::Directory::CreateDirectoryWithUniqueName(outputDir);
-
-	// doc->docx
-	COfficeDocFile docFile;
-
-	docFile.m_sTempFolder = outputDir;
-	
-	HRESULT hRes = docFile.LoadFromFile( sSrcDoc, dstTempPath, L"password", NULL);
-	
-	if (hRes == S_OK)
+	class EncryptionHeader: public IVisitable
 	{
-		COfficeUtils oCOfficeUtils(NULL);
-		hRes = oCOfficeUtils.CompressFileOrDirectory(dstTempPath.c_str(), sDstDocx, -1);
-	}
-	
-	FileSystem::Directory::DeleteDirectory(dstTempPath);
-
-	return hRes;
+    public:
+        friend class WordDocument;
+       
+		virtual ~EncryptionHeader(){}
+        
+		EncryptionHeader( FileInformationBlock* fib, POLE::Stream* tableStream );
+	private:    
+		CRYPT::CryptRC4Data			crypt_data;
+	};
 }
-

@@ -462,7 +462,7 @@ void oox_serialize_xfrm(std::wostream & strm, _oox_drawing & val, const std::wst
                 _CP_LOG << L"[error!!!] not set size object\n";
 			}
 			
-			if (val.type == mediaitems::typeGroup)
+			if (val.type == typeGroupShape)
 			{		
 				CP_XML_NODE(L"a:chOff")
 				{

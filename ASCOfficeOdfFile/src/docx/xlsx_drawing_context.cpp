@@ -158,7 +158,7 @@ xlsx_drawing_context::xlsx_drawing_context(xlsx_drawing_context_handle & h)
 
 void xlsx_drawing_context::clear()
 {
-	impl_->object_description_.type_				= mediaitems::typeUnknown;
+	impl_->object_description_.type_				= typeUnknown;
 	impl_->object_description_.in_group_			= false;
     impl_->object_description_.xlink_href_			= L"";
     impl_->object_description_.name_				= L"";
@@ -183,7 +183,7 @@ void xlsx_drawing_context::start_group(std::wstring const & name)
 {
 	start_drawing(name);
 	
-	impl_->object_description_.type_		= mediaitems::typeGroup;
+	impl_->object_description_.type_		= typeGroupShape;
 	impl_->object_description_.svg_rect_	= _rect();
 	impl_->object_description_.svg_rect_->x = impl_->object_description_.svg_rect_->y = 0x7fffffff;
 	
@@ -263,7 +263,7 @@ void xlsx_drawing_context::end_drawing()
 
 void xlsx_drawing_context::start_shape(int type)
 {
-	impl_->object_description_.type_		= mediaitems::typeShape;
+	impl_->object_description_.type_		= typeShape;
 	impl_->object_description_.shape_type_	= type; //2,3... 
 }
 
@@ -282,7 +282,7 @@ void xlsx_drawing_context::end_object_ole()
 
 void xlsx_drawing_context::start_image(std::wstring const & path)
 {
-	impl_->object_description_.type_		= mediaitems::typeImage;
+	impl_->object_description_.type_		= typeImage;
 	impl_->object_description_.xlink_href_	= path; 
 }
 void xlsx_drawing_context::end_image()
@@ -291,7 +291,7 @@ void xlsx_drawing_context::end_image()
 }
 void xlsx_drawing_context::start_chart(std::wstring const & path)
 {
-	impl_->object_description_.type_		= mediaitems::typeChart;
+	impl_->object_description_.type_		= typeChart;
 	impl_->object_description_.xlink_href_	= path; 
 }
 void xlsx_drawing_context::end_chart()
@@ -496,7 +496,7 @@ void xlsx_drawing_context::process_image(drawing_object_description & obj,_xlsx_
 
 	if (sTextContent)//в ms office на картинке нельзя сделать надпись - меняем тип на рект с заливкой картинкой
 	{
-		drawing.type		= mediaitems::typeShape;
+		drawing.type		= typeShape;
 		drawing.sub_type	= 2;//rect
 	}
 	std::wstring fileName = odf_packet_path_ + FILE_SEPARATOR_STR +  obj.xlink_href_;			
@@ -507,20 +507,20 @@ void xlsx_drawing_context::process_image(drawing_object_description & obj,_xlsx_
 	std::wstring ref;/// это ссылка на выходной внешний объект
 	bool isMediaInternal = false;
 
-	drawing.fill.bitmap->rId = impl_->get_mediaitems().add_or_find(obj.xlink_href_, mediaitems::typeImage, isMediaInternal, ref);		
+	drawing.fill.bitmap->rId = impl_->get_mediaitems().add_or_find(obj.xlink_href_, typeImage, isMediaInternal, ref);		
 
-	if (drawing.type == mediaitems::typeShape)
+	if (drawing.type == typeShape)
 	{
-		impl_->get_drawings()->add(isMediaInternal, drawing.fill.bitmap->rId, ref, mediaitems::typeImage);//собственно это не объект, а доп рел и ref объекта
+		impl_->get_drawings()->add(isMediaInternal, drawing.fill.bitmap->rId, ref, typeImage);//собственно это не объект, а доп рел и ref объекта
 	
 		isMediaInternal=true;
-		std::wstring rId = impl_->get_mediaitems().add_or_find(L"", mediaitems::typeShape, isMediaInternal, ref);
+		std::wstring rId = impl_->get_mediaitems().add_or_find(L"", typeShape, isMediaInternal, ref);
 		
-		xlsx_drawings_->add(drawing, isMediaInternal, rId, ref, mediaitems::typeShape);//объект
+		xlsx_drawings_->add(drawing, isMediaInternal, rId, ref, typeShape);//объект
 
 	}else
 	{
-		xlsx_drawings_->add(drawing, isMediaInternal, drawing.fill.bitmap->rId , ref, mediaitems::typeImage);//объект
+		xlsx_drawings_->add(drawing, isMediaInternal, drawing.fill.bitmap->rId , ref, typeImage);//объект
 		
 		if (drawing.inGroup)
 			impl_->get_drawings()->add(isMediaInternal, drawing.fill.bitmap->rId, ref, obj.type_); // не объект
@@ -596,18 +596,18 @@ void xlsx_drawing_context::process_objects(std::vector<drawing_object_descriptio
 			std::wstring ref;
 			bool isMediaInternal = true;
 			
-			drawing.fill.bitmap->rId = impl_->get_mediaitems().add_or_find(drawing.fill.bitmap->xlink_href_, mediaitems::typeImage, isMediaInternal, ref);
-			impl_->get_drawings()->add(isMediaInternal, drawing.fill.bitmap->rId, ref, mediaitems::typeImage);//собственно это не объект, а доп рел и ref объекта
+			drawing.fill.bitmap->rId = impl_->get_mediaitems().add_or_find(drawing.fill.bitmap->xlink_href_, typeImage, isMediaInternal, ref);
+			impl_->get_drawings()->add(isMediaInternal, drawing.fill.bitmap->rId, ref, typeImage);//собственно это не объект, а доп рел и ref объекта
 		}
 	   
 		process_common_properties(obj, drawing, table_metrics);
 
 		switch(obj.type_)
 		{
-			case mediaitems::typeChart:		process_chart	( obj, drawing, xlsx_drawings_);				break;
-			case mediaitems::typeImage:		process_image	( obj, drawing, xlsx_drawings_);				break;
-			case mediaitems::typeShape:		process_shape	( obj, drawing, xlsx_drawings_);				break;
-			case mediaitems::typeGroup:		process_group	( obj, table_metrics, drawing, xlsx_drawings_);	break;
+			case typeChart:			process_chart	( obj, drawing, xlsx_drawings_);				break;
+			case typeImage:			process_image	( obj, drawing, xlsx_drawings_);				break;
+			case typeShape:			process_shape	( obj, drawing, xlsx_drawings_);				break;
+			case typeGroupShape:	process_group	( obj, table_metrics, drawing, xlsx_drawings_);	break;
 		}
 	}
 }

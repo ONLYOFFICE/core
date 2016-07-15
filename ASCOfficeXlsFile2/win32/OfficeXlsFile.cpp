@@ -113,7 +113,7 @@ HRESULT COfficeXlsFile::LoadFromFile(BSTR sSrcFileName, BSTR sDstPath, BSTR sXML
 
 
 #if defined(STANDALONE_USE) && (STANDALONE_USE == 1)
-    // в случае если на выходе файл Ч стираем временную директорию (мы сами ее создали)
+    // в случае если на выходе файл — стираем временную директорию (мы сами ее создали)
     try 
     {
 		FileSystem::Directory::DeleteDirectory(dstTempPath);

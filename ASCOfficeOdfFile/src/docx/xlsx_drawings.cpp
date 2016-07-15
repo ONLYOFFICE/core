@@ -32,63 +32,50 @@
 
 #include "xlsx_drawings.h"
 #include "xlsx_drawing.h"
+
 #include <boost/foreach.hpp>
 #include <vector>
 #include <cpdoccore/xml/simple_xml_writer.h>
+
 #include "mediaitems_utils.h"
-#include "docx_rels.h"
+#include "oox_rels.h"
 
 namespace cpdoccore {
 namespace oox {
 
 class xlsx_drawings::Impl
 {
-    struct rel_
-    { 
-        rel_(bool is_internal, std::wstring const & rid, std::wstring const & ref,  mediaitems::Type type) :
-				is_internal_(is_internal),
-				rid_(rid),
-				ref_(ref),
-				type_(type)
-			{}
-
-        bool				is_internal_;
-        std::wstring		rid_;
-        std::wstring		ref_;
-        mediaitems::Type	type_;
-    };
-
 public:
-    void add(_xlsx_drawing const & d, bool isInternal, std::wstring const & rid, std::wstring const & ref, mediaitems::Type type)
+    void add(_xlsx_drawing const & d, bool isInternal, std::wstring const & rid, std::wstring const & ref, RelsType type)
     {
         xlsx_drawings_.push_back(d);
 		
 		bool present = false;
-        BOOST_FOREACH(rel_ const & r, xlsx_drawing_rels_)
+        BOOST_FOREACH(_rel const & r, xlsx_drawing_rels_)
         {		
-			if (r.rid_ == rid && r.ref_ == ref)
+			if (r.rid == rid && r.ref == ref)
 				present = true;
 		}
 		if (!present)
 		{
-			xlsx_drawing_rels_.push_back(rel_(isInternal, rid, ref, type));
+			xlsx_drawing_rels_.push_back(_rel(isInternal, rid, ref, type));
 		}
         BOOST_FOREACH(_hlink_desc h, d.hlinks)
         {
-			xlsx_drawing_rels_.push_back(rel_(false, h.hId, h.hRef, mediaitems::typeHyperlink));
+			xlsx_drawing_rels_.push_back(_rel(false, h.hId, h.hRef, typeHyperlink));
 		}
     }
-    void add( bool isInternal, std::wstring const & rid, std::wstring const & ref, mediaitems::Type type)
+    void add( bool isInternal, std::wstring const & rid, std::wstring const & ref, RelsType type)
     {
 		bool present = false;
-        BOOST_FOREACH(rel_ const & r, xlsx_drawing_rels_)
+        BOOST_FOREACH(_rel const & r, xlsx_drawing_rels_)
         {		
-			if (r.rid_ == rid && r.ref_ == ref)
+			if (r.rid == rid && r.ref == ref)
 				present = true;
 		}
 		if (!present)
 		{
-			xlsx_drawing_rels_.push_back(rel_(isInternal, rid, ref, type));
+			xlsx_drawing_rels_.push_back(_rel(isInternal, rid, ref, type));
 		}
     }
 
@@ -129,35 +116,34 @@ public:
 
     void dump_rels(rels & Rels)
     {
-        BOOST_FOREACH(rel_ const & r, xlsx_drawing_rels_)
+        BOOST_FOREACH(_rel const & r, xlsx_drawing_rels_)
         {
-			if (r.type_ == mediaitems::typeChart)//временно - нужно потом все загнать в релс
+			if (r.type == typeChart)
 			{
 				Rels.add(relationship(
-							r.rid_,
-							utils::media::get_rel_type(r.type_),
-							(r.is_internal_ ? std::wstring(L"../") + r.ref_ : r.ref_),
-							(r.is_internal_ ? L"" : L"External")
+							r.rid,
+							utils::media::get_rel_type(r.type),
+							(r.is_internal ? std::wstring(L"../") + r.ref : r.ref),
+							(r.is_internal ? L"" : L"External")
 							) 
 					);
 			}
-			else if (r.type_ == mediaitems::typeImage)
+			else if (r.type == typeImage)
 			{
 				Rels.add(relationship(
-							r.rid_,
-							utils::media::get_rel_type(r.type_),
-							r.is_internal_ ? std::wstring(L"../") + r.ref_ : r.ref_,
-							(r.is_internal_ ? L"" : L"External")
+							r.rid,
+							utils::media::get_rel_type(r.type),
+							r.is_internal ? std::wstring(L"../") + r.ref : r.ref,
+							(r.is_internal ? L"" : L"External")
 							) 
 					);
 			}
-			//typeShape внутренний рисованый объект - релсов нет
- 			else if (r.type_ == mediaitems::typeHyperlink)//заместо гипрелинка пользуем неизвестный ... поменять ... временно .. сделать красиво
+ 			else if (r.type == typeHyperlink)
 			{
 				Rels.add(relationship(
-							r.rid_,
+							r.rid,
 							L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink",
-							r.ref_,
+							r.ref,
 							L"External")
 				);
 			}
@@ -169,7 +155,7 @@ public:
 private:
 
 	std::vector<_xlsx_drawing>	xlsx_drawings_;	
-	std::vector<rel_>			xlsx_drawing_rels_;
+	std::vector<_rel>			xlsx_drawing_rels_;
 };
 
 xlsx_drawings::xlsx_drawings(bool inGroup_) : impl_( new xlsx_drawings::Impl() )
@@ -182,12 +168,12 @@ xlsx_drawings::~xlsx_drawings()
 }
 
 void xlsx_drawings::add(_xlsx_drawing const & d, bool isInternal, std::wstring const & rid,
-															std::wstring const & ref, mediaitems::Type type)
+															std::wstring const & ref, RelsType type)
 {
     impl_->add(d, isInternal, rid, ref, type);
 }
 
-void xlsx_drawings::add( bool isInternal, std::wstring const & rid, std::wstring const & ref, mediaitems::Type type)
+void xlsx_drawings::add( bool isInternal, std::wstring const & rid, std::wstring const & ref, RelsType type)
 {
     impl_->add(isInternal, rid, ref, type);
 }

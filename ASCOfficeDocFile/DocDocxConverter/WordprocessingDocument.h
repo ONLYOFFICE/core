@@ -55,26 +55,26 @@ namespace DocFileFormat
 		friend class OleObjectMapping;
 
 	private:
-		wstring FileName;
+		std::wstring FileName;
 
-		wstring FontTableXML;
-		wstring DocumentXML;
-		wstring StyleSheetXML;
-		wstring FootnotesXML;
-		wstring EndnotesXML;
-		wstring NumberingXML;
-		wstring CommentsXML;
-		wstring SettingsXML;
-		wstring CommandTableXML;
+		std::wstring FontTableXML;
+		std::wstring DocumentXML;
+		std::wstring StyleSheetXML;
+		std::wstring FootnotesXML;
+		std::wstring EndnotesXML;
+		std::wstring NumberingXML;
+		std::wstring CommentsXML;
+		std::wstring SettingsXML;
+		std::wstring CommandTableXML;
 
-		list<ImageFileStructure> ImagesList;
-		list<OleObjectFileStructure> OleObjectsList;
+		std::list<ImageFileStructure>		ImagesList;
+		std::list<OleObjectFileStructure>	OleObjectsList;
 
-		list<wstring> HeaderXMLList;
-		list<wstring> FooterXMLList;
+		std::list<std::wstring> HeaderXMLList;
+		std::list<std::wstring> FooterXMLList;
 
 	public:
-		WordprocessingDocument(const wchar_t* _docxDirectory, const WordDocument* _docFile);
+		WordprocessingDocument(const std::wstring & _docxDirectory, const WordDocument* _docFile);
 		virtual ~WordprocessingDocument();
 		void SaveDocument();
 	};

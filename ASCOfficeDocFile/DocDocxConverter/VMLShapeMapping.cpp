@@ -277,10 +277,6 @@ namespace DocFileFormat
 				std::list<OptionEntry>::const_iterator end = options.end();
 				for (std::list<OptionEntry>::const_iterator iter = options.begin(); iter != end; ++iter)
 				{
-					//mso-position-horizontal:absolute
-					//mso-position-horizontal-relative:margin
-					//mso-position-vertical:absolute
-					//mso-position-vertical-relative:margin
 					switch (iter->pid)
 					{
 			//BOOLEANS
@@ -438,7 +434,7 @@ namespace DocFileFormat
 					case lineColor:
 						{
 							RGBColor lineColor((int)iter->op, RedFirst);
-							m_pXmlWriter->WriteAttribute( _T("strokecolor"), (wstring(_T("#")) + lineColor.SixDigitHexCode).c_str());
+							m_pXmlWriter->WriteAttribute( _T("strokecolor"), (std::wstring(_T("#")) + lineColor.SixDigitHexCode).c_str());
 						}
 						break;
 
@@ -663,7 +659,7 @@ namespace DocFileFormat
 					case pibName:
 						{
 							std::wstring name;
-							FormatUtils::GetSTLCollectionFromBytes<std::wstring>(&name, iter->opComplex, iter->op, ENCODING_UNICODE);
+							FormatUtils::GetSTLCollectionFromBytes<std::wstring>(&name, iter->opComplex, iter->op, ENCODING_UTF16);
 							appendValueAttribute(&m_imagedata, _T( "o:title" ), FormatUtils::XmlEncode(name).c_str());
 						}
 						break;
@@ -879,7 +875,7 @@ namespace DocFileFormat
 				m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
 
 				//build shadow offsets
-				wstring offset;
+				std::wstring offset;
 
 				if ( ShadowOffsetX != 0 )
 				{
@@ -899,7 +895,7 @@ namespace DocFileFormat
 					appendValueAttribute(&m_shadow, _T( "offset" ), offset.c_str());
 				}
 
-				wstring offset2;
+				std::wstring offset2;
 
 				if ( SecondShadowOffsetX != 0 )
 				{
@@ -945,7 +941,7 @@ namespace DocFileFormat
 					//write the viewpoint
 					if ( ( ViewPointX != 0 ) || ( ViewPointY != 0 ) || ( ViewPointZ != 0 ) )
 					{
-						wstring viewPoint;
+						std::wstring viewPoint;
 
 						if ( ViewPointX != 0 )
 						{
@@ -1259,7 +1255,7 @@ namespace DocFileFormat
 		//write the blip
 		if (oBlip)
 		{
-			VirtualStreamReader reader(m_ctx->_doc->WordDocumentStream, oBlip->foDelay);
+			VirtualStreamReader reader(m_ctx->_doc->WordDocumentStream, oBlip->foDelay, m_ctx->_doc->FIB->m_bOlderVersion);
 
 			switch (oBlip->btWin32)
 			{
@@ -1277,7 +1273,7 @@ namespace DocFileFormat
 						decompressedSize = metaBlip->Decompress(&decompressed);
 						if (0 != decompressedSize && NULL != decompressed)
 						{
-							m_ctx->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(oBlip->btWin32), vector<unsigned char>(decompressed, (decompressed + decompressedSize))));
+							m_ctx->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(oBlip->btWin32), std::vector<unsigned char>(decompressed, (decompressed + decompressedSize))));
 							RELEASEARRAYOBJECTS(decompressed);
 						}
 
@@ -1297,7 +1293,7 @@ namespace DocFileFormat
 					if ((bitBlip) && (bitBlip->m_pvBits))
 					{
 						m_ctx->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(oBlip->btWin32), 
-							vector<unsigned char>(bitBlip->m_pvBits, (bitBlip->m_pvBits + bitBlip->pvBitsSize)), oBlip->btWin32));
+							std::vector<unsigned char>(bitBlip->m_pvBits, (bitBlip->m_pvBits + bitBlip->pvBitsSize)), oBlip->btWin32));
 						RELEASEOBJECT (bitBlip);
 					}
 				}
@@ -1372,8 +1368,8 @@ namespace DocFileFormat
 				height = TwipsValue( ( pict->dxaGoal - ( pict->dxaCropLeft + pict->dxaCropRight ) ) * xScaling );
 			}
 
-			wstring widthString = FormatUtils::DoubleToWideString( width.ToPoints() );
-			wstring heightString = FormatUtils::DoubleToWideString( height.ToPoints() );
+			std::wstring widthString = FormatUtils::DoubleToWideString( width.ToPoints() );
+			std::wstring heightString = FormatUtils::DoubleToWideString( height.ToPoints() );
 
 			style->operator += ( std::wstring( _T( "width:" ) ) + widthString + std::wstring( _T( "pt;" ) ) );
 			style->operator += ( std::wstring( _T( "height:" ) ) + heightString + std::wstring( _T( "pt;" ) ) );
@@ -1423,7 +1419,7 @@ namespace DocFileFormat
 	{
 		if ((style != NULL) && (anchor != NULL))
 		{
-			ASCDocFormatUtils::Rectangle bounds = anchor->rcgBounds;
+			DocFormatUtils::Rectangle bounds = anchor->rcgBounds;
 
 			if (twistDimensions)
 			{

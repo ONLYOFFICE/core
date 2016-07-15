@@ -45,7 +45,9 @@ namespace DocFileFormat
 	{
 		if ( fib->m_FibWord97.lcbPlfLst > 0 )
 		{
-			VirtualStreamReader reader( tableStream, fib->m_FibWord97.fcPlfLst );
+			VirtualStreamReader reader( tableStream, fib->m_FibWord97.fcPlfLst, fib->m_bOlderVersion);
+			
+			if (fib->m_FibWord97.fcPlfLst > reader.GetSize()) return;
 
 			//the ListTable is not a real plex:
 			//it starts with a count, followed by the array of LSTF structs,
@@ -61,7 +63,7 @@ namespace DocFileFormat
 			}
 
 			//read the LVLF structs
-			for ( list<ListData*>::iterator iter = listData.begin(); iter != listData.end(); iter++ )
+			for ( std::list<ListData*>::iterator iter = listData.begin(); iter != listData.end(); iter++ )
 			{
 				for ( unsigned int j = 0; j < (*iter)->rglvl->size(); j++ )
 				{

@@ -41,9 +41,9 @@ namespace DocFileFormat
 
 	TableCell::TableCell( const TableCell& _tableCell ) : cp(_tableCell.cp), depth(_tableCell.depth), documentMapping(_tableCell.documentMapping)
 	{
-		for ( list<ITableCellElementPtr>::const_iterator iter = _tableCell.cellElements.begin(); iter != _tableCell.cellElements.end(); iter++ )
+		for ( std::list<ITableCellElementPtr>::const_iterator iter = _tableCell.cellElements.begin(); iter != _tableCell.cellElements.end(); iter++ )
 		{
-			this->AddItem( **iter );
+			AddItem( **iter );
 		}
 	}
 
@@ -55,16 +55,16 @@ namespace DocFileFormat
 	{
 		if ( this != &_tableCell )
 		{
-			this->cp = _tableCell.cp;
-			this->depth = _tableCell.depth;
-			this->cellElements.clear();
+			cp = _tableCell.cp;
+			depth = _tableCell.depth;
+			cellElements.clear();
 
-			for ( list<ITableCellElementPtr>::const_iterator iter = _tableCell.cellElements.begin(); iter != _tableCell.cellElements.end(); iter++ )
+			for ( std::list<ITableCellElementPtr>::const_iterator iter = _tableCell.cellElements.begin(); iter != _tableCell.cellElements.end(); iter++ )
 			{
-				this->AddItem( **iter );
+				AddItem( **iter );
 			}
 
-			this->documentMapping = _tableCell.documentMapping;
+			documentMapping = _tableCell.documentMapping;
 		}
 
 		return *this;
@@ -72,41 +72,41 @@ namespace DocFileFormat
 
 	void TableCell::SetCP( int _cp )
 	{
-		this->cp = _cp;
+		cp = _cp;
 	}
 
 	int TableCell::GetCP() const
 	{
-		return this->cp;
+		return cp;
 	}
 
 	void TableCell::SetDepth( unsigned int _depth )
 	{
-		this->depth = _depth;
+		depth = _depth;
 	}
 
 	unsigned int TableCell::GetDepth() const
 	{
-		return this->depth;
+		return depth;
 	}
 
 	void TableCell::AddItem( const ITableCellElement& _tableCellElement )
 	{
-		this->cellElements.push_back( ITableCellElementPtr( static_cast<ITableCellElement*>( _tableCellElement.Clone() ) ) );
+		cellElements.push_back( ITableCellElementPtr( static_cast<ITableCellElement*>( _tableCellElement.Clone() ) ) );
 	}
 
 	bool TableCell::IsEmpty() const
 	{
-		return this->cellElements.empty();
+		return cellElements.empty();
 	}
 
 	void TableCell::Clear()
 	{
-		this->cp = 0;
-		this->cellElements.clear();
+		cp = 0;
+		cellElements.clear();
 	}
 
-	void TableCell::Convert(IMapping* mapping, TablePropertyExceptions* tapx, const vector<short>* grid, int& gridIndex, int nCellIndex)
+	void TableCell::Convert(IMapping* mapping, TablePropertyExceptions* tapx, const std::vector<short>* grid, int& gridIndex, int nCellIndex)
 	{
 		if (NULL != mapping)
 		{
@@ -135,7 +135,7 @@ namespace DocFileFormat
 		documentMapping->_lastValidPapx = papxBackup;
 		documentMapping->_lastValidSepx = sepxBackup;
 
-		for (list<ITableCellElementPtr>::iterator iter = cellElements.begin(); iter != cellElements.end(); ++iter)
+		for (std::list<ITableCellElementPtr>::iterator iter = cellElements.begin(); iter != cellElements.end(); ++iter)
 		{
 			(*iter)->Convert( mapping );
 		}
@@ -158,42 +158,42 @@ namespace DocFileFormat
 		
 	void TableRow::SetCP( int _cp )
 	{
-		this->cp = _cp;
+		cp = _cp;
 	}
 
 	int TableRow::GetCP() const
 	{
-		return this->cp;
+		return cp;
 	}
 
 	void TableRow::SetDepth( unsigned int _depth )
 	{
-		this->depth = _depth;
+		depth = _depth;
 	}
 
 	unsigned int TableRow::GetDepth() const
 	{
-		return this->depth;
+		return depth;
 	}
 
 	void TableRow::AddCell( const TableCell& _tableCell )
 	{
-		this->cells.push_back( _tableCell );
+		cells.push_back( _tableCell );
 	}
 
 	bool TableRow::IsEmpty() const
 	{
-		return this->cells.empty();
+		return cells.empty();
 	}
 
 	void TableRow::Clear()
 	{
-		this->cp = 0;
-		this->depth = 1;
-		this->cells.clear();
+		cp = 0;
+		depth = 1;
+		cells.clear();
 	}
 
-	void TableRow::Convert(IMapping* mapping, const vector<short>* grid)
+	void TableRow::Convert(IMapping* mapping, const std::vector<short>* grid)
 	{
 		if ( mapping != NULL )
 		{
@@ -205,29 +205,32 @@ namespace DocFileFormat
 			int gridIndex	=	0;
 			int nCellIndex	=	0;
 
-			ParagraphPropertyExceptions* papxBackup = this->documentMapping->_lastValidPapx;
-			SectionPropertyExceptions* sepxBackup = this->documentMapping->_lastValidSepx;
+			ParagraphPropertyExceptions* papxBackup = documentMapping->_lastValidPapx;
+			SectionPropertyExceptions* sepxBackup = documentMapping->_lastValidSepx;
 
 			//start w:tr
-			this->documentMapping->GetXMLWriter()->WriteNodeBegin( _T( "w:tr" ) );
+			documentMapping->GetXMLWriter()->WriteNodeBegin( _T( "w:tr" ) );
 
 			//convert the properties
 			int fcRowEnd = documentMapping->findRowEndFc(cp, depth);
-			TablePropertyExceptions tapx( this->documentMapping->findValidPapx( fcRowEnd ), this->documentMapping->m_document->DataStream );
-			list<CharacterPropertyExceptions*>* chpxs = this->documentMapping->m_document->GetCharacterPropertyExceptions( fcRowEnd, fcRowEnd + 1 );
-			TableRowPropertiesMapping trpMapping( this->documentMapping->GetXMLWriter(), *(chpxs->begin()) );
+			TablePropertyExceptions tapx (	documentMapping->findValidPapx( fcRowEnd ), 
+											documentMapping->m_document->DataStream,
+											documentMapping->m_document->FIB->m_bOlderVersion);
+			
+			std::list<CharacterPropertyExceptions*>* chpxs = documentMapping->m_document->GetCharacterPropertyExceptions( fcRowEnd, fcRowEnd + 1 );
+			TableRowPropertiesMapping trpMapping( documentMapping->GetXMLWriter(), *(chpxs->begin()) );
 			tapx.Convert( &trpMapping );
 
-			this->documentMapping->_lastValidPapx = papxBackup;
-			this->documentMapping->_lastValidSepx = sepxBackup;
+			documentMapping->_lastValidPapx = papxBackup;
+			documentMapping->_lastValidSepx = sepxBackup;
 
-			for ( list<TableCell>::iterator iter = this->cells.begin(); iter != this->cells.end(); iter++ )
+			for ( std::list<TableCell>::iterator iter = cells.begin(); iter != cells.end(); iter++ )
 			{
 				iter->Convert( mapping, &tapx, grid, gridIndex, nCellIndex++ );
 			}
 
 			//end w:tr
-			this->documentMapping->GetXMLWriter()->WriteNodeEnd( _T( "w:tr" ) );
+			documentMapping->GetXMLWriter()->WriteNodeEnd( _T( "w:tr" ) );
 
 			RELEASEOBJECT( chpxs );
 		}
@@ -246,27 +249,27 @@ namespace DocFileFormat
 
 	int DocParagraph::GetCPStart() const
 	{
-		return this->cpStart;
+		return cpStart;
 	}
 
 	void DocParagraph::SetCPStart( int _cpStart )
 	{
-		this->cpStart = _cpStart;  
+		cpStart = _cpStart;  
 	}
 
 	int DocParagraph::GetCPEnd() const
 	{
-		return this->cpEnd;
+		return cpEnd;
 	}
 
 	void DocParagraph::SetCPEnd( int _cpEnd )
 	{
-		this->cpEnd = _cpEnd;
+		cpEnd = _cpEnd;
 	}
 
 	IVirtualConstructor* DocParagraph::New() const
 	{
-		return new DocParagraph( this->documentMapping );
+		return new DocParagraph( documentMapping );
 	}
 
 	IVirtualConstructor* DocParagraph::Clone() const
@@ -278,10 +281,10 @@ namespace DocFileFormat
 	{
 		if ( mapping != NULL )
 		{
-			this->documentMapping = static_cast<DocumentMapping*>(mapping);
+			documentMapping = static_cast<DocumentMapping*>(mapping);
 		}
 
-		this->documentMapping->writeParagraph( this->cpStart );
+		documentMapping->writeParagraph( cpStart );
 	}
 
 }
@@ -294,6 +297,8 @@ namespace DocFileFormat
 
 	bool Table::IsCellMarker(int _cp)
 	{
+		if ( _cp > documentMapping->m_document->Text->size() - 1) return false;
+		
 		int fc = documentMapping->m_document->FindFileCharPos(_cp);
 		if (fc < 0) return false;
 
@@ -303,6 +308,7 @@ namespace DocFileFormat
 
 		TableInfo tai( papx );
 
+
 		return ( ( tai.fInTable ) && ( ( ( documentMapping->m_document->Text->at( _cp ) == 0x0007 ) && ( tai.iTap <= 1 ) && 
 			( !tai.fTtp ) ) ||
 			( ( documentMapping->m_document->Text->at( _cp ) == 0x000D ) && ( tai.iTap > 1 ) && 
@@ -311,70 +317,75 @@ namespace DocFileFormat
 
 	bool Table::IsRowMarker( int _cp )
 	{
+		if ( _cp > documentMapping->m_document->Text->size() - 1) return false;
+
 		int fc = documentMapping->m_document->FindFileCharPos(_cp);
 		if (fc < 0) return false;
 
 		ParagraphPropertyExceptions* papx = NULL;
 
-		papx = this->documentMapping->findValidPapx( fc );
+		papx = documentMapping->findValidPapx( fc );
 
 		TableInfo tai( papx );
 
-		return ( ( tai.fInTable ) && ( ( ( this->documentMapping->m_document->Text->at( _cp ) == 0x0007 ) && ( tai.iTap <= 1 ) &&
+		return ( ( tai.fInTable ) && ( ( ( documentMapping->m_document->Text->at( _cp ) == 0x0007 ) && ( tai.iTap <= 1 ) &&
 			( tai.fTtp ) ) ||
-			( ( this->documentMapping->m_document->Text->at( _cp ) == 0x000D ) && ( tai.iTap > 1 ) && 
+			( ( documentMapping->m_document->Text->at( _cp ) == 0x000D ) && ( tai.iTap > 1 ) && 
 			( tai.fInnerTtp ) ) ) );
 	}
 
 	bool Table::IsParagraphMarker( int _cp )
 	{
+		if ( _cp > documentMapping->m_document->Text->size() - 1) return false;
+		
 		int fc = documentMapping->m_document->FindFileCharPos(_cp);
+		
 		if (fc < 0) return false;
 
 		ParagraphPropertyExceptions* papx = NULL;
 
-		papx = this->documentMapping->findValidPapx( fc );
+		papx = documentMapping->findValidPapx( fc );
 
 		TableInfo tai( papx );
 
-		return (  ( tai.fInTable ) && ( this->documentMapping->m_document->Text->at( _cp ) == 0x000D ) && 
-			( !this->IsCellMarker( _cp ) ) && ( !this->IsRowMarker( _cp ) ) );
+		return (  ( tai.fInTable ) && ( documentMapping->m_document->Text->at( _cp ) == 0x000D ) && 
+			( !IsCellMarker( _cp ) ) && ( !IsRowMarker( _cp ) ) );
 	}
 
 	Table::Table( DocumentMapping* _documentMapping, int _cp, unsigned int _depth ):
 	cpStart(_cp), cpEnd(_cp), depth(_depth), documentMapping(_documentMapping)
 	{
-		if ( this->documentMapping != NULL )
+		if ( documentMapping != NULL )
 		{
 			int paragraphBeginCP = _cp;
 
-			ParagraphPropertyExceptions* papxBackup = this->documentMapping->_lastValidPapx;
-			SectionPropertyExceptions* sepxBackup = this->documentMapping->_lastValidSepx;
+			ParagraphPropertyExceptions* papxBackup = documentMapping->_lastValidPapx;
+			SectionPropertyExceptions* sepxBackup = documentMapping->_lastValidSepx;
 
 			int fc = documentMapping->m_document->FindFileCharPos(_cp);
 			if (fc < 0) return;
 
 			ParagraphPropertyExceptions* papx = NULL;
 
-			papx = this->documentMapping->findValidPapx( fc );
+			papx = documentMapping->findValidPapx( fc );
 
 			TableInfo tai( papx );
 
-			TableRow tableRow( this->documentMapping, _cp );
-			TableCell tableCell( this->documentMapping, _cp );
+			TableRow tableRow( documentMapping, _cp );
+			TableCell tableCell( documentMapping, _cp );
 
 			do
 			{
 				fc = documentMapping->m_document->FindFileCharPos(_cp);
 				if (fc < 0) break;
 
-				papx = this->documentMapping->findValidPapx( fc );
+				papx = documentMapping->findValidPapx( fc );
 
 				tai = TableInfo( papx );
 
 				if ( tai.iTap > _depth )
 				{
-					Table innerTable( this->documentMapping, _cp, ( _depth + 1 ) );
+					Table innerTable( documentMapping, _cp, ( _depth + 1 ) );
 
 					tableCell.AddItem( innerTable );
 
@@ -383,7 +394,7 @@ namespace DocFileFormat
 					fc = documentMapping->m_document->FindFileCharPos(_cp);
 					if (fc < 0) break;
 
-					papx = this->documentMapping->findValidPapx( fc );
+					papx = documentMapping->findValidPapx( fc );
 
 					tai = TableInfo( papx );
 
@@ -391,28 +402,28 @@ namespace DocFileFormat
 				}
 				else
 				{
-					if ( this->IsCellMarker( _cp ) )
+					if ( IsCellMarker( _cp ) )
 					{
 						tableCell.SetCP( _cp );
 						tableCell.SetDepth( _depth );
 
-						tableCell.AddItem( DocParagraph( this->documentMapping, paragraphBeginCP, _cp ) );  
+						tableCell.AddItem( DocParagraph( documentMapping, paragraphBeginCP, _cp ) );  
 
 						tableRow.AddCell( tableCell );
 						tableCell.Clear();
 						paragraphBeginCP = ( _cp + 1 );
 					}
-					else if ( this->IsRowMarker( _cp ) )
+					else if ( IsRowMarker( _cp ) )
 					{
 						tableRow.SetCP( _cp );
 						tableRow.SetDepth( _depth );
-						this->AddRow( tableRow );
+						AddRow( tableRow );
 						tableRow.Clear();
 						paragraphBeginCP++;
 					}
-					else if ( this->IsParagraphMarker( _cp ) )
+					else if ( IsParagraphMarker( _cp ) )
 					{
-						tableCell.AddItem( DocParagraph( this->documentMapping, paragraphBeginCP, _cp ) );
+						tableCell.AddItem( DocParagraph( documentMapping, paragraphBeginCP, _cp ) );
 						paragraphBeginCP = ( _cp + 1 );
 					}
 
@@ -421,65 +432,65 @@ namespace DocFileFormat
 			}
 			while ( ( tai.fInTable ) && ( tai.iTap == _depth ) );
 
-			this->cpEnd = ( _cp - 1 );
+			cpEnd = ( _cp - 1 );
 
-			this->documentMapping->_lastValidPapx = papxBackup;
-			this->documentMapping->_lastValidSepx = sepxBackup;
+			documentMapping->_lastValidPapx = papxBackup;
+			documentMapping->_lastValidSepx = sepxBackup;
 		}
 	}
 
 	int Table::GetCPStart() const
 	{
-		return this->cpStart;
+		return cpStart;
 	}
 
 	void Table::SetCPStart( int _cpStart )
 	{
-		this->cpStart = _cpStart;  
+		cpStart = _cpStart;  
 	}
 
 	int Table::GetCPEnd() const
 	{
-		return this->cpEnd;
+		return cpEnd;
 	}
 
 	void Table::SetCPEnd( int _cpEnd )
 	{
-		this->cpEnd = _cpEnd;
+		cpEnd = _cpEnd;
 	}
 
 	bool Table::IsEmpty() const
 	{
-		return this->rows.empty();
+		return rows.empty();
 	}
 
 	void Table::Clear()
 	{
-		this->cpStart = 0;
-		this->cpEnd = 0;
-		this->rows.clear();
+		cpStart = 0;
+		cpEnd = 0;
+		rows.clear();
 	}
 
 	void Table::SetDepth( unsigned int _depth )
 	{
-		this->depth = _depth;
+		depth = _depth;
 	}
 
 	unsigned int Table::GetDepth() const
 	{
-		return this->depth;
+		return depth;
 	}
 
 	int Table::AddRow( const TableRow& _tableRow )
 	{
-		this->rows.push_back( _tableRow );
+		rows.push_back( _tableRow );
 
-		return this->cpEnd;
+		return cpEnd;
 	}
 
 	IVirtualConstructor* Table::New() const
 	{
-		return new Table( this->documentMapping );
+		return new Table( documentMapping );
 	}
 
 	IVirtualConstructor* Table::Clone() const
@@ -496,31 +507,33 @@ namespace DocFileFormat
 		SectionPropertyExceptions* sepxBackup	=	documentMapping->_lastValidSepx;
 
 		//build the table grid
-		vector<short>* grid = this->documentMapping->buildTableGrid( this->cpStart, this->depth );
+		std::vector<short>* grid = documentMapping->buildTableGrid( cpStart, depth );
 
 		//find first row end
-		int fcRowEnd = this->documentMapping->findRowEndFc( this->cpStart, this->depth );
+		int fcRowEnd = documentMapping->findRowEndFc( cpStart, depth );
 
-		TablePropertyExceptions row1Tapx( this->documentMapping->findValidPapx( fcRowEnd ), this->documentMapping->m_document->DataStream );
+		TablePropertyExceptions row1Tapx(	documentMapping->findValidPapx( fcRowEnd ), 
+											documentMapping->m_document->DataStream ,
+											documentMapping->m_document->FIB->m_bOlderVersion);
 
 		//start table
-		this->documentMapping->GetXMLWriter()->WriteNodeBegin( _T( "w:tbl" ) );
+		documentMapping->GetXMLWriter()->WriteNodeBegin( _T( "w:tbl" ) );
 
 		//Convert it
-		TablePropertiesMapping tpMapping( this->documentMapping->GetXMLWriter(), this->documentMapping->m_document->Styles, grid );
+		TablePropertiesMapping tpMapping( documentMapping->GetXMLWriter(), documentMapping->m_document->Styles, grid );
 
 		row1Tapx.Convert( &tpMapping );
 
-		this->documentMapping->_lastValidPapx = papxBackup;
-		this->documentMapping->_lastValidSepx = sepxBackup;
+		documentMapping->_lastValidPapx = papxBackup;
+		documentMapping->_lastValidSepx = sepxBackup;
 
-		for ( list<TableRow>::iterator iter = this->rows.begin(); iter != this->rows.end(); iter++ )
+		for ( std::list<TableRow>::iterator iter = rows.begin(); iter != rows.end(); iter++ )
 		{
 			iter->Convert( mapping, grid );  
 		}
 
 		//close w:tbl
-		this->documentMapping->GetXMLWriter()->WriteNodeEnd( _T( "w:tbl" ) );
+		documentMapping->GetXMLWriter()->WriteNodeEnd( _T( "w:tbl" ) );
 
 		RELEASEOBJECT( grid );
 	}

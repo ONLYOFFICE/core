@@ -41,7 +41,7 @@ namespace DocFileFormat
 		friend class PieceTable;
 	public:
 		/// Parses the bytes to retrieve a PieceDescriptor
-		PieceDescriptor(unsigned char *bytes, unsigned int size) : fc(0), encoding(ENCODING_INVALID_VALUE), cpStart(0), cpEnd(0)
+		PieceDescriptor(unsigned char *bytes, unsigned int size, int code_page_) : fc(0), code_page(code_page_), cpStart(0), cpEnd(0)
 		{
 			if (8 == size)
 			{
@@ -57,19 +57,14 @@ namespace DocFileFormat
 				//find encoding and offset
 				if (flag)
 				{
-					this->encoding = ENCODING_WINDOWS_1251;
+					code_page = ENCODING_WINDOWS_1250;
 					this->fc = (unsigned int)( fcValue / 2 );
 				}
 				else
 				{
-					this->encoding = ENCODING_UNICODE;
+					code_page = ENCODING_UTF16;
 					this->fc = fcValue;
 				}
-			}
-			else
-			{
-				//!!!TODO!!!
-				//throw new ByteParseException("Cannot parse the struct PCD, the length of the struct doesn't match");
 			}
 		}
 
@@ -78,7 +73,7 @@ namespace DocFileFormat
 		/// This is relative to the beginning of the WordDocument stream.
 		unsigned int fc;
 		/// The encoding of the piece
-		ASCDocFormatUtils::Encoding encoding;
+		int code_page;
 		int cpStart;
 		int cpEnd;
 	};

@@ -72,32 +72,41 @@ namespace DocFileFormat
 		newObject->wWeight		= reader->ReadInt16();
 		newObject->chs			= reader->ReadByte();
 
-		//skip unsigned char 5
-		reader->ReadByte();
+		//int sz_fonts = 150; //..  нужно генерить уникальное todooo
+		
+		int szAlt = reader->ReadByte();
 
-		//read the 10 bytes panose
-		newObject->panoseSize = 10;
-		newObject->panose = reader->ReadBytes( newObject->panoseSize, true );
+		if (!reader->olderVersion)
+		{
+			//read the 10 bytes panose
+			newObject->panoseSize = 10;
+			newObject->panose = reader->ReadBytes( newObject->panoseSize, true );
 
-		//read the 24 bytes FontSignature
-		newObject->fs.UnicodeSubsetBitfield0	= reader->ReadUInt32();
-		newObject->fs.UnicodeSubsetBitfield1	= reader->ReadUInt32();
-		newObject->fs.UnicodeSubsetBitfield2	= reader->ReadUInt32();
-		newObject->fs.UnicodeSubsetBitfield3	= reader->ReadUInt32();
-		newObject->fs.CodePageBitfield0		= reader->ReadUInt32();
-		newObject->fs.CodePageBitfield1		= reader->ReadUInt32();
+			//read the 24 bytes FontSignature
+			newObject->fs.UnicodeSubsetBitfield0	= reader->ReadUInt32();
+			newObject->fs.UnicodeSubsetBitfield1	= reader->ReadUInt32();
+			newObject->fs.UnicodeSubsetBitfield2	= reader->ReadUInt32();
+			newObject->fs.UnicodeSubsetBitfield3	= reader->ReadUInt32();
+			newObject->fs.CodePageBitfield0			= reader->ReadUInt32();
+			newObject->fs.CodePageBitfield1			= reader->ReadUInt32();
+		}
+	//read the next \0 terminated string
+		long strStart	= reader->GetPosition();
+		long strEnd		= searchTerminationZero( reader );	
 
-		//read the next \0 terminated string
-		long strStart = reader->GetPosition();
-		long strEnd = searchTerminationZero( reader );
-
-		int sz_fonts = 150; //..  нужно генерить уникальное todooo
 
 		unsigned char *bytes = reader->ReadBytes( (int)( strEnd - strStart ), true );
 
-		FormatUtils::GetSTLCollectionFromBytes<wstring>( &(newObject->xszFtn), bytes, (int)( strEnd - strStart ), (Encoding)ENCODING_UNICODE );
+		if (reader->olderVersion)
+		{
+			FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &(newObject->xszFtn), bytes, (int)( strEnd - strStart ), ENCODING_WINDOWS_1250 );
+		}
+		else
+		{
+			FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &(newObject->xszFtn), bytes, (int)( strEnd - strStart ), ENCODING_UTF16 );
+		}
 
-		if (newObject->xszFtn.length() >0)
+		if (newObject->xszFtn.length() > 0)
 		{
 			  if ((int) newObject->xszFtn.at(0) < 31) //DDToneWebService.doc
 			  {
@@ -105,25 +114,31 @@ namespace DocFileFormat
 			  }
 		}
 
-		if (newObject->xszFtn.length() < 2)//programo.doc 
+		if (newObject->xszFtn.length() < 2 && szAlt < 1)//programo.doc 
 		{
-			newObject->xszFtn = _T("font") + FormatUtils::IntToWideString(++sz_fonts); 
+			newObject->xszFtn = _T("font"); 
 		}
 
 		RELEASEARRAYOBJECTS( bytes );
 
 		long readBytes = reader->GetPosition() - startPos;
 
-		if( readBytes < length )
+		if( readBytes < length && szAlt > 0)
 		{
-		//read the next \0 terminated string
-			strStart = reader->GetPosition();
-			strEnd = searchTerminationZero( reader );
+	//read the next \0 terminated string		
+			strStart	= reader->GetPosition();
+			strEnd		= searchTerminationZero( reader );
 
 			bytes = reader->ReadBytes( (int)( strEnd - strStart ), true );
 
-			FormatUtils::GetSTLCollectionFromBytes<wstring>( &(newObject->xszAlt), bytes, (int)( strEnd - strStart ), ENCODING_UNICODE );
-
+			if (reader->olderVersion)
+			{
+				FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &(newObject->xszAlt), bytes, (int)( strEnd - strStart ), ENCODING_WINDOWS_1250);
+			}
+			else
+			{
+				FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &(newObject->xszAlt), bytes, (int)( strEnd - strStart ), ENCODING_UTF16 );
+			}
 			RELEASEARRAYOBJECTS( bytes );
 		 }
 
@@ -136,10 +151,20 @@ namespace DocFileFormat
     {
 	  long strStart = reader->GetPosition();
       
-	  while ( reader->ReadInt16() != 0 )
-      {
-        ;
-      }
+	  if (reader->olderVersion)
+	  {//ansi string only
+		  while ( reader->ReadByte() != 0 )
+		  {
+			;
+		  }
+	  }
+	  else
+	  {//unicode string
+		  while ( reader->ReadInt16() != 0 )
+		  {
+			;
+		  }
+	  }
       
 	  long pos = reader->GetPosition();
 	  

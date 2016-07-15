@@ -111,7 +111,7 @@ namespace DocFileFormat
 			{
 				m_pXmlWriter->WriteNodeBegin( _T( "v:formulas" ) );
 
-				for ( list<wstring>::iterator iter = pShape->Formulas.begin(); iter != pShape->Formulas.end(); iter++ )
+				for ( std::list<std::wstring>::iterator iter = pShape->Formulas.begin(); iter != pShape->Formulas.end(); iter++ )
 				{
 					m_pXmlWriter->WriteNodeBegin( _T( "v:f" ), true );
 					m_pXmlWriter->WriteAttribute( _T( "eqn" ), iter->c_str() );
@@ -179,7 +179,7 @@ namespace DocFileFormat
 			{
 				m_pXmlWriter->WriteNodeBegin( _T( "v:handles" ) );
 
-				for ( list<Handle>::iterator iter = pShape->Handles.begin(); iter != pShape->Handles.end(); ++iter)
+				for ( std::list<Handle>::iterator iter = pShape->Handles.begin(); iter != pShape->Handles.end(); ++iter)
 				{
 					m_pXmlWriter->WriteNodeBegin( _T( "v:h" ), true );
 
@@ -213,9 +213,9 @@ namespace DocFileFormat
 
 	std::wstring VMLShapeTypeMapping::GenerateTypeId (const ShapeType* pShape)
 	{
-		wstring type;
+		std::wstring type;
 
-		type += wstring( _T( "_x0000_t" ) );
+		type += std::wstring( _T( "_x0000_t" ) );
 		type += FormatUtils::IntToWideString(pShape->GetTypeCode() );
 
 		return type;

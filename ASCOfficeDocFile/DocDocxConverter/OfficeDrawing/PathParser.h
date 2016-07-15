@@ -161,7 +161,7 @@ namespace DocFileFormat
 			
 			int cc = 0;
 			std::vector<PathSegment>::const_iterator end = m_arSegments.end();
-			for (vector<PathSegment>::const_iterator iter = m_arSegments.begin(); iter != end; ++iter, cc++)
+			for (std::vector<PathSegment>::const_iterator iter = m_arSegments.begin(); iter != end; ++iter, cc++)
 			{
 				try
 				{

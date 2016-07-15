@@ -54,53 +54,53 @@ namespace DocFileFormat
 		TablePropertyExceptions* tapx = static_cast<TablePropertyExceptions*>( visited );
 
 		//delete infos
-		RevisionData rev( this->_rowEndChpx );
+		RevisionData rev( _rowEndChpx );
 
-		if ( ( this->_rowEndChpx != NULL ) && ( rev.Type == Deleted ) )
+		if ( ( _rowEndChpx != NULL ) && ( rev.Type == Deleted ) )
 		{
 			XMLTools::XMLElement<wchar_t> del( _T( "w:del" ) );
-			this->_trPr->AppendChild( del );
+			_trPr->AppendChild( del );
 		}
 
-		for ( list<SinglePropertyModifier>::iterator iter = tapx->grpprl->begin(); iter != tapx->grpprl->end(); iter++ )
+		for ( std::list<SinglePropertyModifier>::iterator iter = tapx->grpprl->begin(); iter != tapx->grpprl->end(); iter++ )
 		{
 			switch ( iter->OpCode )  
 			{
-			case sprmTDefTable:
+				case sprmOldTDefTable:
+				case sprmTDefTable:
 				{
 					//SprmTDefTable tdef = new SprmTDefTable(sprm.Arguments);
 				}
 				break;
 
-				//header row
-			case sprmTTableHeader:
-				{
+				case sprmOldTTableHeader:
+				case sprmTTableHeader:
+				{						//header row
+
 					bool fHeader = ( iter->Arguments[0] != 0 ) ? (true) : (false);
 
 					if ( fHeader )
 					{
 						XMLTools::XMLElement<wchar_t> header( _T( "w:tblHeader" ) );
-						this->_trPr->AppendChild( header );
+						_trPr->AppendChild( header );
 					}
 				}
 				break;
 
-				//width after
-			case sprmTWidthAfter:
-				{
+				case sprmTWidthAfter:
+				{						//width after
 					XMLTools::XMLElement<wchar_t> wAfter( _T( "w:wAfter" ) );
 					XMLTools::XMLAttribute<wchar_t> wAfterValue( _T( "w:w" ), FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 1, iter->argumentsSize ) ).c_str() );
 					wAfter.AppendAttribute( wAfterValue );
 
 					XMLTools::XMLAttribute<wchar_t> wAfterType( _T( "w:type" ), _T( "dxa" ) );
 					wAfter.AppendAttribute( wAfterType );
-					this->_trPr->AppendChild( wAfter );
+					_trPr->AppendChild( wAfter );
 				}
 				break;
 
-				//width before
-			case sprmTWidthBefore:
-				{
+				case sprmTWidthBefore:
+				{						//width before
 					short before = FormatUtils::BytesToInt16( iter->Arguments, 1, iter->argumentsSize );
 
 					if ( before != 0 )
@@ -111,14 +111,14 @@ namespace DocFileFormat
 
 						XMLTools::XMLAttribute<wchar_t> wBeforeType( _T( "w:type" ), _T( "dxa" ) );
 						wBefore.AppendAttribute( wBeforeType );
-						this->_trPr->AppendChild( wBefore );
+						_trPr->AppendChild( wBefore );
 					}
 				}
 				break;
 
-				//row height
-			case sprmTDyaRowHeight:
-				{
+				case sprmOldTDyaRowHeight:
+				case sprmTDyaRowHeight:
+				{						//row height
 					XMLTools::XMLElement<wchar_t> rowHeight( _T( "w:trHeight" ) );
 					XMLTools::XMLAttribute<wchar_t> rowHeightVal( _T( "w:val" ) );
 					XMLTools::XMLAttribute<wchar_t> rowHeightRule( _T( "w:hRule" ) );
@@ -144,20 +144,22 @@ namespace DocFileFormat
 					}
 
 					rowHeight.AppendAttribute( rowHeightRule );
-					this->_trPr->AppendChild( rowHeight );
+					_trPr->AppendChild( rowHeight );
 				}
 				break;
 
-				//can't split
+			case sprmOldTFCantSplit:
 			case sprmTFCantSplit:
 			case sprmTFCantSplit90:
-				appendFlagElement( this->_trPr, *iter, _T( "cantSplit" ), true );
-				break;
+			{						//can't split
+				appendFlagElement( _trPr, *iter, _T( "cantSplit" ), true );
+			}break;
 
 				//div id
 			case sprmTIpgp:
-				appendValueElement( this->_trPr, _T( "divId" ), FormatUtils::IntToWideString( FormatUtils::BytesToInt32( iter->Arguments, 0, iter->argumentsSize ) ).c_str(), true );
-				break;
+			{
+				appendValueElement( _trPr, _T( "divId" ), FormatUtils::IntToWideString( FormatUtils::BytesToInt32( iter->Arguments, 0, iter->argumentsSize ) ).c_str(), true );
+			}break;
 
 				//borders 80 exceptions
 				//case SinglePropertyModifier.OperationCode.sprmTTableBorders80:
@@ -250,15 +252,15 @@ namespace DocFileFormat
 		//}
 
 		//set exceptions
-		if ( this->_tblPrEx->GetChildCount() > 0 )
+		if ( _tblPrEx->GetChildCount() > 0 )
 		{
-			this->_trPr->AppendChild( *(this->_tblPrEx) );
+			_trPr->AppendChild( *(_tblPrEx) );
 		}
 
 		//write Properties
-		if ( ( this->_trPr->GetChildCount() > 0 ) || ( this->_trPr->GetAttributeCount() > 0 ) )
+		if ( ( _trPr->GetChildCount() > 0 ) || ( _trPr->GetAttributeCount() > 0 ) )
 		{
-			m_pXmlWriter->WriteString( this->_trPr->GetXMLString().c_str() );
+			m_pXmlWriter->WriteString( _trPr->GetXMLString().c_str() );
 		}
 	}
 }

@@ -57,12 +57,12 @@ PropertySet::PropertySet(XLS::CFStreamPtr stream, const unsigned int property_se
 		PropertyIdentifierAndOffset prop_offset;
 		*stream >> prop_offset;
 
-		if (prop_offset.Offset - property_set_offset > Size)
+		if (prop_offset.Offset/* - property_set_offset*/ > Size)
 			break;
 		prop_offsets.push_back(prop_offset);
 	}
 
-    code_page = PropertyCodePage::DefaultCodePage;
+    code_page = 0;
 	for(unsigned int i = 0; i < prop_offsets.size(); ++i)
 	{
 		if (stream->getStreamPointer() - property_set_offset > Size)

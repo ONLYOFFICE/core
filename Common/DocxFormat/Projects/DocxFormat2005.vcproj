@@ -1975,6 +1975,14 @@
 				RelativePath="..\Source\DocxFormat\Logic\Vml.cpp"
 				>
 				<FileConfiguration
+					Name="Debug|x64"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						AdditionalOptions="/bigobj"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|x64"
 					>
 					<Tool
@@ -2063,6 +2071,14 @@
 		<File
 			RelativePath="..\Source\DocxFormat\IFileContainer.cpp"
 			>
+			<FileConfiguration
+				Name="Debug|x64"
+				>
+				<Tool
+					Name="VCCLCompilerTool"
+					AdditionalOptions="/bigobj"
+				/>
+			</FileConfiguration>
 		</File>
 		<File
 			RelativePath="..\Source\DocxFormat\IFileContainer.h"

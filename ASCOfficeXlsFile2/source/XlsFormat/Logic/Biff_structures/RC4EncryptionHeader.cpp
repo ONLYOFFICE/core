@@ -54,9 +54,10 @@ void RC4EncryptionHeader::store(XLS::CFRecord& record)
 void RC4EncryptionHeader::load(XLS::CFRecord& record)
 {
 	record >> EncryptionVersionInfo;
-	record.loadAnyData(Salt);
-	record.loadAnyData(EncryptedVerifier);
-	record.loadAnyData(EncryptedVerifierHash);
+	
+	record.loadAnyData(RC4Data.Salt);
+	record.loadAnyData(RC4Data.EncryptedVerifier);
+	record.loadAnyData(RC4Data.EncryptedVerifierHash);
 }
 
 

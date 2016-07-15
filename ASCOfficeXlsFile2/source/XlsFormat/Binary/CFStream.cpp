@@ -32,8 +32,6 @@
 
 #include "CFStream.h"
 #include "CFRecordType.h"
-//#include <Exception/CompoundFileFormatError.h>
-//#include <Exception/EndOfStreamReached.h>
 
 #include <boost/bind.hpp>
 
@@ -47,7 +45,7 @@ CFStream::CFStream(POLE::Stream* stream)
 {
 	if(NULL == stream)
 	{
-		return; // throw;EXCEPT::RT::CompoundFileFormatError("Wrong IStream pointer (NULL)");
+		return; // Wrong IStream pointer (NULL)
 	}
 	stream_ = stream;
 }
@@ -65,15 +63,14 @@ void CFStream::read(void* buf, const size_t size)
 {
 	if(NULL == buf || stream_ == NULL)
 	{
-		return;//throw;EXCEPT::RT::CompoundFileFormatError("Wrong buffer pointer (NULL)");
+		return;// Wrong buffer pointer (NULL)
 	} 
 	POLE::uint64 num_read = stream_->read((unsigned char*)buf, size);
 
 	if(num_read < size)
 	{
-		return;//throw; EXCEPT::RT::EndOfStreamReached(stream_->fullName(), num_read, size);
+		return;// EndOfStreamReached
 	}
-	// Tipa successful
 }
 
 

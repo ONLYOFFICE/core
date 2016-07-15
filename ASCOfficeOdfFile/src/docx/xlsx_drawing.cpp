@@ -36,12 +36,8 @@
 
 #include "../odf/datatypes/custom_shape_types_convert.h"
 
-
 namespace cpdoccore {
-
 namespace oox {
-
-
 
 namespace {
 
@@ -248,19 +244,19 @@ void xlsx_serialize_chart(std::wostream & strm, _xlsx_drawing & val)
 }
 void xlsx_serialize_object(std::wostream & strm, _xlsx_drawing & val)
 {
-	if (val.type == mediaitems::typeShape)
+	if (val.type == typeShape)
 	{
 		xlsx_serialize_shape(strm, val);
 	}
-	else if (val.type == mediaitems::typeImage)
+	else if (val.type == typeImage)
 	{
 		xlsx_serialize_image(strm, val);
 	}
-	else if (val.type == mediaitems::typeChart)
+	else if (val.type == typeChart)
 	{
 		xlsx_serialize_chart(strm, val);
 	}
-	else if (val.type == mediaitems::typeGroup)
+	else if (val.type == typeGroupShape)
 	{
 		xlsx_serialize_group(strm, val);
 	}

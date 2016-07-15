@@ -53,8 +53,10 @@ public:
 	{
 	}
 
-    HRESULT LoadFromFile(std::wstring sSrcFileName, std::wstring sDstFileName, ProgressCallback *ffCallBack = NULL);
-    HRESULT SaveToFile(std::wstring sDstFileName, std::wstring sSrcFileName, ProgressCallback *ffCallBack = NULL);
+	std::wstring m_sTempFolder;
+
+    HRESULT LoadFromFile(const std::wstring & sSrcFileName, const std::wstring & sDstFileName, const std::wstring & password, ProgressCallback *ffCallBack = NULL);
+    HRESULT SaveToFile(const std::wstring &  sDstFileName, const std::wstring &  sSrcFileName, ProgressCallback *ffCallBack = NULL);
 
 };
 

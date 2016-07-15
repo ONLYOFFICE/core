@@ -30,9 +30,13 @@
  *
  */
 
-
 #include "Converter.h"
+
 #include "TextboxMapping.h"
+#include "TableMapping.h"
+#include "FooterMapping.h"
+#include "HeaderMapping.h"
+#include "MainDocumentMapping.h"
 
 namespace DocFileFormat
 {

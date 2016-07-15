@@ -64,11 +64,11 @@ namespace DocFileFormat
 
 		if ( this->fSimpleList )
 		{
-			this->rglvl = new vector<ListLevel*>( 1 );
+			this->rglvl = new std::vector<ListLevel*>( 1 );
 		}
 		else
 		{
-			this->rglvl = new vector<ListLevel*>( 9 );
+			this->rglvl = new std::vector<ListLevel*>( 9 );
 		}
 
 		this->fRestartHdn = FormatUtils::BitmaskToBool( flag, 0x02 );

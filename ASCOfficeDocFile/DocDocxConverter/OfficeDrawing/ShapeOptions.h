@@ -587,8 +587,8 @@ namespace DocFileFormat
 		static const unsigned short TYPE_CODE_0xF121 = 0xF121;
 		static const unsigned short TYPE_CODE_0xF122 = 0xF122;
 
-		vector<OptionEntry> Options;
-		map<PropertyId, OptionEntry> OptionsByID;
+		std::vector<OptionEntry>			Options;
+		std::map<PropertyId, OptionEntry>	OptionsByID;
 
 		ShapeOptions() : Record()
 		{
@@ -596,7 +596,7 @@ namespace DocFileFormat
 
 		virtual ~ShapeOptions()
 		{
-			for (vector<OptionEntry>::iterator iter = Options.begin(); iter != Options.end(); ++iter)
+			for (std::vector<OptionEntry>::iterator iter = Options.begin(); iter != Options.end(); ++iter)
 				RELEASEARRAYOBJECTS( iter->opComplex );
 		}
 
@@ -639,7 +639,7 @@ namespace DocFileFormat
 					Options[i].opComplex = Reader->ReadBytes( read_size, true );
 				}
 
-				OptionsByID.insert(pair<PropertyId, OptionEntry>(Options[i].pid, Options[i]));
+				OptionsByID.insert(std::pair<PropertyId, OptionEntry>(Options[i].pid, Options[i]));
 			}
 
             Reader->Seek(( pos + size ), 0/*STREAM_SEEK_SET*/);

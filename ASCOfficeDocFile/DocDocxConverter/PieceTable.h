@@ -52,13 +52,14 @@ namespace DocFileFormat
 	public:
 		~PieceTable();
 		// Parses the pice table and creates a list of PieceDescriptors.
-		PieceTable(FileInformationBlock* fib, POLE::Stream* tableStream);
+		PieceTable(FileInformationBlock* fib, POLE::Stream* tableStream, POLE::Stream* wordStream);
+		
 		std::vector<wchar_t>* GetAllEncodingText(POLE::Stream* wordStream);
 		std::vector<wchar_t>* GetEncodingChars(int fcStart, int fcEnd, POLE::Stream* wordStream);
 		std::vector<wchar_t>* GetChars (int fcStart, int fcEnd, int cp, POLE::Stream* word);
 
 	private:
-		bool ReadSymbolsBuffer(int pos, int size, ASCDocFormatUtils::Encoding encoding, POLE::Stream* word, std::vector<wchar_t>* encodingChars);
+		bool ReadSymbolsBuffer(int pos, int size, int coding, POLE::Stream* word, std::vector<wchar_t>* encodingChars);
 
 	public:
 

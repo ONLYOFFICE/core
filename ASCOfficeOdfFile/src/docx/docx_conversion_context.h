@@ -510,7 +510,7 @@ public:
     hyperlinks::_ref	last_hyperlink	();
     void				dump_hyperlinks	(rels & Rels, hyperlinks::_type_place type);
 
-    std::wstring add_mediaitem(const std::wstring & uri, mediaitems::Type type, bool & isInternal, std::wstring & ref);
+    std::wstring add_mediaitem(const std::wstring & uri, RelsType type, bool & isInternal, std::wstring & ref);
     
 	void dump_mediaitems		(rels & Rels);
     void dump_headers_footers	(rels & Rels) const;
@@ -626,7 +626,7 @@ public:
 	void add_note_reference();
 
 	oox_chart_context & current_chart();
-    void start_chart(std::wstring const & name);
+    void start_chart(std::wstring name);
     void end_chart();
 
 	void start_comment()	{process_comment_ = true;}
@@ -645,6 +645,7 @@ public:
 	drop_cap_context & get_drop_cap_context(){return drop_cap_context_;}
 	
 	styles_map styles_map_;
+
 private:
     std::wstringstream document_xml_;
     std::wstringstream styles_xml_;
@@ -680,9 +681,7 @@ private:
     bool page_break_before_;
 	bool page_break_;
    
-	bool in_automatic_style_;
-    
-
+	bool in_automatic_style_; 
    
 	std::wstring text_list_style_name_;
     std::list<std::wstring> list_style_stack_;

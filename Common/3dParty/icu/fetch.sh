@@ -58,3 +58,19 @@ fi
 cp "./usr/local/lib/libicudata.so.55.1" "build/libicudata.so.55"
 cp "./usr/local/lib/libicuuc.so.55.1" "build/libicuuc.so.55"
 fi
+
+if [[ "$platform" == *"mac"* ]]
+then
+if [ -d "./icu" ]
+then
+echo "icu already extracted"
+else
+svn export http://source.icu-project.org/repos/icu/icu/tags/release-55-1 ./icu
+fi
+cd ./icu/source/
+./runConfigureICU MacOSX
+make
+cd ../../
+cp "./icu/source/lib/libicudata.55.1.dylib" "build/llibicudata.55.1.dylib"
+cp "./icu/source/lib/libicuuc.55.1.dylib" "build/libicuuc.55.1.dylib"
+fi

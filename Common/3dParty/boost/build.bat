@@ -6,32 +6,36 @@ if defined ProgramFiles(x86) (
 	SET platform=win_64
 )
 
-outputdir="%SCRIPTPATH%/boost_1_58_0/build/%platform%"
+SET outputdir=%SCRIPTPATH%boost_1_58_0\build\%platform%
 echo "%outputdir%"
 
-CD "%SCRIPTPATH%/boost_1_58_0"
-call .\bootstrap.bat --with-libraries=filesystem,system
+CD "%SCRIPTPATH%\boost_1_58_0"
+call .\bootstrap.bat
 
 SET folder=build/%platform%
 if exist "%folder%" (
 	RMDIR "%folder%" /S /Q
 )
 
-mkdir build
-mkdir  %folder%
-mkdir  %folder%/static
-mkdir  %folder%/static_fpic
-mkdir  %folder%/shared
+if exist "stage" (
+	RMDIR "stage" /S /Q
+)
 
-.\b2 --clean
-.\bjam link=static
+md build
+md  %folder%
+md  %folder%\static
+md  %folder%\static_fpic
+md  %folder%\shared
+
+.\b2.exe --clean
+.\bjam.exe link=static --with-filesystem --with-system
 XCOPY stage\lib\* "%folder%\static\"
 
-.\b2 --clean
-.\bjam link=static cxxflags=-fPIC
+.\b2.exe --clean
+.\bjam.exe link=static cxxflags=-fPIC --with-filesystem --with-system
 XCOPY stage\lib\* "%folder%\static_fpic\"
 
-.\b2 --clean
-.\bjam link=shared
+.\b2.exe --clean
+.\bjam.exe link=shared --with-filesystem --with-system
 XCOPY stage\lib\* "%folder%\shared\"
 

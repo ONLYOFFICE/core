@@ -31,6 +31,11 @@ if [ -d $folder ]; then
   rm -R $folder
 fi
 
+stage="stage"
+if [ -d $stage ]; then
+  rm -R $stage
+fi
+
 mkdir -p "$folder"
 mkdir -p "$folder/static"
 mkdir -p "$folder/static_fpic"

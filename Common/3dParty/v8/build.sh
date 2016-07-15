@@ -62,5 +62,5 @@ cp "./out/native/libicui18n.a" "./../$platform$arch/"
 cp "./out/native/libicuuc.a" "./../$platform$arch/"
 cp "./out/native/icudtl.dat" "./../$platform$arch/"
 
-cp "./third_party/icu/mac/icudtl_dat.S" "./$platform$arch/"
+cp "./third_party/icu/mac/icudtl_dat.S" "./../$platform$arch/"
 fi

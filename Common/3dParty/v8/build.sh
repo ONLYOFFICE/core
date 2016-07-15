@@ -52,15 +52,15 @@ if [[ "$platform" == *"mac"* ]]
 then
 CFLAGS="-fPIC" CXXFLAGS="-fPIC -stdlib=libc++" LDFLAGS="-stdlib=libc++"  make native
 
-cp "./out/native/libv8_base.a" "./$platform$arch/"
-cp "./out/native/libv8_libbase.a" "./$platform$arch/"
-cp "./out/native/libv8_libplatform.a" "./$platform$arch/"
-cp "./out/native/libv8_nosnapshot.a" "./$platform$arch/"
-cp "./out/native/libv8_external_snapshot.a" "./$platform$arch/"
+cp "./out/native/libv8_base.a" "./../$platform$arch/"
+cp "./out/native/libv8_libbase.a" "./../$platform$arch/"
+cp "./out/native/libv8_libplatform.a" "./../$platform$arch/"
+cp "./out/native/libv8_nosnapshot.a" "./../$platform$arch/"
+cp "./out/native/libv8_external_snapshot.a" "./../$platform$arch/"
 
-cp "./out/native/libicui18n.a" "./$platform$arch/"
-cp "./out/native/libicuuc.a" "./$platform$arch/"
-cp "./out/native/libicudata.a" "./$platform$arch/"
+cp "./out/native/libicui18n.a" "./../$platform$arch/"
+cp "./out/native/libicuuc.a" "./../$platform$arch/"
+cp "./out/native/icudlt.dat" "./../$platform$arch/"
 
 cp "./third_party/icu/mac/icudtl_dat.S" "./$platform$arch/"
 fi

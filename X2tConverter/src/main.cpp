@@ -141,8 +141,10 @@ int main(int argc, char *argv[])
 		if (argc >= 5) sArg4 = CA2T(argv [4]);
 		if (argc >= 6) sArg5 = CA2T(argv [5]);
 #endif
-		oInputParams.m_sFileFrom = new std::wstring(sArg1);
-		oInputParams.m_sFileTo = new std::wstring(sArg2);
+		oInputParams.m_sFileFrom	= new std::wstring(sArg1);
+		oInputParams.m_sFileTo		= new std::wstring(sArg2);
+		oInputParams.m_sPassword	= new std::wstring(L"password");
+		
 		// get conversion direction from 3rd argument
 		if (argc > 3)
 		{
@@ -163,11 +165,13 @@ int main(int argc, char *argv[])
 				conversion = TCD_AUTO;
 			 }
 		}
+		sPassword = *oInputParams.m_sPassword;
 	}
 
     std::wstring sFileFrom	= *oInputParams.m_sFileFrom;
     std::wstring sFileTo	= *oInputParams.m_sFileTo;
-    int nFormatFrom = AVS_OFFICESTUDIO_FILE_UNKNOWN;
+   
+	int nFormatFrom = AVS_OFFICESTUDIO_FILE_UNKNOWN;
     if(NULL != oInputParams.m_nFormatFrom)
         nFormatFrom = *oInputParams.m_nFormatFrom;
     int nFormatTo = AVS_OFFICESTUDIO_FILE_UNKNOWN;

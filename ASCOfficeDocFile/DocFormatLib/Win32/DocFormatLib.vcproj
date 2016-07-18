@@ -337,7 +337,7 @@
 			</Filter>
 		</Filter>
 		<Filter
-			Name="DOC_2_DOCX"
+			Name="Doc_2_Docx"
 			>
 			<File
 				RelativePath="..\..\DocDocxConverter\AnnotationOwnerList.h"

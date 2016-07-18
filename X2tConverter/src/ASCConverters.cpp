@@ -58,6 +58,7 @@
 #include "../../HtmlRenderer/include/HTMLRenderer3.h"
 #include "../../HtmlFile/HtmlFile.h"
 #include "../../ASCOfficeXlsFile2/source/XlsXlsxConverter/ConvertXls2Xlsx.h"
+#include "../../OfficeCryptReader/source/ECMACryptReader.h"
 
 #include <iostream>
 #include <fstream>
@@ -1265,7 +1266,8 @@ namespace NExtractTools
         std::wstring sResultDecryptDir = sTemp	+ FILE_SEPARATOR_STR + _T("crypt_unpacked");
         FileSystem::Directory::CreateDirectory(sResultDecryptDir);
 
-
+		CryptReader cryptReader;
+		cryptReader.DecryptFile(sFrom, sResultDecryptDir, *params.m_sPassword);
 
 		//convert from format (detect before) to temp binary folder
 

@@ -491,6 +491,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
+							AdditionalOptions="/bigobj"
 							PrecompiledHeaderThrough="./StdAfx.h"
 						/>
 					</FileConfiguration>

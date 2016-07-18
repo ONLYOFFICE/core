@@ -1266,12 +1266,12 @@ namespace NExtractTools
         std::wstring sResultDecryptDir = sTemp	+ FILE_SEPARATOR_STR + _T("crypt_unpacked");
         FileSystem::Directory::CreateDirectory(sResultDecryptDir);
 
-		CryptReader cryptReader;
-		cryptReader.DecryptFile(sFrom, sResultDecryptDir, *params.m_sPassword);
+		ECMACryptReader cryptReader;
+		if (cryptReader.DecryptOfficeFile(sFrom, sResultDecryptDir, *params.m_sPassword) == false)
+			return AVS_FILEUTILS_ERROR_CONVERT_PASSWORD;
 
 		//convert from format (detect before) to temp binary folder
-
-		return AVS_FILEUTILS_ERROR_CONVERT_PASSWORD;
+		return 0;
 	}
 
    //html

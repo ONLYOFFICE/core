@@ -33,3 +33,7 @@ ASCOfficeXlsFile2/win32/_ASCOfficeXlsFile2_i.c
 ASCOfficeXlsFile2/win32/_ASCOfficeXlsFile2_p.c
 ASCOfficeXlsFile2/win32/dlldata.c
 OfficeUtils/win32/OfficeUtilsLib/OfficeUtilsLib/ReadMe.txt
+*.obj
+*.pdb
+*.tlb
+*.idb

@@ -34,11 +34,11 @@
 #include <string>
 #include <vector>
 
-class CryptReader
+class ECMACryptReader
 {
 public:
 
-	void DecryptFile(std::wstring file_name, std::wstring folder_out, std::wstring password);
+	bool DecryptOfficeFile(std::wstring file_name, std::wstring folder_out, std::wstring password);
 
 	struct _keyEncryptor
 	{
@@ -57,21 +57,21 @@ public:
 		std::string encryptedVerifierHashValue;
 		std::string encryptedKeyValue;
 	};
-	//struct _refComponent
-	//{
-	//	int				type;
-	//	std::wstring	ref;
-	//};
-	//struct _mapEntry
-	//{
-	//	std::vector<_refComponent>	refComponents;
-	//	std::wstring				dataSpaceName;
-	//};
+	struct _refComponent
+	{
+		int				type;
+		std::wstring	ref;
+	};
+	struct _mapEntry
+	{
+		std::vector<_refComponent>	refComponents;
+		std::wstring				dataSpaceName;
+	};
 private:
 
-	bool ReadEncryptionInfo(std::string & xmlString);
+	bool ReadEncryptionInfo(const std::string & xmlString);
 
-	//std::vector<_mapEntry>		mapEntries;
+	std::vector<_mapEntry>		mapEntries;
 //--------------------------------------------------------------
 	_keyEncryptor				keyData;
 	std::string					encryptedHmacKey;

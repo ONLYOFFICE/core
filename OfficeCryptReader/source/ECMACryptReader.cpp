@@ -34,7 +34,7 @@
 
 #include "../../Common/3dParty/pole/pole.h"
 #include "../../Common/DocxFormat/Source/Base/Types_32.h"
-#include "../../DesktopEditor/xml/include/xmlutils.h"
+#include "../../Common/DocxFormat/Source/XML/xmlutils.h"
 
 #include "../../OfficeCryptTransform/CryptTransform.h"
 
@@ -86,7 +86,7 @@ std::wstring ReadUnicodeLP(POLE::Stream *pStream)
 	return res;
 
 }
-void ReadMapEntry(POLE::Stream *pStream, CryptReader::_mapEntry & m)
+void ReadMapEntry(POLE::Stream *pStream, ECMACryptReader::_mapEntry & m)
 {
 	if (!pStream) return;
 
@@ -98,7 +98,7 @@ void ReadMapEntry(POLE::Stream *pStream, CryptReader::_mapEntry & m)
 
 	for (int i = 0 ; i < refCount; i++)
 	{
-		CryptReader::_refComponent r;
+		ECMACryptReader::_refComponent r;
 		pStream->read((unsigned char*)&r.type, 4); 
 
 		r.ref = ReadUnicodeLP(pStream);
@@ -107,7 +107,7 @@ void ReadMapEntry(POLE::Stream *pStream, CryptReader::_mapEntry & m)
 	m.dataSpaceName= ReadUnicodeLP(pStream);
 }
 //--------------------------------------------------------------
-bool CryptReader::DecryptFile(std::wstring file_name, std::wstring folder_out, std::wstring password)
+bool ECMACryptReader::DecryptOfficeFile(std::wstring file_name, std::wstring folder_out, std::wstring password)
 {
 	POLE::Storage *pStorage = new POLE::Storage(file_name.c_str());
 	
@@ -147,15 +147,16 @@ bool CryptReader::DecryptFile(std::wstring file_name, std::wstring folder_out, s
 			return false;
 		}
 	}
-	Decryptor decryptor(1);
 
-	decryptor.SetCryptData(keyData.saltValue, keyData.encryptedVerifierHashInput, keyData.encryptedVerifierHashValue);
+	//Decryptor decryptor(1);
 
-	if (!decryptor.SetPassword(password)) 
-	{
-		delete pStorage;
-		return false;
-	}
+	//decryptor.SetCryptData(keyData.saltValue, keyData.encryptedVerifierHashInput, keyData.encryptedVerifierHashValue);
+
+	//if (!decryptor.SetPassword(password)) 
+	//{
+	//	delete pStorage;
+	//	return false;
+	//}
 
 	//pStream = new POLE::Stream(pStorage, "DataSpaces/DataSpaceMap"); // савершенно ненужная инфа
 	//if (pStream)
@@ -186,6 +187,7 @@ bool CryptReader::DecryptFile(std::wstring file_name, std::wstring folder_out, s
 
 		while (true)
 		{
+			break;
 		}
 
 		delete pStream;
@@ -198,9 +200,9 @@ bool CryptReader::DecryptFile(std::wstring file_name, std::wstring folder_out, s
 	return result;
 }
 
-bool CryptReader::ReadEncryptionInfo(std::string & xml_string)
+bool ECMACryptReader::ReadEncryptionInfo(const std::string & xml_string)
 {
-	XmlUtils1::CXmlLiteReader xmlReader;
+	XmlUtils::CXmlLiteReader xmlReader;
 
 	if (!xmlReader.FromStringA(xml_string))
 		return false;
@@ -256,7 +258,7 @@ bool CryptReader::ReadEncryptionInfo(std::string & xml_string)
 				}
 			}
 		}
-		return true;
 	}
+	return true;
 }
 

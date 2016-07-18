@@ -46,7 +46,7 @@ public:
 
 	bool SetPassword(std::wstring password);
 
-	void SetCryptData(std::string salt, std::string verifier, verifier_hash);
+	void SetCryptData(std::string salt, std::string verifier, std::string verifier_hash);
 	
 private:
 

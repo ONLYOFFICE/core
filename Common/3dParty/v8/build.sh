@@ -33,7 +33,7 @@ cd "$SCRIPTPATH/v8"
 
 if [[ "$platform" == *"linux"* ]]
 then
-CFLAGS="-fPIC" CXXFLAGS="-fPIC" make native
+CFLAGS="-fPIC" CXXFLAGS="-fPIC" make native GYPFLAGS=-Dclang=0
 
 cp "./out/native/obj.target/tools/gyp/libv8_base.a" "./../$platform$arch/"
 cp "./out/native/obj.target/tools/gyp/libv8_libbase.a" "./../$platform$arch/"
@@ -46,6 +46,8 @@ cp "./out/native/obj.target/third_party/icu/libicuuc.a" "./../$platform$arch/"
 cp "./out/native/obj.target/third_party/icu/libicudata.a" "./../$platform$arch/"
 
 cp "./third_party/icu/linux/icudtl_dat.S" "./../$platform$arch/"
+
+cp "./third_party/icu/source/data/in/icudtl.dat" "./../$platform$arch/"
 fi
 
 if [[ "$platform" == *"mac"* ]]

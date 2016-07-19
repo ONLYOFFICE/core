@@ -6,30 +6,47 @@ SET DEPOT_TOOLS_WIN_TOOLCHAIN=0
 SET GYP_MSVS_VERSION=2013
 
 echo "building x86... -------------------------------------------"
-call python v8\build\gyp_v8 -Dcomponent=shared_library
-
-cd "%SCRIPTPATH%v8\tools\gyp"
-call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\devenv.com" v8.sln /Rebuild "Release"
-cd "%SCRIPTPATH%"
 
 if exist "win_32" (
 	RMDIR "win_32" /S /Q
 )
 md win_32
-XCOPY "v8\build\Release\lib\*" "win_32\"
-XCOPY "v8\build\Release\icudt.dll" "win_32\icudt.dll"
+md win_32\debug
+md win_32\release
 
-echo "building x64... -------------------------------------------"
-
-call python v8\build\gyp_v8 -Dtarget_arch=x64 -Dcomponent=shared_library
+call python v8\build\gyp_v8
+call .\change_projects.bat
 
 cd "%SCRIPTPATH%v8\tools\gyp"
 call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\devenv.com" v8.sln /Rebuild "Release"
+call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\devenv.com" v8.sln /Rebuild "Debug"
 cd "%SCRIPTPATH%"
+
+XCOPY "v8\build\Release\lib\*" "win_32\release\"
+XCOPY "v8\build\Release\icudt.dll" "win_32\release\"
+
+XCOPY "v8\build\Debug\lib\*" "win_32\debug\"
+XCOPY "v8\build\Debug\icudt.dll" "win_32\debug\"
+
+echo "building x64... -------------------------------------------"
 
 if exist "win_64" (
 	RMDIR "win_64" /S /Q
 )
 md win_64
-XCOPY "v8\build\Release\lib\*" "win_64\"
-XCOPY "v8\build\Release\icudt.dll" "win_64\icudt.dll"
+md win_64\debug
+md win_64\release
+
+call python v8\build\gyp_v8 -Dtarget_arch=x64
+call .\change_projects.bat
+
+cd "%SCRIPTPATH%v8\tools\gyp"
+call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\devenv.com" v8.sln /Rebuild "Release"
+call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\devenv.com" v8.sln /Rebuild "Debug"
+cd "%SCRIPTPATH%"
+
+XCOPY "v8\build\Release\lib\*" "win_64\release\"
+XCOPY "v8\build\Release\icudt.dll" "win_64\release\"
+
+XCOPY "v8\build\Debug\lib\*" "win_64\debug\"
+XCOPY "v8\build\Debug\icudt.dll" "win_64\debug\"

@@ -18,8 +18,13 @@ call python v8\build\gyp_v8
 call .\change_projects.bat
 
 cd "%SCRIPTPATH%v8\tools\gyp"
-call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\devenv.com" v8.sln /Rebuild "Release"
-call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\devenv.com" v8.sln /Rebuild "Debug"
+if defined ProgramFiles(x86) (
+	call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\devenv.com" v8.sln /Rebuild "Release"
+	call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\devenv.com" v8.sln /Rebuild "Debug"
+) else (
+	call "C:\Program Files\Microsoft Visual Studio 12.0\Common7\IDE\devenv.com" v8.sln /Rebuild "Release"
+	call "C:\Program Files\Microsoft Visual Studio 12.0\Common7\IDE\devenv.com" v8.sln /Rebuild "Debug"
+)
 cd "%SCRIPTPATH%"
 
 XCOPY "v8\build\Release\lib\*" "win_32\release\"
@@ -41,8 +46,13 @@ call python v8\build\gyp_v8 -Dtarget_arch=x64
 call .\change_projects.bat
 
 cd "%SCRIPTPATH%v8\tools\gyp"
-call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\devenv.com" v8.sln /Rebuild "Release"
-call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\devenv.com" v8.sln /Rebuild "Debug"
+if defined ProgramFiles(x86) (
+	call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\devenv.com" v8.sln /Rebuild "Release"
+	call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\devenv.com" v8.sln /Rebuild "Debug"
+) else (
+	call "C:\Program Files\Microsoft Visual Studio 12.0\Common7\IDE\devenv.com" v8.sln /Rebuild "Release"
+	call "C:\Program Files\Microsoft Visual Studio 12.0\Common7\IDE\devenv.com" v8.sln /Rebuild "Debug"
+)
 cd "%SCRIPTPATH%"
 
 XCOPY "v8\build\Release\lib\*" "win_64\release\"

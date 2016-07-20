@@ -1,128 +1,32 @@
-#-------------------------------------------------
-#
-# Project created by QtCreator 2015-05-18T16:30:42
-#
-#-------------------------------------------------
-
 QT       -= core gui
 
 VERSION = 1.0.0.3
 TARGET = DjVuFile
 TEMPLATE = lib
 
-#CONFIG += staticlib
 CONFIG += shared
+CONFIG += plugin
 
-############### destination path ###############
-DESTINATION_SDK_PATH = $$PWD/../build/lib
+CONFIG += core_static_link_libstd
 
-# WINDOWS
-win32:contains(QMAKE_TARGET.arch, x86_64):{
-CONFIG(debug, debug|release) {
-    DESTDIR = $$DESTINATION_SDK_PATH/win_64/DEBUG
-} else {
-    DESTDIR = $$DESTINATION_SDK_PATH/win_64
-}
-}
-win32:!contains(QMAKE_TARGET.arch, x86_64):{
-CONFIG(debug, debug|release) {
-    DESTDIR = $$DESTINATION_SDK_PATH/win_32/DEBUG
-} else {
-    DESTDIR = $$DESTINATION_SDK_PATH/win_32
-}
-}
+DEFINES += DJVU_USE_DYNAMIC_LIBRARY
 
-linux-g++:contains(QMAKE_HOST.arch, x86_64):{
-    DESTDIR = $$DESTINATION_SDK_PATH/linux_64
-}
-linux-g++:!contains(QMAKE_HOST.arch, x86_64):{
-    DESTDIR = $$DESTINATION_SDK_PATH/linux_32
-}
+CORE_ROOT_DIR = $$PWD/..
+PWD_ROOT_DIR = $$PWD
+include(../Common/base.pri)
 
-mac {
-    DESTDIR = $$DESTINATION_SDK_PATH/mac_64
-}
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lPdfWriter
 
-################################################
+CONFIG += build_all_zlib build_zlib_as_sources
+include(../OfficeUtils/OfficeUtils.pri)
 
-LIBS_DESTDIR_PATH = $$DESTDIR
+CONFIG += build_cximage_zlib_disable
+include(../DesktopEditor/Qt_build/graphics/project/graphics.pri)
+include(../DesktopEditor/xml/build/qt/libxml2.pri)
 
-# теперь всегда с libstd
-linux-g++ | linux-g++-64 | linux-g++-32 {
-    CONFIG += static_link_libstd
-}
-static_link_libstd {
-    QMAKE_LFLAGS += -static-libstdc++ -static-libgcc
-#    DESTDIR_POSTFIX = _static_stdlib
-#    DESTDIR = $$DESTDIR$$DESTDIR_POSTFIX
-    message(static_link_libstd)
-}
-
-############# dynamic dependencies #############
-shared {
-    DEFINES += DJVU_USE_DYNAMIC_LIBRARY
-
-    LIBS += -L$$LIBS_DESTDIR_PATH -lPdfWriter
-
-    CONFIG += build_all_zlib build_zlib_as_sources
-    include(../OfficeUtils/OfficeUtils.pri)
-
-    CONFIG += build_cximage_zlib_disable
-    LIB_GRAPHICS_PRI_PATH = ../DesktopEditor
-    include(../DesktopEditor/Qt_build/graphics/project/graphics.pri)
-
-    LIB_XML_PRI_PATH = ../DesktopEditor/xml
-    include(../DesktopEditor/xml/build/qt/libxml2.pri)
-
-    message(dynamic)
-
-    win32 {
-        LIBS += -lgdi32 \
-                -ladvapi32 \
-                -luser32 \
-                -lshell32
-
-        TARGET_EXT = .dll
-    }
-
-    linux-g++ | linux-g++-64 | linux-g++-32 {
-        CONFIG += plugin
-        TARGET_EXT = .so
-
-        QMAKE_CXXFLAGS += -fvisibility=hidden
-        QMAKE_CFLAGS += -fvisibility=hidden
-    }
-
-    mac {
-        CONFIG += plugin
-
-        QMAKE_CXXFLAGS += -fvisibility=hidden
-        QMAKE_CFLAGS += -fvisibility=hidden
-    }
-} else {
-    LIBS += -L$$LIBS_DESTDIR_PATH -llibxml
-}
-################################################
-
-CONFIG += c++11
-
-DEFINES += \
-    _QT \
-    FT2_BUILD_LIBRARY \
-    EXCLUDE_JPG_SUPPORT \
-    MNG_SUPPORT_DISPLAY \
-    MNG_SUPPORT_READ \
-    MNG_SUPPORT_WRITE \
-    MNG_ACCESS_CHUNKS \
-    MNG_STORE_CHUNKS\
-    MNG_ERROR_TELLTALE
-
-linux-g++ | linux-g++-64 | linux-g++-32 {
+core_linux {
     DEFINES += \
     HAVE_UNISTD_H \
-    LINUX \
-    _LINUX \
-    _LINUX_QT \
     HAVE_MBSTATE_T \
     GCONTAINER_NO_MEMBER_TEMPLATES="1" \
     HAS_WCHAR \
@@ -131,38 +35,23 @@ linux-g++ | linux-g++-64 | linux-g++-32 {
     HAVE_STDINCLUDES
 }
 
-mac {
+core_mac {
     DEFINES += \
-    HAVE_UNISTD_H \
-    LINUX \
-    _LINUX \
-    _LINUX_QT \
+    HAVE_UNISTD_H \    
     HAVE_MBSTATE_T \
     GCONTAINER_NO_MEMBER_TEMPLATES="1" \
     HAS_WCHAR \
     HAVE_WCHAR_H \
     UNIX \
-    HAVE_STDINCLUDES \
-    _MAC \
-    MAC
-
-    CONFIG += c++11
-
-    message(mac)
+    HAVE_STDINCLUDES
 }
 
-win32 {
-    DEFINES += \
-    JAS_WIN_MSVC_BUILD \
-    WIN32 \
-    NOMINMAX
-
-    DEFINES -= UNICODE
+core_windows {
+LIBS += -lgdi32 \
+        -ladvapi32 \
+        -luser32 \
+        -lshell32
 }
-
-INCLUDEPATH += \
-    ../DesktopEditor/agg-2.4/include \
-    ../DesktopEditor/freetype-2.5.2/include
 
 SOURCES += DjVu.cpp \
     DjVuFileImplementation.cpp \
@@ -274,8 +163,3 @@ HEADERS +=     DjVu.h \
     libdjvu/XMLParser.h \
     libdjvu/XMLTags.h \
     libdjvu/ZPCodec.h
-
-unix {
-    target.path = /usr/lib
-    INSTALLS += target
-}

@@ -15,6 +15,7 @@ Common/3dParty/v8/win_32
 Common/3dParty/v8/linux_64
 Common/3dParty/v8/linux_32
 Common/3dParty/v8/mac_64
+**/core_build
 **/Release
 **/Debug
 *.user

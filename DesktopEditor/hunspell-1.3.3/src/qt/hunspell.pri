@@ -4,20 +4,6 @@ building_hunspell {
     DEFINES += BUILDING_LIBHUNSPELL
 }
 
-linux-g++ | linux-g++-64 | linux-g++-32 {
-    message(linux)
-}
-
-mac {
-    message(mac)
-}
-
-win32 {
-DEFINES += WIN32
-DEFINES += _WIN32
-    message(windows)
-}
-
 INCLUDEPATH += \
     $$PWD/../hunspell \
     $$PWD/../win_api

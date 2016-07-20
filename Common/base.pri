@@ -127,3 +127,6 @@ core_debug {
 plugin {
     DESTDIR = $$CORE_BUILDS_LIBRARIES_PATH
 }
+staticlib {
+    DESTDIR = $$CORE_BUILDS_LIBRARIES_PATH
+}

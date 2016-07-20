@@ -18,5 +18,3 @@ if exist "%SCRIPTPATH%boost_1_58_0/" (
 ) else (
     call %UNSIP_PROGRAMM% x "%SCRIPTPATH%/boost_1_58_0.7z" -o"%SCRIPTPATH%/"
 )
-
-pause

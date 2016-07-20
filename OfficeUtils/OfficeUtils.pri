@@ -1,32 +1,12 @@
-CONFIG += c++11
-win32 {
-    QMAKE_CXXFLAGS_RELEASE -= -Zc:strictStrings
-} else {
+core_linux {
     QMAKE_CXXFLAGS += -Wall -Wno-ignored-qualifiers
 }
-
-SOURCES_UTILS = $$PWD/src
-
-#################### WINDOWS #####################
-win32 {
-DEFINES += WIN32
+core_mac {
+    QMAKE_CXXFLAGS += -Wall -Wno-ignored-qualifiers
+    DEFINES += unix
 }
-#################### WINDOWS #####################
 
-#################### LINUX ########################
-linux-g++ | linux-g++-64 | linux-g++-32 {
-    DEFINES += \
-        LINUX \
-        _LINUX \
-        _LINUX_QT
-}
-mac {
-    DEFINES += \
-        MAC \
-        _MAC \
-        unix
-}
-#################### LINUX ########################
+SOURCES_UTILS = $$CORE_ROOT_DIR/OfficeUtils/src
 
 build_zlib_as_sources {
     DEFINES += BUILD_ZLIB_AS_SOURCES

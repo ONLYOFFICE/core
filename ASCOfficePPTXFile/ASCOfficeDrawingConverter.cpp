@@ -3459,6 +3459,7 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem& oElem, XmlUtils
 		pSolid->Color.Color = new PPTX::Logic::SrgbClr();
 		pSolid->Color.Color->SetRGB(color.R, color.G, color.B);
 
+		pShape->spPr.Fill.m_type = PPTX::Logic::UniFill::solidFill;
         pShape->spPr.Fill.Fill = pSolid;
 	}
     else if (!pPPTShape->IsWordArt())
@@ -3469,6 +3470,7 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem& oElem, XmlUtils
         pSolid->Color.Color = new PPTX::Logic::SrgbClr();
         pSolid->Color.Color->SetRGB(R, G, B);
 
+		pShape->spPr.Fill.m_type = PPTX::Logic::UniFill::solidFill;
         pShape->spPr.Fill.Fill = pSolid;
     }
 
@@ -3480,6 +3482,8 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem& oElem, XmlUtils
 		{
 			PPTX::Logic::NoFill* pNoFill = new PPTX::Logic::NoFill();
 			pNoFill->m_namespace = _T("a");
+
+			pShape->spPr.Fill.m_type = PPTX::Logic::UniFill::noFill;
 			pShape->spPr.Fill.Fill = pNoFill;
 		}
 	}
@@ -3487,6 +3491,8 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem& oElem, XmlUtils
 	{
 		PPTX::Logic::NoFill* pNoFill = new PPTX::Logic::NoFill();
 		pNoFill->m_namespace = _T("a");
+
+		pShape->spPr.Fill.m_type = PPTX::Logic::UniFill::noFill;
 		pShape->spPr.Fill.Fill = pNoFill;
 	}
 
@@ -3526,6 +3532,7 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem& oElem, XmlUtils
 			pSolid->Color.Color = new PPTX::Logic::SrgbClr();
 			pSolid->Color.Color->SetRGB(color.R, color.G, color.B);
 
+			pShape->spPr.Fill.m_type = PPTX::Logic::UniFill::solidFill;
 			pShape->spPr.Fill.Fill = pSolid;
 
 			if (!sFillColor.is_init()) 
@@ -3547,6 +3554,7 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem& oElem, XmlUtils
 				pBlipFill->tile = new PPTX::Logic::Tile();				
 			}
 
+			pShape->spPr.Fill.m_type = PPTX::Logic::UniFill::blipFill;
 			pShape->spPr.Fill.Fill = pBlipFill;
 		}		
 		nullable_string sRotate;
@@ -3628,6 +3636,7 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem& oElem, XmlUtils
 				if (*sRotate == L"r") pGradFill->lin->ang = 180 * 60000;
 			}
 
+			pShape->spPr.Fill.m_type = PPTX::Logic::UniFill::gradFill;
 			pShape->spPr.Fill.Fill = pGradFill;
 		}	
 
@@ -3690,6 +3699,7 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem& oElem, XmlUtils
 
 				}
 
+				pShape->spPr.Fill.m_type = PPTX::Logic::UniFill::blipFill;
 				pShape->spPr.Fill.Fill = pBlipFill;
 
 				CString strCropT = oNodeFillID.GetAttribute(_T("croptop"));
@@ -3738,6 +3748,8 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem& oElem, XmlUtils
 		{
 			PPTX::Logic::NoFill* pNoFill = new PPTX::Logic::NoFill();
 			pNoFill->m_namespace = _T("a");
+
+			pShape->spPr.Fill.m_type = PPTX::Logic::UniFill::noFill;
 			pShape->spPr.Fill.Fill = pNoFill;
 		}
 		else
@@ -3746,6 +3758,8 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem& oElem, XmlUtils
 			pSolid->m_namespace = _T("a");
 			pSolid->Color.Color = new PPTX::Logic::SrgbClr();
 			pSolid->Color.Color->SetRGB(0xFF, 0xFF, 0xFF);
+
+			pShape->spPr.Fill.m_type = PPTX::Logic::UniFill::solidFill;
 			pShape->spPr.Fill.Fill = pSolid;
 
 			if (sOpacity.is_init())
@@ -3778,6 +3792,8 @@ void CDrawingConverter::CheckPenShape(PPTX::Logic::SpTreeElem& oElem, XmlUtils::
 		pSolid->m_namespace = _T("a");
 		pSolid->Color.Color = new PPTX::Logic::SrgbClr();
 		pSolid->Color.Color->SetRGB(color.R, color.G, color.B);
+
+		pShape->spPr.ln->Fill.m_type = PPTX::Logic::UniFill::solidFill;
 		pShape->spPr.ln->Fill.Fill = pSolid;
 	}
 
@@ -3809,6 +3825,7 @@ void CDrawingConverter::CheckPenShape(PPTX::Logic::SpTreeElem& oElem, XmlUtils::
 			if (!pShape->spPr.ln.is_init())
 				pShape->spPr.ln = new PPTX::Logic::Ln();
 
+			pShape->spPr.ln->Fill.m_type = PPTX::Logic::UniFill::noFill;
 			pShape->spPr.ln->Fill.Fill = new PPTX::Logic::NoFill();
 		}
 	}
@@ -3817,6 +3834,7 @@ void CDrawingConverter::CheckPenShape(PPTX::Logic::SpTreeElem& oElem, XmlUtils::
 		if (!pShape->spPr.ln.is_init())
 			pShape->spPr.ln = new PPTX::Logic::Ln();
 
+		pShape->spPr.ln->Fill.m_type = PPTX::Logic::UniFill::noFill;
 		pShape->spPr.ln->Fill.Fill = new PPTX::Logic::NoFill();
 	}
 
@@ -3837,6 +3855,7 @@ void CDrawingConverter::CheckPenShape(PPTX::Logic::SpTreeElem& oElem, XmlUtils::
 			pSolid->Color.Color = new PPTX::Logic::SrgbClr();
 			pSolid->Color.Color->SetRGB(color.R, color.G, color.B);
 
+			pShape->spPr.ln->Fill.m_type = PPTX::Logic::UniFill::solidFill;
 			pShape->spPr.ln->Fill.Fill = pSolid;
 		}
 
@@ -4048,6 +4067,8 @@ void CDrawingConverter::CheckPenShape(PPTX::Logic::SpTreeElem& oElem, XmlUtils::
 			pSolid->m_namespace = _T("a");
 			pSolid->Color.Color = new PPTX::Logic::SrgbClr();
 			pSolid->Color.Color->SetRGB(0, 0, 0);
+
+			pShape->spPr.ln->Fill.m_type = PPTX::Logic::UniFill::solidFill;
 			pShape->spPr.ln->Fill.Fill = pSolid;
 		}
 	}

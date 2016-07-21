@@ -959,40 +959,43 @@ void text_format_properties_content::docx_convert(oox::docx_conversion_context &
         std::wstring w_eastAsia;
         std::wstring w_hAnsi;
         std::wstring w_cs;
-        std::wstring w_ascii = w_hAnsi = (style_font_name_ ? *style_font_name_: L"");
+        std::wstring w_ascii = w_hAnsi = w_cs = (style_font_name_ ? *style_font_name_: L"");
 
-        if (style_font_name_asian_)
-            w_eastAsia = *style_font_name_asian_;                     
-
-        if (style_font_name_complex_)
-            w_cs = *style_font_name_complex_;
-
-        fonts_container & fonts = Context.root()->odf_context().fontContainer();
-        
-        font_instance * font = fonts.font_by_style_name(w_ascii);
-        if (font)
-            w_ascii = font->name();
-    
-        font = fonts.font_by_style_name(w_hAnsi);
-        if (font)
-            w_hAnsi = font->name();
-
-		if (w_ascii.empty() && fo_font_family_)
+		if ( !Context.process_math_formula_ )
 		{
-			w_ascii = fo_font_family_.get();
-		}
-		if (w_hAnsi.empty() && fo_font_family_)
-		{
-			w_hAnsi = fo_font_family_.get();
-		}
+			if (style_font_name_asian_)
+				w_eastAsia = *style_font_name_asian_;                     
 
-        font = fonts.font_by_style_name(w_eastAsia);
-        if (font)
-            w_eastAsia = font->name();
+			if (style_font_name_complex_)
+				w_cs = *style_font_name_complex_;
 
-        font = fonts.font_by_style_name(w_cs);
-        if (font)
-            w_cs = font->name();
+			fonts_container & fonts = Context.root()->odf_context().fontContainer();
+	        
+			font_instance * font = fonts.font_by_style_name(w_ascii);
+			if (font)
+				w_ascii = font->name();
+	    
+			font = fonts.font_by_style_name(w_hAnsi);
+			if (font)
+				w_hAnsi = font->name();
+
+			if (w_ascii.empty() && fo_font_family_)
+			{
+				w_ascii = fo_font_family_.get();
+			}
+			if (w_hAnsi.empty() && fo_font_family_)
+			{
+				w_hAnsi = fo_font_family_.get();
+			}
+
+			font = fonts.font_by_style_name(w_eastAsia);
+			if (font)
+				w_eastAsia = font->name();
+
+			font = fonts.font_by_style_name(w_cs);
+			if (font)
+				w_cs = font->name();
+		}
 
         _rPr << L"<w:rFonts ";
         if (!w_ascii.empty())

@@ -292,12 +292,14 @@ void presentation_masters_instance::add_layout_to(const std::wstring & master_na
 	}
 }
 
-const std::wstring styles_container::master_page_name_by_name(const std::wstring & StyleName) const
+const _CP_OPT(std::wstring) styles_container::master_page_name_by_name(const std::wstring & StyleName) const
 {
+	_CP_OPT(std::wstring) master_page;
+
     map_wstring_wstring::const_iterator res = master_page_name_.find(StyleName);
     if (res != master_page_name_.end())
-        return res->second;
-    return L"";
+        master_page =  res->second;
+    return master_page;
 }
 
 style_instance * styles_container::style_default_by_type(style_family::type Type) const

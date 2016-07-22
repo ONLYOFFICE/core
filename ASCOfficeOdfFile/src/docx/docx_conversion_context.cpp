@@ -64,6 +64,7 @@ docx_conversion_context::docx_conversion_context(odf_reader::odf_document * OdfD
 	next_dump_page_properties_(false),
 	in_automatic_style_		(false),
 	in_paragraph_			(false),
+	in_header_				(false),
 	table_context_			(*this),
 	output_document_		(NULL),
 	section_properties_in_table_(NULL),
@@ -142,15 +143,16 @@ void docx_conversion_context::add_element_to_run(std::wstring parenStyleId)
 	}
 }
 
-void docx_conversion_context::start_paragraph()
+void docx_conversion_context::start_paragraph(bool is_header)
 {
 	if (in_paragraph_)
 		finish_paragraph();
 
 	output_stream() << L"<w:p>";
 	
-	in_paragraph_ = true;
-    rtl_ = false; 
+	in_header_		= is_header;
+	in_paragraph_	= true;
+    rtl_			= false; 
 }
 
 void docx_conversion_context::finish_paragraph()
@@ -159,7 +161,9 @@ void docx_conversion_context::finish_paragraph()
 	{
 		output_stream() << L"</w:p>";
 	}
-	in_paragraph_ = false;
+	
+	in_paragraph_	= false;
+	in_header_		= false;
 }
 
 
@@ -750,9 +754,9 @@ void docx_conversion_context::docx_serialize_paragraph_style(std::wostream & str
    
 	CP_XML_WRITER(strm)
 	{
-		if (get_section_context().dump_.empty() == false && (!ParentId.empty() || get_section_context().get().is_dump_) 
+		if (get_section_context().dump_.empty() == false && (!ParentId.empty() || get_section_context().get().is_dump_ || in_header_) 
 			 && !get_table_context().in_table())
-		{//две подряд секции или если стиль определен 
+		{//две подряд секции или если стиль определен и в заголовки нельзя пихать !!!
 			CP_XML_NODE(L"w:pPr")
 			{
 				CP_XML_STREAM() << get_section_context().dump_;

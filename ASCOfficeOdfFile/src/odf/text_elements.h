@@ -52,17 +52,18 @@ namespace text {
 class paragraph
 {
 public:
-    paragraph() : next_par_(NULL), next_section_(false), next_end_section_(false) {}
+    paragraph() : next_par_(NULL), next_section_(false), next_end_section_(false), is_header_(false) {}
 
-public:
-    ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
-    void add_attributes( const xml::attributes_wc_ptr & Attributes );
+    std::wostream & text_to_stream(::std::wostream & _Wostream) const;
+   
+	void add_attributes( const xml::attributes_wc_ptr & Attributes );
     void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name, document_context * Context);
     void add_text(const std::wstring & Text);
 
     paragraph * get_next() { return next_par_; }
     void set_next(paragraph * next) {next_par_ = next;}
-    void set_next_section(bool Val) 
+    
+	void set_next_section(bool Val) 
     {
         next_section_ = Val;
     }
@@ -82,14 +83,21 @@ public:
 
 private:
 	void drop_cap_text_docx_convert(office_element_ptr first_text_paragraph,oox::docx_conversion_context & Context);
-    paragraph_attrs paragraph_attrs_;
-
-    office_element_ptr_array paragraph_content_;
-    paragraph * next_par_;
-    bool next_section_;
-    bool next_end_section_;
-    friend class par_docx_convert_class;   
+   
+	paragraph_attrs				paragraph_attrs_;
+    office_element_ptr_array	paragraph_content_;
+   
+	paragraph				*next_par_;
     
+	bool					next_section_;
+    bool					next_end_section_;
+	
+	bool					is_header_;
+
+    friend class par_docx_convert_class;   
+    friend class p;   
+	friend class h;   
+   
 };
 
 // text:h
@@ -103,31 +111,25 @@ public:
     static const ElementType type = typeTextH;
     CPDOCCORE_DEFINE_VISITABLE();
 
-public:
     void docx_convert(oox::docx_conversion_context & Context) ;
     void xlsx_convert(oox::xlsx_conversion_context & Context) ;
     void pptx_convert(oox::pptx_conversion_context & Context) ;
 
     virtual void afterCreate();
+    virtual std::wostream & text_to_stream(::std::wostream & _Wostream) const;
 
-public:
-    virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
-
-public:
-    h();
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_text(const std::wstring & Text);
 
-private:
     // heading-attrs
-    unsigned int text_outline_level_;
-    bool text_restart_numbering_; // default false
-    _CP_OPT(unsigned int) text_start_value_;
-    bool text_is_list_header_; // default false
-    _CP_OPT(std::wstring) text_number_;
+    _CP_OPT(unsigned int)	text_outline_level_;
+    _CP_OPT(bool)			text_restart_numbering_;
+    _CP_OPT(unsigned int)	text_start_value_;
+    _CP_OPT(bool)			text_is_list_header_;
+    _CP_OPT(std::wstring)	text_number_;
     
     paragraph paragraph_;
 
@@ -148,17 +150,14 @@ public:
     static const ElementType type = typeTextP;
     CPDOCCORE_DEFINE_VISITABLE();
 
-public:
     void docx_convert(oox::docx_conversion_context & Context) ;
     void xlsx_convert(oox::xlsx_conversion_context & Context) ;
 	void pptx_convert(oox::pptx_conversion_context & Context) ;
 
 	virtual void afterCreate();
 
-public:
-    virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(::std::wostream & _Wostream) const;
 
-public:
     p(){};
 	paragraph paragraph_;
 
@@ -166,9 +165,8 @@ private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_text(const std::wstring & Text);
-private:
 
-    friend class par_docx_convert_class;   
+	friend class par_docx_convert_class;   
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(p);
@@ -221,8 +219,7 @@ public:
     static const ElementType type = typeTextSoftPageBreak;
     CPDOCCORE_DEFINE_VISITABLE();
 
-public:
-    virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(::std::wostream & _Wostream) const;
     void docx_convert(oox::docx_conversion_context & Context);
 
 private:
@@ -238,7 +235,6 @@ class text_section_attr
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
-public:
     _CP_OPT(odf_types::style_ref)	text_style_name_;
     std::wstring					text_name_;
     _CP_OPT(bool)					text_protected_;
@@ -262,7 +258,6 @@ public:
     void docx_convert(oox::docx_conversion_context & Context);
 	//void pptx_convert(oox::pptx_conversion_context & Context) ;
 
-public:
     virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
     virtual void afterCreate();
     virtual void afterReadContent();
@@ -271,7 +266,6 @@ private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
 
-private:
     text_section_attr			text_section_attr_;
     office_element_ptr			text_section_source_;
     office_element_ptr_array	text_content_;          
@@ -310,7 +304,6 @@ private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
 
-private:
     text_section_source_attr text_section_source_attr_;
     
 };
@@ -332,8 +325,8 @@ public:
 	void docx_convert(oox::docx_conversion_context & Context);
 	void pptx_convert(oox::pptx_conversion_context & Context) ;
 
-public:
-    virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(::std::wostream & _Wostream) const;
+
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
@@ -362,8 +355,8 @@ public:
 	void docx_convert(oox::docx_conversion_context & Context);
 	void pptx_convert(oox::pptx_conversion_context & Context) ;
 
-public:
-    virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(::std::wostream & _Wostream) const;
+
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
@@ -392,8 +385,8 @@ public:
 	void docx_convert(oox::docx_conversion_context & Context);
 	void pptx_convert(oox::pptx_conversion_context & Context) ;
 
-public:
-    virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(::std::wostream & _Wostream) const;
+
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
@@ -422,8 +415,7 @@ public:
 	void docx_convert(oox::docx_conversion_context & Context);
 	void pptx_convert(oox::pptx_conversion_context & Context) ;
 
-public:
-    virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(::std::wostream & _Wostream) const;
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
@@ -451,8 +443,8 @@ public:
 	void pptx_convert(oox::pptx_conversion_context & Context) ;
 	void docx_convert(oox::docx_conversion_context & Context);
 
-public:
-    virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(::std::wostream & _Wostream) const;
+
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);

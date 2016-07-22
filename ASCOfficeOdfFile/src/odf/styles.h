@@ -307,8 +307,8 @@ private:
     
 private:
     // attr
-    std::wstring	style_name_;
-    bool			style_auto_update_;				// default = false
+    std::wstring			style_name_;
+    bool					style_auto_update_;	// default = false
     
 	_CP_OPT( std::wstring ) style_display_name_; 
     odf_types::style_family style_family_;
@@ -319,7 +319,8 @@ private:
     _CP_OPT( std::wstring ) style_master_page_name_;
     _CP_OPT( std::wstring ) style_data_style_name_;	
     _CP_OPT( std::wstring ) style_class_;
-    _CP_OPT( std::wstring ) style_default_outline_level_;  
+    _CP_OPT( std::wstring ) style_default_outline_level_; 
+
 private:
     style_content				style_content_;
     office_element_ptr_array	style_map_;

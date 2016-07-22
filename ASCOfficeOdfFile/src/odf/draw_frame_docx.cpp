@@ -855,7 +855,9 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, const unio
 //////////////////////////////////////////////
 	graphicProperties.apply_to(drawing.additional);
 //////////////////////////////////////////
-	Compute_GraphicFill(graphicProperties.common_draw_fill_attlist_, graphicProperties.style_background_image_, Context.root()->odf_context().drawStyles() ,drawing.fill);	
+	bool bTxbx = (drawing.sub_type == 1);
+
+	Compute_GraphicFill(graphicProperties.common_draw_fill_attlist_, graphicProperties.style_background_image_, Context.root()->odf_context().drawStyles() ,drawing.fill, bTxbx);	
 
 	if ((drawing.fill.bitmap) && (drawing.fill.bitmap->rId.length() < 1))
 	{

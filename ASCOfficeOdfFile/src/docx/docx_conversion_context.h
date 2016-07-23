@@ -510,9 +510,12 @@ public:
     void start_paragraph	(bool is_header = false);
     void finish_paragraph	();
 
-	bool is_paragraph_header()			{ return in_header_; }
-	bool get_paragraph_state()			{ return in_paragraph_; }
-    void set_paragraph_state(bool Val)  {in_paragraph_= Val; }
+	bool is_paragraph_header()					{ return in_header_; }
+	bool get_paragraph_state()					{ return in_paragraph_; }
+    void set_paragraph_state(bool val)			{in_paragraph_ = val; }
+
+	bool get_drawing_state_content()			{ return in_drawing_content_; }
+	void set_drawing_state_content(bool val)	{in_drawing_content_ = val; }
 
 	 std::wstring		add_hyperlink	(const std::wstring & href, bool drawing);
     hyperlinks::_ref	last_hyperlink	();
@@ -699,6 +702,7 @@ private:
 	comments_context comments_context_;
 
     bool first_element_list_item_;
+	bool in_drawing_content_;
     bool in_paragraph_;
 	bool in_header_;
 

@@ -394,11 +394,8 @@ void docx_serialize_child(std::wostream & strm, _docx_drawing & val)
 	}
 }
 
-void docx_serialize(std::wostream & strm, _docx_drawing & val)
+void docx_serialize_wps(std::wostream & strm, _docx_drawing & val)
 {
-	if (val.inGroup)
-		return docx_serialize_child(strm, val);
-	
 	CP_XML_WRITER(strm)    
     {
 		CP_XML_NODE(L"w:drawing")
@@ -499,6 +496,70 @@ void docx_serialize(std::wostream & strm, _docx_drawing & val)
 		}
 	}
 }
+
+void docx_serialize_vml(std::wostream & strm, _docx_drawing & val)
+{
+	CP_XML_WRITER(strm)    
+    {
+		CP_XML_NODE(L"w:pict")
+		{
+			CP_XML_NODE(L"v:rect")
+			{
+				std::wstring strStyle =	  L"position:absolute;\
+visibility:visible;\
+mso-wrap-style:square;\
+mso-position-horizontal:absolute;\
+mso-position-horizontal-relative:text;\
+mso-position-vertical:absolute;\
+mso-position-vertical-relative:text;";
+				strStyle += L"margin-left:" + boost::lexical_cast<std::wstring>(val.x / 12700.) + L"pt;";
+				strStyle += L"margin-top:"  + boost::lexical_cast<std::wstring>(val.y / 12700.) + L"pt;";
+				strStyle += L"width:"		+ boost::lexical_cast<std::wstring>(val.cx / 12700.) + L"pt;"; 
+				strStyle += L"height:"		+ boost::lexical_cast<std::wstring>(val.cy / 12700.) + L"pt;"; 
+				strStyle += L"z-index:"		+ boost::lexical_cast<std::wstring>(0xF000800 - val.id);
+			
+				CP_XML_ATTR(L"id",				L"Rect" + boost::lexical_cast<std::wstring>(val.id));
+				CP_XML_ATTR(L"o:spid",			L"_x0000_s" + boost::lexical_cast<std::wstring>(1024 + val.id));
+				CP_XML_ATTR(L"style",			strStyle);
+				CP_XML_ATTR(L"fillcolor",		L"#4f81bd [3204]");
+				CP_XML_ATTR(L"strokecolor",		L"#243f60 [1604]");
+				CP_XML_ATTR(L"strokeweight",	L"1pt");
+			}
+		}
+	}
+}
+
+void docx_serialize_alt_content(std::wostream & strm, _docx_drawing & val)
+{
+	CP_XML_WRITER(strm)    
+    {
+		CP_XML_NODE(L"mc:AlternateContent")
+		{
+			CP_XML_NODE(L"mc:Choice")
+			{
+				CP_XML_ATTR(L"Requires", L"wps"); 
+				docx_serialize_wps(CP_XML_STREAM(), val);
+			}
+			CP_XML_NODE(L"mc:Fallback")
+			{
+				docx_serialize_vml(CP_XML_STREAM(), val);
+			}
+		}
+	}
+}
+
+void docx_serialize(std::wostream & strm, _docx_drawing & val, bool insideOtherDrawing)
+{
+	if (val.inGroup)
+		return docx_serialize_child(strm, val);
+	
+	//if (insideOtherDrawing)
+		docx_serialize_wps(strm, val);
+	//else
+	//	docx_serialize_alt_content(strm, val);
+
+}
+
 
 
 }

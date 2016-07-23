@@ -65,6 +65,7 @@ docx_conversion_context::docx_conversion_context(odf_reader::odf_document * OdfD
 	in_automatic_style_		(false),
 	in_paragraph_			(false),
 	in_header_				(false),
+	in_drawing_content_		(false),
 	table_context_			(*this),
 	output_document_		(NULL),
 	section_properties_in_table_(NULL),

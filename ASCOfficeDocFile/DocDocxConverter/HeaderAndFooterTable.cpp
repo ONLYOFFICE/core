@@ -42,7 +42,7 @@ namespace DocFileFormat
 
 		if (fib->m_FibWord97.fcPlcfHdd > tableReader.GetSize()) return;
 
-		unsigned int tableSize	=	fib->m_FibWord97.lcbPlcfHdd / (fib->m_bOlderVersion ? 1: 4);
+		unsigned int tableSize	=	fib->m_FibWord97.lcbPlcfHdd / 4;//in bytes
 
 		if ( ( tableSize > 0 ) && ( fib->m_RgLw97.ccpHdr > 0 ) )
 		{
@@ -53,14 +53,15 @@ namespace DocFileFormat
 				table[i]		=	tableReader.ReadInt32();
 			}
 
-			int count			=	( tableSize - 8 ) / 6;
-
 			int initialPos		=	fib->m_RgLw97.ccpText + fib->m_RgLw97.ccpFtn;
+
 
 			//the first 6 _entries are about footnote and endnote formatting
 			//so skip these _entries
-			int pos = 6;
-
+			int pos = (fib->m_FibBase.fComplex || !fib->m_bOlderVersion) ? 6 : 0;
+			
+			int count			=	( tableSize - pos - 2) / 6;
+			
 			for (int i = 0; i < count; ++i)
 			{
 				//Even Header
@@ -123,7 +124,7 @@ namespace DocFileFormat
 
 				pos++;
 
-				if (pos > tableSize)
+				if (pos >= tableSize)
 					break;
 
 				//First Page Footers

@@ -38,7 +38,7 @@ namespace CRYPT
 class Decryptor
 {
 public:
-		Decryptor(CryptRC4Data & header, std::wstring password, int type);
+	Decryptor(CryptRC4Data & header, std::wstring password, int type);
 
 	void Decrypt(char* data, const size_t size, const unsigned long stream_pos);
 
@@ -47,9 +47,9 @@ public:
 	bool SetPassword(std::wstring password);
 
 private:
-	CryptPtr						crypt;
-	Crypt::crypt_type				type;
-		CryptRC4Data			crypt_data;
+	CryptPtr				crypt;
+	Crypt::crypt_type		type;
+	CryptRC4Data			crypt_data;
 };
 
 typedef boost::shared_ptr<Decryptor> DecryptorPtr;

@@ -34,6 +34,7 @@
 #include "CommentsMapping.h"
 #include "TablePropertiesMapping.h"
 #include "MainDocumentMapping.h"
+#include "DrawingPrimitives.h"
 
 #include "../Common/TextMark.h"
 #include "../Common/FormatUtils.h"
@@ -61,6 +62,8 @@ namespace DocFileFormat
 		m_context				=	context;
 		m_bInternalXmlWriter	=	false;
 	
+		_writeWebHidden			=	false;
+		_writeInstrText			=	false;
 		_isSectionPageBreak		=	0;
 	}
 
@@ -265,7 +268,7 @@ namespace DocFileFormat
 				std::vector<int> bookmarks = searchBookmarks(chpxChars, cp);
 
 				//if there are bookmarks in this run, split the run into several runs
-				if (bookmarks.size())
+				if (!bookmarks.empty())
 				{
 					std::list<std::vector<wchar_t>>* runs = splitCharList(chpxChars, &bookmarks);
 					if (runs) 
@@ -452,9 +455,9 @@ namespace DocFileFormat
 		//write text
 		for (unsigned int i = 0; i < chars->size(); ++i)
 		{
-			wchar_t c = chars->at(i);
+			wchar_t c = chars->at(i), code = c;
 
-			if (TextMark::Tab == c)
+			if (TextMark::Tab == code)
 			{
                 writeTextElement(text, textType);
 
@@ -464,7 +467,7 @@ namespace DocFileFormat
 
 				m_pXmlWriter->WriteString(elem.GetXMLString().c_str());
 			}
-			else if (TextMark::HardLineBreak == c)
+			else if (TextMark::HardLineBreak == code)
 			{
                 writeTextElement(text, textType);
 
@@ -476,11 +479,11 @@ namespace DocFileFormat
 
 				m_pXmlWriter->WriteString(elem.GetXMLString().c_str());
 			}
-			else if (TextMark::ParagraphEnd == c)
+			else if (TextMark::ParagraphEnd == code)
 			{
 				//do nothing
 			}
-			else if (TextMark::PageBreakOrSectionMark == c)
+			else if (TextMark::PageBreakOrSectionMark == code)
 			{
 				//write page break, section breaks are written by writeParagraph() method
 				if (/*!isSectionEnd(c)*/_isSectionPageBreak == 0)
@@ -495,7 +498,7 @@ namespace DocFileFormat
 					m_pXmlWriter->WriteString(elem.GetXMLString().c_str());
 				}
 			}
-			else if (TextMark::ColumnBreak == c)
+			else if (TextMark::ColumnBreak == code)
 			{
                 writeTextElement(text, textType);
 
@@ -506,7 +509,7 @@ namespace DocFileFormat
 
 				m_pXmlWriter->WriteString(elem.GetXMLString().c_str());
 			}
-			else if (TextMark::FieldBeginMark == c)
+			else if (TextMark::FieldBeginMark == code)
 			{
 				int cpFieldStart = initialCp + i;
 				int cpFieldEnd = searchNextTextMark( m_document->Text, cpFieldStart, TextMark::FieldEndMark );
@@ -642,52 +645,67 @@ namespace DocFileFormat
 						int fcPic = m_document->FindFileCharPos( cpPic );
 						std::list<CharacterPropertyExceptions*>* chpxs	=	m_document->GetCharacterPropertyExceptions(fcPic, fcPic + 1); 
 						
-						CharacterPropertyExceptions* chpxPic =	chpxs->front();
+						CharacterPropertyExceptions* chpxObj =	chpxs->front();
 
-						PictureDescriptor pic(chpxPic, m_document->DataStream, 0x7fffffff, m_document->bOlderVersion);
-
-						RevisionData oData = RevisionData(chpxPic);
+						RevisionData oData = RevisionData(chpxObj);
 
 						CharacterPropertiesMapping* rPr = new CharacterPropertiesMapping(m_pXmlWriter, m_document, &oData, _lastValidPapx, false);
 						if(rPr)
 						{
-							chpxPic->Convert(rPr);
+							chpxObj->Convert(rPr);
 							RELEASEOBJECT(rPr);
-						}
-						XmlUtils::CXmlWriter OleWriter;
-						OleWriter.WriteNodeBegin (_T( "w:object" ), TRUE);
+						}					
+						XmlUtils::CXmlWriter	OleWriter;
+						VMLPictureMapping		oVmlMapper (m_context, &OleWriter, true, _caller);
 
-						//append the origin attributes
-						OleWriter.WriteAttribute( _T( "w:dxaOrig" ), FormatUtils::IntToWideString( ( pic.dxaGoal + pic.dxaOrigin ) ).c_str() ); 
-						OleWriter.WriteAttribute( _T( "w:dyaOrig" ), FormatUtils::IntToWideString( ( pic.dyaGoal + pic.dyaOrigin ) ).c_str() ); 
-						OleWriter.WriteNodeEnd( _T( "" ), TRUE, FALSE );
-
-						VMLPictureMapping oVmlMapper (m_context, &OleWriter, true, _caller);
-						pic.Convert(&oVmlMapper);
-						RELEASEOBJECT(chpxs);
-
-						if ( cpFieldSep < cpFieldEnd )
+						if (m_document->bOlderVersion)
 						{
-							int fcFieldSep = m_document->m_PieceTable->FileCharacterPositions->operator []( cpFieldSep );
-							int fcFieldSep1 = m_document->FindFileCharPos( cpFieldSep );
+							OleObject ole ( chpxObj, m_document->GetStorage(), m_document->bOlderVersion);
 							
-							std::list<CharacterPropertyExceptions*>* chpxs = m_document->GetCharacterPropertyExceptions( fcFieldSep, ( fcFieldSep + 1 ) ); 
-							CharacterPropertyExceptions* chpxSep = chpxs->front();
-							
-							OleObject ole ( chpxSep, m_document->GetStorage() );
-							OleObjectMapping oleObjectMapping( &OleWriter, m_context, &pic, _caller, oVmlMapper.GetShapeId() );
-							
-							if (oVmlMapper.m_isEmbedded)
-							{
-								ole.isEquation		= oVmlMapper.m_isEquation;
-								ole.isEmbedded		= oVmlMapper.m_isEmbedded;
-								ole.emeddedData		= oVmlMapper.m_embeddedData;
-							}
-							ole.Convert( &oleObjectMapping );
-							
-							RELEASEOBJECT( chpxs );
-						}
+							OleWriter.WriteNodeBegin (_T( "w:object" ), TRUE);
+								OleWriter.WriteAttribute( _T( "w:dxaOrig" ), FormatUtils::IntToWideString( ( ole.pictureDesciptor.dxaGoal + ole.pictureDesciptor.dxaOrigin ) ).c_str() ); 
+								OleWriter.WriteAttribute( _T( "w:dyaOrig" ), FormatUtils::IntToWideString( ( ole.pictureDesciptor.dyaGoal + ole.pictureDesciptor.dyaOrigin ) ).c_str() ); 
+							OleWriter.WriteNodeEnd( _T( "" ), TRUE, FALSE );
 
+							ole.pictureDesciptor.Convert(&oVmlMapper);
+							OleObjectMapping oleObjectMapping( &OleWriter, m_context, &ole.pictureDesciptor, _caller, oVmlMapper.GetShapeId() );
+							
+							ole.Convert( &oleObjectMapping );
+						}
+						else
+						{
+							PictureDescriptor pic(chpxObj, m_document->DataStream, 0x7fffffff, m_document->bOlderVersion);
+							
+							OleWriter.WriteNodeBegin (_T( "w:object" ), TRUE);
+								OleWriter.WriteAttribute( _T( "w:dxaOrig" ), FormatUtils::IntToWideString( ( pic.dxaGoal + pic.dxaOrigin ) ).c_str() ); 
+								OleWriter.WriteAttribute( _T( "w:dyaOrig" ), FormatUtils::IntToWideString( ( pic.dyaGoal + pic.dyaOrigin ) ).c_str() ); 
+							OleWriter.WriteNodeEnd( _T( "" ), TRUE, FALSE );
+							
+							pic.Convert(&oVmlMapper);
+							RELEASEOBJECT(chpxs);
+
+							if ( cpFieldSep < cpFieldEnd  && m_document->m_PieceTable)
+							{
+								int fcFieldSep = m_document->m_PieceTable->FileCharacterPositions->operator []( cpFieldSep );
+								int fcFieldSep1 = m_document->FindFileCharPos( cpFieldSep );
+								
+								std::list<CharacterPropertyExceptions*>* chpxs = m_document->GetCharacterPropertyExceptions( fcFieldSep, ( fcFieldSep + 1 ) ); 
+								CharacterPropertyExceptions* chpxSep = chpxs->front();
+								
+								OleObject ole ( chpxSep, m_document->GetStorage(), m_document->bOlderVersion);
+								OleObjectMapping oleObjectMapping( &OleWriter, m_context, &pic, _caller, oVmlMapper.GetShapeId() );
+								
+								if (oVmlMapper.m_isEmbedded)
+								{
+									ole.isEquation		= oVmlMapper.m_isEquation;
+									ole.isEmbedded		= oVmlMapper.m_isEmbedded;
+									ole.emeddedData		= oVmlMapper.m_embeddedData;
+								}
+								ole.Convert( &oleObjectMapping );
+								
+								RELEASEOBJECT( chpxs );
+							}
+						}
 						OleWriter.WriteNodeEnd( _T( "w:object" ) );	
 
 						if (!oVmlMapper.m_isEmbedded && oVmlMapper.m_isEquation)
@@ -699,7 +717,7 @@ namespace DocFileFormat
 						else
 						{
 							m_pXmlWriter->WriteString(OleWriter.GetXmlString());
-						}
+						}	
 					}
 
 					if (bEMBED)	_skipRuns = 3;
@@ -715,7 +733,7 @@ namespace DocFileFormat
 					_fldCharCounter++;
 				}
 			}
-			else if (TextMark::FieldSeparator == c)
+			else if (TextMark::FieldSeparator == code)
 			{
 				if (_fldCharCounter > 0)
 				{
@@ -725,7 +743,7 @@ namespace DocFileFormat
 					m_pXmlWriter->WriteString( elem.GetXMLString().c_str() );
 				}
 			}
-			else if (TextMark::FieldEndMark == c)
+			else if (TextMark::FieldEndMark == code)
 			{
 				if (_fldCharCounter > 0)
 				{
@@ -747,7 +765,7 @@ namespace DocFileFormat
 					_writeInstrText	= false;
 				}
 			}
-			else if ((TextMark::Symbol == c) && fSpec)
+			else if ((TextMark::Symbol == code) && fSpec)
 			{
 				Symbol s = getSymbol( chpx );
 
@@ -756,17 +774,17 @@ namespace DocFileFormat
 				m_pXmlWriter->WriteAttribute(_T("w:char"), FormatUtils::XmlEncode(s.HexValue).c_str()); 
 				m_pXmlWriter->WriteNodeEnd(_T(""), TRUE);
 			}
-			else if ((TextMark::DrawnObject == c) && fSpec)
+			else if ((TextMark::DrawnObject == code) && fSpec)
 			{
-				Spa* pSpa			=	NULL;
+				Spa* pSpa	=	NULL;
 				if (typeid(*this) == typeid(MainDocumentMapping))
 				{
-					pSpa			=	static_cast<Spa*>(m_document->OfficeDrawingPlex->GetStruct(cp));
+					pSpa	=	static_cast<Spa*>(m_document->OfficeDrawingPlex->GetStruct(cp));
 				}
 				else if ((typeid(*this) == typeid(HeaderMapping) ) || ( typeid(*this) == typeid(FooterMapping)))
 				{
 					int headerCp	=	( cp - m_document->FIB->m_RgLw97.ccpText - m_document->FIB->m_RgLw97.ccpFtn );
-					pSpa			=	static_cast<Spa*>(m_document->OfficeDrawingPlexHeader->GetStruct(headerCp));
+					pSpa	=	static_cast<Spa*>(m_document->OfficeDrawingPlexHeader->GetStruct(headerCp));
 				}
 
 				if (pSpa)
@@ -780,9 +798,17 @@ namespace DocFileFormat
 						pShape->Convert(&oVmlWriter);
 						m_pXmlWriter->WriteNodeEnd (_T("w:pict"));
 					}
+					
+					if (!pSpa->primitives.empty())
+					{
+						m_pXmlWriter->WriteNodeBegin (_T("w:pict"));
+						VMLShapeMapping oVmlWriter (m_context, m_pXmlWriter, pSpa, NULL,  _caller);
+						pSpa->primitives.Convert(&oVmlWriter);
+						m_pXmlWriter->WriteNodeEnd (_T("w:pict"));
+					}
 				}
 			}
-			else if ((TextMark::Picture == c) && fSpec )
+			else if ((TextMark::Picture == code) && fSpec )
 			{
 				PictureDescriptor oPicture (chpx, m_document->bOlderVersion ? m_document->WordDocumentStream : m_document->DataStream, 0x7fffffff, m_document->bOlderVersion);
 
@@ -815,7 +841,7 @@ namespace DocFileFormat
 						
 						if (oVmlMapper.m_isEmbedded)
 						{
-							OleObject ole ( chpx, m_document->GetStorage() );
+							OleObject ole ( chpx, m_document->GetStorage(), m_document->bOlderVersion);
 							OleObjectMapping oleObjectMapping( m_pXmlWriter, m_context, &oPicture, _caller, oVmlMapper.GetShapeId() );
 							
 							ole.isEquation		= oVmlMapper.m_isEquation;
@@ -833,7 +859,7 @@ namespace DocFileFormat
 					m_pXmlWriter->WriteNodeEnd	 (_T("w:pict"));
 				}                   
 			}
-			else if ((TextMark::AutoNumberedFootnoteReference == c) && fSpec)
+			else if ((TextMark::AutoNumberedFootnoteReference == code) && fSpec)
 			{
 				if ((m_document->FootnoteReferenceCharactersPlex != NULL) && (m_document->FootnoteReferenceCharactersPlex->IsCpExists(cp)))
 				{
@@ -859,7 +885,7 @@ namespace DocFileFormat
 					m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
 				}
 			}
-			else if (TextMark::AnnotationReference == c)
+			else if (TextMark::AnnotationReference == code)
 			{
 				if (typeid(*this) != typeid(CommentsMapping))
 				{
@@ -1555,8 +1581,8 @@ namespace DocFileFormat
 		{
 			if (DocFileFormat::sprmCSymbol == iter->OpCode)
 			{
-				//special symbol
 				short fontIndex = FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize );
+				
 				short code = FormatUtils::BytesToInt16( iter->Arguments, 2, iter->argumentsSize );
 
 				FontFamilyName* ffn = static_cast<FontFamilyName*>( m_document->FontTable->operator [] ( fontIndex ) );
@@ -1566,6 +1592,19 @@ namespace DocFileFormat
 
 				break;
 			}
+			else if (DocFileFormat::sprmOldCSymbol == iter->OpCode)
+			{
+				short fontIndex = FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ;
+				
+				short code = FormatUtils::BytesToUChar( iter->Arguments, 2, iter->argumentsSize );
+
+				FontFamilyName* ffn = static_cast<FontFamilyName*>( m_document->FontTable->operator [] ( fontIndex ) );
+
+				ret.FontName = ffn->xszFtn;
+				ret.HexValue = L"f0" + FormatUtils::IntToFormattedWideString( code, _T( "%02x" ) );
+
+				break;
+			}		
 		}
 
 		return ret;

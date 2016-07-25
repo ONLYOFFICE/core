@@ -58,7 +58,7 @@ namespace DocFileFormat
 
 		ListTable* rglst = static_cast<ListTable*>(visited);
 
-		if ((rglst != NULL) && (!rglst->listData.empty()))
+		if ((rglst != NULL) && (!rglst->listData.empty() || !rglst->listNumbering.empty()))
 		{
 			m_xmldocument->RegisterNumbering();
 
@@ -126,6 +126,32 @@ namespace DocFileFormat
 				//end abstractNum
 				m_pXmlWriter->WriteNodeEnd( _T( "w:abstractNum" ) );
 			}
+			//write old style numbering (сложносоставных не сущестует)
+			for (std::list<NumberingDescriptor>::iterator iter = rglst->listNumbering.begin(); iter != rglst->listNumbering.end(); ++iter, ++i)
+			{
+				//start abstractNum
+				m_pXmlWriter->WriteNodeBegin( _T( "w:abstractNum" ), TRUE );
+				m_pXmlWriter->WriteAttribute( _T( "w:abstractNumId" ), FormatUtils::IntToWideString( i ).c_str() );
+				m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
+
+				////nsid
+				//m_pXmlWriter->WriteNodeBegin( _T( "w:nsid" ), TRUE );
+				//m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::IntToFormattedWideString( (*iter)->lsid, _T( "%08x" ) ).c_str() );
+				//m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
+
+				//multiLevelType
+				m_pXmlWriter->WriteNodeBegin( _T( "w:multiLevelType" ), TRUE );
+				{
+					m_pXmlWriter->WriteAttribute( _T( "w:val" ), _T( "singleLevel" ) );
+				}
+
+				m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
+
+				LevelMapping(*iter, 0);
+
+				//end abstractNum
+				m_pXmlWriter->WriteNodeEnd( _T( "w:abstractNum" ) );
+			}
 
 			//write the overrides
 			for (unsigned int i = 0; i < m_document->listFormatOverrideTable->size(); ++i)
@@ -163,6 +189,24 @@ namespace DocFileFormat
 				}
 
 				m_pXmlWriter->WriteNodeEnd(_T( "w:num"));
+			}
+
+			if (m_document->listFormatOverrideTable->empty() &&  !rglst->listNumbering.empty())
+			{
+				i = 0;
+				for (std::list<NumberingDescriptor>::iterator iter = rglst->listNumbering.begin(); iter != rglst->listNumbering.end(); ++iter, ++i)
+				{
+					m_pXmlWriter->WriteNodeBegin( _T( "w:num" ), TRUE );
+					m_pXmlWriter->WriteAttribute( _T( "w:numId" ), FormatUtils::IntToWideString(i+1).c_str());
+					m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
+
+
+					m_pXmlWriter->WriteNodeBegin( _T( "w:abstractNumId" ), TRUE );
+					m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::IntToWideString( i ).c_str() );
+					m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
+
+					m_pXmlWriter->WriteNodeEnd(_T( "w:num"));
+				}
 			}
 
 			m_pXmlWriter->WriteNodeEnd(_T("w:numbering"));
@@ -241,6 +285,45 @@ namespace DocFileFormat
 
 		return ret;
 	}
+	
+	std::wstring NumberingMapping::GetLvlText(const NumberingDescriptor& lvl, bool bIsSymbol, int Before, int After) const
+	{
+		std::wstring ret;
+
+		if (lvl.nfc == 0xff)
+		{
+			if (!lvl.xst.empty())
+			{
+				wchar_t xchBullet = lvl.xst[0];
+
+				// В символьном шрифте обрезать надо, в других случаях - нет
+				if (bIsSymbol && (xchBullet & 0xF000) != 0)
+				{
+					xchBullet &= 0x0FFF;
+				}
+
+				if (!FormatUtils::IsControlSymbol(xchBullet))
+				{
+					ret.push_back(lvl.xst[0]);
+					ret.push_back(L'\0');
+				}
+			}
+			else
+			{
+				ret.push_back(L'\xF0B7');
+				ret.push_back(L'\0');
+			}
+		}
+		else
+		{
+			std::wstring strBefore		=	lvl.xst.substr(0, Before);
+			std::wstring strAfter		=	lvl.xst.substr(Before, After);
+
+			ret = strBefore + _T( "%1" ) + strAfter ;
+		}
+
+		return ret;
+	}
 
 	bool NumberingMapping::IsPlaceholder(wchar_t symbol)
 	{
@@ -254,9 +337,15 @@ namespace DocFileFormat
 		return false;
 	}
 
-	// Converts the number format code of the binary format.
-	std::wstring NumberingMapping::GetNumberFormatWideString(int nfc)
+
+	std::wstring NumberingMapping::GetNumberFormatWideString(int nfc, bool bOlderVersion)
 	{
+		if (bOlderVersion && nfc > 5)
+		{
+			if (nfc == 0xff)	return std::wstring( _T( "bullet" ) );
+			else				return std::wstring( _T( "none" ) );
+		}
+		
 		switch ( nfc )
 		{
 		case 0:
@@ -384,87 +473,151 @@ namespace DocFileFormat
 		}
 	}
 
+	void NumberingMapping::LevelMapping(const NumberingDescriptor& lvl, unsigned int level)
+	{
+		std::wstring fontFamily;
+		bool isSymbol = false;
+		
+		if( lvl.ftc < m_document->FontTable->Data.size() )
+		{
+			FontFamilyName* ffn = static_cast<FontFamilyName*>( m_document->FontTable->operator [] ( lvl.ftc ) );
+			isSymbol = (ffn->chs == 2);
+			fontFamily = FormatUtils::XmlEncode(ffn->xszFtn);
+		}
+
+//--------------------------------------------------------------------------------
+		m_pXmlWriter->WriteNodeBegin( _T( "w:lvl" ), TRUE );
+			m_pXmlWriter->WriteAttribute( _T( "w:ilvl" ), FormatUtils::IntToWideString(level).c_str());
+		m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
+
+		m_pXmlWriter->WriteNodeBegin( _T( "w:start" ), TRUE );
+			m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::IntToWideString(lvl.iStartAt).c_str());
+		m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
+
+		m_pXmlWriter->WriteNodeBegin( _T( "w:numFmt" ), TRUE );
+			m_pXmlWriter->WriteAttribute( _T( "w:val" ), GetNumberFormatWideString(lvl.nfc, true).c_str());
+		m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
+
+//// suffix
+//		m_pXmlWriter->WriteNodeBegin( _T( "w:suff" ), TRUE );
+//		m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::MapValueToWideString(lvl.ixchFollow, &FollowingCharMap[0][0], 3, 8).c_str());
+//		m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
+
+// Number level text
+		std::wstring lvlText = GetLvlText(lvl, isSymbol, lvl.cbTextBefore, lvl.cbTextAfter);
+
+		//if (lvlText.empty() && lvl.ftc == 0)//auto
+		//{
+		//	lvlText.push_back(L'\xF0B7');
+		//	lvlText.push_back(L'\0');
+
+		//	fontFamily = L"Wingdings";
+		//}
+		if (!lvlText.empty())
+		{
+			m_pXmlWriter->WriteNodeBegin(_T("w:lvlText"), TRUE);
+				m_pXmlWriter->WriteAttribute(_T("w:val"), lvlText.c_str());
+			m_pXmlWriter->WriteNodeEnd(_T( ""), TRUE);
+		}
+
+// jc
+		m_pXmlWriter->WriteNodeBegin( _T( "w:lvlJc" ), TRUE );
+			m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::MapValueToWideString(lvl.jc, &LevelJustificationMap[0][0], 3, 7).c_str());
+		m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
+// pPr
+		m_pXmlWriter->WriteNodeBegin( _T( "w:pPr" ), FALSE );
+		m_pXmlWriter->WriteNodeEnd(_T("w:pPr"));
+
+//  rPr
+		m_pXmlWriter->WriteNodeBegin( _T( "w:rPr" ), FALSE );
+
+		if (!fontFamily.empty())
+		{
+			m_pXmlWriter->WriteNodeBegin( _T( "w:rFonts" ), TRUE );
+				// w:hint="default"
+				m_pXmlWriter->WriteAttribute(_T("w:hAnsi"), fontFamily.c_str());
+				m_pXmlWriter->WriteAttribute(_T("w:ascii"), fontFamily.c_str());
+			m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
+		}
+		m_pXmlWriter->WriteNodeEnd(_T("w:rPr"));
+		
+		m_pXmlWriter->WriteNodeEnd(_T("w:lvl"));
+	}
+
 	void NumberingMapping::LevelMapping(const ListLevel* lvl, unsigned int level, short styleIndex)
 	{
-		if (lvl)
+		if (!lvl) return;
+
+		XmlUtils::CXmlWriter oWriterTemp;	//Временный writer,что не нарушать последовательность записи
+//rPr
+		RevisionData rev(lvl->grpprlChpx);
+		CharacterPropertiesMapping cpMapping(&oWriterTemp, m_document, &rev, lvl->grpprlPapx, false);
+		lvl->grpprlChpx->Convert(&cpMapping);
+
+// Проверяем шрифт
+
+		m_pXmlWriter->WriteNodeBegin( _T( "w:lvl" ), TRUE );
+		m_pXmlWriter->WriteAttribute( _T( "w:ilvl" ), FormatUtils::IntToWideString(level).c_str());
+		m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
+
+// starts at
+
+		m_pXmlWriter->WriteNodeBegin( _T( "w:start" ), TRUE );
+		m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::IntToWideString(lvl->iStartAt).c_str());
+		m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
+
+// number format
+
+		m_pXmlWriter->WriteNodeBegin( _T( "w:numFmt" ), TRUE );
+		m_pXmlWriter->WriteAttribute( _T( "w:val" ), GetNumberFormatWideString(lvl->nfc).c_str());
+		m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
+
+// suffix
+
+		m_pXmlWriter->WriteNodeBegin( _T( "w:suff" ), TRUE );
+		m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::MapValueToWideString(lvl->ixchFollow, &FollowingCharMap[0][0], 3, 8).c_str());
+		m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
+
+// style
+// The style id is used for a reverse reference. 
+// It can happen that the reference points to the wrong style.
+
+		if (styleIndex != ListData::ISTD_NIL)
 		{
-			XmlUtils::CXmlWriter oWriterTemp;	//Временный writer,что не нарушать последовательность записи
-
-			//rPr
-
-			RevisionData rev(lvl->grpprlChpx);
-			CharacterPropertiesMapping cpMapping(&oWriterTemp, m_document, &rev, lvl->grpprlPapx, false);
-			lvl->grpprlChpx->Convert(&cpMapping);
-
-			// Проверяем шрифт
-
-			m_pXmlWriter->WriteNodeBegin( _T( "w:lvl" ), TRUE );
-			m_pXmlWriter->WriteAttribute( _T( "w:ilvl" ), FormatUtils::IntToWideString(level).c_str());
-			m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
-
-			// starts at
-
-			m_pXmlWriter->WriteNodeBegin( _T( "w:start" ), TRUE );
-			m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::IntToWideString(lvl->iStartAt).c_str());
+			m_pXmlWriter->WriteNodeBegin( _T( "w:pStyle" ), TRUE );
+			m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::XmlEncode(StyleSheetMapping::MakeStyleId(m_document->Styles->Styles->at(styleIndex))).c_str());
 			m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
-
-			// number format
-
-			m_pXmlWriter->WriteNodeBegin( _T( "w:numFmt" ), TRUE );
-			m_pXmlWriter->WriteAttribute( _T( "w:val" ), GetNumberFormatWideString(lvl->nfc).c_str());
-			m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
-
-			// suffix
-
-			m_pXmlWriter->WriteNodeBegin( _T( "w:suff" ), TRUE );
-			m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::MapValueToWideString(lvl->ixchFollow, &FollowingCharMap[0][0], 3, 8).c_str());
-			m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
-
-			// style
-			// The style id is used for a reverse reference. 
-			// It can happen that the reference points to the wrong style.
-
-			if (styleIndex != ListData::ISTD_NIL)
-			{
-				m_pXmlWriter->WriteNodeBegin( _T( "w:pStyle" ), TRUE );
-				m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::XmlEncode(StyleSheetMapping::MakeStyleId(m_document->Styles->Styles->at(styleIndex))).c_str());
-				m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
-			}
-
-			// Number level text
-
-			m_pXmlWriter->WriteNodeBegin(_T("w:lvlText"), TRUE);
-			m_pXmlWriter->WriteAttribute(_T("w:val"), GetLvlText(lvl, cpMapping.CheckIsSymbolFont()).c_str());
-			m_pXmlWriter->WriteNodeEnd(_T( ""), TRUE);
-
-			WriteLevelPictureBullet(lvl->grpprlChpx);
-
-			// legacy
-
-			if (lvl->fWord6)
-			{
-				m_pXmlWriter->WriteNodeBegin( _T( "w:legacy" ), TRUE );
-				m_pXmlWriter->WriteAttribute( _T( "w:legacy" ), _T( "1" ) );
-				m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
-			}
-
-			// jc
-
-			m_pXmlWriter->WriteNodeBegin( _T( "w:lvlJc" ), TRUE );
-			m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::MapValueToWideString(lvl->jc, &LevelJustificationMap[0][0], 3, 7).c_str());
-			m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
-
-			// pPr
-			bool isBidi = false;
-			ParagraphPropertiesMapping oppMapping(m_pXmlWriter, m_context, m_document, NULL, isBidi);
-			lvl->grpprlPapx->Convert(&oppMapping);
-
-			// пишем rPr
-
-			m_pXmlWriter->WriteString(oWriterTemp.GetXmlString());
-
-			m_pXmlWriter->WriteNodeEnd(_T("w:lvl"));
 		}
+
+// Number level text
+
+		m_pXmlWriter->WriteNodeBegin(_T("w:lvlText"), TRUE);
+		m_pXmlWriter->WriteAttribute(_T("w:val"), GetLvlText(lvl, cpMapping.CheckIsSymbolFont()).c_str());
+		m_pXmlWriter->WriteNodeEnd(_T( ""), TRUE);
+
+		WriteLevelPictureBullet(lvl->grpprlChpx);
+
+// legacy
+		if (lvl->fWord6)
+		{
+			m_pXmlWriter->WriteNodeBegin( _T( "w:legacy" ), TRUE );
+			m_pXmlWriter->WriteAttribute( _T( "w:legacy" ), _T( "1" ) );
+			m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
+		}
+// jc
+		m_pXmlWriter->WriteNodeBegin( _T( "w:lvlJc" ), TRUE );
+		m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::MapValueToWideString(lvl->jc, &LevelJustificationMap[0][0], 3, 7).c_str());
+		m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
+// pPr
+		bool isBidi = false;
+		ParagraphPropertiesMapping oppMapping(m_pXmlWriter, m_context, m_document, NULL, isBidi);
+		lvl->grpprlPapx->Convert(&oppMapping);
+
+// пишем rPr
+
+		m_pXmlWriter->WriteString(oWriterTemp.GetXmlString());
+
+		m_pXmlWriter->WriteNodeEnd(_T("w:lvl"));
 	}
 
 	void NumberingMapping::PictureBulletsMapping()

@@ -32,7 +32,10 @@
 
 #include "ListData.h"
 
-#include <algorithm>
+#include <algorithm> 
+#include <functional> 
+#include <cctype>
+#include <locale>
 
 namespace DocFileFormat
 {
@@ -41,44 +44,152 @@ namespace DocFileFormat
 		for_each(rglvl->begin(), rglvl->end(), DeleteDynamicObject());
 
 		RELEASEOBJECT(rglvl);
-		RELEASEARRAYOBJECTS(_rawBytes);
 	}
 
 	// Parses the StreamReader to retrieve a ListData
 
-	ListData::ListData(VirtualStreamReader* reader, int length) : rglvl(NULL), _rawBytes(NULL)
+	ListData::ListData(VirtualStreamReader* reader, int length) : rglvl(NULL)
 	{
 		long startPos = reader->GetPosition();
 
-		this->lsid = reader->ReadInt32();
-		this->tplc = reader->ReadInt32();
+		lsid = reader->ReadInt32();
+		tplc = reader->ReadInt32();
 
 		for ( int i = 0; i < 9; i++ )
 		{
-			this->rgistd.push_back( reader->ReadInt16() );
+			rgistd.push_back( reader->ReadInt16() );
 		}
 
 		//parse flagbyte
 		int flag = (int)reader->ReadByte();
-		this->fSimpleList = FormatUtils::BitmaskToBool( flag, 0x01 );
+		fSimpleList = FormatUtils::BitmaskToBool( flag, 0x01 );
 
-		if ( this->fSimpleList )
+		if ( fSimpleList )
 		{
-			this->rglvl = new std::vector<ListLevel*>( 1 );
+			rglvl = new std::vector<ListLevel*>( 1 );
 		}
 		else
 		{
-			this->rglvl = new std::vector<ListLevel*>( 9 );
+			rglvl = new std::vector<ListLevel*>( 9 );
 		}
 
-		this->fRestartHdn = FormatUtils::BitmaskToBool( flag, 0x02 );
-		this->fAutoNum = FormatUtils::BitmaskToBool( flag, 0x04 );
-		this->fPreRTF = FormatUtils::BitmaskToBool( flag, 0x08 );
-		this->fHybrid = FormatUtils::BitmaskToBool( flag, 0x10 );
+		fRestartHdn = FormatUtils::BitmaskToBool( flag, 0x02 );
+		fAutoNum	= FormatUtils::BitmaskToBool( flag, 0x04 );
+		fPreRTF		= FormatUtils::BitmaskToBool( flag, 0x08 );
+		fHybrid		= FormatUtils::BitmaskToBool( flag, 0x10 );
 
-		this->grfhic = reader->ReadByte();
-
-        reader->Seek( startPos, 0/*STREAM_SEEK_SET */);
-		_rawBytes = reader->ReadBytes( LSTF_LENGTH, true );
+		grfhic		= reader->ReadByte();
 	}
+
+	NumberingDescriptor::NumberingDescriptor( unsigned char * data, int length )
+	{
+		nfc				= FormatUtils::BytesToUChar(data, 0, length);
+		cbTextBefore	= FormatUtils::BytesToUChar(data, 1, length);
+		cbTextAfter		= FormatUtils::BytesToUChar(data, 2, length);
+
+		int flag		= FormatUtils::BytesToUChar(data, 3, length);
+
+		jc				= (unsigned char)( flag & 0x03 );
+
+		fPrev			= FormatUtils::BitmaskToBool( flag, 0x04 );
+		fHang			= FormatUtils::BitmaskToBool( flag, 0x08 );
+
+		fSetBold		= FormatUtils::BitmaskToBool( flag, 0x10 );
+		fSetItalic		= FormatUtils::BitmaskToBool( flag, 0x20 );
+		fSetSmallCaps	= FormatUtils::BitmaskToBool( flag, 0x40 );
+		fSetCaps		= FormatUtils::BitmaskToBool( flag, 0x80 );
+
+		flag			= FormatUtils::BytesToUChar(data, 4, length);;
+
+		fSetStrike		= FormatUtils::BitmaskToBool( flag, 0x01 );
+		fSetKul			= FormatUtils::BitmaskToBool( flag, 0x02 );
+
+		fPrevSpace		= FormatUtils::BitmaskToBool( flag, 0x04 );
+		fBold			= FormatUtils::BitmaskToBool( flag, 0x08 );
+		fItalic			= FormatUtils::BitmaskToBool( flag, 0x10 );
+		fSmallCaps		= FormatUtils::BitmaskToBool( flag, 0x20 );
+		fCaps			= FormatUtils::BitmaskToBool( flag, 0x40 );
+		fStrike			= FormatUtils::BitmaskToBool( flag, 0x80 );
+
+		flag			= FormatUtils::BytesToUChar(data, 5, length);
+
+		kul				= FormatUtils::BitmaskToBool( flag, 0x07 );//3 bit
+		ico				= FormatUtils::BitmaskToBool( flag, 0xf1 );//5 bit
+
+		ftc				= FormatUtils::BytesToInt16 (data, 6, length);
+		
+		ftc = ftc & 0x0fff; // 0x8001 ???? file(31).doc
+
+		hps				= FormatUtils::BytesToUInt16(data, 8, length);
+
+		iStartAt		= FormatUtils::BytesToUInt16(data, 10, length);
+		dxaIndent		= FormatUtils::BytesToUInt16(data, 12, length);
+		dxaSpace		= FormatUtils::BytesToUInt16(data, 14, length);
+
+		fNumber1		= FormatUtils::BytesToUChar(data, 16, length);
+		fNumberAcross	= FormatUtils::BytesToUChar(data, 17, length);
+		fRestartHdn		= FormatUtils::BytesToUChar(data, 18, length);
+		fSpareX			= FormatUtils::BytesToUChar(data, 19, length);
+	
+	// fixed size = 20
+	//read the number text
+		short strLen = length - 20;
+		
+		while (strLen > 0)
+		{
+			if (data[strLen + 20 - 1] != 0)
+				break;
+			strLen--;
+		}
+		if (strLen > 0)
+		{
+			FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &(xst), data + 20, ( strLen ), ENCODING_WINDOWS_1250);
+		}	
+	}
+	OutlineListDescriptor::~OutlineListDescriptor()
+	{
+		for (int i = 0 ; i < 9; i++)
+		{
+			if (lvl[i])	delete lvl[i];
+			lvl[i] = NULL;
+		}
+	}
+	OutlineListDescriptor::OutlineListDescriptor( unsigned char * data, int length )
+	{
+		int pos = 0;
+
+		for (int i = 0 ; i < 9; i++)
+		{
+			lvl[i] = new NumberingLevelDescriptor(data + pos, length - pos);
+			pos += 16;
+		}
+		fRestartHdr	= FormatUtils::BytesToUChar(data, pos, length); pos += 2;
+		fSpareOlst2	= FormatUtils::BytesToUChar(data, pos, length); pos += 2;
+		fSpareOlst3	= FormatUtils::BytesToUChar(data, pos, length); pos += 2;
+		fSpareOlst4	= FormatUtils::BytesToUChar(data, pos, length); pos += 2;
+		
+		short strLen = length - pos;
+		
+		while (strLen > 0)
+		{
+			if (data[strLen + 20 - 1] != 0)
+				break;
+			strLen--;
+		}
+		if (strLen > 0)
+		{
+			FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &(xst), data + 20, ( strLen ), ENCODING_WINDOWS_1250);
+		}	
+	}
+
+	ByteStructure* OutlineListDescriptor::ConstructObject(VirtualStreamReader* reader, int length)
+	{
+		unsigned char *data = reader->ReadBytes(212, true);
+		OutlineListDescriptor *newObject = new OutlineListDescriptor(data, 212);
+
+		delete []data;
+
+		return static_cast<ByteStructure*>(newObject);
+	}
+
 }

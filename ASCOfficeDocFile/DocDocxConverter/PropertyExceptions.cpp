@@ -66,12 +66,17 @@ namespace DocFileFormat
 
 		while ( goOn )
 		{
-			//enough bytes to read?
 			if ( ( sprmStart + opCodeSize ) < size )
 			{
-				OperationCode opCode = oldVersion ? (OperationCode)FormatUtils::BytesToUChar	( bytes, sprmStart, size ) :
-													(OperationCode)FormatUtils::BytesToUInt16	( bytes, sprmStart, size ) ;
+				unsigned short code  = oldVersion ? FormatUtils::BytesToUChar	( bytes, sprmStart, size ) :
+													FormatUtils::BytesToUInt16	( bytes, sprmStart, size ) ;
 
+				if (oldVersion && code == 0) 
+				{
+					sprmStart++;
+					continue;
+				}
+				OperationCode opCode = (OperationCode)code;
 				short opSize = -1;
 
 				if (oldVersion)
@@ -137,7 +142,6 @@ namespace DocFileFormat
 					}
 				}
 
-				//copy sprm to array
 				//length is 2byte for the opCode, lenByte for the length, opSize for the length of the operand
 				int sprmBytesSize = opCodeSize + lenByte + opSize;
 				unsigned char* sprmBytes = NULL;
@@ -148,7 +152,6 @@ namespace DocFileFormat
 				{
 					memcpy( sprmBytes, ( bytes + sprmStart ), sprmBytesSize );
 
-					//parse
 					SinglePropertyModifier sprm( sprmBytes, sprmBytesSize, oldVersion );
 					grpprl->push_back( sprm );
 

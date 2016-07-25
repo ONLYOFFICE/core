@@ -132,7 +132,12 @@ namespace NExtractTools
 
         TCD_XML2DOCX,
         TCD_DOCX2XML,
-
+//							 
+		TCD_MSCRYPT2DOCT,
+		TCD_MSCRYPT2XLST,
+		TCD_MSCRYPT2PPTT,
+		TCD_MSCRYPT2BIN,
+//
         TCD_MAILMERGE,
         TCD_T2,
         TCD_DOCT_BIN2,

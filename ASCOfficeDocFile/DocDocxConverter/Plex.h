@@ -44,9 +44,9 @@ namespace DocFileFormat
 
 	protected:
 		static const int CP_LENGTH = 4;
-		std::vector<int>				CharacterPositions;
+		std::vector<int>			CharacterPositions;
 		std::vector<ByteStructure*>	Elements;
-		bool					m_bIsValid;
+		bool						m_bIsValid;
 
 	public:
 		Plex(int structureLength, POLE::Stream* stream, unsigned int fc, unsigned int lcb, bool oldVersion) 

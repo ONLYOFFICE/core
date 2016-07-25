@@ -45,7 +45,8 @@ namespace DocFileFormat
 		friend class FontTableMapping;
 		friend class StyleSheetMapping;	
 		friend class DocumentMapping;
-  
+ 		friend class NumberingMapping;
+ 
     private:
 		bool						fExtend;
 		int							cbData;

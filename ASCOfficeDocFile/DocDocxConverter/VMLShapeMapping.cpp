@@ -52,6 +52,8 @@
 #include "OfficeDrawing/GroupShapeBooleanProperties.h"
 #include "OfficeDrawing/ProtectionBooleanProperties.h"
 
+#include "DrawingPrimitives.h"
+
 #include "../../DesktopEditor/common/String.h"
 
 namespace DocFileFormat
@@ -104,7 +106,13 @@ namespace DocFileFormat
 {
 	void VMLShapeMapping::Apply(IVisitable* visited)
 	{
-		ShapeContainer* pContainer = static_cast<ShapeContainer*>(visited);
+		DrawingPrimitives * primitives = dynamic_cast<DrawingPrimitives *>(visited);
+		
+		if ( primitives ) return ApplyPrimitives(primitives);
+
+//----------------------------------------------------------------------------------------------
+
+		ShapeContainer* pContainer = dynamic_cast<ShapeContainer*>(visited);
 		if ((pContainer != NULL) && (!pContainer->Children.empty()))
 		{
 			Record* firstRecord = pContainer->Children[0];
@@ -288,7 +296,7 @@ namespace DocFileFormat
 								stroked	=	false;
 							}
 
-							if (!(booleans.fUsefFillOK && booleans.fFillOK))
+							if (booleans.fUsefFillOK && !booleans.fFillOK)
 							{
 								filled	=	false;
 							}
@@ -1319,36 +1327,36 @@ namespace DocFileFormat
 	{
 		switch ( _type )
 		{
-			//case msoblipBMP:
-			//  return std::wstring( _T( ".bmp" ) );
+			case Global::msoblipDIB:
+			  return std::wstring( _T( ".bmp" ) );
 
-		case Global::msoblipEMF:
-			return std::wstring( _T( ".emf" ) );
+			case Global::msoblipEMF:
+				return std::wstring( _T( ".emf" ) );
 
-			//case msoblipGIF:
-			//  return std::wstring( _T( ".gif" ) );
+				//case msoblipGIF:
+				//  return std::wstring( _T( ".gif" ) );
 
-			//case msoblipICON:
-			//  return std::wstring( _T( ".ico" ) );
+				//case msoblipICON:
+				//  return std::wstring( _T( ".ico" ) );
 
-		case Global::msoblipJPEG:
-		case Global::msoblipCMYKJPEG:
-			return std::wstring( _T( ".jpg" ) );
+			case Global::msoblipJPEG:
+			case Global::msoblipCMYKJPEG:
+				return std::wstring( _T( ".jpg" ) );
 
-			//case msoblipPCX:
-			//  return std::wstring( _T( ".pcx" ) );
+				//case msoblipPCX:
+				//  return std::wstring( _T( ".pcx" ) );
 
-		case Global::msoblipPNG:
-			return std::wstring( _T( ".png" ) );
+			case Global::msoblipPNG:
+				return std::wstring( _T( ".png" ) );
 
-		case Global::msoblipTIFF:
-			return std::wstring( _T( ".tif" ) );
+			case Global::msoblipTIFF:
+				return std::wstring( _T( ".tif" ) );
 
-		case Global::msoblipWMF:
-			return std::wstring( _T( ".wmf" ) );
+			case Global::msoblipWMF:
+				return std::wstring( _T( ".wmf" ) );
 
-		default:
-			return std::wstring( _T( ".png" ) );
+			default:
+				return std::wstring( _T( ".png" ) );
 		}
 	}
 
@@ -2084,4 +2092,186 @@ namespace DocFileFormat
 
 		return rectangles;
 	}
+//------------------------------------------------------------------------------------------------------
+	static int count_vml_objects = 0;
+	
+	void VMLShapeMapping::ApplyPrimitives(DrawingPrimitives * primitives)
+	{
+		int index = 0;
+
+		while(true)
+		{
+			index = ApplyPrimitive(primitives, index);
+			if (index > primitives->size() - 1)
+				break;
+		}
+	}
+
+	static int currentTextBoxIndex = 1;
+	
+	int VMLShapeMapping::ApplyPrimitive(DrawingPrimitives * primitives, int index)
+	{
+		if (!primitives) return index++;
+		if (index >= primitives->size()) return index++;
+
+		DrawingPrimitive *primitive = dynamic_cast<DrawingPrimitive *>(primitives->at(index));
+		
+		m_pXmlWriter->WriteNodeBegin(primitive->strVmlType.c_str(), TRUE );
+	
+		if (primitive->type == 0x0007)
+		{
+			DrawingPrimitiveCTextBox * callout = dynamic_cast<DrawingPrimitiveCTextBox *>(primitive);
+			if ((callout) && (callout->txbx))
+			{
+				//временно обычный текстбокс
+				callout->txbx->xa += callout->xa;
+				callout->txbx->ya += callout->ya;
+
+				WritePrimitiveProps(dynamic_cast<DrawingPrimitive*>(callout->txbx), (index==0?true:false));
+			}
+			//todooo нарисовать кастомный шейп
+		}
+		else 
+			WritePrimitiveProps(primitive, (index==0?true:false));
+
+		
+		if (primitive->type == 0x0000) 
+		{
+			index++;
+			
+			while(true)
+			{
+				if (index > primitives->size() - 1)
+					break;			
+				
+				primitive = dynamic_cast<DrawingPrimitive *>(primitives->at(index));
+
+				if (primitive->type == 0x0008)
+				{
+					break;
+				}
+
+				index = ApplyPrimitive(primitives, index);
+			}
+		}	
+
+		if (primitive->type == 0x0002 || primitive->type == 0x0007) 
+		{
+			int nLTxID = currentTextBoxIndex++;;
+
+			if (-1 != nLTxID)
+			{
+				TextboxMapping textboxMapping(m_ctx, nLTxID - 1, m_pXmlWriter, m_pCaller);
+				//textboxMapping.SetInset(ndxTextLeft, ndyTextTop, ndxTextRight, ndyTextBottom);
+				m_ctx->_doc->Convert(&textboxMapping);
+			}
+		}
+		
+		m_pXmlWriter->WriteNodeEnd( primitive->strVmlType.c_str() );
+	
+		index++;
+		return index;
+	}
+
+	void VMLShapeMapping::WritePrimitiveProps (DrawingPrimitive	* primitive, bool root)
+	{
+		TwipsValue x( primitive->xa );
+		TwipsValue y( primitive->ya );
+		TwipsValue w( primitive->dxa );
+		TwipsValue h( primitive->dya );
+
+		std::wstring strId = std::wstring(L"_x0000_s") + FormatUtils::IntToWideString(1024 + (count_vml_objects++));
+		//m_pXmlWriter->WriteAttribute ( _T( "id")	, strId.c_str());
+		m_pXmlWriter->WriteAttribute ( _T( "o:spid"), strId.c_str());
+
+		std::wstring strStyle = _T("position:absolute;visibility:visible;mso-wrap-style:square;");
+
+		DrawingPrimitiveLine * line = dynamic_cast<DrawingPrimitiveLine *>(primitive);
+		if (line)
+		{
+			TwipsValue x1( line->xaStart );
+			TwipsValue y1( line->yaStart );
+			TwipsValue x2( line->xaEnd );
+			TwipsValue y2( line->yaEnd );
+						
+			std::wstring strStart	=  FormatUtils::IntToWideString(line->xaStart + primitive->xa) + _T(",") + FormatUtils::IntToWideString(line->yaStart + primitive->ya); 
+			std::wstring strEnd		=  FormatUtils::IntToWideString(line->xaEnd + primitive->xa) + _T(",") + FormatUtils::IntToWideString(line->yaEnd + primitive->ya);
+
+			m_pXmlWriter->WriteAttribute(_T("from"),  strStart.c_str() );
+			m_pXmlWriter->WriteAttribute(_T("to"),	strEnd.c_str());
+		}
+		else
+		{
+			if (root)
+			{
+				//strStyle += _T("left:")		+ FormatUtils::IntToWideString( x.ToPoints()) + _T("pt;");
+				//strStyle += _T("top:")		+ FormatUtils::IntToWideString( y.ToPoints()) + _T("pt;");
+				strStyle +=	_T("width:")		+ FormatUtils::IntToWideString( w.ToPoints()) + _T("pt;");
+				strStyle +=	_T("height:")		+ FormatUtils::IntToWideString( h.ToPoints()) + _T("pt;");
+
+				strStyle += _T("margin-left:")	+ FormatUtils::IntToWideString( x.ToPoints()) + _T("pt;");
+				strStyle +=	_T("margin-top:")	+ FormatUtils::IntToWideString( y.ToPoints()) + _T("pt;");
+
+				std::wstring xMargin;
+				std::wstring yMargin;
+				if (m_pSpa->bx == PAGE) xMargin = _T("page;");
+				if (m_pSpa->by == PAGE) yMargin = _T("page;");
+				
+				if (m_pSpa->bx == MARGIN) xMargin = _T("margin;");
+				if (m_pSpa->by == MARGIN) yMargin = _T("margin;");
+
+				if (!xMargin.empty()) strStyle += _T("mso-position-horizontal-relative:") + xMargin;
+				if (!yMargin.empty()) strStyle += _T("mso-position-vertical-relative:") + yMargin;
+
+				std::wstring strSize = FormatUtils::IntToWideString(primitive->dxa) + _T(",") + FormatUtils::IntToWideString(primitive->dya);
+				std::wstring strOrigin = FormatUtils::IntToWideString(primitive->xa) + _T(",") + FormatUtils::IntToWideString(primitive->ya);
+				
+				m_pXmlWriter->WriteAttribute( _T("coordsize"), strSize.c_str());
+				//m_pXmlWriter->WriteAttribute( _T("coordorigin"), strOrigin.c_str());
+			}
+			else
+			{
+				strStyle += _T("left:")		+ FormatUtils::IntToWideString( primitive->xa)	+ _T(";");
+				strStyle += _T("top:")		+ FormatUtils::IntToWideString( primitive->ya)	+ _T(";");
+				strStyle += _T("width:")	+ FormatUtils::IntToWideString( primitive->dxa) + _T(";");
+				strStyle += _T("height:")	+ FormatUtils::IntToWideString( primitive->dya) + _T(";");
+			}
+		}
+		if (primitive->fillPattern == 0)
+			m_pXmlWriter->WriteAttribute( _T("filled"), _T("f"));
+		
+		if (primitive->type > 1)
+		{
+			m_pXmlWriter->WriteAttribute( _T("fillColor"), FormatUtils::IntToFormattedWideString(primitive->fillFore, L"#%06x").c_str());
+		}
+		m_pXmlWriter->WriteAttribute( _T("style"), strStyle.c_str());
+
+		std::wstring strStrokeWeight = FormatUtils::IntToWideString(primitive->lineWeight / 20) + _T("pt");
+		if (primitive->lineWeight > 20)
+			m_pXmlWriter->WriteAttribute( _T("strokeweight"), strStrokeWeight.c_str());
+
+		if (primitive->type > 0)
+			m_pXmlWriter->WriteAttribute( _T("strokecolor"), FormatUtils::IntToFormattedWideString(primitive->lineColor, L"#%06x").c_str());
+
+		m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
+		
+		if (primitive->type > 1 && primitive->fillPattern > 1)
+		{
+			m_pXmlWriter->WriteNodeBegin(_T("v:fill"), TRUE );
+				m_pXmlWriter->WriteAttribute( _T("color2"), FormatUtils::IntToFormattedWideString(primitive->fillBack, L"#%06x").c_str());
+				m_pXmlWriter->WriteAttribute( _T("type"), _T("pattern"));
+			m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
+			m_pXmlWriter->WriteNodeEnd( _T("v:fill") );
+		}
+
+		if (primitive->lineStyle > 1)
+		{
+			m_pXmlWriter->WriteNodeBegin(_T("v:stroke"), TRUE );
+				std::wstring strDashStyle = FormatUtils::IntToWideString(primitive->lineStyle) + _T(" 1");
+				m_pXmlWriter->WriteAttribute( _T("dashstyle"), strDashStyle.c_str());
+			m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
+			m_pXmlWriter->WriteNodeEnd( _T("v:stroke") );
+		}
+	}
+
 }

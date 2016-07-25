@@ -58,6 +58,7 @@
 #include "../../HtmlRenderer/include/HTMLRenderer3.h"
 #include "../../HtmlFile/HtmlFile.h"
 #include "../../ASCOfficeXlsFile2/source/XlsXlsxConverter/ConvertXls2Xlsx.h"
+#include "../../OfficeCryptReader/source/ECMACryptReader.h"
 
 #include <iostream>
 #include <fstream>
@@ -142,7 +143,7 @@ namespace NExtractTools
         return nRes;
     }
     // bin -> docx dir
-    int doct_bin2docx_dir (const std::wstring &sFrom, const std::wstring &sToResult, const std::wstring &sToDir, const std::wstring &sFontPath, bool bFromChanges, const std::wstring &sThemeDir, const InputParams& params)
+    int doct_bin2docx_dir (const std::wstring &sFrom, const std::wstring &sToResult, const std::wstring &sTo, const std::wstring &sFontPath, bool bFromChanges, const std::wstring &sThemeDir, const InputParams& params)
     {
         int nRes = 0;
         std::wstring sTargetBin;
@@ -162,7 +163,7 @@ namespace NExtractTools
 		CString sMediaPath;             // will be filled by 'CreateDocxFolders' method
 		CString sEmbedPath;             // will be filled by 'CreateDocxFolders' method
 
-        CString sToDir2 = std_string2string(sToDir);
+        CString sToDir2 = std_string2string(sTo);
         m_oCDocxSerializer.CreateDocxFolders (sToDir2, sThemePath, sMediaPath, sEmbedPath);
 
         if (SUCCEEDED_X2T(nRes))
@@ -882,13 +883,13 @@ namespace NExtractTools
    }
 
    // doc -> docx
-   int doc2docx (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp)
+   int doc2docx (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const InputParams& params)
    {
        std::wstring sResultDocxDir = sTemp + FILE_SEPARATOR_STR + _T("docx_unpacked");
 
        FileSystem::Directory::CreateDirectory(sResultDocxDir);
 
-       int nRes = doc2docx_dir(sFrom, sResultDocxDir, sTemp);
+       int nRes = doc2docx_dir(sFrom, sResultDocxDir, sTemp, params);
        if(SUCCEEDED_X2T(nRes))
        {
            COfficeUtils oCOfficeUtils(NULL);
@@ -897,16 +898,16 @@ namespace NExtractTools
        }
        return AVS_FILEUTILS_ERROR_CONVERT;
    }
-   int doc2docx_dir (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp)
+   int doc2docx_dir (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const InputParams& params)
    {
         COfficeDocFile docFile;
 		docFile.m_sTempFolder = sTemp;
        
-        return S_OK == docFile.LoadFromFile( sFrom, sTo, L"", NULL) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+		return S_OK == docFile.LoadFromFile( sFrom, sTo, params.m_sPassword ? *params.m_sPassword : L"", NULL) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
    }
 
    // doc -> doct
-   int doc2doct (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sFontPath)
+   int doc2doct (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sPassword, const std::wstring &sTemp, const std::wstring &sFontPath)
    {
        // Extract docx to temp directory
        std::wstring sResultDoctDir = sTemp + FILE_SEPARATOR_STR + _T("doct_unpacked");
@@ -914,7 +915,7 @@ namespace NExtractTools
 
        FileSystem::Directory::CreateDirectory(sResultDoctDir);
 
-       int nRes = doc2doct_bin(sFrom, sResultDoctFileEditor, sTemp, sFontPath);
+       int nRes = doc2doct_bin(sFrom, sResultDoctFileEditor, sPassword, sTemp, sFontPath);
 
        if (SUCCEEDED_X2T(nRes))
        {
@@ -926,7 +927,7 @@ namespace NExtractTools
    }
 
    // doc -> doct_bin
-   int doc2doct_bin (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sFontPath)
+   int doc2doct_bin (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sPassword, const std::wstring &sTemp, const std::wstring &sFontPath)
    {
         std::wstring sResultDocxDir = sTemp + FILE_SEPARATOR_STR + _T("docx_unpacked");
 
@@ -935,7 +936,7 @@ namespace NExtractTools
         COfficeDocFile docFile;
 		docFile.m_sTempFolder = sTemp;
 
-        if (docFile.LoadFromFile( sFrom, sResultDocxDir, L"", NULL)== S_OK)
+        if (docFile.LoadFromFile( sFrom, sResultDocxDir, sPassword, NULL)== S_OK)
         {
             BinDocxRW::CDocxSerializer m_oCDocxSerializer;
 
@@ -1216,6 +1217,7 @@ namespace NExtractTools
         }
         return AVS_FILEUTILS_ERROR_CONVERT;
    }
+
    int xlsx_dir2ods (const std::wstring &sXlsxDir, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sFontPath )
    {
        std::wstring sTempUnpackedODS = sTemp + FILE_SEPARATOR_STR + _T("ods_unpacked");
@@ -1236,7 +1238,42 @@ namespace NExtractTools
        {
        }
        return AVS_FILEUTILS_ERROR_CONVERT;
-   }
+	}
+
+	int mscrypt2oot (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, const std::wstring &sFontPath, const InputParams& params)
+	{
+        std::wstring sResultOotDir			= sTemp			+ FILE_SEPARATOR_STR + _T("oot_unpacked");
+        std::wstring sResultOotFileEditor	= sResultOotDir	+ FILE_SEPARATOR_STR + _T("Editor.bin");
+
+        FileSystem::Directory::CreateDirectory(sResultOotDir);
+
+        int nRes = mscrypt2oot_bin(sFrom, sResultOotFileEditor, sTemp, sFontPath, params);
+        if (SUCCEEDED_X2T(nRes))
+        {
+            COfficeUtils oCOfficeUtils(NULL);
+            nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sResultOotDir, sTo, -1)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
+        }
+
+		return nRes;
+	}
+
+	int mscrypt2oot_bin	 (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, const std::wstring &sFontPath, const InputParams& params)
+	{
+		if (!params.m_sPassword)			return AVS_FILEUTILS_ERROR_CONVERT_DRM;
+		if ( params.m_sPassword->empty())	return AVS_FILEUTILS_ERROR_CONVERT_DRM;
+
+		//decrypt to temp
+        std::wstring sResultDecryptDir = sTemp	+ FILE_SEPARATOR_STR + _T("crypt_unpacked");
+        FileSystem::Directory::CreateDirectory(sResultDecryptDir);
+
+		ECMACryptReader cryptReader;
+		if (cryptReader.DecryptOfficeFile(sFrom, sResultDecryptDir, *params.m_sPassword) == false)
+			return AVS_FILEUTILS_ERROR_CONVERT_PASSWORD;
+
+		//convert from format (detect before) to temp binary folder
+		return 0;
+	}
+
    //html
    int html2doct_dir (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const InputParams& params)
    {
@@ -1567,7 +1604,7 @@ namespace NExtractTools
            }
            else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC == nFormatFrom)
            {
-               nRes = doc2docx_dir(sFrom, sDocxDir, sTemp);
+               nRes = doc2docx_dir(sFrom, sDocxDir, sTemp, params);
            }
            else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT == nFormatFrom)
            {
@@ -1890,7 +1927,7 @@ namespace NExtractTools
 
        FileSystem::Directory::CreateDirectory(sResultDocxDir);
 
-       int nRes = xls2xlsx_dir(sFrom, sResultDocxDir, sFontPath, sTemp, params);
+       int nRes = xls2xlsx_dir(sFrom, sResultDocxDir, sTemp, sFontPath, params);
        if(SUCCEEDED_X2T(nRes))
        {
            COfficeUtils oCOfficeUtils(NULL);

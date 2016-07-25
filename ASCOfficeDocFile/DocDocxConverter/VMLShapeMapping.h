@@ -65,6 +65,11 @@ namespace DocFileFormat
 
 	private:
 
+		void ApplyPrimitives	(DrawingPrimitives	* primitives );
+		int  ApplyPrimitive		(DrawingPrimitives	* primitives, int index);
+
+		void WritePrimitiveProps(DrawingPrimitive	* primitive, bool root);
+
 		// Converts a group of shapes
 		void WriteGroup(const GroupContainer* pContainer);
 		// Converts a single shape

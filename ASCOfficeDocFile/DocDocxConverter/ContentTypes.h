@@ -70,6 +70,7 @@ namespace OpenXmlContentTypes
 	static const TCHAR* Png						=	_T("image/png");
 	static const TCHAR* Tiff					=	_T("image/tiff");
 	static const TCHAR* Wmf						=	_T("image/x-wmf");
+	static const TCHAR* Bmp						=	_T("image/bmp");
 }
 
 namespace WordprocessingMLContentTypes

@@ -578,7 +578,7 @@ void odf_document::Impl::parse_styles()
                     continue;
                 }
 
-                if (styleInst->style_master_page_name_ && !styleInst->style_master_page_name_->empty())
+                if (styleInst->style_master_page_name_/* && !styleInst->style_master_page_name_->empty()*/)
                     context_->styleContainer().add_master_page_name(styleInst->style_name_, *styleInst->style_master_page_name_);
 
                 context_->styleContainer().add_style(styleInst->style_name_,

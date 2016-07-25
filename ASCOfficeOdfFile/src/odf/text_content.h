@@ -63,10 +63,11 @@ class paragraph_attrs
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
-public:
     odf_types::style_ref		text_style_name_;
     odf_types::style_ref_array	text_class_names_;
     odf_types::style_ref		text_cond_style_name_;
+
+	_CP_OPT(unsigned int)		outline_level_; //from header attr
 
 };
 

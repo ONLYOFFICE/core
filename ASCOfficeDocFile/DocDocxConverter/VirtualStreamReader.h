@@ -187,27 +187,34 @@ public:
 
 	std::wstring ReadXst()
 	{
-		std::wstring wstrResult( _T( "" ) );
-		if (stream)
+		if (!stream) return L"";
+		std::wstring wstrResult;
+
+		unsigned char* xstz = NULL;
+		unsigned char* cch	= NULL;
+		if (olderVersion)
+		{
+			int cchSize = 1;
+			cch = ReadBytes( cchSize, true );
+
+			int xstzSize = FormatUtils::BytesToUChar( cch, 0, cchSize ) * 1;      
+			xstz = ReadBytes(xstzSize, true);
+
+			FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &wstrResult, xstz, xstzSize, ENCODING_WINDOWS_1250 );
+		}
+		else
 		{
 			int cchSize = 2;
-			unsigned char* cch = this->ReadBytes( cchSize, true );
+			cch = ReadBytes( cchSize, true );
 
 			int xstzSize = FormatUtils::BytesToInt16( cch, 0, cchSize ) * 2;      
-			unsigned char* xstz = ReadBytes(xstzSize, true);
+			xstz = ReadBytes(xstzSize, true);
 
-			if (this->olderVersion)
-			{
-				FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &wstrResult, xstz, xstzSize, ENCODING_WINDOWS_1250 );
-			}
-			else
-			{
-				FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &wstrResult, xstz, xstzSize, ENCODING_UTF16 );
-			}
-
-			RELEASEARRAYOBJECTS(xstz);
-			RELEASEARRAYOBJECTS(cch);
+			FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &wstrResult, xstz, xstzSize, ENCODING_UTF16 );
 		}
+
+		RELEASEARRAYOBJECTS(xstz);
+		RELEASEARRAYOBJECTS(cch);
 
 		return wstrResult;
 	}
@@ -239,21 +246,42 @@ public:
 	/// The string must have the following structure:
 	/// unsigned char 1-4: Character count (cch)
 	/// unsigned char 5-cch+4:   ANSI characters terminated by \0
-	std::wstring ReadLengthPrefixedAnsiString()
+	std::wstring ReadLengthPrefixedAnsiString(int max_size)
 	{
 		std::wstring result;
 
-		int cch = this->ReadInt32();
+		unsigned int cch = ReadUInt32();
 
-		if ( cch > 0 )
+		unsigned char* stringBytes = NULL;
+
+		if (cch > max_size)
 		{
-			//dont read the terminating zero
-			unsigned char* stringBytes = ReadBytes( cch, true );
+			//error ... skip to 0
+			int pos_orinal = GetPosition();
+			int pos = 0;
+		
+			stringBytes = ReadBytes( max_size, true );
 
-			FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &result, stringBytes, ( cch - 1 ), ENCODING_WINDOWS_1250);
+			if (stringBytes)
+			{
+				while(pos < max_size)
+				{
+					if (stringBytes[pos] == 0)
+						break;
+					pos++;
+				}
+			}
+			Seek(pos_orinal + pos - 1, 0);
+		}else
+			if ( cch > 0 )
+			{
+				//dont read the terminating zero
+				stringBytes = ReadBytes( cch, true );
 
-			RELEASEARRAYOBJECTS( stringBytes );
-		}
+				FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &result, stringBytes, ( cch - 1 ), ENCODING_WINDOWS_1250);
+
+			}
+		RELEASEARRAYOBJECTS( stringBytes );
 
 		return result;
 	}

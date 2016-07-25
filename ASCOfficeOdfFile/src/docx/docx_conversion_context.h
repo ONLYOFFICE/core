@@ -333,9 +333,15 @@ public:
 	}
 	void remove_section()	
 	{
-		if (!sections_.empty()) 
+		if (sections_.empty()) return;
+
+		sections_.erase(sections_.begin(), sections_.begin() + 1);
+		if (sections_.empty())
 		{
-			sections_.erase(sections_.begin(), sections_.begin() + 1);
+			//после оканчания разметки секциями и начале (возобновлении) основного раздела нужен разрыв (хотя настройки страницы могут и не поменяться)
+			//щас разрыв на текущей странице
+			//todooo проверить - может типо если следующий будет заголовок - разорвать
+			main_section_.is_dump_ = false;
 		}
 	}
 	std::wstring			dump_;
@@ -495,16 +501,21 @@ public:
             return temp_stream_;
     }
 
-    void add_element_to_run(std::wstring parenStyleId = _T(""));
-    void finish_run();
-	void add_new_run(std::wstring parentStyleId = _T(""));
-    bool get_run_state() { return current_run_; }
-    void set_run_state(bool Val) { current_run_ = Val; }
+    void add_element_to_run	(std::wstring parenStyleId = _T(""));
+    void finish_run			();
+	void add_new_run		(std::wstring parentStyleId = _T(""));
+    bool get_run_state		() { return current_run_; }
+    void set_run_state		(bool Val) { current_run_ = Val; }
   
-    void start_paragraph();
-    void finish_paragraph();
-    bool get_paragraph_state()  { return in_paragraph_; }
-    void set_paragraph_state(bool Val)  {in_paragraph_= Val; }
+    void start_paragraph	(bool is_header = false);
+    void finish_paragraph	();
+
+	bool is_paragraph_header()					{ return in_header_; }
+	bool get_paragraph_state()					{ return in_paragraph_; }
+    void set_paragraph_state(bool val)			{in_paragraph_ = val; }
+
+	bool get_drawing_state_content()			{ return in_drawing_content_; }
+	void set_drawing_state_content(bool val)	{in_drawing_content_ = val; }
 
 	 std::wstring		add_hyperlink	(const std::wstring & href, bool drawing);
     hyperlinks::_ref	last_hyperlink	();
@@ -691,7 +702,9 @@ private:
 	comments_context comments_context_;
 
     bool first_element_list_item_;
+	bool in_drawing_content_;
     bool in_paragraph_;
+	bool in_header_;
 
     std::list<odf_reader::office_element *> delayed_elements_;
 

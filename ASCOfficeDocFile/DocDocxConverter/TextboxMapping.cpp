@@ -74,7 +74,7 @@ namespace DocFileFormat
 	{
 		//emu to pt (1 pt = 12700)
 		m_dxTextLeft	=	nLeft	/ 12700.;
-		m_dyTextTop	=	nTop	/ 12700.;
+		m_dyTextTop		=	nTop	/ 12700.;
 		m_dxTextRight	=	nRight	/ 12700.;
 		m_dyTextBottom	=	nBottom	/ 12700.;
 	}
@@ -110,33 +110,39 @@ namespace DocFileFormat
 			Tbkd* bkd	=	NULL;
 
 			int txtbxSubdocStart	=	
-				m_document->FIB->m_RgLw97.ccpText + 
-				m_document->FIB->m_RgLw97.ccpFtn + 
-				m_document->FIB->m_RgLw97.ccpHdr +
-				m_document->FIB->m_RgLw97.ccpAtn +
-				m_document->FIB->m_RgLw97.ccpEdn;
-
+				m_document->FIB->m_RgLw97.ccpText	+ 
+				m_document->FIB->m_RgLw97.ccpFtn	+ 
+				m_document->FIB->m_RgLw97.ccpHdr	+
+				m_document->FIB->m_RgLw97.ccpAtn	+
+				m_document->FIB->m_RgLw97.ccpEdn	;
+	
 			if (typeid(*_caller) == typeid(MainDocumentMapping))
 			{
 				if (m_nTBIndex < m_document->TextboxBreakPlex->Elements.size() )//file(21).doc
 				{
-					bkd				=	static_cast<Tbkd*>(m_document->TextboxBreakPlex->Elements[m_nTBIndex]);
+					bkd		=	static_cast<Tbkd*>(m_document->TextboxBreakPlex->Elements[m_nTBIndex]);
 				}
 
-				if (m_nTBIndex < m_document->TextboxBreakPlex->CharacterPositions.size() - 1)
+				if (m_nTBIndex + 1 < m_document->TextboxBreakPlex->CharacterPositions.size())
 				{				
-					cp					=	txtbxSubdocStart + m_document->TextboxBreakPlex->CharacterPositions[m_nTBIndex];
-					cpEnd				=	txtbxSubdocStart + m_document->TextboxBreakPlex->CharacterPositions[m_nTBIndex + 1];
+					cp		=	txtbxSubdocStart + m_document->TextboxBreakPlex->CharacterPositions[m_nTBIndex];
+					cpEnd	=	txtbxSubdocStart + m_document->TextboxBreakPlex->CharacterPositions[m_nTBIndex + 1];
+				}
+				else if (m_nTBIndex + 1 < m_document->TextboxIndividualPlex->CharacterPositions.size())
+				{
+					//todooo сделать чище
+					cp		=	m_document->TextboxIndividualPlex->CharacterPositions[m_nTBIndex] + 2;
+					cpEnd	=	m_document->TextboxIndividualPlex->CharacterPositions[m_nTBIndex + 1];
 				}
 			}
 			else if ((typeid(*_caller) == typeid(HeaderMapping)) || (typeid(*_caller) == typeid(FooterMapping)))
 			{
 				txtbxSubdocStart	+=	m_document->FIB->m_RgLw97.ccpTxbx;
 				
-				bkd					=	static_cast<Tbkd*>(m_document->TextboxBreakPlexHeader->Elements[m_nTBIndex]);
+				bkd			=	static_cast<Tbkd*>(m_document->TextboxBreakPlexHeader->Elements[m_nTBIndex]);
 			
-				cp					=	txtbxSubdocStart + m_document->TextboxBreakPlexHeader->CharacterPositions[m_nTBIndex];
-				cpEnd				=	txtbxSubdocStart + m_document->TextboxBreakPlexHeader->CharacterPositions[m_nTBIndex + 1];
+				cp			=	txtbxSubdocStart + m_document->TextboxBreakPlexHeader->CharacterPositions[m_nTBIndex];
+				cpEnd		=	txtbxSubdocStart + m_document->TextboxBreakPlexHeader->CharacterPositions[m_nTBIndex + 1];
 			}
 
 			//convert the textbox text

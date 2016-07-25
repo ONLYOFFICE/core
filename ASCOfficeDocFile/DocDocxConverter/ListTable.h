@@ -41,9 +41,12 @@ namespace DocFileFormat
   class ListTable: public IVisitable
   {
     public: 
-		std::list<ListData*> listData;
+		std::list<ListData*>			listData;
+		std::list<NumberingDescriptor>	listNumbering;
 
-	  virtual ~ListTable();
-	  ListTable( FileInformationBlock* fib, POLE::Stream* tableStream );
+		virtual ~ListTable();
+		ListTable( FileInformationBlock* fib, POLE::Stream* tableStream );
+
+		void appendNumbering( const NumberingDescriptor & desc );
   };
 }

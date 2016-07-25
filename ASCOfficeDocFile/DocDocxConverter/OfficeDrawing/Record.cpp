@@ -35,8 +35,8 @@ namespace DocFileFormat
 {
   Record::~Record()
   {
-    RELEASEARRAYOBJECTS( this->RawData );
-	RELEASEOBJECT( this->Reader );
+    RELEASEARRAYOBJECTS( RawData );
+	RELEASEOBJECT( Reader );
   }
 
   /*========================================================================================================*/
@@ -53,20 +53,27 @@ namespace DocFileFormat
   HeaderSize(0), BodySize(0), RawData(NULL), SiblingIdx(0), TypeCode(0), Version(0), Instance(0), Reader(NULL),
   _ParentRecord(NULL)
   {
-    this->BodySize = bodySize;
-    this->TypeCode = typeCode;
-    this->Version = version;
-    this->Instance = instance;
-	this->HeaderSize = Record::HEADER_SIZE_IN_BYTES;
+    BodySize = bodySize;
+    TypeCode = typeCode;
+    Version = version;
+    Instance = instance;
+	HeaderSize = Record::HEADER_SIZE_IN_BYTES;
 
-	this->RawData = _reader->ReadBytes( (int)this->BodySize, true );
-	this->Reader = new MemoryStream( this->RawData, this->BodySize, false );
+	int real_size = _reader->GetSize() - _reader->GetPosition();
+
+	if (real_size < BodySize)
+	{
+		BodySize = real_size;
+	}
+
+	RawData = _reader->ReadBytes( BodySize, true );
+	Reader = new MemoryStream( RawData, BodySize, false );
   }
 
   /*========================================================================================================*/
 
   unsigned int Record::GetTotalSize() const
   {
-    return ( this->HeaderSize + this->BodySize );
+    return ( HeaderSize + BodySize );
   }
 }

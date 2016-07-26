@@ -197,7 +197,8 @@ _buf GenerateKey(_buf & salt, _buf & password, _buf & blockKey, int hashSize, in
 
 	for (int i = 0; i < spin; i++)
 	{
-		pHashBuf = HashAppend(_buf((unsigned char*)&i, 4, false), pHashBuf, algorithm);
+        _buf iterator((unsigned char*)&i, 4, false);
+        pHashBuf = HashAppend(iterator, pHashBuf, algorithm);
 	}
 
 	pHashBuf = HashAppend(pHashBuf, blockKey, algorithm);
@@ -243,7 +244,8 @@ bool ECMADecryptor::SetPassword(std::wstring password_)
 	DecryptAES(verifierInputKey, pSalt, pEncVerInput, decryptedVerifierHashInputBytes);
 //--------------------------------------------
 
-	_buf hashBuf = HashAppend(decryptedVerifierHashInputBytes, _buf(), cryptData.hashAlgorithm);
+    _buf empty(NULL,0,false);
+    _buf hashBuf = HashAppend(decryptedVerifierHashInputBytes, empty, cryptData.hashAlgorithm);
 
 //--------------------------------------------
 	_buf decryptedVerifierHashBytes;

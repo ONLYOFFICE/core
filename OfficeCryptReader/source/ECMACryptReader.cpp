@@ -241,7 +241,7 @@ bool ECMACryptReader::DecryptOfficeFile(std::wstring file_name_inp, std::wstring
 		if (data_out)
 		{
 			NSFile::CFileBinary f;
-			f.CreateFile(file_name_out);
+            f.CreateFileW(file_name_out);
 			f.WriteFile(data_out, lengthData);
 			f.CloseFile();
 

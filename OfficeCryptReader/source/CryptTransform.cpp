@@ -1,4 +1,4 @@
-/*
+ο»Ώ/*
  * (c) Copyright Ascensio System SIA 2010-2016
  *
  * This program is a free software product. You can redistribute it and/or
@@ -150,7 +150,7 @@ void CorrectHashSize(_buf & hashBuf, int size, unsigned char padding)
 }
 
 _buf HashAppend(_buf &  hashBuf, _buf & block, CRYPT_METHOD::_hashAlgorithm algorithm)
-{//todooo οεπεδελΰςό
+{//todooo ΠΏΠµΡ€ΠµΠ΄ΠµΠ»Π°Ρ‚Ρ
 	if (algorithm == CRYPT_METHOD::SHA1)
 	{
 		CryptoPP::SHA1 hash;

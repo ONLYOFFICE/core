@@ -1,4 +1,4 @@
-/*
+п»ї/*
  * (c) Copyright Ascensio System SIA 2010-2016
  *
  * This program is a free software product. You can redistribute it and/or
@@ -203,7 +203,7 @@ bool ECMACryptReader::DecryptOfficeFile(std::wstring file_name_inp, std::wstring
 	if (!decryptor.SetPassword(password))
 		return false;
 
-	//pStream = new POLE::Stream(pStorage, "DataSpaces/DataSpaceMap"); // савершенно ненужная инфа
+	//pStream = new POLE::Stream(pStorage, "DataSpaces/DataSpaceMap"); // СЃР°РІРµСЂС€РµРЅРЅРѕ РЅРµРЅСѓР¶РЅР°СЏ РёРЅС„Р°
 	//if (pStream)
 	//{
 	//	_UINT32 size	= 0;
@@ -235,7 +235,7 @@ bool ECMACryptReader::DecryptOfficeFile(std::wstring file_name_inp, std::wstring
 
 		pStream->read(data, lengthRead);
 
-		decryptor.Decrypt(data, lengthRead, data_out);//todoo сделать покусочное чтение декриптование
+		decryptor.Decrypt(data, lengthRead, data_out);//todoo СЃРґРµР»Р°С‚СЊ РїРѕРєСѓСЃРѕС‡РЅРѕРµ С‡С‚РµРЅРёРµ РґРµРєСЂРёРїС‚РѕРІР°РЅРёРµ
 		delete pStream;
 
 		if (data_out)

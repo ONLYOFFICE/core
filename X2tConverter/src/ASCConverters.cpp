@@ -1240,7 +1240,7 @@ namespace NExtractTools
        return AVS_FILEUTILS_ERROR_CONVERT;
 	}
 
-	int mscrypt2oot (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, const std::wstring &sFontPath, const InputParams& params)
+	int mscrypt2oot (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, const std::wstring &sFontPath, InputParams& params)
 	{
         std::wstring sResultOotDir			= sTemp			+ FILE_SEPARATOR_STR + _T("oot_unpacked");
         std::wstring sResultOotFileEditor	= sResultOotDir	+ FILE_SEPARATOR_STR + _T("Editor.bin");
@@ -1256,22 +1256,54 @@ namespace NExtractTools
 
 		return nRes;
 	}
-
-	int mscrypt2oot_bin	 (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, const std::wstring &sFontPath, const InputParams& params)
+	int mscrypt2oox	 (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, const std::wstring &sFontPath, InputParams& params)
 	{
 		if (!params.m_sPassword)			return AVS_FILEUTILS_ERROR_CONVERT_DRM;
 		if ( params.m_sPassword->empty())	return AVS_FILEUTILS_ERROR_CONVERT_DRM;
 
-		//decrypt to temp
-        std::wstring sResultDecryptDir = sTemp	+ FILE_SEPARATOR_STR + _T("crypt_unpacked");
-        FileSystem::Directory::CreateDirectory(sResultDecryptDir);
+		//decrypt to sTo
 
 		ECMACryptReader cryptReader;
-		if (cryptReader.DecryptOfficeFile(sFrom, sResultDecryptDir, *params.m_sPassword) == false)
+		if (cryptReader.DecryptOfficeFile(sFrom, sTo, *params.m_sPassword) == false)
 			return AVS_FILEUTILS_ERROR_CONVERT_PASSWORD;
 
-		//convert from format (detect before) to temp binary folder
-		return 0;
+		return S_OK;
+	}
+	int mscrypt2oot_bin	 (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, const std::wstring &sFontPath, InputParams& params)
+	{
+		if (!params.m_sPassword)			return AVS_FILEUTILS_ERROR_CONVERT_DRM;
+		if ( params.m_sPassword->empty())	return AVS_FILEUTILS_ERROR_CONVERT_DRM;
+
+		//decrypt to temp file
+        std::wstring sResultDecryptFile = sTemp	+ FILE_SEPARATOR_STR + L"uncrypt_file.oox";
+
+		ECMACryptReader cryptReader;
+		if (cryptReader.DecryptOfficeFile(sFrom, sResultDecryptFile, *params.m_sPassword) == false)
+			return AVS_FILEUTILS_ERROR_CONVERT_PASSWORD;
+
+		COfficeFileFormatChecker OfficeFileFormatChecker;
+
+		if (OfficeFileFormatChecker.isOfficeFile(sResultDecryptFile))
+        {
+            switch (OfficeFileFormatChecker.nFileType)
+			{
+				case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX:
+				{
+					return docx2doct_bin(sResultDecryptFile, sTo, sTemp, sFontPath);
+				}break;
+				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX:
+				{
+					const std::wstring & sXmlOptions = params.getXmlOptions();
+					return xlsx2xlst_bin(sResultDecryptFile, sTo, sTemp, sFontPath, sXmlOptions);
+                }break;
+				case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX:
+				case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSX:
+				{
+					return pptx2pptt_bin(sResultDecryptFile, sTo, sTemp, sFontPath);
+				}break;
+			}
+		}
+		return AVS_FILEUTILS_ERROR_CONVERT;
 	}
 
    //html

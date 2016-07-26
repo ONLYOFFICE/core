@@ -36,10 +36,9 @@
 
 class ECMACryptReader
 {
-public:
-
-	bool DecryptOfficeFile(std::wstring file_name, std::wstring folder_out, std::wstring password);
-
+public:	
+	bool DecryptOfficeFile(std::wstring file_name_inp, std::wstring file_name_out, std::wstring password);
+	
 	struct _keyEncryptor
 	{
 		std::string	spinCount;
@@ -57,6 +56,12 @@ public:
 		std::string encryptedVerifierHashValue;
 		std::string encryptedKeyValue;
 	};
+	struct _dataIntegrity
+	{
+		std::string	encryptedHmacKey;
+		std::string	encryptedHmacValue;
+	};
+
 	struct _refComponent
 	{
 		int				type;
@@ -74,8 +79,6 @@ private:
 	std::vector<_mapEntry>		mapEntries;
 //--------------------------------------------------------------
 	_keyEncryptor				keyData;
-	std::string					encryptedHmacKey;
-	std::string					encryptedHmacValue;
+	_dataIntegrity				dataIntegrity;
 	std::vector<_keyEncryptor>	keyEncryptors;
-
 };

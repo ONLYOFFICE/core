@@ -31,12 +31,13 @@
  */
 
 #include "ECMACryptReader.h"
+#include "CryptTransform.h"
 
 #include "../../Common/3dParty/pole/pole.h"
 #include "../../Common/DocxFormat/Source/Base/Types_32.h"
 #include "../../Common/DocxFormat/Source/XML/xmlutils.h"
 
-#include "../../OfficeCryptTransform/CryptTransform.h"
+#include "../../DesktopEditor/common/File.h"
 
 #define WritingElement_ReadAttributes_Start(Reader) \
 	if ( Reader.GetAttributesCount() <= 0 )\
@@ -106,10 +107,25 @@ void ReadMapEntry(POLE::Stream *pStream, ECMACryptReader::_mapEntry & m)
 	}
 	m.dataSpaceName= ReadUnicodeLP(pStream);
 }
-//--------------------------------------------------------------
-bool ECMACryptReader::DecryptOfficeFile(std::wstring file_name, std::wstring folder_out, std::wstring password)
+
+std::string DecodeBase64(const std::string & value)
 {
-	POLE::Storage *pStorage = new POLE::Storage(file_name.c_str());
+	int nLength = 0;
+	unsigned char *pData = NULL;
+	std::string result;
+
+	NSFile::CBase64Converter::Decode(value.c_str(), value.length(), pData, nLength);
+	if (pData)
+	{
+		result = std::string((char*)pData, nLength);
+		delete []pData; pData = NULL;
+	}
+	return result;
+}
+//--------------------------------------------------------------
+bool ECMACryptReader::DecryptOfficeFile(std::wstring file_name_inp, std::wstring file_name_out, std::wstring password)
+{
+	POLE::Storage *pStorage = new POLE::Storage(file_name_inp.c_str());
 	
 	if (!pStorage)return false;
 
@@ -148,15 +164,44 @@ bool ECMACryptReader::DecryptOfficeFile(std::wstring file_name, std::wstring fol
 		}
 	}
 
-	//Decryptor decryptor(1);
+	ECMADecryptor decryptor;
 
-	//decryptor.SetCryptData(keyData.saltValue, keyData.encryptedVerifierHashInput, keyData.encryptedVerifierHashValue);
+	ECMADecryptor::_cryptData cryptData;
+	
+	cryptData.spinCount				 = atoi(keyEncryptors[0].spinCount.c_str());
+	cryptData.blockSize				 = atoi(keyEncryptors[0].blockSize.c_str());
+	cryptData.hashSize				 = atoi(keyEncryptors[0].hashSize.c_str());
+	cryptData.saltSize				 = atoi(keyEncryptors[0].saltSize.c_str());
+	cryptData.keySize				 = atoi(keyEncryptors[0].keyBits.c_str() ) / 8;
+	
+	cryptData.dataSaltValue          = DecodeBase64(keyData.saltValue);
+	cryptData.saltValue              = DecodeBase64(keyEncryptors[0].saltValue);
+	cryptData.encryptedKeyValue      = DecodeBase64(keyEncryptors[0].encryptedKeyValue);
+	cryptData.encryptedVerifierInput = DecodeBase64(keyEncryptors[0].encryptedVerifierHashInput);
+	cryptData.encryptedVerifierValue = DecodeBase64(keyEncryptors[0].encryptedVerifierHashValue);
+	  
+	cryptData.encryptedHmacKey       = DecodeBase64(dataIntegrity.encryptedHmacKey);
+	cryptData.encryptedHmacValue     = DecodeBase64(dataIntegrity.encryptedHmacValue);
 
-	//if (!decryptor.SetPassword(password)) 
-	//{
-	//	delete pStorage;
-	//	return false;
-	//}
+	if (keyData.cipherAlgorithm == "AES")
+	{
+		if (keyData.cipherChaining == "ChainingModeCBC")	cryptData.cipherAlgorithm = CRYPT_METHOD::AES_CBC;
+		if (keyData.cipherChaining == "ChainingModeCFB")	cryptData.cipherAlgorithm = CRYPT_METHOD::AES_CFB;
+	}
+	else
+	{
+	}
+
+	if (keyData.hashAlgorithm == "SHA1")	cryptData.hashAlgorithm = CRYPT_METHOD::SHA1;
+	if (keyData.hashAlgorithm == "SHA224")	cryptData.hashAlgorithm = CRYPT_METHOD::SHA224;
+	if (keyData.hashAlgorithm == "SHA256")	cryptData.hashAlgorithm = CRYPT_METHOD::SHA256;
+	if (keyData.hashAlgorithm == "SHA384")	cryptData.hashAlgorithm = CRYPT_METHOD::SHA384;
+	if (keyData.hashAlgorithm == "SHA512")	cryptData.hashAlgorithm = CRYPT_METHOD::SHA512;
+
+	decryptor.SetCryptData(cryptData);
+	
+	if (!decryptor.SetPassword(password))
+		return false;
 
 	//pStream = new POLE::Stream(pStorage, "DataSpaces/DataSpaceMap"); // савершенно ненужная инфа
 	//if (pStream)
@@ -179,26 +224,35 @@ bool ECMACryptReader::DecryptOfficeFile(std::wstring file_name, std::wstring fol
 
 	bool result = false;
 
-	pStream = new POLE::Stream(pStorage, "EncryptionPackage");
-	if (pStream)
+	pStream = new POLE::Stream(pStorage, "EncryptedPackage");
+	if (pStream->size() > 0)
 	{
-		_UINT64 length;
-		pStream->read((unsigned char*)&length, 8); 
+		_UINT64 lengthData, lengthRead = pStream->size() - 8;
+		pStream->read((unsigned char*)&lengthData, 8); 
 
-		while (true)
-		{
-			break;
-		}
+		unsigned char* data		= new unsigned char[lengthRead];
+		unsigned char* data_out	= NULL;
 
+		pStream->read(data, lengthRead);
+
+		decryptor.Decrypt(data, lengthRead, data_out);//todoo сделать покусочное чтение декриптование
 		delete pStream;
+
+		if (data_out)
+		{
+			NSFile::CFileBinary f;
+			f.CreateFile(file_name_out);
+			f.WriteFile(data_out, lengthData);
+			f.CloseFile();
+
+			result = true;
+		}
 	}
 //-------------------------------------------------------------------
-
-
 	delete pStorage;
-
 	return result;
 }
+
 
 bool ECMACryptReader::ReadEncryptionInfo(const std::string & xml_string)
 {
@@ -217,44 +271,55 @@ bool ECMACryptReader::ReadEncryptionInfo(const std::string & xml_string)
 		if ( L"keyData" == sName )
 		{
 			WritingElement_ReadAttributes_Start( xmlReader)
-			WritingElement_ReadAttributes_Read_if		( xmlReader, "saltSize",		keyData.saltSize )
-			WritingElement_ReadAttributes_Read_else_if	( xmlReader, "blockSize",		keyData.blockSize )
-			WritingElement_ReadAttributes_Read_else_if	( xmlReader, "keyBits",			keyData.keyBits )
-			WritingElement_ReadAttributes_Read_else_if	( xmlReader, "hashSize",		keyData.hashSize )
-			WritingElement_ReadAttributes_Read_else_if	( xmlReader, "cipherAlgorithm",	keyData.cipherAlgorithm )
-			WritingElement_ReadAttributes_Read_else_if	( xmlReader, "cipherChaining",	keyData.cipherChaining )
-			WritingElement_ReadAttributes_Read_else_if	( xmlReader, "hashAlgorithm",	keyData.hashAlgorithm )
-			WritingElement_ReadAttributes_Read_else_if	( xmlReader, "saltValue",		keyData.saltValue )
+				WritingElement_ReadAttributes_Read_if		( xmlReader, "saltSize",		keyData.saltSize )
+				WritingElement_ReadAttributes_Read_else_if	( xmlReader, "blockSize",		keyData.blockSize )
+				WritingElement_ReadAttributes_Read_else_if	( xmlReader, "keyBits",			keyData.keyBits )
+				WritingElement_ReadAttributes_Read_else_if	( xmlReader, "hashSize",		keyData.hashSize )
+				WritingElement_ReadAttributes_Read_else_if	( xmlReader, "cipherAlgorithm",	keyData.cipherAlgorithm )
+				WritingElement_ReadAttributes_Read_else_if	( xmlReader, "cipherChaining",	keyData.cipherChaining )
+				WritingElement_ReadAttributes_Read_else_if	( xmlReader, "hashAlgorithm",	keyData.hashAlgorithm )
+				WritingElement_ReadAttributes_Read_else_if	( xmlReader, "saltValue",		keyData.saltValue )
 			WritingElement_ReadAttributes_End( xmlReader )
 		}
 		else if ( L"dataIntegrity" == sName )
 		{
-
+			WritingElement_ReadAttributes_Start( xmlReader)
+				WritingElement_ReadAttributes_Read_if		( xmlReader, "encryptedHmacKey",	dataIntegrity.encryptedHmacKey)
+				WritingElement_ReadAttributes_Read_else_if	( xmlReader, "encryptedHmacValue",	dataIntegrity.encryptedHmacValue)
+			WritingElement_ReadAttributes_End( xmlReader )
 		}
 		else if (L"keyEncryptors" == sName)
 		{
 			while( xmlReader.ReadNextSiblingNode( nCurDepth + 1 ) )
 			{
-				 if (L"keyEncryptor" == sName)
+				sName = xmlReader.GetName();
+				if (L"keyEncryptor" == sName)
 				 {
-					_keyEncryptor k;
-					 
-					WritingElement_ReadAttributes_Start( xmlReader)
-					WritingElement_ReadAttributes_Read_if     ( xmlReader, "spinCount",			k.spinCount )
-					WritingElement_ReadAttributes_Read_else_if( xmlReader, "saltSize",			k.saltSize )
-					WritingElement_ReadAttributes_Read_else_if( xmlReader, "blockSize",			k.blockSize )
-					WritingElement_ReadAttributes_Read_else_if( xmlReader, "keyBits",			k.keyBits )
-					WritingElement_ReadAttributes_Read_else_if( xmlReader, "hashSize",			k.hashSize )
-					WritingElement_ReadAttributes_Read_else_if( xmlReader, "cipherAlgorithm",	k.cipherAlgorithm )
-					WritingElement_ReadAttributes_Read_else_if( xmlReader, "cipherChaining",	k.cipherChaining )
-					WritingElement_ReadAttributes_Read_else_if( xmlReader, "hashAlgorithm",		k.hashAlgorithm )
-					WritingElement_ReadAttributes_Read_else_if( xmlReader, "saltValue",			k.saltValue )
-					WritingElement_ReadAttributes_Read_else_if( xmlReader, "encryptedVerifierHashInput",	k.encryptedVerifierHashInput )
-					WritingElement_ReadAttributes_Read_else_if( xmlReader, "encryptedVerifierHashValue",	k.encryptedVerifierHashValue )
-					WritingElement_ReadAttributes_Read_else_if( xmlReader, "encryptedKeyValue",	k.encryptedKeyValue )
-					WritingElement_ReadAttributes_End( xmlReader )
-					 
-					keyEncryptors.push_back(k);
+					while( xmlReader.ReadNextSiblingNode( nCurDepth + 2 ) )
+					{
+						sName = xmlReader.GetName();
+						if (L"p:encryptedKey" == sName)
+						 {
+							_keyEncryptor k={};
+							 
+							WritingElement_ReadAttributes_Start( xmlReader)
+								WritingElement_ReadAttributes_Read_if     ( xmlReader, "spinCount",			k.spinCount )
+								WritingElement_ReadAttributes_Read_else_if( xmlReader, "saltSize",			k.saltSize )
+								WritingElement_ReadAttributes_Read_else_if( xmlReader, "blockSize",			k.blockSize )
+								WritingElement_ReadAttributes_Read_else_if( xmlReader, "keyBits",			k.keyBits )
+								WritingElement_ReadAttributes_Read_else_if( xmlReader, "hashSize",			k.hashSize )
+								WritingElement_ReadAttributes_Read_else_if( xmlReader, "cipherAlgorithm",	k.cipherAlgorithm )
+								WritingElement_ReadAttributes_Read_else_if( xmlReader, "cipherChaining",	k.cipherChaining )
+								WritingElement_ReadAttributes_Read_else_if( xmlReader, "hashAlgorithm",		k.hashAlgorithm )
+								WritingElement_ReadAttributes_Read_else_if( xmlReader, "saltValue",			k.saltValue )
+								WritingElement_ReadAttributes_Read_else_if( xmlReader, "encryptedVerifierHashInput",	k.encryptedVerifierHashInput )
+								WritingElement_ReadAttributes_Read_else_if( xmlReader, "encryptedVerifierHashValue",	k.encryptedVerifierHashValue )
+								WritingElement_ReadAttributes_Read_else_if( xmlReader, "encryptedKeyValue",	k.encryptedKeyValue )
+							WritingElement_ReadAttributes_End( xmlReader )
+						 
+							keyEncryptors.push_back(k);
+						}
+					}
 				}
 			}
 		}

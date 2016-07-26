@@ -34,36 +34,76 @@
 #include <string>
 #include <vector>
 
-class Decryptor
+namespace CRYPT_METHOD
+{
+	enum _hashAlgorithm
+	{
+		SHA1,
+		SHA224,
+		SHA256,
+		SHA384,
+		SHA512
+	};
+
+	enum _cipherAlgorithm
+	{
+		XOR,
+		RC4,
+		AES_CBC,
+		AES_CFB
+	};
+}
+
+class ECMADecryptor
 {
 public:
-	Decryptor(int type);
-	virtual ~Decryptor();
 
-	void Decrypt(void* data, int  size);
+	struct _cryptData
+	{
+		CRYPT_METHOD::_cipherAlgorithm	cipherAlgorithm;
+		CRYPT_METHOD::_hashAlgorithm	hashAlgorithm;
 
-	bool IsVerify();
+		int			spinCount;
+		int			keySize;
+		int			hashSize;
+		int			blockSize;
+		int			saltSize;
+
+		std::string dataSaltValue;
+		std::string saltValue;
+		std::string encryptedKeyValue;
+		std::string encryptedVerifierInput;
+		std::string encryptedVerifierValue;
+		  
+		std::string encryptedHmacKey;
+		std::string encryptedHmacValue;
+
+//..........
+
+	};
+	ECMADecryptor();
+	virtual ~ECMADecryptor(){}
+
+	void Decrypt(unsigned char* data, int  size, unsigned char*& data_out);
+
+	bool IsVerify(){}
 
 	bool SetPassword(std::wstring password);
 
-	void SetCryptData(std::string salt, std::string verifier, std::string verifier_hash);
+	void SetCryptData(_cryptData	&data);
 	
 private:
-
-	void *impl_;
+	_cryptData		cryptData;
+	std::wstring	password;
 };
 //
-//class Encryptor
+//class ECMAEncryptor
 //{
 //public:
-//	Encryptor(int type);
-//	virtual ~Encryptor();
+//	ECMAEncryptor(int type);
+//	virtual ~ECMAEncryptor();
 //
 //	void Encrypt(char* data, int size);
 //
 //	bool SetPassword(std::wstring password);
-//
-//private:
-//
-//	void *impl_;
 //};

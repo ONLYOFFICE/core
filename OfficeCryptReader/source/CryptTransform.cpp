@@ -40,6 +40,8 @@
 #include "../../Common/3dParty/cryptopp/pwdbased.h"
 #include "../../Common/3dParty/cryptopp/filters.h"
 
+#include "../../Common/DocxFormat/Source/Base/unicode_util.h"
+
 
 static const unsigned char encrVerifierHashInputBlockKey[8]			= { 0xfe, 0xa7, 0xd2, 0x76, 0x3b, 0x4b, 0x9e, 0x79 };
 static const unsigned char encrVerifierHashValueBlockKey[8]			= { 0xd7, 0xaa, 0x0f, 0x6d, 0x30, 0x61, 0x34, 0x4e };
@@ -57,7 +59,7 @@ ECMADecryptor::ECMADecryptor()
 	cryptData.hashSize			= 0x14;
 	cryptData.blockSize			= 0x10;
 	cryptData.saltSize			= 0x10;
-//default ms2016
+//default ms2013/ms2016
 	//cryptData.cipherAlgorithm	= AES_CBC;
 	//cryptData.hashAlgorithm	= SHA256;
 	//cryptData.spinCount		= 100000; 
@@ -69,38 +71,56 @@ ECMADecryptor::ECMADecryptor()
 
 class _buf
 {
-private:
-	bool bDelete;
 public:
 	unsigned char	*ptr;
 	int				size;
 //-----------------------------------------------------------------------------------
-	_buf()													{ptr = NULL; size = 0; bDelete = true;}
-	_buf(int sz)											{ptr = new unsigned char [sz]; size = sz; bDelete = true;}
-	_buf(unsigned char * p, int sz, bool bDelete_ = true )	
+	_buf()													: ptr(NULL), size(0), 	bDelete(true){}
+	_buf(int sz)											: ptr(NULL), size(0), 	bDelete(true)
 	{
-		bDelete = bDelete_;
-		if (bDelete)
+		ptr = new unsigned char [sz]; 
+		size = sz; 
+	}
+	_buf(unsigned char * buf, int sz, bool bDelete_ = true ): ptr(NULL), size(0), 	bDelete(true)
+	{
+		CreateCopy(buf, sz, bDelete_);
+	}
+	_buf(const std::string  & str)							: ptr(NULL), size(0), 	bDelete(true)
+	{
+		CreateCopy((unsigned char*)str.c_str(), str.length(), true);
+	}
+	_buf(const std::wstring & str)							: ptr(NULL), size(0), 	bDelete(true)
+	{
+		if (sizeof(wchar_t) == 4)
 		{
-			ptr = new unsigned char [sz]; size = sz;
-			memcpy(ptr, p , sz);
+			unsigned int nLength = str.length();
+			
+			size = nLength * 2; 
+			ptr = new unsigned char [size]; 
+
+			UTF16* pStrUtf16 = (UTF16*)		ptr;
+			UTF32 *pStrUtf32 = (UTF32 *)	str.c_str();
+
+            UTF16 *pStrUtf16_Conv		= pStrUtf16;
+            const UTF32 *pStrUtf32_Conv = pStrUtf32;
+
+            ConversionResult eUnicodeConversionResult = ConvertUTF32toUTF16 (&pStrUtf32_Conv, &pStrUtf32[nLength]
+                    , &pStrUtf16_Conv, &pStrUtf16 [nLength], strictConversion);
+
+            if (conversionOK != eUnicodeConversionResult)
+            {
+            }
 		}
 		else
 		{
-			ptr = p; size = sz; 
+			CreateCopy((unsigned char*)str.c_str(), str.length() * 2, true);
 		}
 	}
-
-	void Clear()
-	{
-		if (bDelete && ptr) delete []ptr; 
-		ptr = NULL; size = 0;
-
-		bDelete = true;
-	}
 	
-	virtual ~_buf()	{Clear();}
-
+	virtual ~_buf()	
+	{
+		Clear();
+	}
 	_buf& operator=(const _buf& oSrc)
 	{
 		Clear();
@@ -124,13 +144,40 @@ public:
 
 		return *this;
 	}	
+//----------------------------------------------------------------------
+private:
+	bool bDelete;
+	void CreateCopy(unsigned char* buf, int sz, bool bDelete_)
+	{
+		Clear();
+		bDelete = bDelete_;
+		if (bDelete)
+		{
+			ptr = new unsigned char [sz]; size = sz;
+			memcpy(ptr, buf , sz);
+		}
+		else
+		{
+			ptr = buf; size = sz; 
+		}
+
+	}
+	void Clear()
+	{
+		if (bDelete && ptr) delete []ptr; 
+		ptr = NULL; size = 0;
+
+		bDelete = true;
+	}
 };
+
 bool operator==(const _buf& oBuf1, const _buf& oBuf2)
 {
 	if (!oBuf1.ptr || !oBuf2.ptr) return false;
 
 	return 0 == memcmp(oBuf1.ptr, oBuf2.ptr, (std::min)(oBuf1.size, oBuf2.size));
 }
+
 void CorrectHashSize(_buf & hashBuf, int size, unsigned char padding)
 {
 	if (hashBuf.size < size)
@@ -229,13 +276,13 @@ bool ECMADecryptor::SetPassword(std::wstring password_)
 {
 	password = password_;
 	
-	_buf pPassword		((unsigned char*)password.c_str()				, password.length() * 2);
-	_buf pSalt			((unsigned char*)cryptData.saltValue.c_str()	, cryptData.saltValue.length());
-	_buf pInputBlockKey ((unsigned char*)encrVerifierHashInputBlockKey	, 8);
-	_buf pValueBlockKey ((unsigned char*)encrVerifierHashValueBlockKey	, 8);
+	_buf pPassword		(password);
+	_buf pSalt			(cryptData.saltValue);
+	_buf pInputBlockKey ((unsigned char*)encrVerifierHashInputBlockKey, 8);
+	_buf pValueBlockKey ((unsigned char*)encrVerifierHashValueBlockKey, 8);
 	
-	_buf pEncVerInput	((unsigned char*)cryptData.encryptedVerifierInput.c_str()	, cryptData.encryptedVerifierInput.length());
- 	_buf pEncVerValue	((unsigned char*)cryptData.encryptedVerifierValue.c_str()	, cryptData.encryptedVerifierValue.length());
+	_buf pEncVerInput	(cryptData.encryptedVerifierInput);
+ 	_buf pEncVerValue	(cryptData.encryptedVerifierValue);
 	
 
 	_buf verifierInputKey = GenerateKey( pSalt, pPassword, pInputBlockKey, cryptData.keySize, cryptData.spinCount, cryptData.hashAlgorithm );
@@ -266,13 +313,13 @@ void ECMADecryptor::Decrypt(unsigned char* data_inp, int  size, unsigned char*& 
 	data_out = NULL;
 
 	_buf pBlockKey	((unsigned char*)encrKeyValueBlockKey, 8);
-	_buf pPassw		((unsigned char*)password.c_str(), password.length() * 2);
+	_buf pPassword	(password);
 	
-	_buf pDataSalt	((unsigned char*)cryptData.dataSaltValue.c_str(), cryptData.dataSaltValue.length());
-	_buf pSalt		((unsigned char*)cryptData.saltValue.c_str(), cryptData.saltValue.length());
-	_buf pKeyValue	((unsigned char*)cryptData.encryptedKeyValue.c_str(), cryptData.encryptedKeyValue.length());
-	
-	_buf Key = GenerateKey( pSalt, pPassw, pBlockKey, cryptData.keySize, cryptData.spinCount, cryptData.hashAlgorithm);  
+	_buf pDataSalt	(cryptData.dataSaltValue);
+	_buf pSalt		(cryptData.saltValue);
+	_buf pKeyValue	(cryptData.encryptedKeyValue);
+
+	_buf Key = GenerateKey( pSalt, pPassword, pBlockKey, cryptData.keySize, cryptData.spinCount, cryptData.hashAlgorithm);  
 
 	_buf pDecryptedKey;
 	DecryptAES( Key, pSalt, pKeyValue, pDecryptedKey);  

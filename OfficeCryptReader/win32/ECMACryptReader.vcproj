@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8,00"
-	Name="ECMACryptReader"
+	Name="OfficeFileCrypt"
 	ProjectGUID="{C27E9A9F-3A17-4482-9C5F-BF15C01E747C}"
 	RootNamespace="ECMACryptReader"
 	Keyword="Win32Proj"
@@ -142,11 +142,11 @@
 	</References>
 	<Files>
 		<File
-			RelativePath="..\..\OfficeCryptTransform\CryptTransform.cpp"
+			RelativePath="..\source\CryptTransform.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\OfficeCryptTransform\CryptTransform.h"
+			RelativePath="..\source\CryptTransform.h"
 			>
 		</File>
 		<File

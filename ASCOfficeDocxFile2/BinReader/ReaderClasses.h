@@ -1233,17 +1233,29 @@ public:
 				oWriter.WriteString(sFormatXml);
 			}
 		}
+		if(bRestart && 0 == Restart)
+		{
+			CString sRestart;sRestart.Format(_T("<w:lvlRestart w:val=\"%d\"/>"), Restart);
+			oWriter.WriteString(sRestart);
+		}
 		if(bPStyle)
 		{
 			CString sStyleName = XmlUtils::EncodeXmlString(PStyle);
             CString sFormatXml;sFormatXml.Format(_T("<w:pStyle w:val=\"%ls\"/>"), sStyleName);
 			oWriter.WriteString(sFormatXml);
 		}
-		
-		if(bRestart && 0 == Restart)
+		if(bSuff)
 		{
-			CString sRestart;sRestart.Format(_T("<w:lvlRestart w:val=\"%d\"/>"), Restart);
-			oWriter.WriteString(sRestart);
+			CString sSuff;
+			switch(Suff)
+			{
+			case numbering_suff_Nothing: sSuff = _T("nothing");break;
+			case numbering_suff_Space: sSuff = _T("space");break;
+			default: sSuff = _T("tab");break;
+			}
+			oWriter.WriteString(CString(_T("<w:suff w:val=\"")));
+			oWriter.WriteString(sSuff);
+			oWriter.WriteString(CString(_T("\" />")));
 		}
 		if(bText)
 		{

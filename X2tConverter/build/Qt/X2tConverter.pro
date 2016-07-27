@@ -253,6 +253,7 @@ linux-g++ | linux-g++-64 | linux-g++-32 {
     LIBS += -lz
     LIBS += -lxml2
     LIBS += -lcurl
+    LIBS += -lcrypto++
 }
 
 mac {

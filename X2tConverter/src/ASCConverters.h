@@ -115,8 +115,9 @@ namespace NExtractTools
     int xlsx2ods        (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, const std::wstring &sFontPath);
     int xlsx_dir2ods    (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, const std::wstring &sFontPath);
 
-	int mscrypt2oot		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, const std::wstring &sFontPath, const InputParams& params);
-	int mscrypt2oot_bin	(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, const std::wstring &sFontPath, const InputParams& params);
+	int mscrypt2oox		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, const std::wstring &sFontPath, const InputParams& params);
+	int mscrypt2oot		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, const std::wstring &sFontPath, InputParams& params);
+	int mscrypt2oot_bin	(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, const std::wstring &sFontPath, InputParams& params);
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
     int dir2zip			(const std::wstring &sFrom, const std::wstring &sTo);

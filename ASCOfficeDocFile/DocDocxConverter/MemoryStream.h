@@ -32,6 +32,7 @@
 #pragma once
 
 #include "IBinaryReader.h"
+#include "../Common/FormatUtils.h"
 
 class MemoryStream: public IBinaryReader
 {

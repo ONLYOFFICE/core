@@ -116,8 +116,15 @@ bool COfficeFileFormatChecker::isDocFormatFile	(POLE::Storage * storage)
 	POLE::Stream stream(storage, "WordDocument");	
 	
 	unsigned char buffer[10];
-	if (stream.read(buffer,10) >0)
+	if (stream.read(buffer,10) > 0)
+	{
+		//ms office 2007 encrypted contains stream WordDocument !!
+		std::list<std::string> entries = storage->entries("DataSpaces");
+		if (entries.size() > 0)
+			return false;
+
 		return true;
+	}
 
 	return false;
 }

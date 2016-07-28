@@ -39,6 +39,10 @@
 
 #include "../../DesktopEditor/common/File.h"
 
+#include "../../ASCOfficeDocFile/DocDocxConverter/MemoryStream.h"
+
+#define GETBIT(from, num) ((from & (1 << num)) != 0)
+
 #define WritingElement_ReadAttributes_Start(Reader) \
 	if ( Reader.GetAttributesCount() <= 0 )\
 		return false;\
@@ -87,6 +91,7 @@ std::wstring ReadUnicodeLP(POLE::Stream *pStream)
 	return res;
 
 }
+
 void ReadMapEntry(POLE::Stream *pStream, ECMACryptReader::_mapEntry & m)
 {
 	if (!pStream) return;
@@ -122,139 +127,30 @@ std::string DecodeBase64(const std::string & value)
 	}
 	return result;
 }
-//--------------------------------------------------------------
-bool ECMACryptReader::DecryptOfficeFile(std::wstring file_name_inp, std::wstring file_name_out, std::wstring password)
+//-----------------------------------------------------------------------------------------------------------------------
+struct _keyEncryptor
 {
-	POLE::Storage *pStorage = new POLE::Storage(file_name_inp.c_str());
-	
-	if (!pStorage)return false;
+	std::string	spinCount;
+	std::string	saltSize;
+	std::string	blockSize;
+	std::string	keyBits;
+	std::string hashSize;
 
-	if (!pStorage->open())
-	{
-		delete pStorage;
-		return false;
-	}
+	std::string cipherAlgorithm;
+	std::string cipherChaining;
+	std::string hashAlgorithm;
 
-	POLE::Stream *pStream = new POLE::Stream(pStorage, "EncryptionInfo");
-	if (pStream)
-	{
-		_UINT32 nEncryptionInfoSize = 0;
-		int sz = pStream->read((unsigned char*)&nEncryptionInfoSize, 4); //size uncrypt ??
-
-		_UINT32 nEncryptionInfoSize1 = 0;
-		sz = pStream->read((unsigned char*)&nEncryptionInfoSize1, 4); //??? (64)
-
-		unsigned char* byteEncryptionInfo = new unsigned char[nEncryptionInfoSize];
-		if (!byteEncryptionInfo)
-		{
-			delete pStream;
-			delete pStorage;
-			return false;
-		}
-		sz = pStream->read(byteEncryptionInfo, nEncryptionInfoSize);
-
-		std::string xml_string((char*) byteEncryptionInfo, sz);
-		delete []byteEncryptionInfo;
-		delete pStream;
-	
-		if (!ReadEncryptionInfo(xml_string))
-		{
-			delete pStorage;
-			return false;
-		}
-	}
-
-	ECMADecryptor decryptor;
-
-	ECMADecryptor::_cryptData cryptData;
-	
-	cryptData.spinCount				 = atoi(keyEncryptors[0].spinCount.c_str());
-	cryptData.blockSize				 = atoi(keyEncryptors[0].blockSize.c_str());
-	cryptData.hashSize				 = atoi(keyEncryptors[0].hashSize.c_str());
-	cryptData.saltSize				 = atoi(keyEncryptors[0].saltSize.c_str());
-	cryptData.keySize				 = atoi(keyEncryptors[0].keyBits.c_str() ) / 8;
-	
-	cryptData.dataSaltValue          = DecodeBase64(keyData.saltValue);
-	cryptData.saltValue              = DecodeBase64(keyEncryptors[0].saltValue);
-	cryptData.encryptedKeyValue      = DecodeBase64(keyEncryptors[0].encryptedKeyValue);
-	cryptData.encryptedVerifierInput = DecodeBase64(keyEncryptors[0].encryptedVerifierHashInput);
-	cryptData.encryptedVerifierValue = DecodeBase64(keyEncryptors[0].encryptedVerifierHashValue);
-	  
-	cryptData.encryptedHmacKey       = DecodeBase64(dataIntegrity.encryptedHmacKey);
-	cryptData.encryptedHmacValue     = DecodeBase64(dataIntegrity.encryptedHmacValue);
-
-	if (keyData.cipherAlgorithm == "AES")
-	{
-		if (keyData.cipherChaining == "ChainingModeCBC")	cryptData.cipherAlgorithm = CRYPT_METHOD::AES_CBC;
-		if (keyData.cipherChaining == "ChainingModeCFB")	cryptData.cipherAlgorithm = CRYPT_METHOD::AES_CFB;
-	}
-	else
-	{
-	}
-
-	if (keyData.hashAlgorithm == "SHA1")	cryptData.hashAlgorithm = CRYPT_METHOD::SHA1;
-	if (keyData.hashAlgorithm == "SHA224")	cryptData.hashAlgorithm = CRYPT_METHOD::SHA224;
-	if (keyData.hashAlgorithm == "SHA256")	cryptData.hashAlgorithm = CRYPT_METHOD::SHA256;
-	if (keyData.hashAlgorithm == "SHA384")	cryptData.hashAlgorithm = CRYPT_METHOD::SHA384;
-	if (keyData.hashAlgorithm == "SHA512")	cryptData.hashAlgorithm = CRYPT_METHOD::SHA512;
-
-	decryptor.SetCryptData(cryptData);
-	
-	if (!decryptor.SetPassword(password))
-		return false;
-
-	//pStream = new POLE::Stream(pStorage, "DataSpaces/DataSpaceMap"); // савершенно ненужная инфа
-	//if (pStream)
-	//{
-	//	_UINT32 size	= 0;
-	//	_UINT32 count	= 0;
-	//	
-	//	pStream->read((unsigned char*)&size, 4); 
-	//	pStream->read((unsigned char*)&count, 4); 
-
-	//	for (int i = 0 ; i < count; i++)
-	//	{
-	//		_mapEntry m;
-	//		ReadMapEntry(pStream, m);
-
-	//		mapEntries.push_back(m);
-	//	}
-	//	delete pStream;
-	//}
-
-	bool result = false;
-
-	pStream = new POLE::Stream(pStorage, "EncryptedPackage");
-	if (pStream->size() > 0)
-	{
-		_UINT64 lengthData, lengthRead = pStream->size() - 8;
-		pStream->read((unsigned char*)&lengthData, 8); 
-
-		unsigned char* data		= new unsigned char[lengthRead];
-		unsigned char* data_out	= NULL;
-
-		pStream->read(data, lengthRead);
-
-		decryptor.Decrypt(data, lengthRead, data_out);//todoo сделать покусочное чтение декриптование
-		delete pStream;
-
-		if (data_out)
-		{
-			NSFile::CFileBinary f;
-            f.CreateFileW(file_name_out);
-			f.WriteFile(data_out, lengthData);
-			f.CloseFile();
-
-			result = true;
-		}
-	}
-//-------------------------------------------------------------------
-	delete pStorage;
-	return result;
-}
-
-
-bool ECMACryptReader::ReadEncryptionInfo(const std::string & xml_string)
+	std::string saltValue;
+	std::string encryptedVerifierHashInput;
+	std::string encryptedVerifierHashValue;
+	std::string encryptedKeyValue;
+};
+struct _dataIntegrity
+{
+	std::string	encryptedHmacKey;
+	std::string	encryptedHmacValue;
+};
+bool ReadXmlEncryptionInfo(const std::string & xml_string, ECMADecryptor::_cryptData & cryptData)
 {
 	XmlUtils::CXmlLiteReader xmlReader;
 
@@ -263,6 +159,10 @@ bool ECMACryptReader::ReadEncryptionInfo(const std::string & xml_string)
 
 	if ( !xmlReader.ReadNextNode() )
 		return false;
+
+	_dataIntegrity				dataIntegrity;
+	_keyEncryptor				keyData;
+	std::vector<_keyEncryptor>	keyEncryptors;
 
 	int nCurDepth = xmlReader.GetDepth();
 	while( xmlReader.ReadNextSiblingNode( nCurDepth ) )
@@ -324,6 +224,246 @@ bool ECMACryptReader::ReadEncryptionInfo(const std::string & xml_string)
 			}
 		}
 	}
+
+	if (keyEncryptors.empty()) return false;
+
+	cryptData.spinCount				 = atoi(keyEncryptors[0].spinCount.c_str());
+	cryptData.blockSize				 = atoi(keyEncryptors[0].blockSize.c_str());
+	cryptData.hashSize				 = atoi(keyEncryptors[0].hashSize.c_str());
+	cryptData.saltSize				 = atoi(keyEncryptors[0].saltSize.c_str());
+	cryptData.keySize				 = atoi(keyEncryptors[0].keyBits.c_str() ) / 8;
+	
+	cryptData.dataSaltValue          = DecodeBase64(keyData.saltValue);
+	cryptData.saltValue              = DecodeBase64(keyEncryptors[0].saltValue);
+	cryptData.encryptedKeyValue      = DecodeBase64(keyEncryptors[0].encryptedKeyValue);
+	cryptData.encryptedVerifierInput = DecodeBase64(keyEncryptors[0].encryptedVerifierHashInput);
+	cryptData.encryptedVerifierValue = DecodeBase64(keyEncryptors[0].encryptedVerifierHashValue);
+	  
+	cryptData.encryptedHmacKey       = DecodeBase64(dataIntegrity.encryptedHmacKey);
+	cryptData.encryptedHmacValue     = DecodeBase64(dataIntegrity.encryptedHmacValue);
+
+	if (keyData.cipherAlgorithm == "AES")
+	{
+		if (keyData.cipherChaining == "ChainingModeCBC")	cryptData.cipherAlgorithm = CRYPT_METHOD::AES_CBC;
+		if (keyData.cipherChaining == "ChainingModeCFB")	cryptData.cipherAlgorithm = CRYPT_METHOD::AES_CFB;
+	}
+
+	if (keyData.hashAlgorithm == "SHA1")	cryptData.hashAlgorithm = CRYPT_METHOD::SHA1;
+	if (keyData.hashAlgorithm == "SHA224")	cryptData.hashAlgorithm = CRYPT_METHOD::SHA224;
+	if (keyData.hashAlgorithm == "SHA256")	cryptData.hashAlgorithm = CRYPT_METHOD::SHA256;
+	if (keyData.hashAlgorithm == "SHA384")	cryptData.hashAlgorithm = CRYPT_METHOD::SHA384;
+	if (keyData.hashAlgorithm == "SHA512")	cryptData.hashAlgorithm = CRYPT_METHOD::SHA512;
+
 	return true;
 }
 
+bool ReadStandartEncryptionInfo(unsigned char* data, int size, ECMADecryptor::_cryptData & cryptData)
+{
+	if (!data || size < 1) return false;
+	MemoryStream mem_stream(data, size, false);
+
+//EncryptionHeader
+	int HeaderSize	= mem_stream.ReadUInt32();
+	int Flags		= mem_stream.ReadUInt32();
+	int SizeExtra	= mem_stream.ReadUInt32();
+	int AlgID		= mem_stream.ReadUInt32();
+	int AlgIDHash	= mem_stream.ReadUInt32();
+	int KeySize		= mem_stream.ReadUInt32();
+	int ProviderType= mem_stream.ReadUInt32();
+	int Reserved1	= mem_stream.ReadUInt32();
+	int Reserved2	= mem_stream.ReadUInt32();
+
+	int pos = mem_stream.GetPosition();
+
+	while(pos  < size - 1)
+	{
+		if (data[pos] == 0 && data[pos + 1] == 0)
+		{
+			break;
+		}
+		pos+=2;//unicode null-terminate string
+	}
+	int szCSPName = pos - mem_stream.GetPosition() + 2;
+
+	unsigned char* strData = mem_stream.ReadBytes(szCSPName, true);
+	if (strData)
+	{
+		delete []strData;
+	}
+//EncryptionVerifier
+	cryptData.saltSize = mem_stream.ReadUInt32(); 
+	
+	cryptData.saltValue	= std::string((char*)data + mem_stream.GetPosition(), cryptData.saltSize);	
+	mem_stream.ReadBytes(cryptData.saltSize, false);
+	
+	cryptData.encryptedVerifierInput = std::string((char*)data + mem_stream.GetPosition(), 0x10);
+	mem_stream.ReadBytes(0x10, false);
+
+	cryptData.hashSize = mem_stream.ReadUInt32();
+			
+	int szEncryptedVerifierHash = (ProviderType == 0x0001) ? 0x14 : 0x20;
+	cryptData.encryptedVerifierValue = std::string((char*)data + mem_stream.GetPosition(), szEncryptedVerifierHash);
+	mem_stream.ReadBytes(szEncryptedVerifierHash, false);
+
+	pos = mem_stream.GetPosition();
+	
+//------------------------------------------------------------------------------------------
+	cryptData.hashAlgorithm = CRYPT_METHOD::SHA1; //by AlgIDHash -> 0x0000 || 0x8004
+	cryptData.spinCount		= 50000;
+
+	switch(AlgID)
+	{
+	case 0x6801:	
+		cryptData.cipherAlgorithm = CRYPT_METHOD::RC4;		
+		cryptData.keySize = KeySize / 8;
+		break;
+	case 0x660E:	
+		cryptData.cipherAlgorithm = CRYPT_METHOD::AES_ECB;
+		cryptData.keySize	= 128 /8;	
+		break;
+	case 0x660F:	
+		cryptData.cipherAlgorithm = CRYPT_METHOD::AES_ECB;
+		cryptData.keySize	= 192 /8;	
+		break;
+	case 0x6610:	
+		cryptData.cipherAlgorithm = CRYPT_METHOD::AES_ECB;
+		cryptData.keySize	= 256 /8;	
+		break;
+	}
+	return true;
+}
+
+bool ReadExtensibleEncryptionInfo(unsigned char* data, int size, ECMADecryptor::_cryptData & cryptData)
+{
+	return false;
+}
+
+
+//--------------------------------------------------------------
+bool ECMACryptReader::DecryptOfficeFile(std::wstring file_name_inp, std::wstring file_name_out, std::wstring password)
+{
+	POLE::Storage *pStorage = new POLE::Storage(file_name_inp.c_str());
+	
+	if (!pStorage)return false;
+
+	if (!pStorage->open())
+	{
+		delete pStorage;
+		return false;
+	}
+	ECMADecryptor::_cryptData cryptData;
+	bool result = false;
+
+	POLE::Stream *pStream = new POLE::Stream(pStorage, "EncryptionInfo");
+	if (pStream)
+	{
+		_UINT16 VersionInfoMajor = 0, VersionInfoMinor = 0;
+		
+		pStream->read((unsigned char*)&VersionInfoMajor, 2);
+		pStream->read((unsigned char*)&VersionInfoMinor, 2);
+
+		_UINT32 nEncryptionInfoFlags = 0;
+		pStream->read((unsigned char*)&nEncryptionInfoFlags, 4); 
+
+		int  nEncryptionInfoSize = pStream->size() - 8;
+		unsigned char* byteEncryptionInfo = new unsigned char[nEncryptionInfoSize];
+		if (!byteEncryptionInfo)
+		{
+			delete pStream;
+			delete pStorage;
+			return false;
+		}
+		nEncryptionInfoSize = pStream->read(byteEncryptionInfo, nEncryptionInfoSize);
+		delete pStream;
+
+		if (VersionInfoMajor == 0x0004 && VersionInfoMinor == 0x0004)
+		{//agile info
+			std::string xml_string((char*) byteEncryptionInfo, nEncryptionInfoSize);
+			delete []byteEncryptionInfo;	
+			
+			cryptData.bAgile = true;
+			result = ReadXmlEncryptionInfo(xml_string, cryptData);
+		}
+		else
+		{
+			cryptData.bAgile = false;
+			bool fCryptoAPI	= GETBIT(nEncryptionInfoFlags, 1); 
+			bool fDocProps	= GETBIT(nEncryptionInfoFlags, 2); 
+			bool fExternal	= GETBIT(nEncryptionInfoFlags, 3); 
+			bool fAES		= GETBIT(nEncryptionInfoFlags, 4); 
+			
+			if ((VersionInfoMajor == 0x0003 || VersionInfoMajor == 0x0004) && VersionInfoMinor == 0x0003)		//extensible info
+			{
+				result = ReadExtensibleEncryptionInfo(byteEncryptionInfo, nEncryptionInfoSize, cryptData);
+			}
+			else if ((VersionInfoMajor == 0x0003 || VersionInfoMajor == 0x0004) && VersionInfoMinor == 0x0002)	//standart info
+			{
+				result = ReadStandartEncryptionInfo(byteEncryptionInfo, nEncryptionInfoSize, cryptData);
+			}
+			else
+			{
+				// look in DocFormat
+			}
+			delete []byteEncryptionInfo;
+		}
+	}
+	if (!result) 
+	{
+		delete pStorage;
+		return false;
+	}
+//------------------------------------------------------------------------------------------------------------
+	pStream = new POLE::Stream(pStorage, "DataSpaces/DataSpaceMap"); 
+	if (pStream)
+	{
+		_UINT32 size	= 0;
+		_UINT32 count	= 0;
+		
+		pStream->read((unsigned char*)&size, 4); 
+		pStream->read((unsigned char*)&count, 4); 
+
+		for (int i = 0 ; i < count; i++)
+		{
+			_mapEntry m;
+			ReadMapEntry(pStream, m);
+
+			mapEntries.push_back(m);
+		}
+		delete pStream;
+	}
+//------------------------------------------------------------------------------------------------------------
+	ECMADecryptor decryptor;
+	
+	decryptor.SetCryptData(cryptData);
+	
+	if (!decryptor.SetPassword(password))
+		return false;
+//------------------------------------------------------------------------------------------------------------
+	pStream = new POLE::Stream(pStorage, "EncryptedPackage");
+	if (pStream->size() > 0)
+	{
+		_UINT64 lengthData, lengthRead = pStream->size() - 8;
+		pStream->read((unsigned char*)&lengthData, 8); 
+
+		unsigned char* data		= new unsigned char[lengthRead];
+		unsigned char* data_out	= NULL;
+
+		pStream->read(data, lengthRead);
+
+		decryptor.Decrypt(data, lengthRead, data_out);//todoo сделать покусочное чтение декриптование
+		delete pStream;
+
+		if (data_out)
+		{
+			NSFile::CFileBinary f;
+            f.CreateFileW(file_name_out);
+			f.WriteFile(data_out, lengthData);
+			f.CloseFile();
+
+			result = true;
+		}
+	}
+//-------------------------------------------------------------------
+	delete pStorage;
+	return result;
+}

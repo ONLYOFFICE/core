@@ -11,7 +11,7 @@ DEFINES += \
 
 core_linux {
     DEFINES += \
-    HAVE_UNISTD_H \
+    HAVE_UNISTD_H
     QMAKE_CXXFLAGS += -Wno-narrowing
 }
 

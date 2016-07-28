@@ -50,7 +50,8 @@ namespace CRYPT_METHOD
 		XOR,
 		RC4,
 		AES_CBC,
-		AES_CFB
+		AES_CFB,
+		AES_ECB
 	};
 }
 
@@ -60,6 +61,14 @@ public:
 
 	struct _cryptData
 	{
+//default ms2010		
+		_cryptData() :	cipherAlgorithm(CRYPT_METHOD::AES_CBC), hashAlgorithm(CRYPT_METHOD::SHA1), spinCount(100000), 
+						keySize(0x10), hashSize(0x14), blockSize(0x10), saltSize(0x10), bAgile(true)
+//default ms2013/ms2016
+		//_cryptData(): cipherAlgorithm(CRYPT_METHOD::AES_CBC), hashAlgorithm(CRYPT_METHOD::SHA256), spinCount(100000), 
+		//				keySize(0x20), hashSize(0x40), blockSize(0x10), saltSize(0x10), bAgile(true)
+		{
+		}
 		CRYPT_METHOD::_cipherAlgorithm	cipherAlgorithm;
 		CRYPT_METHOD::_hashAlgorithm	hashAlgorithm;
 
@@ -78,6 +87,8 @@ public:
 		std::string encryptedHmacKey;
 		std::string encryptedHmacValue;
 
+		bool bAgile;
+
 //..........
 
 	};
@@ -85,8 +96,6 @@ public:
 	virtual ~ECMADecryptor(){}
 
 	void Decrypt(unsigned char* data, int  size, unsigned char*& data_out);
-
-	bool IsVerify(){}
 
 	bool SetPassword(std::wstring password);
 

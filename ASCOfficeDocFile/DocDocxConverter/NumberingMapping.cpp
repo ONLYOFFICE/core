@@ -642,14 +642,18 @@ namespace DocFileFormat
 					m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
 					m_pXmlWriter->WriteNodeBegin( _T( "w:pict" ) );
 
+					//inline picture + bullete props
 					if (pict.blipStoreEntry != NULL)
 					{
 						VMLPictureMapping oPicture(m_context, m_pXmlWriter, false, this, true);
+						oPicture.m_isBullete = true;
+
 						pict.Convert(&oPicture);
 					}
 					else
 					{
-						VMLShapeMapping oShape (m_context, m_pXmlWriter, NULL, &pict, this,true);
+						VMLShapeMapping oShape (m_context, m_pXmlWriter, NULL, &pict, this, true);
+						oShape.m_isBullete = true;
 						pict.shapeContainer->Convert(&oShape);
 					}
 

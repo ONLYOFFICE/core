@@ -145,6 +145,8 @@ namespace DocFileFormat
 				cpEnd		=	txtbxSubdocStart + m_document->TextboxBreakPlexHeader->CharacterPositions[m_nTBIndex + 1];
 			}
 
+			_isTextBoxContent = true;
+
 			//convert the textbox text
 			_lastValidPapx = (*(m_document->AllPapxFkps->begin()))->grppapx[0];
 
@@ -175,6 +177,7 @@ namespace DocFileFormat
 					cp = writeParagraph( cp );
 				}
 			}
+			_isTextBoxContent = false;
 
 			m_pXmlWriter->WriteNodeEnd( _T( "w:txbxContent" ) );
 			m_pXmlWriter->WriteNodeEnd( _T( "v:textbox" ) );

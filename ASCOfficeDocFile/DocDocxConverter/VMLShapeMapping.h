@@ -63,6 +63,12 @@ namespace DocFileFormat
 		virtual ~VMLShapeMapping();
 		virtual void Apply(IVisitable* visited);
 
+		static std::wstring mapVerticalPosition			(static const PositionVertical & vPos );
+		static std::wstring mapVerticalPositionRelative	(static const int &vRel );
+		static std::wstring mapHorizontalPosition		(static const PositionHorizontal &hPos );
+		static std::wstring mapHorizontalPositionRelative(static const int &hRel );
+
+		bool m_isBullete;
 	private:
 
 		void ApplyPrimitives	(DrawingPrimitives	* primitives );
@@ -90,12 +96,7 @@ namespace DocFileFormat
 		void appendStyleProperty	( std::wstring* b, const std::wstring& propName, const std::wstring& propValue ) const;
 		
 		std::wstring getTextboxAnchor( unsigned int anchor ) const;
-		
-		std::wstring mapVerticalPosition		( PositionVertical vPos ) const;
-		std::wstring mapVerticalPositionRelative( int vRel ) const;
-		std::wstring mapHorizontalPosition		( PositionHorizontal hPos ) const;
-		std::wstring mapHorizontalPositionRelative( int hRel ) const;
-		
+				
 		void AppendOptionsToStyle( std::wstring* style, const std::list<OptionEntry>& options ) const;
 		
 		std::wstring buildStyle		( const Shape* shape, const ChildAnchor* anchor, const std::list<OptionEntry>& options, int zIndex ) const;
@@ -122,7 +123,7 @@ namespace DocFileFormat
 		std::vector<CString> GetTextRectangles(const OptionEntry& inscribe) const;
 
 	private: 
-		bool							m_bBullet;
+		bool							m_isInlineShape;
 		Spa*							m_pSpa;
 		IMapping*						m_pCaller;
 		BlipStoreContainer*				m_pBlipStore;

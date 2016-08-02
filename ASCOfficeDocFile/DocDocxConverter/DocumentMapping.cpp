@@ -52,6 +52,7 @@ namespace DocFileFormat
 		_writeWebHidden			=	false;
 		_writeInstrText			=	false;
 		_isSectionPageBreak		=	0;
+		_isTextBoxContent		=	false;
 	}
 
 	DocumentMapping::DocumentMapping(ConversionContext* context, XmlUtils::CXmlWriter* writer, IMapping* caller):_skipRuns(0),  _lastValidPapx(NULL), _lastValidSepx(NULL), _writeInstrText(false),
@@ -65,6 +66,7 @@ namespace DocFileFormat
 		_writeWebHidden			=	false;
 		_writeInstrText			=	false;
 		_isSectionPageBreak		=	0;
+		_isTextBoxContent		=	false;
 	}
 
 	DocumentMapping::~DocumentMapping()
@@ -813,11 +815,13 @@ namespace DocFileFormat
 			{
 				PictureDescriptor oPicture (chpx, m_document->bOlderVersion ? m_document->WordDocumentStream : m_document->DataStream, 0x7fffffff, m_document->bOlderVersion);
 
+				bool isInline = _isTextBoxContent;
+
 				if (oPicture.embeddedData && oPicture.embeddedDataSize > 0)
 				{
 					m_pXmlWriter->WriteNodeBegin (_T("w:pict"));
 					
-					VMLPictureMapping oVmlMapper(m_context, m_pXmlWriter, false, _caller);
+					VMLPictureMapping oVmlMapper(m_context, m_pXmlWriter, false, _caller, isInline);
 					oPicture.Convert (&oVmlMapper);
 					
 					m_pXmlWriter->WriteNodeEnd	 (_T("w:pict"));
@@ -837,7 +841,7 @@ namespace DocFileFormat
 					
 					if (picture)
 					{
-						VMLPictureMapping oVmlMapper(m_context, m_pXmlWriter, false, _caller);
+						VMLPictureMapping oVmlMapper(m_context, m_pXmlWriter, false, _caller, isInline);
 						oPicture.Convert (&oVmlMapper);
 						
 						if (oVmlMapper.m_isEmbedded)
@@ -853,7 +857,7 @@ namespace DocFileFormat
 						}
 					}else
 					{
-						VMLShapeMapping oVmlMapper(m_context, m_pXmlWriter, NULL, &oPicture,  _caller);
+						VMLShapeMapping oVmlMapper(m_context, m_pXmlWriter, NULL, &oPicture,  _caller, isInline);
 						oPicture.shapeContainer->Convert(&oVmlMapper);
 					}
 					

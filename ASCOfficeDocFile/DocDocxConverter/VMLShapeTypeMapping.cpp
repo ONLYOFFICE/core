@@ -32,6 +32,7 @@
 
 #include "VMLShapeTypeMapping.h"
 #include "OfficeDrawing/Shapetypes/OvalType.h"
+#include "OfficeDrawing/Shapetypes/WordArtText.h"
 
 namespace DocFileFormat
 {
@@ -160,7 +161,12 @@ namespace DocFileFormat
 				if (pShape->ConnectorAngles.length())
 					m_pXmlWriter->WriteAttribute( _T( "o:connectangles" ), pShape->ConnectorAngles.c_str() );
 			}
-
+			WordArtTextType* wordArt = dynamic_cast<WordArtTextType*>(pShape);
+			if (wordArt)
+			{
+				m_pXmlWriter->WriteAttribute( _T( "textpathok" ), _T( "t" ) );
+			}
+			
 			m_pXmlWriter->WriteNodeEnd( _T( "" ), true );
 
 			//Lock

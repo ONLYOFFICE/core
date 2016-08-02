@@ -1545,6 +1545,9 @@ namespace DocFileFormat
 		bool bRelH = false;
 		bool bRelV = false;
 
+		bool bPosH = false;
+		bool bPosV = false;
+
 		std::list<OptionEntry>::const_iterator end = options.end();
 		for (std::list<OptionEntry>::const_iterator iter = options.begin(); iter != end; ++iter)
 		{
@@ -1554,6 +1557,7 @@ namespace DocFileFormat
 			case posh:
 				{
 					appendStyleProperty(oStyle, _T("mso-position-horizontal"), mapHorizontalPosition((PositionHorizontal)iter->op));
+					bPosH = true;
 				}
 				break;
 
@@ -1567,6 +1571,7 @@ namespace DocFileFormat
 			case posv:
 				{
 					appendStyleProperty(oStyle, _T("mso-position-vertical"), mapVerticalPosition((PositionVertical)iter->op));
+					bPosV = true;
 				}
 				break;
 
@@ -1654,6 +1659,15 @@ namespace DocFileFormat
 		if (!bRelV && m_pSpa)
 		{
 			appendStyleProperty(oStyle, _T("mso-position-vertical-relative"), mapVerticalPositionRelative(m_pSpa->bx));
+		}
+
+		if (!bPosH)
+		{
+			appendStyleProperty(oStyle, _T("mso-position-horizontal"), _T( "absolute" ));
+		}
+		if (!bPosV)
+		{
+			appendStyleProperty(oStyle, _T("mso-position-vertical"), _T( "absolute" ));
 		}
 	}
 
@@ -1878,34 +1892,29 @@ namespace DocFileFormat
 
 		case 1:
 			{
-				return _T( "tile" );
-			}
-			break;
-
-		case 2:
-			{
 				return _T( "pattern" );
 			}
 			break;
-
+		case 2:
+			{
+				return _T( "tile" );
+			}
+			break;
 		case 3:
 			{
 				return _T( "frame" );
 			}
 			break;
-
 		case 4:
 			{
 				return _T( "gradient" );
 			}
 			break;
-
 		case 5:
 			{
 				return _T( "gradientRadial" );
 			}
 			break;
-
 		case 6:
 			{
 				return _T( "gradientRadial" );
@@ -1917,13 +1926,11 @@ namespace DocFileFormat
 				return _T( "gradient" );
 			}
 			break;
-
 		case 9:
 			{
 				return _T( "solid" );
 			}
 			break;
-
 		default:
 			{
 				return _T( "solid" );

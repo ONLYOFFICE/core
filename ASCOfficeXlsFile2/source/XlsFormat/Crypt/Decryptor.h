@@ -31,28 +31,30 @@
  */
 #pragma once
 
+
 #include "Crypt.h"
+#include "../../../../OfficeCryptReader/source/CryptTransform.h"
 
 namespace CRYPT
 {
-class Decryptor
-{
-public:
-	Decryptor(CryptRC4Data & header, std::wstring password, int type);
+	class RC4Decryptor : public Decryptor
+	{
+	public:
+		RC4Decryptor(CryptRC4Data & header, std::wstring password, int type);
 
-	void Decrypt(char* data, const size_t size, const unsigned long stream_pos);
+		virtual void Decrypt(char* data, const size_t size, const unsigned long stream_pos);
 
-	bool IsVerify();
+		bool IsVerify();
 
-	bool SetPassword(std::wstring password);
+		bool SetPassword(std::wstring password);
 
-private:
-	CryptPtr				crypt;
-	Crypt::crypt_type		type;
-	CryptRC4Data			crypt_data;
-};
+	private:
+		CryptPtr				crypt;
+		Crypt::crypt_type		type;
+		CryptRC4Data			crypt_data;
+	};
 
-typedef boost::shared_ptr<Decryptor> DecryptorPtr;
+	typedef boost::shared_ptr<RC4Decryptor> RC4DecryptorPtr;
 
 
 } // namespace CRYPT

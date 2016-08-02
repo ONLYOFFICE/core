@@ -64,24 +64,24 @@ namespace CRYPT
 		} EncryptedVerifierHash;
 	};
 
-class Crypt
-{
-public:
-
-	virtual void Encrypt(char* data, const size_t size) = 0;
-	virtual void Decrypt(char* data, const size_t size, const unsigned long stream_pos) = 0;
-
-	typedef enum
+	class Crypt
 	{
-		RC4,
-		RC4CryptoAPI,
-		XOR
-	} crypt_type;
+	public:
 
-	virtual bool IsVerify() = 0;
+		virtual void Encrypt(char* data, const size_t size) = 0;
+		virtual void Decrypt(char* data, const size_t size, const unsigned long stream_pos) = 0;
 
-};
+		typedef enum
+		{
+			RC4,
+			RC4CryptoAPI,
+			XOR
+		} crypt_type;
 
-typedef boost::shared_ptr<Crypt> CryptPtr;
+		virtual bool IsVerify() = 0;
+
+	};
+
+	typedef boost::shared_ptr<Crypt> CryptPtr;
 
 } // namespace CRYPT

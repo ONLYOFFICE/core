@@ -200,6 +200,7 @@ namespace DocFileFormat
 		}
 
 //-----------------------------------------------------------		
+		_isSectionPageBreak = 0;
 		if (sectionEnd)
 		{
 			// this is the last paragraph of this section

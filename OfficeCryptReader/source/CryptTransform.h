@@ -54,8 +54,15 @@ namespace CRYPT_METHOD
 		AES_ECB
 	};
 }
+namespace CRYPT
+{
+class Decryptor
+{
+	public:
+		virtual void Decrypt(char* data, const size_t size, const unsigned long stream_pos) = 0;
+};
 
-class ECMADecryptor
+class ECMADecryptor : public Decryptor
 {
 public:
 
@@ -96,6 +103,7 @@ public:
 	virtual ~ECMADecryptor(){}
 
 	void Decrypt(unsigned char* data, int  size, unsigned char*& data_out);
+	virtual void Decrypt(char* data	, const size_t size, const unsigned long stream_pos);
 
 	bool SetPassword(std::wstring password);
 
@@ -105,14 +113,5 @@ private:
 	_cryptData		cryptData;
 	std::wstring	password;
 };
-//
-//class ECMAEncryptor
-//{
-//public:
-//	ECMAEncryptor(int type);
-//	virtual ~ECMAEncryptor();
-//
-//	void Encrypt(char* data, int size);
-//
-//	bool SetPassword(std::wstring password);
-//};
+
+}

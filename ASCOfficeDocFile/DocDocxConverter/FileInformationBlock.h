@@ -509,7 +509,6 @@ namespace DocFileFormat
 	public:
 		bool					m_bOlderVersion;
 		int						m_CodePage;
-		CRYPT::DecryptorPtr		m_Decryptor;
 		FibBase					m_FibBase;
 		
 		RgW97			m_RgW97;

@@ -37,6 +37,7 @@
 #include "../../Common/3dParty/cryptopp/modes.h"
 #include "../../Common/3dParty/cryptopp/aes.h"
 #include "../../Common/3dParty/cryptopp/sha.h"
+#include "../../Common/3dParty/cryptopp/md5.h"
 #include "../../Common/3dParty/cryptopp/pwdbased.h"
 #include "../../Common/3dParty/cryptopp/filters.h"
 
@@ -49,9 +50,6 @@ static const unsigned char encrKeyValueBlockKey[8]					= { 0x14, 0x6e, 0x0b, 0xe
 static const unsigned char encrDataIntegritySaltBlockKey[8]			= { 0x5f, 0xb2, 0xad, 0x01, 0x0c, 0xb9, 0xe1, 0xf6 };
 static const unsigned char encrDataIntegrityHmacValueBlockKey[8]	= { 0xa0, 0x67, 0x7f, 0x02, 0xb2, 0x2c, 0x84, 0x33 };
 
-ECMADecryptor::ECMADecryptor()
-{
-}
 
 class _buf
 {
@@ -174,7 +172,7 @@ _buf HashAppend(_buf &  hashBuf, _buf & block, CRYPT_METHOD::_hashAlgorithm algo
 {//todooo переделать
 	if (algorithm == CRYPT_METHOD::SHA1)
 	{
-		CryptoPP::SHA1 hash;
+		CryptoPP::MD5 hash;
 
 		if (hashBuf.ptr && hashBuf.size > 0)	hash.Update( hashBuf.ptr, hashBuf.size);
 		if (block.ptr	&& block.size > 0)		hash.Update( block.ptr	, block.size);
@@ -183,6 +181,15 @@ _buf HashAppend(_buf &  hashBuf, _buf & block, CRYPT_METHOD::_hashAlgorithm algo
 		hash.Final(buffer);
 
 		return _buf(buffer.BytePtr(), buffer.SizeInBytes());
+		//CryptoPP::SHA1 hash;
+
+		//if (hashBuf.ptr && hashBuf.size > 0)	hash.Update( hashBuf.ptr, hashBuf.size);
+		//if (block.ptr	&& block.size > 0)		hash.Update( block.ptr	, block.size);
+
+		//CryptoPP::SecByteBlock buffer(hash.DigestSize());
+		//hash.Final(buffer);
+
+		//return _buf(buffer.BytePtr(), buffer.SizeInBytes());
 	}
 	else if (algorithm == CRYPT_METHOD::SHA256)
 	{
@@ -290,6 +297,13 @@ bool DecryptCipher(_buf & key, _buf & iv, _buf & data_inp, _buf & data_out, CRYP
 
 	return true;
 }
+//------------------------------------------------------------------------------------------------------------------------------------
+namespace CRYPT
+{
+
+ECMADecryptor::ECMADecryptor()
+{
+}
 
 bool ECMADecryptor::SetPassword(std::wstring password_)
 {
@@ -353,7 +367,17 @@ void ECMADecryptor::SetCryptData(_cryptData	&data)
 {
 	cryptData = data;
 }
-
+void ECMADecryptor::Decrypt(char* data	, const size_t size, const unsigned long stream_pos)
+{
+	unsigned char* data_out = NULL;
+	Decrypt((unsigned char*)data, size, data_out);
+	
+	if (data_out)
+	{
+		delete []data;
+		data = (char*)data_out;
+	}
+}
 void ECMADecryptor::Decrypt(unsigned char* data_inp, int  size, unsigned char*& data_out)
 {
 	data_out = NULL;
@@ -407,4 +431,5 @@ void ECMADecryptor::Decrypt(unsigned char* data_inp, int  size, unsigned char*& 
 		
 		DecryptCipher(hashKey, empty, pInp, pOut, cryptData.cipherAlgorithm);
 	}
+}
 }

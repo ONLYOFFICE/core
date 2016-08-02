@@ -39,7 +39,6 @@
 #include "../../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"
 #include "../../DesktopEditor/common/File.h"
 
-
 namespace DocFileFormat
 {
 	WordDocument::WordDocument (const ProgressCallback* pCallFunc, const std::wstring & sTempFolder ) :	
@@ -137,18 +136,36 @@ namespace DocFileFormat
 		{
 			encryptionHeader	=	new EncryptionHeader	(FIB, TableStream);
 
-			FIB->m_Decryptor = CRYPT::DecryptorPtr(new CRYPT::Decryptor(encryptionHeader->crypt_data, m_sPassword, 1));
-
-			if (FIB->m_Decryptor->IsVerify() == false) 
+			if (encryptionHeader->bStandard)
 			{
-				Clear();
+				CRYPT::RC4Decryptor Decryptor(encryptionHeader->crypt_data_rc4, m_sPassword, 1);
 
-				if (m_sPassword.empty() )	return AVS_ERROR_DRM;
-				else						return AVS_ERROR_PASSWORD;
+				if (Decryptor.IsVerify() == false) 
+				{
+					Clear();
+
+					if (m_sPassword.empty() )	return AVS_ERROR_DRM;
+					else						return AVS_ERROR_PASSWORD;
+				}
+				
+				if (DecryptOfficeFile(&Decryptor) == false)	return AVS_ERROR_DRM;
+			}
+			else
+			{
+				CRYPT::ECMADecryptor Decryptor;
+
+				Decryptor.SetCryptData(encryptionHeader->crypt_data_aes);
+
+				if (Decryptor.SetPassword(m_sPassword) == false)
+				{
+					Clear();
+
+					if (m_sPassword.empty() )	return AVS_ERROR_DRM;
+					else						return AVS_ERROR_PASSWORD;
+				}
+				if (DecryptOfficeFile(&Decryptor) == false)	return AVS_ERROR_DRM;
 			}
 			
-			if (DecryptFile() == false)	return AVS_ERROR_DRM;
-
 			FIB->reset(VirtualStreamReader(WordDocumentStream, 68, false));
 		}
 		else if (FIB->m_FibBase.fEncrypted)  return AVS_ERROR_DRM;
@@ -429,8 +446,7 @@ namespace DocFileFormat
 
 		return 0;
 	}
-
-	bool WordDocument::DecryptFile()
+	bool WordDocument::DecryptOfficeFile(CRYPT::Decryptor* Decryptor)
 	{
 		if (m_sTempFolder.empty())
 		{
@@ -458,11 +474,11 @@ namespace DocFileFormat
 				
 				for (std::list<std::string>::iterator it2 = list_entry.begin(); it2 != list_entry.end(); it2++)
 				{
-					DecryptStream(*it2, storageIn, storageOut);
+					DecryptStream(Decryptor, *it2, storageIn, storageOut);
 				}
 			}
 			else 
-				DecryptStream(*it, storageIn, storageOut);
+				DecryptStream(Decryptor, *it, storageIn, storageOut);
 
 		}
 		storageOut->close();
@@ -487,7 +503,8 @@ namespace DocFileFormat
 		return true;
 	}
 
-	bool WordDocument::DecryptStream(std::string streamName, POLE::Storage * storageIn, POLE::Storage * storageOut)
+
+	bool WordDocument::DecryptStream(CRYPT::Decryptor* Decryptor, std::string streamName, POLE::Storage * storageIn, POLE::Storage * storageOut)
 	{
 		POLE::Stream *stream = new POLE::Stream(storageIn, streamName);
 		if (!stream) return false;
@@ -513,7 +530,7 @@ namespace DocFileFormat
 		if (data_store)
 			memcpy(data_store, data_stream, sz_data_store);
 
-		FIB->m_Decryptor->Decrypt((char*)data_stream, sz_stream, 0);
+		Decryptor->Decrypt((char*)data_stream, sz_stream, 0);
 		
 		if (data_store)
 			memcpy(data_stream, data_store, sz_data_store);

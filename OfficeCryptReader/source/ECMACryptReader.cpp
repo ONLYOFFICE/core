@@ -41,6 +41,8 @@
 
 #include "../../ASCOfficeDocFile/DocDocxConverter/MemoryStream.h"
 
+using namespace CRYPT;
+
 #define GETBIT(from, num) ((from & (1 << num)) != 0)
 
 #define WritingElement_ReadAttributes_Start(Reader) \
@@ -340,6 +342,7 @@ bool ReadExtensibleEncryptionInfo(unsigned char* data, int size, ECMADecryptor::
 
 
 //--------------------------------------------------------------
+
 bool ECMACryptReader::DecryptOfficeFile(std::wstring file_name_inp, std::wstring file_name_out, std::wstring password)
 {
 	POLE::Storage *pStorage = new POLE::Storage(file_name_inp.c_str());

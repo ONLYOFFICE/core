@@ -134,8 +134,10 @@ namespace DocFileFormat
 			unsigned short flag	=	reader->ReadUInt16();
 
 			pSpa->fHdr			=	FormatUtils::BitmaskToBool(flag, 0x0001);
-			pSpa->bx			=	(AnchorType)FormatUtils::BitmaskToInt(flag, 0x0006);
-			pSpa->by			=	(AnchorType)FormatUtils::BitmaskToInt(flag, 0x0018);
+			int bx				=	FormatUtils::BitmaskToInt(flag, 0x0006);
+			int	by				=	FormatUtils::BitmaskToInt(flag, 0x0018);
+			pSpa->bx			=	(AnchorType)bx;
+			pSpa->by			=	(AnchorType)by;
 			pSpa->wr			=	(unsigned short)FormatUtils::BitmaskToInt(flag, 0x01E0);
 			pSpa->wrk			=	(unsigned short)FormatUtils::BitmaskToInt(flag, 0x1E00);
 			pSpa->fRcaSimple	=	FormatUtils::BitmaskToBool(flag, 0x2000);

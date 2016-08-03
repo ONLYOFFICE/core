@@ -1491,7 +1491,7 @@ namespace DocFileFormat
 		}
 	}
 
-	std::wstring VMLShapeMapping::mapVerticalPosition(static const PositionVertical &vPos)
+    std::wstring VMLShapeMapping::mapVerticalPosition(PositionVertical vPos)
 	{
 		switch ( vPos )
 		{
@@ -1506,7 +1506,7 @@ namespace DocFileFormat
 		}
 	}
 
-	std::wstring VMLShapeMapping::mapVerticalPositionRelative(const int &vRel_)
+    std::wstring VMLShapeMapping::mapVerticalPositionRelative(int vRel_)
 	{
 		PositionVerticalRelative vRel = (PositionVerticalRelative)vRel_;
 		switch ( vRel )
@@ -1520,7 +1520,7 @@ namespace DocFileFormat
 		}
 	}
 
-	std::wstring VMLShapeMapping::mapHorizontalPosition(const PositionHorizontal &hPos)
+    std::wstring VMLShapeMapping::mapHorizontalPosition(PositionHorizontal hPos)
 	{
 		switch ( hPos )
 		{
@@ -1535,7 +1535,7 @@ namespace DocFileFormat
 		}
 	}
 
-	std::wstring VMLShapeMapping::mapHorizontalPositionRelative( const int &hRel_ )
+    std::wstring VMLShapeMapping::mapHorizontalPositionRelative(int hRel_ )
 	{
 		PositionHorizontalRelative hRel = (PositionHorizontalRelative )hRel_;
 		switch ( hRel ) 

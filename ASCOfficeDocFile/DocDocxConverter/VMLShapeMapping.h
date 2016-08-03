@@ -63,10 +63,10 @@ namespace DocFileFormat
 		virtual ~VMLShapeMapping();
 		virtual void Apply(IVisitable* visited);
 
-		static std::wstring mapVerticalPosition			(static const PositionVertical & vPos );
-		static std::wstring mapVerticalPositionRelative	(static const int &vRel );
-		static std::wstring mapHorizontalPosition		(static const PositionHorizontal &hPos );
-		static std::wstring mapHorizontalPositionRelative(static const int &hRel );
+        static std::wstring mapVerticalPosition			(PositionVertical vPos );
+        static std::wstring mapVerticalPositionRelative	(int vRel );
+        static std::wstring mapHorizontalPosition		(PositionHorizontal hPos );
+        static std::wstring mapHorizontalPositionRelative(int hRel );
 
 		bool m_isBullete;
 	private:

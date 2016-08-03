@@ -769,6 +769,14 @@ namespace DocFileFormat
 					case gtextFont:
 					{
 						std::wstring font = NSStringExt::CConverter::GetUnicodeFromUTF16((unsigned short*)iter->opComplex, (iter->op)/2);
+						int i = font.size();
+						while (i > 0)
+						{
+							if (font[i-1] != 0) break;
+							i--;
+						}
+						if (i < font.size()) font.erase(font.begin() + i, font.end());
+
 						font = std::wstring(_T("\"")) + font + std::wstring(_T("\""));
 						appendStyleProperty(&m_textPathStyle, L"font-family", font);
 					}break;
@@ -1541,7 +1549,7 @@ namespace DocFileFormat
 		}
 	}
 
-	void VMLShapeMapping::AppendOptionsToStyle (std::wstring* oStyle, const std::list<OptionEntry>& options) const
+	void VMLShapeMapping::AppendOptionsToStyle (std::wstring* oStyle, const std::list<OptionEntry>& options, int zIndex) const
 	{
 		bool bRelH = false;
 		bool bRelV = false;
@@ -1584,6 +1592,10 @@ namespace DocFileFormat
 					{
 						//The shape is behind the text, so the z-index must be negative.
 						appendStyleProperty(oStyle, _T( "z-index" ), _T( "-1" ) );
+					}
+					else if (!m_isInlineShape)
+					{
+						appendStyleProperty( oStyle, _T( "z-index" ), FormatUtils::IntToWideString(zIndex + 0x7ffff));
 					}
 
 					if (groupShapeBooleans.fHidden && groupShapeBooleans.fUsefHidden)
@@ -1674,8 +1686,6 @@ namespace DocFileFormat
 
 				if ((dAngle >= 45.0 && dAngle <= 135.0) || (dAngle >= 225.0 && dAngle <= 315.0) || (dAngle <= -45.0 && dAngle >= -135.0) || (dAngle <= -225.0 && dAngle >= -315.0))
 					twistDimensions	=	true;
-
-				//ATLTRACE (L"angle : %f\n", dAngle);
 			}
 		}
 
@@ -1734,13 +1744,8 @@ namespace DocFileFormat
 			appendStyleProperty( &style, _T( "flip" ), _T( "y" ) );
 		}
 
-		AppendOptionsToStyle( &style, options );
+		AppendOptionsToStyle( &style, options, zIndex );
 		
-		if (!m_isInlineShape)
-		{
-			appendStyleProperty( &style, _T( "z-index" ), FormatUtils::IntToWideString(zIndex + 0x7ffff));
-		}
-
 		return style;
 	}
 

@@ -97,7 +97,7 @@ namespace DocFileFormat
 		
 		std::wstring getTextboxAnchor( unsigned int anchor ) const;
 				
-		void AppendOptionsToStyle( std::wstring* style, const std::list<OptionEntry>& options ) const;
+		void AppendOptionsToStyle( std::wstring* style, const std::list<OptionEntry>& options, int zIndex ) const;
 		
 		std::wstring buildStyle		( const Shape* shape, const ChildAnchor* anchor, const std::list<OptionEntry>& options, int zIndex ) const;
 		std::wstring getLineStyle	( unsigned int p ) const;

@@ -7,7 +7,7 @@
 QT       -= core
 QT       -= gui
 
-VERSION = 2.0.2.381
+VERSION = 2.0.2.382
 DEFINES += INTVER=$$VERSION
 
 mac {
@@ -239,7 +239,8 @@ LIBS += -L$$DESTINATION_SDK_PATH -lXpsFile
 LIBS += -L$$DESTINATION_SDK_PATH -lHtmlFile
 #UnicodeConverter
 LIBS += -L$$DESTINATION_SDK_PATH -lUnicodeConverter
-
+#Crypto++
+LIBS += -L$$DESTINATION_SDK_PATH -lCryptoPPLib
 
 #####################################################
 # внешнее подключение сторонних библиотек
@@ -253,7 +254,6 @@ linux-g++ | linux-g++-64 | linux-g++-32 {
     LIBS += -lz
     LIBS += -lxml2
     LIBS += -lcurl
-    LIBS += -lcrypto++
 }
 
 mac {

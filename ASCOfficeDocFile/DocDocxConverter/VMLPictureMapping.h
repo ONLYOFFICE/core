@@ -51,7 +51,7 @@ namespace DocFileFormat
 	class VMLPictureMapping: public PropertiesMapping, public IMapping
 	{
 	public:
-		VMLPictureMapping( ConversionContext* ctx, XmlUtils::CXmlWriter* writer, bool olePreview, IMapping* caller, bool isBulletPicture = false );
+		VMLPictureMapping( ConversionContext* ctx, XmlUtils::CXmlWriter* writer, bool olePreview, IMapping* caller, bool isInlinePicture = false );
 		virtual ~VMLPictureMapping();
 		virtual void Apply( IVisitable* visited );
 		std::wstring GetShapeId() const;
@@ -70,6 +70,7 @@ namespace DocFileFormat
 		static std::wstring GetTargetExt (Global::BlipType nType);
 		static std::wstring GetContentType (Global::BlipType nType);
 
+		bool							m_isBullete;
 		bool							m_isEquation;
 		bool							m_isEmbedded;
 		std::string						m_embeddedData;
@@ -81,9 +82,9 @@ namespace DocFileFormat
 		int								m_nImageId;
 		std::wstring					m_ShapeId;
 		
-		bool							m_isOlePreview;
-		
-		bool							m_isBulletPicture;
+		bool							m_isOlePreview;		
+		bool							m_isInlinePicture;
+
 		XMLTools::XMLElement<wchar_t>*	m_imageData;
 		
 	};

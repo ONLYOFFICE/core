@@ -86,7 +86,7 @@ void FilePass::readFields(CFRecord& record)
 			rc4HeaderPtr->load (record);
 
 			record.getGlobalWorkbookInfo()->decryptor = 
-				CRYPT::DecryptorPtr(new CRYPT::Decryptor(rc4HeaderPtr->RC4Data, record.getGlobalWorkbookInfo()->password, 2));
+				CRYPT::RC4DecryptorPtr(new CRYPT::RC4Decryptor(rc4HeaderPtr->RC4Data, record.getGlobalWorkbookInfo()->password, 2));
 			
 			Log::info("Encryption type: RC4 Standard");
 		}

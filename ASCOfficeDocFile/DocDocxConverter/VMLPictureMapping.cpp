@@ -31,9 +31,11 @@
  */
 
 #include "VMLPictureMapping.h"
+#include "VMLShapeMapping.h"
 
 #include "OfficeDrawing/GeometryBooleanProperties.h"
 #include "OfficeDrawing/GeometryTextBooleanProperties.h"
+#include "OfficeDrawing/GroupShapeBooleanProperties.h"
 #include "OfficeDrawing/MetafilePictBlip.h"
 
 #include "../../DesktopEditor/common/String.h"
@@ -199,15 +201,16 @@ namespace DocFileFormat
 		}
 	}
 
-	VMLPictureMapping::VMLPictureMapping(ConversionContext* ctx, XmlUtils::CXmlWriter* writer, bool olePreview, IMapping* caller, bool isBulletPicture) : PropertiesMapping(writer)
+	VMLPictureMapping::VMLPictureMapping(ConversionContext* ctx, XmlUtils::CXmlWriter* writer, bool olePreview, IMapping* caller, bool isInlinePicture) : PropertiesMapping(writer)
 	{
 		m_ctx				=	ctx;
 		m_isOlePreview		=	olePreview;
 		m_imageData			=	NULL;
 		m_nImageId			=	0;
 		m_caller			=	caller;
-		m_isBulletPicture	=	isBulletPicture;
+		m_isInlinePicture	=	isInlinePicture;
 		
+		m_isBullete			=	false;
 		m_isEquation		=	false;
 		m_isEmbedded		=	false;
 
@@ -232,8 +235,9 @@ namespace DocFileFormat
 		TwipsValue width( ( pict->dxaGoal - ( pict->dxaCropLeft + pict->dxaCropRight ) ) * xScaling );
 		TwipsValue height( ( pict->dyaGoal - ( pict->dyaCropTop + pict->dyaCropBottom ) ) * yScaling );
 
-		std::wstring widthString = FormatUtils::DoubleToWideString( width.ToPoints() );
-		std::wstring heightString = FormatUtils::DoubleToWideString( height.ToPoints() );
+		std::wstring strWidth = FormatUtils::DoubleToWideString( width.ToPoints() );
+		std::wstring strHeight = FormatUtils::DoubleToWideString( height.ToPoints() );
+		std::wstring strStyle;
 	
 		std::list<OptionEntry> options;
 		
@@ -246,7 +250,8 @@ namespace DocFileFormat
 			//v:shapetype
 			type.SetType(shape->Instance);
 			
-			VMLShapeTypeMapping* vmlShapeTypeMapping = new VMLShapeTypeMapping( m_pXmlWriter, m_isBulletPicture );
+			VMLShapeTypeMapping* vmlShapeTypeMapping = new VMLShapeTypeMapping( m_pXmlWriter, m_isInlinePicture );
+
 			type.Convert( vmlShapeTypeMapping );
 			RELEASEOBJECT( vmlShapeTypeMapping );
 		}
@@ -258,21 +263,18 @@ namespace DocFileFormat
 		
 		m_pXmlWriter->WriteAttribute( _T( "type" ), std::wstring( _T( "#" ) + VMLShapeTypeMapping::GenerateTypeId(&type)).c_str());
 
-		std::wstring style = std::wstring( _T( "width:" ) ) + widthString + std::wstring( _T( "pt;" ) ) + std::wstring( _T( "height:" ) ) + heightString + std::wstring( _T( "pt;" ) );
-
-		m_pXmlWriter->WriteAttribute( _T( "style" ), style.c_str() );
-
 		m_pXmlWriter->WriteAttribute( _T( "id" ), m_ShapeId.c_str() );
 
 		if (m_isOlePreview)
 		{
 			m_pXmlWriter->WriteAttribute( _T( "o:ole" ), _T( "" ) );
 		}
-		else if (m_isBulletPicture)
+		else if (m_isBullete)
 		{
             m_pXmlWriter->WriteAttribute( _T( "o:bullet" ), _T( "1" ) );
 		}
-		
+//todooo oбъединить с shape_mapping		
+
 		std::list<OptionEntry>::iterator end = options.end();
 		for (std::list<OptionEntry>::iterator iter = options.begin(); iter != end; ++iter)
 		{
@@ -350,8 +352,56 @@ namespace DocFileFormat
 					appendValueAttribute(m_imageData, _T( "croptop" ), ( FormatUtils::IntToWideString( cropTop ) + std::wstring( _T( "f" ) ) ).c_str());
 				}
 				break;
+//------------------------------------------------------------
+			case PropertyId_rotation:
+				{
+					double dAngle = (double)((int)iter->op) / 65535.0;
+
+					if (dAngle < -360.0)
+						dAngle += 360.0;
+
+					std::wstring v = strHeight;
+					strHeight = strWidth; strWidth = v;
+
+					appendStyleProperty(&strStyle, _T( "rotation" ), FormatUtils::DoubleToWideString(dAngle));
+				}break;
+			case posh:
+				{
+					appendStyleProperty(&strStyle, _T("mso-position-horizontal"), VMLShapeMapping::mapHorizontalPosition((PositionHorizontal)iter->op));
+				}break;
+			case posrelh:
+				{
+					appendStyleProperty(&strStyle, _T("mso-position-horizontal-relative"), VMLShapeMapping::mapHorizontalPositionRelative((PositionHorizontalRelative)iter->op));
+				}break;
+			case posv:
+				{
+					appendStyleProperty(&strStyle, _T("mso-position-vertical"), VMLShapeMapping::mapVerticalPosition((PositionVertical)iter->op));
+				}break;
+			case posrelv:
+				{
+					appendStyleProperty(&strStyle, _T("mso-position-vertical-relative"), VMLShapeMapping::mapVerticalPositionRelative((PositionVerticalRelative)iter->op));
+				}break;
+			case groupShapeBooleans:
+				{
+					GroupShapeBooleanProperties groupShapeBooleans(iter->op);
+
+					if (groupShapeBooleans.fUsefBehindDocument && groupShapeBooleans.fBehindDocument)
+					{//m_isInlineShape ???
+						//The shape is behind the text, so the z-index must be negative.
+						appendStyleProperty(&strStyle, _T( "z-index" ), _T( "-1" ) );
+					}
+
+					if (groupShapeBooleans.fHidden && groupShapeBooleans.fUsefHidden)
+					{
+						appendStyleProperty(&strStyle, _T( "visibility" ), _T( "hidden" ));
+					}
+				}
+				break;
 			}
 		}
+
+		strStyle +=  _T( "width:" )  + strWidth + _T( "pt;" ) + _T( "height:" ) + strHeight + _T( "pt;" );
+		m_pXmlWriter->WriteAttribute( _T( "style" ), strStyle.c_str() );
 
 		m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
 		

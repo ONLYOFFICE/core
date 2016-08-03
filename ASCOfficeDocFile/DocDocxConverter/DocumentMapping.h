@@ -142,6 +142,7 @@ namespace DocFileFormat
 		int								_footnoteNr;
 		int								_endnoteNr;
 		int								_commentNr;
+		bool							_isTextBoxContent;
 		int								_isSectionPageBreak; //0 - not set, 1 -page break, 2 - continues
 		bool							_writeInstrText;
 		bool							_writeWebHidden;

@@ -32,6 +32,7 @@
 #pragma once
 
 #include "FileInformationBlock.h"
+#include "../../OfficeCryptReader/source/CryptTransform.h"
 
 #include "IVisitable.h"
 
@@ -49,6 +50,8 @@ namespace DocFileFormat
         
 		EncryptionHeader( FileInformationBlock* fib, POLE::Stream* tableStream );
 	private:    
-		CRYPT::CryptRC4Data			crypt_data;
+		CRYPT::CryptRC4Data					crypt_data_rc4;
+		CRYPT::ECMADecryptor::_cryptData	crypt_data_aes;
+		bool								bStandard;
 	};
 }

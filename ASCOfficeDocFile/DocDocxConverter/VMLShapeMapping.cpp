@@ -58,9 +58,10 @@
 
 namespace DocFileFormat
 {
-	VMLShapeMapping::VMLShapeMapping (ConversionContext* pConv, XmlUtils::CXmlWriter* pWriter, Spa* pSpa, PictureDescriptor* pPicture, IMapping* pCaller, bool bullet) : PropertiesMapping(pWriter)
+	VMLShapeMapping::VMLShapeMapping (ConversionContext* pConv, XmlUtils::CXmlWriter* pWriter, Spa* pSpa, PictureDescriptor* pPicture, IMapping* pCaller, bool isInlineShape) : PropertiesMapping(pWriter)
 	{		
-		m_bBullet			=	bullet;
+		m_isInlineShape		=	isInlineShape;
+		m_isBullete			=	false;
 
 		m_pSpa				=	pSpa;
 		m_pCaller			=	pCaller;
@@ -242,7 +243,7 @@ namespace DocFileFormat
 					m_pXmlWriter->WriteAttribute(_T("to"),	GetLineTo(pAnchor).c_str());
 				}
 
-				if (m_bBullet)
+				if (m_isBullete)
 				{
                      m_pXmlWriter->WriteAttribute(_T("o:bullet"), _T("t"));
 				}
@@ -768,6 +769,14 @@ namespace DocFileFormat
 					case gtextFont:
 					{
 						std::wstring font = NSStringExt::CConverter::GetUnicodeFromUTF16((unsigned short*)iter->opComplex, (iter->op)/2);
+						int i = font.size();
+						while (i > 0)
+						{
+							if (font[i-1] != 0) break;
+							i--;
+						}
+						if (i < font.size()) font.erase(font.begin() + i, font.end());
+
 						font = std::wstring(_T("\"")) + font + std::wstring(_T("\""));
 						appendStyleProperty(&m_textPathStyle, L"font-family", font);
 					}break;
@@ -1086,7 +1095,7 @@ namespace DocFileFormat
 				WriteEndShapeNode(pShape);
 
 				//ShapeType 
-				if (NULL != pShape->GetShapeType() && !m_bBullet)
+				if (NULL != pShape->GetShapeType() && !m_isInlineShape) //bullete only???
 				{
 					VMLShapeTypeMapping oXmlMapper(m_pXmlWriter);
 					pShape->GetShapeType()->Convert(&oXmlMapper);
@@ -1482,7 +1491,7 @@ namespace DocFileFormat
 		}
 	}
 
-	std::wstring VMLShapeMapping::mapVerticalPosition(PositionVertical vPos) const
+	std::wstring VMLShapeMapping::mapVerticalPosition(static const PositionVertical &vPos)
 	{
 		switch ( vPos )
 		{
@@ -1497,7 +1506,7 @@ namespace DocFileFormat
 		}
 	}
 
-	std::wstring VMLShapeMapping::mapVerticalPositionRelative(int vRel_) const
+	std::wstring VMLShapeMapping::mapVerticalPositionRelative(const int &vRel_)
 	{
 		PositionVerticalRelative vRel = (PositionVerticalRelative)vRel_;
 		switch ( vRel )
@@ -1511,7 +1520,7 @@ namespace DocFileFormat
 		}
 	}
 
-	std::wstring VMLShapeMapping::mapHorizontalPosition(PositionHorizontal hPos) const
+	std::wstring VMLShapeMapping::mapHorizontalPosition(const PositionHorizontal &hPos)
 	{
 		switch ( hPos )
 		{
@@ -1526,7 +1535,7 @@ namespace DocFileFormat
 		}
 	}
 
-	std::wstring VMLShapeMapping::mapHorizontalPositionRelative( int hRel_ ) const
+	std::wstring VMLShapeMapping::mapHorizontalPositionRelative( const int &hRel_ )
 	{
 		PositionHorizontalRelative hRel = (PositionHorizontalRelative )hRel_;
 		switch ( hRel ) 
@@ -1540,45 +1549,41 @@ namespace DocFileFormat
 		}
 	}
 
-	void VMLShapeMapping::AppendOptionsToStyle (std::wstring* oStyle, const std::list<OptionEntry>& options) const
+	void VMLShapeMapping::AppendOptionsToStyle (std::wstring* oStyle, const std::list<OptionEntry>& options, int zIndex) const
 	{
 		bool bRelH = false;
 		bool bRelV = false;
+
+		bool bPosH = false;
+		bool bPosV = false;
 
 		std::list<OptionEntry>::const_iterator end = options.end();
 		for (std::list<OptionEntry>::const_iterator iter = options.begin(); iter != end; ++iter)
 		{
 			switch (iter->pid)
 			{
-				//	POSITIONING
+//	POSITIONING
 			case posh:
 				{
 					appendStyleProperty(oStyle, _T("mso-position-horizontal"), mapHorizontalPosition((PositionHorizontal)iter->op));
-				}
-				break;
-
+					bPosH = true;
+				}break;
 			case posrelh:
 				{
 					appendStyleProperty(oStyle, _T("mso-position-horizontal-relative"), mapHorizontalPositionRelative((PositionHorizontalRelative)iter->op));
 					bRelH = true;
-				}
-				break;
-
+				}break;
 			case posv:
 				{
 					appendStyleProperty(oStyle, _T("mso-position-vertical"), mapVerticalPosition((PositionVertical)iter->op));
-				}
-				break;
-
+					bPosV = true;
+				}break;
 			case posrelv:
 				{
 					appendStyleProperty(oStyle, _T("mso-position-vertical-relative"), mapVerticalPositionRelative((PositionVerticalRelative)iter->op));
 					bRelV = true;
-				}
-				break;
-
-				//	BOOLEANS
-
+				}break;
+//	BOOLEANS
 			case groupShapeBooleans:
 				{
 					GroupShapeBooleanProperties groupShapeBooleans(iter->op);
@@ -1588,16 +1593,17 @@ namespace DocFileFormat
 						//The shape is behind the text, so the z-index must be negative.
 						appendStyleProperty(oStyle, _T( "z-index" ), _T( "-1" ) );
 					}
+					else if (!m_isInlineShape)
+					{
+						appendStyleProperty( oStyle, _T( "z-index" ), FormatUtils::IntToWideString(zIndex + 0x7ffff));
+					}
 
 					if (groupShapeBooleans.fHidden && groupShapeBooleans.fUsefHidden)
 					{
 						appendStyleProperty(oStyle, _T( "visibility" ), _T( "hidden" ));
 					}
-				}
-				break;
-
-				//	GEOMETRY
-
+				}break;
+// GEOMETRY
 			case PropertyId_rotation:
 				{
 					double dAngle = (double)((int)iter->op) / 65535.0;
@@ -1605,45 +1611,30 @@ namespace DocFileFormat
 					if (dAngle < -360.0)
 						dAngle += 360.0;
 
-					// //ATLTRACE (L"angle : %f\n", dAngle);
-
 					appendStyleProperty(oStyle, _T( "rotation" ), FormatUtils::DoubleToWideString(dAngle));
-				}
-				break;
-
-				//	TEXTBOX	
-
+				}break;
+// TEXTBOX	
 			case anchorText:
 				{
 					appendStyleProperty(oStyle, _T("v-text-anchor"), getTextboxAnchor(iter->op));
-				}
-				break;
-
-				//	WRAP DISTANCE
-
+				}break;
+// WRAP DISTANCE
 			case dxWrapDistLeft:
 				{
 					appendStyleProperty(oStyle, _T("mso-wrap-distance-left"), (FormatUtils::DoubleToWideString(EmuValue((int)iter->op).ToPoints()) + std::wstring(_T("pt"))));
-				}
-				break;
-
+				}break;
 			case dxWrapDistRight:
 				{
 					appendStyleProperty(oStyle, _T("mso-wrap-distance-right"), (FormatUtils::DoubleToWideString(EmuValue((int)iter->op).ToPoints()) + std::wstring(_T("pt"))));
-				}
-				break;
-
+				}break;
 			case dyWrapDistBottom:
 				{
 					appendStyleProperty(oStyle, _T("mso-wrap-distance-bottom"), (FormatUtils::DoubleToWideString(EmuValue((int)iter->op).ToPoints()) + std::wstring(_T("pt"))));
-				}
-				break;
-
+				}break;
 			case dyWrapDistTop:
 				{
 					appendStyleProperty(oStyle, _T("mso-wrap-distance-top"), (FormatUtils::DoubleToWideString(EmuValue((int)iter->op).ToPoints()) + std::wstring(_T("pt"))));
-				}
-				break;
+				}break;
 			}
 		}
 		
@@ -1655,6 +1646,15 @@ namespace DocFileFormat
 		{
 			appendStyleProperty(oStyle, _T("mso-position-vertical-relative"), mapVerticalPositionRelative(m_pSpa->bx));
 		}
+
+		//if (!bPosH)
+		//{
+		//	appendStyleProperty(oStyle, _T("mso-position-horizontal"), _T( "absolute" ));
+		//}
+		//if (!bPosV)
+		//{
+		//	appendStyleProperty(oStyle, _T("mso-position-vertical"), _T( "absolute" ));
+		//}
 	}
 
 	//
@@ -1686,8 +1686,6 @@ namespace DocFileFormat
 
 				if ((dAngle >= 45.0 && dAngle <= 135.0) || (dAngle >= 225.0 && dAngle <= 315.0) || (dAngle <= -45.0 && dAngle >= -135.0) || (dAngle <= -225.0 && dAngle >= -315.0))
 					twistDimensions	=	true;
-
-				//ATLTRACE (L"angle : %f\n", dAngle);
 			}
 		}
 
@@ -1746,10 +1744,8 @@ namespace DocFileFormat
 			appendStyleProperty( &style, _T( "flip" ), _T( "y" ) );
 		}
 
-		AppendOptionsToStyle( &style, options );
+		AppendOptionsToStyle( &style, options, zIndex );
 		
-		if (!this->m_bBullet)appendStyleProperty( &style, _T( "z-index" ), FormatUtils::IntToWideString(zIndex + 0x7ffff));
-
 		return style;
 	}
 
@@ -1878,34 +1874,29 @@ namespace DocFileFormat
 
 		case 1:
 			{
-				return _T( "tile" );
-			}
-			break;
-
-		case 2:
-			{
 				return _T( "pattern" );
 			}
 			break;
-
+		case 2:
+			{
+				return _T( "tile" );
+			}
+			break;
 		case 3:
 			{
 				return _T( "frame" );
 			}
 			break;
-
 		case 4:
 			{
 				return _T( "gradient" );
 			}
 			break;
-
 		case 5:
 			{
 				return _T( "gradientRadial" );
 			}
 			break;
-
 		case 6:
 			{
 				return _T( "gradientRadial" );
@@ -1917,13 +1908,11 @@ namespace DocFileFormat
 				return _T( "gradient" );
 			}
 			break;
-
 		case 9:
 			{
 				return _T( "solid" );
 			}
 			break;
-
 		default:
 			{
 				return _T( "solid" );

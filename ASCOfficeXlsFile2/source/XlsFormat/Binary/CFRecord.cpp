@@ -47,7 +47,7 @@ CFRecord::CFRecord(CFStreamPtr stream, GlobalWorkbookInfoPtr global_info)
 :	rdPtr(0), // seek to the start
 	global_info_(global_info)
 {
-	file_ptr = static_cast<unsigned int>(stream->getStreamPointer()); // Assume that files have size < 4Gb
+	file_ptr = static_cast<unsigned int>(stream->getStreamPointer());
 	*stream >> type_id_;
 	unsigned short size_short;
 	*stream >> size_short;

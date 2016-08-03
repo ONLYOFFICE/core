@@ -217,9 +217,18 @@ namespace DocFileFormat
 		
 		case msosptTextStop						:	{	pShape	=	new WordArtTextStop();					}	break;
 		case msosptTextArchUpCurve				:	{	pShape	=	new WordArtTextArchUpCurve();			}	break;
-		case msosptTextPlainText				:
-	//без детализаций - todooo прописать формулы
-		case msosptTextTriangle					:
+		case msosptTextSlantUp					:	{	pShape	=	new WordArtTextSlantUp();				}	break;
+		case msosptTextDeflate					:	{	pShape	=	new WordArtTextDeflate();				}	break;
+		case msosptTextCanDown					:	{	pShape	=	new WordArtTextCanDown();				}	break;
+		case msosptTextWave1					:	{	pShape	=	new WordArtTextWave1();					}	break;
+		case msosptTextWave3					:	{	pShape	=	new WordArtTextWave3();					}	break;
+		case msosptTextWave4					:	{	pShape	=	new WordArtTextWave4();					}	break;
+		case msosptTextCurveUp					:	{	pShape	=	new WordArtTextCurveUp();				}	break;
+		case msosptTextFadeUp					:	{	pShape	=	new WordArtTextFadeUp();				}	break;
+		case msosptTextTriangle					:	{	pShape	=	new WordArtTextTriangle();				}	break;
+		case msosptTextCascadeUp				:	{	pShape	=	new WordArtTextCascadeUp();				}	break;
+		case msosptTextDeflateBottom			:	{	pShape	=	new WordArtTextDeflateBottom();			}	break;
+
 		case msosptTextTriangleInverted			:
 		case msosptTextChevron					:
 		case msosptTextChevronInverted			:
@@ -232,30 +241,21 @@ namespace DocFileFormat
 		case msosptTextArchDownPour				:
 		case msosptTextCirclePour				:
 		case msosptTextButtonPour				:
-		case msosptTextCurveUp					:
 		case msosptTextCurveDown				:
-		case msosptTextCascadeUp				:
 		case msosptTextCascadeDown				:
-		case msosptTextWave1					:
 		case msosptTextWave2					:
-		case msosptTextWave3					:
-		case msosptTextWave4					:
 		case msosptTextInflate					:
-		case msosptTextDeflate					:
 		case msosptTextInflateBottom			:
-		case msosptTextDeflateBottom			:
 		case msosptTextInflateTop				:
 		case msosptTextDeflateTop				:
 		case msosptTextDeflateInflate			:
 		case msosptTextDeflateInflateDeflate	:
 		case msosptTextFadeRight				:
 		case msosptTextFadeLeft					:
-		case msosptTextFadeUp					:
 		case msosptTextFadeDown					:
-		case msosptTextSlantUp					:
 		case msosptTextSlantDown				:
 		case msosptTextCanUp					:
-		case msosptTextCanDown					:
+		case msosptTextPlainText				:	
 													{	pShape	=	new WordArtTextType(TypeCode);			}	break;
 
 		default									:	{	pShape	=	NULL;									}	break;

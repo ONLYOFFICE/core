@@ -69,6 +69,7 @@ void CFStream::read(void* buf, const size_t size)
 
 	if(num_read < size)
 	{
+		stream_->seek(stream_->size()); // 5217417.xls
 		return;// EndOfStreamReached
 	}
 }

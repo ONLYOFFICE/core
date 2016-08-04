@@ -1869,9 +1869,13 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 					CString strNameP = XmlUtils::GetNameNoNS(oNodeP.GetName());
 					if (_T("textpath") == strNameP)
 					{
-						strString = oNodeP.GetAttribute(_T("string"));
-                        // мы используем его в хмл
-                        CorrectXmlString(strString);
+						strString = oNodeP.GetText();	//для обхода &#xA пишется дубль в контент
+
+						if (strString.IsEmpty())
+						{
+							strString = oNodeP.GetAttribute(_T("string"));
+						}
+                        CorrectXmlString(strString); // мы используем его в хмл
 
 						CString strStyle = oNodeP.GetAttribute(_T("style"));
 						PPTX::CCSS oCSSParser;

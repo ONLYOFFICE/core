@@ -2623,6 +2623,8 @@ namespace OOX
 			{
 				ReadAttributes( oReader );
 
+				m_sStringOriginal = oReader.GetText2();
+
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
@@ -2716,6 +2718,8 @@ namespace OOX
 			nullable<SimpleTypes::Vml::CCssStyle>                 m_oStyle;
 			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>    m_oTrim;
 			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>    m_oXScale;
+			
+			nullable<CString>                                     m_sStringOriginal;
 		};
 		//--------------------------------------------------------------------------------
 		// CGroup 14.1.2.7 (Part4)

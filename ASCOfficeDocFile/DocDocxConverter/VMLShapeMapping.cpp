@@ -224,6 +224,8 @@ namespace DocFileFormat
 				ChildAnchor* pAnchor			=	pContainer->FirstChildWithType<ChildAnchor>();
 				ClientAnchor* clientAnchor		=	pContainer->FirstChildWithType<ClientAnchor>();
 
+				XMLTools::XMLElement<wchar_t>	*pMultiTextPath = NULL;
+
 				WriteBeginShapeNode (pShape);
 
 				m_pXmlWriter->WriteAttribute ( _T( "id"), GetShapeID(pShape).c_str());
@@ -303,7 +305,6 @@ namespace DocFileFormat
 							}
 						}
 						break;
-
 					case fillStyleBooleanProperties:
 						{
 							FillStyleBooleanProperties booleans(iter->op);
@@ -311,9 +312,7 @@ namespace DocFileFormat
 							{
 								filled = false;
 							}
-						}
-						break;
-
+						}break;
 					case lineStyleBooleans:
 						{
 							LineStyleBooleanProperties booleans(iter->op);
@@ -366,44 +365,32 @@ namespace DocFileFormat
 						{
 							adjValues[2]	=	FormatUtils::IntToWideString( (int)iter->op );
                             nAdjValues		=	(std::max)(nAdjValues,3);
-						}
-						break;
-
+						}break;
 					case adjust4Value:
 						{
 							adjValues[3]	=	FormatUtils::IntToWideString( (int)iter->op );
                             nAdjValues		=	(std::max)(nAdjValues,4);
-						}
-						break;
-
+						}break;
 					case adjust5Value:
 						{
 							adjValues[4]	=	FormatUtils::IntToWideString( (int)iter->op );
                             nAdjValues		=	(std::max)(nAdjValues,5);
-						}
-						break;
-
+						}break;
 					case adjust6Value:
 						{
 							adjValues[5]	=	FormatUtils::IntToWideString( (int)iter->op );
                             nAdjValues		=	(std::max)(nAdjValues,6);
-						}
-						break;
-
+						}break;
 					case adjust7Value:
 						{
 							adjValues[6]	=	FormatUtils::IntToWideString( (int)iter->op );
                             nAdjValues		=	(std::max)(nAdjValues,7);
-						}
-						break;
-
+						}break;
 					case adjust8Value:
 						{
 							adjValues[7]	=	FormatUtils::IntToWideString( (int)iter->op );
                             nAdjValues		=	(std::max)(nAdjValues,8);
-						}
-						break;
-
+						}break;
 					case pWrapPolygonVertices:
 						{
 							std::wstring wrapCoords = getWrapCoords(*iter);
@@ -412,144 +399,98 @@ namespace DocFileFormat
 							{
 								m_pXmlWriter->WriteAttribute( _T( "wrapcoords" ), wrapCoords.c_str() );
 							}
-						}
-						break;
-
+						}break;
 					case geoRight:
 						{
 							xCoord = iter->op;
-						}
-						break;
-
+						}break;
 					case geoBottom:
 						{
 							yCoord = iter->op;
-						}
-						break;
-
+						}break;
 					case pGuides:
 						{
-						}
-						break;
-
+						}break;
 					case pInscribe:
 						{
 							arrInscribe = GetTextRectangles(*iter);
-						}
-						break;
-
-						// OUTLINE
-
+						}break;
+		// OUTLINE
 					case lineColor:
 						{
 							RGBColor lineColor((int)iter->op, RedFirst);
 							m_pXmlWriter->WriteAttribute( _T("strokecolor"), (std::wstring(_T("#")) + lineColor.SixDigitHexCode).c_str());
-						}
-						break;
-
+						}break;
 					case lineWidth:
 						{
 							EmuValue eLineWidth ((int)iter->op );
 							CString sWidth; sWidth.Format(_T("%fpt"), eLineWidth.ToPoints());
 							m_pXmlWriter->WriteAttribute(_T("strokeweight"), sWidth);
-						}
-						break;
-
+						}break;
 					case lineDashing:
 						{
 							appendValueAttribute(&m_stroke, _T( "dashstyle" ), FormatUtils::MapValueToWideString( iter->op, &Global::DashStyleMap[0][0], 11, 16 ).c_str() );
-						}
-						break;
-
+						}break;
 					case lineStyle:
 						{
 							appendValueAttribute(&m_stroke, _T( "linestyle" ), getLineStyle( iter->op ).c_str());
-						}
-						break;
-
+						}break;
 					case lineEndArrowhead:
 						{
 							appendValueAttribute(&m_stroke, _T( "endarrow" ), getArrowStyle( iter->op ).c_str());
-						}
-						break;
-
+						}break;
 					case lineEndArrowLength:
 						{
 							appendValueAttribute(&m_stroke, _T( "endarrowlength" ), getArrowLength( iter->op ).c_str());
-						}
-						break;
-
+						}break;
 					case lineEndArrowWidth:
 						{
 							appendValueAttribute(&m_stroke, _T( "endarrowwidth" ), getArrowWidth( iter->op ).c_str());
-						}
-						break;
-
+						}break;
 					case lineStartArrowhead:
 						{
 							appendValueAttribute(&m_stroke, _T( "startarrow" ), getArrowStyle( iter->op ).c_str());
-						}
-						break;
-
+						}break;
 					case lineStartArrowLength:
 						{
 							appendValueAttribute(&m_stroke, _T( "startarrowlength" ), getArrowLength( iter->op ).c_str());
-						}
-						break;
-
+						}break;
 					case lineStartArrowWidth:
 						{
 							appendValueAttribute(&m_stroke, _T( "startarrowwidth" ), getArrowWidth( iter->op ).c_str());
-						}
-						break;
-
-						// FILL
-
+						}break;
+		// FILL
 					case fillColor:
 						{
 							RGBColor fillColor((int)iter->op, RedFirst);
 							m_pXmlWriter->WriteAttribute(_T( "fillcolor" ), ( std::wstring( _T( "#" ) ) + fillColor.SixDigitHexCode ).c_str());
-						}
-						break;
-
+						}break;
 					case fillBackColor:
 						{
 							RGBColor fillBackColor( (int)iter->op, RedFirst );
 							appendValueAttribute(&m_fill, _T( "color2" ), ( std::wstring( _T( "#" ) ) + fillBackColor.SixDigitHexCode ).c_str());
-						}
-						break;
-
+						}break;
 					case fillAngle:
 						{
 							FixedPointNumber fllAngl( iter->op );
 							appendValueAttribute(&m_fill, _T( "angle" ), FormatUtils::DoubleToWideString( fllAngl.ToAngle() ).c_str());
-						}
-						break;
-
+						}break;
 					case fillShadeType:
 						{
 							appendValueAttribute(&m_fill, _T( "method" ), getFillMethod( iter->op ).c_str());
-						}
-						break;
-
+						}break;
 					case fillShadeColors:
 						{
 							appendValueAttribute(&m_fill, _T( "colors" ), getFillColorString( iter->opComplex, iter->op ).c_str());
-						}
-						break;
-
+						}break;
 					case fillFocus:
 						{
 							appendValueAttribute(&m_fill, _T( "focus" ), ( FormatUtils::IntToWideString( iter->op ) + _T( "%" ) ).c_str());
-						}
-						break;
-
+						}break;
 					case fillType:
 						{
 							appendValueAttribute(&m_fill, _T( "type" ), getFillType( iter->op ).c_str());
-						}
-						break;
-
+						}break;
 					case fillBlip:
 						{
 							BlipStoreEntry* pFillBlip = NULL;
@@ -569,9 +510,7 @@ namespace DocFileFormat
 								appendValueAttribute(&m_fill, _T( "r:id" ), ( std::wstring( _T( "rId" ) ) + FormatUtils::IntToWideString(m_nImageId) ).c_str());
 								appendValueAttribute(&m_imagedata, _T( "o:title" ), _T( "" ));
 							}
-						}
-						break;
-
+						}break;
 					case fillOpacity:
 						{
 							appendValueAttribute(&m_fill, _T( "opacity" ), ( FormatUtils::IntToWideString( iter->op ) + _T( "f" ) ).c_str());
@@ -580,76 +519,53 @@ namespace DocFileFormat
 					case fillBackOpacity:
 						{
 							appendValueAttribute(&m_fill, _T("opacity2"), (FormatUtils::IntToWideString(iter->op) + _T("f")).c_str());
-						}
-						break;
-
-						// SHADOW
-
+						}break;
+		// SHADOW
 					case shadowType:
 						{
 							appendValueAttribute(&m_shadow, _T("type"), getShadowType(iter->op).c_str());
-						}
-						break;
+						}break;
 
 					case shadowColor:
 						{
 							RGBColor shadowColor((int)iter->op, RedFirst);
 							appendValueAttribute(&m_shadow, _T( "color" ), ( std::wstring( _T( "#" ) ) + shadowColor.SixDigitHexCode ).c_str());
-						}
-						break;
-
+						}break;
 					case shadowOffsetX:
 						{
 							ShadowOffsetX = EmuValue( (int)iter->op );
-						}
-						break;
-
+						}break;
 					case shadowSecondOffsetX:
 						{
 							SecondShadowOffsetX = EmuValue( (int)iter->op );
-						}
-						break;
-
+						}break;
 					case shadowOffsetY:
 						{
 							ShadowOffsetY = EmuValue( (int)iter->op );
-						}
-						break;
-
+						}break;
 					case shadowSecondOffsetY:
 						{
 							SecondShadowOffsetY = EmuValue( (int)iter->op );
-						}
-						break;
-
+						}break;
 					case shadowOriginX:
 						{
 							ShadowOriginX = ( iter->op / pow( (double)2, (double)16 ) );
-						}
-						break;
-
+						}break;
 					case shadowOriginY:
 						{
 							ShadowOriginY = (iter->op / pow( (double)2, (double)16));
-						}
-						break;
-
+						}break;
 					case shadowOpacity:
 						{
 							double shadowOpa = (iter->op / pow( (double)2, (double)16));
 
 							appendValueAttribute(&m_shadow, _T( "opacity" ), FormatUtils::DoubleToFormattedWideString( shadowOpa, _T( "%.2f" ) ).c_str());
-						}
-						break;
-
+						}break;
 					case shadowStyleBooleanProperties:
 						{
 							shadowBoolean	=	ShadowStyleBooleanProperties(iter->op);
-						}
-						break;
-
-						// PICTURE
-
+						}break;
+		// PICTURE
 					case Pib:
 						{
 							int index = (int)( iter->op - 1 );
@@ -662,19 +578,14 @@ namespace DocFileFormat
 									appendValueAttribute(&m_imagedata, _T( "r:id" ), ( std::wstring( _T( "rId" ) ) + FormatUtils::IntToWideString(m_nImageId) ).c_str());
 								}
 							}
-						}
-						break;
-
+						}break;
 					case pibName:
 						{
 							std::wstring name;
 							FormatUtils::GetSTLCollectionFromBytes<std::wstring>(&name, iter->opComplex, iter->op, ENCODING_UTF16);
 							appendValueAttribute(&m_imagedata, _T( "o:title" ), FormatUtils::XmlEncode(name).c_str());
-						}
-						break;
-
-						// 3D STYLE
-
+						}break;
+		// 3D STYLE
 					case f3D:
 					case threeDStyleBooleanProperties:
 					case threeDObjectBooleanProperties:
@@ -684,102 +595,113 @@ namespace DocFileFormat
 						{
 							EmuValue backwardValue( (int)iter->op );
 							appendValueAttribute(&m_3dstyle, _T( "backdepth" ), FormatUtils::DoubleToWideString( backwardValue.ToPoints() ).c_str());
-						}
-						break; 
-
+						}break; 
 					case c3DSkewAngle:
 						{
 							FixedPointNumber skewAngle( iter->op );
 							appendValueAttribute(&m_3dstyle, _T( "skewangle" ), FormatUtils::DoubleToWideString( skewAngle.ToAngle() ).c_str());
-						}
-						break;
-
+						}break;
 					case c3DXViewpoint:
 						{
 							ViewPointX = EmuValue( FixedPointNumber( iter->op ).Integral );
-						}
-						break;
-
+						}break;
 					case c3DYViewpoint:
 						{
 							ViewPointY = EmuValue( FixedPointNumber( iter->op ).Integral );
-						}
-						break;
-
+						}break;
 					case c3DZViewpoint:
 						{
 							ViewPointZ = EmuValue( FixedPointNumber( iter->op ).Integral );
-						}
-						break;
-
+						}break;
 					case c3DOriginX:
 						{
 							FixedPointNumber dOriginX( iter->op );
 							viewPointOriginX = ( dOriginX.Integral / 65536.0 );
-						}
-						break;
-
+						}break;
 					case c3DOriginY:
 						{
 							FixedPointNumber dOriginY( iter->op );
 							viewPointOriginY = (dOriginY.Integral / 65536.0 );
-						}
-						break;
-
-			// TEXTBOX
-
+						}break;
+		// TEXTBOX
 					case lTxid:
 						{
 							hasTextbox	=	true;
 							nLTxID		=	(((iter->op) >> 16) & 0xFFFF);
-						}
-						break;
+						}break;
 					case dxTextLeft:	{ndxTextLeft	= (int)iter->op;break;}
 					case dyTextTop:		{ndyTextTop		= (int)iter->op;break;}
 					case dxTextRight:	{ndxTextRight	= (int)iter->op;break;}
 					case dyTextBottom:	{ndyTextBottom	= (int)iter->op;break;}
 					case txflTextFlow:
-					{
-						switch(iter->op)
 						{
-						case 0:
-						case 4://обычный 							
-							break;
-						case 1:
-						case 5://верт (склони голову направо)						
-							appendStyleProperty(&sTextboxStyle, L"layout-flow", L"vertical");
-							break;
-						case 2://верт (склони голову налево)	
-							appendStyleProperty(&sTextboxStyle, L"layout-flow", L"vertical");
-							appendStyleProperty(&sTextboxStyle, L"mso-layout-flow-alt", L"bottom-to-top");
-							break;
-						}
-					}break;	
-	// TEXT PATH (Word Art)
-
+							switch(iter->op)
+							{
+							case 0:
+							case 4://обычный 							
+								break;
+							case 1:
+							case 5://верт (склони голову направо)						
+								appendStyleProperty(&sTextboxStyle, L"layout-flow", L"vertical");
+								break;
+							case 2://верт (склони голову налево)	
+								appendStyleProperty(&sTextboxStyle, L"layout-flow", L"vertical");
+								appendStyleProperty(&sTextboxStyle, L"mso-layout-flow-alt", L"bottom-to-top");
+								break;
+							}
+						}break;	
+	// Word Art)
 					case gtextUNICODE:
-					{
-						std::wstring text = NSStringExt::CConverter::GetUnicodeFromUTF16((unsigned short*)iter->opComplex, (iter->op)/2);
-
-						text = FormatUtils::XmlEncode(text);
-						text = ReplaceString(text, _T("\n"), _T("&#xA;"));
-						appendValueAttribute(&m_textpath, L"string", text.c_str());
-					}break;
-
-					case gtextFont:
-					{
-						std::wstring font = NSStringExt::CConverter::GetUnicodeFromUTF16((unsigned short*)iter->opComplex, (iter->op)/2);
-						int i = font.size();
-						while (i > 0)
 						{
-							if (font[i-1] != 0) break;
-							i--;
-						}
-						if (i < font.size()) font.erase(font.begin() + i, font.end());
+							std::wstring text = NSStringExt::CConverter::GetUnicodeFromUTF16((unsigned short*)iter->opComplex, (iter->op)/2);
 
-						font = std::wstring(_T("\"")) + font + std::wstring(_T("\""));
-						appendStyleProperty(&m_textPathStyle, L"font-family", font);
-					}break;
+							text = FormatUtils::XmlEncode(text);
+
+							if (0 <= text.find(_T("\n")))
+							{
+								pMultiTextPath = new XMLTools::XMLElement<wchar_t>(_T("v:multitextpaths"));
+								int pos1 = 0, pos2 = 0;
+								std::wstring s;
+
+								XMLTools::XMLElement<wchar_t> t_child;
+								while(pos1 < text.length() && pos2 < text.length())
+								{
+									pos2 = text.find(_T("\n"), pos1);
+									if (pos2 > 0)
+									{
+										std::wstring s = text.substr(pos1, pos2 - pos1);
+										t_child = XMLTools::XMLElement<wchar_t>(_T("v:textpart"));
+										t_child.AppendAttribute(_T("val"), s.c_str());
+										pMultiTextPath->AppendChild(t_child );
+										pos1 = pos2 + 1;
+									}
+									else break;
+								}
+								s = text.substr(pos1, text.length() - pos1);
+								t_child = XMLTools::XMLElement<wchar_t>(_T("v:textpart"));
+								t_child.AppendAttribute(_T("val"), s.c_str());
+								pMultiTextPath->AppendChild(t_child );
+							}
+							
+							m_textpath.AppendText(text.c_str());
+							
+							text = ReplaceString(text, _T("\n")	, _T("&#xA;"));						
+							appendValueAttribute(&m_textpath, L"string", text.c_str());
+						}break;
+					case gtextFont:
+						{
+							std::wstring font = NSStringExt::CConverter::GetUnicodeFromUTF16((unsigned short*)iter->opComplex, (iter->op)/2);
+							int i = font.size();
+							while (i > 0)
+							{
+								if (font[i-1] != 0) break;
+								i--;
+							}
+							if (i < font.size()) font.erase(font.begin() + i, font.end());
+
+							font = std::wstring(_T("\"")) + font + std::wstring(_T("\""));
+							appendStyleProperty(&m_textPathStyle, L"font-family", font);
+						}break;
 					case gtextSize:
 					{
 						std::wstring fontSize = FormatUtils::IntToWideString(iter->op/65535);
@@ -948,7 +870,6 @@ namespace DocFileFormat
 
 					m_pXmlWriter->WriteString(m_shadow.GetXMLString().c_str());
 				}
-
 				//write 3d style 
 				if (m_3dstyle.GetAttributeCount() > 0)
 				{
@@ -1032,6 +953,11 @@ namespace DocFileFormat
 				{
 					appendValueAttribute(&m_textpath, _T( "style" ), FormatUtils::XmlEncode(m_textPathStyle).c_str());
 					m_pXmlWriter->WriteString(m_textpath.GetXMLString().c_str());
+				}
+				if (pMultiTextPath)
+				{
+					//m_pXmlWriter->WriteString(pMultiTextPath->GetXMLString().c_str());
+					delete pMultiTextPath;
 				}
 
 				// write imagedata

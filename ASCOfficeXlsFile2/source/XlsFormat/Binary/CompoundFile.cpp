@@ -91,6 +91,8 @@ CFStreamPtr CompoundFile::getWorkbookStream()
 	CFStreamPtr stream = getNamedStream("Workbook");
 
 	if (stream == NULL) 
+		stream = getNamedStream("WORKBOOK"); //6447323.xls
+	if (stream == NULL) 
 		stream = getNamedStream("Book");
 	if (stream == NULL) 
 		stream = getNamedStream("BOOK");//file(6).xls

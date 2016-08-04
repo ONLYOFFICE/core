@@ -1798,14 +1798,14 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 			if (oNodeShape.GetNodes(_T("*"), oChilds))
 			{
 				EFilltype eFillType = etSolidFill;
-				CString sTxbxContent = _T("<w:txbxContent><w:p>");
-				CString sParaRun = _T("<w:r>");
+				CString sTxbxContent = _T("<w:txbxContent>");
 				CString srPr;
 				CString sFont = (_T("Arial Black"));
 				//CString sDashStyle;
 				int nFontSize = 36;
 				LONG lChildsCount = oChilds.GetCount();
-				CString strString = _T("");
+				
+				std::vector<CString> strString;
 				BYTE lAlpha;
 				bool bOpacity = false;
 				bool bOpacity2 = false;
@@ -1869,13 +1869,33 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 					CString strNameP = XmlUtils::GetNameNoNS(oNodeP.GetName());
 					if (_T("textpath") == strNameP)
 					{
-						strString = oNodeP.GetText();	//для обхода &#xA пишется дубль в контент
+						CString tmpString = oNodeP.GetText();	//для обхода &#xA пишется дубль в контент
 
-						if (strString.IsEmpty())
+						if (tmpString.IsEmpty())
 						{
-							strString = oNodeP.GetAttribute(_T("string"));
+							tmpString = oNodeP.GetAttribute(_T("string"));
+							CorrectXmlString(tmpString ); // мы используем его в хмл
+							strString.push_back(tmpString );
 						}
-                        CorrectXmlString(strString); // мы используем его в хмл
+						else
+						{
+							CorrectXmlString(tmpString ); // мы используем его в хмл
+
+							int pos1 = 0, pos2 = 0;
+
+							while(pos1 < tmpString.GetLength() && pos2 < tmpString.GetLength())
+							{
+								pos2 = tmpString.Find(_T("\n"), pos1);
+								if (pos2 > 0)
+								{
+									strString.push_back(tmpString.Mid(pos1, pos2 - pos1));
+									pos1 = pos2 + 1;
+								}
+								else break;
+							}
+							strString.push_back(tmpString.Mid(pos1, tmpString.GetLength() - pos1));
+						}
+
 
 						CString strStyle = oNodeP.GetAttribute(_T("style"));
 						PPTX::CCSS oCSSParser;
@@ -2092,7 +2112,6 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 					}*/
 				}
 
-				//srPr += _T("<w:rPr>");
 				srPr += _T("<w:rFonts w:ascii=\"") + sFont + _T("\" w:hAnsi=\"") + sFont + _T("\"/>");
 				CString strSize;
 				strSize.Format(_T("%d"), nFontSize);
@@ -2262,11 +2281,15 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 				if (bStroked)
 					srPr += pSolid->toXML();
 
-				srPr += _T("</w14:textOutline>");			
+				srPr += _T("</w14:textOutline>");
 
-				//srPr += _T("</w:rPr>");
-                sParaRun += _T("<w:rPr>") + srPr + _T("</w:rPr>") + _T("<w:t>") + strString + _T("</w:t></w:r>");
-				sTxbxContent += _T("<w:pPr><w:rPr>") + srPr + _T("</w:rPr></w:pPr>") + sParaRun + _T("</w:p></w:txbxContent>");
+				for (int i = 0; i < strString.size(); i++)
+				{
+					CString sParaRun = _T("<w:r><w:rPr>") + srPr + _T("</w:rPr>") + _T("<w:t>") + strString[i] + _T("</w:t></w:r>");
+				
+					sTxbxContent += _T("<w:p><w:pPr><w:rPr>") + srPr + _T("</w:rPr></w:pPr>") + sParaRun + _T("</w:p>");
+				}
+				sTxbxContent += _T("</w:txbxContent>");
 				pShape->TextBoxShape = sTxbxContent;
 			}
 			strXmlPPTX = _T("<a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom>");

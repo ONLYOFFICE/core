@@ -224,8 +224,6 @@ namespace DocFileFormat
 				ChildAnchor* pAnchor			=	pContainer->FirstChildWithType<ChildAnchor>();
 				ClientAnchor* clientAnchor		=	pContainer->FirstChildWithType<ClientAnchor>();
 
-				XMLTools::XMLElement<wchar_t>	*pMultiTextPath = NULL;
-
 				WriteBeginShapeNode (pShape);
 
 				m_pXmlWriter->WriteAttribute ( _T( "id"), GetShapeID(pShape).c_str());
@@ -659,32 +657,8 @@ namespace DocFileFormat
 
 							if (0 <= text.find(_T("\n")))
 							{
-								pMultiTextPath = new XMLTools::XMLElement<wchar_t>(_T("v:multitextpaths"));
-								int pos1 = 0, pos2 = 0;
-								std::wstring s;
-
-								XMLTools::XMLElement<wchar_t> t_child;
-								while(pos1 < text.length() && pos2 < text.length())
-								{
-									pos2 = text.find(_T("\n"), pos1);
-									if (pos2 > 0)
-									{
-										std::wstring s = text.substr(pos1, pos2 - pos1);
-										t_child = XMLTools::XMLElement<wchar_t>(_T("v:textpart"));
-										t_child.AppendAttribute(_T("val"), s.c_str());
-										pMultiTextPath->AppendChild(t_child );
-										pos1 = pos2 + 1;
-									}
-									else break;
-								}
-								s = text.substr(pos1, text.length() - pos1);
-								t_child = XMLTools::XMLElement<wchar_t>(_T("v:textpart"));
-								t_child.AppendAttribute(_T("val"), s.c_str());
-								pMultiTextPath->AppendChild(t_child );
+								m_textpath.AppendText(text.c_str());
 							}
-							
-							m_textpath.AppendText(text.c_str());
-							
 							text = ReplaceString(text, _T("\n")	, _T("&#xA;"));						
 							appendValueAttribute(&m_textpath, L"string", text.c_str());
 						}break;
@@ -703,55 +677,54 @@ namespace DocFileFormat
 							appendStyleProperty(&m_textPathStyle, L"font-family", font);
 						}break;
 					case gtextSize:
-					{
-						std::wstring fontSize = FormatUtils::IntToWideString(iter->op/65535);
-						appendStyleProperty(&m_textPathStyle, L"font-size", fontSize + L"pt");
-					}break;
+						{
+							std::wstring fontSize = FormatUtils::IntToWideString(iter->op/65535);
+							appendStyleProperty(&m_textPathStyle, L"font-size", fontSize + L"pt");
+						}break;
 					case gtextSpacing:
-					{
-						std::wstring spacing = FormatUtils::IntToWideString(iter->op);
-						appendStyleProperty(&m_textPathStyle, L"v-text-spacing", spacing + L"f");
-					}break;
+						{
+							std::wstring spacing = FormatUtils::IntToWideString(iter->op);
+							appendStyleProperty(&m_textPathStyle, L"v-text-spacing", spacing + L"f");
+						}break;
 					case geometryTextBooleanProperties:
-					{
-						GeometryTextBooleanProperties props(iter->op);
-						if (props.fUsegtextFBestFit && props.gtextFBestFit)
 						{
-							appendValueAttribute(&m_textpath, L"fitshape", _T("t"));
-						}
-						if (props.fUsegtextFShrinkFit && props.gtextFShrinkFit)
-						{
-							appendValueAttribute(&m_textpath, L"trim", _T("t"));
-						}
-						if (props.fUsegtextFVertical && props.gtextFVertical)
-						{
-							appendStyleProperty(&m_textPathStyle, L"v-rotate-letters", L"t");
-							//_twistDimension = true;
-						}
-						if (props.fUsegtextFKern && props.gtextFKern)
-						{
-							appendStyleProperty(&m_textPathStyle, L"v-text-kern", L"t");
-						}
-						if (props.fUsegtextFItalic && props.gtextFItalic)
-						{
-							appendStyleProperty(&m_textPathStyle, L"font-style", L"italic");
-						}
-						if (props.fUsegtextFBold && props.gtextFBold)
-						{
-							appendStyleProperty(&m_textPathStyle, L"font-weight", L"bold");
-						}
-					}break;
-
+							GeometryTextBooleanProperties props(iter->op);
+							if (props.fUsegtextFBestFit && props.gtextFBestFit)
+							{
+								appendValueAttribute(&m_textpath, L"fitshape", _T("t"));
+							}
+							if (props.fUsegtextFShrinkFit && props.gtextFShrinkFit)
+							{
+								appendValueAttribute(&m_textpath, L"trim", _T("t"));
+							}
+							if (props.fUsegtextFVertical && props.gtextFVertical)
+							{
+								appendStyleProperty(&m_textPathStyle, L"v-rotate-letters", L"t");
+								//_twistDimension = true;
+							}
+							if (props.fUsegtextFKern && props.gtextFKern)
+							{
+								appendStyleProperty(&m_textPathStyle, L"v-text-kern", L"t");
+							}
+							if (props.fUsegtextFItalic && props.gtextFItalic)
+							{
+								appendStyleProperty(&m_textPathStyle, L"font-style", L"italic");
+							}
+							if (props.fUsegtextFBold && props.gtextFBold)
+							{
+								appendStyleProperty(&m_textPathStyle, L"font-weight", L"bold");
+							}
+						}break;
 		  // PATH
-					case shapePath :
-					{
-						bHavePath			=	true;
+						case shapePath :
+						{
+							bHavePath			=	true;
 
-						std::wstring path	=	ParsePath(options);
+							std::wstring path	=	ParsePath(options);
 
-						if (false == path.empty())
-							m_pXmlWriter->WriteAttribute (_T( "path" ), path.c_str());
-					}break;
+							if (false == path.empty())
+								m_pXmlWriter->WriteAttribute (_T( "path" ), path.c_str());
+						}break;
 					}
 				}
 
@@ -783,8 +756,6 @@ namespace DocFileFormat
 					m_pXmlWriter->WriteAttribute( _T( "coordsize" ), ( FormatUtils::IntToWideString( xCoord ) + _T( "," ) + FormatUtils::IntToWideString( yCoord ) ).c_str() );
 				}
 
-				///	<!--		DOCX TAG	'adj'		-->
-
 				int nCode	=	0;
 				if (pShape->GetShapeType())
 				{
@@ -813,7 +784,7 @@ namespace DocFileFormat
 
 				m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
 
-				//build shadow offsets
+		//build shadow offsets
 				std::wstring offset;
 
 				if ( ShadowOffsetX != 0 )
@@ -821,14 +792,12 @@ namespace DocFileFormat
 					offset += FormatUtils::DoubleToWideString( ShadowOffsetX.ToPoints() );
 					offset += _T( "pt" );
 				}
-
 				if ( ShadowOffsetY != 0 )
 				{
 					offset += _T( "," );
 					offset += FormatUtils::DoubleToWideString( ShadowOffsetY.ToPoints() );
 					offset += _T( "pt" );
 				}
-
 				if ( !offset.empty() )
 				{
 					appendValueAttribute(&m_shadow, _T( "offset" ), offset.c_str());
@@ -854,13 +823,13 @@ namespace DocFileFormat
 					appendValueAttribute(&m_shadow, _T("offset2"), offset2.c_str());
 				}
 
-				//build shadow origin
+		//build shadow origin
 				if ( ( ShadowOriginX != 0 ) && ( ShadowOriginY != 0 ) )
 				{
 					appendValueAttribute(&m_shadow, _T("origin"), (FormatUtils::DoubleToWideString(shadowOriginX) + std::wstring(_T( "," )) + FormatUtils::DoubleToWideString(shadowOriginY)).c_str());
 				}
 
-				// write shadow
+		// write shadow
 				if (m_shadow.GetAttributeCount() > 0)
 				{
 					if (shadowBoolean.fShadow)
@@ -870,13 +839,13 @@ namespace DocFileFormat
 
 					m_pXmlWriter->WriteString(m_shadow.GetXMLString().c_str());
 				}
-				//write 3d style 
+		//write 3d style 
 				if (m_3dstyle.GetAttributeCount() > 0)
 				{
 					appendValueAttribute(&m_3dstyle, _T( "v:ext" ), _T( "view" ));
 					appendValueAttribute(&m_3dstyle, _T( "on" ), _T( "t" ));
 
-					//write the viewpoint
+		//write the viewpoint
 					if ( ( ViewPointX != 0 ) || ( ViewPointY != 0 ) || ( ViewPointZ != 0 ) )
 					{
 						std::wstring viewPoint;
@@ -900,8 +869,7 @@ namespace DocFileFormat
 
 						appendValueAttribute(&m_3dstyle, _T( "viewpoint" ), viewPoint.c_str());
 					}
-
-					// write the viewpointorigin
+		// write the viewpointorigin
 					if ( ( viewPointOriginX != 0 ) || ( viewPointOriginY != 0 ) )
 					{
 						std::wstring viewPointOrigin;
@@ -922,8 +890,7 @@ namespace DocFileFormat
 
 					m_pXmlWriter->WriteString(m_3dstyle.GetXMLString().c_str());
 				}
-
-				// write wrap
+		// write wrap
 				if (m_pSpa)
 				{
 					std::wstring wrap = getWrapType(m_pSpa);
@@ -935,32 +902,23 @@ namespace DocFileFormat
 						m_pXmlWriter->WriteNodeEnd	( _T( "w10:wrap" ), TRUE );
 					}
 				}
-
-				// write stroke
+		// write stroke
 				if (m_stroke.GetAttributeCount())
 				{
 					m_pXmlWriter->WriteString(m_stroke.GetXMLString().c_str());
 				}
-
-				// write fill
+		// write fill
 				if (m_fill.GetAttributeCount())
 				{
 					m_pXmlWriter->WriteString(m_fill.GetXMLString().c_str());
 				}
-
-				// text path
+		// text path
 				if (m_textpath.GetAttributeCount())
 				{
 					appendValueAttribute(&m_textpath, _T( "style" ), FormatUtils::XmlEncode(m_textPathStyle).c_str());
 					m_pXmlWriter->WriteString(m_textpath.GetXMLString().c_str());
 				}
-				if (pMultiTextPath)
-				{
-					//m_pXmlWriter->WriteString(pMultiTextPath->GetXMLString().c_str());
-					delete pMultiTextPath;
-				}
-
-				// write imagedata
+		// write imagedata
 				if (m_imagedata.GetAttributeCount())
 				{
 					m_pXmlWriter->WriteString(m_imagedata.GetXMLString().c_str());
@@ -975,9 +933,7 @@ namespace DocFileFormat
 						m_pXmlWriter->WriteNodeEnd(L"", true);
 					}
 				}
-
-				// TEXTBOX
-
+		// TEXTBOX
 				OfficeArtClientTextbox* pTextBox = pContainer->FirstChildWithType<OfficeArtClientTextbox>();
 				if (pTextBox)
 				{
@@ -1019,8 +975,7 @@ namespace DocFileFormat
 				}
 
 				WriteEndShapeNode(pShape);
-
-				//ShapeType 
+		//ShapeType 
 				if (NULL != pShape->GetShapeType() && !m_isInlineShape) //bullete only???
 				{
 					VMLShapeTypeMapping oXmlMapper(m_pXmlWriter);

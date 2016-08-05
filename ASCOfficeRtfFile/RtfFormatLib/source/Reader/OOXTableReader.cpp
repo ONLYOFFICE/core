@@ -97,7 +97,7 @@ bool OOXTableReader::Parse( ReaderParameter oParam, RtfTable& oOutputTable )
 		
 		OOX::Logic::CTr *ooxRow = dynamic_cast<OOX::Logic::CTr *>(m_ooxTable->m_arrItems[i]);
 		
-		OOXTableRowReader oRowReader(ooxRow);
+		OOXTableRowReader oRowReader(ooxRow, m_ooxTable->m_oTableProperties);
 		oRowReader.Parse( newParam, *oNewRow, nCurRow++, nRowCount );
 		oOutputTable.AddItem( oNewRow );
 	}

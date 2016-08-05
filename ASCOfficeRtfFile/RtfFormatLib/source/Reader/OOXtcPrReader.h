@@ -38,10 +38,12 @@
 class OOXtcPrReader
 {
 	OOX::Logic::CTableCellProperties*		m_ooxTableCellProps;
+	OOX::Logic::CTableProperty*				m_ooxTableProps;
 public: 
-	OOXtcPrReader(OOX::Logic::CTableCellProperties*		ooxTableCellProps)
+	OOXtcPrReader(OOX::Logic::CTableCellProperties* ooxTableCellProps, OOX::Logic::CTableProperty* ooxTableProps)
 	{
 		m_ooxTableCellProps = ooxTableCellProps;
+		m_ooxTableProps		= ooxTableProps;
 	}
 	bool Parse( ReaderParameter oParam ,RtfCellProperty& oOutputProperty,  CcnfStyle& oConditionalTableStyle, int nCurCell, int nCellCount, int nCurRow, int nRowCount  )
 	{
@@ -151,6 +153,45 @@ public:
 				oBorderReader.Parse( oParam,oOutputProperty.m_oBorderBottom  );
 			}
 		}
+		else if (m_ooxTableProps)
+		{
+			//from table props
+			//todoo last, first !!!!
+			//if( m_ooxTableProps->m_oTblBorders->m_oTop.IsInit() )
+			//{
+			//	OOXBorderReader oBorderReader(m_ooxTableProps->m_oTblBorders->m_oTop.GetPointer());
+			//	oBorderReader.Parse( oParam,oOutputProperty.m_oBorderTop);
+			//}
+			//if( m_ooxTableProps->m_oTblBorders->m_oStart.IsInit() )
+			//{
+			//	OOXBorderReader oBorderReader(m_ooxTableProps->m_oTblBorders->m_oStart.GetPointer());
+			//	oBorderReader.Parse(oParam,oOutputProperty.m_oBorderLeft);
+			//}
+			//if( m_ooxTableProps->m_oTblBorders->m_oBottom.IsInit())
+			//{
+			//	OOXBorderReader oBorderReader(m_ooxTableProps->m_oTblBorders->m_oBottom.GetPointer());
+			//	oBorderReader.Parse(oParam,oOutputProperty.m_oBorderBottom);
+			//}
+			//if( m_ooxTableProps->m_oTblBorders->m_oEnd.IsInit() )
+			//{
+			//	OOXBorderReader oBorderReader(m_ooxTableProps->m_oTblBorders->m_oEnd.GetPointer());
+			//	oBorderReader.Parse(oParam,oOutputProperty.m_oBorderRight);
+			//}
+			if( m_ooxTableProps->m_oTblBorders->m_oInsideH.IsInit())
+			{
+				OOXBorderReader oBorderReader(m_ooxTableProps->m_oTblBorders->m_oInsideH.GetPointer());
+				
+				oBorderReader.Parse( oParam,oOutputProperty.m_oBorderTop  );
+				oBorderReader.Parse( oParam,oOutputProperty.m_oBorderBottom  );
+			}
+			if( m_ooxTableProps->m_oTblBorders->m_oInsideV.IsInit() )
+			{
+				OOXBorderReader oBorderReader(m_ooxTableProps->m_oTblBorders->m_oInsideV.GetPointer());
+				
+				oBorderReader.Parse( oParam,oOutputProperty.m_oBorderLeft  );
+				oBorderReader.Parse( oParam,oOutputProperty.m_oBorderRight  );
+			}
+		}
 		if( m_ooxTableCellProps->m_oShd.IsInit())
 		{
 			OOXShadingReader oShadingReader(m_ooxTableCellProps->m_oShd.GetPointer());
@@ -170,12 +211,13 @@ public:
 		{
 			switch(m_ooxTableCellProps->m_oTextDirection->m_oVal->GetValue())
 			{
-				case SimpleTypes::textdirectionLr  : oOutputProperty.m_oCellFlow = RtfCellProperty::cf_lrtb;
-				case SimpleTypes::textdirectionLrV : oOutputProperty.m_oCellFlow = RtfCellProperty::cf_lrtbv;
-				case SimpleTypes::textdirectionRl  : oOutputProperty.m_oCellFlow = RtfCellProperty::cf_tbrl;
-				case SimpleTypes::textdirectionRlV : oOutputProperty.m_oCellFlow = RtfCellProperty::cf_tbrlv;
-				case SimpleTypes::textdirectionTb  : oOutputProperty.m_oCellFlow = RtfCellProperty::cf_btlr; //??
+				case SimpleTypes::textdirectionLr  : oOutputProperty.m_oCellFlow = RtfCellProperty::cf_lrtb;	break;
+				case SimpleTypes::textdirectionLrV : oOutputProperty.m_oCellFlow = RtfCellProperty::cf_lrtbv;	break;
+				case SimpleTypes::textdirectionRl  : oOutputProperty.m_oCellFlow = RtfCellProperty::cf_tbrl;	break;
+				case SimpleTypes::textdirectionRlV : oOutputProperty.m_oCellFlow = RtfCellProperty::cf_tbrlv;	break;
 				case SimpleTypes::textdirectionTbV : oOutputProperty.m_oCellFlow = RtfCellProperty::cf_btlr; //??
+				case SimpleTypes::textdirectionTb  : //lrTb .. default
+				default:								break;
 			}
 		}
 		if (m_ooxTableCellProps->m_oGridSpan.IsInit() && m_ooxTableCellProps->m_oGridSpan->m_oVal.IsInit())

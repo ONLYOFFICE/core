@@ -148,7 +148,7 @@ public:
 		{
 			RtfTableStylePtr oNewTableStyle = boost::static_pointer_cast<RtfTableStyle, RtfStyle>( oNewStyle );
 			
-			OOXtcPrReader otcPrReader(m_ooxStyle->m_oTcPr.GetPointer());
+			OOXtcPrReader otcPrReader(m_ooxStyle->m_oTcPr.GetPointer(), m_ooxStyle->m_oTblPr.GetPointer());
 			
             CcnfStyle style;
             otcPrReader.Parse( oParam, oNewTableStyle->m_oCellProp, style, -1, -1, -1, -1 );
@@ -317,7 +317,7 @@ public:
 		{
 			RtfTableStylePtr oNewTableStyle = boost::static_pointer_cast<RtfTableStyle, RtfStyle>( oOutputStyle );
 			
-			OOXtcPrReader otcPrReader(oox_tableStyle->m_oTcPr.GetPointer());
+			OOXtcPrReader otcPrReader(oox_tableStyle->m_oTcPr.GetPointer(), oox_tableStyle->m_oTblPr.GetPointer());
 			
             CcnfStyle style;
             otcPrReader.Parse( oParam, oNewTableStyle->m_oCellProp, style, -1, -1, -1, -1 );

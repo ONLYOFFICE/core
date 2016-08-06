@@ -347,6 +347,425 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 	return true;
 }
 
+bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagraph, RtfStylePtr poStyle, RtfCharProperty& oNewProperty, OOX::WritingElement* ooxItem )
+{
+	if (!ooxItem) return false;
+
+	switch(ooxItem->getType())
+	{
+		case OOX::et_w_t:
+		{
+			OOX::Logic::CText * ooxText = dynamic_cast<OOX::Logic::CText*>(ooxItem);
+			if (ooxText)
+			{
+				CString sValue;
+				if ((ooxText->m_oSpace.IsInit()) && (ooxText->m_oSpace->GetValue() == SimpleTypes::xmlspacePreserve))
+				{
+					sValue = RtfUtility::Preserve(ooxText->m_sText);
+				}
+				else
+					sValue = ooxText->m_sText;
+			
+				RtfCharPtr oNewChar = RtfCharPtr( new RtfChar() );
+				oNewChar->m_oProperty = oNewProperty;
+				oNewChar->setText( sValue );
+				oOutputParagraph.AddItem( oNewChar );		
+			}
+		}break;
+		case OOX::et_w_fldChar:
+		{
+			OOX::Logic::CFldChar * ooxFldChar = dynamic_cast<OOX::Logic::CFldChar*>(ooxItem);
+			if ((ooxFldChar) && (ooxFldChar->m_oFldCharType.IsInit()))
+			{
+				switch(ooxFldChar->m_oFldCharType->GetValue())
+				{
+				case SimpleTypes::fldchartypeBegin:
+					{
+						OOXFieldBeginPtr oNewField( new OOXFieldBegin() );
+						if (ooxFldChar->m_oFldLock.IsInit())
+							oNewField->m_bLock = ooxFldChar->m_oFldLock->ToBool();
+						if (ooxFldChar->m_oDirty.IsInit())
+							oNewField->m_bDirty = ooxFldChar->m_oDirty->ToBool();
+						oNewField->m_oCharProp = oNewProperty;
+						oOutputParagraph.AddItem( oNewField );
+					}break;
+				case SimpleTypes::fldchartypeEnd: 
+					{
+						OOXFieldEndPtr oNewField( new OOXFieldEnd() );
+						oOutputParagraph.AddItem( oNewField );
+					}break;
+				case SimpleTypes::fldchartypeSeparate:
+					{
+						OOXFieldSeparatePtr oNewField( new OOXFieldSeparate() );
+						oOutputParagraph.AddItem( oNewField );
+					}break;
+				}
+			}
+		}break;
+		case OOX::et_w_instrText:
+		{
+			OOX::Logic::CInstrText * ooxInstrText = dynamic_cast<OOX::Logic::CInstrText*>(ooxItem);
+			OOXFieldInsertTextPtr oNewField( new OOXFieldInsertText() );
+			RtfCharPtr oNewChar( new RtfChar() );
+			if (ooxInstrText)
+				oNewChar->setText( ooxInstrText->m_sText );//add preserve .. todooo
+			oNewField->m_oText = oNewChar;
+			oOutputParagraph.AddItem( oNewField );
+		}break;
+		case OOX::et_w_footnoteReference:
+		{
+			OOX::Logic::CFootnoteReference * ooxFootnoteReference = dynamic_cast<OOX::Logic::CFootnoteReference*>(ooxItem);
+			if ((ooxFootnoteReference) && (ooxFootnoteReference->m_oId.IsInit()))
+			{
+				int nID = ooxFootnoteReference->m_oId->GetValue();
+				std::map<int, TextItemContainerPtr>::iterator oPair = oParam.oReader->m_mapFootnotes.find( nID );
+				if( oParam.oReader->m_mapFootnotes.end() != oPair )
+				{
+					RtfFootnotePtr oNewFootnote( new RtfFootnote() );
+					oNewFootnote->m_oCharProp = oNewProperty;
+					oNewFootnote->m_oContent = oPair->second;
+					oOutputParagraph.AddItem( oNewFootnote );
+				}
+			}
+		}break;
+		case OOX::et_w_endnoteReference:
+		{
+			OOX::Logic::CEndnoteReference * ooxEndnoteReference = dynamic_cast<OOX::Logic::CEndnoteReference*>(ooxItem);
+			if ((ooxEndnoteReference) && (ooxEndnoteReference->m_oId.IsInit()))
+			{
+				int nID = ooxEndnoteReference->m_oId->GetValue();
+				std::map<int, TextItemContainerPtr>::iterator oPair = oParam.oReader->m_mapEndnotes.find ( nID );
+				if( oParam.oReader->m_mapEndnotes.end() != oPair )
+				{
+					RtfFootnotePtr oNewEndnote( new RtfFootnote() );
+					oNewEndnote->m_oCharProp = oNewProperty;
+					oNewEndnote->m_oContent = oPair->second;
+					oNewEndnote->m_bEndNote = true;
+					oOutputParagraph.AddItem( oNewEndnote );
+				}
+			}
+		}break;
+		case OOX::et_w_object:
+		{
+			OOX::Logic::CObject * ooxObject = dynamic_cast<OOX::Logic::CObject*>(ooxItem);
+			if (ooxObject)
+			{
+				long nOleWidth = PROP_DEF;
+				long nOleHeight = PROP_DEF;
+
+				RtfShapePtr aPictShape;
+				RtfOlePtr	oCurOle;
+
+				if (ooxObject->m_oShape.IsInit())
+				{
+					RtfShapePtr oNewShape( new RtfShape() );
+					oNewShape->m_eShapeType = RtfShape::st_inline;
+					
+					OOXShapeReader oShapeReader(ooxObject->m_oShape.GetPointer());
+					if( true == oShapeReader.Parse( oParam, oNewShape ) )
+						 aPictShape = oNewShape;
+				}
+				//if (ooxObject->m_oGroupShape.IsInit())
+				//{
+				//	RtfShapeGroupPtr oNewShape( new RtfShapeGroup() );
+				//	oNewShape->m_eShapeType = RtfShape::st_inline;
+				//	OOXShapeGroupReader oShapeReader;
+				//	if( true == oShapeReader.Parse( oParam, oNewShape ) )
+				//		 aPictShape = oNewShape;
+				//}
+				if (ooxObject->m_oOleObject.IsInit())
+				{
+					RtfOlePtr oNewOle( new RtfOle() );
+					
+					oNewOle->m_nWidth = nOleWidth; //?? todooo
+					oNewOle->m_nHeight = nOleHeight;
+
+					int nShapeId = PROP_DEF;
+					if (ooxObject->m_oOleObject->m_sShapeId.IsInit())
+						nShapeId = oParam.oReader->m_oOOXIdGenerator.GetId(ooxObject->m_oOleObject->m_sShapeId.get2());
+					if( PROP_DEF != nShapeId )
+					{
+						oNewOle->m_nShapeId = nShapeId;
+						//ставим соответствующий shape
+						if( NULL != aPictShape && aPictShape->m_nID == nShapeId )
+							aPictShape->m_bIsOle = true;									
+					}
+					if( ooxObject->m_oOleObject->m_sProgId.IsInit() )
+						oNewOle->m_sOleClass = ooxObject->m_oOleObject->m_sProgId.get2();
+					
+					if(ooxObject->m_oOleObject->m_oType.IsInit())
+					{
+						switch( ooxObject->m_oOleObject->m_oType->GetValue())
+						{
+							case SimpleTypes::oletypeLink: 	oNewOle->m_eOleType = RtfOle::ot_link;	break;
+							case SimpleTypes::oletypeEmbed: oNewOle->m_eOleType = RtfOle::ot_emb;	break;
+						}
+					}
+					if(ooxObject->m_oOleObject->m_oId.IsInit())
+					{
+						CString sRelativePath;
+						
+						if (oParam.oReader->m_currentContainer)
+						{ 
+							smart_ptr<OOX::File> oFile = oParam.oReader->m_currentContainer->Find(ooxObject->m_oOleObject->m_oId->GetValue());
+						
+							if ((oFile.IsInit() && (OOX::FileTypes::OleObject == oFile->type())))
+							{
+								OOX::OleObject* pO = (OOX::OleObject*)oFile.operator->();
+                                sRelativePath = pO->filename().m_strFilename;
+							}
+						}
+						//todooo проверить что тут за путь ..
+						CString sOlePath = oParam.oReader->m_sPath + FILE_SEPARATOR_STR + sRelativePath;
+
+						POLE::Storage *storage = new POLE::Storage(sOlePath.GetBuffer());
+						if (storage)
+						{
+							//RtfOle2ToOle1Stream oStream;
+							//oStream.lpstbl = new OLESTREAMVTBL();
+							//oStream.lpstbl->Get = &OleGet2;
+							//oStream.lpstbl->Put = &OlePut2;
+							//todooo convert ole2 to ole1
+							//if( SUCCEEDED( OleConvertIStorageToOLESTREAM( piStorage, &oStream ) ) )
+							//{
+							//	//сохраняем в файл
+							//	CString sOleStorageName = Utils::CreateTempFile( oParam.oReader->m_sTempFolder );
+							//	HANDLE hFile = CreateFile ( sOleStorageName, GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL );
+							//	if( INVALID_HANDLE_VALUE != hFile )
+							//	{
+							//		DWORD dwByteWrite = 0;
+							//		WriteFile( hFile, oStream.aBuffer.GetData(), (DWORD)oStream.aBuffer.size(), &dwByteWrite, NULL );
+							//		CloseHandle( hFile );
+
+							//		oNewOle->SetFilename( sOleStorageName );
+							//		//только сейчас запоминаем
+							//		oCurOle = oNewOle;
+							//	}
+							//	else
+							//		Utils::RemoveDirOrFile( sOleStorageName );
+							//}
+							delete( storage );
+						}
+					}
+				}
+				if( NULL != aPictShape && NULL != oCurOle )
+				{
+					//надо пересчитать размеры картинки так чтобы scalex == 100 и scaley = 100
+					//если scalex != 100, то после редактирование ole киртинка сжимается(растягивается)
+					if( NULL != aPictShape->m_oPicture )
+					{
+						if( PROP_DEF != (int)aPictShape->m_oPicture->m_dScaleX && PROP_DEF != (int)aPictShape->m_oPicture->m_dScaleY &&
+							PROP_DEF != aPictShape->m_oPicture->m_nWidthGoal && PROP_DEF != aPictShape->m_oPicture->m_nHeightGoal )
+						{
+							if( 100 != (int)aPictShape->m_oPicture->m_dScaleX )
+							{
+								aPictShape->m_oPicture->m_nWidthGoal =  long (( aPictShape->m_oPicture->m_dScaleX / 100.0 ) * aPictShape->m_oPicture->m_nWidthGoal );
+								aPictShape->m_oPicture->m_dScaleX = 100;
+							}
+							if( 100 != (int)aPictShape->m_oPicture->m_dScaleY )
+							{
+								aPictShape->m_oPicture->m_nHeightGoal =  long (( aPictShape->m_oPicture->m_dScaleY / 100.0 ) * aPictShape->m_oPicture->m_nHeightGoal );
+								aPictShape->m_oPicture->m_dScaleY = 100;
+							}
+						}
+					}
+
+					TextItemContainerPtr oNewTextItemContainer = TextItemContainerPtr( new TextItemContainer() );
+					RtfParagraphPtr oNewPar = RtfParagraphPtr( new RtfParagraph() );
+
+					oNewPar->AddItem( oCurOle );
+					oNewTextItemContainer->AddItem( oNewPar );
+					aPictShape->m_aTextItems = oNewTextItemContainer;
+
+					oCurOle->m_oResultPic = aPictShape;
+					oOutputParagraph.AddItem( oCurOle );
+				}
+			}
+		}break;
+		case OOX::et_w_drawing:
+		{
+			OOX::Logic::CDrawing* ooxDrawing = dynamic_cast<OOX::Logic::CDrawing*>(ooxItem);
+			RtfShapePtr oNewPicture( new RtfShape() );
+		
+			OOXPictureReader oPictureReader(ooxDrawing);
+			if( true == oPictureReader.Parse( oParam, (*oNewPicture) ) )
+			{
+				 oOutputParagraph.AddItem( oNewPicture );
+			}
+		}break;
+		case OOX::et_w_pict:
+		{
+			OOX::Logic::CPicture *ooxPicture = dynamic_cast<OOX::Logic::CPicture*>(ooxItem);
+			if( ooxPicture) 
+			{//todooo - groups & custom
+				RtfShapePtr oNewShape( new RtfShape() );
+				OOXShapeReader *pShapeReader = NULL;
+				
+					 if (ooxPicture->m_oShape.IsInit())			pShapeReader = new OOXShapeReader(ooxPicture->m_oShape.GetPointer());
+				else if (ooxPicture->m_oShapeRect.IsInit())		pShapeReader = new OOXShapeReader(ooxPicture->m_oShapeRect.GetPointer());
+				else if (ooxPicture->m_oShapeRoundRect.IsInit())pShapeReader = new OOXShapeReader(ooxPicture->m_oShapeRoundRect.GetPointer());
+				else if (ooxPicture->m_oShapeOval.IsInit())		pShapeReader = new OOXShapeReader(ooxPicture->m_oShapeOval.GetPointer());
+				else if (ooxPicture->m_oShapeLine.IsInit())		pShapeReader = new OOXShapeReader(ooxPicture->m_oShapeLine.GetPointer());
+				else if (ooxPicture->m_oShapePolyLine.IsInit())	pShapeReader = new OOXShapeReader(ooxPicture->m_oShapePolyLine.GetPointer());
+				else if (ooxPicture->m_oShapeCurve.IsInit())	pShapeReader = new OOXShapeReader(ooxPicture->m_oShapeCurve.GetPointer());
+				
+				if (pShapeReader)
+				{
+					if( true == pShapeReader->Parse( oParam, oNewShape ) )
+						 oOutputParagraph.AddItem( oNewShape );		
+					delete pShapeReader;
+				}
+			}
+		}break;
+		case OOX::et_w_nonBreakHyphen:
+		{
+			RtfCharSpecialPtr oNewChar = RtfCharSpecialPtr( new RtfCharSpecial() );
+			oNewChar->m_oProperty = oNewProperty;
+			oNewChar->m_eType = RtfCharSpecial::rsc_NonBrHyphen;
+			oOutputParagraph.AddItem( oNewChar );
+		}break;
+		case OOX::et_w_softHyphen:
+		{
+			RtfCharSpecialPtr oNewChar = RtfCharSpecialPtr( new RtfCharSpecial() );
+			oNewChar->m_oProperty = oNewProperty;
+			oNewChar->m_eType = RtfCharSpecial::rsc_OptHyphen;
+			oOutputParagraph.AddItem( oNewChar );
+		}break;
+		case OOX::et_w_pgNum:
+		{
+			RtfCharSpecialPtr oNewChar = RtfCharSpecialPtr( new RtfCharSpecial() );
+			oNewChar->m_oProperty = oNewProperty;
+			oNewChar->m_eType = RtfCharSpecial::rsc_chpgn;
+			oOutputParagraph.AddItem( oNewChar );
+		}break;
+		case OOX::et_w_footnoteRef:
+		{
+			RtfCharSpecialPtr oNewChar = RtfCharSpecialPtr( new RtfCharSpecial() );
+			oNewChar->m_oProperty = oNewProperty;
+			oNewChar->m_eType = RtfCharSpecial::rsc_chftn;
+			oOutputParagraph.AddItem( oNewChar );
+		}break;
+		case OOX::et_w_endnoteRef:
+		{
+			RtfCharSpecialPtr oNewChar = RtfCharSpecialPtr( new RtfCharSpecial() );
+			oNewChar->m_oProperty = oNewProperty;
+			oNewChar->m_eType = RtfCharSpecial::rsc_chftnEnd;
+			oOutputParagraph.AddItem( oNewChar );
+		}break;
+		case OOX::et_w_separator:
+		{
+			RtfCharSpecialPtr oNewChar = RtfCharSpecialPtr( new RtfCharSpecial() );
+			oNewChar->m_oProperty = oNewProperty;
+			oNewChar->m_eType = RtfCharSpecial::rsc_chftnsep;
+			oOutputParagraph.AddItem( oNewChar );
+		}break;
+		case OOX::et_w_continuationSeparator:
+		{
+			RtfCharSpecialPtr oNewChar = RtfCharSpecialPtr( new RtfCharSpecial() );
+			oNewChar->m_oProperty = oNewProperty;
+			oNewChar->m_eType = RtfCharSpecial::rsc_chftnsepc;
+			oOutputParagraph.AddItem( oNewChar );
+		}break;
+		case OOX::et_w_tab:
+		{
+			RtfCharSpecialPtr oNewChar = RtfCharSpecialPtr( new RtfCharSpecial() );
+			oNewChar->m_oProperty = oNewProperty;
+			oNewChar->m_eType = RtfCharSpecial::rsc_tab;
+			oOutputParagraph.AddItem( oNewChar );
+		}break;
+		case OOX::et_w_br:
+		{
+			OOX::Logic::CBr *ooxBr = dynamic_cast<OOX::Logic::CBr*>(ooxItem);
+			
+			RtfCharSpecialPtr oNewChar = RtfCharSpecialPtr( new RtfCharSpecial() );
+			oNewChar->m_oProperty = oNewProperty;
+			
+			if (ooxBr)
+			{
+				switch(ooxBr->m_oType.GetValue())
+				{
+				case SimpleTypes::brtypeColumn       : 
+					oNewChar->m_eType = RtfCharSpecial::rsc_column;	break;
+				case SimpleTypes::brtypePage         : 
+					oNewChar->m_eType = RtfCharSpecial::rsc_page;	break;
+				case SimpleTypes::brtypeTextWrapping :
+					switch(ooxBr->m_oClear.GetValue())
+					{
+						case SimpleTypes::brclearAll   : oNewChar->m_nTextWrapBreak = 3;	break;
+						case SimpleTypes::brclearLeft  : oNewChar->m_nTextWrapBreak = 1;	break;
+						case SimpleTypes::brclearRight : oNewChar->m_nTextWrapBreak = 2;	break;
+						default:	oNewChar->m_eType = RtfCharSpecial::rsc_line;
+					}
+					break;
+				}
+			}else oNewChar->m_eType = RtfCharSpecial::rsc_line;							
+			oOutputParagraph.AddItem( oNewChar );
+		}break;
+		case OOX::et_mc_alternateContent:
+		{//выбираем всегда более старую версию 
+			OOX::Logic::CAlternateContent *ooxAlt = dynamic_cast<OOX::Logic::CAlternateContent* >(ooxItem);
+			if (ooxAlt->m_arrChoiceItems.size() > 0)
+			{
+				for (int i = 0; i < ooxAlt->m_arrFallbackItems.size(); i++)
+				{
+					Parse(oParam , oOutputParagraph, poStyle, oNewProperty, ooxAlt->m_arrFallbackItems[i]);
+				}					
+			}
+			else
+			{
+				for (int i = 0; i < ooxAlt->m_arrChoiceItems.size(); i++)
+				{
+					Parse(oParam , oOutputParagraph, poStyle, oNewProperty, ooxAlt->m_arrChoiceItems[i]);
+				}
+			}
+		}break;
+		case OOX::et_w_sym:
+		{
+			OOX::Logic::CSym *ooxSym = dynamic_cast<OOX::Logic::CSym* >(ooxItem);
+
+			if(ooxSym->m_oFont.IsInit() && ooxSym->m_oChar.IsInit() )
+			{	
+				CString sFont = *ooxSym->m_oFont;
+				//CString sChar = ooxSym->m_oChar->GetValue();
+
+				//sChar.MakeLower();
+				////оставляем только 2 байта (4 символа)
+				//if( sChar.GetLength() > 4 )
+				//	sChar = sChar.Right( 4 );
+				////убираем маску F000
+				//if( sChar.GetLength() == 4 && 'f' == sChar[0] )
+				//	sChar = sChar.Right( 3 );
+				
+				int nChar = ooxSym->m_oChar->GetValue();
+				CString sCharUnicode; sCharUnicode.AppendChar( nChar );
+				RtfFont oCurFont;
+				if( false == oParam.oRtf->m_oFontTable.GetFont( sFont, oCurFont ) )
+				{
+					oCurFont.m_nID = oParam.oRtf->m_oFontTable.GetCount() + 1;
+					oCurFont.m_sName = sFont;
+					oParam.oRtf->m_oFontTable.DirectAddItem( oCurFont );
+				}
+				RtfFieldPtr oNewField = RtfFieldPtr( new RtfField() );
+				oNewField->m_oInsert = TextItemContainerPtr( new TextItemContainer() );
+				oNewField->m_oResult = TextItemContainerPtr( new TextItemContainer() );
+				RtfCharPtr oNewChar( new RtfChar() );
+				oNewChar->m_bRtfEncode = false;
+				CString sFieldText;
+				int nFontSize = 10;
+				if( PROP_DEF != oNewProperty.m_nFontSize )
+					nFontSize = oNewProperty.m_nFontSize / 2;
+                sFieldText.AppendFormat(_T("SYMBOL %d \\\\f \"%ls\" \\\\s %d"), nChar, sFont.GetBuffer(), nFontSize );
+				oNewChar->setText( sFieldText );
+				RtfParagraphPtr oNewInsertParagraph( new RtfParagraph() );
+				oNewInsertParagraph->AddItem( oNewChar );
+				oNewField->m_oInsert->AddItem( oNewInsertParagraph );
+
+				oOutputParagraph.AddItem( oNewField );	
+			}
+		}break;
+	}
+	return true;
+}
 bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagraph, RtfStylePtr poStyle )
 {
 	if (m_ooxRun == NULL) return false;
@@ -373,404 +792,7 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 
 	for (long i =0 ; i < m_ooxRun->m_arrItems.size(); i++)
 	{
-		switch(m_ooxRun->m_arrItems[i]->getType())
-		{
-			case OOX::et_w_t:
-			{
-				OOX::Logic::CText * ooxText = dynamic_cast<OOX::Logic::CText*>(m_ooxRun->m_arrItems[i]);
-				if (ooxText)
-				{
-					CString sValue;
-					if ((ooxText->m_oSpace.IsInit()) && (ooxText->m_oSpace->GetValue() == SimpleTypes::xmlspacePreserve))
-					{
-						sValue = RtfUtility::Preserve(ooxText->m_sText);
-					}
-					else
-						sValue = ooxText->m_sText;
-				
-					RtfCharPtr oNewChar = RtfCharPtr( new RtfChar() );
-					oNewChar->m_oProperty = oNewProperty;
-					oNewChar->setText( sValue );
-					oOutputParagraph.AddItem( oNewChar );		
-				}
-			}break;
-			case OOX::et_w_fldChar:
-			{
-				OOX::Logic::CFldChar * ooxFldChar = dynamic_cast<OOX::Logic::CFldChar*>(m_ooxRun->m_arrItems[i]);
-				if ((ooxFldChar) && (ooxFldChar->m_oFldCharType.IsInit()))
-				{
-					switch(ooxFldChar->m_oFldCharType->GetValue())
-					{
-					case SimpleTypes::fldchartypeBegin:
-						{
-							OOXFieldBeginPtr oNewField( new OOXFieldBegin() );
-							if (ooxFldChar->m_oFldLock.IsInit())
-								oNewField->m_bLock = ooxFldChar->m_oFldLock->ToBool();
-							if (ooxFldChar->m_oDirty.IsInit())
-								oNewField->m_bDirty = ooxFldChar->m_oDirty->ToBool();
-							oNewField->m_oCharProp = oNewProperty;
-							oOutputParagraph.AddItem( oNewField );
-						}break;
-					case SimpleTypes::fldchartypeEnd: 
-						{
-							OOXFieldEndPtr oNewField( new OOXFieldEnd() );
-							oOutputParagraph.AddItem( oNewField );
-						}break;
-					case SimpleTypes::fldchartypeSeparate:
-						{
-							OOXFieldSeparatePtr oNewField( new OOXFieldSeparate() );
-							oOutputParagraph.AddItem( oNewField );
-						}break;
-					}
-				}
-			}break;
-			case OOX::et_w_instrText:
-			{
-				OOX::Logic::CInstrText * ooxInstrText = dynamic_cast<OOX::Logic::CInstrText*>(m_ooxRun->m_arrItems[i]);
-				OOXFieldInsertTextPtr oNewField( new OOXFieldInsertText() );
-				RtfCharPtr oNewChar( new RtfChar() );
-				if (ooxInstrText)
-					oNewChar->setText( ooxInstrText->m_sText );//add preserve .. todooo
-				oNewField->m_oText = oNewChar;
-				oOutputParagraph.AddItem( oNewField );
-			}break;
-			case OOX::et_w_footnoteReference:
-			{
-				OOX::Logic::CFootnoteReference * ooxFootnoteReference = dynamic_cast<OOX::Logic::CFootnoteReference*>(m_ooxRun->m_arrItems[i]);
-				if ((ooxFootnoteReference) && (ooxFootnoteReference->m_oId.IsInit()))
-				{
-					int nID = ooxFootnoteReference->m_oId->GetValue();
-					std::map<int, TextItemContainerPtr>::iterator oPair = oParam.oReader->m_mapFootnotes.find( nID );
-					if( oParam.oReader->m_mapFootnotes.end() != oPair )
-					{
-						RtfFootnotePtr oNewFootnote( new RtfFootnote() );
-						oNewFootnote->m_oCharProp = oNewProperty;
-						oNewFootnote->m_oContent = oPair->second;
-						oOutputParagraph.AddItem( oNewFootnote );
-					}
-				}
-			}break;
-			case OOX::et_w_endnoteReference:
-			{
-				OOX::Logic::CEndnoteReference * ooxEndnoteReference = dynamic_cast<OOX::Logic::CEndnoteReference*>(m_ooxRun->m_arrItems[i]);
-				if ((ooxEndnoteReference) && (ooxEndnoteReference->m_oId.IsInit()))
-				{
-					int nID = ooxEndnoteReference->m_oId->GetValue();
-					std::map<int, TextItemContainerPtr>::iterator oPair = oParam.oReader->m_mapEndnotes.find ( nID );
-					if( oParam.oReader->m_mapEndnotes.end() != oPair )
-					{
-						RtfFootnotePtr oNewEndnote( new RtfFootnote() );
-						oNewEndnote->m_oCharProp = oNewProperty;
-						oNewEndnote->m_oContent = oPair->second;
-						oNewEndnote->m_bEndNote = true;
-						oOutputParagraph.AddItem( oNewEndnote );
-					}
-				}
-			}break;
-			case OOX::et_w_object:
-			{
-				OOX::Logic::CObject * ooxObject = dynamic_cast<OOX::Logic::CObject*>(m_ooxRun->m_arrItems[i]);
-				if (ooxObject)
-				{
-					long nOleWidth = PROP_DEF;
-					long nOleHeight = PROP_DEF;
-
-					RtfShapePtr aPictShape;
-					RtfOlePtr	oCurOle;
-
-					if (ooxObject->m_oShape.IsInit())
-					{
-						RtfShapePtr oNewShape( new RtfShape() );
-						oNewShape->m_eShapeType = RtfShape::st_inline;
-						
-						OOXShapeReader oShapeReader(ooxObject->m_oShape.GetPointer());
-						if( true == oShapeReader.Parse( oParam, oNewShape ) )
-							 aPictShape = oNewShape;
-					}
-					//if (ooxObject->m_oGroupShape.IsInit())
-					//{
-					//	RtfShapeGroupPtr oNewShape( new RtfShapeGroup() );
-					//	oNewShape->m_eShapeType = RtfShape::st_inline;
-					//	OOXShapeGroupReader oShapeReader;
-					//	if( true == oShapeReader.Parse( oParam, oNewShape ) )
-					//		 aPictShape = oNewShape;
-					//}
-					if (ooxObject->m_oOleObject.IsInit())
-					{
-						RtfOlePtr oNewOle( new RtfOle() );
-						
-						oNewOle->m_nWidth = nOleWidth; //?? todooo
-						oNewOle->m_nHeight = nOleHeight;
-
-						int nShapeId = PROP_DEF;
-						if (ooxObject->m_oOleObject->m_sShapeId.IsInit())
-							nShapeId = oParam.oReader->m_oOOXIdGenerator.GetId(ooxObject->m_oOleObject->m_sShapeId.get2());
-						if( PROP_DEF != nShapeId )
-						{
-							oNewOle->m_nShapeId = nShapeId;
-							//ставим соответствующий shape
-							if( NULL != aPictShape && aPictShape->m_nID == nShapeId )
-								aPictShape->m_bIsOle = true;									
-						}
-						if( ooxObject->m_oOleObject->m_sProgId.IsInit() )
-							oNewOle->m_sOleClass = ooxObject->m_oOleObject->m_sProgId.get2();
-						
-						if(ooxObject->m_oOleObject->m_oType.IsInit())
-						{
-							switch( ooxObject->m_oOleObject->m_oType->GetValue())
-							{
-								case SimpleTypes::oletypeLink: 	oNewOle->m_eOleType = RtfOle::ot_link;	break;
-								case SimpleTypes::oletypeEmbed: oNewOle->m_eOleType = RtfOle::ot_emb;	break;
-							}
-						}
-						if(ooxObject->m_oOleObject->m_oId.IsInit())
-						{
-							CString sRelativePath;
-							
-							if (oParam.oReader->m_currentContainer)
-							{ 
-								smart_ptr<OOX::File> oFile = oParam.oReader->m_currentContainer->Find(ooxObject->m_oOleObject->m_oId->GetValue());
-							
-								if ((oFile.IsInit() && (OOX::FileTypes::OleObject == oFile->type())))
-								{
-									OOX::OleObject* pO = (OOX::OleObject*)oFile.operator->();
-                                    sRelativePath = pO->filename().m_strFilename;
-								}
-							}
-							//todooo проверить что тут за путь ..
-							CString sOlePath = oParam.oReader->m_sPath + FILE_SEPARATOR_STR + sRelativePath;
-
-							POLE::Storage *storage = new POLE::Storage(sOlePath.GetBuffer());
-							if (storage)
-							{
-								//RtfOle2ToOle1Stream oStream;
-								//oStream.lpstbl = new OLESTREAMVTBL();
-								//oStream.lpstbl->Get = &OleGet2;
-								//oStream.lpstbl->Put = &OlePut2;
-								//todooo convert ole2 to ole1
-								//if( SUCCEEDED( OleConvertIStorageToOLESTREAM( piStorage, &oStream ) ) )
-								//{
-								//	//сохраняем в файл
-								//	CString sOleStorageName = Utils::CreateTempFile( oParam.oReader->m_sTempFolder );
-								//	HANDLE hFile = CreateFile ( sOleStorageName, GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL );
-								//	if( INVALID_HANDLE_VALUE != hFile )
-								//	{
-								//		DWORD dwByteWrite = 0;
-								//		WriteFile( hFile, oStream.aBuffer.GetData(), (DWORD)oStream.aBuffer.size(), &dwByteWrite, NULL );
-								//		CloseHandle( hFile );
-
-								//		oNewOle->SetFilename( sOleStorageName );
-								//		//только сейчас запоминаем
-								//		oCurOle = oNewOle;
-								//	}
-								//	else
-								//		Utils::RemoveDirOrFile( sOleStorageName );
-								//}
-								delete( storage );
-							}
-						}
-					}
-					if( NULL != aPictShape && NULL != oCurOle )
-					{
-						//надо пересчитать размеры картинки так чтобы scalex == 100 и scaley = 100
-						//если scalex != 100, то после редактирование ole киртинка сжимается(растягивается)
-						if( NULL != aPictShape->m_oPicture )
-						{
-							if( PROP_DEF != (int)aPictShape->m_oPicture->m_dScaleX && PROP_DEF != (int)aPictShape->m_oPicture->m_dScaleY &&
-								PROP_DEF != aPictShape->m_oPicture->m_nWidthGoal && PROP_DEF != aPictShape->m_oPicture->m_nHeightGoal )
-							{
-								if( 100 != (int)aPictShape->m_oPicture->m_dScaleX )
-								{
-									aPictShape->m_oPicture->m_nWidthGoal =  long (( aPictShape->m_oPicture->m_dScaleX / 100.0 ) * aPictShape->m_oPicture->m_nWidthGoal );
-									aPictShape->m_oPicture->m_dScaleX = 100;
-								}
-								if( 100 != (int)aPictShape->m_oPicture->m_dScaleY )
-								{
-									aPictShape->m_oPicture->m_nHeightGoal =  long (( aPictShape->m_oPicture->m_dScaleY / 100.0 ) * aPictShape->m_oPicture->m_nHeightGoal );
-									aPictShape->m_oPicture->m_dScaleY = 100;
-								}
-							}
-						}
-
-						TextItemContainerPtr oNewTextItemContainer = TextItemContainerPtr( new TextItemContainer() );
-						RtfParagraphPtr oNewPar = RtfParagraphPtr( new RtfParagraph() );
-
-						oNewPar->AddItem( oCurOle );
-						oNewTextItemContainer->AddItem( oNewPar );
-						aPictShape->m_aTextItems = oNewTextItemContainer;
-
-						oCurOle->m_oResultPic = aPictShape;
-						oOutputParagraph.AddItem( oCurOle );
-					}
-				}
-			}break;
-			case OOX::et_w_drawing:
-			{
-				OOX::Logic::CDrawing* ooxDrawing = dynamic_cast<OOX::Logic::CDrawing*>(m_ooxRun->m_arrItems[i]);
-				RtfShapePtr oNewPicture( new RtfShape() );
-			
-				OOXPictureReader oPictureReader(ooxDrawing);
-				if( true == oPictureReader.Parse( oParam, (*oNewPicture) ) )
-				{
-					 oOutputParagraph.AddItem( oNewPicture );
-				}
-			}break;
-			case OOX::et_w_pict:
-			{
-				OOX::Logic::CPicture *ooxPicture = dynamic_cast<OOX::Logic::CPicture*>(m_ooxRun->m_arrItems[i]);
-				if( (ooxPicture) && (ooxPicture->m_oShape.IsInit())) //??? todooo ваще то могут быть и др элементы/инициализции
-				{
-					RtfShapePtr oNewPicture( new RtfShape() );
-					OOXShapeReader oShapeReader(ooxPicture->m_oShape.GetPointer());
-					if( true == oShapeReader.Parse( oParam, oNewPicture ) )
-						 oOutputParagraph.AddItem( oNewPicture );
-				}
-			}break;
-			case OOX::et_w_nonBreakHyphen:
-			{
-				RtfCharSpecialPtr oNewChar = RtfCharSpecialPtr( new RtfCharSpecial() );
-				oNewChar->m_oProperty = oNewProperty;
-				oNewChar->m_eType = RtfCharSpecial::rsc_NonBrHyphen;
-				oOutputParagraph.AddItem( oNewChar );
-			}break;
-			case OOX::et_w_softHyphen:
-			{
-				RtfCharSpecialPtr oNewChar = RtfCharSpecialPtr( new RtfCharSpecial() );
-				oNewChar->m_oProperty = oNewProperty;
-				oNewChar->m_eType = RtfCharSpecial::rsc_OptHyphen;
-				oOutputParagraph.AddItem( oNewChar );
-			}break;
-			case OOX::et_w_pgNum:
-			{
-				RtfCharSpecialPtr oNewChar = RtfCharSpecialPtr( new RtfCharSpecial() );
-				oNewChar->m_oProperty = oNewProperty;
-				oNewChar->m_eType = RtfCharSpecial::rsc_chpgn;
-				oOutputParagraph.AddItem( oNewChar );
-			}break;
-			case OOX::et_w_footnoteRef:
-			{
-				RtfCharSpecialPtr oNewChar = RtfCharSpecialPtr( new RtfCharSpecial() );
-				oNewChar->m_oProperty = oNewProperty;
-				oNewChar->m_eType = RtfCharSpecial::rsc_chftn;
-				oOutputParagraph.AddItem( oNewChar );
-			}break;
-			case OOX::et_w_endnoteRef:
-			{
-				RtfCharSpecialPtr oNewChar = RtfCharSpecialPtr( new RtfCharSpecial() );
-				oNewChar->m_oProperty = oNewProperty;
-				oNewChar->m_eType = RtfCharSpecial::rsc_chftnEnd;
-				oOutputParagraph.AddItem( oNewChar );
-			}break;
-			case OOX::et_w_separator:
-			{
-				RtfCharSpecialPtr oNewChar = RtfCharSpecialPtr( new RtfCharSpecial() );
-				oNewChar->m_oProperty = oNewProperty;
-				oNewChar->m_eType = RtfCharSpecial::rsc_chftnsep;
-				oOutputParagraph.AddItem( oNewChar );
-			}break;
-			case OOX::et_w_continuationSeparator:
-			{
-				RtfCharSpecialPtr oNewChar = RtfCharSpecialPtr( new RtfCharSpecial() );
-				oNewChar->m_oProperty = oNewProperty;
-				oNewChar->m_eType = RtfCharSpecial::rsc_chftnsepc;
-				oOutputParagraph.AddItem( oNewChar );
-			}break;
-			case OOX::et_w_tab:
-			{
-				RtfCharSpecialPtr oNewChar = RtfCharSpecialPtr( new RtfCharSpecial() );
-				oNewChar->m_oProperty = oNewProperty;
-				oNewChar->m_eType = RtfCharSpecial::rsc_tab;
-				oOutputParagraph.AddItem( oNewChar );
-			}break;
-			case OOX::et_w_br:
-			{
-				OOX::Logic::CBr *ooxBr = dynamic_cast<OOX::Logic::CBr*>(m_ooxRun->m_arrItems[i]);
-				
-				RtfCharSpecialPtr oNewChar = RtfCharSpecialPtr( new RtfCharSpecial() );
-				oNewChar->m_oProperty = oNewProperty;
-				
-				if (ooxBr)
-				{
-					switch(ooxBr->m_oType.GetValue())
-					{
-					case SimpleTypes::brtypeColumn       : 
-						oNewChar->m_eType = RtfCharSpecial::rsc_column;	break;
-					case SimpleTypes::brtypePage         : 
-						oNewChar->m_eType = RtfCharSpecial::rsc_page;	break;
-					case SimpleTypes::brtypeTextWrapping :
-						switch(ooxBr->m_oClear.GetValue())
-						{
-							case SimpleTypes::brclearAll   : oNewChar->m_nTextWrapBreak = 3;	break;
-							case SimpleTypes::brclearLeft  : oNewChar->m_nTextWrapBreak = 1;	break;
-							case SimpleTypes::brclearRight : oNewChar->m_nTextWrapBreak = 2;	break;
-							default:	oNewChar->m_eType = RtfCharSpecial::rsc_line;
-						}
-						break;
-					}
-				}else oNewChar->m_eType = RtfCharSpecial::rsc_line;							
-				oOutputParagraph.AddItem( oNewChar );
-			}break;
-			case OOX::et_mc_alternateContent:
-			{//???? todooo
-				//XmlUtils::IXMLDOMNodePtr oNode;
-				//oXmlReader.GetNode( i , oNode );
-				//XmlUtils::CXmlLiteReader oSubReader;
-				//if( TRUE == oSubReader.OpenFromXmlNode( oNode ) )
-				//	if( TRUE == oSubReader.ReadNode( _T("mc:Fallback") ) )
-				//	{
-				//		XmlUtils::IXMLDOMNodePtr oSubNode;
-				//		oSubReader.GetNode( oSubNode );
-				//		ReaderParameter oParam = oParam;
-				//		oParam.oNode = oSubNode;
-				//		OOXRunReader oSubReader;
-				//		oSubReader.Parse( oParam, oOutputParagraph, poStyle );
-				//	}
-			}break;
-			case OOX::et_w_sym:
-			{
-				OOX::Logic::CSym *ooxSym = dynamic_cast<OOX::Logic::CSym* >(m_ooxRun->m_arrItems[i]);
-
-				if(ooxSym->m_oFont.IsInit() && ooxSym->m_oChar.IsInit() )
-				{	
-					CString sFont = *ooxSym->m_oFont;
-					//CString sChar = ooxSym->m_oChar->GetValue();
-
-					//sChar.MakeLower();
-					////оставляем только 2 байта (4 символа)
-					//if( sChar.GetLength() > 4 )
-					//	sChar = sChar.Right( 4 );
-					////убираем маску F000
-					//if( sChar.GetLength() == 4 && 'f' == sChar[0] )
-					//	sChar = sChar.Right( 3 );
-					
-					int nChar = ooxSym->m_oChar->GetValue();
-					CString sCharUnicode; sCharUnicode.AppendChar( nChar );
-					RtfFont oCurFont;
-					if( false == oParam.oRtf->m_oFontTable.GetFont( sFont, oCurFont ) )
-					{
-						oCurFont.m_nID = oParam.oRtf->m_oFontTable.GetCount() + 1;
-						oCurFont.m_sName = sFont;
-						oParam.oRtf->m_oFontTable.DirectAddItem( oCurFont );
-					}
-					RtfFieldPtr oNewField = RtfFieldPtr( new RtfField() );
-					oNewField->m_oInsert = TextItemContainerPtr( new TextItemContainer() );
-					oNewField->m_oResult = TextItemContainerPtr( new TextItemContainer() );
-					RtfCharPtr oNewChar( new RtfChar() );
-					oNewChar->m_bRtfEncode = false;
-					CString sFieldText;
-					int nFontSize = 10;
-					if( PROP_DEF != oNewProperty.m_nFontSize )
-						nFontSize = oNewProperty.m_nFontSize / 2;
-                    sFieldText.AppendFormat(_T("SYMBOL %d \\\\f \"%ls\" \\\\s %d"), nChar, sFont.GetBuffer(), nFontSize );
-					oNewChar->setText( sFieldText );
-					RtfParagraphPtr oNewInsertParagraph( new RtfParagraph() );
-					oNewInsertParagraph->AddItem( oNewChar );
-					oNewField->m_oInsert->AddItem( oNewInsertParagraph );
-
-					oOutputParagraph.AddItem( oNewField );	
-				}
-			}break;
-		}
+		Parse(oParam, oOutputParagraph, poStyle, oNewProperty, m_ooxRun->m_arrItems[i]);
 	}
 	return true;
 }

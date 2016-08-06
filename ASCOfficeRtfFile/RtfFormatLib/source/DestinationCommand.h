@@ -1245,8 +1245,10 @@ public:
 			RtfUtility::WriteDataToFileBinary( sTempFile, m_pbBin, m_nBinLength );
 		else
 			RtfUtility::WriteDataToFile( sTempFile, m_sData );
+		
 		if( RtfPicture::dt_none ==  m_oShape.m_oPicture->eDataType )
-			RtfPicture::DataType eDataType = RtfPicture::GetPictureType( sTempFile );
+			m_oShape.m_oPicture->eDataType = RtfPicture::GetPictureType( sTempFile );
+
 		m_oShape.m_oPicture->m_bIsCopy = true;
 		m_oShape.m_oPicture->m_sPicFilename = sTempFile;
 	}
@@ -1280,7 +1282,7 @@ class ShapeReader : public RtfAbstractReader
 			{
 				if( _T("sv") == sCommand )
 					return true;
-				else if( _T("pict") == sCommand && _T("pib") == m_sPropName )
+				else if( _T("pict") == sCommand && ( _T("pib") == m_sPropName  || _T("fillBlip") == m_sPropName))
 				{
 					m_oShape.m_oPicture = RtfPicturePtr( new RtfPicture() );
 					PictureReader oPictureReader( oReader, m_oShape );
@@ -1309,7 +1311,7 @@ class ShapeReader : public RtfAbstractReader
 					m_oShape.m_sDescription = sValue;
 					return;
 				}
-		//числовые
+	//числовые
 				int nValue = 0;
 
 				try
@@ -1321,7 +1323,7 @@ class ShapeReader : public RtfAbstractReader
 
 				if( _T("shapeType") == m_sPropName )
 					m_oShape.m_nShapeType = nValue;
-				//Position absolute
+	//Position absolute
 				else if( _T("posh") == m_sPropName )
 					m_oShape.m_nPositionH = nValue;
 				else if( _T("posrelh") == m_sPropName )
@@ -1334,7 +1336,7 @@ class ShapeReader : public RtfAbstractReader
 					m_oShape.m_bLayoutInCell = nValue;
 				else if( _T("fAllowOverlap") == m_sPropName )
 					m_oShape.m_bAllowOverlap = nValue;
-				//Position relative
+	//Position relative
 				else if( _T("pctHorizPos") == m_sPropName )
 					m_oShape.m_nPositionHPct = nValue;
 				else if( _T("pctVertPos") == m_sPropName )
@@ -1401,7 +1403,7 @@ class ShapeReader : public RtfAbstractReader
 					m_oShape.m_nZOrderRelative = nValue;
 				else if( _T("fHidden") == m_sPropName )
 					m_oShape.m_bHidden = nValue;
-				//Text box
+	//Text box
 				else if( _T("dxTextLeft") == m_sPropName )
 					m_oShape.m_nTexpLeft = nValue;
 				else if( _T("dyTextTop") == m_sPropName )
@@ -1411,7 +1413,7 @@ class ShapeReader : public RtfAbstractReader
 				else if( _T("dyTextBottom") == m_sPropName )
 					m_oShape.m_nTexpBottom = nValue;
 
-				//Geometry
+	//Geometry
 				else if( _T("adjustValue") == m_sPropName )
 					m_oShape.m_nAdjustValue = nValue;
 				else if( _T("adjust2Value") == m_sPropName )
@@ -1432,7 +1434,7 @@ class ShapeReader : public RtfAbstractReader
 					m_oShape.m_nAdjustValue9 = nValue;
 				else if( _T("adjust10Value") == m_sPropName )
 					m_oShape.m_nAdjustValue10 = nValue;
-				//WordArt Effects
+	//WordArt Effects
 				else if( _T("cropFromTop") == m_sPropName )
 					m_oShape.m_nCropFromTop = nValue;
 				else if( _T("cropFromBottom") == m_sPropName )
@@ -1441,7 +1443,7 @@ class ShapeReader : public RtfAbstractReader
 					m_oShape.m_nCropFromRight = nValue;
 				else if( _T("cropFromRight") == m_sPropName )
 					m_oShape.m_nCropFromTop = nValue;
-				//Grouped Shapes
+	//Grouped Shapes
 				else if( _T("groupBottom") == m_sPropName )
 					m_oShape.m_nGroupBottom = nValue;
 				else if( _T("groupLeft") == m_sPropName )
@@ -1462,22 +1464,14 @@ class ShapeReader : public RtfAbstractReader
 					m_oShape.m_nRelRotation = nValue;
 				else if( _T("dhgt") == m_sPropName )
 					m_oShape.m_nRelZOrder = nValue;
-				//Fill
+	//Fill
 				else if( _T("fFilled") == m_sPropName )
-				{
-					if( 0 == nValue )
-						m_oShape.m_bFilled = false;
-					else
-						m_oShape.m_bFilled = false;
-				}
-				//Line
+					m_oShape.m_bFilled = (0 == nValue ? false : true );
+				else if( _T("fillType") == m_sPropName )
+					m_oShape.m_nFillType = nValue;
+	//Line
 				else if( _T("fLine") == m_sPropName )
-				{
-					if( 0 == nValue )
-						m_oShape.m_bLine = false;
-					else
-						m_oShape.m_bLine = false;
-				}
+					m_oShape.m_bLine = ( 0 == nValue ? false : true );
 				else if( _T("lineStartArrowhead") == m_sPropName )
 					m_oShape.m_nLineStartArrow = nValue;
 				else if( _T("lineStartArrowWidth") == m_sPropName )
@@ -1492,6 +1486,11 @@ class ShapeReader : public RtfAbstractReader
 					m_oShape.m_nLineEndArrowLength = nValue;
 				else if( _T("lineWidth") == m_sPropName )
 					m_oShape.m_nLineWidth = nValue;
+				else
+				{
+					int val				= nValue;
+					std::wstring name	= m_sPropName.GetBuffer();
+				}
 			}
 			void ExecuteText( RtfDocument& oDocument, RtfReader& oReader, CString oText )
 			{
@@ -3395,21 +3394,25 @@ public:
 			}
 			else if( _T("sect") == sCommand )
 			{
-				RtfSectionPtr oCurSection;
-				if(true == oDocument.GetItem( oCurSection ) )
-					oCurSection->m_oProperty = oReader.m_oCurSectionProp;
-				//вручную обнуляем footer, т.к. sectd может встретиться и после field
-				oReader.m_oCurSectionProp.m_oHeaderLeft = TextItemContainerPtr();
-				oReader.m_oCurSectionProp.m_oHeaderFirst = TextItemContainerPtr();
-				oReader.m_oCurSectionProp.m_oHeaderRight = TextItemContainerPtr();
-				oReader.m_oCurSectionProp.m_oFooterLeft = TextItemContainerPtr();
-				oReader.m_oCurSectionProp.m_oFooterFirst = TextItemContainerPtr();
-				oReader.m_oCurSectionProp.m_oFooterRight = TextItemContainerPtr();
+				//if (oParagraphReaderDestination.m_oTextItems->GetCount() > 0)
+				{
+					RtfSectionPtr oCurSection;
+					if(true == oDocument.GetItem( oCurSection ) )
+						oCurSection->m_oProperty = oReader.m_oCurSectionProp;
+					//вручную обнуляем footer, т.к. sectd может встретиться и после field
+					oReader.m_oCurSectionProp.m_oHeaderLeft = TextItemContainerPtr();
+					oReader.m_oCurSectionProp.m_oHeaderFirst = TextItemContainerPtr();
+					oReader.m_oCurSectionProp.m_oHeaderRight = TextItemContainerPtr();
+					oReader.m_oCurSectionProp.m_oFooterLeft = TextItemContainerPtr();
+					oReader.m_oCurSectionProp.m_oFooterFirst = TextItemContainerPtr();
+					oReader.m_oCurSectionProp.m_oFooterRight = TextItemContainerPtr();
 
-				RtfSectionPtr oNewSection = RtfSectionPtr( new RtfSection() );
-				oParagraphReaderDestination.Finalize( oReader );
-				oParagraphReaderDestination.m_oTextItems = oNewSection;
-				oDocument.AddItem( oNewSection );
+					oParagraphReaderDestination.Finalize( oReader );
+					
+					RtfSectionPtr oNewSection = RtfSectionPtr( new RtfSection() );
+					oParagraphReaderDestination.m_oTextItems = oNewSection;
+					oDocument.AddItem( oNewSection );
+				}
 			}
 			else if(  _T("sectd") == sCommand  )
 			{

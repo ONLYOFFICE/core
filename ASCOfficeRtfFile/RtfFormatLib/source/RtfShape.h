@@ -145,6 +145,7 @@ public:
 
 //Fill
 		int m_bFilled; //fFilled The shape is filled.
+		int m_nFillType;
 //Line
 		int m_bLine; //fLine Has a line
 		int m_nLineStartArrow; //lineStartArrowhead Start arrow type:
@@ -198,7 +199,7 @@ public:
 			DEFAULT_PROPERTY_DEF( m_eXAnchor, ax_column ) //по умолчанию - привязка к тексту
 			DEFAULT_PROPERTY_DEF( m_eYAnchor, ay_Para )//по умолчанию - привязка к тексту
 
-			//Position absolute
+	//Position absolute
 			DEFAULT_PROPERTY( m_nPositionH )
 			DEFAULT_PROPERTY( m_nPositionHRelative )
 			DEFAULT_PROPERTY( m_nPositionV )
@@ -206,7 +207,7 @@ public:
 			DEFAULT_PROPERTY( m_bLayoutInCell )
 			DEFAULT_PROPERTY( m_bAllowOverlap )
 
-			//Position relative
+	//Position relative
 			DEFAULT_PROPERTY( m_nPositionHPct )
 			DEFAULT_PROPERTY( m_nPositionVPct )
 			DEFAULT_PROPERTY( m_nPctWidth )
@@ -216,7 +217,7 @@ public:
 			DEFAULT_PROPERTY( m_nColStart )
 			DEFAULT_PROPERTY( m_nColSpan )
 
-			//Object Type
+	//Object Type
 			DEFAULT_PROPERTY( m_bIsBullet )
 			DEFAULT_PROPERTY( m_nRotation )
 			DEFAULT_PROPERTY( m_bFlipV )
@@ -230,7 +231,7 @@ public:
 			//m_bBehindDocument = -1;
 			DEFAULT_PROPERTY( m_bHidden )
 
-			//Text box
+	//Text box
 			DEFAULT_PROPERTY_DEF( m_nTexpLeft, 91440 )
 			DEFAULT_PROPERTY_DEF( m_nTexpTop, 45720 )
 			DEFAULT_PROPERTY_DEF( m_nTexpRight, 91440 )
@@ -248,13 +249,13 @@ public:
 			DEFAULT_PROPERTY( m_nAdjustValue9 )
 			DEFAULT_PROPERTY( m_nAdjustValue10 )
 
-			//WordArt Effects
+	//WordArt Effects
 			DEFAULT_PROPERTY( m_nCropFromTop )
 			DEFAULT_PROPERTY( m_nCropFromBottom )
 			DEFAULT_PROPERTY( m_nCropFromLeft )
 			DEFAULT_PROPERTY( m_nCropFromRight )
 
-			//Grouped Shapes
+	//Grouped Shapes
 			DEFAULT_PROPERTY( m_nGroupBottom )
 			DEFAULT_PROPERTY( m_nGroupLeft )
 			DEFAULT_PROPERTY( m_nGroupRight )
@@ -266,17 +267,18 @@ public:
 			DEFAULT_PROPERTY( m_nRelRotation )
 			DEFAULT_PROPERTY( m_nRelZOrder )
 
-			//Rehydration
+	//Rehydration
 			m_sMetroBlob = _T("");
 			m_sMetroBlobRels = _T("");
 			m_sMetroBlobData = _T("");
-			//Connectors
+	//Connectors
 			DEFAULT_PROPERTY( m_nConnectionType )
 			DEFAULT_PROPERTY( m_nConnectorStyle )
 
-			//Fill
+	//Fill
 			DEFAULT_PROPERTY_DEF( m_bFilled, true )
-			//Line
+			DEFAULT_PROPERTY( m_nFillType )
+	//Line
 			DEFAULT_PROPERTY_DEF( m_bLine, true )
 			DEFAULT_PROPERTY( m_nLineStartArrow )
 			DEFAULT_PROPERTY( m_nLineStartArrowWidth )

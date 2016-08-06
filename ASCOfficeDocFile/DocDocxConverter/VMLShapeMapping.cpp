@@ -1438,6 +1438,8 @@ namespace DocFileFormat
 		bool bPosH = false;
 		bool bPosV = false;
 
+		bool bZIndex = false;
+
 		std::list<OptionEntry>::const_iterator end = options.end();
 		for (std::list<OptionEntry>::const_iterator iter = options.begin(); iter != end; ++iter)
 		{
@@ -1469,14 +1471,16 @@ namespace DocFileFormat
 				{
 					GroupShapeBooleanProperties groupShapeBooleans(iter->op);
 
-					if (groupShapeBooleans.fUsefBehindDocument && groupShapeBooleans.fBehindDocument)
+					if (groupShapeBooleans.fUsefBehindDocument && groupShapeBooleans.fBehindDocument && !bZIndex)
 					{
 						//The shape is behind the text, so the z-index must be negative.
 						appendStyleProperty(oStyle, _T( "z-index" ), _T( "-1" ) );
+						bZIndex = true;
 					}
-					else if (!m_isInlineShape)
+					else if (!m_isInlineShape && !bZIndex)
 					{
 						appendStyleProperty( oStyle, _T( "z-index" ), FormatUtils::IntToWideString(zIndex + 0x7ffff));
+						bZIndex = true;
 					}
 
 					if (groupShapeBooleans.fHidden && groupShapeBooleans.fUsefHidden)

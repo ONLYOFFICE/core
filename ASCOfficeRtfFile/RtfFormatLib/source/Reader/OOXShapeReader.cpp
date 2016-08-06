@@ -68,17 +68,41 @@ bool OOXShapeReader::Parse2( ReaderParameter oParam , RtfShapePtr& oOutput)
 
 		switch(m_arrElement->m_arrItems[i]->getType())
 		{
+			case OOX::et_v_fill:
+			{
+				OOX::Vml::CFill* fill_ = dynamic_cast<OOX::Vml::CFill*>(m_arrElement->m_arrItems[i]); 
+				OOX::VmlOffice::CFill * fill = fill_ ? dynamic_cast<OOX::VmlOffice::CFill*>(fill_->m_oFill.GetPointer()) : NULL;
+				
+				CString srId = fill_->m_sId.IsInit() ? fill_->m_sId.get2() : _T("") ;
+
+				if (srId.IsEmpty())
+                    srId = fill_->m_rId.IsInit() ? fill_->m_rId->GetValue() : _T("") ;
+				
+				if (!srId.IsEmpty() && oParam.oReader->m_currentContainer)
+				{        
+					smart_ptr<OOX::File> oFile = oParam.oReader->m_currentContainer->Find(srId);
+				
+					if ( oFile.IsInit() && (OOX::FileTypes::Image == oFile->type()))
+					{
+						OOX::Image* pImage = (OOX::Image*)oFile.operator->();
+						CString sImagePath = pImage->filename().GetPath();
+
+						oOutput->m_oPicture = RtfPicturePtr( new RtfPicture() );
+						//todooo проверить что за путь тут выставляется
+						OOXPictureGraphicReader::WriteDataToPicture( sImagePath, *oOutput->m_oPicture, oParam.oReader->m_sPath );
+					}
+				}
+				else
+				{
+				}
+			}break;
 			case OOX::et_v_imagedata:
 			{
 				OOX::Vml::CImageData* image_data = dynamic_cast<OOX::Vml::CImageData*>(m_arrElement->m_arrItems[i]);
 
-				oOutput->m_oPicture = RtfPicturePtr( new RtfPicture() );
-				oOutput->m_eShapeType = RtfShape::st_none;
-				oOutput->m_nShapeType = 75;
-
 				CString srId = image_data->m_oId.IsInit() ? image_data->m_oId.get2() : _T("") ;
 
-				if (srId.GetLength() < 1)
+				if (srId.IsEmpty())
                     srId = image_data->m_rId.IsInit() ? image_data->m_rId->GetValue() : _T("") ;
 
 				if (oParam.oReader->m_currentContainer)
@@ -87,6 +111,10 @@ bool OOXShapeReader::Parse2( ReaderParameter oParam , RtfShapePtr& oOutput)
 				
 					if ( oFile.IsInit() && (OOX::FileTypes::Image == oFile->type()))
 					{
+						oOutput->m_oPicture		= RtfPicturePtr( new RtfPicture() );
+						oOutput->m_eShapeType	= RtfShape::st_none;
+						oOutput->m_nShapeType	= 75;
+
 						OOX::Image* pImage = (OOX::Image*)oFile.operator->();
 
 						CString sImagePath = pImage->filename().GetPath();
@@ -149,11 +177,6 @@ bool OOXShapeReader::Parse2( ReaderParameter oParam , RtfShapePtr& oOutput)
 					double dNewScale = 100 * ( 1.0 * nHeight / nCropedHeightGoal );
 					oOutput->m_oPicture->m_dScaleY = dNewScale;
 				}
-
-
-				//проверяем на inline
-				if( (PROP_DEF == oOutput->m_nLeft || 0 == oOutput->m_nLeft ) && ( PROP_DEF == oOutput->m_nTop || 0 == oOutput->m_nTop ) && PROP_DEF == oOutput->m_nPositionH && PROP_DEF == oOutput->m_nPositionV )
-					oOutput->m_eShapeType = RtfShape::st_inline;
 			}break;
 			case OOX::et_wd_wrap:
 			{
@@ -200,6 +223,10 @@ bool OOXShapeReader::Parse2( ReaderParameter oParam , RtfShapePtr& oOutput)
 			}break;
 		}
 	}
+	//проверяем на inline
+	if((PROP_DEF == oOutput->m_nLeft/* || 0 == oOutput->m_nLeft */) && ( PROP_DEF == oOutput->m_nTop/* || 0 == oOutput->m_nTop */) && 
+		PROP_DEF == oOutput->m_nPositionH && PROP_DEF == oOutput->m_nPositionV )
+		oOutput->m_eShapeType = RtfShape::st_inline;
 	//если ничего не задали делаем inline
 	if( (PROP_DEF == oOutput->m_nLeft || 0 == oOutput->m_nLeft ) && ( PROP_DEF == oOutput->m_nTop || 0 == oOutput->m_nTop ) && PROP_DEF == oOutput->m_nPositionH && PROP_DEF == oOutput->m_nPositionV )
 	{
@@ -208,6 +235,7 @@ bool OOXShapeReader::Parse2( ReaderParameter oParam , RtfShapePtr& oOutput)
 		oOutput->m_nPositionHRelative = 3;
 		oOutput->m_nPositionVRelative = 3;
 	}
+	return true;
 }
 bool OOXShapeReader::Parse( ReaderParameter oParam , RtfShapePtr& oOutput)
 {
@@ -221,10 +249,13 @@ bool OOXShapeReader::Parse( ReaderParameter oParam , RtfShapePtr& oOutput)
 	//if( -1 != nType )
 	//	oOutput->m_nShapeType = nType;
 	if( m_vmlElement->m_sId.IsInit())
+	{
 		oOutput->m_nID = oParam.oReader->m_oOOXIdGenerator.GetId( m_vmlElement->m_sId.get());
+	}
 
-	oOutput->m_nLeft = 0; //стили только с widht height (например в Numbering)
-	oOutput->m_nTop = 0;
+	//oOutput->m_nLeft		= 0; //стили только с widht height (например в Numbering)
+	//oOutput->m_nTop			= 0;
+	oOutput->m_eShapeType	= RtfShape::st_none; //inline or anchor
 	
 	if ( m_vmlElement->m_oStyle.IsInit())
 	{
@@ -235,6 +266,19 @@ bool OOXShapeReader::Parse( ReaderParameter oParam , RtfShapePtr& oOutput)
 	{
 		if (shape->m_oAdj.IsInit())
 			ParseAdjustment( *oOutput, shape->m_oAdj.get() );
+		
+		if (shape->m_sType.IsInit())
+		{
+			int pos = shape->m_sType->Find(_T("#_x0000_t"));
+			if (pos >= 0)
+			{				
+				oOutput->m_nShapeType	= _wtoi(shape->m_sType->Mid(pos + 9, shape->m_sType->GetLength() - pos - 9).GetString());
+			}
+		}
+	}
+	if (OOX::Vml::CRect* rect = dynamic_cast<OOX::Vml::CRect*>(m_vmlElement))
+	{
+		oOutput->m_nShapeType	= 1;
 	}
 	//CString sConnectionType = oXmlReader.ReadNodeAttribute( _T("o:connecttype"), _T("") );
 	//if( _T("custom") == sConnectionType )
@@ -299,72 +343,111 @@ bool OOXShapeReader::ParseStyle(RtfShape& oShape, SimpleTypes::Vml::CCssProperty
 		case SimpleTypes::Vml::cssptFlip : 
 			switch(oShape.m_bFlipH = prop->get_Value().eFlip)
 			{
-			case SimpleTypes::Vml::cssflipX:	oShape.m_bFlipH = true; break; 
-			case SimpleTypes::Vml::cssflipY:	oShape.m_bFlipV = true; break;
-			case SimpleTypes::Vml::cssflipXY:	oShape.m_bFlipH = true; oShape.m_bFlipV = true; break; 
-			case SimpleTypes::Vml::cssflipYX :	oShape.m_bFlipH = true; oShape.m_bFlipV = true; break; 
+				case SimpleTypes::Vml::cssflipX:	oShape.m_bFlipH = true; break; 
+				case SimpleTypes::Vml::cssflipY:	oShape.m_bFlipV = true; break;
+				case SimpleTypes::Vml::cssflipXY:	oShape.m_bFlipH = true; oShape.m_bFlipV = true; break; 
+				case SimpleTypes::Vml::cssflipYX :	oShape.m_bFlipH = true; oShape.m_bFlipV = true; break; 
 			}
-			break;
-		case SimpleTypes::Vml::cssptHeight : 
-			{
-				int nHeight = (int)(20 * prop->get_Value().dValue);
-				if( PROP_DEF != oShape.m_nTop )//todooo переделать !!!
-					oShape.m_nBottom = oShape.m_nTop + nHeight;
-				if( PROP_DEF != oShape.m_nRelTop)//todooo переделать !!!
-					oShape.m_nRelBottom = oShape.m_nRelTop + nHeight;
-			}break;
-		case SimpleTypes::Vml::cssptLeft : 
-			oShape.m_nRelLeft	= prop->get_Value().dValue;					break;
-		case SimpleTypes::Vml::cssptMarginBottom: 
-			oShape.m_nBottom	=  (int)(20 * prop->get_Value().dValue );	break;
-		case SimpleTypes::Vml::cssptMarginLeft : 
-			oShape.m_nLeft		=  (int)(20 * prop->get_Value().dValue );	break;//pt tp twips
-		case SimpleTypes::Vml::cssptMarginRight : 
-			oShape.m_nRight	=  (int)(20 * prop->get_Value().dValue );		break;
-		case SimpleTypes::Vml::cssptMarginTop                      : 
-			oShape.m_nTop		=  (int)(20 * prop->get_Value().dValue );	break;
-		case SimpleTypes::Vml::cssptMsoPositionHorizontal          : 
-			oShape.m_nPositionH = prop->get_Value().eMsoPosHor;	break;
-		case SimpleTypes::Vml::cssptMsoPositionHorizontalRelative  :
-			oShape.m_nPositionHRelative = prop->get_Value().eMsoPosHorRel;	break;
-		case SimpleTypes::Vml::cssptMsoPositionVertical            : 
-			oShape.m_nPositionV = prop->get_Value().eMsoPosVer;		break;
-		case SimpleTypes::Vml::cssptMsoPositionVerticalRelative    : 
-			oShape.m_nPositionVRelative = prop->get_Value().eMsoPosVerRel;		break;
-		case SimpleTypes::Vml::cssptMsoWrapDistanceBottom          :
-			oShape.m_nWrapDistBottom =  (int)(20 * prop->get_Value().dValue );	break;
-		case SimpleTypes::Vml::cssptMsoWrapDistanceLeft            :  
-			oShape.m_nWrapDistLeft = (int)(20 * prop->get_Value().dValue );		break;
-		case SimpleTypes::Vml::cssptMsoWrapDistanceRight           : 
-			oShape.m_nWrapDistRight = (int)(20 * prop->get_Value().dValue );	break;
-		case SimpleTypes::Vml::cssptMsoWrapDistanceTop             : 
-			oShape.m_nWrapDistTop =  (int)(20 * prop->get_Value().dValue );		break;
-			break;
-		case SimpleTypes::Vml::cssptMsoWrapEdited                  : 
-			break;
-		case SimpleTypes::Vml::cssptMsoWrapStyle                   : 
-			break;
-		case SimpleTypes::Vml::cssptPosition                       : 
-			break;
-		case SimpleTypes::Vml::cssptRotation                       : 
-			oShape.m_nRotation = 65536 * prop->get_Value().dValue;
-			if( PROP_DEF != oShape.m_nRelRight || PROP_DEF != oShape.m_nRelLeft || PROP_DEF != oShape.m_nRelTop || PROP_DEF != oShape.m_nRelBottom  )
-				oShape.m_nRelRotation = oShape.m_nRotation;
-			break;
-		case SimpleTypes::Vml::cssptTop : 
-			oShape.m_nRelTop = prop->get_Value().dValue;				break;
-		case SimpleTypes::Vml::cssptVisibility :  
 			break;
 		case SimpleTypes::Vml::cssptWidth : 
 			{
-				int nWidth = (int)(20 * prop->get_Value().dValue);
+				//OOX::SimpleTypes::CPoint oPoint;
+				//oPoint.FromPoints(prop->get_Value().dValue);
+				
+				oShape.m_nRight = oShape.m_nRelRight = (int)(20 * prop->get_Value().oValue.dValue);
+				
 				if( PROP_DEF != oShape.m_nLeft )
-					oShape.m_nRight = oShape.m_nLeft + nWidth;
+					oShape.m_nRight += oShape.m_nLeft;
 				if( PROP_DEF != oShape.m_nRelLeft)
-					oShape.m_nRelRight = oShape.m_nRelLeft + nWidth;
+					oShape.m_nRelRight += oShape.m_nRelLeft;
 			}break;
+		case SimpleTypes::Vml::cssptHeight : 
+			{
+				oShape.m_nBottom  = oShape.m_nRelBottom = (int)(20 * prop->get_Value().oValue.dValue);
+				
+				if( PROP_DEF != oShape.m_nTop )
+					oShape.m_nBottom += oShape.m_nTop;
+				if( PROP_DEF != oShape.m_nRelTop)
+					oShape.m_nRelBottom += oShape.m_nRelTop;
+			}break;
+		case SimpleTypes::Vml::cssptLeft :
+			{
+				oShape.m_nRelLeft	= prop->get_Value().oValue.dValue;					
+				if( PROP_DEF != oShape.m_nRelRight)
+					oShape.m_nRelRight += oShape.m_nRelLeft;
+			}break;
+		case SimpleTypes::Vml::cssptTop : 
+			{
+				oShape.m_nRelTop = prop->get_Value().oValue.dValue;
+				if( PROP_DEF != oShape.m_nRelBottom)
+					oShape.m_nRelBottom += oShape.m_nRelTop;
+			}break;
+		case SimpleTypes::Vml::cssptMarginBottom: 
+			{
+				oShape.m_nBottom	=  (int)(20 * prop->get_Value().oValue.dValue );	
+			}break;
+		case SimpleTypes::Vml::cssptMarginLeft :
+			{
+				oShape.m_nLeft		=  (int)(20 * prop->get_Value().oValue.dValue );	
+			}break;//pt tp twips
+		case SimpleTypes::Vml::cssptMarginRight : 
+			{
+				oShape.m_nRight	=  (int)(20 * prop->get_Value().oValue.dValue );		
+			}break;
+		case SimpleTypes::Vml::cssptMarginTop:
+			{
+				oShape.m_nTop		=  (int)(20 * prop->get_Value().oValue.dValue );	
+			}break;
+		case SimpleTypes::Vml::cssptMsoPositionHorizontal: 
+			{
+				oShape.m_nPositionH = prop->get_Value().eMsoPosHor;	
+			}break;
+		case SimpleTypes::Vml::cssptMsoPositionHorizontalRelative  :
+			{
+				oShape.m_nPositionHRelative = prop->get_Value().eMsoPosHorRel;	
+			}break;
+		case SimpleTypes::Vml::cssptMsoPositionVertical: 
+			{
+				oShape.m_nPositionV = prop->get_Value().eMsoPosVer;		
+			}break;
+		case SimpleTypes::Vml::cssptMsoPositionVerticalRelative    :
+			{
+				oShape.m_nPositionVRelative = prop->get_Value().eMsoPosVerRel;		
+			}break;
+		case SimpleTypes::Vml::cssptMsoWrapDistanceBottom:
+			{
+				oShape.m_nWrapDistBottom =  (int)(20 * prop->get_Value().dValue );	
+			}break;
+		case SimpleTypes::Vml::cssptMsoWrapDistanceLeft : 
+			{
+				oShape.m_nWrapDistLeft = (int)(20 * prop->get_Value().dValue );		
+			}break;
+		case SimpleTypes::Vml::cssptMsoWrapDistanceRight:
+			{
+				oShape.m_nWrapDistRight = (int)(20 * prop->get_Value().dValue );	
+			}break;
+		case SimpleTypes::Vml::cssptMsoWrapDistanceTop : 
+			{
+				oShape.m_nWrapDistTop =  (int)(20 * prop->get_Value().dValue );		
+			}break;
+		case SimpleTypes::Vml::cssptMsoWrapEdited: 
+			break;
+		case SimpleTypes::Vml::cssptMsoWrapStyle: 
+			break;
+		case SimpleTypes::Vml::cssptPosition: 
+			break;
+		case SimpleTypes::Vml::cssptRotation: 
+			{
+				oShape.m_nRotation = 65536 * prop->get_Value().dValue;
+				if( PROP_DEF != oShape.m_nRelRight || PROP_DEF != oShape.m_nRelLeft || PROP_DEF != oShape.m_nRelTop || PROP_DEF != oShape.m_nRelBottom  )
+					oShape.m_nRelRotation = oShape.m_nRotation;
+			}break;
+		case SimpleTypes::Vml::cssptVisibility :  
+			break;
 		case SimpleTypes::Vml::cssptZIndex : 
 			{
+				oShape.m_eShapeType	= RtfShape::st_anchor;
+
 				int nValue = prop->get_Value().oZIndex.nOrder;
 				oShape.m_nZOrder = nValue;
 				if( nValue > 0 )

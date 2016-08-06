@@ -103,6 +103,15 @@ public:
 					Parse( pSdt->m_oSdtContent.GetPointer(), oParam );
 				}
 			}break;
+			case OOX::et_w_sdtContent:
+			{
+				OOX::Logic::CSdtContent * pSdt = dynamic_cast<OOX::Logic::CSdtContent*>(ooxElement);
+				for (int i = 0; i < pSdt->m_arrItems.size(); i++)
+				{
+					Parse( pSdt->m_arrItems[i], oParam );
+				}
+
+			}break;
 		}
 		return true;
 	}

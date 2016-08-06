@@ -63,6 +63,7 @@ bool ShapeReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CStr
 	{
 		if( PROP_DEF == m_oShape.m_nShapeType )
 			m_oShape.m_nShapeType = 202;//Text box
+		
 		ParagraphReader oParagraphReader(_T("shptxt"), oReader);
 		StartSubReader( oParagraphReader, oDocument, oReader );
 		m_oShape.m_aTextItems = oParagraphReader.m_oParPropDest.m_oTextItems;
@@ -170,12 +171,16 @@ bool PictureReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CS
 	else if( _T("picw") == sCommand )
 	{
 		if( true == hasParameter )
+		{
 			m_oShape.m_oPicture->m_nWidth = parameter;
+		}
 	}
 	else if( _T("pich") == sCommand )
 	{
 		if( true == hasParameter )
+		{
 			m_oShape.m_oPicture->m_nHeight = parameter;
+		}
 	}
 	else if( _T("picwgoal") == sCommand )
 	{

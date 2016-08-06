@@ -153,7 +153,7 @@ public:
 				oBorderReader.Parse( oParam,oOutputProperty.m_oBorderBottom  );
 			}
 		}
-		else if (m_ooxTableProps)
+		else if ((m_ooxTableProps) && (m_ooxTableProps->m_oTblBorders.IsInit()))
 		{
 			//from table props
 			//todoo last, first !!!!

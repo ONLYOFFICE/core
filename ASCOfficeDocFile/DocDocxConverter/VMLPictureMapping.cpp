@@ -386,10 +386,14 @@ namespace DocFileFormat
 					GroupShapeBooleanProperties groupShapeBooleans(iter->op);
 
 					if (groupShapeBooleans.fUsefBehindDocument && groupShapeBooleans.fBehindDocument)
-					{//m_isInlineShape ???
+					{
 						//The shape is behind the text, so the z-index must be negative.
 						appendStyleProperty(&strStyle, _T( "z-index" ), _T( "-1" ) );
 					}
+					//else if (!m_isInlinePicture)
+					//{
+					//	appendStyleProperty( &strStyle, _T( "z-index" ), FormatUtils::IntToWideString(zIndex + 0x7ffff));
+					//}
 
 					if (groupShapeBooleans.fHidden && groupShapeBooleans.fUsefHidden)
 					{

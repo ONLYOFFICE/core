@@ -52,4 +52,5 @@ public:
 	}
 
 	bool Parse( ReaderParameter oParam , RtfParagraph& oOutputParagraph, RtfStylePtr poStyle );
+	bool Parse( ReaderParameter oParam , RtfParagraph& oOutputParagraph, RtfStylePtr poStyle, RtfCharProperty& oNewProperty, OOX::WritingElement* ooxItem );
 };

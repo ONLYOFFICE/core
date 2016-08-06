@@ -98,8 +98,8 @@ namespace OOX
 			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>              m_oHrNoShade;
 			SimpleTypes::CDouble                                            m_oHrPct;
 			SimpleTypes::CHrAlign<SimpleTypes::hralignLeft>                 m_oHrAlign;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>              m_oAllowInCell;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>              m_oAllowOverlap;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>				m_oAllowInCell;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>				m_oAllowOverlap;
 			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>              m_oUserDrawn;
 			nullable<SimpleTypes::CColorType<>>                             m_oBorderTopColor;
 			nullable<SimpleTypes::CColorType<>>                             m_oBorderLeftColor;

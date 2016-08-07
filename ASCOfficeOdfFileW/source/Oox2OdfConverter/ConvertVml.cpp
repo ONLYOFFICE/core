@@ -370,7 +370,8 @@ void OoxConverter::convert(OOX::Vml::CFill	*vml_fill)
 				if (vml_fill->m_oColor2.IsInit())
 					odf_context()->drawing_context()->set_gradient_end(string2std_string(vml_fill->m_oColor2->ToString()),no_set);
 
-				odf_context()->drawing_context()->set_gradient_center(vml_fill->m_oFocusPosition.GetX(), vml_fill->m_oFocusPosition.GetY());
+				if (vml_fill->m_oFocusPosition.IsInit())
+					odf_context()->drawing_context()->set_gradient_center(vml_fill->m_oFocusPosition->GetX(), vml_fill->m_oFocusPosition->GetY());
 			
 			odf_context()->drawing_context()->end_gradient_style();
 		}break;

@@ -78,10 +78,10 @@ public:
 			switch(m_ooxTableRowProps->m_oJc->m_oVal->GetValue())
 			{
 				case SimpleTypes::jctableCenter : oOutputProperty.m_eJust = RtfRowProperty::rj_trqc; break;
-				case SimpleTypes::jctableEnd    : oOutputProperty.m_eJust = RtfRowProperty::rj_trql; break;
+				case SimpleTypes::jctableEnd    : oOutputProperty.m_eJust = RtfRowProperty::rj_trqr; break;
 				case SimpleTypes::jctableStart  : oOutputProperty.m_eJust = RtfRowProperty::rj_trql; break;
 				case SimpleTypes::jctableLeft   : oOutputProperty.m_eJust = RtfRowProperty::rj_trql; break;
-				case SimpleTypes::jctableRight  : oOutputProperty.m_eJust = RtfRowProperty::rj_trql; break;
+				case SimpleTypes::jctableRight  : oOutputProperty.m_eJust = RtfRowProperty::rj_trqr; break;
 			}
 		}
 

@@ -33,6 +33,129 @@
 #include "Writer/OOXWriter.h"
 #include "RtfOle.h"
 
+void RtfShape::SetDefault()
+{
+	m_eShapeType = st_none;
+
+//Common
+	DEFAULT_PROPERTY( m_nLeft )
+	DEFAULT_PROPERTY( m_nTop )
+	DEFAULT_PROPERTY( m_nBottom )
+	DEFAULT_PROPERTY( m_nRight )
+	DEFAULT_PROPERTY( m_nID )
+	DEFAULT_PROPERTY( m_nZOrder )
+	DEFAULT_PROPERTY( m_nHeader )
+	DEFAULT_PROPERTY( m_nWrapType )
+	DEFAULT_PROPERTY( m_nWrapSideType )
+	DEFAULT_PROPERTY( m_nZOrderRelative )
+	DEFAULT_PROPERTY( m_bLockAnchor )
+	DEFAULT_PROPERTY_DEF( m_eXAnchor, ax_column ) //по умолчанию - привязка к тексту
+	DEFAULT_PROPERTY_DEF( m_eYAnchor, ay_Para )//по умолчанию - привязка к тексту
+
+//Position absolute
+	DEFAULT_PROPERTY( m_nPositionH )
+	DEFAULT_PROPERTY( m_nPositionHRelative )
+	DEFAULT_PROPERTY( m_nPositionV )
+	DEFAULT_PROPERTY( m_nPositionVRelative )
+	DEFAULT_PROPERTY( m_bLayoutInCell )
+	DEFAULT_PROPERTY( m_bAllowOverlap )
+
+//Position relative
+	DEFAULT_PROPERTY( m_nPositionHPct )
+	DEFAULT_PROPERTY( m_nPositionVPct )
+	DEFAULT_PROPERTY( m_nPctWidth )
+	DEFAULT_PROPERTY( m_nPctHeight )
+	DEFAULT_PROPERTY( m_nPctWidthRelative )
+	DEFAULT_PROPERTY( m_nPctHeightRelative )
+	DEFAULT_PROPERTY( m_nColStart )
+	DEFAULT_PROPERTY( m_nColSpan )
+
+//Object Type
+	DEFAULT_PROPERTY( m_bIsBullet )
+	DEFAULT_PROPERTY( m_nRotation )
+	DEFAULT_PROPERTY( m_bFlipV )
+	DEFAULT_PROPERTY( m_bFlipH )
+	DEFAULT_PROPERTY( m_nShapeType )
+	DEFAULT_PROPERTY( m_nWrapDistLeft )
+	DEFAULT_PROPERTY( m_nWrapDistTop )
+	DEFAULT_PROPERTY( m_nWrapDistRight )
+	DEFAULT_PROPERTY( m_nWrapDistBottom )
+
+	//m_bBehindDocument = -1;
+	DEFAULT_PROPERTY( m_bHidden )
+
+//Text box
+	DEFAULT_PROPERTY_DEF( m_nTexpLeft, 91440 )
+	DEFAULT_PROPERTY_DEF( m_nTexpTop, 45720 )
+	DEFAULT_PROPERTY_DEF( m_nTexpRight, 91440 )
+	DEFAULT_PROPERTY_DEF( m_nTexpBottom, 45720 )
+
+//Geometry
+	DEFAULT_PROPERTY( m_nAdjustValue )
+	DEFAULT_PROPERTY( m_nAdjustValue2 )
+	DEFAULT_PROPERTY( m_nAdjustValue3 )
+	DEFAULT_PROPERTY( m_nAdjustValue4 )
+	DEFAULT_PROPERTY( m_nAdjustValue5 )
+	DEFAULT_PROPERTY( m_nAdjustValue6 )
+	DEFAULT_PROPERTY( m_nAdjustValue7 )
+	DEFAULT_PROPERTY( m_nAdjustValue8 )
+	DEFAULT_PROPERTY( m_nAdjustValue9 )
+	DEFAULT_PROPERTY( m_nAdjustValue10 )
+
+//Picture Effects
+	DEFAULT_PROPERTY( m_nCropFromTop )
+	DEFAULT_PROPERTY( m_nCropFromBottom )
+	DEFAULT_PROPERTY( m_nCropFromLeft )
+	DEFAULT_PROPERTY( m_nCropFromRight )
+
+//Grouped Shapes
+	DEFAULT_PROPERTY( m_nGroupBottom )
+	DEFAULT_PROPERTY( m_nGroupLeft )
+	DEFAULT_PROPERTY( m_nGroupRight )
+	DEFAULT_PROPERTY( m_nGroupTop )
+	DEFAULT_PROPERTY( m_nRelBottom )
+	DEFAULT_PROPERTY( m_nRelLeft )
+	DEFAULT_PROPERTY( m_nRelRight )
+	DEFAULT_PROPERTY( m_nRelTop )
+	DEFAULT_PROPERTY( m_nRelRotation )
+	DEFAULT_PROPERTY( m_nRelZOrder )
+
+//Rehydration
+	m_sMetroBlob = _T("");
+	m_sMetroBlobRels = _T("");
+	m_sMetroBlobData = _T("");
+//Connectors
+	DEFAULT_PROPERTY( m_nConnectionType )
+	DEFAULT_PROPERTY( m_nConnectorStyle )
+
+//Fill
+	DEFAULT_PROPERTY_DEF( m_bFilled, true )
+	DEFAULT_PROPERTY( m_nFillType )
+	DEFAULT_PROPERTY( m_nFillColor )
+	DEFAULT_PROPERTY( m_nFillColor2 )
+	DEFAULT_PROPERTY( m_nFillOpacity )
+	DEFAULT_PROPERTY( m_nFillFocus )
+	DEFAULT_PROPERTY( m_nFillAngle )
+//Line
+	DEFAULT_PROPERTY_DEF( m_bLine, true )
+	DEFAULT_PROPERTY( m_nLineColor )
+	DEFAULT_PROPERTY( m_nLineStartArrow )
+	DEFAULT_PROPERTY( m_nLineStartArrowWidth )
+	DEFAULT_PROPERTY( m_nLineStartArrowLength )
+	DEFAULT_PROPERTY( m_nLineEndArrow )
+	DEFAULT_PROPERTY( m_nLineEndArrowWidth )
+	DEFAULT_PROPERTY( m_nLineEndArrowLength )
+	DEFAULT_PROPERTY( m_nLineWidth )
+	DEFAULT_PROPERTY( m_nLineDashing )
+
+	DEFAULT_PROPERTY( m_nGtextSize )
+	DEFAULT_PROPERTY( m_bGtext )
+
+	m_aTextItems = TextItemContainerPtr();
+	m_oPicture = RtfPicturePtr();
+	m_bIsOle = false;
+}
+
 CString RtfShape::RenderToRtf(RenderParameter oRenderParameter)
 {
 	CString sResult;
@@ -99,9 +222,7 @@ CString RtfShape::RenderToRtf(RenderParameter oRenderParameter)
 				RENDER_RTF_INT( m_nWrapType		, sResult, _T("shpwr") );
 				RENDER_RTF_INT( m_nWrapSideType	, sResult, _T("shpwrk") );
 				RENDER_RTF_BOOL( m_bLockAnchor	, sResult, _T("shplockanchor") );
-				//RENDER_RTF_BOOL( false			, sResult, _T("fUseShapeAnchor") );
-				//RENDER_RTF_BOOL( true			, sResult, _T("fPseudoInline") );				
-
+				
 				sResult.Append( _T("\\shpbxignore") );
 				sResult.Append( _T("\\shpbyignore") );
 
@@ -109,10 +230,10 @@ CString RtfShape::RenderToRtf(RenderParameter oRenderParameter)
 				sResult.AppendFormat( _T("{\\sp{\\sn fPseudoInline}{\\sv %d}}"), true);
 				
 				sResult.Append( RenderToRtfShapeProperty( oRenderParameter ) );
+				
 				//picture
 				if( 0 != m_oPicture )
 				{
-					sResult.Append( _T("{\\sp{\\sn fillType}{\\sv 2}}"));
 					sResult.Append( _T("{\\sp{\\sn fillBlip}{\\sv "));
 					sResult.Append( m_oPicture->RenderToRtf( oRenderParameter ) );
 					sResult.Append( _T("}}") );
@@ -221,9 +342,9 @@ CString RtfShape::RenderToRtfShapeProperty(RenderParameter oRenderParameter)
 
 	//Position absolute
 	if( PROP_DEF != m_nPositionH )
-		sResult.AppendFormat( _T("{\\sp{\\sn posh}{\\sv %d}}"),m_nPositionH);
+		sResult.AppendFormat( _T("{\\sp{\\sn posh}{\\sv %d}}"),	m_nPositionH);
 	if( PROP_DEF != m_nPositionHRelative )
-		sResult.AppendFormat( _T("{\\sp{\\sn posrelh}{\\sv %d}}"),m_nPositionHRelative);
+		sResult.AppendFormat( _T("{\\sp{\\sn posrelh}{\\sv %d}}"),	m_nPositionHRelative);
 	if( PROP_DEF != m_nPositionV )
 		sResult.AppendFormat( _T("{\\sp{\\sn posv}{\\sv %d}}"), m_nPositionV);
 	
@@ -232,40 +353,40 @@ CString RtfShape::RenderToRtfShapeProperty(RenderParameter oRenderParameter)
 	if(  PROP_DEF != m_bLayoutInCell )
 		sResult.AppendFormat( _T("{\\sp{\\sn fLayoutInCell}{\\sv %d}}"), m_bLayoutInCell);
 	if(  PROP_DEF != m_bAllowOverlap )
-		sResult.AppendFormat( _T("{\\sp{\\sn fAllowOverlap}{\\sv %d}}"),m_bAllowOverlap);
+		sResult.AppendFormat( _T("{\\sp{\\sn fAllowOverlap}{\\sv %d}}"),	m_bAllowOverlap);
 
 	//Position relative
 	if(  PROP_DEF != m_nPositionHPct )
-		sResult.AppendFormat( _T("{\\sp{\\sn pctHorizPos}{\\sv %d}}"),m_nPositionHPct);
+		sResult.AppendFormat( _T("{\\sp{\\sn pctHorizPos}{\\sv %d}}"),	m_nPositionHPct);
 	if(  PROP_DEF != m_nPositionVPct )
-		sResult.AppendFormat( _T("{\\sp{\\sn pctVertPos}{\\sv %d}}"),m_nPositionVPct);
+		sResult.AppendFormat( _T("{\\sp{\\sn pctVertPos}{\\sv %d}}"),	m_nPositionVPct);
 	if(  PROP_DEF != m_nPctWidth )
-		sResult.AppendFormat( _T("{\\sp{\\sn pctHoriz}{\\sv %d}}"),m_nPctWidth);
+		sResult.AppendFormat( _T("{\\sp{\\sn pctHoriz}{\\sv %d}}"),	m_nPctWidth);
 	if(  PROP_DEF != m_nPctHeight )
-		sResult.AppendFormat( _T("{\\sp{\\sn pctVert}{\\sv %d}}"),m_nPctHeight);
+		sResult.AppendFormat( _T("{\\sp{\\sn pctVert}{\\sv %d}}"),	m_nPctHeight);
 	if(  PROP_DEF != m_nPctWidthRelative )
-		sResult.AppendFormat( _T("{\\sp{\\sn sizerelh}{\\sv %d}}"),m_nPctWidthRelative);
+		sResult.AppendFormat( _T("{\\sp{\\sn sizerelh}{\\sv %d}}"),	m_nPctWidthRelative);
 	if(  PROP_DEF != m_nPctHeightRelative )
-		sResult.AppendFormat( _T("{\\sp{\\sn sizerelv}{\\sv %d}}"),m_nPctHeightRelative);
+		sResult.AppendFormat( _T("{\\sp{\\sn sizerelv}{\\sv %d}}"),	m_nPctHeightRelative);
 	if(  PROP_DEF != m_nColStart )
-		sResult.AppendFormat( _T("{\\sp{\\sn colStart}{\\sv %d}}"),m_nColStart);
+		sResult.AppendFormat( _T("{\\sp{\\sn colStart}{\\sv %d}}"),	m_nColStart);
 	if(  PROP_DEF != m_nColSpan )
-		sResult.AppendFormat( _T("{\\sp{\\sn colSpan}{\\sv %d}}"),m_nColSpan);
+		sResult.AppendFormat( _T("{\\sp{\\sn colSpan}{\\sv %d}}"),	m_nColSpan);
 	//Rehydration
 	if(  _T("") != m_sMetroBlob )
-        sResult.AppendFormat( _T("{\\sp{\\sn metroBlob}{\\sv %d}}"),m_sMetroBlob.GetBuffer());
+        sResult.AppendFormat( _T("{\\sp{\\sn metroBlob}{\\sv %d}}"),	m_sMetroBlob.GetBuffer());
 
 	//Object Type
 	if(  PROP_DEF != m_bIsBullet )
-		sResult.AppendFormat( _T("{\\sp{\\sn fIsBullet}{\\sv %d}}"),m_bIsBullet);
+		sResult.AppendFormat( _T("{\\sp{\\sn fIsBullet}{\\sv %d}}"),	m_bIsBullet);
 	if(  PROP_DEF != m_nRotation  )
-		sResult.AppendFormat( _T("{\\sp{\\sn rotation}{\\sv %d}}"),m_nRotation);
+		sResult.AppendFormat( _T("{\\sp{\\sn rotation}{\\sv %d}}"),	m_nRotation);
 	if(  PROP_DEF != m_bFlipV )
-		sResult.AppendFormat( _T("{\\sp{\\sn fFlipV}{\\sv %d}}"),m_bFlipV);
+		sResult.AppendFormat( _T("{\\sp{\\sn fFlipV}{\\sv %d}}"),	m_bFlipV);
 	if(  PROP_DEF != m_bFlipH )
-		sResult.AppendFormat( _T("{\\sp{\\sn fFlipH}{\\sv %d}}"),m_bFlipH);
+		sResult.AppendFormat( _T("{\\sp{\\sn fFlipH}{\\sv %d}}"),	m_bFlipH);
 	if(  PROP_DEF != m_nShapeType )
-		sResult.AppendFormat( _T("{\\sp{\\sn shapeType}{\\sv %d}}"),m_nShapeType);
+		sResult.AppendFormat( _T("{\\sp{\\sn shapeType}{\\sv %d}}"),	m_nShapeType);
 	if(  PROP_DEF != m_nWrapDistLeft )
 		sResult.AppendFormat( _T("{\\sp{\\sn dxWrapDistLeft}{\\sv %d}}"), RtfUtility::Twips2Emu( m_nWrapDistLeft ));
 	if(  PROP_DEF != m_nWrapDistTop )
@@ -275,82 +396,102 @@ CString RtfShape::RenderToRtfShapeProperty(RenderParameter oRenderParameter)
 	if(  PROP_DEF != m_nWrapDistBottom )
 		sResult.AppendFormat( _T("{\\sp{\\sn dyWrapDistBottom}{\\sv %d}}"),RtfUtility::Twips2Emu(  m_nWrapDistBottom ));
 	if(  PROP_DEF != m_nZOrderRelative )
-		sResult.AppendFormat( _T("{\\sp{\\sn fBehindDocument}{\\sv %d}}"),m_nZOrderRelative);
+		sResult.AppendFormat( _T("{\\sp{\\sn fBehindDocument}{\\sv %d}}"),	m_nZOrderRelative);
 	if(  PROP_DEF != m_bHidden )
-		sResult.AppendFormat( _T("{\\sp{\\sn fHidden}{\\sv %d}}"),m_bHidden);
+		sResult.AppendFormat( _T("{\\sp{\\sn fHidden}{\\sv %d}}"),	m_bHidden);
 	//Geometry
 	if( PROP_DEF != m_nAdjustValue )
-		sResult.AppendFormat( _T("{\\sp{\\sn adjustValue}{\\sv %d}}"),m_nAdjustValue );
+		sResult.AppendFormat( _T("{\\sp{\\sn adjustValue}{\\sv %d}}"),	m_nAdjustValue );
 	if( PROP_DEF != m_nAdjustValue )
-		sResult.AppendFormat( _T("{\\sp{\\sn adjust2Value}{\\sv %d}}"),m_nAdjustValue2 );
+		sResult.AppendFormat( _T("{\\sp{\\sn adjust2Value}{\\sv %d}}"),	m_nAdjustValue2 );
 	if( PROP_DEF != m_nAdjustValue )
-		sResult.AppendFormat( _T("{\\sp{\\sn adjust3Value}{\\sv %d}}"),m_nAdjustValue3 );
+		sResult.AppendFormat( _T("{\\sp{\\sn adjust3Value}{\\sv %d}}"),	m_nAdjustValue3 );
 	if( PROP_DEF != m_nAdjustValue )
-		sResult.AppendFormat( _T("{\\sp{\\sn adjust4Value}{\\sv %d}}"),m_nAdjustValue4 );
+		sResult.AppendFormat( _T("{\\sp{\\sn adjust4Value}{\\sv %d}}"),	m_nAdjustValue4 );
 	if( PROP_DEF != m_nAdjustValue )
-		sResult.AppendFormat( _T("{\\sp{\\sn adjust5Value}{\\sv %d}}"),m_nAdjustValue5 );
+		sResult.AppendFormat( _T("{\\sp{\\sn adjust5Value}{\\sv %d}}"),	m_nAdjustValue5 );
 	if( PROP_DEF != m_nAdjustValue )
-		sResult.AppendFormat( _T("{\\sp{\\sn adjust6Value}{\\sv %d}}"),m_nAdjustValue6 );
+		sResult.AppendFormat( _T("{\\sp{\\sn adjust6Value}{\\sv %d}}"),	m_nAdjustValue6 );
 	if( PROP_DEF != m_nAdjustValue )
-		sResult.AppendFormat( _T("{\\sp{\\sn adjust7Value}{\\sv %d}}"),m_nAdjustValue7 );
+		sResult.AppendFormat( _T("{\\sp{\\sn adjust7Value}{\\sv %d}}"),	m_nAdjustValue7 );
 	if( PROP_DEF != m_nAdjustValue )
-		sResult.AppendFormat( _T("{\\sp{\\sn adjust8Value}{\\sv %d}}"),m_nAdjustValue8 );
+		sResult.AppendFormat( _T("{\\sp{\\sn adjust8Value}{\\sv %d}}"),	m_nAdjustValue8 );
 	if( PROP_DEF != m_nAdjustValue )
-		sResult.AppendFormat( _T("{\\sp{\\sn adjust9Value}{\\sv %d}}"),m_nAdjustValue9 );
+		sResult.AppendFormat( _T("{\\sp{\\sn adjust9Value}{\\sv %d}}"),	m_nAdjustValue9 );
 	if( PROP_DEF != m_nAdjustValue )
-		sResult.AppendFormat( _T("{\\sp{\\sn adjust10Value}{\\sv %d}}"),m_nAdjustValue10 );
+		sResult.AppendFormat( _T("{\\sp{\\sn adjust10Value}{\\sv %d}}"),	m_nAdjustValue10 );
 	//Connectors
 	if( PROP_DEF != m_nConnectionType )
-		sResult.AppendFormat( _T("{\\sp{\\sn cxk}{\\sv %d}}"),m_nConnectionType );
+		sResult.AppendFormat( _T("{\\sp{\\sn cxk}{\\sv %d}}"),	m_nConnectionType );
 	if( PROP_DEF != m_nConnectorStyle )
-		sResult.AppendFormat( _T("{\\sp{\\sn cxstyle}{\\sv %d}}"),m_nConnectorStyle );
-	//WordArt Effects
+		sResult.AppendFormat( _T("{\\sp{\\sn cxstyle}{\\sv %d}}"),	m_nConnectorStyle );
+	//Picture Effects
 	if( PROP_DEF != m_nCropFromTop )
-		sResult.AppendFormat( _T("{\\sp{\\sn cropFromTop}{\\sv %d}}"),m_nCropFromTop );
+		sResult.AppendFormat( _T("{\\sp{\\sn cropFromTop}{\\sv %d}}"),	m_nCropFromTop );
 	if( PROP_DEF != m_nCropFromBottom )
-		sResult.AppendFormat( _T("{\\sp{\\sn cropFromBottom}{\\sv %d}}"),m_nCropFromBottom );
+		sResult.AppendFormat( _T("{\\sp{\\sn cropFromBottom}{\\sv %d}}"),	m_nCropFromBottom );
 	if( PROP_DEF != m_nCropFromLeft )
-		sResult.AppendFormat( _T("{\\sp{\\sn cropFromLeft}{\\sv %d}}"),m_nCropFromLeft );
+		sResult.AppendFormat( _T("{\\sp{\\sn cropFromLeft}{\\sv %d}}"),	m_nCropFromLeft );
 	if( PROP_DEF != m_nCropFromRight )
-		sResult.AppendFormat( _T("{\\sp{\\sn cropFromRight}{\\sv %d}}"),m_nCropFromRight );
+		sResult.AppendFormat( _T("{\\sp{\\sn cropFromRight}{\\sv %d}}"),	m_nCropFromRight );
 
 	//Grouped Shapes
 	if( PROP_DEF != m_nGroupBottom )
-		sResult.AppendFormat( _T("{\\sp{\\sn groupBottom}{\\sv %d}}"),m_nCropFromRight );
+		sResult.AppendFormat( _T("{\\sp{\\sn groupBottom}{\\sv %d}}"),	m_nCropFromRight );
 	if( PROP_DEF != m_nGroupLeft )
-		sResult.AppendFormat( _T("{\\sp{\\sn groupLeft}{\\sv %d}}"),m_nGroupLeft );
+		sResult.AppendFormat( _T("{\\sp{\\sn groupLeft}{\\sv %d}}"),	m_nGroupLeft );
 	if( PROP_DEF != m_nGroupRight )
-		sResult.AppendFormat( _T("{\\sp{\\sn groupRight}{\\sv %d}}"),m_nGroupRight );
+		sResult.AppendFormat( _T("{\\sp{\\sn groupRight}{\\sv %d}}"),	m_nGroupRight );
 	if( PROP_DEF != m_nGroupTop )
-		sResult.AppendFormat( _T("{\\sp{\\sn groupTop}{\\sv %d}}"),m_nGroupTop );
+		sResult.AppendFormat( _T("{\\sp{\\sn groupTop}{\\sv %d}}"),	m_nGroupTop );
 	if( PROP_DEF != m_nRelBottom )
-		sResult.AppendFormat( _T("{\\sp{\\sn relBottom}{\\sv %d}}"),m_nRelBottom );
+		sResult.AppendFormat( _T("{\\sp{\\sn relBottom}{\\sv %d}}"),	m_nRelBottom );
 	if( PROP_DEF != m_nRelLeft )
-		sResult.AppendFormat( _T("{\\sp{\\sn relLeft}{\\sv %d}}"),m_nRelLeft );
+		sResult.AppendFormat( _T("{\\sp{\\sn relLeft}{\\sv %d}}"),	m_nRelLeft );
 	if( PROP_DEF != m_nRelRight )
-		sResult.AppendFormat( _T("{\\sp{\\sn relRight}{\\sv %d}}"),m_nRelRight );
+		sResult.AppendFormat( _T("{\\sp{\\sn relRight}{\\sv %d}}"),	m_nRelRight );
 	if( PROP_DEF != m_nRelTop )
-		sResult.AppendFormat( _T("{\\sp{\\sn relTop}{\\sv %d}}"),m_nRelTop );
+		sResult.AppendFormat( _T("{\\sp{\\sn relTop}{\\sv %d}}"),	m_nRelTop );
 	if( PROP_DEF != m_nRelRotation )
-		sResult.AppendFormat( _T("{\\sp{\\sn relRotation}{\\sv %d}}"),m_nRelRotation );
+		sResult.AppendFormat( _T("{\\sp{\\sn relRotation}{\\sv %d}}"),	m_nRelRotation );
 	if( PROP_DEF != m_nRelZOrder )
-		sResult.AppendFormat( _T("{\\sp{\\sn dhgt}{\\sv %d}}"),m_nRelZOrder );
-
-	//Line
+		sResult.AppendFormat( _T("{\\sp{\\sn dhgt}{\\sv %d}}"),		m_nRelZOrder );
+//Fill
+	if( 0 == m_bFilled )
+		sResult.Append( _T("{\\sp{\\sn fFilled}{\\sv 0}}"));
+	if( PROP_DEF != m_nFillType )
+		sResult.AppendFormat( _T("{\\sp{\\sn fillType}{\\sv %d}}"), m_nFillType );
+	if( PROP_DEF != m_nFillColor )
+		sResult.AppendFormat( _T("{\\sp{\\sn fillColor}{\\sv %d}}"), m_nFillColor );
+	if( PROP_DEF != m_nFillColor2 )
+		sResult.AppendFormat( _T("{\\sp{\\sn fillBackColor}{\\sv %d}}"), m_nFillColor2 );
+	if( PROP_DEF != m_nFillOpacity )
+		sResult.AppendFormat( _T("{\\sp{\\sn fillOpacity}{\\sv %d}}"), ( m_nFillOpacity * 65536 /100 ) );
+	if( PROP_DEF != m_nFillFocus )
+		sResult.AppendFormat( _T("{\\sp{\\sn fillFocus}{\\sv %d}}"), m_nFillFocus );
+	if( PROP_DEF != m_nFillAngle )
+		sResult.AppendFormat( _T("{\\sp{\\sn fillAngle}{\\sv %d}}"), m_nFillAngle * 65536 );
+//Line
+	if( 0 == m_bLine )
+		sResult.Append( _T("{\\sp{\\sn fLine}{\\sv 0}}"));
+	if( PROP_DEF != m_nLineColor )
+		sResult.AppendFormat( _T("{\\sp{\\sn lineColor}{\\sv %d}}"), m_nLineColor );
 	if( PROP_DEF != m_nLineStartArrow )
-		sResult.AppendFormat( _T("{\\sp{\\sn lineStartArrowhead}{\\sv %d}}"),m_nLineStartArrow );
+		sResult.AppendFormat( _T("{\\sp{\\sn lineStartArrowhead}{\\sv %d}}"),	m_nLineStartArrow );
 	if( PROP_DEF != m_nLineEndArrow )
-		sResult.AppendFormat( _T("{\\sp{\\sn lineEndArrowhead}{\\sv %d}}"),m_nLineEndArrow );
+		sResult.AppendFormat( _T("{\\sp{\\sn lineEndArrowhead}{\\sv %d}}"),	m_nLineEndArrow );
 	if( PROP_DEF != m_nLineStartArrowWidth )
-		sResult.AppendFormat( _T("{\\sp{\\sn lineStartArrowWidth}{\\sv %d}}"),m_nLineStartArrowWidth );
+		sResult.AppendFormat( _T("{\\sp{\\sn lineStartArrowWidth}{\\sv %d}}"),	m_nLineStartArrowWidth );
 	if( PROP_DEF != m_nLineStartArrowLength )
-		sResult.AppendFormat( _T("{\\sp{\\sn lineStartArrowLength}{\\sv %d}}"),m_nLineStartArrowLength );
+		sResult.AppendFormat( _T("{\\sp{\\sn lineStartArrowLength}{\\sv %d}}"),	m_nLineStartArrowLength );
 	if( PROP_DEF != m_nLineEndArrowWidth )
-		sResult.AppendFormat( _T("{\\sp{\\sn lineEndArrowWidth}{\\sv %d}}"),m_nLineEndArrowWidth );
+		sResult.AppendFormat( _T("{\\sp{\\sn lineEndArrowWidth}{\\sv %d}}"),	m_nLineEndArrowWidth );
 	if( PROP_DEF != m_nLineEndArrowLength )
-		sResult.AppendFormat( _T("{\\sp{\\sn lineEndArrowLength}{\\sv %d}}"),m_nLineEndArrowLength );
+		sResult.AppendFormat( _T("{\\sp{\\sn lineEndArrowLength}{\\sv %d}}"),	m_nLineEndArrowLength );
 	if( PROP_DEF != m_nLineWidth )
-		sResult.AppendFormat( _T("{\\sp{\\sn lineWidth}{\\sv %d}}"),m_nLineWidth );
+		sResult.AppendFormat( _T("{\\sp{\\sn lineWidth}{\\sv %d}}"),	m_nLineWidth );
+	if( PROP_DEF != m_nLineDashing )
+		sResult.AppendFormat( _T("{\\sp{\\sn lineDashing}{\\sv %d}}"),	m_nLineDashing );
 
 	//pWrapPolygonVertices	Points of the text wrap polygon.
 	int nWrapPointCount = (int)m_aWrapPoints.size();
@@ -360,6 +501,24 @@ CString RtfShape::RenderToRtfShapeProperty(RenderParameter oRenderParameter)
 		for( int i = 0; i < nWrapPointCount - 1; i += 2 )
 			sResult.AppendFormat( _T(";(%d,%d)"), m_aWrapPoints[i], m_aWrapPoints[ i + 1 ] );
 		sResult.Append( _T("}}") );
+	}
+
+//WordArt
+	if( PROP_DEF != m_bGtext )
+	{
+		sResult.AppendFormat( _T("{\\sp{\\sn fGtext}{\\sv %d}}"),	m_bGtext );
+		if( !m_sGtextUNICODE.IsEmpty() )
+		{
+			sResult.Append ( _T("{\\sp{\\sn gtextUNICODE}{\\sv "));
+			sResult.Append ( m_sGtextUNICODE + _T("}}"));
+		}
+		if( !m_sGtextFont.IsEmpty() )
+		{
+			sResult.Append ( _T("{\\sp{\\sn gtextFont}{\\sv "));
+			sResult.Append ( m_sGtextFont + _T("}}"));
+		}
+		if( PROP_DEF != m_nGtextSize )
+			sResult.AppendFormat( _T("{\\sp{\\sn gtextSize}{\\sv %d}}"), m_nGtextSize );
 	}
 
 	return sResult;
@@ -821,7 +980,7 @@ CString RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 
 	sResult.AppendFormat( _T(" id=\"_x0000_s%d\""), poDocument->GetShapeId( m_nID ) );
 	if( PROP_DEF != m_nShapeType )
-		sResult.AppendFormat( _T(" type=\"#_x0000_t%d\""),m_nShapeType );
+		sResult.AppendFormat( _T(" type=\"#_x0000_t%d\""),	m_nShapeType );
 
 	//Connectors
 	switch( m_nConnectionType )
@@ -934,7 +1093,7 @@ CString RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 		case 5: sStyle.Append(_T("mso-position-vertical:outside;"));break;
 	}
 	if( PROP_DEF != m_nPositionVPct )
-		sStyle.AppendFormat(_T("mso-top-percent:%d;"),m_nPositionVPct);
+		sStyle.AppendFormat(_T("mso-top-percent:%d;"),	m_nPositionVPct);
 
 	if( PROP_DEF != m_nPositionV && PROP_DEF == m_nPositionVRelative )
 		m_nPositionVRelative =2;
@@ -962,7 +1121,7 @@ CString RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 		}
 	}
 	if( PROP_DEF != m_nPctWidth )
-		sStyle.AppendFormat(_T("mso-width-percent:%d;"),m_nPctWidth);
+		sStyle.AppendFormat(_T("mso-width-percent:%d;"),	m_nPctWidth);
 	switch( m_nPctWidthRelative )
 	{
 		case 0:sStyle.Append(_T("mso-width-relative:margin;"));break;
@@ -973,7 +1132,7 @@ CString RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 		case 5:sStyle.Append(_T("mso-width-relative:outer-margin-area;"));break;
 	}
 	if( PROP_DEF != m_nPctHeight )
-		sStyle.AppendFormat(_T("mso-height-percent:%d;"),m_nPctHeight);
+		sStyle.AppendFormat(_T("mso-height-percent:%d;"),	m_nPctHeight);
 	switch( m_nPctHeightRelative )
 	{
 		case 0:sStyle.Append(_T("mso-height-relative:margin;"));break;
@@ -985,9 +1144,9 @@ CString RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 	}
 
 	if( PROP_DEF != m_nRotation )
-		sStyle.AppendFormat(_T("rotation:%d;"),m_nRotation / 65536 );
+		sStyle.AppendFormat(_T("rotation:%d;"),	m_nRotation / 65536 );
 	else if( PROP_DEF != m_nRelRotation )
-		sStyle.AppendFormat(_T("rotation:%d;"),m_nRelRotation / 65536 );
+		sStyle.AppendFormat(_T("rotation:%d;"),	m_nRelRotation / 65536 );
 
 	int nZIndex = PROP_DEF;
 	if( PROP_DEF != m_nRelZOrder )
@@ -1042,34 +1201,34 @@ CString RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 	CString sAdjust;
 	if( PROP_DEF != m_nAdjustValue )
 	{
-		sAdjust.AppendFormat( _T("%d"),m_nAdjustValue);
+		sAdjust.AppendFormat( _T("%d"),	m_nAdjustValue);
 		if( PROP_DEF != m_nAdjustValue2 )
 		{
-			sAdjust.AppendFormat( _T(",%d"),m_nAdjustValue2);
+			sAdjust.AppendFormat( _T(",%d"),	m_nAdjustValue2);
 			if( PROP_DEF != m_nAdjustValue3 )
 			{
-				sAdjust.AppendFormat( _T(",%d"),m_nAdjustValue3);
+				sAdjust.AppendFormat( _T(",%d"),	m_nAdjustValue3);
 				if( PROP_DEF != m_nAdjustValue4 )
 				{
-					sAdjust.AppendFormat( _T(",%d"),m_nAdjustValue4);
+					sAdjust.AppendFormat( _T(",%d"),	m_nAdjustValue4);
 					if( PROP_DEF != m_nAdjustValue5 )
 					{
-						sAdjust.AppendFormat( _T(",%d"),m_nAdjustValue5);
+						sAdjust.AppendFormat( _T(",%d"),	m_nAdjustValue5);
 						if( PROP_DEF != m_nAdjustValue6 )
 						{
-							sAdjust.AppendFormat( _T(",%d"),m_nAdjustValue6);
+							sAdjust.AppendFormat( _T(",%d"),	m_nAdjustValue6);
 							if( PROP_DEF != m_nAdjustValue7 )
 							{
-								sAdjust.AppendFormat( _T(",%d"),m_nAdjustValue7);
+								sAdjust.AppendFormat( _T(",%d"),	m_nAdjustValue7);
 								if( PROP_DEF != m_nAdjustValue8 )
 								{
-									sAdjust.AppendFormat( _T(",%d"),m_nAdjustValue8);
+									sAdjust.AppendFormat( _T(",%d"),	m_nAdjustValue8);
 									if( PROP_DEF != m_nAdjustValue9 )
 									{
-										sAdjust.AppendFormat( _T(",%d"),m_nAdjustValue9);
+										sAdjust.AppendFormat( _T(",%d"),	m_nAdjustValue9);
 										if( PROP_DEF != m_nAdjustValue10 )
 										{
-											sAdjust.AppendFormat( _T(",%d"),m_nAdjustValue10);
+											sAdjust.AppendFormat( _T(",%d"),	m_nAdjustValue10);
 										}
 									}
 								}
@@ -1094,19 +1253,19 @@ CString RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 		sResult.AppendFormat( _T(" coordorigin=\"%d,%d\""), m_nGroupLeft, m_nGroupTop);
 	if( PROP_DEF != m_nGroupLeft && PROP_DEF != m_nGroupTop && PROP_DEF != m_nGroupRight && PROP_DEF != m_nGroupBottom)
 		sResult.AppendFormat( _T(" coordsize=\"%d,%d\""), m_nGroupRight - m_nGroupLeft, m_nGroupBottom - m_nGroupTop );
-	if( true == m_bIsOle )
-		sResult.Append( _T(" o:ole=\"\"") );
-	if( true == m_bFilled )
-		sResult.Append( _T(" filled=\"t\"") );
-	else
-		sResult.Append( _T(" filled=\"f\"") );
-	if( true == m_bLine )
-		sResult.Append( _T(" stroked=\"t\"") );
-	else
-		sResult.Append( _T(" stroked=\"f\"") );
+	
+	if( true == m_bIsOle )		sResult.Append( _T(" o:ole=\"\"") );
+	
+	if( true == m_bFilled )		sResult.Append( _T(" filled=\"t\"") );
+	else						sResult.Append( _T(" filled=\"f\"") );
+	
+	if( true == m_bLine )		sResult.Append( _T(" stroked=\"t\"") );
+	else						sResult.Append( _T(" stroked=\"f\"") );
+	
 	if(PROP_DEF != m_nLineWidth)
 		sResult.AppendFormat( _T(" strokeweight=\"%fpt\""), RtfUtility::Emu2Pt(m_nLineWidth) );
 	sResult.Append( _T(">") );
+	
 	if( PROP_DEF != m_nWrapType && 3 != m_nWrapType)
 	{
 		sResult.Append( _T("<w10:wrap"));

@@ -70,13 +70,13 @@ bool OOXShapeReader::Parse2( ReaderParameter oParam , RtfShapePtr& oOutput)
 		{
 			case OOX::et_v_fill:
 			{
-				OOX::Vml::CFill* fill_ = dynamic_cast<OOX::Vml::CFill*>(m_arrElement->m_arrItems[i]); 
-				OOX::VmlOffice::CFill * fill = fill_ ? dynamic_cast<OOX::VmlOffice::CFill*>(fill_->m_oFill.GetPointer()) : NULL;
+				OOX::Vml::CFill* fill = dynamic_cast<OOX::Vml::CFill*>(m_arrElement->m_arrItems[i]); 
+				if (!fill) break;
 				
-				CString srId = fill_->m_sId.IsInit() ? fill_->m_sId.get2() : _T("") ;
+				CString srId = fill->m_sId.IsInit() ? fill->m_sId.get2() : _T("") ;
 
 				if (srId.IsEmpty())
-                    srId = fill_->m_rId.IsInit() ? fill_->m_rId->GetValue() : _T("") ;
+                    srId = fill->m_rId.IsInit() ? fill->m_rId->GetValue() : _T("") ;
 				
 				if (!srId.IsEmpty() && oParam.oReader->m_currentContainer)
 				{        
@@ -92,13 +92,53 @@ bool OOXShapeReader::Parse2( ReaderParameter oParam , RtfShapePtr& oOutput)
 						OOXPictureGraphicReader::WriteDataToPicture( sImagePath, *oOutput->m_oPicture, oParam.oReader->m_sPath );
 					}
 				}
-				else
+				if (fill->m_oColor.IsInit())
+					oOutput->m_nFillColor = (fill->m_oColor->Get_B() << 16) + (fill->m_oColor->Get_G() << 8) + fill->m_oColor->Get_R();
+
+				if (fill->m_oColor2.IsInit())
+					oOutput->m_nFillColor2 = (fill->m_oColor2->Get_B() << 16) + (fill->m_oColor2->Get_G() << 8) + fill->m_oColor2->Get_R();
+
+				if (fill->m_oOpacity.IsInit())
+					oOutput->m_nFillOpacity = fill->m_oOpacity->GetValue() * 100;
+
+				switch(fill->m_oType.GetValue())
 				{
+					case SimpleTypes::filltypeBackground:		oOutput->m_nFillType = 9;	break;
+					case SimpleTypes::filltypeFrame :			oOutput->m_nFillType = 3;	break;
+					case SimpleTypes::filltypeGradient:			oOutput->m_nFillType = 4;	break;
+					case SimpleTypes::filltypeGradientCenter:	oOutput->m_nFillType = 4;	break;
+					case SimpleTypes::filltypeGradientRadial:	oOutput->m_nFillType = 4;	break;
+					case SimpleTypes::filltypeGradientUnscaled:	oOutput->m_nFillType = 4;	break;
+					case SimpleTypes::filltypePattern:			oOutput->m_nFillType = 1;	break;
+					case SimpleTypes::filltypeTile:				oOutput->m_nFillType = 2;	break;
+					case SimpleTypes::filltypeSolid:
+					default:
+						break;
 				}
+				if (fill->m_oAngle.IsInit())
+				{
+					oOutput->m_nFillAngle = fill->m_oAngle->GetValue();
+					if (oOutput->m_nFillType == 4) 
+						oOutput->m_nFillType = 7;
+				}
+				if (fill->m_oFocus.IsInit())
+				{
+					oOutput->m_nFillFocus = fill->m_oFocus->GetValue();
+				}
+			}break;
+			case OOX::et_v_stroke:
+			{
+				OOX::Vml::CStroke* stroke = dynamic_cast<OOX::Vml::CStroke*>(m_arrElement->m_arrItems[i]); 
+				if (!stroke) break;
+				oOutput->m_nLineDashing = stroke->m_oDahsStyle.GetValue(); //совпадают значения
+
+				if (stroke->m_oColor.IsInit())
+					oOutput->m_nLineColor = (stroke->m_oColor->Get_B() << 16) + (stroke->m_oColor->Get_G() << 8) + stroke->m_oColor->Get_R();
 			}break;
 			case OOX::et_v_imagedata:
 			{
 				OOX::Vml::CImageData* image_data = dynamic_cast<OOX::Vml::CImageData*>(m_arrElement->m_arrItems[i]);
+				if (!image_data) break;
 
 				CString srId = image_data->m_oId.IsInit() ? image_data->m_oId.get2() : _T("") ;
 
@@ -208,7 +248,7 @@ bool OOXShapeReader::Parse2( ReaderParameter oParam , RtfShapePtr& oOutput)
 			{
 				OOX::Vml::CTextbox *text_box= dynamic_cast<OOX::Vml::CTextbox*>(m_arrElement->m_arrItems[i]);
 
-				if (text_box->m_oTxtbxContent.IsInit())
+				if ((text_box) && (text_box->m_oTxtbxContent.IsInit()))
 				{
 					OOXTextItemReader oTextItemReader;
 					
@@ -220,6 +260,23 @@ bool OOXShapeReader::Parse2( ReaderParameter oParam , RtfShapePtr& oOutput)
 					if( oTextItemReader.m_oTextItems->GetCount() > 0 )
 						oOutput->m_aTextItems = oTextItemReader.m_oTextItems;
 				}
+			}break;
+			case OOX::et_v_textpath:
+			{
+				OOX::Vml::CTextPath *text_path= dynamic_cast<OOX::Vml::CTextPath*>(m_arrElement->m_arrItems[i]);
+				if (text_path)
+				{
+					oOutput->m_bGtext			= 1;
+					if (text_path->m_sString.IsInit())
+					{
+						oOutput->m_sGtextUNICODE	= text_path->m_sString.get();
+					}
+					if (text_path->m_oStyle.IsInit())
+					{
+						ParseStyles( *oOutput, text_path->m_oStyle->m_arrProperties );
+					}
+				}
+
 			}break;
 		}
 	}
@@ -243,18 +300,13 @@ bool OOXShapeReader::Parse( ReaderParameter oParam , RtfShapePtr& oOutput)
 
 	if (m_vmlElement == NULL ) return Parse2(oParam , oOutput);
 
-	//todooo
-	//CString sType = m_vmlElement->;Type
-	//int nType = GetType( sType );
-	//if( -1 != nType )
-	//	oOutput->m_nShapeType = nType;
 	if( m_vmlElement->m_sId.IsInit())
 	{
 		oOutput->m_nID = oParam.oReader->m_oOOXIdGenerator.GetId( m_vmlElement->m_sId.get());
 	}
 
 	//oOutput->m_nLeft		= 0; //стили только с widht height (например в Numbering)
-	//oOutput->m_nTop			= 0;
+	//oOutput->m_nTop		= 0;
 	oOutput->m_eShapeType	= RtfShape::st_none; //inline or anchor
 	
 	if ( m_vmlElement->m_oStyle.IsInit())
@@ -280,22 +332,28 @@ bool OOXShapeReader::Parse( ReaderParameter oParam , RtfShapePtr& oOutput)
 	{
 		oOutput->m_nShapeType	= 1;
 	}
-	//CString sConnectionType = oXmlReader.ReadNodeAttribute( _T("o:connecttype"), _T("") );
-	//if( _T("custom") == sConnectionType )
-	//	oOutput->m_nConnectionType = 0;
-	//else if( _T("none") == sConnectionType )
-	//	oOutput->m_nConnectionType = 1;
-	//else if( _T("rect") == sConnectionType )
-	//	oOutput->m_nConnectionType = 2;
-	//else if( _T("segments") == sConnectionType )
-	//	oOutput->m_nConnectionType = 3;
+				
+	if (m_vmlElement->m_oFilled.IsInit())
+		oOutput->m_bFilled = m_vmlElement->m_oFilled->GetValue() ==  SimpleTypes::booleanFalse ? 0 : 1;
+
+	if (m_vmlElement->m_oStroked.IsInit())
+		oOutput->m_bLine = m_vmlElement->m_oStroked->GetValue() ==  SimpleTypes::booleanFalse ? 0 : 1;
+
+	if (m_vmlElement->m_oFillColor.IsInit())
+		oOutput->m_nFillColor = (m_vmlElement->m_oFillColor->Get_B() << 16) + (m_vmlElement->m_oFillColor->Get_G() << 8) + m_vmlElement->m_oFillColor->Get_R();
+
+	if (m_vmlElement->m_oStrokeColor.IsInit())
+		oOutput->m_nLineColor = (m_vmlElement->m_oStrokeColor->Get_B() << 16) + (m_vmlElement->m_oStrokeColor->Get_G() << 8) + m_vmlElement->m_oStrokeColor->Get_R();
+
+	if( m_vmlElement->m_oStrokeWeight.IsInit())
+		oOutput->m_nLineWidth = m_vmlElement->m_oStrokeWeight->ToEmu();
 
 	switch(m_vmlElement->m_oConnectorType.GetValue())
 	{
-	case SimpleTypes::connectortypeCurved	: oOutput->m_nConnectionType = 2; break;
-	case SimpleTypes::connectortypeElbow	: oOutput->m_nConnectionType = 1; break;
-	case SimpleTypes::connectortypeNone		: oOutput->m_nConnectionType = 3; break;
-	case SimpleTypes::connectortypeStraight	: oOutput->m_nConnectionType = 0; break;
+		case SimpleTypes::connectortypeCurved	: oOutput->m_nConnectionType = 2; break;
+		case SimpleTypes::connectortypeElbow	: oOutput->m_nConnectionType = 1; break;
+		case SimpleTypes::connectortypeNone		: oOutput->m_nConnectionType = 3; break;
+		case SimpleTypes::connectortypeStraight	: oOutput->m_nConnectionType = 0; break;
 	}
 
 	oOutput->m_bLayoutInCell = m_vmlElement->m_oAllowInCell.GetValue();
@@ -322,9 +380,6 @@ bool OOXShapeReader::Parse( ReaderParameter oParam , RtfShapePtr& oOutput)
 		oOutput->m_nGroupRight = oOutput->m_nGroupLeft + m_vmlElement->m_oCoordSize->GetX();
 		oOutput->m_nGroupBottom = oOutput->m_nGroupTop + m_vmlElement->m_oCoordSize->GetY();
 	}
-
-	if( m_vmlElement->m_oStrokeWeight.IsInit())
-		oOutput->m_nLineWidth = m_vmlElement->m_oStrokeWeight->ToEmu();
 
 	return Parse2(oParam, oOutput);
 
@@ -455,6 +510,15 @@ bool OOXShapeReader::ParseStyle(RtfShape& oShape, SimpleTypes::Vml::CCssProperty
 				else if( nValue < 0 )
 					oShape.m_nZOrderRelative = 1;
 			}break;
+		case SimpleTypes::Vml::cssptFontFamily:
+			{
+				oShape.m_sGtextFont = CString(prop->get_Value().wsValue);
+			}break;
+		case SimpleTypes::Vml::cssptFontSize:
+			{
+				oShape.m_nGtextSize = prop->get_Value().oValue.dValue;
+			}break;
+
 		case SimpleTypes::Vml::cssptDirection                      : 			break;
 		case SimpleTypes::Vml::cssptLayoutFlow                     : 			break;
 		case SimpleTypes::Vml::cssptMsoDirectionAlt                : 			break;
@@ -466,8 +530,6 @@ bool OOXShapeReader::ParseStyle(RtfShape& oShape, SimpleTypes::Vml::CCssProperty
 		case SimpleTypes::Vml::cssptMsoTextScale                   : 			break;
 		case SimpleTypes::Vml::cssptVTextAnchor                    :			break;
 		case SimpleTypes::Vml::cssptFont                           :			break;
-		case SimpleTypes::Vml::cssptFontFamily                     :			break;
-		case SimpleTypes::Vml::cssptFontSize                       : 			break;
 		case SimpleTypes::Vml::cssptFontStyle                      : 			break;
 		case SimpleTypes::Vml::cssptFontVariant                    :			break;
 		case SimpleTypes::Vml::cssptFontWeight                     :			break;

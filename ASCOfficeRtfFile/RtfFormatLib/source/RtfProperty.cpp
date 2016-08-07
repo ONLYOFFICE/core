@@ -1702,68 +1702,73 @@ CString RtfParagraphProperty::RenderToRtf(RenderParameter oRenderParameter)
 {
 	CString sResult;
 	//RENDER_RTF_INT( m_nStyle, sResult, _T("s") );
-	RENDER_RTF_BOOL( m_bAutoHyphenation, sResult, _T("hyphpar") );
-	RENDER_RTF_BOOL( m_bInTable, sResult, _T("intbl") );
+	RENDER_RTF_BOOL( m_bAutoHyphenation	, sResult, _T("hyphpar") );
+	RENDER_RTF_BOOL( m_bInTable			, sResult, _T("intbl") );
+	
 	if( PROP_DEF != m_nItap && 1 != m_nItap )
 		sResult.AppendFormat( _T("\\itap%d"),m_nItap );
-	RENDER_RTF_BOOL( m_bKeep, sResult, _T("keep") );
-	RENDER_RTF_BOOL( m_bKeepNext, sResult, _T("keepn") );
-	RENDER_RTF_INT( m_nOutlinelevel, sResult, _T("outlinelevel") );
-	RENDER_RTF_BOOL( m_bPageBB, sResult, _T("pagebb") );
+	
+	RENDER_RTF_BOOL	( m_bKeep			, sResult, _T("keep") );
+	RENDER_RTF_BOOL	( m_bKeepNext		, sResult, _T("keepn") );
+	RENDER_RTF_INT	( m_nOutlinelevel	, sResult, _T("outlinelevel") );
+	RENDER_RTF_BOOL	( m_bPageBB			, sResult, _T("pagebb") );
 
 
 	switch(m_eAlign)
 	{
-		case  pa_qc:sResult.Append( _T("\\qc") );break;  
-		case  pa_qj:sResult.Append( _T("\\qj") );break;  
-		case  pa_ql:sResult.Append( _T("\\ql") );break;  
-		case  pa_qr:sResult.Append( _T("\\qr") );break;  
-		case  pa_qd:sResult.Append( _T("\\qd") );break;  
-		case  pa_qk0:sResult.Append( _T("\\qk0") );break;  
-		case  pa_qk10:sResult.Append( _T("\\qk10") );break;  
-		case  pa_qk20:sResult.Append( _T("\\qk20") );break;  
+		case  pa_qc:	sResult.Append( _T("\\qc") );break;  
+		case  pa_qj:	sResult.Append( _T("\\qj") );break;  
+		case  pa_ql:	sResult.Append( _T("\\ql") );break;  
+		case  pa_qr:	sResult.Append( _T("\\qr") );break;  
+		case  pa_qd:	sResult.Append( _T("\\qd") );break;  
+		case  pa_qk0:	sResult.Append( _T("\\qk0") );break;  
+		case  pa_qk10:	sResult.Append( _T("\\qk10") );break;  
+		case  pa_qk20:	sResult.Append( _T("\\qk20") );break;  
 	}
 	switch( m_eFontAlign )
 	{
-		case fa_faauto:sResult.Append( _T("\\faauto") );break;
-		case fa_fahang:sResult.Append( _T("\\fahang") );break;
-		case fa_facenter:sResult.Append( _T("\\facenter") );break;
-		case fa_faroman:sResult.Append( _T("\\faroman") );break;
-		case fa_favar:sResult.Append( _T("\\favar") );break;
-		case fa_fafixed:sResult.Append( _T("\\fafixed") );break;
+		case fa_faauto:		sResult.Append( _T("\\faauto") );break;
+		case fa_fahang:		sResult.Append( _T("\\fahang") );break;
+		case fa_facenter:	sResult.Append( _T("\\facenter") );break;
+		case fa_faroman:	sResult.Append( _T("\\faroman") );break;
+		case fa_favar:		sResult.Append( _T("\\favar") );break;
+		case fa_fafixed:	sResult.Append( _T("\\fafixed") );break;
 	}
-	RENDER_RTF_INT( m_nIndFirstLine, sResult, _T("fi") );
-	RENDER_RTF_INT( m_nIndLeft, sResult, _T("li") );
-	RENDER_RTF_INT( m_nIndStart, sResult, _T("lin") );
-	RENDER_RTF_INT( m_nIndRight, sResult, _T("ri") );
-	RENDER_RTF_INT( m_nIndEnd, sResult, _T("rin") );
-	RENDER_RTF_BOOL( m_bIndRightAuto, sResult, _T("adjustright") );
-	RENDER_RTF_BOOL( m_bIndMirror, sResult, _T("indmirror") );
-	RENDER_RTF_INT( m_nSpaceBefore, sResult, _T("sb") );
-	RENDER_RTF_INT( m_nSpaceAfter, sResult, _T("sa") );
-	RENDER_RTF_INT( m_nSpaceBeforeAuto, sResult, _T("sbauto") );
-	RENDER_RTF_INT( m_nSpaceAfterAuto, sResult, _T("saauto") );
-	RENDER_RTF_INT( m_nSpaceBeforeLine, sResult, _T("lisb") );
-	RENDER_RTF_INT( m_nSpaceAfterLine, sResult, _T("lisa") );
-	RENDER_RTF_INT( m_nSpaceBetween, sResult, _T("sl") );
-	RENDER_RTF_INT( m_nSpaceMultiLine, sResult, _T("slmult") );
+	RENDER_RTF_INT( m_nIndFirstLine		, sResult, _T("fi") );
+	RENDER_RTF_INT( m_nIndLeft			, sResult, _T("li") );
+	RENDER_RTF_INT( m_nIndStart			, sResult, _T("lin") );
+	RENDER_RTF_INT( m_nIndRight			, sResult, _T("ri") );
+	RENDER_RTF_INT( m_nIndEnd			, sResult, _T("rin") );
+	RENDER_RTF_BOOL( m_bIndRightAuto	, sResult, _T("adjustright") );
+	RENDER_RTF_BOOL( m_bIndMirror		, sResult, _T("indmirror") );
+	RENDER_RTF_INT( m_nSpaceBefore		, sResult, _T("sb") );
+	RENDER_RTF_INT( m_nSpaceAfter		, sResult, _T("sa") );
+	RENDER_RTF_INT( m_nSpaceBeforeAuto	, sResult, _T("sbauto") );
+	RENDER_RTF_INT( m_nSpaceAfterAuto	, sResult, _T("saauto") );
+	RENDER_RTF_INT( m_nSpaceBeforeLine	, sResult, _T("lisb") );
+	RENDER_RTF_INT( m_nSpaceAfterLine	, sResult, _T("lisa") );
+	RENDER_RTF_INT( m_nSpaceBetween		, sResult, _T("sl") );
+	RENDER_RTF_INT( m_nSpaceMultiLine	, sResult, _T("slmult") );
 	RENDER_RTF_BOOL( m_bContextualSpacing, sResult, _T("contextualspace") );
+	
 	if( 0 == m_bRtl )
 		sResult.Append(_T("\\ltrpar"));
 	else if( PROP_DEF != m_bRtl )
 		sResult.Append(_T("\\rtlpar"));
+	
 	RENDER_RTF_BOOL( m_bNoWordWrap, sResult, _T("nowwrap") );
+	
 	if( 0 == m_bSnapToGrid )
 		sResult.Append( _T("\\nosnaplinegrid") );
 	else if(  PROP_DEF != m_bSnapToGrid  )
 		sResult.Append( _T("\\nosnaplinegrid0") );
 	switch ( m_eTextBoxWrap )
 	{
-		case tbw_txbxtwno:sResult.Append(_T("\\txbxtwno"));break;
-		case tbw_txbxtwalways:sResult.Append(_T("\\txbxtwalways"));break;
-		case tbw_txbxtwfirstlast:sResult.Append(_T("\\txbxtwfirstlast"));break;
-		case tbw_txbxtwfirst:sResult.Append(_T("\\txbxtwfirst"));break;
-		case tbw_txbxtwlast:sResult.Append(_T("\\txbxtwlast"));break;
+		case tbw_txbxtwno:			sResult.Append(_T("\\txbxtwno"));break;
+		case tbw_txbxtwalways:		sResult.Append(_T("\\txbxtwalways"));break;
+		case tbw_txbxtwfirstlast:	sResult.Append(_T("\\txbxtwfirstlast"));break;
+		case tbw_txbxtwfirst:		sResult.Append(_T("\\txbxtwfirst"));break;
+		case tbw_txbxtwlast:		sResult.Append(_T("\\txbxtwlast"));break;
 	}
 	if( PROP_DEF != m_nListId && PROP_DEF != m_nListLevel )
 	{
@@ -1816,9 +1821,9 @@ CString RtfParagraphProperty::RenderToRtf(RenderParameter oRenderParameter)
 
 	switch ( m_eTextFollow )
 	{
-		case tf_frmtxlrtb: sResult.Append(_T("\\frmtxlrtb"));break;
-		case tf_frmtxtbrl: sResult.Append(_T("\\frmtxtbrl"));break;
-		case tf_frmtxbtlr: sResult.Append(_T("\\frmtxbtlr"));break;
+		case tf_frmtxlrtb:	sResult.Append(_T("\\frmtxlrtb"));break;
+		case tf_frmtxtbrl:	sResult.Append(_T("\\frmtxtbrl"));break;
+		case tf_frmtxbtlr:	sResult.Append(_T("\\frmtxbtlr"));break;
 		case tf_frmtxlrtbv: sResult.Append(_T("\\frmtxlrtbv"));break;
 		case tf_frmtxtbrlv: sResult.Append(_T("\\frmtxtbrlv"));break;
 	}

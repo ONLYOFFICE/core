@@ -7,7 +7,7 @@
 QT       -= core
 QT       -= gui
 
-VERSION = 2.0.2.380
+VERSION = 2.0.2.382
 DEFINES += INTVER=$$VERSION
 
 mac {
@@ -174,8 +174,8 @@ CONFIG(debug, debug|release) {
 linux-g++ | linux-g++-64 | linux-g++-32:contains(QMAKE_HOST.arch, x86_64):{
     message(linuX)
     
-    LIBS += /usr/local/lib/libicuuc.so.55
-    LIBS += /usr/local/lib/libicudata.so.55
+    LIBS += $$PWD/../../../Common/3dParty/icu/linux_64/build/libicuuc.so.55
+    LIBS += $$PWD/../../../Common/3dParty/icu/linux_64/build/libicudata.so.55
     
     DESTINATION_SDK_PATH = $$DESTINATION_SDK_PATH/linux_64
 	DESTINATION_BIN_PATH = $$DESTINATION_BIN_PATH/linux
@@ -239,7 +239,8 @@ LIBS += -L$$DESTINATION_SDK_PATH -lXpsFile
 LIBS += -L$$DESTINATION_SDK_PATH -lHtmlFile
 #UnicodeConverter
 LIBS += -L$$DESTINATION_SDK_PATH -lUnicodeConverter
-
+#Crypto++
+LIBS += -L$$DESTINATION_SDK_PATH -lCryptoPPLib
 
 #####################################################
 # внешнее подключение сторонних библиотек
@@ -253,7 +254,6 @@ linux-g++ | linux-g++-64 | linux-g++-32 {
     LIBS += -lz
     LIBS += -lxml2
     LIBS += -lcurl
-    LIBS += -lcrypto++
 }
 
 mac {

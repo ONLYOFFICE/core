@@ -65,7 +65,7 @@ public:
 
 		bool bSimplePos = m_ooxAnchor->m_oSimplePos.IsInit() ? true : false;
 
-		int nWidth = PROP_DEF;
+		int nWidth	= PROP_DEF;
 		int nHeight = PROP_DEF;
 
 		if( m_ooxAnchor->m_oSimplePos.IsInit())

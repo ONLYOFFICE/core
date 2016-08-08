@@ -2592,6 +2592,8 @@ namespace SimpleTypes
 				if ( sValue.GetLength() <= 0 )
                     return this->m_eValue;
 
+				sValue.MakeLower();
+
 				wchar_t wChar = sValue.GetAt(0);
 				switch ( wChar )
 				{

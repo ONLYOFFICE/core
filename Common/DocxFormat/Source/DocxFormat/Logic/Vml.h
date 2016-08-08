@@ -98,8 +98,8 @@ namespace OOX
 			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>              m_oHrNoShade;
 			SimpleTypes::CDouble                                            m_oHrPct;
 			SimpleTypes::CHrAlign<SimpleTypes::hralignLeft>                 m_oHrAlign;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>              m_oAllowInCell;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>              m_oAllowOverlap;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>				m_oAllowInCell;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>				m_oAllowOverlap;
 			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>              m_oUserDrawn;
 			nullable<SimpleTypes::CColorType<>>                             m_oBorderTopColor;
 			nullable<SimpleTypes::CColorType<>>                             m_oBorderLeftColor;
@@ -430,7 +430,7 @@ namespace OOX
 				ComplexTypes_WriteAttribute2( _T("id=\""), m_sId );
 				sResult += _T("type=\"") + m_oType.ToString() + _T("\" ");
 				
-				if ( SimpleTypes::booleanTrue != m_oOn.GetValue() )
+				if ( (m_oOn.IsInit()) && ( SimpleTypes::booleanTrue != m_oOn->GetValue() ))
 					sResult += _T("on=\"false\" ");
 
 				if (  m_oOpacity.IsInit() )
@@ -445,27 +445,27 @@ namespace OOX
 				ComplexTypes_WriteAttribute ( _T("origin=\""),    m_oOrigin );
 				ComplexTypes_WriteAttribute ( _T("position=\""),  m_oPosition );
 
-				if ( SimpleTypes::imageaspectIgnore != m_oAspect.GetValue() )
-					sResult += _T("aspect=\"") + m_oAspect.ToString() + _T("\" ");
+				if ((m_oAspect.IsInit()) && (SimpleTypes::imageaspectIgnore != m_oAspect->GetValue() ))
+					sResult += _T("aspect=\"") + m_oAspect->ToString() + _T("\" ");
 
 				// TO DO: Сделать запись m_arrColors
 
 				ComplexTypes_WriteAttribute ( _T("angle=\""),         m_oAngle );
 
-				if ( SimpleTypes::booleanTrue != m_oAlignShape.GetValue() )
+				if ( (m_oAlignShape.IsInit()) && (SimpleTypes::booleanTrue != m_oAlignShape->GetValue() ))
 					sResult += _T("alignshape=\"false\" ");
 
-				if ( 0 != m_oFocus.GetValue() )
-					sResult += _T("focus=\"") + m_oFocus.ToString() + _T("\" ");
+				if ( (m_oFocus.IsInit()) && (0 != m_oFocus->GetValue() ))
+					sResult += _T("focus=\"") + m_oFocus->ToString() + _T("\" ");
 
-				if ( 0 != m_oFocusPosition.GetX() || 0 != m_oFocusPosition.GetY() )
-					sResult += _T("focusposition=\"") + m_oFocusPosition.ToString() + _T("\" ");
+				if ( (m_oFocusPosition.IsInit()) && (0 != m_oFocusPosition->GetX() || 0 != m_oFocusPosition->GetY() ))
+					sResult += _T("focusposition=\"") + m_oFocusPosition->ToString() + _T("\" ");
 
-				if ( 0 != m_oFocusSize.GetX() || 0 != m_oFocusSize.GetY() )
-					sResult += _T("focussize=\"") + m_oFocusSize.ToString() + _T("\" ");
+				if ( ( m_oFocusSize.IsInit() ) && (0 != m_oFocusSize->GetX() || 0 != m_oFocusSize->GetY() ))
+					sResult += _T("focussize=\"") + m_oFocusSize->ToString() + _T("\" ");
 
-				if ( SimpleTypes::fillmethodSigma != m_oMethod.GetValue() )
-					sResult += _T("method=\"") + m_oMethod.ToString() + _T("\" ");
+				if ( (m_oMethod.IsInit() ) && (SimpleTypes::fillmethodSigma != m_oMethod->GetValue() ))
+					sResult += _T("method=\"") + m_oMethod->ToString() + _T("\" ");
 
 				ComplexTypes_WriteAttribute ( _T("o:detectmouseclick=\""), m_oDetectMouseClick );
 				ComplexTypes_WriteAttribute2( _T("o:title=\""),            m_sTitle );
@@ -473,10 +473,10 @@ namespace OOX
 				if ( m_oOpacity2.IsInit() )
 					sResult += _T("o:opacity2=\"") + m_oOpacity2->ToString() + _T("\" ");
 
-				if ( SimpleTypes::booleanFalse != m_oRecolor.GetValue() )
+				if ( (m_oRecolor.IsInit()) && (SimpleTypes::booleanFalse != m_oRecolor->GetValue() ))
 					sResult += _T("recolor=\"true\" ");
 
-				if ( SimpleTypes::booleanFalse != m_oRotate.GetValue() )
+				if (( m_oRotate.IsInit()) && (SimpleTypes::booleanFalse != m_oRotate->GetValue() ))
 					sResult += _T("rotate=\"true\" ");
 
 				ComplexTypes_WriteAttribute ( _T("r:id=\""),    m_rId );
@@ -501,9 +501,9 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				// Выставляем значения по умолчанию
-				m_oFocus.SetValue( 0 );
-				m_oFocusPosition.SetValue( 0.0, 0.0 );
-				m_oFocusSize.SetValue( 0.0, 0.0 );
+				//m_oFocus.SetValue( 0 );
+				//m_oFocusPosition.SetValue( 0.0, 0.0 );
+				//m_oFocusSize.SetValue( 0.0, 0.0 );
 
 				CString sColors;
 				// Читаем атрибуты
@@ -596,36 +596,36 @@ namespace OOX
 			};
 
 			// Attributes
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>         m_oAlignShape;
-			nullable<CString>                                         m_sAltHref;
-			nullable<SimpleTypes::CDecimalNumber<>>                   m_oAngle;
-			SimpleTypes::CImageAspect<SimpleTypes::imageaspectIgnore> m_oAspect;
-			nullable<SimpleTypes::CColorType<>>						  m_oColor;
-			nullable<SimpleTypes::CColorType<>>						  m_oColor2;
-			std::vector<TIntermediateColor*>                          m_arrColors;
-			nullable<SimpleTypes::CTrueFalse<>>                       m_oDetectMouseClick;
-			SimpleTypes::CFixedPercentage                             m_oFocus;
-			SimpleTypes::Vml::CVml_Vector2D_Percentage                m_oFocusPosition;
-			SimpleTypes::Vml::CVml_Vector2D_Percentage                m_oFocusSize;
-			nullable<CString>                                         m_sHref;
-			nullable<SimpleTypes::CRelationshipId>                    m_rId;
-			nullable<CString>                                         m_sId;
-			SimpleTypes::CFillMethod<SimpleTypes::fillmethodSigma>    m_oMethod;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>         m_oOn;
-			nullable<SimpleTypes::Vml::CVml_1_65536>                  m_oOpacity;
-			nullable<SimpleTypes::Vml::CVml_1_65536>                  m_oOpacity2;
-			nullable<SimpleTypes::Vml::CVml_Vector2D_1_65536>         m_oOrigin;
-			nullable<SimpleTypes::Vml::CVml_Vector2D_1_65536>         m_oPosition;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>        m_oRecolor;
-			nullable<SimpleTypes::CRelationshipId>                    m_oRelId;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>        m_oRotate;
-			nullable<SimpleTypes::Vml::CVml_Vector2D_Units>           m_oSize;
-			nullable<CString>                                         m_sSrc;
-			nullable<CString>                                         m_sTitle;
-			SimpleTypes::CFillType<SimpleTypes::filltypeSolid, 0>     m_oType;
+			nullable<SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>>			m_oAlignShape;
+			nullable<CString>													m_sAltHref;
+			nullable<SimpleTypes::CDecimalNumber<>>								m_oAngle;
+			nullable<SimpleTypes::CImageAspect<SimpleTypes::imageaspectIgnore>> m_oAspect;
+			nullable<SimpleTypes::CColorType<>>									m_oColor;
+			nullable<SimpleTypes::CColorType<>>									m_oColor2;
+			std::vector<TIntermediateColor*>									m_arrColors;
+			nullable<SimpleTypes::CTrueFalse<>>									m_oDetectMouseClick;
+			nullable<SimpleTypes::CFixedPercentage >							m_oFocus;
+			nullable<SimpleTypes::Vml::CVml_Vector2D_Percentage>				m_oFocusPosition;
+			nullable<SimpleTypes::Vml::CVml_Vector2D_Percentage>				m_oFocusSize;
+			nullable<CString>													m_sHref;
+			nullable<SimpleTypes::CRelationshipId>								m_rId;
+			nullable<CString>													m_sId;
+			nullable<SimpleTypes::CFillMethod<SimpleTypes::fillmethodSigma>>	m_oMethod;
+			nullable<SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>>			m_oOn;
+			nullable<SimpleTypes::Vml::CVml_1_65536>							m_oOpacity;
+			nullable<SimpleTypes::Vml::CVml_1_65536>							m_oOpacity2;
+			nullable<SimpleTypes::Vml::CVml_Vector2D_1_65536>					m_oOrigin;
+			nullable<SimpleTypes::Vml::CVml_Vector2D_1_65536>					m_oPosition;
+			nullable<SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>>		m_oRecolor;
+			nullable<SimpleTypes::CRelationshipId>								m_oRelId;
+			nullable<SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>>		m_oRotate;
+			nullable<SimpleTypes::Vml::CVml_Vector2D_Units>						m_oSize;
+			nullable<CString>													m_sSrc;
+			nullable<CString>													m_sTitle;
+			SimpleTypes::CFillType<SimpleTypes::filltypeSolid, 0>				m_oType;
 
 			// Childs
-			nullable<OOX::VmlOffice::CFill>                           m_oFill;
+			nullable<OOX::VmlOffice::CFill>										m_oFill;
 
 		};
 		//--------------------------------------------------------------------------------
@@ -2623,6 +2623,8 @@ namespace OOX
 			{
 				ReadAttributes( oReader );
 
+				m_sStringOriginal = oReader.GetText2();
+
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
@@ -2716,6 +2718,8 @@ namespace OOX
 			nullable<SimpleTypes::Vml::CCssStyle>                 m_oStyle;
 			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>    m_oTrim;
 			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>    m_oXScale;
+			
+			nullable<CString>                                     m_sStringOriginal;
 		};
 		//--------------------------------------------------------------------------------
 		// CGroup 14.1.2.7 (Part4)

@@ -40,11 +40,13 @@
 class OOXTableRowReader
 {
 private:
-	OOX::Logic::CTr *m_ooxRowTable;
+	OOX::Logic::CTr				*m_ooxRowTable;
+	OOX::Logic::CTableProperty	*m_ooxTableProps;
 public: 
-	OOXTableRowReader(OOX::Logic::CTr *ooxRowTable)
+	OOXTableRowReader(OOX::Logic::CTr *ooxRowTable, OOX::Logic::CTableProperty* ooxTableProps)
 	{
-		m_ooxRowTable = ooxRowTable;
+		m_ooxRowTable	= ooxRowTable;
+		m_ooxTableProps	= ooxTableProps;
 	}
 	
 	bool Parse( ReaderParameter oParam ,RtfTableRow& oOutputRow, int nCurRow, int nRowCount)
@@ -73,7 +75,7 @@ public:
             if (nCurCell < m_ooxRowTable->m_arrItems.size())
                 ooxCell = dynamic_cast<OOX::Logic::CTc *>(m_ooxRowTable->m_arrItems[i]);
 
-			OOXTableCellReader oCellReader(ooxCell);
+			OOXTableCellReader oCellReader(ooxCell, m_ooxTableProps );
 			oCellReader.Parse( oParam, *oNewCell, oConditionStyle, nCurCell++, nCurRow, nCellCount, nRowCount );
 			//добавляем cell
 			oOutputRow.AddItem(oNewCell);

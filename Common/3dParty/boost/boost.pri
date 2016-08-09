@@ -23,3 +23,18 @@ core_release {
 }
 
 }
+
+core_boost_regex {
+
+core_windows {
+core_debug {
+    LIBS += -L$$CORE_BOOST_LIBS -llibboost_regex-vc120-mt-gd-1_58
+}
+core_release {
+    LIBS += -L$$CORE_BOOST_LIBS -llibboost_regex-vc120-mt-1_58
+}
+} else {
+    LIBS += -L$$CORE_BOOST_LIBS -lboost_regex
+}
+
+}

@@ -25,15 +25,15 @@ md  %folder%\static_fpic
 md  %folder%\shared
 
 .\b2.exe --clean
-.\bjam.exe link=static --with-filesystem --with-system --with-date_time
+.\bjam.exe link=static --with-filesystem --with-system --with-date_time --with-regex
 XCOPY stage\lib\* "%folder%\static\"
 
 .\b2.exe --clean
-.\bjam.exe link=static cxxflags=-fPIC --with-filesystem --with-system --with-date_time
+.\bjam.exe link=static cxxflags=-fPIC --with-filesystem --with-system --with-date_time --with-regex
 XCOPY stage\lib\* "%folder%\static_fpic\"
 
 .\b2.exe --clean
-.\bjam.exe link=shared --with-filesystem --with-system --with-date_time
+.\bjam.exe link=shared --with-filesystem --with-system --with-date_time --with-regex
 XCOPY stage\lib\* "%folder%\shared\"
 
 SET folder=build/win_64
@@ -53,13 +53,13 @@ md  %folder%\static_fpic
 md  %folder%\shared
 
 .\b2.exe --clean
-.\bjam.exe link=static --with-filesystem --with-system --with-date_time address-model=64
+.\bjam.exe link=static --with-filesystem --with-system --with-date_time --with-regex address-model=64
 XCOPY stage\lib\* "%folder%\static\"
 
 .\b2.exe --clean
-.\bjam.exe link=static cxxflags=-fPIC --with-filesystem --with-system --with-date_time address-model=64
+.\bjam.exe link=static cxxflags=-fPIC --with-filesystem --with-system --with-date_time --with-regex address-model=64
 XCOPY stage\lib\* "%folder%\static_fpic\"
 
 .\b2.exe --clean
-.\bjam.exe link=shared --with-filesystem --with-system --with-date_time address-model=64
+.\bjam.exe link=shared --with-filesystem --with-system --with-date_time --with-regex address-model=64
 XCOPY stage\lib\* "%folder%\shared\"

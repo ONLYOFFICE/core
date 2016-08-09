@@ -10,85 +10,25 @@ TARGET = RtfFormatLib
 TEMPLATE = lib
 CONFIG += staticlib
 
-CONFIG += c++11
+CORE_ROOT_DIR = $$PWD/../../..
+PWD_ROOT_DIR = $$PWD
 
-win32 {
-    QMAKE_CXXFLAGS_RELEASE -= -Zc:strictStrings
-    CONFIG(debug, debug|release) {
-        QMAKE_CXXFLAGS += /bigobj
-    }
-} else {
-    QMAKE_CXXFLAGS += -std=c++11 -Wall -Wno-ignored-qualifiers
-}
-############### destination path ###############
-DESTINATION_SDK_PATH = $$PWD/../../../build/lib
+CONFIG += core_x2t
+include(../../../Common/base.pri)
 
-# WINDOWS
-win32:contains(QMAKE_TARGET.arch, x86_64):{
-CONFIG(debug, debug|release) {
-    DESTDIR = $$DESTINATION_SDK_PATH/win_64/DEBUG
-} else {
-    DESTDIR = $$DESTINATION_SDK_PATH/win_64
-}
-}
-win32:!contains(QMAKE_TARGET.arch, x86_64):{
-CONFIG(debug, debug|release) {
-    DESTDIR = $$DESTINATION_SDK_PATH/win_32/DEBUG
-} else {
-    DESTDIR = $$DESTINATION_SDK_PATH/win_32
-}
-}
+#BOOST
+include($$PWD/../../../Common/3dParty/boost/boost.pri)
 
-linux-g++ | linux-g++-64 | linux-g++-32:contains(QMAKE_HOST.arch, x86_64):{
-    DESTDIR = $$DESTINATION_SDK_PATH/linux_64
-}
-linux-g++ | linux-g++-64 | linux-g++-32:!contains(QMAKE_HOST.arch, x86_64):{
-    DESTDIR = $$DESTINATION_SDK_PATH/linux_32
-}
+DEFINES += UNICODE _UNICODE _USE_LIBXML2_READER_ _USE_XMLLITE_READER_ USE_LITE_READER LIBXML_READER_ENABLED
+INCLUDEPATH += ../../../DesktopEditor/xml/libxml2/include
 
-mac {
-    DESTDIR = $$DESTINATION_SDK_PATH/mac_64
-}
-############### destination path ###############
-
-DEFINES += UNICODE _UNICODE _USE_LIBXML2_READER_ _USE_XMLLITE_READER_ USE_LITE_READER
-
-#################### WINDOWS #####################
-win32 {
+core_mac {
     DEFINES += \
-        LIBXML_READER_ENABLED
-
-INCLUDEPATH += ../../../Common/DocxFormat/Source/XML/libxml2/XML/include
-INCLUDEPATH += C:/boost_1_58_0
-}
-#################### WINDOWS #####################
-
-#################### LINUX ########################
-linux-g++ | linux-g++-64 | linux-g++-32 {
-    DEFINES += \
-        LINUX \
-        _LINUX \
-        _LINUX_QT
-
-INCLUDEPATH += /usr/include/libxml2
-}
-
-mac {
-    DEFINES += \
-        LINUX \
-        _LINUX \
-        _LINUX_QT \
-        _MAC \
-        MAC \
-        LIBXML_READER_ENABLED \
         _ASC_USE_UNICODE_CONVERTER_ \
         UNICODECONVERTER_USE_DYNAMIC_LIBRARY
 
-INCLUDEPATH += ../../../DesktopEditor/xml/libxml2/include
-INCLUDEPATH += ../../../Common/boost_1_58_0
 LIBS += $$DESTDIR -lUnicodeConverter
 }
-#################### LINUX ########################
 
 build_fast {
 SOURCES += \
@@ -209,10 +149,6 @@ HEADERS += \
     ../source/Writer/OOXThemeWriter.h \
     ../source/Writer/OOXWriter.h \
     ../source/Ole1FormatReader.h
-unix {
-    target.path = /usr/lib
-    INSTALLS += target
-}
 
 SOURCES += \
     ../source/RtfMath.cpp \

@@ -24,7 +24,7 @@ outputdir="$SCRIPTPATH/boost_1_58_0/build/$platform$arch"
 echo $outputdir
 
 cd "$SCRIPTPATH/boost_1_58_0"
-./bootstrap.sh --with-libraries=filesystem,system,date_time
+./bootstrap.sh --with-libraries=filesystem,system,date_time,regex
 
 folder="build/$platform$arch"
 if [ -d $folder ]; then

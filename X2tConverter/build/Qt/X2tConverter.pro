@@ -7,7 +7,7 @@
 QT       -= core
 QT       -= gui
 
-VERSION = 2.0.2.382
+VERSION = 2.0.2.383
 DEFINES += INTVER=$$VERSION
 
 TEMPLATE = app
@@ -29,10 +29,6 @@ core_win_32 {
 core_linux_32 {
     TARGET = x2t32
 }
-
-#BOOST
-CONFIG += core_boost_regex
-include($$PWD/../../../Common/3dParty/boost/boost.pri)
 
 core_windows {
     QMAKE_LFLAGS += /INCREMENTAL:NO
@@ -167,6 +163,11 @@ LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lCryptoPPLib
 
 #####################################################
 # внешнее подключение сторонних библиотек
+
+#BOOST
+CONFIG += core_boost_regex
+include($$PWD/../../../Common/3dParty/boost/boost.pri)
+
 core_windows {
     LIBS += -lurlmon
     LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -llibxml

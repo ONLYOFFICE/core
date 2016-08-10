@@ -3228,6 +3228,8 @@ namespace SimpleTypes
 			cssptVisibility                     = 1020,
 			cssptWidth                          = 1021,
 			cssptZIndex                         = 1022,
+			csspctMsoWidthPercent				= 1023,
+			csspctMsoHeightPercent				= 1024,
 
 			//  Для элемента Textbox 14.1.2.22
 			cssptDirection                      = 1100,

@@ -77,6 +77,7 @@ namespace PdfReader
 				     
 	private:
         CPdfReader_Private* m_pInternal;
+        EError              m_eError;
 	};
 }
 

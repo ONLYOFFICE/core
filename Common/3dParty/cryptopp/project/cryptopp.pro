@@ -11,6 +11,10 @@ PWD_ROOT_DIR = $$PWD
 
 include(../../../../Common/base.pri)
 
+core_mac {
+    DEFINES -= MAC
+}
+
 core_windows {
     DEFINES -= UNICODE
 }

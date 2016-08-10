@@ -302,7 +302,8 @@ public:
 		if( m_ooxAnchor->m_oGraphic.IsInit() )
 		{
 			OOXPictureGraphicReader oGraphicReader(m_ooxAnchor->m_oGraphic.GetPointer());
-			oGraphicReader.Parse( oParam, *oOutput.m_oPicture );
+
+			oGraphicReader.Parse( oParam, oOutput );
 		}
 		//изменяем scale в соответсявии с выходным размером
 		if( PROP_DEF != nWidth && PROP_DEF != oOutput.m_oPicture->m_nWidthGoal )

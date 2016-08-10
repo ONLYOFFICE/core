@@ -51,54 +51,7 @@ public:
 	{
 		m_ooxGraphic = ooxGraphic;
 	}
-	bool Parse( ReaderParameter oParam , RtfPicture& oOutput)
-	{
-		if (m_ooxGraphic == NULL) return false;
-		
-		switch(m_ooxGraphic->m_eGraphicType)
-		{
-			case OOX::Drawing::graphictypePicture:
-				//собственно тока этот объект пока и есть (
-				break;
-			case OOX::Drawing::graphictypeLockedCanvas:
-			case OOX::Drawing::graphictypeChart:
-			case OOX::Drawing::graphictypeDiagram:
-			case OOX::Drawing::graphictypeShape:
-			case OOX::Drawing::graphictypeGroupShape:
-				///todooo воткнуть конвертацию pptx->ppt->vml !!!
-				break;
-		}
-
-		for (long i=0; i < m_ooxGraphic->m_arrItems.size(); i++)
-		{
-			if (m_ooxGraphic->m_arrItems[i] == NULL) continue;
-
-			if (m_ooxGraphic->m_arrItems[i]->getType() == OOX::et_pic_pic)
-			{
-				OOX::Drawing::CPicture *picture = dynamic_cast<OOX::Drawing::CPicture *>(m_ooxGraphic->m_arrItems[i]);
-				if ( (picture) && (picture->m_oBlipFill.m_oBlip.IsInit()))
-				{
-					CString sImageId = picture->m_oBlipFill.m_oBlip->m_oEmbed.GetValue();
-
-					if (oParam.oReader->m_currentContainer)
-					{
-						smart_ptr<OOX::File> oFile = oParam.oReader->m_currentContainer->Find(sImageId);
-						
-						if ( oFile.IsInit() && (OOX::FileTypes::Image == oFile->type()))
-						{
-							OOX::Image* pImage = (OOX::Image*)oFile.operator->();
-
-							CString sImagePath = pImage->filename().GetPath();
-							WriteDataToPicture( sImagePath, oOutput, _T("") );
-						}
-					}
-				}
-			}
-		}
-		return true;
-
-	}
-
+	bool Parse( ReaderParameter oParam , RtfShape& oOutput);
 	static bool WriteDataToPicture( CString sPath, RtfPicture& oOutput, CString sTempPath )
 	{
 		OOX::CPath ooxPath = sPath;	//для target 

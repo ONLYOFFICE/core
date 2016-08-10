@@ -108,11 +108,16 @@ public:
 		int m_bHidden;					//Do not display or print (only set through Visual Basic for Applications).	Boolean	FALSE
 
 //Text box
+		int m_nAnchorText;
 		int m_nTexpLeft;				//dxTextLeft	Left internal margin of the text box. EMU	91,440
 		int m_nTexpTop;					//
 		int m_nTexpRight;				//
 		int m_nTexpBottom;				//
-
+		int m_bFitShapeToText;
+		int m_bFitTextToShape;
+		int m_nCcol;					//columns
+		int m_nTxdir;					//bidi
+		int m_nWrapText;
 //Geometry
 		int m_nAdjustValue;				//adjustValue	First adjust value from an adjust handle. The interpretation varies with the shape type. Adjust values alter the geometry of the shape in smart ways. 	Integer	0
 		int m_nAdjustValue2;

@@ -365,6 +365,10 @@
 						Name="Drawing"
 						>
 						<File
+							RelativePath="..\source\Reader\OOXDrawingGraphicReader.cpp"
+							>
+						</File>
+						<File
 							RelativePath="..\source\Reader\OOXPictureAnchorReader.h"
 							>
 						</File>

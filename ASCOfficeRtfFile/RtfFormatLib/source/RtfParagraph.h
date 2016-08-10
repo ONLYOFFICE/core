@@ -70,6 +70,7 @@ class RtfParagraph : public ITextItem, public ItemContainer< IDocumentElementPtr
 public: 
 	RtfParagraphProperty m_oProperty;
 	RtfOldListPtr m_oOldList;
+	
 	int GetType( )
 	{
 		return TYPE_RTF_PARAGRAPH;
@@ -102,20 +103,27 @@ public:
 		if( RENDER_TO_RTF_PARAM_CHAR == oRenderParameter.nType )
 		{
 			for( int i = 0; i < (int)m_aArray.size(); i++ )
-				sResult.Append( m_aArray[i]->RenderToRtf( oRenderParameter ) );
+			{
+				sResult += m_aArray[i]->RenderToRtf( oRenderParameter );
+			}
 		}
 		else
 		{
-			sResult.Append(_T("\\pard\\plain"));
-			sResult.Append( m_oProperty.RenderToRtf( oRenderParameter ) );
+			sResult += _T("\\pard\\plain");
+			sResult += m_oProperty.RenderToRtf( oRenderParameter ) ;
+			
 			if( NULL != m_oOldList )
-				sResult.Append( m_oOldList->RenderToRtf( oRenderParameter ) );
+				sResult += m_oOldList->RenderToRtf( oRenderParameter ) ;
+
 			for( int i = 0; i < (int)m_aArray.size(); i++ )
-				sResult.Append( m_aArray[i]->RenderToRtf( oRenderParameter ) );
-			sResult.Append( m_oProperty.m_oCharProperty.RenderToRtf( oRenderParameter ) );
+			{
+				sResult += m_aArray[i]->RenderToRtf( oRenderParameter );
+			}
+
+			sResult += m_oProperty.m_oCharProperty.RenderToRtf( oRenderParameter );
 
 			//if( RENDER_TO_RTF_PARAM_NO_PAR != oRenderParameter.nValue )
-			//	sResult.Append(_T("\\par"));
+			//	sResult += T("\\par");
 		}
 		return sResult;
 	}
@@ -126,25 +134,31 @@ public:
 		if( RENDER_TO_OOX_PARAM_PLAIN == oRenderParameter.nType )
 		{
 			for( int i = 0; i < (int)m_aArray.size(); i++ )
-				sResult.Append( m_aArray[i]->RenderToOOX(oRenderParameter) );
+			{
+				sResult += m_aArray[i]->RenderToOOX(oRenderParameter);
+			}
 		}
 		else if( RENDER_TO_OOX_PARAM_RUN == oRenderParameter.nType )
 		{
 			for( int i = 0; i < (int)m_aArray.size(); i++ )
-				sResult.Append( m_aArray[i]->RenderToOOX(oRenderParameter) );
+			{
+				sResult += m_aArray[i]->RenderToOOX(oRenderParameter);
+			}
 		}
 		else if( RENDER_TO_OOX_PARAM_MATH == oRenderParameter.nType )
 		{
 			if (m_aArray.size() < 1)
 			{
-				sResult.Append( _T("<w:rPr>") );
-				sResult.Append( m_oProperty.m_oCharProperty.RenderToOOX(oRenderParameter) );
-				sResult.Append( _T("</w:rPr>") );
+				sResult += _T("<w:rPr>");
+				sResult += m_oProperty.m_oCharProperty.RenderToOOX(oRenderParameter);
+				sResult += _T("</w:rPr>");
 			}
 			else
 			{
 				for( int i = 0; i < (int)m_aArray.size(); i++ )
-					sResult.Append( m_aArray[i]->RenderToOOX(oRenderParameter) );
+				{
+					sResult += m_aArray[i]->RenderToOOX(oRenderParameter);
+				}
 			}
 		}
 		else
@@ -153,17 +167,17 @@ public:
 			if( NULL != m_oOldList )
 				bCanConvertToNumbering = m_oOldList->CanConvertToNumbering();
 
-			sResult.Append( _T("<w:p>") );
-			sResult.Append( _T("<w:pPr>") );
-			sResult.Append( m_oProperty.RenderToOOX(oRenderParameter) );
+			sResult += _T("<w:p>");
+			sResult += _T("<w:pPr>");
+			sResult += m_oProperty.RenderToOOX(oRenderParameter);
 
 			if( NULL != m_oOldList )
 			{
 				//для OldList
 				if( true == bCanConvertToNumbering )
-					sResult.Append(  m_oOldList->RenderToOOX( oRenderParameter ) );
+					sResult += m_oOldList->RenderToOOX( oRenderParameter );
 			}
-			sResult.Append( _T("</w:pPr>") );
+			sResult += _T("</w:pPr>");
 
 			if( NULL != m_oOldList )
 			{
@@ -179,22 +193,25 @@ public:
 
 					for( int i = 0; i < m_oOldList->m_oText->GetCount(); i++ )
 					{
-						sResult.Append( _T("<w:r>") );
-						sResult.Append( _T("<w:rPr>") );
-						sResult.Append( oCharProp.RenderToOOX(oRenderParameter) );
-						sResult.Append( _T("</w:rPr>") );
+						sResult += _T("<w:r>");
+						sResult += _T("<w:rPr>");
+						sResult += oCharProp.RenderToOOX(oRenderParameter);
+						sResult += _T("</w:rPr>");
 
-						sResult.Append( m_oOldList->m_oText->m_aArray[ i ]->RenderToOOX(oNewParam) );
-						sResult.Append( _T("</w:r>") );
+						sResult += m_oOldList->m_oText->m_aArray[ i ]->RenderToOOX(oNewParam);
+						sResult += _T("</w:r>");
 					}
 				}
 			}
 
 			RenderParameter oNewParam = oRenderParameter;
 			oNewParam.nType = RENDER_TO_OOX_PARAM_RUN;
+			
 			for( int i = 0; i < (int)m_aArray.size(); i++ )
-				sResult.Append( m_aArray[i]->RenderToOOX(oNewParam) );
-			sResult.Append( _T("</w:p>") );
+			{
+				sResult += m_aArray[i]->RenderToOOX(oNewParam);
+			}
+			sResult += _T("</w:p>");
 		}
 		return sResult;
 	}

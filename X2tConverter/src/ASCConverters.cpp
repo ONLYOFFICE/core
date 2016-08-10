@@ -902,8 +902,20 @@ namespace NExtractTools
    {
         COfficeDocFile docFile;
 		docFile.m_sTempFolder = sTemp;
-       
-		return S_OK == docFile.LoadFromFile( sFrom, sTo, params.m_sPassword ? *params.m_sPassword : L"", NULL) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+		long hRes = docFile.LoadFromFile( sFrom, sTo, params.m_sPassword ? *params.m_sPassword : L"", NULL);
+		if (AVS_ERROR_DRM == hRes)
+		{
+			if(!params.getDontSaveAdditional())
+			{
+				copyOrigin(sFrom, *params.m_sFileTo);
+			}
+			return AVS_FILEUTILS_ERROR_CONVERT_DRM;
+		}
+		else if (AVS_ERROR_PASSWORD == hRes)
+		{
+			return AVS_FILEUTILS_ERROR_CONVERT_PASSWORD;
+		}
+		return 0 == hRes ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
    }
 
    // doc -> doct
@@ -1305,7 +1317,40 @@ namespace NExtractTools
 		}
 		return AVS_FILEUTILS_ERROR_CONVERT;
 	}
+	int fromMscrypt	 (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, const std::wstring &sFontPath, InputParams& params)
+	{
+		std::wstring sResultDecryptFile = sTemp	+ FILE_SEPARATOR_STR + L"uncrypt_file.oox";
+		int nRes = mscrypt2oox(sFrom, sResultDecryptFile, sTemp, sFontPath, params);
+		if (SUCCEEDED_X2T(nRes))
+		{
+			COfficeFileFormatChecker OfficeFileFormatChecker;
 
+			if (OfficeFileFormatChecker.isOfficeFile(sResultDecryptFile))
+			{
+				switch (OfficeFileFormatChecker.nFileType)
+				{
+					case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX:
+					{
+						return fromDocument(sResultDecryptFile, AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX, sTemp, params.getXmlOptions(), params);
+					}break;
+					case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX:
+					{
+						return fromSpreadsheet(sResultDecryptFile, AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX, sTemp, params.getXmlOptions(), params);
+					}break;
+					case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX:
+					case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSX:
+					{
+						return fromPresentation(sResultDecryptFile, AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX, sTemp, params.getXmlOptions(), params);
+					}break;
+				}
+			}
+		}
+		else if (AVS_FILEUTILS_ERROR_CONVERT_DRM == nRes && !params.getDontSaveAdditional())
+		{
+			copyOrigin(sFrom, sTo);
+		}
+		return nRes;
+	}
    //html
    int html2doct_dir (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const InputParams& params)
    {
@@ -1590,8 +1635,25 @@ namespace NExtractTools
             nRes = AVS_FILEUTILS_ERROR_CONVERT;
        return nRes;
    }
-   int fromDocument(const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sFontPath, const std::wstring &sXmlOptions, const std::wstring &sThemeDir, bool bFromChanges, bool bPaid, const InputParams& params)
+   int fromDocument(const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTemp, const std::wstring &sXmlOptions, const InputParams& params)
    {
+		std::wstring sTo	= *params.m_sFileTo;
+		int nFormatTo = AVS_OFFICESTUDIO_FILE_UNKNOWN;
+		if(NULL != params.m_nFormatTo)
+			nFormatTo = *params.m_nFormatTo;
+		std::wstring sFontPath;
+		if(NULL != params.m_sFontDir)
+			sFontPath = *params.m_sFontDir;
+		std::wstring sThemeDir;
+		if(NULL != params.m_sThemeDir)
+			sThemeDir = *params.m_sThemeDir;
+		bool bFromChanges = false;
+		if(NULL != params.m_bFromChanges)
+			bFromChanges = *params.m_bFromChanges;
+		bool bPaid = true;
+		if(NULL != params.m_bPaid)
+			bPaid = *params.m_bPaid;
+
        int nRes = 0;
        if(AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML == nFormatFrom || AVS_OFFICESTUDIO_FILE_DOCUMENT_MHT == nFormatFrom || AVS_OFFICESTUDIO_FILE_DOCUMENT_EPUB == nFormatFrom)
        {
@@ -1732,8 +1794,25 @@ namespace NExtractTools
            nRes = AVS_FILEUTILS_ERROR_CONVERT;
        return nRes;
    }
-   int fromSpreadsheet(const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sFontPath, const std::wstring &sXmlOptions, const std::wstring &sThemeDir, bool bFromChanges, bool bPaid, const InputParams& params)
+   int fromSpreadsheet(const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTemp, const std::wstring &sXmlOptions, const InputParams& params)
    {
+		std::wstring sTo	= *params.m_sFileTo;
+		int nFormatTo = AVS_OFFICESTUDIO_FILE_UNKNOWN;
+		if(NULL != params.m_nFormatTo)
+			nFormatTo = *params.m_nFormatTo;
+		std::wstring sFontPath;
+		if(NULL != params.m_sFontDir)
+			sFontPath = *params.m_sFontDir;
+		std::wstring sThemeDir;
+		if(NULL != params.m_sThemeDir)
+			sThemeDir = *params.m_sThemeDir;
+		bool bFromChanges = false;
+		if(NULL != params.m_bFromChanges)
+			bFromChanges = *params.m_bFromChanges;
+		bool bPaid = true;
+		if(NULL != params.m_bPaid)
+			bPaid = *params.m_bPaid;
+
        int nRes = 0;
        if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV == nFormatFrom)
        {
@@ -1838,8 +1917,25 @@ namespace NExtractTools
            nRes = AVS_FILEUTILS_ERROR_CONVERT;
        return nRes;
    }
-   int fromPresentation(const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sFontPath, const std::wstring &sXmlOptions, const std::wstring &sThemeDir, bool bFromChanges, bool bPaid, const InputParams& params)
+   int fromPresentation(const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTemp, const std::wstring &sXmlOptions, const InputParams& params)
    {
+		std::wstring sTo	= *params.m_sFileTo;
+		int nFormatTo = AVS_OFFICESTUDIO_FILE_UNKNOWN;
+		if(NULL != params.m_nFormatTo)
+			nFormatTo = *params.m_nFormatTo;
+		std::wstring sFontPath;
+		if(NULL != params.m_sFontDir)
+			sFontPath = *params.m_sFontDir;
+		std::wstring sThemeDir;
+		if(NULL != params.m_sThemeDir)
+			sThemeDir = *params.m_sThemeDir;
+		bool bFromChanges = false;
+		if(NULL != params.m_bFromChanges)
+			bFromChanges = *params.m_bFromChanges;
+		bool bPaid = true;
+		if(NULL != params.m_bPaid)
+			bPaid = *params.m_bPaid;
+
        int nRes = 0;
        std::wstring sPptxDir = sTemp + FILE_SEPARATOR_STR + _T("pptx_unpacked");
        FileSystem::Directory::CreateDirectory(sPptxDir);

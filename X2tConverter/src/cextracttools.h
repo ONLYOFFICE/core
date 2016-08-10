@@ -132,7 +132,8 @@ namespace NExtractTools
 
         TCD_XML2DOCX,
         TCD_DOCX2XML,
-//							 
+//
+		TCD_MSCRYPT2,
 		TCD_MSCRYPT2DOCT,
 		TCD_MSCRYPT2XLST,
 		TCD_MSCRYPT2PPTT,
@@ -466,6 +467,8 @@ namespace NExtractTools
                     eRes = TCD_CROSSPLATFORM2;
                 else if(AVS_OFFICESTUDIO_FILE_CANVAS_PDF == nFormatFrom)
                     eRes = TCD_CANVAS_PDF2;
+				else if(AVS_OFFICESTUDIO_FILE_OTHER_MS_OFFCRYPTO == nFormatFrom)
+					eRes = TCD_MSCRYPT2;
                 else if(AVS_OFFICESTUDIO_FILE_OTHER_ZIP			== nFormatFrom	&& AVS_OFFICESTUDIO_FILE_UNKNOWN			== nFormatTo)
                     eRes = TCD_UNZIPDIR;
                 else if(AVS_OFFICESTUDIO_FILE_UNKNOWN			== nFormatFrom	&& AVS_OFFICESTUDIO_FILE_OTHER_ZIP			== nFormatTo)
@@ -483,9 +486,7 @@ namespace NExtractTools
         {
             TConversionDirection eRes = TCD_AUTO;
             int nFormatFrom	= *m_nFormatFrom;
-            if(AVS_OFFICESTUDIO_FILE_OTHER_MS_OFFCRYPTO == nFormatFrom)
-                eRes = TCD_ERROR;
-            else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT == nFormatFrom && NULL == m_nCsvTxtEncoding)
+			if(AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT == nFormatFrom && NULL == m_nCsvTxtEncoding)
             {
                 int nCodePage = getEncodingByContent();
                 if(nCodePage < 0)

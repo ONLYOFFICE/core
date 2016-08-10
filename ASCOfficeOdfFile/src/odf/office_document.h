@@ -61,7 +61,7 @@ private:
     virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_text(const std::wstring & Text);
 
-private:
+public:
     std::wstring				office_mimetype_;
     std::wstring				office_version_;
     

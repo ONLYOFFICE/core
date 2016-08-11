@@ -53,11 +53,14 @@ public:
 public:
 	CompoundFile(const std::wstring & file_path, const ReadWriteMode mode);
 	~CompoundFile();
+
+	bool Open(const std::wstring & file_path, const ReadWriteMode mode);
 	
 	bool isError();
 
 	CFStreamPtr getWorkbookStream();
 	CFStreamPtr createWorkbookStream();
+	void		closeWorkbookStream();
 
 	CFStreamPtr getSummaryInformationStream();
 	CFStreamPtr createSummaryInformationStream();

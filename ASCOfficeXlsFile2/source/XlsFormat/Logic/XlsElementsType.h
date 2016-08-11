@@ -522,6 +522,8 @@ enum ElementType
 	typeCFExTemplateParams,
 	typeCFMStateItem,
 	typeCFMultistate,
+	typeCFDatabar,
+	typeCFGradient,
 	typeCFVO,
 	typeCondFmtStructure,
 	typeControlInfo,

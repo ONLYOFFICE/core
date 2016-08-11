@@ -40,30 +40,62 @@ namespace XLS
 
 class CFRecord;
 
-class CFDatabar : public BiffStructure
+struct CFGradientInterpItem : public BiffStructure
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(CFDatabar)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(CFGradientInterpItem)
 public:
 	BiffStructurePtr clone();
 
-	static const ElementType	type = typeCFDatabar;
+	static const ElementType	type = typeAnyObject;
+
+	virtual void load(CFRecord& record);
+	virtual void store(CFRecord& record);
+
+	CFVO	cfvo;
+	double	numDomain;
+};
+typedef boost::shared_ptr<CFGradientInterpItem> CFGradientInterpItemPtr;
+
+
+struct CFGradientItem : public BiffStructure
+{
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(CFGradientItem)
+public:
+	BiffStructurePtr clone();
+
+	static const ElementType	type = typeAnyObject;
+
+	virtual void load(CFRecord& record);
+	virtual void store(CFRecord& record);
+
+	double	numGrange;
+	CFColor	color;
+};
+typedef boost::shared_ptr<CFGradientItem> CFGradientItemPtr;
+
+class CFGradient : public BiffStructure
+{
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(CFGradient)
+public:
+	BiffStructurePtr clone();
+
+	static const ElementType	type = typeCFGradient;
 	
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-	unsigned char iPercentMin;
-	unsigned char iPercentMax;
+	unsigned char						cInterpCurve;		//MUST be 0x2 or 0x3.
+	unsigned char						cGradientCurve;		// == cInterpCurve
 
-	bool fShowValue;
-	bool fRightToLeft;
+	bool								fClamp;
+	bool								fBackground;
 
-	CFColor color;
+	std::vector<CFGradientInterpItemPtr>rgInterp;
+	std::vector<CFGradientItemPtr>		rgCurve;
 
-	CFVO cfvoDB1;
-	CFVO cfvoDB2;
 };
 
-typedef boost::shared_ptr<CFDatabar> CFDatabarPtr;
+typedef boost::shared_ptr<CFGradient> CFGradientPtr;
 
 } // namespace XLS
 

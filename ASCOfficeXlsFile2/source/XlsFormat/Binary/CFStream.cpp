@@ -95,6 +95,7 @@ void CFStream::write(const void* buf, const size_t size)
 		str << L"Only " << num_written << L" unsigned chars were saved instead of " << size << L" unsigned chars requested.";
 		throw;// EXCEPT::RT::CompoundFileFormatError(str.str(), hres);
 	}
+	stream_->flush();
 	// Tipa successful
 }
 

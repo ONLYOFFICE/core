@@ -69,6 +69,8 @@ void XFExt::readFields(CFRecord& record)
 	record >> cexts;
 	while(!record.isEOF())
 	{
+		if(record.getRdPtr() + 8 < record.getDataSize())
+			break;// 8 = миним размер структуры
 		ExtPropPtr element(new ExtProp);
 		record >> *element;
 		rgExt.push_back(element);

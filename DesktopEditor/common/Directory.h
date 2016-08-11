@@ -61,6 +61,13 @@
 namespace NSDirectory
 {
 #if !defined(_WIN32) && !defined (_WIN64)
+    static bool is_directory_exist(char* dir)
+    {
+        struct stat st;
+        bool bRes = (0 == stat(dir, &st)) && S_ISDIR(st.st_mode);
+        return bRes;
+    }
+
     static bool _mkdir (const char *dir)
     {
         char tmp[MAX_PATH];
@@ -75,7 +82,9 @@ namespace NSDirectory
         for(p = tmp + 1; *p; p++)
                 if(*p == '/') {
                         *p = 0;
-                        res = (0 == mkdir(tmp, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH));
+                        res = is_directory_exist(tmp);
+                        if (!res)
+                            res = (0 == mkdir(tmp, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH));
                         *p = '/';
                         if (!res)
                             break;
@@ -293,18 +302,17 @@ namespace NSDirectory
 		return (dwAttrib != INVALID_FILE_ATTRIBUTES && 0 != (dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
 #elif __linux__
         BYTE* pUtf8 = NULL;
-		LONG lLen = 0;
+        LONG lLen = 0;
         NSFile::CUtf8Converter::GetUtf8StringFromUnicode(strDirectory.c_str(), strDirectory.length(), pUtf8, lLen, false);
-		struct stat st;
-		bool bRes = (0 == stat((char*)pUtf8, &st)) && S_ISDIR(st.st_mode);
-		delete [] pUtf8;
-		return bRes;
+        bool bRes = is_directory_exist((char*)pUtf8);
+        delete [] pUtf8;
+        return bRes;
 #elif MAC
         BYTE* pUtf8 = NULL;
         LONG lLen = 0;
         NSFile::CUtf8Converter::GetUtf8StringFromUnicode(strDirectory.c_str(), strDirectory.length(), pUtf8, lLen, false);
         struct stat st;
-        bool bRes = (0 == stat((char*)pUtf8, &st)) && S_ISDIR(st.st_mode);
+        bool bRes = is_directory_exist((char*)pUtf8);
         delete [] pUtf8;
         return bRes;
 #endif

@@ -55,22 +55,22 @@ public:
 	CString RenderToRtf(RenderParameter oRenderParameter)
 	{
 		CString sResult;
-		sResult.Append(_T("{\\field "));
+		sResult += _T("{\\field ");
 		RENDER_RTF_BOOL( m_bDirty, sResult, _T("flddirty") )
 		RENDER_RTF_BOOL( m_bLock, sResult, _T("fldlock") )
-		sResult.Append(_T("{\\*\\fldinst"));
-		sResult.Append( m_oCharProp.RenderToRtf(oRenderParameter) );
+		sResult += _T("{\\*\\fldinst");
+		sResult +=  m_oCharProp.RenderToRtf(oRenderParameter);
 		return sResult;
 	}
 	CString RenderToOOX(RenderParameter oRenderParameter)
 	{
 		CString sResult;
-		sResult.Append( _T("<w:r>") );
-		sResult.Append( _T("<w:fldChar w:fldCharType=\"separate\"") );
+		sResult +=  _T("<w:r>");
+		sResult +=  _T("<w:fldChar w:fldCharType=\"separate\"");
 		RENDER_OOX_INT_ATTRIBUTE( m_bDirty, sResult, _T("dirty") )
 		RENDER_OOX_INT_ATTRIBUTE( m_bLock, sResult, _T("fldLock") )
-		sResult.Append( _T("/>") );
-		sResult.Append( _T("</w:r>") );
+		sResult +=  _T("/>");
+		sResult +=  _T("</w:r>");
 		return sResult;
 	}
 };
@@ -93,13 +93,16 @@ public: CString RenderToOOX(RenderParameter oRenderParameter)
 		if( NULL != m_oText )
 		{
 			CString sResult;
-			sResult.Append( _T("<w:r>") );
-			sResult.Append( _T("<w:instrText>") );
+			sResult += _T("<w:r>");
+			sResult += _T("<w:instrText>");
+			
 			oRenderParameter.nType = RENDER_TO_RTF_PARAM_CHAR;
 			oRenderParameter.nValue = RENDER_TO_RTF_PARAM_NO_PAR;
-			sResult.Append( m_oText->RenderToOOX( oRenderParameter ) );
-			sResult.Append( _T("</w:instrText>") );
-			sResult.Append( _T("</w:r>") );
+			
+			sResult += m_oText->RenderToOOX( oRenderParameter );
+			
+			sResult +=  _T("</w:instrText>");
+			sResult += _T("</w:r>");
 			return sResult;
 		}
 		else
@@ -191,31 +194,35 @@ public: void SetDefault()
 public: CString RenderToRtf(RenderParameter oRenderParameter)
 	{
 		CString sResult;
-		sResult.Append(_T("{\\field "));
+		sResult += _T("{\\field ");
 		if( fm_none != m_eMode )
 		{
 			switch( m_eMode )
 			{
-				case fm_flddirty: sResult.Append(_T("{\\flddirty "));break;
-				case fm_fldedit: sResult.Append(_T("{\\fldedit "));break;
-				case fm_fldlock: sResult.Append(_T("{\\fldlock "));break;
-				case fm_fldpriv: sResult.Append(_T("{\\fldpriv "));break;
-			}
+				case fm_flddirty:	sResult += _T("{\\flddirty ");	break;
+				case fm_fldedit:	sResult += _T("{\\fldedit ");	break;
+				case fm_fldlock:	sResult += _T("{\\fldlock ");	break;
+				case fm_fldpriv:	sResult += _T("{\\fldpriv ");	break;
+			}	
 		}
-		sResult.Append(_T("{\\*\\fldinst "));
+		sResult += _T("{\\*\\fldinst ");
 		RenderParameter oNewParam = oRenderParameter;
 		oNewParam.nType = RENDER_TO_RTF_PARAM_CHAR;
 		oNewParam.nValue = RENDER_TO_RTF_PARAM_NO_PAR;
-		sResult.Append( m_oInsert->RenderToRtf( oNewParam ) );
+		
+		sResult += m_oInsert->RenderToRtf( oNewParam );
+		
 		if( true == m_bReferenceToEndnote )
-			sResult.Append( _T("\\fldalt") );
+			sResult +=  _T("\\fldalt");
+
 		if( false == m_sData.IsEmpty() )
             sResult.AppendFormat( _T("{\\*\\datafield %ls}"), m_sData.GetBuffer());
-		sResult.Append(_T("}"));
+		
+		sResult += _T("}");
 
         CString str = m_oResult->RenderToRtf( oRenderParameter ) ;
         sResult.AppendFormat(_T("{\\fldrslt %ls}"),  str.GetBuffer());
-		sResult.Append(_T("}"));
+		sResult += _T("}");
 		return sResult;
 	}
 public: CString RenderToOOX(RenderParameter oRenderParameter)
@@ -225,7 +232,7 @@ public: CString RenderToOOX(RenderParameter oRenderParameter)
 		{
 			RenderParameter oNewParam = oRenderParameter;
 			oNewParam.nType = RENDER_TO_OOX_PARAM_RUN;
-			sResult.Append(m_oResult->RenderToOOX(oNewParam));
+			sResult += m_oResult->RenderToOOX(oNewParam);
 		}
 		else
 		{
@@ -257,8 +264,9 @@ public: CString RenderToOOX(RenderParameter oRenderParameter)
 				//добавляем гиперссылку в документ
                 sResult.AppendFormat( _T("<w:hyperlink r:id=\"%ls\" >"), sId.GetBuffer() );
 				oNewParam.nType = RENDER_TO_OOX_PARAM_RUN;
-				sResult.Append(m_oResult->RenderToOOX(oNewParam));
-				sResult.Append( _T("</w:hyperlink>") );
+				
+				sResult += m_oResult->RenderToOOX(oNewParam);
+				sResult += _T("</w:hyperlink>");
 			}
 			else
 			{
@@ -267,45 +275,51 @@ public: CString RenderToOOX(RenderParameter oRenderParameter)
 				{
 					RenderParameter oNewParametr = oRenderParameter;
 					oNewParametr.nType = RENDER_TO_OOX_PARAM_PLAIN;
-					//sResult.Append(_T("<w:r>"));
+					//sResult += _T("<w:r>"));
 
                     CString str = Utils::PrepareToXML( m_oInsert->RenderToOOX(oNewParametr) ).Trim();
-                    sResult.AppendFormat(_T("<w:fldSimple w:instr=\"%ls\">"), str.GetBuffer() );
+                    
+					sResult += _T("<w:fldSimple w:instr=\"");
+					sResult += str;
+					sResult += _T("\">");
+					
 					RenderParameter oNewParam = oRenderParameter;
 					oNewParam.nType = RENDER_TO_OOX_PARAM_RUN;
-					sResult.Append(m_oResult->RenderToOOX(oNewParam));
+					sResult += m_oResult->RenderToOOX(oNewParam);
 					sResult.AppendFormat(_T("</w:fldSimple>"));
-					//sResult.Append(_T("</w:r>"));
+					//sResult += _T("</w:r>"));
 				}
 				else
 				{
 					//так добавляются лишние параграфы
 					RenderParameter oNewParametr = oRenderParameter;
 					oNewParametr.nType = RENDER_TO_OOX_PARAM_PLAIN;
-					sResult.Append(_T("<w:r><w:fldChar w:fldCharType=\"begin\"/></w:r>"));
+					sResult += _T("<w:r><w:fldChar w:fldCharType=\"begin\"/></w:r>");
 
                     CString str = Utils::PrepareToXML( m_oInsert->RenderToOOX(oNewParametr) );
 
-                    sResult.AppendFormat(_T("<w:r><w:instrText xml:space=\"preserve\">%ls</w:instrText></w:r>"), str.GetBuffer());
-					sResult.Append(_T("<w:r><w:fldChar w:fldCharType=\"separate\"/></w:r>"));
+                    sResult += _T("<w:r><w:instrText xml:space=\"preserve\">");
+					sResult += str;
+					sResult += _T("</w:instrText></w:r>");
+					sResult += _T("<w:r><w:fldChar w:fldCharType=\"separate\"/></w:r>");
 					//заканчиваем этот параграф
-					sResult.Append(_T("</w:p>"));
+					sResult += _T("</w:p>");
 					//пишем параграфы содержания
 					oNewParametr.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
-					sResult.Append(m_oResult->RenderToOOX(oNewParametr));
+					sResult += m_oResult->RenderToOOX(oNewParametr);
 					//заканчиваем Field
-					sResult.Append(_T("<w:p>"));
-					sResult.Append(_T("<w:r><w:fldChar w:fldCharType=\"end\"/></w:r>"));
+					sResult += _T("<w:p>");
+					sResult += _T("<w:r><w:fldChar w:fldCharType=\"end\"/></w:r>");
 
 					////пишем параграфы содержания
 					//RenderParameter oNewParametr = oRenderParameter;
 					//oNewParametr.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
-					//sResult.Append(m_oResult->RenderToOOX(oNewParametr));
+					//sResult += m_oResult->RenderToOOX(oNewParametr));
 
 					//CString sFieldBegin;
-					//sFieldBegin.Append(_T("<w:r><w:fldChar w:fldCharType=\"begin\"/></w:r>"));
+					//sFieldBegin += _T("<w:r><w:fldChar w:fldCharType=\"begin\"/></w:r>");
 					//sFieldBegin.AppendFormat(_T("<w:r><w:instrText xml:space=\"preserve\">%ls</w:instrText></w:r>"), Utils::PrepareToXML( m_oInsert->RenderToOOX(oNewParametr) ));
-					//sFieldBegin.Append(_T("<w:r><w:fldChar w:fldCharType=\"separate\"/></w:r>"));
+					//sFieldBegin += _T("<w:r><w:fldChar w:fldCharType=\"separate\"/></w:r>");
 					////пишем после первого w:pPr
 					//CString sFindStr = _T("</w:pPr>");
 					//int nIndex = sResult.Find( sFindStr );
@@ -319,9 +333,9 @@ public: CString RenderToOOX(RenderParameter oRenderParameter)
 					//		sResult.Inset( sFieldBegin, nIndex + sFindStr.GetLength() );
 					//}
 					//CString sFieldEnd;
-					//sFieldEnd.Append(_T("<w:r><w:fldChar w:fldCharType=\"begin\"/></w:r>"));
+					//sFieldEnd += _T("<w:r><w:fldChar w:fldCharType=\"begin\"/></w:r>");
 					//sFieldEnd.AppendFormat(_T("<w:r><w:instrText xml:space=\"preserve\">%ls</w:instrText></w:r>"), Utils::PrepareToXML( m_oInsert->RenderToOOX(oNewParametr) ));
-					//sFieldEnd.Append(_T("<w:r><w:fldChar w:fldCharType=\"separate\"/></w:r>"));
+					//sFieldEnd += _T("<w:r><w:fldChar w:fldCharType=\"separate\"/></w:r>");
 					////пишем после последнего w:pPr
 				}
 			}

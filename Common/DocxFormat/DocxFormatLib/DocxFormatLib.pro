@@ -10,81 +10,15 @@ TARGET = DocxFormatLib
 TEMPLATE = lib
 CONFIG += staticlib
 
-CONFIG += c++11
+CORE_ROOT_DIR = $$PWD/../../..
+PWD_ROOT_DIR = $$PWD
 
-win32 {
-    QMAKE_CXXFLAGS_RELEASE -= -Zc:strictStrings
-    QMAKE_CXXFLAGS += /bigobj
-} else {
-    QMAKE_CXXFLAGS += -std=c++11 -Wall -Wno-ignored-qualifiers
-}
+CONFIG += core_x2t
+include(../../../Common/base.pri)
 
-############### destination path ###############
-DESTINATION_SDK_PATH = $$PWD/../../../build/lib
-
-# WINDOWS
-win32:contains(QMAKE_TARGET.arch, x86_64):{
-CONFIG(debug, debug|release) {
-    DESTDIR = $$DESTINATION_SDK_PATH/win_64/DEBUG
-} else {
-    DESTDIR = $$DESTINATION_SDK_PATH/win_64
-}
-}
-win32:!contains(QMAKE_TARGET.arch, x86_64):{
-CONFIG(debug, debug|release) {
-    DESTDIR = $$DESTINATION_SDK_PATH/win_32/DEBUG
-} else {
-    DESTDIR = $$DESTINATION_SDK_PATH/win_32
-}
-}
-
-linux-g++ | linux-g++-64 | linux-g++-32:contains(QMAKE_HOST.arch, x86_64):{
-    DESTDIR = $$DESTINATION_SDK_PATH/linux_64
-}
-linux-g++ | linux-g++-64 | linux-g++-32:!contains(QMAKE_HOST.arch, x86_64):{
-    DESTDIR = $$DESTINATION_SDK_PATH/linux_32
-}
-
-mac {
-    DESTDIR = $$DESTINATION_SDK_PATH/mac_64
-}
-############### destination path ###############
-
-DEFINES += UNICODE _UNICODE _USE_LIBXML2_READER_ _USE_XMLLITE_READER_ USE_LITE_READER
-
-#################### WINDOWS #####################
-win32 {
-    DEFINES += \
-        LIBXML_READER_ENABLED
-
-INCLUDEPATH += ../Source/XML/libxml2/XML/include
-}
-#################### WINDOWS #####################
-
-#################### LINUX ########################
-linux-g++ | linux-g++-64 | linux-g++-32 {
-    DEFINES += \
-        LINUX \
-        _LINUX \
-        _LINUX_QT
-
-INCLUDEPATH += /usr/include/libxml2
-}
-
-mac {
-    DEFINES += \
-        LINUX \
-        _LINUX \
-        _LINUX_QT \
-        _MAC \
-        MAC
+DEFINES += UNICODE _UNICODE _USE_LIBXML2_READER_ _USE_XMLLITE_READER_ USE_LITE_READER LIBXML_READER_ENABLED
 
 INCLUDEPATH += ../../../DesktopEditor/xml/libxml2/include
-
-DEFINES += \
-    LIBXML_READER_ENABLED
-}
-#################### LINUX ########################
 
 build_fast {
 SOURCES += \
@@ -125,7 +59,7 @@ SOURCES += \
     ../Source/XlsxFormat/FileFactory_Spreadsheet.cpp \
     ../Source/XlsxFormat/IFileContainer_Spreadsheet.cpp \
 
-win32 {
+core_windows {
     SOURCES += \
         ../Source/SystemUtility/FileSystem/Directory.cpp \
         ../Source/SystemUtility/FileSystem/File.cpp \
@@ -351,8 +285,3 @@ HEADERS += docxformatlib.h \
     ../Source/XlsxFormat/ExternalLinks/ExternalLinks.h \
     ../Source/XlsxFormat/Worksheets/Sparkline.h \
     ../Source/XlsxFormat/Ole/OleObjects.h
-unix {
-    target.path = /usr/lib
-    INSTALLS += target
-}
-

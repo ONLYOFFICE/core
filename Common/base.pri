@@ -130,3 +130,15 @@ plugin {
 staticlib {
     DESTDIR = $$CORE_BUILDS_LIBRARIES_PATH
 }
+
+core_x2t {
+core_windows {
+    CONFIG(debug, debug|release) {
+        QMAKE_CXXFLAGS += /bigobj
+    }
+} else {
+    QMAKE_CXXFLAGS += -Wall -Wno-ignored-qualifiers
+}
+
+DEFINES += CRYPTOPP_DISABLE_ASM
+}

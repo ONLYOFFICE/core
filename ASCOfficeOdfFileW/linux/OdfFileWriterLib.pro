@@ -10,88 +10,26 @@ TARGET = OdfFileWriterLib
 TEMPLATE = lib
 CONFIG += staticlib
 
-CONFIG += c++11
+CORE_ROOT_DIR = $$PWD/../..
+PWD_ROOT_DIR = $$PWD
 
-win32 {
-    QMAKE_CXXFLAGS_RELEASE -= -Zc:strictStrings
-    QMAKE_CXXFLAGS += /bigobj
-} else {
-    QMAKE_CXXFLAGS += -std=c++11 -Wall -Wno-ignored-qualifiers
-}
-############### destination path ###############
-DESTINATION_SDK_PATH = $$PWD/../../build/lib
+CONFIG += core_x2t
+include(../../Common/base.pri)
 
-# WINDOWS
-win32:contains(QMAKE_TARGET.arch, x86_64):{
-CONFIG(debug, debug|release) {
-    DESTDIR = $$DESTINATION_SDK_PATH/win_64/DEBUG
-} else {
-    DESTDIR = $$DESTINATION_SDK_PATH/win_64
-}
-}
-win32:!contains(QMAKE_TARGET.arch, x86_64):{
-CONFIG(debug, debug|release) {
-    DESTDIR = $$DESTINATION_SDK_PATH/win_32/DEBUG
-} else {
-    DESTDIR = $$DESTINATION_SDK_PATH/win_32
-}
-}
-
-linux-g++ | linux-g++-64 | linux-g++-32:contains(QMAKE_HOST.arch, x86_64):{
-    DESTDIR = $$DESTINATION_SDK_PATH/linux_64
-}
-linux-g++ | linux-g++-64 | linux-g++-32:!contains(QMAKE_HOST.arch, x86_64):{
-    DESTDIR = $$DESTINATION_SDK_PATH/linux_32
-}
-
-mac {
-    DESTDIR = $$DESTINATION_SDK_PATH/mac_64
-}
-############### destination path ###############
+#BOOST
+include($$PWD/../../Common/3dParty/boost/boost.pri)
 
 DEFINES +=  UNICODE \
             _UNICODE \
             _USE_LIBXML2_READER_ \
             _USE_XMLLITE_READER_ \
-            USE_LITE_READER
+            USE_LITE_READER \
+            LIBXML_READER_ENABLED
 
 INCLUDEPATH += ../../DesktopEditor/freetype-2.5.2/include
 INCLUDEPATH += ../../ASCOfficeOdfFile/include
 INCLUDEPATH += ../../ASCOfficeOdfFile/src/odf/datatypes
-
-#################### WINDOWS #####################
-win32 {
-    DEFINES += \
-        LIBXML_READER_ENABLED
-
-INCLUDEPATH += ../../Common/DocxFormat/Source/XML/libxml2/XML/include
-INCLUDEPATH += C:/boost_1_58_0
-}
-#################### WINDOWS #####################
-
-#################### LINUX ########################
-linux-g++ | linux-g++-64 | linux-g++-32 {
-    DEFINES += \
-        LINUX \
-        _LINUX \
-        _LINUX_QT
-
-INCLUDEPATH += /usr/include/libxml2
-}
-
-mac {
-    DEFINES += \
-        LINUX \
-        _LINUX \
-        _LINUX_QT \
-        _MAC \
-        MAC \
-        LIBXML_READER_ENABLED
-
-INCLUDEPATH += ../../Common/DocxFormat/Source/XML/libxml2/XML/include
-INCLUDEPATH += ../../Common/boost_1_58_0
-}
-#################### LINUX ########################
+INCLUDEPATH += ../../DesktopEditor/xml/libxml2/include
 
 CONFIG(debug, debug|release){
 DEFINES +=  _DEBUG
@@ -245,11 +183,6 @@ HEADERS += \
     ../source/OdfFormat/Shapes/oox_shapeWordArt.h \
     ../source/OdfFormat/odf_settings_context.h \
     ../source/OdfFormat/office_settings.h
-
-unix {
-    target.path = /usr/lib
-    INSTALLS += target
-}
 
 SOURCES += \
     ../source/OdfFormat/odf_settings_context.cpp \

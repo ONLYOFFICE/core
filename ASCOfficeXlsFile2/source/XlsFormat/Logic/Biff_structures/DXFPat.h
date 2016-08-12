@@ -46,7 +46,7 @@ public:
 	BiffStructurePtr clone();
 
 	static const ElementType	type = typeDXFPat;
-	
+
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 

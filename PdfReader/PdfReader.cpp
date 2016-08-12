@@ -83,6 +83,8 @@ namespace PdfReader
         m_pInternal->m_pFontManager->SetOwnerCache(pMeasurerCache);
         pMeasurerCache->SetCacheSize(1);
         m_pInternal->m_pGlobalParams->SetFontManager(m_pInternal->m_pFontManager);
+
+        m_eError = errorNone;
 	}
 	CPdfReader::~CPdfReader()
 	{
@@ -128,7 +130,13 @@ namespace PdfReader
         if (!wsUserPassword.empty())
             seUser = new StringExt(wsUserPassword.c_str());
 
+        m_eError = errorNone;
         m_pInternal->m_pPDFDocument = new PDFDoc(m_pInternal->m_pGlobalParams, wsSrcPath.c_str(), seOwner, seUser);
+
+        if (m_pInternal->m_pPDFDocument)
+            m_eError = m_pInternal->m_pPDFDocument->GetErrorCode();
+        else
+            m_eError = errorMemory;
 
 		if (seUser)
 			delete seUser;
@@ -144,7 +152,7 @@ namespace PdfReader
 
         m_pInternal->m_pFontList->Clear();
 
-        return (errorNone == m_pInternal->m_pPDFDocument->GetErrorCode());
+        return (errorNone == m_eError);
 	}
     void CPdfReader::Close()
 	{
@@ -153,7 +161,7 @@ namespace PdfReader
     EError CPdfReader::GetError()
 	{
         if (!m_pInternal->m_pPDFDocument)
-			return errorOpenFile;
+            return m_eError;
 
         return m_pInternal->m_pPDFDocument->GetErrorCode();
 	}

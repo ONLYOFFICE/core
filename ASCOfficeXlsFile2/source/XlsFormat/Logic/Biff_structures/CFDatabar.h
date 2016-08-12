@@ -46,7 +46,7 @@ class CFDatabar : public BiffStructure
 public:
 	BiffStructurePtr clone();
 
-	static const ElementType	type = typeCFMultistate;//todoooo
+	static const ElementType	type = typeCFDatabar;
 	
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);

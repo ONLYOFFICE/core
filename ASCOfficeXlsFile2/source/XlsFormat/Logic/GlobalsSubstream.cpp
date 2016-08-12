@@ -263,6 +263,7 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 			case rt_UsesELFs:		proc.optional<UsesELFs>();	break;
 			case rt_RecalcId:		proc.optional<RecalcId>();	break;
 			case rt_Font:	
+			case rt_XFCRC:
 			{
 				if (proc.mandatory<FORMATTING>())
 				{

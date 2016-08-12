@@ -1,9 +1,3 @@
-#-------------------------------------------------
-#
-# Project created by QtCreator 2016-07-26T18:24:47
-#
-#-------------------------------------------------
-
 QT       -= core gui
 
 TARGET = CryptoPPLib
@@ -12,37 +6,20 @@ CONFIG += staticlib
 
 DEFINES += CRYPTOPPLIB_LIBRARY
 
-############### destination path ###############
-DESTINATION_SDK_PATH = $$PWD/../../../../build/lib
+CORE_ROOT_DIR = $$PWD/../../../..
+PWD_ROOT_DIR = $$PWD
 
-# WINDOWS
-win32:contains(QMAKE_TARGET.arch, x86_64):{
-CONFIG(debug, debug|release) {
-    DESTDIR = $$DESTINATION_SDK_PATH/win_64/DEBUG
-} else {
-    DESTDIR = $$DESTINATION_SDK_PATH/win_64
-}
-}
-win32:!contains(QMAKE_TARGET.arch, x86_64):{
-CONFIG(debug, debug|release) {
-    DESTDIR = $$DESTINATION_SDK_PATH/win_32/DEBUG
-} else {
-    DESTDIR = $$DESTINATION_SDK_PATH/win_32
-}
+include(../../../../Common/base.pri)
+
+core_mac {
+    DEFINES -= MAC
 }
 
-linux-g++ | linux-g++-64 | linux-g++-32:contains(QMAKE_HOST.arch, x86_64):{
-    DESTDIR = $$DESTINATION_SDK_PATH/linux_64
-}
-linux-g++ | linux-g++-64 | linux-g++-32:!contains(QMAKE_HOST.arch, x86_64):{
-    DESTDIR = $$DESTINATION_SDK_PATH/linux_32
+core_windows {
+    DEFINES -= UNICODE
 }
 
-mac {
-    DESTDIR = $$DESTINATION_SDK_PATH/mac_64
-}
-############### destination path ###############
-
+DEFINES += CRYPTOPP_DISABLE_ASM
 
 HEADERS += \
     ../3way.h \
@@ -319,9 +296,4 @@ SOURCES += \
     ../zinflate.cpp \
     ../zlib.cpp \
     ../cpu.cpp
-
-unix {
-    target.path = /usr/lib
-    INSTALLS += target
-}
 

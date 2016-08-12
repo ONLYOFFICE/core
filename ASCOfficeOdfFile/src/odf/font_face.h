@@ -56,7 +56,6 @@ class common_svg_font_face_xlink_attlist
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
     
-private:
 	odf_types::common_xlink_attlist common_xlink_attlist_;
 };
 
@@ -71,18 +70,15 @@ public:
 
     CPDOCCORE_DEFINE_VISITABLE();
 
-public:
     virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
+
+    common_svg_font_face_xlink_attlist	common_svg_font_face_xlink_attlist_;
+    office_element_ptr_array			svg_font_face_format_;
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_text(const std::wstring & Text);
-
-private:
-    common_svg_font_face_xlink_attlist common_svg_font_face_xlink_attlist_;
-    office_element_ptr_array svg_font_face_format_;
-
 };
 
 class svg_font_face_format : public office_element_impl<svg_font_face_format>
@@ -95,16 +91,14 @@ public:
 
     CPDOCCORE_DEFINE_VISITABLE();
 
-public:
     virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
+
+    optional<std::wstring>::Type svg_string_;
+
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_text(const std::wstring & Text);
-
-private:
-    optional<std::wstring>::Type svg_string_;
-
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(svg_font_face_format);
@@ -120,17 +114,13 @@ public:
 
     CPDOCCORE_DEFINE_VISITABLE();
 
-public:
     virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
+    optional<std::wstring>::Type name_;
     
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_text(const std::wstring & Text);
-
-private:
-    optional<std::wstring>::Type name_;
-
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(svg_font_face_name);
@@ -146,13 +136,11 @@ public:
 
     CPDOCCORE_DEFINE_VISITABLE();
 
+    common_svg_font_face_xlink_attlist common_svg_font_face_xlink_attlist_;
+
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
-
-private:
-    common_svg_font_face_xlink_attlist common_svg_font_face_xlink_attlist_;
-
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(svg_definition_src);
@@ -175,7 +163,7 @@ private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
 
-private:
+public:
     
     optional<std::wstring>::Type			style_name_;
     optional<std::wstring>::Type			style_font_adornments_;
@@ -217,14 +205,9 @@ private:
     optional<int>::Type						svg_overline_position_;
     optional<int>::Type						svg_overline_thickness_;
 
-private:
-    // svg-font-face-src
-    
-    office_element_ptr_array svg_font_face_uri_; // svg-font-face-uri
-    office_element_ptr_array svg_font_face_name_; // svg-font-face-name    
-
-    //svg-definition-src
-    office_element_ptr svg_definition_src_;
+    office_element_ptr_array				svg_font_face_uri_; 
+    office_element_ptr_array				svg_font_face_name_;   
+    office_element_ptr						svg_definition_src_;
 
     friend class odf_document;
 };
@@ -244,15 +227,13 @@ public:
 
     void docx_convert(oox::docx_conversion_context & Context);
 
-private:
-    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
-
-private:
     office_element_ptr_array style_font_face_;
 
     friend class odf_document;
 
+private:
+    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(office_font_face_decls);

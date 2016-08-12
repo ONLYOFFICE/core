@@ -227,41 +227,41 @@ public:
 		CString sResult;
 		switch( m_eType )
 		{
-		case rsc_chdate:			sResult.Append( _T("") );break;
-			case rsc_chdpl:			sResult.Append( _T("") );break;
-			case rsc_chdpa:			sResult.Append( _T("") );break;
-			case rsc_chtime:		sResult.Append( _T("") );break;
-			case rsc_chpgn:			sResult.Append( _T("<w:pgNum />") );break;
-			case rsc_sectnum:		sResult.Append( _T("") );break;
-			case rsc_chftn:			sResult.Append( _T("<w:footnoteRef/>") );break;
-			case rsc_chftnEnd:		sResult.Append( _T("<w:endnoteRef/>") );break;
-			case rsc_chatn:			sResult.Append( _T("<w:annotationRef />") );break;
-			case rsc_chftnsep:		sResult.Append( _T("<w:separator />") );break;
-			case rsc_chftnsepc:		sResult.Append( _T("<w:continuationSeparator/>") );break;
-			case rsc_page:			sResult.Append( _T("<w:br w:type=\"page\"/>") );break;
-			case rsc_column:		sResult.Append( _T("<w:br w:type=\"column\"/>") );break;
+		case rsc_chdate:			sResult.Append( _T("") );							break;
+			case rsc_chdpl:			sResult.Append( _T("") );							break;
+			case rsc_chdpa:			sResult.Append( _T("") );							break;
+			case rsc_chtime:		sResult.Append( _T("") );							break;
+			case rsc_chpgn:			sResult.Append( _T("<w:pgNum />") );				break;
+			case rsc_sectnum:		sResult.Append( _T("") );							break;
+			case rsc_chftn:			sResult.Append( _T("<w:footnoteRef/>") );			break;
+			case rsc_chftnEnd:		sResult.Append( _T("<w:endnoteRef/>") );			break;
+			case rsc_chatn:			sResult.Append( _T("<w:annotationRef />") );		break;
+			case rsc_chftnsep:		sResult.Append( _T("<w:separator />") );			break;
+			case rsc_chftnsepc:		sResult.Append( _T("<w:continuationSeparator/>") );	break;
+			case rsc_page:			sResult.Append( _T("<w:br w:type=\"page\"/>") );	break;
+			case rsc_column:		sResult.Append( _T("<w:br w:type=\"column\"/>") );	break;
 			case rsc_line:			sResult.Append( _T("<w:br w:type=\"textWrapping\" w:clear=\"none\"/>") );break;
-			case rsc_softpage:		sResult.Append( _T("") );break;
-			case rsc_softcol:		sResult.Append( _T("") );break;
-			case rsc_softline:		sResult.Append( _T("") );break;
-			case rsc_tab:			sResult.Append( _T("<w:tab/>") );break;
-			case rsc_emspace:		sResult.Append( _T("") );break;
-			case rsc_qmspace:		sResult.Append( _T("") );break;
-			case rsc_Formula:		sResult.Append( _T("") );break;
+			case rsc_softpage:		sResult.Append( _T("") );									break;
+			case rsc_softcol:		sResult.Append( _T("") );									break;
+			case rsc_softline:		sResult.Append( _T("") );									break;
+			case rsc_tab:			sResult.Append( _T("<w:tab/>") );							break;
+			case rsc_emspace:		sResult.Append( _T("") );									break;
+			case rsc_qmspace:		sResult.Append( _T("") );									break;
+			case rsc_Formula:		sResult.Append( _T("") );									break;
 			case rsc_OptHyphen:		sResult.Append( _T("<w:t xml:space=\"preserve\">-</w:t>") );break;//<w:softHyphen/>
 			case rsc_NonBrHyphen:	sResult.Append( _T("<w:t xml:space=\"preserve\">-</w:t>") );break;//<w:nonBreakHyphen/>
 			case rsc_NonBrSpace:	sResult.Append( _T("<w:t xml:space=\"preserve\"> </w:t>") );break;
-			case rsc_zwbo:			sResult.Append( _T("") );break;
-			case rsc_zwnbo:			sResult.Append( _T("") );break;
-			case rsc_zwj:			sResult.Append( _T("") );break;
-			case rsc_zwnj:			sResult.Append( _T("") );break;
+			case rsc_zwbo:			sResult.Append( _T("") );									break;
+			case rsc_zwnbo:			sResult.Append( _T("") );									break;
+			case rsc_zwj:			sResult.Append( _T("") );									break;
+			case rsc_zwnj:			sResult.Append( _T("") );									break;
 		}
 		switch ( m_nTextWrapBreak )
 		{
-			case 0: sResult.Append( _T("<w:br w:type=\"textWrapping\" w:clear=\"none\"/>") );break;
-			case 1: sResult.Append( _T("<w:br w:type=\"textWrapping\" w:clear=\"left\"/>") );break;
-			case 2: sResult.Append( _T("<w:br w:type=\"textWrapping\" w:clear=\"right\"/>") );break;
-			case 3: sResult.Append( _T("<w:br w:type=\"textWrapping\" w:clear=\"all\"/>") );break;
+			case 0: sResult.Append( _T("<w:br w:type=\"textWrapping\" w:clear=\"none\"/>") );	break;
+			case 1: sResult.Append( _T("<w:br w:type=\"textWrapping\" w:clear=\"left\"/>") );	break;
+			case 2: sResult.Append( _T("<w:br w:type=\"textWrapping\" w:clear=\"right\"/>") );	break;
+			case 3: sResult.Append( _T("<w:br w:type=\"textWrapping\" w:clear=\"all\"/>") );	break;
 		}
 		return sResult;
 	}

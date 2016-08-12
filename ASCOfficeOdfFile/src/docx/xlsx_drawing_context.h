@@ -65,8 +65,8 @@ public:
     const std::vector<drawing_elm>			& content() const;
 
     friend class xlsx_drawing_context;
-private:
-    class Impl;
+
+	class Impl;
     _CP_PTR(Impl) impl_;
 };
 

@@ -131,7 +131,31 @@ XlsConverter::XlsConverter(const std::wstring & xls_file, const std::wstring & _
 	try{
 		XLS::CompoundFile cfile(xls_file, XLS::CompoundFile::cf_ReadMode);
 
-		if (cfile.isError())return;
+		if (cfile.isError())
+		{
+			//if (0 <= xls_file.rfind(L".xls"))//todooo lower
+			//{
+			//	unsigned char* fileData = NULL;
+			//	DWORD fileSize = 0;
+
+			//	if (!NSFile::CFileBinary::ReadAllBytes(xls_file, &fileData, fileSize)) return;
+			//	if (!fileData) return;
+
+			//	//test/open as list
+			//	std::wstring xls_file_new = _xlsx_path + FILE_SEPARATOR_STR + L"temp.xls";
+			//	if (cfile.Open(xls_file_new, XLS::CompoundFile::cf_WriteMode))
+			//	{
+			//		XLS::CFStreamPtr stream = cfile.createWorkbookStream();
+			//		if (stream)
+			//			stream->write(fileData, fileSize);
+			//		cfile.closeWorkbookStream();
+			//	}
+			//	delete []fileData;
+			//	if (!cfile.Open(xls_file_new, XLS::CompoundFile::cf_ReadMode)) 
+			//		return;					
+			//}else 
+				return;
+		}
 
 		XLS::CFStreamPtr summary;
 		XLS::CFStreamPtr doc_summary;

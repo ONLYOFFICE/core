@@ -66,7 +66,7 @@ namespace DocFileFormat
 
 	  virtual Record* NewObject( IBinaryReader* _reader, unsigned int bodySize, unsigned int typeCode, unsigned int version, unsigned int instance )
 	  {
-	    return new UnknownRecord( _reader, bodySize, typeCode, version, instance );
+	    return NULL;//new UnknownRecord( _reader, bodySize, typeCode, version, instance );
 	  }
   };
 }

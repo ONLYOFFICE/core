@@ -88,7 +88,32 @@ std::wstring ReadUnicodeLP(POLE::Stream *pStream)
 	unsigned char* Data = new unsigned char[length * 2];
 	pStream->read(Data, length * 2); 
 
-	std::wstring res ((wchar_t*)Data, length);
+	std::wstring res;
+	
+	if (sizeof(wchar_t) == 4)
+	{
+		unsigned int nLength = length;
+		
+		wchar_t* ptr = new wchar_t [length]; 
+
+		UTF16* pStrUtf16 = (UTF16*)		Data;
+		UTF32 *pStrUtf32 = (UTF32 *)	ptr;
+
+        const UTF16 *pStrUtf16_Conv		= pStrUtf16;
+        UTF32 *pStrUtf32_Conv			= pStrUtf32;
+
+        ConversionResult eUnicodeConversionResult = ConvertUTF16toUTF32 (&pStrUtf16_Conv, &pStrUtf16[nLength]
+                , &pStrUtf32_Conv, &pStrUtf32 [nLength], strictConversion);
+
+        if (conversionOK != eUnicodeConversionResult)
+        {
+        }
+		res = std::wstring(ptr, length);
+		delete ptr;
+	}
+	else
+		res = std::wstring((wchar_t*)Data, length);
+
 
 	return res;
 
@@ -416,24 +441,24 @@ bool ECMACryptReader::DecryptOfficeFile(std::wstring file_name_inp, std::wstring
 		return false;
 	}
 //------------------------------------------------------------------------------------------------------------
-	pStream = new POLE::Stream(pStorage, "DataSpaces/DataSpaceMap"); 
-	if (pStream)
-	{
-		_UINT32 size	= 0;
-		_UINT32 count	= 0;
-		
-		pStream->read((unsigned char*)&size, 4); 
-		pStream->read((unsigned char*)&count, 4); 
+	//pStream = new POLE::Stream(pStorage, "DataSpaces/DataSpaceMap"); 
+	//if (pStream)
+	//{
+	//	_UINT32 size	= 0;
+	//	_UINT32 count	= 0;
+	//	
+	//	pStream->read((unsigned char*)&size, 4); 
+	//	pStream->read((unsigned char*)&count, 4); 
 
-		for (int i = 0 ; i < count; i++)
-		{
-			_mapEntry m;
-			ReadMapEntry(pStream, m);
+	//	for (int i = 0 ; i < count; i++)
+	//	{
+	//		_mapEntry m;
+	//		ReadMapEntry(pStream, m);
 
-			mapEntries.push_back(m);
-		}
-		delete pStream;
-	}
+	//		mapEntries.push_back(m);
+	//	}
+	//	delete pStream;
+	//}
 //------------------------------------------------------------------------------------------------------------
 	ECMADecryptor decryptor;
 	

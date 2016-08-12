@@ -460,6 +460,13 @@ bool OOXShapeReader::ParseStyle(RtfShape& oShape, SimpleTypes::Vml::CCssProperty
 		case SimpleTypes::Vml::cssptMsoPositionHorizontalRelative  :
 			{
 				oShape.m_nPositionHRelative = prop->get_Value().eMsoPosHorRel;	
+				switch(prop->get_Value().eMsoPosHorRel)
+				{
+				case SimpleTypes::Vml::cssmsoposhorrelMargin:	oShape.m_eXAnchor = RtfShape::ax_margin; break;
+				case SimpleTypes::Vml::cssmsoposhorrelPage:		oShape.m_eXAnchor = RtfShape::ax_page; break;
+				case SimpleTypes::Vml::cssmsoposhorrelText:
+				case SimpleTypes::Vml::cssmsoposhorrelChar:		break;//inline	
+				}
 			}break;
 		case SimpleTypes::Vml::cssptMsoPositionVertical: 
 			{
@@ -468,6 +475,13 @@ bool OOXShapeReader::ParseStyle(RtfShape& oShape, SimpleTypes::Vml::CCssProperty
 		case SimpleTypes::Vml::cssptMsoPositionVerticalRelative    :
 			{
 				oShape.m_nPositionVRelative = prop->get_Value().eMsoPosVerRel;		
+				switch(prop->get_Value().eMsoPosVerRel)
+				{
+				case SimpleTypes::Vml::cssmsoposverrelMargin:	oShape.m_eYAnchor = RtfShape::ay_margin; break;
+				case SimpleTypes::Vml::cssmsoposverrelPage:		oShape.m_eYAnchor = RtfShape::ay_page; break;
+				case SimpleTypes::Vml::cssmsoposverrelText:
+				case SimpleTypes::Vml::cssmsoposverrelLine:		break;//inline	
+				}
 			}break;
 		case SimpleTypes::Vml::cssptMsoWrapDistanceBottom:
 			{
@@ -518,7 +532,19 @@ bool OOXShapeReader::ParseStyle(RtfShape& oShape, SimpleTypes::Vml::CCssProperty
 			{
 				oShape.m_nGtextSize = prop->get_Value().oValue.dValue;
 			}break;
-
+		case SimpleTypes::Vml::cssptVTextAnchor:
+			{
+				oShape.m_nAnchorText		= prop->get_Value().eVTextAnchor;//совпдает
+				oShape.m_bFitShapeToText	= 0;
+			}break;
+		case SimpleTypes::Vml::csspctMsoWidthPercent:
+			{
+				oShape.m_nPctWidth	= prop->get_Value().oValue.dValue;
+			}break;
+		case SimpleTypes::Vml::csspctMsoHeightPercent:
+			{
+				oShape.m_nPctHeight	= prop->get_Value().oValue.dValue;
+			}break;
 		case SimpleTypes::Vml::cssptDirection                      : 			break;
 		case SimpleTypes::Vml::cssptLayoutFlow                     : 			break;
 		case SimpleTypes::Vml::cssptMsoDirectionAlt                : 			break;
@@ -528,7 +554,6 @@ bool OOXShapeReader::ParseStyle(RtfShape& oShape, SimpleTypes::Vml::CCssProperty
 		case SimpleTypes::Vml::cssptMsoNextTextbox                 :			break;
 		case SimpleTypes::Vml::cssptMsoRotate                      : 			break;
 		case SimpleTypes::Vml::cssptMsoTextScale                   : 			break;
-		case SimpleTypes::Vml::cssptVTextAnchor                    :			break;
 		case SimpleTypes::Vml::cssptFont                           :			break;
 		case SimpleTypes::Vml::cssptFontStyle                      : 			break;
 		case SimpleTypes::Vml::cssptFontVariant                    :			break;
@@ -543,60 +568,6 @@ bool OOXShapeReader::ParseStyle(RtfShape& oShape, SimpleTypes::Vml::CCssProperty
 		case SimpleTypes::Vml::cssptVTextSpacingMode               : 			break;
 		case SimpleTypes::Vml::cssptVTextSpacing                   : 			break;		
 	}
-
-	//else if(  _T("mso-left-percent") == sProperty )
-	//	oShape.m_nPositionHPct = Strings::ToInteger( sValue );
-	//else if(  _T("mso-position-horizontal-relative") == sProperty )
-	//{
-	//	if( _T("page") == sValue )
-	//		oShape.m_eXAnchor = RtfShape::ax_page;
-	//	else if( _T("margin") == sValue )
-	//		oShape.m_eXAnchor = RtfShape::ax_margin;
-	//	else if( _T("text") == sValue )
-	//		oShape.m_eXAnchor = RtfShape::ax_column;
-	//}
-	//else if(  _T("mso-top-percent") == sProperty )
-	//	oShape.m_nPositionVPct = Strings::ToInteger( sValue );
-	//else if(  _T("mso-position-vertical-relative") == sProperty )
-	//{
-	//	if( _T("page") == sValue )
-	//		oShape.m_eYAnchor = RtfShape::ay_page;
-	//	else if( _T("margin") == sValue )
-	//		oShape.m_eYAnchor = RtfShape::ay_margin;
-	//	else if( _T("text") == sValue )
-	//		oShape.m_eYAnchor = RtfShape::ay_margin;
-	//}
-	//else if(  _T("mso-width-relative") == sProperty )
-	//{
-	//	if( _T("margin") == sValue )
-	//		oShape.m_nPctWidthRelative = 0;
-	//	else if( _T("page") == sValue )
-	//		oShape.m_nPctWidthRelative = 1;
-	//	else if( _T("left-margin-area") == sValue )
-	//		oShape.m_nPctWidthRelative = 2;
-	//	else if( _T("right-margin-area") == sValue )
-	//		oShape.m_nPctWidthRelative = 3;
-	//	else if( _T("inner-margin-area") == sValue )
-	//		oShape.m_nPctWidthRelative = 4;
-	//	else if( _T("outer-margin-area") == sValue )
-	//		oShape.m_nPctWidthRelative = 5;
-
-	//}
-	//else if(  _T("mso-height-relative") == sProperty )
-	//{
-	//	if( _T("margin") == sValue )
-	//		oShape.m_nPctHeightRelative = 0;
-	//	else if( _T("page") == sValue )
-	//		oShape.m_nPctHeightRelative = 1;
-	//	else if( _T("top-margin-area") == sValue )
-	//		oShape.m_nPctHeightRelative = 2;
-	//	else if( _T("bottom-margin-area") == sValue )
-	//		oShape.m_nPctHeightRelative = 3;
-	//	else if( _T("inner-margin-area") == sValue )
-	//		oShape.m_nPctHeightRelative = 4;
-	//	else if( _T("outer-margin-area") == sValue )
-	//		oShape.m_nPctHeightRelative = 5;
-	//}
 
 	return true;
 }

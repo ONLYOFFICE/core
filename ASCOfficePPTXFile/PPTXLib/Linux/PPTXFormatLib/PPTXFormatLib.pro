@@ -10,48 +10,18 @@ TARGET = PPTXFormatLib
 TEMPLATE = lib
 CONFIG += staticlib
 
-CONFIG += c++11
-win32 {
-    #todo accentbordercallout90type, вернуть inline оптимизацию Ob2
+CORE_ROOT_DIR = $$PWD/../../../..
+PWD_ROOT_DIR = $$PWD
+
+CONFIG += core_x2t
+include(../../../../Common/base.pri)
+
+core_windows {
     QMAKE_CXXFLAGS_RELEASE += -Ob0
-    QMAKE_CXXFLAGS_RELEASE -= -Zc:strictStrings
-    CONFIG(debug, debug|release) {
-        QMAKE_CXXFLAGS += /bigobj
-    }
-} else {
-    QMAKE_CXXFLAGS += -std=c++11 -Wall -Wno-ignored-qualifiers
 }
 
-############### destination path ###############
-DESTINATION_SDK_PATH = $$PWD/../../../../build/lib
-
-# WINDOWS
-win32:contains(QMAKE_TARGET.arch, x86_64):{
-CONFIG(debug, debug|release) {
-    DESTDIR = $$DESTINATION_SDK_PATH/win_64/DEBUG
-} else {
-    DESTDIR = $$DESTINATION_SDK_PATH/win_64
-}
-}
-win32:!contains(QMAKE_TARGET.arch, x86_64):{
-CONFIG(debug, debug|release) {
-    DESTDIR = $$DESTINATION_SDK_PATH/win_32/DEBUG
-} else {
-    DESTDIR = $$DESTINATION_SDK_PATH/win_32
-}
-}
-
-linux-g++ | linux-g++-64 | linux-g++-32:contains(QMAKE_HOST.arch, x86_64):{
-    DESTDIR = $$DESTINATION_SDK_PATH/linux_64
-}
-linux-g++ | linux-g++-64 | linux-g++-32:!contains(QMAKE_HOST.arch, x86_64):{
-    DESTDIR = $$DESTINATION_SDK_PATH/linux_32
-}
-
-mac {
-    DESTDIR = $$DESTINATION_SDK_PATH/mac_64
-}
-############### destination path ###############
+#BOOST
+include($$PWD/../../../../Common/3dParty/boost/boost.pri)
 
 DEFINES += UNICODE \
     _UNICODE \
@@ -67,46 +37,19 @@ DEFINES += UNICODE \
     CXIMAGE_DONT_DECLARE_TCHAR \
     BUILD_CONFIG_FULL_VERSION \
     DONT_WRITE_EMBEDDED_FONTS \
-    CXIMAGE_DONT_DECLARE_TCHAR
+    CXIMAGE_DONT_DECLARE_TCHAR \
+    LIBXML_READER_ENABLED
 
-#################### WINDOWS #####################
-win32 {
-    DEFINES += \
-        LIBXML_READER_ENABLED
-
-INCLUDEPATH += ../../../../OfficeUtils/src/zlib-1.2.3
-INCLUDEPATH += ../../../../Common/DocxFormat/Source/XML/libxml2/XML/include
+core_windows {
+    INCLUDEPATH += ../../../../OfficeUtils/src/zlib-1.2.3
 }
-#################### WINDOWS #####################
-
-#################### LINUX ########################
-linux-g++ | linux-g++-64 | linux-g++-32 {
-    DEFINES += \
-        LINUX \
-        _LINUX \
-        _LINUX_QT \
-        LIBXML_READER_ENABLED
-
-INCLUDEPATH += /usr/include/libxml2/libxml
-}
-
-mac {
-    DEFINES += \
-        LINUX \
-        _LINUX \
-        _LINUX_QT \
-        LIBXML_READER_ENABLED \
-        _MAC \
-        MAC
-}
-#################### LINUX ########################
 
 INCLUDEPATH += \
     ../../../../DesktopEditor/freetype-2.5.2/include \
     ../../../../Common/ASCDocxFormat/Source/Utility \
     ../../../../Common/ASCDocxFormat/Source/XML \
     ../../../../Common/ASCDocxFormat/Source \
-    ../../../../Common/DocxFormat/Source/XML/libxml2/XML/include
+    ../../../../DesktopEditor/xml/libxml2/include
 
 SOURCES += pptxformatlib.cpp
 
@@ -597,20 +540,15 @@ HEADERS += pptxformatlib.h \
     ../../../PPTXFormat/ShowPr/SldAll.h \
     ../../../PPTXFormat/ShowPr/SldRg.h
 
-win32 {
+core_windows {
     SOURCES += \
         ../../../../Common/FileDownloader/FileDownloader_win.cpp
 }
-linux-g++ | linux-g++-64 | linux-g++-32 {
+core_linux {
     SOURCES += \
         ../../../../Common/FileDownloader/FileDownloader_curl.cpp
 }
-mac {
+core_mac {
     OBJECTIVE_SOURCES += \
         ../../../../Common/FileDownloader/FileDownloader_mac.mm
-}
-
-unix {
-    target.path = /usr/lib
-    INSTALLS += target
 }

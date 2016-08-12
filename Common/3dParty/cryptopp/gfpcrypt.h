@@ -1,6 +1,11 @@
 #ifndef CRYPTOPP_GFPCRYPT_H
 #define CRYPTOPP_GFPCRYPT_H
 
+#ifdef MAC
+#define TEMP_MAC
+#undef MAC
+#endif
+
 /** \file
 	Implementation of schemes based on DL over GF(p)
 */
@@ -631,6 +636,10 @@ NAMESPACE_END
 	
 #if CRYPTOPP_MSC_VERSION
 # pragma warning(pop)
+#endif
+
+#ifdef TEMP_MAC
+#define MAC
 #endif
 
 #endif

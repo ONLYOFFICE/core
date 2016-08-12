@@ -172,16 +172,7 @@ _buf HashAppend(_buf &  hashBuf, _buf & block, CRYPT_METHOD::_hashAlgorithm algo
 {//todooo переделать
 	if (algorithm == CRYPT_METHOD::SHA1)
 	{
-		CryptoPP::MD5 hash;
-
-		if (hashBuf.ptr && hashBuf.size > 0)	hash.Update( hashBuf.ptr, hashBuf.size);
-		if (block.ptr	&& block.size > 0)		hash.Update( block.ptr	, block.size);
-
-		CryptoPP::SecByteBlock buffer(hash.DigestSize());
-		hash.Final(buffer);
-
-		return _buf(buffer.BytePtr(), buffer.SizeInBytes());
-		//CryptoPP::SHA1 hash;
+		//CryptoPP::MD5 hash;
 
 		//if (hashBuf.ptr && hashBuf.size > 0)	hash.Update( hashBuf.ptr, hashBuf.size);
 		//if (block.ptr	&& block.size > 0)		hash.Update( block.ptr	, block.size);
@@ -190,6 +181,15 @@ _buf HashAppend(_buf &  hashBuf, _buf & block, CRYPT_METHOD::_hashAlgorithm algo
 		//hash.Final(buffer);
 
 		//return _buf(buffer.BytePtr(), buffer.SizeInBytes());
+		CryptoPP::SHA1 hash;
+
+		if (hashBuf.ptr && hashBuf.size > 0)	hash.Update( hashBuf.ptr, hashBuf.size);
+		if (block.ptr	&& block.size > 0)		hash.Update( block.ptr	, block.size);
+
+		CryptoPP::SecByteBlock buffer(hash.DigestSize());
+		hash.Final(buffer);
+
+		return _buf(buffer.BytePtr(), buffer.SizeInBytes());
 	}
 	else if (algorithm == CRYPT_METHOD::SHA256)
 	{

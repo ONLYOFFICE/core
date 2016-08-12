@@ -79,8 +79,11 @@ namespace XPS
 					sFontData[nIndex] ^= sKey[nIndex % 16];
 
 				FILE* pFile = oFile.GetFileNative();
-				fseek(pFile, 0, SEEK_SET);
-				fwrite(sFontData, 1, 32, pFile);
+				if (pFile)
+				{
+					fseek(pFile, 0, SEEK_SET);
+					fwrite(sFontData, 1, 32, pFile);
+				}
 
 				oFile.CloseFile();
 			}

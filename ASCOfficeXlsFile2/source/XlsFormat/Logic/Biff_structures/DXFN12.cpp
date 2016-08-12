@@ -91,7 +91,7 @@ void DXFN12::load(CFRecord& record)
 
 int DXFN12::serialize(std::wostream & stream)
 {
-	if (!dxfn) return 0;
+	if (!dxfn) return -1;
 
 	if (!xfext)
 	{

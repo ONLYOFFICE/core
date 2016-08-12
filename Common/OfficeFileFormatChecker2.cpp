@@ -144,6 +144,11 @@ bool COfficeFileFormatChecker::isXlsFormatFile	(POLE::Storage * storage)
     if (stream2.read(buffer,10) >0)
         return true;
 
+    POLE::Stream stream3(storage, "WORKBOOK");
+
+    if (stream3.read(buffer,10) >0)
+        return true;
+
 	return false;
 }
 bool COfficeFileFormatChecker::isPptFormatFile	(POLE::Storage * storage)

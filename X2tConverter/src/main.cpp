@@ -180,9 +180,7 @@ int main(int argc, char *argv[])
 
     if (TCD_ERROR == conversion)
     {
-        if(AVS_OFFICESTUDIO_FILE_OTHER_MS_OFFCRYPTO == nFormatFrom)
-            return getReturnErrorCode(AVS_FILEUTILS_ERROR_CONVERT_MS_OFFCRYPTO);
-        else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT == nFormatFrom || AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV == nFormatFrom)
+		if(AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT == nFormatFrom || AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV == nFormatFrom)
             return getReturnErrorCode(AVS_FILEUTILS_ERROR_CONVERT_NEED_PARAMS);
         else{
             // print out conversion direction error
@@ -415,15 +413,15 @@ int main(int argc, char *argv[])
 		}break;
 		case TCD_DOCUMENT2:
 		{
-			result = fromDocument(sFileFrom, nFormatFrom, sFileTo, nFormatTo, sTempDir, sFontPath, sXmlOptions, sThemeDir, bFromChanges, bPaid, oInputParams);
+			result = fromDocument(sFileFrom, nFormatFrom, sTempDir, sXmlOptions, oInputParams);
 		}break;
 		case TCD_SPREADSHEET2:
 		{
-			result = fromSpreadsheet(sFileFrom, nFormatFrom, sFileTo, nFormatTo, sTempDir, sFontPath, sXmlOptions, sThemeDir, bFromChanges, bPaid, oInputParams);
+			result = fromSpreadsheet(sFileFrom, nFormatFrom, sTempDir, sXmlOptions, oInputParams);
 		}break;
 		case TCD_PRESENTATION2:
 		{
-			result = fromPresentation(sFileFrom, nFormatFrom, sFileTo, nFormatTo, sTempDir, sFontPath, sXmlOptions, sThemeDir, bFromChanges, bPaid, oInputParams);
+			result = fromPresentation(sFileFrom, nFormatFrom, sTempDir, sXmlOptions, oInputParams);
 		}break;
 		case TCD_T2:
 		{
@@ -448,6 +446,10 @@ int main(int argc, char *argv[])
 		case TCD_CANVAS_PDF2:
 		{
 			result = fromCanvasPdf(sFileFrom, nFormatFrom, sFileTo, nFormatTo, sTempDir, sFontPath, sXmlOptions, sThemeDir, bFromChanges, bPaid);
+		}break;
+		case TCD_MSCRYPT2:
+		{
+			result = fromMscrypt (sFileFrom, sFileTo, sTempDir, sFontPath, oInputParams);
 		}break;
 		case TCD_MSCRYPT2DOCT:
 		case TCD_MSCRYPT2XLST:

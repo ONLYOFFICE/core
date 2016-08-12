@@ -1,12 +1,14 @@
 TEMPLATE = subdirs
 
-CONFIG -= debug_and_release debug_and_release_target
+CORE_ROOT_DIR = $$PWD/../../..
+PWD_ROOT_DIR = $$PWD
 
-# важно!!! build directory должна быть на уровне выше, чтобы Makefile и $$PWD были на одном уровне к ServerComponents
+include(../../../Common/base.pri)
 
 SUBDIRS = \
     OfficeUtils \
     graphics \
+    cryptopp \
     DocxFormatLib \
     PPTXFormatLib \
     ASCOfficeDocxFile2Lib \
@@ -21,6 +23,7 @@ SUBDIRS = \
 
 OfficeUtils.file = ../../../OfficeUtils/OfficeUtils.pro
 graphics.file = ../../../DesktopEditor/Qt_build/graphics/project/graphics.pro
+cryptopp.file = ../../../Common/3dParty/cryptopp/project/cryptopp.pro
 
 DocxFormatLib.file = ../../../Common/DocxFormat/DocxFormatLib/DocxFormatLib.pro
 PPTXFormatLib.file = ../../../ASCOfficePPTXFile/PPTXLib/Linux/PPTXFormatLib/PPTXFormatLib.pro
@@ -37,6 +40,7 @@ X2tConverter.file = ./X2tConverter.pro
 X2tConverter.depends = \
     OfficeUtils \
     graphics \
+    cryptopp \
     DocxFormatLib \
     PPTXFormatLib \
     ASCOfficeDocxFile2Lib \
@@ -48,40 +52,6 @@ X2tConverter.depends = \
     OdfFileWriterLib \
     XlsFormatLib
 
-############### destination path ###############
-DESTINATION_SDK_PATH = $$PWD/../../../build/lib
-DESTINATION_ICU = $$PWD/../../../UnicodeConverter/icubuilds
-
-win32:contains(QMAKE_TARGET.arch, x86_64):{
-    DESTINATION_ICU = $$DESTINATION_ICU/win64/bin
-CONFIG(debug, debug|release) {
-    DESTINATION_SDK_PATH = $$DESTINATION_SDK_PATH/win_64/DEBUG
-} else {
-    DESTINATION_SDK_PATH = $$DESTINATION_SDK_PATH/win_64
-}
-}
-win32:!contains(QMAKE_TARGET.arch, x86_64):{
-    DESTINATION_ICU = $$DESTINATION_ICU/win32/bin
-CONFIG(debug, debug|release) {
-    DESTINATION_SDK_PATH = $$DESTINATION_SDK_PATH/win_32/DEBUG
-} else {
-    DESTINATION_SDK_PATH = $$DESTINATION_SDK_PATH/win_32
-}
-}
-
-linux-g++ | linux-g++-64 | linux-g++-32:contains(QMAKE_HOST.arch, x86_64):{
-    DESTINATION_ICU = $$DESTINATION_ICU/linux64/usr/local/lib
-    DESTINATION_SDK_PATH = $$DESTINATION_SDK_PATH/linux_64
-}
-linux-g++ | linux-g++-64 | linux-g++-32:!contains(QMAKE_HOST.arch, x86_64):{
-    DESTINATION_SDK_PATH = $$DESTINATION_SDK_PATH/linux_32
-}
-
-mac {
-    DESTINATION_ICU = $$DESTINATION_ICU/icubuilds/mac/build_release-55-1/lib
-    DESTINATION_SDK_PATH = $$DESTINATION_SDK_PATH/mac_64
-}
-
-LIBS += -L$$DESTINATION_SDK_PATH
-LIBS += -L$$DESTINATION_ICU
-################################################
+# for run in qt from this solution
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH
+include(../../../Common/3dParty/icu/icu.pri)

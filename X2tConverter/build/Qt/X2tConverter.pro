@@ -7,31 +7,30 @@
 QT       -= core
 QT       -= gui
 
-VERSION = 2.0.2.382
+VERSION = 2.0.2.383
 DEFINES += INTVER=$$VERSION
-
-mac {
-    message(64 bit)
-    TARGET = x2t
-} else {
-contains(QMAKE_HOST.arch, x86_64):{
-#64bit
-message(64 bit)
-    TARGET = x2t
-}
-!contains(QMAKE_HOST.arch, x86_64):{
-#32bit
-message(32 bit)
-    TARGET = x2t32
-}
-}
 
 TEMPLATE = app
 CONFIG   += console
 CONFIG   -= app_bundle
 
-win32 {
-    QMAKE_CXXFLAGS_RELEASE -= -Zc:strictStrings
+TARGET = x2t
+
+CORE_ROOT_DIR = $$PWD/../../..
+PWD_ROOT_DIR = $$PWD
+
+CONFIG += core_static_link_libstd
+CONFIG += core_x2t
+include(../../../Common/base.pri)
+
+core_win_32 {
+    TARGET = x2t32
+}
+core_linux_32 {
+    TARGET = x2t32
+}
+
+core_windows {
     QMAKE_LFLAGS += /INCREMENTAL:NO
 
     contains(QMAKE_TARGET.arch, x86_64):{
@@ -41,18 +40,7 @@ win32 {
     }
 
 } else {
-    QMAKE_CXXFLAGS += -std=c++11 -Wall -Wno-ignored-qualifiers
-}
-
-CONFIG += c++11
-
-# теперь всегда с libstd
-linux-g++ | linux-g++-64 | linux-g++-32 {
-    CONFIG += static_link_libstd
-}
-static_link_libstd {
-    QMAKE_LFLAGS += -static-libstdc++ -static-libgcc
-    message(static_link_libstd)
+    QMAKE_CXXFLAGS += -Wall -Wno-ignored-qualifiers
 }
 
 #CONFIG += build_for_centos6
@@ -74,7 +62,8 @@ DEFINES += UNICODE \
     CXIMAGE_DONT_DECLARE_TCHAR \
     BUILD_CONFIG_FULL_VERSION \
     DONT_WRITE_EMBEDDED_FONTS \
-    AVS_USE_CONVERT_PPTX_TOCUSTOM_VML
+    AVS_USE_CONVERT_PPTX_TOCUSTOM_VML \
+    LIBXML_READER_ENABLED
 
 DEFINES += PDFREADER_USE_DYNAMIC_LIBRARY
 DEFINES += PDFWRITER_USE_DYNAMIC_LIBRARY
@@ -84,42 +73,15 @@ DEFINES += HTMLRENDERER_USE_DYNAMIC_LIBRARY
 DEFINES += HTMLFILE_USE_DYNAMIC_LIBRARY
 DEFINES += UNICODECONVERTER_USE_DYNAMIC_LIBRARY
 
-#################### WINDOWS #####################
-win32 {
-    DEFINES += \
-        LIBXML_READER_ENABLED
-
-INCLUDEPATH += ../../../Common/DocxFormat/Source/XML/libxml2/XML/include\
-INCLUDEPATH += ../../../OfficeUtils/src/zlib-1.2.3
+core_windows {
+    INCLUDEPATH += ../../../OfficeUtils/src/zlib-1.2.3
 }
-#################### WINDOWS #####################
-
-#################### LINUX ########################
-linux-g++ | linux-g++-64 | linux-g++-32 {
-    DEFINES += \
-        LINUX \
-        _LINUX \
-        _LINUX_QT
-
-INCLUDEPATH += /usr/include/libxml2
+core_mac {
+    INCLUDEPATH += ../../../OfficeUtils/src/zlib-1.2.3
 }
 
-mac {
-    DEFINES += \
-        LINUX \
-        _LINUX \
-        _LINUX_QT \
-        _MAC \
-        MAC \
-        LIBXML_READER_ENABLED
-
-INCLUDEPATH += ../../../Common/DocxFormat/Source/XML/libxml2/XML/include\
-INCLUDEPATH += ../../../OfficeUtils/src/zlib-1.2.3
-}
-#################### LINUX ########################
-
-INCLUDEPATH += \
-    ../../../DesktopEditor/freetype-2.5.2/include
+INCLUDEPATH += ../../../DesktopEditor/xml/libxml2/include
+INCLUDEPATH += ../../../DesktopEditor/freetype-2.5.2/include
 
 INCLUDEPATH += $$PWD/../../../Common/DocxFormat
 DEPENDPATH += $$PWD/../../../Common/DocxFormat
@@ -148,118 +110,77 @@ HEADERS += ../../src/cextracttools.h \
 
 ###############################################################################################################
 
-############### destination path ###############
-DESTINATION_SDK_PATH = $$PWD/../../../build/lib
-DESTINATION_BIN_PATH = $$PWD/../../../build/bin
-
-win32:contains(QMAKE_TARGET.arch, x86_64):{
-    message(win64)
-	DESTINATION_BIN_PATH = $$DESTINATION_BIN_PATH/windows
-CONFIG(debug, debug|release) {
-    DESTINATION_SDK_PATH = $$DESTINATION_SDK_PATH/win_64/DEBUG
-} else {
-    DESTINATION_SDK_PATH = $$DESTINATION_SDK_PATH/win_64
+DESTDIR = $$PWD/../../../build/bin
+core_windows {
+    DESTDIR = $$DESTDIR/windows
 }
+core_linux {
+    DESTDIR = $$DESTDIR/linux
 }
-win32:!contains(QMAKE_TARGET.arch, x86_64):{
-    message(win32)
-	DESTINATION_BIN_PATH = $$DESTINATION_BIN_PATH/windows
-CONFIG(debug, debug|release) {
-    DESTINATION_SDK_PATH = $$DESTINATION_SDK_PATH/win_32/DEBUG
-} else {
-    DESTINATION_SDK_PATH = $$DESTINATION_SDK_PATH/win_32
-}
+core_mac {
+    DESTDIR = $$DESTDIR/mac
 }
 
-linux-g++ | linux-g++-64 | linux-g++-32:contains(QMAKE_HOST.arch, x86_64):{
-    message(linuX)
-    
-    LIBS += $$PWD/../../../Common/3dParty/icu/linux_64/build/libicuuc.so.55
-    LIBS += $$PWD/../../../Common/3dParty/icu/linux_64/build/libicudata.so.55
-    
-    DESTINATION_SDK_PATH = $$DESTINATION_SDK_PATH/linux_64
-	DESTINATION_BIN_PATH = $$DESTINATION_BIN_PATH/linux
-
-
-}
-linux-g++ | linux-g++-64 | linux-g++-32:!contains(QMAKE_HOST.arch, x86_64):{
-    DESTINATION_SDK_PATH = $$DESTINATION_SDK_PATH/linux_32
-	DESTINATION_BIN_PATH = $$DESTINATION_BIN_PATH/linux
-}
-
-mac {
-    DESTINATION_SDK_PATH = $$DESTINATION_SDK_PATH/mac_64
-	DESTINATION_BIN_PATH = $$DESTINATION_BIN_PATH/mac
-}
-DESTDIR = $$DESTINATION_BIN_PATH
-############### destination path ###############
-
-message(destination sdk path = $$DESTINATION_SDK_PATH)
-
-CONFIG(debug, debug|release) {
-    message(Debug)
-    BOOST_LIBNAME_POSTFIX = -gd
-} else {
-    message(Release)
-}
 #Xls file
-LIBS += -L$$DESTINATION_SDK_PATH -lXlsFormatLib
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lXlsFormatLib
 # odf format writer
-LIBS += -L$$DESTINATION_SDK_PATH -lOdfFileWriterLib
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lOdfFileWriterLib
 # odf format reader
-LIBS += -L$$DESTINATION_SDK_PATH -lOdfFileReaderLib
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lOdfFileReaderLib
 #doc file
-LIBS += -L$$DESTINATION_SDK_PATH -lDocFormatLib
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lDocFormatLib
 # ppt file
-LIBS += -L$$DESTINATION_SDK_PATH -lPptFormatLib
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lPptFormatLib
 #rtf file
-LIBS += -L$$DESTINATION_SDK_PATH -lRtfFormatLib
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lRtfFormatLib
 #txt(xml) file
-LIBS += -L$$DESTINATION_SDK_PATH -lTxtXmlFormatLib
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lTxtXmlFormatLib
 # pdf writer
-LIBS += -L$$DESTINATION_SDK_PATH -lPdfWriter
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lPdfWriter
 #docxfile2
-LIBS += -L$$DESTINATION_SDK_PATH -lASCOfficeDocxFile2Lib
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lASCOfficeDocxFile2Lib
 #pptxformat
-LIBS += -L$$DESTINATION_SDK_PATH -lPPTXFormatLib
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lPPTXFormatLib
 #docxformat
-LIBS += -L$$DESTINATION_SDK_PATH -lDocxFormatLib
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lDocxFormatLib
 #office utils
-LIBS += -L$$DESTINATION_SDK_PATH -lOfficeUtils
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lOfficeUtils
 #graphics
-LIBS += -L$$DESTINATION_SDK_PATH -lgraphics
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lgraphics
 #doctrenderer
-LIBS += -L$$DESTINATION_SDK_PATH -ldoctrenderer
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -ldoctrenderer
 #HtmlRenderer
-LIBS += -L$$DESTINATION_SDK_PATH -lHtmlRenderer
-LIBS += -L$$DESTINATION_SDK_PATH -lPdfReader
-LIBS += -L$$DESTINATION_SDK_PATH -lDjVuFile
-LIBS += -L$$DESTINATION_SDK_PATH -lXpsFile
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lHtmlRenderer
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lPdfReader
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lDjVuFile
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lXpsFile
 #HtmlFile
-LIBS += -L$$DESTINATION_SDK_PATH -lHtmlFile
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lHtmlFile
 #UnicodeConverter
-LIBS += -L$$DESTINATION_SDK_PATH -lUnicodeConverter
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lUnicodeConverter
 #Crypto++
-LIBS += -L$$DESTINATION_SDK_PATH -lCryptoPPLib
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lCryptoPPLib
 
 #####################################################
 # внешнее подключение сторонних библиотек
-win32 {
+
+#BOOST
+CONFIG += core_boost_regex
+include($$PWD/../../../Common/3dParty/boost/boost.pri)
+
+core_windows {
     LIBS += -lurlmon
-    LIBS += -LC:\boost_1_58_0\stage\lib -llibboost_regex-vc120-mt$$BOOST_LIBNAME_POSTFIX-1_58
+    LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -llibxml
 }
 
-linux-g++ | linux-g++-64 | linux-g++-32 {
-    LIBS += -lboost_regex
+core_linux {
     LIBS += -lz
     LIBS += -lxml2
     LIBS += -lcurl
 }
 
 mac {
-    LIBS += -L$$PWD/../../../Common/boost_1_58_0/stage/lib -lboost_regex
-    LIBS += -L$$DESTINATION_SDK_PATH -llibxml
-
+    LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -llibxml
     LIBS += -framework AppKit
 }
 ########################################################

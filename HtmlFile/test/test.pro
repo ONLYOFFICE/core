@@ -11,6 +11,8 @@ TARGET = test
 CONFIG   += console
 CONFIG   -= app_bundle
 
+CONFIG -= debug_and_release debug_and_release_target
+
 DEFINES += HTMLFILE_USE_DYNAMIC_LIBRARY
 DEFINES += UNICODECONVERTER_USE_DYNAMIC_LIBRARY
 
@@ -65,6 +67,9 @@ win32 {
 LIBS += -ladvapi32 \
         -luser32 \
         -lshell32
+
+LIBS        += -L$$PWD/../../build/bin/icu/win_64/ -licudt
+LIBS        += -L$$PWD/../../build/bin/icu/win_64/ -licuuc
 }
 
 SOURCES += main.cpp

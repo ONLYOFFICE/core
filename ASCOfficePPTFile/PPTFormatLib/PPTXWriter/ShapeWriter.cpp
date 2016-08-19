@@ -1297,7 +1297,18 @@ CString NSPresentationEditor::CShapeWriter::ConvertImage()
 		m_pImageElement->m_strImageFileName.clear();
 		m_pImageElement->m_bImagePresent = true;
 	}
+	CString strRid;
+	if (!m_pImageElement->m_strImageFileName.empty())
+	{
+		strRid = m_pRels->WriteImage(m_pImageElement->m_strImageFileName);
+	}	
+	else if (!m_pImageElement->m_sImageName.empty())
+	{
+		strRid = m_pRels->WriteHyperlinkImage(CorrectXmlString3(m_pImageElement->m_sImageName));
+	}	
 	
+	if (strRid.IsEmpty()) return _T("");
+
 	m_oWriter.WriteString(std::wstring(L"<p:pic>"));
 
 	WriteImageInfo();
@@ -1313,18 +1324,8 @@ CString NSPresentationEditor::CShapeWriter::ConvertImage()
 	oInfo.m_lOriginalHeight	= (LONG)m_pImageElement->m_rcBoundsOriginal.GetHeight();
 
 	m_oWriter.WriteString(std::wstring(L"<p:blipFill>"));
-		CString strRid;
-		if (m_pImageElement->m_strImageFileName.empty())
-		{
-			strRid = m_pRels->WriteHyperlinkImage(CorrectXmlString3(m_pImageElement->m_sImageName));
-		}
-		else
-		{
-			strRid = m_pRels->WriteImage(m_pImageElement->m_strImageFileName);
-		}
-
-		CString strWrite = _T("<a:blip r:embed=\"") + strRid + _T("\"/>");
 		
+		CString strWrite = _T("<a:blip r:embed=\"") + strRid + _T("\"/>");
 		m_oWriter.WriteString(strWrite);
 
 		m_oWriter.WriteString(std::wstring(L"<a:srcRect"));

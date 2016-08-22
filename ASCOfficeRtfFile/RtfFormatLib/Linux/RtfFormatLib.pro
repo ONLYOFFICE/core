@@ -152,4 +152,5 @@ HEADERS += \
 
 SOURCES += \
     ../source/RtfMath.cpp \
-    ../source/Reader/OOXMathReader.cpp
+    ../source/Reader/OOXMathReader.cpp \
+    ../source/Reader/OOXDrawingGraphicReader.cpp

@@ -1722,9 +1722,11 @@ HEADERS +=  \
     ../XlsFormat/Logic/Biff_structures/AFDOperXNum.h \
     ../XlsFormat/Logic/Biff_unions/IMDATAOBJECT.h \
     ../XlsFormat/Logic/Biff_records/IMDATA.h \
-    ../XlsFormat/Logic/Biff_structures/CFDatabar.h
+    ../XlsFormat/Logic/Biff_structures/CFDatabar.h \
+    ../XlsFormat/Logic/Biff_structures/CFGradient.h
 
 SOURCES += \
     ../XlsFormat/Logic/Biff_unions/IMDATAOBJECT.cpp \
     ../XlsFormat/Logic/Biff_records/IMDATA.cpp \
-    ../XlsFormat/Logic/Biff_structures/CFDatabar.cpp
+    ../XlsFormat/Logic/Biff_structures/CFDatabar.cpp \
+    ../XlsFormat/Logic/Biff_structures/CFGradient.cpp

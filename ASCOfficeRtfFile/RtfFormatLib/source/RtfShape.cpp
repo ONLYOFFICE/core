@@ -1185,7 +1185,7 @@ CString RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 
 		CString sTextStyle;
 
-		if ( PROP_DEF != m_sGtextFont )
+        if ( !m_sGtextFont.IsEmpty() )
 		{
 			sTextStyle += _T("font-family:") + XmlUtils::EncodeXmlString(m_sGtextFont) + _T(";");//todooo значения как в кавычках так и без - проверить как без
 		}

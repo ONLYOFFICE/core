@@ -2386,7 +2386,16 @@ void ParagraphPropDestination::Finalize( RtfReader& oReader/*, RtfSectionPtr pSe
 				m_oShape.m_aWrapPoints.push_back( nWrapPoint );
 				sWrapPoint = sWrapPair.Tokenize( _T(","), nSubPos);
 				sWrapPoint.Remove(')');
-				nWrapPoint = Strings::ToInteger(sWrapPoint);
+                 try
+                {
+                    nWrapPoint = Strings::ToInteger(sWrapPoint);
+                    //(-90,-() - file_1_(1).rtf
+                }
+                catch(...)
+                {
+                    nWrapPoint = 0;
+                }
+
 				m_oShape.m_aWrapPoints.push_back( nWrapPoint );
 			}
 		}

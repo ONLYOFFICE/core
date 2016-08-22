@@ -105,55 +105,11 @@ protected:
 
 int main(int argc, char *argv[])
 {
-#if 0
-
-    std::vector<std::wstring> arFiles;
-#ifdef WIN32
-    std::wstring sPath = NSFile::GetProcessDirectory() + L"/../../Internal/windows/Release/";
-
-    arFiles.push_back(L"file:///C:/Users/oleg.korshul/Desktop/original_message%20(5).html");
-    std::wstring sDstFolder = L"D:/test/Document";
-#else
-    std::wstring sPath = NSFile::GetProcessDirectory() + L"/../../Internal/linux/Release/";
-
-    arFiles.push_back(L"/home/oleg/activex/test.html");
-    std::wstring sDstFolder = L"/home/oleg/activex/1/";
-#endif
-
-    CHtmlFile oFile;
-    int nResult = oFile.Convert(arFiles, sDstFolder, sPath);
-    nResult;
-
-#else
-
-#ifdef WIN32
-    std::wstring sPath = NSFile::GetProcessDirectory() + L"/../../Internal/windows/Release/";
-
-    //std::wstring sSrc = L"D:\\activex\\1\\1";
-    std::wstring sSrc = L"\\\\192.168.3.208\\allusers\\Files\\HTML\\AllHTML\\embed.html";
-    std::wstring sDstFolder = L"D:/test/Document";
-#else
-    std::wstring sPath = NSFile::GetProcessDirectory() + L"/../../Internal/linux/Release/";
-
-    std::wstring sSrc = L"/home/oleg/activex/37898EB";
-    std::wstring sDstFolder = L"/home/oleg/activex/1/";
-#endif
-
 #if 1
     CHtmlFile oFile;
-    int nResult = oFile.ConvertMht(L"/home/oleg/activex/1/Яндекс.mht", sDstFolder, sPath);
-    //int nResult = oFile.ConvertMht(L"\\\\KIRILLOV8\\_Office\\MHT\\Problem_20091016_1927.mht", sDstFolder, sPath);
-    return 0;
-#endif
-
-#if 0
-    CHtmlFile oFile;
     std::wstring sMetaInfo;
-    //int nResult = oFile.ConvertEpub(sSrc, sMetaInfo, sDstFolder, sPath);
-    std::vector<std::wstring> arFiles;
-    arFiles.push_back(sSrc);
-    int nResult = oFile.Convert(arFiles, sDstFolder, sPath);
-    nResult;
+    int nResult = oFile.ConvertEpub(L"D:/1", sMetaInfo, L"D:/test/Document");
+    return 0;
 #else
 
     int nCountTC = 1;
@@ -170,9 +126,6 @@ int main(int argc, char *argv[])
 
     while (0 != oCounter.GetCounter())
         NSThreads::Sleep(100);
-
-#endif
-
 #endif
 
     return 0;

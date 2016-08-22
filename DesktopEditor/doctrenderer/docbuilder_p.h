@@ -921,13 +921,9 @@ namespace NSDoctRenderer
             NSStringUtils::CStringBuilder oBuilder;
 
             std::wstring _path = path;
-            std::wstring sDstFileDir = NSCommon::GetDirectoryName(_path);
-            if (sDstFileDir.find(L"./") == 0)
-                sDstFileDir = NSFile::GetProcessDirectory() + L"/" + sDstFileDir.substr(2);
-            if (!NSDirectory::Exists(sDstFileDir))
+            std::wstring sDstFileDir = NSCommon::GetDirectoryName(_path);            
+            if ((sDstFileDir != _path) && !NSDirectory::Exists(sDstFileDir))
                 NSDirectory::CreateDirectories(sDstFileDir);
-
-            _path = sDstFileDir + L"/" + NSCommon::GetFileName(path);
 
             oBuilder.WriteString(L"<?xml version=\"1.0\" encoding=\"utf-8\"?><TaskQueueDataConvert><m_sFileFrom>");
             oBuilder.WriteEncodeXmlString(m_sFileDir);

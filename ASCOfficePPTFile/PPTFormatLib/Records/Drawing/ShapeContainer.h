@@ -247,6 +247,7 @@ public:
 		case NSPresentationEditor::etPicture:
 			{
 				//default -> line = false
+				pElement->m_oBrush.Type = c_BrushTypeTexture;
 				pElement->m_bLine = false;
 				for (long i = 0; i < lCount; ++i)
 				{

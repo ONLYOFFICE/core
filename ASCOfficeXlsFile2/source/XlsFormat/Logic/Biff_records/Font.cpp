@@ -99,6 +99,11 @@ void Font::readFields(CFRecord& record)
 	{
 		record >> fontName;
 	}
+
+	if (global_info->fonts_charsets.find(bCharSet) == global_info->fonts_charsets.end())
+	{
+		global_info->fonts_charsets.insert(global_info->fonts_charsets.begin(), std::pair<int,int>(bCharSet, bFamily));
+	}
 }
 
 int Font::serialize(std::wostream & stream)

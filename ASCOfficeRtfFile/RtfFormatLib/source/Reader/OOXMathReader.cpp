@@ -750,6 +750,26 @@ bool OOXMathReader::ParseElement(ReaderParameter oParam , OOX::WritingElement * 
 				}
 			}
 		}break;
+		case OOX::et_m_jc:
+		{
+			OOX::Logic::CMathBottomNodes<SimpleTypes::CMJc<>>* ooxElemMJc =
+							dynamic_cast<OOX::Logic::CMathBottomNodes<SimpleTypes::CMJc<>>*>(ooxMath);
+
+			if ((ooxElemMJc) && (ooxElemMJc->m_val.IsInit()))
+			{
+				RtfCharPtr oChar = RtfCharPtr(new RtfChar);
+				
+				switch(ooxElemMJc->m_val->GetValue())
+				{
+					case SimpleTypes::mjcCenter:		oChar->setText(L"2"); break;	
+					case SimpleTypes::mjcCenterGroup:	oChar->setText(L"1"); break;	
+					case SimpleTypes::mjcLeft:			oChar->setText(L"3"); break;	
+					case SimpleTypes::mjcRight:			oChar->setText(L"4"); break;	
+				}
+				rtfMath->m_oVal.AddItem( oChar );
+				rtfMath->m_bIsVal = true;
+			}
+		}break;
 		default:
 		{
 			OOX::Logic::CMathBottomNodes<SimpleTypes::COnOff<>>* ooxElemBool =
@@ -791,9 +811,6 @@ bool OOXMathReader::ParseElement(ReaderParameter oParam , OOX::WritingElement * 
 			OOX::Logic::CMathBottomNodes<SimpleTypes::CXAlign<>>* ooxElemXAlign =
 							dynamic_cast<OOX::Logic::CMathBottomNodes<SimpleTypes::CXAlign<>>*>(ooxMath);
 
-			OOX::Logic::CMathBottomNodes<SimpleTypes::CMJc<>>* ooxElemMJc =
-							dynamic_cast<OOX::Logic::CMathBottomNodes<SimpleTypes::CMJc<>>*>(ooxMath);
-
 			OOX::Logic::CMathBottomNodes<SimpleTypes::CInteger2<>>* ooxElemInteger2 =
 							dynamic_cast<OOX::Logic::CMathBottomNodes<SimpleTypes::CInteger2<>>*>(ooxMath);
 
@@ -809,8 +826,9 @@ bool OOXMathReader::ParseElement(ReaderParameter oParam , OOX::WritingElement * 
 			OOX::WritingElementWithChilds<OOX::WritingElement>* ooxElemArray = 
 							dynamic_cast<OOX::WritingElementWithChilds<OOX::WritingElement>*>(ooxMath);
 	//----------------------------------
-			nullable<CString> sVal;
-			if ((ooxElemBool) && (ooxElemBool->m_val.IsInit()))			sVal = ooxElemBool->m_val->ToString2(SimpleTypes::onofftostringOn);
+			nullable<CString>	sVal;
+			
+			if ((ooxElemBool) && (ooxElemBool->m_val.IsInit()))						sVal = ooxElemBool->m_val->ToString2(SimpleTypes::onofftostringOn);
 			else if ((ooxElemChar) && (ooxElemChar->m_val.IsInit()))				sVal = ooxElemChar->m_val->GetValue();
 			else if ((ooxElemMeasure) && (ooxElemMeasure->m_val.IsInit()))			sVal = ooxElemMeasure->m_val->ToString();
 			else if ((ooxElemInt255) && (ooxElemInt255->m_val.IsInit()))			sVal = ooxElemInt255->m_val->ToString();
@@ -823,7 +841,6 @@ bool OOXMathReader::ParseElement(ReaderParameter oParam , OOX::WritingElement * 
 			else if ((ooxElemScript) && (ooxElemScript->m_val.IsInit()))			sVal = ooxElemScript->m_val->ToString();
 			else if ((ooxElemSpacingRule) && (ooxElemSpacingRule->m_val.IsInit()))	sVal = ooxElemSpacingRule->m_val->ToString();
 			else if ((ooxElemXAlign) && (ooxElemXAlign->m_val.IsInit()))			sVal = ooxElemXAlign->m_val->ToString();
-			else if ((ooxElemMJc) && (ooxElemMJc->m_val.IsInit()))					sVal = ooxElemMJc->m_val->ToString();
 			else if ((ooxElemInteger2) && (ooxElemInteger2->m_val.IsInit()))		sVal = ooxElemInteger2->m_val->ToString();
 			else if ((ooxElemYAlign) && (ooxElemYAlign->m_val.IsInit()))			sVal = ooxElemYAlign->m_val->ToString();
 			else if ((ooxElemBreakBin) && (ooxElemBreakBin->m_val.IsInit()))		sVal = ooxElemBreakBin->m_val->ToString();
@@ -838,8 +855,11 @@ bool OOXMathReader::ParseElement(ReaderParameter oParam , OOX::WritingElement * 
 			else if (sVal.IsInit())
 			{
 				rtfMath->m_bIsVal = true;
+				
 				RtfCharPtr oChar = RtfCharPtr(new RtfChar);
-				oChar->setText( *sVal );
+				if (!sVal->IsEmpty())
+					oChar->setText( L" " + *sVal );
+				
 				rtfMath->m_oVal.AddItem( oChar );
 			}
 			else

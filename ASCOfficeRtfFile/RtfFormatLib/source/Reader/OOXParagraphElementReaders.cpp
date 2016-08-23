@@ -315,6 +315,17 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 					m_oRunReader.Parse( oParam, oOutputParagraph, poExternalStyle );
 				}		
 			}break;
+			case OOX::et_m_oMath:
+			{
+				OOX::Logic::COMath * pMath = dynamic_cast<OOX::Logic::COMath*>(m_ooxElement->m_arrItems[i]);
+				
+				RtfMathPtr oNewMath( new RtfMath() );
+				oNewMath->SetOOXType( OOX::et_m_oMath );
+				
+				OOXMathReader oMathRreader(pMath);
+				if(true == oMathRreader.Parse( oParam, (*oNewMath) ) )
+					oOutputParagraph.AddItem( oNewMath );
+			}break;
 			case OOX::et_m_oMathPara:
 			{
 				OOX::Logic::COMathPara * pMathPara = dynamic_cast<OOX::Logic::COMathPara*>(m_ooxElement->m_arrItems[i]);

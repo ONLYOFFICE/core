@@ -95,19 +95,12 @@ CString RtfMath::RenderToRtf(RenderParameter oRenderParameter)
     sResult.AppendFormat(_T("{\\%ls"), m_sRtfName.GetBuffer());
 	RenderParameter oNewParameter = oRenderParameter;
 
-	if (m_sRtfName == L"mctrlPr")
-	{
-		m_bIsVal = m_bIsVal;
-	}
-
 	CString sVal;
 
 	if (m_bIsVal)
 	{
 		oNewParameter.nType = RENDER_TO_RTF_PARAM_CHAR;
 		sVal = m_oVal.RenderToRtf( oNewParameter ) ;
-		if (!sVal.IsEmpty())
-			sVal = _T(" ") + sVal;
 	}
 	else
 	{

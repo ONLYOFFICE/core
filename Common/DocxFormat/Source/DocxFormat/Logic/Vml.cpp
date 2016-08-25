@@ -551,8 +551,10 @@ namespace OOX
 			if ( 0 != m_oSpt.GetValue() )
 				sResult += _T("o:spt=\"") + m_oSpt.ToString() + _T("\" ");
 
-			if ( SimpleTypes::connectortypeStraight != m_oConnectorType.GetValue() )
-				sResult += _T("o:connectortype=\"") + m_oConnectorType.ToString() + _T("\" ");
+			if (m_oConnectorType.IsInit())
+			{
+				sResult += _T("o:connectortype=\"") + m_oConnectorType->ToString() + _T("\" ");
+			}
 
 			ComplexTypes_WriteAttribute ( _T("o:bwmode=\""),   m_oBwMode );
 			ComplexTypes_WriteAttribute ( _T("o:bwpure=\""),   m_oBwPure );

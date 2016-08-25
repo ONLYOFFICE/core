@@ -199,7 +199,7 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 						RtfCharPtr oNewChar( new RtfChar() );
 						oNewChar->m_bRtfEncode = false;
 						CString sFieldText;
-                        sFieldText.AppendFormat(_T("HYPERLINK \"%ls\""), sTarget.GetBuffer() );
+                        sFieldText += _T("HYPERLINK \"") + sTarget + _T("\"");
 						oNewChar->setText( sFieldText );
 						RtfParagraphPtr oNewInsertParagraph( new RtfParagraph() );
 						oNewInsertParagraph->AddItem( oNewChar );
@@ -470,20 +470,13 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 				if (ooxObject->m_oShape.IsInit())
 				{
 					RtfShapePtr oNewShape( new RtfShape() );
-					oNewShape->m_eShapeType = RtfShape::st_inline;
+					oNewShape->m_eAnchorTypeShape = RtfShape::st_inline;
 					
 					OOXShapeReader oShapeReader(ooxObject->m_oShape.GetPointer());
 					if( true == oShapeReader.Parse( oParam, oNewShape ) )
 						 aPictShape = oNewShape;
 				}
-				//if (ooxObject->m_oGroupShape.IsInit())
-				//{
-				//	RtfShapeGroupPtr oNewShape( new RtfShapeGroup() );
-				//	oNewShape->m_eShapeType = RtfShape::st_inline;
-				//	OOXShapeGroupReader oShapeReader;
-				//	if( true == oShapeReader.Parse( oParam, oNewShape ) )
-				//		 aPictShape = oNewShape;
-				//}
+
 				if (ooxObject->m_oOleObject.IsInit())
 				{
 					RtfOlePtr oNewOle( new RtfOle() );
@@ -608,23 +601,35 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 		{
 			OOX::Logic::CPicture *ooxPicture = dynamic_cast<OOX::Logic::CPicture*>(ooxItem);
 			if( ooxPicture) 
-			{//todooo - groups & custom
-				RtfShapePtr oNewShape( new RtfShape() );
-				OOXShapeReader *pShapeReader = NULL;
-				
-					 if (ooxPicture->m_oShape.IsInit())			pShapeReader = new OOXShapeReader(ooxPicture->m_oShape.GetPointer());
-				else if (ooxPicture->m_oShapeRect.IsInit())		pShapeReader = new OOXShapeReader(ooxPicture->m_oShapeRect.GetPointer());
-				else if (ooxPicture->m_oShapeRoundRect.IsInit())pShapeReader = new OOXShapeReader(ooxPicture->m_oShapeRoundRect.GetPointer());
-				else if (ooxPicture->m_oShapeOval.IsInit())		pShapeReader = new OOXShapeReader(ooxPicture->m_oShapeOval.GetPointer());
-				else if (ooxPicture->m_oShapeLine.IsInit())		pShapeReader = new OOXShapeReader(ooxPicture->m_oShapeLine.GetPointer());
-				else if (ooxPicture->m_oShapePolyLine.IsInit())	pShapeReader = new OOXShapeReader(ooxPicture->m_oShapePolyLine.GetPointer());
-				else if (ooxPicture->m_oShapeCurve.IsInit())	pShapeReader = new OOXShapeReader(ooxPicture->m_oShapeCurve.GetPointer());
-				
-				if (pShapeReader)
+			{
+				if (ooxPicture->m_oShapeGroup.IsInit())
 				{
-					if( true == pShapeReader->Parse( oParam, oNewShape ) )
-						 oOutputParagraph.AddItem( oNewShape );		
-					delete pShapeReader;
+					RtfShapeGroupPtr oNewShape( new RtfShapeGroup() );
+					OOXShapeGroupReader oShapeGroupReader(ooxPicture->m_oShapeGroup.GetPointer());
+					if( true == oShapeGroupReader.Parse( oParam, oNewShape ) )
+						 oOutputParagraph.AddItem( oNewShape );
+				}		
+				else 
+				{
+					RtfShapePtr oNewShape( new RtfShape() );
+					OOXShapeReader *pShapeReader = NULL;
+					
+						 if (ooxPicture->m_oShape.IsInit())			pShapeReader = new OOXShapeReader(ooxPicture->m_oShape.GetPointer());
+					else if (ooxPicture->m_oShapeType.IsInit())		pShapeReader = new OOXShapeReader(ooxPicture->m_oShapeType.GetPointer());
+					else if (ooxPicture->m_oShapeArc.IsInit())		pShapeReader = new OOXShapeReader(ooxPicture->m_oShapeArc.GetPointer());
+					else if (ooxPicture->m_oShapeRect.IsInit())		pShapeReader = new OOXShapeReader(ooxPicture->m_oShapeRect.GetPointer());
+					else if (ooxPicture->m_oShapeRoundRect.IsInit())pShapeReader = new OOXShapeReader(ooxPicture->m_oShapeRoundRect.GetPointer());
+					else if (ooxPicture->m_oShapeOval.IsInit())		pShapeReader = new OOXShapeReader(ooxPicture->m_oShapeOval.GetPointer());
+					else if (ooxPicture->m_oShapeLine.IsInit())		pShapeReader = new OOXShapeReader(ooxPicture->m_oShapeLine.GetPointer());
+					else if (ooxPicture->m_oShapePolyLine.IsInit())	pShapeReader = new OOXShapeReader(ooxPicture->m_oShapePolyLine.GetPointer());
+					else if (ooxPicture->m_oShapeCurve.IsInit())	pShapeReader = new OOXShapeReader(ooxPicture->m_oShapeCurve.GetPointer());
+					
+					if (pShapeReader)
+					{
+						if( true == pShapeReader->Parse( oParam, oNewShape ) )
+							 oOutputParagraph.AddItem( oNewShape );		
+						delete pShapeReader;
+					}
 				}
 			}
 		}break;
@@ -765,7 +770,11 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 				int nFontSize = 10;
 				if( PROP_DEF != oNewProperty.m_nFontSize )
 					nFontSize = oNewProperty.m_nFontSize / 2;
-                sFieldText.AppendFormat(_T("SYMBOL %d \\\\f \"%ls\" \\\\s %d"), nChar, sFont.GetBuffer(), nFontSize );
+
+                sFieldText.AppendFormat(_T("SYMBOL %d \\\\f \""), nChar);
+				sFieldText += sFont;
+				sFieldText.AppendFormat(_T("\" \\\\s %d"), nFontSize );
+				
 				oNewChar->setText( sFieldText );
 				RtfParagraphPtr oNewInsertParagraph( new RtfParagraph() );
 				oNewInsertParagraph->AddItem( oNewChar );

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="gb2312"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="8,00"
 	Name="cryptlib"
 	ProjectGUID="{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}"
 	RootNamespace="cryptlib"
@@ -14,6 +14,8 @@
 			Name="x64"
 		/>
 	</Platforms>
+	<ToolFiles>
+	</ToolFiles>
 	<Configurations>
 		<Configuration
 			Name="Release|Win32"
@@ -30,6 +32,15 @@
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -64,6 +75,9 @@
 			/>
 			<Tool
 				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
 			/>
 			<Tool
 				Name="VCBscMakeTool"
@@ -92,6 +106,15 @@
 				Name="VCCustomBuildTool"
 			/>
 			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
+			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="2"
@@ -126,6 +149,9 @@
 				Name="VCALinkTool"
 			/>
 			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
 				Name="VCBscMakeTool"
 			/>
 			<Tool
@@ -150,6 +176,15 @@
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -184,6 +219,9 @@
 			/>
 			<Tool
 				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
 			/>
 			<Tool
 				Name="VCBscMakeTool"
@@ -212,6 +250,15 @@
 				Name="VCCustomBuildTool"
 			/>
 			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
+			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="2"
@@ -246,6 +293,9 @@
 				Name="VCALinkTool"
 			/>
 			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
 				Name="VCBscMakeTool"
 			/>
 			<Tool
@@ -272,11 +322,20 @@
 				Name="VCCustomBuildTool"
 			/>
 			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
+			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				EnableIntrinsicFunctions="true"
 				PreprocessorDefinitions="_DEBUG;_WINDOWS;USE_PRECOMPILED_HEADERS;WIN32"
-				RuntimeLibrary="1"
+				RuntimeLibrary="3"
 				EnableEnhancedInstructionSet="1"
 				UsePrecompiledHeader="2"
 				PrecompiledHeaderThrough="pch.h"
@@ -301,6 +360,9 @@
 			/>
 			<Tool
 				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
 			/>
 			<Tool
 				Name="VCBscMakeTool"
@@ -329,11 +391,20 @@
 				Name="VCCustomBuildTool"
 			/>
 			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
+			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				EnableIntrinsicFunctions="true"
 				PreprocessorDefinitions="_DEBUG;_WINDOWS;USE_PRECOMPILED_HEADERS;WIN32"
-				RuntimeLibrary="1"
+				RuntimeLibrary="3"
 				UsePrecompiledHeader="2"
 				PrecompiledHeaderThrough="pch.h"
 				ProgramDataBaseFileName="$(OutDir)\vc80.pdb"
@@ -357,6 +428,9 @@
 			/>
 			<Tool
 				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
 			/>
 			<Tool
 				Name="VCBscMakeTool"
@@ -385,6 +459,15 @@
 				Name="VCCustomBuildTool"
 			/>
 			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
+			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				EnableIntrinsicFunctions="true"
@@ -413,6 +496,9 @@
 			/>
 			<Tool
 				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
 			/>
 			<Tool
 				Name="VCBscMakeTool"
@@ -441,6 +527,15 @@
 				Name="VCCustomBuildTool"
 			/>
 			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
+			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				EnableIntrinsicFunctions="true"
@@ -469,6 +564,9 @@
 			/>
 			<Tool
 				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
 			/>
 			<Tool
 				Name="VCBscMakeTool"
@@ -3130,80 +3228,6 @@
 			</File>
 			<File
 				RelativePath="fips140.cpp"
-				>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|x64"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DLL-Import Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DLL-Import Release|x64"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|x64"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DLL-Import Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DLL-Import Debug|x64"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="fipstest.cpp"
 				>
 				<FileConfiguration
 					Name="Release|Win32"

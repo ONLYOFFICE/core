@@ -54,10 +54,11 @@ CString RtfOldList::RenderToOOX(RenderParameter oRenderParameter)
 			CString sText = m_oLevelText->RenderToOOX( oNewParameter );
 
 			sResult.AppendFormat( _T("<w:abstractNum w:abstractNumId=\"%d\">"), m_nLs );
-			sResult.Append(_T("<w:multiLevelType w:val=\"singleLevel\" />"));
-			sResult.Append(_T("<w:lvl w:ilvl=\"0\">"));
-			sResult.Append(_T("<w:numFmt w:val=\"bullet\"/>"));
-			if( false == sText.IsEmpty() )
+			sResult += _T("<w:multiLevelType w:val=\"singleLevel\" />");
+			sResult += _T("<w:lvl w:ilvl=\"0\">");
+			sResult += _T("<w:numFmt w:val=\"bullet\"/>");
+			
+			if(!sText.IsEmpty() )
                 sResult.AppendFormat(_T("<w:lvlText w:val=\"%ls\"/>"), Utils::PrepareToXML( sText ).GetBuffer() );
 			else
 			{

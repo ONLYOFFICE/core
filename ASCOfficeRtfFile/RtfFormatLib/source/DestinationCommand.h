@@ -1126,7 +1126,7 @@ public:
 			return true;
 		else if( _T("pict") == sCommand )
 		{
-			m_oShape.m_eShapeType = RtfShape::st_inline;
+			m_oShape.m_eAnchorTypeShape = RtfShape::st_inline;
 			m_oShape.m_nShapeType = 75;
 			m_oShape.m_nWrapType = 3; // none
 			m_oShape.m_nPositionHRelative = 3;//TCHAR
@@ -1165,7 +1165,7 @@ public:
 		}
 		else if( _T("pict") == sCommand )
 		{
-			m_oShape.m_eShapeType = RtfShape::st_inline;
+			m_oShape.m_eAnchorTypeShape = RtfShape::st_inline;
 			m_oShape.m_nShapeType = 75;
 			m_oShape.m_nWrapType = 3; // none
 			m_oShape.m_nPositionHRelative = 3;//TCHAR
@@ -1523,13 +1523,12 @@ private:
 	RtfParagraphPtr m_oCurParagraph;
 
 //реальные параграфы и таблицы
-	std::vector< ITextItemPtr > aCellRenderables;
-	std::vector< int > aItaps; //вложенность параграфов
-	std::vector< RtfTableCellPtr > aCells;
-	std::vector< int > aCellItaps; //вложенность cell
-	std::vector< RtfTableRowPtr > aRows;
-	std::vector< int > aRowItaps; //вложенность row
-	int nCurItap;
+	std::vector< ITextItemPtr >		aCellRenderables;
+	std::vector< int >				aItaps; //вложенность параграфов
+	std::vector< RtfTableCellPtr >	aCells;
+	std::vector< int >				aCellItaps; //вложенность cell
+	std::vector< RtfTableRowPtr >	aRows;
+	std::vector< int >				aRowItaps; //вложенность row
 	RtfRowProperty oCurRowProperty;
 
 	RtfReader* m_oReader;
@@ -1537,16 +1536,17 @@ private:
 public: 
 	TextItemContainerPtr m_oTextItems;	//для разбивки на TextItem
 	int nTargetItap;		//уровень который считается не таблицей ( для того чтобы читать параграфы в таблицах )
+	int nCurItap;
 	RtfTab m_oCurTab;
 
 	ParagraphPropDestination( )
 	{
-		nTargetItap = PROP_DEF;
-		m_bPar = false;
-		m_oTextItems = TextItemContainerPtr( new TextItemContainer() );
-		nCurItap = 0;//main document
-		m_eInternalState = is_normal;
-		m_oCurParagraph = RtfParagraphPtr(new RtfParagraph());
+		nTargetItap			= PROP_DEF;
+		m_bPar				= false;
+		m_oTextItems		= TextItemContainerPtr( new TextItemContainer() );
+		nCurItap			= 0;//main document
+		m_eInternalState	= is_normal;
+		m_oCurParagraph		= RtfParagraphPtr(new RtfParagraph());
 	}
 	bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,RtfAbstractReader& oAbstrReader,CString sCommand, bool hasParameter, int parameter);
 	void ExecuteText(RtfDocument& oDocument, RtfReader& oReader, CString sText)

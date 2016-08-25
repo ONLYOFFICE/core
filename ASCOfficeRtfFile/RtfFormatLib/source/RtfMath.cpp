@@ -90,9 +90,9 @@ CString RtfMath::RenderToRtf(RenderParameter oRenderParameter)
 
 	CString sResult;
 	if( RENDER_TO_RTF_PARAM_NESTED != oRenderParameter.nType )
-		sResult.Append(_T("{\\mmath"));
+		sResult += _T("{\\mmath");
 
-    sResult.AppendFormat(_T("{\\%ls"), m_sRtfName.GetBuffer());
+    sResult += _T("{\\") + m_sRtfName;
 	RenderParameter oNewParameter = oRenderParameter;
 
 	CString sVal;
@@ -120,10 +120,10 @@ CString RtfMath::RenderToRtf(RenderParameter oRenderParameter)
 		for( int i = 0; i < (int)m_aArray.size(); i++ )
 			sResult.Append(m_aArray[i]->RenderToRtf( oNewParameter ));
 	}
-	sResult.Append(_T("}"));
+	sResult += _T("}");
 
 	if( RENDER_TO_RTF_PARAM_NESTED != oRenderParameter.nType )
-        sResult.AppendFormat(_T("}"), m_sRtfName.GetBuffer());
+        sResult += _T("}");// m_sRtfName
 	return sResult;
 }
 CString RtfMath::RenderToOOX(RenderParameter oRenderParameter)

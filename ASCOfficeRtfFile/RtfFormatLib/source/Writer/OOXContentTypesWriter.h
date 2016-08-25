@@ -80,19 +80,31 @@ private:
 	CString CreateXml()
 	{
 		CString sResult;
-		sResult.Append( _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>") );
+		sResult += _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>");
 		sResult.AppendChar('\n');
-		sResult.Append( _T("<Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">") );
+		sResult += _T("<Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">");
 
-		sResult.Append( _T("<Default Extension=\"rels\" ContentType=\"application/vnd.openxmlformats-package.relationships+xml\"/>") );
-		sResult.Append( _T("<Default Extension=\"xml\" ContentType=\"application/xml\"/>") );
+		sResult += _T("<Default Extension=\"rels\" ContentType=\"application/vnd.openxmlformats-package.relationships+xml\"/>");
+		sResult += _T("<Default Extension=\"xml\" ContentType=\"application/xml\"/>");
 
 		for( int i = 0; i < (int)m_aExtensions.size(); i++ )
-            sResult.AppendFormat( _T("<Default Extension=\"%ls\" ContentType=\"%ls\"/>"), m_aExtensions[i].GetBuffer(), m_aExtTypes[i].GetBuffer());
+		{
+            sResult += _T("<Default Extension=\"");
+			sResult += m_aExtensions[i];
+			sResult += _T("\" ContentType=\"");
+			sResult += m_aExtTypes[i];
+			sResult += _T("\"/>");
+		}
 
 		for( int i = 0; i < (int)m_aTargets.size(); i++ )
-            sResult.AppendFormat( _T("<Override PartName=\"%ls\" ContentType=\"%ls\"/>"), m_aTargets[i].GetBuffer(), m_aTypes[i].GetBuffer());
-		sResult.Append( _T("</Types>") );
+		{
+            sResult += _T("<Override PartName=\"");
+			sResult += m_aTargets[i];
+			sResult += _T("\" ContentType=\"");
+			sResult += m_aTypes[i];
+			sResult += _T("\"/>");
+		}
+		sResult += _T("</Types>");
 		return sResult;
 	}
 };

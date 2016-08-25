@@ -46,7 +46,7 @@ public:
 		if (m_ooxInline == NULL) return false;
 
 		oOutput.m_oPicture = RtfPicturePtr( new RtfPicture() );
-		oOutput.m_eShapeType = RtfShape::st_inline;
+		oOutput.m_eAnchorTypeShape = RtfShape::st_inline;
 		oOutput.m_nShapeType = 75;
 		oOutput.m_nLeft = 0;
 		oOutput.m_nTop = 0;

@@ -55,7 +55,7 @@ CString RtfBookmarkStart::RenderToOOX(RenderParameter oRenderParameter)
 {
 	CString sResult;
 	//ATLASSERT( false == m_sName.IsEmpty() );
-	sResult.Append(_T("<w:bookmarkStart"));
+	sResult += _T("<w:bookmarkStart");
 	
 	OOXWriter	* poOOXWriter	= static_cast<OOXWriter*>	( oRenderParameter.poWriter );
 	RtfDocument	* poDocument	= static_cast<RtfDocument*>	(oRenderParameter.poDocument);
@@ -75,8 +75,8 @@ CString RtfBookmarkStart::RenderToOOX(RenderParameter oRenderParameter)
 		sResult.AppendFormat(_T(" w:colFirst =\"%d\""), nID);
 	if( PROP_DEF != nLastColumn )
 		sResult.AppendFormat(_T(" w:colLast =\"%d\""), nID);
-    sResult.AppendFormat(_T(" w:name =\"%ls\""), Utils::PrepareToXML( m_sName ).GetBuffer() );
-	sResult.Append(_T("/>"));
+    sResult += _T(" w:name =\"") + Utils::PrepareToXML( m_sName ) + _T("\"");
+	sResult += _T("/>");
 	return sResult;
 }
 CString RtfBookmarkEnd::RenderToRtf(RenderParameter oRenderParameter)

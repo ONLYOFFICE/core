@@ -957,33 +957,35 @@ CString RtfListLevelProperty::RenderToOOX2(RenderParameter oRenderParameter, int
 	{
 		sResult.AppendFormat( _T("<w:lvl w:ilvl=\"%d\""), nLevel ); 
 		RENDER_OOX_BOOL_ATTRIBUTE( m_bTentative, sResult, _T("w:tentative"))
-		sResult.Append(_T(">")); 
+		sResult += _T(">"); 
 
 		if( PROP_DEF != m_nJustification )
 		{
 			switch( m_nJustification )
 			{
-				case 0:sResult.Append(_T("<w:lvlJc w:val=\"left\" />")); break;
-				case 1:sResult.Append(_T("<w:lvlJc w:val=\"center\" />")); break;
-				case 2:sResult.Append(_T("<w:lvlJc w:val=\"right\" />")); break;
+				case 0:	sResult += _T("<w:lvlJc w:val=\"left\"/>");		break;
+				case 1:	sResult += _T("<w:lvlJc w:val=\"center\"/>");	break;
+				case 2:	sResult += _T("<w:lvlJc w:val=\"right\"/>");	break;
 			}
 		}
 		if( 1 == m_nNoRestart)
-			sResult.Append(_T("<w:lvlRestart w:val=\"0\"/>"));
+			sResult += _T("<w:lvlRestart w:val=\"0\"/>");
 		if( 1 ==  m_nLegal)
-			sResult.Append(_T("<w:isLgl />")); 
+			sResult += _T("<w:isLgl/>"); 
 
-        sResult.AppendFormat( _T("<w:lvlText w:val=\"%ls\"/>"), GetLevelTextOOX().GetBuffer() );
-        sResult.AppendFormat(_T("<w:numFmt w:val=\"%ls\" />"), GetFormat(m_nNumberType).GetBuffer() );
+        sResult += _T("<w:lvlText w:val=\"") + GetLevelTextOOX() + _T("\"/>");
+        sResult += _T("<w:numFmt w:val=\"") + GetFormat(m_nNumberType) + _T("\"/>");
+		
 		RENDER_OOX_INT( m_nPictureIndex, sResult, _T("w:lvlPicBulletId") )
 		RENDER_OOX_INT( m_nStart, sResult, _T("w:start") )
+		
 		if( PROP_DEF != m_nFollow )
 		{
 			switch( m_nFollow )
 			{
-				case 0: sResult.Append( _T("<w:suff w:val=\"tab\" />") );break;
-				case 1: sResult.Append( _T("<w:suff w:val=\"space\" />") );break;
-				case 2: sResult.Append( _T("<w:suff w:val=\"nothing\" />") );break;
+				case 0: sResult += _T("<w:suff w:val=\"tab\"/>");		break;
+				case 1: sResult += _T("<w:suff w:val=\"space\"/>");		break;
+				case 2: sResult += _T("<w:suff w:val=\"nothing\"/>");	break;
 			}
 		}
 
@@ -998,22 +1000,24 @@ CString RtfListLevelProperty::RenderToOOX2(RenderParameter oRenderParameter, int
 		}
 		RENDER_OOX_INT_ATTRIBUTE( m_nIndent, sIndent, _T("w:left") )
 		RENDER_OOX_INT_ATTRIBUTE( m_nIndentStart, sIndent, _T("w:start") )
-		if( false == sIndent.IsEmpty() )
-            spPr.AppendFormat(_T("<w:ind %ls/>"), sIndent.GetBuffer());
+		
+		if( !sIndent.IsEmpty() )
+            spPr += _T("<w:ind ") + sIndent + _T("/>");
 
-		spPr.Append( m_oTabs.RenderToOOX( oRenderParameter ) );
+		spPr += m_oTabs.RenderToOOX( oRenderParameter );
 
-		if( false == spPr.IsEmpty() )
-            sResult.AppendFormat(_T("<w:pPr>%ls</w:pPr>"), spPr.GetBuffer());
+		if( !spPr.IsEmpty() )
+            sResult += _T("<w:pPr>") + spPr + _T("</w:pPr>");
 
-		CString srPr;
 		RenderParameter oNewParam = oRenderParameter;
 		oNewParam.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
-		srPr.Append( m_oCharProp.RenderToOOX(oNewParam) ); 
-		if( false == srPr.IsEmpty() )
-            sResult.AppendFormat(_T("<w:rPr>%ls</w:rPr>"), srPr.GetBuffer());
+		
+		CString srPr = m_oCharProp.RenderToOOX(oNewParam);
 
-		sResult.Append(_T("</w:lvl>")); 
+		if( !srPr.IsEmpty() )
+            sResult += _T("<w:rPr>") + srPr + _T("</w:rPr>");
+
+		sResult += _T("</w:lvl>"); 
 	}
 	return sResult;		
 }

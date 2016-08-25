@@ -39,15 +39,15 @@ CString RtfDocumentProperty::RenderToRtf(RenderParameter oRenderParameter)
 	{
 		case cp_ansi: 
 			{
-				sResult.Append( _T("\\ansi") );
+				sResult += _T("\\ansi");
 				if( PROP_DEF != m_nAnsiCodePage )
 					sResult.AppendFormat( _T("\\ansicpg%d"), m_nAnsiCodePage );
 
 				break;
 			}
-		case cp_mac: sResult.Append( _T("\\mac") );break;
-		case cp_pc: sResult.Append( _T("\\pc") );break;
-		case cp_pca: sResult.Append( _T("\\pca") );break;
+		case cp_mac:	sResult += _T("\\mac" );	break;
+		case cp_pc:		sResult += _T("\\pc" );		break;
+		case cp_pca:	sResult += _T("\\pca" );	break;
 	}
 	RENDER_RTF_BOOL( m_bHypCaps, sResult, _T("hyphcaps") )
 	RENDER_RTF_BOOL( m_bAutoHyp, sResult, _T("hyphauto") )
@@ -85,46 +85,47 @@ CString RtfDocumentProperty::RenderToRtf(RenderParameter oRenderParameter)
 
 	//footnote, endnote property
 	if( PROP_DEF != m_nFootnoteNumberingFormat )
-		sResult.Append( _T("\\") + GetRtfFormat(m_nFootnoteNumberingFormat, true) );
+		sResult += _T("\\") + GetRtfFormat(m_nFootnoteNumberingFormat, true);
 	RENDER_RTF_INT( m_nFootnoteStart, sResult, _T("ftnstart") )
 	if( PROP_DEF != m_eFootnoteRestart )
 	{
 		switch( m_eFootnoteRestart )
 		{
-		case fr_EachPage: sResult.Append( _T("ftnrstpg") ); break;
-		case fr_EachSection: sResult.Append( _T("ftnrestart") ); break;
-		case fr_Continuous: sResult.Append( _T("ftnrstcont") ); break;
+		case fr_EachPage:		sResult += _T("ftnrstpg") ;		break;
+		case fr_EachSection:	sResult += _T("ftnrestart");	break;
+		case fr_Continuous:		sResult += _T("ftnrstcont");	break;
 		}
 	}
 	if( PROP_DEF != m_eFootnotePlacement )
 	{
 		switch( m_eFootnoteRestart )
 		{
-		case fp_EndSection: sResult.Append( _T("endnotes") ); break;
-		case fp_EndDocument: sResult.Append( _T("enddoc") ); break;
-		case fp_BeneathText: sResult.Append( _T("ftntj") ); break;
-		case fp_BottomPage: sResult.Append( _T("ftnbj") ); break;
+		case fp_EndSection:		sResult += _T("endnotes");	break;
+		case fp_EndDocument:	sResult += _T("enddoc");	break;
+		case fp_BeneathText:	sResult += _T("ftntj");		break;
+		case fp_BottomPage:		sResult += _T("ftnbj");		break;
 		}
 	}
 	if( PROP_DEF != m_nEndnoteNumberingFormat )
-		sResult.Append( _T("\\") + GetRtfFormat(m_nEndnoteNumberingFormat, false) );
+		sResult += _T("\\") + GetRtfFormat(m_nEndnoteNumberingFormat, false);
+
 	RENDER_RTF_INT( m_nEndnoteStart, sResult, _T("aftnstart") )
 	if( PROP_DEF != m_eEndnoteRestart )
 	{
 		switch( m_eEndnoteRestart )
 		{
-		case er_EachSection: sResult.Append( _T("aftnrestart") ); break;
-		case er_Continuous: sResult.Append( _T("aftnrstcont") ); break;
+		case er_EachSection:	sResult += _T("aftnrestart"); break;
+		case er_Continuous:		sResult += _T("aftnrstcont"); break;
 		}
 	}
 	if( PROP_DEF != m_eEndnotePlacement )
 	{
 		switch( m_eEndnotePlacement )
 		{
-		case ep_EndSection: sResult.Append( _T("aendnotes") ); break;
-		case ep_EndDocument: sResult.Append( _T("aenddoc") ); break;
-		case ep_BeneathText: sResult.Append( _T("aftntj") ); break;
-		case ep_BottomPage: sResult.Append( _T("aftnbj") ); break;
+		case ep_EndSection:		sResult += _T("aendnotes"); break;
+		case ep_EndDocument:	sResult += _T("aenddoc");	break;
+		case ep_BeneathText:	sResult += _T("aftntj");	break;
+		case ep_BottomPage:		sResult += _T("aftnbj");	break;
 		}
 	}
 
@@ -132,7 +133,7 @@ CString RtfDocumentProperty::RenderToRtf(RenderParameter oRenderParameter)
 	RENDER_RTF_INT( m_bSplitPageBrake, sResult, _T("spltpgpar") )
 
 	if( 0 != m_bHtmlAutoSpace )
-		sResult.Append( _T("\\htmautsp") );
+		sResult += _T("\\htmautsp");
 
 	return sResult;
 }
@@ -142,9 +143,9 @@ CString RtfDocumentProperty::RenderToOOX(RenderParameter oRenderParameter)
 	if( PROP_DEF != m_bHypCaps )
 	{
 		if( 0 == m_bHypCaps )
-			sResult.Append( _T("<w:doNotHyphenateCaps w:val=\"true\"/>") );
+			sResult += _T("<w:doNotHyphenateCaps w:val=\"true\"/>");
 		else
-			sResult.Append( _T("<w:doNotHyphenateCaps w:val=\"false\"/>") );
+			sResult += _T("<w:doNotHyphenateCaps w:val=\"false\"/>");
 	}
 	RENDER_OOX_BOOL( m_bAutoHyp, sResult, _T("w:autoHyphenation") )
 	RENDER_OOX_INT( m_nMaxHypen, sResult, _T("w:consecutiveHyphenLimit") )
@@ -157,16 +158,16 @@ CString RtfDocumentProperty::RenderToOOX(RenderParameter oRenderParameter)
 	if( PROP_DEF != m_bDorderSurroundHeader )
 	{
 		if( 0 == m_bDorderSurroundHeader )
-			sResult.Append( _T("<w:bordersDoNotSurroundHeader w:val=\"true\"/>") );
+			sResult += _T("<w:bordersDoNotSurroundHeader w:val=\"true\"/>");
 		else
-			sResult.Append( _T("<w:bordersDoNotSurroundHeader w:val=\"false\"/>") );
+			sResult += _T("<w:bordersDoNotSurroundHeader w:val=\"false\"/>");
 	}
 	if( PROP_DEF != m_bDorderSurroundFotter )
 	{
 		if( 0 == m_bDorderSurroundFotter )
-			sResult.Append( _T("<w:bordersDoNotSurroundFooter w:val=\"true\"/>") );
+			sResult += _T("<w:bordersDoNotSurroundFooter w:val=\"true\"/>");
 		else
-			sResult.Append( _T("<w:bordersDoNotSurroundFooter w:val=\"false\"/>") );
+			sResult += _T("<w:bordersDoNotSurroundFooter w:val=\"false\"/>");
 	}
 	RENDER_OOX_BOOL( m_bAlignBordersAndEdges, sResult, _T("w:alignBordersAndEdges") )
 
@@ -180,68 +181,86 @@ CString RtfDocumentProperty::RenderToOOX(RenderParameter oRenderParameter)
 
 //footnote, endnote property
 	CString sFootnoteProp;
-	for( int i = 0; i < (int)m_aSpecialFootnotes.size(); i++ )
+	for( int i = 0; i < m_aSpecialFootnotes.size(); i++ )
+	{
 		sFootnoteProp.AppendFormat( _T("<w:footnote w:id=\"%d\" />"), m_aSpecialFootnotes[i] );
+	}
+	
 	if( PROP_DEF != m_nFootnoteNumberingFormat )
-        sFootnoteProp.AppendFormat( _T("<w:numRestart w:val=\"%ls\" />"), RtfListLevelProperty::GetFormat( m_nFootnoteNumberingFormat ).GetBuffer() );
+	{
+        sFootnoteProp += _T("<w:numRestart w:val=\"");
+		sFootnoteProp += RtfListLevelProperty::GetFormat( m_nFootnoteNumberingFormat );
+		sFootnoteProp += _T("\" />");
+	}
 	RENDER_OOX_INT( m_nFootnoteStart, sFootnoteProp, _T("w:numStart") );
+	
 	if( PROP_DEF != m_eFootnoteRestart )
 	{
 		switch( m_eFootnoteRestart )
 		{
-		case fr_EachPage: sFootnoteProp.Append( _T("<w:numRestart w:val=\"eachPage\" />") ); break;
-		case fr_EachSection: sFootnoteProp.Append( _T("<w:numRestart w:val=\"eachSect\" />") ); break;
-		case fr_Continuous: sFootnoteProp.Append( _T("<w:numRestart w:val=\"continuous\" />") ); break;
+		case fr_EachPage:		sFootnoteProp += _T("<w:numRestart w:val=\"eachPage\"/>");		break;
+		case fr_EachSection:	sFootnoteProp += _T("<w:numRestart w:val=\"eachSect\"/>");		break;
+		case fr_Continuous:		sFootnoteProp += _T("<w:numRestart w:val=\"continuous\"/>");	break;
 		}
 	}
 	if( PROP_DEF != m_eFootnotePlacement )
 	{
 		switch( m_eFootnotePlacement )
 		{
-		case fp_EndSection: sFootnoteProp.Append( _T("<w:pos w:val=\"sectEnd\" />") ); break;
-		case fp_EndDocument: sFootnoteProp.Append( _T("<w:pos w:val=\"docEnd\" />") ); break;
-		case fp_BeneathText: sFootnoteProp.Append( _T("<w:pos w:val=\"beneathText\" />") ); break;
-		case fp_BottomPage: sFootnoteProp.Append( _T("<w:pos w:val=\"pageBottom\" />") ); break;
+		case fp_EndSection:		sFootnoteProp += _T("<w:pos w:val=\"sectEnd\"/>");		break;
+		case fp_EndDocument:	sFootnoteProp += _T("<w:pos w:val=\"docEnd\"/>");		break;
+		case fp_BeneathText:	sFootnoteProp += _T("<w:pos w:val=\"beneathText\"/>");	break;
+		case fp_BottomPage:		sFootnoteProp += _T("<w:pos w:val=\"pageBottom\"/>");	break;
 		}
 	}
-	if( false == sFootnoteProp.IsEmpty() )
-        sResult.AppendFormat( _T("<w:footnotePr>%ls</w:footnotePr>"), sFootnoteProp.GetBuffer() );
+	if( !sFootnoteProp.IsEmpty() && !m_aSpecialFootnotes.empty())
+        sResult += _T("<w:footnotePr>") + sFootnoteProp + _T("</w:footnotePr>");
 
 	CString sEndnoteProp;
     //todooo проверить id
-    for( int i = 0; i < (int)m_aSpecialEndnotes.size(); i++ )
-        sEndnoteProp.AppendFormat( _T("<w:endnote w:id=\"%i\" />"), m_aSpecialEndnotes[i] );
+    for( int i = 0; i < m_aSpecialEndnotes.size(); i++ )
+	{
+        sEndnoteProp.AppendFormat( _T("<w:endnote w:id=\"%i\"/>"), m_aSpecialEndnotes[i] );
+	}
 	if( PROP_DEF != m_nFootnoteNumberingFormat )
-        sFootnoteProp.AppendFormat( _T("<w:numRestart w:val=\"%ls\" />"), RtfListLevelProperty::GetFormat( m_nFootnoteNumberingFormat ).GetBuffer() );
+	{
+        sFootnoteProp += _T("<w:numRestart w:val=\"");
+		sFootnoteProp += RtfListLevelProperty::GetFormat( m_nFootnoteNumberingFormat );
+		sFootnoteProp += _T("\"/>");
+	}
 	RENDER_OOX_INT( m_nEndnoteStart, sEndnoteProp, _T("w:numStart") );
+	
 	if( PROP_DEF != m_eEndnoteRestart )
 	{
 		switch( m_eEndnoteRestart )
 		{
-		case fr_EachSection: sEndnoteProp.Append( _T("<w:numRestart w:val=\"eachSect\" />") ); break;
-		case fr_Continuous: sEndnoteProp.Append( _T("<w:numRestart w:val=\"continuous\" />") ); break;
+		case fr_EachSection:	sEndnoteProp += _T("<w:numRestart w:val=\"eachSect\"/>" );		break;
+		case fr_Continuous:		sEndnoteProp += _T("<w:numRestart w:val=\"continuous\"/>" );	break;
 		}
 	}
 	if( PROP_DEF != m_eEndnotePlacement )
 	{
 		switch( m_eEndnotePlacement )
 		{
-		case fp_EndSection: sEndnoteProp.Append( _T("<w:pos w:val=\"sectEnd\" />") ); break;
-		case fp_EndDocument: sEndnoteProp.Append( _T("<w:pos w:val=\"docEnd\" />") ); break;
-		case fp_BeneathText: sEndnoteProp.Append( _T("<w:pos w:val=\"beneathText\" />") ); break;
-		case fp_BottomPage: sEndnoteProp.Append( _T("<w:pos w:val=\"pageBottom\" />") ); break;
+		case fp_EndSection:		sEndnoteProp += _T("<w:pos w:val=\"sectEnd\"/>" );		break;
+		case fp_EndDocument:	sEndnoteProp += _T("<w:pos w:val=\"docEnd\"/>" );		break;
+		case fp_BeneathText:	sEndnoteProp += _T("<w:pos w:val=\"beneathText\"/>" );	break;
+		case fp_BottomPage:		sEndnoteProp += _T("<w:pos w:val=\"pageBottom\"/>" );	break;
 		}
 	}
-	if( false == sEndnoteProp.IsEmpty() )
-        sResult.AppendFormat( _T("<w:endnotePr>%ls</w:endnotePr>"), sEndnoteProp.GetBuffer() );
+	if( !sEndnoteProp.IsEmpty() && !m_aSpecialEndnotes.empty())
+        sResult += _T("<w:endnotePr>") + sEndnoteProp + _T("</w:endnotePr>");
 
 	CString sCompat;
 	if( 1 != m_bHtmlAutoSpace )
-		sCompat.Append( _T("<w:doNotUseHTMLParagraphAutoSpacing/>") );
+		sCompat += _T("<w:doNotUseHTMLParagraphAutoSpacing/>");
 	if( 0 == m_bUseTabAlignment )
-		sCompat.Append( _T("<w:forgetLastTabAlignment/>") );
-	if( false == sCompat.IsEmpty() )
-        sResult.AppendFormat( _T("<w:compat>%ls</w:compat>"), sCompat.GetBuffer() );
+		sCompat += _T("<w:forgetLastTabAlignment/>");
+	
+	if( !sCompat.IsEmpty() )
+	{
+        sResult += _T("<w:compat>") + sCompat + _T("</w:compat>");
+	}
 
 	return sResult;
 }
@@ -263,7 +282,7 @@ CString RtfSectionProperty::RenderToRtf(RenderParameter oRenderParameter)
 		RENDER_RTF_BOOL( m_bLandscapeFormat, sResult, _T("landscape") )
 	}
 
-	sResult.Append( _T("\\sectd") );
+	sResult += _T("\\sectd");
 	RENDER_RTF_BOOL( m_bBidi, sResult, _T("endnhere") )
 	RENDER_RTF_INT( m_nPaperSourceFirst, sResult, _T("binfsxn") )
 	RENDER_RTF_INT( m_nPaperSourceOther, sResult, _T("binsxn") )
@@ -273,11 +292,11 @@ CString RtfSectionProperty::RenderToRtf(RenderParameter oRenderParameter)
 	//Section Break
 	switch( m_eSectionBreak )
 	{
-		case sb_sbknone: sResult.Append( _T("\\sbknone") );break;
-		case sb_sbkcol: sResult.Append( _T("\\sbkcol") );break;
-		case sb_sbkpage: sResult.Append( _T("\\sbkpage") );break;
-		case sb_sbkeven: sResult.Append( _T("\\sbkeven") );break;
-		case sb_sbkodd: sResult.Append( _T("\\sbkodd") );break;
+		case sb_sbknone:	sResult += _T("\\sbknone" );	break;
+		case sb_sbkcol:		sResult += _T("\\sbkcol" );		break;
+		case sb_sbkpage:	sResult += _T("\\sbkpage" );	break;
+		case sb_sbkeven:	sResult += _T("\\sbkeven" );	break;
+		case sb_sbkodd:		sResult += _T("\\sbkodd" );		break;
 	}
 	//Columns
 	RENDER_RTF_INT( m_nColumnNumber, sResult, _T("cols") )
@@ -297,69 +316,69 @@ CString RtfSectionProperty::RenderToRtf(RenderParameter oRenderParameter)
 	//Footnotes and Endnotes
 	switch( m_eFootnotesJust )
 	{
-		case fj_sftntj: sResult.Append( _T("\\sftntj") );break;
-		case fj_sftnbj: sResult.Append( _T("\\sftnbj") );break;
+		case fj_sftntj: sResult += _T("\\sftntj" );	break;
+		case fj_sftnbj: sResult += _T("\\sftnbj" );	break;
 	}
 	RENDER_RTF_INT( m_nFootnotesStart, sResult, _T("sftnstart") )
 	switch( m_eFootnotesRestart )
 	{
-		case fr_sftnrstpg: sResult.Append( _T("\\sftnrstpg") );break;
-		case fr_sftnrestart: sResult.Append( _T("\\sftnrestart") );break;
-		case fr_sftnrstcont: sResult.Append( _T("\\sftnrstcont") );break;
+		case fr_sftnrstpg:		sResult += _T("\\sftnrstpg" );		break;
+		case fr_sftnrestart:	sResult += _T("\\sftnrestart" );	break;
+		case fr_sftnrstcont:	sResult += _T("\\sftnrstcont" );	break;
 	}
 	switch( m_eFootnotesFormat )
 	{
-		case ff_sftnnar: sResult.Append( _T("\\sftnnar") );break;
-		case ff_sftnnalc: sResult.Append( _T("\\sftnnalc") );break;
-		case ff_sftnnauc: sResult.Append( _T("\\sftnnauc") );break;
-		case ff_sftnnrlc: sResult.Append( _T("\\sftnnrlc") );break;
-		case ff_sftnnruc: sResult.Append( _T("\\sftnnruc") );break;
-		case ff_sftnnchi: sResult.Append( _T("\\sftnnchi") );break;
-		case ff_sftnnchosung: sResult.Append( _T("\\sftnnchosung") );break;
-		case ff_sftnncnum: sResult.Append( _T("\\sftnncnum") );break;
-		case ff_sftnndbnum: sResult.Append( _T("\\sftnndbnum") );break;
-		case ff_sftnndbnumd: sResult.Append( _T("\\sftnndbnumd") );break;
-		case ff_sftnndbnumt: sResult.Append( _T("\\sftnndbnumt") );break;
-		case ff_sftnndbnumk: sResult.Append( _T("\\sftnndbnumk") );break;
-		case ff_sftnndbar: sResult.Append( _T("\\sftnndbar") );break;
-		case ff_sftnnganada: sResult.Append( _T("\\sftnnganada") );break;
-		case ff_sftnngbnum: sResult.Append( _T("\\sftnngbnum") );break;
-		case ff_sftnngbnumd: sResult.Append( _T("\\sftnngbnumd") );break;
-		case ff_sftnngbnuml: sResult.Append( _T("\\sftnngbnuml") );break;
-		case ff_sftnngbnumk: sResult.Append( _T("\\sftnngbnumk") );break;
-		case ff_sftnnzodiac: sResult.Append( _T("\\sftnnzodiac") );break;
-		case ff_sftnnzodiacd: sResult.Append( _T("\\sftnnzodiacd") );break;
-		case ff_sftnnzodiacl: sResult.Append( _T("\\sftnnzodiacl") );break;
+		case ff_sftnnar:		sResult += _T("\\sftnnar" );		break;
+		case ff_sftnnalc:		sResult += _T("\\sftnnalc" );		break;
+		case ff_sftnnauc:		sResult += _T("\\sftnnauc" );		break;
+		case ff_sftnnrlc:		sResult += _T("\\sftnnrlc" );		break;
+		case ff_sftnnruc:		sResult += _T("\\sftnnruc" );		break;
+		case ff_sftnnchi:		sResult += _T("\\sftnnchi" );		break;
+		case ff_sftnnchosung:	sResult += _T("\\sftnnchosung" );	break;
+		case ff_sftnncnum:		sResult += _T("\\sftnncnum" );		break;
+		case ff_sftnndbnum:		sResult += _T("\\sftnndbnum" );		break;
+		case ff_sftnndbnumd:	sResult += _T("\\sftnndbnumd" );	break;
+		case ff_sftnndbnumt:	sResult += _T("\\sftnndbnumt" );	break;
+		case ff_sftnndbnumk:	sResult += _T("\\sftnndbnumk" );	break;
+		case ff_sftnndbar:		sResult += _T("\\sftnndbar" );		break;
+		case ff_sftnnganada:	sResult += _T("\\sftnnganada" );	break;
+		case ff_sftnngbnum:		sResult += _T("\\sftnngbnum" );		break;
+		case ff_sftnngbnumd:	sResult += _T("\\sftnngbnumd" );	break;
+		case ff_sftnngbnuml:	sResult += _T("\\sftnngbnuml" );	break;
+		case ff_sftnngbnumk:	sResult += _T("\\sftnngbnumk" );	break;
+		case ff_sftnnzodiac:	sResult += _T("\\sftnnzodiac" );	break;
+		case ff_sftnnzodiacd:	sResult += _T("\\sftnnzodiacd" );	break;
+		case ff_sftnnzodiacl:	sResult += _T("\\sftnnzodiacl" );	break;
 	}
 	RENDER_RTF_INT( m_nEndnotesStart, sResult, _T("saftnstart") )
 	switch( m_eEndnotesRestart )
 	{
-		case er_saftnrestart: sResult.Append( _T("\\saftnrestart") );break;
-		case er_saftnrstcont: sResult.Append( _T("\\saftnrstcont") );break;
+		case er_saftnrestart: sResult += _T("\\saftnrestart" );		break;
+		case er_saftnrstcont: sResult += _T("\\saftnrstcont" );		break;
 	}
 	switch( m_eEndnotesFormat )
 	{
-		case ef_saftnnar: sResult.Append( _T("\\saftnnar") );break;
-		case ef_saftnnalc: sResult.Append( _T("\\saftnnalc") );break;
-		case ef_saftnnauc: sResult.Append( _T("\\saftnnauc") );break;
-		case ef_saftnnrlc: sResult.Append( _T("\\saftnnrlc") );break;
-		case ef_saftnnruc: sResult.Append( _T("\\saftnnruc") );break;
-		case ef_saftnnchi: sResult.Append( _T("\\saftnnchi") );break;
-		case ef_saftnnchosung: sResult.Append( _T("\\saftnnchosung") );break;
-		case ef_saftnncnum: sResult.Append( _T("\\saftnncnum") );break;
-		case ef_saftnndbnum: sResult.Append( _T("\\saftnndbnum") );break;
-		case ef_saftnndbnumd: sResult.Append( _T("\\saftnndbnumd") );break;
-		case ef_saftnndbnumt: sResult.Append( _T("\\saftnndbnumt") );break;
-		case ef_saftnndbnumk: sResult.Append( _T("\\saftnndbnumk") );break;
-		case ef_saftnndbar: sResult.Append( _T("\\saftnndbar") );break;
-		case ef_saftnnganada: sResult.Append( _T("\\saftnnganada") );break;
-		case ef_saftnngbnum: sResult.Append( _T("\\saftnngbnum") );break;
-		case ef_saftnngbnumd: sResult.Append( _T("\\saftnngbnumd") );break;
-		case ef_saftnngbnuml: sResult.Append( _T("\\saftnngbnuml") );break;
-		case ef_saftnngbnumk: sResult.Append( _T("\\saftnngbnumk") );break;
-		case ef_saftnnzodiac: sResult.Append( _T("\\saftnnzodiac") );break;
-		case ef_saftnnzodiacd: sResult.Append( _T("\\saftnnzodiacd") );break;
-		case ef_saftnnzodiacl: sResult.Append( _T("\\saftnnzodiacl") );break;
+		case ef_saftnnar:		sResult += _T("\\saftnnar" );		break;
+		case ef_saftnnalc:		sResult += _T("\\saftnnalc" );		break;
+		case ef_saftnnauc:		sResult += _T("\\saftnnauc" );		break;
+		case ef_saftnnrlc:		sResult += _T("\\saftnnrlc" );		break;
+		case ef_saftnnruc:		sResult += _T("\\saftnnruc" );		break;
+		case ef_saftnnchi:		sResult += _T("\\saftnnchi" );		break;
+		case ef_saftnnchosung:	sResult += _T("\\saftnnchosung" );	break;
+		case ef_saftnncnum:		sResult += _T("\\saftnncnum" );		break;
+		case ef_saftnndbnum:	sResult += _T("\\saftnndbnum" );	break;
+		case ef_saftnndbnumd:	sResult += _T("\\saftnndbnumd" );	break;
+		case ef_saftnndbnumt:	sResult += _T("\\saftnndbnumt" );	break;
+		case ef_saftnndbnumk:	sResult += _T("\\saftnndbnumk" );	break;
+		case ef_saftnndbar:		sResult += _T("\\saftnndbar" );		break;
+		case ef_saftnnganada:	sResult += _T("\\saftnnganada" );	break;
+		case ef_saftnngbnum:	sResult += _T("\\saftnngbnum" );	break;
+		case ef_saftnngbnumd:	sResult += _T("\\saftnngbnumd" );	break;
+		case ef_saftnngbnuml:	sResult += _T("\\saftnngbnuml" );	break;
+		case ef_saftnngbnumk:	sResult += _T("\\saftnngbnumk" );	break;
+		case ef_saftnnzodiac:	sResult += _T("\\saftnnzodiac" );	break;
+		case ef_saftnnzodiacd:	sResult += _T("\\saftnnzodiacd" );	break;
+		case ef_saftnnzodiacl:	sResult += _T("\\saftnnzodiacl" );	break;
 	}
 
 	//Line Numbering
@@ -368,9 +387,9 @@ CString RtfSectionProperty::RenderToRtf(RenderParameter oRenderParameter)
 	RENDER_RTF_INT( m_nLineStart, sResult, _T("linestarts") )
 	switch( m_eLineNumberRestart )
 	{
-		case lnr_linerestart: sResult.Append( _T("\\linerestart") );break;
-		case lnr_lineppage: sResult.Append( _T("\\lineppage") );break;
-		case lnr_linecont: sResult.Append( _T("\\linecont") );break;
+		case lnr_linerestart:	sResult += _T("\\linerestart" );break;
+		case lnr_lineppage:		sResult += _T("\\lineppage" );	break;
+		case lnr_linecont:		sResult += _T("\\linecont" );	break;
 	}
 
 	if( RENDER_TO_OOX_PARAM_FIRST_SECTION != oRenderParameter.nType )//Пишем как свойства секции
@@ -399,17 +418,17 @@ CString RtfSectionProperty::RenderToRtf(RenderParameter oRenderParameter)
 	RENDER_RTF_INT( m_nPageNumberY, sResult, _T("pgny") )
 	switch( m_ePageNumberFormat )
 	{
-		case pnf_pgndec: sResult.Append( _T("\\pgndec") );break;
-		case pnf_pgnucrm: sResult.Append( _T("\\pgnucrm") );break;
-		case pnf_pgnlcrm: sResult.Append( _T("\\pgnlcrm") );break;
+		case pnf_pgndec:	sResult += _T("\\pgndec" );		break;
+		case pnf_pgnucrm:	sResult += _T("\\pgnucrm" );	break;
+		case pnf_pgnlcrm:	sResult += _T("\\pgnlcrm" );	break;
 	}
 	//Vertical Alignment
 	switch( m_eVerticalAlignment )
 	{
-		case va_vertalt: sResult.Append( _T("\\vertalt") );break;
-		case va_vertalb: sResult.Append( _T("\\vertalb") );break;
-		case va_vertalc: sResult.Append( _T("\\vertalc") );break;
-		case va_vertalj: sResult.Append( _T("\\vertalj") );break;
+		case va_vertalt: sResult += _T("\\vertalt" );	break;
+		case va_vertalb: sResult += _T("\\vertalb" );	break;
+		case va_vertalc: sResult += _T("\\vertalc" );	break;
+		case va_vertalj: sResult += _T("\\vertalj" );	break;
 
 	}
 	//Text Flow
@@ -418,24 +437,24 @@ CString RtfSectionProperty::RenderToRtf(RenderParameter oRenderParameter)
 	//Page Borders
 	if( true == m_oBorderLeft.IsValid() )
 	{
-		sResult.Append( _T("\\pgbrdrl") );
-		sResult.Append( m_oBorderLeft.RenderToRtf( oRenderParameter ) );
+		sResult += _T("\\pgbrdrl");
+		sResult += m_oBorderLeft.RenderToRtf( oRenderParameter );
 	}
 	if( true == m_oBorderTop.IsValid() )
 	{
-		sResult.Append( _T("\\pgbrdrt") );
-		sResult.Append( m_oBorderTop.RenderToRtf( oRenderParameter ) );
+		sResult += _T("\\pgbrdrt");
+		sResult += m_oBorderTop.RenderToRtf( oRenderParameter );
 	}
 		
 	if( true == m_oBorderRight.IsValid() )
 	{
-		sResult.Append( _T("\\pgbrdrr") );
-		sResult.Append( m_oBorderRight.RenderToRtf( oRenderParameter ) );
+		sResult += _T("\\pgbrdrr");
+		sResult += m_oBorderRight.RenderToRtf( oRenderParameter );
 	}
 	if( true == m_oBorderBottom.IsValid() )
 	{
-		sResult.Append( _T("\\pgbrdrb") );
-		sResult.Append( m_oBorderBottom.RenderToRtf( oRenderParameter ) );
+		sResult += _T("\\pgbrdrb");
+		sResult += m_oBorderBottom.RenderToRtf( oRenderParameter );
 	}
 	RENDER_RTF_INT( m_nBorderArt, sResult, _T("brdrart") )
 	RENDER_RTF_INT( m_nBorderMeasure, sResult, _T("pgbrdropt") )
@@ -444,54 +463,54 @@ CString RtfSectionProperty::RenderToRtf(RenderParameter oRenderParameter)
 	//footer - header
 	if( 0 != m_oHeaderRight )
 	{
-		sResult.Append( _T("{\\headerr") );
-		sResult.Append( m_oHeaderRight->RenderToRtf(  oRenderParameter  ));
-		sResult.Append( _T("\\par") );
-		sResult.Append( _T("}") );
+		sResult += _T("{\\headerr");
+		sResult += m_oHeaderRight->RenderToRtf( oRenderParameter );
+		sResult += _T("\\par");
+		sResult += _T("}");
 	}
 	if( 0 != m_oHeaderLeft )
 	{
-		sResult.Append( _T("{\\headerl") );
-		sResult.Append( m_oHeaderLeft->RenderToRtf(  oRenderParameter  ));
-		sResult.Append( _T("\\par") );
-		sResult.Append( _T("}") );
+		sResult += _T("{\\headerl");
+		sResult += m_oHeaderLeft->RenderToRtf( oRenderParameter );
+		sResult += _T("\\par");
+		sResult += _T("}");
 	}
 	if( 0 != m_oHeaderFirst )
 	{
-		sResult.Append( _T("{\\headerf") );
-		sResult.Append( m_oHeaderFirst->RenderToRtf(  oRenderParameter  ));
-		sResult.Append( _T("\\par") );
-		sResult.Append( _T("}") );
+		sResult += _T("{\\headerf");
+		sResult += m_oHeaderFirst->RenderToRtf( oRenderParameter );
+		sResult += _T("\\par");
+		sResult += _T("}");
 	}
 	if( 0 != m_oFooterRight )
 	{
-		sResult.Append( _T("{\\footerr") );
-		sResult.Append( m_oFooterRight->RenderToRtf(  oRenderParameter  ));
-		sResult.Append( _T("\\par") );
-		sResult.Append( _T("}") );
+		sResult += _T("{\\footerr");
+		sResult += m_oFooterRight->RenderToRtf( oRenderParameter );
+		sResult += _T("\\par");
+		sResult += _T("}");
 	}
 	if( 0 != m_oFooterLeft )
 	{
-		sResult.Append( _T("{\\footerl") );
-		sResult.Append( m_oFooterLeft->RenderToRtf(  oRenderParameter  ));
-		sResult.Append( _T("\\par") );
-		sResult.Append( _T("}") );
+		sResult += _T("{\\footerl");
+		sResult += m_oFooterLeft->RenderToRtf( oRenderParameter );
+		sResult += _T("\\par");
+		sResult += _T("}");
 	}
 	if( 0 != m_oFooterFirst )
 	{
-		sResult.Append( _T("{\\footerf") );
-		sResult.Append( m_oFooterFirst->RenderToRtf(  oRenderParameter  ));
-		sResult.Append( _T("\\par") );
-		sResult.Append( _T("}") );
+		sResult += _T("{\\footerf");
+		sResult += m_oFooterFirst->RenderToRtf( oRenderParameter );
+		sResult += _T("\\par");
+		sResult += _T("}");
 	}
 	return sResult;
 }
 CString RtfSectionProperty::RenderToOOX(RenderParameter oRenderParameter)
 {
 	CString sResult;
-	sResult.Append(_T("<w:sectPr>"));
+	sResult += _T("<w:sectPr>");
 	if( 1 == m_bBidi )
-		sResult.Append(_T("<w:bidi/>"));
+		sResult += _T("<w:bidi/>");
 	CString sPaperSource;
 	if( PROP_DEF != m_nPaperSourceFirst )
 		sPaperSource.AppendFormat( _T(" w:first=\"%d\""), m_nPaperSourceFirst );
@@ -500,16 +519,19 @@ CString RtfSectionProperty::RenderToOOX(RenderParameter oRenderParameter)
 	if( false == sPaperSource.IsEmpty() )
         sResult.AppendFormat(_T("<w:paperSrc %ls/>"), sPaperSource.GetBuffer() );
 	if( 1 == m_bRtlGutter )
-		sResult.Append(_T("<w:rtlGutter/>"));
+		sResult += _T("<w:rtlGutter/>");
 
 	//Section Break
 	switch( m_eSectionBreak )
 	{
-		case sb_sbknone: sResult.Append(_T("<w:type w:val=\"continuous\"/>") );break;
-		case sb_sbkcol: sResult.Append(_T("<w:type w:val=\"nextColumn\"/>") );break;
-		case sb_sbkpage: sResult.Append(_T("<w:type w:val=\"nextPage\"/>") );break;
-		case sb_sbkeven: sResult.Append(_T("<w:type w:val=\"evenPage\"/>") );break;
-		case sb_sbkodd: sResult.Append(_T("<w:type w:val=\"oddPage\"/>") );break;
+		case sb_sbkcol:		sResult += _T("<w:type w:val=\"nextColumn\"/>");	break;
+		case sb_sbkpage:	sResult += _T("<w:type w:val=\"nextPage\"/>");		break;
+		case sb_sbkeven:	sResult += _T("<w:type w:val=\"evenPage\"/>");		break;
+		case sb_sbkodd:		sResult += _T("<w:type w:val=\"oddPage\"/>");		break;
+		case sb_sbknone:	
+		default:
+			sResult += _T("<w:type w:val=\"continuous\"/>");				
+			break;
 	}
 	//Columns
 	if( PROP_DEF != m_nColumnNumber ) 
@@ -529,113 +551,114 @@ CString RtfSectionProperty::RenderToOOX(RenderParameter oRenderParameter)
 		if( PROP_DEF != m_nColumnSpace )
 			sCollumnFormating.AppendFormat( _T(" w:space=\"%d\""), m_nColumnSpace );
 		if( true == bEqualWidth )
-			sCollumnFormating.Append( _T(" w:equalWidth=\"true\"/>") );
+			sCollumnFormating += _T(" w:equalWidth=\"true\"/>" );
 		else
 		{
-			sCollumnFormating.Append( _T(" w:equalWidth=\"false\">") );
+			sCollumnFormating += _T(" w:equalWidth=\"false\">");
 			for( int i = 0; i < (int)m_oCollumnProperty.m_aCollumnProperty.size(); i++ )
 			{
-				sCollumnFormating.Append( _T("<w:col") );
+				sCollumnFormating += _T( "<w:col" );
 				if( PROP_DEF != m_oCollumnProperty.m_aCollumnProperty[i].m_nColumnWidth )
 					sCollumnFormating.AppendFormat( _T(" w:w=\"%d\""), m_oCollumnProperty.m_aCollumnProperty[i].m_nColumnWidth );
 				if( PROP_DEF != m_oCollumnProperty.m_aCollumnProperty[i].m_nColumnSpaceToRightOfCol )
 					sCollumnFormating.AppendFormat( _T(" w:space=\"%d\""), m_oCollumnProperty.m_aCollumnProperty[i].m_nColumnSpaceToRightOfCol );
-				sCollumnFormating.Append( _T("/>") );
+				sCollumnFormating += _T( "/>" );
 			}
-			sCollumnFormating.Append( _T("</w:cols>") );
+			sCollumnFormating += _T( "</w:cols>" );
 		}
 		if( false == sCollumnFormating.IsEmpty() )
-			sResult.Append( sCollumnFormating );
+			sResult += sCollumnFormating;
 	}
 
 	//Footnotes and Endnotes
 	CString sFootnotesProp;
 	switch( m_eFootnotesJust )
 	{
-		case fj_sftntj:sFootnotesProp.Append( _T("<w:pos w:val=\"beneathText\"/>") );break; 
-		case fj_sftnbj:sFootnotesProp.Append( _T("<w:pos w:val=\"pageBottom\"/>") );break; 
+		case fj_sftntj:	sFootnotesProp += _T("<w:pos w:val=\"beneathText\"/>" );	break;
+		case fj_sftnbj:	sFootnotesProp += _T("<w:pos w:val=\"pageBottom\"/>" );		break;
 	}
 	RENDER_OOX_INT( m_nFootnotesStart, sFootnotesProp, _T("w:numStart") )
 	switch( m_eFootnotesRestart )
 	{
-		case fr_sftnrstpg:sFootnotesProp.Append( _T("<w:numRestart w:val=\"eachPage\"/>") );break; 
-		case fr_sftnrestart:sFootnotesProp.Append( _T("<w:numRestart w:val=\"eachSect\"/>") );break; 
-		case fr_sftnrstcont:sFootnotesProp.Append( _T("<w:numRestart w:val=\"continuous\"/>") );break; 
+		case fr_sftnrstpg:		sFootnotesProp += _T("<w:numRestart w:val=\"eachPage\"/>" );	break;
+		case fr_sftnrestart:	sFootnotesProp += _T("<w:numRestart w:val=\"eachSect\"/>" );	break;
+		case fr_sftnrstcont:	sFootnotesProp += _T("<w:numRestart w:val=\"continuous\"/>" );	break;
 	}
-	switch( m_eFootnotesRestart )
+	switch( m_eFootnotesFormat )
 	{
-		case ff_sftnnar:sFootnotesProp.Append( _T("<w:numFmt w:val=\"upperLetter\" />") );break; 
-		case ff_sftnnalc:sFootnotesProp.Append( _T("<w:numFmt w:val=\"upperLetter\" />") );break; 
-		case ff_sftnnauc:sFootnotesProp.Append( _T("<w:numFmt w:val=\"upperLetter\" />") );break; 
-		case ff_sftnnrlc:sFootnotesProp.Append( _T("<w:numFmt w:val=\"upperLetter\" />") );break; 
-		case ff_sftnnruc:sFootnotesProp.Append( _T("<w:numFmt w:val=\"upperLetter\" />") );break; 
-		case ff_sftnnchi:sFootnotesProp.Append( _T("<w:numFmt w:val=\"upperLetter\" />") );break; 
-		case ff_sftnnchosung:sFootnotesProp.Append( _T("<w:numFmt w:val=\"upperLetter\" />") );break; 
-		case ff_sftnncnum:sFootnotesProp.Append( _T("<w:numFmt w:val=\"upperLetter\" />") );break; 
-		case ff_sftnndbnum:sFootnotesProp.Append( _T("<w:numFmt w:val=\"upperLetter\" />") );break; 
-		case ff_sftnndbnumd:sFootnotesProp.Append( _T("<w:numFmt w:val=\"upperLetter\" />") );break; 
-		case ff_sftnndbnumt:sFootnotesProp.Append( _T("<w:numFmt w:val=\"upperLetter\" />") );break; 
-		case ff_sftnndbnumk:sFootnotesProp.Append( _T("<w:numFmt w:val=\"upperLetter\" />") );break; 
-		case ff_sftnndbar:sFootnotesProp.Append( _T("<w:numFmt w:val=\"upperLetter\" />") );break; 
-		case ff_sftnnganada:sFootnotesProp.Append( _T("<w:numFmt w:val=\"upperLetter\" />") );break; 
-		case ff_sftnngbnum:sFootnotesProp.Append( _T("<w:numFmt w:val=\"upperLetter\" />") );break; 
-		case ff_sftnngbnumd:sFootnotesProp.Append( _T("<w:numFmt w:val=\"upperLetter\" />") );break; 
-		case ff_sftnngbnuml:sFootnotesProp.Append( _T("<w:numFmt w:val=\"upperLetter\" />") );break; 
-		case ff_sftnngbnumk:sFootnotesProp.Append( _T("<w:numFmt w:val=\"upperLetter\" />") );break; 
-		case ff_sftnnzodiac:sFootnotesProp.Append( _T("<w:numFmt w:val=\"upperLetter\" />") );break; 
-		case ff_sftnnzodiacd:sFootnotesProp.Append( _T("<w:numFmt w:val=\"upperLetter\" />") );break; 
-		case ff_sftnnzodiacl:sFootnotesProp.Append( _T("<w:numFmt w:val=\"upperLetter\" />") );break; 
+		case ff_sftnnar:		sFootnotesProp += _T("<w:numFmt w:val=\"upperLetter\" />" );	break;
+		case ff_sftnnalc:		sFootnotesProp += _T("<w:numFmt w:val=\"upperLetter\" />" );	break;
+		case ff_sftnnauc:		sFootnotesProp += _T("<w:numFmt w:val=\"upperLetter\" />" );	break;
+		case ff_sftnnrlc:		sFootnotesProp += _T("<w:numFmt w:val=\"upperLetter\" />" );	break;
+		case ff_sftnnruc:		sFootnotesProp += _T("<w:numFmt w:val=\"upperLetter\" />" );	break;
+		case ff_sftnnchi:		sFootnotesProp += _T("<w:numFmt w:val=\"upperLetter\" />" );	break;
+		case ff_sftnnchosung:	sFootnotesProp += _T("<w:numFmt w:val=\"upperLetter\" />" );	break;
+		case ff_sftnncnum:		sFootnotesProp += _T("<w:numFmt w:val=\"upperLetter\" />" );	break;
+		case ff_sftnndbnum:		sFootnotesProp += _T("<w:numFmt w:val=\"upperLetter\" />" );	break;
+		case ff_sftnndbnumd:	sFootnotesProp += _T("<w:numFmt w:val=\"upperLetter\" />" );	break;
+		case ff_sftnndbnumt:	sFootnotesProp += _T("<w:numFmt w:val=\"upperLetter\" />" );	break;
+		case ff_sftnndbnumk:	sFootnotesProp += _T("<w:numFmt w:val=\"upperLetter\" />" );	break;
+		case ff_sftnndbar:		sFootnotesProp += _T("<w:numFmt w:val=\"upperLetter\" />" );	break;
+		case ff_sftnnganada:	sFootnotesProp += _T("<w:numFmt w:val=\"upperLetter\" />" );	break;
+		case ff_sftnngbnum:		sFootnotesProp += _T("<w:numFmt w:val=\"upperLetter\" />" );	break;
+		case ff_sftnngbnumd:	sFootnotesProp += _T("<w:numFmt w:val=\"upperLetter\" />" );	break;
+		case ff_sftnngbnuml:	sFootnotesProp += _T("<w:numFmt w:val=\"upperLetter\" />" );	break;
+		case ff_sftnngbnumk:	sFootnotesProp += _T("<w:numFmt w:val=\"upperLetter\" />" );	break;
+		case ff_sftnnzodiac:	sFootnotesProp += _T("<w:numFmt w:val=\"upperLetter\" />" );	break;
+		case ff_sftnnzodiacd:	sFootnotesProp += _T("<w:numFmt w:val=\"upperLetter\" />" );	break;
+		case ff_sftnnzodiacl:	sFootnotesProp += _T("<w:numFmt w:val=\"upperLetter\" />" );	break;
 	}
-	if( false == sFootnotesProp.IsEmpty() )
-        sResult.AppendFormat( _T("<w:footnotePr>%ls</w:footnotePr>"), sFootnotesProp.GetBuffer() );
+	if(!sFootnotesProp.IsEmpty() )
+        sResult +=  _T("<w:footnotePr>") + sFootnotesProp + _T("</w:footnotePr>");
 
 	CString sEndnotesProp;
 	RENDER_OOX_INT( m_nEndnotesStart, sEndnotesProp, _T("w:numStart") )
+	
 	switch( m_eEndnotesRestart )
 	{
-		case er_saftnrestart:sEndnotesProp.Append( _T("<w:numRestart w:val=\"eachPage\"/>") );break; 
-		case er_saftnrstcont:sEndnotesProp.Append( _T("<w:numRestart w:val=\"continuous\"/>") );break; 
+		case er_saftnrestart:	sEndnotesProp += _T("<w:numRestart w:val=\"eachPage\"/>" );		break;
+		case er_saftnrstcont:	sEndnotesProp += _T("<w:numRestart w:val=\"continuous\"/>" );	break;
 	}
-	switch( m_eEndnotesRestart )
+	switch( m_eEndnotesFormat )
 	{
-		case ef_saftnnar:sEndnotesProp.Append( _T("<w:numFmt w:val=\"upperLetter\" />") );break; 
-		case ef_saftnnalc:sEndnotesProp.Append( _T("<w:numFmt w:val=\"upperLetter\" />") );break; 
-		case ef_saftnnauc:sEndnotesProp.Append( _T("<w:numFmt w:val=\"upperLetter\" />") );break; 
-		case ef_saftnnrlc:sEndnotesProp.Append( _T("<w:numFmt w:val=\"upperLetter\" />") );break; 
-		case ef_saftnnruc:sEndnotesProp.Append( _T("<w:numFmt w:val=\"upperLetter\" />") );break; 
-		case ef_saftnnchi:sEndnotesProp.Append( _T("<w:numFmt w:val=\"upperLetter\" />") );break; 
-		case ef_saftnnchosung:sEndnotesProp.Append( _T("<w:numFmt w:val=\"upperLetter\" />") );break; 
-		case ef_saftnncnum:sEndnotesProp.Append( _T("<w:numFmt w:val=\"upperLetter\" />") );break; 
-		case ef_saftnndbnum:sEndnotesProp.Append( _T("<w:numFmt w:val=\"upperLetter\" />") );break; 
-		case ef_saftnndbnumd:sEndnotesProp.Append( _T("<w:numFmt w:val=\"upperLetter\" />") );break; 
-		case ef_saftnndbnumt:sEndnotesProp.Append( _T("<w:numFmt w:val=\"upperLetter\" />") );break; 
-		case ef_saftnndbnumk:sEndnotesProp.Append( _T("<w:numFmt w:val=\"upperLetter\" />") );break; 
-		case ef_saftnndbar:sEndnotesProp.Append( _T("<w:numFmt w:val=\"upperLetter\" />") );break; 
-		case ef_saftnnganada:sEndnotesProp.Append( _T("<w:numFmt w:val=\"upperLetter\" />") );break; 
-		case ef_saftnngbnum:sEndnotesProp.Append( _T("<w:numFmt w:val=\"upperLetter\" />") );break; 
-		case ef_saftnngbnumd:sEndnotesProp.Append( _T("<w:numFmt w:val=\"upperLetter\" />") );break; 
-		case ef_saftnngbnuml:sEndnotesProp.Append( _T("<w:numFmt w:val=\"upperLetter\" />") );break; 
-		case ef_saftnngbnumk:sEndnotesProp.Append( _T("<w:numFmt w:val=\"upperLetter\" />") );break; 
-		case ef_saftnnzodiac:sEndnotesProp.Append( _T("<w:numFmt w:val=\"upperLetter\" />") );break; 
-		case ef_saftnnzodiacd:sEndnotesProp.Append( _T("<w:numFmt w:val=\"upperLetter\" />") );break; 
-		case ef_saftnnzodiacl:sEndnotesProp.Append( _T("<w:numFmt w:val=\"upperLetter\" />") );break; 
+		case ef_saftnnar:		sEndnotesProp += _T("<w:numFmt w:val=\"upperLetter\" />" );	break;
+		case ef_saftnnalc:		sEndnotesProp += _T("<w:numFmt w:val=\"upperLetter\" />" );	break;
+		case ef_saftnnauc:		sEndnotesProp += _T("<w:numFmt w:val=\"upperLetter\" />" );	break;
+		case ef_saftnnrlc:		sEndnotesProp += _T("<w:numFmt w:val=\"upperLetter\" />" );	break;
+		case ef_saftnnruc:		sEndnotesProp += _T("<w:numFmt w:val=\"upperLetter\" />" );	break;
+		case ef_saftnnchi:		sEndnotesProp += _T("<w:numFmt w:val=\"upperLetter\" />" );	break;
+		case ef_saftnnchosung:	sEndnotesProp += _T("<w:numFmt w:val=\"upperLetter\" />" );	break;
+		case ef_saftnncnum:		sEndnotesProp += _T("<w:numFmt w:val=\"upperLetter\" />" );	break;
+		case ef_saftnndbnum:	sEndnotesProp += _T("<w:numFmt w:val=\"upperLetter\" />" );	break;
+		case ef_saftnndbnumd:	sEndnotesProp += _T("<w:numFmt w:val=\"upperLetter\" />" );	break;
+		case ef_saftnndbnumt:	sEndnotesProp += _T("<w:numFmt w:val=\"upperLetter\" />" );	break;
+		case ef_saftnndbnumk:	sEndnotesProp += _T("<w:numFmt w:val=\"upperLetter\" />" );	break;
+		case ef_saftnndbar:		sEndnotesProp += _T("<w:numFmt w:val=\"upperLetter\" />" );	break;
+		case ef_saftnnganada:	sEndnotesProp += _T("<w:numFmt w:val=\"upperLetter\" />" );	break;
+		case ef_saftnngbnum:	sEndnotesProp += _T("<w:numFmt w:val=\"upperLetter\" />" );	break;
+		case ef_saftnngbnumd:	sEndnotesProp += _T("<w:numFmt w:val=\"upperLetter\" />" );	break;
+		case ef_saftnngbnuml:	sEndnotesProp += _T("<w:numFmt w:val=\"upperLetter\" />" );	break;
+		case ef_saftnngbnumk:	sEndnotesProp += _T("<w:numFmt w:val=\"upperLetter\" />" );	break;
+		case ef_saftnnzodiac:	sEndnotesProp += _T("<w:numFmt w:val=\"upperLetter\" />" );	break;
+		case ef_saftnnzodiacd:	sEndnotesProp += _T("<w:numFmt w:val=\"upperLetter\" />" );	break;
+		case ef_saftnnzodiacl:	sEndnotesProp += _T("<w:numFmt w:val=\"upperLetter\" />" );	break;
 	}
-	if( false == sEndnotesProp.IsEmpty() )
-        sResult.AppendFormat( _T("<w:endnotePr>%ls</w:endnotePr>"), sEndnotesProp.GetBuffer() );
+	if(!sEndnotesProp.IsEmpty() )
+        sResult += _T("<w:endnotePr>") + sEndnotesProp + _T("</w:endnotePr>");
 
 	//Line Numbering
 	CString sLineNumbering;
 	if( PROP_DEF != m_nLineModulus )
 		sLineNumbering.AppendFormat( _T(" w:countBy=\"%d\""), m_nLineModulus );
-	if( PROP_DEF != m_nLineX )
+	if( PROP_DEF != m_nLineX && 0 != m_nLineX)
 		sLineNumbering.AppendFormat( _T(" w:distance=\"%d\""), m_nLineX );
 	if( PROP_DEF != m_nLineStart )
 		sLineNumbering.AppendFormat( _T(" w:start=\"%d\""), m_nLineStart );
 	switch( m_eLineNumberRestart )
 	{
-		case lnr_linerestart:sLineNumbering.Append( _T(" w:restart=\"newSection\"") );break; 
-		case lnr_lineppage:sLineNumbering.Append( _T(" w:restart=\"newPage\"") );break; 
-		case lnr_linecont:sLineNumbering.Append( _T(" w:restart=\"continuous\"") );break; 
+		case lnr_linerestart:	sLineNumbering += _T(" w:restart=\"newSection\"");	break; 
+		case lnr_lineppage:		sLineNumbering += _T(" w:restart=\"newPage\"");		break; 
+		case lnr_linecont:		sLineNumbering += _T(" w:restart=\"continuous\"");	break; 
 	}
 	if( false == sLineNumbering.IsEmpty() )
         sResult.AppendFormat( _T("<w:lnNumType %ls/>"), sLineNumbering.GetBuffer() );
@@ -680,20 +703,20 @@ CString RtfSectionProperty::RenderToOOX(RenderParameter oRenderParameter)
 	//Vertical Alignment
 	switch( m_eVerticalAlignment )
 	{
-		case va_vertalt:sResult.Append(_T("<w:vAlign w:val=\"top\" />"));break;
-		case va_vertalb:sResult.Append(_T("<w:vAlign w:val=\"bottom\" />"));break;
-		case va_vertalc:sResult.Append(_T("<w:vAlign w:val=\"center\" />"));break;
-		case va_vertalj:sResult.Append(_T("<w:vAlign w:val=\"both\" />"));break;
+		case va_vertalt:	sResult += _T("<w:vAlign w:val=\"top\" />");	break;
+		case va_vertalb:	sResult += _T("<w:vAlign w:val=\"bottom\" />");	break;
+		case va_vertalc:	sResult += _T("<w:vAlign w:val=\"center\" />");	break;
+		case va_vertalj:	sResult += _T("<w:vAlign w:val=\"both\" />");	break;
 	}
 	//Text Flow
 	switch( m_nTextFollow )
 	{
-		case 0: sResult.Append( _T("<w:textDirection w:val=\"lrTb\" />") );break;
-		case 1: sResult.Append( _T("<w:textDirection w:val=\"tbRl\" />") );break;
-		case 2: sResult.Append( _T("<w:textDirection w:val=\"lrBt\" />") );break;
-		case 3: sResult.Append( _T("<w:textDirection w:val=\"rlTb\" />") );break;
-		case 4: sResult.Append( _T("<w:textDirection w:val=\"lrTbV\" />") );break;
-		case 5: sResult.Append( _T("<w:textDirection w:val=\"tbLrV\" />") );break;
+		case 0: sResult += _T("<w:textDirection w:val=\"lrTb\" />" );	break;
+		case 1: sResult += _T("<w:textDirection w:val=\"tbRl\" />" );	break;
+		case 2: sResult += _T("<w:textDirection w:val=\"lrBt\" />" );	break;
+		case 3: sResult += _T("<w:textDirection w:val=\"rlTb\" />" );	break;
+		case 4: sResult += _T("<w:textDirection w:val=\"lrTbV\" />" );	break;
+		case 5: sResult += _T("<w:textDirection w:val=\"tbLrV\" />" );	break;
 	}
 	//Page Borders
 	CString sBorders;
@@ -702,46 +725,46 @@ CString RtfSectionProperty::RenderToOOX(RenderParameter oRenderParameter)
 	if( true == m_oBorderLeft.IsValid() )
 	{
 		oNewParam.sValue = _T("w:left");
-		sBorders.Append( m_oBorderLeft.RenderToOOX( oNewParam ) );
+		sBorders += m_oBorderLeft.RenderToOOX( oNewParam );
 	}
 	if( true == m_oBorderTop.IsValid() )
 	{
 		oNewParam.sValue = _T("w:top");
-		sBorders.Append( m_oBorderTop.RenderToOOX( oNewParam ) );
+		sBorders += m_oBorderTop.RenderToOOX( oNewParam ) ;
 	}
 	if( true == m_oBorderRight.IsValid() )
 	{
 		oNewParam.sValue = _T("w:right");
-		sBorders.Append( m_oBorderRight.RenderToOOX( oNewParam ) );
+		sBorders += m_oBorderRight.RenderToOOX( oNewParam );
 	}
 	if( true == m_oBorderBottom.IsValid() )
 	{
 		oNewParam.sValue = _T("w:bottom");
-		sBorders.Append( m_oBorderBottom.RenderToOOX( oNewParam ) );
+		sBorders += m_oBorderBottom.RenderToOOX( oNewParam );
 	}
 	if( false == sBorders.IsEmpty() )
 	{
-		sResult.Append( _T("<w:pgBorders") );
+		sResult += _T("<w:pgBorders");
 		if( PROP_DEF != m_nBorderMeasure )
 		{
 			switch( m_nBorderMeasure & 3 )
 			{
-				case 0: sResult.Append( _T(" w:display=\"allPages\"") );break;
-				case 1: sResult.Append( _T(" w:display=\"firstPage\"") );break;
-				case 2: sResult.Append( _T(" w:display=\"notFirstPage\"") );break;
+				case 0: sResult += _T(" w:display=\"allPages\"" );		break;
+				case 1: sResult += _T(" w:display=\"firstPage\"" );		break;
+				case 2: sResult += _T(" w:display=\"notFirstPage\"" );	break;
 			}
 			if( 0 != (m_nBorderMeasure & 8) )
-				sResult.Append( _T(" w:zOrder=\"back\"") );
+				sResult += _T(" w:zOrder=\"back\"");
 			else
-				sResult.Append( _T(" w:zOrder=\"front\"") );
+				sResult += _T(" w:zOrder=\"front\"");
 			if( 0 != (m_nBorderMeasure & 32) )
-				sResult.Append( _T(" w:offsetFrom=\"page\"") );
+				sResult += _T(" w:offsetFrom=\"page\"");
 			else
-				sResult.Append( _T(" w:offsetFrom=\"text\"") );
+				sResult += _T(" w:offsetFrom=\"text\"");
 		}
-		sResult.Append( _T(">") );
-		sResult.Append( sBorders );
-		sResult.Append( _T("</w:pgBorders>") );
+		sResult += _T(">");
+		sResult += sBorders;
+		sResult += _T("</w:pgBorders>");
 	}
 	if( 0 != m_oHeaderLeft )
 	{
@@ -801,9 +824,8 @@ CString RtfSectionProperty::SaveFile( TextItemContainerPtr oTarget, RenderParame
 	poOOXWriter->m_oCustomRelsWriter.push_back( oNewRelsWr );
 	oNewParameter.poRels			= oNewRelsWr.get();
 	
-	sContent.Append( oTarget->RenderToOOX(oNewParameter) );
+	sContent += oTarget->RenderToOOX(oNewParameter);
     sContent.AppendFormat( _T("</%ls>"), sRootName.GetBuffer() );
-
 
     std::string sXmlUTF = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sContent.GetBuffer());
 	

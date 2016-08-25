@@ -2025,7 +2025,7 @@ void DocxConverter::convert(OOX::Logic::CPicture* oox_pic)
 					odf_context()->drawing_context()->start_shape(OOX::Spt2ShapeType(sptType));
 					bSet = true;
 				}
-				else if (oox_pic->m_oShape->m_oConnectorType.GetValue() != SimpleTypes::connectortypeNone)
+                else if ((oox_pic->m_oShape->m_oConnectorType.IsInit()) && (oox_pic->m_oShape->m_oConnectorType->GetValue() != SimpleTypes::connectortypeNone))
 				{
 					odf_context()->drawing_context()->set_name(L"Connector");
 					odf_context()->drawing_context()->start_shape(SimpleTypes::shapetypeStraightConnector1);
@@ -2082,7 +2082,7 @@ void DocxConverter::convert(OOX::Logic::CObject* oox_obj)
 			odf_context()->drawing_context()->start_shape(OOX::Spt2ShapeType(sptType));
 			bSet = true;
 		}
-		else if (oox_obj->m_oShape->m_oConnectorType.GetValue() != SimpleTypes::connectortypeNone)
+        else if ((oox_obj->m_oShape->m_oConnectorType.IsInit()) && (oox_obj->m_oShape->m_oConnectorType->GetValue() != SimpleTypes::connectortypeNone))
 		{
 			odf_context()->drawing_context()->set_name(L"Connector");
 			odf_context()->drawing_context()->start_shape(SimpleTypes::shapetypeStraightConnector1);

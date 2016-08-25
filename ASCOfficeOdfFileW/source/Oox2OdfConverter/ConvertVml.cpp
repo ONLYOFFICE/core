@@ -803,7 +803,7 @@ void OoxConverter::convert(OOX::Vml::CGroup *vml_group)
 							odf_context()->drawing_context()->start_shape(OOX::Spt2ShapeType(sptType));
 							bSet = true;
 						}
-						else if (vml->m_oConnectorType.GetValue() != SimpleTypes::connectortypeNone)
+                        else if ((vml->m_oConnectorType.IsInit()) && (vml->m_oConnectorType->GetValue() != SimpleTypes::connectortypeNone))
 						{
 							odf_context()->drawing_context()->start_shape(SimpleTypes::shapetypeStraightConnector1);
 							odf_context()->drawing_context()->set_line_width(1.);

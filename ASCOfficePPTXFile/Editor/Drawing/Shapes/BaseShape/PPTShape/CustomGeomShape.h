@@ -118,7 +118,7 @@ namespace NSCustomVML
                     m_nCount = value;
                     break;
             }
-			return max(1, repeate);
+            return std::max(1, repeate);
 		}
 		void Read(POLE::Stream* pStream)
 		{

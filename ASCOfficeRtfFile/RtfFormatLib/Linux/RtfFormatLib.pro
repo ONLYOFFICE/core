@@ -19,8 +19,12 @@ include(../../../Common/base.pri)
 #BOOST
 include($$PWD/../../../Common/3dParty/boost/boost.pri)
 
-DEFINES += UNICODE _UNICODE _USE_LIBXML2_READER_ _USE_XMLLITE_READER_ USE_LITE_READER LIBXML_READER_ENABLED
-INCLUDEPATH += ../../../DesktopEditor/xml/libxml2/include
+DEFINES += UNICODE _UNICODE _USE_LIBXML2_READER_ _USE_XMLLITE_READER_ USE_LITE_READER LIBXML_READER_ENABLED PPT_DEF
+
+
+INCLUDEPATH += \
+    ../../../DesktopEditor/freetype-2.5.2/include \
+    ../../../DesktopEditor/xml/libxml2/include
 
 core_mac {
     DEFINES += \

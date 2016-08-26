@@ -33,6 +33,8 @@
 #include "Writer/OOXWriter.h"
 #include "RtfOle.h"
 
+#include "../../../ASCOfficePPTXFile/Editor/Drawing/Shapes/BaseShape/PPTShape/PPTShape.h"
+
 void RtfShape::SetDefault()
 {
 	m_eAnchorTypeShape = st_none;
@@ -99,16 +101,8 @@ void RtfShape::SetDefault()
 	DEFAULT_PROPERTY( m_nTxdir )
 	DEFAULT_PROPERTY( m_nWrapText )
 //Geometry
-	DEFAULT_PROPERTY( m_nAdjustValue )
-	DEFAULT_PROPERTY( m_nAdjustValue2 )
-	DEFAULT_PROPERTY( m_nAdjustValue3 )
-	DEFAULT_PROPERTY( m_nAdjustValue4 )
-	DEFAULT_PROPERTY( m_nAdjustValue5 )
-	DEFAULT_PROPERTY( m_nAdjustValue6 )
-	DEFAULT_PROPERTY( m_nAdjustValue7 )
-	DEFAULT_PROPERTY( m_nAdjustValue8 )
-	DEFAULT_PROPERTY( m_nAdjustValue9 )
-	DEFAULT_PROPERTY( m_nAdjustValue10 )
+	for (int i = 0; i < 10; i++)
+		DEFAULT_PROPERTY( m_nAdjustValue[i] )
 //Custom
 	DEFAULT_PROPERTY( m_nGeoLeft)	
 	DEFAULT_PROPERTY( m_nGeoTop)	
@@ -454,26 +448,26 @@ CString RtfShape::RenderToRtfShapeProperty(RenderParameter oRenderParameter)
 	if(  PROP_DEF != m_nWrapText )
 		sResult.AppendFormat( _T("{\\sp{\\sn WrapText}{\\sv %d}}"),	m_nWrapText);
 //Geometry
-	if( PROP_DEF != m_nAdjustValue )
-		sResult.AppendFormat( _T("{\\sp{\\sn adjustValue}{\\sv %d}}"),	m_nAdjustValue );
-	if( PROP_DEF != m_nAdjustValue )
-		sResult.AppendFormat( _T("{\\sp{\\sn adjust2Value}{\\sv %d}}"),	m_nAdjustValue2 );
-	if( PROP_DEF != m_nAdjustValue )
-		sResult.AppendFormat( _T("{\\sp{\\sn adjust3Value}{\\sv %d}}"),	m_nAdjustValue3 );
-	if( PROP_DEF != m_nAdjustValue )
-		sResult.AppendFormat( _T("{\\sp{\\sn adjust4Value}{\\sv %d}}"),	m_nAdjustValue4 );
-	if( PROP_DEF != m_nAdjustValue )
-		sResult.AppendFormat( _T("{\\sp{\\sn adjust5Value}{\\sv %d}}"),	m_nAdjustValue5 );
-	if( PROP_DEF != m_nAdjustValue )
-		sResult.AppendFormat( _T("{\\sp{\\sn adjust6Value}{\\sv %d}}"),	m_nAdjustValue6 );
-	if( PROP_DEF != m_nAdjustValue )
-		sResult.AppendFormat( _T("{\\sp{\\sn adjust7Value}{\\sv %d}}"),	m_nAdjustValue7 );
-	if( PROP_DEF != m_nAdjustValue )
-		sResult.AppendFormat( _T("{\\sp{\\sn adjust8Value}{\\sv %d}}"),	m_nAdjustValue8 );
-	if( PROP_DEF != m_nAdjustValue )
-		sResult.AppendFormat( _T("{\\sp{\\sn adjust9Value}{\\sv %d}}"),	m_nAdjustValue9 );
-	if( PROP_DEF != m_nAdjustValue )
-		sResult.AppendFormat( _T("{\\sp{\\sn adjust10Value}{\\sv %d}}"),	m_nAdjustValue10 );
+	if( PROP_DEF != m_nAdjustValue[0] )
+		sResult.AppendFormat( _T("{\\sp{\\sn adjustValue}{\\sv %d}}"),	m_nAdjustValue[0] );
+	if( PROP_DEF != m_nAdjustValue[1] )
+		sResult.AppendFormat( _T("{\\sp{\\sn adjust2Value}{\\sv %d}}"),	m_nAdjustValue[1] );
+	if( PROP_DEF != m_nAdjustValue[2] )
+		sResult.AppendFormat( _T("{\\sp{\\sn adjust3Value}{\\sv %d}}"),	m_nAdjustValue[2] );
+	if( PROP_DEF != m_nAdjustValue[3] )
+		sResult.AppendFormat( _T("{\\sp{\\sn adjust4Value}{\\sv %d}}"),	m_nAdjustValue[3] );
+	if( PROP_DEF != m_nAdjustValue[4] )
+		sResult.AppendFormat( _T("{\\sp{\\sn adjust5Value}{\\sv %d}}"),	m_nAdjustValue[4] );
+	if( PROP_DEF != m_nAdjustValue[5] )
+		sResult.AppendFormat( _T("{\\sp{\\sn adjust6Value}{\\sv %d}}"),	m_nAdjustValue[5] );
+	if( PROP_DEF != m_nAdjustValue[6] )
+		sResult.AppendFormat( _T("{\\sp{\\sn adjust7Value}{\\sv %d}}"),	m_nAdjustValue[6] );
+	if( PROP_DEF != m_nAdjustValue[7] )
+		sResult.AppendFormat( _T("{\\sp{\\sn adjust8Value}{\\sv %d}}"),	m_nAdjustValue[7] );
+	if( PROP_DEF != m_nAdjustValue[8] )
+		sResult.AppendFormat( _T("{\\sp{\\sn adjust9Value}{\\sv %d}}"),	m_nAdjustValue[8] );
+	if( PROP_DEF != m_nAdjustValue[9] )
+		sResult.AppendFormat( _T("{\\sp{\\sn adjust10Value}{\\sv %d}}"), m_nAdjustValue[9] );
 //custom
 	if( PROP_DEF != m_nGeoLeft)	
 		sResult.AppendFormat( _T("{\\sp{\\sn geoLeft}{\\sv %d}}"), m_nGeoLeft );
@@ -602,72 +596,72 @@ CString RtfShape::RenderToRtfShapeProperty(RenderParameter oRenderParameter)
 }
 CString RtfShape::RenderToOOX(RenderParameter oRenderParameter)
 {
+	if( PROP_DEF == m_nShapeType ) return L"";
+
 	CString sResult;
 	RtfDocument* poDocument = static_cast<RtfDocument*>(oRenderParameter.poDocument);
 	
-	if( PROP_DEF != m_nShapeType && 0 != m_nShapeType )
-	{
-		TextItemContainerPtr aTempTextItems;
-		
-		if( 75 == m_nShapeType && 0 != m_aTextItems )
-		{//Значит это Ole обьект с anchor, для него все также только TextBox надо делать по-другому
-			aTempTextItems = m_aTextItems;
-			m_aTextItems = TextItemContainerPtr();
-			m_bIsOle = true;
-		}
+	TextItemContainerPtr aTempTextItems;
+	
+	if( NSOfficeDrawing::sptPictureFrame == m_nShapeType && 0 != m_aTextItems )
+	{//Значит это Ole обьект с anchor, для него все также только TextBox надо делать по-другому
+		aTempTextItems	= m_aTextItems;
+		m_aTextItems	= TextItemContainerPtr();
+		m_bIsOle		= true;
+	}
 
-		sResult = RenderToOOXBegin(oRenderParameter);
-		
-		if( !sResult.IsEmpty() )
-			sResult +=  RenderToOOXEnd(oRenderParameter);
+	sResult = RenderToOOXBegin(oRenderParameter);
+	
+	if( !sResult.IsEmpty() )
+		sResult +=  RenderToOOXEnd(oRenderParameter);
 
-		CString sOle;
-		if( 0 != aTempTextItems )
-		{//пишем только Ole обьект
-			//ищем первый ole обьект
-			RtfOlePtr poFirstOle;
-			int nTempTextItemsCount = aTempTextItems->GetCount();
-			for( int i = 0; i < nTempTextItemsCount; i++ )
+	CString sOle;
+	if( 0 != aTempTextItems )
+	{//пишем только Ole обьект
+		//ищем первый ole обьект
+		RtfOlePtr poFirstOle;
+		int nTempTextItemsCount = aTempTextItems->GetCount();
+		for( int i = 0; i < nTempTextItemsCount; i++ )
+		{
+			ITextItemPtr piCurTextItem;
+			aTempTextItems->GetItem( piCurTextItem, i );
+			if( NULL != piCurTextItem && TYPE_RTF_PARAGRAPH == piCurTextItem->GetType() )
 			{
-				ITextItemPtr piCurTextItem;
-				aTempTextItems->GetItem( piCurTextItem, i );
-				if( NULL != piCurTextItem && TYPE_RTF_PARAGRAPH == piCurTextItem->GetType() )
+				RtfParagraphPtr poCurParagraph = boost::static_pointer_cast< RtfParagraph, ITextItem >( piCurTextItem );
+				if( NULL != poCurParagraph )
 				{
-					RtfParagraphPtr poCurParagraph = boost::static_pointer_cast< RtfParagraph, ITextItem >( piCurTextItem );
-					if( NULL != poCurParagraph )
+					bool bBreak = false;
+					for( int j = 0; j < poCurParagraph->GetCount(); j++ )
 					{
-						bool bBreak = false;
-						for( int j = 0; j < poCurParagraph->GetCount(); j++ )
+						IDocumentElementPtr piCurIDocumentElement;
+						poCurParagraph->GetItem( piCurIDocumentElement, j );
+						if( NULL != piCurIDocumentElement && TYPE_RTF_OLE == piCurIDocumentElement->GetType() )
 						{
-							IDocumentElementPtr piCurIDocumentElement;
-							poCurParagraph->GetItem( piCurIDocumentElement, j );
-							if( NULL != piCurIDocumentElement && TYPE_RTF_OLE == piCurIDocumentElement->GetType() )
-							{
-								//рендерим только Ole часть
-								RenderParameter oNewParam = oRenderParameter;
-								oNewParam.nType = RENDER_TO_OOX_PARAM_OLE_ONLY;
-								oNewParam.nValue = m_nID;
+							//рендерим только Ole часть
+							RenderParameter oNewParam = oRenderParameter;
+							oNewParam.nType = RENDER_TO_OOX_PARAM_OLE_ONLY;
+							oNewParam.nValue = m_nID;
 
-								RtfOlePtr poCurOle = boost::static_pointer_cast< RtfOle, IDocumentElement >( piCurIDocumentElement );
-								if( NULL != poCurOle )
-								{
-									sOle += poCurOle->RenderToOOX( oNewParam );
-									bBreak = true;
-									break;
-								}
+							RtfOlePtr poCurOle = boost::static_pointer_cast< RtfOle, IDocumentElement >( piCurIDocumentElement );
+							if( NULL != poCurOle )
+							{
+								sOle += poCurOle->RenderToOOX( oNewParam );
+								bBreak = true;
+								break;
 							}
 						}
-						if( true == bBreak )
-							break;
 					}
+					if( true == bBreak )
+						break;
 				}
 			}
-			//возвращаем text box на место
-			m_aTextItems = aTempTextItems;
 		}
-		if( false == sOle.IsEmpty() )
-			sResult.Replace( _T("</w:pict>"), sOle + _T("</w:pict>") );
+		//возвращаем text box на место
+		m_aTextItems = aTempTextItems;
 	}
+	if( !sOle.IsEmpty() && !sResult.IsEmpty())
+		sResult.Replace( _T("</w:pict>"), sOle + _T("</w:pict>") );//todooo переписать
+	
 	return sResult;
 }
 CString RtfShape::GetShapeNodeName(int type)
@@ -684,14 +678,12 @@ CString RtfShape::GetShapeNodeName(int type)
 }
 CString RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 {
-	if( false == IsValid() )
-		return _T("");
+	if( !IsValid() ) return _T("");
 
-	RtfDocument* poDocument = static_cast<RtfDocument*>( oRenderParameter.poDocument );
-	CString sResult;
+	CString			sResult;
 	
 	if( RENDER_TO_OOX_PARAM_SHAPE_WSHAPE2 == oRenderParameter.nType )
-		;
+		;//child shape
 	else if( RENDER_TO_OOX_PARAM_SHAPE_WSHAPE == oRenderParameter.nType )
 		sResult += _T("<w:pict>");
 	else
@@ -702,21 +694,19 @@ CString RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 
 	sResult += _T("<") + oRenderParameter.sValue;
 
-	CString strUniqId;
 	if (m_sName.IsEmpty())
 	{
+		RtfDocument* poDocument = static_cast<RtfDocument*>( oRenderParameter.poDocument );
 		m_sName.AppendFormat(L"_x0000_s%d", poDocument->GetShapeId( m_nID ));
 	}
 	sResult += _T(" id=\"") + m_sName + _T("\"");
 
-
-	if( PROP_DEF != m_nShapeType )
+	if( PROP_DEF != m_nShapeType && 0 != m_nShapeType)
 	{
 		sResult.AppendFormat( _T(" type=\"#_x0000_t%d\""),	m_nShapeType );
-		
-		if (m_nShapeType > 0)
-			sResult.AppendFormat( _T(" o:spt=\"%d\""),	m_nShapeType );
+		sResult.AppendFormat( _T(" o:spt=\"%d\"")		 ,	m_nShapeType );
 	}
+
 	if( 0 == m_bFilled) sResult += _T(" filled=\"f\"");
 	else				sResult += _T(" filled=\"t\"");
 
@@ -733,6 +723,8 @@ CString RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 		RtfColor color(m_nLineColor);
 		sResult.AppendFormat( _T(" strokecolor=\"#") + color.ToHexColor(true) + _T("\""));
 	}
+	if(PROP_DEF != m_nLineWidth)
+		sResult.AppendFormat( _T(" strokeweight=\"%.2fpt\""), RtfUtility::Emu2Pt(m_nLineWidth) );
 //path
 	switch( m_nConnectionType )
 	{
@@ -749,6 +741,7 @@ CString RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 		case 2: sResult += _T(" o:connectortype=\"curved\"");	break;
 		case 3: sResult += _T(" o:connectortype=\"none\"");		break;
 	}
+
 //-----------------------------------------------------------------------------------------------------------------
 	CString sStyle ;
 	if( PROP_DEF != m_nLeft &&  PROP_DEF != m_nRight && PROP_DEF != m_nTop && PROP_DEF != m_nBottom   )
@@ -962,9 +955,12 @@ CString RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 	
 	if( PROP_DEF != m_nGroupLeft && PROP_DEF != m_nGroupTop )
 		sResult.AppendFormat( _T(" coordorigin=\"%d,%d\""), m_nGroupLeft, m_nGroupTop);
+	
 	if( PROP_DEF != m_nGroupLeft && PROP_DEF != m_nGroupTop && PROP_DEF != m_nGroupRight && PROP_DEF != m_nGroupBottom)
 		sResult.AppendFormat( _T(" coordsize=\"%d,%d\""), m_nGroupRight - m_nGroupLeft, m_nGroupBottom - m_nGroupTop );
-	
+	else if ( PROP_DEF != m_nGeoLeft && PROP_DEF != m_nGeoTop && PROP_DEF != m_nGeoRight && PROP_DEF != m_nGeoBottom)
+		sResult.AppendFormat( _T(" coordsize=\"%d,%d\""), m_nGeoRight - m_nGeoLeft, m_nGeoBottom - m_nGeoTop );
+
 	if (oRenderParameter.nType !=  RENDER_TO_OOX_PARAM_SHAPE_WSHAPE2)
 	{
 		if( PROP_DEF != m_bLayoutInCell )
@@ -982,52 +978,48 @@ CString RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 				sResult += _T(" o:allowoverlap=\"true\"");
 		}
 	}
-	//Position
-
-	//Geometry
-	CString sAdjust;
-	if( PROP_DEF != m_nAdjustValue )
+//Geometry
+	if( PROP_DEF != m_nAdjustValue[0] )
 	{
-		sAdjust.AppendFormat( _T("%d"),	m_nAdjustValue);
-		if( PROP_DEF != m_nAdjustValue2 )
+		CString sAdjust;
+		sAdjust.AppendFormat( _T("%d"),	m_nAdjustValue[0]);
+		for (int i = 1 ; i < 10; i++)
 		{
-			sAdjust.AppendFormat( _T(",%d"),	m_nAdjustValue2);
-			if( PROP_DEF != m_nAdjustValue3 )
-			{
-				sAdjust.AppendFormat( _T(",%d"),	m_nAdjustValue3);
-				if( PROP_DEF != m_nAdjustValue4 )
-				{
-					sAdjust.AppendFormat( _T(",%d"),	m_nAdjustValue4);
-					if( PROP_DEF != m_nAdjustValue5 )
-					{
-						sAdjust.AppendFormat( _T(",%d"),	m_nAdjustValue5);
-						if( PROP_DEF != m_nAdjustValue6 )
-						{
-							sAdjust.AppendFormat( _T(",%d"),	m_nAdjustValue6);
-							if( PROP_DEF != m_nAdjustValue7 )
-							{
-								sAdjust.AppendFormat( _T(",%d"),	m_nAdjustValue7);
-								if( PROP_DEF != m_nAdjustValue8 )
-								{
-									sAdjust.AppendFormat( _T(",%d"),	m_nAdjustValue8);
-									if( PROP_DEF != m_nAdjustValue9 )
-									{
-										sAdjust.AppendFormat( _T(",%d"),	m_nAdjustValue9);
-										if( PROP_DEF != m_nAdjustValue10 )
-										{
-											sAdjust.AppendFormat( _T(",%d"),	m_nAdjustValue10);
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			}
+			if (PROP_DEF != m_nAdjustValue[i])
+				sAdjust.AppendFormat( _T(",%d"), m_nAdjustValue[i]);
+			else
+				sAdjust += _T(",");
 		}
-    sResult.AppendFormat( _T(" adj=\"%ls\""),sAdjust.GetBuffer() );
+		sResult +=_T(" adj=\"") + sAdjust + _T("\"");
 	}
-	//Geometry
+//Custom
+	if (!m_aPVerticles.empty() || !m_aPSegmentInfo.empty())
+	{
+		CPPTShape * custom_shape = CPPTShape::CreateByType((PPTShapes::ShapeType)m_nShapeType);
+		if (custom_shape)
+		{
+			custom_shape->m_bCustomShape = true;
+			
+			custom_shape->m_oPath.SetCoordsize(m_nGeoRight - m_nGeoLeft, m_nGeoBottom - m_nGeoTop);
+			
+			for (int i = 0 ; i < 10; i++)
+			{
+				if (PROP_DEF != m_nAdjustValue[i])
+					custom_shape->m_oCustomVML.LoadAdjusts(i + 1, m_nAdjustValue[i]);
+			}
+			
+			if (PROP_DEF != m_nShapePath)
+				custom_shape->m_oCustomVML.SetPath((NSPresentationEditor::RulesType)m_nShapePath);
+			
+			custom_shape->m_oCustomVML.LoadVertices(m_aPVerticles);
+			custom_shape->m_oCustomVML.LoadSegments(m_aPSegmentInfo);
+
+			custom_shape->m_oCustomVML.ToCustomShape(custom_shape, custom_shape->m_oManager);
+			
+			sResult +=_T(" path=\"") + custom_shape->m_strPath + _T("\"");
+		}
+	}
+//Wrap Geometry
 	if( !m_aWrapPoints.empty())
 	{
 		sResult += _T(" wrapcoords=\"");
@@ -1040,9 +1032,6 @@ CString RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 		
 		sResult += _T("\"");
 	}
-
-	if(PROP_DEF != m_nLineWidth)
-		sResult.AppendFormat( _T(" strokeweight=\"%fpt\""), RtfUtility::Emu2Pt(m_nLineWidth) );
 	
 	sResult += _T(">");
 //-------------------------------------------------------------------------------------------------------------- nodes	

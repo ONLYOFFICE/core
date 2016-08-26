@@ -48,12 +48,12 @@ namespace NSPresentationEditor
 	public:
 		CHandle_()
 		{
-			position = _T("");
-			xrange = _T("");
-			yrange = _T("");
-			switchHandle = _T("");
-			polar = _T("");
-			radiusrange = _T(""); 
+			position		= _T("");
+			xrange			= _T("");
+			yrange			= _T("");
+			switchHandle	= _T("");
+			polar			= _T("");
+			radiusrange			= _T(""); 
 		}
 		CHandle_& operator =(const CHandle_& oSrc)
 		{
@@ -72,7 +72,6 @@ namespace NSPresentationEditor
 	public:
 		std::vector<long>					m_arAdjustments;
 		std::vector<double>					m_arGuides;
-	public: 
 		LONG								m_eJoin;
 		bool								m_bConcentricFill;
 		bool								m_bCustomShape;
@@ -83,17 +82,16 @@ namespace NSPresentationEditor
 		
 		std::vector<CHandle_>				m_arHandles;
 
-		CString					m_strTransformXml;
+		CString								m_strTransformXml;
 
-		CString					m_strPath;
-		CString					m_strRect;
+		CString								m_strPath;
+		CString								m_strRect;
 
-		LONG					m_lLimoX;
-		LONG					m_lLimoY;
+		LONG								m_lLimoX;
+		LONG								m_lLimoY;
 		
-		CPath					m_oPath;
+		CPath								m_oPath;
 
-	public:
 		CBaseShape()
 		{
 			m_bCustomShape = false;

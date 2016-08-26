@@ -312,7 +312,6 @@ namespace OOX
 		{
 			// Выставляем значения по умолчанию
 			m_oHrPct.SetValue( 0 );
-			m_oSpt.SetValue( 0 );
 
 			// Читаем атрибуты
 			if ( oReader.GetAttributesCount() <= 0 )
@@ -548,8 +547,8 @@ namespace OOX
 
 			ComplexTypes_WriteAttribute ( _T("insetpen=\""),  m_oInsetPen );
 
-			if ( 0 != m_oSpt.GetValue() )
-				sResult += _T("o:spt=\"") + m_oSpt.ToString() + _T("\" ");
+			if ( m_oSpt.IsInit() )
+				sResult += _T("o:spt=\"") + m_oSpt->ToString() + _T("\" ");
 
 			if (m_oConnectorType.IsInit())
 			{

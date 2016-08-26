@@ -31,7 +31,6 @@
  */
 #pragma once
 #include "RtfPicture.h"
-#include "../../../ASCOfficePPTXFile/Editor/Drawing/Enums.h"
 
 class RtfShape: public IRenderableProperty
 {
@@ -101,20 +100,20 @@ public:
 	CString m_sMetroBlobData;
 //Object Type
 	int m_bIsBullet;				//fIsBullet Indicates whether a picture was inserted as a picture bullet.
-	int m_nRotation;				//rotation	Rotation of the shape.	Angle	0
-	int m_bFlipV;					//fFlipV	Vertical flip, applied after the rotation.	Boolean	FALSE
-	int m_bFlipH;					//fFlipH	Horizontal flip, applied after the rotation.	Boolean	FALSE
-	int m_nShapeType;				//shapeType	See below for values. 0 indicates user-drawn freeforms and polygons. 	Not applicable	Not applicable
+	int m_nRotation;
+	int m_bFlipV;		
+	int m_bFlipH;	
+	int m_nShapeType;				// 0 indicates user-drawn freeforms and polygons
 	
-	int m_nWrapDistLeft;			//dxWrapDistLeft	Left wrapping distance from text.
+	int m_nWrapDistLeft;
 	int m_nWrapDistTop;		
 	int m_nWrapDistRight;
 	int m_nWrapDistBottom;	
-	int m_bHidden;					//Do not display or print (only set through Visual Basic for Applications).	Boolean	FALSE
+	int m_bHidden;					//Do not display or print 
 
 //Text box
 	int m_nAnchorText;
-	int m_nTexpLeft;				//dxTextLeft	Left internal margin of the text box. EMU	91,440
+	int m_nTexpLeft;				//in EMU
 	int m_nTexpTop;	
 	int m_nTexpRight;
 	int m_nTexpBottom;	
@@ -124,16 +123,7 @@ public:
 	int m_nTxdir;					//bidi
 	int m_nWrapText;
 //Geometry
-	int m_nAdjustValue;				//adjustValue	First adjust value from an adjust handle. The interpretation varies with the shape type. Adjust values alter the geometry of the shape in smart ways. 	Integer	0
-	int m_nAdjustValue2;
-	int m_nAdjustValue3;
-	int m_nAdjustValue4;
-	int m_nAdjustValue5;
-	int m_nAdjustValue6;
-	int m_nAdjustValue7;
-	int m_nAdjustValue8;
-	int m_nAdjustValue9;
-	int m_nAdjustValue10;
+	int m_nAdjustValue[10];	
 //Custom
 	int m_nGeoLeft;	
 	int m_nGeoTop;	

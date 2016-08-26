@@ -53,50 +53,7 @@ public:
 	bool Parse( ReaderParameter oParam , RtfShapePtr& oOutput);
 	bool Parse2( ReaderParameter oParam , RtfShapePtr& oOutput);
 	
-	void ParseAdjustment(RtfShape& oShape, CString sAdjustment)
-	{
-		 int nPosition = 0;
-		 CString sAdj = sAdjustment.Tokenize(_T(","), nPosition);
-		 if( _T("") == sAdj )
-			 return;
-		 oShape.m_nAdjustValue = Strings::ToInteger( sAdj );
-		 sAdj = sAdjustment.Tokenize(_T(","), nPosition);
-		 if( _T("") == sAdj )
-			 return;
-		 oShape.m_nAdjustValue2 = Strings::ToInteger( sAdj );
-		 sAdj = sAdjustment.Tokenize(_T(","), nPosition);
-		 if( _T("") == sAdj )
-			 return;
-		 oShape.m_nAdjustValue3 = Strings::ToInteger( sAdj );
-		 sAdj = sAdjustment.Tokenize(_T(","), nPosition);
-		 if( _T("") == sAdj )
-			 return;
-		 oShape.m_nAdjustValue4 = Strings::ToInteger( sAdj );
-		 sAdj = sAdjustment.Tokenize(_T(","), nPosition);
-		 if( _T("") == sAdj )
-			 return;
-		 oShape.m_nAdjustValue5 = Strings::ToInteger( sAdj );
-		 sAdj = sAdjustment.Tokenize(_T(","), nPosition);
-		 if( _T("") == sAdj )
-			 return;
-		 oShape.m_nAdjustValue6 = Strings::ToInteger( sAdj );
-		 sAdj = sAdjustment.Tokenize(_T(","), nPosition);
-		 if( _T("") == sAdj )
-			 return;
-		 oShape.m_nAdjustValue7 = Strings::ToInteger( sAdj );
-		 sAdj = sAdjustment.Tokenize(_T(","), nPosition);
-		 if( _T("") == sAdj )
-			 return;
-		 oShape.m_nAdjustValue8 = Strings::ToInteger( sAdj );
-		 sAdj = sAdjustment.Tokenize(_T(","), nPosition);
-		 if( _T("") == sAdj )
-			 return;
-		 oShape.m_nAdjustValue9 = Strings::ToInteger( sAdj );
-		 sAdj = sAdjustment.Tokenize(_T(","), nPosition);
-		 if( _T("") == sAdj )
-			 return;
-		 oShape.m_nAdjustValue10 = Strings::ToInteger( sAdj );
-	 }
+	void ParseAdjustment(RtfShape& oShape, CString sAdjustment);
 
 private:
 	OOX::Vml::CVmlCommonElements						*m_vmlElement;

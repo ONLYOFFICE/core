@@ -2428,16 +2428,16 @@ void ParagraphPropDestination::Finalize( RtfReader& oReader/*, RtfSectionPtr pSe
 	else if( _T("anchorText")		== m_sPropName ) m_oShape.m_nAnchorText		= nValue;
 
 //Geometry
-	else if( _T("adjustValue")		== m_sPropName ) m_oShape.m_nAdjustValue	= nValue;
-	else if( _T("adjust2Value")		== m_sPropName ) m_oShape.m_nAdjustValue2	= nValue;
-	else if( _T("adjust3Value")		== m_sPropName ) m_oShape.m_nAdjustValue3	= nValue;
-	else if( _T("adjust4Value")		== m_sPropName ) m_oShape.m_nAdjustValue4	= nValue;
-	else if( _T("adjust5Value")		== m_sPropName ) m_oShape.m_nAdjustValue5	= nValue;
-	else if( _T("adjust6Value")		== m_sPropName ) m_oShape.m_nAdjustValue6	= nValue;
-	else if( _T("adjust7Value")		== m_sPropName ) m_oShape.m_nAdjustValue7	= nValue;
-	else if( _T("adjust8Value")		== m_sPropName ) m_oShape.m_nAdjustValue8	= nValue;
-	else if( _T("adjust9Value")		== m_sPropName ) m_oShape.m_nAdjustValue9	= nValue;
-	else if( _T("adjust10Value")	== m_sPropName ) m_oShape.m_nAdjustValue10	= nValue;
+	else if( _T("adjustValue")		== m_sPropName ) m_oShape.m_nAdjustValue[0]	= nValue;
+	else if( _T("adjust2Value")		== m_sPropName ) m_oShape.m_nAdjustValue[1]	= nValue;
+	else if( _T("adjust3Value")		== m_sPropName ) m_oShape.m_nAdjustValue[2]	= nValue;
+	else if( _T("adjust4Value")		== m_sPropName ) m_oShape.m_nAdjustValue[3]	= nValue;
+	else if( _T("adjust5Value")		== m_sPropName ) m_oShape.m_nAdjustValue[4]	= nValue;
+	else if( _T("adjust6Value")		== m_sPropName ) m_oShape.m_nAdjustValue[5]	= nValue;
+	else if( _T("adjust7Value")		== m_sPropName ) m_oShape.m_nAdjustValue[6]	= nValue;
+	else if( _T("adjust8Value")		== m_sPropName ) m_oShape.m_nAdjustValue[7]	= nValue;
+	else if( _T("adjust9Value")		== m_sPropName ) m_oShape.m_nAdjustValue[8]	= nValue;
+	else if( _T("adjust10Value")	== m_sPropName ) m_oShape.m_nAdjustValue[9]	= nValue;
 //WordArt Effects
 	else if( _T("cropFromTop")		== m_sPropName ) m_oShape.m_nCropFromTop	= nValue;
 	else if( _T("cropFromBottom")	== m_sPropName ) m_oShape.m_nCropFromBottom = nValue;

@@ -344,6 +344,42 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath="..\..\..\XlsxSerializerCom\Reader\ChartFromToBinary.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\ASCOfficeDocxFile2\DocWrapper\ChartWriter.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\XlsxSerializerCom\Common\Common.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\XlsxSerializerCom\Reader\CommonWriter.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\XlsxSerializerCom\Reader\CSVReader.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\XlsxSerializerCom\Writer\CSVWriter.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\ASCOfficeDocxFile2\DocWrapper\DocxSerializer.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\Common\FileDownloader\FileDownloader_win.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\ASCOfficeDocxFile2\DocWrapper\FontProcessor.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\Common\DocxFormat\Source\XML\libxml2\libxml2.cpp"
 				>
 				<FileConfiguration
@@ -391,6 +427,14 @@
 				RelativePath="..\RtfFormatTest.cpp"
 				>
 			</File>
+			<File
+				RelativePath="..\..\..\UnicodeConverter\UnicodeConverter.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\ASCOfficeDocxFile2\DocWrapper\XlsxSerializer.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -398,6 +442,14 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 		</Filter>
+		<File
+			RelativePath="..\..\..\build\bin\icu\win_32\icudt.lib"
+			>
+		</File>
+		<File
+			RelativePath="..\..\..\build\bin\icu\win_32\icuuc.lib"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

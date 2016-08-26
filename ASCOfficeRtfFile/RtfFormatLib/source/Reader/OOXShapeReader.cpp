@@ -32,6 +32,10 @@
 #include "OOXShapeReader.h"
 #include "OOXTextItemReader.h"
 
+#include "../../../ASCOfficePPTXFile/Editor/Drawing/Shapes/BaseShape/PPTShape/PPTShape.h"
+
+#include <boost/algorithm/string.hpp>
+
 bool ParseStyle(RtfShape* pShape, SimpleTypes::Vml::CCssProperty* prop)
 {
 	if (pShape == NULL)	return false;
@@ -512,8 +516,13 @@ bool OOXShapeReader::Parse( ReaderParameter oParam , RtfShapePtr& oOutput)
 
 	if (OOX::Vml::CShapeType* shape_type = dynamic_cast<OOX::Vml::CShapeType*>(m_vmlElement))
 	{
-		oOutput->m_nShapeType = NSOfficeDrawing::sptNotPrimitive;
+		if (oOutput->m_nShapeType == PROP_DEF)
+			oOutput->m_nShapeType = NSOfficeDrawing::sptNotPrimitive;
 		
+		if (shape_type->m_oSpt.IsInit())
+		{
+			oOutput->m_nShapeType = shape_type->m_oSpt->GetValue();
+		}
 		if (shape_type->m_sId.IsInit())
 		{
 			if (oParam.oReader->m_mapShapeTypes.find(shape_type->m_sId.get()) == 
@@ -532,6 +541,10 @@ bool OOXShapeReader::Parse( ReaderParameter oParam , RtfShapePtr& oOutput)
 		if (shape->m_oAdj.IsInit())
 			ParseAdjustment( *oOutput, shape->m_oAdj.get() );
 		
+		if (shape->m_oSpt.IsInit())
+		{
+			oOutput->m_nShapeType = shape->m_oSpt->GetValue();
+		}
 		if (shape->m_sType.IsInit())
 		{
 			CString type = shape->m_sType.get().Mid(1);//without #
@@ -542,17 +555,20 @@ bool OOXShapeReader::Parse( ReaderParameter oParam , RtfShapePtr& oOutput)
 				OOXShapeReader sub_reader(it->second);
 				sub_reader.Parse(oParam, oOutput);
 			}
-			int pos = shape->m_sType->Find(_T("#_x0000_t"));
-			if (pos >= 0)
-			{				
-				oOutput->m_nShapeType = _wtoi(shape->m_sType->Mid(pos + 9, shape->m_sType->GetLength() - pos - 9).GetString());
+			if (oOutput->m_nShapeType == PROP_DEF)
+			{
+				int pos = shape->m_sType->Find(_T("#_x0000_t"));
+				if (pos >= 0)
+				{				
+					oOutput->m_nShapeType = _wtoi(shape->m_sType->Mid(pos + 9, shape->m_sType->GetLength() - pos - 9).GetString());
+				}
 			}
 		}
-		else
+		else if (oOutput->m_nShapeType == PROP_DEF)
 		{
 			oOutput->m_nShapeType = NSOfficeDrawing::sptNotPrimitive;
-			custom_path = shape->m_oPath.GetPointer();
 		}
+		custom_path = shape->m_oPath.GetPointer();
 	}
 	else if (OOX::Vml::CRect* rect = dynamic_cast<OOX::Vml::CRect*>(m_vmlElement))
 	{
@@ -758,3 +774,26 @@ bool OOXShapeGroupReader::Parse( ReaderParameter oParam , RtfShapeGroupPtr& oOut
 	}
 	return true;
 }
+
+void OOXShapeReader::ParseAdjustment(RtfShape& oShape, CString sAdjustment)
+{
+	std::wstring sValue_(sAdjustment.GetBuffer());
+	std::vector< std::wstring > splitted;
+	
+	boost::algorithm::split(splitted, sValue_, boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);
+
+	for (int i = 0; i < splitted.size(); i++)
+	{
+		if (!splitted[i].empty())
+		{
+			try
+			{
+				oShape.m_nAdjustValue[i] = _wtoi(splitted[i].c_str());
+			}
+			catch(...)
+			{
+				oShape.m_nAdjustValue[i] = 0;
+			}
+		}
+	}
+ }

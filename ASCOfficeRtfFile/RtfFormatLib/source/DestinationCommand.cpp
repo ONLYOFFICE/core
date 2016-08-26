@@ -2370,8 +2370,17 @@ void ParagraphPropDestination::Finalize( RtfReader& oReader/*, RtfSectionPtr pSe
 			boost::algorithm::replace_all(splitted[i], L"(", L"");
 			int pos = splitted[i].find(L",");
 
-			int x = _wtoi(splitted[i].substr(0, pos).c_str());
-			int y = _wtoi(splitted[i].substr(pos + 1, splitted[i].length() - 1).c_str());
+            int x = 0, y = 0;
+            try
+            {
+                x = _wtoi(splitted[i].substr(0, pos).c_str());
+            }
+            catch(...){}
+            try
+            {
+                y = _wtoi(splitted[i].substr(pos + 1, splitted[i].length() - 1).c_str());
+            }
+            catch(...){}
 
 			m_oShape.m_aWrapPoints.push_back( std::pair<int, int>(x, y) );
 		}
@@ -2389,8 +2398,17 @@ void ParagraphPropDestination::Finalize( RtfReader& oReader/*, RtfSectionPtr pSe
 			boost::algorithm::replace_all(splitted[i], L"(", L"");
 			int pos = splitted[i].find(L",");
 
-			int x = _wtoi(splitted[i].substr(0, pos).c_str());
-			int y = _wtoi(splitted[i].substr(pos + 1, splitted[i].length() - 1).c_str());
+            int x = 0, y = 0;
+            try
+            {
+                x = _wtoi(splitted[i].substr(0, pos).c_str());
+            }
+            catch(...){}
+            try
+            {
+                y = _wtoi(splitted[i].substr(pos + 1, splitted[i].length() - 1).c_str());
+            }
+            catch(...){}
 
 			m_oShape.m_aPVerticles.push_back( std::pair<int, int>(x, y) );
 		}
@@ -2404,7 +2422,11 @@ void ParagraphPropDestination::Finalize( RtfReader& oReader/*, RtfSectionPtr pSe
 		
 		for (int i = 2 ; i < splitted.size(); i++)
 		{
-			int val = _wtoi(splitted[i].c_str());
+            int val = 0;
+            try
+            {
+                val = _wtoi(splitted[i].c_str());
+            }catch(...){}
 
 			m_oShape.m_aPSegmentInfo.push_back( val );
 		}

@@ -65,36 +65,38 @@ public:
 	}
 	CString RenderToRtf(RenderParameter oRenderParameter)
 	{
-		if( false == IsValid() )
-			return _T("");
-		CString sResult;
-		sResult.Append( _T("{\\object") );
+		if( !IsValid() ) return _T("");
+
+		CString sResult = _T("{\\object");
+		
 		if( PROP_DEF != m_eOleType )
 		{
 			switch( m_eOleType )
 			{
-				case ot_emb:  sResult.Append( _T("\\objemb") );break;
-				case ot_link:  sResult.Append( _T("\\objlink") );break;
+				case ot_emb:	sResult += _T("\\objemb");	break;
+				case ot_link:	sResult += _T("\\objlink");	break;
 			}
 		}
 		RENDER_RTF_INT( m_nWidth, sResult, _T("objw") );
 		RENDER_RTF_INT( m_nHeight, sResult, _T("objh") );
 
-        if( _T("") != m_sOleClass )
-            sResult.AppendFormat( _T("{\\*\\objclass %ls}"), m_sOleClass.GetBuffer() );
-		if( _T("") != m_sOleFilename )
+		if( !m_sOleClass.IsEmpty() )
+            sResult += _T("{\\*\\objclass ") + m_sOleClass + _T("}");
+		
+		if( !m_sOleFilename.IsEmpty() )
         {
             CString str = RtfUtility::RtfInternalEncoder::Encode( m_sOleFilename );
-            sResult.AppendFormat( _T("{\\*\\objdata %ls}"), str.GetBuffer() );
+            sResult += _T("{\\*\\objdata ") + str + _T("}");
         }
 		if( NULL != m_oResultPic )
 		{
             CString str = m_oResultPic->RenderToRtf( oRenderParameter );
-            sResult.AppendFormat( _T("{\\result \\pard\\plain%ls}"), str.GetBuffer() );
+            sResult += _T("{\\result \\pard\\plain") + str + _T("}");
 		}
-		sResult.Append( _T("}") );
+		sResult += _T("}");
 		return sResult;
 	}
+
 	CString RenderToOOX(RenderParameter oRenderParameter);
 
 	void SetFilename( CString sFilename )

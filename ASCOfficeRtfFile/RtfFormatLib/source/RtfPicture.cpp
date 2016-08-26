@@ -36,30 +36,30 @@
 CString RtfPicture::GenerateWMF(RenderParameter oRenderParameter)
 {
 	CString sResult;
-	sResult.Append(_T("{\\pict"));
+	sResult += _T("{\\pict");
 	//if(-1 != m_nShapeId)
 	//	sResult.AppendFormat(_T("{\\*\\picprop\\shplid%d%ls}"), m_nShapeId, m_oShapeProp.RenderToRtf( oRenderParameter ) );
 	//else
 	//	sResult.AppendFormat(_T("{\\*\\picprop%ls}"), m_oShapeProp.RenderToRtf( oRenderParameter ) );
 	////"наши" wmf не растягиваются
 	RENDER_RTF_INT( 100, sResult, _T("picscalex") )
-		RENDER_RTF_INT( 100, sResult, _T("picscaley") )
+	RENDER_RTF_INT( 100, sResult, _T("picscaley") )
 
-		//RENDER_RTF_INT( (int)m_dScaleX, sResult, _T("picscalex") )
-		//RENDER_RTF_INT( (int)m_dScaleY, sResult, _T("picscaley") )
-		RENDER_RTF_INT( m_nCropL, sResult, _T("piccropl") )
-		RENDER_RTF_INT( m_nCropT, sResult, _T("piccropt") )
-		RENDER_RTF_INT( m_nCropR, sResult, _T("piccropr") )
-		RENDER_RTF_INT( m_nCropB, sResult, _T("piccropb") )
+	//RENDER_RTF_INT( (int)m_dScaleX, sResult, _T("picscalex") )
+	//RENDER_RTF_INT( (int)m_dScaleY, sResult, _T("picscaley") )
+	RENDER_RTF_INT( m_nCropL, sResult, _T("piccropl") )
+	RENDER_RTF_INT( m_nCropT, sResult, _T("piccropt") )
+	RENDER_RTF_INT( m_nCropR, sResult, _T("piccropr") )
+	RENDER_RTF_INT( m_nCropB, sResult, _T("piccropb") )
 
-		RENDER_RTF_INT( m_nWidth, sResult, _T("picw") )
-		RENDER_RTF_INT( m_nHeight, sResult, _T("pich") )
-		RENDER_RTF_INT( m_nWidthGoal, sResult, _T("picwgoal") )
-		RENDER_RTF_INT( m_nHeightGoal, sResult, _T("pichgoal") )
+	RENDER_RTF_INT( m_nWidth, sResult, _T("picw") )
+	RENDER_RTF_INT( m_nHeight, sResult, _T("pich") )
+	RENDER_RTF_INT( m_nWidthGoal, sResult, _T("picwgoal") )
+	RENDER_RTF_INT( m_nHeightGoal, sResult, _T("pichgoal") )
 
-		sResult.Append(_T("\\wmetafile8"));
+	sResult += _T("\\wmetafile8");
 
-	sResult.Append( _T(" "));
+	sResult += _T(" ");
 
 	//сохраняем в темповую директорию и загружаем файл как текст
 	RtfWriter * poWriter = static_cast<RtfWriter*>( oRenderParameter.poWriter );
@@ -72,50 +72,49 @@ CString RtfPicture::GenerateWMF(RenderParameter oRenderParameter)
 	//	if( true == SavePicture( piTempPict, sTempFile, IMAGEFORMAT_WMF ) )
 	//	{
 	//		m_aTempFiles.push_back( sTempFile );
-	//		sResult.Append( RtfInternalEncoder::Encode( sTempFile ) );
+	//		sResult += RtfInternalEncoder::Encode( sTempFile );
 	//	}
 	//}
     //RELEASEINTERFACE( piTempPict );
 
-	sResult.Append(_T("}"));
+	sResult += _T("}");
 	return sResult;
 }
 CString RtfPicture::RenderToRtf(RenderParameter oRenderParameter)		
 {
-	if( false == IsValid() )
-		return _T("");
-	CString sResult;
+	if( !IsValid() )return _T("");
 
-	sResult.Append(_T("{\\pict"));
+	CString sResult = _T("{\\pict");
+
 	//if(-1 != m_nShapeId)
 	//	sResult.AppendFormat(_T("{\\*\\picprop\\shplid%d%ls}"), m_nShapeId, m_oShapeProp.RenderToRtf( oRenderParameter ) );
 	//else
 	//	sResult.AppendFormat(_T("{\\*\\picprop%ls}"), m_oShapeProp.RenderToRtf( oRenderParameter ) );
 	RENDER_RTF_INT( (int)m_dScaleX, sResult, _T("picscalex") )
-		RENDER_RTF_INT( (int)m_dScaleY, sResult, _T("picscaley") )
-		RENDER_RTF_INT( m_nCropL, sResult, _T("piccropl") )
-		RENDER_RTF_INT( m_nCropT, sResult, _T("piccropt") )
-		RENDER_RTF_INT( m_nCropR, sResult, _T("piccropr") )
-		RENDER_RTF_INT( m_nCropB, sResult, _T("piccropb") )
+	RENDER_RTF_INT( (int)m_dScaleY, sResult, _T("picscaley") )
+	RENDER_RTF_INT( m_nCropL, sResult, _T("piccropl") )
+	RENDER_RTF_INT( m_nCropT, sResult, _T("piccropt") )
+	RENDER_RTF_INT( m_nCropR, sResult, _T("piccropr") )
+	RENDER_RTF_INT( m_nCropB, sResult, _T("piccropb") )
 
-		RENDER_RTF_INT( m_nWidth, sResult, _T("picw") )
-		RENDER_RTF_INT( m_nHeight, sResult, _T("pich") )
-		RENDER_RTF_INT( m_nWidthGoal, sResult, _T("picwgoal") )
-		RENDER_RTF_INT( m_nHeightGoal, sResult, _T("pichgoal") )
+	RENDER_RTF_INT( m_nWidth, sResult, _T("picw") )
+	RENDER_RTF_INT( m_nHeight, sResult, _T("pich") )
+	RENDER_RTF_INT( m_nWidthGoal, sResult, _T("picwgoal") )
+	RENDER_RTF_INT( m_nHeightGoal, sResult, _T("pichgoal") )
 
-		switch( eDataType )
-		{
-			case dt_emf: sResult.Append(_T("\\emfblip"));break;
-			case dt_wmf: sResult.Append(_T("\\wmetafile8"));break;
-			case dt_png: sResult.Append(_T("\\pngblip"));break;
-			case dt_jpg: sResult.Append(_T("\\jpegblip"));break;
-				//case dt_bmp: sResult.Append(_T("wbitmap8"));break;
-		}
-	sResult.Append( _T(" "));
+	switch( eDataType )
+	{
+		case dt_emf: sResult += _T("\\emfblip");	break;
+		case dt_wmf: sResult += _T("\\wmetafile8");	break;
+		case dt_png: sResult += _T("\\pngblip");	break;
+		case dt_jpg: sResult += _T("\\jpegblip");	break;
+		//case dt_bmp: sResult += _T("wbitmap8");	break;
+	}
+	sResult += _T(" ");
 
-    sResult.Append( RtfUtility::RtfInternalEncoder::Encode( m_sPicFilename ) );
+    sResult += RtfUtility::RtfInternalEncoder::Encode( m_sPicFilename );
 
-	sResult.Append(_T("}"));
+	sResult += _T("}");
 	return sResult;
 }
 CString RtfPicture::RenderToOOX(RenderParameter oRenderParameter)

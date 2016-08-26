@@ -149,7 +149,7 @@ bool RtfWriter::SaveByItem()
 		sRtf = m_oDocument[0]->operator[](0)->RenderToRtf(oNewParam);
 		if( TYPE_RTF_PARAGRAPH == m_oDocument[0]->operator[](0)->GetType() && !(m_oDocument[0]->GetCount() == 0 && m_oDocument.GetCount() > 1) )//для последнего параграфа секции не пишем \par
 		{
-			sRtf.Append( _T("\\par") );
+			sRtf += _T("\\par");
 			//oNewParam.nValue = RENDER_TO_RTF_PARAM_NO_PAR;
 		}
         RtfUtility::RtfInternalEncoder::Decode( sRtf, *m_oCurTempFileWriter );
@@ -276,48 +276,51 @@ CString RtfWriter::CreateRtfStart()
 	oRenderParameter.nType = RENDER_TO_RTF_PARAM_UNKNOWN;
 
 	CString sResult;
-	sResult.Append( _T("{\\rtf1\\ulc1") );
-	sResult.Append( m_oDocument.m_oProperty.RenderToRtf( oRenderParameter ) );
-	sResult.Append( m_oDocument.m_oFontTable.RenderToRtf( oRenderParameter ) );
-	sResult.Append( m_oDocument.m_oColorTable.RenderToRtf( oRenderParameter ) );
+	sResult += _T("{\\rtf1\\ulc1");
+	sResult += m_oDocument.m_oProperty.RenderToRtf( oRenderParameter );
+	sResult += m_oDocument.m_oFontTable.RenderToRtf( oRenderParameter );
+	sResult += m_oDocument.m_oColorTable.RenderToRtf( oRenderParameter );
+	
 	//CString sDefCharProp = m_oDocument.m_oDefaultCharProp.RenderToRtf( oRenderParameter );
 	//if( false == sDefCharProp.IsEmpty() )
 	//	sResult.AppendFormat( _T("{\\*\\defchp %ls}"), sDefCharProp);
 	//CString sDefParProp = m_oDocument.m_oDefaultParagraphProp.RenderToRtf( oRenderParameter );
 	//if( false == sDefParProp.IsEmpty() )
 	//	sResult.AppendFormat( _T("{\\*\\defpap %ls}"),sDefParProp );
-	//sResult.Append( m_oDocument.m_oStyleTable.RenderToRtf( oRenderParameter ) );
-	sResult.Append( m_oDocument.m_oListTabel.RenderToRtf( oRenderParameter ) );
-	sResult.Append( m_oDocument.m_oListOverrideTabel.RenderToRtf( oRenderParameter ) );
-	sResult.Append( m_oDocument.m_oInformation.RenderToRtf( oRenderParameter ) );
-	sResult.Append( _T("\\fet2") );//0	Footnotes only or nothing at all (the default). 1 Endnotes only. 2	Both footnotes and endnotes
+	//sResult += m_oDocument.m_oStyleTable.RenderToRtf( oRenderParameter ) );
+	
+	sResult += m_oDocument.m_oListTabel.RenderToRtf( oRenderParameter );
+	sResult += m_oDocument.m_oListOverrideTabel.RenderToRtf( oRenderParameter );
+	sResult += m_oDocument.m_oInformation.RenderToRtf( oRenderParameter );
+	sResult += _T("\\fet2");//0	Footnotes only or nothing at all (the default). 1 Endnotes only. 2	Both footnotes and endnotes
+	
 	CString sFootnote;
 	if( NULL != m_oDocument.m_oFootnoteSep )
 	{
 		sFootnote = m_oDocument.m_oFootnoteSep->RenderToRtf( oRenderParameter );
-		if( _T("") != sFootnote )
-            sResult.AppendFormat( _T("{\\*\\ftnsep %ls}"), sFootnote.GetBuffer() );
+		if( !sFootnote.IsEmpty() )
+            sResult += _T("{\\*\\ftnsep ") + sFootnote + _T("}");
 	}
 	if( NULL != m_oDocument.m_oFootnoteCon )
 	{
 		sFootnote = m_oDocument.m_oFootnoteCon->RenderToRtf( oRenderParameter );
-		if( _T("") != sFootnote )
-            sResult.AppendFormat( _T("{\\*\\ftnsepc %ls}"), sFootnote.GetBuffer() );
+		if( !sFootnote.IsEmpty() )
+            sResult += _T("{\\*\\ftnsepc ") + sFootnote + _T("}");
 	}
 	if( NULL != m_oDocument.m_oEndnoteSep )
 	{
 		sFootnote = m_oDocument.m_oEndnoteSep->RenderToRtf( oRenderParameter );
-		if( _T("") != sFootnote )
-            sResult.AppendFormat( _T("{\\*\\aftnsep %ls}"), sFootnote.GetBuffer() );
+		if( !sFootnote.IsEmpty() )
+            sResult += _T("{\\*\\aftnsep ") + sFootnote + _T("}");
 	}
 	if( NULL != m_oDocument.m_oEndnoteCon )
 	{
 		sFootnote = m_oDocument.m_oEndnoteCon->RenderToRtf( oRenderParameter );
-		if( _T("") != sFootnote )
-            sResult.AppendFormat( _T("{\\*\\aftnsepc %ls}"), sFootnote.GetBuffer() );
+		if( !sFootnote.IsEmpty() )
+            sResult += _T("{\\*\\aftnsepc ") + sFootnote + _T("}");
 	}
 
-	sResult.Append(_T("\n\n"));
+	sResult += _T("\n\n");
 	return sResult;
 }
 

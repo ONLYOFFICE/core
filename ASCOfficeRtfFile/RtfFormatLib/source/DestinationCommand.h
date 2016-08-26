@@ -818,15 +818,15 @@ class PictureReader:  public RtfAbstractReader
 		CString ToString()
 		{
 			CString sResult;
-			sResult.Append( ByteToString( (BYTE*)&Key, 4, true ) );
-			sResult.Append( ByteToString( (BYTE*)&Handle, 2, true ) );
-			sResult.Append( ByteToString( (BYTE*)&Left, 2, true ) );
-			sResult.Append( ByteToString( (BYTE*)&Top, 2, true ) );
-			sResult.Append( ByteToString( (BYTE*)&Right, 2, true ) );
-			sResult.Append( ByteToString( (BYTE*)&Bottom, 2, true ) );
-			sResult.Append( ByteToString( (BYTE*)&Inch, 2, true ) );
-			sResult.Append( ByteToString( (BYTE*)&Reserved, 4, true ) );
-			sResult.Append( ByteToString( (BYTE*)&Checksum, 2, true ) );
+			sResult += ByteToString( (BYTE*)&Key, 4, true );
+			sResult += ByteToString( (BYTE*)&Handle, 2, true );
+			sResult += ByteToString( (BYTE*)&Left, 2, true );
+			sResult += ByteToString( (BYTE*)&Top, 2, true );
+			sResult += ByteToString( (BYTE*)&Right, 2, true );
+			sResult += ByteToString( (BYTE*)&Bottom, 2, true );
+			sResult += ByteToString( (BYTE*)&Inch, 2, true );
+			sResult += ByteToString( (BYTE*)&Reserved, 4, true );
+			sResult += ByteToString( (BYTE*)&Checksum, 2, true );
 			return sResult;
 		}
 			CString ByteToString( BYTE* pbData, int nSize, bool bLittleEnd = true )
@@ -971,7 +971,7 @@ class ShapeReader : public RtfAbstractReader
 			{
 				CString sValue;
 				sValue = oText;
-				m_sPropValue.Append( sValue );
+				m_sPropValue += sValue;
 			}
 		};
 		private:
@@ -1490,7 +1490,7 @@ public:
 	}
 	void ExecuteText(RtfDocument& oDocument, RtfReader& oReader, CString sText)
 	{
-		m_oBookmarkStart.m_sName.Append( sText );
+		m_oBookmarkStart.m_sName += sText ;
 	}
 };
 
@@ -1503,7 +1503,7 @@ public:
 	}
 	void ExecuteText(RtfDocument& oDocument, RtfReader& oReader, CString sText)
 	{
-		m_oBookmarkEnd.m_sName.Append( sText );
+		m_oBookmarkEnd.m_sName += sText;
 	}
 };
 

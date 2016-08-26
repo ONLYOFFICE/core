@@ -60,63 +60,63 @@
 #define RENDER_OOX_BOOL( prop, sResult, sName)\
 		if( 0 == prop )\
 		{\
-			sResult.Append( _T("<") );\
-			sResult.Append( sName );\
+			sResult += _T("<");\
+			sResult += sName;\
 			sResult.AppendFormat( _T(" w:val=\"false\"/>"));\
 		}\
 		else if(  PROP_DEF != prop  )\
 		{\
-			sResult.Append( _T("<") );\
-			sResult.Append( sName );\
+			sResult += _T("<");\
+			sResult += sName;\
 			sResult.AppendFormat( _T(" w:val=\"true\"/>"));\
 		}
 
 #define RENDER_OOX_INT( prop, sResult, sName)\
 		if( PROP_DEF != prop )\
 		{\
-			sResult.Append( _T("<") );\
-			sResult.Append( sName );\
+			sResult += _T("<");\
+			sResult += sName;\
 			sResult.AppendFormat( _T(" w:val=\"%d\"/>"), prop  );\
 		}
 #define RENDER_OOX_INT_ATTRIBUTE( prop, sResult, sName)\
 		if( PROP_DEF != prop )\
 		{\
-			sResult.Append( _T(" ") );\
-			sResult.Append( sName );\
+			sResult += _T(" ");\
+			sResult += sName;\
 			sResult.AppendFormat( _T("=\"%d\""), prop  );\
 		}
 #define RENDER_OOX_BOOL_ATTRIBUTE( prop, sResult, sName)\
 		if( 0 == prop )\
 		{\
-			sResult.Append( _T(" ") );\
-			sResult.Append( sName );\
-			sResult.AppendFormat( _T("=\"0\""));\
+			sResult += _T(" ");\
+			sResult += sName;\
+			sResult += _T("=\"0\"");\
 		}\
 		else if(  PROP_DEF != prop  )\
 		{\
-			sResult.Append( _T(" ") );\
-			sResult.Append( sName );\
-			sResult.AppendFormat( _T("=\"1\""));\
+			sResult += _T(" ");\
+			sResult += sName;\
+			sResult += _T("=\"1\"");\
 		}
 
 #define RENDER_RTF_BOOL( prop, sResult, sName)\
 		if( 0 == prop )\
 		{\
-			sResult.Append( _T("\\") );\
-			sResult.Append( sName );\
-			sResult.Append( _T("0") );\
+			sResult += _T("\\");\
+			sResult += sName;\
+			sResult += _T("0");\
 		}\
 		else if(  PROP_DEF != prop  )\
 		{\
-			sResult.Append( _T("\\") );\
-			sResult.Append( sName );\
+			sResult += _T("\\");\
+			sResult += sName;\
 		}
 
 #define RENDER_RTF_INT( prop, sResult, sName)\
 		if( PROP_DEF != prop )\
 		{\
-			sResult.Append( _T("\\") );\
-			sResult.Append( sName );\
+			sResult += _T("\\");\
+			sResult += sName;\
 			sResult.AppendFormat( _T("%d"), prop  );\
 		}
 
@@ -130,15 +130,15 @@ public:
 		
 	typedef enum {ff_none, ff_fnil ,ff_froman ,ff_fswiss ,ff_fmodern ,ff_fscript ,ff_fdecor ,ff_ftech ,ff_fbidi} FontFamily;
 	
-	FontTheme m_eFontTheme;
-	FontFamily m_eFontFamily;
-	CString m_sPanose;
-	int m_nID;
-	CString m_sName;
-	CString m_sAltName;
-	int m_nCharset;
-	int m_nCodePage;
-	int m_nPitch;
+	FontTheme	m_eFontTheme;
+	FontFamily	m_eFontFamily;
+	CString		m_sPanose;
+	int			m_nID;
+	CString		m_sName;
+	CString		m_sAltName;
+	int			m_nCharset;
+	int			m_nCodePage;
+	int			m_nPitch;
 
 	RtfFont()
 	{
@@ -1029,17 +1029,23 @@ public:
 	{
 		CString sResult;
 		for( int i = 0; i < (int)m_aTabs.size(); i++ )
-			sResult.Append( m_aTabs[i].RenderToRtf( oRenderParameter ) );
+		{
+			sResult += m_aTabs[i].RenderToRtf( oRenderParameter );
+		}
 		return sResult;
 	}
 	CString RenderToOOX(RenderParameter oRenderParameter)
 	{
-		CString sResult;
-		CString sTabs;
+		CString sTabs;		
 		for( int i = 0; i < (int)m_aTabs.size(); i++ )
-			sTabs.Append( m_aTabs[i].RenderToOOX( oRenderParameter ) );
-		if( false == sTabs.IsEmpty() )
-            sResult.AppendFormat( _T("<w:tabs>%ls</w:tabs>"), sTabs.GetBuffer() );
+		{
+			sTabs += m_aTabs[i].RenderToOOX( oRenderParameter );
+		}
+
+		CString sResult;
+		if( !sTabs.IsEmpty() )
+            sResult += _T("<w:tabs>") + sTabs + _T("</w:tabs>");
+
 		return sResult;
 	}
 };
@@ -1245,12 +1251,12 @@ public:
         std::string sBullet = cBullet;
         std::wstring swBullet(sBullet.begin(), sBullet.end());
 
-        sResult.Append( swBullet.c_str() );
+		sResult += swBullet.c_str();
 		//CString sOOXNumber = GetLevelTextOOX();
 		//for( int i = 0; i < sOOXNumber.GetLength(); i++ )
 		//	if( sOOXNumber[i] == '%' && i != sOOXNumber.GetLength() - 1 )
 		//	{
-		//		sResult.Append( swBullet );
+		//		sResult += swBullet;
 		//		i++;
 		//	}
 		//	else
@@ -1623,13 +1629,15 @@ public:
 			{
 				if( PROP_DEF != m_aOverrideLevels[i].m_nLevelIndex )
 				{
-					sResult.Append( _T("{\\lfolevel") );
+					sResult += _T("{\\lfolevel");
+					
 					if( PROP_DEF != m_aOverrideLevels[i].m_nLevelIndex )
 						sResult.AppendFormat( _T("\\listoverrideformat%d"), m_aOverrideLevels[i].m_nLevelIndex );
 					if( PROP_DEF != m_aOverrideLevels[i].m_nStart )
 						sResult.AppendFormat( _T("\\listoverridestartat%d"), m_aOverrideLevels[i].m_nStart );
-					sResult.Append( m_aOverrideLevels[i].m_oLevel.RenderToRtf(oRenderParameter) );
-					sResult.Append( _T("}") );
+					
+					sResult += m_aOverrideLevels[i].m_oLevel.RenderToRtf(oRenderParameter);
+					sResult += _T("}");
 				}
 			}
 			return sResult;
@@ -1645,8 +1653,8 @@ public:
 					sResult.AppendFormat( _T("<w:lvlOverride w:ilvl=\"%d\">"), OverrideLevel.m_nLevelIndex );
 					if( PROP_DEF != OverrideLevel.m_nStart )
 						sResult.AppendFormat( _T("<w:startOverride w:val=\"%d\"/>"), OverrideLevel.m_nStart );
-					sResult.Append( OverrideLevel.m_oLevel.RenderToOOX2(oRenderParameter, OverrideLevel.m_nLevelIndex) );
-					sResult.Append( _T("</w:lvlOverride>") );
+					sResult += OverrideLevel.m_oLevel.RenderToOOX2(oRenderParameter, OverrideLevel.m_nLevelIndex);
+					sResult += _T("</w:lvlOverride>");
 				}
 			}
 			return sResult;
@@ -2861,8 +2869,8 @@ public:
 //public: CString RenderToRtf(RenderParameter oRenderParameter)
 //		{
 //			CString sResult;
-//			sResult.Append( m_oRowProperty.RenderToRtf(  oRenderParameter  ) );
-//			sResult.Append(_T(" {")+RtfParagraphProperty::RenderToRtf(  oRenderParameter  )+_T(" }") );
+//			sResult += m_oRowProperty.RenderToRtf(  oRenderParameter  );
+//			sResult += _T(" {") + RtfParagraphProperty::RenderToRtf(  oRenderParameter  )+_T(" }");
 //			return sResult;
 //		}
 //};

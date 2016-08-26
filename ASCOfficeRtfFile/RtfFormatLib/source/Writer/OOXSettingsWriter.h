@@ -58,7 +58,7 @@ public:
 	}
 	void AddContent( CString sText )
 	{
-		m_sFileXml.Append( sText );
+		m_sFileXml += sText;
 	}
 	bool Save( CString sFolder )
 	{
@@ -82,7 +82,7 @@ public:
 			//		TRUE == oXmlReader1.ReadRootNode( _T("w:settings") ) && TRUE == oXmlReader2.ReadRootNode( _T("w:settings") ) )
 			//	{
 			//		sXml = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>");
-			//		//sXml.Append( RtfUtility::MergeXml( oXmlReader1, oXmlReader2 ) );
+			//		//sXml += RtfUtility::MergeXml( oXmlReader1, oXmlReader2 );
 			//	}
 			//}
 

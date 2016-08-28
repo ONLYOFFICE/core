@@ -59,7 +59,7 @@ namespace DocFileFormat
 	{
 	public:
 
-		VMLShapeMapping (ConversionContext* ctx ,XmlUtils::CXmlWriter* writer, Spa* pSpa, PictureDescriptor* pict,  IMapping* caller, bool bullet = false);
+		VMLShapeMapping (ConversionContext* ctx ,XMLTools::CStringXmlWriter* writer, Spa* pSpa, PictureDescriptor* pict,  IMapping* caller, bool bullet = false);
 		virtual ~VMLShapeMapping();
 		virtual void Apply(IVisitable* visited);
 
@@ -120,7 +120,7 @@ namespace DocFileFormat
 		std::wstring GetLineFrom	(const ChildAnchor* pAnchor) const;
 		std::wstring GetLineTo		(const ChildAnchor* pAnchor) const;
 
-		std::vector<CString> GetTextRectangles(const OptionEntry& inscribe) const;
+		std::vector<std::wstring> GetTextRectangles(const OptionEntry& inscribe) const;
 
 	private: 
 		bool							m_isInlineShape;

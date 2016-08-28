@@ -41,24 +41,24 @@
 #include <set>
 #include <map>
 
-
 #include <limits.h>
 #include <math.h>
 
 #include "utf8.h"
 
 #if defined(_WIN32) || defined(_WIN64)
-    #include <atlbase.h>
-    #include <atlstr.h>
+	#include <windows.h>
+	#include <tchar.h>
 #else
-    #include "../../DesktopEditor/common/ASCVariant.h"
-    #include "../../Common/DocxFormat/Source/Base/ASCString.h"
+    //#include "../../DesktopEditor/common/ASCVariant.h"
+    //#include "../../Common/DocxFormat/Source/Base/ASCString.h"
 #endif
 
 #include "../../DesktopEditor/common/Types.h"
-#include "../../Common/DocxFormat/Source/XML/stringcommon.h"
 #include "../../Common/DocxFormat/Source/Base/unicode_util.h"
 #include "../../UnicodeConverter/UnicodeConverter.h"
+
+#include <boost/format.hpp>
 
 namespace DocFormatUtils
 {
@@ -768,10 +768,11 @@ namespace DocFormatUtils
 
         static inline std::wstring IntToWideString(int value)
 		{
-            CString strValue;
-            strValue.Format(_T("%d"), value);
+			wchar_t sVal[32]={};
+			_itow(value, sVal, 10);
+			std::wstring strValue;
 
-            return string2std_string(strValue);
+			return std::wstring(sVal);
 		}
 		static inline std::wstring DoubleToWideString(double value)
 		{
@@ -827,29 +828,35 @@ namespace DocFormatUtils
 
 //			wchar_t strValue[size] = _T( "\0" );
 
-//			if ( format != NULL )
-//			{
+			if ( format == NULL ) return L"";
 //				swprintf_s( strValue, size, format, value );
-//			}
-            CString format_str;
-            format_str.Format(format , value);
+////			}
+//            CString format_str;
+//            format_str.Format(format , value);
 
-            return string2std_string( format_str );
+			std::wstringstream sstream;
+			sstream << boost::wformat(format) % value;
+			return sstream.str();
+            //return string2std_string( format_str );
 		}
 
 		static inline std::wstring DoubleToFormattedWideString( double value, wchar_t* format )
 		{
-			std::wstring wstr;
+			if ( format == NULL ) return L"";
+			//std::wstring wstr;
 
-			if ( format != NULL )
-			{
-                CString strValue;
-                strValue.Format(format, value);
+			//if ( format != NULL )
+			//{
+   //             CString strValue;
+   //             strValue.Format(format, value);
 
-                wstr = string2std_string( strValue );
-			}
+   //             wstr = string2std_string( strValue );
+			//}
 
-			return wstr;
+			//return wstr;
+			std::wstringstream sstream;
+			sstream << boost::wformat(format) % value;
+			return sstream.str();
 		}
 
 		static inline void SetBytes( unsigned char *bytes, int value )

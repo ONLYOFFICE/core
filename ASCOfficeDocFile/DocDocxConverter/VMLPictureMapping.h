@@ -51,7 +51,7 @@ namespace DocFileFormat
 	class VMLPictureMapping: public PropertiesMapping, public IMapping
 	{
 	public:
-		VMLPictureMapping( ConversionContext* ctx, XmlUtils::CXmlWriter* writer, bool olePreview, IMapping* caller, bool isInlinePicture = false );
+		VMLPictureMapping( ConversionContext* ctx, XMLTools::CStringXmlWriter* writer, bool olePreview, IMapping* caller, bool isInlinePicture = false );
 		virtual ~VMLPictureMapping();
 		virtual void Apply( IVisitable* visited );
 		std::wstring GetShapeId() const;

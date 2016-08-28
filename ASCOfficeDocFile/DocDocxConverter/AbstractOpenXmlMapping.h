@@ -31,19 +31,19 @@
  */
 #pragma once
 
-#include "../../Common/DocxFormat/Source/XML/xmlutils.h"
+#include "../Common/XmlTools.h"
 
 namespace DocFileFormat
 {
 	class AbstractOpenXmlMapping
 	{
 	public: 
-		AbstractOpenXmlMapping (XmlUtils::CXmlWriter* pWriter) : m_pXmlWriter(pWriter)
+		AbstractOpenXmlMapping (XMLTools::CStringXmlWriter* pWriter) : m_pXmlWriter(pWriter)
 		{
 
 		}
 
-		inline XmlUtils::CXmlWriter* GetXMLWriter()
+		inline XMLTools::CStringXmlWriter* GetXMLWriter()
 		{
 			return m_pXmlWriter;
 		}
@@ -55,6 +55,6 @@ namespace DocFileFormat
 
 	protected:
 
-		XmlUtils::CXmlWriter* m_pXmlWriter;
+		XMLTools::CStringXmlWriter* m_pXmlWriter;
 	};
 }

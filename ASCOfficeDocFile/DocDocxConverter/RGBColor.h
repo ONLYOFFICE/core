@@ -33,15 +33,7 @@
 
 #include "../../DesktopEditor/common/Types.h"
 
-#if defined(_WIN32) || defined(_WIN64)
-    #include <atlbase.h>
-    #include <atlstr.h>
-#else
-    #include "../../DesktopEditor/common/ASCVariant.h"
-    #include "../../Common/DocxFormat/Source/Base/ASCString.h"
-#endif
-
-#include "../../Common/DocxFormat/Source/XML/stringcommon.h"
+#include <sstream>
 
 namespace DocFileFormat
 {
@@ -69,8 +61,9 @@ namespace DocFileFormat
 
 //			wchar_t rgbColor6[7];
 //			wchar_t rgbColor8[9];
-            CString rgbColor6;
-            CString rgbColor8;
+            //CString rgbColor6;
+            //CString rgbColor8;
+			std::wstringstream rgbColor6, rgbColor8;
 
 			if( order == RedFirst )
 			{
@@ -83,11 +76,16 @@ namespace DocFileFormat
 				//Alpha
 				this->Alpha = bytes[3];
 
-                rgbColor6.Format( _T( "%02x%02x%02x" ),     /*R*/this->Red, /*G*/this->Green, /*B*/this->Blue );
-                rgbColor8.Format( _T( "%02x%02x%02x%02x" ), /*R*/this->Red, /*G*/this->Green, /*B*/this->Blue, /*A*/this->Alpha );
+                //rgbColor6.Format( _T( "%02x%02x%02x" ),     /*R*/this->Red, /*G*/this->Green, /*B*/this->Blue );
+                //rgbColor8.Format( _T( "%02x%02x%02x%02x" ), /*R*/this->Red, /*G*/this->Green, /*B*/this->Blue, /*A*/this->Alpha );
 
-                SixDigitHexCode     = string2std_string( rgbColor6 );
-                EightDigitHexCode   = string2std_string( rgbColor8 );
+                //SixDigitHexCode     = string2std_string( rgbColor6 );
+                //EightDigitHexCode   = string2std_string( rgbColor8 );
+				rgbColor6 << boost::wformat( L"%02x%02x%02x" ) %  /*R*/this->Red % /*G*/this->Green % /*B*/this->Blue;
+				rgbColor8 << boost::wformat( L"%02x%02x%02x%02x" ) % /*R*/this->Red % /*G*/this->Green % /*B*/this->Blue % /*A*/this->Alpha;
+                
+				SixDigitHexCode     = rgbColor6.str();
+                EightDigitHexCode   = rgbColor8.str();
 			}
 			else if ( order == RedLast )
 			{
@@ -100,12 +98,17 @@ namespace DocFileFormat
 				//Alpha
 				this->Alpha = bytes[3];
 
-                rgbColor6.Format( _T( "%02x%02x%02x" ),     /*R*/this->Red, /*G*/this->Green, /*B*/this->Blue );
-                rgbColor8.Format( _T( "%02x%02x%02x%02x" ), /*R*/this->Red, /*G*/this->Green, /*B*/this->Blue, /*A*/this->Alpha );
+                //rgbColor6.Format( _T( "%02x%02x%02x" ),     /*R*/this->Red, /*G*/this->Green, /*B*/this->Blue );
+                //rgbColor8.Format( _T( "%02x%02x%02x%02x" ), /*R*/this->Red, /*G*/this->Green, /*B*/this->Blue, /*A*/this->Alpha );
 
-                SixDigitHexCode     = string2std_string( rgbColor6 );
-                EightDigitHexCode   = string2std_string( rgbColor8 );
-            }
+                //SixDigitHexCode     = string2std_string( rgbColor6 );
+                //EightDigitHexCode   = string2std_string( rgbColor8 );
+				rgbColor6 << boost::wformat( L"%02x%02x%02x" ) % /*R*/this->Red % /*G*/this->Green % /*B*/this->Blue;
+                rgbColor8 << boost::wformat( L"%02x%02x%02x%02x" ) % /*R*/this->Red % /*G*/this->Green % /*B*/this->Blue % /*A*/this->Alpha;
+ 				
+				SixDigitHexCode     = rgbColor6.str();
+                EightDigitHexCode   = rgbColor8.str();
+          }
 
 			RELEASEARRAYOBJECTS( bytes );
 		}

@@ -33,8 +33,8 @@
 
 #include "ProtectionBooleanProperties.h"
 #include "../IVisitable.h"
+#include "../../Common/XmlTools.h"
 
-#include "../../../Common/DocxFormat/Source/XML/xmlutils.h"
 
 #include <list>
 

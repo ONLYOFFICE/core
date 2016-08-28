@@ -42,7 +42,7 @@
 namespace DocFileFormat
 {
 	DocumentMapping::DocumentMapping(ConversionContext* context, IMapping* caller):_skipRuns(0), _lastValidPapx(NULL), _lastValidSepx(NULL), _writeInstrText(false),
-		_fldCharCounter(0), AbstractOpenXmlMapping( new XmlUtils::CXmlWriter() ), _sectionNr(0), _footnoteNr(0),
+		_fldCharCounter(0), AbstractOpenXmlMapping( new XMLTools::CStringXmlWriter() ), _sectionNr(0), _footnoteNr(0),
 		_endnoteNr(0), _commentNr(0), _caller(caller)
 	{
 		m_document				=	NULL;
@@ -55,7 +55,7 @@ namespace DocFileFormat
 		_isTextBoxContent		=	false;
 	}
 
-	DocumentMapping::DocumentMapping(ConversionContext* context, XmlUtils::CXmlWriter* writer, IMapping* caller):_skipRuns(0),  _lastValidPapx(NULL), _lastValidSepx(NULL), _writeInstrText(false),
+	DocumentMapping::DocumentMapping(ConversionContext* context, XMLTools::CStringXmlWriter* writer, IMapping* caller):_skipRuns(0),  _lastValidPapx(NULL), _lastValidSepx(NULL), _writeInstrText(false),
 		_fldCharCounter(0), AbstractOpenXmlMapping(writer), _sectionNr(0), _footnoteNr(0), _endnoteNr(0),
 		_commentNr(0), _caller(caller)
 	{
@@ -658,7 +658,7 @@ namespace DocFileFormat
 							chpxObj->Convert(rPr);
 							RELEASEOBJECT(rPr);
 						}					
-						XmlUtils::CXmlWriter	OleWriter;
+						XMLTools::CStringXmlWriter	OleWriter;
 						VMLPictureMapping		oVmlMapper (m_context, &OleWriter, true, _caller);
 
 						if (m_document->bOlderVersion)

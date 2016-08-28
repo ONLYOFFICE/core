@@ -58,7 +58,7 @@ namespace DocFileFormat
 	public:	
 
 		virtual ~TableCellPropertiesMapping();
-		TableCellPropertiesMapping (XmlUtils::CXmlWriter* pWriter, const std::vector<short>* tableGrid, int gridIndex, int cellIndex);
+		TableCellPropertiesMapping (XMLTools::CStringXmlWriter* pWriter, const std::vector<short>* tableGrid, int gridIndex, int cellIndex);
 		virtual void Apply( IVisitable* visited );
 	
 		inline int GetGridSpan() const

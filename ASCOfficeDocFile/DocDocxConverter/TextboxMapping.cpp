@@ -42,7 +42,7 @@ namespace DocFileFormat
 {
 	int TextboxMapping::TextboxCount = 0;
 
-	TextboxMapping::TextboxMapping (ConversionContext* ctx, int nTBIndex, XmlUtils::CXmlWriter* writer, IMapping* caller ): DocumentMapping( ctx, writer, caller ), m_nTBIndex(0)
+	TextboxMapping::TextboxMapping (ConversionContext* ctx, int nTBIndex, XMLTools::CStringXmlWriter* writer, IMapping* caller ): DocumentMapping( ctx, writer, caller ), m_nTBIndex(0)
 	{
 		TextboxCount++;
 		m_nTBIndex	=	nTBIndex;
@@ -50,7 +50,7 @@ namespace DocFileFormat
 	}
 
 
-	TextboxMapping::TextboxMapping (ConversionContext* ctx, XmlUtils::CXmlWriter* writer, IMapping* caller) : DocumentMapping( ctx, writer, caller ), m_nTBIndex(0)
+	TextboxMapping::TextboxMapping (ConversionContext* ctx, XMLTools::CStringXmlWriter* writer, IMapping* caller) : DocumentMapping( ctx, writer, caller ), m_nTBIndex(0)
 	{
 		TextboxCount++;
 		m_nTBIndex	=	TextboxCount - 1;
@@ -91,15 +91,14 @@ namespace DocFileFormat
 			m_pXmlWriter->WriteNodeBegin(_T("v:textbox"), true);
 				if(m_dxTextLeft >= 0 && m_dyTextTop >= 0 && m_dxTextRight >= 0 && m_dyTextBottom >= 0)
 				{
-					m_pXmlWriter->WriteAttribute( _T( "inset" ), std_string2string(
-																		FormatUtils::DoubleToWideString(m_dxTextLeft) + 
+					m_pXmlWriter->WriteAttribute( _T( "inset" ), FormatUtils::DoubleToWideString(m_dxTextLeft) + 
 															_T("pt,") +	FormatUtils::DoubleToWideString(m_dyTextTop) +
 															_T("pt,") +	FormatUtils::DoubleToWideString(m_dxTextRight) + 
-															_T("pt,") +	FormatUtils::DoubleToWideString(m_dyTextBottom) + _T("pt")));
+															_T("pt,") +	FormatUtils::DoubleToWideString(m_dyTextBottom) + _T("pt"));
 				}
 				if (!m_sTextBoxStyle.empty())
 				{
-					m_pXmlWriter->WriteAttribute( _T( "style" ), std_string2string(m_sTextBoxStyle));
+					m_pXmlWriter->WriteAttribute( _T( "style" ), m_sTextBoxStyle);
 				}
 			m_pXmlWriter->WriteNodeEnd( _T( "" ), true, false );
 			

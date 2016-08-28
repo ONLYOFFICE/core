@@ -36,8 +36,9 @@
 
 #include "../../ASCOfficeXlsFile2/source/XlsFormat/Logic/SummaryInformationStream/SummaryInformation.h"
 #include "../../ASCOfficeXlsFile2/source/XlsFormat/Binary/CFStream.h"
-#include "../../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"
+
 #include "../../DesktopEditor/common/File.h"
+#include "../../DesktopEditor/common/Directory.h"
 
 namespace DocFileFormat
 {
@@ -450,7 +451,7 @@ namespace DocFileFormat
 	{
 		if (m_sTempFolder.empty())
 		{
-            m_sTempFolder = FileSystem::Directory::GetTempPath().GetBuffer();
+			m_sTempFolder = NSFile::CFileBinary::GetTempPathW();
 		}
 		m_sTempDecryptFileName	= m_sTempFolder + FILE_SEPARATOR_STR + L"~tempFile.doc";
 		

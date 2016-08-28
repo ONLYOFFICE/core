@@ -34,7 +34,7 @@
 
 namespace DocFileFormat
 {
-	CharacterPropertiesMapping::CharacterPropertiesMapping( XmlUtils::CXmlWriter* writer, WordDocument* doc, RevisionData* rev, ParagraphPropertyExceptions* currentPapx, bool styleChpx, bool isRunStyleNeeded)
+	CharacterPropertiesMapping::CharacterPropertiesMapping( XMLTools::CStringXmlWriter* writer, WordDocument* doc, RevisionData* rev, ParagraphPropertyExceptions* currentPapx, bool styleChpx, bool isRunStyleNeeded)
 		: PropertiesMapping( writer ), _isRunStyleNeeded(isRunStyleNeeded), _isOwnRPr(true), _isRTL(false)
 	{
 		_doc			= doc;
@@ -294,11 +294,13 @@ namespace DocFileFormat
 
 			case sprmCCv:
 				{
-                    CString rgbColor;
+					std::wstringstream sstream;
 
-                    rgbColor.Format( _T( "%02x%02x%02x" ), /*R*/iter->Arguments[0], /*G*/iter->Arguments[1], /*B*/iter->Arguments[2] );
-
-                    colorVal->SetValue( rgbColor.GetString() );
+					sstream << boost::wformat(L"%02x%02x%02x") % iter->Arguments[0] % /*G*/iter->Arguments[1] % /*B*/iter->Arguments[2];
+					colorVal->SetValue(sstream.str().c_str());
+                    //CString rgbColor;
+                    //rgbColor.Format( _T( "%02x%02x%02x" ), /*R*/iter->Arguments[0], /*G*/iter->Arguments[1], /*B*/iter->Arguments[2] );
+                    //colorVal->SetValue( rgbColor.GetString() );
 				}break;	
 
 			case sprmCOldHighlight:

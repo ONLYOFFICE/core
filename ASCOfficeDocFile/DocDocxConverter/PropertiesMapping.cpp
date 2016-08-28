@@ -237,7 +237,7 @@ namespace DocFileFormat
 		}
 		brcTypeMapLock.Leave();
 	}
-	PropertiesMapping::PropertiesMapping (XmlUtils::CXmlWriter* pWriter) : m_pXmlWriter(pWriter)
+	PropertiesMapping::PropertiesMapping (XMLTools::CStringXmlWriter* pWriter) : m_pXmlWriter(pWriter)
 	{	    
 		init();
 	}

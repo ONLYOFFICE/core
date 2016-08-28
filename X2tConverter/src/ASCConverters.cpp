@@ -902,7 +902,7 @@ namespace NExtractTools
    {
         COfficeDocFile docFile;
 		docFile.m_sTempFolder = sTemp;
-		long hRes = docFile.LoadFromFile( sFrom, sTo, params.m_sPassword ? *params.m_sPassword : L"", NULL);
+		long hRes = docFile.LoadFromFile( sFrom, sTo, params.getPassword(), NULL);
 		if (AVS_ERROR_DRM == hRes)
 		{
 			if(!params.getDontSaveAdditional())

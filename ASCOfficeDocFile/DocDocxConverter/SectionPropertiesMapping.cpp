@@ -36,7 +36,7 @@
 namespace DocFileFormat
 {
 	// Creates a new SectionPropertiesMapping which writes the properties to the given writer
-	SectionPropertiesMapping::SectionPropertiesMapping (XmlUtils::CXmlWriter* pWriter, ConversionContext* pContext, int nSelectProperties) : PropertiesMapping (pWriter)
+	SectionPropertiesMapping::SectionPropertiesMapping (XMLTools::CStringXmlWriter* pWriter, ConversionContext* pContext, int nSelectProperties) : PropertiesMapping (pWriter)
 	{		
 		m_bDeleteNode		=	TRUE;
 		m_pXmlNode			=	new XMLTools::XMLElement<wchar_t> (_T("w:sectPr"));
@@ -456,9 +456,6 @@ namespace DocFileFormat
 				break;
 
 			default:
-#ifdef _DEBUG 
-				// //ATLTRACE (_T("SectionPropertiesMapping - UNKNOWN SPRM : 0x%x\n"), iter->OpCode);
-#endif
 				break;
 			}
 		}

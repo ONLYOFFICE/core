@@ -56,9 +56,11 @@
 
 #include "../../DesktopEditor/common/String.h"
 
+#include "../Common/FormatUtils.h"
+
 namespace DocFileFormat
 {
-	VMLShapeMapping::VMLShapeMapping (ConversionContext* pConv, XmlUtils::CXmlWriter* pWriter, Spa* pSpa, PictureDescriptor* pPicture, IMapping* pCaller, bool isInlineShape) : PropertiesMapping(pWriter)
+	VMLShapeMapping::VMLShapeMapping (ConversionContext* pConv, XMLTools::CStringXmlWriter* pWriter, Spa* pSpa, PictureDescriptor* pPicture, IMapping* pCaller, bool isInlineShape) : PropertiesMapping(pWriter)
 	{		
 		m_isInlineShape		=	isInlineShape;
 		m_isBullete			=	false;
@@ -281,7 +283,7 @@ namespace DocFileFormat
 				
 				std::wstring					adjValues[8];
 				ShadowStyleBooleanProperties	shadowBoolean(0);
-				std::vector<CString>			arrInscribe;
+				std::vector<std::wstring>		arrInscribe;
 
 				std::list<OptionEntry>::const_iterator end = options.end();
 				for (std::list<OptionEntry>::const_iterator iter = options.begin(); iter != end; ++iter)
@@ -422,8 +424,7 @@ namespace DocFileFormat
 					case lineWidth:
 						{
 							EmuValue eLineWidth ((int)iter->op );
-							CString sWidth; sWidth.Format(_T("%fpt"), eLineWidth.ToPoints());
-							m_pXmlWriter->WriteAttribute(_T("strokeweight"), sWidth);
+							m_pXmlWriter->WriteAttribute(_T("strokeweight"), FormatUtils::DoubleToWideString(eLineWidth.ToPoints()) + _T("pt"));
 						}break;
 					case lineDashing:
 						{
@@ -1304,8 +1305,6 @@ namespace DocFileFormat
 				top		=	TwipsValue((pSpa->yaBottom	+	pSpa->yaTop)  * 0.5 - (pSpa->xaRight	-	pSpa->xaLeft) * 0.5);
 			}
 
-			// //ATLTRACE (L"left : %f, top : %f\n", left.ToPoints(), top.ToPoints());
-
 			appendStyleProperty (style, _T( "margin-left" ), ( FormatUtils::DoubleToWideString(left.ToPoints())		+ std::wstring( _T( "pt" ) ) ));
 			appendStyleProperty (style, _T( "margin-top" ),	 ( FormatUtils::DoubleToWideString(top.ToPoints())		+ std::wstring( _T( "pt" ) ) ));
 			appendStyleProperty (style, _T( "width" ),		 ( FormatUtils::DoubleToWideString(width.ToPoints())	+ std::wstring( _T( "pt" ) ) ));
@@ -1936,7 +1935,7 @@ namespace DocFileFormat
 	}
 
 	//
-	std::vector<CString> VMLShapeMapping::GetTextRectangles(const OptionEntry& inscribe) const 
+	std::vector<std::wstring> VMLShapeMapping::GetTextRectangles(const OptionEntry& inscribe) const 
 	{
 		MemoryStream reader(inscribe.opComplex, inscribe.op + 6);
 
@@ -1944,7 +1943,7 @@ namespace DocFileFormat
 		unsigned short allocElems	=	reader.ReadUInt16();
 		unsigned short cb			=	reader.ReadUInt16();
 	
-		std::vector<CString> rectangles;
+		std::vector<std::wstring> rectangles;
 
 		if (16 != cb) return rectangles; // TODO: доделать
 
@@ -1959,9 +1958,9 @@ namespace DocFileFormat
 			rc.right	=	reader.ReadInt32();
 			rc.bottom	=	reader.ReadInt32();
 
-			CString rectangle;
-			rectangle.Format(L"%d,%d,%d,%d", rc.top, rc.left, rc.right, rc.bottom);  
-			rectangles.push_back(rectangle);
+			std::wstringstream sstream;
+			sstream << boost::wformat(L"%d,%d,%d,%d") % rc.top % rc.left % rc.right % rc.bottom; 
+			rectangles.push_back(sstream.str());
 		}
 
 		return rectangles;

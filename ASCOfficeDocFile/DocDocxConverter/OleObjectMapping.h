@@ -43,7 +43,7 @@ namespace DocFileFormat
 	class OleObjectMapping: public AbstractOpenXmlMapping, public IMapping
 	{
 	public:
-		OleObjectMapping(XmlUtils::CXmlWriter* writer, ConversionContext* context, PictureDescriptor* pict, IMapping* caller, const std::wstring& shapeId) 
+		OleObjectMapping(XMLTools::CStringXmlWriter* writer, ConversionContext* context, PictureDescriptor* pict, IMapping* caller, const std::wstring& shapeId) 
 			:
 		AbstractOpenXmlMapping(writer), m_context(NULL), _pict(NULL), _caller(NULL), _shapeId(shapeId)
 		{

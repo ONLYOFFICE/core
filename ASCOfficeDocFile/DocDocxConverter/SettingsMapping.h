@@ -58,7 +58,7 @@ namespace DocFileFormat
   {
     private:
 	  ConversionContext* _ctx;
-	  XmlUtils::CXmlWriter m_oXmlWriter;
+	  XMLTools::CStringXmlWriter m_oXmlWriter;
 
     public: 
 	  SettingsMapping( ConversionContext* ctx/*, OpenXmlPart targetPart*/ );

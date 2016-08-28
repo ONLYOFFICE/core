@@ -36,7 +36,7 @@
 
 namespace DocFileFormat
 {
-	VMLShapeTypeMapping::VMLShapeTypeMapping (XmlUtils::CXmlWriter* pWriter, bool isInlineShape) : PropertiesMapping(pWriter), _lock(NULL), _isInlineShape(isInlineShape)
+	VMLShapeTypeMapping::VMLShapeTypeMapping (XMLTools::CStringXmlWriter* pWriter, bool isInlineShape) : PropertiesMapping(pWriter), _lock(NULL), _isInlineShape(isInlineShape)
 	{
 		this->_lock = new XMLTools::XMLElement<wchar_t>( _T( "o:lock" ) );
 		appendValueAttribute( this->_lock, _T( "v:ext" ), _T( "edit" ) );

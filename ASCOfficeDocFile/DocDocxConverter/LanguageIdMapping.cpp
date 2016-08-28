@@ -35,7 +35,7 @@
 
 namespace DocFileFormat
 {
-	LanguageIdMapping::LanguageIdMapping (XmlUtils::CXmlWriter* pWriter, LanguageType type) : PropertiesMapping (pWriter)
+	LanguageIdMapping::LanguageIdMapping (XMLTools::CStringXmlWriter* pWriter, LanguageType type) : PropertiesMapping (pWriter)
 	{
 		_type = type;
 	}

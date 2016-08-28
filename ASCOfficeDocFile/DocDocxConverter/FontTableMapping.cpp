@@ -34,7 +34,7 @@
 
 namespace DocFileFormat
 {
-	FontTableMapping::FontTableMapping( ConversionContext* ctx ): AbstractOpenXmlMapping( new XmlUtils::CXmlWriter() )
+	FontTableMapping::FontTableMapping( ConversionContext* ctx ): AbstractOpenXmlMapping( new XMLTools::CStringXmlWriter() )
 	{
 		_ctx = ctx;
 	}

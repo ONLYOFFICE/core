@@ -90,23 +90,26 @@ struct SFileIdCluster
 	}
 };
 #if !defined(_WIN32) && !defined (_WIN64)
-    struct POINT
-    {
-        long x;
-        long y;
-    };
-    struct SIZE
+	typedef struct tagPOINT
+	{
+		long x;
+		long y;
+	} POINT;
+
+    typedef struct tagSIZE
     {
         long cx;
         long cy;
-    };
-    struct RECT
+    }SIZE;
+
+    typedef struct tagRECT
     {
         long left;
         long top;
         long right;
         long bottom;
-    };
+    }RECT;
+ #endif
 
 namespace Gdiplus
 {
@@ -151,7 +154,6 @@ namespace Gdiplus
         short           Checksum;       // Checksum value for previous 10 WORDs
     }WmfPlaceableFileHeader;
 }
- #endif
 
 class CMetaHeader
 {

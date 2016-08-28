@@ -38,7 +38,7 @@ namespace DocFileFormat
 	std::map<std::wstring, std::wstring>	StyleSheetMapping::m_mapStyleId;
 	ASCOfficeCriticalSection				StyleSheetMapping::m_mapStyleIdLock;
 
-	StyleSheetMapping::StyleSheetMapping( ConversionContext* ctx ) : AbstractOpenXmlMapping( new XmlUtils::CXmlWriter() )
+	StyleSheetMapping::StyleSheetMapping( ConversionContext* ctx ) : AbstractOpenXmlMapping( new XMLTools::CStringXmlWriter() )
 	{
 		_ctx = ctx;
 		m_document = _ctx->_doc;

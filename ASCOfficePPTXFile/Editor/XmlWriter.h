@@ -47,15 +47,15 @@ namespace NSBinPptxRW
 {
     static std::wstring	g_bstr_nodeopen			= L"<";
     static std::wstring	g_bstr_nodeclose		= L">";
-    static std::wstring	g_bstr_nodeopen_slash		= L"</";
-    static std::wstring	g_bstr_nodeclose_slash		= L"/>";
+    static std::wstring	g_bstr_nodeopen_slash	= L"</";
+    static std::wstring	g_bstr_nodeclose_slash	= L"/>";
     static std::wstring	g_bstr_node_space		= L" ";
     static std::wstring	g_bstr_node_equal		= L"=";
     static std::wstring	g_bstr_node_quote		= L"\"";
     static std::wstring	g_bstr_boolean_true		= L"true";
-    static std::wstring	g_bstr_boolean_false		= L"false";
-    static std::wstring	g_bstr_boolean_true2		= L"1";
-    static std::wstring	g_bstr_boolean_false2		= L"0";
+    static std::wstring	g_bstr_boolean_false	= L"false";
+    static std::wstring	g_bstr_boolean_true2	= L"1";
+    static std::wstring	g_bstr_boolean_false2	= L"0";
 	
     AVSINLINE static double FABS(double dVal)
     {
@@ -715,21 +715,21 @@ namespace NSBinPptxRW
             m_oWriter.WriteString(g_bstr_nodeclose);
         }
 
-#ifdef _WIN32
-        template<typename T>
-        AVSINLINE void WriteArray(const CString& strName, const CAtlArray<T>& arr)
-        {
-            size_t nCount = arr.GetCount();
-            if (0 != nCount)
-            {
-                StartNode(strName);
-                m_oWriter.WriteString(g_bstr_nodeclose);
-                for (size_t i = 0; i < nCount; ++i)
-                    arr[i].toXmlWriter(this);
-                EndNode(strName);
-            }
-        }
-#endif //#ifdef _WIN32
+//#ifdef _WIN32
+//        template<typename T>
+//        AVSINLINE void WriteArray(const CString& strName, const CAtlArray<T>& arr)
+//        {
+//            size_t nCount = arr.GetCount();
+//            if (0 != nCount)
+//            {
+//                StartNode(strName);
+//                m_oWriter.WriteString(g_bstr_nodeclose);
+//                for (size_t i = 0; i < nCount; ++i)
+//                    arr[i].toXmlWriter(this);
+//                EndNode(strName);
+//            }
+//        }
+//#endif //#ifdef _WIN32
         template<typename T>
         AVSINLINE void WriteArray(const CString& strName, const std::vector<T>& arr)
         {
@@ -744,18 +744,18 @@ namespace NSBinPptxRW
             }
         }
 
-#ifdef _WIN32
-        template<typename T>
-        AVSINLINE void WriteArray2(const CAtlArray<T>& arr)
-        {
-            size_t nCount = arr.GetCount();
-            if (0 != nCount)
-            {
-                for (size_t i = 0; i < nCount; ++i)
-                    arr[i].toXmlWriter(this);
-            }
-        }
-#endif //#ifdef _WIN32
+//#ifdef _WIN32
+//        template<typename T>
+//        AVSINLINE void WriteArray2(const CAtlArray<T>& arr)
+//        {
+//            size_t nCount = arr.GetCount();
+//            if (0 != nCount)
+//            {
+//                for (size_t i = 0; i < nCount; ++i)
+//                    arr[i].toXmlWriter(this);
+//            }
+//        }
+//#endif //#ifdef _WIN32
         template<typename T>
         AVSINLINE void WriteArray2(const std::vector<T>& arr)
         {

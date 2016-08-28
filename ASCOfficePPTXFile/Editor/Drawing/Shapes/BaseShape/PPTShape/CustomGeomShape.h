@@ -36,13 +36,6 @@
 #include "../../../Attributes.h"
 #include "Formula.h"
 
-#ifdef max
-#undef max
-#endif
-#ifdef min
-#undef min
-#endif
-
 namespace NSCustomVML
 {
 	using namespace NSPresentationEditor;
@@ -78,7 +71,7 @@ namespace NSCustomVML
 		~CSegment()
 		{
 		}
-		int Read(WORD value)
+		int Read(WORD value)//from rtf segments
 		{
 			int repeate = 0;
             if (value >= 0x2000 && value < 0x20FF)
@@ -127,7 +120,7 @@ namespace NSCustomVML
             }
             return (std::max)(1, repeate);
 		}
-		void Read(POLE::Stream* pStream)
+		void Read(POLE::Stream* pStream)//from binary ms segments
 		{
 			WORD mem = StreamUtils::ReadWORD(pStream);
 			BYTE type = mem & 0x07;
@@ -222,7 +215,7 @@ namespace NSCustomVML
 
 			m_nCount = (mem >> 5) & 0x00FF;
 		}
-		void Read(NSOfficeDrawing::CBinaryReader& oReader)
+		void Read(NSOfficeDrawing::CBinaryReader& oReader)//from binary ms segments
 		{
 			WORD mem = oReader.ReadWORD();
 
@@ -231,7 +224,6 @@ namespace NSCustomVML
 			{
 				m_eRuler	= (RulesType)type;
 				m_nCount	= (mem & 0x1FFF);
-				//m_nCount = (WORD)GetCountPoints2(m_eRuler);
 				m_nCount = (WORD)GetCountPoints2(m_eRuler, m_nCount);
 				return;
 			}

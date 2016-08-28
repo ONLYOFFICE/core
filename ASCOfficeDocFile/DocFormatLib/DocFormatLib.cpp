@@ -32,9 +32,6 @@
 #include "DocFormatLib.h"
 
 #include "../DocDocxConverter/Converter.h"
-//#include "../DocxDocConverter/FileConverter.h"
-
-#include "../../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"
 #include "../../OfficeUtils/src/OfficeUtils.h"
 
 HRESULT COfficeDocFile::LoadFromFile(const std::wstring &  docFile, const std::wstring & docxDirectory, const std::wstring & password, ProgressCallback *ffCallBack )

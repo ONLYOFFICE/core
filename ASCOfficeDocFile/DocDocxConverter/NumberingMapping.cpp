@@ -34,7 +34,7 @@
 
 namespace DocFileFormat
 {
-	NumberingMapping::NumberingMapping(ConversionContext* context) : AbstractOpenXmlMapping(new XmlUtils::CXmlWriter()), m_context(context), m_document(NULL), m_xmldocument(NULL)
+	NumberingMapping::NumberingMapping(ConversionContext* context) : AbstractOpenXmlMapping(new XMLTools::CStringXmlWriter()), m_context(context), m_document(NULL), m_xmldocument(NULL)
 	{
 		if (m_context)
 		{
@@ -548,7 +548,7 @@ namespace DocFileFormat
 	{
 		if (!lvl) return;
 
-		XmlUtils::CXmlWriter oWriterTemp;	//Временный writer,что не нарушать последовательность записи
+		XMLTools::CStringXmlWriter oWriterTemp;	//Временный writer,что не нарушать последовательность записи
 //rPr
 		RevisionData rev(lvl->grpprlChpx);
 		CharacterPropertiesMapping cpMapping(&oWriterTemp, m_document, &rev, lvl->grpprlPapx, false);

@@ -58,6 +58,18 @@
     #include <dirent.h>
 #endif
 
+#ifndef FILE_SEPARATOR
+	#if defined(_WIN32) || defined(_WIN64)
+		#define FILE_SEPARATOR
+		#define FILE_SEPARATOR_CHAR '\\'
+		#define FILE_SEPARATOR_STR _T("\\")
+	#else
+		#define FILE_SEPARATOR
+		#define FILE_SEPARATOR_CHAR '/'
+		#define FILE_SEPARATOR_STR _T("/")
+	#endif
+#endif
+
 namespace NSDirectory
 {
 #if !defined(_WIN32) && !defined (_WIN64)

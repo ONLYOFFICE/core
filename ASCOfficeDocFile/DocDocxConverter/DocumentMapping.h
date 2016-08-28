@@ -69,7 +69,7 @@ namespace DocFileFormat
 
 	public:
 		DocumentMapping(ConversionContext* context, IMapping* caller);
-		DocumentMapping(ConversionContext* context, XmlUtils::CXmlWriter* writer, IMapping* caller);
+		DocumentMapping(ConversionContext* context, XMLTools::CStringXmlWriter* writer, IMapping* caller);
 		virtual ~DocumentMapping();
 		virtual void Apply( IVisitable* visited ) = 0;
 

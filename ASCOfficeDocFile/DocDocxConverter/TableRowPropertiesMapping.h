@@ -51,7 +51,7 @@ namespace DocFileFormat
       CharacterPropertyExceptions* _rowEndChpx;
 
     public: 
-	  TableRowPropertiesMapping( XmlUtils::CXmlWriter* writer, CharacterPropertyExceptions* rowEndChpx );
+	  TableRowPropertiesMapping( XMLTools::CStringXmlWriter* writer, CharacterPropertyExceptions* rowEndChpx );
 	  virtual ~TableRowPropertiesMapping();
 	  virtual void Apply( IVisitable* visited );
   };

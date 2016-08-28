@@ -61,11 +61,12 @@ namespace OOX
 			{
 				if(m_oType.IsInit() && m_oDxfId.IsInit())
 				{
-					CString sXml;
+					CString sXml = _T("<tableStyleElement type=\"") + m_oType->ToString() + _T("\"");
+					
 					if(m_oSize.IsInit())
-						sXml.Format(_T("<tableStyleElement type=\"%ls\" size=\"%d\" dxfId=\"%d\"/>"), m_oType->ToString(), m_oSize->GetValue(), m_oDxfId->GetValue());
-					else
-						sXml.Format(_T("<tableStyleElement type=\"%ls\" dxfId=\"%d\"/>"), m_oType->ToString(), m_oDxfId->GetValue());
+						sXml.AppendFormat(_T(" size=\"%d\""), m_oSize->GetValue());
+					
+					sXml.AppendFormat(_T(" dxfId=\"%d\"/>"),  m_oDxfId->GetValue());
 					writer.WriteString(sXml);
 				}
 			}

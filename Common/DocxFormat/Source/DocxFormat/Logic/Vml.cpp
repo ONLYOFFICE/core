@@ -1023,8 +1023,7 @@ namespace OOX
 				sResult += _T("<x:SizeWithCells/>");
 			if(m_oAnchor.IsInit())
 			{
-				CString sAnchor;sAnchor.Format(_T("<x:Anchor>%ls</x:Anchor>"), m_oAnchor.get());
-				sResult += sAnchor;
+				sResult += _T("<x:Anchor>") + m_oAnchor.get() + _T("</x:Anchor>");
 			}
 			if(m_oRow.IsInit())
 			{

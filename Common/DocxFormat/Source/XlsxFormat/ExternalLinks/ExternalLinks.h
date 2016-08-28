@@ -80,7 +80,7 @@ namespace OOX
 
 				if(m_oRid.IsInit())
 				{
-					CString sVal; sVal.Format(_T(" r:id=\"%ls\""), m_oRid->GetValue());
+					CString sVal = _T(" r:id=\"") + m_oRid->GetValue() + _T("\"");
 					sResult += sVal;
 					sResult += _T(" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" ");
 				}

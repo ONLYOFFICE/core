@@ -153,9 +153,9 @@ namespace OOX
 				if(m_oVal.IsInit())
                 {
 #if defined(_WIN32) || defined (_WIN64)
-                    sResult.AppendFormat(_T(" val=\"%ls\""), m_oVal->ToString());
+                    sResult += _T(" val=\"") + m_oVal->ToString() + _T("\"");
 #else
-                    sResult.AppendFormat(_T(" val=\"%ls\""), m_oVal->ToString().c_str());
+                    sResult += _T(" val=\"") + m_oVal->ToString().c_str() + _T("\"");
 #endif
                 }
 				sResult += _T(">");

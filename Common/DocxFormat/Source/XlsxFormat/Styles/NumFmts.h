@@ -82,8 +82,7 @@ namespace OOX
 				}
 				if(m_oSourceLinked.IsInit())
 				{
-					CString sVal;
-                    sVal.Format(_T(" sourceLinked=\"%ls\""), m_oSourceLinked->ToString2(SimpleTypes::onofftostring1));
+					CString sVal = _T(" sourceLinked=\"") + m_oSourceLinked->ToString2(SimpleTypes::onofftostring1) + _T("\"");
 					writer.WriteString(sVal);
 				}
 				writer.WriteString(_T("/>"));

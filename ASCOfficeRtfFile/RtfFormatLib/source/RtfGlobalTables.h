@@ -250,7 +250,7 @@ public:
 			for( int i = 0; i < (int)m_aArray.size(); i++ )
             {
                 CString str = m_aArray[i]->RenderToRtf( oRenderParameter );
-                sResult.AppendFormat(_T("%ls\n\n"), str.GetBuffer());
+                sResult += str + _T("\n\n");
             }
 			
 			sResult += _T("}");

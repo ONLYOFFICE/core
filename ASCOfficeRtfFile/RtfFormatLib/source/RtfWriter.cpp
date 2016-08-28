@@ -283,10 +283,10 @@ CString RtfWriter::CreateRtfStart()
 	
 	//CString sDefCharProp = m_oDocument.m_oDefaultCharProp.RenderToRtf( oRenderParameter );
 	//if( false == sDefCharProp.IsEmpty() )
-	//	sResult.AppendFormat( _T("{\\*\\defchp %ls}"), sDefCharProp);
+	//	sResult += _T("{\\*\\defchp ") + sDefCharProp + _T("}");
 	//CString sDefParProp = m_oDocument.m_oDefaultParagraphProp.RenderToRtf( oRenderParameter );
 	//if( false == sDefParProp.IsEmpty() )
-	//	sResult.AppendFormat( _T("{\\*\\defpap %ls}"),sDefParProp );
+	//	sResult += _T("{\\*\\defpap ") + sDefParProp+ _T("}");
 	//sResult += m_oDocument.m_oStyleTable.RenderToRtf( oRenderParameter ) );
 	
 	sResult += m_oDocument.m_oListTabel.RenderToRtf( oRenderParameter );

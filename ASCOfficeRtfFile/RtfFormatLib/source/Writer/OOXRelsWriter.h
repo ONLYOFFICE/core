@@ -70,7 +70,13 @@ public:
 		
 		for( int i = 0; i < (int)m_aTargets.size(); i++ )
 		{
-            sResult.AppendFormat( _T("<Relationship Id=\"%ls\" Type=\"%ls\" Target=\"%ls\""), m_aIDs[i].GetBuffer(), m_aTypes[i].GetBuffer(), m_aTargets[i].GetBuffer());
+            sResult += _T("<Relationship Id=\"");
+			sResult += m_aIDs[i];
+			sResult += _T("\" Type=\"");
+			sResult += m_aTypes[i];
+			sResult += _T("\" Target=\"");
+			sResult += m_aTargets[i];
+			sResult += _T("\"");
 			if( false == m_aModes[i] )
 				sResult += _T(" TargetMode=\"External\"");
 			sResult += _T("/>");

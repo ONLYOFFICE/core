@@ -37,16 +37,10 @@ CString RtfPicture::GenerateWMF(RenderParameter oRenderParameter)
 {
 	CString sResult;
 	sResult += _T("{\\pict");
-	//if(-1 != m_nShapeId)
-	//	sResult.AppendFormat(_T("{\\*\\picprop\\shplid%d%ls}"), m_nShapeId, m_oShapeProp.RenderToRtf( oRenderParameter ) );
-	//else
-	//	sResult.AppendFormat(_T("{\\*\\picprop%ls}"), m_oShapeProp.RenderToRtf( oRenderParameter ) );
-	////"наши" wmf не растягиваются
+
 	RENDER_RTF_INT( 100, sResult, _T("picscalex") )
 	RENDER_RTF_INT( 100, sResult, _T("picscaley") )
 
-	//RENDER_RTF_INT( (int)m_dScaleX, sResult, _T("picscalex") )
-	//RENDER_RTF_INT( (int)m_dScaleY, sResult, _T("picscaley") )
 	RENDER_RTF_INT( m_nCropL, sResult, _T("piccropl") )
 	RENDER_RTF_INT( m_nCropT, sResult, _T("piccropt") )
 	RENDER_RTF_INT( m_nCropR, sResult, _T("piccropr") )
@@ -87,9 +81,12 @@ CString RtfPicture::RenderToRtf(RenderParameter oRenderParameter)
 	CString sResult = _T("{\\pict");
 
 	//if(-1 != m_nShapeId)
-	//	sResult.AppendFormat(_T("{\\*\\picprop\\shplid%d%ls}"), m_nShapeId, m_oShapeProp.RenderToRtf( oRenderParameter ) );
+	//{
+	//	sResult.AppendFormat(_T("{\\*\\picprop\\shplid%d"), m_nShapeId);
+	//	sResult += m_oShapeProp.RenderToRtf( oRenderParameter ) + _T("}");
+	//}
 	//else
-	//	sResult.AppendFormat(_T("{\\*\\picprop%ls}"), m_oShapeProp.RenderToRtf( oRenderParameter ) );
+	//	sResult.AppendFormat(_T("{\\*\\picprop") + m_oShapeProp.RenderToRtf( oRenderParameter ) + _T("}");
 	RENDER_RTF_INT( (int)m_dScaleX, sResult, _T("picscalex") )
 	RENDER_RTF_INT( (int)m_dScaleY, sResult, _T("picscaley") )
 	RENDER_RTF_INT( m_nCropL, sResult, _T("piccropl") )
@@ -137,7 +134,9 @@ CString RtfPicture::RenderToOOX(RenderParameter oRenderParameter)
 	}
 
 	CString sFilenameRels;
-    sFilenameRels.AppendFormat( _T("Image%d.%ls"), poRtfDocument->m_oIdGenerator.Generate_ImageIndex(), sExtension.GetBuffer());
+    sFilenameRels.AppendFormat( _T("Image%d."), poRtfDocument->m_oIdGenerator.Generate_ImageIndex());
+	sFilenameRels += sExtension;
+	
 	CString sFilenameFull = poOOXWriter->m_sTargetFolder + FILE_SEPARATOR_STR + _T("word") + FILE_SEPARATOR_STR +_T("media");
 	
 	FileSystem::Directory::CreateDirectory( sFilenameFull );
@@ -153,9 +152,6 @@ CString RtfPicture::RenderToOOX(RenderParameter oRenderParameter)
 	poOOXWriter->m_oContentTypes.AddExtension( sMime, sExtension);
 
 	CString srId = poRelsWriter->AddRelationship( _T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/image"), sFilenameRels);
-
-	//CString sResult;
-	//sResult.AppendFormat( _T("<v:imagedata r:id=\"%ls\""), srId );
 
 	return srId;
 }

@@ -714,9 +714,15 @@ private:
              CString sTheme;
              if( true == GetStringByTheme( sTheme, m_eTheme ) )
              {
-                 sResult.AppendFormat(_T("theme%lsColor = \"%ls\" theme%lsShade = \"%d\" theme%lsTint = \"%d\""),
-                                      sParam.GetBuffer(), sTheme.GetBuffer(), sParam.GetBuffer(), m_byteShade ,sParam.GetBuffer(), m_byteTint);
-             }
+				sResult += _T("theme") + sParam + _T("Color");
+				sResult += _T("=\"") + sTheme +_T("\"");
+				
+				sResult += _T(" theme") + sParam + _T("Shade");
+				sResult.AppendFormat(_T("=\"%d\""), m_byteShade);
+				
+				sResult += _T(" theme") + sParam + _T("Tint"); 
+				sResult.AppendFormat(_T("=\"%d\""), m_byteTint);   
+			 }
          }
          return sResult;
 	 }

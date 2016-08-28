@@ -364,7 +364,7 @@ namespace DocFileFormat
 			{
 				WideString* bookmarkName = static_cast<WideString*>(BookmarkNames->operator[]( i ));
 
-				if ( ( bookmarkName != NULL ) && ( *bookmarkName == _T( "_PictureBullets" ) ) )
+                if ( ( bookmarkName != NULL ) && ( *bookmarkName == L"_PictureBullets" ) )
 				{
 					for (unsigned int j = BookmarkStartEndCPs[i].first, k = 0; j < this->Text->size(); ++j, ++k )
 					{
@@ -451,7 +451,7 @@ namespace DocFileFormat
 	{
 		if (m_sTempFolder.empty())
 		{
-			m_sTempFolder = NSFile::CFileBinary::GetTempPathW();
+            m_sTempFolder = NSFile::CFileBinary::GetTempPath();
 		}
 		m_sTempDecryptFileName	= m_sTempFolder + FILE_SEPARATOR_STR + L"~tempFile.doc";
 		

@@ -256,9 +256,9 @@ namespace DocFileFormat
 
 	static const wchar_t JoinStyleMap[3][6] =
 	{
-		_T( "miter" ),
-		_T( "round" ),
-		_T( "bevel" )
+        L"miter" ,
+        L"round" ,
+        L"bevel"
 	};
 
 	class Handle

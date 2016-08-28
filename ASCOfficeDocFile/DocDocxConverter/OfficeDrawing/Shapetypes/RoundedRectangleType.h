@@ -42,7 +42,7 @@ namespace DocFileFormat
 		{
 			TypeCode			=	msosptRoundRectangle;
 			Joins				=	round;
-			AdjustmentValues	=	_T( "5400" );
+            AdjustmentValues	=	L"5400";
 		}
 
 		virtual ~RoundedRectangleType()

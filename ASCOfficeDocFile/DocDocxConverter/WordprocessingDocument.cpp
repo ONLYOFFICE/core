@@ -33,7 +33,7 @@
 #include "WordprocessingDocument.h"
 
 #include "../../DesktopEditor/raster/BgraFrame.h"
-#include "../../DesktopEditor/Common/Directory.h"
+#include "../../DesktopEditor/common/Directory.h"
 
 namespace ImageHelper
 {
@@ -185,7 +185,7 @@ namespace DocFileFormat
 		std::wstring pathWord = m_strOutputPath + FILE_SEPARATOR_STR + _T( "word" ) ;
 		//OOX::CPath pathWord = CString(m_strOutputPath.c_str()) + FILE_SEPARATOR_STR + _T( "word" );
 		//FileSystem::Directory::CreateDirectory( pathWord.GetPath() );
-		NSDirectory::CreateDirectoryW( pathWord );
+        NSDirectory::CreateDirectory( pathWord );
 
 		WritePackage();
 
@@ -207,7 +207,7 @@ namespace DocFileFormat
 			//OOX::CPath pathMedia = pathWord + FILE_SEPARATOR_STR + _T( "media" );
 			//FileSystem::Directory::CreateDirectory( pathMedia.GetPath() );
 
-			NSDirectory::CreateDirectoryW(pathMedia);
+            NSDirectory::CreateDirectory(pathMedia);
 
 			int i = 1;
 
@@ -239,7 +239,7 @@ namespace DocFileFormat
 			std::wstring pathObjects = pathWord + FILE_SEPARATOR_STR + _T( "embeddings") ;
 			//OOX::CPath pathObjects = pathWord + FILE_SEPARATOR_STR + _T( "embeddings" );
 			//FileSystem::Directory::CreateDirectory( pathObjects.GetPath());
-			NSDirectory::CreateDirectoryW( pathObjects );
+            NSDirectory::CreateDirectory( pathObjects );
 
 			int i = 1;
 			for (std::list<OleObjectFileStructure>::iterator iter = OleObjectsList.begin(); iter != OleObjectsList.end(); ++iter)

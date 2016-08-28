@@ -68,10 +68,10 @@ namespace DocFileFormat
 
 	void OpenXmlPackage::WritePackage()
 	{
-		NSDirectory::CreateDirectoryW( m_strOutputPath + FILE_SEPARATOR_STR +  L"_rels" );
+        NSDirectory::CreateDirectory(m_strOutputPath + FILE_SEPARATOR_STR +  L"_rels" );
 		WriteRelsFile( MainRelationshipsFile );
 
-        NSDirectory::CreateDirectoryW( m_strOutputPath + FILE_SEPARATOR_STR + L"word" + FILE_SEPARATOR_STR + L"_rels" );
+        NSDirectory::CreateDirectory( m_strOutputPath + FILE_SEPARATOR_STR + L"word" + FILE_SEPARATOR_STR + L"_rels" );
 
 
 		WriteRelsFile( DocumentRelationshipsFile );

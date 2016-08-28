@@ -46,9 +46,9 @@ namespace DocFileFormat
 {
 	static const wchar_t SuperscriptIndex[3][12] =
 	{
-		_T( "baseline" ),
-		_T( "superscript" ),
-		_T( "subscript" )
+        L"baseline",
+        L"superscript",
+        L"subscript"
 	};
 
 	class CharacterPropertiesMapping: public PropertiesMapping, public IMapping

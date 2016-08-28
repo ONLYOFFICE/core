@@ -34,14 +34,9 @@
 #include <string>
 #include <map>
 #include <list>
-//
-//#if defined(_WIN32) || defined(_WIN64)
-//#else
-//    #include "../../DesktopEditor/common/ASCVariant.h"
-//    #include "../../Common/DocxFormat/Source/Base/ASCString.h"
-//#endif
 
-#include "../../DesktopEditor/Common/File.h"
+
+#include "../../DesktopEditor/common/File.h"
 
 inline static std::wstring ReplaceString(std::wstring subject, const std::wstring& search, const std::wstring& replace) 
 {
@@ -448,15 +443,22 @@ namespace XMLTools
 		{
 			m_str += strValue;
 		}
+
 		void WriteInteger(int Value, int Base = 10)
 		{
-			wchar_t str[33]={};
-            _itow(Value, str, Base);
-			m_str += str;
+#if defined(_WIN32) || defined (_WIN64)
+            wchar_t buff[33] ={};
+            _itow(Value, buff, Base);
+            m_str += std::wstring(buff);
+#else
+            m_str += std::to_wstring(Value);
+#endif
 		}
+
 		void WriteDouble(double Value)
 		{
-			int *dec = NULL, *sign = NULL;
+#if defined(_WIN32) || defined (_WIN64)
+            int *dec = NULL, *sign = NULL;
 			char *str = _fcvt( Value , 4, dec, sign);
 
 			if (str)
@@ -469,7 +471,10 @@ namespace XMLTools
 			{
 				m_str += L"0";
 			}
-		}
+#else
+            m_str += std::to_wstring(Value);
+#endif
+        }
 		void WriteBoolean(bool Value)
 		{
 			if (Value)

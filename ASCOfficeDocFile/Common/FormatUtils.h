@@ -48,10 +48,8 @@
 
 #if defined(_WIN32) || defined(_WIN64)
 	#include <windows.h>
-	#include <tchar.h>
 #else
-    //#include "../../DesktopEditor/common/ASCVariant.h"
-    //#include "../../Common/DocxFormat/Source/Base/ASCString.h"
+    #include <string.h>
 #endif
 
 #include "../../DesktopEditor/common/Types.h"
@@ -131,11 +129,11 @@ namespace DocFormatUtils
 				{
 					switch(data[pos])
 					{
-						case '&':  buffer.append(_T("&amp;"));      break;
-						case '\"': buffer.append(_T("&quot;"));     break;
-						case '\'': buffer.append(_T("&apos;"));     break;
-						case '<':  buffer.append(_T("&lt;"));       break;
-						case '>':  buffer.append(_T("&gt;"));       break;
+                        case '&':  buffer.append(L"&amp;");      break;
+                        case '\"': buffer.append(L"&quot;");     break;
+                        case '\'': buffer.append(L"&apos;");     break;
+                        case '<':  buffer.append(L"&lt;");       break;
+                        case '>':  buffer.append(L"&gt;");       break;
 						default:   
 						{
 							if ( false == IsUnicodeSymbol( data[pos] ) )
@@ -163,11 +161,11 @@ namespace DocFormatUtils
 				{
 					switch(data[pos])
 					{
-						case '&':  buffer.append(_T("&amp;"));      break;
-						case '\"': buffer.append(_T("&quot;"));     break;
-						case '\'': buffer.append(_T("&apos;"));     break;
-						case '<':  buffer.append(_T("&lt;"));       break;
-						case '>':  buffer.append(_T("&gt;"));       break;
+                        case '&':  buffer.append(L"&amp;");      break;
+                        case '\"': buffer.append(L"&quot;");     break;
+                        case '\'': buffer.append(L"&apos;");     break;
+                        case '<':  buffer.append(L"&lt;");       break;
+                        case '>':  buffer.append(L"&gt;");       break;
 						default:   buffer.append(&data[pos], 1);	break;
 					}
 				}
@@ -285,33 +283,33 @@ namespace DocFormatUtils
 
 			switch ( c )
 			{
-			case _T( '&' ):
+            case L'&':
 				{
-					result = std::wstring( _T( "&amp;" ) );
+                    result = std::wstring( L"&amp;" );
 				}
 				break;  
 
-			case _T( '<' ):
+            case L'<':
 				{
-					result = std::wstring( _T( "&lt;" ) );
+                    result = std::wstring( L"&lt;" );
 				}
 				break;
 
-			case _T( '>' ):
+            case L'>':
 				{
-					result = std::wstring( _T( "&gt;" ) );
+                    result = std::wstring( L"&gt;" );
 				}
 				break;
 
-			case _T( '\"' ):
+            case L'\"':
 				{
-					result = std::wstring( _T( "&quot;" ) );
+                    result = std::wstring( L"&quot;" );
 				}
 				break;
 
-			case _T( '\'' ):
+            case L'\'':
 				{
-					result = std::wstring( _T( "&apos;" ) );
+                    result = std::wstring( L"&apos;" );
 				}
 				break;
 
@@ -768,11 +766,13 @@ namespace DocFormatUtils
 
         static inline std::wstring IntToWideString(int value)
 		{
-			wchar_t sVal[32]={};
-			_itow(value, sVal, 10);
-			std::wstring strValue;
-
-			return std::wstring(sVal);
+#if defined(_WIN32) || defined (_WIN64)
+            wchar_t buff[33] ={};
+            _itow(value, buff, 10);
+            return std::wstring(buff);
+#else
+            return (std::to_wstring(value));
+#endif
 		}
 		static inline std::wstring DoubleToWideString(double value)
 		{
@@ -781,17 +781,6 @@ namespace DocFormatUtils
 			src << value;
 			
 			return std::wstring(src.str());
-		}
-
-		static inline std::string IntToString(int value, int radix = 10)
-		{
-			const int size = 33;
-
-			char strValue[size];
-
-            itoa(value, strValue, radix);
-
-			return std::string(strValue);
 		}
 
 		static inline std::string DoubleToString(double value)
@@ -808,7 +797,7 @@ namespace DocFormatUtils
             std::wstring out;
             if ( mapArray == NULL )
 			{
-                out = std::wstring( _T( "" ) );
+                out = std::wstring( L"" );
 			}
 
 			if ( value < size1 )
@@ -826,7 +815,7 @@ namespace DocFormatUtils
 		{
 //			const int size = 33;
 
-//			wchar_t strValue[size] = _T( "\0" );
+//			wchar_t strValue[size] = L"\0";
 
 			if ( format == NULL ) return L"";
 //				swprintf_s( strValue, size, format, value );

@@ -42,7 +42,7 @@ namespace DocFileFormat
 		{
 			ShapeConcentricFill =	true;
 			Joins				=	miter;
-			Path				=	_T("m,l,21600r21600,l21600,xe");
+            Path				=	L"m,l,21600r21600,l21600,xe";
 
 		}
 

@@ -224,9 +224,8 @@ namespace svg_path
 						nLastX = aFirst.x.get();
 						nLastY = aFirst.y.get();
                     }
-                    break;
-                }
-
+ 					aCurrPoly.command=L"a:close";                   
+                } break;
                 case 'm' :
                 case 'M' :
                 {
@@ -260,7 +259,6 @@ namespace svg_path
 							aCurrPoly.points.clear();
                         }
                     }
-
                     nPos++;
                     skipSpaces(nPos, rSvgDStatement, nLen);
 
@@ -285,10 +283,8 @@ namespace svg_path
                         aCurrPoly.points.push_back(_point(nX, nY));
                         Polyline.push_back(aCurrPoly);
 						aCurrPoly.points.clear();                   
-					}
-                    break;
-                }
-
+					}                    
+                }break;
                 case 'h' :
                 {
                     bRelative = true;
@@ -404,9 +400,8 @@ namespace svg_path
 						//keep control point
 						nLastControlX = nX2;
 						nLastControlY = nY2;            
-					}
-                    break;
-                }
+					}                    
+                }break;
 
                 case 'c' :
                 {
@@ -457,9 +452,8 @@ namespace svg_path
 						//keep control point
 						nLastControlX = nX2;
 						nLastControlY = nY2;
-                    }
-                    break;
-                }
+                    }                    
+                }break;
 
                 // #100617# quadratic beziers are imported as cubic ones
                 //case 'q' :
@@ -760,7 +754,7 @@ namespace svg_path
             }
         }
 
-        if(aCurrPoly.points.size()>0)
+        if(aCurrPoly.points.size() > 0 || bIsClosed)
         {
             // end-process last poly
             if(bIsClosed)

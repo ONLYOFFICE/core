@@ -99,14 +99,14 @@ _CP_OPT(length) GetOnlyLength(const _CP_OPT(length_or_percent) & Value)
 
 
 
-length ComputeContextWidth(const style_page_layout_properties * pagePropertiesNode,
-                           const style_page_layout_properties_attlist & pageProperties,
-                           const union_common_draw_attlists  & attlists_,
-                           const _CP_OPT(horizontal_rel) & horizontalRel,
-                           const _CP_OPT(horizontal_pos) & horizontalPos,
-                           const _CP_OPT(length) & pageWidth,
-                           const _CP_OPT(length) & pageMarginLeft,
-                           const _CP_OPT(length) & pageMarginRight
+length ComputeContextWidth(const style_page_layout_properties			* pagePropertiesNode,
+                           const style_page_layout_properties_attlist	& pageProperties,
+                           const union_common_draw_attlists				& attlists_,
+                           const _CP_OPT(horizontal_rel)				& horizontalRel,
+                           const _CP_OPT(horizontal_pos)				& horizontalPos,
+                           const _CP_OPT(length)						& pageWidth,
+                           const _CP_OPT(length)						& pageMarginLeft,
+                           const _CP_OPT(length)						& pageMarginRight
                            )
 {
     if (!horizontalRel)
@@ -172,30 +172,34 @@ length ComputeContextWidth(const style_page_layout_properties * pagePropertiesNo
     return length(0, length::pt);
 }
 
-int ComputeMarginX(const style_page_layout_properties * pagePropertiesNode,
-                      const style_page_layout_properties_attlist & pageProperties,
-                      const union_common_draw_attlists  & attlists_,
-                      const graphic_format_properties & graphicProperties)
+int ComputeMarginX(const style_page_layout_properties				* pagePropertiesNode,
+                      const style_page_layout_properties_attlist	& pageProperties,
+                      const union_common_draw_attlists				& attlists_,
+                      const graphic_format_properties				& graphicProperties,
+					  const std::vector<odf_reader::_property>		& additional)
 {
-    const _CP_OPT(anchor_type) anchor = 
-        attlists_.shape_with_text_and_styles_.
-        common_draw_shape_with_styles_attlist_.
-        common_text_spreadsheet_shape_attlist_.
-        common_text_anchor_attlist_.
-        type_;
+
+    const _CP_OPT(anchor_type) anchor = attlists_.shape_with_text_and_styles_.
+										common_draw_shape_with_styles_attlist_.
+										common_text_spreadsheet_shape_attlist_.
+										common_text_anchor_attlist_.
+										type_;
 
     _CP_OPT(horizontal_rel) styleHorizontalRel = graphicProperties.common_horizontal_rel_attlist_.style_horizontal_rel_;
     _CP_OPT(horizontal_pos) styleHorizontalPos = graphicProperties.common_horizontal_pos_attlist_.style_horizontal_pos_;
 
-    const _CP_OPT(length) pageWidth = pageProperties.fo_page_width_;
-    const _CP_OPT(length) pageMarginLeft = CalcResultLength(pageProperties.common_horizontal_margin_attlist_.fo_margin_left_, pageWidth);
-    const _CP_OPT(length) pageMarginRight = CalcResultLength(pageProperties.common_horizontal_margin_attlist_.fo_margin_right_, pageWidth);
+	_CP_OPT(double) dVal;	
+	if (GetProperty(additional, L"svg:translate_x", dVal));
+ 	
+	const _CP_OPT(length) translation		= length(dVal ? *dVal : 0, length::pt);
+	const _CP_OPT(length) pageWidth			= pageProperties.fo_page_width_;
+    const _CP_OPT(length) pageMarginLeft	= CalcResultLength(pageProperties.common_horizontal_margin_attlist_.fo_margin_left_, pageWidth);
+    const _CP_OPT(length) pageMarginRight	= CalcResultLength(pageProperties.common_horizontal_margin_attlist_.fo_margin_right_, pageWidth);
 
 	length contextWidth = ComputeContextWidth(pagePropertiesNode, pageProperties, attlists_,
-                           styleHorizontalRel, styleHorizontalPos, pageWidth, pageMarginLeft,pageMarginRight);
+												styleHorizontalRel, styleHorizontalPos, pageWidth, pageMarginLeft,pageMarginRight);
 
-    
-    _CP_OPT(length) contextSubstractedValue(0, length::pt);
+    _CP_OPT(length)		contextSubstractedValue(0, length::pt);
     _CP_OPT(style_wrap) styleWrap = graphicProperties.style_wrap_;
    
 	if (!styleWrap || 
@@ -205,14 +209,14 @@ int ComputeMarginX(const style_page_layout_properties * pagePropertiesNode,
         // TODO contextSubstractedValue
     }
 
-    const _CP_OPT(length) frameMarginLeft = GetOnlyLength(graphicProperties.common_horizontal_margin_attlist_.fo_margin_left_);
-    const _CP_OPT(length) frameMarginRight = GetOnlyLength(graphicProperties.common_horizontal_margin_attlist_.fo_margin_right_);
+    const _CP_OPT(length) frameMarginLeft	= GetOnlyLength(graphicProperties.common_horizontal_margin_attlist_.fo_margin_left_);
+    const _CP_OPT(length) frameMarginRight	= GetOnlyLength(graphicProperties.common_horizontal_margin_attlist_.fo_margin_right_);
 
-	const _CP_OPT(length) frameWidth = attlists_.rel_size_.common_draw_size_attlist_.svg_width_;
-    const _CP_OPT(length) frameHeight = attlists_.rel_size_.common_draw_size_attlist_.svg_height_;
+	const _CP_OPT(length) frameWidth	= attlists_.rel_size_.common_draw_size_attlist_.svg_width_;
+    const _CP_OPT(length) frameHeight	= attlists_.rel_size_.common_draw_size_attlist_.svg_height_;
 
     const _CP_OPT(length) fromLeft = (styleHorizontalPos && styleHorizontalPos->get_type() == horizontal_pos::FromLeft) ?
-        attlists_.position_.svg_x_ : length(0, length::pt);
+										attlists_.position_.svg_x_ : length(0, length::pt);
     
      _CP_OPT(length) svgX;
 
@@ -232,48 +236,59 @@ int ComputeMarginX(const style_page_layout_properties * pagePropertiesNode,
                     horRel == horizontal_rel::PageContent ||
                     horRel == horizontal_rel::PageStartMargin)
                 {
-                    svgX = fromLeft; // + translation
+                    svgX = length (fromLeft.get_value_or(length(0, length::pt)).get_value_unit(length::pt)
+									+ translation->get_value_unit(length::pt)
+									, length::pt); // + translation
                 }
                 else if (horRel == horizontal_rel::PageEndMargin)
                 {
-                    svgX = length(contextWidth.get_value_unit(length::pt) + 
-                        fromLeft.get_value_or(length(0, length::pt)).get_value_unit(length::pt), length::pt); // + translation
+                    svgX = length (contextWidth.get_value_unit(length::pt) 
+									+ fromLeft.get_value_or(length(0, length::pt)).get_value_unit(length::pt)
+									+ translation->get_value_unit(length::pt)
+									, length::pt); // + translation
                 }
                 else if (anchor && anchor->get_type() == anchor_type::Page)
                 {
-                    svgX = fromLeft; // + translation
+                    svgX = length (fromLeft.get_value_or(length(0, length::pt)).get_value_unit(length::pt)
+									+ translation->get_value_unit(length::pt)
+									, length::pt); // + translation
                 }
                 else if (horRel == horizontal_rel::Paragraph ||
                     horRel == horizontal_rel::ParagraphContent ||
                     horRel == horizontal_rel::ParagraphStartMargin)
                 {
-                    // TODO
                     double paragraphLeftIndent = 0;
-                    svgX = length(paragraphLeftIndent - 
-                        contextSubstractedValue.get_value_or(length(0, length::pt)).get_value_unit(length::pt) +
-                        fromLeft.get_value_or(length(0, length::pt)).get_value_unit(length::pt)
-                        ,length::pt); // + translation
+                    svgX = length (paragraphLeftIndent
+									- contextSubstractedValue.get_value_or(length(0, length::pt)).get_value_unit(length::pt)
+									+ fromLeft.get_value_or(length(0, length::pt)).get_value_unit(length::pt)
+									+ translation->get_value_unit(length::pt)
+									, length::pt); // + translation
                                         
                 }
                 else if (horRel == horizontal_rel::ParagraphEndMargin)
                 {
-                    // TODO
                     double paragraphRightIndent = 0;
-                    svgX = length(contextWidth.get_value_unit(length::pt) - paragraphRightIndent - 
-                        contextSubstractedValue.get_value_or(length(0, length::pt)).get_value_unit(length::pt) +
-                        fromLeft.get_value_or(length(0, length::pt)).get_value_unit(length::pt)
-                        ,length::pt); // + translation
+                    
+					svgX = length ( contextWidth.get_value_unit(length::pt) - paragraphRightIndent
+									- contextSubstractedValue.get_value_or(length(0, length::pt)).get_value_unit(length::pt)
+									+ fromLeft.get_value_or(length(0, length::pt)).get_value_unit(length::pt)
+									+ translation->get_value_unit(length::pt)
+									, length::pt); // + translation
                 }
                 else if (horRel == horizontal_rel::Frame ||
                     horRel == horizontal_rel::FrameContent ||
                     horRel == horizontal_rel::FrameStartMargin ||
                     horRel == horizontal_rel::FrameEndMargin)
                 {
-                    svgX = fromLeft; // + translation
+                    svgX = length (fromLeft.get_value_or(length(0, length::pt)).get_value_unit(length::pt)
+									+ translation->get_value_unit(length::pt)
+									, length::pt); // + translation
                 }
                 else if (horRel == horizontal_rel::Char)
                 {
-                    svgX = fromLeft; // + translation                                    
+                    svgX = length (fromLeft.get_value_or(length(0, length::pt)).get_value_unit(length::pt)
+									+ translation->get_value_unit(length::pt)
+									, length::pt); // + translation
                 }
             }
             return get_value_emu(svgX);
@@ -289,27 +304,26 @@ int ComputeMarginX(const style_page_layout_properties * pagePropertiesNode,
                     horRel == horizontal_rel::PageContent || 
                     horRel == horizontal_rel::PageStartMargin)
                 {
-                    svgX = frameMarginLeft.get_value_or( length(0, length::pt )); // + translation
+                    svgX = length ( frameMarginLeft.get_value_or( length(0, length::pt )).get_value_unit(length::pt) 
+										+ translation->get_value_unit(length::pt)
+										, length::pt);
                 }
                 else if (horRel == horizontal_rel::PageEndMargin)
                 {
                     if (frameWidth.get_value_or( length(0, length::pt )).get_value_unit(length::pt) <
                         pageMarginRight.get_value_or( length(0, length::pt )).get_value_unit(length::pt))
                     {
-                        // TODO
-                        svgX = length(
-                            contextWidth.get_value_unit(length::pt) // - contextSubstractedValue
-                            + frameMarginLeft.get_value_or( length(0, length::pt )).get_value_unit(length::pt),
-                            length::pt                                
-                            );
+                        svgX = length (contextWidth.get_value_unit(length::pt) // - contextSubstractedValue
+										+ frameMarginLeft.get_value_or( length(0, length::pt )).get_value_unit(length::pt)
+										, length::pt);
                     }
                     else
                     {
-                        svgX = length(
-                            pageWidth.get_value_or( length(0, length::pt )).get_value_unit(length::pt) - 
-                            frameWidth.get_value_or( length(0, length::pt )).get_value_unit(length::pt) -
-                            frameMarginLeft.get_value_or( length(0, length::pt )).get_value_unit(length::pt),
-                            length::pt);
+                        svgX = length (pageWidth.get_value_or( length(0, length::pt )).get_value_unit(length::pt) 
+										- frameWidth.get_value_or( length(0, length::pt )).get_value_unit(length::pt)
+										- frameMarginLeft.get_value_or( length(0, length::pt )).get_value_unit(length::pt)
+										+ translation->get_value_unit(length::pt)
+										, length::pt);
                         //$pageWidth -$frameWidth - $frameMarginLeft + $translation
                     }
                 } 
@@ -324,20 +338,19 @@ int ComputeMarginX(const style_page_layout_properties * pagePropertiesNode,
                     // TODO paragraphLeftIndent
                     // TODO contextSubstractedValue
                     //$paragraphLeftIndent + $frameMarginLeft - $contextSubstractedValue + $translation"                        
-                    svgX = length(
-                        frameMarginLeft.get_value_or( length(0, length::pt )).get_value_unit(length::pt), length::pt                            
-                        );
+                    svgX = length ( frameMarginLeft.get_value_or( length(0, length::pt )).get_value_unit(length::pt)
+										+ translation->get_value_unit(length::pt)
+										, length::pt );
                 } 
                 else if (horRel == horizontal_rel::ParagraphEndMargin)
                 {
                     // TODO paragraphRightIndent
                     // TODO contextSubstractedValue
                     // select="$contextWidth - $paragraphRightIndent + $frameMarginLeft - $contextSubstractedValue + $translation"
-                    svgX = length(
-                        contextWidth.get_value_unit(length::pt) +
-                        frameMarginLeft.get_value_or( length(0, length::pt )).get_value_unit(length::pt)
-                        ,length::pt                            
-                        );
+                    svgX = length (contextWidth.get_value_unit(length::pt)
+									+ frameMarginLeft.get_value_or( length(0, length::pt )).get_value_unit(length::pt)
+									+ translation->get_value_unit(length::pt)
+									, length::pt );
                 }
                 else if (horRel == horizontal_rel::Frame ||
                     horRel == horizontal_rel::FrameContent ||
@@ -367,26 +380,21 @@ int ComputeMarginX(const style_page_layout_properties * pagePropertiesNode,
                      horRel == horizontal_rel::PageEndMargin)
                  {
                      // "$pageWidth - $frameWidth - $frameMarginRight + $translation
-                     svgX = length(
-                         pageWidth.get_value_or( length(0, length::pt )).get_value_unit(length::pt) - 
-                         frameWidth.get_value_or( length(0, length::pt )).get_value_unit(length::pt) - 
-                         frameMarginRight.get_value_or( length(0, length::pt )).get_value_unit(length::pt),
-                         length::pt
-                         );
+                     svgX = length (pageWidth.get_value_or( length(0, length::pt )).get_value_unit(length::pt)
+										- frameWidth.get_value_or( length(0, length::pt )).get_value_unit(length::pt) 
+										- frameMarginRight.get_value_or( length(0, length::pt )).get_value_unit(length::pt)
+										+ translation->get_value_unit(length::pt)
+										, length::pt);
                  }
                  else if (horRel == horizontal_rel::PageStartMargin)
                  {
                      if (frameWidth.get_value_or( length(0, length::pt )).get_value_unit(length::pt) < 
-                         pageMarginLeft.get_value_or( length(0, length::pt )).get_value_unit(length::pt)
-                         )                                         
+								pageMarginLeft.get_value_or( length(0, length::pt )).get_value_unit(length::pt))                                         
                      {
-                         // 
-                         svgX = length(
-                             pageMarginLeft.get_value_or( length(0, length::pt )).get_value_unit(length::pt) - 
-                             frameWidth.get_value_or( length(0, length::pt )).get_value_unit(length::pt) - 
-                             frameMarginRight.get_value_or( length(0, length::pt )).get_value_unit(length::pt),
-                             length::pt
-                             );                        
+                         svgX = length (pageMarginLeft.get_value_or( length(0, length::pt )).get_value_unit(length::pt) 
+										 - frameWidth.get_value_or( length(0, length::pt )).get_value_unit(length::pt) 
+										 - frameMarginRight.get_value_or( length(0, length::pt )).get_value_unit(length::pt)
+										 , length::pt);                        
                      }
                      else
                          svgX = length(0, length::pt);
@@ -394,50 +402,44 @@ int ComputeMarginX(const style_page_layout_properties * pagePropertiesNode,
                  }
                  else if (anchor && anchor->get_type() == anchor_type::Page)
                  {
-                     svgX = length( pageWidth.get_value_or( length(0, length::pt )).get_value_unit(length::pt) - 
-                         frameWidth.get_value_or( length(0, length::pt )).get_value_unit(length::pt) -
-                         frameMarginRight.get_value_or( length(0, length::pt )).get_value_unit(length::pt)
-                         );                    
+                     svgX = length( pageWidth.get_value_or( length(0, length::pt )).get_value_unit(length::pt)
+									 - frameWidth.get_value_or( length(0, length::pt )).get_value_unit(length::pt) 
+									 - frameMarginRight.get_value_or( length(0, length::pt )).get_value_unit(length::pt));                    
                  } 
                  else if (horRel == horizontal_rel::PageContent)
                  {
                      // $contextWidth - $frameWidth - $frameMarginRight - $contextSubstractedValue + $translation
-                     svgX = length( 
-                         contextWidth.get_value_unit(length::pt) - 
-                         frameWidth.get_value_or( length(0, length::pt )).get_value_unit(length::pt) -
-                         frameMarginRight.get_value_or( length(0, length::pt )).get_value_unit(length::pt) -
-                         contextSubstractedValue.get_value_or( length(0, length::pt )).get_value_unit(length::pt)
-                         , length::pt
-                         );                                                              
+                     svgX = length (contextWidth.get_value_unit(length::pt) 
+										- frameWidth.get_value_or( length(0, length::pt )).get_value_unit(length::pt)
+										- frameMarginRight.get_value_or( length(0, length::pt )).get_value_unit(length::pt)
+										- contextSubstractedValue.get_value_or( length(0, length::pt )).get_value_unit(length::pt)
+										+ translation->get_value_unit(length::pt)
+										, length::pt);                                                              
                  }
                  else if (horRel == horizontal_rel::Paragraph ||
                      horRel == horizontal_rel::ParagraphContent ||
                      horRel == horizontal_rel::ParagraphEndMargin)
                  {
                      // $contextWidth - $paragraphRightIndent -$frameWidth - $frameMarginRight - $contextSubstractedValue + $translation
-                     // TODO
                      length paragraphRightIndent(0, length::pt);
-                     svgX = length( 
-                         contextWidth.get_value_unit(length::pt) - 
-                         paragraphRightIndent.get_value_unit(length::pt) - 
-                         frameWidth.get_value_or( length(0, length::pt )).get_value_unit(length::pt) - 
-                         frameMarginRight.get_value_or( length(0, length::pt )).get_value_unit(length::pt) -
-                         contextSubstractedValue.get_value_or( length(0, length::pt )).get_value_unit(length::pt)
-                         , length::pt
-                         ); 
+                     svgX = length ( contextWidth.get_value_unit(length::pt)
+										- paragraphRightIndent.get_value_unit(length::pt)
+										- frameWidth.get_value_or( length(0, length::pt )).get_value_unit(length::pt)
+										- frameMarginRight.get_value_or( length(0, length::pt )).get_value_unit(length::pt)
+										- contextSubstractedValue.get_value_or( length(0, length::pt )).get_value_unit(length::pt)
+										+ translation->get_value_unit(length::pt)
+										, length::pt); 
 
                  }     
                  else if (horRel == horizontal_rel::ParagraphStartMargin)
                  {
                      // $paragraphLeftIndent - $frameMarginRight - $contextSubstractedValue + $translation
-                     // TODO
                      length paragraphLeftIndent(0, length::pt);
-                     svgX = length( 
-                         paragraphLeftIndent.get_value_unit(length::pt) - 
-                         frameMarginRight.get_value_or( length(0, length::pt )).get_value_unit(length::pt) -
-                         contextSubstractedValue.get_value_or( length(0, length::pt )).get_value_unit(length::pt)
-                         , length::pt
-                         ); 
+                     svgX = length (paragraphLeftIndent.get_value_unit(length::pt)
+										- frameMarginRight.get_value_or( length(0, length::pt )).get_value_unit(length::pt)
+										- contextSubstractedValue.get_value_or( length(0, length::pt )).get_value_unit(length::pt)
+										+ translation->get_value_unit(length::pt)
+										, length::pt); 
                  } 
                  else if (horRel == horizontal_rel::Frame ||
                      horRel == horizontal_rel::FrameContent ||
@@ -446,20 +448,17 @@ int ComputeMarginX(const style_page_layout_properties * pagePropertiesNode,
                  {
                      // $pageWidth - $frameMarginRight + $translation
 
-                     svgX = length( 
-                         pageWidth.get_value_or( length(0, length::pt )).get_value_unit(length::pt) - 
-                         frameMarginRight.get_value_or( length(0, length::pt )).get_value_unit(length::pt)                         
-                         , length::pt
-                         ); 
+                     svgX = length (pageWidth.get_value_or( length(0, length::pt )).get_value_unit(length::pt)
+										- frameMarginRight.get_value_or( length(0, length::pt )).get_value_unit(length::pt)                         
+										+ translation->get_value_unit(length::pt)
+										, length::pt); 
 
                  }
                  else if (horRel == horizontal_rel::Char)
                  {
-                     svgX = length( 
-                         pageWidth.get_value_or( length(0, length::pt )).get_value_unit(length::pt) - 
-                         frameMarginRight.get_value_or( length(0, length::pt )).get_value_unit(length::pt)                         
-                         , length::pt
-                         );                   
+                     svgX = length ( pageWidth.get_value_or( length(0, length::pt )).get_value_unit(length::pt) 
+									 - frameMarginRight.get_value_or( length(0, length::pt )).get_value_unit(length::pt)                         
+									 , length::pt);                   
                  }
                  else
                  {
@@ -564,12 +563,13 @@ int ComputeMarginX(const style_page_layout_properties * pagePropertiesNode,
                 svgX = *attlists_.position_.svg_x_;
         }
     }
-    return get_value_emu(svgX);
+	return get_value_emu (svgX);
 }
 
-int ComputeMarginY(const style_page_layout_properties_attlist & pageProperties,
-                      const union_common_draw_attlists & attlists_,
-                      const graphic_format_properties & graphicProperties)
+int ComputeMarginY(const style_page_layout_properties_attlist		& pageProperties,
+                      const union_common_draw_attlists				& attlists_,
+                      const graphic_format_properties				& graphicProperties,
+					  const std::vector<odf_reader::_property>		& additional)
 {
     // TODO : recursive result!!!
     const _CP_OPT(anchor_type) anchor = 
@@ -590,10 +590,14 @@ int ComputeMarginY(const style_page_layout_properties_attlist & pageProperties,
 	_CP_OPT(vertical_rel) styleVerticalRel  = graphicProperties.common_vertical_rel_attlist_.style_vertical_rel_;
     _CP_OPT(vertical_pos) styleVerticallPos = graphicProperties.common_vertical_pos_attlist_.style_vertical_pos_;
 
-    const _CP_OPT(length) pageHeight = pageProperties.fo_page_height_;        
+	_CP_OPT(double) dVal;	
+	if (GetProperty(additional, L"svg:translate_y", dVal));
+ 	
+	const _CP_OPT(length) translation		= length(dVal ? *dVal : 0, length::pt);
+    const _CP_OPT(length) pageHeight		= pageProperties.fo_page_height_;        
     // TODO : проверить, значения в процентах что именно означают
-    const _CP_OPT(length) pageMarginTop = CalcResultLength(pageProperties.common_vertical_margin_attlist_.fo_margin_top_, pageHeight);
-    const _CP_OPT(length) pageMarginBottom = CalcResultLength(pageProperties.common_vertical_margin_attlist_.fo_margin_bottom_, pageHeight);
+    const _CP_OPT(length) pageMarginTop		= CalcResultLength(pageProperties.common_vertical_margin_attlist_.fo_margin_top_, pageHeight);
+    const _CP_OPT(length) pageMarginBottom	= CalcResultLength(pageProperties.common_vertical_margin_attlist_.fo_margin_bottom_, pageHeight);
 
     const _CP_OPT(length) frameMarginTop = GetOnlyLength(graphicProperties.common_vertical_margin_attlist_.fo_margin_top_);
     const _CP_OPT(length) frameMarginBottom = GetOnlyLength(graphicProperties.common_vertical_margin_attlist_.fo_margin_bottom_);
@@ -620,15 +624,22 @@ int ComputeMarginY(const style_page_layout_properties_attlist & pageProperties,
             case vertical_rel::PageContent:
             case vertical_rel::Paragraph:
             case vertical_rel::Line:
-                svgY = fromTop;
+                svgY = length (fromTop.get_value_or(length(0, length::pt)).get_value_unit(length::pt)
+									+ translation->get_value_unit(length::pt)
+									, length::pt); 
                 break;        
             case vertical_rel::ParagraphContent:
                 // TODO:  get spacing property of current paragraph
-                svgY = fromTop /*+paragraphTopSpacing*/;
+                svgY = length (fromTop.get_value_or(length(0, length::pt)).get_value_unit(length::pt)
+					+ translation->get_value_unit(length::pt)
+					, length::pt); 
+				/*+paragraphTopSpacing*/;
                 break;
             case vertical_rel::Frame:
             case vertical_rel::FrameContent:
-                svgY = fromTop;
+                svgY = length (fromTop.get_value_or(length(0, length::pt)).get_value_unit(length::pt)
+									+ translation->get_value_unit(length::pt)
+									, length::pt); 
                 break;
             default:
                 break;
@@ -675,12 +686,10 @@ int ComputeMarginY(const style_page_layout_properties_attlist & pageProperties,
                 {
                     if (pageHeight)
                     {
-                        svgY = length(
-                            pageHeight->get_value_unit(length::pt) - 
-                            frameHeight.get_value_or( length(0, length::pt) ).get_value_unit(length::pt) -
-                            frameMarginBottom.get_value_or( length(0, length::pt) ).get_value_unit(length::pt),
-                            length::pt
-                            );
+                        svgY = length (pageHeight->get_value_unit(length::pt) 
+										- frameHeight.get_value_or( length(0, length::pt) ).get_value_unit(length::pt)
+										- frameMarginBottom.get_value_or( length(0, length::pt) ).get_value_unit(length::pt)
+										, length::pt);
                     }
                 }
                 break;
@@ -688,12 +697,12 @@ int ComputeMarginY(const style_page_layout_properties_attlist & pageProperties,
                 {
                     if (pageHeight)
                     {
-                        svgY = length(
-                        pageHeight->get_value_unit(length::pt) -
-                        pageMarginTop.get_value_or( length(0, length::pt) ).get_value_unit(length::pt) -
-                        pageMarginBottom.get_value_or( length(0, length::pt) ).get_value_unit(length::pt) -
-                        frameHeight.get_value_or( length(0, length::pt) ).get_value_unit(length::pt) -
-                        frameMarginBottom.get_value_or( length(0, length::pt) ).get_value_unit(length::pt), length::pt);                        
+                        svgY = length (pageHeight->get_value_unit(length::pt)
+										- pageMarginTop.get_value_or( length(0, length::pt) ).get_value_unit(length::pt)
+										- pageMarginBottom.get_value_or( length(0, length::pt) ).get_value_unit(length::pt)
+										- frameHeight.get_value_or( length(0, length::pt) ).get_value_unit(length::pt)
+										- frameMarginBottom.get_value_or( length(0, length::pt) ).get_value_unit(length::pt)
+										, length::pt);                        
                     }
                 }
                 break;
@@ -703,13 +712,13 @@ int ComputeMarginY(const style_page_layout_properties_attlist & pageProperties,
                     double paragraphBottomSpacing = 0.0; // TODO
                     if (pageHeight)
                     {
-                        svgY = length(
-                        pageHeight->get_value_unit(length::pt) -
-                        pageMarginTop.get_value_or( length(0, length::pt) ).get_value_unit(length::pt) -
-                        pageMarginBottom.get_value_or( length(0, length::pt) ).get_value_unit(length::pt) -
-                        paragraphBottomSpacing -
-                        frameHeight.get_value_or( length(0, length::pt) ).get_value_unit(length::pt) -
-                        frameMarginBottom.get_value_or( length(0, length::pt) ).get_value_unit(length::pt), length::pt);                        
+                        svgY = length (pageHeight->get_value_unit(length::pt)
+										- pageMarginTop.get_value_or( length(0, length::pt) ).get_value_unit(length::pt)
+										- pageMarginBottom.get_value_or( length(0, length::pt) ).get_value_unit(length::pt)
+										- paragraphBottomSpacing
+										- frameHeight.get_value_or( length(0, length::pt) ).get_value_unit(length::pt)
+										- frameMarginBottom.get_value_or( length(0, length::pt) ).get_value_unit(length::pt)
+										, length::pt);                        
                     }
                 }
                 break;
@@ -719,10 +728,11 @@ int ComputeMarginY(const style_page_layout_properties_attlist & pageProperties,
                     // $pageHeight - $frameHeight - $frameMarginBottom + $translation"
                     if (pageHeight)
                     {
-                        svgY = length(
-                        pageHeight->get_value_unit(length::pt) -
-                        frameHeight.get_value_or( length(0, length::pt) ).get_value_unit(length::pt) -
-                        frameMarginBottom.get_value_or( length(0, length::pt) ).get_value_unit(length::pt), length::pt);                        
+                        svgY = length (pageHeight->get_value_unit(length::pt)
+										- frameHeight.get_value_or( length(0, length::pt) ).get_value_unit(length::pt)
+										- frameMarginBottom.get_value_or( length(0, length::pt) ).get_value_unit(length::pt)
+										+ translation->get_value_unit(length::pt)
+										, length::pt);                        
                     }
                 }
                 break;
@@ -741,8 +751,13 @@ int ComputeMarginY(const style_page_layout_properties_attlist & pageProperties,
 	//{
 	//	svgY = length(svgY->get_value_unit(length::pt) + pageHeight->get_value_unit(length::pt) * (*anchor_page_number - 1), length::pt );
 	//}
-                
-    return get_value_emu(svgY);
+	//_CP_OPT(double) dVal;
+	//if (GetProperty(additional, L"svg:translate_y", dVal))
+	//{
+	//	if (svgY) svgY = *svgY + *dVal;
+	//	else svgY = length(*dVal, length::pt);
+	//}	
+	return get_value_emu(svgY);
 }
 
 }
@@ -810,7 +825,11 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, const unio
     {
         drawing.isInline = true;
     }
-
+	if (attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_draw_transform_attlist_.draw_transform_)
+	{
+		std::wstring transformStr = attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_draw_transform_attlist_.draw_transform_.get();
+		oox_convert_transforms(transformStr, drawing.additional);
+	} 
 	if (!drawing.isInline)
     {
 		if (!drawing.styleWrap)
@@ -842,8 +861,8 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, const unio
         drawing.margin_rect[2] = GetMargin(graphicProperties, sideRight);
         drawing.margin_rect[3] = GetMargin(graphicProperties, sideBottom);
 
-        drawing.posOffsetH = ComputeMarginX(pagePropertiesNode, pageProperties, attlists_, graphicProperties);
-        drawing.posOffsetV = ComputeMarginY(pageProperties, attlists_, graphicProperties);
+        drawing.posOffsetH = ComputeMarginX(pagePropertiesNode, pageProperties, attlists_, graphicProperties, drawing.additional);
+        drawing.posOffsetV = ComputeMarginY(					pageProperties, attlists_, graphicProperties, drawing.additional);
 
     }
 	drawing.number_wrapped_paragraphs=graphicProperties.style_number_wrapped_paragraphs_.
@@ -881,11 +900,7 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, const unio
 		}
 	}
 ///////////////////////////
-	if (attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_draw_transform_attlist_.draw_transform_)
-	{
-		std::wstring transformStr = attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_draw_transform_attlist_.draw_transform_.get();
-		oox_convert_transforms(transformStr,drawing.additional);
-	}
+
 	drawing.x = get_value_emu(attlists_.position_.svg_x_);
     drawing.y = get_value_emu(attlists_.position_.svg_y_);
 
@@ -947,24 +962,24 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, const unio
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 	_CP_OPT(double) dVal;
 	
-	GetProperty(drawing.additional,L"svg:scale_x",dVal);
+	GetProperty(drawing.additional, L"svg:scale_x",dVal);
 	if (dVal)drawing.cx = (int)(0.5 + drawing.cx * dVal.get());
 	
-	GetProperty(drawing.additional,L"svg:scale_y",dVal);
+	GetProperty(drawing.additional, L"svg:scale_y",dVal);
 	if (dVal)drawing.cy = (int)(0.5 + drawing.cy * dVal.get());
 
-	GetProperty(drawing.additional,L"svg:translate_x",dVal);
+	GetProperty(drawing.additional, L"svg:translate_x", dVal);
 	if (dVal)
 	{
 		int val = get_value_emu(dVal.get());
-		drawing.x = val >=0 ? val : 0; //??? todooo отрицательные величины ...
+		drawing.x = val >= 0 ? val : 0; //??? todooo отрицательные величины ...
 	}
 
-	GetProperty(drawing.additional,L"svg:translate_y",dVal);
+	GetProperty(drawing.additional,L"svg:translate_y", dVal);
 	if (dVal)
 	{
 		int val = get_value_emu(dVal.get());
-		drawing.y = val >=0 ? val : 0; //??? todooo отрицательные величины ...
+		drawing.y = val >= 0 ? val : 0; //??? todooo отрицательные величины ...
 	}
 
 	if (drawing.inGroup && drawing.type != oox::typeGroupShape)

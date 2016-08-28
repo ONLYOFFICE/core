@@ -439,20 +439,20 @@ void docx_serialize_wps(std::wostream & strm, _docx_drawing & val)
 					CP_XML_NODE(L"wp:positionH")
 					{
 						std::wstring relativeFrom = L"margin";
-						if (val.styleHorizontalRel)relativeFrom =val.styleHorizontalRel->get_type_str();
+						if (val.styleHorizontalRel) relativeFrom =val.styleHorizontalRel->get_type_str();
 
-						CP_XML_ATTR(L"relativeFrom",relativeFrom);
+						CP_XML_ATTR(L"relativeFrom", relativeFrom);
 
 						if (val.styleHorizontalPos &&
 							val.styleHorizontalPos->get_type() != odf_types::horizontal_pos::FromLeft &&
 							val.styleHorizontalPos->get_type() != odf_types::horizontal_pos::Outside)
 						{
-							CP_XML_NODE(L"wp:align"){CP_XML_STREAM() << boost::lexical_cast<std::wstring>(*val.styleHorizontalPos);}
+							CP_XML_NODE(L"wp:align") {CP_XML_STREAM() << boost::lexical_cast<std::wstring>(*val.styleHorizontalPos);}
 
 						}
 						else
 						{
-							CP_XML_NODE(L"wp:posOffset"){CP_XML_STREAM() << val.posOffsetH;}
+							CP_XML_NODE(L"wp:posOffset") {CP_XML_STREAM() << val.posOffsetH;}
 						}
 			     
 					}

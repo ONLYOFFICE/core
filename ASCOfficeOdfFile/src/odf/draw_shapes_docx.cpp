@@ -245,10 +245,6 @@ void draw_enhanced_geometry::docx_convert(oox::docx_conversion_context & Context
 
 	shape->word_art_ = word_art_;
 
-	if (sub_type_)
-	{
-		shape->sub_type_ = sub_type_.get();
-	}
 	if (draw_type_oox_index_)
 	{
 		shape->additional_.push_back(_property(L"odf-custom-draw-index", draw_type_oox_index_.get()));	
@@ -257,7 +253,39 @@ void draw_enhanced_geometry::docx_convert(oox::docx_conversion_context & Context
 			shape->additional_.push_back(_property(L"wordArt", true));	
 
 	}
-	if (draw_enhanced_geometry_attlist_.draw_modifiers_)
+	if (sub_type_)
+	{
+		shape->sub_type_ = sub_type_.get();
+	}
+	
+	if (draw_enhanced_geometry_attlist_.draw_enhanced_path_)
+	{
+		std::vector<svg_path::_polyline> o_Polyline;
+	
+		bool res = svg_path::parseSvgD(o_Polyline, draw_enhanced_geometry_attlist_.draw_enhanced_path_.get(), true);
+		
+		if (o_Polyline.size()>0)
+		{
+			//сформируем xml-oox сдесь ... а то придется плодить массивы в drawing .. хоть и не красиво..
+			std::wstringstream output_;   
+            svg_path::oox_serialize(output_, o_Polyline);
+			shape->additional_.push_back(odf_reader::_property(L"custom_path", output_.str()));
+
+			if (draw_enhanced_geometry_attlist_.drawooo_sub_view_size_)
+			{
+				int pos = draw_enhanced_geometry_attlist_.drawooo_sub_view_size_->find(L" ");
+				if (pos >= 0)
+				{
+					int w = boost::lexical_cast<int>(draw_enhanced_geometry_attlist_.drawooo_sub_view_size_->substr(0, pos));
+					int h = boost::lexical_cast<int>(draw_enhanced_geometry_attlist_.drawooo_sub_view_size_->substr(pos + 1));
+					
+					shape->additional_.push_back(odf_reader::_property(L"custom_path_w", w));
+					shape->additional_.push_back(odf_reader::_property(L"custom_path_h", h));
+				}
+			}
+		}
+	}
+	else if (draw_enhanced_geometry_attlist_.draw_modifiers_)
 	{
 		shape->additional_.push_back(_property(L"draw-modifiers",draw_enhanced_geometry_attlist_.draw_modifiers_.get()));	
 		if (draw_handle_geometry_.size()>0)
@@ -268,7 +296,6 @@ void draw_enhanced_geometry::docx_convert(oox::docx_conversion_context & Context
 				shape->additional_.push_back(_property(L"draw-modifiers-max",draw_handle_geometry_[0].max));	
 			}
 		}
-
 	}
 }
 }

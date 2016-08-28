@@ -431,9 +431,11 @@ int draw_enhanced_geometry::parsing(_CP_OPT(std::wstring) val)
 /// draw-enhanced_geometry_attlist
 void draw_enhanced_geometry_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    CP_APPLY_ATTR(L"draw:type"		, draw_type_);
-    CP_APPLY_ATTR(L"draw:modifiers"	, draw_modifiers_);
-	CP_APPLY_ATTR(L"draw:text-path"	, draw_text_path_);
+    CP_APPLY_ATTR(L"draw:type"				, draw_type_);
+    CP_APPLY_ATTR(L"draw:modifiers"			, draw_modifiers_);
+	CP_APPLY_ATTR(L"draw:text-path"			, draw_text_path_);
+	CP_APPLY_ATTR(L"draw:enhanced-path"		, draw_enhanced_path_);
+	CP_APPLY_ATTR(L"drawooo:sub-view-size"	, drawooo_sub_view_size_);
 }
 // draw:enhanced_geometry
 const wchar_t * draw_enhanced_geometry::ns = L"draw";
@@ -490,31 +492,42 @@ void draw_enhanced_geometry::find_draw_type_oox()
 					draw_type_oox_index_ = i;
 					break;
 				}
-				
 			}
 		}
 		else
 		{
 			int count = sizeof(_OO_OOX_custom_shapes) / sizeof(_shape_converter);
+			int pos = odf_type.find(L"ooxml-");
 
-			for (long i=0; i< count; i++)
+			if (pos < 0)
 			{
-				if (_OO_OOX_custom_shapes[i].odf_reader == odf_type)
+				for (long i=0; i< count; i++)
 				{
-					draw_type_oox_index_ = i;
-					break;
+					if (_OO_OOX_custom_shapes[i].odf_reader == odf_type)
+					{
+						draw_type_oox_index_ = i;
+						break;
+					}	
 				}
-				
+			}
+			else
+			{
+				std::wstring oox_type = odf_type.substr(pos + 6);
+				for (long i=0; i< count; i++)
+				{
+					if (_OO_OOX_custom_shapes[i].oox == oox_type)
+					{
+						draw_type_oox_index_ = i;
+						break;
+					}	
+				}
 			}
 			if ((draw_type_oox_index_) && (*draw_type_oox_index_== 179))//L"textBox"
 			{
 				sub_type_ = 1;//textBox
 			}
 		}
-
 	}
-
-
 	std::wstringstream str;
 
     BOOST_FOREACH(const office_element_ptr & parElement, draw_handle_)
@@ -527,19 +540,19 @@ void draw_enhanced_geometry::find_draw_type_oox()
 		try
 		{
 			min = parsing(handle->draw_handle_attlist_.draw_handle_range_y_minimum_);//пока статик .. и выдается только цыфровое значение
-			if (min<0)min =parsing(handle->draw_handle_attlist_.draw_handle_range_x_minimum_);
+			if (min<0)min = parsing(handle->draw_handle_attlist_.draw_handle_range_x_minimum_);
 			if (min<0)min = parsing(handle->draw_handle_attlist_.draw_handle_radius_range_minimum_);
 		}
 		catch(...)
 		{
 		}
-		if (min<0)min=0;
+		if (min <0 ) min=0;
 
 		try
 		{	
 			max = parsing(handle->draw_handle_attlist_.draw_handle_range_y_maximum_);
-			if (max<0)max = parsing(handle->draw_handle_attlist_.draw_handle_range_x_maximum_);
-			if (max<0)max = parsing(handle->draw_handle_attlist_.draw_handle_radius_range_maximum_);
+			if (max < 0) max = parsing(handle->draw_handle_attlist_.draw_handle_range_x_maximum_);
+			if (max < 0) max = parsing(handle->draw_handle_attlist_.draw_handle_radius_range_maximum_);
 		}
 		catch(...)
 		{
@@ -605,11 +618,11 @@ void draw_connector::reset_svg_path()
 			{
 				if (poly.points[i].x)
 				{
-					poly.points[i].x =  length(poly.points[i].x.get()/1000.,length::cm).get_value_unit(length::emu)-x1; 
+					poly.points[i].x =  length(poly.points[i].x.get()/1000.,length::cm).get_value_unit(length::emu) - x1; 
 				}
 				if (poly.points[i].y)
 				{
-					poly.points[i].y = length(poly.points[i].y.get()/1000.,length::cm).get_value_unit(length::emu)-y1; 
+					poly.points[i].y = length(poly.points[i].y.get()/1000.,length::cm).get_value_unit(length::emu) - y1; 
 				}
 			}
 			o_Polyline_pt.push_back(poly);

@@ -605,11 +605,13 @@ namespace NExtractTools
            m_oCXlsxSerializer.setFontDir(sFontPath1);
            std::wstring sToTemp = sTemp + FILE_SEPARATOR_STR + _T("output.csv");
            CString sMediaPath;             // will be filled by 'CreateXlsxFolders' method
-           CString sEmbedPath;             // will be filled by 'CreateXlsxFolders' method
-          
-		   m_oCXlsxSerializer.CreateXlsxFolders (std_string2string(params.getXmlOptions()), std_string2string(sTemp), sMediaPath, sEmbedPath);
+           CString sEmbedPath;             // will be filled by 'CreateXlsxFolders' method          
+           CString sXmlOptions  = std_string2string(params.getXmlOptions());
+
+           m_oCXlsxSerializer.CreateXlsxFolders (sXmlOptions, std_string2string(sTemp), sMediaPath, sEmbedPath);
            
-		   nRes = m_oCXlsxSerializer.loadFromFile(std_string2string(sTargetBin), std_string2string(sToTemp), std_string2string(params.getXmlOptions()), sMediaPath, sEmbedPath) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
+           nRes = m_oCXlsxSerializer.loadFromFile(std_string2string(sTargetBin), std_string2string(sToTemp), sXmlOptions, sMediaPath, sEmbedPath) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
+
            //пишем в Temp и копируем, чтобы не возникало лишних файлов рядом с sTo, а лучше перейти на отдельный метод
            if(SUCCEEDED_X2T(nRes))
            {

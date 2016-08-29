@@ -84,7 +84,20 @@ namespace NExtractTools
 
         COfficeUtils oCOfficeUtils(NULL);
         if (S_OK != oCOfficeUtils.ExtractToDirectory(sFrom, sTempUnpackedDOCX, NULL, 0))
-            return AVS_FILEUTILS_ERROR_CONVERT;
+		{
+			//check crypt 
+			COfficeFileFormatChecker OfficeFileFormatChecker;
+			if (OfficeFileFormatChecker.isOfficeFile(sFrom))
+			{
+				if (OfficeFileFormatChecker.nFileType == AVS_OFFICESTUDIO_FILE_OTHER_MS_OFFCRYPTO)
+					return mscrypt2oot_bin(sFrom, sTo, sTemp, params);
+				else
+				{
+					//вместо docx другой формат!!
+				}
+			}
+			else return AVS_FILEUTILS_ERROR_CONVERT;
+		}
 
         return docx_dir2doct_bin(sTempUnpackedDOCX, sTo, params);
     }
@@ -202,7 +215,19 @@ namespace NExtractTools
 
         COfficeUtils oCOfficeUtils(NULL);
         if (S_OK != oCOfficeUtils.ExtractToDirectory(sFrom, sTempUnpackedXLSX, NULL, 0))
-            return AVS_FILEUTILS_ERROR_CONVERT;
+		{
+			//check crypt 
+			COfficeFileFormatChecker OfficeFileFormatChecker;
+			if (OfficeFileFormatChecker.isOfficeFile(sFrom))
+			{
+				if (OfficeFileFormatChecker.nFileType == AVS_OFFICESTUDIO_FILE_OTHER_MS_OFFCRYPTO)
+					return mscrypt2oot_bin(sFrom, sTo, sTemp, params);
+				else
+				{
+					//вместо xlsx другой формат!!
+				}
+			}
+			else return AVS_FILEUTILS_ERROR_CONVERT;		}
 
         return xlsx_dir2xlst_bin(sTempUnpackedXLSX, sTo, params);
     }
@@ -313,7 +338,17 @@ namespace NExtractTools
         // unzip pptx to folder
         COfficeUtils oCOfficeUtils(NULL);
 		if (S_OK != oCOfficeUtils.ExtractToDirectory(sFrom, sTempUnpackedPPTX, NULL, 0))
-            return AVS_FILEUTILS_ERROR_CONVERT;
+		{
+			//check crypt 
+			COfficeFileFormatChecker OfficeFileFormatChecker;
+			if (OfficeFileFormatChecker.isOfficeFile(sFrom))
+			{
+				if (OfficeFileFormatChecker.nFileType == AVS_OFFICESTUDIO_FILE_OTHER_MS_OFFCRYPTO)
+					return mscrypt2oot_bin(sFrom, sTo, sTemp, params);
+				//вместо pptx другой формат!!
+			}
+			else return AVS_FILEUTILS_ERROR_CONVERT;
+		}
 
         return pptx_dir2pptt_bin(sTempUnpackedPPTX, sTo, params);
 	}

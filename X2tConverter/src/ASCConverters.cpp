@@ -65,15 +65,17 @@
 
 namespace NExtractTools
 {
-    void initApplicationFonts(CApplicationFonts& oApplicationFonts, const std::wstring &sFontPath)
+    void initApplicationFonts(CApplicationFonts& oApplicationFonts, InputParams& params)
     {
-        if(sFontPath.empty())
+		std::wstring sFontPath = params.getFontPath();
+        
+		if(sFontPath.empty())
             oApplicationFonts.Initialize();
         else
             oApplicationFonts.InitializeFromFolder(sFontPath);
     }
 	// docx -> bin
-    int docx2doct_bin (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sFontPath, InputParams& params)
+    int docx2doct_bin (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
     {
         // Extract docx to temp directory
         std::wstring sTempUnpackedDOCX = sTemp + FILE_SEPARATOR_STR + _T("docx_unpacked");
@@ -84,16 +86,15 @@ namespace NExtractTools
         if (S_OK != oCOfficeUtils.ExtractToDirectory(sFrom, sTempUnpackedDOCX, NULL, 0))
             return AVS_FILEUTILS_ERROR_CONVERT;
 
-        return docx_dir2doct_bin(sTempUnpackedDOCX, sTo, sFontPath, params);
+        return docx_dir2doct_bin(sTempUnpackedDOCX, sTo, params);
     }
-    int docx_dir2doct_bin (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sFontPath, InputParams& params)
+    int docx_dir2doct_bin (const std::wstring &sFrom, const std::wstring &sTo, InputParams& params)
     {
         // Save to file (from temp dir)
         BinDocxRW::CDocxSerializer m_oCDocxSerializer;
 
-		CString sFontPath1 = std_string2string(sFontPath);
-
-        m_oCDocxSerializer.setFontDir(sFontPath1);
+		CString sFontPath = std_string2string(params.getFontPath());
+        m_oCDocxSerializer.setFontDir(sFontPath);
 
         //bool bRes = m_oCDocxSerializer.saveToFile (sResDoct, sSrcDocx, sTemp);
 		int nRes =  m_oCDocxSerializer.saveToFile (std_string2string(sTo), std_string2string(sFrom), std_string2string(params.getXmlOptions())) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
@@ -104,7 +105,7 @@ namespace NExtractTools
     }
 
     // docx -> doct
-    int docx2doct (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sFontPath, InputParams& params)
+    int docx2doct (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
     {
         // Extract docx to temp directory
         std::wstring sResultDoctDir = sTemp + FILE_SEPARATOR_STR + _T("doct_unpacked");
@@ -112,7 +113,7 @@ namespace NExtractTools
 
         FileSystem::Directory::CreateDirectory(sResultDoctDir);
 
-        int nRes = docx2doct_bin(sFrom, sResultDoctFileEditor, sTemp, sFontPath, params);
+        int nRes = docx2doct_bin(sFrom, sResultDoctFileEditor, sTemp, params);
 
         if (SUCCEEDED_X2T(nRes))
         {
@@ -124,14 +125,14 @@ namespace NExtractTools
     }
 
 	// bin -> docx
-    int doct_bin2docx (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sFontPath, bool bFromChanges, const std::wstring &sThemeDir, InputParams& params)
+    int doct_bin2docx (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, bool bFromChanges, const std::wstring &sThemeDir, InputParams& params)
     {
         int nRes = 0;
         std::wstring sResultDocxDir = sTemp + FILE_SEPARATOR_STR + _T("docx_unpacked");
 
         FileSystem::Directory::CreateDirectory(sResultDocxDir);
 
-        nRes = doct_bin2docx_dir(sFrom, sTo, sResultDocxDir, sFontPath, bFromChanges, sThemeDir, params);
+        nRes = doct_bin2docx_dir(sFrom, sTo, sResultDocxDir, bFromChanges, sThemeDir, params);
 
         if (SUCCEEDED_X2T(nRes))
         {
@@ -142,20 +143,19 @@ namespace NExtractTools
         return nRes;
     }
     // bin -> docx dir
-    int doct_bin2docx_dir (const std::wstring &sFrom, const std::wstring &sToResult, const std::wstring &sTo, const std::wstring &sFontPath, bool bFromChanges, const std::wstring &sThemeDir, InputParams& params)
+    int doct_bin2docx_dir (const std::wstring &sFrom, const std::wstring &sToResult, const std::wstring &sTo, bool bFromChanges, const std::wstring &sThemeDir, InputParams& params)
     {
         int nRes = 0;
         std::wstring sTargetBin;
         if(bFromChanges)
-            nRes = apply_changes(sFrom, sToResult, NSDoctRenderer::DoctRendererFormat::FormatFile::DOCT, sFontPath, sThemeDir, sTargetBin, params);
+            nRes = apply_changes(sFrom, sToResult, NSDoctRenderer::DoctRendererFormat::FormatFile::DOCT, sThemeDir, sTargetBin, params);
         else
             sTargetBin = sFrom;
 
         BinDocxRW::CDocxSerializer m_oCDocxSerializer;
 
-        CString sFontPath1 = std_string2string(sFontPath);
-
-        m_oCDocxSerializer.setFontDir(sFontPath1);
+        CString sFontPath = std_string2string(params.getFontPath());
+        m_oCDocxSerializer.setFontDir(sFontPath);
 
         CString sXmlOptions = _T("");
         CString sThemePath;             // will be filled by 'CreateDocxFolders' method
@@ -176,7 +176,7 @@ namespace NExtractTools
     }
 
     // doct -> docx
-    int doct2docx (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sFontPath, bool bFromChanges, const std::wstring &sThemeDir, InputParams& params)
+    int doct2docx (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, bool bFromChanges, const std::wstring &sThemeDir, InputParams& params)
     {
         // Extract docx to temp directory
         std::wstring sTempUnpackedDOCT = sTemp + FILE_SEPARATOR_STR + _T("doct_unpacked");
@@ -189,11 +189,11 @@ namespace NExtractTools
         if (S_OK != oCOfficeUtils.ExtractToDirectory(sFrom, sTempUnpackedDOCT, NULL, 0))
             return AVS_FILEUTILS_ERROR_CONVERT;
 
-        return doct_bin2docx(sTempDoctFileEditor, sTo, sTemp, sFontPath, bFromChanges, sThemeDir, params);
+        return doct_bin2docx(sTempDoctFileEditor, sTo, sTemp, bFromChanges, sThemeDir, params);
     }
 
     // xslx -> bin
-    int xlsx2xlst_bin (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sFontPath, InputParams& params)
+    int xlsx2xlst_bin (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
     {
         // Extract xlsx to temp directory
         std::wstring sTempUnpackedXLSX = sTemp + FILE_SEPARATOR_STR + _T("xlsx_unpacked");
@@ -204,22 +204,22 @@ namespace NExtractTools
         if (S_OK != oCOfficeUtils.ExtractToDirectory(sFrom, sTempUnpackedXLSX, NULL, 0))
             return AVS_FILEUTILS_ERROR_CONVERT;
 
-        return xlsx_dir2xlst_bin(sTempUnpackedXLSX, sTo, sFontPath, params);
+        return xlsx_dir2xlst_bin(sTempUnpackedXLSX, sTo, params);
     }
-    int xlsx_dir2xlst_bin (const std::wstring &sXlsxDir, const std::wstring &sTo, const std::wstring &sFontPath, InputParams& params)
+    int xlsx_dir2xlst_bin (const std::wstring &sXlsxDir, const std::wstring &sTo, InputParams& params)
     {
         // Save to file (from temp dir)
         BinXlsxRW::CXlsxSerializer m_oCXlsxSerializer;
 
-		CString sFontPath1 = std_string2string(sFontPath);
-        m_oCXlsxSerializer.setFontDir(sFontPath1);
+		CString sFontPath = std_string2string(params.getFontPath());
+        m_oCXlsxSerializer.setFontDir(sFontPath);
 
         CString sTo1 = std_string2string(sTo);
 		return m_oCXlsxSerializer.saveToFile (sTo1, std_string2string(sXlsxDir), std_string2string(params.getXmlOptions())) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
     }
 
     // xslx -> xslt
-    int xlsx2xlst (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sFontPath, InputParams& params)
+    int xlsx2xlst (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
     {
         // Extract xlsx to temp directory
         std::wstring sResultXlstDir = sTemp + FILE_SEPARATOR_STR + _T("xlst_unpacked");
@@ -227,7 +227,7 @@ namespace NExtractTools
 
         FileSystem::Directory::CreateDirectory(sResultXlstDir);
 
-		int nRes = xlsx2xlst_bin(sFrom, sResultXlstFileEditor, sTemp, sFontPath, params);
+		int nRes = xlsx2xlst_bin(sFrom, sResultXlstFileEditor, sTemp, params);
         if (SUCCEEDED_X2T(nRes))
         {
             COfficeUtils oCOfficeUtils(NULL);
@@ -238,7 +238,7 @@ namespace NExtractTools
     }
 
     // bin -> xslx
-    int xlst_bin2xlsx (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sFontPath, bool bFromChanges, const std::wstring &sThemeDir, InputParams& params)
+    int xlst_bin2xlsx (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, bool bFromChanges, const std::wstring &sThemeDir, InputParams& params)
     {
         int nRes = 0;
         // Extract xlsx to temp directory
@@ -246,7 +246,7 @@ namespace NExtractTools
 
         FileSystem::Directory::CreateDirectory(sResultXlsxDir);
 
-        nRes = xlst_bin2xlsx_dir(sFrom, sTo, sResultXlsxDir, sFontPath, bFromChanges, sThemeDir, params);
+        nRes = xlst_bin2xlsx_dir(sFrom, sTo, sResultXlsxDir, bFromChanges, sThemeDir, params);
         if (SUCCEEDED_X2T(nRes))
         {
             // compress
@@ -255,21 +255,20 @@ namespace NExtractTools
         }
         return nRes;
     }
-    int xlst_bin2xlsx_dir (const std::wstring &sFrom, const std::wstring &sToResult, const std::wstring &sTo, const std::wstring &sFontPath, bool bFromChanges, const std::wstring &sThemeDir, InputParams& params)
+    int xlst_bin2xlsx_dir (const std::wstring &sFrom, const std::wstring &sToResult, const std::wstring &sTo, bool bFromChanges, const std::wstring &sThemeDir, InputParams& params)
     {
         int nRes = 0;
 
         std::wstring sTargetBin;
         if(bFromChanges)
-            nRes = apply_changes(sFrom, sToResult, NSDoctRenderer::DoctRendererFormat::FormatFile::XLST, sFontPath, sThemeDir, sTargetBin, params);
+            nRes = apply_changes(sFrom, sToResult, NSDoctRenderer::DoctRendererFormat::FormatFile::XLST, sThemeDir, sTargetBin, params);
         else
             sTargetBin = sFrom;
 
         BinXlsxRW::CXlsxSerializer m_oCXlsxSerializer;
 
-        CString sFontPath1 = std_string2string(sFontPath);
-
-        m_oCXlsxSerializer.setFontDir(sFontPath1);
+        CString sFontPath = std_string2string(params.getFontPath());
+        m_oCXlsxSerializer.setFontDir(sFontPath);
 
         CString sXmlOptions = _T("");
         CString sMediaPath;             // will be filled by 'CreateXlsxFolders' method
@@ -288,7 +287,7 @@ namespace NExtractTools
     }
 
     // xslt -> xslx
-    int xlst2xlsx (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sFontPath, bool bFromChanges, const std::wstring &sThemeDir, InputParams& params)
+    int xlst2xlsx (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, bool bFromChanges, const std::wstring &sThemeDir, InputParams& params)
     {
         // Extract xlsx to temp directory
         std::wstring sTempUnpackedXLST = sTemp + FILE_SEPARATOR_STR + _T("xlst_unpacked");
@@ -301,10 +300,10 @@ namespace NExtractTools
         if (S_OK != oCOfficeUtils.ExtractToDirectory(sFrom, sTempUnpackedXLST, NULL, 0))
             return AVS_FILEUTILS_ERROR_CONVERT;
 
-        return xlst_bin2xlsx(sTempXlstFileEditor, sTo, sTemp, sFontPath, bFromChanges, sThemeDir, params);
+        return xlst_bin2xlsx(sTempXlstFileEditor, sTo, sTemp, bFromChanges, sThemeDir, params);
     }
     // pptx -> bin
-    int pptx2pptt_bin (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sFontPath, InputParams& params)
+    int pptx2pptt_bin (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
     {
         // unzip pptx to temp folder
         std::wstring sTempUnpackedPPTX = sTemp + FILE_SEPARATOR_STR + _T("pptx_unpacked")+ FILE_SEPARATOR_STR;  // leading slash is very important!
@@ -316,9 +315,9 @@ namespace NExtractTools
 		if (S_OK != oCOfficeUtils.ExtractToDirectory(sFrom, sTempUnpackedPPTX, NULL, 0))
             return AVS_FILEUTILS_ERROR_CONVERT;
 
-        return pptx_dir2pptt_bin(sTempUnpackedPPTX, sTo, sFontPath, params);
+        return pptx_dir2pptt_bin(sTempUnpackedPPTX, sTo, params);
 	}
-    int pptx_dir2pptt_bin (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sFontPath, InputParams& params)
+    int pptx_dir2pptt_bin (const std::wstring &sFrom, const std::wstring &sTo, InputParams& params)
     {
         // convert unzipped pptx to unzipped pptt
         CPPTXFile *pptx_file = new CPPTXFile(NULL, NULL, NULL, NULL);
@@ -328,7 +327,7 @@ namespace NExtractTools
         if (pptx_file)
         {
 #if defined(_WIN32) || defined (_WIN64)
-            BSTR bstrFontPath			= SysAllocString(sFontPath.c_str());
+			BSTR bstrFontPath			= SysAllocString(params.getFontPath().c_str());
             BSTR bstrTempUnpackedPPTX	= SysAllocString(sFrom.c_str());
             BSTR bstrTo					= SysAllocString(sTo.c_str());
 
@@ -339,7 +338,7 @@ namespace NExtractTools
             SysFreeString(bstrTempUnpackedPPTX);
             SysFreeString(bstrTo);
 #else
-            pptx_file->SetFontDir (sFontPath);
+            pptx_file->SetFontDir (params.getFontPath());
             nRes = (S_OK == pptx_file->OpenFileToPPTY (sFrom, sTo)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
 #endif
             delete pptx_file;
@@ -348,14 +347,14 @@ namespace NExtractTools
         return nRes;
 	}
     // pptx -> pptt
-    int pptx2pptt (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sFontPath, InputParams& params)
+    int pptx2pptt (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
     {
         std::wstring sResultPpttDir = sTemp + FILE_SEPARATOR_STR + _T("pptt_unpacked");
         std::wstring sTempPpttFileEditor = sResultPpttDir + FILE_SEPARATOR_STR + _T("Editor.bin");
 
         FileSystem::Directory::CreateDirectory(sResultPpttDir);
 
-        int nRes = pptx2pptt_bin(sFrom, sTempPpttFileEditor, sTemp, sFontPath, params);
+        int nRes = pptx2pptt_bin(sFrom, sTempPpttFileEditor, sTemp, params);
         if (SUCCEEDED_X2T(nRes))
         {
             // zip pptt folder to output file
@@ -366,14 +365,14 @@ namespace NExtractTools
     }
 
     // bin -> pptx
-    int pptt_bin2pptx (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sFontPath, bool bFromChanges, const std::wstring &sThemeDir, InputParams& params)
+    int pptt_bin2pptx (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, bool bFromChanges, const std::wstring &sThemeDir, InputParams& params)
     {
         int nRes = 0;
         std::wstring sResultPptxDir = sTemp + FILE_SEPARATOR_STR + _T("pptx_unpacked");
 
         FileSystem::Directory::CreateDirectory(sResultPptxDir);
 
-        nRes = pptt_bin2pptx_dir(sFrom, sTo, sResultPptxDir, sFontPath, bFromChanges, sThemeDir, params);
+        nRes = pptt_bin2pptx_dir(sFrom, sTo, sResultPptxDir, bFromChanges, sThemeDir, params);
         if (!SUCCEEDED_X2T(nRes))
             return nRes;
 
@@ -383,13 +382,13 @@ namespace NExtractTools
 
         return nRes;
 	}
-    int pptt_bin2pptx_dir (const std::wstring &sFrom, const std::wstring &sToResult, const std::wstring &sTo, const std::wstring &sFontPath, bool bFromChanges, const std::wstring &sThemeDir, InputParams& params)
+    int pptt_bin2pptx_dir (const std::wstring &sFrom, const std::wstring &sToResult, const std::wstring &sTo, bool bFromChanges, const std::wstring &sThemeDir, InputParams& params)
     {
         int nRes = 0;
 
         std::wstring sTargetBin;
         if(bFromChanges)
-            nRes = apply_changes(sFrom, sToResult, NSDoctRenderer::DoctRendererFormat::FormatFile::PPTT, sFontPath, sThemeDir, sTargetBin, params);
+            nRes = apply_changes(sFrom, sToResult, NSDoctRenderer::DoctRendererFormat::FormatFile::PPTT, sThemeDir, sTargetBin, params);
         else
             sTargetBin = sFrom;
 
@@ -400,7 +399,7 @@ namespace NExtractTools
         if (pptx_file)
         {
 #if defined(_WIN32) || defined (_WIN64)
-            BSTR bstrFontPath		= SysAllocString(sFontPath.c_str());
+            BSTR bstrFontPath		= SysAllocString(params.getFontPath().c_str());
             BSTR bstrTargetBin		= SysAllocString(sTargetBin.c_str());
             BSTR bstrResultPptxDir	= SysAllocString(sTo.c_str());
             BSTR bstrThemeDir	= SysAllocString(sThemeDir.c_str());
@@ -413,7 +412,7 @@ namespace NExtractTools
             SysFreeString(bstrResultPptxDir);
             SysFreeString(bstrThemeDir);
 #else
-            pptx_file->SetFontDir(sFontPath);
+            pptx_file->SetFontDir(params.getFontPath());
 
             nRes = (S_OK == pptx_file->ConvertPPTYToPPTX(sTargetBin, sTo, sThemeDir)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
 #endif
@@ -426,7 +425,7 @@ namespace NExtractTools
         return nRes;
 	}
 	// pptt -> pptx
-    int pptt2pptx (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sFontPath, bool bFromChanges, const std::wstring &sThemeDir, InputParams& params)
+    int pptt2pptx (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, bool bFromChanges, const std::wstring &sThemeDir, InputParams& params)
     {
         // unzip pptt to temp folder
         std::wstring sTempUnpackedPPTT = sTemp + FILE_SEPARATOR_STR + _T("pptt_unpacked");
@@ -439,7 +438,7 @@ namespace NExtractTools
         if (S_OK != oCOfficeUtils.ExtractToDirectory(sFrom, sTempUnpackedPPTT, NULL, 0))
             return AVS_FILEUTILS_ERROR_CONVERT;
 
-        return pptt_bin2pptx(sTempPpttFileEditor, sTo, sTemp, sFontPath, bFromChanges, sThemeDir, params);
+        return pptt_bin2pptx(sTempPpttFileEditor, sTo, sTemp, bFromChanges, sThemeDir, params);
     }
     // zip dir
     int dir2zip (const std::wstring &sFrom, const std::wstring &sTo)
@@ -456,7 +455,7 @@ namespace NExtractTools
     }
 
     // csv -> xslt
-    int csv2xlst (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sFontPath, InputParams& params)
+    int csv2xlst (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
     {
         CString sCSV = std_string2string(sFrom);
         std::wstring sResultXlstDir = sTemp + FILE_SEPARATOR_STR + _T("xlst_unpacked");
@@ -468,9 +467,8 @@ namespace NExtractTools
         // Save to file (from temp dir)
         BinXlsxRW::CXlsxSerializer m_oCXlsxSerializer;
 
-        CString sFontPath1 = std_string2string(sFontPath);
-
-        m_oCXlsxSerializer.setFontDir(sFontPath1);
+        CString sFontPath = std_string2string(params.getFontPath());
+        m_oCXlsxSerializer.setFontDir(sFontPath);
 
         int nRes = m_oCXlsxSerializer.saveToFile (std_string2string(sResultXlstFileEditor), sCSV, std_string2string(params.getXmlOptions())) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
         if (SUCCEEDED_X2T(nRes))
@@ -482,7 +480,7 @@ namespace NExtractTools
     }
 
     // csv -> xslx
-    int csv2xlsx (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sFontPath, InputParams& params)
+    int csv2xlsx (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
     {
         CString sCSV = std_string2string(sFrom);
         std::wstring sTempUnpackedXLSX = sTemp + FILE_SEPARATOR_STR + _T("xlsx_unpacked");
@@ -495,9 +493,8 @@ namespace NExtractTools
         // Save to file (from temp dir)
         BinXlsxRW::CXlsxSerializer m_oCXlsxSerializer;
 
-        CString sFontPath1 = std_string2string(sFontPath);
-
-        m_oCXlsxSerializer.setFontDir(sFontPath1);
+        CString sFontPath = std_string2string(params.getFontPath());
+        m_oCXlsxSerializer.setFontDir(sFontPath);
 
         COfficeUtils oCOfficeUtils(NULL);
 
@@ -516,18 +513,18 @@ namespace NExtractTools
 
         return nRes;
     }
-    int csv2xlst_bin (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sFontPath, InputParams& params)
+    int csv2xlst_bin (const std::wstring &sFrom, const std::wstring &sTo, InputParams& params)
     {
         // Save to file (from temp dir)
         BinXlsxRW::CXlsxSerializer m_oCXlsxSerializer;
-        CString sFontPath1 = std_string2string(sFontPath);
-       
-		m_oCXlsxSerializer.setFontDir(sFontPath1);
+
+        CString sFontPath = std_string2string(params.getFontPath());       
+		m_oCXlsxSerializer.setFontDir(sFontPath);
 
         return m_oCXlsxSerializer.saveToFile(std_string2string(sTo), std_string2string(sFrom), std_string2string(params.getXmlOptions())) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
     }
     // xlst -> csv
-   int xlst2csv (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sFontPath, InputParams& params)
+   int xlst2csv (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
     {
         CString sCSV = std_string2string(sTo);
         std::wstring sTempUnpackedXLST = sTemp + FILE_SEPARATOR_STR + _T("xlst_unpacked");
@@ -543,9 +540,8 @@ namespace NExtractTools
 
         BinXlsxRW::CXlsxSerializer m_oCXlsxSerializer;
 
-        CString sFontPath1 = std_string2string(sFontPath);
-
-        m_oCXlsxSerializer.setFontDir(sFontPath1);
+		CString sFontPath = std_string2string(params.getFontPath());
+        m_oCXlsxSerializer.setFontDir(sFontPath);
 
         CString sMediaPath;
         CString sEmbedPath;
@@ -553,7 +549,7 @@ namespace NExtractTools
         return m_oCXlsxSerializer.loadFromFile (std_string2string(sTempXlstFileEditor), sCSV, std_string2string(params.getXmlOptions()), sMediaPath, sEmbedPath) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
     }
    // xslx -> csv
-   int xlsx2csv (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sFontPath, InputParams& params)
+   int xlsx2csv (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
    {
        CString sCSV = std_string2string(sTo);
        std::wstring sTempUnpackedXLSX = sTemp + FILE_SEPARATOR_STR + _T("xlsx_unpacked");
@@ -570,9 +566,8 @@ namespace NExtractTools
        // Save to file (from temp dir)
        BinXlsxRW::CXlsxSerializer m_oCXlsxSerializer;
 
-       CString sFontPath1 = std_string2string(sFontPath);
-
-       m_oCXlsxSerializer.setFontDir(sFontPath1);
+	   CString sFontPath = std_string2string(params.getFontPath());
+       m_oCXlsxSerializer.setFontDir(sFontPath);
 
        CString sXMLOptions = _T("");
 	   int nRes = m_oCXlsxSerializer.saveToFile (std_string2string(sResultXlstFileEditor), std_string2string(sTempUnpackedXLSX), sXMLOptions) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
@@ -586,13 +581,13 @@ namespace NExtractTools
 
        return nRes;
    }
-   int xlst_bin2csv (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sFontPath, const std::wstring &sThemeDir, bool bFromChanges, InputParams& params)
+   int xlst_bin2csv (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bFromChanges, InputParams& params)
    {
        int nRes = 0;
 
        std::wstring sTargetBin;
        if(bFromChanges)
-           nRes = apply_changes(sFrom, sTo, NSDoctRenderer::DoctRendererFormat::FormatFile::XLST, sFontPath, sThemeDir, sTargetBin, params);
+           nRes = apply_changes(sFrom, sTo, NSDoctRenderer::DoctRendererFormat::FormatFile::XLST, sThemeDir, sTargetBin, params);
        else
            sTargetBin = sFrom;
 
@@ -601,8 +596,10 @@ namespace NExtractTools
            //todo сделать отдельный метод для сохранения в csv
            // Save to file (from temp dir)
            BinXlsxRW::CXlsxSerializer m_oCXlsxSerializer;
-           CString sFontPath1 = std_string2string(sFontPath);
-           m_oCXlsxSerializer.setFontDir(sFontPath1);
+
+           CString sFontPath = std_string2string(params.getFontPath());
+           m_oCXlsxSerializer.setFontDir(sFontPath);
+
            std::wstring sToTemp = sTemp + FILE_SEPARATOR_STR + _T("output.csv");
            CString sMediaPath;             // will be filled by 'CreateXlsxFolders' method
            CString sEmbedPath;             // will be filled by 'CreateXlsxFolders' method          
@@ -621,10 +618,10 @@ namespace NExtractTools
        return nRes;
    }
    // bin -> pdf
-   int bin2pdf (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sFontPath, bool bPaid, const std::wstring &sThemeDir)
+   int bin2pdf (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, bool bPaid, const std::wstring &sThemeDir, InputParams& params)
    {
        CApplicationFonts oApplicationFonts;
-       initApplicationFonts(oApplicationFonts, sFontPath);
+       initApplicationFonts(oApplicationFonts, params);
        CPdfRenderer pdfWriter(&oApplicationFonts);
        pdfWriter.SetTempFolder(sTemp);
        pdfWriter.SetThemesPlace(sThemeDir);
@@ -632,7 +629,7 @@ namespace NExtractTools
        return S_OK == pdfWriter.OnlineWordToPdf(sFrom, sTo) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
    }
    //doct_bin -> pdf
-   int doct_bin2pdf(NSDoctRenderer::DoctRendererFormat::FormatFile eFromType, const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sFontPath, bool bPaid, const std::wstring &sThemeDir, InputParams& params)
+   int doct_bin2pdf(NSDoctRenderer::DoctRendererFormat::FormatFile eFromType, const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, bool bPaid, const std::wstring &sThemeDir, InputParams& params)
    {
        int nRes = 0;
        NSDoctRenderer::DoctRendererFormat::FormatFile eToType = NSDoctRenderer::DoctRendererFormat::FormatFile::PDF;
@@ -640,7 +637,7 @@ namespace NExtractTools
        std::wstring sImagesDirectory = sTFileDir + FILE_SEPARATOR_STR + _T("media");
        std::wstring sPdfBinFile = sTFileDir + FILE_SEPARATOR_STR + _T("pdf.bin");
 	   NSDoctRenderer::CDoctrenderer oDoctRenderer(NULL != params.m_sAllFontsPath ? *params.m_sAllFontsPath : _T(""));
-       std::wstring sXml = getDoctXml(eFromType, eToType, sTFileDir, sPdfBinFile, sFontPath, sImagesDirectory, sThemeDir, -1, _T(""), params);
+       std::wstring sXml = getDoctXml(eFromType, eToType, sTFileDir, sPdfBinFile, sImagesDirectory, sThemeDir, -1, _T(""), params);
        std::wstring sResult;
        bool bRes = oDoctRenderer.Execute(sXml, sResult);
        if (-1 != sResult.find(_T("error")))
@@ -651,7 +648,7 @@ namespace NExtractTools
        else
        {
            CApplicationFonts oApplicationFonts;
-           initApplicationFonts(oApplicationFonts, sFontPath);
+           initApplicationFonts(oApplicationFonts, params);
            CPdfRenderer pdfWriter(&oApplicationFonts);
            pdfWriter.SetTempFolder(sTemp);
            pdfWriter.SetThemesPlace(sThemeDir);
@@ -729,14 +726,14 @@ namespace NExtractTools
        return S_OK == pptFile.LoadFromFile(sFrom, sTo) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
    }
    // ppt -> pptt
-   int ppt2pptt (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sFontPath, InputParams& params)
+   int ppt2pptt (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
    {
        std::wstring sResultPpttDir = sTemp + FILE_SEPARATOR_STR + _T("pptt_unpacked");
        std::wstring sTempPpttFileEditor = sResultPpttDir + FILE_SEPARATOR_STR + _T("Editor.bin");
 
        FileSystem::Directory::CreateDirectory(sResultPpttDir);
 
-       int nRes = ppt2pptt_bin(sFrom, sTempPpttFileEditor, sTemp, sFontPath, params);
+       int nRes = ppt2pptt_bin(sFrom, sTempPpttFileEditor, sTemp, params);
        if (SUCCEEDED_X2T(nRes))
        {
            // zip pptt folder to output file
@@ -746,7 +743,7 @@ namespace NExtractTools
        return nRes;
    }
    // ppt -> pptt_bin
-   int ppt2pptt_bin (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sFontPath, InputParams& params)
+   int ppt2pptt_bin (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
    {
        // unzip pptx to temp folder
        std::wstring sTempUnpackedPPTX = sTemp + FILE_SEPARATOR_STR + _T("pptx_unpacked")+ FILE_SEPARATOR_STR;  // leading slash is very important!
@@ -767,7 +764,7 @@ namespace NExtractTools
        if (pptx_file)
        {
 #if defined(_WIN32) || defined (_WIN64)
-           BSTR bstrFontPath			= SysAllocString(sFontPath.c_str());
+           BSTR bstrFontPath			= SysAllocString(params.getFontPath().c_str());
            BSTR bstrTempUnpackedPPTX	= SysAllocString(sTempUnpackedPPTX.c_str());
            BSTR bstrTo					= SysAllocString(sTo.c_str());
 
@@ -778,7 +775,7 @@ namespace NExtractTools
            SysFreeString(bstrTempUnpackedPPTX);
            SysFreeString(bstrTo);
 #else
-           pptx_file->SetFontDir (sFontPath);
+           pptx_file->SetFontDir (params.getFontPath());
            nRes = (S_OK == pptx_file->OpenFileToPPTY (sTempUnpackedPPTX, sTo)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
 #endif
            delete pptx_file;
@@ -810,7 +807,7 @@ namespace NExtractTools
    }
 
    // rtf -> doct
-   int rtf2doct (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sFontPath, InputParams& params)
+   int rtf2doct (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
    {
        // Extract docx to temp directory
        std::wstring sResultDoctDir = sTemp + FILE_SEPARATOR_STR + _T("doct_unpacked");
@@ -818,7 +815,7 @@ namespace NExtractTools
 
        FileSystem::Directory::CreateDirectory(sResultDoctDir);
 
-       int nRes = rtf2doct_bin(sFrom, sResultDoctFileEditor, sTemp, sFontPath, params);
+       int nRes = rtf2doct_bin(sFrom, sResultDoctFileEditor, sTemp, params);
 
        if (SUCCEEDED_X2T(nRes))
        {
@@ -830,7 +827,7 @@ namespace NExtractTools
    }
 
    // rtf -> doct_bin
-   int rtf2doct_bin (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sFontPath, InputParams& params)
+   int rtf2doct_bin (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
    {
         std::wstring sResultDocxDir = sTemp + FILE_SEPARATOR_STR + _T("docx_unpacked");
 
@@ -843,9 +840,9 @@ namespace NExtractTools
         {
             BinDocxRW::CDocxSerializer m_oCDocxSerializer;
 
-            CString sFontPath1 = std_string2string(sFontPath);
+			CString sFontPath = std_string2string(params.getFontPath());
 
-            m_oCDocxSerializer.setFontDir(sFontPath1);
+            m_oCDocxSerializer.setFontDir(sFontPath);
 
             CString sXmlOptions;
             int res =  m_oCDocxSerializer.saveToFile (std_string2string(sTo), std_string2string(sResultDocxDir), sXmlOptions) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
@@ -918,7 +915,7 @@ namespace NExtractTools
    }
 
    // doc -> doct
-   int doc2doct (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sFontPath, InputParams& params)
+   int doc2doct (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
    {
        // Extract docx to temp directory
        std::wstring sResultDoctDir = sTemp + FILE_SEPARATOR_STR + _T("doct_unpacked");
@@ -926,7 +923,7 @@ namespace NExtractTools
 
        FileSystem::Directory::CreateDirectory(sResultDoctDir);
 
-       int nRes = doc2doct_bin(sFrom, sResultDoctFileEditor, sTemp, sFontPath, params);
+       int nRes = doc2doct_bin(sFrom, sResultDoctFileEditor, sTemp, params);
 
        if (SUCCEEDED_X2T(nRes))
        {
@@ -938,7 +935,7 @@ namespace NExtractTools
    }
 
    // doc -> doct_bin
-   int doc2doct_bin (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sFontPath, InputParams& params)
+   int doc2doct_bin (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
    {
         std::wstring sResultDocxDir = sTemp + FILE_SEPARATOR_STR + _T("docx_unpacked");
 
@@ -951,9 +948,8 @@ namespace NExtractTools
         {
             BinDocxRW::CDocxSerializer m_oCDocxSerializer;
 
-            CString sFontPath1 = std_string2string(sFontPath);
-
-            m_oCDocxSerializer.setFontDir(sFontPath1);
+            CString sFontPath = std_string2string(params.getFontPath());
+            m_oCDocxSerializer.setFontDir(sFontPath);
 
 			std::wstring xml_options = params.getXmlOptions();
 
@@ -964,7 +960,7 @@ namespace NExtractTools
         }
         return AVS_FILEUTILS_ERROR_CONVERT;
    }
-   int docx_dir2doc (const std::wstring &sDocxDir, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sFontPath, InputParams& params)
+   int docx_dir2doc (const std::wstring &sDocxDir, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
    {
        return AVS_FILEUTILS_ERROR_CONVERT;
        COfficeDocFile docFile;
@@ -972,7 +968,7 @@ namespace NExtractTools
    }
 
    // doct -> rtf
-   int doct2rtf (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sFontPath, bool bFromChanges, const std::wstring &sThemeDir, InputParams& params)
+   int doct2rtf (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, bool bFromChanges, const std::wstring &sThemeDir, InputParams& params)
    {
        // Extract docx to temp directory
        std::wstring sTempUnpackedDOCT = sTemp + FILE_SEPARATOR_STR + _T("doct_unpacked");
@@ -985,11 +981,11 @@ namespace NExtractTools
        if (S_OK != oCOfficeUtils.ExtractToDirectory(sFrom, sTempUnpackedDOCT, NULL, 0))
            return AVS_FILEUTILS_ERROR_CONVERT;
 
-       return doct_bin2rtf(sTempDoctFileEditor, sTo, sTemp, sFontPath, bFromChanges, sThemeDir, params);
+       return doct_bin2rtf(sTempDoctFileEditor, sTo, sTemp, bFromChanges, sThemeDir, params);
    }
 
    // bin -> rtf
-   int doct_bin2rtf (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sFontPath, bool bFromChanges, const std::wstring &sThemeDir, InputParams& params)
+   int doct_bin2rtf (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, bool bFromChanges, const std::wstring &sThemeDir, InputParams& params)
    {
        int nRes = 0;
        CString sResultDocxDir = std_string2string(sTemp) + FILE_SEPARATOR_STR + _T("docx_unpacked");
@@ -998,15 +994,14 @@ namespace NExtractTools
 
        std::wstring sTargetBin;
        if(bFromChanges)
-           nRes = apply_changes(sFrom, _T(""), NSDoctRenderer::DoctRendererFormat::FormatFile::DOCT, sFontPath, sThemeDir, sTargetBin, params);
+           nRes = apply_changes(sFrom, _T(""), NSDoctRenderer::DoctRendererFormat::FormatFile::DOCT, sThemeDir, sTargetBin, params);
        else
        sTargetBin = sFrom;
 
        BinDocxRW::CDocxSerializer m_oCDocxSerializer;
 
-       CString sFontPath1 = std_string2string(sFontPath);
-
-       m_oCDocxSerializer.setFontDir(sFontPath1);
+       CString sFontPath = std_string2string(params.getFontPath());
+       m_oCDocxSerializer.setFontDir(sFontPath);
 
        CString sXmlOptions = _T("");
        CString sThemePath;             // will be filled by 'CreateDocxFolders' method
@@ -1058,14 +1053,14 @@ namespace NExtractTools
 	   return S_OK == txtFile.txt_LoadFromFile(sFrom, sTo, xml_options) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
    }
    // txt -> doct
-   int txt2doct (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sFontPath, InputParams& params)
+   int txt2doct (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
    {
        std::wstring sResultDoctDir = sTemp + FILE_SEPARATOR_STR + _T("doct_unpacked");
        std::wstring sResultDoctFileEditor = sResultDoctDir + FILE_SEPARATOR_STR + _T("Editor.bin");
 
        FileSystem::Directory::CreateDirectory(sResultDoctDir);
 
-       int nRes = txt2doct_bin(sFrom, sResultDoctFileEditor, sTemp, sFontPath, params);
+       int nRes = txt2doct_bin(sFrom, sResultDoctFileEditor, sTemp, params);
 
        if (SUCCEEDED_X2T(nRes))
        {
@@ -1077,7 +1072,7 @@ namespace NExtractTools
    }
 
    // txt -> doct_bin
-   int txt2doct_bin (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sFontPath, InputParams& params)
+   int txt2doct_bin (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
    {
         std::wstring sResultDocxDir = sTemp + FILE_SEPARATOR_STR + _T("docx_unpacked");
 
@@ -1091,9 +1086,8 @@ namespace NExtractTools
         {
             BinDocxRW::CDocxSerializer m_oCDocxSerializer;
 
-            CString sFontPath1 = std_string2string(sFontPath);
-
-            m_oCDocxSerializer.setFontDir(sFontPath1);
+            CString sFontPath = std_string2string(params.getFontPath());
+            m_oCDocxSerializer.setFontDir(sFontPath);
 
 			int res =  m_oCDocxSerializer.saveToFile (std_string2string(sTo), std_string2string(sResultDocxDir), std_string2string(params.getXmlOptions())) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 
@@ -1109,14 +1103,14 @@ namespace NExtractTools
 		return S_OK == txtFile.txt_SaveToFile(sTo, sDocxDir, params.getXmlOptions()) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
    }
 
-   int odf2oot(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, const std::wstring &sFontPath, InputParams& params)
+   int odf2oot(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
    {
        std::wstring sResultDoctDir = sTemp + FILE_SEPARATOR_STR + _T("doct_unpacked");
        std::wstring sResultDoctFileEditor = sResultDoctDir + FILE_SEPARATOR_STR + _T("Editor.bin");
 
        FileSystem::Directory::CreateDirectory(sResultDoctDir);
 
-       int nRes = odf2oot_bin(sFrom, sResultDoctFileEditor, sTemp, sFontPath, params);
+       int nRes = odf2oot_bin(sFrom, sResultDoctFileEditor, sTemp, params);
 
        if (SUCCEEDED_X2T(nRes))
        {
@@ -1127,7 +1121,7 @@ namespace NExtractTools
        return nRes;
    }
 
-   int odf2oot_bin(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, const std::wstring &sFontPath, InputParams& params)
+   int odf2oot_bin(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
    {
        std::wstring sTempUnpackedOdf = sTemp + FILE_SEPARATOR_STR + _T("odf_unpacked");
        std::wstring sTempUnpackedOox = sTemp + FILE_SEPARATOR_STR + _T("oox_unpacked");
@@ -1140,13 +1134,12 @@ namespace NExtractTools
 
        FileSystem::Directory::CreateDirectory(sTempUnpackedOox);
 
-       if (S_OK == ConvertOO2OOX(sTempUnpackedOdf, sTempUnpackedOox, sFontPath, false, NULL))
+       if (S_OK == ConvertOO2OOX(sTempUnpackedOdf, sTempUnpackedOox, params.getFontPath(), false, NULL))
        {
            BinDocxRW::CDocxSerializer m_oCDocxSerializer;
 
-           CString sFontPath1 = std_string2string(sFontPath);
-
-           m_oCDocxSerializer.setFontDir(sFontPath1);
+           CString sFontPath = std_string2string(params.getFontPath());
+           m_oCDocxSerializer.setFontDir(sFontPath);
 
 		   int res =  m_oCDocxSerializer.saveToFile (std_string2string(sTo), std_string2string(sTempUnpackedOox), std_string2string(params.getXmlOptions())) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 
@@ -1156,12 +1149,12 @@ namespace NExtractTools
        return AVS_FILEUTILS_ERROR_CONVERT;
    }
 
-   int odf2oox(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, const std::wstring &sFontPath, InputParams& params)
+   int odf2oox(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
    {
        std::wstring sTempUnpackedOox = sTemp + FILE_SEPARATOR_STR + _T("oox_unpacked");
        FileSystem::Directory::CreateDirectory(sTempUnpackedOox);
 
-       int nRes = odf2oox_dir(sFrom, sTempUnpackedOox, sTemp, sFontPath, params);
+       int nRes = odf2oox_dir(sFrom, sTempUnpackedOox, sTemp, params);
        if(SUCCEEDED_X2T(nRes))
        {
            COfficeUtils oCOfficeUtils(NULL);
@@ -1169,7 +1162,7 @@ namespace NExtractTools
        }
        return nRes;
    }
-   int odf2oox_dir(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, const std::wstring &sFontPath, InputParams& params)
+   int odf2oox_dir(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
    {
        std::wstring sTempUnpackedOdf = sTemp + FILE_SEPARATOR_STR + _T("odf_unpacked");
        FileSystem::Directory::CreateDirectory(sTempUnpackedOdf);
@@ -1178,10 +1171,10 @@ namespace NExtractTools
        if (S_OK != oCOfficeUtils.ExtractToDirectory(sFrom, sTempUnpackedOdf, NULL, 0))
            return AVS_FILEUTILS_ERROR_CONVERT;;
 
-       return S_OK == ConvertOO2OOX(sTempUnpackedOdf, sTo, sFontPath, false, NULL) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+       return S_OK == ConvertOO2OOX(sTempUnpackedOdf, sTo, params.getFontPath(), false, NULL) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
    }
    // docx -> odt
-   int docx2odt (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sFontPath, InputParams& params )
+   int docx2odt (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params )
    {
         std::wstring sTempUnpackedDOCX = sTemp + FILE_SEPARATOR_STR + _T("docx_unpacked");
         FileSystem::Directory::CreateDirectory(sTempUnpackedDOCX);
@@ -1189,17 +1182,17 @@ namespace NExtractTools
         COfficeUtils oCOfficeUtils(NULL);
         if (S_OK == oCOfficeUtils.ExtractToDirectory(sFrom, sTempUnpackedDOCX, NULL, 0))
         {
-            return docx_dir2odt(sTempUnpackedDOCX, sTo, sTemp, sFontPath, params);
+            return docx_dir2odt(sTempUnpackedDOCX, sTo, sTemp, params);
         }
         return AVS_FILEUTILS_ERROR_CONVERT;
    }
    // docx dir -> odt
-   int docx_dir2odt (const std::wstring &sDocxDir, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sFontPath, InputParams& params )
+   int docx_dir2odt (const std::wstring &sDocxDir, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params )
    {
        std::wstring sTempUnpackedODT = sTemp + FILE_SEPARATOR_STR + _T("odt_unpacked");
        FileSystem::Directory::CreateDirectory(sTempUnpackedODT);
 
-       Oox2Odf::Converter converter(sDocxDir, _T("text"), sFontPath,  NULL);
+       Oox2Odf::Converter converter(sDocxDir, _T("text"), params.getFontPath(),  NULL);
 
        int nRes = 0;
        try
@@ -1216,7 +1209,7 @@ namespace NExtractTools
        return nRes;
    }
    // xlsx -> ods
-   int xlsx2ods (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sFontPath, InputParams& params )
+   int xlsx2ods (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params )
    {
         std::wstring sTempUnpackedXLSX = sTemp + FILE_SEPARATOR_STR + _T("xlsx_unpacked");
 
@@ -1225,19 +1218,19 @@ namespace NExtractTools
         COfficeUtils oCOfficeUtils(NULL);
         if (S_OK == oCOfficeUtils.ExtractToDirectory(sFrom, sTempUnpackedXLSX, NULL, 0))
         {
-            return xlsx_dir2ods(sTempUnpackedXLSX, sTo, sTemp, sFontPath, params);
+            return xlsx_dir2ods(sTempUnpackedXLSX, sTo, sTemp, params);
         }
         return AVS_FILEUTILS_ERROR_CONVERT;
    }
 
-   int xlsx_dir2ods (const std::wstring &sXlsxDir, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sFontPath, InputParams& params)
+   int xlsx_dir2ods (const std::wstring &sXlsxDir, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
    {
        std::wstring sTempUnpackedODS = sTemp + FILE_SEPARATOR_STR + _T("ods_unpacked");
        FileSystem::Directory::CreateDirectory(sTempUnpackedODS);
 
        try
        {
-           Oox2Odf::Converter converter(sXlsxDir, _T("spreadsheet"), sFontPath, NULL);
+           Oox2Odf::Converter converter(sXlsxDir, _T("spreadsheet"),params.getFontPath(), NULL);
 
            converter.convert();
            converter.write(sTempUnpackedODS);
@@ -1252,14 +1245,14 @@ namespace NExtractTools
        return AVS_FILEUTILS_ERROR_CONVERT;
 	}
 
-	int mscrypt2oot (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, const std::wstring &sFontPath, InputParams& params)
+	int mscrypt2oot (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
 	{
         std::wstring sResultOotDir			= sTemp			+ FILE_SEPARATOR_STR + _T("oot_unpacked");
         std::wstring sResultOotFileEditor	= sResultOotDir	+ FILE_SEPARATOR_STR + _T("Editor.bin");
 
         FileSystem::Directory::CreateDirectory(sResultOotDir);
 
-        int nRes = mscrypt2oot_bin(sFrom, sResultOotFileEditor, sTemp, sFontPath, params);
+        int nRes = mscrypt2oot_bin(sFrom, sResultOotFileEditor, sTemp, params);
         if (SUCCEEDED_X2T(nRes))
         {
             COfficeUtils oCOfficeUtils(NULL);
@@ -1268,7 +1261,7 @@ namespace NExtractTools
 
 		return nRes;
 	}
-	int mscrypt2oox	 (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, const std::wstring &sFontPath, InputParams& params)
+	int mscrypt2oox	 (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
 	{
 		//decrypt to sTo
 		ECMACryptReader cryptReader;
@@ -1277,7 +1270,7 @@ namespace NExtractTools
 
 		return S_OK;
 	}
-	int mscrypt2oot_bin	 (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, const std::wstring &sFontPath, InputParams& params)
+	int mscrypt2oot_bin	 (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
 	{
 		//decrypt to temp file
         std::wstring sResultDecryptFile = sTemp	+ FILE_SEPARATOR_STR + L"uncrypt_file.oox";
@@ -1294,26 +1287,26 @@ namespace NExtractTools
 			{
 				case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX:
 				{
-					return docx2doct_bin(sResultDecryptFile, sTo, sTemp, sFontPath, params);
+					return docx2doct_bin(sResultDecryptFile, sTo, sTemp, params);
 				}break;
 				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX:
 				{
 					const std::wstring & sXmlOptions = params.getXmlOptions();
-					return xlsx2xlst_bin(sResultDecryptFile, sTo, sTemp, sFontPath, params);
+					return xlsx2xlst_bin(sResultDecryptFile, sTo, sTemp, params);
                 }break;
 				case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX:
 				case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSX:
 				{
-					return pptx2pptt_bin(sResultDecryptFile, sTo, sTemp, sFontPath,params);
+					return pptx2pptt_bin(sResultDecryptFile, sTo, sTemp,params);
 				}break;
 			}
 		}
 		return AVS_FILEUTILS_ERROR_CONVERT;
 	}
-	int fromMscrypt (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, const std::wstring &sFontPath, InputParams& params)
+	int fromMscrypt (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
 	{
 		std::wstring sResultDecryptFile = sTemp	+ FILE_SEPARATOR_STR + L"uncrypt_file.oox";
-		int nRes = mscrypt2oox(sFrom, sResultDecryptFile, sTemp, sFontPath, params);
+		int nRes = mscrypt2oox(sFrom, sResultDecryptFile, sTemp, params);
 		if (SUCCEEDED_X2T(nRes))
 		{
 			COfficeFileFormatChecker OfficeFileFormatChecker;
@@ -1376,7 +1369,7 @@ namespace NExtractTools
        return nRes;
    }
    // mailmerge
-   int convertmailmerge (const InputParamsMailMerge& oMailMergeSend,const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sFontPath, bool bPaid, const std::wstring &sThemeDir, InputParams& params)
+   int convertmailmerge (const InputParamsMailMerge& oMailMergeSend,const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, bool bPaid, const std::wstring &sThemeDir, InputParams& params)
    {
        if(NULL == oMailMergeSend.mailFormat || NULL == oMailMergeSend.recordFrom || NULL == oMailMergeSend.recordTo)
            return AVS_FILEUTILS_ERROR_CONVERT;
@@ -1399,7 +1392,7 @@ namespace NExtractTools
 	   NSDoctRenderer::CDoctrenderer oDoctRenderer(NULL != params.m_sAllFontsPath ? *params.m_sAllFontsPath : _T(""));
        std::wstring sMailMergeXml = getMailMergeXml(sJsonPath, *oMailMergeSend.recordFrom, recordTo, *oMailMergeSend.to);
        //посылаем выходную папку sFileFromDir, чтобы файлы лежали на одном уровне с папкой media, важно для дальнейшей конвертации в docx, pdf
-       std::wstring sXml = getDoctXml(NSDoctRenderer::DoctRendererFormat::FormatFile::DOCT, eTypeTo, sFileFromDir, sFileFromDir, sFontPath, sImagesDirectory, sThemeDir, -1, sMailMergeXml, params);
+       std::wstring sXml = getDoctXml(NSDoctRenderer::DoctRendererFormat::FormatFile::DOCT, eTypeTo, sFileFromDir, sFileFromDir, sImagesDirectory, sThemeDir, -1, sMailMergeXml, params);
        std::wstring sResult;
        oDoctRenderer.Execute(sXml, sResult);
        if (-1 != sResult.find(_T("error")))
@@ -1433,8 +1426,9 @@ namespace NExtractTools
                                FileSystem::Directory::CreateDirectory(sTempDocx);
 
                                BinDocxRW::CDocxSerializer m_oCDocxSerializer;
-                               CString sFontPath1 = std_string2string(sFontPath);
-                               m_oCDocxSerializer.setFontDir(sFontPath1);
+
+                               CString sFontPath = std_string2string(params.getFontPath());
+                               m_oCDocxSerializer.setFontDir(sFontPath);
 
                                CString sXmlOptions = _T("");
                                CString sThemePath;             // will be filled by 'CreateDocxFolders' method
@@ -1454,7 +1448,7 @@ namespace NExtractTools
                                sFilePathOut += _T(".pdf");
 
                                CApplicationFonts oApplicationFonts;
-                               initApplicationFonts(oApplicationFonts, sFontPath);
+                               initApplicationFonts(oApplicationFonts, params);
                                CPdfRenderer pdfWriter(&oApplicationFonts);
                                pdfWriter.SetTempFolder(sTemp);
                                pdfWriter.SetThemesPlace(sThemeDir);
@@ -1479,7 +1473,7 @@ namespace NExtractTools
        }
        return nRes;
    }
-   int PdfDjvuXpsToRenderer(IOfficeDrawingFile** ppReader, IRenderer* pRenderer, const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sFontPath, InputParams& params, CApplicationFonts* pApplicationFonts)
+   int PdfDjvuXpsToRenderer(IOfficeDrawingFile** ppReader, IRenderer* pRenderer, const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params, CApplicationFonts* pApplicationFonts)
    {
        int nRes = 0;
        IOfficeDrawingFile* pReader = NULL;
@@ -1556,7 +1550,7 @@ namespace NExtractTools
        return nRes;
    }
 
-   int fromDocxDir(const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sFontPath, const std::wstring &sThemeDir, bool bFromChanges, bool bPaid, InputParams& params)
+   int fromDocxDir(const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bFromChanges, bool bPaid, InputParams& params)
    {
        int nRes = 0;
        if(0 != (AVS_OFFICESTUDIO_FILE_DOCUMENT & nFormatTo))
@@ -1567,11 +1561,11 @@ namespace NExtractTools
            }
            else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC == nFormatTo)
            {
-               nRes = docx_dir2doc(sFrom, sTo, sTemp, sFontPath, params);
+               nRes = docx_dir2doc(sFrom, sTo, sTemp, params);
            }
            else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT == nFormatTo)
            {
-               nRes = docx_dir2odt(sFrom, sTo, sTemp, sFontPath, params);
+               nRes = docx_dir2odt(sFrom, sTo, sTemp, params);
            }
            else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_RTF == nFormatTo)
            {
@@ -1586,7 +1580,7 @@ namespace NExtractTools
        }
        else if(AVS_OFFICESTUDIO_FILE_CANVAS_WORD == nFormatTo)
        {
-           nRes = docx_dir2doct_bin(sFrom, sTo, sFontPath, params);
+           nRes = docx_dir2doct_bin(sFrom, sTo, params);
        }
        else
        {
@@ -1594,16 +1588,16 @@ namespace NExtractTools
            FileSystem::Directory::CreateDirectory(sDoctDir);
            std::wstring sTFile = sDoctDir + FILE_SEPARATOR_STR + _T("Editor.bin");
 
-		   nRes = docx_dir2doct_bin(sFrom, sTFile, sFontPath, params);
+		   nRes = docx_dir2doct_bin(sFrom, sTFile, params);
           
 		   if(SUCCEEDED_X2T(nRes))
            {
-               nRes = fromDoctBin(sTFile, sTo, nFormatTo, sTemp, sFontPath, sThemeDir, bFromChanges, bPaid, params);
+               nRes = fromDoctBin(sTFile, sTo, nFormatTo, sTemp, sThemeDir, bFromChanges, bPaid, params);
            }
        }
        return nRes;
    }
-   int fromDoctBin(const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sFontPath, const std::wstring &sThemeDir, bool bFromChanges, bool bPaid, InputParams& params)
+   int fromDoctBin(const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bFromChanges, bool bPaid, InputParams& params)
    {
        int nRes = 0;
        if(AVS_OFFICESTUDIO_FILE_TEAMLAB_DOCY == nFormatTo)
@@ -1614,16 +1608,16 @@ namespace NExtractTools
        else if(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatTo)
        {
            NSDoctRenderer::DoctRendererFormat::FormatFile eFromType = NSDoctRenderer::DoctRendererFormat::FormatFile::DOCT;
-           nRes = doct_bin2pdf(eFromType, sFrom, sTo, sTemp, sFontPath, bPaid, sThemeDir, params);
+           nRes = doct_bin2pdf(eFromType, sFrom, sTo, sTemp, bPaid, sThemeDir, params);
        }
        else if(0 != (AVS_OFFICESTUDIO_FILE_DOCUMENT & nFormatTo))
        {
            std::wstring sDocxDir = sTemp + FILE_SEPARATOR_STR + _T("docx_unpacked");
            NSDirectory::CreateDirectory(sDocxDir);
-           nRes = doct_bin2docx_dir(sFrom, sTo, sDocxDir, sFontPath, bFromChanges, sThemeDir, params);
+           nRes = doct_bin2docx_dir(sFrom, sTo, sDocxDir, bFromChanges, sThemeDir, params);
            if(SUCCEEDED_X2T(nRes))
            {
-                nRes = fromDocxDir(sDocxDir, sTo, nFormatTo, sTemp, sFontPath, sThemeDir, bFromChanges, bPaid, params);
+                nRes = fromDocxDir(sDocxDir, sTo, nFormatTo, sTemp, sThemeDir, bFromChanges, bPaid, params);
            }
        }
        else
@@ -1682,7 +1676,7 @@ namespace NExtractTools
                
 			   if(SUCCEEDED_X2T(nRes))
                {
-				   nRes = fromDoctBin(sTFile, sTo, nFormatTo, sTemp, sFontPath, sThemeDir, bFromChanges, bPaid, params);
+				   nRes = fromDoctBin(sTFile, sTo, nFormatTo, sTemp, sThemeDir, bFromChanges, bPaid, params);
                }
            }
        }
@@ -1700,7 +1694,7 @@ namespace NExtractTools
            }
            else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT == nFormatFrom)
            {
-               nRes = odf2oox_dir(sFrom, sDocxDir, sTemp, sFontPath, params);
+               nRes = odf2oox_dir(sFrom, sDocxDir, sTemp, params);
            }
            else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_RTF == nFormatFrom)
            {
@@ -1714,13 +1708,13 @@ namespace NExtractTools
                nRes = AVS_FILEUTILS_ERROR_CONVERT;
            if(SUCCEEDED_X2T(nRes))
            {
-               nRes = fromDocxDir(sDocxDir, sTo, nFormatTo, sTemp, sFontPath, sThemeDir, bFromChanges, bPaid, params);
+               nRes = fromDocxDir(sDocxDir, sTo, nFormatTo, sTemp, sThemeDir, bFromChanges, bPaid, params);
            }
        }
        return nRes;
    }
 
-   int fromXlsxDir(const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sFontPath, const std::wstring &sThemeDir, bool bFromChanges, bool bPaid, InputParams& params)
+   int fromXlsxDir(const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bFromChanges, bool bPaid, InputParams& params)
    {
        int nRes = 0;
        if(0 != (AVS_OFFICESTUDIO_FILE_SPREADSHEET & nFormatTo) && AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV != nFormatTo)
@@ -1732,18 +1726,18 @@ namespace NExtractTools
            //else if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS == nFormatTo)
            else if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS == nFormatTo)
            {
-               nRes = xlsx_dir2ods(sFrom, sTo, sTemp, sFontPath, params);
+               nRes = xlsx_dir2ods(sFrom, sTo, sTemp, params);
            }
            else
                nRes = AVS_FILEUTILS_ERROR_CONVERT;
        }
        else if(AVS_OFFICESTUDIO_FILE_OTHER_JSON == nFormatTo)
        {
-           nRes = xlsx_dir2xlst_bin(sFrom, sTo, sFontPath, params);
+           nRes = xlsx_dir2xlst_bin(sFrom, sTo, params);
        }
        else if(AVS_OFFICESTUDIO_FILE_CANVAS_SPREADSHEET == nFormatTo)
        {
-           nRes = xlsx_dir2xlst_bin(sFrom, sTo, sFontPath, params);
+           nRes = xlsx_dir2xlst_bin(sFrom, sTo, params);
        }
        else
        {
@@ -1751,17 +1745,17 @@ namespace NExtractTools
            FileSystem::Directory::CreateDirectory(sXlstDir);
            std::wstring sTFile = sXlstDir + FILE_SEPARATOR_STR + _T("Editor.bin");
            if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV == nFormatTo)
-               nRes = xlsx_dir2xlst_bin(sFrom, sTFile, sFontPath, params);
+               nRes = xlsx_dir2xlst_bin(sFrom, sTFile, params);
            else
-               nRes = xlsx_dir2xlst_bin(sFrom, sTFile, sFontPath, params);
+               nRes = xlsx_dir2xlst_bin(sFrom, sTFile, params);
            if(SUCCEEDED_X2T(nRes))
            {
-               nRes = fromXlstBin(sTFile, sTo, nFormatTo, sTemp, sFontPath, sThemeDir, bFromChanges, bPaid, params);
+               nRes = fromXlstBin(sTFile, sTo, nFormatTo, sTemp, sThemeDir, bFromChanges, bPaid, params);
            }
        }
        return nRes;
    }
-   int fromXlstBin(const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sFontPath, const std::wstring &sThemeDir, bool bFromChanges, bool bPaid, InputParams& params)
+   int fromXlstBin(const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bFromChanges, bool bPaid, InputParams& params)
    {
        int nRes = 0;
        if(AVS_OFFICESTUDIO_FILE_TEAMLAB_XLSY == nFormatTo)
@@ -1771,21 +1765,21 @@ namespace NExtractTools
        }
        else if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV == nFormatTo)
        {
-           nRes = xlst_bin2csv(sFrom, sTo, sTemp, sFontPath, sThemeDir, bFromChanges, params);
+           nRes = xlst_bin2csv(sFrom, sTo, sTemp, sThemeDir, bFromChanges, params);
        }
        else if(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatTo)
        {
            NSDoctRenderer::DoctRendererFormat::FormatFile eFromType = NSDoctRenderer::DoctRendererFormat::FormatFile::XLST;
-           nRes = doct_bin2pdf(eFromType, sFrom, sTo, sTemp, sFontPath, bPaid, sThemeDir, params);
+           nRes = doct_bin2pdf(eFromType, sFrom, sTo, sTemp, bPaid, sThemeDir, params);
        }
        else if(0 != (AVS_OFFICESTUDIO_FILE_SPREADSHEET & nFormatTo))
        {
            std::wstring sXlsxDir = sTemp + FILE_SEPARATOR_STR + _T("xlsx_unpacked");
            NSDirectory::CreateDirectory(sXlsxDir);
-           nRes = xlst_bin2xlsx_dir(sFrom, sTo, sXlsxDir, sFontPath, bFromChanges, sThemeDir, params);
+           nRes = xlst_bin2xlsx_dir(sFrom, sTo, sXlsxDir, bFromChanges, sThemeDir, params);
            if(SUCCEEDED_X2T(nRes))
            {
-                nRes = fromXlsxDir(sXlsxDir, sTo, nFormatTo, sTemp, sFontPath, sThemeDir, bFromChanges, bPaid, params);
+                nRes = fromXlsxDir(sXlsxDir, sTo, nFormatTo, sTemp, sThemeDir, bFromChanges, bPaid, params);
            }
        }
        else
@@ -1816,18 +1810,18 @@ namespace NExtractTools
        {
            if(AVS_OFFICESTUDIO_FILE_CANVAS_SPREADSHEET == nFormatTo)
            {
-               nRes = csv2xlst_bin(sFrom, sTo, sFontPath, params);
+               nRes = csv2xlst_bin(sFrom, sTo, params);
            }
            else
            {
                std::wstring sXlstDir = sTemp + FILE_SEPARATOR_STR + _T("xlst_unpacked");
                FileSystem::Directory::CreateDirectory(sXlstDir);
                std::wstring sTFile = sXlstDir + FILE_SEPARATOR_STR + _T("Editor.bin");
-               nRes = csv2xlst_bin(sFrom, sTFile, sFontPath, params);
+               nRes = csv2xlst_bin(sFrom, sTFile, params);
                if(SUCCEEDED_X2T(nRes))
                {
                    //зануляем sXmlOptions чтобы, при конвертации xlst bin -> xlsx не перепутать с csv
-                   nRes = fromXlstBin(sTFile, sTo, nFormatTo, sTemp, sFontPath, sThemeDir, bFromChanges, bPaid, params);
+                   nRes = fromXlstBin(sTFile, sTo, nFormatTo, sTemp, sThemeDir, bFromChanges, bPaid, params);
                }
            }
        }
@@ -1841,23 +1835,23 @@ namespace NExtractTools
            }
            else if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS == nFormatFrom)
            {
-               nRes = xls2xlsx_dir(sFrom, sXlsxDir, sTemp, sFontPath, params);
+               nRes = xls2xlsx_dir(sFrom, sXlsxDir, sTemp, params);
            }
            else if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS == nFormatFrom)
            {
-               nRes = odf2oox_dir(sFrom, sXlsxDir, sTemp, sFontPath, params);
+               nRes = odf2oox_dir(sFrom, sXlsxDir, sTemp, params);
            }
            else
                nRes = AVS_FILEUTILS_ERROR_CONVERT;
            if(SUCCEEDED_X2T(nRes))
            {
-               nRes = fromXlsxDir(sXlsxDir, sTo, nFormatTo, sTemp, sFontPath, sThemeDir, bFromChanges, bPaid, params);
+               nRes = fromXlsxDir(sXlsxDir, sTo, nFormatTo, sTemp, sThemeDir, bFromChanges, bPaid, params);
            }
        }
        return nRes;
    }
 
-   int fromPptxDir(const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sFontPath, const std::wstring &sThemeDir, bool bFromChanges, bool bPaid, InputParams& params)
+   int fromPptxDir(const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bFromChanges, bool bPaid, InputParams& params)
    {
        int nRes = 0;
        if(0 != (AVS_OFFICESTUDIO_FILE_PRESENTATION & nFormatTo))
@@ -1873,7 +1867,7 @@ namespace NExtractTools
        }
        else if(AVS_OFFICESTUDIO_FILE_CANVAS_PRESENTATION == nFormatTo)
        {
-           nRes = pptx_dir2pptt_bin(sFrom, sTo, sFontPath, params);
+           nRes = pptx_dir2pptt_bin(sFrom, sTo, params);
        }
        else
        {
@@ -1881,15 +1875,15 @@ namespace NExtractTools
            FileSystem::Directory::CreateDirectory(sPpttDir);
            std::wstring sTFile = sPpttDir + FILE_SEPARATOR_STR + _T("Editor.bin");
          
-		   nRes = pptx_dir2pptt_bin(sFrom, sTFile, sFontPath, params);
+		   nRes = pptx_dir2pptt_bin(sFrom, sTFile, params);
            if(SUCCEEDED_X2T(nRes))
            {
-               nRes = fromPpttBin(sTFile, sTo, nFormatTo, sTemp, sFontPath, sThemeDir, bFromChanges, bPaid, params);
+               nRes = fromPpttBin(sTFile, sTo, nFormatTo, sTemp, sThemeDir, bFromChanges, bPaid, params);
            }
        }
        return nRes;
    }
-   int fromPpttBin(const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sFontPath, const std::wstring &sThemeDir, bool bFromChanges, bool bPaid, InputParams& params)
+   int fromPpttBin(const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bFromChanges, bool bPaid, InputParams& params)
    {
        int nRes = 0;
        if(AVS_OFFICESTUDIO_FILE_TEAMLAB_PPTY == nFormatTo)
@@ -1900,16 +1894,16 @@ namespace NExtractTools
        else if(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatTo)
        {
            NSDoctRenderer::DoctRendererFormat::FormatFile eFromType = NSDoctRenderer::DoctRendererFormat::FormatFile::PPTT;
-           nRes = doct_bin2pdf(eFromType, sFrom, sTo, sTemp, sFontPath, bPaid, sThemeDir, params);
+           nRes = doct_bin2pdf(eFromType, sFrom, sTo, sTemp, bPaid, sThemeDir, params);
        }
        else if(0 != (AVS_OFFICESTUDIO_FILE_PRESENTATION & nFormatTo))
        {
            std::wstring sPptxDir = sTemp + FILE_SEPARATOR_STR + _T("pptx_unpacked");
            NSDirectory::CreateDirectory(sPptxDir);
-           nRes = pptt_bin2pptx_dir(sFrom, sTo, sPptxDir, sFontPath, bFromChanges, sThemeDir, params);
+           nRes = pptt_bin2pptx_dir(sFrom, sTo, sPptxDir, bFromChanges, sThemeDir, params);
            if(SUCCEEDED_X2T(nRes))
            {
-                nRes = fromPptxDir(sPptxDir, sTo, nFormatTo, sTemp, sFontPath, sThemeDir, bFromChanges, bPaid, params);
+                nRes = fromPptxDir(sPptxDir, sTo, nFormatTo, sTemp, sThemeDir, bFromChanges, bPaid, params);
            }
        }
        else
@@ -1948,7 +1942,7 @@ namespace NExtractTools
        }
        else if(AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP == nFormatFrom)
        {
-           nRes = odf2oox_dir(sFrom, sPptxDir, sTemp, sFontPath, params);
+           nRes = odf2oox_dir(sFrom, sPptxDir, sTemp, params);
        }
        else if(AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSX == nFormatFrom)
        {
@@ -1958,12 +1952,12 @@ namespace NExtractTools
            nRes = AVS_FILEUTILS_ERROR_CONVERT;
        if(SUCCEEDED_X2T(nRes))
        {
-           nRes = fromPptxDir(sPptxDir, sTo, nFormatTo, sTemp, sFontPath, sThemeDir, bFromChanges, bPaid, params);
+           nRes = fromPptxDir(sPptxDir, sTo, nFormatTo, sTemp, sThemeDir, bFromChanges, bPaid, params);
        }
        return nRes;
    }
 
-   int fromT(const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sFontPath, const std::wstring &sThemeDir, bool bFromChanges, bool bPaid, InputParams& params)
+   int fromT(const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bFromChanges, bool bPaid, InputParams& params)
    {
        int nRes = 0;
        if(0 != (AVS_OFFICESTUDIO_FILE_CANVAS & nFormatTo))
@@ -1980,22 +1974,22 @@ namespace NExtractTools
            if(SUCCEEDED_X2T(nRes))
            {
                if(AVS_OFFICESTUDIO_FILE_TEAMLAB_DOCY == nFormatFrom)
-                   nRes = fromDoctBin(sTFile, sTo, nFormatTo, sTemp, sFontPath, sThemeDir, bFromChanges, bPaid, params);
+                   nRes = fromDoctBin(sTFile, sTo, nFormatTo, sTemp, sThemeDir, bFromChanges, bPaid, params);
                else if(AVS_OFFICESTUDIO_FILE_TEAMLAB_XLSY == nFormatFrom)
-                   nRes = fromXlstBin(sTFile, sTo, nFormatTo, sTemp, sFontPath, sThemeDir, bFromChanges, bPaid, params);
+                   nRes = fromXlstBin(sTFile, sTo, nFormatTo, sTemp, sThemeDir, bFromChanges, bPaid, params);
                else if(AVS_OFFICESTUDIO_FILE_TEAMLAB_PPTY == nFormatFrom)
-                   nRes = fromPpttBin(sTFile, sTo, nFormatTo, sTemp, sFontPath, sThemeDir, bFromChanges, bPaid, params);
+                   nRes = fromPpttBin(sTFile, sTo, nFormatTo, sTemp, sThemeDir, bFromChanges, bPaid, params);
                else
                    nRes = AVS_FILEUTILS_ERROR_CONVERT;
            }
        }
        return nRes;
    }
-   int fromCrossPlatform(const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sFontPath, const std::wstring &sThemeDir, bool bFromChanges, bool bPaid, InputParams& params)
+   int fromCrossPlatform(const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bFromChanges, bool bPaid, InputParams& params)
    {
        int nRes = 0;
        CApplicationFonts oApplicationFonts;
-       initApplicationFonts(oApplicationFonts, sFontPath);
+       initApplicationFonts(oApplicationFonts, params);
        if(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatTo)
        {
            if(nFormatFrom == nFormatTo)
@@ -2007,7 +2001,7 @@ namespace NExtractTools
                CPdfRenderer pdfWriter(&oApplicationFonts);
                pdfWriter.SetTempFolder(sTemp);
                IOfficeDrawingFile* pReader = NULL;
-               nRes = PdfDjvuXpsToRenderer(&pReader, &pdfWriter, sFrom, nFormatFrom, sTo, sTemp, sFontPath, params, &oApplicationFonts);
+               nRes = PdfDjvuXpsToRenderer(&pReader, &pdfWriter, sFrom, nFormatFrom, sTo, sTemp, params, &oApplicationFonts);
                pdfWriter.SaveToFile(sTo);
                RELEASEOBJECT(pReader);
            }
@@ -2021,9 +2015,9 @@ namespace NExtractTools
                copyOrigin(sFrom, *params.m_sFileTo);
            }
            NSHtmlRenderer::CASCHTMLRenderer3 oHtmlRenderer;
-           oHtmlRenderer.CreateOfficeFile(sToDir, sFontPath);
+           oHtmlRenderer.CreateOfficeFile(sToDir);
            IOfficeDrawingFile* pReader = NULL;
-           nRes = PdfDjvuXpsToRenderer(&pReader, &oHtmlRenderer, sFrom, nFormatFrom, sTo, sTemp, sFontPath, params, &oApplicationFonts);
+           nRes = PdfDjvuXpsToRenderer(&pReader, &oHtmlRenderer, sFrom, nFormatFrom, sTo, sTemp, params, &oApplicationFonts);
            oHtmlRenderer.CloseFile();
            RELEASEOBJECT(pReader);
        }
@@ -2033,12 +2027,12 @@ namespace NExtractTools
        }
        return nRes;
    }
-   int fromCanvasPdf(const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sFontPath, const std::wstring &sThemeDir, bool bFromChanges, bool bPaid)
+   int fromCanvasPdf(const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bFromChanges, bool bPaid, InputParams& params)
    {
        int nRes = 0;
        if(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatTo)
        {
-           nRes = bin2pdf(sFrom, sTo, sTemp, sFontPath, bPaid, sThemeDir);
+           nRes = bin2pdf(sFrom, sTo, sTemp, bPaid, sThemeDir, params);
        }
        else
        {
@@ -2048,13 +2042,13 @@ namespace NExtractTools
    }
 
    // xls -> xlsx
-   int xls2xlsx (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sFontPath, InputParams& params)
+   int xls2xlsx (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
    {
        std::wstring sResultDocxDir = sTemp + FILE_SEPARATOR_STR + _T("xlsx_unpacked");
 
        FileSystem::Directory::CreateDirectory(sResultDocxDir);
 
-       int nRes = xls2xlsx_dir(sFrom, sResultDocxDir, sTemp, sFontPath, params);
+       int nRes = xls2xlsx_dir(sFrom, sResultDocxDir, sTemp, params);
        if(SUCCEEDED_X2T(nRes))
        {
            COfficeUtils oCOfficeUtils(NULL);
@@ -2063,9 +2057,9 @@ namespace NExtractTools
        }
        return AVS_FILEUTILS_ERROR_CONVERT;
    }
-   int xls2xlsx_dir (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sFontPath, InputParams& params)
+   int xls2xlsx_dir (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
    {
-       long hRes = ConvertXls2Xlsx( sFrom, sTo, params.getPassword(), sFontPath, NULL);
+       long hRes = ConvertXls2Xlsx( sFrom, sTo, params.getPassword(), params.getFontPath(), NULL);
        if (AVS_ERROR_DRM == hRes)
        {
            if(!params.getDontSaveAdditional())
@@ -2082,7 +2076,7 @@ namespace NExtractTools
    }
 
    // xls -> xlst
-   int xls2xlst (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sFontPath, InputParams& params)
+   int xls2xlst (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
    {
        // Extract xlsx to temp directory
        std::wstring sResultDoctDir = sTemp + FILE_SEPARATOR_STR + _T("xlst_unpacked");
@@ -2090,7 +2084,7 @@ namespace NExtractTools
 
        FileSystem::Directory::CreateDirectory(sResultDoctDir);
 
-	   int nRes = xls2xlst_bin(sFrom, sResultDoctFileEditor, sTemp, sFontPath, params);
+	   int nRes = xls2xlst_bin(sFrom, sResultDoctFileEditor, sTemp, params);
 
        if (SUCCEEDED_X2T(nRes))
        {
@@ -2102,18 +2096,18 @@ namespace NExtractTools
    }
 
    // xls -> xlst_bin
-   int xls2xlst_bin (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sFontPath, InputParams& params)
+   int xls2xlst_bin (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
    {
         std::wstring sResultXlsxDir = sTemp + FILE_SEPARATOR_STR + _T("xlsx_unpacked");
 
         FileSystem::Directory::CreateDirectory(sResultXlsxDir);
 
-		if (ConvertXls2Xlsx( sFrom, sResultXlsxDir, params.getPassword(), sFontPath, NULL)== S_OK)
+		if (ConvertXls2Xlsx( sFrom, sResultXlsxDir, params.getPassword(), params.getFontPath(), NULL)== S_OK)
         {
             BinXlsxRW::CXlsxSerializer m_oCXlsxSerializer;
 
-            CString sFontPath1 = std_string2string(sFontPath);
-            m_oCXlsxSerializer.setFontDir(sFontPath1);
+            CString sFontPath = std_string2string(params.getFontPath());
+            m_oCXlsxSerializer.setFontDir(sFontPath);
 
             CString sTo1 = std_string2string(sTo);
 

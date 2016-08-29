@@ -262,9 +262,18 @@ void draw_enhanced_geometry::docx_convert(oox::docx_conversion_context & Context
 	{
 		std::vector<svg_path::_polyline> o_Polyline;
 	
-		bool res = svg_path::parseSvgD(o_Polyline, draw_enhanced_geometry_attlist_.draw_enhanced_path_.get(), true);
+		bool res = false;
 		
-		if (o_Polyline.size()>0)
+		try
+		{
+			res = svg_path::parseSvgD(o_Polyline, draw_enhanced_geometry_attlist_.draw_enhanced_path_.get(), true);
+		}
+		catch(...)
+		{
+			res = false; 
+		}
+		
+		if (o_Polyline.size() > 1 && res )
 		{
 			//сформируем xml-oox сдесь ... а то придется плодить массивы в drawing .. хоть и не красиво..
 			std::wstringstream output_;   
@@ -273,16 +282,30 @@ void draw_enhanced_geometry::docx_convert(oox::docx_conversion_context & Context
 
 			if (draw_enhanced_geometry_attlist_.drawooo_sub_view_size_)
 			{
-				int pos = draw_enhanced_geometry_attlist_.drawooo_sub_view_size_->find(L" ");
-				if (pos >= 0)
+				std::vector< std::wstring > splitted;			    
+				boost::algorithm::split(splitted, *draw_enhanced_geometry_attlist_.drawooo_sub_view_size_, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
+				
+				if (splitted.size() == 2)
 				{
-					int w = boost::lexical_cast<int>(draw_enhanced_geometry_attlist_.drawooo_sub_view_size_->substr(0, pos));
-					int h = boost::lexical_cast<int>(draw_enhanced_geometry_attlist_.drawooo_sub_view_size_->substr(pos + 1));
+					int w = boost::lexical_cast<int>(splitted[0]);
+					int h = boost::lexical_cast<int>(splitted[1]);
 					
 					shape->additional_.push_back(odf_reader::_property(L"custom_path_w", w));
 					shape->additional_.push_back(odf_reader::_property(L"custom_path_h", h));
 				}
+				else if (splitted.size() == 4)
+				{///???? rect ???
+					int l = boost::lexical_cast<int>(splitted[0]);
+					int t = boost::lexical_cast<int>(splitted[1]);
+					int r = boost::lexical_cast<int>(splitted[2]);
+					int b = boost::lexical_cast<int>(splitted[3]);
+
+				}
 			}
+		}
+		else if (!draw_type_oox_index_)
+		{
+			draw_type_oox_index_ = 0;
 		}
 	}
 	else if (draw_enhanced_geometry_attlist_.draw_modifiers_)

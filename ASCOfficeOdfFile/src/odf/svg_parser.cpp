@@ -202,9 +202,11 @@ namespace svg_path
 
         while(nPos < nLen)
         {
-            bool bRelative(false);
-            bool bMoveTo(false);
+            bool bRelative	(false);
+            bool bMoveTo	(false);
             const wchar_t aCurrChar(rSvgDStatement[nPos]);
+
+			aCurrPoly.command.clear();
 
             switch(aCurrChar)
             {
@@ -230,7 +232,6 @@ namespace svg_path
                 case 'M' :
                 {
                     bMoveTo = true;
-                    // FALLTHROUGH intended
                 }
                 case 'l' :
                 case 'L' :
@@ -239,28 +240,26 @@ namespace svg_path
                     {
                         bRelative = true;
                     }
-					aCurrPoly.command=L"a:lnTo";
-
-                    if(bMoveTo)
+					
+					// new polygon start, finish old one
+                    if(aCurrPoly.points.size() > 0)
                     {
- 						aCurrPoly.command=L"a:moveTo";
-                       // new polygon start, finish old one
-                        if(aCurrPoly.points.size()>0)
+                        // add current polygon
+                        if(bIsClosed)
                         {
-                            // add current polygon
-                            if(bIsClosed)
-                            {
-                                //closeWithGeometryChange(aCurrPoly);
-                            }
-                            Polyline.push_back(aCurrPoly);
-
-                            // reset import values
-                            bIsClosed = false;
-							aCurrPoly.points.clear();
+                            //closeWithGeometryChange(aCurrPoly);
                         }
+                        Polyline.push_back(aCurrPoly);
+
+                        // reset import values
+                        bIsClosed = false;
+						if(bMoveTo)	aCurrPoly.command = L"a:moveTo";
+						else		aCurrPoly.command = L"a:lnTo";
+						aCurrPoly.points.clear();
                     }
                     nPos++;
                     skipSpaces(nPos, rSvgDStatement, nLen);
+					aCurrPoly.command.clear();
 
                     while(nPos < nLen && isOnNumberChar(rSvgDStatement, nPos))
                     {
@@ -280,19 +279,20 @@ namespace svg_path
                         nLastY = nY;
 
                         // add point
-                        aCurrPoly.points.push_back(_point(nX, nY));
+ 						if(bMoveTo)	aCurrPoly.command = L"a:moveTo";
+						else		aCurrPoly.command = L"a:lnTo";
+						
+						aCurrPoly.points.push_back(_point(nX, nY));
                         Polyline.push_back(aCurrPoly);
-						aCurrPoly.points.clear();                   
-					}                    
+						aCurrPoly.points.clear();   
+					}    
                 }break;
                 case 'h' :
                 {
                     bRelative = true;
-                    // FALLTHROUGH intended
                 }
                 case 'H' ://горизонт линия
                 {
-					aCurrPoly.command=L"a:lnTo";
                     nPos++;
                     skipSpaces(nPos, rSvgDStatement, nLen);
 
@@ -311,6 +311,7 @@ namespace svg_path
                         nLastX = nX;
 
                         // add point
+						aCurrPoly.command = L"a:lnTo";
                         aCurrPoly.points.push_back(_point(nX, nY));
                         Polyline.push_back(aCurrPoly);
 						aCurrPoly.points.clear();            
@@ -325,7 +326,6 @@ namespace svg_path
                 }
                 case 'V' ://вертикальная линия
                 {
-					aCurrPoly.command =L"a:lnTo";
                     nPos++;
                     skipSpaces(nPos, rSvgDStatement, nLen);
 
@@ -344,6 +344,7 @@ namespace svg_path
                         nLastY = nY;
 
                         // add point
+						aCurrPoly.command = L"a:lnTo";
 						aCurrPoly.points.push_back(_point(nX, nY));
                         Polyline.push_back(aCurrPoly);
 						aCurrPoly.points.clear();   
@@ -358,7 +359,6 @@ namespace svg_path
                 }
                 case 'S' :
                 {
-					aCurrPoly.command=L"a:cubicBezTo";
                     nPos++;
                     skipSpaces(nPos, rSvgDStatement, nLen);
 
@@ -370,8 +370,8 @@ namespace svg_path
 
                         if(!importDoubleAndSpaces(nX2, nPos, rSvgDStatement, nLen)) return false;
                         if(!importDoubleAndSpaces(nY2, nPos, rSvgDStatement, nLen)) return false;
-                        if(!importDoubleAndSpaces(nX, nPos, rSvgDStatement, nLen)) return false;
-                        if(!importDoubleAndSpaces(nY, nPos, rSvgDStatement, nLen)) return false;
+                        if(!importDoubleAndSpaces(nX, nPos, rSvgDStatement, nLen))	return false;
+                        if(!importDoubleAndSpaces(nY, nPos, rSvgDStatement, nLen))	return false;
 
                         if(bRelative)
                         {
@@ -385,11 +385,12 @@ namespace svg_path
                         nX1 =((2.0 * nLastX) - nLastControlX);
                         nY1 =((2.0 * nLastY) - nLastControlY);
 						
+						aCurrPoly.command = L"a:cubicBezTo";
 						// append curved edge
 						aCurrPoly.points.push_back(_point(nX1, nY1));
 						aCurrPoly.points.push_back(_point(nX2, nY2));
 						aCurrPoly.points.push_back(_point(nX, nY));
-
+						
                         Polyline.push_back(aCurrPoly);
 						aCurrPoly.points.clear();   
 
@@ -406,11 +407,9 @@ namespace svg_path
                 case 'c' :
                 {
                     bRelative = true;
-                    // FALLTHROUGH intended
                 }
                 case 'C' :
                 {
-					aCurrPoly.command = L"a:cubicBezTo";
                     nPos++;
                     skipSpaces(nPos, rSvgDStatement, nLen);
 
@@ -420,12 +419,12 @@ namespace svg_path
                         double nX1, nY1;
                         double nX2, nY2;
 
-                        if(!importDoubleAndSpaces(nX1, nPos, rSvgDStatement, nLen)) return false;
-                        if(!importDoubleAndSpaces(nY1, nPos, rSvgDStatement, nLen)) return false;
-                        if(!importDoubleAndSpaces(nX2, nPos, rSvgDStatement, nLen)) return false;
-                        if(!importDoubleAndSpaces(nY2, nPos, rSvgDStatement, nLen)) return false;
-                        if(!importDoubleAndSpaces(nX, nPos, rSvgDStatement, nLen)) return false;
-                        if(!importDoubleAndSpaces(nY, nPos, rSvgDStatement, nLen)) return false;
+						if(!importDoubleAndSpaces(nX1, nPos, rSvgDStatement, nLen))	return false;
+                        if(!importDoubleAndSpaces(nY1, nPos, rSvgDStatement, nLen))	return false;
+                        if(!importDoubleAndSpaces(nX2, nPos, rSvgDStatement, nLen))	return false;
+                        if(!importDoubleAndSpaces(nY2, nPos, rSvgDStatement, nLen))	return false;
+                        if(!importDoubleAndSpaces(nX, nPos, rSvgDStatement, nLen))	return false;
+                        if(!importDoubleAndSpaces(nY, nPos, rSvgDStatement, nLen))	return false;
 
                         if(bRelative)
                         {
@@ -437,7 +436,8 @@ namespace svg_path
                             nY += nLastY;
                         }
 
-                        // append curved edge
+ 						aCurrPoly.command = L"a:cubicBezTo";
+                       // append curved edge
 						aCurrPoly.points.push_back(_point(nX1, nY1));
 						aCurrPoly.points.push_back(_point(nX2, nY2));
 						aCurrPoly.points.push_back(_point(nX, nY));
@@ -459,7 +459,6 @@ namespace svg_path
                 //case 'q' :
                 //{
                 //    bRelative = true;
-                //    // FALLTHROUGH intended
                 //}
                 //case 'Q' :
                 //{
@@ -510,7 +509,6 @@ namespace svg_path
                 //case 't' :
                 //{
                 //    bRelative = true;
-                //    // FALLTHROUGH intended
                 //}
                 //case 'T' :
                 //{
@@ -584,7 +582,6 @@ namespace svg_path
                 //case 'a' :
                 //{
                 //    bRelative = true;
-                //    // FALLTHROUGH intended
                 //}
                 //case 'A' :
                 //{
@@ -754,7 +751,7 @@ namespace svg_path
             }
         }
 
-        if(aCurrPoly.points.size() > 0 || bIsClosed)
+        if ((aCurrPoly.points.size() > 0 || bIsClosed) && !aCurrPoly.command.empty())
         {
             // end-process last poly
             if(bIsClosed)
@@ -795,7 +792,7 @@ namespace svg_path
 			aCurrPoly.points.clear();
 			aCurrPoly.command = L"a:lnTo";
 		}
-		if (Polyline.size()>2 && closed)
+		if (Polyline.size() > 2 && closed)
 		{
 			//замкнем
 			Polyline.push_back(Polyline[0]);

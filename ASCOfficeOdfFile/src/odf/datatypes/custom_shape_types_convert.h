@@ -220,6 +220,34 @@ static const _shape_converter _OO_OOX_custom_shapes[]=
 {L"concave-star6"			,L""	,0	,0	,0	},
 {L"signet"					,L""	,0	,0	,0	},
 {L"doorplate"				,L""	,0	,0	,0	},
+{L""						,L"round1Rect"	,0	,0	,0	},
+{L""						,L"round2DiagRect"	,0	,0	,0	},
+{L""						,L"mathPlus"		,0	,0	,0	},
+{L""						,L"mathMinus"		,0	,0	,0	},
+{L""						,L"mathMultiply"	,0	,0	,0	},
+{L""						,L"mathDivide"		,0	,0	,0	},
+{L""						,L"mathEqual"		,0	,0	,0	},
+{L""						,L"mathNotEqual"	,0	,0	,0	},
+{L""						,L"plaque"			,0	,0	,0	},
+{L""						,L"decagon"			,0	,0	,0	},
+{L""						,L"dodecagon"		,0	,0	,0	},
+{L""						,L"star7"			,0	,0	,0	},
+{L""						,L"star10"			,0	,0	,0	},
+{L""						,L"star16"			,0	,0	,0	},
+{L""						,L"star32"			,0	,0	,0	},
+{L""						,L"diagStripe"		,0	,0	,0	},
+{L""						,L"teardrop"		,0	,0	,0	},
+{L""						,L"arc"				,0	,0	,0	},
+{L""						,L"chord"			,0	,0	,0	},
+{L""						,L"heptagon"		,0	,0	,0	},
+{L""						,L"wave"			,0	,0	,0	},
+{L""						,L"doubleWave"		,0	,0	,0	},
+{L""						,L"corner"			,0	,0	,0	},
+{L""						,L"accentBorderCallout3",0	,0	,0	},
+{L""						,L"accentBorderCallout2",0	,0	,0	},
+{L""						,L"accentBorderCallout1",0	,0	,0	},
+{L""						,L"halfFrame"		,0	,0	,0	}
+
 };
 
 static const _shape_converter _OO_OOX_wordart[]=
@@ -277,6 +305,6 @@ static const _shape_converter _OO_OOX_wordart[]=
 {L"mso-spt166"					,L"textDeflateInflateDeflate"	,0	,0	,0	},
 {L"mso-spt174"					,L"textCanUp"	,0	,0	,0	},
 {L"mso-spt175"					,L"textCanDown"	,0	,0	,0	}, 
-{L"mso-spt188"					,L"textDoubleWave1"	,0	,0	,0	} 
+{L"mso-spt188"					,L"textDoubleWave1"	,0	,0	,0	},
 
 };

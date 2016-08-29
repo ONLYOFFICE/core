@@ -194,7 +194,7 @@ CString RtfShape::RenderToRtf(RenderParameter oRenderParameter)
 
 	if( st_inline == m_eAnchorTypeShape )
 	{
-		if( NULL != m_oPicture && m_nShapeType == 75)
+		if( NULL != m_oPicture && m_nShapeType == NSOfficeDrawing::sptPictureFrame)
 		{
 			if (m_oPicture->m_nWidth == PROP_DEF)
 			{
@@ -312,7 +312,7 @@ CString RtfShape::RenderToRtf(RenderParameter oRenderParameter)
 		//picture
 		if( 0 != m_oPicture)
 		{
-			if (m_nShapeType == 75)
+			if (m_nShapeType == NSOfficeDrawing::sptPictureFrame)
 			{
 				sResult += _T("{\\sp{\\sn pib}{\\sv ");
 				sResult +=  m_oPicture->RenderToRtf( oRenderParameter );
@@ -334,7 +334,7 @@ CString RtfShape::RenderToRtf(RenderParameter oRenderParameter)
 			sResult += _T("}");
 		}
 		sResult += _T("}");
-		if( m_oPicture && m_nShapeType == 75 )
+		if( m_oPicture && m_nShapeType == NSOfficeDrawing::sptPictureFrame )
 		{
 			sResult += _T("{\\shprslt\\par\\plain");
 			sResult +=  m_oPicture->GenerateWMF( oRenderParameter );
@@ -596,7 +596,8 @@ CString RtfShape::RenderToRtfShapeProperty(RenderParameter oRenderParameter)
 }
 CString RtfShape::RenderToOOX(RenderParameter oRenderParameter)
 {
-	if( PROP_DEF == m_nShapeType ) return L"";
+	if( PROP_DEF == m_nShapeType ) 
+		return L"";
 
 	CString sResult;
 	RtfDocument* poDocument = static_cast<RtfDocument*>(oRenderParameter.poDocument);

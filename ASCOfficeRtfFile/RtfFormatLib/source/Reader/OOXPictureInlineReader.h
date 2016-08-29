@@ -45,11 +45,11 @@ public:
 	{
 		if (m_ooxInline == NULL) return false;
 
-		oOutput.m_oPicture = RtfPicturePtr( new RtfPicture() );
-		oOutput.m_eAnchorTypeShape = RtfShape::st_inline;
-		oOutput.m_nShapeType = 75;
-		oOutput.m_nLeft = 0;
-		oOutput.m_nTop = 0;
+		oOutput.m_oPicture			= RtfPicturePtr( new RtfPicture() );
+		oOutput.m_eAnchorTypeShape	= RtfShape::st_inline;
+		oOutput.m_nShapeType		= 75;//NSOfficeDrawing::sptPictureFrame;
+		oOutput.m_nLeft				= 0;
+		oOutput.m_nTop				= 0;
 		oOutput.m_nPositionHRelative = 3;
 		oOutput.m_nPositionVRelative = 3;
 		

@@ -650,6 +650,104 @@ bool RtfShadingCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReade
 		return false;
 	return true;
 }
+bool OldShapeReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CString sCommand, bool hasParameter, int parameter)
+{
+	if( L"do" == sCommand )
+		return true;
+	else if( L"doinst" == sCommand )
+		return true;
+	else if( L"dorslt" == sCommand )
+		return false;
+	else if( L"picprop" == sCommand )
+		return true;
+//-------------------------------------------------------- type primitives
+	else if ( L"dprect" == sCommand)
+		m_oShape.m_nShapeType = NSOfficeDrawing::sptRectangle;
+	else if ( L"dpline" == sCommand)
+		m_oShape.m_nShapeType = NSOfficeDrawing::sptLine;
+	else if ( L"dpellipse" == sCommand)
+		m_oShape.m_nShapeType = NSOfficeDrawing::sptEllipse;
+	else if ( L"dparc" == sCommand)
+		m_oShape.m_nShapeType = NSOfficeDrawing::sptArc;
+	else if ( L"dppolyline" == sCommand)
+		m_oShape.m_nShapeType = NSOfficeDrawing::sptNotPrimitive;
+	else if ( L"dppolygon" == sCommand)
+		m_oShape.m_nShapeType = NSOfficeDrawing::sptNotPrimitive;
+	else if ( L"dpcallout" == sCommand)
+		m_oShape.m_nShapeType = NSOfficeDrawing::sptTextBox;
+	else if ( L"dptxbx" == sCommand)
+		m_oShape.m_nShapeType = NSOfficeDrawing::sptTextBox;
+	else if ( L"dproundr"  == sCommand)
+		m_oShape.m_nShapeType = NSOfficeDrawing::sptRoundRectangle;
+
+	else if ( L"dptxbxtext" == sCommand )
+	{
+		if( PROP_DEF == m_oShape.m_nShapeType )
+			m_oShape.m_nShapeType = NSOfficeDrawing::sptTextBox;
+		
+		ParagraphReader oParagraphReader(_T("shptxt"), oReader);
+		StartSubReader( oParagraphReader, oDocument, oReader );
+		m_oShape.m_aTextItems = oParagraphReader.m_oParPropDest.m_oTextItems;
+	}
+	//else if( L"shpbxignore" == sCommand )
+	//	m_oShape.m_eXAnchor = RtfShape::ax_ignore;
+	else if( L"dobxpage" == sCommand )
+		m_oShape.m_eXAnchor = RtfShape::ax_page;
+	else if( L"dobxmargin" == sCommand )
+		m_oShape.m_eXAnchor = RtfShape::ax_margin;
+	else if( L"dobxcolumn" == sCommand )
+		m_oShape.m_eXAnchor = RtfShape::ax_column;
+	//else if( L"shpbyignore" == sCommand )
+	//	m_oShape.m_eYAnchor = RtfShape::ay_ignore;
+	else if( L"dobypage" == sCommand )
+		m_oShape.m_eYAnchor = RtfShape::ay_page;
+	else if( L"dobymargin" == sCommand )
+		m_oShape.m_eYAnchor = RtfShape::ay_margin;
+	else if( L"dobypara" == sCommand )
+		m_oShape.m_eYAnchor = RtfShape::ay_Para;
+	else if( L"dolockanchor" == sCommand )
+		m_oShape.m_bLockAnchor = true;
+	else if ( L"dplinehollow" == sCommand )
+		m_oShape.m_bLine = false;
+
+	else if ( true == hasParameter)
+	{
+		if( L"dpx" == sCommand )
+			m_oShape.m_nLeft = parameter;
+		else if( L"dpx" == sCommand )
+			m_oShape.m_nLeft = parameter;
+		else if( L"dpy" == sCommand )
+			m_oShape.m_nTop = parameter;
+		else if( L"dpysize" == sCommand )
+			m_oShape.m_nBottom = parameter + m_oShape.m_nTop;
+		else if( L"dpxsize" == sCommand )
+			m_oShape.m_nRight = parameter + m_oShape.m_nLeft;
+		else if( L"doz" == sCommand )
+			m_oShape.m_nZOrder = parameter;
+		else if( L"dofhdr" == sCommand )
+			m_oShape.m_nHeader = parameter;
+		else if( L"dowr" == sCommand )
+			m_oShape.m_nWrapType = parameter;
+		else if( L"dowrk" == sCommand )
+			m_oShape.m_nWrapSideType = parameter;
+		else if( L"dofblwtxt" == sCommand)
+			m_oShape.m_nZOrderRelative = parameter;		
+		else if( L"dplinew" == sCommand )
+			m_oShape.m_nLineWidth = parameter;	
+		else if( L"dodhgt" == sCommand )
+			m_oShape.m_nZOrder = parameter;	
+		else if ( L"dpfillpat" == sCommand )
+		{
+			m_oShape.m_nFillType = parameter;	
+			if (m_oShape.m_nFillType == 0) m_oShape.m_bFilled = false;
+		}
+	}
+	else
+	{
+		return false;
+	}
+	return true;
+}
 bool ShapeReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CString sCommand, bool hasParameter, int parameter)
 {
 	if( _T("shp") == sCommand )
@@ -1007,6 +1105,9 @@ bool PictureReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CS
 		m_oShape.m_oPicture->eDataType = RtfPicture::dt_png;
 	else if( _T("jpegblip") == sCommand )
 		m_oShape.m_oPicture->eDataType = RtfPicture::dt_jpg;
+	else if( _T("macpict") == sCommand )
+		m_oShape.m_oPicture->eDataType = RtfPicture::dt_macpict;
+
 	else if( _T("wmetafile") == sCommand )
 	{
 		if( true == hasParameter && 8 == parameter )
@@ -1887,6 +1988,14 @@ bool ParagraphPropDestination::ExecuteCommand(RtfDocument& oDocument, RtfReader&
 		if( true == oNewShape->IsValid() )
 			m_oCurParagraph->AddItem( oNewShape );
 	}
+	else if( _T("do") == sCommand )
+	{
+		RtfShapePtr oNewShape( new RtfShape() );
+		OldShapeReader oShapeReader( *oNewShape );
+		oAbstrReader.StartSubReader( oShapeReader, oDocument, oReader );
+		if( true == oNewShape->IsValid() )
+			m_oCurParagraph->AddItem( oNewShape );
+	}
 	else if( _T("shppict") == sCommand )
 	{
 		RtfShapePtr oNewShape( new RtfShape() );
@@ -1898,15 +2007,17 @@ bool ParagraphPropDestination::ExecuteCommand(RtfDocument& oDocument, RtfReader&
 	else if( _T("pict") == sCommand )
 	{
 		RtfShapePtr oNewShape( new RtfShape() );
-		oNewShape->m_nShapeType = 75;
-		oNewShape->m_nWrapType = 3; // none
+		oNewShape->m_nShapeType			= NSOfficeDrawing::sptPictureFrame;
+		oNewShape->m_nWrapType			= 3; // none
 		oNewShape->m_nPositionHRelative = 3;//TCHAR
 		oNewShape->m_nPositionVRelative = 3;//line
-		oNewShape->m_nPositionH = 0;//absolute
-		oNewShape->m_nPositionV = 0;//absolute
+		oNewShape->m_nPositionH			= 0;//absolute
+		oNewShape->m_nPositionV			= 0;//absolute
+
 		oNewShape->m_oPicture = RtfPicturePtr( new RtfPicture() );
 		PictureReader oPictureReader( oReader, *oNewShape);
 		oAbstrReader.StartSubReader( oPictureReader, oDocument, oReader );
+
 		if( true == oNewShape->IsValid() )
 			m_oCurParagraph->AddItem( oNewShape );
 	}

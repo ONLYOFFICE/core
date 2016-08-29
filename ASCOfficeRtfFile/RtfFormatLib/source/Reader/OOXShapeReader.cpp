@@ -354,9 +354,9 @@ bool OOXShapeReader::Parse2( ReaderParameter oParam , RtfShapePtr& oOutput)
 				
 					if ( oFile.IsInit() && (OOX::FileTypes::Image == oFile->type()))
 					{
-						oOutput->m_oPicture		= RtfPicturePtr( new RtfPicture() );
+						oOutput->m_oPicture			= RtfPicturePtr( new RtfPicture() );
 						oOutput->m_eAnchorTypeShape	= RtfShape::st_none;
-						oOutput->m_nShapeType	= 75;
+						oOutput->m_nShapeType		= NSOfficeDrawing::sptPictureFrame;
 
 						OOX::Image* pImage = (OOX::Image*)oFile.operator->();
 

@@ -47,9 +47,9 @@ public:
 	{
 		if (m_ooxAnchor == NULL) return false;
 
-		oOutput.m_oPicture = RtfPicturePtr( new RtfPicture() );
-		oOutput.m_eAnchorTypeShape = RtfShape::st_anchor;
-		oOutput.m_nShapeType = 75;
+		oOutput.m_oPicture			= RtfPicturePtr( new RtfPicture() );
+		oOutput.m_eAnchorTypeShape	= RtfShape::st_anchor;
+		oOutput.m_nShapeType		= 75;//NSOfficeDrawing::sptPictureFrame;
 
 		oOutput.m_bAllowOverlap		= m_ooxAnchor->m_oAllowOverlap.IsInit() ? m_ooxAnchor->m_oAllowOverlap->ToBool() : false;
 		oOutput.m_nZOrderRelative	= m_ooxAnchor->m_oBehindDoc.IsInit() ? 	m_ooxAnchor->m_oBehindDoc->ToBool() : false;

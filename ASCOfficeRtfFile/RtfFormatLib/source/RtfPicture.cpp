@@ -119,18 +119,19 @@ CString RtfPicture::RenderToOOX(RenderParameter oRenderParameter)
 	if( false == IsValid() )
 		return _T("");
 	
-	OOXWriter* poOOXWriter			= static_cast<OOXWriter*>(oRenderParameter.poWriter);
-	OOXRelsWriter* poRelsWriter		= static_cast<OOXRelsWriter*>(oRenderParameter.poRels);
-	RtfDocument* poRtfDocument		= static_cast<RtfDocument*>(oRenderParameter.poDocument);
+	OOXWriter		* poOOXWriter	= static_cast<OOXWriter*>		(oRenderParameter.poWriter);
+	OOXRelsWriter	* poRelsWriter	= static_cast<OOXRelsWriter*>	(oRenderParameter.poRels);
+	RtfDocument		* poRtfDocument	= static_cast<RtfDocument*>		(oRenderParameter.poDocument);
 	
 	CString sExtension;	
 	CString sMime;
 	switch( eDataType )
 	{
-		case dt_png: sExtension = _T("png"); sMime = _T("image/png");break;
-		case dt_jpg: sExtension = _T("jpg"); sMime = _T("image/jpg");break;
-		case dt_wmf: sExtension = _T("wmf"); sMime = _T("image/x-wmf");break;
-		case dt_emf: sExtension = _T("emf"); sMime = _T("image/x-emf");break;
+		case dt_png:	sExtension = _T("png"); sMime = _T("image/png");	break;
+		case dt_jpg:	sExtension = _T("jpg"); sMime = _T("image/jpg");	break;
+		case dt_wmf:	sExtension = _T("wmf"); sMime = _T("image/x-wmf");	break;
+		case dt_emf:	sExtension = _T("emf"); sMime = _T("image/x-emf");	break;
+		case dt_macpict:sExtension = _T("pct"); sMime = _T("image/x-pict");	break;
 	}
 
 	CString sFilenameRels;

@@ -1390,6 +1390,7 @@ namespace NExtractTools
 		{
 			return AVS_FILEUTILS_ERROR_CONVERT_UNKNOWN_FORMAT;
 		}
+        return 0;
 	}
    //html
    int html2doct_dir (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)

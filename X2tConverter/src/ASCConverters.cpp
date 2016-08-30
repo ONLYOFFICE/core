@@ -1301,7 +1301,10 @@ namespace NExtractTools
 		//decrypt to sTo
 		ECMACryptReader cryptReader;
 		if (cryptReader.DecryptOfficeFile(sFrom, sTo, params.getPassword()) == false)
-			return AVS_FILEUTILS_ERROR_CONVERT_PASSWORD;
+		{
+			if (params.getPassword().empty())	return AVS_FILEUTILS_ERROR_CONVERT_DRM;
+			else								return AVS_FILEUTILS_ERROR_CONVERT_PASSWORD;
+		}
 
 		return S_OK;
 	}
@@ -1341,36 +1344,52 @@ namespace NExtractTools
 	int fromMscrypt (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
 	{
 		std::wstring sResultDecryptFile = sTemp	+ FILE_SEPARATOR_STR + L"uncrypt_file.oox";
-		int nRes = mscrypt2oox(sFrom, sResultDecryptFile, sTemp, params);
-		if (SUCCEEDED_X2T(nRes))
+		
+		COfficeFileFormatChecker OfficeFileFormatChecker;
+		if (OfficeFileFormatChecker.isOfficeFile(sFrom))
 		{
-			COfficeFileFormatChecker OfficeFileFormatChecker;
-
-			if (OfficeFileFormatChecker.isOfficeFile(sResultDecryptFile))
+			if (OfficeFileFormatChecker.nFileType == AVS_OFFICESTUDIO_FILE_OTHER_MS_OFFCRYPTO)
 			{
-				switch (OfficeFileFormatChecker.nFileType)
+				int nRes = mscrypt2oox(sFrom, sResultDecryptFile, sTemp, params);
+				
+				if (SUCCEEDED_X2T(nRes))
 				{
-					case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX:
+					COfficeFileFormatChecker OfficeFileFormatChecker;
+
+					if (OfficeFileFormatChecker.isOfficeFile(sResultDecryptFile))
 					{
-						return fromDocument(sResultDecryptFile, AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX, sTemp, params);
-					}break;
-					case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX:
-					{
-						return fromSpreadsheet(sResultDecryptFile, AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX, sTemp, params);
-					}break;
-					case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX:
-					case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSX:
-					{
-						return fromPresentation(sResultDecryptFile, AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX, sTemp, params);
-					}break;
+						switch (OfficeFileFormatChecker.nFileType)
+						{
+							case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX:
+							{
+								return fromDocument(sResultDecryptFile, AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX, sTemp, params);
+							}break;
+							case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX:
+							{
+								return fromSpreadsheet(sResultDecryptFile, AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX, sTemp, params);
+							}break;
+							case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX:
+							case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSX:
+							{
+								return fromPresentation(sResultDecryptFile, AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX, sTemp, params);
+							}break;
+						}
+					}
+				}
+				else if (AVS_FILEUTILS_ERROR_CONVERT_DRM == nRes && !params.getDontSaveAdditional())
+				{
+					copyOrigin(sFrom, sTo);
 				}
 			}
+			else
+			{
+				copyOrigin(sFrom, sTo);
+			}
 		}
-		else if (AVS_FILEUTILS_ERROR_CONVERT_DRM == nRes && !params.getDontSaveAdditional())
+		else
 		{
-			copyOrigin(sFrom, sTo);
+			return AVS_FILEUTILS_ERROR_CONVERT_UNKNOWN_FORMAT;
 		}
-		return nRes;
 	}
    //html
    int html2doct_dir (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)

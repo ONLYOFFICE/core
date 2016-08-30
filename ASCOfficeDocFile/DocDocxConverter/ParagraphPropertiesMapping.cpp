@@ -159,8 +159,9 @@ namespace DocFileFormat
 
 				case sprmPFBiDi:
 				{
-					appendFlagElement( _pPr, *iter, _T( "bidi" ), true );
-					_isBidi = true;
+					bool val = iter->argumentsSize > 0 ? iter->Arguments[0] : true;
+					appendFlagElement( _pPr, *iter, _T( "bidi" ), val);
+					_isBidi = val;
 				}break;			
 
 				case sprmPFContextualSpacing:

@@ -1666,8 +1666,11 @@ CString RtfFrame::RenderToOOX(RenderParameter oRenderParameter)
 	else if( PROP_DEF != m_nAllSpace )	sFrame.AppendFormat( _T(" w:vSpace=\"%d\""), m_nAllSpace );
 
 	if( !sFrame.IsEmpty() )
+	{
 		sResult = _T("<w:framePr ") + sFrame + _T("/>");
 
+		sResult += _T("<w:widowControl w:val=\"0\"/>");
+	}
 	return sResult;
 }
 CString RtfParagraphProperty::RenderToRtf(RenderParameter oRenderParameter)
@@ -1922,10 +1925,13 @@ CString RtfParagraphProperty::RenderToOOX(RenderParameter oRenderParameter)
 		if( m_nIndFirstLine >= 0 )	sIndent.AppendFormat( _T(" w:firstLine=\"%d\""), m_nIndFirstLine );
 		else						sIndent.AppendFormat( _T(" w:hanging=\"%d\""), -m_nIndFirstLine );
 	}
-	RENDER_OOX_INT_ATTRIBUTE( m_nIndLeft, sIndent, _T("w:left") );
-	RENDER_OOX_INT_ATTRIBUTE( m_nIndRight, sIndent, _T("w:right") );
-	//RENDER_OOX_INT_ATTRIBUTE( m_nIndStart, sIndent, _T("w:start") );
-	//RENDER_OOX_INT_ATTRIBUTE( m_nIndEnd, sIndent, _T("w:end") );
+	else if (m_bOldList && PROP_DEF != m_nIndLeft)
+		sIndent.AppendFormat( _T(" w:firstLine=\"%d\""), 0 );
+
+	RENDER_OOX_INT_ATTRIBUTE	( m_nIndLeft,	sIndent, _T("w:left") );
+	RENDER_OOX_INT_ATTRIBUTE	( m_nIndRight,	sIndent, _T("w:right") );
+	//RENDER_OOX_INT_ATTRIBUTE	( m_nIndStart,	sIndent, _T("w:start") );
+	//RENDER_OOX_INT_ATTRIBUTE	( m_nIndEnd,	sIndent, _T("w:end") );
 	
 	if( !sIndent.IsEmpty() )
 	{

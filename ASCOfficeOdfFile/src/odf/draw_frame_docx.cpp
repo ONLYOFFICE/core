@@ -1457,12 +1457,12 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 			Context.set_run_state(false);	
 			Context.set_paragraph_state(false);	
 			
-			if (!Context.get_drawing_context().in_group())
+			if (!Context.get_drawing_context().in_group() && !runState)
 				Context.add_new_run(_T(""));
 			
 			docx_serialize(Context.output_stream(), drawing, Context.get_drawing_state_content());
 			
-			if (!Context.get_drawing_context().in_group())
+			if (!Context.get_drawing_context().in_group() && !runState)
 				Context.finish_run();
 			
 			Context.set_run_state(runState);

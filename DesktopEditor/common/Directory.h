@@ -220,7 +220,11 @@ namespace NSDirectory
     static CArray<std::wstring> GetFiles(std::wstring strDirectory, bool bIsRecursion = false)
 	{
 		CArray<std::wstring> oArray;
-        GetFiles2(strDirectory, oArray, bIsRecursion);
+		
+		if (!strDirectory.empty())
+		{     
+			GetFiles2(strDirectory, oArray, bIsRecursion);
+		}
 		return oArray;
 	}
 

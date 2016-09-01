@@ -1162,12 +1162,12 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 
 void draw_text_box::docx_convert(oox::docx_conversion_context & Context)
 {
- 	if (Context.get_drawing_context().get_current_level() >1 )
-	{ 
-		if(Context.delayed_converting_ == false)
-			Context.add_delayed_element(Context.get_drawing_context().get_current_frame());
-		return;
-	}
+ //	if (Context.get_drawing_context().get_current_level() > 1 )
+	//{ 
+	//	if(Context.delayed_converting_ == false)
+	//		Context.add_delayed_element(Context.get_drawing_context().get_current_frame());
+	//	return;
+	//}
 
 	//тут может быть не только текст , но и таблицы, другие объекты ...
  	oox::docx_conversion_context::StreamsManPtr prev = Context.get_stream_man();
@@ -1377,7 +1377,8 @@ void draw_g::docx_convert(oox::docx_conversion_context & Context)
 }
 void draw_frame::docx_convert(oox::docx_conversion_context & Context)
 {
-	if ((!Context.get_paragraph_state() && !Context.get_drawing_context().in_group()) && !Context.delayed_converting_)
+	//if ((!Context.get_paragraph_state() && !Context.get_drawing_context().in_group()) && !Context.delayed_converting_)
+	if (Context.get_drawing_context().get_current_level() > 0 && !Context.get_drawing_context().in_group() )
     {
         Context.add_delayed_element(this);
         return;

@@ -220,13 +220,16 @@ namespace svg_path
                     bIsClosed = true;
 
                     // update current point - we're back at the start
-                    if( aCurrPoly.points.size()>0 && !bWrongPositionAfterZ)
+                    if( aCurrPoly.points.size() > 0 && !bWrongPositionAfterZ)
                     {
                         const _point aFirst( aCurrPoly.points[0]);
 						nLastX = aFirst.x.get();
 						nLastY = aFirst.y.get();
                     }
- 					aCurrPoly.command=L"a:close";                   
+ 					
+					aCurrPoly.command=L"a:close";   
+					Polyline.push_back(aCurrPoly);
+
                 } break;
                 case 'm' :
                 case 'M' :
@@ -751,13 +754,9 @@ namespace svg_path
             }
         }
 
-        if ((aCurrPoly.points.size() > 0 || bIsClosed) && !aCurrPoly.command.empty())
+        if ((aCurrPoly.points.size() > 0 || !bIsClosed) && !aCurrPoly.command.empty())
         {
             // end-process last poly
-            if(bIsClosed)
-            //{
-            //    closeWithGeometryChange(aCurrPoly);
-            //}
 
             Polyline.push_back(aCurrPoly);
         }
@@ -797,6 +796,13 @@ namespace svg_path
 			//замкнем
 			Polyline.push_back(Polyline[0]);
 			Polyline.back().command = L"a:lnTo";
+		}
+		if (closed) 
+		{
+			aCurrPoly.points.clear();
+			aCurrPoly.command = L"a:close";
+			
+			Polyline.push_back(aCurrPoly);
 		}
 		return true;
     }

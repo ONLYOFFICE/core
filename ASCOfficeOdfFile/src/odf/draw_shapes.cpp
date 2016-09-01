@@ -343,7 +343,7 @@ void draw_polyline::reset_polyline_path()
 		std::vector<svg_path::_polyline> o_Polyline_pt;
 		std::vector<svg_path::_polyline> o_Polyline_cm;
 
-		bool res = svg_path::parsePolygon(o_Polyline_cm, draw_polyline_attlist_.draw_points_.get(), false, false);
+		bool res = svg_path::parsePolygon(o_Polyline_cm, draw_polyline_attlist_.draw_points_.get(), false, true);
 
 		_CP_OPT(double) start_x, start_y;
 		

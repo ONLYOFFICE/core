@@ -423,8 +423,11 @@ namespace DocFileFormat
 						}break;
 					case lineWidth:
 						{
-							EmuValue eLineWidth ((int)iter->op );
-							m_pXmlWriter->WriteAttribute(_T("strokeweight"), FormatUtils::DoubleToWideString(eLineWidth.ToPoints()) + _T("pt"));
+							if (iter->op > 0)
+							{
+								EmuValue eLineWidth ((int)iter->op );
+								m_pXmlWriter->WriteAttribute(_T("strokeweight"), FormatUtils::DoubleToWideString(eLineWidth.ToPoints()) + _T("pt"));
+							}
 						}break;
 					case lineDashing:
 						{
@@ -1529,6 +1532,11 @@ namespace DocFileFormat
 		if (!bRelV && m_pSpa)
 		{
 			appendStyleProperty(oStyle, _T("mso-position-vertical-relative"), mapVerticalPositionRelative(m_pSpa->bx));
+		}
+		if (!m_isInlineShape && !bZIndex)
+		{
+			appendStyleProperty( oStyle, _T( "z-index" ), FormatUtils::IntToWideString(zIndex + 0x7ffff));
+			bZIndex = true;
 		}
 
 		//if (!bPosH)

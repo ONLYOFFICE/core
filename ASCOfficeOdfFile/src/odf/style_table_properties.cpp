@@ -144,6 +144,11 @@ void table_format_properties::docx_convert(oox::docx_conversion_context & Contex
 				if (common_horizontal_margin_attlist_.fo_margin_left_->get_length() == common_horizontal_margin_attlist_.fo_margin_right_->get_length())
 					w_val = L"center";
 			}
+			if (w_val != L"center" && common_horizontal_margin_attlist_.fo_margin_left_ )
+			{
+				odf_types::length indent = common_horizontal_margin_attlist_.fo_margin_left_->get_length();
+				_tblPr << L"<w:tblInd w:w=\"" << indent.get_value_unit(odf_types::length::pt) * 20<< "\" w:type=\"dxa\" />";
+			}
 		}
         else
             w_val = boost::lexical_cast<std::wstring>(*table_align_);
@@ -151,7 +156,7 @@ void table_format_properties::docx_convert(oox::docx_conversion_context & Contex
         _tblPr << L"<w:jc w:val=\"" << w_val << "\" />";
     }
 
-    if (table_align_ && table_align_->get_type() == table_align::Center)
+	if (table_align_ && table_align_->get_type() == table_align::Center)
     {
         // TODO ()
     }

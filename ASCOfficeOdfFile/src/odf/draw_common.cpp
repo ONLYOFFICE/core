@@ -519,10 +519,10 @@ void draw_a::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
 	common_xlink_attlist_.add_attributes(Attributes);
 
-    CP_APPLY_ATTR(L"office:name", office_name_, std::wstring(L""));
-    CP_APPLY_ATTR(L"office:target-frame-name", office_target_frame_name_);
-    CP_APPLY_ATTR(L"text:style-name", text_style_name_, style_ref(L""));
-    CP_APPLY_ATTR(L"text:visited-style-name", text_visited_style_name_, style_ref(L""));
+    CP_APPLY_ATTR(L"office:name"				, office_name_				, std::wstring(L""));
+    CP_APPLY_ATTR(L"office:target-frame-name"	, office_target_frame_name_);
+    CP_APPLY_ATTR(L"text:style-name"			, text_style_name_			, style_ref(L""));
+    CP_APPLY_ATTR(L"text:visited-style-name"	, text_visited_style_name_	, style_ref(L""));
 
 }
 
@@ -582,10 +582,10 @@ void oox_convert_transforms(std::wstring transformStr,std::vector<odf_reader::_p
 		
 		boost::algorithm::split(transform,t, boost::algorithm::is_any_of(L"("), boost::algorithm::token_compress_on);
 		
-		if (transform.size()>1)//тока с аргументами
+		if (transform.size() > 1)//тока с аргументами
 		{
 			int res=0;
-			if ((res = transform[0].find(L"translate"))>=0)//перемещение
+			if ((res = transform[0].find(L"translate")) >= 0)	//перемещение
 			{
 				std::vector<length> Points ;
 				parse_string_to_points(transform[1], Points);
@@ -594,11 +594,12 @@ void oox_convert_transforms(std::wstring transformStr,std::vector<odf_reader::_p
 				{
 					double x_pt = Points[0].get_value_unit(length::pt);
 					double y_pt = 0;
-					if (Points.size()>1)y_pt = Points[1].get_value_unit(length::pt);//ее может не быть
+					
+					if (Points.size()>1) y_pt = Points[1].get_value_unit(length::pt);	//ее может не быть
 
 					//Context.get_drawing_context().set_translate(x_pt,y_pt);
-					additional.push_back(_property(L"svg:translate_x",x_pt));
-					additional.push_back(_property(L"svg:translate_y",y_pt));
+					additional.push_back(_property(L"svg:translate_x", x_pt));
+					additional.push_back(_property(L"svg:translate_y", y_pt));
 				}
 			}
 			else if ((res = transform[0].find(L"scale"))>=0)//масштабирование
@@ -612,14 +613,14 @@ void oox_convert_transforms(std::wstring transformStr,std::vector<odf_reader::_p
 					if (Points.size()>1)y_pt = Points[1].get_value_unit(length::pt);//ее может не быть
 
 					//Context.get_drawing_context().set_scale(x_pt,y_pt);
-					additional.push_back(_property(L"svg:scale_x",x_pt));
-					additional.push_back(_property(L"svg:scale_y",y_pt));
+					additional.push_back(_property(L"svg:scale_x", x_pt));
+					additional.push_back(_property(L"svg:scale_y", y_pt));
 				}
 			}
 			else if ((res = transform[0].find(L"rotate"))>=0)//вращение
 			{
 				double angle =  boost::lexical_cast<double>(transform[1]);
-				additional.push_back(_property(L"svg:rotate",angle));
+				additional.push_back(_property(L"svg:rotate", angle));
 			}
 		}
 	}

@@ -59,29 +59,33 @@ public:
 
 	CString RenderToOOX(RenderParameter oRenderParameter)
 	{
-		CString sResult;
+		CString sResult = _T("<w:tbl>");
+		sResult += m_oProperty.RenderToOOX(oRenderParameter);
+		sResult += _T("<w:tblGrid>");
+		
+		for( int i = 0; i < (int)m_aTableGrid.size(); i++ )
+		{
+			sResult.AppendFormat(_T("<w:gridCol w:w=\"%d\"/>"), m_aTableGrid[i]);
+		}
+		sResult += _T("</w:tblGrid>");	
 
-			sResult.Append( _T("<w:tbl>") );
-			sResult.Append(m_oProperty.RenderToOOX(oRenderParameter));
-			sResult.Append(_T("<w:tblGrid>"));
-			for( int i = 0; i < (int)m_aTableGrid.size(); i++ )
-				sResult.AppendFormat(_T("<w:gridCol w:w=\"%d\"/>"), m_aTableGrid[i]);
-			sResult.Append(_T("</w:tblGrid>"));	
-
-			for(int i = 0; i < (int)m_aArray.size(); i++)
-			{
-				sResult.Append( m_aArray[i]->RenderToOOX(oRenderParameter ) );
-			}
-			sResult.Append( _T("</w:tbl>") );
+		for(int i = 0; i < (int)m_aArray.size(); i++)
+		{
+			sResult += m_aArray[i]->RenderToOOX(oRenderParameter );
+		}
+		sResult += _T("</w:tbl>");
 		return sResult;
 	}
 	CString RenderToRtf(RenderParameter oRenderParameter)
 	{
 		CString result;
-		result.Append(_T("\n"));
+		
+		result += _T("\n");
 		for(int i = 0 ; i < (int)m_aArray.size(); i++)
-			result.Append( m_aArray[i]->RenderToRtf(oRenderParameter) );
-		result.Append(_T("\n"));
+		{
+			result += m_aArray[i]->RenderToRtf( oRenderParameter );
+		}
+		result += _T("\n");
 		return result;
 	}
 

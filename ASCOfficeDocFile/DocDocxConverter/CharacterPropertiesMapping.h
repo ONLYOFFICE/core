@@ -46,15 +46,15 @@ namespace DocFileFormat
 {
 	static const wchar_t SuperscriptIndex[3][12] =
 	{
-		_T( "baseline" ),
-		_T( "superscript" ),
-		_T( "subscript" )
+        L"baseline",
+        L"superscript",
+        L"subscript"
 	};
 
 	class CharacterPropertiesMapping: public PropertiesMapping, public IMapping
 	{
 	public:
-		CharacterPropertiesMapping( XmlUtils::CXmlWriter* writer, WordDocument* doc, RevisionData* rev, ParagraphPropertyExceptions* currentPapx, bool styleChpx, bool isRunStyleNeeded = true );
+		CharacterPropertiesMapping( XMLTools::CStringXmlWriter* writer, WordDocument* doc, RevisionData* rev, ParagraphPropertyExceptions* currentPapx, bool styleChpx, bool isRunStyleNeeded = true );
 		CharacterPropertiesMapping( XMLTools::XMLElement<wchar_t>* rPr, WordDocument* doc, RevisionData* rev, ParagraphPropertyExceptions* currentPapx, bool styleChpx, bool isRunStyleNeeded = true );
 		virtual ~CharacterPropertiesMapping();
 		void Apply( IVisitable* chpx );
@@ -74,7 +74,7 @@ namespace DocFileFormat
 		virtual void appendFlagElement( XMLTools::XMLElement<wchar_t>* node, const SinglePropertyModifier& sprm, const wchar_t* elementName, bool unique );
 
 	private:
-		XmlUtils::CXmlWriter			pRunPr;
+		XMLTools::CStringXmlWriter			pRunPr;
 
 		WordDocument*					_doc;
 		XMLTools::XMLElement<wchar_t>*	_rPr; 

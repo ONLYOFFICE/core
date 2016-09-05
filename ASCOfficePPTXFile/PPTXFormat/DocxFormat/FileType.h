@@ -95,11 +95,20 @@ namespace PPTX
 
 	static const bool operator ==(const CString& type, const FileType& file)
 	{
-		return (type == file.RelationType());
+		//RelationType
+		//http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument
+		//http://purl.oclc.org/ooxml/officeDocument/relationships/officeDocument
+		//is valid and equal so compare tail
+		int nIndexType = type.ReverseFind('/');
+		CString relationType = file.RelationType();
+		int nIndexFile = relationType.ReverseFind('/');
+		CString tempType = (-1 == nIndexType) ? type : type.Right(type.GetLength() - nIndexType);
+		CString tempFile = (-1 == nIndexFile) ? relationType : relationType.Right(relationType.GetLength() - nIndexFile);
+		return (tempType == tempFile);
 	}
 	static const bool operator ==(const FileType& file, const CString& type)
 	{
-		return (file.RelationType() == type);
+		return type == file;
 	}
 } // namespace PPTX
 

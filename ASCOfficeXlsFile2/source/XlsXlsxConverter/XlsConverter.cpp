@@ -109,11 +109,11 @@
     } BITMAPINFOHEADER;
 
 typedef struct tagBITMAPCOREHEADER {
-        DWORD   bcSize;                 /* used to get to color table */
-        WORD    bcWidth;
-        WORD    bcHeight;
-        WORD    bcPlanes;
-        WORD    bcBitCount;
+        _UINT32   bcSize;                 /* used to get to color table */
+        _UINT16    bcWidth;
+        _UINT16    bcHeight;
+        _UINT16    bcPlanes;
+        _UINT16    bcBitCount;
 } BITMAPCOREHEADER;
 #endif
 

@@ -472,7 +472,13 @@ namespace OOX
         virtual CString      toXML() const
 		{
 			CString sResult;
-			sResult.Format( _T("<w:latentStyles w:count=\"%d\" w:defLockedState=\"%ls\" w:defQFormat=\"%ls\" w:defSemiHidden=\"%ls\" w:defUIPriority=\"%d\" w:defUnhideWhenUsed=\"%ls\">"), m_oCount.GetValue(), m_oDefLockedState.ToString(), m_oDefQFormat.ToString(), m_oDefSemiHidden.ToString(), m_oDefUiPriority.GetValue(), m_oDefUnhideWhenUsed.ToString() );
+			sResult.AppendFormat( _T("<w:latentStyles w:count=\"%d\""), m_oCount.GetValue());
+			sResult += _T(" w:defLockedState=\"")	+ m_oDefLockedState.ToString() + _T("\"");
+			sResult += _T(" w:defQFormat=\"")		+ m_oDefQFormat.ToString() + _T("\"");
+			sResult += _T(" w:defSemiHidden=\"")	+ m_oDefSemiHidden.ToString() + _T("\"");
+			sResult.AppendFormat(_T(" w:defUIPriority=\"%d\""), m_oDefUiPriority.GetValue());
+			sResult += _T(" w:defUnhideWhenUsed=\"")+ m_oDefUnhideWhenUsed.ToString();
+			sResult += _T("\">");
 
 			for (unsigned int nIndex = 0; nIndex < m_arrLsdException.size(); nIndex++ )
 			{

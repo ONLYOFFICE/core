@@ -201,7 +201,7 @@ namespace DocFileFormat
 		}
 	}
 
-	VMLPictureMapping::VMLPictureMapping(ConversionContext* ctx, XmlUtils::CXmlWriter* writer, bool olePreview, IMapping* caller, bool isInlinePicture) : PropertiesMapping(writer)
+	VMLPictureMapping::VMLPictureMapping(ConversionContext* ctx, XMLTools::CStringXmlWriter* writer, bool olePreview, IMapping* caller, bool isInlinePicture) : PropertiesMapping(writer)
 	{
 		m_ctx				=	ctx;
 		m_isOlePreview		=	olePreview;

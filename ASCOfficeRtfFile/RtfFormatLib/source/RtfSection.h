@@ -646,15 +646,14 @@ public:
 
 	CString RenderToRtf(RenderParameter oRenderParameter)
 	{
-		CString sResult;
-		sResult.Append( m_oProperty.RenderToRtf(  oRenderParameter  ) );
+		CString sResult = m_oProperty.RenderToRtf(  oRenderParameter );
 
 		if( RENDER_TO_RTF_PARAM_NO_SECT != oRenderParameter.nType )
 			sResult.Append(_T("\\sectd"));
 
 		for( int i = 0; i < (int)m_aArray.size(); i++ )
 		{
-			sResult += m_aArray[i]->RenderToRtf(  oRenderParameter  );
+			sResult += m_aArray[i]->RenderToRtf( oRenderParameter );
 		}
 		return sResult;
 	}

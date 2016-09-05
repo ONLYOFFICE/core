@@ -42,11 +42,11 @@ public:
 	{
 		m_oRelsWriter = OOXRelsWriterPtr( new OOXRelsWriter( _T("numbering.xml"), oDocument ) );
 		oWriter.m_oCustomRelsWriter.push_back( m_oRelsWriter );
-		//m_sFileXml.Append( oDocument.RenderToOOX(&oWriter,&oDocument,"numbering.xml","") );
+		//m_sFileXml += oDocument.RenderToOOX(&oWriter,&oDocument,"numbering.xml","");
 	}
 	void AddNumbering( CString sText )
 	{
-		m_sFileXml.Append( sText );
+		m_sFileXml += sText;
 	}
 	bool Save( CString sFolder )
 	{

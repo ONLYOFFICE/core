@@ -46,9 +46,9 @@ namespace DocFileFormat
 
 	static const wchar_t FollowingCharMap[3][8] =
 	{
-		_T( "tab" ),
-		_T( "space" ),
-		_T( "nothing" )
+        L"tab" ,
+        L"space" ,
+        L"nothing"
 	};
 
 	class ListLevel

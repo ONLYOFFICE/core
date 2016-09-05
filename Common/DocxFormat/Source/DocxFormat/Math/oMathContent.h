@@ -3293,7 +3293,7 @@ namespace OOX
 				CString sResult;
 				
 				if ( m_oSpace.IsInit() )
-					sResult.Format( _T("<m:t xml:space=\"%ls\">"), m_oSpace->ToString() );
+					sResult = _T("<m:t xml:space=\"") + m_oSpace->ToString() + _T("\">");
 				else
 					sResult = _T("<m:t>");
 

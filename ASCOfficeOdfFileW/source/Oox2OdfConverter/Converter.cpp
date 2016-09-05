@@ -609,10 +609,6 @@ void OoxConverter::convert(OOX::Drawing::CCustomGeometry2D *oox_cust_geom)
 	{
 		convert(oox_cust_geom->m_oPthLst.m_arrPath[i]);
 	}
-	for (unsigned int i=0; i< oox_cust_geom->m_oPthLst.m_arrPath.size();i++)
-	{
-		convert(oox_cust_geom->m_oPthLst.m_arrPath[i]);
-	}
 }
 void OoxConverter::convert(OOX::Drawing::CLineProperties *oox_line_prop, CString *change_sheme_color )
 {
@@ -699,6 +695,10 @@ void OoxConverter::convert(OOX::Drawing::CPath2D *oox_geom_path)
 	{
 		convert(oox_geom_path->m_arrItems[i]);
 	}
+
+	std::wstring path_elm ;	
+	odf_context()->drawing_context()->add_path_element(std::wstring(L"N"), path_elm);
+
 }
 //-----------------------------------------------------------------------------------------------------------------
 void OoxConverter::convert(OOX::Drawing::CEffectList *oox_effect_list, CString *change_sheme_color)
@@ -1096,6 +1096,7 @@ void OoxConverter::convert(OOX::Drawing::CPath2DMoveTo *oox_geom_path)
 							std::wstring(L" ")+ boost::lexical_cast<std::wstring> ((int)pt2emu(oox_geom_path->m_oPt.m_oY.GetValue()));	
 	odf_context()->drawing_context()->add_path_element(std::wstring(L"M"), path_elm);
 }
+
 void OoxConverter::convert(OOX::Drawing::CPath2DArcTo *oox_geom_path)
 {
 	if (!oox_geom_path) return;
@@ -1113,6 +1114,7 @@ void OoxConverter::convert(OOX::Drawing::CPath2DQuadBezierTo *oox_geom_path)
 							std::wstring(L" ") +	boost::lexical_cast<std::wstring> ((int)pt2emu(oox_geom_path->m_oCtrl.m_oY.GetValue())) + 
 							std::wstring(L" ") +	boost::lexical_cast<std::wstring> ((int)pt2emu(oox_geom_path->m_oEnd.m_oX.GetValue())) +
 							std::wstring(L" ") +	boost::lexical_cast<std::wstring> ((int)pt2emu(oox_geom_path->m_oEnd.m_oY.GetValue())) ;	
+	
 	odf_context()->drawing_context()->add_path_element(std::wstring(L"S"), path_elm);
 
 }
@@ -1126,6 +1128,7 @@ void OoxConverter::convert(OOX::Drawing::CPath2DCubicBezierTo *oox_geom_path)
 							std::wstring(L" ") +	boost::lexical_cast<std::wstring> ((int)pt2emu(oox_geom_path->m_oCtrl2.m_oY.GetValue())) +
 							std::wstring(L" ") +	boost::lexical_cast<std::wstring> ((int)pt2emu(oox_geom_path->m_oEnd.m_oX.GetValue())) +
 							std::wstring(L" ") +	boost::lexical_cast<std::wstring> ((int)pt2emu(oox_geom_path->m_oEnd.m_oY.GetValue())) ;	
+	
 	odf_context()->drawing_context()->add_path_element(std::wstring(L"C"), path_elm);
 }
 void OoxConverter::convert(OOX::Drawing::CPath2DClose *oox_geom_path)
@@ -1133,7 +1136,7 @@ void OoxConverter::convert(OOX::Drawing::CPath2DClose *oox_geom_path)
 	if (!oox_geom_path) return;
 
 	std::wstring path_elm ;	
-	odf_context()->drawing_context()->add_path_element(std::wstring(L"N"), path_elm);
+	odf_context()->drawing_context()->add_path_element(std::wstring(L"Z"), path_elm);
 }
 void OoxConverter::convert(OOX::Drawing::CTextBodyProperties	*oox_bodyPr)
 {

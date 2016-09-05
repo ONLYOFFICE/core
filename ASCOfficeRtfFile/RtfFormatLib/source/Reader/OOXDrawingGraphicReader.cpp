@@ -81,7 +81,7 @@ bool OOXPictureGraphicReader::Parse( ReaderParameter oParam , RtfShape& oOutput)
 
 		if (!bTryPicture)
 		{
-			return false;
+			//return false;
 			//рисуем крест (todooo получать с редактора реплейсмент картинку)
 			oOutput.m_nShapeType = 1;
 			oOutput.m_nFillColor = 0x967bdf;
@@ -89,7 +89,7 @@ bool OOXPictureGraphicReader::Parse( ReaderParameter oParam , RtfShape& oOutput)
 	}
 	else
 	{
-		return false;
+		//return false;
 		//convertDrawingML2Vml();
 		oOutput.m_nShapeType = 1;
 		oOutput.m_nFillColor = 0x967bdf;

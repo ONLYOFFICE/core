@@ -60,7 +60,7 @@ public:
 				RtfShapePtr oNewShape( new RtfShape() );	
 				if( true == oShapeReader.Parse( oParam, oNewShape ) )
 				{
-					oNewShape->m_eShapeType = RtfShape::st_inline;
+					oNewShape->m_eAnchorTypeShape	= RtfShape::st_inline;
 					oNewShape->m_nPositionHRelative = 3;
 					oNewShape->m_nPositionVRelative = 3;
 					

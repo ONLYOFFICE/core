@@ -1354,25 +1354,12 @@ namespace OOX
 			{
 				CString sResult = _T("<w:permStart ");
 
-				ComplexTypes_WriteAttribute( _T("w:colFirst=\""),             m_oColFirst );
-				ComplexTypes_WriteAttribute( _T("w:colLast=\""),              m_oColLast );
-				ComplexTypes_WriteAttribute( _T("w:displacedbyCustomXml=\""), m_oDisplacedByCustomXml );
-
-				if ( m_sEd.IsInit() )
-				{
-					sResult += _T("w:ed=\"");
-					sResult += m_sEd->GetString();
-					sResult += _T("\" ");
-				}
-
-				ComplexTypes_WriteAttribute( _T("w:edGrp=\""),                m_oEdGrp );
-
-				if ( m_sId.IsInit() )
-				{
-					sResult += _T("w:id=\"");
-					sResult += m_sId->GetString();
-					sResult += _T("\" ");
-				}
+				ComplexTypes_WriteAttribute( _T("w:colFirst=\""),				m_oColFirst );
+				ComplexTypes_WriteAttribute( _T("w:colLast=\""),				m_oColLast );
+				ComplexTypes_WriteAttribute( _T("w:displacedbyCustomXml=\""),	m_oDisplacedByCustomXml );
+				ComplexTypes_WriteAttribute2(_T("w:ed=\""),						m_sEd);
+				ComplexTypes_WriteAttribute( _T("w:edGrp=\""),					m_oEdGrp );
+				ComplexTypes_WriteAttribute2(_T("w:id=\""),						m_sId);
 
 				sResult += _T("/>");
 

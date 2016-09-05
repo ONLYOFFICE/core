@@ -76,8 +76,7 @@ namespace OOX
 			}
 			virtual CString      toXML() const
 			{
-				CString sResult;
-				sResult.Format( _T("<ds:schemaRef ds:uri=\"%ls\" />"), m_sUri );
+				CString sResult = _T("<ds:schemaRef ds:uri=\"") + m_sUri  + _T("\" />");
 				return sResult;
 			}
 			virtual EElementType getType() const
@@ -180,8 +179,9 @@ namespace OOX
 		}
 		virtual void write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const
 		{
-			CString sXml;
-			sXml.Format( _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ds:datastoreItem ds:itemID=\"%ls\" xmlns:ds=\"http://schemas.openxmlformats.org/officeDocument/2006/customXml\">"), m_oItemID.ToString() );
+			CString sXml = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ds:datastoreItem ds:itemID=\"");
+			sXml += m_oItemID.ToString();
+			sXml += _T("\" xmlns:ds=\"http://schemas.openxmlformats.org/officeDocument/2006/customXml\">");
 
 			if ( m_oShemaRefs.IsInit() )
 				sXml += m_oShemaRefs->toXML();

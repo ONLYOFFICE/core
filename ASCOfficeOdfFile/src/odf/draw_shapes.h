@@ -436,6 +436,8 @@ public:
 	_CP_OPT(std::wstring)	draw_type_;
 	_CP_OPT(std::wstring)	draw_modifiers_;
 	_CP_OPT(bool)			draw_text_path_;
+	_CP_OPT(std::wstring)	draw_enhanced_path_;
+	_CP_OPT(std::wstring)	drawooo_sub_view_size_;
 };
 /////////////////////////////////////////////////////////////////////////
 class draw_enhanced_geometry : public office_element_impl<draw_enhanced_geometry>
@@ -466,11 +468,11 @@ public:
 
 	typedef std::pair<std::wstring,std::wstring> pair_string_value;
 
-	std::vector<draw_handle_geometry> draw_handle_geometry_; //параметры в удобноваримом виде
-	std::vector<pair_string_value>draw_equation_array_;
+	std::vector<draw_handle_geometry>	draw_handle_geometry_; 
+	std::vector<pair_string_value>		draw_equation_array_;
 	
-	office_element_ptr_array draw_handle_;
-	office_element_ptr_array draw_equation_;//некоторые заданные параметры отрисовки которые используются в draw_handle - автозамена общих частей
+	office_element_ptr_array			draw_handle_;
+	office_element_ptr_array			draw_equation_;
 	
 	static int parsing(_CP_OPT(std::wstring) val);
 

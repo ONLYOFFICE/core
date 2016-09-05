@@ -60,63 +60,63 @@
 #define RENDER_OOX_BOOL( prop, sResult, sName)\
 		if( 0 == prop )\
 		{\
-			sResult.Append( _T("<") );\
-			sResult.Append( sName );\
+			sResult += _T("<");\
+			sResult += sName;\
 			sResult.AppendFormat( _T(" w:val=\"false\"/>"));\
 		}\
 		else if(  PROP_DEF != prop  )\
 		{\
-			sResult.Append( _T("<") );\
-			sResult.Append( sName );\
+			sResult += _T("<");\
+			sResult += sName;\
 			sResult.AppendFormat( _T(" w:val=\"true\"/>"));\
 		}
 
 #define RENDER_OOX_INT( prop, sResult, sName)\
 		if( PROP_DEF != prop )\
 		{\
-			sResult.Append( _T("<") );\
-			sResult.Append( sName );\
+			sResult += _T("<");\
+			sResult += sName;\
 			sResult.AppendFormat( _T(" w:val=\"%d\"/>"), prop  );\
 		}
 #define RENDER_OOX_INT_ATTRIBUTE( prop, sResult, sName)\
 		if( PROP_DEF != prop )\
 		{\
-			sResult.Append( _T(" ") );\
-			sResult.Append( sName );\
+			sResult += _T(" ");\
+			sResult += sName;\
 			sResult.AppendFormat( _T("=\"%d\""), prop  );\
 		}
 #define RENDER_OOX_BOOL_ATTRIBUTE( prop, sResult, sName)\
 		if( 0 == prop )\
 		{\
-			sResult.Append( _T(" ") );\
-			sResult.Append( sName );\
-			sResult.AppendFormat( _T("=\"0\""));\
+			sResult += _T(" ");\
+			sResult += sName;\
+			sResult += _T("=\"0\"");\
 		}\
 		else if(  PROP_DEF != prop  )\
 		{\
-			sResult.Append( _T(" ") );\
-			sResult.Append( sName );\
-			sResult.AppendFormat( _T("=\"1\""));\
+			sResult += _T(" ");\
+			sResult += sName;\
+			sResult += _T("=\"1\"");\
 		}
 
 #define RENDER_RTF_BOOL( prop, sResult, sName)\
 		if( 0 == prop )\
 		{\
-			sResult.Append( _T("\\") );\
-			sResult.Append( sName );\
-			sResult.Append( _T("0") );\
+			sResult += _T("\\");\
+			sResult += sName;\
+			sResult += _T("0");\
 		}\
 		else if(  PROP_DEF != prop  )\
 		{\
-			sResult.Append( _T("\\") );\
-			sResult.Append( sName );\
+			sResult += _T("\\");\
+			sResult += sName;\
 		}
 
 #define RENDER_RTF_INT( prop, sResult, sName)\
 		if( PROP_DEF != prop )\
 		{\
-			sResult.Append( _T("\\") );\
-			sResult.Append( sName );\
+			sResult += _T("\\");\
+			sResult += sName;\
 			sResult.AppendFormat( _T("%d"), prop  );\
 		}
 
@@ -130,15 +130,15 @@ public:
 		
 	typedef enum {ff_none, ff_fnil ,ff_froman ,ff_fswiss ,ff_fmodern ,ff_fscript ,ff_fdecor ,ff_ftech ,ff_fbidi} FontFamily;
 	
-	FontTheme m_eFontTheme;
-	FontFamily m_eFontFamily;
-	CString m_sPanose;
-	int m_nID;
-	CString m_sName;
-	CString m_sAltName;
-	int m_nCharset;
-	int m_nCodePage;
-	int m_nPitch;
+	FontTheme	m_eFontTheme;
+	FontFamily	m_eFontFamily;
+	CString		m_sPanose;
+	int			m_nID;
+	CString		m_sName;
+	CString		m_sAltName;
+	int			m_nCharset;
+	int			m_nCodePage;
+	int			m_nPitch;
 
 	RtfFont()
 	{
@@ -714,9 +714,15 @@ private:
              CString sTheme;
              if( true == GetStringByTheme( sTheme, m_eTheme ) )
              {
-                 sResult.AppendFormat(_T("theme%lsColor = \"%ls\" theme%lsShade = \"%d\" theme%lsTint = \"%d\""),
-                                      sParam.GetBuffer(), sTheme.GetBuffer(), sParam.GetBuffer(), m_byteShade ,sParam.GetBuffer(), m_byteTint);
-             }
+				sResult += _T("theme") + sParam + _T("Color");
+				sResult += _T("=\"") + sTheme +_T("\"");
+				
+				sResult += _T(" theme") + sParam + _T("Shade");
+				sResult.AppendFormat(_T("=\"%d\""), m_byteShade);
+				
+				sResult += _T(" theme") + sParam + _T("Tint"); 
+				sResult.AppendFormat(_T("=\"%d\""), m_byteTint);   
+			 }
          }
          return sResult;
 	 }
@@ -727,19 +733,19 @@ class RtfShading
 public: 
 	typedef enum 
 	{	st_none, 
-		st_chbghoriz, //\bghoriz	Specifies a horizontal background pattern for the paragraph.
-		st_chbgvert, //\bgvert	Specifies a vertical background pattern for the paragraph.
-		st_chbgfdiag, //\bgfdiag	Specifies a forward diagonal background pattern for the paragraph (\\\\).
-		st_chbgbdiag, //\bgbdiag	Specifies a backward diagonal background pattern for the paragraph (////).
-		st_chbgcross, //\bgcross	Specifies a cross background pattern for the paragraph.
-		st_chbgdcross, //\bgdcross	Specifies a diagonal cross background pattern for the paragraph.
-		st_chbgdkhoriz, //\bgdkhoriz	Specifies a dark horizontal background pattern for the paragraph.
-		st_chbgdkvert, //\bgdkvert	Specifies a dark vertical background pattern for the paragraph.
-		st_chbgdkfdiag, //\bgdkfdiag	Specifies a dark forward diagonal background pattern for the paragraph (\\\\).
-		st_chbgdkbdiag, //\bgdkbdiag	Specifies a dark backward diagonal background pattern for the paragraph (////).
-		st_chbgdkcross, //\bgdkcross	Specifies a dark cross background pattern for the paragraph.
-		st_chbgdkdcross, //\bgdkdcross	Specifies a dark diagonal cross background pattern for the paragraph.
-		st_clshdrawnil, //\clshdrawnil	Specifies a dark diagonal cross background pattern for the paragraph.
+		st_chbghoriz,	//bghoriz	Specifies a horizontal background pattern for the paragraph.
+		st_chbgvert,	//bgvert	Specifies a vertical background pattern for the paragraph.
+		st_chbgfdiag,	//bgfdiag	Specifies a forward diagonal background pattern for the paragraph (\\\\).
+		st_chbgbdiag,	//bgbdiag	Specifies a backward diagonal background pattern for the paragraph (////).
+		st_chbgcross,	//bgcross	Specifies a cross background pattern for the paragraph.
+		st_chbgdcross,	//bgdcross	Specifies a diagonal cross background pattern for the paragraph.
+		st_chbgdkhoriz,	//bgdkhoriz	Specifies a dark horizontal background pattern for the paragraph.
+		st_chbgdkvert,	//bgdkvert	Specifies a dark vertical background pattern for the paragraph.
+		st_chbgdkfdiag,	//bgdkfdiag	Specifies a dark forward diagonal background pattern for the paragraph (\\\\).
+		st_chbgdkbdiag,	//bgdkbdiag	Specifies a dark backward diagonal background pattern for the paragraph (////).
+		st_chbgdkcross,	//bgdkcross	Specifies a dark cross background pattern for the paragraph.
+		st_chbgdkdcross,	//bgdkdcross	Specifies a dark diagonal cross background pattern for the paragraph.
+		st_clshdrawnil,	//clshdrawnil	Specifies a dark diagonal cross background pattern for the paragraph.
 	}ShadingType;
 
 	ShadingType m_eType;
@@ -847,35 +853,35 @@ public:
 	typedef enum 
 	{ 
 		bt_none,
-		bt_brdrs, //\brdrs	Single-thickness border.
-		bt_brdrth, //\brdrth	Double-thickness border.
-		bt_brdrsh, //\brdrsh	Shadowed border.
-		bt_brdrdb, //\brdrdb	Double border.
-		bt_brdrdot, //\brdrdot	Dotted border.
-		bt_brdrdash, //\brdrdash	Dashed border.
-		bt_brdrhair, //\brdrhair	Hairline border.
-		bt_brdrdashsm, //\brdrdashsm	Dashed border (small).
-		bt_brdrdashd, //\brdrdashd	Dot-dashed border.
-		bt_brdrdashdd, //\brdrdashdd	Dot-dot-dashed border.
-		bt_brdrdashdot, //\brdrdashdot	Dot-dashed border (alias for \brdrdashd read but not written by Word)
-		bt_brdrinset, //\brdrinset	Inset border.
-		bt_brdrnone, //\brdrnone	No border.
-		bt_brdroutset, //\brdroutset	Outset border.
-		bt_brdrtriple, //\brdrtriple	Triple border.
-		bt_brdrtnthsg, //\brdrtnthsg	Thick-thin border (small).
-		bt_brdrthtnsg, //\brdrthtnsg	Thin-thick border (small).
-		bt_brdrtnthtnsg, //\brdrtnthtnsg	Thin-thick thin border (small).
-		bt_brdrtnthmg, //\brdrtnthmg	Thick-thin border (medium).
-		bt_brdrthtnmg, //\brdrthtnmg	Thin-thick border (medium).
-		bt_brdrtnthtnmg, //\brdrtnthtnmg	Thin-thick thin border (medium).
-		bt_brdrtnthlg, //\brdrtnthlg	Thick-thin border (large).
-		bt_brdrthtnlg, //\brdrthtnlg	Thin-thick border (large).
-		bt_brdrtnthtnlg, //\brdrtnthtnlg	Thin-thick-thin border (large).
-		bt_brdrwavy, //\brdrwavy	Wavy border.
-		bt_brdrwavydb, //\brdrwavydb	Double wavy border.
-		bt_brdrdashdotstr, //\brdrdashdotstr	Striped border.
-		bt_brdremboss, //\brdremboss	Embossed border.
-		bt_brdrengrave, //\brdrengrave	Engraved border.
+		bt_brdrs,	//brdrs	Single-thickness border.
+		bt_brdrth,	//brdrth	Double-thickness border.
+		bt_brdrsh,	//brdrsh	Shadowed border.
+		bt_brdrdb,	//brdrdb	Double border.
+		bt_brdrdot,	//brdrdot	Dotted border.
+		bt_brdrdash,	//brdrdash	Dashed border.
+		bt_brdrhair,	//brdrhair	Hairline border.
+		bt_brdrdashsm,	//brdrdashsm	Dashed border (small).
+		bt_brdrdashd,	//brdrdashd	Dot-dashed border.
+		bt_brdrdashdd,	//brdrdashdd	Dot-dot-dashed border.
+		bt_brdrdashdot,	//brdrdashdot	Dot-dashed border (alias for \brdrdashd read but not written by Word)
+		bt_brdrinset,	//brdrinset	Inset border.
+		bt_brdrnone,	//brdrnone	No border.
+		bt_brdroutset,	//brdroutset	Outset border.
+		bt_brdrtriple,	//brdrtriple	Triple border.
+		bt_brdrtnthsg,	//brdrtnthsg	Thick-thin border (small).
+		bt_brdrthtnsg,	//brdrthtnsg	Thin-thick border (small).
+		bt_brdrtnthtnsg,	//brdrtnthtnsg	Thin-thick thin border (small).
+		bt_brdrtnthmg,	//brdrtnthmg	Thick-thin border (medium).
+		bt_brdrthtnmg,	//brdrthtnmg	Thin-thick border (medium).
+		bt_brdrtnthtnmg,	//brdrtnthtnmg	Thin-thick thin border (medium).
+		bt_brdrtnthlg,	//brdrtnthlg	Thick-thin border (large).
+		bt_brdrthtnlg,	//brdrthtnlg	Thin-thick border (large).
+		bt_brdrtnthtnlg,	//brdrtnthtnlg	Thin-thick-thin border (large).
+		bt_brdrwavy,	//brdrwavy	Wavy border.
+		bt_brdrwavydb,	//brdrwavydb	Double wavy border.
+		bt_brdrdashdotstr,	//brdrdashdotstr	Striped border.
+		bt_brdremboss,	//brdremboss	Embossed border.
+		bt_brdrengrave,	//brdrengrave	Engraved border.
 	} BorderType;
 
 	BorderType m_eType;
@@ -960,21 +966,21 @@ class RtfTab : public IRenderableProperty
 public:
 	typedef enum 
 	{	tl_none,
-		tl_dot , //\tldot 	Absolute position tab with a leading that uses period symbols (.....).
-		tl_mdot , //\tlmdot 	Absolute position tab with a leading that uses middle dot symbols (•••••).
-		tl_hyph , //\tlhyph 	Absolute position tab with a leading that uses minus symbols (-----).
-		tl_ul , //\tlul 	Absolute position tab with a leading that uses underscore symbols (_____).
+		tl_dot ,	//tldot 	Absolute position tab with a leading that uses period symbols (.....).
+		tl_mdot ,	//tlmdot 	Absolute position tab with a leading that uses middle dot symbols (•••••).
+		tl_hyph ,	//tlhyph 	Absolute position tab with a leading that uses minus symbols (-----).
+		tl_ul ,	//tlul 	Absolute position tab with a leading that uses underscore symbols (_____).
 	}TabLeader;
 	typedef enum 
 	{	tk_none,
 		tk_tql,
-		tk_tqr, //\tqr	Flush-right tab.
-		tk_tqc, //\tqc	Centered tab.
-		tk_tqdec, //\tqdec	Decimal tab.
-		tk_tqbar //\tbN	Bar tab position in twips from the left margin.
+		tk_tqr,	//tqr	Flush-right tab.
+		tk_tqc,	//tqc	Centered tab.
+		tk_tqdec,	//tqdec	Decimal tab.
+		tk_tqbar//tbN	Bar tab position in twips from the left margin.
 	}TabKind;
 	
-	int m_nTab; //\tbN or \txN	Tab position in twips from the left margin.
+	int m_nTab;		//tbN or \txN	Tab position in twips from the left margin.
 	TabLeader m_eLeader;
 	TabKind m_eKind;
 	RtfTab()
@@ -1029,17 +1035,23 @@ public:
 	{
 		CString sResult;
 		for( int i = 0; i < (int)m_aTabs.size(); i++ )
-			sResult.Append( m_aTabs[i].RenderToRtf( oRenderParameter ) );
+		{
+			sResult += m_aTabs[i].RenderToRtf( oRenderParameter );
+		}
 		return sResult;
 	}
 	CString RenderToOOX(RenderParameter oRenderParameter)
 	{
-		CString sResult;
-		CString sTabs;
+		CString sTabs;		
 		for( int i = 0; i < (int)m_aTabs.size(); i++ )
-			sTabs.Append( m_aTabs[i].RenderToOOX( oRenderParameter ) );
-		if( false == sTabs.IsEmpty() )
-            sResult.AppendFormat( _T("<w:tabs>%ls</w:tabs>"), sTabs.GetBuffer() );
+		{
+			sTabs += m_aTabs[i].RenderToOOX( oRenderParameter );
+		}
+
+		CString sResult;
+		if( !sTabs.IsEmpty() )
+            sResult += _T("<w:tabs>") + sTabs + _T("</w:tabs>");
+
 		return sResult;
 	}
 };
@@ -1048,42 +1060,42 @@ class RtfCharProperty: public IRenderableProperty
 public: 
 	typedef enum {uls_none, uls_Single, uls_Dotted,uls_Dashed ,uls_Dash_dotted,uls_Dash_dot_dotted,uls_Double,uls_Heavy_wave,uls_Long_dashe,uls_Stops_all,uls_Thick,uls_Thick_dotted,uls_Thick_dashed,uls_Thick_dash_dotted,uls_Thick_dash_dot_dotted,uls_Thick_long_dashed,uls_Double_wave,uls_Word,uls_Wave} UnderlineStyle;
 
-	int m_nAnimated; //\animtextN	Animated text properties (note: Word 2007 ignores this control word):
+	int m_nAnimated;		//animtextN	Animated text properties (note: Word 2007 ignores this control word):
 
-	int m_bBold; //\b*	Bold.
-	int m_bCaps; //\caps*	All capitals.
-	int m_nScalex; //\charscalexN 	Character scaling value. The N argument is a value representing a percentage (default is 100).
-	int m_nCharStyle; //\csN	Designates character style. If a character style is specified, style properties must be specified with the character run. N refers to an entry in the style table.
-	int m_nDown; //\dnN	Move down N half-points (default is 6).
-	int m_bEmbo; //\embo*	Emboss.
-	int m_nCharacterSpacing; //\expndtwN	Expansion or compression of the space between characters in twips; a negative value compresses. For backward compatibility, both \expndtwN and \expndN should be emitted.		
-	int m_nFitText; //\fittextN	Fit the text in the current group in N twips. When N is set to -1 (\fittext-1), it indicates a continuation of the previous \fittextN run. In other words, {\fittext1000 Fit this} {\fittext-1 text} fits the string “Fit this text” in 1000 twips.
-	int m_nFont; //\fN	Font number. N refers to an entry in the font table.
+	int m_bBold;		//b*	Bold.
+	int m_bCaps;		//caps*	All capitals.
+	int m_nScalex;		//charscalexN 	Character scaling value. The N argument is a value representing a percentage (default is 100).
+	int m_nCharStyle;		//csN	Designates character style. If a character style is specified, style properties must be specified with the character run. N refers to an entry in the style table.
+	int m_nDown;		//dnN	Move down N half-points (default is 6).
+	int m_bEmbo;		//embo*	Emboss.
+	int m_nCharacterSpacing;		//expndtwN	Expansion or compression of the space between characters in twips; a negative value compresses. For backward compatibility, both \expndtwN and \expndN should be emitted.		
+	int m_nFitText;		//fittextN	Fit the text in the current group in N twips. When N is set to -1 (\fittext-1), it indicates a continuation of the previous \fittextN run. In other words, {\fittext1000 Fit this} {\fittext-1 text} fits the string “Fit this text” in 1000 twips.
+	int m_nFont;		//fN	Font number. N refers to an entry in the font table.
 	int m_nFont2; //
 	int m_nFont3; //
-	int m_nFontSize; //\fsN	Font size in half-points (default is 24).
-	int m_bItalic; //\i*	Italic.
-	int m_bImprint; //\impr*	Engrave (imprint).
-	int m_nKerning; //\kerningN	Point size (in half-points) above which to kern character pairs. \kerning0 turns off kerning.
-	int m_bRightToLeft; //\rtlch	Character data following this control word is treated as a right-to-left run.
+	int m_nFontSize;		//fsN	Font size in half-points (default is 24).
+	int m_bItalic;		//i*	Italic.
+	int m_bImprint;		//impr*	Engrave (imprint).
+	int m_nKerning;		//kerningN	Point size (in half-points) above which to kern character pairs. \kerning0 turns off kerning.
+	int m_bRightToLeft;		//rtlch	Character data following this control word is treated as a right-to-left run.
 	int m_nLanguage;
 	int m_nComplexScript;
-	int m_bOutline; //\outl*	Outline.
-	int m_bScaps; //\scaps*	Small capitals.
-	int m_bShadow; //\shad*	Shadow.
-	int m_bStrike; //\strike*	Strikethrough.
-	int m_nStriked; //\striked1	Double strikethrough. \striked0 turns it off.
-	int m_bSub; //\sub	Subscripts text and shrinks point size according to font information.
-	int m_bSuper; //\super	Superscripts text and shrinks point size according to font information.
-	int m_bHidden; //\v*	Hidden text.
+	int m_bOutline;		//outl*	Outline.
+	int m_bScaps;		//scaps*	Small capitals.
+	int m_bShadow;		//shad*	Shadow.
+	int m_bStrike;		//strike*	Strikethrough.
+	int m_nStriked;		//striked1	Double strikethrough. \striked0 turns it off.
+	int m_bSub;		//sub	Subscripts text and shrinks point size according to font information.
+	int m_bSuper;		//super	Superscripts text and shrinks point size according to font information.
+	int m_bHidden;		//v*	Hidden text.
 	int m_nHightlited; //
 
 	int m_nForeColor; //
 
-//		int m_bUnderline; //\ul*	Continuous underline. \ul0 turns off all underlining.
+//		int m_bUnderline;		//ul*	Continuous underline. \ul0 turns off all underlining.
 	UnderlineStyle m_eUnderStyle; //
 	int m_nUnderlineColor; //
-	int m_nUp; //\upN	Move up N half-points (default is 6).
+	int m_nUp;		//upN	Move up N half-points (default is 6).
 
 
 	RtfBorder m_poBorder;
@@ -1209,16 +1221,16 @@ class RtfListLevelProperty : IRenderableProperty
 {
 public: 
 	int m_nLevel; //OOX
-	int m_nNumberType; //\levelnfcN \levelnfcnN Specifies the number type for the level
-	int m_bTentative; //\lvltentative 	Specifies that a given numbering level was been saved by a producer but was not used in the parent document. This means that this numbering level may be redefined by a future consumer without changing the actual content of the document.
-	int m_nJustification; //\leveljcN \leveljcnN	0	Left justified 1	Center justified 2	Right justified
-	int m_nFollow; //\levelfollowN
-	int m_nStart; //\levelstartatN	N specifies the start-at value for the level.
+	int m_nNumberType;		//levelnfcN \levelnfcnN Specifies the number type for the level
+	int m_bTentative;		//lvltentative 	Specifies that a given numbering level was been saved by a producer but was not used in the parent document. This means that this numbering level may be redefined by a future consumer without changing the actual content of the document.
+	int m_nJustification;		//leveljcN \leveljcnN	0	Left justified 1	Center justified 2	Right justified
+	int m_nFollow;		//levelfollowN
+	int m_nStart;		//levelstartatN	N specifies the start-at value for the level.
 	CString m_sText; //как в rtf текст, но сдвинут от нуля на 1 // \'03\'00.\'01 -> ("%d%d%d",4,1,2)
 	CString m_sNumber;
-	int m_nNoRestart; //\levelnorestartN	1 if this level does not restart its count each time a super ordinate level is incremented; 0 if this level does restart its count each time a super ordinate level is incremented.
-	int m_nLegal; //\levellegalN	1 if any list numbers from previous levels should be converted to Arabic numbers; 0 if they should be left with the format specified by their own level’s definition.
-	int m_nPictureIndex; //\levelpictureN	Determines which picture bullet from the \listpicture destination should be applied.
+	int m_nNoRestart;		//levelnorestartN	1 if this level does not restart its count each time a super ordinate level is incremented; 0 if this level does restart its count each time a super ordinate level is incremented.
+	int m_nLegal;		//levellegalN	1 if any list numbers from previous levels should be converted to Arabic numbers; 0 if they should be left with the format specified by their own level’s definition.
+	int m_nPictureIndex;		//levelpictureN	Determines which picture bullet from the \listpicture destination should be applied.
 
 	RtfTabs m_oTabs; //ParagraphProp
 	int m_nFirstIndent;
@@ -1245,12 +1257,12 @@ public:
         std::string sBullet = cBullet;
         std::wstring swBullet(sBullet.begin(), sBullet.end());
 
-        sResult.Append( swBullet.c_str() );
+		sResult += swBullet.c_str();
 		//CString sOOXNumber = GetLevelTextOOX();
 		//for( int i = 0; i < sOOXNumber.GetLength(); i++ )
 		//	if( sOOXNumber[i] == '%' && i != sOOXNumber.GetLength() - 1 )
 		//	{
-		//		sResult.Append( swBullet );
+		//		sResult += swBullet;
 		//		i++;
 		//	}
 		//	else
@@ -1548,11 +1560,11 @@ public:
 class RtfListProperty : public IRenderableProperty, public ItemContainer<RtfListLevelProperty>
 {
 public: 
-	int m_nID; //\listidN	Each list must have a unique list ID that should be randomly generated. N is a long integer. The list ID cannot be between –1 and –5. 
-	int m_nTemplateId; //\listtemplateidN	Each list should have a unique template ID as well, which also should be randomly generated. The template ID –1 means the template ID is undefined. N is a long integer. 
-	int m_nListSimple; //\listsimpleN	1 if the list has one level; 0 (default) if the list has nine levels.
-	int m_bListHybrid; //\listhybrid	Present if the list has 9 levels, each of which is the equivalent of a simple list. Only one of \listsimpleN and \listhybrid should be present. Word 2000 and newer versions will write lists with the \listhybrid property.
-	CString m_sName; //\listname	The argument for \listname is a string that is the name of this list. Names allow ListNum fields to specify the list to which they belong. This is a destination control word.
+	int m_nID;		//listidN	Each list must have a unique list ID that should be randomly generated. N is a long integer. The list ID cannot be between –1 and –5. 
+	int m_nTemplateId;		//listtemplateidN	Each list should have a unique template ID as well, which also should be randomly generated. The template ID –1 means the template ID is undefined. N is a long integer. 
+	int m_nListSimple;		//listsimpleN	1 if the list has one level; 0 (default) if the list has nine levels.
+	int m_bListHybrid;		//listhybrid	Present if the list has 9 levels, each of which is the equivalent of a simple list. Only one of \listsimpleN and \listhybrid should be present. Word 2000 and newer versions will write lists with the \listhybrid property.
+	CString m_sName;		//listname	The argument for \listname is a string that is the name of this list. Names allow ListNum fields to specify the list to which they belong. This is a destination control word.
 
 	RtfListProperty()
 	{
@@ -1570,7 +1582,7 @@ public:
 	}
 	bool IsValid()
 	{
-		return (PROP_DEF != m_nID) ;//&& (_T("") != m_sName);
+		return (PROP_DEF != m_nID) ;		//&& (_T("") != m_sName);
 	}
 	CString RenderToRtf(RenderParameter oRenderParameter);
 	CString RenderToOOX(RenderParameter oRenderParameter);
@@ -1584,8 +1596,8 @@ public:
 		class ListOverrideLevel
 		{
 			public:
-				int m_nLevelIndex; //\listoverrideformat	Number of list format override levels within this list override (should be either 1, 9, or missing, which means 0).
-				int m_nStart; //\listoverridestartat	Indicates an override of the start-at value.
+				int m_nLevelIndex;		//listoverrideformat	Number of list format override levels within this list override (should be either 1, 9, or missing, which means 0).
+				int m_nStart;		//listoverridestartat	Indicates an override of the start-at value.
 				RtfListLevelProperty m_oLevel;
 				ListOverrideLevel()
 				{
@@ -1623,13 +1635,15 @@ public:
 			{
 				if( PROP_DEF != m_aOverrideLevels[i].m_nLevelIndex )
 				{
-					sResult.Append( _T("{\\lfolevel") );
+					sResult += _T("{\\lfolevel");
+					
 					if( PROP_DEF != m_aOverrideLevels[i].m_nLevelIndex )
 						sResult.AppendFormat( _T("\\listoverrideformat%d"), m_aOverrideLevels[i].m_nLevelIndex );
 					if( PROP_DEF != m_aOverrideLevels[i].m_nStart )
 						sResult.AppendFormat( _T("\\listoverridestartat%d"), m_aOverrideLevels[i].m_nStart );
-					sResult.Append( m_aOverrideLevels[i].m_oLevel.RenderToRtf(oRenderParameter) );
-					sResult.Append( _T("}") );
+					
+					sResult += m_aOverrideLevels[i].m_oLevel.RenderToRtf(oRenderParameter);
+					sResult += _T("}");
 				}
 			}
 			return sResult;
@@ -1645,15 +1659,15 @@ public:
 					sResult.AppendFormat( _T("<w:lvlOverride w:ilvl=\"%d\">"), OverrideLevel.m_nLevelIndex );
 					if( PROP_DEF != OverrideLevel.m_nStart )
 						sResult.AppendFormat( _T("<w:startOverride w:val=\"%d\"/>"), OverrideLevel.m_nStart );
-					sResult.Append( OverrideLevel.m_oLevel.RenderToOOX2(oRenderParameter, OverrideLevel.m_nLevelIndex) );
-					sResult.Append( _T("</w:lvlOverride>") );
+					sResult += OverrideLevel.m_oLevel.RenderToOOX2(oRenderParameter, OverrideLevel.m_nLevelIndex);
+					sResult += _T("</w:lvlOverride>");
 				}
 			}
 			return sResult;
 		}
 	};
-	int m_nListID; //\listidN	Should exactly match the \listid of one of the lists in the List table. The value N is a long integer.
-	int m_nIndex; //\lsN	The (1-based) index of this \listoverride in the \listoverride table. This value should never be zero inside a \listoverride and must be unique for all \listoverride’s within a document. The valid values are from 1 to 2000. The value 0 means no list.
+	int m_nListID;		//listidN	Should exactly match the \listid of one of the lists in the List table. The value N is a long integer.
+	int m_nIndex;		//lsN	The (1-based) index of this \listoverride in the \listoverride table. This value should never be zero inside a \listoverride and must be unique for all \listoverride’s within a document. The valid values are from 1 to 2000. The value 0 means no list.
 	ListOverrideLevels m_oOverrideLevels;
 
 	RtfListOverrideProperty()
@@ -1807,76 +1821,76 @@ class RtfTableProperty: public IRenderableProperty
 {
 public: 
 	typedef enum{hr_none,
-				hr_phmrg,//\tphmrg	Use margin as horizontal reference frame.
-				hr_phpg, //\tphpg	Use page as horizontal reference frame.
-				hr_phcol //\tphcol	Use column as horizontal reference frame. This is the default if no horizontal table positioning information is given.
+				hr_phmrg,	//\tphmrg	Use margin as horizontal reference frame.
+				hr_phpg,	//tphpg	Use page as horizontal reference frame.
+				hr_phcol//tphcol	Use column as horizontal reference frame. This is the default if no horizontal table positioning information is given.
 					} HRef;
 	typedef enum{vr_none,
-				vr_pvmrg, //\tpvmrg	Position table vertically relative to the top margin. This is the default if no vertical table positioning information is given.
-				vr_pvpg,  //\tpvpg	Position table vertically relative to the top of the page.
-				vr_pvpara //\tpvpara	Position table vertically relative to the upper left corner of the next unframed paragraph in the stream.
+				vr_pvmrg,	//tpvmrg	Position table vertically relative to the top margin. This is the default if no vertical table positioning information is given.
+				vr_pvpg, //tpvpg	Position table vertically relative to the top of the page.
+				vr_pvpara//tpvpara	Position table vertically relative to the upper left corner of the next unframed paragraph in the stream.
 					} VRef;
 	typedef enum{hp_none, 
-				hp_posxc, //\tposxc	Center table within the horizontal reference frame.
-				hp_posxi, //\tposxi	Position table inside the horizontal reference frame.
-				hp_posxo, //\tposxo	Position table outside the horizontal reference frame.
-				hp_posxl, //\tposxl	Position table at the left of the horizontal reference frame.
-				hp_posxr  //\tposxr	Position table at the right of the horizontal reference frame.
+				hp_posxc,	//tposxc	Center table within the horizontal reference frame.
+				hp_posxi,	//tposxi	Position table inside the horizontal reference frame.
+				hp_posxo,	//tposxo	Position table outside the horizontal reference frame.
+				hp_posxl,	//tposxl	Position table at the left of the horizontal reference frame.
+				hp_posxr //tposxr	Position table at the right of the horizontal reference frame.
 					} HPos;
 	typedef enum{vp_none,
-				vp_posyt,  //\tposyt	Position table at the top of the vertical reference frame.
-				vp_posyil, //\tposyil	Position table to be inline.
-				vp_posyb,  //\tposyb	Position table at the bottom of the vertical reference frame.
-				vp_posyc,  //\tposyc	Center table within the vertical reference frame
-				vp_posyin, //\tposyin	Position table inside within the vertical reference frame.
-				vp_posyout //\tposyout	Position table outside within the vertical reference frame.
+				vp_posyt, //tposyt	Position table at the top of the vertical reference frame.
+				vp_posyil,	//tposyil	Position table to be inline.
+				vp_posyb, //tposyb	Position table at the bottom of the vertical reference frame.
+				vp_posyc, //tposyc	Center table within the vertical reference frame
+				vp_posyin,	//tposyin	Position table inside within the vertical reference frame.
+				vp_posyout//tposyout	Position table outside within the vertical reference frame.
 					} VPos;
 
-	int m_bBidi; //\taprtl	Table direction is right to left.
-	int m_nAutoFit; //\trautofitN	AutoFit:0	No AutoFit (default).1	AutoFit is on for the row. Overridden by \clwWidthN and \trwWidthN in any table row
-	int m_nGraph; //\trgaphN	Half the space between the cells of a table row in twips.
+	int m_bBidi;		//taprtl	Table direction is right to left.
+	int m_nAutoFit;		//trautofitN	AutoFit:0	No AutoFit (default).1	AutoFit is on for the row. Overridden by \clwWidthN and \trwWidthN in any table row
+	int m_nGraph;		//trgaphN	Half the space between the cells of a table row in twips.
 
-	int nTableIndent; //\tblindN 
-	int nTableIndentUnits; //\\tblindtypeN  
+	int nTableIndent;		//tblindN 
+	int nTableIndentUnits;		//\tblindtypeN  
 
 	typedef enum{rj_none,
-				rj_trql, //\trql	Left-justifies a table row with respect to its containing column.
-				rj_trqr, //\trqr	Right-justifies a table row with respect to its containing column.
-				rj_trqc  //\trqc	Centers a table row with respect to its containing column.
+				rj_trql,	//trql	Left-justifies a table row with respect to its containing column.
+				rj_trqr,	//trqr	Right-justifies a table row with respect to its containing column.
+				rj_trqc //trqc	Centers a table row with respect to its containing column.
 					} RowJust;
 	RowJust m_eJust; // 
 
-	int m_nWrapLeft; //\tdfrmtxtLeftN	Distance in twips, between the left of the table and surrounding text (default is 0).
-	int m_nWrapRight; //\tdfrmtxtRightN	Distance in twips, between the right of the table and surrounding text (default is 0).
-	int m_nWrapTop; //\tdfrmtxtTopN	Distance in twips, between the top of the table and surrounding text (default is 0).
-	int m_nWrapBottom; //\tdfrmtxtBottomN	Distance in twips, between the bottom of the table and surrounding text (default is 0).
-	int m_bOverlap; //\tabsnoovrlp	Do not allow table to overlap with other tables or shapes with similar wrapping not contained within it.
+	int m_nWrapLeft;		//tdfrmtxtLeftN	Distance in twips, between the left of the table and surrounding text (default is 0).
+	int m_nWrapRight;		//tdfrmtxtRightN	Distance in twips, between the right of the table and surrounding text (default is 0).
+	int m_nWrapTop;		//tdfrmtxtTopN	Distance in twips, between the top of the table and surrounding text (default is 0).
+	int m_nWrapBottom;		//tdfrmtxtBottomN	Distance in twips, between the bottom of the table and surrounding text (default is 0).
+	int m_bOverlap;		//tabsnoovrlp	Do not allow table to overlap with other tables or shapes with similar wrapping not contained within it.
 
 	HRef m_eHRef;
 	VRef m_eVRef;
 	HPos m_eHPos;
-	int m_nHPos; //\tposxN	Position table N twips from the left edge of the horizontal reference frame.
+	int m_nHPos;		//tposxN	Position table N twips from the left edge of the horizontal reference frame.
 	VPos m_eVPos;
-	int m_nVPos; //\tposyN	Position table N twips from the top edge of the vertical reference frame.
+	int m_nVPos;		//tposyN	Position table N twips from the top edge of the vertical reference frame.
 
 	int m_nLeft;
-	int m_nWidth; //\trwWidthN	Preferred row width. Overrides \trautofitN.
-	MetricUnits m_eMUWidth; //\trftsWidthN	Units for \trwWidthN:
+	int m_nWidth;		//trwWidthN	Preferred row width. Overrides \trautofitN.
+	MetricUnits m_eMUWidth;		//trftsWidthN	Units for \trwWidthN:
 
-	int m_nDefCellMarBottom; //\trpaddbN	Default bottom cell margin or padding for the row.
-	int m_nDefCellMarLeft; //\trpaddlN	Default left cell margin or padding for the row.
-	int m_nDefCellMarRight; //\trpaddrN	Default right cell margin or padding for the row.
-	int m_nDefCellMarTop; //\trpaddtN	Default top cell margin or padding for the row.
+	int m_nDefCellMarBottom;		//trpaddbN	Default bottom cell margin or padding for the row.
+	int m_nDefCellMarLeft;		//trpaddlN	Default left cell margin or padding for the row.
+	int m_nDefCellMarRight;		//trpaddrN	Default right cell margin or padding for the row.
+	int m_nDefCellMarTop;		//trpaddtN	Default top cell margin or padding for the row.
 
 	int m_nDefCellMarBottomUnits; //Units for \trpaddbN: 0	Null. Ignore \trpaddbN in favor of \trgaphN (Word 97 style padding). 3	Twips.
 	int m_nDefCellMarLeftUnits;
 	int m_nDefCellMarRightUnits;
 	int m_nDefCellMarTopUnits;
 
-	int m_nDefCellSpBottom; //\trspdbN	Default bottom cell spacing for the row. The total vertical spacing between adjacent cells is equal to the sum of \trspdtN from the bottom cell and \trspdbN from the top cell, both of which will have the same value when written by Word.
-	int m_nDefCellSpLeft; //\trspdlN
-	int m_nDefCellSpRight; //\trspdrN
-	int m_nDefCellSpTop; //\trspdtN
+	int m_nDefCellSpBottom;		//trspdbN	Default bottom cell spacing for the row. The total vertical spacing between adjacent cells is equal to the sum of \trspdtN from the bottom cell and \trspdbN from the top cell, both of which will have the same value when written by Word.
+	int m_nDefCellSpLeft;		//trspdlN
+	int m_nDefCellSpRight;		//trspdrN
+	int m_nDefCellSpTop;		//trspdtN
 
 	int m_nDefCellSpBottomUnits; //trspdfbN Units for \trspdbN: 0	Null. Ignore \trspdbN. 3	Twips.
 	int m_nDefCellSpLeftUnits;
@@ -1894,15 +1908,15 @@ public:
 	int m_nStyle;
 
 //Autoformatting Flags
-	int m_bAutoFirstRow; //\tbllkhdrrows	Flag sets table autoformat to format the first (header) row.
-	int m_bAutoLastRow; //\tbllklastrow	Flag sets table autoformat to format the last row.
-	int m_bAutoFirstCol; //\tbllkhdrcols	Flag sets table autoformat to format the first (header) column.
-	int m_bAutoLastCol; //\tbllklastcol	Flag sets table autoformat to format the last column.
-	int m_bAutoNoRowBand; //\tbllknorowband	Specifies row banding conditional formatting shall not be applied.
-	int m_bAutoNoColBand; //\tbllknocolband	Specifies column banding conditional formatting shall not be applied.
+	int m_bAutoFirstRow;		//tbllkhdrrows	Flag sets table autoformat to format the first (header) row.
+	int m_bAutoLastRow;		//tbllklastrow	Flag sets table autoformat to format the last row.
+	int m_bAutoFirstCol;		//tbllkhdrcols	Flag sets table autoformat to format the first (header) column.
+	int m_bAutoLastCol;		//tbllklastcol	Flag sets table autoformat to format the last column.
+	int m_bAutoNoRowBand;		//tbllknorowband	Specifies row banding conditional formatting shall not be applied.
+	int m_bAutoNoColBand;		//tbllknocolband	Specifies column banding conditional formatting shall not be applied.
 
-	int m_nRowBandSize; //\tscbandshN	Count of rows in a row band
-	int m_nColBandSize; //\tscbandsvN	Count of cells in a cell band
+	int m_nRowBandSize;		//tscbandshN	Count of rows in a row band
+	int m_nColBandSize;		//tscbandsvN	Count of cells in a cell band
 
 
 	RtfTableProperty()
@@ -2116,9 +2130,9 @@ public:
 		TextWrap m_eWrap;
 		int m_DropcapType;
 		int m_DropcapLines;
-		int m_nHorSpace;//\dxfrtextN	Distance in twips of a positioned paragraph from text in the main text flow in all directions.
-		int m_nVerSpace;//\dfrmtxtxN	N is the horizontal distance in twips from text on both sides of the frame.
-		int m_nAllSpace;//\dfrmtxtyN	N is the vertical distance in twips from text on both sides of the frame.
+		int m_nHorSpace;		//\dxfrtextN	Distance in twips of a positioned paragraph from text in the main text flow in all directions.
+		int m_nVerSpace;		//\dfrmtxtxN	N is the horizontal distance in twips from text on both sides of the frame.
+		int m_nAllSpace;		//\dfrmtxtyN	N is the vertical distance in twips from text on both sides of the frame.
 
 		RtfFrame()
 		{
@@ -2206,16 +2220,16 @@ public:
 class RtfCellProperty: public IRenderableProperty
 {	
 public:
-	int m_bMergeFirst; //\clmgf	The first cell in a range of table cells to be merged.
-	int m_bMerge; //\clmrg	Contents of the table cell are merged with those of the preceding cell.
-	int m_bMergeFirstVertical; //\clvmgf	The first cell in a range of table cells to be vertically merged.
-	int m_bMergeVertical; //\clvmrg	Contents of the table cell are vertically merged with those of the preceding cell.
+	int m_bMergeFirst;		//clmgf	The first cell in a range of table cells to be merged.
+	int m_bMerge;		//clmrg	Contents of the table cell are merged with those of the preceding cell.
+	int m_bMergeFirstVertical;		//clvmgf	The first cell in a range of table cells to be vertically merged.
+	int m_bMergeVertical;		//clvmrg	Contents of the table cell are vertically merged with those of the preceding cell.
 
-	int m_bFitText; //\clFitText	Fit text in cell, compressing each paragraph to the width of the cell.
-	int m_bNoWrap; //\clNoWrap	Do not wrap text for the cell. Only has an effect if the table cell does not have a preferred \clwWidthN, which overrides \trautofitN.
+	int m_bFitText;		//clFitText	Fit text in cell, compressing each paragraph to the width of the cell.
+	int m_bNoWrap;		//clNoWrap	Do not wrap text for the cell. Only has an effect if the table cell does not have a preferred \clwWidthN, which overrides \trautofitN.
 
-	int m_nPaddingLeft; //\clpadlN	Left cell margin or padding. Overrides \trpaddlN.
-	int m_nIsPaddingLeft; //\clpadflN	Units for \clpadlN:
+	int m_nPaddingLeft;		//clpadlN	Left cell margin or padding. Overrides \trpaddlN.
+	int m_nIsPaddingLeft;		//clpadflN	Units for \clpadlN:
 	int m_nPaddingRight;
 	int m_nIsPaddingRight;
 	int m_nPaddingTop;
@@ -2223,8 +2237,8 @@ public:
 	int m_nPaddingBottom;
 	int m_nIsPaddingBottom;
 
-	int m_nSpacingLeft; //\clsplN	Left cell margin or padding. Overrides \trspdlN.
-	int m_nIsSpacingLeft; //\clspflN	Units for \clsplN:
+	int m_nSpacingLeft;		//clsplN	Left cell margin or padding. Overrides \trspdlN.
+	int m_nIsSpacingLeft;		//clspflN	Units for \clsplN:
 	int m_nSpacingRight;
 	int m_nIsSpacingRight;
 	int m_nSpacingTop;
@@ -2232,10 +2246,10 @@ public:
 	int m_nSpacingBottom;
 	int m_nIsSpacingBottom;
 
-	int m_nWidth; //\clwWidthN	Preferred cell width. Overrides \trautofitN.
-	MetricUnits m_eWidthUnits; //\clftsWidthN	Units for \clwWidthN:
+	int m_nWidth;		//clwWidthN	Preferred cell width. Overrides \trautofitN.
+	MetricUnits m_eWidthUnits;		//clftsWidthN	Units for \clwWidthN:
 
-	int m_bHideMark; //\clhidemark	This control word specifies whether the end of cell glyph shall influence the height of the given table row in the table. If it is specified, then only printing characters in this cell shall be used to determine the row height.
+	int m_bHideMark;		//clhidemark	This control word specifies whether the end of cell glyph shall influence the height of the given table row in the table. If it is specified, then only printing characters in this cell shall be used to determine the row height.
 
 	RtfBorder m_oBorderDiagonalLR;
 	RtfBorder m_oBorderDiagonalRL;
@@ -2250,36 +2264,36 @@ public:
 	int				m_nShadingPctFrom;
 
 	typedef enum{ ca_none, 
-					ca_Top, //\clvertalt	Text is top-aligned in cell (the default).
-					ca_Center, //\clvertalc	Text is centered vertically in cell.
-					ca_Bottom  //\clvertalb	Text is bottom-aligned in cell.
+					ca_Top,	//clvertalt	Text is top-aligned in cell (the default).
+					ca_Center,	//clvertalc	Text is centered vertically in cell.
+					ca_Bottom //clvertalb	Text is bottom-aligned in cell.
 						} CellAlign;
 	CellAlign m_eAlign;
 	typedef enum{ cf_none,
-					cf_lrtb, //\cltxlrtb	Text in a cell flows from left to right and top to bottom (default).
-					cf_tbrl, //\cltxtbrl	Text in a cell flows right to left and top to bottom.
-					cf_btlr, //\cltxbtlr	Text in a cell flows left to right and bottom to top.
-					cf_lrtbv, //\cltxlrtbv	Text in a cell flows left to right and top to bottom, vertical.
-					cf_tbrlv //\cltxtbrlv	Text in a cell flows top to bottom and right to left, vertical.
+					cf_lrtb,	//cltxlrtb	Text in a cell flows from left to right and top to bottom (default).
+					cf_tbrl,	//cltxtbrl	Text in a cell flows right to left and top to bottom.
+					cf_btlr,	//cltxbtlr	Text in a cell flows left to right and bottom to top.
+					cf_lrtbv,	//cltxlrtbv	Text in a cell flows left to right and top to bottom, vertical.
+					cf_tbrlv//cltxtbrlv	Text in a cell flows top to bottom and right to left, vertical.
 						} CellFlow;
 	CellFlow m_oCellFlow;
 
-	int m_nCellx; //\cellxN	Defines the right boundary of a table cell, including its half of the space between cells.
+	int m_nCellx;		//cellxN	Defines the right boundary of a table cell, including its half of the space between cells.
 	int m_nSpan;
 
 //Table Style Specific
-	int m_bStyleFirstRow;//\tscfirstrow	This cell is in the first row.
-	int m_bStyleLastRow;//\tsclastrow	This cell is in the last row.
-	int m_bStyleFirstCol;//\tscfirstcol	This cell is in the first column.
-	int m_bStyleLastCol;//\tsclastcol	This cell is in the last column.
-	int m_bStyleOddRowBand;//\tscbandhorzodd	This cell is in the odd row band.
-	int m_bStyleEvenRowBand;//\tscbandhorzeven	This cell is in the even row band.
-	int m_bStyleOddColBand;//\tscbandvertodd	This cell is in the odd column band.
-	int m_bStyleEvenColBand;//\tscbandverteven	This cell is in the even column band.
-	int m_bStyleNWCell;//\tscnwcell	This is the NW (north west) cell in the table (upper left).
-	int m_bStyleNECell;//\tscnecell	NE cell
-	int m_bStyleSWCell;//\tscswcell	SW cell.
-	int m_bStyleSECell;//\tscsecell	SE cell.
+	int m_bStyleFirstRow;		//\tscfirstrow	This cell is in the first row.
+	int m_bStyleLastRow;		//\tsclastrow	This cell is in the last row.
+	int m_bStyleFirstCol;		//\tscfirstcol	This cell is in the first column.
+	int m_bStyleLastCol;		//\tsclastcol	This cell is in the last column.
+	int m_bStyleOddRowBand;		//\tscbandhorzodd	This cell is in the odd row band.
+	int m_bStyleEvenRowBand;		//\tscbandhorzeven	This cell is in the even row band.
+	int m_bStyleOddColBand;		//\tscbandvertodd	This cell is in the odd column band.
+	int m_bStyleEvenColBand;		//\tscbandverteven	This cell is in the even column band.
+	int m_bStyleNWCell;		//\tscnwcell	This is the NW (north west) cell in the table (upper left).
+	int m_bStyleNECell;		//\tscnecell	NE cell
+	int m_bStyleSWCell;		//\tscswcell	SW cell.
+	int m_bStyleSECell;		//\tscsecell	SE cell.
 
 	RtfCellProperty()
 	{
@@ -2445,37 +2459,37 @@ public:
 class RtfRowProperty: public RtfTableProperty, public ItemContainer< RtfCellProperty >
 {
 public: 
-	int m_nIndex; //\irowN	N is the row index of this row.
-	int m_nBandIndex; //\irowbandN	N is the row index of the row, adjusted to account for header rows. A header row has a value of –1.
+	int m_nIndex;		//irowN	N is the row index of this row.
+	int m_nBandIndex;		//irowbandN	N is the row index of the row, adjusted to account for header rows. A header row has a value of –1.
 
-	int m_bLastRow; //\lastrow	Output if this is the last row in the table.
+	int m_bLastRow;		//lastrow	Output if this is the last row in the table.
 
-	int m_bIsHeader; //\trhdr	Table row header. This row should appear at the top of every page on which the current table appears.
-	int m_bKeep; //\trkeep	Keep table row together. This row cannot be split by a page break. This property is assumed to be off unless the control word is present.
+	int m_bIsHeader;		//trhdr	Table row header. This row should appear at the top of every page on which the current table appears.
+	int m_bKeep;		//trkeep	Keep table row together. This row cannot be split by a page break. This property is assumed to be off unless the control word is present.
 
-	int m_nHeight; //\trrhN	Height of a table row in twips. When 0, the height is sufficient for all the text in the line; when positive, the height is guaranteed to be at least the specified height; when negative, the absolute value of the height is used, regardless of the height of the text in the line.
+	int m_nHeight;		//trrhN	Height of a table row in twips. When 0, the height is sufficient for all the text in the line; when positive, the height is guaranteed to be at least the specified height; when negative, the absolute value of the height is used, regardless of the height of the text in the line.
 
-	int m_nWidthStartInvCell; //\trwWidthBN	Width of invisible cell at the beginning of the row. Used only in cases where rows have different widths.
-	MetricUnits m_eMUStartInvCell; //\trftsWidthBN	Units for \trwWidthBN:
+	int m_nWidthStartInvCell;		//trwWidthBN	Width of invisible cell at the beginning of the row. Used only in cases where rows have different widths.
+	MetricUnits m_eMUStartInvCell;		//trftsWidthBN	Units for \trwWidthBN:
 
-	int m_nWidthEndInvCell; //\trwWidthAN	Width of invisible cell at the end of the row. Used only when rows have different widths.
-	MetricUnits m_eMUEndInvCell; //\trftsWidthAN	Units for \trwWidthAN:
+	int m_nWidthEndInvCell;		//trwWidthAN	Width of invisible cell at the end of the row. Used only when rows have different widths.
+	MetricUnits m_eMUEndInvCell;		//trftsWidthAN	Units for \trwWidthAN:
 
 	int m_nGridBefore; //для oox
 	int m_nGridAfter; //для oox
 
-	int m_bStyleFirstRow;//\tscfirstrow	This cell is in the first row.
-	int m_bStyleLastRow;//\tsclastrow	This cell is in the last row.
-	int m_bStyleFirstCol;//\tscfirstcol	This cell is in the first column.
-	int m_bStyleLastCol;//\tsclastcol	This cell is in the last column.
-	int m_bStyleOddRowBand;//\tscbandhorzodd	This cell is in the odd row band.
-	int m_bStyleEvenRowBand;//\tscbandhorzeven	This cell is in the even row band.
-	int m_bStyleOddColBand;//\tscbandvertodd	This cell is in the odd column band.
-	int m_bStyleEvenColBand;//\tscbandverteven	This cell is in the even column band.
-	int m_bStyleNWCell;//\tscnwcell	This is the NW (north west) cell in the table (upper left).
-	int m_bStyleNECell;//\tscnecell	NE cell
-	int m_bStyleSWCell;//\tscswcell	SW cell.
-	int m_bStyleSECell;//\tscsecell	SE cell.
+	int m_bStyleFirstRow;		//\tscfirstrow	This cell is in the first row.
+	int m_bStyleLastRow;		//\tsclastrow	This cell is in the last row.
+	int m_bStyleFirstCol;		//\tscfirstcol	This cell is in the first column.
+	int m_bStyleLastCol;		//\tsclastcol	This cell is in the last column.
+	int m_bStyleOddRowBand;		//\tscbandhorzodd	This cell is in the odd row band.
+	int m_bStyleEvenRowBand;		//\tscbandhorzeven	This cell is in the even row band.
+	int m_bStyleOddColBand;		//\tscbandvertodd	This cell is in the odd column band.
+	int m_bStyleEvenColBand;		//\tscbandverteven	This cell is in the even column band.
+	int m_bStyleNWCell;		//\tscnwcell	This is the NW (north west) cell in the table (upper left).
+	int m_bStyleNECell;		//\tscnecell	NE cell
+	int m_bStyleSWCell;		//\tscswcell	SW cell.
+	int m_bStyleSECell;		//\tscsecell	SE cell.
 
 	RtfRowProperty()
 	{
@@ -2571,69 +2585,78 @@ public:
 class RtfParagraphProperty: public IRenderableProperty
 {
 public: 
-	int m_bAutoHyphenation; //\hyphpar	Switches automatic hyphenation for the paragraph. Append 1 or nothing to toggle property on; append 0 to turn it off.
-	int m_bInTable; //\intbl	Paragraph is part of a table.
-	int m_nItap; //\itapN	Paragraph nesting level, where 0 is the main document, 1 is a table cell, 2 is a nested table cell, 3 is a doubly nested table cell, and so forth (default is 1).
-	int m_bKeep; //\keep	Keep paragraph intact (completely on one page if possible).
-	int m_bKeepNext; //\keepn	Keep paragraph with the next paragraph.
-	int m_bPageBB; //\pagebb	Break page before the paragraph.
-	int m_nOutlinelevel;//\outlinelevelN	Outline level of paragraph. The N argument is a value from 0 to 8 representing the outline level of the paragraph. In the default case, no outline level is specified (same as body text).
-	int m_nStyle; //\sN	Designates paragraph style. If a paragraph style is specified, style properties must be specified with the paragraph. N references an entry in the style sheet.
+	bool	m_bOldList;
 
-	typedef enum {pa_none,
-					pa_qc, //\qc	Centered.
-					pa_qj, //\qj	Justified.
-					pa_ql, //\ql	Left-aligned (the default).
-					pa_qr, //\qr	Right-aligned.
-					pa_qd, //\qd	Distributed.
-					pa_qk0, //\qkN	Percentage of line occupied by Kashida justification (0 – low, 10 – medium, 20 – high).
-					pa_qk10, //
-					pa_qk20, //
-						} ParagraphAlign;
+	int		m_bAutoHyphenation;	//hyphpar	Switches automatic hyphenation for the paragraph. Append 1 or nothing to toggle property on; append 0 to turn it off.
+	int		m_bInTable;			//intbl	Paragraph is part of a table.
+	int		m_nItap;			//itapN	Paragraph nesting level, where 0 is the main document, 1 is a table cell, 2 is a nested table cell, 3 is a doubly nested table cell, and so forth (default is 1).
+	int		m_bKeep;			//keep	Keep paragraph intact (completely on one page if possible).
+	int		m_bKeepNext;		//keepn	Keep paragraph with the next paragraph.
+	int		m_bPageBB;			//pagebb	Break page before the paragraph.
+	int		m_nOutlinelevel;	//\outlinelevelN	Outline level of paragraph. The N argument is a value from 0 to 8 representing the outline level of the paragraph. In the default case, no outline level is specified (same as body text).
+	int		m_nStyle;			//sN	Designates paragraph style. If a paragraph style is specified, style properties must be specified with the paragraph. N references an entry in the style sheet.
+
+	typedef enum 
+	{
+		pa_none,
+		pa_qc,		//qc	Centered.
+		pa_qj,		//qj	Justified.
+		pa_ql,		//ql	Left-aligned (the default).
+		pa_qr,		//qr	Right-aligned.
+		pa_qd,		//qd	Distributed.
+		pa_qk0,		//qkN	Percentage of line occupied by Kashida justification (0 – low, 10 – medium, 20 – high).
+		pa_qk10,	//
+		pa_qk20,	//
+	} ParagraphAlign;
+	
 	ParagraphAlign m_eAlign;
-	typedef enum {fa_none,
-					fa_faauto, //\faauto	Font alignment. The default setting for this is "Auto."
-					fa_fahang, //\fahang	Font alignment: Hanging.
-					fa_facenter, //\facenter	Font alignment: Center.
-					fa_faroman, //\faroman	Font alignment: Roman (default).
-					fa_favar, //\favar	Font alignment: Upholding variable.
-					fa_fafixed, //\fafixed	Font alignment: Upholding fixed.
-						} FontAlign;
+	
+	typedef enum 
+	{
+		fa_none,
+		fa_faauto,	//faauto	Font alignment. The default setting for this is "Auto."
+		fa_fahang,	//fahang	Font alignment: Hanging.
+		fa_facenter,	//facenter	Font alignment: Center.
+		fa_faroman,	//faroman	Font alignment: Roman (default).
+		fa_favar,	//favar	Font alignment: Upholding variable.
+		fa_fafixed,	//fafixed	Font alignment: Upholding fixed.
+	} FontAlign;
+	
 	FontAlign m_eFontAlign;
 
-	int m_nIndFirstLine; //\fiN	First-line indent in twips (default is 0).
-	int m_nIndLeft; //\liN	Left indent in twips (default is 0).
-	int m_nIndRight; //\riN	Right indent in twips (default is 0).
-	int m_nIndStart; //\linN	Left indent for left-to-right paragraphs; right indent for right-to-left paragraphs (default is 0). \linN defines space before the paragraph.
-	int m_nIndEnd; //\rinN	Right indent for left-to-right paragraphs; left indent for right-to-left paragraphs (default is 0). \rinN defines space after the paragraph.
-	int m_bIndRightAuto; //\adjustright	Automatically adjust right indent when document grid is defined.
-	int m_bIndMirror; //\indmirror...
+	int m_nIndFirstLine;		//fiN	First-line indent in twips (default is 0).
+	int m_nIndLeft;		//liN	Left indent in twips (default is 0).
+	int m_nIndRight;		//riN	Right indent in twips (default is 0).
+	int m_nIndStart;		//linN	Left indent for left-to-right paragraphs; right indent for right-to-left paragraphs (default is 0). \linN defines space before the paragraph.
+	int m_nIndEnd;		//rinN	Right indent for left-to-right paragraphs; left indent for right-to-left paragraphs (default is 0). \rinN defines space after the paragraph.
+	int m_bIndRightAuto;		//adjustright	Automatically adjust right indent when document grid is defined.
+	int m_bIndMirror;		//indmirror...
 
-	int m_nSpaceBefore; //\sbN	Space before in twips (default is 0).
-	int m_nSpaceAfter; //\saN	Space after in twips (default is 0).
-	int m_nSpaceBeforeAuto; //\sbautoN	Auto spacing before:
-	int m_nSpaceAfterAuto; //\saautoN	Auto spacing after:
-	int m_nSpaceBeforeLine; //\lisbN	Space before in hundredths of a character unit. Overrides \sbN, although they should both be emitted with equivalent values.
-	int m_nSpaceAfterLine; //\lisaN	Space after in hundredths of a character unit. Overrides \saN, although they should both be emitted with equivalent values.
-	int m_nSpaceBetween; //\slN	Space between lines. If this control word is missing or if \sl0 is used, the line spacing is automatically determined by the tallest character in the line. If N is a positive value, this size is used only if it is taller than the tallest character (otherwise, the tallest character is used); if N is a negative value, the absolute value of N is used, even if it is shorter than the tallest character.
-	int m_nSpaceMultiLine; //\slmultN
-	int m_bContextualSpacing; //\contextualspace
+	int m_nSpaceBefore;		//sbN	Space before in twips (default is 0).
+	int m_nSpaceAfter;		//saN	Space after in twips (default is 0).
+	int m_nSpaceBeforeAuto;		//sbautoN	Auto spacing before:
+	int m_nSpaceAfterAuto;		//saautoN	Auto spacing after:
+	int m_nSpaceBeforeLine;		//lisbN	Space before in hundredths of a character unit. Overrides \sbN, although they should both be emitted with equivalent values.
+	int m_nSpaceAfterLine;		//lisaN	Space after in hundredths of a character unit. Overrides \saN, although they should both be emitted with equivalent values.
+	int m_nSpaceBetween;		//slN	Space between lines. If this control word is missing or if \sl0 is used, the line spacing is automatically determined by the tallest character in the line. If N is a positive value, this size is used only if it is taller than the tallest character (otherwise, the tallest character is used); if N is a negative value, the absolute value of N is used, even if it is shorter than the tallest character.
+	int m_nSpaceMultiLine;		//slmultN
+	int m_bContextualSpacing;		//contextualspace
 
-	int m_bRtl; //\rtlpar	Text in this paragraph will display with right-to-left precedence.
-	int m_bNoWordWrap; //\nowwrap
-	int m_bSnapToGrid; //\nosnaplinegrid	Disable snap line to grid.
+	int m_bRtl;		//rtlpar	Text in this paragraph will display with right-to-left precedence.
+	int m_bNoWordWrap;		//nowwrap
+	int m_bSnapToGrid;		//nosnaplinegrid	Disable snap line to grid.
 
 	typedef enum {tbw_none,
-					tbw_txbxtwno, //\txbxtwno
-					tbw_txbxtwalways, //\txbxtwalways
-					tbw_txbxtwfirstlast, //\txbxtwfirstlast
-					tbw_txbxtwfirst, //\txbxtwfirst
-					tbw_txbxtwlast, //\txbxtwlast
+					tbw_txbxtwno,	//txbxtwno
+					tbw_txbxtwalways,	//txbxtwalways
+					tbw_txbxtwfirstlast,	//txbxtwfirstlast
+					tbw_txbxtwfirst,	//txbxtwfirst
+					tbw_txbxtwlast,	//txbxtwlast
 
 						} TextBoxWrap;
 	TextBoxWrap m_eTextBoxWrap; //1
-	int m_nListId; //\lsN	Should exactly match the \lsN for one of the list overrides in the List Override table.
-	int m_nListLevel; //\ilvlN	The 0-based level of the list to which the paragraph belongs. For all simple lists, N should always be 0. For multilevel lists, it can be 0 through 8. The value 9 is never used. The values 10 through 12 have the special meanings for documents generated by Word 6: 10 = ilvlBullet (a bulleted paragraph in Word 6), 11 = ilvlList (a numbered paragraph in Word 6), 12 = ilvlContinue (a paragraph that was not itself numbered, but took its indenting scheme from its numbering properties and did not “break” numbering (that in Word 6 required otherwise contiguous paragraphs).
+	int m_nListId;		//lsN	Should exactly match the \lsN for one of the list overrides in the List Override table.
+	int m_nListLevel;		//ilvlN	The 0-based level of the list to which the paragraph belongs. For all simple lists, N should always be 0. For multilevel lists, it can be 0 through 8. The value 9 is never used. The values 10 through 12 have the special meanings for documents generated by Word 6: 10 = ilvlBullet (a bulleted paragraph in Word 6), 11 = ilvlList (a numbered paragraph in Word 6), 12 = ilvlContinue (a paragraph that was not itself numbered, but took its indenting scheme from its numbering properties and did not “break” numbering (that in Word 6 required otherwise contiguous paragraphs).
 
 	RtfShadingPar m_oShading; //
 
@@ -2645,31 +2668,31 @@ public:
 	RtfBorder m_oBorderBar; //
 
 	RtfFrame m_oFrame; //
-	int m_bOverlap;//1\absnoovrlpN	Allow overlap with other frames or objects with similar wrapping:
+	int m_bOverlap;		//1\absnoovrlpN	Allow overlap with other frames or objects with similar wrapping:
 	typedef enum{tf_none,
-			tf_frmtxlrtb, //\frmtxlrtb	Frame box flows from left to right and top to bottom (default).
-			tf_frmtxtbrl, //\frmtxtbrl	Frame box flows right to left and top to bottom.
-			tf_frmtxbtlr, //\frmtxbtlr	Frame box flows left to right and bottom to top.
-			tf_frmtxlrtbv, //\frmtxlrtbv	Frame box flows left to right and top to bottom, vertical.
-			tf_frmtxtbrlv  //\frmtxtbrlv	Frame box flows top to bottom and right to left, vertical.
+			tf_frmtxlrtb,	//frmtxlrtb	Frame box flows from left to right and top to bottom (default).
+			tf_frmtxtbrl,	//frmtxtbrl	Frame box flows right to left and top to bottom.
+			tf_frmtxbtlr,	//frmtxbtlr	Frame box flows left to right and bottom to top.
+			tf_frmtxlrtbv,	//frmtxlrtbv	Frame box flows left to right and top to bottom, vertical.
+			tf_frmtxtbrlv //frmtxtbrlv	Frame box flows top to bottom and right to left, vertical.
 				} TextFollow;
 	TextFollow m_eTextFollow;
 	RtfTabs m_oTabs;
 
 //Table Style Specific
-	int m_nTableStyle;//\ytsN	Designates the table style handle that was applied to the row/cell.
-	int m_bStyleFirstRow;//\tscfirstrow	This cell is in the first row.
-	int m_bStyleLastRow;//\tsclastrow	This cell is in the last row.
-	int m_bStyleFirstCollumn;//\tscfirstcol	This cell is in the first column.
-	int m_bStyleLastCollumn;//\tsclastcol	This cell is in the last column.
-	int m_bStyleOddRowBand;//\tscbandhorzodd	This cell is in the odd row band.
-	int m_bStyleEvenRowBand;//\tscbandhorzeven	This cell is in the even row band.
-	int m_bStyleOddColBand;//\tscbandvertodd	This cell is in the odd column band.
-	int m_bStyleEvenColBand;//\tscbandverteven	This cell is in the even column band.
-	int m_bStyleNWCell;//\tscnwcell	This is the NW (north west) cell in the table (upper left).
-	int m_bStyleNECell;//\tscnecell	NE cell.
-	int m_bStyleSWCell;//\tscswcell	SW cell.
-	int m_bStyleSECell;//\tscsecell	SE cell.
+	int m_nTableStyle;		//\ytsN	Designates the table style handle that was applied to the row/cell.
+	int m_bStyleFirstRow;		//\tscfirstrow	This cell is in the first row.
+	int m_bStyleLastRow;		//\tsclastrow	This cell is in the last row.
+	int m_bStyleFirstCollumn;		//\tscfirstcol	This cell is in the first column.
+	int m_bStyleLastCollumn;		//\tsclastcol	This cell is in the last column.
+	int m_bStyleOddRowBand;		//\tscbandhorzodd	This cell is in the odd row band.
+	int m_bStyleEvenRowBand;		//\tscbandhorzeven	This cell is in the even row band.
+	int m_bStyleOddColBand;		//\tscbandvertodd	This cell is in the odd column band.
+	int m_bStyleEvenColBand;		//\tscbandverteven	This cell is in the even column band.
+	int m_bStyleNWCell;		//\tscnwcell	This is the NW (north west) cell in the table (upper left).
+	int m_bStyleNECell;		//\tscnecell	NE cell.
+	int m_bStyleSWCell;		//\tscswcell	SW cell.
+	int m_bStyleSECell;		//\tscsecell	SE cell.
 
 	RtfCharProperty		m_oCharProperty;
 
@@ -2763,6 +2786,8 @@ public:
 		DEFAULT_PROPERTY( m_bStyleSECell )
 
 		m_oCharProperty.SetDefault();
+
+		m_bOldList = false;
 	}
 	void Merge( RtfParagraphProperty& oParPr )
 	{
@@ -2861,8 +2886,8 @@ public:
 //public: CString RenderToRtf(RenderParameter oRenderParameter)
 //		{
 //			CString sResult;
-//			sResult.Append( m_oRowProperty.RenderToRtf(  oRenderParameter  ) );
-//			sResult.Append(_T(" {")+RtfParagraphProperty::RenderToRtf(  oRenderParameter  )+_T(" }") );
+//			sResult += m_oRowProperty.RenderToRtf(  oRenderParameter  );
+//			sResult += _T(" {") + RtfParagraphProperty::RenderToRtf(  oRenderParameter  )+_T(" }");
 //			return sResult;
 //		}
 //};

@@ -329,6 +329,8 @@ bool odf_page_layout_context::add_footer(int type)
 
 	if (!elm) return false;
 	
+	if (master_state_list_.empty())
+		start_master_page(L"");
 	master_state_list_.back().add_footer(elm);
 
 /////////////////////////////////////////////////////////////////////

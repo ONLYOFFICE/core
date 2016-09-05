@@ -40,18 +40,20 @@ class OOXReader
 {
 public: 
 
-    RtfConvertationManager *m_convertationManager;
-	CString					m_sPath;
+    RtfConvertationManager*						m_convertationManager;
+	CString										m_sPath;
 
-	int						m_nCurItap; //для определение вложенности таблицы
+	int											m_nCurItap;			//для определение вложенности таблицы
 
-	int						m_nCurFittextId;
-	std::map<int, CString>	m_aBookmarks;
+	int											m_nCurFittextId;
+	std::map<int, CString>						m_aBookmarks;
 
-	std::map<int, int>					m_mapPictureBullet;
-	std::map<int, TextItemContainerPtr> m_mapFootnotes;
-	std::map<int, TextItemContainerPtr> m_mapEndnotes;
+	std::map<int, int>							m_mapPictureBullet;
+	std::map<int, TextItemContainerPtr>			m_mapFootnotes;
+	std::map<int, TextItemContainerPtr>			m_mapEndnotes;
 
+	std::map<CString, OOX::Vml::CShapeType*>	m_mapShapeTypes;	
+//------------------------------------------------------------------------
 	OOXIdGenerator			m_oOOXIdGenerator;
 
 //Theme Fonts

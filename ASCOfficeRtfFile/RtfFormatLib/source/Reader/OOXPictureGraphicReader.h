@@ -36,7 +36,6 @@
 #include "../RtfPicture.h"
 
 #include "../../../../DesktopEditor/raster/BgraFrame.h"
-
 #include "../../../../Common/DocxFormat/Source/DocxFormat/Drawing/Drawing.h"
 
 #define PICTURE_BUFFER_SIZE 1024

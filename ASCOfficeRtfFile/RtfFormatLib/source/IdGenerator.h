@@ -137,7 +137,7 @@ public:
 		sId.AppendFormat( _T("%d"), m_nOleId++ );
 		CString sResult = _T("_1330071130");
 		sResult = sResult.Left( sResult.GetLength() - sId.GetLength() );
-		sResult.Append( sId );
+		sResult += sId;
 		return sResult;
 	}
 

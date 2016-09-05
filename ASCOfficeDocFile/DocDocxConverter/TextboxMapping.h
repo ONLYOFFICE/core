@@ -40,8 +40,8 @@ namespace DocFileFormat
 	{
 	public:
 
-		TextboxMapping(ConversionContext* ctx, int textboxIndex, XmlUtils::CXmlWriter* writer, IMapping* caller);
-		TextboxMapping(ConversionContext* ctx, XmlUtils::CXmlWriter* writer, IMapping* caller);
+		TextboxMapping(ConversionContext* ctx, int textboxIndex, XMLTools::CStringXmlWriter* writer, IMapping* caller);
+		TextboxMapping(ConversionContext* ctx, XMLTools::CStringXmlWriter* writer, IMapping* caller);
 		
 		virtual ~TextboxMapping();
 		virtual void Apply(IVisitable* visited);

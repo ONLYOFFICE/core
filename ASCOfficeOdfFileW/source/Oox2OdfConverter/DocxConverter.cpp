@@ -2003,7 +2003,7 @@ void DocxConverter::convert(OOX::Logic::CPicture* oox_pic)
 		}
 		else if (oox_pic->m_oShapeType.IsInit())
 		{
-			OOX::Vml::SptType sptType = static_cast<OOX::Vml::SptType>(oox_pic->m_oShapeType->m_oSpt.GetValue());
+            OOX::Vml::SptType sptType = oox_pic->m_oShapeType->m_oSpt.IsInit() ? static_cast<OOX::Vml::SptType>(oox_pic->m_oShapeType->m_oSpt->GetValue()) : OOX::Vml::sptNotPrimitive;
 
 			odf_context()->drawing_context()->set_name(std::wstring (L"Custom") + boost::lexical_cast<std::wstring>(sptType));
 			odf_context()->drawing_context()->start_shape(OOX::Spt2ShapeType(sptType));
@@ -2018,14 +2018,14 @@ void DocxConverter::convert(OOX::Logic::CPicture* oox_pic)
 			bool bSet = false;
 			if (oox_pic->m_oShape.IsInit())
 			{
-				OOX::Vml::SptType sptType = static_cast<OOX::Vml::SptType>(oox_pic->m_oShape->m_oSpt.GetValue());
-				if (sptType != OOX::Vml::SptType::sptNotPrimitive)
+                OOX::Vml::SptType sptType = oox_pic->m_oShapeType->m_oSpt.IsInit() ? static_cast<OOX::Vml::SptType>(oox_pic->m_oShapeType->m_oSpt->GetValue()) : OOX::Vml::sptNotPrimitive;
+                if (sptType != OOX::Vml::SptType::sptNotPrimitive)
 				{
 					odf_context()->drawing_context()->set_name(std::wstring (L"Custom") + boost::lexical_cast<std::wstring>(sptType));
 					odf_context()->drawing_context()->start_shape(OOX::Spt2ShapeType(sptType));
 					bSet = true;
 				}
-				else if (oox_pic->m_oShape->m_oConnectorType.GetValue() != SimpleTypes::connectortypeNone)
+                else if ((oox_pic->m_oShape->m_oConnectorType.IsInit()) && (oox_pic->m_oShape->m_oConnectorType->GetValue() != SimpleTypes::connectortypeNone))
 				{
 					odf_context()->drawing_context()->set_name(L"Connector");
 					odf_context()->drawing_context()->start_shape(SimpleTypes::shapetypeStraightConnector1);
@@ -2075,14 +2075,15 @@ void DocxConverter::convert(OOX::Logic::CObject* oox_obj)
 	bool bSet = false;
 	if (oox_obj->m_oShape.IsInit())
 	{
-		OOX::Vml::SptType sptType = static_cast<OOX::Vml::SptType>(oox_obj->m_oShape->m_oSpt.GetValue());
-		if (sptType != OOX::Vml::SptType::sptNotPrimitive)
+        OOX::Vml::SptType sptType = oox_obj->m_oShapeType->m_oSpt.IsInit() ? static_cast<OOX::Vml::SptType>(oox_obj->m_oShapeType->m_oSpt->GetValue()) : OOX::Vml::sptNotPrimitive;
+
+        if (sptType != OOX::Vml::SptType::sptNotPrimitive)
 		{
 			odf_context()->drawing_context()->set_name(std::wstring (L"Custom") + boost::lexical_cast<std::wstring>(sptType));
 			odf_context()->drawing_context()->start_shape(OOX::Spt2ShapeType(sptType));
 			bSet = true;
 		}
-		else if (oox_obj->m_oShape->m_oConnectorType.GetValue() != SimpleTypes::connectortypeNone)
+        else if ((oox_obj->m_oShape->m_oConnectorType.IsInit()) && (oox_obj->m_oShape->m_oConnectorType->GetValue() != SimpleTypes::connectortypeNone))
 		{
 			odf_context()->drawing_context()->set_name(L"Connector");
 			odf_context()->drawing_context()->start_shape(SimpleTypes::shapetypeStraightConnector1);

@@ -150,16 +150,6 @@ public:
 
 				//------------------------------------------------------------------------------------------------------
 
-				//ATL::CAtlFile oFile;
-				//if (SUCCEEDED(oFile.Create(L"d:\\blop.dat",GENERIC_WRITE, FILE_SHARE_WRITE, CREATE_ALWAYS)))
-				//{
-				//	DWORD nFileBuff	=	0L;
-				//	oFile.Write (pBytes, count, &nFileBuff);
-				//	oFile.Close();
-				//}
-
-				//------------------------------------------------------------------------------------------------------
-
 				if ( !isResultNeeded )
 				{
 					RELEASEARRAYOBJECTS (pBytes);

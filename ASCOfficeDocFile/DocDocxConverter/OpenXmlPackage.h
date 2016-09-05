@@ -36,8 +36,6 @@
 #include "WordDocument.h"
 #include "IMapping.h"
 
-#include "../../Common/DocxFormat/Source/XML/xmlutils.h"
-
 namespace DocFileFormat
 {
 	struct Relationship

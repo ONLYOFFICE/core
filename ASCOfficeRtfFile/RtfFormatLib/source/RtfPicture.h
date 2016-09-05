@@ -37,7 +37,7 @@
 class RtfPicture : public IDocumentElement
 {
 public: 
-	typedef enum {dt_none, dt_png, dt_jpg, dt_emf, dt_wmf, dt_apm}DataType;
+	typedef enum {dt_none, dt_png, dt_jpg, dt_emf, dt_wmf, dt_apm, dt_macpict}DataType;
 	//		RtfShape m_oShapeProp;
 
 	DataType eDataType;

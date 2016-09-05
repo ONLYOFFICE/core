@@ -61,6 +61,7 @@ bool CBgraFrame::OpenFile(const std::wstring& strFileName, unsigned int nFileTyp
 			return false;
 
 		CxImageToMediaFrame(img);
+		m_bIsGrayScale = img.IsGrayScale();
 		return true;
 	}
 }

@@ -312,7 +312,6 @@ namespace OOX
 		{
 			// Выставляем значения по умолчанию
 			m_oHrPct.SetValue( 0 );
-			m_oSpt.SetValue( 0 );
 
 			// Читаем атрибуты
 			if ( oReader.GetAttributesCount() <= 0 )
@@ -548,11 +547,13 @@ namespace OOX
 
 			ComplexTypes_WriteAttribute ( _T("insetpen=\""),  m_oInsetPen );
 
-			if ( 0 != m_oSpt.GetValue() )
-				sResult += _T("o:spt=\"") + m_oSpt.ToString() + _T("\" ");
+			if ( m_oSpt.IsInit() )
+				sResult += _T("o:spt=\"") + m_oSpt->ToString() + _T("\" ");
 
-			if ( SimpleTypes::connectortypeStraight != m_oConnectorType.GetValue() )
-				sResult += _T("o:connectortype=\"") + m_oConnectorType.ToString() + _T("\" ");
+			if (m_oConnectorType.IsInit())
+			{
+				sResult += _T("o:connectortype=\"") + m_oConnectorType->ToString() + _T("\" ");
+			}
 
 			ComplexTypes_WriteAttribute ( _T("o:bwmode=\""),   m_oBwMode );
 			ComplexTypes_WriteAttribute ( _T("o:bwpure=\""),   m_oBwPure );
@@ -1022,8 +1023,7 @@ namespace OOX
 				sResult += _T("<x:SizeWithCells/>");
 			if(m_oAnchor.IsInit())
 			{
-				CString sAnchor;sAnchor.Format(_T("<x:Anchor>%ls</x:Anchor>"), m_oAnchor.get());
-				sResult += sAnchor;
+				sResult += _T("<x:Anchor>") + m_oAnchor.get() + _T("</x:Anchor>");
 			}
 			if(m_oRow.IsInit())
 			{

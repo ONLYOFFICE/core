@@ -204,10 +204,7 @@ namespace ComplexTypes
 			}
 			virtual CString ToString() const
 			{
-				CString sResult;
-
-				sResult.Format( _T("w:val=\"%ls\""), m_oVal.ToString() );
-
+				CString sResult = _T("w:val=\"") + m_oVal.ToString() + _T("\"");
 				return sResult;
 			}
 		private:
@@ -252,10 +249,7 @@ namespace ComplexTypes
 			}
 			virtual CString ToString() const
 			{
-				CString sResult;
-
-				sResult.Format( _T("w:val=\"%ls\""), m_oVal.ToString() );
-
+				CString sResult = _T("w:val=\"") + m_oVal.ToString() + _T("\"");
 				return sResult;
 			}
 		private:
@@ -300,9 +294,7 @@ namespace ComplexTypes
 			}
 			virtual CString ToString() const
 			{
-				CString sResult;
-
-				sResult.Format( _T("w:val=\"%ls\""), m_oVal.ToString() );
+				CString sResult = _T("w:val=\"") + m_oVal.ToString() + _T("\"");
 
 				return sResult;
 			}
@@ -348,9 +340,7 @@ namespace ComplexTypes
 			}
 			virtual CString ToString() const
 			{
-				CString sResult;
-
-				sResult.Format( _T("w:multiLine=\"%ls\""), m_oMultiLine.ToString() );
+				CString sResult = _T("w:multiLine=\"") + m_oMultiLine.ToString() + _T("\"");
 
 				return sResult;
 			}

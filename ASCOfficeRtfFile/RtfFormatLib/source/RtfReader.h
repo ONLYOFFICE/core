@@ -53,8 +53,8 @@ public:
             RtfRowProperty          m_oRowProperty;
             RtfCellProperty         m_oCellProperty;
             RtfOldList              m_oCurOldList;
-		//		RtfSectionProperty m_oSectionProp;
-			ReaderStatePtr psave;
+		//	RtfSectionProperty		m_oSectionProp;
+			ReaderStatePtr			m_pSaveState;
             std::string             m_sCurText;
 			
 			ReaderState()
@@ -65,7 +65,6 @@ public:
 				m_oRowProperty.SetDefaultRtf();
 				m_oCellProperty.SetDefaultRtf();
 				m_oCurOldList.SetDefault();
-				//m_oSectionProp.SetDefaultOOX();
 			}
 	};
 

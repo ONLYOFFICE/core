@@ -256,8 +256,8 @@ namespace OOX
 					m_sTextFill = oReader.GetOuterXml();
 
 					CString strXml = _T("<xml xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" >");
-							strXml.Append(m_sTextFill.get());
-							strXml.Append(_T("</xml>"));
+							strXml += m_sTextFill.get();
+							strXml += _T("</xml>");
 							
 					XmlUtils::CXmlLiteReader oSubReader;//нам нужны xml и сами объекты 
 					bool result = oSubReader.FromString(strXml);

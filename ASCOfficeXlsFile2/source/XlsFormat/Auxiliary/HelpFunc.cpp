@@ -37,9 +37,9 @@
 	#else
 		#include <iconv.h>
 	#endif
-#else
-	#include "../../../../UnicodeConverter/UnicodeConverter.h"
+
 #endif
+#include "../../../../UnicodeConverter/UnicodeConverter.h"
 
 #include <Logic/Biff_structures/CellRangeRef.h>
 
@@ -555,7 +555,22 @@ const std::string toStdString(std::wstring wide_string, const unsigned int code_
 }
  const std::wstring	toStdWString(char* ansi, int size, const unsigned int code_page)
  {
- #if defined (_WIN32) || defined (_WIN64)
+    std::string sCodePage;
+    for (int i = 0; i < UNICODE_CONVERTER_ENCODINGS_COUNT; ++i)
+    {
+        if (code_page == NSUnicodeConverter::Encodings[i].WindowsCodePage)
+        {
+            sCodePage = NSUnicodeConverter::Encodings[i].Name;
+            break;
+        }
+    }
+    if (!sCodePage.empty())
+	{
+		NSUnicodeConverter::CUnicodeConverter oConverter;
+		return oConverter.toUnicode(ansi, size, sCodePage.c_str());
+	}
+
+#if defined (_WIN32) || defined (_WIN64)
     const int nSize = MultiByteToWideChar(code_page, 0, ansi, size, NULL, 0);
 
     wchar_t *sTemp = new wchar_t[nSize];

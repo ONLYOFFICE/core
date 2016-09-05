@@ -45,6 +45,8 @@ private:
 
 	BYTE* m_pData;
 
+	bool m_bIsGrayScale;
+
 public:
 	CBgraFrame()
 	{
@@ -69,6 +71,7 @@ private:
 		m_lHeight	= 0;
 		m_lStride	= 0;
 		m_pData		= NULL;
+		m_bIsGrayScale  = false;
 	}
 
 public:
@@ -107,6 +110,11 @@ public:
 	inline void put_Data(BYTE* pData)
 	{
 		m_pData = pData;
+	}
+
+	inline bool IsGrayScale()
+	{
+		return m_bIsGrayScale;
 	}
 
 public:

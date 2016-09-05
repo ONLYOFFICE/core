@@ -281,8 +281,8 @@ namespace PPTX
             CString type = it->second->type().RelationType();
             CString name = it->second->type().DefaultFileName().m_strFilename;
 
-            return (((type == PPTX::FileTypes::ExternalAudio.RelationType()) || (type == PPTX::FileTypes::ExternalImage.RelationType())
-                || (type == PPTX::FileTypes::ExternalVideo.RelationType())) && (name == _T("")));
+            return (((type == PPTX::FileTypes::ExternalAudio) || (type == PPTX::FileTypes::ExternalImage)
+                || (type == PPTX::FileTypes::ExternalVideo)) && (name == _T("")));
         }
         return true;
 	}

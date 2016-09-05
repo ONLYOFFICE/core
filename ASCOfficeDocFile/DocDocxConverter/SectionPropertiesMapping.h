@@ -156,7 +156,7 @@ namespace DocFileFormat
 	{
 	public:
 		// Creates a new SectionPropertiesMapping which writes the properties to the given writer
-		SectionPropertiesMapping (XmlUtils::CXmlWriter* writer, ConversionContext* ctx, int nSelectProperties);
+		SectionPropertiesMapping (XMLTools::CStringXmlWriter* writer, ConversionContext* ctx, int nSelectProperties);
 		// Creates a new SectionPropertiesMapping which appends the properties to a given node.
 		SectionPropertiesMapping (XMLTools::XMLElement<wchar_t>* sectPr, ConversionContext* ctx, int nSelectProperties);
 		virtual ~SectionPropertiesMapping();

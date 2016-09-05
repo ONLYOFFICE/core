@@ -105,7 +105,7 @@
 			UseOfMFC="0"
 			UseOfATL="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
-			CharacterSet="1"
+			CharacterSet="0"
 			DeleteExtensionsOnClean=""
 			>
 			<Tool
@@ -126,6 +126,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalOptions=" /Wp64"
 				Optimization="0"
 				AdditionalIncludeDirectories="include;font_win32_tt;..\Expat;..\Objects\Font\FreeType"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;AGG_BMP_ALPHA_BLEND;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS"

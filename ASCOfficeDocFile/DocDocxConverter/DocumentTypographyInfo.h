@@ -76,16 +76,14 @@ namespace DocFileFormat
 
 		DocumentTypographyInfo():
 		fKerningPunct(false), iJustification(0), iLevelOfKinsoku(0), f2on1(false), fOldDefineLineBaseOnGrid(false),
-			iCustomKsu(0), fJapaneseUseLevel2(false), cchFollowingPunct(0), cchLeadingPunct(0), rgxchFPunct( _T( "" ) ),
-			rgxchLPunct( _T( "" ) )
+            iCustomKsu(0), fJapaneseUseLevel2(false), cchFollowingPunct(0), cchLeadingPunct(0)
 		{
 		}
 
 		/// Parses the bytes to retrieve a DocumentTypographyInfo
 		DocumentTypographyInfo( unsigned char* bytes, int size ):
 		fKerningPunct(false), iJustification(0), iLevelOfKinsoku(0), f2on1(false), fOldDefineLineBaseOnGrid(false),
-			iCustomKsu(0), fJapaneseUseLevel2(false), cchFollowingPunct(0), cchLeadingPunct(0), rgxchFPunct( _T( "" ) ),
-			rgxchLPunct( _T( "" ) )
+            iCustomKsu(0), fJapaneseUseLevel2(false), cchFollowingPunct(0), cchLeadingPunct(0)
 		{
 			if ( size == 310 )
 			{

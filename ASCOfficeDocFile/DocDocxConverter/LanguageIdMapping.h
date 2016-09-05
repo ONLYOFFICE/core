@@ -48,7 +48,7 @@ namespace DocFileFormat
 	class LanguageIdMapping : public PropertiesMapping, public IMapping
 	{
 	public: 
-		LanguageIdMapping( XmlUtils::CXmlWriter* writer, LanguageType type );
+		LanguageIdMapping( XMLTools::CStringXmlWriter* writer, LanguageType type );
 		LanguageIdMapping( XMLTools::XMLElement<wchar_t>* parentElement, LanguageType type );
 		virtual ~LanguageIdMapping();
 		void Apply( IVisitable* lid );

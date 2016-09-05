@@ -373,7 +373,7 @@ namespace OOX
 			{
 				if(m_oId.IsInit())
 				{
-					CString sVal;sVal.Format(_T("<legacyDrawing r:id=\"%ls\"/>"), m_oId->GetValue());
+					CString sVal = _T("<legacyDrawing r:id=\"") + m_oId->GetValue() + _T("\"/>");
 					writer.WriteString(sVal);
 				}
 				

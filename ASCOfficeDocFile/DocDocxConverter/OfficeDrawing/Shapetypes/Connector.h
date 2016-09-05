@@ -42,8 +42,8 @@ namespace DocFileFormat
 		{
 			ShapeConcentricFill =	true;
 			Joins				=	miter;
-			Path				=	_T("m,l21600,r,21600e");
-			//AdjustmentValues	=	_T("10800");
+            Path				=	L"m,l21600,r,21600e";
+            //AdjustmentValues	=	L"10800";
 
 			Filled				=	true;
 		}
@@ -56,15 +56,15 @@ namespace DocFileFormat
 		{
 			ShapeConcentricFill =	true;
 			Joins				=	miter;
-			Path				=	_T("m,l@0,0@0,21600,21600,21600e");
-			AdjustmentValues	=	_T("10800");
+            Path				=	L"m,l@0,0@0,21600,21600,21600e";
+            AdjustmentValues	=	L"10800";
 
 			Filled				=	true;
 
-			Formulas.push_back(_T("val #0"));
+            Formulas.push_back(L"val #0");
 
 			Handle one;
-			one.position		=	_T("#0,center");
+            one.position		=	L"#0,center";
 			Handles.push_back (one);
 		}
 	};
@@ -76,15 +76,15 @@ namespace DocFileFormat
 		{
 			ShapeConcentricFill =	true;
 			Joins				=	miter;
-			Path				=	_T("m,l@0,0@0,21600,21600,21600e");
-			AdjustmentValues	=	_T("10800");
+            Path				=	L"m,l@0,0@0,21600,21600,21600e";
+            AdjustmentValues	=	L"10800";
 
 			Filled				=	true;
 
-			Formulas.push_back(_T("val #0"));
+            Formulas.push_back(L"val #0");
 
 			Handle one;
-			one.position		=	_T("#0,center");
+            one.position		=	L"#0,center";
 			Handles.push_back (one);
 		}
 	};
@@ -96,15 +96,15 @@ namespace DocFileFormat
 		{
 			ShapeConcentricFill =	true;
 			Joins				=	miter;
-			Path				=	_T("m,l@0,0@0,21600,21600,21600e");
-			AdjustmentValues	=	_T("10800");
+            Path				=	L"m,l@0,0@0,21600,21600,21600e";
+            AdjustmentValues	=	L"10800";
 
 			Filled				=	true;
 
-			Formulas.push_back(_T("val #0"));
+            Formulas.push_back(L"val #0");
 
 			Handle one;
-			one.position		=	_T("#0,center");
+            one.position		=	L"#0,center";
 			Handles.push_back (one);
 		}
 	};
@@ -117,16 +117,16 @@ namespace DocFileFormat
 		{
 			ShapeConcentricFill =	true;
 			Joins				=	miter;
-			Path				=	_T("m,c@0,0@1,5400@1,10800@1,16200@2,21600,21600,21600e");
+            Path				=	L"m,c@0,0@1,5400@1,10800@1,16200@2,21600,21600,21600e";
 
 			Filled				=	true;
 
-			Formulas.push_back(_T("mid #0 0"));
-			Formulas.push_back(_T("val #0"));		
-			Formulas.push_back(_T("mid #0 21600"));
+            Formulas.push_back(L"mid #0 0");
+            Formulas.push_back(L"val #0");
+            Formulas.push_back(L"mid #0 21600");
 
 			Handle one;
-			one.position		=	_T("#0,center");
+            one.position		=	L"#0,center";
 			Handles.push_back (one);
 		}
 	};
@@ -137,16 +137,16 @@ namespace DocFileFormat
 		{
 			ShapeConcentricFill =	true;
 			Joins				=	miter;
-			Path				=	_T("m,c@0,0@1,5400@1,10800@1,16200@2,21600,21600,21600e");
+            Path				=	L"m,c@0,0@1,5400@1,10800@1,16200@2,21600,21600,21600e";
 
 			Filled				=	true;
 
-			Formulas.push_back(_T("mid #0 0"));
-			Formulas.push_back(_T("val #0"));		
-			Formulas.push_back(_T("mid #0 21600"));
+            Formulas.push_back(L"mid #0 0");
+            Formulas.push_back(L"val #0");
+            Formulas.push_back(L"mid #0 21600");
 
 			Handle one;
-			one.position		=	_T("#0,center");
+            one.position		=	L"#0,center";
 			Handles.push_back (one);
 		}
 	};
@@ -157,16 +157,16 @@ namespace DocFileFormat
 		{
 			ShapeConcentricFill =	true;
 			Joins				=	miter;
-			Path				=	_T("m,c@0,0@1,5400@1,10800@1,16200@2,21600,21600,21600e");
+            Path				=	L"m,c@0,0@1,5400@1,10800@1,16200@2,21600,21600,21600e";
 
 			Filled				=	true;
 
-			Formulas.push_back(_T("mid #0 0"));
-			Formulas.push_back(_T("val #0"));		
-			Formulas.push_back(_T("mid #0 21600"));
+            Formulas.push_back(L"mid #0 0");
+            Formulas.push_back(L"val #0");
+            Formulas.push_back(L"mid #0 21600");
 
 			Handle one;
-			one.position		=	_T("#0,center");
+            one.position		=	L"#0,center";
 			Handles.push_back (one);
 		}
 	};
@@ -177,16 +177,16 @@ namespace DocFileFormat
 		{
 			ShapeConcentricFill =	true;
 			Joins				=	miter;
-			Path				=	_T("m,c@0,0@1,5400@1,10800@1,16200@2,21600,21600,21600e");
+            Path				=	L"m,c@0,0@1,5400@1,10800@1,16200@2,21600,21600,21600e";
 
 			Filled				=	true;
 
-			Formulas.push_back(_T("mid #0 0"));
-			Formulas.push_back(_T("val #0"));		
-			Formulas.push_back(_T("mid #0 21600"));
+            Formulas.push_back(L"mid #0 0");
+            Formulas.push_back(L"val #0");
+            Formulas.push_back(L"mid #0 21600");
 
 			Handle one;
-			one.position		=	_T("#0,center");
+            one.position		=	L"#0,center";
 			Handles.push_back (one);
 		}
 	};

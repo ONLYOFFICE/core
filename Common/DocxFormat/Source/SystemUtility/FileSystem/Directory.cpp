@@ -131,7 +131,7 @@ namespace FileSystem
         memset (pBuffer, 0, sizeof (TCHAR) * (MAX_PATH+1));
 		::GetTempPathW (MAX_PATH, pBuffer);
         CString res;
-        res.AppendFormat(_T("%ls"), pBuffer);
+        res += CString(pBuffer);
        
 		int nSeparator1Pos = res.ReverseFind(_T('/'));
         if (-1 == nSeparator1Pos)

@@ -123,8 +123,6 @@ namespace DocFileFormat
 						rgTc80.push_back(oTC80);
 					}
 
-					// static int m = 0; //ATLTRACE(L"PUSH: %d\n", m); ++m;
-
 					break;
 				}	
 

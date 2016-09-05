@@ -47,9 +47,9 @@ public:
 	{
 		if (m_ooxAnchor == NULL) return false;
 
-		oOutput.m_oPicture = RtfPicturePtr( new RtfPicture() );
-		oOutput.m_eShapeType = RtfShape::st_anchor;
-		oOutput.m_nShapeType = 75;
+		oOutput.m_oPicture			= RtfPicturePtr( new RtfPicture() );
+		oOutput.m_eAnchorTypeShape	= RtfShape::st_anchor;
+		oOutput.m_nShapeType		= 75;//NSOfficeDrawing::sptPictureFrame;
 
 		oOutput.m_bAllowOverlap		= m_ooxAnchor->m_oAllowOverlap.IsInit() ? m_ooxAnchor->m_oAllowOverlap->ToBool() : false;
 		oOutput.m_nZOrderRelative	= m_ooxAnchor->m_oBehindDoc.IsInit() ? 	m_ooxAnchor->m_oBehindDoc->ToBool() : false;
@@ -241,22 +241,20 @@ public:
 			}
 			if (m_ooxAnchor->m_oWrapThrough->m_oWrapPolygon.IsInit())///??? todooo twips ? pt?
 			{
-				int nValue;
+				int nValueX, nValueY;
 				if (m_ooxAnchor->m_oWrapThrough->m_oWrapPolygon->m_oStart.IsInit())
 				{
-					nValue = m_ooxAnchor->m_oWrapThrough->m_oWrapPolygon->m_oStart->m_oX.ToTwips();
-					oOutput.m_aWrapPoints.push_back( nValue );
+					nValueX = m_ooxAnchor->m_oWrapThrough->m_oWrapPolygon->m_oStart->m_oX.ToTwips();
+					nValueY = m_ooxAnchor->m_oWrapThrough->m_oWrapPolygon->m_oStart->m_oY.ToTwips();
 					
-					nValue =m_ooxAnchor->m_oWrapThrough->m_oWrapPolygon->m_oStart->m_oY.ToTwips();
-					oOutput.m_aWrapPoints.push_back( nValue );
+					oOutput.m_aWrapPoints.push_back( std::pair<int,int>(nValueX, nValueY));
 				}
 				for( int i = 0; i < m_ooxAnchor->m_oWrapThrough->m_oWrapPolygon->m_arrLineTo.size(); i++ )
 				{
-					nValue = m_ooxAnchor->m_oWrapThrough->m_oWrapPolygon->m_arrLineTo[i]->m_oX.ToTwips();
-					oOutput.m_aWrapPoints.push_back( nValue );
+					nValueX = m_ooxAnchor->m_oWrapThrough->m_oWrapPolygon->m_arrLineTo[i]->m_oX.ToTwips();
+					nValueY = m_ooxAnchor->m_oWrapThrough->m_oWrapPolygon->m_arrLineTo[i]->m_oY.ToTwips();
 					
-					nValue =m_ooxAnchor->m_oWrapThrough->m_oWrapPolygon->m_arrLineTo[i]->m_oY.ToTwips();
-					oOutput.m_aWrapPoints.push_back( nValue );
+					oOutput.m_aWrapPoints.push_back( std::pair<int,int>(nValueX, nValueY));
 				}
 			}
 		}
@@ -275,24 +273,22 @@ public:
 			}
 			if (m_ooxAnchor->m_oWrapTight->m_oWrapPolygon.IsInit())
 			{
-				int nValue;
+				int nValueX, nValueY;
 
 				if (m_ooxAnchor->m_oWrapTight->m_oWrapPolygon->m_oStart.IsInit())
 				{
-					nValue = m_ooxAnchor->m_oWrapTight->m_oWrapPolygon->m_oStart->m_oX.ToTwips();
-					oOutput.m_aWrapPoints.push_back( nValue );
+					nValueX = m_ooxAnchor->m_oWrapTight->m_oWrapPolygon->m_oStart->m_oX.ToTwips();
+					nValueY = m_ooxAnchor->m_oWrapTight->m_oWrapPolygon->m_oStart->m_oY.ToTwips();
 					
-					nValue =m_ooxAnchor->m_oWrapTight->m_oWrapPolygon->m_oStart->m_oY.ToTwips();
-					oOutput.m_aWrapPoints.push_back( nValue );
+					oOutput.m_aWrapPoints.push_back( std::pair<int,int>(nValueX, nValueY) );
 				}
 
 				for( int i = 0; i < m_ooxAnchor->m_oWrapTight->m_oWrapPolygon->m_arrLineTo.size(); i++ )
 				{
-					nValue = m_ooxAnchor->m_oWrapTight->m_oWrapPolygon->m_arrLineTo[i]->m_oX.ToTwips();
-					oOutput.m_aWrapPoints.push_back( nValue );
+					nValueX = m_ooxAnchor->m_oWrapTight->m_oWrapPolygon->m_arrLineTo[i]->m_oX.ToTwips();
+					nValueY = m_ooxAnchor->m_oWrapTight->m_oWrapPolygon->m_arrLineTo[i]->m_oY.ToTwips();
 					
-					nValue =m_ooxAnchor->m_oWrapTight->m_oWrapPolygon->m_arrLineTo[i]->m_oY.ToTwips();
-					oOutput.m_aWrapPoints.push_back( nValue );
+					oOutput.m_aWrapPoints.push_back( std::pair<int,int>(nValueX, nValueY) );
 				}
 			}
 		}

@@ -37,164 +37,164 @@ namespace Global
 {
 	static const wchar_t ColorIdentifier[17][12] = 
 	{
-		_T( "auto" ),
-		_T( "black" ),
-		_T( "blue" ),
-		_T( "cyan" ),
-		_T( "green" ),
-		_T( "magenta" ),
-		_T( "red" ),
-		_T( "yellow" ),
-		_T( "white" ),
-		_T( "darkBlue" ),
-		_T( "darkCyan" ),
-		_T( "darkGreen" ),
-		_T( "darkMagenta" ),
-		_T( "darkRed" ),
-		_T( "darkYellow" ),
-		_T( "darkGray" ),
-		_T( "lightGray" )
+        L"auto",
+        L"black",
+        L"blue",
+        L"cyan",
+        L"green",
+        L"magenta",
+        L"red",
+        L"yellow",
+        L"white",
+        L"darkBlue",
+        L"darkCyan",
+        L"darkGreen",
+        L"darkMagenta",
+        L"darkRed",
+        L"darkYellow",
+        L"darkGray",
+        L"lightGray"
 	};
 
 	static const wchar_t UnderlineCode[56][16] =
 	{
-		_T( "none" ),
-		_T( "single" ),
-		_T( "words" ),
-		_T( "double" ),
-		_T( "dotted" ),
-		_T( "notUsed1" ),
-		_T( "thick" ),
-		_T( "dash" ),
-		_T( "notUsed2" ),
-		_T( "dotDash" ),
-		_T( "dotDotDash" ),
-		_T( "wave" ),
-		_T( "notUsed3" ),
-		_T( "notUsed4" ),
-		_T( "notUsed5" ),
-		_T( "notUsed6" ),
-		_T( "notUsed7" ),
-		_T( "notUsed8" ),
-		_T( "notUsed9" ),
-		_T( "notUsed10" ),
-		_T( "dottedHeavy" ),
-		_T( "notUsed11" ),
-		_T( "notUsed12" ),
-		_T( "dashedHeavy" ),
-		_T( "notUsed13" ),
-		_T( "dashDotHeavy" ),
-		_T( "dashDotDotHeavy" ),
-		_T( "wavyHeavy" ),
-		_T( "notUsed14" ),
-		_T( "notUsed15" ),
-		_T( "notUsed16" ),
-		_T( "notUsed17" ),
-		_T( "notUsed18" ),
-		_T( "notUsed19" ),
-		_T( "notUsed20" ),
-		_T( "notUsed21" ),
-		_T( "notUsed22" ),
-		_T( "notUsed23" ),
-		_T( "notUsed24" ),
-		_T( "dashLong" ),
-		_T( "notUsed25" ),
-		_T( "notUsed26" ),
-		_T( "notUsed27" ),
-		_T( "wavyDouble" ),
-		_T( "notUsed28" ),
-		_T( "notUsed29" ),
-		_T( "notUsed30" ),
-		_T( "notUsed31" ),
-		_T( "notUsed32" ),
-		_T( "notUsed33" ),
-		_T( "notUsed34" ),
-		_T( "notUsed35" ),
-		_T( "notUsed36" ),
-		_T( "notUsed37" ),
-		_T( "notUsed38" ),
-		_T( "dashLongHeavy" )
+        L"none",
+        L"single",
+        L"words",
+        L"double",
+        L"dotted",
+        L"notUsed1",
+        L"thick",
+        L"dash",
+        L"notUsed2",
+        L"dotDash",
+        L"dotDotDash",
+        L"wave",
+        L"notUsed3",
+        L"notUsed4",
+        L"notUsed5",
+        L"notUsed6",
+        L"notUsed7",
+        L"notUsed8",
+        L"notUsed9",
+        L"notUsed10",
+        L"dottedHeavy",
+        L"notUsed11",
+        L"notUsed12",
+        L"dashedHeavy",
+        L"notUsed13",
+        L"dashDotHeavy",
+        L"dashDotDotHeavy",
+        L"wavyHeavy",
+        L"notUsed14",
+        L"notUsed15",
+        L"notUsed16",
+        L"notUsed17",
+        L"notUsed18",
+        L"notUsed19",
+        L"notUsed20",
+        L"notUsed21",
+        L"notUsed22",
+        L"notUsed23",
+        L"notUsed24",
+        L"dashLong",
+        L"notUsed25",
+        L"notUsed26",
+        L"notUsed27",
+        L"wavyDouble",
+        L"notUsed28",
+        L"notUsed29",
+        L"notUsed30",
+        L"notUsed31",
+        L"notUsed32",
+        L"notUsed33",
+        L"notUsed34",
+        L"notUsed35",
+        L"notUsed36",
+        L"notUsed37",
+        L"notUsed38",
+        L"dashLongHeavy"
 	};
 
 	static const wchar_t TabLeader[8][11] =
 	{
-		_T( "none" ),
-		_T( "dot" ),
-		_T( "hyphen" ),
-		_T( "underscore" ),
-		_T( "heavy" ),
-		_T( "middleDot" ),
-		_T( "none" ),
-		_T( "none" )
+        L"none",
+        L"dot",
+        L"hyphen",
+        L"underscore",
+        L"heavy",
+        L"middleDot",
+        L"none",
+        L"none"
 	};
 
 	static const wchar_t TabStop[7][8] =
 	{
-		_T( "left" ),
-		_T( "center"),
-		_T( "right" ),
-		_T( "decimal" ),
-		_T( "bar" ),
-		_T( "clear" ),
-		_T( "num" )
+        L"left",
+        L"center",
+        L"right",
+        L"decimal",
+        L"bar",
+        L"clear",
+        L"num"
 	};
 
 	static const wchar_t TextAnimation[7][16] =
 	{
-		_T( "none" ),
-		_T( "lights" ),
-		_T( "blinkBackground" ),
-		_T( "sparkle" ),
-		_T( "antsBlack" ),
-		_T( "antsRed" ),
-		_T( "shimmer" )
+        L"none",
+        L"lights",
+        L"blinkBackground",
+        L"sparkle",
+        L"antsBlack",
+        L"antsRed",
+        L"shimmer"
 	};
 
 	static const wchar_t JustificationCode[10][15] =
 	{
-		_T( "start" ),
-		_T( "center" ),
-		_T( "end" ),
-		_T( "both" ),
-		_T( "distribute" ),
-		_T( "mediumKashida" ),
-		_T( "numTab" ),
-		_T( "highKashida" ),
-		_T( "lowKashida" ),
-		_T( "thaiDistribute" )
+        L"start",
+        L"center",
+        L"end",
+        L"both",
+        L"distribute",
+        L"mediumKashida",
+        L"numTab",
+        L"highKashida",
+        L"lowKashida",
+        L"thaiDistribute"
 	};
 
 	static const wchar_t VerticalPositionCode[4][7] =
 	{
-		_T( "margin" ),
-		_T( "page" ),
-		_T( "text" ),
-		_T( "none" )
+        L"margin",
+        L"page",
+        L"text",
+        L"none"
 	};
 
 	static const wchar_t HorizontalPositionCode[4][7] =
 	{
-		_T( "text" ),
-		_T( "margin" ),
-		_T( "page" ),
-		_T( "none" )
+        L"text",
+        L"margin",
+        L"page",
+        L"none"
 	};
 
 	static const wchar_t TextFrameWrapping[6][10] =
 	{
-		_T( "auto" ),
-		_T( "notBeside" ),
-		_T( "around" ),
-		_T( "none" ),
-		_T( "tight" ),
-		_T( "through" )
+        L"auto",
+        L"notBeside",
+        L"around",
+        L"none",
+        L"tight",
+        L"through"
 	};
 
 	static const wchar_t TextFrameDropCapLocation[3][7] =
 	{
-		_T( "none" ),
-		_T( "drop" ),
-		_T( "margin" )
+        L"none",
+        L"drop",
+        L"margin"
 	};
 
 	typedef enum _DashStyle
@@ -214,17 +214,17 @@ namespace Global
 
 	static const wchar_t DashStyleMap[11][16] =
 	{
-		_T( "solid" ),
-		_T( "shortdash" ),
-		_T( "shortdot" ),
-		_T( "shortdashdot" ),
-		_T( "shortdashdotdot" ),
-		_T( "dot" ),
-		_T( "dash" ),
-		_T( "longdash" ),
-		_T( "dashdot" ),
-		_T( "longdashdot" ),
-		_T( "longdashdotdot" )
+        L"solid",
+        L"shortdash",
+        L"shortdot",
+        L"shortdashdot",
+        L"shortdashdotdot",
+        L"dot",
+        L"dash",
+        L"longdash",
+        L"dashdot",
+        L"longdashdot",
+        L"longdashdotdot"
 	};
 
 	typedef enum _TextFlow
@@ -238,12 +238,12 @@ namespace Global
 
 	static const wchar_t TextFlowMap[6][6] =
 	{
-		_T( "lrTb" ),
-		_T( "tbRl" ),
-		_T( "lrTb" ),//его на самом деле нету (2.9.323 TextFlow)
-		_T( "btLr" ),
-		_T( "lrTbV" ),
-		_T( "tbRlV" ),
+        L"lrTb",
+        L"tbRl",
+        L"lrTb",//его на самом деле нету (2.9.323 TextFlow)
+        L"btLr",
+        L"lrTbV",
+        L"tbRlV",
 	};
 
 	typedef enum _VerticalMergeFlag
@@ -262,9 +262,9 @@ namespace Global
 
 	static const wchar_t VerticalAlignMap[3][7] =
 	{
-		_T( "top" ),
-		_T( "center" ),
-		_T( "bottom" )
+        L"top",
+        L"center",
+        L"bottom"
 	};
 
 	typedef enum _CellWidthType
@@ -277,10 +277,10 @@ namespace Global
 
 	static const wchar_t CellWidthTypeMap[4][5] =
 	{
-		_T( "nil" ),
-		_T( "auto" ),
-		_T( "pct" ),
-		_T( "dxa" )
+        L"nil",
+        L"auto",
+        L"pct",
+        L"dxa"
 	};
 
 	typedef enum _BlipUsage

@@ -235,7 +235,7 @@ namespace OOX
 				CString sType = pPair->second->type().RelationType();
 				CString sName = pPair->second->type().DefaultFileName().m_strFilename;
 
-				return (( ( sType == OOX::FileTypes::ExternalAudio.RelationType() ) || ( sType == OOX::FileTypes::ExternalImage.RelationType() ) || ( sType == OOX::FileTypes::ExternalVideo.RelationType() ) ) && ( sName == _T("") ) );
+				return (( ( sType == OOX::FileTypes::ExternalAudio ) || ( sType == OOX::FileTypes::ExternalImage ) || ( sType == OOX::FileTypes::ExternalVideo ) ) && ( sName == _T("") ) );
 			}
 			return true;
 		}

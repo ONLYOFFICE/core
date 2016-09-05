@@ -34,7 +34,7 @@
 
 namespace DocFileFormat
 {
-	TablePropertiesMapping::TablePropertiesMapping (XmlUtils::CXmlWriter* pWriter, StyleSheet* styles, std::vector<short>* grid, bool isTableStyleNeeded ):
+	TablePropertiesMapping::TablePropertiesMapping (XMLTools::CStringXmlWriter* pWriter, StyleSheet* styles, std::vector<short>* grid, bool isTableStyleNeeded ):
 			PropertiesMapping(pWriter), _tblPr(NULL), _tblGrid(NULL), _tblBorders(NULL), _grid(NULL),
 			brcLeft(NULL), brcTop(NULL), brcBottom(NULL), brcRight(NULL), brcHorz(NULL), brcVert(NULL), _styles(NULL),
 			_isTableStyleNeeded(isTableStyleNeeded)

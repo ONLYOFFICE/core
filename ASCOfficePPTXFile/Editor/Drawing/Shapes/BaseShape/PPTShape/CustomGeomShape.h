@@ -44,8 +44,8 @@ namespace NSCustomVML
 	class CSegment
 	{
 	public:
-		RulesType m_eRuler;
-		WORD m_nCount;
+		RulesType	m_eRuler;
+		WORD		m_nCount;
 
 	public:
 		CSegment(RulesType eType = rtMoveTo, WORD nCount = 2)
@@ -71,11 +71,60 @@ namespace NSCustomVML
 		~CSegment()
 		{
 		}
-		void Read(POLE::Stream* pStream)
+		int Read(WORD value)//from rtf segments
+		{
+			int repeate = 0;
+            if (value >= 0x2000 && value < 0x20FF)
+            {
+                repeate = value & 0x0FFF;
+                value &= 0xFF00;
+            }
+
+			m_nCount = 0;
+            switch (value)
+            {
+                case 0x0001: // lineto
+					m_eRuler = rtLineTo;
+                    m_nCount = 1;
+                    break;
+                case 0x4000: // moveto
+                    m_eRuler = rtMoveTo;
+                    m_nCount = 1;
+                    break;
+                case 0x2000: // curveto
+                    m_eRuler = rtCurveTo;
+                    m_nCount = 3;
+                    break;
+                case 0xb300: // arcto
+                    m_eRuler = rtArc;
+                    m_nCount = 2;
+                    break;
+                case 0xac00:
+                case 0xaa00: // nofill
+                case 0xad00:
+ 					m_eRuler = rtNoFill;
+					break;
+               case 0xab00: // nostroke
+					m_eRuler = rtNoStroke;
+				   break;
+                case 0x6001: // close
+					m_eRuler = rtClose;
+                    break;
+                case 0x8000: // end
+                    m_eRuler = rtEnd;
+                    break;
+                default: // given number of lineto elements
+                    m_eRuler = rtLineTo;
+                    m_nCount = value;
+                    break;
+            }
+            return (std::max)(1, repeate);
+		}
+		void Read(POLE::Stream* pStream)//from binary ms segments
 		{
 			WORD mem = StreamUtils::ReadWORD(pStream);
-
 			BYTE type = mem & 0x07;
+			
 			if (type <= 4)
 			{
 				m_eRuler	= (RulesType)type;
@@ -166,7 +215,7 @@ namespace NSCustomVML
 
 			m_nCount = (mem >> 5) & 0x00FF;
 		}
-		void Read(NSOfficeDrawing::CBinaryReader& oReader)
+		void Read(NSOfficeDrawing::CBinaryReader& oReader)//from binary ms segments
 		{
 			WORD mem = oReader.ReadWORD();
 
@@ -175,7 +224,6 @@ namespace NSCustomVML
 			{
 				m_eRuler	= (RulesType)type;
 				m_nCount	= (mem & 0x1FFF);
-				//m_nCount = (WORD)GetCountPoints2(m_eRuler);
 				m_nCount = (WORD)GetCountPoints2(m_eRuler, m_nCount);
 				return;
 			}
@@ -489,17 +537,47 @@ namespace NSCustomVML
 		{
 		}
 
-	public:
 		bool IsCustom()
 		{
 			return (m_bIsVerticesPresent && m_bIsPathPresent);
 		}
 
-	public:
 		void SetPath(RulesType ePath)
 		{
 			m_ePath = ePath;
                         m_bIsPathPresent = true;
+		}
+		void LoadVertices(std::vector<std::pair<int,int>> values)
+		{
+			if (!values.empty())
+				m_bIsVerticesPresent = true;
+			
+			m_arVertices.clear();
+
+			for (int ind = 0; ind < values.size(); ++ind)
+			{
+                Aggplus::POINT oPoint;
+				
+				oPoint.x = values[ind].first;
+				oPoint.y = values[ind].second;
+		
+				LONG lMinF = (LONG)0x80000000;
+				LONG lMaxF = (LONG)0x8000007F;
+				if (lMinF <= (DWORD)oPoint.x)
+				{
+					int nGuideIndex = (DWORD)oPoint.x - 0x80000000;	
+
+					bool b = false;
+				}
+				if (lMinF <= (DWORD)oPoint.y)
+				{
+					int nGuideIndex = (DWORD)oPoint.y - 0x80000000;					
+
+					bool b = false;
+				}
+
+				m_arVertices.push_back(oPoint);
+			}
 		}
 		void LoadVertices(CProperty* pProperty)
 		{
@@ -554,6 +632,32 @@ namespace NSCustomVML
 		void LoadAHs(CProperty* pProperty)
 		{
 		}
+		void LoadSegments(std::vector<int> values)
+		{
+			m_arSegments.clear();
+			
+			if (!values.empty())	
+				m_bIsPathPresent = true;
+
+			for (int ind = 0; ind <  values.size(); ++ind)
+			{
+				CSegment oInfo;
+				int count = oInfo.Read(values[ind]);
+				
+				if (0 == oInfo.m_nCount)
+				{
+					if ((rtEnd		!= oInfo.m_eRuler) &&
+						(rtNoFill	!= oInfo.m_eRuler) &&
+						(rtNoStroke != oInfo.m_eRuler) &&
+						(rtClose	!= oInfo.m_eRuler))
+					{
+						continue;
+					}
+				}
+				for (int i = 0 ; i < count; i++)
+					m_arSegments.push_back(oInfo);
+			}
+		}
 		void LoadSegments(CProperty* pProperty)
 		{
 			NSOfficeDrawing::CBinaryReader oReader(pProperty->m_pOptions, pProperty->m_lValue);
@@ -561,10 +665,7 @@ namespace NSCustomVML
 
 			WORD lCount = (WORD)(pProperty->m_lValue / 2);
 
-			if (lCount > 0)
-			{
-                                m_bIsPathPresent = true;
-			}
+			if (lCount > 0)	m_bIsPathPresent = true;
 
 			for (WORD lIndex = 0; lIndex < lCount; ++lIndex)
 			{

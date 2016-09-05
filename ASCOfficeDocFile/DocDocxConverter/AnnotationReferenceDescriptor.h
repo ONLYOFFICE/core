@@ -61,7 +61,7 @@ namespace DocFileFormat
 			return m_BookmarkId;
 		}
 
-		AnnotationReferenceDescriptor() : m_UserInitials( _T( "" ) ), m_AuthorIndex(0), m_BookmarkId(0)
+        AnnotationReferenceDescriptor() : m_AuthorIndex(0), m_BookmarkId(0)
 		{
 		}
 

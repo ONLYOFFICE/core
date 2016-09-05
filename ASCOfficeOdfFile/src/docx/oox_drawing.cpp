@@ -320,7 +320,7 @@ void oox_serialize_bodyPr(std::wostream & strm, _oox_drawing & val, const std::w
 
 void oox_serialize_shape(std::wostream & strm, _oox_drawing & val)
 {
-	_CP_OPT(std::wstring) strVal;
+	_CP_OPT(std::wstring)	strVal;
 	_CP_OPT(double)			dVal;
 
  	std::wstring	shapeType;
@@ -332,7 +332,11 @@ void oox_serialize_shape(std::wostream & strm, _oox_drawing & val)
 	{
 		_CP_OPT(int) iVal;
 		odf_reader::GetProperty(val.additional, L"odf-custom-draw-index",iVal);
-		if (iVal)shapeType = _OO_OOX_custom_shapes[*iVal].oox;	
+		
+		if (iVal)
+			shapeType = _OO_OOX_custom_shapes[*iVal].oox;	
+		else 
+			val.sub_type = 6; //path
 
 		if (shapeType == L"textBox")
 		{
@@ -340,16 +344,11 @@ void oox_serialize_shape(std::wostream & strm, _oox_drawing & val)
 			shapeType = L"rect";
 		}
 	}
-	else if (val.sub_type<9 && val.sub_type>=0)
+	else if (val.sub_type < 9 && val.sub_type >= 0)
 	{
 		shapeType =	_ooxShapeType[val.sub_type];
 	} 
 	
-	if (shapeType.length()<1)
-	{
-		shapeType	 = L"rect";
-		val.sub_type = 2;
-	}
 	if (bWordArt) val.sub_type = 1;
 
 	CP_XML_WRITER(strm)
@@ -358,7 +357,8 @@ void oox_serialize_shape(std::wostream & strm, _oox_drawing & val)
 		{
 			CP_XML_NODE(L"a:custGeom")
 			{        
-				oox_serialize_aLst(CP_XML_STREAM(),val.additional);
+				oox_serialize_aLst(CP_XML_STREAM(), val.additional);
+				
 				CP_XML_NODE(L"a:ahLst");
 				CP_XML_NODE(L"a:gdLst");
 				CP_XML_NODE(L"a:rect")
@@ -369,14 +369,18 @@ void oox_serialize_shape(std::wostream & strm, _oox_drawing & val)
 					CP_XML_ATTR(L"t",0);
 				}
 				//<a:rect b="b" l="0" r="r" t="0"/>
-				if (odf_reader::GetProperty(val.additional,L"custom_path",strVal))
+				if (odf_reader::GetProperty(val.additional, L"custom_path", strVal))
 				{
+					_CP_OPT(int) w, h;
+					odf_reader::GetProperty(val.additional, L"custom_path_w", w);
+					odf_reader::GetProperty(val.additional, L"custom_path_h", h);
 					CP_XML_NODE(L"a:pathLst")
 					{ 	
 						CP_XML_NODE(L"a:path")
 						{
-							CP_XML_ATTR(L"w", val.cx);
-							CP_XML_ATTR(L"h", val.cy);
+							CP_XML_ATTR(L"w", w ? *w : val.cx);
+							CP_XML_ATTR(L"h", h ? *h : val.cy);
+							
 							CP_XML_STREAM() << strVal.get();
 						}
 					}
@@ -385,6 +389,11 @@ void oox_serialize_shape(std::wostream & strm, _oox_drawing & val)
 		}
 		else
 		{
+			if (shapeType.length() < 1)
+			{
+				shapeType	 = L"rect";
+				val.sub_type = 2;
+			}
 			CP_XML_NODE(L"a:prstGeom")//автофигура
 			{        
 				CP_XML_ATTR(L"prst", shapeType);

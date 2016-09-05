@@ -389,7 +389,10 @@ namespace NExtractTools
         {
             return (NULL != m_sPassword) ? (*m_sPassword) : L"";
         }
-
+		std::wstring getFontPath() const
+        {
+            return (NULL != m_sFontDir) ? (*m_sFontDir) : L"";
+        }
         std::wstring getXmlOptions()
 		{
 			CString sRes;
@@ -782,8 +785,8 @@ namespace NExtractTools
 	}
     std::wstring getMailMergeXml(const std::wstring& sJsonPath, int nRecordFrom, int nRecordTo, const std::wstring& sField);
     std::wstring getDoctXml(NSDoctRenderer::DoctRendererFormat::FormatFile eFromType, NSDoctRenderer::DoctRendererFormat::FormatFile eToType,
-                            const std::wstring& sTFileDir, const std::wstring& sPdfBinFile, const std::wstring& sFontPath, const std::wstring& sImagesDirectory,
+                            const std::wstring& sTFileDir, const std::wstring& sPdfBinFile, const std::wstring& sImagesDirectory,
                             const std::wstring& sThemeDir, int nTopIndex, const std::wstring& sMailMerge, const InputParams& params);
-    int apply_changes(const std::wstring &sBinFrom, const std::wstring &sToResult, NSDoctRenderer::DoctRendererFormat::FormatFile eType, const std::wstring &sFontDir, const std::wstring &sThemeDir, std::wstring &sBinTo, const InputParams& params);
+    int apply_changes(const std::wstring &sBinFrom, const std::wstring &sToResult, NSDoctRenderer::DoctRendererFormat::FormatFile eType, const std::wstring &sThemeDir, std::wstring &sBinTo, const InputParams& params);
 }
 #endif // CEXTRACTTOOLS_H

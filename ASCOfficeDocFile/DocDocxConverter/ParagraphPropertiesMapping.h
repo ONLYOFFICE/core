@@ -46,8 +46,8 @@ namespace DocFileFormat
 	class ParagraphPropertiesMapping: public PropertiesMapping, public IMapping
 	{
 	public: 
-		ParagraphPropertiesMapping( XmlUtils::CXmlWriter* writer, ConversionContext* ctx, WordDocument* document, CharacterPropertyExceptions* paraEndChpx, bool isBidi, bool isParagraphStyleNeeded = true );
-		ParagraphPropertiesMapping( XmlUtils::CXmlWriter* writer, ConversionContext* ctx, WordDocument* document, CharacterPropertyExceptions* paraEndChpx, bool isBidi, SectionPropertyExceptions* sepx, int sectionNr, bool isParagraphStyleNeeded = true );
+		ParagraphPropertiesMapping( XMLTools::CStringXmlWriter* writer, ConversionContext* ctx, WordDocument* document, CharacterPropertyExceptions* paraEndChpx, bool isBidi, bool isParagraphStyleNeeded = true );
+		ParagraphPropertiesMapping( XMLTools::CStringXmlWriter* writer, ConversionContext* ctx, WordDocument* document, CharacterPropertyExceptions* paraEndChpx, bool isBidi, SectionPropertyExceptions* sepx, int sectionNr, bool isParagraphStyleNeeded = true );
 		virtual ~ParagraphPropertiesMapping();
 		void Apply(IVisitable* visited);
 

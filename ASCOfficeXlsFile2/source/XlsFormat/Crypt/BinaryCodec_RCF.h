@@ -31,7 +31,7 @@
  */
 #pragma once
 
-#include "Crypt.h"
+#include "Decryptor.h"
 #include "rtl/cipher.h"
 #include "rtl/digest.h"
 

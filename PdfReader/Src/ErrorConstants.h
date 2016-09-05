@@ -46,7 +46,8 @@ namespace PdfReader
 		errorPrinting      =  7, // ошибка во время печати
 		errorPermission    =  8, // Ошибка связанная с ограничениями наложенными на файл
 		errorBadPageNum    =  9, // Неверное количество страниц
-		errorFileIO        = 10  // Ошибка при чтении/записи
+        errorFileIO        = 10, // Ошибка при чтении/записи
+        errorMemory        = 11  // Memory exceed
 	} EError;
 }
 

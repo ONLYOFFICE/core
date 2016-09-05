@@ -66,12 +66,17 @@ namespace DocFileFormat
 
 		while ( goOn )
 		{
-			//enough bytes to read?
 			if ( ( sprmStart + opCodeSize ) < size )
 			{
-				OperationCode opCode = oldVersion ? (OperationCode)FormatUtils::BytesToUChar	( bytes, sprmStart, size ) :
-													(OperationCode)FormatUtils::BytesToUInt16	( bytes, sprmStart, size ) ;
+				unsigned short code  = oldVersion ? FormatUtils::BytesToUChar	( bytes, sprmStart, size ) :
+													FormatUtils::BytesToUInt16	( bytes, sprmStart, size ) ;
 
+				if (oldVersion && code == 0) 
+				{
+					sprmStart++;
+					continue;
+				}
+				OperationCode opCode = (OperationCode)code;
 				short opSize = -1;
 
 				if (oldVersion)
@@ -91,28 +96,32 @@ namespace DocFileFormat
 					//some opCode need special treatment
 					switch ( opCode )
 					{
+						case sprmOldTDefTable:
+						case sprmOldTDefTable10:
 						case sprmTDefTable:
 						case sprmTDefTable10:
 						{
 							//The opSize of the table definition is stored in 2 bytes instead of 1
 							lenByte = 2;
-							opSize = FormatUtils::BytesToInt16( bytes, ( sprmStart + 2 ), size );
+							opSize = FormatUtils::BytesToInt16( bytes, ( sprmStart + opCodeSize ), size );
 							//Word adds an additional unsigned char to the opSize to compensate the additional
 							//unsigned char needed for the length
 							opSize--;
 						}break;				  
 				      
+						case sprmOldPChgTabs:
 						case sprmPChgTabs:
 						{
 							//The tab operand can be bigger than 255 bytes (length unsigned char is set to 255).
 							//In this case a special calculation of the opSize is needed
 							lenByte = 1;
-							opSize = bytes[sprmStart + 2];
+							opSize = bytes[sprmStart + opCodeSize];
 
 							if ( opSize == 255 )
 							{
-							  unsigned char itbdDelMax = bytes[sprmStart + 3];
-							  unsigned char itbdAddMax = bytes[sprmStart + 3 + 2 * itbdDelMax];
+							  unsigned char itbdDelMax = bytes[sprmStart + opCodeSize + 1];
+							  unsigned char itbdAddMax = bytes[sprmStart + opCodeSize + 1 + 2 * itbdDelMax];
+							  
 							  opSize = (short)( ( itbdDelMax * 4 + itbdAddMax * 3 ) - 1 );
 							}
 						}break;	
@@ -133,7 +142,6 @@ namespace DocFileFormat
 					}
 				}
 
-				//copy sprm to array
 				//length is 2byte for the opCode, lenByte for the length, opSize for the length of the operand
 				int sprmBytesSize = opCodeSize + lenByte + opSize;
 				unsigned char* sprmBytes = NULL;
@@ -144,7 +152,6 @@ namespace DocFileFormat
 				{
 					memcpy( sprmBytes, ( bytes + sprmStart ), sprmBytesSize );
 
-					//parse
 					SinglePropertyModifier sprm( sprmBytes, sprmBytesSize, oldVersion );
 					grpprl->push_back( sprm );
 

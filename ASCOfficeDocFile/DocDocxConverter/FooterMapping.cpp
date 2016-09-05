@@ -65,7 +65,7 @@ namespace DocFileFormat
 		//this additional paragraph mark shall not be converted.
 		cpMax--;
 
-		while ( cp < cpMax )
+		while ( cp < cpMax && cp < (int)m_document->Text->size())
 		{
 			int fc =  m_document->FindFileCharPos(cp);
 			if (fc < 0) break;

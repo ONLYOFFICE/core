@@ -301,6 +301,10 @@ namespace DocFileFormat
                     colorVal->SetValue( rgbColor.GetString() );
 				}break;	
 
+			case sprmCOldHighlight:
+				{
+					appendValueElement( parent, _T( "highlight" ), FormatUtils::MapValueToWideString( iter->Arguments[1], &Global::ColorIdentifier[0][0], 17, 12 ).c_str(), true );
+				}break;	
 			case sprmCHighlight:
 				{
 					appendValueElement( parent, _T( "highlight" ), FormatUtils::MapValueToWideString( iter->Arguments[0], &Global::ColorIdentifier[0][0], 17, 12 ).c_str(), true );

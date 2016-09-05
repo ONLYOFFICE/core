@@ -91,7 +91,8 @@ void CalcMode::readFields(CFRecord& record)
 			fAutoRecalc = std::wstring (L"autoNoTable");
 			break;
 		default:
-			throw;// EXCEPT::RT::WrongBiffRecord("Unsupported value of fAutoRecalc.", record.getTypeString());
+			fAutoRecalc = std::wstring (L"auto");
+			// EXCEPT::RT::WrongBiffRecord("Unsupported value of fAutoRecalc.", record.getTypeString());
 	}
 }
 

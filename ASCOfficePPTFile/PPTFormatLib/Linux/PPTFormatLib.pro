@@ -10,46 +10,15 @@ TARGET = PptFormatLib
 TEMPLATE = lib
 CONFIG += staticlib
 
-CONFIG += c++11
+CORE_ROOT_DIR = $$PWD/../../..
+PWD_ROOT_DIR = $$PWD
 
-win32 {
-    QMAKE_CXXFLAGS_RELEASE -= -Zc:strictStrings
-    CONFIG(debug, debug|release) {
-        QMAKE_CXXFLAGS += /bigobj
-    }
-} else {
-    QMAKE_CXXFLAGS += -std=c++11 -Wall -Wno-ignored-qualifiers
-}
-############### destination path ###############
-DESTINATION_SDK_PATH = $$PWD/../../../build/lib
+CONFIG += core_x2t
+include(../../../Common/base.pri)
 
-# WINDOWS
-win32:contains(QMAKE_TARGET.arch, x86_64):{
-CONFIG(debug, debug|release) {
-    DESTDIR = $$DESTINATION_SDK_PATH/win_64/DEBUG
-} else {
-    DESTDIR = $$DESTINATION_SDK_PATH/win_64
-}
-}
-win32:!contains(QMAKE_TARGET.arch, x86_64):{
-CONFIG(debug, debug|release) {
-    DESTDIR = $$DESTINATION_SDK_PATH/win_32/DEBUG
-} else {
-    DESTDIR = $$DESTINATION_SDK_PATH/win_32
-}
-}
+#BOOST
+include($$PWD/../../../Common/3dParty/boost/boost.pri)
 
-linux-g++ | linux-g++-64 | linux-g++-32:contains(QMAKE_HOST.arch, x86_64):{
-    DESTDIR = $$DESTINATION_SDK_PATH/linux_64
-}
-linux-g++ | linux-g++-64 | linux-g++-32:!contains(QMAKE_HOST.arch, x86_64):{
-    DESTDIR = $$DESTINATION_SDK_PATH/linux_32
-}
-
-mac {
-    DESTDIR = $$DESTINATION_SDK_PATH/mac_64
-}
-############### destination path ###############
 DEFINES +=  UNICODE \
         _UNICODE \
          USE_ATL_CSTRING \
@@ -68,43 +37,11 @@ DEFINES +=  UNICODE \
 
 
 INCLUDEPATH += \
-    ../../../DesktopEditor/freetype-2.5.2/include
+    ../../../DesktopEditor/freetype-2.5.2/include \
+    ../../../DesktopEditor/xml/libxml2/include
 
-#################### WINDOWS #####################
-win32 {
-    DEFINES += \
-        LIBXML_READER_ENABLED
-
-INCLUDEPATH += ../../../OfficeUtils/src/zlib-1.2.3
-INCLUDEPATH += ../../../Common/DocxFormat/Source/XML/libxml2/XML/include
-}
-#################### WINDOWS #####################
-
-#################### LINUX ########################
-linux-g++ | linux-g++-64 | linux-g++-32 {
-    DEFINES += \
-        LINUX \
-        _LINUX \
-        _LINUX_QT
-
-INCLUDEPATH += /usr/include/libxml2
-}
-
-mac {
-    DEFINES += \
-        LINUX \
-        _LINUX \
-        _LINUX_QT \
-        _MAC \
-        MAC
-
-INCLUDEPATH += ../../../DesktopEditor/xml/libxml2/include
-}
-#################### LINUX ########################
-
-unix {
-    target.path = /usr/lib
-    INSTALLS += target
+core_windows {
+    INCLUDEPATH += ../../../OfficeUtils/src/zlib-1.2.3
 }
 
 HEADERS += \
@@ -255,15 +192,15 @@ SOURCES += \
 SOURCES += \
     ../../../Common/3dParty/pole/pole.cpp
 
-win32 {
+core_windows {
     SOURCES += \
         ../../../Common/FileDownloader/FileDownloader_win.cpp
 }
-linux-g++ | linux-g++-64 | linux-g++-32 {
+core_linux {
     SOURCES += \
         ../../../Common/FileDownloader/FileDownloader_curl.cpp
 }
-mac {
+core_mac {
     OBJECTIVE_SOURCES += \
         ../../../Common/FileDownloader/FileDownloader_mac.mm
 }

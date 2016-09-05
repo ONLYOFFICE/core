@@ -12,36 +12,9 @@ TEMPLATE = lib
 CONFIG += staticlib
 CONFIG += building_hunspell
 
+CORE_ROOT_DIR = $$PWD/../../../..
+PWD_ROOT_DIR = $$PWD
+include($$CORE_ROOT_DIR/Common/base.pri)
+
 include($$PWD/hunspell.pri)
 
-############### destination path ###############
-DESTINATION_SDK_PATH = $$PWD/../../../../build/lib
-
-# WINDOWS
-win32:contains(QMAKE_TARGET.arch, x86_64):{
-CONFIG(debug, debug|release) {
-    DESTDIR = $$DESTINATION_SDK_PATH/win_64/DEBUG
-} else {
-    DESTDIR = $$DESTINATION_SDK_PATH/win_64
-}
-}
-win32:!contains(QMAKE_TARGET.arch, x86_64):{
-CONFIG(debug, debug|release) {
-    DESTDIR = $$DESTINATION_SDK_PATH/win_32/DEBUG
-} else {
-    DESTDIR = $$DESTINATION_SDK_PATH/win_32
-}
-}
-
-linux-g++:contains(QMAKE_HOST.arch, x86_64):{
-    DESTDIR = $$DESTINATION_SDK_PATH/linux_64
-}
-linux-g++:!contains(QMAKE_HOST.arch, x86_64):{
-    DESTDIR = $$DESTINATION_SDK_PATH/linux_32
-}
-
-mac {
-    DESTDIR = $$DESTINATION_SDK_PATH/mac_64
-}
-
-################################################

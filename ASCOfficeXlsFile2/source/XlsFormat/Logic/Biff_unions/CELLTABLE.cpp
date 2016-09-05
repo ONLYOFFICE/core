@@ -197,6 +197,9 @@ int CELL_GROUP::serialize(std::wostream & stream)
 				{//skip cells
 					row->serialize(stream);
 					current_row++;
+
+					if (current_row == m_rows.end())
+						break;
 					row = dynamic_cast<Row *>(current_row->get());
 				}
 			}

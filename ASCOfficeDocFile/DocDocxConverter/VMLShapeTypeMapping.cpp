@@ -32,10 +32,11 @@
 
 #include "VMLShapeTypeMapping.h"
 #include "OfficeDrawing/Shapetypes/OvalType.h"
+#include "OfficeDrawing/Shapetypes/WordArtText.h"
 
 namespace DocFileFormat
 {
-	VMLShapeTypeMapping::VMLShapeTypeMapping (XmlUtils::CXmlWriter* pWriter, bool isBulletPicture) : PropertiesMapping(pWriter), _lock(NULL), _isBulletPicture(isBulletPicture)
+	VMLShapeTypeMapping::VMLShapeTypeMapping (XmlUtils::CXmlWriter* pWriter, bool isInlineShape) : PropertiesMapping(pWriter), _lock(NULL), _isInlineShape(isInlineShape)
 	{
 		this->_lock = new XMLTools::XMLElement<wchar_t>( _T( "o:lock" ) );
 		appendValueAttribute( this->_lock, _T( "v:ext" ), _T( "edit" ) );
@@ -72,7 +73,7 @@ namespace DocFileFormat
 			// Path
 			if (!pShape->Path.empty())
 				m_pXmlWriter->WriteAttribute( _T("path"), pShape->Path.c_str() );
-			else if (_isBulletPicture)
+			else if (_isInlineShape)
 				m_pXmlWriter->WriteAttribute( _T("path"), _T("m@4@5l@4@11@9@11@9@5xe"));
 
 
@@ -87,7 +88,7 @@ namespace DocFileFormat
 				m_pXmlWriter->WriteAttribute( _T( "stroked" ), _T( "f" ) );
 			}
 
-			if ( _isBulletPicture )
+			if ( _isInlineShape )
 			{
 				m_pXmlWriter->WriteAttribute( _T( "o:preferrelative" ), _T( "t" ) );  
 			}
@@ -120,7 +121,7 @@ namespace DocFileFormat
 
 				m_pXmlWriter->WriteNodeEnd( _T( "v:formulas" ) );
 			}
-			else if (_isBulletPicture)
+			else if (_isInlineShape)
 			{
 				m_pXmlWriter->WriteString(_T("<v:formulas><v:f eqn=\"if lineDrawn pixelLineWidth 0\"/>\
 											 <v:f eqn=\"sum @0 1 0\"/><v:f eqn=\"sum 0 0 @1\"/>\
@@ -134,7 +135,7 @@ namespace DocFileFormat
 			// Path
 			m_pXmlWriter->WriteNodeBegin( _T( "v:path" ), true );
 
-			if (_isBulletPicture)
+			if (_isInlineShape)
 			{
 				m_pXmlWriter->WriteAttribute( _T( "o:extrusionok" ), _T( "f" ) );
 				m_pXmlWriter->WriteAttribute( _T( "gradientshapeok" ), _T( "t" ) );
@@ -160,7 +161,12 @@ namespace DocFileFormat
 				if (pShape->ConnectorAngles.length())
 					m_pXmlWriter->WriteAttribute( _T( "o:connectangles" ), pShape->ConnectorAngles.c_str() );
 			}
-
+			WordArtTextType* wordArt = dynamic_cast<WordArtTextType*>(pShape);
+			if (wordArt)
+			{
+				m_pXmlWriter->WriteAttribute( _T( "textpathok" ), _T( "t" ) );
+			}
+			
 			m_pXmlWriter->WriteNodeEnd( _T( "" ), true );
 
 			//Lock

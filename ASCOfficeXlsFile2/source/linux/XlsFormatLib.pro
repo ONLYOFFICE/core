@@ -10,47 +10,17 @@ TARGET = XlsFormatLib
 TEMPLATE = lib
 CONFIG += staticlib
 
-CONFIG += c++11
+CORE_ROOT_DIR = $$PWD/../../..
+PWD_ROOT_DIR = $$PWD
 
-win32 {
-    QMAKE_CXXFLAGS_RELEASE -= -Zc:strictStrings
-    QMAKE_CXXFLAGS += /bigobj
-} else {
-    QMAKE_CXXFLAGS += -std=c++11 -Wall -Wno-ignored-qualifiers
-}
-############### destination path ###############
-DESTINATION_SDK_PATH = $$PWD/../../../build/lib
+CONFIG += core_x2t
+include(../../../Common/base.pri)
 
-# WINDOWS
-win32:contains(QMAKE_TARGET.arch, x86_64):{
-CONFIG(debug, debug|release) {
-    DESTDIR = $$DESTINATION_SDK_PATH/win_64/DEBUG
-} else {
-    DESTDIR = $$DESTINATION_SDK_PATH/win_64
-}
-}
-win32:!contains(QMAKE_TARGET.arch, x86_64):{
-CONFIG(debug, debug|release) {
-    DESTDIR = $$DESTINATION_SDK_PATH/win_32/DEBUG
-} else {
-    DESTDIR = $$DESTINATION_SDK_PATH/win_32
-}
-}
-
-linux-g++ | linux-g++-64 | linux-g++-32:contains(QMAKE_HOST.arch, x86_64):{
-    DESTDIR = $$DESTINATION_SDK_PATH/linux_64
-}
-linux-g++ | linux-g++-64 | linux-g++-32:!contains(QMAKE_HOST.arch, x86_64):{
-    DESTDIR = $$DESTINATION_SDK_PATH/linux_32
-}
-
-mac {
-    DESTDIR = $$DESTINATION_SDK_PATH/mac_64
-}
-############### destination path ###############
+#BOOST
+include($$PWD/../../../Common/3dParty/boost/boost.pri)
 
 DEFINES +=  UNICODE \
-        _UNICODE 
+        _UNICODE
 
 CONFIG(debug, debug|release){
 
@@ -58,38 +28,15 @@ message(Debug)
 DEFINES += _DEBUG
 }
 
-#################### WINDOWS #####################
-win32 {
-    DEFINES += \
-        LIBXML_READER_ENABLED
-
-INCLUDEPATH += C:/boost_1_58_0
-}
-#################### WINDOWS #####################
-
-#################### LINUX ########################
-linux-g++ | linux-g++-64 | linux-g++-32 {
-    DEFINES += \
-        LINUX \
-        _LINUX \
-        _LINUX_QT
-}
-
-mac {
-    DEFINES += \
-        LINUX \
-        _LINUX \
-        _LINUX_QT \
-        _MAC \
-        MAC \
-        _ASC_USE_UNICODE_CONVERTER_ \
-        UNICODECONVERTER_USE_DYNAMIC_LIBRARY
-
-INCLUDEPATH += ../../../Common/boost_1_58_0
+core_mac {
+DEFINES += \
+    _ASC_USE_UNICODE_CONVERTER_ \
+    UNICODECONVERTER_USE_DYNAMIC_LIBRARY
 
 LIBS += $$DESTDIR -lUnicodeConverter
 }
-#################### LINUX ########################
+
+
 INCLUDEPATH += ../../../DesktopEditor/freetype-2.5.2/include
 INCLUDEPATH += ../XlsFormat
 INCLUDEPATH += ../Common
@@ -1775,17 +1722,11 @@ HEADERS +=  \
     ../XlsFormat/Logic/Biff_structures/AFDOperXNum.h \
     ../XlsFormat/Logic/Biff_unions/IMDATAOBJECT.h \
     ../XlsFormat/Logic/Biff_records/IMDATA.h \
-    ../XlsFormat/Logic/Biff_structures/CFDatabar.h
-
-
-
-
-unix {
-    target.path = /usr/lib
-    INSTALLS += target
-}
+    ../XlsFormat/Logic/Biff_structures/CFDatabar.h \
+    ../XlsFormat/Logic/Biff_structures/CFGradient.h
 
 SOURCES += \
     ../XlsFormat/Logic/Biff_unions/IMDATAOBJECT.cpp \
     ../XlsFormat/Logic/Biff_records/IMDATA.cpp \
-    ../XlsFormat/Logic/Biff_structures/CFDatabar.cpp
+    ../XlsFormat/Logic/Biff_structures/CFDatabar.cpp \
+    ../XlsFormat/Logic/Biff_structures/CFGradient.cpp

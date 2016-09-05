@@ -633,21 +633,27 @@ void OoxConverter::convert(OOX::Drawing::CLineProperties *oox_line_prop, CString
 	}
 	if (oox_line_prop->m_oHeadEnd.IsInit())
 	{
-		int type =0, w=1, len =1;//medium arrow
-		if (oox_line_prop->m_oHeadEnd->m_oLen.IsInit())		len = oox_line_prop->m_oHeadEnd->m_oLen->GetValue();
-		if (oox_line_prop->m_oHeadEnd->m_oType.IsInit())	type = oox_line_prop->m_oHeadEnd->m_oType->GetValue();
-		if (oox_line_prop->m_oHeadEnd->m_oW.IsInit())		w=oox_line_prop->m_oHeadEnd->m_oW->GetValue();
-		odf_context()->drawing_context()->set_line_head(type, len, w);
+		if (oox_line_prop->m_oHeadEnd->m_oLen.IsInit() || oox_line_prop->m_oHeadEnd->m_oType.IsInit() || oox_line_prop->m_oHeadEnd->m_oW.IsInit())
+		{
+			int type = 0, w=1, len =1;//medium arrow
+			if (oox_line_prop->m_oHeadEnd->m_oLen.IsInit())		len = oox_line_prop->m_oHeadEnd->m_oLen->GetValue();
+			if (oox_line_prop->m_oHeadEnd->m_oType.IsInit())	type = oox_line_prop->m_oHeadEnd->m_oType->GetValue();
+			if (oox_line_prop->m_oHeadEnd->m_oW.IsInit())		w=oox_line_prop->m_oHeadEnd->m_oW->GetValue();
+			
+			odf_context()->drawing_context()->set_line_head(type, len, w);
+		}
 	}
 	if (oox_line_prop->m_oTailEnd.IsInit())
 	{
-		int type =0, w=1, len =1;//medium arrow
-		if (oox_line_prop->m_oTailEnd->m_oLen.IsInit())		len = oox_line_prop->m_oTailEnd->m_oLen->GetValue();
-		if (oox_line_prop->m_oTailEnd->m_oType.IsInit())	type = oox_line_prop->m_oTailEnd->m_oType->GetValue();
-		if (oox_line_prop->m_oTailEnd->m_oW.IsInit())		w = oox_line_prop->m_oTailEnd->m_oW->GetValue();
+		if (oox_line_prop->m_oTailEnd->m_oLen.IsInit() || oox_line_prop->m_oTailEnd->m_oType.IsInit() || oox_line_prop->m_oTailEnd->m_oW.IsInit())
+		{
+			int type =0, w=1, len =1;//medium arrow
+			if (oox_line_prop->m_oTailEnd->m_oLen.IsInit())		len = oox_line_prop->m_oTailEnd->m_oLen->GetValue();
+			if (oox_line_prop->m_oTailEnd->m_oType.IsInit())	type = oox_line_prop->m_oTailEnd->m_oType->GetValue();
+			if (oox_line_prop->m_oTailEnd->m_oW.IsInit())		w = oox_line_prop->m_oTailEnd->m_oW->GetValue();
 			
-		odf_context()->drawing_context()->set_line_tail(type, len, w);
-
+			odf_context()->drawing_context()->set_line_tail(type, len, w);
+		}
 	}
 
 	if (oox_line_prop->m_oCustDash.IsInit())

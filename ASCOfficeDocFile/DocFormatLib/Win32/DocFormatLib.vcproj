@@ -337,7 +337,7 @@
 			</Filter>
 		</Filter>
 		<Filter
-			Name="DOC_2_DOCX"
+			Name="Doc_2_Docx"
 			>
 			<File
 				RelativePath="..\..\DocDocxConverter\AnnotationOwnerList.h"
@@ -409,6 +409,14 @@
 			</File>
 			<File
 				RelativePath="..\..\DocDocxConverter\DrawingObjectGrid.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\DocDocxConverter\DrawingPrimitives.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\DocDocxConverter\DrawingPrimitives.h"
 				>
 			</File>
 			<File
@@ -637,6 +645,10 @@
 			</File>
 			<File
 				RelativePath="..\..\DocDocxConverter\SinglePropertyModifier.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\DocDocxConverter\Spa.cpp"
 				>
 			</File>
 			<File

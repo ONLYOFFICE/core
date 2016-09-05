@@ -53,14 +53,17 @@ bool CompoundFile::isError()
 	return true;	
 }
 
-
-CompoundFile::CompoundFile(const std::wstring & file_path, const ReadWriteMode mode)
-:	rwMode(mode)
+bool CompoundFile::Open(const std::wstring & file_path, const ReadWriteMode mode)
 {
+	if (storage_) delete storage_;
+	storage_ = NULL;
+
+	rwMode = mode;
+
 	unsigned int grfMode = 0;
 
 	storage_ = new POLE::Storage(file_path.c_str());
-	if (storage_ == NULL) return;
+	if (storage_ == NULL) return false;
 
 	switch(rwMode)
 	{		
@@ -82,6 +85,16 @@ CompoundFile::CompoundFile(const std::wstring & file_path, const ReadWriteMode m
 			}
 		}break;
 	}
+
+	if (storage_ == NULL) return false;
+	return true;
+}
+
+
+CompoundFile::CompoundFile(const std::wstring & file_path, const ReadWriteMode mode)
+{
+	storage_ = NULL;
+	Open(file_path, mode);
 }
 
 
@@ -90,6 +103,8 @@ CFStreamPtr CompoundFile::getWorkbookStream()
 {
 	CFStreamPtr stream = getNamedStream("Workbook");
 
+	if (stream == NULL) 
+		stream = getNamedStream("WORKBOOK"); //6447323.xls
 	if (stream == NULL) 
 		stream = getNamedStream("Book");
 	if (stream == NULL) 
@@ -104,6 +119,11 @@ CFStreamPtr CompoundFile::getWorkbookStream()
 CFStreamPtr CompoundFile::createWorkbookStream()
 {
 	return createNamedStream("Workbook");
+}
+
+void CompoundFile::closeWorkbookStream()
+{
+	return closeNamedStream("Workbook");
 }
 
 
@@ -145,7 +165,7 @@ CFStreamPtr CompoundFile::createDocumentSummaryInformationStream()
 // Closes "SummaryInformation" stream
 void CompoundFile::closeDocumentSummaryInformationStream()
 {
-	closeNamedStream("DocumentSummaryInformation");
+	return closeNamedStream("DocumentSummaryInformation");
 }
 
 

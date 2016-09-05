@@ -120,6 +120,8 @@
 			sResult.AppendFormat( _T("%d"), prop  );\
 		}
 
+class RtfSection;
+typedef boost::shared_ptr<RtfSection> RtfSectionPtr;
 
 class RtfFont : public IRenderableProperty
 {
@@ -260,14 +262,14 @@ public:
 		return  m_byteRed == oColor.m_byteRed && m_byteGreen == oColor.m_byteGreen && m_byteBlue == oColor.m_byteBlue &&
 				m_byteTint == oColor.m_byteTint && m_byteShade == oColor.m_byteShade && m_eTheme == oColor.m_eTheme;
 	}
-		void SetHEX(int color)
+	void SetHEX(int color)
 	{
 		SetDefault();
-		m_byteRed= (color&0xFF0000) >>16;
-		m_byteGreen = (color&0xFF00) >>4;
-		m_byteBlue =  (color&0xFF);
+		m_byteRed	= (color&0xFF0000) >> 16;
+		m_byteGreen = (color&0xFF00) >> 8;
+		m_byteBlue	= (color&0xFF);
 	}
-        void SetRGB(BYTE red, BYTE green, BYTE blue)
+	void SetRGB(BYTE red, BYTE green, BYTE blue)
 	{
 		SetDefault();
 		m_byteRed = red;
@@ -361,7 +363,7 @@ public:
 		else
 			SetDefault();
 	}
-	CString ToHexColor()
+	CString ToHexColor(bool bBGR = false)
 	{
         BYTE byteRed = SetShade( m_byteRed );
 		byteRed = SetTint( byteRed );
@@ -384,7 +386,9 @@ public:
 			sBlue.AppendFormat( _T("0%x"), byteBlue );
 		else
 			sBlue.AppendFormat( _T("%x"), byteBlue );
-		return sRed + sGreen + sBlue;
+
+		if (bBGR)	return sBlue + sGreen + sRed ;
+		else		return sRed + sGreen + sBlue ;
 	}
 	
 	int ToInt()const
@@ -779,10 +783,10 @@ public:
 		//свойство должно быть как единое целое, поэтому если oBorPr задано, то переписыватся целиком
 		if( st_none != oParPr.m_eType || PROP_DEF != oParPr.m_nValue || PROP_DEF != oParPr.m_nForeColor || PROP_DEF != oParPr.m_nBackColor )
 		{
-			m_eType = oParPr.m_eType;
-			m_nValue = oParPr.m_nValue;
-			m_nForeColor = oParPr.m_nForeColor;
-			m_nBackColor = oParPr.m_nBackColor;
+			m_eType			= oParPr.m_eType;
+			m_nValue		= oParPr.m_nValue;
+			m_nForeColor	= oParPr.m_nForeColor;
+			m_nBackColor	= oParPr.m_nBackColor;
 		}
 	}
 	CString RenderToOOX(RenderParameter oRenderParameter);
@@ -2667,7 +2671,7 @@ public:
 	int m_bStyleSWCell;//\tscswcell	SW cell.
 	int m_bStyleSECell;//\tscsecell	SE cell.
 
-	RtfCharProperty m_oCharProperty;
+	RtfCharProperty		m_oCharProperty;
 
 	RtfParagraphProperty()
 	{

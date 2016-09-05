@@ -44,31 +44,33 @@
 
 namespace DocFileFormat
 {
+	class OleObject;
+
 	bool ParseEmbeddedEquation( const std::string & xmlString, std::wstring & newXmlString );
 
 	class VMLPictureMapping: public PropertiesMapping, public IMapping
 	{
 	public:
-		VMLPictureMapping( ConversionContext* ctx, XmlUtils::CXmlWriter* writer, bool olePreview, IMapping* caller, bool isBulletPicture = false );
+		VMLPictureMapping( ConversionContext* ctx, XmlUtils::CXmlWriter* writer, bool olePreview, IMapping* caller, bool isInlinePicture = false );
 		virtual ~VMLPictureMapping();
 		virtual void Apply( IVisitable* visited );
 		std::wstring GetShapeId() const;
 
 	private:
 		/// Writes a border element
-		void writePictureBorder (const wchar_t* name, const BorderCode* brc);
+		void writePictureBorder (const std::wstring & name, const BorderCode* brc);
 		void appendStyleProperty( std::wstring* b, const std::wstring& propName, const std::wstring& propValue ) const;
-
 	protected:
 		/// Copies the picture from the binary stream to the zip archive 
 		/// and creates the relationships for the image.
-		bool CopyPicture (BlipStoreEntry* oBlipEntry);
+		bool CopyPicture (PictureDescriptor* pict);
 
 	public:
 
 		static std::wstring GetTargetExt (Global::BlipType nType);
 		static std::wstring GetContentType (Global::BlipType nType);
 
+		bool							m_isBullete;
 		bool							m_isEquation;
 		bool							m_isEmbedded;
 		std::string						m_embeddedData;
@@ -80,9 +82,9 @@ namespace DocFileFormat
 		int								m_nImageId;
 		std::wstring					m_ShapeId;
 		
-		bool							m_isOlePreview;
-		
-		bool							m_isBulletPicture;
+		bool							m_isOlePreview;		
+		bool							m_isInlinePicture;
+
 		XMLTools::XMLElement<wchar_t>*	m_imageData;
 		
 	};

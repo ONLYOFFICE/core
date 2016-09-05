@@ -34,10 +34,14 @@
 #include "../../../Common/FileWriter.h"
 
 #ifdef _ASC_USE_UNICODE_CONVERTER_
-#include "../../../UnicodeConverter/UnicodeConverter.h"
+    #include "../../../UnicodeConverter/UnicodeConverter.h"
 #endif
 
 #include "UniversalConverterUtils.h"
+
+#if !defined (_WIN32) && !defined (_WIN64)
+    #include "iconv.h"
+#endif
 
 #define BUF_SIZE 2048
 #define ONE_INCH 2.54

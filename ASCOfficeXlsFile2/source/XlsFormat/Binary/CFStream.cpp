@@ -69,6 +69,7 @@ void CFStream::read(void* buf, const size_t size)
 
 	if(num_read < size)
 	{
+		stream_->seek(stream_->size()); // 5217417.xls
 		return;// EndOfStreamReached
 	}
 }
@@ -94,6 +95,7 @@ void CFStream::write(const void* buf, const size_t size)
 		str << L"Only " << num_written << L" unsigned chars were saved instead of " << size << L" unsigned chars requested.";
 		throw;// EXCEPT::RT::CompoundFileFormatError(str.str(), hres);
 	}
+	stream_->flush();
 	// Tipa successful
 }
 

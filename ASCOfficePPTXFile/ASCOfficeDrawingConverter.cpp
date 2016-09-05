@@ -83,7 +83,8 @@ static void GetColorWithEffect(const std::wstring& sColor, const int& R, const i
     if (pos2 < (pos1 + 2))
         return;
 
-    param = std::stod(sColor.substr(pos1 + 1, pos2 - pos1 - 1));
+	std::wstring s = sColor.substr(pos1 + 1, pos2 - pos1 - 1); 
+	param = _wtoi(s.c_str());
     bool isEffect = false;
 
     if (0 == sColor.find(L"darken"))
@@ -1355,7 +1356,17 @@ rIns=\"91440\" bIns=\"45720\" numCol=\"1\" spcCol=\"0\" rtlCol=\"0\" fromWordArt
 							PPTX::Logic::Shape* pShape = dynamic_cast<PPTX::Logic::Shape*>(pElem->GetElem().operator ->());
 							if(NULL != pShape && pShape->spPr.Fill.Fill.IsInit())
 							{
-								const PPTX::Logic::BlipFill& oBlipFill = pShape->spPr.Fill.Fill.as<PPTX::Logic::BlipFill>();
+								bool bImageOle = false;
+
+								if (pShape->spPr.Fill.m_type == PPTX::Logic::UniFill::blipFill) bImageOle = true;
+								
+								PPTX::Logic::BlipFill oBlipFillNew;
+
+								if (!bImageOle)
+									oBlipFillNew.blip = new PPTX::Logic::Blip();
+
+								const PPTX::Logic::BlipFill& oBlipFill = bImageOle ? pShape->spPr.Fill.Fill.as<PPTX::Logic::BlipFill>() :
+																			oBlipFillNew;
 								if(oBlipFill.blip.IsInit())
 								{
 									if (pOle->m_sFilepathBin.IsInit())
@@ -1383,8 +1394,8 @@ rIns=\"91440\" bIns=\"45720\" numCol=\"1\" spcCol=\"0\" rtlCol=\"0\" fromWordArt
 									newElem->spPr		= pShape->spPr;
 									newElem->style		= pShape->style;
 									newElem->oleObject.reset(pOle);
-									pOle = NULL;
-
+									pOle = NULL;								
+									
 									pElem->InitElem(newElem);
 								}
 							}
@@ -1679,49 +1690,20 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 
         CString strXmlPPTX;
 
-		PPTX::Logic::Shape* pShape = new PPTX::Logic::Shape();
+		PPTX::Logic::Shape* pShape	= new PPTX::Logic::Shape();
 		
-		
-
-		/*
-#ifdef _DEBUG
-		const PPTX::Logic::CustGeom lpGeom = pShape->spPr.Geometry.as<PPTX::Logic::CustGeom>();
-		CString strShapeWWW = lpGeom.GetODString();
-		NSPresentationEditor::CShapeElement* lpShapeElement = new CShapeElement(strShapeWWW);
-
-		lpShapeElement->m_oShape.ReCalculate();
-
-		std::map<CString, long>* mapGuides = &((CPPTXShape*)(lpShapeElement->m_oShape.m_pShape))->FManager.mapGuides;
-		std::vector<double>* Guides = ((CPPTXShape*)(lpShapeElement->m_oShape.m_pShape))->FManager.Guides;
-		double formulas[1905];
-		for (int u = 0; u < 1905; u++)
-		{
-			CString strF = _T("");
-			strF.Format(_T("gd%d"), u);
-
-			long num = mapGuides->FindKey(strF);
-			if (num >= 0)
-			{
-				formulas[u] = (*Guides)[mapGuides->GetValueAt(num)];
-			}
-		}
-#endif
-		*/
-
 		if (!pShape->TextBoxBodyPr.is_init())
-			pShape->TextBoxBodyPr = new PPTX::Logic::BodyPr();
-
-        bool bIsTrimTextPath = false;
+			pShape->TextBoxBodyPr	= new PPTX::Logic::BodyPr();
 
 		if (pPPTShape->IsWordArt())
 		{
 			enum EFilltype
 			{
-				etBlipFill = 0,
-				etGradFill = 1,
-				etNoFill = 2,
-				etPattFill = 3,
-				etSolidFill = 4
+				etBlipFill	= 0,
+				etGradFill	= 1,
+				etNoFill	= 2,
+				etPattFill	= 3,
+				etSolidFill	= 4
 			};
 
 			PPTShapes::ShapeType eShapeType = pPPTShape->m_eType;
@@ -1771,56 +1753,54 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 			}
 			SimpleTypes::CTextShapeType<> oTextShapeType;
 			oTextShapeType.SetValue(eTextShapeType);
+			
 			CString strPrstTxWarp = _T("<a:prstTxWarp prst=\"") + oTextShapeType.ToString() + _T("\"><a:avLst/></a:prstTxWarp>");
 
 			XmlUtils::CXmlNode oPrstTxWarpNode;
 			oPrstTxWarpNode.FromXmlString(strPrstTxWarp);
 
 			pShape->TextBoxBodyPr->prstTxWarp = oPrstTxWarpNode;
-			//pShape->TextBoxBodyPr->wrap = new PPTX::Limit::TextWrap();
-			//pShape->TextBoxBodyPr->wrap->set(_T("none"));
 
-            // TODO:
-            // тут утечки памяти. И вообще надо переписать. все намешано
-            // нужно с комментами прояснить всю конвертацию
-			XmlUtils::CXmlNodes oChilds;
+			bool bTrimTextPath	= false, bFitShape = false, bFitPath = false;
+
+ 			XmlUtils::CXmlNodes oChilds;
 			if (oNodeShape.GetNodes(_T("*"), oChilds))
 			{
-				EFilltype eFillType = etSolidFill;
-				CString sTxbxContent = _T("<w:txbxContent><w:p>");
-				CString sParaRun = _T("<w:r>");
-				CString srPr;
-				CString sFont = (_T("Arial Black"));
-				//CString sDashStyle;
-				int nFontSize = 36;
 				LONG lChildsCount = oChilds.GetCount();
-				CString strString = _T("");
-				BYTE lAlpha;
-				bool bOpacity = false;
-				bool bOpacity2 = false;
-				PPTX::Logic::ColorModifier oMod;
-				PPTX::Logic::ColorModifier oMod2;
-				std::vector<PPTX::Logic::UniColor*> arColors;
-				std::vector<PPTX::Logic::UniColor*> arColorsNew;
-				std::vector<int> arPos;
-				std::vector<int> arPosNew;
-				std::map<PPTX::Logic::UniColor*, int> arGradMap;
-				double nFocus = 0;
-				int nAngle = 90;
-				bool bColors = false;
+				
+				std::vector<CString>	wordArtString;
+				EFilltype				eFillType		= etNoFill;;
+				CString					sTxbxContent	= _T("<w:txbxContent>");
+				CString					sFont			= _T("Arial Black");
+				int						nFontSize		= 36;
+				
+				BYTE					lAlpha;
+				bool					bOpacity		= false;
+				bool					bOpacity2		= false;
+				double					nFocus			= 0;
+				int						nAngle			= 90;
+				bool					bColors			= false;	
+				
+				PPTX::Logic::ColorModifier				oMod;				
+				PPTX::Logic::ColorModifier				oMod2;
+				std::vector<PPTX::Logic::UniColor*>		arColors;
+				std::vector<PPTX::Logic::UniColor*>		arColorsNew;
+				std::vector<int>						arPos;
+				std::vector<int>						arPosNew;
+				std::map<PPTX::Logic::UniColor*, int>	arGradMap;
 
-                int R = 255;
-                int G = 255;
-                int B = 255;
+                int R = 255,	G = 255,	B = 255;
 
 				nullable_string sFillColor;
 				oNodeShape.ReadAttributeBase(L"fillcolor", sFillColor);
 				if (sFillColor.is_init())
 				{
 					eFillType = etSolidFill;
-					NSPresentationEditor::CColor color = NS_DWC_Common::getColorFromString(*sFillColor);
-					PPTX::Logic::SolidFill* pSolid = new PPTX::Logic::SolidFill();
+					
+					NSPresentationEditor::CColor color	= NS_DWC_Common::getColorFromString(*sFillColor);
+					PPTX::Logic::SolidFill* pSolid		= new PPTX::Logic::SolidFill();
 					pSolid->m_namespace = _T("a");
+					
 					pSolid->Color.Color = new PPTX::Logic::SrgbClr();
 					pSolid->Color.Color->SetRGB(color.R, color.G, color.B);					
 					arColors.push_back(&pSolid->Color);
@@ -1830,8 +1810,6 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
                     G = color.G;
                     B = color.B;
 				}
-				else
-					eFillType = etNoFill;
 
                 if (eFillType == etNoFill)
                 {
@@ -1841,7 +1819,8 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
                     if (!sFilled.is_init() || (*sFilled != _T("false") && *sFilled != _T("f")))
                     {
                         eFillType = etSolidFill;
-                        PPTX::Logic::SolidFill* pSolid = new PPTX::Logic::SolidFill();
+                        
+						PPTX::Logic::SolidFill* pSolid = new PPTX::Logic::SolidFill();
                         pSolid->m_namespace = _T("a");
                         pSolid->Color.Color = new PPTX::Logic::SrgbClr();
                         pSolid->Color.Color->SetRGB(R, G, B);
@@ -1858,11 +1837,34 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 					CString strNameP = XmlUtils::GetNameNoNS(oNodeP.GetName());
 					if (_T("textpath") == strNameP)
 					{
-						strString = oNodeP.GetAttribute(_T("string"));
-                        // мы используем его в хмл
-                        CorrectXmlString(strString);
+						CString tmpString = oNodeP.GetText();	//для обхода &#xA пишется дубль в контент
 
-						CString strStyle = oNodeP.GetAttribute(_T("style"));
+						if (tmpString.IsEmpty())
+						{
+							tmpString = oNodeP.GetAttribute(_T("string"));
+							CorrectXmlString(tmpString );
+							wordArtString.push_back(tmpString );
+						}
+						else
+						{
+							CorrectXmlString(tmpString );
+
+							int pos1 = 0, pos2 = 0;
+
+							while(pos1 < tmpString.GetLength() && pos2 < tmpString.GetLength())
+							{
+								pos2 = tmpString.Find(_T("\n"), pos1);
+								if (pos2 > 0)
+								{
+									wordArtString.push_back(tmpString.Mid(pos1, pos2 - pos1));
+									pos1 = pos2 + 1;
+								}
+								else break;
+							}
+							wordArtString.push_back(tmpString.Mid(pos1, tmpString.GetLength() - pos1));
+						}
+
+						CString		strStyle = oNodeP.GetAttribute(_T("style"));
 						PPTX::CCSS oCSSParser;
 						oCSSParser.LoadFromString2(strStyle);
 						std::map<CString, CString>::iterator pPair = oCSSParser.m_mapSettings.find(_T("font-family"));
@@ -1877,30 +1879,26 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 							nFontSize = _wtoi(pPair->second.GetBuffer()) * 2;
                         }
 
-                        if (true)
+                        nullable_string sFitPath;
+                        oNodeP.ReadAttributeBase(L"fitpath", sFitPath);
+                        if (sFitPath.is_init() && (*sFitPath == _T("true") || *sFitPath == _T("t")))
                         {
-                            nullable_string sFitPath;
-                            oNodeP.ReadAttributeBase(L"fitpath", sFitPath);
-                            if (sFitPath.is_init() && (*sFitPath == _T("true") || *sFitPath == _T("t")))
-                            {
-                                nFontSize = 2;
-                            }
-
-                            nullable_string sFitShape;
-                            oNodeP.ReadAttributeBase(L"fitshape", sFitShape);
-                            if (sFitShape.is_init() && (*sFitShape == _T("true") || *sFitShape == _T("t")))
-                            {
-                                nFontSize = 2;
-                            }
-
-                            nullable_string sTrim;
-                            oNodeP.ReadAttributeBase(L"trim", sTrim);
-                            if (sTrim.is_init() && (*sTrim == _T("true") || *sTrim == _T("t")))
-                            {
-                                bIsTrimTextPath = true;
-                            }
+                            bFitPath = true;
                         }
 
+                        nullable_string sFitShape;
+                        oNodeP.ReadAttributeBase(L"fitshape", sFitShape);
+                        if (sFitShape.is_init() && (*sFitShape == _T("true") || *sFitShape == _T("t")))
+                        {
+                            bFitShape = true;
+                        }
+
+                        nullable_string sTrim;
+                        oNodeP.ReadAttributeBase(L"trim", sTrim);
+                        if (sTrim.is_init() && (*sTrim == _T("true") || *sTrim == _T("t")))
+                        {
+                            bTrimTextPath = true;
+                        }
 					}
 					else if (_T("fill") == strNameP)
 					{						
@@ -1909,16 +1907,34 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 						nullable_string sColor2;
 						nullable_string sType;
 						nullable_string sFocus;
+						nullable_string sFocusSize;
+						nullable_string sFocusPosition;
 						nullable_string sAngle;
 						nullable_string sColors;
 
-						oNodeP.ReadAttributeBase(L"opacity", sOpacity);
-						oNodeP.ReadAttributeBase(L"opacity2", sOpacity2);
-						oNodeP.ReadAttributeBase(L"color2", sColor2);
-						oNodeP.ReadAttributeBase(L"type", sType);
-						oNodeP.ReadAttributeBase(L"focus", sFocus);
-						oNodeP.ReadAttributeBase(L"angle", sAngle);
-						oNodeP.ReadAttributeBase(L"colors", sColors);
+						oNodeP.ReadAttributeBase(L"opacity"			, sOpacity);
+						oNodeP.ReadAttributeBase(L"opacity2"		, sOpacity2);
+						oNodeP.ReadAttributeBase(L"color2"			, sColor2);
+						oNodeP.ReadAttributeBase(L"type"			, sType);
+						oNodeP.ReadAttributeBase(L"focus"			, sFocus);
+						oNodeP.ReadAttributeBase(L"focussize"		, sFocusSize);
+						oNodeP.ReadAttributeBase(L"focusposition"	, sFocusPosition);
+						oNodeP.ReadAttributeBase(L"angle"			, sAngle);
+						oNodeP.ReadAttributeBase(L"colors"			, sColors);
+
+						if (sType.is_init())
+						{
+									if (*sType == _T("gradient"))		eFillType = etGradFill;
+                            else	if (*sType == _T("gradientradial"))	eFillType = etGradFill;
+                            else	if (*sType == _T("pattern"))		eFillType = etPattFill;
+                            else	if (*sType == _T("tile"))			eFillType = etBlipFill;
+							else	if (*sType == _T("frame"))			eFillType = etBlipFill;
+						}
+						else
+						{
+							if (sFocus.is_init() || sColors.is_init() || sAngle.is_init() || sFocusSize.is_init() || sFocusPosition.is_init())
+								eFillType = etGradFill;
+						}
 
 						if (sFocus.is_init())
 						{
@@ -1926,29 +1942,26 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 						}
 						if (sOpacity.is_init())
 						{
-							bOpacity = true;
-							lAlpha = NS_DWC_Common::getOpacityFromString(*sOpacity);
-							oMod.name = _T("alpha");
-							int nA = (int)(lAlpha * 100000.0 / 255.0);
-							oMod.val = nA;
+							bOpacity	= true;
+							lAlpha		= NS_DWC_Common::getOpacityFromString(*sOpacity);
+							oMod.name	= _T("alpha");
+							oMod.val	= (int)(lAlpha * 100000.0 / 255.0);
+
 							if (arColors.at(0)->is_init())
 								arColors.at(0)->Color->Modifiers.push_back(oMod);
 						}
 						if (sOpacity2.is_init())
 						{
-							bOpacity2 = true;
-							lAlpha = NS_DWC_Common::getOpacityFromString(*sOpacity2);
-							oMod.name = _T("alpha");
-							int nA = (int)(lAlpha * 100000.0 / 255.0);
-							oMod2.val = nA;
+							bOpacity2	= true;
+							lAlpha		= NS_DWC_Common::getOpacityFromString(*sOpacity2);
+							oMod.name	= _T("alpha");
+							oMod2.val	= (int)(lAlpha * 100000.0 / 255.0);
+							
 							if (arColors.at(1)->is_init())
 								arColors.at(1)->Color->Modifiers.push_back(oMod2);
 						}
 						if (sColor2.is_init())
 						{
-							if (etSolidFill == eFillType)
-								eFillType = etGradFill;
-
                             NSPresentationEditor::CColor color;
                             if (sColor2->Find(L"fill") != -1)
                             {
@@ -1979,6 +1992,7 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 								arColors.push_back(oColor);
 							else
 							{
+								//дублирование 
 								PPTX::Logic::UniColor *oColor1 = new PPTX::Logic::UniColor();
 								oColor1->Color = new PPTX::Logic::SrgbClr();
                                 oColor1->Color->SetRGB(color.R, color.G, color.B);
@@ -1988,23 +2002,11 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 								arColors.push_back(oColor);
 							}
 							arPos.push_back(100000);
-						}
-						if (sType.is_init())
-						{
-							if (*sType == _T("gradient"))
-							{
-								eFillType = etGradFill;
-							}
-                            else if (*sType == _T("gradientradial") || *sType == _T("gradientRadial"))
-							{
-                                // TODO: дописать радиальный!!!
-                                eFillType = etGradFill;
-							}
-						}
+						}						
 						if (sAngle.is_init())
 						{
 							nAngle =  _wtoi(sAngle->GetBuffer());
-							nAngle =  (-1)*nAngle + 90;
+							nAngle =  (-1) * nAngle + 90;
 						}
 						if (sColors.is_init())
 						{
@@ -2018,8 +2020,7 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 
 							resToken = strColors.Tokenize(_T(";"), curPos);
 							while (resToken != _T(""))
-							{
-								
+							{								
 								CString strPos = resToken.Left(resToken.Find(_T(" ")));
 								CString strColor = resToken.Right(resToken.GetLength() - resToken.Find(_T(" ")) - 1);
 								double pos;
@@ -2039,7 +2040,7 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 								arGradMap.insert(std::pair<PPTX::Logic::UniColor*, int>(oColor, (int)pos) );
 
 								resToken = strColors.Tokenize(_T(";"), curPos);
-							};
+							}
 						}
 
 					}
@@ -2076,14 +2077,15 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 						}
 					}*/
 				}
-
-				//srPr += _T("<w:rPr>");
-				srPr += _T("<w:rFonts w:ascii=\"") + sFont + _T("\" w:hAnsi=\"") + sFont + _T("\"/>");
-				CString strSize;
+				CString strRPr, strPPr, strSize;
+				
 				strSize.Format(_T("%d"), nFontSize);
-				srPr += _T("<w:sz w:val=\"") + strSize + _T("\"/><w:szCs w:val=\"") + strSize + _T("\"/>");
 
-				 
+				strPPr = _T("<w:jc w:val=\"center\"/>");
+
+				strRPr += _T("<w:rFonts w:ascii=\"") + sFont + _T("\" w:hAnsi=\"") + sFont + _T("\"/>");
+				strRPr += _T("<w:sz w:val=\"") + strSize + _T("\"/><w:szCs w:val=\"") + strSize + _T("\"/>");
+
 				nullable_string sStrokeColor;
 				nullable_string sStrokeWeight;
 				nullable_string sStroked;				
@@ -2091,19 +2093,18 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 				oNodeShape.ReadAttributeBase(L"strokeweight", sStrokeWeight);
 				oNodeShape.ReadAttributeBase(L"stroked", sStroked);
 
-				//textFill
-				srPr += _T("<w14:textFill>");			
-				
+	//textFill
+				strRPr += _T("<w14:textFill>");					
 					
 				if (eFillType == etSolidFill)
 				{
-					srPr += _T("<w14:solidFill>");
-					srPr += arColors.at(0)->toXML();
-					srPr += _T("</w14:solidFill>");
+					strRPr += _T("<w14:solidFill>");
+					strRPr += arColors.at(0)->toXML();
+					strRPr += _T("</w14:solidFill>");
 				}
 				else if (eFillType == etGradFill)
 				{					
-					srPr += _T("<w14:gradFill><w14:gsLst>");
+					strRPr += _T("<w14:gradFill><w14:gsLst>");
 					int nSize = arColors.size();
 					bool bRevert = false;
 					int nColorsLen = arColors.size();
@@ -2142,8 +2143,7 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 					}
 					//else if (-1 < nFocus &&  nFocus < 0)
 					else if (((nAngle != 90) && (-1 < nFocus &&  nFocus < 0)) || ((nAngle == 90) && (0 < nFocus &&  nFocus < 1)))
-					{
-						
+					{						
 						if (nAngle != 90)
 							dNewZero *= -1;
 
@@ -2167,7 +2167,7 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 							arPosNew.push_back((int)dPosNew);
 						}							
 					}
-					//nFocus == 0
+			//nFocus == 0
 					else if ((nAngle != 90 && nFocus == 0) || (nAngle == 90 && nFocus == 1))
 					{
 						for (int i = 0; i < nColorsLen; i++)
@@ -2176,7 +2176,7 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 							arPosNew.push_back(arPos.at(i));
 						}
 					}
-					//nFocus == 1
+			//nFocus == 1
 					else if ((nAngle != 90 && nFocus == 1) || (nAngle == 90 && nFocus == 0))
 					{
 						for (int i = nColorsLen - 1; i >= 0; i--)
@@ -2193,33 +2193,38 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 
 						CString strPos;
 						strPos.Format(_T("%d"), pos);
-						srPr += _T("<w14:gs w14:pos = \"") + strPos + _T("\">");
-						srPr += color;
-						srPr += _T("</w14:gs>");
+						strRPr += _T("<w14:gs w14:pos = \"") + strPos + _T("\">");
+						strRPr += color;
+						strRPr += _T("</w14:gs>");
 					}
 					
 					CString strAngle;
 					strAngle.Format(_T("%d"), nAngle * 60000);
-					srPr += _T("</w14:gsLst><w14:lin w14:ang=\"") + strAngle + _T("\" w14:scaled=\"0\"/></w14:gradFill>");
+					strRPr += _T("</w14:gsLst><w14:lin w14:ang=\"") + strAngle + _T("\" w14:scaled=\"0\"/></w14:gradFill>");
 				}
 				else if (eFillType == etNoFill)
-					srPr += _T("<w14:noFill/>");
+				{
+					strRPr += _T("<w14:noFill/>");
+				}
+				else
+				{
+					//не существует в природе
+				}
 
-				srPr += _T("</w14:textFill>");
+				strRPr += _T("</w14:textFill>");
 
-				//textOutline
-				double m_dValue;
-				CString strStrokeW;
+	//textOutline
+				double m_dValue = 1;
 				if (sStrokeWeight.is_init())
 				{
 					CString strW(*sStrokeWeight);
 					strW.Remove('pt');
 					m_dValue = _wtof(strW);
 				}
-				else
-					m_dValue = 1;
+
+				CString strStrokeW;
 				strStrokeW.Format(_T("%d"), (int)Pt_To_Emu(m_dValue));
-				srPr += _T("<w14:textOutline w14:w=\"") + strStrokeW + _T("\">");
+				strRPr += _T("<w14:textOutline w14:w=\"") + strStrokeW + _T("\">");
 
                 smart_ptr<PPTX::Logic::SolidFill> pSolid = new PPTX::Logic::SolidFill();
 				pSolid->m_namespace = _T("a");
@@ -2231,7 +2236,7 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 				{
 					if (*sStroked == _T("false") || *sStroked == _T("f"))
 					{
-						srPr += _T("<w14:noFill/>");
+						strRPr += _T("<w14:noFill/>");
 						bStroked = false;
 					}
 				}				
@@ -2245,13 +2250,17 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 					pSolid->Color.Color->SetRGB(0x00, 0x00, 0x00);
 
 				if (bStroked)
-					srPr += pSolid->toXML();
+					strRPr += pSolid->toXML();
 
-				srPr += _T("</w14:textOutline>");			
+				strRPr += _T("</w14:textOutline>");
 
-				//srPr += _T("</w:rPr>");
-                sParaRun += _T("<w:rPr>") + srPr + _T("</w:rPr>") + _T("<w:t>") + strString + _T("</w:t></w:r>");
-				sTxbxContent += _T("<w:pPr><w:rPr>") + srPr + _T("</w:rPr></w:pPr>") + sParaRun + _T("</w:p></w:txbxContent>");
+				for (int i = 0; i < wordArtString.size(); i++)
+				{
+					CString sParaRun = _T("<w:r><w:rPr>") + strRPr + _T("</w:rPr>") + _T("<w:t>") + wordArtString[i] + _T("</w:t></w:r>");
+				
+					sTxbxContent += _T("<w:p><w:pPr>") + strPPr + _T("<w:rPr>") + strRPr + _T("</w:rPr></w:pPr>") + sParaRun + _T("</w:p>");
+				}
+				sTxbxContent += _T("</w:txbxContent>");
 				pShape->TextBoxShape = sTxbxContent;
 			}
 			strXmlPPTX = _T("<a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom>");
@@ -2262,7 +2271,7 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
             pShape->TextBoxBodyPr->rIns = 0;
             pShape->TextBoxBodyPr->bIns = 0;
 
-            if (!bIsTrimTextPath)
+            if (!bTrimTextPath)
             {
                 // нужно для данного размера шейпа выставить отступы сверху и снизу
                 // top: Ascent - CapHeight
@@ -3448,6 +3457,7 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem& oElem, XmlUtils
 		pSolid->Color.Color = new PPTX::Logic::SrgbClr();
 		pSolid->Color.Color->SetRGB(color.R, color.G, color.B);
 
+		pShape->spPr.Fill.m_type = PPTX::Logic::UniFill::solidFill;
         pShape->spPr.Fill.Fill = pSolid;
 	}
     else if (!pPPTShape->IsWordArt())
@@ -3458,6 +3468,7 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem& oElem, XmlUtils
         pSolid->Color.Color = new PPTX::Logic::SrgbClr();
         pSolid->Color.Color->SetRGB(R, G, B);
 
+		pShape->spPr.Fill.m_type = PPTX::Logic::UniFill::solidFill;
         pShape->spPr.Fill.Fill = pSolid;
     }
 
@@ -3469,6 +3480,8 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem& oElem, XmlUtils
 		{
 			PPTX::Logic::NoFill* pNoFill = new PPTX::Logic::NoFill();
 			pNoFill->m_namespace = _T("a");
+
+			pShape->spPr.Fill.m_type = PPTX::Logic::UniFill::noFill;
 			pShape->spPr.Fill.Fill = pNoFill;
 		}
 	}
@@ -3476,6 +3489,8 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem& oElem, XmlUtils
 	{
 		PPTX::Logic::NoFill* pNoFill = new PPTX::Logic::NoFill();
 		pNoFill->m_namespace = _T("a");
+
+		pShape->spPr.Fill.m_type = PPTX::Logic::UniFill::noFill;
 		pShape->spPr.Fill.Fill = pNoFill;
 	}
 
@@ -3515,6 +3530,7 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem& oElem, XmlUtils
 			pSolid->Color.Color = new PPTX::Logic::SrgbClr();
 			pSolid->Color.Color->SetRGB(color.R, color.G, color.B);
 
+			pShape->spPr.Fill.m_type = PPTX::Logic::UniFill::solidFill;
 			pShape->spPr.Fill.Fill = pSolid;
 
 			if (!sFillColor.is_init()) 
@@ -3536,6 +3552,7 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem& oElem, XmlUtils
 				pBlipFill->tile = new PPTX::Logic::Tile();				
 			}
 
+			pShape->spPr.Fill.m_type = PPTX::Logic::UniFill::blipFill;
 			pShape->spPr.Fill.Fill = pBlipFill;
 		}		
 		nullable_string sRotate;
@@ -3617,6 +3634,7 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem& oElem, XmlUtils
 				if (*sRotate == L"r") pGradFill->lin->ang = 180 * 60000;
 			}
 
+			pShape->spPr.Fill.m_type = PPTX::Logic::UniFill::gradFill;
 			pShape->spPr.Fill.Fill = pGradFill;
 		}	
 
@@ -3679,6 +3697,7 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem& oElem, XmlUtils
 
 				}
 
+				pShape->spPr.Fill.m_type = PPTX::Logic::UniFill::blipFill;
 				pShape->spPr.Fill.Fill = pBlipFill;
 
 				CString strCropT = oNodeFillID.GetAttribute(_T("croptop"));
@@ -3727,6 +3746,8 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem& oElem, XmlUtils
 		{
 			PPTX::Logic::NoFill* pNoFill = new PPTX::Logic::NoFill();
 			pNoFill->m_namespace = _T("a");
+
+			pShape->spPr.Fill.m_type = PPTX::Logic::UniFill::noFill;
 			pShape->spPr.Fill.Fill = pNoFill;
 		}
 		else
@@ -3735,6 +3756,8 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem& oElem, XmlUtils
 			pSolid->m_namespace = _T("a");
 			pSolid->Color.Color = new PPTX::Logic::SrgbClr();
 			pSolid->Color.Color->SetRGB(0xFF, 0xFF, 0xFF);
+
+			pShape->spPr.Fill.m_type = PPTX::Logic::UniFill::solidFill;
 			pShape->spPr.Fill.Fill = pSolid;
 
 			if (sOpacity.is_init())
@@ -3767,6 +3790,8 @@ void CDrawingConverter::CheckPenShape(PPTX::Logic::SpTreeElem& oElem, XmlUtils::
 		pSolid->m_namespace = _T("a");
 		pSolid->Color.Color = new PPTX::Logic::SrgbClr();
 		pSolid->Color.Color->SetRGB(color.R, color.G, color.B);
+
+		pShape->spPr.ln->Fill.m_type = PPTX::Logic::UniFill::solidFill;
 		pShape->spPr.ln->Fill.Fill = pSolid;
 	}
 
@@ -3798,6 +3823,7 @@ void CDrawingConverter::CheckPenShape(PPTX::Logic::SpTreeElem& oElem, XmlUtils::
 			if (!pShape->spPr.ln.is_init())
 				pShape->spPr.ln = new PPTX::Logic::Ln();
 
+			pShape->spPr.ln->Fill.m_type = PPTX::Logic::UniFill::noFill;
 			pShape->spPr.ln->Fill.Fill = new PPTX::Logic::NoFill();
 		}
 	}
@@ -3806,6 +3832,7 @@ void CDrawingConverter::CheckPenShape(PPTX::Logic::SpTreeElem& oElem, XmlUtils::
 		if (!pShape->spPr.ln.is_init())
 			pShape->spPr.ln = new PPTX::Logic::Ln();
 
+		pShape->spPr.ln->Fill.m_type = PPTX::Logic::UniFill::noFill;
 		pShape->spPr.ln->Fill.Fill = new PPTX::Logic::NoFill();
 	}
 
@@ -3826,6 +3853,7 @@ void CDrawingConverter::CheckPenShape(PPTX::Logic::SpTreeElem& oElem, XmlUtils::
 			pSolid->Color.Color = new PPTX::Logic::SrgbClr();
 			pSolid->Color.Color->SetRGB(color.R, color.G, color.B);
 
+			pShape->spPr.ln->Fill.m_type = PPTX::Logic::UniFill::solidFill;
 			pShape->spPr.ln->Fill.Fill = pSolid;
 		}
 
@@ -4037,6 +4065,8 @@ void CDrawingConverter::CheckPenShape(PPTX::Logic::SpTreeElem& oElem, XmlUtils::
 			pSolid->m_namespace = _T("a");
 			pSolid->Color.Color = new PPTX::Logic::SrgbClr();
 			pSolid->Color.Color->SetRGB(0, 0, 0);
+
+			pShape->spPr.ln->Fill.m_type = PPTX::Logic::UniFill::solidFill;
 			pShape->spPr.ln->Fill.Fill = pSolid;
 		}
 	}

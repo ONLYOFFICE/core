@@ -1,56 +1,14 @@
-#-------------------------------------------------
-#
-# Project created by QtCreator 2014-10-10T14:24:04
-#
-#-------------------------------------------------
-
 QT       -= core gui
 
 TARGET = ASCOfficeDocxFile2Lib
 TEMPLATE = lib
 CONFIG += staticlib
 
-CONFIG += c++11
+CORE_ROOT_DIR = $$PWD/../..
+PWD_ROOT_DIR = $$PWD
 
-win32 {
-    QMAKE_CXXFLAGS_RELEASE -= -Zc:strictStrings
-    CONFIG(debug, debug|release) {
-        QMAKE_CXXFLAGS += /bigobj
-    }
-} else {
-    QMAKE_CXXFLAGS += -std=c++11 -Wall -Wno-ignored-qualifiers
-}
-
-############### destination path ###############
-DESTINATION_SDK_PATH = $$PWD/../../build/lib
-
-# WINDOWS
-win32:contains(QMAKE_TARGET.arch, x86_64):{
-CONFIG(debug, debug|release) {
-    DESTDIR = $$DESTINATION_SDK_PATH/win_64/DEBUG
-} else {
-    DESTDIR = $$DESTINATION_SDK_PATH/win_64
-}
-}
-win32:!contains(QMAKE_TARGET.arch, x86_64):{
-CONFIG(debug, debug|release) {
-    DESTDIR = $$DESTINATION_SDK_PATH/win_32/DEBUG
-} else {
-    DESTDIR = $$DESTINATION_SDK_PATH/win_32
-}
-}
-
-linux-g++ | linux-g++-64 | linux-g++-32:contains(QMAKE_HOST.arch, x86_64):{
-    DESTDIR = $$DESTINATION_SDK_PATH/linux_64
-}
-linux-g++ | linux-g++-64 | linux-g++-32:!contains(QMAKE_HOST.arch, x86_64):{
-    DESTDIR = $$DESTINATION_SDK_PATH/linux_32
-}
-
-mac {
-    DESTDIR = $$DESTINATION_SDK_PATH/mac_64
-}
-############### destination path ###############
+CONFIG += core_x2t
+include(../../Common/base.pri)
 
 DEFINES += UNICODE \
 	_UNICODE \
@@ -65,35 +23,9 @@ DEFINES += UNICODE \
 	LIBXML_READER_ENABLED
 
 INCLUDEPATH += \
-    ../../DesktopEditor/freetype-2.5.2/include
+    ../../DesktopEditor/freetype-2.5.2/include \
+    ../../DesktopEditor/xml/libxml2/include \
 
-#################### WINDOWS #####################
-win32 {
-INCLUDEPATH += ../../Common/DocxFormat/Source/XML/libxml2/XML/include
-}
-#################### WINDOWS #####################
-
-#################### LINUX ########################
-linux-g++ | linux-g++-64 | linux-g++-32 {
-    DEFINES += \
-        LINUX \
-        _LINUX \
-        _LINUX_QT
-
-INCLUDEPATH += /usr/include/libxml2
-}
-
-mac {
-    DEFINES += \
-        LINUX \
-        _LINUX \
-        _LINUX_QT \
-        _MAC \
-        MAC
-
-INCLUDEPATH += ../../DesktopEditor/xml/libxml2/include
-}
-#################### LINUX ########################
 
 SOURCES += ../DocWrapper/DocxSerializer.cpp \
     ../DocWrapper/FontProcessor.cpp \
@@ -103,7 +35,9 @@ SOURCES += ../DocWrapper/DocxSerializer.cpp \
     ../../XlsxSerializerCom/Reader/CommonWriter.cpp \
     ../../XlsxSerializerCom/Reader/CSVReader.cpp \
     ../../XlsxSerializerCom/Writer/CSVWriter.cpp \
-    ../DocWrapper/ChartWriter.cpp
+    ../DocWrapper/ChartWriter.cpp \
+    ../../OfficeCryptReader/source/ECMACryptReader.cpp \
+    ../../OfficeCryptReader/source/CryptTransform.cpp
 
 HEADERS += ../DocWrapper/DocxSerializer.h \
     ../DocWrapper/FontProcessor.h \
@@ -137,10 +71,6 @@ HEADERS += ../DocWrapper/DocxSerializer.h \
     ../BinReader/webSettingsWriter.h \
     ../../Common/FileDownloader/FileDownloader.h \
     ../BinReader/DefaultThemeWriter.h \
-    ../DocWrapper/ChartWriter.h
-
-unix {
-    target.path = /usr/lib
-    INSTALLS += target
-}
-
+    ../DocWrapper/ChartWriter.h \
+    ../../OfficeCryptReader/source/ECMACryptReader.h \
+    ../../OfficeCryptReader/source/CryptTransform.h

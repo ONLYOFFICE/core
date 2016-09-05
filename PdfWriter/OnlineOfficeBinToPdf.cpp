@@ -390,12 +390,16 @@ namespace NSOnlineOfficeBinToPdf
                     case Aggplus::DashStyleCustom:
                     {
                         int nCountDash = ReadInt(current, curindex);
-                        double* pDash = new double(nCountDash);
-                        for (int nDash = 0; nDash < nCountDash; ++nDash)
+                        if (0 < nCountDash)
                         {
-                            pDash[nDash] = ReadInt(current, curindex) / 100000.0;
+                            double* pDash = new double[nCountDash];
+                            for (int nDash = 0; nDash < nCountDash; ++nDash)
+                            {
+                                pDash[nDash] = ReadInt(current, curindex) / 100000.0;
+                            }
+                            pPdf->PenDashPattern(pDash, nCountDash);
+                            delete[] pDash;
                         }
-                        pPdf->PenDashPattern(pDash, nCountDash);
                     }
                     default:
                         pPdf->put_PenDashStyle(nDashType);

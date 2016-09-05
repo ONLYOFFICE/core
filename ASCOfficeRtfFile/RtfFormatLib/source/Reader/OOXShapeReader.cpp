@@ -68,17 +68,81 @@ bool OOXShapeReader::Parse2( ReaderParameter oParam , RtfShapePtr& oOutput)
 
 		switch(m_arrElement->m_arrItems[i]->getType())
 		{
+			case OOX::et_v_fill:
+			{
+				OOX::Vml::CFill* fill = dynamic_cast<OOX::Vml::CFill*>(m_arrElement->m_arrItems[i]); 
+				if (!fill) break;
+				
+				CString srId = fill->m_sId.IsInit() ? fill->m_sId.get2() : _T("") ;
+
+				if (srId.IsEmpty())
+                    srId = fill->m_rId.IsInit() ? fill->m_rId->GetValue() : _T("") ;
+				
+				if (!srId.IsEmpty() && oParam.oReader->m_currentContainer)
+				{        
+					smart_ptr<OOX::File> oFile = oParam.oReader->m_currentContainer->Find(srId);
+				
+					if ( oFile.IsInit() && (OOX::FileTypes::Image == oFile->type()))
+					{
+						OOX::Image* pImage = (OOX::Image*)oFile.operator->();
+						CString sImagePath = pImage->filename().GetPath();
+
+						oOutput->m_oPicture = RtfPicturePtr( new RtfPicture() );
+						//todooo проверить что за путь тут выставляется
+						OOXPictureGraphicReader::WriteDataToPicture( sImagePath, *oOutput->m_oPicture, oParam.oReader->m_sPath );
+					}
+				}
+				if (fill->m_oColor.IsInit())
+					oOutput->m_nFillColor = (fill->m_oColor->Get_B() << 16) + (fill->m_oColor->Get_G() << 8) + fill->m_oColor->Get_R();
+
+				if (fill->m_oColor2.IsInit())
+					oOutput->m_nFillColor2 = (fill->m_oColor2->Get_B() << 16) + (fill->m_oColor2->Get_G() << 8) + fill->m_oColor2->Get_R();
+
+				if (fill->m_oOpacity.IsInit())
+					oOutput->m_nFillOpacity = fill->m_oOpacity->GetValue() * 100;
+
+				switch(fill->m_oType.GetValue())
+				{
+					case SimpleTypes::filltypeBackground:		oOutput->m_nFillType = 9;	break;
+					case SimpleTypes::filltypeFrame :			oOutput->m_nFillType = 3;	break;
+					case SimpleTypes::filltypeGradient:			oOutput->m_nFillType = 4;	break;
+					case SimpleTypes::filltypeGradientCenter:	oOutput->m_nFillType = 4;	break;
+					case SimpleTypes::filltypeGradientRadial:	oOutput->m_nFillType = 4;	break;
+					case SimpleTypes::filltypeGradientUnscaled:	oOutput->m_nFillType = 4;	break;
+					case SimpleTypes::filltypePattern:			oOutput->m_nFillType = 1;	break;
+					case SimpleTypes::filltypeTile:				oOutput->m_nFillType = 2;	break;
+					case SimpleTypes::filltypeSolid:
+					default:
+						break;
+				}
+				if (fill->m_oAngle.IsInit())
+				{
+					oOutput->m_nFillAngle = fill->m_oAngle->GetValue();
+					if (oOutput->m_nFillType == 4) 
+						oOutput->m_nFillType = 7;
+				}
+				if (fill->m_oFocus.IsInit())
+				{
+					oOutput->m_nFillFocus = fill->m_oFocus->GetValue();
+				}
+			}break;
+			case OOX::et_v_stroke:
+			{
+				OOX::Vml::CStroke* stroke = dynamic_cast<OOX::Vml::CStroke*>(m_arrElement->m_arrItems[i]); 
+				if (!stroke) break;
+				oOutput->m_nLineDashing = stroke->m_oDahsStyle.GetValue(); //совпадают значения
+
+				if (stroke->m_oColor.IsInit())
+					oOutput->m_nLineColor = (stroke->m_oColor->Get_B() << 16) + (stroke->m_oColor->Get_G() << 8) + stroke->m_oColor->Get_R();
+			}break;
 			case OOX::et_v_imagedata:
 			{
 				OOX::Vml::CImageData* image_data = dynamic_cast<OOX::Vml::CImageData*>(m_arrElement->m_arrItems[i]);
-
-				oOutput->m_oPicture = RtfPicturePtr( new RtfPicture() );
-				oOutput->m_eShapeType = RtfShape::st_none;
-				oOutput->m_nShapeType = 75;
+				if (!image_data) break;
 
 				CString srId = image_data->m_oId.IsInit() ? image_data->m_oId.get2() : _T("") ;
 
-				if (srId.GetLength() < 1)
+				if (srId.IsEmpty())
                     srId = image_data->m_rId.IsInit() ? image_data->m_rId->GetValue() : _T("") ;
 
 				if (oParam.oReader->m_currentContainer)
@@ -87,6 +151,10 @@ bool OOXShapeReader::Parse2( ReaderParameter oParam , RtfShapePtr& oOutput)
 				
 					if ( oFile.IsInit() && (OOX::FileTypes::Image == oFile->type()))
 					{
+						oOutput->m_oPicture		= RtfPicturePtr( new RtfPicture() );
+						oOutput->m_eShapeType	= RtfShape::st_none;
+						oOutput->m_nShapeType	= 75;
+
 						OOX::Image* pImage = (OOX::Image*)oFile.operator->();
 
 						CString sImagePath = pImage->filename().GetPath();
@@ -149,11 +217,6 @@ bool OOXShapeReader::Parse2( ReaderParameter oParam , RtfShapePtr& oOutput)
 					double dNewScale = 100 * ( 1.0 * nHeight / nCropedHeightGoal );
 					oOutput->m_oPicture->m_dScaleY = dNewScale;
 				}
-
-
-				//проверяем на inline
-				if( (PROP_DEF == oOutput->m_nLeft || 0 == oOutput->m_nLeft ) && ( PROP_DEF == oOutput->m_nTop || 0 == oOutput->m_nTop ) && PROP_DEF == oOutput->m_nPositionH && PROP_DEF == oOutput->m_nPositionV )
-					oOutput->m_eShapeType = RtfShape::st_inline;
 			}break;
 			case OOX::et_wd_wrap:
 			{
@@ -185,7 +248,7 @@ bool OOXShapeReader::Parse2( ReaderParameter oParam , RtfShapePtr& oOutput)
 			{
 				OOX::Vml::CTextbox *text_box= dynamic_cast<OOX::Vml::CTextbox*>(m_arrElement->m_arrItems[i]);
 
-				if (text_box->m_oTxtbxContent.IsInit())
+				if ((text_box) && (text_box->m_oTxtbxContent.IsInit()))
 				{
 					OOXTextItemReader oTextItemReader;
 					
@@ -198,8 +261,29 @@ bool OOXShapeReader::Parse2( ReaderParameter oParam , RtfShapePtr& oOutput)
 						oOutput->m_aTextItems = oTextItemReader.m_oTextItems;
 				}
 			}break;
+			case OOX::et_v_textpath:
+			{
+				OOX::Vml::CTextPath *text_path= dynamic_cast<OOX::Vml::CTextPath*>(m_arrElement->m_arrItems[i]);
+				if (text_path)
+				{
+					oOutput->m_bGtext			= 1;
+					if (text_path->m_sString.IsInit())
+					{
+						oOutput->m_sGtextUNICODE	= text_path->m_sString.get();
+					}
+					if (text_path->m_oStyle.IsInit())
+					{
+						ParseStyles( *oOutput, text_path->m_oStyle->m_arrProperties );
+					}
+				}
+
+			}break;
 		}
 	}
+	//проверяем на inline
+	if((PROP_DEF == oOutput->m_nLeft/* || 0 == oOutput->m_nLeft */) && ( PROP_DEF == oOutput->m_nTop/* || 0 == oOutput->m_nTop */) && 
+		PROP_DEF == oOutput->m_nPositionH && PROP_DEF == oOutput->m_nPositionV )
+		oOutput->m_eShapeType = RtfShape::st_inline;
 	//если ничего не задали делаем inline
 	if( (PROP_DEF == oOutput->m_nLeft || 0 == oOutput->m_nLeft ) && ( PROP_DEF == oOutput->m_nTop || 0 == oOutput->m_nTop ) && PROP_DEF == oOutput->m_nPositionH && PROP_DEF == oOutput->m_nPositionV )
 	{
@@ -208,6 +292,7 @@ bool OOXShapeReader::Parse2( ReaderParameter oParam , RtfShapePtr& oOutput)
 		oOutput->m_nPositionHRelative = 3;
 		oOutput->m_nPositionVRelative = 3;
 	}
+	return true;
 }
 bool OOXShapeReader::Parse( ReaderParameter oParam , RtfShapePtr& oOutput)
 {
@@ -215,16 +300,14 @@ bool OOXShapeReader::Parse( ReaderParameter oParam , RtfShapePtr& oOutput)
 
 	if (m_vmlElement == NULL ) return Parse2(oParam , oOutput);
 
-	//todooo
-	//CString sType = m_vmlElement->;Type
-	//int nType = GetType( sType );
-	//if( -1 != nType )
-	//	oOutput->m_nShapeType = nType;
 	if( m_vmlElement->m_sId.IsInit())
+	{
 		oOutput->m_nID = oParam.oReader->m_oOOXIdGenerator.GetId( m_vmlElement->m_sId.get());
+	}
 
-	oOutput->m_nLeft = 0; //стили только с widht height (например в Numbering)
-	oOutput->m_nTop = 0;
+	//oOutput->m_nLeft		= 0; //стили только с widht height (например в Numbering)
+	//oOutput->m_nTop		= 0;
+	oOutput->m_eShapeType	= RtfShape::st_none; //inline or anchor
 	
 	if ( m_vmlElement->m_oStyle.IsInit())
 	{
@@ -235,23 +318,42 @@ bool OOXShapeReader::Parse( ReaderParameter oParam , RtfShapePtr& oOutput)
 	{
 		if (shape->m_oAdj.IsInit())
 			ParseAdjustment( *oOutput, shape->m_oAdj.get() );
+		
+		if (shape->m_sType.IsInit())
+		{
+			int pos = shape->m_sType->Find(_T("#_x0000_t"));
+			if (pos >= 0)
+			{				
+				oOutput->m_nShapeType	= _wtoi(shape->m_sType->Mid(pos + 9, shape->m_sType->GetLength() - pos - 9).GetString());
+			}
+		}
 	}
-	//CString sConnectionType = oXmlReader.ReadNodeAttribute( _T("o:connecttype"), _T("") );
-	//if( _T("custom") == sConnectionType )
-	//	oOutput->m_nConnectionType = 0;
-	//else if( _T("none") == sConnectionType )
-	//	oOutput->m_nConnectionType = 1;
-	//else if( _T("rect") == sConnectionType )
-	//	oOutput->m_nConnectionType = 2;
-	//else if( _T("segments") == sConnectionType )
-	//	oOutput->m_nConnectionType = 3;
+	if (OOX::Vml::CRect* rect = dynamic_cast<OOX::Vml::CRect*>(m_vmlElement))
+	{
+		oOutput->m_nShapeType	= 1;
+	}
+				
+	if (m_vmlElement->m_oFilled.IsInit())
+		oOutput->m_bFilled = m_vmlElement->m_oFilled->GetValue() ==  SimpleTypes::booleanFalse ? 0 : 1;
+
+	if (m_vmlElement->m_oStroked.IsInit())
+		oOutput->m_bLine = m_vmlElement->m_oStroked->GetValue() ==  SimpleTypes::booleanFalse ? 0 : 1;
+
+	if (m_vmlElement->m_oFillColor.IsInit())
+		oOutput->m_nFillColor = (m_vmlElement->m_oFillColor->Get_B() << 16) + (m_vmlElement->m_oFillColor->Get_G() << 8) + m_vmlElement->m_oFillColor->Get_R();
+
+	if (m_vmlElement->m_oStrokeColor.IsInit())
+		oOutput->m_nLineColor = (m_vmlElement->m_oStrokeColor->Get_B() << 16) + (m_vmlElement->m_oStrokeColor->Get_G() << 8) + m_vmlElement->m_oStrokeColor->Get_R();
+
+	if( m_vmlElement->m_oStrokeWeight.IsInit())
+		oOutput->m_nLineWidth = m_vmlElement->m_oStrokeWeight->ToEmu();
 
 	switch(m_vmlElement->m_oConnectorType.GetValue())
 	{
-	case SimpleTypes::connectortypeCurved	: oOutput->m_nConnectionType = 2; break;
-	case SimpleTypes::connectortypeElbow	: oOutput->m_nConnectionType = 1; break;
-	case SimpleTypes::connectortypeNone		: oOutput->m_nConnectionType = 3; break;
-	case SimpleTypes::connectortypeStraight	: oOutput->m_nConnectionType = 0; break;
+		case SimpleTypes::connectortypeCurved	: oOutput->m_nConnectionType = 2; break;
+		case SimpleTypes::connectortypeElbow	: oOutput->m_nConnectionType = 1; break;
+		case SimpleTypes::connectortypeNone		: oOutput->m_nConnectionType = 3; break;
+		case SimpleTypes::connectortypeStraight	: oOutput->m_nConnectionType = 0; break;
 	}
 
 	oOutput->m_bLayoutInCell = m_vmlElement->m_oAllowInCell.GetValue();
@@ -279,9 +381,6 @@ bool OOXShapeReader::Parse( ReaderParameter oParam , RtfShapePtr& oOutput)
 		oOutput->m_nGroupBottom = oOutput->m_nGroupTop + m_vmlElement->m_oCoordSize->GetY();
 	}
 
-	if( m_vmlElement->m_oStrokeWeight.IsInit())
-		oOutput->m_nLineWidth = m_vmlElement->m_oStrokeWeight->ToEmu();
-
 	return Parse2(oParam, oOutput);
 
 
@@ -299,78 +398,152 @@ bool OOXShapeReader::ParseStyle(RtfShape& oShape, SimpleTypes::Vml::CCssProperty
 		case SimpleTypes::Vml::cssptFlip : 
 			switch(oShape.m_bFlipH = prop->get_Value().eFlip)
 			{
-			case SimpleTypes::Vml::cssflipX:	oShape.m_bFlipH = true; break; 
-			case SimpleTypes::Vml::cssflipY:	oShape.m_bFlipV = true; break;
-			case SimpleTypes::Vml::cssflipXY:	oShape.m_bFlipH = true; oShape.m_bFlipV = true; break; 
-			case SimpleTypes::Vml::cssflipYX :	oShape.m_bFlipH = true; oShape.m_bFlipV = true; break; 
+				case SimpleTypes::Vml::cssflipX:	oShape.m_bFlipH = true; break; 
+				case SimpleTypes::Vml::cssflipY:	oShape.m_bFlipV = true; break;
+				case SimpleTypes::Vml::cssflipXY:	oShape.m_bFlipH = true; oShape.m_bFlipV = true; break; 
+				case SimpleTypes::Vml::cssflipYX :	oShape.m_bFlipH = true; oShape.m_bFlipV = true; break; 
 			}
-			break;
-		case SimpleTypes::Vml::cssptHeight : 
-			{
-				int nHeight = (int)(20 * prop->get_Value().dValue);
-				if( PROP_DEF != oShape.m_nTop )//todooo переделать !!!
-					oShape.m_nBottom = oShape.m_nTop + nHeight;
-				if( PROP_DEF != oShape.m_nRelTop)//todooo переделать !!!
-					oShape.m_nRelBottom = oShape.m_nRelTop + nHeight;
-			}break;
-		case SimpleTypes::Vml::cssptLeft : 
-			oShape.m_nRelLeft	= prop->get_Value().dValue;					break;
-		case SimpleTypes::Vml::cssptMarginBottom: 
-			oShape.m_nBottom	=  (int)(20 * prop->get_Value().dValue );	break;
-		case SimpleTypes::Vml::cssptMarginLeft : 
-			oShape.m_nLeft		=  (int)(20 * prop->get_Value().dValue );	break;//pt tp twips
-		case SimpleTypes::Vml::cssptMarginRight : 
-			oShape.m_nRight	=  (int)(20 * prop->get_Value().dValue );		break;
-		case SimpleTypes::Vml::cssptMarginTop                      : 
-			oShape.m_nTop		=  (int)(20 * prop->get_Value().dValue );	break;
-		case SimpleTypes::Vml::cssptMsoPositionHorizontal          : 
-			oShape.m_nPositionH = prop->get_Value().eMsoPosHor;	break;
-		case SimpleTypes::Vml::cssptMsoPositionHorizontalRelative  :
-			oShape.m_nPositionHRelative = prop->get_Value().eMsoPosHorRel;	break;
-		case SimpleTypes::Vml::cssptMsoPositionVertical            : 
-			oShape.m_nPositionV = prop->get_Value().eMsoPosVer;		break;
-		case SimpleTypes::Vml::cssptMsoPositionVerticalRelative    : 
-			oShape.m_nPositionVRelative = prop->get_Value().eMsoPosVerRel;		break;
-		case SimpleTypes::Vml::cssptMsoWrapDistanceBottom          :
-			oShape.m_nWrapDistBottom =  (int)(20 * prop->get_Value().dValue );	break;
-		case SimpleTypes::Vml::cssptMsoWrapDistanceLeft            :  
-			oShape.m_nWrapDistLeft = (int)(20 * prop->get_Value().dValue );		break;
-		case SimpleTypes::Vml::cssptMsoWrapDistanceRight           : 
-			oShape.m_nWrapDistRight = (int)(20 * prop->get_Value().dValue );	break;
-		case SimpleTypes::Vml::cssptMsoWrapDistanceTop             : 
-			oShape.m_nWrapDistTop =  (int)(20 * prop->get_Value().dValue );		break;
-			break;
-		case SimpleTypes::Vml::cssptMsoWrapEdited                  : 
-			break;
-		case SimpleTypes::Vml::cssptMsoWrapStyle                   : 
-			break;
-		case SimpleTypes::Vml::cssptPosition                       : 
-			break;
-		case SimpleTypes::Vml::cssptRotation                       : 
-			oShape.m_nRotation = 65536 * prop->get_Value().dValue;
-			if( PROP_DEF != oShape.m_nRelRight || PROP_DEF != oShape.m_nRelLeft || PROP_DEF != oShape.m_nRelTop || PROP_DEF != oShape.m_nRelBottom  )
-				oShape.m_nRelRotation = oShape.m_nRotation;
-			break;
-		case SimpleTypes::Vml::cssptTop : 
-			oShape.m_nRelTop = prop->get_Value().dValue;				break;
-		case SimpleTypes::Vml::cssptVisibility :  
 			break;
 		case SimpleTypes::Vml::cssptWidth : 
 			{
-				int nWidth = (int)(20 * prop->get_Value().dValue);
+				//OOX::SimpleTypes::CPoint oPoint;
+				//oPoint.FromPoints(prop->get_Value().dValue);
+				
+				oShape.m_nRight = oShape.m_nRelRight = (int)(20 * prop->get_Value().oValue.dValue);
+				
 				if( PROP_DEF != oShape.m_nLeft )
-					oShape.m_nRight = oShape.m_nLeft + nWidth;
+					oShape.m_nRight += oShape.m_nLeft;
 				if( PROP_DEF != oShape.m_nRelLeft)
-					oShape.m_nRelRight = oShape.m_nRelLeft + nWidth;
+					oShape.m_nRelRight += oShape.m_nRelLeft;
 			}break;
+		case SimpleTypes::Vml::cssptHeight : 
+			{
+				oShape.m_nBottom  = oShape.m_nRelBottom = (int)(20 * prop->get_Value().oValue.dValue);
+				
+				if( PROP_DEF != oShape.m_nTop )
+					oShape.m_nBottom += oShape.m_nTop;
+				if( PROP_DEF != oShape.m_nRelTop)
+					oShape.m_nRelBottom += oShape.m_nRelTop;
+			}break;
+		case SimpleTypes::Vml::cssptLeft :
+			{
+				oShape.m_nRelLeft	= prop->get_Value().oValue.dValue;					
+				if( PROP_DEF != oShape.m_nRelRight)
+					oShape.m_nRelRight += oShape.m_nRelLeft;
+			}break;
+		case SimpleTypes::Vml::cssptTop : 
+			{
+				oShape.m_nRelTop = prop->get_Value().oValue.dValue;
+				if( PROP_DEF != oShape.m_nRelBottom)
+					oShape.m_nRelBottom += oShape.m_nRelTop;
+			}break;
+		case SimpleTypes::Vml::cssptMarginBottom: 
+			{
+				oShape.m_nBottom	=  (int)(20 * prop->get_Value().oValue.dValue );	
+			}break;
+		case SimpleTypes::Vml::cssptMarginLeft :
+			{
+				oShape.m_nLeft		=  (int)(20 * prop->get_Value().oValue.dValue );	
+			}break;//pt tp twips
+		case SimpleTypes::Vml::cssptMarginRight : 
+			{
+				oShape.m_nRight	=  (int)(20 * prop->get_Value().oValue.dValue );		
+			}break;
+		case SimpleTypes::Vml::cssptMarginTop:
+			{
+				oShape.m_nTop		=  (int)(20 * prop->get_Value().oValue.dValue );	
+			}break;
+		case SimpleTypes::Vml::cssptMsoPositionHorizontal: 
+			{
+				oShape.m_nPositionH = prop->get_Value().eMsoPosHor;	
+			}break;
+		case SimpleTypes::Vml::cssptMsoPositionHorizontalRelative  :
+			{
+				oShape.m_nPositionHRelative = prop->get_Value().eMsoPosHorRel;	
+				switch(prop->get_Value().eMsoPosHorRel)
+				{
+				case SimpleTypes::Vml::cssmsoposhorrelMargin:	oShape.m_eXAnchor = RtfShape::ax_margin; break;
+				case SimpleTypes::Vml::cssmsoposhorrelPage:		oShape.m_eXAnchor = RtfShape::ax_page; break;
+				case SimpleTypes::Vml::cssmsoposhorrelText:
+				case SimpleTypes::Vml::cssmsoposhorrelChar:		break;//inline	
+				}
+			}break;
+		case SimpleTypes::Vml::cssptMsoPositionVertical: 
+			{
+				oShape.m_nPositionV = prop->get_Value().eMsoPosVer;		
+			}break;
+		case SimpleTypes::Vml::cssptMsoPositionVerticalRelative    :
+			{
+				oShape.m_nPositionVRelative = prop->get_Value().eMsoPosVerRel;		
+				switch(prop->get_Value().eMsoPosVerRel)
+				{
+				case SimpleTypes::Vml::cssmsoposverrelMargin:	oShape.m_eYAnchor = RtfShape::ay_margin; break;
+				case SimpleTypes::Vml::cssmsoposverrelPage:		oShape.m_eYAnchor = RtfShape::ay_page; break;
+				case SimpleTypes::Vml::cssmsoposverrelText:
+				case SimpleTypes::Vml::cssmsoposverrelLine:		break;//inline	
+				}
+			}break;
+		case SimpleTypes::Vml::cssptMsoWrapDistanceBottom:
+			{
+				oShape.m_nWrapDistBottom =  (int)(20 * prop->get_Value().dValue );	
+			}break;
+		case SimpleTypes::Vml::cssptMsoWrapDistanceLeft : 
+			{
+				oShape.m_nWrapDistLeft = (int)(20 * prop->get_Value().dValue );		
+			}break;
+		case SimpleTypes::Vml::cssptMsoWrapDistanceRight:
+			{
+				oShape.m_nWrapDistRight = (int)(20 * prop->get_Value().dValue );	
+			}break;
+		case SimpleTypes::Vml::cssptMsoWrapDistanceTop : 
+			{
+				oShape.m_nWrapDistTop =  (int)(20 * prop->get_Value().dValue );		
+			}break;
+		case SimpleTypes::Vml::cssptMsoWrapEdited: 
+			break;
+		case SimpleTypes::Vml::cssptMsoWrapStyle: 
+			break;
+		case SimpleTypes::Vml::cssptPosition: 
+			break;
+		case SimpleTypes::Vml::cssptRotation: 
+			{
+				oShape.m_nRotation = 65536 * prop->get_Value().dValue;
+				if( PROP_DEF != oShape.m_nRelRight || PROP_DEF != oShape.m_nRelLeft || PROP_DEF != oShape.m_nRelTop || PROP_DEF != oShape.m_nRelBottom  )
+					oShape.m_nRelRotation = oShape.m_nRotation;
+			}break;
+		case SimpleTypes::Vml::cssptVisibility :  
+			break;
 		case SimpleTypes::Vml::cssptZIndex : 
 			{
+				oShape.m_eShapeType	= RtfShape::st_anchor;
+
 				int nValue = prop->get_Value().oZIndex.nOrder;
 				oShape.m_nZOrder = nValue;
 				if( nValue > 0 )
 					oShape.m_nZOrderRelative = 0;
 				else if( nValue < 0 )
 					oShape.m_nZOrderRelative = 1;
+			}break;
+		case SimpleTypes::Vml::cssptFontFamily:
+			{
+				oShape.m_sGtextFont = CString(prop->get_Value().wsValue);
+			}break;
+		case SimpleTypes::Vml::cssptFontSize:
+			{
+				oShape.m_nGtextSize = prop->get_Value().oValue.dValue;
+			}break;
+		case SimpleTypes::Vml::cssptVTextAnchor:
+			{
+				oShape.m_nAnchorText		= prop->get_Value().eVTextAnchor;//совпдает
+				oShape.m_bFitShapeToText	= 0;
+			}break;
+		case SimpleTypes::Vml::csspctMsoWidthPercent:
+			{
+				oShape.m_nPctWidth	= prop->get_Value().oValue.dValue;
+			}break;
+		case SimpleTypes::Vml::csspctMsoHeightPercent:
+			{
+				oShape.m_nPctHeight	= prop->get_Value().oValue.dValue;
 			}break;
 		case SimpleTypes::Vml::cssptDirection                      : 			break;
 		case SimpleTypes::Vml::cssptLayoutFlow                     : 			break;
@@ -381,10 +554,7 @@ bool OOXShapeReader::ParseStyle(RtfShape& oShape, SimpleTypes::Vml::CCssProperty
 		case SimpleTypes::Vml::cssptMsoNextTextbox                 :			break;
 		case SimpleTypes::Vml::cssptMsoRotate                      : 			break;
 		case SimpleTypes::Vml::cssptMsoTextScale                   : 			break;
-		case SimpleTypes::Vml::cssptVTextAnchor                    :			break;
 		case SimpleTypes::Vml::cssptFont                           :			break;
-		case SimpleTypes::Vml::cssptFontFamily                     :			break;
-		case SimpleTypes::Vml::cssptFontSize                       : 			break;
 		case SimpleTypes::Vml::cssptFontStyle                      : 			break;
 		case SimpleTypes::Vml::cssptFontVariant                    :			break;
 		case SimpleTypes::Vml::cssptFontWeight                     :			break;
@@ -398,60 +568,6 @@ bool OOXShapeReader::ParseStyle(RtfShape& oShape, SimpleTypes::Vml::CCssProperty
 		case SimpleTypes::Vml::cssptVTextSpacingMode               : 			break;
 		case SimpleTypes::Vml::cssptVTextSpacing                   : 			break;		
 	}
-
-	//else if(  _T("mso-left-percent") == sProperty )
-	//	oShape.m_nPositionHPct = Strings::ToInteger( sValue );
-	//else if(  _T("mso-position-horizontal-relative") == sProperty )
-	//{
-	//	if( _T("page") == sValue )
-	//		oShape.m_eXAnchor = RtfShape::ax_page;
-	//	else if( _T("margin") == sValue )
-	//		oShape.m_eXAnchor = RtfShape::ax_margin;
-	//	else if( _T("text") == sValue )
-	//		oShape.m_eXAnchor = RtfShape::ax_column;
-	//}
-	//else if(  _T("mso-top-percent") == sProperty )
-	//	oShape.m_nPositionVPct = Strings::ToInteger( sValue );
-	//else if(  _T("mso-position-vertical-relative") == sProperty )
-	//{
-	//	if( _T("page") == sValue )
-	//		oShape.m_eYAnchor = RtfShape::ay_page;
-	//	else if( _T("margin") == sValue )
-	//		oShape.m_eYAnchor = RtfShape::ay_margin;
-	//	else if( _T("text") == sValue )
-	//		oShape.m_eYAnchor = RtfShape::ay_margin;
-	//}
-	//else if(  _T("mso-width-relative") == sProperty )
-	//{
-	//	if( _T("margin") == sValue )
-	//		oShape.m_nPctWidthRelative = 0;
-	//	else if( _T("page") == sValue )
-	//		oShape.m_nPctWidthRelative = 1;
-	//	else if( _T("left-margin-area") == sValue )
-	//		oShape.m_nPctWidthRelative = 2;
-	//	else if( _T("right-margin-area") == sValue )
-	//		oShape.m_nPctWidthRelative = 3;
-	//	else if( _T("inner-margin-area") == sValue )
-	//		oShape.m_nPctWidthRelative = 4;
-	//	else if( _T("outer-margin-area") == sValue )
-	//		oShape.m_nPctWidthRelative = 5;
-
-	//}
-	//else if(  _T("mso-height-relative") == sProperty )
-	//{
-	//	if( _T("margin") == sValue )
-	//		oShape.m_nPctHeightRelative = 0;
-	//	else if( _T("page") == sValue )
-	//		oShape.m_nPctHeightRelative = 1;
-	//	else if( _T("top-margin-area") == sValue )
-	//		oShape.m_nPctHeightRelative = 2;
-	//	else if( _T("bottom-margin-area") == sValue )
-	//		oShape.m_nPctHeightRelative = 3;
-	//	else if( _T("inner-margin-area") == sValue )
-	//		oShape.m_nPctHeightRelative = 4;
-	//	else if( _T("outer-margin-area") == sValue )
-	//		oShape.m_nPctHeightRelative = 5;
-	//}
 
 	return true;
 }

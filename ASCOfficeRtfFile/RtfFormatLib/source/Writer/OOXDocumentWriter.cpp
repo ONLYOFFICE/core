@@ -185,3 +185,121 @@ CString OOXDocumentWriter::CreateXmlEnd( )
 
 	return sResult;
 }
+
+bool OOXDocumentWriter::SaveByItemStart( CString sFolder )
+{
+	CString pathWord = sFolder + FILE_SEPARATOR_STR + _T("word");
+    FileSystem::Directory::CreateDirectory(pathWord) ;
+
+	try
+	{
+		CString sFilename = pathWord + FILE_SEPARATOR_STR + _T("document.xml");
+		m_oFileWriter = new NFileWriter::CBufferedFileWriter( sFilename );
+	}
+	catch(...)
+	{
+		return false;
+	}
+	m_oWriter.m_oRels.AddRelationship( _T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument"), _T("word/document.xml") );
+	m_oWriter.m_oContentTypes.AddContent( _T("application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"), _T("/word/document.xml") );
+
+	CString sXml = CreateXmlStart( );
+    std::string sXmlUTF = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sXml.GetBuffer());
+
+    m_oFileWriter->Write((BYTE*)sXmlUTF.c_str(), sXmlUTF.length());
+    return true;
+}
+bool OOXDocumentWriter::SaveByItem()
+{
+	if( true == m_bFirst )
+		m_bFirst = false;
+	else
+	{
+		RenderParameter oNewParam;
+		oNewParam.poDocument	= &m_oDocument;
+		oNewParam.poWriter		= &m_oWriter;
+		oNewParam.poRels		= &m_oWriter.m_oDocRels;
+		oNewParam.nType			= RENDER_TO_OOX_PARAM_UNKNOWN;
+
+		if( m_oDocument.GetCount() > 1)//если что-то есть в следующей секции значит предудущая закончилась
+		{
+			if( m_oDocument[1]->GetCount() > 0 )
+			{
+				CString sSectPr = m_oDocument[0]->m_oProperty.RenderToOOX(oNewParam);
+				CString sXml	= m_oDocument[1]->operator[](0)->RenderToOOX(oNewParam);
+				
+				int nIndexP = sXml.Find( _T("<w:p>") );
+
+				if (nIndexP == 0) //элемент параграф
+				{
+					int nIndexpPr = sXml.Find( _T("</w:pPr>") );
+					if( -1 != nIndexpPr )
+					{
+						sXml.Insert( nIndexpPr, sSectPr );
+					}
+					else
+					{
+						sSectPr = _T("<w:pPr>") + sSectPr + _T("</w:pPr>");
+						sXml.Insert( 5, sSectPr );
+					}
+				}
+				else
+				{
+					sXml = _T("<w:p><w:pPr>") + sSectPr + _T("</w:pPr></w:p>") + sXml;
+				}
+				
+                std::string sXmlUTF = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sXml.GetBuffer());
+
+                m_oFileWriter->Write((BYTE*)sXmlUTF.c_str(), sXmlUTF.length());
+				
+				m_oDocument[1]->RemoveItem( 0 );	//удаляем первый параграф
+				m_oDocument.RemoveItem( 0 );		//удаляем секцию
+			}			
+		}
+		else if( m_oDocument.GetCount() > 0 && m_oDocument[0]->GetCount() > 0 )//пишем параграф
+		{
+			CString sXml = m_oDocument[0]->operator[](0)->RenderToOOX(oNewParam);
+            std::string sXmlUTF = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sXml.GetBuffer());
+
+			if (m_oFileWriter)
+			{
+				m_oFileWriter->Write((BYTE*)sXmlUTF.c_str(), sXmlUTF.length());
+			}
+			else
+			{
+				//!!!!
+				m_oFileWriter = NULL;
+			}
+			
+			m_oDocument[0]->RemoveItem( 0 );//удаляем первый параграф
+        }
+	}
+	return true;
+}
+bool OOXDocumentWriter::SaveByItemEnd()
+{
+	RenderParameter oNewParam;
+	oNewParam.poDocument	= &m_oDocument;
+	oNewParam.poWriter		= &m_oWriter;
+	oNewParam.poRels		= &m_oWriter.m_oDocRels;
+	oNewParam.nType			= RENDER_TO_OOX_PARAM_UNKNOWN;
+
+	if( m_oDocument.GetCount() > 0 && m_oDocument[0]->GetCount() > 0 )//дописываем последний параграф
+	{
+		CString sXml = m_oDocument[0]->operator[](0)->RenderToOOX(oNewParam);
+		//удаляем первый параграф
+		m_oDocument[0]->RemoveItem( 0 );
+        std::string sXmlUTF = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sXml.GetBuffer());
+
+        m_oFileWriter->Write((BYTE*)sXmlUTF.c_str(), sXmlUTF.length());
+    }
+	CString sXml = CreateXmlEnd( );
+    std::string sXmlUTF = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sXml.GetBuffer());
+
+	if (m_oFileWriter)
+	{
+		m_oFileWriter->Write((BYTE*)sXmlUTF.c_str(), sXmlUTF.length());
+	}
+    RELEASEOBJECT( m_oFileWriter );
+	return true;
+}

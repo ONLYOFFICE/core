@@ -2592,6 +2592,8 @@ namespace SimpleTypes
 				if ( sValue.GetLength() <= 0 )
                     return this->m_eValue;
 
+				sValue.MakeLower();
+
 				wchar_t wChar = sValue.GetAt(0);
 				switch ( wChar )
 				{
@@ -3226,6 +3228,8 @@ namespace SimpleTypes
 			cssptVisibility                     = 1020,
 			cssptWidth                          = 1021,
 			cssptZIndex                         = 1022,
+			csspctMsoWidthPercent				= 1023,
+			csspctMsoHeightPercent				= 1024,
 
 			//  Для элемента Textbox 14.1.2.22
 			cssptDirection                      = 1100,

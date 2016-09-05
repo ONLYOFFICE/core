@@ -68,7 +68,7 @@ namespace DocFileFormat
 				m_pXmlWriter->WriteNodeBegin( _T( "o:OLEObject" ), TRUE );
 
 				//type
-				if ( ole->fLinked )
+				if ( ole->bLinked )
 				{
 					int relID = -1;
 					

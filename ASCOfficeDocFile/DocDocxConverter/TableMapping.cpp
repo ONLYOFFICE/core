@@ -353,7 +353,7 @@ namespace DocFileFormat
 	}
 
 	Table::Table( DocumentMapping* _documentMapping, int _cp, unsigned int _depth ):
-	cpStart(_cp), cpEnd(_cp), depth(_depth), documentMapping(_documentMapping)
+					cpStart(_cp), cpEnd(_cp), depth(_depth), documentMapping(_documentMapping)
 	{
 		if ( documentMapping != NULL )
 		{
@@ -371,8 +371,8 @@ namespace DocFileFormat
 
 			TableInfo tai( papx );
 
-			TableRow tableRow( documentMapping, _cp );
-			TableCell tableCell( documentMapping, _cp );
+			TableRow	tableRow	( documentMapping, _cp );
+			TableCell	tableCell	( documentMapping, _cp );
 
 			do
 			{

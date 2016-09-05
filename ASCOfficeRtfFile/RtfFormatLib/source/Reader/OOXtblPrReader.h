@@ -113,6 +113,17 @@ public:
 			OOXtblpPrReader otblpPrReader(m_ooxTableProps->m_oTblpPr.GetPointer());
 			otblpPrReader.Parse( oParam, oOutputProperty );
 		}
+		if( (m_ooxTableProps->m_oJc.IsInit()) && (m_ooxTableProps->m_oJc->m_oVal.IsInit()))
+		{
+			switch(m_ooxTableProps->m_oJc->m_oVal->GetValue())
+			{
+				case SimpleTypes::jctableCenter		: oOutputProperty.m_eJust = RtfTableProperty::rj_trqc;break;
+				case SimpleTypes::jctableEnd		: 
+				case SimpleTypes::jctableRight		: oOutputProperty.m_eJust = RtfTableProperty::rj_trqr;break;
+				case SimpleTypes::jctableStart		: 
+				case SimpleTypes::jctableLeft		: oOutputProperty.m_eJust = RtfTableProperty::rj_trql;break;
+			}
+		}
 		if( m_ooxTableProps->m_oTblBorders.IsInit())
 		{
 			if( m_ooxTableProps->m_oTblBorders->m_oTop.IsInit() )

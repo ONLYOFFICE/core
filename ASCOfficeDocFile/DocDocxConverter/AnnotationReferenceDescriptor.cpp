@@ -39,20 +39,40 @@ namespace DocFileFormat
 		AnnotationReferenceDescriptor *newObject = new AnnotationReferenceDescriptor();
 
 		//read the user initials (LPXCharBuffer9)
-		short cch = reader->ReadInt16();
 
-		unsigned char *chars = reader->ReadBytes(18, true);
+		if (reader->olderVersion)
+		{
+			short cch = reader->ReadByte();
+		
+			unsigned char *chars = reader->ReadBytes(cch, true);
+			FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &(newObject->m_UserInitials), chars,  cch , ENCODING_WINDOWS_1250);
+			
+			newObject->m_AuthorIndex = reader->ReadUInt16();
+			newObject->m_BookmarkId = reader->ReadInt16();
+			
+			RELEASEARRAYOBJECTS(chars);
+			chars = reader->ReadBytes(length - cch - 1 - 4, true);
+			
 
-		FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &(newObject->m_UserInitials), chars, ( cch * 2 ), ENCODING_UTF16);
+			RELEASEARRAYOBJECTS(chars);
+		}
+		else
+		{
+			short cch = reader->ReadInt16();
 
-		newObject->m_AuthorIndex = reader->ReadUInt16();
+			unsigned char *chars = reader->ReadBytes(18, true);
 
-		//skip 4 bytes
-		reader->ReadBytes(4, false);
+			FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &(newObject->m_UserInitials), chars, ( cch * 2 ), ENCODING_UTF16);
+			
+			newObject->m_AuthorIndex = reader->ReadUInt16();
 
-		newObject->m_BookmarkId = reader->ReadInt32();
+			//skip 4 bytes
+			reader->ReadBytes(4, false);
 
-		RELEASEARRAYOBJECTS(chars);
+			newObject->m_BookmarkId = reader->ReadInt32();
+			RELEASEARRAYOBJECTS(chars);
+		}
+
 
 		return static_cast<ByteStructure*>(newObject);
 	}

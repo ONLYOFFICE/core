@@ -855,7 +855,9 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, const unio
 //////////////////////////////////////////////
 	graphicProperties.apply_to(drawing.additional);
 //////////////////////////////////////////
-	Compute_GraphicFill(graphicProperties.common_draw_fill_attlist_, graphicProperties.style_background_image_, Context.root()->odf_context().drawStyles() ,drawing.fill);	
+	bool bTxbx = (drawing.sub_type == 1);
+
+	Compute_GraphicFill(graphicProperties.common_draw_fill_attlist_, graphicProperties.style_background_image_, Context.root()->odf_context().drawStyles() ,drawing.fill, bTxbx);	
 
 	if ((drawing.fill.bitmap) && (drawing.fill.bitmap->rId.length() < 1))
 	{
@@ -1025,7 +1027,7 @@ void draw_shape::docx_convert(oox::docx_conversion_context & Context)
 	else
 		Context.add_new_run(_T(""));
 
-	docx_serialize(strm, drawing);
+	docx_serialize(strm, drawing, Context.get_drawing_state_content());
 
 	if (new_run) Context.finish_run();
 
@@ -1134,7 +1136,7 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 	if (!Context.get_drawing_context().in_group())
 		Context.add_new_run(_T(""));
 	
-	docx_serialize(strm, drawing);
+	docx_serialize(strm, drawing, Context.get_drawing_state_content());
  	
 	if (!Context.get_drawing_context().in_group())
 		Context.finish_run();
@@ -1162,19 +1164,22 @@ void draw_text_box::docx_convert(oox::docx_conversion_context & Context)
 
 	bool pState = Context.get_paragraph_state();
 	Context.set_paragraph_state(false);		
+
+	bool drState = Context.get_drawing_state_content();
 	
-	bool graphic_parent=false;
-	
+	Context.set_drawing_state_content(true);
 	BOOST_FOREACH(const office_element_ptr & elm, content_)
     {
 		ElementType type = elm->get_type();
         elm->docx_convert(Context);
     }
-
+	
 	Context.get_drawing_context().get_text_stream_frame() = temp_stream.str();
 	Context.set_stream_man(prev);
-	Context.set_run_state(runState);
-	Context.set_paragraph_state(pState);		
+	
+	Context.set_run_state				(runState);
+	Context.set_paragraph_state			(pState);		
+	Context.set_drawing_state_content	(drState);
 
 	/////...../////
 
@@ -1244,7 +1249,7 @@ void draw_text_box::docx_convert(oox::docx_conversion_context & Context)
 	if (!Context.get_drawing_context().in_group())
 		Context.add_new_run(_T(""));    
 	
-	docx_serialize(strm, drawing);
+	docx_serialize(strm, drawing, Context.get_drawing_state_content());
 	
 	if (!Context.get_drawing_context().in_group())
 		Context.finish_run();
@@ -1258,6 +1263,16 @@ void draw_g::docx_convert(oox::docx_conversion_context & Context)
         Context.add_delayed_element(this);
         return;
     }
+
+	//if (Context.get_drawing_state_content())
+	//{
+	//	BOOST_FOREACH(const office_element_ptr & elm, content_)
+	//	{
+	//		ElementType type = elm->get_type();
+	//		elm->docx_convert(Context);
+	//	}	
+	//	return;
+	//}
 	
 	oox::_docx_drawing drawing = oox::_docx_drawing();
 	
@@ -1337,7 +1352,7 @@ void draw_g::docx_convert(oox::docx_conversion_context & Context)
 	if (!Context.get_drawing_context().in_group())
 		Context.add_new_run(_T(""));
 	
-	docx_serialize(strm, drawing);
+	docx_serialize(strm, drawing, Context.get_drawing_state_content());
  	
 	if (!Context.get_drawing_context().in_group())
 		Context.finish_run();
@@ -1430,7 +1445,7 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 			if (!Context.get_drawing_context().in_group())
 				Context.add_new_run(_T(""));
 			
-			docx_serialize(Context.output_stream(), drawing);
+			docx_serialize(Context.output_stream(), drawing, Context.get_drawing_state_content());
 			
 			if (!Context.get_drawing_context().in_group())
 				Context.finish_run();
@@ -1468,7 +1483,7 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 				if (!Context.get_drawing_context().in_group())
 					Context.add_new_run(_T(""));
 				
-				docx_serialize(Context.output_stream(), drawing);
+				docx_serialize(Context.output_stream(), drawing, Context.get_drawing_state_content());
 				
 				if (!Context.get_drawing_context().in_group())
 					Context.finish_run();

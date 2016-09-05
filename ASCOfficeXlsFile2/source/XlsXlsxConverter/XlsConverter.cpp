@@ -109,11 +109,11 @@
     } BITMAPINFOHEADER;
 
 typedef struct tagBITMAPCOREHEADER {
-        DWORD   bcSize;                 /* used to get to color table */
-        WORD    bcWidth;
-        WORD    bcHeight;
-        WORD    bcPlanes;
-        WORD    bcBitCount;
+        _UINT32   bcSize;                 /* used to get to color table */
+        _UINT16    bcWidth;
+        _UINT16    bcHeight;
+        _UINT16    bcPlanes;
+        _UINT16    bcBitCount;
 } BITMAPCOREHEADER;
 #endif
 
@@ -131,7 +131,31 @@ XlsConverter::XlsConverter(const std::wstring & xls_file, const std::wstring & _
 	try{
 		XLS::CompoundFile cfile(xls_file, XLS::CompoundFile::cf_ReadMode);
 
-		if (cfile.isError())return;
+		if (cfile.isError())
+		{
+			//if (0 <= xls_file.rfind(L".xls"))//todooo lower
+			//{
+			//	unsigned char* fileData = NULL;
+			//	DWORD fileSize = 0;
+
+			//	if (!NSFile::CFileBinary::ReadAllBytes(xls_file, &fileData, fileSize)) return;
+			//	if (!fileData) return;
+
+			//	//test/open as list
+			//	std::wstring xls_file_new = _xlsx_path + FILE_SEPARATOR_STR + L"temp.xls";
+			//	if (cfile.Open(xls_file_new, XLS::CompoundFile::cf_WriteMode))
+			//	{
+			//		XLS::CFStreamPtr stream = cfile.createWorkbookStream();
+			//		if (stream)
+			//			stream->write(fileData, fileSize);
+			//		cfile.closeWorkbookStream();
+			//	}
+			//	delete []fileData;
+			//	if (!cfile.Open(xls_file_new, XLS::CompoundFile::cf_ReadMode)) 
+			//		return;					
+			//}else 
+				return;
+		}
 
 		XLS::CFStreamPtr summary;
 		XLS::CFStreamPtr doc_summary;
@@ -657,7 +681,7 @@ std::wstring XlsConverter::WriteMediaFile(char *data, int size, std::wstring typ
 			if (file.CreateFileW(xlsx_context->get_mediaitems().media_path() + file_name))
 			{
 				WORD vtType		= 0x4D42;				file.WriteFile((BYTE*)&vtType,	2);
-				DWORD dwLen		= biSizeImage;	file.WriteFile((BYTE*)&dwLen,	4);
+				DWORD dwLen		= biSizeImage;			file.WriteFile((BYTE*)&dwLen,	4);
 				DWORD dwRes		= 0;					file.WriteFile((BYTE*)&dwRes,	4);
 				DWORD dwOffset	= 2;					file.WriteFile((BYTE*)&dwOffset, 4);
 			

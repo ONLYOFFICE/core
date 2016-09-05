@@ -1,31 +1,16 @@
-CONFIG += c++11
-
+DESKTOPEDITOR_PATH =  $$PWD/../../..
 DEFINES += \
     _QT \
     FT2_BUILD_LIBRARY
 
-linux-g++ | linux-g++-64 | linux-g++-32 {
+core_linux {
     DEFINES += \
-    HAVE_UNISTD_H \
-    LINUX \
-    _LINUX \
-    _LINUX_QT
+    HAVE_UNISTD_H
 }
 
-mac {
+core_mac {
     DEFINES += \
-    HAVE_UNISTD_H \
-    _LINUX \
-    _LINUX_QT \
-    _MAC \
-    QT_MAC
-}
-
-win32 {
-    DEFINES += \
-    WIN32
-
-    QMAKE_CXXFLAGS_RELEASE -= -Zc:strictStrings
+    HAVE_UNISTD_H
 }
 
 INCLUDEPATH += \

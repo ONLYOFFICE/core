@@ -29,10 +29,10 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include "RtfDocument.h"
 #include "RtfWriter.h"
 #include "Writer/OOXWriter.h"
 #include "RtfProperty.h"
+#include "RtfDocument.h"
 
 #include "../../../Common/DocxFormat/Source/DocxFormat/FileTypes.h"
 #include "../../../Common/DocxFormat/Source/DocxFormat/App.h"
@@ -461,13 +461,13 @@ CString RtfShading::RenderToOOX(RenderParameter oRenderParameter)
 	{
 		RtfColor oForeColor;
 		if( true == poRtfDocument->m_oColorTable.GetColor( m_nForeColor, oForeColor ) )
-            sShading.AppendFormat( _T(" w:color=\"%ls\""), oForeColor.RenderToOOX(oNewParam).GetBuffer());
+            sShading.Append( _T(" w:color=\"") + oForeColor.RenderToOOX(oNewParam) + _T("\""));
 	}
 	if( PROP_DEF != m_nBackColor )
 	{
 		RtfColor oBackColor;
 		if( true == poRtfDocument->m_oColorTable.GetColor( m_nBackColor, oBackColor ) )
-            sShading.AppendFormat( _T(" w:fill=\"%ls\""), oBackColor.RenderToOOX(oNewParam).GetBuffer());
+            sShading.Append( _T(" w:fill=\"") + oBackColor.RenderToOOX(oNewParam) + _T("\""));
 	}
 	if( PROP_DEF != m_nValue )
 	{
@@ -523,19 +523,19 @@ CString RtfShading::RenderToOOX(RenderParameter oRenderParameter)
 	{
 		switch( m_eType )
 		{
-			case st_clshdrawnil:sShading.Append( _T(" w:val=\"nil\"") );break;
-			case st_chbghoriz:sShading.Append( _T(" w:val=\"thinHorzStripehorzStripe\"") );break;
-			case st_chbgvert:sShading.Append( _T(" w:val=\"thinVertStripe\"") );break;
-			case st_chbgfdiag:sShading.Append( _T(" w:val=\"thinReverseDiagStripe\"") );break;
-			case st_chbgbdiag:sShading.Append( _T(" w:val=\"thinDiagStripe\"") );break;
-			case st_chbgcross:sShading.Append( _T(" w:val=\"thinHorzCross\"") );break;
-			case st_chbgdcross:sShading.Append( _T(" w:val=\"thinDiagCross\"") );break;
-			case st_chbgdkhoriz:sShading.Append( _T(" w:val=\"horzStripe\"") );break;
-			case st_chbgdkvert:sShading.Append( _T(" w:val=\"vertStripe\"") );break;
-			case st_chbgdkfdiag:sShading.Append( _T(" w:val=\"reverseDiagStripe\"") );break;
-			case st_chbgdkbdiag:sShading.Append( _T(" w:val=\"diagStripe\"") );break;
-			case st_chbgdkcross:sShading.Append( _T(" w:val=\"horzCross\"") );break;
-			case st_chbgdkdcross:sShading.Append( _T(" w:val=\"diagCross\"") );break;
+			case st_clshdrawnil:	sShading.Append( _T(" w:val=\"nil\"") );						break;
+			case st_chbghoriz:		sShading.Append( _T(" w:val=\"thinHorzStripehorzStripe\"") );	break;
+			case st_chbgvert:		sShading.Append( _T(" w:val=\"thinVertStripe\"") );				break;
+			case st_chbgfdiag:		sShading.Append( _T(" w:val=\"thinReverseDiagStripe\"") );		break;
+			case st_chbgbdiag:		sShading.Append( _T(" w:val=\"thinDiagStripe\"") );				break;
+			case st_chbgcross:		sShading.Append( _T(" w:val=\"thinHorzCross\"") );				break;
+			case st_chbgdcross:		sShading.Append( _T(" w:val=\"thinDiagCross\"") );				break;
+			case st_chbgdkhoriz:	sShading.Append( _T(" w:val=\"horzStripe\"") );					break;
+			case st_chbgdkvert:		sShading.Append( _T(" w:val=\"vertStripe\"") );					break;
+			case st_chbgdkfdiag:	sShading.Append( _T(" w:val=\"reverseDiagStripe\"") );			break;
+			case st_chbgdkbdiag:	sShading.Append( _T(" w:val=\"diagStripe\"") );					break;
+			case st_chbgdkcross:	sShading.Append( _T(" w:val=\"horzCross\"") );					break;
+			case st_chbgdkdcross:	sShading.Append( _T(" w:val=\"diagCross\"") );					break;
 		}
 	}
 	if( false == sShading.IsEmpty() )
@@ -547,33 +547,33 @@ CString RtfBorder::RenderToRtf(RenderParameter oRenderParameter)
 	CString  sResult;
 	switch( m_eType )
 	{
-		case bt_brdrs: sResult = _T("\\brdrs"); break;
-		case bt_brdrth: sResult = _T("\\brdrth"); break;
-		case bt_brdrsh: sResult = _T("\\brdrsh"); break;
-		case bt_brdrdb: sResult = _T("\\brdrdb"); break;
-		case bt_brdrdot: sResult = _T("\\brdrdot"); break;
-		case bt_brdrdash: sResult = _T("\\brdrdash"); break;
-		case bt_brdrhair: sResult = _T("\\brdrhair"); break;
-		case bt_brdrinset: sResult = _T("\\brdrinset"); break;
-		case bt_brdrdashsm: sResult = _T("\\brdrdashsm"); break;
-		case bt_brdrdashd: sResult = _T("\\brdrdashd"); break;
-		case bt_brdrdashdd: sResult = _T("\\brdrdashdd"); break;
-		case bt_brdrdashdot: sResult = _T("\\brdrdashdot"); break;
-		case bt_brdrtriple: sResult = _T("\\brdrtriple"); break;
-		case bt_brdrtnthsg: sResult = _T("\\brdrtnthsg"); break;
-		case bt_brdrthtnsg: sResult = _T("\\brdrthtnsg"); break;
-		case bt_brdrtnthtnsg: sResult = _T("\\brdrtnthtnsg"); break;
-		case bt_brdrtnthtnmg: sResult = _T("\\brdrtnthtnmg"); break;
-		case bt_brdrtnthlg: sResult = _T("\\brdrtnthlg"); break;
-		case bt_brdrthtnlg: sResult = _T("\\brdrthtnlg"); break;
-		case bt_brdrtnthtnlg: sResult = _T("\\brdrtnthtnlg"); break;
-		case bt_brdrwavy: sResult = _T("\\brdrwavy"); break;
-		case bt_brdrwavydb: sResult = _T("\\brdrwavydb"); break;
+		case bt_brdrs:			sResult = _T("\\brdrs");		break;
+		case bt_brdrth:			sResult = _T("\\brdrth");		break;
+		case bt_brdrsh:			sResult = _T("\\brdrsh");		break;
+		case bt_brdrdb:			sResult = _T("\\brdrdb");		break;
+		case bt_brdrdot:		sResult = _T("\\brdrdot");		break;
+		case bt_brdrdash:		sResult = _T("\\brdrdash");		break;
+		case bt_brdrhair:		sResult = _T("\\brdrhair");		break;
+		case bt_brdrinset:		sResult = _T("\\brdrinset");	break;
+		case bt_brdrdashsm:		sResult = _T("\\brdrdashsm");	break;
+		case bt_brdrdashd:		sResult = _T("\\brdrdashd");	break;
+		case bt_brdrdashdd:		sResult = _T("\\brdrdashdd");	break;
+		case bt_brdrdashdot:	sResult = _T("\\brdrdashdot");	break;
+		case bt_brdrtriple:		sResult = _T("\\brdrtriple");	break;
+		case bt_brdrtnthsg:		sResult = _T("\\brdrtnthsg");	break;
+		case bt_brdrthtnsg:		sResult = _T("\\brdrthtnsg");	break;
+		case bt_brdrtnthtnsg:	sResult = _T("\\brdrtnthtnsg"); break;
+		case bt_brdrtnthtnmg:	sResult = _T("\\brdrtnthtnmg"); break;
+		case bt_brdrtnthlg:		sResult = _T("\\brdrtnthlg");	break;
+		case bt_brdrthtnlg:		sResult = _T("\\brdrthtnlg");	break;
+		case bt_brdrtnthtnlg:	sResult = _T("\\brdrtnthtnlg"); break;
+		case bt_brdrwavy:		sResult = _T("\\brdrwavy");		break;
+		case bt_brdrwavydb:		sResult = _T("\\brdrwavydb");	break;
 		case bt_brdrdashdotstr: sResult = _T("\\brdrdashdotstr"); break;
-		case bt_brdremboss: sResult = _T("\\brdremboss"); break;
-		case bt_brdrengrave: sResult = _T("\\brdrengrave"); break;
-		case bt_brdroutset: sResult = _T("\\brdroutset"); break;
-		case bt_brdrnone: sResult = _T("\\brdrnone"); break;
+		case bt_brdremboss:		sResult = _T("\\brdremboss");	break;
+		case bt_brdrengrave:	sResult = _T("\\brdrengrave");	break;
+		case bt_brdroutset:		sResult = _T("\\brdroutset");	break;
+		case bt_brdrnone:		sResult = _T("\\brdrnone");		break;
 	}
 	if( PROP_DEF != m_nWidth && m_nWidth > 0)
 		sResult.AppendFormat( _T("\\brdrw%d"), m_nWidth );
@@ -602,34 +602,34 @@ CString RtfBorder::RenderToOOX(RenderParameter oRenderParameter)
 
 	switch( m_eType )
 	{
-		case bt_brdrs: sResult.Append( _T(" w:val=\"single\"") ); break;
-		case bt_brdrth: sResult.Append( _T(" w:val=\"thick\"") ); break;
-		case bt_brdrsh: sResult.Append( _T(" w:val=\"\"thin") ); break;
-		case bt_brdrdb: sResult.Append( _T(" w:val=\"double\"") ); break;
-		case bt_brdrdot: sResult.Append( _T(" w:val=\"dotted\"") ); break;
-		case bt_brdrdash: sResult.Append( _T(" w:val=\"dashed\"") ); break;
-		case bt_brdrhair: sResult.Append( _T(" w:val=\"hair\"") ); break;
-		case bt_brdrdashsm: sResult.Append( _T(" w:val=\"dashSmallGap\"") ); break;
-		case bt_brdrdashd: sResult.Append( _T(" w:val=\"dotDash\"") ); break;
-		case bt_brdrdashdd: sResult.Append( _T(" w:val=\"dotDotDash\"") ); break;
-		case bt_brdrinset: sResult.Append( _T(" w:val=\"inset\"") ); break;
-		case bt_brdrnone: sResult.Append( _T(" w:val=\"nil\"") ); break;
-		case bt_brdroutset: sResult.Append( _T(" w:val=\"outset\"") ); break;
-		case bt_brdrtriple: sResult.Append( _T(" w:val=\"triple\"") ); break;
-		case bt_brdrtnthsg: sResult.Append( _T(" w:val=\"thinThickSmallGap\"") ); break;
-		case bt_brdrthtnsg: sResult.Append( _T(" w:val=\"thickThinSmallGap\"") ); break;
-		case bt_brdrtnthtnsg: sResult.Append( _T(" w:val=\"thinThickThinSmallGap\"") ); break;
-		case bt_brdrtnthtnmg: sResult.Append( _T(" w:val=\"thinThickThinMediumGap\"") ); break;
-		case bt_brdrtnthmg: sResult.Append( _T(" w:val=\"thinThickMediumGap\"") ); break;
-		case bt_brdrthtnmg: sResult.Append( _T(" w:val=\"thickThinMediumGap\"") ); break;
-		case bt_brdrtnthlg: sResult.Append( _T(" w:val=\"thinThickLargeGap\"") ); break;
-		case bt_brdrthtnlg: sResult.Append( _T(" w:val=\"thickThinLargeGap\"") ); break;
-		case bt_brdrtnthtnlg: sResult.Append( _T(" w:val=\"thinThickThinLargeGap\"") ); break;
-		case bt_brdrwavy: sResult.Append( _T(" w:val=\"wave\"") ); break;
-		case bt_brdrwavydb: sResult.Append( _T(" w:val=\"doubleWave\"") ); break;
-		case bt_brdrdashdotstr: sResult.Append( _T(" w:val=\"dashDotStroked\"") ); break;
-		case bt_brdremboss: sResult.Append( _T(" w:val=\"threeDEmboss\"") ); break;
-		case bt_brdrengrave: sResult.Append( _T(" w:val=\"threeDEngrave\"") ); break;
+		case bt_brdrs:			sResult.Append( _T(" w:val=\"single\"") );					break;
+		case bt_brdrth:			sResult.Append( _T(" w:val=\"thick\"") );					break;
+		case bt_brdrsh:			sResult.Append( _T(" w:val=\"\"thin") );					break;
+		case bt_brdrdb:			sResult.Append( _T(" w:val=\"double\"") );					break;
+		case bt_brdrdot:		sResult.Append( _T(" w:val=\"dotted\"") );					break;
+		case bt_brdrdash:		sResult.Append( _T(" w:val=\"dashed\"") );					break;
+		case bt_brdrhair:		sResult.Append( _T(" w:val=\"hair\"") );					break;
+		case bt_brdrdashsm:		sResult.Append( _T(" w:val=\"dashSmallGap\"") );			break;
+		case bt_brdrdashd:		sResult.Append( _T(" w:val=\"dotDash\"") );					break;
+		case bt_brdrdashdd:		sResult.Append( _T(" w:val=\"dotDotDash\"") );				break;
+		case bt_brdrinset:		sResult.Append( _T(" w:val=\"inset\"") );					break;
+		case bt_brdrnone:		sResult.Append( _T(" w:val=\"nil\"") );						break;
+		case bt_brdroutset:		sResult.Append( _T(" w:val=\"outset\"") );					break;
+		case bt_brdrtriple:		sResult.Append( _T(" w:val=\"triple\"") );					break;
+		case bt_brdrtnthsg:		sResult.Append( _T(" w:val=\"thinThickSmallGap\"") );		break;
+		case bt_brdrthtnsg:		sResult.Append( _T(" w:val=\"thickThinSmallGap\"") );		break;
+		case bt_brdrtnthtnsg:	sResult.Append( _T(" w:val=\"thinThickThinSmallGap\"") );	break;
+		case bt_brdrtnthtnmg:	sResult.Append( _T(" w:val=\"thinThickThinMediumGap\"") );	break;
+		case bt_brdrtnthmg:		sResult.Append( _T(" w:val=\"thinThickMediumGap\"") );		break;
+		case bt_brdrthtnmg:		sResult.Append( _T(" w:val=\"thickThinMediumGap\"") );		break;
+		case bt_brdrtnthlg:		sResult.Append( _T(" w:val=\"thinThickLargeGap\"") );		break;
+		case bt_brdrthtnlg:		sResult.Append( _T(" w:val=\"thickThinLargeGap\"") );		break;
+		case bt_brdrtnthtnlg:	sResult.Append( _T(" w:val=\"thinThickThinLargeGap\"") );	break;
+		case bt_brdrwavy:		sResult.Append( _T(" w:val=\"wave\"") );					break;
+		case bt_brdrwavydb:		sResult.Append( _T(" w:val=\"doubleWave\"") );				break;
+		case bt_brdrdashdotstr: sResult.Append( _T(" w:val=\"dashDotStroked\"") );			break;
+		case bt_brdremboss:		sResult.Append( _T(" w:val=\"threeDEmboss\"") );			break;
+		case bt_brdrengrave:	sResult.Append( _T(" w:val=\"threeDEngrave\"") );			break;
 	}
 	if( false == sResult.IsEmpty() )
 	{
@@ -687,24 +687,24 @@ CString RtfCharProperty::RenderToRtf(RenderParameter oRenderParameter)
 	RENDER_RTF_INT( m_nForeColor, sResult, _T("cf") )
 	switch( m_eUnderStyle )
 	{
-		case uls_Single: sResult.Append( _T("\\ul") );break;
-		case uls_Dotted: sResult.Append( _T("\\uld") );break;
-		case uls_Dashed: sResult.Append( _T("\\uldash") );break;
-		case uls_Dash_dotted: sResult.Append( _T("\\uldashd") );break;
-		case uls_Dash_dot_dotted: sResult.Append( _T("\\uldashdd") );break;
-		case uls_Double: sResult.Append( _T("\\uldb") );break;
-		case uls_Heavy_wave: sResult.Append( _T("\\ulhwave") );break;
-		case uls_Long_dashe: sResult.Append( _T("\\ulldash") );break;
-		case uls_Stops_all: sResult.Append( _T("\\ulnone") );break;
-		case uls_Thick: sResult.Append( _T("\\ulth") );break;
-		case uls_Thick_dotted: sResult.Append( _T("\\ulthd") );break;
-		case uls_Thick_dashed: sResult.Append( _T("\\ulthdash") );break;
-		case uls_Thick_dash_dotted: sResult.Append( _T("\\ulthdashd") );break;
+		case uls_Single:				sResult.Append( _T("\\ul") );break;
+		case uls_Dotted:				sResult.Append( _T("\\uld") );break;
+		case uls_Dashed:				sResult.Append( _T("\\uldash") );break;
+		case uls_Dash_dotted:			sResult.Append( _T("\\uldashd") );break;
+		case uls_Dash_dot_dotted:		sResult.Append( _T("\\uldashdd") );break;
+		case uls_Double:				sResult.Append( _T("\\uldb") );break;
+		case uls_Heavy_wave:			sResult.Append( _T("\\ulhwave") );break;
+		case uls_Long_dashe:			sResult.Append( _T("\\ulldash") );break;
+		case uls_Stops_all:				sResult.Append( _T("\\ulnone") );break;
+		case uls_Thick:					sResult.Append( _T("\\ulth") );break;
+		case uls_Thick_dotted:			sResult.Append( _T("\\ulthd") );break;
+		case uls_Thick_dashed:			sResult.Append( _T("\\ulthdash") );break;
+		case uls_Thick_dash_dotted:		sResult.Append( _T("\\ulthdashd") );break;
 		case uls_Thick_dash_dot_dotted: sResult.Append( _T("\\ulthdashdd") );break;
-		case uls_Thick_long_dashed: sResult.Append( _T("\\ulthldash") );break;
-		case uls_Double_wave: sResult.Append( _T("\\ululdbwave") );break;
-		case uls_Word: sResult.Append( _T("\\ulw") );break;
-		case uls_Wave: sResult.Append( _T("\\ulwave") );break;
+		case uls_Thick_long_dashed:		sResult.Append( _T("\\ulthldash") );break;
+		case uls_Double_wave:			sResult.Append( _T("\\ululdbwave") );break;
+		case uls_Word:					sResult.Append( _T("\\ulw") );break;
+		case uls_Wave:					sResult.Append( _T("\\ulwave") );break;
 	}
 	RENDER_RTF_INT( m_nUnderlineColor, sResult, _T("ulc") )
 	RENDER_RTF_INT( m_nUp, sResult, _T("up") )
@@ -730,13 +730,13 @@ CString RtfCharProperty::RenderToOOX(RenderParameter oRenderParameter)
 	
 	switch( m_nAnimated )
 	{
-		case 0:sResult.Append(_T("<w:effect w:val=\"none\"/>"));break;
-		case 1:sResult.Append(_T("<w:effect w:val=\"lights\"/>"));break;
-		case 2:sResult.Append(_T("<w:effect w:val=\"blinkBackground\"/>"));break;
-		case 3:sResult.Append(_T("<w:effect w:val=\"sparkle\"/>"));break;
-		case 4:sResult.Append(_T("<w:effect w:val=\"antsBlack\"/>"));break;
-		case 5:sResult.Append(_T("<w:effect w:val=\"antsRed\"/>"));break;
-		case 6:sResult.Append(_T("<w:effect w:val=\"shimmer\"/>"));break;
+		case 0:	sResult.Append(_T("<w:effect w:val=\"none\"/>"));			break;
+		case 1:	sResult.Append(_T("<w:effect w:val=\"lights\"/>"));			break;
+		case 2:	sResult.Append(_T("<w:effect w:val=\"blinkBackground\"/>"));break;
+		case 3:	sResult.Append(_T("<w:effect w:val=\"sparkle\"/>"));		break;
+		case 4:	sResult.Append(_T("<w:effect w:val=\"antsBlack\"/>"));		break;
+		case 5:	sResult.Append(_T("<w:effect w:val=\"antsRed\"/>"));		break;
+		case 6:	sResult.Append(_T("<w:effect w:val=\"shimmer\"/>"));		break;
 	}
 	RENDER_OOX_BOOL( m_bBold, sResult, _T("w:b") )
 	RENDER_OOX_BOOL( m_bCaps, sResult, _T("w:caps") )
@@ -1702,68 +1702,73 @@ CString RtfParagraphProperty::RenderToRtf(RenderParameter oRenderParameter)
 {
 	CString sResult;
 	//RENDER_RTF_INT( m_nStyle, sResult, _T("s") );
-	RENDER_RTF_BOOL( m_bAutoHyphenation, sResult, _T("hyphpar") );
-	RENDER_RTF_BOOL( m_bInTable, sResult, _T("intbl") );
+	RENDER_RTF_BOOL( m_bAutoHyphenation	, sResult, _T("hyphpar") );
+	RENDER_RTF_BOOL( m_bInTable			, sResult, _T("intbl") );
+	
 	if( PROP_DEF != m_nItap && 1 != m_nItap )
 		sResult.AppendFormat( _T("\\itap%d"),m_nItap );
-	RENDER_RTF_BOOL( m_bKeep, sResult, _T("keep") );
-	RENDER_RTF_BOOL( m_bKeepNext, sResult, _T("keepn") );
-	RENDER_RTF_INT( m_nOutlinelevel, sResult, _T("outlinelevel") );
-	RENDER_RTF_BOOL( m_bPageBB, sResult, _T("pagebb") );
+	
+	RENDER_RTF_BOOL	( m_bKeep			, sResult, _T("keep") );
+	RENDER_RTF_BOOL	( m_bKeepNext		, sResult, _T("keepn") );
+	RENDER_RTF_INT	( m_nOutlinelevel	, sResult, _T("outlinelevel") );
+	RENDER_RTF_BOOL	( m_bPageBB			, sResult, _T("pagebb") );
 
 
 	switch(m_eAlign)
 	{
-		case  pa_qc:sResult.Append( _T("\\qc") );break;  
-		case  pa_qj:sResult.Append( _T("\\qj") );break;  
-		case  pa_ql:sResult.Append( _T("\\ql") );break;  
-		case  pa_qr:sResult.Append( _T("\\qr") );break;  
-		case  pa_qd:sResult.Append( _T("\\qd") );break;  
-		case  pa_qk0:sResult.Append( _T("\\qk0") );break;  
-		case  pa_qk10:sResult.Append( _T("\\qk10") );break;  
-		case  pa_qk20:sResult.Append( _T("\\qk20") );break;  
+		case  pa_qc:	sResult.Append( _T("\\qc") );break;  
+		case  pa_qj:	sResult.Append( _T("\\qj") );break;  
+		case  pa_ql:	sResult.Append( _T("\\ql") );break;  
+		case  pa_qr:	sResult.Append( _T("\\qr") );break;  
+		case  pa_qd:	sResult.Append( _T("\\qd") );break;  
+		case  pa_qk0:	sResult.Append( _T("\\qk0") );break;  
+		case  pa_qk10:	sResult.Append( _T("\\qk10") );break;  
+		case  pa_qk20:	sResult.Append( _T("\\qk20") );break;  
 	}
 	switch( m_eFontAlign )
 	{
-		case fa_faauto:sResult.Append( _T("\\faauto") );break;
-		case fa_fahang:sResult.Append( _T("\\fahang") );break;
-		case fa_facenter:sResult.Append( _T("\\facenter") );break;
-		case fa_faroman:sResult.Append( _T("\\faroman") );break;
-		case fa_favar:sResult.Append( _T("\\favar") );break;
-		case fa_fafixed:sResult.Append( _T("\\fafixed") );break;
+		case fa_faauto:		sResult.Append( _T("\\faauto") );break;
+		case fa_fahang:		sResult.Append( _T("\\fahang") );break;
+		case fa_facenter:	sResult.Append( _T("\\facenter") );break;
+		case fa_faroman:	sResult.Append( _T("\\faroman") );break;
+		case fa_favar:		sResult.Append( _T("\\favar") );break;
+		case fa_fafixed:	sResult.Append( _T("\\fafixed") );break;
 	}
-	RENDER_RTF_INT( m_nIndFirstLine, sResult, _T("fi") );
-	RENDER_RTF_INT( m_nIndLeft, sResult, _T("li") );
-	RENDER_RTF_INT( m_nIndStart, sResult, _T("lin") );
-	RENDER_RTF_INT( m_nIndRight, sResult, _T("ri") );
-	RENDER_RTF_INT( m_nIndEnd, sResult, _T("rin") );
-	RENDER_RTF_BOOL( m_bIndRightAuto, sResult, _T("adjustright") );
-	RENDER_RTF_BOOL( m_bIndMirror, sResult, _T("indmirror") );
-	RENDER_RTF_INT( m_nSpaceBefore, sResult, _T("sb") );
-	RENDER_RTF_INT( m_nSpaceAfter, sResult, _T("sa") );
-	RENDER_RTF_INT( m_nSpaceBeforeAuto, sResult, _T("sbauto") );
-	RENDER_RTF_INT( m_nSpaceAfterAuto, sResult, _T("saauto") );
-	RENDER_RTF_INT( m_nSpaceBeforeLine, sResult, _T("lisb") );
-	RENDER_RTF_INT( m_nSpaceAfterLine, sResult, _T("lisa") );
-	RENDER_RTF_INT( m_nSpaceBetween, sResult, _T("sl") );
-	RENDER_RTF_INT( m_nSpaceMultiLine, sResult, _T("slmult") );
+	RENDER_RTF_INT( m_nIndFirstLine		, sResult, _T("fi") );
+	RENDER_RTF_INT( m_nIndLeft			, sResult, _T("li") );
+	RENDER_RTF_INT( m_nIndStart			, sResult, _T("lin") );
+	RENDER_RTF_INT( m_nIndRight			, sResult, _T("ri") );
+	RENDER_RTF_INT( m_nIndEnd			, sResult, _T("rin") );
+	RENDER_RTF_BOOL( m_bIndRightAuto	, sResult, _T("adjustright") );
+	RENDER_RTF_BOOL( m_bIndMirror		, sResult, _T("indmirror") );
+	RENDER_RTF_INT( m_nSpaceBefore		, sResult, _T("sb") );
+	RENDER_RTF_INT( m_nSpaceAfter		, sResult, _T("sa") );
+	RENDER_RTF_INT( m_nSpaceBeforeAuto	, sResult, _T("sbauto") );
+	RENDER_RTF_INT( m_nSpaceAfterAuto	, sResult, _T("saauto") );
+	RENDER_RTF_INT( m_nSpaceBeforeLine	, sResult, _T("lisb") );
+	RENDER_RTF_INT( m_nSpaceAfterLine	, sResult, _T("lisa") );
+	RENDER_RTF_INT( m_nSpaceBetween		, sResult, _T("sl") );
+	RENDER_RTF_INT( m_nSpaceMultiLine	, sResult, _T("slmult") );
 	RENDER_RTF_BOOL( m_bContextualSpacing, sResult, _T("contextualspace") );
+	
 	if( 0 == m_bRtl )
 		sResult.Append(_T("\\ltrpar"));
 	else if( PROP_DEF != m_bRtl )
 		sResult.Append(_T("\\rtlpar"));
+	
 	RENDER_RTF_BOOL( m_bNoWordWrap, sResult, _T("nowwrap") );
+	
 	if( 0 == m_bSnapToGrid )
 		sResult.Append( _T("\\nosnaplinegrid") );
 	else if(  PROP_DEF != m_bSnapToGrid  )
 		sResult.Append( _T("\\nosnaplinegrid0") );
 	switch ( m_eTextBoxWrap )
 	{
-		case tbw_txbxtwno:sResult.Append(_T("\\txbxtwno"));break;
-		case tbw_txbxtwalways:sResult.Append(_T("\\txbxtwalways"));break;
-		case tbw_txbxtwfirstlast:sResult.Append(_T("\\txbxtwfirstlast"));break;
-		case tbw_txbxtwfirst:sResult.Append(_T("\\txbxtwfirst"));break;
-		case tbw_txbxtwlast:sResult.Append(_T("\\txbxtwlast"));break;
+		case tbw_txbxtwno:			sResult.Append(_T("\\txbxtwno"));break;
+		case tbw_txbxtwalways:		sResult.Append(_T("\\txbxtwalways"));break;
+		case tbw_txbxtwfirstlast:	sResult.Append(_T("\\txbxtwfirstlast"));break;
+		case tbw_txbxtwfirst:		sResult.Append(_T("\\txbxtwfirst"));break;
+		case tbw_txbxtwlast:		sResult.Append(_T("\\txbxtwlast"));break;
 	}
 	if( PROP_DEF != m_nListId && PROP_DEF != m_nListLevel )
 	{
@@ -1816,9 +1821,9 @@ CString RtfParagraphProperty::RenderToRtf(RenderParameter oRenderParameter)
 
 	switch ( m_eTextFollow )
 	{
-		case tf_frmtxlrtb: sResult.Append(_T("\\frmtxlrtb"));break;
-		case tf_frmtxtbrl: sResult.Append(_T("\\frmtxtbrl"));break;
-		case tf_frmtxbtlr: sResult.Append(_T("\\frmtxbtlr"));break;
+		case tf_frmtxlrtb:	sResult.Append(_T("\\frmtxlrtb"));break;
+		case tf_frmtxtbrl:	sResult.Append(_T("\\frmtxtbrl"));break;
+		case tf_frmtxbtlr:	sResult.Append(_T("\\frmtxbtlr"));break;
 		case tf_frmtxlrtbv: sResult.Append(_T("\\frmtxlrtbv"));break;
 		case tf_frmtxtbrlv: sResult.Append(_T("\\frmtxtbrlv"));break;
 	}
@@ -1904,7 +1909,14 @@ CString RtfParagraphProperty::RenderToOOX(RenderParameter oRenderParameter)
 			sResult += _T("\"/>") ;
 		}
 	}
-	
+
+	RtfSectionPtr oCurSection;
+	if(true == poRtfDocument->GetItem( oCurSection ) )
+	{
+		sResult += oCurSection->RenderToOOX(oRenderParameter);
+		oCurSection->m_bFinalize = false;
+	}
+
 	if( 0 == m_bAutoHyphenation )
 		sResult.Append( _T("<w:suppressAutoHyphens/>") );
 	else if( 1 == m_bAutoHyphenation )
@@ -1945,8 +1957,8 @@ CString RtfParagraphProperty::RenderToOOX(RenderParameter oRenderParameter)
 	}
 	RENDER_OOX_INT_ATTRIBUTE( m_nIndLeft, sIndent, _T("w:left") );
 	RENDER_OOX_INT_ATTRIBUTE( m_nIndRight, sIndent, _T("w:right") );
-	RENDER_OOX_INT_ATTRIBUTE( m_nIndStart, sIndent, _T("w:start") );
-	RENDER_OOX_INT_ATTRIBUTE( m_nIndEnd, sIndent, _T("w:end") );
+	//RENDER_OOX_INT_ATTRIBUTE( m_nIndStart, sIndent, _T("w:start") );
+	//RENDER_OOX_INT_ATTRIBUTE( m_nIndEnd, sIndent, _T("w:end") );
 	if( false == sIndent.IsEmpty() )
 	{
         sResult += _T("<w:ind ");
@@ -2291,7 +2303,7 @@ CString RtfCellProperty::RenderToOOX(RenderParameter oRenderParameter)
 
 	if( true == m_oShading.IsValid() )
 	{
-		if (PROP_DEF != m_nShadingPctFrom && PROP_DEF != m_oShading.m_nValue )
+		if (PROP_DEF != m_nShadingPctFrom && PROP_DEF != m_oShading.m_nValue && m_oShading.m_nValue != 0)
 		{
 			// todooo тут цвет подложки подкладывается от ячейки, таблицы или еще какой хрени
 			// пока берем второй цвет паттерна Romanization_Armenian.rtf

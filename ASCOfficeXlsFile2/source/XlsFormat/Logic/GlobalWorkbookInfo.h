@@ -77,7 +77,7 @@ public:
 
 
 	unsigned short								CodePage;
-	CRYPT::DecryptorPtr							decryptor;
+	CRYPT::RC4DecryptorPtr						decryptor;
 	std::wstring								password;
 	
 	std::vector<std::wstring>					sheets_state;
@@ -87,7 +87,9 @@ public:
 
 	boost::unordered_map<BorderInfo, int>		border_x_ids;
 	boost::unordered_map<FillInfo, int>			fill_x_ids;
+	
 	std::map<int,  FillInfoExt>					fonts_color_ext;
+	std::map<int, int>							fonts_charsets;
 	std::map<int,  std::wstring>				colors_palette;
 
 	std::vector<BaseObjectPtr>					*m_arFonts;

@@ -1,67 +1,45 @@
-CONFIG += c++11
-win32 {
-    QMAKE_CXXFLAGS_RELEASE -= -Zc:strictStrings
-} else {
+core_linux {
     QMAKE_CXXFLAGS += -Wall -Wno-ignored-qualifiers
 }
-
-SOURCES_UTILS = $$PWD/src
-
-#################### WINDOWS #####################
-win32 {
-DEFINES += WIN32
+core_mac {
+    QMAKE_CXXFLAGS += -Wall -Wno-ignored-qualifiers
+    DEFINES += unix
 }
-#################### WINDOWS #####################
-
-#################### LINUX ########################
-linux-g++ | linux-g++-64 | linux-g++-32 {
-    DEFINES += \
-        LINUX \
-        _LINUX \
-        _LINUX_QT
-}
-mac {
-    DEFINES += \
-        MAC \
-        _MAC \
-        unix
-}
-#################### LINUX ########################
 
 build_zlib_as_sources {
     DEFINES += BUILD_ZLIB_AS_SOURCES
 }
 
 INCLUDEPATH += \
-    $$SOURCES_UTILS/zlib-1.2.3/contrib/minizip \
-    $$SOURCES_UTILS/zlib-1.2.3
+    $$PWD/src/zlib-1.2.3/contrib/minizip \
+    $$PWD/src/zlib-1.2.3
 
 SOURCES +=  \
-    $$SOURCES_UTILS/OfficeUtils.cpp \
-    $$SOURCES_UTILS/ZipUtilsCP.cpp \
-    $$SOURCES_UTILS/zlib-1.2.3/contrib/minizip/ioapi.c \
-    $$SOURCES_UTILS/zlib-1.2.3/contrib/minizip/miniunz.c \
-    $$SOURCES_UTILS/zlib-1.2.3/contrib/minizip/minizip.c \
-    $$SOURCES_UTILS/zlib-1.2.3/contrib/minizip/mztools.c \
-    $$SOURCES_UTILS/zlib-1.2.3/contrib/minizip/unzip.c \
-    $$SOURCES_UTILS/zlib-1.2.3/contrib/minizip/zip.c
+    $$PWD/src/OfficeUtils.cpp \
+    $$PWD/src/ZipUtilsCP.cpp \
+    $$PWD/src/zlib-1.2.3/contrib/minizip/ioapi.c \
+    $$PWD/src/zlib-1.2.3/contrib/minizip/miniunz.c \
+    $$PWD/src/zlib-1.2.3/contrib/minizip/minizip.c \
+    $$PWD/src/zlib-1.2.3/contrib/minizip/mztools.c \
+    $$PWD/src/zlib-1.2.3/contrib/minizip/unzip.c \
+    $$PWD/src/zlib-1.2.3/contrib/minizip/zip.c
 
 build_all_zlib {
 SOURCES += \
-    $$SOURCES_UTILS/zlib-1.2.3/adler32.c \
-    $$SOURCES_UTILS/zlib-1.2.3/compress.c \
-    $$SOURCES_UTILS/zlib-1.2.3/crc32.c \
-    $$SOURCES_UTILS/zlib-1.2.3/deflate.c \
-    $$SOURCES_UTILS/zlib-1.2.3/example.c \
-    $$SOURCES_UTILS/zlib-1.2.3/gzio.c \
-    $$SOURCES_UTILS/zlib-1.2.3/infback.c \
-    $$SOURCES_UTILS/zlib-1.2.3/inffast.c \
-    $$SOURCES_UTILS/zlib-1.2.3/inflate.c \
-    $$SOURCES_UTILS/zlib-1.2.3/inftrees.c \
-    $$SOURCES_UTILS/zlib-1.2.3/minigzip.c \
-    $$SOURCES_UTILS/zlib-1.2.3/trees.c \
-    $$SOURCES_UTILS/zlib-1.2.3/uncompr.c \
-    $$SOURCES_UTILS/zlib-1.2.3/zutil.c
+    $$PWD/src/zlib-1.2.3/adler32.c \
+    $$PWD/src/zlib-1.2.3/compress.c \
+    $$PWD/src/zlib-1.2.3/crc32.c \
+    $$PWD/src/zlib-1.2.3/deflate.c \
+    $$PWD/src/zlib-1.2.3/example.c \
+    $$PWD/src/zlib-1.2.3/gzio.c \
+    $$PWD/src/zlib-1.2.3/infback.c \
+    $$PWD/src/zlib-1.2.3/inffast.c \
+    $$PWD/src/zlib-1.2.3/inflate.c \
+    $$PWD/src/zlib-1.2.3/inftrees.c \
+    $$PWD/src/zlib-1.2.3/minigzip.c \
+    $$PWD/src/zlib-1.2.3/trees.c \
+    $$PWD/src/zlib-1.2.3/uncompr.c \
+    $$PWD/src/zlib-1.2.3/zutil.c
 }	
 	
 HEADERS +=  \

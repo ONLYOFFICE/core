@@ -325,21 +325,21 @@ const wchar_t * draw_gradient::name = L"gradient";
 
 void draw_gradient::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-	CP_APPLY_ATTR(L"draw:name",	draw_name_);
-	CP_APPLY_ATTR(L"draw:display-name",	draw_display_name_);
+	CP_APPLY_ATTR(L"draw:name"				, draw_name_);
+	CP_APPLY_ATTR(L"draw:display-name"		, draw_display_name_);
 
-	CP_APPLY_ATTR(L"draw:start-color",	draw_start_color_);
-	CP_APPLY_ATTR(L"draw:end-color",	draw_end_color_);
+	CP_APPLY_ATTR(L"draw:start-color"		, draw_start_color_);
+	CP_APPLY_ATTR(L"draw:end-color"			, draw_end_color_);
 
-	CP_APPLY_ATTR(L"draw:end-intensity",	draw_end_intensity_); 
-	CP_APPLY_ATTR(L"draw:start-intensity",	draw_start_intensity_);
+	CP_APPLY_ATTR(L"draw:end-intensity"		, draw_end_intensity_); 
+	CP_APPLY_ATTR(L"draw:start-intensity"	, draw_start_intensity_);
 
-	CP_APPLY_ATTR(L"draw:cy",	draw_cy_);//%
-	CP_APPLY_ATTR(L"draw:cx",	draw_cx_);
+	CP_APPLY_ATTR(L"draw:cy"				, draw_cy_);//%
+	CP_APPLY_ATTR(L"draw:cx"				, draw_cx_);
 	
-	CP_APPLY_ATTR(L"draw:border",	draw_border_);
-	CP_APPLY_ATTR(L"draw:angle",	draw_angle_);
-	CP_APPLY_ATTR(L"draw:style",	draw_style_);//"square" 
+	CP_APPLY_ATTR(L"draw:border"			, draw_border_);
+	CP_APPLY_ATTR(L"draw:angle"				, draw_angle_);
+	CP_APPLY_ATTR(L"draw:style"				, draw_style_);//"square" 
 
 }
 
@@ -400,17 +400,25 @@ const wchar_t * style::name = L"style";
 
 void style::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    CP_APPLY_ATTR(L"style:name", style_name_, std::wstring(L""));
-    CP_APPLY_ATTR(L"style:display-name", style_display_name_);
-    CP_APPLY_ATTR(L"style:family", style_family_, style_family());
-    CP_APPLY_ATTR(L"style:parent-style-name", style_parent_style_name_);
-    CP_APPLY_ATTR(L"style:next-style-name", style_next_style_name_);
-    CP_APPLY_ATTR(L"style:list-style-name", style_list_style_name_);
-    CP_APPLY_ATTR(L"style:master-page-name", style_master_page_name_);
-    CP_APPLY_ATTR(L"style:auto-update", style_auto_update_, false);
-    CP_APPLY_ATTR(L"style:data-style-name", style_data_style_name_);
-    CP_APPLY_ATTR(L"style:class", style_class_);
+    CP_APPLY_ATTR(L"style:name"					, style_name_, std::wstring(L""));
+    CP_APPLY_ATTR(L"style:display-name"			, style_display_name_);
+    CP_APPLY_ATTR(L"style:family"				, style_family_, style_family());
+    CP_APPLY_ATTR(L"style:parent-style-name"	, style_parent_style_name_);
+    CP_APPLY_ATTR(L"style:next-style-name"		, style_next_style_name_);
+    CP_APPLY_ATTR(L"style:list-style-name"		, style_list_style_name_);
+    CP_APPLY_ATTR(L"style:master-page-name"		, style_master_page_name_);
+    CP_APPLY_ATTR(L"style:auto-update"			, style_auto_update_, false);
+    CP_APPLY_ATTR(L"style:data-style-name"		, style_data_style_name_);
+    CP_APPLY_ATTR(L"style:class"				, style_class_);
     CP_APPLY_ATTR(L"style:default-outline-level", style_default_outline_level_);//было int .. error
+
+	if (style_master_page_name_)
+	{
+		if (style_master_page_name_->empty())
+		{
+			style_master_page_name_.reset();
+		}
+	}
 }
 
 void style::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
@@ -1255,7 +1263,7 @@ void style_page_layout_properties::docx_convert_serialize(std::wostream & strm, 
 		CP_XML_NODE(L"w:sectPr")
 		{
 			Context.process_section( CP_XML_STREAM(), columns);
-
+			
 			CP_XML_NODE(L"w:type")
 			{				
 				if (Context.is_next_dump_page_properties())
@@ -1267,7 +1275,7 @@ void style_page_layout_properties::docx_convert_serialize(std::wostream & strm, 
 				}
 			}			
 
-			std::wstring masterPageName = Context.get_master_page_name();//выдавался последний по document.xml!!!
+			std::wstring masterPageName = Context.get_master_page_name();
 			bool res = Context.get_headers_footers().write_sectPr(masterPageName, strm);
 			if (res == false)
 			{

@@ -920,10 +920,15 @@ namespace NSDoctRenderer
 
             NSStringUtils::CStringBuilder oBuilder;
 
+            std::wstring _path = path;
+            std::wstring sDstFileDir = NSCommon::GetDirectoryName(_path);            
+            if ((sDstFileDir != _path) && !NSDirectory::Exists(sDstFileDir))
+                NSDirectory::CreateDirectories(sDstFileDir);
+
             oBuilder.WriteString(L"<?xml version=\"1.0\" encoding=\"utf-8\"?><TaskQueueDataConvert><m_sFileFrom>");
             oBuilder.WriteEncodeXmlString(m_sFileDir);
             oBuilder.WriteString(sFileBin + L"</m_sFileFrom><m_sFileTo>");
-            oBuilder.WriteEncodeXmlString(path);
+            oBuilder.WriteEncodeXmlString(_path);
             oBuilder.WriteString(L"</m_sFileTo><m_nFormatTo>");
             oBuilder.WriteString(std::to_wstring(type));
             oBuilder.WriteString(L"</m_nFormatTo><m_sThemeDir>");

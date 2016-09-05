@@ -41,11 +41,13 @@
 class OOXTableCellReader
 {
 private:
-	OOX::Logic::CTc		*m_ooxTableCell;
+	OOX::Logic::CTc						*m_ooxTableCell;
+	OOX::Logic::CTableProperty			*m_ooxTableProps;
 public: 
-	OOXTableCellReader(OOX::Logic::CTc *ooxTableCell)
+	OOXTableCellReader(OOX::Logic::CTc *ooxTableCell, OOX::Logic::CTableProperty* ooxTableProps)
 	{
-		m_ooxTableCell = ooxTableCell;
+		m_ooxTableCell	= ooxTableCell;
+		m_ooxTableProps	= ooxTableProps;
 	}
 	bool Parse( ReaderParameter oParam ,RtfTableCell& oOutputCell,  CcnfStyle oConditionalTableStyle, int nCurCell, int nCellCount, int nCurRow, int nRowCount )
 	{
@@ -53,7 +55,7 @@ public:
 
 		if( m_ooxTableCell->m_oTableCellProperties )
 		{
-			OOXtcPrReader oCellPropReader(m_ooxTableCell->m_oTableCellProperties);
+			OOXtcPrReader oCellPropReader(m_ooxTableCell->m_oTableCellProperties, m_ooxTableProps);
 			oCellPropReader.Parse( oParam, oOutputCell.m_oProperty, oConditionalTableStyle, nCurCell, nCellCount, nCurRow, nRowCount );//может поменяться на любой condition (firstRow)
 		}
 		else

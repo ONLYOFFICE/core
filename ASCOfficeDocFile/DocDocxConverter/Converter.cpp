@@ -65,12 +65,16 @@ namespace DocFileFormat
 	{
 		ConversionContext context( doc, docx );
 
-		//Write numbering.xml
-		if (doc->listTable)
+		//Write styles.xml
+		if (doc->Styles)
 		{
-			NumberingMapping numberingMapping( &context );
-			doc->listTable->Convert( &numberingMapping );
+			StyleSheetMapping styleSheetMapping( &context );
+			doc->Styles->Convert( &styleSheetMapping );
 		}
+
+		//write document.xml and the header and footers
+		MainDocumentMapping mainDocMapping( &context, progress );
+		doc->Convert( &mainDocMapping );
 
 		if ( progress != NULL )
 		{
@@ -85,28 +89,12 @@ namespace DocFileFormat
 			}
 		}
 
-		//write document.xml and the header and footers
-		MainDocumentMapping mainDocMapping( &context, progress );
-		doc->Convert( &mainDocMapping );
 
-		if ( progress != NULL )
+		//Write numbering.xml
+		if (doc->listTable)
 		{
-			progress->OnProgress( progress->caller, DOC_ONPROGRESSEVENT_ID, 825000 );
-
-			short cancel = 0;
-			progress->OnProgressEx( progress->caller, DOC_ONPROGRESSEVENT_ID, 825000, &cancel );
-
-			if ( cancel != 0 )
-			{
-				return S_FALSE;
-			}
-		}
-
-		//Write styles.xml
-		if (doc->Styles)
-		{
-			StyleSheetMapping styleSheetMapping( &context );
-			doc->Styles->Convert( &styleSheetMapping );
+			NumberingMapping numberingMapping( &context );
+			doc->listTable->Convert( &numberingMapping );
 		}
 
 		if ( progress != NULL )

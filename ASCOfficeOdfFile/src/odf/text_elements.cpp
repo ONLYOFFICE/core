@@ -185,42 +185,52 @@ int process_paragraph_attr(const paragraph_attrs & Attr, oox::docx_conversion_co
             else
             {
                 const std::wstring id = Context.styles_map_.get( styleInst->name(), styleInst->type() );
-				std::wostream & _Wostream = Context.output_stream();
-                _Wostream << L"<w:pPr>";
-				if ( !Context.get_table_context().in_table())
-				{
-					_Wostream << Context.get_section_context().dump_;
-					Context.get_section_context().dump_.clear();
-				}
-					_Wostream << L"<w:pStyle w:val=\"" << id << L"\" />";
-					Context.docx_serialize_list_properties(_Wostream);
-                _Wostream << L"</w:pPr>";
+                Context.output_stream() << L"<w:pPr>";
+//todooo причесать					
+					if (Context.is_paragraph_header() && !Context.get_section_context().dump_.empty())
+					{
+						Context.output_stream() << Context.get_section_context().dump_;
+						Context.get_section_context().dump_.clear();
+
+						Context.output_stream() << L"</w:pPr>";
+						Context.finish_paragraph();
+						Context.start_paragraph();					
+						Context.output_stream() << L"<w:pPr>";
+					}
+					else if ( !Context.get_table_context().in_table())
+					{
+						Context.output_stream() << Context.get_section_context().dump_;
+						Context.get_section_context().dump_.clear();
+					}	
+
+					Context.output_stream() << L"<w:pStyle w:val=\"" << id << L"\" />";
+					Context.docx_serialize_list_properties(Context.output_stream());
+					
+					if ((Attr.outline_level_) && (*Attr.outline_level_ > 0))
+					{
+						Context.output_stream() << L"<w:outlineLvl w:val=\"" << *Attr.outline_level_ - 1 << L"\" />";
+					}
+                Context.output_stream() << L"</w:pPr>";
 				return 2;
 			}
-        }
-		else if (!Context.get_section_context().dump_.empty() &&  !Context.get_table_context().in_table())
-		{
-            Context.output_stream() << L"<w:pPr>";
-				Context.output_stream() << Context.get_section_context().dump_;
-				Context.get_section_context().dump_.clear();
-			Context.output_stream() << L"</w:pPr>";
 		}
-		return 3;
-    }
-	else if (!Context.get_section_context().dump_.empty() && !Context.get_table_context().in_table())
+	}
+	if (!Context.get_section_context().dump_.empty() &&  !Context.get_table_context().in_table())
 	{
         Context.output_stream() << L"<w:pPr>";
 			Context.output_stream() << Context.get_section_context().dump_;
 			Context.get_section_context().dump_.clear();
-        Context.output_stream() << L"</w:pPr>";
-
+			//todooo выяснить реальны ли заголовки без стилей и свойств
+		Context.output_stream() << L"</w:pPr>";
 		return 3;
 	}
+
     return 0;
 }
+
 }
 
-::std::wostream & paragraph::text_to_stream(::std::wostream & _Wostream) const
+std::wostream & paragraph::text_to_stream(::std::wostream & _Wostream) const
 {
     // TODO!!!!
     CP_SERIALIZE_TEXT(paragraph_content_);
@@ -348,7 +358,7 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
 	bool is_empty= paragraph_content_.size()==0;
 
 
-    Context.start_paragraph();
+    Context.start_paragraph(is_header_);
 	
 	std::wostream & _Wostream = Context.output_stream();
 
@@ -358,10 +368,10 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
         // если да — устанавливаем контексту флаг на то что необходимо в конце текущего параграфа 
         // распечатать свойства секции
 		//проверить ... не она ли основная - может быть прописан дубляж - и тогда разрыв нарисуется ненужный
-        const std::wstring & styleName = next_par_->paragraph_attrs_.text_style_name_.style_name();
-        const std::wstring masterPageName = Context.root()->odf_context().styleContainer().master_page_name_by_name(styleName);
+        const std::wstring & next_styleName				= next_par_->paragraph_attrs_.text_style_name_.style_name();
+        const _CP_OPT(std::wstring) next_masterPageName	= Context.root()->odf_context().styleContainer().master_page_name_by_name(next_styleName);
 
-        if (!masterPageName.empty()  && Context.get_master_page_name() != masterPageName)
+        if ((next_masterPageName)  && (Context.get_master_page_name() != *next_masterPageName))
         {
             Context.next_dump_page_properties(true);
 			is_empty = false;
@@ -374,13 +384,13 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
 	}
 
     const std::wstring & styleName		= paragraph_attrs_.text_style_name_.style_name();
-    const std::wstring masterPageName	= Context.root()->odf_context().styleContainer().master_page_name_by_name(styleName);
+    const _CP_OPT(std::wstring) masterPageName	= Context.root()->odf_context().styleContainer().master_page_name_by_name(styleName);
    
-	if (!masterPageName.empty())
+	if (masterPageName)
     {
-		Context.set_master_page_name(masterPageName);
+		Context.set_master_page_name(*masterPageName);
         
-		const std::wstring masterPageNameLayout = Context.root()->odf_context().pageLayoutContainer().page_layout_name_by_style(masterPageName);
+		const std::wstring masterPageNameLayout = Context.root()->odf_context().pageLayoutContainer().page_layout_name_by_style(*masterPageName);
         
 		Context.remove_page_properties();
 		Context.add_page_properties(masterPageNameLayout);
@@ -496,17 +506,17 @@ void soft_page_break::docx_convert(oox::docx_conversion_context & Context)
     return paragraph_.text_to_stream(_Wostream);
 }
 
-h::h() : text_outline_level_(1), text_restart_numbering_(false), text_is_list_header_(false)
-{}
-
 void h::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    CP_APPLY_ATTR(L"text:outline-level", text_outline_level_, (unsigned int)1);
-    CP_APPLY_ATTR(L"text:restart-numbering", text_restart_numbering_, false);
-    CP_APPLY_ATTR(L"text:start-value", text_start_value_);
-    CP_APPLY_ATTR(L"text:is-list-header", text_is_list_header_, false);
+    CP_APPLY_ATTR(L"text:outline-level"		, text_outline_level_);
+    CP_APPLY_ATTR(L"text:restart-numbering"	, text_restart_numbering_);
+    CP_APPLY_ATTR(L"text:start-value"		, text_start_value_);
+    CP_APPLY_ATTR(L"text:is-list-header"	, text_is_list_header_);
 
     paragraph_.add_attributes(Attributes);
+
+	paragraph_.is_header_						= true;
+	paragraph_.paragraph_attrs_.outline_level_	= text_outline_level_;
 }
 
 void h::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)

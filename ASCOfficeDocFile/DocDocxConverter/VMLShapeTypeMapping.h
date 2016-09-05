@@ -41,10 +41,10 @@ namespace DocFileFormat
 	{
 	private: 
 		XMLTools::XMLElement<wchar_t> *_lock;
-		bool _isBulletPicture;
+		bool _isInlineShape;
 
 	public:
-		VMLShapeTypeMapping(XmlUtils::CXmlWriter* writer, bool isBulletPicture = false );
+		VMLShapeTypeMapping(XmlUtils::CXmlWriter* writer, bool isInlineShape = false );
 		virtual ~VMLShapeTypeMapping();
 		virtual void Apply( IVisitable* visited );
 		/// Returns the id of the referenced type

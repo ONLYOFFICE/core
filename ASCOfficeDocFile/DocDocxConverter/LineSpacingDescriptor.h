@@ -37,11 +37,11 @@ namespace DocFileFormat
 	{
 		friend class ParagraphPropertiesMapping;
 
-		private: 
+	private: 
 		short dyaLine;
 		bool fMultLinespace;
 
-		public:
+	public:
 		/// Creates a new LineSpacingDescriptor with empty values
 		LineSpacingDescriptor(): dyaLine(0), fMultLinespace(false)
 		{
@@ -50,18 +50,17 @@ namespace DocFileFormat
 		/// Parses the bytes to retrieve a LineSpacingDescriptor
 		LineSpacingDescriptor( unsigned char* bytes, int size )	:	dyaLine(0), fMultLinespace(false)
 		{
-			if ( size == 4 )
-			{
-				dyaLine = FormatUtils::BytesToInt16( bytes, 0, size );
+			dyaLine = FormatUtils::BytesToInt16( bytes, 0, size );
 
-				if ( FormatUtils::BytesToInt16( bytes, 2, size ) == 1 )
-				{
-					fMultLinespace = true;
-				}
+			if ( FormatUtils::BytesToInt16( bytes, 2, size ) == 1 )
+			{
+				fMultLinespace = true;
 			}
-			else
+			
+			if ( size > 4 )
 			{
 			}
+
 		}
 	};
 }

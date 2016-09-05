@@ -35,6 +35,7 @@
 
 #include <Logic/Biff_structures/CFMultistate.h>
 #include <Logic/Biff_structures/CFDatabar.h>
+#include <Logic/Biff_structures/CFGradient.h>
 #include <utils.h>
 
 namespace XLS
@@ -98,14 +99,15 @@ void CF12::readFields(CFRecord& record)
 	switch(ct)
 	{
 		case 0x03:
-			//rgbCT = BiffStructurePtr(new CFGradient);
-			//rgbCT->load(record);
+			rgbCT = BiffStructurePtr(new CFGradient);
+			rgbCT->load(record);
 			break;
 		case 0x04:
 			rgbCT = BiffStructurePtr(new CFDatabar);
 			rgbCT->load(record);
 			break;
 		case 0x05:
+			//todooo
 			//rgbCT = BiffStructurePtr(new CFFilter);
 			//rgbCT->load(record);
 			break;
@@ -117,9 +119,10 @@ void CF12::readFields(CFRecord& record)
 	
 	ipriority_	= ++record.getGlobalWorkbookInfo()->cmt_rules;
 	
-	dxf.serialize(record.getGlobalWorkbookInfo()->users_Dxfs_stream);
-	dxfId_ = global_info->cellStyleDxfs_count++;
-
+	if  ( 0 == dxf.serialize(record.getGlobalWorkbookInfo()->users_Dxfs_stream))
+		dxfId_ = global_info->cellStyleDxfs_count++;
+	else 
+		dxfId_ = -1;
 }
 int CF12::serialize(std::wostream & stream)
 {
@@ -135,6 +138,7 @@ int CF12::serialize(std::wostream & stream)
 			{
 				case 1:	CP_XML_ATTR(L"type", L"cellIs");		break;
 				case 2:	CP_XML_ATTR(L"type", L"expression");	break;
+				case 3:	CP_XML_ATTR(L"type", L"colorScale");	break;
 				case 4:	CP_XML_ATTR(L"type", L"dataBar");		break;
 				case 6:	CP_XML_ATTR(L"type", L"iconSet");		break;
 			}
@@ -155,8 +159,52 @@ int CF12::serialize(std::wostream & stream)
 			CP_XML_ATTR(L"priority", ipriority_);
 			CP_XML_ATTR(L"stopIfTrue", fStopIfTrue);
 
-			CP_XML_ATTR(L"dxfId", dxfId_);
+			if (dxfId_ >= 0)
+				CP_XML_ATTR(L"dxfId", dxfId_);
 
+			if (ct == 3)
+			{
+				CFGradient *gradient = dynamic_cast<CFGradient*>(rgbCT.get());
+				CP_XML_NODE(L"colorScale")
+				{
+					for (int i = 0; i < gradient->rgInterp.size(); i ++)
+					{
+						CP_XML_NODE(L"cfvo")
+						{
+							CFVO & cfvo = gradient->rgInterp[i]->cfvo;							
+							switch(cfvo.cfvoType)
+							{
+								case 2:	CP_XML_ATTR(L"type", L"min");			break;
+								case 3:	CP_XML_ATTR(L"type", L"max");			break;
+								case 7:	CP_XML_ATTR(L"type", L"formule");		break;
+								case 4:	CP_XML_ATTR(L"type", L"percent");		break;
+								case 5:	CP_XML_ATTR(L"type", L"percentile");	break;
+								default:
+									CP_XML_ATTR(L"type", L"percentile");		break;
+							}	
+							if (cfvo.cfvoType == 7)
+								CP_XML_ATTR(L"val", cfvo.fmla.getAssembledFormula()); 
+							else
+								CP_XML_ATTR(L"val", cfvo.numValue);
+						}
+					}
+					for (int i = 0; i < gradient->rgCurve.size(); i ++)
+					{
+						CP_XML_NODE(L"color")
+						{
+							CFColor & color = gradient->rgCurve[i]->color;
+							switch(color.type)
+							{
+							case 1: CP_XML_ATTR(L"indexed",	color.icv);			break;
+							case 2:	CP_XML_ATTR(L"rgb",		color.rgb.strARGB);	break;
+							case 3: CP_XML_ATTR(L"theme",	color.theme);
+									CP_XML_ATTR(L"tint",	color.numTint);		break;
+							default: CP_XML_ATTR(L"auto", true);
+							}
+						}
+					}
+				}
+			}
 			if (ct == 4)
 			{
 				CFDatabar *dataBar = dynamic_cast<CFDatabar*>(rgbCT.get());

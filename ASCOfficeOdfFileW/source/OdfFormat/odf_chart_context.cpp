@@ -129,7 +129,7 @@ public:
 		styles_context_ = NULL;
 		current_series_count_= 0;
 
-		if (odf_context->type == SpreadsheetDocument)
+		if (odf_context_->type == SpreadsheetDocument)
 		{
 			local_table_enabled_ = false;
 		}
@@ -208,7 +208,15 @@ void odf_chart_context::Impl::clear_current()
 	cash_.clear();
 
 	current_series_count_ = 0;
-	local_table_enabled_ = true; //false; пока тока кэш - demo.docx
+	
+	if (odf_context_->type == SpreadsheetDocument)
+	{
+		local_table_enabled_ = false;
+	}
+	else
+	{
+		local_table_enabled_ = true;
+	}
 }
 void odf_chart_context::Impl::set_default_series_color()
 {

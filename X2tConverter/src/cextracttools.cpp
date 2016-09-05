@@ -165,43 +165,43 @@ namespace NExtractTools
 					}break;
 				case AVS_OFFICESTUDIO_FILE_CANVAS_PDF:
 					{
-						if (0 == sExt2.compare(_T(".pdf")))					res = TCD_BIN2PDF;
+						if (0 == sExt2.compare(_T(".pdf")))				res = TCD_BIN2PDF;
 					}break;
 				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV:
 					{
-							 if (0 == sExt2.compare(_T(".xlsx")))			res = TCD_CSV2XLSX;
-						else if (0 == sExt2.compare(_T(".xlst")))			res = TCD_CSV2XLST;
-						else if (0 == sExt2.compare(_T(".bin")))			res = TCD_CSV2XLST_BIN;
+							 if (0 == sExt2.compare(_T(".xlsx")))		res = TCD_CSV2XLSX;
+						else if (0 == sExt2.compare(_T(".xlst")))		res = TCD_CSV2XLST;
+						else if (0 == sExt2.compare(_T(".bin")))		res = TCD_CSV2XLST_BIN;
 					}break;
 				case AVS_OFFICESTUDIO_FILE_DOCUMENT_RTF:
 					{
-							 if (0 == sExt2.compare(_T(".docx")))			res = TCD_RTF2DOCX;
-						else if (0 == sExt2.compare(_T(".doct")))			res = TCD_RTF2DOCT;
-						else if (0 == sExt2.compare(_T(".bin")))			res = TCD_RTF2DOCT_BIN;
+							 if (0 == sExt2.compare(_T(".docx")))		res = TCD_RTF2DOCX;
+						else if (0 == sExt2.compare(_T(".doct")))		res = TCD_RTF2DOCT;
+						else if (0 == sExt2.compare(_T(".bin")))		res = TCD_RTF2DOCT_BIN;
 					}break;
 				case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC:
 					{
-							 if (0 == sExt2.compare(_T(".docx")))			res = TCD_DOC2DOCX;
-						else if (0 == sExt2.compare(_T(".doct")))			res = TCD_DOC2DOCT;
-						else if (0 == sExt2.compare(_T(".bin")))			res = TCD_DOC2DOCT_BIN;
+							 if (0 == sExt2.compare(_T(".docx")))		res = TCD_DOC2DOCX;
+						else if (0 == sExt2.compare(_T(".doct")))		res = TCD_DOC2DOCT;
+						else if (0 == sExt2.compare(_T(".bin")))		res = TCD_DOC2DOCT_BIN;
 					}break;
                 case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS:
                     {
-                             if (0 == sExt2.compare(_T(".xlsx")))			res = TCD_XLS2XLSX;
-                        else if (0 == sExt2.compare(_T(".xlst")))			res = TCD_XLS2XLST;
-                        else if (0 == sExt2.compare(_T(".bin")))			res = TCD_XLS2XLST_BIN;
+                             if (0 == sExt2.compare(_T(".xlsx")))		res = TCD_XLS2XLSX;
+                        else if (0 == sExt2.compare(_T(".xlst")))		res = TCD_XLS2XLST;
+                        else if (0 == sExt2.compare(_T(".bin")))		res = TCD_XLS2XLST_BIN;
                     }break;
                 case AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT:
 					{
-							 if (0 == sExt2.compare(_T(".docx")))			res = TCD_TXT2DOCX;
-						else if (0 == sExt2.compare(_T(".doct")))			res = TCD_TXT2DOCT;
-						else if (0 == sExt2.compare(_T(".bin")))			res = TCD_TXT2DOCT_BIN;
+							 if (0 == sExt2.compare(_T(".docx")))		res = TCD_TXT2DOCX;
+						else if (0 == sExt2.compare(_T(".doct")))		res = TCD_TXT2DOCT;
+						else if (0 == sExt2.compare(_T(".bin")))		res = TCD_TXT2DOCT_BIN;
 					}break;
                 case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPT:
                     {
-                             if (0 == sExt2.compare(_T(".pptx")))           res = TCD_PPT2PPTX;
-                        else if (0 == sExt2.compare(_T(".bin")))            res = TCD_PPT2PPTT_BIN;
-                        else if (0 == sExt2.compare(_T(".pptt")))           res = TCD_PPT2PPTT;
+                             if (0 == sExt2.compare(_T(".pptx")))		res = TCD_PPT2PPTX;
+                        else if (0 == sExt2.compare(_T(".bin")))		res = TCD_PPT2PPTT_BIN;
+                        else if (0 == sExt2.compare(_T(".pptt")))		res = TCD_PPT2PPTT;
                     }break;
                 case AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT:
                 case AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS:
@@ -215,6 +215,13 @@ namespace NExtractTools
                                  0 == sExt2.compare(_T(".xlsx")) ||
                                  0 == sExt2.compare(_T(".pptx")))		res = TCD_ODF2OOX;
                     }break;
+				case AVS_OFFICESTUDIO_FILE_OTHER_MS_OFFCRYPTO:
+					{
+							 if (0 == sExt2.compare(_T(".doct")))		res = TCD_MSCRYPT2DOCT;
+                        else if (0 == sExt2.compare(_T(".xlst")))		res = TCD_MSCRYPT2XLST;
+                        else if (0 == sExt2.compare(_T(".pptt")))		res = TCD_MSCRYPT2PPTT;
+ 						else if (0 == sExt2.compare(_T(".bin")))		res = TCD_MSCRYPT2BIN;
+					}break;
                 }
             }
 		}

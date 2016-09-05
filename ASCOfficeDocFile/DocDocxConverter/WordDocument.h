@@ -60,6 +60,11 @@
 #include "IVisitable.h"
 #include "../Common/Callback.h"
 
+namespace CRYPT
+{
+	class Decryptor;
+}
+
 namespace DocFileFormat
 {
 	class WordDocument: public IVisitable
@@ -95,8 +100,8 @@ namespace DocFileFormat
 		int		document_code_page;
 
 	private:
-		bool DecryptFile();
-		bool DecryptStream(std::string streamName, POLE::Storage * storageIn, POLE::Storage * storageOut);
+		bool DecryptOfficeFile	(CRYPT::Decryptor* Decryptor);
+		bool DecryptStream		(CRYPT::Decryptor* Decryptor, std::string streamName, POLE::Storage * storageIn, POLE::Storage * storageOut);
 
 		inline StructuredStorageReader* GetStorage() const
 		{
@@ -182,16 +187,16 @@ namespace DocFileFormat
 		Plex<EmptyStructure>				*HeaderStoriesPlex;					//A plex of the header document
 		Plex<EmptyStructure>				*IndividualCommentsPlex;			// A plex with all ATRDPre10 structs
 		
+		Plex<EmptyStructure>				*TextboxIndividualPlex;	
 		Plex<Tbkd>							*TextboxBreakPlex;					// Describes the breaks inside the textbox subdocument
 		Plex<Tbkd>							*TextboxBreakPlexHeader;			// Describes the breaks inside the header textbox subdocument
 		
+		Plex<OutlineListDescriptor>			*OutlineListDescriptorPlex;
 		Plex<Spa>							*OfficeDrawingPlex;
 		Plex<Spa>							*OfficeDrawingPlexHeader;
 		
 		Plex<SectionDescriptor>				*SectionPlex;						// A Plex containing all section descriptors
 	
-		Plex<FTXBXS>						*m_arFTBXS;							//	 FOR TEST		
-		
 		Plex<BookmarkFirst>					*BookmarkStartPlex;
 		Plex<EmptyStructure>				*BookmarkEndPlex;		
 

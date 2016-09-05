@@ -98,6 +98,42 @@
 namespace XLS
 {;
 
+static const int aCodePages[][2] = {
+    //charset	codepage
+    0,	1252, //ANSI
+    1,	0,//Default
+    2,	42,//Symbol
+    77,	10000,//Mac Roman
+    78,	10001,//Mac Shift Jis
+    79,	10003,//Mac Hangul
+    80,	10008,//Mac GB2312
+    81,	10002,//Mac Big5
+    83,	10005,//Mac Hebrew
+    84,	10004,//Mac Arabic
+    85,	10006,//Mac Greek
+    86,	10081,//Mac Turkish
+    87,	10021,//Mac Thai
+    88,	10029,//Mac East Europe
+    89,	10007,//Mac Russian
+    128,	932,//Shift JIS
+    129,	949,//Hangul
+    130,	1361,//Johab
+    134,	936,//GB2312
+    136,	950,//Big5
+    238,	1250,//Greek
+    161,	1253,//Greek
+    162,	1254,//Turkish
+    163,	1258,//Vietnamese
+    177,	1255,//Hebrew
+    178,	1256, //Arabic
+    186,	1257,//Baltic
+    204,	1251,//Russian
+    222,	874,//Thai
+    238,	1250,//Eastern European
+    254,	437,//PC 437
+    255,	850//OEM
+};
+
 GlobalsSubstream::GlobalsSubstream(const unsigned short code_page)
 :	code_page_(code_page)
 {
@@ -263,6 +299,7 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 			case rt_UsesELFs:		proc.optional<UsesELFs>();	break;
 			case rt_RecalcId:		proc.optional<RecalcId>();	break;
 			case rt_Font:	
+			case rt_XFCRC:
 			{
 				if (proc.mandatory<FORMATTING>())
 				{
@@ -411,7 +448,25 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 				proc.SkipRecord();	
 			}break;
 		}
-	}	
+	}
+
+	if (proc.getGlobalWorkbookInfo()->CodePage == 0)
+	{	//try from charsets ... todooo make local set on each record (aka Label)
+		//from ixfe -> ifnt from xf -> arFonts
+		for (std::map<int, int>::iterator it = proc.getGlobalWorkbookInfo()->fonts_charsets.begin()
+			; proc.getGlobalWorkbookInfo()->CodePage == 0 && it != proc.getGlobalWorkbookInfo()->fonts_charsets.end()
+			; it++)
+		{
+			for (int i = 0 ; i < sizeof(aCodePages) / 2; i++)
+			{
+				if (aCodePages[i][0] == it->first)
+				{
+					proc.getGlobalWorkbookInfo()->CodePage = aCodePages[i][1];
+					break;
+				}
+			}
+		}
+	}
 
 	return true;
 }

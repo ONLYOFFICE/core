@@ -9,41 +9,23 @@ DEFINES += \
     MNG_STORE_CHUNKS\
     MNG_ERROR_TELLTALE
 
-linux-g++ | linux-g++-64 | linux-g++-32 {
+core_linux {
     DEFINES += \
-    HAVE_UNISTD_H \
-    LINUX \
-    _LINUX \
-    _LINUX_QT
-
-    CONFIG += c++11
+    HAVE_UNISTD_H
     QMAKE_CXXFLAGS += -Wno-narrowing
-
-    message(linux)
 }
 
-mac {
+core_mac {
     DEFINES += \
-    HAVE_UNISTD_H \
-    _LINUX \
-    _LINUX_QT \
-    _MAC \
-    QT_MAC
-
-    message(mac)
+    HAVE_UNISTD_H
 }
 
-win32 {
+core_windows {
     DEFINES += \
     JAS_WIN_MSVC_BUILD \
-    WIN32 \
     NOMINMAX
 
     DEFINES -= UNICODE
-
-    QMAKE_CXXFLAGS_RELEASE -= -Zc:strictStrings
-
-    message(windows)
 }
 
 LIB_GRAPHICS_PRI_PATH = $$PWD/../../..
@@ -56,7 +38,7 @@ INCLUDEPATH += \
     $$LIB_GRAPHICS_PRI_PATH/cximage/png \
     $$LIB_GRAPHICS_PRI_PATH/cximage/zlib
 
-SOURCES += $$LIB_GRAPHICS_PRI_PATH/Qt_build/graphics/project/graphics_pri.cpp
+SOURCES += $$PWD/graphics_pri.cpp
 
 SOURCES += $$LIB_GRAPHICS_PRI_PATH/freetype-2.5.2/src/base/ftbbox.c \
     $$LIB_GRAPHICS_PRI_PATH/freetype-2.5.2/src/base/ftgxval.c \

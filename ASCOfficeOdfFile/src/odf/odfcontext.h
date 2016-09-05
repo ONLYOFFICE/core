@@ -156,7 +156,7 @@ public:
 
 	style_instance * style_default_by_type	(odf_types::style_family::type Type) const;
     
-	const std::wstring master_page_name_by_name(const std::wstring & StyleName) const;
+	const _CP_OPT(std::wstring) master_page_name_by_name(const std::wstring & StyleName) const;
 
     instances_array & instances() { return instances_; } 
 

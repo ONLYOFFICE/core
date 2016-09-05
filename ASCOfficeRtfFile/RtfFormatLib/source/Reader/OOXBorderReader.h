@@ -133,7 +133,7 @@ public:
 					//case SimpleTypes::bordervalueCup                   : return _T("cup");
 					//case SimpleTypes::bordervalueCustom                : return _T("custom");
 					case SimpleTypes::bordervalueDashDotStroked        : oOutputBorder.m_eType = RtfBorder::bt_brdrdashdotstr;	break;
-					case SimpleTypes::bordervalueDashed                : oOutputBorder.m_eType = RtfBorder::bt_brdrdash;			break;
+					case SimpleTypes::bordervalueDashed                : oOutputBorder.m_eType = RtfBorder::bt_brdrdash;		break;
 					case SimpleTypes::bordervalueDashSmallGap          : oOutputBorder.m_eType = RtfBorder::bt_brdrdashsm;		break;
 					//case SimpleTypes::bordervalueDecoArch              : return _T("decoArch");
 					//case SimpleTypes::bordervalueDecoArchColor         : return _T("decoArchColor");
@@ -189,8 +189,8 @@ public:
 					//case SimpleTypes::bordervalueMoons                 : return _T("moons");
 					//case SimpleTypes::bordervalueMosaic                : return _T("mosaic");
 					//case SimpleTypes::bordervalueMusicNotes            : return _T("musicNotes");
-					case SimpleTypes::bordervalueNil                   : oOutputBorder.m_eType = RtfBorder::bt_brdrnone;			break;
-					case SimpleTypes::bordervalueNone                  : oOutputBorder.m_eType = RtfBorder::bt_brdrnone;			break;
+					case SimpleTypes::bordervalueNil                   : oOutputBorder.m_eType = RtfBorder::bt_brdrnone;		break;
+					case SimpleTypes::bordervalueNone                  : oOutputBorder.m_eType = RtfBorder::bt_brdrnone;		break;
 					//case SimpleTypes::bordervalueNorthwest             : return _T("northwest");
 					case SimpleTypes::bordervalueOutset                : oOutputBorder.m_eType = RtfBorder::bt_brdroutset;		break;
 					//case SimpleTypes::bordervalueOvals                 : return _T("ovals");
@@ -246,7 +246,7 @@ public:
 					case SimpleTypes::bordervalueThinThickSmallGap     : oOutputBorder.m_eType = RtfBorder::bt_brdrtnthsg;		break;
 					case SimpleTypes::bordervalueThinThickThinLargeGap : oOutputBorder.m_eType = RtfBorder::bt_brdrtnthtnlg;	break;
 					case SimpleTypes::bordervalueThinThickThinMediumGap: oOutputBorder.m_eType = RtfBorder::bt_brdrtnthtnmg;	break;
-					case SimpleTypes::bordervalueThinThickThinSmallGap : oOutputBorder.m_eType = RtfBorder::bt_brdrtnthtnsg;		break;
+					case SimpleTypes::bordervalueThinThickThinSmallGap : oOutputBorder.m_eType = RtfBorder::bt_brdrtnthtnsg;	break;
 					case SimpleTypes::bordervalueThreeDEmboss          : oOutputBorder.m_eType = RtfBorder::bt_brdremboss;		break;
 					case SimpleTypes::bordervalueThreeDEngrave         : oOutputBorder.m_eType = RtfBorder::bt_brdrengrave;		break;
 					//case SimpleTypes::bordervalueTornPaper             : return _T("tornPaper");
@@ -262,7 +262,7 @@ public:
 					//case SimpleTypes::bordervalueTwistedLines1         : return _T("twistedLines1");
 					//case SimpleTypes::bordervalueTwistedLines2         : return _T("twistedLines2");
 					//case SimpleTypes::bordervalueVine                  : return _T("vine");
-					case SimpleTypes::bordervalueWave                  : oOutputBorder.m_eType = RtfBorder::bt_brdrwavy;			break;
+					case SimpleTypes::bordervalueWave                  : oOutputBorder.m_eType = RtfBorder::bt_brdrwavy;		break;
 					//case SimpleTypes::bordervalueWaveline              : return _T("waveline");
 					//case SimpleTypes::bordervalueWeavingAngles         : return _T("weavingAngles");
 					//case SimpleTypes::bordervalueWeavingBraid          : return _T("weavingBraid");
@@ -277,6 +277,7 @@ public:
 					
 					//oOutputBorder.m_eType = RtfBorder::bt_brdrsh;
 					//oOutputBorder.m_eType = RtfBorder::bt_brdrhair;
+					default												: oOutputBorder.m_eType = RtfBorder::bt_brdrs;			break;
 
 				}
 			}

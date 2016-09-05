@@ -437,7 +437,22 @@ namespace XPS
 				{
 					wsFontPath = oReader.GetText();
 					std::wstring wsFontName = GetFileName(wsFontPath);
-					wsFontPath = m_wsRootPath + L"/" + wsFontPath;
+
+					if (wsFontPath.length() >= 0 && '.' == wsFontPath.at(0))
+					{
+						int nSlashPos = m_wsPagePath.find_last_of(L'/');
+						if (std::wstring::npos == nSlashPos)
+							nSlashPos = -1;
+
+						std::wstring wsRelativePath = (std::wstring::npos == nSlashPos) ? m_wsPagePath : m_wsPagePath.substr(0, nSlashPos + 1);
+						wsFontPath = wsRelativePath + wsFontPath;
+					}
+					else
+					{
+						wsFontPath = m_wsRootPath + L"/" + wsFontPath;
+					}
+
+
 					std::wstring wsExt = GetFileExtension(wsFontPath);
 					NSStringExt::ToLower(wsExt);
 					if (L"odttf" == wsExt)

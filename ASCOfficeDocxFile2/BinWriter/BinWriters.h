@@ -5162,7 +5162,7 @@ namespace BinDocxRW
 								WriteDocumentContent(poDocumentEmbedded.m_arrItems);
 								m_oBcw.WriteItemEnd(nPosEmbedded);
 							}
-							else if ( _T("Equation.3") == sProgID)
+							else if ( _T("Equation.3") == sProgID || _T("Equation.2") == sProgID)
 							{
 								//write equation
 								OOX::Rels::CRelationShip* oRels = NULL;

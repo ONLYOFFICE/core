@@ -66,7 +66,7 @@ void Label::readFields(CFRecord& record)
 	
 	record >> cell;
 	
-	if (record.getGlobalWorkbookInfo()->Version < 0x0600)
+	if (global_info_->Version < 0x0600)
 	{
 		LPAnsiString name;
 		record >> name;

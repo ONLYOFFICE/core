@@ -42,6 +42,7 @@ namespace PPTX
 
 		SpPr::SpPr()
 		{
+			Fill.m_type = UniFill::notInit;
 		}
 
 

@@ -43,6 +43,47 @@
 #define min(a,b)            (((a) < (b)) ? (a) : (b))
 #endif
 
+FT_Error FT_Load_Glyph_Wrapper( FT_Face   face,
+                 FT_UInt   glyph_index,
+                 FT_Int32& load_flags, INT& bHintsSupport )
+{
+	int nErr = FT_Load_Glyph(face, glyph_index, load_flags);
+
+    /*
+    FT_Err_Invalid_Glyph_Index            = 0x10;
+    FT_Err_Invalid_Character_Code         = 0x11;
+    FT_Err_Invalid_Glyph_Format           = 0x12;
+    FT_Err_Cannot_Render_Glyph            = 0x13;
+    FT_Err_Invalid_Outline                = 0x14;
+    FT_Err_Invalid_Composite              = 0x15;
+    FT_Err_Too_Many_Hints                 = 0x16;
+    FT_Err_Invalid_Pixel_Size             = 0x17;
+
+    FT_Err_Invalid_Handle                 = 0x20;
+    FT_Err_Invalid_Library_Handle         = 0x21;
+    FT_Err_Invalid_Driver_Handle          = 0x22;
+    FT_Err_Invalid_Face_Handle            = 0x23;
+    FT_Err_Invalid_Size_Handle            = 0x24;
+    FT_Err_Invalid_Slot_Handle            = 0x25;
+    FT_Err_Invalid_CharMap_Handle         = 0x26;
+    FT_Err_Invalid_Cache_Handle           = 0x27;
+    FT_Err_Invalid_Stream_Handle          = 0x28;
+    */
+
+    if ((bHintsSupport == TRUE) && (nErr < 0x10 || nErr > 0x28))
+	{
+        int nErr2 = FT_Load_Glyph(face, glyph_index, 40970);
+
+        if (0 == nErr2)
+        {
+            bHintsSupport = FALSE;
+            load_flags = 40970;
+            nErr = 0;
+        }
+	}
+	return nErr;
+}
+
 CFontFile::CFontFile()
 {
 	m_pStream = NULL;
@@ -815,7 +856,7 @@ TFontCacheSizes CFontFile::GetChar(LONG lUnicode)
         oSizes.nCMapIndex = nCMapIndex;
 
         FT_Int32 _LOAD_MODE = m_bHintsSupport ? m_pFontManager->m_nLOAD_MODE : 40970;
-        if (0 != FT_Load_Glyph(pFace, unGID, _LOAD_MODE))
+        if (0 != FT_Load_Glyph_Wrapper(pFace, unGID, _LOAD_MODE, m_bHintsSupport))
             return oSizes;
 
 		FT_Glyph pGlyph = NULL;
@@ -960,7 +1001,7 @@ INT CFontFile::GetString(CGlyphString& oString)
             }
 
 			FT_Int32 _LOAD_MODE = m_bHintsSupport ? m_pFontManager->m_nLOAD_MODE : 40970;
-            if (0 != FT_Load_Glyph(pFace, unGID, _LOAD_MODE))
+            if (0 != FT_Load_Glyph_Wrapper(pFace, unGID, _LOAD_MODE, m_bHintsSupport))
                 return FALSE;
 
 			FT_Glyph pGlyph = NULL;
@@ -1178,7 +1219,7 @@ INT CFontFile::GetString2(CGlyphString& oString)
             }
 
 			FT_Int32 _LOAD_MODE = m_bHintsSupport ? m_pFontManager->m_nLOAD_MODE : 40970;
-            if (0 != FT_Load_Glyph(pFace, unGID, _LOAD_MODE))
+            if (0 != FT_Load_Glyph_Wrapper(pFace, unGID, _LOAD_MODE, m_bHintsSupport))
                 return FALSE;
 
 			FT_Glyph pGlyph = NULL;
@@ -1458,7 +1499,7 @@ INT CFontFile::GetString2C(CGlyphString& oString)
         }
 
 		FT_Int32 _LOAD_MODE = m_bHintsSupport ? m_pFontManager->m_nLOAD_MODE : 40970;
-        if (0 != FT_Load_Glyph(pFace, unGID, _LOAD_MODE))
+        if (0 != FT_Load_Glyph_Wrapper(pFace, unGID, _LOAD_MODE, m_bHintsSupport))
             return FALSE;
 
 		FT_Glyph pGlyph = NULL;

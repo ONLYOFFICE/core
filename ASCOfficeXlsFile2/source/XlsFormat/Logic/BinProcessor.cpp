@@ -186,7 +186,6 @@ const bool BinReaderProcessor::getNextSubstreamType(unsigned short& type)
 	}
 	if(rt_BOF != record->getTypeId())
 	{
-		//throw XLS::RequestedRecordNotFound(rt_BOF, record->getTypeId());
 		return false;
 	}
 	unsigned short vers;

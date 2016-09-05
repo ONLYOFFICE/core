@@ -621,51 +621,52 @@ public:
 		}
 		CString RenderToRtf(RenderParameter oRenderParameter);
 		CString RenderToOOX(RenderParameter oRenderParameter);
-private: CString SaveFile( TextItemContainerPtr oTarget, RenderParameter oRenderParameter, bool bHeader);
+private: 
+	CString SaveFile( TextItemContainerPtr oTarget, RenderParameter oRenderParameter, bool bHeader);
 };
 
-typedef boost::shared_ptr<RtfSectionProperty> RtfSectionPropertyPtr;
-typedef boost::shared_ptr<RtfDocumentProperty> RtfDocumentPropertyPtr;
-class RtfSection :public TextItemContainer
+typedef boost::shared_ptr<RtfSectionProperty>	RtfSectionPropertyPtr;
+typedef boost::shared_ptr<RtfDocumentProperty>	RtfDocumentPropertyPtr;
+
+class RtfSection : public TextItemContainer
 {
-public: RtfSectionProperty m_oProperty;
+public: 
+	RtfSectionProperty m_oProperty;
 
-		RtfSection()
-		{
-		}
-		int GetType()
-		{
-			return TYPE_RTF_SECTION;
-		}
-		CString RenderToRtf(RenderParameter oRenderParameter)
-		{
-			CString sResult;
-			sResult.Append( m_oProperty.RenderToRtf(  oRenderParameter  ) );
+	bool m_bFinalize;
 
-			if( RENDER_TO_RTF_PARAM_NO_SECT != oRenderParameter.nType )
-				sResult.Append(_T("\\sectd"));
-			for( int i = 0; i < (int)m_aArray.size(); i++ )
-				sResult.Append( m_aArray[i]->RenderToRtf(  oRenderParameter  ) );
-			return sResult;
-		}
-		CString RenderToOOX(RenderParameter oRenderParameter)
-		{
-			//CString sResult;
-			// CString sSectProp;
-			//	RenderParameter oNewParam = oRenderParameter;
-			//	oNewParam.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
-			// sSectProp.Append(m_oProperty.RenderToOOX(oNewParam));
+	RtfSection()
+	{
+		m_bFinalize = false;
+	}
+	int GetType()
+	{
+		return TYPE_RTF_SECTION;
+	}
 
-			// CString sParagraphs;
-			//	for( int i = 0; i < (int)m_aArray.size(); i++ )
-			//	{
-			//		sParagraphs.Append( m_aArray[i]->RenderToOOX(oNewParam) );
-			//	}
-			//if( oRenderParameter.nType == RENDER_TO_OOX_PARAM_LAST )
-			//	return sParagraphs + sSectProp;
-			//else
-			//	return _T("<w:p><w:pPr>") + sSectProp + _T("</w:pPr></w:p>") + sParagraphs;
-			return _T("");
+	CString RenderToRtf(RenderParameter oRenderParameter)
+	{
+		CString sResult;
+		sResult.Append( m_oProperty.RenderToRtf(  oRenderParameter  ) );
+
+		if( RENDER_TO_RTF_PARAM_NO_SECT != oRenderParameter.nType )
+			sResult.Append(_T("\\sectd"));
+
+		for( int i = 0; i < (int)m_aArray.size(); i++ )
+		{
+			sResult += m_aArray[i]->RenderToRtf(  oRenderParameter  );
 		}
+		return sResult;
+	}
+	CString RenderToOOX(RenderParameter oRenderParameter)
+	{
+		if (!m_bFinalize) return L"";
+		m_bFinalize = false; // тут .. чтобы не повторилось при конвертации колонтитулов
+
+		RenderParameter oNewParam = oRenderParameter;
+		oNewParam.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
+		
+		return m_oProperty.RenderToOOX(oNewParam);
+	}
 };
 typedef boost::shared_ptr<RtfSection> RtfSectionPtr;

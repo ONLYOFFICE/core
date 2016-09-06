@@ -268,7 +268,7 @@ namespace DocFileFormat
 				bool stroked			=	true;
 				bool filled				=	true;
 				bool hasTextbox			=	false;
-				bool layoutInCell		=	false;
+				bool layoutInCell		=	true; //anmeldebogenfos.doc
 				
 				int ndxTextLeft			=	-1;
 				int ndyTextTop			=	-1;

@@ -535,6 +535,7 @@ namespace DocFileFormat
 				std::wstring TOC		( _T( " TOC" ) );
 				std::wstring HYPERLINK	( _T( " HYPERLINK" ) );
 				std::wstring PAGEREF	( _T( " PAGEREF" ) );
+				std::wstring PAGE		( _T( "PAGE" ) );
 
 				bool bChart			= search( f.begin(), f.end(), chart.begin(),		chart.end())			!= f.end();
 				bool bEMBED			= search( f.begin(), f.end(), EMBED.begin(),		EMBED.end())			!= f.end();
@@ -548,6 +549,7 @@ namespace DocFileFormat
 				bool bPAGEREF		= search( f.begin(), f.end(), PAGEREF.begin(),		PAGEREF.end())			!= f.end();
 				bool bQUOTE			= search( f.begin(), f.end(), QUOTE.begin(),		QUOTE.end())			!= f.end();
 				bool bEquation		= search( f.begin(), f.end(), Equation.begin(),		Equation.end())			!= f.end();
+				bool bPAGE			= !bPAGEREF && search( f.begin(), f.end(), PAGE.begin(), PAGE.end())		!= f.end();
 			
 				if ( bFORM )
 				{
@@ -588,12 +590,12 @@ namespace DocFileFormat
 
 					_fldCharCounter++;
 				}
-				else if ( bHYPERLINK && bPAGEREF )
+				else if ( (bHYPERLINK && bPAGEREF) || bPAGE)
 				{
 					int cpFieldSep2 = cpFieldStart, cpFieldSep1 = cpFieldStart;
 					std::vector<std::wstring> toc;
 
-					if (search( f.begin(),	f.end(), TOC.begin(),	TOC.end()) != f.end())
+					if ((search( f.begin(),	f.end(), TOC.begin(),	TOC.end()) != f.end()) || bPAGE)
 					{
 						m_pXmlWriter->WriteNodeBegin( _T( "w:fldChar" ), TRUE );
 							m_pXmlWriter->WriteAttribute( _T( "w:fldCharType" ), _T( "begin" ) ); 

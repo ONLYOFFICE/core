@@ -1405,6 +1405,43 @@ void xlsx_drawing_context::serialize_line(std::wostream & stream, _drawing_state
 				case lineDashDotDot:CP_XML_ATTR(L"val", L"lgDashDotDot"); break;
 				}
 			}
+			if (line.arrow.enabled)
+			{
+				serialize_arrow(CP_XML_STREAM(), L"a:headEnd", line.arrow.start, line.arrow.start_width, line.arrow.start_length);
+
+				serialize_arrow(CP_XML_STREAM(), L"a:tailEnd", line.arrow.end, line.arrow.end_width, line.arrow.end_length);
+			}
+		}
+	}
+}
+void xlsx_drawing_context::serialize_arrow(std::wostream & stream, std::wstring name, int type, int width, int length)
+{
+	if (type < 1) return;
+
+	CP_XML_WRITER(stream)    
+	{
+		CP_XML_NODE(name)
+		{
+			switch(type)
+			{
+				case 1:	CP_XML_ATTR(L"type", L"triangle");	break;
+				case 2:	CP_XML_ATTR(L"type", L"stealth");	break;
+				case 3:	CP_XML_ATTR(L"type", L"diamond");	break;
+				case 4:	CP_XML_ATTR(L"type", L"oval");		break;
+				case 5:	CP_XML_ATTR(L"type", L"arrow");		break;
+			}
+			switch(width)
+			{
+				case 1:	CP_XML_ATTR(L"w", L"lg");	break;
+				case 2:	CP_XML_ATTR(L"w", L"med");	break;
+				case 3:	CP_XML_ATTR(L"w", L"sm");	break;
+			}
+			switch(length)
+			{
+				case 1:	CP_XML_ATTR(L"len", L"lg");	break;
+				case 2:	CP_XML_ATTR(L"len", L"med");break;
+				case 3:	CP_XML_ATTR(L"len", L"sm");	break;
+			}			
 		}
 	}
 }
@@ -1746,6 +1783,49 @@ void xlsx_drawing_context::set_line_width (int val)
 	if (current_drawing_states == NULL) return;	
 
 	current_drawing_states->back()->line.width = val;
+}
+
+void xlsx_drawing_context::set_line_arrow(bool val)
+{
+	if (current_drawing_states == NULL) return;	
+
+	current_drawing_states->back()->line.arrow.enabled = val;
+}
+void xlsx_drawing_context::set_arrow_start (int val)
+{
+	if (current_drawing_states == NULL) return;	
+
+	current_drawing_states->back()->line.arrow.start = val;
+}
+void xlsx_drawing_context::set_arrow_end (int val)
+{
+	if (current_drawing_states == NULL) return;	
+
+	current_drawing_states->back()->line.arrow.end = val;
+}
+void xlsx_drawing_context::set_arrow_start_width (int val)
+{
+	if (current_drawing_states == NULL) return;	
+
+	current_drawing_states->back()->line.arrow.start_width = val;
+}
+void xlsx_drawing_context::set_arrow_end_width (int val)
+{
+	if (current_drawing_states == NULL) return;	
+
+	current_drawing_states->back()->line.arrow.end_width = val;
+}
+void xlsx_drawing_context::set_arrow_start_length (int val)
+{
+	if (current_drawing_states == NULL) return;	
+
+	current_drawing_states->back()->line.arrow.start_length = val;
+}
+void xlsx_drawing_context::set_arrow_end_length (int val)
+{
+	if (current_drawing_states == NULL) return;	
+
+	current_drawing_states->back()->line.arrow.end_length = val;
 }
 //----------------------------------------------------------------------
 void xlsx_drawing_context::set_fill_old_version (_UINT32 val)

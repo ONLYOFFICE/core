@@ -559,9 +559,24 @@ namespace NSShapeImageGen
 						if(bIsRaster)
 						{
 							//случай растрового wmf/emf
-							//-1 == lHeight имеет спецальное значение(берет размеры из файла)
-							if(lWidth <= 0)			lWidth = -1;
-							if(lHeight <= 0)		lHeight = -1;
+							if (lWidth <= 0 || lHeight <= 0)
+							{
+								int nMaxPixSize = 1000;
+								int nMinPixSize = 10;
+								//usually bound of raster wmf from 0 to 1
+								if ((nMinPixSize <= w && w <= nMaxPixSize) && (nMinPixSize <= h && h <= nMaxPixSize))
+								{
+									lWidth = -1;
+									lHeight = -1;
+								}
+								else
+								{
+									double dKoef = nMaxPixSize / _max;
+
+									lWidth = (LONG)(dKoef * w + 0.5);
+									lHeight = (LONG)(dKoef * h + 0.5);
+								}
+							}
 
 							std::wstring strSaveItem = strSaveItemWE + _T(".png");
 							oMetafile.ConvertToRaster(strSaveItem.c_str(), 4 /*CXIMAGE_FORMAT_PNG*/,  lWidth, lHeight);

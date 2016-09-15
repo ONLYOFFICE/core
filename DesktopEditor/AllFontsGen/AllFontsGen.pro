@@ -10,10 +10,10 @@ DESTDIR = $$PWD/../../build/bin/AllFontsGen
 
 # WINDOWS
 win32:contains(QMAKE_TARGET.arch, x86_64):{
-    TARGET = windows_64
+    TARGET = win_64
 }
 win32:!contains(QMAKE_TARGET.arch, x86_64):{
-    TARGET = windows_32
+    TARGET = win_32
 }
 
 linux-g++:contains(QMAKE_HOST.arch, x86_64):{

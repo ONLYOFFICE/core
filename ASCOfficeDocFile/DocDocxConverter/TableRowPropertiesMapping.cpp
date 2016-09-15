@@ -35,7 +35,7 @@
 
 namespace DocFileFormat
 {
-	TableRowPropertiesMapping::TableRowPropertiesMapping (XmlUtils::CXmlWriter* pWriter, CharacterPropertyExceptions* rowEndChpx) : PropertiesMapping(pWriter), _trPr(NULL), _tblPrEx(NULL), _rowEndChpx(NULL)
+	TableRowPropertiesMapping::TableRowPropertiesMapping (XMLTools::CStringXmlWriter* pWriter, CharacterPropertyExceptions* rowEndChpx) : PropertiesMapping(pWriter), _trPr(NULL), _tblPrEx(NULL), _rowEndChpx(NULL)
 	{
 		_trPr			=	new XMLTools::XMLElement<wchar_t>(_T( "w:trPr"));
 		_tblPrEx		=	new XMLTools::XMLElement<wchar_t>(_T( "w:tblPrEx"));

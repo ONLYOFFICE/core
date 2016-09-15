@@ -95,20 +95,18 @@ int main(int argc, char *argv[])
         std::cout << std::endl;
 		std::cout << "USAGE: x2t \"path_to_params_xml\"" << std::endl;
 		std::cout << "or" << std::endl;
-        std::cout << "USAGE: x2t \"path_to_file_1\" \"path_to_file_2\" [\"path_to_font_selection\"] [conversion_direction] [XmlOptionsFile]" << std::endl;
+        std::cout << "USAGE: x2t \"path_to_file_1\" \"path_to_file_2\" [\"path_to_font_selection\"]" << std::endl;
         std::cout << "WHERE:" << std::endl;
         std::cout << "\t\"path_to_file_1\" is a path to file to be converted" << std::endl;
         std::cout << "\t\"path_to_file_2\" is a path to the corresponding output file" << std::endl;
         std::cout << "\t\"path_to_font_selection\" is a path to 'font_selection.bin' location" << std::endl << std::endl;
-        std::cout << "NOTE: if 'conversion_direction' is empty or 'auto' conversion direction will be calculated from file extensions" << std::endl << std::endl;
+        std::cout << "NOTE: conversion direction will be calculated from file extensions" << std::endl << std::endl;
 
         return getReturnErrorCode(AVS_FILEUTILS_ERROR_CONVERT_PARAMS);
     }
     std::wstring            sArg1, sExePath;
     InputParams             oInputParams;
     TConversionDirection    conversion = TCD_AUTO;
-    std::wstring            sXmlOptions;
-    std::wstring            sPassword;
 
 #if !defined(_WIN32) && !defined (_WIN64)
     sExePath    = utf8_to_unicode(argv [0]);
@@ -123,8 +121,6 @@ int main(int argc, char *argv[])
 	{
 		oInputParams.FromXmlFile(sArg1);
         conversion  = oInputParams.getConversionDirection();
-        sXmlOptions = oInputParams.getXmlOptions();
-        sPassword   = oInputParams.getPassword();
 	}
 	else
 	{
@@ -150,24 +146,7 @@ int main(int argc, char *argv[])
 		{
 			oInputParams.m_sFontDir = new std::wstring(sArg3);
 		}
-		if (argc > 5)
-		{
-            sXmlOptions = getXMLOptionsFromFile(sArg5);
-		}
-
-		if (argc > 4)
-		{
-			conversion = getConversionDirection (sArg4);
-
-            if (TCD_ERROR == conversion && argc < 5 )
-			 {
-                sXmlOptions = getXMLOptionsFromFile(sArg4);
-				conversion = TCD_AUTO;
-			 }
-		}
-		sPassword = *oInputParams.m_sPassword;
 	}
-
     std::wstring sFileFrom	= *oInputParams.m_sFileFrom;
     std::wstring sFileTo	= *oInputParams.m_sFileTo;
    
@@ -207,9 +186,6 @@ int main(int argc, char *argv[])
         std::cerr << "Couldn't automatically recognize conversion direction from extensions" << std::endl;
         return getReturnErrorCode(AVS_FILEUTILS_ERROR_CONVERT_PARAMS);
     }
-    std::wstring sFontPath;
-    if(NULL != oInputParams.m_sFontDir)
-        sFontPath = *oInputParams.m_sFontDir;
 	bool bFromChanges = false;
 	if(NULL != oInputParams.m_bFromChanges)
 		bFromChanges = *oInputParams.m_bFromChanges;
@@ -237,27 +213,27 @@ int main(int argc, char *argv[])
 	{
 		case TCD_DOCX2DOCT:
 		{
-			result = docx2doct (sFileFrom, sFileTo, sTempDir, sFontPath);
+			result = docx2doct (sFileFrom, sFileTo, sTempDir, oInputParams);
 		}break;
 		case TCD_DOCT2DOCX:
 		{
-			result =  doct2docx (sFileFrom, sFileTo, sTempDir, sFontPath, bFromChanges, sThemeDir, oInputParams);
+			result =  doct2docx (sFileFrom, sFileTo, sTempDir, bFromChanges, sThemeDir, oInputParams);
 		}break;
 		case TCD_XLSX2XLST:
 		{
-			result =  xlsx2xlst (sFileFrom, sFileTo, sTempDir, sFontPath, sXmlOptions);
+			result =  xlsx2xlst (sFileFrom, sFileTo, sTempDir, oInputParams);
 		}break;
 		case TCD_XLST2XLSX:
 		{
-			result =  xlst2xlsx (sFileFrom, sFileTo, sTempDir, sFontPath, bFromChanges, sThemeDir, oInputParams);
+			result =  xlst2xlsx (sFileFrom, sFileTo, sTempDir, bFromChanges, sThemeDir, oInputParams);
 		}break;
 		case TCD_PPTX2PPTT:
 		{
-			result =  pptx2pptt (sFileFrom, sFileTo, sTempDir, sFontPath);
+			result =  pptx2pptt (sFileFrom, sFileTo, sTempDir, oInputParams);
 		}break;
 		case TCD_PPTT2PPTX:
 		{
-			result =  pptt2pptx (sFileFrom, sFileTo, sTempDir, sFontPath, bFromChanges, sThemeDir, oInputParams);
+			result =  pptt2pptx (sFileFrom, sFileTo, sTempDir, bFromChanges, sThemeDir, oInputParams);
 		}break;
 		case TCD_ZIPDIR:
 		{
@@ -269,47 +245,47 @@ int main(int argc, char *argv[])
 		}break;
 		case TCD_CSV2XLSX:
 		{
-			result =  csv2xlsx (sFileFrom, sFileTo, sXmlOptions, sTempDir, sFontPath);
+			result =  csv2xlsx (sFileFrom, sFileTo, sTempDir, oInputParams);
 		}break;
 		case TCD_CSV2XLST:
 		{
-			result =  csv2xlst (sFileFrom, sFileTo, sXmlOptions, sTempDir, sFontPath);
+			result =  csv2xlst (sFileFrom, sFileTo, sTempDir, oInputParams);
 		}break;
 		case TCD_XLSX2CSV:
 		{
-			result =  xlsx2csv (sFileFrom, sFileTo, sXmlOptions, sTempDir, sFontPath);
+			result =  xlsx2csv (sFileFrom, sFileTo, sTempDir, oInputParams);
 		}break;
 		case TCD_XLST2CSV:
 		{
-			result =  xlst2csv (sFileFrom, sFileTo, sXmlOptions, sTempDir, sFontPath);
+			result =  xlst2csv (sFileFrom, sFileTo, sTempDir, oInputParams);
 		}break;
 		case TCD_DOCX2DOCT_BIN:
 		{
-			result = docx2doct_bin (sFileFrom, sFileTo, sTempDir, sFontPath);
+			result = docx2doct_bin (sFileFrom, sFileTo, sTempDir, oInputParams);
 		}break;
 		case TCD_DOCT_BIN2DOCX:
 		{
-			result =  doct_bin2docx (sFileFrom, sFileTo, sTempDir, sFontPath, bFromChanges, sThemeDir, oInputParams);
+			result =  doct_bin2docx (sFileFrom, sFileTo, sTempDir, bFromChanges, sThemeDir, oInputParams);
 		}break;
 		case TCD_XLSX2XLST_BIN:
 		{
-			result =  xlsx2xlst_bin (sFileFrom, sFileTo, sTempDir, sFontPath, sXmlOptions);
+			result =  xlsx2xlst_bin (sFileFrom, sFileTo, sTempDir, oInputParams);
 		}break;
 		case TCD_XLST_BIN2XLSX:
 		{
-			result =  xlst_bin2xlsx (sFileFrom, sFileTo, sTempDir, sFontPath, bFromChanges, sThemeDir, oInputParams);
+			result =  xlst_bin2xlsx (sFileFrom, sFileTo, sTempDir, bFromChanges, sThemeDir, oInputParams);
 		}break;
 		case TCD_PPTX2PPTT_BIN:
 		{
-			result =  pptx2pptt_bin (sFileFrom, sFileTo, sTempDir, sFontPath);
+			result =  pptx2pptt_bin (sFileFrom, sFileTo, sTempDir, oInputParams);
 		}break;
 		case TCD_PPTT_BIN2PPTX:
 		{
-			result =  pptt_bin2pptx (sFileFrom, sFileTo, sTempDir, sFontPath, bFromChanges, sThemeDir, oInputParams);
+			result =  pptt_bin2pptx (sFileFrom, sFileTo, sTempDir, bFromChanges, sThemeDir, oInputParams);
 		}break;
 		case TCD_BIN2PDF:
 		{
-			result =  bin2pdf (sFileFrom, sFileTo, sTempDir, sFontPath, bPaid, sThemeDir);
+			result =  bin2pdf (sFileFrom, sFileTo, sTempDir, bPaid, sThemeDir, oInputParams);
 		}break;
 		case TCD_BIN2T:
 		{
@@ -321,35 +297,35 @@ int main(int argc, char *argv[])
 		}break;
 		case TCD_PPSX2PPTX:
 		{
-			result =  ppsx2pptx (sFileFrom, sFileTo, sTempDir);
+			result =  ppsx2pptx (sFileFrom, sFileTo, sTempDir, oInputParams);
 		}break;
 		case TCD_PPT2PPTX:
 		{
-			result =  ppt2pptx (sFileFrom, sFileTo, sTempDir);
+			result =  ppt2pptx (sFileFrom, sFileTo, sTempDir, oInputParams);
 		}
 		case TCD_PPT2PPTT:
 		{
-			result =  ppt2pptt (sFileFrom, sFileTo, sTempDir, sFontPath);
+			result =  ppt2pptt (sFileFrom, sFileTo, sTempDir, oInputParams);
 		}break;
 		case TCD_PPT2PPTT_BIN:
 		{
-			result =  ppt2pptt_bin (sFileFrom, sFileTo, sTempDir, sFontPath);
+			result =  ppt2pptt_bin (sFileFrom, sFileTo, sTempDir, oInputParams);
 		}break;
 		case TCD_RTF2DOCX:
 		{
-			result =  rtf2docx (sFileFrom, sFileTo, sTempDir);
+			result =  rtf2docx (sFileFrom, sFileTo, sTempDir, oInputParams);
 		}break;
 		case TCD_RTF2DOCT:
 		{
-			result = rtf2doct (sFileFrom, sFileTo, sTempDir, sFontPath);
+			result = rtf2doct (sFileFrom, sFileTo, sTempDir, oInputParams);
 		}break;
 		case TCD_RTF2DOCT_BIN:
 		{
-			result = rtf2doct_bin (sFileFrom, sFileTo, sTempDir, sFontPath);
+			result = rtf2doct_bin (sFileFrom, sFileTo, sTempDir, oInputParams);
 		}break;
 		case TCD_DOCX2RTF:
 		{
-			result =  docx2rtf (sFileFrom, sFileTo, sTempDir);
+			result =  docx2rtf (sFileFrom, sFileTo, sTempDir, oInputParams);
 		}break;
 		case TCD_DOC2DOCX:
 		{
@@ -357,108 +333,108 @@ int main(int argc, char *argv[])
 		}break;
 		case TCD_DOCT2RTF:
 		{
-			result =  doct2rtf (sFileFrom, sFileTo, sTempDir, sFontPath, bFromChanges, sThemeDir, oInputParams);
+			result =  doct2rtf (sFileFrom, sFileTo, sTempDir, bFromChanges, sThemeDir, oInputParams);
 		}break;
 		case TCD_DOCT_BIN2RTF:
 		{
-			result =  doct_bin2rtf (sFileFrom, sFileTo, sTempDir, sFontPath, bFromChanges, sThemeDir, oInputParams);
+			result =  doct_bin2rtf (sFileFrom, sFileTo, sTempDir, bFromChanges, sThemeDir, oInputParams);
 		}break;
 		case TCD_TXT2DOCX:
 		{
-			result =  txt2docx (sFileFrom, sFileTo, sXmlOptions, sTempDir);
+			result =  txt2docx (sFileFrom, sFileTo, sTempDir, oInputParams);
 		}break;
 		case TCD_TXT2DOCT:
 		{
-			result = txt2doct (sFileFrom, sFileTo, sXmlOptions, sTempDir, sFontPath);
+			result = txt2doct (sFileFrom, sFileTo, sTempDir, oInputParams);
 		}break;
 		case TCD_TXT2DOCT_BIN:
 		{
-			result = txt2doct_bin (sFileFrom, sFileTo, sXmlOptions, sTempDir, sFontPath);
+			result = txt2doct_bin (sFileFrom, sFileTo, sTempDir, oInputParams);
 		}break;
 		case TCD_XLS2XLSX:
 		{
-			result =  xls2xlsx (sFileFrom, sFileTo, sTempDir, sFontPath, oInputParams);
+			result =  xls2xlsx (sFileFrom, sFileTo, sTempDir, oInputParams);
 		}break;
 		case TCD_XLS2XLST:
 		{
-			result = xls2xlst (sFileFrom, sFileTo, sPassword, sTempDir, sFontPath, sXmlOptions);
+			result = xls2xlst (sFileFrom, sFileTo, sTempDir, oInputParams);
 		}break;
 		case TCD_XLS2XLST_BIN:
 		{
-			result = xls2xlst_bin (sFileFrom, sFileTo, sPassword, sTempDir, sFontPath, sXmlOptions);
+			result = xls2xlst_bin (sFileFrom, sFileTo, sTempDir, oInputParams);
 		}break;
 		case TCD_ODF2OOX:
 		{
-			result =  odf2oox (sFileFrom, sFileTo, sTempDir, sFontPath);
+			result =  odf2oox (sFileFrom, sFileTo, sTempDir, oInputParams);
 		}break;
 		case TCD_ODF2OOT:
 		{
-			result = odf2oot (sFileFrom, sFileTo,  sTempDir, sFontPath);
+			result = odf2oot (sFileFrom, sFileTo,  sTempDir, oInputParams);
 		}break;
 		case TCD_ODF2OOT_BIN:
 		{
-			result = odf2oot_bin (sFileFrom, sFileTo, sTempDir, sFontPath);
+			result = odf2oot_bin (sFileFrom, sFileTo, sTempDir, oInputParams);
 		}
 		case TCD_DOCX2ODT:
 		{
-			result =  docx2odt (sFileFrom, sFileTo, sTempDir, sFontPath);
+			result =  docx2odt (sFileFrom, sFileTo, sTempDir, oInputParams);
 		}break;
 		case TCD_XLSX2ODS:
 		{
-			result =  xlsx2ods (sFileFrom, sFileTo, sTempDir, sFontPath);
+			result =  xlsx2ods (sFileFrom, sFileTo, sTempDir, oInputParams);
 		}break;
 		case TCD_MAILMERGE:
 		{
-			result = convertmailmerge(*oMailMerge, sFileFrom, sFileTo, sTempDir, sFontPath, bPaid, sThemeDir, oInputParams);
+			result = convertmailmerge(*oMailMerge, sFileFrom, sFileTo, sTempDir, bPaid, sThemeDir, oInputParams);
 		}break;
 		case TCD_DOCUMENT2:
 		{
-			result = fromDocument(sFileFrom, nFormatFrom, sTempDir, sXmlOptions, oInputParams);
+			result = fromDocument(sFileFrom, nFormatFrom, sTempDir, oInputParams);
 		}break;
 		case TCD_SPREADSHEET2:
 		{
-			result = fromSpreadsheet(sFileFrom, nFormatFrom, sTempDir, sXmlOptions, oInputParams);
+			result = fromSpreadsheet(sFileFrom, nFormatFrom, sTempDir, oInputParams);
 		}break;
 		case TCD_PRESENTATION2:
 		{
-			result = fromPresentation(sFileFrom, nFormatFrom, sTempDir, sXmlOptions, oInputParams);
+			result = fromPresentation(sFileFrom, nFormatFrom, sTempDir, oInputParams);
 		}break;
 		case TCD_T2:
 		{
-			result = fromT(sFileFrom, nFormatFrom, sFileTo, nFormatTo, sTempDir, sFontPath, sXmlOptions, sThemeDir, bFromChanges, bPaid, oInputParams);
+			result = fromT(sFileFrom, nFormatFrom, sFileTo, nFormatTo, sTempDir, sThemeDir, bFromChanges, bPaid, oInputParams);
 		}break;
 		case TCD_DOCT_BIN2:
 		{
-			result = fromDoctBin(sFileFrom, sFileTo, nFormatTo, sTempDir, sFontPath, sXmlOptions, sThemeDir, bFromChanges, bPaid, oInputParams);
+			result = fromDoctBin(sFileFrom, sFileTo, nFormatTo, sTempDir, sThemeDir, bFromChanges, bPaid, oInputParams);
 		}break;
 		case TCD_XLST_BIN2:
 		{
-			result = fromXlstBin(sFileFrom, sFileTo, nFormatTo, sTempDir, sFontPath, sXmlOptions, sThemeDir, bFromChanges, bPaid, oInputParams);
+			result = fromXlstBin(sFileFrom, sFileTo, nFormatTo, sTempDir, sThemeDir, bFromChanges, bPaid, oInputParams);
 		}break;
 		case TCD_PPTT_BIN2:
 		{
-			result = fromPpttBin(sFileFrom, sFileTo, nFormatTo, sTempDir, sFontPath, sXmlOptions, sThemeDir, bFromChanges, bPaid, oInputParams);
+			result = fromPpttBin(sFileFrom, sFileTo, nFormatTo, sTempDir, sThemeDir, bFromChanges, bPaid, oInputParams);
 		}break;
 		case TCD_CROSSPLATFORM2:
 		{
-			result = fromCrossPlatform(sFileFrom, nFormatFrom, sFileTo, nFormatTo, sTempDir, sFontPath, sXmlOptions, sThemeDir, bFromChanges, bPaid, oInputParams);
+			result = fromCrossPlatform(sFileFrom, nFormatFrom, sFileTo, nFormatTo, sTempDir, sThemeDir, bFromChanges, bPaid, oInputParams);
 		}break;
 		case TCD_CANVAS_PDF2:
 		{
-			result = fromCanvasPdf(sFileFrom, nFormatFrom, sFileTo, nFormatTo, sTempDir, sFontPath, sXmlOptions, sThemeDir, bFromChanges, bPaid);
+			result = fromCanvasPdf(sFileFrom, nFormatFrom, sFileTo, nFormatTo, sTempDir, sThemeDir, bFromChanges, bPaid, oInputParams);
 		}break;
 		case TCD_MSCRYPT2:
 		{
-			result = fromMscrypt (sFileFrom, sFileTo, sTempDir, sFontPath, oInputParams);
+			result = fromMscrypt (sFileFrom, sFileTo, sTempDir, oInputParams);
 		}break;
 		case TCD_MSCRYPT2DOCT:
 		case TCD_MSCRYPT2XLST:
 		case TCD_MSCRYPT2PPTT:
 		{
-			result = mscrypt2oot (sFileFrom, sFileTo, sTempDir, sFontPath, oInputParams);
+			result = mscrypt2oot (sFileFrom, sFileTo, sTempDir, oInputParams);
 		}break;
 		case TCD_MSCRYPT2BIN:
-			result =  mscrypt2oot_bin (sFileFrom, sFileTo, sTempDir, sFontPath, oInputParams);
+			result =  mscrypt2oot_bin (sFileFrom, sFileTo, sTempDir, oInputParams);
 		{
 		}break;
 	}

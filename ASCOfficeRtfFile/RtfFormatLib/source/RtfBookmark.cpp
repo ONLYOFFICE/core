@@ -40,22 +40,23 @@
 CString RtfBookmarkStart::RenderToRtf(RenderParameter oRenderParameter)
 {
 	CString sResult;
-	//ATLASSERT( false == m_sName.IsEmpty() );
-	sResult.Append(_T("{\\*\\bkmkstart"));
+
+	sResult += _T("{\\*\\bkmkstart");
 	if( PROP_DEF != nFirstColumn )
 		sResult.AppendFormat(_T("\\bkmkcolf%d"), nFirstColumn);
 	if( PROP_DEF != nLastColumn )
 		sResult.AppendFormat(_T("\\bkmkcoll%d"), nLastColumn);
-	sResult.Append(_T(" "));
-	sResult.Append( RtfChar::renderRtfText( m_sName, oRenderParameter.poDocument, NULL ) );
-	sResult.Append(_T("}"));
+	
+	sResult += _T(" ");
+	sResult += RtfChar::renderRtfText( m_sName, oRenderParameter.poDocument, NULL );
+	sResult += _T("}");
 	return sResult;
 }
 CString RtfBookmarkStart::RenderToOOX(RenderParameter oRenderParameter)
 {
 	CString sResult;
 	//ATLASSERT( false == m_sName.IsEmpty() );
-	sResult.Append(_T("<w:bookmarkStart"));
+	sResult += _T("<w:bookmarkStart");
 	
 	OOXWriter	* poOOXWriter	= static_cast<OOXWriter*>	( oRenderParameter.poWriter );
 	RtfDocument	* poDocument	= static_cast<RtfDocument*>	(oRenderParameter.poDocument);
@@ -75,25 +76,26 @@ CString RtfBookmarkStart::RenderToOOX(RenderParameter oRenderParameter)
 		sResult.AppendFormat(_T(" w:colFirst =\"%d\""), nID);
 	if( PROP_DEF != nLastColumn )
 		sResult.AppendFormat(_T(" w:colLast =\"%d\""), nID);
-    sResult.AppendFormat(_T(" w:name =\"%ls\""), Utils::PrepareToXML( m_sName ).GetBuffer() );
-	sResult.Append(_T("/>"));
+    sResult += _T(" w:name =\"") + Utils::PrepareToXML( m_sName ) + _T("\"");
+	sResult += _T("/>");
 	return sResult;
 }
 CString RtfBookmarkEnd::RenderToRtf(RenderParameter oRenderParameter)
 {
 	CString sResult;
-	//ATLASSERT( false == m_sName.IsEmpty() );
-	sResult.Append(_T("{\\*\\bkmkend"));
-	sResult.Append(_T(" "));
-	sResult.Append( RtfChar::renderRtfText( m_sName, oRenderParameter.poDocument, NULL ) );
-	sResult.Append(_T("}"));
+
+	sResult += _T("{\\*\\bkmkend");
+	sResult += _T(" ");
+	sResult += RtfChar::renderRtfText( m_sName, oRenderParameter.poDocument, NULL );
+	sResult += _T("}");
+	
 	return sResult;
 }
 CString RtfBookmarkEnd::RenderToOOX(RenderParameter oRenderParameter)
 {
 	CString sResult;
-	//ATLASSERT( false == m_sName.IsEmpty() );
-	sResult.Append(_T("<w:bookmarkEnd"));
+
+	sResult  += _T("<w:bookmarkEnd");
 
 	OOXWriter* poOOXWriter = static_cast<OOXWriter*>( oRenderParameter.poWriter );
 	RtfDocument* poDocument = static_cast<RtfDocument*>(oRenderParameter.poDocument);
@@ -108,22 +110,27 @@ CString RtfBookmarkEnd::RenderToOOX(RenderParameter oRenderParameter)
 		poOOXWriter->m_aBookmarksId[m_sName] = nID;
 	}
 	sResult.AppendFormat(_T(" w:id =\"%d\""), nID);
-	sResult.Append(_T("/>"));
+	sResult += _T("/>");
 	return sResult;
 }
 CString RtfFootnote::RenderToRtf(RenderParameter oRenderParameter)
 {
 	CString sResult;
-	sResult.Append(_T("{"));
-	sResult.Append( m_oCharProp.RenderToRtf( oRenderParameter ) );
-	sResult.Append(_T("\\chftn"));
-	sResult.Append(_T("{\\footnote"));
+	
+	sResult += _T("{");
+	sResult += m_oCharProp.RenderToRtf( oRenderParameter );
+	sResult += _T("\\chftn");
+	sResult += _T("{\\footnote");
+	
 	if( true == m_bEndNote )
-		sResult.Append(_T("\\ftnalt"));
+		sResult += _T("\\ftnalt");
+	
 	for( int i = 0; i < m_oContent->GetCount(); i++ )
-		sResult.Append( m_oContent->RenderToRtf(  oRenderParameter  ) );
-	sResult.Append(_T("}"));
-	sResult.Append(_T("}"));
+		sResult += m_oContent->RenderToRtf(  oRenderParameter  );
+	
+	sResult += _T("}");
+	sResult += _T("}");
+	
 	return sResult;
 }
 CString RtfFootnote::RenderToOOX(RenderParameter oRenderParameter)
@@ -139,16 +146,18 @@ CString RtfFootnote::RenderToOOX(RenderParameter oRenderParameter)
 		oNewParameter.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
 		oNewParameter.poRels = poEndnoteWriter->m_oRelsWriter.get();
 		poEndnoteWriter->AddEndnote( _T(""), nID, m_oContent->RenderToOOX(oNewParameter) );
-		sResult.Append( _T("<w:r>") );
+		
+		sResult += _T("<w:r>");
 		CString srPr = m_oCharProp.RenderToOOX( oRenderParameter );
+
 		if( false == srPr.IsEmpty() )
 		{
-			sResult.Append( _T("<w:rPr>") );
+			sResult += _T("<w:rPr>");
             sResult += srPr;
-			sResult.Append( _T("</w:rPr>") );
+			sResult += _T("</w:rPr>");
 		}
 		sResult.AppendFormat( _T("<w:endnoteReference  w:id=\"%d\"/>"), nID );
-		sResult.Append( _T("</w:r>") );
+		sResult += _T("</w:r>");
 	}
 	else
 	{
@@ -158,16 +167,18 @@ CString RtfFootnote::RenderToOOX(RenderParameter oRenderParameter)
 		oNewParameter.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
 		oNewParameter.poRels = poFootnoteWriter->m_oRelsWriter.get();
 		poFootnoteWriter->AddFootnote( _T(""), nID, m_oContent->RenderToOOX(oNewParameter) );
-		sResult.Append( _T("<w:r>") );
+		
+		sResult += _T("<w:r>");
 		CString srPr = m_oCharProp.RenderToOOX( oRenderParameter );
+
 		if( false == srPr.IsEmpty() )
 		{
-			sResult.Append( _T("<w:rPr>") );
+			sResult += _T("<w:rPr>");
             sResult += srPr;
-            sResult.Append( _T("</w:rPr>") );
+            sResult += _T("</w:rPr>");
 		}
 		sResult.AppendFormat( _T("<w:footnoteReference w:id=\"%d\"/>"), nID );
-		sResult.Append( _T("</w:r>") );
+		sResult += _T("</w:r>");
 	}
 
 	return sResult;

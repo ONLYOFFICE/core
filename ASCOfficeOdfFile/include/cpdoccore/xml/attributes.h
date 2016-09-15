@@ -51,28 +51,28 @@ namespace cpdoccore
 	{
 		struct _property
 		{
-			_property(std::wstring n, std::wstring s){name_	=	n; val_	=	s;}
-			_property(std::wstring n, bool b)	{name_	=	n; val_	=	b;}
-			_property(std::wstring n, int i){name_	=	n; val_	=	i;}
-			_property(std::wstring n, double d){name_	=	n;val_	=	d;}
+			_property(std::wstring n, std::wstring s)	{ name_	=	n; val_	=	s;}
+			_property(std::wstring n, bool b)			{ name_	=	n; val_	=	b;}
+			_property(std::wstring n, int i)			{ name_	=	n; val_	=	i;}
+			_property(std::wstring n, double d)			 {name_	=	n;val_	=	d;}
 		
 			std::wstring name_;
 			boost::variant<bool,std::wstring,double,int> val_;
 		};
 
 		template <class T>
-        bool GetProperty(std::vector<_property> Heap, const std::wstring Name, T & Val)
+        bool GetProperty(const std::vector<_property> & Heap, const std::wstring Name, T & Val)
 		{
             typedef typename T::value_type T_value_type;
 
 			Val.reset();
-			BOOST_FOREACH(_property const & p, Heap)
+			for (int i = 0 ; i < Heap.size(); i++)
 			{
-				if (p.name_ == Name )
+				if (Heap[i].name_ == Name )
 				{
 					try
 					{
-                        Val = boost::get<T_value_type>(p.val_);
+                        Val = boost::get<T_value_type>(Heap[i].val_);
 					}
 					catch(...)
 					{

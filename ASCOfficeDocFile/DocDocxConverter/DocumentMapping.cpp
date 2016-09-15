@@ -42,7 +42,7 @@
 namespace DocFileFormat
 {
 	DocumentMapping::DocumentMapping(ConversionContext* context, IMapping* caller):_skipRuns(0), _lastValidPapx(NULL), _lastValidSepx(NULL), _writeInstrText(false),
-		_fldCharCounter(0), AbstractOpenXmlMapping( new XmlUtils::CXmlWriter() ), _sectionNr(0), _footnoteNr(0),
+		_fldCharCounter(0), AbstractOpenXmlMapping( new XMLTools::CStringXmlWriter() ), _sectionNr(0), _footnoteNr(0),
 		_endnoteNr(0), _commentNr(0), _caller(caller)
 	{
 		m_document				=	NULL;
@@ -55,7 +55,7 @@ namespace DocFileFormat
 		_isTextBoxContent		=	false;
 	}
 
-	DocumentMapping::DocumentMapping(ConversionContext* context, XmlUtils::CXmlWriter* writer, IMapping* caller):_skipRuns(0),  _lastValidPapx(NULL), _lastValidSepx(NULL), _writeInstrText(false),
+	DocumentMapping::DocumentMapping(ConversionContext* context, XMLTools::CStringXmlWriter* writer, IMapping* caller):_skipRuns(0),  _lastValidPapx(NULL), _lastValidSepx(NULL), _writeInstrText(false),
 		_fldCharCounter(0), AbstractOpenXmlMapping(writer), _sectionNr(0), _footnoteNr(0), _endnoteNr(0),
 		_commentNr(0), _caller(caller)
 	{
@@ -535,6 +535,7 @@ namespace DocFileFormat
 				std::wstring TOC		( _T( " TOC" ) );
 				std::wstring HYPERLINK	( _T( " HYPERLINK" ) );
 				std::wstring PAGEREF	( _T( " PAGEREF" ) );
+				std::wstring PAGE		( _T( "PAGE" ) );
 
 				bool bChart			= search( f.begin(), f.end(), chart.begin(),		chart.end())			!= f.end();
 				bool bEMBED			= search( f.begin(), f.end(), EMBED.begin(),		EMBED.end())			!= f.end();
@@ -548,6 +549,7 @@ namespace DocFileFormat
 				bool bPAGEREF		= search( f.begin(), f.end(), PAGEREF.begin(),		PAGEREF.end())			!= f.end();
 				bool bQUOTE			= search( f.begin(), f.end(), QUOTE.begin(),		QUOTE.end())			!= f.end();
 				bool bEquation		= search( f.begin(), f.end(), Equation.begin(),		Equation.end())			!= f.end();
+				bool bPAGE			= !bPAGEREF && search( f.begin(), f.end(), PAGE.begin(), PAGE.end())		!= f.end();
 			
 				if ( bFORM )
 				{
@@ -588,12 +590,12 @@ namespace DocFileFormat
 
 					_fldCharCounter++;
 				}
-				else if ( bHYPERLINK && bPAGEREF )
+				else if ( (bHYPERLINK && bPAGEREF) || bPAGE)
 				{
 					int cpFieldSep2 = cpFieldStart, cpFieldSep1 = cpFieldStart;
 					std::vector<std::wstring> toc;
 
-					if (search( f.begin(),	f.end(), TOC.begin(),	TOC.end()) != f.end())
+					if ((search( f.begin(),	f.end(), TOC.begin(),	TOC.end()) != f.end()) || bPAGE)
 					{
 						m_pXmlWriter->WriteNodeBegin( _T( "w:fldChar" ), TRUE );
 							m_pXmlWriter->WriteAttribute( _T( "w:fldCharType" ), _T( "begin" ) ); 
@@ -658,7 +660,7 @@ namespace DocFileFormat
 							chpxObj->Convert(rPr);
 							RELEASEOBJECT(rPr);
 						}					
-						XmlUtils::CXmlWriter	OleWriter;
+						XMLTools::CStringXmlWriter	OleWriter;
 						VMLPictureMapping		oVmlMapper (m_context, &OleWriter, true, _caller);
 
 						if (m_document->bOlderVersion)

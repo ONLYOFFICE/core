@@ -56,18 +56,18 @@ CString OOXDocumentWriter::CreateXmlStart()
 
 	//пишем document.xml
 	CString sResult = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\n");
-	sResult.Append( _T("<w:document") );
-	sResult.Append( _T(" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\"") );
-	sResult.Append( _T(" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\"") );
-	sResult.Append( _T(" xmlns:v=\"urn:schemas-microsoft-com:vml\"") );
-	sResult.Append( _T(" xmlns:o=\"urn:schemas-microsoft-com:office:office\"") );
-	sResult.Append( _T(" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\"") );
-	sResult.Append( _T(" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\"") );
-	sResult.Append( _T(" xmlns:w10=\"urn:schemas-microsoft-com:office:word\"") );
-	sResult.Append( _T(" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\"") );
-	sResult.Append( _T(">") );
+	sResult += _T("<w:document");
+	sResult += _T(" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\"");
+	sResult += _T(" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\"");
+	sResult += _T(" xmlns:v=\"urn:schemas-microsoft-com:vml\"");
+	sResult += _T(" xmlns:o=\"urn:schemas-microsoft-com:office:office\"");
+	sResult += _T(" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\"");
+	sResult += _T(" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\"");
+	sResult += _T(" xmlns:w10=\"urn:schemas-microsoft-com:office:word\"");
+	sResult += _T(" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\"");
+	sResult += _T(">");
 
-	sResult.Append( _T("<w:body>") );
+	sResult += _T("<w:body>");
 	return sResult;
 }
 CString OOXDocumentWriter::CreateXmlEnd( )
@@ -76,13 +76,14 @@ CString OOXDocumentWriter::CreateXmlEnd( )
 
 	//пишем все кроме document.xml
 	RenderParameter oNewParam;
-	oNewParam.poDocument = &m_oDocument;
-	oNewParam.poWriter = &m_oWriter;
-	oNewParam.poRels = &m_oWriter.m_oDocRels;
-	oNewParam.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
+	oNewParam.poDocument	= &m_oDocument;
+	oNewParam.poWriter		= &m_oWriter;
+	oNewParam.poRels		= &m_oWriter.m_oDocRels;
+	oNewParam.nType			= RENDER_TO_OOX_PARAM_UNKNOWN;
 
-	OOXEndnoteWriter* poEndnoteWriter = static_cast<OOXEndnoteWriter*>( m_oWriter.m_poEndnoteWriter );
-	OOXFootnoteWriter* poFootnoteWriter = static_cast<OOXFootnoteWriter*>( m_oWriter.m_poFootnoteWriter );
+	OOXEndnoteWriter*	poEndnoteWriter		= static_cast<OOXEndnoteWriter*>( m_oWriter.m_poEndnoteWriter );
+	OOXFootnoteWriter*	poFootnoteWriter	= static_cast<OOXFootnoteWriter*>( m_oWriter.m_poFootnoteWriter );
+	
 	if( NULL != m_oDocument.m_oFootnoteCon )
 	{
 		oNewParam.poRels = poFootnoteWriter->m_oRelsWriter.get();
@@ -154,7 +155,7 @@ CString OOXDocumentWriter::CreateXmlEnd( )
 			sStyles +=  sTempParaDef;
 			sStyles += _T("</w:pPr></w:pPrDefault>");
 		}
-		sStyles.Append(_T("</w:docDefaults>"));
+		sStyles += _T("</w:docDefaults>");
 	}
 
 	sStyles += m_oDocument.m_oStyleTable.RenderToOOX(oNewParam);
@@ -178,10 +179,10 @@ CString OOXDocumentWriter::CreateXmlEnd( )
 	oNewParam.poWriter = &m_oWriter;
 	oNewParam.poRels = &m_oWriter.m_oDocRels;
 	oNewParam.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
-	sResult.Append( m_oDocument[0]->m_oProperty.RenderToOOX(oNewParam) );
+	sResult += m_oDocument[0]->m_oProperty.RenderToOOX(oNewParam);
 
-	sResult.Append( _T("</w:body>") );
-	sResult.Append( _T("</w:document>") );
+	sResult += _T("</w:body>");
+	sResult += _T("</w:document>");
 
 	return sResult;
 }

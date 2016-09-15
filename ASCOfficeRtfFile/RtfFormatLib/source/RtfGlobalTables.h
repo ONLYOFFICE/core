@@ -65,10 +65,10 @@ public:
 	CString RenderToOOX(RenderParameter oRenderParameter)
 	{
 		CString sResult;
-		if( m_aArray.size() > 0 )
+		if( !m_aArray.empty())
 		{
 			for( int i = 0; i < (int)m_aArray.size(); i++ )
-				sResult.Append(m_aArray[i].RenderToOOX(oRenderParameter));
+				sResult += m_aArray[i].RenderToOOX(oRenderParameter);
 
 		}
 		return sResult;
@@ -143,14 +143,16 @@ public:
 		CString sResult;
 		if( m_aArray.size() > 0 )
 		{
-			sResult.Append(_T("{\\colortbl;"));
+			sResult += _T("{\\colortbl;");
 			RenderParameter oNewParameter = oRenderParameter;
 			oNewParameter.nType = RENDER_TO_RTF_PARAM_COLOR_TBL;
+			
 			for( int i = 0; i < (int)m_aArray.size(); i++ )
             {
                 sResult += m_aArray[i].RenderToRtf( oNewParameter );
             }
-			sResult.Append(_T("}"));
+			
+			sResult += _T("}");
 		}
 		return sResult;
 	}
@@ -243,13 +245,15 @@ public:
 		CString sResult;
 		if( m_aArray.size() > 0 )
 		{
-			sResult.Append(_T("{\\stylesheet"));
+			sResult += _T("{\\stylesheet");
+			
 			for( int i = 0; i < (int)m_aArray.size(); i++ )
             {
                 CString str = m_aArray[i]->RenderToRtf( oRenderParameter );
-                sResult.AppendFormat(_T("%ls\n\n"), str.GetBuffer());
+                sResult += str + _T("\n\n");
             }
-			sResult.Append(_T("}"));
+			
+			sResult += _T("}");
 		}
 		return sResult;
 	}
@@ -257,7 +261,9 @@ public:
 	{
 		CString sResult;
 		for( int i = 0; i < (int)m_aArray.size(); i++ )
-			sResult.Append(m_aArray[i]->RenderToOOX(oRenderParameter));
+		{
+			sResult += m_aArray[i]->RenderToOOX(oRenderParameter);
+		}
 		return sResult;
 	}
 };
@@ -293,7 +299,7 @@ public:
 //			CString sResult;
 //			if( m_aArray.size() > 0 )
 //			{
-//				sResult.Append(_T("{\\*\\latentstyles"));
+//				sResult += _T("{\\*\\latentstyles"));
 //				if( PROP_DEF != m_nCount )
 //					sResult.AppendFormat(_T("\\lsdstimax%d"),m_nCount);
 //				if( PROP_DEF != m_nLocked )
@@ -306,11 +312,11 @@ public:
 //					sResult.AppendFormat(_T("\\lsdqformatdef%d"),m_nQFormat);
 //				if( PROP_DEF != m_nPriority )
 //					sResult.AppendFormat(_T("\\lsdprioritydef%d"),m_nPriority);
-//				sResult.Append(_T("{\\lsdlockedexcept "));
+//				sResult += _T("{\\lsdlockedexcept "));
 //				for( int i = 0; i < (int)m_aArray.size(); i++ )
-//					sResult.Append(m_aArray[i].RenderToRtf( oRenderParameter ));
-//				sResult.Append(_T("}"));
-//				sResult.Append(_T("}"));
+//					sResult += m_aArray[i].RenderToRtf( oRenderParameter ));
+//				sResult += _T("}");
+//				sResult += _T("}");
 //			}
 //			return sResult;
 //		}
@@ -372,23 +378,23 @@ public:
 		CString sResult;
 		if( m_aArray.size() > 0 )
 		{
-			sResult.Append(_T("{\\*\\listtable "));
+			sResult += _T("{\\*\\listtable ");
 			if( m_aPictureList.GetCount() > 0 )
 			{
-				sResult.Append(_T("{\\*\\listpicture") );
+				sResult += _T("{\\*\\listpicture");
 				for( int i = 0; i < (int)m_aPictureList.GetCount(); i++ )
                 {
-					sResult.Append( m_aPictureList[i]->RenderToRtf( oRenderParameter ) );
+					sResult +=  m_aPictureList[i]->RenderToRtf( oRenderParameter );
                 }
-				sResult.Append(_T("}") );
+				sResult += _T("}");
 			}
 			for( int i = 0; i < (int)m_aArray.size(); i++)
             {
-				sResult.Append(_T("{"));
-				sResult.Append(m_aArray[i].RenderToRtf( oRenderParameter ));
- 				sResult.Append(_T("}"));
+				sResult += _T("{");
+				sResult += m_aArray[i].RenderToRtf( oRenderParameter );
+ 				sResult += _T("}");
            }
-			sResult.Append(_T("}"));
+			sResult += _T("}");
 		}
 		return sResult;
 	}
@@ -412,14 +418,14 @@ public:
 			CString sResult;
 			if( m_aArray.size() > 0 )
 			{
-				sResult.Append(_T("{\\*\\listoverridetable"));
+				sResult += _T("{\\*\\listoverridetable");
 				for( int i = 0; i < (int)m_aArray.size(); i++)
                 {
- 					sResult.Append(_T("{"));
-                    sResult.Append(m_aArray[i].RenderToRtf( oRenderParameter ));
-					sResult.Append(_T("}"));
+ 					sResult += _T("{");
+                    sResult += m_aArray[i].RenderToRtf( oRenderParameter );
+					sResult += _T("}");
                 }
-				sResult.Append(_T("}"));
+				sResult += _T("}");
 			}
 			return sResult;
 		}

@@ -120,8 +120,8 @@ namespace OOX
 			nullable<SimpleTypes::CEmu>                                     m_oStrokeWeight;
 			nullable<SimpleTypes::CTrueFalse<>>                             m_oInsetPen;
 			// 2.2 AG_OfficeShapeAttributes
-			SimpleTypes::CDecimalNumber<>									m_oSpt;
-			SimpleTypes::CConnectorType<SimpleTypes::connectortypeNone>		m_oConnectorType;
+			nullable<SimpleTypes::CDecimalNumber<>>							m_oSpt;
+			nullable<SimpleTypes::CConnectorType<>>							m_oConnectorType;
 			nullable<SimpleTypes::CBWMode<>>                                m_oBwMode;
 			nullable<SimpleTypes::CBWMode<>>                                m_oBwPure;
 			nullable<SimpleTypes::CBWMode<>>                                m_oBwNormal;

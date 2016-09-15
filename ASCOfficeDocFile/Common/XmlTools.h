@@ -35,13 +35,8 @@
 #include <map>
 #include <list>
 
-#if defined(_WIN32) || defined(_WIN64)
-    #include <atlbase.h>
-    #include <atlstr.h>
-#else
-    #include "../../DesktopEditor/common/ASCVariant.h"
-    #include "../../Common/DocxFormat/Source/Base/ASCString.h"
-#endif
+
+#include "../../DesktopEditor/common/File.h"
 
 inline static std::wstring ReplaceString(std::wstring subject, const std::wstring& search, const std::wstring& replace) 
 {
@@ -118,12 +113,12 @@ namespace XMLTools
 
 		std::basic_string<T> GetXMLString()
 		{
-			std::basic_string<T> xmlString( _T( "" ) );
+			std::basic_string<T> xmlString( L"" );
 
 			xmlString += m_Name;
-			xmlString += std::basic_string<T>( _T( "=\"" ) );
+			xmlString += std::basic_string<T>( L"=\"" );
 			xmlString += m_Value;
-			xmlString += std::basic_string<T>( _T( "\"" ) );
+			xmlString += std::basic_string<T>( L"\"" );
 
 			return xmlString;
 		}
@@ -165,7 +160,7 @@ namespace XMLTools
 
 		/*========================================================================================================*/
 
-		XMLElement( const T* prefix, const T* localName ) : m_Name( std::basic_string<T>( prefix ) + std::basic_string<T>( _T( ":" ) ) + std::basic_string<T>( localName ) ), m_ElementText( _T( "" ) )
+		XMLElement( const T* prefix, const T* localName ) : m_Name( std::basic_string<T>( prefix ) + std::basic_string<T>( L":" ) + std::basic_string<T>( localName ) ), m_ElementText( L"" )
 		{
 
 		}
@@ -341,25 +336,25 @@ namespace XMLTools
 
         std::basic_string<T> GetXMLString()
 		{
-			std::basic_string<T> xmlString( _T( "" ) );
+			std::basic_string<T> xmlString( L"");
 
-            bool bIsNameExists = ( m_Name != std::basic_string<T>( _T( "" ) ) );
-            bool bIsTextExists = ( m_ElementText != std::basic_string<T>( _T( "" ) ) );
+            bool bIsNameExists = ( m_Name != std::basic_string<T>( L"") );
+            bool bIsTextExists = ( m_ElementText != std::basic_string<T>( L"") );
 
 			if ( bIsNameExists )
 			{
-                xmlString += std::basic_string<T>( _T( "<" ) ) + m_Name;
+                xmlString += std::basic_string<T>( L"<" ) + m_Name;
 			}
 
             if ( ( bIsNameExists ) && ( m_AttributeMap.size() > 0 ) )
 			{
                 for ( AttMapIterator iter = m_AttributeMap.begin(); iter != m_AttributeMap.end(); iter++ )
 				{
-					xmlString += std::basic_string<T>( _T( " " ) );
+					xmlString += std::basic_string<T>( L" " );
 					xmlString += iter->first;
-					xmlString += std::basic_string<T>( _T( "=\"" ) );
+					xmlString += std::basic_string<T>( L"=\"" );
 					xmlString += iter->second;
-					xmlString += std::basic_string<T>( _T( "\"" ) );
+					xmlString += std::basic_string<T>( L"\"" );
 				}
 			}
 
@@ -367,7 +362,7 @@ namespace XMLTools
 			{
 				if ( bIsNameExists )
 				{
-					xmlString += std::basic_string<T>( _T( ">" ) );
+					xmlString += std::basic_string<T>( L">" );
 				}
 
                 for ( ElementsIterator iter = m_Elements.begin(); iter != m_Elements.end(); iter++ )
@@ -382,16 +377,16 @@ namespace XMLTools
 
 				if ( bIsNameExists )
 				{
-                    xmlString += std::basic_string<T>( _T( "</" ) );
+                    xmlString += std::basic_string<T>( L"</" );
 					xmlString += m_Name;
-                    xmlString += std::basic_string<T>( _T( ">" ) );
+					xmlString += std::basic_string<T>( L">" );
 				}
 			}
 			else
 			{
 				if ( bIsNameExists )
 				{
-					xmlString += std::basic_string<T>( _T( "/>" ) );
+					xmlString += std::basic_string<T>( L"/>" );
 				}
 			}
 
@@ -412,5 +407,142 @@ namespace XMLTools
 			return (unsigned int)m_Elements.size();
 		}
 	};
+
+
+	class CStringXmlWriter
+	{
+		std::wstring m_str;
+	
+	public:
+		CStringXmlWriter(){}
+		std::wstring GetXmlString()
+		{
+			return m_str;
+		}
+		void SetXmlString(const std::wstring& strValue)
+		{
+			m_str = strValue;
+		}
+		bool SaveToFile(const std::wstring& strFilePath, bool bEncodingToUTF8 = false)
+		{
+			NSFile::CFileBinary file;
+			if (!file.CreateFileW(strFilePath)) return false;
+
+			if (bEncodingToUTF8)
+				file.WriteStringUTF8(m_str);
+			else
+			{
+				std::string s(m_str.begin(), m_str.end());
+				file.WriteFile((unsigned char*)s.c_str(), s.length());
+			}
+			file.CloseFile();
+			return true;
+		}
+
+		void WriteString(const std::wstring & strValue)
+		{
+			m_str += strValue;
+		}
+
+		void WriteInteger(int Value, int Base = 10)
+		{
+#if defined(_WIN32) || defined (_WIN64)
+            wchar_t buff[33] ={};
+            _itow(Value, buff, Base);
+            m_str += std::wstring(buff);
+#else
+            m_str += std::to_wstring(Value);
+#endif
+		}
+
+		void WriteDouble(double Value)
+		{
+#if defined(_WIN32) || defined (_WIN64)
+            int *dec = NULL, *sign = NULL;
+			char *str = _fcvt( Value , 4, dec, sign);
+
+			if (str)
+			{
+				std::string sA(str);
+				delete []str;	
+				m_str += std::wstring(sA.begin(), sA.end());
+			}
+			else
+			{
+				m_str += L"0";
+			}
+#else
+            m_str += std::to_wstring(Value);
+#endif
+        }
+		void WriteBoolean(bool Value)
+		{
+			if (Value)
+				m_str += L"true";
+			else
+				m_str += L"false";
+		}		
+		void WriteNodeBegin(const std::wstring& strNodeName, bool bAttributed = false)
+		{
+			m_str += L"<" + strNodeName;
+
+			if (!bAttributed)
+				m_str += L">";
+		}
+		void WriteNodeEnd(const std::wstring& strNodeName, bool bEmptyNode = false, bool bEndNode = true)
+		{
+			if (bEmptyNode)
+			{
+				if (bEndNode)
+					m_str += L"/>";
+				else
+					m_str += L">";
+			}
+			else
+				m_str += L"</" + strNodeName + L">";
+		}
+		void WriteNode(const std::wstring& strNodeName, const std::wstring& strNodeValue)
+		{
+			if (strNodeValue.length() == 0)
+				m_str += L"<" + strNodeName + L"/>";
+			else
+				m_str += L"<" + strNodeName + L">" + strNodeValue + L"</" + strNodeName + L">";
+		}
+		void WriteNode(const std::wstring& strNodeName, int nValue, int nBase = 10, const std::wstring& strTextBeforeValue = L"", const std::wstring& strTextAfterValue = L"")
+		{
+			WriteNodeBegin(strNodeName);
+				WriteString(strTextBeforeValue);
+				WriteInteger(nValue, nBase);
+				WriteString(strTextAfterValue);
+			WriteNodeEnd(strNodeName);
+		}
+		void WriteNode(const std::wstring& strNodeName, double dValue)
+		{
+			WriteNodeBegin(strNodeName);
+				WriteDouble(dValue);
+			WriteNodeEnd(strNodeName);
+		}
+		void WriteAttribute(const std::wstring& strAttributeName, const std::wstring& strAttributeValue)
+		{
+			m_str += L" " + strAttributeName + L"=\"" + strAttributeValue + L"\"";
+		}
+		void WriteAttribute(const std::wstring& strAttributeName, int nValue, int nBase = 10, const std::wstring& strTextBeforeValue = L"", const std::wstring& strTextAfterValue = L"")
+		{
+			WriteString(L" " + strAttributeName + L"=");
+			WriteString(L"\"");
+			WriteString(strTextBeforeValue);
+			WriteInteger(nValue, nBase);
+			WriteString(strTextAfterValue);
+			WriteString(L"\"");
+		}
+		void WriteAttribute(const std::wstring& strAttributeName, double dValue)
+		{
+			WriteString(L" " + strAttributeName + L"=");
+			WriteString(L"\"");
+			WriteDouble(dValue);
+			WriteString(L"\"");
+		}
+	};
+
 
 }

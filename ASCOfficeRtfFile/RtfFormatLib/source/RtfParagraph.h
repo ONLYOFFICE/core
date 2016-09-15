@@ -169,6 +169,8 @@ public:
 
 			sResult += _T("<w:p>");
 			sResult += _T("<w:pPr>");
+			
+			m_oProperty.m_bOldList = (NULL != m_oOldList);
 			sResult += m_oProperty.RenderToOOX(oRenderParameter);
 
 			if( NULL != m_oOldList )

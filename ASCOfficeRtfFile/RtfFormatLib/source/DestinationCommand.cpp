@@ -35,6 +35,9 @@
 #include "Ole1FormatReader.h"
 
 #include "ConvertationManager.h"
+#include "../../../ASCOfficePPTXFile/Editor/Drawing/Enums.h"
+
+#include <boost/algorithm/string.hpp>
 
 HRESULT ConvertOle1ToOle2(BYTE *pData, int nSize, std::wstring sOle2Name)
 {
@@ -357,7 +360,13 @@ bool RtfNormalReader::ExecuteCommand( RtfDocument& oDocument, RtfReader& oReader
 		if(true == oDocument.GetItem( oCurSection ) )
 		{
 			oCurSection->m_oProperty = oReader.m_oCurSectionProp;
-			oCurSection->m_bFinalize = true;
+			if (oParagraphReaderDestination.nCurItap > 0)
+			{
+			}
+			else
+			{
+				oCurSection->m_bFinalize = true;
+			}
 		}
 			
 		oParagraphReaderDestination.Finalize( oReader/* , oCurSection*/);
@@ -641,6 +650,104 @@ bool RtfShadingCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReade
 		return false;
 	return true;
 }
+bool OldShapeReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CString sCommand, bool hasParameter, int parameter)
+{
+	if( L"do" == sCommand )
+		return true;
+	else if( L"doinst" == sCommand )
+		return true;
+	else if( L"dorslt" == sCommand )
+		return false;
+	else if( L"picprop" == sCommand )
+		return true;
+//-------------------------------------------------------- type primitives
+	else if ( L"dprect" == sCommand)
+		m_oShape.m_nShapeType = NSOfficeDrawing::sptRectangle;
+	else if ( L"dpline" == sCommand)
+		m_oShape.m_nShapeType = NSOfficeDrawing::sptLine;
+	else if ( L"dpellipse" == sCommand)
+		m_oShape.m_nShapeType = NSOfficeDrawing::sptEllipse;
+	else if ( L"dparc" == sCommand)
+		m_oShape.m_nShapeType = NSOfficeDrawing::sptArc;
+	else if ( L"dppolyline" == sCommand)
+		m_oShape.m_nShapeType = NSOfficeDrawing::sptNotPrimitive;
+	else if ( L"dppolygon" == sCommand)
+		m_oShape.m_nShapeType = NSOfficeDrawing::sptNotPrimitive;
+	else if ( L"dpcallout" == sCommand)
+		m_oShape.m_nShapeType = NSOfficeDrawing::sptTextBox;
+	else if ( L"dptxbx" == sCommand)
+		m_oShape.m_nShapeType = NSOfficeDrawing::sptTextBox;
+	else if ( L"dproundr"  == sCommand)
+		m_oShape.m_nShapeType = NSOfficeDrawing::sptRoundRectangle;
+
+	else if ( L"dptxbxtext" == sCommand )
+	{
+		if( PROP_DEF == m_oShape.m_nShapeType )
+			m_oShape.m_nShapeType = NSOfficeDrawing::sptTextBox;
+		
+		ParagraphReader oParagraphReader(_T("shptxt"), oReader);
+		StartSubReader( oParagraphReader, oDocument, oReader );
+		m_oShape.m_aTextItems = oParagraphReader.m_oParPropDest.m_oTextItems;
+	}
+	//else if( L"shpbxignore" == sCommand )
+	//	m_oShape.m_eXAnchor = RtfShape::ax_ignore;
+	else if( L"dobxpage" == sCommand )
+		m_oShape.m_eXAnchor = RtfShape::ax_page;
+	else if( L"dobxmargin" == sCommand )
+		m_oShape.m_eXAnchor = RtfShape::ax_margin;
+	else if( L"dobxcolumn" == sCommand )
+		m_oShape.m_eXAnchor = RtfShape::ax_column;
+	//else if( L"shpbyignore" == sCommand )
+	//	m_oShape.m_eYAnchor = RtfShape::ay_ignore;
+	else if( L"dobypage" == sCommand )
+		m_oShape.m_eYAnchor = RtfShape::ay_page;
+	else if( L"dobymargin" == sCommand )
+		m_oShape.m_eYAnchor = RtfShape::ay_margin;
+	else if( L"dobypara" == sCommand )
+		m_oShape.m_eYAnchor = RtfShape::ay_Para;
+	else if( L"dolockanchor" == sCommand )
+		m_oShape.m_bLockAnchor = true;
+	else if ( L"dplinehollow" == sCommand )
+		m_oShape.m_bLine = false;
+
+	else if ( true == hasParameter)
+	{
+		if( L"dpx" == sCommand )
+			m_oShape.m_nLeft = parameter;
+		else if( L"dpx" == sCommand )
+			m_oShape.m_nLeft = parameter;
+		else if( L"dpy" == sCommand )
+			m_oShape.m_nTop = parameter;
+		else if( L"dpysize" == sCommand )
+			m_oShape.m_nBottom = parameter + m_oShape.m_nTop;
+		else if( L"dpxsize" == sCommand )
+			m_oShape.m_nRight = parameter + m_oShape.m_nLeft;
+		else if( L"doz" == sCommand )
+			m_oShape.m_nZOrder = parameter;
+		else if( L"dofhdr" == sCommand )
+			m_oShape.m_nHeader = parameter;
+		else if( L"dowr" == sCommand )
+			m_oShape.m_nWrapType = parameter;
+		else if( L"dowrk" == sCommand )
+			m_oShape.m_nWrapSideType = parameter;
+		else if( L"dofblwtxt" == sCommand)
+			m_oShape.m_nZOrderRelative = parameter;		
+		else if( L"dplinew" == sCommand )
+			m_oShape.m_nLineWidth = parameter;	
+		else if( L"dodhgt" == sCommand )
+			m_oShape.m_nZOrder = parameter;	
+		else if ( L"dpfillpat" == sCommand )
+		{
+			m_oShape.m_nFillType = parameter;	
+			if (m_oShape.m_nFillType == 0) m_oShape.m_bFilled = false;
+		}
+	}
+	else
+	{
+		return false;
+	}
+	return true;
+}
 bool ShapeReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CString sCommand, bool hasParameter, int parameter)
 {
 	if( _T("shp") == sCommand )
@@ -654,7 +761,7 @@ bool ShapeReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CStr
 	else if( _T("shptxt") == sCommand )
 	{
 		if( PROP_DEF == m_oShape.m_nShapeType )
-			m_oShape.m_nShapeType = 202;//Text box
+			m_oShape.m_nShapeType = NSOfficeDrawing::sptTextBox;
 		
 		ParagraphReader oParagraphReader(_T("shptxt"), oReader);
 		StartSubReader( oParagraphReader, oDocument, oReader );
@@ -998,6 +1105,9 @@ bool PictureReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CS
 		m_oShape.m_oPicture->eDataType = RtfPicture::dt_png;
 	else if( _T("jpegblip") == sCommand )
 		m_oShape.m_oPicture->eDataType = RtfPicture::dt_jpg;
+	else if( _T("macpict") == sCommand )
+		m_oShape.m_oPicture->eDataType = RtfPicture::dt_macpict;
+
 	else if( _T("wmetafile") == sCommand )
 	{
 		if( true == hasParameter && 8 == parameter )
@@ -1878,6 +1988,14 @@ bool ParagraphPropDestination::ExecuteCommand(RtfDocument& oDocument, RtfReader&
 		if( true == oNewShape->IsValid() )
 			m_oCurParagraph->AddItem( oNewShape );
 	}
+	else if( _T("do") == sCommand )
+	{
+		RtfShapePtr oNewShape( new RtfShape() );
+		OldShapeReader oShapeReader( *oNewShape );
+		oAbstrReader.StartSubReader( oShapeReader, oDocument, oReader );
+		if( true == oNewShape->IsValid() )
+			m_oCurParagraph->AddItem( oNewShape );
+	}
 	else if( _T("shppict") == sCommand )
 	{
 		RtfShapePtr oNewShape( new RtfShape() );
@@ -1889,15 +2007,17 @@ bool ParagraphPropDestination::ExecuteCommand(RtfDocument& oDocument, RtfReader&
 	else if( _T("pict") == sCommand )
 	{
 		RtfShapePtr oNewShape( new RtfShape() );
-		oNewShape->m_nShapeType = 75;
-		oNewShape->m_nWrapType = 3; // none
+		oNewShape->m_nShapeType			= NSOfficeDrawing::sptPictureFrame;
+		oNewShape->m_nWrapType			= 3; // none
 		oNewShape->m_nPositionHRelative = 3;//TCHAR
 		oNewShape->m_nPositionVRelative = 3;//line
-		oNewShape->m_nPositionH = 0;//absolute
-		oNewShape->m_nPositionV = 0;//absolute
+		oNewShape->m_nPositionH			= 0;//absolute
+		oNewShape->m_nPositionV			= 0;//absolute
+
 		oNewShape->m_oPicture = RtfPicturePtr( new RtfPicture() );
 		PictureReader oPictureReader( oReader, *oNewShape);
 		oAbstrReader.StartSubReader( oPictureReader, oDocument, oReader );
+
 		if( true == oNewShape->IsValid() )
 			m_oCurParagraph->AddItem( oNewShape );
 	}
@@ -2322,202 +2442,178 @@ void ParagraphPropDestination::Finalize( RtfReader& oReader/*, RtfSectionPtr pSe
 	{
 	}
 
-	if( _T("shapeType") == m_sPropName )
-		m_oShape.m_nShapeType = nValue;
+	if( _T("shapeType")					== m_sPropName ) m_oShape.m_nShapeType			= nValue;
 //Position absolute
-	else if( _T("posh") == m_sPropName )
-		m_oShape.m_nPositionH = nValue;
-	else if( _T("posrelh") == m_sPropName )
-		m_oShape.m_nPositionHRelative = nValue;
-	else if( _T("posv") == m_sPropName )
-		m_oShape.m_nPositionV = nValue;
-	else if( _T("posrelv") == m_sPropName )
-		m_oShape.m_nPositionVRelative = nValue;
-	else if( _T("fLayoutInCell") == m_sPropName )
-		m_oShape.m_bLayoutInCell = nValue;
-	else if( _T("fAllowOverlap") == m_sPropName )
-		m_oShape.m_bAllowOverlap = nValue;
+	else if( _T("posh")					== m_sPropName ) m_oShape.m_nPositionH			= nValue;
+	else if( _T("posrelh")				== m_sPropName ) m_oShape.m_nPositionHRelative	= nValue;
+	else if( _T("posv")					== m_sPropName ) m_oShape.m_nPositionV			= nValue;
+	else if( _T("posrelv")				== m_sPropName ) m_oShape.m_nPositionVRelative	= nValue;
+	else if( _T("fLayoutInCell")		== m_sPropName ) m_oShape.m_bLayoutInCell		= nValue;
+	else if( _T("fAllowOverlap")		== m_sPropName ) m_oShape.m_bAllowOverlap		= nValue;
 //Position relative
-	else if( _T("pctHorizPos") == m_sPropName )
-		m_oShape.m_nPositionHPct = nValue;
-	else if( _T("pctVertPos") == m_sPropName )
-		m_oShape.m_nPositionVPct = nValue;
-	else if( _T("pctHoriz") == m_sPropName )
-		m_oShape.m_nPctWidth = nValue;
-	else if( _T("pctVert") == m_sPropName )
-		m_oShape.m_nPctHeight = nValue;
-	else if( _T("sizerelh") == m_sPropName )
-		m_oShape.m_nPctWidthRelative = nValue;
-	else if( _T("sizerelv") == m_sPropName )
-		m_oShape.m_nPctHeightRelative = nValue;
-	else if( _T("colStart") == m_sPropName )
-		m_oShape.m_nColStart = nValue;
-	//Rehydration
-	else if( _T("metroBlob") == m_sPropName )
-		m_oShape.m_sMetroBlob = sValue;
-	//Object Type
-	else if( _T("fIsBullet") == m_sPropName )
-		m_oShape.m_bIsBullet = nValue;
-	else if( _T("rotation") == m_sPropName )
-		m_oShape.m_nRotation = nValue;
-	else if( _T("fFlipV") == m_sPropName )
-		m_oShape.m_bFlipV = nValue;
-	else if( _T("fFlipH") == m_sPropName )
-		m_oShape.m_bFlipH = nValue;
-	else if( _T("shapeType") == m_sPropName )
-		m_oShape.m_nShapeType = nValue;
+	else if( _T("pctHorizPos")			== m_sPropName ) m_oShape.m_nPositionHPct		= nValue;
+	else if( _T("pctVertPos")			== m_sPropName ) m_oShape.m_nPositionVPct		= nValue;
+	else if( _T("pctHoriz")				== m_sPropName ) m_oShape.m_nPctWidth			= nValue;
+	else if( _T("pctVert")				== m_sPropName ) m_oShape.m_nPctHeight			= nValue;
+	else if( _T("sizerelh")				== m_sPropName ) m_oShape.m_nPctWidthRelative	= nValue;
+	else if( _T("sizerelv")				== m_sPropName ) m_oShape.m_nPctHeightRelative	= nValue;
+	else if( _T("colStart")				== m_sPropName ) m_oShape.m_nColStart			= nValue;
+//Rehydration
+	else if( _T("metroBlob")			== m_sPropName ) m_oShape.m_sMetroBlob			= sValue;
+//Object Type
+	else if( _T("fIsBullet")			== m_sPropName ) m_oShape.m_bIsBullet			= nValue;
+	else if( _T("rotation")				== m_sPropName ) m_oShape.m_nRotation			= nValue;
+	else if( _T("fFlipV")				== m_sPropName ) m_oShape.m_bFlipV				= nValue;
+	else if( _T("fFlipH")				== m_sPropName ) m_oShape.m_bFlipH				= nValue;
+	else if( _T("shapeType")			== m_sPropName ) m_oShape.m_nShapeType			= nValue;
+//custom
+	else if( _T("shapePath")			== m_sPropName ) m_oShape.m_nShapePath			= nValue;
 	else if( _T("pWrapPolygonVertices") == m_sPropName )
 	{
-		CString sWrapPair;
-		int nPosition = 0;
-		int nCount=0;
-		while(true)
+		std::wstring sValue_(sValue.GetBuffer());
+		std::vector< std::wstring > splitted;
+	    
+		boost::algorithm::split(splitted, sValue_, boost::algorithm::is_any_of(L";"), boost::algorithm::token_compress_on);
+		
+		for (int i = 2 ; i < splitted.size(); i++)
 		{
-			sWrapPair = sValue.Tokenize(_T(";"),nPosition);
-			if( _T("") == sWrapPair )
-				break;
-			nCount++;
-			if( nCount > 2 )
-			{
-				int nSubPos = 0;
-				CString sWrapPoint = sWrapPair.Tokenize( _T(","), nSubPos);
-				sWrapPoint.Remove('(');
-				int nWrapPoint = Strings::ToInteger(sWrapPoint);
-				m_oShape.m_aWrapPoints.push_back( nWrapPoint );
-				sWrapPoint = sWrapPair.Tokenize( _T(","), nSubPos);
-				sWrapPoint.Remove(')');
-                 try
-                {
-                    nWrapPoint = Strings::ToInteger(sWrapPoint);
-                    //(-90,-() - file_1_(1).rtf
-                }
-                catch(...)
-                {
-                    nWrapPoint = 0;
-                }
+			boost::algorithm::replace_all(splitted[i], L")", L"");
+			boost::algorithm::replace_all(splitted[i], L"(", L"");
+			int pos = splitted[i].find(L",");
 
-				m_oShape.m_aWrapPoints.push_back( nWrapPoint );
-			}
+            int x = 0, y = 0;
+            try
+            {
+                x = _wtoi(splitted[i].substr(0, pos).c_str());
+            }
+            catch(...){}
+            try
+            {
+                y = _wtoi(splitted[i].substr(pos + 1, splitted[i].length() - 1).c_str());
+            }
+            catch(...){}
+
+			m_oShape.m_aWrapPoints.push_back( std::pair<int, int>(x, y) );
 		}
-
 	}
-	else if( _T("dxWrapDistLeft") == m_sPropName )
-		m_oShape.m_nWrapDistLeft =  RtfUtility::Emu2Twips( nValue );
-	else if( _T("dyWrapDistTop") == m_sPropName )
-		m_oShape.m_nWrapDistTop = RtfUtility::Emu2Twips( nValue );
-	else if( _T("dxWrapDistRight") == m_sPropName )
-		m_oShape.m_nWrapDistRight = RtfUtility::Emu2Twips( nValue );
-	else if( _T("dyWrapDistBottom") == m_sPropName )
-		m_oShape.m_nWrapDistBottom = RtfUtility::Emu2Twips( nValue );
-	else if( _T("fBehindDocument") == m_sPropName )
-		m_oShape.m_nZOrderRelative = nValue;
-	else if( _T("fHidden") == m_sPropName )
-		m_oShape.m_bHidden = nValue;
+	else if( _T("pVerticies")		== m_sPropName )
+	{
+		std::wstring sValue_(sValue.GetBuffer());
+		std::vector< std::wstring > splitted;
+	    
+		boost::algorithm::split(splitted, sValue_, boost::algorithm::is_any_of(L";"), boost::algorithm::token_compress_on);
+		
+		for (int i = 2 ; i < splitted.size(); i++)
+		{
+			boost::algorithm::replace_all(splitted[i], L")", L"");
+			boost::algorithm::replace_all(splitted[i], L"(", L"");
+			int pos = splitted[i].find(L",");
+
+            int x = 0, y = 0;
+            try
+            {
+                x = _wtoi(splitted[i].substr(0, pos).c_str());
+            }
+            catch(...){}
+            try
+            {
+                y = _wtoi(splitted[i].substr(pos + 1, splitted[i].length() - 1).c_str());
+            }
+            catch(...){}
+
+			m_oShape.m_aPVerticles.push_back( std::pair<int, int>(x, y) );
+		}
+	}	
+	else if( _T("pSegmentInfo") == m_sPropName )
+	{
+		std::wstring sValue_(sValue.GetBuffer());
+		std::vector< std::wstring > splitted;
+	    
+		boost::algorithm::split(splitted, sValue_, boost::algorithm::is_any_of(L";"), boost::algorithm::token_compress_on);
+		
+		for (int i = 2 ; i < splitted.size(); i++)
+		{
+            int val = 0;
+            try
+            {
+                val = _wtoi(splitted[i].c_str());
+            }catch(...){}
+
+			m_oShape.m_aPSegmentInfo.push_back( val );
+		}
+	}	
+	else if( _T("geoBottom")		== m_sPropName ) m_oShape.m_nGeoBottom		= nValue;
+	else if( _T("geoLeft")			== m_sPropName ) m_oShape.m_nGeoLeft		= nValue;
+	else if( _T("geoRight")			== m_sPropName ) m_oShape.m_nGeoRight		= nValue;
+	else if( _T("geoTop")			== m_sPropName ) m_oShape.m_nGeoTop			= nValue;
+//
+	else if( _T("dxWrapDistLeft")	== m_sPropName ) m_oShape.m_nWrapDistLeft	= RtfUtility::Emu2Twips( nValue );
+	else if( _T("dyWrapDistTop")	== m_sPropName ) m_oShape.m_nWrapDistTop	= RtfUtility::Emu2Twips( nValue );
+	else if( _T("dxWrapDistRight")	== m_sPropName ) m_oShape.m_nWrapDistRight	= RtfUtility::Emu2Twips( nValue );
+	else if( _T("dyWrapDistBottom") == m_sPropName ) m_oShape.m_nWrapDistBottom = RtfUtility::Emu2Twips( nValue );
+	else if( _T("fBehindDocument")	== m_sPropName ) m_oShape.m_nZOrderRelative = nValue;
+	else if( _T("fHidden")			== m_sPropName ) m_oShape.m_bHidden			= nValue;
 //Text box
-	else if( _T("dxTextLeft") == m_sPropName )
-		m_oShape.m_nTexpLeft = nValue;
-	else if( _T("dyTextTop") == m_sPropName )
-		m_oShape.m_nTexpTop = nValue;
-	else if( _T("dxTextRight") == m_sPropName )
-		m_oShape.m_nTexpRight = nValue;
-	else if( _T("dyTextBottom") == m_sPropName )
-		m_oShape.m_nTexpBottom = nValue;
-	else if( _T("anchorText") == m_sPropName )
-		m_oShape.m_nAnchorText = nValue;
+	else if( _T("dxTextLeft")		== m_sPropName ) m_oShape.m_nTexpLeft		= nValue;
+	else if( _T("dyTextTop")		== m_sPropName ) m_oShape.m_nTexpTop		= nValue;
+	else if( _T("dxTextRight")		== m_sPropName ) m_oShape.m_nTexpRight		= nValue;
+	else if( _T("dyTextBottom")		== m_sPropName ) m_oShape.m_nTexpBottom		= nValue;
+	else if( _T("anchorText")		== m_sPropName ) m_oShape.m_nAnchorText		= nValue;
 
 //Geometry
-	else if( _T("adjustValue") == m_sPropName )
-		m_oShape.m_nAdjustValue = nValue;
-	else if( _T("adjust2Value") == m_sPropName )
-		m_oShape.m_nAdjustValue2 = nValue;
-	else if( _T("adjust3Value") == m_sPropName )
-		m_oShape.m_nAdjustValue3 = nValue;
-	else if( _T("adjust4Value") == m_sPropName )
-		m_oShape.m_nAdjustValue4 = nValue;
-	else if( _T("adjust5Value") == m_sPropName )
-		m_oShape.m_nAdjustValue5 = nValue;
-	else if( _T("adjust6Value") == m_sPropName )
-		m_oShape.m_nAdjustValue6 = nValue;
-	else if( _T("adjust7Value") == m_sPropName )
-		m_oShape.m_nAdjustValue7 = nValue;
-	else if( _T("adjust8Value") == m_sPropName )
-		m_oShape.m_nAdjustValue8 = nValue;
-	else if( _T("adjust9Value") == m_sPropName )
-		m_oShape.m_nAdjustValue9 = nValue;
-	else if( _T("adjust10Value") == m_sPropName )
-		m_oShape.m_nAdjustValue10 = nValue;
+	else if( _T("adjustValue")		== m_sPropName ) m_oShape.m_nAdjustValue[0]	= nValue;
+	else if( _T("adjust2Value")		== m_sPropName ) m_oShape.m_nAdjustValue[1]	= nValue;
+	else if( _T("adjust3Value")		== m_sPropName ) m_oShape.m_nAdjustValue[2]	= nValue;
+	else if( _T("adjust4Value")		== m_sPropName ) m_oShape.m_nAdjustValue[3]	= nValue;
+	else if( _T("adjust5Value")		== m_sPropName ) m_oShape.m_nAdjustValue[4]	= nValue;
+	else if( _T("adjust6Value")		== m_sPropName ) m_oShape.m_nAdjustValue[5]	= nValue;
+	else if( _T("adjust7Value")		== m_sPropName ) m_oShape.m_nAdjustValue[6]	= nValue;
+	else if( _T("adjust8Value")		== m_sPropName ) m_oShape.m_nAdjustValue[7]	= nValue;
+	else if( _T("adjust9Value")		== m_sPropName ) m_oShape.m_nAdjustValue[8]	= nValue;
+	else if( _T("adjust10Value")	== m_sPropName ) m_oShape.m_nAdjustValue[9]	= nValue;
 //WordArt Effects
-	else if( _T("cropFromTop") == m_sPropName )
-		m_oShape.m_nCropFromTop = nValue;
-	else if( _T("cropFromBottom") == m_sPropName )
-		m_oShape.m_nCropFromBottom = nValue;
-	else if( _T("cropFromLeft") == m_sPropName )
-		m_oShape.m_nCropFromRight = nValue;
-	else if( _T("cropFromRight") == m_sPropName )
-		m_oShape.m_nCropFromTop = nValue;
+	else if( _T("cropFromTop")		== m_sPropName ) m_oShape.m_nCropFromTop	= nValue;
+	else if( _T("cropFromBottom")	== m_sPropName ) m_oShape.m_nCropFromBottom = nValue;
+	else if( _T("cropFromLeft")		== m_sPropName ) m_oShape.m_nCropFromRight	= nValue;
+	else if( _T("cropFromRight")	== m_sPropName ) m_oShape.m_nCropFromTop	= nValue;
 //Grouped Shapes
-	else if( _T("groupBottom") == m_sPropName )
-		m_oShape.m_nGroupBottom = nValue;
-	else if( _T("groupLeft") == m_sPropName )
-		m_oShape.m_nGroupLeft = nValue;
-	else if( _T("groupRight") == m_sPropName )
-		m_oShape.m_nGroupRight = nValue;
-	else if( _T("groupTop") == m_sPropName )
-		m_oShape.m_nGroupTop = nValue;
-	else if( _T("relBottom") == m_sPropName )
-		m_oShape.m_nRelBottom = nValue;
-	else if( _T("relLeft") == m_sPropName )
-		m_oShape.m_nRelLeft = nValue;
-	else if( _T("relRight") == m_sPropName )
-		m_oShape.m_nRelRight = nValue;
-	else if( _T("relTop") == m_sPropName )
-		m_oShape.m_nRelTop = nValue;
-	else if( _T("relRotation") == m_sPropName )
-		m_oShape.m_nRelRotation = nValue;
-	else if( _T("dhgt") == m_sPropName )
-		m_oShape.m_nRelZOrder = nValue;
-//Fill
-	else if( _T("fFilled") == m_sPropName )
-		m_oShape.m_bFilled = (0 == nValue ? false : true );
-	else if( _T("fillType") == m_sPropName )
-		m_oShape.m_nFillType = nValue;
-	else if( _T("fillColor") == m_sPropName )
-		m_oShape.m_nFillColor = nValue;
-	else if( _T("fillBackColor") == m_sPropName )
-		m_oShape.m_nFillColor2 = nValue;
-	else if( _T("fillOpacity") == m_sPropName )
-		m_oShape.m_nFillOpacity = nValue * 100 / 65536;
-	else if( _T("fillAngle") == m_sPropName )
-		m_oShape.m_nFillAngle = nValue / 65536;
-	else if( _T("fillFocus") == m_sPropName )
-		m_oShape.m_nFillFocus = nValue;
+	else if( _T("groupBottom")		== m_sPropName ) m_oShape.m_nGroupBottom	= nValue;
+	else if( _T("groupLeft")		== m_sPropName ) m_oShape.m_nGroupLeft		= nValue;
+	else if( _T("groupRight")		== m_sPropName ) m_oShape.m_nGroupRight		= nValue;
+	else if( _T("groupTop")			== m_sPropName ) m_oShape.m_nGroupTop		= nValue;
 
-	else if( _T("fGtext") == m_sPropName )
-		m_oShape.m_bGtext = nValue;
-	else if( _T("gtextSize") == m_sPropName )
-		m_oShape.m_nGtextSize = nValue;
+	else if( _T("relBottom")		== m_sPropName ) m_oShape.m_nRelBottom		= nValue;
+	else if( _T("relLeft")			== m_sPropName ) m_oShape.m_nRelLeft		= nValue;
+	else if( _T("relRight")			== m_sPropName ) m_oShape.m_nRelRight		= nValue;
+	else if( _T("relTop")			== m_sPropName ) m_oShape.m_nRelTop			= nValue;
+	else if( _T("relRotation")		== m_sPropName ) m_oShape.m_nRelRotation	= nValue;
+
+	else if( _T("dhgt")				== m_sPropName ) m_oShape.m_nRelZOrder		= nValue;
+//Fill
+	else if( _T("fFilled")			== m_sPropName ) m_oShape.m_bFilled			= (0 == nValue ? false : true );
+	else if( _T("fillType")			== m_sPropName ) m_oShape.m_nFillType		= nValue;
+	else if( _T("fillColor")		== m_sPropName ) m_oShape.m_nFillColor		= nValue;
+	else if( _T("fillBackColor")	== m_sPropName ) m_oShape.m_nFillColor2		= nValue;
+	else if( _T("fillOpacity")		== m_sPropName ) m_oShape.m_nFillOpacity	= nValue * 100 / 65536;
+	else if( _T("fillAngle")		== m_sPropName ) m_oShape.m_nFillAngle		= nValue / 65536;
+	else if( _T("fillFocus")		== m_sPropName ) m_oShape.m_nFillFocus		= nValue;
+
+	else if( _T("fGtext")			== m_sPropName ) m_oShape.m_bGtext			= nValue;
+	else if( _T("gtextSize")		== m_sPropName ) m_oShape.m_nGtextSize		= nValue;
 
 //Line
-	else if( _T("fLine") == m_sPropName )
-		m_oShape.m_bLine = ( 0 == nValue ? false : true );
-	else if( _T("lineStartArrowhead") == m_sPropName )
-		m_oShape.m_nLineStartArrow = nValue;
-	else if( _T("lineColor") == m_sPropName )
-		m_oShape.m_nLineColor = nValue;
-	else if( _T("lineStartArrowWidth") == m_sPropName )
-		m_oShape.m_nLineStartArrowWidth = nValue;
-	else if( _T("lineStartArrowLength") == m_sPropName )
-		m_oShape.m_nLineStartArrowLength = nValue;
-	else if( _T("lineEndArrowhead") == m_sPropName )
-		m_oShape.m_nLineEndArrow = nValue;
-	else if( _T("lineEndArrowWidth") == m_sPropName )
-		m_oShape.m_nLineEndArrowWidth = nValue;
-	else if( _T("lineEndArrowLength") == m_sPropName )
-		m_oShape.m_nLineEndArrowLength = nValue;
-	else if( _T("lineWidth") == m_sPropName )
-		m_oShape.m_nLineWidth = nValue;
-	else if( _T("lineDashing") == m_sPropName )
-		m_oShape.m_nLineDashing = nValue;
+	else if( _T("fLine")				== m_sPropName ) m_oShape.m_bLine					= ( 0 == nValue ? false : true );
+	else if( _T("lineStartArrowhead")	== m_sPropName ) m_oShape.m_nLineStartArrow			= nValue;
+	else if( _T("lineColor")			== m_sPropName ) m_oShape.m_nLineColor				= nValue;
+	else if( _T("lineStartArrowWidth")	== m_sPropName ) m_oShape.m_nLineStartArrowWidth	= nValue;
+	else if( _T("lineStartArrowLength") == m_sPropName ) m_oShape.m_nLineStartArrowLength	= nValue;
+	else if( _T("lineEndArrowhead")		== m_sPropName ) m_oShape.m_nLineEndArrow			= nValue;
+	else if( _T("lineEndArrowWidth")	== m_sPropName ) m_oShape.m_nLineEndArrowWidth		= nValue;
+	else if( _T("lineEndArrowLength")	== m_sPropName ) m_oShape.m_nLineEndArrowLength		= nValue;
+	else if( _T("lineWidth")			== m_sPropName ) m_oShape.m_nLineWidth				= nValue;
+	else if( _T("lineDashing")			== m_sPropName ) m_oShape.m_nLineDashing			= nValue;
+	else if (_T("cxstyle")				== m_sPropName ) m_oShape.m_nConnectorStyle			= nValue;
+	else if (_T("cxk")					== m_sPropName ) m_oShape.m_nConnectionType			= nValue;
 	else
 	{
 		std::wstring name	= m_sPropName.GetBuffer();

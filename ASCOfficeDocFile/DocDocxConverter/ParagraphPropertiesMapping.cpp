@@ -35,7 +35,7 @@
 
 namespace DocFileFormat
 {
-	ParagraphPropertiesMapping::ParagraphPropertiesMapping(XmlUtils::CXmlWriter* writer, ConversionContext* context, WordDocument* document, CharacterPropertyExceptions* paraEndChpx, bool isBidi, bool isParagraphStyleNeeded)
+	ParagraphPropertiesMapping::ParagraphPropertiesMapping(XMLTools::CStringXmlWriter* writer, ConversionContext* context, WordDocument* document, CharacterPropertyExceptions* paraEndChpx, bool isBidi, bool isParagraphStyleNeeded)
 		: PropertiesMapping( writer ), m_context(NULL), _pPr(NULL), _framePr(NULL), _sepx(NULL), _paraEndChpx(NULL), _sectionNr(0),
 		m_document(NULL), _isParagraphStyleNeeded(isParagraphStyleNeeded)
 	{
@@ -50,7 +50,7 @@ namespace DocFileFormat
 		_isSectionPageBreak	= 0;
 	}
 
-	ParagraphPropertiesMapping::ParagraphPropertiesMapping( XmlUtils::CXmlWriter* writer, ConversionContext* context, WordDocument* document, CharacterPropertyExceptions* paraEndChpx, bool isBidi, SectionPropertyExceptions* sepx, int sectionNr, bool isParagraphStyleNeeded )
+	ParagraphPropertiesMapping::ParagraphPropertiesMapping( XMLTools::CStringXmlWriter* writer, ConversionContext* context, WordDocument* document, CharacterPropertyExceptions* paraEndChpx, bool isBidi, SectionPropertyExceptions* sepx, int sectionNr, bool isParagraphStyleNeeded )
 		: PropertiesMapping( writer ), m_context(NULL), _pPr(NULL), _framePr(NULL), _sepx(NULL), _paraEndChpx(NULL), _sectionNr(0), 
 		m_document(NULL), _isParagraphStyleNeeded(isParagraphStyleNeeded)
 	{
@@ -159,8 +159,9 @@ namespace DocFileFormat
 
 				case sprmPFBiDi:
 				{
-					appendFlagElement( _pPr, *iter, _T( "bidi" ), true );
-					_isBidi = true;
+					bool val = iter->argumentsSize > 0 ? iter->Arguments[0] : true;
+					appendFlagElement( _pPr, *iter, _T( "bidi" ), val);
+					_isBidi = val;
 				}break;			
 
 				case sprmPFContextualSpacing:

@@ -3270,9 +3270,10 @@ namespace SimpleTypes
 		};
 		enum ECssUnitsType
 		{
-			cssunitstypeAuto  = 0,
-			cssunitstypeUnits = 1,
-			cssunitstypePerc  = 2,
+			cssunitstypeAuto		= 0,
+			cssunitstypeUnits		= 1,
+			cssunitstypePerc		= 2,
+			cssunitstypeAbsolute	= 3
 		};
 		struct TCssUnitsValue
 		{
@@ -3823,10 +3824,15 @@ namespace SimpleTypes
 				}
 				else
 				{
-					m_oValue.oValue.eType = cssunitstypeUnits;
-
-                    CString strValue = sValue.Mid( 0, nPos );
-                    m_oValue.oValue.dValue = strValue.IsEmpty() ? 0 : _wtof(strValue );
+					m_oValue.oValue.eType = cssunitstypeAbsolute;
+					try
+					{
+						m_oValue.oValue.dValue = sValue.IsEmpty() ? 0 : _wtof(sValue );
+					}
+					catch(...)
+					{
+						m_oValue.oValue.dValue = 0;
+					}
                 }
 			}
 

@@ -241,7 +241,8 @@ public:
 		CString sResult;
 		for( int i = 0; i < (int)m_aArray.size(); i++ )
 		{
-			sResult.Append( m_aArray[i]->RenderToRtf( oRenderParameter ) );
+			sResult += m_aArray[i]->RenderToRtf( oRenderParameter );
+
 			if( TYPE_RTF_PARAGRAPH == m_aArray[i]->GetType() && i != (int)m_aArray.size() - 1)
 			{
 				sResult += _T("\\par") ;

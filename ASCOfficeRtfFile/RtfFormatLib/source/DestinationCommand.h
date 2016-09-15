@@ -44,6 +44,8 @@
 #include "Writer/OOXWriter.h"
 #include "Writer/OOXRelsWriter.h"
 
+#include "../../../ASCOfficePPTXFile/Editor/Drawing/Enums.h"
+
 #define COMMAND_RTF_BOOL( pattern, target, command, hasParameter, parameter )\
 		else if( pattern == command )\
 		{\
@@ -818,15 +820,15 @@ class PictureReader:  public RtfAbstractReader
 		CString ToString()
 		{
 			CString sResult;
-			sResult.Append( ByteToString( (BYTE*)&Key, 4, true ) );
-			sResult.Append( ByteToString( (BYTE*)&Handle, 2, true ) );
-			sResult.Append( ByteToString( (BYTE*)&Left, 2, true ) );
-			sResult.Append( ByteToString( (BYTE*)&Top, 2, true ) );
-			sResult.Append( ByteToString( (BYTE*)&Right, 2, true ) );
-			sResult.Append( ByteToString( (BYTE*)&Bottom, 2, true ) );
-			sResult.Append( ByteToString( (BYTE*)&Inch, 2, true ) );
-			sResult.Append( ByteToString( (BYTE*)&Reserved, 4, true ) );
-			sResult.Append( ByteToString( (BYTE*)&Checksum, 2, true ) );
+			sResult += ByteToString( (BYTE*)&Key, 4, true );
+			sResult += ByteToString( (BYTE*)&Handle, 2, true );
+			sResult += ByteToString( (BYTE*)&Left, 2, true );
+			sResult += ByteToString( (BYTE*)&Top, 2, true );
+			sResult += ByteToString( (BYTE*)&Right, 2, true );
+			sResult += ByteToString( (BYTE*)&Bottom, 2, true );
+			sResult += ByteToString( (BYTE*)&Inch, 2, true );
+			sResult += ByteToString( (BYTE*)&Reserved, 4, true );
+			sResult += ByteToString( (BYTE*)&Checksum, 2, true );
 			return sResult;
 		}
 			CString ByteToString( BYTE* pbData, int nSize, bool bLittleEnd = true )
@@ -943,14 +945,16 @@ public:
 
 class ShapeReader : public RtfAbstractReader
 {
+public:
 	class ShapePropertyReader : public RtfAbstractReader
 	{
+	public:
 		class ShapePropertyValueReader : public RtfAbstractReader
 		{
 			CString& m_sPropName;
-			CString m_sPropValue;
 			RtfShape& m_oShape;
 		public: 
+			CString m_sPropValue;
 			ShapePropertyValueReader(CString& sPropName, RtfShape& oShape):m_sPropName(sPropName),m_oShape(oShape)
 			{
 			}
@@ -971,7 +975,7 @@ class ShapeReader : public RtfAbstractReader
 			{
 				CString sValue;
 				sValue = oText;
-				m_sPropValue.Append( sValue );
+				m_sPropValue += sValue;
 			}
 		};
 		private:
@@ -1112,6 +1116,85 @@ public:
 		return true;
 	}
 };
+class OldShapeReader : public RtfAbstractReader
+{
+private: 
+	RtfShape& m_oShape;
+public: 
+	OldShapeReader( RtfShape& oShape ):m_oShape(oShape)
+	{
+	}
+	bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CString sCommand, bool hasParameter, int parameter);
+	void ExitReader( RtfDocument& oDocument, RtfReader& oReader )
+	{
+		//если задан поворот, то надо повернуть и исходный rect, если угол от 45 до 135 и от 225 до 315
+		if( (PROP_DEF != m_oShape.m_nRotation || PROP_DEF != m_oShape.m_nRelRotation) && 
+				 (( PROP_DEF != m_oShape.m_nLeft && PROP_DEF != m_oShape.m_nTop &&
+				PROP_DEF != m_oShape.m_nBottom && PROP_DEF != m_oShape.m_nRight ) ||
+				( PROP_DEF != m_oShape.m_nRelLeft && PROP_DEF != m_oShape.m_nRelTop &&
+				PROP_DEF != m_oShape.m_nRelRight && PROP_DEF != m_oShape.m_nRelBottom ) )
+				)
+		{
+			int nAngel = 0; // в градусах
+			if( PROP_DEF != m_oShape.m_nRotation )
+				nAngel = m_oShape.m_nRotation / 65536;
+			else
+				nAngel = m_oShape.m_nRelRotation / 65536;
+			int nSourceAngel = nAngel; // в градусах
+			bool bRel = false;
+			int nLeft;
+			int nRight;
+			int nTop;
+			int nBottom;
+			if( PROP_DEF != m_oShape.m_nLeft )
+			{
+				nLeft = m_oShape.m_nLeft;
+				nRight = m_oShape.m_nRight;
+				nTop = m_oShape.m_nTop;
+				nBottom = m_oShape.m_nBottom;
+			}
+			else
+			{
+				bRel = true;
+				nLeft = m_oShape.m_nRelLeft;
+				nRight = m_oShape.m_nRelRight;
+				nTop = m_oShape.m_nRelTop;
+				nBottom = m_oShape.m_nRelBottom;
+			}
+			//поворачиваем на 45 градусов
+			nAngel -= 45;
+			//делаем угол от 0 до 360
+			nAngel = nAngel % 360;
+			if( nAngel < 0 )
+				nAngel += 360;
+			int nQuater = nAngel / 90; // определяем четверть
+			if( 0 == nQuater || 2 == nQuater )
+			{
+				//поворачиваем относительно центра на 90 градусов обратно
+				int nCenterX = ( nLeft + nRight ) / 2;
+				int nCenterY = ( nTop + nBottom ) / 2;
+				int nWidth = nRight - nLeft;
+				int nHeight = nBottom - nTop;
+				if( true == bRel )
+				{
+					m_oShape.m_nRelLeft = nCenterX - nHeight / 2;
+					m_oShape.m_nRelRight = nCenterX + nHeight / 2;
+					m_oShape.m_nRelTop = nCenterY - nWidth / 2;
+					m_oShape.m_nRelBottom = nCenterY + nWidth / 2;
+				}
+				else
+				{
+					m_oShape.m_nLeft = nCenterX - nHeight / 2;
+					m_oShape.m_nRight = nCenterX + nHeight / 2;
+					m_oShape.m_nTop = nCenterY - nWidth / 2;
+					m_oShape.m_nBottom = nCenterY + nWidth / 2;
+				}
+			}
+
+		}
+	}
+};
+
 class ShppictReader : public RtfAbstractReader
 {
 private: 
@@ -1126,13 +1209,14 @@ public:
 			return true;
 		else if( _T("pict") == sCommand )
 		{
-			m_oShape.m_eShapeType = RtfShape::st_inline;
-			m_oShape.m_nShapeType = 75;
-			m_oShape.m_nWrapType = 3; // none
-			m_oShape.m_nPositionHRelative = 3;//TCHAR
-			m_oShape.m_nPositionVRelative = 3;//line
-			m_oShape.m_nPositionH = 0;//absolute
-			m_oShape.m_nPositionV = 0;//absolute
+			m_oShape.m_eAnchorTypeShape		= RtfShape::st_inline;
+			m_oShape.m_nShapeType			= NSOfficeDrawing::sptPictureFrame;
+			m_oShape.m_nWrapType			= 3; // none
+			m_oShape.m_nPositionHRelative	= 3;//TCHAR
+			m_oShape.m_nPositionVRelative	= 3;//line
+			m_oShape.m_nPositionH			= 0;//absolute
+			m_oShape.m_nPositionV			= 0;//absolute
+
 			m_oShape.m_oPicture = RtfPicturePtr( new RtfPicture() );
 			PictureReader oPictureReader( oReader, m_oShape);
 			StartSubReader( oPictureReader, oDocument, oReader );
@@ -1165,14 +1249,15 @@ public:
 		}
 		else if( _T("pict") == sCommand )
 		{
-			m_oShape.m_eShapeType = RtfShape::st_inline;
-			m_oShape.m_nShapeType = 75;
-			m_oShape.m_nWrapType = 3; // none
-			m_oShape.m_nPositionHRelative = 3;//TCHAR
-			m_oShape.m_nPositionVRelative = 3;//line
-			m_oShape.m_nPositionH = 0;//absolute
-			m_oShape.m_nPositionV = 0;//absolute
-			m_oShape.m_oPicture = RtfPicturePtr( new RtfPicture() );
+			m_oShape.m_eAnchorTypeShape		= RtfShape::st_inline;
+			m_oShape.m_nShapeType			= NSOfficeDrawing::sptPictureFrame;
+			m_oShape.m_nWrapType			= 3; // none
+			m_oShape.m_nPositionHRelative	= 3;//TCHAR
+			m_oShape.m_nPositionVRelative	= 3;//line
+			m_oShape.m_nPositionH			= 0;//absolute
+			m_oShape.m_nPositionV			= 0;//absolute
+			m_oShape.m_oPicture				= RtfPicturePtr( new RtfPicture() );
+
 			PictureReader oPictureReader( oReader, m_oShape);
 			StartSubReader( oPictureReader, oDocument, oReader );
 		}
@@ -1490,7 +1575,7 @@ public:
 	}
 	void ExecuteText(RtfDocument& oDocument, RtfReader& oReader, CString sText)
 	{
-		m_oBookmarkStart.m_sName.Append( sText );
+		m_oBookmarkStart.m_sName += sText ;
 	}
 };
 
@@ -1503,7 +1588,7 @@ public:
 	}
 	void ExecuteText(RtfDocument& oDocument, RtfReader& oReader, CString sText)
 	{
-		m_oBookmarkEnd.m_sName.Append( sText );
+		m_oBookmarkEnd.m_sName += sText;
 	}
 };
 
@@ -1523,13 +1608,12 @@ private:
 	RtfParagraphPtr m_oCurParagraph;
 
 //реальные параграфы и таблицы
-	std::vector< ITextItemPtr > aCellRenderables;
-	std::vector< int > aItaps; //вложенность параграфов
-	std::vector< RtfTableCellPtr > aCells;
-	std::vector< int > aCellItaps; //вложенность cell
-	std::vector< RtfTableRowPtr > aRows;
-	std::vector< int > aRowItaps; //вложенность row
-	int nCurItap;
+	std::vector< ITextItemPtr >		aCellRenderables;
+	std::vector< int >				aItaps; //вложенность параграфов
+	std::vector< RtfTableCellPtr >	aCells;
+	std::vector< int >				aCellItaps; //вложенность cell
+	std::vector< RtfTableRowPtr >	aRows;
+	std::vector< int >				aRowItaps; //вложенность row
 	RtfRowProperty oCurRowProperty;
 
 	RtfReader* m_oReader;
@@ -1537,16 +1621,17 @@ private:
 public: 
 	TextItemContainerPtr m_oTextItems;	//для разбивки на TextItem
 	int nTargetItap;		//уровень который считается не таблицей ( для того чтобы читать параграфы в таблицах )
+	int nCurItap;
 	RtfTab m_oCurTab;
 
 	ParagraphPropDestination( )
 	{
-		nTargetItap = PROP_DEF;
-		m_bPar = false;
-		m_oTextItems = TextItemContainerPtr( new TextItemContainer() );
-		nCurItap = 0;//main document
-		m_eInternalState = is_normal;
-		m_oCurParagraph = RtfParagraphPtr(new RtfParagraph());
+		nTargetItap			= PROP_DEF;
+		m_bPar				= false;
+		m_oTextItems		= TextItemContainerPtr( new TextItemContainer() );
+		nCurItap			= 0;//main document
+		m_eInternalState	= is_normal;
+		m_oCurParagraph		= RtfParagraphPtr(new RtfParagraph());
 	}
 	bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,RtfAbstractReader& oAbstrReader,CString sCommand, bool hasParameter, int parameter);
 	void ExecuteText(RtfDocument& oDocument, RtfReader& oReader, CString sText)

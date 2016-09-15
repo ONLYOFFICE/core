@@ -246,14 +246,26 @@ public:
 
 		std::vector<std::pair<double, _color>> colorsPosition;
 	}fill;
-
+	struct _arrow
+	{
+		_arrow() { enabled = false; start = end = 0; start_length = end_length = end_width = start_width = 2;}
+		
+		bool	enabled;
+		int		start;
+		int		end;
+		int		start_width;
+		int		end_width;
+		int		start_length;
+		int		end_length;
+	};
 	struct _line
 	{
-		_line() { fill.color.SetRGB(0, 0, 0); width = 0;}
+		_line() { fill.color.SetRGB(0, 0, 0); width = 0; }
 		std::wstring	style;
         int             width;
 		_line_typeDash	typeDash;
 		_fill			fill;
+		_arrow			arrow;
 	}line;	
 //for group
 	std::vector<_drawing_state_ptr>		drawing_states;
@@ -311,13 +323,19 @@ public:
 		void add_fill_colors		(double position, int index, int type);		
 		void set_fill_focus			(int val);
 
-
 		void set_line_color			(int nColor, const std::wstring & color);
 		void set_line_color			(int index, int type);
         void set_line_type			(int val);
         void set_line_style			(int val);
         void set_line_width			(int val);
 		void set_line_dash			(int val);
+		void set_line_arrow			(bool val);
+		void set_arrow_start		(int val);
+		void set_arrow_end			(int val);
+		void set_arrow_start_width	(int val);
+		void set_arrow_end_width	(int val);
+		void set_arrow_start_length	(int val);
+		void set_arrow_end_length	(int val);
 
 		void set_fill_old_version	(_UINT32 val);
 		void set_line_old_version	(_UINT32 val);
@@ -330,7 +348,6 @@ public:
 
         void set_properties			(const std::wstring & str);
         void set_hyperlink			(const std::wstring & link, const std::wstring & display, bool is_external);
-
 
 		void set_text				(const std::wstring & text);
 		void set_text_wrap			(int val);
@@ -400,6 +417,8 @@ private:
 	void serialize_anchor		(std::wostream & stream, _drawing_state_ptr & drawing_state);
 	void serialize_text			(std::wostream & stream, _drawing_state_ptr & drawing_state);
 	void serialize_color		(std::wostream & stream, const _color &color, double opacity = 0);
+
+	void serialize_arrow		(std::wostream & stream, std::wstring name, int type, int width, int length);
 
 	bool ChangeBlack2ColorImage(std::wstring sRgbColor1, std::wstring sRgbColor2, _drawing_state_ptr & drawing_state);
 	_color CorrectSysColor(int nColorCode, _drawing_state_ptr & drawing_state);

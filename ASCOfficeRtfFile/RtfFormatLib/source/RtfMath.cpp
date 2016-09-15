@@ -90,15 +90,10 @@ CString RtfMath::RenderToRtf(RenderParameter oRenderParameter)
 
 	CString sResult;
 	if( RENDER_TO_RTF_PARAM_NESTED != oRenderParameter.nType )
-		sResult.Append(_T("{\\mmath"));
+		sResult += _T("{\\mmath");
 
-    sResult.AppendFormat(_T("{\\%ls"), m_sRtfName.GetBuffer());
+    sResult += _T("{\\") + m_sRtfName;
 	RenderParameter oNewParameter = oRenderParameter;
-
-	if (m_sRtfName == L"mctrlPr")
-	{
-		m_bIsVal = m_bIsVal;
-	}
 
 	CString sVal;
 
@@ -106,15 +101,13 @@ CString RtfMath::RenderToRtf(RenderParameter oRenderParameter)
 	{
 		oNewParameter.nType = RENDER_TO_RTF_PARAM_CHAR;
 		sVal = m_oVal.RenderToRtf( oNewParameter ) ;
-		if (!sVal.IsEmpty())
-			sVal = _T(" ") + sVal;
 	}
 	else
 	{
 		oNewParameter.nType = RENDER_TO_RTF_PARAM_UNKNOWN;
 		for( int i = 0; i < m_oVal.GetCount(); i++ )
 		{
-			sVal.Append( _T(" ") + m_oVal[i]->RenderToRtf( oNewParameter ) );
+			sVal += _T(" ") + m_oVal[i]->RenderToRtf( oNewParameter );
 		}
 	}
 	if (!sVal.IsEmpty())
@@ -125,12 +118,12 @@ CString RtfMath::RenderToRtf(RenderParameter oRenderParameter)
 	{
 		oNewParameter.nType = RENDER_TO_RTF_PARAM_NESTED;
 		for( int i = 0; i < (int)m_aArray.size(); i++ )
-			sResult.Append(m_aArray[i]->RenderToRtf( oNewParameter ));
+			sResult += m_aArray[i]->RenderToRtf( oNewParameter );
 	}
-	sResult.Append(_T("}"));
+	sResult += _T("}");
 
 	if( RENDER_TO_RTF_PARAM_NESTED != oRenderParameter.nType )
-        sResult.AppendFormat(_T("}"), m_sRtfName.GetBuffer());
+        sResult += _T("}");// m_sRtfName
 	return sResult;
 }
 CString RtfMath::RenderToOOX(RenderParameter oRenderParameter)
@@ -167,7 +160,7 @@ CString RtfMath::RenderToOOX(RenderParameter oRenderParameter)
 		}
 	}
 
-	sResult.Append( _T("<") );
+	sResult += _T("<");
 	sResult += m_sOOXName;
 
 	if( false == sVal.IsEmpty() )
@@ -177,23 +170,23 @@ CString RtfMath::RenderToOOX(RenderParameter oRenderParameter)
 			if (sVal == L"on")	sVal = L"1";
 			else				sVal = L"0";
 		}
-		sResult.Append( _T(" m:val=\"") );
+		sResult += _T(" m:val=\"");
 		sResult += sVal;
-		sResult.Append( _T("\"") );
+		sResult += _T("\"");
 	}
-	sResult.Append( _T(">") );
+	sResult += _T(">");
 
 	sResult += sProp;
 
 	sResult += sContent;
 
-	sResult.Append(_T("</") );
+	sResult += _T("</");
 		sResult += m_sOOXName;
-	sResult.Append(_T(">"));
+	sResult += _T(">");
 
 //альтернативная картинка
 //	if( NULL != m_oPicture )
-//		sResult.Append( m_oPicture->RenderToOOX(oRenderParameter) );
+//		sResult += m_oPicture->RenderToOOX(oRenderParameter);
 
 	return sResult;
 }

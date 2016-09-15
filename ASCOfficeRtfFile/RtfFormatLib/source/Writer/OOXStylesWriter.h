@@ -48,7 +48,7 @@ public:
 	}
 	void AddContent( CString sText )
 	{
-		m_sFileXml.Append( sText );
+		m_sFileXml += sText;
 	}
 	bool Save( CString sFolder )
 	{

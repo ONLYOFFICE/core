@@ -36,7 +36,7 @@ CString RtfOldList::RenderToRtf(RenderParameter oRenderParameter)
 {
 	CString sResult;
 	if( NULL != m_oText )
-		sResult.Append( m_oText->RenderToRtf( oRenderParameter ) );
+		sResult += m_oText->RenderToRtf( oRenderParameter );
 	return sResult;
 }
 CString RtfOldList::RenderToOOX(RenderParameter oRenderParameter)
@@ -46,45 +46,50 @@ CString RtfOldList::RenderToOOX(RenderParameter oRenderParameter)
 	{//сохраняем как список
 		if( RENDER_TO_OOX_PARAM_OLDLIST_ABS == oRenderParameter.nType )
 		{
-			CString sCharProp = m_oLevelText->m_oProperty.m_oCharProperty.RenderToOOX( oRenderParameter );
-			CString sParProp = m_oLevelText->m_oProperty.RenderToOOX( oRenderParameter );
+			CString sCharProp	= m_oLevelText->m_oProperty.m_oCharProperty.RenderToOOX( oRenderParameter );
+			CString sParProp	= m_oLevelText->m_oProperty.RenderToOOX( oRenderParameter );
 
 			RenderParameter oNewParameter = oRenderParameter;
 			oNewParameter.nType = RENDER_TO_OOX_PARAM_PLAIN;
 			CString sText = m_oLevelText->RenderToOOX( oNewParameter );
 
 			sResult.AppendFormat( _T("<w:abstractNum w:abstractNumId=\"%d\">"), m_nLs );
-			sResult.Append(_T("<w:multiLevelType w:val=\"singleLevel\" />"));
-			sResult.Append(_T("<w:lvl w:ilvl=\"0\">"));
-			sResult.Append(_T("<w:numFmt w:val=\"bullet\"/>"));
-			if( false == sText.IsEmpty() )
-                sResult.AppendFormat(_T("<w:lvlText w:val=\"%ls\"/>"), Utils::PrepareToXML( sText ).GetBuffer() );
+			sResult += _T("<w:multiLevelType w:val=\"singleLevel\" />");
+			sResult += _T("<w:lvl w:ilvl=\"0\">");
+			sResult += _T("<w:numFmt w:val=\"bullet\"/>");
+			
+			if(!sText.IsEmpty() )
+                sResult += _T("<w:lvlText w:val=\"") + Utils::PrepareToXML( sText ) + _T("\"/>");
 			else
 			{
-				sResult.Append(_T("<w:lvlText w:val=\"") );
+				sResult += _T("<w:lvlText w:val=\"");
 				sResult.AppendChar( 0xf0b7 );
-				sResult.Append(_T("\"/>") );
+				sResult += _T("\"/>");
 			}
-			if( false == sParProp.IsEmpty() )
-                sResult.AppendFormat(_T("<w:pPr>%ls</w:pPr>"), sParProp.GetBuffer() );
-			if( false == sCharProp.IsEmpty() )
-                sResult.AppendFormat(_T("<w:rPr>%ls</w:rPr>"), sCharProp.GetBuffer() );
+			
+			if( !sParProp.IsEmpty() )
+                sResult += _T("<w:pPr>") + sParProp + _T("</w:pPr>");
+			
+			if( !sCharProp.IsEmpty() )
+                sResult += _T("<w:rPr>") + sCharProp + _T("</w:rPr>");
+			
 			if( lj_none != m_eLevelJust )
 			{
 				switch( m_eLevelJust )
 				{
-					case lj_left: sResult.Append(_T("<w:lvlJc w:val=\"left\"/>"));break;
-					case lj_center: sResult.Append(_T("<w:lvlJc w:val=\"center\"/>"));break;
-					case lj_right: sResult.Append(_T("<w:lvlJc w:val=\"right\"/>"));break;
+					case lj_left:	sResult += _T("<w:lvlJc w:val=\"left\"/>");		break;
+					case lj_center: sResult += _T("<w:lvlJc w:val=\"center\"/>");	break;
+					case lj_right:	sResult += _T("<w:lvlJc w:val=\"right\"/>");	break;
 				}
 			}
 			else
-				sResult.Append(_T("<w:lvlJc w:val=\"left\"/>"));
-			sResult.Append(_T("</w:lvl>"));
-			sResult.Append( _T("</w:abstractNum>") );
+				sResult += _T("<w:lvlJc w:val=\"left\"/>");
+			
+			sResult += _T("</w:lvl>");
+			sResult += _T("</w:abstractNum>");
 		}
 		else if( RENDER_TO_OOX_PARAM_OLDLIST_OVR == oRenderParameter.nType )
-			sResult.AppendFormat(_T("<w:num w:numId=\"%d\"><w:abstractNumId w:val=\"%d\" /></w:num>"), m_nLs, m_nLs );
+			sResult.AppendFormat(_T("<w:num w:numId=\"%d\"><w:abstractNumId w:val=\"%d\"/></w:num>"), m_nLs, m_nLs );
 		else
 		{
 			if( PROP_DEF != m_nLs && PROP_DEF != m_nIlvl )

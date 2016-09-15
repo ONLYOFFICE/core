@@ -36,7 +36,7 @@
 namespace DocFileFormat
 {
 	// Creates a new SectionPropertiesMapping which writes the properties to the given writer
-	SectionPropertiesMapping::SectionPropertiesMapping (XmlUtils::CXmlWriter* pWriter, ConversionContext* pContext, int nSelectProperties) : PropertiesMapping (pWriter)
+	SectionPropertiesMapping::SectionPropertiesMapping (XMLTools::CStringXmlWriter* pWriter, ConversionContext* pContext, int nSelectProperties) : PropertiesMapping (pWriter)
 	{		
 		m_bDeleteNode		=	TRUE;
 		m_pXmlNode			=	new XMLTools::XMLElement<wchar_t> (_T("w:sectPr"));
@@ -112,8 +112,27 @@ namespace DocFileFormat
 				{
 					case sprmOldSGprfIhdt:
 					case sprmSGprfIhdt:
+					{
 						fHF = FormatUtils::BytesToUChar( iter->Arguments, 0, iter->argumentsSize );
-						break;
+					}break;
+					case sprmSPgbProp:
+					{
+						int val = FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize );
+						int pgbApplyTo		= FormatUtils::GetIntFromBits(val, 0 , 3);
+						int pgbPageDepth	= FormatUtils::GetIntFromBits(val, 3 , 2);
+						int pgbOffsetFrom	= FormatUtils::GetIntFromBits(val, 5 , 3);
+
+						if (pgbOffsetFrom == 0x1) //else default from text
+							appendValueAttribute( &pgBorders, L"w:offsetFrom", L"page" );
+						
+						if (pgbApplyTo == 0x0)
+							appendValueAttribute( &pgBorders, L"w:display", L"allPages" );
+						else if (pgbApplyTo == 0x1)
+							appendValueAttribute( &pgBorders, L"w:display", L"firstPage" );
+						else
+							appendValueAttribute( &pgBorders, L"w:display", L"notFirstPage" );
+
+					}break;
 				}
 			}
 			// Header
@@ -142,8 +161,8 @@ namespace DocFileFormat
 			case sprmSDxaLeft:
 				{
 					//left margin
-					this->_marLeft = FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize );
-					appendValueAttribute( &pgMar, _T( "w:left" ), FormatUtils::IntToWideString( this->_marLeft ).c_str() );
+					_marLeft = FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize );
+					appendValueAttribute( &pgMar, _T( "w:left" ), FormatUtils::IntToWideString( _marLeft ).c_str() );
 				}
 				break;
 
@@ -151,8 +170,8 @@ namespace DocFileFormat
 			case sprmSDxaRight:
 				{
 					//right margin
-					this->_marRight = FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize );
-					appendValueAttribute( &pgMar, _T( "w:right" ), FormatUtils::IntToWideString( this->_marRight ).c_str() );
+					_marRight = FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize );
+					appendValueAttribute( &pgMar, _T( "w:right" ), FormatUtils::IntToWideString( _marRight ).c_str() );
 				}
 				break;
 
@@ -191,8 +210,8 @@ namespace DocFileFormat
 			case sprmSXaPage:
 				{
 					//width
-					this->_pgWidth = FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize );
-					appendValueAttribute( &pgSz, _T( "w:w" ), FormatUtils::IntToWideString( this->_pgWidth ).c_str() );
+					_pgWidth = FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize );
+					appendValueAttribute( &pgSz, _T( "w:w" ), FormatUtils::IntToWideString( _pgWidth ).c_str() );
 				}
 				break;
 
@@ -397,7 +416,7 @@ namespace DocFileFormat
 			case sprmOldSBkc:
 			case sprmSBkc:
 				{
-					this->_type = FormatUtils::MapValueToWideString( iter->Arguments[0], &SectionTypeMap[0][0], 5, 11 );
+					_type = FormatUtils::MapValueToWideString( iter->Arguments[0], &SectionTypeMap[0][0], 5, 11 );
 				}
 				break;
 
@@ -456,10 +475,8 @@ namespace DocFileFormat
 				break;
 
 			default:
-#ifdef _DEBUG 
-				// //ATLTRACE (_T("SectionPropertiesMapping - UNKNOWN SPRM : 0x%x\n"), iter->OpCode);
-#endif
-				break;
+				{
+				}break;
 			}
 		}
 
@@ -477,7 +494,7 @@ namespace DocFileFormat
 			//the last column width is not written to the document because it can be calculated.
 			if (0 == m_arrWidth [m_nColumns - 1])
 			{
-				short lastColWidth = (short)( this->_pgWidth - this->_marLeft - this->_marRight );
+				short lastColWidth = (short)( _pgWidth - _marLeft - _marRight );
 
 				for (int i = 0; i < m_nColumns - 1; ++i)
 				{
@@ -491,13 +508,13 @@ namespace DocFileFormat
 			// append the xml elements
 			for (int i = 0; i < m_nColumns; ++i)
 			{
-				XMLTools::XMLElement<wchar_t>		col		(_T( "w:col" ));
+				XMLTools::XMLElement<wchar_t>	col		(_T( "w:col" ));
 				XMLTools::XMLAttribute<wchar_t>	w		(_T( "w:w" ),		FormatUtils::IntToWideString (m_arrWidth[i]).c_str());
 				XMLTools::XMLAttribute<wchar_t>	space	(_T( "w:space" ),	FormatUtils::IntToWideString (m_arrSpace[i]).c_str());
 
 				col.AppendAttribute (w);
 				col.AppendAttribute (space);
-				cols.AppendChild (col);
+				cols.AppendChild	(col);
 			}
 		}
 

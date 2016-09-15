@@ -58,6 +58,18 @@
     #include <dirent.h>
 #endif
 
+#ifndef FILE_SEPARATOR
+	#if defined(_WIN32) || defined(_WIN64)
+		#define FILE_SEPARATOR
+		#define FILE_SEPARATOR_CHAR '\\'
+        #define FILE_SEPARATOR_STR L"\\"
+	#else
+		#define FILE_SEPARATOR
+		#define FILE_SEPARATOR_CHAR '/'
+        #define FILE_SEPARATOR_STR L"/"
+	#endif
+#endif
+
 namespace NSDirectory
 {
 #if !defined(_WIN32) && !defined (_WIN64)
@@ -208,7 +220,11 @@ namespace NSDirectory
     static CArray<std::wstring> GetFiles(std::wstring strDirectory, bool bIsRecursion = false)
 	{
 		CArray<std::wstring> oArray;
-        GetFiles2(strDirectory, oArray, bIsRecursion);
+		
+		if (!strDirectory.empty())
+		{     
+			GetFiles2(strDirectory, oArray, bIsRecursion);
+		}
 		return oArray;
 	}
 

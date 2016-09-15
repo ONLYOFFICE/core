@@ -333,7 +333,7 @@ namespace OOX
 				CString sResult;
 				
 				if ( m_oSpace.IsInit() )
-					sResult.Format( _T("<w:delText xml:space=\"%ls\">"), m_oSpace->ToString() );
+					sResult = _T("<w:delText xml:space=\"") + m_oSpace->ToString() + _T("\">");
 				else
 					sResult = _T("<w:delText>");
 
@@ -798,7 +798,7 @@ namespace OOX
 				CString sResult;
 				
 				if ( m_oSpace.IsInit() )
-					sResult.Format( _T("<w:t xml:space=\"%ls\">"), m_oSpace->ToString() );
+					sResult = _T("<w:t xml:space=\"") + m_oSpace->ToString() + _T("\">");
 				else
 					sResult = _T("<w:t>");
 
@@ -1121,7 +1121,7 @@ namespace OOX
 				CString sResult;
 				
 				if ( m_oSpace.IsInit() )
-					sResult.Format( _T("<w:delInstrText xml:space=\"%ls\">"), m_oSpace->ToString() );
+					sResult = _T("<w:delInstrText xml:space=\"") + m_oSpace->ToString() + _T("\">");
 				else
 					sResult = _T("<w:delInstrText>");
 
@@ -1423,7 +1423,7 @@ namespace OOX
 				CString sResult;
 				
 				if ( m_oSpace.IsInit() )
-					sResult.Format( _T("<w:instrText xml:space=\"%ls\">"), m_oSpace->ToString() );
+					sResult = _T("<w:instrText xml:space=\"") + m_oSpace->ToString() + _T("\">");
 				else
 					sResult = _T("<w:instrText>");
 

@@ -98,7 +98,10 @@ void text_s::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         { 		
-			CP_XML_ATTR_OPT(L"text:c", text_c_);
+			if ((text_c_) && (*text_c_ > 1))
+			{
+				CP_XML_ATTR_OPT(L"text:c", text_c_);
+			}
 		}
 	}
 
@@ -265,8 +268,25 @@ void text_span::add_child_element( const office_element_ptr & child_element)
 }
 void text_span::add_text(const std::wstring & Text)
 {
-    office_element_ptr elm = text_text::create(Text);
-    paragraph_content_.push_back( elm );
+	int bSpace = true;
+	for (int i = 0 ; i < Text.size() ; i++)
+	{
+		if (Text[i] != 0x20)
+		{
+			bSpace = false;
+			break;
+		}
+	}
+	if (bSpace)
+	{
+		office_element_ptr elm = boost::make_shared<text_s>(Text.size());
+		paragraph_content_.push_back( elm );
+	}
+	else
+	{
+		office_element_ptr elm = text_text::create(Text);
+		paragraph_content_.push_back( elm );
+	}
 }
 // text:a
 //////////////////////////////////////////////////////////////////////////////////////////////////

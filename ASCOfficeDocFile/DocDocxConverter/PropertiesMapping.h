@@ -32,13 +32,12 @@
 #pragma once
 
 #include "../Common/XmlTools.h"
+
 #include "Global.h"
 #include "BorderCode.h"
 #include "RGBColor.h"
 #include "ShadingDescriptor.h"
 #include "SinglePropertyModifier.h"
-
-#include "../../Common/DocxFormat/Source/XML/xmlutils.h"
 
 
 #include "../Win32/ASCOfficeCriticalSection.h" //for linux make inside
@@ -48,7 +47,7 @@ namespace DocFileFormat
 	class PropertiesMapping
 	{
 	public:
-		PropertiesMapping( XmlUtils::CXmlWriter* writer );
+		PropertiesMapping( XMLTools::CStringXmlWriter* writer );
 
 	protected:
 		static void init();
@@ -72,7 +71,7 @@ namespace DocFileFormat
 
 	protected:
 
-		XmlUtils::CXmlWriter* m_pXmlWriter;
+		XMLTools::CStringXmlWriter* m_pXmlWriter;
 
 		static std::map<unsigned char, std::wstring>	brcTypeMap;		
 		static ASCOfficeCriticalSection					brcTypeMapLock;

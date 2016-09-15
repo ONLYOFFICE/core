@@ -84,7 +84,10 @@ CString RtfChar::renderRtfText( CString& sText, void* poDocument, RtfCharPropert
     CString sTextBack  = RtfUtility::convert_string(ansiStr.begin(), ansiStr.end(), nCodePage);
     //обратное преобразование чтобы понять какие символы свонвертировались неправильно
 
-    for( int i = 0; i < sText.GetLength() && i < sTextBack.GetLength() ; i++ )
+	while (sTextBack.GetLength() < sText.GetLength())
+		sTextBack += L"-";
+
+    for( int i = 0; i < sText.GetLength() ; i++ )
     {
         bool bWriteUnicode = true;
 
@@ -126,9 +129,9 @@ CString RtfChar::renderRtfText( CString& sText, void* poDocument, RtfCharPropert
             {
                 sResult.AppendFormat(_T("\\u%d*"),nUnicode);
             } else if (0x8000 < nUnicode && nUnicode <= 0xffff) {
-                sResult.AppendFormat(_T("\\u%d*"),nUnicode - 0x10000);
+                sResult.AppendFormat(_T("\\u%d*"), nUnicode - 0x10000); //??? font alt name china ALL FONTS NEW.docx (Mekanik LET)
             } else {
-                sResult.Append(_T("\\u9633*"));
+                sResult += _T("\\u9633*");
             }
         }
 

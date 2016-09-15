@@ -35,7 +35,7 @@
 
 namespace DocFileFormat
 {
-	LanguageIdMapping::LanguageIdMapping (XmlUtils::CXmlWriter* pWriter, LanguageType type) : PropertiesMapping (pWriter)
+	LanguageIdMapping::LanguageIdMapping (XMLTools::CStringXmlWriter* pWriter, LanguageType type) : PropertiesMapping (pWriter)
 	{
 		_type = type;
 	}
@@ -65,25 +65,25 @@ namespace DocFileFormat
 			{
 			case Default:
 				{
-					att = new XMLTools::XMLAttribute<wchar_t>( _T( "w:val" ), langcode.c_str() );
+                    att = new XMLTools::XMLAttribute<wchar_t>( L"w:val", langcode.c_str() );
 				}
 				break;
 
 			case EastAsian:
 				{                    
-					att = new XMLTools::XMLAttribute<wchar_t>( _T( "w:eastAsia" ), langcode.c_str() );
+                    att = new XMLTools::XMLAttribute<wchar_t>( L"w:eastAsia", langcode.c_str() );
 				}
 				break;
 
 			case Complex:
 				{
-					att = new XMLTools::XMLAttribute<wchar_t>( _T( "w:bidi" ), langcode.c_str() );
+                    att = new XMLTools::XMLAttribute<wchar_t>( L"w:bidi", langcode.c_str() );
 				}
 				break;
 
 			default:
 				{    
-					att = new XMLTools::XMLAttribute<wchar_t>( _T( "w:val" ), langcode.c_str() );
+                    att = new XMLTools::XMLAttribute<wchar_t>( L"w:val", langcode.c_str() );
 				}
 				break;
 			}

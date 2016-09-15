@@ -35,7 +35,7 @@
 
 namespace DocFileFormat
 {
-	TableCellPropertiesMapping::TableCellPropertiesMapping (XmlUtils::CXmlWriter* pWriter, const std::vector<short>* tableGrid, int gridIndex, int cellIndex) : 
+	TableCellPropertiesMapping::TableCellPropertiesMapping (XMLTools::CStringXmlWriter* pWriter, const std::vector<short>* tableGrid, int gridIndex, int cellIndex) : 
 										PropertiesMapping(pWriter)
 	{
 		_width		=	0;

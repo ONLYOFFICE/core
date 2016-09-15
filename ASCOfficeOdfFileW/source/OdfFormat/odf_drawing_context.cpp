@@ -1098,11 +1098,16 @@ void odf_drawing_context::add_path_element(std::wstring command, std::wstring & 
 {
 	if (command != impl_->current_drawing_state_.path_last_command_)
 	{
-		impl_->current_drawing_state_.path_ += command + L" ";
+		impl_->current_drawing_state_.path_ += command;
+		if (!strE.empty())
+			impl_->current_drawing_state_.path_ += L" ";
+
 		impl_->current_drawing_state_.path_last_command_ = command;
 	}
-
-	impl_->current_drawing_state_.path_ += strE + L" ";
+	if (command != L"N") 
+		impl_->current_drawing_state_.path_ += strE + L" ";
+	else
+		impl_->current_drawing_state_.path_ += strE;
 }
 void odf_drawing_context::add_modifier(std::wstring modifier)
 {

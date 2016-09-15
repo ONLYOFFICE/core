@@ -243,7 +243,7 @@ namespace NExtractTools
         return oBuilder.GetData();
     }
     std::wstring getDoctXml(NSDoctRenderer::DoctRendererFormat::FormatFile eFromType, NSDoctRenderer::DoctRendererFormat::FormatFile eToType,
-                            const std::wstring& sTFileDir, const std::wstring& sPdfBinFile, const std::wstring& sFontPath, const std::wstring& sImagesDirectory,
+                            const std::wstring& sTFileDir, const std::wstring& sPdfBinFile, const std::wstring& sImagesDirectory,
                             const std::wstring& sThemeDir, int nTopIndex, const std::wstring& sMailMerge, const InputParams& params)
     {
         NSStringUtils::CStringBuilder oBuilder;
@@ -256,7 +256,7 @@ namespace NExtractTools
         oBuilder.WriteString(_T("</SrcFilePath><DstFilePath>"));
         oBuilder.WriteEncodeXmlString(sPdfBinFile.c_str());
         oBuilder.WriteString(_T("</DstFilePath><FontsDirectory>"));
-        oBuilder.WriteEncodeXmlString(sFontPath.c_str());
+        oBuilder.WriteEncodeXmlString(params.getFontPath().c_str());
         oBuilder.WriteString(_T("</FontsDirectory><ImagesDirectory>"));
         oBuilder.WriteEncodeXmlString(sImagesDirectory.c_str());
         oBuilder.WriteString(_T("</ImagesDirectory><ThemesDirectory>"));
@@ -296,7 +296,7 @@ namespace NExtractTools
         oBuilder.WriteString(_T("</Settings>"));
         return oBuilder.GetData();
     }
-    int apply_changes(const std::wstring &sBinFrom, const std::wstring &sToResult, NSDoctRenderer::DoctRendererFormat::FormatFile eType, const std::wstring &sFontDir, const std::wstring &sThemeDir, std::wstring &sBinTo, const InputParams& params)
+    int apply_changes(const std::wstring &sBinFrom, const std::wstring &sToResult, NSDoctRenderer::DoctRendererFormat::FormatFile eType, const std::wstring &sThemeDir, std::wstring &sBinTo, const InputParams& params)
 	{
         int nRes = 0;
 		std::wstring sBinDir = FileSystem::Directory::GetFolderPath(sBinFrom);
@@ -310,7 +310,7 @@ namespace NExtractTools
             int nChangeIndex = -1;
             while (true)
             {
-                std::wstring sXml = getDoctXml(eType, eType, sBinDir, sBinTo, sFontDir, sImagesDirectory, sThemeDir, nChangeIndex, _T(""), params);
+                std::wstring sXml = getDoctXml(eType, eType, sBinDir, sBinTo, sImagesDirectory, sThemeDir, nChangeIndex, _T(""), params);
 				std::wstring sResult;
                 oDoctRenderer.Execute(sXml, sResult);
                 bool bContinue = false;

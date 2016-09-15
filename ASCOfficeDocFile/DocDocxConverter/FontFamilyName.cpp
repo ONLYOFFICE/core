@@ -110,13 +110,13 @@ namespace DocFileFormat
 		{
 			  if ((int) newObject->xszFtn.at(0) < 31) //DDToneWebService.doc
 			  {
-				  newObject->xszFtn = _T("");
+                  newObject->xszFtn = L"";
 			  }
 		}
 
 		if (newObject->xszFtn.length() < 2 && szAlt < 1)//programo.doc 
 		{
-			newObject->xszFtn = _T("font"); 
+            newObject->xszFtn = L"font";
 		}
 
 		RELEASEARRAYOBJECTS( bytes );

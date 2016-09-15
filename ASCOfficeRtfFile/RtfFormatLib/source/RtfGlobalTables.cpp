@@ -50,7 +50,7 @@ CString RtfFontTable::RenderToRtf(RenderParameter oRenderParameter)
 	CString sResult;
 	if( m_aArray.size() > 0 )
 	{
-		sResult.Append(_T("{\\fonttbl"));
+		sResult += _T("{\\fonttbl");
 		RenderParameter oNewParameter = oRenderParameter;
 		oNewParameter.nType = RENDER_TO_RTF_PARAM_FONT_TBL;
 		for( int i = 0; i < (int)m_aArray.size(); i++ )
@@ -71,39 +71,44 @@ CString RtfListTable::RenderToOOX(RenderParameter oRenderParameter)
 		for( int i = 0; i < (int)m_aPictureList.GetCount(); i++ )
 		{
 			sResult.AppendFormat(_T("<w:numPicBullet w:numPicBulletId=\"%d\">"), i );
-			sResult.Append( m_aPictureList[i]->RenderToOOX(oNewParam) );
-			sResult.Append(_T("</w:numPicBullet>") );
+			sResult += m_aPictureList[i]->RenderToOOX(oNewParam);
+			sResult += _T("</w:numPicBullet>");
 		}
 		for( int i = 0; i < (int)m_aArray.size(); i++)
-			sResult.Append( m_aArray[i].RenderToOOX(oRenderParameter) );
+			sResult += m_aArray[i].RenderToOOX(oRenderParameter);
 	}
 	else
 	{
 		RenderParameter oNewParam = oRenderParameter;
 		oNewParam.nType = RENDER_TO_OOX_PARAM_OLDLIST_ABS;
 		RtfDocument* poDocument = static_cast<RtfDocument*>( oRenderParameter.poDocument );
+		
 		for( int i = 0; i < (int)poDocument->m_aOldLists.size(); i++ )
-			sResult.Append( poDocument->m_aOldLists[i]->RenderToOOX( oNewParam ) );
+		{
+			sResult += poDocument->m_aOldLists[i]->RenderToOOX( oNewParam );
+		}
 	}
 	return sResult;
 }
 CString RtfListOverrideTable::RenderToOOX(RenderParameter oRenderParameter)
 {
 	CString sResult;
-	if( m_aArray.size() > 0 )
+	if( !m_aArray.empty())
 	{
 		RenderParameter oNewParam = oRenderParameter;
 		oNewParam.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
+		
 		for( int i = 0; i < (int)m_aArray.size(); i++)
-			sResult.Append( m_aArray[i].RenderToOOX(oNewParam) );
+			sResult += m_aArray[i].RenderToOOX(oNewParam);
 	}
 	else
 	{
 		RenderParameter oNewParam = oRenderParameter;
 		oNewParam.nType = RENDER_TO_OOX_PARAM_OLDLIST_OVR;
 		RtfDocument* poDocument = static_cast<RtfDocument*>( oRenderParameter.poDocument );
+		
 		for( int i = 0; i < (int)poDocument->m_aOldLists.size(); i++ )
-			sResult.Append( poDocument->m_aOldLists[i]->RenderToOOX( oNewParam ) );
+			sResult += poDocument->m_aOldLists[i]->RenderToOOX( oNewParam );
 	}
 	return sResult;
 }

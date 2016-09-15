@@ -1294,6 +1294,30 @@ void XlsConverter::convert_line_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & pr
 			{
 				xlsx_context->get_drawing_context().set_line_dash(props[i]->op);
 			}break;
+        	case NSOfficeDrawing::lineStartArrowhead:
+			{
+				xlsx_context->get_drawing_context().set_arrow_start(props[i]->op);
+			}break;
+        	case NSOfficeDrawing::lineEndArrowhead:
+			{
+				xlsx_context->get_drawing_context().set_arrow_end(props[i]->op);
+			}break;
+        	case NSOfficeDrawing::lineStartArrowWidth:
+			{
+				xlsx_context->get_drawing_context().set_arrow_start_width(props[i]->op);
+			}break;
+        	case NSOfficeDrawing::lineStartArrowLength:
+			{
+				xlsx_context->get_drawing_context().set_arrow_start_length(props[i]->op);
+			}break;
+        	case NSOfficeDrawing::lineEndArrowWidth:
+			{
+				xlsx_context->get_drawing_context().set_arrow_end_width(props[i]->op);
+			}break;
+        	case NSOfficeDrawing::lineEndArrowLength:
+			{
+				xlsx_context->get_drawing_context().set_arrow_end_length(props[i]->op);
+			}break;
 			case NSOfficeDrawing::lineBoolean:
 			{
 				ODRAW::LineStyleBooleanProperties * bools = (ODRAW::LineStyleBooleanProperties *)(props[i].get());
@@ -1301,6 +1325,11 @@ void XlsConverter::convert_line_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & pr
 				{
 					if (bools->fUsefLine && bools->fLine == false) 
 						xlsx_context->get_drawing_context().set_line_type(5); //no line
+
+					if (bools->fUsefArrowheadsOK && bools->fArrowheadsOK)
+					{
+						xlsx_context->get_drawing_context().set_line_arrow(true);
+					}
 				}
 			}break;
 		}
@@ -1562,7 +1591,7 @@ void XlsConverter::convert_group_shape(std::vector<ODRAW::OfficeArtFOPTEPtr> & p
 		case 0x380:
 			{
 				ODRAW::anyString *str = dynamic_cast<ODRAW::anyString*>(props[i].get());
-		xlsx_context->get_drawing_context().set_name(str->string_);
+				xlsx_context->get_drawing_context().set_name(str->string_);
 			}break;
 		case 0x381:
 			{

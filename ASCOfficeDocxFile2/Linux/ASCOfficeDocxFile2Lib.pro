@@ -8,7 +8,11 @@ CORE_ROOT_DIR = $$PWD/../..
 PWD_ROOT_DIR = $$PWD
 
 CONFIG += core_x2t
+
 include(../../Common/base.pri)
+
+#BOOST
+include($$PWD/../../Common/3dParty/boost/boost.pri)
 
 DEFINES += UNICODE \
 	_UNICODE \

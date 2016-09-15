@@ -1138,7 +1138,7 @@ namespace BinDocxRW
 					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
 					switch(TabItem.m_oVal.get().GetValue())
 					{
-					case SimpleTypes::tabjcEnd: break;
+					case SimpleTypes::tabjcEnd:
 					case SimpleTypes::tabjcRight: 
 						m_oBcw.m_oStream.WriteBYTE(g_tabtype_right);
 						bRight = true;

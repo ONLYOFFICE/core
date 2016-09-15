@@ -2989,6 +2989,17 @@ CString CDrawingConverter::GetDrawingMainProps(XmlUtils::CXmlNode& oNode, PPTX::
 		*/
 	}
 
+    nullable_bool isAllowInCell;
+    nullable_string sAllowInCell;
+    oNode.ReadAttributeBase(L"o:allowincell", sAllowInCell);
+    if (sAllowInCell.is_init())
+    {
+        if ((L"f" == *sAllowInCell) || (L"false"== *sAllowInCell))
+            isAllowInCell = false;
+        if ((L"t" == *sAllowInCell) || (L"true"== *sAllowInCell))
+            isAllowInCell = true;
+    }
+
 	CString strWrapPoints = oNode.GetAttribute(_T("wrapcoords"));
 	CString strWrapPointsResult = _T("");
 	if (_T("") != strWrapPoints)
@@ -3028,6 +3039,14 @@ CString CDrawingConverter::GetDrawingMainProps(XmlUtils::CXmlNode& oNode, PPTX::
 			oWriter.WriteAttribute(_T("behindDoc"), (CString)_T("1"));
 		}
 	}
+
+    if (isAllowInCell.is_init())
+    {
+        if (*isAllowInCell)
+            oWriter.WriteAttribute(_T("layoutInCell"), (CString)_T("1"));
+        else
+            oWriter.WriteAttribute(_T("layoutInCell"), (CString)_T("0"));
+    }
 
 	oWriter.EndAttributes();
 

@@ -59,7 +59,7 @@ void RtfReader::PushState()
 	psaveNew -> m_oCellProperty		= m_oState->m_oCellProperty;
 	psaveNew -> m_oCurOldList		= m_oState->m_oCurOldList;
 	//psaveNew -> m_oSectionProp	= m_oState->m_oSectionProp;
-	psaveNew -> psave = m_oState;
+	psaveNew -> m_pSaveState		= m_oState;
 	m_oState = psaveNew;
 
 	if( PROP_DEF == m_oState->m_oCharProp.m_nFont )
@@ -67,9 +67,8 @@ void RtfReader::PushState()
 }
 void RtfReader::PopState()
 {
-	if( 0 != m_oState->psave )
-		m_oState = m_oState->psave;
-	//delete psaveOld;
+	if( 0 != m_oState->m_pSaveState )
+		m_oState = m_oState->m_pSaveState;
 }
 
 CString RtfAbstractReader::ExecuteTextInternalCodePage( std::string& sCharString, RtfDocument& oDocument, RtfReader& oReader)

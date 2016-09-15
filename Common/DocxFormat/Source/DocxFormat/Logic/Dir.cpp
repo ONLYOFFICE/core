@@ -152,11 +152,7 @@ namespace OOX
 				CString sResult = _T("<w:dir");
 				if(m_oVal.IsInit())
                 {
-#if defined(_WIN32) || defined (_WIN64)
-                    sResult.AppendFormat(_T(" val=\"%ls\""), m_oVal->ToString());
-#else
-                    sResult.AppendFormat(_T(" val=\"%ls\""), m_oVal->ToString().c_str());
-#endif
+                    sResult += _T(" val=\"") + m_oVal->ToString() + _T("\"");
                 }
 				sResult += _T(">");
 				

@@ -596,8 +596,34 @@ namespace DocFileFormat
 					case c3DExtrudeBackward:
 						{
 							EmuValue backwardValue( (int)iter->op );
-							appendValueAttribute(&m_3dstyle, _T( "backdepth" ), FormatUtils::DoubleToWideString( backwardValue.ToPoints() ).c_str());
+							std::wstring depth = FormatUtils::DoubleToWideString( backwardValue.ToPoints() ) + L"pt";
+							appendValueAttribute(&m_3dstyle, _T( "backdepth" ), depth.c_str());
 						}break; 
+					case c3DAmbientIntensity:
+						{
+							std::wstring intens = FormatUtils::IntToWideString((int)iter->op) + L"f";
+							appendValueAttribute(&m_3dstyle, _T( "brightness" ), intens.c_str());
+						}break; 
+					case c3DSpecularAmt:
+						{
+							std::wstring amt = FormatUtils::IntToWideString((int)iter->op) + L"f";
+							appendValueAttribute(&m_3dstyle, _T( "specularity" ), amt.c_str());
+						}break; 
+					case c3DDiffuseAmt:
+						{
+							std::wstring amt = FormatUtils::IntToWideString((int)iter->op) + L"f";
+							appendValueAttribute(&m_3dstyle, _T( "diffusity" ), amt.c_str());
+						}break; 
+					case c3DKeyIntensity:
+						{
+							std::wstring amt = FormatUtils::IntToWideString((int)iter->op);
+							appendValueAttribute(&m_3dstyle, _T( "lightlevel" ), amt.c_str());
+						}break; 	
+					case c3DExtrusionColor:
+						{
+							std::wstring color = FormatUtils::IntToFormattedWideString(iter->op, L"#%06x");
+							appendValueAttribute(&m_3dstyle, _T( "color" ), color.c_str());
+						}break;
 					case c3DSkewAngle:
 						{
 							FixedPointNumber skewAngle( iter->op );
@@ -729,6 +755,10 @@ namespace DocFileFormat
 							if (false == path.empty())
 								m_pXmlWriter->WriteAttribute (_T( "path" ), path.c_str());
 						}break;
+						default:
+						{
+							int val = iter->op;
+						}break;
 					}
 				}
 
@@ -856,19 +886,17 @@ namespace DocFileFormat
 
 						if ( ViewPointX != 0 )
 						{
-							viewPoint += FormatUtils::IntToWideString( ViewPointX );
+							viewPoint += FormatUtils::IntToWideString( ViewPointX ) + L"pt";
 						}
-
+						viewPoint += _T( "," );
 						if ( ViewPointY != 0 )
 						{
-							viewPoint += _T( "," );
-							viewPoint += FormatUtils::IntToWideString( ViewPointY );
+							viewPoint += FormatUtils::IntToWideString( ViewPointY ) + L"pt";
 						}
-
+						viewPoint += _T( "," );
 						if ( ViewPointZ != 0 )
 						{
-							viewPoint += _T( "," );
-							viewPoint += FormatUtils::IntToWideString( ViewPointZ );
+							viewPoint += FormatUtils::IntToWideString( ViewPointZ ) + L"pt";
 						}
 
 						appendValueAttribute(&m_3dstyle, _T( "viewpoint" ), viewPoint.c_str());

@@ -223,37 +223,41 @@ public:
 				m_eType = (PPTShapes::ShapeType)id;	
 			}
 		}
-		//else
+		CString strAdj = oNodeShapeType.GetAttribute(_T("adj"));
+		if (strAdj != _T(""))
+			LoadAdjustValuesList(strAdj);
+
+		XmlUtils::CXmlNode oNodeGuides;
+		if (oNodeShapeType.GetNode(_T("v:formulas"), oNodeGuides))
 		{
-			CString strAdj = oNodeShapeType.GetAttribute(_T("adj"));
-			if (strAdj != _T(""))
-				LoadAdjustValuesList(strAdj);
+			LoadGuidesList(oNodeGuides.GetXml());
+		}
 
-			XmlUtils::CXmlNode oNodeGuides;
-			if (oNodeShapeType.GetNode(_T("v:formulas"), oNodeGuides))
-			{
-				LoadGuidesList(oNodeGuides.GetXml());
-			}
+		XmlUtils::CXmlNode oNodePath;
+		if (oNodeShapeType.GetNode(_T("v:path"), oNodePath))
+		{
+			CString strTextR = oNodePath.GetAttribute(_T("textboxrect"));
+			if (strTextR != _T(""))
+				LoadTextRect(strTextR);
+		}
 
-			XmlUtils::CXmlNode oNodePath;
-			if (oNodeShapeType.GetNode(_T("v:path"), oNodePath))
-			{
-				CString strTextR = oNodePath.GetAttribute(_T("textboxrect"));
-				if (strTextR != _T(""))
-					LoadTextRect(strTextR);
-			}
+		XmlUtils::CXmlNode oNodeAHs;
+		if (oNodeShapeType.GetNode(_T("v:handles"), oNodeAHs))
+		{
+			LoadAHList(oNodeAHs);
+		}
 
-			XmlUtils::CXmlNode oNodeAHs;
-			if (oNodeShapeType.GetNode(_T("v:handles"), oNodeAHs))
-			{
-				LoadAHList(oNodeAHs);
-			}
+		CString strPath = oNodeShapeType.GetAttribute(_T("path"));
+		if (strPath != _T(""))
+		{
+			LoadPathList(strPath);
+		}
 
-			CString strPath = oNodeShapeType.GetAttribute(_T("path"));
-			if (strPath != _T(""))
-			{
-				LoadPathList(strPath);
-			}
+		XmlUtils::CXmlNode oNodeTextPath;
+		if (oNodeShapeType.GetNode(_T("v:textpath"), oNodeTextPath))
+		{
+			if (m_eType < PPTShapes::ShapeType::sptCTextPlain || m_eType > PPTShapes::ShapeType::sptCTextCanDown)
+				m_eType = PPTShapes::ShapeType::sptCTextPlain;
 		}
 
 		CString strFilled = oNodeShapeType.GetAttribute(_T("filled"));

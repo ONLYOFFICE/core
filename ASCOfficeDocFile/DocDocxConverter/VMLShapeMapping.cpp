@@ -232,7 +232,7 @@ namespace DocFileFormat
 
 				if (pShape->GetShapeType())
 				{
-					freeform					=	false;
+					freeform =	false;
 					m_pXmlWriter->WriteAttribute( _T("type"), (std::wstring(_T("#")) + VMLShapeTypeMapping::GenerateTypeId(pShape->GetShapeType())).c_str());
 				}
 
@@ -678,7 +678,7 @@ namespace DocFileFormat
 								break;
 							}
 						}break;	
-	// Word Art)
+	// Word Art
 					case gtextUNICODE:
 						{
 							std::wstring text = NSStringExt::CConverter::GetUnicodeFromUTF16((unsigned short*)iter->opComplex, (iter->op)/2);
@@ -1008,7 +1008,7 @@ namespace DocFileFormat
 
 				WriteEndShapeNode(pShape);
 		//ShapeType 
-				if (NULL != pShape->GetShapeType() && !m_isInlineShape) //bullete only???
+				if (NULL != pShape->GetShapeType()/* && !m_isInlineShape*/) //bullete only???
 				{
 					VMLShapeTypeMapping oXmlMapper(m_pXmlWriter);
 					pShape->GetShapeType()->Convert(&oXmlMapper);

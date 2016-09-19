@@ -97,52 +97,65 @@ namespace DocFileFormat
 			RELEASEARRAYOBJECTS( bytes );
 		}
 	}
+    NumberingLevelDescriptor::NumberingLevelDescriptor()
+    {
+        //default set
+        bEnabled = false;
+    }
 
 	NumberingLevelDescriptor::~NumberingLevelDescriptor()
 	{
 	}
 
-	NumberingLevelDescriptor::NumberingLevelDescriptor( unsigned char * data, int length )
+    NumberingLevelDescriptor::NumberingLevelDescriptor( unsigned char * data, int length )
 	{
-		nfc				= FormatUtils::BytesToUChar(data, 0, length);
-		cbTextBefore	= FormatUtils::BytesToUChar(data, 1, length);
-		cbTextAfter		= FormatUtils::BytesToUChar(data, 2, length);
+        bEnabled = false;
 
-		int flag		= FormatUtils::BytesToUChar(data, 3, length);
-
-		jc				= (unsigned char)( flag & 0x03 );
-
-		fPrev			= FormatUtils::BitmaskToBool( flag, 0x04 );
-		fHang			= FormatUtils::BitmaskToBool( flag, 0x08 );
-
-		fSetBold		= FormatUtils::BitmaskToBool( flag, 0x10 );
-		fSetItalic		= FormatUtils::BitmaskToBool( flag, 0x20 );
-		fSetSmallCaps	= FormatUtils::BitmaskToBool( flag, 0x40 );
-		fSetCaps		= FormatUtils::BitmaskToBool( flag, 0x80 );
-
-		flag			= FormatUtils::BytesToUChar(data, 4, length);;
-
-		fSetStrike		= FormatUtils::BitmaskToBool( flag, 0x01 );
-		fSetKul			= FormatUtils::BitmaskToBool( flag, 0x02 );
-
-		fPrevSpace		= FormatUtils::BitmaskToBool( flag, 0x04 );
-		fBold			= FormatUtils::BitmaskToBool( flag, 0x08 );
-		fItalic			= FormatUtils::BitmaskToBool( flag, 0x10 );
-		fSmallCaps		= FormatUtils::BitmaskToBool( flag, 0x20 );
-		fCaps			= FormatUtils::BitmaskToBool( flag, 0x40 );
-		fStrike			= FormatUtils::BitmaskToBool( flag, 0x80 );
-
-		flag			= FormatUtils::BytesToUChar(data, 5, length);
-
-		kul				= FormatUtils::BitmaskToBool( flag, 0x07 );//3 bit
-		ico				= FormatUtils::BitmaskToBool( flag, 0xf1 );//5 bit
-
-		ftc				= FormatUtils::BytesToInt16 (data, 6, length);
-		hps				= FormatUtils::BytesToUInt16(data, 8, length);
-
-		iStartAt		= FormatUtils::BytesToUInt16(data, 10, length);
-		dxaIndent		= FormatUtils::BytesToUInt16(data, 12, length);
-		dxaSpace		= FormatUtils::BytesToUInt16(data, 14, length);
+        Parse(data, length);
 	}
-            
+
+    void NumberingLevelDescriptor::Parse(unsigned char * data, int length )
+    {
+        bEnabled        = true;
+
+        nfc				= FormatUtils::BytesToUChar(data, 0, length);
+        cbTextBefore	= FormatUtils::BytesToUChar(data, 1, length);
+        cbTextAfter		= FormatUtils::BytesToUChar(data, 2, length);
+
+        int flag		= FormatUtils::BytesToUChar(data, 3, length);
+
+        jc				= (unsigned char)( flag & 0x03 );
+
+        fPrev			= FormatUtils::BitmaskToBool( flag, 0x04 );
+        fHang			= FormatUtils::BitmaskToBool( flag, 0x08 );
+
+        fSetBold		= FormatUtils::BitmaskToBool( flag, 0x10 );
+        fSetItalic		= FormatUtils::BitmaskToBool( flag, 0x20 );
+        fSetSmallCaps	= FormatUtils::BitmaskToBool( flag, 0x40 );
+        fSetCaps		= FormatUtils::BitmaskToBool( flag, 0x80 );
+
+        flag			= FormatUtils::BytesToUChar(data, 4, length);;
+
+        fSetStrike		= FormatUtils::BitmaskToBool( flag, 0x01 );
+        fSetKul			= FormatUtils::BitmaskToBool( flag, 0x02 );
+
+        fPrevSpace		= FormatUtils::BitmaskToBool( flag, 0x04 );
+        fBold			= FormatUtils::BitmaskToBool( flag, 0x08 );
+        fItalic			= FormatUtils::BitmaskToBool( flag, 0x10 );
+        fSmallCaps		= FormatUtils::BitmaskToBool( flag, 0x20 );
+        fCaps			= FormatUtils::BitmaskToBool( flag, 0x40 );
+        fStrike			= FormatUtils::BitmaskToBool( flag, 0x80 );
+
+        flag			= FormatUtils::BytesToUChar(data, 5, length);
+
+        kul				= FormatUtils::BitmaskToBool( flag, 0x07 );//3 bit
+        ico				= FormatUtils::BitmaskToBool( flag, 0xf1 );//5 bit
+
+        ftc				= FormatUtils::BytesToInt16 (data, 6, length);
+        hps				= FormatUtils::BytesToUInt16(data, 8, length);
+
+        iStartAt		= FormatUtils::BytesToUInt16(data, 10, length);
+        dxaIndent		= FormatUtils::BytesToUInt16(data, 12, length);
+        dxaSpace		= FormatUtils::BytesToUInt16(data, 14, length);
+    }
 }

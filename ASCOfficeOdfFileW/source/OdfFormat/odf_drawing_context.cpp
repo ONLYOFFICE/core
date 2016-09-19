@@ -1051,6 +1051,12 @@ void odf_drawing_context::set_no_fill()
 		break;
 	}
 }
+void odf_drawing_context::set_type_fill(int type)
+{
+	if (!impl_->current_graphic_properties)return;
+
+	impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_ = (draw_fill::type)type;
+}
 void odf_drawing_context::set_solid_fill(std::wstring hexColor)
 {
 	if (!impl_->current_graphic_properties)return;

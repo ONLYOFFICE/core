@@ -2075,7 +2075,10 @@ void DocxConverter::convert(OOX::Logic::CObject* oox_obj)
 	bool bSet = false;
 	if (oox_obj->m_oShape.IsInit())
 	{
-        OOX::Vml::SptType sptType = oox_obj->m_oShapeType->m_oSpt.IsInit() ? static_cast<OOX::Vml::SptType>(oox_obj->m_oShapeType->m_oSpt->GetValue()) : OOX::Vml::sptNotPrimitive;
+        OOX::Vml::SptType sptType = OOX::Vml::SptType::sptNotPrimitive;
+		
+		if ((oox_obj->m_oShapeType.IsInit()) && (oox_obj->m_oShapeType->m_oSpt.IsInit()))
+			sptType = static_cast<OOX::Vml::SptType>(oox_obj->m_oShapeType->m_oSpt->GetValue());
 
         if (sptType != OOX::Vml::SptType::sptNotPrimitive)
 		{
@@ -2103,9 +2106,11 @@ void DocxConverter::convert(OOX::Logic::CObject* oox_obj)
 		odf_context()->drawing_context()->set_name(L"Rect");
 		odf_context()->drawing_context()->start_shape(SimpleTypes::shapetypeRect);			
 	}
-	OoxConverter::convert(oox_obj->m_oShape.GetPointer()); 			
-	odf_context()->drawing_context()->end_shape(); 
+	OoxConverter::convert(oox_obj->m_oShape.GetPointer()); 	
 
+	odf_context()->drawing_context()->set_type_fill(2); //temp ...  image 
+
+	odf_context()->drawing_context()->end_shape(); 
 	odf_context()->drawing_context()->end_drawing();
 
 	odt_context->end_drawings();

@@ -64,6 +64,7 @@ SerArPtr SerAr::createSerAr(const unsigned char type)
 		break;
 	default:
 		// EXCEPT::RT::WrongBiffRecord("Unsupported type of SerAr.", "SerAr container");
+		break;
 	}
 
 }

@@ -63,7 +63,7 @@ namespace DocFileFormat
 
 		virtual ~Spa();
 
-		virtual ByteStructure* ConstructObject(VirtualStreamReader* reader, int length);
+        virtual ByteStructure* ConstructObject(VirtualStreamReader* reader, int length);
 		inline int GetShapeID() const
 		{
 			return spid;

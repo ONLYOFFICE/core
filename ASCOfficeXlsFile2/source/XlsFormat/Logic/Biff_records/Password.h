@@ -54,7 +54,8 @@ public:
 	static const ElementType	type = typePassword;
 
 //-----------------------------
-	BIFF_BSTR wPassword;
+	unsigned short	wPassword_num;
+	std::wstring	wPassword;
 
 };
 

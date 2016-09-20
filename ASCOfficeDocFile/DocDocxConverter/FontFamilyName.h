@@ -79,7 +79,7 @@ namespace DocFileFormat
     public:
 	  FontFamilyName();
 	  virtual ~FontFamilyName();
-	  virtual ByteStructure* ConstructObject( VirtualStreamReader* reader, int length );
+      virtual ByteStructure* ConstructObject( VirtualStreamReader* reader, int length );
 	
     private:
 	  long searchTerminationZero( VirtualStreamReader *reader );

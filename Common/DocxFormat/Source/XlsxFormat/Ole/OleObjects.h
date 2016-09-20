@@ -297,7 +297,6 @@ namespace OOX
 										{
 											delete pOleObject;
 										}
-										m_mapOleObjects[pOleObject->m_oShapeId->GetValue()] = pOleObject;
 									}
 								}
 							}

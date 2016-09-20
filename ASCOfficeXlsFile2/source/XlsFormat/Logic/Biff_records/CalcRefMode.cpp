@@ -65,7 +65,7 @@ void CalcRefMode::writeFields(CFRecord& record)
 	}
 	else
 	{
-		throw;// EXCEPT::LE::AttributeDataWrong(L"fRefA1", record.getTypeString().c_str(), fRefA1);
+		// EXCEPT::LE::AttributeDataWrong(L"fRefA1", record.getTypeString().c_str(), fRefA1);
 	}
 	record << fRef;
 }

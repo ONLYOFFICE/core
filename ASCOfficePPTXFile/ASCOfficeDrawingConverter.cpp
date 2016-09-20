@@ -3630,7 +3630,7 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem& oElem, XmlUtils
 				Gs_.pos = 100 * 1000;
 				pGradFill->GsLst.push_back( Gs_ );
 			}
-			if (pGradFill->GsLst.size() < 2)	//Sindicatum.docx
+			if (pGradFill->GsLst.size() == 1)	//Sindicatum.docx
 			{
 				PPTX::Logic::Gs Gs_; 
 				Gs_.pos = 0;

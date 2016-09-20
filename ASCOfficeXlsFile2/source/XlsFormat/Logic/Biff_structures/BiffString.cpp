@@ -85,14 +85,14 @@ BiffStructurePtr BiffString::clone()
 
 void BiffString::store(CFRecord& record)
 {
-	throw;// EXCEPT::LE::WhatIsTheFuck("Wrong usage of BiffString. The function must not be called.", __FUNCTION__);
+	// EXCEPT::LE::WhatIsTheFuck("Wrong usage of BiffString. The function must not be called.", __FUNCTION__);
 }
 
 
 void BiffString::load(CFRecord& record)
 {
-	throw;// EXCEPT::LE::WhatIsTheFuck("Wrong usage of BiffString. Stack overflow stopped.", __FUNCTION__);
-//	record >> *this; // :-)
+	// EXCEPT::LE::WhatIsTheFuck("Wrong usage of BiffString. Stack overflow stopped.", __FUNCTION__);
+	//	record >> *this; // :-)
 }
 
 
@@ -185,7 +185,7 @@ const size_t BiffString::getSize() const
 {
 	if(!cch_)
 	{
-		throw;// EXCEPT::LE::StructureSizeNotSet("BiffString", __FUNCTION__/*__FUNCDNAME__*/); 
+		// EXCEPT::LE::StructureSizeNotSet("BiffString", __FUNCTION__/*__FUNCDNAME__*/); 
 	}
 	return *cch_;
 }

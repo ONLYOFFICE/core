@@ -104,14 +104,14 @@ namespace DocFileFormat
 
 		if (FIB->m_FibBase.nFib)
 		{
-			if (FIB->m_FibBase.nFib < Fib1997)
+            if (FIB->m_FibBase.nFib <= Fib1995)
 			{
 				bOlderVersion = FIB->m_bOlderVersion = true;
 			}
 		}
 		else
 		{
-			if (FIB->m_FibNew.nFibNew < Fib1997 && FIB->m_FibNew.nFibNew > 0)
+            if (FIB->m_FibNew.nFibNew <= Fib1995 && FIB->m_FibNew.nFibNew > 0)
 			{
 				bOlderVersion = FIB->m_bOlderVersion = true;
 			}

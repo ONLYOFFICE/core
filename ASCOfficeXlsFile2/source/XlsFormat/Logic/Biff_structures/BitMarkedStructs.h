@@ -162,7 +162,7 @@ struct BErr : public BiffStructure_NoVtbl
 		}
 		else
 		{
-			throw;// EXCEPT::RT::WrongBiffRecord("Unsupported type of BErr.", "unknown");
+			// EXCEPT::RT::WrongBiffRecord("Unsupported type of BErr.", "unknown");
 		}
 	};
 
@@ -185,7 +185,8 @@ struct BErr : public BiffStructure_NoVtbl
 		case 0x2A:
 			return L"#N/A";
 		default:
-			throw;// EXCEPT::RT::WrongBiffRecord("Unsupported type of BErr.", "unknown");
+			// EXCEPT::RT::WrongBiffRecord("Unsupported type of BErr.", "unknown");
+			break;
 		}
 	}
 };

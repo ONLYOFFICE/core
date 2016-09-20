@@ -148,11 +148,7 @@ namespace DocFileFormat
 	}
 	OutlineListDescriptor::~OutlineListDescriptor()
 	{
-		for (int i = 0 ; i < 9; i++)
-		{
-			if (lvl[i])	delete lvl[i];
-			lvl[i] = NULL;
-		}
+
 	}
 	OutlineListDescriptor::OutlineListDescriptor( unsigned char * data, int length )
 	{
@@ -160,10 +156,11 @@ namespace DocFileFormat
 
 		for (int i = 0 ; i < 9; i++)
 		{
-			lvl[i] = new NumberingLevelDescriptor(data + pos, length - pos);
+            lvl[i].Parse(data + pos, length - pos);
 			pos += 16;
 		}
-		fRestartHdr	= FormatUtils::BytesToUChar(data, pos, length); pos += 2;
+
+        fRestartHdr	= FormatUtils::BytesToUChar(data, pos, length); pos += 2;
 		fSpareOlst2	= FormatUtils::BytesToUChar(data, pos, length); pos += 2;
 		fSpareOlst3	= FormatUtils::BytesToUChar(data, pos, length); pos += 2;
 		fSpareOlst4	= FormatUtils::BytesToUChar(data, pos, length); pos += 2;
@@ -189,7 +186,7 @@ namespace DocFileFormat
 
 		delete []data;
 
-		return static_cast<ByteStructure*>(newObject);
+        return static_cast<ByteStructure*>(newObject);
 	}
 
 }

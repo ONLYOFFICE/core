@@ -58,7 +58,7 @@ void CFParsedFormulaNoCCE::store(CFRecord& record)
 
 void CFParsedFormulaNoCCE::load(CFRecord& record)
 {
-	throw;// EXCEPT::LE::WhatIsTheFuck("Unexpected stub function call.", __FUNCTION__);
+	// EXCEPT::LE::WhatIsTheFuck("Unexpected stub function call.", __FUNCTION__);
 }
 
 

@@ -53,7 +53,7 @@ void FtNts::store(CFRecord& record)
 	_GUID_ guid_num;
 	if(!STR::bstr2guid(guid, guid_num))
 	{
-		throw;// EXCEPT::LE::AttributeDataWrong(L"guid", L"FtNts", guid);
+		// EXCEPT::LE::AttributeDataWrong(L"guid", L"FtNts", guid);
 	}
 	record << guid_num << fSharedNote;
 }

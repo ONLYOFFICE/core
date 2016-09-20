@@ -72,7 +72,11 @@ const bool FORMATTING::loadContent(BinProcessor& proc)
 	count = proc.repeated<Font>(0, 510); // Wrong records sequence workaround (originally  at least one Font is mandatory)
 	while(count > 0)
 	{
-		m_arFonts.push_back(elements_.front());
+		Font *font = dynamic_cast<Font *>(elements_.front().get());
+		if ((font) && (font->correct))
+		{
+			m_arFonts.push_back(elements_.front());
+		}
 		elements_.pop_front();
 		count--;
 	}	

@@ -171,7 +171,7 @@ namespace XLS
 //			}
 //			else
 //			{
-//				throw;// EXCEPT::RT::WrongFormulaString("Unknown operator format in formula.", assembled_formula);
+//				// EXCEPT::RT::WrongFormulaString("Unknown operator format in formula.", assembled_formula);
 //			}
 //			OperatorPtgPtr operator_top;
 //			while(ptg_stack.size() && (operator_top = boost::dynamic_pointer_cast<OperatorPtg>(ptg_stack.top())) &&
@@ -217,7 +217,7 @@ namespace XLS
 //			}
 //			if(!ptg_stack.size() || !left_p)
 //			{
-//				throw;// EXCEPT::RT::WrongParenthesisSequence(assembled_formula);
+//				// EXCEPT::RT::WrongParenthesisSequence(assembled_formula);
 //			}
 //			ptg_stack.pop(); // pop PtgParen that is now stored in left_p
 //			last_ptg = left_p;
@@ -232,7 +232,7 @@ namespace XLS
 //				size_t num_parameters = left_p->getParametersNum() + 1;
 //				if(num_parameters > 255)
 //				{
-//					throw;// EXCEPT::RT::WrongFormulaString("Too many parameters to a function", assembled_formula);
+//					// EXCEPT::RT::WrongFormulaString("Too many parameters to a function", assembled_formula);
 //				}
 //				func_var->setParamsNum(static_cast<unsigned char>(num_parameters));
 //				last_ptg = ptg_stack.top();
@@ -267,7 +267,7 @@ namespace XLS
 //			}
 //			if(!ptg_stack.size() || !left_p)
 //			{
-//				throw;// EXCEPT::RT::WrongParenthesisSequence(assembled_formula);
+//				// EXCEPT::RT::WrongParenthesisSequence(assembled_formula);
 //			}
 //			left_p->incrementParametersNum(); // The count of parameters will be transferred to PtgFuncVar
 //			last_ptg = left_p; // PtgParen. Mostly to differ unary and binary minuses and pluses
@@ -314,7 +314,7 @@ namespace XLS
 //				}
 //				else
 //				{
-//					throw;// EXCEPT::RT::WrongFormulaString("Unknown format of 3D reference in formula.", assembled_formula);
+//					// EXCEPT::RT::WrongFormulaString("Unknown format of 3D reference in formula.", assembled_formula);
 //				}
 //			}
 //			else if(SyntaxPtg::extract_PtgName(it, itEnd, number))// Shall be placed strongly before PtgArea and PtgRef
@@ -377,7 +377,7 @@ namespace XLS
 //					func = PtgFuncVar::create(L"USER_DEFINED_FUNCTION", OperandPtg::pdt_VALUE);
 //					if(!func)
 //					{
-//						throw;// EXCEPT::LE::WhatIsTheFuck("Ftab_Cetab doesn't contain info about user-defined function (0xFF).", __FUNCTION__);
+//						// EXCEPT::LE::WhatIsTheFuck("Ftab_Cetab doesn't contain info about user-defined function (0xFF).", __FUNCTION__);
 //					}
 //					ptg_stack.push(func);
 //					rgce.addPtg(PtgPtr(new PtgNameX(operand_str,  OperandPtg::pdt_VALUE)));
@@ -385,7 +385,7 @@ namespace XLS
 //			}
 //			else
 //			{
-//				throw;// EXCEPT::RT::WrongFormulaString("Unknown operand format in formula.", assembled_formula);
+//				// EXCEPT::RT::WrongFormulaString("Unknown operand format in formula.", assembled_formula);
 //			}
 //			last_ptg = found_operand;
 //			operand_expected = false;

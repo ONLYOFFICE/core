@@ -153,7 +153,7 @@ void Lbl::writeFields(CFRecord& record)
 		}
 		else
 		{
-			throw;// EXCEPT::RT::WrongBiffRecord(L"Unsupported value of built-in name.", record.getTypeString());
+			// EXCEPT::RT::WrongBiffRecord(L"Unsupported value of built-in name.", record.getTypeString());
 		}
 				
 		// fix
@@ -267,7 +267,9 @@ void Lbl::readFields(CFRecord& record)
 				Name =  (L"_xlnm._FilterDatabase");
 				break;
 			default:
-				throw;// EXCEPT::RT::WrongBiffRecord(L"Unsupported value of built-in name.", record.getTypeString());
+				Name;
+				break;
+				// EXCEPT::RT::WrongBiffRecord(L"Unsupported value of built-in name.", record.getTypeString());
 		}
 	}
 }

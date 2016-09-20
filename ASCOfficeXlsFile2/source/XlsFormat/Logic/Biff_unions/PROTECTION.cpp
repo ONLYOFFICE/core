@@ -60,11 +60,31 @@ BaseObjectPtr PROTECTION::clone()
 // PROTECTION = WinProtect Protect Password Prot4Rev Prot4RevPass
 const bool PROTECTION::loadContent(BinProcessor& proc)
 {
-	proc.optional<WinProtect>(); 
-	proc.optional<Protect>(); 
-	proc.optional<Password>(); 
-	proc.optional<Prot4Rev>(); 
-	proc.optional<Prot4RevPass>(); 
+	if (proc.optional<WinProtect>())
+	{
+		m_WinProtect = elements_.back();
+		elements_.pop_back();
+	}
+	if (proc.optional<Protect>())
+	{
+		m_Protect = elements_.back();
+		elements_.pop_back();
+	}	
+	if (proc.optional<Password>())
+	{
+		m_Password = elements_.back();
+		elements_.pop_back();
+	}
+	if (proc.optional<Prot4Rev>())
+	{
+		m_Prot4Rev = elements_.back();
+		elements_.pop_back();
+	}
+	if (proc.optional<Prot4RevPass>())
+	{
+		m_Prot4RevPass = elements_.back();
+		elements_.pop_back();
+	}
 	return true;
 }
 

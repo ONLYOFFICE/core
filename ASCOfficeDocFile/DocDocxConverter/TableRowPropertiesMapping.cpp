@@ -95,7 +95,7 @@ namespace DocFileFormat
 
 					XMLTools::XMLAttribute<wchar_t> wAfterType( _T( "w:type" ), _T( "dxa" ) );
 					wAfter.AppendAttribute( wAfterType );
-					_trPr->AppendChild( wAfter );
+					_trPr->AppendChild( wAfter, true );
 				}
 				break;
 
@@ -111,7 +111,7 @@ namespace DocFileFormat
 
 						XMLTools::XMLAttribute<wchar_t> wBeforeType( _T( "w:type" ), _T( "dxa" ) );
 						wBefore.AppendAttribute( wBeforeType );
-						_trPr->AppendChild( wBefore );
+						_trPr->AppendChild( wBefore, true );
 					}
 				}
 				break;

@@ -71,7 +71,7 @@ const bool BiffRecordSplit::storeRecordAndDecideProceeding(CFRecordPtr record)
 	else if(stored_record == NULL)
 	{
 		stored_record = record;
-		//throw;// EXCEPT::RT::WrongBiffRecord("Split records do not match", record->getTypeString());
+		// EXCEPT::RT::WrongBiffRecord("Split records do not match", record->getTypeString());
 	}
 	else
 	{

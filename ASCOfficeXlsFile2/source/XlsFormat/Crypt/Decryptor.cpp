@@ -54,10 +54,10 @@ namespace CRYPT
 		return crypt->IsVerify();
 	}
 
-	bool RC4Decryptor::SetPassword(std::wstring password)
+	bool RC4Decryptor::SetPassword(std::wstring password, int type)
 	{
 		crypt.reset();
-		crypt = CryptPtr(new RC4Crypt(crypt_data, password, 1));
+		crypt = CryptPtr(new RC4Crypt(crypt_data, password, type));
 		
 		if (crypt)	return crypt->IsVerify();
 		else		return false;

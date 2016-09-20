@@ -46,7 +46,7 @@ namespace CRYPT
 
 		bool IsVerify();
 
-		bool SetPassword(std::wstring password);
+		bool SetPassword(std::wstring password, int type = 1);
 
 	private:
 		CryptPtr				crypt;

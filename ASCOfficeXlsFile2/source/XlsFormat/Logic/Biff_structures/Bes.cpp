@@ -80,6 +80,7 @@ const std::wstring Bes::toString()
 			return L"#GETTING_DATA";
 		default:
 			// EXCEPT::RT::WrongBiffRecord("Unsupported type of Bes.", "unknown");
+			break;
 		}
 	}
 	else

@@ -119,6 +119,7 @@ void RevLblName::load(CFRecord& record)
 			break;
 		default:
 			// EXCEPT::RT::WrongBiffRecord("Unsupported value of built-in name.", record.getTypeString());
+			break;
 	}
 }
 

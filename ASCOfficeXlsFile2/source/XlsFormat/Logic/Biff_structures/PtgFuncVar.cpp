@@ -83,7 +83,7 @@ void PtgFuncVar::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool 
 	
 	int sz = ptg_stack.size();
 	
-	if(nparams )
+	if(nparams && !ptg_stack.empty())
 	{
 		arguments += ptg_stack.top();
 		ptg_stack.pop();

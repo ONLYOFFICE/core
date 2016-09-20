@@ -73,6 +73,8 @@ void Font::writeFields(CFRecord& record)
 
 void Font::readFields(CFRecord& record)
 {
+	correct = false;
+
 	global_info = record.getGlobalWorkbookInfo();
 
 	unsigned short flags;
@@ -86,7 +88,13 @@ void Font::readFields(CFRecord& record)
 	fExtend		= GETBIT(flags, 7);
 
 	record >> icv >> bls >> sss >> uls >> bFamily >> bCharSet;
-	record.skipNunBytes(1);
+	
+	unsigned char reserved;
+
+	record >> reserved;
+
+	if (bls >=100 && bls <= 1000)
+		correct = true;
 	
 	if (record.getGlobalWorkbookInfo()->Version < 0x0600)
 	{

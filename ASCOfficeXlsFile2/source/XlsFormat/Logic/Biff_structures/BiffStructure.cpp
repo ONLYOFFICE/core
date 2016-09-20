@@ -47,7 +47,7 @@ void BiffStructure_NoVtbl::store(CFRecord& record)
 // this function will never be called ( look at operator>>(CFRecord& record, T& val))
 void BiffStructure_NoVtbl::load(CFRecord& record)
 {
-	throw;// EXCEPT::LE::HowCouldItHappen("Unexpected behaviour.", __FUNCTION__);
+	// EXCEPT::LE::HowCouldItHappen("Unexpected behaviour.", __FUNCTION__);
 }
 
 

@@ -118,7 +118,7 @@ void RevLblName::load(CFRecord& record)
 			st = L"_xlnm._FilterDatabase";
 			break;
 		default:
-			throw;// EXCEPT::RT::WrongBiffRecord("Unsupported value of built-in name.", record.getTypeString());
+			// EXCEPT::RT::WrongBiffRecord("Unsupported value of built-in name.", record.getTypeString());
 	}
 }
 

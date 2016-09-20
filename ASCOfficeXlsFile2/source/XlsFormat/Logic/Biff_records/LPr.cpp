@@ -46,7 +46,7 @@ BaseObjectPtr LPr::clone()
 void LPr::writeFields(CFRecord& record)
 {
 	// The record is unused
-	throw;// EXCEPT::LE::WhatIsTheFuck("LPr must appears in the intermediate XML file while it must not.", __FUNCTION__);
+	// EXCEPT::LE::WhatIsTheFuck("LPr must appears in the intermediate XML file while it must not.", __FUNCTION__);
 }
 
 

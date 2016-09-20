@@ -59,7 +59,7 @@ PtgBool::PtgBool(const std::wstring& word)
 	}
 	else
 	{
-		throw;// EXCEPT::LE::FormulaParsingError("Wrong boolean format.", __FUNCTION__);
+		// EXCEPT::LE::FormulaParsingError("Wrong boolean format.", __FUNCTION__);
 	}
 
 }

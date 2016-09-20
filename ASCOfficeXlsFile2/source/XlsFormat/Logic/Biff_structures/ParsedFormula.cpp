@@ -90,7 +90,7 @@ const std::wstring ParsedFormula::getAssembledFormula(bool full_ref) const
 		if(1 != ptg_stack.size())
 		{
 			return L"";
-			//throw; EXCEPT::LE::WrongAPIUsage("Wrong formula assembling.", __FUNCTION__);
+			//EXCEPT::LE::WrongAPIUsage("Wrong formula assembling.", __FUNCTION__);
 		}
 		return ptg_stack.top();
 	}

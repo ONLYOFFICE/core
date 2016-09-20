@@ -76,7 +76,7 @@ void BookBool::writeFields(CFRecord& record)
 	}
 	else
 	{
-		throw;// EXCEPT::LE::AttributeDataWrong(L"grUpdateLinks", record.getTypeString().c_str(), grUpdateLinks);
+		// EXCEPT::LE::AttributeDataWrong(L"grUpdateLinks", record.getTypeString().c_str(), grUpdateLinks);
 	}
 	SETBITS(flags, 5, 6, grUpdateLinks_num);
 	SETBIT(flags, 8, fHideBorderUnselLists);
@@ -107,7 +107,7 @@ void BookBool::readFields(CFRecord& record)
 			grUpdateLinks = std::wstring (L"always");
 			break;
 		default:
-			throw;// EXCEPT::RT::WrongBiffRecord("Unsupported value of grUpdateLinks.", record.getTypeString());
+			// EXCEPT::RT::WrongBiffRecord("Unsupported value of grUpdateLinks.", record.getTypeString());
 
 	}
 	

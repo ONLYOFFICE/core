@@ -181,7 +181,7 @@ void CellRangeRef::fromString(const std::wstring& str)
 	{
 		if(-1 == columnFirst || -1 == columnLast) // no correct data found in the supplied string
 		{
-			throw;// EXCEPT::LE::WrongIntermediateXMLFormat(std::string("CellRangeRef failed to initialize from \"") + 
+			// EXCEPT::LE::WrongIntermediateXMLFormat(std::string("CellRangeRef failed to initialize from \"") + 
 															//static_cast<char*>(std::wstring (str.c_str())) + "\".", __FUNCTION__);
 		}
 

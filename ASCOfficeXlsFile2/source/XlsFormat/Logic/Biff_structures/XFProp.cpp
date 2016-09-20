@@ -140,7 +140,7 @@ void XFProp::load(CFRecord& record)
 				return;
 			}
 		default:
-			throw;// EXCEPT::RT::WrongBiffRecord("Unsupported type of XFProp.", record.getTypeString());
+			// EXCEPT::RT::WrongBiffRecord("Unsupported type of XFProp.", record.getTypeString());
 	}
 	record >> *xfPropDataBlob;
 }

@@ -63,6 +63,8 @@ public:
 	BaseObjectPtr				m_ExtSST;
 	BaseObjectPtr				m_CodePage;
 	BaseObjectPtr				m_Country;
+	BaseObjectPtr				m_WriteProtect;
+	BaseObjectPtr				m_PROTECTION;
 
 	std::vector<BaseObjectPtr>	m_arHFPicture;
 	std::vector<BaseObjectPtr>	m_arLBL;

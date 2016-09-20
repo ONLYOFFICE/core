@@ -117,7 +117,7 @@ void PtgExtraArray::fromString(const std::wstring& str)
 {
 	if(str.length() <= 2)
 	{
-		throw;// EXCEPT::LE::WhatIsTheFuck("Unknown PtgExtraArray format extracted from formula.", __FUNCTION__);
+		// EXCEPT::LE::WhatIsTheFuck("Unknown PtgExtraArray format extracted from formula.", __FUNCTION__);
 
 	}
 	std::wstring::const_iterator first = str.begin() + 1;
@@ -155,7 +155,7 @@ void PtgExtraArray::fromString(const std::wstring& str)
 		}
 		else
 		{
-			throw;// EXCEPT::LE::WhatIsTheFuck("Unknown operand format in PtgArray.", __FUNCTION__);
+			// EXCEPT::LE::WhatIsTheFuck("Unknown operand format in PtgArray.", __FUNCTION__);
 		}
 
 	}

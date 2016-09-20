@@ -54,7 +54,7 @@ BaseObjectPtr EntExU2::clone()
 
 void EntExU2::writeFields(CFRecord& record)
 {
-	throw;// EXCEPT::LE::UnexpectedProgramPath("EntExU2 record is skipped.", __FUNCTION__);
+	// EXCEPT::LE::UnexpectedProgramPath("EntExU2 record is skipped.", __FUNCTION__);
 }
 
 

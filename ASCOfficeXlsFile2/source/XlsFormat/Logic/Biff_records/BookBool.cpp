@@ -108,7 +108,7 @@ void BookBool::readFields(CFRecord& record)
 			break;
 		default:
 			// EXCEPT::RT::WrongBiffRecord("Unsupported value of grUpdateLinks.", record.getTypeString());
-
+			break;
 	}
 	
 	fHideBorderUnselLists = GETBIT(flags, 8);

@@ -385,6 +385,9 @@ bool odf_page_layout_context::add_header(int type)
 		create_element(L"style", L"header", elm, odf_context_);
 
 	if (!elm)return false;
+
+	if (master_state_list_.empty())
+		start_master_page(L"");
 	
 	master_state_list_.back().add_header(elm);
 ////////////////////////////////////////////////////////////////////////
@@ -425,8 +428,10 @@ bool odf_page_layout_context::add_header(int type)
 	return true;
 }
 
-void odf_page_layout_context::set_page_border_padding_bottom(int offset_type, double length_pt)
+void odf_page_layout_context::set_page_border_padding_bottom(int offset_type, int type, double length_pt)
 {
+	if (type < 1) return;
+
 	style_page_layout_properties * props = get_properties();
 	if (!props)return;
 
@@ -443,8 +448,10 @@ void odf_page_layout_context::set_page_border_padding_bottom(int offset_type, do
 }
 
 
-void odf_page_layout_context::set_page_border_padding_top(int offset_type, double length_pt)
+void odf_page_layout_context::set_page_border_padding_top(int offset_type, int type, double length_pt)
 {
+	if (type < 1) return;
+
 	style_page_layout_properties * props = get_properties();
 	if (!props)return;
 
@@ -461,8 +468,10 @@ void odf_page_layout_context::set_page_border_padding_top(int offset_type, doubl
 }
 
 
-void odf_page_layout_context::set_page_border_padding_left(int offset_type, double length_pt)
+void odf_page_layout_context::set_page_border_padding_left(int offset_type, int type, double length_pt)
 {
+	if (type < 1) return;
+
 	style_page_layout_properties * props = get_properties();
 	if (!props)return;
 	
@@ -479,8 +488,10 @@ void odf_page_layout_context::set_page_border_padding_left(int offset_type, doub
 }
 
 
-void odf_page_layout_context::set_page_border_padding_right(int offset_type, double length_pt)
+void odf_page_layout_context::set_page_border_padding_right(int offset_type, int type, double length_pt)
 {
+	if (type < 1) return;
+
 	style_page_layout_properties * props = get_properties();
 	if (!props)return;
 	

@@ -1053,14 +1053,34 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool r
 		if (oox_section_pr->m_oPgBorders->m_oOffsetFrom.IsInit() && 
 			(oox_section_pr->m_oPgBorders->m_oOffsetFrom->GetValue() == SimpleTypes::pageborderoffsetPage))border_offset = 2;
 
-		if (oox_section_pr->m_oPgBorders->m_oBottom.IsInit() && oox_section_pr->m_oPgBorders->m_oBottom->m_oSpace.IsInit())
-			odt_context->page_layout_context()->set_page_border_padding_bottom(border_offset,oox_section_pr->m_oPgBorders->m_oBottom->m_oSpace->ToPoints());
-		if (oox_section_pr->m_oPgBorders->m_oTop.IsInit() && oox_section_pr->m_oPgBorders->m_oTop->m_oSpace.IsInit())
-			odt_context->page_layout_context()->set_page_border_padding_top(border_offset,oox_section_pr->m_oPgBorders->m_oTop->m_oSpace->ToPoints());
-		if (oox_section_pr->m_oPgBorders->m_oLeft.IsInit() && oox_section_pr->m_oPgBorders->m_oLeft->m_oSpace.IsInit())
-			odt_context->page_layout_context()->set_page_border_padding_left(border_offset,oox_section_pr->m_oPgBorders->m_oLeft->m_oSpace->ToPoints());
-		if (oox_section_pr->m_oPgBorders->m_oRight.IsInit() && oox_section_pr->m_oPgBorders->m_oRight->m_oSpace.IsInit())
-			odt_context->page_layout_context()->set_page_border_padding_right(border_offset,oox_section_pr->m_oPgBorders->m_oRight->m_oSpace->ToPoints());
+		if (oox_section_pr->m_oPgBorders->m_oBottom.IsInit())
+		{
+			int type = (oox_section_pr->m_oPgBorders->m_oBottom->m_oVal.IsInit() ? oox_section_pr->m_oPgBorders->m_oBottom->m_oVal->GetValue() : SimpleTypes::bordervalueSingle);
+
+			if (oox_section_pr->m_oPgBorders->m_oBottom->m_oSpace.IsInit())
+				odt_context->page_layout_context()->set_page_border_padding_bottom(border_offset, type, oox_section_pr->m_oPgBorders->m_oBottom->m_oSpace->ToPoints());
+		}
+		if (oox_section_pr->m_oPgBorders->m_oTop.IsInit())
+		{
+			int type = (oox_section_pr->m_oPgBorders->m_oBottom->m_oVal.IsInit() ? oox_section_pr->m_oPgBorders->m_oTop->m_oVal->GetValue() : SimpleTypes::bordervalueSingle);
+
+			if (oox_section_pr->m_oPgBorders->m_oTop->m_oSpace.IsInit())
+				odt_context->page_layout_context()->set_page_border_padding_top(border_offset, type, oox_section_pr->m_oPgBorders->m_oTop->m_oSpace->ToPoints());
+		}
+		if (oox_section_pr->m_oPgBorders->m_oLeft.IsInit())
+		{
+			int type = (oox_section_pr->m_oPgBorders->m_oBottom->m_oVal.IsInit() ? oox_section_pr->m_oPgBorders->m_oLeft->m_oVal->GetValue() : SimpleTypes::bordervalueSingle);
+			
+			if (oox_section_pr->m_oPgBorders->m_oLeft->m_oSpace.IsInit())
+				odt_context->page_layout_context()->set_page_border_padding_left(border_offset, type, oox_section_pr->m_oPgBorders->m_oLeft->m_oSpace->ToPoints());
+		}
+		if (oox_section_pr->m_oPgBorders->m_oRight.IsInit())
+		{
+			int type = (oox_section_pr->m_oPgBorders->m_oBottom->m_oVal.IsInit() ? oox_section_pr->m_oPgBorders->m_oRight->m_oVal->GetValue() : SimpleTypes::bordervalueSingle);
+		
+			if (oox_section_pr->m_oPgBorders->m_oRight->m_oSpace.IsInit())
+				odt_context->page_layout_context()->set_page_border_padding_right(border_offset, type, oox_section_pr->m_oPgBorders->m_oRight->m_oSpace->ToPoints());
+		}
 
 
 		bool shadow = false;

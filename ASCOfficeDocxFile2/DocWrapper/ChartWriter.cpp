@@ -789,6 +789,10 @@ namespace BinXlsxRW{
 					}
 				}
 			}
+            else
+            {
+                //range is defined name
+            }
 		}
 	}
 	void ChartWriter::parseMultiLvlStrRef(const OOX::Spreadsheet::CT_MultiLvlStrRef* pMultiLvlStrRef, bool bUpdateRange, const wchar_t* cRangeName)

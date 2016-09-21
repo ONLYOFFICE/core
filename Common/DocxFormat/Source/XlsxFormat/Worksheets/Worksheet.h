@@ -408,7 +408,8 @@ namespace OOX
 				bool bRes = false;
 				int nIndex = sRef.Find('!');
 				CString sCellRef;
-				if(-1 != nIndex)
+
+                if(-1 != nIndex)
 				{
 					CString sSheetPrefix = sRef.Left(nIndex);
 					if(sSheetPrefix.GetLength() > 0 && '\'' == sSheetPrefix[0] && '\'' == sSheetPrefix[sSheetPrefix.GetLength() - 1])
@@ -416,24 +417,26 @@ namespace OOX
 						sSheetPrefix = sSheetPrefix.Mid(1, sSheetPrefix.GetLength() - 2);
 					}
 					sSheetPrefix.Replace(L"''", L"'");
-					int nIndexWbStart = sSheetPrefix.Find('[');
-					int nIndexWbEnd = sSheetPrefix.Find(']');
-					if(-1 != nIndexWbStart && -1 != nIndexWbEnd)
+
+                    int nIndexWbStart   = sSheetPrefix.Find('[');
+                    int nIndexWbEnd     = sSheetPrefix.Find(']');
+
+                    if(-1 != nIndexWbStart && -1 != nIndexWbEnd)
 					{
-						workbook = sSheetPrefix.Mid(nIndexWbStart + 1, nIndexWbEnd - nIndexWbStart - 1);
-						sSheetPrefix = sSheetPrefix.Right(sSheetPrefix.GetLength() - nIndexWbEnd - 1);
+                        workbook        = sSheetPrefix.Mid(nIndexWbStart + 1, nIndexWbEnd - nIndexWbStart - 1);
+                        sSheetPrefix    = sSheetPrefix.Right(sSheetPrefix.GetLength() - nIndexWbEnd - 1);
 					}
 					int nIndexColon = sSheetPrefix.Find(':');
 					if(-1 != nIndexColon)
 					{
-						sheetFrom = sSheetPrefix.Left(nIndexColon);
-						sheetTo = sSheetPrefix.Right(sSheetPrefix.GetLength() - nIndexColon - 1);
+                        sheetFrom   = sSheetPrefix.Left(nIndexColon);
+                        sheetTo     = sSheetPrefix.Right(sSheetPrefix.GetLength() - nIndexColon - 1);
 					}
 					else
 					{
 						sheetFrom = sSheetPrefix;
 					}
-					sCellRef = sRef.Right(sRef.GetLength() - nIndex - 1);
+                    sCellRef    = sRef.Right(sRef.GetLength() - nIndex - 1);
 				}
 				else
 				{
@@ -456,7 +459,8 @@ namespace OOX
 			static bool parseRef(CString sRef, int& nRow, int& nCol)
 			{
 				bool bRes = false;
-				nRow = 0;
+
+                nRow = 0;
 				nCol = 0;
 				int nLegnth = sRef.GetLength();
 				if(nLegnth > 0)
@@ -477,8 +481,11 @@ namespace OOX
 						{
 							nCol = nCol * 26 + sAdd[i] - 'A' + 1;
 						}
-						nRow = _wtoi(sDig);
-						bRes = true;
+                        if (!sDig.IsEmpty())
+                        {
+                            nRow = _wtoi(sDig);
+                            bRes = true;
+                        }
 					}
 				}
 				return bRes;

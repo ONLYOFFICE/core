@@ -1234,7 +1234,12 @@ namespace OOX
 			{
 				CString sResult = _T("<w:endnoteReference ");
 
-				ComplexTypes_WriteAttribute( _T("w:customMarkFollows=\""), m_oCustomMarkFollows );
+				if ( m_oCustomMarkFollows.IsInit() )
+				{
+					sResult += _T("w:customMarkFollows=\"");
+					sResult += m_oCustomMarkFollows->ToString2(SimpleTypes::onofftostring1);
+					sResult += _T("\" ");
+				}
 				ComplexTypes_WriteAttribute( _T("w:id=\""),                m_oId );
 
 				sResult += _T("/>");
@@ -1343,7 +1348,12 @@ namespace OOX
 			{
 				CString sResult = _T("<w:footnoteReference ");
 
-				ComplexTypes_WriteAttribute( _T("w:customMarkFollows=\""), m_oCustomMarkFollows );
+				if ( m_oCustomMarkFollows.IsInit() )
+				{
+					sResult += _T("w:customMarkFollows=\"");
+					sResult += m_oCustomMarkFollows->ToString2(SimpleTypes::onofftostring1);
+					sResult += _T("\" ");
+				}
 				ComplexTypes_WriteAttribute( _T("w:id=\""),                m_oId );
 
 				sResult += _T("/>");

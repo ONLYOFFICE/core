@@ -355,6 +355,12 @@
 #define c_oAscZoomType_FitWidth		1
 #define c_oAscZoomType_FitPage		2
 
+#define c_oAscLockLockTypeNone                      1 // никто не залочил данный объект
+#define c_oAscLockLockTypeMine                      2 // данный объект залочен текущим пользователем
+#define c_oAscLockLockTypeOther                     3 // данный объект залочен другим(не текущим) пользователем
+#define c_oAscLockLockTypeOther2                    4 // данный объект залочен другим(не текущим) пользователем (обновления уже пришли)
+#define c_oAscLockLockTypeOther3                    5 // данный объект был залочен (обновления пришли) и снова стал залочен
+
 #define c_oAscAsyncActionType_Information			0
 #define c_oAscAsyncActionType_BlockInteraction		1
 

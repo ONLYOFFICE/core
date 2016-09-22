@@ -128,13 +128,21 @@ namespace PPTX
 		void COLEObject::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 		{
 			std::wstring sData;
-			if(m_oId.IsInit() && m_sProgId.IsInit() && 0 == m_sProgId.get().Find(L"asc."))
+			if((m_oId.IsInit() || m_sFilepathBin.IsInit()) && m_sProgId.IsInit() && 0 == m_sProgId.get().Find(L"asc."))
 			{
-				FileContainer* pRels = NULL;
-				if (pWriter->m_pCommonRels->is_init())
-					pRels = pWriter->m_pCommonRels->operator ->();
+				CString sFilePath;
+				if (m_sFilepathBin.IsInit())
+				{
+					sFilePath = m_sFilepathBin.get();
+				}
+				else if (m_oId.IsInit())
+				{
+					FileContainer* pRels = NULL;
+					if (pWriter->m_pCommonRels->is_init())
+						pRels = pWriter->m_pCommonRels->operator ->();
 
-				CString sFilePath = this->GetFullOleName(PPTX::RId(m_oId.get()), pRels);
+					sFilePath = this->GetFullOleName(PPTX::RId(m_oId.get()), pRels);
+				}
 				if(!sFilePath.IsEmpty())
 				{
 					sData = GetOleData(string2std_string(sFilePath));
@@ -338,6 +346,8 @@ namespace PPTX
 			spPr.SetParentPointer(this);
 			if (style.IsInit())
 				style->SetParentPointer(this);
+			if (oleObject.IsInit())
+				oleObject->SetParentPointer(this);
 		}
 
 		void Pic::GetRect(Aggplus::RECT& pRect)const

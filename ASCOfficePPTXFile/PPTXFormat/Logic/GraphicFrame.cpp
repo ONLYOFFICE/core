@@ -101,7 +101,6 @@ namespace PPTX
 								{
 									xfrm.Merge(pic->spPr.xfrm);
 								}
-								return;
 							}
 							XmlUtils::CXmlNode oNode3 = oNodeData.ReadNodeNoNS(_T("AlternateContent"));
 							if (oNode3.IsValid())

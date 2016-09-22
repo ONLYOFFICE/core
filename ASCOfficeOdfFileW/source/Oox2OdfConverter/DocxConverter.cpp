@@ -1156,14 +1156,14 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool r
 		}
 	}
 	s = oox_section_pr;
-    if (present_footer && s->m_arrFooterReference.size() <1 && last_section_properties)
+    if (present_footer && s->m_arrFooterReference.size() < 1 && last_section_properties)
         s = last_section_properties; // нужно хранить ссылки на ВСЕ !!!
 
 	for (unsigned int i=0; i< s->m_arrFooterReference.size(); i++)
 	{
 		if (s->m_arrFooterReference[i] == NULL) continue;
 
-		int type =s->m_arrFooterReference[i]->m_oType.IsInit() ? s->m_arrFooterReference[i]->m_oType->GetValue() :0 ;
+		int type = s->m_arrFooterReference[i]->m_oType.IsInit() ? s->m_arrFooterReference[i]->m_oType->GetValue() :0 ;
 		if (odt_context->start_footer(type))
 		{
 			if (s->m_arrFooterReference[i]->m_oId.IsInit())
@@ -2157,10 +2157,10 @@ void DocxConverter::convert(OOX::Drawing::CAnchor *oox_anchor)
 		width = oox_anchor->m_oExtent->m_oCx.ToPoints();
 		height = oox_anchor->m_oExtent->m_oCy.ToPoints();
 	}
-	if (oox_anchor->m_oDistL.IsInit())odt_context->drawing_context()->set_margin_left(oox_anchor->m_oDistL->ToPoints());
-	if (oox_anchor->m_oDistT.IsInit())odt_context->drawing_context()->set_margin_top(oox_anchor->m_oDistT->ToPoints());
-	if (oox_anchor->m_oDistR.IsInit())odt_context->drawing_context()->set_margin_right(oox_anchor->m_oDistR->ToPoints());
-	if (oox_anchor->m_oDistB.IsInit())odt_context->drawing_context()->set_margin_bottom(oox_anchor->m_oDistB->ToPoints());
+	if (oox_anchor->m_oDistL.IsInit())odt_context->drawing_context()->set_margin_left	(oox_anchor->m_oDistL->ToPoints());
+	if (oox_anchor->m_oDistT.IsInit())odt_context->drawing_context()->set_margin_top	(oox_anchor->m_oDistT->ToPoints());
+	if (oox_anchor->m_oDistR.IsInit())odt_context->drawing_context()->set_margin_right	(oox_anchor->m_oDistR->ToPoints());
+	if (oox_anchor->m_oDistB.IsInit())odt_context->drawing_context()->set_margin_bottom	(oox_anchor->m_oDistB->ToPoints());
 
 	odt_context->drawing_context()->set_drawings_rect(x, y, width, height);
 

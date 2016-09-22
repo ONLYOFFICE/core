@@ -353,6 +353,7 @@ void OoxConverter::convert(OOX::Drawing::CGroupShapeProperties *   oox_group_spP
 	{
 		if (oox_group_spPr->m_oXfrm->m_oFlipH.GetValue() == SimpleTypes::onoffTrue)
 			odf_context()->drawing_context()->set_group_flip_H(true);
+		
 		if (oox_group_spPr->m_oXfrm->m_oFlipV.GetValue() == SimpleTypes::onoffTrue)
 			odf_context()->drawing_context()->set_group_flip_V(true);
 
@@ -362,22 +363,24 @@ void OoxConverter::convert(OOX::Drawing::CGroupShapeProperties *   oox_group_spP
 			
 			cx		= oox_group_spPr->m_oXfrm->m_oExt->m_oCx.ToPoints();
 			cy		= oox_group_spPr->m_oXfrm->m_oExt->m_oCy.ToPoints();
+			
 			ch_cx	= oox_group_spPr->m_oXfrm->m_oChExt->m_oCx.ToPoints();
 			ch_cy	= oox_group_spPr->m_oXfrm->m_oChExt->m_oCy.ToPoints();
 
-			odf_context()->drawing_context()->set_group_size(cx,cy,ch_cx,ch_cy);
+			odf_context()->drawing_context()->set_group_size(cx, cy, ch_cx, ch_cy);
 		}
 		if (
 			oox_group_spPr->m_oXfrm->m_oOff.IsInit() && oox_group_spPr->m_oXfrm->m_oChOff.IsInit())
 		{
 			_CP_OPT(double) x,y, ch_x, ch_y;
+			
 			x =	oox_group_spPr->m_oXfrm->m_oOff->m_oX.ToPoints();
 			y = oox_group_spPr->m_oXfrm->m_oOff->m_oY.ToPoints();
 
 			ch_x = oox_group_spPr->m_oXfrm->m_oChOff->m_oX.ToPoints();
 			ch_y = oox_group_spPr->m_oXfrm->m_oChOff->m_oY.ToPoints();
 
-			odf_context()->drawing_context()->set_group_position(	x,y, ch_x, ch_y);
+			odf_context()->drawing_context()->set_group_position(	x, y, ch_x, ch_y);
 		}
 
 		if (oox_group_spPr->m_oXfrm->m_oRot.GetValue() > 0)

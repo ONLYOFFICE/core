@@ -140,10 +140,11 @@ void ods_table_context::add_defined_expression(const std::wstring & name, const 
 
 	formulasconvert::oox2odf_converter formulas_converter;
 
-	std::wstring odf_value = formulas_converter.convert_named_ref(value);
-	std::wstring odf_base_cell = formulas_converter.find_base_cell(value);
+	std::wstring odf_value		= formulas_converter.convert_formula(value);	
+								//formulas_converter.convert_named_ref(value); -> ChartDateRange2007.xlsx
+	std::wstring odf_base_cell	= formulas_converter.find_base_cell(value);
 
-	named_expression->table_name_ = name;
+	named_expression->table_name_		= name;
 	named_expression->table_expression_ = odf_value;
 	
 	if (sheet_id >=0)

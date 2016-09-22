@@ -37,7 +37,9 @@
 #include "PPTDocumentInfo.h"
 
 #define CURRENT_USER_STREAM		"Current User" 
+
 #define DOCUMENT_STREAM			"PowerPoint Document" 
+
 #define PICTURE_STREAM			"Pictures" 
 #define HEADER_STREAM			"Header" 
 
@@ -58,21 +60,26 @@ public:
 		m_bDualStorage = false;
 
 		POLE::Stream *pStm = new POLE::Stream( m_pPowerPointStg, CURRENT_USER_STREAM);
-		if (pStm == NULL) return;
 				
-		if ( ReadCurrentUser(pStm)) 
-		  m_bIsPPTFile = TRUE; 
+		if ( ReadCurrentUser(pStm) ) 
+		{
+			m_bIsPPTFile = TRUE; 
+		}
 		else
 		{
 			RELEASEOBJECT(pStm);
-
+			
 			std::string stream_name = std::string(PP97_DUALSTORAGE) + std::string("/") + std::string(CURRENT_USER_STREAM);
 			pStm = new POLE::Stream( m_pPowerPointStg, stream_name);
-			if (pStm == NULL) return;
+			
+			if (pStm == NULL)
+				return;
 			
 			m_bDualStorage = true;
-			if ( ReadCurrentUser(pStm)) 
-			  m_bIsPPTFile = TRUE; 
+			if ( ReadCurrentUser(pStm))
+			{
+				m_bIsPPTFile = TRUE; 
+			}
 		}
 		
 		RELEASEOBJECT(pStm);
@@ -126,6 +133,8 @@ protected:
 
     bool ReadCurrentUser(POLE::Stream *pStm)
 	{
+		if (!pStm) return false;
+
 		SRecordHeader oHeader; 
         bool isPP = false;
 		

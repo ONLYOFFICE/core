@@ -135,9 +135,11 @@ namespace PPTX
 						for (ULONG i = 0; i < _c; ++i)
 						{
 							pReader->Skip(1); // type (0)
+							LONG pos = pReader->GetPos();
 							LONG nElemLength = pReader->GetLong(); // len
 							if(nElemLength > 0)
 							{
+								pReader->Seek(pos);
 								Logic::UniColor elm;
 								ClrMru.push_back(elm);
 								ClrMru.back().fromPPTY(pReader);

@@ -110,6 +110,7 @@ public:
 	const bool loadContent(BinProcessor& proc)
 	{
 		// EXCEPT::LE::UnexpectedProgramPath("Wrong loadContent usage", __FUNCTION__);
+		return false;
 	}
 
 
@@ -138,6 +139,7 @@ BaseObjectPtr OBJECTS::clone()
 const bool OBJECTS::loadContent(BinProcessor& proc)
 {
 	// EXCEPT::LE::UnexpectedProgramPath("Wrong loadContent usage", __FUNCTION__);
+	return false;
 }
 
 

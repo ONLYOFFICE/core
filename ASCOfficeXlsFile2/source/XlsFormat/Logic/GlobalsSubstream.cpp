@@ -314,14 +314,15 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 			{
 				if (proc.mandatory<FORMATTING>())
 				{
-					if (!m_Formating )
+					if (!m_Formating )//todooo concatinate?
 					{
 						m_Formating = elements_.back();
 						elements_.pop_back();
 						FORMATTING* fmts = dynamic_cast<FORMATTING*>(m_Formating.get());
 						if (fmts)
 						{
-							proc.getGlobalWorkbookInfo()->m_arFonts = &fmts->m_arFonts;
+							proc.getGlobalWorkbookInfo()->cellStyleDxfs_count	= fmts->m_arDXF.size(); // + будут юзерские
+							proc.getGlobalWorkbookInfo()->m_arFonts				= &fmts->m_arFonts;
 						}
 					}
 				}		

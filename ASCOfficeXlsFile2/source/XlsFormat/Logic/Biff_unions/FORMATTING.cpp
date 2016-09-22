@@ -110,8 +110,6 @@ const bool FORMATTING::loadContent(BinProcessor& proc)
 		elements_.pop_back();
 		count--;
 	}	
-
-	global_info->cellStyleDxfs_count = m_arDXF.size(); // + будут юзерские
 	//----------------------------------------------------------------------------------------------------	
 	if (proc.optional<STYLES>())
 	{

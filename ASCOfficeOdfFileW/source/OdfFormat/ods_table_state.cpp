@@ -48,6 +48,8 @@
 #include "style_paragraph_properties.h"
 #include "style_graphic_properties.h"
 
+#include <boost/date_time.hpp>
+
 namespace cpdoccore {
 
 	using namespace odf_types;
@@ -74,16 +76,14 @@ std::wstring convert_date(const std::wstring & oox_date)
 	{
 		return oox_date;
 	}
-	//todoooo  ПЕРЕПИСАТЬ !!!!
-
-	//boost::gregorian::date date_ = boost::gregorian::date(1900, 1, 1) + boost::gregorian::date_duration(iDate-2);
+	boost::gregorian::date date_ = boost::gregorian::date(1900, 1, 1) + boost::gregorian::date_duration(iDate-2);
 
 	////to for example, "1899-12-31T05:37:46.66569
-	std::wstring date_str = L"";//boost::lexical_cast<std::wstring>(date_.year())
-	//						+ L"-" +
-	//						(date_.month() < 10 ? L"0": L"") + boost::lexical_cast<std::wstring>(date_.month()) 
-	//						+ L"-" +
-	//						(date_.day() < 10 ? L"0": L"") + boost::lexical_cast<std::wstring>(date_.day());
+	std::wstring date_str = boost::lexical_cast<std::wstring>(date_.year())
+							+ L"-" +
+							(date_.month() < 10 ? L"0": L"") + boost::lexical_cast<std::wstring>(date_.month().as_number()) 
+							+ L"-" +
+							(date_.day() < 10 ? L"0": L"") + boost::lexical_cast<std::wstring>(date_.day());
 	return date_str;
 }
 

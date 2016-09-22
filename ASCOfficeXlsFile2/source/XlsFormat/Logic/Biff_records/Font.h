@@ -82,6 +82,8 @@ public:
 
 	FillInfoExt				color_ext;
 	ShortXLUnicodeString	fontName;
+
+	bool					correct;
 	
 };
 

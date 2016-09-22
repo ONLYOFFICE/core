@@ -1053,14 +1053,34 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool r
 		if (oox_section_pr->m_oPgBorders->m_oOffsetFrom.IsInit() && 
 			(oox_section_pr->m_oPgBorders->m_oOffsetFrom->GetValue() == SimpleTypes::pageborderoffsetPage))border_offset = 2;
 
-		if (oox_section_pr->m_oPgBorders->m_oBottom.IsInit() && oox_section_pr->m_oPgBorders->m_oBottom->m_oSpace.IsInit())
-			odt_context->page_layout_context()->set_page_border_padding_bottom(border_offset,oox_section_pr->m_oPgBorders->m_oBottom->m_oSpace->ToPoints());
-		if (oox_section_pr->m_oPgBorders->m_oTop.IsInit() && oox_section_pr->m_oPgBorders->m_oTop->m_oSpace.IsInit())
-			odt_context->page_layout_context()->set_page_border_padding_top(border_offset,oox_section_pr->m_oPgBorders->m_oTop->m_oSpace->ToPoints());
-		if (oox_section_pr->m_oPgBorders->m_oLeft.IsInit() && oox_section_pr->m_oPgBorders->m_oLeft->m_oSpace.IsInit())
-			odt_context->page_layout_context()->set_page_border_padding_left(border_offset,oox_section_pr->m_oPgBorders->m_oLeft->m_oSpace->ToPoints());
-		if (oox_section_pr->m_oPgBorders->m_oRight.IsInit() && oox_section_pr->m_oPgBorders->m_oRight->m_oSpace.IsInit())
-			odt_context->page_layout_context()->set_page_border_padding_right(border_offset,oox_section_pr->m_oPgBorders->m_oRight->m_oSpace->ToPoints());
+		if (oox_section_pr->m_oPgBorders->m_oBottom.IsInit())
+		{
+			int type = (oox_section_pr->m_oPgBorders->m_oBottom->m_oVal.IsInit() ? oox_section_pr->m_oPgBorders->m_oBottom->m_oVal->GetValue() : SimpleTypes::bordervalueSingle);
+
+			if (oox_section_pr->m_oPgBorders->m_oBottom->m_oSpace.IsInit())
+				odt_context->page_layout_context()->set_page_border_padding_bottom(border_offset, type, oox_section_pr->m_oPgBorders->m_oBottom->m_oSpace->ToPoints());
+		}
+		if (oox_section_pr->m_oPgBorders->m_oTop.IsInit())
+		{
+			int type = (oox_section_pr->m_oPgBorders->m_oBottom->m_oVal.IsInit() ? oox_section_pr->m_oPgBorders->m_oTop->m_oVal->GetValue() : SimpleTypes::bordervalueSingle);
+
+			if (oox_section_pr->m_oPgBorders->m_oTop->m_oSpace.IsInit())
+				odt_context->page_layout_context()->set_page_border_padding_top(border_offset, type, oox_section_pr->m_oPgBorders->m_oTop->m_oSpace->ToPoints());
+		}
+		if (oox_section_pr->m_oPgBorders->m_oLeft.IsInit())
+		{
+			int type = (oox_section_pr->m_oPgBorders->m_oBottom->m_oVal.IsInit() ? oox_section_pr->m_oPgBorders->m_oLeft->m_oVal->GetValue() : SimpleTypes::bordervalueSingle);
+			
+			if (oox_section_pr->m_oPgBorders->m_oLeft->m_oSpace.IsInit())
+				odt_context->page_layout_context()->set_page_border_padding_left(border_offset, type, oox_section_pr->m_oPgBorders->m_oLeft->m_oSpace->ToPoints());
+		}
+		if (oox_section_pr->m_oPgBorders->m_oRight.IsInit())
+		{
+			int type = (oox_section_pr->m_oPgBorders->m_oBottom->m_oVal.IsInit() ? oox_section_pr->m_oPgBorders->m_oRight->m_oVal->GetValue() : SimpleTypes::bordervalueSingle);
+		
+			if (oox_section_pr->m_oPgBorders->m_oRight->m_oSpace.IsInit())
+				odt_context->page_layout_context()->set_page_border_padding_right(border_offset, type, oox_section_pr->m_oPgBorders->m_oRight->m_oSpace->ToPoints());
+		}
 
 
 		bool shadow = false;
@@ -1136,14 +1156,14 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool r
 		}
 	}
 	s = oox_section_pr;
-    if (present_footer && s->m_arrFooterReference.size() <1 && last_section_properties)
+    if (present_footer && s->m_arrFooterReference.size() < 1 && last_section_properties)
         s = last_section_properties; // нужно хранить ссылки на ВСЕ !!!
 
 	for (unsigned int i=0; i< s->m_arrFooterReference.size(); i++)
 	{
 		if (s->m_arrFooterReference[i] == NULL) continue;
 
-		int type =s->m_arrFooterReference[i]->m_oType.IsInit() ? s->m_arrFooterReference[i]->m_oType->GetValue() :0 ;
+		int type = s->m_arrFooterReference[i]->m_oType.IsInit() ? s->m_arrFooterReference[i]->m_oType->GetValue() :0 ;
 		if (odt_context->start_footer(type))
 		{
 			if (s->m_arrFooterReference[i]->m_oId.IsInit())
@@ -2075,7 +2095,10 @@ void DocxConverter::convert(OOX::Logic::CObject* oox_obj)
 	bool bSet = false;
 	if (oox_obj->m_oShape.IsInit())
 	{
-        OOX::Vml::SptType sptType = oox_obj->m_oShapeType->m_oSpt.IsInit() ? static_cast<OOX::Vml::SptType>(oox_obj->m_oShapeType->m_oSpt->GetValue()) : OOX::Vml::sptNotPrimitive;
+        OOX::Vml::SptType sptType = OOX::Vml::SptType::sptNotPrimitive;
+		
+		if ((oox_obj->m_oShapeType.IsInit()) && (oox_obj->m_oShapeType->m_oSpt.IsInit()))
+			sptType = static_cast<OOX::Vml::SptType>(oox_obj->m_oShapeType->m_oSpt->GetValue());
 
         if (sptType != OOX::Vml::SptType::sptNotPrimitive)
 		{
@@ -2103,9 +2126,11 @@ void DocxConverter::convert(OOX::Logic::CObject* oox_obj)
 		odf_context()->drawing_context()->set_name(L"Rect");
 		odf_context()->drawing_context()->start_shape(SimpleTypes::shapetypeRect);			
 	}
-	OoxConverter::convert(oox_obj->m_oShape.GetPointer()); 			
-	odf_context()->drawing_context()->end_shape(); 
+	OoxConverter::convert(oox_obj->m_oShape.GetPointer()); 	
 
+	odf_context()->drawing_context()->set_type_fill(2); //temp ...  image 
+
+	odf_context()->drawing_context()->end_shape(); 
 	odf_context()->drawing_context()->end_drawing();
 
 	odt_context->end_drawings();
@@ -2132,10 +2157,10 @@ void DocxConverter::convert(OOX::Drawing::CAnchor *oox_anchor)
 		width = oox_anchor->m_oExtent->m_oCx.ToPoints();
 		height = oox_anchor->m_oExtent->m_oCy.ToPoints();
 	}
-	if (oox_anchor->m_oDistL.IsInit())odt_context->drawing_context()->set_margin_left(oox_anchor->m_oDistL->ToPoints());
-	if (oox_anchor->m_oDistT.IsInit())odt_context->drawing_context()->set_margin_top(oox_anchor->m_oDistT->ToPoints());
-	if (oox_anchor->m_oDistR.IsInit())odt_context->drawing_context()->set_margin_right(oox_anchor->m_oDistR->ToPoints());
-	if (oox_anchor->m_oDistB.IsInit())odt_context->drawing_context()->set_margin_bottom(oox_anchor->m_oDistB->ToPoints());
+	if (oox_anchor->m_oDistL.IsInit())odt_context->drawing_context()->set_margin_left	(oox_anchor->m_oDistL->ToPoints());
+	if (oox_anchor->m_oDistT.IsInit())odt_context->drawing_context()->set_margin_top	(oox_anchor->m_oDistT->ToPoints());
+	if (oox_anchor->m_oDistR.IsInit())odt_context->drawing_context()->set_margin_right	(oox_anchor->m_oDistR->ToPoints());
+	if (oox_anchor->m_oDistB.IsInit())odt_context->drawing_context()->set_margin_bottom	(oox_anchor->m_oDistB->ToPoints());
 
 	odt_context->drawing_context()->set_drawings_rect(x, y, width, height);
 

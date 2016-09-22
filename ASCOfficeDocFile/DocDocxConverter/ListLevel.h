@@ -141,8 +141,11 @@ namespace DocFileFormat
 		unsigned short	dxaIndent;
 		unsigned short	dxaSpace;
 	public:
+        bool            bEnabled;
 		virtual ~NumberingLevelDescriptor();
 		// Parses the given StreamReader to retrieve a ANLV struct
-		NumberingLevelDescriptor( unsigned char * data, int length ); //cbANLV is 16 bytes 
-	};
+        NumberingLevelDescriptor();
+        NumberingLevelDescriptor( unsigned char * data, int length ); //cbANLV is 16 bytes
+        void Parse( unsigned char * data, int length );
+    };
 }

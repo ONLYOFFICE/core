@@ -134,7 +134,7 @@ namespace DocFileFormat
 	
 	private:
 
-		NumberingLevelDescriptor *lvl[9];
+        NumberingLevelDescriptor lvl[9];
 		
 		unsigned char	fRestartHdr;
 		unsigned char	fSpareOlst2;
@@ -145,7 +145,7 @@ namespace DocFileFormat
 
 	public:
 		static const int STRUCTURE_SIZE = 212;
-		virtual ByteStructure* ConstructObject( VirtualStreamReader* reader, int length );
+        virtual ByteStructure* ConstructObject( VirtualStreamReader* reader, int length );
 		
 		virtual ~OutlineListDescriptor();
 		// Parses the given StreamReader to retrieve a OLST struct

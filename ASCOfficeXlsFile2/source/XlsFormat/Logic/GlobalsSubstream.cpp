@@ -210,7 +210,14 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 					}
 				}
 			}break;
-			case rt_WriteProtect:	proc.optional<WriteProtect>();	break;
+			case rt_WriteProtect:	
+			{
+				if (proc.optional<WriteProtect>())
+				{
+					m_WriteProtect = elements_.back();
+					elements_.pop_back();
+				}
+			}break;
 			case rt_FilePass:		
 			{
 				if (proc.optional<FilePass>())
@@ -218,11 +225,8 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 					if (( proc.getGlobalWorkbookInfo()->decryptor)  &&
 						( proc.getGlobalWorkbookInfo()->decryptor->IsVerify() == false))
 					{
-						if (proc.getGlobalWorkbookInfo()->password.empty())
-						{
-							if (!proc.getGlobalWorkbookInfo()->decryptor->SetPassword(L"VelvetSweatshop"))
-								return false;
-						}else return false;
+						if (!proc.getGlobalWorkbookInfo()->decryptor->SetPassword(L"VelvetSweatshop", 2))
+							return false;
 					}
 				}
 			}break;
@@ -245,7 +249,14 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 			case rt_CodeName:			proc.optional<CodeName>();		break;
 			case rt_BuiltInFnGroupCount:proc.optional<FNGROUPS>();		break;
 			case rt_OleObjectSize:		proc.optional<OleObjectSize>();	break;
-			case rt_WinProtect:			proc.optional<PROTECTION>();	break;
+			case rt_WinProtect:			
+			{
+				if (proc.optional<PROTECTION>())
+				{
+					m_PROTECTION = elements_.back();
+					elements_.pop_back();
+				}
+			}break;
 			case rt_FileSharing:		proc.optional<FileSharing>();	break;
 			case rt_CodePage:
 			{
@@ -303,13 +314,16 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 			{
 				if (proc.mandatory<FORMATTING>())
 				{
-					m_Formating = elements_.back();
-					elements_.pop_back();
-
-					FORMATTING* fmts = dynamic_cast<FORMATTING*>(m_Formating.get());
-					if (fmts)
+					if (!m_Formating )//todooo concatinate?
 					{
-						proc.getGlobalWorkbookInfo()->m_arFonts = &fmts->m_arFonts;
+						m_Formating = elements_.back();
+						elements_.pop_back();
+						FORMATTING* fmts = dynamic_cast<FORMATTING*>(m_Formating.get());
+						if (fmts)
+						{
+							proc.getGlobalWorkbookInfo()->cellStyleDxfs_count	= fmts->m_arDXF.size(); // + будут юзерские
+							proc.getGlobalWorkbookInfo()->m_arFonts				= &fmts->m_arFonts;
+						}
 					}
 				}		
 			}break;

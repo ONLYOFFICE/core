@@ -529,7 +529,7 @@ namespace DocFileFormat
 		
 		void reset( VirtualStreamReader reader )
 		{
-			if (m_FibBase.nFib > 0 && m_FibBase.nFib < Fib1997)
+            if (m_FibBase.nFib > 0 && m_FibBase.nFib <= Fib1995)
 			{
 				m_RgLw97.cbMac				= reader.ReadInt32();//32
 				/*m_FibWord97.fcSpare0	= */reader.ReadInt32();
@@ -539,8 +539,8 @@ namespace DocFileFormat
 				m_RgLw97.ccpText			= reader.ReadInt32(); 
 				m_RgLw97.ccpFtn				= reader.ReadInt32();
 				m_RgLw97.ccpHdr				= reader.ReadInt32();
-				
-				/*m_FibWord97.ccpMcr		= */reader.ReadInt32();
+
+                /*m_FibWord97.ccpMcr		= */reader.ReadInt32();
 				m_RgLw97.ccpAtn				= reader.ReadInt32();
 				m_RgLw97.ccpEdn				= reader.ReadInt32();
 				m_RgLw97.ccpTxbx			= reader.ReadInt32();				
@@ -743,7 +743,7 @@ namespace DocFileFormat
 				m_FibWord97.fcSttbFnm			= reader.ReadInt32();
 				m_FibWord97.lcbSttbFnm			= reader.ReadInt32();	//676	
 			}
-			if (m_FibBase.nFib >= Fib1997 || m_FibBase.nFib == 0)
+            if (m_FibBase.nFib > Fib1995 || m_FibBase.nFib == 0)
 			{				
 				reader.ReadBytes(8, false); //68
 				
@@ -1218,7 +1218,7 @@ namespace DocFileFormat
 			if (m_FibBase.nFib  > Fib1995)
 				csw = reader.ReadUInt16(); //32
 
-			if (m_FibBase.nFib >= Fib1997 || m_FibBase.nFib == 0)
+            if (m_FibBase.nFib > Fib1995 || m_FibBase.nFib == 0)
 			{	
 				
 				//read the RgW97

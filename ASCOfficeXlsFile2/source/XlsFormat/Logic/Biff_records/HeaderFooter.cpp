@@ -60,7 +60,7 @@ void HeaderFooter::writeFields(CFRecord& record)
 	_GUID_ guid_num;
 	if(!STR::bstr2guid(guidSView, guid_num))
 	{
-		throw;// EXCEPT::LE::AttributeDataWrong(L"guid", L"HeaderFooter", guidSView);
+		// EXCEPT::LE::AttributeDataWrong(L"guid", L"HeaderFooter", guidSView);
 	}
 	record << guid_num;
 	unsigned short flags = 0;

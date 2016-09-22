@@ -136,6 +136,7 @@ namespace XMLTools
 		std::basic_string<T>									m_Name;
 		std::basic_string<T>									m_ElementText;
 		std::map<std::basic_string<T>, std::basic_string<T>>	m_AttributeMap;
+		std::map<std::basic_string<T>, int>						m_ChildMap; //for uniq
         std::list<XMLElement<T>>								m_Elements;
 
         typedef typename std::list<XMLElement<T>>::iterator          ElementsIterator;
@@ -206,8 +207,16 @@ namespace XMLTools
 
 		/*========================================================================================================*/
 
-		void AppendChild( const XMLElement<T>& element )
+		void AppendChild( const XMLElement<T>& element, bool uniq = false)
 		{
+			if (m_ChildMap.find(element.GetName()) != m_ChildMap.end())
+			{
+				if (uniq) return; 		
+			}
+			else
+			{
+				m_ChildMap.insert(m_ChildMap.end(), std::pair<std::basic_string<T>, int>(element.GetName(), 0));
+			}
 			m_Elements.push_back( element );
 		}
 

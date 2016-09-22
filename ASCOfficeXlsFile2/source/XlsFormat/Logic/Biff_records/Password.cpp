@@ -53,16 +53,16 @@ BaseObjectPtr Password::clone()
 
 void Password::writeFields(CFRecord& record)
 {
-	unsigned short wPassword_num = static_cast<unsigned short>(STR::hex_str2int(wPassword));
+	wPassword_num = static_cast<unsigned short>(STR::hex_str2int(wPassword));
 	record << wPassword_num;
 }
 
 
 void Password::readFields(CFRecord& record)
 {
-	unsigned short wPassword_num;
 	record >> wPassword_num;
-	wPassword = std::wstring (STR::int2hex_wstr(wPassword_num, sizeof(wPassword_num)).c_str());
+
+	wPassword = STR::int2hex_wstr(wPassword_num, sizeof(wPassword_num));
 }
 
 } // namespace XLS

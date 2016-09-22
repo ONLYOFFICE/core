@@ -50,6 +50,12 @@ public:
 	virtual const bool loadContent(BinProcessor& proc);
 
 	static const ElementType	type = typePROTECTION;
+
+	BaseObjectPtr	m_WinProtect;
+	BaseObjectPtr	m_Protect;
+	BaseObjectPtr	m_Password;
+	BaseObjectPtr	m_Prot4Rev;
+	BaseObjectPtr	m_Prot4RevPass;
 };
 
 } // namespace XLS

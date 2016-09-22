@@ -58,7 +58,7 @@ void UserSViewBegin::writeFields(CFRecord& record)
 	_GUID_ guid_num;
 	if(!STR::bstr2guid(guid, guid_num))
 	{
-		throw;// EXCEPT::LE::AttributeDataWrong(L"guid", L"UserSViewBegin", guid);
+		// EXCEPT::LE::AttributeDataWrong(L"guid", L"UserSViewBegin", guid);
 	}
 	record << guid_num << iTabid;
 	record.reserveNunBytes(2); // reserved

@@ -86,7 +86,7 @@ void HyperlinkObject::store(XLS::CFRecord& record)
 		_GUID_ guid_num;
 		if(!STR::bstr2guid(guid, guid_num))
 		{
-			throw;// EXCEPT::LE::AttributeDataWrong(L"guid", L"HyperlinkObject", guid);
+			// EXCEPT::LE::AttributeDataWrong(L"guid", L"HyperlinkObject", guid);
 		}
 		record << guid_num;
 	}

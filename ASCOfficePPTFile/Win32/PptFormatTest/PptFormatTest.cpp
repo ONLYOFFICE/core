@@ -47,21 +47,22 @@ int _tmain(int argc, _TCHAR* argv[])
 	std::wstring dstTempPath	= FileSystem::Directory::CreateDirectoryWithUniqueName(outputDir);
 
 	std::wstring tempPath	= FileSystem::Directory::CreateDirectoryWithUniqueName(outputDir);
-	// Ppt->Pptx
-		COfficePPTFile pptFile;
-		
-		pptFile.put_TempDirectory(tempPath);
 
-		HRESULT hRes = pptFile.LoadFromFile(sSrcPpt, dstTempPath);
+	COfficePPTFile pptFile;
 	
-	if (hRes != S_OK)return 2;
+	pptFile.put_TempDirectory(tempPath);
+
+	HRESULT hRes = pptFile.LoadFromFile(sSrcPpt, dstTempPath);
 	
-	COfficeUtils oCOfficeUtils(NULL);
-	if (S_OK != oCOfficeUtils.CompressFileOrDirectory(dstTempPath.c_str(), sDstPptx, -1))
-        return 1;
-	
+	if (hRes == S_OK)
+	{
+		COfficeUtils oCOfficeUtils(NULL);		
+		hRes = oCOfficeUtils.CompressFileOrDirectory(dstTempPath.c_str(), sDstPptx, -1);
+	}
+		
 	FileSystem::Directory::DeleteDirectory(dstTempPath);
 	FileSystem::Directory::DeleteDirectory(tempPath);
-	return 0;
+
+	return hRes;
 }
 

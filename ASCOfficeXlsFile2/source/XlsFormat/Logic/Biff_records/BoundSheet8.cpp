@@ -72,7 +72,7 @@ void BoundSheet8::writeFields(CFRecord& record)
 	}
 	else
 	{
-		throw;// EXCEPT::LE::AttributeDataWrong(L"hsState", record.getTypeString().c_str(), hsState);
+		// EXCEPT::LE::AttributeDataWrong(L"hsState", record.getTypeString().c_str(), hsState);
 	}
 	ShortXLUnicodeString stName = name_;
 

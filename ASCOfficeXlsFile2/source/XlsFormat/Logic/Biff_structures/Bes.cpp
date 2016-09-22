@@ -79,7 +79,8 @@ const std::wstring Bes::toString()
 		case 0x2B:
 			return L"#GETTING_DATA";
 		default:
-			throw;// EXCEPT::RT::WrongBiffRecord("Unsupported type of Bes.", "unknown");
+			// EXCEPT::RT::WrongBiffRecord("Unsupported type of Bes.", "unknown");
+			break;
 		}
 	}
 	else
@@ -144,7 +145,7 @@ void Bes::fromString(const std::wstring str)
 	}
 	else
 	{
-		throw;// EXCEPT::RT::WrongBiffRecord("Unsupported type of Bes.", "unknown");
+		// EXCEPT::RT::WrongBiffRecord("Unsupported type of Bes.", "unknown");
 	}
 }
 

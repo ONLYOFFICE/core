@@ -30,8 +30,8 @@
  *
  */
 #pragma once
-#ifndef OOX_RELS_RELATION_SHIP_INCLUDE_H_
-#define OOX_RELS_RELATION_SHIP_INCLUDE_H_
+#ifndef PPTXOOX_RELS_RELATION_SHIP_INCLUDE_H_
+#define PPTXOOX_RELS_RELATION_SHIP_INCLUDE_H_
 
 #include "./../WritingElement.h"
 #include "./../RId.h"
@@ -124,4 +124,4 @@ namespace PPTX
 	} // namespace Rels
 } // namespace PPTX
 
-#endif // OOX_RELS_RELATION_SHIP_INCLUDE_H_
+#endif // PPTXOOX_RELS_RELATION_SHIP_INCLUDE_H_

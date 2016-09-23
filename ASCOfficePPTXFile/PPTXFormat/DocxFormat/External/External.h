@@ -30,8 +30,8 @@
  *
  */
 #pragma once
-#ifndef OOX_EXTERNAL_INCLUDE_H_
-#define OOX_EXTERNAL_INCLUDE_H_
+#ifndef PPTXOOX_EXTERNAL_INCLUDE_H_
+#define PPTXOOX_EXTERNAL_INCLUDE_H_
 
 #include "../File.h"
 #include "../FileTypes.h"
@@ -73,4 +73,4 @@ namespace PPTX
 	};
 } // namespace PPTX
 
-#endif // OOX_EXTERNAL_INCLUDE_H_
+#endif // PPTXOOX_EXTERNAL_INCLUDE_H_

@@ -30,8 +30,8 @@
  *
  */
 #pragma once
-#ifndef OOX_CONTENT_TYPES_OVERRIDE_INCLUDE_H_
-#define OOX_CONTENT_TYPES_OVERRIDE_INCLUDE_H_
+#ifndef PPTXOOX_CONTENT_TYPES_OVERRIDE_INCLUDE_H_
+#define PPTXOOX_CONTENT_TYPES_OVERRIDE_INCLUDE_H_
 
 #include "./../WritingElement.h"
 #include "../../../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h"
@@ -98,4 +98,4 @@ namespace PPTX
 	} // namespace ContentTypes
 } // namespace PPTX
 
-#endif // OOX_CONTENT_TYPES_OVERRIDE_INCLUDE_H_
+#endif // PPTXOOX_CONTENT_TYPES_OVERRIDE_INCLUDE_H_

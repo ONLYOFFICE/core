@@ -30,8 +30,8 @@
  *
  */
 #pragma once
-#ifndef OOX_FILE_TYPES_INCLUDE_H_
-#define OOX_FILE_TYPES_INCLUDE_H_
+#ifndef PPTXOOX_FILE_TYPES_INCLUDE_H_
+#define PPTXOOX_FILE_TYPES_INCLUDE_H_
 
 #include "FileType.h"
 
@@ -285,4 +285,4 @@ namespace PPTX
 	} // namespace FileTypes
 } // namespace OOX
 
-#endif // OOX_FILE_TYPES_INCLUDE_H_
+#endif // PPTXOOX_FILE_TYPES_INCLUDE_H_

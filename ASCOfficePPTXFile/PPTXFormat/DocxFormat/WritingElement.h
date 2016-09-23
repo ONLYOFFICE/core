@@ -40,33 +40,6 @@
 
 namespace PPTX
 {
-#define WritingElement_AdditionConstructors(Class) \
-	Class(XmlUtils::CXmlNode& oNode)\
-	{\
-		fromXML( oNode );\
-	}\
-	const Class& operator =(const XmlUtils::CXmlNode &oNode)\
-	{\
-		fromXML( (XmlUtils::CXmlNode &)oNode );\
-		return *this;\
-	}
-
-#define WritingElement_ReadNode( oRootNode, oChildNode, sNodeName, oValue ) \
-	if ( oRootNode.GetNode( sNodeName, oChildNode ) )\
-		oValue = oChildNode;
-
-#define WritingElement_WriteNode_1( sStartNodeString, oValue ) \
-	if ( oValue.IsInit() )\
-	{\
-		sResult += sStartNodeString;\
-		sResult += oValue->ToString();\
-		sResult += _T("/>");\
-	}
-
-#define WritingElement_WriteNode_2( oValue ) \
-	if ( oValue.IsInit() )\
-		sResult += oValue->toXML();
-
 	enum EElementType
 	{
 		et_Unknown,

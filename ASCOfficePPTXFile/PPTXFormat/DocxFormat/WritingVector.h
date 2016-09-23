@@ -30,8 +30,8 @@
  *
  */
 #pragma once
-#ifndef OOX_WRITING_VECTOR_INCLUDE_H_
-#define OOX_WRITING_VECTOR_INCLUDE_H_
+#ifndef PPTXOOX_WRITING_VECTOR_INCLUDE_H_
+#define PPTXOOX_WRITING_VECTOR_INCLUDE_H_
 
 #include "WritingElement.h"
 
@@ -94,4 +94,4 @@ namespace PPTX
 	};
 } // namespace PPTX
 
-#endif // OOX_WRITING_VECTOR_INCLUDE_H_
+#endif // PPTXOOX_WRITING_VECTOR_INCLUDE_H_

@@ -30,8 +30,8 @@
  *
  */
 #pragma once
-#ifndef OOX_EXTERNALVIDEO_INCLUDE_H_
-#define OOX_EXTERNALVIDEO_INCLUDE_H_
+#ifndef PPTXOOX_EXTERNALVIDEO_INCLUDE_H_
+#define PPTXOOX_EXTERNALVIDEO_INCLUDE_H_
 
 #include "External.h"
 
@@ -68,4 +68,4 @@ namespace PPTX
 	};
 } // namespace PPTX
 
-#endif // OOX_EXTERNALVIDEO_INCLUDE_H_
+#endif // PPTXOOX_EXTERNALVIDEO_INCLUDE_H_

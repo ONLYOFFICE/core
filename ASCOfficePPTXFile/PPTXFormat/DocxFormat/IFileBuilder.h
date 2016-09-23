@@ -30,8 +30,8 @@
  *
  */
 #pragma once
-#ifndef OOX_FILE_BUILDER_INCLUDE_H_
-#define OOX_FILE_BUILDER_INCLUDE_H_
+#ifndef PPTXOOX_FILE_BUILDER_INCLUDE_H_
+#define PPTXOOX_FILE_BUILDER_INCLUDE_H_
 
 #include "ContentTypes/File.h"
 
@@ -50,4 +50,4 @@ namespace PPTX
 	};
 } // namespace OOX
 
-#endif // OOX_FILE_BUILDER_INCLUDE_H_
+#endif // PPTXOOX_FILE_BUILDER_INCLUDE_H_

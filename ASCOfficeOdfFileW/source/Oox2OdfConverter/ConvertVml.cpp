@@ -230,9 +230,9 @@ void OoxConverter::convert(SimpleTypes::Vml::CCssStyle *vml_style, bool group)
 	if (group)
 	{
 		_CP_OPT(double) not_set;
-		odf_context()->drawing_context()->set_group_size(width_pt, height_pt, not_set ,not_set);
+		odf_context()->drawing_context()->set_group_size(width_pt, height_pt, width_pt, height_pt);//not_set ,not_set);
 
-		odf_context()->drawing_context()->set_group_position(x, y, not_set , not_set );
+		odf_context()->drawing_context()->set_group_position(x, y, x, y);//not_set , not_set );
 	}
 	else
 	{

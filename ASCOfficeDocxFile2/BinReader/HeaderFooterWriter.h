@@ -64,6 +64,12 @@ namespace Writers
 	static CString g_string_ftr_Start = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:ftr xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" mc:Ignorable=\"w14 wp14\">");
 	static CString g_string_ftr_End = _T("</w:ftr>");
 
+	static CString g_string_footnotes_Start = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:footnotes xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" mc:Ignorable=\"w14 wp14\">");
+	static CString g_string_footnotes_End = _T("</w:footnotes>");
+
+	static CString g_string_endnotes_Start = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:endnotes xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" mc:Ignorable=\"w14 wp14\">");
+	static CString g_string_endnotes_End = _T("</w:endnotes>");
+
 	class HeaderFooterWriter 
 	{
 		CString	m_sDir;
@@ -120,6 +126,80 @@ namespace Writers
 
 			//Rels
 			//return m_oDocumentRelsWriter.AddRels(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/") + sHeader, sFilename);
+		}
+	};
+	class FootnotesWriter
+	{
+		CString m_sDir;
+		ContentTypesWriter& m_oContentTypesWriter;
+	public:
+		ContentWriter	m_oNotesWriter;
+		FootnotesWriter(CString sDir, ContentTypesWriter& oContentTypesWriter):m_sDir(sDir),m_oContentTypesWriter(oContentTypesWriter)
+		{
+		}
+		void Write()
+		{
+			if(!IsEmpty())
+			{
+				CString sFilename = getFilename();
+
+				CString filePath = m_sDir + FILE_SEPARATOR_STR +_T("word") + FILE_SEPARATOR_STR + sFilename;
+
+				CFile oFile;
+				oFile.CreateFile(filePath);
+				oFile.WriteStringUTF8(g_string_footnotes_Start);
+				oFile.WriteStringUTF8(m_oNotesWriter.m_oContent.GetData());
+				oFile.WriteStringUTF8(g_string_footnotes_End);
+				oFile.CloseFile();
+
+				//ContentType
+				m_oContentTypesWriter.AddOverride(_T("/word/") + sFilename, _T("application/vnd.openxmlformats-officedocument.wordprocessingml.footnotes+xml"));
+			}
+		}
+		CString getFilename()
+		{
+			return _T("footnotes.xml");
+		}
+		bool IsEmpty()
+		{
+			return !(m_oNotesWriter.m_oContent.GetCurSize() > 0);
+		}
+	};
+	class EndnotesWriter
+	{
+		CString m_sDir;
+		ContentTypesWriter& m_oContentTypesWriter;
+	public:
+		ContentWriter	m_oNotesWriter;
+		EndnotesWriter(CString sDir, ContentTypesWriter& oContentTypesWriter):m_sDir(sDir),m_oContentTypesWriter(oContentTypesWriter)
+		{
+		}
+		void Write()
+		{
+			if(!IsEmpty())
+			{
+				CString sFilename = getFilename();
+
+				CString filePath = m_sDir + FILE_SEPARATOR_STR +_T("word") + FILE_SEPARATOR_STR + sFilename;
+
+				CFile oFile;
+				oFile.CreateFile(filePath);
+				oFile.WriteStringUTF8(g_string_endnotes_Start);
+				oFile.WriteStringUTF8(m_oNotesWriter.m_oContent.GetData());
+				oFile.WriteStringUTF8(g_string_endnotes_End);
+				oFile.CloseFile();
+
+				//ContentType
+				m_oContentTypesWriter.AddOverride(_T("/word/") + sFilename, _T("application/vnd.openxmlformats-officedocument.wordprocessingml.endnotes+xml"));
+			}
+		}
+		CString getFilename()
+		{
+			return _T("endnotes.xml");
+		}
+		bool IsEmpty()
+		{
+			return !(m_oNotesWriter.m_oContent.GetCurSize() > 0);
 		}
 	};
 }

@@ -1027,7 +1027,7 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_AxDataSource* cat, int type)
 {
 	if (cat == NULL)
 	{
-		odf_context()->chart_context()->set_category_axis_formula(L"",type);
+		odf_context()->chart_context()->set_category_axis_formula(L"", type);
 		return;
 	}
 	if (cat->m_numLit)
@@ -1039,19 +1039,19 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_AxDataSource* cat, int type)
 	else if (cat->m_strLit)
 	{
 		odf_context()->chart_context()->set_category_axis_formula(L"", type);
-		convert(cat->m_strLit,true);
+		convert(cat->m_strLit, true);
 	}
 	else if (cat->m_strRef)
 	{
 		if (cat->m_strRef->m_f)odf_context()->chart_context()->set_category_axis_formula(string2std_string(*cat->m_strRef->m_f),type);
 		
-		convert(cat->m_strRef->m_strCache,true/*, type == 1 ? true:false*/);
+		convert(cat->m_strRef->m_strCache, true/*, type == 1 ? true:false*/);
 	}
 	else if (cat->m_numRef)
 	{
-		if (cat->m_numRef->m_f)odf_context()->chart_context()->set_category_axis_formula(string2std_string(*cat->m_numRef->m_f),type);
+		if (cat->m_numRef->m_f)odf_context()->chart_context()->set_category_axis_formula(string2std_string(*cat->m_numRef->m_f), type);
 		
-		convert(cat->m_numRef->m_numCache);
+		convert(cat->m_numRef->m_numCache, true);
 	}
 
 }
@@ -1111,7 +1111,7 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_ExternalData *external_data)
 
 	odf_context()->chart_context()->set_local_table(true);//пока пользуем кэш ....
 }
-void OoxConverter::convert(OOX::Spreadsheet::CT_NumData	*num_data)
+void OoxConverter::convert(OOX::Spreadsheet::CT_NumData	*num_data, bool label)
 {
 	if (num_data == NULL)return;
 
@@ -1137,8 +1137,9 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_NumData	*num_data)
 	std::wstring format;
 	if (num_data->m_formatCode) format = string2std_string(*num_data->m_formatCode);
 	
-	odf_context()->chart_context()->set_cash(format, data);
+	odf_context()->chart_context()->set_cash(format, data, label);
 }
+
 void OoxConverter::convert(OOX::Spreadsheet::CT_StrData *str_data, bool label)
 {
 	if (str_data == NULL)return;
@@ -1152,6 +1153,6 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_StrData *str_data, bool label)
 	}
 	std::wstring format;
 
-	odf_context()->chart_context()->set_cash(format, data,label);
+	odf_context()->chart_context()->set_cash(format, data, label);
 }
 }

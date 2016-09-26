@@ -30,8 +30,8 @@
  *
  */
 #pragma once
-#ifndef OOX_FILE_TYPE_INCLUDE_H_
-#define OOX_FILE_TYPE_INCLUDE_H_
+#ifndef PPTXOOX_FILE_TYPE_INCLUDE_H_
+#define PPTXOOX_FILE_TYPE_INCLUDE_H_
 
 #include "../../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h"
 
@@ -112,4 +112,4 @@ namespace PPTX
 	}
 } // namespace PPTX
 
-#endif // OOX_FILE_TYPE_INCLUDE_H_
+#endif // PPTXOOX_FILE_TYPE_INCLUDE_H_

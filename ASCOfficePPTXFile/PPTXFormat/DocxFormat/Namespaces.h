@@ -30,8 +30,8 @@
  *
  */
 #pragma once
-#ifndef OOX_NAMESPACES_INCLUDE_H_
-#define OOX_NAMESPACES_INCLUDE_H_
+#ifndef PPTXOOX_NAMESPACES_INCLUDE_H_
+#define PPTXOOX_NAMESPACES_INCLUDE_H_
 
 #include "../../../Common/DocxFormat/Source/Base/Base.h"
 #if defined(_WIN32) || defined (_WIN64)
@@ -135,4 +135,4 @@ namespace PPTX
 	};
 } // namespace PPTX
 
-#endif // OOX_NAMESPACES_INCLUDE_H_
+#endif // PPTXOOX_NAMESPACES_INCLUDE_H_

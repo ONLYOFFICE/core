@@ -30,8 +30,8 @@
  *
  */
 #pragma once
-#ifndef OOX_RELS_RELATION_TABLE_INCLUDE_H_
-#define OOX_RELS_RELATION_TABLE_INCLUDE_H_
+#ifndef PPTXOOX_RELS_RELATION_TABLE_INCLUDE_H_
+#define PPTXOOX_RELS_RELATION_TABLE_INCLUDE_H_
 
 #include "./../WritingVector.h"
 #include "RelationShip.h"
@@ -75,4 +75,4 @@ namespace PPTX
 	} // namespace Rels
 } // namespace PPTX
 
-#endif // OOX_RELS_RELATION_TABLE_INCLUDE_H_
+#endif // PPTXOOX_RELS_RELATION_TABLE_INCLUDE_H_

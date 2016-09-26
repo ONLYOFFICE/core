@@ -692,7 +692,7 @@ style_header_footer_properties *odf_page_layout_context::get_footer_properties()
 	{
 		office_element_ptr elm;
 		create_element(L"style", L"footer-style", elm, odf_context_);
-			layout_state_list_.back().add_child(elm, office_element_ptr(),L"");
+		layout_state_list_.back().add_child(elm, office_element_ptr(),L"");
 
 		office_element_ptr pr;
 		create_element(L"style", L"header-footer-properties", pr, odf_context_);

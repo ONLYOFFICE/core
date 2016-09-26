@@ -1345,6 +1345,7 @@ void odf_chart_context::end_chart()
 
 	impl_->clear_current();
 }
+
 static formulasconvert::oox2odf_converter formulas_converter_chart;
 
 void odf_chart_context::set_series_value_formula(std::wstring oox_formula)
@@ -1353,30 +1354,59 @@ void odf_chart_context::set_series_value_formula(std::wstring oox_formula)
 	
 	if (oox_formula.length() > 0)
 		odfFormula = formulas_converter_chart.convert_chart_distance(oox_formula);
+//----------------------------------------------------------------------------
+	std::vector<std::wstring> refs;
+	boost::algorithm::split(refs, oox_formula, boost::algorithm::is_any_of(L":"), boost::algorithm::token_compress_on);
 
+	if (refs.size() > 0)
+	{
+		int col = -1, row = -1;
+		utils::parsing_ref( refs[0], col, row);
+
+		if (col < 0 && row < 0)
+		{
+			odfFormula.clear(); //reset by cash
+		}
+	}
+//----------------------------------------------------------------------------
 	chart_series *series = dynamic_cast<chart_series*>(impl_->current_chart_state_.elements_.back().elm.get());
 	if (series == NULL)return;
 
 	Impl::_range r = {odfFormula, false};
 	impl_->data_cell_ranges_.push_back(r);
 
-	if (oox_formula.length() > 0)
+	if (!oox_formula.empty())
 	{
 		series->chart_series_attlist_.chart_values_cell_range_address_ = odfFormula;
 		impl_->current_data_points_series_count_ = formulas_converter_chart.get_count_value_points(oox_formula);
 	}
 }
+
 void odf_chart_context::set_series_label_formula(std::wstring oox_formula)
 {
 	std::wstring odfFormula;
 
 	if (oox_formula.length() > 0)
 		odfFormula = formulas_converter_chart.convert_chart_distance(oox_formula);
+//----------------------------------------------------------------------------
+	std::vector<std::wstring> refs;
+	boost::algorithm::split(refs, oox_formula, boost::algorithm::is_any_of(L":"), boost::algorithm::token_compress_on);
 
+	if (refs.size() > 0)
+	{
+		int col = -1, row = -1;
+		utils::parsing_ref( refs[0], col, row);
+
+		if (col < 0 && row < 0)
+		{
+			odfFormula.clear(); //reset by cash
+		}
+	}
+//----------------------------------------------------------------------------
 	Impl::_range r = {odfFormula, true};
 	impl_->data_cell_ranges_.push_back(r);
 	
-	if (odfFormula.length() > 0)
+	if (!odfFormula.empty())
 	{
 		chart_series *series = dynamic_cast<chart_series*>(impl_->current_chart_state_.elements_.back().elm.get());
 		if (series == NULL)return;
@@ -1390,11 +1420,29 @@ void odf_chart_context::set_category_axis_formula(std::wstring oox_formula,int t
 	
 	if (oox_formula.length() > 0)
 		odfFormula = formulas_converter_chart.convert_chart_distance(oox_formula);
+//----------------------------------------------------------------------------
+	std::vector<std::wstring> refs;
+	boost::algorithm::split(refs, oox_formula, boost::algorithm::is_any_of(L":"), boost::algorithm::token_compress_on);
+
+	if (refs.size() > 0)
+	{
+		int col = -1, row = -1;
+		utils::parsing_ref( refs[0], col, row);
+
+		if (col < 0 && row < 0)
+		{
+			odfFormula.clear(); //reset by cash
+		}
+	}
+//----------------------------------------------------------------------------
 
 	Impl::_range r = {odfFormula, true};
 	impl_->data_cell_ranges_.push_back(r);
 	
-	impl_->categories_.push_back(std::pair<std::wstring,int>(odfFormula,type));
+	if (!odfFormula.empty())
+	{
+		impl_->categories_.push_back(std::pair<std::wstring,int>(odfFormula, type));
+	}
 }
 
 void odf_chart_context::set_series_pie_explosion(int val)//или точка серии
@@ -1416,19 +1464,19 @@ void odf_chart_context::set_series_pie_explosion(int val)//или точка с�
 
 void odf_chart_context::set_cash(std::wstring format, std::vector<std::wstring> & data_str, bool label)
 {
-	if (data_str.size() <1) return;
-	if (impl_->data_cell_ranges_.size()<1) return;
+	if (data_str.size() < 1)					return;
+	if (impl_->data_cell_ranges_.size() < 1)	return;
 
 	std::wstring ref = impl_->data_cell_ranges_.back().ref;
 
-	if (ref.length() < 1)
+	if (ref.empty())
 	{
 		std::wstring col;
 		if (label) col = L"A";
 		else
 		{
 			int curr_col = 0;
-			for (long i=0; i<impl_->data_cell_ranges_.size(); i++)
+			for (long i=0; i < impl_->data_cell_ranges_.size(); i++)
 			{
 				if (impl_->data_cell_ranges_[i].label)continue;
 				curr_col++;
@@ -1439,14 +1487,20 @@ void odf_chart_context::set_cash(std::wstring format, std::vector<std::wstring> 
 
 		impl_->data_cell_ranges_.back().ref = ref;
 
+		chart_series *series = dynamic_cast<chart_series*>(impl_->current_chart_state_.elements_.back().elm.get());
+		if (series == NULL)return;
+		
 		if (label == false)
 		{
-			chart_series *series = dynamic_cast<chart_series*>(impl_->current_chart_state_.elements_.back().elm.get());
-			if (series == NULL)return;
 			series->chart_series_attlist_.chart_values_cell_range_address_ = ref;
 		}
 		else
-			impl_->categories_.back().first = ref;
+		{
+			series->chart_series_attlist_.chart_label_cell_address_ = ref;
+			
+			if (!impl_->categories_.empty())
+				impl_->categories_.back().first = ref;
+		}
 	}
 	std::vector<double> data_double;
 
@@ -1523,6 +1577,7 @@ void odf_chart_context::Impl::create_local_table_rows(ods_table_state * table_st
 		curr_cell = cells[i].col;
 	}
 }
+
 void odf_chart_context::Impl::create_local_table()
 {
 	if (local_table_enabled_ == false)return;
@@ -1530,60 +1585,80 @@ void odf_chart_context::Impl::create_local_table()
 	std::vector<_cell_cash> cells_cash;
 	std::vector<_cell_cash> cells_cash_label;
 
-	std::wstring table_name = L"local-table";
-	int max_columns=0;
+	std::wstring	table_name	= L"local-table";
+	int				max_columns	= 0;
 
-	bool col_header = false;
-	bool row_header = false;
+	bool			col_header	= false;
+	bool			row_header	= false;
 	
 	//выкинем дублирующие ref
-	for (long i=0; i < cash_.size(); i++)
+	for (long i = 0; i < cash_.size(); i++)
 	{
-		for (long j=i+1; j < cash_.size(); j++)
+		for (long j = i + 1; j < cash_.size(); j++)
 		{
 			if (cash_[j].ref == cash_[i].ref && cash_[j].ref.length() > 1)
 			{
-				cash_.erase(cash_.begin()+j);
+				cash_.erase(cash_.begin() + j);
 			}
 		}
 	}
 
-	for (long i=0; i < cash_.size(); i++)
+	for (long i = 0; i < cash_.size(); i++)
 	{
 		std::vector<std::wstring> refs;
 		boost::algorithm::split(refs,cash_[i].ref, boost::algorithm::is_any_of(L":"), boost::algorithm::token_compress_on);
 
         int col1 = -1, col2 = -1, row1 = -1, row2 = -1;
 
-		if (refs.size()<1) continue;
+		if (refs.size() < 1) continue;
+		
 		int r = refs[0].rfind(L".");//в имени таблички может быть точка
 		if (r > 0)
 		{
-			table_name = refs[0].substr (0,r);
-			refs[0] = refs[0].substr(r+1,refs[0].size()-r);
+			table_name = refs[0].substr (0, r);
+			refs[0] = refs[0].substr(r + 1, refs[0].size() - r);
 		}
 
 		utils::parsing_ref( refs[0], col1, row1);
-		
-		if (refs.size() > 1) 
+
+		if (col1 < 0 && row1 < 0)	//ChartDateRange2007.xlsx
 		{
-			r = refs[1].rfind(L".");
-			if (r>=0)refs[1] = refs[1].substr(r+1,refs[1].size()-r);
-			utils::parsing_ref( refs[1], col2, row2);
+			//recalc_refs = true;
+			//table_name	= L"local-table";
+			////defined name? 
+			//row1 = i + 1;
+			//col1 = 0;
+
+			//row2 = i + 1;
+			//col2 = cash_[i].data_str.size() - 1;
+
+			//cash_[i].ref = table_name	+ L"." + L"$" + utils::getColAddress(col1) + L"$" + boost::lexical_cast<std::wstring>(row1) +
+			//					+ L":"	+ L"." + L"$" + utils::getColAddress(col2) + L"$" + boost::lexical_cast<std::wstring>(row2);
 		}
 		else
-		{
-			col2 = col1; row2 = row1;
+		{		
+			if (refs.size() > 1) 
+			{
+				r = refs[1].rfind(L".");
+				if (r >= 0)
+					refs[1] = refs[1].substr(r + 1, refs[1].size() - r);
+				utils::parsing_ref( refs[1], col2, row2);
+			}
+			else
+			{
+				col2 = col1; row2 = row1;
+			}
 		}
-		for (long j=0;j<cash_[i].data_str.size(); j++)
+
+		for (long j = 0; j < cash_[i].data_str.size(); j++)
 		{
 			_cell_cash c = {0, 0, false, false, L""};
 
 			if (col1 >= 0 && row1 >= 0)
 			{
-				c.col = (col2 == col1) ? col1 : col1 + j;
-				c.row = (row2 == row1) ? row1 : row1 + j;
-				c.val = cash_[i].data_str[j];
+				c.col	= (col2 == col1) ? col1 : col1 + j;
+				c.row	= (row2 == row1) ? row1 : row1 + j;
+				c.val	= cash_[i].data_str[j];
 				c.label = false;
 			}
 			else
@@ -1594,8 +1669,8 @@ void odf_chart_context::Impl::create_local_table()
 
 			if (cash_[i].label && c.row == 1)
 			{
-				c.label = cash_[i].label;
-				row_header = true;
+				c.label		= cash_[i].label;
+				row_header	= true;
 			}
 			if (cash_[i].label && c.col == 1)
 			{

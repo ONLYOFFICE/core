@@ -671,8 +671,8 @@ class style_page_layout_attlist
 public:
 	void serialize(CP_ATTR_NODE);
 
-	_CP_OPT(std::wstring)	style_name_;
-    _CP_OPT(odf_types::page_usage)		style_page_usage_; // default All
+	_CP_OPT(std::wstring)			style_name_;
+    _CP_OPT(odf_types::page_usage)	style_page_usage_; // default All
         
 };
 
@@ -699,7 +699,7 @@ CP_REGISTER_OFFICE_ELEMENT2(style_header_style)
 
 
 /// style:footer-style
-class style_footer_style : public office_element_impl<style_header_style>
+class style_footer_style : public office_element_impl<style_footer_style>
 {
 public:
     static const wchar_t * ns;

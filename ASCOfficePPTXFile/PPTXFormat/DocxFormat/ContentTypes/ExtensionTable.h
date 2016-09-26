@@ -30,8 +30,8 @@
  *
  */
 #pragma once
-#ifndef OOX_CONTENT_TYPES_EXTENSION_TABLE_INCLUDE_H_
-#define OOX_CONTENT_TYPES_EXTENSION_TABLE_INCLUDE_H_
+#ifndef PPTXOOX_CONTENT_TYPES_EXTENSION_TABLE_INCLUDE_H_
+#define PPTXOOX_CONTENT_TYPES_EXTENSION_TABLE_INCLUDE_H_
 
 #include "../../../../Common/DocxFormat/Source/Base/Base.h"
 #include <map>
@@ -90,4 +90,4 @@ namespace PPTX
 	} // namespace ContentTypes
 } // namespace PPTX
 
-#endif // OOX_CONTENT_TYPES_EXTENSION_TABLE_INCLUDE_H_
+#endif // PPTXOOX_CONTENT_TYPES_EXTENSION_TABLE_INCLUDE_H_

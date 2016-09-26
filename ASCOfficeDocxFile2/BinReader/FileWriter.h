@@ -64,6 +64,8 @@ namespace Writers
 		StylesWriter			m_oStylesWriter;
 		NumberingWriter			m_oNumberingWriter;
 		HeaderFooterWriter		m_oHeaderFooterWriter;
+		FootnotesWriter			m_oFootnotesWriter;
+		EndnotesWriter			m_oEndnotesWriter;
 		SettingWriter			m_oSettingWriter;
 		CommentsWriter			m_oCommentsWriter;
 		ChartWriter				m_oChartWriter;
@@ -78,6 +80,8 @@ namespace Writers
 										m_pDrawingConverter(pDrawingConverter),m_sThemePath(sThemePath),m_bSaveChartAsImg(bSaveChartAsImg),
 										m_oContentTypesWriter(sDirOutput), m_oFontTableWriter(sDirOutput, sFontDir),
 										m_oHeaderFooterWriter(sDirOutput, m_oContentTypesWriter),
+										m_oFootnotesWriter(sDirOutput, m_oContentTypesWriter),
+										m_oEndnotesWriter(sDirOutput, m_oContentTypesWriter),
 										m_oMediaWriter(sDirOutput),
 										m_oStylesWriter(sDirOutput, nVersion),
 										m_oNumberingWriter(sDirOutput, m_oContentTypesWriter),

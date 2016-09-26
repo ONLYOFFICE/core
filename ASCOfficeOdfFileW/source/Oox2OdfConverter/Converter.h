@@ -448,7 +448,7 @@ public:
 		void convert(OOX::Spreadsheet::CT_Marker				*marker);
 		void convert(OOX::Spreadsheet::CT_Marker				*marker, std::vector<OOX::Spreadsheet::CT_DPt*> & dPt);
 		void convert(OOX::Spreadsheet::CT_ExternalData			*external_data);
-		void convert(OOX::Spreadsheet::CT_NumData				*num_data);
+		void convert(OOX::Spreadsheet::CT_NumData				*num_data, bool label = false);
 		void convert(OOX::Spreadsheet::CT_StrData				*str_data, bool label = false);
 
 

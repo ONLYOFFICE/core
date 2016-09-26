@@ -1702,7 +1702,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CCellAnchor *oox_anchor)
 		ods_context->current_table().convert_position(from, x1, y1);
 		ods_context->current_table().convert_position(to,	x2, y2);
 		
-		ods_context->drawing_context()->set_drawings_rect(x1, y1, x2-x1, y2-y1);
+		ods_context->drawing_context()->set_drawings_rect(x1, y1, x2 - x1, y2 - y1);
 	}
 		
 //////////////

@@ -30,8 +30,8 @@
  *
  */
 #pragma once
-#ifndef OOX_NAMESPACE_OWN_INCLUDE_H_
-#define OOX_NAMESPACE_OWN_INCLUDE_H_
+#ifndef PPTXOOX_NAMESPACE_OWN_INCLUDE_H_
+#define PPTXOOX_NAMESPACE_OWN_INCLUDE_H_
 
 #include "Namespaces.h"
 
@@ -47,4 +47,4 @@ namespace PPTX
 	static Namespaces g_Namespaces;
 } // namespace PPTX
 
-#endif // OOX_NAMESPACE_OWN_INCLUDE_H_
+#endif // PPTXOOX_NAMESPACE_OWN_INCLUDE_H_

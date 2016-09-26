@@ -346,6 +346,8 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(const CString& sSrcFileName, const
 				m_pCurFileWriter->m_oNumberingWriter.Write();
 				m_pCurFileWriter->m_oFontTableWriter.Write();
 				m_pCurFileWriter->m_oHeaderFooterWriter.Write();
+				m_pCurFileWriter->m_oFootnotesWriter.Write();
+				m_pCurFileWriter->m_oEndnotesWriter.Write();
 				//Setting пишем после HeaderFooter, чтобы заполнить evenAndOddHeaders
 				m_pCurFileWriter->m_oSettingWriter.Write();
 				m_pCurFileWriter->m_oWebSettingsWriter.Write();

@@ -30,8 +30,8 @@
  *
  */
 #pragma once
-#ifndef OOX_OLE_OBJECT_INCLUDE_H_
-#define OOX_OLE_OBJECT_INCLUDE_H_
+#ifndef PPTXOOX_OLE_OBJECT_INCLUDE_H_
+#define PPTXOOX_OLE_OBJECT_INCLUDE_H_
 
 #include "Media.h"
 
@@ -81,4 +81,4 @@ namespace PPTX
 	};
 } // namespace OOX
 
-#endif // OOX_OLE_OBJECT_INCLUDE_H_
+#endif // PPTXOOX_OLE_OBJECT_INCLUDE_H_

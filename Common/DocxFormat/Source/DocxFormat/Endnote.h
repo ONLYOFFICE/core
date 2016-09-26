@@ -72,25 +72,33 @@ namespace OOX
 			CPath oRootPath;
 			read(oRootPath, oPath);
 		}
-		virtual void read(const CPath& oRootPath, const CPath& oPath)
+		virtual void read(const CPath& oRootPath, const CPath& oFilePath)
 		{
-			IFileContainer::Read( oRootPath, oPath );
+			m_oReadPath = oFilePath;
+			IFileContainer::Read( oRootPath, oFilePath );
 
-			XmlUtils::CXmlNode oEndnotes;
-			oEndnotes.FromXmlFile( oPath.GetPath(), true );
+			Common::readAllShapeTypes(oFilePath, m_arrShapeTypes);
 
-			if ( _T("w:endnotes") == oEndnotes.GetName() )
+			XmlUtils::CXmlLiteReader oReader;
+
+			if ( !oReader.FromFile( oFilePath.GetPath() ) )
+				return;
+
+			if ( !oReader.ReadNextNode() )
+				return;
+
+			CWCharWrapper sName = oReader.GetName();
+			if ( _T("w:endnotes") == sName && !oReader.IsEmptyNode() )
 			{
-				XmlUtils::CXmlNodes oEndnoteList;
-				oEndnotes.GetNodes( _T("w:endnote"), oEndnoteList );
-
-				for ( int nIndex = 0; nIndex < oEndnoteList.GetCount(); nIndex++ )
+				int nNumberingDepth = oReader.GetDepth();
+				while ( oReader.ReadNextSiblingNode( nNumberingDepth ) )
 				{
-					XmlUtils::CXmlNode oEndnoteNode;
-					if ( oEndnoteList.GetAt( nIndex, oEndnoteNode ) )
+					sName = oReader.GetName();
+					if ( _T("w:endnote") == sName )
 					{
-						CFtnEdn *pEndnote = new CFtnEdn( oEndnoteNode );
-						m_arrEndnote.push_back( pEndnote );
+						CFtnEdn *pEndnote = new CFtnEdn( oReader );
+						if (pEndnote) m_arrEndnote.push_back( pEndnote );
+
 					}
 				}
 			}
@@ -150,8 +158,9 @@ namespace OOX
 		}
 
 	public:
-
+		CPath						m_oReadPath;
 		std::vector<OOX::CFtnEdn*> m_arrEndnote;
+		std::vector<CString>			m_arrShapeTypes;
 	};
 } // namespace OOX
 #endif // OOX_ENDNOTE_INCLUDE_H_

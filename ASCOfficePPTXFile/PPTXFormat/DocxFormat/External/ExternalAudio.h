@@ -30,8 +30,8 @@
  *
  */
 #pragma once
-#ifndef OOX_EXTERNALAUDIO_INCLUDE_H_
-#define OOX_EXTERNALAUDIO_INCLUDE_H_
+#ifndef PPTXOOX_EXTERNALAUDIO_INCLUDE_H_
+#define PPTXOOX_EXTERNALAUDIO_INCLUDE_H_
 
 #include "External.h"
 
@@ -68,4 +68,4 @@ namespace PPTX
 	};
 } // namespace PPTX
 
-#endif // OOX_EXTERNALAUDIO_INCLUDE_H_
+#endif // PPTXOOX_EXTERNALAUDIO_INCLUDE_H_

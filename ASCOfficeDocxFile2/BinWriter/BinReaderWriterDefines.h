@@ -150,7 +150,9 @@ extern int g_nCurFormatVersion;
 		Document = 6,
 		Other = 7,
 		Comments = 8,
-		Settings = 9
+		Settings = 9,
+		Footnotes = 10,
+		Endnotes = 11
 	};}
 	namespace c_oSerSigTypes{enum c_oSerSigTypes
 	{
@@ -175,7 +177,7 @@ extern int g_nCurFormatVersion;
 		AbstractNum_Type = 3,
 		AbstractNum_Lvls = 4,
 		Lvl = 5,
-		lvl_Format = 6,
+		lvl_Format = 6,//deprecated (instead use lvl_NumFmt)
 		lvl_Jc = 7,
 		lvl_LvlText = 8,
 		lvl_LvlTextItem = 9,
@@ -192,7 +194,10 @@ extern int g_nCurFormatVersion;
 		Num_NumId = 20,
 		lvl_PStyle = 21,
 		NumStyleLink = 22,
-		StyleLink = 23
+		StyleLink = 23,
+		lvl_NumFmt = 24,
+		NumFmtVal = 25,
+		NumFmtFormat = 26
 	};}
 	namespace c_oSerOtherTableTypes{enum c_oSerOtherTableTypes
 	{
@@ -425,7 +430,9 @@ extern int g_nCurFormatVersion;
 		pageNumType = 6,
 		sectPrChange = 7,
 		cols = 8,
-		pgBorders = 9
+		pgBorders = 9,
+		footnotePr = 10,
+		endnotePr = 11
 	};}
 	namespace c_oSerProp_secPrSettingsType{enum c_oSerProp_secPrSettingsType
 	{
@@ -492,7 +499,11 @@ extern int g_nCurFormatVersion;
 		noBreakHyphen = 20,
 		softHyphen = 21,
 		separator = 22,
-		continuationSeparator = 23
+		continuationSeparator = 23,
+		footnoteRef = 24,
+		endnoteRef = 25,
+		footnoteReference = 26,
+		endnoteReference = 27
 	};}
 	namespace c_oSerImageType{enum c_oSerImageType
 	{
@@ -689,7 +700,9 @@ extern int g_nCurFormatVersion;
 		ClrSchemeMapping = 0,
 		DefaultTabStop = 1,
 		MathPr = 2,
-		TrackRevisions = 3
+		TrackRevisions = 3,
+		FootnotePr = 4,
+		EndnotePr = 5
 	};}
 	namespace c_oSer_MathPrType{enum c_oSer_SettingsType
 	{
@@ -947,6 +960,21 @@ extern int g_nCurFormatVersion;
 		NoMove	= 3,
 		NoResize = 4,
 		NoSelect = 5
+	};}
+	namespace c_oSerNotes{enum c_oSerNotes
+	{
+		Note = 0,
+		NoteType = 1,
+		NoteId = 2,
+		NoteContent = 3,
+		RefCustomMarkFollows = 4,
+		RefId = 5,
+		PrFmt = 6,
+		PrRestart = 7,
+		PrStart = 8,
+		PrFntPos = 9,
+		PrEndPos = 10,
+		PrRef = 11
 	};}
 }
 

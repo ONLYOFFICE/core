@@ -72,25 +72,33 @@ namespace OOX
 			CPath oRootPath;
 			read(oRootPath, oPath);
 		}
-		virtual void read(const CPath& oRootPath, const CPath& oPath)
+		virtual void read(const CPath& oRootPath, const CPath& oFilePath)
 		{
-			IFileContainer::Read( oRootPath, oPath );
+			m_oReadPath = oFilePath;
+			IFileContainer::Read( oRootPath, oFilePath );
 
-			XmlUtils::CXmlNode oFootnotes;
-			oFootnotes.FromXmlFile( oPath.GetPath(), true );
+			Common::readAllShapeTypes(oFilePath, m_arrShapeTypes);
 
-			if ( _T("w:footnotes") == oFootnotes.GetName() )
+			XmlUtils::CXmlLiteReader oReader;
+
+			if ( !oReader.FromFile( oFilePath.GetPath() ) )
+				return;
+
+			if ( !oReader.ReadNextNode() )
+				return;
+
+			CWCharWrapper sName = oReader.GetName();
+			if ( _T("w:footnotes") == sName && !oReader.IsEmptyNode() )
 			{
-				XmlUtils::CXmlNodes oFootnoteList;
-				oFootnotes.GetNodes( _T("w:footnote"), oFootnoteList );
-
-				for ( int nIndex = 0; nIndex < oFootnoteList.GetCount(); nIndex++ )
+				int nNumberingDepth = oReader.GetDepth();
+				while ( oReader.ReadNextSiblingNode( nNumberingDepth ) )
 				{
-					XmlUtils::CXmlNode oFootnoteNode;
-					if ( oFootnoteList.GetAt( nIndex, oFootnoteNode ) )
+					sName = oReader.GetName();
+					if ( _T("w:footnote") == sName )
 					{
-						CFtnEdn *pFootnote = new CFtnEdn( oFootnoteNode );
+						CFtnEdn *pFootnote = new CFtnEdn( oReader );
 						if (pFootnote) m_arrFootnote.push_back( pFootnote );
+
 					}
 				}
 			}
@@ -150,8 +158,9 @@ namespace OOX
 		}
 
 	public:
-
+		CPath						m_oReadPath;
 		std::vector<OOX::CFtnEdn*> m_arrFootnote;
+		std::vector<CString>			m_arrShapeTypes;
 	};
 } // namespace OOX
 

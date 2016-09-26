@@ -30,8 +30,8 @@
  *
  */
 #pragma once
-#ifndef OOX_CONTENT_TYPES_FILE_INCLUDE_H_
-#define OOX_CONTENT_TYPES_FILE_INCLUDE_H_
+#ifndef PPTXOOX_CONTENT_TYPES_FILE_INCLUDE_H_
+#define PPTXOOX_CONTENT_TYPES_FILE_INCLUDE_H_
 
 #include "OverrideTable.h"
 #include "DefaultTable.h"

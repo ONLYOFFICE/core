@@ -120,8 +120,8 @@ private:
 ///////	
 	bool automatic_;
 	bool root_;
-	bool default_; // это для тех стилей что в root
-	bool conditional_; //стили накладываемые по условию
+	bool default_;		// это для тех стилей что в root
+	bool conditional_;	//стили накладываемые по условию
 
 	bool writable_;
 

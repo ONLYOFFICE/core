@@ -633,32 +633,37 @@ std::wstring oox2odf_converter::Impl::convert_chart_distance(const std::wstring&
 	
 	boost::algorithm::split(distance_inp,expr, boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);
 
-	BOOST_FOREACH(std::wstring &d,distance_inp)
+	for (int i = 0; i < distance_inp.size(); i++)
 	{
 		std::wstring sheet;
 		std::vector<std::wstring> range;
 		std::vector<std::wstring> cells;
 
-		boost::algorithm::split(range,d, boost::algorithm::is_any_of(L":"), boost::algorithm::token_compress_on);
+		boost::algorithm::split(range, distance_inp[i], boost::algorithm::is_any_of(L":"), boost::algorithm::token_compress_on);
 
-		BOOST_FOREACH(std::wstring &c,range)
+		for (int j = 0 ; j < range.size(); j++)
 		{
-			const ::std::string::size_type colon = c.find('!');
-			cells.push_back(c.substr(colon+1));
-			if (sheet.size()<1)
-				sheet=c.substr(0, colon);
+			int pos = range[j].find('!'); 
+			if (0 <= pos)
+			{
+				if (sheet.empty())
+					sheet = range[j].substr(0, pos);		
+			}
+			cells.push_back(range[j].substr(pos + 1));
+
 		}
 		std::wstring cells_out;
-		BOOST_FOREACH(std::wstring &c,cells)
+		for (int c = 0; c < cells.size(); c++)
 		{
-			cells_out.append(sheet+L".");
-			cells_out.append(c);
-			cells_out.append(L":");
+			if (!sheet.empty())
+				cells_out += sheet + L".";
+			cells_out += cells[c];
+			cells_out += L":";
 		}
 		int res1 = sheet.find(L"-");
 		int res2 = sheet.find(L"'");
 		
-		if (res1>=0 && !(res2==0))
+		if (res1 >= 0 && !(res2 == 0))
 		{
 			sheet = L"'" + sheet + L"'";
 		}
@@ -667,10 +672,10 @@ std::wstring oox2odf_converter::Impl::convert_chart_distance(const std::wstring&
 	}
 	std::wstring result;
 
-	BOOST_FOREACH(std::wstring &d,distance_out)
+	for (int i = 0 ; i < distance_out.size(); i++)
 	{
-		result.append(d);
-		result.append(L" ");
+		result += distance_out[i];
+		result += L" ";
 	}
 	return result.substr(0, result.size()-1);
 }

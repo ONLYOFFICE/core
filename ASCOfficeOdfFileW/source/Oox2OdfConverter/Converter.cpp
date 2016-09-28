@@ -1223,6 +1223,7 @@ void OoxConverter::convert(OOX::Drawing::CRunProperty * oox_run_pr, odf_writer::
 			text_properties->content().fo_font_family_ = string2std_string(oox_run_pr->m_oLatinFont->m_oTypeFace->GetValue());
 		else
 		{
+			text_properties->content().fo_font_family_ = L"Calibri";//default_font; ???? 
 		}
 	}
 	if (oox_run_pr->m_oAsianFont.IsInit())

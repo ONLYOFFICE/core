@@ -1654,6 +1654,9 @@ void odf_drawing_context::set_line_dash_preset(int style)
 {
 	if (!impl_->current_graphic_properties)return;
 
+	if ((impl_->current_graphic_properties->content().draw_stroke_) && 
+		(impl_->current_graphic_properties->content().draw_stroke_->get_type() == line_style::None))	return;
+
 	switch(style)	//+создать стиль, привзать имена
 	{
 		case 0://presetlinedashvalDash    

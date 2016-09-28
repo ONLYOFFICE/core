@@ -1089,6 +1089,10 @@
 			>
 		</File>
 		<File
+			RelativePath="..\..\ASCOfficeOdfFileW\source\OdfFormat\odf_chart_context.h"
+			>
+		</File>
+		<File
 			RelativePath="..\src\common\readdocelement.cpp"
 			>
 			<FileConfiguration

@@ -103,9 +103,8 @@ void odf_style_state::set_display_name(std::wstring name)
 }
 std::wstring odf_style_state::get_name()
 {
-	style* style_ = dynamic_cast<style*>(odf_style_.get());
-	
-	if (!style_)return odf_style_name_;
+	style* style_ = dynamic_cast<style*>(odf_style_.get());	
+	if (!style_) return odf_style_name_;
 
 	return style_->style_name_;
 }
@@ -161,7 +160,12 @@ void odf_style_state::set_default(bool val)
 }
 void odf_style_state::set_conditional(bool val)
 {
+	style* style_ = dynamic_cast<style*>(odf_style_.get());	
+	if (!style_) return;
+
 	conditional_ = val;
+	if (val)
+		style_->style_name_ = L"dx_" + style_->style_name_;
 }
 //------------------------------------------------------------------------------------
 bool odf_style_state::get_list_style_exist()

@@ -326,14 +326,14 @@ void ods_table_state::set_table_dimension(int col, int row)
 {
 	if (col<1 || row <1 )return;
 
-	if (dimension_columns < col)	dimension_columns = col +1;
-	if (dimension_row < row)		dimension_row = row+1;
+	if (dimension_columns < col)	dimension_columns = col + 1;
+	if (dimension_row < row)		dimension_row = row + 1;
 }
 
 void ods_table_state::add_row(office_element_ptr & elm, short repeated, office_element_ptr & style_elm)
 {
-    current_table_column_ = 0; 
-    current_table_row_+=repeated;
+    current_table_column_	= 0; 
+    current_table_row_		+= repeated;
 
 	current_level_.back()->add_child_element(elm);
 
@@ -352,7 +352,7 @@ void ods_table_state::add_row(office_element_ptr & elm, short repeated, office_e
 	if (style_name.length()>0) row->table_table_row_attlist_.table_style_name_ = style_ref(style_name);
 	row->table_table_row_attlist_.table_number_rows_repeated_ = repeated;
 
-	row_default_cell_style_name_= L"";
+	row_default_cell_style_name_ = L"";
 
 }
 void ods_table_state::set_row_hidden(bool Val)

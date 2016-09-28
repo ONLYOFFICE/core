@@ -105,11 +105,13 @@ public:
 
 	double convert_symbol_width(double val);
 	
-    void add_defined_range(const std::wstring & name, const std::wstring & cell_range, int sheet_id, bool printable = false);
-    void add_defined_expression(const std::wstring & name, const std::wstring & value, int sheet_id, bool printable = false);
+    void add_defined_range		(const std::wstring & name, const std::wstring & cell_range, int sheet_id, bool printable = false);
+    void add_defined_expression	(const std::wstring & name, const std::wstring & value, int sheet_id, bool printable = false);
+	void add_autofilter			(std::wstring ref);
 
-	void start_autofilter(std::wstring ref);
-	void end_autofilter(){}
+	void start_table_part	(std::wstring name, std::wstring ref);
+	void end_table_part		();
+	void set_table_part_autofilter(bool val);
 
 	void start_conditional_formats();
 	void end_conditional_formats(){}

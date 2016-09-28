@@ -144,9 +144,8 @@ public:
 		void set_layout_w(double *val,int mode);
 		void set_layout_h(double *val,int mode);
 
-		void set_local_table(bool Val);
-		//void set_cash(std::wstring format, std::vector<double>		&data);
-		void set_cash(std::wstring format, std::vector<std::wstring> &data,bool label = false);
+		void set_local_table(bool Val, bool use_cash_only = false);
+		void set_cash(std::wstring format, std::vector<std::wstring> &data, bool categories, bool label);
 
 	void end_chart();
 

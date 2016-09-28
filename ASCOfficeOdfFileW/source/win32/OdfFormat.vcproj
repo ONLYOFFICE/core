@@ -710,10 +710,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\OdfFormat\odf_chart_context.h"
-				>
-			</File>
-			<File
 				RelativePath="..\OdfFormat\odf_comment_context.cpp"
 				>
 			</File>

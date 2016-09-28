@@ -56,7 +56,48 @@ ods_table_state & ods_table_context::state()
 {
     return table_state_list_.back();
 }
-void ods_table_context::start_autofilter(std::wstring ref)
+
+void ods_table_context::start_table_part(std::wstring name, std::wstring ref)
+{
+	if (!table_database_ranges_.root) create_element(L"table", L"database-ranges",table_database_ranges_.root,&context_);
+
+	office_element_ptr elm;
+	create_element(L"table", L"database-range",elm, &context_);
+	table_database_range * d_range = dynamic_cast<table_database_range*>(elm.get());
+
+	if (!d_range)return;
+
+	formulasconvert::oox2odf_converter formulas_converter;
+
+	std::wstring odf_range = formulas_converter.convert_named_ref(ref);
+	boost::algorithm::replace_all(odf_range, L"[", L"");
+	boost::algorithm::replace_all(odf_range, L"]", L"");
+
+	d_range->table_target_range_address_	= odf_range;
+	d_range->table_name_					= name;
+	//d_range->table_display_filter_buttons_= true;
+
+	table_database_ranges_.root->add_child_element(elm);
+	table_database_ranges_.elements.push_back(elm);
+}
+
+void ods_table_context::set_table_part_autofilter(bool val)
+{
+	if (!val) return;
+	if (table_database_ranges_.elements.empty()) return;
+
+	table_database_range * d_range = dynamic_cast<table_database_range*>(table_database_ranges_.elements.back().get());
+
+	if (!d_range) return;
+
+	d_range->table_display_filter_buttons_= true;
+}
+
+void ods_table_context::end_table_part()
+{
+}
+
+void ods_table_context::add_autofilter(std::wstring ref)
 {
 	if (!table_database_ranges_.root) create_element(L"table", L"database-ranges",table_database_ranges_.root,&context_);
 
@@ -140,8 +181,7 @@ void ods_table_context::add_defined_expression(const std::wstring & name, const 
 
 	formulasconvert::oox2odf_converter formulas_converter;
 
-	std::wstring odf_value		= formulas_converter.convert_formula(value);	
-								//formulas_converter.convert_named_ref(value); -> ChartDateRange2007.xlsx
+	std::wstring odf_value		= formulas_converter.convert_named_ref(value);
 	std::wstring odf_base_cell	= formulas_converter.find_base_cell(value);
 
 	named_expression->table_name_		= name;

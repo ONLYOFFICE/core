@@ -442,13 +442,12 @@ namespace NExtractTools
                                 FileFormatChecker.nFileType != AVS_OFFICESTUDIO_FILE_UNKNOWN)
                     {
                         nFormatFrom = FileFormatChecker.nFileType;
-                        *m_nFormatFrom = nFormatFrom;
+                        changeFormatFrom(nFormatFrom);
                     }
                 }
                 eRes = processDownloadFile();
                 if(TCD_AUTO != eRes)
                     return eRes;
-                processInnerFormats();
 
                 if(NULL != m_oMailMergeSend)
                     eRes = TCD_MAILMERGE;
@@ -595,17 +594,17 @@ namespace NExtractTools
             }
             return nRes;
         }
-        void processInnerFormats()
+        void changeFormatFrom(int formatFrom)
         {
+          *m_nFormatFrom = formatFrom;
           int toFormat = *m_nFormatTo;
-          int formatFrom = *m_nFormatFrom;
 
           if (AVS_OFFICESTUDIO_FILE_CANVAS == toFormat) {
             if (AVS_OFFICESTUDIO_FILE_TEAMLAB_XLSY == formatFrom || 0 != (AVS_OFFICESTUDIO_FILE_SPREADSHEET & formatFrom)) {
               toFormat = AVS_OFFICESTUDIO_FILE_CANVAS_SPREADSHEET;
             } else if (AVS_OFFICESTUDIO_FILE_TEAMLAB_PPTY == formatFrom || 0 != (AVS_OFFICESTUDIO_FILE_PRESENTATION & formatFrom)) {
               toFormat = AVS_OFFICESTUDIO_FILE_CANVAS_PRESENTATION;
-            } else {
+            } else if (AVS_OFFICESTUDIO_FILE_TEAMLAB_DOCY == formatFrom || 0 != (AVS_OFFICESTUDIO_FILE_DOCUMENT & formatFrom)) {
               toFormat = AVS_OFFICESTUDIO_FILE_CANVAS_WORD;
             }
           } else if (AVS_OFFICESTUDIO_FILE_OTHER_TEAMLAB_INNER == toFormat) {
@@ -613,7 +612,7 @@ namespace NExtractTools
               toFormat = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX;
             } else if (AVS_OFFICESTUDIO_FILE_CANVAS_PRESENTATION == formatFrom || AVS_OFFICESTUDIO_FILE_TEAMLAB_PPTY == formatFrom || 0 != (AVS_OFFICESTUDIO_FILE_PRESENTATION & formatFrom)) {
               toFormat = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX;
-            } else {
+            } else if (AVS_OFFICESTUDIO_FILE_CANVAS_WORD == formatFrom || AVS_OFFICESTUDIO_FILE_TEAMLAB_DOCY == formatFrom || 0 != (AVS_OFFICESTUDIO_FILE_DOCUMENT & formatFrom)) {
               toFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX;
             }
             size_t nIndex = m_sFileTo->rfind('.');

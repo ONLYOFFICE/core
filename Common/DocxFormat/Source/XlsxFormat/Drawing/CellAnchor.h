@@ -207,8 +207,10 @@ namespace OOX
 							while( oReader.ReadNextSiblingNode( nCurDepth ) )
 							{
 								CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
-								if ( _T("Fallback") == sName )
+								if ( _T("Fallback") == sName || _T("Choice") == sName )
 								{
+									CString sRequires;
+									ReadAttributesRequire(oReader, sRequires);
 									CString xmlString;// = L"<?xml version=\"1.0\"?>"; //encoding=\"UTF-8\"
 									xmlString += L"<root ";
 										xmlString += L"xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" ";
@@ -218,7 +220,13 @@ namespace OOX
 										xmlString += L"xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" ";
 									xmlString += L">";
 									xmlString += oReader.GetOuterXml();
-									xmlString += L"</root>";										
+									xmlString += L"</root>";
+
+									//todo better check (a14 can be math, slicer)
+									if(_T("Choice") == sName && !(L"a14" == sRequires && -1 != xmlString.Find(L"a14:m")))
+									{
+										continue;
+									}
 									XmlUtils::CXmlLiteReader oSubReader;
 									
 									if (oSubReader.FromString(xmlString))
@@ -262,6 +270,13 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
+			}
+			void ReadAttributesRequire(XmlUtils::CXmlLiteReader& oReader, CString& sRequire)
+			{
+				// Читаем атрибуты
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_ReadSingle( oReader, _T("Requires"),      sRequire )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
 			SimpleTypes::Spreadsheet::CCellAnchorType<>		m_oAnchorType;

@@ -127,25 +127,6 @@ namespace OOX
 				return L"";
 			}
 			// Childs
-		};
-
-		template <EElementType EnumType = OOX::et_Unknown>
-		class CMathArgNodesEx : public CMathArgNodes
-		{
-		public:
-			CMathArgNodesEx(XmlUtils::CXmlNode& oNode)
-			{
-				fromXML( oNode );
-			}
-			CMathArgNodesEx(XmlUtils::CXmlLiteReader& oReader)
-			{
-				fromXML( oReader );
-			}
-			virtual EElementType getType() const
-			{
-				return EnumType;
-			}
 		};		
-		
 	}//namespace Logic
 }//namespace OOX

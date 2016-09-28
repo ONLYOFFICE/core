@@ -81,7 +81,7 @@ namespace PPTX
 							pPr = oNode;
 						else if (_T("endParaRPr") == strName)
 							endParaRPr = oNode;
-						else if ((_T("r") == strName) || (_T("fld") == strName) || (_T("br") == strName))
+						else if ((_T("r") == strName) || (_T("fld") == strName) || (_T("br") == strName) || (_T("m") == strName))
 							RunElems.push_back(RunElem(oNode));
 					}
 				}
@@ -271,6 +271,26 @@ namespace PPTX
 										RunElems.back().InitRun(pRun);
 
 										pReader->Seek(_end);
+										break;
+									}
+									case PARRUN_TYPE_MATH:
+									{
+										Logic::MathParaWrapper* pRun = new Logic::MathParaWrapper();
+										pRun->fromPPTY(_type, pReader);
+
+										RunElem elm;
+										RunElems.push_back(elm);
+										RunElems.back().InitRun(pRun);
+										break;
+									}
+									case PARRUN_TYPE_MATHPARA:
+									{
+										Logic::MathParaWrapper* pRun = new Logic::MathParaWrapper();
+										pRun->fromPPTY(_type, pReader);
+
+										RunElem elm;
+										RunElems.push_back(elm);
+										RunElems.back().InitRun(pRun);
 										break;
 									}
 									default:

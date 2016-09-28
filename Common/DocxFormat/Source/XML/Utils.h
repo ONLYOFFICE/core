@@ -438,9 +438,34 @@ namespace XmlUtils
 		inline void WriteEncodeXmlString(const wchar_t* pString)
 		{
 			const wchar_t* pData = pString;
+			bool isUtf16 = sizeof(wchar_t) == 2;
+			bool skipNext = false;
 			while (*pData != 0)
 			{
-				BYTE _code = CheckCode(*pData);
+				wchar_t code = *pData;
+				BYTE _code;
+				//todo replace CString with std::wstring and choose one writer
+				if (isUtf16)
+				{
+					if (skipNext)
+					{
+						skipNext = false;
+						_code = 1;
+					}
+					else if (code >= 0xD800 && code <= 0xDFFF && *(pData + 1) != 0)
+					{
+						skipNext = true;
+						_code = 1;
+					}
+					else
+					{
+						_code = CheckCode(code);
+					}
+				}
+				else
+				{
+					_code = CheckCode(code);
+				}
 
 				switch (_code)
 				{

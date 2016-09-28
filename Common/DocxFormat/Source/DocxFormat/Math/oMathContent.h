@@ -42,6 +42,7 @@
 #include "../Logic/Annotations.h"
 #include "../Logic/Pict.h"
 #include "../Drawing/Drawing.h"
+#include "../../../../../ASCOfficePPTXFile/PPTXFormat/Logic/RunProperties.h"
 
 
 namespace OOX
@@ -49,15 +50,32 @@ namespace OOX
 	// Elements 22.1.2
 	namespace Logic
 	{
-		typedef CMathArgNodesEx<OOX::et_m_deg>		CDeg;
-		typedef CMathArgNodesEx<OOX::et_m_den>		CDen;
-		typedef CMathArgNodesEx<OOX::et_m_e>		CElement;
-		typedef CMathArgNodesEx<OOX::et_m_fName>	CFName;
-		typedef CMathArgNodesEx<OOX::et_m_lim>		CLim;
-		typedef CMathArgNodesEx<OOX::et_m_num>		CNum;
-		typedef CMathArgNodesEx<OOX::et_m_oMath>	COMath;
-		typedef CMathArgNodesEx<OOX::et_m_sub>		CSub;
-		typedef CMathArgNodesEx<OOX::et_m_sup>		CSup;
+		#define CMathArgNodesEx(name, type)\
+			class name : public CMathArgNodes\
+			{\
+			public:\
+				name(XmlUtils::CXmlNode& oNode)\
+				{\
+					fromXML( oNode );\
+				}\
+				name(XmlUtils::CXmlLiteReader& oReader)\
+				{\
+					fromXML( oReader );\
+				}\
+				virtual EElementType getType() const\
+				{\
+					return type;\
+				}\
+			};
+		CMathArgNodesEx(CDeg, OOX::et_m_deg)
+		CMathArgNodesEx(CDen, OOX::et_m_den)
+		CMathArgNodesEx(CElement, OOX::et_m_e)
+		CMathArgNodesEx(CFName, OOX::et_m_fName)
+		CMathArgNodesEx(CLim, OOX::et_m_lim)
+		CMathArgNodesEx(CNum, OOX::et_m_num)
+		CMathArgNodesEx(COMath, OOX::et_m_oMath)
+		CMathArgNodesEx(CSub, OOX::et_m_sub)
+		CMathArgNodesEx(CSup, OOX::et_m_sup)
 		//--------------------------------------------------------------------------------
 		// CAcc 22.1.2.1  (Accent) 
 		//--------------------------------------------------------------------------------
@@ -2354,6 +2372,14 @@ namespace OOX
 						m_oMRPr = oReader ;
 					else if ( _T("w:rPr") == sName )
 						m_oRPr = oReader;
+					else if ( _T("a:rPr") == sName )
+					{
+						CString sXml = oReader.GetOuterXml();
+						XmlUtils::CXmlNode node;
+						node.FromXmlString(sXml.GetBuffer());
+						sXml.ReleaseBuffer();
+						m_oARPr = node;
+					}
 					else if ( _T("w:ruby") == sName )
 						m_oRuby = oReader;
 					else if ( _T("w:separator") == sName )
@@ -2411,6 +2437,7 @@ namespace OOX
 			nullable<OOX::Logic::CPTab>						m_oPtab;
 			nullable<OOX::Logic::CRunProperty>				m_oRPr;
 			nullable<OOX::Logic::CMRPr>						m_oMRPr;
+			nullable<PPTX::Logic::RunProperties>			m_oARPr;
 			nullable<OOX::Logic::CRuby>						m_oRuby;
 			nullable<OOX::Logic::CSeparator>				m_oSeparator;
 			nullable<OOX::Logic::CSoftHyphen>				m_oSoftHyphen;

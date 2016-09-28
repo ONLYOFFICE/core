@@ -5402,6 +5402,17 @@ public:
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathMRPr, this, poResult);
 			GetRunStringWriter().WriteString(CString(_T("</m:rPr>")));
 		}
+		else if ( c_oSer_OMathContentType::ARPr == type )
+		{
+			PPTX::Logic::RunProperties rPr;
+			m_oBufferedStream.Skip(1);//skip type
+			rPr.fromPPTY(&m_oBufferedStream);
+			rPr.m_name = L"a:rPr";
+			//todo use one writer
+			NSBinPptxRW::CXmlWriter oWriter;
+			rPr.toXmlWriter(&oWriter);
+			GetRunStringWriter().WriteString(oWriter.GetXmlString());
+		}
 		else if (c_oSer_OMathContentType::pagebreak == type)
 		{
 			GetRunStringWriter().WriteString(CString(_T("<w:br w:type=\"page\"/>")));

@@ -18,7 +18,9 @@ include(../../../Common/base.pri)
 
 DEFINES += UNICODE _UNICODE _USE_LIBXML2_READER_ _USE_XMLLITE_READER_ USE_LITE_READER LIBXML_READER_ENABLED
 
-INCLUDEPATH += ../../../DesktopEditor/xml/libxml2/include
+INCLUDEPATH += \
+    ../../../DesktopEditor/freetype-2.5.2/include \
+    ../../../DesktopEditor/xml/libxml2/include
 
 build_fast {
 SOURCES += \

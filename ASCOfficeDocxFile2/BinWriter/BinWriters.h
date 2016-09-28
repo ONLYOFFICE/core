@@ -3352,6 +3352,11 @@ namespace BinDocxRW
 			int nIndexStart = 0;
 			int nLength = m_arrItems.size();
 			bool bWasText = false;
+			int nRecordType;
+			if (bMathRun)
+				nRecordType = c_oSer_OMathContentType::Run;
+			else
+				nRecordType = c_oSerParType::Run;
 			//Разбиваем массив по знаку et_w_sym
 			for(int i = 0; i < nLength; ++i)
 			{
@@ -3361,9 +3366,11 @@ namespace BinDocxRW
 					if(bWasText)
 					{
 						bWasText = false;
+						nCurPos = m_oBcw.WriteItemStart(nRecordType);
 						WritePreparedRun(m_arrItems, bHyperlink, nIndexStart, i);
+						m_oBcw.WriteItemWithLengthEnd(nCurPos);
 					}
-					nCurPos = m_oBcw.WriteItemStart(c_oSerParType::Run);
+					nCurPos = m_oBcw.WriteItemStart(nRecordType);
 					WritePreparedRun(m_arrItems, bHyperlink, i, i + 1);
 					m_oBcw.WriteItemWithLengthEnd(nCurPos);
 					nIndexStart = i + 1;
@@ -3373,10 +3380,7 @@ namespace BinDocxRW
 			}
 			if(nIndexStart < nLength)
 			{
-				if (bMathRun)
-					nCurPos = m_oBcw.WriteItemStart(c_oSer_OMathContentType::Run);
-				else
-					nCurPos = m_oBcw.WriteItemStart(c_oSerParType::Run);
+				nCurPos = m_oBcw.WriteItemStart(nRecordType);
 				WritePreparedRun(m_arrItems, bHyperlink, nIndexStart, nLength);
 				m_oBcw.WriteItemWithLengthEnd(nCurPos);
 			}

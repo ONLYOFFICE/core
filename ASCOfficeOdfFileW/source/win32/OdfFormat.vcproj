@@ -734,6 +734,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\OdfFormat\odf_notes_context.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\OdfFormat\odf_notes_context.h"
+				>
+			</File>
+			<File
 				RelativePath="..\OdfFormat\odf_settings_context.cpp"
 				>
 			</File>

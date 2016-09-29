@@ -323,6 +323,16 @@ void DocxConverter::convert(OOX::WritingElement  *oox_unknown)
 			OOX::Logic::CCommentReference* pCommRef = static_cast<OOX::Logic::CCommentReference*>(oox_unknown);
 			convert(pCommRef);		//если нет Start - означает начало с предыдущего Run
 		}break;
+		case OOX::et_w_footnoteReference:
+		{
+			OOX::Logic::CFootnoteReference* pRef= static_cast<OOX::Logic::CFootnoteReference*>(oox_unknown);
+			convert(pRef);
+		}break;
+		case OOX::et_w_endnoteReference:
+		{
+			OOX::Logic::CEndnoteReference* pRef= static_cast<OOX::Logic::CEndnoteReference*>(oox_unknown);
+			convert(pRef);
+		}break;
 		case OOX::et_w_tbl:
 		{
 			OOX::Logic::CTbl* pTable= static_cast<OOX::Logic::CTbl*>(oox_unknown);
@@ -563,11 +573,7 @@ void DocxConverter::convert(OOX::Logic::CRun *oox_run)//wordprocessing 22.1.2.87
 			}break;
 			//annotationRef
 			//endnoteRef
-			//endnoteReference
 			//footnoteRef
-			//footnoteReference
-			//commentReference
-			//separator			
 			//contentPart
 			//cr
 			//dayLong, dayShort, monthLong, monthShort, yearLong, yearShort
@@ -3266,8 +3272,8 @@ void DocxConverter::convert(OOX::Logic::CCommentRangeEnd* oox_comm_end)
 }
 void DocxConverter::convert(OOX::Logic::CCommentReference* oox_comm_ref)
 {
-	if(oox_comm_ref == NULL)return;
-	if (oox_comm_ref->m_oId.IsInit() == false) return;
+	if (oox_comm_ref == NULL)					return;
+	if (oox_comm_ref->m_oId.IsInit() == false)	return;
 
 	int oox_comm_id = oox_comm_ref->m_oId->GetValue();
 
@@ -3278,28 +3284,46 @@ void DocxConverter::convert(OOX::Logic::CCommentReference* oox_comm_ref)
 		//значит старт тута а не по RangeStart
 		convert_comment(oox_comm_id);
 	}
+}
+void DocxConverter::convert(OOX::Logic::CFootnoteReference* oox_ref)
+{
+	if (oox_ref == NULL)					return;
+	if (oox_ref->m_oId.IsInit() == false)	return;
 
+	int oox_ref_id = oox_ref->m_oId->GetValue();
+
+	convert_footnote(oox_ref_id);
+}
+void DocxConverter::convert(OOX::Logic::CEndnoteReference* oox_ref)
+{
+	if (oox_ref == NULL)					return;
+	if (oox_ref->m_oId.IsInit() == false)	return;
+
+	int oox_ref_id = oox_ref->m_oId->GetValue();
+
+	convert_endnote(oox_ref_id);
 }
 void DocxConverter::convert_comment(int oox_comm_id)
 {
 	OOX::CComments * docx_comments = docx_document->GetComments();
 	if (!docx_comments)return;
 
-	for (unsigned int comm =0 ; comm < docx_comments->m_arrComments.size(); comm++)
+	for (unsigned int comm = 0 ; comm < docx_comments->m_arrComments.size(); comm++)
 	{
 		OOX::CComment* oox_comment = docx_comments->m_arrComments[comm];
-		if (oox_comment == NULL) continue;
-		if (oox_comment->m_oId.IsInit() == false) continue;
+		
+		if (oox_comment == NULL)					continue;
+		if (oox_comment->m_oId.IsInit() == false)	continue;
 		
 		if (oox_comment->m_oId->GetValue() == oox_comm_id)
 		{
 			odt_context->start_comment_content();
 			{
-				if (oox_comment->m_oAuthor.IsInit())odt_context->comment_context()->set_author	(string2std_string(*oox_comment->m_oAuthor));
-				if (oox_comment->m_oDate.IsInit())	odt_context->comment_context()->set_date	(string2std_string(oox_comment->m_oDate->GetValue()));
-				if (oox_comment->m_oInitials.IsInit()){}
+				if (oox_comment->m_oAuthor.IsInit())	odt_context->comment_context()->set_author	(string2std_string(*oox_comment->m_oAuthor));
+				if (oox_comment->m_oDate.IsInit())		odt_context->comment_context()->set_date	(string2std_string(oox_comment->m_oDate->GetValue()));
+				if (oox_comment->m_oInitials.IsInit())	{}
 
-				for (unsigned int i=0; i <oox_comment->m_arrItems.size(); i++)
+				for (unsigned int i = 0; i <oox_comment->m_arrItems.size(); i++)
 				{
 					convert(oox_comment->m_arrItems[i]);
 				}
@@ -3307,6 +3331,62 @@ void DocxConverter::convert_comment(int oox_comm_id)
 			odt_context->end_comment_content();
 		}
 	}
+}
+void DocxConverter::convert_footnote(int oox_ref_id)
+{
+	OOX::CFootnotes * footnotes = docx_document->GetFootnotes();
+	if (!footnotes)return;
+
+	odt_context->start_note(oox_ref_id, 1);
+
+	for (unsigned int n = 0 ; n < footnotes->m_arrFootnote.size(); n++)
+	{
+		OOX::CFtnEdn* oox_note = footnotes->m_arrFootnote[n];
+		
+		if (oox_note == NULL)					continue;
+		if (oox_note->m_oId.IsInit() == false)	continue;
+		
+		if (oox_note->m_oId->GetValue() == oox_ref_id)
+		{
+			odt_context->start_note_content();
+			{
+				for (unsigned int i = 0; i < oox_note->m_arrItems.size(); i++)
+				{
+					convert(oox_note->m_arrItems[i]);
+				}
+			}
+			odt_context->end_note_content();
+		}
+	}
+	odt_context->end_note();
+}
+void DocxConverter::convert_endnote(int oox_ref_id)
+{
+	OOX::CEndnotes * endnotes = docx_document->GetEndnotes();
+	if (!endnotes)return;
+
+	odt_context->start_note(oox_ref_id, 2);
+
+	for (unsigned int n = 0 ; n < endnotes->m_arrEndnote.size(); n++)
+	{
+		OOX::CFtnEdn* oox_note = endnotes->m_arrEndnote[n];
+		
+		if (oox_note == NULL)					continue;
+		if (oox_note->m_oId.IsInit() == false)	continue;
+		
+		if (oox_note->m_oId->GetValue() == oox_ref_id)
+		{
+			odt_context->start_note_content();
+			{
+				for (unsigned int i = 0; i < oox_note->m_arrItems.size(); i++)
+				{
+					convert(oox_note->m_arrItems[i]);
+				}
+			}
+			odt_context->end_note_content();
+		}
+	}
+	odt_context->end_note();
 }
 void DocxConverter::convert_hdr_ftr	(CString sId)
 {

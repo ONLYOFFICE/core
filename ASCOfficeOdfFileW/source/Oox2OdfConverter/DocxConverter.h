@@ -71,6 +71,8 @@ namespace OOX
 		class CCommentRangeStart;
 		class CCommentRangeEnd;
 		class CCommentReference;
+		class CFootnoteReference;
+		class CEndnoteReference;
 		class CTbl;
 		class CTblGrid;
 		class CTr;
@@ -146,13 +148,15 @@ namespace Oox2Odf
 
 		void apply_from(OOX::Logic::CSectionProperty *props, OOX::Logic::CSectionProperty *other);
 		
-		void convert_document();
-		void convert_styles();
-		void convert_lists_styles();
-		void convert_settings();
+		void convert_document		();
+		void convert_styles			();
+		void convert_lists_styles	();
+		void convert_settings		();
 		
-		void convert_comment	(int oox_comm_id);
-		void convert_hdr_ftr	(CString sId);
+		void convert_footnote		(int oox_ref_id);
+		void convert_endnote		(int oox_ref_id);
+		void convert_comment		(int oox_comm_id);
+		void convert_hdr_ftr		(CString sId);
 
 		void convert(OOX::Logic::CBackground			*oox_background, int type);
 		void convert(OOX::Logic::CSdt					*oox_sdt);
@@ -213,6 +217,9 @@ namespace Oox2Odf
 		void convert(OOX::Logic::CCommentRangeStart		*oox_comm_start);
 		void convert(OOX::Logic::CCommentRangeEnd		*oox_comm_end);
 		void convert(OOX::Logic::CCommentReference		*oox_comm_ref);
+
+		void convert(OOX::Logic::CFootnoteReference		*oox_note_ref);
+		void convert(OOX::Logic::CEndnoteReference		*oox_note_ref);
 
 		void convert(OOX::Logic::CTbl					*oox_table);
 		void convert(OOX::Logic::CTblGrid				*oox_table_grid);

@@ -41,7 +41,9 @@
 
 RtfDocument::RtfDocument()
 {
-	m_aArray.push_back( RtfSectionPtr( new RtfSection() ) );
+	_section section(RtfSectionPtr(new RtfSection()), 0, 0);
+	m_aArray.push_back( section );
+	
 	m_oProperty.SetDefaultOOX();
 	m_oDefaultCharProp.SetDefaultRtf();
 	m_oDefaultParagraphProp.SetDefaultRtf();

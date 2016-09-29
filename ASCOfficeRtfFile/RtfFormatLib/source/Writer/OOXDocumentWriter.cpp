@@ -179,7 +179,8 @@ CString OOXDocumentWriter::CreateXmlEnd( )
 	oNewParam.poWriter = &m_oWriter;
 	oNewParam.poRels = &m_oWriter.m_oDocRels;
 	oNewParam.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
-	sResult += m_oDocument[0]->m_oProperty.RenderToOOX(oNewParam);
+	
+	sResult += m_oDocument[0].props->m_oProperty.RenderToOOX(oNewParam);
 
 	sResult += _T("</w:body>");
 	sResult += _T("</w:document>");
@@ -222,12 +223,12 @@ bool OOXDocumentWriter::SaveByItem()
 		oNewParam.poRels		= &m_oWriter.m_oDocRels;
 		oNewParam.nType			= RENDER_TO_OOX_PARAM_UNKNOWN;
 
-		if( m_oDocument.GetCount() > 1)//если что-то есть в следующей секции значит предудущая закончилась
+		if( m_oDocument.GetCount() > 1)//если что-то есть в следующей секции значит предыдущая закончилась
 		{
-			if( m_oDocument[1]->GetCount() > 0 )
+			if( m_oDocument[1].props->GetCount() > 0 )
 			{
-				CString sSectPr = m_oDocument[0]->m_oProperty.RenderToOOX(oNewParam);
-				CString sXml	= m_oDocument[1]->operator[](0)->RenderToOOX(oNewParam);
+				CString sSectPr = m_oDocument[0].props->m_oProperty.RenderToOOX(oNewParam);
+				CString sXml	= m_oDocument[1].props->operator[](0)->RenderToOOX(oNewParam);
 				
 				int nIndexP = sXml.Find( _T("<w:p>") );
 
@@ -253,13 +254,13 @@ bool OOXDocumentWriter::SaveByItem()
 
                 m_oFileWriter->Write((BYTE*)sXmlUTF.c_str(), sXmlUTF.length());
 				
-				m_oDocument[1]->RemoveItem( 0 );	//удаляем первый параграф
+				m_oDocument[1].props->RemoveItem( 0 );	//удаляем первый параграф
 				m_oDocument.RemoveItem( 0 );		//удаляем секцию
 			}			
 		}
-		else if( m_oDocument.GetCount() > 0 && m_oDocument[0]->GetCount() > 0 )//пишем параграф
+		else if( m_oDocument.GetCount() > 0 && m_oDocument[0].props->GetCount() > 0 )//пишем параграф
 		{
-			CString sXml = m_oDocument[0]->operator[](0)->RenderToOOX(oNewParam);
+			CString sXml = m_oDocument[0].props->operator[](0)->RenderToOOX(oNewParam);
             std::string sXmlUTF = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sXml.GetBuffer());
 
 			if (m_oFileWriter)
@@ -272,7 +273,7 @@ bool OOXDocumentWriter::SaveByItem()
 				m_oFileWriter = NULL;
 			}
 			
-			m_oDocument[0]->RemoveItem( 0 );//удаляем первый параграф
+			m_oDocument[0].props->RemoveItem( 0 );//удаляем первый параграф
         }
 	}
 	return true;
@@ -285,11 +286,11 @@ bool OOXDocumentWriter::SaveByItemEnd()
 	oNewParam.poRels		= &m_oWriter.m_oDocRels;
 	oNewParam.nType			= RENDER_TO_OOX_PARAM_UNKNOWN;
 
-	if( m_oDocument.GetCount() > 0 && m_oDocument[0]->GetCount() > 0 )//дописываем последний параграф
+	if( m_oDocument.GetCount() > 0 && m_oDocument[0].props->GetCount() > 0 )//дописываем последний параграф
 	{
-		CString sXml = m_oDocument[0]->operator[](0)->RenderToOOX(oNewParam);
+		CString sXml = m_oDocument[0].props->operator[](0)->RenderToOOX(oNewParam);
 		//удаляем первый параграф
-		m_oDocument[0]->RemoveItem( 0 );
+		m_oDocument[0].props->RemoveItem( 0 );
         std::string sXmlUTF = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sXml.GetBuffer());
 
         m_oFileWriter->Write((BYTE*)sXmlUTF.c_str(), sXmlUTF.length());

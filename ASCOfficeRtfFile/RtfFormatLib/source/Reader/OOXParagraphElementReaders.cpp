@@ -1115,11 +1115,11 @@ bool OOXpPrReader::Parse( ReaderParameter oParam ,RtfParagraphProperty& oOutputP
 		OOXpPrTabReader oTabReader(m_ooxParaProps->m_oTabs.GetPointer());
 		oTabReader.Parse( oParam, oOutputProperty.m_oTabs );
 	}
-	if( m_ooxParaProps->m_oSectPr.IsInit())
-	{
-		oParam.oRtf->m_oStatusSection.number++;
-		oParam.oRtf->m_oStatusSection.start_new = true;
-	}
+	//if( m_ooxParaProps->m_oSectPr.IsInit())
+	//{
+	//	oParam.oRtf->m_oStatusSection.number++;
+	//	oParam.oRtf->m_oStatusSection.start_new = true;
+	//}
 	
 	if( m_ooxParaProps->m_oRPr.IsInit() )
 	{

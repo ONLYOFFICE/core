@@ -64,7 +64,7 @@ public:
 	{
 		int nCount = 0;
 		for( int i = 0; i < m_oDocument.GetCount(); i++ )
-			nCount += m_oDocument[i]->GetCount();
+			nCount += m_oDocument[i].props->GetCount();
 		return nCount;
 	}
 };

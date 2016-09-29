@@ -1883,11 +1883,11 @@ CString RtfParagraphProperty::RenderToOOX(RenderParameter oRenderParameter)
 		}
 	}
 
-	RtfSectionPtr oCurSection;
-	if(true == poRtfDocument->GetItem( oCurSection ) )
+	_section section;
+	if(true == poRtfDocument->GetItem( section ) )
 	{
-		sResult += oCurSection->RenderToOOX(oRenderParameter);
-		oCurSection->m_bFinalize = false;
+		sResult += section.props->RenderToOOX(oRenderParameter);
+		section.props->m_bFinalize = false;
 	}
 
 	if( 0 == m_bAutoHyphenation )		sResult += _T("<w:suppressAutoHyphens/>");

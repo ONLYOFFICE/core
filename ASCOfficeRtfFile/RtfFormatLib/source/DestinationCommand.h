@@ -2440,12 +2440,13 @@ public:
 
 	RtfNormalReader( RtfDocument& oDocument, RtfReader& oReader )
 	{
-		RtfSectionPtr oCurSection;
 		SectDef( oDocument, oReader );
-		if(true == oDocument.GetItem( oCurSection ) )
+
+		_section section;
+		if(true == oDocument.GetItem( section ) )
 		{
-			oCurSection->m_oProperty = oReader.m_oCurSectionProp;
-			oParagraphReaderDestination.m_oTextItems = oCurSection;
+			section.props->m_oProperty					= oReader.m_oCurSectionProp;
+			oParagraphReaderDestination.m_oTextItems	= section.props;
 		}
 		m_nCurGroups = 0;
 	}
@@ -2457,9 +2458,12 @@ public:
 	void ExitReader(RtfDocument& oDocument, RtfReader& oReader)
 	{
 		oParagraphReaderDestination.Finalize(oReader/*, RtfSectionPtr()*/);
-		RtfSectionPtr oCurSection;
-		if(true == oDocument.GetItem( oCurSection ) )
-			oCurSection->m_oProperty = oReader.m_oCurSectionProp;
+		
+		_section section;
+		if(true == oDocument.GetItem( section) )
+		{
+			section.props->m_oProperty = oReader.m_oCurSectionProp;
+		}
 
 		if( NULL == oDocument.m_oFootnoteCon )
 		{

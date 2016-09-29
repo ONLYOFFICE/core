@@ -59,82 +59,64 @@ public:
 		m_poReader		= oParam.oReader;
 		m_poDocument	= oParam.oRtf;
 		
-		//oParam.oRtf->m_oStatusSection.start_new = false;
-
-		_section first_section;
+		int last_section_start = 0;
 		
-		//if( true == oParam.oRtf->GetItem( first_section ) )
+		//считаем количесво секций и заполняем их свойства .. 
+		for (long i = 0; i < m_ooxDocument->m_arrItems.size(); i++)
 		{
-			//first_section.props->m_oProperty.SetDefaultOOX();
-			//if (m_ooxDocument->m_oSectPr.IsInit())// свойства последней секции
-			//{
-			//	OOXSectionPropertyReader oSectReader(m_ooxDocument->m_oSectPr.GetPointer());
-			//	if (oSectReader.Parse( oParam, first_section.props->m_oProperty ))
-			//	{
-			//	}
-			//}
+			if (m_ooxDocument->m_arrItems[i] == NULL) continue;
 
-			int last_section_start = 0;
-			
-			//считаем количесво секций и заполняем их свойства .. 
-			for (long i = 0; i < m_ooxDocument->m_arrItems.size(); i++)
+			if (m_ooxDocument->m_arrItems[i]->getType() == OOX::et_w_p)
 			{
-				if (m_ooxDocument->m_arrItems[i] == NULL) continue;
-
-				if (m_ooxDocument->m_arrItems[i]->getType() == OOX::et_w_p)
+				OOX::Logic::CParagraph * para = dynamic_cast<OOX::Logic::CParagraph *>(m_ooxDocument->m_arrItems[i]);
+				
+				if ((para) && (para->m_oParagraphProperty))
 				{
-					OOX::Logic::CParagraph * para = dynamic_cast<OOX::Logic::CParagraph *>(m_ooxDocument->m_arrItems[i]);
-					
-					if ((para) && (para->m_oParagraphProperty))
+					if (para->m_oParagraphProperty->m_oSectPr.IsInit() )
 					{
-						if (para->m_oParagraphProperty->m_oSectPr.IsInit() )
+						_section section(RtfSectionPtr( new RtfSection() ), last_section_start, i + 1);
+
+						last_section_start = i + 1;
+
+						section.props->m_oProperty.SetDefaultOOX();
+
+						OOXSectionPropertyReader oSectReader(para->m_oParagraphProperty->m_oSectPr.GetPointer());
+						if( true == oSectReader.Parse( oParam, section.props->m_oProperty ) )
 						{
-							_section section(RtfSectionPtr( new RtfSection() ), last_section_start, i + 1);
-							//if (i == last_section_start) section.end_para = 1;
-
-							last_section_start = i + 1;
-
-							section.props->m_oProperty.SetDefaultOOX();
-
-							OOXSectionPropertyReader oSectReader(para->m_oParagraphProperty->m_oSectPr.GetPointer());
-							if( true == oSectReader.Parse( oParam, section.props->m_oProperty ) )
-							{
-								oParam.oRtf->AddItem( section );
-							}
+							m_poDocument->AddItem( section );
 						}
 					}
 				}
 			}
-			m_poDocument->RemoveItem(0);
+		}
+		m_poDocument->RemoveItem(0);
 
-			_section last_section;
-			m_poDocument->GetItem(last_section);
+		_section last_section;
+		m_poDocument->GetItem(last_section);
+		
+		if (last_section.end_para < m_ooxDocument->m_arrItems.size())
+		{
+			_section section(RtfSectionPtr( new RtfSection() ), last_section.end_para, m_ooxDocument->m_arrItems.size());
 			
-			if (last_section.end_para < m_ooxDocument->m_arrItems.size())
+			section.props->m_oProperty.SetDefaultOOX();
+			if (m_ooxDocument->m_oSectPr.IsInit())// свойства последней секции
 			{
-				_section section(RtfSectionPtr( new RtfSection() ), last_section.end_para, m_ooxDocument->m_arrItems.size());
-				
-				section.props->m_oProperty.SetDefaultOOX();
-				if (m_ooxDocument->m_oSectPr.IsInit())// свойства последней секции
+				OOXSectionPropertyReader oSectReader(m_ooxDocument->m_oSectPr.GetPointer());
+				if (oSectReader.Parse( oParam, section.props->m_oProperty ))
 				{
-					OOXSectionPropertyReader oSectReader(m_ooxDocument->m_oSectPr.GetPointer());
-					if (oSectReader.Parse( oParam, section.props->m_oProperty ))
-					{
-					}
 				}
-				
-				oParam.oRtf->AddItem( section );
 			}
+			
+			m_poDocument->AddItem( section );
+		}
 
+		for (int sect = 0 ; sect < m_poDocument->GetCount(); sect++)
+		{
+			m_oTextItemReader.m_oTextItems = m_poDocument->m_aArray[sect].props;
 
-			for (int sect = 0 ; sect < m_poDocument->GetCount(); sect++)
+			for (long i = m_poDocument->m_aArray[sect].start_para; i < m_poDocument->m_aArray[sect].end_para; i++)
 			{
-				m_oTextItemReader.m_oTextItems = m_poDocument->m_aArray[sect].props;
-
-				for (long i = m_poDocument->m_aArray[sect].start_para; i < m_poDocument->m_aArray[sect].end_para; i++)
-				{
-					m_oTextItemReader.Parse(m_ooxDocument->m_arrItems[i], oParam );
-				}
+				m_oTextItemReader.Parse(m_ooxDocument->m_arrItems[i], oParam );
 			}
 		}
 		return true;

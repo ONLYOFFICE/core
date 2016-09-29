@@ -197,7 +197,7 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 						oCurField->m_oResult = TextItemContainerPtr( new TextItemContainer() );
 						//добавляем insert
 						RtfCharPtr oNewChar( new RtfChar() );
-						oNewChar->m_bRtfEncode = false;
+						oNewChar->m_bRtfEncode = true;// false;
 						CString sFieldText;
                         sFieldText += _T("HYPERLINK \"") + sTarget + _T("\"");
 						oNewChar->setText( sFieldText );

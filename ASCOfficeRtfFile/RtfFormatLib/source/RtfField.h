@@ -207,7 +207,7 @@ public: CString RenderToRtf(RenderParameter oRenderParameter)
 		}
 		sResult += _T("{\\*\\fldinst ");
 		RenderParameter oNewParam = oRenderParameter;
-		oNewParam.nType		= RENDER_TO_RTF_PARAM_CHAR;
+		oNewParam.nType		= RENDER_TO_RTF_PARAM_PLAIN;//RENDER_TO_RTF_PARAM_CHAR;
 		oNewParam.nValue	= RENDER_TO_RTF_PARAM_NO_PAR;
 		
 		sResult += m_oInsert->RenderToRtf( oNewParam );

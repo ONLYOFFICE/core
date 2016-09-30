@@ -173,6 +173,8 @@ namespace NSBinPptxRW
 #define PARRUN_TYPE_RUN					1
 #define PARRUN_TYPE_FLD					2
 #define PARRUN_TYPE_BR					3
+#define PARRUN_TYPE_MATH				4
+#define PARRUN_TYPE_MATHPARA			5
 
 #define SPTREE_TYPE_NONE				0
 #define SPTREE_TYPE_SHAPE				1

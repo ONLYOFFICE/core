@@ -34,6 +34,7 @@
 #include "odf_conversion_context.h"
 
 #include "odf_comment_context.h"
+#include "odf_notes_context.h"
 #include "odf_table_context.h"
 
 namespace cpdoccore { 
@@ -112,11 +113,15 @@ public:
 		void set_drop_cap_margin(bool val);
 	void end_drop_cap();
 
-	bool start_comment(int oox_comment_id);
-	void end_comment(int oox_comment_id);
+	bool start_comment			(int oox_comment_id);
+	void end_comment			(int oox_comment_id);
+	void start_comment_content	();
+	void end_comment_content	();
 
-	void start_comment_content();
-	void end_comment_content();
+	void start_note				(int oox_ref_id, int type);
+		void start_note_content	();
+		void end_note_content	();
+	void end_note				();
 
 	void start_table(bool styled = false);
 		void start_table_columns();
@@ -154,6 +159,7 @@ private:
 
 	odf_table_context			table_context_;
 	odf_comment_context			comment_context_;
+	odf_notes_context			notes_context_;
 
 	bool is_header_;
 	bool is_footer_;

@@ -449,7 +449,7 @@ void chart_domain::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         {
-			CP_XML_ATTR_OPT(L"chart:table-cell-range-address", table_cell_range_address_);
+			CP_XML_ATTR_OPT(L"table:cell-range-address", table_cell_range_address_);
 		}
 	}
 }

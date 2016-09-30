@@ -148,7 +148,7 @@ namespace OOX
 
 			return NULL;
 		}
-		void       Add(OOX::CFtnEdn* pFootnote)
+		void Add(OOX::CFtnEdn* pFootnote)
 		{
 			m_arrFootnote.push_back( pFootnote );
 		}		
@@ -159,8 +159,8 @@ namespace OOX
 
 	public:
 		CPath						m_oReadPath;
-		std::vector<OOX::CFtnEdn*> m_arrFootnote;
-		std::vector<CString>			m_arrShapeTypes;
+		std::vector<OOX::CFtnEdn*>	m_arrFootnote;
+		std::vector<CString>		m_arrShapeTypes;
 	};
 } // namespace OOX
 

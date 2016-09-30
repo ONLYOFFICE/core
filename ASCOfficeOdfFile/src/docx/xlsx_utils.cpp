@@ -45,14 +45,6 @@ namespace cpdoccore {
 
 namespace oox {
 
-//_ASSERTE(getColAddress(0) == L"A");
-//_ASSERTE(getColAddress(1) == L"B");
-//_ASSERTE(getColAddress(25) == L"Z");
-//_ASSERTE(getColAddress(26) == L"AA");
-//_ASSERTE(getColAddress(51) == L"AZ");
-//_ASSERTE(getColAddress(52) == L"BA");
-//_ASSERTE(getColAddress(77) == L"BZ");
-//_ASSERTE(getColAddress(26 * 26 + 25) == L"ZZ");
 std::wstring getColAddress(size_t col)
 {
     static const size_t r = (L'Z' - L'A' + 1);

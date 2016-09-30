@@ -60,14 +60,14 @@ public:
 	
 	bool is_started();// for content
 
-	void start_comment(office_element_ptr &elm, int oox_id);
-	void end_comment(office_element_ptr & elm, int oox_id);
+	void start_comment	(office_element_ptr & elm, int oox_id);
+	void end_comment	(office_element_ptr & elm, int oox_id);
 
-	void start_comment_content();
-	void end_comment_content();
+	void start_comment_content	();
+	void end_comment_content	();
 
-	void set_author(std::wstring author);
-	void set_date(std::wstring author);
+	void set_author	(std::wstring author);
+	void set_date	(std::wstring author);
 
 private:
 	std::wstring find_name_by_id(int oox_id);

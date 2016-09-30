@@ -99,15 +99,26 @@ void ods_conversion_context::end_document()
 	odf_conversion_context::end_document();
 }
 
-void ods_conversion_context::start_autofilter(std::wstring ref)
+void ods_conversion_context::add_autofilter(std::wstring ref)
 {
-	table_context_.start_autofilter(ref);
+	table_context_.add_autofilter(ref);
 }
 void ods_conversion_context::start_conditional_formats()
 {
 	current_table().start_conditional_formats();
 }
-
+void ods_conversion_context::start_table_part(std::wstring name, std::wstring ref)
+{
+	table_context_.start_table_part(name, ref);
+}
+void ods_conversion_context::set_table_part_autofilter(bool val)
+{
+	table_context_.set_table_part_autofilter(val);
+}
+void ods_conversion_context::end_table_part()
+{
+	table_context_.end_table_part();
+}
 void ods_conversion_context::add_defined_range(const std::wstring & name, const std::wstring & cell_range, int sheet_id, bool printable)
 {
 	table_context_.add_defined_range(name,cell_range, sheet_id, printable);

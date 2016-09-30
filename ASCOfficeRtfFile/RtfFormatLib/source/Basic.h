@@ -92,10 +92,8 @@ public:
 template<class T>
 class ItemContainer
 {
-protected:
-    std::vector<T> m_aArray;
-
 public:
+    std::vector<T> m_aArray;
 
     ItemContainer( )
 	{
@@ -138,9 +136,13 @@ public:
 	void RemoveItem( int nIndex = -1 )
 	{
 		if( nIndex >= 0 && nIndex < (int)m_aArray.size() )
+		{
 			m_aArray.erase(m_aArray.begin() + nIndex );
+		}
 		else if( -1 == nIndex && 0 < (int)m_aArray.size() )
+		{
 			m_aArray.pop_back();
+		}
 
 	}
 	void RemoveAll()
@@ -149,14 +151,19 @@ public:
 	}
 	bool GetItem(T& oOutput,int nIndex = -1)
 	{
-		if( -1 == nIndex && (int)m_aArray.size() > 0 )
+		if( -1 == nIndex && !m_aArray.empty() )
 		{
-			oOutput = m_aArray[m_aArray.size() - 1];
+			oOutput = m_aArray.back();
 			return true;
 		}
 		if( nIndex >= 0 && nIndex < (int)m_aArray.size())
 		{
 			oOutput = m_aArray[nIndex];
+			return true;
+		}
+		else if (!m_aArray.empty())
+		{
+			oOutput = m_aArray[0]; // default
 			return true;
 		}
 		return false;

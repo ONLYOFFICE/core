@@ -61,7 +61,7 @@ using xml::xml_char_wc;
 const wchar_t * text_h::ns = L"text";
 const wchar_t * text_h::name = L"h";
 
-void paragraph::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context)
+void paragraph::create_child_element( const std::wstring & Ns, const std::wstring & Name, odf_conversion_context * Context)
 {
     CP_CREATE_ELEMENT_SIMPLE(paragraph_content_);
 }
@@ -126,7 +126,7 @@ void text_h::serialize(std::wostream & _Wostream)
 	}
 }
 //
-void text_h::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
+void text_h::create_child_element( const std::wstring & Ns, const std::wstring & Name)
 {
     paragraph_.create_child_element(Ns, Name, getContext());
 }
@@ -144,7 +144,7 @@ void text_h::add_child_element( const office_element_ptr & child_element)
 const wchar_t * text_p::ns = L"text";
 const wchar_t * text_p::name = L"p";
 
-void text_p::create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
+void text_p::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
     paragraph_.create_child_element( Ns, Name, getContext());
 }
@@ -194,7 +194,7 @@ void text_list::serialize(std::wostream & _Wostream)
 	}
 }
 
-void text_list::create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
+void text_list::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
     if CP_CHECK_NAME(L"text", L"list-header")
     {
@@ -219,7 +219,7 @@ void text_list::add_child_element( const office_element_ptr & child_element)
 const wchar_t * text_soft_page_break::ns = L"text";
 const wchar_t * text_soft_page_break::name = L"soft-page-break";
 
-void text_soft_page_break::serialize(::std::wostream & _Wostream)
+void text_soft_page_break::serialize(std::wostream & _Wostream)
 {
  	CP_XML_WRITER(_Wostream)
     {
@@ -245,7 +245,7 @@ void text_section_attr::serialize(CP_ATTR_NODE)
 const wchar_t * text_section::ns = L"text";
 const wchar_t * text_section::name = L"section";
 
-void text_section::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
+void text_section::create_child_element( const std::wstring & Ns, const std::wstring & Name)
 {
     if (L"text" == Ns && L"section-source" == Name)
     {
@@ -301,7 +301,7 @@ void text_section_source_attr::serialize(CP_ATTR_NODE)
 const wchar_t * text_section_source::ns = L"text";
 const wchar_t * text_section_source::name = L"section-source";
 
-void text_section_source::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
+void text_section_source::create_child_element( const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }
@@ -320,7 +320,7 @@ void text_section_source::serialize(std::wostream & _Wostream)
 const wchar_t * text_index_body::ns = L"text";
 const wchar_t * text_index_body::name = L"index-body";
 
-void text_index_body::serialize(::std::wostream & _Wostream)
+void text_index_body::serialize(std::wostream & _Wostream)
 {
  	CP_XML_WRITER(_Wostream)
     {
@@ -334,7 +334,7 @@ void text_index_body::serialize(::std::wostream & _Wostream)
 	} 
 }
 
-void text_index_body::create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
+void text_index_body::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
     CP_CREATE_ELEMENT(index_content_main_);
 }
@@ -349,7 +349,7 @@ void text_index_body::add_child_element( const office_element_ptr & child_elemen
 const wchar_t * text_index_title::ns = L"text";
 const wchar_t * text_index_title::name = L"index-title";
 
-void text_index_title::serialize(::std::wostream & _Wostream) 
+void text_index_title::serialize(std::wostream & _Wostream) 
 {
  	CP_XML_WRITER(_Wostream)
     {
@@ -362,7 +362,7 @@ void text_index_title::serialize(::std::wostream & _Wostream)
 		}
 	} 
 }
-void text_index_title::create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
+void text_index_title::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
      CP_CREATE_ELEMENT(index_content_main_);
 }
@@ -376,7 +376,7 @@ void text_index_title::add_child_element( const office_element_ptr & child_eleme
 const wchar_t * text_table_of_content::ns = L"text";
 const wchar_t * text_table_of_content::name = L"table-of-content";
 
-void text_table_of_content::serialize(::std::wostream & _Wostream) 
+void text_table_of_content::serialize(std::wostream & _Wostream) 
 {
  	CP_XML_WRITER(_Wostream)
     {
@@ -388,7 +388,7 @@ void text_table_of_content::serialize(::std::wostream & _Wostream)
 		}
 	} 
 }
-void text_table_of_content::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
+void text_table_of_content::create_child_element( const std::wstring & Ns, const std::wstring & Name)
 {
     if CP_CHECK_NAME(L"text", L"index-body")
     {

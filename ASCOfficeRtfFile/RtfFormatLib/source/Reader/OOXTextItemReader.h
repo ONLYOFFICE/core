@@ -67,15 +67,15 @@ public:
 				if( true == m_oParagraphReader.Parse( oParam, (*oNewParagraph), CcnfStyle() ))
 				{
 					m_oTextItems->AddItem( oNewParagraph );
-					if( true == oParam.oRtf->m_oStatusSection.start_new )
-					{
-						RtfSectionPtr oCurSection;
-						if( true == oParam.oRtf->GetItem( oCurSection, oParam.oRtf->m_oStatusSection.number - 1) )
-						{
-							m_oTextItems = oCurSection;
-						}
-						oParam.oRtf->m_oStatusSection.start_new = false;
-					}
+					//if( true == oParam.oRtf->m_oStatusSection.start_new )
+					//{
+					//	RtfSectionPtr oCurSection;
+					//	if( true == oParam.oRtf->GetItem( oCurSection, oParam.oRtf->m_oStatusSection.number - 1) )
+					//	{
+					//		m_oTextItems = oCurSection;
+					//	}
+					//	oParam.oRtf->m_oStatusSection.start_new = false;
+					//}
 				}
 			}break;
 			case OOX::et_w_tbl:

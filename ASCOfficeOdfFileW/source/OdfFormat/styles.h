@@ -317,7 +317,7 @@ public:
     // attr
     std::wstring			style_name_;
     _CP_OPT( std::wstring ) style_display_name_; 
-    odf_types::style_family			style_family_;
+    odf_types::style_family	style_family_;
 
     _CP_OPT( std::wstring ) style_parent_style_name_; 
     _CP_OPT( std::wstring ) style_next_style_name_; 

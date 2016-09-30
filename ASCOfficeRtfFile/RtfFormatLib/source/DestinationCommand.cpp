@@ -356,16 +356,16 @@ bool RtfNormalReader::ExecuteCommand( RtfDocument& oDocument, RtfReader& oReader
 	}
 	else if( _T("sect") == sCommand )
 	{
-		RtfSectionPtr oCurSection;
-		if(true == oDocument.GetItem( oCurSection ) )
+		_section section;
+		if(true == oDocument.GetItem( section ) )
 		{
-			oCurSection->m_oProperty = oReader.m_oCurSectionProp;
+			section.props->m_oProperty = oReader.m_oCurSectionProp;
 			if (oParagraphReaderDestination.nCurItap > 0)
 			{
 			}
 			else
 			{
-				oCurSection->m_bFinalize = true;
+				section.props->m_bFinalize = true;
 			}
 		}
 			
@@ -373,7 +373,9 @@ bool RtfNormalReader::ExecuteCommand( RtfDocument& oDocument, RtfReader& oReader
 		
 		RtfSectionPtr oNewSection = RtfSectionPtr( new RtfSection() );
 		oParagraphReaderDestination.m_oTextItems = oNewSection;
-		oDocument.AddItem( oNewSection );
+		
+		_section new_section(oNewSection);
+		oDocument.AddItem( new_section );
 
 		//вручную обнуляем footer, т.к. sectd может встретиться и после field
 		///?????

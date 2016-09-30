@@ -97,7 +97,7 @@ bool RtfWriter::SaveByItem()
 	oNewParam.poWriter = this;
 	oNewParam.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
 
-	if( m_oDocument.GetCount() > 1 && m_oDocument[0]->GetCount() == 0 )
+	if( m_oDocument.GetCount() > 1 && m_oDocument[0].props->GetCount() == 0 )
 	{
 		//пишем конец секции
 		CStringA sRtfExt = "\\sect";
@@ -125,7 +125,7 @@ bool RtfWriter::SaveByItem()
 				m_bFirst = false;
 				oNewParam.nType = RENDER_TO_OOX_PARAM_FIRST_SECTION;
 			}
-			sRtf = m_oDocument[0]->m_oProperty.RenderToRtf(oNewParam);
+			sRtf = m_oDocument[0].props->m_oProperty.RenderToRtf(oNewParam);
             RtfUtility::RtfInternalEncoder::Decode( sRtf, *m_oCurTempFileSectWriter );
 			//дописываем в файл
 			RELEASEOBJECT( m_oCurTempFileSectWriter );
@@ -143,11 +143,14 @@ bool RtfWriter::SaveByItem()
 		m_oDocument.RemoveItem( 0 );
 	}
 	//пишем параграф
-	if( m_oDocument.GetCount() > 0 && m_oDocument[0]->GetCount() > 0 )
+	if( m_oDocument.GetCount() > 0 && m_oDocument[0].props->GetCount() > 0 )
 	{
 		CString sRtf;
-		sRtf = m_oDocument[0]->operator[](0)->RenderToRtf(oNewParam);
-		if( TYPE_RTF_PARAGRAPH == m_oDocument[0]->operator[](0)->GetType() && !(m_oDocument[0]->GetCount() == 0 && m_oDocument.GetCount() > 1) )//для последнего параграфа секции не пишем \par
+		sRtf = m_oDocument[0].props->operator[](0)->RenderToRtf(oNewParam);
+		
+		if( TYPE_RTF_PARAGRAPH ==		m_oDocument[0].props->operator[](0)->GetType() 
+								&&	!( m_oDocument[0].props->GetCount() == 0 
+									&& m_oDocument.GetCount() > 1) )//для последнего параграфа секции не пишем \par
 		{
 			sRtf += _T("\\par");
 			//oNewParam.nValue = RENDER_TO_RTF_PARAM_NO_PAR;
@@ -156,7 +159,7 @@ bool RtfWriter::SaveByItem()
 		//m_oTempFileWriter->Write( (BYTE*)(LPCSTR)sRtf, sRtf.GetLength() );
 
 		//удаляем элемент который только что написали
-		m_oDocument[0]->RemoveItem( 0 );
+		m_oDocument[0].props->RemoveItem( 0 );
 	}
 	return true;
 }
@@ -182,7 +185,7 @@ bool RtfWriter::SaveByItemEnd()
 				m_bFirst = false;
 				oNewParam.nType = RENDER_TO_OOX_PARAM_FIRST_SECTION;
 			}
-			sRtf = m_oDocument[0]->m_oProperty.RenderToRtf(oNewParam);
+			sRtf = m_oDocument[0].props->m_oProperty.RenderToRtf(oNewParam);
             RtfUtility::RtfInternalEncoder::Decode( sRtf, *m_oCurTempFileSectWriter );
 			//дописываем в файл
 			RELEASEOBJECT( m_oCurTempFileSectWriter );
@@ -265,7 +268,7 @@ int RtfWriter::GetCount()
 {
 	int nCount = 0;
 	for( int i = 0; i < m_oDocument.GetCount(); i++ )
-		nCount += m_oDocument[i]->GetCount();
+		nCount += m_oDocument[i].props->GetCount();
 	return nCount;
 }
 CString RtfWriter::CreateRtfStart()

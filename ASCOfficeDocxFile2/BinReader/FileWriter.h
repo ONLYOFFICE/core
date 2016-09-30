@@ -76,9 +76,9 @@ namespace Writers
 		int m_nDocPrIndex;
 		BinDocxRW::CComments* m_pComments;
 	public:
-		FileWriter(CString sDirOutput,CString sFontDir, int nVersion, bool bSaveChartAsImg, NSBinPptxRW::CDrawingConverter* pDrawingConverter, CString sThemePath):
+		FileWriter(CString sDirOutput,CString sFontDir, bool bNoFontDir, int nVersion, bool bSaveChartAsImg, NSBinPptxRW::CDrawingConverter* pDrawingConverter, CString sThemePath):
 										m_pDrawingConverter(pDrawingConverter),m_sThemePath(sThemePath),m_bSaveChartAsImg(bSaveChartAsImg),
-										m_oContentTypesWriter(sDirOutput), m_oFontTableWriter(sDirOutput, sFontDir),
+										m_oContentTypesWriter(sDirOutput), m_oFontTableWriter(sDirOutput, sFontDir, bNoFontDir),
 										m_oHeaderFooterWriter(sDirOutput, m_oContentTypesWriter),
 										m_oFootnotesWriter(sDirOutput, m_oContentTypesWriter),
 										m_oEndnotesWriter(sDirOutput, m_oContentTypesWriter),

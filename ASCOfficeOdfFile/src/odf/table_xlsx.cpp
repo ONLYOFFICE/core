@@ -397,7 +397,7 @@ void table_table_column::xlsx_convert(oox::xlsx_conversion_context & Context)
     Context.start_table_column(columnsRepeated, defaultCellStyleName, cMin, cMax);
 
 	if ( cMin > 16384 ) return;
-	if ( cMax > 16384 ) cMax = 16384;
+	if ( cMax > 16384 ) return;
 
     double pt_width = 0.0;
 	double cm_width = 0.0;  

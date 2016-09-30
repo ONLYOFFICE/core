@@ -59,47 +59,71 @@ public:
 
 		if (m_ooxEndNotes)
 		{
-			int nMin1 = INT_MAX;
 			if( oParam.oRtf->m_oProperty.m_aSpecialEndnotes.size() > 0 )
 			{
-				int nMin1 = INT_MAX;
-				int nMin2 = INT_MAX;
-				for( int i = 0; i < (int)oParam.oRtf->m_oProperty.m_aSpecialEndnotes.size(); i++ )
-					if( nMin1 > oParam.oRtf->m_oProperty.m_aSpecialEndnotes[i] )
+				for (long i = 0 ; i < m_ooxEndNotes->m_arrEndnote.size() ; i++)
+				{
+					for( int j = 0; j < oParam.oRtf->m_oProperty.m_aSpecialEndnotes.size(); j++ )
 					{
-						nMin2 = nMin1;
-						nMin1 = oParam.oRtf->m_oProperty.m_aSpecialEndnotes[i];
+						if (m_ooxEndNotes->m_arrEndnote[i]->m_oId.IsInit() && 
+							m_ooxEndNotes->m_arrEndnote[i]->m_oId->GetValue() == oParam.oRtf->m_oProperty.m_aSpecialEndnotes[j])
+						{
+							if (m_ooxEndNotes->m_arrEndnote[i]->m_oType.IsInit())
+							{
+								if (m_ooxEndNotes->m_arrEndnote[i]->m_oType->GetValue() == SimpleTypes::ftnednSeparator)
+								{
+									nSeparatorId = oParam.oRtf->m_oProperty.m_aSpecialEndnotes[j];
+									break;
+								}
+								else if (m_ooxEndNotes->m_arrEndnote[i]->m_oType->GetValue() == SimpleTypes::ftnednContinuationSeparator)
+								{
+									nContinueId = oParam.oRtf->m_oProperty.m_aSpecialEndnotes[j];
+									break;
+								}
+							}
+						}
 					}
-				if( INT_MAX != nMin1 )
-					nSeparatorId = nMin1;
-				if( INT_MAX != nMin2 )
-					nContinueId = nMin1;
+				}
 			}
 
 			for (long i =0 ; i < m_ooxEndNotes->m_arrEndnote.size() ; i++)
+			{
 				ParseOne(m_ooxEndNotes->m_arrEndnote[i], oParam, false, nSeparatorId, nContinueId);
+			}
 		}
 
 		if (m_ooxFootNotes)
 		{
-			int nMin1 = INT_MAX;
 			if( oParam.oRtf->m_oProperty.m_aSpecialFootnotes.size() > 0 )
 			{
-				int nMin1 = INT_MAX;
-				int nMin2 = INT_MAX;
-				for( int i = 0; i < (int)oParam.oRtf->m_oProperty.m_aSpecialFootnotes.size(); i++ )
-					if( nMin1 > oParam.oRtf->m_oProperty.m_aSpecialFootnotes[i] )
+				for (long i = 0 ; i < m_ooxFootNotes->m_arrFootnote.size() ; i++)
+				{
+					for( int j = 0; j < oParam.oRtf->m_oProperty.m_aSpecialFootnotes.size(); j++ )
 					{
-						nMin2 = nMin1;
-						nMin1 = oParam.oRtf->m_oProperty.m_aSpecialFootnotes[i];
+						if (m_ooxFootNotes->m_arrFootnote[i]->m_oId.IsInit() && 
+							m_ooxFootNotes->m_arrFootnote[i]->m_oId->GetValue() == oParam.oRtf->m_oProperty.m_aSpecialFootnotes[j])
+						{
+							if (m_ooxFootNotes->m_arrFootnote[i]->m_oType.IsInit())
+							{
+								if (m_ooxFootNotes->m_arrFootnote[i]->m_oType->GetValue() == SimpleTypes::ftnednSeparator)
+								{
+									nSeparatorId = oParam.oRtf->m_oProperty.m_aSpecialFootnotes[j];
+									break;
+								}
+								else if (m_ooxFootNotes->m_arrFootnote[i]->m_oType->GetValue() == SimpleTypes::ftnednContinuationSeparator)
+								{
+									nContinueId = oParam.oRtf->m_oProperty.m_aSpecialFootnotes[j];
+									break;
+								}
+							}
+						}
 					}
-				if( INT_MAX != nMin1 )
-					nSeparatorId = nMin1;
-				if( INT_MAX != nMin2 )
-					nContinueId = nMin1;
+				}
 			}
 			for (long i =0 ; i < m_ooxFootNotes->m_arrFootnote.size() ; i++)
+			{
 				ParseOne(m_ooxFootNotes->m_arrFootnote[i], oParam, true, nSeparatorId, nContinueId);
+			}
 		}
 		return true;
 	}

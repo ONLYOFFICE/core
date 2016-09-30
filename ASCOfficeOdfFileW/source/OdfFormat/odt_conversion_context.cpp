@@ -73,7 +73,7 @@ double calculate_size_font_symbols(std::wstring str_test, std::wstring font_name
 }
 odt_conversion_context::odt_conversion_context(package::odf_document * outputDocument) 
 	:	odf_conversion_context (TextDocument, outputDocument),
-		comment_context_(this), main_text_context_(NULL),table_context_(this)	
+		comment_context_(this), notes_context_(this), main_text_context_(NULL), table_context_(this)	
 {
 	current_field_.enabled = false;
 	current_field_.started = false;
@@ -677,6 +677,7 @@ void odt_conversion_context::end_run()
 		current_field_.started = true;
 	}
 }
+//--------------------------------------------------------------------------------------------------------
 bool odt_conversion_context::start_comment(int oox_comm_id)
 {
 	int comm_state = comment_context_.find_by_id(oox_comm_id);
@@ -684,7 +685,7 @@ bool odt_conversion_context::start_comment(int oox_comm_id)
 	if (comm_state == 0)
 	{
 		office_element_ptr comm_elm;
-		create_element(L"office", L"annotation",comm_elm,this);
+		create_element(L"office", L"annotation", comm_elm, this);
 
 		comment_context_.start_comment(comm_elm, oox_comm_id);
 		
@@ -725,7 +726,7 @@ void odt_conversion_context::end_comment(int oox_comm_id)
 	if (added == true)
 	{
 		office_element_ptr comm_elm;
-		create_element(L"office", L"annotation-end",comm_elm,this);
+		create_element(L"office", L"annotation-end", comm_elm, this);
 
 		comment_context_.end_comment(comm_elm, oox_comm_id);
 		
@@ -733,6 +734,48 @@ void odt_conversion_context::end_comment(int oox_comm_id)
 			text_context()->current_level_.back().elm->add_child_element(comm_elm);
 	}
 }
+//--------------------------------------------------------------------------------------------------------
+void odt_conversion_context::start_note(int oox_ref_id, int type)
+{
+	office_element_ptr note_elm;
+	create_element(L"text", L"note", note_elm, this);
+
+	notes_context_.start_note(note_elm, oox_ref_id, type);
+	
+	if (text_context()->current_level_.size() > 0)
+		text_context()->current_level_.back().elm->add_child_element(note_elm);
+
+	odf_element_state state = {note_elm, L"", office_element_ptr(), (int)text_context()->current_level_.size()};
+	text_context()->current_level_.push_back(state);
+}
+void odt_conversion_context::start_note_content()
+{
+	notes_context_.start_note_content();
+
+	office_element_ptr & note_content_element = notes_context_.get_note_content();
+
+	odf_element_state state = {note_content_element, L"", office_element_ptr(), (int)text_context()->current_level_.size()};
+	text_context()->current_level_.push_back(state);
+
+	start_text_context();
+
+	text_context()->start_element(note_content_element);
+}
+void odt_conversion_context::end_note_content()
+{
+	notes_context_.end_note_content();
+	
+	text_context()->end_element();
+	end_text_context();
+
+	text_context()->current_level_.pop_back();
+}
+void odt_conversion_context::end_note()
+{
+	notes_context_.end_note();
+	text_context()->current_level_.pop_back();
+}
+//--------------------------------------------------------------------------------------------------------
 void odt_conversion_context::start_image(const std::wstring & image_file_name)
 {
 	std::wstring odf_ref_name ;

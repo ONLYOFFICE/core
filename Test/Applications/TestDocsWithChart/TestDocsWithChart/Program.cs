@@ -45,8 +45,57 @@ namespace TestDocsWithChart
     {
         static void Main(string[] args)
         {
+            getFilesAlternateContent();
             //getFiles();
-            convertFiles();
+            //convertFiles();
+        }
+        static void getFilesAlternateContent()
+        {
+            string sAlternateContent = ":Choice ";
+            string sDirInput = @"\\192.168.3.208\allusers\Files\PPTX";
+            string sDirOutput = @"F:\Files\AlternateContent\pptx";
+            String[] allfiles = System.IO.Directory.GetFiles(sDirInput, "*.*", System.IO.SearchOption.AllDirectories);
+            
+            for (var i = 0; i < allfiles.Length; ++i)
+            {
+                string file = allfiles[i];
+                try
+                {
+                    ZipArchive zip = ZipFile.OpenRead(file);
+                    string sOutputPath = Path.Combine(sDirOutput, Path.GetFileName(file));
+                    bool bCopy = false;
+                    string sRes = "";
+                    foreach (ZipArchiveEntry entry in zip.Entries)
+                    {
+                        if (entry.FullName.EndsWith(".xml", StringComparison.OrdinalIgnoreCase))
+                        {
+                            using (StreamReader reader = new StreamReader(entry.Open(), Encoding.UTF8))
+                            {
+                                string sXml = reader.ReadToEnd();
+                                int nIndex = -1;
+                                while (-1 != (nIndex = sXml.IndexOf(sAlternateContent, nIndex + 1)))
+                                {
+                                    if (!bCopy)
+                                    {
+                                        bCopy = true;
+                                        sRes += sOutputPath;
+                                        System.IO.File.Copy(file, sOutputPath, true);
+                                    }
+                                    sRes += ";";
+                                    sRes += entry.ToString();
+                                    sRes += "-";
+                                    sRes += sXml.Substring(nIndex, sXml.IndexOf(">", nIndex + 1) - nIndex);
+                                }
+                            }
+                        }
+                    }
+                    Debug.WriteLineIf(bCopy, sRes);
+                }
+                catch(Exception e) {
+
+                }
+            }
+
         }
         static void getFiles()
         {

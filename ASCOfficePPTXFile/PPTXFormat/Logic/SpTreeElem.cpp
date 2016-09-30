@@ -252,30 +252,32 @@ namespace PPTX
 				m_elem.reset(new Logic::GraphicFrame(node));
 			else if (name == _T("AlternateContent"))
 			{
-				XmlUtils::CXmlNode oNodeFall;
-				if (node.GetNode(_T("mc:Fallback"), oNodeFall))
+				bool isEmpty = true;
+				XmlUtils::CXmlNode oNodeChoice;
+				if (node.GetNode(_T("mc:Choice"), oNodeChoice))
 				{
+					XmlUtils::CXmlNode oNodeFall;
 					XmlUtils::CXmlNodes oNodesC;
-					if (oNodeFall.GetNodes(_T("*"), oNodesC))
+					CString sRequires;
+					//todo better check (a14 can be math, slicer)
+					if(oNodeChoice.GetAttributeIfExist(L"Requires", sRequires) && L"a14" == sRequires)
 					{
-						if (1 == oNodesC.GetCount())
-						{
-							XmlUtils::CXmlNode oNodeC;
-							oNodesC.GetAt(0, oNodeC);
-
-							fromXML(oNodeC);
-						}
-						else
-						{
-							m_elem.reset();	
-						}
+						oNodeChoice.GetNodes(_T("*"), oNodesC);
 					}
-					else
+					else if (node.GetNode(_T("mc:Fallback"), oNodeFall))
 					{
-						m_elem.reset();	
+						oNodeFall.GetNodes(_T("*"), oNodesC);
+					}
+					if (1 == oNodesC.GetCount())
+					{
+						XmlUtils::CXmlNode oNodeC;
+						oNodesC.GetAt(0, oNodeC);
+
+						fromXML(oNodeC);
+						isEmpty = false;
 					}
 				}
-				else 
+				if(isEmpty)
 				{
 					m_elem.reset();	
 				}

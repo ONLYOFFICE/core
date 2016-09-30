@@ -49,19 +49,23 @@ namespace Writers
 	public:
 		std::map<CString, int> m_mapFonts;
 	public:
-		FontTableWriter(CString sDir, CString sFontDir):m_sDir(sDir)
+		FontTableWriter(CString sDir, CString sFontDir, bool bNoFontDir):m_sDir(sDir)
 		{
-			if(sFontDir.IsEmpty())
-				m_oApplicationFonts.Initialize();
-			else
-				m_oApplicationFonts.InitializeFromFolder(string2std_string(sFontDir));
-			CFontList* pFontList = m_oApplicationFonts.GetList();
-			if(NULL != pFontList)
+			m_pFontManager = NULL;
+			if(!bNoFontDir)
 			{
-				std::wstring sDefaultFont(_T("Arial"));
-				pFontList->SetDefaultFont(sDefaultFont);
+				if(sFontDir.IsEmpty())
+					m_oApplicationFonts.Initialize();
+				else
+					m_oApplicationFonts.InitializeFromFolder(string2std_string(sFontDir));
+				CFontList* pFontList = m_oApplicationFonts.GetList();
+				if(NULL != pFontList)
+				{
+					std::wstring sDefaultFont(_T("Arial"));
+					pFontList->SetDefaultFont(sDefaultFont);
+				}
+				m_pFontManager = m_oApplicationFonts.GenerateFontManager();
 			}
-			m_pFontManager = m_oApplicationFonts.GenerateFontManager();
 		}
 		~FontTableWriter()
 		{

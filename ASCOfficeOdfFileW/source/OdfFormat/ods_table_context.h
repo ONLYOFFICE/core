@@ -72,8 +72,11 @@ public:
     void add_defined_range(const std::wstring & name, const  std::wstring & cell_range, int sheet_id, bool printable = false);
     void add_defined_expression(const std::wstring & name, const  std::wstring & value, int sheet_id, bool printable = false);
 
-
-	void start_autofilter(std::wstring ref);
+	void add_autofilter(std::wstring ref);
+	
+	void start_table_part(std::wstring name, std::wstring ref);
+		void set_table_part_autofilter(bool val);
+	void end_table_part();
 
 private:
 

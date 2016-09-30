@@ -258,7 +258,7 @@ void text_span::serialize(std::wostream & _Wostream)
 	}
 }
 
-void text_span::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
+void text_span::create_child_element( const std::wstring & Ns, const std::wstring & Name)
 {
     CP_CREATE_ELEMENT(paragraph_content_);
 }
@@ -306,16 +306,15 @@ void text_a::serialize(std::wostream & _Wostream)
 		    CP_XML_ATTR_OPT(L"text:style-name", text_style_name_);
 		    CP_XML_ATTR_OPT(L"text:visited-style-name", text_visited_style_name_);   
 			
-			BOOST_FOREACH(const office_element_ptr & element, paragraph_content_)
+			for (int i = 0; i < paragraph_content_.size(); i++)
 			{
-				element->serialize(CP_XML_STREAM());
+				paragraph_content_[i]->serialize(CP_XML_STREAM());
 			}
 		}
-	}
-    
+	}    
 }
 
-void text_a::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
+void text_a::create_child_element( const std::wstring & Ns, const std::wstring & Name)
 {
     CP_CREATE_ELEMENT(paragraph_content_);
 }
@@ -330,10 +329,74 @@ void text_a::add_text(const std::wstring & Text)
     office_element_ptr elm = text_text::create(Text) ;
     paragraph_content_.push_back( elm );
 }
+// text:note-citation
+//////////////////////////////////////////////////////////////////////////////////////////////////
+const wchar_t * text_note_citation::ns = L"text";
+const wchar_t * text_note_citation::name = L"note-citation";
+
+void text_note_citation::create_child_element( const std::wstring & Ns, const std::wstring & Name)
+{
+    CP_CREATE_ELEMENT(content_);
+}
+
+void text_note_citation::add_child_element( const office_element_ptr & child_element)
+{
+	content_.push_back(child_element);
+}
+
+void text_note_citation::add_text(const std::wstring & Text)
+{
+    office_element_ptr elm = text_text::create(Text) ;
+    content_.push_back( elm );
+}
+
+void text_note_citation::serialize(std::wostream & _Wostream) 
+{
+ 	CP_XML_WRITER(_Wostream)
+    {
+		CP_XML_NODE_SIMPLE()
+        { 	
+			CP_XML_ATTR_OPT(L"text:label", text_label_);
+			
+			for (int i = 0; i < content_.size(); i++)
+			{
+				content_[i]->serialize(CP_XML_STREAM());
+			}
+		}
+	}    
+}
+// text:note-body
+//////////////////////////////////////////////////////////////////////////////////////////////////
+const wchar_t * text_note_body::ns	= L"text";
+const wchar_t * text_note_body::name = L"note-body";
+
+void text_note_body::create_child_element( const std::wstring & Ns, const std::wstring & Name)
+{
+    CP_CREATE_ELEMENT(content_);
+}
+
+void text_note_body::add_child_element( const office_element_ptr & child_element)
+{
+	content_.push_back(child_element);
+}
+
+void text_note_body::serialize(std::wostream & _Wostream) 
+{
+ 	CP_XML_WRITER(_Wostream)
+    {
+		CP_XML_NODE_SIMPLE()
+        { 	
+			for (int i = 0; i < content_.size(); i++)
+			{
+				content_[i]->serialize(CP_XML_STREAM());
+			}
+		}
+	}    
+}
 
 // text:note
 //////////////////////////////////////////////////////////////////////////////////////////////////
-const wchar_t * text_note::ns = L"text";
+const wchar_t * text_note::ns	= L"text";
 const wchar_t * text_note::name = L"note";
 
 text_note::text_note()
@@ -357,7 +420,7 @@ void text_note::serialize(std::wostream & _Wostream)
 	}    
 }
 
-void text_note::create_child_element(  const ::std::wstring & Ns, const ::std::wstring & Name)
+void text_note::create_child_element(  const std::wstring & Ns, const std::wstring & Name)
 {
     if CP_CHECK_NAME(L"text", L"note-citation")
     {
@@ -409,7 +472,7 @@ void text_ruby::serialize(std::wostream & _Wostream)
 	}
 }
 
-void text_ruby::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
+void text_ruby::create_child_element( const std::wstring & Ns, const std::wstring & Name)
 {
     if CP_CHECK_NAME(L"text", L"ruby-base")
     {
@@ -454,7 +517,7 @@ void text_title::serialize(std::wostream & _Wostream)
     
 }
 
-void text_title::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
+void text_title::create_child_element( const std::wstring & Ns, const std::wstring & Name)
 {
 }
 
@@ -488,7 +551,7 @@ void text_placeholder::serialize(std::wostream & _Wostream)
 	}    
 }
 
-void text_placeholder::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
+void text_placeholder::create_child_element( const std::wstring & Ns, const std::wstring & Name)
 {
 }
 
@@ -529,7 +592,7 @@ void text_page_number::serialize(std::wostream & _Wostream)
 	}
 }
 
-void text_page_number::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
+void text_page_number::create_child_element( const std::wstring & Ns, const std::wstring & Name)
 {
     CP_CREATE_ELEMENT(text_);
 }
@@ -565,7 +628,7 @@ void text_page_count::serialize(std::wostream & _Wostream)
 		}
 	}
 }
-void text_page_count::create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
+void text_page_count::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
     CP_CREATE_ELEMENT(text_);
 }
@@ -602,7 +665,7 @@ void text_date::serialize(std::wostream & _Wostream)
 		}
 	}
 }
-void text_date::create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
+void text_date::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
     CP_CREATE_ELEMENT(text_);
 }
@@ -643,7 +706,7 @@ void text_time::serialize(std::wostream & _Wostream)
 }
 
 
-void text_time::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
+void text_time::create_child_element( const std::wstring & Ns, const std::wstring & Name)
 {
     CP_CREATE_ELEMENT(text_);
 }
@@ -682,7 +745,7 @@ void text_file_name::serialize(std::wostream & _Wostream)
 }
 
 
-void text_file_name::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
+void text_file_name::create_child_element( const std::wstring & Ns, const std::wstring & Name)
 {
     CP_CREATE_ELEMENT(text_);
 }
@@ -717,7 +780,7 @@ void text_sequence::serialize(std::wostream & _Wostream)
 	}
 }
 
-void text_sequence::create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
+void text_sequence::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
     CP_CREATE_ELEMENT(text_);
 }
@@ -737,7 +800,7 @@ void text_sequence::add_text(const std::wstring & Text)
 const wchar_t * text_sheet_name::ns = L"text";
 const wchar_t * text_sheet_name::name = L"sheet-name";
 
-void text_sheet_name::create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
+void text_sheet_name::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }

@@ -256,10 +256,10 @@ bool odf_style_context::find_odf_style_state(int oox_id_style, style_family::typ
 	{
 		if (style_state_list_[i]->odf_style_)
 		{
-			if (style_state_list_[i]->get_family_type() == family	&& 
-				style_state_list_[i]->root_				== root		&&
-				style_state_list_[i]->automatic_ == automatic		&&
-				style_state_list_[i]->conditional_		== false	&&
+			if (style_state_list_[i]->get_family_type() == family		&& 
+				style_state_list_[i]->root_				== root			&&
+				style_state_list_[i]->automatic_		== automatic	&&
+				style_state_list_[i]->conditional_		== false		&&
 				style_state_list_[i]->default_			== false)
 			{
 				if (oox_id_style >=0 && style_state_list_[i]->style_oox_id_ == oox_id_style)
@@ -325,7 +325,7 @@ bool odf_style_context::find_odf_style(std::wstring style_name, style_family::ty
 }
 office_element_ptr odf_style_context::find_odf_style_default(style_family::type family)
 {
-	for (int i=0;i<current_default_styles_.size(); i++)
+	for (int i=0; i < current_default_styles_.size(); i++)
 	{
 		if (current_default_styles_[i]->odf_style_)
 		{
@@ -336,11 +336,12 @@ office_element_ptr odf_style_context::find_odf_style_default(style_family::type 
 }
 std::wstring odf_style_context::find_odf_style_name_default(style_family::type family)
 {
-	for (int i=0;i<current_default_styles_.size(); i++)
+	for (int i = 0; i < current_default_styles_.size(); i++)
 	{
 		if (current_default_styles_[i]->odf_style_)
 		{
-			if (current_default_styles_[i]->get_family_type() == family) return current_default_styles_[i]->get_name();
+			if (current_default_styles_[i]->get_family_type() == family)
+				return current_default_styles_[i]->get_name();
 		}
 	}
 	return L"";

@@ -411,6 +411,9 @@ namespace OOX
 				 if ( m_oMRPr.IsInit() )
 					 sResult += m_oMRPr->toXML();
 
+				 if ( m_oARPr.IsInit() )
+					 sResult += m_oARPr->toXML();
+
 				 if ( m_oRPr.IsInit() )
 					 sResult += m_oRPr->toXML();
 

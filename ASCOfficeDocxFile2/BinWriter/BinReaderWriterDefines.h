@@ -123,7 +123,7 @@ const double g_dKoef_mm_to_emu = 36000;
 const double g_dKoef_mm_to_eightpoint = 8 * g_dKoef_mm_to_pt;
 const double g_dKoef_mm_to_hps = 2 * g_dKoef_mm_to_pt;
 
-const static TCHAR* g_sFormatSignature = _T("DOCY");
+const static wchar_t* g_sFormatSignature = L"DOCY";
 const int g_nFormatVersion = 5;
 extern int g_nCurFormatVersion;
 	namespace c_oAscWrapStyle{enum c_oSerFormat
@@ -865,7 +865,8 @@ extern int g_nCurFormatVersion;
 		Run = 61,
 		Ins = 62,
 		Del = 63,
-		columnbreak = 64
+		columnbreak = 64,
+		ARPr = 65
 	};}
 	namespace c_oSer_FramePrType{ enum c_oSer_FramePrType
 	{		

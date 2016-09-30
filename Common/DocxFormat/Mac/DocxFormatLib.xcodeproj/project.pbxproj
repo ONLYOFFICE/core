@@ -1424,6 +1424,8 @@
 					"$(PROJECT_DIR)/../../../UnicodeConverter/icubuilds/mac/icu/icu/common",
 					"$(PROJECT_DIR)/../../../UnicodeConverter/icubuilds/mac/icu/icu/i18n",
 					"$(PROJECT_DIR)/../../../UnicodeConverter/icubuilds/mac/icu/icu/io",
+					"$(PROJECT_DIR)/../../../DesktopEditor/freetype-2.5.2/include",
+					"$(PROJECT_DIR)/../../../DesktopEditor/freetype-2.5.2/devel",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				PRODUCT_NAME = DocxFormatLib_ios;
@@ -1460,6 +1462,8 @@
 					"$(PROJECT_DIR)/../../../UnicodeConverter/icubuilds/mac/icu/icu/common",
 					"$(PROJECT_DIR)/../../../UnicodeConverter/icubuilds/mac/icu/icu/i18n",
 					"$(PROJECT_DIR)/../../../UnicodeConverter/icubuilds/mac/icu/icu/io",
+					"$(PROJECT_DIR)/../../../DesktopEditor/freetype-2.5.2/include",
+					"$(PROJECT_DIR)/../../../DesktopEditor/freetype-2.5.2/devel",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				PRODUCT_NAME = DocxFormatLib_ios;

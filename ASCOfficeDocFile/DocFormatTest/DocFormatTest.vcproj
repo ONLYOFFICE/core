@@ -45,7 +45,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\..\..\..\..\Common\OfficeDrawing;&quot;..\..\..\..\..\DesktopEditor\freetype-2.5.2\include&quot;;..\..\..\..\..\Common\OfficeDrawing\Shapes"
-				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;USE_ATL_CSTRINGS;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;USE_LITE_READER;_USE_XMLLITE_READER_"
+				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;USE_ATL_CSTRINGS;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;USE_LITE_READER;_USE_XMLLITE_READER_;DONT_WRITE_EMBEDDED_FONTS"
 				MinimalRebuild="false"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -377,6 +377,10 @@
 					XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
 				/>
 			</FileConfiguration>
+		</File>
+		<File
+			RelativePath="..\..\Common\FileDownloader\FileDownloader_win.cpp"
+			>
 		</File>
 		<File
 			RelativePath="..\..\Common\DocxFormat\Source\XML\libxml2\libxml2.cpp"

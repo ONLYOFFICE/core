@@ -45,6 +45,10 @@
 		17C1FEBE1ACC42C4006B99B3 /* CSVWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17F301AC4549B00BEA2EA /* CSVWriter.h */; };
 		69414A301CB51666003E771B /* ChartWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 69414A2E1CB51666003E771B /* ChartWriter.cpp */; };
 		69414A311CB51666003E771B /* ChartWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 69414A2F1CB51666003E771B /* ChartWriter.h */; };
+		6967917C1D9E8AEE002CA4BA /* BinEquationWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 696791781D9E8AEE002CA4BA /* BinEquationWriter.h */; };
+		6967917D1D9E8AEE002CA4BA /* BinReaderWriterDefines.h in Headers */ = {isa = PBXBuildFile; fileRef = 696791791D9E8AEE002CA4BA /* BinReaderWriterDefines.h */; };
+		6967917E1D9E8AEE002CA4BA /* BinWriters.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6967917A1D9E8AEE002CA4BA /* BinWriters.cpp */; };
+		6967917F1D9E8AEE002CA4BA /* BinWriters.h in Headers */ = {isa = PBXBuildFile; fileRef = 6967917B1D9E8AEE002CA4BA /* BinWriters.h */; };
 		69F181AF1C77274E00B2952B /* FileDownloader.h in Headers */ = {isa = PBXBuildFile; fileRef = 69F181AD1C77274E00B2952B /* FileDownloader.h */; };
 		69F181B51C77276D00B2952B /* FileDownloader_curl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 69F181B31C77276D00B2952B /* FileDownloader_curl.cpp */; };
 /* End PBXBuildFile section */
@@ -89,6 +93,10 @@
 		17E17F301AC4549B00BEA2EA /* CSVWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSVWriter.h; sourceTree = "<group>"; };
 		69414A2E1CB51666003E771B /* ChartWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ChartWriter.cpp; sourceTree = "<group>"; };
 		69414A2F1CB51666003E771B /* ChartWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChartWriter.h; sourceTree = "<group>"; };
+		696791781D9E8AEE002CA4BA /* BinEquationWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BinEquationWriter.h; path = ../../BinWriter/BinEquationWriter.h; sourceTree = "<group>"; };
+		696791791D9E8AEE002CA4BA /* BinReaderWriterDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BinReaderWriterDefines.h; path = ../../BinWriter/BinReaderWriterDefines.h; sourceTree = "<group>"; };
+		6967917A1D9E8AEE002CA4BA /* BinWriters.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BinWriters.cpp; path = ../../BinWriter/BinWriters.cpp; sourceTree = "<group>"; };
+		6967917B1D9E8AEE002CA4BA /* BinWriters.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BinWriters.h; path = ../../BinWriter/BinWriters.h; sourceTree = "<group>"; };
 		69F181AD1C77274E00B2952B /* FileDownloader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FileDownloader.h; path = ../../../Common/FileDownloader/FileDownloader.h; sourceTree = "<group>"; };
 		69F181B31C77276D00B2952B /* FileDownloader_curl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FileDownloader_curl.cpp; path = ../../../Common/FileDownloader/FileDownloader_curl.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -126,6 +134,7 @@
 				17E17F4D1AC454E200BEA2EA /* Common */,
 				17E17F1A1AC4549B00BEA2EA /* XlsxSerializerCom */,
 				17E17F0D1AC4546100BEA2EA /* DocWrapper */,
+				696791771D9E8AD2002CA4BA /* BinWriter */,
 				17E17EEA1AC4544900BEA2EA /* BinReader */,
 			);
 			path = ASCOfficeDocxFile2Lib;
@@ -226,6 +235,17 @@
 			name = Common;
 			sourceTree = "<group>";
 		};
+		696791771D9E8AD2002CA4BA /* BinWriter */ = {
+			isa = PBXGroup;
+			children = (
+				696791781D9E8AEE002CA4BA /* BinEquationWriter.h */,
+				696791791D9E8AEE002CA4BA /* BinReaderWriterDefines.h */,
+				6967917A1D9E8AEE002CA4BA /* BinWriters.cpp */,
+				6967917B1D9E8AEE002CA4BA /* BinWriters.h */,
+			);
+			name = BinWriter;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -240,7 +260,9 @@
 				17C1FEA51ACC42C4006B99B3 /* CommonWriter.h in Headers */,
 				17C1FEA61ACC42C4006B99B3 /* NumberingWriter.h in Headers */,
 				17C1FEA71ACC42C4006B99B3 /* BinReaderWriterDefines.h in Headers */,
+				6967917C1D9E8AEE002CA4BA /* BinEquationWriter.h in Headers */,
 				17C1FEA81ACC42C4006B99B3 /* BinaryWriter.h in Headers */,
+				6967917F1D9E8AEE002CA4BA /* BinWriters.h in Headers */,
 				17C1FEA91ACC42C4006B99B3 /* DocumentWriter.h in Headers */,
 				17C1FEAA1ACC42C4006B99B3 /* FontProcessor.h in Headers */,
 				17C1FEAB1ACC42C4006B99B3 /* StylesWriter.h in Headers */,
@@ -253,6 +275,7 @@
 				17C1FEB11ACC42C4006B99B3 /* Common.h in Headers */,
 				17C1FEB21ACC42C4006B99B3 /* XlsxSerializer.h in Headers */,
 				17C1FEB31ACC42C4006B99B3 /* CSVReader.h in Headers */,
+				6967917D1D9E8AEE002CA4BA /* BinReaderWriterDefines.h in Headers */,
 				69414A311CB51666003E771B /* ChartWriter.h in Headers */,
 				17C1FEB41ACC42C4006B99B3 /* ContentTypesWriter.h in Headers */,
 				17C1FEB51ACC42C4006B99B3 /* HeaderFooterWriter.h in Headers */,
@@ -325,6 +348,7 @@
 				17C1FE9A1ACC42C4006B99B3 /* CommonWriter.cpp in Sources */,
 				17C1FE9B1ACC42C4006B99B3 /* CSVWriter.cpp in Sources */,
 				69414A301CB51666003E771B /* ChartWriter.cpp in Sources */,
+				6967917E1D9E8AEE002CA4BA /* BinWriters.cpp in Sources */,
 				17C1FE9C1ACC42C4006B99B3 /* XlsxSerializer.cpp in Sources */,
 				17C1FE9D1ACC42C4006B99B3 /* FontProcessor.cpp in Sources */,
 			);

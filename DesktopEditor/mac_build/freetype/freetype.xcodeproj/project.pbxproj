@@ -72,6 +72,7 @@
 		17C100841ACC4BC4006B99B3 /* ftmodule.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D914171AC59CE60096D788 /* ftmodule.h */; };
 		17C100851ACC4BC4006B99B3 /* ftoption.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D914181AC59CE60096D788 /* ftoption.h */; };
 		17C100861ACC4BC4006B99B3 /* ftbase.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D914F41AC59CFB0096D788 /* ftbase.h */; };
+		696791751D9E881F002CA4BA /* ft2build.h in Headers */ = {isa = PBXBuildFile; fileRef = 696791741D9E881F002CA4BA /* ft2build.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -142,6 +143,7 @@
 		17D9168B1AC59CFD0096D788 /* type1.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = type1.c; sourceTree = "<group>"; };
 		17D916981AC59CFD0096D788 /* type42.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = type42.c; sourceTree = "<group>"; };
 		17D9169E1AC59CFD0096D788 /* winfnt.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = winfnt.c; sourceTree = "<group>"; };
+		696791741D9E881F002CA4BA /* ft2build.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ft2build.h; path = "../../../freetype-2.5.2/devel/ft2build.h"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -174,6 +176,7 @@
 		17D914071AC59C860096D788 /* freetype */ = {
 			isa = PBXGroup;
 			children = (
+				696791731D9E8819002CA4BA /* devel */,
 				17D914C71AC59CFA0096D788 /* src */,
 				17D914131AC59CE60096D788 /* include */,
 			);
@@ -438,6 +441,14 @@
 			path = winfonts;
 			sourceTree = "<group>";
 		};
+		696791731D9E8819002CA4BA /* devel */ = {
+			isa = PBXGroup;
+			children = (
+				696791741D9E881F002CA4BA /* ft2build.h */,
+			);
+			name = devel;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -451,6 +462,7 @@
 				17C100811ACC4BC4006B99B3 /* ftstdlib.h in Headers */,
 				17C100821ACC4BC4006B99B3 /* basepic.h in Headers */,
 				17C100831ACC4BC4006B99B3 /* ftheader.h in Headers */,
+				696791751D9E881F002CA4BA /* ft2build.h in Headers */,
 				17C100841ACC4BC4006B99B3 /* ftmodule.h in Headers */,
 				17C100851ACC4BC4006B99B3 /* ftoption.h in Headers */,
 				17C100861ACC4BC4006B99B3 /* ftbase.h in Headers */,
@@ -586,6 +598,7 @@
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(PROJECT_DIR)/../../freetype-2.5.2/include",
+					"$(PROJECT_DIR)/../../freetype-2.5.2/devel",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				PRODUCT_NAME = freetype_ios;
@@ -609,6 +622,7 @@
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(PROJECT_DIR)/../../freetype-2.5.2/include",
+					"$(PROJECT_DIR)/../../freetype-2.5.2/devel",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				PRODUCT_NAME = freetype_ios;

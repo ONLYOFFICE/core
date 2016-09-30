@@ -476,6 +476,8 @@
 		695BC0061C06FFC400817D7E /* Enums.h in Headers */ = {isa = PBXBuildFile; fileRef = 695BC0041C06FFC400817D7E /* Enums.h */; };
 		695BC0371C070DE900817D7E /* ASCSVGWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 695BC0351C070DE900817D7E /* ASCSVGWriter.h */; };
 		695BC03A1C070DEF00817D7E /* ASCSVGWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 695BC0381C070DEF00817D7E /* ASCSVGWriter.cpp */; };
+		696791821D9E8B81002CA4BA /* MathParaWrapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 696791801D9E8B81002CA4BA /* MathParaWrapper.cpp */; };
+		696791831D9E8B81002CA4BA /* MathParaWrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 696791811D9E8B81002CA4BA /* MathParaWrapper.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -954,6 +956,8 @@
 		695BC0041C06FFC400817D7E /* Enums.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Enums.h; path = ../../Editor/Drawing/Enums.h; sourceTree = "<group>"; };
 		695BC0351C070DE900817D7E /* ASCSVGWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ASCSVGWriter.h; path = ../../../HtmlRenderer/include/ASCSVGWriter.h; sourceTree = "<group>"; };
 		695BC0381C070DEF00817D7E /* ASCSVGWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ASCSVGWriter.cpp; path = ../../../HtmlRenderer/src/ASCSVGWriter.cpp; sourceTree = "<group>"; };
+		696791801D9E8B81002CA4BA /* MathParaWrapper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MathParaWrapper.cpp; sourceTree = "<group>"; };
+		696791811D9E8B81002CA4BA /* MathParaWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MathParaWrapper.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1498,6 +1502,8 @@
 				179A44A31AC57B83005A27F7 /* Fld.h */,
 				179A44A41AC57B83005A27F7 /* Run.h */,
 				179A44A51AC57B83005A27F7 /* RunBase.h */,
+				696791801D9E8B81002CA4BA /* MathParaWrapper.cpp */,
+				696791811D9E8B81002CA4BA /* MathParaWrapper.h */,
 			);
 			path = Runs;
 			sourceTree = "<group>";
@@ -1767,6 +1773,7 @@
 				17C1FD2D1ACC429D006B99B3 /* Blur.h in Headers */,
 				17C1FD2E1ACC429D006B99B3 /* CxnSp.h in Headers */,
 				17C1FD2F1ACC429D006B99B3 /* Transition.h in Headers */,
+				696791831D9E8B81002CA4BA /* MathParaWrapper.h in Headers */,
 				17C1FD301ACC429D006B99B3 /* EmbeddedFontDataId.h in Headers */,
 				17C1FD321ACC429D006B99B3 /* TransitionBase.h in Headers */,
 				17C1FD331ACC429D006B99B3 /* TLNodeFillType.h in Headers */,
@@ -2189,6 +2196,7 @@
 				695BC03A1C070DEF00817D7E /* ASCSVGWriter.cpp in Sources */,
 				17C1FCC11ACC429D006B99B3 /* FileMap.cpp in Sources */,
 				17C1FCC21ACC429D006B99B3 /* ShapeTextProperties.cpp in Sources */,
+				696791821D9E8B81002CA4BA /* MathParaWrapper.cpp in Sources */,
 				17C1FCC31ACC429D006B99B3 /* TransitionBase.cpp in Sources */,
 				17C1FCC51ACC429D006B99B3 /* Shape.cpp in Sources */,
 				17C1FCC61ACC429D006B99B3 /* ShapeProperties.cpp in Sources */,

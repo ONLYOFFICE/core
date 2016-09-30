@@ -607,7 +607,11 @@ namespace DocFileFormat
 				{
 					if ( istd < styleSheet->Styles->size() )
 					{
-						CharacterPropertyExceptions* baseChpx = styleSheet->Styles->at( istd )->chpx;
+						StyleSheetDescription* style = styleSheet->Styles->at( istd );
+						
+						if (!style) 
+							break;
+						CharacterPropertyExceptions* baseChpx = style->chpx;
 
 						if ( baseChpx != NULL )
 						{

@@ -95,6 +95,9 @@ namespace DocFileFormat
 			}
 			current++;
 		}
+		if (current + 1 >= m_document->SectionPlex->CharacterPositions.size())
+			current = m_document->SectionPlex->CharacterPositions.size() - 2;
+
 		return m_document->SectionPlex->CharacterPositions[current + 1];
 	}
 	bool DocumentMapping::isSectionEnd(int cp)

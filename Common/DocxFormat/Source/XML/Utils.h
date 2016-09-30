@@ -119,7 +119,7 @@ namespace XmlUtils
 
         try
         {
-            return _ttoi(string);
+            return _wtoi(string);
         }
         catch(...)
         {
@@ -139,7 +139,7 @@ namespace XmlUtils
         if (string.GetLength() <1) return 0;
         try
         {
-            return (size_t) _ttoi(string);
+            return (size_t) _wtoi(string);
         }
         catch(...)
         {

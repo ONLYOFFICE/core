@@ -663,10 +663,8 @@ bool OOXShapeReader::Parse( ReaderParameter oParam , RtfShapePtr& oOutput)
 
 	if( m_vmlElement->m_oCoordSize.IsInit())
 	{// shapeType content only size
-		if (oOutput->m_nGroupLeft != PROP_DEF)
-			oOutput->m_nGroupRight	= oOutput->m_nGroupLeft + m_vmlElement->m_oCoordSize->GetX();
-		if (oOutput->m_nGroupTop != PROP_DEF)
-			oOutput->m_nGroupBottom = oOutput->m_nGroupTop	+ m_vmlElement->m_oCoordSize->GetY();
+		oOutput->m_nGroupRight	= (oOutput->m_nGroupLeft != PROP_DEF ? oOutput->m_nGroupLeft : 0)	+ m_vmlElement->m_oCoordSize->GetX();
+		oOutput->m_nGroupBottom = (oOutput->m_nGroupTop != PROP_DEF ? oOutput->m_nGroupTop : 0)		+ m_vmlElement->m_oCoordSize->GetY();
 	}
 
 	if (m_vmlElement->m_oConnectorType.IsInit())
@@ -725,14 +723,14 @@ bool OOXShapeGroupReader::Parse( ReaderParameter oParam , RtfShapeGroupPtr& oOut
 
 	if( m_vmlGroup->m_oCoordOrigin.IsInit() )
 	{
-		oOutput->m_nGroupLeft = m_vmlGroup->m_oCoordOrigin->GetX();
-		oOutput->m_nGroupTop = m_vmlGroup->m_oCoordOrigin->GetY();
+		oOutput->m_nGroupLeft	= m_vmlGroup->m_oCoordOrigin->GetX();
+		oOutput->m_nGroupTop	= m_vmlGroup->m_oCoordOrigin->GetY();
 	}
 
 	if( m_vmlGroup->m_oCoordSize.IsInit())
 	{
-		oOutput->m_nGroupRight = oOutput->m_nGroupLeft + m_vmlGroup->m_oCoordSize->GetX();
-		oOutput->m_nGroupBottom = oOutput->m_nGroupTop + m_vmlGroup->m_oCoordSize->GetY();
+		oOutput->m_nGroupRight = (oOutput->m_nGroupLeft != PROP_DEF  ? oOutput->m_nGroupLeft : 0)	+ m_vmlGroup->m_oCoordSize->GetX();
+		oOutput->m_nGroupBottom =(oOutput->m_nGroupTop != PROP_DEF  ? oOutput->m_nGroupTop : 0)		+ m_vmlGroup->m_oCoordSize->GetY();
 	}
 
 	for( int i = 0; i < m_vmlGroup->m_arrItems.size() ; i++ )

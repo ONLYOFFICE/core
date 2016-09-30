@@ -71,7 +71,7 @@ namespace DocFileFormat
 		RELEASEARRAYOBJECTS( stshi );
 
 		//create list of STDs
-		this->Styles = new std::vector<StyleSheetDescription*>();
+		Styles = new std::vector<StyleSheetDescription*>();
 
 		for ( int i = 0; i < this->stshi->cstd; i++ )
 		{
@@ -84,13 +84,13 @@ namespace DocFileFormat
 				unsigned char* std = tableReader.ReadBytes( cbStd, true );
 
 				//parse the STD bytes
-				this->Styles->push_back( new StyleSheetDescription( std, cbStd, (int)this->stshi->cbSTDBaseInFile, dataStream, fib->m_bOlderVersion) );
+				Styles->push_back( new StyleSheetDescription( std, cbStd, (int)this->stshi->cbSTDBaseInFile, dataStream, fib->m_bOlderVersion) );
 
 				RELEASEARRAYOBJECTS( std );
 			}
 			else
 			{
-				this->Styles->push_back( NULL );
+				Styles->push_back( NULL );
 			}
 		}
 	}

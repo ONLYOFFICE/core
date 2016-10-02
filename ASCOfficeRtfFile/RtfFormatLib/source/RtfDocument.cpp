@@ -43,6 +43,7 @@ RtfDocument::RtfDocument()
 {
     RtfSectionPtr s(new RtfSection());
     _section section(s, 0, 0);
+	
 	m_aArray.push_back( section );
 	
 	m_oProperty.SetDefaultOOX();

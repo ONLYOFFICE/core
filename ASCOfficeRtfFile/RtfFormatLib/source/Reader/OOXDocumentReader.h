@@ -90,7 +90,6 @@ public:
 				}
 			}
 		}
-		m_poDocument->RemoveItem(0);
 
 		_section last_section;
 		m_poDocument->GetItem(last_section);
@@ -111,6 +110,8 @@ public:
 			
 			m_poDocument->AddItem( section );
 		}
+
+		m_poDocument->RemoveItem(0);
 
 		for (int sect = 0 ; sect < m_poDocument->GetCount(); sect++)
 		{

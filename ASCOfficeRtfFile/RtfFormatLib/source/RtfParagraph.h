@@ -68,8 +68,8 @@ typedef boost::shared_ptr<RtfOldList> RtfOldListPtr;
 class RtfParagraph : public ITextItem, public ItemContainer< IDocumentElementPtr >
 {
 public: 
-	RtfParagraphProperty m_oProperty;
-	RtfOldListPtr m_oOldList;
+	RtfParagraphProperty	m_oProperty;
+	RtfOldListPtr			m_oOldList;
 	
 	int GetType( )
 	{
@@ -163,6 +163,17 @@ public:
 		}
 		else
 		{
+			CString ParagraphContent;// todooo проследить за вложенными объектами (inset fields) - св-ва секций 
+			// нужно чтобы были в последнем параграфе!!! - так что и начнем с него - Australia Electronic Transactions Act 1999.rtf
+
+			RenderParameter oNewParam = oRenderParameter;
+			oNewParam.nType = RENDER_TO_OOX_PARAM_RUN;
+			
+			for( int i = m_aArray.size() - 1; i >= 0; i-- )
+			{
+				ParagraphContent = m_aArray[i]->RenderToOOX(oNewParam) + ParagraphContent;
+			}
+
 			bool bCanConvertToNumbering = false;
 			if( NULL != m_oOldList )
 				bCanConvertToNumbering = m_oOldList->CanConvertToNumbering();
@@ -190,7 +201,7 @@ public:
 					if( NULL != m_oOldList->m_oText )
 						oCharProp.m_nFont = m_oOldList->m_oText->m_oProperty.m_oCharProperty.m_nFont;
 
-					RenderParameter oNewParam = oRenderParameter;
+					oNewParam = oRenderParameter;
 					oNewParam.nType = RENDER_TO_OOX_PARAM_TEXT;
 
 					for( int i = 0; i < m_oOldList->m_oText->GetCount(); i++ )
@@ -206,13 +217,8 @@ public:
 				}
 			}
 
-			RenderParameter oNewParam = oRenderParameter;
-			oNewParam.nType = RENDER_TO_OOX_PARAM_RUN;
-			
-			for( int i = 0; i < (int)m_aArray.size(); i++ )
-			{
-				sResult += m_aArray[i]->RenderToOOX(oNewParam);
-			}
+			sResult += ParagraphContent;
+
 			sResult += _T("</w:p>");
 		}
 		return sResult;

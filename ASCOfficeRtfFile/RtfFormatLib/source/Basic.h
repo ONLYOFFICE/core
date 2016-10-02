@@ -260,10 +260,12 @@ public:
 	CString RenderToOOX(RenderParameter oRenderParameter)
 	{
 		CString sResult;
-		for( int i = (int)m_aArray.size() - 1; i >= 0; i-- )
+       
+		for( int i = 0; i < (int)m_aArray.size(); i++ )
 		{
-			sResult = m_aArray[i]->RenderToOOX(oRenderParameter) + sResult;
+            sResult += m_aArray[i]->RenderToOOX(oRenderParameter);
 		}
+
 		return sResult;
 	}
 	bool IsValid()

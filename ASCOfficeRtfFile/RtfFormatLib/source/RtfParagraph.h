@@ -163,17 +163,10 @@ public:
 		}
 		else
 		{
-			CString ParagraphContent;// todooo проследить за вложенными объектами (inset fields) - св-ва секций 
-			// нужно чтобы были в последнем параграфе!!! - так что и начнем с него - Australia Electronic Transactions Act 1999.rtf
-
+			
 			RenderParameter oNewParam = oRenderParameter;
 			oNewParam.nType = RENDER_TO_OOX_PARAM_RUN;
 			
-			for( int i = m_aArray.size() - 1; i >= 0; i-- )
-			{
-				ParagraphContent = m_aArray[i]->RenderToOOX(oNewParam) + ParagraphContent;
-			}
-
 			bool bCanConvertToNumbering = false;
 			if( NULL != m_oOldList )
 				bCanConvertToNumbering = m_oOldList->CanConvertToNumbering();
@@ -217,7 +210,16 @@ public:
 				}
 			}
 
-			sResult += ParagraphContent;
+			oNewParam.nType = RENDER_TO_OOX_PARAM_RUN;
+			
+			CString ParagraphContent;
+			for( int i = 0; i < m_aArray.size(); i++)
+			{
+				ParagraphContent += m_aArray[i]->RenderToOOX(oNewParam);
+			}
+
+			if (!ParagraphContent.IsEmpty())
+				sResult += ParagraphContent;
 
 			sResult += _T("</w:p>");
 		}

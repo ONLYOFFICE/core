@@ -237,8 +237,17 @@ bool OOXDocumentWriter::SaveByItem()
 			{
 				sXml = m_oDocument[0].props->operator[](0)->RenderToOOX(oNewParam).GetBuffer();
 				
-				int		nFind = sXml.rfind(L"</w:pPr>");
-				if( -1 != nFind )
+				int nFind = -1, nFindPict = -1, pos = sXml.size();
+
+				do
+				{
+					nFindPict	= sXml.rfind(L"<w:pict>", pos);
+					nFind		= sXml.rfind(L"</w:pPr>", pos);
+					pos = nFindPict - 1;
+				}while(nFindPict > 0 && nFind > nFindPict);
+
+
+				if( -1 != nFind)
 				{
 					sXml.insert( nFind, sectPr );
 				}

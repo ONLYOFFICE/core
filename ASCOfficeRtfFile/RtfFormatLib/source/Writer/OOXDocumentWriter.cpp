@@ -225,40 +225,51 @@ bool OOXDocumentWriter::SaveByItem()
 
 		if( m_oDocument.GetCount() > 1)//если что-то есть в следующей секции значит предыдущая закончилась
 		{
-			if( m_oDocument[1].props->GetCount() > 0 )
-			{
-				CString sSectPr = m_oDocument[0].props->m_oProperty.RenderToOOX(oNewParam);
-				CString sXml	= m_oDocument[1].props->operator[](0)->RenderToOOX(oNewParam);
-				
-				int nIndexP = sXml.Find( _T("<w:p>") );
+			std::wstring sXml, sectPr;
 
-				if (nIndexP == 0) //элемент параграф
+			_section section;
+			if (m_oDocument.GetItem(section, 0))
+			{
+				sectPr = section.props->RenderToOOX(oNewParam).GetBuffer();
+			}
+
+			if( m_oDocument[0].props->GetCount() > 0 )
+			{
+				sXml = m_oDocument[0].props->operator[](0)->RenderToOOX(oNewParam).GetBuffer();
+				
+				int nFind = -1, nFindPict = -1, pos = sXml.size();
+
+				do
 				{
-					int nIndexpPr = sXml.Find( _T("</w:pPr>") );
-					if( -1 != nIndexpPr )
-					{
-						sXml.Insert( nIndexpPr, sSectPr );
-					}
-					else
-					{
-						sSectPr = _T("<w:pPr>") + sSectPr + _T("</w:pPr>");
-						sXml.Insert( 5, sSectPr );
-					}
+					nFindPict	= sXml.rfind(L"<w:pict>", pos);
+					nFind		= sXml.rfind(L"</w:pPr>", pos);
+					pos = nFindPict - 1;
+				}while(nFindPict > 0 && nFind > nFindPict);
+
+
+				if( -1 != nFind)
+				{
+					sXml.insert( nFind, sectPr );
 				}
 				else
 				{
-					sXml = _T("<w:p><w:pPr>") + sSectPr + _T("</w:pPr></w:p>") + sXml;
+					int Find = sXml.rfind( L"<w:p>" );
+					if( -1 != nFind )
+						sXml.insert( nFind + 5, L"<w:pPr>" + sectPr + L"</w:pPr>" );
 				}
-				
-                std::string sXmlUTF = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sXml.GetBuffer());
-
-                m_oFileWriter->Write((BYTE*)sXmlUTF.c_str(), sXmlUTF.length());
-				
-				m_oDocument[1].props->RemoveItem( 0 );	//удаляем первый параграф
-				m_oDocument.RemoveItem( 0 );		//удаляем секцию
-			}			
+			}
+			else
+			{
+				//генерация ???
+				sXml = _T("<w:p><w:pPr>") + sectPr + _T("</w:pPr></w:p>");
+			}
+	
+			std::string sXmlUTF = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sXml);
+			m_oFileWriter->Write((BYTE*)sXmlUTF.c_str(), sXmlUTF.length());
+			
+			m_oDocument.RemoveItem( 0 ); //удаляем секцию
 		}
-		else if( m_oDocument.GetCount() > 0 && m_oDocument[0].props->GetCount() > 0 )//пишем параграф
+		else if( m_oDocument.GetCount() > 0 && m_oDocument[0].props->GetCount() > 1 )//пишем параграф - один всегда  "прозапас для секций"
 		{
 			CString sXml = m_oDocument[0].props->operator[](0)->RenderToOOX(oNewParam);
             std::string sXmlUTF = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sXml.GetBuffer());

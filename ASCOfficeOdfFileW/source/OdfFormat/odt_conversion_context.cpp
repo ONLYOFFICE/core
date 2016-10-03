@@ -752,7 +752,7 @@ void odt_conversion_context::start_note_content()
 {
 	notes_context_.start_note_content();
 
-	office_element_ptr & note_content_element = notes_context_.get_note_content();
+    office_element_ptr note_content_element = notes_context_.get_note_content();
 
 	odf_element_state state = {note_content_element, L"", office_element_ptr(), (int)text_context()->current_level_.size()};
 	text_context()->current_level_.push_back(state);

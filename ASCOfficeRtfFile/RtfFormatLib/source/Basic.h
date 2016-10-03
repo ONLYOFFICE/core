@@ -246,7 +246,7 @@ public:
 	CString RenderToRtf(RenderParameter oRenderParameter)
 	{
 		CString sResult;
-		for( int i = 0; i < (int)m_aArray.size(); i++ )
+		for( int i = 0; i < (int)m_aArray.size(); i++ )//идем с конца - из за св-в секций
 		{
 			sResult += m_aArray[i]->RenderToRtf( oRenderParameter );
 
@@ -260,8 +260,12 @@ public:
 	CString RenderToOOX(RenderParameter oRenderParameter)
 	{
 		CString sResult;
+       
 		for( int i = 0; i < (int)m_aArray.size(); i++ )
-			sResult += m_aArray[i]->RenderToOOX(oRenderParameter);
+		{
+            sResult += m_aArray[i]->RenderToOOX(oRenderParameter);
+		}
+
 		return sResult;
 	}
 	bool IsValid()

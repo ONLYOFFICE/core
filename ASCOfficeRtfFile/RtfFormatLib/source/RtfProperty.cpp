@@ -1202,14 +1202,14 @@ CString RtfParagraphStyle::RenderToOOX(RenderParameter oRenderParameter)
 	if( false == sParProp.IsEmpty() )
 	{
         sResult += _T("<w:pPr>");
-		sResult += sParProp;
+			sResult += sParProp;
 		sResult += _T("</w:pPr>");
 	}
 	CString sCharProp = m_oCharProp.RenderToOOX(oRenderParameter);
 	if( false == sCharProp.IsEmpty() )
 	{
         sResult += _T("<w:rPr>");
-		sResult += sCharProp;
+			sResult += sCharProp;
 		sResult += _T("</w:rPr>");
 	}
 	sResult += RenderToOOXEnd( oRenderParameter ) ;
@@ -1321,35 +1321,35 @@ CString RtfTableStyle::RenderToOOX(RenderParameter oRenderParameter)
 		if( false == sTablProp.IsEmpty() )
 		{
             sResult += _T("<w:tblPr>");
-			sResult += sTablProp;
+				sResult += sTablProp;
 			sResult += _T("</w:tblPr>");
 		}
 		CString sRowProp = m_oRowProp.RenderToOOX(oRenderParameter);
 		if( false == sRowProp.IsEmpty() )
 		{
             sResult += _T("<w:trPr>");
-			sResult += sRowProp;
+				sResult += sRowProp;
 			sResult += _T("</w:trPr>");
 		}
 		CString sCellProp = m_oCellProp.RenderToOOX(oRenderParameter);
 		if( false == sCellProp.IsEmpty() )
 		{
             sResult += _T("<w:tcPr>");
-			sResult += sCellProp;
+				sResult += sCellProp;
 			sResult += _T("</w:tcPr>");
 		}
 		CString sParProp = m_oParProp.RenderToOOX(oRenderParameter);
 		if( false == sParProp.IsEmpty() )
 		{
             sResult += _T("<w:pPr>");
-			sResult += sParProp;
+				sResult += sParProp;
 			sResult += _T("</w:pPr>");
 		}
 		CString sCharProp = m_oCharProp.RenderToOOX(oRenderParameter);
 		if( false == sCharProp.IsEmpty() )
 		{
             sResult += _T("<w:rPr>");
-			sResult += sCharProp;
+				sResult += sCharProp;
 			sResult += _T("</w:rPr>");
 		}
 
@@ -1447,14 +1447,14 @@ CString RtfTableStyle::RenderToOOX(RenderParameter oRenderParameter)
 		if( false == sParProp.IsEmpty() )
 		{
             sResult += _T("<w:pPr>");
-			sResult += sParProp;
+				sResult += sParProp;
 			sResult += _T("</w:pPr>");
 		}
 		CString sCharProp = m_oCharProp.RenderToOOX(oRenderParameter);
 		if( false == sCharProp.IsEmpty() )
 		{
             sResult += _T("<w:rPr>");
-			sResult += sCharProp;
+				sResult += sCharProp;
 			sResult += _T("</w:rPr>");
 		}
 		sResult += _T("</w:tblStylePr>") ;
@@ -1868,8 +1868,8 @@ CString RtfParagraphProperty::RenderToRtf(RenderParameter oRenderParameter)
 }
 CString RtfParagraphProperty::RenderToOOX(RenderParameter oRenderParameter)
 {
-	RtfDocument* poRtfDocument = static_cast<RtfDocument*>(oRenderParameter.poDocument);
-	OOXWriter* poOOXWriter = static_cast<OOXWriter*>(oRenderParameter.poWriter);
+	RtfDocument*	poRtfDocument	= static_cast<RtfDocument*>	(oRenderParameter.poDocument);
+	OOXWriter*		poOOXWriter		= static_cast<OOXWriter*>	(oRenderParameter.poWriter);
 	
 	CString sResult;
 	if( PROP_DEF != m_nStyle )
@@ -1882,21 +1882,13 @@ CString RtfParagraphProperty::RenderToOOX(RenderParameter oRenderParameter)
 			sResult += _T("\"/>") ;
 		}
 	}
+	if		( 0 == m_bAutoHyphenation )	sResult += _T("<w:suppressAutoHyphens/>");
+	else if	( 1 == m_bAutoHyphenation )	sResult += _T("<w:suppressAutoHyphens w:val=\"false\"/>");
 
-	_section section;
-	if(true == poRtfDocument->GetItem( section ) )
-	{
-		sResult += section.props->RenderToOOX(oRenderParameter);
-		section.props->m_bFinalize = false;
-	}
-
-	if( 0 == m_bAutoHyphenation )		sResult += _T("<w:suppressAutoHyphens/>");
-	else if( 1 == m_bAutoHyphenation )	sResult += _T("<w:suppressAutoHyphens w:val=\"false\"/>");
-
-	RENDER_OOX_BOOL( m_bKeep, sResult, _T("w:keepLines") );
-	RENDER_OOX_BOOL( m_bKeepNext, sResult, _T("w:keepNext") );
-	RENDER_OOX_INT( m_nOutlinelevel, sResult, _T("w:outlineLvl") );
-	RENDER_OOX_BOOL( m_bPageBB, sResult, _T("w:pageBreakBefore") );
+	RENDER_OOX_BOOL	( m_bKeep			, sResult, _T("w:keepLines") );
+	RENDER_OOX_BOOL	( m_bKeepNext		, sResult, _T("w:keepNext") );
+	RENDER_OOX_INT	( m_nOutlinelevel	, sResult, _T("w:outlineLvl") );
+	RENDER_OOX_BOOL	( m_bPageBB			, sResult, _T("w:pageBreakBefore") );
 
 
 	switch(m_eAlign)
@@ -1947,12 +1939,12 @@ CString RtfParagraphProperty::RenderToOOX(RenderParameter oRenderParameter)
 	if( PROP_DEF == m_nSpaceAfter )		m_nSpaceAfter = 0;
 	//if( PROP_DEF == m_nSpaceBefore )	m_nSpaceBefore = 0;
 
-	RENDER_OOX_INT_ATTRIBUTE( m_nSpaceBefore, sSpacing, _T("w:before") );
-	RENDER_OOX_INT_ATTRIBUTE( m_nSpaceAfter, sSpacing, _T("w:after") );
-	RENDER_OOX_INT_ATTRIBUTE( m_nSpaceBeforeAuto, sSpacing, _T("w:beforeAutospacing") );
-	RENDER_OOX_INT_ATTRIBUTE( m_nSpaceAfterAuto, sSpacing, _T("w:afterAutospacing") );
-	RENDER_OOX_INT_ATTRIBUTE( m_nSpaceBeforeLine, sSpacing, _T("w:beforeLines") );
-	RENDER_OOX_INT_ATTRIBUTE( m_nSpaceAfterLine, sSpacing, _T("w:afterLines") );
+	RENDER_OOX_INT_ATTRIBUTE( m_nSpaceBefore,		sSpacing, _T("w:before") );
+	RENDER_OOX_INT_ATTRIBUTE( m_nSpaceAfter,		sSpacing, _T("w:after") );
+	RENDER_OOX_INT_ATTRIBUTE( m_nSpaceBeforeAuto,	sSpacing, _T("w:beforeAutospacing") );
+	RENDER_OOX_INT_ATTRIBUTE( m_nSpaceAfterAuto,	sSpacing, _T("w:afterAutospacing") );
+	RENDER_OOX_INT_ATTRIBUTE( m_nSpaceBeforeLine,	sSpacing, _T("w:beforeLines") );
+	RENDER_OOX_INT_ATTRIBUTE( m_nSpaceAfterLine,	sSpacing, _T("w:afterLines") );
 
 	if( PROP_DEF != m_nSpaceBetween && 0 != m_nSpaceBetween )
 	{
@@ -2024,7 +2016,7 @@ CString RtfParagraphProperty::RenderToOOX(RenderParameter oRenderParameter)
 		}
 		if( true == m_oBorderRight.IsValid() )
 		{
-			sBorder += _T("<w:right ");	sBorder += m_oBorderRight.RenderToOOX(oNewParam);	sBorder += _T(" />");
+			sBorder += _T("<w:right ");		sBorder += m_oBorderRight.RenderToOOX(oNewParam);	sBorder += _T(" />");
 		}
 	}
 

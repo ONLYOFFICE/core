@@ -508,108 +508,114 @@ public:
 			SetDefault();
 
 			//footer - header
-			m_oHeaderLeft = TextItemContainerPtr();
-			m_oHeaderFirst = TextItemContainerPtr();
-			m_oHeaderRight = TextItemContainerPtr();
-			m_oFooterLeft = TextItemContainerPtr();
-			m_oFooterFirst = TextItemContainerPtr();
-			m_oFooterRight = TextItemContainerPtr();
+			m_oHeaderLeft	= TextItemContainerPtr();
+			m_oHeaderFirst	= TextItemContainerPtr();
+			m_oHeaderRight	= TextItemContainerPtr();
+			m_oFooterLeft	= TextItemContainerPtr();
+			m_oFooterFirst	= TextItemContainerPtr();
+			m_oFooterRight	= TextItemContainerPtr();
 		}
 
 		int GetType()
 		{
 			return TYPE_RTF_PROPERTY_SECTION;
 		}
+
 		void SetDefaultRtf()
 		{
 			SetDefault();
-			m_nColumnSpace = 720;
+			
+			DEFAULT_PROPERTY_DEF( m_eSectionBreak, sb_sbkpage )
+			DEFAULT_PROPERTY_DEF( m_nColumnSpace, 720);
 		}
+
 		void SetDefaultOOX()
 		{
 			SetDefault();
-			m_nPageWidth = 11906;
-			m_nPageHeight = 16838;
 
-			m_nMarginLeft = 210;
-			m_nMarginRight = 215;
-			m_nMarginTop = 204;
-			m_nMarginBottom = 204;
+			m_nPageWidth			= 11906;
+			m_nPageHeight			= 16838;
 
-			m_nHeaderTop = 709;
-			m_nFooterBottom = 709;
-			m_nGutterMarginWidth = 0;
+			m_nMarginLeft			= 210;
+			m_nMarginRight			= 215;
+			m_nMarginTop			= 204;
+			m_nMarginBottom			= 204;
 
-			m_nColumnSpace = 708;
+			m_nHeaderTop			= 709;
+			m_nFooterBottom			= 709;
+			m_nGutterMarginWidth	= 0;
+
+			m_nColumnSpace			= 708;
 		}
 		void SetDefault()
 		{
-			DEFAULT_PROPERTY( m_bBidi )
-			DEFAULT_PROPERTY( m_nPaperSourceFirst )
-			DEFAULT_PROPERTY( m_nPaperSourceOther )
-			DEFAULT_PROPERTY( m_bRtlGutter )
-			DEFAULT_PROPERTY( m_bEndnotes )
-			DEFAULT_PROPERTY( m_nStyle )
+			DEFAULT_PROPERTY	( m_bBidi )
+			DEFAULT_PROPERTY	( m_nPaperSourceFirst )
+			DEFAULT_PROPERTY	( m_nPaperSourceOther )
+			DEFAULT_PROPERTY	( m_bRtlGutter )
+			DEFAULT_PROPERTY	( m_bEndnotes )
+			DEFAULT_PROPERTY	( m_nStyle )
 			DEFAULT_PROPERTY_DEF( m_eSectionBreak, sb_none )
 
 			//Columns
 			m_nColumnNumber = 1;
-			DEFAULT_PROPERTY( m_nColumnSpace )
-			DEFAULT_PROPERTY( m_bColumnLineBetween )
+			DEFAULT_PROPERTY	( m_nColumnSpace )
+			DEFAULT_PROPERTY	( m_bColumnLineBetween )
 
 			m_oCollumnProperty.m_aCollumnProperty.resize( m_nColumnNumber );
 
 			//Footnotes and Endnotes
-			DEFAULT_PROPERTY_DEF( m_eFootnotesJust, fj_none )
-			DEFAULT_PROPERTY( m_nFootnotesStart )
-			DEFAULT_PROPERTY_DEF( m_eFootnotesRestart, fr_none )
-			DEFAULT_PROPERTY_DEF( m_eFootnotesFormat, ff_none )
-			DEFAULT_PROPERTY( m_nEndnotesStart )
-			DEFAULT_PROPERTY_DEF( m_eEndnotesRestart, er_none )
-			DEFAULT_PROPERTY_DEF( m_eEndnotesFormat, ef_none )
+			DEFAULT_PROPERTY_DEF( m_eFootnotesJust,		fj_none )
+			DEFAULT_PROPERTY	( m_nFootnotesStart )
+			DEFAULT_PROPERTY_DEF( m_eFootnotesRestart,	fr_none )
+			DEFAULT_PROPERTY_DEF( m_eFootnotesFormat,	ff_none )
+			DEFAULT_PROPERTY	( m_nEndnotesStart )
+			DEFAULT_PROPERTY_DEF( m_eEndnotesRestart,	er_none )
+			DEFAULT_PROPERTY_DEF( m_eEndnotesFormat,	ef_none )
 
 			//Line Numbering
-			DEFAULT_PROPERTY( m_nLineModulus )
-			DEFAULT_PROPERTY( m_nLineX )
-			DEFAULT_PROPERTY( m_nLineStart )
+			DEFAULT_PROPERTY	( m_nLineModulus )
+			DEFAULT_PROPERTY	( m_nLineX )
+			DEFAULT_PROPERTY	( m_nLineStart )
 			DEFAULT_PROPERTY_DEF( m_eLineNumberRestart, lnr_none )
 
 			//Page Information
-			DEFAULT_PROPERTY( m_nPageWidth )
-			DEFAULT_PROPERTY( m_nPageHeight )
-			DEFAULT_PROPERTY( m_nMarginLeft )
-			DEFAULT_PROPERTY( m_nMarginRight )
-			DEFAULT_PROPERTY( m_nMarginTop )
-			DEFAULT_PROPERTY( m_nMarginBottom )
-			DEFAULT_PROPERTY( m_nGutterMarginWidth )
-			DEFAULT_PROPERTY( m_bSwitchMargin )
-			DEFAULT_PROPERTY( m_bLandscapeFormat )
-			DEFAULT_PROPERTY( m_bTitlePage )
+			DEFAULT_PROPERTY	( m_nPageWidth )
+			DEFAULT_PROPERTY	( m_nPageHeight )
+			DEFAULT_PROPERTY	( m_nMarginLeft )
+			DEFAULT_PROPERTY	( m_nMarginRight )
+			DEFAULT_PROPERTY	( m_nMarginTop )
+			DEFAULT_PROPERTY	( m_nMarginBottom )
+			DEFAULT_PROPERTY	( m_nGutterMarginWidth )
+			DEFAULT_PROPERTY	( m_bSwitchMargin )
+			DEFAULT_PROPERTY	( m_bLandscapeFormat )
+			DEFAULT_PROPERTY	( m_bTitlePage )
 			DEFAULT_PROPERTY_DEF( m_nHeaderTop, 720 )
 			DEFAULT_PROPERTY_DEF( m_nFooterBottom, 720 )
 
 			//Page Numbers
-			DEFAULT_PROPERTY( m_nPageNumberStart )
-			DEFAULT_PROPERTY( m_bPageNumberContinuos )
-			DEFAULT_PROPERTY( m_bPageNumberRestart )
-			DEFAULT_PROPERTY( m_nPageNumberX )
-			DEFAULT_PROPERTY( m_nPageNumberY )
+			DEFAULT_PROPERTY	( m_nPageNumberStart )
+			DEFAULT_PROPERTY	( m_bPageNumberContinuos )
+			DEFAULT_PROPERTY	( m_bPageNumberRestart )
+			DEFAULT_PROPERTY	( m_nPageNumberX )
+			DEFAULT_PROPERTY	( m_nPageNumberY )
 			DEFAULT_PROPERTY_DEF( m_ePageNumberFormat, pnf_none )
 
 			//Vertical Alignment
 			DEFAULT_PROPERTY_DEF( m_eVerticalAlignment, va_none )
 
 			//Text Flow
-			DEFAULT_PROPERTY( m_nTextFollow )
+			DEFAULT_PROPERTY	( m_nTextFollow )
 
 			//Page Borders
 			m_oBorderLeft.SetDefault();
 			m_oBorderTop.SetDefault();
 			m_oBorderRight.SetDefault();
 			m_oBorderBottom.SetDefault();
-			DEFAULT_PROPERTY( m_nBorderArt )
-			DEFAULT_PROPERTY( m_nBorderMeasure )
-			DEFAULT_PROPERTY( m_nBorderAlign )
+
+			DEFAULT_PROPERTY	( m_nBorderArt )
+			DEFAULT_PROPERTY	( m_nBorderMeasure )
+			DEFAULT_PROPERTY	( m_nBorderAlign )
 
 			//footer - header надо обнулять вручную
 			//m_oHeaderLeft = TextItemContainerPtr();
@@ -660,6 +666,7 @@ public:
 	CString RenderToOOX(RenderParameter oRenderParameter)
 	{
 		if (!m_bFinalize) return L"";
+		
 		m_bFinalize = false; // тут .. чтобы не повторилось при конвертации колонтитулов
 
 		RenderParameter oNewParam = oRenderParameter;

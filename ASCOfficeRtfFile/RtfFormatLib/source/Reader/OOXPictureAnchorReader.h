@@ -84,8 +84,8 @@ public:
 
 			if( PROP_DEF != oOutput.m_nLeft && PROP_DEF != oOutput.m_nTop )//всегда !!
 			{
-				oOutput.m_nRight = oOutput.m_nLeft + nWidth;
-				oOutput.m_nBottom = oOutput.m_nTop + nHeight;
+				oOutput.m_nRight	= oOutput.m_nLeft	+ nWidth;
+				oOutput.m_nBottom	= oOutput.m_nTop	+ nHeight;
 			}
 		}
 		if( m_ooxAnchor->m_oPositionH.IsInit() )
@@ -315,7 +315,14 @@ public:
 			int nNewScale = (int)(100 * ( 1.0 * nHeight / oOutput.m_oPicture->m_nHeightGoal ));
 			oOutput.m_oPicture->m_dScaleY	= nNewScale;
 		}
-
+		if( PROP_DEF == oOutput.m_nBottom && oOutput.m_nTop !=PROP_DEF )
+		{
+			oOutput.m_nBottom	= oOutput.m_nTop	+ nHeight;
+		}
+		if( PROP_DEF == oOutput.m_nRight && oOutput.m_nLeft !=PROP_DEF )
+		{
+			oOutput.m_nRight	= oOutput.m_nLeft	+ nWidth;
+		}
 		return true;
 	}
 };

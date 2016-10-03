@@ -74,7 +74,8 @@ public:
 				{
 					if (para->m_oParagraphProperty->m_oSectPr.IsInit() )
 					{
-						_section section(RtfSectionPtr( new RtfSection() ), last_section_start, i + 1);
+                        RtfSectionPtr s(new RtfSection());
+                        _section section(s, last_section_start, i + 1);
 
 						last_section_start = i + 1;
 
@@ -89,14 +90,14 @@ public:
 				}
 			}
 		}
-		m_poDocument->RemoveItem(0);
 
 		_section last_section;
 		m_poDocument->GetItem(last_section);
 		
 		if (last_section.end_para < m_ooxDocument->m_arrItems.size())
 		{
-			_section section(RtfSectionPtr( new RtfSection() ), last_section.end_para, m_ooxDocument->m_arrItems.size());
+            RtfSectionPtr s(new RtfSection());
+            _section section(s, last_section.end_para, m_ooxDocument->m_arrItems.size());
 			
 			section.props->m_oProperty.SetDefaultOOX();
 			if (m_ooxDocument->m_oSectPr.IsInit())// свойства последней секции
@@ -109,6 +110,8 @@ public:
 			
 			m_poDocument->AddItem( section );
 		}
+
+		m_poDocument->RemoveItem(0);
 
 		for (int sect = 0 ; sect < m_poDocument->GetCount(); sect++)
 		{

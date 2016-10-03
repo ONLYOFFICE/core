@@ -163,9 +163,11 @@ CString RtfFootnote::RenderToOOX(RenderParameter oRenderParameter)
 	{
 		int nID = poDocument->m_oIdGenerator.Generate_FootnoteNumber();
 		OOXFootnoteWriter* poFootnoteWriter = static_cast<OOXFootnoteWriter*>( poOOXWriter->m_poFootnoteWriter );
+		
 		RenderParameter oNewParameter = oRenderParameter;
-		oNewParameter.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
-		oNewParameter.poRels = poFootnoteWriter->m_oRelsWriter.get();
+		oNewParameter.nType		= RENDER_TO_OOX_PARAM_UNKNOWN;
+		oNewParameter.poRels	= poFootnoteWriter->m_oRelsWriter.get();
+		
 		poFootnoteWriter->AddFootnote( _T(""), nID, m_oContent->RenderToOOX(oNewParameter) );
 		
 		sResult += _T("<w:r>");

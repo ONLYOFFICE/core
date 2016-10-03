@@ -33,7 +33,6 @@
 
 #include "Basic.h"
 #include "Utils.h"
-#include "RtfDefine.h"
 
 #include "../../../Common/DocxFormat/Source/Common/SimpleTypes_Drawing.h"
 
@@ -1823,61 +1822,63 @@ public:
 	typedef enum{hr_none,
 				hr_phmrg,	//\tphmrg	Use margin as horizontal reference frame.
 				hr_phpg,	//tphpg	Use page as horizontal reference frame.
-				hr_phcol//tphcol	Use column as horizontal reference frame. This is the default if no horizontal table positioning information is given.
+				hr_phcol	//tphcol	Use column as horizontal reference frame. This is the default if no horizontal table positioning information is given.
 					} HRef;
 	typedef enum{vr_none,
 				vr_pvmrg,	//tpvmrg	Position table vertically relative to the top margin. This is the default if no vertical table positioning information is given.
-				vr_pvpg, //tpvpg	Position table vertically relative to the top of the page.
-				vr_pvpara//tpvpara	Position table vertically relative to the upper left corner of the next unframed paragraph in the stream.
+				vr_pvpg,	//tpvpg	Position table vertically relative to the top of the page.
+				vr_pvpara	//tpvpara	Position table vertically relative to the upper left corner of the next unframed paragraph in the stream.
 					} VRef;
 	typedef enum{hp_none, 
 				hp_posxc,	//tposxc	Center table within the horizontal reference frame.
 				hp_posxi,	//tposxi	Position table inside the horizontal reference frame.
 				hp_posxo,	//tposxo	Position table outside the horizontal reference frame.
 				hp_posxl,	//tposxl	Position table at the left of the horizontal reference frame.
-				hp_posxr //tposxr	Position table at the right of the horizontal reference frame.
+				hp_posxr	//tposxr	Position table at the right of the horizontal reference frame.
 					} HPos;
 	typedef enum{vp_none,
-				vp_posyt, //tposyt	Position table at the top of the vertical reference frame.
+				vp_posyt,	//tposyt	Position table at the top of the vertical reference frame.
 				vp_posyil,	//tposyil	Position table to be inline.
-				vp_posyb, //tposyb	Position table at the bottom of the vertical reference frame.
-				vp_posyc, //tposyc	Center table within the vertical reference frame
+				vp_posyb,	//tposyb	Position table at the bottom of the vertical reference frame.
+				vp_posyc,	//tposyc	Center table within the vertical reference frame
 				vp_posyin,	//tposyin	Position table inside within the vertical reference frame.
-				vp_posyout//tposyout	Position table outside within the vertical reference frame.
+				vp_posyout	//tposyout	Position table outside within the vertical reference frame.
 					} VPos;
 
-	int m_bBidi;		//taprtl	Table direction is right to left.
-	int m_nAutoFit;		//trautofitN	AutoFit:0	No AutoFit (default).1	AutoFit is on for the row. Overridden by \clwWidthN and \trwWidthN in any table row
-	int m_nGraph;		//trgaphN	Half the space between the cells of a table row in twips.
+	int m_bBidi;			//taprtl	Table direction is right to left.
+	int m_nAutoFit;			//trautofitN	AutoFit:0	No AutoFit (default).1	AutoFit is on for the row. Overridden by \clwWidthN and \trwWidthN in any table row
+	int m_nGraph;			//trgaphN	Half the space between the cells of a table row in twips.
 
 	int nTableIndent;		//tblindN 
-	int nTableIndentUnits;		//\tblindtypeN  
+	int nTableIndentUnits;	//\tblindtypeN  
 
-	typedef enum{rj_none,
-				rj_trql,	//trql	Left-justifies a table row with respect to its containing column.
-				rj_trqr,	//trqr	Right-justifies a table row with respect to its containing column.
-				rj_trqc //trqc	Centers a table row with respect to its containing column.
-					} RowJust;
-	RowJust m_eJust; // 
+	typedef enum
+	{
+		rj_none,
+		rj_trql,		//trql	Left-justifies a table row with respect to its containing column.
+		rj_trqr,		//trqr	Right-justifies a table row with respect to its containing column.
+		rj_trqc			//trqc	Centers a table row with respect to its containing column.
+	} RowJust;
+	RowJust m_eJust; 
 
 	int m_nWrapLeft;		//tdfrmtxtLeftN	Distance in twips, between the left of the table and surrounding text (default is 0).
 	int m_nWrapRight;		//tdfrmtxtRightN	Distance in twips, between the right of the table and surrounding text (default is 0).
-	int m_nWrapTop;		//tdfrmtxtTopN	Distance in twips, between the top of the table and surrounding text (default is 0).
+	int m_nWrapTop;			//tdfrmtxtTopN	Distance in twips, between the top of the table and surrounding text (default is 0).
 	int m_nWrapBottom;		//tdfrmtxtBottomN	Distance in twips, between the bottom of the table and surrounding text (default is 0).
-	int m_bOverlap;		//tabsnoovrlp	Do not allow table to overlap with other tables or shapes with similar wrapping not contained within it.
+	int m_bOverlap;			//tabsnoovrlp	Do not allow table to overlap with other tables or shapes with similar wrapping not contained within it.
 
 	HRef m_eHRef;
 	VRef m_eVRef;
 	HPos m_eHPos;
-	int m_nHPos;		//tposxN	Position table N twips from the left edge of the horizontal reference frame.
+	int m_nHPos;				//tposxN	Position table N twips from the left edge of the horizontal reference frame.
 	VPos m_eVPos;
-	int m_nVPos;		//tposyN	Position table N twips from the top edge of the vertical reference frame.
+	int m_nVPos;				//tposyN	Position table N twips from the top edge of the vertical reference frame.
 
 	int m_nLeft;
-	int m_nWidth;		//trwWidthN	Preferred row width. Overrides \trautofitN.
+	int m_nWidth;				//trwWidthN	Preferred row width. Overrides \trautofitN.
 	MetricUnits m_eMUWidth;		//trftsWidthN	Units for \trwWidthN:
 
-	int m_nDefCellMarBottom;		//trpaddbN	Default bottom cell margin or padding for the row.
+	int m_nDefCellMarBottom;	//trpaddbN	Default bottom cell margin or padding for the row.
 	int m_nDefCellMarLeft;		//trpaddlN	Default left cell margin or padding for the row.
 	int m_nDefCellMarRight;		//trpaddrN	Default right cell margin or padding for the row.
 	int m_nDefCellMarTop;		//trpaddtN	Default top cell margin or padding for the row.
@@ -2586,6 +2587,7 @@ class RtfParagraphProperty: public IRenderableProperty
 {
 public: 
 	bool	m_bOldList;
+//-------------------------------------------------------------------
 
 	int		m_bAutoHyphenation;	//hyphpar	Switches automatic hyphenation for the paragraph. Append 1 or nothing to toggle property on; append 0 to turn it off.
 	int		m_bInTable;			//intbl	Paragraph is part of a table.
@@ -2599,14 +2601,14 @@ public:
 	typedef enum 
 	{
 		pa_none,
-		pa_qc,		//qc	Centered.
-		pa_qj,		//qj	Justified.
-		pa_ql,		//ql	Left-aligned (the default).
-		pa_qr,		//qr	Right-aligned.
-		pa_qd,		//qd	Distributed.
-		pa_qk0,		//qkN	Percentage of line occupied by Kashida justification (0 – low, 10 – medium, 20 – high).
-		pa_qk10,	//
-		pa_qk20,	//
+		pa_qc,					//qc	Centered.
+		pa_qj,					//qj	Justified.
+		pa_ql,					//ql	Left-aligned (the default).
+		pa_qr,					//qr	Right-aligned.
+		pa_qd,					//qd	Distributed.
+		pa_qk0,					//qkN	Percentage of line occupied by Kashida justification (0 – low, 10 – medium, 20 – high).
+		pa_qk10,
+		pa_qk20,
 	} ParagraphAlign;
 	
 	ParagraphAlign m_eAlign;
@@ -2614,88 +2616,90 @@ public:
 	typedef enum 
 	{
 		fa_none,
-		fa_faauto,	//faauto	Font alignment. The default setting for this is "Auto."
-		fa_fahang,	//fahang	Font alignment: Hanging.
-		fa_facenter,	//facenter	Font alignment: Center.
-		fa_faroman,	//faroman	Font alignment: Roman (default).
-		fa_favar,	//favar	Font alignment: Upholding variable.
-		fa_fafixed,	//fafixed	Font alignment: Upholding fixed.
+		fa_faauto,				//faauto	Font alignment. The default setting for this is "Auto."
+		fa_fahang,				//fahang	Font alignment: Hanging.
+		fa_facenter,			//facenter	Font alignment: Center.
+		fa_faroman,				//faroman	Font alignment: Roman (default).
+		fa_favar,				//favar	Font alignment: Upholding variable.
+		fa_fafixed,				//fafixed	Font alignment: Upholding fixed.
 	} FontAlign;
 	
 	FontAlign m_eFontAlign;
 
 	int m_nIndFirstLine;		//fiN	First-line indent in twips (default is 0).
-	int m_nIndLeft;		//liN	Left indent in twips (default is 0).
-	int m_nIndRight;		//riN	Right indent in twips (default is 0).
-	int m_nIndStart;		//linN	Left indent for left-to-right paragraphs; right indent for right-to-left paragraphs (default is 0). \linN defines space before the paragraph.
-	int m_nIndEnd;		//rinN	Right indent for left-to-right paragraphs; left indent for right-to-left paragraphs (default is 0). \rinN defines space after the paragraph.
+	int m_nIndLeft;				//liN	Left indent in twips (default is 0).
+	int m_nIndRight;			//riN	Right indent in twips (default is 0).
+	int m_nIndStart;			//linN	Left indent for left-to-right paragraphs; right indent for right-to-left paragraphs (default is 0). \linN defines space before the paragraph.
+	int m_nIndEnd;				//rinN	Right indent for left-to-right paragraphs; left indent for right-to-left paragraphs (default is 0). \rinN defines space after the paragraph.
 	int m_bIndRightAuto;		//adjustright	Automatically adjust right indent when document grid is defined.
-	int m_bIndMirror;		//indmirror...
+	int m_bIndMirror;			//indmirror...
 
-	int m_nSpaceBefore;		//sbN	Space before in twips (default is 0).
-	int m_nSpaceAfter;		//saN	Space after in twips (default is 0).
+	int m_nSpaceBefore;			//sbN	Space before in twips (default is 0).
+	int m_nSpaceAfter;			//saN	Space after in twips (default is 0).
 	int m_nSpaceBeforeAuto;		//sbautoN	Auto spacing before:
 	int m_nSpaceAfterAuto;		//saautoN	Auto spacing after:
 	int m_nSpaceBeforeLine;		//lisbN	Space before in hundredths of a character unit. Overrides \sbN, although they should both be emitted with equivalent values.
 	int m_nSpaceAfterLine;		//lisaN	Space after in hundredths of a character unit. Overrides \saN, although they should both be emitted with equivalent values.
 	int m_nSpaceBetween;		//slN	Space between lines. If this control word is missing or if \sl0 is used, the line spacing is automatically determined by the tallest character in the line. If N is a positive value, this size is used only if it is taller than the tallest character (otherwise, the tallest character is used); if N is a negative value, the absolute value of N is used, even if it is shorter than the tallest character.
 	int m_nSpaceMultiLine;		//slmultN
-	int m_bContextualSpacing;		//contextualspace
+	int m_bContextualSpacing;	//contextualspace
 
-	int m_bRtl;		//rtlpar	Text in this paragraph will display with right-to-left precedence.
-	int m_bNoWordWrap;		//nowwrap
-	int m_bSnapToGrid;		//nosnaplinegrid	Disable snap line to grid.
+	int m_bRtl;					//rtlpar	Text in this paragraph will display with right-to-left precedence.
+	int m_bNoWordWrap;			//nowwrap
+	int m_bSnapToGrid;			//nosnaplinegrid	Disable snap line to grid.
 
 	typedef enum {tbw_none,
-					tbw_txbxtwno,	//txbxtwno
-					tbw_txbxtwalways,	//txbxtwalways
+					tbw_txbxtwno,			//txbxtwno
+					tbw_txbxtwalways,		//txbxtwalways
 					tbw_txbxtwfirstlast,	//txbxtwfirstlast
-					tbw_txbxtwfirst,	//txbxtwfirst
-					tbw_txbxtwlast,	//txbxtwlast
+					tbw_txbxtwfirst,		//txbxtwfirst
+					tbw_txbxtwlast,			//txbxtwlast
 
 						} TextBoxWrap;
-	TextBoxWrap m_eTextBoxWrap; //1
-	int m_nListId;		//lsN	Should exactly match the \lsN for one of the list overrides in the List Override table.
-	int m_nListLevel;		//ilvlN	The 0-based level of the list to which the paragraph belongs. For all simple lists, N should always be 0. For multilevel lists, it can be 0 through 8. The value 9 is never used. The values 10 through 12 have the special meanings for documents generated by Word 6: 10 = ilvlBullet (a bulleted paragraph in Word 6), 11 = ilvlList (a numbered paragraph in Word 6), 12 = ilvlContinue (a paragraph that was not itself numbered, but took its indenting scheme from its numbering properties and did not “break” numbering (that in Word 6 required otherwise contiguous paragraphs).
+	TextBoxWrap m_eTextBoxWrap;		//1
+	int m_nListId;					//lsN	Should exactly match the \lsN for one of the list overrides in the List Override table.
+	int m_nListLevel;				//ilvlN	The 0-based level of the list to which the paragraph belongs. For all simple lists, N should always be 0. For multilevel lists, it can be 0 through 8. The value 9 is never used. The values 10 through 12 have the special meanings for documents generated by Word 6: 10 = ilvlBullet (a bulleted paragraph in Word 6), 11 = ilvlList (a numbered paragraph in Word 6), 12 = ilvlContinue (a paragraph that was not itself numbered, but took its indenting scheme from its numbering properties and did not “break” numbering (that in Word 6 required otherwise contiguous paragraphs).
 
-	RtfShadingPar m_oShading; //
+	RtfShadingPar m_oShading;
 
-	RtfBorder m_oBorderTop; //
-	RtfBorder m_oBorderLeft; //
-	RtfBorder m_oBorderBottom; //
-	RtfBorder m_oBorderRight; //
-	RtfBorder m_oBorderBox; //
-	RtfBorder m_oBorderBar; //
+	RtfBorder m_oBorderTop;
+	RtfBorder m_oBorderLeft;
+	RtfBorder m_oBorderBottom;
+	RtfBorder m_oBorderRight;
+	RtfBorder m_oBorderBox;
+	RtfBorder m_oBorderBar;
 
-	RtfFrame m_oFrame; //
-	int m_bOverlap;		//1\absnoovrlpN	Allow overlap with other frames or objects with similar wrapping:
-	typedef enum{tf_none,
-			tf_frmtxlrtb,	//frmtxlrtb	Frame box flows from left to right and top to bottom (default).
-			tf_frmtxtbrl,	//frmtxtbrl	Frame box flows right to left and top to bottom.
-			tf_frmtxbtlr,	//frmtxbtlr	Frame box flows left to right and bottom to top.
-			tf_frmtxlrtbv,	//frmtxlrtbv	Frame box flows left to right and top to bottom, vertical.
-			tf_frmtxtbrlv //frmtxtbrlv	Frame box flows top to bottom and right to left, vertical.
-				} TextFollow;
-	TextFollow m_eTextFollow;
-	RtfTabs m_oTabs;
+	RtfFrame m_oFrame;
+	int m_bOverlap;				//1\absnoovrlpN	Allow overlap with other frames or objects with similar wrapping:
+	typedef enum
+	{
+		tf_none,
+		tf_frmtxlrtb,		//frmtxlrtb	Frame box flows from left to right and top to bottom (default).
+		tf_frmtxtbrl,		//frmtxtbrl	Frame box flows right to left and top to bottom.
+		tf_frmtxbtlr,		//frmtxbtlr	Frame box flows left to right and bottom to top.
+		tf_frmtxlrtbv,		//frmtxlrtbv	Frame box flows left to right and top to bottom, vertical.
+		tf_frmtxtbrlv		//frmtxtbrlv	Frame box flows top to bottom and right to left, vertical.
+	} TextFollow;
+	TextFollow	m_eTextFollow;
+	RtfTabs		m_oTabs;
 
 //Table Style Specific
-	int m_nTableStyle;		//\ytsN	Designates the table style handle that was applied to the row/cell.
+	int m_nTableStyle;			//\ytsN	Designates the table style handle that was applied to the row/cell.
 	int m_bStyleFirstRow;		//\tscfirstrow	This cell is in the first row.
 	int m_bStyleLastRow;		//\tsclastrow	This cell is in the last row.
-	int m_bStyleFirstCollumn;		//\tscfirstcol	This cell is in the first column.
-	int m_bStyleLastCollumn;		//\tsclastcol	This cell is in the last column.
+	int m_bStyleFirstCollumn;	//\tscfirstcol	This cell is in the first column.
+	int m_bStyleLastCollumn;	//\tsclastcol	This cell is in the last column.
 	int m_bStyleOddRowBand;		//\tscbandhorzodd	This cell is in the odd row band.
-	int m_bStyleEvenRowBand;		//\tscbandhorzeven	This cell is in the even row band.
+	int m_bStyleEvenRowBand;	//\tscbandhorzeven	This cell is in the even row band.
 	int m_bStyleOddColBand;		//\tscbandvertodd	This cell is in the odd column band.
-	int m_bStyleEvenColBand;		//\tscbandverteven	This cell is in the even column band.
-	int m_bStyleNWCell;		//\tscnwcell	This is the NW (north west) cell in the table (upper left).
-	int m_bStyleNECell;		//\tscnecell	NE cell.
-	int m_bStyleSWCell;		//\tscswcell	SW cell.
-	int m_bStyleSECell;		//\tscsecell	SE cell.
-
+	int m_bStyleEvenColBand;	//\tscbandverteven	This cell is in the even column band.
+	int m_bStyleNWCell;			//\tscnwcell	This is the NW (north west) cell in the table (upper left).
+	int m_bStyleNECell;			//\tscnecell	NE cell.
+	int m_bStyleSWCell;			//\tscswcell	SW cell.
+	int m_bStyleSECell;			//\tscsecell	SE cell.
+	
 	RtfCharProperty		m_oCharProperty;
-
+//--------------------------------------------------------------------------------------------------------------
 	RtfParagraphProperty()
 	{
 		SetDefault();

@@ -1705,9 +1705,10 @@ public:
 	}
 	void ExitReader( RtfDocument& oDocument, RtfReader& oReader )
 	{
-		m_oParPropDest.Finalize( oReader/*, RtfSectionPtr()*/);
-		m_oRtfFootnote.m_oContent = m_oParPropDest.m_oTextItems;
-		oReader.m_nFootnote = PROP_DEF;
+		m_oParPropDest.Finalize( oReader );
+
+		m_oRtfFootnote.m_oContent	= m_oParPropDest.m_oTextItems;
+		oReader.m_nFootnote			= PROP_DEF;
 	}
 };
 class RtfDefParPropReader: public RtfAbstractReader
@@ -2409,7 +2410,7 @@ public:
 	}
 	void ExitReader( RtfDocument& oDocument, RtfReader& oReader )
 	{
-		m_oParPropDest.Finalize( oReader /*, RtfSectionPtr()*/ );
+		m_oParPropDest.Finalize( oReader );
 	}
 };
 
@@ -2422,21 +2423,22 @@ class RtfSectionCommand
 {
 private: 
 	typedef enum{ is_none, is_border_left, is_border_top, is_border_right, is_border_bottom }InternalState;
+	
 	InternalState m_eInternalState;
 	int nCurCollumnNumber;
 public: 
 	RtfSectionCommand()
 	{
-		m_eInternalState = is_none;
-		nCurCollumnNumber = PROP_DEF;
+		m_eInternalState	= is_none;
+		nCurCollumnNumber	= PROP_DEF;
 	}
 	bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, RtfAbstractReader& oAbstrReader, CString sCommand, bool hasParameter, int parameter);
 };
 class RtfNormalReader : public RtfAbstractReader
 {
 public: 
-	ParagraphPropDestination oParagraphReaderDestination;
-	RtfSectionCommand oRtfSectionCommand;
+	ParagraphPropDestination	oParagraphReaderDestination;
+	RtfSectionCommand			oRtfSectionCommand;
 
 	RtfNormalReader( RtfDocument& oDocument, RtfReader& oReader )
 	{
@@ -2457,7 +2459,7 @@ public:
 	}
 	void ExitReader(RtfDocument& oDocument, RtfReader& oReader)
 	{
-		oParagraphReaderDestination.Finalize(oReader/*, RtfSectionPtr()*/);
+		oParagraphReaderDestination.Finalize( oReader );
 		
 		_section section;
 		if(true == oDocument.GetItem( section) )
@@ -2467,10 +2469,10 @@ public:
 
 		if( NULL == oDocument.m_oFootnoteCon )
 		{
-			oDocument.m_oFootnoteCon = TextItemContainerPtr( new TextItemContainer() );
-			RtfParagraphPtr oNewPar = RtfParagraphPtr( new RtfParagraph() );
-			RtfCharSpecialPtr oNewChar = RtfCharSpecialPtr( new RtfCharSpecial() );
-			oNewChar->m_eType = RtfCharSpecial::rsc_chftnsepc;
+			oDocument.m_oFootnoteCon		= TextItemContainerPtr( new TextItemContainer() );
+			RtfParagraphPtr		oNewPar		= RtfParagraphPtr( new RtfParagraph() );
+			RtfCharSpecialPtr	oNewChar	= RtfCharSpecialPtr( new RtfCharSpecial() );
+			oNewChar->m_eType				= RtfCharSpecial::rsc_chftnsepc;
 			
 			oNewPar->AddItem( oNewChar );
 			oDocument.m_oFootnoteCon->AddItem( oNewPar );
@@ -2478,10 +2480,10 @@ public:
 		}
 		if( NULL == oDocument.m_oFootnoteSep )
 		{
-			oDocument.m_oFootnoteSep = TextItemContainerPtr( new TextItemContainer() );
-			RtfParagraphPtr oNewPar = RtfParagraphPtr( new RtfParagraph() );
-			RtfCharSpecialPtr oNewChar = RtfCharSpecialPtr( new RtfCharSpecial() );
-			oNewChar->m_eType = RtfCharSpecial::rsc_chftnsep;
+			oDocument.m_oFootnoteSep		= TextItemContainerPtr( new TextItemContainer() );
+			RtfParagraphPtr		oNewPar		= RtfParagraphPtr( new RtfParagraph() );
+			RtfCharSpecialPtr	oNewChar	= RtfCharSpecialPtr( new RtfCharSpecial() );
+			oNewChar->m_eType				= RtfCharSpecial::rsc_chftnsep;
 			
 			oNewPar->AddItem( oNewChar );
 			oDocument.m_oFootnoteSep->AddItem( oNewPar );
@@ -2489,10 +2491,10 @@ public:
 		}
 		if( NULL == oDocument.m_oEndnoteCon )
 		{
-			oDocument.m_oEndnoteCon = TextItemContainerPtr( new TextItemContainer() );
-			RtfParagraphPtr oNewPar = RtfParagraphPtr( new RtfParagraph() );
-			RtfCharSpecialPtr oNewChar = RtfCharSpecialPtr( new RtfCharSpecial() );
-			oNewChar->m_eType = RtfCharSpecial::rsc_chftnsepc;
+			oDocument.m_oEndnoteCon			= TextItemContainerPtr( new TextItemContainer() );
+			RtfParagraphPtr		oNewPar		= RtfParagraphPtr( new RtfParagraph() );
+			RtfCharSpecialPtr	oNewChar	= RtfCharSpecialPtr( new RtfCharSpecial() );
+			oNewChar->m_eType				= RtfCharSpecial::rsc_chftnsepc;
 			
 			oNewPar->AddItem( oNewChar );
 			oDocument.m_oEndnoteCon->AddItem( oNewPar );
@@ -2500,10 +2502,10 @@ public:
 		}
 		if( NULL == oDocument.m_oEndnoteSep )
 		{
-			oDocument.m_oEndnoteSep = TextItemContainerPtr( new TextItemContainer() );
-			RtfParagraphPtr oNewPar = RtfParagraphPtr( new RtfParagraph() );
-			RtfCharSpecialPtr oNewChar = RtfCharSpecialPtr( new RtfCharSpecial() );
-			oNewChar->m_eType = RtfCharSpecial::rsc_chftnsep;
+			oDocument.m_oEndnoteSep			= TextItemContainerPtr( new TextItemContainer() );
+			RtfParagraphPtr		oNewPar		= RtfParagraphPtr( new RtfParagraph() );
+			RtfCharSpecialPtr	oNewChar	= RtfCharSpecialPtr( new RtfCharSpecial() );
+			oNewChar->m_eType				= RtfCharSpecial::rsc_chftnsep;
 			
 			oNewPar->AddItem( oNewChar );
 			oDocument.m_oEndnoteSep->AddItem( oNewPar );
@@ -2514,15 +2516,16 @@ private:
 	void SectDef( RtfDocument& oDocument, RtfReader& oReader )
 	 {
 		oReader.m_oCurSectionProp.SetDefaultRtf();
+		
 		//в соответствии с документацией ставим Page Information свойства как у документа
-		oReader.m_oCurSectionProp.m_nPageWidth = oDocument.m_oProperty.m_nPaperWidth;
-		oReader.m_oCurSectionProp.m_nPageHeight = oDocument.m_oProperty.m_nPaperHeight;
-		oReader.m_oCurSectionProp.m_nMarginLeft = oDocument.m_oProperty.m_nMarginLeft;
-		oReader.m_oCurSectionProp.m_nMarginRight = oDocument.m_oProperty.m_nMarginRight;
-		oReader.m_oCurSectionProp.m_nMarginTop = oDocument.m_oProperty.m_nMarginTop;
-		oReader.m_oCurSectionProp.m_nMarginBottom = oDocument.m_oProperty.m_nMarginBottom;
-		oReader.m_oCurSectionProp.m_nGutterMarginWidth = oDocument.m_oProperty.m_nGutterWidth;
-		oReader.m_oCurSectionProp.m_bSwitchMargin = oDocument.m_oProperty.m_bFacingPage;
-		oReader.m_oCurSectionProp.m_bLandscapeFormat = oDocument.m_oProperty.m_bLandScape;
+		oReader.m_oCurSectionProp.m_nPageWidth			= oDocument.m_oProperty.m_nPaperWidth;
+		oReader.m_oCurSectionProp.m_nPageHeight			= oDocument.m_oProperty.m_nPaperHeight;
+		oReader.m_oCurSectionProp.m_nMarginLeft			= oDocument.m_oProperty.m_nMarginLeft;
+		oReader.m_oCurSectionProp.m_nMarginRight		= oDocument.m_oProperty.m_nMarginRight;
+		oReader.m_oCurSectionProp.m_nMarginTop			= oDocument.m_oProperty.m_nMarginTop;
+		oReader.m_oCurSectionProp.m_nMarginBottom		= oDocument.m_oProperty.m_nMarginBottom;
+		oReader.m_oCurSectionProp.m_nGutterMarginWidth	= oDocument.m_oProperty.m_nGutterWidth;
+		oReader.m_oCurSectionProp.m_bSwitchMargin		= oDocument.m_oProperty.m_bFacingPage;
+		oReader.m_oCurSectionProp.m_bLandscapeFormat	= oDocument.m_oProperty.m_bLandScape;
 	 }
 };

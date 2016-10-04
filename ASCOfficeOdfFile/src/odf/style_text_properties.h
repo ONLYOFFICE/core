@@ -76,19 +76,21 @@ class text_format_properties_content : public oox::conversion_element
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
-    void docx_convert(oox::docx_conversion_context & Context);
-	void pptx_convert(oox::pptx_conversion_context & Context);
-	void pptx_convert_as_list(oox::pptx_conversion_context & Context);
+    void docx_convert			(oox::docx_conversion_context & Context);
+	void pptx_convert			(oox::pptx_conversion_context & Context);
+	void pptx_convert_as_list	(oox::pptx_conversion_context & Context);
+	void oox_convert			(std::wostream & stream, bool graphic);
 
-    void apply_from(const text_format_properties_content & Other);
-	void apply_to(std::vector<_property> & properties);
-    void set_r_style(const std::wstring & rStyle) { r_style_ = rStyle; }
-    int process_font_size(const optional<odf_types::font_size>::Type & FontSize, const style_instance * currnetStyle, bool Complex = false, double Mul = 1.0);
+    void apply_from			(const text_format_properties_content & Other);
+	void apply_to			(std::vector<_property> & properties);
+    void set_r_style		(const std::wstring & rStyle) { r_style_ = rStyle; }
+   
+	int process_font_size	(const _CP_OPT(odf_types::font_size) & FontSize, const style_instance * currnetStyle, bool Complex = false, double Mul = 1.0);
 
 private:
-    static double process_font_size_impl(const _CP_OPT(odf_types::font_size) & FontSize, const style_instance * currnetStyle, bool Complex = false, double Mul = 1.0);
-    static int process_font_weight(const optional<odf_types::font_weight>::Type & FontWeight);
-    static int process_font_style(const optional<odf_types::font_style>::Type & FontStyle);
+    static double	process_font_size_impl	(const _CP_OPT(odf_types::font_size) & FontSize, const style_instance * currnetStyle, bool Complex = false, double Mul = 1.0);
+    static int		process_font_weight		(const _CP_OPT(odf_types::font_weight) & FontWeight);
+    static int		process_font_style		(const _CP_OPT(odf_types::font_style) & FontStyle);
 public:
 
     _CP_OPT(std::wstring)    r_style_;
@@ -314,21 +316,20 @@ public:
 
     CPDOCCORE_DEFINE_VISITABLE();
 
-    void docx_convert(oox::docx_conversion_context & Context);
-	void pptx_convert(oox::pptx_conversion_context & Context);
+    void docx_convert	(oox::docx_conversion_context & Context);
+	void pptx_convert	(oox::pptx_conversion_context & Context);
 
-    const text_format_properties_content & content() const { return text_format_properties_content_; } ;
-    text_format_properties_content & content() { return text_format_properties_content_; } ;
+    const	text_format_properties_content & content() const	{ return text_format_properties_content_; } ;
+			text_format_properties_content & content()			{ return text_format_properties_content_; } ;
 
-public:
     style_text_properties(){};
-    style_text_properties(const std::wstring & rStyle){ text_format_properties_content_.set_r_style(rStyle); };
+    style_text_properties(const std::wstring & rStyle)			{ text_format_properties_content_.set_r_style(rStyle); };
+
 private:
-    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_attributes		( const xml::attributes_wc_ptr & Attributes );
+    virtual void add_child_element	( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
  
-private:
-    text_format_properties_content text_format_properties_content_;
+    text_format_properties_content		text_format_properties_content_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(style_text_properties);

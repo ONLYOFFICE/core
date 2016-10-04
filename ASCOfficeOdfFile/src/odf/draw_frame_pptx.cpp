@@ -291,7 +291,7 @@ void draw_object::pptx_convert(oox::pptx_conversion_context & Context)
 		//пример RemanejamentoOrcamentario.ods
 ///////////////////////////////////////////////////////////////////////////
 //функциональная часть
-		const office_element *contentSubDoc = objectSubDoc.get_impl()->get_content();
+		office_element *contentSubDoc = objectSubDoc.get_impl()->get_content();
 		if (!contentSubDoc)
 		{
 			//здесь другой формат xml (не Open Office)
@@ -301,9 +301,9 @@ void draw_object::pptx_convert(oox::pptx_conversion_context & Context)
 		}
 
 
-		chart_build objectBuild(href);
+		object_odf_context objectBuild(href);
 
-		process_build_chart process_build_object_(objectBuild, objectSubDoc.odf_context());
+		process_build_object process_build_object_(objectBuild, objectSubDoc.odf_context());
         contentSubDoc->accept(process_build_object_); 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -333,6 +333,28 @@ void draw_object::pptx_convert(oox::pptx_conversion_context & Context)
 			if (text_content_.length()>0)
 			{
 				Context.get_slide_context().set_property(_property(L"text-content",text_content_));
+			}
+			Context.get_slide_context().end_shape();		
+		}
+		else if (objectBuild.object_type_ == 3) //мат формулы
+		{
+			Context.get_slide_context().start_shape(2);  
+
+			objectBuild.pptx_convert(Context);
+			
+			std::wstring math_content = Context.get_math_context().end();
+	
+			if (!math_content.empty())
+			{
+				std::wstring text_content = L"<a:p><a14:m xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\">";
+				text_content += L"<m:oMathPara xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\">";
+				text_content += L"<m:oMathParaPr/>";
+				text_content += L"<m:oMath xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\">";
+				text_content += math_content;
+				text_content += L"</m:oMath></m:oMathPara></a14:m></a:p>";
+
+				Context.get_slide_context().set_property(_property(L"fit-to-size",	true));		
+				Context.get_slide_context().set_property(_property(L"text-content",	text_content));
 			}
 			Context.get_slide_context().end_shape();		
 		}

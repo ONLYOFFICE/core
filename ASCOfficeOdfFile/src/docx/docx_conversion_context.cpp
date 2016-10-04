@@ -75,7 +75,7 @@ docx_conversion_context::docx_conversion_context(odf_reader::odf_document * OdfD
 	delayed_converting_		(false),
 	process_headers_footers_(false),
 	process_comment_		(false),
-	process_math_formula_	(false),
+	math_context_			(false),
 	odf_document_			(OdfDocument)
 {
 	streams_man_		= streams_man::create(temp_stream_);
@@ -187,15 +187,17 @@ void docx_conversion_context::finish_run()
 }
 void docx_conversion_context::start_math_formula()
 {
-	process_math_formula_ = true;
-
-	output_stream() << L"<m:oMath>";
+	math_context_.start();
 }
 
 void docx_conversion_context::end_math_formula()
 {
-	output_stream() << L"</m:oMath>";
-	process_math_formula_ = false;
+	std::wstring math_content = math_context_.end();
+
+	if (!math_content.empty())
+	{
+		output_stream() << L"<m:oMath>" << math_content << L"</m:oMath>";
+	}
 }
 
 void docx_conversion_context::start_chart(std::wstring  name)

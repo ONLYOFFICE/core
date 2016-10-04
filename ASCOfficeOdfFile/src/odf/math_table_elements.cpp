@@ -54,19 +54,20 @@ void math_mtable::add_attributes( const xml::attributes_wc_ptr & Attributes )
 
 }
 
-void math_mtable::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void math_mtable::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }
 
-void math_mtable::docx_convert(oox::docx_conversion_context & Context) 
+void math_mtable::oox_convert(oox::math_context & Context)
 {//0* elements
 	std::wostream & strm = Context.output_stream();
 	
 	strm << L"<m:m>";		
-		BOOST_FOREACH(const office_element_ptr & elm, content_)
+		for (int i = 0; i < content_.size(); i++)
 		{
-			elm->docx_convert(Context);
+			office_math_element* math_element = dynamic_cast<office_math_element*>(content_[i].get());
+			math_element->oox_convert(Context);
 		}
 	strm << L"</m:m>";
 }
@@ -81,19 +82,20 @@ void math_mtr::add_attributes( const xml::attributes_wc_ptr & Attributes )
 
 }
 
-void math_mtr::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void math_mtr::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }
 
-void math_mtr::docx_convert(oox::docx_conversion_context & Context) 
+void math_mtr::oox_convert(oox::math_context & Context)
 {//0* elements
 	std::wostream & strm = Context.output_stream();
 
 	strm << L"<m:mr>";		
-		BOOST_FOREACH(const office_element_ptr & elm, content_)
+		for (int i = 0; i < content_.size(); i++)
 		{
-			elm->docx_convert(Context);
+			office_math_element* math_element = dynamic_cast<office_math_element*>(content_[i].get());
+			math_element->oox_convert(Context);
 		}
 	strm << L"</m:mr>";
 }
@@ -108,12 +110,12 @@ void math_mlabeledtr::add_attributes( const xml::attributes_wc_ptr & Attributes 
 
 }
 
-void math_mlabeledtr::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void math_mlabeledtr::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }
 
-void math_mlabeledtr::docx_convert(oox::docx_conversion_context & Context) 
+void math_mlabeledtr::oox_convert(oox::math_context & Context)
 {
 
 }
@@ -128,19 +130,20 @@ void math_mtd::add_attributes( const xml::attributes_wc_ptr & Attributes )
 
 }
 
-void math_mtd::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void math_mtd::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }
 
-void math_mtd::docx_convert(oox::docx_conversion_context & Context) 
+void math_mtd::oox_convert(oox::math_context & Context)
 {
 	std::wostream & strm = Context.output_stream();
 
 	strm << L"<m:e>";		
-		BOOST_FOREACH(const office_element_ptr & elm, content_)
+		for (int i = 0; i < content_.size(); i++)
 		{
-			elm->docx_convert(Context);
+			office_math_element* math_element = dynamic_cast<office_math_element*>(content_[i].get());
+			math_element->oox_convert(Context);
 		}
 	strm << L"</m:e>";
 }
@@ -155,12 +158,12 @@ void math_maligngroup::add_attributes( const xml::attributes_wc_ptr & Attributes
 
 }
 
-void math_maligngroup::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void math_maligngroup::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }
 
-void math_maligngroup::docx_convert(oox::docx_conversion_context & Context) 
+void math_maligngroup::oox_convert(oox::math_context & Context)
 {
 
 }
@@ -175,12 +178,12 @@ void math_malignmark::add_attributes( const xml::attributes_wc_ptr & Attributes 
 
 }
 
-void math_malignmark::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void math_malignmark::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }
 
-void math_malignmark::docx_convert(oox::docx_conversion_context & Context) 
+void math_malignmark::oox_convert(oox::math_context & Context)
 {
 
 }

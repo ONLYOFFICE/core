@@ -56,22 +56,21 @@ namespace cpdoccore {
 		class style_ref;
 		class length_or_percent;
 	}
-namespace odf_reader 
-{
-    class style_instance;
-    class odf_document;
-    class style_text_properties;
-    class draw_frame;
-    class draw_shape;
-    typedef boost::shared_ptr<style_text_properties> style_text_properties_ptr;
-    class office_element;
-	class style_columns;
+	namespace odf_reader 
+	{
+		class style_instance;
+		class odf_document;
+		class style_text_properties;
+		class draw_frame;
+		class draw_shape;
+		class office_element;
+		class style_columns;
 
-    
-    namespace text{
-        class note_citation;
-    }
-}
+		namespace text
+		{
+			class note_citation;
+		}
+	}
 
 namespace oox {
     
@@ -571,7 +570,8 @@ public:
 
     void push_text_properties(const odf_reader::style_text_properties * TextProperties);
     void pop_text_properties();
-    odf_reader::style_text_properties_ptr current_text_properties();
+   
+	odf_reader::style_text_properties_ptr current_text_properties();
 
     void set_page_break_after(bool val);
     bool get_page_break_after();
@@ -606,9 +606,9 @@ public:
    
 	std::wstring find_list_rename(const std::wstring & ListStyleName) const;
 
-    drawing_context & get_drawing_context() { return drawing_context_; } 
-	
-	comments_context & get_comments_context() {return comments_context_;}
+    drawing_context		& get_drawing_context()		{ return drawing_context_; } 	
+	comments_context	& get_comments_context()	{ return comments_context_; }
+	math_context		& get_math_context()		{ return math_context_; }
 
     void docx_convert_delayed();
     void add_delayed_element(odf_reader::office_element * Elm);
@@ -646,8 +646,7 @@ public:
    
 	void start_math_formula();
 	void end_math_formula();
-	bool process_math_formula_;
-
+	
 	void set_process_headers_footers(bool Val) { process_headers_footers_ = Val; }
     headers_footers			& get_headers_footers() { return headers_footers_; }
 	header_footer_context	& get_header_footer_context() { return header_footer_context_; }
@@ -682,7 +681,8 @@ private:
 	hyperlinks hyperlinks_;
     mediaitems mediaitems_;
      
-    styles_context styles_context_;
+    styles_context	styles_context_;
+	math_context	math_context_;
 
     std::wstring automatic_parent_style_; 
 

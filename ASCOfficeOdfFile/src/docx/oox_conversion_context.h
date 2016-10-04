@@ -40,8 +40,11 @@
 
 namespace cpdoccore { 
 
-namespace odf_reader{
-	class style_instance;
+namespace odf_reader
+{
+	class	style_instance;
+	class	style_text_properties;
+	typedef boost::shared_ptr<style_text_properties> style_text_properties_ptr;
 };
 
 class styles_context : boost::noncopyable
@@ -54,7 +57,6 @@ public:
     std::wstringstream & paragraph_attr();
     std::wstringstream & table_style();
     std::wstringstream & list_style();
-	std::wstringstream & math_text_style();
 
     void docx_serialize_text_style(std::wostream & strm, std::wstring parenStyleId);
     void docx_serialize_table_style(std::wostream & strm);
@@ -65,7 +67,8 @@ public:
 	std::wstring & hlinkClick(){return hlinkClick_;}
 
 	const odf_reader::style_instance * get_current_processed_style() const { return current_processed_style_; }
-    void start_process_style(const odf_reader::style_instance * Instance);
+   
+	void start_process_style(const odf_reader::style_instance * Instance);
     void end_process_style();
 
 private:
@@ -79,12 +82,32 @@ private:
     std::wstringstream			paragraph_nodes_;
     std::wstringstream			paragraph_attr_;
     std::wstringstream			table_style_;
-	std::wstringstream			math_text_style_;
 };
 
 
 namespace oox {
 	
+	class math_context : boost::noncopyable
+	{
+	public:
+		math_context(bool graphic = false);
+		
+		void				start();
+		std::wstring		end();
+
+		std::wostream		& output_stream()		{ return math_stream_; }	
+		
+		std::wstringstream	& math_style_stream()	{ return math_style_stream_; }
+		
+		int										base_font_size_;
+		odf_reader::style_text_properties_ptr	text_properties_;
+
+		std::wstring							nsRPr_;
+		bool									graphRPR_;
+	private:
+		std::wstringstream						math_stream_;
+		std::wstringstream						math_style_stream_;
+	};
 
 }
 }

@@ -33,7 +33,6 @@
 #include "xlsx_drawings.h"
 #include "xlsx_drawing.h"
 
-#include <boost/foreach.hpp>
 #include <vector>
 #include <cpdoccore/xml/simple_xml_writer.h>
 
@@ -51,26 +50,26 @@ public:
         xlsx_drawings_.push_back(d);
 		
 		bool present = false;
-        BOOST_FOREACH(_rel const & r, xlsx_drawing_rels_)
+		for (int i = 0 ; i < xlsx_drawing_rels_.size(); i++)
         {		
-			if (r.rid == rid && r.ref == ref)
+			if (xlsx_drawing_rels_[i].rid == rid && xlsx_drawing_rels_[i].ref == ref)
 				present = true;
 		}
 		if (!present)
 		{
 			xlsx_drawing_rels_.push_back(_rel(isInternal, rid, ref, type));
 		}
-        BOOST_FOREACH(_hlink_desc h, d.hlinks)
+        for (int i = 0 ; i < d.hlinks.size(); i++)
         {
-			xlsx_drawing_rels_.push_back(_rel(false, h.hId, h.hRef, typeHyperlink));
+			xlsx_drawing_rels_.push_back(_rel(false, d.hlinks[i].hId, d.hlinks[i].hRef, typeHyperlink));
 		}
     }
     void add( bool isInternal, std::wstring const & rid, std::wstring const & ref, RelsType type)
     {
 		bool present = false;
-        BOOST_FOREACH(_rel const & r, xlsx_drawing_rels_)
+        for (int i = 0 ; i < xlsx_drawing_rels_.size(); i++)
         {		
-			if (r.rid == rid && r.ref == ref)
+			if (xlsx_drawing_rels_[i].rid == rid && xlsx_drawing_rels_[i].ref == ref)
 				present = true;
 		}
 		if (!present)
@@ -85,9 +84,9 @@ public:
     {
 		if (inGroup)
 		{
-			BOOST_FOREACH(_xlsx_drawing & d, xlsx_drawings_)
+			for (int i = 0 ; i < xlsx_drawings_.size(); i++)
 			{
-				xlsx_serialize(strm, d);
+				xlsx_serialize(strm, xlsx_drawings_[i]);
 			}
 		}
 		else
@@ -100,9 +99,9 @@ public:
 					CP_XML_ATTR(L"xmlns:a"	, L"http://schemas.openxmlformats.org/drawingml/2006/main");
 					CP_XML_ATTR(L"xmlns:r"	, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
 
-					BOOST_FOREACH(_xlsx_drawing & d, xlsx_drawings_)
+					for (int i = 0 ; i < xlsx_drawings_.size(); i++)
 					{
-						xlsx_serialize(CP_XML_STREAM(), d);
+						xlsx_serialize(CP_XML_STREAM(), xlsx_drawings_[i]);
 					}
 				}
 			}
@@ -116,34 +115,34 @@ public:
 
     void dump_rels(rels & Rels)
     {
-        BOOST_FOREACH(_rel const & r, xlsx_drawing_rels_)
+        for (int i = 0 ; i < xlsx_drawing_rels_.size(); i++)
         {
-			if (r.type == typeChart)
+			if (xlsx_drawing_rels_[i].type == typeChart)
 			{
 				Rels.add(relationship(
-							r.rid,
-							utils::media::get_rel_type(r.type),
-							(r.is_internal ? std::wstring(L"../") + r.ref : r.ref),
-							(r.is_internal ? L"" : L"External")
+							xlsx_drawing_rels_[i].rid,
+							utils::media::get_rel_type(xlsx_drawing_rels_[i].type),
+							(xlsx_drawing_rels_[i].is_internal ? std::wstring(L"../") + xlsx_drawing_rels_[i].ref : xlsx_drawing_rels_[i].ref),
+							(xlsx_drawing_rels_[i].is_internal ? L"" : L"External")
 							) 
 					);
 			}
-			else if (r.type == typeImage)
+			else if (xlsx_drawing_rels_[i].type == typeImage)
 			{
 				Rels.add(relationship(
-							r.rid,
-							utils::media::get_rel_type(r.type),
-							r.is_internal ? std::wstring(L"../") + r.ref : r.ref,
-							(r.is_internal ? L"" : L"External")
+							xlsx_drawing_rels_[i].rid,
+							utils::media::get_rel_type(xlsx_drawing_rels_[i].type),
+							xlsx_drawing_rels_[i].is_internal ? std::wstring(L"../") + xlsx_drawing_rels_[i].ref : xlsx_drawing_rels_[i].ref,
+							(xlsx_drawing_rels_[i].is_internal ? L"" : L"External")
 							) 
 					);
 			}
- 			else if (r.type == typeHyperlink)
+ 			else if (xlsx_drawing_rels_[i].type == typeHyperlink)
 			{
 				Rels.add(relationship(
-							r.rid,
+							xlsx_drawing_rels_[i].rid,
 							L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink",
-							r.ref,
+							xlsx_drawing_rels_[i].ref,
 							L"External")
 				);
 			}

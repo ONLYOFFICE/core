@@ -57,7 +57,7 @@ void math_mi::add_attributes( const xml::attributes_wc_ptr & Attributes )
 	common_attlist_.add_attributes(Attributes);
 }
 
-void math_mi::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void math_mi::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }
@@ -67,26 +67,21 @@ void math_mi::add_text(const std::wstring & Text)
     text_ = Text;
 }
 
-std::wostream & math_mi::text_to_stream(::std::wostream & _strm) const
+std::wostream & math_mi::text_to_stream(std::wostream & _strm) const
 {
 	if (text_) 
 		_strm << *text_;
     return _strm;
 }
 
-void math_mi::docx_convert(oox::docx_conversion_context & Context) 
+void math_mi::oox_convert(oox::math_context & Context)
 {
 	if (!text_) return;
-
 
 	CP_XML_WRITER(Context.output_stream())
     {
 		CP_XML_NODE(L"m:r")
-		{
-		
-			Context.get_styles_context().start();
-			Context.current_text_properties()->docx_convert(Context);
-		
+		{		
 			if (common_attlist_.mathvariant_)
 			{
 				std::wstring m_sty_val;
@@ -119,11 +114,8 @@ void math_mi::docx_convert(oox::docx_conversion_context & Context)
 				}
 			}
 
-			CP_XML_NODE(L"w:rPr")
-			{
-				CP_XML_STREAM() << Context.get_styles_context().text_style().str();
-			
-			}
+			Context.text_properties_->content().oox_convert(CP_XML_STREAM(), Context.graphRPR_);
+
 			CP_XML_NODE(L"m:t")
 			{
 				//CP_XML_ATTR(L"xml:space", L"preserve");
@@ -143,7 +135,7 @@ void math_mo::add_attributes( const xml::attributes_wc_ptr & Attributes )
 	CP_APPLY_ATTR(L"fence",			fence_);
 }
 
-void math_mo::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void math_mo::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }
@@ -153,14 +145,14 @@ void math_mo::add_text(const std::wstring & Text)
     text_ = Text;
 }
 
-std::wostream & math_mo::text_to_stream(::std::wostream & _strm) const
+std::wostream & math_mo::text_to_stream(std::wostream & _strm) const
 {
 	if (text_) 
 		_strm << *text_;
     return _strm;
 }
 
-void math_mo::docx_convert(oox::docx_conversion_context & Context) 
+void math_mo::oox_convert(oox::math_context & Context)
 {
 	if (!text_) return;
    
@@ -169,13 +161,9 @@ void math_mo::docx_convert(oox::docx_conversion_context & Context)
 		CP_XML_NODE(L"m:r")
         {
 			// + доп стили текста ... todoooo
-			Context.get_styles_context().start();
-			Context.current_text_properties()->docx_convert(Context);
 
-			CP_XML_NODE(L"w:rPr")
-			{
-				CP_XML_STREAM() << Context.get_styles_context().text_style().str();
-			}	
+			Context.text_properties_->content().oox_convert(CP_XML_STREAM(), Context.graphRPR_);
+			
 			CP_XML_NODE(L"m:t")
 			{
 				//CP_XML_ATTR(L"xml:space", L"preserve");
@@ -194,7 +182,7 @@ void math_mn::add_attributes( const xml::attributes_wc_ptr & Attributes )
 
 }
 
-void math_mn::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void math_mn::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }
@@ -205,7 +193,7 @@ void math_mn::add_text(const std::wstring & Text)
 }
 
 
-void math_mn::docx_convert(oox::docx_conversion_context & Context) 
+void math_mn::oox_convert(oox::math_context & Context)
 {
 	if (!text_) return;
 
@@ -214,13 +202,9 @@ void math_mn::docx_convert(oox::docx_conversion_context & Context)
 		CP_XML_NODE(L"m:r")
 		{
 			// + доп стили текста ... todoooo
-			Context.get_styles_context().start();
-			Context.current_text_properties()->docx_convert(Context);
 
-			CP_XML_NODE(L"w:rPr")
-			{
-				CP_XML_STREAM() << Context.get_styles_context().text_style().str();
-			}	
+			Context.text_properties_->content().oox_convert(CP_XML_STREAM(), Context.graphRPR_);
+	
 			CP_XML_NODE(L"m:t")
 			{
 				//CP_XML_ATTR(L"xml:space", L"preserve");
@@ -239,7 +223,7 @@ void math_ms::add_attributes( const xml::attributes_wc_ptr & Attributes )
 
 }
 
-void math_ms::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void math_ms::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }
@@ -250,7 +234,7 @@ void math_ms::add_text(const std::wstring & Text)
 }
 
 
-void math_ms::docx_convert(oox::docx_conversion_context & Context) 
+void math_ms::oox_convert(oox::math_context & Context)
 {
 
 }
@@ -263,7 +247,7 @@ void math_mspace::add_attributes( const xml::attributes_wc_ptr & Attributes )
 
 }
 
-void math_mspace::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void math_mspace::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }
@@ -274,7 +258,7 @@ void math_mspace::add_text(const std::wstring & Text)
 }
 
 
-void math_mspace::docx_convert(oox::docx_conversion_context & Context) 
+void math_mspace::oox_convert(oox::math_context & Context)
 {
 
 }
@@ -288,7 +272,7 @@ void math_mtext::add_attributes( const xml::attributes_wc_ptr & Attributes )
 
 }
 
-void math_mtext::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void math_mtext::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }
@@ -299,7 +283,7 @@ void math_mtext::add_text(const std::wstring & Text)
 }
 
 
-void math_mtext::docx_convert(oox::docx_conversion_context & Context) 
+void math_mtext::oox_convert(oox::math_context & Context)
 {
 
 }
@@ -313,7 +297,7 @@ void math_mglyph::add_attributes( const xml::attributes_wc_ptr & Attributes )
 
 }
 
-void math_mglyph::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void math_mglyph::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }
@@ -324,7 +308,7 @@ void math_mglyph::add_text(const std::wstring & Text)
 }
 
 
-void math_mglyph::docx_convert(oox::docx_conversion_context & Context) 
+void math_mglyph::oox_convert(oox::math_context & Context)
 {
 
 }

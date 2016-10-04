@@ -1421,14 +1421,14 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 //функциональная часть
 		office_element	*contentSubDoc	= objectSubDoc.get_impl()->get_content();
 		draw_frame		*frame			= NULL;
-		chart_build		objectBuild(href);
+		object_odf_context		objectBuild(href);
 
 		//if (!contentSubDoc)//Diagramma.odt - кривые ссылки на объекты
 		//	return;
 		
 		if (contentSubDoc)
 		{
-			process_build_chart process_build_object_(objectBuild, objectSubDoc.odf_context());
+			process_build_object process_build_object_(objectBuild, objectSubDoc.odf_context());
 			contentSubDoc->accept(process_build_object_); 
 
 			objectBuild.docx_convert(Context);		
@@ -1491,6 +1491,7 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 			
 			if (in_frame)
 			{
+				drawing.additional.push_back(_property(L"fit-to-size",	true));		
 				drawing.additional.push_back(_property(L"text-content",	std::wstring(L"<w:p><m:oMathPara><m:oMathParaPr/>") + 
 																	content + std::wstring(L"</m:oMathPara></w:p>")));
 				Context.set_run_state(false);	

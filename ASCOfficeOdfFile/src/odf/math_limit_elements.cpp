@@ -54,14 +54,14 @@ void math_msub::add_attributes( const xml::attributes_wc_ptr & Attributes )
 
 }
 
-void math_msub::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void math_msub::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	//<msub> base subscript </msub>
 
 	CP_CREATE_ELEMENT(content_);
 }
 
-void math_msub::docx_convert(oox::docx_conversion_context & Context) 
+void math_msub::oox_convert(oox::math_context & Context)
 {//2 elements
 	if (content_.size() != 2)
 	{
@@ -69,14 +69,18 @@ void math_msub::docx_convert(oox::docx_conversion_context & Context)
 	}
     std::wostream & strm = Context.output_stream();
 	
+	office_math_element* math_element = NULL;
+
 	strm << L"<m:sSub>";
 
 		strm << L"<m:e>";
-			content_[0]->docx_convert(Context);
+			math_element = dynamic_cast<office_math_element*>(content_[0].get());
+			math_element->oox_convert(Context);		
 		strm << L"</m:e>";
 		
 		strm << L"<m:sub>";
-			content_[1]->docx_convert(Context);
+			math_element = dynamic_cast<office_math_element*>(content_[1].get());
+			math_element->oox_convert(Context);		
 		strm << L"</m:sub>";
 
 	strm << L"</m:sSub>";
@@ -90,12 +94,12 @@ void math_msup::add_attributes( const xml::attributes_wc_ptr & Attributes )
 
 }
 
-void math_msup::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void math_msup::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }
 
-void math_msup::docx_convert(oox::docx_conversion_context & Context) 
+void math_msup::oox_convert(oox::math_context & Context)
 {//2 elements
 	if (content_.size() != 2)
 	{
@@ -103,14 +107,18 @@ void math_msup::docx_convert(oox::docx_conversion_context & Context)
 	}
     std::wostream & strm = Context.output_stream();
 	
+	office_math_element* math_element = NULL;
+
 	strm << L"<m:sSup>";
 
 		strm << L"<m:e>";
-			content_[0]->docx_convert(Context);
+			math_element = dynamic_cast<office_math_element*>(content_[0].get());
+			math_element->oox_convert(Context);		
 		strm << L"</m:e>";
 		
 		strm << L"<m:sup>";
-			content_[1]->docx_convert(Context);
+			math_element = dynamic_cast<office_math_element*>(content_[1].get());
+			math_element->oox_convert(Context);		
 		strm << L"</m:sup>";
 
 	strm << L"</m:sSup>";
@@ -125,27 +133,32 @@ void math_msubsup::add_attributes( const xml::attributes_wc_ptr & Attributes )
 
 }
 
-void math_msubsup::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void math_msubsup::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }
 
-void math_msubsup::docx_convert(oox::docx_conversion_context & Context) 
+void math_msubsup::oox_convert(oox::math_context & Context)
 {//3 elements
     std::wostream & strm = Context.output_stream();
 	
+	office_math_element* math_element = NULL;
+
 	strm << L"<m:sSubSup>";
 
 		strm << L"<m:e>";
-			content_[0]->docx_convert(Context);
+			math_element = dynamic_cast<office_math_element*>(content_[0].get());
+			math_element->oox_convert(Context);		
 		strm << L"</m:e>";
 		
 		strm << L"<m:sub>";
-			content_[1]->docx_convert(Context);
+			math_element = dynamic_cast<office_math_element*>(content_[1].get());
+			math_element->oox_convert(Context);		
 		strm << L"</m:sub>";
 
 		strm << L"<m:sup>";
-			content_[2]->docx_convert(Context);
+			math_element = dynamic_cast<office_math_element*>(content_[2].get());
+			math_element->oox_convert(Context);		
 		strm << L"</m:sup>";
 
 	strm << L"</m:sSubSup>";
@@ -159,12 +172,12 @@ void math_none::add_attributes( const xml::attributes_wc_ptr & Attributes )
 
 }
 
-void math_none::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void math_none::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }
 
-void math_none::docx_convert(oox::docx_conversion_context & Context) 
+void math_none::oox_convert(oox::math_context & Context)
 {
 
 }
@@ -178,12 +191,12 @@ void math_mprescripts::add_attributes( const xml::attributes_wc_ptr & Attributes
 
 }
 
-void math_mprescripts::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void math_mprescripts::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }
 
-void math_mprescripts::docx_convert(oox::docx_conversion_context & Context) 
+void math_mprescripts::oox_convert(oox::math_context & Context)
 {
 
 }
@@ -196,12 +209,12 @@ void math_mmultiscripts::add_attributes( const xml::attributes_wc_ptr & Attribut
 
 }
 
-void math_mmultiscripts::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void math_mmultiscripts::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }
 
-void math_mmultiscripts::docx_convert(oox::docx_conversion_context & Context) 
+void math_mmultiscripts::oox_convert(oox::math_context & Context)
 {//1* elements
 
 }
@@ -214,12 +227,12 @@ void math_munderover::add_attributes( const xml::attributes_wc_ptr & Attributes 
 
 }
 
-void math_munderover::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void math_munderover::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }
 
-void math_munderover::docx_convert(oox::docx_conversion_context & Context) 
+void math_munderover::oox_convert(oox::math_context & Context)
 {//3 elements (+1)
 	if (content_.size() < 4)
 	{
@@ -232,6 +245,8 @@ void math_munderover::docx_convert(oox::docx_conversion_context & Context)
 	std::wstring sBase = strmTemp.str();
 
 	std::wostream & strm = Context.output_stream();
+
+	office_math_element* math_element = NULL;
 
 	if (sBase.size() < 3)
 	{	
@@ -246,19 +261,22 @@ void math_munderover::docx_convert(oox::docx_conversion_context & Context)
 			strm << L"</m:naryPr>";
 			strm << L"<m:sub>";
 			{
-				content_[2]->docx_convert(Context);
+				math_element = dynamic_cast<office_math_element*>(content_[2].get());
+				math_element->oox_convert(Context);		
 			}
 			strm << L"</m:sub>";
 			
 			strm << L"<m:sup>";
 			{
-				content_[1]->docx_convert(Context);
+				math_element = dynamic_cast<office_math_element*>(content_[1].get());
+				math_element->oox_convert(Context);		
 			}
 			strm << L"</m:sup>";
 
 			strm << L"<m:e>";
 			{
-				content_[3]->docx_convert(Context);
+				math_element = dynamic_cast<office_math_element*>(content_[3].get());
+				math_element->oox_convert(Context);		
 			}
 			strm << L"</m:e>";
 		strm << L"</m:nary>";
@@ -271,19 +289,23 @@ void math_munderover::docx_convert(oox::docx_conversion_context & Context)
 				strm << L"<m:limLow>";	
 					strm << L"<m:limLowPr/>";
 					strm << L"<m:e>";
-						content_[0]->docx_convert(Context);
+						math_element = dynamic_cast<office_math_element*>(content_[0].get());
+						math_element->oox_convert(Context);		
 					strm << L"</m:e>";
 					strm << L"<m:lim>";
-						content_[1]->docx_convert(Context);
+						math_element = dynamic_cast<office_math_element*>(content_[1].get());
+						math_element->oox_convert(Context);		
 					strm << L"</m:lim>";
 				strm << L"</m:limLow>";
 			strm << L"</m:e>";
 			strm << L"<m:lim>";
-				content_[2]->docx_convert(Context);
+				math_element = dynamic_cast<office_math_element*>(content_[2].get());
+				math_element->oox_convert(Context);		
 			strm << L"</m:lim>";
 		strm << L"</m:limUpp>";
 	
-		content_[3]->docx_convert(Context);
+		math_element = dynamic_cast<office_math_element*>(content_[3].get());
+		math_element->oox_convert(Context);		
 	}
 }
 //---------------------------------------------------------------
@@ -295,22 +317,26 @@ void math_mover::add_attributes( const xml::attributes_wc_ptr & Attributes )
 
 }
 
-void math_mover::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void math_mover::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }
 
-void math_mover::docx_convert(oox::docx_conversion_context & Context) 
+void math_mover::oox_convert(oox::math_context & Context)
 {//2 elements
 	std::wostream & strm = Context.output_stream();
+
+	office_math_element* math_element = NULL;
 
 	strm << L"<m:limUpp>";	
 		strm << L"<m:limUppPr/>";
 		strm << L"<m:e>";
-			content_[0]->docx_convert(Context);
+			math_element = dynamic_cast<office_math_element*>(content_[0].get());
+			math_element->oox_convert(Context);		
 		strm << L"</m:e>";
 		strm << L"<m:lim>";
-			content_[1]->docx_convert(Context);
+			math_element = dynamic_cast<office_math_element*>(content_[1].get());
+			math_element->oox_convert(Context);		
 		strm << L"</m:lim>";
 	strm << L"</m:limUpp>";
 }
@@ -323,22 +349,25 @@ void math_munder::add_attributes( const xml::attributes_wc_ptr & Attributes )
 
 }
 
-void math_munder::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void math_munder::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }
 
-void math_munder::docx_convert(oox::docx_conversion_context & Context) 
+void math_munder::oox_convert(oox::math_context & Context)
 {//2 elements
 	std::wostream & strm = Context.output_stream();
 
+	office_math_element* math_element = NULL;
 	strm << L"<m:limLow>";	
 		strm << L"<m:limLowPr/>";
 		strm << L"<m:e>";
-			content_[0]->docx_convert(Context);
+			math_element = dynamic_cast<office_math_element*>(content_[0].get());
+			math_element->oox_convert(Context);		
 		strm << L"</m:e>";
 		strm << L"<m:lim>";
-			content_[1]->docx_convert(Context);
+			math_element = dynamic_cast<office_math_element*>(content_[1].get());
+			math_element->oox_convert(Context);		
 		strm << L"</m:lim>";
 	strm << L"</m:limLow>";
 }

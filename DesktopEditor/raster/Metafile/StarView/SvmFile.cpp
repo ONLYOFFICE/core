@@ -222,7 +222,7 @@ void CSvmFile::PlayMetaFile()
 		m_oStream.Skip(need_skip);
 
 #ifdef _DEBUG
-		if (/*100 <= actionType &&*/ actionType <= META_LAST_ACTION && /*need_skip > 0 &&*/ !m_pOutput)
+		if (100 <= actionType && actionType <= META_LAST_ACTION && need_skip > 0 && !m_pOutput)
 		{
 			std::wstring name = actionNames[actionType - 99].actionName;
 

@@ -39,6 +39,7 @@
 #include <cpdoccore/xml/simple_xml_writer.h>
 
 #include "../odf/odfcontext.h"
+#include "../odf/style_text_properties.h"
 
 namespace cpdoccore { 
 
@@ -76,11 +77,6 @@ void styles_context::start()
 std::wstringstream & styles_context::text_style()
 {
     return text_style_;
-}
-
-std::wstringstream & styles_context::math_text_style()
-{
-    return math_text_style_;
 }
 
 std::wstringstream & styles_context::paragraph_nodes()
@@ -135,5 +131,32 @@ void styles_context::docx_serialize_table_style(std::wostream & strm)
 		}
     }
 }
+namespace oox
+{
+math_context::math_context(bool graphic) :  base_font_size_(12)
+{
+	graphRPR_ = graphic;
 
+	if (graphRPR_)	nsRPr_ = L"a:rPr";
+	else			nsRPr_ = L"w:rPr";
+}
+void math_context::start()
+{
+	text_properties_ = odf_reader::style_text_properties_ptr(new odf_reader::style_text_properties());
+	
+	text_properties_->content().style_font_name_	= L"Cambria Math";
+	text_properties_->content().fo_font_size_		= odf_types::length(base_font_size_, odf_types::length::pt);
+}
+
+std::wstring math_context::end()
+{
+	std::wstring math = math_stream_.str();
+	
+	math_stream_.str( std::wstring() );
+	math_stream_.clear();
+
+	return math;
+}
+
+}
 }

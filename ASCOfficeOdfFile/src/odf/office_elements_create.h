@@ -71,7 +71,7 @@ public:
     bool register_element(const std::wstring &ns, const std::wstring & name, CreateFuncImpl f);
 
     // Создать элемент по имени
-    office_element_ptr create(const ::std::wstring & ns, const ::std::wstring & name, document_context * Context = NULL, bool isRoot = false) const;
+    office_element_ptr create(const std::wstring & ns, const std::wstring & name, document_context * Context = NULL, bool isRoot = false) const;
 
 private:
     typedef std::map<std::wstring, CreateFuncImpl> MapType;
@@ -134,16 +134,16 @@ template<class T> int RegisterElement<T>::class_registered_1_	= 0; //without nam
 
 //  Создать элемент и в случае успеха прочитать его содержимое из SAX, поместить в shared_ptr
 bool create_element_and_read(xml::sax * Reader,
-                             const ::std::wstring & Ns,
-                             const ::std::wstring & Name,
+                             const std::wstring & Ns,
+                             const std::wstring & Name,
                              office_element_ptr & _Element,
                              document_context * Context,
                              bool isRoot = false);
 
 //  Создать элемент и в случае успеха прочитать его содержимое из SAX, поместить в array
 bool create_element_and_read(xml::sax * Reader,
-                             const ::std::wstring & Ns,
-                             const ::std::wstring & Name,
+                             const std::wstring & Ns,
+                             const std::wstring & Name,
                              office_element_ptr_array & _Elements,
                              document_context * Context,
                              bool isRoot = false);

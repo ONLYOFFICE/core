@@ -22,6 +22,7 @@ PWD_ROOT_DIR = $$PWD
 CONFIG += core_static_link_libstd
 CONFIG += core_x2t
 include(../../../Common/base.pri)
+include(../../../Common/3dParty/icu/icu.pri)
 
 core_win_32 {
     TARGET = x2t32

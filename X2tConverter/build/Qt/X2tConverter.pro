@@ -115,8 +115,13 @@ DESTDIR = $$PWD/../../../build/bin
 core_windows {
     DESTDIR = $$DESTDIR/windows
 }
-core_linux {
-    DESTDIR = $$DESTDIR/linux
+core_linux_64 {
+    message("x2t linux 64 build")
+    DESTDIR = $$DESTDIR/linux_64
+}
+core_linux_32 {
+    message("x2t linux 32 build")
+    DESTDIR = $$DESTDIR/linux_32
 }
 core_mac {
     DESTDIR = $$DESTDIR/mac

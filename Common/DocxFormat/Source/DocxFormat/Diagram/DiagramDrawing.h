@@ -98,6 +98,8 @@ namespace Diagram
 						m_oShapeStyle = oReader;	
 					else if (_T("dsp:txBody") == sName)
 						m_oTxBody = oReader; 		
+					else if (_T("dsp:txXfrm") == sName)
+						m_oTxXfrm = oReader;
 				}
 			}
 
@@ -116,6 +118,7 @@ namespace Diagram
 			nullable<OOX::Drawing::CShapeProperties>		m_oSpPr;
 			nullable<OOX::Drawing::CShapeStyle>				m_oShapeStyle;
 			nullable<OOX::Drawing::CTxBody>					m_oTxBody;	
+			nullable<OOX::Drawing::CTransform2D>			m_oTxXfrm;
 
 //extLst (Extension List) І20.1.2.2.15
 

@@ -195,6 +195,8 @@ namespace OOX
                 CString sName = oReader.GetName();
 				if ( _T("a:xfrm") == sName )
 					m_eType = et_a_xfrm;
+				else if ( _T("dsp:txXfrm") == sName )
+					m_eType = et_dsp_txXfrm;
 				else
 					return;
 

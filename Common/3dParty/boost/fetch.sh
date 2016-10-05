@@ -34,7 +34,7 @@ echo "boost already extracted"
 else
 if [[ "$platform" == *"linux"* ]]
 then
-7z x "$SCRIPTPATH/boost_1_58_0.7z" -o"$SCRIPTPATH/"
+7z x -y "$SCRIPTPATH/boost_1_58_0.7z" -o"$SCRIPTPATH/"
 else
 hdiutil mount "$SCRIPTPATH/7zX_1.7.1.dmg"
 /Volumes/7zX/7zX.app/Contents/Resources/7za x "$SCRIPTPATH/boost_1_58_0.7z" -o"$SCRIPTPATH/"

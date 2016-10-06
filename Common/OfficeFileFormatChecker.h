@@ -72,7 +72,7 @@ private:
     bool isMS_OFFCRYPTOFormatFile	(POLE::Storage * storage);
 
 	bool isRtfFormatFile	(unsigned char* pBuffer,int dwBytes);
-	bool isHtmlFormatFile	(unsigned char* pBuffer,int dwBytes);
+	bool isHtmlFormatFile	(unsigned char* pBuffer,int dwBytes, bool testCloseTag);
 	bool isPdfFormatFile	(unsigned char* pBuffer,int dwBytes);
 
 	bool isBinaryDoctFormatFile	(unsigned char* pBuffer,int dwBytes);

@@ -139,7 +139,7 @@ int main(int argc, char *argv[])
 #endif
 		oInputParams.m_sFileFrom	= new std::wstring(sArg1);
 		oInputParams.m_sFileTo		= new std::wstring(sArg2);
-		oInputParams.m_sPassword	= new std::wstring(L"password");
+		//oInputParams.m_sPassword	= new std::wstring(L"password");
 		
 		// get conversion direction from 3rd argument
 		if (argc > 3)

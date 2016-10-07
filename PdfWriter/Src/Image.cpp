@@ -46,7 +46,7 @@ namespace PdfWriter
 		m_pXref     = pXref;
 		m_pDocument = pDocument;
 	}
-	void CImageDict::LoadJpeg(const wchar_t* wsFilePath, unsigned int unWidth, unsigned int unHeight)
+    void CImageDict::LoadJpeg(const wchar_t* wsFilePath, unsigned int unWidth, unsigned int unHeight, bool bGrayScale)
 	{
 		CImageFileStream* pStream = new CImageFileStream();
 		if (!pStream)
@@ -58,11 +58,16 @@ namespace PdfWriter
 		Add("Subtype", "Image");
 		Add("Height", unHeight);
 		Add("Width", unWidth);
-		Add("ColorSpace", "DeviceRGB");
+
+        if (bGrayScale)
+            Add("ColorSpace", "DeviceGray");
+        else
+            Add("ColorSpace", "DeviceRGB");
+
 		Add("BitsPerComponent", 8);
 		SetFilter(STREAM_FILTER_DCT_DECODE);
 	}
-	void CImageDict::LoadJpeg(BYTE* pBuffer, int nBufferSize, unsigned int unWidth, unsigned int unHeight)
+    void CImageDict::LoadJpeg(BYTE* pBuffer, int nBufferSize, unsigned int unWidth, unsigned int unHeight, bool bGrayScale)
 	{
 		CMemoryStream* pStream = new CMemoryStream();
 		if (!pStream)
@@ -74,8 +79,13 @@ namespace PdfWriter
 		Add("Subtype", "Image");
 		Add("Height", unHeight);
 		Add("Width", unWidth);
-		Add("ColorSpace", "DeviceRGB");
-		Add("BitsPerComponent", 8);
+
+        if (bGrayScale)
+            Add("ColorSpace", "DeviceGray");
+        else
+            Add("ColorSpace", "DeviceRGB");
+
+        Add("BitsPerComponent", 8);
 		SetFilter(STREAM_FILTER_DCT_DECODE);
 	}
 	void CImageDict::LoadJpx(const wchar_t* wsFilePath, unsigned int unWidth, unsigned int unHeight)

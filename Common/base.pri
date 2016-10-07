@@ -17,8 +17,7 @@ win32:!contains(QMAKE_TARGET.arch, x86_64): {
     CONFIG += core_win_32
 }
 
-linux-g++
-{
+linux-g++ {
     CONFIG += core_linux
 linux-g++:contains(QMAKE_HOST.arch, x86_64): {
     message("linux-64")

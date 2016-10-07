@@ -68,6 +68,8 @@ namespace NSDoctRenderer
         bool m_bIsRetina;
         int m_nSaveToPDFParams;
 
+        bool m_bIsOnlyOnePage;
+
     public:
         CExecuteParams() : m_arChanges()
         {
@@ -90,6 +92,8 @@ namespace NSDoctRenderer
 
             m_bIsRetina = false;
             m_nSaveToPDFParams = 0;
+
+            m_bIsOnlyOnePage = false;
         }
         ~CExecuteParams()
         {
@@ -146,6 +150,8 @@ namespace NSDoctRenderer
 
             if (nParams & 0x02)
                 m_nSaveToPDFParams = 1;
+
+            m_bIsOnlyOnePage = (oNode.ReadValueInt("OnlyOnePage", 0) == 1) ? true : false;
 
             return true;
         }
@@ -523,7 +529,10 @@ namespace NSDoctRenderer
                     if (js_func_get_file_s->IsFunction())
                     {
                         v8::Handle<v8::Function> func_get_file_s = v8::Handle<v8::Function>::Cast(js_func_get_file_s);
-                        args[0] = v8::Int32::New(isolate, pParams->m_nSaveToPDFParams);
+                        if (pParams->m_bIsOnlyOnePage)
+                            args[0] = v8::Int32::New(isolate, pParams->m_nSaveToPDFParams);
+                        else
+                            args[0] = v8::Int32::New(isolate, 0x0100);
                         v8::Local<v8::Value> js_result2 = func_get_file_s->Call(global_js, 1, args);
 
                         if (try_catch.HasCaught())

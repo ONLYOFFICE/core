@@ -37,6 +37,7 @@
 #include "./IRenderer.h"
 #include "../common/String.h"
 #include <math.h>
+#include "../common/Array.h"
 
 #ifndef INT32
 typedef int INT32;
@@ -202,6 +203,12 @@ namespace NSOnlineOfficeBinToPdf
 		return ret;
 	#endif
 	}
+	static inline void SkipInt(BYTE*& pData, int& nOffset, int nCount = 1)
+	{
+		pData   += (nCount << 2);
+		nOffset += (nCount << 2);
+	}
+
 	static inline USHORT ReadUSHORT(BYTE*& pData, int& nOffset)
 	{
 	#ifdef _ARM_ALIGN_
@@ -216,6 +223,11 @@ namespace NSOnlineOfficeBinToPdf
 		nOffset += 2;
 		return ret;
 	#endif
+	}
+	static inline void SkipUSHORT(BYTE*& pData, int& nOffset)
+	{
+		pData   += 2;
+		nOffset += 2;
 	}
 
 	static inline std::wstring ReadString16(BYTE*& pData, int& nOffset, int nLen)
@@ -259,6 +271,11 @@ namespace NSOnlineOfficeBinToPdf
 		pData += nLen;
 		nOffset += nLen;
 		return wsTempString;
+	}
+	static inline void SkipString16(BYTE*& pData, int& nOffset, int nLen)
+	{
+		pData += nLen;
+		nOffset += nLen;
 	}
 
 	static bool ConvertBufferToRenderer(BYTE* pBuffer, LONG lBufferLen, IMetafileToRenderter* pCorrector)
@@ -311,6 +328,9 @@ namespace NSOnlineOfficeBinToPdf
 				bIsPathOpened = false;
 
 				pRenderer->EndCommand(c_nPageType);
+
+				if (lRendererType == c_nGrRenderer)
+					return true;
 
 				break;
 			}
@@ -477,7 +497,7 @@ namespace NSOnlineOfficeBinToPdf
                     case 2:
                     {
                         LONG lColorsCount = (LONG)ReadInt(current, curindex);
-                        if (0 <= lColorsCount)
+                        if (0 >= lColorsCount)
                         {
                             pRenderer->put_BrushGradientColors(NULL, NULL, 0);
                         }
@@ -806,6 +826,322 @@ namespace NSOnlineOfficeBinToPdf
 
 		return true;
 	}
+
+	class CMetafilePageInfo
+	{
+	public:
+		double width;
+		double height;
+
+		BYTE* data;
+
+	public:
+		CMetafilePageInfo()
+		{
+			width = 0;
+			height = 0;
+
+			data = NULL;
+		}
+	};
+
+	class CMetafilePagesInfo
+	{
+	public:
+		int PagesCount;
+
+		CArray<CMetafilePageInfo> arSizes;
+
+	public:
+		CMetafilePagesInfo()
+		{
+			PagesCount = 0;
+		}
+
+	public:
+		inline void AddPage()
+		{
+			++PagesCount;
+			arSizes.Add();
+		}
+
+		void CheckBuffer(BYTE* pBuffer, LONG lBufferLen)
+		{
+			CommandType eCommand = ctError;
+
+			bool bIsPathOpened = false;
+			int curindex = 0;
+
+			BYTE* current = pBuffer;
+			while (curindex < lBufferLen)
+			{
+				eCommand = (CommandType)(*current);
+				current++;
+				curindex++;
+				switch (eCommand)
+				{
+				case ctPageWidth:
+				{
+					arSizes[PagesCount].width = (ReadInt(current, curindex) / 100000.0);
+					break;
+				}
+				case ctPageHeight:
+				{
+					arSizes[PagesCount].height = (ReadInt(current, curindex) / 100000.0);
+					break;
+				}
+				case ctPageStart:
+				{
+					AddPage();
+					arSizes[PagesCount].data = current;
+					break;
+				}
+				case ctPageEnd:
+				{
+					break;
+				}
+				case ctPenColor:
+				{
+					SkipInt(current, curindex);
+					break;
+				}
+				case ctPenAlpha:
+				{
+					current++;
+					curindex++;
+					break;
+				}
+				case ctPenSize:
+				{
+					SkipInt(current, curindex);
+					break;
+				}
+				case ctPenDashStyle:
+				{
+					BYTE nDashType = *current++;
+					curindex++;
+					switch (nDashType)
+					{
+					case Aggplus::DashStyleCustom:
+					{
+						int nCountDash = ReadInt(current, curindex);
+						if (0 < nCountDash)
+						{
+							SkipInt(current, curindex, nCountDash);
+						}
+					}
+					defaut:
+						break;
+					}
+
+					break;
+				}
+				case ctPenLineJoin:
+				{
+					current++;
+					curindex++;
+					break;
+				}
+				case ctBrushType:
+				{
+					SkipInt(current, curindex);
+					break;
+				}
+				case ctBrushColor1:
+				{
+					SkipInt(current, curindex);
+					break;
+				}
+				case ctBrushAlpha1:
+				{
+					current++;
+					curindex++;
+					break;
+				}
+				case ctBrushColor2:
+				{
+					SkipInt(current, curindex);
+					break;
+				}
+				case ctBrushAlpha2:
+				{
+					current++;
+					curindex++;
+					break;
+				}
+				case ctBrushRectable:
+				{
+					SkipInt(current, curindex, 4);
+					break;
+				}
+				case ctBrushRectableEnabled:
+				{
+					current += 1;
+					curindex += 1;
+					break;
+				}
+				case ctBrushTexturePath:
+				{
+					int nLen = 2 * ReadUSHORT(current, curindex);
+					SkipString16(current, curindex, nLen);
+					break;
+				}
+				case ctBrushGradient:
+				{
+					current++;
+					curindex++;
+
+					while (true)
+					{
+						BYTE _command = *current;
+						current++;
+						curindex++;
+
+						if (251 == _command)
+							break;
+
+						switch (_command)
+						{
+						case 0:
+						{
+							current += 5;
+							curindex += 5;
+							SkipInt(current, curindex, 4);
+							break;
+						}
+						case 1:
+						{
+							current++;
+							curindex++;
+							SkipInt(current, curindex, 6);
+							break;
+						}
+						case 2:
+						{
+							LONG lColorsCount = (LONG)ReadInt(current, curindex);
+							if (0 <= lColorsCount)
+							{
+								SkipInt(current, curindex, 8 * lColorsCount);
+							}
+
+							break;
+						}
+						default:
+						{
+							break;
+						}
+						};
+					}
+
+					break;
+				}
+				case ctBrushTextureMode:
+				{
+					current += 1;
+					curindex += 1;
+					break;
+				}
+				case ctBrushTextureAlpha:
+				{
+					current += 1;
+					curindex += 1;
+					break;
+				}
+				case ctSetTransform:
+				{
+					SkipInt(current, curindex, 6);
+					break;
+				}
+				case ctPathCommandStart:
+				{
+					break;
+				}
+				case ctPathCommandMoveTo:
+				{
+					SkipInt(current, curindex, 2);
+					break;
+				}
+				case ctPathCommandLineTo:
+				{
+					SkipInt(current, curindex, 2);
+					break;
+				}
+				case ctPathCommandCurveTo:
+				{
+					SkipInt(current, curindex, 6);
+					break;
+				}
+				case ctPathCommandClose:
+				{
+					break;
+				}
+				case ctPathCommandEnd:
+				{
+					break;
+				}
+				case ctDrawPath:
+				{
+					SkipInt(current, curindex);
+					break;
+				}
+				case ctDrawImageFromFile:
+				{
+					int nLen = ReadInt(current, curindex);
+					SkipString16(current, curindex, nLen);
+
+					SkipInt(current, curindex, 4);
+					break;
+				}
+				case ctFontName:
+				{
+					int nLen = 2 * (int)ReadUSHORT(current, curindex);
+					SkipString16(current, curindex, nLen);
+					break;
+				}
+				case ctFontSize:
+				{
+					SkipInt(current, curindex);
+					break;
+				}
+				case ctFontStyle:
+				{
+					SkipInt(current, curindex);
+					break;
+				}
+				case ctDrawText:
+				{
+					int nLen = 2 * (int)ReadUSHORT(current, curindex);
+					SkipString16(current, curindex, nLen);
+
+					SkipInt(current, curindex, 2);
+					break;
+				}
+				case ctBeginCommand:
+				{
+					SkipInt(current, curindex);
+					break;
+				}
+				case ctEndCommand:
+				{
+					SkipInt(current, curindex);
+					break;
+				}
+				case ctGradientFill:
+				case ctGradientFillXML:
+				case ctGradientStroke:
+				case ctGradientStrokeXML:
+				{
+					// TODO: Эта команда не должна приходить
+					return;
+				}
+				default:
+				{
+					break;
+				}
+				}; // switch (eCommand)
+			} // while (curindex < len)
+		}
+	};
 }
 
 #endif // _BUILD_METAFILE_TO_IRENDERER_H_

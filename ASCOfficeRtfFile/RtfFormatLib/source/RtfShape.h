@@ -179,6 +179,12 @@ public:
 	CString m_sGtextFont;
 	int		m_nGtextSize;
 	int		m_bGtext;
+	int		m_bGtextFVertical;
+	int		m_bGtextFKern;
+	int		m_bGtextFStretch;
+	int		m_bGtextFShrinkFit;
+	int		m_bGtextFBestFit;
+
 
 //pWrapPolygonVertices	Points of the text wrap polygon.
 	std::vector< std::pair<int, int> >	m_aWrapPoints;
@@ -212,24 +218,26 @@ public:
 	
 	void ToRtfRotation( int nAngel , int &nLeft, int &nTop, int& nRight, int& nBottom )
 	{
+		nAngel = nAngel/ 65536;
 		//поворачиваем на 45 градусов
 		nAngel -= 45;
 		//делаем угол от 0 до 360
 		nAngel = nAngel % 360;
-		if( nAngel < 0 )
-			nAngel += 360;
+		
+		if( nAngel < 0 )	nAngel += 360;
+
 		int nQuater = nAngel / 90; // определяем четверть
 		if( 0 == nQuater || 2 == nQuater )
 		{
 			//поворачиваем относительно центра на 90 градусов обратно
-			int nCenterX = ( nLeft + nRight ) / 2;
-			int nCenterY = ( nTop + nBottom ) / 2;
-			int nWidth = nRight - nLeft;
-			int nHeight = nBottom - nTop;
+			int nCenterX	= ( nLeft + nRight ) / 2;
+			int nCenterY	= ( nTop + nBottom ) / 2;
+			int nWidth		= nRight - nLeft;
+			int nHeight		= nBottom - nTop;
 
-			nLeft = nCenterX - nHeight / 2;
-			nRight = nCenterX + nHeight / 2;
-			nTop = nCenterY - nWidth / 2;
+			nLeft	= nCenterX - nHeight / 2;
+			nRight	= nCenterX + nHeight / 2;
+			nTop	= nCenterY - nWidth / 2;
 			nBottom = nCenterY + nWidth / 2;
 		}
 	}

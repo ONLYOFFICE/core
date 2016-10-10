@@ -915,26 +915,26 @@ public:
 	void SetDefault( )
 	{
 		DEFAULT_PROPERTY_DEF( m_eType, bt_none )
-		DEFAULT_PROPERTY( m_nWidth )
-		DEFAULT_PROPERTY( m_nSpace )
-		DEFAULT_PROPERTY( m_nColor )
+		DEFAULT_PROPERTY	( m_nWidth )
+		DEFAULT_PROPERTY	( m_nSpace )
+		DEFAULT_PROPERTY	( m_nColor )
 	}
 	void SetEmpty( )
 	{
-		m_eType = bt_brdrnone;
-		m_nWidth = 0;
-		m_nSpace = 0;
-		m_nColor = PROP_DEF;
+		m_eType		= bt_brdrnone;
+		m_nWidth	= 0;
+		m_nSpace	= 0;
+		m_nColor	= PROP_DEF;
 	}
 	void Merge( RtfBorder& oBorPr )
 	{
 		//свойство должно быть как единое целое, поэтому если oBorPr задано, то переписыватся целиком
 		if( bt_none != oBorPr.m_eType || PROP_DEF != oBorPr.m_nWidth || PROP_DEF != oBorPr.m_nSpace || PROP_DEF != oBorPr.m_nColor )
 		{
-			m_eType = oBorPr.m_eType;
-			m_nWidth = oBorPr.m_nWidth;
-			m_nSpace = oBorPr.m_nSpace;
-			m_nColor = oBorPr.m_nColor;
+			m_eType		= oBorPr.m_eType;
+			m_nWidth	= oBorPr.m_nWidth;
+			m_nSpace	= oBorPr.m_nSpace;
+			m_nColor	= oBorPr.m_nColor;
 		}
 	}
 	CString RenderToRtf(RenderParameter oRenderParameter);
@@ -2016,56 +2016,56 @@ public:
 	}
 	void Merge( RtfTableProperty& oTablePr )
 	{
-		MERGE_PROPERTY( m_bBidi, oTablePr )
-		MERGE_PROPERTY( m_nAutoFit, oTablePr )
-		MERGE_PROPERTY( m_nGraph, oTablePr )
-		MERGE_PROPERTY( nTableIndent, oTablePr )
-		MERGE_PROPERTY( nTableIndentUnits, oTablePr )
+		MERGE_PROPERTY( m_bBidi,			oTablePr )
+		MERGE_PROPERTY( m_nAutoFit,			oTablePr )
+		MERGE_PROPERTY( m_nGraph,			oTablePr )
+		MERGE_PROPERTY( nTableIndent,		oTablePr )
+		MERGE_PROPERTY( nTableIndentUnits,	oTablePr )
 
-		MERGE_PROPERTY_DEF( m_eJust, oTablePr, rj_none )
+		MERGE_PROPERTY_DEF( m_eJust,	oTablePr, rj_none )
 
-		MERGE_PROPERTY( m_nWrapLeft, oTablePr )
-		MERGE_PROPERTY( m_nWrapRight, oTablePr )
-		MERGE_PROPERTY( m_nWrapTop, oTablePr )
-		MERGE_PROPERTY( m_nWrapBottom, oTablePr )
-		MERGE_PROPERTY( m_bOverlap, oTablePr )
+		MERGE_PROPERTY( m_nWrapLeft,	oTablePr )
+		MERGE_PROPERTY( m_nWrapRight,	oTablePr )
+		MERGE_PROPERTY( m_nWrapTop,		oTablePr )
+		MERGE_PROPERTY( m_nWrapBottom,	oTablePr )
+		MERGE_PROPERTY( m_bOverlap,		oTablePr )
 
-		MERGE_PROPERTY_DEF( m_eHRef, oTablePr, hr_none )
-		MERGE_PROPERTY_DEF( m_eVRef, oTablePr, vr_none )
-		MERGE_PROPERTY_DEF( m_eHPos, oTablePr, hp_none )
-		MERGE_PROPERTY_DEF( m_eVPos, oTablePr, vp_none )
-		MERGE_PROPERTY( m_nHPos, oTablePr )
-		MERGE_PROPERTY( m_nVPos, oTablePr )
+		MERGE_PROPERTY_DEF( m_eHRef,	oTablePr, hr_none )
+		MERGE_PROPERTY_DEF( m_eVRef,	oTablePr, vr_none )
+		MERGE_PROPERTY_DEF( m_eHPos,	oTablePr, hp_none )
+		MERGE_PROPERTY_DEF( m_eVPos,	oTablePr, vp_none )
+		MERGE_PROPERTY( m_nHPos,		oTablePr )
+		MERGE_PROPERTY( m_nVPos,		oTablePr )
 
-		MERGE_PROPERTY( m_nLeft, oTablePr )
-		MERGE_PROPERTY( m_nWidth, oTablePr )
-		MERGE_PROPERTY_DEF( m_eMUWidth, oTablePr, mu_none )
+		MERGE_PROPERTY( m_nLeft,					oTablePr )
+		MERGE_PROPERTY( m_nWidth,					oTablePr )
+		MERGE_PROPERTY_DEF( m_eMUWidth,				oTablePr, mu_none )
 
-		MERGE_PROPERTY( m_nDefCellMarBottom, oTablePr )
-		MERGE_PROPERTY( m_nDefCellMarRight, oTablePr )
-		MERGE_PROPERTY( m_nDefCellMarLeft, oTablePr )
-		MERGE_PROPERTY( m_nDefCellMarTop, oTablePr )
-		MERGE_PROPERTY( m_nDefCellMarBottomUnits, oTablePr )
-		MERGE_PROPERTY( m_nDefCellMarRightUnits, oTablePr )
-		MERGE_PROPERTY( m_nDefCellMarLeftUnits, oTablePr )
-		MERGE_PROPERTY( m_nDefCellMarTopUnits, oTablePr )
+		MERGE_PROPERTY( m_nDefCellMarBottom,		oTablePr )
+		MERGE_PROPERTY( m_nDefCellMarRight,			oTablePr )
+		MERGE_PROPERTY( m_nDefCellMarLeft,			oTablePr )
+		MERGE_PROPERTY( m_nDefCellMarTop,			oTablePr )
+		MERGE_PROPERTY( m_nDefCellMarBottomUnits,	oTablePr )
+		MERGE_PROPERTY( m_nDefCellMarRightUnits,	oTablePr )
+		MERGE_PROPERTY( m_nDefCellMarLeftUnits,		oTablePr )
+		MERGE_PROPERTY( m_nDefCellMarTopUnits,		oTablePr )
 
-		MERGE_PROPERTY( m_nDefCellSpBottom, oTablePr )
-		MERGE_PROPERTY( m_nDefCellSpLeft, oTablePr )
-		MERGE_PROPERTY( m_nDefCellSpRight, oTablePr )
-		MERGE_PROPERTY( m_nDefCellSpTop, oTablePr )
-		MERGE_PROPERTY( m_nDefCellSpBottomUnits, oTablePr )
-		MERGE_PROPERTY( m_nDefCellSpLeftUnits, oTablePr )
-		MERGE_PROPERTY( m_nDefCellSpRightUnits, oTablePr )
-		MERGE_PROPERTY( m_nDefCellSpTopUnits, oTablePr )
+		MERGE_PROPERTY( m_nDefCellSpBottom,			oTablePr )
+		MERGE_PROPERTY( m_nDefCellSpLeft,			oTablePr )
+		MERGE_PROPERTY( m_nDefCellSpRight,			oTablePr )
+		MERGE_PROPERTY( m_nDefCellSpTop,			oTablePr )
+		MERGE_PROPERTY( m_nDefCellSpBottomUnits,	oTablePr )
+		MERGE_PROPERTY( m_nDefCellSpLeftUnits,		oTablePr )
+		MERGE_PROPERTY( m_nDefCellSpRightUnits,		oTablePr )
+		MERGE_PROPERTY( m_nDefCellSpTopUnits,		oTablePr )
 
-		m_oBorderLeft.Merge( oTablePr.m_oBorderLeft );
+		m_oBorderLeft.Merge	( oTablePr.m_oBorderLeft );
 		m_oBorderRight.Merge( oTablePr.m_oBorderRight );
-		m_oBorderTop.Merge( oTablePr.m_oBorderTop );
+		m_oBorderTop.Merge	( oTablePr.m_oBorderTop );
 		m_oBorderBottom.Merge( oTablePr.m_oBorderBottom );
-		m_oBorderVert.Merge( oTablePr.m_oBorderVert );
-		m_oBorderHor.Merge( oTablePr.m_oBorderHor );
-		m_oShading.Merge( oTablePr.m_oShading );
+		m_oBorderVert.Merge	( oTablePr.m_oBorderVert );
+		m_oBorderHor.Merge	( oTablePr.m_oBorderHor );
+		m_oShading.Merge	( oTablePr.m_oShading );
 
 		MERGE_PROPERTY( m_nStyle, oTablePr )
 
@@ -2507,6 +2507,13 @@ public:
 	void SetDefault()
 	{
 		RtfTableProperty::SetDefault();
+//не SetEmpty() !!!		
+		m_oBorderLeft.SetDefault();
+		m_oBorderRight.SetDefault();
+		m_oBorderTop.SetDefault();
+		m_oBorderBottom.SetDefault();
+		m_oBorderVert.SetDefault();
+		m_oBorderHor.SetDefault();
 
 		DEFAULT_PROPERTY( m_nIndex )
 		DEFAULT_PROPERTY( m_nBandIndex )

@@ -2635,19 +2635,19 @@ namespace OOX
 				ComplexTypes_WriteAttribute2( _T("id=\""),    m_oId );
 				ComplexTypes_WriteAttribute ( _T("style=\""), m_oStyle );
 
-				if ( SimpleTypes::booleanFalse != m_oOn.GetValue() )
+				if ( (m_oOn.IsInit()) && (SimpleTypes::booleanFalse != m_oOn->GetValue()) )
 					sResult += _T("on=\"true\" ");
 
-				if ( SimpleTypes::booleanFalse != m_oFitShape.GetValue() )
+				if ( (m_oFitShape.IsInit()) && ( SimpleTypes::booleanFalse != m_oFitShape->GetValue()) )
 					sResult += _T("fitshape=\"true\" ");
 
-				if ( SimpleTypes::booleanFalse != m_oFitPath.GetValue() )
+				if ( (m_oFitPath.IsInit()) && ( SimpleTypes::booleanFalse != m_oFitPath->GetValue()) )
 					sResult += _T("fitpath=\"true\" ");
 
-				if ( SimpleTypes::booleanFalse != m_oTrim.GetValue() )
+				if ( (m_oTrim.IsInit()) && ( SimpleTypes::booleanFalse != m_oTrim->GetValue()) )
 					sResult += _T("trim=\"true\" ");
 
-				if ( SimpleTypes::booleanFalse != m_oXScale.GetValue() )
+				if ( (m_oXScale.IsInit()) && ( SimpleTypes::booleanFalse != m_oXScale->GetValue()) )
 					sResult += _T("xscale=\"true\" ");
 
 				ComplexTypes_WriteAttribute2( _T("string=\""), m_sString );
@@ -2710,14 +2710,14 @@ namespace OOX
 		public:
 
 			// Attributes
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>    m_oFitPath;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>    m_oFitShape;
-			nullable<CString>                                     m_oId;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>    m_oOn;
-			nullable<CString>                                     m_sString;
-			nullable<SimpleTypes::Vml::CCssStyle>                 m_oStyle;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>    m_oTrim;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>    m_oXScale;
+			nullable<SimpleTypes::CTrueFalse<>>						m_oFitPath;
+			nullable<SimpleTypes::CTrueFalse<>>						m_oFitShape;
+			nullable<CString>										m_oId;
+			nullable<SimpleTypes::CTrueFalse<>>						m_oOn;
+			nullable<CString>										m_sString;
+			nullable<SimpleTypes::Vml::CCssStyle>					m_oStyle;
+			nullable<SimpleTypes::CTrueFalse<>>						m_oTrim;
+			nullable<SimpleTypes::CTrueFalse<>>						m_oXScale;
 			
 			nullable<CString>                                     m_sStringOriginal;
 		};

@@ -63,29 +63,29 @@ namespace SimpleTypes
             this->m_eValue = eDefValue;
 
 			if ( sValue.GetLength() <= 0 )
-                return this->m_eValue;
+					return this->m_eValue;
 
 			wchar_t wChar = sValue.GetAt(0);
 			switch ( wChar )
 			{
 			case 'b':
-                if      ( _T("bullseye") == sValue ) this->m_eValue = editasBullseye;
+					if      ( _T("bullseye") == sValue ) this->m_eValue = editasBullseye;
 				break;
 			case 'c':
-                if      ( _T("canvas")   == sValue ) this->m_eValue = editasCanvas;
-                else if ( _T("cycle")    == sValue ) this->m_eValue = editasCycle;
+					if      ( _T("canvas")   == sValue ) this->m_eValue = editasCanvas;
+					else if ( _T("cycle")    == sValue ) this->m_eValue = editasCycle;
 				break;
 			case 'o':
-                if      ( _T("orgchart") == sValue ) this->m_eValue = editasOrgchart;
+					if      ( _T("orgchart") == sValue ) this->m_eValue = editasOrgchart;
 				break;
 			case 'r':
-                if      ( _T("radial")   == sValue ) this->m_eValue = editasRadial;
+					if      ( _T("radial")   == sValue ) this->m_eValue = editasRadial;
 				break;
 			case 's':
-                if      ( _T("stacked")  == sValue ) this->m_eValue = editasStacked;
+					if      ( _T("stacked")  == sValue ) this->m_eValue = editasStacked;
 				break;
 			case 'v':
-                if      ( _T("venn")     == sValue ) this->m_eValue = editasVenn;
+					if      ( _T("venn")     == sValue ) this->m_eValue = editasVenn;
 				break;
 			}
 
@@ -119,8 +119,8 @@ namespace SimpleTypes
 	enum EExt
 	{
 		extBackwardCompatible = 0,
-		extEdit               = 1,
-		extView               = 2,
+		extEdit					= 1,
+		extView					= 2,
 	};
 
 	template<EExt eDefValue = extView>
@@ -133,19 +133,19 @@ namespace SimpleTypes
             this->m_eValue = eDefValue;
 
 			if ( sValue.GetLength() <= 0 )
-                return this->m_eValue;
+					return this->m_eValue;
 
 			wchar_t wChar = sValue.GetAt(0);
 			switch ( wChar )
 			{
 			case 'b':
-                if      ( _T("backwardCompatible") == sValue ) this->m_eValue = extBackwardCompatible;
+					if      ( _T("backwardCompatible") == sValue ) this->m_eValue = extBackwardCompatible;
 				break;
 			case 'e':
-                if      ( _T("edit")               == sValue ) this->m_eValue = extEdit;
+					if      ( _T("edit")					== sValue ) this->m_eValue = extEdit;
 				break;
 			case 'v':
-                if      ( _T("view")               == sValue ) this->m_eValue = extView;
+					if      ( _T("view")					== sValue ) this->m_eValue = extView;
 				break;
 			}
 
@@ -157,9 +157,9 @@ namespace SimpleTypes
             switch(this->m_eValue)
 			{
 			case extBackwardCompatible : return _T("backwardCompatible");
-			case extEdit               : return _T("edit");
-			case extView               : return _T("view");
-			default                    : return _T("view");
+			case extEdit					: return _T("edit");
+			case extView					: return _T("view");
+			default					   : return _T("view");
 			}
 		}
 
@@ -241,38 +241,38 @@ namespace SimpleTypes
 			if ( 0 == nType )
 			{
 				if ( filltypeFrame == eValue || filltypeGradient == eValue || eValue == filltypeGradientRadial ||
-					 filltypePattern == eValue || filltypeSolid == eValue || filltypeTile == eValue )
-                     this->m_eValue = eValue;
+					filltypePattern == eValue || filltypeSolid == eValue || filltypeTile == eValue )
+					this->m_eValue = eValue;
 				else
-                    this->m_eValue = eDefValue;
+					   this->m_eValue = eDefValue;
 			}
 			else
-                this->m_eValue = eValue;
+					this->m_eValue = eValue;
 		}
 		virtual EFillType FromString(CString &sValue)
 		{
 			if ( 0 == nType )
 			{
-                if      (_T("frame")			== sValue)	this->m_eValue = filltypeFrame;
-                else if (_T("gradient")			== sValue)	this->m_eValue = filltypeGradient;
-                else if (_T("gradientRadial")	== sValue)	this->m_eValue = filltypeGradientRadial;
-                else if (_T("pattern")			== sValue)	this->m_eValue = filltypePattern;
-                else if (_T("solid")			== sValue)	this->m_eValue = filltypeSolid;
-                else if (_T("tile")				== sValue)	this->m_eValue = filltypeTile;
-                else										this->m_eValue = eDefValue;
+					if      (_T("frame")			== sValue)	this->m_eValue = filltypeFrame;
+					else if (_T("gradient")			== sValue)	this->m_eValue = filltypeGradient;
+					else if (_T("gradientRadial")	== sValue)	this->m_eValue = filltypeGradientRadial;
+					else if (_T("pattern")			== sValue)	this->m_eValue = filltypePattern;
+					else if (_T("solid")			== sValue)	this->m_eValue = filltypeSolid;
+					else if (_T("tile")				== sValue)	this->m_eValue = filltypeTile;
+					else										this->m_eValue = eDefValue;
 			}
 			else
 			{
-                if      (_T("background")		== sValue)	this->m_eValue = filltypeBackground;
-                else if (_T("frame")			== sValue)	this->m_eValue = filltypeFrame;
-                else if (_T("gradient")			== sValue)	this->m_eValue = filltypeGradient;
-                else if (_T("gradientCenter")   == sValue)	this->m_eValue = filltypeGradientCenter;
-                else if (_T("gradientRadial")	== sValue)	this->m_eValue = filltypeGradientRadial;
-                else if (_T("gradientUnscaled") == sValue)	this->m_eValue = filltypeGradientUnscaled;
-                else if (_T("pattern")			== sValue)	this->m_eValue = filltypePattern;
-                else if (_T("solid")			== sValue)	this->m_eValue = filltypeSolid;
-                else if (_T("tile")				== sValue)	this->m_eValue = filltypeTile;
-                else										this->m_eValue = eDefValue;
+					if      (_T("background")		== sValue)	this->m_eValue = filltypeBackground;
+					else if (_T("frame")			== sValue)	this->m_eValue = filltypeFrame;
+					else if (_T("gradient")			== sValue)	this->m_eValue = filltypeGradient;
+					else if (_T("gradientCenter")   == sValue)	this->m_eValue = filltypeGradientCenter;
+					else if (_T("gradientRadial")	== sValue)	this->m_eValue = filltypeGradientRadial;
+					else if (_T("gradientUnscaled") == sValue)	this->m_eValue = filltypeGradientUnscaled;
+					else if (_T("pattern")			== sValue)	this->m_eValue = filltypePattern;
+					else if (_T("solid")			== sValue)	this->m_eValue = filltypeSolid;
+					else if (_T("tile")				== sValue)	this->m_eValue = filltypeTile;
+					else										this->m_eValue = eDefValue;
 			}
 
             return this->m_eValue;
@@ -282,7 +282,7 @@ namespace SimpleTypes
 		{
 			if ( 0 == nType )
 			{
-                switch (this->m_eValue)
+					switch (this->m_eValue)
 				{
 				case filltypeFrame			: return _T("frame");
 				case filltypeGradient		: return _T("gradient");
@@ -295,7 +295,7 @@ namespace SimpleTypes
 			}
 			else
 			{
-                switch (this->m_eValue)
+					switch (this->m_eValue)
 				{
 				case filltypeBackground		  : return _T("background");
 				case filltypeFrame			  : return _T("frame");
@@ -306,7 +306,7 @@ namespace SimpleTypes
 				case filltypePattern		  : return _T("pattern");
 				case filltypeSolid			  : return _T("solid");
 				case filltypeTile			  : return _T("tile");
-				default						  : return _T("solid");
+				default						 : return _T("solid");
 				}
 			}
 		}
@@ -335,17 +335,17 @@ namespace SimpleTypes
             this->m_eValue = eDefValue;
 
 			if ( sValue.GetLength() <= 0 )
-                return this->m_eValue;
+					return this->m_eValue;
 
 			wchar_t wChar = sValue.GetAt(0);
 			switch ( wChar )
 			{
 			case 'a':
-                if      ( _T("atLeast") == sValue ) this->m_eValue = imageaspectAtLeast;
-                else if ( _T("atMost")  == sValue ) this->m_eValue = imageaspectAtMost;
+					if      ( _T("atLeast") == sValue ) this->m_eValue = imageaspectAtLeast;
+					else if ( _T("atMost")  == sValue ) this->m_eValue = imageaspectAtMost;
 				break;
 			case 'i':
-                if      ( _T("ignore")  == sValue ) this->m_eValue = imageaspectIgnore;
+					if      ( _T("ignore")  == sValue ) this->m_eValue = imageaspectIgnore;
 				break;
 			}
 
@@ -359,7 +359,7 @@ namespace SimpleTypes
 			case imageaspectAtLeast : return _T("atLeast");
 			case imageaspectAtMost  : return _T("atMost");
 			case imageaspectIgnore  : return _T("ignore");
-			default                 : return _T("ignore");
+			default					: return _T("ignore");
 			}
 		}
 
@@ -431,19 +431,19 @@ namespace SimpleTypes
             this->m_eValue = eDefValue;
 
 			if ( sValue.GetLength() <= 0 )
-                return this->m_eValue;
+					return this->m_eValue;
 
 			wchar_t wChar = sValue.GetAt(0);
 			switch ( wChar )
 			{
 			case 'l':
-                if      ( _T("long")   == sValue ) this->m_eValue = strokearrowlengthLong;
+					if      ( _T("long")   == sValue ) this->m_eValue = strokearrowlengthLong;
 				break;
 			case 'm':
-                if      ( _T("medium") == sValue ) this->m_eValue = strokearrowlengthMedium;
+					if      ( _T("medium") == sValue ) this->m_eValue = strokearrowlengthMedium;
 				break;
 			case 's':
-                if      ( _T("short")  == sValue ) this->m_eValue = strokearrowlengthShort;
+					if      ( _T("short")  == sValue ) this->m_eValue = strokearrowlengthShort;
 				break;
 			}
 
@@ -457,7 +457,7 @@ namespace SimpleTypes
 			case strokearrowlengthLong   : return _T("long");
 			case strokearrowlengthMedium : return _T("medium");
 			case strokearrowlengthShort  : return _T("short");
-			default                      : return _T("medium");
+			default					: return _T("medium");
 			}
 		}
 
@@ -490,26 +490,26 @@ namespace SimpleTypes
             this->m_eValue = eDefValue;
 
 			if ( sValue.GetLength() <= 0 )
-                return this->m_eValue;
+					return this->m_eValue;
 
 			wchar_t wChar = sValue.GetAt(0);
 			switch ( wChar )
 			{
 			case 'b':
-                if      ( _T("block")   == sValue ) this->m_eValue = strokearrowtypeBlock;
+					if      ( _T("block")   == sValue ) this->m_eValue = strokearrowtypeBlock;
 				break;
 			case 'c':
-                if      ( _T("classic") == sValue ) this->m_eValue = strokearrowtypeClassic;
+					if      ( _T("classic") == sValue ) this->m_eValue = strokearrowtypeClassic;
 				break;
 			case 'd':
-                if      ( _T("diamond") == sValue ) this->m_eValue = strokearrowtypeDiamond;
+					if      ( _T("diamond") == sValue ) this->m_eValue = strokearrowtypeDiamond;
 				break;
 			case 'n':
-                if      ( _T("none")    == sValue ) this->m_eValue = strokearrowtypeNone;
+					if      ( _T("none")    == sValue ) this->m_eValue = strokearrowtypeNone;
 				break;
 			case 'o':
-                if      ( _T("open")    == sValue ) this->m_eValue = strokearrowtypeOpen;
-                else if ( _T("oval")    == sValue ) this->m_eValue = strokearrowtypeOval;
+					if      ( _T("open")    == sValue ) this->m_eValue = strokearrowtypeOpen;
+					else if ( _T("oval")    == sValue ) this->m_eValue = strokearrowtypeOval;
 				break;
 			}
 
@@ -526,7 +526,7 @@ namespace SimpleTypes
 			case strokearrowtypeNone    : return _T("none");
 			case strokearrowtypeOpen    : return _T("open");
 			case strokearrowtypeOval    : return _T("oval");
-			default                     : return _T("none");
+			default					: return _T("none");
 			}
 		}
 
@@ -556,19 +556,19 @@ namespace SimpleTypes
             this->m_eValue = eDefValue;
 
 			if ( sValue.GetLength() <= 0 )
-                return this->m_eValue;
+					return this->m_eValue;
 
 			wchar_t wChar = sValue.GetAt(0);
 			switch ( wChar )
 			{
 			case 'm':
-                if      ( _T("medium") == sValue ) this->m_eValue = strokearrowwidthMedium;
+					if      ( _T("medium") == sValue ) this->m_eValue = strokearrowwidthMedium;
 				break;
 			case 'n':
-                if      ( _T("narrow") == sValue ) this->m_eValue = strokearrowwidthNarrow;
+					if      ( _T("narrow") == sValue ) this->m_eValue = strokearrowwidthNarrow;
 				break;
 			case 'w':
-                if      ( _T("wide")   == sValue ) this->m_eValue = strokearrowwidthWide;
+					if      ( _T("wide")   == sValue ) this->m_eValue = strokearrowwidthWide;
 				break;
 			}
 
@@ -582,7 +582,7 @@ namespace SimpleTypes
 			case strokearrowwidthMedium : return _T("medium");
 			case strokearrowwidthNarrow : return _T("narrow");
 			case strokearrowwidthWide   : return _T("wide");
-			default                     : return _T("medium");
+			default					: return _T("medium");
 			}
 		}
 
@@ -612,19 +612,19 @@ namespace SimpleTypes
             this->m_eValue = eDefValue;
 
 			if ( sValue.GetLength() <= 0 )
-                return this->m_eValue;
+					return this->m_eValue;
 
 			wchar_t wChar = sValue.GetAt(0);
 			switch ( wChar )
 			{
 			case 'f':
-                if      ( _T("flat")   == sValue ) this->m_eValue = strokeendcapFlat;
+					if      ( _T("flat")   == sValue ) this->m_eValue = strokeendcapFlat;
 				break;
 			case 'r':
-                if      ( _T("round")  == sValue ) this->m_eValue = strokeendcapRound;
+					if      ( _T("round")  == sValue ) this->m_eValue = strokeendcapRound;
 				break;
 			case 's':
-                if      ( _T("square") == sValue ) this->m_eValue = strokeendcapSqaure;
+					if      ( _T("square") == sValue ) this->m_eValue = strokeendcapSqaure;
 				break;
 			}
 
@@ -638,7 +638,7 @@ namespace SimpleTypes
 			case strokeendcapFlat   : return _T("flat");
 			case strokeendcapRound  : return _T("round");
 			case strokeendcapSqaure : return _T("square");
-			default                 : return _T("round");
+			default					: return _T("round");
 			}
 		}
 
@@ -709,19 +709,19 @@ namespace SimpleTypes
             this->m_eValue = eDefValue;
 
 			if ( sValue.GetLength() <= 0 )
-                return this->m_eValue;
+					return this->m_eValue;
 
 			wchar_t wChar = sValue.GetAt(0);
 			switch ( wChar )
 			{
 			case 's':
-                if      ( _T("single")           == sValue ) this->m_eValue = strokelinestyleSingle;
+					if      ( _T("single")           == sValue ) this->m_eValue = strokelinestyleSingle;
 				break;
 			case 't':
-                if      ( _T("thickBetweenThin") == sValue ) this->m_eValue = strokelinestyleThickBetweenThin;
-                else if ( _T("thickThin")        == sValue ) this->m_eValue = strokelinestyleThickThin;
-                else if ( _T("thinThick")        == sValue ) this->m_eValue = strokelinestyleThinThick;
-                else if ( _T("thinThin")         == sValue ) this->m_eValue = strokelinestyleThinThin;
+					if      ( _T("thickBetweenThin") == sValue ) this->m_eValue = strokelinestyleThickBetweenThin;
+					else if ( _T("thickThin")        == sValue ) this->m_eValue = strokelinestyleThickThin;
+					else if ( _T("thinThick")        == sValue ) this->m_eValue = strokelinestyleThinThick;
+					else if ( _T("thinThin")         == sValue ) this->m_eValue = strokelinestyleThinThin;
 				break;
 			}
 
@@ -737,7 +737,7 @@ namespace SimpleTypes
 			case strokelinestyleThickThin         : return _T("thickThin");
 			case strokelinestyleThinThick         : return _T("thinThick");
 			case strokelinestyleThinThin          : return _T("thinThin");
-			default                               : return _T("single");
+			default					      : return _T("single");
 			}
 		}
 
@@ -770,29 +770,29 @@ namespace SimpleTypes
             this->m_eValue = eDefValue;
 
 			if ( sValue.GetLength() <= 0 )
-                return this->m_eValue;
+					return this->m_eValue;
 
 			wchar_t wChar = sValue.GetAt(0);
 			switch ( wChar )
 			{
 			case 'o':
-                if      ( _T("officeopenxmlmath") == sValue ) this->m_eValue = alternatemathcontenttypeOfficeOpenXmlMath;
+					if      ( _T("officeopenxmlmath") == sValue ) this->m_eValue = alternatemathcontenttypeOfficeOpenXmlMath;
 				break;
 			case 'm':
-                if      ( _T("mathml")            == sValue ) this->m_eValue = alternatemathcontenttypeMathMl;
+					if      ( _T("mathml")            == sValue ) this->m_eValue = alternatemathcontenttypeMathMl;
 				break;
 			}
 
             return this->m_eValue;
 		}
 
-		virtual CString                   ToString  () const 
+		virtual CString					  ToString  () const 
 		{
             switch(this->m_eValue)
 			{
 			case alternatemathcontenttypeOfficeOpenXmlMath: return _T("officeopenxmlmath");			
 			case alternatemathcontenttypeMathMl:            return _T("mathml");			
-			default :                                       return _T("officeopenxmlmath");
+			default :										return _T("officeopenxmlmath");
 			}
 		}
 
@@ -825,26 +825,26 @@ namespace SimpleTypes
             this->m_eValue = eDefValue;
 
 			if ( sValue.GetLength() <= 0 )
-                return this->m_eValue;
+					return this->m_eValue;
 
 			wchar_t wChar = sValue.GetAt(0);
 			switch ( wChar )
 			{
 			case '3':
-                if      ( _T("30")   == sValue ) this->m_eValue = vmlangle30;
+					if      ( _T("30")   == sValue ) this->m_eValue = vmlangle30;
 				break;
 			case '4':
-                if      ( _T("45")   == sValue ) this->m_eValue = vmlangle45;
+					if      ( _T("45")   == sValue ) this->m_eValue = vmlangle45;
 				break;
 			case '6':
-                if      ( _T("60")   == sValue ) this->m_eValue = vmlangle60;
+					if      ( _T("60")   == sValue ) this->m_eValue = vmlangle60;
 				break;
 			case '9':
-                if      ( _T("90")   == sValue ) this->m_eValue = vmlangle90;
+					if      ( _T("90")   == sValue ) this->m_eValue = vmlangle90;
 				break;
 			case 'a':  
-                if      ( _T("any")  == sValue ) this->m_eValue = vmlangleAny;
-                else if ( _T("auto") == sValue ) this->m_eValue = vmlangleAuto;
+					if      ( _T("any")  == sValue ) this->m_eValue = vmlangleAny;
+					else if ( _T("auto") == sValue ) this->m_eValue = vmlangleAuto;
 				break;
 
 			}
@@ -876,13 +876,13 @@ namespace SimpleTypes
 	//--------------------------------------------------------------------------------		
 	enum EBWMode
 	{
-		bwmodeAuto              = 0,
+		bwmodeAuto					= 0,
 		bwmodeBlack             = 1,
 		bwmodeBlackTextAndLines = 2,
 		bwmodeColor             = 3,
 		bwmodeGrayOutline       = 4,
 		bwmodeGrayScale         = 5,
-		bwmodeHide              = 6,
+		bwmodeHide					= 6,
 		bwmodeHighContrast      = 7,
 		bwmodeInverseGray       = 8,
 		bwmodeLightGrayscale    = 9,
@@ -901,40 +901,40 @@ namespace SimpleTypes
             this->m_eValue = eDefValue;
 
 			if ( sValue.GetLength() <= 0 )
-                return this->m_eValue;
+					return this->m_eValue;
 
 			wchar_t wChar = sValue.GetAt(0);
 			switch ( wChar )
 			{
 			case 'a':
-                if      ( _T("auto")              == sValue ) this->m_eValue = bwmodeAuto;
+					if      ( _T("auto")					== sValue ) this->m_eValue = bwmodeAuto;
 				break;
 			case 'b':
-                if      ( _T("black")             == sValue ) this->m_eValue = bwmodeBlack;
-                else if ( _T("blackTextAndLines") == sValue ) this->m_eValue = bwmodeBlackTextAndLines;
+					if      ( _T("black")             == sValue ) this->m_eValue = bwmodeBlack;
+					else if ( _T("blackTextAndLines") == sValue ) this->m_eValue = bwmodeBlackTextAndLines;
 				break;
 			case 'c':
-                if      ( _T("color")             == sValue ) this->m_eValue = bwmodeColor;
+					if      ( _T("color")             == sValue ) this->m_eValue = bwmodeColor;
 				break;
 			case 'g':
-                if      ( _T("grayOutline")       == sValue ) this->m_eValue = bwmodeGrayOutline;
-                else if ( _T("grayScale")         == sValue ) this->m_eValue = bwmodeGrayScale;
+					if      ( _T("grayOutline")       == sValue ) this->m_eValue = bwmodeGrayOutline;
+					else if ( _T("grayScale")         == sValue ) this->m_eValue = bwmodeGrayScale;
 				break;
 			case 'h':  
-                if      ( _T("hide")              == sValue ) this->m_eValue = bwmodeHide;
-                else if ( _T("highContrast")      == sValue ) this->m_eValue = bwmodeHighContrast;
+					if      ( _T("hide")					== sValue ) this->m_eValue = bwmodeHide;
+					else if ( _T("highContrast")      == sValue ) this->m_eValue = bwmodeHighContrast;
 				break;
 			case 'i':
-                if      ( _T("inverseGray")       == sValue ) this->m_eValue = bwmodeInverseGray;
+					if      ( _T("inverseGray")       == sValue ) this->m_eValue = bwmodeInverseGray;
 				break;
 			case 'l':
-                if      ( _T("lightGrayscale")    == sValue ) this->m_eValue = bwmodeLightGrayscale;
+					if      ( _T("lightGrayscale")    == sValue ) this->m_eValue = bwmodeLightGrayscale;
 				break;
 			case 'u':
-                if      ( _T("undrawn")           == sValue ) this->m_eValue = bwmodeUndrawn;
+					if      ( _T("undrawn")           == sValue ) this->m_eValue = bwmodeUndrawn;
 				break;
 			case 'w':
-                if      ( _T("white")             == sValue ) this->m_eValue = bwmodeWhite;
+					if      ( _T("white")             == sValue ) this->m_eValue = bwmodeWhite;
 				break;
 
 			}
@@ -946,19 +946,19 @@ namespace SimpleTypes
 		{
             switch(this->m_eValue)
 			{
-			case bwmodeAuto:              return _T("auto");			
+			case bwmodeAuto:					return _T("auto");			
 			case bwmodeBlack:             return _T("black");			
 			case bwmodeBlackTextAndLines: return _T("blackTextAndLines");			
 			case bwmodeColor:             return _T("color");					
 			case bwmodeGrayOutline:       return _T("grayOutline");					
 			case bwmodeGrayScale:         return _T("grayScale");					
-			case bwmodeHide:              return _T("hide");			
+			case bwmodeHide:					return _T("hide");			
 			case bwmodeHighContrast:      return _T("highContrast");			
 			case bwmodeInverseGray:       return _T("inverseGray");					
 			case bwmodeLightGrayscale:    return _T("lightGrayscale");					
 			case bwmodeUndrawn:           return _T("undrawn");					
 			case bwmodeWhite:             return _T("white");					
-			default :                     return _T("auto");
+			default :					return _T("auto");
 			}
 		}
 
@@ -1026,16 +1026,16 @@ namespace SimpleTypes
             this->m_eValue = eDefValue;
 
 			if ( sValue.GetLength() <= 0 )
-                return this->m_eValue;
+					return this->m_eValue;
 
 			wchar_t wChar = sValue.GetAt(0);
 			switch ( wChar )
 			{
 			case 'a':
-                if      ( _T("auto")   == sValue ) this->m_eValue = colormodeAuto;
+					if      ( _T("auto")   == sValue ) this->m_eValue = colormodeAuto;
 				break;
 			case 'c':
-                if      ( _T("custom") == sValue ) this->m_eValue = colormodeCustom;
+					if      ( _T("custom") == sValue ) this->m_eValue = colormodeCustom;
 				break;
 			}
 
@@ -1079,22 +1079,22 @@ namespace SimpleTypes
             this->m_eValue = eDefValue;
 
 			if ( sValue.GetLength() <= 0 )
-                return this->m_eValue;
+					return this->m_eValue;
 
 			wchar_t wChar = sValue.GetAt(0);
 			switch ( wChar )
 			{
 			case 'c':
-                if      ( _T("curved")   == sValue ) this->m_eValue = connectortypeCurved;
+					if      ( _T("curved")   == sValue ) this->m_eValue = connectortypeCurved;
 				break;
 			case 'e':
-                if      ( _T("elbow")    == sValue ) this->m_eValue = connectortypeElbow;
+					if      ( _T("elbow")    == sValue ) this->m_eValue = connectortypeElbow;
 				break;
 			case 'n':
-                if      ( _T("none")     == sValue ) this->m_eValue = connectortypeNone;
+					if      ( _T("none")     == sValue ) this->m_eValue = connectortypeNone;
 				break;
 			case 's':
-                if      ( _T("straight") == sValue ) this->m_eValue = connectortypeStraight;
+					if      ( _T("straight") == sValue ) this->m_eValue = connectortypeStraight;
 				break;
 			}
 
@@ -1109,7 +1109,7 @@ namespace SimpleTypes
 			case connectortypeElbow   : return _T("elbow");			
 			case connectortypeNone    : return _T("none");			
 			case connectortypeStraight: return _T("straight");			
-			default                   : return _T("none");
+			default					  : return _T("none");
 			}
 		}
 
@@ -1140,22 +1140,22 @@ namespace SimpleTypes
             this->m_eValue = eDefValue;
 
 			if ( sValue.GetLength() <= 0 )
-                return this->m_eValue;
+					return this->m_eValue;
 
 			wchar_t wChar = sValue.GetAt(0);
 			switch ( wChar )
 			{
 			case 'c':
-                if      ( _T("custom")   == sValue ) this->m_eValue = connecttypeCustom;
+					if      ( _T("custom")   == sValue ) this->m_eValue = connecttypeCustom;
 				break;
 			case 'n':
-                if      ( _T("none")     == sValue ) this->m_eValue = connecttypeNone;
+					if      ( _T("none")     == sValue ) this->m_eValue = connecttypeNone;
 				break;
 			case 'r':
-                if      ( _T("rect")     == sValue ) this->m_eValue = connecttypeRect;
+					if      ( _T("rect")     == sValue ) this->m_eValue = connecttypeRect;
 				break;
 			case 's':
-                if      ( _T("segments") == sValue ) this->m_eValue = connecttypeSegments;
+					if      ( _T("segments") == sValue ) this->m_eValue = connecttypeSegments;
 				break;
 			}
 
@@ -1170,7 +1170,7 @@ namespace SimpleTypes
 			case connecttypeNone    : return _T("none");			
 			case connecttypeRect    : return _T("rect");			
 			case connecttypeSegments: return _T("segments");			
-			default                 : return _T("none");
+			default					: return _T("none");
 			}
 		}
 
@@ -1240,22 +1240,22 @@ namespace SimpleTypes
             this->m_eValue = eDefValue;
 
 			if ( sValue.GetLength() <= 0 )
-                return this->m_eValue;
+					return this->m_eValue;
 
 			wchar_t wChar = sValue.GetAt(0);
 			switch ( wChar )
 			{
 			case '0':
-                if      ( _T("0") == sValue ) this->m_eValue = diagramlayout0;
+					if      ( _T("0") == sValue ) this->m_eValue = diagramlayout0;
 				break;
 			case '1':
-                if      ( _T("1") == sValue ) this->m_eValue = diagramlayout1;
+					if      ( _T("1") == sValue ) this->m_eValue = diagramlayout1;
 				break;
 			case '2':
-                if      ( _T("2") == sValue ) this->m_eValue = diagramlayout2;
+					if      ( _T("2") == sValue ) this->m_eValue = diagramlayout2;
 				break;
 			case '3':
-                if      ( _T("3") == sValue ) this->m_eValue = diagramlayout3;
+					if      ( _T("3") == sValue ) this->m_eValue = diagramlayout3;
 				break;
 			}
 
@@ -1300,28 +1300,28 @@ namespace SimpleTypes
             this->m_eValue = eDefValue;
 
 			if ( sValue.GetLength() <= 0 )
-                return this->m_eValue;
+					return this->m_eValue;
 
 			wchar_t wChar = sValue.GetAt(0);
 			switch ( wChar )
 			{
 			case 'X':
-                if      ( _T("XY") == sValue ) this->m_eValue = extrusionplaneXY;
+					if      ( _T("XY") == sValue ) this->m_eValue = extrusionplaneXY;
 				break;
 			case 'Y':
-                if      ( _T("YZ") == sValue ) this->m_eValue = extrusionplaneYZ;
+					if      ( _T("YZ") == sValue ) this->m_eValue = extrusionplaneYZ;
 				break;
 			case 'Z':
-                if      ( _T("ZX") == sValue ) this->m_eValue = extrusionplaneZX;
+					if      ( _T("ZX") == sValue ) this->m_eValue = extrusionplaneZX;
 				break;
 			case 'x':
-                if      ( _T("xy") == sValue ) this->m_eValue = extrusionplaneXY;
+					if      ( _T("xy") == sValue ) this->m_eValue = extrusionplaneXY;
 				break;
 			case 'y':
-                if      ( _T("yz") == sValue ) this->m_eValue = extrusionplaneYZ;
+					if      ( _T("yz") == sValue ) this->m_eValue = extrusionplaneYZ;
 				break;
 			case 'z':
-                if      ( _T("zx") == sValue ) this->m_eValue = extrusionplaneZX;
+					if      ( _T("zx") == sValue ) this->m_eValue = extrusionplaneZX;
 				break;
 			}
 
@@ -1335,7 +1335,7 @@ namespace SimpleTypes
 			case extrusionplaneXY: return _T("XY");			
 			case extrusionplaneYZ: return _T("YZ");			
 			case extrusionplaneZX: return _T("ZX");			
-			default :              return _T("XY");
+			default :					return _T("XY");
 			}
 		}
 
@@ -1365,19 +1365,19 @@ namespace SimpleTypes
             this->m_eValue = eDefValue;
 
 			if ( sValue.GetLength() <= 0 )
-                return this->m_eValue;
+					return this->m_eValue;
 
 			wchar_t wChar = sValue.GetAt(0);
 			switch ( wChar )
 			{
 			case 'b':
-                if      ( _T("boundingCube") == sValue ) this->m_eValue = extrusionrenderBoundingCube;
+					if      ( _T("boundingCube") == sValue ) this->m_eValue = extrusionrenderBoundingCube;
 				break;
 			case 's':
-                if      ( _T("solid")        == sValue ) this->m_eValue = extrusionrenderSolid;
+					if      ( _T("solid")        == sValue ) this->m_eValue = extrusionrenderSolid;
 				break;
 			case 'w':
-                if      ( _T("wireFrame")    == sValue ) this->m_eValue = extrusionrenderWireFrame;
+					if      ( _T("wireFrame")    == sValue ) this->m_eValue = extrusionrenderWireFrame;
 				break;
 			}
 
@@ -1391,7 +1391,7 @@ namespace SimpleTypes
 			case extrusionrenderBoundingCube: return _T("boundingCube");			
 			case extrusionrenderSolid:        return _T("solid");			
 			case extrusionrenderWireFrame:    return _T("wireFrame");			
-			default :                         return _T("solid");
+			default :					return _T("solid");
 			}
 		}
 
@@ -1418,7 +1418,7 @@ namespace SimpleTypes
 		{
             if		(_T("parallel")    == sValue ) this->m_eValue = extrusiontypeParallel;
             else if	(_T("perspective") == sValue ) this->m_eValue = extrusiontypePerspective;
-            else								   this->m_eValue = eDefValue;
+            else								  this->m_eValue = eDefValue;
 
             return this->m_eValue;
 		}
@@ -1460,28 +1460,28 @@ namespace SimpleTypes
             this->m_eValue = eDefValue;
 
 			if ( sValue.GetLength() <= 0 )
-                return this->m_eValue;
+					return this->m_eValue;
 
 			wchar_t wChar = sValue.GetAt(0);
 			switch ( wChar )
 			{
 			case 'b':
-                if      ( _T("bottom") == sValue ) this->m_eValue = howBottom;
+					if      ( _T("bottom") == sValue ) this->m_eValue = howBottom;
 				break;
 			case 'c':
-                if      ( _T("center") == sValue ) this->m_eValue = howCenter;
+					if      ( _T("center") == sValue ) this->m_eValue = howCenter;
 				break;
 			case 'l':
-                if      ( _T("left")   == sValue ) this->m_eValue = howLeft;
+					if      ( _T("left")   == sValue ) this->m_eValue = howLeft;
 				break;
 			case 'm':
-                if      ( _T("middle") == sValue ) this->m_eValue = howMiddle;
+					if      ( _T("middle") == sValue ) this->m_eValue = howMiddle;
 				break;
 			case 'r':
-                if      ( _T("right")  == sValue ) this->m_eValue = howRight;
+					if      ( _T("right")  == sValue ) this->m_eValue = howRight;
 				break;
 			case 't':
-                if      ( _T("top")    == sValue ) this->m_eValue = howTop;
+					if      ( _T("top")    == sValue ) this->m_eValue = howTop;
 				break;
 			}
 
@@ -1528,19 +1528,19 @@ namespace SimpleTypes
             this->m_eValue = eDefValue;
 
 			if ( sValue.GetLength() <= 0 )
-                return this->m_eValue;
+					return this->m_eValue;
 
 			wchar_t wChar = sValue.GetAt(0);
 			switch ( wChar )
 			{
 			case 'c':
-                if      ( _T("center") == sValue ) this->m_eValue = hralignCenter;
+					if      ( _T("center") == sValue ) this->m_eValue = hralignCenter;
 				break;
 			case 'l':
-                if      ( _T("left")   == sValue ) this->m_eValue = hralignLeft;
+					if      ( _T("left")   == sValue ) this->m_eValue = hralignLeft;
 				break;
 			case 'r':
-                if      ( _T("right")  == sValue ) this->m_eValue = hralignRight;
+					if      ( _T("right")  == sValue ) this->m_eValue = hralignRight;
 				break;
 			}
 
@@ -1583,16 +1583,16 @@ namespace SimpleTypes
             this->m_eValue = eDefValue;
 
 			if ( sValue.GetLength() <= 0 )
-                return this->m_eValue;
+					return this->m_eValue;
 
 			wchar_t wChar = sValue.GetAt(0);
 			switch ( wChar )
 			{
 			case 'a':
-                if      ( _T("auto")   == sValue ) this->m_eValue = insetmodeAuto;
+					if      ( _T("auto")   == sValue ) this->m_eValue = insetmodeAuto;
 				break;
 			case 'c':
-                if      ( _T("custom") == sValue ) this->m_eValue = insetmodeCustom;
+					if      ( _T("custom") == sValue ) this->m_eValue = insetmodeCustom;
 				break;
 			}
 
@@ -1605,7 +1605,7 @@ namespace SimpleTypes
 			{
 			case insetmodeAuto   : return _T("auto");			
 			case insetmodeCustom : return _T("custom");			
-			default              : return _T("auto");
+			default					: return _T("auto");
 			}
 		}
 
@@ -1674,23 +1674,23 @@ namespace SimpleTypes
             this->m_eValue = eDefValue;
 
 			if ( sValue.GetLength() <= 0 )
-                return this->m_eValue;
+					return this->m_eValue;
 
 			wchar_t wChar = sValue.GetAt(0);
 			switch ( wChar )
 			{
 			case 'B':
-                if      ( _T("Bitmap")           == sValue ) this->m_eValue = olelinktypeBitmap;
+					if      ( _T("Bitmap")           == sValue ) this->m_eValue = olelinktypeBitmap;
 				break;
 			case 'E':
-                if      ( _T("EnhancedMetaFile") == sValue ) this->m_eValue = olelinktypeEmf;
+					if      ( _T("EnhancedMetaFile") == sValue ) this->m_eValue = olelinktypeEmf;
 				break;
 			case 'J':
-                if      ( _T("Jpeg")             == sValue ) this->m_eValue = olelinktypeJpeg;
+					if      ( _T("Jpeg")             == sValue ) this->m_eValue = olelinktypeJpeg;
 				break;
 			case 'P':
-                if      ( _T("Picture")          == sValue ) this->m_eValue = olelinktypePicture;
-                else if ( _T("Png")              == sValue ) this->m_eValue = olelinktypePng;
+					if      ( _T("Picture")          == sValue ) this->m_eValue = olelinktypePicture;
+					else if ( _T("Png")					== sValue ) this->m_eValue = olelinktypePng;
 				break;
 			}
 
@@ -1706,7 +1706,7 @@ namespace SimpleTypes
 			case olelinktypeJpeg:    return _T("Jpeg");			
 			case olelinktypePicture: return _T("Picture");			
 			case olelinktypePng:     return _T("Png");			
-			default :                return _T("Bitmap");
+			default :					return _T("Bitmap");
 			}
 		}
 
@@ -1809,18 +1809,18 @@ namespace SimpleTypes
             this->m_eValue = eDefValue;
 
 			if ( sValue.GetLength() <= 0 )
-                return this->m_eValue;
+					return this->m_eValue;
 
 			wchar_t wChar = sValue.GetAt(0);
 			switch ( wChar )
 			{
 			case 'a':
-                if      ( _T("align")     == sValue ) this->m_eValue = rtypeAlign;
-                else if ( _T("arc")       == sValue ) this->m_eValue = rtypeArc;
+					if      ( _T("align")     == sValue ) this->m_eValue = rtypeAlign;
+					else if ( _T("arc")       == sValue ) this->m_eValue = rtypeArc;
 				break;
 			case 'c':
-                if      ( _T("callout")   == sValue ) this->m_eValue = rtypeCallout;
-                else if ( _T("connector") == sValue ) this->m_eValue = rtypeConnector;
+					if      ( _T("callout")   == sValue ) this->m_eValue = rtypeCallout;
+					else if ( _T("connector") == sValue ) this->m_eValue = rtypeConnector;
 				break;
 			}
 
@@ -1867,26 +1867,26 @@ namespace SimpleTypes
             this->m_eValue = eDefValue;
 
 			if ( sValue.GetLength() <= 0 )
-                return this->m_eValue;
+					return this->m_eValue;
 
 			wchar_t wChar = sValue.GetAt(0);
 			switch ( wChar )
 			{
 			case '1':
-                if      ( _T("1024,768")  == sValue ) this->m_eValue = screensize1024x768;
-                else if ( _T("1152,862")  == sValue ) this->m_eValue = screensize1152x862;
+					if      ( _T("1024,768")  == sValue ) this->m_eValue = screensize1024x768;
+					else if ( _T("1152,862")  == sValue ) this->m_eValue = screensize1152x862;
 				break;
 			case '5':
-                if      ( _T("544,376")   == sValue ) this->m_eValue = screensize544x376;
+					if      ( _T("544,376")   == sValue ) this->m_eValue = screensize544x376;
 				break;
 			case '6':
-                if      ( _T("640,480")   == sValue ) this->m_eValue = screensize640x480;
+					if      ( _T("640,480")   == sValue ) this->m_eValue = screensize640x480;
 				break;
 			case '7':
-                if      ( _T("720,512")   == sValue ) this->m_eValue = screensize720x512;
+					if      ( _T("720,512")   == sValue ) this->m_eValue = screensize720x512;
 				break;
 			case '8':
-                if      ( _T("800,600")   == sValue ) this->m_eValue = screensize800x600;
+					if      ( _T("800,600")   == sValue ) this->m_eValue = screensize800x600;
 				break;
 			}
 
@@ -1903,7 +1903,7 @@ namespace SimpleTypes
 			case screensize640x480 : return _T("640,480");			
 			case screensize720x512 : return _T("720,512");			
 			case screensize800x600 : return _T("800,600");			
-			default                : return _T("640,480");
+			default					: return _T("640,480");
 			}
 		}
 
@@ -1937,16 +1937,16 @@ namespace SimpleTypes
             this->m_eValue = eDefValue;
 
 			if ( sValue.GetLength() <= 0 )
-                return this->m_eValue;
+					return this->m_eValue;
 
 			wchar_t wChar = sValue.GetAt(0);
 			switch ( wChar )
 			{
 			case 'f':
-                if      ( _T("f") == sValue || _T("false") == sValue ) this->m_eValue = bordershadowFalse;
+					if      ( _T("f") == sValue || _T("false") == sValue ) this->m_eValue = bordershadowFalse;
 				break;
 			case 't':
-                if      ( _T("t") == sValue || _T("true") == sValue  ) this->m_eValue = bordershadowTrue;
+					if      ( _T("t") == sValue || _T("true") == sValue  ) this->m_eValue = bordershadowTrue;
 				break;
 			}
 
@@ -1959,7 +1959,7 @@ namespace SimpleTypes
 			{
 			case bordershadowTrue:  return _T("t");			
 			case bordershadowFalse: return _T("f");			
-			default :               return _T("f");
+			default :					return _T("f");
 			}
 		}
 
@@ -2013,56 +2013,56 @@ namespace SimpleTypes
             this->m_eValue = eDefValue;
 
 			if ( sValue.GetLength() <= 0 )
-                return this->m_eValue;
+					return this->m_eValue;
 
 			wchar_t wChar = sValue.GetAt(0);
 			switch ( wChar )
 			{
 			case 'd':
-                if      ( _T("dash")           == sValue ) this->m_eValue = bordertypeDash;
-                else if ( _T("dashDotDot")     == sValue ) this->m_eValue = bordertypeDashDotDot;
-                else if ( _T("dashDotStroked") == sValue ) this->m_eValue = bordertypeDashDotStroked;
-                else if ( _T("dashedSmall")    == sValue ) this->m_eValue = bordertypeDashedSmall;
-                else if ( _T("dot")            == sValue ) this->m_eValue = bordertypeDot;
-                else if ( _T("dotDash")        == sValue ) this->m_eValue = bordertypeDotDash;
-                else if ( _T("double")         == sValue ) this->m_eValue = bordertypeDouble;
-                else if ( _T("doubleWave")     == sValue ) this->m_eValue = bordertypeDoubleWave;
+					if      ( _T("dash")           == sValue ) this->m_eValue = bordertypeDash;
+					else if ( _T("dashDotDot")     == sValue ) this->m_eValue = bordertypeDashDotDot;
+					else if ( _T("dashDotStroked") == sValue ) this->m_eValue = bordertypeDashDotStroked;
+					else if ( _T("dashedSmall")    == sValue ) this->m_eValue = bordertypeDashedSmall;
+					else if ( _T("dot")            == sValue ) this->m_eValue = bordertypeDot;
+					else if ( _T("dotDash")        == sValue ) this->m_eValue = bordertypeDotDash;
+					else if ( _T("double")         == sValue ) this->m_eValue = bordertypeDouble;
+					else if ( _T("doubleWave")     == sValue ) this->m_eValue = bordertypeDoubleWave;
 				break;
 			case 'h':
-                if      ( _T("hairline")      == sValue ) this->m_eValue = bordertypeHairline;
+					if      ( _T("hairline")      == sValue ) this->m_eValue = bordertypeHairline;
 				break;
 
 			case 'H':
-                if      ( _T("HTMLInset")     == sValue ) this->m_eValue = bordertypeHTMLInset;
-                else if ( _T("HTMLOutset")    == sValue ) this->m_eValue = bordertypeHTMLOutset;
+					if      ( _T("HTMLInset")     == sValue ) this->m_eValue = bordertypeHTMLInset;
+					else if ( _T("HTMLOutset")    == sValue ) this->m_eValue = bordertypeHTMLOutset;
 				break;
 
 			case 'n':
-                if      ( _T("none")          == sValue ) this->m_eValue = bordertypeNone;
+					if      ( _T("none")          == sValue ) this->m_eValue = bordertypeNone;
 				break;
 
 			case 's':
-                if      ( _T("single")        == sValue ) this->m_eValue = bordertypeSingle;
+					if      ( _T("single")        == sValue ) this->m_eValue = bordertypeSingle;
 				break;
 
 			case 't':
-                if      ( _T("thick")                 == sValue ) this->m_eValue = bordertypeThick;
-                else if ( _T("thickBetweenThin")      == sValue ) this->m_eValue = bordertypeThickBetweenThin;
-                else if ( _T("thickBetweenThinLarge") == sValue ) this->m_eValue = bordertypeThickBetweenThinLarge;
-                else if ( _T("thickBetweenThinSmall") == sValue ) this->m_eValue = bordertypeThickBetweenThinSmall;
-                else if ( _T("thickThin")             == sValue ) this->m_eValue = bordertypeThickThin;
-                else if ( _T("thickThinLarge")        == sValue ) this->m_eValue = bordertypeThickThinLarge;
-                else if ( _T("thickThinSmall")        == sValue ) this->m_eValue = bordertypeThickThinSmall;
-                else if ( _T("thinThick")             == sValue ) this->m_eValue = bordertypeThinThick;
-                else if ( _T("thinThickLarge")        == sValue ) this->m_eValue = bordertypeThinThickLarge;
-                else if ( _T("thinThickSmall")        == sValue ) this->m_eValue = bordertypeThinThickSmall;
-                else if ( _T("threeDEmboss")          == sValue ) this->m_eValue = bordertypeThreeDEmboss;
-                else if ( _T("threeDEngrave")         == sValue ) this->m_eValue = bordertypeThreeDEngrave;
-                else if ( _T("triple")                == sValue ) this->m_eValue = bordertypeTriple;
+					if      ( _T("thick")					== sValue ) this->m_eValue = bordertypeThick;
+					else if ( _T("thickBetweenThin")      == sValue ) this->m_eValue = bordertypeThickBetweenThin;
+					else if ( _T("thickBetweenThinLarge") == sValue ) this->m_eValue = bordertypeThickBetweenThinLarge;
+					else if ( _T("thickBetweenThinSmall") == sValue ) this->m_eValue = bordertypeThickBetweenThinSmall;
+					else if ( _T("thickThin")             == sValue ) this->m_eValue = bordertypeThickThin;
+					else if ( _T("thickThinLarge")        == sValue ) this->m_eValue = bordertypeThickThinLarge;
+					else if ( _T("thickThinSmall")        == sValue ) this->m_eValue = bordertypeThickThinSmall;
+					else if ( _T("thinThick")             == sValue ) this->m_eValue = bordertypeThinThick;
+					else if ( _T("thinThickLarge")        == sValue ) this->m_eValue = bordertypeThinThickLarge;
+					else if ( _T("thinThickSmall")        == sValue ) this->m_eValue = bordertypeThinThickSmall;
+					else if ( _T("threeDEmboss")          == sValue ) this->m_eValue = bordertypeThreeDEmboss;
+					else if ( _T("threeDEngrave")         == sValue ) this->m_eValue = bordertypeThreeDEngrave;
+					else if ( _T("triple")					== sValue ) this->m_eValue = bordertypeTriple;
 				break;
 
 			case 'w':
-                if      ( _T("wave")                  == sValue ) this->m_eValue = bordertypeWave;
+					if      ( _T("wave")					 == sValue ) this->m_eValue = bordertypeWave;
 				break;
 			}
 
@@ -2073,20 +2073,20 @@ namespace SimpleTypes
 		{
             switch(this->m_eValue)
 			{
-			case bordertypeDash:                  return _T("dash");			
+			case bordertypeDash:					 return _T("dash");			
 			case bordertypeDashDotDot:            return _T("dashDotDot");			
 			case bordertypeDashDotStroked:        return _T("dashDotStroked");			
 			case bordertypeDashedSmall:           return _T("dashedSmall");			
-			case bordertypeDot:                   return _T("dot");			
-			case bordertypeDotDash:               return _T("dotDash");			
-			case bordertypeDouble:                return _T("double");			
+			case bordertypeDot:					  return _T("dot");			
+			case bordertypeDotDash:					return _T("dotDash");			
+			case bordertypeDouble:					return _T("double");			
 			case bordertypeDoubleWave:            return _T("doubleWave");			
-			case bordertypeHairline:              return _T("hairline");			
+			case bordertypeHairline:					return _T("hairline");			
 			case bordertypeHTMLInset:             return _T("HTMLInset");			
 			case bordertypeHTMLOutset:            return _T("HTMLOutset");			
-			case bordertypeNone:                  return _T("none");			
-			case bordertypeSingle:                return _T("single");	
-			case bordertypeThick:                 return _T("thick");
+			case bordertypeNone:					 return _T("none");			
+			case bordertypeSingle:					return _T("single");	
+			case bordertypeThick:					return _T("thick");
 			case bordertypeThickBetweenThin:      return _T("thickBetweenThin");
 			case bordertypeThickBetweenThinLarge: return _T("thickBetweenThinLarge");
 			case bordertypeThickBetweenThinSmall: return _T("thickBetweenThinSmall");
@@ -2098,9 +2098,9 @@ namespace SimpleTypes
 			case bordertypeThinThickSmall:        return _T("thinThickSmall");
 			case bordertypeThreeDEmboss:          return _T("threeDEmboss");
 			case bordertypeThreeDEngrave:         return _T("threeDEngrave");
-			case bordertypeTriple:                return _T("triple");
-			case bordertypeWave:                  return _T("wave");
-			default :                             return _T("none");
+			case bordertypeTriple:					return _T("triple");
+			case bordertypeWave:					 return _T("wave");
+			default :					    return _T("none");
 			}
 		}
 
@@ -2131,24 +2131,24 @@ namespace SimpleTypes
             this->m_eValue = eDefValue;
 
 			if ( sValue.GetLength() <= 0 )
-                return this->m_eValue;
+					return this->m_eValue;
 
 			wchar_t wChar = sValue.GetAt(0);
 			switch ( wChar )
 			{
 			case 'c':
-                if      ( _T("char")   == sValue ) this->m_eValue = horizontalanchorChar;
+					if      ( _T("char")   == sValue ) this->m_eValue = horizontalanchorChar;
 				break;
 			case 'm':
-                if      ( _T("margin") == sValue ) this->m_eValue = horizontalanchorMargin;
+					if      ( _T("margin") == sValue ) this->m_eValue = horizontalanchorMargin;
 				break;
 
 			case 'p':
-                if      ( _T("page")   == sValue ) this->m_eValue = horizontalanchorPage;
+					if      ( _T("page")   == sValue ) this->m_eValue = horizontalanchorPage;
 				break;
 
 			case 't':
-                if      ( _T("text")   == sValue ) this->m_eValue = horizontalanchorText;
+					if      ( _T("text")   == sValue ) this->m_eValue = horizontalanchorText;
 				break;
 			}
 
@@ -2163,7 +2163,7 @@ namespace SimpleTypes
 			case horizontalanchorMargin: return _T("margin");			
 			case horizontalanchorPage:   return _T("page");			
 			case horizontalanchorText:   return _T("text");					
-			default :                    return _T("char");
+			default :					   return _T("char");
 			}
 		}
 
@@ -2194,24 +2194,24 @@ namespace SimpleTypes
             this->m_eValue = eDefValue;
 
 			if ( sValue.GetLength() <= 0 )
-                return this->m_eValue;
+					return this->m_eValue;
 
 			wchar_t wChar = sValue.GetAt(0);
 			switch ( wChar )
 			{
 			case 'l':
-                if      ( _T("line")   == sValue ) this->m_eValue = verticalanchorLine;
+					if      ( _T("line")   == sValue ) this->m_eValue = verticalanchorLine;
 				break;
 			case 'm':
-                if      ( _T("margin") == sValue ) this->m_eValue = verticalanchorMargin;
+					if      ( _T("margin") == sValue ) this->m_eValue = verticalanchorMargin;
 				break;
 
 			case 'p':
-                if      ( _T("page")   == sValue ) this->m_eValue = verticalanchorPage;
+					if      ( _T("page")   == sValue ) this->m_eValue = verticalanchorPage;
 				break;
 
 			case 't':
-                if      ( _T("text")   == sValue ) this->m_eValue = verticalanchorText;
+					if      ( _T("text")   == sValue ) this->m_eValue = verticalanchorText;
 				break;
 			}
 
@@ -2226,7 +2226,7 @@ namespace SimpleTypes
 			case verticalanchorMargin: return _T("margin");			
 			case verticalanchorPage:   return _T("page");			
 			case verticalanchorText:   return _T("text");					
-			default :                  return _T("line");
+			default :					 return _T("line");
 			}
 		}
 
@@ -2257,21 +2257,21 @@ namespace SimpleTypes
             this->m_eValue = eDefValue;
 
 			if ( sValue.GetLength() <= 0 )
-                return this->m_eValue;
+					return this->m_eValue;
 
 			wchar_t wChar = sValue.GetAt(0);
 			switch ( wChar )
 			{
 			case 'b':
-                if      ( _T("both")    == sValue ) this->m_eValue = wrapsideBoth;
+					if      ( _T("both")    == sValue ) this->m_eValue = wrapsideBoth;
 				break;
 			case 'l':
-                if      ( _T("largest") == sValue ) this->m_eValue = wrapsideLargest;
-                else if ( _T("left")    == sValue ) this->m_eValue = wrapsideLeft;
+					if      ( _T("largest") == sValue ) this->m_eValue = wrapsideLargest;
+					else if ( _T("left")    == sValue ) this->m_eValue = wrapsideLeft;
 				break;
 
 			case 'r':
-                if      ( _T("right")   == sValue ) this->m_eValue = wrapsideRight;
+					if      ( _T("right")   == sValue ) this->m_eValue = wrapsideRight;
 				break;
 
 			}
@@ -2319,22 +2319,22 @@ namespace SimpleTypes
             this->m_eValue = eDefValue;
 
 			if ( sValue.GetLength() <= 0 )
-                return this->m_eValue;
+					return this->m_eValue;
 
 			wchar_t wChar = sValue.GetAt(0);
 			switch ( wChar )
 			{
 			case 'n':
-                if      ( _T("none")         == sValue ) this->m_eValue = wraptypeNone;
+					if      ( _T("none")         == sValue ) this->m_eValue = wraptypeNone;
 				break;
 			case 's':
-                if      ( _T("square")       == sValue ) this->m_eValue = wraptypeSquare;
+					if      ( _T("square")       == sValue ) this->m_eValue = wraptypeSquare;
 				break;
 
 			case 't':  
-                if      ( _T("through")      == sValue ) this->m_eValue = wraptypeThrough;
-                else if ( _T("tight")        == sValue ) this->m_eValue = wraptypeTight;
-                else if ( _T("topAndBottom") == sValue ) this->m_eValue = wraptypeTopAndBottom;
+					if      ( _T("through")      == sValue ) this->m_eValue = wraptypeThrough;
+					else if ( _T("tight")        == sValue ) this->m_eValue = wraptypeTight;
+					else if ( _T("topAndBottom") == sValue ) this->m_eValue = wraptypeTopAndBottom;
 				break;
 
 			}
@@ -2351,7 +2351,7 @@ namespace SimpleTypes
 			case wraptypeThrough:      return _T("through");			
 			case wraptypeTight:        return _T("tight");					
 			case wraptypeTopAndBottom: return _T("topAndBottom");					
-			default :                  return _T("none");
+			default :					 return _T("none");
 			}
 		}
 
@@ -2397,36 +2397,36 @@ namespace SimpleTypes
 
 			virtual EVmlClientDataObjectType FromString(CString &sValue)
 			{
-                this->m_eValue = eDefValue;
+					this->m_eValue = eDefValue;
 
 				if ( sValue.GetLength() <= 0 )
-                    return this->m_eValue;
+					   return this->m_eValue;
 
-                if      ( _T("Button") == sValue ) this->m_eValue = vmlclientdataobjecttypeButton;
-                else if ( _T("Checkbox") == sValue ) this->m_eValue = vmlclientdataobjecttypeCheckbox;
-                else if ( _T("Dialog") == sValue ) this->m_eValue = vmlclientdataobjecttypeDialog;
-                else if ( _T("Drop") == sValue ) this->m_eValue = vmlclientdataobjecttypeDrop;
-                else if ( _T("Edit") == sValue ) this->m_eValue = vmlclientdataobjecttypeEdit;
-                else if ( _T("GBox") == sValue ) this->m_eValue = vmlclientdataobjecttypeGBox;
-                else if ( _T("Group") == sValue ) this->m_eValue = vmlclientdataobjecttypeGroup;
-                else if ( _T("Label") == sValue ) this->m_eValue = vmlclientdataobjecttypeLabel;
-                else if ( _T("LineA") == sValue ) this->m_eValue = vmlclientdataobjecttypeLineA;
-                else if ( _T("List") == sValue ) this->m_eValue = vmlclientdataobjecttypeList;
-                else if ( _T("Movie") == sValue ) this->m_eValue = vmlclientdataobjecttypeMovie;
-                else if ( _T("Note") == sValue ) this->m_eValue = vmlclientdataobjecttypeNote;
-                else if ( _T("Pict") == sValue ) this->m_eValue = vmlclientdataobjecttypePict;
-                else if ( _T("Radio") == sValue ) this->m_eValue = vmlclientdataobjecttypeRadio;
-                else if ( _T("Rect") == sValue ) this->m_eValue = vmlclientdataobjecttypeRect;
-                else if ( _T("RectA") == sValue ) this->m_eValue = vmlclientdataobjecttypeRectA;
-                else if ( _T("Scroll") == sValue ) this->m_eValue = vmlclientdataobjecttypeScroll;
-                else if ( _T("Shape") == sValue ) this->m_eValue = vmlclientdataobjecttypeShape;
-                else if ( _T("Spin") == sValue ) this->m_eValue = vmlclientdataobjecttypeSpin;
-                return this->m_eValue;
+					if      ( _T("Button") == sValue ) this->m_eValue = vmlclientdataobjecttypeButton;
+					else if ( _T("Checkbox") == sValue ) this->m_eValue = vmlclientdataobjecttypeCheckbox;
+					else if ( _T("Dialog") == sValue ) this->m_eValue = vmlclientdataobjecttypeDialog;
+					else if ( _T("Drop") == sValue ) this->m_eValue = vmlclientdataobjecttypeDrop;
+					else if ( _T("Edit") == sValue ) this->m_eValue = vmlclientdataobjecttypeEdit;
+					else if ( _T("GBox") == sValue ) this->m_eValue = vmlclientdataobjecttypeGBox;
+					else if ( _T("Group") == sValue ) this->m_eValue = vmlclientdataobjecttypeGroup;
+					else if ( _T("Label") == sValue ) this->m_eValue = vmlclientdataobjecttypeLabel;
+					else if ( _T("LineA") == sValue ) this->m_eValue = vmlclientdataobjecttypeLineA;
+					else if ( _T("List") == sValue ) this->m_eValue = vmlclientdataobjecttypeList;
+					else if ( _T("Movie") == sValue ) this->m_eValue = vmlclientdataobjecttypeMovie;
+					else if ( _T("Note") == sValue ) this->m_eValue = vmlclientdataobjecttypeNote;
+					else if ( _T("Pict") == sValue ) this->m_eValue = vmlclientdataobjecttypePict;
+					else if ( _T("Radio") == sValue ) this->m_eValue = vmlclientdataobjecttypeRadio;
+					else if ( _T("Rect") == sValue ) this->m_eValue = vmlclientdataobjecttypeRect;
+					else if ( _T("RectA") == sValue ) this->m_eValue = vmlclientdataobjecttypeRectA;
+					else if ( _T("Scroll") == sValue ) this->m_eValue = vmlclientdataobjecttypeScroll;
+					else if ( _T("Shape") == sValue ) this->m_eValue = vmlclientdataobjecttypeShape;
+					else if ( _T("Spin") == sValue ) this->m_eValue = vmlclientdataobjecttypeSpin;
+					return this->m_eValue;
 			}
 
 			virtual CString         ToString  () const 
 			{
-                switch(this->m_eValue)
+					switch(this->m_eValue)
 				{
 				case vmlclientdataobjecttypeButton:      return _T("Button");
 				case vmlclientdataobjecttypeCheckbox:      return _T("Checkbox");
@@ -2447,7 +2447,7 @@ namespace SimpleTypes
 				case vmlclientdataobjecttypeScroll:      return _T("Scroll");
 				case vmlclientdataobjecttypeShape:      return _T("Shape");
 				case vmlclientdataobjecttypeSpin:      return _T("Spin");
-				default :                          return _T("Button");
+				default :					 return _T("Button");
 				}
 			}
 
@@ -2473,38 +2473,38 @@ namespace SimpleTypes
 
 			virtual EVmlCalloutType FromString(CString &sValue)
 			{
-                this->m_eValue = eDefValue;
+					this->m_eValue = eDefValue;
 
 				if ( sValue.GetLength() <= 0 )
-                    return this->m_eValue;
+					   return this->m_eValue;
 
 				wchar_t wChar = sValue.GetAt(0);
 				switch ( wChar )
 				{
 				case 'r':
-                    if      ( _T("rectangle")        == sValue ) this->m_eValue = vmlcallouttypeRectangle;
-                    else if ( _T("roundedrectangle") == sValue ) this->m_eValue = vmlcallouttypeRoundRectangle;
+					   if      ( _T("rectangle")        == sValue ) this->m_eValue = vmlcallouttypeRectangle;
+					   else if ( _T("roundedrectangle") == sValue ) this->m_eValue = vmlcallouttypeRoundRectangle;
 					break;
 				case 'o':
-                    if      ( _T("oval")             == sValue ) this->m_eValue = vmlcallouttypeOval;
+					   if      ( _T("oval")             == sValue ) this->m_eValue = vmlcallouttypeOval;
 					break;
 				case 'c':
-                    if      ( _T("cloud")            == sValue ) this->m_eValue = vmlcallouttypeCloud;
+					   if      ( _T("cloud")            == sValue ) this->m_eValue = vmlcallouttypeCloud;
 					break;
 				}
 
-                return this->m_eValue;
+					return this->m_eValue;
 			}
 
 			virtual CString         ToString  () const 
 			{
-                switch(this->m_eValue)
+					switch(this->m_eValue)
 				{
 				case vmlcallouttypeRectangle:      return _T("rectangle");			
 				case vmlcallouttypeRoundRectangle: return _T("roundedrectangle");			
 				case vmlcallouttypeOval:           return _T("oval");			
 				case vmlcallouttypeCloud:          return _T("cloud");					
-				default :                          return _T("rectangle");
+				default :					 return _T("rectangle");
 				}
 			}
 
@@ -2587,10 +2587,10 @@ namespace SimpleTypes
 			{
 				m_nCount    = 0;
 
-                this->m_eValue = eDefValue;
+					this->m_eValue = eDefValue;
 
 				if ( sValue.GetLength() <= 0 )
-                    return this->m_eValue;
+					   return this->m_eValue;
 
 				sValue.MakeLower();
 
@@ -2598,26 +2598,26 @@ namespace SimpleTypes
 				switch ( wChar )
 				{
 				case 's':
-                    if      ( _T("solid")           == sValue ) this->m_eValue = vmldashstyleSolid;
-                    else if ( _T("shortdash")       == sValue ) this->m_eValue = vmldashstyleShortDash;
-                    else if ( _T("shortdot")        == sValue ) this->m_eValue = vmldashstyleShortDot;
-                    else if ( _T("shortdashdot")    == sValue ) this->m_eValue = vmldashstyleShortDashDot;
-                    else if ( _T("shortdashdotdot") == sValue ) this->m_eValue = vmldashstyleShortDashDotDot;
+					   if      ( _T("solid")           == sValue ) this->m_eValue = vmldashstyleSolid;
+					   else if ( _T("shortdash")       == sValue ) this->m_eValue = vmldashstyleShortDash;
+					   else if ( _T("shortdot")        == sValue ) this->m_eValue = vmldashstyleShortDot;
+					   else if ( _T("shortdashdot")    == sValue ) this->m_eValue = vmldashstyleShortDashDot;
+					   else if ( _T("shortdashdotdot") == sValue ) this->m_eValue = vmldashstyleShortDashDotDot;
 					break;
 				case 'd':
-                    if      ( _T("dot")             == sValue ) this->m_eValue = vmldashstyleDot;
-                    else if ( _T("dash")            == sValue ) this->m_eValue = vmldashstyleDash;
-                    else if ( _T("dashdot")         == sValue ) this->m_eValue = vmldashstyleDashDot;
+					   if      ( _T("dot")             == sValue ) this->m_eValue = vmldashstyleDot;
+					   else if ( _T("dash")            == sValue ) this->m_eValue = vmldashstyleDash;
+					   else if ( _T("dashdot")         == sValue ) this->m_eValue = vmldashstyleDashDot;
 					break;
 				case 'l':
-                    if      ( _T("longdash")        == sValue ) this->m_eValue = vmldashstyleLongDash;
-                    else if ( _T("longdashdot")     == sValue ) this->m_eValue = vmldashstyleLongDashDot;
-                    else if ( _T("longdashdotdot")  == sValue ) this->m_eValue = vmldashstyleLongDashDotDot;
+					   if      ( _T("longdash")        == sValue ) this->m_eValue = vmldashstyleLongDash;
+					   else if ( _T("longdashdot")     == sValue ) this->m_eValue = vmldashstyleLongDashDot;
+					   else if ( _T("longdashdotdot")  == sValue ) this->m_eValue = vmldashstyleLongDashDotDot;
 					break;
 
 				default:
 					{
-                        this->m_eValue = vmldashstyleCustom;
+					this->m_eValue = vmldashstyleCustom;
 
 						CString sTemp = sValue;
 						for ( int nIndex = 0; nIndex < sValue.GetLength(); nIndex++ )
@@ -2636,7 +2636,7 @@ namespace SimpleTypes
 								continue;
 
 							CString sTemp = sValue.Mid( nIndex, nLen );
-                            double dVal = sTemp.IsEmpty() ? 0 : _wtof( sTemp);
+					   double dVal = sTemp.IsEmpty() ? 0 : _wtof( sTemp);
 
 							if ( m_nCount >= 32 )
 								break;
@@ -2646,12 +2646,12 @@ namespace SimpleTypes
 					}
 				}
 
-                return this->m_eValue;
+					return this->m_eValue;
 			}
 
 			virtual CString       ToString  () const 
 			{
-                switch(this->m_eValue)
+					switch(this->m_eValue)
 				{
 				case vmldashstyleSolid          :  return _T("solid");
 				case vmldashstyleShortDash      :  return _T("shortdash");
@@ -2708,12 +2708,12 @@ namespace SimpleTypes
 
 			void   SetValue(double dValue)
 			{
-                m_dValue = (std::max)( 0.0, (std::min)( 1.0, dValue) );
+					m_dValue = (std::max)( 0.0, (std::min)( 1.0, dValue) );
 			}
 
 			void   SetValue(int nValue)
 			{
-                m_dValue = (std::max)( 0.0, (std::min)( 65536.0, (double) nValue) ) / 65536.0;
+					m_dValue = (std::max)( 0.0, (std::min)( 65536.0, (double) nValue) ) / 65536.0;
 			}
 
 			virtual double FromString(CString &sValue)
@@ -2726,14 +2726,14 @@ namespace SimpleTypes
 
 				if ( bFraction )
 				{
-                    CString strValue = sValue.Mid( 0, nLen - 1 );
-                    int nValue = strValue.IsEmpty() ? 0 : _wtoi(strValue );
+					   CString strValue = sValue.Mid( 0, nLen - 1 );
+					   int nValue = strValue.IsEmpty() ? 0 : _wtoi(strValue );
 
-                    SetValue( nValue );
+					   SetValue( nValue );
 				}
 				else
 				{
-                    double dValue = sValue.IsEmpty() ? 0 : _wtof( sValue );
+					   double dValue = sValue.IsEmpty() ? 0 : _wtof( sValue );
 					SetValue( dValue );
 				}
 
@@ -2809,25 +2809,25 @@ namespace SimpleTypes
 				if ( -1 == nPos )
 					return 0;
 
-                CString strX = sValue.Mid( 0, nPos );
-                strX.Replace(_T("@"), _T(""));
+					CString strX = sValue.Mid( 0, nPos );
+					strX.Replace(_T("@"), _T(""));
 
-                m_nX = strX.IsEmpty() ? 0 : _wtoi(strX );
+					m_nX = strX.IsEmpty() ? 0 : _wtoi(strX );
 
-                int nPos2 = sValue.Find( _T(","), nPos + 1 );
+					int nPos2 = sValue.Find( _T(","), nPos + 1 );
 				if ( -1 == nPos2 )
 					return 0;
 
-                CString strY = sValue.Mid( nPos + 1, nPos2 - nPos - 1)  ;
-                CString strZ = sValue.Mid( nPos2 + 1, nLen - nPos2 - 1 );
+					CString strY = sValue.Mid( nPos + 1, nPos2 - nPos - 1)  ;
+					CString strZ = sValue.Mid( nPos2 + 1, nLen - nPos2 - 1 );
 
-                strZ.Replace(_T("@"), _T(""));
-                strY.Replace(_T("@"), _T(""));
+					strZ.Replace(_T("@"), _T(""));
+					strY.Replace(_T("@"), _T(""));
 
-                m_nY = strY.IsEmpty() ? 0 : _wtoi(strY );
-                m_nZ = strZ.IsEmpty() ? 0 : _wtoi(strZ );
+					m_nY = strY.IsEmpty() ? 0 : _wtoi(strY );
+					m_nZ = strZ.IsEmpty() ? 0 : _wtoi(strZ );
 
-                return 0;
+					return 0;
 			}
 
 			virtual CString ToString  () const 
@@ -2894,23 +2894,23 @@ namespace SimpleTypes
 				if ( -1 == nPos )
 					return 0;
 
-                CString strX = sValue.Mid( 0, nPos );
-                strX.Replace(_T("@"), _T(""));
+					CString strX = sValue.Mid( 0, nPos );
+					strX.Replace(_T("@"), _T(""));
 
-                m_nX = strX.IsEmpty() ? 0 : _wtoi(strX );
+					m_nX = strX.IsEmpty() ? 0 : _wtoi(strX );
 
 				int nPos2 = sValue.Find( _T(","), nPos + 1 );
 				if ( -1 == nPos2 )
 					return 0;
 
-                CString strY = sValue.Mid( nPos + 1, nPos2 - nPos - 1);
-                CString strZ = sValue.Mid( nPos2 + 1, nLen - nPos2 - 1 ) ;
+					CString strY = sValue.Mid( nPos + 1, nPos2 - nPos - 1);
+					CString strZ = sValue.Mid( nPos2 + 1, nLen - nPos2 - 1 ) ;
 
-                strZ.Replace(_T("@"), _T(""));
-                strY.Replace(_T("@"), _T(""));
+					strZ.Replace(_T("@"), _T(""));
+					strY.Replace(_T("@"), _T(""));
 
-                m_nY = strY.IsEmpty() ? 0 : _wtoi(strY );
-                m_nZ = strZ.IsEmpty() ? 0 : _wtoi(strZ );
+					m_nY = strY.IsEmpty() ? 0 : _wtoi(strY );
+					m_nZ = strZ.IsEmpty() ? 0 : _wtoi(strZ );
 
 
 				return 0;
@@ -2973,14 +2973,14 @@ namespace SimpleTypes
 				if ( -1 == nPos )
 					return 0;
 
-                CString strX = sValue.Mid( 0, nPos );
-                CString strY = sValue.Mid( nPos + 1, nLen - nPos - 1 ) ;
+					CString strX = sValue.Mid( 0, nPos );
+					CString strY = sValue.Mid( nPos + 1, nLen - nPos - 1 ) ;
 
-                strX.Replace(_T("@"), _T(""));
-                strY.Replace(_T("@"), _T(""));
+					strX.Replace(_T("@"), _T(""));
+					strY.Replace(_T("@"), _T(""));
 
-                m_nX = strX.IsEmpty() ? 0 : _wtoi(strX );
-                m_nY = strY.IsEmpty() ? 0 : _wtoi(strY );
+					m_nX = strX.IsEmpty() ? 0 : _wtoi(strX );
+					m_nY = strY.IsEmpty() ? 0 : _wtoi(strY );
 
 				return 0;
 			}
@@ -3041,11 +3041,11 @@ namespace SimpleTypes
 				if ( -1 == nPos )
 					return 0;
 
-                CString strX = sValue.Mid( 0, nPos );
-                CString strY = sValue.Mid( nPos + 1, nLen - nPos - 1 ) ;
+					CString strX = sValue.Mid( 0, nPos );
+					CString strY = sValue.Mid( nPos + 1, nLen - nPos - 1 ) ;
 
-                m_dX = strX.IsEmpty() ? 0 : _wtof(strX );
-                m_dY = strY.IsEmpty() ? 0 : _wtof(strY );
+					m_dX = strX.IsEmpty() ? 0 : _wtof(strX );
+					m_dY = strY.IsEmpty() ? 0 : _wtof(strY );
 
 				return 0;
 			}
@@ -3121,14 +3121,14 @@ namespace SimpleTypes
 					if ( -1 == nEndPos )
 						nEndPos = nLen;
 
-                    CString strX = sValue.Mid( nStartPos, nMidPos - nStartPos );
-                    CString strY = sValue.Mid( nStartPos, nMidPos - nStartPos );
+					   CString strX = sValue.Mid( nStartPos, nMidPos - nStartPos );
+					   CString strY = sValue.Mid( nStartPos, nMidPos - nStartPos );
 
-                    strX.Replace(_T("@"), _T(""));
-                    strY.Replace(_T("@"), _T(""));
+					   strX.Replace(_T("@"), _T(""));
+					   strY.Replace(_T("@"), _T(""));
 
-                    int nX = strX.IsEmpty() ? 0 : _wtoi(strX );
-                    int nY = strY.IsEmpty() ? 0 : _wtoi(strY );
+					   int nX = strX.IsEmpty() ? 0 : _wtoi(strX );
+					   int nY = strY.IsEmpty() ? 0 : _wtoi(strY );
 
 					m_arrPoints.push_back( TPoint( nX, nY ) );
 
@@ -3203,15 +3203,15 @@ namespace SimpleTypes
 
 		enum ECssPropertyType
 		{
-			cssptUnknown                        = 0000,
+			cssptUnknown					= 0000,
 
-			cssptFlip                           = 1000,
-			cssptHeight                         = 1001,
-			cssptLeft                           = 1002,
-			cssptMarginBottom                   = 1003,
-			cssptMarginLeft                     = 1004,
-			cssptMarginRight                    = 1005,
-			cssptMarginTop                      = 1006,
+			cssptFlip					  = 1000,
+			cssptHeight					= 1001,
+			cssptLeft					  = 1002,
+			cssptMarginBottom					  = 1003,
+			cssptMarginLeft					= 1004,
+			cssptMarginRight					   = 1005,
+			cssptMarginTop					= 1006,
 			cssptMsoPositionHorizontal          = 1007,
 			cssptMsoPositionHorizontalRelative  = 1008,
 			cssptMsoPositionVertical            = 1009,
@@ -3220,45 +3220,45 @@ namespace SimpleTypes
 			cssptMsoWrapDistanceLeft            = 1012,
 			cssptMsoWrapDistanceRight           = 1013,
 			cssptMsoWrapDistanceTop             = 1014,
-			cssptMsoWrapEdited                  = 1015,
-			cssptMsoWrapStyle                   = 1016,
-			cssptPosition                       = 1017,
-			cssptRotation                       = 1018,
-			cssptTop                            = 1019,
-			cssptVisibility                     = 1020,
-			cssptWidth                          = 1021,
-			cssptZIndex                         = 1022,
+			cssptMsoWrapEdited					 = 1015,
+			cssptMsoWrapStyle					  = 1016,
+			cssptPosition					= 1017,
+			cssptRotation					= 1018,
+			cssptTop					   = 1019,
+			cssptVisibility					= 1020,
+			cssptWidth					 = 1021,
+			cssptZIndex					= 1022,
 			csspctMsoWidthPercent				= 1023,
 			csspctMsoHeightPercent				= 1024,
 
 			//  Для элемента Textbox 14.1.2.22
-			cssptDirection                      = 1100,
-			cssptLayoutFlow                     = 1101,
-			cssptMsoDirectionAlt                = 1102,
-			cssptMsoFitShapeToText              = 1103,
-			cssptMsoFitTextToShape              = 1104,
-			cssptMsoLayoutFlowAlt               = 1105,
-			cssptMsoNextTextbox                 = 1106,
-			cssptMsoRotate                      = 1107,
-			cssptMsoTextScale                   = 1108,
-			cssptVTextAnchor                    = 1109,
+			cssptDirection					= 1100,
+			cssptLayoutFlow					= 1101,
+			cssptMsoDirectionAlt					= 1102,
+			cssptMsoFitShapeToText					= 1103,
+			cssptMsoFitTextToShape					= 1104,
+			cssptMsoLayoutFlowAlt					= 1105,
+			cssptMsoNextTextbox					= 1106,
+			cssptMsoRotate					= 1107,
+			cssptMsoTextScale					  = 1108,
+			cssptVTextAnchor					   = 1109,
 			
 			// Для элемента Textpath 14.1.2.23
-			cssptFont                           = 1200,
-			cssptFontFamily                     = 1201,
-			cssptFontSize                       = 1202,
-			cssptFontStyle                      = 1203,
-			cssptFontVariant                    = 1204,
-			cssptFontWeight                     = 1205,
-			cssptMsoTextShadow                  = 1206,
-			cssptTextDecoration                 = 1207,
-			cssptVRotateLetters                 = 1208,
+			cssptFont					  = 1200,
+			cssptFontFamily					= 1201,
+			cssptFontSize					= 1202,
+			cssptFontStyle					= 1203,
+			cssptFontVariant					   = 1204,
+			cssptFontWeight					= 1205,
+			cssptMsoTextShadow					 = 1206,
+			cssptTextDecoration					= 1207,
+			cssptVRotateLetters					= 1208,
 			cssptVSameLetterHeights             = 1209,
-			cssptVTextAlign                     = 1210,
-			cssptVTextKern                      = 1211,
-			cssptVTextReverse                   = 1212,
-			cssptVTextSpacingMode               = 1213,
-			cssptVTextSpacing                   = 1214,
+			cssptVTextAlign					= 1210,
+			cssptVTextKern					= 1211,
+			cssptVTextReverse					  = 1212,
+			cssptVTextSpacingMode					= 1213,
+			cssptVTextSpacing					  = 1214,
 		};
 
 		enum ECssFlip
@@ -3346,7 +3346,7 @@ namespace SimpleTypes
 		enum ECssLayoutFlow
 		{
 			csslayoutflowHorizontal            = 0,
-			csslayoutflowVertical              = 1,
+			csslayoutflowVertical					= 1,
 			csslayoutflowVerticalIdeographic   = 2,
 			csslayoutflowHorizontalIdeographic = 3,
 		};
@@ -3368,9 +3368,9 @@ namespace SimpleTypes
 		};
 		enum ECssVTextAnchor
 		{
-			cssvtextanchorTop                  = 0,
-			cssvtextanchorMiddle               = 1,
-			cssvtextanchorBottom               = 2,
+			cssvtextanchorTop					 = 0,
+			cssvtextanchorMiddle					= 1,
+			cssvtextanchorBottom					= 2,
 			cssvtextanchorTopCenter            = 3,
 			cssvtextanchorMiddleCenter         = 4,
 			cssvtextanchorBottomCenter         = 5,
@@ -3438,8 +3438,8 @@ namespace SimpleTypes
 			ECssMsoPosHorRel     eMsoPosHorRel;
 			ECssMsoPosVer        eMsoPosVer;
 			ECssMsoPosVerRel     eMsoPosVerRel;
-			double               dValue;
-			bool                 bValue;
+			double					dValue;
+			bool					bValue;
 			ECssMsoWrapStyle     eMsoWrapStyle;
 			ECssPosition         ePosition;
 			ECssVisibility       eVisibility;
@@ -3448,7 +3448,7 @@ namespace SimpleTypes
 			ECssLayoutFlow       eLayoutFlow;
 			ECssDirectionAlt     eDirectionAlt;
 			ECssLayoutFlowAlt    eLayoutFlowAlt;
-			wchar_t              wsValue[CSS_MAX_NAME_LEN + 1];
+			wchar_t					wsValue[CSS_MAX_NAME_LEN + 1];
 			ECssMsoRotate        eRotate;
 			ECssVTextAnchor      eVTextAnchor;
 			ECssFontStyle        eFontStyle;
@@ -3519,7 +3519,7 @@ namespace SimpleTypes
 					case 'd':
 						{
 							if      ( _T("direction") == sProperty ) m_eType = cssptDirection;
-							else                                       m_eType = cssptUnknown;
+							else										m_eType = cssptUnknown;
 
 							break;
 						}
@@ -3530,7 +3530,7 @@ namespace SimpleTypes
 							case 'l':
 								{
 									if ( _T("flip") == sProperty ) m_eType = cssptFlip;
-									else                             m_eType = cssptUnknown;
+									else					    m_eType = cssptUnknown;
 
 									break;
 								}
@@ -3542,7 +3542,7 @@ namespace SimpleTypes
 									else if ( _T("font-style")   == sProperty ) m_eType = cssptFontStyle;
 									else if ( _T("font-variant") == sProperty ) m_eType = cssptFontVariant;
 									else if ( _T("font-weight")  == sProperty ) m_eType = cssptFontWeight;
-									else                                          m_eType = cssptUnknown;
+									else										 m_eType = cssptUnknown;
 
 									break;
 								}
@@ -3557,7 +3557,7 @@ namespace SimpleTypes
 					case 'h':
 						{
 							if      ( _T("height") == sProperty )	m_eType = cssptHeight;
-							else                                    m_eType = cssptUnknown;
+							else					           m_eType = cssptUnknown;
 
 							break;
 						}
@@ -3585,25 +3585,27 @@ namespace SimpleTypes
 								}
 							case 's':
 								{
-									if      ( _T("mso-direction-alt")                == sProperty ) m_eType = cssptMsoDirectionAlt;
-									else if ( _T("mso-fit-shape-to-text")            == sProperty ) m_eType = cssptMsoFitShapeToText;
-									else if ( _T("mso-fit-text-to-shape")            == sProperty ) m_eType = cssptMsoFitTextToShape;
-									else if ( _T("mso-layout-flow-alt")              == sProperty ) m_eType = cssptMsoLayoutFlowAlt;
-									else if ( _T("mso-next-textbox")                 == sProperty ) m_eType = cssptMsoNextTextbox;
-									else if ( _T("mso-position-horizontal")          == sProperty ) m_eType = cssptMsoPositionHorizontal;
-									else if ( _T("mso-position-horizontal-relative") == sProperty ) m_eType = cssptMsoPositionHorizontalRelative;
-									else if ( _T("mso-position-vertical")            == sProperty ) m_eType = cssptMsoPositionVertical;
-									else if ( _T("mso-position-vertical-relative")   == sProperty ) m_eType = cssptMsoPositionVerticalRelative;
-									else if ( _T("mso-rotate")                       == sProperty ) m_eType = cssptMsoRotate;
-									else if ( _T("mso-text-scale")                   == sProperty ) m_eType = cssptMsoTextScale;
-									else if ( _T("mso-text-shadow")                  == sProperty ) m_eType = cssptMsoTextShadow;
-									else if ( _T("mso-wrap-distance-bottom")         == sProperty ) m_eType = cssptMsoWrapDistanceBottom;
-									else if ( _T("mso-wrap-distance-left")           == sProperty ) m_eType = cssptMsoWrapDistanceLeft;
-									else if ( _T("mso-wrap-distance-right")          == sProperty ) m_eType = cssptMsoWrapDistanceRight;
-									else if ( _T("mso-wrap-distance-top")            == sProperty ) m_eType = cssptMsoWrapDistanceTop;
-									else if ( _T("mso-wrap-edited")                  == sProperty ) m_eType = cssptMsoWrapEdited;
-									else if ( _T("mso-wrap-style")                   == sProperty ) m_eType = cssptMsoWrapStyle;
-									else                                                              m_eType = cssptUnknown;
+									if      ( _T("mso-direction-alt")					== sProperty ) m_eType = cssptMsoDirectionAlt;
+									else if ( _T("mso-fit-shape-to-text")				== sProperty ) m_eType = cssptMsoFitShapeToText;
+									else if ( _T("mso-fit-text-to-shape")				== sProperty ) m_eType = cssptMsoFitTextToShape;
+									else if ( _T("mso-layout-flow-alt")					== sProperty ) m_eType = cssptMsoLayoutFlowAlt;
+									else if ( _T("mso-next-textbox")					== sProperty ) m_eType = cssptMsoNextTextbox;
+									else if ( _T("mso-position-horizontal")				== sProperty ) m_eType = cssptMsoPositionHorizontal;
+									else if ( _T("mso-position-horizontal-relative")	== sProperty ) m_eType = cssptMsoPositionHorizontalRelative;
+									else if ( _T("mso-position-vertical")				== sProperty ) m_eType = cssptMsoPositionVertical;
+									else if ( _T("mso-position-vertical-relative")		== sProperty ) m_eType = cssptMsoPositionVerticalRelative;
+									else if ( _T("mso-rotate")							== sProperty ) m_eType = cssptMsoRotate;
+									else if ( _T("mso-text-scale")						== sProperty ) m_eType = cssptMsoTextScale;
+									else if ( _T("mso-text-shadow")						== sProperty ) m_eType = cssptMsoTextShadow;
+									else if ( _T("mso-wrap-distance-bottom")			== sProperty ) m_eType = cssptMsoWrapDistanceBottom;
+									else if ( _T("mso-wrap-distance-left")				== sProperty ) m_eType = cssptMsoWrapDistanceLeft;
+									else if ( _T("mso-wrap-distance-right")				== sProperty ) m_eType = cssptMsoWrapDistanceRight;
+									else if ( _T("mso-wrap-distance-top")				== sProperty ) m_eType = cssptMsoWrapDistanceTop;
+									else if ( _T("mso-wrap-edited")						== sProperty ) m_eType = cssptMsoWrapEdited;
+									else if ( _T("mso-wrap-style")						== sProperty ) m_eType = cssptMsoWrapStyle;
+									else if ( _T("mso-height-percent")					== sProperty ) m_eType = csspctMsoHeightPercent;
+									else if ( _T("mso-width-percent")					== sProperty ) m_eType = csspctMsoWidthPercent;
+									else															m_eType = cssptUnknown;
 
 									break;
 								}
@@ -3633,7 +3635,7 @@ namespace SimpleTypes
 						{
 							if      ( _T("text-decoration") == sProperty )	m_eType = cssptTextDecoration;
 							else if ( _T("top")             == sProperty )	m_eType = cssptTop;
-							else							                m_eType = cssptUnknown;
+							else												m_eType = cssptUnknown;
 
 							break;
 						}
@@ -3676,58 +3678,60 @@ namespace SimpleTypes
 
 				switch ( m_eType )
 				{
-				case cssptUnknown                        : ReadValue_Unknown( sValue ); break;
+				case cssptUnknown						: ReadValue_Unknown( sValue ); break;
 
-				case cssptFlip                           : ReadValue_Flip( sValue ); break;
-				case cssptHeight                         : ReadValue_Units( sValue ); break;
-				case cssptLeft                           : ReadValue_Units( sValue ); break;
-				case cssptMarginBottom                   : ReadValue_Units( sValue ); break;
-				case cssptMarginLeft                     : ReadValue_Units( sValue ); break;
-				case cssptMarginRight                    : ReadValue_Units( sValue ); break;
-				case cssptMarginTop                      : ReadValue_Units( sValue ); break;
-				case cssptMsoPositionHorizontal          : ReadValue_MsoPosHor( sValue ); break;
-				case cssptMsoPositionHorizontalRelative  : ReadValue_MsoPosHorRel( sValue ); break;
-				case cssptMsoPositionVertical            : ReadValue_MsoPosVer( sValue ); break;
-				case cssptMsoPositionVerticalRelative    : ReadValue_MsoPosVerRel( sValue ); break;
-				case cssptMsoWrapDistanceBottom          : ReadValue_Double( sValue ); break;
-				case cssptMsoWrapDistanceLeft            : ReadValue_Double( sValue ); break;
-				case cssptMsoWrapDistanceRight           : ReadValue_Double( sValue ); break;
-				case cssptMsoWrapDistanceTop             : ReadValue_Double( sValue ); break;
-				case cssptMsoWrapEdited                  : ReadValue_Boolean( sValue ); break;
-				case cssptMsoWrapStyle                   : ReadValue_MsoWrapStyle( sValue ); break;
-				case cssptPosition                       : ReadValue_Position( sValue ); break;
-				case cssptRotation                       : ReadValue_Rotation( sValue ); break;
-				case cssptTop                            : ReadValue_Units( sValue ); break;
-				case cssptVisibility                     : ReadValue_Visibility( sValue ); break;
-				case cssptWidth                          : ReadValue_Units( sValue ); break;
-				case cssptZIndex                         : ReadValue_ZIndex( sValue ); break;
+				case cssptFlip							: ReadValue_Flip( sValue ); break;
+				case cssptHeight						: ReadValue_Units( sValue ); break;
+				case cssptLeft							: ReadValue_Units( sValue ); break;
+				case cssptMarginBottom 					: ReadValue_Units( sValue ); break;
+				case cssptMarginLeft					: ReadValue_Units( sValue ); break;
+				case cssptMarginRight					: ReadValue_Units( sValue ); break;
+				case cssptMarginTop						: ReadValue_Units( sValue ); break;
+				case cssptMsoPositionHorizontal			: ReadValue_MsoPosHor( sValue ); break;
+				case cssptMsoPositionHorizontalRelative	: ReadValue_MsoPosHorRel( sValue ); break;
+				case cssptMsoPositionVertical			: ReadValue_MsoPosVer( sValue ); break;
+				case cssptMsoPositionVerticalRelative	: ReadValue_MsoPosVerRel( sValue ); break;
+				case cssptMsoWrapDistanceBottom			: ReadValue_Double( sValue ); break;
+				case cssptMsoWrapDistanceLeft			: ReadValue_Double( sValue ); break;
+				case cssptMsoWrapDistanceRight			: ReadValue_Double( sValue ); break;
+				case cssptMsoWrapDistanceTop			: ReadValue_Double( sValue ); break;
+				case cssptMsoWrapEdited					: ReadValue_Boolean( sValue ); break;
+				case cssptMsoWrapStyle					: ReadValue_MsoWrapStyle( sValue ); break;
+				case cssptPosition						: ReadValue_Position( sValue ); break;
+				case cssptRotation						: ReadValue_Rotation( sValue ); break;
+				case cssptTop							: ReadValue_Units( sValue ); break;
+				case cssptVisibility					: ReadValue_Visibility( sValue ); break;
+				case cssptWidth							: ReadValue_Units( sValue ); break;
+				case cssptZIndex						: ReadValue_ZIndex( sValue ); break;
 
-				case cssptDirection                      : ReadValue_Direction( sValue ); break;
-				case cssptLayoutFlow                     : ReadValue_LayoutFlow( sValue ); break;
-				case cssptMsoDirectionAlt                : ReadValue_DirectionAlt( sValue ); break;
-				case cssptMsoFitShapeToText              : ReadValue_Boolean( sValue ); break;
-				case cssptMsoFitTextToShape              : ReadValue_Boolean( sValue ); break;
-				case cssptMsoLayoutFlowAlt               : ReadValue_LayoutFlowAlt( sValue ); break;
-				case cssptMsoNextTextbox                 : ReadValue_String( sValue ); break;
-				case cssptMsoRotate                      : ReadValue_MsoRotate( sValue ); break;
-				case cssptMsoTextScale                   : ReadValue_Double( sValue ); break;
-				case cssptVTextAnchor                    : ReadValue_VTextAnchor( sValue ); break;
+				case cssptDirection						: ReadValue_Direction( sValue ); break;
+				case cssptLayoutFlow					: ReadValue_LayoutFlow( sValue ); break;
+				case cssptMsoDirectionAlt				: ReadValue_DirectionAlt( sValue ); break;
+				case cssptMsoFitShapeToText				: ReadValue_Boolean( sValue ); break;
+				case cssptMsoFitTextToShape				: ReadValue_Boolean( sValue ); break;
+				case cssptMsoLayoutFlowAlt				: ReadValue_LayoutFlowAlt( sValue ); break;
+				case cssptMsoNextTextbox				: ReadValue_String( sValue ); break;
+				case cssptMsoRotate						: ReadValue_MsoRotate( sValue ); break;
+				case cssptMsoTextScale					: ReadValue_Double( sValue ); break;
+				case cssptVTextAnchor					: ReadValue_VTextAnchor( sValue ); break;
 
-				case cssptFont                           : ReadValue_String( sValue ); break;
-				case cssptFontFamily                     : ReadValue_String( sValue ); break;
-				case cssptFontSize                       : ReadValue_Double( sValue ); break;
-				case cssptFontStyle                      : ReadValue_FontStyle( sValue ); break;
-				case cssptFontVariant                    : ReadValue_FontVariant( sValue ); break;
-				case cssptFontWeight                     : ReadValue_FontWeight( sValue ); break;
-				case cssptMsoTextShadow                  : ReadValue_Boolean( sValue ); break;
-				case cssptTextDecoration                 : ReadValue_TextDecoration( sValue ); break;
-				case cssptVRotateLetters                 : ReadValue_Boolean( sValue ); break;
-				case cssptVSameLetterHeights             : ReadValue_Boolean( sValue ); break;
-				case cssptVTextAlign                     : ReadValue_VTextAlign( sValue ); break;
-				case cssptVTextKern                      : ReadValue_Boolean( sValue ); break;
-				case cssptVTextReverse                   : ReadValue_Boolean( sValue ); break;
-				case cssptVTextSpacingMode               : ReadValue_VTextSpacingMode( sValue ); break;
-				case cssptVTextSpacing                   : ReadValue_Double( sValue ); break;
+				case cssptFont							: ReadValue_String( sValue ); break;
+				case cssptFontFamily					: ReadValue_String( sValue ); break;
+				case cssptFontSize						: ReadValue_Double( sValue ); break;
+				case cssptFontStyle						: ReadValue_FontStyle( sValue ); break;
+				case cssptFontVariant					: ReadValue_FontVariant( sValue ); break;
+				case cssptFontWeight					: ReadValue_FontWeight( sValue ); break;
+				case cssptMsoTextShadow					: ReadValue_Boolean( sValue ); break;
+				case cssptTextDecoration				: ReadValue_TextDecoration( sValue ); break;
+				case cssptVRotateLetters				: ReadValue_Boolean( sValue ); break;
+				case cssptVSameLetterHeights			: ReadValue_Boolean( sValue ); break;
+				case cssptVTextAlign					: ReadValue_VTextAlign( sValue ); break;
+				case cssptVTextKern						: ReadValue_Boolean( sValue ); break;
+				case cssptVTextReverse					: ReadValue_Boolean( sValue ); break;
+				case cssptVTextSpacingMode				: ReadValue_VTextSpacingMode( sValue ); break;
+				case cssptVTextSpacing					: ReadValue_Double( sValue ); break;
+				case csspctMsoWidthPercent				: ReadValue_Double( sValue ); break;				
+				case csspctMsoHeightPercent				: ReadValue_Double( sValue ); break;
 				};
 			}
 
@@ -3757,8 +3761,8 @@ namespace SimpleTypes
 				{
 					m_oValue.oValue.eType = cssunitstypeUnits;
 
-                    CString strValue = sValue.Mid( 0, nPos );
-                    double dValue = strValue.IsEmpty() ? 0 : _wtof(strValue );
+					   CString strValue = sValue.Mid( 0, nPos );
+					   double dValue = strValue.IsEmpty() ? 0 : _wtof(strValue );
 
 					m_oValue.oValue.dValue = Inch_To_Pt(dValue);
 				}
@@ -3766,19 +3770,19 @@ namespace SimpleTypes
 				{
 					m_oValue.oValue.eType = cssunitstypeUnits;
 
-                    CString strValue = sValue.Mid( 0, nPos );
-                    double dValue = strValue.IsEmpty() ? 0 : _wtof(strValue );
+					   CString strValue = sValue.Mid( 0, nPos );
+					   double dValue = strValue.IsEmpty() ? 0 : _wtof(strValue );
 
-                    m_oValue.oValue.dValue = Cm_To_Pt(dValue);
+					   m_oValue.oValue.dValue = Cm_To_Pt(dValue);
 				}
 				else if ( -1 != ( nPos = sValue.Find( _T("mm") ) ) )
 				{
 					m_oValue.oValue.eType = cssunitstypeUnits;
 
-                    CString strValue = sValue.Mid( 0, nPos );
-                    double dValue = strValue.IsEmpty() ? 0 : _wtof(strValue );
+					   CString strValue = sValue.Mid( 0, nPos );
+					   double dValue = strValue.IsEmpty() ? 0 : _wtof(strValue );
 
-                    m_oValue.oValue.dValue = Mm_To_Pt(dValue);
+					   m_oValue.oValue.dValue = Mm_To_Pt(dValue);
 				}
 				else if ( -1 != ( nPos = sValue.Find( _T("em") ) ) )
 				{
@@ -3792,35 +3796,35 @@ namespace SimpleTypes
 				{
 					m_oValue.oValue.eType = cssunitstypeUnits;
 
-                    CString strValue = sValue.Mid( 0, nPos );
-                    double dValue = strValue.IsEmpty() ? 0 : _wtof(strValue );
+					   CString strValue = sValue.Mid( 0, nPos );
+					   double dValue = strValue.IsEmpty() ? 0 : _wtof(strValue );
 
-                    m_oValue.oValue.dValue = dValue;
+					   m_oValue.oValue.dValue = dValue;
 				}
 				else if ( -1 != ( nPos = sValue.Find( _T("pc") ) ) )
 				{
 					m_oValue.oValue.eType = cssunitstypeUnits;
 
-                    CString strValue = sValue.Mid( 0, nPos );
-                    double dValue = strValue.IsEmpty() ? 0 : _wtof(strValue );
+					   CString strValue = sValue.Mid( 0, nPos );
+					   double dValue = strValue.IsEmpty() ? 0 : _wtof(strValue );
 
-                    m_oValue.oValue.dValue = dValue * 12;
+					   m_oValue.oValue.dValue = dValue * 12;
 				}
 				else if ( -1 != ( nPos = sValue.Find( _T("%") ) ) )
 				{
 					m_oValue.oValue.eType = cssunitstypePerc;
 
-                    CString strValue = sValue.Mid( 0, nPos );
-                    m_oValue.oValue.dValue = strValue.IsEmpty() ? 0 : _wtof(strValue );
+					   CString strValue = sValue.Mid( 0, nPos );
+					   m_oValue.oValue.dValue = strValue.IsEmpty() ? 0 : _wtof(strValue );
 				}
 				else if ( -1 != ( nPos = sValue.Find( _T("px") ) ) )
 				{
 					m_oValue.oValue.eType = cssunitstypeUnits;
 
-                    CString strValue = sValue.Mid( 0, nPos );
-                    double dValue = strValue.IsEmpty() ? 0 : _wtof(strValue );
+					   CString strValue = sValue.Mid( 0, nPos );
+					   double dValue = strValue.IsEmpty() ? 0 : _wtof(strValue );
 
-                    m_oValue.oValue.dValue = Px_To_Pt(dValue);
+					   m_oValue.oValue.dValue = Px_To_Pt(dValue);
 				}
 				else
 				{
@@ -3833,7 +3837,7 @@ namespace SimpleTypes
 					{
 						m_oValue.oValue.dValue = 0;
 					}
-                }
+					}
 			}
 
 			void ReadValue_MsoPosHor(CString& sValue)
@@ -3882,7 +3886,7 @@ namespace SimpleTypes
 
             void ReadValue_Rotation(CString& sValue)
             {
-                m_oValue.dValue = sValue.IsEmpty() ? 0 : _wtof(sValue );
+					m_oValue.dValue = sValue.IsEmpty() ? 0 : _wtof(sValue );
 
 				if (sValue.Find(_T("fd")) != -1)
 					m_oValue.dValue /= 6000;
@@ -3890,7 +3894,7 @@ namespace SimpleTypes
 
 			void ReadValue_Double(CString& sValue)
 			{
-                m_oValue.dValue = sValue.IsEmpty() ? 0 : _wtof(sValue );
+					m_oValue.dValue = sValue.IsEmpty() ? 0 : _wtof(sValue );
             }
 
 			void ReadValue_Boolean(CString& sValue)
@@ -3943,7 +3947,7 @@ namespace SimpleTypes
 			void ReadValue_LayoutFlow(CString& sValue)
 			{
 				if      ( _T("horizontal")             == sValue ) m_oValue.eLayoutFlow = csslayoutflowHorizontal;
-				else if ( _T("vertical")               == sValue ) m_oValue.eLayoutFlow = csslayoutflowVertical;
+				else if ( _T("vertical")					== sValue ) m_oValue.eLayoutFlow = csslayoutflowVertical;
 				else if ( _T("vertical-ideographic")   == sValue ) m_oValue.eLayoutFlow = csslayoutflowVerticalIdeographic;
 				else if ( _T("horizontal-ideographic") == sValue ) m_oValue.eLayoutFlow = csslayoutflowHorizontalIdeographic;
 				else 
@@ -3978,9 +3982,9 @@ namespace SimpleTypes
 			}
 			void ReadValue_VTextAnchor(CString& sValue)
 			{
-				if      ( _T("top")                    == sValue ) m_oValue.eVTextAnchor = cssvtextanchorTop;
-				else if ( _T("middle")                 == sValue ) m_oValue.eVTextAnchor = cssvtextanchorMiddle;
-				else if ( _T("bottom")                 == sValue ) m_oValue.eVTextAnchor = cssvtextanchorBottom;
+				if      ( _T("top")					   == sValue ) m_oValue.eVTextAnchor = cssvtextanchorTop;
+				else if ( _T("middle")					== sValue ) m_oValue.eVTextAnchor = cssvtextanchorMiddle;
+				else if ( _T("bottom")					== sValue ) m_oValue.eVTextAnchor = cssvtextanchorBottom;
 				else if ( _T("top-center")             == sValue ) m_oValue.eVTextAnchor = cssvtextanchorTopCenter;
 				else if ( _T("middle-center")          == sValue ) m_oValue.eVTextAnchor = cssvtextanchorMiddleCenter;
 				else if ( _T("bottom-center")          == sValue ) m_oValue.eVTextAnchor = cssvtextanchorBottomCenter;
@@ -4144,7 +4148,7 @@ namespace SimpleTypes
 		public:
 
 			std::vector<SimpleTypes::Vml::CCssProperty*>  m_arrProperties;
-			CString                                       m_sCss;
+			CString										m_sCss;
 		};
 		//--------------------------------------------------------------------------------
 		// Vml_Vector2D_Units 14.1.2.3 (from, control1, control2, to) 
@@ -4186,10 +4190,10 @@ namespace SimpleTypes
 				if ( -1 == nPos )
 					return 0;
 
-                SimpleTypes::CPoint oPt1 = (const TCHAR *) sValue.Mid( 0, nPos );
+					SimpleTypes::CPoint oPt1 = (const TCHAR *) sValue.Mid( 0, nPos );
 				m_dX = oPt1.GetValue();
 
-                SimpleTypes::CPoint oPt2 = (const TCHAR *) sValue.Mid( nPos + 1, nLen - nPos - 1 );
+					SimpleTypes::CPoint oPt2 = (const TCHAR *) sValue.Mid( nPos + 1, nLen - nPos - 1 );
 				m_dY = oPt2.GetValue();
 
 				return 0;
@@ -4251,10 +4255,10 @@ namespace SimpleTypes
 				if ( -1 == nPos )
 					return 0;
 
-                SimpleTypes::CPercentage oPerc1 = (const TCHAR *) sValue.Mid( 0, nPos );
+					SimpleTypes::CPercentage oPerc1 = (const TCHAR *) sValue.Mid( 0, nPos );
 				m_dX = oPerc1.GetValue();
 
-                SimpleTypes::CPercentage oPerc2 = (const TCHAR *) sValue.Mid( nPos + 1, nLen - nPos - 1 );
+					SimpleTypes::CPercentage oPerc2 = (const TCHAR *) sValue.Mid( nPos + 1, nLen - nPos - 1 );
 				m_dY = oPerc2.GetValue();
 
 				return 0;
@@ -4316,10 +4320,10 @@ namespace SimpleTypes
 				if ( -1 == nPos )
 					return 0;
 
-                SimpleTypes::Vml::CVml_1_65536 oFraction1 = (const TCHAR *) sValue.Mid( 0, nPos );
+					SimpleTypes::Vml::CVml_1_65536 oFraction1 = (const TCHAR *) sValue.Mid( 0, nPos );
 				m_dX = oFraction1.GetValue();
 
-                SimpleTypes::Vml::CVml_1_65536 oFraction2 = (const TCHAR *) sValue.Mid( nPos + 1, nLen - nPos - 1 );
+					SimpleTypes::Vml::CVml_1_65536 oFraction2 = (const TCHAR *) sValue.Mid( nPos + 1, nLen - nPos - 1 );
 				m_dY = oFraction2.GetValue();
 
 				return 0;
@@ -4388,7 +4392,7 @@ namespace SimpleTypes
 					if ( -1 == nSpacePos )
 						nSpacePos = nLen;
 
-                    SimpleTypes::CPoint oPoint = (const TCHAR *) sValue.Mid( nPos, nSpacePos - nPos );
+					   SimpleTypes::CPoint oPoint = (const TCHAR *) sValue.Mid( nPos, nSpacePos - nPos );
 					nPos = nSpacePos + 1;
 
 					m_arrLimits.push_back( oPoint.ToPoints() );
@@ -4430,32 +4434,32 @@ namespace SimpleTypes
 
 			virtual int     FromString(CString &sValue)
 			{
-                this->m_eValue = _wtoi( sValue );
+					this->m_eValue = _wtoi( sValue );
 
-                return this->m_eValue;
+					return this->m_eValue;
 			}
 
 			virtual CString ToString  () const 
 			{
 				CString sResult;
-                sResult.Format( _T("%d"), this->m_eValue);
+					sResult.Format( _T("%d"), this->m_eValue);
 
 				return sResult;
 			}
 
 			bool IsTable() const
 			{
-                return ( this->m_eValue & 1 ? true : false );
+					return ( this->m_eValue & 1 ? true : false );
 			}
 
 			bool IsPlaceholder() const
 			{
-                return ( this->m_eValue & 2 ? true : false );
+					return ( this->m_eValue & 2 ? true : false );
 			}
 
 			bool IsBiDirectionalText() const
 			{
-                return ( this->m_eValue & 4 ? true : false );
+					return ( this->m_eValue & 4 ? true : false );
 			}
 
 			SimpleType_FromString           (int)
@@ -4492,19 +4496,19 @@ namespace SimpleTypes
 			{
 				return m_eTypeY;
 			}
-			CString                GetIdX() const
+			CString					GetIdX() const
 			{
 				return m_sIdX;
 			}
-			CString                GetIdY() const
+			CString					GetIdY() const
 			{
 				return m_sIdY;
 			}
-			double                 GetX() const
+			double					GetX() const
 			{
 				return m_dX;
 			}
-			double                 GetY() const
+			double					GetY() const
 			{
 				return m_dY;
 			}
@@ -4607,7 +4611,7 @@ namespace SimpleTypes
 					case '.':
 
 						eValue = vmlvector2dposConstant;
-                        dValue = sValue.IsEmpty() ? 0 : _wtof(sValue );
+					dValue = sValue.IsEmpty() ? 0 : _wtof(sValue );
 						break;
 
 					case 'c':
@@ -4665,11 +4669,11 @@ namespace SimpleTypes
 			EVml_Vector2D_Position m_eTypeX;
 			EVml_Vector2D_Position m_eTypeY;
 
-			CString                m_sIdX;  // Значение для типа Formula иди AdjValue
-			CString                m_sIdY;  //
+			CString					m_sIdX;  // Значение для типа Formula иди AdjValue
+			CString					m_sIdY;  //
 
-			double                 m_dX;    // Значение для типа Constant
-			double                 m_dY;    // 
+			double					m_dX;    // Значение для типа Constant
+			double					m_dY;    // 
 		};
 		//--------------------------------------------------------------------------------
 		// Vml_Polygon2D_Units 14.1.2.15 (points)
@@ -4772,16 +4776,16 @@ namespace SimpleTypes
 					if ( -1 == nEndPos )
 						nEndPos = nLen;
 
-                    CString strX = sValue.Mid( nStartPos, nMidPos - nStartPos ) ;
-                    CString strY = sValue.Mid( nMidPos + 1, nEndPos - nMidPos - 1 );
+					   CString strX = sValue.Mid( nStartPos, nMidPos - nStartPos ) ;
+					   CString strY = sValue.Mid( nMidPos + 1, nEndPos - nMidPos - 1 );
 
-                    strX.Replace(_T("@"), _T(""));
-                    strY.Replace(_T("@"), _T(""));
+					   strX.Replace(_T("@"), _T(""));
+					   strY.Replace(_T("@"), _T(""));
 
-                    int nX = strX.IsEmpty() ? 0 : _wtoi(strX );
-                    int nY = strY.IsEmpty() ? 0 : _wtoi(strY );
+					   int nX = strX.IsEmpty() ? 0 : _wtoi(strX );
+					   int nY = strY.IsEmpty() ? 0 : _wtoi(strY );
 
-                    m_arrPoints.push_back( TPoint( nX, nY ) );
+					   m_arrPoints.push_back( TPoint( nX, nY ) );
 
 					nStartPos = nEndPos + 1;
 				}
@@ -4824,7 +4828,7 @@ namespace SimpleTypes
 			};
 
 			std::vector<TPoint> m_arrPoints;
-			wchar_t              m_wcDelimiter; // Разделитель, по умолчнию пробел ' '
+			wchar_t					m_wcDelimiter; // Разделитель, по умолчнию пробел ' '
 		};
 		//--------------------------------------------------------------------------------
 		// Vml_1_65536_Or_Percentage 14.2.2.11 (brightness)
@@ -4844,16 +4848,16 @@ namespace SimpleTypes
 
 			void   SetValue(double dValue)
 			{
-                m_dValue = (std::max)( 0.0, (std::min)( 1.0, dValue) );
+					m_dValue = (std::max)( 0.0, (std::min)( 1.0, dValue) );
 			}
 
 			void   SetValue(int nValue)
 			{
-                m_dValue = (std::max)( 0.0, (std::min)( 65536.0, (double) nValue) ) / 65536.0;
+					m_dValue = (std::max)( 0.0, (std::min)( 65536.0, (double) nValue) ) / 65536.0;
 			}
 			void   SetPercentage(double dValue)
 			{
-                m_dValue = (std::max)( 0.0, (std::min)( 100.0, dValue ) ) / 100.0;
+					m_dValue = (std::max)( 0.0, (std::min)( 100.0, dValue ) ) / 100.0;
 			}
 
 			virtual double FromString(CString &sValue)
@@ -4867,20 +4871,20 @@ namespace SimpleTypes
 
 				if ( bFraction )
 				{
-                    CString strValue = sValue.Mid( 0, nLen - 1 );
-                    int nValue = strValue.IsEmpty() ? 0 : _wtoi(strValue );
+					   CString strValue = sValue.Mid( 0, nLen - 1 );
+					   int nValue = strValue.IsEmpty() ? 0 : _wtoi(strValue );
 
-                    SetValue( nValue );
+					   SetValue( nValue );
 				}
 				else if ( bPercentage )
 				{
-                    CString strValue = sValue.Mid( 0, nLen - 1 );
-                    double dValue = strValue.IsEmpty() ? 0 : _wtof(strValue );
+					   CString strValue = sValue.Mid( 0, nLen - 1 );
+					   double dValue = strValue.IsEmpty() ? 0 : _wtof(strValue );
 					SetPercentage( dValue );
 				}
 				else
 				{
-                    double dValue = sValue.IsEmpty() ? 0 : _wtof(sValue );
+					   double dValue = sValue.IsEmpty() ? 0 : _wtof(sValue );
 					SetValue( dValue );
 				}
 
@@ -5012,10 +5016,10 @@ namespace SimpleTypes
 					nEndPos = nLen;
 
 				if ( nEndPos - nStartPos > 0 )
-                {
-                    CString strValue = sValue.Mid( nStartPos, nEndPos - nStartPos );
-                    m_dSxx = strValue.IsEmpty() ? 0 : _wtof(strValue );
-                }
+					{
+					   CString strValue = sValue.Mid( nStartPos, nEndPos - nStartPos );
+					   m_dSxx = strValue.IsEmpty() ? 0 : _wtof(strValue );
+					}
 
 				// Sxy
 				nStartPos = nEndPos + 1;
@@ -5024,10 +5028,10 @@ namespace SimpleTypes
 					nEndPos = nLen;
 
 				if ( nEndPos - nStartPos > 0 )
-                {
-                    CString strValue = sValue.Mid( nStartPos, nEndPos - nStartPos );
-                    m_dSxy = strValue.IsEmpty() ? 0 : _wtof(strValue );
-                }
+					{
+					   CString strValue = sValue.Mid( nStartPos, nEndPos - nStartPos );
+					   m_dSxy = strValue.IsEmpty() ? 0 : _wtof(strValue );
+					}
 
 				// Syx
 				nStartPos = nEndPos + 1;
@@ -5036,10 +5040,10 @@ namespace SimpleTypes
 					nEndPos = nLen;
 
 				if ( nEndPos - nStartPos > 0 )
-                {
-                    CString strValue = sValue.Mid( nStartPos, nEndPos - nStartPos );
-                    m_dSyx = strValue.IsEmpty() ? 0 : _wtof(strValue );
-               }
+					{
+					   CString strValue = sValue.Mid( nStartPos, nEndPos - nStartPos );
+					   m_dSyx = strValue.IsEmpty() ? 0 : _wtof(strValue );
+					}
 
 				// Syy
 				nStartPos = nEndPos + 1;
@@ -5048,10 +5052,10 @@ namespace SimpleTypes
 					nEndPos = nLen;
 
 				if ( nEndPos - nStartPos > 0 )
-                {
-                    CString strValue = sValue.Mid( nStartPos, nEndPos - nStartPos );
-                    m_dSyy = strValue.IsEmpty() ? 0 : _wtof(strValue );
-                }
+					{
+					   CString strValue = sValue.Mid( nStartPos, nEndPos - nStartPos );
+					   m_dSyy = strValue.IsEmpty() ? 0 : _wtof(strValue );
+					}
 
 				// Px
 				nStartPos = nEndPos + 1;
@@ -5060,10 +5064,10 @@ namespace SimpleTypes
 					nEndPos = nLen;
 
 				if ( nEndPos - nStartPos > 0 )
-                {
-                    CString strValue = sValue.Mid( nStartPos, nEndPos - nStartPos );
-                    m_dPx = strValue.IsEmpty() ? 0 : _wtof(strValue );
-                }
+					{
+					   CString strValue = sValue.Mid( nStartPos, nEndPos - nStartPos );
+					   m_dPx = strValue.IsEmpty() ? 0 : _wtof(strValue );
+					}
 
 				// Py
 				nStartPos = nEndPos + 1;
@@ -5072,10 +5076,10 @@ namespace SimpleTypes
 					nEndPos = nLen;
 
 				if ( nEndPos - nStartPos > 0 )
-                {
-                    CString strValue = sValue.Mid( nStartPos, nEndPos - nStartPos );
-                    m_dPy = strValue.IsEmpty() ? 0 : _wtof(strValue );
-                }
+					{
+					   CString strValue = sValue.Mid( nStartPos, nEndPos - nStartPos );
+					   m_dPy = strValue.IsEmpty() ? 0 : _wtof(strValue );
+					}
 
 				nStartPos = nEndPos + 1;		
 				return 0;
@@ -5282,7 +5286,7 @@ namespace SimpleTypes
 				if ( -1 == nEndPos )
 					nEndPos = nLen;
 
-                SimpleTypes::CPoint oPtLeft = (const TCHAR *) sValue.Mid( nStartPos, nEndPos - nStartPos );
+					SimpleTypes::CPoint oPtLeft = (const TCHAR *) sValue.Mid( nStartPos, nEndPos - nStartPos );
 				m_dLeft = oPtLeft.GetValue();
 
 				// Top
@@ -5291,7 +5295,7 @@ namespace SimpleTypes
 				if ( -1 == nEndPos )
 					nEndPos = nLen;
 
-                SimpleTypes::CPoint oPtTop = (const TCHAR *) sValue.Mid( nStartPos, nEndPos - nStartPos );
+					SimpleTypes::CPoint oPtTop = (const TCHAR *) sValue.Mid( nStartPos, nEndPos - nStartPos );
 				m_dTop = oPtTop.GetValue();
 
 				// Right
@@ -5300,7 +5304,7 @@ namespace SimpleTypes
 				if ( -1 == nEndPos )
 					nEndPos = nLen;
 
-                SimpleTypes::CPoint oPtRight = (const TCHAR *) sValue.Mid( nStartPos, nEndPos - nStartPos );
+					SimpleTypes::CPoint oPtRight = (const TCHAR *) sValue.Mid( nStartPos, nEndPos - nStartPos );
 				m_dRight = oPtRight.GetValue();
 
 				// Bottom
@@ -5309,7 +5313,7 @@ namespace SimpleTypes
 				if ( -1 == nEndPos )
 					nEndPos = nLen;
 
-                SimpleTypes::CPoint oPtBottom = (const TCHAR *) sValue.Mid( nStartPos, nEndPos - nStartPos );
+					SimpleTypes::CPoint oPtBottom = (const TCHAR *) sValue.Mid( nStartPos, nEndPos - nStartPos );
 				m_dBottom = oPtBottom.GetValue();
 
 				return 0;

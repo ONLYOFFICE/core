@@ -72,100 +72,70 @@
 #include "math.h"
 class RtfBorderCommand
 {
-public:static bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CString sCommand, bool hasParameter, int parameter,RtfBorder& oOutput)
+public:
+	static bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CString sCommand, bool hasParameter, int parameter,RtfBorder& oOutput)
+	{
+		if( _T("brdrs") == sCommand )						oOutput.m_eType = RtfBorder::bt_brdrs;
+		else if( _T("brdrth") == sCommand )					oOutput.m_eType = RtfBorder::bt_brdrth;
+		else if( _T("brdrsh") == sCommand )					oOutput.m_eType = RtfBorder::bt_brdrsh;
+		else if( _T("brdrdb") == sCommand )					oOutput.m_eType = RtfBorder::bt_brdrdb;
+		else if( _T("brdrdot") == sCommand )				oOutput.m_eType = RtfBorder::bt_brdrdot;
+		else if( _T("brdrdash") == sCommand )				oOutput.m_eType = RtfBorder::bt_brdrdash;
+		else if( _T("brdrhair") == sCommand )				oOutput.m_eType = RtfBorder::bt_brdrhair;
+		else if( _T("brdrdashsm") == sCommand )				oOutput.m_eType = RtfBorder::bt_brdrdashsm;
+		else if( _T("brdrdashd") == sCommand )				oOutput.m_eType = RtfBorder::bt_brdrdashd;
+		else if( _T("brdrdashdd") == sCommand )				oOutput.m_eType = RtfBorder::bt_brdrdashdd;
+		else if( _T("brdrdashdot") == sCommand )			oOutput.m_eType = RtfBorder::bt_brdrdashdot;
+		else if( _T("brdrdashdotdot") == sCommand )			oOutput.m_eType = RtfBorder::bt_brdrdashdot;
+		else if( _T("brdrtriple") == sCommand )				oOutput.m_eType = RtfBorder::bt_brdrtriple;
+		else if( _T("brdrtnthsg") == sCommand )				oOutput.m_eType = RtfBorder::bt_brdrtnthsg;
+		else if( _T("brdrthtnsg") == sCommand )				oOutput.m_eType = RtfBorder::bt_brdrthtnsg;
+		else if( _T("brdrtnthtnsg") == sCommand )			oOutput.m_eType = RtfBorder::bt_brdrtnthtnsg;
+		else if( _T("brdrtnthmg") == sCommand )				oOutput.m_eType = RtfBorder::bt_brdrtnthmg;
+		else if( _T("brdrthtnmg") == sCommand )				oOutput.m_eType = RtfBorder::bt_brdrthtnmg;
+		else if( _T("brdrtnthtnmg") == sCommand )			oOutput.m_eType = RtfBorder::bt_brdrtnthtnmg;
+		else if( _T("brdrtnthlg") == sCommand )				oOutput.m_eType = RtfBorder::bt_brdrtnthlg;
+		else if( _T("brdrthtnlg") == sCommand )				oOutput.m_eType = RtfBorder::bt_brdrthtnlg;
+		else if( _T("brdrtnthtnlg") == sCommand )			oOutput.m_eType = RtfBorder::bt_brdrtnthtnlg;
+		else if( _T("brdrwavy") == sCommand )				oOutput.m_eType = RtfBorder::bt_brdrwavy;
+		else if( _T("brdrwavydb") == sCommand )				oOutput.m_eType = RtfBorder::bt_brdrwavydb;
+		else if( _T("brdrdashdotstr") == sCommand )			oOutput.m_eType = RtfBorder::bt_brdrdashdotstr;
+		else if( _T("brdremboss") == sCommand )				oOutput.m_eType = RtfBorder::bt_brdremboss;
+		else if( _T("brdrengrave") == sCommand )			oOutput.m_eType = RtfBorder::bt_brdrengrave;
+		else if( _T("brdroutset") == sCommand )				oOutput.m_eType = RtfBorder::bt_brdroutset;
+		else if( _T("brdrinset") == sCommand )				oOutput.m_eType = RtfBorder::bt_brdrinset;
+		else if( _T("brdrnone") == sCommand )				oOutput.m_eType = RtfBorder::bt_brdrnone;
+		else if( _T("brdrw") == sCommand )
 		{
-			if( _T("brdrs") == sCommand )
-				oOutput.m_eType = RtfBorder::bt_brdrs;
-			else if( _T("brdrth") == sCommand )
-				oOutput.m_eType = RtfBorder::bt_brdrth;
-			else if( _T("brdrsh") == sCommand )
-				oOutput.m_eType = RtfBorder::bt_brdrsh;
-			else if( _T("brdrdb") == sCommand )
-				oOutput.m_eType = RtfBorder::bt_brdrdb;
-			else if( _T("brdrdot") == sCommand )
-				oOutput.m_eType = RtfBorder::bt_brdrdot;
-			else if( _T("brdrdash") == sCommand )
-				oOutput.m_eType = RtfBorder::bt_brdrdash;
-			else if( _T("brdrhair") == sCommand )
-				oOutput.m_eType = RtfBorder::bt_brdrhair;
-			else if( _T("brdrdashsm") == sCommand )
-				oOutput.m_eType = RtfBorder::bt_brdrdashsm;
-			else if( _T("brdrdashd") == sCommand )
-				oOutput.m_eType = RtfBorder::bt_brdrdashd;
-			else if( _T("brdrdashdd") == sCommand )
-				oOutput.m_eType = RtfBorder::bt_brdrdashdd;
-			else if( _T("brdrdashdot") == sCommand )
-				oOutput.m_eType = RtfBorder::bt_brdrdashdot;
-			else if( _T("brdrdashdotdot") == sCommand )
-				oOutput.m_eType = RtfBorder::bt_brdrdashdot;
-			else if( _T("brdrtriple") == sCommand )
-				oOutput.m_eType = RtfBorder::bt_brdrtriple;
-			else if( _T("brdrtnthsg") == sCommand )
-				oOutput.m_eType = RtfBorder::bt_brdrtnthsg;
-			else if( _T("brdrthtnsg") == sCommand )
-				oOutput.m_eType = RtfBorder::bt_brdrthtnsg;
-			else if( _T("brdrtnthtnsg") == sCommand )
-				oOutput.m_eType = RtfBorder::bt_brdrtnthtnsg;
-			else if( _T("brdrtnthmg") == sCommand )
-				oOutput.m_eType = RtfBorder::bt_brdrtnthmg;
-			else if( _T("brdrthtnmg") == sCommand )
-				oOutput.m_eType = RtfBorder::bt_brdrthtnmg;
-			else if( _T("brdrtnthtnmg") == sCommand )
-				oOutput.m_eType = RtfBorder::bt_brdrtnthtnmg;
-			else if( _T("brdrtnthlg") == sCommand )
-				oOutput.m_eType = RtfBorder::bt_brdrtnthlg;
-			else if( _T("brdrthtnlg") == sCommand )
-				oOutput.m_eType = RtfBorder::bt_brdrthtnlg;
-			else if( _T("brdrtnthtnlg") == sCommand )
-				oOutput.m_eType = RtfBorder::bt_brdrtnthtnlg;
-			else if( _T("brdrwavy") == sCommand )
-				oOutput.m_eType = RtfBorder::bt_brdrwavy;
-			else if( _T("brdrwavydb") == sCommand )
-				oOutput.m_eType = RtfBorder::bt_brdrwavydb;
-			else if( _T("brdrdashdotstr") == sCommand )
-				oOutput.m_eType = RtfBorder::bt_brdrdashdotstr;
-			else if( _T("brdremboss") == sCommand )
-				oOutput.m_eType = RtfBorder::bt_brdremboss;
-			else if( _T("brdrengrave") == sCommand )
-				oOutput.m_eType = RtfBorder::bt_brdrengrave;
-			else if( _T("brdroutset") == sCommand )
-				oOutput.m_eType = RtfBorder::bt_brdroutset;
-			else if( _T("brdrinset") == sCommand )
-				oOutput.m_eType = RtfBorder::bt_brdrinset;
-
-			else if( _T("brdrnone") == sCommand )
-				oOutput.m_eType = RtfBorder::bt_brdrnone;
-			else if( _T("brdrw") == sCommand )
+			if( true == hasParameter )
 			{
-				if( true == hasParameter )
-				{
-					oOutput.m_nWidth = parameter;
-					if( RtfBorder::bt_none == oOutput.m_eType )
-						oOutput.m_eType = RtfBorder::bt_brdrs;
-				}
+				oOutput.m_nWidth = parameter;
+				if( RtfBorder::bt_none == oOutput.m_eType )
+					oOutput.m_eType = RtfBorder::bt_brdrs;
 			}
-			else if( _T("brsp") == sCommand )
-			{
-				if( true == hasParameter )
-				{
-					oOutput.m_nSpace = parameter;
-					if( RtfBorder::bt_none == oOutput.m_eType )
-						oOutput.m_eType = RtfBorder::bt_brdrs;
-				}
-			}
-			else if( _T("brdrcf") == sCommand )
-			{
-				if( true == hasParameter )
-				{
-					oOutput.m_nColor = parameter;
-					if( RtfBorder::bt_none == oOutput.m_eType )
-						oOutput.m_eType = RtfBorder::bt_brdrs;
-				}
-			}
-			else
-				return false;
-			return true;
 		}
+		else if( _T("brsp") == sCommand )
+		{
+			if( true == hasParameter )
+			{
+				oOutput.m_nSpace = parameter;
+				if( RtfBorder::bt_none == oOutput.m_eType )
+					oOutput.m_eType = RtfBorder::bt_brdrs;
+			}
+		}
+		else if( _T("brdrcf") == sCommand )
+		{
+			if( true == hasParameter )
+			{
+				oOutput.m_nColor = parameter;
+				if( RtfBorder::bt_none == oOutput.m_eType )
+					oOutput.m_eType = RtfBorder::bt_brdrs;
+			}
+		}
+		else
+			return false;
+		return true;
+	}
 };
 class RtfShadingCommand
 {

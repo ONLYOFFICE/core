@@ -282,7 +282,7 @@ public:
 				}
 			}
 
-			if (oOutputBorder.m_eType != RtfBorder::bt_brdrnone)
+			if (oOutputBorder.m_eType != RtfBorder::bt_none)
 			{
 				if ((m_ooxBorder->m_oColor.IsInit()) && (m_ooxBorder->m_oColor->GetValue() == SimpleTypes::hexcolorRGB))
 				{

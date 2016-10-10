@@ -49,7 +49,7 @@ struct _rect
 
 struct drawing_object_description
 {
-	oox::RelsType					type_;
+	oox::RelsType							type_;
 
 	std::wstring							name_;	
 	_CP_OPT(_rect)							svg_rect_;

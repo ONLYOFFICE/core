@@ -864,6 +864,17 @@ bool OOXpPrReader::Parse( ReaderParameter oParam ,RtfParagraphProperty& oOutputP
 			}
 		}
 	}
+// ------------ test
+	//if( m_ooxParaProps->m_oPStyle.IsInit() && m_ooxParaProps->m_oPStyle->m_sVal.IsInit())
+	//{
+	//	CString sStyleName = m_ooxParaProps->m_oPStyle->m_sVal.get2();
+	//	RtfStylePtr oCurStyle;
+	//	if( true == oParam.oRtf->m_oStyleTable.GetStyle(sStyleName, oCurStyle) )
+	//	{
+	//		oOutputProperty.m_nStyle = oCurStyle->m_nID;
+	//	}
+	//}
+// ------------ test
 	if( m_ooxParaProps->m_oSuppressAutoHyphens.IsInit() )
 	{
 		if (m_ooxParaProps->m_oSuppressAutoHyphens->m_oVal.ToBool())
@@ -957,13 +968,18 @@ bool OOXpPrReader::Parse( ReaderParameter oParam ,RtfParagraphProperty& oOutputP
 			{
 				if (m_ooxParaProps->m_oSpacing->m_oLineRule->GetValue() == SimpleTypes::linespacingruleExact)
 				{
-					oOutputProperty.m_nSpaceBetween = - m_ooxParaProps->m_oSpacing->m_oLine->ToTwips();//twips ??? todooo
-					oOutputProperty.m_nSpaceMultiLine = 0;
+					oOutputProperty.m_nSpaceBetween		= - m_ooxParaProps->m_oSpacing->m_oLine->ToTwips();//twips ??? todooo
+					oOutputProperty.m_nSpaceMultiLine	= 0;
 				}
 				else if (m_ooxParaProps->m_oSpacing->m_oLineRule->GetValue() == SimpleTypes::linespacingruleAtLeast)
 				{
-					oOutputProperty.m_nSpaceBetween = m_ooxParaProps->m_oSpacing->m_oLine->ToTwips();
-					oOutputProperty.m_nSpaceMultiLine = 0;
+					oOutputProperty.m_nSpaceBetween		= m_ooxParaProps->m_oSpacing->m_oLine->ToTwips();
+					oOutputProperty.m_nSpaceMultiLine	= 0;
+				}
+				else //auto
+				{
+					oOutputProperty.m_nSpaceBetween		= m_ooxParaProps->m_oSpacing->m_oLine->ToTwips();
+					oOutputProperty.m_nSpaceMultiLine	= 1;
 				}
 			}
 		}

@@ -53,12 +53,12 @@ void math_mstack::add_attributes( const xml::attributes_wc_ptr & Attributes )
 
 }
 
-void math_mstack::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void math_mstack::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }
 
-void math_mstack::docx_convert(oox::docx_conversion_context & Context) 
+void math_mstack::oox_convert(oox::math_context & Context)
 {//0* elements
 
 }
@@ -72,12 +72,12 @@ void math_msrow::add_attributes( const xml::attributes_wc_ptr & Attributes )
 
 }
 
-void math_msrow::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void math_msrow::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }
 
-void math_msrow::docx_convert(oox::docx_conversion_context & Context) 
+void math_msrow::oox_convert(oox::math_context & Context)
 {
 
 }
@@ -91,12 +91,12 @@ void math_msline::add_attributes( const xml::attributes_wc_ptr & Attributes )
 
 }
 
-void math_msline::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void math_msline::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }
 
-void math_msline::docx_convert(oox::docx_conversion_context & Context) 
+void math_msline::oox_convert(oox::math_context & Context)
 {
 
 }
@@ -110,12 +110,12 @@ void math_msgroup::add_attributes( const xml::attributes_wc_ptr & Attributes )
 
 }
 
-void math_msgroup::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void math_msgroup::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }
 
-void math_msgroup::docx_convert(oox::docx_conversion_context & Context) 
+void math_msgroup::oox_convert(oox::math_context & Context)
 {//0* elements
 
 }
@@ -129,12 +129,12 @@ void math_mlongdiv::add_attributes( const xml::attributes_wc_ptr & Attributes )
 
 }
 
-void math_mlongdiv::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void math_mlongdiv::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }
 
-void math_mlongdiv::docx_convert(oox::docx_conversion_context & Context) 
+void math_mlongdiv::oox_convert(oox::math_context & Context)
 {//3* elements
 
 }
@@ -148,12 +148,12 @@ void math_mscarry::add_attributes( const xml::attributes_wc_ptr & Attributes )
 
 }
 
-void math_mscarry::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void math_mscarry::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }
 
-void math_mscarry::docx_convert(oox::docx_conversion_context & Context) 
+void math_mscarry::oox_convert(oox::math_context & Context)
 {
 
 }
@@ -167,12 +167,12 @@ void math_mscarries::add_attributes( const xml::attributes_wc_ptr & Attributes )
 
 }
 
-void math_mscarries::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void math_mscarries::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }
 
-void math_mscarries::docx_convert(oox::docx_conversion_context & Context) 
+void math_mscarries::oox_convert(oox::math_context & Context)
 {//0* elements
 
 }

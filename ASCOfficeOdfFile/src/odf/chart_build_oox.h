@@ -96,7 +96,7 @@ chart::class_type static get_series_class_type(std::wstring const & str)
 
 }
 
-class chart_build 
+class object_odf_context 
 {
 public:
 	struct _cell
@@ -106,20 +106,20 @@ public:
 		std::wstring val;
 	};
 
-	chart_build(std::wstring ref) : 
-		width_pt_(0), 
-		height_pt_(0), 
-		in_axis_(false),
-        current_table_column_(0),
-        current_table_row_(0),
-        columns_spanned_num_(0),
-		//target_table_(0/*targetTable*/),
-		columns_count_(0),
-		object_type_(0),
-		office_text_(NULL),
-		office_math_(NULL),
-		baseRef_(ref),
-		baseFontHeight_(12)
+	object_odf_context(std::wstring ref) 
+	: 
+		width_pt_				(0), 
+		height_pt_				(0), 
+		in_axis_				(false),
+        current_table_column_	(0),
+        current_table_row_		(0),
+        columns_spanned_num_	(0),
+		columns_count_			(0),
+		object_type_			(0),
+		office_text_			(NULL),
+		office_math_			(NULL),
+		baseRef_				(ref),
+		baseFontHeight_			(12)
     {
 	}
 	
@@ -150,23 +150,23 @@ public:
 	
 	void xlsx_convert	(oox::xlsx_conversion_context & Context);
 	void docx_convert	(oox::docx_conversion_context & Context);
-	void oox_convert	(oox::oox_chart_context & chart);
 	void pptx_convert	(oox::pptx_conversion_context & Context);
+	void oox_convert	(oox::oox_chart_context & chart);
 
-    double width_pt_;
-    double height_pt_;
+    double						width_pt_;
+    double						height_pt_;
 
-	int			object_type_;
-	office_text *office_text_;
- 	office_math	*office_math_;
+	int							object_type_;
+	office_text					*office_text_;
+ 	office_math					*office_math_;
 
-	int				baseFontHeight_;
-	std::wstring	baseRef_; 
+	int							baseFontHeight_;
+	std::wstring				baseRef_; 
 //---------------------------------------------------------------
-	std::wstring		str_class_;  
-	chart::class_type	class_;  
-	std::wstring		style_name_;
- 	std::wstring		name_;
+	std::wstring				str_class_;  
+	chart::class_type			class_;  
+	std::wstring				style_name_;
+ 	std::wstring				name_;
   
 	bool in_axis_;
     std::vector<chart::axis>	axises_;
@@ -192,7 +192,7 @@ public:
 	std::vector<_property>		chart_graphic_properties_;
 	oox::_oox_fill				chart_fill_;
 
-	std::vector<_cell> cash_values;
+	std::vector<_cell>			cash_values;
 
 //---------------------------------------
 	std::wstring				target_table_;
@@ -213,61 +213,62 @@ public:
 };
 // Класс для обхода всех элеменов office:object для построения диаграммы
 
-class process_build_chart : public base_visitor,
-	public const_visitor<office_document_content>,
- 	public visitor<office_document_content>,
-   
-	public visitor<office_body>,
-    public visitor<office_chart>,    
-	public visitor<office_text>,
-	public visitor<office_math>,
- 
-    public const_visitor<chart_chart>,
+class process_build_object 
+	:	public base_visitor,
+		public const_visitor<office_document_content>,
+ 		public visitor<office_document_content>,
+	   
+		public visitor<office_body>,
+		public visitor<office_chart>,    
+		public visitor<office_text>,
+		public visitor<office_math>,
+	 
+		public const_visitor<chart_chart>,
 
-    public const_visitor<chart_title>,
-    public const_visitor<chart_subtitle>,
-    public const_visitor<chart_footer>,
-    public const_visitor<chart_legend>,
+		public const_visitor<chart_title>,
+		public const_visitor<chart_subtitle>,
+		public const_visitor<chart_footer>,
+		public const_visitor<chart_legend>,
 
-    public const_visitor<chart_plot_area>,
-    
-	public const_visitor<chart_axis>,
-    public const_visitor<chart_categories>,
-    public const_visitor<chart_grid>,
+		public const_visitor<chart_plot_area>,
+	    
+		public const_visitor<chart_axis>,
+		public const_visitor<chart_categories>,
+		public const_visitor<chart_grid>,
 
-    public const_visitor<chart_series>,
-	public const_visitor<chart_domain>,
-    public const_visitor<chart_data_point>,
-	public const_visitor<chart_mean_value>,
-	public const_visitor<chart_regression_curve>,
-	public const_visitor<chart_equation>,
-	public const_visitor<chart_error_indicator>,
-    public const_visitor<chart_wall>,
-    public const_visitor<chart_floor>,
+		public const_visitor<chart_series>,
+		public const_visitor<chart_domain>,
+		public const_visitor<chart_data_point>,
+		public const_visitor<chart_mean_value>,
+		public const_visitor<chart_regression_curve>,
+		public const_visitor<chart_equation>,
+		public const_visitor<chart_error_indicator>,
+		public const_visitor<chart_wall>,
+		public const_visitor<chart_floor>,
 
-    public const_visitor<table_table>,
-    
-    public const_visitor<table_table_row_group>,
-    public const_visitor<table_rows_no_group>,
-    public const_visitor<table_table_header_rows>,
-    public const_visitor<table_table_rows>,
-    public const_visitor<table_table_row>,
+		public const_visitor<table_table>,
+	    
+		public const_visitor<table_table_row_group>,
+		public const_visitor<table_rows_no_group>,
+		public const_visitor<table_table_header_rows>,
+		public const_visitor<table_table_rows>,
+		public const_visitor<table_table_row>,
 
-    public visitor<table_table_rows>,
-    public visitor<table_table_header_rows>,
+		public visitor<table_table_rows>,
+		public visitor<table_table_header_rows>,
 
-    public const_visitor<table_table_cell>,
-    public const_visitor<table_covered_table_cell>,    
+		public const_visitor<table_table_cell>,
+		public const_visitor<table_covered_table_cell>,    
 
-    public const_visitor<table_table_column_group>,
-    public visitor<table_table_header_columns>,
-    public visitor<table_table_columns>,
-    public const_visitor<table_table_column>,
-    public const_visitor<table_columns_no_group>
+		public const_visitor<table_table_column_group>,
+		public visitor<table_table_header_columns>,
+		public visitor<table_table_columns>,
+		public const_visitor<table_table_column>,
+		public const_visitor<table_columns_no_group>
 {
 public:
 
-	process_build_chart(chart_build & chartBuild, odf_read_context & context);
+	process_build_object(object_odf_context & object_context, odf_read_context & context);
 
 private:
 	void ApplyChartProperties(std::wstring style,std::vector<_property> & propertiesOut);
@@ -331,7 +332,7 @@ public:
 private:
     bool stop_;
     
-	chart_build				& chart_build_;
+	object_odf_context		& object_odf_context_;
 
 	styles_container		& styles_;
 	

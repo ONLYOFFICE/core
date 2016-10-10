@@ -43,6 +43,11 @@
 #include "office_binary_data.h"
 
 #include "math_elements.h"
+#include "math_elementaries.h"
+#include "math_token_elements.h"
+#include "math_table_elements.h"
+#include "math_limit_elements.h"
+#include "math_layout_elements.h"]
 
 #include "text_elements.h"
 #include "list.h"

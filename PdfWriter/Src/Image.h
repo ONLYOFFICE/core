@@ -57,8 +57,8 @@ namespace PdfWriter
 
 		CImageDict(CXref* pXref, CDocument* pDocument);
 
-		void LoadJpeg(const wchar_t* wsTempFile, unsigned int unWidth, unsigned int unHeight);
-		void LoadJpeg(BYTE* pBuffer, int nBufferSize, unsigned int unWidth, unsigned int unHeight);
+        void LoadJpeg(const wchar_t* wsTempFile, unsigned int unWidth, unsigned int unHeight, bool bGrayScale = false);
+        void LoadJpeg(BYTE* pBuffer, int nBufferSize, unsigned int unWidth, unsigned int unHeight, bool bGrayScale = false);
 		void LoadJpx(const wchar_t* wsTempFile, unsigned int unWidth, unsigned int unHeight);
 		void LoadJpx(BYTE* pBuffer, int nBufferSize, unsigned int unWidth, unsigned int unHeight);
 		void LoadJb2(const wchar_t* wsTempFile, unsigned int unWidth, unsigned int unHeight);

@@ -56,9 +56,9 @@ namespace odf_reader {
 class document_context;
 
 class office_element;
-typedef shared_ptr<office_element>::Type office_element_ptr;
-typedef weak_ptr<office_element>::Type office_element_weak_ptr;
-typedef ::std::vector<office_element_ptr> office_element_ptr_array;
+typedef shared_ptr<office_element>::Type	office_element_ptr;
+typedef weak_ptr<office_element>::Type		office_element_weak_ptr;
+typedef std::vector<office_element_ptr>	office_element_ptr_array;
 
 class office_element : public xml::element<wchar_t>,
     public common::read_doc_element,
@@ -81,13 +81,13 @@ public:
     void setContext(document_context * Context) { context_ = Context; }
 
 public:
-    virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const
     {
         _CP_LOG << L"[warning] use base text_to_stream\n";
         return _Wostream;
     }
 
-    virtual ::std::wostream & xml_to_stream(::std::wostream & _Wostream) const
+    virtual std::wostream & xml_to_stream(std::wostream & _Wostream) const
     {
         _CP_LOG << L"[warning] use base xml_to_stream\n";
         return _Wostream;

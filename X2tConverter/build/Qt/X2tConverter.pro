@@ -7,7 +7,7 @@
 QT       -= core
 QT       -= gui
 
-VERSION = 2.0.2.396
+VERSION = 2.0.2.397
 DEFINES += INTVER=$$VERSION
 
 TEMPLATE = app
@@ -22,6 +22,7 @@ PWD_ROOT_DIR = $$PWD
 CONFIG += core_static_link_libstd
 CONFIG += core_x2t
 include(../../../Common/base.pri)
+include(../../../Common/3dParty/icu/icu.pri)
 
 core_win_32 {
     TARGET = x2t32
@@ -114,8 +115,13 @@ DESTDIR = $$PWD/../../../build/bin
 core_windows {
     DESTDIR = $$DESTDIR/windows
 }
-core_linux {
-    DESTDIR = $$DESTDIR/linux
+core_linux_64 {
+    message("x2t linux 64 build")
+    DESTDIR = $$DESTDIR/linux_64
+}
+core_linux_32 {
+    message("x2t linux 32 build")
+    DESTDIR = $$DESTDIR/linux_32
 }
 core_mac {
     DESTDIR = $$DESTDIR/mac

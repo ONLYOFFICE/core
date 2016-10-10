@@ -29,11 +29,13 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include <algorithm>
 #include "OfficeFileFormatChecker.h"
+
 #include "../DesktopEditor/common/File.h"
 #include "../OfficeUtils/src/OfficeUtils.h"
+
 #include "3dParty/pole/pole.h"
+#include <algorithm>
 
 #define MIN_SIZE_BUFFER 4096
 #define MAX_SIZE_BUFFER 102400
@@ -47,22 +49,40 @@ bool COfficeFileFormatChecker::isRtfFormatFile(unsigned char* pBuffer,int dwByte
 
 	return false;
 }
-bool COfficeFileFormatChecker::isHtmlFormatFile(unsigned char* pBuffer,int dwBytes)
+bool COfficeFileFormatChecker::isHtmlFormatFile(unsigned char* pBuffer, int dwBytes, bool testCloseTag)
 {
 	if (pBuffer == NULL) return false;
 
-    bool tagOpen = false;
-    //Html File is XML-file with rootElement - html
-    for (int i = 0; i < dwBytes - 4 && i < 100; i++)
-    {
-        if (0x3C == pBuffer[i])
-            tagOpen = true;
-        else if (0x3E == pBuffer[i])
-            tagOpen = false;
-        else if (tagOpen && (0x48 == pBuffer[i] || 0x68 == pBuffer[i]) && (0x54 == pBuffer[i + 1] || 0x74 == pBuffer[i + 1])
-                         && (0x4d == pBuffer[i + 2] || 0x6d == pBuffer[i + 2]) && (0x4c == pBuffer[i + 3] || 0x6c == pBuffer[i + 3]))
-            return true;
-    }
+    bool tagOpen	= false;
+	
+	if (testCloseTag)
+	{
+		for (int i = 0; i < dwBytes - 6 ; i++)
+		{
+			if ((0x3C == pBuffer[i]) && (0x2F == pBuffer[i +1])	&& (0x48 == pBuffer[i + 2] || 0x68 == pBuffer[i + 2]) 
+																&& (0x54 == pBuffer[i + 3] || 0x74 == pBuffer[i + 3])
+																&& (0x4d == pBuffer[i + 4] || 0x6d == pBuffer[i + 4]) 
+																&& (0x4c == pBuffer[i + 5] || 0x6c == pBuffer[i + 5]))
+			{
+				return true;
+			}
+		}
+	}
+	else
+	{
+		for (int i = 0; i < dwBytes - 4 && i < 100; i++)
+		{
+			if (0x3C == pBuffer[i])
+				tagOpen = true;
+			else if (0x3E == pBuffer[i])
+				tagOpen = false;
+			else if (tagOpen && (0x48 == pBuffer[i] || 0x68 == pBuffer[i]) && (0x54 == pBuffer[i + 1] || 0x74 == pBuffer[i + 1])
+							 && (0x4d == pBuffer[i + 2] || 0x6d == pBuffer[i + 2]) && (0x4c == pBuffer[i + 3] || 0x6c == pBuffer[i + 3]))
+			{
+				return true;
+			}
+		}
+	}
     return false;
 }
 
@@ -222,9 +242,8 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring & fileName)
         if (!buffer){file.CloseFile();return false;}
 
         DWORD dwReadBytes = 0;
-        file.ReadFile(buffer,MIN_SIZE_BUFFER,dwReadBytes);
+        file.ReadFile(buffer, MIN_SIZE_BUFFER, dwReadBytes);
         int sizeRead = (int)dwReadBytes;
-		file.CloseFile();
 
 		if ( isRtfFormatFile(buffer,sizeRead) )
 		{
@@ -250,15 +269,27 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring & fileName)
         {
             nFileType = AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_DJVU;
         }
-        else if (isHtmlFormatFile(buffer,sizeRead) )
+        else if (isHtmlFormatFile(buffer,sizeRead, false))
         {
-            nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML;
+			long fileSize = file.GetFileSize();
+			if (fileSize > MIN_SIZE_BUFFER)		
+			{
+				file.SeekFile(fileSize - MIN_SIZE_BUFFER);
+				file.ReadFile(buffer, MIN_SIZE_BUFFER, dwReadBytes);
+				int sizeRead = (int)dwReadBytes;
+			}
+			if (isHtmlFormatFile(buffer,sizeRead, true))
+			{
+				nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML;
+			}
         }
         else if (isFB2FormatFile(buffer,sizeRead) )
         {
             nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_FB2;
         }
 	/////////////////////////////////////////////////////////////////////////
+		file.CloseFile();
+
 		if (buffer)delete []buffer;
 		buffer = NULL;
 	}

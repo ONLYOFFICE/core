@@ -113,10 +113,11 @@ public:
     pptx_xml_theme			& current_theme();
     pptx_xml_presentation	& current_presentation();//собственно она одна
   
-	oox_chart_context & current_chart();
-	pptx_text_context & get_text_context() { return pptx_text_context_; }
+	oox_chart_context	& current_chart();
+	math_context		& get_math_context()	{ return math_context_; }
+	pptx_text_context	& get_text_context()	{ return pptx_text_context_; }
 
-	pptx_table_context & get_table_context(){return pptx_table_context_;}
+	pptx_table_context	& get_table_context()	{ return pptx_table_context_; }
 
     mediaitems & get_mediaitems() { return pptx_slide_context_.get_mediaitems(); }
 
@@ -146,6 +147,7 @@ private:
 	pptx_text_context		pptx_text_context_;
 	pptx_table_context		pptx_table_context_;
 	pptx_comments_context	pptx_comments_context_;
+	math_context			math_context_;
 	
 	std::vector<oox_chart_context_ptr> charts_;
 	

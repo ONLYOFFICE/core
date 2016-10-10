@@ -72,178 +72,86 @@ std::wstring delete_apostroph_in_name(std::wstring value)
 
 void text_format_properties_content::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-// 15.4.1
-    CP_APPLY_ATTR(L"fo:font-variant", fo_font_variant_);
-    
-    // 15.4.2
-    CP_APPLY_ATTR(L"fo:text-transform", fo_text_transform_);
-    
-    // 15.4.3 
-    CP_APPLY_ATTR(L"fo:color", fo_color_);
-    
-    // 15.4.4 
-    CP_APPLY_ATTR(L"style:use-window-font-color", style_use_window_font_color_);
-    
-    // 15.4.5 
-    CP_APPLY_ATTR(L"style:text-outline", style_text_outline_);
-    
-    // 15.4.6 
-    CP_APPLY_ATTR(L"style:text-line-through-type", style_text_line_through_type_);
-    
-    // 15.4.7 
-    CP_APPLY_ATTR(L"style:text-line-through-style", style_text_line_through_style_);
-    
-    // 15.4.8 
-    CP_APPLY_ATTR(L"style:text-line-through-width", style_text_line_through_width_);
-     
-    // 15.4.9 
-    CP_APPLY_ATTR(L"style:text-line-through-color", style_text_line_through_color_);
-    
-    // 15.4.10
-    CP_APPLY_ATTR(L"style:text-line-through-text", style_text_line_through_text_);
-    
-    // 15.4.11 
+    CP_APPLY_ATTR(L"fo:font-variant",					fo_font_variant_);
+    CP_APPLY_ATTR(L"fo:text-transform",					fo_text_transform_);
+    CP_APPLY_ATTR(L"fo:color",							fo_color_);
+    CP_APPLY_ATTR(L"fo:font-family",					fo_font_family_);
+    CP_APPLY_ATTR(L"fo:font-size",						fo_font_size_);
+    CP_APPLY_ATTR(L"fo:letter-spacing",					fo_letter_spacing_);
+    CP_APPLY_ATTR(L"fo:language",						fo_language_);
+    CP_APPLY_ATTR(L"fo:country",						fo_country_);
+    CP_APPLY_ATTR(L"fo:font-style",						fo_font_style_);
+    CP_APPLY_ATTR(L"fo:text-shadow",					fo_text_shadow_);
+    CP_APPLY_ATTR(L"fo:font-weight",					fo_font_weight_);
+    CP_APPLY_ATTR(L"fo:background-color",				fo_background_color_);
+    CP_APPLY_ATTR(L"fo:hyphenate",						fo_hyphenate_);
+    CP_APPLY_ATTR(L"fo:hyphenation-remain-char-count",	fo_hyphenation_remain_char_count_);
+    CP_APPLY_ATTR(L"fo:hyphenation-push-char-count",	fo_hyphenation_push_char_count_);
+
+    CP_APPLY_ATTR(L"style:use-window-font-color",		style_use_window_font_color_);
+    CP_APPLY_ATTR(L"style:text-outline",				style_text_outline_);
+    CP_APPLY_ATTR(L"style:text-line-through-type",		style_text_line_through_type_);
+    CP_APPLY_ATTR(L"style:text-line-through-style",		style_text_line_through_style_);
+    CP_APPLY_ATTR(L"style:text-line-through-width",		style_text_line_through_width_);
+    CP_APPLY_ATTR(L"style:text-line-through-color",		style_text_line_through_color_);
+    CP_APPLY_ATTR(L"style:text-line-through-text",		style_text_line_through_text_);
     CP_APPLY_ATTR(L"style:text-line-through-text-style", style_text_line_through_text_style_);
-
-    // 15.4.12 
-    CP_APPLY_ATTR(L"style:text-position", style_text_position_);
-    
-    // 15.4.13 
-    CP_APPLY_ATTR(L"style:font-name", style_font_name_);
-    CP_APPLY_ATTR(L"style:font-name-asian", style_font_name_asian_);
-    CP_APPLY_ATTR(L"style:font-name-complex", style_font_name_complex_);
-    
-    // 15.4.14 
-    CP_APPLY_ATTR(L"fo:font-family", fo_font_family_);
-    CP_APPLY_ATTR(L"style:font-family-asian", style_font_family_asian_);
-    CP_APPLY_ATTR(L"style:font-family-complex", style_font_family_complex_);
-
-    // 15.4.15 
-    CP_APPLY_ATTR(L"style:font-family-generic", style_font_family_generic_);
-    CP_APPLY_ATTR(L"style:font-family-generic-asian", style_font_family_generic_asian_);
+    CP_APPLY_ATTR(L"style:text-position",				style_text_position_);
+    CP_APPLY_ATTR(L"style:font-name",					style_font_name_);
+    CP_APPLY_ATTR(L"style:font-name-asian",				style_font_name_asian_);
+    CP_APPLY_ATTR(L"style:font-name-complex",			style_font_name_complex_);
+    CP_APPLY_ATTR(L"style:font-family-asian",			style_font_family_asian_);
+    CP_APPLY_ATTR(L"style:font-family-complex",			style_font_family_complex_);
+    CP_APPLY_ATTR(L"style:font-family-generic",			style_font_family_generic_);
+    CP_APPLY_ATTR(L"style:font-family-generic-asian",	style_font_family_generic_asian_);
     CP_APPLY_ATTR(L"style:font-family-generic-complex", style_font_family_generic_complex_);
+    CP_APPLY_ATTR(L"style:font-style-name",				style_font_style_name_);
+    CP_APPLY_ATTR(L"style:font-style-name-asian",		style_font_style_name_asian_);
+    CP_APPLY_ATTR(L"style:font-style-name-complex",		style_font_style_name_complex_);
+    CP_APPLY_ATTR(L"style:font-pitch",					style_font_pitch_);
+    CP_APPLY_ATTR(L"style:font-pitch",					style_font_pitch_asian_);
+    CP_APPLY_ATTR(L"style:font-pitch-complex",			style_font_pitch_complex_);
+    CP_APPLY_ATTR(L"style:font-charset",				style_font_charset_);
+    CP_APPLY_ATTR(L"style:font-charset-asian",			style_font_charset_asian_);
+    CP_APPLY_ATTR(L"style:font-charset-complex",		style_font_charset_complex_);
+    CP_APPLY_ATTR(L"style:font-size-asian",				style_font_size_asian_);
+    CP_APPLY_ATTR(L"style:font-size-complex",			style_font_size_complex_);
+    CP_APPLY_ATTR(L"style:font-size-rel",				style_font_size_rel_);
+    CP_APPLY_ATTR(L"style:font-size-rel-asian",			style_font_size_rel_asian_);
+    CP_APPLY_ATTR(L"style:font-size-rel-complex",		style_font_size_rel_complex_);
+    CP_APPLY_ATTR(L"style:script-type",					style_script_type_);
+    CP_APPLY_ATTR(L"style:language-asian",				style_language_asian_);
+    CP_APPLY_ATTR(L"style:language-complex",			style_language_complex_);
+    CP_APPLY_ATTR(L"style:country-asian",				style_country_asian_);
+    CP_APPLY_ATTR(L"style:country-complex",				style_country_complex_);
+    CP_APPLY_ATTR(L"style:font-style-asian",			style_font_style_asian_);
+    CP_APPLY_ATTR(L"style:font-style-complex",			style_font_style_complex_);
+    CP_APPLY_ATTR(L"style:font-relief",					style_font_relief_);
+    CP_APPLY_ATTR(L"style:text-underline-type",			style_text_underline_type_);
+    CP_APPLY_ATTR(L"style:text-underline-style",		style_text_underline_style_);
+    CP_APPLY_ATTR(L"style:text-underline-width",		style_text_underline_width_);
+    CP_APPLY_ATTR(L"style:text-underline-color",		style_text_underline_color_);
+    CP_APPLY_ATTR(L"style:font-weight-asian",			style_font_weight_asian_);
+    CP_APPLY_ATTR(L"style:font-weight-complex",			style_font_weight_complex_);
+    CP_APPLY_ATTR(L"style:text-underline-mode",			style_text_underline_mode_);
+    CP_APPLY_ATTR(L"style:text-line-through-mode",		style_text_line_through_mode_);
+    CP_APPLY_ATTR(L"style:letter-kerning",				style_letter_kerning_);
+    CP_APPLY_ATTR(L"style:text-blinking",				style_text_blinking_);
+    CP_APPLY_ATTR(L"style:text-combine",				style_text_combine_);
+    CP_APPLY_ATTR(L"style:text-combine-start-char",		style_text_combine_start_char_);
+    CP_APPLY_ATTR(L"style:text-combine-end-char",		style_text_combine_end_char_);
+    CP_APPLY_ATTR(L"style:text-emphasize",				style_text_emphasize_);
+    CP_APPLY_ATTR(L"style:text-scale",					style_text_scale_);
+    CP_APPLY_ATTR(L"style:text-rotation-angle",			style_text_rotation_angle_);
+    CP_APPLY_ATTR(L"style:text-rotation-scale",			style_text_rotation_scale_);
+    CP_APPLY_ATTR(L"style:text-overline-color",			style_text_overline_color_);
+    CP_APPLY_ATTR(L"style:text-overline-mode",			style_text_overline_mode_);
+    CP_APPLY_ATTR(L"style:text-overline-style",			style_text_overline_style_);
 
-    // 15.4.16 
-    CP_APPLY_ATTR(L"style:font-style-name", style_font_style_name_);
-    CP_APPLY_ATTR(L"style:font-style-name-asian", style_font_style_name_asian_);
-    CP_APPLY_ATTR(L"style:font-style-name-complex", style_font_style_name_complex_);
-
-    // 15.4.17 
-    CP_APPLY_ATTR(L"style:font-pitch", style_font_pitch_);
-    CP_APPLY_ATTR(L"style:font-pitch", style_font_pitch_asian_);
-    CP_APPLY_ATTR(L"style:font-pitch-complex", style_font_pitch_complex_);
-
-    // 15.4.18 
-    CP_APPLY_ATTR(L"style:font-charset", style_font_charset_);
-    CP_APPLY_ATTR(L"style:font-charset-asian", style_font_charset_asian_);
-    CP_APPLY_ATTR(L"style:font-charset-complex", style_font_charset_complex_);
-    
-    // 15.4.19 
-    CP_APPLY_ATTR(L"fo:font-size", fo_font_size_);
-    CP_APPLY_ATTR(L"style:font-size-asian", style_font_size_asian_);
-    CP_APPLY_ATTR(L"style:font-size-complex", style_font_size_complex_);
-
-    // 15.4.20 
-    CP_APPLY_ATTR(L"style:font-size-rel", style_font_size_rel_);
-    CP_APPLY_ATTR(L"style:font-size-rel-asian", style_font_size_rel_asian_);
-    CP_APPLY_ATTR(L"style:font-size-rel-complex", style_font_size_rel_complex_);
-
-    // 15.4.21 
-    CP_APPLY_ATTR(L"style:script-type", style_script_type_);
-
-    // 15.4.22 
-    CP_APPLY_ATTR(L"fo:letter-spacing", fo_letter_spacing_);
-
-    // 15.4.23 
-    CP_APPLY_ATTR(L"fo:language", fo_language_);
-    CP_APPLY_ATTR(L"style:language-asian", style_language_asian_);
-    CP_APPLY_ATTR(L"style:language-complex", style_language_complex_);
-
-    // 15.4.24 
-    CP_APPLY_ATTR(L"fo:country", fo_country_);
-    CP_APPLY_ATTR(L"style:country-asian", style_country_asian_);
-    CP_APPLY_ATTR(L"style:country-complex", style_country_complex_);
-           
-    // 15.4.25 
-    CP_APPLY_ATTR(L"fo:font-style", fo_font_style_);
-    CP_APPLY_ATTR(L"style:font-style-asian", style_font_style_asian_);
-    CP_APPLY_ATTR(L"style:font-style-complex", style_font_style_complex_);
-
-    // 15.4.26 
-    CP_APPLY_ATTR(L"style:font-relief", style_font_relief_);
-    
-    // 15.4.27 
-    CP_APPLY_ATTR(L"fo:text-shadow", fo_text_shadow_);
-
-    // 15.4.28 
-    CP_APPLY_ATTR(L"style:text-underline-type", style_text_underline_type_);
-    
-    // 15.4.29 
-    CP_APPLY_ATTR(L"style:text-underline-style", style_text_underline_style_);
-    
-    // 15.4.30 
-    CP_APPLY_ATTR(L"style:text-underline-width", style_text_underline_width_);
-
-    // 15.4.31 
-    CP_APPLY_ATTR(L"style:text-underline-color", style_text_underline_color_);
-    
-    // 15.4.32 
-    CP_APPLY_ATTR(L"fo:font-weight", fo_font_weight_);
-    CP_APPLY_ATTR(L"style:font-weight-asian", style_font_weight_asian_);
-    CP_APPLY_ATTR(L"style:font-weight-complex", style_font_weight_complex_);
-   
-    // 15.4.33 
-    CP_APPLY_ATTR(L"style:text-underline-mode", style_text_underline_mode_);
-    
-    // 15.4.34 
-    CP_APPLY_ATTR(L"style:text-line-through-mode", style_text_line_through_mode_);
-    
-    // 15.4.35 
-    CP_APPLY_ATTR(L"style:letter-kerning", style_letter_kerning_);
-    
-    // 15.4.36 
-    CP_APPLY_ATTR(L"style:text-blinking", style_text_blinking_);
-
-    // 15.4.37 
-    CP_APPLY_ATTR(L"fo:background-color", fo_background_color_);
-
-    // 15.4.38 
-    CP_APPLY_ATTR(L"style:text-combine", style_text_combine_);
-
-    // 15.4.39 
-    CP_APPLY_ATTR(L"style:text-combine-start-char", style_text_combine_start_char_);
-    CP_APPLY_ATTR(L"style:text-combine-end-char", style_text_combine_end_char_);
-
-    // 15.4.40 
-    CP_APPLY_ATTR(L"style:text-emphasize", style_text_emphasize_);
-
-    // 15.4.41 
-    CP_APPLY_ATTR(L"style:text-scale", style_text_scale_);
-
-    // 15.4.42 
-    CP_APPLY_ATTR(L"style:text-rotation-angle", style_text_rotation_angle_);
-
-    // 15.4.43 
-    CP_APPLY_ATTR(L"style:text-rotation-scale", style_text_rotation_scale_);
-
-    // 15.4.44 
-    CP_APPLY_ATTR(L"fo:hyphenate", fo_hyphenate_);
-
-    // 15.4.45 
-    CP_APPLY_ATTR(L"fo:hyphenation-remain-char-count", fo_hyphenation_remain_char_count_);
-
-    // 15.4.46
-    CP_APPLY_ATTR(L"fo:hyphenation-push-char-count", fo_hyphenation_push_char_count_);
-
-    // 15.4.47 
-    CP_APPLY_ATTR(L"text:display", text_display_);
-    CP_APPLY_ATTR(L"text:condition", text_condition_);
-
-    CP_APPLY_ATTR(L"style:text-overline-color", style_text_overline_color_);
-    CP_APPLY_ATTR(L"style:text-overline-mode", style_text_overline_mode_);
-    CP_APPLY_ATTR(L"style:text-overline-style", style_text_overline_style_);
-
+    CP_APPLY_ATTR(L"text:display",						text_display_);
+    CP_APPLY_ATTR(L"text:condition",					text_condition_);
 }
+
 
 
 int text_format_properties_content::process_font_size(const _CP_OPT(font_size) & FontSize, const style_instance * currnetStyle, bool Complex, double Mul)
@@ -293,7 +201,7 @@ double text_format_properties_content::process_font_size_impl(const _CP_OPT(font
     return -1.0;
 }
 
-int text_format_properties_content::process_font_weight(const optional<font_weight>::Type & FontWeight)
+int text_format_properties_content::process_font_weight(const _CP_OPT(font_weight) & FontWeight)
 {
     if (FontWeight)
     {
@@ -305,7 +213,7 @@ int text_format_properties_content::process_font_weight(const optional<font_weig
     return 0; //not set
 }
 
-int text_format_properties_content::process_font_style(const optional<font_style>::Type & FontStyle)
+int text_format_properties_content::process_font_style(const _CP_OPT(font_style) & FontStyle)
 {
     if (FontStyle)
     {
@@ -587,6 +495,7 @@ void text_format_properties_content::pptx_convert(oox::pptx_conversion_context &
 	}
 }
 
+
 void text_format_properties_content::docx_convert(oox::docx_conversion_context & Context)
 {
     std::wostream & _pPr = Context.get_styles_context().paragraph_nodes();
@@ -599,9 +508,10 @@ void text_format_properties_content::docx_convert(oox::docx_conversion_context &
         else
             _pPr << L"<w:suppressAutoHyphens w:val=\"true\" />";
     }
-
-    std::wostream & _rPr = Context.get_styles_context().text_style();
-    if (Context.rtl())
+   
+	std::wostream & _rPr = Context.get_styles_context().text_style();
+    
+	if (Context.rtl())
     {
         _rPr << L"<w:rtl/>";/* w:val=\"true\" */
     }
@@ -961,42 +871,6 @@ void text_format_properties_content::docx_convert(oox::docx_conversion_context &
         std::wstring w_cs;
         std::wstring w_ascii = w_hAnsi = w_cs = (style_font_name_ ? *style_font_name_: L"");
 
-		if ( !Context.process_math_formula_ )
-		{
-			if (style_font_name_asian_)
-				w_eastAsia = *style_font_name_asian_;                     
-
-			if (style_font_name_complex_)
-				w_cs = *style_font_name_complex_;
-
-			fonts_container & fonts = Context.root()->odf_context().fontContainer();
-	        
-			font_instance * font = fonts.font_by_style_name(w_ascii);
-			if (font)
-				w_ascii = font->name();
-	    
-			font = fonts.font_by_style_name(w_hAnsi);
-			if (font)
-				w_hAnsi = font->name();
-
-			if (w_ascii.empty() && fo_font_family_)
-			{
-				w_ascii = fo_font_family_.get();
-			}
-			if (w_hAnsi.empty() && fo_font_family_)
-			{
-				w_hAnsi = fo_font_family_.get();
-			}
-
-			font = fonts.font_by_style_name(w_eastAsia);
-			if (font)
-				w_eastAsia = font->name();
-
-			font = fonts.font_by_style_name(w_cs);
-			if (font)
-				w_cs = font->name();
-		}
-
         _rPr << L"<w:rFonts ";
         if (!w_ascii.empty())
             _rPr << L"w:ascii=\"" << w_ascii <<"\" ";
@@ -1113,6 +987,447 @@ void text_format_properties_content::docx_convert(oox::docx_conversion_context &
     }
 }
 
+
+void text_format_properties_content::oox_convert (std::wostream & _rPr, bool graphic)
+{
+	const int W			= process_font_weight	(fo_font_weight_);
+	const int fontStyle = process_font_style	(fo_font_style_);
+	const int WCs		= process_font_weight	(style_font_weight_complex_);
+	
+	if (graphic)
+	{	
+		_rPr << L"<a:rPr";
+		int fontSize = process_font_size(fo_font_size_, NULL) / 2 * 100;       
+		if (fontSize > 0)
+		{
+			_rPr << L" sz=\"" << fontSize << L"\"";
+		}
+		if (W)
+		{
+			if (W > 0)	_rPr << L" b=\"1\"";
+			else		_rPr << L" b=\"0\"";
+		}
+		if (fontStyle)
+		{
+			if (fontStyle > 0)	_rPr << L" i=\"1\"";
+			else				_rPr << L" i=\"0\"";
+		}	
+		_rPr << L">";
+		_CP_OPT(color) color_text = fo_color_;
+
+		if (color_text)
+		{
+			_rPr << L"<a:solidFill><a:srgbClr val=\"" << color_text->get_hex_value() <<  "\"/></a:solidFill>";
+		}
+		//else if (style_use_window_font_color_ && *style_use_window_font_color_)
+		//{
+		//	_rPr << L"<w:color w:val=\"auto\" />";
+		//}
+		//if (fo_background_color_)
+		//{
+		//	std::wstring w_fill;
+		//	if (fo_background_color_->get_type() == background_color::Transparent)
+		//		w_fill = L"auto";        
+		//	else
+		//		w_fill = fo_background_color_->get_color().get_hex_value();
+
+		//	_rPr << L"<w:shd w:val=\"clear\" w:color=\"auto\" w:fill=\"" << w_fill << "\" />";
+		//}
+		if (style_font_name_)									
+		{
+			_rPr << L"<a:latin typeface=\"" <<  style_font_name_.get() <<  "\"/>";
+		} 
+		_rPr << L"</a:rPr>";
+	}
+	else
+	{
+		_rPr << L"<w:rPr>";
+		if (r_style_)
+		{
+			_rPr << L"<w:rStyle w:val=\"" << *r_style_ << L"\" />";
+		}
+		const int W = process_font_weight(fo_font_weight_);
+		if (W)
+		{
+			if (W > 0)
+				_rPr << L"<w:b/>";
+			else
+				_rPr << L"<w:b w:val=\"false\" />";
+		}
+		if (WCs)
+		{
+			if (WCs > 0)
+				_rPr << L"<w:bCs/>";
+			else
+				_rPr << L"<w:bCs w:val=\"false\" />";
+		}
+		if (fo_text_transform_)
+		{
+			_rPr << (fo_text_transform_->get_type() ==  text_transform::Uppercase ? L"<w:caps w:val=\"true\" />" : L"<w:caps w:val=\"false\" />");
+		}
+		if (fontStyle)
+		{
+			if (fontStyle > 0)
+				_rPr << L"<w:i />";
+			else
+				_rPr << L"<w:i w:val=\"false\" />";
+		}
+		const int fontStyleComplex = process_font_style(style_font_style_complex_);
+		if (fontStyleComplex)
+		{
+			if (fontStyleComplex > 0)
+				_rPr << L"<w:iCs />";
+			else
+				_rPr << L"<w:iCs w:val=\"false\" />";
+		}
+		if (fo_font_variant_)
+		{
+			_rPr << (fo_font_variant_->get_type() == font_variant::SmallCaps ? L"<w:smallCaps w:val=\"true\" />" : L"<w:smallCaps w:val=\"true\" />" );
+		}
+		if (style_font_relief_)
+		{
+			if (style_font_relief_->get_type() == font_relief::Embossed)
+				_rPr << L"<w:emboss w:val=\"true\" />";
+			else if (style_font_relief_->get_type() == font_relief::Engraved)
+				_rPr << L"<w:imprint w:val=\"true\" />";
+			else
+			{
+				_rPr << L"<w:emboss w:val=\"false\" />";
+				_rPr << L"<w:imprint w:val=\"false\" />";
+			}
+		}
+		if (style_text_outline_)
+		{
+		   _rPr << ((*style_text_outline_ == true) ? L"<w:outline w:val=\"true\" />" : L"<w:outline w:val=\"false\" />" );
+		}
+		if (fo_text_shadow_)
+		{
+			_rPr << ((fo_text_shadow_->get_type() == shadow_type::Enable) ? L"<w:shadow w:val=\"true\" />" : L"<w:shadow w:val=\"false\" />" );        
+		}
+		if (text_display_)
+		{
+			if (text_display_->get_type() == text_display::None)
+				_rPr << L"<w:vanish />";        
+		}    
+		// underline
+		{
+			line_width under = style_text_underline_width_.get_value_or(line_width::Auto);
+			bool underlineBold = under.get_type() == line_width::Bold || 
+				under.get_type() == line_width::Thick;
+			std::wstring underline = L"";
+
+			if ( style_text_underline_type_ && style_text_underline_type_->get_type() == line_type::Non ||
+				style_text_underline_style_ && style_text_underline_style_->get_type() == line_style::None        
+				)
+			{
+				// подчеркивание выключено 
+				underline = L"none";
+			}
+			else if (style_text_underline_type_ && 
+				(!style_text_underline_style_ || style_text_underline_style_ && style_text_underline_style_->get_type() == line_style::Solid) )
+			{
+				if (underlineBold)
+					underline = L"thick"; 
+
+				switch (style_text_underline_type_->get_type())
+				{
+				case line_type::Single:
+					underline = L"single";
+					break;
+				case line_type::Double:
+					underline = L"double";
+					break;
+				}
+			}
+			else if (style_text_underline_style_)
+			{
+				switch (style_text_underline_style_->get_type())
+				{
+				case line_style::Solid:
+					if (underlineBold)
+						underline = L"thick"; 
+					else
+						underline = L"single";
+					break;
+				case line_style::Dotted:
+					if (underlineBold)
+						underline = L"dottedHeavy"; 
+					else
+						underline = L"dotted";
+					break;
+				case line_style::Dash:
+					if (underlineBold)
+						underline = L"dashedHeavy"; 
+					else
+						underline = L"dash";
+					break;
+				case line_style::LongDash:if (underlineBold)
+						underline = L"dashLongHeavy"; 
+					else
+						underline = L"dashLong";
+					break;
+				case line_style::DotDash:
+					if (underlineBold)
+						underline = L"dashDotHeavy"; 
+					else
+						underline = L"dotDash";
+					break;
+				case line_style::DotDotDash:
+					if (underlineBold)
+						underline = L"dashDotDotHeavy"; 
+					else
+						underline = L"dotDotDash";
+					break;
+				case line_style::Wave:
+					if (underlineBold)
+						underline = L"wavyHeavy"; 
+					else if (style_text_underline_type_.get_value_or( line_type(line_type::Single) ).get_type() == line_type::Double)
+						underline = L"wavyDouble"; 
+					else
+						underline = L"wave"; 
+					break;
+				}
+			}
+
+			std::wstring color = L"";
+			if (style_text_underline_color_ &&
+				style_text_underline_color_->get_type() == underline_color::Enabled)
+			{
+				color = style_text_underline_color_->get_color().get_color();
+			}
+	        
+			if (!underline.empty())
+			{
+				_rPr << L"<w:u w:val=\"" << underline << "\" ";
+				if (!color.empty())
+					_rPr << L"w:color=\"" << color <<  L"\" ";
+				_rPr << L"/>";
+			}
+		}
+		if (style_text_line_through_type_ && style_text_line_through_type_->get_type() == line_type::Non ||
+			style_text_line_through_style_ && style_text_line_through_style_->get_type() == line_style::None
+			)
+		{
+			_rPr << L"<w:dstrike w:val=\"false\" />";
+			_rPr << L"<w:strike w:val=\"false\" />";
+		}
+		else if (style_text_line_through_type_)
+		{
+			if (style_text_line_through_type_->get_type() == line_type::Single)
+				_rPr << L"<w:strike w:val=\"true\" />";            
+			else if (style_text_line_through_type_->get_type() == line_type::Double)
+				_rPr << L"<w:dstrike w:val=\"true\" />";
+		}
+		else if (style_text_line_through_style_ && style_text_line_through_style_->get_type() != line_style::None)
+		{
+			_rPr << L"<w:strike w:val=\"true\" />";
+		}
+
+		bool needProcessFontSize = true;
+
+		if (style_text_position_)
+		{
+			bool noNeedSize = false;
+			if (style_text_position_->get_type() == text_position::Sub)
+			{
+				_rPr << L"<w:vertAlign w:val=\"subscript\" />";
+				noNeedSize = true;
+			}
+			if (style_text_position_->get_type() == text_position::Super)
+			{
+				_rPr << L"<w:vertAlign w:val=\"superscript\" />";
+				noNeedSize = true;
+			}
+
+			double fontSizeVal = (fo_font_size_) ?	process_font_size_impl(fo_font_size_, NULL) :
+													process_font_size_impl(font_size(percent(100.0)), NULL);
+
+			if (style_text_position_->get_type() == text_position::Percent)
+			{
+				const double mul = style_text_position_->get_position().get_value() / 100.0;
+				if (fontSizeVal > 0)
+				{
+					const std::wstring position = boost::lexical_cast<std::wstring>( (int)(fontSizeVal * mul + 0.5));
+					if (!position.empty())
+					{
+						_rPr << L"<w:position w:val=\"" << position << "\" />";
+					}
+				}
+			}
+
+			if (style_text_position_->has_font_size() && !noNeedSize)
+			{
+				const double mul = style_text_position_->font_size().get_value() / 100.0;
+				if (fontSizeVal > 0 && mul > 0)
+				{
+					const std::wstring fontSize = boost::lexical_cast<std::wstring>((int)(fontSizeVal * mul + 0.5));
+					if (!fontSize.empty())
+					{
+						needProcessFontSize = false;
+						_rPr << L"<w:sz w:val=\"" << fontSize << "\" />";
+					}
+				}
+			}
+		}
+
+		if (style_text_rotation_angle_)
+		{
+			unsigned int value = (std::abs)(*style_text_rotation_angle_);
+			if (90 == value || 270 == value)
+				_rPr << L"<w:eastAsianLayout w:vert=\"true\" />";
+		}
+
+		if (style_text_scale_)
+		{
+			_rPr << L"<w:w w:val=\"" << style_text_scale_->get_value() << "\" />";
+		}
+
+		if (needProcessFontSize)
+		{
+			 int fontSize = process_font_size(fo_font_size_, NULL);
+	       
+			 if (fontSize > 0)
+			{
+				_rPr << L"<w:sz w:val=\"" << fontSize << "\" />";
+			}
+		}
+
+		int fontSizeComplex = process_font_size(style_font_size_complex_, NULL, true);
+
+		if (fontSizeComplex > 0)
+			_rPr << L"<w:szCs w:val=\"" << fontSizeComplex << "\" />";
+
+		if (fo_letter_spacing_)
+		{
+			if (fo_letter_spacing_->get_type() == letter_spacing::Normal)
+				_rPr << L"<w:spacing w:val=\"0\" />";
+			else
+				_rPr << L"<w:spacing w:val=\"" << 
+				(int)(20.0 * fo_letter_spacing_->get_length().get_value_unit(length::pt))
+				<< "\" />";
+		}
+
+		if (style_text_emphasize_)
+		{
+			std::wstring em = L"";
+			switch(style_text_emphasize_->get_type())
+			{
+			case text_emphasize::None:
+				em = L"none";
+				break;
+			case text_emphasize::Accent:
+				em = L"comma";
+				break;
+			case text_emphasize::Dot:
+				if (style_text_emphasize_->get_type_2() == text_emphasize::Above)
+					em = L"dot";
+				else
+					em = L"underDot";
+				break;
+			case text_emphasize::Circle:
+				em = L"circle";
+				break;
+			case text_emphasize::Disc:
+				em = L"dot"; // ?
+				break;
+			}
+
+			_rPr << L"<w:em w:val=\"" << em << "\" />";        
+		}
+
+		if (style_font_name_ || style_font_name_asian_ || style_font_name_complex_ || fo_font_family_)
+		{
+			std::wstring w_eastAsia;
+			std::wstring w_hAnsi;
+			std::wstring w_cs;
+			std::wstring w_ascii = w_hAnsi = w_cs = (style_font_name_ ? *style_font_name_: L"");
+
+			_rPr << L"<w:rFonts ";
+			if (!w_ascii.empty())
+				_rPr << L"w:ascii=\"" << w_ascii <<"\" ";
+			if (!w_hAnsi.empty())
+				_rPr << L"w:hAnsi=\"" << w_hAnsi <<"\" ";
+			if (!w_eastAsia.empty())
+				_rPr << L"w:eastAsia=\"" << w_eastAsia <<"\" ";
+			if (!w_cs.empty())
+				_rPr << L"w:cs=\"" << w_cs <<"\" ";
+
+			_rPr << L" />";
+		}
+
+		_CP_OPT(color) color_text = fo_color_;
+
+		if (color_text)
+		{
+			_rPr << L"<w:color w:val=\"" << color_text->get_hex_value() << "\" />";
+		}
+		else if (style_use_window_font_color_ && *style_use_window_font_color_)
+		{
+			_rPr << L"<w:color w:val=\"auto\" />";
+		}
+
+		if (fo_background_color_)
+		{
+			std::wstring w_fill;
+			if (fo_background_color_->get_type() == background_color::Transparent)
+				w_fill = L"auto";        
+			else
+				w_fill = fo_background_color_->get_color().get_hex_value();
+
+			_rPr << L"<w:shd w:val=\"clear\" w:color=\"auto\" w:fill=\"" << w_fill << "\" />";
+		}
+
+		if (fo_language_ || style_language_asian_ || style_language_complex_)
+		{
+
+			std::wstring w_val;
+			if (fo_language_)
+			{
+				w_val = *fo_language_;
+				if (fo_country_)
+					w_val += L"-" + *fo_country_;
+			}
+
+			std::wstring w_eastAsia;
+			if (style_language_asian_)
+			{
+				w_eastAsia = *style_language_asian_;
+				if (style_country_asian_)
+					w_eastAsia += L"-" + *style_country_asian_;
+			}
+
+			std::wstring w_bidi;
+			if (style_language_complex_)
+			{
+				w_bidi = *style_language_complex_;
+				if (style_country_complex_)
+					w_bidi += L"-" + *style_country_complex_;
+			}
+
+			_rPr << L"<w:lang ";
+			if (!w_val.empty())
+				_rPr << L"w:val=\"" << w_val << "\" ";
+	        
+			if (!w_eastAsia.empty())
+				_rPr << L"w:eastAsia=\"" << w_eastAsia << "\" ";
+
+			if (!w_bidi.empty())
+				_rPr << L"w:bidi=\"" << w_bidi << "\" ";
+			_rPr << L"/>";
+		}
+		if (style_text_blinking_)
+		{
+			std::wstring w_val = L"none";
+			if (*style_text_blinking_)
+				w_val = L"blinkBackground";
+
+			_rPr << L"<w:effect w:val=\"" << w_val << "\" />";
+		}
+		_rPr << L"</w:rPr>";
+	}
+}
+
+
 void apply_font_size(optional<font_size>::Type & A, const optional<font_size>::Type & B)
 {
     if (B && 
@@ -1160,12 +1475,12 @@ void text_format_properties_content::apply_from(const text_format_properties_con
     _CP_APPLY_PROP(style_font_style_name_asian_, Other.style_font_style_name_asian_);
     _CP_APPLY_PROP(style_font_style_name_complex_, Other.style_font_style_name_complex_);
 
-    _CP_APPLY_PROP(style_font_pitch_, Other.style_font_pitch_);
-    _CP_APPLY_PROP(style_font_pitch_asian_, Other.style_font_pitch_asian_);
-    _CP_APPLY_PROP(style_font_pitch_complex_, Other.style_font_pitch_complex_);
+    _CP_APPLY_PROP(style_font_pitch_,	Other.style_font_pitch_);
+    _CP_APPLY_PROP(style_font_pitch_asian_,		Other.style_font_pitch_asian_);
+    _CP_APPLY_PROP(style_font_pitch_complex_,	Other.style_font_pitch_complex_);
 
-    _CP_APPLY_PROP(style_font_charset_, Other.style_font_charset_);
-    _CP_APPLY_PROP(style_font_charset_asian_, Other.style_font_charset_asian_);
+    _CP_APPLY_PROP(style_font_charset_,			Other.style_font_charset_);
+    _CP_APPLY_PROP(style_font_charset_asian_,	Other.style_font_charset_asian_);
     _CP_APPLY_PROP(style_font_charset_complex_, Other.style_font_charset_complex_);
     
     apply_font_size(fo_font_size_, Other.fo_font_size_);

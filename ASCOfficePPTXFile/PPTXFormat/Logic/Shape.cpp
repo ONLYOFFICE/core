@@ -83,6 +83,8 @@ namespace PPTX
 						style = oNode;
 					else if (_T("txBody") == strName)
 						txBody = oNode;
+					else if (_T("txXfrm")  == strName)
+						txXfrm = oNode;
 					else if (_T("txbx") == strName || _T("textbox") == strName)
 					{
 						XmlUtils::CXmlNode _node = oNode.ReadNode(_T("w:txbxContent"));

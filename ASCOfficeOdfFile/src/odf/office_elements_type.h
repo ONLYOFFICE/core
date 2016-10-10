@@ -204,6 +204,7 @@ enum ElementType
     typeOfficeDocumentMeta,
     typeOfficeDocumentSettings,
 
+	typeMathElement,
 	typeMath,
 	typeMathSemantics,
 	typeMathAnnotation,

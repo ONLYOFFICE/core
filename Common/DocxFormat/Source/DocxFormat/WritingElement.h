@@ -331,6 +331,7 @@ namespace OOX
 		et_dsp_style,			// <dsp:style>
 		et_dsp_groupSpPr,		// <dsp:grpSpPr>
 		et_dsp_cNvPr,
+		et_dsp_txXfrm,
 		
 		et_a_p, // <a:p>
 		et_a_pPr, // <a:pPr>

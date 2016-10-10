@@ -66,7 +66,7 @@ public:
 	static const xml::NodeType xml_type = xml::typeElement;
 
 	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-	virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 	virtual void docx_convert(oox::docx_conversion_context & Context) ;
 	virtual void xlsx_convert(oox::xlsx_conversion_context & Context) {}
@@ -378,7 +378,7 @@ public:
 	static const xml::NodeType xml_type = xml::typeElement;
 	
 	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-	virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name){}
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
 
     draw_equation_attlist draw_equation_attlist_;
 };
@@ -421,7 +421,7 @@ public:
 	static const xml::NodeType xml_type = xml::typeElement;
 	
 	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-	virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name){}
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
 
     draw_handle_attlist draw_handle_attlist_;
 
@@ -451,7 +451,7 @@ public:
 	static const xml::NodeType xml_type = xml::typeElement;
 	
 	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-	virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 	
 	virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
 	virtual void docx_convert(oox::docx_conversion_context & Context);

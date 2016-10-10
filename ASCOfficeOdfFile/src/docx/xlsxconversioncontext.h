@@ -83,7 +83,7 @@ public:
 
     void start_chart(std::wstring name);
     void end_chart();
-	
+
 	void start_body();
     void end_body();
 
@@ -164,6 +164,7 @@ public:
     xlsx_xml_worksheet          & current_sheet();
    
     oox_chart_context           & current_chart();
+	math_context				& get_math_context()			 { return math_context_; }
     num_format_context          & get_num_format_context()		 { return num_format_context_; }
     size_t                        get_default_cell_style() const { return default_style_; }
     xlsx_defined_names          & get_xlsx_defined_names()		 { return xlsx_defined_names_; }
@@ -197,6 +198,7 @@ private:
     xlsx_defined_names              xlsx_defined_names_;
     xlsx_table_context              xlsx_table_context_;
     xlsx_text_context               xlsx_text_context_;
+	math_context					math_context_;
     xlsx_drawing_context_handle     xlsx_drawing_context_handle_;
     xlsx_comments_context_handle    xlsx_comments_context_handle_;
     

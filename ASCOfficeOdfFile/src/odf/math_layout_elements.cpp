@@ -59,7 +59,7 @@ void math_mrow::add_attributes( const xml::attributes_wc_ptr & Attributes )
 
 }
 
-void math_mrow::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void math_mrow::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {//0* elements
 	if (next_element_to_prev_)
 	{
@@ -75,7 +75,7 @@ void math_mrow::add_child_element( xml::sax * Reader, const ::std::wstring & Ns,
 		next_element_to_prev_ = true;
 }
 
-void math_mrow::docx_convert(oox::docx_conversion_context & Context) 
+void math_mrow::oox_convert(oox::math_context & Context)
 {
 	if (content_.size() < 1) return; 
 	
@@ -114,14 +114,15 @@ void math_mrow::docx_convert(oox::docx_conversion_context & Context)
 					mo_test_last->text_to_stream(Context.output_stream());
 				Context.output_stream() << L"\"/>";
 			}
-			Context.output_stream() << Context.get_styles_context().math_text_style().str();
+			Context.output_stream() << Context.math_style_stream().str();
 		Context.output_stream() << L"</m:dPr>";
 			Context.output_stream() << L"<m:e>";
 	}
 	
 	for (int i = i_start; i < i_end ; i++)
 	{
-		content_[i]->docx_convert(Context);
+		office_math_element* math_element = dynamic_cast<office_math_element*>(content_[i].get());
+		math_element->oox_convert(Context);
 	}
 
 	if (bDPr)
@@ -139,24 +140,28 @@ void math_mfrac::add_attributes( const xml::attributes_wc_ptr & Attributes )
 
 }
 
-void math_mfrac::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void math_mfrac::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }
 
-void math_mfrac::docx_convert(oox::docx_conversion_context & Context) 
+void math_mfrac::oox_convert(oox::math_context & Context)
 {//2 elements
 	if (content_.size() != 2)
 	{
 		return;
 	}
+	office_math_element* math_element = NULL;
+
 	Context.output_stream() << L"<m:f>";
 		Context.output_stream() << L"<m:num>";
-			content_[0]->docx_convert(Context);
+			math_element = dynamic_cast<office_math_element*>(content_[0].get());
+			math_element->oox_convert(Context);
 		Context.output_stream() << L"</m:num>";
 
 		Context.output_stream() << L"<m:den>";
-			content_[1]->docx_convert(Context);
+			math_element = dynamic_cast<office_math_element*>(content_[1].get());
+			math_element->oox_convert(Context);
 		Context.output_stream() << L"</m:den>";
 
 	Context.output_stream() << L"</m:f>";
@@ -170,27 +175,28 @@ void math_msqrt::add_attributes( const xml::attributes_wc_ptr & Attributes )
 
 }
 
-void math_msqrt::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void math_msqrt::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }
 
-void math_msqrt::docx_convert(oox::docx_conversion_context & Context) 
+void math_msqrt::oox_convert(oox::math_context & Context)
 {//1* elements
 	std::wostream & strm = Context.output_stream();
 
 	strm << L"<m:rad>";
 		strm << L"<m:radPr>";
 			strm << L"<m:degHide m:val=\"1\"/>";
-			strm << Context.get_styles_context().math_text_style().str();
+			strm << Context.math_style_stream().str();
 		strm << L"</m:radPr>";
 
 		strm << L"<m:deg/>";
 		
 		strm << L"<m:e>";		
-			BOOST_FOREACH(const office_element_ptr & elm, content_)
+			for (int i = 0 ; i < content_.size(); i++)
 			{
-				elm->docx_convert(Context);
+				office_math_element* math_element = dynamic_cast<office_math_element*>(content_[i].get());
+				math_element->oox_convert(Context);
 			}
 		strm << L"</m:e>";
 	strm << L"</m:rad>";
@@ -204,27 +210,30 @@ void math_mroot::add_attributes( const xml::attributes_wc_ptr & Attributes )
 
 }
 
-void math_mroot::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void math_mroot::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }
 
-void math_mroot::docx_convert(oox::docx_conversion_context & Context) 
+void math_mroot::oox_convert(oox::math_context & Context)
 {//2 elements
 	std::wostream & strm = Context.output_stream();
 
 	strm << L"<m:rad>";
 
+		office_math_element* math_element = NULL;
+
 		strm << L"<m:radPr>";
-			strm << Context.get_styles_context().math_text_style().str();
+			strm << Context.math_style_stream().str();
 		strm << L"</m:radPr>";
 		
 		strm << L"<m:deg>";
-			content_[1]->docx_convert(Context);
+			math_element = dynamic_cast<office_math_element*>(content_[1].get());
+			math_element->oox_convert(Context);		
 		strm << L"</m:deg>";
-
 		strm << L"<m:e>";		
-			content_[0]->docx_convert(Context);
+			math_element = dynamic_cast<office_math_element*>(content_[0].get());
+			math_element->oox_convert(Context);		
 		strm << L"</m:e>";		
 
 	strm << L"</m:rad>";
@@ -242,36 +251,40 @@ void math_mstyle::add_attributes( const xml::attributes_wc_ptr & Attributes )
 	CP_APPLY_ATTR(L"math:color", color_);
    
 // ver 3	
-	if (!fontweight_)	CP_APPLY_ATTR( L"fontweight", fontweight_);
-	if (!mathsize_)	CP_APPLY_ATTR(L"mathsize", mathsize_);
-	if (!color_)		CP_APPLY_ATTR(L"color", color_);
+	if (!fontweight_)	CP_APPLY_ATTR( L"fontweight",	fontweight_);
+	if (!mathsize_)		CP_APPLY_ATTR(L"mathsize",		mathsize_);
+	if (!color_)		CP_APPLY_ATTR(L"color",			color_);
 }
 
-void math_mstyle::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void math_mstyle::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }
 
-void math_mstyle::docx_convert(oox::docx_conversion_context & Context) 
+void math_mstyle::oox_convert(oox::math_context & Context)
 {
-	style_text_properties textProperty;
+	Context.text_properties_ = odf_reader::style_text_properties_ptr(new odf_reader::style_text_properties());
+	
+	Context.text_properties_->content().style_font_name_	= L"Cambria Math";
+	Context.text_properties_->content().fo_font_size_		= odf_types::length(Context.base_font_size_, odf_types::length::pt);
 	
 	if (mathsize_)
-		textProperty.content().fo_font_size_ = mathsize_;
+		Context.text_properties_->content().fo_font_size_ = mathsize_;
+
 	if (color_)
-		textProperty.content().fo_color_ = color_;
+		Context.text_properties_->content().fo_color_ = color_;
+	
 	if (common_attlist_.mathvariant_)
 	{
 		if (common_attlist_.mathvariant_->style_.bold)
-			textProperty.content().fo_font_weight_ = odf_types::font_weight(odf_types::font_weight::WBold);
+			Context.text_properties_->content().fo_font_weight_ = odf_types::font_weight(odf_types::font_weight::WBold);
 		if (common_attlist_.mathvariant_->style_.italic)
-			textProperty.content().fo_font_style_ = odf_types::font_style(odf_types::font_style::Italic);
+			Context.text_properties_->content().fo_font_style_ = odf_types::font_style(odf_types::font_style::Italic);
 	}
 
-	Context.push_text_properties(&textProperty);
 //--------------------------------------------------
 	{
-		std::wstringstream & strm = Context.get_styles_context().math_text_style();
+		std::wstringstream & strm = Context.math_style_stream();
 		strm.str( std::wstring() );
 		strm.clear();
 
@@ -279,28 +292,24 @@ void math_mstyle::docx_convert(oox::docx_conversion_context & Context)
 		{ 
 			CP_XML_NODE(L"m:ctrlPr")
 			{
-				Context.get_styles_context().start();
-				Context.current_text_properties()->docx_convert(Context);
-
-				CP_XML_NODE(L"w:rPr")
-				{
-					CP_XML_STREAM() << Context.get_styles_context().text_style().str();
-				}	
+				Context.text_properties_->content().oox_convert(CP_XML_STREAM(), Context.graphRPR_);
 			}
 		}
 	}
 
-	BOOST_FOREACH(const office_element_ptr & elm, content_)
+	for (int i = 0; i < content_.size(); i++)
 	{
-		elm->docx_convert(Context);
+		office_math_element* math_element = dynamic_cast<office_math_element*>(content_[i].get());
+		math_element->oox_convert(Context);
 	}
+//reset to default math text props
+	Context.text_properties_ = odf_reader::style_text_properties_ptr(new odf_reader::style_text_properties());
 	
-	Context.pop_text_properties();
-
-// reset style ... todooo вынести отдельно..
+	Context.text_properties_->content().style_font_name_	= L"Cambria Math";
+	Context.text_properties_->content().fo_font_size_		= odf_types::length(Context.base_font_size_, odf_types::length::pt);
 
 	{
-		std::wstringstream & strm = Context.get_styles_context().math_text_style();
+		std::wstringstream & strm = Context.math_style_stream();
 		strm.str( std::wstring() );
 		strm.clear();
 
@@ -308,13 +317,7 @@ void math_mstyle::docx_convert(oox::docx_conversion_context & Context)
 		{ 
 			CP_XML_NODE(L"m:ctrlPr")
 			{
-				Context.get_styles_context().start();
-				Context.current_text_properties()->docx_convert(Context);
-
-				CP_XML_NODE(L"w:rPr")
-				{
-					CP_XML_STREAM() << Context.get_styles_context().text_style().str();
-				}	
+				Context.text_properties_->content().oox_convert(CP_XML_STREAM(), Context.graphRPR_);
 			}
 		}
 	}
@@ -332,16 +335,17 @@ void math_menclose::add_attributes( const xml::attributes_wc_ptr & Attributes )
 //	if (!fontweight_) CP_APPLY_ATTR( L"fontweight", fontweight_);
 }
 
-void math_menclose::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void math_menclose::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }
 
-void math_menclose::docx_convert(oox::docx_conversion_context & Context) 
+void math_menclose::oox_convert(oox::math_context & Context)
 {//0* elements
 	//BOOST_FOREACH(const office_element_ptr & elm, content_)
 	//{
-	//	elm->docx_convert(Context);
+		//office_math_element* math_element = dynamic_cast<office_math_element*>(elm.get());
+		//math_element->oox_convert(Context);
 	//}
 }
 //---------------------------------------------------------------
@@ -357,16 +361,17 @@ void math_mfenced::add_attributes( const xml::attributes_wc_ptr & Attributes )
 //	if (!fontweight_) CP_APPLY_ATTR( L"fontweight", fontweight_);
 }
 
-void math_mfenced::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void math_mfenced::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }
 
-void math_mfenced::docx_convert(oox::docx_conversion_context & Context) 
+void math_mfenced::oox_convert(oox::math_context & Context)
 {//0* elements
 	//BOOST_FOREACH(const office_element_ptr & elm, content_)
 	//{
-	//	elm->docx_convert(Context);
+		//office_math_element* math_element = dynamic_cast<office_math_element*>(elm.get());
+		//math_element->oox_convert(Context);
 	//}
 }
 //---------------------------------------------------------------
@@ -382,12 +387,12 @@ void math_mpadded::add_attributes( const xml::attributes_wc_ptr & Attributes )
 //	if (!fontweight_) CP_APPLY_ATTR( L"fontweight", fontweight_);
 }
 
-void math_mpadded::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void math_mpadded::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }
 
-void math_mpadded::docx_convert(oox::docx_conversion_context & Context) 
+void math_mpadded::oox_convert(oox::math_context & Context)
 {//1* elements
 
 }

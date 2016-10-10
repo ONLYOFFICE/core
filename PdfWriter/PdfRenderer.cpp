@@ -1470,7 +1470,7 @@ PdfWriter::CImageDict* CPdfRenderer::LoadImage(Aggplus::CImage* pImage, const BY
 		pPdfImage->LoadSMask(pData, nImageW, nImageH, nAlpha, (pImage->GetStride() >= 0) ? false : true);
 
 	if (bJpeg)
-		pPdfImage->LoadJpeg(pBuffer, nBufferSize, nImageW, nImageH);
+        pPdfImage->LoadJpeg(pBuffer, nBufferSize, nImageW, nImageH);
 	else
 		pPdfImage->LoadJpx(pBuffer, nBufferSize, nImageW, nImageH);
 
@@ -1663,7 +1663,7 @@ void CPdfRenderer::UpdateBrush()
 			if (pImage)
 			{
 				if (_CXIMAGE_FORMAT_JPG == oImageFormat.eFileType)
-					pImage->LoadJpeg(wsTexturePath.c_str(), nImageW, nImageH);
+                    pImage->LoadJpeg(wsTexturePath.c_str(), nImageW, nImageH, oFrame.IsGrayScale());
 				else
 					pImage->LoadJpx(wsTexturePath.c_str(), nImageW, nImageH);
 			}

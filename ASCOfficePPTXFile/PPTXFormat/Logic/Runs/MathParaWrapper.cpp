@@ -133,14 +133,14 @@ namespace PPTX
 					BinDocxRW::CDocxSerializer oDocxSerializer;
 					NSBinPptxRW::CDrawingConverter oDrawingConverter;
 					NSBinPptxRW::CBinaryFileWriter* pOldWriter = oDrawingConverter.m_pBinaryWriter;
-					NSCommon::smart_ptr<PPTX::CCommonRels> pOldRels = *oDrawingConverter.m_pBinaryWriter->m_pCommonRels;
+					//NSCommon::smart_ptr<PPTX::CCommonRels> pOldRels = *oDrawingConverter.m_pBinaryWriter->m_pCommonRels;
 					oDrawingConverter.m_pBinaryWriter = pWriter;
 
 					DocWrapper::FontProcessor fp;
 					BinDocxRW::ParamsWriter oParamsWriter(pWriter, &fp, &oDrawingConverter, NULL);
 					oDocxSerializer.m_pParamsWriter = &oParamsWriter;
 					oDocxSerializer.getBinaryContentElem(eElemType, pElem, *pWriter, lDataSize);
-					*oDrawingConverter.m_pBinaryWriter->m_pCommonRels = pOldRels;
+					//*oDrawingConverter.m_pBinaryWriter->m_pCommonRels = pOldRels;
 					oDrawingConverter.m_pBinaryWriter = pOldWriter;
 				}
 

@@ -226,7 +226,7 @@ $(ASCDOCUMENTSCORE): $(ASCDOCUMENTSCORE_DEP)
 $(PDFREADER): $(PDFREADER_DEP)
 
 %.build/Makefile: %.pro
-	mkdir -p $(dir $@) && cd $(dir $@) && qmake -r -spec linux-g++ "CONGIG+=build_fast" $<
+	mkdir -p $(dir $@) && cd $(dir $@) && qmake -r -spec linux-g++ $<
 
 clean:
 	rm -rf $(TARGETS)

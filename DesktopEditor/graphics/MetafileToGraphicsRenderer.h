@@ -240,6 +240,7 @@ namespace NSOnlineOfficeBinToPdf
 
                 oRenderer.CreateFromBgraFrame(&oFrame);
                 oRenderer.SetTileImageDpi(96.0);
+                oRenderer.SetSwapRGB(false);
 
                 this->m_pRenderer = &oRenderer;
                 BYTE* pBufferPage = oInfo.arSizes[nPageIndex].data;

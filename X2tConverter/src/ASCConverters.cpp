@@ -51,6 +51,7 @@
 #include "../../ASCOfficeOdfFileW/source/Oox2OdfConverter/Oox2OdfConverter.h"
 #include "../../DesktopEditor/doctrenderer/doctrenderer.h"
 #include "../../DesktopEditor/fontengine/ApplicationFonts.h"
+#include "../../DesktopEditor/graphics/MetafileToGraphicsRenderer.h"
 #include "../../PdfReader/PdfReader.h"
 #include "../../PdfReader/Src/ErrorConstants.h"
 #include "../../DjVuFile/DjVu.h"
@@ -695,6 +696,81 @@ namespace NExtractTools
            NSFile::CFileBinary::Remove(sPdfBinFile);
        return nRes;
    }
+	//doct_bin -> image
+	int doct_bin2image(NSDoctRenderer::DoctRendererFormat::FormatFile eFromType, const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, bool bPaid, const std::wstring &sThemeDir, InputParams& params)
+	{
+		int nRes = 0;
+		NSDoctRenderer::DoctRendererFormat::FormatFile eToType = NSDoctRenderer::DoctRendererFormat::FormatFile::PDF;
+		std::wstring sTFileDir = FileSystem::Directory::GetFolderPath(sFrom);
+		std::wstring sImagesDirectory = sTFileDir + FILE_SEPARATOR_STR + _T("media");
+		std::wstring sPdfBinFile = sTFileDir + FILE_SEPARATOR_STR + _T("pdf.bin");
+		NSDoctRenderer::CDoctrenderer oDoctRenderer(NULL != params.m_sAllFontsPath ? *params.m_sAllFontsPath : _T(""));
+		std::wstring sXml = getDoctXml(eFromType, eToType, sTFileDir, sPdfBinFile, sImagesDirectory, sThemeDir, -1, _T(""), params);
+		std::wstring sResult;
+		bool bRes = oDoctRenderer.Execute(sXml, sResult);
+		if (-1 != sResult.find(_T("error")))
+		{
+			std::wcerr << _T("DoctRenderer:") << sResult << std::endl;
+			nRes = AVS_FILEUTILS_ERROR_CONVERT;
+		}
+		else
+		{
+			CApplicationFonts oApplicationFonts;
+			initApplicationFonts(oApplicationFonts, params);
+			NSOnlineOfficeBinToPdf::CMetafileToRenderterRaster imageWriter(NULL);
+			imageWriter.wsHtmlPlace = sTFileDir;
+			imageWriter.wsThemesPlace = sThemeDir;
+			imageWriter.wsTempDir = sTemp;
+			imageWriter.appFonts = &oApplicationFonts;
+			if(NULL != params.m_oThumbnail)
+			{
+				InputParamsThumbnail* oThumbnail = params.m_oThumbnail;
+				if(NULL != oThumbnail->format)
+				{
+					imageWriter.m_nRasterFormat = *oThumbnail->format;
+				}
+				if(NULL != oThumbnail->aspect)
+				{
+					imageWriter.m_nSaveType = *oThumbnail->aspect;
+				}
+				if(NULL != oThumbnail->first)
+				{
+					imageWriter.m_bIsOnlyFirst = *oThumbnail->first;
+				}
+				if(NULL != oThumbnail->width)
+				{
+					imageWriter.m_nRasterW = *oThumbnail->width;
+				}
+				if(NULL != oThumbnail->height)
+				{
+					imageWriter.m_nRasterH = *oThumbnail->height;
+				}
+			}
+			std::wstring sThumbnailDir;
+			if(imageWriter.m_bIsOnlyFirst)
+			{
+				imageWriter.m_sFileName = sTo;
+			}
+			else
+			{
+				sThumbnailDir = sTemp + FILE_SEPARATOR_STR + _T("thumbnails");
+				FileSystem::Directory::CreateDirectory(sThumbnailDir);
+				std::wstring::size_type pos = sTo.find_last_of('.');
+				std::wstring sExt = std::wstring::npos == pos ? L"" : sTo.substr(pos);
+				imageWriter.m_sFileName = sThumbnailDir + FILE_SEPARATOR_STR + L"image" + sExt;
+			}
+			BYTE* pData;
+			DWORD nBytesCount;
+			NSFile::CFileBinary::ReadAllBytes(sPdfBinFile, &pData, nBytesCount);
+			nRes = imageWriter.ConvertBuffer(pData, nBytesCount) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
+			if(!imageWriter.m_bIsOnlyFirst)
+			{
+				COfficeUtils oCOfficeUtils(NULL);
+				nRes = S_OK == oCOfficeUtils.CompressFileOrDirectory(sThumbnailDir, sTo, -1) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
+			}
+		}
+		return nRes;
+	}
 
    // ppsx -> pptx
    int ppsx2pptx (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
@@ -1696,6 +1772,11 @@ namespace NExtractTools
            NSDoctRenderer::DoctRendererFormat::FormatFile eFromType = NSDoctRenderer::DoctRendererFormat::FormatFile::DOCT;
            nRes = doct_bin2pdf(eFromType, sFrom, sTo, sTemp, bPaid, sThemeDir, params);
        }
+       else if(AVS_OFFICESTUDIO_FILE_IMAGE == nFormatTo)
+       {
+           NSDoctRenderer::DoctRendererFormat::FormatFile eFromType = NSDoctRenderer::DoctRendererFormat::FormatFile::DOCT;
+           nRes = doct_bin2image(eFromType, sFrom, sTo, sTemp, bPaid, sThemeDir, params);
+       }
        else if(0 != (AVS_OFFICESTUDIO_FILE_DOCUMENT & nFormatTo))
        {
            std::wstring sDocxDir = sTemp + FILE_SEPARATOR_STR + _T("docx_unpacked");
@@ -1858,6 +1939,11 @@ namespace NExtractTools
            NSDoctRenderer::DoctRendererFormat::FormatFile eFromType = NSDoctRenderer::DoctRendererFormat::FormatFile::XLST;
            nRes = doct_bin2pdf(eFromType, sFrom, sTo, sTemp, bPaid, sThemeDir, params);
        }
+       else if(AVS_OFFICESTUDIO_FILE_IMAGE == nFormatTo)
+       {
+           NSDoctRenderer::DoctRendererFormat::FormatFile eFromType = NSDoctRenderer::DoctRendererFormat::FormatFile::XLST;
+           nRes = doct_bin2image(eFromType, sFrom, sTo, sTemp, bPaid, sThemeDir, params);
+       }
        else if(0 != (AVS_OFFICESTUDIO_FILE_SPREADSHEET & nFormatTo))
        {
            std::wstring sXlsxDir = sTemp + FILE_SEPARATOR_STR + _T("xlsx_unpacked");
@@ -1981,6 +2067,11 @@ namespace NExtractTools
        {
            NSDoctRenderer::DoctRendererFormat::FormatFile eFromType = NSDoctRenderer::DoctRendererFormat::FormatFile::PPTT;
            nRes = doct_bin2pdf(eFromType, sFrom, sTo, sTemp, bPaid, sThemeDir, params);
+       }
+       else if(AVS_OFFICESTUDIO_FILE_IMAGE == nFormatTo)
+       {
+           NSDoctRenderer::DoctRendererFormat::FormatFile eFromType = NSDoctRenderer::DoctRendererFormat::FormatFile::PPTT;
+           nRes = doct_bin2image(eFromType, sFrom, sTo, sTemp, bPaid, sThemeDir, params);
        }
        else if(0 != (AVS_OFFICESTUDIO_FILE_PRESENTATION & nFormatTo))
        {

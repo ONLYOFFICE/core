@@ -882,18 +882,18 @@ namespace NSOnlineOfficeBinToPdf
 				{
 				case ctPageWidth:
 				{
-					arSizes[PagesCount].width = (ReadInt(current, curindex) / 100000.0);
+					arSizes[PagesCount - 1].width = (ReadInt(current, curindex) / 100000.0);
 					break;
 				}
 				case ctPageHeight:
 				{
-					arSizes[PagesCount].height = (ReadInt(current, curindex) / 100000.0);
+					arSizes[PagesCount - 1].height = (ReadInt(current, curindex) / 100000.0);
 					break;
 				}
 				case ctPageStart:
 				{
 					AddPage();
-					arSizes[PagesCount].data = current;
+					arSizes[PagesCount - 1].data = current;
 					break;
 				}
 				case ctPageEnd:
@@ -1021,7 +1021,7 @@ namespace NSOnlineOfficeBinToPdf
 							LONG lColorsCount = (LONG)ReadInt(current, curindex);
 							if (0 <= lColorsCount)
 							{
-								SkipInt(current, curindex, 8 * lColorsCount);
+								SkipInt(current, curindex, 2 * lColorsCount);
 							}
 
 							break;

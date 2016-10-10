@@ -83,6 +83,7 @@ core_mac {
 
 INCLUDEPATH += ../../../DesktopEditor/xml/libxml2/include
 INCLUDEPATH += ../../../DesktopEditor/freetype-2.5.2/include
+INCLUDEPATH += ../../../DesktopEditor/agg-2.4/include
 
 INCLUDEPATH += $$PWD/../../../Common/DocxFormat
 DEPENDPATH += $$PWD/../../../Common/DocxFormat
@@ -107,7 +108,8 @@ SOURCES += ../../src/main.cpp \
 	../../src/ASCConverters.cpp
 HEADERS += ../../src/cextracttools.h \
     ../../../Common/OfficeFileFormatChecker.h \
-	../../src/ASCConverters.h
+	../../src/ASCConverters.h \
+	../../../DesktopEditor/graphics/MetafileToGraphicsRenderer.h
 
 ###############################################################################################################
 

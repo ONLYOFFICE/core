@@ -122,8 +122,8 @@ public:
             CcnfStyle style;
             opPrReader.Parse( oParam, oNewParStyle->m_oParProp, style );
 			
-			oNewParStyle->m_oParProp.m_nListId = PROP_DEF; //экспериментально вроде нельзя иметь numbering в параграф стиле
-			oNewParStyle->m_oParProp.m_nListLevel = PROP_DEF;
+			//oNewParStyle->m_oParProp.m_nListId = PROP_DEF; //экспериментально вроде нельзя иметь numbering в параграф стиле
+			//oNewParStyle->m_oParProp.m_nListLevel = PROP_DEF;
 
 		}
 		if (m_ooxStyle->m_oTblPr.IsInit()  && RtfStyle::stTable == eStyleType )

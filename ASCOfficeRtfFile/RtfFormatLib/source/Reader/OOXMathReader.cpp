@@ -165,6 +165,43 @@ bool OOXMathReader::ParseElement(ReaderParameter oParam , OOX::WritingElement * 
 					rtfMath->AddItem(oSubMath);
 			}
 		}break;		
+		case OOX::et_m_box:
+		{
+			OOX::Logic::CBox *ooxSubMath = dynamic_cast<OOX::Logic::CBox *>(ooxMath);
+			if (ooxSubMath)
+			{
+				RtfMathPtr oSubMath;
+				if (ParseElement(oParam, ooxSubMath->m_oBoxPr.GetPointer(), oSubMath))
+					rtfMath->AddItem(oSubMath);
+				
+				oSubMath.reset();
+				if (ParseElement(oParam, ooxSubMath->m_oElement.GetPointer(), oSubMath))
+					rtfMath->AddItem(oSubMath);
+			}
+		}break;
+		case OOX::et_m_boxPr:
+		{
+			OOX::Logic::CBoxPr *ooxSubMath = dynamic_cast<OOX::Logic::CBoxPr *>(ooxMath);
+			if (ooxSubMath)
+			{
+				RtfMathPtr oSubMath;
+				if (ParseElement(oParam, ooxSubMath->m_oCtrlPr.GetPointer(), oSubMath))
+					rtfMath->AddItem(oSubMath);
+			
+				oSubMath.reset();
+				if (ParseElement(oParam, ooxSubMath->m_oAln.GetPointer(), oSubMath))
+					rtfMath->AddItem(oSubMath);
+				
+				oSubMath.reset();
+				if (ParseElement(oParam, ooxSubMath->m_oBrk.GetPointer(), oSubMath))
+					rtfMath->AddItem(oSubMath);
+				
+				oSubMath.reset();
+				if (ParseElement(oParam, ooxSubMath->m_oDiff.GetPointer(), oSubMath))
+					rtfMath->AddItem(oSubMath);
+				//m_oNoBreak; m_oOpEmu;
+			}
+		}break;
 		case OOX::et_m_dPr:
 		{
 			OOX::Logic::CDelimiterPr *ooxSubMath = dynamic_cast<OOX::Logic::CDelimiterPr *>(ooxMath);

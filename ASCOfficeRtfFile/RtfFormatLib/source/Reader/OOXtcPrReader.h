@@ -74,9 +74,9 @@ public:
 			case SimpleTypes::mergeRestart  : oOutputProperty.m_bMergeFirst = 1;	break;
 			}
 		}
-		if( m_ooxTableCellProps->m_oVMerge.IsInit() && m_ooxTableCellProps->m_oVMerge->m_oVal.IsInit() )
+		if( m_ooxTableCellProps->m_oVMerge.IsInit())
 		{
-			if(m_ooxTableCellProps->m_oVMerge->m_oVal->GetValue() == SimpleTypes::mergeRestart)
+			if ((m_ooxTableCellProps->m_oVMerge->m_oVal.IsInit()) && (m_ooxTableCellProps->m_oVMerge->m_oVal->GetValue() == SimpleTypes::mergeRestart))
 				oOutputProperty.m_bMergeFirstVertical = 1;
 			else 
 				oOutputProperty.m_bMergeVertical = 1;

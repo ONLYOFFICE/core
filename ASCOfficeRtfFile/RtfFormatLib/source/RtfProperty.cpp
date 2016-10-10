@@ -1676,9 +1676,9 @@ CString RtfFrame::RenderToOOX(RenderParameter oRenderParameter)
 CString RtfParagraphProperty::RenderToRtf(RenderParameter oRenderParameter)
 {
 	CString sResult;
-	//RENDER_RTF_INT( m_nStyle, sResult, _T("s") );
-	RENDER_RTF_BOOL( m_bAutoHyphenation	, sResult, _T("hyphpar") );
-	RENDER_RTF_BOOL( m_bInTable			, sResult, _T("intbl") );
+	RENDER_RTF_INT	( m_nStyle				, sResult, _T("s") ); //test
+	RENDER_RTF_BOOL	( m_bAutoHyphenation	, sResult, _T("hyphpar") );
+	RENDER_RTF_BOOL	( m_bInTable			, sResult, _T("intbl") );
 	
 	if( PROP_DEF != m_nItap && 1 != m_nItap )
 		sResult.AppendFormat( _T("\\itap%d"),m_nItap );

@@ -283,15 +283,15 @@ CString RtfWriter::CreateRtfStart()
 	sResult += m_oDocument.m_oProperty.RenderToRtf( oRenderParameter );
 	sResult += m_oDocument.m_oFontTable.RenderToRtf( oRenderParameter );
 	sResult += m_oDocument.m_oColorTable.RenderToRtf( oRenderParameter );
-	
-	//CString sDefCharProp = m_oDocument.m_oDefaultCharProp.RenderToRtf( oRenderParameter );
-	//if( false == sDefCharProp.IsEmpty() )
-	//	sResult += _T("{\\*\\defchp ") + sDefCharProp + _T("}");
-	//CString sDefParProp = m_oDocument.m_oDefaultParagraphProp.RenderToRtf( oRenderParameter );
-	//if( false == sDefParProp.IsEmpty() )
-	//	sResult += _T("{\\*\\defpap ") + sDefParProp+ _T("}");
-	//sResult += m_oDocument.m_oStyleTable.RenderToRtf( oRenderParameter ) );
-	
+//---------- test 	
+	CString sDefCharProp = m_oDocument.m_oDefaultCharProp.RenderToRtf( oRenderParameter );
+	if( false == sDefCharProp.IsEmpty() )
+		sResult += _T("{\\*\\defchp ") + sDefCharProp + _T("}");
+	CString sDefParProp = m_oDocument.m_oDefaultParagraphProp.RenderToRtf( oRenderParameter );
+	if( false == sDefParProp.IsEmpty() )
+		sResult += _T("{\\*\\defpap ") + sDefParProp+ _T("}");
+	sResult += m_oDocument.m_oStyleTable.RenderToRtf( oRenderParameter );
+//---------- test 	
 	sResult += m_oDocument.m_oListTabel.RenderToRtf( oRenderParameter );
 	sResult += m_oDocument.m_oListOverrideTabel.RenderToRtf( oRenderParameter );
 	sResult += m_oDocument.m_oInformation.RenderToRtf( oRenderParameter );

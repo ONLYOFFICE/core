@@ -3556,16 +3556,16 @@ namespace SimpleTypes
 						}
 					case 'h':
 						{
-							if      ( _T("height") == sProperty ) m_eType = cssptHeight;
+							if      ( _T("height") == sProperty )	m_eType = cssptHeight;
 							else                                    m_eType = cssptUnknown;
 
 							break;
 						}
 					case 'l':
 						{
-							if      ( _T("layout-flow") == sProperty ) m_eType = cssptLayoutFlow;
-							else if ( _T("left")       == sProperty ) m_eType = cssptLeft;
-							else                                         m_eType = cssptUnknown;
+							if      ( _T("layout-flow") == sProperty )		m_eType = cssptLayoutFlow;
+							else if ( _T("left")       == sProperty )		m_eType = cssptLeft;
+							else											m_eType = cssptUnknown;
 
 							break;
 						}		
@@ -3575,11 +3575,11 @@ namespace SimpleTypes
 							{
 							case 'a':
 								{
-									if      ( _T("margin-bottom") == sProperty ) m_eType = cssptMarginBottom;
-									else if ( _T("margin-left")   == sProperty ) m_eType = cssptMarginLeft;
-									else if ( _T("margin-right")  == sProperty ) m_eType = cssptMarginRight;
-									else if ( _T("margin-top")    == sProperty ) m_eType = cssptMarginTop;
-									else                                           m_eType = cssptUnknown;
+									if      ( _T("margin-bottom") == sProperty )	m_eType = cssptMarginBottom;
+									else if ( _T("margin-left")   == sProperty )	m_eType = cssptMarginLeft;
+									else if ( _T("margin-right")  == sProperty )	m_eType = cssptMarginRight;
+									else if ( _T("margin-top")    == sProperty )	m_eType = cssptMarginTop;
+									else											m_eType = cssptUnknown;
 
 									break;
 								}
@@ -3617,52 +3617,52 @@ namespace SimpleTypes
 						}
 					case 'p':
 						{
-							if      ( _T("position") == sProperty ) m_eType = cssptPosition;
-							else                                      m_eType = cssptUnknown;
+							if      ( _T("position") == sProperty )		m_eType = cssptPosition;
+							else										m_eType = cssptUnknown;
 
 							break;
 						}
 					case 'r':
 						{
-							if      ( _T("rotation") == sProperty ) m_eType = cssptRotation;
-							else                                      m_eType = cssptUnknown;
+							if      ( _T("rotation") == sProperty )		m_eType = cssptRotation;
+							else										m_eType = cssptUnknown;
 
 							break;
 						}
 					case 't':
 						{
-							if      ( _T("text-decoration") == sProperty ) m_eType = cssptTextDecoration;
-							else if ( _T("top")             == sProperty ) m_eType = cssptTop;
-							else							                 m_eType = cssptUnknown;
+							if      ( _T("text-decoration") == sProperty )	m_eType = cssptTextDecoration;
+							else if ( _T("top")             == sProperty )	m_eType = cssptTop;
+							else							                m_eType = cssptUnknown;
 
 							break;
 						}
 					case 'v':
 						{
-							if      ( _T("visibility")            == sProperty ) m_eType = cssptVisibility;
-							else if ( _T("v-rotate-letters ")     == sProperty ) m_eType = cssptVRotateLetters;
-							else if ( _T("v-same-letter-heights") == sProperty ) m_eType = cssptVSameLetterHeights;
-							else if ( _T("v-text-align")          == sProperty ) m_eType = cssptVTextAlign;
-							else if ( _T("v-text-anchor")         == sProperty ) m_eType = cssptVTextAnchor;
-							else if ( _T("v-text-kern")           == sProperty ) m_eType = cssptVTextKern;
-							else if ( _T("v-text-reverse")        == sProperty ) m_eType = cssptVTextReverse;
-							else if ( _T("v-text-spacing-mode")   == sProperty ) m_eType = cssptVTextSpacingMode;
-							else if ( _T("v-text-spacing")        == sProperty ) m_eType = cssptVTextSpacing;
-							else                                                 m_eType = cssptUnknown;
+							if      ( _T("visibility")				== sProperty )	m_eType = cssptVisibility;
+							else if ( _T("v-rotate-letters")		== sProperty )	m_eType = cssptVRotateLetters;
+							else if ( _T("v-same-letter-heights")	== sProperty )	m_eType = cssptVSameLetterHeights;
+							else if ( _T("v-text-align")			== sProperty )	m_eType = cssptVTextAlign;
+							else if ( _T("v-text-anchor")			== sProperty )	m_eType = cssptVTextAnchor;
+							else if ( _T("v-text-kern")				== sProperty )	m_eType = cssptVTextKern;
+							else if ( _T("v-text-reverse")			== sProperty )	m_eType = cssptVTextReverse;
+							else if ( _T("v-text-spacing-mode")		== sProperty )	m_eType = cssptVTextSpacingMode;
+							else if ( _T("v-text-spacing")			== sProperty )	m_eType = cssptVTextSpacing;
+							else													m_eType = cssptUnknown;
 
 							break;
 						}
 					case 'w':
 						{
-							if ( _T("width")  == sProperty ) m_eType = cssptWidth;
-							else                               m_eType = cssptUnknown;
+							if ( _T("width")  == sProperty )	m_eType = cssptWidth;
+							else								m_eType = cssptUnknown;
 
 							break;
 						}
 					case 'z':
 						{
-							if   ( _T("z-index") == sProperty ) m_eType = cssptZIndex;
-							else                                  m_eType = cssptUnknown;
+							if   ( _T("z-index") == sProperty )		m_eType = cssptZIndex;
+							else									m_eType = cssptUnknown;
 
 							break;
 						}

@@ -151,7 +151,7 @@ namespace NSDoctRenderer
             if (nParams & 0x02)
                 m_nSaveToPDFParams = 1;
 
-            m_bIsOnlyOnePage = (oNode.ReadValueInt("OnlyOnePage", 0) == 1) ? true : false;
+            m_bIsOnlyOnePage = (oNode.ReadValueInt(L"OnlyOnePage", 0) == 1) ? true : false;
 
             return true;
         }

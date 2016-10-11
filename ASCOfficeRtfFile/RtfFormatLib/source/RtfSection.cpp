@@ -395,27 +395,28 @@ CString RtfSectionProperty::RenderToRtf(RenderParameter oRenderParameter)
 	if( RENDER_TO_OOX_PARAM_FIRST_SECTION != oRenderParameter.nType )//Пишем как свойства секции
 	{
 		//Page Information
-		RENDER_RTF_INT( m_nPageWidth, sResult, _T("pgwsxn") )
-		RENDER_RTF_INT( m_nPageHeight, sResult, _T("pghsxn") )
-		RENDER_RTF_INT( m_nMarginLeft, sResult, _T("marglsxn") )
-		RENDER_RTF_INT( m_nMarginRight, sResult, _T("margrsxn") )
-		RENDER_RTF_INT( m_nMarginTop, sResult, _T("margtsxn") )
-		RENDER_RTF_INT( m_nMarginBottom, sResult, _T("margbsxn") )
-		RENDER_RTF_INT( m_nGutterMarginWidth, sResult, _T("guttersxn") )
-		RENDER_RTF_BOOL( m_bSwitchMargin, sResult, _T("margmirsxn") )
-		RENDER_RTF_BOOL( m_bLandscapeFormat, sResult, _T("lndscpsxn") )
+		RENDER_RTF_INT( m_nPageWidth,			sResult, _T("pgwsxn") )
+		RENDER_RTF_INT( m_nPageHeight,			sResult, _T("pghsxn") )
+		RENDER_RTF_INT( m_nMarginLeft,			sResult, _T("marglsxn") )
+		RENDER_RTF_INT( m_nMarginRight,			sResult, _T("margrsxn") )
+		RENDER_RTF_INT( m_nMarginTop,			sResult, _T("margtsxn") )
+		RENDER_RTF_INT( m_nMarginBottom,		sResult, _T("margbsxn") )
+		RENDER_RTF_INT( m_nGutterMarginWidth,	sResult, _T("guttersxn") )
+		RENDER_RTF_BOOL( m_bSwitchMargin,		sResult, _T("margmirsxn") )
+		RENDER_RTF_BOOL( m_bLandscapeFormat,	sResult, _T("lndscpsxn") )
 	}
 
-	RENDER_RTF_BOOL( m_bTitlePage, sResult, _T("titlepg") )
-	RENDER_RTF_INT( m_nHeaderTop, sResult, _T("headery") )
-	RENDER_RTF_INT( m_nFooterBottom, sResult, _T("footery") )
+	RENDER_RTF_BOOL	( m_bTitlePage,		sResult, _T("titlepg") )
+	RENDER_RTF_INT	( m_nHeaderTop,		sResult, _T("headery") )
+	RENDER_RTF_INT	( m_nFooterBottom,	sResult, _T("footery") )
 
 	//Page Numbers
-	RENDER_RTF_INT( m_nPageNumberStart, sResult, _T("pgnstarts") )
-	RENDER_RTF_BOOL( m_bPageNumberContinuos, sResult, _T("pgncont") )
-	RENDER_RTF_BOOL( m_bPageNumberRestart, sResult, _T("pgnrestart") )
-	RENDER_RTF_INT( m_nPageNumberX, sResult, _T("pgnx") )
-	RENDER_RTF_INT( m_nPageNumberY, sResult, _T("pgny") )
+	RENDER_RTF_INT	( m_nPageNumberStart,		sResult, _T("pgnstarts") )
+	RENDER_RTF_BOOL	( m_bPageNumberContinuos,	sResult, _T("pgncont") )
+	RENDER_RTF_BOOL	( m_bPageNumberRestart,		sResult, _T("pgnrestart") )
+	RENDER_RTF_INT	( m_nPageNumberX,			sResult, _T("pgnx") )
+	RENDER_RTF_INT	( m_nPageNumberY,			sResult, _T("pgny") )
+	
 	switch( m_ePageNumberFormat )
 	{
 		case pnf_pgndec:	sResult += _T("\\pgndec" );		break;
@@ -456,9 +457,9 @@ CString RtfSectionProperty::RenderToRtf(RenderParameter oRenderParameter)
 		sResult += _T("\\pgbrdrb");
 		sResult += m_oBorderBottom.RenderToRtf( oRenderParameter );
 	}
-	RENDER_RTF_INT( m_nBorderArt, sResult, _T("brdrart") )
-	RENDER_RTF_INT( m_nBorderMeasure, sResult, _T("pgbrdropt") )
-	RENDER_RTF_INT( m_nBorderAlign, sResult, _T("pgbrdrsnap") )
+	RENDER_RTF_INT( m_nBorderArt,		sResult, _T("brdrart") )
+	RENDER_RTF_INT( m_nBorderMeasure,	sResult, _T("pgbrdropt") )
+	RENDER_RTF_INT( m_nBorderAlign,		sResult, _T("pgbrdrsnap") )
 
 	//footer - header
 	if( 0 != m_oHeaderRight )

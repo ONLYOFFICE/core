@@ -2970,9 +2970,15 @@ namespace SimpleTypes
 					return 0;
 
 				int nPos = sValue.Find( _T(",") );
+				
 				if ( -1 == nPos )
-					return 0;
-
+				{
+					//only x coord
+					sValue.Replace(_T("@"), _T(""));
+					m_nX = sValue.IsEmpty() ? 0 : _wtoi(sValue );
+				}
+				else
+				{
 					CString strX = sValue.Mid( 0, nPos );
 					CString strY = sValue.Mid( nPos + 1, nLen - nPos - 1 ) ;
 
@@ -2981,6 +2987,7 @@ namespace SimpleTypes
 
 					m_nX = strX.IsEmpty() ? 0 : _wtoi(strX );
 					m_nY = strY.IsEmpty() ? 0 : _wtoi(strY );
+				}
 
 				return 0;
 			}

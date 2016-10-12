@@ -380,12 +380,13 @@ namespace NSOnlineOfficeBinToPdf
 							}
 						}
 
-						pRenderer->PenDashPattern(pDash, nCountDash);
-						delete[] pDash;
+                        pRenderer->PenDashPattern(pDash, nCountDash);
+                        delete[] pDash;
 					}
 				}
 				default:
-					pRenderer->put_PenDashStyle(nDashType);
+                    pRenderer->put_PenDashStyle(nDashType);
+                    break;
 				}
 
 				break;
@@ -518,20 +519,7 @@ namespace NSOnlineOfficeBinToPdf
                             for (LONG lIndex = 0; lIndex < lColorsCount; lIndex++)
                             {
                                 pPositions[lIndex] = ReadInt(current, curindex) / 100000.0;
-
-                                if (c_nPDFWriter == lRendererType)
-                                    pColors[lIndex] = ReadInt(current, curindex);
-                                else
-                                {
-                                    BYTE _b = *current++;
-                                    BYTE _g = *current++;
-                                    BYTE _r = *current++;
-                                    BYTE _a = *current++;
-
-                                    curindex += 4;
-
-                                    pColors[lIndex] = ((_b << 24) & 0xFF000000) | ((_g << 16) & 0xFF0000) | ((_r << 8) & 0xFF00) | _a;
-                                }
+                                pColors[lIndex] = ReadInt(current, curindex);
                             }
 
                             pRenderer->put_BrushGradientColors(pColors, pPositions, lColorsCount);

@@ -1969,6 +1969,13 @@ namespace NSFontConverter
         {
             nPos = m_pTables[nIndex].nOffset + 2;
             m_nCMapsCount = GetU16BE( nPos, &m_bSuccess);
+
+            if (0 == m_nCMapsCount)
+            {
+                m_bSuccess = false;
+                return;
+            }
+
             nPos += 2;
             if ( !m_bSuccess )
                 return;

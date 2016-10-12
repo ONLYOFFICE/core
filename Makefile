@@ -1,33 +1,64 @@
-JOBS_COUNT := $(shell grep -c ^processor /proc/cpuinfo)
+ifeq ($(OS),Windows_NT)
+	PLATFORM := win
+	EXEC_EXT := .exe
+	SHELL_EXT := .bat
+	SHARED_EXT := .dll
+	LIB_EXT := .lib
+	MAKE := "make -j $(shell grep -c ^processor /proc/cpuinfo)"
+	ifeq ($(PROCESSOR_ARCHITECTURE),AMD64)
+		ARCHITECTURE := 64
+	endif
+	ifeq ($(PROCESSOR_ARCHITECTURE),x86)
+		ARCHITECTURE := 32
+	endif
+else
+	UNAME_S := $(shell uname -s)
+	ifeq ($(UNAME_S),Linux)
+		PLATFORM := linux
+		SHARED_EXT := .so*
+		SHELL_EXT := .sh
+		LIB_EXT := .a
+		MAKE := nmake
+	endif
+	UNAME_P := $(shell uname -p)
+	ifeq ($(UNAME_P),x86_64)
+		ARCHITECTURE := 64
+	endif
+	ifneq ($(filter %86,$(UNAME_P)),)
+		ARCHITECTURE := 32
+	endif
+endif
 
-LIBDIR := build/lib/linux_64
+TARGET := $(PLATFORM)_$(ARCHITECTURE)
 
-ALLFONTSGEN := build/bin/AllFontsGen/linux_64
-X2T := build/bin/linux/x2t
-HTMLFILEINTERNAL := $(LIBDIR)/HtmlFileInternal
-XLSFORMATLIB := $(LIBDIR)/libXlsFormatLib.a
-ODFFILEWRITERLIB := $(LIBDIR)/libOdfFileWriterLib.a
-ODFFILEREADERLIB := $(LIBDIR)/libOdfFileReaderLib.a
-DOCFORMATLIB := $(LIBDIR)/libDocFormatLib.a
-PPTFORMATLIB := $(LIBDIR)/libPptFormatLib.a
-RTFFORMATLIB := $(LIBDIR)/libRtfFormatLib.a
-TXTXMLFORMATLIB := $(LIBDIR)/libTxtXmlFormatLib.a
-PDFWRITER := $(LIBDIR)/libPdfWriter.so
-ASCOFFICEDOCXFILE2LIB := $(LIBDIR)/libASCOfficeDocxFile2Lib.a
-PPTXFORMATLIB := $(LIBDIR)/libPPTXFormatLib.a
-DOCXFORMATLIB := $(LIBDIR)/libDocxFormatLib.a
-OFFICEUTILS := $(LIBDIR)/libOfficeUtils.a
-GRAPHICS := $(LIBDIR)/libgraphics.a
-DOCTRENDERER := $(LIBDIR)/libdoctrenderer.so
-HTMLRENDERER := $(LIBDIR)/libHtmlRenderer.so
-PDFREADER := $(LIBDIR)/libPdfReader.so
-DJVUFILE := $(LIBDIR)/libDjVuFile.so
-XPSFILE := $(LIBDIR)/libXpsFile.so
-HTMLFILE := $(LIBDIR)/libHtmlFile.so
-UNICODECONVERTER := $(LIBDIR)/libUnicodeConverter.so
-ASCDOCUMENTSCORE := $(LIBDIR)/libascdocumentscore.so
-LIBXML := $(LIBDIR)/liblibxml.a
-LICENSEMANAGER := $(LIBDIR)/libLicenceManager.a
+LIBDIR := build/lib/$(TARGET)
+
+ALLFONTSGEN := build/bin/AllFontsGen/$(TARGET)$(EXEC_EXT)
+X2T := build/bin/$(TARGET)/x2t$(EXEC_EXT)
+HTMLFILEINTERNAL := $(LIBDIR)/HtmlFileInternal$(EXEC_EXT)
+XLSFORMATLIB := $(LIBDIR)/libXlsFormatLib$(LIB_EXT)
+ODFFILEWRITERLIB := $(LIBDIR)/libOdfFileWriterLib$(LIB_EXT)
+ODFFILEREADERLIB := $(LIBDIR)/libOdfFileReaderLib$(LIB_EXT)
+DOCFORMATLIB := $(LIBDIR)/libDocFormatLib$(LIB_EXT)
+PPTFORMATLIB := $(LIBDIR)/libPptFormatLib$(LIB_EXT)
+RTFFORMATLIB := $(LIBDIR)/libRtfFormatLib$(LIB_EXT)
+TXTXMLFORMATLIB := $(LIBDIR)/libTxtXmlFormatLib$(LIB_EXT)
+PDFWRITER := $(LIBDIR)/libPdfWriter$(SHARED_EXT)
+ASCOFFICEDOCXFILE2LIB := $(LIBDIR)/libASCOfficeDocxFile2Lib$(LIB_EXT)
+PPTXFORMATLIB := $(LIBDIR)/libPPTXFormatLib$(LIB_EXT)
+DOCXFORMATLIB := $(LIBDIR)/libDocxFormatLib$(LIB_EXT)
+OFFICEUTILS := $(LIBDIR)/libOfficeUtils$(LIB_EXT)
+GRAPHICS := $(LIBDIR)/libgraphics$(LIB_EXT)
+DOCTRENDERER := $(LIBDIR)/libdoctrenderer$(SHARED_EXT)
+HTMLRENDERER := $(LIBDIR)/libHtmlRenderer$(SHARED_EXT)
+PDFREADER := $(LIBDIR)/libPdfReader$(SHARED_EXT)
+DJVUFILE := $(LIBDIR)/libDjVuFile$(SHARED_EXT)
+XPSFILE := $(LIBDIR)/libXpsFile$(SHARED_EXT)
+HTMLFILE := $(LIBDIR)/libHtmlFile$(SHARED_EXT)
+UNICODECONVERTER := $(LIBDIR)/libUnicodeConverter$(SHARED_EXT)
+ASCDOCUMENTSCORE := $(LIBDIR)/libascdocumentscore$(SHARED_EXT)
+LIBXML := $(LIBDIR)/liblibxml$(LIB_EXT)
+LICENSEMANAGER := $(LIBDIR)/libLicenceManager$(LIB_EXT)
 
 TARGETS += $(ALLFONTSGEN)
 TARGETS += $(X2T)
@@ -190,7 +221,7 @@ define build_proj_tmpl
 PROS += $$(basename $$(value $(1)_PRO)).build
 $(1)_MAKE := $$(basename $$(value $(1)_PRO)).build/Makefile
 $$(value $(1)): $$(value $(1)_MAKE)
-	cd $$(dir $$(value $(1)_MAKE)) && make -j $(JOBS_COUNT);
+	cd $$(dir $$(value $(1)_MAKE)) && $(MAKE);
 endef
 
 .PHONY : all bin lib clean
@@ -226,13 +257,13 @@ $(ASCDOCUMENTSCORE): $(ASCDOCUMENTSCORE_DEP)
 $(PDFREADER): $(PDFREADER_DEP)
 
 %.build/Makefile: %.pro
-	mkdir -p $(dir $@) && cd $(dir $@) && qmake -r -spec linux-g++ $<
+	mkdir -p $(dir $@) && cd $(dir $@) && qmake -r $<
 
 clean:
 	rm -rf $(TARGETS)
 	for i in $(PROS); do \
 		if [ -d $$i -a -f $$i/Makefile ]; then \
-			cd $$i && make distclean; \
+			cd $$i && $(MAKE) distclean; \
 		fi \
 done
 

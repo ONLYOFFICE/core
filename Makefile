@@ -18,7 +18,7 @@ else
 		SHARED_EXT := .so*
 		SHELL_EXT := .sh
 		LIB_EXT := .a
-		MAKE := "make -j $(shell grep -c ^processor /proc/cpuinfo)"
+		MAKE := make -j $(shell grep -c ^processor /proc/cpuinfo)
 	endif
 	UNAME_P := $(shell uname -p)
 	ifeq ($(UNAME_P),x86_64)

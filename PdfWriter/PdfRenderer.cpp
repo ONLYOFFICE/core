@@ -488,10 +488,21 @@ void CPdfRenderer::SetTempFolder(const std::wstring& wsPath)
 		NSDirectory::DeleteDirectory(m_wsTempFolder);
 	
 	int nCounter = 0;
-	m_wsTempFolder = wsPath + L"\\PDF\\";
+    m_wsTempFolder = wsPath;
+    int nPathLen = (int)m_wsTempFolder.length();
+    if (nPathLen > 0)
+    {
+        const wchar_t* pData = m_wsTempFolder.c_str();
+        if ((pData[nPathLen - 1] != '/') && (pData[nPathLen - 1] != '\\'))
+            m_wsTempFolder += L"/";
+
+        m_wsTempFolder += L"PDF";
+    }
+
+    std::wstring sTest = m_wsTempFolder;
 	while (NSDirectory::Exists(m_wsTempFolder))
 	{
-		m_wsTempFolder = wsPath + L"\\PDF_" + std::to_wstring(nCounter) + L"\\";
+        m_wsTempFolder = sTest + L"/PDF_" + std::to_wstring(nCounter);
 		nCounter++;
 	}
 	NSDirectory::CreateDirectory(m_wsTempFolder);

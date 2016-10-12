@@ -4,7 +4,7 @@ ifeq ($(OS),Windows_NT)
 	SHELL_EXT := .bat
 	SHARED_EXT := .dll
 	LIB_EXT := .lib
-	MAKE := "make -j $(shell grep -c ^processor /proc/cpuinfo)"
+	MAKE := nmake
 	ifeq ($(PROCESSOR_ARCHITECTURE),AMD64)
 		ARCHITECTURE := 64
 	endif
@@ -18,7 +18,7 @@ else
 		SHARED_EXT := .so*
 		SHELL_EXT := .sh
 		LIB_EXT := .a
-		MAKE := nmake
+		MAKE := "make -j $(shell grep -c ^processor /proc/cpuinfo)"
 	endif
 	UNAME_P := $(shell uname -p)
 	ifeq ($(UNAME_P),x86_64)

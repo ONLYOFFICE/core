@@ -1565,6 +1565,8 @@ namespace PdfReader
 				return;
 			}
 
+			unsigned int unDataStartPos = m_pCurStream->GetPos();
+
 			// read the segment data
 			switch (unSegType)
 			{
@@ -1643,6 +1645,9 @@ namespace PdfReader
 			}
 
 			MemUtilsFree(punRefSegs);
+
+			if (m_pCurStream->GetPos() - unDataStartPos != unSegLength)
+				m_pCurStream->SetPos(unDataStartPos + unSegLength);
 		}
 
 		return;

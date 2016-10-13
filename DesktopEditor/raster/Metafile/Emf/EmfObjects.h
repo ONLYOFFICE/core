@@ -117,9 +117,10 @@ namespace MetaFile
 	class CEmfLogFont : public CEmfObjectBase, public IFont
 	{
 	public:
-		CEmfLogFont()
+		CEmfLogFont(bool bFixedLength = false)
 		{
 			DesignVector.Values = NULL;
+			m_bFixedLength = bFixedLength;
 		}
 		virtual ~CEmfLogFont()
 		{
@@ -164,11 +165,19 @@ namespace MetaFile
 		{
 			return LogFontEx.LogFont.CharSet;
 		}
+		bool         IsFixedLength()
+		{
+		    return m_bFixedLength;
+		}
 
 	public:
 
 		TEmfLogFontEx    LogFontEx;
 		TEmfDesignVector DesignVector;
+
+	private:
+
+		bool             m_bFixedLength;
 	};
 
 	class CEmfLogPen : public CEmfObjectBase, public IPen

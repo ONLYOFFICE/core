@@ -1030,13 +1030,17 @@ namespace MetaFile
 		}
 		void Read_EMR_EXTCREATEFONTINDIRECTW()
 		{
-			unsigned int ulIndex;
-			CEmfLogFont* pFont = new CEmfLogFont();
+			unsigned int unSize = m_ulRecordSize - 4;
+			bool bFixedLength = unSize <= 0x0140 ? true : false;
+
+			unsigned int ulIndex;						
+			CEmfLogFont* pFont = new CEmfLogFont(bFixedLength);
 			if (!pFont)
 				return SetError();
 
 			m_oStream >> ulIndex;
 			m_oStream >> *pFont;
+
 			m_oPlayer.RegisterObject(ulIndex, (CEmfObjectBase*)pFont);
 		}
 		void Read_EMR_SETTEXTALIGN()

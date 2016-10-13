@@ -352,9 +352,9 @@ namespace MetaFile
 		{
 			*this >> oVector.Signature;
 			*this >> oVector.NumAxes;
-			oVector.Values = NULL;
 
-			if (oVector.NumAxes <= 0)
+			oVector.Values = NULL;
+			if (oVector.Signature != 0x08007664 || oVector.NumAxes > 16 || oVector.NumAxes <= 0)
 				return *this;
 
 			oVector.Values = new int[oVector.NumAxes];
@@ -368,8 +368,19 @@ namespace MetaFile
 		}
 		CDataStream& operator>>(CEmfLogFont& oFont)
 		{
-			*this >> oFont.LogFontEx;
-			*this >> oFont.DesignVector;
+			if (oFont.IsFixedLength())
+			{
+			    *this >> oFont.LogFontEx.LogFont;
+			    ReadBytes(oFont.LogFontEx.FullName, 64);
+			    ReadBytes(oFont.LogFontEx.Style, 32);
+			    ReadBytes(oFont.LogFontEx.Script, 18);
+			}
+			else
+			{
+			    *this >> oFont.LogFontEx;
+			    *this >> oFont.DesignVector;
+			}
+
 			return *this;
 		}
 		CDataStream& operator>>(TEmfBitBlt& oBitBtl)

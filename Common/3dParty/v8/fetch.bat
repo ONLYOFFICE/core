@@ -15,4 +15,4 @@ if not exist "%SCRIPTPATH%v8" (
 call .\depot_tools\fetch v8
 )
 
-depot_tools\gclient sync -r 4.10.253
+call depot_tools\gclient sync -r 4.10.253

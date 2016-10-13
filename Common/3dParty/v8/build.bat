@@ -14,7 +14,7 @@ md win_32
 md win_32\debug
 md win_32\release
 
-call python v8\build\gyp_v8
+python v8\build\gyp_v8
 call .\change_projects.bat
 
 cd "%SCRIPTPATH%v8\tools\gyp"

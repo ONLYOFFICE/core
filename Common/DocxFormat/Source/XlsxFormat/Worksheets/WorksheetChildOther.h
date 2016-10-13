@@ -459,10 +459,17 @@ namespace OOX
 			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 				writer.WriteString(_T("<pane"));
+				if (m_oActivePane.IsInit())
+				{
+					writer.WriteString(L" activePane=\"");
+					writer.WriteString(m_oActivePane->ToString());
+					writer.WriteString(L"\"");
+				}
 				if (m_oState.IsInit())
 				{
-					CString sVal; sVal.Format(_T(" state=\"%ls\""), m_oState.get());
-					writer.WriteString(sVal);
+					writer.WriteString(L" state=\"");
+					writer.WriteString(m_oState->ToString());
+					writer.WriteString(L"\"");
 				}
 				if (m_oTopLeftCell.IsInit())
 				{
@@ -510,8 +517,8 @@ namespace OOX
 			}
 
 		public:
-			nullable<CString>				m_oActivePane;
-			nullable<CString>				m_oState;	// frozen - закреплены; split - разделены на 2 одинаковые части; frozenSplit - сначала разделены, а потом закреплены (после снятия закрепления, будут снова разделены)
+			nullable<SimpleTypes::Spreadsheet::CActivePane<>> m_oActivePane;
+			nullable<SimpleTypes::Spreadsheet::СPaneState<>> m_oState;
 			nullable<CString>				m_oTopLeftCell;
 			nullable<SimpleTypes::CDouble>	m_oXSplit;
 			nullable<SimpleTypes::CDouble>	m_oYSplit;
@@ -553,8 +560,9 @@ namespace OOX
 				}
 				if (m_oPane.IsInit())
 				{
-					CString sVal; sVal.Format(_T(" pane=\"%ls\""), m_oPane.get());
-					writer.WriteString(sVal);
+					writer.WriteString(L" pane=\"");
+					writer.WriteString(m_oPane->ToString());
+					writer.WriteString(L"\"");
 				}
 				writer.WriteString(_T("/>"));
 			}
@@ -589,13 +597,13 @@ namespace OOX
 			nullable<CString>									m_oActiveCell;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oActiveCellId;
 			nullable<CString>									m_oSqref;
-			nullable<CString>									m_oPane;	//bottomLeft, bottomRight, topLeft, topRight
+			nullable<SimpleTypes::Spreadsheet::CActivePane<>>	m_oPane;
 		};
 
 		//необработано:
 		//<extLst>
 		//<pivotSelection>
-		class CSheetView : public WritingElement
+		class CSheetView : public WritingElementWithChilds<CSelection>
 		{
 		public:
 			WritingElementSpreadsheet_AdditionConstructors(CSheetView)
@@ -714,8 +722,10 @@ namespace OOX
 				if (m_oPane.IsInit())
 					m_oPane->toXML(writer);
 				
-				if (m_oSelection.IsInit())
-					m_oSelection->toXML(writer);
+				for(size_t i = 0 ; i < m_arrItems.size(); ++i)
+				{
+					m_arrItems[i]->toXML(writer);
+				}
 
 				writer.WriteString(_T("</sheetView>"));
 			}
@@ -734,7 +744,10 @@ namespace OOX
 					if (_T("pane") == sName)
 						m_oPane = oReader;
 					if (_T("selection") == sName)
-						m_oSelection = oReader;				}
+					{
+						m_arrItems.push_back(new CSelection(oReader));
+					}
+				}
 			}
 
 			virtual EElementType getType () const
@@ -774,7 +787,6 @@ namespace OOX
 
 		public:
 				nullable<CPane>										m_oPane;
-				nullable<CSelection>								m_oSelection;
 
 				nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oColorId;
 				nullable<SimpleTypes::COnOff<>>						m_oDefaultGridColor;

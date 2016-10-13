@@ -1,7 +1,7 @@
 SET SCRIPTPATH=%~dp0
 CD /D %~dp0
 
-SET PATH "%SCRIPTPATH%depot_tools;%SCRIPTPATH%depot_tools\python276_bin;%PATH%;"
+SET PATH=%SCRIPTPATH%depot_tools;%SCRIPTPATH%depot_tools\python276_bin;%PATH%
 SET DEPOT_TOOLS_WIN_TOOLCHAIN=0
 SET GYP_MSVS_VERSION=2013
 

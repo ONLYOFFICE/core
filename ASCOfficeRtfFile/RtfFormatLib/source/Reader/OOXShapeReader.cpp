@@ -170,7 +170,10 @@ bool ParseStyle(RtfShape* pShape, SimpleTypes::Vml::CCssProperty* prop)
 		case SimpleTypes::Vml::cssptRotation: 
 			{
 				pShape->m_nRotation = 65536 * prop->get_Value().dValue;
-				if( PROP_DEF != pShape->m_nRelRight || PROP_DEF != pShape->m_nRelLeft || PROP_DEF != pShape->m_nRelTop || PROP_DEF != pShape->m_nRelBottom  )
+				if(	PROP_DEF != pShape->m_nRelRight 
+					||	PROP_DEF != pShape->m_nRelLeft 
+					||	PROP_DEF != pShape->m_nRelTop 
+					||	PROP_DEF != pShape->m_nRelBottom )
 					pShape->m_nRelRotation = pShape->m_nRotation;
 			}break;
 		case SimpleTypes::Vml::cssptVisibility :  
@@ -207,11 +210,19 @@ bool ParseStyle(RtfShape* pShape, SimpleTypes::Vml::CCssProperty* prop)
 			}break;
 		case SimpleTypes::Vml::csspctMsoWidthPercent:
 			{
-				pShape->m_nPctWidth	= prop->get_Value().oValue.dValue;
+				pShape->m_nPctWidth	= prop->get_Value().dValue;
 			}break;
 		case SimpleTypes::Vml::csspctMsoHeightPercent:
 			{
-				pShape->m_nPctHeight	= prop->get_Value().oValue.dValue;
+				pShape->m_nPctHeight	= prop->get_Value().dValue;
+			}break;
+		case SimpleTypes::Vml::cssptVRotateLetters:
+			{
+				pShape->m_bGtextFVertical	= prop->get_Value().bValue;
+			}break;
+		case SimpleTypes::Vml::cssptVTextKern:
+			{
+				pShape->m_bGtextFKern		= prop->get_Value().bValue;
 			}break;
 		case SimpleTypes::Vml::cssptDirection                      : 			break;
 		case SimpleTypes::Vml::cssptLayoutFlow                     : 			break;
@@ -228,10 +239,8 @@ bool ParseStyle(RtfShape* pShape, SimpleTypes::Vml::CCssProperty* prop)
 		case SimpleTypes::Vml::cssptFontWeight                     :			break;
 		case SimpleTypes::Vml::cssptMsoTextShadow                  : 			break;
 		case SimpleTypes::Vml::cssptTextDecoration                 : 			break;
-		case SimpleTypes::Vml::cssptVRotateLetters                 : 			break;
 		case SimpleTypes::Vml::cssptVSameLetterHeights             : 			break;
 		case SimpleTypes::Vml::cssptVTextAlign                     : 			break;
-		case SimpleTypes::Vml::cssptVTextKern                      : 			break;
 		case SimpleTypes::Vml::cssptVTextReverse                   : 			break;
 		case SimpleTypes::Vml::cssptVTextSpacingMode               : 			break;
 		case SimpleTypes::Vml::cssptVTextSpacing                   : 			break;		
@@ -298,13 +307,17 @@ bool OOXShapeReader::Parse2( ReaderParameter oParam , RtfShapePtr& oOutput)
 						oOutput->m_oPicture = RtfPicturePtr( new RtfPicture() );
 						//todooo проверить что за путь тут выставляется
 						OOXPictureGraphicReader::WriteDataToPicture( sImagePath, *oOutput->m_oPicture, oParam.oReader->m_sPath );
+
+						oOutput->m_nFillType = 2;
 					}
 				}
 				if (fill->m_oColor.IsInit())
 					oOutput->m_nFillColor = (fill->m_oColor->Get_B() << 16) + (fill->m_oColor->Get_G() << 8) + fill->m_oColor->Get_R();
 
 				if (fill->m_oColor2.IsInit())
-					oOutput->m_nFillColor2 = (fill->m_oColor2->Get_B() << 16) + (fill->m_oColor2->Get_G() << 8) + fill->m_oColor2->Get_R();
+				{
+					oOutput->m_nFillColor2	= (fill->m_oColor2->Get_B() << 16) + (fill->m_oColor2->Get_G() << 8) + fill->m_oColor2->Get_R();
+				}
 
 				if (fill->m_oOpacity.IsInit())
 					oOutput->m_nFillOpacity = fill->m_oOpacity->GetValue() * 100;
@@ -478,6 +491,15 @@ bool OOXShapeReader::Parse2( ReaderParameter oParam , RtfShapePtr& oOutput)
 					if (text_path->m_sString.IsInit())
 					{
 						oOutput->m_sGtextUNICODE	= text_path->m_sString.get();
+					}
+					if ((text_path->m_oFitPath.IsInit()) && (text_path->m_oFitPath->GetValue()))
+					{
+						oOutput->m_bGtextFStretch	= 1;
+						oOutput->m_bGtextFBestFit	= 1;
+						oOutput->m_bGtextFShrinkFit	= 1;
+					}
+					if (text_path->m_oTrim.IsInit())
+					{
 					}
 					if (text_path->m_oStyle.IsInit())
 					{
@@ -706,6 +728,8 @@ bool OOXShapeGroupReader::Parse( ReaderParameter oParam , RtfShapeGroupPtr& oOut
 	
 	oOutput->m_bLayoutInCell	= m_vmlGroup->m_oAllowInCell.GetValue();
 	oOutput->m_bAllowOverlap	= m_vmlGroup->m_oAllowOverlap.GetValue();
+
+	oOutput->m_nZOrderRelative	= 0;
 	
 	oOutput->m_nWrapType		= 3; //def
 	

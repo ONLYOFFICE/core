@@ -51,11 +51,11 @@ public:
 		oOutput.m_eAnchorTypeShape	= RtfShape::st_anchor;
 		oOutput.m_nShapeType		= 75;//NSOfficeDrawing::sptPictureFrame;
 
-		oOutput.m_bAllowOverlap		= m_ooxAnchor->m_oAllowOverlap.IsInit() ? m_ooxAnchor->m_oAllowOverlap->ToBool() : false;
-		oOutput.m_nZOrderRelative	= m_ooxAnchor->m_oBehindDoc.IsInit() ? 	m_ooxAnchor->m_oBehindDoc->ToBool() : false;
-		oOutput.m_bHidden			= m_ooxAnchor->m_oHidden.IsInit() ? m_ooxAnchor->m_oHidden->ToBool() : false;
-		oOutput.m_bLayoutInCell		= m_ooxAnchor->m_oLayoutInCell.IsInit() ? m_ooxAnchor->m_oLayoutInCell->ToBool() : false;
-		oOutput.m_bLockAnchor		= m_ooxAnchor->m_oLocked.IsInit() ? m_ooxAnchor->m_oLocked->ToBool() : false;
+		oOutput.m_bAllowOverlap		= m_ooxAnchor->m_oAllowOverlap.IsInit() ? m_ooxAnchor->m_oAllowOverlap->ToBool()	: false;
+		oOutput.m_nZOrderRelative	= m_ooxAnchor->m_oBehindDoc.IsInit()	? m_ooxAnchor->m_oBehindDoc->ToBool()		: false;
+		oOutput.m_bHidden			= m_ooxAnchor->m_oHidden.IsInit()		? m_ooxAnchor->m_oHidden->ToBool()			: false;
+		oOutput.m_bLayoutInCell		= m_ooxAnchor->m_oLayoutInCell.IsInit() ? m_ooxAnchor->m_oLayoutInCell->ToBool()	: false;
+		oOutput.m_bLockAnchor		= m_ooxAnchor->m_oLocked.IsInit()		? m_ooxAnchor->m_oLocked->ToBool()			: false;
 		oOutput.m_nZOrder			= m_ooxAnchor->m_oRelativeHeight.IsInit() ? true : false;
 			
 		int nDistLeft	= m_ooxAnchor->m_oDistL.IsInit() ? m_ooxAnchor->m_oDistL->ToTwips() : PROP_DEF;
@@ -94,46 +94,46 @@ public:
 			{
 				switch(m_ooxAnchor->m_oPositionH->m_oRelativeFrom->GetValue())
 				{
-				case SimpleTypes::relfromhCharacter     : 
-					{
-				oOutput.m_nPositionHRelative = 3;
-				oOutput.m_eXAnchor = RtfShape::ax_margin;
-					}break;
-				case SimpleTypes::relfromhColumn        : 					
-					{
-				oOutput.m_nPositionHRelative = 2;
-				oOutput.m_eXAnchor = RtfShape::ax_column;
-					}break;
-				case SimpleTypes::relfromhInsideMargin  : 					
-					{
-				oOutput.m_nPositionHRelative = 6;
-				oOutput.m_eXAnchor = RtfShape::ax_margin;
-					}break;
-				case SimpleTypes::relfromhLeftMargin    : 					
-					{
-				oOutput.m_nPositionHRelative = 4;
-				oOutput.m_eXAnchor = RtfShape::ax_margin;
-					}break;
-				case SimpleTypes::relfromhMargin        : 					
-					{
-				oOutput.m_nPositionHRelative = 0;
-				oOutput.m_eXAnchor = RtfShape::ax_margin;
-					}break;
-				case SimpleTypes::relfromhOutsideMargin : 					
-					{
-				oOutput.m_nPositionHRelative = 7;
-				oOutput.m_eXAnchor = RtfShape::ax_margin;
-					}break;
+				case SimpleTypes::relfromhCharacter: 
+				{
+					oOutput.m_nPositionHRelative	= 3;
+					oOutput.m_eXAnchor				= RtfShape::ax_margin;
+				}break;
+				case SimpleTypes::relfromhColumn: 					
+				{
+					oOutput.m_nPositionHRelative = 2;
+					oOutput.m_eXAnchor = RtfShape::ax_column;
+				}break;
+				case SimpleTypes::relfromhInsideMargin: 					
+				{
+					oOutput.m_nPositionHRelative = 6;
+					oOutput.m_eXAnchor = RtfShape::ax_margin;
+				}break;
+				case SimpleTypes::relfromhLeftMargin: 					
+				{
+					oOutput.m_nPositionHRelative = 4;
+					oOutput.m_eXAnchor = RtfShape::ax_margin;
+				}break;
+				case SimpleTypes::relfromhMargin: 					
+				{
+					oOutput.m_nPositionHRelative = 0;
+					oOutput.m_eXAnchor = RtfShape::ax_margin;
+				}break;
+				case SimpleTypes::relfromhOutsideMargin: 					
+				{
+					oOutput.m_nPositionHRelative = 7;
+					oOutput.m_eXAnchor = RtfShape::ax_margin;
+				}break;
 				case SimpleTypes::relfromhPage          : 					
-					{
-				oOutput.m_nPositionHRelative = 1;
-				oOutput.m_eXAnchor = RtfShape::ax_page;
-					}break;
+				{
+					oOutput.m_nPositionHRelative = 1;
+					oOutput.m_eXAnchor = RtfShape::ax_page;
+				}break;
 				case SimpleTypes::relfromhRightMargin   : 					
-					{
-				oOutput.m_nPositionHRelative = 5;
-				oOutput.m_eXAnchor = RtfShape::ax_margin;
-					}break;
+				{
+					oOutput.m_nPositionHRelative = 5;
+					oOutput.m_eXAnchor = RtfShape::ax_margin;
+				}break;
 				}
 			}
 			if (m_ooxAnchor->m_oPositionH->m_oAlign.IsInit())

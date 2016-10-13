@@ -7,7 +7,7 @@ if exist "depot_tools" (
 	git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
 )
 
-SET PATH "%SCRIPTPATH%depot_tools;%SCRIPTPATH%depot_tools\python276_bin;%PATH%;"
+SET PATH=%SCRIPTPATH%depot_tools;%SCRIPTPATH%depot_tools\python276_bin;%PATH%
 SET DEPOT_TOOLS_WIN_TOOLCHAIN=0
 SET GYP_MSVS_VERSION=2013
 

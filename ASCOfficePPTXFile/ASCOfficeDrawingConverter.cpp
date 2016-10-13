@@ -258,7 +258,7 @@ namespace NS_DWC_Common
 		{
 			if (colorStr.GetLength() == 4)
 			{
-				int lColor = XmlUtils::GetColor(colorStr.Mid(1, 3));
+				int lColor = XmlUtils::GetColorBGR(colorStr.Mid(1, 3));
 				BYTE lB = ((lColor >> 16) & 0x0F);
 				BYTE lG = ((lColor >> 20) & 0x0F);
 				BYTE lR = ((lColor >> 8) & 0x0F);
@@ -270,7 +270,7 @@ namespace NS_DWC_Common
 			}
 			else
 			{
-				int lColor = XmlUtils::GetColor(colorStr.Mid(1, 6));
+				int lColor = XmlUtils::GetColorBGR(colorStr.Mid(1, 6));
 				color.R = (BYTE)(lColor >> 0);
 				color.G = (BYTE)(lColor >> 8);
 				color.B = (BYTE)(lColor >> 16);

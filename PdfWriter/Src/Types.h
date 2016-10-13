@@ -195,12 +195,24 @@ namespace PdfWriter
 			if (m_pPattern)
 				delete[] m_pPattern;
 		}
+        CDashMode(const CDashMode& oSrc)
+        {
+            m_pPattern  = NULL;
+            Set(oSrc.m_pPattern, oSrc.m_unCount, oSrc.m_dPhase);
+        }
+        CDashMode& operator=(const CDashMode& oSrc)
+        {
+            m_pPattern  = NULL;
+            Set(oSrc.m_pPattern, oSrc.m_unCount, oSrc.m_dPhase);
+            return *this;
+        }
+
 		void Set(const double* pPattern, unsigned int unCount, double dPhase)
 		{
 			if (!pPattern || !unCount)
 				return;
 
-			if (m_pPattern)
+            if (m_pPattern && m_pPattern != pPattern)
 				delete[] m_pPattern;
 
 			m_pPattern = new double[unCount];

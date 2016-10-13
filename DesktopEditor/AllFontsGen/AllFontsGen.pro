@@ -16,12 +16,23 @@ win32:!contains(QMAKE_TARGET.arch, x86_64):{
     TARGET = win_32
 }
 
-linux-g++:contains(QMAKE_HOST.arch, x86_64):{
+linux-g++{
+    linux-g++:contains(QMAKE_HOST.arch, x86_64):{
+        TARGET = linux_64
+    }
+    linux-g++:!contains(QMAKE_HOST.arch, x86_64):{
+        TARGET = linux_32
+    }
+}
+
+linux-g++-64{
     TARGET = linux_64
 }
-linux-g++:!contains(QMAKE_HOST.arch, x86_64):{
+
+linux-g++-32{
     TARGET = linux_32
 }
+
 
 mac {
     TARGET = mac_64
@@ -45,11 +56,19 @@ CONFIG(debug, debug|release) {
     DESTINATION_SDK_PATH = $$DESTINATION_SDK_PATH/win_32
 }
 }
+linux-g++{
+    linux-g++:contains(QMAKE_HOST.arch, x86_64):{
+        DESTINATION_SDK_PATH = $$DESTINATION_SDK_PATH/linux_64
+    }
+    linux-g++:!contains(QMAKE_HOST.arch, x86_64):{
+        DESTINATION_SDK_PATH = $$DESTINATION_SDK_PATH/linux_32
+    }
+}
 
-linux-g++:contains(QMAKE_HOST.arch, x86_64):{
+linux-g++-64{
     DESTINATION_SDK_PATH = $$DESTINATION_SDK_PATH/linux_64
 }
-linux-g++:!contains(QMAKE_HOST.arch, x86_64):{
+linux-g++-32{
     DESTINATION_SDK_PATH = $$DESTINATION_SDK_PATH/linux_32
 }
 

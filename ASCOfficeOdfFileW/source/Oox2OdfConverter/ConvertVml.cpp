@@ -55,7 +55,19 @@ void OoxConverter::convert(OOX::Vml::CShapeType *vml_shape_type)
 	if (vml_shape_type == NULL) return;
 	//custom shape 
 
-	
+//save cash to other shape with this type
+	if (vml_shape_type->m_sId.IsInit())
+	{
+		std::wstring sId (vml_shape_type->m_sId.get());
+		
+		if (odf_context()->drawing_context()->m_mapVmlShapeTypes.find( sId ) == 
+			odf_context()->drawing_context()->m_mapVmlShapeTypes.end())
+		{
+			odf_context()->drawing_context()->m_mapVmlShapeTypes.insert(odf_context()->drawing_context()->m_mapVmlShapeTypes.begin(), 
+				std::pair<std::wstring, OOX::Vml::CShapeType*>(sId, vml_shape_type));
+
+		}
+	}	
 	//m_oPreferRelative//типо можно менять размер 
 
 	for (unsigned int i=0 ; i < vml_shape_type->m_arrItems.size();i++)

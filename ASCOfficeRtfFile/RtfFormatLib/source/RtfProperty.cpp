@@ -2320,20 +2320,22 @@ CString RtfTableProperty::RenderToRtf(RenderParameter oRenderParameter)
 	CString sResult;
 	
 	RENDER_RTF_BOOL( m_bBidi, sResult, _T("taprtl") )
-	if( PROP_DEF == m_nAutoFit || 1 == m_nAutoFit )
+	
+		if( PROP_DEF == m_nAutoFit || 1 == m_nAutoFit )
 			sResult += _T("\\trautofit1");
 	else if( 0 == m_nAutoFit )
 			sResult += _T("\\trautofit0");
-	RENDER_RTF_INT( m_nAutoFit, sResult, _T("trautofit") )
-	RENDER_RTF_INT( m_nGraph, sResult, _T("trgaph") )
-	RENDER_RTF_INT( nTableIndent, sResult, _T("tblind") )
-	RENDER_RTF_INT( nTableIndentUnits, sResult, _T("tblindtype") )
+	
+	RENDER_RTF_INT( m_nAutoFit,			sResult, _T("trautofit") )
+	RENDER_RTF_INT( m_nGraph,			sResult, _T("trgaph") )
+	RENDER_RTF_INT( nTableIndent,		sResult, _T("tblind") )
+	RENDER_RTF_INT( nTableIndentUnits,	sResult, _T("tblindtype") )
 
-	RENDER_RTF_INT( m_nWrapLeft, sResult, _T("tdfrmtxtLeft") )
-	RENDER_RTF_INT( m_nWrapRight, sResult, _T("tdfrmtxtRight") )
-	RENDER_RTF_INT( m_nWrapTop, sResult, _T("tdfrmtxtTop") )
-	RENDER_RTF_INT( m_nWrapBottom, sResult, _T("tdfrmtxtBottom") )
-	RENDER_RTF_BOOL( m_bOverlap, sResult, _T("tabsnoovrlp") )
+	RENDER_RTF_INT( m_nWrapLeft,		sResult, _T("tdfrmtxtLeft") )
+	RENDER_RTF_INT( m_nWrapRight,		sResult, _T("tdfrmtxtRight") )
+	RENDER_RTF_INT( m_nWrapTop,			sResult, _T("tdfrmtxtTop") )
+	RENDER_RTF_INT( m_nWrapBottom,		sResult, _T("tdfrmtxtBottom") )
+	RENDER_RTF_BOOL( m_bOverlap,		sResult, _T("tabsnoovrlp") )
 
 	switch ( m_eHRef )
 	{
@@ -2381,22 +2383,22 @@ CString RtfTableProperty::RenderToRtf(RenderParameter oRenderParameter)
 	}
 	RENDER_RTF_INT( m_nLeft, sResult, _T("trleft") )
 
-	RENDER_RTF_INT( m_nDefCellMarLeft, sResult, _T("trpaddl") );
-	RENDER_RTF_INT( m_nDefCellMarRight, sResult, _T("trpaddr") );
-	RENDER_RTF_INT( m_nDefCellMarTop, sResult, _T("trpaddt") );
-	RENDER_RTF_INT( m_nDefCellMarBottom, sResult, _T("trpaddb") );
-	RENDER_RTF_INT( m_nDefCellMarLeftUnits, sResult, _T("trpaddfl") );
-	RENDER_RTF_INT( m_nDefCellMarRightUnits, sResult, _T("trpaddfr") );
-	RENDER_RTF_INT( m_nDefCellMarTopUnits, sResult, _T("trpaddft") );
-	RENDER_RTF_INT( m_nDefCellMarBottomUnits, sResult, _T("trpaddfb") );
-	RENDER_RTF_INT( m_nDefCellSpBottom, sResult, _T("trspdb") );
-	RENDER_RTF_INT( m_nDefCellSpLeft, sResult, _T("trspdl") );
-	RENDER_RTF_INT( m_nDefCellSpRight, sResult, _T("trspdr") );
-	RENDER_RTF_INT( m_nDefCellSpTop, sResult, _T("trspdt") );
-	RENDER_RTF_INT( m_nDefCellSpBottomUnits, sResult, _T("trspdfb") );
-	RENDER_RTF_INT( m_nDefCellSpLeftUnits, sResult, _T("trspdfl") );
-	RENDER_RTF_INT( m_nDefCellSpRightUnits, sResult, _T("trspdfr") );
-	RENDER_RTF_INT( m_nDefCellSpTopUnits, sResult, _T("trspdft") );
+	RENDER_RTF_INT( m_nDefCellMarLeft,			sResult, _T("trpaddl") );
+	RENDER_RTF_INT( m_nDefCellMarRight,			sResult, _T("trpaddr") );
+	RENDER_RTF_INT( m_nDefCellMarTop,			sResult, _T("trpaddt") );
+	RENDER_RTF_INT( m_nDefCellMarBottom,		sResult, _T("trpaddb") );
+	RENDER_RTF_INT( m_nDefCellMarLeftUnits,		sResult, _T("trpaddfl") );
+	RENDER_RTF_INT( m_nDefCellMarRightUnits,	sResult, _T("trpaddfr") );
+	RENDER_RTF_INT( m_nDefCellMarTopUnits,		sResult, _T("trpaddft") );
+	RENDER_RTF_INT( m_nDefCellMarBottomUnits,	sResult, _T("trpaddfb") );
+	RENDER_RTF_INT( m_nDefCellSpBottom,			sResult, _T("trspdb") );
+	RENDER_RTF_INT( m_nDefCellSpLeft,			sResult, _T("trspdl") );
+	RENDER_RTF_INT( m_nDefCellSpRight,			sResult, _T("trspdr") );
+	RENDER_RTF_INT( m_nDefCellSpTop,			sResult, _T("trspdt") );
+	RENDER_RTF_INT( m_nDefCellSpBottomUnits,	sResult, _T("trspdfb") );
+	RENDER_RTF_INT( m_nDefCellSpLeftUnits,		sResult, _T("trspdfl") );
+	RENDER_RTF_INT( m_nDefCellSpRightUnits,		sResult, _T("trspdfr") );
+	RENDER_RTF_INT( m_nDefCellSpTopUnits,		sResult, _T("trspdft") );
 
 	if( m_oBorderLeft.IsValid() == true )
 	{
@@ -2433,15 +2435,15 @@ CString RtfTableProperty::RenderToRtf(RenderParameter oRenderParameter)
 
 	//RENDER_RTF_INT( m_nStyle, sResult, _T("ts") )
 
-	RENDER_RTF_BOOL( m_bAutoFirstRow, sResult, _T("tbllkhdrrows") )
-	RENDER_RTF_BOOL( m_bAutoLastRow, sResult, _T("tbllklastrow") )
-	RENDER_RTF_BOOL( m_bAutoFirstCol, sResult, _T("tbllkhdrcols") )
-	RENDER_RTF_BOOL( m_bAutoLastCol, sResult, _T("tbllklastcol") )
-	RENDER_RTF_BOOL( m_bAutoNoRowBand, sResult, _T("tbllknorowband") )
-	RENDER_RTF_BOOL( m_bAutoNoColBand, sResult, _T("tbllknocolband") )
+	RENDER_RTF_BOOL( m_bAutoFirstRow,	sResult, _T("tbllkhdrrows") )
+	RENDER_RTF_BOOL( m_bAutoLastRow,	sResult, _T("tbllklastrow") )
+	RENDER_RTF_BOOL( m_bAutoFirstCol,	sResult, _T("tbllkhdrcols") )
+	RENDER_RTF_BOOL( m_bAutoLastCol,	sResult, _T("tbllklastcol") )
+	RENDER_RTF_BOOL( m_bAutoNoRowBand,	sResult, _T("tbllknorowband") )
+	RENDER_RTF_BOOL( m_bAutoNoColBand,	sResult, _T("tbllknocolband") )
 
-	RENDER_RTF_INT( m_nRowBandSize, sResult, _T("tscbandsh") )
-	RENDER_RTF_INT( m_nColBandSize, sResult, _T("tscbandsv") )
+	RENDER_RTF_INT( m_nRowBandSize,		sResult, _T("tscbandsh") )
+	RENDER_RTF_INT( m_nColBandSize,		sResult, _T("tscbandsv") )
 
 	return sResult;
 }

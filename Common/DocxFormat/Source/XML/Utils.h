@@ -78,7 +78,7 @@ namespace XmlUtils
 
 		return nResult;
 	}
-	AVSINLINE static int     GetColor   (const CString& string)
+	AVSINLINE static int	GetColorBGR   (const CString& string)
 	{
 		// variables
 		int blue = 0;
@@ -95,11 +95,11 @@ namespace XmlUtils
 		while (color.GetLength() < 6)
 			color = _T("0") + color;
 
-		red = 16*GetDigit(color[0]) + GetDigit(color[1]);
-		green = 16*GetDigit(color[2]) + GetDigit(color[3]);
-		blue = 16*GetDigit(color[4]) + GetDigit(color[5]);
+		red		= 16*GetDigit(color[0]) + GetDigit(color[1]);
+		green	= 16*GetDigit(color[2]) + GetDigit(color[3]);
+		blue	= 16*GetDigit(color[4]) + GetDigit(color[5]);
 
-		return RGB(red, green, blue);
+		return ((int)(((BYTE)(red)|((WORD)((BYTE)(green))<<8))|(((DWORD)(BYTE)(blue))<<16)));	//RGB(red, green, blue);
 	}
         AVSINLINE static bool    GetBoolean (const CString& string)
 	{

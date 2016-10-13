@@ -259,6 +259,63 @@ namespace NExtractTools
         }
     };
 
+	class InputParamsThumbnail
+	{
+	public:
+		int* format;
+		int* aspect;
+		bool* first;
+		int* width;
+		int* height;
+		InputParamsThumbnail()
+		{
+			format = NULL;
+			aspect = NULL;
+			first = NULL;
+			width = NULL;
+			height = NULL;
+		}
+		~InputParamsThumbnail()
+		{
+			RELEASEOBJECT(format);
+			RELEASEOBJECT(aspect);
+			RELEASEOBJECT(first);
+			RELEASEOBJECT(width);
+			RELEASEOBJECT(height);
+		}
+
+		bool FromXmlNode(XmlUtils::CXmlNode& oNode)
+		{
+			XmlUtils::CXmlNodes oXmlNodes;
+			if(TRUE == oNode.GetChilds(oXmlNodes))
+			{
+				for(int i = 0; i < oXmlNodes.GetCount(); ++i)
+				{
+					XmlUtils::CXmlNode oXmlNode;
+					if(oXmlNodes.GetAt(i, oXmlNode))
+					{
+						CString sValue;
+						if(oXmlNode.GetTextIfExist(sValue))
+						{
+							std::wstring sName = oXmlNode.GetName();
+							if(_T("format") == sName)
+								format = new int(XmlUtils::GetInteger(sValue));
+							else if(_T("aspect") == sName)
+								aspect = new int(XmlUtils::GetInteger(sValue));
+							else if(_T("first") == sName)
+								first = new bool(XmlUtils::GetBoolean2(sValue));
+							else if(_T("width") == sName)
+								width = new int(XmlUtils::GetInteger(sValue));
+							else if(_T("height") == sName)
+								height = new int(XmlUtils::GetInteger(sValue));
+						}
+					}
+				}
+			}
+			return true;
+		}
+	};
+
 	class InputParams
 	{
 	public:
@@ -276,6 +333,7 @@ namespace NExtractTools
 		std::wstring* m_sFontDir;
 		std::wstring* m_sThemeDir;
         InputParamsMailMerge* m_oMailMergeSend;
+		InputParamsThumbnail* m_oThumbnail;
 		int* m_nDoctParams;
 		std::wstring* m_sHtmlFileInternalPath;
 		std::wstring* m_sPassword;
@@ -296,6 +354,7 @@ namespace NExtractTools
 			m_sFontDir = NULL;
 			m_sThemeDir = NULL;
             m_oMailMergeSend = NULL;
+			m_oThumbnail = NULL;
 			m_nDoctParams = NULL;
 			m_sHtmlFileInternalPath = NULL;
 			m_sPassword = NULL;
@@ -316,6 +375,7 @@ namespace NExtractTools
 			RELEASEOBJECT(m_sFontDir);
 			RELEASEOBJECT(m_sThemeDir);
             RELEASEOBJECT(m_oMailMergeSend);
+			RELEASEOBJECT(m_oThumbnail);
 			RELEASEOBJECT(m_nDoctParams);
 			RELEASEOBJECT(m_sHtmlFileInternalPath);
 			RELEASEOBJECT(m_sPassword);
@@ -340,6 +400,11 @@ namespace NExtractTools
                                 m_oMailMergeSend = new InputParamsMailMerge();
                                 m_oMailMergeSend->FromXmlNode(oXmlNode);
                             }
+							else if(_T("m_oThumbnail") == sName)
+							{
+								m_oThumbnail = new InputParamsThumbnail();
+								m_oThumbnail->FromXmlNode(oXmlNode);
+							}
                             else
                             {
                                 CString sValue;

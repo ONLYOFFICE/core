@@ -147,9 +147,7 @@ staticlib {
 
 core_x2t {
 core_windows {
-    CONFIG(debug, debug|release) {
-        QMAKE_CXXFLAGS += /bigobj
-    }
+    QMAKE_CXXFLAGS += /bigobj
 } else {
     QMAKE_CXXFLAGS += -Wall -Wno-ignored-qualifiers
 }

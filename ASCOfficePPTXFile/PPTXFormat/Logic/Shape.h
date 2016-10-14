@@ -304,6 +304,12 @@ namespace PPTX
 							TextBoxBodyPr->fromPPTY(pReader);
 							break;
 						}
+						case 6:
+						{
+							txXfrm = new PPTX::Logic::Xfrm();
+							txXfrm->fromPPTY(pReader);
+							break;
+						}
 						default:
 						{
 							break;

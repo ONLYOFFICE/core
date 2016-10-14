@@ -517,11 +517,11 @@ namespace OOX
 			}
 
 		public:
-			nullable<SimpleTypes::Spreadsheet::CActivePane<>> m_oActivePane;
-			nullable<SimpleTypes::Spreadsheet::СPaneState<>> m_oState;
-			nullable<CString>				m_oTopLeftCell;
-			nullable<SimpleTypes::CDouble>	m_oXSplit;
-			nullable<SimpleTypes::CDouble>	m_oYSplit;
+            nullable<SimpleTypes::Spreadsheet::CActivePane<>>   m_oActivePane;
+            nullable<SimpleTypes::Spreadsheet::CPaneState<>>    m_oState;
+            nullable<CString>                                   m_oTopLeftCell;
+            nullable<SimpleTypes::CDouble>                      m_oXSplit;
+            nullable<SimpleTypes::CDouble>                      m_oYSplit;
 		};
 
 		class CSelection : public WritingElement

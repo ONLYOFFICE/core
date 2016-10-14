@@ -7,7 +7,7 @@
 QT       -= core
 QT       -= gui
 
-VERSION = 2.0.2.398
+VERSION = 2.0.2.399
 DEFINES += INTVER=$$VERSION
 
 TEMPLATE = app

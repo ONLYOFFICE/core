@@ -2501,11 +2501,11 @@ namespace SimpleTypes
 			panestateSplit = 2
 		};
 
-		template<EPaneState eDefValue = panestateFrozen>
-		class СPaneState : public CSimpleType<EPaneState, eDefValue>
-		{
-		public:
-			СPaneState() {}
+        template<EPaneState eDefValue = panestateFrozen>
+        class CPaneState : public CSimpleType<EPaneState, eDefValue>
+        {
+        public:
+            CPaneState() {}
 
 			virtual EPaneState FromString(CString &sValue)
 			{
@@ -2528,8 +2528,8 @@ namespace SimpleTypes
 				}
 			}
 
-			SimpleType_FromString     (EPaneState)
-			SimpleType_Operator_Equal (СPaneState)
+            SimpleType_FromString     (EPaneState)
+            SimpleType_Operator_Equal (CPaneState)
 		};
 	};// Spreadsheet
 } // SimpleTypes

@@ -336,6 +336,11 @@ namespace Spreadsheet
 		et_Pane,
 		et_ExternalBook,
 		et_Selection,
+		et_LegacyDrawingWorksheet,
+		et_LegacyDrawingHFWorksheet,
+		et_PictureWorksheet,
+		et_HeaderFooterWorksheet,
+		et_HeaderFooterElementWorksheet,
 
 		et_PictureNonVisual,
 		et_NonVisualDrawingProperties,

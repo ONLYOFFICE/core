@@ -945,6 +945,409 @@ namespace OOX
 			nullable<SimpleTypes::COnOff<>>		m_oTransitionEntry;
 			nullable<SimpleTypes::COnOff<>>		m_oTransitionEvaluation;
 		};
+		class CHeaderFooterElement : public WritingElement
+		{
+		public:
+			WritingElementSpreadsheet_AdditionConstructors(CHeaderFooterElement)
+			CHeaderFooterElement()
+			{
+			}
+			virtual ~CHeaderFooterElement()
+			{
+			}
+
+		public:
+			virtual CString      toXML() const
+			{
+				return _T("");
+			}
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			{
+			}
+			void toXML2(XmlUtils::CStringWriter& writer, CString sName) const
+			{
+				if (m_sText.IsEmpty())			return;
+
+				writer.WriteString(_T("<"));
+					writer.WriteString(sName);
+				writer.WriteString(_T(">"));
+
+				writer.WriteString(m_sText);
+				
+				writer.WriteString(_T("</"));				
+					writer.WriteString(sName);
+				writer.WriteString(_T(">"));
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				m_sText = oReader.GetText2();
+			}
+			virtual EElementType getType () const
+			{
+				return et_HeaderFooterElementWorksheet;
+			}
+
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+
+		public:
+			CString	m_sText;
+		};
+
+		class CHeaderFooter : public WritingElement
+		{
+		public:
+			WritingElementSpreadsheet_AdditionConstructors(CHeaderFooter)
+			CHeaderFooter()
+			{
+			}
+			virtual ~CHeaderFooter()
+			{
+			}
+
+		public:
+			virtual CString      toXML() const
+			{
+				return _T("");
+			}
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			{
+				writer.WriteString(_T("<headerFooter"));
+					if(m_oAlignWithMargins.IsInit())
+					{
+						CString sVal; sVal.Format(_T(" alignWithMargins=\"%ls\""), m_oAlignWithMargins->ToString());
+						writer.WriteString(sVal);
+					}
+					if(m_oDifferentFirst.IsInit())
+					{
+						CString sVal; sVal.Format(_T(" differentFirst=\"%ls\""), m_oDifferentFirst->ToString());
+						writer.WriteString(sVal);
+					}
+					if(m_oDifferentOddEven.IsInit())
+					{
+						CString sVal; sVal.Format(_T(" differentOddEven=\"%ls\""), m_oDifferentOddEven->ToString());
+						writer.WriteString(sVal);
+					}
+					if(m_oScaleWithDoc.IsInit())
+					{
+						CString sVal; sVal.Format(_T(" scaleWithDoc=\"%ls\""), m_oScaleWithDoc->ToString());
+						writer.WriteString(sVal);
+					}
+				writer.WriteString(_T(">"));
+					if (m_oOddHeader.IsInit())
+					{
+						m_oOddHeader->toXML2(writer, _T("oddHeader"));
+					}
+					if (m_oOddFooter.IsInit())
+					{
+						m_oOddFooter->toXML2(writer, _T("oddFooter"));
+					}
+					if (m_oEvenHeader.IsInit())
+					{
+						m_oEvenHeader->toXML2(writer, _T("evenHeader"));
+					}					
+					if (m_oEvenFooter.IsInit())
+					{
+						m_oEvenFooter->toXML2(writer, _T("evenFooter"));
+					}
+					if (m_oFirstFooter.IsInit())
+					{
+						m_oFirstFooter->toXML2(writer, _T("firstFooter"));
+					}
+					if (m_oFirstHeader.IsInit())
+					{
+						m_oFirstHeader->toXML2(writer, _T("firstHeader"));
+					}
+				writer.WriteString(_T("</headerFooter>"));
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+					if ( _T("evenFooter") == sName )
+						m_oEvenFooter = oReader;
+					else if ( _T("evenHeader") == sName )
+						m_oEvenHeader = oReader;
+					else if ( _T("firstFooter") == sName )
+						m_oFirstFooter = oReader;
+					else if ( _T("firstHeader") == sName )
+						m_oFirstHeader = oReader;
+					else if ( _T("oddFooter") == sName )
+						m_oOddFooter = oReader;
+					else if ( _T("oddHeader") == sName )
+						m_oOddHeader = oReader;
+				}
+			}
+			virtual EElementType getType () const
+			{
+				return et_HeaderFooterWorksheet;
+			}
+
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Read_if		( oReader, _T("alignWithMargins"),	m_oAlignWithMargins)
+				WritingElement_ReadAttributes_Read_if		( oReader, _T("differentFirst"),	m_oDifferentFirst)
+				WritingElement_ReadAttributes_Read_if		( oReader, _T("differentOddEven"),	m_oDifferentOddEven)
+				WritingElement_ReadAttributes_Read_if		( oReader, _T("scaleWithDoc"),		m_oScaleWithDoc)
+				WritingElement_ReadAttributes_End( oReader )
+			}
+
+		public:
+			nullable<CHeaderFooterElement>		m_oEvenFooter;
+			nullable<CHeaderFooterElement>		m_oEvenHeader;
+			nullable<CHeaderFooterElement>		m_oFirstFooter;
+			nullable<CHeaderFooterElement>		m_oFirstHeader;
+			nullable<CHeaderFooterElement>		m_oOddFooter;
+			nullable<CHeaderFooterElement>		m_oOddHeader;
+
+			nullable<SimpleTypes::COnOff<>>		m_oAlignWithMargins;
+			nullable<SimpleTypes::COnOff<>>		m_oDifferentFirst;
+			nullable<SimpleTypes::COnOff<>>		m_oDifferentOddEven;
+			nullable<SimpleTypes::COnOff<>>		m_oScaleWithDoc;
+
+		};
+
+		class CLegacyDrawingHFWorksheet : public WritingElement
+		{
+		public:
+			WritingElementSpreadsheet_AdditionConstructors(CLegacyDrawingHFWorksheet)
+			CLegacyDrawingHFWorksheet()
+			{
+			}
+			virtual ~CLegacyDrawingHFWorksheet()
+			{
+			}
+
+		public:
+			virtual CString  toXML() const
+			{
+				return _T("");
+			}
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			{
+				if(!m_oId.IsInit()) return;
+
+				CString sVal = _T("<legacyDrawingHF r:id=\"") + m_oId->GetValue() ;
+
+				if(m_oCfe.IsInit())
+				{
+					CString sVal; sVal.Format(_T(" cfe=\"%d\""), m_oCfe->GetValue());
+					writer.WriteString(sVal);
+				}
+				if(m_oCff.IsInit())
+				{
+					CString sVal; sVal.Format(_T(" cff=\"%d\""), m_oCff->GetValue());
+					writer.WriteString(sVal);
+				}
+				if(m_oCfo.IsInit())
+				{
+					CString sVal; sVal.Format(_T(" cfo=\"%d\""), m_oCfo->GetValue());
+					writer.WriteString(sVal);
+				}
+				if(m_oChe.IsInit())
+				{
+					CString sVal; sVal.Format(_T(" che=\"%d\""), m_oChe->GetValue());
+					writer.WriteString(sVal);
+				}
+				if(m_oChf.IsInit())
+				{
+					CString sVal; sVal.Format(_T(" chf=\"%d\""), m_oChf->GetValue());
+					writer.WriteString(sVal);
+				}
+				if(m_oCho.IsInit())
+				{
+					CString sVal; sVal.Format(_T(" cho=\"%d\""), m_oCho->GetValue());
+					writer.WriteString(sVal);
+				}
+				if(m_oLfe.IsInit())
+				{
+					CString sVal; sVal.Format(_T(" lfe=\"%d\""), m_oLfe->GetValue());
+					writer.WriteString(sVal);
+				}
+				if(m_oLff.IsInit())
+				{
+					CString sVal; sVal.Format(_T(" lff=\"%d\""), m_oLff->GetValue());
+					writer.WriteString(sVal);
+				}
+				if(m_oLhe.IsInit())
+				{
+					CString sVal; sVal.Format(_T(" lhe=\"%d\""), m_oLhe->GetValue());
+					writer.WriteString(sVal);
+				}
+				if(m_oLhf.IsInit())
+				{
+					CString sVal; sVal.Format(_T(" lLhf=\"%d\""), m_oLhf->GetValue());
+					writer.WriteString(sVal);
+				}
+				if(m_oLho.IsInit())
+				{
+					CString sVal; sVal.Format(_T(" lho=\"%d\""), m_oLho->GetValue());
+					writer.WriteString(sVal);
+				}
+				if(m_oRfe.IsInit())
+				{
+					CString sVal; sVal.Format(_T(" rfe=\"%d\""), m_oRfe->GetValue());
+					writer.WriteString(sVal);
+				}
+				if(m_oRff.IsInit())
+				{
+					CString sVal; sVal.Format(_T(" rff=\"%d\""), m_oRff->GetValue());
+					writer.WriteString(sVal);
+				}
+				if(m_oRfo.IsInit())
+				{
+					CString sVal; sVal.Format(_T(" rfo=\"%d\""), m_oRfo->GetValue());
+					writer.WriteString(sVal);
+				}
+				if(m_oRhe.IsInit())
+				{
+					CString sVal; sVal.Format(_T(" rhe=\"%d\""), m_oRhe->GetValue());
+					writer.WriteString(sVal);
+				}
+				if(m_oRhf.IsInit())
+				{
+					CString sVal; sVal.Format(_T(" rhf=\"%d\""), m_oRhf->GetValue());
+					writer.WriteString(sVal);
+				}
+				if(m_oRho.IsInit())
+				{
+					CString sVal; sVal.Format(_T(" rho=\"%d\""), m_oRho->GetValue());
+					writer.WriteString(sVal);
+				}
+				
+				sVal += _T("\"/>");
+				writer.WriteString(sVal);
+
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+
+				if ( !oReader.IsEmptyNode() )
+					oReader.ReadTillEnd();
+			}
+
+			virtual EElementType getType () const
+			{
+				return et_LegacyDrawingHFWorksheet;
+			}
+
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("r:id"),    m_oId )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("cfe"),     m_oCfe )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("cff"),     m_oCff )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("cfo"),     m_oCfo )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("che"),		m_oChe )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("chf"),     m_oChf )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("cho"),     m_oCho )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("lfe"),     m_oLfe )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("lff"),     m_oLff )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("lhe"),     m_oLhe )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("lhf"),     m_oLhf )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("lho"),     m_oLho )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("rfe"),     m_oRfe )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("rff"),     m_oRff )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("rfo"),     m_oRfo )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("rhe"),     m_oRhe )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("rhf"),     m_oRhf )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("rho"),     m_oRho )
+
+				WritingElement_ReadAttributes_End( oReader )
+			}
+		public:
+			nullable<SimpleTypes::CRelationshipId >				m_oId;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oCfe;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oCff;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oCfo;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oChe;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oChf;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oCho;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oLfe;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oLff;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oLhe;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oLhf;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oLho;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oRfe;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oRff;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oRfo;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oRhe;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oRhf;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oRho;
+		};
+
+		class CPictureWorksheet : public WritingElement
+		{
+		public:
+			WritingElementSpreadsheet_AdditionConstructors(CPictureWorksheet)
+			CPictureWorksheet()
+			{
+			}
+			virtual ~CPictureWorksheet()
+			{
+			}
+
+		public:
+			virtual CString  toXML() const
+			{
+				return _T("");
+			}
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			{
+				if(m_oId.IsInit())
+				{
+					CString sVal = _T("<picture r:id=\"") + m_oId->GetValue() + _T("\"/>");
+					writer.WriteString(sVal);
+				}
+				
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+
+				if ( !oReader.IsEmptyNode() )
+					oReader.ReadTillEnd();
+			}
+
+			virtual EElementType getType () const
+			{
+				return et_PictureWorksheet;
+			}
+
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("r:id"),      m_oId )
+
+					WritingElement_ReadAttributes_End( oReader )
+			}
+		public:
+			nullable<SimpleTypes::CRelationshipId > m_oId;
+		};
 
 	} //Spreadsheet
 } // namespace OOX

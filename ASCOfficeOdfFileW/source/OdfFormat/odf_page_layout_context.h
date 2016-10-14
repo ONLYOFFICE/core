@@ -83,10 +83,8 @@ public:
 	void set_page_border				(std::wstring top, std::wstring left, std::wstring bottom, std::wstring right);
 	void set_page_border_shadow			(bool val);
 	
-	void set_page_border_padding_bottom	(int offset_type, int type, double length_pt);
-	void set_page_border_padding_top	(int offset_type, int type, double length_pt);
-	void set_page_border_padding_left	(int offset_type, int type, double length_pt);
-	void set_page_border_padding_right	(int offset_type, int type, double length_pt);
+	void set_page_border_padding		(int border, double length_pt);
+	void set_page_border_offset			(int type);
 
 	void set_page_orientation			(int type);
 	void set_page_size					(_CP_OPT(odf_types::length) width, _CP_OPT(odf_types::length) height);

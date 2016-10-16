@@ -79,6 +79,7 @@ namespace ODRAW
 {
 	class OfficeArtRecord;
 	class OfficeArtBStoreContainer;
+	class OfficeArtSpgrContainer;
 	class OfficeArtSpContainer;
 	class OfficeArtFOPT;
 	class OfficeArtFSP;
@@ -118,7 +119,8 @@ public:
 	void convert(XLS::IMDATA					* imadata);
 
 	void convert(ODRAW::OfficeArtRecord			* art);
-	void convert(ODRAW::OfficeArtBStoreContainer* art_bstore);
+	void convert(ODRAW::OfficeArtBStoreContainer* art_bstore, int start_id = 0);
+	void convert(ODRAW::OfficeArtSpgrContainer	* spgr);
 	void convert(ODRAW::OfficeArtSpContainer	* sp, bool anchor_only = false);
 	void convert(ODRAW::OfficeArtFOPT 			* fort);
 	void convert(ODRAW::OfficeArtFSP 			* fsp);

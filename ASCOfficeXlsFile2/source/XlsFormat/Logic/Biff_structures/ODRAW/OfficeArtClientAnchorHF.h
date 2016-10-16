@@ -54,8 +54,8 @@ public:
 	virtual void loadFields(XLS::CFRecord& record);
 	virtual void storeFields(XLS::CFRecord& record);
 
-    int width;
-    int height;
+    int _cx;
+	int _cy;
 };
 
 typedef boost::shared_ptr<OfficeArtClientAnchorHF> OfficeArtClientAnchorHFPtr;

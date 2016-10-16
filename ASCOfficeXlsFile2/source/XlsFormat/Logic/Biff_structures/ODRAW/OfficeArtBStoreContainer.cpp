@@ -65,6 +65,9 @@ void OfficeArtBStoreContainer::loadFields(XLS::CFRecord& record)
 		rgfb.push_back(fileBlock);
 	}	
 
+	//int skip_data = record.getDataSize() - record.getRdPtr();
+	//record.skipNunBytes(skip_data);
+
 	// OpenOffice
 	while(1)
 	{

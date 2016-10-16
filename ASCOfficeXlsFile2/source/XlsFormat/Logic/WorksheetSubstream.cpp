@@ -53,7 +53,7 @@
 
 #include <Logic/Biff_unions/BACKGROUND.h>
 #include <Logic/Biff_unions/BIGNAME.h>
-#include <Logic/Biff_unions/PROTECTION_COMMON.h> // special name to exclude ambiguous meaning
+#include <Logic/Biff_unions/PROTECTION_COMMON.h> 
 #include <Logic/Biff_unions/COLUMNS.h>
 #include <Logic/Biff_unions/SCENARIOS.h>
 #include <Logic/Biff_unions/SORTANDFILTER.h>
@@ -73,6 +73,8 @@
 #include <Logic/Biff_unions/FEAT11.h>
 #include <Logic/Biff_unions/RECORD12.h>
 #include <Logic/Biff_unions/SHFMLA_SET.h>
+
+#include "Biff_structures/ODRAW/OfficeArtDgContainer.h"
 
 namespace XLS
 {;
@@ -105,13 +107,14 @@ WORKSHEET = BOF WORKSHEETCONTENT
 */
 const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 {
-	GlobalWorkbookInfoPtr global_info = proc.getGlobalWorkbookInfo();
+	global_info_ = proc.getGlobalWorkbookInfo();
 	
 	GlobalWorkbookInfo::_sheet_size_info sheet_size_info;
-	global_info->sheet_size_info.push_back(sheet_size_info);
-	global_info->current_sheet = global_info->sheet_size_info.size();
+	
+	global_info_->sheet_size_info.push_back(sheet_size_info);
+	global_info_->current_sheet = global_info_->sheet_size_info.size();
 
-	global_info->cmt_rules	= 0;
+	global_info_->cmt_rules	= 0;
 
 	int count = 0;
 	std::vector<CellRangeRef>	shared_formulas_locations;
@@ -251,19 +254,26 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 					elements_.pop_back();
 				}
 			}break;
-			case rt_HFPicture:		proc.repeated<HFPicture>(0, 0);		break;
-
-			case rt_CommentText:
+			case rt_HFPicture:		
+			{
+				count = proc.repeated<HFPicture>(0, 0);		
+				while(count > 0)
 				{
-					count = proc.repeated<CommentText>(0, 0);
-					while(count > 0)
-					{
-						m_arNote.insert(m_arNote.begin(), elements_.back());
-						elements_.pop_back();
-						count--;
-					}
-				}break;
-
+					m_arHFPicture.insert(m_arHFPicture.begin(), elements_.back());
+					elements_.pop_back();
+					count--;
+				}
+			}break;
+			case rt_CommentText:
+			{
+				count = proc.repeated<CommentText>(0, 0);
+				while(count > 0)
+				{
+					m_arNote.insert(m_arNote.begin(), elements_.back());
+					elements_.pop_back();
+					count--;
+				}
+			}break;
 			case rt_Note:
 			{
 				count = proc.repeated<Note>(0, 0);
@@ -304,7 +314,7 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 					elements_.pop_back(); 
 					
 					DxGCol* dx = dynamic_cast<DxGCol*>(m_DxGCol.get());
-					global_info->sheet_size_info.back().defaultColumnWidth = dx->dxgCol / 256.;
+					global_info_->sheet_size_info.back().defaultColumnWidth = dx->dxgCol / 256.;
 				}
 			}break;				
 			case rt_MergeCells:
@@ -386,8 +396,9 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 					count--;
 				}
 			}break;
-			case rt_HeaderFooter:		proc.repeated<RECORD12>	(0, 0);		break;
-
+			case rt_HeaderFooter:		
+				proc.repeated<RECORD12>	(0, 0);		
+				break;
 			default://unknown .... skip					
 			{
 				proc.SkipRecord();	
@@ -395,8 +406,51 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 		}
 	}	
 
+	LoadHFPicture();
+
 	return true;
 }
+void WorksheetSubstream::LoadHFPicture()
+{
+	if (m_arHFPicture.empty()) return;
+
+	int current_size_hf = 0, j = 0;
+	for ( int i = 0; i < m_arHFPicture.size(); i++)
+	{
+		HFPicture* hf = dynamic_cast<HFPicture*>(m_arHFPicture[i].get());
+		if ((hf) && (hf->recordDrawingGroup))
+		{
+			if (!hf->fContinue && current_size_hf > 0)
+			{
+				XLS::CFRecord record(CFRecordType::ANY_TYPE, global_info_);
+				for (; j < i; j++)
+				{
+					hf = dynamic_cast<HFPicture*>(m_arHFPicture[j].get());
+					record.appendRawData(hf->recordDrawingGroup);
+				}
+				ODRAW::OfficeArtDgContainerPtr rgDrawing = ODRAW::OfficeArtDgContainerPtr(new ODRAW::OfficeArtDgContainer(ODRAW::OfficeArtRecord::CA_HF));
+				rgDrawing->loadFields(record);
+				m_arHFPictureDrawing.push_back(rgDrawing);
+				current_size_hf = 0;
+
+			}
+			current_size_hf += hf->recordDrawingGroup->getDataSize();
+		}
+	}
+	if (current_size_hf > 0)
+	{
+		XLS::CFRecord record(ODRAW::OfficeArtRecord::DggContainer, global_info_);
+		for (; j < m_arHFPicture.size(); j++)
+		{
+			HFPicture* hf = dynamic_cast<HFPicture*>(m_arHFPicture[j].get());
+			record.appendRawData(hf->recordDrawingGroup);
+		}
+		ODRAW::OfficeArtDgContainerPtr rgDrawing = ODRAW::OfficeArtDgContainerPtr(new ODRAW::OfficeArtDgContainer(ODRAW::OfficeArtRecord::CA_HF));
+		rgDrawing->loadFields(record);
+		m_arHFPictureDrawing.push_back(rgDrawing);
+	}
+}
+
 
 
 } // namespace XLS

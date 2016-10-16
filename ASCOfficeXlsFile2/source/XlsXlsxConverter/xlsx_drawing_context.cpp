@@ -72,8 +72,8 @@ namespace oox {
 class xlsx_drawing_context_handle::Impl
 {
 public:
-    Impl(external_items & items)
-        : items_(items), next_rId_(1), next_drawing_id_(1) 
+    Impl(size_t & next_vml_file_id, external_items & items)
+				: next_vml_file_id_(next_vml_file_id), items_(items), next_rId_(1), next_drawing_id_(1) 
     {
     }  
 
@@ -85,48 +85,76 @@ public:
     }
 
     std::pair<std::wstring, std::wstring> add_drawing_xml(std::wstring const & content, xlsx_drawings_rels_ptr rels)
-    {
+    {//todooo отсчеты номеров файлов отдельно
         const std::wstring id = boost::lexical_cast<std::wstring>(next_drawing_id_++);
         const std::wstring fileName = std::wstring(L"drawing") + id + L".xml";
        
 		drawings_.push_back(drawing_elm(fileName, content, rels));
        
-		const std::wstring rId = std::wstring(L"rId") + id;//rDrId
+		const std::wstring rId = std::wstring(L"rId") + id;
         return std::pair<std::wstring, std::wstring>(fileName, rId);
     }
+
+    std::pair<std::wstring, std::wstring> add_drawing_vml(std::wstring const & content, xlsx_drawings_rels_ptr rels)
+    {
+        const std::wstring drawing_id	= boost::lexical_cast<std::wstring>(next_drawing_id_++);
+		const std::wstring file_vml_id	= boost::lexical_cast<std::wstring>(next_vml_file_id_++);
+		const std::wstring fileName		= std::wstring(L"vmlDrawing") + file_vml_id + L".vml";
+       
+		drawings_vml_.push_back(drawing_elm(fileName, content, rels));
+       
+		const std::wstring rId = std::wstring(L"rId") + drawing_id;
+        return std::pair<std::wstring, std::wstring>(fileName, rId);
+    }
+	
     const std::vector<drawing_elm> & content() const
     {
         return drawings_;
     }
+	 const std::vector<drawing_elm> & content_vml() const
+	 {
+        return drawings_vml_;
+	 }
 
 	xlsx_drawings_rels_ptr get_drawings_rels();
 private:
-    external_items & items_;
-    size_t next_rId_;
+    external_items				& items_;
+    size_t						next_rId_;
     
-    std::vector<drawing_elm> drawings_;
+    std::vector<drawing_elm>	drawings_;
+    std::vector<drawing_elm>	drawings_vml_;
 
-    size_t next_drawing_id_;
+    size_t						next_drawing_id_;
+	size_t						& next_vml_file_id_;
 };
 
-xlsx_drawing_context_handle::xlsx_drawing_context_handle(external_items & items)
-: impl_(new xlsx_drawing_context_handle::Impl(items))
+xlsx_drawing_context_handle::xlsx_drawing_context_handle(size_t & next_vml_file_id, external_items & items)
+									: impl_(new xlsx_drawing_context_handle::Impl(next_vml_file_id, items))
 {
 }
 
 xlsx_drawing_context_handle::~xlsx_drawing_context_handle()
 {
 }
+
 std::pair<std::wstring, std::wstring> xlsx_drawing_context_handle::add_drawing_xml(std::wstring const & content, xlsx_drawings_rels_ptr rels )
 {
     return impl_->add_drawing_xml(content, rels);
+}
+
+std::pair<std::wstring, std::wstring> xlsx_drawing_context_handle::add_drawing_vml(std::wstring const & content, xlsx_drawings_rels_ptr rels )
+{
+    return impl_->add_drawing_vml(content, rels);
 }
 
 const std::vector<drawing_elm> & xlsx_drawing_context_handle::content() const
 {
     return impl_->content();
 }
-
+const std::vector<drawing_elm> & xlsx_drawing_context_handle::content_vml() const
+{
+    return impl_->content_vml();
+}
 //---------------------------------------------------------------------------------------
 _color xlsx_drawing_context::CorrectSysColor(int nColorCode, _drawing_state_ptr & drawing_state)
 {
@@ -257,8 +285,10 @@ _color xlsx_drawing_context::CorrectSysColor(int nColorCode, _drawing_state_ptr 
 	return color;
 }
 
-xlsx_drawing_context::xlsx_drawing_context(xlsx_conversion_context & Context)
- : context_(Context), handle_(Context.get_drawing_context_handle()), rels_(xlsx_drawings_rels::create())
+xlsx_drawing_context::xlsx_drawing_context(xlsx_conversion_context & Context) : context_(Context), handle_(Context.get_drawing_context_handle())
+	, rels_				(xlsx_drawings_rels::create())
+	, vml_HF_rels_		(xlsx_drawings_rels::create())
+	, vml_comments_rels_(xlsx_drawings_rels::create())
 {    
 	in_chart_		= false;
 	count_object	= 0;
@@ -433,6 +463,25 @@ void xlsx_drawing_context::set_shape_id(int id)
 
 	current_drawing_states->back()->shape_id = (MSOSPT)id;
 }
+void xlsx_drawing_context::set_object_visible	(bool val)
+{
+	if (current_drawing_states == NULL);
+
+	current_drawing_states->back()->object.visible = val;
+}
+void xlsx_drawing_context::set_object_anchor	(int col, int row)
+{
+	if (current_drawing_states == NULL);
+
+	current_drawing_states->back()->object.col = col;
+	current_drawing_states->back()->object.row = row;
+
+}
+void xlsx_drawing_context::set_object_id(int val)
+{
+}
+
+
 void xlsx_drawing_context::end_drawing()
 {
 	if (current_drawing_states == NULL)		return;
@@ -443,8 +492,15 @@ void xlsx_drawing_context::end_drawing()
 
 	if ( current_drawing_states->back()->type == external_items::typeComment )
 	{
+		drawing_states_vml_comments.push_back(current_drawing_states->back());
 		current_drawing_states->pop_back();
 	}
+	else 
+		if (current_drawing_states->back()->vmlwrite_mode_)
+		{
+			drawing_states_vml_HF.push_back(current_drawing_states->back());
+			current_drawing_states->pop_back();
+		}
 }
 
 void xlsx_drawing_context::end_drawing(_drawing_state_ptr & drawing_state)
@@ -466,7 +522,10 @@ void xlsx_drawing_context::end_drawing(_drawing_state_ptr & drawing_state)
 			
 			serialize_pic(drawing_state, rId);
 		
-			rels_->add(isIternal, rId , drawing_state->fill.texture_target, drawing_state->type);
+			if (drawing_state->vmlwrite_mode_)
+				vml_HF_rels_->add(isIternal, rId , drawing_state->fill.texture_target, drawing_state->type);
+			else
+				rels_->add(isIternal, rId , drawing_state->fill.texture_target, drawing_state->type);
 		}
 		else 
 			drawing_state->type = external_items::typeShape;
@@ -487,28 +546,15 @@ void xlsx_drawing_context::end_drawing(_drawing_state_ptr & drawing_state)
 		
 		serialize_chart(drawing_state, rId); 
 		
-		rels_->add( isIternal, 	rId , target, drawing_state->type);
+		rels_->add( isIternal, 	rId, target, drawing_state->type);
 	}
 	if ( drawing_state->type == external_items::typeComment )
 	{
-		//serialize_vml_shape()
-		//context_.get_comments_context().set_drawing(drawing_state->text.content);
-		context_.get_comments_context().set_fill_color(drawing_state->fill.color.sRGB);
-		context_.get_comments_context().set_line_color(drawing_state->line.fill.color.sRGB);
-		
 		context_.get_comments_context().set_content(drawing_state->text.content);
-
-		std::wstringstream strm;
-		strm	<< drawing_state->sheet_anchor.colFrom	<< L", " << (int)(2 * drawing_state->sheet_anchor.xFrom / 12700.)	<< L", " 
-				<< drawing_state->sheet_anchor.rwFrom	<< L", " << (int)(2 * drawing_state->sheet_anchor.yFrom / 12700.)	<< L", " 
-				<< drawing_state->sheet_anchor.colTo	<< L", " << (int)(2 * drawing_state->sheet_anchor.xTo / 12700.)		<< L", " 
-				<< drawing_state->sheet_anchor.rwTo		<< L", " << (int)(2 * drawing_state->sheet_anchor.yTo / 12700.); 
-		context_.get_comments_context().set_anchor(strm.str());
-
-		context_.get_comments_context().set_size(	drawing_state->child_anchor.cx / 12700., 
-													drawing_state->child_anchor.cy / 12700.,
-													drawing_state->child_anchor.x / 12700., 
-													drawing_state->child_anchor.y / 12700.); //in pt (1 pt = 12700 emu)
+		
+		serialize_shape_comment(drawing_state);
+	
+		//context_.get_comments_context().set_shape_drawing(drawing_state->shape); 
 		context_.get_comments_context().end_comment();
 	}
 	if ( drawing_state->type == external_items::typeShape)
@@ -581,10 +627,160 @@ void xlsx_drawing_context::serialize_group()
 
 	drawing_state->shape = strm.str();
 }
+void xlsx_drawing_context::serialize_shape_comment(_drawing_state_ptr & drawing_state)
+{
+	std::wstringstream strm;
+	
+	CP_XML_WRITER(strm)    
+	{		
+		std::wstringstream strmStyle;
 
+		strmStyle << L"position:absolute;";	
+		strmStyle << L"margin-left:" << boost::lexical_cast<std::wstring>(drawing_state->child_anchor.x / 12700.)	<< L"pt;";	//in pt (1 pt = 12700 emu)
+		strmStyle << L"margin-top:"	<< boost::lexical_cast<std::wstring>(drawing_state->child_anchor.y / 12700.)	<< L"pt;";
+		strmStyle << L"width:"		<< boost::lexical_cast<std::wstring>(drawing_state->child_anchor.cx / 12700.)	<< L"pt;";
+		strmStyle << L"height:"		<< boost::lexical_cast<std::wstring>(drawing_state->child_anchor.cy / 12700.)	<< L"pt;";
+		strmStyle << L"z-index:"		<< boost::lexical_cast<std::wstring>(drawing_state->id)	 << L";";
+		
+		if (drawing_state->object.visible == false) 
+			strmStyle << L"visibility:hidden;";	
+
+		CP_XML_NODE(L"v:shape")
+		{
+			//CP_XML_ATTR(L"id"			, boost::lexical_cast<std::wstring>(drawing_state->object.id));
+			CP_XML_ATTR(L"type"			, L"_x0000_t202");
+			CP_XML_ATTR(L"fillcolor"	, L"#" + drawing_state->fill.color.sRGB);
+
+			if (drawing_state->line.width > 0)
+			{
+				CP_XML_ATTR(L"strokeweight",  boost::lexical_cast<std::wstring>(drawing_state->line.width) +L"pt");
+			}
+			CP_XML_ATTR(L"style", strmStyle.str());
+
+			CP_XML_NODE(L"v:shadow")
+			{
+				CP_XML_ATTR(L"color", L"black");
+				CP_XML_ATTR(L"obscured", L"t");
+				CP_XML_ATTR(L"on", L"t");
+			}
+
+			CP_XML_NODE(L"v:wrap")
+			{
+				CP_XML_ATTR(L"v:type", L"none");
+			}
+		
+			CP_XML_NODE(L"v:fill")
+			{
+				CP_XML_ATTR(L"color", std::wstring(L"#") + drawing_state->fill.color.sRGB);
+				if (drawing_state->fill.opacity > 0.00001)
+				{
+					CP_XML_ATTR(L"opacity", drawing_state->fill.opacity * 65536);
+				}			
+				bool  isIternal = false;
+				std::wstring rId = handle_.impl_->get_mediaitems().find_image( drawing_state->fill.texture_target, isIternal);
+				if (!rId.empty())
+				{	
+					CP_XML_ATTR(L"o:relid"	, rId);
+					CP_XML_ATTR(L"type"		, L"tile");
+
+					vml_comments_rels_->add(isIternal, rId , drawing_state->fill.texture_target, external_items::typeImage);
+				}
+				else if (drawing_state->fill.type == fillGradient || drawing_state->fill.type == fillGradientOne)
+				{
+					CP_XML_ATTR(L"color2", std::wstring(L"#") + drawing_state->fill.color2.sRGB);
+					if (drawing_state->fill.opacity2 > 0.00001)
+					{
+						CP_XML_ATTR(L"opacity2", drawing_state->fill.opacity2 * 65536);
+					}
+					CP_XML_ATTR(L"type", L"gradient");
+				}
+				else
+				{
+					CP_XML_ATTR(L"type", L"solid");
+				}
+			}
+
+			CP_XML_NODE(L"v:stroke")
+			{
+				CP_XML_ATTR(L"color", std::wstring(L"#") + drawing_state->line.fill.color.sRGB);
+				//CP_XML_ATTR(L"opacity",(100.-dVal.get())/100.);
+
+				switch(drawing_state->line.typeDash)
+				{	
+				case lineDash:		CP_XML_ATTR(L"dashstyle", L"dash");			break;
+				case lineDot:		CP_XML_ATTR(L"dashstyle", L"dot");			break;
+				case lineDashDot:	CP_XML_ATTR(L"dashstyle", L"dashDot");		break;
+				case lineDashDotDot:CP_XML_ATTR(L"dashstyle", L"lgDashDotDot"); break;
+				}
+			}	
+			CP_XML_NODE(L"x:ClientData")
+			{
+				CP_XML_ATTR(L"ObjectType", L"Note");
+				CP_XML_NODE(L"x:MoveWithCells"){}
+				CP_XML_NODE(L"x:SizeWithCells"){}
+
+				std::wstringstream strmAnchor;
+				strmAnchor	<< drawing_state->sheet_anchor.colFrom	<< L", " << (int)(2 * drawing_state->sheet_anchor.xFrom / 12700.)	<< L", " 
+						<< drawing_state->sheet_anchor.rwFrom	<< L", " << (int)(2 * drawing_state->sheet_anchor.yFrom / 12700.)		<< L", " 
+						<< drawing_state->sheet_anchor.colTo	<< L", " << (int)(2 * drawing_state->sheet_anchor.xTo / 12700.)			<< L", " 
+						<< drawing_state->sheet_anchor.rwTo		<< L", " << (int)(2 * drawing_state->sheet_anchor.yTo / 12700.); 
+				if (!strmAnchor.str().empty())
+				{
+					CP_XML_NODE(L"x:Anchor"){CP_XML_CONTENT(strmAnchor.str());}
+				}
+				CP_XML_NODE(L"x:AutoFill")	{CP_XML_CONTENT("False");}
+				CP_XML_NODE(L"x:Row")		{CP_XML_CONTENT(drawing_state->object.row);}
+				CP_XML_NODE(L"x:Column")	{CP_XML_CONTENT(drawing_state->object.col);}
+				
+				if (drawing_state->object.visible) CP_XML_NODE(L"x:Visible");
+			}
+		}	
+	
+	}
+	drawing_state->shape = strm.str();
+}
+void xlsx_drawing_context::serialize_vml_shape(_drawing_state_ptr & drawing_state)
+{
+}
+void xlsx_drawing_context::serialize_vml_pic(_drawing_state_ptr & drawing_state, std::wstring rId)
+{
+	std::wstringstream strm;
+
+	CP_XML_WRITER(strm)    
+	{
+		CP_XML_NODE(L"v:shape")
+		{ 
+			CP_XML_ATTR( L"id"				, drawing_state->name);
+			CP_XML_ATTR( L"o:spt"			, L"75" );
+			CP_XML_ATTR( L"o:preferrelative", "t" );
+			CP_XML_ATTR( L"filled"			, "f" );
+			CP_XML_ATTR( L"stroked"			, "f" );
+			CP_XML_ATTR( L"type"			, L"#_x0000_t75" );
+			CP_XML_ATTR( L"coordsize"		, L"21600,21600" );
+
+			std::wstring style = std::wstring(L"position:absolute;margin-left:0;margin-top:0;");
+			
+			//todooo сделать "покороче" значения .. достаточно 2 знаков после запятой
+			style += std::wstring(L"width:")	+ boost::lexical_cast<std::wstring>(drawing_state->child_anchor.cx)	+ std::wstring(L"pt;");
+			style += std::wstring(L"height:")	+ boost::lexical_cast<std::wstring>(drawing_state->child_anchor.cy)	+ std::wstring(L"pt;");
+			style += std::wstring(L"z-index:")	+ boost::lexical_cast<std::wstring>(drawing_state->id) + std::wstring(L";");
+
+			CP_XML_ATTR(L"style",style);
+
+			CP_XML_NODE(L"v:imagedata")
+			{
+				CP_XML_ATTR(L"o:relid", rId);
+			}
+		}
+	}
+	drawing_state->shape = strm.str();
+}
 
 void xlsx_drawing_context::serialize_pic(_drawing_state_ptr & drawing_state, std::wstring rId)
 {
+	if (drawing_state->vmlwrite_mode_) 
+		return serialize_vml_pic(drawing_state, rId);
+
 	std::wstringstream strm;
 
 	CP_XML_WRITER(strm)    
@@ -695,6 +891,9 @@ void xlsx_drawing_context::serialize_chart(_drawing_state_ptr & drawing_state, s
 
 void xlsx_drawing_context::serialize_shape(_drawing_state_ptr & drawing_state)
 {
+	if (drawing_state->vmlwrite_mode_) 
+		return serialize_vml_shape(drawing_state);
+
 	std::wstringstream strm;
 
 	std::wstring prstTxWarp;
@@ -1020,7 +1219,7 @@ void xlsx_drawing_context::serialize_fill(std::wostream & stream, _drawing_state
 		return;
 	}
 //------------ 
-	if (fill.color.index>=0 || !fill.color.sRGB.empty())
+	if (fill.color.index >= 0 || !fill.color.sRGB.empty())
 	{
 		serialize_solid_fill(stream, fill.color, fill.opacity);
 	}
@@ -1481,6 +1680,10 @@ void xlsx_drawing_context::serialize_bitmap_fill(std::wostream & stream, _drawin
 	}
 }
 
+void xlsx_drawing_context::serialize_vml(std::wostream & stream, _drawing_state_ptr & drawing_state)
+{
+	stream << drawing_state->shape;
+}
 
 void xlsx_drawing_context::serialize(std::wostream & stream, _drawing_state_ptr & drawing_state)
 {
@@ -2101,13 +2304,39 @@ void xlsx_drawing_context::set_custom_path (int type_path)
 
 	current_drawing_states->back()->custom_path = type_path;
 }
+//----------------------------------------------------------------------------------------------------------
+bool xlsx_drawing_context::get_mode_vmlwrite ()
+{//comment, shapes in header/footer, ....
+	if (current_drawing_states == NULL) return false;
+
+	return current_drawing_states->back()->vmlwrite_mode_;
+}
+void xlsx_drawing_context::set_mode_vmlwrite (bool val)
+{//comment, shapes in header/footer, ....
+	if (current_drawing_states == NULL) return;
+
+	current_drawing_states->back()->vmlwrite_mode_ = val;
+}
+//----------------------------------------------------------------------------------------------------------
 bool xlsx_drawing_context::empty()
 {
 	return drawing_states.empty();
 }
-xlsx_drawings_rels_ptr xlsx_drawing_context::get_drawings_rels()
+bool xlsx_drawing_context::empty_vml_HF()
+{
+	return drawing_states_vml_HF.empty();
+}
+xlsx_drawings_rels_ptr xlsx_drawing_context::get_rels()
 {
     return rels_;
+}
+xlsx_drawings_rels_ptr xlsx_drawing_context::get_vml_HF_rels()
+{
+    return vml_HF_rels_;
+}
+xlsx_drawings_rels_ptr xlsx_drawing_context::get_vml_comments_rels()
+{
+    return vml_comments_rels_;
 }
 bool xlsx_drawing_context::ChangeBlack2ColorImage(std::wstring sRgbColor1, std::wstring sRgbColor2, _drawing_state_ptr & drawing_state)
 {
@@ -2155,6 +2384,60 @@ bool xlsx_drawing_context::ChangeBlack2ColorImage(std::wstring sRgbColor1, std::
 	return false;
 }
 
+void xlsx_drawing_context::serialize_vml_HF(std::wostream & strm) 
+{
+    CP_XML_WRITER(strm)
+    {
+		CP_XML_NODE(L"xml")
+		{
+            CP_XML_ATTR(L"xmlns:v"	, L"urn:schemas-microsoft-com:vml");
+            CP_XML_ATTR(L"xmlns:o"	, L"urn:schemas-microsoft-com:office:office");
+            CP_XML_ATTR(L"xmlns:x"	, L"urn:schemas-microsoft-com:office:excel");
+
+			for (int i = 0 ; i < drawing_states_vml_HF.size(); i++)
+			{
+				serialize_vml(CP_XML_STREAM(), drawing_states_vml_HF[i]);
+			}
+
+		}
+    }
+}
+void xlsx_drawing_context::serialize_vml_comments(std::wostream & strm) 
+{
+    CP_XML_WRITER(strm)
+    {
+		CP_XML_NODE(L"xml")
+		{
+            CP_XML_ATTR(L"xmlns:v"	, L"urn:schemas-microsoft-com:vml");
+            CP_XML_ATTR(L"xmlns:o"	, L"urn:schemas-microsoft-com:office:office");
+            CP_XML_ATTR(L"xmlns:x"	, L"urn:schemas-microsoft-com:office:excel");
+
+			CP_XML_NODE(L"v:shapetype")
+			{
+				CP_XML_ATTR(L"id"		, L"_x0000_t202");
+				CP_XML_ATTR(L"coordsize", L"21600,21600");
+				CP_XML_ATTR(L"o:spt"	, L"202");
+				CP_XML_ATTR(L"path"		, L"m,l,21600r21600,l21600,xe");
+
+				CP_XML_NODE(L"v:stroke")
+				{
+					CP_XML_ATTR(L"joinstyle", L"miter");
+				}
+				CP_XML_NODE(L"v:path")
+				{
+					CP_XML_ATTR(L"gradientshapeok", L"t");				
+					CP_XML_ATTR(L"o:connecttype", L"rect");
+				}
+			}				
+
+			for (int i = 0 ; i < drawing_states_vml_comments.size(); i++)
+			{
+				serialize_vml(CP_XML_STREAM(), drawing_states_vml_comments[i]);
+			}
+
+		}
+    }
+}
 void xlsx_drawing_context::serialize(std::wostream & strm) 
 {
     CP_XML_WRITER(strm)

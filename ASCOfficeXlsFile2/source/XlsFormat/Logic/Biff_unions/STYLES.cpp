@@ -48,19 +48,24 @@ public:
 
 	const bool loadContent(BinProcessor& proc)
 	{	
-		if(proc.mandatory<Style>())
+		bool res = false;
+		if(proc.optional<Style>())
 		{
 			m_Style = elements_.back();
 			elements_.pop_back();
-		}else return false;
+
+			res = true;
+		}
 
 	
 		if (proc.optional<StyleExt>())
 		{
 			m_StyleEx = elements_.back();
 			elements_.pop_back();
+			
+			res = true;
 		}
-		return true;
+		return res;
 	};
 
 	BaseObjectPtr m_StyleEx;
@@ -74,12 +79,13 @@ BaseObjectPtr STYLES::clone()
 }
 
 
-// STYLES = 1*(Style [StyleExt])
+// STYLES = 1*(Style [StyleExt]) 
 const bool STYLES::loadContent(BinProcessor& proc)
 {
 	styles_count = proc.repeated<Parenthesis_STYLES_1>(0, 0);
 	
-	return true;
+	if (styles_count > 0)	return true;
+	else					return false;
 }
 
 int STYLES::serialize(std::wostream & stream)
@@ -121,7 +127,7 @@ int STYLES::serialize(std::wostream & stream)
 								//{
 								//}
 							}
-							else
+							else if (style)
 							{
 								CP_XML_ATTR(L"name", style->user.value());
 									
@@ -134,10 +140,14 @@ int STYLES::serialize(std::wostream & stream)
 									}
 								}
 							}
-							int xfId = style->ixfe - 1;
-							if (xfId < 0) xfId = 0;
-								
-							CP_XML_ATTR(L"xfId", xfId);
+
+							if (style)
+							{
+								int xfId = style->ixfe - 1;
+								if (xfId < 0) xfId = 0;
+									
+								CP_XML_ATTR(L"xfId", xfId);
+							}
 						}
 					}
 				}

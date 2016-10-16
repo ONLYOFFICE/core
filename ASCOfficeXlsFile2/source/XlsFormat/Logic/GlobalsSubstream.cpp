@@ -318,17 +318,32 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 			{
 				if (proc.mandatory<FORMATTING>())
 				{
-					if (!m_Formating )//todooo concatinate?
+					if (!m_Formating )
 					{
 						m_Formating = elements_.back();
 						elements_.pop_back();
 						FORMATTING* fmts = dynamic_cast<FORMATTING*>(m_Formating.get());
+
 						if (fmts)
-						{
-							proc.getGlobalWorkbookInfo()->cellStyleDxfs_count	= fmts->m_arDXF.size(); // + будут юзерские
+						{		
+							proc.getGlobalWorkbookInfo()->cellStyleDxfs_count	= fmts->m_arDXF.size(); 
 							proc.getGlobalWorkbookInfo()->m_arFonts				= &fmts->m_arFonts;
 						}
 					}
+					//else
+					//{
+					//	FORMATTING* fmts		= dynamic_cast<FORMATTING*>(m_Formating.get());
+					//	FORMATTING* fmts_add	= dynamic_cast<FORMATTING*>(elements_.back().get());
+
+					//	if (fmts && fmts_add)
+					//	{
+					//		fmts->concatinate(fmts_add);
+					//		elements_.pop_back();
+
+					//		proc.getGlobalWorkbookInfo()->cellStyleDxfs_count	= fmts->m_arDXF.size(); 
+					//		proc.getGlobalWorkbookInfo()->m_arFonts				= &fmts->m_arFonts;
+					//	}
+					//}
 				}		
 			}break;
 			case rt_SXStreamID:			proc.repeated<PIVOTCACHEDEFINITION>(0, 0);	break;

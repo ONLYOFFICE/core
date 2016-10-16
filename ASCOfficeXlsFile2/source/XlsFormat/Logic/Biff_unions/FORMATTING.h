@@ -52,6 +52,8 @@ public:
 	int serialize1(std::wostream & stream);
 	int serialize2(std::wostream & stream);
 
+	void concatinate(FORMATTING* ext);
+
 	static const ElementType	type = typeFORMATTING;
 
 	BaseObjectPtr				m_Styles;

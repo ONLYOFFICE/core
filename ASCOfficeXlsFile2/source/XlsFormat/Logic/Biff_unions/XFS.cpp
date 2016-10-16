@@ -63,8 +63,8 @@ const bool XFS::loadContent(BinProcessor& proc)
 {
 	GlobalWorkbookInfoPtr global_info = proc.getGlobalWorkbookInfo();
 	
-	global_info->cellStyleXfs_count	= 0;
-	global_info->cellXfs_count		= 0;
+	int cellStyleXfs_count	= 0;
+	int cellXfs_count		= 0;
 	
     XF xf(cell_xf_current_id, style_xf_current_id);
     int count = proc.repeated(xf ,16, 0);
@@ -80,17 +80,23 @@ const bool XFS::loadContent(BinProcessor& proc)
 		if (xfs->fStyle)
 		{
 			m_arCellStyles.push_back(elements_.front());
-			global_info->cellStyleXfs_count++;
+			cellStyleXfs_count++;
 		}
 		else
 		{
 			m_arCellXFs.push_back(elements_.front());
-			global_info->cellXfs_count++;
+			cellXfs_count++;
 		}
 		
 		elements_.pop_front();
 		count--;
 	}
+
+	if (cellXfs_count > 0)
+		global_info->cellXfs_count = cellXfs_count;
+
+	if (cellStyleXfs_count > 0)
+		global_info->cellStyleXfs_count = cellStyleXfs_count;
 	
 	if(proc.optional<XFCRC>())
 	{

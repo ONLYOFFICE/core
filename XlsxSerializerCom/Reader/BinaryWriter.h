@@ -1747,10 +1747,10 @@ namespace BinXlsxRW {
 				//из Drawing могут быть ссылки на объекты в VmlDrawing
 				OOX::CVmlDrawing *currentVmlDrawing = NULL;
 
-				if (oWorksheet.m_oLegacyDrawingWorksheet.IsInit() && 
-								oWorksheet.m_oLegacyDrawingWorksheet->m_oId.IsInit())
+                if (oWorksheet.m_oLegacyDrawing.IsInit() &&
+                                oWorksheet.m_oLegacyDrawing->m_oId.IsInit())
 				{
-					smart_ptr<OOX::File> oFileV = oWorksheet.Find(oWorksheet.m_oLegacyDrawingWorksheet->m_oId->GetValue());
+                    smart_ptr<OOX::File> oFileV = oWorksheet.Find(oWorksheet.m_oLegacyDrawing->m_oId->GetValue());
 					if (oFileV.IsInit() && OOX::FileTypes::VmlDrawing == oFileV->type())
 					{
 						currentVmlDrawing = (OOX::CVmlDrawing*)oFileV.operator->();

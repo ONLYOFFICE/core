@@ -1889,9 +1889,9 @@ namespace BinXlsxRW {
 						NSCommon::smart_ptr<OOX::File> pVmlDrawingFile(m_pCurVmlDrawing);
 						m_pCurVmlDrawing = NULL;
 						const OOX::RId oRId = m_pCurWorksheet->Add(pVmlDrawingFile);
-						m_pCurWorksheet->m_oLegacyDrawingWorksheet.Init();
-						m_pCurWorksheet->m_oLegacyDrawingWorksheet->m_oId.Init();
-						m_pCurWorksheet->m_oLegacyDrawingWorksheet->m_oId->SetValue(oRId.get());
+                        m_pCurWorksheet->m_oLegacyDrawing.Init();
+                        m_pCurWorksheet->m_oLegacyDrawing->m_oId.Init();
+                        m_pCurWorksheet->m_oLegacyDrawing->m_oId->SetValue(oRId.get());
 					}
 
 					smart_ptr<OOX::File> oCurFile(m_pCurWorksheet);

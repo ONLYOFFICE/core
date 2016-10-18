@@ -48,9 +48,10 @@ namespace odf_reader {
 
 namespace {
 
-std::wstring process_border(border_style & borderStyle,
-    const _CP_OPT(border_widths) & borderLineWidths,
-    const _CP_OPT(length) & borderPadding, const std::wstring & Shadow = L"")
+std::wstring process_border(border_style	& borderStyle,
+				const _CP_OPT(border_widths)& borderLineWidths,
+				const _CP_OPT(length)		& borderPadding,
+				const std::wstring			& Shadow = L"")
 {
     std::wstring w_sz;
     std::wstring w_color;
@@ -66,28 +67,28 @@ std::wstring process_border(border_style & borderStyle,
         double width = borderStyle.get_length().get_value_unit(length::pt);
         //borderLineWidths ? borderLineWidths->get_summ_unit(length::pt) : borderStyle.get_length().get_value_unit(length::pt);
         int szInt = (int)(0.5 + 8.0 * width);
-        if (szInt <= 0)
-            szInt = 1;
-        w_sz = boost::lexical_cast<std::wstring>( szInt );
+        
+		if (szInt <= 0) szInt = 1;
+
+        w_sz	= boost::lexical_cast<std::wstring>( szInt );
         w_color = boost::lexical_cast<std::wstring>( borderStyle.get_color().get_hex_value() );
 
         if (borderPadding)
-            w_space = boost::lexical_cast<std::wstring>((int)(borderPadding->get_value_unit(length::pt) + 0.5) );
+            w_space = boost::lexical_cast<std::wstring>((int)(borderPadding->get_value_unit(length::pt)) );
 
         switch(borderStyle.get_style())
         {
-        case border_style::none:        w_val = L"none";    break;
-        case border_style::solid:
-        case border_style::single:
-                                        w_val = L"single";  break;
-        case border_style::double_:     w_val = L"double";  break;
-        case border_style::dotted:      w_val = L"dotted";  break;
-        case border_style::dashed:      w_val = L"dashed";  break;
-        case border_style::groove:      w_val = L"thinThickMediumGap";  break;
-        case border_style::ridge:       w_val = L"thickThinMediumGap";  break;
-        case border_style::inset:       w_val = L"inset";  break;
-        case border_style::outset:      w_val = L"outset";  break;
-        case border_style::hidden:      w_val = L"nil";     break;
+			case border_style::none:        w_val = L"none";				break;
+			case border_style::solid:
+			case border_style::single:		w_val = L"single";				break;
+			case border_style::double_:     w_val = L"double";				break;
+			case border_style::dotted:      w_val = L"dotted";				break;
+			case border_style::dashed:      w_val = L"dashed";				break;
+			case border_style::groove:      w_val = L"thinThickMediumGap";  break;
+			case border_style::ridge:       w_val = L"thickThinMediumGap";  break;
+			case border_style::inset:       w_val = L"inset";				break;
+			case border_style::outset:      w_val = L"outset";				break;
+			case border_style::hidden:      w_val = L"nil";					break;
         }
     }
     std::wstring res;

@@ -140,6 +140,18 @@ namespace Oox2Odf
 
 		void convert(OOX::WritingElement *oox_unknown);
     private:
+		struct _section
+		{
+			_section() : start_para(0), end_para(-1), props(NULL), root(false) {}
+
+			_section(OOX::Logic::CSectionProperty *s, int start = 0, int end = -1, bool r = false) : props(s), start_para(start), end_para(end), root(r) {}
+
+			OOX::Logic::CSectionProperty *props;
+			int start_para;
+			int end_para;
+
+			bool root;
+		}												*current_section_properties;
 		OOX::CDocx										*docx_document;
 		cpdoccore::odf_writer::package::odf_document	*output_document;
 		

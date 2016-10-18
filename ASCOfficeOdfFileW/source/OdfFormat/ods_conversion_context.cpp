@@ -135,7 +135,7 @@ void ods_conversion_context::start_sheet()
 		drawing_context()->set_styles_context(styles_context());
 		page_layout_context()->set_styles_context(styles_context());
 		
-	page_layout_context()->start_master_page(L"");
+	page_layout_context()->add_master_page(L"");
 
     current_table().set_table_master_page(page_layout_context()->last_master() ?
                                               page_layout_context()->last_master()->get_name() : L"");
@@ -173,8 +173,6 @@ void ods_conversion_context::end_sheet()
 	table_context_.end_table();
 	
 	styles_context()->reset_defaults();
-
-	page_layout_context()->end_master_page();
 }
 
 void ods_conversion_context::start_row(int _start_row, int repeated, int level, bool _default)

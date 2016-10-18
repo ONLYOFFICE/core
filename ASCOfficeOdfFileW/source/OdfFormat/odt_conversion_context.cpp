@@ -241,7 +241,7 @@ void odt_conversion_context::end_drawings()
 		anchor_type::type anchor = drawing_context()->get_anchor();
 
 		bool bSet = false;
-		if ( anchor == anchor_type::Page || anchor == anchor_type::Paragraph)
+		if (( anchor == anchor_type::Page || anchor == anchor_type::Paragraph) || (is_header_ || is_footer_))
 		{
 			for (long i = text_context()->current_level_.size()-1; i>=0; i--)
 			{
@@ -423,10 +423,16 @@ void odt_conversion_context::set_master_page_name(std::wstring master_name)
 		return;
 	}
 
-	is_paragraph_in_current_section_ = false;
-	style *style_ = dynamic_cast<style*>(current_root_elements_[0].style_elm.get());
-
-	if (style_)style_->style_master_page_name_ = master_name;
+	style *style_ = dynamic_cast<style*>(current_root_elements_.back().style_elm.get());
+	if (!style_)
+	{
+		//генерация 
+	}
+	if (style_)
+	{
+		is_paragraph_in_current_section_	= false;
+		style_->style_master_page_name_		= master_name;
+	}
 }
 int odt_conversion_context::get_current_section_columns()
 {
@@ -1004,6 +1010,26 @@ void odt_conversion_context::end_header_footer()
 	is_header_ = false;
 	is_footer_ = false;
 }
+
+void odt_conversion_context::add_empty_header(int type)
+{
+	if (start_header(type))
+	{
+		start_paragraph(false);
+		end_paragraph();
+	}
+	end_header_footer();
+}
+void odt_conversion_context::add_empty_footer(int type)
+{
+	if (start_footer(type))
+	{
+		start_paragraph(false);
+		end_paragraph();
+	}
+	end_header_footer();
+}
+
 
 void odt_conversion_context::set_background(_CP_OPT(color) & color, int type)
 {

@@ -27,11 +27,11 @@ if defined ProgramFiles(x86) (
 )
 cd "%SCRIPTPATH%"
 
-XCOPY "v8\build\Release\lib\*" "win_32\release\"
-XCOPY "v8\build\Release\icudt.dll" "win_32\release\"
+XCOPY /Y "v8\build\Release\lib\*" "win_32\release\"
+XCOPY /Y "v8\build\Release\icudt.dll" "win_32\release\"
 
-XCOPY "v8\build\Debug\lib\*" "win_32\debug\"
-XCOPY "v8\build\Debug\icudt.dll" "win_32\debug\"
+XCOPY /Y "v8\build\Debug\lib\*" "win_32\debug\"
+XCOPY /Y "v8\build\Debug\icudt.dll" "win_32\debug\"
 
 echo "building x64... -------------------------------------------"
 
@@ -55,8 +55,8 @@ if defined ProgramFiles(x86) (
 )
 cd "%SCRIPTPATH%"
 
-XCOPY "v8\build\Release\lib\*" "win_64\release\"
-XCOPY "v8\build\Release\icudt.dll" "win_64\release\"
+XCOPY /Y "v8\build\Release\lib\*" "win_64\release\"
+XCOPY /Y "v8\build\Release\icudt.dll" "win_64\release\"
 
-XCOPY "v8\build\Debug\lib\*" "win_64\debug\"
-XCOPY "v8\build\Debug\icudt.dll" "win_64\debug\"
+XCOPY /Y "v8\build\Debug\lib\*" "win_64\debug\"
+XCOPY /Y "v8\build\Debug\icudt.dll" "win_64\debug\"

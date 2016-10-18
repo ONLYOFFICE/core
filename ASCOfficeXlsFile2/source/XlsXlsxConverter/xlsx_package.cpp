@@ -216,7 +216,13 @@ void xl_files::write(const std::wstring & RootPath)
     {
         comments_->set_main_document(get_main_document());
         comments_->write(path);
+    }	
+	if (vml_drawings_)
+    {
+		vml_drawings_->set_main_document(get_main_document());
+        vml_drawings_->write(path);
     }
+
     rels_files_.write(path);
 }
 
@@ -255,6 +261,8 @@ void xl_files::set_drawings(element_ptr Element)
 void xl_files::set_vml_drawings(element_ptr Element)
 {
     vml_drawings_ = Element;
+	xl_drawings* d = dynamic_cast<xl_drawings*>(vml_drawings_.get());
+	d->vml = true;
 }
 void xl_files::add_charts(chart_content_ptr chart)
 {
@@ -320,8 +328,14 @@ void xl_drawings::write(const std::wstring & RootPath)
         
         content_type & contentTypes = this->get_main_document()->content_type().get_content_type();
 
-        const std::wstring kDrawingCT = L"application/vnd.openxmlformats-officedocument.drawing+xml";
-        contentTypes.add_override(L"/xl/drawings/" + e.filename, kDrawingCT);
+		if (vml)
+		{
+			contentTypes.add_override(L"/xl/drawings/" + e.filename, L"application/vnd.openxmlformats-officedocument.vmlDrawing");
+		}
+		else
+		{
+			contentTypes.add_override(L"/xl/drawings/" + e.filename, L"application/vnd.openxmlformats-officedocument.drawing+xml");
+		}
     }
 }
 
@@ -344,7 +358,6 @@ void xl_comments::write(const std::wstring & RootPath)
         contentTypes.add_override(std::wstring(L"/xl/") + e.filename, kWSConType);
 			
 		package::simple_element(e.filename, e.content).write(RootPath);        
-		package::simple_element(e.vml_filename, e.vml_content).write(vml_path);        
 	}
 }
 

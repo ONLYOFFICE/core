@@ -2453,5 +2453,83 @@ namespace SimpleTypes
 			SimpleType_Operator_Equal (ST_OleUpdate)
 		};
 
+		enum EActivePane
+		{
+			activepaneBottomLeft = 0,
+			activepaneBottomRight  = 1,
+			activepaneTopLeft = 2,
+			activepaneTopRight = 3
+		};
+
+		template<EActivePane eDefValue = activepaneTopLeft>
+		class CActivePane : public CSimpleType<EActivePane, eDefValue>
+		{
+		public:
+			CActivePane() {}
+
+			virtual EActivePane FromString(CString &sValue)
+			{
+				if      ( _T("bottomLeft") == sValue ) this->m_eValue = activepaneBottomLeft;
+				else if ( _T("bottomRight")  == sValue ) this->m_eValue = activepaneBottomRight;
+				else if ( _T("topLeft")  == sValue ) this->m_eValue = activepaneTopLeft;
+				else if ( _T("topRight")  == sValue ) this->m_eValue = activepaneTopRight;
+				else                                  this->m_eValue = eDefValue;
+
+				return this->m_eValue;
+			}
+
+			virtual CString          ToString  () const
+			{
+				switch(this->m_eValue)
+				{
+				case activepaneBottomLeft : return _T("bottomLeft");
+				case activepaneBottomRight  : return _T("bottomRight");
+				case activepaneTopLeft  : return _T("topLeft");
+				case activepaneTopRight  : return _T("topRight");
+				default                  : return _T("topLeft");
+				}
+			}
+
+			SimpleType_FromString     (EActivePane)
+			SimpleType_Operator_Equal (CActivePane)
+		};
+
+		enum EPaneState
+		{
+			panestateFrozen = 0,
+			panestateFrozenSplit  = 1,
+			panestateSplit = 2
+		};
+
+        template<EPaneState eDefValue = panestateFrozen>
+        class CPaneState : public CSimpleType<EPaneState, eDefValue>
+        {
+        public:
+            CPaneState() {}
+
+			virtual EPaneState FromString(CString &sValue)
+			{
+				if      ( _T("frozen") == sValue ) this->m_eValue = panestateFrozen;
+				else if ( _T("frozenSplit")  == sValue ) this->m_eValue = panestateFrozenSplit;
+				else if ( _T("split")  == sValue ) this->m_eValue = panestateSplit;
+				else                                  this->m_eValue = eDefValue;
+
+				return this->m_eValue;
+			}
+
+			virtual CString          ToString  () const
+			{
+				switch(this->m_eValue)
+				{
+				case panestateFrozen : return _T("frozen");
+				case panestateFrozenSplit  : return _T("frozenSplit");
+				case panestateSplit  : return _T("split");
+				default                  : return _T("frozen");
+				}
+			}
+
+            SimpleType_FromString     (EPaneState)
+            SimpleType_Operator_Equal (CPaneState)
+		};
 	};// Spreadsheet
 } // SimpleTypes

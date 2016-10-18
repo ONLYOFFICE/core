@@ -44,9 +44,10 @@
 namespace oox {
     
 
-xlsx_conversion_context::xlsx_conversion_context( package::xlsx_document * outputDocument): output_document_(outputDocument),
-	xlsx_table_context_(*this), 
-	xlsx_drawing_context_handle_(get_mediaitems())
+xlsx_conversion_context::xlsx_conversion_context( package::xlsx_document * outputDocument)	: output_document_(outputDocument),
+	next_vml_file_id_				( 1 ),
+	xlsx_table_context_				( *this ), 
+	xlsx_drawing_context_handle_	( next_vml_file_id_, get_mediaitems())
 {
 }
 xlsx_conversion_context::~xlsx_conversion_context()
@@ -165,18 +166,27 @@ void xlsx_conversion_context::end_document()
 		const std::pair<std::wstring, std::wstring> p2 = sheet->get_comments_link();        
 		if (!p2.first.empty())
         {
-            const std::wstring dId = p2.second;
-            static const std::wstring kType = L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/comments"; 
-            const std::wstring dName = std::wstring(L"../" + p2.first);
+            const std::wstring			dId		= p2.second;
+            static const std::wstring	kType	= L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/comments"; 
+            const std::wstring			dName	= std::wstring(L"../" + p2.first);
             content->add_rel(relationship(dId, kType, dName));
         }
 
 		const std::pair<std::wstring, std::wstring> p3 = sheet->get_vml_drawing_link();		
 		if (!p3.first.empty())
         {
-            const std::wstring dId = p3.second;
-            static const std::wstring kType = L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/vmlDrawing"; 
-            const std::wstring dName = std::wstring(L"../drawings/" + p3.first);
+            const std::wstring			dId		= p3.second;
+            static const std::wstring	kType	= L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/vmlDrawing"; 
+            const std::wstring			dName	= std::wstring(L"../drawings/" + p3.first);
+			content->add_rel(relationship(dId, kType, dName));
+       }
+
+		const std::pair<std::wstring, std::wstring> p4 = sheet->get_vml_drawing_HF_link();		
+		if (!p4.first.empty())
+        {
+            const std::wstring			dId		= p4.second;
+            static const std::wstring	kType	= L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/vmlDrawing"; 
+            const std::wstring			dName	= std::wstring(L"../drawings/" + p4.first);
 			content->add_rel(relationship(dId, kType, dName));
        }
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -262,7 +272,10 @@ void xlsx_conversion_context::end_document()
         package::xl_drawings_ptr drawings = package::xl_drawings::create(xlsx_drawing_context_handle_.content());
         output_document_->get_xl_files().set_drawings(drawings);
 	
-        package::xl_comments_ptr comments = package::xl_comments::create(xlsx_comments_context_handle_.content());
+		package::xl_drawings_ptr drawings_vml = package::xl_drawings::create(xlsx_drawing_context_handle_.content_vml());
+        output_document_->get_xl_files().set_vml_drawings(drawings_vml);
+
+		package::xl_comments_ptr comments = package::xl_comments::create(xlsx_comments_context_handle_.content());
         output_document_->get_xl_files().set_comments(comments);
         
 	}

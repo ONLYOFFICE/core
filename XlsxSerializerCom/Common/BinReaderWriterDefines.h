@@ -725,15 +725,24 @@ namespace BinXlsxRW
 		ZoomScalePageLayoutView = 17,
 		ZoomScaleSheetLayoutView = 18,
 
-		Pane = 19
+		Pane = 19,
+		Selection = 20
 	};}
 	namespace c_oSer_Pane{enum c_oSer_Pane
 	{
 		ActivePane = 0,
-		State = 1,
+//		State = 1,
 		TopLeftCell = 2,
 		XSplit = 3,
-		YSplit = 4
+		YSplit = 4,
+		State = 5
+	};}
+	namespace c_oSer_Selection{enum c_oSer_Selection
+	{
+		ActiveCell = 0,
+		ActiveCellId = 1,
+		Sqref = 2,
+		Pane = 3
 	};}
 	namespace c_oSer_CellStyle{enum c_oSer_CellStyle
 	{

@@ -63,7 +63,7 @@ public:
 	std::wstringstream  sortAndFilters_;
 	std::wstringstream  customViews_;
 	std::wstringstream  conditionalFormatting_;
-	std::wstringstream  picture_;
+	std::wstringstream  picture_background_;
 
 	rels rels_;
 
@@ -75,6 +75,9 @@ public:
 
 	std::wstring vml_drawingName_;
 	std::wstring vml_drawingId_;
+
+	std::wstring vml_drawingName_HF_;
+	std::wstring vml_drawingId_HF_;
 };
 
 std::wstring xlsx_xml_worksheet::name() const
@@ -137,10 +140,10 @@ std::wostream & xlsx_xml_worksheet::pageProperties()
 {
 	return impl_->pageProperties_;
 }
-std::wostream & xlsx_xml_worksheet::comments()
-{
-    return impl_->comments_;
-}
+//std::wostream & xlsx_xml_worksheet::comments()
+//{
+//    return impl_->comments_;
+//}
 std::wostream & xlsx_xml_worksheet::hyperlinks()
 {
     return impl_->hyperlinks_;
@@ -157,9 +160,9 @@ std::wostream & xlsx_xml_worksheet::conditionalFormatting()
 {
     return impl_->conditionalFormatting_;
 }
-std::wostream & xlsx_xml_worksheet::picture()
+std::wostream & xlsx_xml_worksheet::picture_background()
 {
-    return impl_->picture_;
+    return impl_->picture_background_;
 }
 
 //-----------------------------------------------------------------
@@ -207,15 +210,22 @@ void xlsx_xml_worksheet::write_to(std::wostream & strm)
 
             CP_XML_STREAM() << impl_->drawing_.str();
 		
-			if (impl_->commentsId_.length()>0)
+			if (!impl_->commentsId_.empty() && !impl_->vml_drawingId_.empty())
 			{
 				CP_XML_NODE(L"legacyDrawing")
 				{
-					CP_XML_ATTR(L"r:id",impl_->vml_drawingId_);
+					CP_XML_ATTR(L"r:id", impl_->vml_drawingId_);
 				}
 			}
-
-			CP_XML_STREAM() << impl_->picture_.str();
+			if (!impl_->vml_drawingId_HF_.empty())
+			{
+				CP_XML_NODE(L"legacyDrawingHF")
+				{
+					CP_XML_ATTR(L"r:id", impl_->vml_drawingId_HF_);
+				}
+			}
+			
+			CP_XML_STREAM() << impl_->picture_background_.str();
 
 			//CP_XML_NODE(L"rowBreaks){}
 
@@ -229,18 +239,23 @@ void xlsx_xml_worksheet::set_state (std::wstring const & state)
 }
 void xlsx_xml_worksheet::set_drawing_link(std::wstring const & fileName, std::wstring const & id)
 {
-    impl_->drawingName_ = fileName;
-    impl_->drawingId_ = id;      
+    impl_->drawingName_		= fileName;
+    impl_->drawingId_		= id;      
 }
 void xlsx_xml_worksheet::set_comments_link(std::wstring const & fileName, std::wstring const & id)
 {
-    impl_->commentsName_ = fileName;
-    impl_->commentsId_ = id;      
+    impl_->commentsName_	= fileName;
+    impl_->commentsId_		= id;      
 }
 void xlsx_xml_worksheet::set_vml_drawing_link(std::wstring const & fileName, std::wstring const & id)
 {
-    impl_->vml_drawingName_ = fileName;
-    impl_->vml_drawingId_ = id;      
+    impl_->vml_drawingName_		= fileName;
+    impl_->vml_drawingId_		= id;      
+}
+void xlsx_xml_worksheet::set_vml_drawing_link_HF(std::wstring const & fileName, std::wstring const & id)
+{
+    impl_->vml_drawingName_HF_	= fileName;
+    impl_->vml_drawingId_HF_	= id;      
 }
 std::pair<std::wstring, std::wstring> xlsx_xml_worksheet::get_drawing_link() const
 {
@@ -253,6 +268,10 @@ std::pair<std::wstring, std::wstring> xlsx_xml_worksheet::get_comments_link() co
 std::pair<std::wstring, std::wstring> xlsx_xml_worksheet::get_vml_drawing_link() const
 {
     return std::pair<std::wstring, std::wstring>(impl_->vml_drawingName_, impl_->vml_drawingId_);
+}
+std::pair<std::wstring, std::wstring> xlsx_xml_worksheet::get_vml_drawing_HF_link() const
+{
+    return std::pair<std::wstring, std::wstring>(impl_->vml_drawingName_HF_, impl_->vml_drawingId_HF_);
 }
 
 }

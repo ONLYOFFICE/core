@@ -428,93 +428,44 @@ bool odf_page_layout_context::add_header(int type)
 	return true;
 }
 
-void odf_page_layout_context::set_page_border_padding_bottom(int offset_type, int type, double length_pt)
+void odf_page_layout_context::set_page_border_offset (int type)
 {
 	if (type < 1) return;
 
 	style_page_layout_properties * props = get_properties();
 	if (!props)return;
 
-	length length_ = length(length(length_pt,length::pt).get_value_unit(length::cm),length::cm);
-
-	if (offset_type == 2 && props->style_page_layout_properties_attlist_.common_vertical_margin_attlist_.fo_margin_bottom_)
-	{
-		length new_margin = length_;
-		length_ = props->style_page_layout_properties_attlist_.common_vertical_margin_attlist_.fo_margin_bottom_->get_length() - length_;
-		props->style_page_layout_properties_attlist_.common_vertical_margin_attlist_.fo_margin_bottom_ = new_margin;
-	}
-
-	props->style_page_layout_properties_attlist_.common_padding_attlist_.fo_padding_bottom_ = length_;
+	props->style_page_layout_properties_attlist_.offset_page_border_ = type;
 }
 
-
-void odf_page_layout_context::set_page_border_padding_top(int offset_type, int type, double length_pt)
+void odf_page_layout_context::set_page_border_padding(int border, double length_pt)
 {
-	if (type < 1) return;
-
 	style_page_layout_properties * props = get_properties();
 	if (!props)return;
 
-	length length_ = length(length(length_pt,length::pt).get_value_unit(length::cm),length::cm);
+	length length_ = length(length(length_pt, length::pt).get_value_unit(length::cm), length::cm);
 
-	if (offset_type == 2 && props->style_page_layout_properties_attlist_.common_vertical_margin_attlist_.fo_margin_top_)
+	switch (border)
 	{
-		length new_margin = length_;
-		length_ = props->style_page_layout_properties_attlist_.common_vertical_margin_attlist_.fo_margin_top_->get_length() - length_;
-		props->style_page_layout_properties_attlist_.common_vertical_margin_attlist_.fo_margin_top_ = new_margin;
+	case 1:
+		props->style_page_layout_properties_attlist_.common_padding_attlist_.fo_padding_top_ = length_;		break;
+	case 2:
+		props->style_page_layout_properties_attlist_.common_padding_attlist_.fo_padding_bottom_ = length_;	break;
+	case 3:
+		props->style_page_layout_properties_attlist_.common_padding_attlist_.fo_padding_left_ = length_;	break;
+	case 4:
+		props->style_page_layout_properties_attlist_.common_padding_attlist_.fo_padding_right_ = length_;	break;
 	}
-
-	props->style_page_layout_properties_attlist_.common_padding_attlist_.fo_padding_top_ = length_;
 }
 
-
-void odf_page_layout_context::set_page_border_padding_left(int offset_type, int type, double length_pt)
-{
-	if (type < 1) return;
-
-	style_page_layout_properties * props = get_properties();
-	if (!props)return;
-	
-	length length_ = length(length(length_pt,length::pt).get_value_unit(length::cm),length::cm);
-
-	if (offset_type == 2 && props->style_page_layout_properties_attlist_.common_horizontal_margin_attlist_.fo_margin_left_)
-	{
-		length new_margin = length_;
-		length_ = props->style_page_layout_properties_attlist_.common_horizontal_margin_attlist_.fo_margin_left_->get_length() - length_;
-		props->style_page_layout_properties_attlist_.common_horizontal_margin_attlist_.fo_margin_left_ = new_margin;
-	}
-
-	props->style_page_layout_properties_attlist_.common_padding_attlist_.fo_padding_left_ = length_;
-}
-
-
-void odf_page_layout_context::set_page_border_padding_right(int offset_type, int type, double length_pt)
-{
-	if (type < 1) return;
-
-	style_page_layout_properties * props = get_properties();
-	if (!props)return;
-	
-	length length_ = length(length(length_pt,length::pt).get_value_unit(length::cm),length::cm);
-
-	if (offset_type == 2 && props->style_page_layout_properties_attlist_.common_horizontal_margin_attlist_.fo_margin_right_)
-	{
-		length new_margin = length_;
-		length_ = props->style_page_layout_properties_attlist_.common_horizontal_margin_attlist_.fo_margin_right_->get_length() - length_;
-		props->style_page_layout_properties_attlist_.common_horizontal_margin_attlist_.fo_margin_right_ = new_margin;
-	}
-
-	props->style_page_layout_properties_attlist_.common_padding_attlist_.fo_padding_right_ = length_;
-}
-
-void odf_page_layout_context::set_page_border_shadow(bool val)
+void odf_page_layout_context::set_page_border_shadow (bool val)
 {
 	style_page_layout_properties * props = get_properties();
 	if (!props)return;
 
 	props->style_page_layout_properties_attlist_.common_shadow_attlist_.style_shadow_ = shadow_type::parse(L"#000000 0.159cm 0.159cm");
 }
-void odf_page_layout_context::set_page_border(std::wstring top, std::wstring left, std::wstring bottom, std::wstring right)
+void odf_page_layout_context::set_page_border (std::wstring top, std::wstring left, std::wstring bottom, std::wstring right)
 {
 	style_page_layout_properties * props = get_properties();
 	if (!props)return;

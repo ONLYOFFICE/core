@@ -61,11 +61,14 @@ namespace oox {
 class xlsx_drawing_context_handle
 {
 public:
-    xlsx_drawing_context_handle(external_items & items);
+    xlsx_drawing_context_handle	(size_t & next_vml_file_id, external_items & items);
     ~xlsx_drawing_context_handle();
     
-    std::pair<std::wstring, std::wstring> add_drawing_xml(std::wstring const & content, xlsx_drawings_rels_ptr rels);
-    const std::vector<drawing_elm> & content() const;
+    std::pair<std::wstring, std::wstring> add_drawing_xml	(std::wstring const & content, xlsx_drawings_rels_ptr rels);
+	std::pair<std::wstring, std::wstring> add_drawing_vml	(std::wstring const & content, xlsx_drawings_rels_ptr rels);
+    
+	const std::vector<drawing_elm> & content()		const;
+	const std::vector<drawing_elm> & content_vml()	const;
 
     friend class xlsx_drawing_context;
 private:
@@ -131,7 +134,8 @@ public:
 	_drawing_state() :	shape_id(msosptRectangle),  
 						flipH(false), flipV(false), 					
 						bTextBox(false),
-						type_anchor(0)
+						type_anchor(0),
+						vmlwrite_mode_(false)
 	{
 		id			= -1;		
 		rotation	= 0;
@@ -161,6 +165,7 @@ public:
 
 	int						type_anchor;
 	
+	bool					vmlwrite_mode_;
 	std::wstring			shape;
 
 	int						id;
@@ -267,6 +272,14 @@ public:
 		_fill			fill;
 		_arrow			arrow;
 	}line;	
+	struct _object
+	{
+		_object() {visible = false; col = row = 0; id = 0;}
+		int id;
+		bool visible;
+		int col;
+		int row;
+	}object;
 //for group
 	std::vector<_drawing_state_ptr>		drawing_states;
 	std::vector<_drawing_state_ptr>*	parent_drawing_states;
@@ -287,11 +300,16 @@ public:
 
 	external_items::Type	getType();
 
-	xlsx_drawings_rels_ptr get_drawings_rels();
+	xlsx_drawings_rels_ptr get_rels();
+	xlsx_drawings_rels_ptr get_vml_HF_rels();
+	xlsx_drawings_rels_ptr get_vml_comments_rels();
+	
 	bool empty();	
+	bool empty_vml_HF();
 
 	void start_group();
 	bool start_drawing	(int type);	
+//--------------------------------------------------------------------------------------
 		void start_image();
 		void start_shape(int type);
 		void start_chart();
@@ -301,6 +319,9 @@ public:
 		void set_FlipH		();
 		void set_FlipV		();
 		void set_shape_id	(int id);
+//--------------------------------------------------------------------------------------
+		void set_mode_vmlwrite		(bool val);
+		bool get_mode_vmlwrite		();
 //--------------------------------------------------------------------------------------
         void set_name				(const std::wstring & str);
         void set_description		(const std::wstring & str);
@@ -366,7 +387,11 @@ public:
 		void set_wordart_strike		(bool val);
 		void set_wordart_vertical	(bool val);
 		void set_wordart_spacing	(double val);
-
+//---------------------------------------------------------------------------------------------
+		void set_object_id			(int val);
+		void set_object_visible		(bool val);
+		void set_object_anchor		(int col, int row);
+//---------------------------------------------------------------------------------------------
 		void set_custom_rect		(_rect							& rect);
 		void set_custom_verticles	(std::vector<ODRAW::MSOPOINT>	& points);
 		void set_custom_segments	(std::vector<ODRAW::MSOPATHINFO>& segments);
@@ -376,13 +401,23 @@ public:
 		void set_custom_path		(int type_path);
 //------------------------------------------------------------------------------	
 		void serialize_group		();
-		void serialize_shape		(_drawing_state_ptr & drawing_state);			
-		void serialize_chart		(_drawing_state_ptr & drawing_state, std::wstring rId );	
-		void serialize_pic			(_drawing_state_ptr & drawing_state, std::wstring rId );	
+		void serialize_shape		(_drawing_state_ptr & drawing_state);
+		void serialize_chart		(_drawing_state_ptr & drawing_state, std::wstring rId );
+		void serialize_pic			(_drawing_state_ptr & drawing_state, std::wstring rId );
 
-		void serialize				(std::wostream & stream, _drawing_state_ptr & drawing_state);
+		void serialize_shape_comment(_drawing_state_ptr & drawing_state); //part of vml shape
+//-----------------------------------------------------------------------------------		
+		void serialize_vml_shape	(_drawing_state_ptr & drawing_state);			
+		void serialize_vml_pic		(_drawing_state_ptr & drawing_state, std::wstring rId );	
+//-----------------------------------------------------------------------------------		
 		void serialize_fill			(std::wostream & stream, _drawing_state_ptr & drawing_state);
 		void serialize_fill			(std::wostream & stream);
+//-----------------------------------------------------------------------------------		
+		void serialize				(std::wostream & stream, _drawing_state_ptr & drawing_state);
+		void serialize_vml			(std::wostream & stream, _drawing_state_ptr & drawing_state);		
+//-----------------------------------------------------------------------------------		
+		void serialize_vml_HF		(std::wostream & stream);
+		void serialize_vml_comments	(std::wostream & stream);
 		void serialize				(std::wostream & stream);
 //-----------------------------------------------------------------------------------
 		bool is_lined_shape			(_drawing_state_ptr & drawing_state);
@@ -393,11 +428,18 @@ private:
     xlsx_conversion_context		& context_;
 	
 	xlsx_drawing_context_handle	& handle_;
+	
 	xlsx_drawings_rels_ptr		rels_;
+	xlsx_drawings_rels_ptr		vml_comments_rels_;
+	xlsx_drawings_rels_ptr		vml_HF_rels_;
+
 	int							count_object;
 	bool						in_chart_;
 	
 	std::vector<_hlink_desc>	hlinks_;
+
+	std::vector<_drawing_state_ptr>		drawing_states_vml_HF;
+	std::vector<_drawing_state_ptr>		drawing_states_vml_comments;
 
 	std::vector<_drawing_state_ptr>		drawing_states;
 	std::vector<_drawing_state_ptr>*	current_drawing_states;

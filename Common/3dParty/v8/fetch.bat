@@ -4,7 +4,8 @@ CD /D %~dp0
 if exist "depot_tools" (
 	echo "depot_tools already fetched"
 ) else (
-	git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+	call git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+	call powershell -File .\fix-gclient.ps1
 )
 
 SET PATH=%SCRIPTPATH%depot_tools;%SCRIPTPATH%depot_tools\python276_bin;%PATH%
@@ -15,4 +16,4 @@ if not exist "%SCRIPTPATH%v8" (
 call .\depot_tools\fetch v8
 )
 
-depot_tools\gclient sync -r 4.10.253
+call depot_tools\gclient sync -r 4.10.253

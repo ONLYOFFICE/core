@@ -1889,9 +1889,9 @@ namespace BinXlsxRW {
 						NSCommon::smart_ptr<OOX::File> pVmlDrawingFile(m_pCurVmlDrawing);
 						m_pCurVmlDrawing = NULL;
 						const OOX::RId oRId = m_pCurWorksheet->Add(pVmlDrawingFile);
-						m_pCurWorksheet->m_oLegacyDrawingWorksheet.Init();
-						m_pCurWorksheet->m_oLegacyDrawingWorksheet->m_oId.Init();
-						m_pCurWorksheet->m_oLegacyDrawingWorksheet->m_oId->SetValue(oRId.get());
+                        m_pCurWorksheet->m_oLegacyDrawing.Init();
+                        m_pCurWorksheet->m_oLegacyDrawing->m_oId.Init();
+                        m_pCurWorksheet->m_oLegacyDrawing->m_oId->SetValue(oRId.get());
 					}
 
 					smart_ptr<OOX::File> oCurFile(m_pCurWorksheet);
@@ -2178,20 +2178,111 @@ namespace BinXlsxRW {
 		{
 			OOX::Spreadsheet::CSheetView* pSheetView = static_cast<OOX::Spreadsheet::CSheetView*>(poResult);
 			int res = c_oSerConstants::ReadOk;
-			if(c_oSer_SheetView::ShowGridLines == type)
+			if(c_oSer_SheetView::ColorId == type)
+			{
+				pSheetView->m_oColorId.Init();
+				pSheetView->m_oColorId->SetValue(m_oBufferedStream.GetLong());
+			}
+			else if(c_oSer_SheetView::DefaultGridColor == type)
+			{
+				pSheetView->m_oDefaultGridColor.Init();
+				pSheetView->m_oDefaultGridColor->FromBool(m_oBufferedStream.GetBool());
+			}
+			else if(c_oSer_SheetView::RightToLeft == type)
+			{
+				pSheetView->m_oRightToLeft.Init();
+				pSheetView->m_oRightToLeft->FromBool(m_oBufferedStream.GetBool());
+			}
+			else if(c_oSer_SheetView::ShowFormulas == type)
+			{
+				pSheetView->m_oShowFormulas.Init();
+				pSheetView->m_oShowFormulas->FromBool(m_oBufferedStream.GetBool());
+			}
+			else if(c_oSer_SheetView::ShowGridLines == type)
 			{
 				pSheetView->m_oShowGridLines.Init();
-				pSheetView->m_oShowGridLines->SetValue(false != m_oBufferedStream.GetBool() ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
+				pSheetView->m_oShowGridLines->FromBool(m_oBufferedStream.GetBool());
+			}
+			else if(c_oSer_SheetView::ShowOutlineSymbols == type)
+			{
+				pSheetView->m_oShowOutlineSymbols.Init();
+				pSheetView->m_oShowOutlineSymbols->FromBool(m_oBufferedStream.GetBool());
 			}
 			else if(c_oSer_SheetView::ShowRowColHeaders == type)
 			{
 				pSheetView->m_oShowRowColHeaders.Init();
-				pSheetView->m_oShowRowColHeaders->SetValue(false != m_oBufferedStream.GetBool() ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
+				pSheetView->m_oShowRowColHeaders->FromBool(m_oBufferedStream.GetBool());
+			}
+			else if(c_oSer_SheetView::ShowRuler == type)
+			{
+				pSheetView->m_oShowRuler.Init();
+				pSheetView->m_oShowRuler->FromBool(m_oBufferedStream.GetBool());
+			}
+			else if(c_oSer_SheetView::ShowWhiteSpace == type)
+			{
+				pSheetView->m_oShowWhiteSpace.Init();
+				pSheetView->m_oShowWhiteSpace->FromBool(m_oBufferedStream.GetBool());
+			}
+			else if(c_oSer_SheetView::ShowZeros == type)
+			{
+				pSheetView->m_oShowZeros.Init();
+				pSheetView->m_oShowZeros->FromBool(m_oBufferedStream.GetBool());
+			}
+			else if(c_oSer_SheetView::TabSelected == type)
+			{
+				pSheetView->m_oTabSelected.Init();
+				pSheetView->m_oTabSelected->FromBool(m_oBufferedStream.GetBool());
+			}
+			else if(c_oSer_SheetView::TopLeftCell == type)
+			{
+				pSheetView->m_oTopLeftCell.Init();
+				pSheetView->m_oTopLeftCell->Append(m_oBufferedStream.GetString3(length));
+			}
+			else if(c_oSer_SheetView::View == type)
+			{
+				pSheetView->m_oView.Init();
+				pSheetView->m_oView->SetValue((SimpleTypes::Spreadsheet::ESheetViewType)m_oBufferedStream.GetUChar());
+			}
+			else if(c_oSer_SheetView::WindowProtection == type)
+			{
+				pSheetView->m_oWindowProtection.Init();
+				pSheetView->m_oWindowProtection->FromBool(m_oBufferedStream.GetBool());
+			}
+			else if(c_oSer_SheetView::WorkbookViewId == type)
+			{
+				pSheetView->m_oWorkbookViewId.Init();
+				pSheetView->m_oWorkbookViewId->SetValue(m_oBufferedStream.GetLong());
+			}
+			else if(c_oSer_SheetView::ZoomScale == type)
+			{
+				pSheetView->m_oZoomScale.Init();
+				pSheetView->m_oZoomScale->SetValue(m_oBufferedStream.GetLong());
+			}
+			else if(c_oSer_SheetView::ZoomScaleNormal == type)
+			{
+				pSheetView->m_oZoomScaleNormal.Init();
+				pSheetView->m_oZoomScaleNormal->SetValue(m_oBufferedStream.GetLong());
+			}
+			else if(c_oSer_SheetView::ZoomScalePageLayoutView == type)
+			{
+				pSheetView->m_oZoomScalePageLayoutView.Init();
+				pSheetView->m_oZoomScalePageLayoutView->SetValue(m_oBufferedStream.GetLong());
+			}
+			else if(c_oSer_SheetView::ZoomScaleSheetLayoutView == type)
+			{
+				pSheetView->m_oZoomScaleSheetLayoutView.Init();
+				pSheetView->m_oZoomScaleSheetLayoutView->SetValue(m_oBufferedStream.GetLong());
 			}
 			else if (c_oSer_SheetView::Pane == type)
 			{
 				pSheetView->m_oPane.Init();
 				res = Read1(length, &BinaryWorksheetsTableReader::ReadPane, this, pSheetView->m_oPane.GetPointer());
+			}
+			else if (c_oSer_SheetView::Selection == type)
+			{
+				OOX::Spreadsheet::CSelection* pSelection = new OOX::Spreadsheet::CSelection();
+				res = Read1(length, &BinaryWorksheetsTableReader::ReadSelection, this, pSelection);
+				pSheetView->m_arrItems.push_back(pSelection);
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;
@@ -2201,10 +2292,15 @@ namespace BinXlsxRW {
 		{
 			OOX::Spreadsheet::CPane* pPane = static_cast<OOX::Spreadsheet::CPane*>(poResult);
 			int res = c_oSerConstants::ReadOk;
-			if(c_oSer_Pane::State == type)
+			if(c_oSer_Pane::ActivePane == type)
+			{
+				pPane->m_oActivePane.Init();
+				pPane->m_oActivePane->SetValue((SimpleTypes::Spreadsheet::EActivePane)m_oBufferedStream.GetUChar());
+			}
+			else if(c_oSer_Pane::State == type)
 			{
 				pPane->m_oState.Init();
-				pPane->m_oState->Append(m_oBufferedStream.GetString3(length));
+				pPane->m_oState->SetValue((SimpleTypes::Spreadsheet::EPaneState)m_oBufferedStream.GetUChar());
 			}
 			else if(c_oSer_Pane::TopLeftCell == type)
 			{
@@ -2220,6 +2316,34 @@ namespace BinXlsxRW {
 			{
 				pPane->m_oYSplit.Init();
 				pPane->m_oYSplit->SetValue(m_oBufferedStream.GetDoubleReal());
+			}
+			else
+				res = c_oSerConstants::ReadUnknown;
+			return res;
+		}
+		int ReadSelection(BYTE type, long length, void* poResult)
+		{
+			OOX::Spreadsheet::CSelection* pSelection = static_cast<OOX::Spreadsheet::CSelection*>(poResult);
+			int res = c_oSerConstants::ReadOk;
+			if(c_oSer_Selection::ActiveCell == type)
+			{
+				pSelection->m_oActiveCell.Init();
+				pSelection->m_oActiveCell->Append(m_oBufferedStream.GetString3(length));
+			}
+			else if(c_oSer_Selection::ActiveCellId == type)
+			{
+				pSelection->m_oActiveCellId.Init();
+				pSelection->m_oActiveCellId->SetValue(m_oBufferedStream.GetLong());
+			}
+			else if(c_oSer_Selection::Sqref == type)
+			{
+				pSelection->m_oSqref.Init();
+				pSelection->m_oSqref->Append(m_oBufferedStream.GetString3(length));
+			}
+			else if(c_oSer_Selection::Pane == type)
+			{
+				pSelection->m_oPane.Init();
+				pSelection->m_oPane->SetValue((SimpleTypes::Spreadsheet::EActivePane)m_oBufferedStream.GetUChar());
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;

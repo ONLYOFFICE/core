@@ -54,12 +54,6 @@ BaseObjectPtr HFPicture::clone()
 
 void HFPicture::writeFields(CFRecord& record)
 {
-	FrtHeader frtHeader(rt_HFPicture);
-	record << frtHeader;
-
-#pragma message("####################### HFPicture record is not implemented")
-	Log::error("HFPicture record is not implemented.");
-	//record << some_value;
 }
 
 
@@ -70,13 +64,17 @@ void HFPicture::readFields(CFRecord& record)
 
 	unsigned short flags;
 	record >> flags;
-	fIsDrawing = GETBIT(flags, 0);
-	fIsDrawingGroup = GETBIT(flags, 0);
-	fContinue = GETBIT(flags, 0);
+	
+	fIsDrawing		= GETBIT(flags, 0);
+	fIsDrawingGroup = GETBIT(flags, 1);
+	fContinue		= GETBIT(flags, 2);
 
-#pragma message("############################ OfficeArtDggContainer containers are not implemented yet")
-	Log::info("OfficeArtDggContainer containers are not implemented yet");
-	//record >> rgDrawing;
+	int size = record.getDataSize() - record.getRdPtr();
+	
+	recordDrawingGroup = CFRecordPtr(new CFRecord(CFRecordType::ANY_TYPE, record.getGlobalWorkbookInfo()));
+	recordDrawingGroup->appendRawData(record.getCurData<char>(), size);
+		
+	record.skipNunBytes(size);
 }
 
 } // namespace XLS

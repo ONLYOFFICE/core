@@ -32,10 +32,10 @@
 #pragma once
 
 #include "BiffRecord.h"
+//#include "../Biff_structures/ODRAW/OfficeArtDgContainer.h"
 
 namespace XLS
 {
-
 
 // Logical representation of HFPicture record in BIFF8
 class HFPicture: public BiffRecord
@@ -53,12 +53,11 @@ public:
 
 	static const ElementType	type = typeHFPicture;
 
-//-----------------------------
 	bool fIsDrawing;
 	bool fIsDrawingGroup;
 	bool fContinue;
-	//OfficeArtDgContainer rgDrawing;
 
+	CFRecordPtr recordDrawingGroup;
 };
 
 } // namespace XLS

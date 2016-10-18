@@ -46,11 +46,10 @@ typedef _CP_PTR(xlsx_comments) xlsx_comments_ptr;
 class xlsx_comments_context_handle
 {
 public:
-    xlsx_comments_context_handle();
-    ~xlsx_comments_context_handle();
+    xlsx_comments_context_handle	();
+    ~xlsx_comments_context_handle	();
     
-    std::pair<std::wstring, std::wstring> add_comments_xml(std::wstring const & content, std::wstring const & vml_content,xlsx_comments_ptr comments);
-	std::pair<std::wstring, std::wstring> get_vml_drawing_xml();
+    std::pair<std::wstring, std::wstring> add_comments_xml(std::wstring const & content, xlsx_comments_ptr comments);
     const std::vector<comment_elm> & content() const;
 
     friend class xlsx_comments_context;
@@ -70,21 +69,18 @@ public:
 
     void start_comment();
 
-	void set_content	(std::wstring  content);
-	void set_author		(std::wstring  author);
-	void set_anchor		(std::wstring  anchor);
-    void set_size		(double width_pt, double height_pt, double x_pt, double y_pt);
-	void set_ref		(std::wstring ref, int col, int row);
-	void set_visibly	(bool Val);
- 	void set_fill_color	(std::wstring  color);
-  	void set_line_color	(std::wstring  color);
-  
+	int get_id();
+
+	void set_content		(std::wstring  content);
+	void set_author			(std::wstring  author);
+	void set_ref			(std::wstring ref, int col, int row);
+	void set_visibly		(bool Val);
+      
 	void end_comment();
 
     bool empty() const;
 
     void write_comments		(std::wostream & strm);
-    void write_comments_vml	(std::wostream & strm);
 
     xlsx_comments_ptr get_comments();
 

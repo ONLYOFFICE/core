@@ -345,12 +345,13 @@ namespace OOX
 				return m_oReadPath;
 			}
 		private:
-			CPath									m_oReadPath;
+			CPath m_oReadPath;
+
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 			}
 		public:
-			nullable<CAuthors > m_oAuthors;
+			nullable<CAuthors >		m_oAuthors;
 			nullable<CCommentList > m_oCommentList;
 		};
 		class CLegacyDrawingWorksheet : public WritingElement
@@ -388,7 +389,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_FromTo;
+				return et_LegacyDrawingWorksheet;
 			}
 
 		private:

@@ -78,6 +78,7 @@
 #include <Logic/Biff_structures/ODRAW/OfficeArtBlip.h>
 #include <Logic/Biff_structures/ODRAW/OfficeArtFSPGR.h>
 #include <Logic/Biff_structures/ODRAW/OfficeArtClientAnchorSheet.h>
+#include <Logic/Biff_structures/ODRAW/OfficeArtClientAnchorHF.h>
 
 #include "xlsx_conversion_context.h"
 #include "xlsx_package.h"
@@ -446,6 +447,11 @@ void XlsConverter::convert(XLS::WorksheetSubstream* sheet)
 	{
 		sheet->m_PAGESETUP->serialize(xlsx_context->current_sheet().pageProperties());
 	}
+
+	for (int i = 0 ; i < sheet->m_arHFPictureDrawing.size(); i++)
+	{
+		//convert(dynamic_cast<XLS::Note*>(sheet->sheet->m_arHFPictureDrawing[i].get(), 
+	}
  	
 	if (sheet->m_arCUSTOMVIEW.size() > 0)
 	{
@@ -464,6 +470,11 @@ void XlsConverter::convert(XLS::WorksheetSubstream* sheet)
 	if (sheet->m_BACKGROUND)
 	{
 		convert(dynamic_cast<XLS::BACKGROUND*>(sheet->m_BACKGROUND.get()));
+	}
+
+	for (int i = 0 ; i < sheet->m_arHFPictureDrawing.size(); i++)
+	{
+		convert((ODRAW::OfficeArtDgContainer*)sheet->m_arHFPictureDrawing[i].get());
 	}
 }
 
@@ -486,6 +497,12 @@ void XlsConverter::convert(XLS::GlobalsSubstream* global)
 	{
 		convert((XLS::MSODRAWINGGROUP*)global->m_arMSODRAWINGGROUP[i].get());
 	}
+
+	for (int i = 0 ; i < global->m_arHFPictureDrawing.size(); i++)
+	{
+		convert((ODRAW::OfficeArtDgContainer*)global->m_arHFPictureDrawing[i].get());
+	}
+
     for (int i = 0 ; i < global->m_arWindow1.size(); i++)
 	{
 		global->m_arWindow1[i]->serialize(xlsx_context->workbook_views());
@@ -591,7 +608,7 @@ std::wstring XlsConverter::WriteMediaFile(char *data, int size, std::wstring typ
 {
 	if (size < 1 || !data) return L"";
 	
-	if (id < 0)		id = xlsx_context->get_mediaitems().count_image + 1000; // встроенные в поток 
+	if (id < 0)		id = xlsx_context->get_mediaitems().count_image + 1000; // 1000 - встроенные в поток , 3000 - footer/header
 
 	xlsx_context->get_mediaitems().create_media_path(xlsx_path);
 
@@ -714,14 +731,14 @@ std::wstring XlsConverter::WriteMediaFile(char *data, int size, std::wstring typ
 	return L"";
 }
 
-void XlsConverter::convert(ODRAW::OfficeArtBStoreContainer* art_bstore)
+void XlsConverter::convert(ODRAW::OfficeArtBStoreContainer* art_bstore, int start_id)
 {
 	if (art_bstore == NULL) return;
 	if (art_bstore->rgfb.size() < 1) return;
 
-    for (int i =0 ; i < art_bstore->rgfb.size(); i++)
+    for (int i = 0 ; i < art_bstore->rgfb.size(); i++)
 	{
-		int bin_id = i + 1;
+		int bin_id = i + start_id + 1;
 
 		WriteMediaFile(art_bstore->rgfb[i]->pict_data, art_bstore->rgfb[i]->pict_size, art_bstore->rgfb[i]->pict_type, bin_id);
 	}
@@ -796,7 +813,7 @@ void XlsConverter::convert(XLS::BACKGROUND * back)
 
 	if (rId.empty()) return;
 
-	CP_XML_WRITER(xlsx_context->current_sheet().picture())    
+	CP_XML_WRITER(xlsx_context->current_sheet().picture_background())    
 	{
 		CP_XML_NODE(L"picture")
 		{
@@ -1029,7 +1046,24 @@ void XlsConverter::convert(XLS::OBJECTS* objects, XLS::WorksheetSubstream * shee
 		}
 	}
 }
+void XlsConverter::convert(ODRAW::OfficeArtSpgrContainer * spgr)
+{
+	if (spgr == NULL) return;
+	if (spgr->anchor_type_ != ODRAW::OfficeArtRecord::CA_HF) return; //todooo проверить что тока для header/footer это нужно
 
+	for (int i = 0; i < spgr->child_records.size(); i++)
+	{
+		int type_object = 2;//rect
+
+		if (xlsx_context->get_drawing_context().start_drawing(type_object))
+		{
+			xlsx_context->get_drawing_context().set_mode_vmlwrite(true);
+			convert(spgr->child_records[i].get());
+
+			xlsx_context->get_drawing_context().end_drawing();
+		}
+	}
+}
 void XlsConverter::convert(ODRAW::OfficeArtSpContainer *sp, bool anchor_only)
 {
 	if (sp == NULL) return;
@@ -1068,6 +1102,11 @@ void XlsConverter::convert(ODRAW::OfficeArtRecord * art)
 
 			xlsx_context->get_drawing_context().set_group_anchor(ch->_x, ch->_y, ch->_cx, ch->_cy);
 		}break;
+	case XLS::typeOfficeArtClientAnchorHF:
+		{
+			ODRAW::OfficeArtClientAnchorHF * hf = dynamic_cast<ODRAW::OfficeArtClientAnchorHF *>(art);
+			xlsx_context->get_drawing_context().set_child_anchor(0, 0, hf->_cx * 3 / 5, hf->_cy * 3 / 5);
+		}break;
 	case XLS::typeOfficeArtChildAnchor:
 		{
 			ODRAW::OfficeArtChildAnchor * ch = dynamic_cast<ODRAW::OfficeArtChildAnchor *>(art);
@@ -1080,6 +1119,34 @@ void XlsConverter::convert(ODRAW::OfficeArtRecord * art)
 			ch->calculate();
 			//xlsx_context->get_drawing_context().set_child_anchor(ch->_x, ch->_y, ch->_cx, ch->_cy);
 			xlsx_context->get_drawing_context().set_sheet_anchor(ch->colL, ch->_dxL, ch->rwT, ch->_dyT, ch->colR, ch->_dxR, ch->rwB, ch->_dyB);
+		}break;
+	case XLS::typeOfficeArtBStoreContainer:
+		{
+			convert (dynamic_cast<ODRAW::OfficeArtBStoreContainer *>(art), 3000);
+		}break;
+	case XLS::typeOfficeArtSpContainer:
+		{
+			convert (dynamic_cast<ODRAW::OfficeArtSpContainer *>(art));
+		}break;
+	case XLS::typeOfficeArtSpgrContainer:
+		{
+			convert (dynamic_cast<ODRAW::OfficeArtSpgrContainer *>(art));
+		}break;
+	case XLS::typeOfficeArtDgContainer:
+		{
+			ODRAW::OfficeArtDgContainer * dg = dynamic_cast<ODRAW::OfficeArtDgContainer *>(art);
+        
+			for (int i = 0 ; i < dg->child_records.size(); i++)	//a-la msodrawing for headers/footers
+			{
+				convert(dg->child_records[i].get());
+			}
+
+			for (int i = 0; i < dg->m_OfficeArtSpContainer.size(); i++)
+			{
+				convert(dg->m_OfficeArtSpContainer[i].get());
+			}
+
+			convert(dg->m_OfficeArtSpgrContainer.get());
 		}break;
 	}
 }
@@ -1368,7 +1435,12 @@ void XlsConverter::convert_blip(std::vector<ODRAW::OfficeArtFOPTEPtr> & props)
 			{
 				bool isIternal = false;
 				std::wstring target;
-				std::wstring rId = xlsx_context->get_mediaitems().find_image(props[i]->op , target, isIternal);
+
+				int id = props[i]->op;
+				if (xlsx_context->get_drawing_context().get_mode_vmlwrite()) 
+					id += 3000;
+				
+				std::wstring rId = xlsx_context->get_mediaitems().find_image(id , target, isIternal);
 				xlsx_context->get_drawing_context().set_fill_texture(target);
 			}break;
 		}
@@ -1637,16 +1709,18 @@ void XlsConverter::convert(XLS::Note* note)
 		xlsx_context->get_comments_context().start_comment();
 	}
 
-	xlsx_context->get_comments_context().set_ref	(note->note_sh.ref_, 
-													 note->note_sh.col, 
-													 note->note_sh.row);
+	xlsx_context->get_comments_context().set_ref	(note->note_sh.ref_, note->note_sh.col, note->note_sh.row);
 	xlsx_context->get_comments_context().set_author	(note->note_sh.stAuthor);
 	xlsx_context->get_comments_context().set_visibly(note->note_sh.fShow);
+	
+	xlsx_context->get_drawing_context().set_object_id		(xlsx_context->get_comments_context().get_id());
+	xlsx_context->get_drawing_context().set_object_visible	(note->note_sh.fShow);
+	xlsx_context->get_drawing_context().set_object_anchor	(note->note_sh.col, note->note_sh.row);
 
 	if (xls_global_info->Version < 0x0600)
 	{
 		//todooo размеры произвольные .. можно сделать оценку по размеру строки
-		xlsx_context->get_comments_context().set_size(120, 64, note->note_sh.x_/ 12700. , note->note_sh.y_/ 12700.);
+		xlsx_context->get_drawing_context().set_child_anchor(120, 64, note->note_sh.x_/ 12700. , note->note_sh.y_/ 12700.);
 		xlsx_context->get_comments_context().set_content(std::wstring(L"<t>") + note->note_sh.stText.value() + std::wstring(L"</t>"));
 		xlsx_context->get_comments_context().end_comment();
 	}

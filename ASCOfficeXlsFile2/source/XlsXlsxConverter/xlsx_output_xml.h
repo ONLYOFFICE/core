@@ -63,12 +63,12 @@ public:
     std::wostream & hyperlinks();
     std::wostream & mergeCells();
     std::wostream & drawing(); 
-    std::wostream & comments(); 
+    //std::wostream & comments(); 
 	std::wostream & sheetSortAndFilters();
 	std::wostream & pageProperties();
 	std::wostream & customViews();
 	std::wostream & conditionalFormatting();
-	std::wostream & picture();
+	std::wostream & picture_background();
 	
 	rels & sheet_rels();//hyperlink, background image, external, media ...
 
@@ -78,10 +78,12 @@ public:
     void set_vml_drawing_link	(std::wstring const & fileName, std::wstring const & id);
     void set_comments_link		(std::wstring const & fileName, std::wstring const & id);
 	void set_state				(std::wstring const & state);
+    void set_vml_drawing_link_HF(std::wstring const & fileName, std::wstring const & id);
 	
-	std::pair<std::wstring, std::wstring> get_drawing_link() const;
-	std::pair<std::wstring, std::wstring> get_vml_drawing_link() const;
-	std::pair<std::wstring, std::wstring> get_comments_link() const;
+	std::pair<std::wstring, std::wstring> get_drawing_link()		const;
+	std::pair<std::wstring, std::wstring> get_vml_drawing_link()	const;
+	std::pair<std::wstring, std::wstring> get_vml_drawing_HF_link() const;
+	std::pair<std::wstring, std::wstring> get_comments_link()		const;
 
     static xlsx_xml_worksheet_ptr create(std::wstring const & name);
 

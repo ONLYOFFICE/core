@@ -1747,10 +1747,10 @@ namespace BinXlsxRW {
 				//из Drawing могут быть ссылки на объекты в VmlDrawing
 				OOX::CVmlDrawing *currentVmlDrawing = NULL;
 
-				if (oWorksheet.m_oLegacyDrawingWorksheet.IsInit() && 
-								oWorksheet.m_oLegacyDrawingWorksheet->m_oId.IsInit())
+                if (oWorksheet.m_oLegacyDrawing.IsInit() &&
+                                oWorksheet.m_oLegacyDrawing->m_oId.IsInit())
 				{
-					smart_ptr<OOX::File> oFileV = oWorksheet.Find(oWorksheet.m_oLegacyDrawingWorksheet->m_oId->GetValue());
+                    smart_ptr<OOX::File> oFileV = oWorksheet.Find(oWorksheet.m_oLegacyDrawing->m_oId->GetValue());
 					if (oFileV.IsInit() && OOX::FileTypes::VmlDrawing == oFileV->type())
 					{
 						currentVmlDrawing = (OOX::CVmlDrawing*)oFileV.operator->();
@@ -1934,11 +1934,40 @@ namespace BinXlsxRW {
 		void WriteSheetView(const OOX::Spreadsheet::CSheetView& oSheetView)
 		{
 			int nCurPos = 0;
-
+			if (oSheetView.m_oColorId.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_SheetView::ColorId);
+				m_oBcw.m_oStream.WriteLONG(oSheetView.m_oColorId->GetValue());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if (oSheetView.m_oDefaultGridColor.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_SheetView::DefaultGridColor);
+				m_oBcw.m_oStream.WriteBOOL(oSheetView.m_oDefaultGridColor->ToBool());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if (oSheetView.m_oRightToLeft.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_SheetView::RightToLeft);
+				m_oBcw.m_oStream.WriteBOOL(oSheetView.m_oRightToLeft->ToBool());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if (oSheetView.m_oShowFormulas.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_SheetView::ShowFormulas);
+				m_oBcw.m_oStream.WriteBOOL(oSheetView.m_oShowFormulas->ToBool());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
 			if (oSheetView.m_oShowGridLines.IsInit())
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_SheetView::ShowGridLines);
 				m_oBcw.m_oStream.WriteBOOL(oSheetView.m_oShowGridLines->ToBool());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if (oSheetView.m_oShowOutlineSymbols.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_SheetView::ShowOutlineSymbols);
+				m_oBcw.m_oStream.WriteBOOL(oSheetView.m_oShowOutlineSymbols->ToBool());
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
 			if (oSheetView.m_oShowRowColHeaders.IsInit())
@@ -1947,10 +1976,89 @@ namespace BinXlsxRW {
 				m_oBcw.m_oStream.WriteBOOL(oSheetView.m_oShowRowColHeaders->ToBool());
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
+			if (oSheetView.m_oShowRuler.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_SheetView::ShowRuler);
+				m_oBcw.m_oStream.WriteBOOL(oSheetView.m_oShowRuler->ToBool());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if (oSheetView.m_oShowWhiteSpace.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_SheetView::ShowWhiteSpace);
+				m_oBcw.m_oStream.WriteBOOL(oSheetView.m_oShowWhiteSpace->ToBool());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if (oSheetView.m_oShowZeros.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_SheetView::ShowZeros);
+				m_oBcw.m_oStream.WriteBOOL(oSheetView.m_oShowZeros->ToBool());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if (oSheetView.m_oTabSelected.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_SheetView::TabSelected);
+				m_oBcw.m_oStream.WriteBOOL(oSheetView.m_oTabSelected->ToBool());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if (oSheetView.m_oTopLeftCell.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_SheetView::TopLeftCell);
+				m_oBcw.m_oStream.WriteStringW3(oSheetView.m_oTopLeftCell.get2());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if (oSheetView.m_oView.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_SheetView::View);
+				m_oBcw.m_oStream.WriteBYTE(oSheetView.m_oView->GetValue());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if (oSheetView.m_oWindowProtection.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_SheetView::WindowProtection);
+				m_oBcw.m_oStream.WriteBOOL(oSheetView.m_oWindowProtection->ToBool());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if (oSheetView.m_oWorkbookViewId.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_SheetView::WorkbookViewId);
+				m_oBcw.m_oStream.WriteLONG(oSheetView.m_oWorkbookViewId->GetValue());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if (oSheetView.m_oZoomScale.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_SheetView::ZoomScale);
+				m_oBcw.m_oStream.WriteLONG(oSheetView.m_oZoomScale->GetValue());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if (oSheetView.m_oZoomScaleNormal.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_SheetView::ZoomScaleNormal);
+				m_oBcw.m_oStream.WriteLONG(oSheetView.m_oZoomScaleNormal->GetValue());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if (oSheetView.m_oZoomScalePageLayoutView.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_SheetView::ZoomScalePageLayoutView);
+				m_oBcw.m_oStream.WriteLONG(oSheetView.m_oZoomScalePageLayoutView->GetValue());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if (oSheetView.m_oZoomScaleSheetLayoutView.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_SheetView::ZoomScaleSheetLayoutView);
+				m_oBcw.m_oStream.WriteLONG(oSheetView.m_oZoomScaleSheetLayoutView->GetValue());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+
 			if (oSheetView.m_oPane.IsInit())
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_SheetView::Pane);
 				WritePane(oSheetView.m_oPane.get());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			for(size_t i = 0; i < oSheetView.m_arrItems.size(); ++i)
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_SheetView::Selection);
+				WriteSelection(*oSheetView.m_arrItems[i]);
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
 		}
@@ -1958,11 +2066,18 @@ namespace BinXlsxRW {
 		void WritePane(const OOX::Spreadsheet::CPane& oPane)
 		{
 			int nCurPos = 0;
+			if (oPane.m_oActivePane.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_Pane::ActivePane);
+				m_oBcw.m_oStream.WriteBYTE(oPane.m_oActivePane->GetValue());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
 			//State
 			if (oPane.m_oState.IsInit())
 			{
-				m_oBcw.m_oStream.WriteBYTE(c_oSer_Pane::State);
-				m_oBcw.m_oStream.WriteStringW(oPane.m_oState.get2());
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_Pane::State);
+				m_oBcw.m_oStream.WriteBYTE(oPane.m_oState->GetValue());
+				m_oBcw.WriteItemEnd(nCurPos);
 			}
 			//TopLeftCell
 			if (oPane.m_oTopLeftCell.IsInit())
@@ -1982,6 +2097,34 @@ namespace BinXlsxRW {
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_Pane::YSplit);
 				m_oBcw.m_oStream.WriteDoubleReal(oPane.m_oYSplit->GetValue());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+		}
+		void WriteSelection(const OOX::Spreadsheet::CSelection& oSelection)
+		{
+			int nCurPos = 0;
+			if (oSelection.m_oActiveCell.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_Selection::ActiveCell);
+				m_oBcw.m_oStream.WriteStringW3(oSelection.m_oActiveCell.get());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if (oSelection.m_oActiveCellId.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_Selection::ActiveCellId);
+				m_oBcw.m_oStream.WriteLONG(oSelection.m_oActiveCellId->GetValue());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if (oSelection.m_oPane.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_Selection::Pane);
+				m_oBcw.m_oStream.WriteBYTE(oSelection.m_oPane->GetValue());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if (oSelection.m_oSqref.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_Selection::Sqref);
+				m_oBcw.m_oStream.WriteStringW3(oSelection.m_oSqref.get());
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
 		}

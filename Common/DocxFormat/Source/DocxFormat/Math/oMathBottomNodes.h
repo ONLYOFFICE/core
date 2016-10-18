@@ -212,9 +212,14 @@ namespace OOX
 			{
 				if (sNodeName.IsEmpty()) return L"";
 
-				CString sResult = _T("<") + sNodeName + _T(" m:val=\"");
-				sResult +=  m_val->ToString();
-				sResult +=  _T("\" />");
+				CString sResult = _T("<") + sNodeName;
+				if (m_val.IsInit())
+				{
+					sResult += _T(" m:val=\"");
+					sResult +=  m_val->ToString();
+					sResult +=  _T("\"");
+				}
+				sResult +=  _T("/>");
 				return sResult;
 			}
 

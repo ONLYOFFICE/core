@@ -874,17 +874,18 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSheetViews *oox_sheet_views)
 
 	for (unsigned long i =0; i < oox_sheet_views->m_arrItems.size(); i++)
 	{
-		if (!oox_sheet_views->m_arrItems[i]) continue;
+		OOX::Spreadsheet::CSheetView *sheet_view = oox_sheet_views->m_arrItems[i];
+		if (!sheet_view) continue;
 
-		int view_id = oox_sheet_views->m_arrItems[i]->m_oWorkbookViewId->GetValue();
+		int view_id = sheet_view->m_oWorkbookViewId->GetValue();
 		if (view_id < 0) continue;
 
 		ods_context->start_table_view( view_id );
 		
-		if (oox_sheet_views->m_arrItems[i]->m_oRightToLeft.IsInit() && oox_sheet_views->m_arrItems[i]->m_oRightToLeft->GetValue()==1)
+		if (sheet_view->m_oRightToLeft.IsInit() && sheet_view->m_oRightToLeft->GetValue()==1)
 			ods_context->current_table().set_table_rtl(true);
 
-		if (oox_sheet_views->m_arrItems[i]->m_oShowGridLines.IsInit() && oox_sheet_views->m_arrItems[i]->m_oShowGridLines->GetValue()==0)
+		if (sheet_view->m_oShowGridLines.IsInit() && sheet_view->m_oShowGridLines->GetValue()==0)
 		{
 			ods_context->settings_context()->add_property(L"ShowGrid", L"boolean", L"false");
 		}
@@ -893,32 +894,35 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSheetViews *oox_sheet_views)
 			ods_context->settings_context()->add_property(L"ShowGrid", L"boolean", L"true");
 		}
 
-		if (oox_sheet_views->m_arrItems[i]->m_oView.IsInit())
+		if (sheet_view->m_oView.IsInit())
 		{
-			//ods_context->set_settings_table_viewtype(oox_sheet_views->m_arrItems[i]->m_oView->GetValue());
+			//ods_context->set_settings_table_viewtype(sheet_view->m_oView->GetValue());
 		}
 
 		ods_context->settings_context()->add_property(L"ZoomType", L"short", L"0");
-		if (oox_sheet_views->m_arrItems[i]->m_oZoomScale.IsInit())
+		if (sheet_view->m_oZoomScale.IsInit())
 		{
-			ods_context->settings_context()->add_property(L"ZoomValue", L"int", oox_sheet_views->m_arrItems[i]->m_oZoomScale->ToString().GetBuffer());
+			ods_context->settings_context()->add_property(L"ZoomValue", L"int", sheet_view->m_oZoomScale->ToString().GetBuffer());
 		}else
 		{
 			ods_context->settings_context()->add_property(L"ZoomValue", L"int", L"100");
 		}
 
-		if (oox_sheet_views->m_arrItems[i]->m_oColorId.IsInit() && !oox_sheet_views->m_arrItems[i]->m_oDefaultGridColor.IsInit())
+		if (sheet_view->m_oColorId.IsInit() && !sheet_view->m_oDefaultGridColor.IsInit())
 		{
-			ods_context->settings_context()->add_property(L"GridColor", L"int", oox_sheet_views->m_arrItems[i]->m_oColorId->ToString().GetBuffer());
+			ods_context->settings_context()->add_property(L"GridColor", L"int", sheet_view->m_oColorId->ToString().GetBuffer());
 		}
 		bool bPaneX			= false;
 		bool bPaneY			= false;
 		int ActiveCellX = -1, ActiveCellY = -1;
-		if (oox_sheet_views->m_arrItems[i]->m_oSelection.IsInit())
+
+		for (int j = 0; j < sheet_view->m_arrItems.size(); j++)
 		{
-			if (oox_sheet_views->m_arrItems[i]->m_oSelection->m_oActiveCell.IsInit())
+			OOX::Spreadsheet::CSelection *selection = sheet_view->m_arrItems[j];
+
+			if (selection->m_oActiveCell.IsInit())
 			{
-				std::wstring ref(oox_sheet_views->m_arrItems[i]->m_oSelection->m_oActiveCell->GetBuffer());
+				std::wstring ref(selection->m_oActiveCell->GetBuffer());
 				odf_writer::utils::parsing_ref (ref, ActiveCellX, ActiveCellY);
 
 				if (ActiveCellX >= 0 && ActiveCellY >= 0)
@@ -927,18 +931,19 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSheetViews *oox_sheet_views)
 					ods_context->settings_context()->add_property(L"CursorPositionY", L"int", boost::lexical_cast<std::wstring>(ActiveCellY));
 				}
 			}
-			if (oox_sheet_views->m_arrItems[i]->m_oSelection->m_oSqref.IsInit())
+			if (selection->m_oSqref.IsInit())
 			{
 				//D6:D9 I9:I12 M16:M21 C20:I24
 				//в OpenOffice этого нету
 			}
+			break; // в OpenOffice нет множественного селекта 
 		}
-		if (oox_sheet_views->m_arrItems[i]->m_oPane.IsInit())
+		if (sheet_view->m_oPane.IsInit())
 		{
 			
-			if (oox_sheet_views->m_arrItems[i]->m_oPane->m_oXSplit.IsInit())
+			if (sheet_view->m_oPane->m_oXSplit.IsInit())
 			{
-				std::wstring sVal = boost::lexical_cast<std::wstring>((int)oox_sheet_views->m_arrItems[i]->m_oPane->m_oXSplit->GetValue());
+				std::wstring sVal = boost::lexical_cast<std::wstring>((int)sheet_view->m_oPane->m_oXSplit->GetValue());
 				
 				ods_context->settings_context()->add_property(L"HorizontalSplitMode", L"short", L"2");
 				ods_context->settings_context()->add_property(L"HorizontalSplitPosition", L"int",  sVal);
@@ -946,9 +951,9 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSheetViews *oox_sheet_views)
 				ods_context->settings_context()->add_property(L"PositionRight", L"int",  sVal);
 				bPaneX = true;
 			}
-			if (oox_sheet_views->m_arrItems[i]->m_oPane->m_oYSplit.IsInit())
+			if (sheet_view->m_oPane->m_oYSplit.IsInit())
 			{
-				std::wstring sVal = boost::lexical_cast<std::wstring>((int)oox_sheet_views->m_arrItems[i]->m_oPane->m_oYSplit->GetValue());
+				std::wstring sVal = boost::lexical_cast<std::wstring>((int)sheet_view->m_oPane->m_oYSplit->GetValue());
 				ods_context->settings_context()->add_property(L"VerticalSplitMode", L"short", L"2");
 				ods_context->settings_context()->add_property(L"VerticalSplitPosition", L"int", sVal);
 				ods_context->settings_context()->add_property(L"PositionTop", L"int",  L"0");
@@ -970,29 +975,29 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSheetViews *oox_sheet_views)
 		//	ods_context->settings_context()->add_property(L"PositionTop", L"int",  L"0");
 		//	ods_context->settings_context()->add_property(L"PositionBottom", L"int", boost::lexical_cast<std::wstring>(ActiveCellY));
 		//}
-		if (oox_sheet_views->m_arrItems[i]->m_oShowRowColHeaders.IsInit())
+		if (sheet_view->m_oShowRowColHeaders.IsInit())
 		{
-			ods_context->settings_context()->add_property(L"HasColumnRowHeaders", L"boolean", oox_sheet_views->m_arrItems[i]->m_oShowRowColHeaders->ToBool() ? L"true" : L"false");
+			ods_context->settings_context()->add_property(L"HasColumnRowHeaders", L"boolean", sheet_view->m_oShowRowColHeaders->ToBool() ? L"true" : L"false");
 		}
-		//if (oox_sheet_views->m_arrItems[i]->m_oTabSelected.IsInit())
+		//if (sheet_view->m_oTabSelected.IsInit())
 		//{
-		//	ods_context->settings_context()->add_property(L"HasSheetTabs", "boolean", oox_sheet_views->m_arrItems[i]->m_oTabSelected->ToBool() ? L"true", L"false");
+		//	ods_context->settings_context()->add_property(L"HasSheetTabs", "boolean", sheet_view->m_oTabSelected->ToBool() ? L"true", L"false");
 		//}
-		//if (oox_sheet_views->m_arrItems[i]->m_oShowFormulas.IsInit())
+		//if (sheet_view->m_oShowFormulas.IsInit())
 		//{
-		//	ods_context->settings_context()->add_property(L"ShowFormulas", "boolean", oox_sheet_views->m_arrItems[i]->m_oShowFormulas->ToBool() ? L"true", L"false");
+		//	ods_context->settings_context()->add_property(L"ShowFormulas", "boolean", sheet_view->m_oShowFormulas->ToBool() ? L"true", L"false");
 		//}
-		if (oox_sheet_views->m_arrItems[i]->m_oShowOutlineSymbols.IsInit())
+		if (sheet_view->m_oShowOutlineSymbols.IsInit())
 		{
-			ods_context->settings_context()->add_property(L"IsOutlineSymbolsSet", L"boolean", oox_sheet_views->m_arrItems[i]->m_oShowOutlineSymbols->ToBool() ? L"true" : L"false");
+			ods_context->settings_context()->add_property(L"IsOutlineSymbolsSet", L"boolean", sheet_view->m_oShowOutlineSymbols->ToBool() ? L"true" : L"false");
 		}
-		if (oox_sheet_views->m_arrItems[i]->m_oShowZeros.IsInit())
+		if (sheet_view->m_oShowZeros.IsInit())
 		{
-			ods_context->settings_context()->add_property(L"ShowZeroValues", L"boolean", oox_sheet_views->m_arrItems[i]->m_oShowZeros->ToBool() ? L"true" : L"false");
+			ods_context->settings_context()->add_property(L"ShowZeroValues", L"boolean", sheet_view->m_oShowZeros->ToBool() ? L"true" : L"false");
 		}
-		if (oox_sheet_views->m_arrItems[i]->m_oZoomScalePageLayoutView.IsInit())
+		if (sheet_view->m_oZoomScalePageLayoutView.IsInit())
 		{
-			ods_context->settings_context()->add_property(L"PageViewZoomValue", L"int", oox_sheet_views->m_arrItems[i]->m_oZoomScalePageLayoutView->ToString().GetBuffer());
+			ods_context->settings_context()->add_property(L"PageViewZoomValue", L"int", sheet_view->m_oZoomScalePageLayoutView->ToString().GetBuffer());
 		}
 		//nullable<SimpleTypes::COnOff<>>						m_oDefaultGridColor;
 		//nullable<SimpleTypes::COnOff<>>						m_oShowRuler;

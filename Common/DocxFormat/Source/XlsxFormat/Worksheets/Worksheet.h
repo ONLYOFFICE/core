@@ -56,29 +56,25 @@ namespace OOX
 {
 	namespace Spreadsheet
 	{
-		//необработанные child:
+//необработанные child:
 		//<cellWatches>
 		//<colBreaks>
 		//<controls>
 		//<customProperties>
 		//<dataConsolidate>
 		//<dataValidations>
-		//<drawing>
-		//<drawingHF>
 		//<extLst>
-		//<headerFooter>
 		//<oleObjects>
 		//<phoneticPr>
-		//<picture>
 		//<protectedRanges>
 		//<rowBreaks>
 		//<scenarios>
 		//<sheetCalcPr>
 		//<sheetProtection>
-		//<sheetViews>
 		//<smartTags>
 		//<sortState>
 		//<webPublishItems>
+
 		class CWorksheet : public OOX::File, public OOX::Spreadsheet::IFileContainer
 		{
 		public:
@@ -153,29 +149,38 @@ namespace OOX
 							else if ( _T("tableParts") == sName )
 								m_oTableParts = oReader;
 							else if ( _T("legacyDrawing") == sName )
-								m_oLegacyDrawingWorksheet = oReader;
+								m_oLegacyDrawing = oReader;
+							else if ( _T("legacyDrawingHF") == sName )
+								m_oLegacyDrawingHF = oReader;
 							else if ( _T("oleObjects") == sName )
 								m_oOleObjects = oReader;
+							else if ( _T("headerFooter") == sName )
+								m_oHeaderFooter = oReader;
 							else if (_T("sheetPr") == sName)
 								m_oSheetPr = oReader;
                             else if (_T("extLst") == sName)
                                 m_oExtLst = oReader;
+                            else if (_T("picture") == sName)
+                                m_oPicture = oReader;
 						}
 					}
-					if(m_oLegacyDrawingWorksheet.IsInit() && m_oLegacyDrawingWorksheet->m_oId.IsInit())
+					if(m_oLegacyDrawing.IsInit() && m_oLegacyDrawing->m_oId.IsInit())
 					{
-						OOX::RId oRId(m_oLegacyDrawingWorksheet->m_oId->GetValue());
+						OOX::RId oRId(m_oLegacyDrawing->m_oId->GetValue());
 						
 						smart_ptr<OOX::File> oVmlDrawing = IFileContainer::Find(oRId);
 						smart_ptr<OOX::File> oComments = IFileContainer::Get(FileTypes::Comments);
 						
 						if (oComments.IsInit() && FileTypes::Comments == oComments->type() && oVmlDrawing.IsInit() && OOX::FileTypes::VmlDrawing == oVmlDrawing->type())
 						{
-							OOX::Spreadsheet::CComments* pComments		= static_cast<OOX::Spreadsheet::CComments*>(oComments.operator->());
+							OOX::Spreadsheet::CComments* pComments	= static_cast<OOX::Spreadsheet::CComments*>(oComments.operator->());
 							OOX::CVmlDrawing* pVmlDrawing	= static_cast<OOX::CVmlDrawing*>(oVmlDrawing.operator->());
 							
 							PrepareComments(pComments, pVmlDrawing);
 						}
+					}
+					if (m_oHeaderFooter.IsInit() && m_oLegacyDrawing.IsInit() && m_oLegacyDrawingHF->m_oId.IsInit())
+					{
 					}
 				}		
 			}
@@ -357,8 +362,10 @@ namespace OOX
 					m_oPageSetup->toXML(sXml);
 				if(m_oDrawing.IsInit())
 					m_oDrawing->toXML(sXml);
-				if(m_oLegacyDrawingWorksheet.IsInit())
-					m_oLegacyDrawingWorksheet->toXML(sXml);
+				if(m_oLegacyDrawing.IsInit())
+					m_oLegacyDrawing->toXML(sXml);
+				if(m_oLegacyDrawingHF.IsInit())
+					m_oLegacyDrawingHF->toXML(sXml);
 				if(m_oOleObjects.IsInit())
 					m_oOleObjects->toXML(sXml);
 				if(m_oTableParts.IsInit())
@@ -535,11 +542,14 @@ namespace OOX
 			nullable<OOX::Spreadsheet::CPrintOptions>				m_oPrintOptions;
 			nullable<OOX::Spreadsheet::CAutofilter>					m_oAutofilter;
 			nullable<OOX::Spreadsheet::CTableParts>					m_oTableParts;
-			nullable<OOX::Spreadsheet::CLegacyDrawingWorksheet>		m_oLegacyDrawingWorksheet;
+			nullable<OOX::Spreadsheet::CLegacyDrawingWorksheet>		m_oLegacyDrawing;
 			nullable<OOX::Spreadsheet::COleObjects>					m_oOleObjects;
 			std::map<CString, CCommentItem*>						m_mapComments;
 			std::vector<OOX::Spreadsheet::CConditionalFormatting*>	m_arrConditionalFormatting;
 			nullable<OOX::Spreadsheet::CSheetPr>					m_oSheetPr;
+			nullable<OOX::Spreadsheet::CHeaderFooter>				m_oHeaderFooter;
+			nullable<OOX::Spreadsheet::CLegacyDrawingHFWorksheet>	m_oLegacyDrawingHF;
+			nullable<OOX::Spreadsheet::CPictureWorksheet>			m_oPicture;
 
 			nullable<OOX::Drawing::COfficeArtExtensionList>			m_oExtLst;
 		};

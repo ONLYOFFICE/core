@@ -1178,6 +1178,7 @@ void odf_drawing_context::set_flip_V(bool bVal)
 
 void odf_drawing_context::set_rotate(double dVal)
 {
+	if (dVal > 180) dVal = dVal - 360;
 	double dRotate = dVal / 180. * 3.14159265358979323846;
 	impl_->current_drawing_state_.rotateAngle = dRotate;
 }
@@ -1267,14 +1268,14 @@ void odf_drawing_context::set_vertical_rel(int from)
 
 	switch(from)
 	{
-	case 0:	type = vertical_rel::Baseline;										break;//	relfromvBottomMargin ???
-	case 1:	type = vertical_rel::PageContent;									break;//	relfromvInsideMargin ???
-	case 2:	type = vertical_rel::Baseline;										break;//	relfromvLine          
-	case 3:	type = vertical_rel::Paragraph; set_anchor(anchor_type::Paragraph);	break;//	relfromvMargin     
-	case 4:	type = vertical_rel::Baseline;										break;//	relfromvOutsideMargin ???
-	case 5:	type = vertical_rel::Page;		set_anchor(anchor_type::Page);		break;//	relfromvPage          
-	case 6:	type = vertical_rel::Paragraph;	set_anchor(anchor_type::Paragraph);	break;//	relfromvParagraph    
-	case 7:	type = vertical_rel::Baseline;										break;//	relfromvTopMargin   ???  
+		case 0:	type = vertical_rel::Baseline;		break;//	relfromvBottomMargin ???
+		case 1:	type = vertical_rel::PageContent;	break;//	relfromvInsideMargin ???
+		case 2:	type = vertical_rel::Baseline;		break;//	relfromvLine          
+		case 3:	type = vertical_rel::Paragraph; 	break;//	relfromvMargin     
+		case 4:	type = vertical_rel::Baseline;		break;//	relfromvOutsideMargin ???
+		case 5:	type = vertical_rel::Page;			break;//	relfromvPage          
+		case 6:	type = vertical_rel::Paragraph;		break;//	relfromvParagraph    
+		case 7:	type = vertical_rel::Baseline;		break;//	relfromvTopMargin   ???  
 	}
 
 	impl_->anchor_settings_.style_vertical_rel_ = vertical_rel(type);
@@ -1287,11 +1288,11 @@ void odf_drawing_context::set_vertical_pos(int align)
 	vertical_pos::type type;
 	switch(align)
 	{
-	case 0:	type =	vertical_pos::Bottom;		break;//alignvBottom  = 0,
-	case 1:	type =	vertical_pos::Middle;		break;//alignvCenter  = 1,
-	case 2:	type =	vertical_pos::FromTop;		break;//alignvInside  = 2, ???
-	case 3:	type =	vertical_pos::Below;		break;//alignvOutside = 3, ???
-	case 4:	type =	vertical_pos::Top;			break;//alignvTop     = 4
+		case 0:	type =	vertical_pos::Bottom;		break;//alignvBottom  = 0,
+		case 1:	type =	vertical_pos::Middle;		break;//alignvCenter  = 1,
+		case 2:	type =	vertical_pos::FromTop;		break;//alignvInside  = 2, ???
+		case 3:	type =	vertical_pos::Below;		break;//alignvOutside = 3, ???
+		case 4:	type =	vertical_pos::Top;			break;//alignvTop     = 4
 	}
 	impl_->anchor_settings_.style_vertical_pos_ = vertical_pos(type);
 }
@@ -1327,14 +1328,14 @@ void odf_drawing_context::set_horizontal_pos(int align)
 
 	switch(align)
 	{
-	case 0:	type =	horizontal_pos::Center;		break;//alignhCenter  = 0,
-	case 1:	type =	horizontal_pos::FromInside;	break;//alignhInside  = 1,
-	case 2:	type =	horizontal_pos::FromLeft;	break;//alignhLeft    = 2,
-	case 3:	type =	horizontal_pos::Outside;	break;//alignhOutside = 3,
-	case 4:	type =	horizontal_pos::Right;		
-		if (impl_->anchor_settings_.style_horizontal_rel_ && impl_->anchor_settings_.style_horizontal_rel_->get_type() == horizontal_rel::ParagraphStartMargin)
-			impl_->anchor_settings_.style_horizontal_rel_ = horizontal_rel::ParagraphEndMargin;
-		break;//alignhRight   = 4
+		case 0:	type =	horizontal_pos::Center;		break;//alignhCenter  = 0,
+		case 1:	type =	horizontal_pos::FromInside;	break;//alignhInside  = 1,
+		case 2:	type =	horizontal_pos::FromLeft;	break;//alignhLeft    = 2,
+		case 3:	type =	horizontal_pos::Outside;	break;//alignhOutside = 3,
+		case 4:	type =	horizontal_pos::Right;		
+			if (impl_->anchor_settings_.style_horizontal_rel_ && impl_->anchor_settings_.style_horizontal_rel_->get_type() == horizontal_rel::ParagraphStartMargin)
+				impl_->anchor_settings_.style_horizontal_rel_ = horizontal_rel::ParagraphEndMargin;
+			break;//alignhRight   = 4
 	}
 	impl_->anchor_settings_.style_horizontal_pos_ = horizontal_pos(type);
 }

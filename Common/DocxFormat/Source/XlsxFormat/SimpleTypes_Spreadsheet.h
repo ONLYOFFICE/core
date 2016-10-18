@@ -36,6 +36,35 @@ namespace SimpleTypes
 {
 	namespace Spreadsheet
 	{	
+		template<typename E, E DefValue = 0>
+		class CSimpleType
+		{
+		public:
+
+			CSimpleType()
+			{
+				m_eValue = DefValue;
+			}
+
+			virtual E       GetValue() const
+			{
+				return m_eValue;
+			}
+
+			virtual void    SetValue(E eValue)
+			{
+				m_eValue = eValue;
+			}
+
+			virtual E       FromString(const BSTR &bsValue) = 0;
+			virtual E       FromString(CString &sValue) = 0;
+			virtual std::wstring ToString() const = 0;
+
+		protected:
+
+			E m_eValue;
+		};
+
 		enum EVisibleType
 		{
 			visibleHidden		=  0,
@@ -59,7 +88,7 @@ namespace SimpleTypes
                 return this->m_eValue;
 			}
 
-			virtual CString       ToString  () const 
+			virtual std::wstring       ToString  () const 
 			{
                 switch(this->m_eValue)
 				{
@@ -100,7 +129,7 @@ namespace SimpleTypes
                 return this->m_eValue;
 			}
 
-			virtual CString       ToString  () const 
+			virtual std::wstring       ToString  () const 
 			{
 				return _T("noControl");
 			}
@@ -134,7 +163,7 @@ namespace SimpleTypes
                 return this->m_eValue;
 			}
 
-			virtual CString       ToString  () const 
+			virtual std::wstring       ToString  () const 
 			{
 				return _T("noConversion");
 			}
@@ -205,13 +234,13 @@ namespace SimpleTypes
                 return this->m_eValue;
 			}
 
-			virtual CString       ToString  () const 
+			virtual std::wstring       ToString  () const 
 			{
 				CString sRes;
                 sRes.Format(_T("%d"), (long)this->m_eValue);
 				return sRes;
 			}
-			virtual CString       ToHexString  () const 
+			virtual std::wstring       ToHexString  () const 
 			{
 				CString sRes;
                 switch(this->m_eValue)
@@ -286,7 +315,7 @@ namespace SimpleTypes
 				}
                 return this->m_eValue;
 			}
-			virtual CString     ToString  () const 
+			virtual std::wstring     ToString  () const 
 			{
 				return _T("0");
 			}
@@ -322,7 +351,7 @@ namespace SimpleTypes
 				Parse(sValue);
 			}
 
-			virtual CString   ToString  () const 
+			virtual std::wstring   ToString  () const 
 			{
 				CString sResult;
 				if(m_unA > 0x0f)
@@ -467,7 +496,7 @@ namespace SimpleTypes
                 return this->m_eValue;
 			}
 
-			virtual CString     ToString  () const 
+			virtual std::wstring     ToString  () const 
 			{
 				CString sRes;
                 sRes.Format(_T("%d"), (int)this->m_eValue);
@@ -518,7 +547,7 @@ namespace SimpleTypes
                 return this->m_eValue;
 			}
 
-			virtual CString     ToString  () const 
+			virtual std::wstring     ToString  () const 
 			{
 				CString sRes;
                 switch(this->m_eValue)
@@ -564,7 +593,7 @@ namespace SimpleTypes
                 return this->m_eValue;
 			}
 
-			virtual CString     ToString  () const 
+			virtual std::wstring     ToString  () const 
 			{
                 switch(this->m_eValue)
 				{
@@ -639,7 +668,7 @@ namespace SimpleTypes
                 return this->m_eValue;
 			}
 
-			virtual CString     ToString  () const 
+			virtual std::wstring     ToString  () const 
 			{
                 switch(this->m_eValue)
 				{
@@ -704,7 +733,7 @@ namespace SimpleTypes
                 return this->m_eValue;
 			}
 
-			virtual CString     ToString  () const 
+			virtual std::wstring     ToString  () const 
 			{
                 switch(this->m_eValue)
 				{
@@ -754,7 +783,7 @@ namespace SimpleTypes
                 return this->m_eValue;
 			}
 
-			virtual CString     ToString  () const 
+			virtual std::wstring     ToString  () const 
 			{
                 switch(this->m_eValue)
 				{
@@ -792,7 +821,7 @@ namespace SimpleTypes
                 return this->m_eValue;
 			}
 
-			virtual CString     ToString  () const 
+			virtual std::wstring     ToString  () const 
 			{
 				return _T("line");
 			}
@@ -873,7 +902,7 @@ namespace SimpleTypes
                 return this->m_eValue;
 			}
 
-			virtual CString     ToString  () const 
+			virtual std::wstring     ToString  () const 
 			{
                 switch(this->m_eValue)
 				{
@@ -1006,7 +1035,7 @@ namespace SimpleTypes
                 return this->m_eValue;
 			}
 
-			virtual CString     ToString  () const 
+			virtual std::wstring     ToString  () const 
 			{
                 switch(this->m_eValue)
 				{
@@ -1074,7 +1103,7 @@ namespace SimpleTypes
                 return this->m_eValue;
 			}
 
-			virtual CString     ToString  () const 
+			virtual std::wstring     ToString  () const 
 			{
                 switch(this->m_eValue)
 				{
@@ -1114,7 +1143,7 @@ namespace SimpleTypes
                 return this->m_eValue;
 			}
 
-			virtual CString     ToString  () const 
+			virtual std::wstring     ToString  () const 
 			{
 				return _T("always");
 			}
@@ -1159,7 +1188,7 @@ namespace SimpleTypes
                 return this->m_eValue;
 			}
 
-			virtual CString     ToString  () const 
+			virtual std::wstring     ToString  () const 
 			{
                 switch(this->m_eValue)
 				{
@@ -1202,7 +1231,7 @@ namespace SimpleTypes
                 return this->m_eValue;
 			}
 
-			virtual CString     ToString  () const 
+			virtual std::wstring     ToString  () const 
 			{
                 switch(this->m_eValue)
 				{
@@ -1242,7 +1271,7 @@ namespace SimpleTypes
                 return this->m_eValue;
 			}
 
-			virtual CString     ToString  () const 
+			virtual std::wstring     ToString  () const 
 			{
                 switch(this->m_eValue)
 				{
@@ -1287,7 +1316,7 @@ namespace SimpleTypes
                 return this->m_eValue;
 			}
 
-			virtual CString     ToString  () const 
+			virtual std::wstring     ToString  () const 
 			{
                 switch(this->m_eValue)
 				{
@@ -1325,7 +1354,7 @@ namespace SimpleTypes
                 return this->m_eValue;
 			}
 
-			virtual CString     ToString  () const 
+			virtual std::wstring     ToString  () const 
 			{
                 switch(this->m_eValue)
 				{
@@ -1360,7 +1389,7 @@ namespace SimpleTypes
                 return this->m_eValue;
 			}
 
-			virtual CString     ToString  () const 
+			virtual std::wstring     ToString  () const 
 			{
                 switch(this->m_eValue)
 				{
@@ -1401,7 +1430,7 @@ namespace SimpleTypes
                 return this->m_eValue;
 			}
 
-			virtual CString     ToString  () const 
+			virtual std::wstring     ToString  () const 
 			{
                 switch(this->m_eValue)
 				{
@@ -1444,7 +1473,7 @@ namespace SimpleTypes
                 return this->m_eValue;
 			}
 
-			virtual CString     ToString  () const 
+			virtual std::wstring     ToString  () const 
 			{
                 switch(this->m_eValue)
 				{
@@ -1481,7 +1510,7 @@ namespace SimpleTypes
                 return this->m_eValue;
 			}
 
-			virtual CString     ToString  () const 
+			virtual std::wstring     ToString  () const 
 			{
                 switch(this->m_eValue)
 				{
@@ -1544,7 +1573,7 @@ namespace SimpleTypes
                 return this->m_eValue;
 			}
 
-			virtual CString     ToString  () const 
+			virtual std::wstring     ToString  () const 
 			{
                 switch(this->m_eValue)
 				{
@@ -1648,7 +1677,7 @@ namespace SimpleTypes
                 return this->m_eValue;
 			}
 
-			virtual CString     ToString  () const 
+			virtual std::wstring     ToString  () const 
 			{
 				CString sResult;
                 sResult.Format( _T("%d"), this->m_eValue );
@@ -1704,7 +1733,7 @@ namespace SimpleTypes
                 return this->m_eValue;
 			}
 
-			virtual CString     ToString  () const 
+			virtual std::wstring     ToString  () const 
 			{
 				CString sResult;
                 switch(this->m_eValue)
@@ -1754,7 +1783,7 @@ namespace SimpleTypes
                 return this->m_eValue;
 			}
 
-			virtual CString     ToString  () const 
+			virtual std::wstring     ToString  () const 
 			{
 				CString sResult;
                 switch(this->m_eValue)
@@ -1804,7 +1833,7 @@ namespace SimpleTypes
                 return this->m_eValue;
 			}
 
-			virtual CString     ToString  () const 
+			virtual std::wstring     ToString  () const 
 			{
 				CString sResult;
                 switch(this->m_eValue)
@@ -1856,7 +1885,7 @@ namespace SimpleTypes
                 return this->m_eValue;
 			}
 
-			virtual CString     ToString  () const 
+			virtual std::wstring     ToString  () const 
 			{
 				CString sResult;
                 switch(this->m_eValue)
@@ -1995,7 +2024,7 @@ namespace SimpleTypes
                 return this->m_eValue;
 			}
 
-			virtual CString     ToString  () const 
+			virtual std::wstring     ToString  () const 
 			{
 				CString sResult;
                 switch(this->m_eValue)
@@ -2094,7 +2123,7 @@ namespace SimpleTypes
                 return this->m_eValue;
 			}
 
-			virtual CString     ToString  () const 
+			virtual std::wstring     ToString  () const 
 			{
                 switch(this->m_eValue)
 				{
@@ -2163,7 +2192,7 @@ namespace SimpleTypes
                 return this->m_eValue;
 			}
 
-			virtual CString     ToString  () const 
+			virtual std::wstring     ToString  () const 
 			{
                 switch(this->m_eValue)
 				{
@@ -2240,7 +2269,7 @@ namespace SimpleTypes
                 return this->m_eValue;
 			}
 
-			virtual CString     ToString  () const 
+			virtual std::wstring     ToString  () const 
 			{
                 switch(this->m_eValue)
 				{
@@ -2299,7 +2328,7 @@ namespace SimpleTypes
                 return this->m_eValue;
 			}
 
-			virtual CString     ToString  () const 
+			virtual std::wstring     ToString  () const 
 			{
                 switch(this->m_eValue)
 				{
@@ -2338,7 +2367,7 @@ namespace SimpleTypes
                 return this->m_eValue;
             }
 
-            virtual CString     ToString  () const
+            virtual std::wstring     ToString  () const
             {
                 switch(this->m_eValue)
                 {
@@ -2374,7 +2403,7 @@ namespace SimpleTypes
                 return this->m_eValue;
             }
 
-            virtual CString     ToString  () const
+            virtual std::wstring     ToString  () const
             {
                 switch(this->m_eValue)
                 {
@@ -2407,7 +2436,7 @@ namespace SimpleTypes
 				return this->m_eValue;
 			}
 
-			virtual CString	 ToString  () const
+			virtual std::wstring	 ToString  () const
 			{
 				switch(this->m_eValue)
 				{
@@ -2439,7 +2468,7 @@ namespace SimpleTypes
 				return this->m_eValue;
 			}
 
-			virtual CString	 ToString  () const
+			virtual std::wstring	 ToString  () const
 			{
 				switch(this->m_eValue)
 				{
@@ -2478,7 +2507,7 @@ namespace SimpleTypes
 				return this->m_eValue;
 			}
 
-			virtual CString          ToString  () const
+			virtual std::wstring          ToString  () const
 			{
 				switch(this->m_eValue)
 				{
@@ -2517,7 +2546,7 @@ namespace SimpleTypes
 				return this->m_eValue;
 			}
 
-			virtual CString          ToString  () const
+			virtual std::wstring          ToString  () const
 			{
 				switch(this->m_eValue)
 				{

@@ -41,7 +41,7 @@ namespace Writers
 		class ChartElem
 		{
 		public:
-			CString content;
+			std::wstring content;
 			CString filename;
 			int index;
 		};
@@ -79,9 +79,9 @@ namespace Writers
 
                     OOX::CPath filePath = pathChartDir + FILE_SEPARATOR_STR + elem->filename;
 
-					CFile oFile;
-					oFile.CreateFile(filePath.GetPath());
-					oFile.WriteStringUTF8(CString(_T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\r\n")));
+					NSFile::CFileBinary oFile;
+					oFile.CreateFileW(string2std_string(filePath.GetPath()));
+					oFile.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\r\n");
 					oFile.WriteStringUTF8(elem->content);
 					oFile.CloseFile();
 
@@ -91,7 +91,7 @@ namespace Writers
 				}
 			}
 		}
-		void AddChart(CString& content, CString& sRelsName, CString& sFileName, int& index)
+		void AddChart(std::wstring& content, CString& sRelsName, CString& sFileName, int& index)
 		{
 			ChartElem* pChartElem = new ChartElem();
 			pChartElem->content = content;

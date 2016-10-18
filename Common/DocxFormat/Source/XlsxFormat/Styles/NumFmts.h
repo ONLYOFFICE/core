@@ -57,34 +57,17 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-                CString sHeader = _T("numFmt");
-                toXML2(writer, sHeader);
+                toXML2(writer, _T("numFmt"));
 			}
-			void toXML2(XmlUtils::CStringWriter& writer, CString& sHeader) const
+			void toXML2(NSStringUtils::CStringBuilder& writer, const wchar_t* sHeader) const
 			{
-				writer.WriteString(_T("<") + sHeader);
-				if(m_oNumFmtId.IsInit())
-				{
-					CString sVal;sVal.Format(_T(" numFmtId=\"%d\""), m_oNumFmtId->GetValue());
-					writer.WriteString(sVal);
-				}
-				if(m_oFormatCode.IsInit())
-				{
-                    //CString sVal;sVal.Format(_T(" formatCode=\"%ls\""), XmlUtils::EncodeXmlString(m_oFormatCode.get()));
-                    
-                    CString sVal(_T(" formatCode=\""));
-                    sVal += XmlUtils::EncodeXmlString(m_oFormatCode.get());
-                    sVal += CString(_T("\""));
-                    
-                    writer.WriteString(sVal);
-				}
-				if(m_oSourceLinked.IsInit())
-				{
-					CString sVal = _T(" sourceLinked=\"") + m_oSourceLinked->ToString2(SimpleTypes::onofftostring1) + _T("\"");
-					writer.WriteString(sVal);
-				}
+				writer.WriteString(L"<");
+				writer.WriteString(sHeader);
+				WritingStringNullableAttrInt(L"numFmtId", m_oNumFmtId, m_oNumFmtId->GetValue());
+				WritingStringNullableAttrEncodeXmlString(L"formatCode", m_oFormatCode, m_oFormatCode.get());
+				WritingStringNullableAttrBool(L"sourceLinked", m_oSourceLinked);
 				writer.WriteString(_T("/>"));
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -113,7 +96,7 @@ namespace OOX
 					WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
-			nullable<CString >								m_oFormatCode;
+			nullable<std::wstring >								m_oFormatCode;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oNumFmtId;
 			nullable<SimpleTypes::COnOff<>>				m_oSourceLinked;
 		};
@@ -133,16 +116,12 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				if(m_arrItems.size() > 0 )
 				{
 					writer.WriteString(_T("<numFmts"));
-					if(m_oCount.IsInit())
-					{
-						CString sVal;sVal.Format(_T(" count=\"%d\""), m_oCount->GetValue());
-						writer.WriteString(sVal);
-					}
+					WritingStringNullableAttrInt(L"count", m_oCount, m_oCount->GetValue());
 					writer.WriteString(_T(">"));
 					for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
 						m_arrItems[i]->toXML(writer);

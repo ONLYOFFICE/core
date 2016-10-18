@@ -58,32 +58,13 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(_T("<sheet"));
-				if(m_oName.IsInit())
-				{
-					CString sVal;
-					sVal.Append(_T(" name=\""));
-					sVal.Append(XmlUtils::EncodeXmlString(m_oName.get()));
-					sVal.Append(_T("\""));
-					writer.WriteString(sVal);
-				}
-				if(m_oSheetId.IsInit())
-				{
-					CString sVal;sVal.Format(_T(" sheetId=\"%d\""), m_oSheetId->GetValue());
-					writer.WriteString(sVal);
-				}
-				if(m_oState.IsInit())
-				{
-					CString sVal;sVal.Format(_T(" state=\"%ls\""), m_oState->ToString());
-					writer.WriteString(sVal);
-				}
-				if(m_oRid.IsInit())
-				{
-					CString sVal;sVal.Format(_T(" r:id=\"%ls\""), m_oRid->GetValue());
-					writer.WriteString(sVal);
-				}
+				WritingStringNullableAttrEncodeXmlString(L"name", m_oName, m_oName.get());
+				WritingStringNullableAttrInt(L"sheetId", m_oSheetId, m_oSheetId->GetValue());
+				WritingStringNullableAttrString(L"state", m_oState, m_oState->ToString());
+				WritingStringNullableAttrString(L"r:id", m_oRid, m_oRid->ToString2());
 				writer.WriteString(_T("/>"));
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -116,7 +97,7 @@ namespace OOX
 
 		public:
 				nullable<SimpleTypes::CRelationshipId>				m_oRid;
-				nullable<CString>									m_oName;
+				nullable<std::wstring>									m_oName;
 				nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oSheetId;
 				nullable<SimpleTypes::Spreadsheet::CVisibleType<>>	m_oState;
 
@@ -138,7 +119,7 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(_T("<sheets>"));
 				for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)

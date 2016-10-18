@@ -85,14 +85,15 @@ namespace OOX
 			}
 			virtual void write2(CString& sFilename) const
 			{
-				XmlUtils::CStringWriter sXml;
+				NSStringUtils::CStringBuilder sXml;
+				sXml.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\r\n");
 				toXML(sXml);
-				CDirectory::SaveToFile( sFilename, _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\r\n") + sXml.GetData() );
+				NSFile::CFileBinary::SaveToFile(sFilename.GetBuffer(), sXml.GetData());
+				sFilename.ReleaseBuffer();
 			}
-			void toXML(XmlUtils::CStringWriter& writer) const
+			void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-                CString sNodeName = _T("c:chartSpace");
-                m_oChartSpace.toXML (sNodeName, writer);
+				m_oChartSpace.toXML(_T("c:chartSpace"), writer);
 			}
 			bool isValid() const
 			{

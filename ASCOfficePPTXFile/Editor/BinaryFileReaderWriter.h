@@ -288,6 +288,7 @@ namespace NSBinPptxRW
 		void WriteDoubleReal(const double& dValue);
 		
 		void WriteStringW(const WCHAR* sBuffer);
+		void WriteStringWStd(const std::wstring& sBuffer);
 		void WriteBYTEArray(const BYTE* pBuffer, size_t len);
 		void WriteStringA(const char* sBuffer);
 		void WriteStringA(CStringA& sBuffer);
@@ -300,6 +301,7 @@ namespace NSBinPptxRW
 		void WriteStringW3(CString& sBuffer);
         void WriteStringW3_2(const WCHAR* sBuffer);
         void WriteStringW3_4(const WCHAR* sBuffer);
+		void WriteStringW4(const std::wstring& sBuffer);
 		// --------------------------------------------------------
 		void WriteLONG64(const _INT64& lValue);
 		void WriteDouble64(const double& dValue);
@@ -520,6 +522,7 @@ namespace NSBinPptxRW
 		CStringA GetString1(_INT32 len);
 		CString GetString2();
 		CString GetString3(_INT32 len);
+		std::wstring GetString4(_INT32 len);
 
         //LPSAFEARRAY GetArray(_INT32 len);
         bool GetArray(BYTE **pBuffer, _INT32 len);

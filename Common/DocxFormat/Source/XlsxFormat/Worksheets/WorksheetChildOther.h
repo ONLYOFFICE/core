@@ -55,48 +55,18 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				if(m_oLeft.IsInit() || m_oTop.IsInit() || m_oRight.IsInit() || m_oBottom.IsInit() || m_oHeader.IsInit() || m_oFooter.IsInit())
 				{
-					writer.WriteString(CString(_T("<pageMargins")));
-					if(m_oLeft.IsInit())
-					{
-						CString sLeft;
-						sLeft.Format(_T(" left=\"%ls\""), SpreadsheetCommon::WriteDouble(m_oLeft->ToInches()));
-						writer.WriteString(sLeft);
-					}
-					if(m_oRight.IsInit())
-					{
-						CString sRight;
-						sRight.Format(_T(" right=\"%ls\""), SpreadsheetCommon::WriteDouble(m_oRight->ToInches()));
-						writer.WriteString(sRight);
-					}
-					if(m_oTop.IsInit())
-					{
-						CString sTop;
-						sTop.Format(_T(" top=\"%ls\""), SpreadsheetCommon::WriteDouble(m_oTop->ToInches()));
-						writer.WriteString(sTop);
-					}
-					if(m_oBottom.IsInit())
-					{
-						CString sBottom;
-						sBottom.Format(_T(" bottom=\"%ls\""), SpreadsheetCommon::WriteDouble(m_oBottom->ToInches()));
-						writer.WriteString(sBottom);
-					}
-					if(m_oHeader.IsInit())
-					{
-						CString sHeader;
-						sHeader.Format(_T(" header=\"%ls\""), SpreadsheetCommon::WriteDouble(m_oHeader->ToInches()));
-						writer.WriteString(sHeader);
-					}
-					if(m_oFooter.IsInit())
-					{
-						CString sFooter;
-						sFooter.Format(_T(" footer=\"%ls\""), SpreadsheetCommon::WriteDouble(m_oFooter->ToInches()));
-						writer.WriteString(sFooter);
-					}
-					writer.WriteString(CString(_T("/>")));
+					writer.WriteString(L"<pageMargins");
+					WritingStringNullableAttrDouble(L"left", m_oLeft, m_oLeft->ToInches());
+					WritingStringNullableAttrDouble(L"right", m_oRight, m_oRight->ToInches());
+					WritingStringNullableAttrDouble(L"top", m_oTop, m_oTop->ToInches());
+					WritingStringNullableAttrDouble(L"bottom", m_oBottom, m_oBottom->ToInches());
+					WritingStringNullableAttrDouble(L"header", m_oHeader, m_oHeader->ToInches());
+					WritingStringNullableAttrDouble(L"footer", m_oFooter, m_oFooter->ToInches());
+					writer.WriteString(L"/>");
 				}
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -153,24 +123,21 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				if(m_oPaperSize.IsInit() || m_oOrientation.IsInit())
 				{
-					writer.WriteString(CString(_T("<pageSetup")));
-					if(m_oPaperSize.IsInit())
+					writer.WriteString(L"<pageSetup");
+					WritingStringNullableAttrString(L"paperSize", m_oPaperSize, m_oPaperSize->ToString());
+					if (m_oOrientation.IsInit())
 					{
-						CString sPaperSize;
-						sPaperSize.Format(_T(" paperSize=\"%ls\""), m_oPaperSize->ToString());
-						writer.WriteString(sPaperSize);
+						CString sOrientation = m_oOrientation->ToString();
+						writer.WriteString(L" orientation=\"");
+						writer.WriteString(sOrientation.GetBuffer());
+						writer.WriteString(L"\"");
+						sOrientation.ReleaseBuffer();
 					}
-					if(m_oOrientation.IsInit())
-					{
-						CString sOrientation;
-						sOrientation.Format(_T(" orientation=\"%ls\""), m_oOrientation->ToString());
-						writer.WriteString(sOrientation);
-					}
-					writer.WriteString(CString(_T("/>")));
+					writer.WriteString(L"/>");
 				}
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -219,30 +186,15 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				if(m_oGridLines.IsInit() || m_oGridLinesSet.IsInit() || m_oHeadings.IsInit())
 				{
-					writer.WriteString(CString(_T("<printOptions")));
-					if(m_oHeadings.IsInit())
-					{
-						CString sHeadings;
-						sHeadings.Format(_T(" headings=\"%ls\""), m_oHeadings->ToString2(SimpleTypes::onofftostring1));
-						writer.WriteString(sHeadings);
-					}
-					if(m_oGridLines.IsInit())
-					{
-						CString sGridLines;
-						sGridLines.Format(_T(" gridLines=\"%ls\""), m_oGridLines->ToString2(SimpleTypes::onofftostring1));
-						writer.WriteString(sGridLines);
-					}
-					if(m_oGridLinesSet.IsInit())
-					{
-						CString sGridLinesSet;
-						sGridLinesSet.Format(_T(" gridLinesSet=\"%ls\""), m_oGridLinesSet->ToString2(SimpleTypes::onofftostring1));
-						writer.WriteString(sGridLinesSet);
-					}
-					writer.WriteString(CString(_T("/>")));
+					writer.WriteString(L"<printOptions");
+					WritingStringNullableAttrBool(L"headings", m_oHeadings);
+					WritingStringNullableAttrBool(L"gridLines", m_oGridLines);
+					WritingStringNullableAttrBool(L"gridLinesSet", m_oGridLinesSet);
+					writer.WriteString(L"/>");
 				}
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -297,7 +249,7 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -326,7 +278,7 @@ namespace OOX
 			}
 
 		public:
-				nullable<CString>	m_oRef;
+			nullable<std::wstring>	m_oRef;
 		};
 
 		class CSheetFormatPr : public WritingElement
@@ -345,55 +297,18 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(_T("<sheetFormatPr"));
-				if(m_oBaseColWidth.IsInit())
-				{
-					CString sVal; sVal.Format(_T(" baseColWidth=\"%d\""), m_oBaseColWidth->GetValue());
-					writer.WriteString(sVal);
-				}
-				if(m_oCustomHeight.IsInit())
-				{
-					CString sVal; sVal.Format(_T(" customHeight=\"%ls\""), m_oCustomHeight->ToString2(SimpleTypes::onofftostring1));
-					writer.WriteString(sVal);
-				}
-				if(m_oDefaultColWidth.IsInit())
-				{
-					CString sVal; sVal.Format(_T(" defaultColWidth=\"%ls\""), SpreadsheetCommon::WriteDouble(m_oDefaultColWidth->GetValue()));
-					writer.WriteString(sVal);
-				}
-				if(m_oDefaultRowHeight.IsInit())
-				{
-					CString sVal; sVal.Format(_T(" defaultRowHeight=\"%ls\""), SpreadsheetCommon::WriteDouble(m_oDefaultRowHeight->GetValue()));
-					writer.WriteString(sVal);
-				}
-				if(m_oOutlineLevelCol.IsInit())
-				{
-					CString sVal; sVal.Format(_T(" outlineLevelCol=\"%d\""), m_oOutlineLevelCol->GetValue());
-					writer.WriteString(sVal);
-				}
-				if(m_oOutlineLevelRow.IsInit())
-				{
-					CString sVal; sVal.Format(_T(" outlineLevelRow=\"%d\""), m_oOutlineLevelRow->GetValue());
-					writer.WriteString(sVal);
-				}
-				if(m_oThickBottom.IsInit())
-				{
-					CString sVal; sVal.Format(_T(" thickBottom=\"%ls\""), m_oThickBottom->ToString2(SimpleTypes::onofftostring1));
-					writer.WriteString(sVal);
-				}
-				if(m_oThickTop.IsInit())
-				{
-					CString sVal; sVal.Format(_T(" thickTop=\"%ls\""), m_oThickTop->ToString2(SimpleTypes::onofftostring1));
-					writer.WriteString(sVal);
-				}
-				if(m_oZeroHeight.IsInit())
-				{
-					CString sVal; sVal.Format(_T(" zeroHeight=\"%ls\""), m_oZeroHeight->ToString2(SimpleTypes::onofftostring1));
-					writer.WriteString(sVal);
-				}
-
+				WritingStringNullableAttrInt(L"baseColWidth", m_oBaseColWidth, m_oBaseColWidth->GetValue());
+				WritingStringNullableAttrBool(L"customHeight", m_oCustomHeight);
+				WritingStringNullableAttrDouble(L"defaultColWidth", m_oDefaultColWidth, m_oDefaultColWidth->GetValue());
+				WritingStringNullableAttrDouble(L"defaultRowHeight", m_oDefaultRowHeight, m_oDefaultRowHeight->GetValue());
+				WritingStringNullableAttrInt(L"outlineLevelCol", m_oOutlineLevelCol, m_oOutlineLevelCol->GetValue());
+				WritingStringNullableAttrInt(L"outlineLevelRow", m_oOutlineLevelRow, m_oOutlineLevelRow->GetValue());
+				WritingStringNullableAttrBool(L"thickBottom", m_oThickBottom);
+				WritingStringNullableAttrBool(L"thickTop", m_oThickTop);
+				WritingStringNullableAttrBool(L"zeroHeight", m_oZeroHeight);
 				writer.WriteString(_T("/>"));
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -456,36 +371,14 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(_T("<pane"));
-				if (m_oActivePane.IsInit())
-				{
-					writer.WriteString(L" activePane=\"");
-					writer.WriteString(m_oActivePane->ToString());
-					writer.WriteString(L"\"");
-				}
-				if (m_oState.IsInit())
-				{
-					writer.WriteString(L" state=\"");
-					writer.WriteString(m_oState->ToString());
-					writer.WriteString(L"\"");
-				}
-				if (m_oTopLeftCell.IsInit())
-				{
-					CString sVal; sVal.Format(_T(" topLeftCell=\"%ls\""), m_oTopLeftCell.get());
-					writer.WriteString(sVal);
-				}
-				if (m_oXSplit.IsInit())
-				{
-					CString sVal; sVal.Format(_T(" xSplit=\"%ls\""), SpreadsheetCommon::WriteDouble(m_oXSplit->GetValue()));
-					writer.WriteString(sVal);
-				}
-				if (m_oYSplit.IsInit())
-				{
-					CString sVal; sVal.Format(_T(" ySplit=\"%ls\""), SpreadsheetCommon::WriteDouble(m_oYSplit->GetValue()));
-					writer.WriteString(sVal);
-				}
+				WritingStringNullableAttrString(L"activePane", m_oActivePane, m_oActivePane->ToString());
+				WritingStringNullableAttrString(L"state", m_oState, m_oState->ToString());
+				WritingStringNullableAttrString(L"topLeftCell", m_oTopLeftCell, m_oTopLeftCell.get());
+				WritingStringNullableAttrDouble(L"xSplit", m_oXSplit, m_oXSplit->GetValue());
+				WritingStringNullableAttrDouble(L"ySplit", m_oYSplit, m_oYSplit->GetValue());
 				writer.WriteString(_T("/>"));
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -519,7 +412,7 @@ namespace OOX
 		public:
             nullable<SimpleTypes::Spreadsheet::CActivePane<>>   m_oActivePane;
             nullable<SimpleTypes::Spreadsheet::CPaneState<>>    m_oState;
-            nullable<CString>                                   m_oTopLeftCell;
+            nullable<std::wstring>                                   m_oTopLeftCell;
             nullable<SimpleTypes::CDouble>                      m_oXSplit;
             nullable<SimpleTypes::CDouble>                      m_oYSplit;
 		};
@@ -540,30 +433,13 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(_T("<selection"));
-				if (m_oActiveCell.IsInit())
-				{
-					CString sVal; sVal.Format(_T(" activeCell=\"%ls\""), m_oActiveCell.get());
-					writer.WriteString(sVal);
-				}
-				if (m_oActiveCellId.IsInit())
-				{
-					CString sVal; sVal.Format(_T(" activeCellId=\"%d\""), m_oActiveCellId->GetValue());
-					writer.WriteString(sVal);
-				}
-				if (m_oSqref.IsInit())
-				{
-					CString sVal; sVal.Format(_T(" sqref=\"%ls\""), m_oSqref.get());
-					writer.WriteString(sVal);
-				}
-				if (m_oPane.IsInit())
-				{
-					writer.WriteString(L" pane=\"");
-					writer.WriteString(m_oPane->ToString());
-					writer.WriteString(L"\"");
-				}
+				WritingStringNullableAttrString(L"activeCell", m_oActiveCell, m_oActiveCell.get());
+				WritingStringNullableAttrInt(L"activeCellId", m_oActiveCellId, m_oActiveCellId->GetValue());
+				WritingStringNullableAttrString(L"sqref", m_oSqref, m_oSqref.get());
+				WritingStringNullableAttrString(L"pane", m_oPane, m_oPane->ToString());
 				writer.WriteString(_T("/>"));
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -594,9 +470,9 @@ namespace OOX
 			}
 
 		public:
-			nullable<CString>									m_oActiveCell;
+			nullable<std::wstring>									m_oActiveCell;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oActiveCellId;
-			nullable<CString>									m_oSqref;
+			nullable<std::wstring>									m_oSqref;
 			nullable<SimpleTypes::Spreadsheet::CActivePane<>>	m_oPane;
 		};
 
@@ -619,104 +495,28 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(_T("<sheetView"));
-				if(m_oColorId.IsInit())
-				{
-					CString sVal; sVal.Format(_T(" colorId=\"%d\""), m_oColorId->GetValue());
-					writer.WriteString(sVal);
-				}
-				if(m_oDefaultGridColor.IsInit())
-				{
-					CString sVal; sVal.Format(_T(" defaultGridColor=\"%ls\""), m_oDefaultGridColor->ToString2(SimpleTypes::onofftostring1));
-					writer.WriteString(sVal);
-				}
-				if(m_oRightToLeft.IsInit())
-				{
-					CString sVal; sVal.Format(_T(" rightToLeft=\"%ls\""), m_oRightToLeft->ToString2(SimpleTypes::onofftostring1));
-					writer.WriteString(sVal);
-				}
-				if(m_oShowFormulas.IsInit())
-				{
-					CString sVal; sVal.Format(_T(" showFormulas=\"%ls\""), m_oShowFormulas->ToString2(SimpleTypes::onofftostring1));
-					writer.WriteString(sVal);
-				}
-				if(m_oShowGridLines.IsInit())
-				{
-					CString sVal; sVal.Format(_T(" showGridLines=\"%ls\""), m_oShowGridLines->ToString2(SimpleTypes::onofftostring1));
-					writer.WriteString(sVal);
-				}
-				if(m_oShowOutlineSymbols.IsInit())
-				{
-					CString sVal; sVal.Format(_T(" showOutlineSymbols=\"%ls\""), m_oShowOutlineSymbols->ToString2(SimpleTypes::onofftostring1));
-					writer.WriteString(sVal);
-				}
-				if(m_oShowRowColHeaders.IsInit())
-				{
-					CString sVal; sVal.Format(_T(" showRowColHeaders=\"%ls\""), m_oShowRowColHeaders->ToString2(SimpleTypes::onofftostring1));
-					writer.WriteString(sVal);
-				}
-				if(m_oShowRuler.IsInit())
-				{
-					CString sVal; sVal.Format(_T(" showRuler=\"%ls\""), m_oShowRuler->ToString2(SimpleTypes::onofftostring1));
-					writer.WriteString(sVal);
-				}
-				if(m_oShowWhiteSpace.IsInit())
-				{
-					CString sVal; sVal.Format(_T(" showWhiteSpace=\"%ls\""), m_oShowWhiteSpace->ToString2(SimpleTypes::onofftostring1));
-					writer.WriteString(sVal);
-				}
-				if(m_oShowZeros.IsInit())
-				{
-					CString sVal; sVal.Format(_T(" showZeros=\"%ls\""), m_oShowZeros->ToString2(SimpleTypes::onofftostring1));
-					writer.WriteString(sVal);
-				}
-				if(m_oTabSelected.IsInit())
-				{
-					CString sVal; sVal.Format(_T(" tabSelected=\"%ls\""), m_oTabSelected->ToString2(SimpleTypes::onofftostring1));
-					writer.WriteString(sVal);
-				}
-				if(m_oTopLeftCell.IsInit())
-				{
-					CString sVal; sVal.Format(_T(" topLeftCell=\"%ls\""), m_oTopLeftCell.get());
-					writer.WriteString(sVal);
-				}
-				if(m_oView.IsInit())
-				{
-					CString sVal; sVal.Format(_T(" view=\"%ls\""), m_oView->ToString());
-					writer.WriteString(sVal);
-				}
-				if(m_oWindowProtection.IsInit())
-				{
-					CString sVal; sVal.Format(_T(" windowProtection=\"%ls\""), m_oWindowProtection->ToString2(SimpleTypes::onofftostring1));
-					writer.WriteString(sVal);
-				}
-				if(m_oWorkbookViewId.IsInit())
-				{
-					CString sVal; sVal.Format(_T(" workbookViewId=\"%d\""), m_oWorkbookViewId->GetValue());
-					writer.WriteString(sVal);
-				}
-				if(m_oZoomScale.IsInit())
-				{
-					CString sVal; sVal.Format(_T(" zoomScale=\"%d\""), m_oZoomScale->GetValue());
-					writer.WriteString(sVal);
-				}
-				if(m_oZoomScaleNormal.IsInit())
-				{
-					CString sVal; sVal.Format(_T(" zoomScaleNormal=\"%d\""), m_oZoomScaleNormal->GetValue());
-					writer.WriteString(sVal);
-				}
-				if(m_oZoomScalePageLayoutView.IsInit())
-				{
-					CString sVal; sVal.Format(_T(" zoomScalePageLayoutView=\"%d\""), m_oZoomScalePageLayoutView->GetValue());
-					writer.WriteString(sVal);
-				}
-				if(m_oZoomScaleSheetLayoutView.IsInit())
-				{
-					CString sVal; sVal.Format(_T(" zoomScaleSheetLayoutView=\"%d\""), m_oZoomScaleSheetLayoutView->GetValue());
-					writer.WriteString(sVal);
-				}
+				WritingStringNullableAttrInt(L"colorId", m_oColorId, m_oColorId->GetValue());
+				WritingStringNullableAttrBool(L"defaultGridColor", m_oDefaultGridColor);
+				WritingStringNullableAttrBool(L"rightToLeft", m_oRightToLeft);
+				WritingStringNullableAttrBool(L"showFormulas", m_oShowFormulas);
+				WritingStringNullableAttrBool(L"showGridLines", m_oShowGridLines);
+				WritingStringNullableAttrBool(L"showOutlineSymbols", m_oShowOutlineSymbols);
+				WritingStringNullableAttrBool(L"showRowColHeaders", m_oShowRowColHeaders);
+				WritingStringNullableAttrBool(L"showRuler", m_oShowRuler);
+				WritingStringNullableAttrBool(L"showWhiteSpace", m_oShowWhiteSpace);
+				WritingStringNullableAttrBool(L"showZeros", m_oShowZeros)
+				WritingStringNullableAttrBool(L"tabSelected", m_oTabSelected);
+				WritingStringNullableAttrString(L"topLeftCell", m_oTopLeftCell, m_oTopLeftCell.get());
+				WritingStringNullableAttrString(L"view", m_oView, m_oView->ToString());
+				WritingStringNullableAttrBool(L"windowProtection", m_oWindowProtection);
+				WritingStringNullableAttrInt(L"workbookViewId", m_oWorkbookViewId, m_oWorkbookViewId->GetValue());
+				WritingStringNullableAttrInt(L"zoomScale", m_oZoomScale, m_oZoomScale->GetValue());
+				WritingStringNullableAttrInt(L"zoomScaleNormal", m_oZoomScaleNormal, m_oZoomScaleNormal->GetValue());
+				WritingStringNullableAttrInt(L"zoomScalePageLayoutView", m_oZoomScalePageLayoutView, m_oZoomScalePageLayoutView->GetValue());
+				WritingStringNullableAttrInt(L"zoomScaleSheetLayoutView", m_oZoomScaleSheetLayoutView, m_oZoomScaleSheetLayoutView->GetValue());
 				writer.WriteString(_T(">"));
 
 				if (m_oPane.IsInit())
@@ -799,7 +599,7 @@ namespace OOX
 				nullable<SimpleTypes::COnOff<>>						m_oShowWhiteSpace;
 				nullable<SimpleTypes::COnOff<>>						m_oShowZeros;
 				nullable<SimpleTypes::COnOff<>>						m_oTabSelected;
-				nullable<CString>									m_oTopLeftCell;
+				nullable<std::wstring>									m_oTopLeftCell;
 				nullable<SimpleTypes::Spreadsheet::CSheetViewType<>>m_oView;
 				nullable<SimpleTypes::COnOff<>>						m_oWindowProtection;
 				nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oWorkbookViewId;
@@ -825,7 +625,7 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				if(m_arrItems.size() > 0)
 				{
@@ -882,7 +682,7 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				if (m_oTabColor.IsInit())
 				{
@@ -935,12 +735,12 @@ namespace OOX
 		public:
 			nullable<CColor>					m_oTabColor;
 
-			nullable<CString>					m_oCodeName;
+			nullable<std::wstring>					m_oCodeName;
 			nullable<SimpleTypes::COnOff<>>		m_oEnableFormatConditionsCalculation;
 			nullable<SimpleTypes::COnOff<>>		m_oFilterMode;
 			nullable<SimpleTypes::COnOff<>>		m_oPublished;
 			nullable<SimpleTypes::COnOff<>>		m_oSyncHorizontal;
-			nullable<CString>					m_oSyncRef;
+			nullable<std::wstring>					m_oSyncRef;
 			nullable<SimpleTypes::COnOff<>>		m_oSyncVertical;
 			nullable<SimpleTypes::COnOff<>>		m_oTransitionEntry;
 			nullable<SimpleTypes::COnOff<>>		m_oTransitionEvaluation;
@@ -961,12 +761,12 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 			}
-			void toXML2(XmlUtils::CStringWriter& writer, CString sName) const
+			void toXML2(NSStringUtils::CStringBuilder& writer, const std::wstring& sName) const
 			{
-				if (m_sText.IsEmpty())			return;
+				if (m_sText.empty())			return;
 
 				writer.WriteString(_T("<"));
 					writer.WriteString(sName);
@@ -985,7 +785,7 @@ namespace OOX
 				if ( oReader.IsEmptyNode() )
 					return;
 
-				m_sText = oReader.GetText2();
+				m_sText = oReader.GetText3();
 			}
 			virtual EElementType getType () const
 			{
@@ -1000,7 +800,7 @@ namespace OOX
 			}
 
 		public:
-			CString	m_sText;
+			std::wstring	m_sText;
 		};
 
 		class CHeaderFooter : public WritingElement
@@ -1019,29 +819,13 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(_T("<headerFooter"));
-					if(m_oAlignWithMargins.IsInit())
-					{
-						CString sVal; sVal.Format(_T(" alignWithMargins=\"%ls\""), m_oAlignWithMargins->ToString());
-						writer.WriteString(sVal);
-					}
-					if(m_oDifferentFirst.IsInit())
-					{
-						CString sVal; sVal.Format(_T(" differentFirst=\"%ls\""), m_oDifferentFirst->ToString());
-						writer.WriteString(sVal);
-					}
-					if(m_oDifferentOddEven.IsInit())
-					{
-						CString sVal; sVal.Format(_T(" differentOddEven=\"%ls\""), m_oDifferentOddEven->ToString());
-						writer.WriteString(sVal);
-					}
-					if(m_oScaleWithDoc.IsInit())
-					{
-						CString sVal; sVal.Format(_T(" scaleWithDoc=\"%ls\""), m_oScaleWithDoc->ToString());
-						writer.WriteString(sVal);
-					}
+				WritingStringNullableAttrBool(L"alignWithMargins", m_oAlignWithMargins);
+				WritingStringNullableAttrBool(L"differentFirst", m_oDifferentFirst);
+				WritingStringNullableAttrBool(L"differentOddEven", m_oDifferentOddEven);
+				WritingStringNullableAttrBool(L"scaleWithDoc", m_oScaleWithDoc);
 				writer.WriteString(_T(">"));
 					if (m_oOddHeader.IsInit())
 					{
@@ -1142,100 +926,30 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				if(!m_oId.IsInit()) return;
 
-				CString sVal = _T("<legacyDrawingHF r:id=\"") + m_oId->GetValue() ;
-
-				if(m_oCfe.IsInit())
-				{
-					CString sVal; sVal.Format(_T(" cfe=\"%d\""), m_oCfe->GetValue());
-					writer.WriteString(sVal);
-				}
-				if(m_oCff.IsInit())
-				{
-					CString sVal; sVal.Format(_T(" cff=\"%d\""), m_oCff->GetValue());
-					writer.WriteString(sVal);
-				}
-				if(m_oCfo.IsInit())
-				{
-					CString sVal; sVal.Format(_T(" cfo=\"%d\""), m_oCfo->GetValue());
-					writer.WriteString(sVal);
-				}
-				if(m_oChe.IsInit())
-				{
-					CString sVal; sVal.Format(_T(" che=\"%d\""), m_oChe->GetValue());
-					writer.WriteString(sVal);
-				}
-				if(m_oChf.IsInit())
-				{
-					CString sVal; sVal.Format(_T(" chf=\"%d\""), m_oChf->GetValue());
-					writer.WriteString(sVal);
-				}
-				if(m_oCho.IsInit())
-				{
-					CString sVal; sVal.Format(_T(" cho=\"%d\""), m_oCho->GetValue());
-					writer.WriteString(sVal);
-				}
-				if(m_oLfe.IsInit())
-				{
-					CString sVal; sVal.Format(_T(" lfe=\"%d\""), m_oLfe->GetValue());
-					writer.WriteString(sVal);
-				}
-				if(m_oLff.IsInit())
-				{
-					CString sVal; sVal.Format(_T(" lff=\"%d\""), m_oLff->GetValue());
-					writer.WriteString(sVal);
-				}
-				if(m_oLhe.IsInit())
-				{
-					CString sVal; sVal.Format(_T(" lhe=\"%d\""), m_oLhe->GetValue());
-					writer.WriteString(sVal);
-				}
-				if(m_oLhf.IsInit())
-				{
-					CString sVal; sVal.Format(_T(" lLhf=\"%d\""), m_oLhf->GetValue());
-					writer.WriteString(sVal);
-				}
-				if(m_oLho.IsInit())
-				{
-					CString sVal; sVal.Format(_T(" lho=\"%d\""), m_oLho->GetValue());
-					writer.WriteString(sVal);
-				}
-				if(m_oRfe.IsInit())
-				{
-					CString sVal; sVal.Format(_T(" rfe=\"%d\""), m_oRfe->GetValue());
-					writer.WriteString(sVal);
-				}
-				if(m_oRff.IsInit())
-				{
-					CString sVal; sVal.Format(_T(" rff=\"%d\""), m_oRff->GetValue());
-					writer.WriteString(sVal);
-				}
-				if(m_oRfo.IsInit())
-				{
-					CString sVal; sVal.Format(_T(" rfo=\"%d\""), m_oRfo->GetValue());
-					writer.WriteString(sVal);
-				}
-				if(m_oRhe.IsInit())
-				{
-					CString sVal; sVal.Format(_T(" rhe=\"%d\""), m_oRhe->GetValue());
-					writer.WriteString(sVal);
-				}
-				if(m_oRhf.IsInit())
-				{
-					CString sVal; sVal.Format(_T(" rhf=\"%d\""), m_oRhf->GetValue());
-					writer.WriteString(sVal);
-				}
-				if(m_oRho.IsInit())
-				{
-					CString sVal; sVal.Format(_T(" rho=\"%d\""), m_oRho->GetValue());
-					writer.WriteString(sVal);
-				}
-				
-				sVal += _T("\"/>");
-				writer.WriteString(sVal);
+				writer.WriteString(L"<legacyDrawingHF");
+				WritingStringAttrString(L"r:id", m_oId->ToString2());
+				WritingStringNullableAttrInt(L"cfe", m_oCfe, m_oCfe->GetValue());
+				WritingStringNullableAttrInt(L"cff", m_oCff, m_oCff->GetValue());
+				WritingStringNullableAttrInt(L"cfo", m_oCfo, m_oCfo->GetValue());
+				WritingStringNullableAttrInt(L"che", m_oChe, m_oChe->GetValue());
+				WritingStringNullableAttrInt(L"chf", m_oChf, m_oChf->GetValue());
+				WritingStringNullableAttrInt(L"cho", m_oCho, m_oCho->GetValue());
+				WritingStringNullableAttrInt(L"lfe", m_oLfe, m_oLfe->GetValue());
+				WritingStringNullableAttrInt(L"lff", m_oLff, m_oLff->GetValue());
+				WritingStringNullableAttrInt(L"lhe", m_oLhe, m_oLhe->GetValue());
+				WritingStringNullableAttrInt(L"lLhf", m_oLhf, m_oLhf->GetValue());
+				WritingStringNullableAttrInt(L"lho", m_oLho, m_oLho->GetValue());
+				WritingStringNullableAttrInt(L"rfe", m_oRfe, m_oRfe->GetValue());
+				WritingStringNullableAttrInt(L"rff", m_oRff, m_oRff->GetValue());
+				WritingStringNullableAttrInt(L"rfo", m_oRfo, m_oRfo->GetValue());
+				WritingStringNullableAttrInt(L"rhe", m_oRhe, m_oRhe->GetValue());
+				WritingStringNullableAttrInt(L"rhf", m_oRhf, m_oRhf->GetValue());
+				WritingStringNullableAttrInt(L"rho", m_oRho, m_oRho->GetValue());
+				writer.WriteString(L"\"/>");
 
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -1314,12 +1028,13 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				if(m_oId.IsInit())
 				{
-					CString sVal = _T("<picture r:id=\"") + m_oId->GetValue() + _T("\"/>");
-					writer.WriteString(sVal);
+					writer.WriteString(L"<picture");
+					WritingStringAttrString(L"r:id", m_oId->ToString2());
+					writer.WriteString(L"/>");
 				}
 				
 			}

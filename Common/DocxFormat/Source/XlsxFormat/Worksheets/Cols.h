@@ -58,59 +58,19 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(_T("<col"));
-				if(m_oBestFit.IsInit())
-				{
-					CString sVal; sVal.Format(_T(" bestFit=\"%ls\""), m_oBestFit->ToString2(SimpleTypes::onofftostring1));
-					writer.WriteString(sVal);
-				}
-				if(m_oCollapsed.IsInit())
-				{
-					CString sVal; sVal.Format(_T(" collapsed=\"%ls\""), m_oCollapsed->ToString2(SimpleTypes::onofftostring1));
-					writer.WriteString(sVal);
-				}
-				if(m_oCustomWidth.IsInit())
-				{
-					CString sVal; sVal.Format(_T(" customWidth=\"%ls\""), m_oCustomWidth->ToString2(SimpleTypes::onofftostring1));
-					writer.WriteString(sVal);
-				}
-				if(m_oHidden.IsInit())
-				{
-					CString sVal; sVal.Format(_T(" hidden=\"%ls\""), m_oHidden->ToString2(SimpleTypes::onofftostring1));
-					writer.WriteString(sVal);
-				}
-				if(m_oMin.IsInit())
-				{
-					CString sVal; sVal.Format(_T(" min=\"%d\""), m_oMin->GetValue());
-					writer.WriteString(sVal);
-				}
-				if(m_oMax.IsInit())
-				{
-					CString sVal; sVal.Format(_T(" max=\"%d\""), m_oMax->GetValue());
-					writer.WriteString(sVal);
-				}
-				if(m_oOutlineLevel.IsInit())
-				{
-					CString sVal; sVal.Format(_T(" outlineLevel=\"%d\""), m_oOutlineLevel->GetValue());
-					writer.WriteString(sVal);
-				}
-				if(m_oPhonetic.IsInit())
-				{
-					CString sVal; sVal.Format(_T(" phonetic=\"%ls\""), m_oPhonetic->ToString2(SimpleTypes::onofftostring1));
-					writer.WriteString(sVal);
-				}
-				if(m_oStyle.IsInit())
-				{
-					CString sVal; sVal.Format(_T(" style=\"%d\""), m_oStyle->GetValue());
-					writer.WriteString(sVal);
-				}
-				if(m_oWidth.IsInit())
-				{
-					CString sVal; sVal.Format(_T(" width=\"%ls\""), SpreadsheetCommon::WriteDouble(m_oWidth->GetValue()));
-					writer.WriteString(sVal);
-				}
+				WritingStringNullableAttrBool(L"bestFit", m_oBestFit);
+				WritingStringNullableAttrBool(L"collapsed", m_oCollapsed);
+				WritingStringNullableAttrBool(L"customWidth", m_oCustomWidth);
+				WritingStringNullableAttrBool(L"hidden", m_oHidden);
+				WritingStringNullableAttrInt(L"min", m_oMin, m_oMin->GetValue());
+				WritingStringNullableAttrInt(L"max", m_oMax, m_oMax->GetValue());
+				WritingStringNullableAttrInt(L"outlineLevel", m_oOutlineLevel, m_oOutlineLevel->GetValue());
+				WritingStringNullableAttrBool(L"phonetic", m_oPhonetic);
+				WritingStringNullableAttrInt(L"style", m_oStyle, m_oStyle->GetValue());
+				WritingStringNullableAttrDouble(L"width", m_oWidth, m_oWidth->GetValue());
 				writer.WriteString(_T("/>"));
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -176,7 +136,7 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				if(m_arrItems.size() > 0)
 				{

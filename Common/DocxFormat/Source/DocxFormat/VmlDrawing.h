@@ -312,7 +312,7 @@ namespace OOX
 				long nIndex = m_lObjectIdVML;
 				if(NULL != m_mapComments && m_mapComments->size() > 0)
 				{
-					for (std::map<CString, OOX::Spreadsheet::CCommentItem*>::const_iterator it = m_mapComments->begin(); it != m_mapComments->end(); ++it)
+					for (std::map<std::wstring, OOX::Spreadsheet::CCommentItem*>::const_iterator it = m_mapComments->begin(); it != m_mapComments->end(); ++it)
 					{
 						OOX::Spreadsheet::CCommentItem* comment = it->second;
 						CString sStyle;
@@ -413,7 +413,7 @@ namespace OOX
 	public:
 		CPath m_oReadPath;
 
-		std::map<CString, OOX::Spreadsheet::CCommentItem*>*		m_mapComments;
+		std::map<std::wstring, OOX::Spreadsheet::CCommentItem*>*		m_mapComments;
 		std::map<CString, int>									m_mapShapes; //связь id (_x0000_s1025) с номером объекта  для комментов
 		std::map<CString,CString>								m_mapShapesXml; //связь id (_x0000_s1025) с  xml для OfficeDrawing
 		std::vector<CString>									m_aXml;

@@ -127,7 +127,7 @@ namespace BinXlsxRW{
 	}
 	ChartWriter::~ChartWriter()
 	{
-		for(std::map<CString, std::map<int, std::map<int, OOX::Spreadsheet::CCell*>*>*>::iterator it = m_mapSheets.begin(); it != m_mapSheets.end(); it++)
+		for (std::map<std::wstring, std::map<int, std::map<int, OOX::Spreadsheet::CCell*>*>*>::iterator it = m_mapSheets.begin(); it != m_mapSheets.end(); it++)
 		{
 			std::map<int, std::map<int, OOX::Spreadsheet::CCell*>*>* rows = it->second;
 			for(std::map<int, std::map<int, OOX::Spreadsheet::CCell*>*>::iterator itRow = rows->begin(); itRow != rows->end(); itRow++)
@@ -139,21 +139,21 @@ namespace BinXlsxRW{
 	}
 	void ChartWriter::toXlsx(OOX::Spreadsheet::CXlsx& oXlsx)
 	{
-		std::vector<CString> aSharedStrings;
+		std::vector<std::wstring> aSharedStrings;
 		//Sheet
 		OOX::Spreadsheet::CWorkbook* pWorkbook = oXlsx.CreateWorkbook();
 		pWorkbook->m_oSheets.Init();
-		std::map<CString, OOX::Spreadsheet::CWorksheet*>& mapWorksheets = oXlsx.GetWorksheets();
+		std::map<std::wstring, OOX::Spreadsheet::CWorksheet*>& mapWorksheets = oXlsx.GetWorksheets();
 		int nSheetId = 1;
 		OOX::Spreadsheet::CWorksheet* pFirstWorksheet = NULL;
-		for(std::map<CString, std::map<int, std::map<int, OOX::Spreadsheet::CCell*>*>*>::iterator it = m_mapSheets.begin(); it != m_mapSheets.end(); it++)
+		for (std::map<std::wstring, std::map<int, std::map<int, OOX::Spreadsheet::CCell*>*>*>::iterator it = m_mapSheets.begin(); it != m_mapSheets.end(); it++)
 		{
-			CString sSheetName = it->first;
+			const std::wstring& sSheetName = it->first;
 			OOX::Spreadsheet::CWorksheet* pWorksheet = toXlsxGetSheet(mapWorksheets, sSheetName);
 			toXlsxSheetdata(pWorksheet, *it->second, aSharedStrings);
 			OOX::Spreadsheet::CSheet* pSheet = new OOX::Spreadsheet::CSheet();
 			pSheet->m_oName.Init();
-			pSheet->m_oName->Append(sSheetName);
+			pSheet->m_oName->append(sSheetName);
 			pSheet->m_oSheetId.Init();
 			pSheet->m_oSheetId->SetValue(nSheetId++);
 			smart_ptr<OOX::File> oWorksheetFile = smart_ptr<OOX::File>(pWorksheet);
@@ -175,7 +175,7 @@ namespace BinXlsxRW{
 		{
 			OOX::Spreadsheet::CText* pText = new OOX::Spreadsheet::CText();
 			pText->m_sText = aSharedStrings[i];
-			if(-1 == pText->m_sText.Find(_T(" ")))
+			if(std::wstring::npos == pText->m_sText.find(_T(" ")))
 			{
 				pText->m_oSpace.Init();
 				pText->m_oSpace->SetValue(SimpleTypes::xmlspacePreserve);
@@ -196,11 +196,11 @@ namespace BinXlsxRW{
 			pStyles->m_oCellXfs->m_arrItems.push_back(m_aXfs[i]);
 		}
 		pStyles->m_oNumFmts.Init();
-		for(std::map<CString, int>::iterator it = m_mapFormats.begin(); it != m_mapFormats.end(); it++)
+		for (std::map<std::wstring, int>::iterator it = m_mapFormats.begin(); it != m_mapFormats.end(); it++)
 		{
 			OOX::Spreadsheet::CNumFmt* pNumFmt = new OOX::Spreadsheet::CNumFmt();
 			pNumFmt->m_oFormatCode.Init();
-			pNumFmt->m_oFormatCode->Append(it->first);
+			pNumFmt->m_oFormatCode->append(it->first);
 			pNumFmt->m_oNumFmtId.Init();
 			pNumFmt->m_oNumFmtId->SetValue(NUMID_START + it->second);
 			pStyles->m_oNumFmts->m_arrItems.push_back(pNumFmt);
@@ -246,9 +246,9 @@ namespace BinXlsxRW{
 			OOX::Spreadsheet::CTableFile* pTable = new OOX::Spreadsheet::CTableFile();
 			pTable->m_oTable.Init();
 			pTable->m_oTable->m_oDisplayName.Init();
-			pTable->m_oTable->m_oDisplayName->Append(L"Table1");
+			pTable->m_oTable->m_oDisplayName->append(L"Table1");
 			pTable->m_oTable->m_oRef.Init();
-			pTable->m_oTable->m_oRef->SetValue(OOX::Spreadsheet::CWorksheet::combineRef(m_nRow1 - 1, m_nCol1 - 1) + L":" + OOX::Spreadsheet::CWorksheet::combineRef(m_nRow2 - 1, m_nCol2 - 1));
+			pTable->m_oTable->m_oRef->SetValue(std_string2string(OOX::Spreadsheet::CCell::combineRef(m_nRow1 - 1, m_nCol1 - 1) + L":" + OOX::Spreadsheet::CCell::combineRef(m_nRow2 - 1, m_nCol2 - 1)));
 			pTable->m_oTable->m_oTotalsRowCount.Init();
 			pTable->m_oTable->m_oTotalsRowCount->SetValue(0);
 			pTable->m_oTable->m_oTableBorderDxfId.Init();
@@ -269,7 +269,7 @@ namespace BinXlsxRW{
 				pTableColumn->m_oId.Init();
 				pTableColumn->m_oId->SetValue(i + 1);
 				pTableColumn->m_oName.Init();
-				pTableColumn->m_oName->Append(m_aTableNames[i]);
+				pTableColumn->m_oName->append(m_aTableNames[i]);
 				pTable->m_oTable->m_oTableColumns->m_arrItems.push_back(pTableColumn);
 			}
 			pTable->m_oTable->m_oTableColumns->m_oCount.Init();
@@ -482,10 +482,10 @@ namespace BinXlsxRW{
 			}
 		}
 	}
-	OOX::Spreadsheet::CWorksheet* ChartWriter::toXlsxGetSheet(std::map<CString, OOX::Spreadsheet::CWorksheet*>& mapWorksheets, const CString& sName)
+	OOX::Spreadsheet::CWorksheet* ChartWriter::toXlsxGetSheet(std::map<std::wstring, OOX::Spreadsheet::CWorksheet*>& mapWorksheets, const std::wstring& sName)
 	{
 		OOX::Spreadsheet::CWorksheet* pWorksheet = NULL;
-		std::map<CString, OOX::Spreadsheet::CWorksheet*>::const_iterator it = mapWorksheets.find(sName);
+		std::map<std::wstring, OOX::Spreadsheet::CWorksheet*>::const_iterator it = mapWorksheets.find(sName);
 		if (it == mapWorksheets.end())
 		{
 			pWorksheet = new OOX::Spreadsheet::CWorksheet();
@@ -515,7 +515,7 @@ namespace BinXlsxRW{
 		}
 		return pWorksheet;
 	}
-	void ChartWriter::toXlsxSheetdata(OOX::Spreadsheet::CWorksheet* pWorksheet, const std::map<int, std::map<int, OOX::Spreadsheet::CCell*>*>& rows, std::vector<CString>& aSharedStrings)
+	void ChartWriter::toXlsxSheetdata(OOX::Spreadsheet::CWorksheet* pWorksheet, const std::map<int, std::map<int, OOX::Spreadsheet::CCell*>*>& rows, std::vector<std::wstring>& aSharedStrings)
 	{
 		pWorksheet->m_oSheetData.Init();
 		std::vector<int> aIndexesRow;
@@ -545,7 +545,7 @@ namespace BinXlsxRW{
 				if(pCell->m_oValue.IsInit())
 				{
 					pCell->m_oType.Init();
-					const CString& val = pCell->m_oValue->m_sText;
+					const std::wstring& val = pCell->m_oValue->m_sText;
 					if(L"TRUE" == val || L"FALSE" == val)
 					{
 						pCell->m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeBool);
@@ -567,13 +567,13 @@ namespace BinXlsxRW{
 					{
 						//как в CsvReader - подозрительный код
 						WCHAR *pEndPtr;
-						wcstod(val, &pEndPtr);
+						wcstod(val.c_str(), &pEndPtr);
 						if (NULL != *pEndPtr)
 						{
 							// Не число
 							aSharedStrings.push_back(val);
 							pCell->m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeSharedString);
-							pCell->m_oValue->m_sText = std::to_string(aSharedStrings.size() - 1).c_str();
+							pCell->m_oValue->m_sText = std::to_wstring(aSharedStrings.size() - 1);
 						}
 						else
 						{
@@ -586,9 +586,9 @@ namespace BinXlsxRW{
 			pWorksheet->m_oSheetData->m_arrItems.push_back(pRow);
 		}
 	}
-	void ChartWriter::parseCell(const CString& sheet, const int& nRow, const int& nCol, const CString& val, CString* format = NULL)
+	void ChartWriter::parseCell(const std::wstring& sheet, const int& nRow, const int& nCol, const std::wstring& val, std::wstring* format = NULL)
 	{
-		std::map<CString, std::map<int, std::map<int, OOX::Spreadsheet::CCell*>*>*>::const_iterator itSheets = m_mapSheets.find(sheet);
+		std::map<std::wstring, std::map<int, std::map<int, OOX::Spreadsheet::CCell*>*>*>::const_iterator itSheets = m_mapSheets.find(sheet);
 		std::map<int, std::map<int, OOX::Spreadsheet::CCell*>*>* rows = NULL;
 		if(itSheets == m_mapSheets.end())
 		{
@@ -616,7 +616,7 @@ namespace BinXlsxRW{
 			cells->insert(std::make_pair(nCol, pNewCell));
 		}
 	}
-	OOX::Spreadsheet::CCell* ChartWriter::parseCreateCell(const int& nRow, const int& nCol, const CString& val, CString* format = NULL)
+	OOX::Spreadsheet::CCell* ChartWriter::parseCreateCell(const int& nRow, const int& nCol, const std::wstring& val, std::wstring* format = NULL)
 	{
 		OOX::Spreadsheet::CCell* pNewCell = new OOX::Spreadsheet::CCell();
 		//пока добавляем как есть, shared string после записи таблицы
@@ -625,7 +625,7 @@ namespace BinXlsxRW{
 		if(NULL != format)
 		{
 			int nXfsIndex = m_aXfs.size();
-			std::map<CString, int>::const_iterator itFormat = m_mapFormats.find(*format);
+			std::map<std::wstring, int>::const_iterator itFormat = m_mapFormats.find(*format);
 			if(itFormat == m_mapFormats.end())
 			{
 				m_mapFormats[*format] = nXfsIndex;
@@ -648,18 +648,17 @@ namespace BinXlsxRW{
 			pNewCell->m_oStyle.Init();
 			pNewCell->m_oStyle->SetValue(nXfsIndex);
 		}
-		pNewCell->m_oRef.Init();
-		pNewCell->m_oRef->Append(OOX::Spreadsheet::CWorksheet::combineRef(nRow - 1, nCol - 1));
+		pNewCell->setRowCol(nRow - 1, nCol - 1);
 		return pNewCell;
 	}
 	void ChartWriter::parseStrRef(const OOX::Spreadsheet::CT_StrRef* pStrRef, bool bUpdateRange, const wchar_t* cRangeName)
 	{
 		if(NULL != pStrRef && NULL != pStrRef->m_f)
 		{
-			CString wb, sheetFrom, sheetTo;
+			std::wstring wb, sheetFrom, sheetTo;
 			int nRow1, nCol1, nRow2, nCol2;
-			if(OOX::Spreadsheet::CWorksheet::parse3DRef(*pStrRef->m_f, wb, sheetFrom, sheetTo, nRow1, nCol1, nRow2, nCol2) &&
-					sheetFrom.GetLength() > 0 && 0 == wb.GetLength() && 0 == sheetTo.GetLength() &&
+			if(OOX::Spreadsheet::CCell::parse3DRef(*pStrRef->m_f, wb, sheetFrom, sheetTo, nRow1, nCol1, nRow2, nCol2) &&
+					sheetFrom.length() > 0 && 0 == wb.length() && 0 == sheetTo.length() &&
 					NULL != pStrRef->m_strCache)
 			{
 				bool bRow = nRow1 == nRow2;
@@ -671,14 +670,14 @@ namespace BinXlsxRW{
 						{
 							if(nCol1 > 1)
 							{
-								parseCell(sheetFrom, nRow1, nCol1 - 1, CString(cRangeName), NULL);
+								parseCell(sheetFrom, nRow1, nCol1 - 1, std::wstring(cRangeName), NULL);
 							}
 						}
 						else
 						{
 							if(nRow1 > 1)
 							{
-								parseCell(sheetFrom, nRow1 - 1, nCol1, CString(cRangeName), NULL);
+								parseCell(sheetFrom, nRow1 - 1, nCol1, std::wstring(cRangeName), NULL);
 							}
 						}
 					}
@@ -725,10 +724,10 @@ namespace BinXlsxRW{
 	{
 		if(NULL != pNumRef && NULL != pNumRef->m_f)
 		{
-			CString wb, sheetFrom, sheetTo;
+			std::wstring wb, sheetFrom, sheetTo;
 			int nRow1, nCol1, nRow2, nCol2;
-			if(OOX::Spreadsheet::CWorksheet::parse3DRef(*pNumRef->m_f, wb, sheetFrom, sheetTo, nRow1, nCol1, nRow2, nCol2) &&
-					sheetFrom.GetLength() > 0 && 0 == wb.GetLength() && 0 == sheetTo.GetLength() && NULL != pNumRef->m_numCache)
+			if(OOX::Spreadsheet::CCell::parse3DRef(*pNumRef->m_f, wb, sheetFrom, sheetTo, nRow1, nCol1, nRow2, nCol2) &&
+				sheetFrom.length() > 0 && 0 == wb.length() && 0 == sheetTo.length() && NULL != pNumRef->m_numCache)
 			{
 				bool bRow = nRow1 == nRow2;
 				if(bUpdateRange)
@@ -739,14 +738,14 @@ namespace BinXlsxRW{
 						{
 							if(nCol1 > 1)
 							{
-								parseCell(sheetFrom, nRow1, nCol1 - 1, CString(cRangeName), NULL);
+								parseCell(sheetFrom, nRow1, nCol1 - 1, std::wstring(cRangeName), NULL);
 							}
 						}
 						else
 						{
 							if(nRow1 > 1)
 							{
-								parseCell(sheetFrom, nRow1 - 1, nCol1, CString(cRangeName), NULL);
+								parseCell(sheetFrom, nRow1 - 1, nCol1, std::wstring(cRangeName), NULL);
 							}
 						}
 					}
@@ -767,13 +766,13 @@ namespace BinXlsxRW{
 						m_nCol2 = nCol2;
 					}
 				}
-				CString* formatCodeSer = pNumRef->m_numCache->m_formatCode;
+				std::wstring* formatCodeSer = pNumRef->m_numCache->m_formatCode;
 				for(size_t i = 0; i < pNumRef->m_numCache->m_pt.size(); ++i)
 				{
 					OOX::Spreadsheet::CT_NumVal* val = pNumRef->m_numCache->m_pt[i];
 					if(NULL != val->m_idx && NULL != val->m_v)
 					{
-						CString* formatCode = NULL != val->m_formatCode ? val->m_formatCode : formatCodeSer;
+						std::wstring* formatCode = NULL != val->m_formatCode ? val->m_formatCode : formatCodeSer;
 						int nRow, nCol;
 						if(bRow)
 						{

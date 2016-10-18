@@ -36,10 +36,10 @@
 
 namespace CSVWriter
 {
-	void escapeJson(const CString sInput, NSStringUtils::CStringBuilder& oBuilder)
+	void escapeJson(const std::wstring& sInput, NSStringUtils::CStringBuilder& oBuilder)
 	{
 		//http://stackoverflow.com/questions/7724448/simple-json-string-escape-for-c
-		for (int i = 0; i < sInput.GetLength(); ++i)
+		for (int i = 0; i < sInput.length(); ++i)
 		{
 			WCHAR c = sInput[i];
 			switch (c)
@@ -64,11 +64,11 @@ namespace CSVWriter
 			}
 		}
 	}
-    void WriteFile(NSFile::CFileBinary *pFile, WCHAR **pWriteBuffer, INT &nCurrentIndex, CString &sWriteString, UINT &nCodePage, bool bIsEnd)
+	void WriteFile(NSFile::CFileBinary *pFile, WCHAR **pWriteBuffer, INT &nCurrentIndex, std::wstring &sWriteString, UINT &nCodePage, bool bIsEnd)
 	{
 		if (NULL == pFile || NULL == pWriteBuffer)
 			return;
-		INT nCountChars = sWriteString.GetLength();
+		INT nCountChars = sWriteString.length();
 		if (0 == nCountChars && !bIsEnd)
 			return;
 
@@ -102,7 +102,7 @@ namespace CSVWriter
 		
 		if (!bIsEnd)
 		{
-			memcpy(*pWriteBuffer + nCurrentIndex, sWriteString.GetBuffer(), nCountChars * nSizeWchar);
+			memcpy(*pWriteBuffer + nCurrentIndex, sWriteString.c_str(), nCountChars * nSizeWchar);
 			nCurrentIndex += nCountChars;
 		}
 	}
@@ -128,12 +128,12 @@ namespace CSVWriter
 			oFile.WriteFile(arBigEndian, 2);
 		}
 
-		CString sNewLineN = _T("\n");
+		std::wstring sNewLineN = _T("\n");
 		LONG lActiveSheet = 0;
 		INT nCurrentIndex = 0;
 		WCHAR *pWriteBuffer = NULL;
 
-		CString sSheetRId = _T("Sheet1"); // Читаем не по rId, а по имени листа
+		std::wstring sSheetRId = _T("Sheet1"); // Читаем не по rId, а по имени листа
 		OOX::Spreadsheet::CWorkbook *pWorkbook = oXlsx.GetWorkbook();
 		if (NULL != pWorkbook)
 		{
@@ -158,25 +158,25 @@ namespace CSVWriter
 				else
 					pSheet = pWorkbook->m_oSheets->m_arrItems[0];
 
-				sSheetRId = bJSON ? pSheet->m_oRid->GetValue() : pSheet->m_oName.get2();
+				sSheetRId = bJSON ? string2std_string(pSheet->m_oRid->GetValue()) : pSheet->m_oName.get2();
 			}
 
-			std::map<CString, OOX::Spreadsheet::CWorksheet*> &arrWorksheets = oXlsx.GetWorksheets();
-			std::map<CString, OOX::Spreadsheet::CWorksheet*>::const_iterator pPair = arrWorksheets.find(sSheetRId);
+			std::map<std::wstring, OOX::Spreadsheet::CWorksheet*> &arrWorksheets = oXlsx.GetWorksheets();
+			std::map<std::wstring, OOX::Spreadsheet::CWorksheet*>::const_iterator pPair = arrWorksheets.find(sSheetRId);
 			if (pPair != arrWorksheets.end())
 			{
 				OOX::Spreadsheet::CWorksheet *pWorksheet = pPair->second;
 				if (NULL != pWorksheet && pWorksheet->m_oSheetData.IsInit())
 				{
 					OOX::Spreadsheet::CSharedStrings *pSharedStrings = oXlsx.GetSharedStrings();
-					CString sDelimiter = _T(""); sDelimiter += wcDelimiter;
-					CString sEscape = _T("\"\n");
+					std::wstring sDelimiter = _T(""); sDelimiter += wcDelimiter;
+					std::wstring sEscape = _T("\"\n");
 					sEscape += wcDelimiter;
-					CString sEndJson = CString(_T("]"));
-					CString sQuote = _T("\"");
-					CString sDoubleQuote = _T("\"\"");
-                    CString sBkt = CString(_T("["));
-                    CString sBktComma = _T(",[");
+					std::wstring sEndJson = CString(_T("]"));
+					std::wstring sQuote = _T("\"");
+					std::wstring sDoubleQuote = _T("\"\"");
+					std::wstring sBkt = CString(_T("["));
+					std::wstring sBktComma = _T(",[");
                     
 					if (bJSON)
                         CSVWriter::WriteFile(&oFile, &pWriteBuffer, nCurrentIndex, sBkt, nCodePage);
@@ -205,8 +205,15 @@ namespace CSVWriter
 						{
 							INT nRowTmp = 0;
 							INT nCol = 0;
-							if (!OOX::Spreadsheet::CWorksheet::parseRef(pRow->m_arrItems[j]->m_oRef.get2(), nRowTmp, nCol))
+							OOX::Spreadsheet::CCell *pCell = static_cast<OOX::Spreadsheet::CCell *>(pRow->m_arrItems[j]);
+							if (pCell->isInitRef())
+							{
+								pCell->getRowCol(nRowTmp, nCol);
+							}
+							else
+							{
 								nCol = 0 == j ? nColCurrent : nColCurrent + 1;
+							}
 
 							while (nCol > nColCurrent)
 							{
@@ -221,15 +228,13 @@ namespace CSVWriter
                                 bIsWriteCell = false;
 							}
 
-							OOX::Spreadsheet::CCell *pCell = static_cast<OOX::Spreadsheet::CCell *>(pRow->m_arrItems[j]);
-
 							// Get cell value
-							CString sCellValue = _T("");
+							std::wstring sCellValue = _T("");
 							if (pCell->m_oValue.IsInit())
 							{
 								if (pCell->m_oType.IsInit() && SimpleTypes::Spreadsheet::celltypeNumber != pCell->m_oType->GetValue())
 								{
-									int nValue = _wtoi(pCell->m_oValue->ToString());
+									int nValue = _wtoi(pCell->m_oValue->ToString().c_str());
 									if (0 <= nValue && nValue < pSharedStrings->m_arrItems.size())
 									{
 										OOX::Spreadsheet::CSi *pSi = static_cast<OOX::Spreadsheet::CSi *>(pSharedStrings->m_arrItems[nValue]);
@@ -254,9 +259,9 @@ namespace CSVWriter
 								oBuilder.WriteString(_T("\""));
 								sCellValue = CString(oBuilder.GetBuffer(), oBuilder.GetCurSize());
 							}
-							else if (-1 != sCellValue.FindOneOf(sEscape))
+							else if (std::wstring::npos != sCellValue.find_first_of(sEscape))
 							{
-								sCellValue.Replace(sQuote, sDoubleQuote);
+								NSStringExt::Replace(sCellValue, sQuote, sDoubleQuote);
 								sCellValue = sQuote + sCellValue + sQuote;
 							}
 							// Write cell value

@@ -57,19 +57,11 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(_T("<xdr:pos"));
-				if(m_oX.IsInit())
-				{
-					CString sVal;sVal.Format(_T(" x=\"%lld\""), m_oX->ToEmu());
-					writer.WriteString(sVal);
-				}
-				if(m_oY.IsInit())
-				{
-					CString sVal;sVal.Format(_T(" y=\"%lld\""), m_oY->ToEmu());
-					writer.WriteString(sVal);
-				}
+				WritingStringNullableAttrInt64(L"x", m_oX, m_oX->GetValue());
+				WritingStringNullableAttrInt64(L"y", m_oY, m_oY->GetValue());
 				writer.WriteString(_T("/>"));
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)

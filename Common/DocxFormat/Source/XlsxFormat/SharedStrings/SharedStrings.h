@@ -102,26 +102,19 @@ namespace OOX
 			}
 			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 			{
-				XmlUtils::CStringWriter sXml;
-				sXml.WriteString(_T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><sst xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\""));
-				if(m_oCount.IsInit())
-				{
-					CString sVal;sVal.Format(_T(" count=\"%d\""), m_oCount->GetValue());
-					sXml.WriteString(sVal);
-				}
-				if(m_oUniqueCount.IsInit())
-				{
-					CString sVal;sVal.Format(_T(" uniqueCount=\"%d\""), m_oUniqueCount->GetValue());
-					sXml.WriteString(sVal);
-				}
-				sXml.WriteString(_T(">"));
+				NSStringUtils::CStringBuilder writer;
+				writer.WriteString(_T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><sst xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\""));
+				WritingStringNullableAttrInt(L"count", m_oCount, m_oCount->GetValue());
+				WritingStringNullableAttrInt(L"uniqueCount", m_oUniqueCount, m_oUniqueCount->GetValue());
+				writer.WriteString(_T(">"));
 
 				for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
-					m_arrItems[i]->toXML(sXml);
+					m_arrItems[i]->toXML(writer);
 
-				sXml.WriteString(_T("</sst>"));
-
-				CDirectory::SaveToFile( oPath.GetPath(), sXml.GetData() );
+				writer.WriteString(_T("</sst>"));
+				CString sPath = oPath.GetPath();
+				NSFile::CFileBinary::SaveToFile(sPath.GetBuffer(), writer.GetData());
+				sPath.ReleaseBuffer();
 				oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
 			}
 			virtual const OOX::FileType type() const

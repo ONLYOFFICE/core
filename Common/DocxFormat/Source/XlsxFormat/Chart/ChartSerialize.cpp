@@ -31,14 +31,15 @@
  */
 //Generated code
 #include "ChartSerialize.h"
+#include "../../../../../DesktopEditor/common/String.h"
 namespace OOX{
 	namespace Spreadsheet{
 
-		void FromString_spPr(CString *spPr, nullable<OOX::Drawing::CShapeProperties> & oSpPr)
+		void FromString_spPr(std::wstring *spPr, nullable<OOX::Drawing::CShapeProperties> & oSpPr)
 		{
 			XmlUtils::CXmlLiteReader oReaderLocal;
 			//сформируем полноценную xml-строку
-            CString xmlString;// = L"<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
+            std::wstring xmlString;// = L"<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 			xmlString += L"<c:chart ";
 				xmlString += L"xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" ";
 				xmlString += L"xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" ";	
@@ -53,16 +54,16 @@ namespace OOX{
 			result = oReaderLocal.ReadNextNode();//root ... skiping
 			result = oReaderLocal.ReadNextNode();
 
-			CString sName = XmlUtils::GetNameNoNS(oReaderLocal.GetName());
+			std::wstring sName = XmlUtils::GetNameNoNS(oReaderLocal.GetName());
 			
 			if (_T("spPr") == sName)
 				oSpPr = oReaderLocal;
 		}
-		void FromString_txPr(CString *txPr, nullable<CTextProperties> & oTxPr)
+		void FromString_txPr(std::wstring *txPr, nullable<CTextProperties> & oTxPr)
 		{
 			XmlUtils::CXmlLiteReader oReaderLocal;
 			//сформируем полноценную xml-строку
-            CString xmlString ;//= L"<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
+            std::wstring xmlString ;//= L"<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 			xmlString += L"<c:txPr ";
 				xmlString += L"xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" ";
 				xmlString += L"xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" ";	
@@ -76,12 +77,12 @@ namespace OOX{
 
 			result = oReaderLocal.ReadNextNode();//root ... skiping
 
-			CString sName = XmlUtils::GetNameNoNS(oReaderLocal.GetName());
+			std::wstring sName = XmlUtils::GetNameNoNS(oReaderLocal.GetName());
 			
 			if (_T("txPr") == sName)
 				oTxPr = oReaderLocal;
 		}
-		bool FromXml_ST_PageSetupOrientation(CString& val, ST_PageSetupOrientation& eOut)
+		bool FromXml_ST_PageSetupOrientation(std::wstring& val, ST_PageSetupOrientation& eOut)
 		{
 			bool bRes = true;
 			if(_T("default")==val)
@@ -94,7 +95,7 @@ namespace OOX{
 				bRes=false;
 			return bRes;
 		}
-		bool ToXml_ST_PageSetupOrientation(ST_PageSetupOrientation& val, CString& sOut)
+		bool ToXml_ST_PageSetupOrientation(ST_PageSetupOrientation& val, std::wstring& sOut)
 		{
 			bool bRes = true;
 			if(st_pagesetuporientationDEFAULT==val)
@@ -107,7 +108,7 @@ namespace OOX{
 				bRes=false;
 			return bRes;
 		}
-		bool FromXml_ST_DispBlanksAs(CString& val, ST_DispBlanksAs& eOut)
+		bool FromXml_ST_DispBlanksAs(std::wstring& val, ST_DispBlanksAs& eOut)
 		{
 			bool bRes = true;
 			if(_T("span")==val)
@@ -120,7 +121,7 @@ namespace OOX{
 				bRes=false;
 			return bRes;
 		}
-		bool ToXml_ST_DispBlanksAs(ST_DispBlanksAs& val, CString& sOut)
+		bool ToXml_ST_DispBlanksAs(ST_DispBlanksAs& val, std::wstring& sOut)
 		{
 			bool bRes = true;
 			if(st_dispblanksasSPAN==val)
@@ -133,7 +134,7 @@ namespace OOX{
 				bRes=false;
 			return bRes;
 		}
-		bool FromXml_ST_LegendPos(CString& val, ST_LegendPos& eOut)
+		bool FromXml_ST_LegendPos(std::wstring& val, ST_LegendPos& eOut)
 		{
 			bool bRes = true;
 			if(_T("b")==val)
@@ -150,7 +151,7 @@ namespace OOX{
 				bRes=false;
 			return bRes;
 		}
-		bool ToXml_ST_LegendPos(ST_LegendPos& val, CString& sOut)
+		bool ToXml_ST_LegendPos(ST_LegendPos& val, std::wstring& sOut)
 		{
 			bool bRes = true;
 			if(st_legendposB==val)
@@ -167,7 +168,7 @@ namespace OOX{
 				bRes=false;
 			return bRes;
 		}
-		bool FromXml_ST_LayoutTarget(CString& val, ST_LayoutTarget& eOut)
+		bool FromXml_ST_LayoutTarget(std::wstring& val, ST_LayoutTarget& eOut)
 		{
 			bool bRes = true;
 			if(_T("inner")==val)
@@ -178,7 +179,7 @@ namespace OOX{
 				bRes=false;
 			return bRes;
 		}
-		bool ToXml_ST_LayoutTarget(ST_LayoutTarget& val, CString& sOut)
+		bool ToXml_ST_LayoutTarget(ST_LayoutTarget& val, std::wstring& sOut)
 		{
 			bool bRes = true;
 			if(st_layouttargetINNER==val)
@@ -189,7 +190,7 @@ namespace OOX{
 				bRes=false;
 			return bRes;
 		}
-		bool FromXml_ST_LayoutMode(CString& val, ST_LayoutMode& eOut)
+		bool FromXml_ST_LayoutMode(std::wstring& val, ST_LayoutMode& eOut)
 		{
 			bool bRes = true;
 			if(_T("edge")==val)
@@ -200,7 +201,7 @@ namespace OOX{
 				bRes=false;
 			return bRes;
 		}
-		bool ToXml_ST_LayoutMode(ST_LayoutMode& val, CString& sOut)
+		bool ToXml_ST_LayoutMode(ST_LayoutMode& val, std::wstring& sOut)
 		{
 			bool bRes = true;
 			if(st_layoutmodeEDGE==val)
@@ -211,7 +212,7 @@ namespace OOX{
 				bRes=false;
 			return bRes;
 		}
-		bool FromXml_ST_Orientation(CString& val, ST_Orientation& eOut)
+		bool FromXml_ST_Orientation(std::wstring& val, ST_Orientation& eOut)
 		{
 			bool bRes = true;
 			if(_T("maxMin")==val)
@@ -222,7 +223,7 @@ namespace OOX{
 				bRes=false;
 			return bRes;
 		}
-		bool ToXml_ST_Orientation(ST_Orientation& val, CString& sOut)
+		bool ToXml_ST_Orientation(ST_Orientation& val, std::wstring& sOut)
 		{
 			bool bRes = true;
 			if(st_orientationMAXMIN==val)
@@ -233,7 +234,7 @@ namespace OOX{
 				bRes=false;
 			return bRes;
 		}
-		bool FromXml_ST_AxPos(CString& val, ST_AxPos& eOut)
+		bool FromXml_ST_AxPos(std::wstring& val, ST_AxPos& eOut)
 		{
 			bool bRes = true;
 			if(_T("b")==val)
@@ -248,7 +249,7 @@ namespace OOX{
 				bRes=false;
 			return bRes;
 		}
-		bool ToXml_ST_AxPos(ST_AxPos& val, CString& sOut)
+		bool ToXml_ST_AxPos(ST_AxPos& val, std::wstring& sOut)
 		{
 			bool bRes = true;
 			if(st_axposB==val)
@@ -263,7 +264,7 @@ namespace OOX{
 				bRes=false;
 			return bRes;
 		}
-		bool FromXml_ST_TickMark(CString& val, ST_TickMark& eOut)
+		bool FromXml_ST_TickMark(std::wstring& val, ST_TickMark& eOut)
 		{
 			bool bRes = true;
 			if(_T("cross")==val)
@@ -278,7 +279,7 @@ namespace OOX{
 				bRes=false;
 			return bRes;
 		}
-		bool ToXml_ST_TickMark(ST_TickMark& val, CString& sOut)
+		bool ToXml_ST_TickMark(ST_TickMark& val, std::wstring& sOut)
 		{
 			bool bRes = true;
 			if(st_tickmarkCROSS==val)
@@ -293,7 +294,7 @@ namespace OOX{
 				bRes=false;
 			return bRes;
 		}
-		bool FromXml_ST_TickLblPos(CString& val, ST_TickLblPos& eOut)
+		bool FromXml_ST_TickLblPos(std::wstring& val, ST_TickLblPos& eOut)
 		{
 			bool bRes = true;
 			if(_T("high")==val)
@@ -308,7 +309,7 @@ namespace OOX{
 				bRes=false;
 			return bRes;
 		}
-		bool ToXml_ST_TickLblPos(ST_TickLblPos& val, CString& sOut)
+		bool ToXml_ST_TickLblPos(ST_TickLblPos& val, std::wstring& sOut)
 		{
 			bool bRes = true;
 			if(st_ticklblposHIGH==val)
@@ -323,7 +324,7 @@ namespace OOX{
 				bRes=false;
 			return bRes;
 		}
-		bool FromXml_ST_Crosses(CString& val, ST_Crosses& eOut)
+		bool FromXml_ST_Crosses(std::wstring& val, ST_Crosses& eOut)
 		{
 			bool bRes = true;
 			if(_T("autoZero")==val)
@@ -336,7 +337,7 @@ namespace OOX{
 				bRes=false;
 			return bRes;
 		}
-		bool ToXml_ST_Crosses(ST_Crosses& val, CString& sOut)
+		bool ToXml_ST_Crosses(ST_Crosses& val, std::wstring& sOut)
 		{
 			bool bRes = true;
 			if(st_crossesAUTOZERO==val)
@@ -349,7 +350,7 @@ namespace OOX{
 				bRes=false;
 			return bRes;
 		}
-		bool FromXml_ST_TimeUnit(CString& val, ST_TimeUnit& eOut)
+		bool FromXml_ST_TimeUnit(std::wstring& val, ST_TimeUnit& eOut)
 		{
 			bool bRes = true;
 			if(_T("days")==val)
@@ -362,7 +363,7 @@ namespace OOX{
 				bRes=false;
 			return bRes;
 		}
-		bool ToXml_ST_TimeUnit(ST_TimeUnit& val, CString& sOut)
+		bool ToXml_ST_TimeUnit(ST_TimeUnit& val, std::wstring& sOut)
 		{
 			bool bRes = true;
 			if(st_timeunitDAYS==val)
@@ -375,7 +376,7 @@ namespace OOX{
 				bRes=false;
 			return bRes;
 		}
-		bool FromXml_ST_LblAlgn(CString& val, ST_LblAlgn& eOut)
+		bool FromXml_ST_LblAlgn(std::wstring& val, ST_LblAlgn& eOut)
 		{
 			bool bRes = true;
 			if(_T("ctr")==val)
@@ -388,7 +389,7 @@ namespace OOX{
 				bRes=false;
 			return bRes;
 		}
-		bool ToXml_ST_LblAlgn(ST_LblAlgn& val, CString& sOut)
+		bool ToXml_ST_LblAlgn(ST_LblAlgn& val, std::wstring& sOut)
 		{
 			bool bRes = true;
 			if(st_lblalgnCTR==val)
@@ -401,7 +402,7 @@ namespace OOX{
 				bRes=false;
 			return bRes;
 		}
-		bool FromXml_ST_BuiltInUnit(CString& val, ST_BuiltInUnit& eOut)
+		bool FromXml_ST_BuiltInUnit(std::wstring& val, ST_BuiltInUnit& eOut)
 		{
 			bool bRes = true;
 			if(_T("hundreds")==val)
@@ -426,7 +427,7 @@ namespace OOX{
 				bRes=false;
 			return bRes;
 		}
-		bool ToXml_ST_BuiltInUnit(ST_BuiltInUnit& val, CString& sOut)
+		bool ToXml_ST_BuiltInUnit(ST_BuiltInUnit& val, std::wstring& sOut)
 		{
 			bool bRes = true;
 			if(st_builtinunitHUNDREDS==val)
@@ -451,7 +452,7 @@ namespace OOX{
 				bRes=false;
 			return bRes;
 		}
-		bool FromXml_ST_CrossBetween(CString& val, ST_CrossBetween& eOut)
+		bool FromXml_ST_CrossBetween(std::wstring& val, ST_CrossBetween& eOut)
 		{
 			bool bRes = true;
 			if(_T("between")==val)
@@ -462,7 +463,7 @@ namespace OOX{
 				bRes=false;
 			return bRes;
 		}
-		bool ToXml_ST_CrossBetween(ST_CrossBetween& val, CString& sOut)
+		bool ToXml_ST_CrossBetween(ST_CrossBetween& val, std::wstring& sOut)
 		{
 			bool bRes = true;
 			if(st_crossbetweenBETWEEN==val)
@@ -473,7 +474,7 @@ namespace OOX{
 				bRes=false;
 			return bRes;
 		}
-		bool FromXml_ST_SizeRepresents(CString& val, ST_SizeRepresents& eOut)
+		bool FromXml_ST_SizeRepresents(std::wstring& val, ST_SizeRepresents& eOut)
 		{
 			bool bRes = true;
 			if(_T("area")==val)
@@ -484,7 +485,7 @@ namespace OOX{
 				bRes=false;
 			return bRes;
 		}
-		bool ToXml_ST_SizeRepresents(ST_SizeRepresents& val, CString& sOut)
+		bool ToXml_ST_SizeRepresents(ST_SizeRepresents& val, std::wstring& sOut)
 		{
 			bool bRes = true;
 			if(st_sizerepresentsAREA==val)
@@ -495,7 +496,7 @@ namespace OOX{
 				bRes=false;
 			return bRes;
 		}
-		bool FromXml_ST_MarkerStyle(CString& val, ST_MarkerStyle& eOut)
+		bool FromXml_ST_MarkerStyle(std::wstring& val, ST_MarkerStyle& eOut)
 		{
 			bool bRes = true;
 			if(_T("circle")==val)
@@ -526,7 +527,7 @@ namespace OOX{
 				bRes=false;
 			return bRes;
 		}
-		bool ToXml_ST_MarkerStyle(ST_MarkerStyle& val, CString& sOut)
+		bool ToXml_ST_MarkerStyle(ST_MarkerStyle& val, std::wstring& sOut)
 		{
 			bool bRes = true;
 			if(st_markerstyleCIRCLE==val)
@@ -557,7 +558,7 @@ namespace OOX{
 				bRes=false;
 			return bRes;
 		}
-		bool FromXml_ST_PictureFormat(CString& val, ST_PictureFormat& eOut)
+		bool FromXml_ST_PictureFormat(std::wstring& val, ST_PictureFormat& eOut)
 		{
 			bool bRes = true;
 			if(_T("stretch")==val)
@@ -570,7 +571,7 @@ namespace OOX{
 				bRes=false;
 			return bRes;
 		}
-		bool ToXml_ST_PictureFormat(ST_PictureFormat& val, CString& sOut)
+		bool ToXml_ST_PictureFormat(ST_PictureFormat& val, std::wstring& sOut)
 		{
 			bool bRes = true;
 			if(st_pictureformatSTRETCH==val)
@@ -583,7 +584,7 @@ namespace OOX{
 				bRes=false;
 			return bRes;
 		}
-		bool FromXml_ST_DLblPos(CString& val, ST_DLblPos& eOut)
+		bool FromXml_ST_DLblPos(std::wstring& val, ST_DLblPos& eOut)
 		{
 			bool bRes = true;
 			if(_T("bestFit")==val)
@@ -608,7 +609,7 @@ namespace OOX{
 				bRes=false;
 			return bRes;
 		}
-		bool ToXml_ST_DLblPos(ST_DLblPos& val, CString& sOut)
+		bool ToXml_ST_DLblPos(ST_DLblPos& val, std::wstring& sOut)
 		{
 			bool bRes = true;
 			if(st_dlblposBESTFIT==val)
@@ -633,7 +634,7 @@ namespace OOX{
 				bRes=false;
 			return bRes;
 		}
-		bool FromXml_ST_TrendlineType(CString& val, ST_TrendlineType& eOut)
+		bool FromXml_ST_TrendlineType(std::wstring& val, ST_TrendlineType& eOut)
 		{
 			bool bRes = true;
 			if(_T("exp")==val)
@@ -652,7 +653,7 @@ namespace OOX{
 				bRes=false;
 			return bRes;
 		}
-		bool ToXml_ST_TrendlineType(ST_TrendlineType& val, CString& sOut)
+		bool ToXml_ST_TrendlineType(ST_TrendlineType& val, std::wstring& sOut)
 		{
 			bool bRes = true;
 			if(st_trendlinetypeEXP==val)
@@ -671,7 +672,7 @@ namespace OOX{
 				bRes=false;
 			return bRes;
 		}
-		bool FromXml_ST_ErrDir(CString& val, ST_ErrDir& eOut)
+		bool FromXml_ST_ErrDir(std::wstring& val, ST_ErrDir& eOut)
 		{
 			bool bRes = true;
 			if(_T("x")==val)
@@ -682,7 +683,7 @@ namespace OOX{
 				bRes=false;
 			return bRes;
 		}
-		bool ToXml_ST_ErrDir(ST_ErrDir& val, CString& sOut)
+		bool ToXml_ST_ErrDir(ST_ErrDir& val, std::wstring& sOut)
 		{
 			bool bRes = true;
 			if(st_errdirX==val)
@@ -693,7 +694,7 @@ namespace OOX{
 				bRes=false;
 			return bRes;
 		}
-		bool FromXml_ST_ErrBarType(CString& val, ST_ErrBarType& eOut)
+		bool FromXml_ST_ErrBarType(std::wstring& val, ST_ErrBarType& eOut)
 		{
 			bool bRes = true;
 			if(_T("both")==val)
@@ -706,7 +707,7 @@ namespace OOX{
 				bRes=false;
 			return bRes;
 		}
-		bool ToXml_ST_ErrBarType(ST_ErrBarType& val, CString& sOut)
+		bool ToXml_ST_ErrBarType(ST_ErrBarType& val, std::wstring& sOut)
 		{
 			bool bRes = true;
 			if(st_errbartypeBOTH==val)
@@ -719,7 +720,7 @@ namespace OOX{
 				bRes=false;
 			return bRes;
 		}
-		bool FromXml_ST_ErrValType(CString& val, ST_ErrValType& eOut)
+		bool FromXml_ST_ErrValType(std::wstring& val, ST_ErrValType& eOut)
 		{
 			bool bRes = true;
 			if(_T("cust")==val)
@@ -736,7 +737,7 @@ namespace OOX{
 				bRes=false;
 			return bRes;
 		}
-		bool ToXml_ST_ErrValType(ST_ErrValType& val, CString& sOut)
+		bool ToXml_ST_ErrValType(ST_ErrValType& val, std::wstring& sOut)
 		{
 			bool bRes = true;
 			if(st_errvaltypeCUST==val)
@@ -753,7 +754,7 @@ namespace OOX{
 				bRes=false;
 			return bRes;
 		}
-		bool FromXml_ST_SplitType(CString& val, ST_SplitType& eOut)
+		bool FromXml_ST_SplitType(std::wstring& val, ST_SplitType& eOut)
 		{
 			bool bRes = true;
 			if(_T("auto")==val)
@@ -770,7 +771,7 @@ namespace OOX{
 				bRes=false;
 			return bRes;
 		}
-		bool ToXml_ST_SplitType(ST_SplitType& val, CString& sOut)
+		bool ToXml_ST_SplitType(ST_SplitType& val, std::wstring& sOut)
 		{
 			bool bRes = true;
 			if(st_splittypeAUTO==val)
@@ -787,7 +788,7 @@ namespace OOX{
 				bRes=false;
 			return bRes;
 		}
-		bool FromXml_ST_OfPieType(CString& val, ST_OfPieType& eOut)
+		bool FromXml_ST_OfPieType(std::wstring& val, ST_OfPieType& eOut)
 		{
 			bool bRes = true;
 			if(_T("pie")==val)
@@ -798,7 +799,7 @@ namespace OOX{
 				bRes=false;
 			return bRes;
 		}
-		bool ToXml_ST_OfPieType(ST_OfPieType& val, CString& sOut)
+		bool ToXml_ST_OfPieType(ST_OfPieType& val, std::wstring& sOut)
 		{
 			bool bRes = true;
 			if(st_ofpietypePIE==val)
@@ -809,7 +810,7 @@ namespace OOX{
 				bRes=false;
 			return bRes;
 		}
-		bool FromXml_ST_BarDir(CString& val, ST_BarDir& eOut)
+		bool FromXml_ST_BarDir(std::wstring& val, ST_BarDir& eOut)
 		{
 			bool bRes = true;
 			if(_T("bar")==val)
@@ -820,7 +821,7 @@ namespace OOX{
 				bRes=false;
 			return bRes;
 		}
-		bool ToXml_ST_BarDir(ST_BarDir& val, CString& sOut)
+		bool ToXml_ST_BarDir(ST_BarDir& val, std::wstring& sOut)
 		{
 			bool bRes = true;
 			if(st_bardirBAR==val)
@@ -831,7 +832,7 @@ namespace OOX{
 				bRes=false;
 			return bRes;
 		}
-		bool FromXml_ST_BarGrouping(CString& val, ST_BarGrouping& eOut)
+		bool FromXml_ST_BarGrouping(std::wstring& val, ST_BarGrouping& eOut)
 		{
 			bool bRes = true;
 			if(_T("percentStacked")==val)
@@ -846,7 +847,7 @@ namespace OOX{
 				bRes=false;
 			return bRes;
 		}
-		bool ToXml_ST_BarGrouping(ST_BarGrouping& val, CString& sOut)
+		bool ToXml_ST_BarGrouping(ST_BarGrouping& val, std::wstring& sOut)
 		{
 			bool bRes = true;
 			if(st_bargroupingPERCENTSTACKED==val)
@@ -861,7 +862,7 @@ namespace OOX{
 				bRes=false;
 			return bRes;
 		}
-		bool FromXml_ST_Shape(CString& val, ST_Shape& eOut)
+		bool FromXml_ST_Shape(std::wstring& val, ST_Shape& eOut)
 		{
 			bool bRes = true;
 			if(_T("cone")==val)
@@ -880,7 +881,7 @@ namespace OOX{
 				bRes=false;
 			return bRes;
 		}
-		bool ToXml_ST_Shape(ST_Shape& val, CString& sOut)
+		bool ToXml_ST_Shape(ST_Shape& val, std::wstring& sOut)
 		{
 			bool bRes = true;
 			if(st_shapeCONE==val)
@@ -899,7 +900,7 @@ namespace OOX{
 				bRes=false;
 			return bRes;
 		}
-		bool FromXml_ST_ScatterStyle(CString& val, ST_ScatterStyle& eOut)
+		bool FromXml_ST_ScatterStyle(std::wstring& val, ST_ScatterStyle& eOut)
 		{
 			bool bRes = true;
 			if(_T("none")==val)
@@ -918,7 +919,7 @@ namespace OOX{
 				bRes=false;
 			return bRes;
 		}
-		bool ToXml_ST_ScatterStyle(ST_ScatterStyle& val, CString& sOut)
+		bool ToXml_ST_ScatterStyle(ST_ScatterStyle& val, std::wstring& sOut)
 		{
 			bool bRes = true;
 			if(st_scatterstyleNONE==val)
@@ -937,7 +938,7 @@ namespace OOX{
 				bRes=false;
 			return bRes;
 		}
-		bool FromXml_ST_RadarStyle(CString& val, ST_RadarStyle& eOut)
+		bool FromXml_ST_RadarStyle(std::wstring& val, ST_RadarStyle& eOut)
 		{
 			bool bRes = true;
 			if(_T("standard")==val)
@@ -950,7 +951,7 @@ namespace OOX{
 				bRes=false;
 			return bRes;
 		}
-		bool ToXml_ST_RadarStyle(ST_RadarStyle& val, CString& sOut)
+		bool ToXml_ST_RadarStyle(ST_RadarStyle& val, std::wstring& sOut)
 		{
 			bool bRes = true;
 			if(st_radarstyleSTANDARD==val)
@@ -963,7 +964,7 @@ namespace OOX{
 				bRes=false;
 			return bRes;
 		}
-		bool FromXml_ST_Grouping(CString& val, ST_Grouping& eOut)
+		bool FromXml_ST_Grouping(std::wstring& val, ST_Grouping& eOut)
 		{
 			bool bRes = true;
 			if(_T("percentStacked")==val)
@@ -976,7 +977,7 @@ namespace OOX{
 				bRes=false;
 			return bRes;
 		}
-		bool ToXml_ST_Grouping(ST_Grouping& val, CString& sOut)
+		bool ToXml_ST_Grouping(ST_Grouping& val, std::wstring& sOut)
 		{
 			bool bRes = true;
 			if(st_groupingPERCENTSTACKED==val)
@@ -1004,7 +1005,7 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("ext") == sName)
 				{
 					CT_Extension* pNewElem = new CT_Extension;
@@ -1013,22 +1014,22 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_extLst::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_extLst::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
             for(int i = 0, length = m_ext.size(); i < length; ++i)
 			{
 				CT_Extension* pElem = m_ext[i];
 				if(NULL != pElem)
 				{
-                    CString sNodeName = _T("c:ext");
+                    std::wstring sNodeName = _T("c:ext");
                     pElem->toXML(sNodeName, writer);
 				}
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_extLst::getType(){return et_ct_extlst;}
 		CT_ChartSpace::CT_ChartSpace()
@@ -1088,7 +1089,7 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("date1904") == sName)
 				{
 					CT_Boolean* pNewElem = new CT_Boolean;
@@ -1121,8 +1122,8 @@ namespace OOX{
 				}
 				else if(_T("clrMapOvr") == sName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetOuterXml();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetOuterXml();
 					*pNewElem = sVal;
 					m_clrMapOvr = pNewElem;
 				}
@@ -1146,16 +1147,16 @@ namespace OOX{
 				}
 				else if(_T("spPr") == sName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetOuterXml();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetOuterXml();
 					*pNewElem = sVal;
 					m_spPr = pNewElem;
 					FromString_spPr(m_spPr, m_oSpPr);
 				}
 				else if(_T("txPr") == sName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetInnerXml();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetInnerXml();
 					*pNewElem = sVal;
 					m_txPr = pNewElem;
 					FromString_txPr(m_txPr, m_oTxPr);
@@ -1186,34 +1187,34 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_ChartSpace::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_ChartSpace::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(" xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"")));
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L" xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
+			writer.WriteString(L">");
 			if(NULL != m_date1904)
 			{
-                CString sNodeName = _T("c:date1904");
+                std::wstring sNodeName = _T("c:date1904");
                 m_date1904->toXML(sNodeName, writer);
 			}
 			if(NULL != m_lang)
 			{
-                CString sNodeName = _T("c:lang");
+                std::wstring sNodeName = _T("c:lang");
                 m_lang->toXML(sNodeName, writer);
 			}
 			if(NULL != m_roundedCorners)
 			{
-                CString sNodeName = _T("c:roundedCorners");
+                std::wstring sNodeName = _T("c:roundedCorners");
                 m_roundedCorners->toXML(sNodeName, writer);
 			}
 			if(NULL != m_AlternateContent)
 			{
-                CString sNodeName = _T("mc:AlternateContent");
+                std::wstring sNodeName = _T("mc:AlternateContent");
                 m_AlternateContent->toXML(sNodeName, writer);
 			}
 			if(NULL != m_style)
 			{
-                CString sNodeName = _T("c:style");
+                std::wstring sNodeName = _T("c:style");
                 m_style->toXML(sNodeName, writer);
 			}
 			if(NULL != m_clrMapOvr)
@@ -1222,17 +1223,17 @@ namespace OOX{
 			}
 			if(NULL != m_pivotSource)
 			{
-                CString sNodeName = _T("c:pivotSource");
+                std::wstring sNodeName = _T("c:pivotSource");
                 m_pivotSource->toXML(sNodeName, writer);
 			}
 			if(NULL != m_protection)
 			{
-                CString sNodeName = _T("c:protection");
+                std::wstring sNodeName = _T("c:protection");
                 m_protection->toXML(sNodeName, writer);
 			}
 			if(NULL != m_chart)
 			{
-                CString sNodeName = _T("c:chart");
+                std::wstring sNodeName = _T("c:chart");
                 m_chart->toXML(sNodeName, writer);
 			}
 			if(NULL != m_spPr)
@@ -1245,35 +1246,35 @@ namespace OOX{
 			}
 			if(NULL != m_externalData)
 			{
-                CString sNodeName = _T("c:externalData");
+                std::wstring sNodeName = _T("c:externalData");
                 m_externalData->toXML(sNodeName, writer);
 			}
 			if(NULL != m_printSettings)
 			{
-                CString sNodeName = _T("c:printSettings");
+                std::wstring sNodeName = _T("c:printSettings");
                 m_printSettings->toXML(sNodeName, writer);
 			}
 			if(NULL != m_userShapes)
 			{
-                CString sNodeName = _T("c:userShapes");
+                std::wstring sNodeName = _T("c:userShapes");
                 m_userShapes->toXML(sNodeName, writer);
 			}
 			if(NULL != m_extLst)
 			{
-                CString sNodeName = _T("c:extLst");
+                std::wstring sNodeName = _T("c:extLst");
                 m_extLst->toXML(sNodeName, writer);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_ChartSpace::getType(){return et_ct_chartspace;}
 		CT_Boolean::CT_Boolean()
 		{
 			/*m_val = new bool;
-			CString s_m_val("True");
+			std::wstring s_m_val("True");
 			{
-			CString sValLower = s_m_val.MakeLower();
+			std::wstring sValLower = s_m_val.MakeLower();
 			if(_T("false") == sValLower || _T("0") == sValLower || _T("off") == sValLower)
 			*m_val = false;
 			else
@@ -1292,21 +1293,19 @@ namespace OOX{
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_Boolean::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_Boolean::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
 			{
-				CString sXml;
-				CString sVal;
+				std::wstring sVal;
 				if(*m_val)
 					sVal = _T("1");
 				else
 					sVal = _T("0");
-				sXml.Format(_T(" val=\"%ls\""), sVal);
-				writer.WriteString(sXml);
+				WritingStringAttrString(L"val", sVal);
 			}
-			writer.WriteString(CString(_T("/>")));
+			writer.WriteString(L"/>");
 		}
 		EElementType CT_Boolean::getType(){return et_ct_boolean;}
 		void CT_Boolean::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
@@ -1314,9 +1313,9 @@ namespace OOX{
 				if(_T("val") == wsName)
 				{
 					bool* pNewElem = new bool;
-					CString sVal = oReader.GetText();
-                    CString sValLower = sVal;
-                    sValLower.MakeLower();
+					std::wstring sVal = oReader.GetText();
+                    std::wstring sValLower = sVal;
+					NSStringExt::ToLower(sValLower);
 					if(_T("false") == sValLower || _T("0") == sValLower || _T("off") == sValLower)
 						*pNewElem = false;
 					else
@@ -1340,20 +1339,15 @@ namespace OOX{
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_RelId::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_RelId::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_id)
 			{
-				//todo
-				CString sXml;
-				CString sVal;
-				sVal = XmlUtils::EncodeXmlString(*m_id);
-				sXml.Format(_T(" r:id=\"%ls\""), sVal);
-				writer.WriteString(sXml);
+				WritingStringAttrEncodeXmlString(L"r:id", *m_id);
 			}
-			writer.WriteString(CString(_T(" xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"")));
-			writer.WriteString(CString(_T("/>")));
+			writer.WriteString(L" xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
+			writer.WriteString(L"/>");
 		}
 		EElementType CT_RelId::getType(){return et_ct_relid;}
 		void CT_RelId::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
@@ -1361,8 +1355,8 @@ namespace OOX{
 				if(_T("id") == wsName)
 				{
 					//todo
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetText();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetText();
 					*pNewElem = sVal;
 					m_id = pNewElem;
 				}
@@ -1371,7 +1365,7 @@ namespace OOX{
 		CT_PageSetup::CT_PageSetup()
 		{
 			/*m_paperSize = new unsigned long;
-			CString s_m_paperSize("1");
+			std::wstring s_m_paperSize("1");
 			{
 			*m_paperSize = _ttoi(s_m_paperSize);
 			}*/
@@ -1379,7 +1373,7 @@ namespace OOX{
 			m_paperHeight = NULL;
 			m_paperWidth = NULL;
 			/*m_firstPageNumber = new unsigned long;
-			CString s_m_firstPageNumber("1");
+			std::wstring s_m_firstPageNumber("1");
 			{
 			*m_firstPageNumber = _ttoi(s_m_firstPageNumber);
 			}*/
@@ -1388,9 +1382,9 @@ namespace OOX{
 			*m_orientation = st_pagesetuporientationDEFAULT;*/
 			m_orientation = NULL;
 			/*m_blackAndWhite = new bool;
-			CString s_m_blackAndWhite("False");
+			std::wstring s_m_blackAndWhite("False");
 			{
-			CString sValLower = s_m_blackAndWhite.MakeLower();
+			std::wstring sValLower = s_m_blackAndWhite.MakeLower();
 			if(_T("false") == sValLower || _T("0") == sValLower || _T("off") == sValLower)
 			*m_blackAndWhite = false;
 			else
@@ -1398,9 +1392,9 @@ namespace OOX{
 			}*/
 			m_blackAndWhite = NULL;
 			/*m_draft = new bool;
-			CString s_m_draft("False");
+			std::wstring s_m_draft("False");
 			{
-			CString sValLower = s_m_draft.MakeLower();
+			std::wstring sValLower = s_m_draft.MakeLower();
 			if(_T("false") == sValLower || _T("0") == sValLower || _T("off") == sValLower)
 			*m_draft = false;
 			else
@@ -1408,9 +1402,9 @@ namespace OOX{
 			}*/
 			m_draft = NULL;
 			/*m_useFirstPageNumber = new bool;
-			CString s_m_useFirstPageNumber("False");
+			std::wstring s_m_useFirstPageNumber("False");
 			{
-			CString sValLower = s_m_useFirstPageNumber.MakeLower();
+			std::wstring sValLower = s_m_useFirstPageNumber.MakeLower();
 			if(_T("false") == sValLower || _T("0") == sValLower || _T("off") == sValLower)
 			*m_useFirstPageNumber = false;
 			else
@@ -1418,19 +1412,19 @@ namespace OOX{
 			}*/
 			m_useFirstPageNumber = NULL;
 			/*m_horizontalDpi = new long;
-			CString s_m_horizontalDpi("600");
+			std::wstring s_m_horizontalDpi("600");
 			{
 			*m_horizontalDpi = _ttoi(s_m_horizontalDpi);
 			}*/
 			m_horizontalDpi = NULL;
 			/*m_verticalDpi = new long;
-			CString s_m_verticalDpi("600");
+			std::wstring s_m_verticalDpi("600");
 			{
 			*m_verticalDpi = _ttoi(s_m_verticalDpi);
 			}*/
 			m_verticalDpi = NULL;
 			/*m_copies = new unsigned long;
-			CString s_m_copies("1");
+			std::wstring s_m_copies("1");
 			{
 			*m_copies = _ttoi(s_m_copies);
 			}*/
@@ -1467,109 +1461,73 @@ namespace OOX{
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_PageSetup::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_PageSetup::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_paperSize)
 			{
-				CString sXml;
-				CString sVal;
-				sVal.Format(_T("%d"), *m_paperSize);
-				sXml.Format(_T(" paperSize=\"%ls\""), sVal);
-				writer.WriteString(sXml);
+				WritingStringAttrInt(L"paperSize", *m_paperSize);
 			}
 			if(NULL != m_paperHeight)
 			{
-				CString sXml;
-				CString sVal;
-				sVal = XmlUtils::EncodeXmlString(*m_paperHeight);
-				sXml.Format(_T(" paperHeight=\"%ls\""), sVal);
-				writer.WriteString(sXml);
+				WritingStringAttrEncodeXmlString(L"paperHeight", *m_paperHeight);
 			}
 			if(NULL != m_paperWidth)
 			{
-				CString sXml;
-				CString sVal;
-				sVal = XmlUtils::EncodeXmlString(*m_paperWidth);
-				sXml.Format(_T(" paperWidth=\"%ls\""), sVal);
-				writer.WriteString(sXml);
+				WritingStringAttrEncodeXmlString(L"paperWidth", *m_paperWidth);
 			}
 			if(NULL != m_firstPageNumber)
 			{
-				CString sXml;
-				CString sVal;
-				sVal.Format(_T("%d"), *m_firstPageNumber);
-				sXml.Format(_T(" firstPageNumber=\"%ls\""), sVal);
-				writer.WriteString(sXml);
+				WritingStringAttrInt(L"firstPageNumber", *m_firstPageNumber);
 			}
 			if(NULL != m_orientation)
 			{
-				CString sEnumVal;
+				std::wstring sEnumVal;
 				if(ToXml_ST_PageSetupOrientation(*m_orientation, sEnumVal))
 				{
-					CString sVal;
-					sVal.Format(_T(" orientation=\"%ls\""), sEnumVal);
-					writer.WriteString(sVal);
+					WritingStringAttrString(L"orientation", sEnumVal);
 				}
 			}
 			if(NULL != m_blackAndWhite)
 			{
-				CString sXml;
-				CString sVal;
+				std::wstring sVal;
 				if(*m_blackAndWhite)
 					sVal = _T("1");
 				else
 					sVal = _T("0");
-				sXml.Format(_T(" blackAndWhite=\"%ls\""), sVal);
-				writer.WriteString(sXml);
+				WritingStringAttrString(L"blackAndWhite", sVal);
 			}
 			if(NULL != m_draft)
 			{
-				CString sXml;
-				CString sVal;
+				std::wstring sVal;
 				if(*m_draft)
 					sVal = _T("1");
 				else
 					sVal = _T("0");
-				sXml.Format(_T(" draft=\"%ls\""), sVal);
-				writer.WriteString(sXml);
+				WritingStringAttrString(L"draft", sVal);
 			}
 			if(NULL != m_useFirstPageNumber)
 			{
-				CString sXml;
-				CString sVal;
+				std::wstring sVal;
 				if(*m_useFirstPageNumber)
 					sVal = _T("1");
 				else
 					sVal = _T("0");
-				sXml.Format(_T(" useFirstPageNumber=\"%ls\""), sVal);
-				writer.WriteString(sXml);
+				WritingStringAttrString(L"useFirstPageNumber", sVal);
 			}
 			if(NULL != m_horizontalDpi)
 			{
-				CString sXml;
-				CString sVal;
-				sVal.Format(_T("%d"), *m_horizontalDpi);
-				sXml.Format(_T(" horizontalDpi=\"%ls\""), sVal);
-				writer.WriteString(sXml);
+				WritingStringAttrInt(L"horizontalDpi", *m_horizontalDpi);
 			}
 			if(NULL != m_verticalDpi)
 			{
-				CString sXml;
-				CString sVal;
-				sVal.Format(_T("%d"), *m_verticalDpi);
-				sXml.Format(_T(" verticalDpi=\"%ls\""), sVal);
-				writer.WriteString(sXml);
+				WritingStringAttrInt(L"verticalDpi", *m_verticalDpi);
 			}
 			if(NULL != m_copies)
 			{
-				CString sXml;
-				CString sVal;
-				sVal.Format(_T("%d"), *m_copies);
-				sXml.Format(_T(" copies=\"%ls\""), sVal);
-				writer.WriteString(sXml);
+				WritingStringAttrInt(L"copies", *m_copies);
 			}
-			writer.WriteString(CString(_T("/>")));
+			writer.WriteString(L"/>");
 		}
 		EElementType CT_PageSetup::getType(){return et_ct_pagesetup;}
 		void CT_PageSetup::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
@@ -1583,15 +1541,15 @@ namespace OOX{
 				}
 				else if(_T("paperHeight") == wsName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetText();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetText();
 					*pNewElem = sVal;
 					m_paperHeight = pNewElem;
 				}
 				else if(_T("paperWidth") == wsName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetText();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetText();
 					*pNewElem = sVal;
 					m_paperWidth = pNewElem;
 				}
@@ -1607,7 +1565,7 @@ namespace OOX{
 					ST_PageSetupOrientation* pNewElem = new ST_PageSetupOrientation;
 					ST_PageSetupOrientation eVal;
 
-                    CString sNodeName = oReader.GetText();
+                    std::wstring sNodeName = oReader.GetText();
                     if(FromXml_ST_PageSetupOrientation(sNodeName, eVal))
 						*pNewElem = eVal;
 					m_orientation = pNewElem;
@@ -1615,9 +1573,9 @@ namespace OOX{
 				else if(_T("blackAndWhite") == wsName)
 				{
 					bool* pNewElem = new bool;
-					CString sVal = oReader.GetText();
-                    CString sValLower = sVal;
-                    sValLower.MakeLower();
+					std::wstring sVal = oReader.GetText();
+                    std::wstring sValLower = sVal;
+					NSStringExt::ToLower(sValLower);
 					if(_T("false") == sValLower || _T("0") == sValLower || _T("off") == sValLower)
 						*pNewElem = false;
 					else
@@ -1627,9 +1585,9 @@ namespace OOX{
 				else if(_T("draft") == wsName)
 				{
 					bool* pNewElem = new bool;
-					CString sVal = oReader.GetText();
-                    CString sValLower = sVal;
-                    sValLower.MakeLower();
+					std::wstring sVal = oReader.GetText();
+                    std::wstring sValLower = sVal;
+					NSStringExt::ToLower(sValLower);
 					if(_T("false") == sValLower || _T("0") == sValLower || _T("off") == sValLower)
 						*pNewElem = false;
 					else
@@ -1639,9 +1597,9 @@ namespace OOX{
 				else if(_T("useFirstPageNumber") == wsName)
 				{
 					bool* pNewElem = new bool;
-					CString sVal = oReader.GetText();
-                    CString sValLower = sVal;
-                    sValLower.MakeLower();
+					std::wstring sVal = oReader.GetText();
+                    std::wstring sValLower = sVal;
+					NSStringExt::ToLower(sValLower);
 					if(_T("false") == sValLower || _T("0") == sValLower || _T("off") == sValLower)
 						*pNewElem = false;
 					else
@@ -1701,58 +1659,34 @@ namespace OOX{
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_PageMargins::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_PageMargins::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_l)
 			{
-				CString sXml;
-				CString sVal;
-				sVal = SpreadsheetCommon::WriteDouble(*m_l);
-				sXml.Format(_T(" l=\"%ls\""), sVal);
-				writer.WriteString(sXml);
+				WritingStringAttrDouble(L"l", *m_l);
 			}
 			if(NULL != m_r)
 			{
-				CString sXml;
-				CString sVal;
-				sVal = SpreadsheetCommon::WriteDouble(*m_r);
-				sXml.Format(_T(" r=\"%ls\""), sVal);
-				writer.WriteString(sXml);
+				WritingStringAttrDouble(L"r", *m_r);
 			}
 			if(NULL != m_t)
 			{
-				CString sXml;
-				CString sVal;
-				sVal = SpreadsheetCommon::WriteDouble(*m_t);
-				sXml.Format(_T(" t=\"%ls\""), sVal);
-				writer.WriteString(sXml);
+				WritingStringAttrDouble(L"t", *m_t);
 			}
 			if(NULL != m_b)
 			{
-				CString sXml;
-				CString sVal;
-				sVal = SpreadsheetCommon::WriteDouble(*m_b);
-				sXml.Format(_T(" b=\"%ls\""), sVal);
-				writer.WriteString(sXml);
+				WritingStringAttrDouble(L"b", *m_b);
 			}
 			if(NULL != m_header)
 			{
-				CString sXml;
-				CString sVal;
-				sVal = SpreadsheetCommon::WriteDouble(*m_header);
-				sXml.Format(_T(" header=\"%ls\""), sVal);
-				writer.WriteString(sXml);
+				WritingStringAttrDouble(L"header", *m_header);
 			}
 			if(NULL != m_footer)
 			{
-				CString sXml;
-				CString sVal;
-				sVal = SpreadsheetCommon::WriteDouble(*m_footer);
-				sXml.Format(_T(" footer=\"%ls\""), sVal);
-				writer.WriteString(sXml);
+				WritingStringAttrDouble(L"footer", *m_footer);
 			}
-			writer.WriteString(CString(_T("/>")));
+			writer.WriteString(L"/>");
 		}
 		EElementType CT_PageMargins::getType(){return et_ct_pagemargins;}
 		void CT_PageMargins::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
@@ -1810,9 +1744,9 @@ namespace OOX{
 			m_firstHeader = NULL;
 			m_firstFooter = NULL;
 			/*m_alignWithMargins = new bool;
-			CString s_m_alignWithMargins("True");
+			std::wstring s_m_alignWithMargins("True");
 			{
-			CString sValLower = s_m_alignWithMargins.MakeLower();
+			std::wstring sValLower = s_m_alignWithMargins.MakeLower();
 			if(_T("false") == sValLower || _T("0") == sValLower || _T("off") == sValLower)
 			*m_alignWithMargins = false;
 			else
@@ -1820,9 +1754,9 @@ namespace OOX{
 			}*/
 			m_alignWithMargins = NULL;
 			/*m_differentOddEven = new bool;
-			CString s_m_differentOddEven("False");
+			std::wstring s_m_differentOddEven("False");
 			{
-			CString sValLower = s_m_differentOddEven.MakeLower();
+			std::wstring sValLower = s_m_differentOddEven.MakeLower();
 			if(_T("false") == sValLower || _T("0") == sValLower || _T("off") == sValLower)
 			*m_differentOddEven = false;
 			else
@@ -1830,9 +1764,9 @@ namespace OOX{
 			}*/
 			m_differentOddEven = NULL;
 			/*m_differentFirst = new bool;
-			CString s_m_differentFirst("False");
+			std::wstring s_m_differentFirst("False");
 			{
-			CString sValLower = s_m_differentFirst.MakeLower();
+			std::wstring sValLower = s_m_differentFirst.MakeLower();
 			if(_T("false") == sValLower || _T("0") == sValLower || _T("off") == sValLower)
 			*m_differentFirst = false;
 			else
@@ -1869,169 +1803,139 @@ namespace OOX{
 				int nParentDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nParentDepth ) )
 				{
-					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 					if(_T("oddHeader") == sName)
 					{
-						CString* pNewElem = new CString;
-						CString sVal = oReader.GetText2();
+						std::wstring* pNewElem = new std::wstring;
+						std::wstring sVal = oReader.GetText3();
 						*pNewElem = sVal;
 						m_oddHeader = pNewElem;
 					}
 					else if(_T("oddFooter") == sName)
 					{
-						CString* pNewElem = new CString;
-						CString sVal = oReader.GetText2();
+						std::wstring* pNewElem = new std::wstring;
+						std::wstring sVal = oReader.GetText3();
 						*pNewElem = sVal;
 						m_oddFooter = pNewElem;
 					}
 					else if(_T("evenHeader") == sName)
 					{
-						CString* pNewElem = new CString;
-						CString sVal = oReader.GetText2();
+						std::wstring* pNewElem = new std::wstring;
+						std::wstring sVal = oReader.GetText3();
 						*pNewElem = sVal;
 						m_evenHeader = pNewElem;
 					}
 					else if(_T("evenFooter") == sName)
 					{
-						CString* pNewElem = new CString;
-						CString sVal = oReader.GetText2();
+						std::wstring* pNewElem = new std::wstring;
+						std::wstring sVal = oReader.GetText3();
 						*pNewElem = sVal;
 						m_evenFooter = pNewElem;
 					}
 					else if(_T("firstHeader") == sName)
 					{
-						CString* pNewElem = new CString;
-						CString sVal = oReader.GetText2();
+						std::wstring* pNewElem = new std::wstring;
+						std::wstring sVal = oReader.GetText3();
 						*pNewElem = sVal;
 						m_firstHeader = pNewElem;
 					}
 					else if(_T("firstFooter") == sName)
 					{
-						CString* pNewElem = new CString;
-						CString sVal = oReader.GetText2();
+						std::wstring* pNewElem = new std::wstring;
+						std::wstring sVal = oReader.GetText3();
 						*pNewElem = sVal;
 						m_firstFooter = pNewElem;
 					}
 				}
 		}
-		void CT_HeaderFooter::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_HeaderFooter::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_alignWithMargins)
 			{
-				CString sXml;
-				CString sVal;
+				std::wstring sVal;
 				if(*m_alignWithMargins)
 					sVal = _T("1");
 				else
 					sVal = _T("0");
-				sXml.Format(_T(" alignWithMargins=\"%ls\""), sVal);
-				writer.WriteString(sXml);
+				WritingStringAttrString(L"alignWithMargins", sVal);
 			}
 			if(NULL != m_differentOddEven)
 			{
-				CString sXml;
-				CString sVal;
+				std::wstring sVal;
 				if(*m_differentOddEven)
 					sVal = _T("1");
 				else
 					sVal = _T("0");
-				sXml.Format(_T(" differentOddEven=\"%ls\""), sVal);
-				writer.WriteString(sXml);
+				WritingStringAttrString(L"differentOddEven", sVal);
 			}
 			if(NULL != m_differentFirst)
 			{
-				CString sXml;
-				CString sVal;
+				std::wstring sVal;
 				if(*m_differentFirst)
 					sVal = _T("1");
 				else
 					sVal = _T("0");
-				sXml.Format(_T(" differentFirst=\"%ls\""), sVal);
-				writer.WriteString(sXml);
+				WritingStringAttrString(L"differentFirst", sVal);
 			}
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_oddHeader)
 			{
-				CString sXml;
-				CString sVal;
-				sVal = XmlUtils::EncodeXmlString(*m_oddHeader);
-				if(-1 != sVal.Find(' ') || -1 != sVal.Find('\n'))
-					sXml.Append(_T("<c:oddHeader xml:space=\"preserve\">"));
+				if (std::wstring::npos != m_oddHeader->find(' ') || std::wstring::npos != m_oddHeader->find('\n'))
+					writer.WriteString(L"<c:oddHeader xml:space=\"preserve\">");
 				else
-					sXml.Append(_T("<c:oddHeader>"));
-				sXml.Append(sVal);
-				sXml.Append(_T("</c:oddHeader>"));
-				writer.WriteString(sXml);
+					writer.WriteString(L"<c:oddHeader>");
+				writer.WriteEncodeXmlString(*m_oddHeader);
+				writer.WriteString(L"</c:oddHeader>");
 			}
 			if(NULL != m_oddFooter)
 			{
-				CString sXml;
-				CString sVal;
-				sVal = XmlUtils::EncodeXmlString(*m_oddFooter);
-				if(-1 != sVal.Find(' ') || -1 != sVal.Find('\n'))
-					sXml.Append(_T("<c:oddFooter xml:space=\"preserve\">"));
+				if (std::wstring::npos != m_oddFooter->find(' ') || std::wstring::npos != m_oddFooter->find('\n'))
+					writer.WriteString(L"<c:oddFooter xml:space=\"preserve\">");
 				else
-					sXml.Append(_T("<c:oddFooter>"));
-				sXml.Append(sVal);
-				sXml.Append(_T("</c:oddFooter>"));
-				writer.WriteString(sXml);
+					writer.WriteString(L"<c:oddFooter>");
+				writer.WriteEncodeXmlString(*m_oddFooter);
+				writer.WriteString(L"</c:oddFooter>");
 			}
 			if(NULL != m_evenHeader)
 			{
-				CString sXml;
-				CString sVal;
-				sVal = XmlUtils::EncodeXmlString(*m_evenHeader);
-				if(-1 != sVal.Find(' ') || -1 != sVal.Find('\n'))
-					sXml.Append(_T("<c:evenHeader xml:space=\"preserve\">"));
+				if (std::wstring::npos != m_evenHeader->find(' ') || std::wstring::npos != m_evenHeader->find('\n'))
+					writer.WriteString(L"<c:evenHeader xml:space=\"preserve\">");
 				else
-					sXml.Append(_T("<c:evenHeader>"));
-				sXml.Append(sVal);
-				sXml.Append(_T("</c:evenHeader>"));
-				writer.WriteString(sXml);
+					writer.WriteString(L"<c:evenHeader>");
+				writer.WriteEncodeXmlString(*m_evenHeader);
+				writer.WriteString(L"</c:evenHeader>");
 			}
 			if(NULL != m_evenFooter)
 			{
-				CString sXml;
-				CString sVal;
-				sVal = XmlUtils::EncodeXmlString(*m_evenFooter);
-				if(-1 != sVal.Find(' ') || -1 != sVal.Find('\n'))
-					sXml.Append(_T("<c:evenFooter xml:space=\"preserve\">"));
+				if (std::wstring::npos != m_evenFooter->find(' ') || std::wstring::npos != m_evenFooter->find('\n'))
+					writer.WriteString(L"<c:evenFooter xml:space=\"preserve\">");
 				else
-					sXml.Append(_T("<c:evenFooter>"));
-				sXml.Append(sVal);
-				sXml.Append(_T("</c:evenFooter>"));
-				writer.WriteString(sXml);
+					writer.WriteString(L"<c:evenFooter>");
+				writer.WriteEncodeXmlString(*m_evenFooter);
+				writer.WriteString(L"</c:evenFooter>");
 			}
 			if(NULL != m_firstHeader)
 			{
-				CString sXml;
-				CString sVal;
-				sVal = XmlUtils::EncodeXmlString(*m_firstHeader);
-				if(-1 != sVal.Find(' ') || -1 != sVal.Find('\n'))
-					sXml.Append(_T("<c:firstHeader xml:space=\"preserve\">"));
+				if (std::wstring::npos != m_firstHeader->find(' ') || std::wstring::npos != m_firstHeader->find('\n'))
+					writer.WriteString(L"<c:firstHeader xml:space=\"preserve\">");
 				else
-					sXml.Append(_T("<c:firstHeader>"));
-				sXml.Append(sVal);
-				sXml.Append(_T("</c:firstHeader>"));
-				writer.WriteString(sXml);
+					writer.WriteString(L"<c:firstHeader>");
+				writer.WriteEncodeXmlString(*m_firstHeader);
+				writer.WriteString(L"</c:firstHeader>");
 			}
 			if(NULL != m_firstFooter)
 			{
-				CString sXml;
-				CString sVal;
-				sVal = XmlUtils::EncodeXmlString(*m_firstFooter);
-				if(-1 != sVal.Find(' ') || -1 != sVal.Find('\n'))
-					sXml.Append(_T("<c:firstFooter xml:space=\"preserve\">"));
+				if (std::wstring::npos != m_firstFooter->find(' ') || std::wstring::npos != m_firstFooter->find('\n'))
+					writer.WriteString(L"<c:firstFooter xml:space=\"preserve\">");
 				else
-					sXml.Append(_T("<c:firstFooter>"));
-				sXml.Append(sVal);
-				sXml.Append(_T("</c:firstFooter>"));
-				writer.WriteString(sXml);
+					writer.WriteString(L"<c:firstFooter>");
+				writer.WriteEncodeXmlString(*m_firstFooter);
+				writer.WriteString(L"</c:firstFooter>");
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_HeaderFooter::getType(){return et_ct_headerfooter;}
 		void CT_HeaderFooter::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
@@ -2039,9 +1943,9 @@ namespace OOX{
 				if(_T("alignWithMargins") == wsName)
 				{
 					bool* pNewElem = new bool;
-					CString sVal = oReader.GetText();
-                    CString sValLower = sVal;
-                    sValLower.MakeLower();
+					std::wstring sVal = oReader.GetText();
+                    std::wstring sValLower = sVal;
+					NSStringExt::ToLower(sValLower);
 					if(_T("false") == sValLower || _T("0") == sValLower || _T("off") == sValLower)
 						*pNewElem = false;
 					else
@@ -2051,9 +1955,9 @@ namespace OOX{
 				else if(_T("differentOddEven") == wsName)
 				{
 					bool* pNewElem = new bool;
-					CString sVal = oReader.GetText();
-                    CString sValLower = sVal;
-                    sValLower.MakeLower();
+					std::wstring sVal = oReader.GetText();
+                    std::wstring sValLower = sVal;
+					NSStringExt::ToLower(sValLower);
 					if(_T("false") == sValLower || _T("0") == sValLower || _T("off") == sValLower)
 						*pNewElem = false;
 					else
@@ -2063,9 +1967,9 @@ namespace OOX{
 				else if(_T("differentFirst") == wsName)
 				{
 					bool* pNewElem = new bool;
-					CString sVal = oReader.GetText();
-                    CString sValLower = sVal;
-                    sValLower.MakeLower();
+					std::wstring sVal = oReader.GetText();
+                    std::wstring sValLower = sVal;
+					NSStringExt::ToLower(sValLower);
 					if(_T("false") == sValLower || _T("0") == sValLower || _T("off") == sValLower)
 						*pNewElem = false;
 					else
@@ -2095,7 +1999,7 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("headerFooter") == sName)
 				{
 					CT_HeaderFooter* pNewElem = new CT_HeaderFooter;
@@ -2116,28 +2020,28 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_PrintSettings::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_PrintSettings::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_headerFooter)
 			{
-                CString sNodeName = _T("c:headerFooter");
+                std::wstring sNodeName = _T("c:headerFooter");
                 m_headerFooter->toXML(sNodeName, writer);
 			}
 			if(NULL != m_pageMargins)
 			{
-                CString sNodeName = _T("c:pageMargins");
+                std::wstring sNodeName = _T("c:pageMargins");
                 m_pageMargins->toXML(sNodeName, writer);
 			}
 			if(NULL != m_pageSetup)
 			{
-                CString sNodeName = _T("c:pageSetup");
+                std::wstring sNodeName = _T("c:pageSetup");
                 m_pageSetup->toXML(sNodeName, writer);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_PrintSettings::getType(){return et_ct_printsettings;}
 		CT_ExternalData::CT_ExternalData()
@@ -2160,7 +2064,7 @@ namespace OOX{
 				int nParentDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nParentDepth ) )
 				{
-					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 					if(_T("autoUpdate") == sName)
 					{
 						CT_Boolean* pNewElem = new CT_Boolean;
@@ -2169,27 +2073,22 @@ namespace OOX{
 					}
 				}
 		}
-		void CT_ExternalData::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_ExternalData::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_id)
 			{
-				//todo
-				CString sXml;
-				CString sVal;
-				sVal = XmlUtils::EncodeXmlString(*m_id);
-				sXml.Format(_T(" r:id=\"%ls\""), sVal);
-				writer.WriteString(sXml);
+				WritingStringAttrEncodeXmlString(L"r:id", *m_id);
 			}
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_autoUpdate)
 			{
-                CString sNodeName = _T("c:autoUpdate");
+                std::wstring sNodeName = _T("c:autoUpdate");
                 m_autoUpdate->toXML(sNodeName, writer);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_ExternalData::getType(){return et_ct_externaldata;}
 		void CT_ExternalData::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
@@ -2197,8 +2096,8 @@ namespace OOX{
 				if(_T("id") == wsName)
 				{
 					//todo
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetText();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetText();
 					*pNewElem = sVal;
 					m_id = pNewElem;
 				}
@@ -2221,20 +2120,18 @@ namespace OOX{
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_DispBlanksAs::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_DispBlanksAs::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
 			{
-				CString sEnumVal;
+				std::wstring sEnumVal;
 				if(ToXml_ST_DispBlanksAs(*m_val, sEnumVal))
 				{
-					CString sVal;
-					sVal.Format(_T(" val=\"%ls\""), sEnumVal);
-					writer.WriteString(sVal);
+					WritingStringAttrString(L"val", sEnumVal);
 				}
 			}
-			writer.WriteString(CString(_T("/>")));
+			writer.WriteString(L"/>");
 		}
 		EElementType CT_DispBlanksAs::getType(){return et_ct_dispblanksas;}
 		void CT_DispBlanksAs::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
@@ -2243,7 +2140,7 @@ namespace OOX{
 				{
 					ST_DispBlanksAs* pNewElem = new ST_DispBlanksAs;
 					ST_DispBlanksAs eVal;
-                    CString sNodeName = oReader.GetText();
+                    std::wstring sNodeName = oReader.GetText();
                     if(FromXml_ST_DispBlanksAs(sNodeName, eVal))
 						*pNewElem = eVal;
 					m_val = pNewElem;
@@ -2274,7 +2171,7 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("idx") == sName)
 				{
 					CT_UnsignedInt* pNewElem = new CT_UnsignedInt;
@@ -2289,8 +2186,8 @@ namespace OOX{
 				}
 				else if(_T("txPr") == sName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetInnerXml();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetInnerXml();
 					*pNewElem = sVal;
 					m_txPr = pNewElem;
 					FromString_txPr(m_txPr, m_oTxPr);
@@ -2303,18 +2200,18 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_LegendEntry::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_LegendEntry::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_idx)
 			{
-                CString sNodeName = _T("c:idx");
+                std::wstring sNodeName = _T("c:idx");
                 m_idx->toXML(sNodeName, writer);
 			}
 			if(NULL != m_delete)
 			{
-                CString sNodeName = _T("c:delete");
+                std::wstring sNodeName = _T("c:delete");
                 m_delete->toXML(sNodeName, writer);
 			}
 			if(NULL != m_txPr)
@@ -2323,12 +2220,12 @@ namespace OOX{
 			}
 			if(NULL != m_extLst)
 			{
-                CString sNodeName = _T("c:extLst");
+                std::wstring sNodeName = _T("c:extLst");
                 m_extLst->toXML(sNodeName, writer);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_LegendEntry::getType(){return et_ct_legendentry;}
 		CT_UnsignedInt::CT_UnsignedInt()
@@ -2346,18 +2243,14 @@ namespace OOX{
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-        void CT_UnsignedInt::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+        void CT_UnsignedInt::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
 			{
-				CString sXml;
-				CString sVal;
-				sVal.Format(_T("%d"), *m_val);
-				sXml.Format(_T(" val=\"%ls\""), sVal);
-				writer.WriteString(sXml);
+				WritingStringAttrInt(L"val", *m_val);
 			}
-			writer.WriteString(CString(_T("/>")));
+			writer.WriteString(L"/>");
 		}
 		EElementType CT_UnsignedInt::getType(){return et_ct_unsignedint;}
 		void CT_UnsignedInt::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
@@ -2391,50 +2284,44 @@ namespace OOX{
 				int nParentDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nParentDepth ) )
 				{
-					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 					if(_T("Any") == sName)
 					{
-						CString* pNewElem = new CString;
-						CString sVal = oReader.GetText2();
+						std::wstring* pNewElem = new std::wstring;
+						std::wstring sVal = oReader.GetText3();
 						*pNewElem = sVal;
 						m_Any = pNewElem;
 					}
 				}
 		}
-		void CT_Extension::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_Extension::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_uri)
 			{
-				CString sXml;
-				CString sVal;
-				sVal = XmlUtils::EncodeXmlString(*m_uri);
-				sXml.Format(_T(" uri=\"%ls\""), sVal);
-				writer.WriteString(sXml);
+				WritingStringAttrEncodeXmlString(L"uri", *m_uri);
 			}
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_Any)
 			{
-				CString sXml;
-				CString sVal;
-				sVal = XmlUtils::EncodeXmlString(*m_Any);
-				if(-1 != sVal.Find(' ') || -1 != sVal.Find('\n'))
-					sXml.Format(_T("<c:Any xml:space=\"preserve\">%ls</c:Any>"), sVal);
+				if (std::wstring::npos != m_Any->find(' ') || std::wstring::npos != m_Any->find('\n'))
+					writer.WriteString(L"<c:Any xml:space=\"preserve\">");
 				else
-					sXml.Format(_T("<c:Any>%ls</c:Any>"), sVal);
-				writer.WriteString(sXml);
+					writer.WriteString(L"<c:Any>");
+				writer.WriteEncodeXmlString(*m_Any);
+				writer.WriteString(L"</c:Any>");
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_Extension::getType(){return et_ct_extension;}
 		void CT_Extension::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("uri") == wsName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetText();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetText();
 					*pNewElem = sVal;
 					m_uri = pNewElem;
 				}
@@ -2457,20 +2344,18 @@ namespace OOX{
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_LegendPos::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_LegendPos::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
 			{
-				CString sEnumVal;
+				std::wstring sEnumVal;
 				if(ToXml_ST_LegendPos(*m_val, sEnumVal))
 				{
-					CString sVal;
-					sVal.Format(_T(" val=\"%ls\""), sEnumVal);
-					writer.WriteString(sVal);
+					WritingStringAttrString(L"val", sEnumVal);
 				}
 			}
-			writer.WriteString(CString(_T("/>")));
+			writer.WriteString(L"/>");
 		}
 		EElementType CT_LegendPos::getType(){return et_ct_legendpos;}
 		void CT_LegendPos::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
@@ -2480,7 +2365,7 @@ namespace OOX{
 					ST_LegendPos* pNewElem = new ST_LegendPos;
 					ST_LegendPos eVal;
 
-                    CString sNodeName = oReader.GetText();
+                    std::wstring sNodeName = oReader.GetText();
                     if(FromXml_ST_LegendPos(sNodeName, eVal))
 						*pNewElem = eVal;
 					m_val = pNewElem;
@@ -2520,7 +2405,7 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("legendPos") == sName)
 				{
 					CT_LegendPos* pNewElem = new CT_LegendPos;
@@ -2547,16 +2432,16 @@ namespace OOX{
 				}
 				else if(_T("spPr") == sName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetOuterXml();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetOuterXml();
 					*pNewElem = sVal;
 					m_spPr = pNewElem;
 					FromString_spPr(m_spPr, m_oSpPr);
 				}
 				else if(_T("txPr") == sName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetInnerXml();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetInnerXml();
 					*pNewElem = sVal;
 					m_txPr = pNewElem;
 					FromString_txPr(m_txPr, m_oTxPr);
@@ -2569,13 +2454,13 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_Legend::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_Legend::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_legendPos)
 			{
-                CString sNodeName = _T("c:legendPos");
+                std::wstring sNodeName = _T("c:legendPos");
                 m_legendPos->toXML(sNodeName, writer);
 			}
             for(int i = 0, length = m_legendEntry.size(); i < length; ++i)
@@ -2583,18 +2468,18 @@ namespace OOX{
 				CT_LegendEntry* pElem = m_legendEntry[i];
 				if(NULL != pElem)
 				{
-                    CString sNodeName = _T("c:legendEntry");
+                    std::wstring sNodeName = _T("c:legendEntry");
                     pElem->toXML(sNodeName, writer);
 				}
 			}
 			if(NULL != m_layout)
 			{
-                CString sNodeName = _T("c:layout");
+                std::wstring sNodeName = _T("c:layout");
                 m_layout->toXML(sNodeName, writer);
 			}
 			if(NULL != m_overlay)
 			{
-                CString sNodeName = _T("c:overlay");
+                std::wstring sNodeName = _T("c:overlay");
                 m_overlay->toXML(sNodeName, writer);
 			}
 			if(NULL != m_spPr)
@@ -2607,12 +2492,12 @@ namespace OOX{
 			}
 			if(NULL != m_extLst)
 			{
-                CString sNodeName = _T("c:extLst");
+                std::wstring sNodeName = _T("c:extLst");
                 m_extLst->toXML(sNodeName, writer);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_Legend::getType(){return et_ct_legend;}
 		CT_Layout::CT_Layout()
@@ -2633,7 +2518,7 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("manualLayout") == sName)
 				{
 					CT_ManualLayout* pNewElem = new CT_ManualLayout;
@@ -2648,23 +2533,23 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_Layout::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_Layout::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_manualLayout)
 			{
-                CString sNodeName = _T("c:manualLayout");
+                std::wstring sNodeName = _T("c:manualLayout");
                 m_manualLayout->toXML(sNodeName, writer);
 			}
 			if(NULL != m_extLst)
 			{
-                CString sNodeName = _T("c:extLst");
+                std::wstring sNodeName = _T("c:extLst");
                 m_extLst->toXML(sNodeName, writer);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_Layout::getType(){return et_ct_layout;}
 		CT_ManualLayout::CT_ManualLayout()
@@ -2709,7 +2594,7 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("layoutTarget") == sName)
 				{
 					CT_LayoutTarget* pNewElem = new CT_LayoutTarget;
@@ -2772,63 +2657,63 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_ManualLayout::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_ManualLayout::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_layoutTarget)
 			{
-                CString sNodeName = _T("c:layoutTarget");
+                std::wstring sNodeName = _T("c:layoutTarget");
                 m_layoutTarget->toXML(sNodeName, writer);
 			}
 			if(NULL != m_xMode)
 			{
-                CString sNodeName = _T("c:xMode");
+                std::wstring sNodeName = _T("c:xMode");
                 m_xMode->toXML(sNodeName, writer);
 			}
 			if(NULL != m_yMode)
 			{
-                CString sNodeName = _T("c:yMode");
+                std::wstring sNodeName = _T("c:yMode");
                 m_yMode->toXML(sNodeName, writer);
 			}
 			if(NULL != m_wMode)
 			{
-                CString sNodeName = _T("c:wMode");
+                std::wstring sNodeName = _T("c:wMode");
                 m_wMode->toXML(sNodeName, writer);
 			}
 			if(NULL != m_hMode)
 			{
-                CString sNodeName = _T("c:hMode");
+                std::wstring sNodeName = _T("c:hMode");
                 m_hMode->toXML(sNodeName, writer);
 			}
 			if(NULL != m_x)
 			{
-                CString sNodeName = _T("c:x");
+                std::wstring sNodeName = _T("c:x");
                 m_x->toXML(sNodeName, writer);
 			}
 			if(NULL != m_y)
 			{
-                CString sNodeName = _T("c:y");
+                std::wstring sNodeName = _T("c:y");
                 m_y->toXML(sNodeName, writer);
 			}
 			if(NULL != m_w)
 			{
-                CString sNodeName = _T("c:w");
+                std::wstring sNodeName = _T("c:w");
                 m_w->toXML(sNodeName, writer);
 			}
 			if(NULL != m_h)
 			{
-                CString sNodeName = _T("c:h");
+                std::wstring sNodeName = _T("c:h");
                 m_h->toXML(sNodeName, writer);
 			}
 			if(NULL != m_extLst)
 			{
-                CString sNodeName = _T("c:extLst");
+                std::wstring sNodeName = _T("c:extLst");
                 m_extLst->toXML(sNodeName, writer);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_ManualLayout::getType(){return et_ct_manuallayout;}
 		CT_LayoutTarget::CT_LayoutTarget()
@@ -2848,20 +2733,18 @@ namespace OOX{
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_LayoutTarget::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_LayoutTarget::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
 			{
-				CString sEnumVal;
+				std::wstring sEnumVal;
 				if(ToXml_ST_LayoutTarget(*m_val, sEnumVal))
 				{
-					CString sVal;
-					sVal.Format(_T(" val=\"%ls\""), sEnumVal);
-					writer.WriteString(sVal);
+					WritingStringAttrString(L"val", sEnumVal);
 				}
 			}
-			writer.WriteString(CString(_T("/>")));
+			writer.WriteString(L"/>");
 		}
 		EElementType CT_LayoutTarget::getType(){return et_ct_layouttarget;}
 		void CT_LayoutTarget::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
@@ -2871,7 +2754,7 @@ namespace OOX{
 					ST_LayoutTarget* pNewElem = new ST_LayoutTarget;
 					ST_LayoutTarget eVal;
 
-                    CString sNodeName = oReader.GetText();
+                    std::wstring sNodeName = oReader.GetText();
                     if(FromXml_ST_LayoutTarget(sNodeName, eVal))
 						*pNewElem = eVal;
 					m_val = pNewElem;
@@ -2895,20 +2778,18 @@ namespace OOX{
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_LayoutMode::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_LayoutMode::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
 			{
-				CString sEnumVal;
+				std::wstring sEnumVal;
 				if(ToXml_ST_LayoutMode(*m_val, sEnumVal))
 				{
-					CString sVal;
-					sVal.Format(_T(" val=\"%ls\""), sEnumVal);
-					writer.WriteString(sVal);
+					WritingStringAttrString(L"val", sEnumVal);
 				}
 			}
-			writer.WriteString(CString(_T("/>")));
+			writer.WriteString(L"/>");
 		}
 		EElementType CT_LayoutMode::getType(){return et_ct_layoutmode;}
 		void CT_LayoutMode::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
@@ -2918,7 +2799,7 @@ namespace OOX{
 					ST_LayoutMode* pNewElem = new ST_LayoutMode;
 					ST_LayoutMode eVal;
 
-                    CString sNodeName = oReader.GetText();
+                    std::wstring sNodeName = oReader.GetText();
 
                     if(FromXml_ST_LayoutMode(sNodeName, eVal))
 						*pNewElem = eVal;
@@ -2941,18 +2822,14 @@ namespace OOX{
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_Double::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_Double::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
 			{
-				CString sXml;
-				CString sVal;
-				sVal = SpreadsheetCommon::WriteDouble(*m_val);
-				sXml.Format(_T(" val=\"%ls\""), sVal);
-				writer.WriteString(sXml);
+				WritingStringAttrDouble(L"val", *m_val);
 			}
-			writer.WriteString(CString(_T("/>")));
+			writer.WriteString(L"/>");
 		}
 		EElementType CT_Double::getType(){return et_ct_double;}
 		void CT_Double::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
@@ -2999,7 +2876,7 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("showHorzBorder") == sName)
 				{
 					CT_Boolean* pNewElem = new CT_Boolean;
@@ -3026,16 +2903,16 @@ namespace OOX{
 				}
 				else if(_T("spPr") == sName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetOuterXml();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetOuterXml();
 					*pNewElem = sVal;
 					m_spPr = pNewElem;
 					FromString_spPr(m_spPr, m_oSpPr);
 				}
 				else if(_T("txPr") == sName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetInnerXml();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetInnerXml();
 					*pNewElem = sVal;
 					m_txPr = pNewElem;
 					FromString_txPr(m_txPr, m_oTxPr);
@@ -3048,28 +2925,28 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_DTable::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_DTable::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_showHorzBorder)
 			{
-                CString sNodeName = _T("c:showHorzBorder");
+                std::wstring sNodeName = _T("c:showHorzBorder");
                 m_showHorzBorder->toXML(sNodeName, writer);
 			}
 			if(NULL != m_showVertBorder)
 			{
-                CString sNodeName = _T("c:showVertBorder");
+                std::wstring sNodeName = _T("c:showVertBorder");
                 m_showVertBorder->toXML(sNodeName, writer);
 			}
 			if(NULL != m_showOutline)
 			{
-                CString sNodeName = _T("c:showOutline");
+                std::wstring sNodeName = _T("c:showOutline");
                 m_showOutline->toXML(sNodeName, writer);
 			}
 			if(NULL != m_showKeys)
 			{
-                CString sNodeName = _T("c:showKeys");
+                std::wstring sNodeName = _T("c:showKeys");
                 m_showKeys->toXML(sNodeName, writer);
 			}
 			if(NULL != m_spPr)
@@ -3082,12 +2959,12 @@ namespace OOX{
 			}
 			if(NULL != m_extLst)
 			{
-                CString sNodeName = _T("c:extLst");
+                std::wstring sNodeName = _T("c:extLst");
                 m_extLst->toXML(sNodeName, writer);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_DTable::getType(){return et_ct_dtable;}
 		CT_SerAx::CT_SerAx()
@@ -3159,7 +3036,7 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("axId") == sName)
 				{
 					CT_UnsignedInt* pNewElem = new CT_UnsignedInt;
@@ -3228,16 +3105,16 @@ namespace OOX{
 				}
 				else if(_T("spPr") == sName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetOuterXml();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetOuterXml();
 					*pNewElem = sVal;
 					m_spPr = pNewElem;
 					FromString_spPr(m_spPr, m_oSpPr);
 				}
 				else if(_T("txPr") == sName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetInnerXml();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetInnerXml();
 					*pNewElem = sVal;
 					m_txPr = pNewElem;
 					FromString_txPr(m_txPr, m_oTxPr);
@@ -3280,63 +3157,63 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_SerAx::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_SerAx::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_axId)
 			{
-                CString sNodeName = _T("c:axId");
+                std::wstring sNodeName = _T("c:axId");
                 m_axId->toXML(sNodeName, writer);
 			}
 			if(NULL != m_scaling)
 			{
-                CString sNodeName = _T("c:scaling");
+                std::wstring sNodeName = _T("c:scaling");
                 m_scaling->toXML(sNodeName, writer);
 			}
 			if(NULL != m_delete)
 			{
-                CString sNodeName = _T("c:delete");
+                std::wstring sNodeName = _T("c:delete");
                 m_delete->toXML(sNodeName, writer);
 			}
 			if(NULL != m_axPos)
 			{
-                CString sNodeName = _T("c:axPos");
+                std::wstring sNodeName = _T("c:axPos");
                 m_axPos->toXML(sNodeName, writer);
 			}
 			if(NULL != m_majorGridlines)
 			{
-                CString sNodeName = _T("c:majorGridlines");
+                std::wstring sNodeName = _T("c:majorGridlines");
                 m_majorGridlines->toXML(sNodeName, writer);
 			}
 			if(NULL != m_minorGridlines)
 			{
-                CString sNodeName = _T("c:minorGridlines");
+                std::wstring sNodeName = _T("c:minorGridlines");
                 m_minorGridlines->toXML(sNodeName, writer);
 			}
 			if(NULL != m_title)
 			{
-                CString sNodeName = _T("c:title");
+                std::wstring sNodeName = _T("c:title");
                 m_title->toXML(sNodeName, writer);
 			}
 			if(NULL != m_numFmt)
 			{
-                CString sNodeName = _T("c:numFmt");
+                std::wstring sNodeName = _T("c:numFmt");
                 m_numFmt->toXML(sNodeName, writer);
 			}
 			if(NULL != m_majorTickMark)
 			{
-                CString sNodeName = _T("c:majorTickMark");
+                std::wstring sNodeName = _T("c:majorTickMark");
                 m_majorTickMark->toXML(sNodeName, writer);
 			}
 			if(NULL != m_minorTickMark)
 			{
-                CString sNodeName = _T("c:minorTickMark");
+                std::wstring sNodeName = _T("c:minorTickMark");
                 m_minorTickMark->toXML(sNodeName, writer);
 			}
 			if(NULL != m_tickLblPos)
 			{
-                CString sNodeName = _T("c:tickLblPos");
+                std::wstring sNodeName = _T("c:tickLblPos");
                 m_tickLblPos->toXML(sNodeName, writer);
 			}
 			if(NULL != m_spPr)
@@ -3349,37 +3226,37 @@ namespace OOX{
 			}
 			if(NULL != m_crossAx)
 			{
-                CString sNodeName = _T("c:crossAx");
+                std::wstring sNodeName = _T("c:crossAx");
                 m_crossAx->toXML(sNodeName, writer);
 			}
 			if(NULL != m_crosses)
 			{
-                CString sNodeName = _T("c:crosses");
+                std::wstring sNodeName = _T("c:crosses");
                 m_crosses->toXML(sNodeName, writer);
 			}
 			if(NULL != m_crossesAt)
 			{
-                CString sNodeName = _T("c:crossesAt");
+                std::wstring sNodeName = _T("c:crossesAt");
                 m_crossesAt->toXML(sNodeName, writer);
 			}
 			if(NULL != m_tickLblSkip)
 			{
-                CString sNodeName = _T("c:tickLblSkip");
+                std::wstring sNodeName = _T("c:tickLblSkip");
                 m_tickLblSkip->toXML(sNodeName, writer);
 			}
 			if(NULL != m_tickMarkSkip)
 			{
-                CString sNodeName = _T("c:tickMarkSkip");
+                std::wstring sNodeName = _T("c:tickMarkSkip");
                 m_tickMarkSkip->toXML(sNodeName, writer);
 			}
 			if(NULL != m_extLst)
 			{
-                CString sNodeName = _T("c:extLst");
+                std::wstring sNodeName = _T("c:extLst");
                 m_extLst->toXML(sNodeName, writer);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_SerAx::getType(){return et_ct_serax;}
 		CT_Scaling::CT_Scaling()
@@ -3409,7 +3286,7 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("logBase") == sName)
 				{
 					CT_LogBase* pNewElem = new CT_LogBase;
@@ -3442,38 +3319,38 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_Scaling::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_Scaling::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_logBase)
 			{
-                CString sNodeName = _T("c:logBase");
+                std::wstring sNodeName = _T("c:logBase");
                 m_logBase->toXML(sNodeName, writer);
 			}
 			if(NULL != m_orientation)
 			{
-                CString sNodeName = _T("c:orientation");
+                std::wstring sNodeName = _T("c:orientation");
                 m_orientation->toXML(sNodeName, writer);
 			}
 			if(NULL != m_max)
 			{
-                CString sNodeName = _T("c:max");
+                std::wstring sNodeName = _T("c:max");
                 m_max->toXML(sNodeName, writer);
 			}
 			if(NULL != m_min)
 			{
-                CString sNodeName = _T("c:min");
+                std::wstring sNodeName = _T("c:min");
                 m_min->toXML(sNodeName, writer);
 			}
 			if(NULL != m_extLst)
 			{
-                CString sNodeName = _T("c:extLst");
+                std::wstring sNodeName = _T("c:extLst");
                 m_extLst->toXML(sNodeName, writer);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_Scaling::getType(){return et_ct_scaling;}
 		CT_LogBase::CT_LogBase()
@@ -3491,18 +3368,14 @@ namespace OOX{
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_LogBase::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_LogBase::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
 			{
-				CString sXml;
-				CString sVal;
-				sVal = SpreadsheetCommon::WriteDouble(*m_val);
-				sXml.Format(_T(" val=\"%ls\""), sVal);
-				writer.WriteString(sXml);
+				WritingStringAttrDouble(L"val", *m_val);
 			}
-			writer.WriteString(CString(_T("/>")));
+			writer.WriteString(L"/>");
 		}
 		EElementType CT_LogBase::getType(){return et_ct_logbase;}
 		void CT_LogBase::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
@@ -3533,20 +3406,18 @@ namespace OOX{
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_Orientation::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_Orientation::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
 			{
-				CString sEnumVal;
+				std::wstring sEnumVal;
 				if(ToXml_ST_Orientation(*m_val, sEnumVal))
 				{
-					CString sVal;
-					sVal.Format(_T(" val=\"%ls\""), sEnumVal);
-					writer.WriteString(sVal);
+					WritingStringAttrString(L"val", sEnumVal);
 				}
 			}
-			writer.WriteString(CString(_T("/>")));
+			writer.WriteString(L"/>");
 		}
 		EElementType CT_Orientation::getType(){return et_ct_orientation;}
 		void CT_Orientation::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
@@ -3556,7 +3427,7 @@ namespace OOX{
 					ST_Orientation* pNewElem = new ST_Orientation;
 					ST_Orientation eVal;
 
-                    CString sNodeName = oReader.GetText();
+                    std::wstring sNodeName = oReader.GetText();
                     if(FromXml_ST_Orientation(sNodeName, eVal))
 						*pNewElem = eVal;
 					m_val = pNewElem;
@@ -3578,20 +3449,18 @@ namespace OOX{
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_AxPos::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_AxPos::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
 			{
-				CString sEnumVal;
+				std::wstring sEnumVal;
 				if(ToXml_ST_AxPos(*m_val, sEnumVal))
 				{
-					CString sVal;
-					sVal.Format(_T(" val=\"%ls\""), sEnumVal);
-					writer.WriteString(sVal);
+					WritingStringAttrString(L"val", sEnumVal);
 				}
 			}
-			writer.WriteString(CString(_T("/>")));
+			writer.WriteString(L"/>");
 		}
 		EElementType CT_AxPos::getType(){return et_ct_axpos;}
 		void CT_AxPos::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
@@ -3601,7 +3470,7 @@ namespace OOX{
 					ST_AxPos* pNewElem = new ST_AxPos;
 					ST_AxPos eVal;
 
-                    CString sNodeName = oReader.GetText();
+                    std::wstring sNodeName = oReader.GetText();
                     if(FromXml_ST_AxPos(sNodeName, eVal))
 						*pNewElem = eVal;
 					m_val = pNewElem;
@@ -3623,28 +3492,28 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("spPr") == sName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetOuterXml();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetOuterXml();
 					*pNewElem = sVal;
 					m_spPr = pNewElem;
 					FromString_spPr(m_spPr, m_oSpPr);
 				}
 			}
 		}
-		void CT_ChartLines::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_ChartLines::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_spPr)
 			{
 				writer.WriteString(*m_spPr);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_ChartLines::getType(){return et_ct_chartlines;}
 		CT_Title::CT_Title()
@@ -3677,7 +3546,7 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("tx") == sName)
 				{
 					CT_Tx* pNewElem = new CT_Tx;
@@ -3698,16 +3567,16 @@ namespace OOX{
 				}
 				else if(_T("spPr") == sName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetOuterXml();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetOuterXml();
 					*pNewElem = sVal;
 					m_spPr = pNewElem;
 					FromString_spPr(m_spPr, m_oSpPr);
 				}
 				else if(_T("txPr") == sName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetInnerXml();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetInnerXml();
 					*pNewElem = sVal;
 					m_txPr = pNewElem;
 					FromString_txPr(m_txPr, m_oTxPr);
@@ -3720,23 +3589,23 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_Title::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_Title::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_tx)
 			{
-                CString sNodeName = _T("c:tx");
+                std::wstring sNodeName = _T("c:tx");
                 m_tx->toXML(sNodeName, writer);
 			}
 			if(NULL != m_layout)
 			{
-                CString sNodeName = _T("c:layout");
+                std::wstring sNodeName = _T("c:layout");
                 m_layout->toXML(sNodeName, writer);
 			}
 			if(NULL != m_overlay)
 			{
-                CString sNodeName = _T("c:overlay");
+                std::wstring sNodeName = _T("c:overlay");
                 m_overlay->toXML(sNodeName, writer);
 			}
 			if(NULL != m_spPr)
@@ -3749,12 +3618,12 @@ namespace OOX{
 			}
 			if(NULL != m_extLst)
 			{
-                CString sNodeName = _T("c:extLst");
+                std::wstring sNodeName = _T("c:extLst");
                 m_extLst->toXML(sNodeName, writer);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_Title::getType(){return et_ct_title;}
 		CT_Tx::CT_Tx()
@@ -3775,18 +3644,18 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("rich") == sName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetInnerXml();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetInnerXml();
 					*pNewElem = sVal;
 					m_rich = pNewElem;
 					{
 						nullable<OOX::Drawing::CShapeProperties> oSpPr;
 						XmlUtils::CXmlLiteReader oReaderLocal;
 						//сформируем полноценную xml-строку
-                        CString xmlString;// = L"<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
+                        std::wstring xmlString;// = L"<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 						xmlString += L"<c:rich ";
 							xmlString += L"xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" ";
 							xmlString += L"xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" ";	
@@ -3800,7 +3669,7 @@ namespace OOX{
 
 						result = oReaderLocal.ReadNextNode();//root ... skiping
 
-						CString sName = XmlUtils::GetNameNoNS(oReaderLocal.GetName());
+						std::wstring sName = XmlUtils::GetNameNoNS(oReaderLocal.GetName());
 						
 						if (_T("rich") == sName)
 							m_oRich = oReaderLocal;
@@ -3814,22 +3683,22 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_Tx::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_Tx::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_rich)
 			{
 				writer.WriteString(_T("<c:rich>") + *m_rich + _T("</c:rich>"));
 			}
 			if(NULL != m_strRef)
 			{
-                CString sNodeName = _T("c:strRef");
+                std::wstring sNodeName = _T("c:strRef");
                 m_strRef->toXML(sNodeName, writer);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_Tx::getType(){return et_ct_tx;}
 		CT_StrRef::CT_StrRef()
@@ -3853,11 +3722,11 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("f") == sName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetText2();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetText3();
 					*pNewElem = sVal;
 					m_f = pNewElem;
 				}
@@ -3875,36 +3744,32 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_StrRef::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_StrRef::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_f)
 			{
-				CString sXml;
-				CString sVal;
-				sVal = XmlUtils::EncodeXmlString(*m_f);
-				if(-1 != sVal.Find(' ') || -1 != sVal.Find('\n'))
-					sXml.Append(_T("<c:f xml:space=\"preserve\">"));
+				if (std::wstring::npos != m_f->find(' ') || std::wstring::npos != m_f->find('\n'))
+					writer.WriteString(L"<c:f xml:space=\"preserve\">");
 				else
-					sXml.Append(_T("<c:f>"));
-				sXml.Append(sVal);
-				sXml.Append(_T("</c:f>"));
-				writer.WriteString(sXml);
+					writer.WriteString(L"<c:f>");
+				writer.WriteEncodeXmlString(*m_f);
+				writer.WriteString(L"</c:f>");
 			}
 			if(NULL != m_strCache)
 			{
-                CString sNodeName = _T("c:strCache");
+                std::wstring sNodeName = _T("c:strCache");
                 m_strCache->toXML(sNodeName, writer);
 			}
 			if(NULL != m_extLst)
 			{
-                CString sNodeName = _T("c:extLst");
+                std::wstring sNodeName = _T("c:extLst");
                 m_extLst->toXML(sNodeName, writer);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_StrRef::getType(){return et_ct_strref;}
 		CT_StrData::CT_StrData()
@@ -3928,7 +3793,7 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("ptCount") == sName)
 				{
 					CT_UnsignedInt* pNewElem = new CT_UnsignedInt;
@@ -3949,13 +3814,13 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_StrData::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_StrData::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_ptCount)
 			{
-                CString sNodeName = _T("c:ptCount");
+                std::wstring sNodeName = _T("c:ptCount");
                 m_ptCount->toXML(sNodeName, writer);
 			}
             for(int i = 0, length = m_pt.size(); i < length; ++i)
@@ -3963,18 +3828,18 @@ namespace OOX{
 				CT_StrVal* pElem = m_pt[i];
 				if(NULL != pElem)
 				{
-                    CString sNodeName = _T("c:pt");
+                    std::wstring sNodeName = _T("c:pt");
                     pElem->toXML(sNodeName, writer);
 				}
 			}
 			if(NULL != m_extLst)
 			{
-                CString sNodeName = _T("c:extLst");
+                std::wstring sNodeName = _T("c:extLst");
                 m_extLst->toXML(sNodeName, writer);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_StrData::getType(){return et_ct_strdata;}
 		CT_StrVal::CT_StrVal()
@@ -3997,44 +3862,36 @@ namespace OOX{
 				int nParentDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nParentDepth ) )
 				{
-					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 					if(_T("v") == sName)
 					{
-						CString* pNewElem = new CString;
-						CString sVal = oReader.GetText2();
+						std::wstring* pNewElem = new std::wstring;
+						std::wstring sVal = oReader.GetText3();
 						*pNewElem = sVal;
 						m_v = pNewElem;
 					}
 				}
 		}
-		void CT_StrVal::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_StrVal::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_idx)
 			{
-				CString sXml;
-				CString sVal;
-				sVal.Format(_T("%d"), *m_idx);
-				sXml.Format(_T(" idx=\"%ls\""), sVal);
-				writer.WriteString(sXml);
+				WritingStringAttrInt(L"idx", *m_idx);
 			}
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_v)
 			{
-				CString sXml;
-				CString sVal;
-				sVal = XmlUtils::EncodeXmlString(*m_v);
-				if(-1 != sVal.Find(' ') || -1 != sVal.Find('\n'))
-					sXml.Append(_T("<c:v xml:space=\"preserve\">"));
+				if (std::wstring::npos != m_v->find(' ') || std::wstring::npos != m_v->find('\n'))
+					writer.WriteString(L"<c:v xml:space=\"preserve\">");
 				else
-					sXml.Append(_T("<c:v>"));
-				sXml.Append(sVal);
-				sXml.Append(_T("</c:v>"));
-				writer.WriteString(sXml);
+					writer.WriteString(L"<c:v>");
+				writer.WriteEncodeXmlString(*m_v);
+				writer.WriteString(L"</c:v>");
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_StrVal::getType(){return et_ct_strval;}
 		void CT_StrVal::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
@@ -4066,46 +3923,40 @@ namespace OOX{
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_NumFmt::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_NumFmt::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_formatCode)
 			{
-				CString sXml;
-				CString sVal;
-				sVal = XmlUtils::EncodeXmlString(*m_formatCode);
-				sXml.Format(_T(" formatCode=\"%ls\""), sVal);
-				writer.WriteString(sXml);
+				WritingStringAttrEncodeXmlString(L"formatCode", *m_formatCode);
 			}
 			if(NULL != m_sourceLinked)
 			{
-				CString sXml;
-				CString sVal;
+				std::wstring sVal;
 				if(*m_sourceLinked)
 					sVal = _T("1");
 				else
 					sVal = _T("0");
-				sXml.Format(_T(" sourceLinked=\"%ls\""), sVal);
-				writer.WriteString(sXml);
+				WritingStringAttrString(L"sourceLinked", sVal);
 			}
-			writer.WriteString(CString(_T("/>")));
+			writer.WriteString(L"/>");
 		}
 		EElementType CT_NumFmt::getType(){return et_ct_numfmt;}
 		void CT_NumFmt::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("formatCode") == wsName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetText();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetText();
 					*pNewElem = sVal;
 					m_formatCode = pNewElem;
 				}
 				else if(_T("sourceLinked") == wsName)
 				{
 					bool* pNewElem = new bool;
-					CString sVal = oReader.GetText();
-                    CString sValLower = sVal;
-                    sValLower.MakeLower();
+					std::wstring sVal = oReader.GetText();
+                    std::wstring sValLower = sVal;
+					NSStringExt::ToLower(sValLower);
 					if(_T("false") == sValLower || _T("0") == sValLower || _T("off") == sValLower)
 						*pNewElem = false;
 					else
@@ -4131,20 +3982,18 @@ namespace OOX{
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_TickMark::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_TickMark::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
 			{
-				CString sEnumVal;
+				std::wstring sEnumVal;
 				if(ToXml_ST_TickMark(*m_val, sEnumVal))
 				{
-					CString sVal;
-					sVal.Format(_T(" val=\"%ls\""), sEnumVal);
-					writer.WriteString(sVal);
+					WritingStringAttrString(L"val", sEnumVal);
 				}
 			}
-			writer.WriteString(CString(_T("/>")));
+			writer.WriteString(L"/>");
 		}
 		EElementType CT_TickMark::getType(){return et_ct_tickmark;}
 		void CT_TickMark::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
@@ -4153,7 +4002,7 @@ namespace OOX{
 				{
 					ST_TickMark* pNewElem = new ST_TickMark;
 					ST_TickMark eVal;
-                    CString sNodeName = oReader.GetText();
+                    std::wstring sNodeName = oReader.GetText();
 
                     if(FromXml_ST_TickMark(sNodeName, eVal))
 						*pNewElem = eVal;
@@ -4178,20 +4027,18 @@ namespace OOX{
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_TickLblPos::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_TickLblPos::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
 			{
-				CString sEnumVal;
+				std::wstring sEnumVal;
 				if(ToXml_ST_TickLblPos(*m_val, sEnumVal))
 				{
-					CString sVal;
-					sVal.Format(_T(" val=\"%ls\""), sEnumVal);
-					writer.WriteString(sVal);
+					WritingStringAttrString(L"val", sEnumVal);
 				}
 			}
-			writer.WriteString(CString(_T("/>")));
+			writer.WriteString(L"/>");
 		}
 		EElementType CT_TickLblPos::getType(){return et_ct_ticklblpos;}
 		void CT_TickLblPos::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
@@ -4200,7 +4047,7 @@ namespace OOX{
 				{
 					ST_TickLblPos* pNewElem = new ST_TickLblPos;
 					ST_TickLblPos eVal;
-                    CString sNodeName = oReader.GetText();
+                    std::wstring sNodeName = oReader.GetText();
 
                     if(FromXml_ST_TickLblPos(sNodeName, eVal))
 						*pNewElem = eVal;
@@ -4223,20 +4070,18 @@ namespace OOX{
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_Crosses::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_Crosses::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
 			{
-				CString sEnumVal;
+				std::wstring sEnumVal;
 				if(ToXml_ST_Crosses(*m_val, sEnumVal))
 				{
-					CString sVal;
-					sVal.Format(_T(" val=\"%ls\""), sEnumVal);
-					writer.WriteString(sVal);
+					WritingStringAttrString(L"val", sEnumVal);
 				}
 			}
-			writer.WriteString(CString(_T("/>")));
+			writer.WriteString(L"/>");
 		}
 		EElementType CT_Crosses::getType(){return et_ct_crosses;}
 		void CT_Crosses::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
@@ -4245,7 +4090,7 @@ namespace OOX{
 				{
 					ST_Crosses* pNewElem = new ST_Crosses;
 					ST_Crosses eVal;
-                    CString sNodeName = oReader.GetText();
+                    std::wstring sNodeName = oReader.GetText();
                     if(FromXml_ST_Crosses(sNodeName, eVal))
 						*pNewElem = eVal;
 					m_val = pNewElem;
@@ -4267,18 +4112,14 @@ namespace OOX{
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_Skip::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_Skip::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
 			{
-				CString sXml;
-				CString sVal;
-				sVal.Format(_T("%d"), *m_val);
-				sXml.Format(_T(" val=\"%ls\""), sVal);
-				writer.WriteString(sXml);
+				WritingStringAttrInt(L"val", *m_val);
 			}
-			writer.WriteString(CString(_T("/>")));
+			writer.WriteString(L"/>");
 		}
 		EElementType CT_Skip::getType(){return et_ct_skip;}
 		void CT_Skip::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
@@ -4309,20 +4150,18 @@ namespace OOX{
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_TimeUnit::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_TimeUnit::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
 			{
-				CString sEnumVal;
+				std::wstring sEnumVal;
 				if(ToXml_ST_TimeUnit(*m_val, sEnumVal))
 				{
-					CString sVal;
-					sVal.Format(_T(" val=\"%ls\""), sEnumVal);
-					writer.WriteString(sVal);
+					WritingStringAttrString(L"val", sEnumVal);
 				}
 			}
-			writer.WriteString(CString(_T("/>")));
+			writer.WriteString(L"/>");
 		}
 		EElementType CT_TimeUnit::getType(){return et_ct_timeunit;}
 		void CT_TimeUnit::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
@@ -4331,7 +4170,7 @@ namespace OOX{
 				{
 					ST_TimeUnit* pNewElem = new ST_TimeUnit;
 					ST_TimeUnit eVal;
-                    CString sNodeName = oReader.GetText();
+                    std::wstring sNodeName = oReader.GetText();
                     if(FromXml_ST_TimeUnit(sNodeName, eVal))
 						*pNewElem = eVal;
 					m_val = pNewElem;
@@ -4422,7 +4261,7 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("axId") == sName)
 				{
 					CT_UnsignedInt* pNewElem = new CT_UnsignedInt;
@@ -4491,16 +4330,16 @@ namespace OOX{
 				}
 				else if(_T("spPr") == sName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetOuterXml();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetOuterXml();
 					*pNewElem = sVal;
 					m_spPr = pNewElem;
 					FromString_spPr(m_spPr, m_oSpPr);
 				}
 				else if(_T("txPr") == sName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetInnerXml();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetInnerXml();
 					*pNewElem = sVal;
 					m_txPr = pNewElem;
 					FromString_txPr(m_txPr, m_oTxPr);
@@ -4573,63 +4412,63 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_DateAx::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_DateAx::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_axId)
 			{
-                CString sNodeName = _T("c:axId");
+                std::wstring sNodeName = _T("c:axId");
                 m_axId->toXML(sNodeName, writer);
 			}
 			if(NULL != m_scaling)
 			{
-                CString sNodeName = _T("c:scaling");
+                std::wstring sNodeName = _T("c:scaling");
                 m_scaling->toXML(sNodeName, writer);
 			}
 			if(NULL != m_delete)
 			{
-                CString sNodeName = _T("c:delete");
+                std::wstring sNodeName = _T("c:delete");
                 m_delete->toXML(sNodeName, writer);
 			}
 			if(NULL != m_axPos)
 			{
-                CString sNodeName = _T("c:axPos");
+                std::wstring sNodeName = _T("c:axPos");
                 m_axPos->toXML(sNodeName, writer);
 			}
 			if(NULL != m_majorGridlines)
 			{
-                CString sNodeName = _T("c:majorGridlines");
+                std::wstring sNodeName = _T("c:majorGridlines");
                 m_majorGridlines->toXML(sNodeName, writer);
 			}
 			if(NULL != m_minorGridlines)
 			{
-                CString sNodeName = _T("c:minorGridlines");
+                std::wstring sNodeName = _T("c:minorGridlines");
                 m_minorGridlines->toXML(sNodeName, writer);
 			}
 			if(NULL != m_title)
 			{
-                CString sNodeName = _T("c:title");
+                std::wstring sNodeName = _T("c:title");
                 m_title->toXML(sNodeName, writer);
 			}
 			if(NULL != m_numFmt)
 			{
-                CString sNodeName = _T("c:numFmt");
+                std::wstring sNodeName = _T("c:numFmt");
                 m_numFmt->toXML(sNodeName, writer);
 			}
 			if(NULL != m_majorTickMark)
 			{
-                CString sNodeName = _T("c:majorTickMark");
+                std::wstring sNodeName = _T("c:majorTickMark");
                 m_majorTickMark->toXML(sNodeName, writer);
 			}
 			if(NULL != m_minorTickMark)
 			{
-                CString sNodeName = _T("c:minorTickMark");
+                std::wstring sNodeName = _T("c:minorTickMark");
                 m_minorTickMark->toXML(sNodeName, writer);
 			}
 			if(NULL != m_tickLblPos)
 			{
-                CString sNodeName = _T("c:tickLblPos");
+                std::wstring sNodeName = _T("c:tickLblPos");
                 m_tickLblPos->toXML(sNodeName, writer);
 			}
 			if(NULL != m_spPr)
@@ -4642,68 +4481,68 @@ namespace OOX{
 			}
 			if(NULL != m_crossAx)
 			{
-                CString sNodeName = _T("c:crossAx");
+                std::wstring sNodeName = _T("c:crossAx");
                 m_crossAx->toXML(sNodeName, writer);
 			}
 			if(NULL != m_crosses)
 			{
-                CString sNodeName = _T("c:crosses");
+                std::wstring sNodeName = _T("c:crosses");
                 m_crosses->toXML(sNodeName, writer);
 			}
 			if(NULL != m_crossesAt)
 			{
-                CString sNodeName = _T("c:crossesAt");
+                std::wstring sNodeName = _T("c:crossesAt");
                 m_crossesAt->toXML(sNodeName, writer);
 			}
 			if(NULL != m_auto)
 			{
-                CString sNodeName = _T("c:auto");
+                std::wstring sNodeName = _T("c:auto");
                 m_auto->toXML(sNodeName, writer);
 			}
 			if(NULL != m_lblOffset)
 			{
-                CString sNodeName = _T("c:lblOffset");
+                std::wstring sNodeName = _T("c:lblOffset");
                 m_lblOffset->toXML(sNodeName, writer);
 			}
 			if(NULL != m_baseTimeUnit)
 			{
-                CString sNodeName = _T("c:baseTimeUnit");
+                std::wstring sNodeName = _T("c:baseTimeUnit");
                 m_baseTimeUnit->toXML(sNodeName, writer);
 			}
 			if(NULL != m_majorUnit)
 			{
-                CString sNodeName = _T("c:majorUnit");
+                std::wstring sNodeName = _T("c:majorUnit");
                 m_majorUnit->toXML(sNodeName, writer);
 			}
 			if(NULL != m_majorTimeUnit)
 			{
-                CString sNodeName = _T("c:majorTimeUnit");
+                std::wstring sNodeName = _T("c:majorTimeUnit");
                 m_majorTimeUnit->toXML(sNodeName, writer);
 			}
 			if(NULL != m_minorUnit)
 			{
-                CString sNodeName = _T("c:minorUnit");
+                std::wstring sNodeName = _T("c:minorUnit");
                 m_minorUnit->toXML(sNodeName, writer);
 			}
 			if(NULL != m_minorTimeUnit)
 			{
-                CString sNodeName = _T("c:minorTimeUnit");
+                std::wstring sNodeName = _T("c:minorTimeUnit");
                 m_minorTimeUnit->toXML(sNodeName, writer);
 			}
 			if(NULL != m_extLst)
 			{
-                CString sNodeName = _T("c:extLst");
+                std::wstring sNodeName = _T("c:extLst");
                 m_extLst->toXML(sNodeName, writer);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_DateAx::getType(){return et_ct_dateax;}
 		CT_LblOffset::CT_LblOffset()
 		{
-			/*m_val = new CString;
-			CString s_m_val("100%");
+			/*m_val = new std::wstring;
+			std::wstring s_m_val("100%");
 			{
 			*m_val = s_m_val;
 			}*/
@@ -4720,26 +4559,22 @@ namespace OOX{
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_LblOffset::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_LblOffset::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
 			{
-				CString sXml;
-				CString sVal;
-				sVal = XmlUtils::EncodeXmlString(*m_val);
-				sXml.Format(_T(" val=\"%ls\""), sVal);
-				writer.WriteString(sXml);
+				WritingStringAttrEncodeXmlString(L"val", *m_val);
 			}
-			writer.WriteString(CString(_T("/>")));
+			writer.WriteString(L"/>");
 		}
 		EElementType CT_LblOffset::getType(){return et_ct_lbloffset;}
 		void CT_LblOffset::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("val") == wsName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetText();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetText();
 					*pNewElem = sVal;
 					m_val = pNewElem;
 				}
@@ -4760,18 +4595,14 @@ namespace OOX{
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_AxisUnit::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_AxisUnit::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
 			{
-				CString sXml;
-				CString sVal;
-				sVal = SpreadsheetCommon::WriteDouble(*m_val);
-				sXml.Format(_T(" val=\"%ls\""), sVal);
-				writer.WriteString(sXml);
+				WritingStringAttrDouble(L"val", *m_val);
 			}
-			writer.WriteString(CString(_T("/>")));
+			writer.WriteString(L"/>");
 		}
 		EElementType CT_AxisUnit::getType(){return et_ct_axisunit;}
 		void CT_AxisUnit::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
@@ -4800,20 +4631,18 @@ namespace OOX{
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_LblAlgn::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_LblAlgn::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
 			{
-				CString sEnumVal;
+				std::wstring sEnumVal;
 				if(ToXml_ST_LblAlgn(*m_val, sEnumVal))
 				{
-					CString sVal;
-					sVal.Format(_T(" val=\"%ls\""), sEnumVal);
-					writer.WriteString(sVal);
+					WritingStringAttrString(L"val", sEnumVal);
 				}
 			}
-			writer.WriteString(CString(_T("/>")));
+			writer.WriteString(L"/>");
 		}
 		EElementType CT_LblAlgn::getType(){return et_ct_lblalgn;}
 		void CT_LblAlgn::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
@@ -4823,7 +4652,7 @@ namespace OOX{
 					ST_LblAlgn* pNewElem = new ST_LblAlgn;
 					ST_LblAlgn eVal;
 
-                    CString sNodeName = oReader.GetText();
+                    std::wstring sNodeName = oReader.GetText();
                     if(FromXml_ST_LblAlgn(sNodeName, eVal))
 						*pNewElem = eVal;
 					m_val = pNewElem;
@@ -4911,7 +4740,7 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("axId") == sName)
 				{
 					CT_UnsignedInt* pNewElem = new CT_UnsignedInt;
@@ -4980,16 +4809,16 @@ namespace OOX{
 				}
 				else if(_T("spPr") == sName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetOuterXml();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetOuterXml();
 					*pNewElem = sVal;
 					m_spPr = pNewElem;
 					FromString_spPr(m_spPr, m_oSpPr);
 				}
 				else if(_T("txPr") == sName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetInnerXml();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetInnerXml();
 					*pNewElem = sVal;
 					m_txPr = pNewElem;
 					FromString_txPr(m_txPr, m_oTxPr);
@@ -5056,63 +4885,63 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_CatAx::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_CatAx::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_axId)
 			{
-                CString sNodeName = _T("c:axId");
+                std::wstring sNodeName = _T("c:axId");
                 m_axId->toXML(sNodeName, writer);
 			}
 			if(NULL != m_scaling)
 			{
-                CString sNodeName = _T("c:scaling");
+                std::wstring sNodeName = _T("c:scaling");
                 m_scaling->toXML(sNodeName, writer);
 			}
 			if(NULL != m_delete)
 			{
-                CString sNodeName = _T("c:delete");
+                std::wstring sNodeName = _T("c:delete");
                 m_delete->toXML(sNodeName, writer);
 			}
 			if(NULL != m_axPos)
 			{
-                CString sNodeName = _T("c:axPos");
+                std::wstring sNodeName = _T("c:axPos");
                 m_axPos->toXML(sNodeName, writer);
 			}
 			if(NULL != m_majorGridlines)
 			{
-                CString sNodeName = _T("c:majorGridlines");
+                std::wstring sNodeName = _T("c:majorGridlines");
                 m_majorGridlines->toXML(sNodeName, writer);
 			}
 			if(NULL != m_minorGridlines)
 			{
-                CString sNodeName = _T("c:minorGridlines");
+                std::wstring sNodeName = _T("c:minorGridlines");
                 m_minorGridlines->toXML(sNodeName, writer);
 			}
 			if(NULL != m_title)
 			{
-                CString sNodeName = _T("c:title");
+                std::wstring sNodeName = _T("c:title");
                 m_title->toXML(sNodeName, writer);
 			}
 			if(NULL != m_numFmt)
 			{
-                CString sNodeName = _T("c:numFmt");
+                std::wstring sNodeName = _T("c:numFmt");
                 m_numFmt->toXML(sNodeName, writer);
 			}
 			if(NULL != m_majorTickMark)
 			{
-                CString sNodeName = _T("c:majorTickMark");
+                std::wstring sNodeName = _T("c:majorTickMark");
                 m_majorTickMark->toXML(sNodeName, writer);
 			}
 			if(NULL != m_minorTickMark)
 			{
-                CString sNodeName = _T("c:minorTickMark");
+                std::wstring sNodeName = _T("c:minorTickMark");
                 m_minorTickMark->toXML(sNodeName, writer);
 			}
 			if(NULL != m_tickLblPos)
 			{
-                CString sNodeName = _T("c:tickLblPos");
+                std::wstring sNodeName = _T("c:tickLblPos");
                 m_tickLblPos->toXML(sNodeName, writer);
 			}
 			if(NULL != m_spPr)
@@ -5125,57 +4954,57 @@ namespace OOX{
 			}
 			if(NULL != m_crossAx)
 			{
-                CString sNodeName = _T("c:crossAx");
+                std::wstring sNodeName = _T("c:crossAx");
                 m_crossAx->toXML(sNodeName, writer);
 			}
 			if(NULL != m_crosses)
 			{
-                CString sNodeName = _T("c:crosses");
+                std::wstring sNodeName = _T("c:crosses");
                 m_crosses->toXML(sNodeName, writer);
 			}
 			if(NULL != m_crossesAt)
 			{
-                CString sNodeName = _T("c:crossesAt");
+                std::wstring sNodeName = _T("c:crossesAt");
                 m_crossesAt->toXML(sNodeName, writer);
 			}
 			if(NULL != m_auto)
 			{
-                CString sNodeName = _T("c:auto");
+                std::wstring sNodeName = _T("c:auto");
                 m_auto->toXML(sNodeName, writer);
 			}
 			if(NULL != m_lblAlgn)
 			{
-                CString sNodeName = _T("c:lblAlgn");
+                std::wstring sNodeName = _T("c:lblAlgn");
                 m_lblAlgn->toXML(sNodeName, writer);
 			}
 			if(NULL != m_lblOffset)
 			{
-                CString sNodeName = _T("c:lblOffset");
+                std::wstring sNodeName = _T("c:lblOffset");
                 m_lblOffset->toXML(sNodeName, writer);
 			}
 			if(NULL != m_tickLblSkip)
 			{
-                CString sNodeName = _T("c:tickLblSkip");
+                std::wstring sNodeName = _T("c:tickLblSkip");
                 m_tickLblSkip->toXML(sNodeName, writer);
 			}
 			if(NULL != m_tickMarkSkip)
 			{
-                CString sNodeName = _T("c:tickMarkSkip");
+                std::wstring sNodeName = _T("c:tickMarkSkip");
                 m_tickMarkSkip->toXML(sNodeName, writer);
 			}
 			if(NULL != m_noMultiLvlLbl)
 			{
-                CString sNodeName = _T("c:noMultiLvlLbl");
+                std::wstring sNodeName = _T("c:noMultiLvlLbl");
                 m_noMultiLvlLbl->toXML(sNodeName, writer);
 			}
 			if(NULL != m_extLst)
 			{
-                CString sNodeName = _T("c:extLst");
+                std::wstring sNodeName = _T("c:extLst");
                 m_extLst->toXML(sNodeName, writer);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_CatAx::getType(){return et_ct_catax;}
 		CT_DispUnitsLbl::CT_DispUnitsLbl()
@@ -5202,7 +5031,7 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("layout") == sName)
 				{
 					CT_Layout* pNewElem = new CT_Layout;
@@ -5217,34 +5046,34 @@ namespace OOX{
 				}
 				else if(_T("spPr") == sName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetOuterXml();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetOuterXml();
 					*pNewElem = sVal;
 					m_spPr = pNewElem;
 					FromString_spPr(m_spPr, m_oSpPr);
 				}
 				else if(_T("txPr") == sName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetInnerXml();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetInnerXml();
 					*pNewElem = sVal;
 					m_txPr = pNewElem;
 					FromString_txPr(m_txPr, m_oTxPr);
 				}
 			}
 		}
-		void CT_DispUnitsLbl::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_DispUnitsLbl::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_layout)
 			{
-                CString sNodeName = _T("c:layout");
+                std::wstring sNodeName = _T("c:layout");
                 m_layout->toXML(sNodeName, writer);
 			}
 			if(NULL != m_tx)
 			{
-                CString sNodeName = _T("c:tx");
+                std::wstring sNodeName = _T("c:tx");
                 m_tx->toXML(sNodeName, writer);
 			}
 			if(NULL != m_spPr)
@@ -5255,9 +5084,9 @@ namespace OOX{
 			{
 				writer.WriteString(_T("<c:txPr>") + *m_txPr + _T("</c:txPr>"));
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_DispUnitsLbl::getType(){return et_ct_dispunitslbl;}
 		CT_BuiltInUnit::CT_BuiltInUnit()
@@ -5277,20 +5106,18 @@ namespace OOX{
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_BuiltInUnit::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_BuiltInUnit::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
 			{
-				CString sEnumVal;
+				std::wstring sEnumVal;
 				if(ToXml_ST_BuiltInUnit(*m_val, sEnumVal))
 				{
-					CString sVal;
-					sVal.Format(_T(" val=\"%ls\""), sEnumVal);
-					writer.WriteString(sVal);
+					WritingStringAttrString(L"val", sEnumVal);
 				}
 			}
-			writer.WriteString(CString(_T("/>")));
+			writer.WriteString(L"/>");
 		}
 		EElementType CT_BuiltInUnit::getType(){return et_ct_builtinunit;}
 		void CT_BuiltInUnit::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
@@ -5299,7 +5126,7 @@ namespace OOX{
 				{
 					ST_BuiltInUnit* pNewElem = new ST_BuiltInUnit;
 					ST_BuiltInUnit eVal;
-                    CString sNodeName = oReader.GetText();
+                    std::wstring sNodeName = oReader.GetText();
                     if(FromXml_ST_BuiltInUnit(sNodeName, eVal))
 						*pNewElem = eVal;
 					m_val = pNewElem;
@@ -5330,7 +5157,7 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("builtInUnit") == sName)
 				{
 					CT_BuiltInUnit* pNewElem = new CT_BuiltInUnit;
@@ -5357,33 +5184,33 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_DispUnits::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_DispUnits::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_builtInUnit)
 			{
-                CString sNodeName = _T("c:builtInUnit");
+                std::wstring sNodeName = _T("c:builtInUnit");
                 m_builtInUnit->toXML(sNodeName, writer);
 			}
 			if(NULL != m_custUnit)
 			{
-                CString sNodeName = _T("c:custUnit");
+                std::wstring sNodeName = _T("c:custUnit");
                 m_custUnit->toXML(sNodeName, writer);
 			}
 			if(NULL != m_dispUnitsLbl)
 			{
-                CString sNodeName = _T("c:dispUnitsLbl");
+                std::wstring sNodeName = _T("c:dispUnitsLbl");
                 m_dispUnitsLbl->toXML(sNodeName, writer);
 			}
 			if(NULL != m_extLst)
 			{
-                CString sNodeName = _T("c:extLst");
+                std::wstring sNodeName = _T("c:extLst");
                 m_extLst->toXML(sNodeName, writer);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_DispUnits::getType(){return et_ct_dispunits;}
 		CT_CrossBetween::CT_CrossBetween()
@@ -5401,20 +5228,18 @@ namespace OOX{
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_CrossBetween::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_CrossBetween::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
 			{
-				CString sEnumVal;
+				std::wstring sEnumVal;
 				if(ToXml_ST_CrossBetween(*m_val, sEnumVal))
 				{
-					CString sVal;
-					sVal.Format(_T(" val=\"%ls\""), sEnumVal);
-					writer.WriteString(sVal);
+					WritingStringAttrString(L"val", sEnumVal);
 				}
 			}
-			writer.WriteString(CString(_T("/>")));
+			writer.WriteString(L"/>");
 		}
 		EElementType CT_CrossBetween::getType(){return et_ct_crossbetween;}
 		void CT_CrossBetween::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
@@ -5423,7 +5248,7 @@ namespace OOX{
 				{
 					ST_CrossBetween* pNewElem = new ST_CrossBetween;
 					ST_CrossBetween eVal;
-                    CString sNodeName = oReader.GetText();
+                    std::wstring sNodeName = oReader.GetText();
                     if(FromXml_ST_CrossBetween(sNodeName, eVal))
 						*pNewElem = eVal;
 					m_val = pNewElem;
@@ -5505,7 +5330,7 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("axId") == sName)
 				{
 					CT_UnsignedInt* pNewElem = new CT_UnsignedInt;
@@ -5574,16 +5399,16 @@ namespace OOX{
 				}
 				else if(_T("spPr") == sName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetOuterXml();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetOuterXml();
 					*pNewElem = sVal;
 					m_spPr = pNewElem;
 					FromString_spPr(m_spPr, m_oSpPr);
 				}
 				else if(_T("txPr") == sName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetInnerXml();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetInnerXml();
 					*pNewElem = sVal;
 					m_txPr = pNewElem;
 					FromString_txPr(m_txPr, m_oTxPr);
@@ -5638,63 +5463,63 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_ValAx::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_ValAx::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_axId)
 			{
-                CString sNodeName = _T("c:axId");
+                std::wstring sNodeName = _T("c:axId");
                 m_axId->toXML(sNodeName, writer);
 			}
 			if(NULL != m_scaling)
 			{
-                CString sNodeName = _T("c:scaling");
+                std::wstring sNodeName = _T("c:scaling");
                 m_scaling->toXML(sNodeName, writer);
 			}
 			if(NULL != m_delete)
 			{
-                CString sNodeName = _T("c:delete");
+                std::wstring sNodeName = _T("c:delete");
                 m_delete->toXML(sNodeName, writer);
 			}
 			if(NULL != m_axPos)
 			{
-                CString sNodeName = _T("c:axPos");
+                std::wstring sNodeName = _T("c:axPos");
                 m_axPos->toXML(sNodeName, writer);
 			}
 			if(NULL != m_majorGridlines)
 			{
-                CString sNodeName = _T("c:majorGridlines");
+                std::wstring sNodeName = _T("c:majorGridlines");
                 m_majorGridlines->toXML(sNodeName, writer);
 			}
 			if(NULL != m_minorGridlines)
 			{
-                CString sNodeName = _T("c:minorGridlines");
+                std::wstring sNodeName = _T("c:minorGridlines");
                 m_minorGridlines->toXML(sNodeName, writer);
 			}
 			if(NULL != m_title)
 			{
-                CString sNodeName = _T("c:title");
+                std::wstring sNodeName = _T("c:title");
                 m_title->toXML(sNodeName, writer);
 			}
 			if(NULL != m_numFmt)
 			{
-                CString sNodeName = _T("c:numFmt");
+                std::wstring sNodeName = _T("c:numFmt");
                 m_numFmt->toXML(sNodeName, writer);
 			}
 			if(NULL != m_majorTickMark)
 			{
-                CString sNodeName = _T("c:majorTickMark");
+                std::wstring sNodeName = _T("c:majorTickMark");
                 m_majorTickMark->toXML(sNodeName, writer);
 			}
 			if(NULL != m_minorTickMark)
 			{
-                CString sNodeName = _T("c:minorTickMark");
+                std::wstring sNodeName = _T("c:minorTickMark");
                 m_minorTickMark->toXML(sNodeName, writer);
 			}
 			if(NULL != m_tickLblPos)
 			{
-                CString sNodeName = _T("c:tickLblPos");
+                std::wstring sNodeName = _T("c:tickLblPos");
                 m_tickLblPos->toXML(sNodeName, writer);
 			}
 			if(NULL != m_spPr)
@@ -5707,47 +5532,47 @@ namespace OOX{
 			}
 			if(NULL != m_crossAx)
 			{
-                CString sNodeName = _T("c:crossAx");
+                std::wstring sNodeName = _T("c:crossAx");
                 m_crossAx->toXML(sNodeName, writer);
 			}
 			if(NULL != m_crosses)
 			{
-                CString sNodeName = _T("c:crosses");
+                std::wstring sNodeName = _T("c:crosses");
                 m_crosses->toXML(sNodeName, writer);
 			}
 			if(NULL != m_crossesAt)
 			{
-                CString sNodeName = _T("c:crossesAt");
+                std::wstring sNodeName = _T("c:crossesAt");
                 m_crossesAt->toXML(sNodeName, writer);
 			}
 			if(NULL != m_crossBetween)
 			{
-                CString sNodeName = _T("c:crossBetween");
+                std::wstring sNodeName = _T("c:crossBetween");
                 m_crossBetween->toXML(sNodeName, writer);
 			}
 			if(NULL != m_majorUnit)
 			{
-                CString sNodeName = _T("c:majorUnit");
+                std::wstring sNodeName = _T("c:majorUnit");
                 m_majorUnit->toXML(sNodeName, writer);
 			}
 			if(NULL != m_minorUnit)
 			{
-                CString sNodeName = _T("c:minorUnit");
+                std::wstring sNodeName = _T("c:minorUnit");
                 m_minorUnit->toXML(sNodeName, writer);
 			}
 			if(NULL != m_dispUnits)
 			{
-                CString sNodeName = _T("c:dispUnits");
+                std::wstring sNodeName = _T("c:dispUnits");
                 m_dispUnits->toXML(sNodeName, writer);
 			}
 			if(NULL != m_extLst)
 			{
-                CString sNodeName = _T("c:extLst");
+                std::wstring sNodeName = _T("c:extLst");
                 m_extLst->toXML(sNodeName, writer);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_ValAx::getType(){return et_ct_valax;}
 		CT_SizeRepresents::CT_SizeRepresents()
@@ -5767,20 +5592,18 @@ namespace OOX{
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_SizeRepresents::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_SizeRepresents::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
 			{
-				CString sEnumVal;
+				std::wstring sEnumVal;
 				if(ToXml_ST_SizeRepresents(*m_val, sEnumVal))
 				{
-					CString sVal;
-					sVal.Format(_T(" val=\"%ls\""), sEnumVal);
-					writer.WriteString(sVal);
+					WritingStringAttrString(L"val", sEnumVal);
 				}
 			}
-			writer.WriteString(CString(_T("/>")));
+			writer.WriteString(L"/>");
 		}
 		EElementType CT_SizeRepresents::getType(){return et_ct_sizerepresents;}
 		void CT_SizeRepresents::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
@@ -5790,7 +5613,7 @@ namespace OOX{
 					ST_SizeRepresents* pNewElem = new ST_SizeRepresents;
 					ST_SizeRepresents eVal;
 
-                    CString sNodeName = oReader.GetText();
+                    std::wstring sNodeName = oReader.GetText();
                     if(FromXml_ST_SizeRepresents(sNodeName, eVal))
 						*pNewElem = eVal;
 					m_val = pNewElem;
@@ -5799,8 +5622,8 @@ namespace OOX{
 		}
 		CT_BubbleScale::CT_BubbleScale()
 		{
-			/*m_val = new CString;
-			CString s_m_val("100%");
+			/*m_val = new std::wstring;
+			std::wstring s_m_val("100%");
 			{
 			*m_val = s_m_val;
 			}*/
@@ -5817,26 +5640,22 @@ namespace OOX{
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_BubbleScale::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_BubbleScale::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
 			{
-				CString sXml;
-				CString sVal;
-				sVal = XmlUtils::EncodeXmlString(*m_val);
-				sXml.Format(_T(" val=\"%ls\""), sVal);
-				writer.WriteString(sXml);
+				WritingStringAttrEncodeXmlString(L"val", *m_val);
 			}
-			writer.WriteString(CString(_T("/>")));
+			writer.WriteString(L"/>");
 		}
 		EElementType CT_BubbleScale::getType(){return et_ct_bubblescale;}
 		void CT_BubbleScale::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("val") == wsName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetText();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetText();
 					*pNewElem = sVal;
 					m_val = pNewElem;
 				}
@@ -5896,7 +5715,7 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("idx") == sName)
 				{
 					CT_UnsignedInt* pNewElem = new CT_UnsignedInt;
@@ -5917,8 +5736,8 @@ namespace OOX{
 				}
 				else if(_T("spPr") == sName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetOuterXml();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetOuterXml();
 					*pNewElem = sVal;
 					m_spPr = pNewElem;
 					FromString_spPr(m_spPr, m_oSpPr);
@@ -5985,23 +5804,23 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_BubbleSer::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_BubbleSer::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_idx)
 			{
-                CString sNodeName = _T("c:idx");
+                std::wstring sNodeName = _T("c:idx");
                 m_idx->toXML(sNodeName, writer);
 			}
 			if(NULL != m_order)
 			{
-                CString sNodeName = _T("c:order");
+                std::wstring sNodeName = _T("c:order");
                 m_order->toXML(sNodeName, writer);
 			}
 			if(NULL != m_tx)
 			{
-                CString sNodeName = _T("c:tx");
+                std::wstring sNodeName = _T("c:tx");
                 m_tx->toXML(sNodeName, writer);
 			}
 			if(NULL != m_spPr)
@@ -6010,7 +5829,7 @@ namespace OOX{
 			}
 			if(NULL != m_invertIfNegative)
 			{
-                CString sNodeName = _T("c:invertIfNegative");
+                std::wstring sNodeName = _T("c:invertIfNegative");
                 m_invertIfNegative->toXML(sNodeName, writer);
 			}
             for(int i = 0, length = m_dPt.size(); i < length; ++i)
@@ -6018,13 +5837,13 @@ namespace OOX{
 				CT_DPt* pElem = m_dPt[i];
 				if(NULL != pElem)
 				{
-                    CString sNodeName = _T("c:dPt");
+                    std::wstring sNodeName = _T("c:dPt");
                     pElem->toXML(sNodeName, writer);
 				}
 			}
 			if(NULL != m_dLbls)
 			{
-                CString sNodeName = _T("c:dLbls");
+                std::wstring sNodeName = _T("c:dLbls");
                 m_dLbls->toXML(sNodeName, writer);
 			}
             for(int i = 0, length = m_trendline.size(); i < length; ++i)
@@ -6032,7 +5851,7 @@ namespace OOX{
 				CT_Trendline* pElem = m_trendline[i];
 				if(NULL != pElem)
 				{
-                    CString sNodeName = _T("c:trendline");
+                    std::wstring sNodeName = _T("c:trendline");
                     pElem->toXML(sNodeName, writer);
 				}
 			}
@@ -6041,38 +5860,38 @@ namespace OOX{
 				CT_ErrBars* pElem = m_errBars[i];
 				if(NULL != pElem)
 				{
-                    CString sNodeName = _T("c:errBars");
+                    std::wstring sNodeName = _T("c:errBars");
                     pElem->toXML(sNodeName, writer);
 				}
 			}
 			if(NULL != m_xVal)
 			{
-                CString sNodeName = _T("c:xVal");
+                std::wstring sNodeName = _T("c:xVal");
                 m_xVal->toXML(sNodeName, writer);
 			}
 			if(NULL != m_yVal)
 			{
-                CString sNodeName = _T("c:yVal");
+                std::wstring sNodeName = _T("c:yVal");
                 m_yVal->toXML(sNodeName, writer);
 			}
 			if(NULL != m_bubbleSize)
 			{
-                CString sNodeName = _T("c:bubbleSize");
+                std::wstring sNodeName = _T("c:bubbleSize");
                 m_bubbleSize->toXML(sNodeName, writer);
 			}
 			if(NULL != m_bubble3D)
 			{
-                CString sNodeName = _T("c:bubble3D");
+                std::wstring sNodeName = _T("c:bubble3D");
                 m_bubble3D->toXML(sNodeName, writer);
 			}
 			if(NULL != m_extLst)
 			{
-                CString sNodeName = _T("c:extLst");
+                std::wstring sNodeName = _T("c:extLst");
                 m_extLst->toXML(sNodeName, writer);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_BubbleSer::getType(){return et_ct_bubbleser;}
 		CT_SerTx::CT_SerTx()
@@ -6093,7 +5912,7 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("strRef") == sName)
 				{
 					CT_StrRef* pNewElem = new CT_StrRef;
@@ -6102,38 +5921,34 @@ namespace OOX{
 				}
 				else if(_T("v") == sName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetText2();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetText3();
 					*pNewElem = sVal;
 					m_v = pNewElem;
 				}
 			}
 		}
-		void CT_SerTx::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_SerTx::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_strRef)
 			{
-                CString sNodeName = _T("c:strRef");
+                std::wstring sNodeName = _T("c:strRef");
                 m_strRef->toXML(sNodeName, writer);
 			}
 			if(NULL != m_v)
 			{
-				CString sXml;
-				CString sVal;
-				sVal = XmlUtils::EncodeXmlString(*m_v);
-				if(-1 != sVal.Find(' ') || -1 != sVal.Find('\n'))
-					sXml.Append(_T("<c:v xml:space=\"preserve\">"));
+				if (std::wstring::npos != m_v->find(' ') || std::wstring::npos != m_v->find('\n'))
+					writer.WriteString(_T("<c:v xml:space=\"preserve\">"));
 				else
-					sXml.Append(_T("<c:v>"));
-				sXml.Append(sVal);
-				sXml.Append(_T("</c:v>"));
-				writer.WriteString(sXml);
+					writer.WriteString(_T("<c:v>"));
+				writer.WriteEncodeXmlString(*m_v);
+				writer.WriteString(_T("</c:v>"));
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_SerTx::getType(){return et_ct_sertx;}
 		CT_DPt::CT_DPt()
@@ -6172,7 +5987,7 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("idx") == sName)
 				{
 					CT_UnsignedInt* pNewElem = new CT_UnsignedInt;
@@ -6205,8 +6020,8 @@ namespace OOX{
 				}
 				else if(_T("spPr") == sName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetOuterXml();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetOuterXml();
 					*pNewElem = sVal;
 					m_spPr = pNewElem;
 					FromString_spPr(m_spPr, m_oSpPr);
@@ -6225,33 +6040,33 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_DPt::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_DPt::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_idx)
 			{
-                CString sNodeName = _T("c:idx");
+                std::wstring sNodeName = _T("c:idx");
                 m_idx->toXML(sNodeName, writer);
 			}
 			if(NULL != m_invertIfNegative)
 			{
-                CString sNodeName = _T("c:invertIfNegative");
+                std::wstring sNodeName = _T("c:invertIfNegative");
                 m_invertIfNegative->toXML(sNodeName, writer);
 			}
 			if(NULL != m_marker)
 			{
-                CString sNodeName = _T("c:marker");
+                std::wstring sNodeName = _T("c:marker");
                 m_marker->toXML(sNodeName, writer);
 			}
 			if(NULL != m_bubble3D)
 			{
-                CString sNodeName = _T("c:bubble3D");
+                std::wstring sNodeName = _T("c:bubble3D");
                 m_bubble3D->toXML(sNodeName, writer);
 			}
 			if(NULL != m_explosion)
 			{
-                CString sNodeName = _T("c:explosion");
+                std::wstring sNodeName = _T("c:explosion");
                 m_explosion->toXML(sNodeName, writer);
 			}
 			if(NULL != m_spPr)
@@ -6260,17 +6075,17 @@ namespace OOX{
 			}
 			if(NULL != m_pictureOptions)
 			{
-                CString sNodeName = _T("c:pictureOptions");
+                std::wstring sNodeName = _T("c:pictureOptions");
                 m_pictureOptions->toXML(sNodeName, writer);
 			}
 			if(NULL != m_extLst)
 			{
-                CString sNodeName = _T("c:extLst");
+                std::wstring sNodeName = _T("c:extLst");
                 m_extLst->toXML(sNodeName, writer);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_DPt::getType(){return et_ct_dpt;}
 		CT_Marker::CT_Marker()
@@ -6297,7 +6112,7 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("symbol") == sName)
 				{
 					CT_MarkerStyle* pNewElem = new CT_MarkerStyle;
@@ -6312,8 +6127,8 @@ namespace OOX{
 				}
 				else if(_T("spPr") == sName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetOuterXml();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetOuterXml();
 					*pNewElem = sVal;
 					m_spPr = pNewElem;
 					FromString_spPr(m_spPr, m_oSpPr);
@@ -6326,18 +6141,18 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_Marker::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_Marker::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_symbol)
 			{
-                CString sNodeName = _T("c:symbol");
+                std::wstring sNodeName = _T("c:symbol");
                 m_symbol->toXML(sNodeName, writer);
 			}
 			if(NULL != m_size)
 			{
-                CString sNodeName = _T("c:size");
+                std::wstring sNodeName = _T("c:size");
                 m_size->toXML(sNodeName, writer);
 			}
 			if(NULL != m_spPr)
@@ -6346,12 +6161,12 @@ namespace OOX{
 			}
 			if(NULL != m_extLst)
 			{
-                CString sNodeName = _T("c:extLst");
+                std::wstring sNodeName = _T("c:extLst");
                 m_extLst->toXML(sNodeName, writer);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_Marker::getType(){return et_ct_marker;}
 		CT_MarkerStyle::CT_MarkerStyle()
@@ -6369,20 +6184,18 @@ namespace OOX{
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_MarkerStyle::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_MarkerStyle::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
 			{
-				CString sEnumVal;
+				std::wstring sEnumVal;
 				if(ToXml_ST_MarkerStyle(*m_val, sEnumVal))
 				{
-					CString sVal;
-					sVal.Format(_T(" val=\"%ls\""), sEnumVal);
-					writer.WriteString(sVal);
+					WritingStringAttrString(L"val", sEnumVal);
 				}
 			}
-			writer.WriteString(CString(_T("/>")));
+			writer.WriteString(L"/>");
 		}
 		EElementType CT_MarkerStyle::getType(){return et_ct_markerstyle;}
 		void CT_MarkerStyle::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
@@ -6392,7 +6205,7 @@ namespace OOX{
 					ST_MarkerStyle* pNewElem = new ST_MarkerStyle;
 					ST_MarkerStyle eVal;
 
-                    CString sNodeName = oReader.GetText();
+                    std::wstring sNodeName = oReader.GetText();
                     if(FromXml_ST_MarkerStyle(sNodeName, eVal))
 						*pNewElem = eVal;
 					m_val = pNewElem;
@@ -6402,7 +6215,7 @@ namespace OOX{
 		CT_MarkerSize::CT_MarkerSize()
 		{
 			/*m_val = new unsigned char;
-			CString s_m_val("5");
+			std::wstring s_m_val("5");
 			{
 			*m_val = _ttoi(s_m_val);
 			}*/
@@ -6419,18 +6232,14 @@ namespace OOX{
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_MarkerSize::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_MarkerSize::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
 			{
-				CString sXml;
-				CString sVal;
-				sVal.Format(_T("%d"), *m_val);
-				sXml.Format(_T(" val=\"%ls\""), sVal);
-				writer.WriteString(sXml);
+				WritingStringAttrInt(L"val", *m_val);
 			}
-			writer.WriteString(CString(_T("/>")));
+			writer.WriteString(L"/>");
 		}
 		EElementType CT_MarkerSize::getType(){return et_ct_markersize;}
 		void CT_MarkerSize::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
@@ -6471,7 +6280,7 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("applyToFront") == sName)
 				{
 					CT_Boolean* pNewElem = new CT_Boolean;
@@ -6504,38 +6313,38 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_PictureOptions::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_PictureOptions::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_applyToFront)
 			{
-                CString sNodeName = _T("c:applyToFront");
+                std::wstring sNodeName = _T("c:applyToFront");
                 m_applyToFront->toXML(sNodeName, writer);
 			}
 			if(NULL != m_applyToSides)
 			{
-                CString sNodeName = _T("c:applyToSides");
+                std::wstring sNodeName = _T("c:applyToSides");
                 m_applyToSides->toXML(sNodeName, writer);
 			}
 			if(NULL != m_applyToEnd)
 			{
-                CString sNodeName = _T("c:applyToEnd");
+                std::wstring sNodeName = _T("c:applyToEnd");
                 m_applyToEnd->toXML(sNodeName, writer);
 			}
 			if(NULL != m_pictureFormat)
 			{
-                CString sNodeName = _T("c:pictureFormat");
+                std::wstring sNodeName = _T("c:pictureFormat");
                 m_pictureFormat->toXML(sNodeName, writer);
 			}
 			if(NULL != m_pictureStackUnit)
 			{
-                CString sNodeName = _T("c:pictureStackUnit");
+                std::wstring sNodeName = _T("c:pictureStackUnit");
                 m_pictureStackUnit->toXML(sNodeName, writer);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_PictureOptions::getType(){return et_ct_pictureoptions;}
 		CT_PictureFormat::CT_PictureFormat()
@@ -6553,20 +6362,18 @@ namespace OOX{
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_PictureFormat::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_PictureFormat::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
 			{
-				CString sEnumVal;
+				std::wstring sEnumVal;
 				if(ToXml_ST_PictureFormat(*m_val, sEnumVal))
 				{
-					CString sVal;
-					sVal.Format(_T(" val=\"%ls\""), sEnumVal);
-					writer.WriteString(sVal);
+					WritingStringAttrString(L"val", sEnumVal);
 				}
 			}
-			writer.WriteString(CString(_T("/>")));
+			writer.WriteString(L"/>");
 		}
 		EElementType CT_PictureFormat::getType(){return et_ct_pictureformat;}
 		void CT_PictureFormat::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
@@ -6575,7 +6382,7 @@ namespace OOX{
 				{
 					ST_PictureFormat* pNewElem = new ST_PictureFormat;
 					ST_PictureFormat eVal;
-                    CString sNodeName = oReader.GetText();
+                    std::wstring sNodeName = oReader.GetText();
                     if(FromXml_ST_PictureFormat(sNodeName, eVal))
 						*pNewElem = eVal;
 					m_val = pNewElem;
@@ -6597,18 +6404,14 @@ namespace OOX{
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_PictureStackUnit::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_PictureStackUnit::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
 			{
-				CString sXml;
-				CString sVal;
-				sVal = SpreadsheetCommon::WriteDouble(*m_val);
-				sXml.Format(_T(" val=\"%ls\""), sVal);
-				writer.WriteString(sXml);
+				WritingStringAttrDouble(L"val", *m_val);
 			}
-			writer.WriteString(CString(_T("/>")));
+			writer.WriteString(L"/>");
 		}
 		EElementType CT_PictureStackUnit::getType(){return et_ct_picturestackunit;}
 		void CT_PictureStackUnit::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
@@ -6646,7 +6449,7 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("dLbl") == sName)
 				{
 					CT_DLbl* pNewElem = new CT_DLbl;
@@ -6691,8 +6494,8 @@ namespace OOX{
 				}
 				else if(_T("separator") == sName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetText2();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetText3();
 					*pNewElem = sVal;
 					ItemsChoiceType3* eElemtype = new ItemsChoiceType3;
 					*eElemtype = itemschoicetype3SEPARATOR;
@@ -6764,8 +6567,8 @@ namespace OOX{
 				}
 				else if(_T("spPr") == sName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetOuterXml();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetOuterXml();
 					*pNewElem = sVal;
 					ItemsChoiceType3* eElemtype = new ItemsChoiceType3;
 					*eElemtype = itemschoicetype3SPPR;
@@ -6774,8 +6577,8 @@ namespace OOX{
 				}
 				else if(_T("txPr") == sName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetInnerXml();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetInnerXml();
 					*pNewElem = sVal;
 					ItemsChoiceType3* eElemtype = new ItemsChoiceType3;
 					*eElemtype = itemschoicetype3TXPR;
@@ -6790,16 +6593,16 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_DLbls::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_DLbls::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
             for(int i = 0, length = m_dLbl.size(); i < length; ++i)
 			{
 				CT_DLbl* pElem = m_dLbl[i];
 				if(NULL != pElem)
 				{
-                    CString sNodeName = _T("c:dLbl");
+                    std::wstring sNodeName = _T("c:dLbl");
                     pElem->toXML(sNodeName, writer);
 				}
 			}
@@ -6810,15 +6613,15 @@ namespace OOX{
 			}
 			if(NULL != m_extLst)
 			{
-                CString sNodeName = _T("c:extLst");
+                std::wstring sNodeName = _T("c:extLst");
                 m_extLst->toXML(sNodeName, writer);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_DLbls::getType(){return et_ct_dlbls;}
-		void CT_DLbls::toXML(XmlUtils::CStringWriter& writer, bool bIsAttribute, ItemsChoiceType3 eType, void* pVal) const{
+		void CT_DLbls::toXML(NSStringUtils::CStringBuilder& writer, bool bIsAttribute, ItemsChoiceType3 eType, void* pVal) const{
 			switch(eType)
 			{
 			case itemschoicetype3DLBLPOS:
@@ -6828,7 +6631,7 @@ namespace OOX{
 					{
 						if(false == bIsAttribute)
                         {
-                            CString sNodeName = _T("c:dLblPos");
+                            std::wstring sNodeName = _T("c:dLblPos");
                             pTypeVal->toXML(sNodeName, writer);
                         }
 					}
@@ -6841,7 +6644,7 @@ namespace OOX{
 					{
 						if(false == bIsAttribute)
                         {
-                            CString sNodeName = _T("c:delete");
+                            std::wstring sNodeName = _T("c:delete");
                             pTypeVal->toXML(sNodeName, writer);
                         }
 					}
@@ -6854,7 +6657,7 @@ namespace OOX{
 					{
 						if(false == bIsAttribute)
                         {
-                            CString sNodeName = _T("c:leaderLines");
+                            std::wstring sNodeName = _T("c:leaderLines");
                             pTypeVal->toXML(sNodeName, writer);
                         }
 					}
@@ -6867,7 +6670,7 @@ namespace OOX{
 					{
 						if(false == bIsAttribute)
                         {
-                            CString sNodeName = _T("c:numFmt");
+                            std::wstring sNodeName = _T("c:numFmt");
                             pTypeVal->toXML(sNodeName, writer);
                         }
 					}
@@ -6875,24 +6678,22 @@ namespace OOX{
 				break;
 			case itemschoicetype3SEPARATOR:
 				{
-					CString* pTypeVal = static_cast<CString*>(pVal);
+					std::wstring* pTypeVal = static_cast<std::wstring*>(pVal);
 					if(NULL != pTypeVal)
 					{
-						CString sXml;
-						CString sVal;
-						sVal = XmlUtils::EncodeXmlString(*pTypeVal);
-						if(true == bIsAttribute)
-							sXml.Format(_T(" c:separator=\"%ls\""), sVal);
+						if (true == bIsAttribute)
+						{
+							WritingStringAttrEncodeXmlString(L"c:separator", *pTypeVal);
+						}
 						else
 						{
-							if(-1 != sVal.Find(' ') || -1 != sVal.Find('\n'))
-								sXml.Append(_T("<c:separator xml:space=\"preserve\">"));
+							if (std::wstring::npos != pTypeVal->find(' ') || std::wstring::npos != pTypeVal->find('\n'))
+								writer.WriteString(_T("<c:separator xml:space=\"preserve\">"));
 							else
-								sXml.Append(_T("<c:separator>"));
-							sXml.Append(sVal);
-							sXml.Append(_T("</c:separator>"));
+								writer.WriteString(_T("<c:separator>"));
+							writer.WriteEncodeXmlString(*pTypeVal);
+							writer.WriteString(_T("</c:separator>"));
 						}
-						writer.WriteString(sXml);
 					}
 				}
 				break;
@@ -6903,7 +6704,7 @@ namespace OOX{
 					{
 						if(false == bIsAttribute)
                         {
-                            CString sNodeName = _T("c:showBubbleSize");
+                            std::wstring sNodeName = _T("c:showBubbleSize");
                             pTypeVal->toXML(sNodeName, writer);
                         }
 					}
@@ -6916,7 +6717,7 @@ namespace OOX{
 					{
 						if(false == bIsAttribute)
                         {
-                            CString sNodeName = _T("c:showCatName");
+                            std::wstring sNodeName = _T("c:showCatName");
                             pTypeVal->toXML(sNodeName, writer);
                         }
 					}
@@ -6929,7 +6730,7 @@ namespace OOX{
 					{
 						if(false == bIsAttribute)
                         {
-                            CString sNodeName = _T("c:showLeaderLines");
+                            std::wstring sNodeName = _T("c:showLeaderLines");
                             pTypeVal->toXML(sNodeName, writer);
                         }
 					}
@@ -6942,7 +6743,7 @@ namespace OOX{
 					{
 						if(false == bIsAttribute)
                         {
-                            CString sNodeName = _T("c:showLegendKey");
+                            std::wstring sNodeName = _T("c:showLegendKey");
                             pTypeVal->toXML(sNodeName, writer);
                         }
 					}
@@ -6955,7 +6756,7 @@ namespace OOX{
 					{
 						if(false == bIsAttribute)
                         {
-                            CString sNodeName = _T("c:showPercent");
+                            std::wstring sNodeName = _T("c:showPercent");
                             pTypeVal->toXML(sNodeName, writer);
                         }
 					}
@@ -6968,7 +6769,7 @@ namespace OOX{
 					{
 						if(false == bIsAttribute)
                         {
-                            CString sNodeName = _T("c:showSerName");
+                            std::wstring sNodeName = _T("c:showSerName");
                             pTypeVal->toXML(sNodeName, writer);
                         }
 					}
@@ -6981,7 +6782,7 @@ namespace OOX{
 					{
 						if(false == bIsAttribute)
                         {
-                            CString sNodeName = _T("c:showVal");
+                            std::wstring sNodeName = _T("c:showVal");
                             pTypeVal->toXML(sNodeName, writer);
                         }
 					}
@@ -6989,7 +6790,7 @@ namespace OOX{
 				break;
 			case itemschoicetype3SPPR:
 				{
-					CString* pTypeVal = static_cast<CString*>(pVal);
+					std::wstring* pTypeVal = static_cast<std::wstring*>(pVal);
 					if(NULL != pTypeVal)
 					{
 						writer.WriteString(*pTypeVal);
@@ -6998,7 +6799,7 @@ namespace OOX{
 				break;
 			case itemschoicetype3TXPR:
 				{
-					CString* pTypeVal = static_cast<CString*>(pVal);
+					std::wstring* pTypeVal = static_cast<std::wstring*>(pVal);
 					if(NULL != pTypeVal)
 					{
 						writer.WriteString(_T("<c:txPr>") + *pTypeVal + _T("</c:txPr>"));
@@ -7036,7 +6837,7 @@ namespace OOX{
 				break;
 			case itemschoicetype3SEPARATOR:
 				{
-					CString* pTypeVal = static_cast<CString*>(pVal);
+					std::wstring* pTypeVal = static_cast<std::wstring*>(pVal);
 					RELEASEOBJECT(pTypeVal);
 				}
 				break;
@@ -7084,13 +6885,13 @@ namespace OOX{
 				break;
 			case itemschoicetype3SPPR:
 				{
-					CString* pTypeVal = static_cast<CString*>(pVal);
+					std::wstring* pTypeVal = static_cast<std::wstring*>(pVal);
 					RELEASEOBJECT(pTypeVal);
 				}
 				break;
 			case itemschoicetype3TXPR:
 				{
-					CString* pTypeVal = static_cast<CString*>(pVal);
+					std::wstring* pTypeVal = static_cast<std::wstring*>(pVal);
 					RELEASEOBJECT(pTypeVal);
 				}
 				break;
@@ -7120,7 +6921,7 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("idx") == sName)
 				{
 					CT_UnsignedInt* pNewElem = new CT_UnsignedInt;
@@ -7165,8 +6966,8 @@ namespace OOX{
 				}
 				else if(_T("separator") == sName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetText2();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetText3();
 					*pNewElem = sVal;
 					ItemsChoiceType4* eElemtype = new ItemsChoiceType4;
 					*eElemtype = itemschoicetype4SEPARATOR;
@@ -7229,8 +7030,8 @@ namespace OOX{
 				}
 				else if(_T("spPr") == sName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetOuterXml();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetOuterXml();
 					*pNewElem = sVal;
 					ItemsChoiceType4* eElemtype = new ItemsChoiceType4;
 					*eElemtype = itemschoicetype4SPPR;
@@ -7248,8 +7049,8 @@ namespace OOX{
 				}
 				else if(_T("txPr") == sName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetInnerXml();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetInnerXml();
 					*pNewElem = sVal;
 					ItemsChoiceType4* eElemtype = new ItemsChoiceType4;
 					*eElemtype = itemschoicetype4TXPR;
@@ -7264,13 +7065,13 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_DLbl::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_DLbl::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_idx)
 			{
-                CString sNodeName = _T("c:idx");
+                std::wstring sNodeName = _T("c:idx");
                 m_idx->toXML(sNodeName, writer);
 			}
             for(int i = 0, length = m_Items.size(); i < length; ++i)
@@ -7280,15 +7081,15 @@ namespace OOX{
 			}
 			if(NULL != m_extLst)
 			{
-                CString sNodeName = _T("c:extLst");
+                std::wstring sNodeName = _T("c:extLst");
                 m_extLst->toXML(sNodeName, writer);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_DLbl::getType(){return et_ct_dlbl;}
-		void CT_DLbl::toXML(XmlUtils::CStringWriter& writer, bool bIsAttribute, ItemsChoiceType4 eType, void* pVal) const{
+		void CT_DLbl::toXML(NSStringUtils::CStringBuilder& writer, bool bIsAttribute, ItemsChoiceType4 eType, void* pVal) const{
 			switch(eType)
 			{
 			case itemschoicetype4DLBLPOS:
@@ -7298,7 +7099,7 @@ namespace OOX{
 					{
 						if(false == bIsAttribute)
                         {
-                            CString sNodeName = _T("c:dLblPos");
+                            std::wstring sNodeName = _T("c:dLblPos");
                             pTypeVal->toXML(sNodeName, writer);
                         }
 					}
@@ -7311,7 +7112,7 @@ namespace OOX{
 					{
 						if(false == bIsAttribute)
                         {
-                            CString sNodeName = _T("c:delete");
+                            std::wstring sNodeName = _T("c:delete");
                             pTypeVal->toXML(sNodeName, writer);
                         }
 					}
@@ -7324,7 +7125,7 @@ namespace OOX{
 					{
 						if(false == bIsAttribute)
                         {
-                            CString sNodeName = _T("c:layout");
+                            std::wstring sNodeName = _T("c:layout");
                             pTypeVal->toXML(sNodeName, writer);
                         }
 					}
@@ -7337,7 +7138,7 @@ namespace OOX{
 					{
 						if(false == bIsAttribute)
                         {
-                            CString sNodeName = _T("c:numFmt");
+                            std::wstring sNodeName = _T("c:numFmt");
                             pTypeVal->toXML(sNodeName, writer);
                         }
 					}
@@ -7345,24 +7146,22 @@ namespace OOX{
 				break;
 			case itemschoicetype4SEPARATOR:
 				{
-					CString* pTypeVal = static_cast<CString*>(pVal);
+					std::wstring* pTypeVal = static_cast<std::wstring*>(pVal);
 					if(NULL != pTypeVal)
 					{
-						CString sXml;
-						CString sVal;
-						sVal = XmlUtils::EncodeXmlString(*pTypeVal);
-						if(true == bIsAttribute)
-							sXml.Format(_T(" c:separator=\"%ls\""), sVal);
+						if (true == bIsAttribute)
+						{
+							WritingStringAttrEncodeXmlString(L"c:separator", *pTypeVal);
+						}
 						else
 						{
-							if(-1 != sVal.Find(' ') || -1 != sVal.Find('\n'))
-								sXml.Append(_T("<c:separator xml:space=\"preserve\">"));
+							if (std::wstring::npos != pTypeVal->find(' ') || std::wstring::npos != pTypeVal->find('\n'))
+								writer.WriteString(_T("<c:separator xml:space=\"preserve\">"));
 							else
-								sXml.Append(_T("<c:separator>"));
-							sXml.Append(sVal);
-							sXml.Append(_T("</c:separator>"));
+								writer.WriteString(_T("<c:separator>"));
+							writer.WriteEncodeXmlString(*pTypeVal);
+							writer.WriteString(_T("</c:separator>"));
 						}
-						writer.WriteString(sXml);
 					}
 				}
 				break;
@@ -7373,7 +7172,7 @@ namespace OOX{
 					{
 						if(false == bIsAttribute)
                         {
-                            CString sNodeName = _T("c:showBubbleSize");
+                            std::wstring sNodeName = _T("c:showBubbleSize");
                             pTypeVal->toXML(sNodeName, writer);
                         }
 					}
@@ -7386,7 +7185,7 @@ namespace OOX{
 					{
 						if(false == bIsAttribute)
                         {
-                            CString sNodeName = _T("c:showCatName");
+                            std::wstring sNodeName = _T("c:showCatName");
                             pTypeVal->toXML(sNodeName, writer);
                         }
 					}
@@ -7399,7 +7198,7 @@ namespace OOX{
 					{
 						if(false == bIsAttribute)
                         {
-                            CString sNodeName = _T("c:showLegendKey");
+                            std::wstring sNodeName = _T("c:showLegendKey");
                             pTypeVal->toXML(sNodeName, writer);
                         }
 					}
@@ -7412,7 +7211,7 @@ namespace OOX{
 					{
 						if(false == bIsAttribute)
                         {
-                            CString sNodeName = _T("c:showPercent");
+                            std::wstring sNodeName = _T("c:showPercent");
                             pTypeVal->toXML(sNodeName, writer);
                         }
 					}
@@ -7425,7 +7224,7 @@ namespace OOX{
 					{
 						if(false == bIsAttribute)
                         {
-                            CString sNodeName = _T("c:showSerName");
+                            std::wstring sNodeName = _T("c:showSerName");
                             pTypeVal->toXML(sNodeName, writer);
                         }
 					}
@@ -7438,7 +7237,7 @@ namespace OOX{
 					{
 						if(false == bIsAttribute)
                         {
-                            CString sNodeName = _T("c:showVal");
+                            std::wstring sNodeName = _T("c:showVal");
                             pTypeVal->toXML(sNodeName, writer);
                         }
 					}
@@ -7446,7 +7245,7 @@ namespace OOX{
 				break;
 			case itemschoicetype4SPPR:
 				{
-					CString* pTypeVal = static_cast<CString*>(pVal);
+					std::wstring* pTypeVal = static_cast<std::wstring*>(pVal);
 					if(NULL != pTypeVal)
 					{
 						writer.WriteString(*pTypeVal);
@@ -7460,7 +7259,7 @@ namespace OOX{
 					{
 						if(false == bIsAttribute)
                         {
-                            CString sNodeName = _T("c:tx");
+                            std::wstring sNodeName = _T("c:tx");
                             pTypeVal->toXML(sNodeName, writer);
                         }
 					}
@@ -7468,7 +7267,7 @@ namespace OOX{
 				break;
 			case itemschoicetype4TXPR:
 				{
-					CString* pTypeVal = static_cast<CString*>(pVal);
+					std::wstring* pTypeVal = static_cast<std::wstring*>(pVal);
 					if(NULL != pTypeVal)
 					{
 						writer.WriteString(_T("<c:txPr>") + *pTypeVal + _T("</c:txPr>"));
@@ -7506,7 +7305,7 @@ namespace OOX{
 				break;
 			case itemschoicetype4SEPARATOR:
 				{
-					CString* pTypeVal = static_cast<CString*>(pVal);
+					std::wstring* pTypeVal = static_cast<std::wstring*>(pVal);
 					RELEASEOBJECT(pTypeVal);
 				}
 				break;
@@ -7548,7 +7347,7 @@ namespace OOX{
 				break;
 			case itemschoicetype4SPPR:
 				{
-					CString* pTypeVal = static_cast<CString*>(pVal);
+					std::wstring* pTypeVal = static_cast<std::wstring*>(pVal);
 					RELEASEOBJECT(pTypeVal);
 				}
 				break;
@@ -7560,7 +7359,7 @@ namespace OOX{
 				break;
 			case itemschoicetype4TXPR:
 				{
-					CString* pTypeVal = static_cast<CString*>(pVal);
+					std::wstring* pTypeVal = static_cast<std::wstring*>(pVal);
 					RELEASEOBJECT(pTypeVal);
 				}
 				break;
@@ -7581,20 +7380,18 @@ namespace OOX{
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_DLblPos::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_DLblPos::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
 			{
-				CString sEnumVal;
+				std::wstring sEnumVal;
 				if(ToXml_ST_DLblPos(*m_val, sEnumVal))
 				{
-					CString sVal;
-					sVal.Format(_T(" val=\"%ls\""), sEnumVal);
-					writer.WriteString(sVal);
+					WritingStringAttrString(L"val", sEnumVal);
 				}
 			}
-			writer.WriteString(CString(_T("/>")));
+			writer.WriteString(L"/>");
 		}
 		EElementType CT_DLblPos::getType(){return et_ct_dlblpos;}
 		void CT_DLblPos::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
@@ -7603,7 +7400,7 @@ namespace OOX{
 				{
 					ST_DLblPos* pNewElem = new ST_DLblPos;
 					ST_DLblPos eVal;
-                    CString sNodeName = oReader.GetText();
+                    std::wstring sNodeName = oReader.GetText();
                     if(FromXml_ST_DLblPos(sNodeName, eVal))
 						*pNewElem = eVal;
 					m_val = pNewElem;
@@ -7658,18 +7455,18 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("name") == sName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetText2();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetText3();
 					*pNewElem = sVal;
 					m_name = pNewElem;
 				}
 				else if(_T("spPr") == sName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetOuterXml();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetOuterXml();
 					*pNewElem = sVal;
 					m_spPr = pNewElem;
 					FromString_spPr(m_spPr, m_oSpPr);
@@ -7736,22 +7533,18 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_Trendline::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_Trendline::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_name)
 			{
-				CString sXml;
-				CString sVal;
-				sVal = XmlUtils::EncodeXmlString(*m_name);
-				if(-1 != sVal.Find(' ') || -1 != sVal.Find('\n'))
-					sXml.Append(_T("<c:name xml:space=\"preserve\">"));
+				if (std::wstring::npos != m_name->find(' ') || std::wstring::npos != m_name->find('\n'))
+					writer.WriteString(_T("<c:name xml:space=\"preserve\">"));
 				else
-					sXml.Append(_T("<c:name>"));
-				sXml.Append(sVal);
-				sXml.Append(_T("</c:name>"));
-				writer.WriteString(sXml);
+					writer.WriteString(_T("<c:name>"));
+				writer.WriteEncodeXmlString(*m_name);
+				writer.WriteString(_T("</c:name>"));
 			}
 			if(NULL != m_spPr)
 			{
@@ -7759,57 +7552,57 @@ namespace OOX{
 			}
 			if(NULL != m_trendlineType)
 			{
-                CString sNodeName = _T("c:trendlineType");
+                std::wstring sNodeName = _T("c:trendlineType");
                 m_trendlineType->toXML(sNodeName, writer);
 			}
 			if(NULL != m_order)
 			{
-                CString sNodeName = _T("c:order");
+                std::wstring sNodeName = _T("c:order");
                 m_order->toXML(sNodeName, writer);
 			}
 			if(NULL != m_period)
 			{
-                CString sNodeName = _T("c:period");
+                std::wstring sNodeName = _T("c:period");
                 m_period->toXML(sNodeName, writer);
 			}
 			if(NULL != m_forward)
 			{
-                CString sNodeName = _T("c:forward");
+                std::wstring sNodeName = _T("c:forward");
                 m_forward->toXML(sNodeName, writer);
 			}
 			if(NULL != m_backward)
 			{
-                CString sNodeName = _T("c:backward");
+                std::wstring sNodeName = _T("c:backward");
                 m_backward->toXML(sNodeName, writer);
 			}
 			if(NULL != m_intercept)
 			{
-                CString sNodeName = _T("c:intercept");
+                std::wstring sNodeName = _T("c:intercept");
                 m_intercept->toXML(sNodeName, writer);
 			}
 			if(NULL != m_dispRSqr)
 			{
-                CString sNodeName = _T("c:dispRSqr");
+                std::wstring sNodeName = _T("c:dispRSqr");
                 m_dispRSqr->toXML(sNodeName, writer);
 			}
 			if(NULL != m_dispEq)
 			{
-                CString sNodeName = _T("c:dispEq");
+                std::wstring sNodeName = _T("c:dispEq");
                 m_dispEq->toXML(sNodeName, writer);
 			}
 			if(NULL != m_trendlineLbl)
 			{
-                CString sNodeName = _T("c:trendlineLbl");
+                std::wstring sNodeName = _T("c:trendlineLbl");
                 m_trendlineLbl->toXML(sNodeName, writer);
 			}
 			if(NULL != m_extLst)
 			{
-                CString sNodeName = _T("c:extLst");
+                std::wstring sNodeName = _T("c:extLst");
                 m_extLst->toXML(sNodeName, writer);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_Trendline::getType(){return et_ct_trendline;}
 		CT_TrendlineType::CT_TrendlineType()
@@ -7829,20 +7622,18 @@ namespace OOX{
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_TrendlineType::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_TrendlineType::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
 			{
-				CString sEnumVal;
+				std::wstring sEnumVal;
 				if(ToXml_ST_TrendlineType(*m_val, sEnumVal))
 				{
-					CString sVal;
-					sVal.Format(_T(" val=\"%ls\""), sEnumVal);
-					writer.WriteString(sVal);
+					WritingStringAttrString(L"val", sEnumVal);
 				}
 			}
-			writer.WriteString(CString(_T("/>")));
+			writer.WriteString(L"/>");
 		}
 		EElementType CT_TrendlineType::getType(){return et_ct_trendlinetype;}
 		void CT_TrendlineType::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
@@ -7852,7 +7643,7 @@ namespace OOX{
 					ST_TrendlineType* pNewElem = new ST_TrendlineType;
 					ST_TrendlineType eVal;
 
-                    CString sNodeName = oReader.GetText();
+                    std::wstring sNodeName = oReader.GetText();
                     if(FromXml_ST_TrendlineType(sNodeName, eVal))
 						*pNewElem = eVal;
 					m_val = pNewElem;
@@ -7862,7 +7653,7 @@ namespace OOX{
 		CT_Order::CT_Order()
 		{
 			/*m_val = new unsigned char;
-			CString s_m_val("2");
+			std::wstring s_m_val("2");
 			{
 			*m_val = _ttoi(s_m_val);
 			}*/
@@ -7879,18 +7670,14 @@ namespace OOX{
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_Order::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_Order::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
 			{
-				CString sXml;
-				CString sVal;
-				sVal.Format(_T("%d"), *m_val);
-				sXml.Format(_T(" val=\"%ls\""), sVal);
-				writer.WriteString(sXml);
+				WritingStringAttrInt(L"val", *m_val);
 			}
-			writer.WriteString(CString(_T("/>")));
+			writer.WriteString(L"/>");
 		}
 		EElementType CT_Order::getType(){return et_ct_order;}
 		void CT_Order::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
@@ -7907,7 +7694,7 @@ namespace OOX{
 		CT_Period::CT_Period()
 		{
 			/*m_val = new unsigned long;
-			CString s_m_val("2");
+			std::wstring s_m_val("2");
 			{
 			*m_val = _ttoi(s_m_val);
 			}*/
@@ -7924,18 +7711,14 @@ namespace OOX{
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_Period::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_Period::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
 			{
-				CString sXml;
-				CString sVal;
-				sVal.Format(_T("%d"), *m_val);
-				sXml.Format(_T(" val=\"%ls\""), sVal);
-				writer.WriteString(sXml);
+				WritingStringAttrInt(L"val", *m_val);
 			}
-			writer.WriteString(CString(_T("/>")));
+			writer.WriteString(L"/>");
 		}
 		EElementType CT_Period::getType(){return et_ct_period;}
 		void CT_Period::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
@@ -7979,7 +7762,7 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("layout") == sName)
 				{
 					CT_Layout* pNewElem = new CT_Layout;
@@ -8000,16 +7783,16 @@ namespace OOX{
 				}
 				else if(_T("spPr") == sName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetOuterXml();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetOuterXml();
 					*pNewElem = sVal;
 					m_spPr = pNewElem;
 					FromString_spPr(m_spPr, m_oSpPr);
 				}
 				else if(_T("txPr") == sName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetInnerXml();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetInnerXml();
 					*pNewElem = sVal;
 					m_txPr = pNewElem;
 					FromString_txPr(m_txPr, m_oTxPr);
@@ -8022,23 +7805,23 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_TrendlineLbl::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_TrendlineLbl::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_layout)
 			{
-                CString sNodeName = _T("c:layout");
+                std::wstring sNodeName = _T("c:layout");
                 m_layout->toXML(sNodeName, writer);
 			}
 			if(NULL != m_tx)
 			{
-                CString sNodeName = _T("c:tx");
+                std::wstring sNodeName = _T("c:tx");
                 m_tx->toXML(sNodeName, writer);
 			}
 			if(NULL != m_numFmt)
 			{
-                CString sNodeName = _T("c:numFmt");
+                std::wstring sNodeName = _T("c:numFmt");
                 m_numFmt->toXML(sNodeName, writer);
 			}
 			if(NULL != m_spPr)
@@ -8051,12 +7834,12 @@ namespace OOX{
 			}
 			if(NULL != m_extLst)
 			{
-                CString sNodeName = _T("c:extLst");
+                std::wstring sNodeName = _T("c:extLst");
                 m_extLst->toXML(sNodeName, writer);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_TrendlineLbl::getType(){return et_ct_trendlinelbl;}
 		CT_ErrBars::CT_ErrBars()
@@ -8098,7 +7881,7 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("errDir") == sName)
 				{
 					CT_ErrDir* pNewElem = new CT_ErrDir;
@@ -8143,8 +7926,8 @@ namespace OOX{
 				}
 				else if(_T("spPr") == sName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetOuterXml();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetOuterXml();
 					*pNewElem = sVal;
 					m_spPr = pNewElem;
 					FromString_spPr(m_spPr, m_oSpPr);
@@ -8157,43 +7940,43 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_ErrBars::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_ErrBars::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_errDir)
 			{
-                CString sNodeName = _T("c:errDir");
+                std::wstring sNodeName = _T("c:errDir");
                 m_errDir->toXML(sNodeName, writer);
 			}
 			if(NULL != m_errBarType)
 			{
-                CString sNodeName = _T("c:errBarType");
+                std::wstring sNodeName = _T("c:errBarType");
                 m_errBarType->toXML(sNodeName, writer);
 			}
 			if(NULL != m_errValType)
 			{
-                CString sNodeName = _T("c:errValType");
+                std::wstring sNodeName = _T("c:errValType");
                 m_errValType->toXML(sNodeName, writer);
 			}
 			if(NULL != m_noEndCap)
 			{
-                CString sNodeName = _T("c:noEndCap");
+                std::wstring sNodeName = _T("c:noEndCap");
                 m_noEndCap->toXML(sNodeName, writer);
 			}
 			if(NULL != m_plus)
 			{
-                CString sNodeName = _T("c:plus");
+                std::wstring sNodeName = _T("c:plus");
                 m_plus->toXML(sNodeName, writer);
 			}
 			if(NULL != m_minus)
 			{
-                CString sNodeName = _T("c:minus");
+                std::wstring sNodeName = _T("c:minus");
                 m_minus->toXML(sNodeName, writer);
 			}
 			if(NULL != m_val)
 			{
-                CString sNodeName = _T("c:val");
+                std::wstring sNodeName = _T("c:val");
                 m_val->toXML(sNodeName, writer);
 			}
 			if(NULL != m_spPr)
@@ -8202,12 +7985,12 @@ namespace OOX{
 			}
 			if(NULL != m_extLst)
 			{
-                CString sNodeName = _T("c:extLst");
+                std::wstring sNodeName = _T("c:extLst");
                 m_extLst->toXML(sNodeName, writer);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_ErrBars::getType(){return et_ct_errbars;}
 		CT_ErrDir::CT_ErrDir()
@@ -8225,20 +8008,18 @@ namespace OOX{
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_ErrDir::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_ErrDir::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
 			{
-				CString sEnumVal;
+				std::wstring sEnumVal;
 				if(ToXml_ST_ErrDir(*m_val, sEnumVal))
 				{
-					CString sVal;
-					sVal.Format(_T(" val=\"%ls\""), sEnumVal);
-					writer.WriteString(sVal);
+					WritingStringAttrString(L"val", sEnumVal);
 				}
 			}
-			writer.WriteString(CString(_T("/>")));
+			writer.WriteString(L"/>");
 		}
 		EElementType CT_ErrDir::getType(){return et_ct_errdir;}
 		void CT_ErrDir::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
@@ -8247,7 +8028,7 @@ namespace OOX{
 				{
 					ST_ErrDir* pNewElem = new ST_ErrDir;
 					ST_ErrDir eVal;
-                    CString sNodeName = oReader.GetText();
+                    std::wstring sNodeName = oReader.GetText();
                     if(FromXml_ST_ErrDir(sNodeName, eVal))
 						*pNewElem = eVal;
 					m_val = pNewElem;
@@ -8271,20 +8052,18 @@ namespace OOX{
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_ErrBarType::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_ErrBarType::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
 			{
-				CString sEnumVal;
+				std::wstring sEnumVal;
 				if(ToXml_ST_ErrBarType(*m_val, sEnumVal))
 				{
-					CString sVal;
-					sVal.Format(_T(" val=\"%ls\""), sEnumVal);
-					writer.WriteString(sVal);
+					WritingStringAttrString(L"val", sEnumVal);
 				}
 			}
-			writer.WriteString(CString(_T("/>")));
+			writer.WriteString(L"/>");
 		}
 		EElementType CT_ErrBarType::getType(){return et_ct_errbartype;}
 		void CT_ErrBarType::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
@@ -8293,7 +8072,7 @@ namespace OOX{
 				{
 					ST_ErrBarType* pNewElem = new ST_ErrBarType;
 					ST_ErrBarType eVal;
-                    CString sNodeName = oReader.GetText();
+                    std::wstring sNodeName = oReader.GetText();
                     if(FromXml_ST_ErrBarType(sNodeName, eVal))
 						*pNewElem = eVal;
 					m_val = pNewElem;
@@ -8317,20 +8096,18 @@ namespace OOX{
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_ErrValType::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_ErrValType::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
 			{
-				CString sEnumVal;
+				std::wstring sEnumVal;
 				if(ToXml_ST_ErrValType(*m_val, sEnumVal))
 				{
-					CString sVal;
-					sVal.Format(_T(" val=\"%ls\""), sEnumVal);
-					writer.WriteString(sVal);
+					WritingStringAttrString(L"val", sEnumVal);
 				}
 			}
-			writer.WriteString(CString(_T("/>")));
+			writer.WriteString(L"/>");
 		}
 		EElementType CT_ErrValType::getType(){return et_ct_errvaltype;}
 		void CT_ErrValType::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
@@ -8339,7 +8116,7 @@ namespace OOX{
 				{
 					ST_ErrValType* pNewElem = new ST_ErrValType;
 					ST_ErrValType eVal;
-                    CString sNodeName = oReader.GetText();
+                    std::wstring sNodeName = oReader.GetText();
                     if(FromXml_ST_ErrValType(sNodeName, eVal))
 						*pNewElem = eVal;
 					m_val = pNewElem;
@@ -8364,7 +8141,7 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("numLit") == sName)
 				{
 					CT_NumData* pNewElem = new CT_NumData;
@@ -8379,23 +8156,23 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_NumDataSource::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_NumDataSource::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_numLit)
 			{
-                CString sNodeName = _T("c:numLit");
+                std::wstring sNodeName = _T("c:numLit");
                 m_numLit->toXML(sNodeName, writer);
 			}
 			if(NULL != m_numRef)
 			{
-                CString sNodeName = _T("c:numRef");
+                std::wstring sNodeName = _T("c:numRef");
                 m_numRef->toXML(sNodeName, writer);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_NumDataSource::getType(){return et_ct_numdatasource;}
 		CT_NumData::CT_NumData()
@@ -8422,11 +8199,11 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("formatCode") == sName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetText2();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetText3();
 					*pNewElem = sVal;
 					m_formatCode = pNewElem;
 				}
@@ -8450,26 +8227,22 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_NumData::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_NumData::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_formatCode)
 			{
-				CString sXml;
-				CString sVal;
-				sVal = XmlUtils::EncodeXmlString(*m_formatCode);
-				if(-1 != sVal.Find(' ') || -1 != sVal.Find('\n'))
-					sXml.Append(_T("<c:formatCode xml:space=\"preserve\">"));
+				if (std::wstring::npos != m_formatCode->find(' ') || std::wstring::npos != m_formatCode->find('\n'))
+					writer.WriteString(_T("<c:formatCode xml:space=\"preserve\">"));
 				else
-					sXml.Append(_T("<c:formatCode>"));
-				sXml.Append(sVal);
-				sXml.Append(_T("</c:formatCode>"));
-				writer.WriteString(sXml);
+					writer.WriteString(_T("<c:formatCode>"));
+				writer.WriteEncodeXmlString(*m_formatCode);
+				writer.WriteString(_T("</c:formatCode>"));
 			}
 			if(NULL != m_ptCount)
 			{
-                CString sNodeName = _T("c:ptCount");
+                std::wstring sNodeName = _T("c:ptCount");
                 m_ptCount->toXML(sNodeName, writer);
 			}
             for(int i = 0, length = m_pt.size(); i < length; ++i)
@@ -8477,18 +8250,18 @@ namespace OOX{
 				CT_NumVal* pElem = m_pt[i];
 				if(NULL != pElem)
 				{
-                    CString sNodeName = _T("c:pt");
+                    std::wstring sNodeName = _T("c:pt");
                     pElem->toXML(sNodeName, writer);
 				}
 			}
 			if(NULL != m_extLst)
 			{
-                CString sNodeName = _T("c:extLst");
+                std::wstring sNodeName = _T("c:extLst");
                 m_extLst->toXML(sNodeName, writer);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_NumData::getType(){return et_ct_numdata;}
 		CT_NumVal::CT_NumVal()
@@ -8514,52 +8287,40 @@ namespace OOX{
 				int nParentDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nParentDepth ) )
 				{
-					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 					if(_T("v") == sName)
 					{
-						CString* pNewElem = new CString;
-						CString sVal = oReader.GetText2();
+						std::wstring* pNewElem = new std::wstring;
+						std::wstring sVal = oReader.GetText3();
 						*pNewElem = sVal;
 						m_v = pNewElem;
 					}
 				}
 		}
-		void CT_NumVal::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_NumVal::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_idx)
 			{
-				CString sXml;
-				CString sVal;
-				sVal.Format(_T("%d"), *m_idx);
-				sXml.Format(_T(" idx=\"%ls\""), sVal);
-				writer.WriteString(sXml);
+				WritingStringAttrInt(L"idx", *m_idx);
 			}
 			if(NULL != m_formatCode)
 			{
-				CString sXml;
-				CString sVal;
-				sVal = XmlUtils::EncodeXmlString(*m_formatCode);
-				sXml.Format(_T(" formatCode=\"%ls\""), sVal);
-				writer.WriteString(sXml);
+				WritingStringAttrEncodeXmlString(L"formatCode", *m_formatCode);
 			}
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_v)
 			{
-				CString sXml;
-				CString sVal;
-				sVal = XmlUtils::EncodeXmlString(*m_v);
-				if(-1 != sVal.Find(' ') || -1 != sVal.Find('\n'))
-					sXml.Append(_T("<c:v xml:space=\"preserve\">"));
+				if (std::wstring::npos != m_v->find(' ') || std::wstring::npos != m_v->find('\n'))
+					writer.WriteString(_T("<c:v xml:space=\"preserve\">"));
 				else
-					sXml.Append(_T("<c:v>"));
-				sXml.Append(sVal);
-				sXml.Append(_T("</c:v>"));
-				writer.WriteString(sXml);
+					writer.WriteString(_T("<c:v>"));
+				writer.WriteEncodeXmlString(*m_v);
+				writer.WriteString(_T("</c:v>"));
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_NumVal::getType(){return et_ct_numval;}
 		void CT_NumVal::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
@@ -8573,8 +8334,8 @@ namespace OOX{
 				}
 				else if(_T("formatCode") == wsName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetText();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetText();
 					*pNewElem = sVal;
 					m_formatCode = pNewElem;
 				}
@@ -8601,11 +8362,11 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("f") == sName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetText2();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetText3();
 					*pNewElem = sVal;
 					m_f = pNewElem;
 				}
@@ -8623,36 +8384,32 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_NumRef::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_NumRef::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_f)
 			{
-				CString sXml;
-				CString sVal;
-				sVal = XmlUtils::EncodeXmlString(*m_f);
-				if(-1 != sVal.Find(' ') || -1 != sVal.Find('\n'))
-					sXml.Append(_T("<c:f xml:space=\"preserve\">"));
+				if (std::wstring::npos != m_f->find(' ') || std::wstring::npos != m_f->find('\n'))
+					writer.WriteString(_T("<c:f xml:space=\"preserve\">"));
 				else
-					sXml.Append(_T("<c:f>"));
-				sXml.Append(sVal);
-				sXml.Append(_T("</c:f>"));
-				writer.WriteString(sXml);
+					writer.WriteString(_T("<c:f>"));
+				writer.WriteEncodeXmlString(*m_f);
+				writer.WriteString(_T("</c:f>"));
 			}
 			if(NULL != m_numCache)
 			{
-                CString sNodeName = _T("c:numCache");
+                std::wstring sNodeName = _T("c:numCache");
                 m_numCache->toXML(sNodeName, writer);
 			}
 			if(NULL != m_extLst)
 			{
-                CString sNodeName = _T("c:extLst");
+                std::wstring sNodeName = _T("c:extLst");
                 m_extLst->toXML(sNodeName, writer);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_NumRef::getType(){return et_ct_numref;}
 		CT_AxDataSource::CT_AxDataSource()
@@ -8682,7 +8439,7 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("multiLvlStrRef") == sName)
 				{
 					CT_MultiLvlStrRef* pNewElem = new CT_MultiLvlStrRef;
@@ -8715,38 +8472,38 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_AxDataSource::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_AxDataSource::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_multiLvlStrRef)
 			{
-                CString sNodeName = _T("c:multiLvlStrRef");
+                std::wstring sNodeName = _T("c:multiLvlStrRef");
                 m_multiLvlStrRef->toXML(sNodeName, writer);
 			}
 			if(NULL != m_numLit)
 			{
-                CString sNodeName = _T("c:numLit");
+                std::wstring sNodeName = _T("c:numLit");
                 m_numLit->toXML(sNodeName, writer);
 			}
 			if(NULL != m_numRef)
 			{
-                CString sNodeName = _T("c:numRef");
+                std::wstring sNodeName = _T("c:numRef");
                 m_numRef->toXML(sNodeName, writer);
 			}
 			if(NULL != m_strLit)
 			{
-                CString sNodeName = _T("c:strLit");
+                std::wstring sNodeName = _T("c:strLit");
                 m_strLit->toXML(sNodeName, writer);
 			}
 			if(NULL != m_strRef)
 			{
-                CString sNodeName = _T("c:strRef");
+                std::wstring sNodeName = _T("c:strRef");
                 m_strRef->toXML(sNodeName, writer);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_AxDataSource::getType(){return et_ct_axdatasource;}
 		CT_MultiLvlStrRef::CT_MultiLvlStrRef()
@@ -8770,11 +8527,11 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("f") == sName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetText2();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetText3();
 					*pNewElem = sVal;
 					m_f = pNewElem;
 				}
@@ -8792,36 +8549,32 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_MultiLvlStrRef::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_MultiLvlStrRef::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_f)
 			{
-				CString sXml;
-				CString sVal;
-				sVal = XmlUtils::EncodeXmlString(*m_f);
-				if(-1 != sVal.Find(' ') || -1 != sVal.Find('\n'))
-					sXml.Append(_T("<c:f xml:space=\"preserve\">"));
+				if (std::wstring::npos != m_f->find(' ') || std::wstring::npos != m_f->find('\n'))
+					writer.WriteString(_T("<c:f xml:space=\"preserve\">"));
 				else
-					sXml.Append(_T("<c:f>"));
-				sXml.Append(sVal);
-				sXml.Append(_T("</c:f>"));
-				writer.WriteString(sXml);
+					writer.WriteString(_T("<c:f>"));
+				writer.WriteEncodeXmlString(*m_f);
+				writer.WriteString(_T("</c:f>"));
 			}
 			if(NULL != m_multiLvlStrCache)
 			{
-                CString sNodeName = _T("c:multiLvlStrCache");
+                std::wstring sNodeName = _T("c:multiLvlStrCache");
                 m_multiLvlStrCache->toXML(sNodeName, writer);
 			}
 			if(NULL != m_extLst)
 			{
-                CString sNodeName = _T("c:extLst");
+                std::wstring sNodeName = _T("c:extLst");
                 m_extLst->toXML(sNodeName, writer);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_MultiLvlStrRef::getType(){return et_ct_multilvlstrref;}
 		CT_lvl::CT_lvl()
@@ -8839,7 +8592,7 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("pt") == sName)
 				{
 					CT_StrVal* pNewElem = new CT_StrVal;
@@ -8848,22 +8601,22 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_lvl::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_lvl::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
             for(int i = 0, length = m_pt.size(); i < length; ++i)
 			{
 				CT_StrVal* pElem = m_pt[i];
 				if(NULL != pElem)
 				{
-                    CString sNodeName = _T("c:pt");
+                    std::wstring sNodeName = _T("c:pt");
                     pElem->toXML(sNodeName, writer);
 				}
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_lvl::getType(){return et_ct_lvl;}
 		CT_MultiLvlStrData::CT_MultiLvlStrData()
@@ -8887,7 +8640,7 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("ptCount") == sName)
 				{
 					CT_UnsignedInt* pNewElem = new CT_UnsignedInt;
@@ -8908,13 +8661,13 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_MultiLvlStrData::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_MultiLvlStrData::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_ptCount)
 			{
-                CString sNodeName = _T("c:ptCount");
+                std::wstring sNodeName = _T("c:ptCount");
                 m_ptCount->toXML(sNodeName, writer);
 			}
             for(int i = 0, length = m_lvl.size(); i < length; ++i)
@@ -8922,18 +8675,18 @@ namespace OOX{
 				CT_lvl* pElem = m_lvl[i];
 				if(NULL != pElem)
 				{
-                    CString sNodeName = _T("c:lvl");
+                    std::wstring sNodeName = _T("c:lvl");
                     pElem->toXML(sNodeName, writer);
 				}
 			}
 			if(NULL != m_extLst)
 			{
-                CString sNodeName = _T("c:extLst");
+                std::wstring sNodeName = _T("c:extLst");
                 m_extLst->toXML(sNodeName, writer);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_MultiLvlStrData::getType(){return et_ct_multilvlstrdata;}
 		CT_BubbleChart::CT_BubbleChart()
@@ -8975,7 +8728,7 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("varyColors") == sName)
 				{
 					CT_Boolean* pNewElem = new CT_Boolean;
@@ -9032,13 +8785,13 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_BubbleChart::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_BubbleChart::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_varyColors)
 			{
-                CString sNodeName = _T("c:varyColors");
+                std::wstring sNodeName = _T("c:varyColors");
                 m_varyColors->toXML(sNodeName, writer);
 			}
             for(int i = 0, length = m_ser.size(); i < length; ++i)
@@ -9046,33 +8799,33 @@ namespace OOX{
 				CT_BubbleSer* pElem = m_ser[i];
 				if(NULL != pElem)
 				{
-                    CString sNodeName = _T("c:ser");
+                    std::wstring sNodeName = _T("c:ser");
                     pElem->toXML(sNodeName, writer);
 				}
 			}
 			if(NULL != m_dLbls)
 			{
-                CString sNodeName = _T("c:dLbls");
+                std::wstring sNodeName = _T("c:dLbls");
                 m_dLbls->toXML(sNodeName, writer);
 			}
 			if(NULL != m_bubble3D)
 			{
-                CString sNodeName = _T("c:bubble3D");
+                std::wstring sNodeName = _T("c:bubble3D");
                 m_bubble3D->toXML(sNodeName, writer);
 			}
 			if(NULL != m_bubbleScale)
 			{
-                CString sNodeName = _T("c:bubbleScale");
+                std::wstring sNodeName = _T("c:bubbleScale");
                 m_bubbleScale->toXML(sNodeName, writer);
 			}
 			if(NULL != m_showNegBubbles)
 			{
-                CString sNodeName = _T("c:showNegBubbles");
+                std::wstring sNodeName = _T("c:showNegBubbles");
                 m_showNegBubbles->toXML(sNodeName, writer);
 			}
 			if(NULL != m_sizeRepresents)
 			{
-                CString sNodeName = _T("c:sizeRepresents");
+                std::wstring sNodeName = _T("c:sizeRepresents");
                 m_sizeRepresents->toXML(sNodeName, writer);
 			}
             for(int i = 0, length = m_axId.size(); i < length; ++i)
@@ -9080,18 +8833,18 @@ namespace OOX{
 				CT_UnsignedInt* pElem = m_axId[i];
 				if(NULL != pElem)
 				{
-                    CString sNodeName = _T("c:axId");
+                    std::wstring sNodeName = _T("c:axId");
                     pElem->toXML(sNodeName, writer);
 				}
 			}
 			if(NULL != m_extLst)
 			{
-                CString sNodeName = _T("c:extLst");
+                std::wstring sNodeName = _T("c:extLst");
                 m_extLst->toXML(sNodeName, writer);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_BubbleChart::getType(){return et_ct_bubblechart;}
 		CT_bandFmts::CT_bandFmts()
@@ -9109,7 +8862,7 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("bandFmt") == sName)
 				{
 					CT_BandFmt* pNewElem = new CT_BandFmt;
@@ -9118,22 +8871,22 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_bandFmts::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_bandFmts::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
             for(int i = 0, length = m_bandFmt.size(); i < length; ++i)
 			{
 				CT_BandFmt* pElem = m_bandFmt[i];
 				if(NULL != pElem)
 				{
-                    CString sNodeName = _T("c:bandFmt");
+                    std::wstring sNodeName = _T("c:bandFmt");
                     pElem->toXML(sNodeName, writer);
 				}
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_bandFmts::getType(){return et_ct_bandfmts;}
 		CT_Surface3DChart::CT_Surface3DChart()
@@ -9163,7 +8916,7 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("wireframe") == sName)
 				{
 					CT_Boolean* pNewElem = new CT_Boolean;
@@ -9196,13 +8949,13 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_Surface3DChart::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_Surface3DChart::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_wireframe)
 			{
-                CString sNodeName = _T("c:wireframe");
+                std::wstring sNodeName = _T("c:wireframe");
                 m_wireframe->toXML(sNodeName, writer);
 			}
             for(int i = 0, length = m_ser.size(); i < length; ++i)
@@ -9210,13 +8963,13 @@ namespace OOX{
 				CT_SurfaceSer* pElem = m_ser[i];
 				if(NULL != pElem)
 				{
-                    CString sNodeName = _T("c:ser");
+                    std::wstring sNodeName = _T("c:ser");
                     pElem->toXML(sNodeName, writer);
 				}
 			}
 			if(NULL != m_bandFmts)
 			{
-                CString sNodeName = _T("c:bandFmts");
+                std::wstring sNodeName = _T("c:bandFmts");
                 m_bandFmts->toXML(sNodeName, writer);
 			}
             for(int i = 0, length = m_axId.size(); i < length; ++i)
@@ -9224,18 +8977,18 @@ namespace OOX{
 				CT_UnsignedInt* pElem = m_axId[i];
 				if(NULL != pElem)
 				{
-                    CString sNodeName = _T("c:axId");
+                    std::wstring sNodeName = _T("c:axId");
                     pElem->toXML(sNodeName, writer);
 				}
 			}
 			if(NULL != m_extLst)
 			{
-                CString sNodeName = _T("c:extLst");
+                std::wstring sNodeName = _T("c:extLst");
                 m_extLst->toXML(sNodeName, writer);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_Surface3DChart::getType(){return et_ct_surface3dchart;}
 		CT_SurfaceSer::CT_SurfaceSer()
@@ -9271,7 +9024,7 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("idx") == sName)
 				{
 					CT_UnsignedInt* pNewElem = new CT_UnsignedInt;
@@ -9292,8 +9045,8 @@ namespace OOX{
 				}
 				else if(_T("spPr") == sName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetOuterXml();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetOuterXml();
 					*pNewElem = sVal;
 					m_spPr = pNewElem;
 					FromString_spPr(m_spPr, m_oSpPr);
@@ -9318,23 +9071,23 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_SurfaceSer::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_SurfaceSer::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_idx)
 			{
-                CString sNodeName = _T("c:idx");
+                std::wstring sNodeName = _T("c:idx");
                 m_idx->toXML(sNodeName, writer);
 			}
 			if(NULL != m_order)
 			{
-                CString sNodeName = _T("c:order");
+                std::wstring sNodeName = _T("c:order");
                 m_order->toXML(sNodeName, writer);
 			}
 			if(NULL != m_tx)
 			{
-                CString sNodeName = _T("c:tx");
+                std::wstring sNodeName = _T("c:tx");
                 m_tx->toXML(sNodeName, writer);
 			}
 			if(NULL != m_spPr)
@@ -9343,22 +9096,22 @@ namespace OOX{
 			}
 			if(NULL != m_cat)
 			{
-                CString sNodeName = _T("c:cat");
+                std::wstring sNodeName = _T("c:cat");
                 m_cat->toXML(sNodeName, writer);
 			}
 			if(NULL != m_val)
 			{
-                CString sNodeName = _T("c:val");
+                std::wstring sNodeName = _T("c:val");
                 m_val->toXML(sNodeName, writer);
 			}
 			if(NULL != m_extLst)
 			{
-                CString sNodeName = _T("c:extLst");
+                std::wstring sNodeName = _T("c:extLst");
                 m_extLst->toXML(sNodeName, writer);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_SurfaceSer::getType(){return et_ct_surfaceser;}
 		CT_BandFmt::CT_BandFmt()
@@ -9379,7 +9132,7 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("idx") == sName)
 				{
 					CT_UnsignedInt* pNewElem = new CT_UnsignedInt;
@@ -9388,30 +9141,30 @@ namespace OOX{
 				}
 				else if(_T("spPr") == sName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetOuterXml();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetOuterXml();
 					*pNewElem = sVal;
 					m_spPr = pNewElem;
 					FromString_spPr(m_spPr, m_oSpPr);
 				}
 			}
 		}
-		void CT_BandFmt::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_BandFmt::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_idx)
 			{
-                CString sNodeName = _T("c:idx");
+                std::wstring sNodeName = _T("c:idx");
                 m_idx->toXML(sNodeName, writer);
 			}
 			if(NULL != m_spPr)
 			{
 				writer.WriteString(*m_spPr);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_BandFmt::getType(){return et_ct_bandfmt;}
 		CT_SurfaceChart::CT_SurfaceChart()
@@ -9441,7 +9194,7 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("wireframe") == sName)
 				{
 					CT_Boolean* pNewElem = new CT_Boolean;
@@ -9474,13 +9227,13 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_SurfaceChart::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_SurfaceChart::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_wireframe)
 			{
-                CString sNodeName = _T("c:wireframe");
+                std::wstring sNodeName = _T("c:wireframe");
                 m_wireframe->toXML(sNodeName, writer);
 			}
             for(int i = 0, length = m_ser.size(); i < length; ++i)
@@ -9488,13 +9241,13 @@ namespace OOX{
 				CT_SurfaceSer* pElem = m_ser[i];
 				if(NULL != pElem)
 				{
-                    CString sNodeName = _T("c:ser");
+                    std::wstring sNodeName = _T("c:ser");
                     pElem->toXML(sNodeName, writer);
 				}
 			}
 			if(NULL != m_bandFmts)
 			{
-                CString sNodeName = _T("c:bandFmts");
+                std::wstring sNodeName = _T("c:bandFmts");
                 m_bandFmts->toXML(sNodeName, writer);
 			}
             for(int i = 0, length = m_axId.size(); i < length; ++i)
@@ -9502,24 +9255,24 @@ namespace OOX{
 				CT_UnsignedInt* pElem = m_axId[i];
 				if(NULL != pElem)
 				{
-                    CString sNodeName = _T("c:axId");
+                    std::wstring sNodeName = _T("c:axId");
                     pElem->toXML(sNodeName, writer);
 				}
 			}
 			if(NULL != m_extLst)
 			{
-                CString sNodeName = _T("c:extLst");
+                std::wstring sNodeName = _T("c:extLst");
                 m_extLst->toXML(sNodeName, writer);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_SurfaceChart::getType(){return et_ct_surfacechart;}
 		CT_SecondPieSize::CT_SecondPieSize()
 		{
-			/*m_val = new CString;
-			CString s_m_val("75%");
+			/*m_val = new std::wstring;
+			std::wstring s_m_val("75%");
 			{
 			*m_val = s_m_val;
 			}*/
@@ -9536,26 +9289,22 @@ namespace OOX{
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_SecondPieSize::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_SecondPieSize::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
 			{
-				CString sXml;
-				CString sVal;
-				sVal = XmlUtils::EncodeXmlString(*m_val);
-				sXml.Format(_T(" val=\"%ls\""), sVal);
-				writer.WriteString(sXml);
+				WritingStringAttrEncodeXmlString(L"val", *m_val);
 			}
-			writer.WriteString(CString(_T("/>")));
+			writer.WriteString(L"/>");
 		}
 		EElementType CT_SecondPieSize::getType(){return et_ct_secondpiesize;}
 		void CT_SecondPieSize::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("val") == wsName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetText();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetText();
 					*pNewElem = sVal;
 					m_val = pNewElem;
 				}
@@ -9578,20 +9327,18 @@ namespace OOX{
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_SplitType::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_SplitType::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
 			{
-				CString sEnumVal;
+				std::wstring sEnumVal;
 				if(ToXml_ST_SplitType(*m_val, sEnumVal))
 				{
-					CString sVal;
-					sVal.Format(_T(" val=\"%ls\""), sEnumVal);
-					writer.WriteString(sVal);
+					WritingStringAttrString(L"val", sEnumVal);
 				}
 			}
-			writer.WriteString(CString(_T("/>")));
+			writer.WriteString(L"/>");
 		}
 		EElementType CT_SplitType::getType(){return et_ct_splittype;}
 		void CT_SplitType::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
@@ -9600,7 +9347,7 @@ namespace OOX{
 				{
 					ST_SplitType* pNewElem = new ST_SplitType;
 					ST_SplitType eVal;
-                    CString sNodeName = oReader.GetText();
+                    std::wstring sNodeName = oReader.GetText();
                     if(FromXml_ST_SplitType(sNodeName, eVal))
 						*pNewElem = eVal;
 					m_val = pNewElem;
@@ -9624,20 +9371,18 @@ namespace OOX{
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_OfPieType::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_OfPieType::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
 			{
-				CString sEnumVal;
+				std::wstring sEnumVal;
 				if(ToXml_ST_OfPieType(*m_val, sEnumVal))
 				{
-					CString sVal;
-					sVal.Format(_T(" val=\"%ls\""), sEnumVal);
-					writer.WriteString(sVal);
+					WritingStringAttrString(L"val", sEnumVal);
 				}
 			}
-			writer.WriteString(CString(_T("/>")));
+			writer.WriteString(L"/>");
 		}
 		EElementType CT_OfPieType::getType(){return et_ct_ofpietype;}
 		void CT_OfPieType::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
@@ -9646,7 +9391,7 @@ namespace OOX{
 				{
 					ST_OfPieType* pNewElem = new ST_OfPieType;
 					ST_OfPieType eVal;
-                    CString sNodeName = oReader.GetText();
+                    std::wstring sNodeName = oReader.GetText();
                     if(FromXml_ST_OfPieType(sNodeName, eVal))
 						*pNewElem = eVal;
 					m_val = pNewElem;
@@ -9668,7 +9413,7 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("secondPiePt") == sName)
 				{
 					CT_UnsignedInt* pNewElem = new CT_UnsignedInt;
@@ -9677,22 +9422,22 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_custSplit::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_custSplit::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
             for(int i = 0, length = m_secondPiePt.size(); i < length; ++i)
 			{
 				CT_UnsignedInt* pElem = m_secondPiePt[i];
 				if(NULL != pElem)
 				{
-                    CString sNodeName = _T("c:secondPiePt");
+                    std::wstring sNodeName = _T("c:secondPiePt");
                     pElem->toXML(sNodeName, writer);
 				}
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_custSplit::getType(){return et_ct_custsplit;}
 		CT_OfPieChart::CT_OfPieChart()
@@ -9740,7 +9485,7 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("ofPieType") == sName)
 				{
 					CT_OfPieType* pNewElem = new CT_OfPieType;
@@ -9809,18 +9554,18 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_OfPieChart::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_OfPieChart::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_ofPieType)
 			{
-                CString sNodeName = _T("c:ofPieType");
+                std::wstring sNodeName = _T("c:ofPieType");
                 m_ofPieType->toXML(sNodeName, writer);
 			}
 			if(NULL != m_varyColors)
 			{
-                CString sNodeName = _T("c:varyColors");
+                std::wstring sNodeName = _T("c:varyColors");
                 m_varyColors->toXML(sNodeName, writer);
 			}
             for(int i = 0, length = m_ser.size(); i < length; ++i)
@@ -9828,38 +9573,38 @@ namespace OOX{
 				CT_PieSer* pElem = m_ser[i];
 				if(NULL != pElem)
 				{
-                    CString sNodeName = _T("c:ser");
+                    std::wstring sNodeName = _T("c:ser");
                     pElem->toXML(sNodeName, writer);
 				}
 			}
 			if(NULL != m_dLbls)
 			{
-                CString sNodeName = _T("c:dLbls");
+                std::wstring sNodeName = _T("c:dLbls");
                 m_dLbls->toXML(sNodeName, writer);
 			}
 			if(NULL != m_gapWidth)
 			{
-                CString sNodeName = _T("c:gapWidth");
+                std::wstring sNodeName = _T("c:gapWidth");
                 m_gapWidth->toXML(sNodeName, writer);
 			}
 			if(NULL != m_splitType)
 			{
-                CString sNodeName = _T("c:splitType");
+                std::wstring sNodeName = _T("c:splitType");
                 m_splitType->toXML(sNodeName, writer);
 			}
 			if(NULL != m_splitPos)
 			{
-                CString sNodeName = _T("c:splitPos");
+                std::wstring sNodeName = _T("c:splitPos");
                 m_splitPos->toXML(sNodeName, writer);
 			}
 			if(NULL != m_custSplit)
 			{
-                CString sNodeName = _T("c:custSplit");
+                std::wstring sNodeName = _T("c:custSplit");
                 m_custSplit->toXML(sNodeName, writer);
 			}
 			if(NULL != m_secondPieSize)
 			{
-                CString sNodeName = _T("c:secondPieSize");
+                std::wstring sNodeName = _T("c:secondPieSize");
                 m_secondPieSize->toXML(sNodeName, writer);
 			}
             for(int i = 0, length = m_serLines.size(); i < length; ++i)
@@ -9867,18 +9612,18 @@ namespace OOX{
 				CT_ChartLines* pElem = m_serLines[i];
 				if(NULL != pElem)
 				{
-                    CString sNodeName = _T("c:serLines");
+                    std::wstring sNodeName = _T("c:serLines");
                     pElem->toXML(sNodeName, writer);
 				}
 			}
 			if(NULL != m_extLst)
 			{
-                CString sNodeName = _T("c:extLst");
+                std::wstring sNodeName = _T("c:extLst");
                 m_extLst->toXML(sNodeName, writer);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_OfPieChart::getType(){return et_ct_ofpiechart;}
 		CT_PieSer::CT_PieSer()
@@ -9923,7 +9668,7 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("idx") == sName)
 				{
 					CT_UnsignedInt* pNewElem = new CT_UnsignedInt;
@@ -9944,8 +9689,8 @@ namespace OOX{
 				}
 				else if(_T("spPr") == sName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetOuterXml();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetOuterXml();
 					*pNewElem = sVal;
 					m_spPr = pNewElem;
 					FromString_spPr(m_spPr, m_oSpPr);
@@ -9988,23 +9733,23 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_PieSer::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_PieSer::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_idx)
 			{
-                CString sNodeName = _T("c:idx");
+                std::wstring sNodeName = _T("c:idx");
                 m_idx->toXML(sNodeName, writer);
 			}
 			if(NULL != m_order)
 			{
-                CString sNodeName = _T("c:order");
+                std::wstring sNodeName = _T("c:order");
                 m_order->toXML(sNodeName, writer);
 			}
 			if(NULL != m_tx)
 			{
-                CString sNodeName = _T("c:tx");
+                std::wstring sNodeName = _T("c:tx");
                 m_tx->toXML(sNodeName, writer);
 			}
 			if(NULL != m_spPr)
@@ -10013,7 +9758,7 @@ namespace OOX{
 			}
 			if(NULL != m_explosion)
 			{
-                CString sNodeName = _T("c:explosion");
+                std::wstring sNodeName = _T("c:explosion");
                 m_explosion->toXML(sNodeName, writer);
 			}
             for(int i = 0, length = m_dPt.size(); i < length; ++i)
@@ -10021,39 +9766,39 @@ namespace OOX{
 				CT_DPt* pElem = m_dPt[i];
 				if(NULL != pElem)
 				{
-                    CString sNodeName = _T("c:dPt");
+                    std::wstring sNodeName = _T("c:dPt");
                     pElem->toXML(sNodeName, writer);
 				}
 			}
 			if(NULL != m_dLbls)
 			{
-                CString sNodeName = _T("c:dLbls");
+                std::wstring sNodeName = _T("c:dLbls");
                 m_dLbls->toXML(sNodeName, writer);
 			}
 			if(NULL != m_cat)
 			{
-                CString sNodeName = _T("c:cat");
+                std::wstring sNodeName = _T("c:cat");
                 m_cat->toXML(sNodeName, writer);
 			}
 			if(NULL != m_val)
 			{
-                CString sNodeName = _T("c:val");
+                std::wstring sNodeName = _T("c:val");
                 m_val->toXML(sNodeName, writer);
 			}
 			if(NULL != m_extLst)
 			{
-                CString sNodeName = _T("c:extLst");
+                std::wstring sNodeName = _T("c:extLst");
                 m_extLst->toXML(sNodeName, writer);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_PieSer::getType(){return et_ct_pieser;}
 		CT_GapAmount::CT_GapAmount()
 		{
-			/*m_val = new CString;
-			CString s_m_val("150%");
+			/*m_val = new std::wstring;
+			std::wstring s_m_val("150%");
 			{
 			*m_val = s_m_val;
 			}*/
@@ -10070,26 +9815,22 @@ namespace OOX{
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_GapAmount::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_GapAmount::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
 			{
-				CString sXml;
-				CString sVal;
-				sVal = XmlUtils::EncodeXmlString(*m_val);
-				sXml.Format(_T(" val=\"%ls\""), sVal);
-				writer.WriteString(sXml);
+				WritingStringAttrEncodeXmlString(L"val", *m_val);
 			}
-			writer.WriteString(CString(_T("/>")));
+			writer.WriteString(L"/>");
 		}
 		EElementType CT_GapAmount::getType(){return et_ct_gapamount;}
 		void CT_GapAmount::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("val") == wsName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetText();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetText();
 					*pNewElem = sVal;
 					m_val = pNewElem;
 				}
@@ -10137,7 +9878,7 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("barDir") == sName)
 				{
 					CT_BarDir* pNewElem = new CT_BarDir;
@@ -10200,23 +9941,23 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_Bar3DChart::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_Bar3DChart::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_barDir)
 			{
-                CString sNodeName = _T("c:barDir");
+                std::wstring sNodeName = _T("c:barDir");
                 m_barDir->toXML(sNodeName, writer);
 			}
 			if(NULL != m_grouping)
 			{
-                CString sNodeName = _T("c:grouping");
+                std::wstring sNodeName = _T("c:grouping");
                 m_grouping->toXML(sNodeName, writer);
 			}
 			if(NULL != m_varyColors)
 			{
-                CString sNodeName = _T("c:varyColors");
+                std::wstring sNodeName = _T("c:varyColors");
                 m_varyColors->toXML(sNodeName, writer);
 			}
             for(int i = 0, length = m_ser.size(); i < length; ++i)
@@ -10224,28 +9965,28 @@ namespace OOX{
 				CT_BarSer* pElem = m_ser[i];
 				if(NULL != pElem)
 				{
-                    CString sNodeName = _T("c:ser");
+                    std::wstring sNodeName = _T("c:ser");
                     pElem->toXML(sNodeName, writer);
 				}
 			}
 			if(NULL != m_dLbls)
 			{
-                CString sNodeName = _T("c:dLbls");
+                std::wstring sNodeName = _T("c:dLbls");
                 m_dLbls->toXML(sNodeName, writer);
 			}
 			if(NULL != m_gapWidth)
 			{
-                CString sNodeName = _T("c:gapWidth");
+                std::wstring sNodeName = _T("c:gapWidth");
                 m_gapWidth->toXML(sNodeName, writer);
 			}
 			if(NULL != m_gapDepth)
 			{
-                CString sNodeName = _T("c:gapDepth");
+                std::wstring sNodeName = _T("c:gapDepth");
                 m_gapDepth->toXML(sNodeName, writer);
 			}
 			if(NULL != m_shape)
 			{
-                CString sNodeName = _T("c:shape");
+                std::wstring sNodeName = _T("c:shape");
                 m_shape->toXML(sNodeName, writer);
 			}
             for(int i = 0, length = m_axId.size(); i < length; ++i)
@@ -10253,18 +9994,18 @@ namespace OOX{
 				CT_UnsignedInt* pElem = m_axId[i];
 				if(NULL != pElem)
 				{
-                    CString sNodeName = _T("c:axId");
+                    std::wstring sNodeName = _T("c:axId");
                     pElem->toXML(sNodeName, writer);
 				}
 			}
 			if(NULL != m_extLst)
 			{
-                CString sNodeName = _T("c:extLst");
+                std::wstring sNodeName = _T("c:extLst");
                 m_extLst->toXML(sNodeName, writer);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_Bar3DChart::getType(){return et_ct_bar3dchart;}
 		CT_BarDir::CT_BarDir()
@@ -10284,20 +10025,18 @@ namespace OOX{
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_BarDir::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_BarDir::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
 			{
-				CString sEnumVal;
+				std::wstring sEnumVal;
 				if(ToXml_ST_BarDir(*m_val, sEnumVal))
 				{
-					CString sVal;
-					sVal.Format(_T(" val=\"%ls\""), sEnumVal);
-					writer.WriteString(sVal);
+					WritingStringAttrString(L"val", sEnumVal);
 				}
 			}
-			writer.WriteString(CString(_T("/>")));
+			writer.WriteString(L"/>");
 		}
 		EElementType CT_BarDir::getType(){return et_ct_bardir;}
 		void CT_BarDir::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
@@ -10306,7 +10045,7 @@ namespace OOX{
 				{
 					ST_BarDir* pNewElem = new ST_BarDir;
 					ST_BarDir eVal;
-                    CString sNodeName = oReader.GetText();
+                    std::wstring sNodeName = oReader.GetText();
                     if(FromXml_ST_BarDir(sNodeName, eVal))
 						*pNewElem = eVal;
 					m_val = pNewElem;
@@ -10330,20 +10069,18 @@ namespace OOX{
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_BarGrouping::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_BarGrouping::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
 			{
-				CString sEnumVal;
+				std::wstring sEnumVal;
 				if(ToXml_ST_BarGrouping(*m_val, sEnumVal))
 				{
-					CString sVal;
-					sVal.Format(_T(" val=\"%ls\""), sEnumVal);
-					writer.WriteString(sVal);
+					WritingStringAttrString(L"val", sEnumVal);
 				}
 			}
-			writer.WriteString(CString(_T("/>")));
+			writer.WriteString(L"/>");
 		}
 		EElementType CT_BarGrouping::getType(){return et_ct_bargrouping;}
 		void CT_BarGrouping::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
@@ -10352,7 +10089,7 @@ namespace OOX{
 				{
 					ST_BarGrouping* pNewElem = new ST_BarGrouping;
 					ST_BarGrouping eVal;
-                    CString sNodeName = oReader.GetText();
+                    std::wstring sNodeName = oReader.GetText();
                     if(FromXml_ST_BarGrouping(sNodeName, eVal))
 						*pNewElem = eVal;
 					m_val = pNewElem;
@@ -10413,7 +10150,7 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("idx") == sName)
 				{
 					CT_UnsignedInt* pNewElem = new CT_UnsignedInt;
@@ -10434,8 +10171,8 @@ namespace OOX{
 				}
 				else if(_T("spPr") == sName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetOuterXml();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetOuterXml();
 					*pNewElem = sVal;
 					m_spPr = pNewElem;
 					FromString_spPr(m_spPr, m_oSpPr);
@@ -10502,23 +10239,23 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_BarSer::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_BarSer::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_idx)
 			{
-                CString sNodeName = _T("c:idx");
+                std::wstring sNodeName = _T("c:idx");
                 m_idx->toXML(sNodeName, writer);
 			}
 			if(NULL != m_order)
 			{
-                CString sNodeName = _T("c:order");
+                std::wstring sNodeName = _T("c:order");
                 m_order->toXML(sNodeName, writer);
 			}
 			if(NULL != m_tx)
 			{
-                CString sNodeName = _T("c:tx");
+                std::wstring sNodeName = _T("c:tx");
                 m_tx->toXML(sNodeName, writer);
 			}
 			if(NULL != m_spPr)
@@ -10527,12 +10264,12 @@ namespace OOX{
 			}
 			if(NULL != m_invertIfNegative)
 			{
-                CString sNodeName = _T("c:invertIfNegative");
+                std::wstring sNodeName = _T("c:invertIfNegative");
                 m_invertIfNegative->toXML(sNodeName, writer);
 			}
 			if(NULL != m_pictureOptions)
 			{
-                CString sNodeName = _T("c:pictureOptions");
+                std::wstring sNodeName = _T("c:pictureOptions");
                 m_pictureOptions->toXML(sNodeName, writer);
 			}
             for(int i = 0, length = m_dPt.size(); i < length; ++i)
@@ -10540,13 +10277,13 @@ namespace OOX{
 				CT_DPt* pElem = m_dPt[i];
 				if(NULL != pElem)
 				{
-                    CString sNodeName = _T("c:dPt");
+                    std::wstring sNodeName = _T("c:dPt");
                     pElem->toXML(sNodeName, writer);
 				}
 			}
 			if(NULL != m_dLbls)
 			{
-                CString sNodeName = _T("c:dLbls");
+                std::wstring sNodeName = _T("c:dLbls");
                 m_dLbls->toXML(sNodeName, writer);
 			}
             for(int i = 0, length = m_trendline.size(); i < length; ++i)
@@ -10554,38 +10291,38 @@ namespace OOX{
 				CT_Trendline* pElem = m_trendline[i];
 				if(NULL != pElem)
 				{
-                    CString sNodeName = _T("c:trendline");
+                    std::wstring sNodeName = _T("c:trendline");
                     pElem->toXML(sNodeName, writer);
 				}
 			}
 			if(NULL != m_errBars)
 			{
-                CString sNodeName = _T("c:errBars");
+                std::wstring sNodeName = _T("c:errBars");
                 m_errBars->toXML(sNodeName, writer);
 			}
 			if(NULL != m_cat)
 			{
-                CString sNodeName = _T("c:cat");
+                std::wstring sNodeName = _T("c:cat");
                 m_cat->toXML(sNodeName, writer);
 			}
 			if(NULL != m_val)
 			{
-                CString sNodeName = _T("c:val");
+                std::wstring sNodeName = _T("c:val");
                 m_val->toXML(sNodeName, writer);
 			}
 			if(NULL != m_shape)
 			{
-                CString sNodeName = _T("c:shape");
+                std::wstring sNodeName = _T("c:shape");
                 m_shape->toXML(sNodeName, writer);
 			}
 			if(NULL != m_extLst)
 			{
-                CString sNodeName = _T("c:extLst");
+                std::wstring sNodeName = _T("c:extLst");
                 m_extLst->toXML(sNodeName, writer);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_BarSer::getType(){return et_ct_barser;}
 		CT_Shape::CT_Shape()
@@ -10605,20 +10342,18 @@ namespace OOX{
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_Shape::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_Shape::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
 			{
-				CString sEnumVal;
+				std::wstring sEnumVal;
 				if(ToXml_ST_Shape(*m_val, sEnumVal))
 				{
-					CString sVal;
-					sVal.Format(_T(" val=\"%ls\""), sEnumVal);
-					writer.WriteString(sVal);
+					WritingStringAttrString(L"val", sEnumVal);
 				}
 			}
-			writer.WriteString(CString(_T("/>")));
+			writer.WriteString(L"/>");
 		}
 		EElementType CT_Shape::getType(){return et_ct_shape;}
 		void CT_Shape::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
@@ -10627,7 +10362,7 @@ namespace OOX{
 				{
 					ST_Shape* pNewElem = new ST_Shape;
 					ST_Shape eVal;
-                    CString sNodeName = oReader.GetText();
+                    std::wstring sNodeName = oReader.GetText();
                     if(FromXml_ST_Shape(sNodeName, eVal))
 						*pNewElem = eVal;
 					m_val = pNewElem;
@@ -10636,8 +10371,8 @@ namespace OOX{
 		}
 		CT_Overlap::CT_Overlap()
 		{
-			/*m_val = new CString;
-			CString s_m_val("0%");
+			/*m_val = new std::wstring;
+			std::wstring s_m_val("0%");
 			{
 			*m_val = s_m_val;
 			}*/
@@ -10654,26 +10389,22 @@ namespace OOX{
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_Overlap::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_Overlap::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
 			{
-				CString sXml;
-				CString sVal;
-				sVal = XmlUtils::EncodeXmlString(*m_val);
-				sXml.Format(_T(" val=\"%ls\""), sVal);
-				writer.WriteString(sXml);
+				WritingStringAttrEncodeXmlString(L"val", *m_val);
 			}
-			writer.WriteString(CString(_T("/>")));
+			writer.WriteString(L"/>");
 		}
 		EElementType CT_Overlap::getType(){return et_ct_overlap;}
 		void CT_Overlap::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("val") == wsName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetText();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetText();
 					*pNewElem = sVal;
 					m_val = pNewElem;
 				}
@@ -10721,7 +10452,7 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("barDir") == sName)
 				{
 					CT_BarDir* pNewElem = new CT_BarDir;
@@ -10784,23 +10515,23 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_BarChart::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_BarChart::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_barDir)
 			{
-                CString sNodeName = _T("c:barDir");
+                std::wstring sNodeName = _T("c:barDir");
                 m_barDir->toXML(sNodeName, writer);
 			}
 			if(NULL != m_grouping)
 			{
-                CString sNodeName = _T("c:grouping");
+                std::wstring sNodeName = _T("c:grouping");
                 m_grouping->toXML(sNodeName, writer);
 			}
 			if(NULL != m_varyColors)
 			{
-                CString sNodeName = _T("c:varyColors");
+                std::wstring sNodeName = _T("c:varyColors");
                 m_varyColors->toXML(sNodeName, writer);
 			}
             for(int i = 0, length = m_ser.size(); i < length; ++i)
@@ -10808,23 +10539,23 @@ namespace OOX{
 				CT_BarSer* pElem = m_ser[i];
 				if(NULL != pElem)
 				{
-                    CString sNodeName = _T("c:ser");
+                    std::wstring sNodeName = _T("c:ser");
                     pElem->toXML(sNodeName, writer);
 				}
 			}
 			if(NULL != m_dLbls)
 			{
-                CString sNodeName = _T("c:dLbls");
+                std::wstring sNodeName = _T("c:dLbls");
                 m_dLbls->toXML(sNodeName, writer);
 			}
 			if(NULL != m_gapWidth)
 			{
-                CString sNodeName = _T("c:gapWidth");
+                std::wstring sNodeName = _T("c:gapWidth");
                 m_gapWidth->toXML(sNodeName, writer);
 			}
 			if(NULL != m_overlap)
 			{
-                CString sNodeName = _T("c:overlap");
+                std::wstring sNodeName = _T("c:overlap");
                 m_overlap->toXML(sNodeName, writer);
 			}
             for(int i = 0, length = m_serLines.size(); i < length; ++i)
@@ -10832,7 +10563,7 @@ namespace OOX{
 				CT_ChartLines* pElem = m_serLines[i];
 				if(NULL != pElem)
 				{
-                    CString sNodeName = _T("c:serLines");
+                    std::wstring sNodeName = _T("c:serLines");
                     pElem->toXML(sNodeName, writer);
 				}
 			}
@@ -10841,24 +10572,24 @@ namespace OOX{
 				CT_UnsignedInt* pElem = m_axId[i];
 				if(NULL != pElem)
 				{
-                    CString sNodeName = _T("c:axId");
+                    std::wstring sNodeName = _T("c:axId");
                     pElem->toXML(sNodeName, writer);
 				}
 			}
 			if(NULL != m_extLst)
 			{
-                CString sNodeName = _T("c:extLst");
+                std::wstring sNodeName = _T("c:extLst");
                 m_extLst->toXML(sNodeName, writer);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_BarChart::getType(){return et_ct_barchart;}
 		CT_HoleSize::CT_HoleSize()
 		{
-			/*m_val = new CString;
-			CString s_m_val("10%");
+			/*m_val = new std::wstring;
+			std::wstring s_m_val("10%");
 			{
 			*m_val = s_m_val;
 			}*/
@@ -10875,26 +10606,22 @@ namespace OOX{
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_HoleSize::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_HoleSize::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
 			{
-				CString sXml;
-				CString sVal;
-				sVal = XmlUtils::EncodeXmlString(*m_val);
-				sXml.Format(_T(" val=\"%ls\""), sVal);
-				writer.WriteString(sXml);
+				WritingStringAttrEncodeXmlString(L"val", *m_val);
 			}
-			writer.WriteString(CString(_T("/>")));
+			writer.WriteString(L"/>");
 		}
 		EElementType CT_HoleSize::getType(){return et_ct_holesize;}
 		void CT_HoleSize::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("val") == wsName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetText();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetText();
 					*pNewElem = sVal;
 					m_val = pNewElem;
 				}
@@ -10930,7 +10657,7 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("varyColors") == sName)
 				{
 					CT_Boolean* pNewElem = new CT_Boolean;
@@ -10969,13 +10696,13 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_DoughnutChart::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_DoughnutChart::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_varyColors)
 			{
-                CString sNodeName = _T("c:varyColors");
+                std::wstring sNodeName = _T("c:varyColors");
                 m_varyColors->toXML(sNodeName, writer);
 			}
             for(int i = 0, length = m_ser.size(); i < length; ++i)
@@ -10983,39 +10710,39 @@ namespace OOX{
 				CT_PieSer* pElem = m_ser[i];
 				if(NULL != pElem)
 				{
-                    CString sNodeName = _T("c:ser");
+                    std::wstring sNodeName = _T("c:ser");
                     pElem->toXML(sNodeName, writer);
 				}
 			}
 			if(NULL != m_dLbls)
 			{
-                CString sNodeName = _T("c:dLbls");
+                std::wstring sNodeName = _T("c:dLbls");
                 m_dLbls->toXML(sNodeName, writer);
 			}
 			if(NULL != m_firstSliceAng)
 			{
-                CString sNodeName = _T("c:firstSliceAng");
+                std::wstring sNodeName = _T("c:firstSliceAng");
                 m_firstSliceAng->toXML(sNodeName, writer);
 			}
 			if(NULL != m_holeSize)
 			{
-                CString sNodeName = _T("c:holeSize");
+                std::wstring sNodeName = _T("c:holeSize");
                 m_holeSize->toXML(sNodeName, writer);
 			}
 			if(NULL != m_extLst)
 			{
-                CString sNodeName = _T("c:extLst");
+                std::wstring sNodeName = _T("c:extLst");
                 m_extLst->toXML(sNodeName, writer);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_DoughnutChart::getType(){return et_ct_doughnutchart;}
 		CT_FirstSliceAng::CT_FirstSliceAng()
 		{
 			/*m_val = new unsigned long;
-			CString s_m_val("0");
+			std::wstring s_m_val("0");
 			{
 			*m_val = _ttoi(s_m_val);
 			}*/
@@ -11032,18 +10759,14 @@ namespace OOX{
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_FirstSliceAng::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_FirstSliceAng::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
 			{
-				CString sXml;
-				CString sVal;
-				sVal.Format(_T("%d"), *m_val);
-				sXml.Format(_T(" val=\"%ls\""), sVal);
-				writer.WriteString(sXml);
+				WritingStringAttrInt(L"val", *m_val);
 			}
-			writer.WriteString(CString(_T("/>")));
+			writer.WriteString(L"/>");
 		}
 		EElementType CT_FirstSliceAng::getType(){return et_ct_firstsliceang;}
 		void CT_FirstSliceAng::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
@@ -11081,7 +10804,7 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("varyColors") == sName)
 				{
 					CT_Boolean* pNewElem = new CT_Boolean;
@@ -11108,13 +10831,13 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_Pie3DChart::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_Pie3DChart::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_varyColors)
 			{
-                CString sNodeName = _T("c:varyColors");
+                std::wstring sNodeName = _T("c:varyColors");
                 m_varyColors->toXML(sNodeName, writer);
 			}
             for(int i = 0, length = m_ser.size(); i < length; ++i)
@@ -11122,23 +10845,23 @@ namespace OOX{
 				CT_PieSer* pElem = m_ser[i];
 				if(NULL != pElem)
 				{
-                    CString sNodeName = _T("c:ser");
+                    std::wstring sNodeName = _T("c:ser");
                     pElem->toXML(sNodeName, writer);
 				}
 			}
 			if(NULL != m_dLbls)
 			{
-                CString sNodeName = _T("c:dLbls");
+                std::wstring sNodeName = _T("c:dLbls");
                 m_dLbls->toXML(sNodeName, writer);
 			}
 			if(NULL != m_extLst)
 			{
-                CString sNodeName = _T("c:extLst");
+                std::wstring sNodeName = _T("c:extLst");
                 m_extLst->toXML(sNodeName, writer);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_Pie3DChart::getType(){return et_ct_pie3dchart;}
 		CT_PieChart::CT_PieChart()
@@ -11168,7 +10891,7 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("varyColors") == sName)
 				{
 					CT_Boolean* pNewElem = new CT_Boolean;
@@ -11201,13 +10924,13 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_PieChart::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_PieChart::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_varyColors)
 			{
-                CString sNodeName = _T("c:varyColors");
+                std::wstring sNodeName = _T("c:varyColors");
                 m_varyColors->toXML(sNodeName, writer);
 			}
             for(int i = 0, length = m_ser.size(); i < length; ++i)
@@ -11215,28 +10938,28 @@ namespace OOX{
 				CT_PieSer* pElem = m_ser[i];
 				if(NULL != pElem)
 				{
-                    CString sNodeName = _T("c:ser");
+                    std::wstring sNodeName = _T("c:ser");
                     pElem->toXML(sNodeName, writer);
 				}
 			}
 			if(NULL != m_dLbls)
 			{
-                CString sNodeName = _T("c:dLbls");
+                std::wstring sNodeName = _T("c:dLbls");
                 m_dLbls->toXML(sNodeName, writer);
 			}
 			if(NULL != m_firstSliceAng)
 			{
-                CString sNodeName = _T("c:firstSliceAng");
+                std::wstring sNodeName = _T("c:firstSliceAng");
                 m_firstSliceAng->toXML(sNodeName, writer);
 			}
 			if(NULL != m_extLst)
 			{
-                CString sNodeName = _T("c:extLst");
+                std::wstring sNodeName = _T("c:extLst");
                 m_extLst->toXML(sNodeName, writer);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_PieChart::getType(){return et_ct_piechart;}
 		CT_ScatterSer::CT_ScatterSer()
@@ -11290,7 +11013,7 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("idx") == sName)
 				{
 					CT_UnsignedInt* pNewElem = new CT_UnsignedInt;
@@ -11311,8 +11034,8 @@ namespace OOX{
 				}
 				else if(_T("spPr") == sName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetOuterXml();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetOuterXml();
 					*pNewElem = sVal;
 					m_spPr = pNewElem;
 					FromString_spPr(m_spPr, m_oSpPr);
@@ -11373,23 +11096,23 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_ScatterSer::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_ScatterSer::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_idx)
 			{
-                CString sNodeName = _T("c:idx");
+                std::wstring sNodeName = _T("c:idx");
                 m_idx->toXML(sNodeName, writer);
 			}
 			if(NULL != m_order)
 			{
-                CString sNodeName = _T("c:order");
+                std::wstring sNodeName = _T("c:order");
                 m_order->toXML(sNodeName, writer);
 			}
 			if(NULL != m_tx)
 			{
-                CString sNodeName = _T("c:tx");
+                std::wstring sNodeName = _T("c:tx");
                 m_tx->toXML(sNodeName, writer);
 			}
 			if(NULL != m_spPr)
@@ -11398,7 +11121,7 @@ namespace OOX{
 			}
 			if(NULL != m_marker)
 			{
-                CString sNodeName = _T("c:marker");
+                std::wstring sNodeName = _T("c:marker");
                 m_marker->toXML(sNodeName, writer);
 			}
             for(int i = 0, length = m_dPt.size(); i < length; ++i)
@@ -11406,13 +11129,13 @@ namespace OOX{
 				CT_DPt* pElem = m_dPt[i];
 				if(NULL != pElem)
 				{
-                    CString sNodeName = _T("c:dPt");
+                    std::wstring sNodeName = _T("c:dPt");
                     pElem->toXML(sNodeName, writer);
 				}
 			}
 			if(NULL != m_dLbls)
 			{
-                CString sNodeName = _T("c:dLbls");
+                std::wstring sNodeName = _T("c:dLbls");
                 m_dLbls->toXML(sNodeName, writer);
 			}
             for(int i = 0, length = m_trendline.size(); i < length; ++i)
@@ -11420,7 +11143,7 @@ namespace OOX{
 				CT_Trendline* pElem = m_trendline[i];
 				if(NULL != pElem)
 				{
-                    CString sNodeName = _T("c:trendline");
+                    std::wstring sNodeName = _T("c:trendline");
                     pElem->toXML(sNodeName, writer);
 				}
 			}
@@ -11429,33 +11152,33 @@ namespace OOX{
 				CT_ErrBars* pElem = m_errBars[i];
 				if(NULL != pElem)
 				{
-                    CString sNodeName = _T("c:errBars");
+                    std::wstring sNodeName = _T("c:errBars");
                     pElem->toXML(sNodeName, writer);
 				}
 			}
 			if(NULL != m_xVal)
 			{
-                CString sNodeName = _T("c:xVal");
+                std::wstring sNodeName = _T("c:xVal");
                 m_xVal->toXML(sNodeName, writer);
 			}
 			if(NULL != m_yVal)
 			{
-                CString sNodeName = _T("c:yVal");
+                std::wstring sNodeName = _T("c:yVal");
                 m_yVal->toXML(sNodeName, writer);
 			}
 			if(NULL != m_smooth)
 			{
-                CString sNodeName = _T("c:smooth");
+                std::wstring sNodeName = _T("c:smooth");
                 m_smooth->toXML(sNodeName, writer);
 			}
 			if(NULL != m_extLst)
 			{
-                CString sNodeName = _T("c:extLst");
+                std::wstring sNodeName = _T("c:extLst");
                 m_extLst->toXML(sNodeName, writer);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_ScatterSer::getType(){return et_ct_scatterser;}
 		CT_ScatterStyle::CT_ScatterStyle()
@@ -11475,20 +11198,18 @@ namespace OOX{
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_ScatterStyle::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_ScatterStyle::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
 			{
-				CString sEnumVal;
+				std::wstring sEnumVal;
 				if(ToXml_ST_ScatterStyle(*m_val, sEnumVal))
 				{
-					CString sVal;
-					sVal.Format(_T(" val=\"%ls\""), sEnumVal);
-					writer.WriteString(sVal);
+					WritingStringAttrString(L"val", sEnumVal);
 				}
 			}
-			writer.WriteString(CString(_T("/>")));
+			writer.WriteString(L"/>");
 		}
 		EElementType CT_ScatterStyle::getType(){return et_ct_scatterstyle;}
 		void CT_ScatterStyle::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
@@ -11497,7 +11218,7 @@ namespace OOX{
 				{
 					ST_ScatterStyle* pNewElem = new ST_ScatterStyle;
 					ST_ScatterStyle eVal;
-                    CString sNodeName = oReader.GetText();
+                    std::wstring sNodeName = oReader.GetText();
                     if(FromXml_ST_ScatterStyle(sNodeName, eVal))
 						*pNewElem = eVal;
 					m_val = pNewElem;
@@ -11534,7 +11255,7 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("scatterStyle") == sName)
 				{
 					CT_ScatterStyle* pNewElem = new CT_ScatterStyle;
@@ -11573,18 +11294,18 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_ScatterChart::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_ScatterChart::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_scatterStyle)
 			{
-                CString sNodeName = _T("c:scatterStyle");
+                std::wstring sNodeName = _T("c:scatterStyle");
                 m_scatterStyle->toXML(sNodeName, writer);
 			}
 			if(NULL != m_varyColors)
 			{
-                CString sNodeName = _T("c:varyColors");
+                std::wstring sNodeName = _T("c:varyColors");
                 m_varyColors->toXML(sNodeName, writer);
 			}
             for(int i = 0, length = m_ser.size(); i < length; ++i)
@@ -11592,13 +11313,13 @@ namespace OOX{
 				CT_ScatterSer* pElem = m_ser[i];
 				if(NULL != pElem)
 				{
-                    CString sNodeName = _T("c:ser");
+                    std::wstring sNodeName = _T("c:ser");
                     pElem->toXML(sNodeName, writer);
 				}
 			}
 			if(NULL != m_dLbls)
 			{
-                CString sNodeName = _T("c:dLbls");
+                std::wstring sNodeName = _T("c:dLbls");
                 m_dLbls->toXML(sNodeName, writer);
 			}
             for(int i = 0, length = m_axId.size(); i < length; ++i)
@@ -11606,18 +11327,18 @@ namespace OOX{
 				CT_UnsignedInt* pElem = m_axId[i];
 				if(NULL != pElem)
 				{
-                    CString sNodeName = _T("c:axId");
+                    std::wstring sNodeName = _T("c:axId");
                     pElem->toXML(sNodeName, writer);
 				}
 			}
 			if(NULL != m_extLst)
 			{
-                CString sNodeName = _T("c:extLst");
+                std::wstring sNodeName = _T("c:extLst");
                 m_extLst->toXML(sNodeName, writer);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_ScatterChart::getType(){return et_ct_scatterchart;}
 		CT_RadarSer::CT_RadarSer()
@@ -11662,7 +11383,7 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("idx") == sName)
 				{
 					CT_UnsignedInt* pNewElem = new CT_UnsignedInt;
@@ -11683,8 +11404,8 @@ namespace OOX{
 				}
 				else if(_T("spPr") == sName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetOuterXml();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetOuterXml();
 					*pNewElem = sVal;
 					m_spPr = pNewElem;
 					FromString_spPr(m_spPr, m_oSpPr);
@@ -11727,23 +11448,23 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_RadarSer::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_RadarSer::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_idx)
 			{
-                CString sNodeName = _T("c:idx");
+                std::wstring sNodeName = _T("c:idx");
                 m_idx->toXML(sNodeName, writer);
 			}
 			if(NULL != m_order)
 			{
-                CString sNodeName = _T("c:order");
+                std::wstring sNodeName = _T("c:order");
                 m_order->toXML(sNodeName, writer);
 			}
 			if(NULL != m_tx)
 			{
-                CString sNodeName = _T("c:tx");
+                std::wstring sNodeName = _T("c:tx");
                 m_tx->toXML(sNodeName, writer);
 			}
 			if(NULL != m_spPr)
@@ -11752,7 +11473,7 @@ namespace OOX{
 			}
 			if(NULL != m_marker)
 			{
-                CString sNodeName = _T("c:marker");
+                std::wstring sNodeName = _T("c:marker");
                 m_marker->toXML(sNodeName, writer);
 			}
             for(int i = 0, length = m_dPt.size(); i < length; ++i)
@@ -11760,33 +11481,33 @@ namespace OOX{
 				CT_DPt* pElem = m_dPt[i];
 				if(NULL != pElem)
 				{
-                    CString sNodeName = _T("c:dPt");
+                    std::wstring sNodeName = _T("c:dPt");
                     pElem->toXML(sNodeName, writer);
 				}
 			}
 			if(NULL != m_dLbls)
 			{
-                CString sNodeName = _T("c:dLbls");
+                std::wstring sNodeName = _T("c:dLbls");
                 m_dLbls->toXML(sNodeName, writer);
 			}
 			if(NULL != m_cat)
 			{
-                CString sNodeName = _T("c:cat");
+                std::wstring sNodeName = _T("c:cat");
                 m_cat->toXML(sNodeName, writer);
 			}
 			if(NULL != m_val)
 			{
-                CString sNodeName = _T("c:val");
+                std::wstring sNodeName = _T("c:val");
                 m_val->toXML(sNodeName, writer);
 			}
 			if(NULL != m_extLst)
 			{
-                CString sNodeName = _T("c:extLst");
+                std::wstring sNodeName = _T("c:extLst");
                 m_extLst->toXML(sNodeName, writer);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_RadarSer::getType(){return et_ct_radarser;}
 		CT_RadarStyle::CT_RadarStyle()
@@ -11806,20 +11527,18 @@ namespace OOX{
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_RadarStyle::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_RadarStyle::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
 			{
-				CString sEnumVal;
+				std::wstring sEnumVal;
 				if(ToXml_ST_RadarStyle(*m_val, sEnumVal))
 				{
-					CString sVal;
-					sVal.Format(_T(" val=\"%ls\""), sEnumVal);
-					writer.WriteString(sVal);
+					WritingStringAttrString(L"val", sEnumVal);
 				}
 			}
-			writer.WriteString(CString(_T("/>")));
+			writer.WriteString(L"/>");
 		}
 		EElementType CT_RadarStyle::getType(){return et_ct_radarstyle;}
 		void CT_RadarStyle::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
@@ -11828,7 +11547,7 @@ namespace OOX{
 				{
 					ST_RadarStyle* pNewElem = new ST_RadarStyle;
 					ST_RadarStyle eVal;
-                    CString sNodeName = oReader.GetText();
+                    std::wstring sNodeName = oReader.GetText();
                     if(FromXml_ST_RadarStyle(sNodeName, eVal))
 						*pNewElem = eVal;
 					m_val = pNewElem;
@@ -11865,7 +11584,7 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("radarStyle") == sName)
 				{
 					CT_RadarStyle* pNewElem = new CT_RadarStyle;
@@ -11904,18 +11623,18 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_RadarChart::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_RadarChart::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_radarStyle)
 			{
-                CString sNodeName = _T("c:radarStyle");
+                std::wstring sNodeName = _T("c:radarStyle");
                 m_radarStyle->toXML(sNodeName, writer);
 			}
 			if(NULL != m_varyColors)
 			{
-                CString sNodeName = _T("c:varyColors");
+                std::wstring sNodeName = _T("c:varyColors");
                 m_varyColors->toXML(sNodeName, writer);
 			}
             for(int i = 0, length = m_ser.size(); i < length; ++i)
@@ -11923,13 +11642,13 @@ namespace OOX{
 				CT_RadarSer* pElem = m_ser[i];
 				if(NULL != pElem)
 				{
-                    CString sNodeName = _T("c:ser");
+                    std::wstring sNodeName = _T("c:ser");
                     pElem->toXML(sNodeName, writer);
 				}
 			}
 			if(NULL != m_dLbls)
 			{
-                CString sNodeName = _T("c:dLbls");
+                std::wstring sNodeName = _T("c:dLbls");
                 m_dLbls->toXML(sNodeName, writer);
 			}
             for(int i = 0, length = m_axId.size(); i < length; ++i)
@@ -11937,18 +11656,18 @@ namespace OOX{
 				CT_UnsignedInt* pElem = m_axId[i];
 				if(NULL != pElem)
 				{
-                    CString sNodeName = _T("c:axId");
+                    std::wstring sNodeName = _T("c:axId");
                     pElem->toXML(sNodeName, writer);
 				}
 			}
 			if(NULL != m_extLst)
 			{
-                CString sNodeName = _T("c:extLst");
+                std::wstring sNodeName = _T("c:extLst");
                 m_extLst->toXML(sNodeName, writer);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_RadarChart::getType(){return et_ct_radarchart;}
 		CT_StockChart::CT_StockChart()
@@ -11984,7 +11703,7 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("ser") == sName)
 				{
 					CT_LineSer* pNewElem = new CT_LineSer;
@@ -12029,37 +11748,37 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_StockChart::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_StockChart::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
             for(int i = 0, length = m_ser.size(); i < length; ++i)
 			{
 				CT_LineSer* pElem = m_ser[i];
 				if(NULL != pElem)
 				{
-                    CString sNodeName = _T("c:ser");
+                    std::wstring sNodeName = _T("c:ser");
                     pElem->toXML(sNodeName, writer);
 				}
 			}
 			if(NULL != m_dLbls)
 			{
-                CString sNodeName = _T("c:dLbls");
+                std::wstring sNodeName = _T("c:dLbls");
                 m_dLbls->toXML(sNodeName, writer);
 			}
 			if(NULL != m_dropLines)
 			{
-                CString sNodeName = _T("c:dropLines");
+                std::wstring sNodeName = _T("c:dropLines");
                 m_dropLines->toXML(sNodeName, writer);
 			}
 			if(NULL != m_hiLowLines)
 			{
-                CString sNodeName = _T("c:hiLowLines");
+                std::wstring sNodeName = _T("c:hiLowLines");
                 m_hiLowLines->toXML(sNodeName, writer);
 			}
 			if(NULL != m_upDownBars)
 			{
-                CString sNodeName = _T("c:upDownBars");
+                std::wstring sNodeName = _T("c:upDownBars");
                 m_upDownBars->toXML(sNodeName, writer);
 			}
             for(int i = 0, length = m_axId.size(); i < length; ++i)
@@ -12067,18 +11786,18 @@ namespace OOX{
 				CT_UnsignedInt* pElem = m_axId[i];
 				if(NULL != pElem)
 				{
-                    CString sNodeName = _T("c:axId");
+                    std::wstring sNodeName = _T("c:axId");
                     pElem->toXML(sNodeName, writer);
 				}
 			}
 			if(NULL != m_extLst)
 			{
-                CString sNodeName = _T("c:extLst");
+                std::wstring sNodeName = _T("c:extLst");
                 m_extLst->toXML(sNodeName, writer);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_StockChart::getType(){return et_ct_stockchart;}
 		CT_LineSer::CT_LineSer()
@@ -12132,7 +11851,7 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("idx") == sName)
 				{
 					CT_UnsignedInt* pNewElem = new CT_UnsignedInt;
@@ -12153,8 +11872,8 @@ namespace OOX{
 				}
 				else if(_T("spPr") == sName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetOuterXml();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetOuterXml();
 					*pNewElem = sVal;
 					m_spPr = pNewElem;
 					FromString_spPr(m_spPr, m_oSpPr);
@@ -12215,23 +11934,23 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_LineSer::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_LineSer::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_idx)
 			{
-                CString sNodeName = _T("c:idx");
+                std::wstring sNodeName = _T("c:idx");
                 m_idx->toXML(sNodeName, writer);
 			}
 			if(NULL != m_order)
 			{
-                CString sNodeName = _T("c:order");
+                std::wstring sNodeName = _T("c:order");
                 m_order->toXML(sNodeName, writer);
 			}
 			if(NULL != m_tx)
 			{
-                CString sNodeName = _T("c:tx");
+                std::wstring sNodeName = _T("c:tx");
                 m_tx->toXML(sNodeName, writer);
 			}
 			if(NULL != m_spPr)
@@ -12240,7 +11959,7 @@ namespace OOX{
 			}
 			if(NULL != m_marker)
 			{
-                CString sNodeName = _T("c:marker");
+                std::wstring sNodeName = _T("c:marker");
                 m_marker->toXML(sNodeName, writer);
 			}
             for(int i = 0, length = m_dPt.size(); i < length; ++i)
@@ -12248,13 +11967,13 @@ namespace OOX{
 				CT_DPt* pElem = m_dPt[i];
 				if(NULL != pElem)
 				{
-                    CString sNodeName = _T("c:dPt");
+                    std::wstring sNodeName = _T("c:dPt");
                     pElem->toXML(sNodeName, writer);
 				}
 			}
 			if(NULL != m_dLbls)
 			{
-                CString sNodeName = _T("c:dLbls");
+                std::wstring sNodeName = _T("c:dLbls");
                 m_dLbls->toXML(sNodeName, writer);
 			}
             for(int i = 0, length = m_trendline.size(); i < length; ++i)
@@ -12262,38 +11981,38 @@ namespace OOX{
 				CT_Trendline* pElem = m_trendline[i];
 				if(NULL != pElem)
 				{
-                    CString sNodeName = _T("c:trendline");
+                    std::wstring sNodeName = _T("c:trendline");
                     pElem->toXML(sNodeName, writer);
 				}
 			}
 			if(NULL != m_errBars)
 			{
-                CString sNodeName = _T("c:errBars");
+                std::wstring sNodeName = _T("c:errBars");
                 m_errBars->toXML(sNodeName, writer);
 			}
 			if(NULL != m_cat)
 			{
-                CString sNodeName = _T("c:cat");
+                std::wstring sNodeName = _T("c:cat");
                 m_cat->toXML(sNodeName, writer);
 			}
 			if(NULL != m_val)
 			{
-                CString sNodeName = _T("c:val");
+                std::wstring sNodeName = _T("c:val");
                 m_val->toXML(sNodeName, writer);
 			}
 			if(NULL != m_smooth)
 			{
-                CString sNodeName = _T("c:smooth");
+                std::wstring sNodeName = _T("c:smooth");
                 m_smooth->toXML(sNodeName, writer);
 			}
 			if(NULL != m_extLst)
 			{
-                CString sNodeName = _T("c:extLst");
+                std::wstring sNodeName = _T("c:extLst");
                 m_extLst->toXML(sNodeName, writer);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_LineSer::getType(){return et_ct_lineser;}
 		CT_UpDownBars::CT_UpDownBars()
@@ -12320,7 +12039,7 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("gapWidth") == sName)
 				{
 					CT_GapAmount* pNewElem = new CT_GapAmount;
@@ -12347,33 +12066,33 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_UpDownBars::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_UpDownBars::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_gapWidth)
 			{
-                CString sNodeName = _T("c:gapWidth");
+                std::wstring sNodeName = _T("c:gapWidth");
                 m_gapWidth->toXML(sNodeName, writer);
 			}
 			if(NULL != m_upBars)
 			{
-                CString sNodeName = _T("c:upBars");
+                std::wstring sNodeName = _T("c:upBars");
                 m_upBars->toXML(sNodeName, writer);
 			}
 			if(NULL != m_downBars)
 			{
-                CString sNodeName = _T("c:downBars");
+                std::wstring sNodeName = _T("c:downBars");
                 m_downBars->toXML(sNodeName, writer);
 			}
 			if(NULL != m_extLst)
 			{
-                CString sNodeName = _T("c:extLst");
+                std::wstring sNodeName = _T("c:extLst");
                 m_extLst->toXML(sNodeName, writer);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_UpDownBars::getType(){return et_ct_updownbars;}
 		CT_UpDownBar::CT_UpDownBar()
@@ -12391,28 +12110,28 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("spPr") == sName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetOuterXml();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetOuterXml();
 					*pNewElem = sVal;
 					m_spPr = pNewElem;
 					FromString_spPr(m_spPr, m_oSpPr);
 				}
 			}
 		}
-		void CT_UpDownBar::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_UpDownBar::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_spPr)
 			{
 				writer.WriteString(*m_spPr);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_UpDownBar::getType(){return et_ct_updownbar;}
 		CT_Line3DChart::CT_Line3DChart()
@@ -12451,7 +12170,7 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("grouping") == sName)
 				{
 					CT_Grouping* pNewElem = new CT_Grouping;
@@ -12502,18 +12221,18 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_Line3DChart::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_Line3DChart::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_grouping)
 			{
-                CString sNodeName = _T("c:grouping");
+                std::wstring sNodeName = _T("c:grouping");
                 m_grouping->toXML(sNodeName, writer);
 			}
 			if(NULL != m_varyColors)
 			{
-                CString sNodeName = _T("c:varyColors");
+                std::wstring sNodeName = _T("c:varyColors");
                 m_varyColors->toXML(sNodeName, writer);
 			}
             for(int i = 0, length = m_ser.size(); i < length; ++i)
@@ -12521,23 +12240,23 @@ namespace OOX{
 				CT_LineSer* pElem = m_ser[i];
 				if(NULL != pElem)
 				{
-                    CString sNodeName = _T("c:ser");
+                    std::wstring sNodeName = _T("c:ser");
                     pElem->toXML(sNodeName, writer);
 				}
 			}
 			if(NULL != m_dLbls)
 			{
-                CString sNodeName = _T("c:dLbls");
+                std::wstring sNodeName = _T("c:dLbls");
                 m_dLbls->toXML(sNodeName, writer);
 			}
 			if(NULL != m_dropLines)
 			{
-                CString sNodeName = _T("c:dropLines");
+                std::wstring sNodeName = _T("c:dropLines");
                 m_dropLines->toXML(sNodeName, writer);
 			}
 			if(NULL != m_gapDepth)
 			{
-                CString sNodeName = _T("c:gapDepth");
+                std::wstring sNodeName = _T("c:gapDepth");
                 m_gapDepth->toXML(sNodeName, writer);
 			}
             for(int i = 0, length = m_axId.size(); i < length; ++i)
@@ -12545,18 +12264,18 @@ namespace OOX{
 				CT_UnsignedInt* pElem = m_axId[i];
 				if(NULL != pElem)
 				{
-                    CString sNodeName = _T("c:axId");
+                    std::wstring sNodeName = _T("c:axId");
                     pElem->toXML(sNodeName, writer);
 				}
 			}
 			if(NULL != m_extLst)
 			{
-                CString sNodeName = _T("c:extLst");
+                std::wstring sNodeName = _T("c:extLst");
                 m_extLst->toXML(sNodeName, writer);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_Line3DChart::getType(){return et_ct_line3dchart;}
 		CT_Grouping::CT_Grouping()
@@ -12576,20 +12295,18 @@ namespace OOX{
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_Grouping::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_Grouping::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
 			{
-				CString sEnumVal;
+				std::wstring sEnumVal;
 				if(ToXml_ST_Grouping(*m_val, sEnumVal))
 				{
-					CString sVal;
-					sVal.Format(_T(" val=\"%ls\""), sEnumVal);
-					writer.WriteString(sVal);
+					WritingStringAttrString(L"val", sEnumVal);
 				}
 			}
-			writer.WriteString(CString(_T("/>")));
+			writer.WriteString(L"/>");
 		}
 		EElementType CT_Grouping::getType(){return et_ct_grouping;}
 		void CT_Grouping::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
@@ -12599,7 +12316,7 @@ namespace OOX{
 					ST_Grouping* pNewElem = new ST_Grouping;
 					ST_Grouping eVal;
 
-                    CString sNodeName = oReader.GetText();
+                    std::wstring sNodeName = oReader.GetText();
                     if(FromXml_ST_Grouping(sNodeName, eVal))
 						*pNewElem = eVal;
 					m_val = pNewElem;
@@ -12651,7 +12368,7 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("grouping") == sName)
 				{
 					CT_Grouping* pNewElem = new CT_Grouping;
@@ -12720,18 +12437,18 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_LineChart::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_LineChart::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_grouping)
 			{
-                CString sNodeName = _T("c:grouping");
+                std::wstring sNodeName = _T("c:grouping");
                 m_grouping->toXML(sNodeName, writer);
 			}
 			if(NULL != m_varyColors)
 			{
-                CString sNodeName = _T("c:varyColors");
+                std::wstring sNodeName = _T("c:varyColors");
                 m_varyColors->toXML(sNodeName, writer);
 			}
             for(int i = 0, length = m_ser.size(); i < length; ++i)
@@ -12739,38 +12456,38 @@ namespace OOX{
 				CT_LineSer* pElem = m_ser[i];
 				if(NULL != pElem)
 				{
-                    CString sNodeName = _T("c:ser");
+                    std::wstring sNodeName = _T("c:ser");
                     pElem->toXML(sNodeName, writer);
 				}
 			}
 			if(NULL != m_dLbls)
 			{
-                CString sNodeName = _T("c:dLbls");
+                std::wstring sNodeName = _T("c:dLbls");
                 m_dLbls->toXML(sNodeName, writer);
 			}
 			if(NULL != m_dropLines)
 			{
-                CString sNodeName = _T("c:dropLines");
+                std::wstring sNodeName = _T("c:dropLines");
                 m_dropLines->toXML(sNodeName, writer);
 			}
 			if(NULL != m_hiLowLines)
 			{
-                CString sNodeName = _T("c:hiLowLines");
+                std::wstring sNodeName = _T("c:hiLowLines");
                 m_hiLowLines->toXML(sNodeName, writer);
 			}
 			if(NULL != m_upDownBars)
 			{
-                CString sNodeName = _T("c:upDownBars");
+                std::wstring sNodeName = _T("c:upDownBars");
                 m_upDownBars->toXML(sNodeName, writer);
 			}
 			if(NULL != m_marker)
 			{
-                CString sNodeName = _T("c:marker");
+                std::wstring sNodeName = _T("c:marker");
                 m_marker->toXML(sNodeName, writer);
 			}
 			if(NULL != m_smooth)
 			{
-                CString sNodeName = _T("c:smooth");
+                std::wstring sNodeName = _T("c:smooth");
                 m_smooth->toXML(sNodeName, writer);
 			}
             for(int i = 0, length = m_axId.size(); i < length; ++i)
@@ -12778,18 +12495,18 @@ namespace OOX{
 				CT_UnsignedInt* pElem = m_axId[i];
 				if(NULL != pElem)
 				{
-                    CString sNodeName = _T("c:axId");
+                    std::wstring sNodeName = _T("c:axId");
                     pElem->toXML(sNodeName, writer);
 				}
 			}
 			if(NULL != m_extLst)
 			{
-                CString sNodeName = _T("c:extLst");
+                std::wstring sNodeName = _T("c:extLst");
                 m_extLst->toXML(sNodeName, writer);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_LineChart::getType(){return et_ct_linechart;}
 		CT_Area3DChart::CT_Area3DChart()
@@ -12828,7 +12545,7 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("grouping") == sName)
 				{
 					CT_Grouping* pNewElem = new CT_Grouping;
@@ -12879,18 +12596,18 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_Area3DChart::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_Area3DChart::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_grouping)
 			{
-                CString sNodeName = _T("c:grouping");
+                std::wstring sNodeName = _T("c:grouping");
                 m_grouping->toXML(sNodeName, writer);
 			}
 			if(NULL != m_varyColors)
 			{
-                CString sNodeName = _T("c:varyColors");
+                std::wstring sNodeName = _T("c:varyColors");
                 m_varyColors->toXML(sNodeName, writer);
 			}
             for(int i = 0, length = m_ser.size(); i < length; ++i)
@@ -12898,23 +12615,23 @@ namespace OOX{
 				CT_AreaSer* pElem = m_ser[i];
 				if(NULL != pElem)
 				{
-                    CString sNodeName = _T("c:ser");
+                    std::wstring sNodeName = _T("c:ser");
                     pElem->toXML(sNodeName, writer);
 				}
 			}
 			if(NULL != m_dLbls)
 			{
-                CString sNodeName = _T("c:dLbls");
+                std::wstring sNodeName = _T("c:dLbls");
                 m_dLbls->toXML(sNodeName, writer);
 			}
 			if(NULL != m_dropLines)
 			{
-                CString sNodeName = _T("c:dropLines");
+                std::wstring sNodeName = _T("c:dropLines");
                 m_dropLines->toXML(sNodeName, writer);
 			}
 			if(NULL != m_gapDepth)
 			{
-                CString sNodeName = _T("c:gapDepth");
+                std::wstring sNodeName = _T("c:gapDepth");
                 m_gapDepth->toXML(sNodeName, writer);
 			}
             for(int i = 0, length = m_axId.size(); i < length; ++i)
@@ -12922,18 +12639,18 @@ namespace OOX{
 				CT_UnsignedInt* pElem = m_axId[i];
 				if(NULL != pElem)
 				{
-                    CString sNodeName = _T("c:axId");
+                    std::wstring sNodeName = _T("c:axId");
                     pElem->toXML(sNodeName, writer);
 				}
 			}
 			if(NULL != m_extLst)
 			{
-                CString sNodeName = _T("c:extLst");
+                std::wstring sNodeName = _T("c:extLst");
                 m_extLst->toXML(sNodeName, writer);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_Area3DChart::getType(){return et_ct_area3dchart;}
 		CT_AreaSer::CT_AreaSer()
@@ -12984,7 +12701,7 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("idx") == sName)
 				{
 					CT_UnsignedInt* pNewElem = new CT_UnsignedInt;
@@ -13005,8 +12722,8 @@ namespace OOX{
 				}
 				else if(_T("spPr") == sName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetOuterXml();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetOuterXml();
 					*pNewElem = sVal;
 					m_spPr = pNewElem;
 					FromString_spPr(m_spPr, m_oSpPr);
@@ -13061,23 +12778,23 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_AreaSer::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_AreaSer::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_idx)
 			{
-                CString sNodeName = _T("c:idx");
+                std::wstring sNodeName = _T("c:idx");
                 m_idx->toXML(sNodeName, writer);
 			}
 			if(NULL != m_order)
 			{
-                CString sNodeName = _T("c:order");
+                std::wstring sNodeName = _T("c:order");
                 m_order->toXML(sNodeName, writer);
 			}
 			if(NULL != m_tx)
 			{
-                CString sNodeName = _T("c:tx");
+                std::wstring sNodeName = _T("c:tx");
                 m_tx->toXML(sNodeName, writer);
 			}
 			if(NULL != m_spPr)
@@ -13086,7 +12803,7 @@ namespace OOX{
 			}
 			if(NULL != m_pictureOptions)
 			{
-                CString sNodeName = _T("c:pictureOptions");
+                std::wstring sNodeName = _T("c:pictureOptions");
                 m_pictureOptions->toXML(sNodeName, writer);
 			}
             for(int i = 0, length = m_dPt.size(); i < length; ++i)
@@ -13094,13 +12811,13 @@ namespace OOX{
 				CT_DPt* pElem = m_dPt[i];
 				if(NULL != pElem)
 				{
-                    CString sNodeName = _T("c:dPt");
+                    std::wstring sNodeName = _T("c:dPt");
                     pElem->toXML(sNodeName, writer);
 				}
 			}
 			if(NULL != m_dLbls)
 			{
-                CString sNodeName = _T("c:dLbls");
+                std::wstring sNodeName = _T("c:dLbls");
                 m_dLbls->toXML(sNodeName, writer);
 			}
             for(int i = 0, length = m_trendline.size(); i < length; ++i)
@@ -13108,7 +12825,7 @@ namespace OOX{
 				CT_Trendline* pElem = m_trendline[i];
 				if(NULL != pElem)
 				{
-                    CString sNodeName = _T("c:trendline");
+                    std::wstring sNodeName = _T("c:trendline");
                     pElem->toXML(sNodeName, writer);
 				}
 			}
@@ -13117,28 +12834,28 @@ namespace OOX{
 				CT_ErrBars* pElem = m_errBars[i];
 				if(NULL != pElem)
 				{
-                    CString sNodeName = _T("c:errBars");
+                    std::wstring sNodeName = _T("c:errBars");
                     pElem->toXML(sNodeName, writer);
 				}
 			}
 			if(NULL != m_cat)
 			{
-                CString sNodeName = _T("c:cat");
+                std::wstring sNodeName = _T("c:cat");
                 m_cat->toXML(sNodeName, writer);
 			}
 			if(NULL != m_val)
 			{
-                CString sNodeName = _T("c:val");
+                std::wstring sNodeName = _T("c:val");
                 m_val->toXML(sNodeName, writer);
 			}
 			if(NULL != m_extLst)
 			{
-                CString sNodeName = _T("c:extLst");
+                std::wstring sNodeName = _T("c:extLst");
                 m_extLst->toXML(sNodeName, writer);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_AreaSer::getType(){return et_ct_areaser;}
 		CT_AreaChart::CT_AreaChart()
@@ -13174,7 +12891,7 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("grouping") == sName)
 				{
 					CT_Grouping* pNewElem = new CT_Grouping;
@@ -13219,18 +12936,18 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_AreaChart::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_AreaChart::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_grouping)
 			{
-                CString sNodeName = _T("c:grouping");
+                std::wstring sNodeName = _T("c:grouping");
                 m_grouping->toXML(sNodeName, writer);
 			}
 			if(NULL != m_varyColors)
 			{
-                CString sNodeName = _T("c:varyColors");
+                std::wstring sNodeName = _T("c:varyColors");
                 m_varyColors->toXML(sNodeName, writer);
 			}
             for(int i = 0, length = m_ser.size(); i < length; ++i)
@@ -13238,18 +12955,18 @@ namespace OOX{
 				CT_AreaSer* pElem = m_ser[i];
 				if(NULL != pElem)
 				{
-                    CString sNodeName = _T("c:ser");
+                    std::wstring sNodeName = _T("c:ser");
                     pElem->toXML(sNodeName, writer);
 				}
 			}
 			if(NULL != m_dLbls)
 			{
-                CString sNodeName = _T("c:dLbls");
+                std::wstring sNodeName = _T("c:dLbls");
                 m_dLbls->toXML(sNodeName, writer);
 			}
 			if(NULL != m_dropLines)
 			{
-                CString sNodeName = _T("c:dropLines");
+                std::wstring sNodeName = _T("c:dropLines");
                 m_dropLines->toXML(sNodeName, writer);
 			}
             for(int i = 0, length = m_axId.size(); i < length; ++i)
@@ -13257,18 +12974,18 @@ namespace OOX{
 				CT_UnsignedInt* pElem = m_axId[i];
 				if(NULL != pElem)
 				{
-                    CString sNodeName = _T("c:axId");
+                    std::wstring sNodeName = _T("c:axId");
                     pElem->toXML(sNodeName, writer);
 				}
 			}
 			if(NULL != m_extLst)
 			{
-                CString sNodeName = _T("c:extLst");
+                std::wstring sNodeName = _T("c:extLst");
                 m_extLst->toXML(sNodeName, writer);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_AreaChart::getType(){return et_ct_areachart;}
 		CT_PlotArea::CT_PlotArea()
@@ -13307,7 +13024,7 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("layout") == sName)
 				{
 					CT_Layout* pNewElem = new CT_Layout;
@@ -13502,8 +13219,8 @@ namespace OOX{
 				}
 				else if(_T("spPr") == sName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetOuterXml();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetOuterXml();
 					*pNewElem = sVal;
 					m_spPr = pNewElem;
 					FromString_spPr(m_spPr, m_oSpPr);
@@ -13516,13 +13233,13 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_PlotArea::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_PlotArea::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_layout)
 			{
-                CString sNodeName = _T("c:layout");
+                std::wstring sNodeName = _T("c:layout");
                 m_layout->toXML(sNodeName, writer);
 			}
             for(int i = 0, length = m_Items.size(); i < length; ++i)
@@ -13537,7 +13254,7 @@ namespace OOX{
 			}
 			if(NULL != m_dTable)
 			{
-                CString sNodeName = _T("c:dTable");
+                std::wstring sNodeName = _T("c:dTable");
                 m_dTable->toXML(sNodeName, writer);
 			}
 			if(NULL != m_spPr)
@@ -13546,15 +13263,15 @@ namespace OOX{
 			}
 			if(NULL != m_extLst)
 			{
-                CString sNodeName = _T("c:extLst");
+                std::wstring sNodeName = _T("c:extLst");
                 m_extLst->toXML(sNodeName, writer);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_PlotArea::getType(){return et_ct_plotarea;}
-		void CT_PlotArea::toXML(XmlUtils::CStringWriter& writer, bool bIsAttribute, ItemsChoiceType5 eType, void* pVal) const{
+		void CT_PlotArea::toXML(NSStringUtils::CStringBuilder& writer, bool bIsAttribute, ItemsChoiceType5 eType, void* pVal) const{
 			switch(eType)
 			{
 			case itemschoicetype5AREA3DCHART:
@@ -13564,7 +13281,7 @@ namespace OOX{
 					{
 						if(false == bIsAttribute)
                         {
-                            CString sNodeName = _T("c:area3DChart");
+                            std::wstring sNodeName = _T("c:area3DChart");
                             pTypeVal->toXML(sNodeName, writer);
                         }
 					}
@@ -13577,7 +13294,7 @@ namespace OOX{
 					{
 						if(false == bIsAttribute)
                         {
-                            CString sNodeName = _T("c:areaChart");
+                            std::wstring sNodeName = _T("c:areaChart");
                             pTypeVal->toXML(sNodeName, writer);
                         }
 					}
@@ -13590,7 +13307,7 @@ namespace OOX{
 					{
 						if(false == bIsAttribute)
                         {
-                            CString sNodeName = _T("c:bar3DChart");
+                            std::wstring sNodeName = _T("c:bar3DChart");
                             pTypeVal->toXML(sNodeName, writer);
                         }
 					}
@@ -13603,7 +13320,7 @@ namespace OOX{
 					{
 						if(false == bIsAttribute)
                         {
-                            CString sNodeName = _T("c:barChart");
+                            std::wstring sNodeName = _T("c:barChart");
                             pTypeVal->toXML(sNodeName, writer);
                         }
 					}
@@ -13616,7 +13333,7 @@ namespace OOX{
 					{
 						if(false == bIsAttribute)
                         {
-                            CString sNodeName = _T("c:bubbleChart");
+                            std::wstring sNodeName = _T("c:bubbleChart");
                             pTypeVal->toXML(sNodeName, writer);
                         }
 					}
@@ -13629,7 +13346,7 @@ namespace OOX{
 					{
 						if(false == bIsAttribute)
                         {
-                            CString sNodeName = _T("c:doughnutChart");
+                            std::wstring sNodeName = _T("c:doughnutChart");
                             pTypeVal->toXML(sNodeName, writer);
                         }
 					}
@@ -13642,7 +13359,7 @@ namespace OOX{
 					{
 						if(false == bIsAttribute)
                         {
-                            CString sNodeName = _T("c:line3DChart");
+                            std::wstring sNodeName = _T("c:line3DChart");
                             pTypeVal->toXML(sNodeName, writer);
                         }
 					}
@@ -13655,7 +13372,7 @@ namespace OOX{
 					{
 						if(false == bIsAttribute)
                         {
-                            CString sNodeName = _T("c:lineChart");
+                            std::wstring sNodeName = _T("c:lineChart");
                             pTypeVal->toXML(sNodeName, writer);
                         }
 					}
@@ -13668,7 +13385,7 @@ namespace OOX{
 					{
 						if(false == bIsAttribute)
                         {
-                            CString sNodeName = _T("c:ofPieChart");
+                            std::wstring sNodeName = _T("c:ofPieChart");
                             pTypeVal->toXML(sNodeName, writer);
                         }
 					}
@@ -13681,7 +13398,7 @@ namespace OOX{
 					{
 						if(false == bIsAttribute)
                         {
-                            CString sNodeName = _T("c:pie3DChart");
+                            std::wstring sNodeName = _T("c:pie3DChart");
                             pTypeVal->toXML(sNodeName, writer);
                         }
 					}
@@ -13694,7 +13411,7 @@ namespace OOX{
 					{
 						if(false == bIsAttribute)
                         {
-                            CString sNodeName = _T("c:pieChart");
+                            std::wstring sNodeName = _T("c:pieChart");
                             pTypeVal->toXML(sNodeName, writer);
                         }
 					}
@@ -13707,7 +13424,7 @@ namespace OOX{
 					{
 						if(false == bIsAttribute)
                         {
-                            CString sNodeName = _T("c:radarChart");
+                            std::wstring sNodeName = _T("c:radarChart");
                             pTypeVal->toXML(sNodeName, writer);
                         }
 					}
@@ -13720,7 +13437,7 @@ namespace OOX{
 					{
 						if(false == bIsAttribute)
                         {
-                            CString sNodeName = _T("c:scatterChart");
+                            std::wstring sNodeName = _T("c:scatterChart");
                             pTypeVal->toXML(sNodeName, writer);
                         }
 					}
@@ -13733,7 +13450,7 @@ namespace OOX{
 					{
 						if(false == bIsAttribute)
                         {
-                            CString sNodeName = _T("c:stockChart");
+                            std::wstring sNodeName = _T("c:stockChart");
                             pTypeVal->toXML(sNodeName, writer);
                         }
 					}
@@ -13746,7 +13463,7 @@ namespace OOX{
 					{
 						if(false == bIsAttribute)
                         {
-                            CString sNodeName = _T("c:surface3DChart");
+                            std::wstring sNodeName = _T("c:surface3DChart");
                             pTypeVal->toXML(sNodeName, writer);
                         }
 					}
@@ -13759,7 +13476,7 @@ namespace OOX{
 					{
 						if(false == bIsAttribute)
                         {
-                            CString sNodeName = _T("c:surfaceChart");
+                            std::wstring sNodeName = _T("c:surfaceChart");
                             pTypeVal->toXML(sNodeName, writer);
                         }
 					}
@@ -13868,7 +13585,7 @@ namespace OOX{
 				break;
 			}
 		}
-		void CT_PlotArea::toXML(XmlUtils::CStringWriter& writer, bool bIsAttribute, ItemsChoiceType6 eType, void* pVal) const{
+		void CT_PlotArea::toXML(NSStringUtils::CStringBuilder& writer, bool bIsAttribute, ItemsChoiceType6 eType, void* pVal) const{
 			switch(eType)
 			{
 			case itemschoicetype6CATAX:
@@ -13878,7 +13595,7 @@ namespace OOX{
 					{
 						if(false == bIsAttribute)
                         {
-                            CString sNodeName = _T("c:catAx");
+                            std::wstring sNodeName = _T("c:catAx");
                             pTypeVal->toXML(sNodeName, writer);
                         }
 					}
@@ -13891,7 +13608,7 @@ namespace OOX{
 					{
 						if(false == bIsAttribute)
                         {
-                            CString sNodeName = _T("c:dateAx");
+                            std::wstring sNodeName = _T("c:dateAx");
                             pTypeVal->toXML(sNodeName, writer);
                         }
 					}
@@ -13904,7 +13621,7 @@ namespace OOX{
 					{
 						if(false == bIsAttribute)
                         {
-                            CString sNodeName = _T("c:serAx");
+                            std::wstring sNodeName = _T("c:serAx");
                             pTypeVal->toXML(sNodeName, writer);
                         }
 					}
@@ -13917,7 +13634,7 @@ namespace OOX{
 					{
 						if(false == bIsAttribute)
                         {
-                            CString sNodeName = _T("c:valAx");
+                            std::wstring sNodeName = _T("c:valAx");
                             pTypeVal->toXML(sNodeName, writer);
                         }
 					}
@@ -13969,26 +13686,22 @@ namespace OOX{
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_Thickness::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_Thickness::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
 			{
-				CString sXml;
-				CString sVal;
-				sVal = XmlUtils::EncodeXmlString(*m_val);
-				sXml.Format(_T(" val=\"%ls\""), sVal);
-				writer.WriteString(sXml);
+				WritingStringAttrEncodeXmlString(L"val", *m_val);
 			}
-			writer.WriteString(CString(_T("/>")));
+			writer.WriteString(L"/>");
 		}
 		EElementType CT_Thickness::getType(){return et_ct_thickness;}
 		void CT_Thickness::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("val") == wsName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetText();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetText();
 					*pNewElem = sVal;
 					m_val = pNewElem;
 				}
@@ -14018,7 +13731,7 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("thickness") == sName)
 				{
 					CT_Thickness* pNewElem = new CT_Thickness;
@@ -14027,8 +13740,8 @@ namespace OOX{
 				}
 				else if(_T("spPr") == sName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetOuterXml();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetOuterXml();
 					*pNewElem = sVal;
 					m_spPr = pNewElem;
 					FromString_spPr(m_spPr, m_oSpPr);
@@ -14047,13 +13760,13 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_Surface::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_Surface::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_thickness)
 			{
-                CString sNodeName = _T("c:thickness");
+                std::wstring sNodeName = _T("c:thickness");
                 m_thickness->toXML(sNodeName, writer);
 			}
 			if(NULL != m_spPr)
@@ -14062,23 +13775,23 @@ namespace OOX{
 			}
 			if(NULL != m_pictureOptions)
 			{
-                CString sNodeName = _T("c:pictureOptions");
+                std::wstring sNodeName = _T("c:pictureOptions");
                 m_pictureOptions->toXML(sNodeName, writer);
 			}
 			if(NULL != m_extLst)
 			{
-                CString sNodeName = _T("c:extLst");
+                std::wstring sNodeName = _T("c:extLst");
                 m_extLst->toXML(sNodeName, writer);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_Surface::getType(){return et_ct_surface;}
 		CT_Perspective::CT_Perspective()
 		{
 			/*m_val = new unsigned char;
-			CString s_m_val("30");
+			std::wstring s_m_val("30");
 			{
 			*m_val = _ttoi(s_m_val);
 			}*/
@@ -14095,18 +13808,14 @@ namespace OOX{
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_Perspective::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_Perspective::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
 			{
-				CString sXml;
-				CString sVal;
-				sVal.Format(_T("%d"), *m_val);
-				sXml.Format(_T(" val=\"%ls\""), sVal);
-				writer.WriteString(sXml);
+				WritingStringAttrInt(L"val", *m_val);
 			}
-			writer.WriteString(CString(_T("/>")));
+			writer.WriteString(L"/>");
 		}
 		EElementType CT_Perspective::getType(){return et_ct_perspective;}
 		void CT_Perspective::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
@@ -14122,8 +13831,8 @@ namespace OOX{
 		}
 		CT_DepthPercent::CT_DepthPercent()
 		{
-			/*m_val = new CString;
-			CString s_m_val("100%");
+			/*m_val = new std::wstring;
+			std::wstring s_m_val("100%");
 			{
 			*m_val = s_m_val;
 			}*/
@@ -14140,26 +13849,22 @@ namespace OOX{
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_DepthPercent::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_DepthPercent::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
 			{
-				CString sXml;
-				CString sVal;
-				sVal = XmlUtils::EncodeXmlString(*m_val);
-				sXml.Format(_T(" val=\"%ls\""), sVal);
-				writer.WriteString(sXml);
+				WritingStringAttrEncodeXmlString(L"val", *m_val);
 			}
-			writer.WriteString(CString(_T("/>")));
+			writer.WriteString(L"/>");
 		}
 		EElementType CT_DepthPercent::getType(){return et_ct_depthpercent;}
 		void CT_DepthPercent::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("val") == wsName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetText();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetText();
 					*pNewElem = sVal;
 					m_val = pNewElem;
 				}
@@ -14168,7 +13873,7 @@ namespace OOX{
 		CT_RotY::CT_RotY()
 		{
 			/*m_val = new unsigned long;
-			CString s_m_val("0");
+			std::wstring s_m_val("0");
 			{
 			*m_val = _ttoi(s_m_val);
 			}*/
@@ -14185,18 +13890,14 @@ namespace OOX{
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_RotY::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_RotY::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
 			{
-				CString sXml;
-				CString sVal;
-				sVal.Format(_T("%d"), *m_val);
-				sXml.Format(_T(" val=\"%ls\""), sVal);
-				writer.WriteString(sXml);
+				WritingStringAttrInt(L"val", *m_val);
 			}
-			writer.WriteString(CString(_T("/>")));
+			writer.WriteString(L"/>");
 		}
 		EElementType CT_RotY::getType(){return et_ct_roty;}
 		void CT_RotY::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
@@ -14212,8 +13913,8 @@ namespace OOX{
 		}
 		CT_HPercent::CT_HPercent()
 		{
-			/*m_val = new CString;
-			CString s_m_val("100%");
+			/*m_val = new std::wstring;
+			std::wstring s_m_val("100%");
 			{
 			*m_val = s_m_val;
 			}*/
@@ -14230,26 +13931,22 @@ namespace OOX{
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_HPercent::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_HPercent::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
 			{
-				CString sXml;
-				CString sVal;
-				sVal = XmlUtils::EncodeXmlString(*m_val);
-				sXml.Format(_T(" val=\"%ls\""), sVal);
-				writer.WriteString(sXml);
+				WritingStringAttrEncodeXmlString(L"val", *m_val);;
 			}
-			writer.WriteString(CString(_T("/>")));
+			writer.WriteString(L"/>");
 		}
 		EElementType CT_HPercent::getType(){return et_ct_hpercent;}
 		void CT_HPercent::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("val") == wsName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetText();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetText();
 					*pNewElem = sVal;
 					m_val = pNewElem;
 				}
@@ -14258,7 +13955,7 @@ namespace OOX{
 		CT_RotX::CT_RotX()
 		{
 			/*m_val = new char;
-			CString s_m_val("0");
+			std::wstring s_m_val("0");
 			{
 			*m_val = _ttoi(s_m_val);
 			}*/
@@ -14275,18 +13972,14 @@ namespace OOX{
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_RotX::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_RotX::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
 			{
-				CString sXml;
-				CString sVal;
-				sVal.Format(_T("%d"), *m_val);
-				sXml.Format(_T(" val=\"%ls\""), sVal);
-				writer.WriteString(sXml);
+				WritingStringAttrInt(L"val", *m_val);
 			}
-			writer.WriteString(CString(_T("/>")));
+			writer.WriteString(L"/>");
 		}
 		EElementType CT_RotX::getType(){return et_ct_rotx;}
 		void CT_RotX::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
@@ -14333,7 +14026,7 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("rotX") == sName)
 				{
 					CT_RotX* pNewElem = new CT_RotX;
@@ -14378,48 +14071,48 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_View3D::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_View3D::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_rotX)
 			{
-                CString sNodeName = _T("c:rotX");
+                std::wstring sNodeName = _T("c:rotX");
                 m_rotX->toXML(sNodeName, writer);
 			}
 			if(NULL != m_hPercent)
 			{
-                CString sNodeName = _T("c:hPercent");
+                std::wstring sNodeName = _T("c:hPercent");
                 m_hPercent->toXML(sNodeName, writer);
 			}
 			if(NULL != m_rotY)
 			{
-                CString sNodeName = _T("c:rotY");
+                std::wstring sNodeName = _T("c:rotY");
                 m_rotY->toXML(sNodeName, writer);
 			}
 			if(NULL != m_depthPercent)
 			{
-                CString sNodeName = _T("c:depthPercent");
+                std::wstring sNodeName = _T("c:depthPercent");
                 m_depthPercent->toXML(sNodeName, writer);
 			}
 			if(NULL != m_rAngAx)
 			{
-                CString sNodeName = _T("c:rAngAx");
+                std::wstring sNodeName = _T("c:rAngAx");
                 m_rAngAx->toXML(sNodeName, writer);
 			}
 			if(NULL != m_perspective)
 			{
-                CString sNodeName = _T("c:perspective");
+                std::wstring sNodeName = _T("c:perspective");
                 m_perspective->toXML(sNodeName, writer);
 			}
 			if(NULL != m_extLst)
 			{
-                CString sNodeName = _T("c:extLst");
+                std::wstring sNodeName = _T("c:extLst");
                 m_extLst->toXML(sNodeName, writer);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_View3D::getType(){return et_ct_view3d;}
 		CT_PivotFmt::CT_PivotFmt()
@@ -14452,7 +14145,7 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("idx") == sName)
 				{
 					CT_UnsignedInt* pNewElem = new CT_UnsignedInt;
@@ -14461,16 +14154,16 @@ namespace OOX{
 				}
 				else if(_T("spPr") == sName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetOuterXml();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetOuterXml();
 					*pNewElem = sVal;
 					m_spPr = pNewElem;
 					FromString_spPr(m_spPr, m_oSpPr);
 				}
 				else if(_T("txPr") == sName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetInnerXml();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetInnerXml();
 					*pNewElem = sVal;
 					m_txPr = pNewElem;
 					FromString_txPr(m_txPr, m_oTxPr);
@@ -14495,13 +14188,13 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_PivotFmt::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_PivotFmt::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_idx)
 			{
-                CString sNodeName = _T("c:idx");
+                std::wstring sNodeName = _T("c:idx");
                 m_idx->toXML(sNodeName, writer);
 			}
 			if(NULL != m_spPr)
@@ -14514,22 +14207,22 @@ namespace OOX{
 			}
 			if(NULL != m_marker)
 			{
-                CString sNodeName = _T("c:marker");
+                std::wstring sNodeName = _T("c:marker");
                 m_marker->toXML(sNodeName, writer);
 			}
 			if(NULL != m_dLbl)
 			{
-                CString sNodeName = _T("c:dLbl");
+                std::wstring sNodeName = _T("c:dLbl");
                 m_dLbl->toXML(sNodeName, writer);
 			}
 			if(NULL != m_extLst)
 			{
-                CString sNodeName = _T("c:extLst");
+                std::wstring sNodeName = _T("c:extLst");
                 m_extLst->toXML(sNodeName, writer);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_PivotFmt::getType(){return et_ct_pivotfmt;}
 		CT_pivotFmts::CT_pivotFmts()
@@ -14547,7 +14240,7 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("pivotFmt") == sName)
 				{
 					CT_PivotFmt* pNewElem = new CT_PivotFmt;
@@ -14556,22 +14249,22 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_pivotFmts::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_pivotFmts::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
             for(int i = 0, length = m_pivotFmt.size(); i < length; ++i)
 			{
 				CT_PivotFmt* pElem = m_pivotFmt[i];
 				if(NULL != pElem)
 				{
-                    CString sNodeName = _T("c:pivotFmt");
+                    std::wstring sNodeName = _T("c:pivotFmt");
                     pElem->toXML(sNodeName, writer);
 				}
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_pivotFmts::getType(){return et_ct_pivotfmts;}
 		CT_Chart::CT_Chart()
@@ -14625,7 +14318,7 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("title") == sName)
 				{
 					CT_Title* pNewElem = new CT_Title;
@@ -14706,78 +14399,78 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_Chart::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_Chart::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_title)
 			{
-                CString sNodeName = _T("c:title");
+                std::wstring sNodeName = _T("c:title");
                 m_title->toXML(sNodeName, writer);
 			}
 			if(NULL != m_autoTitleDeleted)
 			{
-                CString sNodeName = _T("c:autoTitleDeleted");
+                std::wstring sNodeName = _T("c:autoTitleDeleted");
                 m_autoTitleDeleted->toXML(sNodeName, writer);
 			}
 			if(NULL != m_pivotFmts)
 			{
-                CString sNodeName = _T("c:pivotFmts");
+                std::wstring sNodeName = _T("c:pivotFmts");
                 m_pivotFmts->toXML(sNodeName, writer);
 			}
 			if(NULL != m_view3D)
 			{
-                CString sNodeName = _T("c:view3D");
+                std::wstring sNodeName = _T("c:view3D");
                 m_view3D->toXML(sNodeName, writer);
 			}
 			if(NULL != m_floor)
 			{
-                CString sNodeName = _T("c:floor");
+                std::wstring sNodeName = _T("c:floor");
                 m_floor->toXML(sNodeName, writer);
 			}
 			if(NULL != m_sideWall)
 			{
-                CString sNodeName = _T("c:sideWall");
+                std::wstring sNodeName = _T("c:sideWall");
                 m_sideWall->toXML(sNodeName, writer);
 			}
 			if(NULL != m_backWall)
 			{
-                CString sNodeName = _T("c:backWall");
+                std::wstring sNodeName = _T("c:backWall");
                 m_backWall->toXML(sNodeName, writer);
 			}
 			if(NULL != m_plotArea)
 			{
-                CString sNodeName = _T("c:plotArea");
+                std::wstring sNodeName = _T("c:plotArea");
                 m_plotArea->toXML(sNodeName, writer);
 			}
 			if(NULL != m_legend)
 			{
-                CString sNodeName = _T("c:legend");
+                std::wstring sNodeName = _T("c:legend");
                 m_legend->toXML(sNodeName, writer);
 			}
 			if(NULL != m_plotVisOnly)
 			{
-                CString sNodeName = _T("c:plotVisOnly");
+                std::wstring sNodeName = _T("c:plotVisOnly");
                 m_plotVisOnly->toXML(sNodeName, writer);
 			}
 			if(NULL != m_dispBlanksAs)
 			{
-                CString sNodeName = _T("c:dispBlanksAs");
+                std::wstring sNodeName = _T("c:dispBlanksAs");
                 m_dispBlanksAs->toXML(sNodeName, writer);
 			}
 			if(NULL != m_showDLblsOverMax)
 			{
-                CString sNodeName = _T("c:showDLblsOverMax");
+                std::wstring sNodeName = _T("c:showDLblsOverMax");
                 m_showDLblsOverMax->toXML(sNodeName, writer);
 			}
 			if(NULL != m_extLst)
 			{
-                CString sNodeName = _T("c:extLst");
+                std::wstring sNodeName = _T("c:extLst");
                 m_extLst->toXML(sNodeName, writer);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_Chart::getType(){return et_ct_chart;}
 		CT_Protection::CT_Protection()
@@ -14807,7 +14500,7 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("chartObject") == sName)
 				{
 					CT_Boolean* pNewElem = new CT_Boolean;
@@ -14840,38 +14533,38 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_Protection::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_Protection::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_chartObject)
 			{
-                CString sNodeName = _T("c:chartObject");
+                std::wstring sNodeName = _T("c:chartObject");
                 m_chartObject->toXML(sNodeName, writer);
 			}
 			if(NULL != m_data)
 			{
-                CString sNodeName = _T("c:data");
+                std::wstring sNodeName = _T("c:data");
                 m_data->toXML(sNodeName, writer);
 			}
 			if(NULL != m_formatting)
 			{
-                CString sNodeName = _T("c:formatting");
+                std::wstring sNodeName = _T("c:formatting");
                 m_formatting->toXML(sNodeName, writer);
 			}
 			if(NULL != m_selection)
 			{
-                CString sNodeName = _T("c:selection");
+                std::wstring sNodeName = _T("c:selection");
                 m_selection->toXML(sNodeName, writer);
 			}
 			if(NULL != m_userInterface)
 			{
-                CString sNodeName = _T("c:userInterface");
+                std::wstring sNodeName = _T("c:userInterface");
                 m_userInterface->toXML(sNodeName, writer);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_Protection::getType(){return et_ct_protection;}
 		CT_PivotSource::CT_PivotSource()
@@ -14895,11 +14588,11 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("name") == sName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetText2();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetText3();
 					*pNewElem = sVal;
 					m_name = pNewElem;
 				}
@@ -14917,26 +14610,22 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_PivotSource::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_PivotSource::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_name)
 			{
-				CString sXml;
-				CString sVal;
-				sVal = XmlUtils::EncodeXmlString(*m_name);
-				if(-1 != sVal.Find(' ') || -1 != sVal.Find('\n'))
-					sXml.Append(_T("<c:name xml:space=\"preserve\">"));
+				if (std::wstring::npos != m_name->find(' ') || std::wstring::npos != m_name->find('\n'))
+					writer.WriteString(_T("<c:name xml:space=\"preserve\">"));
 				else
-					sXml.Append(_T("<c:name>"));
-				sXml.Append(sVal);
-				sXml.Append(_T("</c:name>"));
-				writer.WriteString(sXml);
+					writer.WriteString(_T("<c:name>"));
+				writer.WriteEncodeXmlString(*m_name);
+				writer.WriteString(_T("</c:name>"));
 			}
 			if(NULL != m_fmtId)
 			{
-                CString sNodeName = _T("c:fmtId");
+                std::wstring sNodeName = _T("c:fmtId");
                 m_fmtId->toXML(sNodeName, writer);
 			}
             for(int i = 0, length = m_extLst.size(); i < length; ++i)
@@ -14944,13 +14633,13 @@ namespace OOX{
 				CT_extLst* pElem = m_extLst[i];
 				if(NULL != pElem)
 				{
-                    CString sNodeName = _T("c:extLst");
+                    std::wstring sNodeName = _T("c:extLst");
                     pElem->toXML(sNodeName, writer);
 				}
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType CT_PivotSource::getType(){return et_ct_pivotsource;}
 		CT_Style1::CT_Style1()
@@ -14968,18 +14657,14 @@ namespace OOX{
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_Style1::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_Style1::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
 			{
-				CString sXml;
-				CString sVal;
-				sVal.Format(_T("%d"), *m_val);
-				sXml.Format(_T(" val=\"%ls\""), sVal);
-				writer.WriteString(sXml);
+				WritingStringAttrInt(L"val", *m_val);
 			}
-			writer.WriteString(CString(_T("/>")));
+			writer.WriteString(L"/>");
 		}
 		EElementType CT_Style1::getType(){return et_ct_style1;}
 		void CT_Style1::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
@@ -15008,18 +14693,14 @@ namespace OOX{
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_Style::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_Style::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
 			{
-				CString sXml;
-				CString sVal;
-				sVal.Format(_T("%d"), *m_val);
-				sXml.Format(_T(" val=\"%ls\""), sVal);
-				writer.WriteString(sXml);
+				WritingStringAttrInt(L"val", *m_val);
 			}
-			writer.WriteString(CString(_T("/>")));
+			writer.WriteString(L"/>");
 		}
 		EElementType CT_Style::getType(){return et_ct_style;}
 		void CT_Style::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
@@ -15048,26 +14729,22 @@ namespace OOX{
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_TextLanguageID::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void CT_TextLanguageID::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
 			{
-				CString sXml;
-				CString sVal;
-				sVal = XmlUtils::EncodeXmlString(*m_val);
-				sXml.Format(_T(" val=\"%ls\""), sVal);
-				writer.WriteString(sXml);
+				WritingStringAttrEncodeXmlString(L"val", *m_val);
 			}
-			writer.WriteString(CString(_T("/>")));
+			writer.WriteString(L"/>");
 		}
 		EElementType CT_TextLanguageID::getType(){return et_ct_textlanguageid;}
 		void CT_TextLanguageID::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("val") == wsName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetText();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetText();
 					*pNewElem = sVal;
 					m_val = pNewElem;
 				}
@@ -15091,7 +14768,7 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("Choice") == sName)
 				{
 					AlternateContentChoice* pNewElem = new AlternateContentChoice;
@@ -15106,27 +14783,27 @@ namespace OOX{
 				}
 			}
 		}
-		void AlternateContent::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void AlternateContent::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
             for(int i = 0, length = m_Choice.size(); i < length; ++i)
 			{
 				AlternateContentChoice* pElem = m_Choice[i];
 				if(NULL != pElem)
 				{
-                    CString sNodeName = _T("mc:Choice");
+                    std::wstring sNodeName = _T("mc:Choice");
                     pElem->toXML(sNodeName, writer);
 				}
 			}
 			if(NULL != m_Fallback)
 			{
-                CString sNodeName = _T("mc:Fallback");
+                std::wstring sNodeName = _T("mc:Fallback");
                 m_Fallback->toXML(sNodeName, writer);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType AlternateContent::getType(){return et_alternatecontent;}
 		AlternateContentChoice::AlternateContentChoice()
@@ -15149,7 +14826,7 @@ namespace OOX{
 				int nParentDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nParentDepth ) )
 				{
-					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 					if(_T("style") == sName)
 					{
 						CT_Style* pNewElem = new CT_Style;
@@ -15158,34 +14835,30 @@ namespace OOX{
 					}
 				}
 		}
-		void AlternateContentChoice::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void AlternateContentChoice::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_Requires)
 			{
-				CString sXml;
-				CString sVal;
-				sVal = XmlUtils::EncodeXmlString(*m_Requires);
-				sXml.Format(_T(" Requires=\"%ls\""), sVal);
-				writer.WriteString(sXml);
+				WritingStringAttrEncodeXmlString(L"Requires", *m_Requires);
 			}
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_style)
 			{
-                CString sNodeName = _T("c14:style");
+                std::wstring sNodeName = _T("c14:style");
                 m_style->toXML(sNodeName, writer);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType AlternateContentChoice::getType(){return et_alternatecontentchoice;}
 		void AlternateContentChoice::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("Requires") == wsName)
 				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetText();
+					std::wstring* pNewElem = new std::wstring;
+					std::wstring sVal = oReader.GetText();
 					*pNewElem = sVal;
 					m_Requires = pNewElem;
 				}
@@ -15206,7 +14879,7 @@ namespace OOX{
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("style") == sName)
 				{
 					CT_Style1* pNewElem = new CT_Style1;
@@ -15215,18 +14888,18 @@ namespace OOX{
 				}
 			}
 		}
-		void AlternateContentFallback::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
-			writer.WriteString(CString(_T("<")));
+		void AlternateContentFallback::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 			if(NULL != m_style)
 			{
-                CString sNodeName = _T("c:style");
+                std::wstring sNodeName = _T("c:style");
                 m_style->toXML(sNodeName, writer);
 			}
-			writer.WriteString(CString(_T("</")));
+			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
-			writer.WriteString(CString(_T(">")));
+			writer.WriteString(L">");
 		}
 		EElementType AlternateContentFallback::getType(){return et_alternatecontentfallback;}
 	}

@@ -57,7 +57,7 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(_T("<x14:sparkline>"));
 				if(m_oRef.IsInit())
@@ -87,9 +87,9 @@ namespace OOX
 					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
                     if ( _T("f") == sName )
-                        m_oRef = oReader.GetText2().GetString();
+                        m_oRef = oReader.GetText3();
                     else if ( _T("sqref") == sName )
-                        m_oSqRef = oReader.GetText2().GetString();
+                        m_oSqRef = oReader.GetText3();
 				}
 			}
 
@@ -105,8 +105,8 @@ namespace OOX
 			}
 
 		public:
-				nullable<CString>										m_oRef;
-				nullable<CString>										m_oSqRef;
+				nullable<std::wstring>										m_oRef;
+				nullable<std::wstring>										m_oSqRef;
 		};
 		class CSparklines  : public WritingElementWithChilds<CSparkline>
 		{
@@ -124,7 +124,7 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(_T("<x14:sparklines>"));
 				for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
@@ -174,25 +174,25 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(_T("<x14:sparklineGroup"));
 				if(m_oManualMax.IsInit())
 				{
 					writer.WriteString(_T(" manualMax=\""));
-					writer.WriteString(m_oManualMax->ToString());
+					writer.WriteString(m_oManualMax->ToString2());
 					writer.WriteString(_T("\""));
 				}
 				if(m_oManualMin.IsInit())
 				{
 					writer.WriteString(_T(" manualMin=\""));
-					writer.WriteString(m_oManualMin->ToString());
+					writer.WriteString(m_oManualMin->ToString2());
 					writer.WriteString(_T("\""));
 				}
 				if(m_oLineWeight.IsInit())
 				{
 					writer.WriteString(_T(" lineWeight=\""));
-					writer.WriteString(m_oLineWeight->ToString());
+					writer.WriteString(m_oLineWeight->ToString2());
 					writer.WriteString(_T("\""));
 				}
 				if(m_oType.IsInit())
@@ -204,13 +204,13 @@ namespace OOX
 				if(m_oDateAxis.IsInit())
 				{
 					writer.WriteString(_T(" dateAxis=\""));
-                    writer.WriteString(m_oDateAxis->ToString2(SimpleTypes::onofftostring1));
+                    writer.WriteString(m_oDateAxis->ToString3(SimpleTypes::onofftostring1));
 					writer.WriteString(_T("\""));
 				}
 				if(m_oDisplayEmptyCellsAs.IsInit())
 				{
 					writer.WriteString(_T(" displayEmptyCellsAs=\""));
-					CString sVal;
+					std::wstring sVal;
 					ToXml_ST_DispBlanksAs(m_oDisplayEmptyCellsAs.get2(), sVal);
 					writer.WriteString(sVal);
 					writer.WriteString(_T("\""));
@@ -218,49 +218,49 @@ namespace OOX
 				if(m_oMarkers.IsInit())
 				{
 					writer.WriteString(_T(" markers=\""));
-                    writer.WriteString(m_oMarkers->ToString2(SimpleTypes::onofftostring1));
+                    writer.WriteString(m_oMarkers->ToString3(SimpleTypes::onofftostring1));
 					writer.WriteString(_T("\""));
 				}
 				if(m_oHigh.IsInit())
 				{
 					writer.WriteString(_T(" high=\""));
-                    writer.WriteString(m_oHigh->ToString2(SimpleTypes::onofftostring1));
+                    writer.WriteString(m_oHigh->ToString3(SimpleTypes::onofftostring1));
 					writer.WriteString(_T("\""));
 				}
 				if(m_oLow.IsInit())
 				{
 					writer.WriteString(_T(" low=\""));
-                    writer.WriteString(m_oLow->ToString2(SimpleTypes::onofftostring1));
+                    writer.WriteString(m_oLow->ToString3(SimpleTypes::onofftostring1));
 					writer.WriteString(_T("\""));
 				}
 				if(m_oFirst.IsInit())
 				{
 					writer.WriteString(_T(" first=\""));
-                    writer.WriteString(m_oFirst->ToString2(SimpleTypes::onofftostring1));
+                    writer.WriteString(m_oFirst->ToString3(SimpleTypes::onofftostring1));
 					writer.WriteString(_T("\""));
 				}
 				if(m_oLast.IsInit())
 				{
 					writer.WriteString(_T(" last=\""));
-                    writer.WriteString(m_oLast->ToString2(SimpleTypes::onofftostring1));
+                    writer.WriteString(m_oLast->ToString3(SimpleTypes::onofftostring1));
 					writer.WriteString(_T("\""));
 				}
 				if(m_oNegative.IsInit())
 				{
 					writer.WriteString(_T(" negative=\""));
-                    writer.WriteString(m_oNegative->ToString2(SimpleTypes::onofftostring1));
+                    writer.WriteString(m_oNegative->ToString3(SimpleTypes::onofftostring1));
 					writer.WriteString(_T("\""));
 				}
 				if(m_oDisplayXAxis.IsInit())
 				{
 					writer.WriteString(_T(" displayXAxis=\""));
-                    writer.WriteString(m_oDisplayXAxis->ToString2(SimpleTypes::onofftostring1));
+                    writer.WriteString(m_oDisplayXAxis->ToString3(SimpleTypes::onofftostring1));
 					writer.WriteString(_T("\""));
 				}
 				if(m_oDisplayHidden.IsInit())
 				{
 					writer.WriteString(_T(" displayHidden=\""));
-                    writer.WriteString(m_oDisplayHidden->ToString2(SimpleTypes::onofftostring1));
+                    writer.WriteString(m_oDisplayHidden->ToString3(SimpleTypes::onofftostring1));
 					writer.WriteString(_T("\""));
 				}
 				if(m_oMinAxisType.IsInit())
@@ -278,7 +278,7 @@ namespace OOX
 				if(m_oRightToLeft.IsInit())
 				{
 					writer.WriteString(_T(" rightToLeft=\""));
-                    writer.WriteString(m_oRightToLeft->ToString2(SimpleTypes::onofftostring1));
+                    writer.WriteString(m_oRightToLeft->ToString3(SimpleTypes::onofftostring1));
 					writer.WriteString(_T("\""));
 				}
 
@@ -356,7 +356,7 @@ namespace OOX
                     else if ( _T("colorLow") == sName )
 						m_oColorLow = oReader;
                     else if ( _T("f") == sName )
-                        m_oRef = oReader.GetText2().GetString();
+                        m_oRef = oReader.GetText3();
                     else if ( _T("sparklines") == sName )
 						m_oSparklines = oReader;
 				}
@@ -382,7 +382,7 @@ namespace OOX
 						else if(_T("displayEmptyCellsAs") == wsName)
 						{
 							ST_DispBlanksAs eVal;
-							CString sNodeName = oReader.GetText();
+							std::wstring sNodeName = oReader.GetText();
 							if(FromXml_ST_DispBlanksAs(sNodeName, eVal))
 							{
 								m_oDisplayEmptyCellsAs.Init();
@@ -432,7 +432,7 @@ namespace OOX
 				nullable<OOX::Spreadsheet::CColor>					m_oColorLast;
 				nullable<OOX::Spreadsheet::CColor>					m_oColorHigh;
 				nullable<OOX::Spreadsheet::CColor>					m_oColorLow;
-				nullable<CString>										m_oRef;
+				nullable<std::wstring>										m_oRef;
 				nullable<CSparklines>									m_oSparklines;
 		};
 		class CSparklineGroups  : public WritingElementWithChilds<CSparklineGroup>
@@ -451,7 +451,7 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(_T("<x14:sparklineGroups xmlns:xm=\"http://schemas.microsoft.com/office/excel/2006/main\">"));
 				for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)

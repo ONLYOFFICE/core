@@ -606,26 +606,26 @@ namespace XmlUtils
 
 			return sResult;
 		}
-		//inline std::wstring GetText3()
-		//{
-		//	if ( !IsValid() )
-		//		return _T("");
+		inline std::wstring GetText3()
+		{
+			if ( !IsValid() )
+				return _T("");
 
-		//	std::wstring sResult;
+			std::wstring sResult;
 
-		//	if ( 0 != xmlTextReaderIsEmptyElement(reader) )
-		//		return sResult;
+			if ( 0 != xmlTextReaderIsEmptyElement(reader) )
+				return sResult;
 
-		//	int nDepth = GetDepth();
-		//	XmlNodeType eNodeType = XmlNodeType_EndElement;
-		//	while ( Read( eNodeType ) && GetDepth() >= nDepth && XmlNodeType_EndElement != eNodeType )
-		//	{
-		//		if ( eNodeType == XmlNodeType_Text || eNodeType == XmlNodeType_Whitespace || eNodeType == XmlNodeType_SIGNIFICANT_WHITESPACE )
-		//			sResult += GetText();
-		//	}
+			int nDepth = GetDepth();
+			XmlNodeType eNodeType = XmlNodeType_EndElement;
+			while ( Read( eNodeType ) && GetDepth() >= nDepth && XmlNodeType_EndElement != eNodeType )
+			{
+				if ( eNodeType == XmlNodeType_Text || eNodeType == XmlNodeType_Whitespace || eNodeType == XmlNodeType_SIGNIFICANT_WHITESPACE )
+					sResult += GetText();
+			}
 
-		//	return sResult;
-		//}
+			return sResult;
+		}
 		inline CString GetOuterXml()
 		{
 			return GetXml(false);

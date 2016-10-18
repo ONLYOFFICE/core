@@ -52,8 +52,11 @@ X2tConverter.depends = \
     DocFormatLib \
     OdfFileReaderLib \
     OdfFileWriterLib \
-    XlsFormatLib \
-    XmlLib
+    XlsFormatLib
+    
+core_windows {
+    X2tConverter.depends += XmlLib
+}
 
 # for run in qt from this solution
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH

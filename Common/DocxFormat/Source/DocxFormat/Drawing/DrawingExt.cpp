@@ -88,9 +88,9 @@ namespace OOX
 			}
 			if(m_oSparklineGroups.IsInit())
 			{
-                XmlUtils::CStringWriter writer;
+				NSStringUtils::CStringBuilder writer;
 				m_oSparklineGroups->toXML(writer);
-                sResult += writer.GetData();
+                sResult += writer.GetData().c_str();
 			}
 
             sResult += _T("</");

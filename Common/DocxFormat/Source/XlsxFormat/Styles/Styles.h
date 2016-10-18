@@ -125,7 +125,7 @@ namespace OOX
 			}
 			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 			{
-				XmlUtils::CStringWriter sXml;
+				NSStringUtils::CStringBuilder sXml;
 				sXml.WriteString(_T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><styleSheet xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" mc:Ignorable=\"x14ac\" xmlns:x14ac=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac\">"));
 				if(m_oNumFmts.IsInit())
 					m_oNumFmts->toXML(sXml);
@@ -149,7 +149,9 @@ namespace OOX
 					m_oTableStyles->toXML(sXml);
 				sXml.WriteString(_T("</styleSheet>"));
 
-				CDirectory::SaveToFile( oPath.GetPath(), sXml.GetData() );
+				CString sPath = oPath.GetPath();
+				NSFile::CFileBinary::SaveToFile(sPath.GetBuffer(), sXml.GetData());
+				sPath.ReleaseBuffer();
 				oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
 			}
 			void PrepareToWrite()
@@ -167,7 +169,7 @@ namespace OOX
 					pFont->m_oColor->m_oThemeColor->SetValue(SimpleTypes::Spreadsheet::themecolorDark1);
 					pFont->m_oRFont.Init();
 					pFont->m_oRFont->m_sVal.Init();
-					pFont->m_oRFont->m_sVal->Append(L"Calibri");
+					pFont->m_oRFont->m_sVal->append(L"Calibri");
 					pFont->m_oFamily.Init();
 					pFont->m_oFamily->m_oFontFamily.Init();
 					pFont->m_oFamily->m_oFontFamily->SetValue(SimpleTypes::Spreadsheet::fontfamilySwiss);

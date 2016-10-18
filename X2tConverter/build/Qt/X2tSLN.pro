@@ -36,7 +36,11 @@ DocFormatLib.file = ../../../ASCOfficeDocFile/DocFormatLib/Linux/DocFormatLib.pr
 OdfFileReaderLib.file = ../../../ASCOfficeOdfFile/linux/OdfFileReaderLib.pro
 OdfFileWriterLib.file = ../../../ASCOfficeOdfFileW/linux/OdfFileWriterLib.pro
 XlsFormatLib.file = ../../../ASCOfficeXlsFile2/source/linux/XlsFormatLib.pro
-XmlLib.file = ../../../DesktopEditor/xml/build/qt/libxml2.pro
+
+core_windows {
+    XmlLib.file = ../../../DesktopEditor/xml/build/qt/libxml2.pro
+}
+
 X2tConverter.file = ./X2tConverter.pro
 
 X2tConverter.depends = \

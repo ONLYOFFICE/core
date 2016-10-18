@@ -57,17 +57,15 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				if(m_oType.IsInit() && m_oDxfId.IsInit())
 				{
-					CString sXml = _T("<tableStyleElement type=\"") + m_oType->ToString() + _T("\"");
-					
-					if(m_oSize.IsInit())
-						sXml.AppendFormat(_T(" size=\"%d\""), m_oSize->GetValue());
-					
-					sXml.AppendFormat(_T(" dxfId=\"%d\"/>"),  m_oDxfId->GetValue());
-					writer.WriteString(sXml);
+					writer.WriteString(L"<tableStyleElement");
+					WritingStringAttrString(L"type", m_oType->ToString());
+					WritingStringNullableAttrInt(L"size", m_oSize, m_oSize->GetValue());
+					WritingStringAttrInt(L"dxfId", m_oDxfId->GetValue());
+					writer.WriteString(L"/>");
 				}
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -116,29 +114,17 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				if(m_oName.IsInit() && m_arrItems.size() > 0)
 				{
 					writer.WriteString(_T("<tableStyle"));
-					if(m_oName.IsInit())
-					{
-						CString sName;
-						sName.Append(_T(" name=\""));
-						sName.Append(XmlUtils::EncodeXmlString(m_oName.get2()));
-						sName.Append(_T("\""));
-						writer.WriteString(sName);
-					}
+					WritingStringNullableAttrEncodeXmlString(L"name", m_oName, m_oName.get());
 					if((m_oPivot.IsInit() && true == m_oPivot->ToBool()) || (m_oTable.IsInit() && false == m_oTable->ToBool()))
 						writer.WriteString(_T(" table=\"0\""));
 					else
 						writer.WriteString(_T(" pivot=\"0\""));
-					if(m_oCount.IsInit())
-					{
-						CString sCount;
-						sCount.Format(_T(" count=\"%d\""), m_oCount->GetValue());
-						writer.WriteString(sCount);
-					}
+					WritingStringNullableAttrInt(L"count", m_oCount, m_oCount->GetValue());
 					writer.WriteString(_T(">"));
 					for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
 						m_arrItems[i]->toXML(writer);
@@ -184,10 +170,10 @@ namespace OOX
 			}
 		public:
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oCount;
-			nullable<CString>									m_oName;
+			nullable<std::wstring>									m_oName;
 			nullable<SimpleTypes::COnOff<>>						m_oPivot;
 			nullable<SimpleTypes::COnOff<>>						m_oTable;
-			nullable<CString>									m_oDisplayName; // Используется только для дефалтовых стилей
+			nullable<std::wstring>									m_oDisplayName; // Используется только для дефалтовых стилей
 		};
 		class CTableStyles : public WritingElementWithChilds<CTableStyle>
 		{
@@ -205,30 +191,12 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(_T("<tableStyles"));
-				if(m_oCount.IsInit())
-				{
-					CString sVal;sVal.Format(_T(" count=\"%d\""), m_oCount->GetValue());
-					writer.WriteString(sVal);
-				}
-				if(m_oDefaultTableStyle.IsInit())
-				{
-					CString sVal;
-					sVal.Append(_T(" defaultTableStyle=\""));
-					sVal.Append(XmlUtils::EncodeXmlString(m_oDefaultTableStyle.get()));
-					sVal.Append(_T("\""));
-					writer.WriteString(sVal);
-				}
-				if(m_oDefaultPivotStyle.IsInit())
-				{
-					CString sVal;
-					sVal.Append(_T(" defaultPivotStyle=\""));
-					sVal.Append(XmlUtils::EncodeXmlString(m_oDefaultPivotStyle.get()));
-					sVal.Append(_T("\""));
-					writer.WriteString(sVal);
-				}
+				WritingStringNullableAttrInt(L"count", m_oCount, m_oCount->GetValue());
+				WritingStringNullableAttrEncodeXmlString(L"defaultTableStyle", m_oDefaultTableStyle, m_oDefaultTableStyle.get());
+				WritingStringNullableAttrEncodeXmlString(L"defaultPivotStyle", m_oDefaultPivotStyle, m_oDefaultPivotStyle.get());
 				if(m_arrItems.size() >  0)
 				{
 					writer.WriteString(_T(">"));
@@ -275,8 +243,8 @@ namespace OOX
 			}
 		public:
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oCount;
-			nullable<CString>									m_oDefaultPivotStyle;
-			nullable<CString>									m_oDefaultTableStyle;
+			nullable<std::wstring>									m_oDefaultPivotStyle;
+			nullable<std::wstring>									m_oDefaultTableStyle;
 		};
 	} //Spreadsheet
 } // namespace OOX

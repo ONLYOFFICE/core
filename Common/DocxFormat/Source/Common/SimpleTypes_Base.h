@@ -480,6 +480,10 @@ namespace SimpleTypes
 			sResult.Format( _T("%f"), m_dValue);
 			return sResult;
 		}
+		virtual std::wstring ToString2() const
+		{
+			return std::to_wstring(m_dValue);
+		}
   
 		void SetValue(double dValue)
 		{

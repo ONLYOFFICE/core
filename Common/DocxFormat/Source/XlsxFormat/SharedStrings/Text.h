@@ -34,7 +34,7 @@
 #define OOX_TEXT_FILE_INCLUDE_H_
 
 #include "../CommonInclude.h"
-
+#include "../../../.././DesktopEditor/common/String.h"
 
 namespace OOX
 {
@@ -53,23 +53,23 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(_T("<t"));
-				if(-1 != m_sText.Find(' ') || -1 != m_sText.Find('\n'))
+				if(std::wstring::npos != m_sText.find(' ') || std::wstring::npos != m_sText.find('\n'))
 					writer.WriteString(_T(" xml:space=\"preserve\""));
 				writer.WriteString(_T(">"));
-				writer.WriteString(XmlUtils::EncodeXmlString(m_sText));
+				writer.WriteEncodeXmlString(m_sText);
 				writer.WriteString(_T("</t>"));
 			}
-			virtual void toXML2(XmlUtils::CStringWriter& writer, CString name) const
+			virtual void toXML2(NSStringUtils::CStringBuilder& writer, const wchar_t* name) const
 			{
 				writer.WriteString(_T("<"));
 				writer.WriteString(name);
-				if(-1 != m_sText.Find(' ') || -1 != m_sText.Find('\n'))
+				if(std::wstring::npos != m_sText.find(' ') || std::wstring::npos != m_sText.find('\n'))
 					writer.WriteString(_T(" xml:space=\"preserve\""));
 				writer.WriteString(_T(">"));
-				writer.WriteString(XmlUtils::EncodeXmlString(m_sText));
+				writer.WriteEncodeXmlString(m_sText);
 				writer.WriteString(_T("</"));
 				writer.WriteString(name);
 				writer.WriteString(_T(">"));
@@ -81,12 +81,12 @@ namespace OOX
 				if ( oReader.IsEmptyNode() )
 					return;
 
-				m_sText = oReader.GetText2();
-				m_sText.Replace(_T("\t"), _T(""));
+				m_sText = oReader.GetText3();
+				NSStringExt::Replace(m_sText, L"\t", L"");
 				if(!(m_oSpace.IsInit() && SimpleTypes::xmlspacePreserve == m_oSpace->GetValue()))
 				{
-					//убираем пробелы и переносы строк в начале и в конце
-					int nLength = m_sText.GetLength();
+					//trim ' ', '\r', '\n'
+					int nLength = m_sText.length();
 					int nStartIndex = 0;
 					int nEndIndex = nLength - 1;
 					for(int i = nStartIndex; i < nLength; ++i)
@@ -107,14 +107,14 @@ namespace OOX
 					}
 					if(0 != nStartIndex || nLength - 1 != nEndIndex)
 					{
-						if(nStartIndex <= nEndIndex)
-							m_sText = m_sText.Mid(nStartIndex, nEndIndex - nStartIndex + 1);
+						if (nStartIndex <= nEndIndex)
+							m_sText = m_sText.substr(nStartIndex, nEndIndex - nStartIndex + 1);
 						else
-							m_sText.Empty();
+							m_sText.clear();
 					}
 				}
 			}
-			CString ToString() const
+			std::wstring ToString() const
 			{
 				return m_sText;
 			}
@@ -156,7 +156,7 @@ namespace OOX
 			nullable<SimpleTypes::CXmlSpace<> > m_oSpace;
 
 			// Value
-			CString                             m_sText;
+			std::wstring                             m_sText;
 
 		};
 	} //Spreadsheet

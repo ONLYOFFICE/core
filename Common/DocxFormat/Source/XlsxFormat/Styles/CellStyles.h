@@ -57,29 +57,12 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(_T("<cellStyle"));
-				if(m_oName.IsInit())
-				{
-					//CString sVal;sVal.Format(_T(" name=\"%ls\""), XmlUtils::EncodeXmlString(m_oName.get()));
-                    
-                    CString sVal(_T(" name=\""));
-                    sVal += XmlUtils::EncodeXmlString(m_oName.get());
-                    sVal += CString(_T("\""));
-                    
-					writer.WriteString(sVal);
-				}
-				if(m_oXfId.IsInit())
-				{
-					CString sVal;sVal.Format(_T(" xfId=\"%d\""), m_oXfId->GetValue());
-					writer.WriteString(sVal);
-				}
-				if(m_oBuiltinId.IsInit())
-				{
-					CString sVal;sVal.Format(_T(" builtinId=\"%d\""), m_oBuiltinId->GetValue());
-					writer.WriteString(sVal);
-				}
+				WritingStringNullableAttrEncodeXmlString(L"name", m_oName, m_oName.get());
+				WritingStringNullableAttrInt(L"xfId", m_oXfId, m_oXfId->GetValue());
+				WritingStringNullableAttrInt(L"builtinId", m_oBuiltinId, m_oBuiltinId->GetValue());
 				writer.WriteString(_T("/>"));
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -115,7 +98,7 @@ namespace OOX
 			nullable<SimpleTypes::COnOff<>>					m_oCustomBuiltin;
 			nullable<SimpleTypes::COnOff<>>					m_oHidden;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oILevel;
-			nullable<CString>								m_oName;
+			nullable<std::wstring>								m_oName;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oXfId;
 		};
 
@@ -135,14 +118,10 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(_T("<cellStyles"));
-				if(m_oCount.IsInit())
-				{
-					CString sVal;sVal.Format(_T(" count=\"%d\""), m_oCount->GetValue());
-					writer.WriteString(sVal);
-				}
+				WritingStringNullableAttrInt(L"count", m_oCount, m_oCount->GetValue());
 				writer.WriteString(_T(">"));
 				for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
 					m_arrItems[i]->toXML(writer);

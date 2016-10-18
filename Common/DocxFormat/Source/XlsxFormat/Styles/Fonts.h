@@ -57,23 +57,20 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(_T("<font>"));
 				if(m_oRFont.IsInit() && m_oRFont->m_sVal.IsInit())
 				{
-					CString sVal;sVal.Format(_T("<name val=\"%ls\"/>"), XmlUtils::EncodeXmlString(m_oRFont->m_sVal.get()));
-					writer.WriteString(sVal);
+					WritingStringValAttrEncodeXmlString(L"name", m_oRFont->m_sVal.get());
 				}			
 				if(m_oCharset.IsInit() && m_oCharset->m_oCharset.IsInit())
 				{
-					CString sVal;sVal.Format(_T("<charset val=\"%ls\"/>"), m_oCharset->m_oCharset->ToString());
-					writer.WriteString(sVal);
+					WritingStringValAttrString(L"charset", m_oCharset->m_oCharset->ToString());
 				}
 				if(m_oFamily.IsInit() && m_oFamily->m_oFontFamily.IsInit())
 				{
-					CString sVal;sVal.Format(_T("<family val=\"%ls\"/>"), m_oFamily->m_oFontFamily->ToString());
-					writer.WriteString(sVal);
+					WritingStringValAttrString(L"family", m_oFamily->m_oFontFamily->ToString());
 				}
 				if(m_oBold.IsInit())
 				{
@@ -128,27 +125,31 @@ namespace OOX
 					m_oColor->toXML2(writer, _T("color"));
 				if(m_oSz.IsInit() && m_oSz->m_oVal.IsInit())
 				{
-					CString sVal;sVal.Format(_T("<sz val=\"%ls\"/>"), SpreadsheetCommon::WriteDouble(m_oSz->m_oVal->GetValue()));
-					writer.WriteString(sVal);
+					WritingStringValAttrDouble(L"sz", m_oSz->m_oVal->GetValue());
 				}
 				if(m_oUnderline.IsInit() && m_oUnderline->m_oUnderline.IsInit())
 				{
-					CString sVal;
-					if( SimpleTypes::underlineSingle != m_oUnderline->m_oUnderline->GetValue())
-						sVal.Format(_T("<u val=\"%ls\"/>"), m_oUnderline->m_oUnderline->ToString());
+					if (SimpleTypes::underlineSingle != m_oUnderline->m_oUnderline->GetValue())
+					{
+						WritingStringValAttrString(L"u", m_oUnderline->m_oUnderline->ToString());
+					}
 					else
-						sVal.Format(_T("<u/>"), m_oUnderline->m_oUnderline->ToString());
-					writer.WriteString(sVal);
+					{
+						writer.WriteString(L"<u/>");
+					}
+					
 				}
 				if(m_oVertAlign.IsInit() && m_oVertAlign->m_oVerticalAlign.IsInit())
 				{
-					CString sVal;sVal.Format(_T("<vertAlign val=\"%ls\"/>"), m_oVertAlign->m_oVerticalAlign->ToString());
-					writer.WriteString(sVal);
+					writer.WriteString(L"<vertAlign val=\"");
+					CString sAlign = m_oVertAlign->m_oVerticalAlign->ToString();
+					writer.WriteString(sAlign.GetBuffer());
+					sAlign.ReleaseBuffer();
+					writer.WriteString(L"\"/>");
 				}
 				if(m_oScheme.IsInit() && m_oScheme->m_oFontScheme.IsInit())
 				{
-					CString sVal;sVal.Format(_T("<scheme val=\"%ls\"/>"), m_oScheme->m_oFontScheme->ToString());
-					writer.WriteString(sVal);
+					WritingStringValAttrString(L"scheme", m_oScheme->m_oFontScheme->ToString());
 				}
 				writer.WriteString(_T("</font>"));
 			}
@@ -239,14 +240,10 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(_T("<fonts"));
-				if(m_oCount.IsInit())
-				{
-					CString sVal;sVal.Format(_T(" count=\"%d\""), m_oCount->GetValue());
-					writer.WriteString(sVal);
-				}
+				WritingStringNullableAttrInt(L"count", m_oCount, m_oCount->GetValue());
 				writer.WriteString(_T(">"));
 				for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
 					m_arrItems[i]->toXML(writer);

@@ -35,6 +35,7 @@
 //#include "../XML/XmlUtils.h"
 
 //#include "atlstr.h"
+#include "../../../DesktopEditor/common/StringBuilder.h"
 
 namespace OOX
 {
@@ -50,6 +51,77 @@ namespace Spreadsheet
 		fromXML( (XmlUtils::CXmlLiteReader&)oReader );\
 		return *this;\
 	}
+
+#define WritingStringCommon(start, func, val, end) \
+		writer.WriteString(start); \
+		writer.func(val); \
+		writer.WriteString(end);
+//#define WritingStringCommonDouble(start, val, end) \
+//		writer.WriteString(start); \
+//		writer.AddDouble(val, -1); \
+//		writer.WriteString(end);
+#define WritingStringCommonDouble(start, val, end) \
+		writer.WriteString(start); \
+		writer.WriteString(OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(val)); \
+		writer.WriteString(end);
+
+
+#define WritingStringValAttr(name, func, val) \
+		WritingStringCommon(L"<" name L" val=\"", func, val, L"\"/>")
+#define WritingStringValAttrString(name, val) \
+		WritingStringValAttr(name, WriteString, val)
+#define WritingStringValAttrEncodeXmlString(name, val) \
+		WritingStringValAttr(name, WriteEncodeXmlString, val)
+#define WritingStringValAttrInt(name, val) \
+		WritingStringValAttr(name, AddInt, val)
+#define WritingStringValAttrDouble(name, val) \
+		WritingStringCommonDouble(L"<" name L" val=\"", val, L"\"/>")
+
+#define WritingStringVal(name, func, val) \
+		WritingStringCommon(L"<" name L">", func, val, L"</" name L">")
+#define WritingStringValString(name, val) \
+		WritingStringVal(name, WriteString, val)
+#define WritingStringValEncodeXmlString(name, val) \
+		WritingStringVal(name, WriteEncodeXmlString, val)
+#define WritingStringValInt(name, val) \
+		WritingStringVal(name, AddInt, val)
+#define WritingStringValInt64(name, val) \
+		WritingStringVal(name, AddInt64, val)
+#define WritingStringValDouble(name, val) \
+		WritingStringCommonDouble(L"<" name L">", val, L"</" name L">")
+
+#define WritingStringAttr(name, func, val) \
+		WritingStringCommon(L" " name L"=\"", func, val, L"\"")
+#define WritingStringAttrString(name, val) \
+		WritingStringAttr(name, WriteString, val)
+#define WritingStringAttrEncodeXmlString(name, val) \
+		WritingStringAttr(name, WriteEncodeXmlString, val)
+#define WritingStringAttrInt(name, val) \
+		WritingStringAttr(name, AddInt, val)
+#define WritingStringAttrDouble(name, val) \
+		WritingStringCommonDouble(L" " name L"=\"", val, L"\"")
+
+#define WritingStringNullableAttr(name, func, elem, val) \
+		if(elem.IsInit()) \
+		{ \
+			WritingStringAttr(name, func, val) \
+		}
+#define WritingStringNullableAttrString(name, elem, val) \
+		WritingStringNullableAttr(name, WriteString, elem, val)
+#define WritingStringNullableAttrEncodeXmlString(name, elem, val) \
+		WritingStringNullableAttr(name, WriteEncodeXmlString, elem, val)
+#define WritingStringNullableAttrInt(name, elem, val) \
+		WritingStringNullableAttr(name, AddInt, elem, val)
+#define WritingStringNullableAttrInt64(name, elem, val) \
+		WritingStringNullableAttr(name, AddInt64, elem, val)
+#define WritingStringNullableAttrDouble(name, elem, val) \
+		if(elem.IsInit()) \
+		{ \
+			WritingStringAttrDouble(name, val) \
+		}
+#define WritingStringNullableAttrBool(name, elem) \
+		WritingStringNullableAttrString(name, elem, elem->ToString3(SimpleTypes::onofftostring1))
+
 
 	const double c_ag_Inch_to_MM	= 25.4;
 	const double c_ag_1pxWidth		= 25.4 / 96;
@@ -375,8 +447,8 @@ namespace Spreadsheet
 		WritingElement(){}
 		virtual ~WritingElement() {}
 
-		virtual void			toXML(XmlUtils::CStringWriter& writer) const	= 0;
-        virtual CString			toXML() const									= 0;
+		virtual void			toXML(NSStringUtils::CStringBuilder& writer) const	= 0;
+        //virtual CString			toXML() const									= 0;
 		virtual EElementType	getType() const
 		{
 			return et_Unknown;

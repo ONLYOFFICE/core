@@ -59,7 +59,7 @@ namespace OOX
 			nullable<double> m_dTopMM;
 			nullable<double> m_dWidthMM;
 			nullable<double> m_dHeightMM;
-			nullable<CString> m_sAuthor;
+			nullable<std::wstring> m_sAuthor;
 			nullable<unsigned int> m_nRow;
 			nullable<unsigned int> m_nCol;
 			nullable<bool> m_bMove;
@@ -74,7 +74,7 @@ namespace OOX
 				return m_nRow.IsInit() && m_nCol.IsInit() && m_sAuthor.IsInit();
 			}
 		};
-		class CAuthors : public WritingElementWithChilds<CString>
+		class CAuthors : public WritingElementWithChilds<std::wstring>
 		{
 		public:
 			WritingElementSpreadsheet_AdditionConstructors(CAuthors)
@@ -90,18 +90,16 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				writer.WriteString(CString("<authors>"));
+				writer.WriteString(L"<authors>");
 				for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
 				{
-					CString sAuthor;
-					sAuthor.Append(_T("<author>"));
-					sAuthor.Append(XmlUtils::EncodeXmlString(*m_arrItems[i]));
-					sAuthor.Append(_T("</author>"));
-					writer.WriteString(sAuthor);
+					writer.WriteString(L"<author>");
+					writer.WriteEncodeXmlString(*m_arrItems[i]);
+					writer.WriteString(L"</author>");
 				}
-				writer.WriteString(CString("</authors>"));
+				writer.WriteString(L"</authors>");
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -116,7 +114,7 @@ namespace OOX
 					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 					if ( _T("author") == sName )
-						m_arrItems.push_back(new CString(oReader.GetText2()));
+						m_arrItems.push_back(new std::wstring(oReader.GetText3()));
 				}
 			}
 
@@ -146,27 +144,19 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				if(m_oRef.IsInit() && m_oAuthorId.IsInit() && m_oText.IsInit())
 				{
-					writer.WriteString(CString("<comment"));
-					if(m_oRef.IsInit())
-					{
-						CString sRef;sRef.Format(_T(" ref=\"%ls\""), XmlUtils::EncodeXmlString(m_oRef->GetValue()));
-						writer.WriteString(sRef);
-					}
-					if(m_oAuthorId.IsInit())
-					{
-						CString sAuthorId;sAuthorId.Format(_T(" authorId=\"%d\""), m_oAuthorId->GetValue());
-						writer.WriteString(sAuthorId);
-					}
-					writer.WriteString(CString(">"));
+					writer.WriteString(L"<comment");
+					WritingStringNullableAttrEncodeXmlString(L"ref", m_oRef, m_oRef->ToString2());
+					WritingStringNullableAttrInt(L"authorId", m_oAuthorId, m_oAuthorId->GetValue());
+					writer.WriteString(L">");
 					
-					writer.WriteString(CString("<text>"));
+					writer.WriteString(L"<text>");
 					m_oText->toXML2(writer);
-					writer.WriteString(CString("</text>"));
-					writer.WriteString(CString("</comment>"));
+					writer.WriteString(L"</text>");
+					writer.WriteString(L"</comment>");
 				}
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -224,14 +214,14 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				writer.WriteString(CString("<commentList>"));
+				writer.WriteString(L"<commentList>");
 				for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
 				{
 					m_arrItems[i]->toXML(writer);
 				}
-				writer.WriteString(CString("</commentList>"));
+				writer.WriteString(L"</commentList>");
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -316,7 +306,7 @@ namespace OOX
 			}
 			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 			{
-				XmlUtils::CStringWriter sXml;
+				NSStringUtils::CStringBuilder sXml;
 				sXml.WriteString(_T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><comments xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\">"));
 				if(m_oAuthors.IsInit())
 					m_oAuthors->toXML(sXml);
@@ -324,7 +314,9 @@ namespace OOX
 					m_oCommentList->toXML(sXml);
 				sXml.WriteString(_T("</comments>"));
 
-				CDirectory::SaveToFile( oPath.GetPath(), sXml.GetData() );
+				CString sPath = oPath.GetPath();
+				NSFile::CFileBinary::SaveToFile(sPath.GetBuffer(), sXml.GetData());
+				sPath.ReleaseBuffer();
 				oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
 				IFileContainer::Write(oPath, oDirectory, oContent);
 			}
@@ -370,12 +362,13 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				if(m_oId.IsInit())
 				{
-					CString sVal = _T("<legacyDrawing r:id=\"") + m_oId->GetValue() + _T("\"/>");
-					writer.WriteString(sVal);
+					writer.WriteString(L"<legacyDrawing r:id=\"");
+					writer.WriteString(m_oId->ToString2());
+					writer.WriteString(L"\"/>");					
 				}
 				
 			}

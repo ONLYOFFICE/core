@@ -61,12 +61,12 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				if(isValid())
 				{
-					CString sStart;
-					CString sEnd;
+					std::wstring sStart;
+					std::wstring sEnd;
 					if(m_oFrom.IsInit() && m_oTo.IsInit())
 					{
 						sStart	= _T("<xdr:twoCellAnchor editAs=\"") + m_oAnchorType.ToString() + _T("\">");
@@ -80,7 +80,7 @@ namespace OOX
 					}
 					else if(m_oFrom.IsInit() && m_oExt.IsInit())
 					{
-						sStart.Append(_T("<xdr:oneCellAnchor>"));
+						sStart.append(_T("<xdr:oneCellAnchor>"));
 						sEnd = _T("</xdr:oneCellAnchor>");
 						writer.WriteString(sStart);
 						if(m_oFrom.IsInit())
@@ -90,7 +90,7 @@ namespace OOX
 					}
 					else if(m_oPos.IsInit() && m_oExt.IsInit())
 					{
-						sStart.Append(_T("<xdr:absoluteAnchor>"));
+						sStart.append(_T("<xdr:absoluteAnchor>"));
 						sEnd = _T("</xdr:absoluteAnchor>");
 						writer.WriteString(sStart);
 						if(m_oPos.IsInit())
@@ -161,7 +161,7 @@ namespace OOX
 								xmlString += L"xmlns:xdr=\"http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing\" ";
 								xmlString += L"xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" ";
 							xmlString += L">";
-							xmlString += *m_oXml;
+							xmlString += m_oXml->c_str();
 							xmlString += L"</root>";
                                                         bool result =oShapeReader.FromString(xmlString);
 
@@ -186,7 +186,7 @@ namespace OOX
 										{
 											//собственно это и есть ссылка на обеъект -> переложим ее "повыше" (для удобства)
 											m_oXml.reset();
-											m_sSpId = pExt->m_oCompatExt->m_sSpId;
+											m_sSpId = string2std_string(pExt->m_oCompatExt->m_sSpId.get());
 										}
 									}
 								}
@@ -291,10 +291,10 @@ namespace OOX
 			nullable<OOX::Spreadsheet::CConnShape>			m_oConnShape;
 
 			// для pptx:ObjectDrawingConverter
-			nullable<CString>								m_oXml;
+			nullable<std::wstring>								m_oXml;
 
 			//для удобства
-			nullable<CString>								m_sSpId;
+			nullable<std::wstring>								m_sSpId;
 		};
 	} //Spreadsheet
 } // namespace OOX

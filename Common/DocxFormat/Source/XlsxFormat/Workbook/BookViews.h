@@ -58,34 +58,14 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(_T("<workbookView"));
-				if(m_oXWindow.IsInit())
-				{
-					CString sVal;sVal.Format(_T(" xWindow=\"%d\""), m_oXWindow->GetValue());
-					writer.WriteString(sVal);
-				}
-				if(m_oYWindow.IsInit())
-				{
-					CString sVal;sVal.Format(_T(" yWindow=\"%d\""), m_oYWindow->GetValue());
-					writer.WriteString(sVal);
-				}
-				if(m_oWindowWidth.IsInit())
-				{
-					CString sVal;sVal.Format(_T(" windowWidth=\"%d\""), m_oWindowWidth->GetValue());
-					writer.WriteString(sVal);
-				}
-				if(m_oWindowHeight.IsInit())
-				{
-					CString sVal;sVal.Format(_T(" windowHeight=\"%d\""), m_oWindowHeight->GetValue());
-					writer.WriteString(sVal);
-				}
-				if(m_oActiveTab.IsInit())
-				{
-					CString sVal;sVal.Format(_T(" activeTab=\"%d\""), m_oActiveTab->GetValue());
-					writer.WriteString(sVal);
-				}
+				WritingStringNullableAttrInt(L"xWindow", m_oXWindow, m_oXWindow->GetValue());
+				WritingStringNullableAttrInt(L"yWindow", m_oYWindow, m_oYWindow->GetValue());
+				WritingStringNullableAttrInt(L"windowWidth", m_oWindowWidth, m_oWindowWidth->GetValue());
+				WritingStringNullableAttrInt(L"windowHeight", m_oWindowHeight, m_oWindowHeight->GetValue());
+				WritingStringNullableAttrInt(L"activeTab", m_oActiveTab, m_oActiveTab->GetValue());
 				writer.WriteString(_T("/>"));
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -157,7 +137,7 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(_T("<bookViews>"));
 				for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)

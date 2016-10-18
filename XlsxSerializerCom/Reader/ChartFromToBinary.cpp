@@ -837,9 +837,9 @@ namespace BinXlsxRW{
 
 	BinaryChartReader::BinaryChartReader(NSBinPptxRW::CBinaryFileReader& oBufferedStream, SaveParams& oSaveParams, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter):Binary_CommonReader(oBufferedStream),m_oSaveParams(oSaveParams),m_pOfficeDrawingConverter(pOfficeDrawingConverter)
 	{}
-	CString* BinaryChartReader::GetRecordXml(long length, int nRecordType)
+	std::wstring* BinaryChartReader::GetRecordXml(long length, int nRecordType)
 	{
-		CString* pNewElem = new CString;
+		std::wstring* pNewElem = new std::wstring;
 		if(length > 0)
 		{
 			long nCurPos = m_oBufferedStream.GetPos();
@@ -847,16 +847,17 @@ namespace BinXlsxRW{
 			HRESULT hRes = m_pOfficeDrawingConverter->GetRecordXml(nCurPos, length, nRecordType, XMLWRITER_DOC_TYPE_CHART, &bstrXml);
 			if (S_OK == hRes && NULL != bstrXml)
 			{
-				*pNewElem = *bstrXml;
+				*pNewElem = bstrXml->GetBuffer();
+				bstrXml->ReleaseBuffer();
 			}
 			RELEASEOBJECT(bstrXml);
 			m_oBufferedStream.Seek(nCurPos + length);
 		}
 		return pNewElem;
 	}
-	CString* BinaryChartReader::GetTxBodyXml(long length)
+	std::wstring* BinaryChartReader::GetTxBodyXml(long length)
 	{
-		CString* pNewElem = new CString;
+		std::wstring* pNewElem = new std::wstring;
 		if(length > 0)
 		{
 			long nCurPos = m_oBufferedStream.GetPos();
@@ -864,7 +865,8 @@ namespace BinXlsxRW{
 			HRESULT hRes = m_pOfficeDrawingConverter->GetTxBodyXml(nCurPos, length, &bstrXml);
 			if (S_OK == hRes && NULL != bstrXml)
 			{
-				*pNewElem = *bstrXml;
+				*pNewElem = bstrXml->GetBuffer();
+				bstrXml->ReleaseBuffer();
 			}
 			RELEASEOBJECT(bstrXml);
 			m_oBufferedStream.Seek(nCurPos + length);
@@ -1031,9 +1033,9 @@ namespace BinXlsxRW{
 		CT_RelId* poVal = static_cast<CT_RelId*>(poResult);
 		if(c_oserct_relidID == type)
 		{
-			CString* pNewElem = new CString;
+			std::wstring* pNewElem = new std::wstring;
 			//todo
-			*pNewElem = m_oBufferedStream.GetString3(length);
+			*pNewElem = m_oBufferedStream.GetString4(length);
 			poVal->m_id = pNewElem;
 		}
 		else
@@ -1052,14 +1054,14 @@ namespace BinXlsxRW{
 		}
 		else if(c_oserct_pagesetupPAPERHEIGHT == type)
 		{
-			CString* pNewElem = new CString;
-			*pNewElem = m_oBufferedStream.GetString3(length);
+			std::wstring* pNewElem = new std::wstring;
+			*pNewElem = m_oBufferedStream.GetString4(length);
 			poVal->m_paperHeight = pNewElem;
 		}
 		else if(c_oserct_pagesetupPAPERWIDTH == type)
 		{
-			CString* pNewElem = new CString;
-			*pNewElem = m_oBufferedStream.GetString3(length);
+			std::wstring* pNewElem = new std::wstring;
+			*pNewElem = m_oBufferedStream.GetString4(length);
 			poVal->m_paperWidth = pNewElem;
 		}
 		else if(c_oserct_pagesetupFIRSTPAGENUMBER == type)
@@ -1165,38 +1167,38 @@ namespace BinXlsxRW{
 		CT_HeaderFooter* poVal = static_cast<CT_HeaderFooter*>(poResult);
 		if(c_oserct_headerfooterODDHEADER == type)
 		{
-			CString* pNewElem = new CString;
-			*pNewElem = m_oBufferedStream.GetString3(length);
+			std::wstring* pNewElem = new std::wstring;
+			*pNewElem = m_oBufferedStream.GetString4(length);
 			poVal->m_oddHeader = pNewElem;
 		}
 		else if(c_oserct_headerfooterODDFOOTER == type)
 		{
-			CString* pNewElem = new CString;
-			*pNewElem = m_oBufferedStream.GetString3(length);
+			std::wstring* pNewElem = new std::wstring;
+			*pNewElem = m_oBufferedStream.GetString4(length);
 			poVal->m_oddFooter = pNewElem;
 		}
 		else if(c_oserct_headerfooterEVENHEADER == type)
 		{
-			CString* pNewElem = new CString;
-			*pNewElem = m_oBufferedStream.GetString3(length);
+			std::wstring* pNewElem = new std::wstring;
+			*pNewElem = m_oBufferedStream.GetString4(length);
 			poVal->m_evenHeader = pNewElem;
 		}
 		else if(c_oserct_headerfooterEVENFOOTER == type)
 		{
-			CString* pNewElem = new CString;
-			*pNewElem = m_oBufferedStream.GetString3(length);
+			std::wstring* pNewElem = new std::wstring;
+			*pNewElem = m_oBufferedStream.GetString4(length);
 			poVal->m_evenFooter = pNewElem;
 		}
 		else if(c_oserct_headerfooterFIRSTHEADER == type)
 		{
-			CString* pNewElem = new CString;
-			*pNewElem = m_oBufferedStream.GetString3(length);
+			std::wstring* pNewElem = new std::wstring;
+			*pNewElem = m_oBufferedStream.GetString4(length);
 			poVal->m_firstHeader = pNewElem;
 		}
 		else if(c_oserct_headerfooterFIRSTFOOTER == type)
 		{
-			CString* pNewElem = new CString;
-			*pNewElem = m_oBufferedStream.GetString3(length);
+			std::wstring* pNewElem = new std::wstring;
+			*pNewElem = m_oBufferedStream.GetString4(length);
 			poVal->m_firstFooter = pNewElem;
 		}
 		else if(c_oserct_headerfooterALIGNWITHMARGINS == type)
@@ -1259,9 +1261,9 @@ namespace BinXlsxRW{
 		}
 		else if(c_oserct_externaldataID == type)
 		{
-			CString* pNewElem = new CString;
+			std::wstring* pNewElem = new std::wstring;
 			//todo
-			*pNewElem = m_oBufferedStream.GetString3(length);
+			*pNewElem = m_oBufferedStream.GetString4(length);
 			poVal->m_id = pNewElem;
 		}
 		else
@@ -1333,14 +1335,14 @@ namespace BinXlsxRW{
 		CT_Extension* poVal = static_cast<CT_Extension*>(poResult);
 		if(c_oserct_extensionANY == type)
 		{
-			CString* pNewElem = new CString;
-			*pNewElem = m_oBufferedStream.GetString3(length);
+			std::wstring* pNewElem = new std::wstring;
+			*pNewElem = m_oBufferedStream.GetString4(length);
 			poVal->m_Any = pNewElem;
 		}
 		else if(c_oserct_extensionURI == type)
 		{
-			CString* pNewElem = new CString;
-			*pNewElem = m_oBufferedStream.GetString3(length);
+			std::wstring* pNewElem = new std::wstring;
+			*pNewElem = m_oBufferedStream.GetString4(length);
 			poVal->m_uri = pNewElem;
 		}
 		else
@@ -1862,8 +1864,8 @@ namespace BinXlsxRW{
 		CT_StrRef* poVal = static_cast<CT_StrRef*>(poResult);
 		if(c_oserct_strrefF == type)
 		{
-			CString* pNewElem = new CString;
-			*pNewElem = m_oBufferedStream.GetString3(length);
+			std::wstring* pNewElem = new std::wstring;
+			*pNewElem = m_oBufferedStream.GetString4(length);
 			poVal->m_f = pNewElem;
 		}
 		else if(c_oserct_strrefSTRCACHE == type)
@@ -1914,8 +1916,8 @@ namespace BinXlsxRW{
 		CT_StrVal* poVal = static_cast<CT_StrVal*>(poResult);
 		if(c_oserct_strvalV == type)
 		{
-			CString* pNewElem = new CString;
-			*pNewElem = m_oBufferedStream.GetString3(length);
+			std::wstring* pNewElem = new std::wstring;
+			*pNewElem = m_oBufferedStream.GetString4(length);
 			poVal->m_v = pNewElem;
 		}
 		else if(c_oserct_strvalIDX == type)
@@ -1934,8 +1936,8 @@ namespace BinXlsxRW{
 		CT_NumFmt* poVal = static_cast<CT_NumFmt*>(poResult);
 		if(c_oserct_numfmtFORMATCODE == type)
 		{
-			CString* pNewElem = new CString;
-			*pNewElem = m_oBufferedStream.GetString3(length);
+			std::wstring* pNewElem = new std::wstring;
+			*pNewElem = m_oBufferedStream.GetString4(length);
 			poVal->m_formatCode = pNewElem;
 		}
 		else if(c_oserct_numfmtSOURCELINKED == type)
@@ -2176,8 +2178,8 @@ namespace BinXlsxRW{
 		CT_LblOffset* poVal = static_cast<CT_LblOffset*>(poResult);
 		if(c_oserct_lbloffsetVAL == type)
 		{
-			CString* pNewElem = new CString;
-			*pNewElem = m_oBufferedStream.GetString3(length);
+			std::wstring* pNewElem = new std::wstring;
+			*pNewElem = m_oBufferedStream.GetString4(length);
 			poVal->m_val = pNewElem;
 		}
 		else
@@ -2596,8 +2598,8 @@ namespace BinXlsxRW{
 		CT_BubbleScale* poVal = static_cast<CT_BubbleScale*>(poResult);
 		if(c_oserct_bubblescaleVAL == type)
 		{
-			CString* pNewElem = new CString;
-			*pNewElem = m_oBufferedStream.GetString3(length);
+			std::wstring* pNewElem = new std::wstring;
+			*pNewElem = m_oBufferedStream.GetString4(length);
 			poVal->m_val = pNewElem;
 		}
 		else
@@ -2706,8 +2708,8 @@ namespace BinXlsxRW{
 		}
 		else if(c_oserct_sertxV == type)
 		{
-			CString* pNewElem = new CString;
-			*pNewElem = m_oBufferedStream.GetString3(length);
+			std::wstring* pNewElem = new std::wstring;
+			*pNewElem = m_oBufferedStream.GetString4(length);
 			poVal->m_v = pNewElem;
 		}
 		else
@@ -2942,8 +2944,8 @@ namespace BinXlsxRW{
 		}
 		else if(c_oserct_dlblsSEPARATOR == type)
 		{
-			CString* pNewElem = new CString;
-			*pNewElem = m_oBufferedStream.GetString3(length);
+			std::wstring* pNewElem = new std::wstring;
+			*pNewElem = m_oBufferedStream.GetString4(length);
 			ItemsChoiceType3* eElemtype = new ItemsChoiceType3;
 			*eElemtype = itemschoicetype3SEPARATOR;
 			poVal->m_ItemsElementName0.push_back(eElemtype);
@@ -3084,8 +3086,8 @@ namespace BinXlsxRW{
 		}
 		else if(c_oserct_dlblSEPARATOR == type)
 		{
-			CString* pNewElem = new CString;
-			*pNewElem = m_oBufferedStream.GetString3(length);
+			std::wstring* pNewElem = new std::wstring;
+			*pNewElem = m_oBufferedStream.GetString4(length);
 			ItemsChoiceType4* eElemtype = new ItemsChoiceType4;
 			*eElemtype = itemschoicetype4SEPARATOR;
 			poVal->m_ItemsElementName0.push_back(eElemtype);
@@ -3199,8 +3201,8 @@ namespace BinXlsxRW{
 		CT_Trendline* poVal = static_cast<CT_Trendline*>(poResult);
 		if(c_oserct_trendlineNAME == type)
 		{
-			CString* pNewElem = new CString;
-			*pNewElem = m_oBufferedStream.GetString3(length);
+			std::wstring* pNewElem = new std::wstring;
+			*pNewElem = m_oBufferedStream.GetString4(length);
 			poVal->m_name = pNewElem;
 		}
 		else if(c_oserct_trendlineSPPR == type)
@@ -3485,8 +3487,8 @@ namespace BinXlsxRW{
 		CT_NumData* poVal = static_cast<CT_NumData*>(poResult);
 		if(c_oserct_numdataFORMATCODE == type)
 		{
-			CString* pNewElem = new CString;
-			*pNewElem = m_oBufferedStream.GetString3(length);
+			std::wstring* pNewElem = new std::wstring;
+			*pNewElem = m_oBufferedStream.GetString4(length);
 			poVal->m_formatCode = pNewElem;
 		}
 		else if(c_oserct_numdataPTCOUNT == type)
@@ -3517,8 +3519,8 @@ namespace BinXlsxRW{
 		CT_NumVal* poVal = static_cast<CT_NumVal*>(poResult);
 		if(c_oserct_numvalV == type)
 		{
-			CString* pNewElem = new CString;
-			*pNewElem = m_oBufferedStream.GetString3(length);
+			std::wstring* pNewElem = new std::wstring;
+			*pNewElem = m_oBufferedStream.GetString4(length);
 			poVal->m_v = pNewElem;
 		}
 		else if(c_oserct_numvalIDX == type)
@@ -3529,8 +3531,8 @@ namespace BinXlsxRW{
 		}
 		else if(c_oserct_numvalFORMATCODE == type)
 		{
-			CString* pNewElem = new CString;
-			*pNewElem = m_oBufferedStream.GetString3(length);
+			std::wstring* pNewElem = new std::wstring;
+			*pNewElem = m_oBufferedStream.GetString4(length);
 			poVal->m_formatCode = pNewElem;
 		}
 		else
@@ -3543,8 +3545,8 @@ namespace BinXlsxRW{
 		CT_NumRef* poVal = static_cast<CT_NumRef*>(poResult);
 		if(c_oserct_numrefF == type)
 		{
-			CString* pNewElem = new CString;
-			*pNewElem = m_oBufferedStream.GetString3(length);
+			std::wstring* pNewElem = new std::wstring;
+			*pNewElem = m_oBufferedStream.GetString4(length);
 			poVal->m_f = pNewElem;
 		}
 		else if(c_oserct_numrefNUMCACHE == type)
@@ -3607,8 +3609,8 @@ namespace BinXlsxRW{
 		CT_MultiLvlStrRef* poVal = static_cast<CT_MultiLvlStrRef*>(poResult);
 		if(c_oserct_multilvlstrrefF == type)
 		{
-			CString* pNewElem = new CString;
-			*pNewElem = m_oBufferedStream.GetString3(length);
+			std::wstring* pNewElem = new std::wstring;
+			*pNewElem = m_oBufferedStream.GetString4(length);
 			poVal->m_f = pNewElem;
 		}
 		else if(c_oserct_multilvlstrrefMULTILVLSTRCACHE == type)
@@ -3891,8 +3893,8 @@ namespace BinXlsxRW{
 		CT_SecondPieSize* poVal = static_cast<CT_SecondPieSize*>(poResult);
 		if(c_oserct_secondpiesizeVAL == type)
 		{
-			CString* pNewElem = new CString;
-			*pNewElem = m_oBufferedStream.GetString3(length);
+			std::wstring* pNewElem = new std::wstring;
+			*pNewElem = m_oBufferedStream.GetString4(length);
 			poVal->m_val = pNewElem;
 		}
 		else
@@ -4089,8 +4091,8 @@ namespace BinXlsxRW{
 		CT_GapAmount* poVal = static_cast<CT_GapAmount*>(poResult);
 		if(c_oserct_gapamountVAL == type)
 		{
-			CString* pNewElem = new CString;
-			*pNewElem = m_oBufferedStream.GetString3(length);
+			std::wstring* pNewElem = new std::wstring;
+			*pNewElem = m_oBufferedStream.GetString4(length);
 			poVal->m_val = pNewElem;
 		}
 		else
@@ -4306,8 +4308,8 @@ namespace BinXlsxRW{
 		CT_Overlap* poVal = static_cast<CT_Overlap*>(poResult);
 		if(c_oserct_overlapVAL == type)
 		{
-			CString* pNewElem = new CString;
-			*pNewElem = m_oBufferedStream.GetString3(length);
+			std::wstring* pNewElem = new std::wstring;
+			*pNewElem = m_oBufferedStream.GetString4(length);
 			poVal->m_val = pNewElem;
 		}
 		else
@@ -4388,8 +4390,8 @@ namespace BinXlsxRW{
 		CT_HoleSize* poVal = static_cast<CT_HoleSize*>(poResult);
 		if(c_oserct_holesizeVAL == type)
 		{
-			CString* pNewElem = new CString;
-			*pNewElem = m_oBufferedStream.GetString3(length);
+			std::wstring* pNewElem = new std::wstring;
+			*pNewElem = m_oBufferedStream.GetString4(length);
 			poVal->m_val = pNewElem;
 		}
 		else
@@ -5515,8 +5517,8 @@ namespace BinXlsxRW{
 		CT_Thickness* poVal = static_cast<CT_Thickness*>(poResult);
 		if(c_oserct_thicknessVAL == type)
 		{
-			CString* pNewElem = new CString;
-			*pNewElem = m_oBufferedStream.GetString3(length);
+			std::wstring* pNewElem = new std::wstring;
+			*pNewElem = m_oBufferedStream.GetString4(length);
 			poVal->m_val = pNewElem;
 		}
 		else
@@ -5573,8 +5575,8 @@ namespace BinXlsxRW{
 		CT_DepthPercent* poVal = static_cast<CT_DepthPercent*>(poResult);
 		if(c_oserct_depthpercentVAL == type)
 		{
-			CString* pNewElem = new CString;
-			*pNewElem = m_oBufferedStream.GetString3(length);
+			std::wstring* pNewElem = new std::wstring;
+			*pNewElem = m_oBufferedStream.GetString4(length);
 			poVal->m_val = pNewElem;
 		}
 		else
@@ -5601,8 +5603,8 @@ namespace BinXlsxRW{
 		CT_HPercent* poVal = static_cast<CT_HPercent*>(poResult);
 		if(c_oserct_hpercentVAL == type)
 		{
-			CString* pNewElem = new CString;
-			*pNewElem = m_oBufferedStream.GetString3(length);
+			std::wstring* pNewElem = new std::wstring;
+			*pNewElem = m_oBufferedStream.GetString4(length);
 			poVal->m_val = pNewElem;
 		}
 		else
@@ -5857,8 +5859,8 @@ namespace BinXlsxRW{
 		CT_PivotSource* poVal = static_cast<CT_PivotSource*>(poResult);
 		if(c_oserct_pivotsourceNAME == type)
 		{
-			CString* pNewElem = new CString;
-			*pNewElem = m_oBufferedStream.GetString3(length);
+			std::wstring* pNewElem = new std::wstring;
+			*pNewElem = m_oBufferedStream.GetString4(length);
 			poVal->m_name = pNewElem;
 		}
 		else if(c_oserct_pivotsourceFMTID == type)
@@ -5911,8 +5913,8 @@ namespace BinXlsxRW{
 		CT_TextLanguageID* poVal = static_cast<CT_TextLanguageID*>(poResult);
 		if(c_oserct_textlanguageidVAL == type)
 		{
-			CString* pNewElem = new CString;
-			*pNewElem = m_oBufferedStream.GetString3(length);
+			std::wstring* pNewElem = new std::wstring;
+			*pNewElem = m_oBufferedStream.GetString4(length);
 			poVal->m_val = pNewElem;
 		}
 		else
@@ -5951,8 +5953,8 @@ namespace BinXlsxRW{
 		}
 		else if(c_oseralternatecontentchoiceREQUIRES == type)
 		{
-			CString* pNewElem = new CString;
-			*pNewElem = m_oBufferedStream.GetString3(length);
+			std::wstring* pNewElem = new std::wstring;
+			*pNewElem = m_oBufferedStream.GetString4(length);
 			poVal->m_Requires = pNewElem;
 		}
 		else
@@ -5975,16 +5977,16 @@ namespace BinXlsxRW{
 	}
 	BinaryChartWriter::BinaryChartWriter(NSBinPptxRW::CBinaryFileWriter &oBufferedStream, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter):m_oBcw(oBufferedStream),m_pOfficeDrawingConverter(pOfficeDrawingConverter)
 	{}
-	void BinaryChartWriter::GetRecordBinary(int nType, CString& sXml, int nRecordType)
+	void BinaryChartWriter::GetRecordBinary(int nType, std::wstring& sXml, int nRecordType)
 	{
 		int nCurPos = m_oBcw.WriteItemStart(nType);
-		HRESULT hRes = m_pOfficeDrawingConverter->GetRecordBinary(nRecordType, sXml);
+		HRESULT hRes = m_pOfficeDrawingConverter->GetRecordBinary(nRecordType, std_string2string(sXml));
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
-	void BinaryChartWriter::GetTxBodyBinary(int nType, CString& sXml)
+	void BinaryChartWriter::GetTxBodyBinary(int nType, std::wstring& sXml)
 	{
 		int nCurPos = m_oBcw.WriteItemStart(nType);
-		CString bstrXml = _T("<c:rich xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">") + sXml + _T("</c:rich>");
+		CString bstrXml = _T("<c:rich xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">") + std_string2string(sXml) + _T("</c:rich>");
 		HRESULT hRes = m_pOfficeDrawingConverter->GetTxBodyBinary(bstrXml);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
@@ -6115,7 +6117,7 @@ namespace BinXlsxRW{
 		{
 			int nCurPos = m_oBcw.WriteItemStart(c_oserct_relidID);
 			//todo
-			m_oBcw.m_oStream.WriteStringW3(*oVal.m_id);
+			m_oBcw.m_oStream.WriteStringW4(*oVal.m_id);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
 	}
@@ -6130,13 +6132,13 @@ namespace BinXlsxRW{
 		if(NULL != oVal.m_paperHeight)
 		{
 			int nCurPos = m_oBcw.WriteItemStart(c_oserct_pagesetupPAPERHEIGHT);
-			m_oBcw.m_oStream.WriteStringW3(*oVal.m_paperHeight);
+			m_oBcw.m_oStream.WriteStringW4(*oVal.m_paperHeight);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
 		if(NULL != oVal.m_paperWidth)
 		{
 			int nCurPos = m_oBcw.WriteItemStart(c_oserct_pagesetupPAPERWIDTH);
-			m_oBcw.m_oStream.WriteStringW3(*oVal.m_paperWidth);
+			m_oBcw.m_oStream.WriteStringW4(*oVal.m_paperWidth);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
 		if(NULL != oVal.m_firstPageNumber)
@@ -6233,37 +6235,37 @@ namespace BinXlsxRW{
 		if(NULL != oVal.m_oddHeader)
 		{
 			int nCurPos = m_oBcw.WriteItemStart(c_oserct_headerfooterODDHEADER);
-			m_oBcw.m_oStream.WriteStringW3(*oVal.m_oddHeader);
+			m_oBcw.m_oStream.WriteStringW4(*oVal.m_oddHeader);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
 		if(NULL != oVal.m_oddFooter)
 		{
 			int nCurPos = m_oBcw.WriteItemStart(c_oserct_headerfooterODDFOOTER);
-			m_oBcw.m_oStream.WriteStringW3(*oVal.m_oddFooter);
+			m_oBcw.m_oStream.WriteStringW4(*oVal.m_oddFooter);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
 		if(NULL != oVal.m_evenHeader)
 		{
 			int nCurPos = m_oBcw.WriteItemStart(c_oserct_headerfooterEVENHEADER);
-			m_oBcw.m_oStream.WriteStringW3(*oVal.m_evenHeader);
+			m_oBcw.m_oStream.WriteStringW4(*oVal.m_evenHeader);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
 		if(NULL != oVal.m_evenFooter)
 		{
 			int nCurPos = m_oBcw.WriteItemStart(c_oserct_headerfooterEVENFOOTER);
-			m_oBcw.m_oStream.WriteStringW3(*oVal.m_evenFooter);
+			m_oBcw.m_oStream.WriteStringW4(*oVal.m_evenFooter);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
 		if(NULL != oVal.m_firstHeader)
 		{
 			int nCurPos = m_oBcw.WriteItemStart(c_oserct_headerfooterFIRSTHEADER);
-			m_oBcw.m_oStream.WriteStringW3(*oVal.m_firstHeader);
+			m_oBcw.m_oStream.WriteStringW4(*oVal.m_firstHeader);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
 		if(NULL != oVal.m_firstFooter)
 		{
 			int nCurPos = m_oBcw.WriteItemStart(c_oserct_headerfooterFIRSTFOOTER);
-			m_oBcw.m_oStream.WriteStringW3(*oVal.m_firstFooter);
+			m_oBcw.m_oStream.WriteStringW4(*oVal.m_firstFooter);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
 		if(NULL != oVal.m_alignWithMargins)
@@ -6318,7 +6320,7 @@ namespace BinXlsxRW{
 		{
 			int nCurPos = m_oBcw.WriteItemStart(c_oserct_externaldataID);
 			//todo
-			m_oBcw.m_oStream.WriteStringW3(*oVal.m_id);
+			m_oBcw.m_oStream.WriteStringW4(*oVal.m_id);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
 	}
@@ -6371,13 +6373,13 @@ namespace BinXlsxRW{
 		if(NULL != oVal.m_Any)
 		{
 			int nCurPos = m_oBcw.WriteItemStart(c_oserct_extensionANY);
-			m_oBcw.m_oStream.WriteStringW3(*oVal.m_Any);
+			m_oBcw.m_oStream.WriteStringW4(*oVal.m_Any);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
 		if(NULL != oVal.m_uri)
 		{
 			int nCurPos = m_oBcw.WriteItemStart(c_oserct_extensionURI);
-			m_oBcw.m_oStream.WriteStringW3(*oVal.m_uri);
+			m_oBcw.m_oStream.WriteStringW4(*oVal.m_uri);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
 	}
@@ -6819,7 +6821,7 @@ namespace BinXlsxRW{
 		if(NULL != oVal.m_f)
 		{
 			int nCurPos = m_oBcw.WriteItemStart(c_oserct_strrefF);
-			m_oBcw.m_oStream.WriteStringW3(*oVal.m_f);
+			m_oBcw.m_oStream.WriteStringW4(*oVal.m_f);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
 		if(NULL != oVal.m_strCache)
@@ -6865,7 +6867,7 @@ namespace BinXlsxRW{
 		if(NULL != oVal.m_v)
 		{
 			int nCurPos = m_oBcw.WriteItemStart(c_oserct_strvalV);
-			m_oBcw.m_oStream.WriteStringW3(*oVal.m_v);
+			m_oBcw.m_oStream.WriteStringW4(*oVal.m_v);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
 		if(NULL != oVal.m_idx)
@@ -6880,7 +6882,7 @@ namespace BinXlsxRW{
 		if(NULL != oVal.m_formatCode)
 		{
 			int nCurPos = m_oBcw.WriteItemStart(c_oserct_numfmtFORMATCODE);
-			m_oBcw.m_oStream.WriteStringW3(*oVal.m_formatCode);
+			m_oBcw.m_oStream.WriteStringW4(*oVal.m_formatCode);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
 		if(NULL != oVal.m_sourceLinked)
@@ -7087,7 +7089,7 @@ namespace BinXlsxRW{
 		if(NULL != oVal.m_val)
 		{
 			int nCurPos = m_oBcw.WriteItemStart(c_oserct_lbloffsetVAL);
-			m_oBcw.m_oStream.WriteStringW3(*oVal.m_val);
+			m_oBcw.m_oStream.WriteStringW4(*oVal.m_val);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
 	}
@@ -7457,7 +7459,7 @@ namespace BinXlsxRW{
 		if(NULL != oVal.m_val)
 		{
 			int nCurPos = m_oBcw.WriteItemStart(c_oserct_bubblescaleVAL);
-			m_oBcw.m_oStream.WriteStringW3(*oVal.m_val);
+			m_oBcw.m_oStream.WriteStringW4(*oVal.m_val);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
 	}
@@ -7569,7 +7571,7 @@ namespace BinXlsxRW{
 		if(NULL != oVal.m_v)
 		{
 			int nCurPos = m_oBcw.WriteItemStart(c_oserct_sertxV);
-			m_oBcw.m_oStream.WriteStringW3(*oVal.m_v);
+			m_oBcw.m_oStream.WriteStringW4(*oVal.m_v);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
 	}
@@ -7791,11 +7793,11 @@ namespace BinXlsxRW{
 			break;
 		case itemschoicetype3SEPARATOR:
 			{
-				CString* pTypeVal = static_cast<CString*>(pVal);
+				std::wstring* pTypeVal = static_cast<std::wstring*>(pVal);
 				if(NULL != pTypeVal)
 				{
 					int nCurPos = m_oBcw.WriteItemStart(c_oserct_dlblsSEPARATOR);
-					m_oBcw.m_oStream.WriteStringW3(*pTypeVal);
+					m_oBcw.m_oStream.WriteStringW4(*pTypeVal);
 					m_oBcw.WriteItemEnd(nCurPos);
 				}
 			}
@@ -7879,7 +7881,7 @@ namespace BinXlsxRW{
 			break;
 		case itemschoicetype3SPPR:
 			{
-				CString* pTypeVal = static_cast<CString*>(pVal);
+				std::wstring* pTypeVal = static_cast<std::wstring*>(pVal);
 				if(NULL != pTypeVal)
 				{
 					GetRecordBinary(c_oserct_dlblsSPPR, (*pTypeVal), XMLWRITER_RECORD_TYPE_SPPR);
@@ -7888,7 +7890,7 @@ namespace BinXlsxRW{
 			break;
 		case itemschoicetype3TXPR:
 			{
-				CString* pTypeVal = static_cast<CString*>(pVal);
+				std::wstring* pTypeVal = static_cast<std::wstring*>(pVal);
 				if(NULL != pTypeVal)
 				{
 					GetTxBodyBinary(c_oserct_dlblsTXPR, (*pTypeVal));
@@ -7966,11 +7968,11 @@ namespace BinXlsxRW{
 			break;
 		case itemschoicetype4SEPARATOR:
 			{
-				CString* pTypeVal = static_cast<CString*>(pVal);
+				std::wstring* pTypeVal = static_cast<std::wstring*>(pVal);
 				if(NULL != pTypeVal)
 				{
 					int nCurPos = m_oBcw.WriteItemStart(c_oserct_dlblSEPARATOR);
-					m_oBcw.m_oStream.WriteStringW3(*pTypeVal);
+					m_oBcw.m_oStream.WriteStringW4(*pTypeVal);
 					m_oBcw.WriteItemEnd(nCurPos);
 				}
 			}
@@ -8043,7 +8045,7 @@ namespace BinXlsxRW{
 			break;
 		case itemschoicetype4SPPR:
 			{
-				CString* pTypeVal = static_cast<CString*>(pVal);
+				std::wstring* pTypeVal = static_cast<std::wstring*>(pVal);
 				if(NULL != pTypeVal)
 				{
 					GetRecordBinary(c_oserct_dlblSPPR, (*pTypeVal), XMLWRITER_RECORD_TYPE_SPPR);
@@ -8063,7 +8065,7 @@ namespace BinXlsxRW{
 			break;
 		case itemschoicetype4TXPR:
 			{
-				CString* pTypeVal = static_cast<CString*>(pVal);
+				std::wstring* pTypeVal = static_cast<std::wstring*>(pVal);
 				if(NULL != pTypeVal)
 				{
 					GetTxBodyBinary(c_oserct_dlblTXPR, (*pTypeVal));
@@ -8087,7 +8089,7 @@ namespace BinXlsxRW{
 		if(NULL != oVal.m_name)
 		{
 			int nCurPos = m_oBcw.WriteItemStart(c_oserct_trendlineNAME);
-			m_oBcw.m_oStream.WriteStringW3(*oVal.m_name);
+			m_oBcw.m_oStream.WriteStringW4(*oVal.m_name);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
 		if(NULL != oVal.m_spPr)
@@ -8323,7 +8325,7 @@ namespace BinXlsxRW{
 		if(NULL != oVal.m_formatCode)
 		{
 			int nCurPos = m_oBcw.WriteItemStart(c_oserct_numdataFORMATCODE);
-			m_oBcw.m_oStream.WriteStringW3(*oVal.m_formatCode);
+			m_oBcw.m_oStream.WriteStringW4(*oVal.m_formatCode);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
 		if(NULL != oVal.m_ptCount)
@@ -8354,7 +8356,7 @@ namespace BinXlsxRW{
 		if(NULL != oVal.m_v)
 		{
 			int nCurPos = m_oBcw.WriteItemStart(c_oserct_numvalV);
-			m_oBcw.m_oStream.WriteStringW3(*oVal.m_v);
+			m_oBcw.m_oStream.WriteStringW4(*oVal.m_v);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
 		if(NULL != oVal.m_idx)
@@ -8366,7 +8368,7 @@ namespace BinXlsxRW{
 		if(NULL != oVal.m_formatCode)
 		{
 			int nCurPos = m_oBcw.WriteItemStart(c_oserct_numvalFORMATCODE);
-			m_oBcw.m_oStream.WriteStringW3(*oVal.m_formatCode);
+			m_oBcw.m_oStream.WriteStringW4(*oVal.m_formatCode);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
 	}
@@ -8375,7 +8377,7 @@ namespace BinXlsxRW{
 		if(NULL != oVal.m_f)
 		{
 			int nCurPos = m_oBcw.WriteItemStart(c_oserct_numrefF);
-			m_oBcw.m_oStream.WriteStringW3(*oVal.m_f);
+			m_oBcw.m_oStream.WriteStringW4(*oVal.m_f);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
 		if(NULL != oVal.m_numCache)
@@ -8429,7 +8431,7 @@ namespace BinXlsxRW{
 		if(NULL != oVal.m_f)
 		{
 			int nCurPos = m_oBcw.WriteItemStart(c_oserct_multilvlstrrefF);
-			m_oBcw.m_oStream.WriteStringW3(*oVal.m_f);
+			m_oBcw.m_oStream.WriteStringW4(*oVal.m_f);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
 		if(NULL != oVal.m_multiLvlStrCache)
@@ -8704,7 +8706,7 @@ namespace BinXlsxRW{
 		if(NULL != oVal.m_val)
 		{
 			int nCurPos = m_oBcw.WriteItemStart(c_oserct_secondpiesizeVAL);
-			m_oBcw.m_oStream.WriteStringW3(*oVal.m_val);
+			m_oBcw.m_oStream.WriteStringW4(*oVal.m_val);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
 	}
@@ -8888,7 +8890,7 @@ namespace BinXlsxRW{
 		if(NULL != oVal.m_val)
 		{
 			int nCurPos = m_oBcw.WriteItemStart(c_oserct_gapamountVAL);
-			m_oBcw.m_oStream.WriteStringW3(*oVal.m_val);
+			m_oBcw.m_oStream.WriteStringW4(*oVal.m_val);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
 	}
@@ -9091,7 +9093,7 @@ namespace BinXlsxRW{
 		if(NULL != oVal.m_val)
 		{
 			int nCurPos = m_oBcw.WriteItemStart(c_oserct_overlapVAL);
-			m_oBcw.m_oStream.WriteStringW3(*oVal.m_val);
+			m_oBcw.m_oStream.WriteStringW4(*oVal.m_val);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
 	}
@@ -9175,7 +9177,7 @@ namespace BinXlsxRW{
 		if(NULL != oVal.m_val)
 		{
 			int nCurPos = m_oBcw.WriteItemStart(c_oserct_holesizeVAL);
-			m_oBcw.m_oStream.WriteStringW3(*oVal.m_val);
+			m_oBcw.m_oStream.WriteStringW4(*oVal.m_val);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
 	}
@@ -10356,7 +10358,7 @@ namespace BinXlsxRW{
 		if(NULL != oVal.m_val)
 		{
 			int nCurPos = m_oBcw.WriteItemStart(c_oserct_thicknessVAL);
-			m_oBcw.m_oStream.WriteStringW3(*oVal.m_val);
+			m_oBcw.m_oStream.WriteStringW4(*oVal.m_val);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
 	}
@@ -10399,7 +10401,7 @@ namespace BinXlsxRW{
 		if(NULL != oVal.m_val)
 		{
 			int nCurPos = m_oBcw.WriteItemStart(c_oserct_depthpercentVAL);
-			m_oBcw.m_oStream.WriteStringW3(*oVal.m_val);
+			m_oBcw.m_oStream.WriteStringW4(*oVal.m_val);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
 	}
@@ -10417,7 +10419,7 @@ namespace BinXlsxRW{
 		if(NULL != oVal.m_val)
 		{
 			int nCurPos = m_oBcw.WriteItemStart(c_oserct_hpercentVAL);
-			m_oBcw.m_oStream.WriteStringW3(*oVal.m_val);
+			m_oBcw.m_oStream.WriteStringW4(*oVal.m_val);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
 	}
@@ -10642,7 +10644,7 @@ namespace BinXlsxRW{
 		if(NULL != oVal.m_name)
 		{
 			int nCurPos = m_oBcw.WriteItemStart(c_oserct_pivotsourceNAME);
-			m_oBcw.m_oStream.WriteStringW3(*oVal.m_name);
+			m_oBcw.m_oStream.WriteStringW4(*oVal.m_name);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
 		if(NULL != oVal.m_fmtId)
@@ -10685,7 +10687,7 @@ namespace BinXlsxRW{
 		if(NULL != oVal.m_val)
 		{
 			int nCurPos = m_oBcw.WriteItemStart(c_oserct_textlanguageidVAL);
-			m_oBcw.m_oStream.WriteStringW3(*oVal.m_val);
+			m_oBcw.m_oStream.WriteStringW4(*oVal.m_val);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
 	}
@@ -10719,7 +10721,7 @@ namespace BinXlsxRW{
 		if(NULL != oVal.m_Requires)
 		{
 			int nCurPos = m_oBcw.WriteItemStart(c_oseralternatecontentchoiceREQUIRES);
-			m_oBcw.m_oStream.WriteStringW3(*oVal.m_Requires);
+			m_oBcw.m_oStream.WriteStringW4(*oVal.m_Requires);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
 	}

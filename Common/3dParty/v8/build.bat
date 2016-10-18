@@ -5,6 +5,12 @@ SET PATH=%SCRIPTPATH%depot_tools;%SCRIPTPATH%depot_tools\python276_bin;%PATH%
 SET DEPOT_TOOLS_WIN_TOOLCHAIN=0
 SET GYP_MSVS_VERSION=2013
 
+if defined ProgramFiles(x86) (
+	SET PATH=%ProgramFiles(x86)%\Microsoft Visual Studio 12.0\Common7\IDE;%PATH%
+) else (
+	SET PATH=%ProgramFiles%\Microsoft Visual Studio 12.0\Common7\IDE;%PATH%
+)
+
 echo "building x86... -------------------------------------------"
 
 if exist "win_32" (
@@ -18,13 +24,10 @@ call python v8\build\gyp_v8
 call .\change_projects.bat
 
 cd "%SCRIPTPATH%v8\tools\gyp"
-if defined ProgramFiles(x86) (
-	call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\devenv.com" v8.sln /Rebuild "Release"
-	call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\devenv.com" v8.sln /Rebuild "Debug"
-) else (
-	call "C:\Program Files\Microsoft Visual Studio 12.0\Common7\IDE\devenv.com" v8.sln /Rebuild "Release"
-	call "C:\Program Files\Microsoft Visual Studio 12.0\Common7\IDE\devenv.com" v8.sln /Rebuild "Debug"
-)
+
+call devenv v8.sln /Rebuild "Release"
+call devenv v8.sln /Rebuild "Debug"
+
 cd "%SCRIPTPATH%"
 
 XCOPY /Y "v8\build\Release\lib\*" "win_32\release\"
@@ -46,13 +49,10 @@ call python v8\build\gyp_v8 -Dtarget_arch=x64
 call .\change_projects.bat
 
 cd "%SCRIPTPATH%v8\tools\gyp"
-if defined ProgramFiles(x86) (
-	call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\devenv.com" v8.sln /Rebuild "Release"
-	call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\devenv.com" v8.sln /Rebuild "Debug"
-) else (
-	call "C:\Program Files\Microsoft Visual Studio 12.0\Common7\IDE\devenv.com" v8.sln /Rebuild "Release"
-	call "C:\Program Files\Microsoft Visual Studio 12.0\Common7\IDE\devenv.com" v8.sln /Rebuild "Debug"
-)
+
+call devenv v8.sln /Rebuild "Release"
+call devenv v8.sln /Rebuild "Debug"
+
 cd "%SCRIPTPATH%"
 
 XCOPY /Y "v8\build\Release\lib\*" "win_64\release\"

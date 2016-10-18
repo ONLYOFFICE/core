@@ -6603,8 +6603,8 @@ public:
 				CString sFilename;
 				CString sRelsName;
 				int nChartIndex;
-				
-				m_oFileWriter.m_oChartWriter.AddChart(sw.GetData(), sRelsName, sFilename, nChartIndex);
+                std::wstring sContent = sw.GetData();
+                m_oFileWriter.m_oChartWriter.AddChart(sContent, sRelsName, sFilename, nChartIndex);
 				m_oFileWriter.m_oContentTypesWriter.AddOverrideRaw(oSaveParams.sAdditionalContentTypes);
 
                 OOX::CPath pathChartsRels =  pathChartsRelsDir.GetPath() + FILE_SEPARATOR_STR + sFilename + _T(".rels");

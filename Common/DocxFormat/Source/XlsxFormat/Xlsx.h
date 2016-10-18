@@ -497,7 +497,8 @@ namespace OOX
 									if(pCell->m_oValue.IsInit())
 									{
 										SimpleTypes::COnOff<> oOnOff;
-										oOnOff.FromString(pCell->m_oValue->ToString());
+                                        std::wstring sVal = pCell->m_oValue->ToString();
+                                        oOnOff.FromString(sVal.c_str());
 										pCell->m_oValue.Init();
 										if(oOnOff.ToBool())
 											pCell->m_oValue->m_sText = _T("1");

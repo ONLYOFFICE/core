@@ -43,6 +43,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
+				AdditionalIncludeDirectories="&quot;../../../DesktopEditor/agg-2.4/include&quot;;&quot;C:\__Work\core\DesktopEditor\agg-2.4\include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;USE_LITE_READER;_USE_XMLLITE_READER_;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;__WORDSIZE=32;DONT_WRITE_EMBEDDED_FONTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"

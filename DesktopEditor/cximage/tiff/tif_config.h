@@ -1,4 +1,5 @@
-﻿/* Define to 1 if you have the <assert.h> header file. */
+﻿
+/* Define to 1 if you have the <assert.h> header file. */
 #define HAVE_ASSERT_H 1
 
 /* Define to 1 if you have the <fcntl.h> header file. */
@@ -62,11 +63,11 @@
 
 /* Define to `__inline__' or `__inline' if that's what the C compiler
    calls it, or to nothing if 'inline' is not supported under any name.  */
-#ifndef __cplusplus
-# ifndef inline
-#  define inline __inline
-# endif
-#endif
+//#ifndef __cplusplus
+//# ifndef inline
+//#  define inline __inline
+//# endif
+//#endif
 
 #ifndef _LINUX
 #define lfind _lfind

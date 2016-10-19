@@ -47,7 +47,7 @@
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
-				UsePrecompiledHeader="2"
+				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="4"
@@ -354,6 +354,14 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\Common\3dParty\icu\win_32\lib\icudt.lib"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Common\3dParty\icu\win_32\lib\icuuc.lib"
+				>
+			</File>
+			<File
 				RelativePath="..\..\UnicodeConverter\UnicodeConverter.cpp"
 				>
 				<FileConfiguration
@@ -366,14 +374,6 @@
 				</FileConfiguration>
 			</File>
 		</Filter>
-		<File
-			RelativePath="..\..\build\bin\icu\win_32\icudt.lib"
-			>
-		</File>
-		<File
-			RelativePath="..\..\build\bin\icu\win_32\icuuc.lib"
-			>
-		</File>
 	</Files>
 	<Globals>
 	</Globals>

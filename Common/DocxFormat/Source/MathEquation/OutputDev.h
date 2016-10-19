@@ -54,7 +54,7 @@ namespace MathEquation
         virtual void SetSize(_UINT16 nSize) = 0;
 
 		// Добавляем символ. К символу могут быть добавлены разные элементы. Зачеркивание, добавление акцента и т.д.
-        virtual void BeginChar(Unicode_t uChar, unsigned char nTypeFace, bool bSpecialSymbol) = 0;
+        virtual void BeginChar(unsigned short uChar, unsigned char nTypeFace, bool bSpecialSymbol) = 0;
 		virtual void AddCharEmbel(MEMBELTYPE eType) = 0;
 		virtual void EndChar() = 0;
 

@@ -453,7 +453,7 @@ namespace MathEquation
 			{
 				nTextSize = nSize*2;				
 			}
-			virtual void BeginChar(Unicode_t uChar, uint8_t nTypeFace, bool bSpecialSymbol)
+            virtual void BeginChar(unsigned short uChar, unsigned char nTypeFace, bool bSpecialSymbol)
 			{
                 bool bIsOpen;
 				if (!m_aCommandStack.empty())
@@ -540,7 +540,7 @@ namespace MathEquation
 					}
 				}*/
 			}
-			virtual void BeginMatrix(uint8_t nVAlign, MMATRIXHORALIGN eHorAlign, MMATRIXVERALIGN eVerAlign, bool bEqualRows, bool bEqualCols, uint8_t nRows, uint8_t nCols, uint8_t* pVerBorders, uint8_t* pHorBorders)
+            virtual void BeginMatrix(unsigned char nVAlign, MMATRIXHORALIGN eHorAlign, MMATRIXVERALIGN eVerAlign, bool bEqualRows, bool bEqualCols, unsigned char nRows, unsigned char nCols, unsigned char* pVerBorders, unsigned char* pHorBorders)
 			{
 				if (!oRManager.IsEmpty())
 					WriteRun();
@@ -587,7 +587,7 @@ namespace MathEquation
 					m_aMatrixStack.pop();
 				}
 			}
-			virtual void StartPile(uint8_t nHAlign, uint8_t nVAlign)
+            virtual void StartPile(unsigned char nHAlign, unsigned char nVAlign)
 			{
 				switch (nHAlign)
 				{
@@ -1490,7 +1490,7 @@ namespace MathEquation
 				}
 			}
 
-			void AddFont(uint8_t nTypeFace, std::string sName, bool bBold, bool bItalic)
+            void AddFont(unsigned char nTypeFace, std::string sName, bool bBold, bool bItalic)
 			{
 				TMathFont aFont;
 				aFont.sName   = sName;

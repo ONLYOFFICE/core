@@ -71,21 +71,20 @@ odf_page_layout_context::~odf_page_layout_context()
 
 odf_layout_state * odf_page_layout_context::last_layout()
 {
-
-	if (layout_state_list_.size() >0)
+	if (!layout_state_list_.empty())
         return &layout_state_list_.back();
 	else
         return NULL;
 }
 odf_master_state * odf_page_layout_context::last_master()
 {
-	if (master_state_list_.size() >0)
+	if (!master_state_list_.empty())
         return &master_state_list_.back();
 	else
         return NULL;
 }
 
-void odf_page_layout_context::start_master_page(std::wstring page_name)
+void odf_page_layout_context::add_master_page(std::wstring page_name)
 {
 	office_element_ptr elm;
 	create_element(L"style", L"master-page", elm, odf_context_);
@@ -94,75 +93,15 @@ void odf_page_layout_context::start_master_page(std::wstring page_name)
 
 	master_state_list_.push_back( odf_master_state(elm) ); 
 ///////////////////////////////////////
-	if (page_name.length() <1)page_name =L"MasterPage" + boost::lexical_cast<std::wstring>(master_state_list_.size());
+	if (page_name.empty())
+		page_name = L"MasterPage" + boost::lexical_cast<std::wstring>(master_state_list_.size());
+	
 	master_state_list_.back().set_name(page_name);
 /////////////////////////
 
 	//default layout
 	create_layout_page();
 	master_state_list_.back().set_layout_name(layout_state_list_.back().get_name());
-}
-void odf_page_layout_context::end_master_page()
-{
-	if (master_state_list_.size() < 1)return;
-
-	bool header=false, f_header = false, l_header = false;
-	bool footer=false, f_footer = false, l_footer = false;
-
-	for (long i = 0; i < master_state_list_.back().elements_.size(); i++)
-	{
-		if (!master_state_list_.back().elements_[i].elm)continue;
-		if (master_state_list_.back().elements_[i].elm->get_type() == typeStyleHeader)header = true;
-		if (master_state_list_.back().elements_[i].elm->get_type() == typeStyleFooter)footer = true;
-
-		if (master_state_list_.back().elements_[i].elm->get_type() == typeStyleHeaderFirst)f_header = true;
-		if (master_state_list_.back().elements_[i].elm->get_type() == typeStyleFooterFirst)f_footer = true;
-
-		if (master_state_list_.back().elements_[i].elm->get_type() == typeStyleHeaderLeft)l_header = true;
-		if (master_state_list_.back().elements_[i].elm->get_type() == typeStyleFooterLeft)l_footer = true;
-	}
-	if (f_header && !f_footer && footer)
-	{
-		add_footer(2);
-		office_element_ptr blank_p_elm;
-		create_element(L"text", L"p", blank_p_elm, odf_context_);
-
-		master_state_list_.back().elements_.back().elm->add_child_element(blank_p_elm);
-		
-		f_footer = true;
-	}
-	if (!f_header && f_footer && header)
-	{
-		add_header(2);
-		office_element_ptr blank_p_elm;
-		create_element(L"text", L"p", blank_p_elm, odf_context_);
-
-		master_state_list_.back().elements_.back().elm->add_child_element(blank_p_elm);
-
-		f_header = true;
-	}	
-	//Так как лажовый Libra и Apach Оо не воспринимают бланковые колонтитулы только первых страниц - городим велосипед на остальные страницы
-	if (!header && (f_header || l_header))
-	{
-		add_header(0);
-		office_element_ptr blank_p_elm;
-		create_element(L"text", L"p", blank_p_elm, odf_context_);
-
-		master_state_list_.back().elements_.back().elm->add_child_element(blank_p_elm);
-		header = true;
-	}
-	if (!footer && (f_footer || l_footer))
-	{
-		add_footer(0);
-		office_element_ptr blank_p_elm;
-		create_element(L"text", L"p", blank_p_elm, odf_context_);
-
-		master_state_list_.back().elements_.back().elm->add_child_element(blank_p_elm);
-
-		footer = true;
-	}
-
-
 }
 
 void odf_page_layout_context::process_master_styles(office_element_ptr root )
@@ -320,7 +259,8 @@ bool odf_page_layout_context::add_footer(int type)
 	
 	if (type == 1) 
 	{
-		if (even_and_left_headers_)create_element(L"style", L"footer-left", elm, odf_context_);
+		if (even_and_left_headers_)
+			create_element(L"style", L"footer-left", elm, odf_context_);
 	}
 	else if (type == 2)
 		create_element(L"style", L"footer-first", elm, odf_context_);
@@ -330,7 +270,7 @@ bool odf_page_layout_context::add_footer(int type)
 	if (!elm) return false;
 	
 	if (master_state_list_.empty())
-		start_master_page(L"");
+		add_master_page(L"");
 	master_state_list_.back().add_footer(elm);
 
 /////////////////////////////////////////////////////////////////////
@@ -377,17 +317,18 @@ bool odf_page_layout_context::add_header(int type)
 
 	if (type == 1)
 	{
-		if (even_and_left_headers_)create_element(L"style", L"header-left", elm, odf_context_);
+		if (even_and_left_headers_) 
+			create_element(L"style", L"header-left", elm, odf_context_);
 	}
 	else if (type == 2)
 		create_element(L"style", L"header-first", elm, odf_context_);
 	else
 		create_element(L"style", L"header", elm, odf_context_);
-
-	if (!elm)return false;
+	
+	if (!elm) return false;
 
 	if (master_state_list_.empty())
-		start_master_page(L"");
+		add_master_page(L"");
 	
 	master_state_list_.back().add_header(elm);
 ////////////////////////////////////////////////////////////////////////
@@ -592,15 +533,6 @@ void odf_page_layout_context::set_pages_mirrored(bool val)
 	{
 		layout_state_list_[i].set_pages_mirrored(val);
 	}	
-}
-
-void odf_page_layout_context::set_even_and_left_headers(bool val)
-{
-	even_and_left_headers_ = val;
-}
-
-void odf_page_layout_context::set_title_page_enable(bool val)
-{
 }
 
 style_page_layout_properties * odf_page_layout_context::get_properties()

@@ -2,150 +2,150 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>{1135223c-7cfc-40e0-80a7-59ec22d73741}</UniqueIdentifier>
+      <UniqueIdentifier>{c36d0077-a3c7-41e4-aa90-b48711ad8e8f}</UniqueIdentifier>
       <Extensions>cpp;c;cxx;def;odl;idl;hpj;bat;asm</Extensions>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>{25ea7a70-c9bd-43d9-93c7-b0501c5f412c}</UniqueIdentifier>
+      <UniqueIdentifier>{476b1213-3b89-452b-bcdf-5d8186b111a9}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl;inc</Extensions>
     </Filter>
     <Filter Include="EditorSource">
-      <UniqueIdentifier>{5b13dfa3-d0c1-4b64-bbe3-4ddd755e9312}</UniqueIdentifier>
+      <UniqueIdentifier>{2fa683c9-192f-4816-ae05-9ec41ffebc7e}</UniqueIdentifier>
     </Filter>
     <Filter Include="PPTX">
-      <UniqueIdentifier>{9becc444-5bcd-43c6-a25f-b0ae63def849}</UniqueIdentifier>
+      <UniqueIdentifier>{e2c272e8-550d-432e-beda-809d229a495c}</UniqueIdentifier>
     </Filter>
     <Filter Include="PPTX\Source">
-      <UniqueIdentifier>{77d0d3b5-4098-49bd-ae2c-a4bd217c174c}</UniqueIdentifier>
+      <UniqueIdentifier>{eb9ec60a-051f-4dcf-ae86-296e67310684}</UniqueIdentifier>
     </Filter>
     <Filter Include="PPTX\Source\Limit">
-      <UniqueIdentifier>{039fbff8-7b96-4141-aa6a-63ea3f553c58}</UniqueIdentifier>
+      <UniqueIdentifier>{62ace3ca-d77d-4f4a-b008-70a4fce0a8c9}</UniqueIdentifier>
     </Filter>
     <Filter Include="PPTX\Source\Logic">
-      <UniqueIdentifier>{b3a3ff8e-e7b7-4e77-84f7-d1653e2db5a9}</UniqueIdentifier>
+      <UniqueIdentifier>{aeafeee1-3ad2-4b5d-a62a-83bd72e154c0}</UniqueIdentifier>
     </Filter>
     <Filter Include="PPTX\Source\Logic\Fills">
-      <UniqueIdentifier>{42bb56bc-de11-4a8e-aad3-34dc4b862852}</UniqueIdentifier>
+      <UniqueIdentifier>{ab5e7301-a177-4df0-ad80-d20fa074a447}</UniqueIdentifier>
     </Filter>
     <Filter Include="PPTX\Source\Logic\Colors">
-      <UniqueIdentifier>{005e8d55-9cd6-4133-9074-cfceb1f0c942}</UniqueIdentifier>
+      <UniqueIdentifier>{d1505c58-d394-4536-97b8-8253db990235}</UniqueIdentifier>
     </Filter>
     <Filter Include="PPTX\Source\Logic\Bullets">
-      <UniqueIdentifier>{ffe2586d-2ba6-47b1-9a10-3b6981995f4c}</UniqueIdentifier>
+      <UniqueIdentifier>{647cdf33-1ceb-46d9-9057-fff9a7de483a}</UniqueIdentifier>
     </Filter>
     <Filter Include="PPTX\Source\Logic\Effects">
-      <UniqueIdentifier>{09cf7708-f37c-41c9-ac08-cd8cfbeb0a22}</UniqueIdentifier>
+      <UniqueIdentifier>{86aeee42-4677-40bc-8539-874ba5bb0d50}</UniqueIdentifier>
     </Filter>
     <Filter Include="PPTX\Source\Logic\Path2D">
-      <UniqueIdentifier>{2a19ff60-fd7a-4bab-b4f6-5a778b99ea39}</UniqueIdentifier>
+      <UniqueIdentifier>{d3c520b7-c33d-4659-8727-14cb47143339}</UniqueIdentifier>
     </Filter>
     <Filter Include="PPTX\Source\Logic\Runs">
-      <UniqueIdentifier>{81a8487e-254b-43c3-850e-721d211a60c9}</UniqueIdentifier>
+      <UniqueIdentifier>{2758289a-ac7b-4b7b-a8b7-f580e2544780}</UniqueIdentifier>
     </Filter>
     <Filter Include="PPTX\Source\Logic\Transitions">
-      <UniqueIdentifier>{17a68d25-dedf-47cc-854c-da0e6342da6a}</UniqueIdentifier>
+      <UniqueIdentifier>{c6bb2f59-2873-4a78-9123-2c992a8701f2}</UniqueIdentifier>
     </Filter>
     <Filter Include="PPTX\Source\Logic\Timing">
-      <UniqueIdentifier>{23e5c13e-2088-4000-8412-f84b1a469fb8}</UniqueIdentifier>
+      <UniqueIdentifier>{abe42048-2877-475a-a305-b03a479f8f73}</UniqueIdentifier>
     </Filter>
     <Filter Include="PPTX\Source\Logic\GraphicFrame">
-      <UniqueIdentifier>{f467e0a4-c6d7-48d4-a9b3-73ccfe76262b}</UniqueIdentifier>
+      <UniqueIdentifier>{6cedd748-cb36-4c42-90e6-7aea0f11b664}</UniqueIdentifier>
     </Filter>
     <Filter Include="PPTX\Source\Logic\Cxn">
-      <UniqueIdentifier>{5adf8b01-fa7b-4c2c-af38-355e2fea4119}</UniqueIdentifier>
+      <UniqueIdentifier>{f32c7b15-fac7-4b2c-acee-c951707ea082}</UniqueIdentifier>
     </Filter>
     <Filter Include="PPTX\Source\Logic\Pic">
-      <UniqueIdentifier>{c6b3533d-8d80-4ee3-82f0-e01d2a8d4db0}</UniqueIdentifier>
+      <UniqueIdentifier>{3cddcb8c-379c-4d88-8d61-4caa8abbc6de}</UniqueIdentifier>
     </Filter>
     <Filter Include="PPTX\Source\Logic\GrpSp">
-      <UniqueIdentifier>{6b722571-ae46-4e4b-bf1d-cdf6caac2f87}</UniqueIdentifier>
+      <UniqueIdentifier>{2cec747a-0b49-4264-91d3-3db0ff551458}</UniqueIdentifier>
     </Filter>
     <Filter Include="PPTX\Source\Logic\Text">
-      <UniqueIdentifier>{c95ec707-2b4e-4a15-a30c-536507c8f611}</UniqueIdentifier>
+      <UniqueIdentifier>{3bfb6456-df1f-4008-bf95-b3edd6528594}</UniqueIdentifier>
     </Filter>
     <Filter Include="PPTX\Source\Logic\Tables">
-      <UniqueIdentifier>{1ce9dd18-c4c0-407a-8d28-a619fa1339ff}</UniqueIdentifier>
+      <UniqueIdentifier>{70e4f734-36fa-4d08-861b-6ff02a14dfa3}</UniqueIdentifier>
     </Filter>
     <Filter Include="PPTX\Source\Logic\Shape">
-      <UniqueIdentifier>{6c87beb1-5b94-4803-b034-fbf9bc610c12}</UniqueIdentifier>
+      <UniqueIdentifier>{ca9516de-26f4-4e73-a024-4c72806a581a}</UniqueIdentifier>
     </Filter>
     <Filter Include="PPTX\Source\Logic\Media">
-      <UniqueIdentifier>{e2dcdee1-e638-46bd-813a-f58a5da49e60}</UniqueIdentifier>
+      <UniqueIdentifier>{d5848200-3d28-4353-b602-4572f7fcb79f}</UniqueIdentifier>
     </Filter>
     <Filter Include="PPTX\Source\Logic\Table">
-      <UniqueIdentifier>{4232bc60-376a-45ac-94ff-4ed39360239b}</UniqueIdentifier>
+      <UniqueIdentifier>{4798f876-f4a5-46a3-aa15-c065f1fb2228}</UniqueIdentifier>
     </Filter>
     <Filter Include="PPTX\Source\Logic\ActiveXControls">
-      <UniqueIdentifier>{4c2c2052-167d-49c9-9408-f04d8178a6ad}</UniqueIdentifier>
+      <UniqueIdentifier>{e9e0f728-4761-4c04-b3bd-3f0d9c01eb18}</UniqueIdentifier>
     </Filter>
     <Filter Include="PPTX\Source\Logic\Hyperlinks">
-      <UniqueIdentifier>{120c6cb1-942c-4fd7-b4cd-6cb69ac847bb}</UniqueIdentifier>
+      <UniqueIdentifier>{66a679b8-bab7-4e0f-8421-5f35fdc1e34f}</UniqueIdentifier>
     </Filter>
     <Filter Include="PPTX\Source\App">
-      <UniqueIdentifier>{3500a994-5a6b-4adc-890c-7ab08808d254}</UniqueIdentifier>
+      <UniqueIdentifier>{ddc18d64-3bfb-4977-8b56-f8083f264260}</UniqueIdentifier>
     </Filter>
     <Filter Include="PPTX\Source\Core">
-      <UniqueIdentifier>{e1100e2d-4a8b-4a9c-8764-67b45027d48c}</UniqueIdentifier>
+      <UniqueIdentifier>{0c828046-d354-4ec4-9a0a-2e4998dff0ec}</UniqueIdentifier>
     </Filter>
     <Filter Include="PPTX\Source\PresProps">
-      <UniqueIdentifier>{082fefa7-5f47-4e92-8493-37a4dcf30539}</UniqueIdentifier>
+      <UniqueIdentifier>{c0a13a26-74b0-4895-b4c8-ae070662b3cf}</UniqueIdentifier>
     </Filter>
     <Filter Include="PPTX\Source\ViewProps">
-      <UniqueIdentifier>{0f0a965a-a836-47de-bd28-f59a1d169c4b}</UniqueIdentifier>
+      <UniqueIdentifier>{066fab34-c44b-4950-850e-0783bb4fcc3d}</UniqueIdentifier>
     </Filter>
     <Filter Include="PPTX\Source\Presentation">
-      <UniqueIdentifier>{349984db-b439-44a9-a26e-da8e33adfc61}</UniqueIdentifier>
+      <UniqueIdentifier>{85695bb6-45ee-40d7-a1af-6becc756930b}</UniqueIdentifier>
     </Filter>
     <Filter Include="PPTX\Source\Slides">
-      <UniqueIdentifier>{83573e36-c948-4a13-be24-de716dfafd22}</UniqueIdentifier>
+      <UniqueIdentifier>{f001ddc1-1ec2-47f3-9e02-4165891e1fef}</UniqueIdentifier>
     </Filter>
     <Filter Include="PPTX\Source\Theme">
-      <UniqueIdentifier>{d4baa3c8-6f48-4ffb-b831-5415426b78a9}</UniqueIdentifier>
+      <UniqueIdentifier>{42fd58c3-5e39-448c-b629-cb28874c9f14}</UniqueIdentifier>
     </Filter>
     <Filter Include="PPTX\Source\SlideLayouts">
-      <UniqueIdentifier>{a3c03015-0652-4db0-aa8b-dbe68e4577d0}</UniqueIdentifier>
+      <UniqueIdentifier>{e11c8f2f-cc2b-44e6-bc53-a5556613faad}</UniqueIdentifier>
     </Filter>
     <Filter Include="PPTX\Source\NotesMasters">
-      <UniqueIdentifier>{1c752396-790d-4f2a-95f4-0f2838de5ba4}</UniqueIdentifier>
+      <UniqueIdentifier>{7fd21565-a385-4ab3-a407-3c63cea5dfb7}</UniqueIdentifier>
     </Filter>
     <Filter Include="PPTX\Source\NotesSlide">
-      <UniqueIdentifier>{e3e35897-dca3-4426-8308-34470faacffd}</UniqueIdentifier>
+      <UniqueIdentifier>{016ee8be-65dd-41f3-9a49-687e22f96ee1}</UniqueIdentifier>
     </Filter>
     <Filter Include="PPTX\Source\SlideMasters">
-      <UniqueIdentifier>{5a40058c-89af-4e66-acc2-8d409d326dae}</UniqueIdentifier>
+      <UniqueIdentifier>{98126d7f-88ca-4b46-8522-6466201ad82e}</UniqueIdentifier>
     </Filter>
     <Filter Include="PPTX\Source\HandoutMasters">
-      <UniqueIdentifier>{742a5122-e0a6-4be3-b685-833d86c22409}</UniqueIdentifier>
+      <UniqueIdentifier>{9e123862-0497-4852-8865-1661c57d2822}</UniqueIdentifier>
     </Filter>
     <Filter Include="PPTX\Source\ContentTypes">
-      <UniqueIdentifier>{82883dfe-0af4-427a-86d2-3b4178cafb4c}</UniqueIdentifier>
+      <UniqueIdentifier>{0b7f9602-ce50-46c2-916f-f8385833bcac}</UniqueIdentifier>
     </Filter>
     <Filter Include="PPTX\Source\Rels">
-      <UniqueIdentifier>{79d63efa-9e06-489d-8fa8-0d1fcd2fb23b}</UniqueIdentifier>
+      <UniqueIdentifier>{a19cc111-d058-4141-bd7d-41c069c23ec1}</UniqueIdentifier>
     </Filter>
     <Filter Include="PPTX\Source\TableStyles">
-      <UniqueIdentifier>{7db8ee5e-f18c-46e9-af01-a003e1bf7117}</UniqueIdentifier>
+      <UniqueIdentifier>{803d9d61-70e0-436e-8163-2413dd4007bf}</UniqueIdentifier>
     </Filter>
     <Filter Include="PPTX\Source\Media">
-      <UniqueIdentifier>{0b4da421-d41a-45f4-bae5-0afba2f91de4}</UniqueIdentifier>
+      <UniqueIdentifier>{85b8c08c-de73-4ca7-a255-9bb2d0e24444}</UniqueIdentifier>
     </Filter>
     <Filter Include="PPTX\Source\External">
-      <UniqueIdentifier>{bddf1e6d-f03c-488e-a3f0-55e5500e4f72}</UniqueIdentifier>
+      <UniqueIdentifier>{13df52d9-ebe0-43d3-8e47-b3d7c77bf1be}</UniqueIdentifier>
     </Filter>
     <Filter Include="PPTX\Source\VectorML">
-      <UniqueIdentifier>{5c562c35-aa54-40f9-8954-d81226f3c312}</UniqueIdentifier>
+      <UniqueIdentifier>{4d53c20e-6023-4dad-b8e6-ed32ddb48076}</UniqueIdentifier>
     </Filter>
     <Filter Include="PPTX\Source\Common">
-      <UniqueIdentifier>{5b451db1-f280-401e-b215-0db6932992b5}</UniqueIdentifier>
+      <UniqueIdentifier>{e30701b8-ace8-4e8a-a714-2f283393c6d0}</UniqueIdentifier>
     </Filter>
     <Filter Include="PPTX\Source\Common\System">
-      <UniqueIdentifier>{d8d66754-be41-47c7-bfbd-6fb4059f880b}</UniqueIdentifier>
+      <UniqueIdentifier>{d2799cb9-6533-46cc-a9e2-13f30979af20}</UniqueIdentifier>
     </Filter>
     <Filter Include="PPTX\Source\Comments">
-      <UniqueIdentifier>{28372421-0c4a-4e88-a7b4-87d946383f3a}</UniqueIdentifier>
+      <UniqueIdentifier>{fe1f9877-af6d-4528-aeba-1951b7d39015}</UniqueIdentifier>
     </Filter>
     <Filter Include="Editor">
-      <UniqueIdentifier>{ded667a1-bcff-415e-939d-c52dd5e557bb}</UniqueIdentifier>
+      <UniqueIdentifier>{42373d3e-a32f-432d-bb66-6b66270ac8da}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -164,16 +164,16 @@
     <ClCompile Include="..\Editor\BinaryFileReaderWriter.cpp">
       <Filter>EditorSource</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\ASCPresentationEditor\OfficeDrawing\Elements.cpp">
+    <ClCompile Include="..\Editor\Drawing\Elements.cpp">
       <Filter>EditorSource</Filter>
     </ClCompile>
     <ClCompile Include="..\Editor\FontPicker.cpp">
       <Filter>EditorSource</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\ASCPresentationEditor\OfficeDrawing\Layout.cpp">
+    <ClCompile Include="..\Editor\Drawing\Layout.cpp">
       <Filter>EditorSource</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\ASCPresentationEditor\OfficeDrawing\TextAttributesEx.cpp">
+    <ClCompile Include="..\Editor\Drawing\TextAttributesEx.cpp">
       <Filter>EditorSource</Filter>
     </ClCompile>
     <ClCompile Include="..\PPTXFormat\FileContainer.cpp">
@@ -239,6 +239,9 @@
     <ClCompile Include="..\PPTXFormat\Logic\Colors\SchemeClr.cpp">
       <Filter>PPTX\Source\Logic\Colors</Filter>
     </ClCompile>
+    <ClCompile Include="..\PPTXFormat\Logic\Runs\MathParaWrapper.cpp">
+      <Filter>PPTX\Source\Logic\Runs</Filter>
+    </ClCompile>
     <ClCompile Include="..\PPTXFormat\Logic\Transitions\TransitionBase.cpp">
       <Filter>PPTX\Source\Logic\Transitions</Filter>
     </ClCompile>
@@ -289,6 +292,9 @@
     </ClCompile>
     <ClCompile Include="..\File.cpp">
       <Filter>PPTX\Source\Common\System</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\HtmlRenderer\src\ASCSVGWriter.cpp">
+      <Filter>Editor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

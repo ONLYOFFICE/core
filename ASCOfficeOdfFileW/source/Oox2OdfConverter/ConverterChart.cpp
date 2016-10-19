@@ -452,7 +452,7 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_Bar3DChart *chart)
 		odf_context()->chart_context()->set_chart_bar_direction(*chart->m_barDir->m_val);
 
 	if (chart->m_gapWidth && chart->m_gapWidth->m_val)
-		odf_context()->chart_context()->set_chart_bar_gap_width(string2std_string(*chart->m_gapWidth->m_val));
+		odf_context()->chart_context()->set_chart_bar_gap_width(*chart->m_gapWidth->m_val);
 	
 	//if (chart->m_overlap && chart->m_overlap->m_val)
 	//	odf_context()->chart_context()->set_chart_bar_overlap(string2std_string(*chart->m_overlap->m_val));
@@ -483,10 +483,10 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_BarChart *chart)
 		odf_context()->chart_context()->set_chart_bar_direction(*chart->m_barDir->m_val);
 
 	if (chart->m_gapWidth && chart->m_gapWidth->m_val)
-		odf_context()->chart_context()->set_chart_bar_gap_width(string2std_string(*chart->m_gapWidth->m_val));
+		odf_context()->chart_context()->set_chart_bar_gap_width(*chart->m_gapWidth->m_val);
 
 	if (chart->m_overlap && chart->m_overlap->m_val)
-		odf_context()->chart_context()->set_chart_bar_overlap(string2std_string(*chart->m_overlap->m_val));
+		odf_context()->chart_context()->set_chart_bar_overlap(*chart->m_overlap->m_val);
 
 	odf_context()->chart_context()->start_group_series();
 		convert(chart->m_dLbls);
@@ -723,7 +723,7 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_StockChart *chart)
 			std::wstring gap_width;
 			if (chart->m_upDownBars->m_gapWidth && chart->m_upDownBars->m_gapWidth->m_val)
 			{
-				gap_width = string2std_string(*chart->m_upDownBars->m_gapWidth->m_val);
+				gap_width = *chart->m_upDownBars->m_gapWidth->m_val;
 				/*odf_context()->chart_context()->set_chart_bar_gap_width(gap_width);*/
 			}
 			
@@ -1039,7 +1039,7 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_SerTx* ser_tx)
 	if (ser_tx->m_strRef)
 	{
 		if (ser_tx->m_strRef->m_f)
-			odf_context()->chart_context()->set_series_label_formula(string2std_string(*ser_tx->m_strRef->m_f));
+			odf_context()->chart_context()->set_series_label_formula(*ser_tx->m_strRef->m_f);
 		
 		convert(ser_tx->m_strRef->m_strCache, false, true);
 	}
@@ -1064,14 +1064,14 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_AxDataSource* cat, int type)
 	else if (cat->m_strRef)
 	{
 		if (cat->m_strRef->m_f)
-			odf_context()->chart_context()->set_category_axis_formula(string2std_string(*cat->m_strRef->m_f), type);
+			odf_context()->chart_context()->set_category_axis_formula(*cat->m_strRef->m_f, type);
 		
 		convert(cat->m_strRef->m_strCache, true, false);
 	}
 	else if (cat->m_numRef)
 	{
 		if (cat->m_numRef->m_f)
-			odf_context()->chart_context()->set_category_axis_formula(string2std_string(*cat->m_numRef->m_f), type);
+			odf_context()->chart_context()->set_category_axis_formula(*cat->m_numRef->m_f, type);
 		
 		convert(cat->m_numRef->m_numCache, true, false);
 	}
@@ -1089,7 +1089,7 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_NumDataSource* val)
 	}
 	else if (val->m_numRef)
 	{
-		if (val->m_numRef->m_f)odf_context()->chart_context()->set_series_value_formula(string2std_string(*val->m_numRef->m_f));
+		if (val->m_numRef->m_f)odf_context()->chart_context()->set_series_value_formula(*val->m_numRef->m_f);
 		
 		convert(val->m_numRef->m_numCache, false, false);
 	}
@@ -1144,7 +1144,7 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_NumData	*num_data, bool categori
 	{
 		if (num_data->m_pt[i] && num_data->m_pt[i]->m_v)
 		{
-			data.push_back(string2std_string(*num_data->m_pt[i]->m_v));
+			data.push_back(*num_data->m_pt[i]->m_v);
 			//double val=0;
 			//try
 			//{		
@@ -1156,7 +1156,7 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_NumData	*num_data, bool categori
 		}
 	}
 	std::wstring format;
-	if (num_data->m_formatCode) format = string2std_string(*num_data->m_formatCode);
+	if (num_data->m_formatCode) format = *num_data->m_formatCode;
 	
 	odf_context()->chart_context()->set_cash(format, data, categories, label);
 }
@@ -1169,7 +1169,7 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_StrData *str_data, bool categori
 	for (unsigned int i=0; i < str_data->m_pt.size(); i++)
 	{
 		if (str_data->m_pt[i] && str_data->m_pt[i]->m_v)
-			data.push_back(string2std_string(*str_data->m_pt[i]->m_v));
+			data.push_back(*str_data->m_pt[i]->m_v);
 
 	}
 	std::wstring format;

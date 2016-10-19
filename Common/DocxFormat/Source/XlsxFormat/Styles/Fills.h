@@ -57,14 +57,10 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(_T("<patternFill"));
-				if(m_oPatternType.IsInit())
-				{
-					CString sVal;sVal.Format(_T(" patternType=\"%ls\""), m_oPatternType->ToString());
-					writer.WriteString(sVal);
-				}
+				WritingStringNullableAttrString(L"patternType", m_oPatternType, m_oPatternType->ToString());
 				if(m_oBgColor.IsInit() || m_oFgColor.IsInit())
 				{
 					writer.WriteString(_T(">"));
@@ -144,7 +140,7 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -199,7 +195,7 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -263,7 +259,7 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(_T("<fill>"));
 				if(m_oPatternFill.IsInit())
@@ -318,14 +314,10 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(_T("<fills"));
-				if(m_oCount.IsInit())
-				{
-					CString sVal;sVal.Format(_T(" count=\"%d\""), m_oCount->GetValue());
-					writer.WriteString(sVal);
-				}
+				WritingStringNullableAttrInt(L"count", m_oCount, m_oCount->GetValue());
 				writer.WriteString(_T(">"));
 				for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
 					m_arrItems[i]->toXML(writer);

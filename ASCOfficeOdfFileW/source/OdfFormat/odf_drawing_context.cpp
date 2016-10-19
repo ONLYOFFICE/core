@@ -1082,10 +1082,17 @@ void odf_drawing_context::set_solid_fill(std::wstring hexColor)
 	switch(impl_->current_drawing_part_)
 	{
 	case Area:
-		impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_					= draw_fill::solid;
 		impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_color_				= hexColor;
 		impl_->current_graphic_properties->content().common_background_color_attlist_.fo_background_color_	= color(hexColor);
 		//последнее нужно - что если будут вводить текст - под текстом будет цвет фона (или он поменяется в полях текста)
+		
+		if ((impl_->is_footer_ || impl_->is_header_) && 
+			(impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_) && 
+			(impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_->get_type() == draw_fill::bitmap))
+		{
+		}
+		else
+			impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_ = draw_fill::solid;
 		break;
 	case Line:
 		impl_->current_graphic_properties->content().svg_stroke_color_ =  hexColor;
@@ -1855,9 +1862,9 @@ void odf_drawing_context::start_image(std::wstring odf_path)
 	draw_image* image = dynamic_cast<draw_image*>(image_elm.get());
 	if (image == NULL)return;
 
-	image->common_xlink_attlist_.type_= xlink_type::Simple;
-	image->common_xlink_attlist_.show_ = xlink_show::Embed;
-	image->common_xlink_attlist_.actuate_= xlink_actuate::OnLoad;
+	image->common_xlink_attlist_.type_		= xlink_type::Simple;
+	image->common_xlink_attlist_.show_		= xlink_show::Embed;
+	image->common_xlink_attlist_.actuate_	= xlink_actuate::OnLoad;
 
 	if (!odf_path.empty())   image->common_xlink_attlist_.href_= odf_path; //may be later set
 	

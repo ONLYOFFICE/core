@@ -58,43 +58,14 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(_T("<hyperlink"));
-				if(m_oDisplay.IsInit())
-				{
-					CString sVal;
-					sVal.Append(_T(" display=\""));
-					sVal.Append(XmlUtils::EncodeXmlString(m_oDisplay.get()));
-					sVal.Append(_T("\""));
-					writer.WriteString(sVal);
-				}
-				if(m_oRid.IsInit())
-				{
-					CString sVal; sVal.Format(_T(" r:id=\"%ls\""), m_oRid->GetValue());
-					writer.WriteString(sVal);
-				}
-				if(m_oLocation.IsInit())
-				{
-					CString sVal;
-					sVal.Append(_T(" location=\""));
-					sVal.Append(XmlUtils::EncodeXmlString(m_oLocation.get()));
-					sVal.Append(_T("\""));
-					writer.WriteString(sVal);
-				}
-				if(m_oRef.IsInit())
-				{
-					CString sVal; sVal.Format(_T(" ref=\"%ls\""), XmlUtils::EncodeXmlString(m_oRef.get()));
-					writer.WriteString(sVal);
-				}
-				if(m_oTooltip.IsInit())
-				{
-					CString sVal;
-					sVal.Append(_T(" tooltip=\""));
-					sVal.Append(XmlUtils::EncodeXmlString(m_oTooltip.get()));
-					sVal.Append(_T("\""));
-					writer.WriteString(sVal);
-				}
+				WritingStringNullableAttrEncodeXmlString(L"display", m_oDisplay, m_oDisplay.get());
+				WritingStringNullableAttrString(L"r:id", m_oRid, m_oRid->ToString2());
+				WritingStringNullableAttrEncodeXmlString(L"location", m_oLocation, m_oLocation.get());
+				WritingStringNullableAttrEncodeXmlString(L"ref", m_oRef, m_oRef.get());
+				WritingStringNullableAttrEncodeXmlString(L"tooltip", m_oTooltip, m_oTooltip.get());
 				writer.WriteString(_T("/>"));
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -127,11 +98,11 @@ namespace OOX
 			}
 
 		public:
-				nullable<CString>						m_oDisplay;
+				nullable<std::wstring>						m_oDisplay;
 				nullable<SimpleTypes::CRelationshipId>	m_oRid;
-				nullable<CString>						m_oLocation;
-				nullable<CString>						m_oRef;
-				nullable<CString>						m_oTooltip;
+				nullable<std::wstring>						m_oLocation;
+				nullable<std::wstring>						m_oRef;
+				nullable<std::wstring>						m_oTooltip;
 		};
 
 		class CHyperlinks  : public WritingElementWithChilds<CHyperlink>
@@ -150,7 +121,7 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				if(m_arrItems.size() > 0)
 				{

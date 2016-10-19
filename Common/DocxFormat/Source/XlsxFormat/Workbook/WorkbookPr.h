@@ -58,24 +58,12 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(_T("<workbookPr"));
-				if(m_oDefaultThemeVersion.IsInit())
-				{
-					CString sVal;sVal.Format(_T(" defaultThemeVersion=\"%d\""), m_oDefaultThemeVersion->GetValue());
-					writer.WriteString(sVal);
-				}
-				if(m_oDate1904.IsInit())
-				{
-					CString sVal;sVal.Format(_T(" date1904=\"%ls\""), m_oDate1904->ToString2(SimpleTypes::onofftostring1));
-					writer.WriteString(sVal);
-				}
-				if(m_oDateCompatibility.IsInit())
-				{
-					CString sVal;sVal.Format(_T(" dateCompatibility=\"%ls\""), m_oDateCompatibility->ToString2(SimpleTypes::onofftostring1));
-					writer.WriteString(sVal);
-				}
+				WritingStringNullableAttrInt(L"defaultThemeVersion", m_oDefaultThemeVersion, m_oDefaultThemeVersion->GetValue());
+				WritingStringNullableAttrBool(L"date1904", m_oDate1904);
+				WritingStringNullableAttrBool(L"dateCompatibility", m_oDateCompatibility);
 				writer.WriteString(_T("/>"));
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)

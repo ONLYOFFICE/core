@@ -170,7 +170,7 @@ namespace BinXlsxRW {
 			else if(c_oSer_TablePart::DisplayName == type)
 			{
 				pTable->m_oDisplayName.Init();
-				pTable->m_oDisplayName->Append(m_oBufferedStream.GetString3(length));
+				pTable->m_oDisplayName->append(m_oBufferedStream.GetString4(length));
 			}
 			else if(c_oSer_TablePart::AutoFilter == type)
 			{
@@ -312,7 +312,7 @@ namespace BinXlsxRW {
 			if(c_oSer_Filter::Val == type)
 			{
 				pFilters->m_oVal.Init();
-				pFilters->m_oVal->Append(m_oBufferedStream.GetString3(length));
+				pFilters->m_oVal->append(m_oBufferedStream.GetString4(length));
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;
@@ -404,7 +404,7 @@ namespace BinXlsxRW {
 			else if(c_oSer_CustomFilters::Val == type)
 			{
 				pCustomFilter->m_oVal.Init();
-				pCustomFilter->m_oVal->Append(m_oBufferedStream.GetString3(length));
+				pCustomFilter->m_oVal->append(m_oBufferedStream.GetString4(length));
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;
@@ -566,12 +566,12 @@ namespace BinXlsxRW {
 			if(c_oSer_TableColumns::Name == type)
 			{
 				pTableColumn->m_oName.Init();
-				pTableColumn->m_oName->Append(m_oBufferedStream.GetString3(length));
+				pTableColumn->m_oName->append(m_oBufferedStream.GetString4(length));
 			}
 			else if(c_oSer_TableColumns::TotalsRowLabel == type)
 			{
 				pTableColumn->m_oTotalsRowLabel.Init();
-				pTableColumn->m_oTotalsRowLabel->Append(m_oBufferedStream.GetString3(length));
+				pTableColumn->m_oTotalsRowLabel->append(m_oBufferedStream.GetString4(length));
 			}
 			else if(c_oSer_TableColumns::TotalsRowFunction == type)
 			{
@@ -581,7 +581,7 @@ namespace BinXlsxRW {
 			else if(c_oSer_TableColumns::TotalsRowFormula == type)
 			{
 				pTableColumn->m_oTotalsRowFormula.Init();
-				pTableColumn->m_oTotalsRowFormula->Append(m_oBufferedStream.GetString3(length));
+				pTableColumn->m_oTotalsRowFormula->append(m_oBufferedStream.GetString4(length));
 			}
 			else if(c_oSer_TableColumns::DataDxfId == type)
 			{
@@ -591,7 +591,7 @@ namespace BinXlsxRW {
 			else if(c_oSer_TableColumns::CalculatedColumnFormula == type)
 			{
 				pTableColumn->m_oCalculatedColumnFormula.Init();
-				pTableColumn->m_oCalculatedColumnFormula->Append(m_oBufferedStream.GetString3(length));
+				pTableColumn->m_oCalculatedColumnFormula->append(m_oBufferedStream.GetString4(length));
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;
@@ -604,7 +604,7 @@ namespace BinXlsxRW {
 			if(c_oSer_TableStyleInfo::Name == type)
 			{
 				pTableStyleInfo->m_oName.Init();
-				pTableStyleInfo->m_oName->Append(m_oBufferedStream.GetString3(length));
+				pTableStyleInfo->m_oName->append(m_oBufferedStream.GetString4(length));
 			}
 			else if(c_oSer_TableStyleInfo::ShowColumnStripes == type)
 			{
@@ -673,10 +673,10 @@ namespace BinXlsxRW {
 			}
 			else if(c_oSerSharedStringTypes::Text == type)
 			{
-				CString sText(m_oBufferedStream.GetString3(length));
+				std::wstring sText(m_oBufferedStream.GetString4(length));
 				OOX::Spreadsheet::CText* pText = new OOX::Spreadsheet::CText();
 				pText->m_sText = sText;
-				if(-1 == sText.Find(_T(" ")))
+				if(std::wstring::npos == sText.find(_T(" ")))
 				{
 					pText->m_oSpace.Init();
 					pText->m_oSpace->SetValue(SimpleTypes::xmlspacePreserve);
@@ -698,10 +698,10 @@ namespace BinXlsxRW {
 			}
 			else if(c_oSerSharedStringTypes::Text == type)
 			{
-				CString sText(m_oBufferedStream.GetString3(length));
+				std::wstring sText(m_oBufferedStream.GetString4(length));
 				OOX::Spreadsheet::CText* pText = new OOX::Spreadsheet::CText();
 				pText->m_sText = sText;
-				if(-1 == sText.Find(_T(" ")))
+				if(std::wstring::npos == sText.find(_T(" ")))
 				{
 					pText->m_oSpace.Init();
 					pText->m_oSpace->SetValue(SimpleTypes::xmlspacePreserve);
@@ -733,10 +733,9 @@ namespace BinXlsxRW {
 			}
 			else if(c_oSerFontTypes::RFont == type)
 			{
-				CString sFontName(m_oBufferedStream.GetString3(length));
 				pFont->m_oRFont.Init();
 				pFont->m_oRFont->m_sVal.Init();
-				pFont->m_oRFont->m_sVal->Append(sFontName);
+				pFont->m_oRFont->m_sVal->append(m_oBufferedStream.GetString4(length));
 			}
 			else if(c_oSerFontTypes::Scheme == type)
 			{
@@ -1033,10 +1032,10 @@ namespace BinXlsxRW {
 			}
 			else if(c_oSerFontTypes::RFont == type)
 			{
-				CString sFontName(m_oBufferedStream.GetString3(length));
+				std::wstring sFontName(m_oBufferedStream.GetString4(length));
 				pFont->m_oRFont.Init();
 				pFont->m_oRFont->m_sVal.Init();
-				pFont->m_oRFont->m_sVal->Append(sFontName);
+				pFont->m_oRFont->m_sVal->append(sFontName);
 			}
 			else if(c_oSerFontTypes::Scheme == type)
 			{
@@ -1090,9 +1089,9 @@ namespace BinXlsxRW {
 			int res = c_oSerConstants::ReadOk;
 			if(c_oSerNumFmtTypes::FormatCode == type)
 			{
-				CString sFormatCode(m_oBufferedStream.GetString3(length));
+				std::wstring sFormatCode(m_oBufferedStream.GetString4(length));
 				pNumFmt->m_oFormatCode.Init();
-				pNumFmt->m_oFormatCode->Append(sFormatCode);
+				pNumFmt->m_oFormatCode->append(sFormatCode);
 			}
 			else if(c_oSerNumFmtTypes::NumFmtId == type)
 			{
@@ -1327,7 +1326,7 @@ namespace BinXlsxRW {
 			else if(c_oSer_CellStyle::Name == type)
 			{
 				pCellStyle->m_oName.Init();
-				pCellStyle->m_oName->Append(m_oBufferedStream.GetString3(length));
+				pCellStyle->m_oName->append(m_oBufferedStream.GetString4(length));
 			}
 			else if(c_oSer_CellStyle::XfId == type)
 			{
@@ -1345,12 +1344,12 @@ namespace BinXlsxRW {
 			if(c_oSer_TableStyles::DefaultTableStyle == type)
 			{
 				pTableStyles->m_oDefaultTableStyle.Init();
-				pTableStyles->m_oDefaultTableStyle->Append(m_oBufferedStream.GetString3(length));
+				pTableStyles->m_oDefaultTableStyle->append(m_oBufferedStream.GetString4(length));
 			}
 			else if(c_oSer_TableStyles::DefaultPivotStyle == type)
 			{
 				pTableStyles->m_oDefaultPivotStyle.Init();
-				pTableStyles->m_oDefaultPivotStyle->Append(m_oBufferedStream.GetString3(length));
+				pTableStyles->m_oDefaultPivotStyle->append(m_oBufferedStream.GetString4(length));
 			}
 			else if(c_oSer_TableStyles::TableStyles == type)
 			{
@@ -1383,7 +1382,7 @@ namespace BinXlsxRW {
 			if(c_oSer_TableStyle::Name == type)
 			{
 				pTableStyle->m_oName.Init();
-				pTableStyle->m_oName->Append(m_oBufferedStream.GetString3(length));
+				pTableStyle->m_oName->append(m_oBufferedStream.GetString4(length));
 			}
 			else if(c_oSer_TableStyle::Pivot == type)
 			{
@@ -1580,15 +1579,13 @@ namespace BinXlsxRW {
 			int res = c_oSerConstants::ReadOk;
 			if(c_oSerDefinedNameTypes::Name == type)
 			{
-				CString sName(m_oBufferedStream.GetString3(length));
 				pDefinedName->m_oName.Init();
-				pDefinedName->m_oName->Append(sName);
+				pDefinedName->m_oName->append(m_oBufferedStream.GetString4(length));
 			}
 			else if(c_oSerDefinedNameTypes::Ref == type)
 			{
-				CString sRef(m_oBufferedStream.GetString3(length));
 				pDefinedName->m_oRef.Init();
-				pDefinedName->m_oRef->Append(sRef);
+				pDefinedName->m_oRef->append(m_oBufferedStream.GetString4(length));
 			}
 			else if(c_oSerDefinedNameTypes::LocalSheetId == type)
 			{
@@ -1602,9 +1599,8 @@ namespace BinXlsxRW {
             }
 			else if(c_oSerDefinedNameTypes::Comment == type)
             {
-				CString sComment(m_oBufferedStream.GetString3(length));
 				pDefinedName->m_oComment.Init();
-				pDefinedName->m_oComment->Append(sComment);
+				pDefinedName->m_oComment->append(m_oBufferedStream.GetString4(length));
             }
 			return res;
 		};
@@ -1648,7 +1644,7 @@ namespace BinXlsxRW {
 
 				if(NULL != m_pCurWorksheet && pNewComment->IsValid())
 				{
-					CString sId;sId.Format(_T("%d-%d"), pNewComment->m_nRow.get(), pNewComment->m_nCol.get());
+					std::wstring sId = std::to_wstring(pNewComment->m_nRow.get()) + L"-" + std::to_wstring(pNewComment->m_nCol.get());
 					m_pCurWorksheet->m_mapComments [sId] = pNewComment;
 				}
 				else
@@ -1767,15 +1763,15 @@ namespace BinXlsxRW {
 			int res = c_oSerConstants::ReadOk;
 			SerializeCommon::CommentData* pComments = static_cast<SerializeCommon::CommentData*>(poResult);
 			if ( c_oSer_CommentData::Text == type )
-				pComments->sText = CString(m_oBufferedStream.GetString3(length));
+				pComments->sText = m_oBufferedStream.GetString4(length);
 			else if ( c_oSer_CommentData::Time == type )
-				pComments->sTime = CString(m_oBufferedStream.GetString3(length));
+				pComments->sTime = m_oBufferedStream.GetString4(length);
 			else if ( c_oSer_CommentData::UserId == type )
-				pComments->sUserId = CString(m_oBufferedStream.GetString3(length));
+				pComments->sUserId = m_oBufferedStream.GetString4(length);
 			else if ( c_oSer_CommentData::UserName == type )
-				pComments->sUserName = CString(m_oBufferedStream.GetString3(length));
+				pComments->sUserName = m_oBufferedStream.GetString4(length);
 			else if ( c_oSer_CommentData::QuoteText == type )
-				pComments->sQuoteText = CString(m_oBufferedStream.GetString3(length));
+				pComments->sQuoteText = m_oBufferedStream.GetString4(length);
 			else if ( c_oSer_CommentData::Solved == type )
 			{
 				pComments->bSolved = true;
@@ -1808,20 +1804,20 @@ namespace BinXlsxRW {
 		}
 		void parseCommentData(SerializeCommon::CommentData* pCommentData, OOX::Spreadsheet::CSi& oSi)
 		{
-			if(NULL != pCommentData && false == pCommentData->sText.IsEmpty())
+			if(NULL != pCommentData && false == pCommentData->sText.empty())
 			{
 				OOX::Spreadsheet::CRun* pRun = new OOX::Spreadsheet::CRun();
 				pRun->m_oRPr.Init();
 				OOX::Spreadsheet::CRPr& pRPr = pRun->m_oRPr.get2();
 				pRPr.m_oRFont.Init();
 				pRPr.m_oRFont->m_sVal.Init();
-				pRPr.m_oRFont->m_sVal->Append(_T("Tahoma"));
+				pRPr.m_oRFont->m_sVal->append(_T("Tahoma"));
 				pRPr.m_oSz.Init();
 				pRPr.m_oSz->m_oVal.Init();
 				pRPr.m_oSz->m_oVal->SetValue(8);
 
 				OOX::Spreadsheet::CText* pText = new OOX::Spreadsheet::CText();
-				pText->m_sText.Append(pCommentData->sText);
+				pText->m_sText.append(pCommentData->sText);
 
 				pRun->m_arrItems.push_back(pText);
 				oSi.m_arrItems.push_back(pRun);
@@ -1833,7 +1829,7 @@ namespace BinXlsxRW {
 		Binary_CommonReader2 m_oBcr2;
 		OOX::Spreadsheet::CWorkbook& m_oWorkbook;
 		OOX::Spreadsheet::CSharedStrings* m_pSharedStrings;
-		std::map<CString, OOX::Spreadsheet::CWorksheet*>&  m_mapWorksheets;
+		std::map<std::wstring, OOX::Spreadsheet::CWorksheet*>&  m_mapWorksheets;
 		std::map<long, ImageObject*>& m_mapMedia;
 		OOX::Spreadsheet::CSheet* m_pCurSheet;
 		OOX::Spreadsheet::CWorksheet* m_pCurWorksheet;
@@ -1848,7 +1844,7 @@ namespace BinXlsxRW {
 		int m_nNextObjectId;
 	public:
 		BinaryWorksheetsTableReader(NSBinPptxRW::CBinaryFileReader& oBufferedStream, OOX::Spreadsheet::CWorkbook& oWorkbook,
-			OOX::Spreadsheet::CSharedStrings* pSharedStrings, std::map<CString, OOX::Spreadsheet::CWorksheet*>& mapWorksheets,
+			OOX::Spreadsheet::CSharedStrings* pSharedStrings, std::map<std::wstring, OOX::Spreadsheet::CWorksheet*>& mapWorksheets,
 			std::map<long, ImageObject*>& mapMedia, const CString& sDestinationDir, const CString& sMediaDir, SaveParams& oSaveParams,
 			NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter) : Binary_CommonReader(oBufferedStream), m_oWorkbook(oWorkbook),
 			m_oBcr2(oBufferedStream), m_mapWorksheets(mapWorksheets), m_mapMedia(mapMedia), m_sDestinationDir(sDestinationDir), m_sMediaDir(sMediaDir), m_oSaveParams(oSaveParams), m_pSharedStrings(pSharedStrings)
@@ -1999,14 +1995,14 @@ namespace BinXlsxRW {
 				{
 					m_pCurVmlDrawing->m_mapComments = &m_pCurWorksheet->m_mapComments;
 
-					std::map<CString, unsigned int> mapAuthors;
+					std::map<std::wstring, unsigned int> mapAuthors;
 					OOX::Spreadsheet::CComments* pComments = new OOX::Spreadsheet::CComments();
 					pComments->m_oCommentList.Init();
 					std::vector<OOX::Spreadsheet::CComment*>& aComments = pComments->m_oCommentList->m_arrItems;
 					pComments->m_oAuthors.Init();
-					std::vector<CString*>& aAuthors = pComments->m_oAuthors->m_arrItems;
+					std::vector<std::wstring*>& aAuthors = pComments->m_oAuthors->m_arrItems;
 
-					for (std::map<CString, OOX::Spreadsheet::CCommentItem*>::const_iterator it = m_pCurWorksheet->m_mapComments.begin(); it != m_pCurWorksheet->m_mapComments.end(); ++it)
+					for (std::map<std::wstring, OOX::Spreadsheet::CCommentItem*>::const_iterator it = m_pCurWorksheet->m_mapComments.begin(); it != m_pCurWorksheet->m_mapComments.end(); ++it)
 					{
 						if(it->second->IsValid())
 						{
@@ -2015,13 +2011,13 @@ namespace BinXlsxRW {
 							if(pCommentItem->m_nRow.IsInit() && pCommentItem->m_nCol.IsInit())
 							{
 								pNewComment->m_oRef.Init();
-								pNewComment->m_oRef->SetValue(OOX::Spreadsheet::CWorksheet::combineRef(pCommentItem->m_nRow.get(), pCommentItem->m_nCol.get()));
+								pNewComment->m_oRef->SetValue(std_string2string(OOX::Spreadsheet::CCell::combineRef(pCommentItem->m_nRow.get(), pCommentItem->m_nCol.get())));
 							}
 
 							if(pCommentItem->m_sAuthor.IsInit())
 							{
-								const CString& sAuthor = pCommentItem->m_sAuthor.get();
-								std::map<CString, unsigned int>::const_iterator pair = mapAuthors.find(sAuthor);
+								const std::wstring& sAuthor = pCommentItem->m_sAuthor.get();
+								std::map<std::wstring, unsigned int>::const_iterator pair = mapAuthors.find(sAuthor);
 								int nAuthorId;
 								if(mapAuthors.end() != pair)
 									nAuthorId = pair->second;
@@ -2029,7 +2025,7 @@ namespace BinXlsxRW {
 								{
 									nAuthorId = mapAuthors.size();
 									mapAuthors[sAuthor] = nAuthorId;
-									aAuthors.push_back(new CString(sAuthor));
+									aAuthors.push_back(new std::wstring(sAuthor));
 								}
 								pNewComment->m_oAuthorId.Init();
 								pNewComment->m_oAuthorId->SetValue(nAuthorId);
@@ -2082,9 +2078,8 @@ namespace BinXlsxRW {
 			int res = c_oSerConstants::ReadOk;
 			if(c_oSerWorksheetPropTypes::Name == type)
 			{
-				CString sName(m_oBufferedStream.GetString3(length));
 				m_pCurSheet->m_oName.Init();
-				m_pCurSheet->m_oName->Append(sName);
+				m_pCurSheet->m_oName->append(m_oBufferedStream.GetString4(length));
 			}
 			else if(c_oSerWorksheetPropTypes::SheetId == type)
 			{
@@ -2236,7 +2231,7 @@ namespace BinXlsxRW {
 			else if(c_oSer_SheetView::TopLeftCell == type)
 			{
 				pSheetView->m_oTopLeftCell.Init();
-				pSheetView->m_oTopLeftCell->Append(m_oBufferedStream.GetString3(length));
+				pSheetView->m_oTopLeftCell->append(m_oBufferedStream.GetString4(length));
 			}
 			else if(c_oSer_SheetView::View == type)
 			{
@@ -2305,7 +2300,7 @@ namespace BinXlsxRW {
 			else if(c_oSer_Pane::TopLeftCell == type)
 			{
 				pPane->m_oTopLeftCell.Init();
-				pPane->m_oTopLeftCell->Append(m_oBufferedStream.GetString3(length));
+				pPane->m_oTopLeftCell->append(m_oBufferedStream.GetString4(length));
 			}
 			else if(c_oSer_Pane::XSplit == type)
 			{
@@ -2328,7 +2323,7 @@ namespace BinXlsxRW {
 			if(c_oSer_Selection::ActiveCell == type)
 			{
 				pSelection->m_oActiveCell.Init();
-				pSelection->m_oActiveCell->Append(m_oBufferedStream.GetString3(length));
+				pSelection->m_oActiveCell->append(m_oBufferedStream.GetString4(length));
 			}
 			else if(c_oSer_Selection::ActiveCellId == type)
 			{
@@ -2338,7 +2333,7 @@ namespace BinXlsxRW {
 			else if(c_oSer_Selection::Sqref == type)
 			{
 				pSelection->m_oSqref.Init();
-				pSelection->m_oSqref->Append(m_oBufferedStream.GetString3(length));
+				pSelection->m_oSqref->append(m_oBufferedStream.GetString4(length));
 			}
 			else if(c_oSer_Selection::Pane == type)
 			{
@@ -2356,7 +2351,7 @@ namespace BinXlsxRW {
 			if(c_oSer_SheetPr::CodeName == type)
 			{
 				pSheetPr->m_oCodeName.Init();
-				pSheetPr->m_oCodeName->Append(m_oBufferedStream.GetString3(length));
+				pSheetPr->m_oCodeName->append(m_oBufferedStream.GetString4(length));
 			}
 			else if(c_oSer_SheetPr::EnableFormatConditionsCalculation == type)
 			{
@@ -2381,7 +2376,7 @@ namespace BinXlsxRW {
 			else if(c_oSer_SheetPr::SyncRef == type)
 			{
 				pSheetPr->m_oSyncRef.Init();
-				pSheetPr->m_oSyncRef->Append(m_oBufferedStream.GetString3(length));
+				pSheetPr->m_oSyncRef->append(m_oBufferedStream.GetString4(length));
 			}
 			else if(c_oSer_SheetPr::SyncVertical == type)
 			{
@@ -2540,15 +2535,13 @@ namespace BinXlsxRW {
 			int res = c_oSerConstants::ReadOk;
 			if(c_oSerHyperlinkTypes::Ref == type)
 			{
-				CString sRef(m_oBufferedStream.GetString3(length));
 				pHyperlink->m_oRef.Init();
-				pHyperlink->m_oRef->Append(sRef);
+				pHyperlink->m_oRef->append(m_oBufferedStream.GetString4(length));
 			}
 			else if(c_oSerHyperlinkTypes::Display == type)
 			{
-				CString sRef(m_oBufferedStream.GetString3(length));
 				pHyperlink->m_oDisplay.Init();
-				pHyperlink->m_oDisplay->Append(sRef);
+				pHyperlink->m_oDisplay->append(m_oBufferedStream.GetString4(length));
 			}
 			else if(c_oSerHyperlinkTypes::Hyperlink == type)
 			{
@@ -2559,15 +2552,13 @@ namespace BinXlsxRW {
 			}
 			else if(c_oSerHyperlinkTypes::Location == type)
 			{
-				CString sLocation(m_oBufferedStream.GetString3(length));
 				pHyperlink->m_oLocation.Init();
-				pHyperlink->m_oLocation->Append(sLocation);
+				pHyperlink->m_oLocation->append(m_oBufferedStream.GetString4(length));
 			}
 			else if(c_oSerHyperlinkTypes::Tooltip == type)
 			{
-				CString sTooltip(m_oBufferedStream.GetString3(length));
 				pHyperlink->m_oTooltip.Init();
-				pHyperlink->m_oTooltip->Append(sTooltip);
+				pHyperlink->m_oTooltip->append(m_oBufferedStream.GetString4(length));
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;
@@ -2578,10 +2569,9 @@ namespace BinXlsxRW {
 			int res = c_oSerConstants::ReadOk;
 			if(c_oSerWorksheetsTypes::MergeCell == type)
 			{
-				CString sRef(m_oBufferedStream.GetString3(length));
 				OOX::Spreadsheet::CMergeCell* pMergeCell = new OOX::Spreadsheet::CMergeCell();
 				pMergeCell->m_oRef.Init();
-				pMergeCell->m_oRef->Append(sRef);
+				pMergeCell->m_oRef->append(m_oBufferedStream.GetString4(length));
 				m_pCurWorksheet->m_oMergeCells->m_arrItems.push_back(pMergeCell);
 			}
 			else
@@ -2669,7 +2659,7 @@ namespace BinXlsxRW {
 								NSCommon::smart_ptr<OOX::File> pImageFile(new OOX::Spreadsheet::Image());
 								m_pCurVmlDrawing->Add(OOX::RId(pOleObject->m_oRidImg->GetValue()), pImageFile);
 								//меняем имя на полученное из pptx
-								pImageFile->m_sOutputFilename = pImageFile->DefaultDirectory().GetPath() + FILE_SEPARATOR_STR + OOX::CPath(pOleObject->m_oFilepathImg.get()).GetFilename();
+								pImageFile->m_sOutputFilename = pImageFile->DefaultDirectory().GetPath() + FILE_SEPARATOR_STR + OOX::CPath(pOleObject->m_oFilepathImg->c_str()).GetFilename();
 
 								//add oleObject rels
 								if(!m_pCurWorksheet->m_oOleObjects.IsInit())
@@ -2679,7 +2669,7 @@ namespace BinXlsxRW {
 								NSCommon::smart_ptr<OOX::File> pOleObjectFile(new OOX::OleObject(true));
 								const OOX::RId oRId = m_pCurWorksheet->Add(pOleObjectFile);
 								//меняем имя на полученное из pptx
-								pOleObjectFile->m_sOutputFilename = pOleObjectFile->DefaultDirectory().GetPath() + FILE_SEPARATOR_STR + OOX::CPath(pOleObject->m_oFilepathBin.get()).GetFilename();
+								pOleObjectFile->m_sOutputFilename = pOleObjectFile->DefaultDirectory().GetPath() + FILE_SEPARATOR_STR + OOX::CPath(pOleObject->m_oFilepathBin->c_str()).GetFilename();
 								if(!pOleObject->m_oRid.IsInit())
 								{
 									pOleObject->m_oRid.Init();
@@ -2696,8 +2686,8 @@ namespace BinXlsxRW {
 						else if(sOleXlsx.IsEmpty())//если sOleXlsx не пустой, то в bstrXml старый shape
 						{
 							pCellAnchor->m_oXml.Init();
-							pCellAnchor->m_oXml->Append(*bstrXml);
-							pCellAnchor->m_oXml->Append(_T("<xdr:clientData/>"));
+							pCellAnchor->m_oXml->append(*bstrXml);
+							pCellAnchor->m_oXml->append(_T("<xdr:clientData/>"));
 							pDrawing->m_arrItems.push_back(pCellAnchor);
 						}
 					}
@@ -2852,7 +2842,9 @@ namespace BinXlsxRW {
 					else
 						sRId = pPair->second;
 					pCellAnchor->m_oXml.Init();
-                    pCellAnchor->m_oXml->AppendFormat(_T("<xdr:pic><xdr:nvPicPr><xdr:cNvPr id=\"1\" name=\"Image 1\"></xdr:cNvPr><xdr:cNvPicPr><a:picLocks noChangeAspect=\"1\"></a:picLocks></xdr:cNvPicPr></xdr:nvPicPr><xdr:blipFill><a:blip r:embed=\"%ls\"></a:blip><a:stretch></a:stretch></xdr:blipFill><xdr:spPr><a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom></xdr:spPr></xdr:pic><xdr:clientData/>"), (const TCHAR *) sRId);
+					pCellAnchor->m_oXml->append(_T("<xdr:pic><xdr:nvPicPr><xdr:cNvPr id=\"1\" name=\"Image 1\"></xdr:cNvPr><xdr:cNvPicPr><a:picLocks noChangeAspect=\"1\"></a:picLocks></xdr:cNvPicPr></xdr:nvPicPr><xdr:blipFill><a:blip r:embed=\""));
+					pCellAnchor->m_oXml->append(sRId);
+					pCellAnchor->m_oXml->append(_T("\"></a:blip><a:stretch></a:stretch></xdr:blipFill><xdr:spPr><a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom></xdr:spPr></xdr:pic><xdr:clientData/>"));
 				}
 			}
 			else
@@ -2938,7 +2930,7 @@ namespace BinXlsxRW {
 					}
 					if(bMoveText)
 					{
-						int nValue = _wtoi(pCell->m_oValue->ToString());
+						int nValue = _wtoi(pCell->m_oValue->ToString().c_str());
 						if(nValue >=0 && nValue < m_pSharedStrings->m_arrItems.size())
 						{
 							OOX::Spreadsheet::CSi *pSi = static_cast<OOX::Spreadsheet::CSi *>(m_pSharedStrings->m_arrItems[nValue]);
@@ -2969,16 +2961,13 @@ namespace BinXlsxRW {
 			int res = c_oSerConstants::ReadOk;
 			if(c_oSerCellTypes::Ref == type)
 			{
-				CString sRef(m_oBufferedStream.GetString3(length));
-				pCell->m_oRef.Init();
-				pCell->m_oRef->Append(sRef);
+				pCell->setRef(m_oBufferedStream.GetString4(length));
 			}
 			else if(c_oSerCellTypes::RefRowCol == type)
 			{
 				int nRow = m_oBufferedStream.GetLong();
 				int nCol = m_oBufferedStream.GetLong();
-				pCell->m_oRef.Init();
-				pCell->m_oRef = OOX::Spreadsheet::CWorksheet::combineRef(nRow, nCol);
+				pCell->setRowCol(nRow, nCol);
 			}
 			else if(c_oSerCellTypes::Style == type)
 			{
@@ -2999,7 +2988,7 @@ namespace BinXlsxRW {
 			{
 				double dValue = m_oBufferedStream.GetDoubleReal();
 				pCell->m_oValue.Init();
-				pCell->m_oValue->m_sText.Append(OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(dValue));
+				pCell->m_oValue->m_sText.append(OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(dValue));
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;
@@ -3046,21 +3035,18 @@ namespace BinXlsxRW {
 			}
 			else if(c_oSerFormulaTypes::R1 == type)
 			{
-				CString sR1(m_oBufferedStream.GetString3(length));
 				pFormula->m_oR1.Init();
-				pFormula->m_oR1->Append(sR1);
+				pFormula->m_oR1->append(m_oBufferedStream.GetString4(length));
 			}
 			else if(c_oSerFormulaTypes::R2 == type)
 			{
-				CString sR2(m_oBufferedStream.GetString3(length));
 				pFormula->m_oR2.Init();
-				pFormula->m_oR2->Append(sR2);
+				pFormula->m_oR2->append(m_oBufferedStream.GetString4(length));
 			}
 			else if(c_oSerFormulaTypes::Ref == type)
 			{
-				CString sRef(m_oBufferedStream.GetString3(length));
 				pFormula->m_oRef.Init();
-				pFormula->m_oRef->Append(sRef);
+				pFormula->m_oRef->append(m_oBufferedStream.GetString4(length));
 			}
 			else if(c_oSerFormulaTypes::Si == type)
 			{
@@ -3074,8 +3060,7 @@ namespace BinXlsxRW {
 			}
 			else if(c_oSerFormulaTypes::Text == type)
 			{
-				CString sText(m_oBufferedStream.GetString3(length));
-				pFormula->m_sText.Append(sText);
+				pFormula->m_sText = m_oBufferedStream.GetString4(length);
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;
@@ -3227,7 +3212,7 @@ namespace BinXlsxRW {
             else if(c_oSer_Sparkline::Ref == type)
             {
                 pSparklineGroup->m_oRef.Init();
-                pSparklineGroup->m_oRef->Append(m_oBufferedStream.GetString3(length));
+                pSparklineGroup->m_oRef->append(m_oBufferedStream.GetString4(length));
             }
             else if(c_oSer_Sparkline::Sparklines == type)
             {
@@ -3259,12 +3244,12 @@ namespace BinXlsxRW {
             if(c_oSer_Sparkline::SparklineRef == type)
             {
                 pSparkline->m_oRef.Init();
-                pSparkline->m_oRef->Append(m_oBufferedStream.GetString3(length));
+                pSparkline->m_oRef->append(m_oBufferedStream.GetString4(length));
             }
             else if(c_oSer_Sparkline::SparklineSqRef == type)
             {
                 pSparkline->m_oSqRef.Init();
-                pSparkline->m_oSqRef->Append(m_oBufferedStream.GetString3(length));
+                pSparkline->m_oSqRef->append(m_oBufferedStream.GetString4(length));
             }
             else
                 res = c_oSerConstants::ReadUnknown;
@@ -3278,7 +3263,7 @@ namespace BinXlsxRW {
 			OOX::Spreadsheet::CRPr& pRPr = pRun->m_oRPr.get2();
 			pRPr.m_oRFont.Init();
 			pRPr.m_oRFont->m_sVal.Init();
-			pRPr.m_oRFont->m_sVal->Append(_T("Tahoma"));
+			pRPr.m_oRFont->m_sVal->append(_T("Tahoma"));
 			pRPr.m_oSz.Init();
 			pRPr.m_oSz->m_oVal.Init();
 			pRPr.m_oSz->m_oVal->SetValue(8);
@@ -3286,7 +3271,7 @@ namespace BinXlsxRW {
 			pRPr.m_oBold->FromBool(true);
 
 			OOX::Spreadsheet::CText* pText = new OOX::Spreadsheet::CText();
-			pText->m_sText.Append(_T("\n"));
+			pText->m_sText.append(_T("\n"));
 
 			pRun->m_arrItems.push_back(pText);
 			oSi.m_arrItems.push_back(pRun);

@@ -65,9 +65,11 @@ namespace odf_reader {
 
 	namespace {
 
-std::wstring process_border(const border_style & borderStyle,
-    const _CP_OPT(border_widths) & borderLineWidths,
-    const _CP_OPT(length) & borderPadding, const std::wstring & Shadow = L"")
+std::wstring process_border(const border_style	& borderStyle,
+			const	_CP_OPT(border_widths)		& borderLineWidths,
+					_CP_OPT(length)				& borderPadding, 
+					_CP_OPT(length_or_percent)	& margin, 
+			const	std::wstring				& Shadow = L"")
 {
     std::wstring w_sz;
     std::wstring w_color;
@@ -969,24 +971,19 @@ Choice [0..6]
 
 namespace {
 
-std::wstring process_page_margin(const _CP_OPT(length_or_percent) & Val, 
-								 const _CP_OPT(length_or_percent) & Val2, 
-								 const _CP_OPT(length) & AddVal = _CP_OPT(length)())
+std::wstring process_page_margin(const _CP_OPT(length_or_percent)	& Val, 
+								 const _CP_OPT(length)				& AddVal = _CP_OPT(length)())
 {
-    if (!Val ||
-        Val->get_type() == length_or_percent::Percent)
-        return L"0";
+    //if ((!Val) || (Val->get_type() == length_or_percent::Percent))
+    //    return L"0";
 
-    double v1 = (!Val || Val->get_type() == length_or_percent::Percent) ? 0 :
-        (20.0 * Val->get_length().get_value_unit(length::pt));
+    double v = (!Val || Val->get_type() == length_or_percent::Percent) ? 0 :
+						(20.0 * Val->get_length().get_value_unit(length::pt));
 
-    double v2 = (!Val2 || Val2->get_type() == length_or_percent::Percent) ? 0 :
-        (20.0 * Val2->get_length().get_value_unit(length::pt));
-    
     double dAddVal = 20.0 * AddVal.get_value_or(length(0, length::pt)).get_value_unit(length::pt) + 0.5;
 
 	if (dAddVal < 0 ) dAddVal = 0;
-    return boost::lexical_cast<std::wstring>( (int)( (!Val ? v2 : v1) + dAddVal));
+    return boost::lexical_cast<std::wstring>( (int)( v + dAddVal));
 }
 
 }
@@ -1041,27 +1038,39 @@ void style_page_layout_properties_attlist::docx_convert_serialize(std::wostream 
 
 		strm << L"/>";
 	}
+	if (!common_padding_attlist_.fo_padding_top_)
+		common_padding_attlist_.fo_padding_top_		= common_padding_attlist_.fo_padding_;
+	if (!common_padding_attlist_.fo_padding_bottom_)
+		common_padding_attlist_.fo_padding_bottom_	= common_padding_attlist_.fo_padding_;
+	if (!common_padding_attlist_.fo_padding_left_)
+		common_padding_attlist_.fo_padding_left_	= common_padding_attlist_.fo_padding_;
+	if (!common_padding_attlist_.fo_padding_right_)
+		common_padding_attlist_.fo_padding_right_	= common_padding_attlist_.fo_padding_;
 
-	if (common_border_attlist_.fo_border_)
+	if (!common_horizontal_margin_attlist_.fo_margin_left_)
+		common_horizontal_margin_attlist_.fo_margin_left_	= common_margin_attlist_.fo_margin_;
+	if (!common_horizontal_margin_attlist_.fo_margin_right_)
+		common_horizontal_margin_attlist_.fo_margin_right_	= common_margin_attlist_.fo_margin_;
+	if (!common_vertical_margin_attlist_.fo_margin_top_)
+		common_vertical_margin_attlist_.fo_margin_top_		= common_margin_attlist_.fo_margin_;
+	if (!common_vertical_margin_attlist_.fo_margin_bottom_)
+		common_vertical_margin_attlist_.fo_margin_bottom_	= common_margin_attlist_.fo_margin_;
+
+//hange offset border from text to from page
+	if (common_padding_attlist_.fo_padding_left_ && common_horizontal_margin_attlist_.fo_margin_left_)
 	{
-		std::wstring w_border, w_shadow;
-		
-		if (common_shadow_attlist_.style_shadow_)
-			w_shadow = common_shadow_attlist_.style_shadow_->get_type() != shadow_type::None ? L"1" : L"0";
-
-		w_border = process_border(*common_border_attlist_.fo_border_,	
-									common_border_line_width_attlist_.style_border_line_width_, 
-									common_padding_attlist_.fo_padding_, 
-									w_shadow);
-
-		 strm << L"<w:pgBorders>";
-			strm << L"<w:top "		<< w_border << L"/>";
-			strm << L"<w:left "		<< w_border << L"/>";
-			strm << L"<w:bottom "	<< w_border << L"/>";
-			strm << L"<w:right "	<< w_border << L"/>";
-		 strm << L"</w:pgBorders>";
 	}
-	else if (common_border_attlist_.fo_border_top_ || common_border_attlist_.fo_border_bottom_ ||
+	if (common_padding_attlist_.fo_padding_right_ && common_horizontal_margin_attlist_.fo_margin_right_)
+	{
+	}	
+	if (common_padding_attlist_.fo_padding_top_ && common_vertical_margin_attlist_.fo_margin_top_)
+	{
+	}
+	if (common_padding_attlist_.fo_padding_bottom_ && common_vertical_margin_attlist_.fo_margin_bottom_)
+	{
+	}
+			
+	if (common_border_attlist_.fo_border_ || common_border_attlist_.fo_border_top_ || common_border_attlist_.fo_border_bottom_ ||
 			common_border_attlist_.fo_border_left_ || common_border_attlist_.fo_border_right_ )
 	{
 		std::wstring w_top, w_left, w_right, w_bottom, w_shadow;
@@ -1069,23 +1078,39 @@ void style_page_layout_properties_attlist::docx_convert_serialize(std::wostream 
 		if (common_shadow_attlist_.style_shadow_)
 			w_shadow = common_shadow_attlist_.style_shadow_->get_type() != shadow_type::None ? L"1" : L"0";
 
-		if (common_border_attlist_.fo_border_top_)
-			w_top = process_border(			*common_border_attlist_.fo_border_top_, 
-											common_border_line_width_attlist_.style_border_line_width_top_, 
-											common_padding_attlist_.fo_padding_top_, w_shadow);
-		if (common_border_attlist_.fo_border_bottom_)
-			w_bottom = process_border(		*common_border_attlist_.fo_border_bottom_, 
-											common_border_line_width_attlist_.style_border_line_width_bottom_, 
-											common_padding_attlist_.fo_padding_bottom_, w_shadow);
-		if (common_border_attlist_.fo_border_left_)
-			w_left = process_border(		*common_border_attlist_.fo_border_left_, 
-											common_border_line_width_attlist_.style_border_line_width_left_, 
-											common_padding_attlist_.fo_padding_left_, w_shadow);
-		if (common_border_attlist_.fo_border_right_)
-			w_right = process_border(		*common_border_attlist_.fo_border_right_, 
-											common_border_line_width_attlist_.style_border_line_width_right_, 
-											common_padding_attlist_.fo_padding_right_, w_shadow);
-		 strm << L"<w:pgBorders>";
+		if (common_border_attlist_.fo_border_ || common_border_attlist_.fo_border_top_)
+		{
+			w_top = process_border (	common_border_attlist_.fo_border_top_ ? *common_border_attlist_.fo_border_top_ : *common_border_attlist_.fo_border_ 
+										, common_border_line_width_attlist_.style_border_line_width_top_
+										, common_padding_attlist_.fo_padding_top_
+										, common_vertical_margin_attlist_.fo_margin_top_
+										, w_shadow);
+		}
+		if (common_border_attlist_.fo_border_ || common_border_attlist_.fo_border_bottom_)
+		{
+			w_bottom = process_border (	common_border_attlist_.fo_border_bottom_ ? *common_border_attlist_.fo_border_bottom_ : *common_border_attlist_.fo_border_
+										, common_border_line_width_attlist_.style_border_line_width_bottom_ 
+										, common_padding_attlist_.fo_padding_bottom_
+										, common_vertical_margin_attlist_.fo_margin_bottom_
+										, w_shadow);
+		}
+		if (common_border_attlist_.fo_border_ || common_border_attlist_.fo_border_left_)
+		{
+			w_left = process_border (	common_border_attlist_.fo_border_left_ ? *common_border_attlist_.fo_border_left_ : *common_border_attlist_.fo_border_ 
+										, common_border_line_width_attlist_.style_border_line_width_left_
+										, common_padding_attlist_.fo_padding_left_
+										, common_horizontal_margin_attlist_.fo_margin_left_
+										, w_shadow);
+		}
+		if (common_border_attlist_.fo_border_ || common_border_attlist_.fo_border_right_)
+		{
+			w_right = process_border (	common_border_attlist_.fo_border_right_ ? *common_border_attlist_.fo_border_right_ : *common_border_attlist_.fo_border_ 
+										, common_border_line_width_attlist_.style_border_line_width_right_
+										, common_padding_attlist_.fo_padding_right_
+										, common_horizontal_margin_attlist_.fo_margin_right_
+										, w_shadow);
+		}
+		 strm << L"<w:pgBorders w:offsetFrom=\"text\">";
 			if (!w_top.empty())			strm << L"<w:top "		<< w_top	<< L" />";
 			if (!w_left.empty())		strm << L"<w:left "		<< w_left	<< L" />";
 			if (!w_right.empty())		strm << L"<w:right "	<< w_right	<< L" />";
@@ -1095,27 +1120,28 @@ void style_page_layout_properties_attlist::docx_convert_serialize(std::wostream 
    
 	CP_XML_WRITER(strm)
 	{
-		if (common_horizontal_margin_attlist_.fo_margin_left_ ||
-		common_horizontal_margin_attlist_.fo_margin_right_ ||
-		common_vertical_margin_attlist_.fo_margin_top_ ||
-		common_vertical_margin_attlist_.fo_margin_bottom_ ||
-		common_margin_attlist_.fo_margin_ || margin_right || margin_left
+		if (common_horizontal_margin_attlist_.fo_margin_left_	||
+			common_horizontal_margin_attlist_.fo_margin_right_	||
+			common_vertical_margin_attlist_.fo_margin_top_		||
+			common_vertical_margin_attlist_.fo_margin_bottom_	||
+			margin_right || margin_left
 			)
 		{
 			_CP_OPT(odf_types::length)  margin_left_length, margin_right_length;
 
-			if (margin_left)	margin_left_length = margin_left->get_length();
+			if (margin_left)	margin_left_length	= margin_left->get_length();
 			if (margin_right)	margin_right_length = margin_right->get_length();
 
 			CP_XML_NODE(L"w:pgMar")
 			{
-				CP_XML_ATTR(L"w:bottom"	, process_page_margin(common_vertical_margin_attlist_.fo_margin_bottom_, common_margin_attlist_.fo_margin_, Context.get_header_footer_context().footer()) );
-				CP_XML_ATTR(L"w:footer"	, process_page_margin(common_vertical_margin_attlist_.fo_margin_bottom_, common_margin_attlist_.fo_margin_) );
+				CP_XML_ATTR(L"w:header"	, process_page_margin(common_vertical_margin_attlist_.fo_margin_top_	) );
+				CP_XML_ATTR(L"w:footer"	, process_page_margin(common_vertical_margin_attlist_.fo_margin_bottom_ ) );
 				CP_XML_ATTR(L"w:gutter"	, 0 );
-				CP_XML_ATTR(L"w:header"	, process_page_margin(common_vertical_margin_attlist_.fo_margin_top_, common_margin_attlist_.fo_margin_) );
-				CP_XML_ATTR(L"w:left"	, process_page_margin(common_horizontal_margin_attlist_.fo_margin_left_, common_margin_attlist_.fo_margin_, margin_left_length) );
-				CP_XML_ATTR(L"w:right"	, process_page_margin(common_horizontal_margin_attlist_.fo_margin_right_, common_margin_attlist_.fo_margin_, margin_right_length) );
-				CP_XML_ATTR(L"w:top"	, process_page_margin(common_vertical_margin_attlist_.fo_margin_top_, common_margin_attlist_.fo_margin_, Context.get_header_footer_context().header()) );
+				
+				CP_XML_ATTR(L"w:left"	, process_page_margin(common_horizontal_margin_attlist_.fo_margin_left_	, margin_left_length) );
+				CP_XML_ATTR(L"w:right"	, process_page_margin(common_horizontal_margin_attlist_.fo_margin_right_, margin_right_length) );
+				CP_XML_ATTR(L"w:top"	, process_page_margin(common_vertical_margin_attlist_.fo_margin_top_	, Context.get_header_footer_context().header()) );
+				CP_XML_ATTR(L"w:bottom"	, process_page_margin(common_vertical_margin_attlist_.fo_margin_bottom_	, Context.get_header_footer_context().footer()) );
 			}
 		}
 

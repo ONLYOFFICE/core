@@ -218,8 +218,9 @@ namespace BinXlsxRW{
 					m_pExternalDrawingConverter->WriteRels(bstrChartsWorksheetRelType, std_string2string(sChartsWorksheetRelsName), CString(), &rId);
 
 					oChartSpace.m_oChartSpace.m_externalData = new OOX::Spreadsheet::CT_ExternalData();
-					oChartSpace.m_oChartSpace.m_externalData->m_id = new CString();
-					oChartSpace.m_oChartSpace.m_externalData->m_id->AppendFormat(L"rId%d", rId);
+					oChartSpace.m_oChartSpace.m_externalData->m_id = new std::wstring();
+					oChartSpace.m_oChartSpace.m_externalData->m_id->append(L"rId");
+					oChartSpace.m_oChartSpace.m_externalData->m_id->append(std::to_wstring(rId));
 					oChartSpace.m_oChartSpace.m_externalData->m_autoUpdate = new OOX::Spreadsheet::CT_Boolean();
 					oChartSpace.m_oChartSpace.m_externalData->m_autoUpdate->m_val = new bool(false);
 				}

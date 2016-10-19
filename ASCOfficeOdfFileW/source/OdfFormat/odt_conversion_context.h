@@ -147,6 +147,9 @@ public:
 	bool start_footer(int type);
 	void end_header_footer();
 
+	void add_empty_header(int type);
+	void add_empty_footer(int type);
+
 	void set_background(_CP_OPT(color) & color, int type);
 
 	bool is_paragraph_in_current_section_;

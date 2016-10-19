@@ -688,6 +688,10 @@ namespace NSBinPptxRW
         m_lPosition += lSizeMem;
         m_pStreamCur += lSizeMem;
     }
+	void CBinaryFileWriter::WriteStringWStd(const std::wstring& sBuffer)
+	{
+		WriteStringW(sBuffer.c_str());
+	}
 	void CBinaryFileWriter::WriteBYTEArray(const BYTE* pBuffer, size_t len)
 	{
 		CheckBufferSize(len);
@@ -844,6 +848,10 @@ namespace NSBinPptxRW
     void CBinaryFileWriter::WriteStringW3(CString& sBuffer)
 	{
 		WriteStringW3(sBuffer.GetBuffer());
+	}
+	void CBinaryFileWriter::WriteStringW4(const std::wstring& sBuffer)
+	{
+		WriteStringW3(sBuffer.c_str());
 	}
 	CBinaryFileWriter::CBinaryFileWriter()
 	{
@@ -1748,6 +1756,58 @@ namespace NSBinPptxRW
 
             return res;
         }
+	}
+	std::wstring CBinaryFileReader::GetString4(_INT32 len)//len in byte for utf16
+	{
+		if (len < 1)
+			return _T("");
+		if (m_lPos + len > m_lSize)
+			return _T("");
+
+		_UINT32 lSize = len >> 1; //string in char
+
+		if (sizeof(wchar_t) == 4)
+		{
+			wchar_t * sBuffer = new wchar_t[lSize + 1];
+			memset(sBuffer, 0, lSize + 1);
+
+			UTF16* pStrUtf16 = (UTF16 *)m_pDataCur;
+			UTF32 *pStrUtf32 = (UTF32 *)sBuffer;
+
+			// this values will be modificated
+			const UTF16 *pStrUtf16_Conv = pStrUtf16;
+			UTF32 *pStrUtf32_Conv = pStrUtf32;
+
+			ConversionResult eUnicodeConversionResult =
+				ConvertUTF16toUTF32(&pStrUtf16_Conv
+				, &pStrUtf16[lSize]
+				, &pStrUtf32_Conv
+				, &pStrUtf32[lSize]
+				, strictConversion);
+
+			if (conversionOK != eUnicodeConversionResult)
+			{
+				delete[]sBuffer;
+				return _T("");
+			}
+
+			std::wstring res((WCHAR*)sBuffer, lSize);
+
+			delete[]sBuffer;
+			m_lPos += len;
+			m_pDataCur += len;
+
+			return res;
+		}
+		else
+		{
+			std::wstring res((WCHAR*)m_pDataCur, lSize);
+
+			m_lPos += len;
+			m_pDataCur += len;
+
+			return res;
+		}
 	}
 
     bool CBinaryFileReader::GetArray(BYTE **pBuffer, _INT32 len)

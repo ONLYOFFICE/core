@@ -1156,7 +1156,7 @@ namespace OOX
 		public:
 
 			// Attributes
-			nullable<CString                       > m_sAuthor;
+			nullable<CString                      > m_sAuthor;
 			nullable<SimpleTypes::CDateTime        > m_oDate;
 			nullable<SimpleTypes::CDecimalNumber<> > m_oId;
 			nullable<CString                       > m_sUserId;

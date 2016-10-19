@@ -6590,21 +6590,21 @@ public:
 				m_oFileWriter.m_pDrawingConverter->WriteRels(bstrChartsWorksheetRelType, std_string2string(sChartsWorksheetRelsName), CString(), &rIdXlsx);
 
 				pChartSpace->m_oChartSpace.m_externalData = new OOX::Spreadsheet::CT_ExternalData();
-				pChartSpace->m_oChartSpace.m_externalData->m_id = new CString();
-				pChartSpace->m_oChartSpace.m_externalData->m_id->AppendFormat(L"rId%d", rIdXlsx);
+				pChartSpace->m_oChartSpace.m_externalData->m_id = new std::wstring();
+				pChartSpace->m_oChartSpace.m_externalData->m_id->append(L"rId");
+				pChartSpace->m_oChartSpace.m_externalData->m_id->append(std::to_wstring(rIdXlsx));
 				pChartSpace->m_oChartSpace.m_externalData->m_autoUpdate = new OOX::Spreadsheet::CT_Boolean();
 				pChartSpace->m_oChartSpace.m_externalData->m_autoUpdate->m_val = new bool(false);
 
 				//save chart.xml
-				XmlUtils::CStringWriter sw;
+				NSStringUtils::CStringBuilder sw;
 				pChartSpace->toXML(sw);
 			
-				CString sChartContent = sw.GetData();
 				CString sFilename;
 				CString sRelsName;
 				int nChartIndex;
-				
-				m_oFileWriter.m_oChartWriter.AddChart(sChartContent, sRelsName, sFilename, nChartIndex);
+                std::wstring sContent = sw.GetData();
+                m_oFileWriter.m_oChartWriter.AddChart(sContent, sRelsName, sFilename, nChartIndex);
 				m_oFileWriter.m_oContentTypesWriter.AddOverrideRaw(oSaveParams.sAdditionalContentTypes);
 
                 OOX::CPath pathChartsRels =  pathChartsRelsDir.GetPath() + FILE_SEPARATOR_STR + sFilename + _T(".rels");

@@ -78,8 +78,7 @@ namespace CSVReader
 			pCell->m_oStyle->SetValue(1);
 		}
 
-		pCell->m_oRef.Init();
-		pCell->m_oRef = OOX::Spreadsheet::CWorksheet::combineRef(nRow, nCol);
+		pCell->setRowCol(nRow, nCol);
 		oRow.m_arrItems.push_back(pCell);
 	}
     void ReadFromCsvToXlsx(const CString &sFileName, OOX::Spreadsheet::CXlsx &oXlsx, UINT nCodePage, const WCHAR wcDelimiter)
@@ -126,16 +125,16 @@ namespace CSVReader
 		pXfs->m_oAligment->m_oWrapText->SetValue(SimpleTypes::onoffTrue);
 		pStyles->m_oCellXfs->m_arrItems.push_back(pXfs);
 
-		CString sSheetRId = _T("rId1");
+		std::wstring sSheetRId = _T("rId1");
 		OOX::Spreadsheet::CWorksheet* pWorksheet = new OOX::Spreadsheet::CWorksheet();
 		pWorksheet->m_oSheetData.Init();
 		OOX::Spreadsheet::CSheet *pSheet = new OOX::Spreadsheet::CSheet();
 		pSheet->m_oName.Init();
-		pSheet->m_oName->Append(_T("Sheet1"));
+		pSheet->m_oName->append(_T("Sheet1"));
 		pSheet->m_oSheetId.Init();
 		pSheet->m_oSheetId->SetValue(1);
 		pSheet->m_oRid.Init();
-		pSheet->m_oRid->SetValue(sSheetRId);
+		pSheet->m_oRid->SetValue(std_string2string(sSheetRId));
 
 		OOX::Spreadsheet::CWorkbook *pWorkbook = oXlsx.GetWorkbook();
 		pWorkbook->m_oSheets.Init();
@@ -274,7 +273,7 @@ namespace CSVReader
 			}
 		}
 
-		std::map<CString, OOX::Spreadsheet::CWorksheet*> &arrWorksheets = oXlsx.GetWorksheets();
+		std::map<std::wstring, OOX::Spreadsheet::CWorksheet*> &arrWorksheets = oXlsx.GetWorksheets();
 		arrWorksheets [sSheetRId] = pWorksheet;
 	}
 }

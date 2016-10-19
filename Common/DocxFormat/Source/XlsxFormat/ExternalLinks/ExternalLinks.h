@@ -69,25 +69,22 @@ namespace OOX
                     CString sName = oReader.GetName();
 				}
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				CString str = toXML();
-				writer.WriteString(str);
+				writer.WriteString(L"<externalBook");
+				if (m_oRid.IsInit())
+				{
+					writer.WriteString(L" r:id=\"");
+					writer.WriteString(m_oRid->ToString2());
+					writer.WriteString(L"\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\"");
+				}
+				writer.WriteString(L"/>");
 			}
 			virtual CString      toXML() const
 			{
-				CString sResult = _T("<externalBook");
-
-				if(m_oRid.IsInit())
-				{
-					CString sVal = _T(" r:id=\"") + m_oRid->GetValue() + _T("\"");
-					sResult += sVal;
-					sResult += _T(" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" ");
-				}
-
-				sResult += _T("/>");
-
-				return sResult;
+				NSStringUtils::CStringBuilder writer;
+				toXML(writer);
+				return writer.GetData().c_str();
 			}
 			virtual EElementType getType() const
 			{
@@ -161,7 +158,7 @@ namespace OOX
 			}
 			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 			{
-				XmlUtils::CStringWriter sXml;
+				NSStringUtils::CStringBuilder sXml;
 				sXml.WriteString(_T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"));
 				sXml.WriteString(_T("<externalLink xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\">"));
 			
@@ -172,7 +169,9 @@ namespace OOX
 				
 				sXml.WriteString(_T("</externalLink>"));
 
-				CDirectory::SaveToFile( oPath.GetPath(), sXml.GetData() );
+				CString sPath = oPath.GetPath();
+				NSFile::CFileBinary::SaveToFile(sPath.GetBuffer(), sXml.GetData());
+				sPath.ReleaseBuffer();
 				oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
 				IFileContainer::Write(oPath, oDirectory, oContent);
 			}

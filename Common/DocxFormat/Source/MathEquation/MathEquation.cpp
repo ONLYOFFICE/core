@@ -64,7 +64,7 @@ void CEquationReader::InitFonts()
 
 	if (pOutputDev)
 	{
-		for(uint8_t i = 1; i <= 8; i++)
+		for(unsigned char i = 1; i <= 8; i++)
 		{
 			switch(i)
 			{
@@ -117,8 +117,8 @@ int CEquationReader::Parse()
 
 int CEquationReader::HandleRecords()
 {
-	uint8_t nTag, nRecord;
-	uint16_t nTabOffset;
+	unsigned char nTag, nRecord;
+    _UINT16 nTabOffset;
 
 	int nRet = 1;
 
@@ -214,16 +214,16 @@ int CEquationReader::HandleRecords()
 
 void CEquationReader::HandleNudge()
 {
-    uint8_t nXNudge; *pS >> nXNudge;
-	uint8_t nYNudge; *pS >> nYNudge;
+    unsigned char nXNudge; *pS >> nXNudge;
+	unsigned char nYNudge; *pS >> nYNudge;
 
 	if (128 == nXNudge && 128 == nYNudge)
     {
-		uint16_t nXLongNudge; *pS >> nXLongNudge;
-		uint16_t nYLongNudge; *pS >> nYLongNudge;
+        _UINT16 nXLongNudge; *pS >> nXLongNudge;
+        _UINT16 nYLongNudge; *pS >> nYLongNudge;
     }
 }
-int  CEquationReader::HandleChar(uint8_t nTag)
+int  CEquationReader::HandleChar(unsigned char nTag)
 {
 	Unicode_t nChar;
 	int nRet = 1;
@@ -234,12 +234,12 @@ int  CEquationReader::HandleChar(uint8_t nTag)
 		//that is!
 	}
 
-	uint8_t nTypeFace;
+	unsigned char nTypeFace;
 	*pS >> nTypeFace;
 
 	if (nVersion < 3)
 	{
-		uint8_t nChar8;
+		unsigned char nChar8;
 		*pS >> nChar8;
 		nChar = nChar8;
 	}
@@ -262,7 +262,7 @@ int  CEquationReader::HandleChar(uint8_t nTag)
 }
 int CEquationReader::HandleTemplate()
 {
-	uint8_t nSelector, nVariation, nOption;
+	unsigned char nSelector, nVariation, nOption;
 	*pS >> nSelector;
 	*pS >> nVariation;
 	*pS >> nOption;
@@ -273,7 +273,7 @@ int CEquationReader::HandleTemplate()
 	return nRet;
 }
 
-void CEquationReader::HandleStartTemplate(uint8_t nSelector, uint8_t nVariation)
+void CEquationReader::HandleStartTemplate(unsigned char nSelector, unsigned char nVariation)
 {
 	switch (nSelector)
 	{
@@ -472,7 +472,7 @@ void CEquationReader::HandleStartTemplate(uint8_t nSelector, uint8_t nVariation)
 		break;
 	}
 }
-void CEquationReader::HandleEndTemplate(uint8_t nSelector, uint8_t nVariation)
+void CEquationReader::HandleEndTemplate(unsigned char nSelector, unsigned char nVariation)
 {
 	switch (nSelector)
 	{
@@ -612,7 +612,7 @@ int CEquationReader::HandlePile()
 
 int CEquationReader::HandleMatrix()
 {
-	uint8_t nHorAlign, nVerAlign, nRows, nCols;
+	unsigned char nHorAlign, nVerAlign, nRows, nCols;
 	*pS >> nVAlign;
 	*pS >> nHorAlign;
 	*pS >> nVerAlign;
@@ -629,8 +629,8 @@ int CEquationReader::HandleMatrix()
 	if (((nRows + 1) * 2) % 8)
 		nBytes++;
 
-	uint8_t *pVerBorders = new uint8_t[nRows + 1];
-	uint8_t nTempByte;
+	unsigned char *pVerBorders = new unsigned char[nRows + 1];
+	unsigned char nTempByte;
 	for (int nByteIndex = 0, nRowIndex = 0, nBitIndex = 0; nByteIndex < nBytes; nByteIndex++, nBitIndex = 0)
 	{
 		*pS >> nTempByte;
@@ -647,7 +647,7 @@ int CEquationReader::HandleMatrix()
 	if (((nCols + 1) * 2) % 8)
 		nBytes++;
 	
-	uint8_t *pHorBorders = new uint8_t[nCols + 1];
+	unsigned char *pHorBorders = new unsigned char[nCols + 1];
 	for (int nByteIndex = 0, nColIndex = 0, nBitIndex = 0; nByteIndex < nBytes; nByteIndex++, nBitIndex = 0)
 	{
 		*pS >> nTempByte;
@@ -674,7 +674,7 @@ int CEquationReader::HandleMatrix()
 
 void CEquationReader::HandleEmblishments()
 {
-	uint8_t nEmbel;
+	unsigned char nEmbel;
 	do
 	{
 		*pS >> nEmbel;
@@ -690,9 +690,9 @@ void CEquationReader::HandleSetSize(MTOKENS eType)
 {
 	if (SIZE_CUSTOM == eType)
 	{
-		uint8_t nTemp;
+		unsigned char nTemp;
 		*pS >> nTemp;
-		uint16_t nSize;
+        _UINT16 nSize;
 		switch (nTemp)
 		{
 		case 101:
@@ -706,7 +706,7 @@ void CEquationReader::HandleSetSize(MTOKENS eType)
 				*pS >> nTemp;
 				nSize = nTemp;
 
-				uint16_t nTempSize;
+                _UINT16 nTempSize;
 				*pS >> nTempSize;
 				break;
 			}
@@ -715,7 +715,7 @@ void CEquationReader::HandleSetSize(MTOKENS eType)
 				// TODO: Проверить эту ветку
 				nSize = nTemp;
 				*pS >> nTemp;
-				uint16_t nTempSize = nTemp - 128;
+                _UINT16 nTempSize = nTemp - 128;
 				break;
 			}
 		}
@@ -731,8 +731,8 @@ void CEquationReader::HandleSetSize(MTOKENS eType)
 
 void CEquationReader::HandleRuler()
 {
-	uint8_t nTabType, nTabStops;
-	uint16_t nTabOffset;
+	unsigned char nTabType, nTabStops;
+    _UINT16 nTabOffset;
 	*pS >> nTabStops;
 
 	for (int nTabIndex = 0; nTabIndex < nTabStops; nTabIndex++)
@@ -743,7 +743,7 @@ void CEquationReader::HandleRuler()
 }
 void CEquationReader::HandleFont()
 {
-	uint8_t nTFace, nStyle;
+	unsigned char nTFace, nStyle;
 	String sName;
 
 	*pS >> nTFace;

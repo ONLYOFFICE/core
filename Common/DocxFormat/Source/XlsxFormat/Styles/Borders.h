@@ -57,18 +57,14 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 			}
-			void toXML2(XmlUtils::CStringWriter& writer, CString sName) const
+			void toXML2(NSStringUtils::CStringBuilder& writer, const std::wstring& sName) const
 			{
 				writer.WriteString(_T("<"));
 				writer.WriteString(sName);
-				if(m_oStyle.IsInit())
-				{
-					CString sVal;sVal.Format(_T(" style=\"%ls\""), m_oStyle->ToString());
-					writer.WriteString(sVal);
-				}
+				WritingStringNullableAttrString(L"style", m_oStyle, m_oStyle->ToString());
 				writer.WriteString(_T(">"));
 				if(m_oColor.IsInit())
 					m_oColor->toXML2(writer, _T("color"));
@@ -133,18 +129,16 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(_T("<border"));
-				if(m_oDiagonalDown.IsInit() && SimpleTypes::onoffTrue == m_oDiagonalDown->GetValue())
+				if (m_oDiagonalDown.IsInit() && SimpleTypes::onoffTrue == m_oDiagonalDown->GetValue())
 				{
-					CString sVal;sVal.Format(_T(" diagonalDown=\"%ls\""), m_oDiagonalDown->ToString2( SimpleTypes::onofftostring1));
-					writer.WriteString(sVal);
+					WritingStringAttrString(L"diagonalDown", m_oDiagonalDown->ToString3(SimpleTypes::onofftostring1));
 				}
-				if(m_oDiagonalUp.IsInit() && SimpleTypes::onoffTrue == m_oDiagonalUp->GetValue())
+				if (m_oDiagonalUp.IsInit() && SimpleTypes::onoffTrue == m_oDiagonalUp->GetValue())
 				{
-					CString sVal;sVal.Format(_T(" diagonalUp=\"%ls\""), m_oDiagonalUp->ToString2( SimpleTypes::onofftostring1));
-					writer.WriteString(sVal);
+					WritingStringAttrString(L"diagonalUp", m_oDiagonalUp->ToString3(SimpleTypes::onofftostring1));
 				}
 				writer.WriteString(_T(">"));
 				if(m_oStart.IsInit() && false == m_oStart->IsEmpty())
@@ -249,14 +243,10 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(_T("<borders"));
-				if(m_oCount.IsInit())
-				{
-					CString sVal;sVal.Format(_T(" count=\"%d\""), m_oCount->GetValue());
-					writer.WriteString(sVal);
-				}
+				WritingStringNullableAttrInt(L"count", m_oCount, m_oCount->GetValue());
 				writer.WriteString(_T(">"));
 				for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
 					m_arrItems[i]->toXML(writer);

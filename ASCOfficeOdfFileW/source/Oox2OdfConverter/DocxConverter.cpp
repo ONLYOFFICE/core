@@ -72,7 +72,8 @@ DocxConverter::DocxConverter(const std::wstring & path, const ProgressCallback* 
 	pCallBack = CallBack;
 
 //set flags to default
-    last_section_properties = NULL;
+	current_section_properties	= NULL;
+    last_section_properties		= NULL;
 	
 	if (UpdateProgress(290000))return;
 }
@@ -198,14 +199,44 @@ void DocxConverter::convert_document()
 	const OOX::CDocument* document = docx_document->GetDocument();
 	if (!document)return;
 
+	std::vector<_section> sections;
+//----------------------------------------------------------------------------------------------------------
+	int last_section_start = 0;
+
+	//считаем количесво секций и запоминаем их свойства .. 
+	for (long i = 0; i < document->m_arrItems.size(); i++)
+	{
+		if (document->m_arrItems[i] == NULL) continue;
+
+		if (document->m_arrItems[i]->getType() == OOX::et_w_p)
+		{
+			OOX::Logic::CParagraph * para = dynamic_cast<OOX::Logic::CParagraph *>(document->m_arrItems[i]);
+			
+			if ((para) && (para->m_oParagraphProperty))
+			{
+				if (para->m_oParagraphProperty->m_oSectPr.IsInit() )
+				{
+					sections.push_back(_section(para->m_oParagraphProperty->m_oSectPr.GetPointer(), last_section_start, i + 1));
+					last_section_start = i + 1;
+				}
+			}
+		}
+	}
+	sections.push_back(_section(document->m_oSectPr.GetPointer(), last_section_start, document->m_arrItems.size(), true));
+//----------------------------------------------------------------------------------------------------------
+
 	odt_context->text_context()->clear_params();
 
-	for (unsigned int nIndex = 0; nIndex < document->m_arrItems.size(); nIndex++ )
+	for (int sect = 0; sect < sections.size(); sect++)
 	{
-		convert(document->m_arrItems[nIndex]);
-	}
+		current_section_properties = &sections[sect];
+		//convert(sections[sect].props, sections[sect].root);
 
-	convert(document->m_oSectPr.GetPointer(),true);
+		for (long i = sections[sect].start_para; i < sections[sect].end_para; i++)
+		{
+			convert(document->m_arrItems[i]);
+		}
+	}
 }
 void DocxConverter::convert(OOX::WritingElement  *oox_unknown)
 {
@@ -461,6 +492,8 @@ void DocxConverter::convert(OOX::Logic::CParagraph *oox_paragraph)
 
 	if (bStartNewParagraph)
 	{
+		if (odt_context->is_paragraph_in_current_section_)
+			bStyled = true;
 		odt_context->start_paragraph(bStyled);
 
 		if (odt_context->is_paragraph_in_current_section_)
@@ -832,17 +865,18 @@ void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr, cp
 
 	convert(oox_paragraph_pr->m_oFramePr.GetPointer(), paragraph_properties);		//буквица или фрейм
 
-	if (oox_paragraph_pr->m_oSectPr.IsInit())
+	if (current_section_properties)
 	{
-		if (oox_paragraph_pr->m_oSectPr->m_oPgNumType.IsInit())
+		if ((current_section_properties->props->m_oPgNumType.IsInit()) && (current_section_properties->props->m_oPgNumType->m_oStart.IsInit()))
 		{
-			if (oox_paragraph_pr->m_oSectPr->m_oPgNumType->m_oStart.IsInit())
-				paragraph_properties->content().style_page_number_ = oox_paragraph_pr->m_oSectPr->m_oPgNumType->m_oStart->GetValue();
-
-			//paragraph//style:page-number=
-		}	
-		convert(oox_paragraph_pr->m_oSectPr.GetPointer());
+			paragraph_properties->content().style_page_number_ = current_section_properties->props->m_oPgNumType->m_oStart->GetValue();
+		}
+		convert(current_section_properties->props, current_section_properties->root);
 	}
+	//if (oox_paragraph_pr->m_oSectPr.IsInit())
+	//{
+	//	convert(oox_paragraph_pr->m_oSectPr.GetPointer()); перенесено выше
+	//}
 
 	if (oox_paragraph_pr->m_oTabs.IsInit())
 	{
@@ -869,69 +903,9 @@ void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr, cp
 	}
 }
 
-void DocxConverter::apply_from(OOX::Logic::CSectionProperty *props, OOX::Logic::CSectionProperty *other)
+void DocxConverter::apply_HF_from(OOX::Logic::CSectionProperty *props, OOX::Logic::CSectionProperty *other)
 {
 	if (props == NULL || other== NULL)return;
-
-	props->m_bSectPrChange = other->m_bSectPrChange;
-
-	// Attributes
-	if (other->m_oRsidDel.IsInit())	props->m_oRsidDel		= other->m_oRsidDel;
-	if (other->m_oRsidR.IsInit())	props->m_oRsidR			= other->m_oRsidR;
-	if (other->m_oRsidRPr.IsInit())	props->m_oRsidRPr		= other->m_oRsidRPr;
-	if (other->m_oRsidSect.IsInit())props->m_oRsidSect		= other->m_oRsidSect;
-
-	// Child Elements
-	if (other->m_oBidi.IsInit())		props->m_oBidi		= other->m_oBidi;
-	if (other->m_oDocGrid.IsInit())		props->m_oDocGrid	= other->m_oDocGrid;
-	if (other->m_oEndnotePr.IsInit())	props->m_oEndnotePr	= other->m_oEndnotePr;
-	if (other->m_oRsidSect.IsInit())	props->m_oRsidSect	= other->m_oRsidSect;
-
-	if (other->m_oFootnotePr.IsInit())	props->m_oFootnotePr= other->m_oFootnotePr;
-	if (other->m_oFormProt.IsInit())	props->m_oFormProt	= other->m_oFormProt;
-	if (other->m_oLnNumType.IsInit())	props->m_oLnNumType	= other->m_oLnNumType;
-	if (other->m_oNoEndnote.IsInit())	props->m_oNoEndnote	= other->m_oNoEndnote;
-
-	if (other->m_oPaperSrc.IsInit())	props->m_oPaperSrc	= other->m_oPaperSrc;
-	if (other->m_oPgBorders.IsInit())	props->m_oPgBorders	= other->m_oPgBorders;
-	if (other->m_oPgMar.IsInit())		props->m_oPgMar		= other->m_oPgMar;
-	if (other->m_oPgNumType.IsInit())	props->m_oPgNumType	= other->m_oPgNumType;
-	if (other->m_oPgSz.IsInit())		props->m_oPgSz		= other->m_oPgSz;
-	if (other->m_oPrinterSettings.IsInit())	props->m_oPrinterSettings = other->m_oPrinterSettings;
-
-	if (other->m_oRtlGutter.IsInit())		props->m_oRtlGutter		= other->m_oRtlGutter;
-	if (other->m_oSectPrChange.IsInit())	props->m_oSectPrChange	= other->m_oSectPrChange;
-	if (other->m_oTextDirection.IsInit())	props->m_oTextDirection	= other->m_oTextDirection;
-	if (other->m_oTitlePg.IsInit())			props->m_oTitlePg		= other->m_oTitlePg;
-	if (other->m_oType.IsInit())			props->m_oType			= other->m_oType;
-	if (other->m_oVAlign.IsInit())			props->m_oVAlign		= other->m_oVAlign;
-	if (other->m_oTitlePg.IsInit())			props->m_oTitlePg		= other->m_oTitlePg;
-
-	if (other->m_oCols.IsInit())
-	{
-		props->m_oCols.Init();
-		props->m_oCols->m_oEqualWidth	= other->m_oCols->m_oEqualWidth;
-		props->m_oCols->m_oNum			= other->m_oCols->m_oNum;	//тут может быть неверное число если колонки определены массивом
-		props->m_oCols->m_oSep			= other->m_oCols->m_oSep;
-		props->m_oCols->m_oSpace		= other->m_oCols->m_oSpace;
-
-		for (unsigned int i =0; i < other->m_oCols->m_arrColumns.size(); i++)
-		{	
-			if (other->m_oCols->m_arrColumns[i] == NULL)continue;
-
-			ComplexTypes::Word::CColumn* col = new ComplexTypes::Word::CColumn();
-		
-			if (other->m_oCols->m_arrColumns[i]->m_oW.IsInit())		col->m_oW		= new SimpleTypes::CTwipsMeasure(*other->m_oCols->m_arrColumns[i]->m_oW.GetPointer());
-			if (other->m_oCols->m_arrColumns[i]->m_oSpace.IsInit()) col->m_oSpace	= new SimpleTypes::CTwipsMeasure(*other->m_oCols->m_arrColumns[i]->m_oSpace.GetPointer());
-
-			props->m_oCols->m_arrColumns.push_back(col);
-		}
-		if (props->m_oCols->m_arrColumns.size() > 0 && other->m_oCols->m_oNum->GetValue() > 1)
-		{
-			props->m_oCols->m_oNum = new SimpleTypes::CDecimalNumber<0>();
-			props->m_oCols->m_oNum->SetValue(props->m_oCols->m_arrColumns.size());
-		}
-	}
 
 	if (other->m_arrFooterReference.size() > 0)
 	{
@@ -976,10 +950,11 @@ void DocxConverter::apply_from(OOX::Logic::CSectionProperty *props, OOX::Logic::
 void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool root)
 {
 	if (oox_section_pr == NULL) return;
+	current_section_properties = NULL;
 
 	odt_context->text_context()->set_type_break(-1, 0);
  
-	bool continuous	= false;
+	bool continuous = false;
 
 	if (oox_section_pr->m_oType.IsInit() && oox_section_pr->m_oType->m_oVal.IsInit())
 	{
@@ -996,35 +971,32 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool r
 			break;
 		}
 	}
-
-    if (continuous && last_section_properties)
-	{	// нужно убрать автоматический разрыв.на следующую страницу
-		// + 
-		//нужно текущие совйства накотить на предыдущие !! .. и так пока continues далее повторяется 
-        apply_from(last_section_properties, oox_section_pr);
+ ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+   if (!last_section_properties && (root || continuous == false))
+	{	
+		last_section_properties = oox_section_pr;
 	}
-	else
+	else if (root || continuous == false)
 	{
+        apply_HF_from(last_section_properties, oox_section_pr);
 	}
-
-    //oox_section_pr = last_section_properties;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	if (!continuous || (root && odt_context->page_layout_context()->last_master() == NULL))
+	if (root  || continuous == false)
 	{
-		odt_context->page_layout_context()->start_master_page(root ? L"Standard" : L"");
+		odt_context->page_layout_context()->add_master_page(root ? L"Standard" : L"");
 	}
 	
-	bool present_header = false;
-	bool present_footer = false;
+	bool present_header		= false;
+	bool present_footer		= false;
 
 	if (oox_section_pr->m_oPgMar.IsInit())
 	{
 		_CP_OPT(odf_types::length) top, left, right, bottom, other;
 
-		convert(oox_section_pr->m_oPgMar->m_oBottom.GetPointer(), bottom);
-		convert(oox_section_pr->m_oPgMar->m_oLeft.GetPointer()	, left);
-		convert(oox_section_pr->m_oPgMar->m_oRight.GetPointer()	, right);
-		convert(oox_section_pr->m_oPgMar->m_oTop.GetPointer()	, top);
+		convert(oox_section_pr->m_oPgMar->m_oBottom.GetPointer(),	bottom);
+		convert(oox_section_pr->m_oPgMar->m_oLeft.GetPointer(),		left);
+		convert(oox_section_pr->m_oPgMar->m_oRight.GetPointer(),	right);
+		convert(oox_section_pr->m_oPgMar->m_oTop.GetPointer(),		top);
 		
 		odt_context->page_layout_context()->set_page_margin(top, left, bottom, right);
 		
@@ -1133,92 +1105,95 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool r
 			//nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oRtlGutter;
 			//nullable<ComplexTypes::Word::CVerticalJc                     > m_oVAlign;
 
-			//nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oTitlePg;	
 	if (oox_section_pr->m_oPgNumType.IsInit())
 	{
 		_CP_OPT(int) format;
 		_CP_OPT(int) start;
 
-		if (oox_section_pr->m_oPgNumType->m_oFmt.IsInit())	format = oox_section_pr->m_oPgNumType->m_oFmt->GetValue();
-		if (oox_section_pr->m_oPgNumType->m_oStart.IsInit())start  = oox_section_pr->m_oPgNumType->m_oStart->GetValue();
+		if (oox_section_pr->m_oPgNumType->m_oFmt.IsInit())		format = oox_section_pr->m_oPgNumType->m_oFmt->GetValue();
+		if (oox_section_pr->m_oPgNumType->m_oStart.IsInit())	start  = oox_section_pr->m_oPgNumType->m_oStart->GetValue();
 
 		odt_context->page_layout_context()->set_page_number_format(	format, start);
 			//nullable<SimpleTypes::CChapterSep<>    > m_oChapSep;
-			//nullable<SimpleTypes::CDecimalNumber<> > m_oChapStyle;
+			//nullable<SimpleTypes::CDecimalNumber<> > m_oChapStyle;	
 	}
-	OOX::Logic::CSectionProperty * s = oox_section_pr;
-    if (present_header && s->m_arrHeaderReference.size() <1 && last_section_properties)
-        s = last_section_properties;
-
-	bool present_title_page = s->m_oTitlePg.IsInit() ? true : false;
-	bool add_title_header = false, add_title_footer = false;
-
-	for (unsigned int i=0; i< s->m_arrHeaderReference.size(); i++)
-	{
-		if (s->m_arrHeaderReference[i] == NULL) continue;
-
-		int type =s->m_arrHeaderReference[i]->m_oType.IsInit() ? s->m_arrHeaderReference[i]->m_oType->GetValue() :0 ;
-
-		if (type == 2) add_title_header = true;
-
-		if (odt_context->start_header(type))
-		{
-			if (s->m_arrHeaderReference[i]->m_oId.IsInit())
-			{
-				convert_hdr_ftr(s->m_arrHeaderReference[i]->m_oId->GetValue());
-				convert(docx_document->GetDocument()->m_oBackground.GetPointer(), 2);
-			}
-
-			odt_context->end_header_footer();
-		}
-	}
-	if (present_title_page && !add_title_header)
-	{
-		if (odt_context->start_header(2))
-		{
-			odt_context->start_paragraph(false);
-			odt_context->end_paragraph();
-		}
-		odt_context->end_header_footer();
-	}
-	s = oox_section_pr;
-    if (present_footer && s->m_arrFooterReference.size() < 1 && last_section_properties)
-        s = last_section_properties; // нужно хранить ссылки на ВСЕ !!!
-
-	for (unsigned int i=0; i< s->m_arrFooterReference.size(); i++)
-	{
-		if (s->m_arrFooterReference[i] == NULL) continue;
-
-		int type = s->m_arrFooterReference[i]->m_oType.IsInit() ? s->m_arrFooterReference[i]->m_oType->GetValue() :0 ;
-
-		if (type == 2) add_title_footer = true;
-
-		if (odt_context->start_footer(type))
-		{
-			if (s->m_arrFooterReference[i]->m_oId.IsInit())
-			{
-				convert_hdr_ftr(s->m_arrFooterReference[i]->m_oId->GetValue());
-				convert(docx_document->GetDocument()->m_oBackground.GetPointer(), 3);
-			}
-
-			odt_context->end_header_footer();	
-		}
-	}
-	if (present_title_page && !add_title_footer)
-	{
-		if (odt_context->start_footer(2))
-		{
-			odt_context->start_paragraph(false);
-			odt_context->end_paragraph();
-		}
-		odt_context->end_header_footer();
-	}
-	//--------------------------------------------------------------------------------------------------------------------------------------------		
 	
-	if (!continuous)
-		odt_context->set_master_page_name(odt_context->page_layout_context()->last_master() ?
-                                          odt_context->page_layout_context()->last_master()->get_name() : L"");
+	if (continuous == false || root)
+	{
+		OOX::Logic::CSectionProperty*	s = last_section_properties; 
+		
+		bool present_title_page		= s->m_oTitlePg.IsInit() ? true : false;
+		bool present_odd_even_pages = odt_context->page_layout_context()->even_and_left_headers_;
+		
+		bool add_title_header			= false, add_title_footer			= false;
+		bool add_odd_even_pages_header	= false, add_odd_even_pages_footer	= false;
+		bool add_default_header			= false, add_default_footer	= false;
 
+		std::vector<int> types;
+
+		for (unsigned int i = 0; i < s->m_arrHeaderReference.size(); i++)
+		{
+			if (s->m_arrHeaderReference[i] == NULL) continue;
+
+			int type = s->m_arrHeaderReference[i]->m_oType.IsInit() ? s->m_arrHeaderReference[i]->m_oType->GetValue() : 0 ;
+
+			if (type == 2 && !present_title_page)		continue;
+			if (type == 1 && !present_odd_even_pages)	continue;
+
+			if (type == 2 && present_title_page)		add_title_header			= true;
+			if (type == 1 && present_odd_even_pages)	add_odd_even_pages_header	= true; //swap even & odd ?
+			if (type == 0)								add_default_header			= true;
+
+			if (odt_context->start_header(type))
+			{
+				if (s->m_arrHeaderReference[i]->m_oId.IsInit())
+				{
+					convert_hdr_ftr(s->m_arrHeaderReference[i]->m_oId->GetValue());
+					convert(docx_document->GetDocument()->m_oBackground.GetPointer(), 2);
+				}
+
+				odt_context->end_header_footer();
+			}
+		}
+		if (!add_title_header			&& present_title_page)								odt_context->add_empty_header(2);
+		if (!add_odd_even_pages_header	&& present_odd_even_pages)							odt_context->add_empty_header(1);
+		if (!add_default_header			&& (present_odd_even_pages || present_title_page))	odt_context->add_empty_header(0);
+
+		for (unsigned int i=0; i< s->m_arrFooterReference.size(); i++)
+		{
+			if (s->m_arrFooterReference[i] == NULL) continue;
+
+			int type = s->m_arrFooterReference[i]->m_oType.IsInit() ? s->m_arrFooterReference[i]->m_oType->GetValue() :0 ;
+
+			if (type == 2 && !present_title_page)		continue;
+			if (type == 1 && !present_odd_even_pages)	continue;
+
+			if (type == 2 && present_title_page)		add_title_footer			= true;
+			if (type == 1 && present_odd_even_pages)	add_odd_even_pages_footer	= true;
+			if (type == 0)								add_default_footer			= true;
+
+			if (odt_context->start_footer(type))
+			{
+				if (s->m_arrFooterReference[i]->m_oId.IsInit())
+				{
+					convert_hdr_ftr(s->m_arrFooterReference[i]->m_oId->GetValue());
+					convert(docx_document->GetDocument()->m_oBackground.GetPointer(), 3);
+				}
+
+				odt_context->end_header_footer();	
+			}
+		}
+		if (!add_title_footer			&& present_title_page)								odt_context->add_empty_footer(2);
+		if (!add_odd_even_pages_footer	&& present_odd_even_pages)							odt_context->add_empty_footer(1);
+		if (!add_default_footer			&& (present_odd_even_pages || present_title_page))	odt_context->add_empty_footer(0);
+
+		odt_context->is_paragraph_in_current_section_ = true;
+
+		//odt_context->set_master_page_name(odt_context->page_layout_context()->last_master() ?
+		//									  odt_context->page_layout_context()->last_master()->get_name() : L"");
+	}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------		
 	// то что относится собственно к секциям-разделам
 	//if (!root)odt_context->add_section(continuous);
 
@@ -1284,14 +1259,6 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool r
 
 		if (root) odt_context->flush_section();
 	}
-
-	if (!continuous)	odt_context->page_layout_context()->end_master_page(); // для добавления автогенераций
-	if (root)
-	{
-		odt_context->page_layout_context()->set_current_master_page_base();
-	}
-
-    last_section_properties = oox_section_pr;
 }
 void DocxConverter::convert(OOX::Logic::CBackground *oox_background, int type)
 {
@@ -2750,8 +2717,7 @@ void DocxConverter::convert_settings()
 		odt_context->page_layout_context()->set_pages_mirrored(true);
 	}
 
-	if (docx_settings->m_oEvenAndOddHeaders.IsInit())odt_context->page_layout_context()->set_even_and_left_headers(true);
-	else odt_context->page_layout_context()->set_even_and_left_headers(false);
+	odt_context->page_layout_context()->even_and_left_headers_ = docx_settings->m_oEvenAndOddHeaders.IsInit();
 
 	if (docx_settings->m_oPrintTwoOnOne.IsInit())
 	{

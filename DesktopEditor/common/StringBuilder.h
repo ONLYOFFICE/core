@@ -267,8 +267,12 @@ namespace NSStringUtils
 			m_pDataCur += nLen;
 			m_lSizeCur += nLen;
 		}
-		inline void WriteString(const wchar_t* pString, size_t nLen)
+		inline void WriteString(const wchar_t* pString, size_t nLen = -1)
 		{
+			if (-1 == nLen)
+			{
+				nLen = wcslen(pString);
+			}
 			AddSize(nLen);
 			WriteStringNoSafe(pString, nLen);
 		}
@@ -466,6 +470,11 @@ namespace NSStringUtils
 		{
 			AddSize(11);
 			AddIntNoCheckDel100(val);
+		}
+		void AddInt64(__int64 val)
+		{
+			//todo AddIntNoCheck
+			WriteString(std::to_wstring(val));
 		}
 
 		void AddIntNoCheck(int val)

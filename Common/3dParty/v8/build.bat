@@ -5,12 +5,12 @@ SET PATH=%SCRIPTPATH%depot_tools;%SCRIPTPATH%depot_tools\python276_bin;%PATH%
 SET DEPOT_TOOLS_WIN_TOOLCHAIN=0
 SET GYP_MSVS_VERSION=2013
 
-SET VC32_PATH=%ProgramFiles(x86)%\Microsoft Visual Studio 12.0\Common7\IDE
-SET VC64_PATH=%ProgramFiles%\Microsoft Visual Studio 12.0\Common7\IDE
+SET VC64_PATH=%ProgramFiles(x86)%\Microsoft Visual Studio 12.0\Common7\IDE
+SET VC32_PATH=%ProgramFiles%\Microsoft Visual Studio 12.0\Common7\IDE
 
 setlocal enabledelayedexpansion
 if defined ProgramFiles(x86) (
-	SET PATH=!VC32_PATH!;!PATH!
+	SET PATH=!VC64_PATH!;!PATH!
 ) else (
 	SET PATH=!VC32_PATH!;!PATH!
 )

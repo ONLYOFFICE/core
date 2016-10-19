@@ -118,7 +118,7 @@ int CEquationReader::Parse()
 int CEquationReader::HandleRecords()
 {
 	unsigned char nTag, nRecord;
-	unsigned short nTabOffset;
+    _UINT16 nTabOffset;
 
 	int nRet = 1;
 
@@ -219,8 +219,8 @@ void CEquationReader::HandleNudge()
 
 	if (128 == nXNudge && 128 == nYNudge)
     {
-		unsigned short nXLongNudge; *pS >> nXLongNudge;
-		unsigned short nYLongNudge; *pS >> nYLongNudge;
+        _UINT16 nXLongNudge; *pS >> nXLongNudge;
+        _UINT16 nYLongNudge; *pS >> nYLongNudge;
     }
 }
 int  CEquationReader::HandleChar(unsigned char nTag)
@@ -692,7 +692,7 @@ void CEquationReader::HandleSetSize(MTOKENS eType)
 	{
 		unsigned char nTemp;
 		*pS >> nTemp;
-		unsigned short nSize;
+        _UINT16 nSize;
 		switch (nTemp)
 		{
 		case 101:
@@ -706,7 +706,7 @@ void CEquationReader::HandleSetSize(MTOKENS eType)
 				*pS >> nTemp;
 				nSize = nTemp;
 
-				unsigned short nTempSize;
+                _UINT16 nTempSize;
 				*pS >> nTempSize;
 				break;
 			}
@@ -715,7 +715,7 @@ void CEquationReader::HandleSetSize(MTOKENS eType)
 				// TODO: Проверить эту ветку
 				nSize = nTemp;
 				*pS >> nTemp;
-				unsigned short nTempSize = nTemp - 128;
+                _UINT16 nTempSize = nTemp - 128;
 				break;
 			}
 		}
@@ -732,7 +732,7 @@ void CEquationReader::HandleSetSize(MTOKENS eType)
 void CEquationReader::HandleRuler()
 {
 	unsigned char nTabType, nTabStops;
-	unsigned short nTabOffset;
+    _UINT16 nTabOffset;
 	*pS >> nTabStops;
 
 	for (int nTabIndex = 0; nTabIndex < nTabStops; nTabIndex++)

@@ -34,16 +34,10 @@
 
 #include <map>
 #include "../../../../DesktopEditor/common/Types.h"
+#include "../../../../Common/DocxFormat/Source/Base/Types_32.h"
 
 namespace MathEquation
 {
-	//typedef unsigned char  uint8_t;
-	//typedef unsigned short uint16_t;
-	//typedef unsigned int   uint32_t;
-	//typedef signed char    int8_t;
-	//typedef signed short   int16_t;
-	//typedef signed int     int32_t;
-
 	typedef unsigned short Unicode_t;
 	typedef signed char    Char_t;
 
@@ -54,7 +48,7 @@ namespace MathEquation
 		bool        bBold;
 	};
 
-	typedef std::map<uint8_t, TMathFont> TFontMap;
+    typedef std::map<unsigned char, TMathFont> TFontMap;
 
 	enum MBRACKETSTYPE
 	{

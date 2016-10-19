@@ -903,69 +903,9 @@ void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr, cp
 	}
 }
 
-void DocxConverter::apply_from(OOX::Logic::CSectionProperty *props, OOX::Logic::CSectionProperty *other)
+void DocxConverter::apply_HF_from(OOX::Logic::CSectionProperty *props, OOX::Logic::CSectionProperty *other)
 {
 	if (props == NULL || other== NULL)return;
-
-	props->m_bSectPrChange = other->m_bSectPrChange;
-
-	// Attributes
-	if (other->m_oRsidDel.IsInit())	props->m_oRsidDel		= other->m_oRsidDel;
-	if (other->m_oRsidR.IsInit())	props->m_oRsidR			= other->m_oRsidR;
-	if (other->m_oRsidRPr.IsInit())	props->m_oRsidRPr		= other->m_oRsidRPr;
-	if (other->m_oRsidSect.IsInit())props->m_oRsidSect		= other->m_oRsidSect;
-
-	// Child Elements
-	if (other->m_oBidi.IsInit())		props->m_oBidi		= other->m_oBidi;
-	if (other->m_oDocGrid.IsInit())		props->m_oDocGrid	= other->m_oDocGrid;
-	if (other->m_oEndnotePr.IsInit())	props->m_oEndnotePr	= other->m_oEndnotePr;
-	if (other->m_oRsidSect.IsInit())	props->m_oRsidSect	= other->m_oRsidSect;
-
-	if (other->m_oFootnotePr.IsInit())	props->m_oFootnotePr= other->m_oFootnotePr;
-	if (other->m_oFormProt.IsInit())	props->m_oFormProt	= other->m_oFormProt;
-	if (other->m_oLnNumType.IsInit())	props->m_oLnNumType	= other->m_oLnNumType;
-	if (other->m_oNoEndnote.IsInit())	props->m_oNoEndnote	= other->m_oNoEndnote;
-
-	if (other->m_oPaperSrc.IsInit())	props->m_oPaperSrc	= other->m_oPaperSrc;
-	if (other->m_oPgBorders.IsInit())	props->m_oPgBorders	= other->m_oPgBorders;
-	if (other->m_oPgMar.IsInit())		props->m_oPgMar		= other->m_oPgMar;
-	if (other->m_oPgNumType.IsInit())	props->m_oPgNumType	= other->m_oPgNumType;
-	if (other->m_oPgSz.IsInit())		props->m_oPgSz		= other->m_oPgSz;
-	if (other->m_oPrinterSettings.IsInit())	props->m_oPrinterSettings = other->m_oPrinterSettings;
-
-	if (other->m_oRtlGutter.IsInit())		props->m_oRtlGutter		= other->m_oRtlGutter;
-	if (other->m_oSectPrChange.IsInit())	props->m_oSectPrChange	= other->m_oSectPrChange;
-	if (other->m_oTextDirection.IsInit())	props->m_oTextDirection	= other->m_oTextDirection;
-	if (other->m_oTitlePg.IsInit())			props->m_oTitlePg		= other->m_oTitlePg;
-	if (other->m_oType.IsInit())			props->m_oType			= other->m_oType;
-	if (other->m_oVAlign.IsInit())			props->m_oVAlign		= other->m_oVAlign;
-	if (other->m_oTitlePg.IsInit())			props->m_oTitlePg		= other->m_oTitlePg;
-
-	if (other->m_oCols.IsInit())
-	{
-		props->m_oCols.Init();
-		props->m_oCols->m_oEqualWidth	= other->m_oCols->m_oEqualWidth;
-		props->m_oCols->m_oNum			= other->m_oCols->m_oNum;	//тут может быть неверное число если колонки определены массивом
-		props->m_oCols->m_oSep			= other->m_oCols->m_oSep;
-		props->m_oCols->m_oSpace		= other->m_oCols->m_oSpace;
-
-		for (unsigned int i =0; i < other->m_oCols->m_arrColumns.size(); i++)
-		{	
-			if (other->m_oCols->m_arrColumns[i] == NULL)continue;
-
-			ComplexTypes::Word::CColumn* col = new ComplexTypes::Word::CColumn();
-		
-			if (other->m_oCols->m_arrColumns[i]->m_oW.IsInit())		col->m_oW		= new SimpleTypes::CTwipsMeasure(*other->m_oCols->m_arrColumns[i]->m_oW.GetPointer());
-			if (other->m_oCols->m_arrColumns[i]->m_oSpace.IsInit()) col->m_oSpace	= new SimpleTypes::CTwipsMeasure(*other->m_oCols->m_arrColumns[i]->m_oSpace.GetPointer());
-
-			props->m_oCols->m_arrColumns.push_back(col);
-		}
-		if (props->m_oCols->m_arrColumns.size() > 0 && other->m_oCols->m_oNum->GetValue() > 1)
-		{
-			props->m_oCols->m_oNum = new SimpleTypes::CDecimalNumber<0>();
-			props->m_oCols->m_oNum->SetValue(props->m_oCols->m_arrColumns.size());
-		}
-	}
 
 	if (other->m_arrFooterReference.size() > 0)
 	{
@@ -1038,7 +978,7 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool r
 	}
 	else if (root || continuous == false)
 	{
-        apply_from(last_section_properties, oox_section_pr);
+        apply_HF_from(last_section_properties, oox_section_pr);
 	}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	if (root  || continuous == false)

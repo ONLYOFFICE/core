@@ -158,7 +158,7 @@ namespace Oox2Odf
 		odf_writer::odt_conversion_context				*odt_context;
         OOX::Logic::CSectionProperty					*last_section_properties;
 
-		void apply_from(OOX::Logic::CSectionProperty *props, OOX::Logic::CSectionProperty *other);
+		void apply_HF_from(OOX::Logic::CSectionProperty *props, OOX::Logic::CSectionProperty *other);
 		
 		void convert_document		();
 		void convert_styles			();

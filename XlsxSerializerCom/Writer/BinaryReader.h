@@ -2295,7 +2295,7 @@ namespace BinXlsxRW {
 			else if(c_oSer_Pane::State == type)
 			{
 				pPane->m_oState.Init();
-				pPane->m_oState->SetValue((SimpleTypes::Spreadsheet::EPaneState)m_oBufferedStream.GetUChar());
+				pPane->m_oState->FromString(m_oBufferedStream.GetString4(length));
 			}
 			else if(c_oSer_Pane::TopLeftCell == type)
 			{

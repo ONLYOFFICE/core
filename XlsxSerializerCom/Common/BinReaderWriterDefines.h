@@ -731,11 +731,10 @@ namespace BinXlsxRW
 	namespace c_oSer_Pane{enum c_oSer_Pane
 	{
 		ActivePane = 0,
-//		State = 1,
+		State = 1,
 		TopLeftCell = 2,
 		XSplit = 3,
-		YSplit = 4,
-		State = 5
+		YSplit = 4
 	};}
 	namespace c_oSer_Selection{enum c_oSer_Selection
 	{

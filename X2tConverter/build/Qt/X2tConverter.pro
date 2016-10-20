@@ -24,13 +24,6 @@ CONFIG += core_x2t
 include(../../../Common/base.pri)
 include(../../../Common/3dParty/icu/icu.pri)
 
-core_win_32 {
-    TARGET = x2t32
-}
-core_linux_32 {
-    TARGET = x2t32
-}
-
 core_windows {
     QMAKE_LFLAGS += /INCREMENTAL:NO
 
@@ -114,8 +107,13 @@ HEADERS += ../../src/cextracttools.h \
 ###############################################################################################################
 
 DESTDIR = $$PWD/../../../build/bin
-core_windows {
-    DESTDIR = $$DESTDIR/windows
+core_win_32 {
+    message("x2t windows 32 build")
+    DESTDIR = $$DESTDIR/win_32
+}
+core_win_64 {
+    message("x2t windows 64 build")
+    DESTDIR = $$DESTDIR/win_64
 }
 core_linux_64 {
     message("x2t linux 64 build")

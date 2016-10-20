@@ -109,12 +109,12 @@ public :
 		nValue = ReadUInt32();
 	}
 
-	void operator>>(int8_t   &nValue)
+    void operator>>(char   &nValue)
 	{
 		nValue = ReadUInt8();
 	}
 
-	void operator>>(int16_t  &nValue)
+    void operator>>(short  &nValue)
 	{
         nValue = ReadUInt16();
 	}

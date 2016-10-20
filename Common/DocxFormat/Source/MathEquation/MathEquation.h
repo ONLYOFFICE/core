@@ -111,7 +111,7 @@ namespace MathEquation
 		void HandleSetSize(MTOKENS eType);
 		void HandleRuler();
 		void HandleFont();
-		bool IsSpecialChar(Unicode_t nChar);
+        bool IsSpecialChar(unsigned short nChar);
 
 	private:
 

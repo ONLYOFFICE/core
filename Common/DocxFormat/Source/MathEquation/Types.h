@@ -38,9 +38,6 @@
 
 namespace MathEquation
 {
-	typedef unsigned short Unicode_t;
-	typedef signed char    Char_t;
-
 	struct TMathFont
 	{
 		std::string sName;

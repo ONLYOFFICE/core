@@ -225,7 +225,7 @@ void CEquationReader::HandleNudge()
 }
 int  CEquationReader::HandleChar(unsigned char nTag)
 {
-	Unicode_t nChar;
+    unsigned short nChar;
 	int nRet = 1;
 
 	if (xfAUTO(nTag))
@@ -749,7 +749,7 @@ void CEquationReader::HandleFont()
 	*pS >> nTFace;
 	*pS >> nStyle;
 
-	Char_t nChar8;
+    char nChar8;
 	do
 	{
 		*pS >> nChar8;
@@ -760,7 +760,7 @@ void CEquationReader::HandleFont()
 	pOutputDev->AddFont(128 - nTFace, sName.GetValue(), nStyle & 0x01, nStyle & 0x02);
 }
 
-bool CEquationReader::IsSpecialChar(Unicode_t nChar)
+bool CEquationReader::IsSpecialChar(unsigned short nChar)
 {
 	switch(nChar)
 	{

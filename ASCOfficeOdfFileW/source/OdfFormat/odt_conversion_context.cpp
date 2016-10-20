@@ -272,6 +272,12 @@ void odt_conversion_context::end_drawings()
 }
 void odt_conversion_context::start_paragraph(bool styled)
 {
+	if (is_paragraph_in_current_section_ && !styled) 
+	{
+		styles_context()->create_style(L"", odf_types::style_family::Paragraph, true, false, -1);					
+		styled = true;
+	}
+
 	text_context()->start_paragraph(styled);	
 	
 	add_to_root();
@@ -281,10 +287,10 @@ void odt_conversion_context::add_page_break()
 	office_element_ptr elm;
 	create_element(L"text", L"soft-page-break", elm, this);	
 	
-	if (current_root_elements_.size()>0/* && text_context()->is_need_break()*/)			
+	if (current_root_elements_.size() > 0/* && text_context()->is_need_break()*/)			
 	{ 	
-		text_p* para = NULL;
-		style * style_ = NULL;
+		text_p* para	= NULL;
+		style * style_	= NULL;
 		//http://docs.oasis-open.org/office/v1.2/os/OpenDocument-v1.2-os-part1.html#__RefHeading__1415190_253892949
 		//нихере не работает !! в span, ... приходится генерить разрыв вручную !!
 
@@ -424,14 +430,16 @@ void odt_conversion_context::set_master_page_name(std::wstring master_name)
 	}
 
 	style *style_ = dynamic_cast<style*>(current_root_elements_.back().style_elm.get());
-	if (!style_)
-	{
-		//генерация 
-	}
+
 	if (style_)
 	{
 		is_paragraph_in_current_section_	= false;
 		style_->style_master_page_name_		= master_name;
+	}
+	else
+	{
+		if (text_context()->set_master_page_name(master_name))
+			is_paragraph_in_current_section_ = false;		
 	}
 }
 int odt_conversion_context::get_current_section_columns()
@@ -443,12 +451,13 @@ int odt_conversion_context::get_current_section_columns()
 void odt_conversion_context::add_section(bool continuous)
 {
 	odt_section_state state;
-	state.empty = true;
-	state.continuous = continuous;
+	
+	state.empty			= true;
+	state.continuous	= continuous;
 //----------------------------------------------------------------
-	styles_context()->create_style(L"",odf_types::style_family::Section, true, false, -1);		
+	styles_context()->create_style(L"", odf_types::style_family::Section, true, false, -1);		
 
-	create_element(L"text", L"section",state.elm,this);
+	create_element(L"text", L"section", state.elm, this);
 	state.style_elm		= styles_context()->last_state()->get_office_element();
 	state.style_name	= styles_context()->last_state()->get_name();
 	
@@ -457,7 +466,7 @@ void odt_conversion_context::add_section(bool continuous)
 
 	sections_.push_back(state);
 }
-void odt_conversion_context::add_section_columns(int count, double space_pt, bool separator )
+void odt_conversion_context::add_section_columns(int count, double space_pt, bool separator)
 {
 	if (sections_.size() < 1 || count < 1) return;
 
@@ -469,7 +478,7 @@ void odt_conversion_context::add_section_columns(int count, double space_pt, boo
 	create_element(L"style", L"columns",section_properties->style_columns_,this);	
 	style_columns* columns = dynamic_cast<style_columns*>(section_properties->style_columns_.get());
 	if (!columns)return;
-	sections_.back().count_columns = count;
+	sections_.back().count_columns	= count;
 
 						columns->fo_column_count_	= count;
 	if (space_pt >= 0)	columns->fo_column_gap_		= length(length(space_pt,length::pt).get_value_unit(length::cm),length::cm);
@@ -494,8 +503,8 @@ void odt_conversion_context::add_section_column(std::vector<std::pair<double,dou
 	style* style_ = dynamic_cast<style*>(sections_.back().style_elm.get());
 	if (!style_)return;
 
-	style_section_properties	* section_properties	= style_->style_content_.get_style_section_properties();
-	//section_properties->text_dont_balance_text_columns_ = true;
+	style_section_properties	* section_properties		= style_->style_content_.get_style_section_properties();
+	//section_properties->text_dont_balance_text_columns_	= true;
 	
 	style_columns* columns = dynamic_cast<style_columns*>(section_properties->style_columns_.get());
 	if (!columns)return;
@@ -624,7 +633,7 @@ void odt_conversion_context::flush_section()
 	{
 		for (long i=0; i< current_root_elements_.size(); i++)
 		{
-			if ((sections_.back().continuous && i<2) || !sections_.back().continuous)
+			if ((sections_.back().continuous && i < 2) || !sections_.back().continuous)
 				// при вставлении параграфа возможен искусственный разрыв в параграфах - см add_page_break
 			{
 				text_soft_page_break * break_ = dynamic_cast<text_soft_page_break*>(current_root_elements_[i].elm.get());
@@ -647,7 +656,7 @@ void odt_conversion_context::flush_section()
 		}
 		current_root_elements_.clear();
 
-		sections_.back().empty = false;
+		//sections_.back().empty = false;
 	}
 }
 void odt_conversion_context::start_run(bool styled)

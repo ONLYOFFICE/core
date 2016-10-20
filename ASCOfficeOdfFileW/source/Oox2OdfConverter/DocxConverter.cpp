@@ -230,7 +230,6 @@ void DocxConverter::convert_document()
 	for (int sect = 0; sect < sections.size(); sect++)
 	{
 		current_section_properties = &sections[sect];
-		//convert(sections[sect].props, sections[sect].root);
 
 		for (long i = sections[sect].start_para; i < sections[sect].end_para; i++)
 		{
@@ -456,7 +455,7 @@ void DocxConverter::convert(OOX::Logic::CParagraph *oox_paragraph)
 			{
 				paragraph_properties = state->get_paragraph_properties();
 
-				if (oox_paragraph->m_oParagraphProperty->m_oPStyle.IsInit() && oox_paragraph->m_oParagraphProperty->m_oPStyle->m_sVal.IsInit())
+				if (oox_paragraph->m_oParagraphProperty && oox_paragraph->m_oParagraphProperty->m_oPStyle.IsInit() && oox_paragraph->m_oParagraphProperty->m_oPStyle->m_sVal.IsInit())
 				{
 					//перезатираем все свойства ... наложение не катит -- ваще то надо чистить после буквицы (Nadpis.docx) .. проверить надобность с остальными случами
 					paragraph_properties->content().clear();
@@ -492,8 +491,6 @@ void DocxConverter::convert(OOX::Logic::CParagraph *oox_paragraph)
 
 	if (bStartNewParagraph)
 	{
-		if (odt_context->is_paragraph_in_current_section_)
-			bStyled = true;
 		odt_context->start_paragraph(bStyled);
 
 		if (odt_context->is_paragraph_in_current_section_)
@@ -532,15 +529,16 @@ void DocxConverter::convert(OOX::Logic::CParagraph *oox_paragraph)
 void DocxConverter::convert(OOX::Logic::CRun *oox_run)//wordprocessing 22.1.2.87 math 17.3.2.25
 {
 	if (oox_run == NULL) return;
-	
-	//test for break - 2 first element ЭТОТ элемент НУЖНО вытащить отдельно !!!
-    for(unsigned int i = 0; i < (std::min) ( (size_t)2, oox_run->m_arrItems.size()); ++i)
-	{
-		if (oox_run->m_arrItems[i]->getType() == OOX::et_w_lastRenderedPageBreak)
-		{
-			odt_context->add_page_break();
-		}
-	}	
+	//хм разобраться а нужен ли он ... частенько бывает в неправильном месте!!! - A   GRUBU.docx
+	//https://forums.asp.net/t/1951556.aspx?Facing+problem+finding+out+page+end+in+Ms+Word+Open+XML+SDK+Asp+net+c+We+can+t+get+a+lastRenderedPageBreak
+	////test for break - 2 first element ЭТОТ элемент НУЖНО вытащить отдельно !!!
+	//for(unsigned int i = 0; i < (std::min) ( (size_t)2, oox_run->m_arrItems.size()); ++i)
+	//{
+	//	if (oox_run->m_arrItems[i]->getType() == OOX::et_w_lastRenderedPageBreak)
+	//	{
+	//		odt_context->add_page_break();
+	//	}
+	//}	
 	bool styled = false;	
 	if (oox_run->m_oRunProperty) 
 	{
@@ -867,7 +865,7 @@ void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr, cp
 
 	if (current_section_properties)
 	{
-		if ((current_section_properties->props->m_oPgNumType.IsInit()) && (current_section_properties->props->m_oPgNumType->m_oStart.IsInit()))
+		if ((current_section_properties->props) && (current_section_properties->props->m_oPgNumType.IsInit()) && (current_section_properties->props->m_oPgNumType->m_oStart.IsInit()))
 		{
 			paragraph_properties->content().style_page_number_ = current_section_properties->props->m_oPgNumType->m_oStart->GetValue();
 		}
@@ -1122,12 +1120,12 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool r
 	{
 		OOX::Logic::CSectionProperty*	s = last_section_properties; 
 		
-		bool present_title_page		= s->m_oTitlePg.IsInit() ? true : false;
-		bool present_odd_even_pages = odt_context->page_layout_context()->even_and_left_headers_;
+		bool present_title_page			= s->m_oTitlePg.IsInit() ? true : false;
+		bool present_odd_even_pages		= odt_context->page_layout_context()->even_and_left_headers_;
 		
 		bool add_title_header			= false, add_title_footer			= false;
 		bool add_odd_even_pages_header	= false, add_odd_even_pages_footer	= false;
-		bool add_default_header			= false, add_default_footer	= false;
+		bool add_default_header			= false, add_default_footer			= false;
 
 		std::vector<int> types;
 
@@ -1195,7 +1193,6 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool r
 
 //--------------------------------------------------------------------------------------------------------------------------------------------		
 	// то что относится собственно к секциям-разделам
-	//if (!root)odt_context->add_section(continuous);
 
 			//nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oBidi;
 			//nullable<ComplexTypes::Word::CDocGrid                        > m_oDocGrid;
@@ -1223,7 +1220,8 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool r
 
 	if (/*num_columns != odt_context->get_current_section_columns() || */num_columns >= 1) //колонки
 	{
-		odt_context->add_section(continuous);
+		if (!root || num_columns > 1)
+			odt_context->add_section(continuous);
 		
 		if (oox_section_pr->m_oCols.IsInit())
 		{
@@ -1256,8 +1254,6 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool r
 			//}
 			odt_context->add_section_column(width_space);
 		}
-
-		if (root) odt_context->flush_section();
 	}
 }
 void DocxConverter::convert(OOX::Logic::CBackground *oox_background, int type)
@@ -1654,17 +1650,27 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::st
 			text_properties->content().fo_font_weight_ = odf_types::font_weight(odf_types::font_weight::WNormal);
 	}
 
+	bool set_color = false;
 	if (oox_run_pr->m_oGradFill.IsInit())
 	{
-		bool res = odf_context()->drawing_context()->change_text_box_2_wordart();
+		odf_writer::odf_drawing_context	 *drawing_context = odf_context()->drawing_context();
+		if (drawing_context)
+		{
+			if (odf_context()->drawing_context()->change_text_box_2_wordart())
+			{
+				odf_context()->drawing_context()->start_area_properties();
+				{		
+					OoxConverter::convert(oox_run_pr->m_oGradFill.GetPointer(), NULL);
+				}
+				odf_context()->drawing_context()->end_area_properties();
 
-		odf_context()->drawing_context()->start_area_properties();
-		{		
-			OoxConverter::convert(oox_run_pr->m_oGradFill.GetPointer(), NULL);
+				set_color = true;
+			}
 		}
-		odf_context()->drawing_context()->end_area_properties();
+		else{}	//обычный текст .. градиент по телу абзаца (
 	}
-	else if (oox_run_pr->m_oColor.IsInit())
+	
+	if (!set_color && oox_run_pr->m_oColor.IsInit())
 	{
 		if(oox_run_pr->m_oColor->m_oVal.IsInit() && oox_run_pr->m_oColor->m_oVal->GetValue() == SimpleTypes::hexcolorAuto)
 			text_properties->content().fo_color_ = odf_types::color(L"#000000");
@@ -3506,7 +3512,16 @@ void DocxConverter::convert(OOX::Logic::CTbl *oox_table)
 
 	if (in_frame)
 	{
+		if (current_section_properties)
+			convert(current_section_properties->props, current_section_properties->root);
+		
 		odt_context->start_paragraph();
+
+		if (odt_context->is_paragraph_in_current_section_)
+		{
+			odt_context->set_master_page_name(odt_context->page_layout_context()->last_master() ?
+								  odt_context->page_layout_context()->last_master()->get_name() : L"");
+		}
 			odt_context->start_drawings();
 				_CP_OPT(double) width, height, x, y ;
 				
@@ -3566,6 +3581,7 @@ void DocxConverter::convert(OOX::Logic::CTbl *oox_table)
 				odt_context->drawing_context()->start_drawing();	
 
 				odt_context->drawing_context()->start_text_box();
+					odt_context->drawing_context()->set_text_box_tableframe(true);
 					odt_context->drawing_context()->set_text_box_min_size(0, 1.);
 					odt_context->drawing_context()->set_z_order(0x7fffffff-1);
 					odt_context->drawing_context()->set_text_box_parent_style(L"Frame");

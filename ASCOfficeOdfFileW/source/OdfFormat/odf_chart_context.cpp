@@ -1527,9 +1527,6 @@ void odf_chart_context::set_cash(std::wstring format, std::vector<std::wstring> 
 
 		if (refs.size() < 1) return;			
 		utils::parsing_ref( refs[0], col1, row1);
-
-		int count_cols = col2 - col1;
-		int count_rows = row2 - row1;
 		
 		if (refs.size() > 1) 
 		{
@@ -1539,11 +1536,14 @@ void odf_chart_context::set_cash(std::wstring format, std::vector<std::wstring> 
 		{
 			col2 = col1; row2 = row1;
 		}
+		int count_cols = col2 - col1;
+		int count_rows = row2 - row1;
+	
 		if (count_cols == 0)
 		{
 			start_col			= col2;
 			start_row			= row1;
-			count_cash_values	= count_rows;
+			count_cash_values	= count_rows + 1;
 		}
 		else
 		{
@@ -1551,7 +1551,7 @@ void odf_chart_context::set_cash(std::wstring format, std::vector<std::wstring> 
 			start_row			= row2;
 
 			by_row = false;
-			count_cash_values = count_cols;
+			count_cash_values = count_cols + 1;
 		}
 		if (data_str.empty())
 		{
@@ -1611,13 +1611,13 @@ struct _sort_cells
 	bool operator() (_cell_cash i, _cell_cash j)
 	{ 
 		if (i.row == j.row)
-			return (i.col<j.col);
+			return (i.col < j.col);
 		else
-			return (i.row<j.row);
+			return (i.row < j.row);
 	}
 } sort_cells;
 
-int odf_chart_context::Impl::create_local_table_rows(int curr_row, ods_table_state * table_state,std::vector<_cell_cash> & cells, bool header )
+int odf_chart_context::Impl::create_local_table_rows(int curr_row, ods_table_state * table_state, std::vector<_cell_cash> & cells, bool header )
 {
 	int curr_cell = 0;
 
@@ -1631,6 +1631,7 @@ int odf_chart_context::Impl::create_local_table_rows(int curr_row, ods_table_sta
 			continue;
 
 		add = false;
+
 		if (cells[i].row  > curr_row + 1 && !header)
 		{	
 			office_element_ptr row_elm;
@@ -1645,17 +1646,13 @@ int odf_chart_context::Impl::create_local_table_rows(int curr_row, ods_table_sta
 			curr_row =  cells[i].row - 1;
 			add = true;
 		}
-		if (cells[i].row == curr_row + 1)
+		while (cells[i].row >= curr_row + 1)
 		{
-			if (!add)
-			{
-				office_element_ptr row_elm;
+			office_element_ptr row_elm;
 
-				create_element(L"table", L"table-row", row_elm, odf_context_);
-                table_state->add_row(row_elm, 1, style_null);
-			}
+			create_element(L"table", L"table-row", row_elm, odf_context_);
+			table_state->add_row(row_elm, 1, style_null);
 			curr_row++;
-
 			curr_cell=0;
 		}
 
@@ -1823,7 +1820,37 @@ void odf_chart_context::Impl::create_local_table()
         office_element_ptr style_null;
 
 		int current_row = 0;
+		
+		if (cells_cash_label.size() > 0 || cells_cash.size() > 0)
+		{
+			int min_row = 1, r1 = 1, r2 = 1;
+			int min_col = 1, c1 = 1, c2 = 1;
 
+			if (cells_cash_label.size() > 0) 
+			{
+				r1 = cells_cash_label[0].row;
+				c1 = cells_cash_label[0].col;
+			}
+			if (cells_cash.size() > 0) 
+			{
+				r2 = cells_cash[0].row;
+				c2 = cells_cash[0].col;
+			}
+			if ((std::min)(r1, r2) > min_row)	min_row = (std::min)(r1, r2);
+			if ((std::min)(c1, c2) > min_col)	min_col = (std::min)(c1, c2);
+
+			for (int i = 0 ; i < cells_cash_label.size(); i++)
+			{
+				cells_cash_label[i].row -= min_row - 1;
+				cells_cash_label[i].col -= min_col - 1;
+			}
+			for (int i = 0 ; i < cells_cash.size(); i++)
+			{
+				cells_cash[i].row -= min_row - 1;
+				cells_cash[i].col -= min_col - 1;
+			}
+		}
+		
 		if (cells_cash_label.size() > 0 || cells_cash.size() > 0)
 		{
 			if (cells_cash_label.size() > 0 && row_header)

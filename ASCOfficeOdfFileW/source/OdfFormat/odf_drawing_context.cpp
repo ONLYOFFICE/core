@@ -171,26 +171,27 @@ struct odf_drawing_state
 	{
 		elements_.clear();
 		
-		svg_x_		= boost::none;
-		svg_y_		= boost::none;
-		svg_height_	= boost::none;
-		svg_width_	= boost::none;
+		svg_x_				= boost::none;
+		svg_y_				= boost::none;
+		svg_height_			= boost::none;
+		svg_width_			= boost::none;
 
-		name_		= L"";
-		z_order_	= -1;
+		name_				= L"";
+		z_order_			= -1;
 		
-		rotateAngle = boost::none;
+		rotateAngle			= boost::none;
 		
-		path_		= L"";
-		view_box_	= L"";
-		path_last_command_ = L"";
-		modifiers_	= L"";
+		path_				= L"";
+		view_box_			= L"";
+		path_last_command_	= L"";
+		modifiers_			= L"";
 
-		oox_shape_preset = -1;
+		oox_shape_preset	= -1;
 
-		in_group		= false;
+		in_group			= false;
+		text_box_tableframe = false;
 
-		flipH = flipV	= false;
+		flipH = flipV		= false;
 
 	}
 	std::vector<odf_element_state>	elements_;
@@ -217,6 +218,7 @@ struct odf_drawing_state
 ///////////////////////
 	int oox_shape_preset;
 	bool in_group;
+	bool text_box_tableframe;
 };
 
 class odf_drawing_context::Impl
@@ -227,9 +229,9 @@ public:
 		current_drawing_state_.clear();
 		styles_context_ = odf_context_->styles_context();
 		
-		current_graphic_properties = NULL;
-		current_paragraph_properties = NULL;
-		current_text_properties = NULL;
+		current_graphic_properties		= NULL;
+		current_paragraph_properties	= NULL;
+		current_text_properties			= NULL;
 
 		width = height = x = y = 0;
 		
@@ -683,9 +685,10 @@ void odf_drawing_context::start_shape(int type)
 bool odf_drawing_context::change_text_box_2_wordart()
 {
 	if (impl_->current_drawing_state_.oox_shape_preset > 2000 && impl_->current_drawing_state_.oox_shape_preset < 3000)
-		return true;	
-	
-	if (impl_->current_drawing_state_.elements_.empty()) return false;
+		return false;	
+
+	if (impl_->current_drawing_state_.text_box_tableframe)	return false;	
+	if (impl_->current_drawing_state_.elements_.empty())	return false;
 
 	draw_text_box* t = dynamic_cast<draw_text_box*>(impl_->current_drawing_state_.elements_.back().elm.get());
 	if (!t) return false;
@@ -693,13 +696,13 @@ bool odf_drawing_context::change_text_box_2_wordart()
 	office_element_ptr draw_elm = impl_->create_draw_element(7);
 	
 	draw_base* draw = dynamic_cast<draw_base*>(draw_elm.get());
-	if (draw == NULL)return false;
+	if (draw == NULL)	return false;
 
 	int sz = impl_->current_level_.size();
-	if (sz < 2) return false;
+	if (sz < 2)			return false;
 
 	int sz_state = impl_->current_drawing_state_.elements_.size();
-	if (sz_state < 2) return false;
+	if (sz_state < 2)	return false;
 
 	if (sz > 2) //в группе ??
 	{
@@ -1938,7 +1941,13 @@ void odf_drawing_context::set_text_box_min_size(double w_pt, double h_pt)
 
 	}
 }
+void odf_drawing_context::set_text_box_tableframe(bool val)
+{
+	if (impl_->current_drawing_state_.elements_.empty()) return;
 
+	impl_->current_drawing_state_.text_box_tableframe = val;
+
+}
 void odf_drawing_context::set_text_box_parent_style(std::wstring style_name)
 {
 	if (impl_->current_drawing_state_.elements_.empty()) return;
@@ -1972,6 +1981,8 @@ void odf_drawing_context::end_text_box()
 	if (impl_->current_drawing_state_.elements_.empty()) return;
 
 	draw_text_box* draw = dynamic_cast<draw_text_box*>(impl_->current_drawing_state_.elements_.back().elm.get());
+
+	if (!draw) return;
 
 	if (!draw->draw_text_box_attlist_.fo_min_height_)
 	{

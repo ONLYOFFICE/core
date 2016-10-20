@@ -122,6 +122,7 @@ public:
 		void set_text_box_min_size		(bool val);
 		void set_text_box_min_size		(double w_pt, double h_pt);
 		void set_text_box_parent_style	(std::wstring style_name);
+		void set_text_box_tableframe	(bool val);
 	void end_text_box					();
 
 	void start_object(std::wstring name);

@@ -2075,7 +2075,7 @@ namespace BinXlsxRW {
 			if (oPane.m_oState.IsInit())
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_Pane::State);
-				m_oBcw.m_oStream.WriteBYTE(oPane.m_oState->GetValue());
+				m_oBcw.m_oStream.WriteStringW4(oPane.m_oState->ToString());
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
 			//TopLeftCell

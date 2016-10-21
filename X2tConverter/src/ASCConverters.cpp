@@ -1712,6 +1712,141 @@ namespace NExtractTools
        return nRes;
    }
 
+	int PdfDjvuXpsToImage(IOfficeDrawingFile** ppReader, const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params, CApplicationFonts* pApplicationFonts)
+	{
+		int nRes = 0;
+		IOfficeDrawingFile* pReader = NULL;
+		if(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatFrom)
+		{
+			pReader = new PdfReader::CPdfReader(pApplicationFonts);
+		}
+		else if(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_DJVU == nFormatFrom)
+		{
+			pReader = new CDjVuFile(pApplicationFonts);
+		}
+		else if(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_XPS == nFormatFrom)
+		{
+			pReader = new CXpsFile(pApplicationFonts);
+		}
+		else
+			nRes = AVS_FILEUTILS_ERROR_CONVERT;
+		if(SUCCEEDED_X2T(nRes))
+		{
+			*ppReader = pReader;
+			pReader->SetTempDirectory(sTemp);
+
+			std::wstring sPassword = params.getPassword();
+
+			bool bResult = pReader->LoadFromFile(sFrom.c_str(), L"", sPassword, sPassword);
+			if(bResult)
+			{
+				//default as in CMetafileToRenderterRaster
+				int nRasterFormat = 4;
+				int nSaveType = 2;
+				bool bIsOnlyFirst = true;
+				int nRasterW = 100;
+				int nRasterH = 100;
+				if(NULL != params.m_oThumbnail)
+				{
+					InputParamsThumbnail* oThumbnail = params.m_oThumbnail;
+					if(NULL != oThumbnail->format)
+					{
+						nRasterFormat = *oThumbnail->format;
+					}
+					if(NULL != oThumbnail->aspect)
+					{
+						nSaveType = *oThumbnail->aspect;
+					}
+					if(NULL != oThumbnail->first)
+					{
+						bIsOnlyFirst = *oThumbnail->first;
+					}
+					if(NULL != oThumbnail->width)
+					{
+						nRasterW = *oThumbnail->width;
+					}
+					if(NULL != oThumbnail->height)
+					{
+						nRasterH = *oThumbnail->height;
+					}
+				}
+				std::wstring sThumbnailDir;
+				std::wstring sFileToExt;
+				if (!bIsOnlyFirst)
+				{
+					sThumbnailDir = sTemp + FILE_SEPARATOR_STR + _T("thumbnails");
+					FileSystem::Directory::CreateDirectory(sThumbnailDir);
+					std::wstring::size_type pos = sTo.find_last_of('.');
+
+					sFileToExt = std::wstring::npos == pos ? L"" : sTo.substr(pos);
+				}
+				int nPagesCount = pReader->GetPagesCount();
+				if (bIsOnlyFirst)
+					nPagesCount = 1;
+				for (int i = 0; i < nPagesCount; ++i)
+				{
+					int nRasterWCur = nRasterW;
+					int nRasterHCur = nRasterH;
+
+					if (1 == nSaveType)
+					{
+						double dPageDpiX, dPageDpiY;
+						double dWidth, dHeight;
+						pReader->GetPageInfo(i, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
+
+						double dKoef1 = nRasterWCur / dWidth;
+						double dKoef2 = nRasterWCur / dHeight;
+						if (dKoef1 > dKoef2)
+							dKoef1 = dKoef2;
+
+						nRasterWCur = (int)(dWidth * dKoef1 + 0.5);
+						nRasterHCur = (int)(dHeight * dKoef1 + 0.5);
+					}
+					std::wstring sFileTo;
+					if (bIsOnlyFirst)
+					{
+						sFileTo = sTo;
+					}
+					else
+					{
+						sFileTo = sThumbnailDir + FILE_SEPARATOR_STR + L"image" + std::to_wstring(i+1) + sFileToExt;
+					}
+					pReader->ConvertToRaster(i, sFileTo, nRasterFormat, nRasterWCur, nRasterHCur);
+				}
+				//zip
+				if(!bIsOnlyFirst)
+				{
+					COfficeUtils oCOfficeUtils(NULL);
+					nRes = S_OK == oCOfficeUtils.CompressFileOrDirectory(sThumbnailDir, sTo, -1) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
+				}
+			}
+			else
+			{
+				nRes = AVS_FILEUTILS_ERROR_CONVERT;
+				if(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatFrom)
+				{
+					PdfReader::CPdfReader* pPdfReader = static_cast<PdfReader::CPdfReader*>(pReader);
+					if(PdfReader::errorEncrypted == pPdfReader->GetError())
+					{
+						if(sPassword.empty())
+						{
+							if(!params.getDontSaveAdditional())
+							{
+								copyOrigin(sFrom, *params.m_sFileTo);
+							}
+							nRes = AVS_FILEUTILS_ERROR_CONVERT_DRM;
+						}
+						else
+						{
+							nRes = AVS_FILEUTILS_ERROR_CONVERT_PASSWORD;
+						}
+					}
+				}
+			}
+		}
+		return nRes;
+	}
+
    int fromDocxDir(const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bFromChanges, bool bPaid, InputParams& params)
    {
        int nRes = 0;
@@ -2198,6 +2333,12 @@ namespace NExtractTools
            oHtmlRenderer.CloseFile();
            RELEASEOBJECT(pReader);
        }
+	   else if(AVS_OFFICESTUDIO_FILE_IMAGE == nFormatTo)
+	   {
+		   IOfficeDrawingFile* pReader = NULL;
+		   nRes = PdfDjvuXpsToImage(&pReader, sFrom, nFormatFrom, sTo, sTemp, params, &oApplicationFonts);
+		   RELEASEOBJECT(pReader);
+	   }
        else
        {
            nRes = AVS_FILEUTILS_ERROR_CONVERT;

@@ -78,21 +78,27 @@ bool OOXPictureGraphicReader::Parse( ReaderParameter oParam , RtfShape& oOutput)
 				}
 			}
 		}
-
-		if (!bTryPicture)
-		{
-			//return false;
-			//рисуем крест (todooo получать с редактора реплейсмент картинку)
-			oOutput.m_nShapeType = 1;
-			oOutput.m_nFillColor = 0x967bdf;
-		}
 	}
-	else
+	if (!bTryPicture)
 	{
-		//return false;
-		//convertDrawingML2Vml();
-		oOutput.m_nShapeType = 1;
-		oOutput.m_nFillColor = 0x967bdf;
+		//рисуем "крест" (todooo получать с редактора реплейсмент картинку)
+		oOutput.m_nShapeType	= 1;
+		oOutput.m_bFilled		= 0;
+		oOutput.m_bLine			= 1;
+
+		oOutput.m_aTextItems	=  TextItemContainerPtr( new TextItemContainer() );
+		
+		RtfParagraphPtr oParagraph( new RtfParagraph() );
+		oParagraph->m_oProperty					= oParam.oRtf->m_oDefaultParagraphProp;
+		oParagraph->m_oProperty.m_oCharProperty	= oParam.oRtf->m_oDefaultCharProp;
+		oParagraph->m_oProperty.m_nItap			= 0;
+		
+		RtfCharPtr oChar( new RtfChar() );
+		oChar->m_oProperty = oParam.oRtf->m_oDefaultCharProp;
+		oChar->setText( L"The element is not supported in RTF format." );
+		
+		oParagraph->AddItem( oChar );	
+		oOutput.m_aTextItems->AddItem( oParagraph );	
 	}
 	return true;
 }

@@ -57,19 +57,17 @@ namespace odf_writer
 
 odf_text_context::odf_text_context(odf_conversion_context *odf_context)
 {
-	odf_context_ = odf_context;
-	styles_context_ = odf_context->styles_context();
+	odf_context_				= odf_context;
+	styles_context_				= odf_context->styles_context();
 	
-	single_paragraph_ = false;
-	paragraph_properties_ = NULL;
-	text_properties_ = NULL;
+	single_paragraph_			= false;
+	paragraph_properties_		= NULL;
+	text_properties_			= NULL;
 
-	current_outline_ = 0;
-	in_field_ = false;
-	
-	keep_next_paragraph_ = false;
-	
-	list_state_.started_list = false;
+	current_outline_			= 0;
+	in_field_					= false;	
+	keep_next_paragraph_		= false;	
+	list_state_.started_list	= false;
 }
 odf_text_context::~odf_text_context()
 {
@@ -77,18 +75,18 @@ odf_text_context::~odf_text_context()
 }
 void odf_text_context::clear_params()
 {
-	single_paragraph_ = false;
-	paragraph_properties_ = NULL;
-	text_properties_ = NULL;
+	single_paragraph_			= false;
+	paragraph_properties_		= NULL;
+	text_properties_			= NULL;
 
-	current_outline_ = 0;
-	in_field_ = false;
+	current_outline_			= 0;
+	in_field_					= false;
 	
-	keep_next_paragraph_ = false;
+	keep_next_paragraph_		= false;
 	
 	list_state_.levels.clear();
-	list_state_.started_list = false;
-	list_state_.style_name = L"";
+	list_state_.started_list	= false;
+	list_state_.style_name		= L"";
 }
 void odf_text_context::set_styles_context(odf_style_context*  styles_context)
 {
@@ -98,11 +96,11 @@ odf_style_context* odf_text_context::get_styles_context()
 {
 	return styles_context_;
 }
-void odf_text_context::set_single_object(bool val, style_paragraph_properties *para_props, style_text_properties *text_props)
+void odf_text_context::set_single_object(bool bSingle, style_paragraph_properties *para_props, style_text_properties *text_props)
 {
-	single_paragraph_ = val;
-	paragraph_properties_ = para_props;
-	text_properties_ = text_props;
+	single_paragraph_		= bSingle;
+	paragraph_properties_	= para_props;
+	text_properties_		= text_props;
 
 	//if (paragraph_properties_)//??? а могут ли быть разрывы после-до диаграммы??? 
 	//{
@@ -198,14 +196,14 @@ void odf_text_context::start_paragraph(bool styled)
 	office_element_ptr paragr_elm;
 	if (current_outline_ > 0)
 	{
-		create_element(L"text", L"h",paragr_elm,odf_context_);
+		create_element(L"text", L"h", paragr_elm, odf_context_);
 		
 		text_h* h = dynamic_cast<text_h*>(paragr_elm.get());
-		if (h)h->text_outline_level_ = current_outline_ + 1;
+		if (h)	h->text_outline_level_ = current_outline_ + 1;
 	}
 	else
 	{
-		create_element(L"text", L"p",paragr_elm,odf_context_);
+		create_element(L"text", L"p", paragr_elm, odf_context_);
 	}
 	current_outline_ = 0;
 
@@ -216,15 +214,15 @@ void odf_text_context::start_paragraph(office_element_ptr & elm, bool styled)
 {
 	int level = current_level_.size();
 	
-	if (single_paragraph_ && level >0)
+	if (single_paragraph_ && level > 0)
 	{
 		std::wstring str_enter(L"\n");
 		add_text_content(str_enter);
 		return;
 	}
 	
-	std::wstring style_name;
-	office_element_ptr style_elm;
+	std::wstring		style_name;
+	office_element_ptr	style_elm;
 
 	if (styled)
 	{		
@@ -232,15 +230,15 @@ void odf_text_context::start_paragraph(office_element_ptr & elm, bool styled)
 
 		if (style_state)
 		{
-			style_name = style_state->get_name();
-			style_elm = style_state->get_office_element();
+			style_name	= style_state->get_name();
+			style_elm	= style_state->get_office_element();
 		}
 	
 		text_p* p = dynamic_cast<text_p*>(elm.get());
-		if (p)p->paragraph_.paragraph_attrs_.text_style_name_ = style_ref(style_name);	
+		if (p)	p->paragraph_.paragraph_attrs_.text_style_name_ = style_ref(style_name);	
 		
 		text_h* h = dynamic_cast<text_h*>(elm.get());
-		if (h)h->paragraph_.paragraph_attrs_.text_style_name_ = style_ref(style_name);	
+		if (h)	h->paragraph_.paragraph_attrs_.text_style_name_ = style_ref(style_name);	
 
 		style *style_ = dynamic_cast<style*>(style_elm.get());
 		if (style_)
@@ -316,8 +314,8 @@ void odf_text_context::start_span(bool styled)
 
 	int level = current_level_.size();
 	
-	std::wstring style_name;
-	office_element_ptr style_elm;
+	std::wstring		style_name;
+	office_element_ptr	style_elm;
 
 	text_properties_ = NULL;
 	if (styled)
@@ -326,8 +324,8 @@ void odf_text_context::start_span(bool styled)
 
 		if (style_state)
 		{
-			style_name = style_state->get_name();
-			style_elm = style_state->get_office_element();
+			style_name	= style_state->get_name();
+			style_elm	= style_state->get_office_element();
 		}
 		style *style_ = dynamic_cast<style*>(style_elm.get());
 		
@@ -344,7 +342,7 @@ void odf_text_context::start_span(bool styled)
 		}
 	}
 
-	odf_element_state state={	span_elm, style_name, style_elm, level};
+	odf_element_state state	= {	span_elm, style_name, style_elm, level};
 
 	text_elements_list_.push_back(state);
 	
@@ -593,6 +591,18 @@ void odf_text_context::set_type_break(int type, int clear)
 			current_level_.back().elm->add_child_element(elm);	
 	}
 
+}
+
+bool odf_text_context::set_master_page_name (std::wstring & master_page_name)
+{
+	if (current_level_.empty()) return false;
+
+	style *style_ = dynamic_cast<style*>(current_level_.back().style_elm.get());
+	
+	if (!style_) return false;
+
+	style_->style_master_page_name_	 = master_page_name;
+	return true;
 }
 
 void odf_text_context::set_parent_paragraph_style(std::wstring & style_name)

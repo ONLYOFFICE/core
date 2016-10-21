@@ -77,7 +77,7 @@ public:
 	int          GetPagesCount() const;
 	void         GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY) const;
 	void         DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak);
-    void         ConvertToRaster(int nPageIndex, const std::wstring& wsDstPath, int nImageType);
+    void         ConvertToRaster(int nPageIndex, const std::wstring& wsDstPath, int nImageType, const int& nRasterW = -1, const int& nRasterH = -1);
     void         ConvertToPdf(const std::wstring& wsDstPath);
 
 private:

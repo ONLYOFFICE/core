@@ -33,7 +33,7 @@
 #define _BUILD_MEMORYSTREAM_H_
 
 #include "../common/File.h"
-#include "IRenderer.h"
+#include "../graphics/IRenderer.h"
 
 #ifdef _DEBUG
 #define _LOGGING_NATIVE_

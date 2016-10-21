@@ -47,7 +47,7 @@ namespace NSDoctRenderer
         bool OpenFile(const wchar_t* path, const wchar_t* params);
         bool CreateFile(const int& type);
         void SetTmpFolder(const wchar_t* folder);
-        bool SaveFile(const int& type, const wchar_t* path);
+        bool SaveFile(const int& type, const wchar_t* path, const wchar_t* params = 0);
         void CloseFile();
         bool ExecuteCommand(const wchar_t* command);
 

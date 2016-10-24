@@ -95,7 +95,7 @@ public:
 	void set_type_break		(int type, int clear);
 	void save_property_break();
 
-	void add_tab();
+	void add_tab(_CP_OPT(int) ref);
 
 	void set_parent_paragraph_style	(std::wstring & style_name);
 	void set_parent_span_style		(std::wstring & style_name);

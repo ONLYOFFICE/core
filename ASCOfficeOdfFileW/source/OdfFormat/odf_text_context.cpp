@@ -520,13 +520,19 @@ void odf_text_context::add_text_style(office_element_ptr & style_elm, std::wstri
 		h->paragraph_.paragraph_attrs_.text_style_name_ = style_ref(style_name);	
 	}
 }
-void odf_text_context::add_tab()
+void odf_text_context::add_tab(_CP_OPT(int) ref)
 {
  	office_element_ptr elm;
 	create_element(L"text", L"tab", elm, odf_context_);
 	
 	if (current_level_.size()>0)
 		current_level_.back().elm->add_child_element(elm);
+
+	text_tab *tab = dynamic_cast<text_tab *>(elm.get());
+	if (tab)
+	{
+		tab->text_tab_ref_ = ref;
+	}
 }
 void odf_text_context::save_property_break()
 {

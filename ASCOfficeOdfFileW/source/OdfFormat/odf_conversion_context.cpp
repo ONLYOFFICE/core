@@ -281,13 +281,13 @@ void odf_conversion_context::add_tab(_CP_OPT(int) type, _CP_OPT(length) _length,
 	if (!temporary_.elm) return;
 
 	office_element_ptr elm;
-	create_element(L"style", L"tab-stop", elm, this,true);
+	create_element(L"style", L"tab-stop", elm, this, true);
 
 	style_tab_stop* tab = dynamic_cast<style_tab_stop*>(elm.get());
 	if (tab)
 	{
 		if (_length)
-			tab->style_position_ = length(_length->get_value_unit(length::cm),length::cm);
+			tab->style_position_ = length(_length->get_value_unit(length::cm), length::cm);
 
 		if (type)
 		{

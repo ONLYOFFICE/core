@@ -48,6 +48,7 @@ namespace OOX
 
 	namespace Logic
 	{
+		class CPTab;
 		class CSmartTag;
 		class CIns;
 		class CParagraph;
@@ -187,6 +188,7 @@ namespace Oox2Odf
 		void convert(OOX::Logic::CSym					*oox_sym);
 		void convert(OOX::Logic::CIns					*oox_ins);
 		void convert(OOX::Logic::CSmartTag				*oox_tag);		
+		void convert(OOX::Logic::CPTab					*oox_ptab);
 		
 		void convert(OOX::Logic::CAlternateContent		*oox_alt_content);
 		void convert(OOX::Logic::CDrawing				*oox_drawing);

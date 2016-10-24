@@ -260,7 +260,7 @@ namespace PdfReader
             m_pInternal->m_pPDFDocument->DisplayPage(&oRendererOut, nPageIndex, 72.0, 72.0, 0, false, true, false);
 		}
 	}
-    void CPdfReader::ConvertToRaster(int nPageIndex, const std::wstring& wsDstPath, int nImageType, const int& nRasterW, const int& nRasterH)
+    void CPdfReader::ConvertToRaster(int nPageIndex, const std::wstring& wsDstPath, int nImageType, const int nRasterW, const int nRasterH)
 	{
         CFontManager *pFontManager = m_pInternal->m_pAppFonts->GenerateFontManager();
 		CFontsCache* pFontCache = new CFontsCache();

@@ -157,7 +157,7 @@ void CXpsFile::DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pB
 
     m_pInternal->m_pDocument->DrawPage(nPageIndex, pRenderer, pBreak);
 }
-void CXpsFile::ConvertToRaster(int nPageIndex, const std::wstring& wsDstPath, int nImageType, const int& nRasterW, const int& nRasterH)
+void CXpsFile::ConvertToRaster(int nPageIndex, const std::wstring& wsDstPath, int nImageType, const int nRasterW, const int nRasterH)
 {
     CFontManager *pFontManager = m_pInternal->m_pAppFonts->GenerateFontManager();
 	CFontsCache* pFontCache = new CFontsCache();

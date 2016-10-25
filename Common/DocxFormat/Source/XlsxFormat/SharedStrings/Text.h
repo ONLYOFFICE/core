@@ -34,7 +34,7 @@
 #define OOX_TEXT_FILE_INCLUDE_H_
 
 #include "../CommonInclude.h"
-#include "../../../.././DesktopEditor/common/String.h"
+#include "../../../../../DesktopEditor/common/String.h"
 
 namespace OOX
 {

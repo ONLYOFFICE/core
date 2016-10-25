@@ -260,7 +260,7 @@ namespace PdfReader
             m_pInternal->m_pPDFDocument->DisplayPage(&oRendererOut, nPageIndex, 72.0, 72.0, 0, false, true, false);
 		}
 	}
-    void CPdfReader::ConvertToRaster(int nPageIndex, const std::wstring& wsDstPath, int nImageType)
+    void CPdfReader::ConvertToRaster(int nPageIndex, const std::wstring& wsDstPath, int nImageType, const int nRasterW, const int nRasterH)
 	{
         CFontManager *pFontManager = m_pInternal->m_pAppFonts->GenerateFontManager();
 		CFontsCache* pFontCache = new CFontsCache();
@@ -274,8 +274,8 @@ namespace PdfReader
         double dDpiX, dDpiY;
         GetPageInfo(nPageIndex, &dWidth, &dHeight, &dDpiX, &dDpiY);
 
-		int nWidth  = (int)dWidth  * 72 / 25.4;
-		int nHeight = (int)dHeight * 72 / 25.4;
+        int nWidth  = (nRasterW > 0) ? nRasterW : ((int)dWidth  * 72 / 25.4);
+        int nHeight = (nRasterH > 0) ? nRasterH : ((int)dHeight * 72 / 25.4);
 
 		BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
 		if (!pBgraData)

@@ -50,9 +50,9 @@ namespace NSDoctRenderer
 
         return m_pInternal->OpenFile(path, params);
     }
-    bool CDocBuilder::SaveFile(const int& type, const wchar_t* path)
+    bool CDocBuilder::SaveFile(const int& type, const wchar_t* path, const wchar_t* params)
     {
-        return m_pInternal->SaveFile(type, path);
+        return m_pInternal->SaveFile(type, path, params);
     }
     bool CDocBuilder::ExecuteCommand(const wchar_t* command)
     {

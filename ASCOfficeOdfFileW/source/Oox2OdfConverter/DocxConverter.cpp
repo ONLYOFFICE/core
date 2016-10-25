@@ -243,6 +243,11 @@ void DocxConverter::convert(OOX::WritingElement  *oox_unknown)
 
 	switch(oox_unknown->getType())
 	{
+		case OOX::et_w_ptab:
+		{
+			OOX::Logic::CPTab* pT= static_cast<OOX::Logic::CPTab*>(oox_unknown);
+			convert(pT);
+		}break;
 		case OOX::et_w_sdt:
 		{
 			OOX::Logic::CSdt* pP= static_cast<OOX::Logic::CSdt*>(oox_unknown);
@@ -384,6 +389,7 @@ void DocxConverter::convert(OOX::WritingElement  *oox_unknown)
 		}break;
 	}
 }
+
 void DocxConverter::convert(OOX::Logic::CSdt *oox_sdt)
 {
 	if (oox_sdt == NULL) return;
@@ -443,7 +449,7 @@ void DocxConverter::convert(OOX::Logic::CParagraph *oox_paragraph)
 				list_style_id = oox_paragraph->m_oParagraphProperty->m_oNumPr->m_oNumID->m_oVal->GetValue();
 		}
 	}
-	if (oox_paragraph->m_oParagraphProperty || odt_context->is_empty_section())
+	if (oox_paragraph->m_oParagraphProperty || odt_context->is_empty_section() || current_section_properties)
 	{
 		bStyled = true;
 		odf_writer::style_paragraph_properties	*paragraph_properties = NULL;
@@ -593,7 +599,8 @@ void DocxConverter::convert(OOX::Logic::CRun *oox_run)//wordprocessing 22.1.2.87
 			case OOX::et_w_tab:
 			{
 				OOX::Logic::CTab* pTab= static_cast<OOX::Logic::CTab*>(oox_run->m_arrItems[i]);
-				odt_context->text_context()->add_tab();
+				_CP_OPT(int) ref;
+				odt_context->text_context()->add_tab(ref);
 			}break;
 			case OOX::et_w_delText:
 			{
@@ -621,7 +628,60 @@ void DocxConverter::convert(OOX::Logic::CRun *oox_run)//wordprocessing 22.1.2.87
 	}
 	odt_context->end_run();
 }
+void DocxConverter::convert(OOX::Logic::CPTab *oox_ptab)
+{
+	if (oox_ptab == NULL) return;
 
+	_CP_OPT(int)				ref;
+
+	odf_writer::style_paragraph_properties * paragraph_properties = odt_context->styles_context()->last_state(style_family::Paragraph)->get_paragraph_properties();;
+
+	if (paragraph_properties)
+	{
+		_CP_OPT(int)				type;
+		_CP_OPT(int)				leader;
+		_CP_OPT(odf_types::length)	length;
+		if (oox_ptab->m_oAlignment.IsInit())
+		{
+			switch(oox_ptab->m_oAlignment->GetValue())
+			{
+				case SimpleTypes::ptabalignmentCenter:
+				{
+					length = odf_types::length(odt_context->page_layout_context()->current_page_width_ / 2, length::pt);
+					type = 1;	
+				}break;					
+				case SimpleTypes::ptabalignmentLeft:		type = 6;	break;//??
+				case SimpleTypes::ptabalignmentRight:
+				{
+					length = odf_types::length(odt_context->page_layout_context()->current_page_width_, length::pt);
+					type = 4;	
+				}break;
+			}
+		}
+		if (oox_ptab->m_oLeader.IsInit())
+		{
+			switch(oox_ptab->m_oLeader->GetValue())
+			{
+				case SimpleTypes::ptableaderDot:			leader = 0;	break;
+				case SimpleTypes::ptableaderHyphen:			leader = 2;	break;
+				case SimpleTypes::ptableaderMiddleDot:		leader = 3;	break;
+				case SimpleTypes::ptableaderNone:			leader = 4;	break;
+				case SimpleTypes::ptableaderUnderscore:		leader = 5;	break;
+			}
+		}
+
+		//todooo m_oRelativeTo
+		paragraph_properties->add_child_element(odf_context()->start_tabs());
+			odt_context->add_tab(type, length, leader);
+		odf_context()->end_tabs();
+		
+		odt_context->add_tab(type, length, leader);
+
+		ref = 0;
+	}
+
+	odt_context->text_context()->add_tab(ref);
+}
 void DocxConverter::convert(OOX::Logic::CSym	*oox_sym)
 {
 	if (oox_sym == NULL) return;
@@ -697,8 +757,16 @@ void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr, cp
 {
 	odt_context->text_context()->set_KeepNextParagraph(false);
 	
-	if (!oox_paragraph_pr)		return;
 	if (!paragraph_properties)	return;
+	if (!paragraph_properties)	return;
+	if (!oox_paragraph_pr)		
+	{
+		if (current_section_properties)
+		{
+			convert(current_section_properties->props, current_section_properties->root);
+		}
+		return;
+	}
 
 	int outline_level = 0;
 
@@ -882,9 +950,10 @@ void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr, cp
 		for (unsigned int i = 0; i < oox_paragraph_pr->m_oTabs->m_arrTabs.size(); i++)
 		{
 			if (oox_paragraph_pr->m_oTabs->m_arrTabs[i] == NULL) continue;
-			_CP_OPT(int) type;
-			_CP_OPT(int) leader;
-			_CP_OPT(odf_types::length) length;
+			
+			_CP_OPT(int)				type;
+			_CP_OPT(int)				leader;
+			_CP_OPT(odf_types::length)	length;
 
 			if (oox_paragraph_pr->m_oTabs->m_arrTabs[i]->m_oVal.IsInit())
 				type = oox_paragraph_pr->m_oTabs->m_arrTabs[i]->m_oVal->GetValue();
@@ -970,7 +1039,7 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool r
 		}
 	}
  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-   if (!last_section_properties && (root || continuous == false))
+   if (!last_section_properties && (root || continuous == false || oox_section_pr->m_oTitlePg.IsInit()))
 	{	
 		last_section_properties = oox_section_pr;
 	}
@@ -1116,7 +1185,7 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool r
 			//nullable<SimpleTypes::CDecimalNumber<> > m_oChapStyle;	
 	}
 	
-	if (continuous == false || root)
+	if (continuous == false || root || oox_section_pr->m_oTitlePg.IsInit())
 	{
 		OOX::Logic::CSectionProperty*	s = last_section_properties; 
 		

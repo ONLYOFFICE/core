@@ -101,13 +101,6 @@ void odf_text_context::set_single_object(bool bSingle, style_paragraph_propertie
 	single_paragraph_		= bSingle;
 	paragraph_properties_	= para_props;
 	text_properties_		= text_props;
-
-	//if (paragraph_properties_)//??? а могут ли быть разрывы после-до диаграммы??? 
-	//{
-	//	paragraph_properties_->content().fo_break_before_ = need_break_;
-	//	need_break_ = boost::none;
-	//}
-
 }
 
 void odf_text_context::add_text_content(const std::wstring & text)
@@ -605,7 +598,8 @@ bool odf_text_context::set_master_page_name (std::wstring & master_page_name)
 
 	style *style_ = dynamic_cast<style*>(current_level_.back().style_elm.get());
 	
-	if (!style_) return false;
+	if (!style_) 
+		return false;
 
 	style_->style_master_page_name_	 = master_page_name;
 	return true;

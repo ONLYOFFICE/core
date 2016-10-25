@@ -287,7 +287,7 @@ void odt_conversion_context::add_page_break()
 	office_element_ptr elm;
 	create_element(L"text", L"soft-page-break", elm, this);	
 	
-	if (current_root_elements_.size() > 0/* && text_context()->is_need_break()*/)			
+	if (current_root_elements_.size() > 0)			
 	{ 	
 		text_p* para	= NULL;
 		style * style_	= NULL;
@@ -303,6 +303,7 @@ void odt_conversion_context::add_page_break()
 		{
 			//тут получается что разрыв будет прописан внутри элемента (не параграфа) - так что вручную свойство запишем
 			//в случае разрыва параграфов оно запишется при старте после-разрывного параграфа
+			text_context()->set_type_break(1, 0);
 			text_context()->save_property_break();
 		}
 		text_context()->start_element(elm);
@@ -311,7 +312,7 @@ void odt_conversion_context::add_page_break()
 
 		if (para)
 		{
-			styles_context()->create_style(L"",odf_types::style_family::Paragraph, true, false, -1);	
+			styles_context()->create_style(L"",	odf_types::style_family::Paragraph, true, false, -1);	
 			//styles_context()->last_state().apply_from(style_);
 			if (style_ )
 			{
@@ -332,15 +333,15 @@ void odt_conversion_context::add_page_break()
 void odt_conversion_context::start_hyperlink(std::wstring ref)
 {
 	office_element_ptr hyperlink_elm;
-	create_element(L"text", L"a",hyperlink_elm,this);
+	create_element(L"text", L"a", hyperlink_elm, this);
 
 	text_a* hyperlink = dynamic_cast<text_a*>(hyperlink_elm.get());
 	if (!hyperlink)return;
 
 ////////////////////////////
 
-	hyperlink->common_xlink_attlist_.href_ = ref;
-	hyperlink->common_xlink_attlist_.type_= xlink_type::Simple;
+	hyperlink->common_xlink_attlist_.href_	= ref;
+	hyperlink->common_xlink_attlist_.type_	= xlink_type::Simple;
 	
 	//current_level_.back()->add_child_element(hyperlink_elm);
 	//current_level_.push_back(hyperlink_elm);

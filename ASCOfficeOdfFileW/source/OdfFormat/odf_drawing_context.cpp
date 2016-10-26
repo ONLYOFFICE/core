@@ -252,16 +252,16 @@ public:
 	bool is_footer_;
 	bool is_header_;
 
-	void create_draw_base(int type);
-	office_element_ptr create_draw_element(int type);
+	void				create_draw_base(int type);
+	office_element_ptr	create_draw_element(int type);
 
 	style_graphic_properties		*current_graphic_properties;
 	style_paragraph_properties		*current_paragraph_properties;
 	style_text_properties			*current_text_properties;
 
-	anchor_settings anchor_settings_;
+	anchor_settings						anchor_settings_;
 
-	graphic_format_properties		preset_graphic_format_properties;
+	graphic_format_properties			preset_graphic_format_properties;
 
 	odf_group_state_ptr					current_group_;
 	
@@ -270,7 +270,7 @@ public:
 	
 	std::vector<office_element_ptr>		tops_elements_;
 
-	office_element_ptr root_element_;
+	office_element_ptr					root_element_;
 	
 	double x;
 	double y;
@@ -1354,9 +1354,16 @@ void odf_drawing_context::set_horizontal_pos(double offset_pt)
 	impl_->anchor_settings_.style_horizontal_pos_svg_x_ = length(length(offset_pt,length::pt).get_value_unit(length::cm),length::cm);
 	impl_->x = offset_pt;
 }
-
+void odf_drawing_context::set_default_wrap_style()
+{
+	if (impl_->is_header_ || impl_->is_footer_ )
+	{
+		impl_->anchor_settings_.style_wrap_ = style_wrap::RunThrough;
+	}
+}
 void odf_drawing_context::set_wrap_style(style_wrap::type type)
 {
+
 	impl_->anchor_settings_.style_wrap_ = style_wrap(type);
 }
 void odf_drawing_context::set_overlap (bool val)
@@ -1612,6 +1619,20 @@ void odf_drawing_context::set_line_head(int type, int len, int width)
 		impl_->current_graphic_properties->content().draw_marker_start_width_ = length(0.2,length::cm); break;
 	}
 }
+
+void odf_drawing_context::set_corner_radius	(odf_types::length corner)
+{
+	if (impl_->current_level_.empty())return;
+
+	draw_rect* draw = dynamic_cast<draw_rect*>(impl_->current_level_.back().get());
+
+	if (draw)
+	{
+		draw->draw_rect_attlist_.draw_corner_radius_ = corner;
+	}
+
+}
+
 std::wstring odf_drawing_context::add_marker_style(int type)
 {
 	if (type == 2) return L"";

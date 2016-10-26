@@ -142,6 +142,16 @@ void OoxConverter::convert(SimpleTypes::Vml::CCssStyle *vml_style, bool group)
 		{
 			switch(vml_style->m_arrProperties[i]->get_Value().eMsoPosHorRel)
 			{
+				case SimpleTypes::Vml::cssmsoposhorrelRightMargin:
+				{
+					anchor_type_x = 2;
+					odf_context()->drawing_context()->set_horizontal_rel(5); 
+				}break;
+				case SimpleTypes::Vml::cssmsoposhorrelLeftMargin: 
+				{
+					anchor_type_x = 2;
+					odf_context()->drawing_context()->set_horizontal_rel(4); 
+				}break;
 				case SimpleTypes::Vml::cssmsoposhorrelMargin:	
 				{
 					anchor_type_x = 2;
@@ -175,6 +185,13 @@ void OoxConverter::convert(SimpleTypes::Vml::CCssStyle *vml_style, bool group)
 		{
 			switch(vml_style->m_arrProperties[i]->get_Value().eMsoPosVerRel)
 			{
+				case SimpleTypes::Vml::cssmsoposverrelBottomMargin:	
+				{
+					anchor_type_y = 2;
+					odf_context()->drawing_context()->set_vertical_pos(0);
+					odf_context()->drawing_context()->set_vertical_rel(3); 
+				}break;
+				case SimpleTypes::Vml::cssmsoposverrelTopMargin:	
 				case SimpleTypes::Vml::cssmsoposverrelMargin:	
 				{
 					anchor_type_y = 2;
@@ -673,6 +690,8 @@ void OoxConverter::convert(OOX::VmlWord::CWrap	*vml_wrap)
 {
 	if (vml_wrap == NULL) return;
 
+	odf_context()->drawing_context()->set_default_wrap_style();
+	
 	if (vml_wrap->m_oType.IsInit())
 	{
 		switch(vml_wrap->m_oType->GetValue())
@@ -709,6 +728,7 @@ void OoxConverter::convert(OOX::VmlWord::CWrap	*vml_wrap)
 			}break;
 		}
 	}
+
 	bool anchor_page_x = false;
 	if (vml_wrap->m_oAnchorX.IsInit())
 	{
@@ -747,6 +767,7 @@ void OoxConverter::convert(OOX::VmlWord::CWrap	*vml_wrap)
 			odf_context()->drawing_context()->set_vertical_rel(2);//Line
 		}
 	}
+
 }
 void OoxConverter::convert(OOX::Vml::CVmlCommonElements *vml_common)
 {

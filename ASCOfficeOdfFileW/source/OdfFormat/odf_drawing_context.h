@@ -39,6 +39,7 @@
 
 #include "office_elements_create.h"
 
+#include "length.h"
 #include "anchortype.h"
 #include "stylewrap.h"
 #include "gradientstyle.h"
@@ -86,6 +87,7 @@ public:
 	void set_horizontal_pos	(int align);
 	void set_horizontal_pos	(double offset_pt);
 
+	void set_default_wrap_style();
 	void set_wrap_style		(odf_types::style_wrap::type  style);
 	void set_overlap		(bool val);
 
@@ -108,6 +110,8 @@ public:
 
 		void set_group_scale	(double cx, double cy);
 		void set_group_shift	(double x, double y);
+
+		void set_corner_radius	(odf_types::length corner);
 	void end_group();
 
 	void start_shape	(int type);

@@ -3298,10 +3298,12 @@ namespace SimpleTypes
 		};
 		enum ECssMsoPosHorRel
 		{
-			cssmsoposhorrelMargin = 0,
-			cssmsoposhorrelPage   = 1,
-			cssmsoposhorrelText   = 2,
-			cssmsoposhorrelChar   = 3,
+			cssmsoposhorrelMargin		= 0,
+			cssmsoposhorrelPage			= 1,
+			cssmsoposhorrelText			= 2,
+			cssmsoposhorrelChar			= 3,
+			cssmsoposhorrelLeftMargin	= 4,
+			cssmsoposhorrelRightMargin	= 5
 		};
 		enum ECssMsoPosVer
 		{
@@ -3314,10 +3316,12 @@ namespace SimpleTypes
 		};
 		enum ECssMsoPosVerRel
 		{
-			cssmsoposverrelMargin = 0,
-			cssmsoposverrelPage   = 1,
-			cssmsoposverrelText   = 2,
-			cssmsoposverrelLine   = 3,
+			cssmsoposverrelMargin		= 0,
+			cssmsoposverrelPage			= 1,
+			cssmsoposverrelText			= 2,
+			cssmsoposverrelLine			= 3,
+			cssmsoposverrelTopMargin	= 4,
+			cssmsoposverrelBottomMargin	= 5
 		};
 		enum ECssMsoWrapStyle
 		{
@@ -3860,10 +3864,12 @@ namespace SimpleTypes
 			}
 			void ReadValue_MsoPosHorRel(CString& sValue)
 			{
-				if      ( _T("margin") == sValue ) m_oValue.eMsoPosHorRel = cssmsoposhorrelMargin;
-				else if ( _T("page")   == sValue ) m_oValue.eMsoPosHorRel = cssmsoposhorrelPage;
-				else if ( _T("text")   == sValue ) m_oValue.eMsoPosHorRel = cssmsoposhorrelText;
-				else if ( _T("char")   == sValue ) m_oValue.eMsoPosHorRel = cssmsoposhorrelChar;
+				if      ( _T("left-margin-area")	== sValue )	m_oValue.eMsoPosHorRel = cssmsoposhorrelLeftMargin;
+				else if ( _T("right-margin-area")	== sValue )	m_oValue.eMsoPosHorRel = cssmsoposhorrelRightMargin;
+				else if ( _T("margin")				== sValue ) m_oValue.eMsoPosHorRel = cssmsoposhorrelMargin;
+				else if ( _T("page")				== sValue ) m_oValue.eMsoPosHorRel = cssmsoposhorrelPage;
+				else if ( _T("text")				== sValue ) m_oValue.eMsoPosHorRel = cssmsoposhorrelText;
+				else if ( _T("char")				== sValue ) m_oValue.eMsoPosHorRel = cssmsoposhorrelChar;
 				else 
 					m_oValue.eMsoPosHorRel = cssmsoposhorrelText;
 			}
@@ -3880,13 +3886,12 @@ namespace SimpleTypes
 			}
 			void ReadValue_MsoPosVerRel(CString& sValue)
 			{
-				//bottom-margin-area ????
-				if      ( _T("margin") == sValue ) m_oValue.eMsoPosVerRel = cssmsoposverrelMargin;
-				else if ( _T("page")   == sValue ) m_oValue.eMsoPosVerRel = cssmsoposverrelPage;
-				else if ( _T("text")   == sValue ) m_oValue.eMsoPosVerRel = cssmsoposverrelText;
-				else if ( _T("line")   == sValue ) m_oValue.eMsoPosVerRel = cssmsoposverrelLine;
-				else if (sValue.Find(_T("margin")) >=0)
-												m_oValue.eMsoPosVerRel = cssmsoposverrelMargin;
+				if      ( _T("bottom-margin-area") == sValue )	m_oValue.eMsoPosVerRel = cssmsoposverrelBottomMargin;
+				else if ( _T("top-margin-area") == sValue )		m_oValue.eMsoPosVerRel = cssmsoposverrelTopMargin;
+				else if ( _T("margin") == sValue )				m_oValue.eMsoPosVerRel = cssmsoposverrelMargin;
+				else if ( _T("page")   == sValue )				m_oValue.eMsoPosVerRel = cssmsoposverrelPage;
+				else if ( _T("text")   == sValue )				m_oValue.eMsoPosVerRel = cssmsoposverrelText;
+				else if ( _T("line")   == sValue )				m_oValue.eMsoPosVerRel = cssmsoposverrelLine;
 				else 
 					m_oValue.eMsoPosVerRel = cssmsoposverrelText;
 			}

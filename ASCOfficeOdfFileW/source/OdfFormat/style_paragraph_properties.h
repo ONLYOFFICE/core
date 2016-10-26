@@ -76,7 +76,6 @@ namespace oox{
 
 namespace odf_writer {
 
-/// \class  style_tab_stop
 class style_tab_stop : public office_element_impl<style_tab_stop>
 {
 public:
@@ -108,7 +107,6 @@ public:
 
 CP_REGISTER_OFFICE_ELEMENT2(style_tab_stop)
 
-/// \class  style_tab_stops
 class style_tab_stops : public office_element_impl<style_tab_stops>
 {
 public:
@@ -131,7 +129,7 @@ public:
 
 CP_REGISTER_OFFICE_ELEMENT2(style_tab_stops)
 
-/// \class  style_drop_cap
+
 class style_drop_cap : public office_element_impl<style_drop_cap>
 {
 public:
@@ -157,8 +155,6 @@ public:
 
 CP_REGISTER_OFFICE_ELEMENT2(style_drop_cap)
 
-/// \class  style_background_image
-///         style:background-image
 class style_background_image : public office_element_impl<style_background_image>
 {
 public:
@@ -186,7 +182,6 @@ public:
 
 CP_REGISTER_OFFICE_ELEMENT2(style_background_image)
 
-/// \class  paragraph_format_properties
 class paragraph_format_properties 
 {
 public:
@@ -265,7 +260,6 @@ public:
 
 };
 
-/// \class  style_paragraph_properties
 class style_paragraph_properties : public office_element_impl<style_paragraph_properties>
 {
 public:

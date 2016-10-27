@@ -137,7 +137,7 @@ void style_background_image::serialize(std::wostream & strm)
 	}
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////
-void paragraph_format_properties::create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name,odf_conversion_context * Context)
+void paragraph_format_properties::create_child_element(const std::wstring & Ns, const std::wstring & Name,odf_conversion_context * Context)
 {
     if (L"style" == Ns)
     {
@@ -251,7 +251,7 @@ void paragraph_format_properties::serialize(std::wostream & _Wostream ,const wch
 const wchar_t * style_paragraph_properties::ns = L"style";
 const wchar_t * style_paragraph_properties::name = L"paragraph-properties";
 
-void style_paragraph_properties::create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_paragraph_properties::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
     style_paragraph_properties_content_.create_child_element(Ns, Name, getContext());    
 }

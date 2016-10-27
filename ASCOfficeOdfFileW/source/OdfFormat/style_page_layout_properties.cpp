@@ -159,7 +159,7 @@ void style_page_layout_properties_attlist::serialize(CP_ATTR_NODE)
 const wchar_t * style_page_layout_properties::ns = L"style";
 const wchar_t * style_page_layout_properties::name = L"page-layout-properties";
 
-void style_page_layout_properties::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_page_layout_properties::create_child_element( const std::wstring & Ns, const std::wstring & Name)
 {
     style_page_layout_properties_elements_.create_child_element( Ns, Name, getContext());
 }
@@ -182,7 +182,7 @@ void style_page_layout_properties::serialize(std::wostream & strm)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
-void style_page_layout_properties_elements::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context )
+void style_page_layout_properties_elements::create_child_element( const std::wstring & Ns, const std::wstring & Name, odf_conversion_context * Context )
 {
     if (L"style" == Ns && L"background-image" == Name)
     {

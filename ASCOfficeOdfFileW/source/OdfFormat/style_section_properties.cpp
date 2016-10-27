@@ -53,7 +53,7 @@ namespace odf_writer {
 const wchar_t * style_columns::ns = L"style";
 const wchar_t * style_columns::name = L"columns";
 
-void style_columns::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_columns::create_child_element( const std::wstring & Ns, const std::wstring & Name)
 {
     if (L"style" == Ns && L"column" == Name)
         CP_CREATE_ELEMENT(style_column_);
@@ -103,7 +103,7 @@ void style_columns::serialize(std::wostream & strm)
 const wchar_t * style_column::ns = L"style";
 const wchar_t * style_column::name = L"column";
 
-void style_column::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_column::create_child_element( const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }
@@ -127,7 +127,7 @@ void style_column::serialize(std::wostream & strm)
 const wchar_t * style_column_sep::ns = L"style";
 const wchar_t * style_column_sep::name = L"column-sep";
 
-void style_column_sep::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_column_sep::create_child_element( const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }
@@ -151,7 +151,7 @@ void style_column_sep::serialize(std::wostream & strm)
 const wchar_t * style_section_properties::ns = L"style";
 const wchar_t * style_section_properties::name = L"section-properties";
 
-void style_section_properties::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_section_properties::create_child_element( const std::wstring & Ns, const std::wstring & Name)
 {
     if (L"style" == Ns && L"background-image" == Name)
         CP_CREATE_ELEMENT(style_background_image_);    

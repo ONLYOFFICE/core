@@ -60,7 +60,7 @@ namespace odf_writer {
 class table_format_properties
 {
 public:
-    bool create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context);
+    bool create_child_element( const std::wstring & Ns, const std::wstring & Name, odf_conversion_context * Context);
 	void apply_from(const table_format_properties & Other);
 	void serialize(std::wostream & strm ,const wchar_t * ns, const wchar_t * name );
 
@@ -89,7 +89,7 @@ public:
        
 };
 
-///         style:table-properties
+// style:table-properties
 
 class style_table_properties : public office_element_impl<style_table_properties>
 {
@@ -101,7 +101,7 @@ public:
 
     CPDOCCORE_DEFINE_VISITABLE()
 
-	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
+	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element( const office_element_ptr & child){}
 
     void apply_from(const style_table_properties * Other);
@@ -127,7 +127,7 @@ public:
 
 };
 
-///         style:table-column-properties
+// style:table-column-properties
 class style_table_column_properties : public office_element_impl<style_table_column_properties>
 {
 public:
@@ -138,7 +138,7 @@ public:
 
     CPDOCCORE_DEFINE_VISITABLE()
   
-	virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
+	virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);
     virtual void serialize(std::wostream & strm);
 
     style_table_column_properties_attlist style_table_column_properties_attlist_;
@@ -161,7 +161,7 @@ public:
     odf_types::common_break_attlist			common_break_attlist_;
 };
 
-///         style:table-row-properties
+// style:table-row-properties
 class style_table_row_properties : public office_element_impl<style_table_row_properties>
 {
 public:
@@ -172,7 +172,7 @@ public:
 
     CPDOCCORE_DEFINE_VISITABLE()
 
-    virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);	
+    virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);	
 	virtual void serialize(std::wostream & strm);
 
 public:
@@ -225,7 +225,6 @@ public:
 class style_table_cell_properties_elements
 {
 public:
-     // 15.11.6
     office_element_ptr style_background_image_;
     
 };
@@ -241,7 +240,7 @@ public:
 
     CPDOCCORE_DEFINE_VISITABLE()
 
-    virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);
 
     void apply_from(const style_table_cell_properties * Other);
 	virtual void serialize(std::wostream & strm);

@@ -169,7 +169,7 @@ void odf_comment_context::set_author(std::wstring author)
 	if ((impl_->comments_.size()<1) || !is_started()) return;
 
 	office_element_ptr elm;
-	create_element(L"dc", L"creator",elm,impl_->odf_context_);
+	create_element(L"dc", L"creator", elm, impl_->odf_context_);
 	
 	dc_creator* creator = dynamic_cast<dc_creator*>(elm.get());
 	if (!creator)return;
@@ -183,8 +183,9 @@ void odf_comment_context::set_author(std::wstring author)
 void odf_comment_context::set_date(std::wstring _date)
 {
 	if ((impl_->comments_.size()<1) || !is_started()) return;
+	
 	office_element_ptr elm;
-	create_element(L"dc", L"date",elm,impl_->odf_context_);
+	create_element(L"dc", L"date", elm, impl_->odf_context_);
 	
 	dc_date* date = dynamic_cast<dc_date*>(elm.get());
 	if (!date)return;

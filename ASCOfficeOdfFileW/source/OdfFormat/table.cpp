@@ -124,7 +124,7 @@ void table_table_column_attlist::serialize(CP_ATTR_NODE)
 const wchar_t * table_table_source::ns = L"table";
 const wchar_t * table_table_source::name = L"table-source";
 
-void table_table_source::create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
+void table_table_source::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }
@@ -148,7 +148,7 @@ void table_table_source::serialize(std::wostream & _Wostream)
 const wchar_t * table_table::ns = L"table";
 const wchar_t * table_table::name = L"table";
 
-void table_table::create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
+void table_table::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
     if (L"table" == Ns && L"table-source" == Name)
     {
@@ -243,7 +243,7 @@ void table_table::serialize(std::wostream & _Wostream)
 const wchar_t * table_table_column::ns = L"table";
 const wchar_t * table_table_column::name = L"table-column";
 
-void table_table_column::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
+void table_table_column::create_child_element( const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }
@@ -266,7 +266,7 @@ void table_table_column::serialize(std::wostream & _Wostream)
 const wchar_t * table_table_columns::ns = L"table";
 const wchar_t * table_table_columns::name = L"table-columns";
 
-void table_table_columns::create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
+void table_table_columns::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
     if CP_CHECK_NAME(L"table", L"table-column")
     {
@@ -301,7 +301,7 @@ void table_table_columns::serialize(std::wostream & _Wostream)
 const wchar_t * table_table_header_columns::ns = L"table";
 const wchar_t * table_table_header_columns::name = L"table-header-columns";
 
-void table_table_header_columns::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
+void table_table_header_columns::create_child_element( const std::wstring & Ns, const std::wstring & Name)
 {
     if CP_CHECK_NAME(L"table", L"table-column")
     {
@@ -333,7 +333,7 @@ void table_table_header_columns::serialize(std::wostream & _Wostream)
 
 // table-columns
 //////////////////////////////////////////////////////////////////////////////////////////////////
-void table_columns::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context)
+void table_columns::create_child_element( const std::wstring & Ns, const std::wstring & Name, odf_conversion_context * Context)
 {
     if CP_CHECK_NAME(L"table", L"table-columns")
     {
@@ -380,7 +380,7 @@ table_columns_no_group::table_columns_no_group(odf_conversion_context * _Context
 	Context = _Context;
 };
 
-void table_columns_no_group::create_child_element(  const ::std::wstring & Ns, const ::std::wstring & Name)
+void table_columns_no_group::create_child_element(  const std::wstring & Ns, const std::wstring & Name)
 {
     if (CP_CHECK_NAME(L"table", L"table-columns") || CP_CHECK_NAME(L"table", L"table-column"))
     {
@@ -440,7 +440,7 @@ _CP_PTR(table_columns_no_group) table_columns_no_group::create(odf_conversion_co
 const wchar_t * table_table_column_group::ns = L"table";
 const wchar_t * table_table_column_group::name = L"table-column-group";
 
-void table_table_column_group::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
+void table_table_column_group::create_child_element( const std::wstring & Ns, const std::wstring & Name)
 {
     table_columns_and_groups_.create_child_element(Ns, Name, getContext());
 }
@@ -468,7 +468,7 @@ table_columns_and_groups::table_columns_and_groups()
 }
 
 
-void table_columns_and_groups::create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context)
+void table_columns_and_groups::create_child_element(const std::wstring & Ns, const std::wstring & Name, odf_conversion_context * Context)
 {
     if (CP_CHECK_NAME(L"table", L"table-column-group"))
     {
@@ -519,7 +519,7 @@ void table_columns_and_groups::serialize(std::wostream & _Wostream)
 // table-table-cell-content
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-void table_table_cell_content::create_child_element(  const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context)
+void table_table_cell_content::create_child_element(  const std::wstring & Ns, const std::wstring & Name, odf_conversion_context * Context)
 {
 	CP_CREATE_ELEMENT_SIMPLE(text_content_);
 }
@@ -540,7 +540,7 @@ void table_table_cell_content::serialize(std::wostream & _Wostream)
 const wchar_t * table_table_cell::ns = L"table";
 const wchar_t * table_table_cell::name = L"table-cell";
 
-void table_table_cell::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
+void table_table_cell::create_child_element( const std::wstring & Ns, const std::wstring & Name)
 {
     table_table_cell_content_.create_child_element(Ns, Name, getContext());
 }
@@ -568,7 +568,7 @@ void table_table_cell::serialize(std::wostream & _Wostream)
 const wchar_t * table_covered_table_cell::ns = L"table";
 const wchar_t * table_covered_table_cell::name = L"covered-table-cell";
 
-void table_covered_table_cell::create_child_element(  const ::std::wstring & Ns, const ::std::wstring & Name)
+void table_covered_table_cell::create_child_element(  const std::wstring & Ns, const std::wstring & Name)
 {
 	empty_ = false;
     table_table_cell_content_.create_child_element( Ns, Name, getContext());
@@ -596,7 +596,7 @@ void table_covered_table_cell::serialize(std::wostream & _Wostream)
 const wchar_t * table_table_row::ns = L"table";
 const wchar_t * table_table_row::name = L"table-row";
 
-void table_table_row::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
+void table_table_row::create_child_element( const std::wstring & Ns, const std::wstring & Name)
 {
     if ( CP_CHECK_NAME(L"table", L"table-cell") || 
          CP_CHECK_NAME(L"table", L"table-covered-cell") )
@@ -634,7 +634,7 @@ void table_table_row::serialize(std::wostream & _Wostream)
 const wchar_t * table_table_rows::ns = L"table";
 const wchar_t * table_table_rows::name = L"table-rows";
 
-void table_table_rows::create_child_element(  const ::std::wstring & Ns, const ::std::wstring & Name)
+void table_table_rows::create_child_element(  const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(table_table_row_);
 }
@@ -661,7 +661,7 @@ void table_table_rows::serialize(std::wostream & _Wostream)
 const wchar_t * table_table_header_rows::ns = L"table";
 const wchar_t * table_table_header_rows::name = L"table-header-rows";
 
-void table_table_header_rows::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
+void table_table_header_rows::create_child_element( const std::wstring & Ns, const std::wstring & Name)
 {
     if CP_CHECK_NAME(L"table", L"table-row")
     {
@@ -692,7 +692,7 @@ void table_table_header_rows::serialize(std::wostream & _Wostream)
 }
 // table-rows
 //////////////////////////////////////////////////////////////////////////////////////////////////
-void table_rows::create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context)
+void table_rows::create_child_element(const std::wstring & Ns, const std::wstring & Name, odf_conversion_context * Context)
 {
     if CP_CHECK_NAME(L"table", L"table-rows")
     {
@@ -742,7 +742,7 @@ table_rows_no_group::table_rows_no_group(odf_conversion_context * _Context) : wa
 	Context = _Context;
 };
 
-void table_rows_no_group::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
+void table_rows_no_group::create_child_element( const std::wstring & Ns, const std::wstring & Name)
 {
     if (CP_CHECK_NAME(L"table", L"table-rows") || CP_CHECK_NAME(L"table", L"table-row"))
     {
@@ -799,7 +799,7 @@ table_rows_and_groups::table_rows_and_groups()
 {
 }
 
-void table_rows_and_groups::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context)
+void table_rows_and_groups::create_child_element( const std::wstring & Ns, const std::wstring & Name, odf_conversion_context * Context)
 {
     if (L"table" == Ns && L"table-row-group" == Name)
     {
@@ -843,7 +843,7 @@ const wchar_t * table_table_row_group::ns = L"table";
 const wchar_t * table_table_row_group::name = L"table-row-group";
 
 
-void table_table_row_group::create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
+void table_table_row_group::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
     table_rows_and_groups_.create_child_element(Ns, Name, getContext());
 }
@@ -873,7 +873,7 @@ void table_table_row_group::add_child_element( const office_element_ptr & child_
 const wchar_t * table_shapes::ns = L"table";
 const wchar_t * table_shapes::name = L"shapes";
 
-void table_shapes::create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
+void table_shapes::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
 	create_element(Ns,Name,content_,getContext());
 }

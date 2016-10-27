@@ -45,7 +45,7 @@ namespace odf_writer {
 
 using xml::xml_char_wc;
 
-bool table_format_properties::create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context)
+bool table_format_properties::create_child_element(const std::wstring & Ns, const std::wstring & Name, odf_conversion_context * Context)
 {
     if (L"style" == Ns && L"background-image" == Name)
     {
@@ -118,7 +118,7 @@ const wchar_t * style_table_properties::ns = L"style";
 const wchar_t * style_table_properties::name = L"table-properties";
 
 
-void style_table_properties::create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_table_properties::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
     table_format_properties_.create_child_element(Ns, Name, getContext());
 }
@@ -157,7 +157,7 @@ void style_table_column_properties_attlist::serialize(std::wostream & _Wostream,
 const wchar_t * style_table_column_properties::ns = L"style";
 const wchar_t * style_table_column_properties::name = L"table-column-properties";
 
-void style_table_column_properties::create_child_element(  const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_table_column_properties::create_child_element(  const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }
@@ -173,7 +173,7 @@ void style_table_column_properties::serialize(std::wostream & strm)
 const wchar_t * style_table_cell_properties::ns = L"style";
 const wchar_t * style_table_cell_properties::name = L"table-cell-properties";
 
-void style_table_cell_properties::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_table_cell_properties::create_child_element( const std::wstring & Ns, const std::wstring & Name)
 {
     if (L"style" == Ns && L"background-image" == Name)
     {
@@ -281,7 +281,7 @@ const wchar_t * style_table_row_properties::ns = L"style";
 const wchar_t * style_table_row_properties::name = L"table-row-properties";
 
 
-void style_table_row_properties::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_table_row_properties::create_child_element( const std::wstring & Ns, const std::wstring & Name)
 {
     if (L"style" == Ns && L"background-image" == Name)
     {

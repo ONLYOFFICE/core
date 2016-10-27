@@ -281,14 +281,15 @@ void odf_text_context::start_element(office_element_ptr & elm, office_element_pt
 	odf_element_state state={elm, style_name, style_elm, level};
 
 	text_elements_list_.push_back(state);
-	if (current_level_.size()>0)
+	
+	if (!current_level_.empty())
 		current_level_.back().elm->add_child_element(elm);
 
 	current_level_.push_back(state);
 }
 void odf_text_context::end_element()
 {
-	if (single_paragraph_ == false && current_level_.size() > 0)
+	if (single_paragraph_ == false && !current_level_.empty())
 	{
 		current_level_.pop_back();
 	}
@@ -533,7 +534,7 @@ void odf_text_context::save_property_break()
 
 	if (paragraph_properties_ == NULL)
 	{
-		for (unsigned int i = current_level_.size()-1; i>=0; i--)
+		for (int i = current_level_.size() - 1; i >= 0; i--)
 		{
 			office_element_ptr & elm = current_level_[i].elm;
 
@@ -543,7 +544,7 @@ void odf_text_context::save_property_break()
 
 			if ((p || h) && !current_level_[i].style_elm)
 			{
-				styles_context_->create_style(L"",odf_types::style_family::Paragraph, true, false, -1);					
+				styles_context_->create_style(L"", odf_types::style_family::Paragraph, true, false, -1);					
 				odf_style_state_ptr style_ = styles_context_->last_state();
 				if (style_)
 				{
@@ -563,23 +564,29 @@ void odf_text_context::save_property_break()
 	need_break_ = boost::none;
 
 }
-void odf_text_context::set_type_break(int type, int clear)
+bool odf_text_context::set_type_break(int type, int clear)//todooo clear ???
 {
-		//brclearAll   = 0,
-		//brclearLeft  = 1,
-		//brclearNone  = 2,
-		//brclearRight = 3
+	bool need_restart = false;
+
 	if (type == -1)
 	{
-		need_break_= boost::none;
+		need_break_		= boost::none;
 	}
 	else if (type == 0)//brtypeColumn 
 	{
-		need_break_= fo_break(fo_break::Column);
+		need_break_		= fo_break(fo_break::Column);
+		need_restart	= true;
 	}
 	else if (type == 1)//brtypePage
 	{
-		need_break_ = fo_break(fo_break::Page);
+		office_element_ptr elm;
+		create_element(L"text", L"soft-page-break", elm, odf_context_);	
+		
+		start_element(elm);
+		end_element();
+		
+		need_break_		= fo_break(fo_break::Page);
+		need_restart	= true;
 	}
 	else //brtypeTextWrapping
 	{
@@ -589,7 +596,7 @@ void odf_text_context::set_type_break(int type, int clear)
 		if (current_level_.size()>0)
 			current_level_.back().elm->add_child_element(elm);	
 	}
-
+	return need_restart;
 }
 
 bool odf_text_context::set_master_page_name (std::wstring & master_page_name)

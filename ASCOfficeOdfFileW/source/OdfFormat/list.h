@@ -52,14 +52,14 @@ public:
 public:
     text_number() {}
 
-	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name){}
+	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element( const office_element_ptr & child_element){}
 
     virtual void serialize(std::wostream & _Wostream);
 
     virtual void add_text(const std::wstring & Text);
 
-    ::std::wstring string_;
+    std::wstring string_;
     
 };
 
@@ -71,7 +71,7 @@ CP_REGISTER_OFFICE_ELEMENT2(text_number);
 
 class text_list_item;
 typedef shared_ptr<text_list_item>::Type text_list_item_ptr;
-typedef ::std::vector<text_list_item_ptr> text_list_item_ptr_array;
+typedef std::vector<text_list_item_ptr> text_list_item_ptr_array;
 
 class text_list_item : public office_element_impl<text_list_item>
 {
@@ -82,7 +82,7 @@ public:
     static const ElementType type = typeTextListItem;
     CPDOCCORE_DEFINE_VISITABLE()
 
-	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
+	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child_element);
 
     virtual void serialize(std::wostream & _Wostream);
@@ -116,7 +116,7 @@ public:
     static const ElementType type = typeTextListHeader;
     CPDOCCORE_DEFINE_VISITABLE()
 
-	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
+	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child_element);
 
     virtual void serialize(std::wostream & _Wostream);

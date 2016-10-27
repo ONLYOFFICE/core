@@ -67,8 +67,6 @@ bool is_text_content(const std::wstring & ns, const std::wstring & name)
             name == L"user-index" ||
             name == L"alphabetical-index" ||
             name == L"bibliography" ||
-
-            // change-marks
             name == L"change" ||
             name == L"change-start" ||
             name == L"change-end"
@@ -92,19 +90,40 @@ void office_text_attlist::serialize(CP_ATTR_NODE)
 {
 	CP_XML_ATTR_OPT(L"text:use-soft-page-breaks", text_use_soft_page_breaks_);
 }
-void office_text::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
+void office_text::create_child_element( const std::wstring & Ns, const std::wstring & Name)
 {
     if (is_text_content(Ns, Name))
     {
         CP_CREATE_ELEMENT(content_);
     }
+	else if CP_CHECK_NAME(L"text", L"tracked-changes") 
+	{
+		CP_CREATE_ELEMENT(tracked_changes_);
+	}
     else
         CP_NOT_APPLICABLE_ELM();
 }
 
 void office_text::add_child_element( const office_element_ptr & child_element)
 {
-    content_.push_back(child_element);
+	if (!child_element) return;
+
+	switch(child_element->get_type())
+	{
+		case typeTextTrackedChanges:
+		{
+			tracked_changes_ = child_element;	
+		}break;
+		case typeTextChangedRegion:
+		{
+			if (!tracked_changes_)
+				create_child_element(L"text", L"tracked-changes");
+
+			tracked_changes_->add_child_element(child_element);
+		}break;
+		default:
+			content_.push_back(child_element);
+	}
 }
 void office_text::serialize(std::wostream & _Wostream)
 {
@@ -114,10 +133,49 @@ void office_text::serialize(std::wostream & _Wostream)
         {
 			office_text_attlist_.serialize(CP_GET_XML_NODE());
 
-			BOOST_FOREACH(office_element_ptr & elm, content_)
+			if (tracked_changes_)
+				tracked_changes_->serialize(CP_XML_STREAM());
+
+			for (int  i = 0; i < content_.size(); i++)
 			{
-				elm->serialize(CP_XML_STREAM());
+				content_[i]->serialize(CP_XML_STREAM());
 			}
+		}
+	}
+}
+// office:change-info
+//-------------------------------------------------------------------------------------------------------------------
+const wchar_t * office_change_info::ns		= L"office";
+const wchar_t * office_change_info::name	= L"change-info";
+
+void office_change_info::create_child_element( const std::wstring & Ns, const std::wstring & Name)
+{
+	if (Ns==L"dc" && Name == L"date")
+	{
+		CP_CREATE_ELEMENT(dc_date_);
+	}
+	else if (Ns==L"dc" && Name == L"creator")
+	{
+		CP_CREATE_ELEMENT(dc_creator_);
+	}
+}
+void office_change_info::add_child_element( const office_element_ptr & child_element)
+{
+	ElementType type = child_element->get_type();
+
+    if (type == typeDcCreator)
+		dc_creator_ = child_element;
+	else if (type == typeDcDate)
+		dc_date_ = child_element;
+}
+void office_change_info::serialize(std::wostream & _Wostream)
+{
+	CP_XML_WRITER(_Wostream)
+    {
+		CP_XML_NODE_SIMPLE()
+        {   
+			if (dc_creator_)dc_creator_->serialize	(CP_XML_STREAM());
+			if (dc_date_)	dc_date_->serialize		(CP_XML_STREAM());
 		}
 	}
 }

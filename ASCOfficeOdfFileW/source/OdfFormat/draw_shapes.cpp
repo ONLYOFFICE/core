@@ -444,7 +444,7 @@ void draw_enhanced_geometry::serialize(std::wostream & _Wostream)
 
 typedef shared_ptr<draw_handle> draw_handle_ptr;
 
-void draw_enhanced_geometry::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
+void draw_enhanced_geometry::create_child_element( const std::wstring & Ns, const std::wstring & Name)
 {
     if CP_CHECK_NAME(L"draw", L"handle")
     {

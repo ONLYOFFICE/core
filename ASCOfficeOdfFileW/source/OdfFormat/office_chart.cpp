@@ -50,7 +50,7 @@ namespace odf_writer {
 const wchar_t * office_chart::ns = L"office";
 const wchar_t * office_chart::name = L"chart";
 
-void office_chart::create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
+void office_chart::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
     CP_CREATE_ELEMENT(content_);
 }
@@ -89,7 +89,7 @@ const wchar_t * chart_chart::ns = L"chart";
 const wchar_t * chart_chart::name = L"chart";
 
 
-void chart_chart::create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
+void chart_chart::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }
@@ -127,7 +127,7 @@ const wchar_t * chart_title::ns = L"chart";
 const wchar_t * chart_title::name = L"title";
 
 
-void chart_title::create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
+void chart_title::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
     if CP_CHECK_NAME(L"text", L"p")
     {
@@ -157,7 +157,7 @@ void chart_title::add_child_element( const office_element_ptr & child_element)
 const wchar_t * chart_subtitle::ns = L"chart";
 const wchar_t * chart_subtitle::name = L"subtitle";
 
-void chart_subtitle::create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
+void chart_subtitle::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
     if CP_CHECK_NAME(L"text", L"p")
     {
@@ -186,7 +186,7 @@ void chart_subtitle::add_child_element( const office_element_ptr & child_element
 const wchar_t * chart_footer::ns = L"chart";
 const wchar_t * chart_footer::name = L"footer";
 
-void chart_footer::create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
+void chart_footer::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
     if CP_CHECK_NAME(L"text", L"p")
     {
@@ -259,7 +259,7 @@ void chart_plot_area_attlist::serialize(CP_ATTR_NODE)
 const wchar_t * chart_plot_area::ns = L"chart";
 const wchar_t * chart_plot_area::name = L"plot-area";
 
-void chart_plot_area::create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
+void chart_plot_area::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
  }
@@ -336,7 +336,7 @@ void chart_axis_attlist::serialize(CP_ATTR_NODE)
 const wchar_t * chart_axis::ns = L"chart";
 const wchar_t * chart_axis::name = L"axis";
 
-void chart_axis::create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
+void chart_axis::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
     CP_CREATE_ELEMENT(content_);
 }
@@ -415,7 +415,7 @@ void chart_series_attlist::serialize(CP_ATTR_NODE)
 const wchar_t * chart_series::ns = L"chart";
 const wchar_t * chart_series::name = L"series";
 
-void chart_series::create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
+void chart_series::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
     CP_CREATE_ELEMENT(content_);
 }
@@ -512,7 +512,7 @@ void chart_error_indicator::serialize(std::wostream & _Wostream)
 const wchar_t * chart_regression_curve::ns = L"chart";
 const wchar_t * chart_regression_curve::name = L"regression-curve";
 
-void chart_regression_curve::create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
+void chart_regression_curve::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
     if CP_CHECK_NAME(L"chart", L"equation") 
 	{

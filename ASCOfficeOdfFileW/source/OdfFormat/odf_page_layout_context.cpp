@@ -255,23 +255,23 @@ void odf_page_layout_context::set_background(_CP_OPT(color) & color, int type)
 ///////////////////////////////////////////////////////////////
 bool odf_page_layout_context::add_footer(int type)
 {
-	office_element_ptr elm;
+	root_header_footer_ = office_element_ptr();
 	
 	if (type == 1) 
 	{
 		if (even_and_left_headers_)
-			create_element(L"style", L"footer-left", elm, odf_context_);
+			create_element(L"style", L"footer-left", root_header_footer_, odf_context_);
 	}
 	else if (type == 2)
-		create_element(L"style", L"footer-first", elm, odf_context_);
+		create_element(L"style", L"footer-first", root_header_footer_, odf_context_);
 	else
-		create_element(L"style", L"footer", elm, odf_context_);
+		create_element(L"style", L"footer", root_header_footer_, odf_context_);
 
-	if (!elm) return false;
+	if (!root_header_footer_) return false;
 	
 	if (master_state_list_.empty())
 		add_master_page(L"");
-	master_state_list_.back().add_footer(elm);
+	master_state_list_.back().add_footer(root_header_footer_);
 
 /////////////////////////////////////////////////////////////////////
 //настраить нужно 1 раз
@@ -313,30 +313,31 @@ bool odf_page_layout_context::add_footer(int type)
 }
 bool odf_page_layout_context::add_header(int type)
 {
-	office_element_ptr elm;
+	root_header_footer_ = office_element_ptr();
 
 	if (type == 1)
 	{
 		if (even_and_left_headers_) 
-			create_element(L"style", L"header-left", elm, odf_context_);
+			create_element(L"style", L"header-left", root_header_footer_, odf_context_);
 	}
 	else if (type == 2)
-		create_element(L"style", L"header-first", elm, odf_context_);
+		create_element(L"style", L"header-first", root_header_footer_, odf_context_);
 	else
-		create_element(L"style", L"header", elm, odf_context_);
+		create_element(L"style", L"header", root_header_footer_, odf_context_);
 	
-	if (!elm) return false;
+	if (!root_header_footer_) return false;
 
 	if (master_state_list_.empty())
 		add_master_page(L"");
 	
-	master_state_list_.back().add_header(elm);
+	master_state_list_.back().add_header(root_header_footer_);
 ////////////////////////////////////////////////////////////////////////
 //настроить нужно один раз
 	if (!layout_state_list_.back().header_size_) return true;
 	
 	style_header_footer_properties * header_props = get_header_properties();
 	if (!header_props)return true;
+	
 	style_page_layout_properties * props = get_properties();
 	if (!props)return true;
 

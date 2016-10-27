@@ -79,39 +79,39 @@ public:
 	odf_comment_context				* comment_context(); 
 	odf_table_context				* table_context();
 	
-	void start_drawings();
-	void end_drawings();
+	void start_drawings		();
+	void end_drawings		();
 
     virtual void start_image(const std::wstring & image_file_name);
     void add_text_content	(const std::wstring & text);
 
-	void start_paragraph(bool styled = false);
-	void end_paragraph();
+	void start_paragraph	(bool styled = false);
+	void end_paragraph		();
 
-	void add_page_break();
+	void add_paragraph_break(int type);
 
-	void start_hyperlink(std::wstring ref);
-	void end_hyperlink();
+	void start_hyperlink	(std::wstring ref);
+	void end_hyperlink		();
 
-	void start_field(bool in_span);
-	void end_field();
-	void set_field_instr(std::wstring instr);
+	void start_field		(bool in_span);
+	void end_field			();
+	void set_field_instr	(std::wstring instr);
 
-	void start_run(bool styled = false);
-	void end_run();
+	void start_run			(bool styled = false);
+	void end_run			();
 
-	void add_section(bool continuous);
-	void add_section_columns(int count, double space_pt, bool separator );
-	void add_section_column(std::vector<std::pair<double,double>> width_space);
-	int get_current_section_columns();
-	void flush_section();
+	void	add_section					(bool continuous);
+	void	add_section_columns			(int count, double space_pt, bool separator );
+	void	add_section_column			(std::vector<std::pair<double,double>> width_space);
+	int		get_current_section_columns	();
+	void	flush_section				();
 
 	void set_master_page_name(std::wstring master_name);
 
-	void start_drop_cap(style_paragraph_properties * paragraph_properties);
-		void set_drop_cap_lines(int lines);
+	void start_drop_cap			(style_paragraph_properties * paragraph_properties);
+		void set_drop_cap_lines	(int lines);
 		void set_drop_cap_margin(bool val);
-	void end_drop_cap();
+	void end_drop_cap			();
 
 	bool start_comment			(int oox_comment_id);
 	void end_comment			(int oox_comment_id);
@@ -123,34 +123,37 @@ public:
 		void end_note_content	();
 	void end_note				();
 
-	void start_table(bool styled = false);
-		void start_table_columns();
-			void add_table_column(double width = -1);
-		void end_table_columns();
-		void start_table_header_rows();
-		void end_table_header_rows();
-		void start_table_row(bool styled = false);
-			void add_default_cell();
-			void start_table_cell(int col, bool covered, bool styled = false);
-			void end_table_cell();
-		void end_table_row();
-	void end_table();
+	void start_change			(int id, int type, std::wstring &author, std::wstring &userId, std::wstring &date);
+	void end_change				(int id, int type);
 
-	void start_list_item(int level, std::wstring style_name);
-	void end_list_item();
+	void start_table				(bool styled = false);
+		void start_table_columns	();
+			void add_table_column	(double width = -1);
+		void end_table_columns		();
+		void start_table_header_rows();
+		void end_table_header_rows	();
+		void start_table_row		(bool styled = false);
+			void add_default_cell	();
+			void start_table_cell	(int col, bool covered, bool styled = false);
+			void end_table_cell		();
+		void end_table_row			();
+	void end_table					();
+
+	void start_list_item	(int level, std::wstring style_name);
+	void end_list_item		();
 
 	void set_no_list();
 
-	bool is_empty_section(){return current_root_elements_.size() > 0 ? false : true; }
+	bool is_empty_section	(){return current_root_elements_.size() > 0 ? false : true; }
 
-	bool start_header(int type);
-	bool start_footer(int type);
-	void end_header_footer();
+	bool start_header		(int type);
+	bool start_footer		(int type);
+	void end_header_footer	();
 
-	void add_empty_header(int type);
-	void add_empty_footer(int type);
+	void add_empty_header	(int type);
+	void add_empty_footer	(int type);
 
-	void set_background(_CP_OPT(color) & color, int type);
+	void set_background		(_CP_OPT(color) & color, int type);
 
 	bool is_paragraph_in_current_section_;
 
@@ -168,7 +171,7 @@ private:
 	bool is_footer_;
 	
 	std::vector<odf_drawing_context_ptr>	drawing_context_;	
-	std::vector<odf_text_context_ptr>		text_context_;//for embedded 
+	std::vector<odf_text_context_ptr>		text_context_;		//for embedded 
 
 	std::vector<odf_element_state>		current_root_elements_; // for section, if needed
 	std::vector<odt_section_state>		sections_;
@@ -177,13 +180,19 @@ private:
 
 	struct _field_state
 	{
-		bool enabled;	
-		int type;
-		std::wstring value;
-		std::wstring format;
-		bool started;
-		bool in_span;
+		bool			enabled;	
+		int				type;
+		std::wstring	value;
+		std::wstring	format;
+		bool			started;
+		bool			in_span;
 	}current_field_;
+	
+	struct _text_changes_state
+	{
+		odf_text_context	*main_text_context;
+		int					level;
+	}text_changes_state_;
 
 	bool is_hyperlink_;
 
@@ -194,12 +203,10 @@ private:
 		bool enabled;
 		style_paragraph_properties *paragraph_properties;
 
-		int characters;
-		bool inline_style;
-		double characters_size_pt;
+		int		characters;
+		bool	inline_style;
+		double	characters_size_pt;
 	}drop_cap_state_;
-
-
 
 };
 

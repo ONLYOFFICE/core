@@ -163,7 +163,7 @@ void style_content::add_child_element( const office_element_ptr & child)
 	}	
 }
 
-void style_content::create_child_element( const std::wstring & Ns, const ::std::wstring & Name)
+void style_content::create_child_element( const std::wstring & Ns, const std::wstring & Name)
 {   
     if CP_CHECK_NAME(L"style", L"text-properties")
     {
@@ -231,7 +231,7 @@ const wchar_t * default_style::ns = L"style";
 const wchar_t * default_style::name = L"default-style";
 
 
-void default_style::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
+void default_style::create_child_element( const std::wstring & Ns, const std::wstring & Name)
 {
     style_content_.create_child_element(Ns, Name);
 }
@@ -254,7 +254,7 @@ void default_style::serialize(std::wostream & strm)
 const wchar_t * draw_fill_image::ns = L"draw";
 const wchar_t * draw_fill_image::name = L"fill-image";
 
-void draw_fill_image::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
+void draw_fill_image::create_child_element( const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }
@@ -275,7 +275,7 @@ void draw_fill_image::serialize(std::wostream & strm)
 const wchar_t * draw_marker::ns = L"draw";
 const wchar_t * draw_marker::name = L"marker";
 
-void draw_marker::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
+void draw_marker::create_child_element( const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }
@@ -297,7 +297,7 @@ void draw_marker::serialize(std::wostream & strm)
 const wchar_t * draw_gradient::ns = L"draw";
 const wchar_t * draw_gradient::name = L"gradient";
 
-void draw_gradient::create_child_element(  const ::std::wstring & Ns, const ::std::wstring & Name)
+void draw_gradient::create_child_element(  const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }
@@ -329,7 +329,7 @@ void draw_gradient::serialize(std::wostream & strm)
 const wchar_t * draw_hatch::ns = L"draw";
 const wchar_t * draw_hatch::name = L"hatch";
 
-void draw_hatch::create_child_element(  const ::std::wstring & Ns, const ::std::wstring & Name)
+void draw_hatch::create_child_element(  const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }
@@ -354,7 +354,7 @@ void draw_hatch::serialize(std::wostream & strm)
 const wchar_t * draw_opacity::ns = L"draw";
 const wchar_t * draw_opacity::name = L"opacity";
 
-void draw_opacity::create_child_element(  const ::std::wstring & Ns, const ::std::wstring & Name)
+void draw_opacity::create_child_element(  const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }
@@ -384,7 +384,7 @@ void draw_opacity::serialize(std::wostream & strm)
 const wchar_t * style::ns = L"style";
 const wchar_t * style::name = L"style";
 
-void style::create_child_element(  const ::std::wstring & Ns, const ::std::wstring & Name)
+void style::create_child_element(  const std::wstring & Ns, const std::wstring & Name)
 {
     if CP_CHECK_NAME(L"style", L"map")
     {
@@ -432,7 +432,7 @@ void style::serialize(std::wostream & strm)
 // styles & draw_styles
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-void styles::create_child_element(  const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context)
+void styles::create_child_element(  const std::wstring & Ns, const std::wstring & Name, odf_conversion_context * Context)
 {
     if CP_CHECK_NAME(L"style", L"style")
     {
@@ -497,7 +497,7 @@ void styles::serialize(std::wostream & strm)//content from different element
 		elm->serialize(strm);
 	}	
 }
-void templates::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context)
+void templates::create_child_element( const std::wstring & Ns, const std::wstring & Name, odf_conversion_context * Context)
 {
     if CP_CHECK_NAME(L"table", L"table-template")
     {
@@ -522,7 +522,7 @@ void templates::serialize(std::wostream & strm)
 		elm->serialize(strm);
 	}	
 }
-void draw_styles::create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context)
+void draw_styles::create_child_element(const std::wstring & Ns, const std::wstring & Name, odf_conversion_context * Context)
 {
     if CP_CHECK_NAME(L"draw", L"gradient")
     {
@@ -603,7 +603,7 @@ void draw_styles::serialize(std::wostream & strm)
 const wchar_t * office_automatic_styles::ns = L"office";
 const wchar_t * office_automatic_styles::name = L"automatic-styles";
 
-void office_automatic_styles::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
+void office_automatic_styles::create_child_element( const std::wstring & Ns, const std::wstring & Name)
 {
     if (L"style" == Ns && L"page-layout" == Name)
     {
@@ -661,7 +661,7 @@ void style_master_page_attlist::serialize(CP_ATTR_NODE)
 const wchar_t * office_master_styles::ns = L"office";
 const wchar_t * office_master_styles::name = L"master-styles";
 
-void office_master_styles::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
+void office_master_styles::create_child_element( const std::wstring & Ns, const std::wstring & Name)
 {
     if (L"style" == Ns && L"master-page" == Name)
         CP_CREATE_ELEMENT(style_master_page_);
@@ -721,7 +721,7 @@ const wchar_t * office_styles::ns = L"office";
 const wchar_t * office_styles::name = L"styles";
 
 
-void office_styles::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
+void office_styles::create_child_element( const std::wstring & Ns, const std::wstring & Name)
 {
     if (CP_CHECK_NAME(L"style",		L"style") ||
         CP_CHECK_NAME(L"text",		L"list-style") ||        
@@ -833,13 +833,13 @@ void office_styles::serialize(std::wostream & strm)
 const wchar_t * style_header::ns = L"style";
 const wchar_t * style_header::name = L"header";
 
-void style_header::create_child_element(  const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_header::create_child_element(  const std::wstring & Ns, const std::wstring & Name)
 {
     content().header_footer_content_.create_child_element( Ns, Name, getContext());
 }
 void style_header::add_child_element( const office_element_ptr & child)
 {
-	content().header_footer_content_.add_child_element( child);
+	content().header_footer_content_.add_child_element( child, getContext());
 }
 void style_header::serialize(std::wostream & strm)
 {
@@ -856,13 +856,13 @@ const wchar_t * style_footer::ns = L"style";
 const wchar_t * style_footer::name = L"footer";
 
 
-void style_footer::create_child_element(  const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_footer::create_child_element(  const std::wstring & Ns, const std::wstring & Name)
 {
     content().header_footer_content_.create_child_element(Ns, Name, getContext());
 }
 void style_footer::add_child_element( const office_element_ptr & child)
 {
-    content().header_footer_content_.add_child_element( child);
+    content().header_footer_content_.add_child_element( child, getContext());
 }
 void style_footer::serialize(std::wostream & strm)
 {
@@ -878,13 +878,13 @@ void style_footer::serialize(std::wostream & strm)
 const wchar_t * style_header_first::ns = L"style";
 const wchar_t * style_header_first::name = L"header-first";
 
-void style_header_first::create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_header_first::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
     content().header_footer_content_.create_child_element(Ns, Name, getContext());
 }
 void style_header_first::add_child_element( const office_element_ptr & child)
 {
-    content().header_footer_content_.add_child_element(child);
+    content().header_footer_content_.add_child_element(child, getContext());
 }
 void style_header_first::serialize(std::wostream & strm)
 {
@@ -900,13 +900,13 @@ void style_header_first::serialize(std::wostream & strm)
 const wchar_t * style_footer_first::ns = L"style";
 const wchar_t * style_footer_first::name = L"footer-first";
 
-void style_footer_first::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_footer_first::create_child_element( const std::wstring & Ns, const std::wstring & Name)
 {
     content().header_footer_content_.create_child_element( Ns, Name, getContext());
 }
 void style_footer_first::add_child_element( const office_element_ptr & child)
 {
-    content().header_footer_content_.add_child_element( child);
+    content().header_footer_content_.add_child_element( child, getContext());
 }
 void style_footer_first::serialize(std::wostream & strm)
 {
@@ -922,13 +922,13 @@ void style_footer_first::serialize(std::wostream & strm)
 const wchar_t * style_header_left::ns = L"style";
 const wchar_t * style_header_left::name = L"header-left";
 
-void style_header_left::create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_header_left::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
     content().header_footer_content_.create_child_element( Ns, Name, getContext());
 }
 void style_header_left::add_child_element( const office_element_ptr & child)
 {
-    content().header_footer_content_.add_child_element( child);
+    content().header_footer_content_.add_child_element( child, getContext());
 }
 
 void style_header_left::serialize(std::wostream & strm)
@@ -945,13 +945,13 @@ void style_header_left::serialize(std::wostream & strm)
 const wchar_t * style_footer_left::ns = L"style";
 const wchar_t * style_footer_left::name = L"footer-left";
 
-void style_footer_left::create_child_element(  const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_footer_left::create_child_element(  const std::wstring & Ns, const std::wstring & Name)
 {
     content().header_footer_content_.create_child_element( Ns, Name, getContext());
 }
 void style_footer_left::add_child_element( const office_element_ptr & child)
 {
-    content().header_footer_content_.add_child_element(child);
+    content().header_footer_content_.add_child_element(child, getContext());
 }
 void style_footer_left::serialize(std::wostream & strm)
 {
@@ -969,7 +969,7 @@ void style_footer_left::serialize(std::wostream & strm)
 const wchar_t * style_header_style::ns = L"style";
 const wchar_t * style_header_style::name = L"header-style";
 
-void style_header_style::create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_header_style::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
     if (L"style" == Ns && L"header-footer-properties" == Name)
     {
@@ -1005,7 +1005,7 @@ void style_header_style::serialize(std::wostream & strm)
 const wchar_t * style_footer_style::ns = L"style";
 const wchar_t * style_footer_style::name = L"footer-style";
 
-void style_footer_style::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_footer_style::create_child_element( const std::wstring & Ns, const std::wstring & Name)
 {
     if (L"style" == Ns && L"header-footer-properties" == Name)
     {
@@ -1046,7 +1046,7 @@ void style_page_layout_attlist::serialize(CP_ATTR_NODE)
 const wchar_t * style_page_layout::ns = L"style";
 const wchar_t * style_page_layout::name = L"page-layout";
 
-void style_page_layout::create_child_element(  const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_page_layout::create_child_element(  const std::wstring & Ns, const std::wstring & Name)
 {
     if (L"style" == Ns && L"header-style" == Name)
     {
@@ -1114,7 +1114,7 @@ void style_footnote_sep_attlist::serialize(CP_ATTR_NODE)
 const wchar_t * style_footnote_sep::ns = L"style";
 const wchar_t * style_footnote_sep::name = L"footnote-sep";
 
-void style_footnote_sep::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_footnote_sep::create_child_element( const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }
@@ -1136,7 +1136,7 @@ void style_footnote_sep::serialize(std::wostream & strm)
 const wchar_t * style_master_page::ns = L"style";
 const wchar_t * style_master_page::name = L"master-page";
 
-void style_master_page::create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_master_page::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
     if (L"style" == Ns && L"header" == Name)
         CP_CREATE_ELEMENT(style_header_);
@@ -1265,7 +1265,7 @@ int style_master_page::find_placeHolderIndex(presentation_class::type placeHolde
 const wchar_t * text_notes_configuration::ns = L"text";
 const wchar_t * text_notes_configuration::name = L"notes-configuration";
 
-void text_notes_configuration::create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
+void text_notes_configuration::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
     if CP_CHECK_NAME(L"text", L"note-continuation-notice-forward")
         CP_CREATE_ELEMENT(text_note_continuation_notice_forward_);
@@ -1280,7 +1280,7 @@ void text_notes_configuration::create_child_element(const ::std::wstring & Ns, c
 const wchar_t * style_presentation_page_layout::ns = L"style";
 const wchar_t * style_presentation_page_layout::name = L"presentation-page-layout";
 
-void style_presentation_page_layout::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_presentation_page_layout::create_child_element( const std::wstring & Ns, const std::wstring & Name)
 {
     if (L"presentation" == Ns && L"placeholder" == Name)
     {

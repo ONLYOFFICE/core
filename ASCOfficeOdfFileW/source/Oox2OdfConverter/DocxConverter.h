@@ -48,11 +48,18 @@ namespace OOX
 
 	namespace Logic
 	{
-		class CPTab;
-		class CSmartTag;
 		class CIns;
+		class CDel;
+		class CPPrChange;
+		class CRPrChange;
+		class CSectPrChange;
+		class CTrPrChange;
+		class CTcPrChange;
+		class CTblPrChange;
 		class CParagraph;
 		class CParagraphProperty;
+		class CPTab;
+		class CSmartTag;
 		class CRun;
 		class CSym;
 		class CRunProperty;
@@ -69,6 +76,7 @@ namespace OOX
 		class CFldChar;
 		class CFldSimple;
 		class CInstrText;
+		class CDelText;
 		class CCommentRangeStart;
 		class CCommentRangeEnd;
 		class CCommentReference;
@@ -176,19 +184,29 @@ namespace Oox2Odf
 		void convert(OOX::Logic::CSectionProperty		*oox_section_pr, bool root = false);
 		void convert(OOX::Logic::CParagraph				*oox_paragraph);
 		void convert(OOX::Logic::CRun					*oox_run);
-		void convert(OOX::Logic::CParagraphProperty		*oox_paragraph_prop,	odf_writer::style_paragraph_properties *paragraph_properties);
-		void convert(ComplexTypes::Word::CFramePr		*oox_frame_pr,			odf_writer::style_paragraph_properties *paragraph_properties);
-		void convert(OOX::Logic::CRunProperty			*oox_run_prop,			odf_writer::style_text_properties		*text_properties);
-		void convert(ComplexTypes::Word::CShading		*oox_shading,			odf_writer::style_text_properties		*text_properties );
+		void convert(OOX::Logic::CParagraphProperty		*oox_para_prop,	odf_writer::style_paragraph_properties	*paragraph_properties);
+		void convert(ComplexTypes::Word::CFramePr		*oox_frame_pr,	odf_writer::style_paragraph_properties	*paragraph_properties);
+		void convert(OOX::Logic::CRunProperty			*oox_run_prop,	odf_writer::style_text_properties		*text_properties);
+		void convert(ComplexTypes::Word::CShading		*oox_shading,	odf_writer::style_text_properties		*text_properties );
 		void convert(OOX::Logic::CFldSimple				*oox_fld);
 		void convert(OOX::Logic::CFldChar				*oox_fld);
-		void convert(OOX::Logic::CInstrText				*oox_instr);
+		void convert(OOX::Logic::CInstrText				*oox_instrText);
+		void convert(OOX::Logic::CDelText				*oox_delText);
 		void convert(OOX::Logic::CText					*oox_text);
 		void convert(OOX::Logic::CHyperlink				*oox_hyperlink);
 		void convert(OOX::Logic::CSym					*oox_sym);
-		void convert(OOX::Logic::CIns					*oox_ins);
 		void convert(OOX::Logic::CSmartTag				*oox_tag);		
 		void convert(OOX::Logic::CPTab					*oox_ptab);
+		
+		void convert(OOX::Logic::CIns					*oox_ins);
+		void convert(OOX::Logic::CDel					*oox_del);
+		int  convert(OOX::Logic::CPPrChange				*oox_para_prop_change);
+		int  convert(OOX::Logic::CRPrChange				*oox_run_prop_change);
+		int  convert(OOX::Logic::CSectPrChange			*oox_sect_prop_change);
+		int  convert(OOX::Logic::CTrPrChange			*oox_tr_prop_change);
+		int  convert(OOX::Logic::CTcPrChange			*oox_tc_prop_change);
+		int  convert(OOX::Logic::CTblPrChange			*oox_table_prop_change);		
+
 		
 		void convert(OOX::Logic::CAlternateContent		*oox_alt_content);
 		void convert(OOX::Logic::CDrawing				*oox_drawing);

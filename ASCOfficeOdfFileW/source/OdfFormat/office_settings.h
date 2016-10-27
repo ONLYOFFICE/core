@@ -53,7 +53,7 @@ public:
     static const ElementType type = typeOfficeSettings;
     CPDOCCORE_DEFINE_VISITABLE();
 
-	virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
+	virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element( const office_element_ptr & child_element);
 
 	virtual void serialize(std::wostream & _Wostream);
@@ -73,7 +73,7 @@ public:
     static const ElementType type = typeOfficeSettingsConfigItemSet;
     CPDOCCORE_DEFINE_VISITABLE();
 
-	virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
+	virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element( const office_element_ptr & child_element);
 
 	virtual void serialize(std::wostream & _Wostream);
@@ -93,7 +93,7 @@ public:
     static const ElementType type = typeOfficeSettingsConfigItem;
     CPDOCCORE_DEFINE_VISITABLE();
 
-	virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
+	virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element( const office_element_ptr & child_element);
 
 	virtual void serialize(std::wostream & _Wostream);
@@ -114,7 +114,7 @@ public:
     static const ElementType type = typeOfficeSettingsConfigItemMapIndexed;
     CPDOCCORE_DEFINE_VISITABLE();
 
-	virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
+	virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element( const office_element_ptr & child_element);
 
 	virtual void serialize(std::wostream & _Wostream);
@@ -134,7 +134,7 @@ public:
     static const ElementType type = typeOfficeSettingsConfigItemMapNamed;
     CPDOCCORE_DEFINE_VISITABLE();
 
-	virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
+	virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element( const office_element_ptr & child_element);
 
 	virtual void serialize(std::wostream & _Wostream);
@@ -154,7 +154,7 @@ public:
     static const ElementType type = typeOfficeSettingsConfigItemMapEntry;
     CPDOCCORE_DEFINE_VISITABLE();
 
-	virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
+	virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element( const office_element_ptr & child_element);
 
 	virtual void serialize(std::wostream & _Wostream);

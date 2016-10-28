@@ -51,7 +51,7 @@ using xml::xml_char_wc;
 const wchar_t * table_named_expressions::ns = L"table";
 const wchar_t * table_named_expressions::name = L"named-expressions";
 
-void table_named_expressions::create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
+void table_named_expressions::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
     if CP_CHECK_NAME(L"table", L"named-range")
     {

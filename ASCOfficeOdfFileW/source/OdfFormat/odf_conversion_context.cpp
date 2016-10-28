@@ -58,10 +58,10 @@ namespace odf_writer {
 odf_conversion_context::odf_conversion_context(_office_type_document type_, package::odf_document * outputDocument) 
 	: type (type_), chart_context_ (this), page_layout_context_(this)
 { 
-	output_document_ = outputDocument;
-	current_object_ =0;
+	output_document_	= outputDocument;
+	current_object_		= 0;
 
-    applicationFonts_ = new CApplicationFonts();
+    applicationFonts_	= new CApplicationFonts();
 
 }
 odf_conversion_context::~odf_conversion_context()
@@ -174,7 +174,7 @@ void odf_conversion_context::end_document()
 void odf_conversion_context::start_chart()
 {
 	create_object();
-	create_element(L"office", L"chart", objects_.back().content, this,true);
+	create_element(L"office", L"chart", objects_.back().content, this, true);
 
 	chart_context_.set_styles_context(styles_context());
 	chart_context_.start_chart(get_current_object_element());
@@ -182,12 +182,12 @@ void odf_conversion_context::start_chart()
 void odf_conversion_context::start_spreadsheet()
 {
 	create_object();
-	create_element(L"office", L"spreadsheet", objects_.back().content, this,true);
+	create_element(L"office", L"spreadsheet", objects_.back().content, this, true);
 }
 void odf_conversion_context::start_text()
 {
 	create_object();
-	create_element(L"office", L"text", objects_.back().content, this,true);
+	create_element(L"office", L"text", objects_.back().content, this, true);
 }
 void odf_conversion_context::create_object()
 {
@@ -203,7 +203,7 @@ void odf_conversion_context::create_object()
 	
 	objects_.push_back(obj);
 
-	current_object_ = objects_.size()-1;
+	current_object_ = objects_.size() - 1;
 }
 void odf_conversion_context::end_chart()
 {
@@ -222,7 +222,7 @@ void odf_conversion_context::end_spreadsheet()
 }
 void odf_conversion_context::end_object()
 {
-	current_object_ = 0;
+	current_object_ = 0;//main
 }
 
 office_element_ptr & odf_conversion_context::get_current_object_element()
@@ -243,7 +243,6 @@ void odf_conversion_context::process_settings(_object & object, bool isRoot)
 	if (isRoot)
 	{	
 	}
-
 }
 
 void odf_conversion_context::process_styles(_object & object, bool isRoot)

@@ -51,7 +51,7 @@ using xml::xml_char_wc;
 const wchar_t * table_database_ranges::ns = L"table";
 const wchar_t * table_database_ranges::name = L"database-ranges";
 
-void table_database_ranges::create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
+void table_database_ranges::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
     if CP_CHECK_NAME(L"table", L"database-range")
     {

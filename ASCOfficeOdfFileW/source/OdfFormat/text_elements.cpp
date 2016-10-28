@@ -57,9 +57,9 @@ namespace odf_writer {
 using xml::xml_char_wc;
 
 // text:h
-//////////////////////////////////////////////////////////////////////////////////////////////////
-const wchar_t * text_h::ns = L"text";
-const wchar_t * text_h::name = L"h";
+//--------------------------------------------------------------------------------------------------------
+const wchar_t * text_h::ns		= L"text";
+const wchar_t * text_h::name	= L"h";
 
 void paragraph::create_child_element( const std::wstring & Ns, const std::wstring & Name, odf_conversion_context * Context)
 {
@@ -86,7 +86,6 @@ void paragraph::serialize(std::wostream & _Wostream)
 void paragraph::serialize_attr(CP_ATTR_NODE)
 {
 	paragraph_attrs_.serialize(CP_GET_XML_NODE());
-
 }
 
 void paragraph_attrs::serialize(CP_ATTR_NODE)
@@ -100,7 +99,8 @@ void paragraph_attrs::serialize(CP_ATTR_NODE)
 	{    
 		text_class_names_all = elm.style_name() + std::wstring(L" ");
 	}
-	if (text_class_names_all.length()>0)
+	
+	if (!text_class_names_all.empty())
 		CP_XML_ATTR(L"text:class-names",	text_class_names_all);
 }
 //////////////////////////////////////////////
@@ -115,10 +115,10 @@ void text_h::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         {
-			CP_XML_ATTR(L"text:outline-level",		text_outline_level_);
-			CP_XML_ATTR(L"text:restart-numbering",	text_restart_numbering_);
-			CP_XML_ATTR_OPT(L"text:start-value",	text_start_value_);
-			CP_XML_ATTR(L"text:is-list-header",		text_is_list_header_);
+			CP_XML_ATTR		(L"text:outline-level",		text_outline_level_);
+			CP_XML_ATTR		(L"text:restart-numbering",	text_restart_numbering_);
+			CP_XML_ATTR_OPT	(L"text:start-value",		text_start_value_);
+			CP_XML_ATTR		(L"text:is-list-header",	text_is_list_header_);
 
 			 paragraph_.serialize_attr	(CP_GET_XML_NODE());
 			 paragraph_.serialize		(CP_XML_STREAM());
@@ -140,9 +140,9 @@ void text_h::add_child_element( const office_element_ptr & child_element)
     paragraph_.add_child_element(child_element);
 }
 // text:p
-//////////////////////////////////////////////////////////////////////////////////////////////////
-const wchar_t * text_p::ns = L"text";
-const wchar_t * text_p::name = L"p";
+//--------------------------------------------------------------------------------------------------------
+const wchar_t * text_p::ns		= L"text";
+const wchar_t * text_p::name	= L"p";
 
 void text_p::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
@@ -171,7 +171,7 @@ void text_p::serialize(std::wostream & _Wostream)
 
 
 // text:list
-//////////////////////////////////////////////////////////////////////////////////////////////////
+//--------------------------------------------------------------------------------------------------------
 const wchar_t * text_list::ns = L"text";
 const wchar_t * text_list::name = L"list";
 
@@ -215,7 +215,7 @@ void text_list::add_child_element( const office_element_ptr & child_element)
 		text_list_items_.push_back(child_element);
 }
 // text:soft-page-break
-//////////////////////////////////////////////////////////////////////////////////////////////////
+//--------------------------------------------------------------------------------------------------------
 const wchar_t * text_soft_page_break::ns = L"text";
 const wchar_t * text_soft_page_break::name = L"soft-page-break";
 
@@ -228,33 +228,27 @@ void text_soft_page_break::serialize(std::wostream & _Wostream)
 }
 
 // text-section-attr
-//////////////////////////////////////////////////////////////////////////////////////////////////
+//--------------------------------------------------------------------------------------------------------
 
 void text_section_attr::serialize(CP_ATTR_NODE)
 {
-    CP_XML_ATTR_OPT(L"text:style-name", text_style_name_);
-    CP_XML_ATTR(L"text:name",			text_name_);
-    CP_XML_ATTR_OPT(L"text:protected",	text_protected_);
-    CP_XML_ATTR_OPT(L"text:protection-key", text_protection_key_);
-    CP_XML_ATTR_OPT(L"text:display",		text_display_);
-    CP_XML_ATTR_OPT(L"text:condition",	text_condition_);
+    CP_XML_ATTR_OPT	(L"text:style-name",	text_style_name_);
+    CP_XML_ATTR		(L"text:name",			text_name_);
+    CP_XML_ATTR_OPT	(L"text:protected",		text_protected_);
+    CP_XML_ATTR_OPT	(L"text:protection-key", text_protection_key_);
+    CP_XML_ATTR_OPT	(L"text:display",		text_display_);
+    CP_XML_ATTR_OPT	(L"text:condition",		text_condition_);
 }
 
 // text:section
-//////////////////////////////////////////////////////////////////////////////////////////////////
-const wchar_t * text_section::ns = L"text";
-const wchar_t * text_section::name = L"section";
+//--------------------------------------------------------------------------------------------------------
+const wchar_t * text_section::ns	= L"text";
+const wchar_t * text_section::name	= L"section";
 
 void text_section::create_child_element( const std::wstring & Ns, const std::wstring & Name)
 {
-    if (L"text" == Ns && L"section-source" == Name)
-    {
-        CP_CREATE_ELEMENT(text_section_source_);    
-    }
-    else
-    {
-        CP_CREATE_ELEMENT(text_content_);
-    }
+    if (L"text" == Ns && L"section-source" == Name)	CP_CREATE_ELEMENT(text_section_source_);    
+    else											CP_CREATE_ELEMENT(content_);
 }
 
 void text_section::add_child_element( const office_element_ptr & child_element)
@@ -264,7 +258,7 @@ void text_section::add_child_element( const office_element_ptr & child_element)
     if (type == typeTextSectionSource)
 		text_section_source_ = child_element;
 	else
-		text_content_.push_back(child_element);
+		content_.push_back(child_element);
 }
 
 void text_section::serialize(std::wostream & _Wostream)
@@ -275,18 +269,19 @@ void text_section::serialize(std::wostream & _Wostream)
 		{
 			text_section_attr_.serialize(CP_GET_XML_NODE());
 
-			if (text_section_source_)text_section_source_->serialize(CP_XML_STREAM());
+			if (text_section_source_)
+				text_section_source_->serialize(CP_XML_STREAM());
  			
-			BOOST_FOREACH(const office_element_ptr & elm, text_content_)
+			for (int i = 0 ; i < content_.size(); i++)
 			{
-				elm->serialize(CP_XML_STREAM());
+				content_[i]->serialize(CP_XML_STREAM());
 			}   
 		}
 	}
 }
 
 // text-section-source-attr
-//////////////////////////////////////////////////////////////////////////////////////////////////
+//--------------------------------------------------------------------------------------------------------
 
 void text_section_source_attr::serialize(CP_ATTR_NODE)
 {
@@ -297,9 +292,9 @@ void text_section_source_attr::serialize(CP_ATTR_NODE)
 }
 
 // text:section-source
-//////////////////////////////////////////////////////////////////////////////////////////////////
-const wchar_t * text_section_source::ns = L"text";
-const wchar_t * text_section_source::name = L"section-source";
+//--------------------------------------------------------------------------------------------------------
+const wchar_t * text_section_source::ns		= L"text";
+const wchar_t * text_section_source::name	= L"section-source";
 
 void text_section_source::create_child_element( const std::wstring & Ns, const std::wstring & Name)
 {
@@ -316,9 +311,9 @@ void text_section_source::serialize(std::wostream & _Wostream)
 	}
 }
 // text:index-body
-//////////////////////////////////////////////////////////////////////////////////////////////////
-const wchar_t * text_index_body::ns = L"text";
-const wchar_t * text_index_body::name = L"index-body";
+//--------------------------------------------------------------------------------------------------------
+const wchar_t * text_index_body::ns		= L"text";
+const wchar_t * text_index_body::name	= L"index-body";
 
 void text_index_body::serialize(std::wostream & _Wostream)
 {
@@ -326,9 +321,9 @@ void text_index_body::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         {   
-			BOOST_FOREACH(const office_element_ptr & listItem, index_content_main_)
+			for (int i = 0 ; i < index_content_main_.size(); i++)
 			{
-				listItem->serialize(CP_XML_STREAM());
+				index_content_main_[i]->serialize(CP_XML_STREAM());
 			}
 		}
 	} 
@@ -345,9 +340,9 @@ void text_index_body::add_child_element( const office_element_ptr & child_elemen
 }
 
 // text:index-title
-//////////////////////////////////////////////////////////////////////////////////////////////////
-const wchar_t * text_index_title::ns = L"text";
-const wchar_t * text_index_title::name = L"index-title";
+//--------------------------------------------------------------------------------------------------------
+const wchar_t * text_index_title::ns	= L"text";
+const wchar_t * text_index_title::name	= L"index-title";
 
 void text_index_title::serialize(std::wostream & _Wostream) 
 {
@@ -355,9 +350,9 @@ void text_index_title::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         {   
-			BOOST_FOREACH(const office_element_ptr & listItem, index_content_main_)
+			for (int i = 0 ; i < index_content_main_.size(); i++)
 			{
-				listItem->serialize(CP_XML_STREAM());
+				index_content_main_[i]->serialize(CP_XML_STREAM());
 			}
 		}
 	} 
@@ -372,8 +367,8 @@ void text_index_title::add_child_element( const office_element_ptr & child_eleme
 }
 
 // text:table-of-content
-//////////////////////////////////////////////////////////////////////////////////////////////////
-const wchar_t * text_table_of_content::ns = L"text";
+//--------------------------------------------------------------------------------------------------------
+const wchar_t * text_table_of_content::ns	= L"text";
 const wchar_t * text_table_of_content::name = L"table-of-content";
 
 void text_table_of_content::serialize(std::wostream & _Wostream) 
@@ -383,8 +378,12 @@ void text_table_of_content::serialize(std::wostream & _Wostream)
 		CP_XML_NODE_SIMPLE()
         {   
 			text_section_attr_.serialize(CP_GET_XML_NODE());
-			if (text_index_body_)text_index_body_->serialize(CP_XML_STREAM());
-			if (text_table_of_content_source_)text_table_of_content_source_->serialize(CP_XML_STREAM());
+
+			if (text_index_body_)
+				text_index_body_->serialize(CP_XML_STREAM());
+
+			if (text_table_of_content_source_)
+				text_table_of_content_source_->serialize(CP_XML_STREAM());
 		}
 	} 
 }
@@ -398,11 +397,214 @@ void text_table_of_content::create_child_element( const std::wstring & Ns, const
 
 void text_table_of_content::add_child_element( const office_element_ptr & child_element)
 {
-    //if CP_CHECK_NAME(L"text", L"index-body")
+     text_index_body_ = child_element;
+}
+//--------------------------------------------------------------------------------------------------------
+
+// text:tracked-changes
+//--------------------------------------------------------------------------------------------------------
+const wchar_t * text_tracked_changes::ns	= L"text";
+const wchar_t * text_tracked_changes::name	= L"tracked-changes";
+
+void text_tracked_changes::create_child_element(const std::wstring & Ns, const std::wstring & Name)
+{
+    if CP_CHECK_NAME(L"text", L"index-body")
     {
-        text_index_body_ = child_element;
+        CP_CREATE_ELEMENT(content_);
     }
 }
+void text_tracked_changes::add_child_element( const office_element_ptr & child_element)
+{
+    content_.push_back(child_element);
+}
 
+void text_tracked_changes::serialize(std::wostream & _Wostream)
+{
+	if (content_.empty()) return;
+
+	CP_XML_WRITER(_Wostream)
+    {
+		CP_XML_NODE_SIMPLE()
+        {   
+			for (int i = 0 ; i < content_.size(); i++)
+			{
+				content_[i]->serialize (CP_XML_STREAM());
+			}
+		}
+	}
+}
+//---------------------------------------------------------------------------------------------------
+const wchar_t * text_insertion::ns			= L"text";
+const wchar_t * text_insertion::name		= L"insertion";
+
+void text_insertion::serialize(std::wostream & _Wostream)
+{
+	CP_XML_WRITER(_Wostream)
+    {
+		CP_XML_NODE_SIMPLE()
+        { 
+			if (office_change_info_)
+				office_change_info_->serialize(CP_XML_STREAM());
+
+			for (int i = 0 ; i < content_.size(); i++)
+			{
+				content_[i]->serialize(CP_XML_STREAM());
+			}  
+		}
+	}
+}
+//---------------------------------------------------------------------------------------------------
+const wchar_t * text_deletion::ns			= L"text";
+const wchar_t * text_deletion::name			= L"deletion";
+
+void text_deletion::serialize(std::wostream & _Wostream)
+{
+	CP_XML_WRITER(_Wostream)
+    {
+		CP_XML_NODE_SIMPLE()
+        { 
+			if (office_change_info_)
+				office_change_info_->serialize(CP_XML_STREAM());
+
+			for (int i = 0 ; i < content_.size(); i++)
+			{
+				content_[i]->serialize(CP_XML_STREAM());
+			}  
+		}
+	}
+}
+//---------------------------------------------------------------------------------------------------
+
+const wchar_t * text_format_change::ns		= L"text";
+const wchar_t * text_format_change::name	= L"format-change";
+
+void text_format_change::serialize(std::wostream & _Wostream)
+{
+	CP_XML_WRITER(_Wostream)
+    {
+		CP_XML_NODE_SIMPLE()
+        { 
+			if (office_change_info_)
+				office_change_info_->serialize(CP_XML_STREAM());
+
+			for (int i = 0 ; i < content_.size(); i++)
+			{
+				content_[i]->serialize(CP_XML_STREAM());
+			}  
+		}
+	}
+}
+//----------------------------------------------------------------------------------------------------------
+const wchar_t * text_unknown_change::ns		= L"text";
+const wchar_t * text_unknown_change::name	= L"UnknownChange";
+
+void text_unknown_change::create_child_element(const std::wstring & Ns, const std::wstring & Name)
+{
+    if (L"office" == Ns && L"change-info" == Name)	CP_CREATE_ELEMENT(office_change_info_);    
+    else											CP_CREATE_ELEMENT(content_);
+}
+
+void text_unknown_change::add_child_element( const office_element_ptr & child_element)
+{
+	ElementType type = child_element->get_type();
+
+    if (type == typeOfficeChangeInfo)
+		office_change_info_= child_element;
+	else
+		content_.push_back(child_element);
+}
+
+void text_unknown_change::serialize(std::wostream & _Wostream)
+{
+	CP_XML_WRITER(_Wostream)
+    {
+		CP_XML_NODE_SIMPLE()
+        { 
+			if (office_change_info_)
+				office_change_info_->serialize(CP_XML_STREAM());
+
+			for (int i = 0 ; i < content_.size(); i++)
+			{
+				content_[i]->serialize(CP_XML_STREAM());
+			}  
+		}
+	}
+}
+
+//---------------------------------------------------------------------------------------------------
+const wchar_t * text_add_change::ns		= L"text";
+const wchar_t * text_add_change::name	= L"unknown-change-mark";
+//---------------------------------------------------------------------------------------------------
+const wchar_t * text_change::ns			= L"text";
+const wchar_t * text_change::name		= L"change";
+
+void text_change::serialize(std::wostream & _Wostream)
+{
+	CP_XML_WRITER(_Wostream)
+    {
+		CP_XML_NODE_SIMPLE()
+        {   
+			CP_XML_ATTR_OPT(L"text:change-id", text_change_id_);
+		}
+	}
+}
+//------------------------------------------------------------------------------------------
+const wchar_t * text_change_start::ns	= L"text";
+const wchar_t * text_change_start::name	= L"change-start";
+
+void text_change_start::serialize(std::wostream & _Wostream)
+{
+	CP_XML_WRITER(_Wostream)
+    {
+		CP_XML_NODE_SIMPLE()
+        {   
+			CP_XML_ATTR_OPT(L"text:change-id", text_change_id_);
+		}
+	}
+}
+
+//------------------------------------------------------------------------------------------
+const wchar_t * text_change_end::ns		= L"text";
+const wchar_t * text_change_end::name	= L"change-end";
+
+void text_change_end::serialize(std::wostream & _Wostream)
+{
+	CP_XML_WRITER(_Wostream)
+    {
+		CP_XML_NODE_SIMPLE()
+        {   
+			CP_XML_ATTR_OPT(L"text:change-id", text_change_id_);
+		}
+	}
+}
+
+//---------------------------------------------------------------------------------------------------
+const wchar_t * text_changed_region::ns		= L"text";
+const wchar_t * text_changed_region::name	= L"changed-region";
+
+void text_changed_region::create_child_element(const std::wstring & Ns, const std::wstring & Name)
+{
+    CP_CREATE_ELEMENT(element_);
+}
+void text_changed_region::add_child_element( const office_element_ptr & child_element)
+{
+    element_ = child_element;
+}
+
+void text_changed_region::serialize(std::wostream & _Wostream)
+{
+	if (!element_) return;
+
+	CP_XML_WRITER(_Wostream)
+    {
+		CP_XML_NODE_SIMPLE()
+        {   
+			CP_XML_ATTR_OPT(L"xml:id", text_id_);
+			CP_XML_ATTR_OPT(L"text:id", text_id_);
+			
+			element_->serialize (CP_XML_STREAM());
+		}
+	}
+}
 }
 }

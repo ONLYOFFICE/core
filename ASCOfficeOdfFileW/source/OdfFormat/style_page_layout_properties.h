@@ -103,7 +103,7 @@ public:
 class style_page_layout_properties_elements
 {
 public:
-    void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context);
+    void create_child_element( const std::wstring & Ns, const std::wstring & Name, odf_conversion_context * Context);
     void add_child_element( const office_element_ptr & child);
 	void serialize(std::wostream & strm);
 
@@ -125,7 +125,7 @@ public:
 
     style_page_layout_properties() { }
 
-    virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child);
 
 	virtual void serialize(std::wostream & strm);

@@ -64,10 +64,10 @@ public:
     bool register_element(const std::wstring &ns, const std::wstring & name, CreateFuncImpl f);
 
     // Создать элемент по имени
-    office_element_ptr create(const ::std::wstring & ns, const ::std::wstring & name, odf_conversion_context * Context = NULL, bool isRoot = false) const;
+    office_element_ptr create(const std::wstring & ns, const std::wstring & name, odf_conversion_context * Context = NULL, bool isRoot = false) const;
 
 private:
-    typedef std::map<::std::wstring, CreateFuncImpl> MapType;
+    typedef std::map<std::wstring, CreateFuncImpl> MapType;
     MapType map_; 
             
 public:
@@ -120,8 +120,8 @@ bool create_element(const std::wstring & Ns,
                     odf_conversion_context * Context,
                     bool isRoot = false);
 
-bool create_element(const ::std::wstring & Ns,
-                             const ::std::wstring & Name,
+bool create_element(const std::wstring & Ns,
+                             const std::wstring & Name,
                              office_element_ptr_array & _Elements,
                              odf_conversion_context * Context,
                              bool isRoot = false);

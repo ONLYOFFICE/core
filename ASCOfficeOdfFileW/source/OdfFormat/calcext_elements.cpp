@@ -72,7 +72,7 @@ void calcext_date_is_attr::serialize(CP_ATTR_NODE)
 const wchar_t * calcext_conditional_formats::ns = L"calcext";
 const wchar_t * calcext_conditional_formats::name = L"conditional-formats";
 
-void calcext_conditional_formats::create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
+void calcext_conditional_formats::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }
@@ -99,7 +99,7 @@ void calcext_conditional_formats::serialize(std::wostream & _Wostream)
 const wchar_t * calcext_conditional_format::ns = L"calcext";
 const wchar_t * calcext_conditional_format::name = L"conditional-format";
 
-void calcext_conditional_format::create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
+void calcext_conditional_format::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }
@@ -128,7 +128,7 @@ void calcext_conditional_format::serialize(std::wostream & _Wostream)
 const wchar_t * calcext_data_bar::ns = L"calcext";
 const wchar_t * calcext_data_bar::name = L"data-bar";
 
-void calcext_data_bar::create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
+void calcext_data_bar::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }
@@ -156,7 +156,7 @@ void calcext_data_bar::serialize(std::wostream & _Wostream)
 const wchar_t * calcext_color_scale::ns = L"calcext";
 const wchar_t * calcext_color_scale::name = L"color-scale";
 
-void calcext_color_scale::create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
+void calcext_color_scale::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }
@@ -182,7 +182,7 @@ void calcext_color_scale::serialize(std::wostream & _Wostream)
 const wchar_t * calcext_icon_set::ns = L"calcext";
 const wchar_t * calcext_icon_set::name = L"icon-set";
 
-void calcext_icon_set::create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
+void calcext_icon_set::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }

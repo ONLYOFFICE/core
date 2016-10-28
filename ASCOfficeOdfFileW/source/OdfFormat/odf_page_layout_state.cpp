@@ -110,7 +110,7 @@ void odf_master_state::add_footer(office_element_ptr & elm)
 
 	style_->add_child_element(elm);
 
-	odf_element_state state = {elm,L"",office_element_ptr(), 1};
+	odf_element_state state = {elm, L"", office_element_ptr(), 1};
 	elements_.push_back(state);
 
 }
@@ -121,7 +121,7 @@ void odf_master_state::add_header(office_element_ptr & elm)
 
 	style_->add_child_element(elm);
 
-	odf_element_state state = {elm,L"",office_element_ptr(), 1};
+	odf_element_state state = {elm, L"", office_element_ptr(), 1};
 	elements_.push_back(state);
 
 }

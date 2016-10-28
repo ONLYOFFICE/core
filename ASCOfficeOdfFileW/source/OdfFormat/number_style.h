@@ -49,7 +49,7 @@ public:
    
     CPDOCCORE_DEFINE_VISITABLE()
     
-    virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element( const office_element_ptr & child);
 	
 	virtual void serialize(std::wostream & strm);
@@ -184,7 +184,7 @@ public:
     static const ElementType type = typeNumberText;
     CPDOCCORE_DEFINE_VISITABLE()
 
-	virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name){}
+	virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name){}
 
     virtual void serialize(std::wostream & strm);
 
@@ -206,7 +206,7 @@ public:
     static const ElementType type = typeNumberNumber;
     CPDOCCORE_DEFINE_VISITABLE()
 
-    virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element( const office_element_ptr & child);
 
 	virtual void serialize(std::wostream & strm);
@@ -238,7 +238,7 @@ public:
     static const ElementType type = typeNumberEmbeddedText;
     CPDOCCORE_DEFINE_VISITABLE()
 
-    virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name){CP_NOT_APPLICABLE_ELM();}
+    virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name){CP_NOT_APPLICABLE_ELM();}
 	virtual void serialize(std::wostream & strm);
 
     virtual void add_text(const std::wstring & Text);
@@ -260,7 +260,7 @@ public:
     static const ElementType type = typeNumberScientificNumber;
     CPDOCCORE_DEFINE_VISITABLE()
 
-    virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name){CP_NOT_APPLICABLE_ELM();}
+    virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name){CP_NOT_APPLICABLE_ELM();}
 	virtual void serialize(std::wostream & strm);
 
     // number-scientific-number-attlist
@@ -287,7 +287,7 @@ public:
     static const ElementType type = typeNumberCurrencySymbol;
     CPDOCCORE_DEFINE_VISITABLE()
 
-	virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name){CP_NOT_APPLICABLE_ELM();}
+	virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name){CP_NOT_APPLICABLE_ELM();}
 	virtual void serialize(std::wostream & strm);
 
     virtual void add_text(const std::wstring & Text);
@@ -311,7 +311,7 @@ public:
     static const ElementType type = typeNumberTextContent;
     CPDOCCORE_DEFINE_VISITABLE()
 
-    virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name){CP_NOT_APPLICABLE_ELM();}
+    virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name){CP_NOT_APPLICABLE_ELM();}
 
     virtual void serialize(std::wostream & strm);
 
@@ -335,7 +335,7 @@ public:
     static const ElementType type = typeNumberDayOfWeek;
     CPDOCCORE_DEFINE_VISITABLE()
 
-    virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name){CP_NOT_APPLICABLE_ELM();}
+    virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name){CP_NOT_APPLICABLE_ELM();}
 	virtual void serialize(std::wostream & strm);
 
     _CP_OPT(std::wstring) number_style_;
@@ -356,7 +356,7 @@ public:
     static const ElementType type = typeNumberQuarter;
     CPDOCCORE_DEFINE_VISITABLE()
 
-    virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name){CP_NOT_APPLICABLE_ELM();}
+    virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name){CP_NOT_APPLICABLE_ELM();}
 	virtual void serialize(std::wostream & strm);
 
     _CP_OPT(std::wstring) number_style_;
@@ -377,7 +377,7 @@ public:
     static const ElementType type = typeNumberDay;
     CPDOCCORE_DEFINE_VISITABLE()
 
-    virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name){CP_NOT_APPLICABLE_ELM();}
+    virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name){CP_NOT_APPLICABLE_ELM();}
 	virtual void serialize(std::wostream & strm);
 
     _CP_OPT(std::wstring) number_style_;
@@ -397,7 +397,7 @@ public:
     static const ElementType type = typeNumberMonth;
     CPDOCCORE_DEFINE_VISITABLE()
 
-    virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name){CP_NOT_APPLICABLE_ELM();}
+    virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name){CP_NOT_APPLICABLE_ELM();}
 	virtual void serialize(std::wostream & strm);
 
     _CP_OPT(odf_types::Bool) number_textual_;
@@ -420,7 +420,7 @@ public:
     static const ElementType type = typeNumberYear;
     CPDOCCORE_DEFINE_VISITABLE()
 
-    virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name){CP_NOT_APPLICABLE_ELM();}
+    virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name){CP_NOT_APPLICABLE_ELM();}
 	virtual void serialize(std::wostream & strm);
 
     _CP_OPT(std::wstring) number_style_;
@@ -440,7 +440,7 @@ public:
     static const ElementType type = typeNumberHours;
     CPDOCCORE_DEFINE_VISITABLE()
 
-    virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name){CP_NOT_APPLICABLE_ELM();}
+    virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name){CP_NOT_APPLICABLE_ELM();}
 	virtual void serialize(std::wostream & strm);
 
     _CP_OPT(std::wstring) number_style_;
@@ -460,7 +460,7 @@ public:
     static const ElementType type = typeNumberMinutes;
     CPDOCCORE_DEFINE_VISITABLE()
 
-    virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name){CP_NOT_APPLICABLE_ELM();}
+    virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name){CP_NOT_APPLICABLE_ELM();}
 	virtual void serialize(std::wostream & strm);
 
     _CP_OPT(std::wstring) number_style_;
@@ -480,7 +480,7 @@ public:
     static const ElementType type = typeNumberSeconds;
     CPDOCCORE_DEFINE_VISITABLE()
 
-    virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name){CP_NOT_APPLICABLE_ELM();}
+    virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name){CP_NOT_APPLICABLE_ELM();}
 	virtual void serialize(std::wostream & strm);
 
     _CP_OPT(std::wstring) number_style_;
@@ -501,7 +501,7 @@ public:
     static const ElementType type = typeNumberAmPm;
     CPDOCCORE_DEFINE_VISITABLE()
 
-    virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name){CP_NOT_APPLICABLE_ELM();}
+    virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name){CP_NOT_APPLICABLE_ELM();}
 	virtual void serialize(std::wostream & strm);
 
 
@@ -519,7 +519,7 @@ public:
     static const ElementType type = typeNumberFraction;
     CPDOCCORE_DEFINE_VISITABLE()
 
-    virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name){CP_NOT_APPLICABLE_ELM();}
+    virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name){CP_NOT_APPLICABLE_ELM();}
 	virtual void serialize(std::wostream & strm);
 
     _CP_OPT(int) number_min_integer_digits_;

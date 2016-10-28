@@ -43,8 +43,8 @@ namespace odf_writer {
 
 void style_header_footer_properties_attlist::serialize(CP_ATTR_NODE)
 {
-    CP_XML_ATTR_OPT(L"svg:height", svg_height_);
-    CP_XML_ATTR_OPT(L"fo:min-height", fo_min_height_);
+    CP_XML_ATTR_OPT(L"svg:height",		svg_height_);
+    CP_XML_ATTR_OPT(L"fo:min-height",	fo_min_height_);
    
 	common_horizontal_margin_attlist_.serialize(CP_GET_XML_NODE());
     common_vertical_margin_attlist_.serialize(CP_GET_XML_NODE());
@@ -58,10 +58,10 @@ void style_header_footer_properties_attlist::serialize(CP_ATTR_NODE)
 }
 
 /// style-header-footer-properties
-const wchar_t * style_header_footer_properties::ns = L"style";
-const wchar_t * style_header_footer_properties::name = L"header-footer-properties";
+const wchar_t * style_header_footer_properties::ns		= L"style";
+const wchar_t * style_header_footer_properties::name	= L"header-footer-properties";
 
-void style_header_footer_properties::create_child_element(  const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_header_footer_properties::create_child_element(  const std::wstring & Ns, const std::wstring & Name)
 {
     if (L"style" == Ns && L"background-image" == Name)
     {
@@ -84,19 +84,44 @@ void style_header_footer_properties::serialize(std::wostream & strm)
 	}
 }
 //////////////////////////////////////////
-void header_footer_content::create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context)
+void header_footer_content::create_child_element(const std::wstring & Ns, const std::wstring & Name, odf_conversion_context * Context)
 {
-    CP_CREATE_ELEMENT_SIMPLE(content_);
+	if CP_CHECK_NAME(L"text", L"tracked-changes") 
+	{
+		CP_CREATE_ELEMENT_SIMPLE(tracked_changes_);
+	}
+    else
+		CP_CREATE_ELEMENT_SIMPLE(content_);
 }
-void header_footer_content::add_child_element( const office_element_ptr & child)
+void header_footer_content::add_child_element( const office_element_ptr & child_element, odf_conversion_context * Context)
 {
-    content_.push_back(child);
+	if (!child_element) return;
+
+	switch(child_element->get_type())
+	{
+		case typeTextTrackedChanges:
+		{
+			tracked_changes_ = child_element;	
+		}break;
+		case typeTextChangedRegion:
+		{
+			if (!tracked_changes_)
+				create_child_element(L"text", L"tracked-changes", Context);
+
+			tracked_changes_->add_child_element(child_element);
+		}break;
+		default:
+			content_.push_back(child_element);
+	}
 }
 void header_footer_content::serialize(std::wostream & strm)
 {
-	BOOST_FOREACH(const office_element_ptr & elm, content_)
+	if (tracked_changes_)
+		tracked_changes_->serialize(strm);
+
+	for (int i = 0; i < content_.size(); i++)
 	{
-		elm->serialize(strm);
+		content_[i]->serialize(strm);
 	}
 }
 }

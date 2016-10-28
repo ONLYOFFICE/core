@@ -54,7 +54,7 @@ public:
     static const ElementType type = typeStyleMap;
     CPDOCCORE_DEFINE_VISITABLE()
 
-    virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);
 	virtual void serialize(std::wostream & strm){}
 
 	std::wstring			style_condition_;

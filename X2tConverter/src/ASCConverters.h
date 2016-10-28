@@ -32,6 +32,13 @@
 #ifndef ASCCONVERTERS_H
 #define ASCCONVERTERS_H
 
+#ifndef X2T_USE_DYNAMIC_LIBRARY
+#define X2T_DECL_EXPORT
+#else
+#include "../../DesktopEditor/common/base_export.h"
+#define X2T_DECL_EXPORT Q_DECL_EXPORT
+#endif
+
 #include <string>
 
 namespace NExtractTools
@@ -141,5 +148,9 @@ namespace NExtractTools
     int fromT(const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bFromChanges, bool bPaid, InputParams& params);
     int fromCrossPlatform(const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bFromChanges, bool bPaid, InputParams& params);
     int fromCanvasPdf(const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bFromChanges, bool bPaid, InputParams& params);
+
+	int fromInputParams(InputParams& oInputParams);
+	X2T_DECL_EXPORT int FromFile(const std::wstring& file);
+	X2T_DECL_EXPORT int FromXml(const std::wstring& xml);
 }
 #endif // ASCCONVERTERS_H

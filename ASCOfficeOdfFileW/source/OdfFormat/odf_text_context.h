@@ -53,8 +53,8 @@ class style_text_properties;
 class odf_text_context: boost::noncopyable
 {
 public:
-	odf_text_context(odf_conversion_context *odf_context);
-    ~odf_text_context();
+	odf_text_context	(odf_conversion_context *odf_context);
+    ~odf_text_context	();
 public:
  	odf_style_context*		get_styles_context();//для embedded
 	void					set_styles_context(odf_style_context*  styles_context);//для embedded
@@ -75,7 +75,6 @@ public:
 	void start_paragraph	(office_element_ptr & elm, bool styled = false);
     void end_paragraph		();
 
-
 	void start_element		(office_element_ptr & elm, office_element_ptr style_elm = office_element_ptr(),std::wstring style_name = L"");
     void end_element		();
  	
@@ -92,25 +91,24 @@ public:
 	void end_list			();
 
 	bool is_need_break		(){return bool(need_break_);}
-	void set_type_break		(int type, int clear);
+	bool set_type_break		(int type, int clear);
 	void save_property_break();
 
-	void add_tab(_CP_OPT(int) ref);
+	void add_tab			(_CP_OPT(int) ref = boost::none);
+	void set_outline_level	(int level);
 
+	bool get_list_item_state()		{return list_state_.levels.size() > 0 ? list_state_.levels.back() : false;}
+	
 	void set_parent_paragraph_style	(std::wstring & style_name);
 	void set_parent_span_style		(std::wstring & style_name);
 
 	bool set_master_page_name		(std::wstring & master_page_name);
+
+	bool get_KeepNextParagraph		()			{return keep_next_paragraph_;}
+	void set_KeepNextParagraph		(bool val)	{keep_next_paragraph_ = val;}
 	
 	style_text_properties		*get_text_properties		()	{return text_properties_;}
 	style_paragraph_properties	*get_paragraph_properties	()	{return paragraph_properties_;}
-
-	void set_outline_level		(int level);
-
-	bool get_KeepNextParagraph	()			{return keep_next_paragraph_;}
-	void set_KeepNextParagraph	(bool val)	{keep_next_paragraph_ = val;}
-
-	bool get_list_item_state	()			{return list_state_.levels.size() > 0 ? list_state_.levels.back() : false;}
 //------------------------------------------------------------------------------------
 	int		current_outline_;
 	bool	in_field_;

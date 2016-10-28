@@ -45,52 +45,66 @@
 namespace cpdoccore { 
 namespace odf_writer {
 
-//office_text_attlist
 class office_text_attlist
 {
 public:
-    _CP_OPT(odf_types::Bool)			text_use_soft_page_breaks_;
+    _CP_OPT(odf_types::Bool) text_use_soft_page_breaks_;
 
 	void serialize(CP_ATTR_NODE);
 };
 
-/// \brief  office:text
 class office_text : public office_element_impl<office_text>
 {
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
-    static const ElementType type = typeOfficeText;
+    static const ElementType type		= typeOfficeText;
     CPDOCCORE_DEFINE_VISITABLE()
 
-	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
+	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child_element);
 
     virtual void serialize(std::wostream & _Wostream);
 
-//    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-//    virtual void add_child_element(const  xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
-//    virtual void add_text(const std::wstring & Text);
-
-	office_text_attlist office_text_attlist_;
+	office_text_attlist			office_text_attlist_;
 
 private:
-    bool text_global_;
-    // TODO: office-text-content-prelude:
-    //  TODO: office-forms
-    //  TODO: text-tracked-changes
-    //  TODO: text-decls
-    //  TODO: table-decls
-
-    office_element_ptr_array content_;
-    // TODO: text-page-sequence
+	office_element_ptr			tracked_changes_;
+    office_element_ptr_array	content_;
+	
+	// TODO: office-text-content-prelude:
+    // TODO: office-forms
+    // TODO: text-decls
+    // TODO: table-decls
+	// TODO: text-page-sequence
     // TODO: office-text-content-epilogue:
-    //  TODO: table-functions
-
+    // TODO: table-functions
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(office_text)
+
+//-------------------------------------------------------------------------------------
+class office_change_info : public office_element_impl<office_change_info>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type		= typeOfficeChangeInfo;
+    CPDOCCORE_DEFINE_VISITABLE()
+
+	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
+    virtual void add_child_element( const office_element_ptr & child_element);
+
+    virtual void serialize(std::wostream & _Wostream);
+
+private:
+    office_element_ptr		dc_date_;
+    office_element_ptr		dc_creator_;
+	
+};
+CP_REGISTER_OFFICE_ELEMENT2(office_change_info)
+
 
 }
 }

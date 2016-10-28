@@ -139,6 +139,7 @@ void odf_notes_context::end_note_content()
 {
 	impl_->notes_.back().is_started = false;
 }
+
 int odf_notes_context::find_by_id(int oox_id, int type)
 {
 	for (int i=0; i < impl_->notes_.size(); i++)

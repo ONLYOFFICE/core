@@ -46,7 +46,7 @@ namespace cpdoccore {
 namespace odf_writer {
 
 // dc:date
-/////////////////////////////////////////////
+//-------------------------------------------------------------------------------------------------------------------
 const wchar_t * dc_date::ns = L"dc";
 const wchar_t * dc_date::name = L"date";
 
@@ -65,7 +65,7 @@ void dc_date::serialize(std::wostream & _Wostream)
 	}
 }
 // dc:creator
-///////////////////////////////////////////
+//-------------------------------------------------------------------------------------------------------------------
 const wchar_t * dc_creator::ns = L"dc";
 const wchar_t * dc_creator::name = L"creator";
 
@@ -83,7 +83,7 @@ void dc_creator::serialize(std::wostream & _Wostream)
 		}
 	}
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////
+//-------------------------------------------------------------------------------------------------------------------
 
 void office_annotation_attr::serialize(CP_ATTR_NODE)
 {
@@ -103,11 +103,11 @@ void office_annotation_attr::serialize(CP_ATTR_NODE)
 }
 
 // office:annotation
-//////////////////////////////////////////////////////////////////////////////////////////////////
-const wchar_t * office_annotation::ns = L"office";
+//-------------------------------------------------------------------------------------------------------------------
+const wchar_t * office_annotation::ns	= L"office";
 const wchar_t * office_annotation::name = L"annotation";
 
-void office_annotation::create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
+void office_annotation::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
 	if (Ns==L"dc" && Name == L"date")
 	{
@@ -165,11 +165,11 @@ void office_annotation::serialize(std::wostream & _Wostream)
 	}
 }
 // officeooo:annotation
-//////////////////////////////////////////////////////////////////////////////////////////////////
-const wchar_t * officeooo_annotation::ns = L"officeooo";
-const wchar_t * officeooo_annotation::name = L"annotation";
+//-------------------------------------------------------------------------------------------------------------------
+const wchar_t * officeooo_annotation::ns	= L"officeooo";
+const wchar_t * officeooo_annotation::name	= L"annotation";
 
-void officeooo_annotation::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
+void officeooo_annotation::create_child_element( const std::wstring & Ns, const std::wstring & Name)
 {
 	if (Ns==L"dc" && Name == L"date")
 	{

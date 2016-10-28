@@ -101,8 +101,10 @@ public:
 
 	void set_page_number_format			(_CP_OPT(int) & type, _CP_OPT(int) & start);
 
-	double current_page_width_;
-	bool even_and_left_headers_;
+	office_element_ptr	root_header_footer_; //для топовых элементов в style:footer
+	
+	double				current_page_width_;
+	bool				even_and_left_headers_;
 private:
 
 

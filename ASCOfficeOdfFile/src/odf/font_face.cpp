@@ -47,7 +47,7 @@ namespace odf_reader {
 const wchar_t * svg_font_face_uri::ns = L"svg";
 const wchar_t * svg_font_face_uri::name = L"font-face-uri";
 
-::std::wostream & svg_font_face_uri::text_to_stream(::std::wostream & _Wostream) const
+std::wostream & svg_font_face_uri::text_to_stream(std::wostream & _Wostream) const
 {
     return _Wostream;
 }
@@ -57,7 +57,7 @@ void svg_font_face_uri::add_attributes( const xml::attributes_wc_ptr & Attribute
     common_svg_font_face_xlink_attlist_.add_attributes(Attributes);
 }
 
-void svg_font_face_uri::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void svg_font_face_uri::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if (L"svg" == Ns && L"font-face-format" == Name)
     {
@@ -75,7 +75,7 @@ void svg_font_face_uri::add_text(const std::wstring & Text)
 const wchar_t * svg_font_face_format::ns = L"svg";
 const wchar_t * svg_font_face_format::name = L"font-face-format";
 
-::std::wostream & svg_font_face_format::text_to_stream(::std::wostream & _Wostream) const
+std::wostream & svg_font_face_format::text_to_stream(std::wostream & _Wostream) const
 {
     return _Wostream;
 }
@@ -85,7 +85,7 @@ void svg_font_face_format::add_attributes( const xml::attributes_wc_ptr & Attrib
     CP_APPLY_ATTR(L"svg:string", svg_string_);
 }
 
-void svg_font_face_format::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void svg_font_face_format::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }
@@ -98,7 +98,7 @@ void svg_font_face_format::add_text(const std::wstring & Text)
 const wchar_t * svg_font_face_name::ns = L"svg";
 const wchar_t * svg_font_face_name::name = L"font-face-name";
 
-::std::wostream & svg_font_face_name::text_to_stream(::std::wostream & _Wostream) const
+std::wostream & svg_font_face_name::text_to_stream(std::wostream & _Wostream) const
 {
     return _Wostream;
 }
@@ -108,7 +108,7 @@ void svg_font_face_name::add_attributes( const xml::attributes_wc_ptr & Attribut
     CP_APPLY_ATTR(L"name", name_);
 }
 
-void svg_font_face_name::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void svg_font_face_name::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }
@@ -134,7 +134,7 @@ void svg_definition_src::add_attributes( const xml::attributes_wc_ptr & Attribut
     common_svg_font_face_xlink_attlist_.add_attributes(Attributes);
 }
 
-void svg_definition_src::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void svg_definition_src::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }
@@ -188,7 +188,7 @@ void style_font_face::add_attributes( const xml::attributes_wc_ptr & Attributes 
 
 }
 
-void style_font_face::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_font_face::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if (L"svg" == Ns && L"font-face-uri" == Name)
         CP_CREATE_ELEMENT(svg_font_face_uri_);
@@ -223,7 +223,7 @@ const wchar_t * office_font_face_decls::name = L"font-face-decls";
 void office_font_face_decls::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {}
 
-void office_font_face_decls::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void office_font_face_decls::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if (L"style" == Ns && L"font-face" == Name)
     {

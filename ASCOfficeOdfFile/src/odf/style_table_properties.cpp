@@ -73,7 +73,7 @@ void table_format_properties::add_attributes( const xml::attributes_wc_ptr & Att
 	CP_APPLY_ATTR(L"tableooo:tab-color",	tableooo_tab_color_);			
 }
 
-bool table_format_properties::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name, document_context * Context)
+bool table_format_properties::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name, document_context * Context)
 {
     if (L"style" == Ns && L"background-image" == Name)
     {
@@ -182,7 +182,7 @@ void style_table_properties::add_attributes( const xml::attributes_wc_ptr & Attr
     table_format_properties_.add_attributes(Attributes);
 }
 
-void style_table_properties::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_table_properties::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     table_format_properties_.add_child_element(Reader, Ns, Name, getContext());
 }
@@ -213,7 +213,7 @@ void style_table_column_properties::add_attributes( const xml::attributes_wc_ptr
     style_table_column_properties_attlist_.add_attributes(Attributes);
 }
 
-void style_table_column_properties::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_table_column_properties::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }
@@ -316,7 +316,7 @@ void style_table_cell_properties::add_attributes( const xml::attributes_wc_ptr &
     style_table_cell_properties_attlist_.add_attributes(Attributes);
 }
 
-void style_table_cell_properties::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_table_cell_properties::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if (L"style" == Ns && L"background-image" == Name)
     {
@@ -378,7 +378,7 @@ void style_table_row_properties::add_attributes( const xml::attributes_wc_ptr & 
     style_table_row_properties_attlist_.add_attributes(Attributes);
 }
 
-void style_table_row_properties::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_table_row_properties::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if (L"style" == Ns && L"background-image" == Name)
     {

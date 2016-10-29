@@ -85,7 +85,7 @@ class style_drawing_page_properties;
 class style_content : noncopyable
 {
 public:
-    void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name, document_context * Context);
+    void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name, document_context * Context);
     
 	void docx_convert(oox::docx_conversion_context & Context, bool in_styles = false);
     void xlsx_convert(oox::xlsx_conversion_context & Context);
@@ -129,7 +129,7 @@ public:
     static const ElementType type = typeStyleDefaultStyle;
     CPDOCCORE_DEFINE_VISITABLE();
 
-    virtual std::wostream & text_to_stream(::std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
 
     default_style() {};
 
@@ -141,7 +141,7 @@ public:
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
     virtual void add_text(const std::wstring & Text);
 };
 
@@ -183,7 +183,7 @@ public:
 
 private:
 	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
  
 };
 CP_REGISTER_OFFICE_ELEMENT2(draw_gradient);
@@ -213,7 +213,7 @@ public:
 	
 private:
 	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
  
 };
 CP_REGISTER_OFFICE_ELEMENT2(draw_hatch);
@@ -246,7 +246,7 @@ public:
 
 private:
 	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
  
 };
 CP_REGISTER_OFFICE_ELEMENT2(draw_opacity);
@@ -270,15 +270,15 @@ public:
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 };
 CP_REGISTER_OFFICE_ELEMENT2(draw_fill_image);
 /////////////////////////////////////////////////////////////////////////////////////////////////
 class style;
 typedef shared_ptr<style>::Type style_ptr;
 typedef weak_ptr<style>::Type style_weak_ptr;
-typedef ::std::vector< style_weak_ptr > style_weak_ptr_array;
-typedef ::std::vector< style_ptr > style_ptr_array;
+typedef std::vector< style_weak_ptr > style_weak_ptr_array;
+typedef std::vector< style_ptr > style_ptr_array;
 
 //  style
 ///         style:style
@@ -291,13 +291,13 @@ public:
     static const ElementType type = typeStyleStyle;
     CPDOCCORE_DEFINE_VISITABLE();
 
-    virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
 
     style() : style_auto_update_(false) { }
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
     virtual void add_text(const std::wstring & Text);
     
 public:
@@ -329,7 +329,7 @@ CP_REGISTER_OFFICE_ELEMENT2(style);
 class styles
 {
 public:
-    void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name, document_context * Context);
+    void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name, document_context * Context);
 
     office_element_ptr_array style_style_;      ///< style-style
     office_element_ptr_array text_list_style_;  ///< text-list-style
@@ -348,7 +348,7 @@ public:
 class draw_styles
 {
 public:
-    void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name, document_context * Context);
+    void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name, document_context * Context);
 
 	office_element_ptr_array draw_gradient_;    
 	office_element_ptr_array draw_fill_image_; 
@@ -367,7 +367,7 @@ public:
 class templates
 {
 public:
-    void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name, document_context * Context);
+    void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name, document_context * Context);
 
 	office_element_ptr_array table_templates_;    
 
@@ -384,7 +384,7 @@ public:
     static const ElementType type = typeOfficeAutomaticStyles;
     CPDOCCORE_DEFINE_VISITABLE();
 
-    virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
 
     styles						styles_; ///< styles
     office_element_ptr_array	style_page_layout_;
@@ -393,7 +393,7 @@ public:
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
     virtual void add_text(const std::wstring & Text);
 };
 
@@ -409,7 +409,7 @@ public:
     static const ElementType type = typeOfficeMasterStyles;
     CPDOCCORE_DEFINE_VISITABLE();
 
-    virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
 
     office_element_ptr_array	style_master_page_;	// разметки тем
     office_element_ptr			style_handout_master_;		// разметки для принтера - .. второстепенно
@@ -421,7 +421,7 @@ public:
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
     virtual void add_text(const std::wstring & Text);
 };
 
@@ -455,11 +455,11 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
 
 	virtual void pptx_convert(oox::pptx_conversion_context & Context);
-    virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 public:
 	int find_placeHolderIndex(odf_types::presentation_class::type placeHolder,int & last_idx);
@@ -495,7 +495,7 @@ public:
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 public:
     styles						styles_;
@@ -520,17 +520,18 @@ CP_REGISTER_OFFICE_ELEMENT2(office_styles);
 class header_footer_content_impl
 {
 public:
-    common_style_header_footer_attlist common_style_header_footer_attlist_;
-    header_footer_content header_footer_content_;
+    common_style_header_footer_attlist	common_style_header_footer_attlist_;
+    header_footer_content				header_footer_content_;
 };
 
 class header_footer_impl
 {
 public:
-    header_footer_content_impl & content() { return content_; }
-    const header_footer_content_impl & content() const { return content_; }
+    header_footer_content_impl & content()				{ return content_; }
+    const header_footer_content_impl & content() const	{ return content_; }
     virtual ~header_footer_impl() {}
-    void docx_convert(oox::docx_conversion_context & Context);
+    
+	void docx_convert(oox::docx_conversion_context & Context);
 
 	header_footer_content_impl content_;
 
@@ -550,7 +551,7 @@ public:
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 public:
     //header_footer_content_impl content_;
@@ -573,7 +574,7 @@ public:
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 public:
    // header_footer_content_impl content_;
@@ -596,7 +597,7 @@ public:
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 public:
     //header_footer_content_impl content_;
@@ -619,7 +620,7 @@ public:
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 public:
    // header_footer_content_impl content_;
@@ -640,7 +641,7 @@ public:
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 public:
    // header_footer_content_impl content_;
@@ -663,7 +664,7 @@ public:
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 public:
    // header_footer_content_impl content_;
@@ -686,7 +687,7 @@ public:
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 public:
     _CP_OPT(unsigned int)		fo_column_count_;
@@ -713,7 +714,7 @@ public:
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 public:
     _CP_OPT(odf_types::length)	style_rel_width_;
@@ -740,7 +741,7 @@ public:
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 public:
 	std::wstring				style_style_; // default solid
@@ -765,7 +766,7 @@ public:
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 public:
 	bool style_protect_; // default false
@@ -808,13 +809,13 @@ public:
     static const ElementType type = typeStyleHeaderStyle;
     CPDOCCORE_DEFINE_VISITABLE();
 
-    virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
 
 	office_element_ptr style_header_footer_properties_;
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(style_header_style);
@@ -829,13 +830,13 @@ public:
     static const ElementType type = typeStyleFooterStyle;
     CPDOCCORE_DEFINE_VISITABLE();
 
-    virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
 
 	office_element_ptr style_header_footer_properties_;
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(style_footer_style);
@@ -851,7 +852,7 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
 
 public:
-    virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
    
 	style_page_layout_attlist	style_page_layout_attlist_;
     office_element_ptr			style_page_layout_properties_;
@@ -860,7 +861,7 @@ public:
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(style_page_layout);
@@ -972,7 +973,7 @@ public:
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(style_footnote_sep);
@@ -981,7 +982,7 @@ CP_REGISTER_OFFICE_ELEMENT2(style_footnote_sep);
 class style_page_layout_properties_elements
 {
 public:
-    void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name, document_context * Context);
+    void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name, document_context * Context);
 
     office_element_ptr	style_background_image_;
     office_element_ptr	style_columns_;
@@ -1014,7 +1015,7 @@ public:
 private:
 
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(style_page_layout_properties);
@@ -1031,7 +1032,7 @@ public:
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
     virtual void add_text(const std::wstring & Text);
 
 public:
@@ -1069,14 +1070,14 @@ public:
 
     virtual void pptx_convert(oox::pptx_conversion_context & Context);
 
-    virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
    
     _CP_OPT(std::wstring)		style_name_;
 	office_element_ptr_array	content_;
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);   
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);   
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(style_presentation_page_layout);

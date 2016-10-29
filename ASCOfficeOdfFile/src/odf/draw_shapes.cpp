@@ -68,7 +68,7 @@ void draw_shape_attlist::add_attributes( const xml::attributes_wc_ptr & Attribut
 {
 }
 
-void draw_shape::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void draw_shape::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }
@@ -449,7 +449,7 @@ void draw_enhanced_geometry::add_attributes( const xml::attributes_wc_ptr & Attr
 
 typedef shared_ptr<draw_handle> draw_handle_ptr;
 
-void draw_enhanced_geometry::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void draw_enhanced_geometry::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if CP_CHECK_NAME(L"draw", L"handle")
     {

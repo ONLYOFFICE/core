@@ -67,7 +67,7 @@ void style_header_footer_properties::add_attributes( const xml::attributes_wc_pt
     style_header_footer_properties_attlist_.add_attributes(Attributes);
 }
 
-void style_header_footer_properties::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_header_footer_properties::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if (L"style" == Ns && L"background-image" == Name)
     {
@@ -87,15 +87,20 @@ void common_style_header_footer_attlist::add_attributes( const xml::attributes_w
 }
 
 // header-footer-content
-::std::wostream & header_footer_content::text_to_stream(::std::wostream & _Wostream) const
+std::wostream & header_footer_content::text_to_stream(std::wostream & _Wostream) const
 {
     serialize_elements_text(_Wostream, content_);
     return _Wostream;
 }
 
-void header_footer_content::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name, document_context * Context)
+void header_footer_content::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name, document_context * Context)
 {
-    CP_CREATE_ELEMENT_SIMPLE(content_);
+ 	if CP_CHECK_NAME(L"text", L"tracked-changes") 
+	{
+		CP_CREATE_ELEMENT_SIMPLE(tracked_changes_);
+	}
+    else
+		CP_CREATE_ELEMENT_SIMPLE(content_);
 }
 
 }

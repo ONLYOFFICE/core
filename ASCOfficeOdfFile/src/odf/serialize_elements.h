@@ -37,14 +37,14 @@
 namespace cpdoccore {
 namespace odf_reader {
 
-inline ::std::wostream & serialize_elements(::std::wostream & _Wostream, const office_element_ptr & elm)
+inline std::wostream & serialize_elements(std::wostream & _Wostream, const office_element_ptr & elm)
 {
     if (elm)
         elm->xml_to_stream(_Wostream);
     return _Wostream;
 }
 
-inline ::std::wostream & serialize_elements(::std::wostream & _Wostream, const office_element_ptr_array & elms)
+inline std::wostream & serialize_elements(std::wostream & _Wostream, const office_element_ptr_array & elms)
 {
     BOOST_FOREACH(const office_element_ptr & elm, elms)
     {
@@ -53,14 +53,14 @@ inline ::std::wostream & serialize_elements(::std::wostream & _Wostream, const o
     return _Wostream;
 }
 
-inline ::std::wostream & serialize_elements_text(::std::wostream & _Wostream, const office_element_ptr & elm)
+inline std::wostream & serialize_elements_text(std::wostream & _Wostream, const office_element_ptr & elm)
 {
     if (elm)
         elm->text_to_stream(_Wostream);
     return _Wostream;
 }
 
-inline ::std::wostream & serialize_elements_text(::std::wostream & _Wostream, const office_element_ptr_array & elms)
+inline std::wostream & serialize_elements_text(std::wostream & _Wostream, const office_element_ptr_array & elms)
 {
     BOOST_FOREACH(const office_element_ptr & elm, elms)
     {

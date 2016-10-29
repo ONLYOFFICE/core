@@ -60,36 +60,36 @@ public:
 	void add_text(const std::wstring & text);
     
     void start_paragraph(const std::wstring & styleName);
-    void end_paragraph();
+    void end_paragraph	();
 
-    void start_span(const std::wstring & styleName);
-    void end_span();
-    std::wstring end_span2();
+    void start_span			(const std::wstring & styleName);
+    void end_span			();
+    std::wstring end_span2	();
 
-	void start_object();
-	std::wstring end_object();
+	void			start_object();
+	std::wstring	end_object	();
 
 	void start_base_style(const std::wstring baseStyleName, const odf_types::style_family::type baseStyleType);
 	void end_base_style();
 
-	void ApplyTextProperties(std::wstring style,odf_reader::text_format_properties_content & propertiesOut, odf_types::style_family::type Type);
-	void ApplyParagraphProperties(std::wstring style,odf_reader::paragraph_format_properties & propertiesOut, odf_types::style_family::type Type);
-	void ApplyListProperties(odf_reader::paragraph_format_properties & propertiesOut, int Level);
+	void ApplyTextProperties		(std::wstring style,odf_reader::text_format_properties_content & propertiesOut, odf_types::style_family::type Type);
+	void ApplyParagraphProperties	(std::wstring style,odf_reader::paragraph_format_properties & propertiesOut, odf_types::style_family::type Type);
+	void ApplyListProperties		(odf_reader::paragraph_format_properties & propertiesOut, int Level);
 
 	void set_local_styles_container(odf_reader::styles_container*  local_styles_);//это если стили объектов содержатся в другом документе
 
-	void end_hyperlink(std::wstring hId);
+	void end_hyperlink	(std::wstring hId);
 	void start_hyperlink();
 
-    void start_list(const std::wstring & StyleName, bool Continue = false);
-    void end_list();
+    void start_list		(const std::wstring & StyleName, bool Continue = false);
+    void end_list		();
     void start_list_item(bool restart = false);
-	void end_list_item();
+	void end_list_item	();
 
-	void start_field(field_type type, const std::wstring & styleName);
-    void end_field();
+	void start_field	(field_type type, const std::wstring & styleName);
+    void end_field		();
 
-	void start_comment();
+	void start_comment		();
     std::wstring end_comment();
 
 	bool in_list_;
@@ -131,7 +131,7 @@ private:
     std::list<std::wstring> list_style_stack_;
     bool first_element_list_item_;
     // счетчик для нумерации имен созданных в процессе конвертации стилей
-    size_t new_list_style_number_;
+    int new_list_style_number_;
     // цепочки переименований нумераций
     boost::unordered_map<std::wstring, std::wstring> list_style_renames_;
    

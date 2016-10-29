@@ -48,7 +48,7 @@ namespace odf_reader {
 const wchar_t * office_chart::ns = L"office";
 const wchar_t * office_chart::name = L"chart";
 
-void office_chart::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void office_chart::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_CREATE_ELEMENT(content_);
 }
@@ -80,7 +80,7 @@ void chart_chart::add_attributes( const xml::attributes_wc_ptr & Attributes )
     chart_chart_attlist_.add_attributes(Attributes);
 }
 
-void chart_chart::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void chart_chart::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }
@@ -102,7 +102,7 @@ void chart_title::add_attributes( const xml::attributes_wc_ptr & Attributes )
     chart_title_attlist_.add_attributes(Attributes);
 }
 
-void chart_title::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void chart_title::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if CP_CHECK_NAME(L"text", L"p")
     {
@@ -122,7 +122,7 @@ void chart_subtitle::add_attributes( const xml::attributes_wc_ptr & Attributes )
     chart_title_attlist_.add_attributes(Attributes);
 }
 
-void chart_subtitle::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void chart_subtitle::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if CP_CHECK_NAME(L"text", L"p")
     {
@@ -142,7 +142,7 @@ void chart_footer::add_attributes( const xml::attributes_wc_ptr & Attributes )
     common_attlist_.add_attributes(Attributes);
 }
 
-void chart_footer::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void chart_footer::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if CP_CHECK_NAME(L"text", L"p")
     {
@@ -162,7 +162,7 @@ void chart_legend::add_attributes( const xml::attributes_wc_ptr & Attributes )
     chart_legend_attlist_.add_attributes(Attributes);
 }
 
-void chart_legend::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void chart_legend::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }
@@ -199,7 +199,7 @@ void chart_plot_area::add_attributes( const xml::attributes_wc_ptr & Attributes 
     chart_plot_area_attlist_.add_attributes(Attributes);
 }
 
-void chart_plot_area::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void chart_plot_area::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
  }
@@ -222,7 +222,7 @@ void chart_wall::add_attributes( const xml::attributes_wc_ptr & Attributes )
     chart_wall_attlist_.add_attributes(Attributes);
 }
 
-void chart_wall::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void chart_wall::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }
@@ -237,7 +237,7 @@ void chart_floor::add_attributes( const xml::attributes_wc_ptr & Attributes )
     common_attlist_.add_attributes(Attributes);
 }
 
-void chart_floor::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void chart_floor::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }
@@ -261,7 +261,7 @@ void chart_axis::add_attributes( const xml::attributes_wc_ptr & Attributes )
     chart_axis_attlist_.add_attributes(Attributes);
 }
 
-void chart_axis::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void chart_axis::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_CREATE_ELEMENT(content_);
 }
@@ -284,7 +284,7 @@ void chart_grid::add_attributes( const xml::attributes_wc_ptr & Attributes )
     chart_grid_attlist_.add_attributes(Attributes);
 }
 
-void chart_grid::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void chart_grid::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }
@@ -299,7 +299,7 @@ void chart_categories::add_attributes( const xml::attributes_wc_ptr & Attributes
     CP_APPLY_ATTR(L"table:cell-range-address", table_cell_range_address_);
 }
 
-void chart_categories::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void chart_categories::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();    
 }
@@ -325,7 +325,7 @@ void chart_series::add_attributes( const xml::attributes_wc_ptr & Attributes )
     chart_series_attlist_.add_attributes(Attributes);
 }
 
-void chart_series::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void chart_series::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_CREATE_ELEMENT(content_);
 }
@@ -340,7 +340,7 @@ void chart_domain::add_attributes( const xml::attributes_wc_ptr & Attributes )
     CP_APPLY_ATTR(L"table:cell-range-address", table_cell_range_address_);
 }
 
-void chart_domain::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void chart_domain::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();    
 }
@@ -363,7 +363,7 @@ void chart_data_point::add_attributes( const xml::attributes_wc_ptr & Attributes
     chart_data_point_attlist_.add_attributes(Attributes);
 }
 
-void chart_data_point::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void chart_data_point::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }
@@ -379,7 +379,7 @@ void chart_mean_value::add_attributes( const xml::attributes_wc_ptr & Attributes
     common_attlist_.add_attributes(Attributes);
 }
 
-void chart_mean_value::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void chart_mean_value::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }
@@ -394,7 +394,7 @@ void chart_error_indicator::add_attributes( const xml::attributes_wc_ptr & Attri
     common_attlist_.add_attributes(Attributes);
 }
 
-void chart_error_indicator::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void chart_error_indicator::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }
@@ -409,7 +409,7 @@ void chart_regression_curve::add_attributes( const xml::attributes_wc_ptr & Attr
     common_attlist_.add_attributes(Attributes);
 }
 
-void chart_regression_curve::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void chart_regression_curve::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if CP_CHECK_NAME(L"chart", L"equation") 
 	{
@@ -427,7 +427,7 @@ void chart_equation::add_attributes( const xml::attributes_wc_ptr & Attributes )
     CP_APPLY_ATTR(L"chart:display-r-square", display_r_square_);
 }
 
-void chart_equation::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void chart_equation::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }
@@ -443,7 +443,7 @@ void chart_stock_gain_marker::add_attributes( const xml::attributes_wc_ptr & Att
     common_attlist_.add_attributes(Attributes);
 }
 
-void chart_stock_gain_marker::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void chart_stock_gain_marker::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }
@@ -458,7 +458,7 @@ void chart_stock_loss_marker::add_attributes( const xml::attributes_wc_ptr & Att
     common_attlist_.add_attributes(Attributes);
 }
 
-void chart_stock_loss_marker::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void chart_stock_loss_marker::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }
@@ -473,7 +473,7 @@ void chart_stock_range_line::add_attributes( const xml::attributes_wc_ptr & Attr
     common_attlist_.add_attributes(Attributes);
 }
 
-void chart_stock_range_line::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void chart_stock_range_line::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }

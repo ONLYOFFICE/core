@@ -203,16 +203,16 @@ void object_odf_context::docx_convert(oox::docx_conversion_context & Context)
 	}
 	else if (object_type_ == 3 && office_math_)
 	{
-		oox::docx_conversion_context::StreamsManPtr prev = Context.get_stream_man();
+		oox::StreamsManPtr prev = Context.get_stream_man();
 		
 		std::wstringstream temp_stream(Context.get_drawing_context().get_text_stream_frame());
 		Context.set_stream_man( boost::shared_ptr<oox::streams_man>( new oox::streams_man(temp_stream) ));	
 		
-		bool runState = Context.get_run_state();
-		Context.set_run_state(false);
+		bool pState		= Context.get_paragraph_state	();
+		bool runState	= Context.get_run_state			();
 
-		bool pState = Context.get_paragraph_state();
-		Context.set_paragraph_state(false);		
+		Context.set_paragraph_state	(false);		
+		Context.set_run_state		(false);
 
 		Context.start_math_formula();
 			Context.get_math_context().base_font_size_ = baseFontHeight_;	

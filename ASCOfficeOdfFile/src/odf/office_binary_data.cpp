@@ -48,7 +48,7 @@ namespace odf_reader {
 const wchar_t * office_binary_data::ns = L"office";
 const wchar_t * office_binary_data::name = L"binary-data";
 
-::std::wostream & office_binary_data::text_to_stream(::std::wostream & _Wostream) const
+std::wostream & office_binary_data::text_to_stream(std::wostream & _Wostream) const
 {
     return _Wostream;
 }
@@ -57,7 +57,7 @@ void office_binary_data::add_attributes( const xml::attributes_wc_ptr & Attribut
 {    
 }
 
-void office_binary_data::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void office_binary_data::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 }
 

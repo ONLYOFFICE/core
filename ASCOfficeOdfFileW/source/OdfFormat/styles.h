@@ -505,8 +505,8 @@ public:
 	draw_styles draw_styles_;	
 	templates	templates_;	
 	
-	office_element_ptr_array style_default_style_;
-	office_element_ptr_array style_presentation_page_layout_;
+	office_element_ptr_array	style_default_style_;
+	office_element_ptr_array	style_presentation_page_layout_;
     
 	office_element_ptr			text_outline_style_; // < TODO
     office_element_ptr_array	text_notes_configuration_; // < TODO

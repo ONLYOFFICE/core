@@ -67,7 +67,7 @@ void text_list_style::add_attributes( const xml::attributes_wc_ptr & Attributes 
     text_list_style_attr_.add_attributes(Attributes);
 }
 
-void text_list_style::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void text_list_style::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if		(L"text" == Ns && L"list-level-style-number" == Name)
         CP_CREATE_ELEMENT(text_list_style_content_);
@@ -132,7 +132,7 @@ void text_list_level_style_number::add_attributes( const xml::attributes_wc_ptr 
     text_list_level_style_number_attr_.add_attributes(Attributes);
 }
 
-void text_list_level_style_number::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void text_list_level_style_number::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if		(L"style" == Ns && L"list-level-properties" == Name)
         CP_CREATE_ELEMENT(style_list_level_properties_);    
@@ -155,7 +155,7 @@ void text_list_level_style_image::add_attributes( const xml::attributes_wc_ptr &
     text_list_level_style_image_attr_.add_attributes(Attributes);
 }
 
-void text_list_level_style_image::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void text_list_level_style_image::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if		(L"style" == Ns && L"list-level-properties" == Name)
         CP_CREATE_ELEMENT(style_list_level_properties_);    
@@ -186,7 +186,7 @@ void style_list_level_properties::add_attributes( const xml::attributes_wc_ptr &
     common_vertical_pos_attlist_.add_attributes(Attributes);
 }
 
-void style_list_level_properties::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_list_level_properties::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if CP_CHECK_NAME(L"style", L"list-level-label-alignment")
     {
@@ -213,7 +213,7 @@ void style_list_level_label_alignment::add_attributes( const xml::attributes_wc_
 	if ((text_label_followed_by_) && (text_label_followed_by_.get() == L"listtab")) text_label_followed_by_ = L"tab";
 }
 
-void style_list_level_label_alignment::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_list_level_label_alignment::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 }
 
@@ -228,7 +228,7 @@ void text_list_level_style_bullet::add_attributes( const xml::attributes_wc_ptr 
     text_list_level_style_bullet_attr_.add_attributes(Attributes);
 }
 
-void text_list_level_style_bullet::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void text_list_level_style_bullet::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if (L"style" == Ns && L"list-level-properties" == Name)
         CP_CREATE_ELEMENT(style_list_level_properties_);
@@ -407,7 +407,7 @@ void text_list_level_style_number::docx_convert(oox::docx_conversion_context & C
 			}
 			CP_XML_NODE(L"w:pPr")
 			{        
-				if (Context.rtl())	CP_XML_NODE(L"w:bidi");
+				if (Context.get_rtl())	CP_XML_NODE(L"w:bidi");
 	
 				if (labelAlignment)
 				{
@@ -600,7 +600,7 @@ void text_list_level_style_bullet::docx_convert(oox::docx_conversion_context & C
 
 			CP_XML_NODE(L"w:pPr")
 			{
-				if (Context.rtl())	CP_XML_NODE(L"w:bidi");
+				if (Context.get_rtl())	CP_XML_NODE(L"w:bidi");
 
 				if (labelAlignment)
 				{
@@ -738,7 +738,7 @@ void text_list_level_style_image::docx_convert(oox::docx_conversion_context & Co
 
 			CP_XML_NODE(L"w:pPr")
 			{
-				if (Context.rtl())	CP_XML_NODE(L"w:bidi");
+				if (Context.get_rtl())	CP_XML_NODE(L"w:bidi");
 
 				if (labelAlignment)
 				{

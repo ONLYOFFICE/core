@@ -45,7 +45,7 @@ namespace oox {
 const wchar_t * default_content_type::ns = L"";
 const wchar_t * default_content_type::name = L"Default";
 
-::std::wostream & default_content_type::xml_to_stream(::std::wostream & _Wostream) const
+std::wostream & default_content_type::xml_to_stream(std::wostream & _Wostream) const
 {
     CP_XML_WRITER(_Wostream)
     {
@@ -61,7 +61,7 @@ const wchar_t * default_content_type::name = L"Default";
 const wchar_t * override_content_type::ns = L"";
 const wchar_t * override_content_type::name = L"Override";
 
-::std::wostream & override_content_type::xml_to_stream(::std::wostream & _Wostream) const
+std::wostream & override_content_type::xml_to_stream(std::wostream & _Wostream) const
 {
     CP_XML_WRITER(_Wostream)
     {
@@ -77,7 +77,7 @@ const wchar_t * override_content_type::name = L"Override";
 const wchar_t * content_type_content::ns = L"";
 const wchar_t * content_type_content::name = L"Types";
 
-::std::wostream & content_type_content::xml_to_stream(::std::wostream & _Wostream) const
+std::wostream & content_type_content::xml_to_stream(std::wostream & _Wostream) const
 {
     CP_XML_WRITER(_Wostream)
     {

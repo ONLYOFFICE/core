@@ -86,7 +86,7 @@ void anim_par::pptx_convert(oox::pptx_conversion_context & Context)
 		elm->pptx_convert(Context);
 	}
 }
-void anim_par::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void anim_par::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	if CP_CHECK_NAME(L"anim", L"par") 
 		CP_CREATE_ELEMENT(anim_par_);
@@ -111,7 +111,7 @@ void anim_seq::pptx_convert(oox::pptx_conversion_context & Context)
 		elm->pptx_convert(Context);
 	}
 }
-void anim_seq::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void anim_seq::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	if	CP_CHECK_NAME(L"anim", L"par") 
 		CP_CREATE_ELEMENT(anim_par_array_);

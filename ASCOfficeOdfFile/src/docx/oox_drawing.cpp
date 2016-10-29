@@ -294,10 +294,11 @@ void oox_serialize_bodyPr(std::wostream & strm, _oox_drawing & val, const std::w
 			}
 			else if ((bFitToSize) && (*bFitToSize))
 			{
-				CP_XML_NODE(L"a:spAutoFit")
-				{
-					CP_XML_ATTR(L"lnSpcReduction", 10000);
-				}
+				CP_XML_NODE(L"a:noAutofit");
+				//CP_XML_NODE(L"a:spAutoFit")
+				//{
+				//	CP_XML_ATTR(L"lnSpcReduction", 10000);
+				//}
 			}
 			//else CP_XML_ATTR(L"anchor", L"dist");break;
 			if (bWordArt)

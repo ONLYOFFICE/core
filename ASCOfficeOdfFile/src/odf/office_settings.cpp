@@ -52,7 +52,7 @@ void office_settings::add_attributes( const xml::attributes_wc_ptr & Attributes 
 {
 }
 
-void office_settings::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void office_settings::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }
@@ -67,7 +67,7 @@ void settings_config_item_set::add_attributes( const xml::attributes_wc_ptr & At
     CP_APPLY_ATTR(L"config:name", config_name_, std::wstring(L""));
 }
 
-void settings_config_item_set::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void settings_config_item_set::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_CREATE_ELEMENT(content_);
 }
@@ -82,7 +82,7 @@ void settings_config_item::add_attributes( const xml::attributes_wc_ptr & Attrib
     CP_APPLY_ATTR(L"config:type", config_type_, std::wstring(L""));
 }
 
-void settings_config_item::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void settings_config_item::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     //CP_CREATE_ELEMENT(content_);
 }
@@ -95,7 +95,7 @@ void settings_config_item_map_indexed::add_attributes( const xml::attributes_wc_
 {
 }
 
-void settings_config_item_map_indexed::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void settings_config_item_map_indexed::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_CREATE_ELEMENT(content_);
 }
@@ -108,7 +108,7 @@ void settings_config_item_map_named::add_attributes( const xml::attributes_wc_pt
 {
 }
 
-void settings_config_item_map_named::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void settings_config_item_map_named::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_CREATE_ELEMENT(content_);
 }
@@ -121,7 +121,7 @@ void settings_config_item_map_entry::add_attributes( const xml::attributes_wc_pt
 {
 }
 
-void settings_config_item_map_entry::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void settings_config_item_map_entry::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_CREATE_ELEMENT(content_);
 }

@@ -53,7 +53,7 @@ namespace odf_reader {
 const wchar_t * office_presentation::ns = L"office";
 const wchar_t * office_presentation::name = L"presentation";
 
-void office_presentation::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void office_presentation::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	if	CP_CHECK_NAME(L"draw", L"page") 
 		CP_CREATE_ELEMENT(pages_);

@@ -29,12 +29,8 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef _CPDOCCORE_ODF_TARGETFRAMENAME_H_
-#define _CPDOCCORE_ODF_TARGETFRAMENAME_H_
 
-#ifdef _MSC_VER
 #pragma once
-#endif
 
 #include <iosfwd>
 #include <string>
@@ -68,7 +64,7 @@ public:
     target_frame_name(const std::wstring & _Name) : type_(String), name_(_Name)
     {}
 
-    const ::std::wstring & get_name() const
+    const std::wstring & get_name() const
     {
         return name_;
     }
@@ -82,7 +78,7 @@ public:
     
 private:
     type type_;
-    ::std::wstring name_;
+    std::wstring name_;
 };
 
 std::wostream & operator << (std::wostream & _Wostream, const target_frame_name & _Val);
@@ -94,4 +90,3 @@ APPLY_PARSE_XML_ATTRIBUTES(odf_types::target_frame_name);
 
 }
 
-#endif

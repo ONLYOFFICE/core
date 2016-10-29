@@ -45,7 +45,7 @@ namespace odf_reader {
 
 
 
-std::wostream & office_document_base::text_to_stream(::std::wostream & _Wostream) const
+std::wostream & office_document_base::text_to_stream(std::wostream & _Wostream) const
 {
     office_body_->text_to_stream(_Wostream);
     return _Wostream;    
@@ -60,7 +60,7 @@ void office_document_base::add_attributes( const xml::attributes_wc_ptr & Attrib
     CP_APPLY_ATTR(L"office:version", office_version_, std::wstring(L""));
 }
 
-void office_document_base::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void office_document_base::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if CP_CHECK_NAME(L"office", L"body")
         CP_CREATE_ELEMENT(office_body_);

@@ -511,7 +511,7 @@ void text_format_properties_content::docx_convert(oox::docx_conversion_context &
    
 	std::wostream & _rPr = Context.get_styles_context().text_style();
     
-	if (Context.rtl())
+	if (Context.get_rtl())
     {
         _rPr << L"<w:rtl/>";/* w:val=\"true\" */
     }
@@ -1563,7 +1563,7 @@ void style_text_properties::add_attributes( const xml::attributes_wc_ptr & Attri
 	text_format_properties_content_.add_attributes(Attributes);
 }
 
-void style_text_properties::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_text_properties::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }

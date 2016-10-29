@@ -48,21 +48,21 @@ namespace text {
 
 void paragraph_attrs::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    text_style_name_ = style_ref( Attributes->get_val< ::std::wstring >(L"text:style-name").get_value_or(L"") );
+    text_style_name_ = style_ref( Attributes->get_val< std::wstring >(L"text:style-name").get_value_or(L"") );
     
-    const ::std::wstring classNames = Attributes->get_val< ::std::wstring >(L"text:class-names").get_value_or(L"");
+    const std::wstring classNames = Attributes->get_val< std::wstring >(L"text:class-names").get_value_or(L"");
     if (classNames.size())
     {
-        ::std::vector< ::std::wstring > classNamesArray;
+        std::vector< std::wstring > classNamesArray;
         boost::algorithm::split(classNamesArray, classNames, boost::algorithm::is_any_of(L" "));
 
-        BOOST_FOREACH(const ::std::wstring & name, classNamesArray)
+        BOOST_FOREACH(const std::wstring & name, classNamesArray)
         {
             text_class_names_.push_back( style_ref(name) );        
         }
     }
 
-    text_cond_style_name_ = style_ref( Attributes->get_val< ::std::wstring >(L"text:cond-style-name").get_value_or(L"") );
+    text_cond_style_name_ = style_ref( Attributes->get_val< std::wstring >(L"text:cond-style-name").get_value_or(L"") );
     
 }
 

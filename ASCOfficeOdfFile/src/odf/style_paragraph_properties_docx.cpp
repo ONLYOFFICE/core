@@ -156,7 +156,7 @@ void paragraph_format_properties::docx_convert(oox::docx_conversion_context & Co
 				Context.set_rtl(false);
 			}
 		}
-		if (Context.rtl()) //может быть он установился от стиля родителя !!
+		if (Context.get_rtl()) //может быть он установился от стиля родителя !!
 		{
 			_pPr << L"<w:bidi/>";
 		}
@@ -170,8 +170,8 @@ void paragraph_format_properties::docx_convert(oox::docx_conversion_context & Co
 				case text_align::Right:			jc = L"right";	break;
 				case text_align::Center:		jc = L"center";	break;
 				case text_align::Justify:		jc = L"both";	break;
-				case text_align::Start:			jc = Context.rtl() ? L"end": L"start"; break;
-				case text_align::End:			jc = Context.rtl() ? L"start": L"end"; break;
+				case text_align::Start:			jc = Context.get_rtl() ? L"end": L"start"; break;
+				case text_align::End:			jc = Context.get_rtl() ? L"start": L"end"; break;
 			}
 
 			if (!jc.empty()) CP_XML_NODE(L"w:jc"){CP_XML_ATTR(L"w:val", jc );}

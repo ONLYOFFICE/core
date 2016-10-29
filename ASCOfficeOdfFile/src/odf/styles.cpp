@@ -235,7 +235,7 @@ void style_content::docx_convert(oox::docx_conversion_context & Context, bool in
     Context.end_process_style_content(in_styles);
 }
 
-void style_content::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name, document_context * Context)
+void style_content::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name, document_context * Context)
 {   
     if CP_CHECK_NAME(L"style", L"text-properties")
     {
@@ -288,7 +288,7 @@ void style_content::add_child_element( xml::sax * Reader, const ::std::wstring &
 const wchar_t * default_style::ns = L"style";
 const wchar_t * default_style::name = L"default-style";
 
-::std::wostream & default_style::text_to_stream(::std::wostream & _Wostream) const
+std::wostream & default_style::text_to_stream(std::wostream & _Wostream) const
 {
     return _Wostream;
 }
@@ -298,7 +298,7 @@ void default_style::add_attributes( const xml::attributes_wc_ptr & Attributes )
     CP_APPLY_ATTR(L"style:family", style_family_, style_family());
 }
 
-void default_style::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void default_style::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     style_content_.add_child_element(Reader, Ns, Name, getContext());
 }
@@ -317,7 +317,7 @@ void draw_fill_image::add_attributes( const xml::attributes_wc_ptr & Attributes 
 	xlink_attlist_.add_attributes(Attributes);
 }
 
-void draw_fill_image::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void draw_fill_image::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }
@@ -345,7 +345,7 @@ void draw_gradient::add_attributes( const xml::attributes_wc_ptr & Attributes )
 
 }
 
-void draw_gradient::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void draw_gradient::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }
@@ -363,7 +363,7 @@ void draw_hatch::add_attributes( const xml::attributes_wc_ptr & Attributes )
 	CP_APPLY_ATTR(L"draw:rotation",		draw_rotation_);
 }
 
-void draw_hatch::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void draw_hatch::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }
@@ -386,7 +386,7 @@ void draw_opacity::add_attributes( const xml::attributes_wc_ptr & Attributes )
 
 }
 
-void draw_opacity::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void draw_opacity::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }
@@ -395,7 +395,7 @@ void draw_opacity::add_child_element( xml::sax * Reader, const ::std::wstring & 
 const wchar_t * style::ns = L"style";
 const wchar_t * style::name = L"style";
 
-::std::wostream & style::text_to_stream(::std::wostream & _Wostream) const
+std::wostream & style::text_to_stream(std::wostream & _Wostream) const
 {
     return _Wostream;
 }
@@ -423,7 +423,7 @@ void style::add_attributes( const xml::attributes_wc_ptr & Attributes )
 	}
 }
 
-void style::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void style::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if CP_CHECK_NAME(L"style", L"map")
     {
@@ -440,7 +440,7 @@ void style::add_text(const std::wstring & Text)
 // styles & draw_styles
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-void styles::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name, document_context * Context)
+void styles::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name, document_context * Context)
 {
     if CP_CHECK_NAME(L"style", L"style")
     {
@@ -468,7 +468,7 @@ void styles::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, co
     }
 }
 
-void templates::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name, document_context * Context)
+void templates::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name, document_context * Context)
 {
     if CP_CHECK_NAME(L"table", L"table-template")
     {
@@ -476,7 +476,7 @@ void templates::add_child_element( xml::sax * Reader, const ::std::wstring & Ns,
     } 
 }
 
-void draw_styles::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name, document_context * Context)
+void draw_styles::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name, document_context * Context)
 {
     if CP_CHECK_NAME(L"draw", L"gradient")
     {
@@ -514,7 +514,7 @@ void draw_styles::add_child_element( xml::sax * Reader, const ::std::wstring & N
 const wchar_t * office_automatic_styles::ns = L"office";
 const wchar_t * office_automatic_styles::name = L"automatic-styles";
 
-::std::wostream & office_automatic_styles::text_to_stream(::std::wostream & _Wostream) const
+std::wostream & office_automatic_styles::text_to_stream(std::wostream & _Wostream) const
 {
     return _Wostream;
 }
@@ -522,7 +522,7 @@ const wchar_t * office_automatic_styles::name = L"automatic-styles";
 void office_automatic_styles::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {}
 
-void office_automatic_styles::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void office_automatic_styles::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if (L"style" == Ns && L"page-layout" == Name)
     {
@@ -542,7 +542,7 @@ void office_automatic_styles::add_text(const std::wstring & Text)
 const wchar_t * office_master_styles::ns = L"office";
 const wchar_t * office_master_styles::name = L"master-styles";
 
-::std::wostream & office_master_styles::text_to_stream(::std::wostream & _Wostream) const
+std::wostream & office_master_styles::text_to_stream(std::wostream & _Wostream) const
 {
     return _Wostream;
 }
@@ -551,7 +551,7 @@ void office_master_styles::add_attributes( const xml::attributes_wc_ptr & Attrib
 {
 }
 
-void office_master_styles::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void office_master_styles::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if (L"style" == Ns && L"master-page" == Name)
         CP_CREATE_ELEMENT(style_master_page_);
@@ -579,7 +579,7 @@ void office_styles::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
 }
 
-void office_styles::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void office_styles::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if (CP_CHECK_NAME(L"style",		L"style") ||
         CP_CHECK_NAME(L"text",		L"list-style") ||
@@ -642,7 +642,7 @@ void style_header::add_attributes( const xml::attributes_wc_ptr & Attributes )
     content().common_style_header_footer_attlist_.add_attributes(Attributes);
 }
 
-void style_header::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_header::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     content().header_footer_content_.add_child_element(Reader, Ns, Name, getContext());
 }
@@ -656,7 +656,7 @@ void style_footer::add_attributes( const xml::attributes_wc_ptr & Attributes )
     content().common_style_header_footer_attlist_.add_attributes(Attributes);
 }
 
-void style_footer::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_footer::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     content().header_footer_content_.add_child_element(Reader, Ns, Name, getContext());
 }
@@ -670,7 +670,7 @@ void style_header_first::add_attributes( const xml::attributes_wc_ptr & Attribut
     content().common_style_header_footer_attlist_.add_attributes(Attributes);
 }
 
-void style_header_first::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_header_first::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     content().header_footer_content_.add_child_element(Reader, Ns, Name, getContext());
 }
@@ -684,7 +684,7 @@ void style_footer_first::add_attributes( const xml::attributes_wc_ptr & Attribut
     content().common_style_header_footer_attlist_.add_attributes(Attributes);
 }
 
-void style_footer_first::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_footer_first::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     content().header_footer_content_.add_child_element(Reader, Ns, Name, getContext());
 }
@@ -698,7 +698,7 @@ void style_header_left::add_attributes( const xml::attributes_wc_ptr & Attribute
     content().common_style_header_footer_attlist_.add_attributes(Attributes);
 }
 
-void style_header_left::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_header_left::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     content().header_footer_content_.add_child_element(Reader, Ns, Name, getContext());
 }
@@ -712,7 +712,7 @@ void style_footer_left::add_attributes( const xml::attributes_wc_ptr & Attribute
     content().common_style_header_footer_attlist_.add_attributes(Attributes);
 }
 
-void style_footer_left::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_footer_left::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     content().header_footer_content_.add_child_element(Reader, Ns, Name, getContext());
 }
@@ -728,7 +728,7 @@ void style_columns::add_attributes( const xml::attributes_wc_ptr & Attributes )
     CP_APPLY_ATTR(L"fo:column-gap", fo_column_gap_);
 }
 
-void style_columns::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_columns::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if (L"style" == Ns && L"column" == Name)
         CP_CREATE_ELEMENT(style_column_);
@@ -755,7 +755,7 @@ void style_column::add_attributes( const xml::attributes_wc_ptr & Attributes )
     
 }
 
-void style_column::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_column::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }
@@ -774,7 +774,7 @@ void style_column_sep::add_attributes( const xml::attributes_wc_ptr & Attributes
     CP_APPLY_ATTR(L"style:color", style_color_, color(L"#000000"));  
 }
 
-void style_column_sep::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_column_sep::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }
@@ -794,7 +794,7 @@ void style_section_properties::add_attributes( const xml::attributes_wc_ptr & At
     common_writing_mode_attlist_.add_attributes(Attributes);
 }
 
-void style_section_properties::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_section_properties::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if (L"style" == Ns && L"background-image" == Name)
         CP_CREATE_ELEMENT(style_background_image_);    
@@ -811,7 +811,7 @@ void style_section_properties::add_child_element( xml::sax * Reader, const ::std
 const wchar_t * style_header_style::ns = L"style";
 const wchar_t * style_header_style::name = L"header-style";
 
-::std::wostream & style_header_style::text_to_stream(::std::wostream & _Wostream) const
+std::wostream & style_header_style::text_to_stream(std::wostream & _Wostream) const
 {
     return _Wostream;
 }
@@ -820,7 +820,7 @@ void style_header_style::add_attributes( const xml::attributes_wc_ptr & Attribut
 {
 }
 
-void style_header_style::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_header_style::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if (L"style" == Ns && L"header-footer-properties" == Name)
     {
@@ -837,7 +837,7 @@ void style_header_style::add_child_element( xml::sax * Reader, const ::std::wstr
 const wchar_t * style_footer_style::ns = L"style";
 const wchar_t * style_footer_style::name = L"footer-style";
 
-::std::wostream & style_footer_style::text_to_stream(::std::wostream & _Wostream) const
+std::wostream & style_footer_style::text_to_stream(std::wostream & _Wostream) const
 {
     return _Wostream;
 }
@@ -846,7 +846,7 @@ void style_footer_style::add_attributes( const xml::attributes_wc_ptr & Attribut
 {
 }
 
-void style_footer_style::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_footer_style::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if (L"style" == Ns && L"header-footer-properties" == Name)
     {
@@ -871,7 +871,7 @@ void style_page_layout_attlist::add_attributes( const xml::attributes_wc_ptr & A
 const wchar_t * style_page_layout::ns = L"style";
 const wchar_t * style_page_layout::name = L"page-layout";
 
-::std::wostream & style_page_layout::text_to_stream(::std::wostream & _Wostream) const
+std::wostream & style_page_layout::text_to_stream(std::wostream & _Wostream) const
 {
     return _Wostream;    
 }
@@ -881,7 +881,7 @@ void style_page_layout::add_attributes( const xml::attributes_wc_ptr & Attribute
     style_page_layout_attlist_.add_attributes(Attributes);
 }
 
-void style_page_layout::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_page_layout::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if (L"style" == Ns && L"header-style" == Name)
     {
@@ -1238,7 +1238,7 @@ void style_footnote_sep::add_attributes( const xml::attributes_wc_ptr & Attribut
     style_footnote_sep_attlist_.add_attributes( Attributes );
 }
 
-void style_footnote_sep::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_footnote_sep::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }
@@ -1253,7 +1253,7 @@ void style_page_layout_properties::add_attributes( const xml::attributes_wc_ptr 
     style_page_layout_properties_attlist_.add_attributes(Attributes);
 }
 
-void style_page_layout_properties::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_page_layout_properties::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     style_page_layout_properties_elements_.add_child_element(Reader, Ns, Name, getContext());
 }
@@ -1331,7 +1331,7 @@ void style_page_layout_properties::pptx_convert(oox::pptx_conversion_context & C
 // style-page-layout-properties-elements
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-void style_page_layout_properties_elements::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name, document_context * Context )
+void style_page_layout_properties_elements::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name, document_context * Context )
 {
     if (L"style" == Ns && L"background-image" == Name)
     {
@@ -1367,7 +1367,7 @@ void style_master_page_attlist::add_attributes( const xml::attributes_wc_ptr & A
 const wchar_t * style_master_page::ns = L"style";
 const wchar_t * style_master_page::name = L"master-page";
 
-::std::wostream & style_master_page::text_to_stream(::std::wostream & _Wostream) const
+std::wostream & style_master_page::text_to_stream(std::wostream & _Wostream) const
 {
     return _Wostream;
 }
@@ -1377,7 +1377,7 @@ void style_master_page::add_attributes( const xml::attributes_wc_ptr & Attribute
     style_master_page_attlist_.add_attributes(Attributes);
 }
 
-void style_master_page::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_master_page::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if (L"style" == Ns && L"header" == Name)
         CP_CREATE_ELEMENT(style_header_);
@@ -1503,7 +1503,8 @@ void style_header::docx_convert(oox::docx_conversion_context & Context)
 
     strm << hdrHeader;
     header_footer_impl::docx_convert(Context);
-    strm << L"</w:hdr>";
+    
+	strm << L"</w:hdr>";
 }
 
 void style_footer::docx_convert(oox::docx_conversion_context & Context)
@@ -1511,7 +1512,8 @@ void style_footer::docx_convert(oox::docx_conversion_context & Context)
     std::wostream & strm = Context.output_stream();
     strm << ftrHeader;
     header_footer_impl::docx_convert(Context);
-    strm << L"</w:ftr>";
+    
+	strm << L"</w:ftr>";
 }
 
 void style_header_first::docx_convert(oox::docx_conversion_context & Context)
@@ -1520,7 +1522,8 @@ void style_header_first::docx_convert(oox::docx_conversion_context & Context)
 
     strm << hdrHeader;
     header_footer_impl::docx_convert(Context);
-    strm << L"</w:hdr>";
+    
+	strm << L"</w:hdr>";
 }
 
 void style_footer_first::docx_convert(oox::docx_conversion_context & Context)
@@ -1528,7 +1531,8 @@ void style_footer_first::docx_convert(oox::docx_conversion_context & Context)
     std::wostream & strm = Context.output_stream();
     strm << ftrHeader;
     header_footer_impl::docx_convert(Context);
-    strm << L"</w:ftr>";
+    
+	strm << L"</w:ftr>";
 }
 
 
@@ -1537,7 +1541,8 @@ void style_header_left::docx_convert(oox::docx_conversion_context & Context)
     std::wostream & strm = Context.output_stream();
     strm << hdrHeader;
     header_footer_impl::docx_convert(Context);
-    strm << L"</w:hdr>";
+    
+	strm << L"</w:hdr>";
 }
 
 void style_footer_left::docx_convert(oox::docx_conversion_context & Context)
@@ -1545,14 +1550,18 @@ void style_footer_left::docx_convert(oox::docx_conversion_context & Context)
     std::wostream & strm = Context.output_stream();
     strm << ftrHeader;
     header_footer_impl::docx_convert(Context);
-    strm << L"</w:ftr>";
+    
+	strm << L"</w:ftr>";
 }
 
 void header_footer_impl::docx_convert(oox::docx_conversion_context & Context)
 {
-    BOOST_FOREACH(const office_element_ptr & elm, content_.header_footer_content_.content_)
+	if (content_.header_footer_content_.tracked_changes_)
+		content_.header_footer_content_.tracked_changes_->docx_convert(Context);
+
+    for (int i=0; i < content_.header_footer_content_.content_.size(); i++)
     {
-        elm->docx_convert(Context);
+        content_.header_footer_content_.content_[i]->docx_convert(Context);
     }
 }
 
@@ -1577,7 +1586,7 @@ void text_notes_configuration::add_attributes( const xml::attributes_wc_ptr & At
 
 }
 
-void text_notes_configuration::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void text_notes_configuration::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     
     if CP_CHECK_NAME(L"text", L"note-continuation-notice-forward")
@@ -1597,7 +1606,7 @@ void text_notes_configuration::add_text(const std::wstring & Text)
 const wchar_t * style_presentation_page_layout::ns = L"style";
 const wchar_t * style_presentation_page_layout::name = L"presentation-page-layout";
 
-::std::wostream & style_presentation_page_layout::text_to_stream(::std::wostream & _Wostream) const
+std::wostream & style_presentation_page_layout::text_to_stream(std::wostream & _Wostream) const
 {
     return _Wostream;    
 } 
@@ -1608,7 +1617,7 @@ void style_presentation_page_layout::add_attributes( const xml::attributes_wc_pt
 	//style:display-name
 }
 
-void style_presentation_page_layout::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_presentation_page_layout::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if (L"presentation" == Ns && L"placeholder" == Name)
     {

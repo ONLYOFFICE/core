@@ -64,7 +64,7 @@ public:
     
 };
 
-//         style:header-footer-properties
+//	style:header-footer-properties
 class style_header_footer_properties : public office_element_impl<style_header_footer_properties>
 {
 public:
@@ -77,7 +77,7 @@ public:
 	CPDOCCORE_DEFINE_VISITABLE();
 
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
     style_header_footer_properties_attlist style_header_footer_properties_attlist_;
     office_element_ptr style_background_image_;
@@ -100,11 +100,11 @@ private:
 class header_footer_content
 {
 public:
-    ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
-    void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name, document_context * Context);
+    std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name, document_context * Context);
 
-public:
-    office_element_ptr_array content_;
+	office_element_ptr			tracked_changes_;
+    office_element_ptr_array	content_;
     
 };
 

@@ -103,7 +103,7 @@ public:
     CPDOCCORE_DEFINE_VISITABLE()
 
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
 
@@ -125,7 +125,7 @@ public:
     CPDOCCORE_DEFINE_VISITABLE()
 
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
 
@@ -146,7 +146,7 @@ public:
     CPDOCCORE_DEFINE_VISITABLE()
 
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
 	
@@ -168,7 +168,7 @@ public:
     CPDOCCORE_DEFINE_VISITABLE()
 
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
 	
@@ -189,7 +189,7 @@ public:
     CPDOCCORE_DEFINE_VISITABLE()
 
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
 
@@ -208,7 +208,7 @@ public:
     CPDOCCORE_DEFINE_VISITABLE()
 
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
 
@@ -227,7 +227,7 @@ public:
     CPDOCCORE_DEFINE_VISITABLE()
 
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
 
@@ -246,7 +246,7 @@ public:
     CPDOCCORE_DEFINE_VISITABLE()
 
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
 	
@@ -268,7 +268,7 @@ public:
     CPDOCCORE_DEFINE_VISITABLE()
 
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
 	

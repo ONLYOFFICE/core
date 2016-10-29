@@ -230,7 +230,7 @@ int process_paragraph_attr(const paragraph_attrs & Attr, oox::docx_conversion_co
 
 }
 
-std::wostream & paragraph::text_to_stream(::std::wostream & _Wostream) const
+std::wostream & paragraph::text_to_stream(std::wostream & _Wostream) const
 {
     // TODO!!!!
     CP_SERIALIZE_TEXT(paragraph_content_);
@@ -243,7 +243,7 @@ void paragraph::add_attributes( const xml::attributes_wc_ptr & Attributes )
     paragraph_attrs_.add_attributes(Attributes);
 }
 
-void paragraph::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name, document_context * Context)
+void paragraph::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name, document_context * Context)
 {
     CP_CREATE_ELEMENT_SIMPLE(paragraph_content_);
 }
@@ -274,6 +274,7 @@ const wchar_t * emptyParagraphDrawing = L"<w:p><w:pPr></w:pPr></w:p>";
 void paragraph::drop_cap_text_docx_convert(office_element_ptr first_text_element_paragraph,oox::docx_conversion_context & Context)
 {
 	if (first_text_element_paragraph == NULL)return;
+	
 	text* first_text_paragraph = dynamic_cast<text*>(first_text_element_paragraph.get());
 	if (first_text_paragraph == NULL)return;
 	
@@ -287,17 +288,17 @@ void paragraph::drop_cap_text_docx_convert(office_element_ptr first_text_element
 	int textStyle = process_paragraph_attr(paragraph_attrs_, Context);
 	first_text_paragraph->docx_convert(Context); 
 
-	int str_start = Context.get_drop_cap_context().Length;
-	int str_size = store_str.length()-Context.get_drop_cap_context().Length;
+	int str_start	= Context.get_drop_cap_context().Length;
+	int str_size	= store_str.length()-Context.get_drop_cap_context().Length;
 
-	if (str_size <0) str_size = 0;										// это если на буквы в буквице разные стили
+	if (str_size < 0) str_size = 0;										// это если на буквы в буквице разные стили
 	if (str_start > store_str.length()) str_start = store_str.length(); // это если на буквы в буквице разные стили
 
 	str=store_str.substr(str_start, str_size);
 }
 void paragraph::drop_cap_docx_convert(oox::docx_conversion_context & Context)
 {
-	if ( paragraph_content_.size()<1)return;
+	if ( paragraph_content_.empty()) return;
 
 	//в рассчет берутся только первые элементы !!! разные там break-и отменяют реэжим drop_cap!!- todooo сделать возможным множественным span
 	if ( paragraph_content_[0]->get_type() == typeTextText)
@@ -307,7 +308,7 @@ void paragraph::drop_cap_docx_convert(oox::docx_conversion_context & Context)
 	else if (paragraph_content_[0]->get_type() == typeTextSpan)
 	{
 		span* first_span_in_paragraph = dynamic_cast<span*>(paragraph_content_[0].get());
-		if (Context.get_drop_cap_context().FontSize<1)
+		if (Context.get_drop_cap_context().FontSize < 1)
 		{
 			style_instance * styleInst = Context.root()->odf_context().styleContainer().style_by_name(first_span_in_paragraph->text_style_name_.style_name(), style_family::Text,Context.process_headers_footers_);
 			if ((styleInst) && (styleInst->is_automatic()))
@@ -328,7 +329,9 @@ void paragraph::drop_cap_docx_convert(oox::docx_conversion_context & Context)
 		//в рассчет берутся только первые элементы !!! разные там break-и отменяют реэжим drop_cap!!
 		if ((first_span_in_paragraph->paragraph_content_.size()>0) &&
 			 (first_span_in_paragraph->paragraph_content_[0]->get_type() == typeTextText))
+		{
 			drop_cap_text_docx_convert(first_span_in_paragraph->paragraph_content_[0],Context);
+		}
 	}
 }
 void paragraph::docx_convert(oox::docx_conversion_context & Context)
@@ -339,26 +342,37 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
 	{
 		drawing = true;
 	}
-				
+		
+	bool bIsNewParagraph = true;
+	
 	if (Context.get_paragraph_state() && (Context.get_process_note() == oox::docx_conversion_context::noNote) && !drawing )
     {//вложеннные элементы
-		if (paragraph_content_.size()==0)
+		if (paragraph_content_.empty())//??
 		{
 			Context.output_stream() << L"<w:p>";
-			Context.output_stream() << emptyParagraphContent;
+				Context.output_stream() << emptyParagraphContent;
 			Context.output_stream() << L"</w:p>";
+
+			return;
 		}
+		else
+		{
+			bIsNewParagraph = false;
 
-        BOOST_FOREACH(const office_element_ptr & elm, paragraph_content_)
-        {
-            elm->docx_convert(Context); 
-        }
-        return;
+			if (!Context.get_paragraph_keep())
+			{
+				for (int i = 0; i < paragraph_content_.size(); i++)
+				{
+					paragraph_content_[i]->docx_convert(Context); 
+				}
+				return;
+			}
+		}
     }
-	bool is_empty= paragraph_content_.size()==0;
+	bool is_empty = paragraph_content_.empty();
 
-
-    Context.start_paragraph(is_header_);
+    if (bIsNewParagraph)
+		Context.start_paragraph(is_header_);
 	
 	std::wostream & _Wostream = Context.output_stream();
 
@@ -383,7 +397,7 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
 		is_empty = false;
 	}
 
-    const std::wstring & styleName		= paragraph_attrs_.text_style_name_.style_name();
+    const std::wstring & styleName = paragraph_attrs_.text_style_name_.style_name();
     const _CP_OPT(std::wstring) masterPageName	= Context.root()->odf_context().styleContainer().master_page_name_by_name(styleName);
    
 	if (masterPageName)
@@ -501,7 +515,7 @@ void soft_page_break::docx_convert(oox::docx_conversion_context & Context)
 
 //////////////////////////////////////////////
 
-::std::wostream & h::text_to_stream(::std::wostream & _Wostream) const
+std::wostream & h::text_to_stream(std::wostream & _Wostream) const
 {
     return paragraph_.text_to_stream(_Wostream);
 }
@@ -519,7 +533,7 @@ void h::add_attributes( const xml::attributes_wc_ptr & Attributes )
 	paragraph_.paragraph_attrs_.outline_level_	= text_outline_level_;
 }
 
-void h::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void h::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     paragraph_.add_child_element(Reader, Ns, Name, getContext());
 }
@@ -557,7 +571,7 @@ void p::afterCreate()
     paragraph_.afterCreate( getContext() );
 }
 
-::std::wostream & p::text_to_stream(::std::wostream & _Wostream) const
+std::wostream & p::text_to_stream(std::wostream & _Wostream) const
 {
     return paragraph_.text_to_stream(_Wostream);
 }
@@ -567,7 +581,7 @@ void p::add_attributes( const xml::attributes_wc_ptr & Attributes )
     paragraph_.add_attributes(Attributes);
 }
 
-void p::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void p::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     paragraph_.add_child_element(Reader, Ns, Name, getContext());
 }
@@ -596,7 +610,7 @@ void p::pptx_convert(oox::pptx_conversion_context & Context)
 const wchar_t * list::ns = L"text";
 const wchar_t * list::name = L"list";
 
-::std::wostream & list::text_to_stream(::std::wostream & _Wostream) const
+std::wostream & list::text_to_stream(std::wostream & _Wostream) const
 {
     BOOST_FOREACH(const office_element_ptr & listItem, text_list_items_)
     {
@@ -607,12 +621,12 @@ const wchar_t * list::name = L"list";
 
 void list::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    text_style_name_ = style_ref( Attributes->get_val< ::std::wstring >(L"text:style-name").get_value_or(L"") );
+    text_style_name_ = style_ref( Attributes->get_val< std::wstring >(L"text:style-name").get_value_or(L"") );
     text_continue_numbering_ = Attributes->get_val< bool >(L"text:continue-numbering");
     // TODO
 }
 
-void list::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void list::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if CP_CHECK_NAME(L"text", L"list-header")
     {
@@ -664,7 +678,7 @@ void list::pptx_convert(oox::pptx_conversion_context & Context)
 const wchar_t * soft_page_break::ns = L"text";
 const wchar_t * soft_page_break::name = L"soft-page-break";
 
-::std::wostream & soft_page_break::text_to_stream(::std::wostream & _Wostream) const
+std::wostream & soft_page_break::text_to_stream(std::wostream & _Wostream) const
 {
     _Wostream << L"\n";
     return _Wostream;
@@ -674,7 +688,7 @@ void soft_page_break::add_attributes( const xml::attributes_wc_ptr & Attributes 
 {
 }
 
-void soft_page_break::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void soft_page_break::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 }
 
@@ -696,7 +710,7 @@ void text_section_attr::add_attributes( const xml::attributes_wc_ptr & Attribute
 const wchar_t * text_section::ns = L"text";
 const wchar_t * text_section::name = L"section";
 
-::std::wostream & text_section::text_to_stream(::std::wostream & _Wostream) const
+std::wostream & text_section::text_to_stream(std::wostream & _Wostream) const
 {
     return serialize_elements_text(_Wostream, text_content_);
 }
@@ -728,7 +742,7 @@ void text_section::add_attributes( const xml::attributes_wc_ptr & Attributes )
     text_section_attr_.add_attributes(Attributes);
 }
 
-void text_section::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void text_section::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if (L"text" == Ns && L"section-source" == Name)
     {
@@ -779,7 +793,7 @@ void text_section_source::add_attributes( const xml::attributes_wc_ptr & Attribu
     text_section_source_attr_.add_attributes(Attributes);
 }
 
-void text_section_source::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void text_section_source::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }
@@ -790,7 +804,7 @@ void text_section_source::add_child_element( xml::sax * Reader, const ::std::wst
 const wchar_t * text_index_body::ns = L"text";
 const wchar_t * text_index_body::name = L"index-body";
 
-::std::wostream & text_index_body::text_to_stream(::std::wostream & _Wostream) const
+std::wostream & text_index_body::text_to_stream(std::wostream & _Wostream) const
 {
     CP_SERIALIZE_TEXT(index_content_main_);
     return _Wostream;
@@ -800,7 +814,7 @@ void text_index_body::add_attributes( const xml::attributes_wc_ptr & Attributes 
 {
 }
 
-void text_index_body::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void text_index_body::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_CREATE_ELEMENT(index_content_main_);
 }
@@ -839,7 +853,7 @@ void text_index_title::pptx_convert(oox::pptx_conversion_context & Context)
         elm->pptx_convert(Context);
     }
 }
-::std::wostream & text_index_title::text_to_stream(::std::wostream & _Wostream) const
+std::wostream & text_index_title::text_to_stream(std::wostream & _Wostream) const
 {
     CP_SERIALIZE_TEXT(index_content_main_);
     return _Wostream;
@@ -850,7 +864,7 @@ void text_index_title::add_attributes( const xml::attributes_wc_ptr & Attributes
     text_section_attr_.add_attributes(Attributes);
 }
 
-void text_index_title::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void text_index_title::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
      CP_CREATE_ELEMENT(index_content_main_);
 }
@@ -873,7 +887,7 @@ void text_table_of_content::pptx_convert(oox::pptx_conversion_context & Context)
 }
 
 
-::std::wostream & text_table_of_content::text_to_stream(::std::wostream & _Wostream) const
+std::wostream & text_table_of_content::text_to_stream(std::wostream & _Wostream) const
 {
     CP_SERIALIZE_TEXT(text_index_body_);
     return _Wostream;
@@ -884,7 +898,7 @@ void text_table_of_content::add_attributes( const xml::attributes_wc_ptr & Attri
     text_section_attr_.add_attributes( Attributes );
 }
 
-void text_table_of_content::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void text_table_of_content::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if CP_CHECK_NAME(L"text", L"index-body")
     {
@@ -911,7 +925,7 @@ void text_table_index::pptx_convert(oox::pptx_conversion_context & Context)
 }
 
 
-::std::wostream & text_table_index::text_to_stream(::std::wostream & _Wostream) const
+std::wostream & text_table_index::text_to_stream(std::wostream & _Wostream) const
 {
     CP_SERIALIZE_TEXT(text_index_body_);
     return _Wostream;
@@ -922,7 +936,7 @@ void text_table_index::add_attributes( const xml::attributes_wc_ptr & Attributes
     text_section_attr_.add_attributes( Attributes );
 }
 
-void text_table_index::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void text_table_index::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if CP_CHECK_NAME(L"text", L"index-body")
     {
@@ -948,7 +962,7 @@ void text_illustration_index::pptx_convert(oox::pptx_conversion_context & Contex
 }
 
 
-::std::wostream & text_illustration_index::text_to_stream(::std::wostream & _Wostream) const
+std::wostream & text_illustration_index::text_to_stream(std::wostream & _Wostream) const
 {
     CP_SERIALIZE_TEXT(text_index_body_);
     return _Wostream;
@@ -959,13 +973,166 @@ void text_illustration_index::add_attributes( const xml::attributes_wc_ptr & Att
     text_section_attr_.add_attributes( Attributes );
 }
 
-void text_illustration_index::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void text_illustration_index::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if CP_CHECK_NAME(L"text", L"index-body")
     {
         CP_CREATE_ELEMENT(text_index_body_);
     }
     // TODO text-illustration-index-source
+}
+//--------------------------------------------------------------------------------------------------------
+// text:tracked-changes
+const wchar_t * text_tracked_changes::ns	= L"text";
+const wchar_t * text_tracked_changes::name	= L"tracked-changes";
+
+void text_tracked_changes::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+	CP_APPLY_ATTR(L"text:track-changes", text_track_changes_);
+}
+
+void text_tracked_changes::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+{
+    CP_CREATE_ELEMENT(content_);
+}
+
+void text_tracked_changes::docx_convert(oox::docx_conversion_context & Context)
+{
+    for (int i = 0; i < content_.size(); i++)
+	{
+		content_[i]->docx_convert(Context);
+	}
+}
+//--------------------------------------------------------------------------------------------------------
+// text:tracked-changes
+const wchar_t * text_changed_region::ns		= L"text";
+const wchar_t * text_changed_region::name	= L"changed-region";
+
+void text_changed_region::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+	CP_APPLY_ATTR(L"text:id", text_id_);
+}
+
+void text_changed_region::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+{
+    CP_CREATE_ELEMENT(element_);
+}
+void text_changed_region::docx_convert(oox::docx_conversion_context & Context)
+{
+	if (!element_ || !text_id_) return;
+
+	Context.get_text_tracked_context().start_change (*text_id_);
+		element_->docx_convert(Context);
+	Context.get_text_tracked_context().end_change ();
+}
+
+//----------------------------------------------------------------------------------------------------------
+const wchar_t * text_unknown_base_change::ns		= L"text";
+const wchar_t * text_unknown_base_change::name		= L"unknown-base-change"; 
+
+void text_unknown_base_change::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+{
+	if CP_CHECK_NAME(L"office", L"change-info")
+	{
+		CP_CREATE_ELEMENT(office_change_info_);
+	}
+	else
+		CP_CREATE_ELEMENT(content_);
+}
+
+void text_unknown_base_change::docx_convert(oox::docx_conversion_context & Context)
+{
+	ElementType type = get_type();
+
+	if (office_change_info_)
+		office_change_info_->docx_convert(Context);
+
+	if (content_.empty()) return;
+
+//тут удаленный текст. не по стандарту сделать бы и форматы - стилями чтоли ....
+	Context.get_text_tracked_context().start_changes_content();
+		for (int i = 0; i < content_.size(); i++)
+		{
+			content_[i]->docx_convert(Context);
+		}
+	Context.get_text_tracked_context().end_changes_content();
+}
+//---------------------------------------------------------------------------------------------------
+const wchar_t * text_insertion::ns			= L"text";
+const wchar_t * text_insertion::name		= L"insertion";
+
+void text_insertion::docx_convert(oox::docx_conversion_context & Context)
+{
+	Context.get_text_tracked_context().set_type(1);
+
+	text_unknown_base_change::docx_convert(Context);
+}
+//---------------------------------------------------------------------------------------------------
+const wchar_t * text_deletion::ns			= L"text";
+const wchar_t * text_deletion::name			= L"deletion";
+
+void text_deletion::docx_convert(oox::docx_conversion_context & Context)
+{
+	Context.get_text_tracked_context().set_type(2);
+
+	text_unknown_base_change::docx_convert(Context);
+}
+//---------------------------------------------------------------------------------------------------
+
+const wchar_t * text_format_change::ns		= L"text";
+const wchar_t * text_format_change::name	= L"format-change";
+
+void text_format_change::docx_convert(oox::docx_conversion_context & Context)
+{
+	Context.get_text_tracked_context().set_type(3);
+
+	text_unknown_base_change::docx_convert(Context);
+}
+//----------------------------------------------------------------------------------------------------------
+const wchar_t * text_unknown_change::ns		= L"text";
+const wchar_t * text_unknown_change::name	= L"UnknownChange"; //?? libra пишет
+
+void text_unknown_change::docx_convert(oox::docx_conversion_context & Context)
+{
+	Context.get_text_tracked_context().set_type(3);
+
+	text_unknown_base_change::docx_convert(Context);
+}
+//---------------------------------------------------------------------------------------------------
+const wchar_t * text_add_change::ns		= L"text";
+const wchar_t * text_add_change::name	= L"unknown-change-mark";
+
+void text_add_change::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+	CP_APPLY_ATTR(L"text:change-id", text_change_id_);
+}
+
+//---------------------------------------------------------------------------------------------------
+const wchar_t * text_change::ns			= L"text";
+const wchar_t * text_change::name		= L"change";
+
+void text_change::docx_convert(oox::docx_conversion_context & Context)
+{
+	if (!text_change_id_) return;
+
+	Context.start_text_changes	(*text_change_id_);
+	Context.end_text_changes	(*text_change_id_);
+}
+//------------------------------------------------------------------------------------------
+const wchar_t * text_change_start::ns	= L"text";
+const wchar_t * text_change_start::name	= L"change-start";
+
+void text_change_start::docx_convert(oox::docx_conversion_context & Context)
+{
+	Context.start_text_changes (*text_change_id_);
+}
+//------------------------------------------------------------------------------------------
+const wchar_t * text_change_end::ns		= L"text";
+const wchar_t * text_change_end::name	= L"change-end";
+
+void text_change_end::docx_convert(oox::docx_conversion_context & Context)
+{
+	Context.end_text_changes (*text_change_id_);
 }
 
 }

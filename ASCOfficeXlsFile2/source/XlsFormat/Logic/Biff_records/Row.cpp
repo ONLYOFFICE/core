@@ -117,9 +117,9 @@ int Row::serialize(std::wostream &stream)
 			bool xf_set = true;
 			if (fGhostDirty == false) xf_set = false;
 			
-			if (ixfe_val && xf_set)
+			if (xf_set)
 			{
-				int xf = ixfe_val >= global_info_->cellStyleXfs_count ? ixfe_val - global_info_->cellStyleXfs_count : ixfe_val;
+				int xf = ixfe_val >= global_info_->cellStyleXfs_count ? ixfe_val - global_info_->cellStyleXfs_count : -1/*ixfe_val*/;
 				
 				if (xf < global_info_->cellXfs_count && xf >= 0)
 				{

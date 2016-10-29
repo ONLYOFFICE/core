@@ -52,26 +52,94 @@
 
 #include "../../DesktopEditor/fontengine/ApplicationFonts.h"
 
+static int current_id_changes = 0;
+
 namespace cpdoccore { 
 namespace oox {
-   
+
+text_tracked_context::text_tracked_context(docx_conversion_context & context) :
+	docx_context_(context)
+{
+	current_state_.clear();
+}
+
+void text_tracked_context::start_changes_content()
+{
+	docx_stream_ = docx_context_.get_stream_man();
+	
+	changes_stream_.str((std::wstring(L"")));
+	docx_context_.set_stream_man( StreamsManPtr( new oox::streams_man(changes_stream_)));
+
+	bParaStateDocx_	= docx_context_.get_paragraph_state();
+	bRunStateDocx_	= docx_context_.get_run_state();
+
+	docx_context_.set_paragraph_state	(false);		
+	docx_context_.set_run_state			(false);		
+	docx_context_.set_delete_text_state	(true);		
+}
+
+void text_tracked_context::end_changes_content()
+{
+	docx_context_.set_paragraph_state	(bParaStateDocx_);	
+	docx_context_.set_run_state			(bRunStateDocx_);	
+	docx_context_.set_delete_text_state	(false);		
+
+	current_state_.content = changes_stream_.str();
+	docx_context_.set_stream_man(docx_stream_);
+}
+void text_tracked_context::start_change (std::wstring id)
+{
+	current_state_.clear();
+
+	current_state_.id	= id;
+}
+void text_tracked_context::end_change ()
+{
+	mapChanges_.insert( std::pair<std::wstring, _state>(current_state_.id, current_state_));
+
+	current_state_.clear();
+}
+void text_tracked_context::set_type(int type)
+{
+	current_state_.type	= type;
+}
+void text_tracked_context::set_user_info (std::wstring &author, std::wstring &date)
+{
+	current_state_.author	= author;
+	current_state_.date		= date;
+}
+text_tracked_context::_state & text_tracked_context::get_tracked_change(std::wstring id)
+{
+	std::map<std::wstring, _state>::iterator it = mapChanges_.find(id);
+	
+	if (it != mapChanges_.end())
+	{
+		return it->second;
+	}
+	else 
+		return 	current_state_; //empty
+}
+//----------------------------------------------------------------------------------------------------------------
 
 docx_conversion_context::docx_conversion_context(odf_reader::odf_document * OdfDocument) : 
 	mediaitems_			(OdfDocument->get_folder() ),
-	current_run_			(false),
+	next_dump_page_properties_(false),
 	page_break_after_		(false),
 	page_break_before_		(false),
-	next_dump_page_properties_(false),
+	in_run_					(false),
 	in_automatic_style_		(false),
 	in_paragraph_			(false),
 	in_header_				(false),
 	in_drawing_content_		(false),
+	text_tracked_context_	(*this),
 	table_context_			(*this),
 	output_document_		(NULL),
 	section_properties_in_table_(NULL),
 	process_note_			(noNote),
-	new_list_style_number_	(0),	
-	rtl_					(false),
+	new_list_style_number_	(0),
+	is_rtl_					(false),
+	is_paragraph_keep_		(false),
+	is_delete_text_			(false),
 	delayed_converting_		(false),
 	process_headers_footers_(false),
 	process_comment_		(false),
@@ -121,9 +189,9 @@ std::wstring styles_map::name(const std::wstring & Name, odf_types::style_family
 }
 void docx_conversion_context::add_element_to_run(std::wstring parenStyleId)
 {
-    if (!current_run_)
+    if (!in_run_)
     {
-        current_run_ = true;
+        in_run_ = true;
 		output_stream() << L"<w:r>";
 
 		if (!text_properties_stack_.empty() || parenStyleId.length() > 0)
@@ -150,30 +218,35 @@ void docx_conversion_context::start_paragraph(bool is_header)
 		finish_paragraph();
 
 	output_stream() << L"<w:p>";
-	
+
 	in_header_		= is_header;
 	in_paragraph_	= true;
-    rtl_			= false; 
+    is_rtl_			= false; 
+	
+	start_changes();
 }
 
 void docx_conversion_context::finish_paragraph()
 {
 	if (in_paragraph_)
 	{
+		end_changes();
+
 		output_stream() << L"</w:p>";
 	}
 	
-	in_paragraph_	= false;
-	in_header_		= false;
+	in_paragraph_		= false;
+	in_header_			= false;
+	is_paragraph_keep_	= false;
 }
 
 
 void docx_conversion_context::finish_run()
 {
-    if (current_run_)
+    if (in_run_)
     {
         output_stream() << L"</w:r>";
-        current_run_ = false;
+        in_run_ = false;
 		if (get_comments_context().state()==2)
 		{
 			output_stream()<< L"<w:commentRangeEnd w:id=\"" << get_comments_context().current_id() << L"\" />";
@@ -1169,7 +1242,7 @@ void notes_context::dump_rels(rels & Rels) const
     }
 }
 
-void docx_conversion_context::add_note_reference()
+void docx_conversion_context::add_note_reference ()
 {
     if (process_note_ == footNote || process_note_ ==  endNote)
     {
@@ -1178,6 +1251,86 @@ void docx_conversion_context::add_note_reference()
         finish_run();
         process_note_ = (NoteType) (process_note_ + 1); //add ref set
     }
+}
+
+typedef std::map<std::wstring, text_tracked_context::_state>::iterator map_changes_iterator;
+
+void docx_conversion_context::start_text_changes (std::wstring id)
+{
+	text_tracked_context::_state  &state = text_tracked_context_.get_tracked_change(id);
+	if (state.id != id) return;
+	
+	map_current_changes_.insert(std::pair<std::wstring, text_tracked_context::_state> (id, state));
+
+	if (in_paragraph_ && (state.type == 1 || state.type == 2))
+	{
+		finish_run();
+
+		if (state.type	== 1) output_stream() << L"<w:ins";
+		if (state.type	== 2) output_stream() << L"<w:del";
+
+		output_stream() << L" w:date=\""	<< state.date	<< "\"";
+		output_stream() << L" w:author=\""	<< state.author << "\"";
+		output_stream() << L" w:id=\""		<< std::to_wstring(current_id_changes++) << "\"";
+		output_stream() << L">";
+	}
+}
+
+void docx_conversion_context::start_changes()
+{
+	if (map_current_changes_.empty()) return;
+
+	for (map_changes_iterator it = map_current_changes_.begin(); it != map_current_changes_.end(); it++)
+	{
+		text_tracked_context::_state  &state = it->second;
+
+		if (state.type	== 3) continue; //format change ... todooo
+		if (state.type	== 0) continue; //unknown change ... todooo
+
+		if (state.type	== 1) output_stream() << L"<w:ins";
+		if (state.type	== 2) output_stream() << L"<w:del";
+
+		output_stream() << L" w:date=\""	<< state.date	<< "\"";
+		output_stream() << L" w:author=\""	<< state.author << "\"";
+		output_stream() << L" w:id=\""		<< std::to_wstring(current_id_changes++) << "\"";
+		output_stream() << L">";
+
+		if (state.type	== 2) output_stream() << state.content;
+	}
+}
+
+void docx_conversion_context::end_changes()
+{
+	for (map_changes_iterator it = map_current_changes_.begin(); it != map_current_changes_.end(); it++)
+	{
+		text_tracked_context::_state  &state = it->second;
+
+		if (state.type	== 3) continue; //format change ... todooo
+		if (state.type	== 0) continue; //unknown change ... todooo
+
+		if (state.type	== 1) output_stream() << L"</w:ins>";
+		if (state.type	== 2) output_stream() << L"</w:del>";
+	}
+}
+void docx_conversion_context::end_text_changes (std::wstring id)
+{
+	if (map_current_changes_.empty()) return;
+
+	map_changes_iterator it = map_current_changes_.find(id);
+
+	if (it == map_current_changes_.end()) return;
+	
+	if (in_paragraph_)
+	{
+		finish_run();
+
+		text_tracked_context::_state  &state = it->second;
+		
+		if (state.type	== 1) output_stream() << L"</w:ins>";
+		if (state.type	== 2) output_stream() << L"</w:del>";
+	}
+
+	map_current_changes_.erase(it);
 }
 
 }

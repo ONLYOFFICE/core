@@ -44,7 +44,7 @@ public:
     {
     } 
 
-    style_ref(const ::std::wstring & StyleName) : style_name_(StyleName) 
+    style_ref(const std::wstring & StyleName) : style_name_(StyleName) 
     {
     }
 
@@ -53,24 +53,24 @@ public:
         return style_name_.empty();
     }
 
-    const ::std::wstring & style_name() const 
+    const std::wstring & style_name() const 
     { 
         return style_name_;
     }
 
-    ::std::wstring & style_name()
+    std::wstring & style_name()
     { 
         return style_name_;
     }
 
     
 private:
-    ::std::wstring style_name_;
+    std::wstring style_name_;
 
 };
 std::wostream & operator << (std::wostream & _Wostream, const style_ref & _styleReft);
 
-typedef ::std::vector<style_ref> style_ref_array;
+typedef std::vector<style_ref> style_ref_array;
 
 inline std::wistream & operator >> (std::wistream & _Istream, style_ref & _styleRef)
 {

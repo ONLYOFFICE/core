@@ -73,7 +73,7 @@ void text_tracked_context::start_changes_content()
 	bParaStateDocx_	= docx_context_.get_paragraph_state();
 	bRunStateDocx_	= docx_context_.get_run_state();
 
-	docx_context_.set_paragraph_state	(false);		
+	docx_context_.set_paragraph_state	(true);		
 	docx_context_.set_run_state			(false);		
 	docx_context_.set_delete_text_state	(true);		
 }
@@ -1273,6 +1273,8 @@ void docx_conversion_context::start_text_changes (std::wstring id)
 		output_stream() << L" w:author=\""	<< state.author << "\"";
 		output_stream() << L" w:id=\""		<< std::to_wstring(current_id_changes++) << "\"";
 		output_stream() << L">";
+		
+		if (state.type	== 2) output_stream() << state.content;
 	}
 }
 

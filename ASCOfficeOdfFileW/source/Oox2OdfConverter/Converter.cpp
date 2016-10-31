@@ -1270,7 +1270,7 @@ void OoxConverter::convert(OOX::Drawing::CRunProperty * oox_run_pr, odf_writer::
 		switch(type)
 		{
 		case SimpleTypes::underlineNone	:
-                text_properties->content().style_text_underline_type_= odf_types::line_type(odf_types::line_type::Non);break;
+                text_properties->content().style_text_underline_type_= odf_types::line_type(odf_types::line_type::None);break;
 		case SimpleTypes::underlineDash :
 		case SimpleTypes::underlineDashedHeavy:
 				text_properties->content().style_text_underline_style_ = odf_types::line_style(odf_types::line_style::Dash);break;

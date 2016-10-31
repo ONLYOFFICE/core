@@ -133,13 +133,14 @@ void process_paragraph_drop_cap_attr(const paragraph_attrs & Attr, oox::docx_con
 	}
 	return;
 }
+typedef std::map<std::wstring, oox::text_tracked_context::_state>::iterator map_changes_iterator;
 
 int process_paragraph_attr(const paragraph_attrs & Attr, oox::docx_conversion_context & Context)
 {
     if (!Attr.text_style_name_.empty())
     {
         if (style_instance * styleInst =
-				Context.root()->odf_context().styleContainer().style_by_name(Attr.text_style_name_.style_name(), style_family::Paragraph,Context.process_headers_footers_)
+				Context.root()->odf_context().styleContainer().style_by_name(Attr.text_style_name_.style_name(), style_family::Paragraph, Context.process_headers_footers_)
             )
         {
             process_page_break_after(styleInst, Context);
@@ -186,7 +187,7 @@ int process_paragraph_attr(const paragraph_attrs & Attr, oox::docx_conversion_co
             {
                 const std::wstring id = Context.styles_map_.get( styleInst->name(), styleInst->type() );
                 Context.output_stream() << L"<w:pPr>";
-//todooo причесать					
+//todooo причесать			
 					if (Context.is_paragraph_header() && !Context.get_section_context().dump_.empty())
 					{
 						Context.output_stream() << Context.get_section_context().dump_;
@@ -204,6 +205,13 @@ int process_paragraph_attr(const paragraph_attrs & Attr, oox::docx_conversion_co
 					}	
 
 					Context.output_stream() << L"<w:pStyle w:val=\"" << id << L"\" />";
+
+					if (!Context.output_stream() << Context.get_text_tracked_context().dumpPPr_.empty())
+					{
+						Context.output_stream() << Context.get_text_tracked_context().dumpPPr_;
+						Context.get_text_tracked_context().dumpPPr_.clear();
+					}
+
 					Context.docx_serialize_list_properties(Context.output_stream());
 					
 					if ((Attr.outline_level_) && (*Attr.outline_level_ > 0))
@@ -1082,9 +1090,17 @@ void text_deletion::docx_convert(oox::docx_conversion_context & Context)
 const wchar_t * text_format_change::ns		= L"text";
 const wchar_t * text_format_change::name	= L"format-change";
 
+void text_format_change::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+	CP_APPLY_ATTR(L"text:style-name", text_style_name_);
+}
+
 void text_format_change::docx_convert(oox::docx_conversion_context & Context)
 {
 	Context.get_text_tracked_context().set_type(3);
+
+	if (text_style_name_)
+		Context.get_text_tracked_context().set_style_name(*text_style_name_);
 
 	text_unknown_base_change::docx_convert(Context);
 }

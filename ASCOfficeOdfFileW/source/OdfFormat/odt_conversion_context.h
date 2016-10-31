@@ -123,8 +123,9 @@ public:
 		void end_note_content	();
 	void end_note				();
 
-	void start_change			(int id, int type, std::wstring &author, std::wstring &userId, std::wstring &date);
+	void start_change			(int id, int type, std::wstring &author, std::wstring &userId, std::wstring &date, std::wstring style_name = L"");
 	void end_change				(int id, int type);
+	bool is_delete_changes		();
 
 	void start_table				(bool styled = false);
 		void start_table_columns	();
@@ -191,7 +192,7 @@ private:
 	struct _text_changes_state
 	{
 		odf_text_context	*main_text_context;
-		int					level;
+		std::vector<int>	current_types;
 	}text_changes_state_;
 
 	bool is_hyperlink_;

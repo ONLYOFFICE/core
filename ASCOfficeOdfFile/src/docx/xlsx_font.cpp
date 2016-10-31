@@ -325,12 +325,11 @@ xlsx_font::xlsx_font (	const odf_reader::text_format_properties_content		* textP
     //    sz = 10.;//kDefaultFontSize;        //todooo ... вытащить как в math
     //}
 
-    if (textProp->style_text_underline_type_ &&
-        textProp->style_text_underline_type_->get_type() != odf_types::line_type::Non ||
+    if ((textProp->style_text_underline_type_ &&
+        textProp->style_text_underline_type_->get_type() != odf_types::line_type::None) ||
     
-        textProp->style_text_underline_style_ &&
-        textProp->style_text_underline_style_->get_type() != odf_types::line_style::None        
-        )
+        (textProp->style_text_underline_style_ &&
+        textProp->style_text_underline_style_->get_type() != odf_types::line_style::None))
     {
         if (textProp->style_text_underline_type_ &&
             textProp->style_text_underline_type_->get_type() == odf_types::line_type::Double)
@@ -338,12 +337,12 @@ xlsx_font::xlsx_font (	const odf_reader::text_format_properties_content		* textP
         else
             u = XUNDERLINE_SINGLE;
     }
+	
+    if ((textProp->style_text_line_through_type_ &&
+        textProp->style_text_line_through_type_->get_type() != odf_types::line_type::None) ||
 
-    if (textProp->style_text_line_through_type_ &&
-        textProp->style_text_line_through_type_->get_type() != odf_types::line_type::Non ||
-
-        textProp->style_text_line_through_style_ &&
-        textProp->style_text_line_through_style_->get_type() != odf_types::line_style::None)
+        (textProp->style_text_line_through_style_ &&
+        textProp->style_text_line_through_style_->get_type() != odf_types::line_style::None))
     {
         strike = true;
     }

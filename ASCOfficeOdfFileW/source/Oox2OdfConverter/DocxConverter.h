@@ -114,6 +114,7 @@ namespace ComplexTypes
 		class CFramePr;
 		class CTblWidth;
 		class CPageBorder;
+		class CTrackChange;
 	}
 }
 namespace cpdoccore 
@@ -198,6 +199,7 @@ namespace Oox2Odf
 		void convert(OOX::Logic::CSmartTag				*oox_tag);		
 		void convert(OOX::Logic::CPTab					*oox_ptab);
 		
+		int convert(ComplexTypes::Word::CTrackChange	*oox_change, int type);
 		void convert(OOX::Logic::CIns					*oox_ins);
 		void convert(OOX::Logic::CDel					*oox_del);
 		int  convert(OOX::Logic::CPPrChange				*oox_para_prop_change);
@@ -206,7 +208,6 @@ namespace Oox2Odf
 		int  convert(OOX::Logic::CTrPrChange			*oox_tr_prop_change);
 		int  convert(OOX::Logic::CTcPrChange			*oox_tc_prop_change);
 		int  convert(OOX::Logic::CTblPrChange			*oox_table_prop_change);		
-
 		
 		void convert(OOX::Logic::CAlternateContent		*oox_alt_content);
 		void convert(OOX::Logic::CDrawing				*oox_drawing);

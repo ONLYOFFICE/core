@@ -413,13 +413,14 @@ void DocxConverter::convert(OOX::Logic::CParagraph *oox_paragraph)
 {
 	if (oox_paragraph == NULL) return; 
 
+//---------------------------------------------------------------------------------------------------------------------
 	if (current_section_properties)
 	{
 		if (odt_context->text_context()->get_KeepNextParagraph())
 			odt_context->end_paragraph();
 		odt_context->text_context()->set_KeepNextParagraph(false);
 	}
-
+//---------------------------------------------------------------------------------------------------------------------
 	bool bStyled			= false;
 	bool bStartNewParagraph = !odt_context->text_context()->get_KeepNextParagraph();
 	
@@ -429,6 +430,35 @@ void DocxConverter::convert(OOX::Logic::CParagraph *oox_paragraph)
 	int			 list_level = -1;
 	int			 list_style_id = -1;
 
+//---------------------------------------------------------------------------------------------------------------------
+	std::vector<std::pair<int, int>> id_change_properties;
+	
+	if (oox_paragraph->m_oParagraphProperty && odt_context->is_delete_changes() == false)
+	{//цепочка изменений форматов в удаленных кусках либрой (и оо) не поддерживается
+		int id;
+
+		if (oox_paragraph->m_oParagraphProperty->m_oRPr.IsInit())
+		{
+			id = convert(oox_paragraph->m_oParagraphProperty->m_oRPr->m_oDel.GetPointer(), 2);
+			if (id >= 0)	id_change_properties.push_back(std::pair<int, int> (2, id));
+
+			id = convert(oox_paragraph->m_oParagraphProperty->m_oRPr->m_oIns.GetPointer(), 1);
+			if (id >= 0)	id_change_properties.push_back(std::pair<int, int> (1, id));
+
+			id = convert(oox_paragraph->m_oParagraphProperty->m_oRPr->m_oRPrChange.GetPointer());
+			if (id >= 0)	id_change_properties.push_back(std::pair<int, int> (3, id));
+		}			
+		
+		if (oox_paragraph->m_oParagraphProperty->m_oSectPr.IsInit())
+		{
+			id = convert(oox_paragraph->m_oParagraphProperty->m_oSectPr->m_oSectPrChange.GetPointer());
+			if (id >= 0)	id_change_properties.push_back(std::pair<int, int> (3, id));
+		}
+
+		id = convert(oox_paragraph->m_oParagraphProperty->m_oPPrChange.GetPointer());
+		if (id >= 0)	id_change_properties.push_back(std::pair<int, int> (3, id));
+	}	
+//---------------------------------------------------------------------------------------------------------------------
 	if(oox_paragraph->m_oParagraphProperty && odt_context->text_context()->get_list_item_state() == false)
 	{
 		if (oox_paragraph->m_oParagraphProperty->m_oPStyle.IsInit() && oox_paragraph->m_oParagraphProperty->m_oPStyle->m_sVal.IsInit())
@@ -546,11 +576,7 @@ void DocxConverter::convert(OOX::Logic::CParagraph *oox_paragraph)
 		}		
 	}
 
-	int id_change_properties = -1;
-	
-	if (oox_paragraph->m_oParagraphProperty)
-		id_change_properties = convert(oox_paragraph->m_oParagraphProperty->m_oPPrChange.GetPointer());
-
+//---------------------------------------------------------------------------------------------------------------------
 	for (unsigned int nIndex = 0; nIndex < oox_paragraph->m_arrItems.size(); nIndex++ )
 	{
 		//те элементы которые тока для Paragraph - здесь - остальные в общей куче		
@@ -565,16 +591,20 @@ void DocxConverter::convert(OOX::Logic::CParagraph *oox_paragraph)
 				break;
 		}
 	}
-	if (id_change_properties >= 0)
-		odt_context->end_change(id_change_properties, 3); //todooo change int type to enum
+//---------------------------------------------------------------------------------------------------------------------
 
-	if (odt_context->text_context()->get_KeepNextParagraph()) odt_context->end_drop_cap();
+	if (odt_context->text_context()->get_KeepNextParagraph())	odt_context->end_drop_cap();
 
 	if (!odt_context->text_context()->get_KeepNextParagraph())  odt_context->end_paragraph();
-
+	
 	if(list_present && !odt_context->text_context()->get_KeepNextParagraph())
 	{
 		odt_context->end_list_item();
+	}
+//---------------------------------------------------------------------------------------------------------------------
+	for (int i = 0; i < id_change_properties.size(); i++)
+	{
+		odt_context->end_change(id_change_properties[i].second, id_change_properties[i].first); 
 	}
 }
 void DocxConverter::convert(OOX::Logic::CRun *oox_run)//wordprocessing 22.1.2.87 math 17.3.2.25
@@ -590,11 +620,16 @@ void DocxConverter::convert(OOX::Logic::CRun *oox_run)//wordprocessing 22.1.2.87
 	//		odt_context->add_page_break();
 	//	}
 	//}	
-	bool styled = false;	
+	bool styled					= false;	
+	int id_change_properties	= -1;
+
 	if (oox_run->m_oRunProperty) 
 	{
 		styled = true;
 
+		if (odt_context->is_delete_changes() == false)
+			id_change_properties = convert(oox_run->m_oRunProperty->m_oRPrChange.GetPointer());
+		
 		odt_context->styles_context()->create_style(L"",odf_types::style_family::Text, true, false, -1);					
 		odf_writer::style_text_properties	* text_properties = odt_context->styles_context()->last_state()->get_text_properties();
 
@@ -602,10 +637,6 @@ void DocxConverter::convert(OOX::Logic::CRun *oox_run)//wordprocessing 22.1.2.87
 	}
 
 	odt_context->start_run(styled);
-	
-	int id_change_properties  = -1;
-	if (oox_run->m_oRunProperty)
-		id_change_properties = convert(oox_run->m_oRunProperty->m_oRPrChange.GetPointer());
 	
 	for(unsigned int i = 0; i < oox_run->m_arrItems.size(); ++i)
 	{
@@ -679,6 +710,10 @@ void DocxConverter::convert(OOX::Logic::CRun *oox_run)//wordprocessing 22.1.2.87
 		}
 	}
 	odt_context->end_run();
+
+	if (id_change_properties >= 0)
+		odt_context->end_change(id_change_properties, 3); //todooo change int type to enum
+
 }
 
 void DocxConverter::convert(OOX::Logic::CPTab *oox_ptab)
@@ -796,7 +831,6 @@ void DocxConverter::convert(OOX::Logic::CDelText *oox_delText)
 		if (oox_delText->m_oSpace->GetValue() == SimpleTypes::xmlspacePreserve)
 		{
 		}
-		//odt_context->text_context()->add_text_space(26);
 	}
 	odt_context->add_text_content(string2std_string(oox_delText->m_sText));
 }
@@ -804,7 +838,6 @@ void DocxConverter::convert(OOX::Logic::CIns *oox_ins)
 {
 	if (oox_ins == NULL) return;
 	
-	//Abortion.docx
 	std::wstring	author	= oox_ins->m_sAuthor.IsInit()	? oox_ins->m_sAuthor.get2()		: L"";
 	std::wstring	userId	= oox_ins->m_sUserId.IsInit()	? oox_ins->m_sUserId.get2()		: L"";
 	int				id		= oox_ins->m_oId.IsInit()		? oox_ins->m_oId->GetValue()	: -1;
@@ -818,6 +851,19 @@ void DocxConverter::convert(OOX::Logic::CIns *oox_ins)
 	}
 	odt_context->end_change(id, 1);
 }
+int DocxConverter::convert(ComplexTypes::Word::CTrackChange *oox_change, int type)
+{
+	if (!oox_change) return -1;
+
+	std::wstring	author	= oox_change->m_sAuthor.IsInit()	? oox_change->m_sAuthor.get2()		: L"";
+	std::wstring	userId	= oox_change->m_sUserId.IsInit()	? oox_change->m_sUserId.get2()		: L"";
+	int				id		= oox_change->m_oId.IsInit()		? oox_change->m_oId->GetValue()		: -1;
+	std::wstring	date	= oox_change->m_oDate.IsInit()		? oox_change->m_oDate->GetValue()	: L"";
+
+	odt_context->start_change(id, type, author, userId, date);
+
+	return id;
+}
 int DocxConverter::convert(OOX::Logic::CSectPrChange *oox_sect_prop_change)
 {
 	if (!oox_sect_prop_change) return -1;
@@ -825,13 +871,13 @@ int DocxConverter::convert(OOX::Logic::CSectPrChange *oox_sect_prop_change)
 	std::wstring	author	= oox_sect_prop_change->m_sAuthor.IsInit()	? oox_sect_prop_change->m_sAuthor.get2()		: L"";
 	std::wstring	userId	= oox_sect_prop_change->m_sUserId.IsInit()	? oox_sect_prop_change->m_sUserId.get2()		: L"";
 	int				id		= oox_sect_prop_change->m_oId.IsInit()		? oox_sect_prop_change->m_oId->GetValue()		: -1;
-	std::wstring	date	= oox_sect_prop_change->m_oDate.IsInit()	? oox_sect_prop_change->m_oDate->GetValue()	: L"";
+	std::wstring	date	= oox_sect_prop_change->m_oDate.IsInit()	? oox_sect_prop_change->m_oDate->GetValue()		: L"";
 
 	odt_context->start_change(id, 3, author, userId, date);
 
 	convert(oox_sect_prop_change->m_pSecPr.GetPointer());
 
-	//odt_context->end_change(id, 3);
+	//odt_context->end_change(id, 3); в конце секции
 	return id;
 }
 int DocxConverter::convert(OOX::Logic::CPPrChange *oox_para_prop_change)
@@ -841,9 +887,8 @@ int DocxConverter::convert(OOX::Logic::CPPrChange *oox_para_prop_change)
 	std::wstring	author	= oox_para_prop_change->m_sAuthor.IsInit()	? oox_para_prop_change->m_sAuthor.get2()		: L"";
 	std::wstring	userId	= oox_para_prop_change->m_sUserId.IsInit()	? oox_para_prop_change->m_sUserId.get2()		: L"";
 	int				id		= oox_para_prop_change->m_oId.IsInit()		? oox_para_prop_change->m_oId->GetValue()		: -1;
-	std::wstring	date	= oox_para_prop_change->m_oDate.IsInit()		? oox_para_prop_change->m_oDate->GetValue()	: L"";
-
-	odt_context->start_change(id, 3, author, userId, date);
+	std::wstring	date	= oox_para_prop_change->m_oDate.IsInit()	? oox_para_prop_change->m_oDate->GetValue()		: L"";
+	std::wstring	style_name;
 
 	if (oox_para_prop_change->m_pParPr.IsInit())
 	{
@@ -881,8 +926,14 @@ int DocxConverter::convert(OOX::Logic::CPPrChange *oox_para_prop_change)
 
 		if (bRunPara)
 			convert(oox_para_prop_change->m_pParPr->m_oRPr.GetPointer(), text_properties);
+		
+		odf_writer::odf_style_state_ptr style_state = odt_context->styles_context()->last_state(style_family::Paragraph);
+		if (style_state)
+			style_name	= style_state->get_name();
 	}
-	//odt_context->end_change(id, 3);
+
+	odt_context->start_change(id, 3, author, userId, date, style_name);
+	//odt_context->end_change(id, 3); в конце параграфа
 	return id;
 }
 int DocxConverter::convert(OOX::Logic::CRPrChange *oox_run_prop_change)
@@ -891,10 +942,9 @@ int DocxConverter::convert(OOX::Logic::CRPrChange *oox_run_prop_change)
 		
 	std::wstring	author	= oox_run_prop_change->m_sAuthor.IsInit()	? oox_run_prop_change->m_sAuthor.get2()		: L"";
 	std::wstring	userId	= oox_run_prop_change->m_sUserId.IsInit()	? oox_run_prop_change->m_sUserId.get2()		: L"";
-	int				id		= oox_run_prop_change->m_oId.IsInit()		? oox_run_prop_change->m_oId->GetValue()		: -1;
+	int				id		= oox_run_prop_change->m_oId.IsInit()		? oox_run_prop_change->m_oId->GetValue()	: -1;
 	std::wstring	date	= oox_run_prop_change->m_oDate.IsInit()		? oox_run_prop_change->m_oDate->GetValue()	: L"";
-
-	odt_context->start_change(id, 3, author, userId, date);
+	std::wstring	style_name;
 
 	if (oox_run_prop_change->m_pRunPr.IsInit())
 	{
@@ -902,8 +952,14 @@ int DocxConverter::convert(OOX::Logic::CRPrChange *oox_run_prop_change)
 		odf_writer::style_text_properties	* text_properties = odt_context->styles_context()->last_state()->get_text_properties();
 
 		convert(oox_run_prop_change->m_pRunPr.GetPointer(), text_properties);
+	
+		odf_writer::odf_style_state_ptr style_state = odt_context->styles_context()->last_state(style_family::Text);
+		if (style_state)
+			style_name	= style_state->get_name();
 	}
-	//odt_context->end_change(id, 3);
+
+	odt_context->start_change(id, 3, author, userId, date, style_name);
+	//odt_context->end_change(id, 3); в конце run 
 	return id;
 }
 int DocxConverter::convert(OOX::Logic::CTrPrChange *oox_tr_prop_change)
@@ -919,7 +975,7 @@ int DocxConverter::convert(OOX::Logic::CTrPrChange *oox_tr_prop_change)
 
 	convert(oox_tr_prop_change->m_pTrPr.GetPointer());
 
-	//odt_context->end_change(id, 3);
+	//odt_context->end_change(id, 3); в конце row
 	return id;
 }
 int DocxConverter::convert(OOX::Logic::CTcPrChange *oox_tc_prop_change)
@@ -935,7 +991,7 @@ int DocxConverter::convert(OOX::Logic::CTcPrChange *oox_tc_prop_change)
 
 	convert(oox_tc_prop_change->m_pTcPr.GetPointer());
 
-	//odt_context->end_change(id, 3);
+	//odt_context->end_change(id, 3); в конце cell
 	return id;
 }
 int DocxConverter::convert(OOX::Logic::CTblPrChange *oox_table_prop_change)
@@ -951,7 +1007,7 @@ int DocxConverter::convert(OOX::Logic::CTblPrChange *oox_table_prop_change)
 
 	convert(oox_table_prop_change->m_pTblPr.GetPointer());
 
-	//odt_context->end_change(id, 3);
+	//odt_context->end_change(id, 3); в конце таблицы
 	return id;
 }
 void DocxConverter::convert(OOX::Logic::CDel *oox_del)
@@ -963,12 +1019,12 @@ void DocxConverter::convert(OOX::Logic::CDel *oox_del)
 	int				id		= oox_del->m_oId.IsInit()		? oox_del->m_oId->GetValue()	: -1;
 	std::wstring	date	= oox_del->m_oDate.IsInit()		? oox_del->m_oDate->GetValue()	: L"";
 
-	odt_context->start_change(id, 3, author, userId, date);
+	odt_context->start_change(id, 2, author, userId, date);
 	for (unsigned int i=0; i< oox_del->m_arrItems.size(); i++)
 	{
 		convert(oox_del->m_arrItems[i]);
 	}
-	odt_context->end_change(id, 3);
+	odt_context->end_change(id, 2);
 }
 void DocxConverter::convert(OOX::Logic::CSmartTag *oox_tag)
 {
@@ -983,7 +1039,6 @@ void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr, cp
 {
 	odt_context->text_context()->set_KeepNextParagraph(false);
 	
-	if (!paragraph_properties)	return;
 	if (!paragraph_properties)	return;
 	if (!oox_paragraph_pr)		
 	{
@@ -1123,17 +1178,17 @@ void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr, cp
 		switch(oox_paragraph_pr->m_oTextDirection->m_oVal->GetValue())
 		{
 		case SimpleTypes::textdirectionLr   :
-			paragraph_properties->content().style_writing_mode_= odf_types::writing_mode(odf_types::writing_mode::Lr); break;
+			paragraph_properties->content().style_writing_mode_= odf_types::writing_mode(odf_types::writing_mode::Lr);		break;
 		case SimpleTypes::textdirectionLrV  :
-			paragraph_properties->content().style_writing_mode_= odf_types::writing_mode(odf_types::writing_mode::LrTb); break;
+			paragraph_properties->content().style_writing_mode_= odf_types::writing_mode(odf_types::writing_mode::LrTb);	break;
 		case SimpleTypes::textdirectionRl   :
-			paragraph_properties->content().style_writing_mode_= odf_types::writing_mode(odf_types::writing_mode::Rl); break;
+			paragraph_properties->content().style_writing_mode_= odf_types::writing_mode(odf_types::writing_mode::Rl);		break;
 		case SimpleTypes::textdirectionRlV  :
-			paragraph_properties->content().style_writing_mode_= odf_types::writing_mode(odf_types::writing_mode::RlTb); break;
+			paragraph_properties->content().style_writing_mode_= odf_types::writing_mode(odf_types::writing_mode::RlTb);	break;
 		case SimpleTypes::textdirectionTb   :
-			paragraph_properties->content().style_writing_mode_= odf_types::writing_mode(odf_types::writing_mode::Tb); break;
+			paragraph_properties->content().style_writing_mode_= odf_types::writing_mode(odf_types::writing_mode::Tb);		break;
 		case SimpleTypes::textdirectionTbV  :
-			paragraph_properties->content().style_writing_mode_= odf_types::writing_mode(odf_types::writing_mode::TbLr); break;
+			paragraph_properties->content().style_writing_mode_= odf_types::writing_mode(odf_types::writing_mode::TbLr);	break;
 		}
 	}
 	if (oox_paragraph_pr->m_oOutlineLvl.IsInit())
@@ -1983,7 +2038,7 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::st
 		   convert(oox_run_pr->m_oColor.GetPointer(),text_properties->content().fo_color_);
 	}
 
-    text_properties->content().style_text_underline_type_= odf_types::line_type(odf_types::line_type::Non);
+    text_properties->content().style_text_underline_type_= odf_types::line_type(odf_types::line_type::None);
 	if (oox_run_pr->m_oU.IsInit())
 	{
 		text_properties->content().style_text_underline_style_	= odf_types::line_style(odf_types::line_style::Solid);
@@ -2007,7 +2062,7 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::st
 					text_properties->content().style_text_underline_type_= odf_types::line_type(odf_types::line_type::Double);break;
 			case SimpleTypes::underlineNone			:
 				{
-                    text_properties->content().style_text_underline_type_	= odf_types::line_type(odf_types::line_type::Non);
+                    text_properties->content().style_text_underline_type_	= odf_types::line_type(odf_types::line_type::None);
 					text_properties->content().style_text_underline_style_	= boost::none;
 					text_properties->content().style_text_underline_color_  = boost::none;
 				}break;
@@ -2090,7 +2145,7 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::st
 	{
 		text_properties->content().style_text_scale_ = odf_types::percent(oox_run_pr->m_oW->m_oVal->GetValue());
 	}
-	if (oox_run_pr->m_oStrike.IsInit() && oox_run_pr->m_oStrike->m_oVal.ToBool())
+	if (oox_run_pr->m_oStrike.IsInit()  && oox_run_pr->m_oStrike->m_oVal.ToBool())
 	{
 		text_properties->content().style_text_line_through_type_ = odf_types::line_type(odf_types::line_type::Single);
 	}

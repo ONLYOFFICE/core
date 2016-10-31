@@ -42,6 +42,7 @@
 #include "docx_conversion_context.h"
 
 #include "../odf/odfcontext.h"
+#include "../odf/style_paragraph_properties.h"
 #include "../odf/style_text_properties.h"
 #include "../odf/style_graphic_properties.h"
 #include "../odf/datatypes/style_ref.h"
@@ -108,6 +109,11 @@ void text_tracked_context::set_user_info (std::wstring &author, std::wstring &da
 	current_state_.author	= author;
 	current_state_.date		= date;
 }
+void text_tracked_context::set_style_name (std::wstring style_name)
+{
+	current_state_.style_name = style_name;
+}
+
 text_tracked_context::_state & text_tracked_context::get_tracked_change(std::wstring id)
 {
 	std::map<std::wstring, _state>::iterator it = mapChanges_.find(id);
@@ -206,7 +212,7 @@ void docx_conversion_context::add_element_to_run(std::wstring parenStyleId)
 				textProp->content().docx_convert(*this);
 			}
 	        
-			get_styles_context().docx_serialize_text_style( output_stream(), parenStyleId);
+			get_styles_context().docx_serialize_text_style( output_stream(), parenStyleId, text_tracked_context_.dumpRPr_);
 		}
 
 	}
@@ -818,7 +824,7 @@ void docx_conversion_context::end_process_style_content(bool in_styles)
    docx_serialize_paragraph_style(output_stream(), automatic_parent_style_, in_styles);
     
     if (automatic_parent_style_.empty())
-        styles_context_.docx_serialize_text_style( output_stream(), _T(""));
+        styles_context_.docx_serialize_text_style( output_stream(), L"", text_tracked_context_.dumpRPr_);
 }
 
 void docx_conversion_context::docx_serialize_paragraph_style(std::wostream & strm, const std::wstring & ParentId, bool in_styles)
@@ -860,7 +866,12 @@ void docx_conversion_context::docx_serialize_paragraph_style(std::wostream & str
 				}
 				CP_XML_STREAM() << paragraph_style.str();
 				docx_serialize_list_properties(CP_XML_STREAM());
-
+				
+				if (!get_text_tracked_context().dumpPPr_.empty())
+				{
+					CP_XML_STREAM() << get_text_tracked_context().dumpPPr_;
+					get_text_tracked_context().dumpPPr_.clear();
+				}
 				if (run_style.tellp() > 0 && in_styles == false)
 				{
 					CP_XML_NODE(L"w:rPr")
@@ -1286,18 +1297,70 @@ void docx_conversion_context::start_changes()
 	{
 		text_tracked_context::_state  &state = it->second;
 
-		if (state.type	== 3) continue; //format change ... todooo
 		if (state.type	== 0) continue; //unknown change ... todooo
 
-		if (state.type	== 1) output_stream() << L"<w:ins";
-		if (state.type	== 2) output_stream() << L"<w:del";
+		std::wstring change_attr;
+		change_attr += L" w:date=\""	+ state.date	+ L"\"";
+		change_attr += L" w:author=\""	+ state.author	+ L"\"";
+		change_attr += L" w:id=\""		+ std::to_wstring(current_id_changes++) + L"\"";
 
-		output_stream() << L" w:date=\""	<< state.date	<< "\"";
-		output_stream() << L" w:author=\""	<< state.author << "\"";
-		output_stream() << L" w:id=\""		<< std::to_wstring(current_id_changes++) << "\"";
-		output_stream() << L">";
+		if (state.type	== 1)
+		{
+			output_stream() << L"<w:ins" << change_attr << L">";
+		}
 
-		if (state.type	== 2) output_stream() << state.content;
+		if (state.type	== 2)
+		{
+			output_stream() << L"<w:del" << change_attr << L">";
+			output_stream() << state.content;
+		}
+		
+		if (state.type	== 3)
+		{
+			odf_reader::style_instance * styleInst = root()->odf_context().styleContainer().style_by_name(state.style_name, odf_types::style_family::Paragraph, false);
+			if (styleInst)
+			{
+				odf_reader::style_paragraph_properties * props = NULL;	
+				props = styleInst->content()->get_style_paragraph_properties();
+				if (props)
+				{
+					props->docx_convert(*this);	
+					odf_reader::style_text_properties * t_props = NULL;	
+					t_props = styleInst->content()->get_style_text_properties();
+					if (t_props)
+						props->docx_convert(*this);
+					std::wstring attr = get_styles_context().paragraph_attr().str();
+					
+					text_tracked_context_.dumpPPr_ = L"<w:pPrChange" + change_attr + (attr.empty() ? L">" : (L" " + attr + L">"));
+					text_tracked_context_.dumpPPr_ += get_styles_context().paragraph_nodes().str();
+					if (t_props)
+					{
+						text_tracked_context_.dumpPPr_ += L"<w:rPr>";
+						text_tracked_context_.dumpPPr_ += get_styles_context().text_style().str();
+						text_tracked_context_.dumpPPr_ += L"</w:rPr>";
+					}
+					text_tracked_context_.dumpPPr_ += L"</w:pPrChange>";
+				}
+				else
+					text_tracked_context_.dumpPPr_ = L"<w:pPrChange/>";
+			}
+			else if (styleInst = root()->odf_context().styleContainer().style_by_name(state.style_name, odf_types::style_family::Text, false))
+			{
+				odf_reader::style_text_properties * props = NULL;	
+				props = styleInst->content()->get_style_text_properties();
+				if (props)
+				{
+					props->docx_convert(*this);
+					text_tracked_context_.dumpRPr_ = L"<w:rPrChange" + change_attr + L">";
+					text_tracked_context_.dumpRPr_ += get_styles_context().text_style().str();
+					text_tracked_context_.dumpRPr_ += L"</w:rPrChange>";
+				}else  
+					text_tracked_context_.dumpRPr_ = L"<w:rPrChange/>";
+			}
+			else
+			{
+			}
+		}
 	}
 }
 
@@ -1307,12 +1370,15 @@ void docx_conversion_context::end_changes()
 	{
 		text_tracked_context::_state  &state = it->second;
 
-		if (state.type	== 3) continue; //format change ... todooo
-		if (state.type	== 0) continue; //unknown change ... todooo
+		if (state.type	== 0) continue; //unknown change ... libra format change skip
+		if (state.type	== 3) continue;
 
 		if (state.type	== 1) output_stream() << L"</w:ins>";
 		if (state.type	== 2) output_stream() << L"</w:del>";
 	}
+
+	text_tracked_context_.dumpPPr_.clear();
+	text_tracked_context_.dumpRPr_.clear();
 }
 void docx_conversion_context::end_text_changes (std::wstring id)
 {

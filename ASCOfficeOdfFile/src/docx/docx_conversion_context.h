@@ -494,7 +494,8 @@ public:
 		std::wstring	author;
 		std::wstring	date;
 		int				type;
-		std::wstring	content;	//delete elements		
+		std::wstring	content;	//delete elements
+		std::wstring	style_name;
 		
 		void clear()
 		{
@@ -505,6 +506,8 @@ public:
 			content.clear();
 		}
 	};
+	std::wstring dumpPPr_;
+	std::wstring dumpRPr_;
 
 	text_tracked_context(docx_conversion_context & context);
 
@@ -516,6 +519,7 @@ public:
 
 	void set_user_info				(std::wstring &author, std::wstring &date);
 	void set_type					(int type);
+	void set_style_name				(std::wstring style_name);
 
 	_state & get_tracked_change		(std::wstring id);
 

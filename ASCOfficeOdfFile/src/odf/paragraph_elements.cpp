@@ -88,17 +88,18 @@ void text::add_text(const std::wstring & Text)
 void text::docx_convert(oox::docx_conversion_context & Context)
 {
     Context.add_element_to_run();
-	std::wostream & _Wostream = Context.output_stream();
+	std::wostream & strm = Context.output_stream();
   
 	std::wstring textNode = L"w:t";
 	if (Context.get_delete_text_state()) textNode = L"w:delText";
 
-	_Wostream << L"<" << textNode;
-	if (preserve_ && !Context.get_delete_text_state()) _Wostream << L" xml:space=\"preserve\">";
-	_Wostream << L">";
+	strm << L"<" << textNode;
+	if (preserve_ && !Context.get_delete_text_state()) 
+		strm << L" xml:space=\"preserve\"";
+	strm << L">";
 
-	_Wostream << xml::utils::replace_text_to_xml( text_ );
-    _Wostream << L"</" << textNode << L">";
+	strm << xml::utils::replace_text_to_xml( text_ );
+    strm << L"</" << textNode << L">";
 }
 
 void text::xlsx_convert(oox::xlsx_conversion_context & Context)
@@ -150,8 +151,8 @@ void s::docx_convert(oox::docx_conversion_context & Context)
 	if (Context.get_delete_text_state()) textNode = L"w:delText";
 
 	strm << L"<" << textNode;
-	if (!Context.get_delete_text_state())
-		L" xml:space=\"preserve\"";
+	if (!Context.get_delete_text_state())	
+		strm << L" xml:space=\"preserve\"";
 	strm << L">";
 		text_to_stream(strm);
     strm << L"</" << textNode << L">"; 
@@ -739,7 +740,7 @@ void title::docx_convert(oox::docx_conversion_context & Context)
 
 	strm << L"<" << textNode;
 	if (!Context.get_delete_text_state())
-		L" xml:space=\"preserve\"";
+		strm << L" xml:space=\"preserve\"";
 	strm << L">";
 		text_to_stream(strm);
     strm << L"</" << textNode << L">"; 
@@ -803,7 +804,7 @@ void subject::docx_convert(oox::docx_conversion_context & Context)
 
 	strm << L"<" << textNode;
 	if (!Context.get_delete_text_state())
-		L" xml:space=\"preserve\"";
+		strm << L" xml:space=\"preserve\"";
 	strm << L">";
 		text_to_stream(strm);
     strm << L"</" << textNode << L">"; 
@@ -866,7 +867,7 @@ void chapter::docx_convert(oox::docx_conversion_context & Context)
 
 	strm << L"<" << textNode;
 	if (!Context.get_delete_text_state())
-		L" xml:space=\"preserve\"";
+		strm << L" xml:space=\"preserve\"";
 	strm << L">";
 		text_to_stream(strm);
     strm << L"</" << textNode << L">"; 
@@ -1098,7 +1099,7 @@ void text_date::docx_convert(oox::docx_conversion_context & Context)
 
 		strm << L"<" << textNode;
 		if (!Context.get_delete_text_state())
-			L" xml:space=\"preserve\"";
+			strm << L" xml:space=\"preserve\"";
 		strm << L">";
 			text_to_stream(strm);
 		strm << L"</" << textNode << L">"; 
@@ -1210,7 +1211,7 @@ void text_time::docx_convert(oox::docx_conversion_context & Context)
 
 		strm << L"<" << textNode;
 		if (!Context.get_delete_text_state())
-			L" xml:space=\"preserve\"";
+			strm << L" xml:space=\"preserve\"";
 		strm << L">";
 			text_to_stream(strm);
 		strm << L"</" << textNode << L">"; 

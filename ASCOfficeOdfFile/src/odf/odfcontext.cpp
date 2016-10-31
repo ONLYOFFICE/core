@@ -184,7 +184,7 @@ const std::wstring & style_instance::data_style_name() const
     return data_style_name_;
 }
 
-style_instance * styles_container::style_by_name(const std::wstring & Name, style_family::type Type,bool object_in_styles) const
+style_instance * styles_container::style_by_name(const std::wstring & Name, style_family::type Type, bool object_in_styles) const
 {
     std::wstring n = L"";
 	if (object_in_styles) n = L"common:";
@@ -200,7 +200,7 @@ style_instance * styles_container::style_by_name(const std::wstring & Name, styl
     else
         return NULL;
 }
-style_instance * styles_container::style_by_display_name(const std::wstring & Name, style_family::type Type,bool object_in_styles) const
+style_instance * styles_container::style_by_display_name(const std::wstring & Name, style_family::type Type, bool object_in_styles) const
 {
     std::wstring n = L"";
 	if (object_in_styles) n = L"common:";

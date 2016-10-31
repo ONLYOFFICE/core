@@ -501,7 +501,10 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type		= typeTextFormatChange;
 
+	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
 	virtual void docx_convert(oox::docx_conversion_context & Context);
+	
+	_CP_OPT(std::wstring)	text_style_name_; //не по снецификации ... но КАК сохранить то что было изменено в формате?????
 };
 CP_REGISTER_OFFICE_ELEMENT2(text_format_change);
 

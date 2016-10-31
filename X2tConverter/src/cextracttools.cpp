@@ -349,9 +349,9 @@ namespace NExtractTools
                             std::wstring sImageCopy = sChangesDir + FILE_SEPARATOR_STR + sImageName;
                             NSFile::CFileBinary::Copy(sImage, sImageCopy);
                         }
-						//copy doct for version history
-						std::wstring sBinCopy = sChangesDir + FILE_SEPARATOR_STR + NSSystemPath::GetFileName(sBinFrom);
-						NSFile::CFileBinary::Copy(sBinFrom, sBinCopy);
+						////copy doct for version history
+						// std::wstring sBinCopy = sChangesDir + FILE_SEPARATOR_STR + NSSystemPath::GetFileName(sBinFrom);
+						// NSFile::CFileBinary::Copy(sBinFrom, sBinCopy);
 
                         std::wstring sToResultDir = FileSystem::Directory::GetFolderPath(sToResult);
                         std::wstring sTo = sToResultDir + FILE_SEPARATOR_STR + _T("changes.zip");

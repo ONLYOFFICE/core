@@ -867,11 +867,7 @@ void docx_conversion_context::docx_serialize_paragraph_style(std::wostream & str
 				CP_XML_STREAM() << paragraph_style.str();
 				docx_serialize_list_properties(CP_XML_STREAM());
 				
-				if (!get_text_tracked_context().dumpPPr_.empty())
-				{
-					CP_XML_STREAM() << get_text_tracked_context().dumpPPr_;
-					get_text_tracked_context().dumpPPr_.clear();
-				}
+
 				if ((run_style.tellp() > 0 && in_styles == false) || !get_text_tracked_context().dumpRPrInsDel_.empty())
 				{
 					CP_XML_NODE(L"w:rPr")
@@ -882,6 +878,11 @@ void docx_conversion_context::docx_serialize_paragraph_style(std::wostream & str
 						CP_XML_STREAM() << test_str;
 					}
 					get_text_tracked_context().dumpRPrInsDel_.clear();
+				}
+				if (!get_text_tracked_context().dumpPPr_.empty())
+				{
+					CP_XML_STREAM() << get_text_tracked_context().dumpPPr_;
+					get_text_tracked_context().dumpPPr_.clear();
 				}
 			}
 		}

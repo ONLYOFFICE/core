@@ -439,21 +439,26 @@ void DocxConverter::convert(OOX::Logic::CParagraph *oox_paragraph)
 
 		if (oox_paragraph->m_oParagraphProperty->m_oRPr.IsInit())
 		{
+			//удаление знака абзаца - объединение со следующим - в либре нету
 			//id = convert(oox_paragraph->m_oParagraphProperty->m_oRPr->m_oDel.GetPointer(), 2);
-			//if (id >= 0)	id_change_properties.push_back(std::pair<int, int> (2, id)); удаление знака абзаца - объединение со следующим ... todooo
+			//if (id >= 0)	id_change_properties.push_back(std::pair<int, int> (2, id)); 
 
-			id = convert(oox_paragraph->m_oParagraphProperty->m_oRPr->m_oIns.GetPointer(), 1); 
-			if (id >= 0)	id_change_properties.push_back(std::pair<int, int> (1, id));
+			//вставка знака абзаца - разделение текущего параграфа - в либре нету
+			//if (oox_paragraph->m_arrItems.size() < 2)//только для пустых 
+			{
+				id = convert(oox_paragraph->m_oParagraphProperty->m_oRPr->m_oIns.GetPointer(), 1); 
+				if (id >= 0)	id_change_properties.push_back(std::pair<int, int> (1, id));
+			}
 
 			id = convert(oox_paragraph->m_oParagraphProperty->m_oRPr->m_oRPrChange.GetPointer());
 			if (id >= 0)	id_change_properties.push_back(std::pair<int, int> (3, id));
 		}			
 		
-		if (oox_paragraph->m_oParagraphProperty->m_oSectPr.IsInit())
-		{
-			id = convert(oox_paragraph->m_oParagraphProperty->m_oSectPr->m_oSectPrChange.GetPointer());
-			if (id >= 0)	id_change_properties.push_back(std::pair<int, int> (3, id));
-		}
+		//if (oox_paragraph->m_oParagraphProperty->m_oSectPr.IsInit())
+		//{
+		//	id = convert(oox_paragraph->m_oParagraphProperty->m_oSectPr->m_oSectPrChange.GetPointer());
+		//	if (id >= 0)	id_change_properties.push_back(std::pair<int, int> (3, id));
+		//}
 
 		id = convert(oox_paragraph->m_oParagraphProperty->m_oPPrChange.GetPointer());
 		if (id >= 0)	id_change_properties.push_back(std::pair<int, int> (3, id));
@@ -602,6 +607,8 @@ void DocxConverter::convert(OOX::Logic::CParagraph *oox_paragraph)
 		odt_context->end_list_item();
 	}
 //---------------------------------------------------------------------------------------------------------------------
+	//std::sort(id_change_properties.begin(), id_change_properties.end());
+
 	for (int i = 0; i < id_change_properties.size(); i++)
 	{
 		odt_context->end_change(id_change_properties[i].second, id_change_properties[i].first); 
@@ -2698,19 +2705,12 @@ void DocxConverter::convert(OOX::Drawing::CInline *oox_inline)
 
 	odt_context->drawing_context()->set_drawings_rect(x, y, width, height);
 
-	if (odt_context->text_context()->list_state_.started_list)
-	{
-		odt_context->drawing_context()->set_anchor(odf_types::anchor_type::Char); 
-	}
-	else
-	{
-		odt_context->drawing_context()->set_anchor(odf_types::anchor_type::AsChar); //плохо в списке с интервалом между строками 200% 
-	}
+	odt_context->drawing_context()->set_anchor(odf_types::anchor_type::AsChar); 
 	
-	if (oox_inline->m_oDistL.IsInit())odt_context->drawing_context()->set_margin_left(oox_inline->m_oDistL->ToPoints());
-	if (oox_inline->m_oDistT.IsInit())odt_context->drawing_context()->set_margin_top(oox_inline->m_oDistT->ToPoints());
-	if (oox_inline->m_oDistR.IsInit())odt_context->drawing_context()->set_margin_right(oox_inline->m_oDistR->ToPoints());
-	if (oox_inline->m_oDistB.IsInit())odt_context->drawing_context()->set_margin_bottom(oox_inline->m_oDistB->ToPoints());
+	if (oox_inline->m_oDistL.IsInit())	odt_context->drawing_context()->set_margin_left		(oox_inline->m_oDistL->ToPoints());
+	if (oox_inline->m_oDistT.IsInit())	odt_context->drawing_context()->set_margin_top		(oox_inline->m_oDistT->ToPoints());
+	if (oox_inline->m_oDistR.IsInit())	odt_context->drawing_context()->set_margin_right	(oox_inline->m_oDistR->ToPoints());
+	if (oox_inline->m_oDistB.IsInit())	odt_context->drawing_context()->set_margin_bottom	(oox_inline->m_oDistB->ToPoints());
 
 	//вертикальное выравнивание относительно строки поставим в середину (иначе по нижнему краю почемуто)
 

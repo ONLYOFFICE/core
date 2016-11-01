@@ -206,7 +206,7 @@ int process_paragraph_attr(const paragraph_attrs & Attr, oox::docx_conversion_co
 
 					Context.output_stream() << L"<w:pStyle w:val=\"" << id << L"\" />";
 
-					if (!Context.output_stream() << Context.get_text_tracked_context().dumpPPr_.empty())
+					if (!Context.get_text_tracked_context().dumpPPr_.empty())
 					{
 						Context.output_stream() << Context.get_text_tracked_context().dumpPPr_;
 						Context.get_text_tracked_context().dumpPPr_.clear();
@@ -217,6 +217,14 @@ int process_paragraph_attr(const paragraph_attrs & Attr, oox::docx_conversion_co
 					if ((Attr.outline_level_) && (*Attr.outline_level_ > 0))
 					{
 						Context.output_stream() << L"<w:outlineLvl w:val=\"" << *Attr.outline_level_ - 1 << L"\" />";
+					}
+
+					if (!Context.get_text_tracked_context().dumpRPrInsDel_.empty())
+					{
+						Context.output_stream() << L"<w:rPr>";
+							Context.output_stream() << Context.get_text_tracked_context().dumpRPrInsDel_;
+							Context.get_text_tracked_context().dumpRPrInsDel_.clear();
+						Context.output_stream() << L"</w:rPr>";
 					}
                 Context.output_stream() << L"</w:pPr>";
 				return 2;

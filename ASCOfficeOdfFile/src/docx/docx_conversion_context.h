@@ -508,6 +508,7 @@ public:
 	};
 	std::wstring dumpPPr_;
 	std::wstring dumpRPr_;
+	std::wstring dumpRPrInsDel_;
 
 	text_tracked_context(docx_conversion_context & context);
 

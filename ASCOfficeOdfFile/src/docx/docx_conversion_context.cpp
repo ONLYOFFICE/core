@@ -872,13 +872,16 @@ void docx_conversion_context::docx_serialize_paragraph_style(std::wostream & str
 					CP_XML_STREAM() << get_text_tracked_context().dumpPPr_;
 					get_text_tracked_context().dumpPPr_.clear();
 				}
-				if (run_style.tellp() > 0 && in_styles == false)
+				if ((run_style.tellp() > 0 && in_styles == false) || !get_text_tracked_context().dumpRPrInsDel_.empty())
 				{
 					CP_XML_NODE(L"w:rPr")
 					{
+						CP_XML_STREAM() << get_text_tracked_context().dumpRPrInsDel_;
+						
 						const std::wstring & test_str = run_style.str();
 						CP_XML_STREAM() << test_str;
 					}
+					get_text_tracked_context().dumpRPrInsDel_.clear();
 				}
 			}
 		}
@@ -1285,7 +1288,8 @@ void docx_conversion_context::start_text_changes (std::wstring id)
 		output_stream() << L" w:id=\""		<< std::to_wstring(current_id_changes++) << "\"";
 		output_stream() << L">";
 		
-		if (state.type	== 2) output_stream() << state.content;
+		if (state.type	== 2) 
+			output_stream() << state.content;
 	}
 }
 
@@ -1293,11 +1297,16 @@ void docx_conversion_context::start_changes()
 {
 	if (map_current_changes_.empty()) return;
 
+	text_tracked_context_.dumpPPr_.clear();
+	text_tracked_context_.dumpRPr_.clear();
+	text_tracked_context_.dumpRPrInsDel_.clear();
+
 	for (map_changes_iterator it = map_current_changes_.begin(); it != map_current_changes_.end(); it++)
 	{
 		text_tracked_context::_state  &state = it->second;
 
 		if (state.type	== 0) continue; //unknown change ... todooo
+
 
 		std::wstring change_attr;
 		change_attr += L" w:date=\""	+ state.date	+ L"\"";
@@ -1306,13 +1315,12 @@ void docx_conversion_context::start_changes()
 
 		if (state.type	== 1)
 		{
-			output_stream() << L"<w:ins" << change_attr << L">";
+			text_tracked_context_.dumpRPrInsDel_ = L"<w:ins" + change_attr + L"/>";
 		}
 
 		if (state.type	== 2)
 		{
-			output_stream() << L"<w:del" << change_attr << L">";
-			output_stream() << state.content;
+			text_tracked_context_.dumpRPrInsDel_ = L"<w:del" + change_attr + L"/>";
 		}
 		
 		if (state.type	== 3)
@@ -1331,7 +1339,7 @@ void docx_conversion_context::start_changes()
 						props->docx_convert(*this);
 					std::wstring attr = get_styles_context().paragraph_attr().str();
 					
-					text_tracked_context_.dumpPPr_ = L"<w:pPrChange" + change_attr + (attr.empty() ? L">" : (L" " + attr + L">"));
+					text_tracked_context_.dumpPPr_ += L"<w:pPrChange" + change_attr + (attr.empty() ? L">" : (L" " + attr + L">"));
 					text_tracked_context_.dumpPPr_ += get_styles_context().paragraph_nodes().str();
 					if (t_props)
 					{
@@ -1366,17 +1374,18 @@ void docx_conversion_context::start_changes()
 
 void docx_conversion_context::end_changes()
 {
-	for (map_changes_iterator it = map_current_changes_.begin(); it != map_current_changes_.end(); it++)
-	{
-		text_tracked_context::_state  &state = it->second;
+	//for (map_changes_iterator it = map_current_changes_.begin(); it != map_current_changes_.end(); it++)
+	//{
+	//	text_tracked_context::_state  &state = it->second;
 
-		if (state.type	== 0) continue; //unknown change ... libra format change skip
-		if (state.type	== 3) continue;
+	//	if (state.type	== 0) continue; //unknown change ... libra format change skip
+	//	if (state.type	== 3) continue;
 
-		if (state.type	== 1) output_stream() << L"</w:ins>";
-		if (state.type	== 2) output_stream() << L"</w:del>";
-	}
+	//	if (state.type	== 1) output_stream() << L"</w:ins>";
+	//	if (state.type	== 2) output_stream() << L"</w:del>";
+	//}
 
+	text_tracked_context_.dumpRPrInsDel_.clear();
 	text_tracked_context_.dumpPPr_.clear();
 	text_tracked_context_.dumpRPr_.clear();
 }

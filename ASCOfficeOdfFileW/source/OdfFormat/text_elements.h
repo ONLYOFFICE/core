@@ -40,7 +40,7 @@
 #include "office_elements_create.h"
 #include "common_attlists.h"
 
-#include "Bool.h"
+#include "bool.h"
 #include "style_ref.h"
 #include "textdisplay.h"
 

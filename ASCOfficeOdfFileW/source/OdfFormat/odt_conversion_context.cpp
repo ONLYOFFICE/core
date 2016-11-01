@@ -794,9 +794,12 @@ void odt_conversion_context::end_note()
 	text_context()->current_level_.pop_back();
 }
 //--------------------------------------------------------------------------------------------------------
-void odt_conversion_context::start_change (int id, int type, std::wstring &author, std::wstring &userId, std::wstring &date, std::wstring style_name)
+bool odt_conversion_context::start_change (int id, int type, std::wstring &author, std::wstring &userId, std::wstring &date, std::wstring style_name)
 {
-	if (id < 0) return;
+	if (id < 0) return false;
+
+	if (!text_changes_state_.current_types.empty() && text_changes_state_.current_types.back() == 2) return false;
+
 	//if (!text_changes_state_.main_text_context)
 	//{
 	//	text_changes_state_.main_text_context = text_context();
@@ -877,6 +880,7 @@ void odt_conversion_context::start_change (int id, int type, std::wstring &autho
 		text_context()->start_element(child_elm);
 		text_context()->start_paragraph();//ваще то не по стандарту .. может мы уже в параграфе (ради Libra! ... гы)
 	}
+	return true;
 }
 void odt_conversion_context::end_change (int id, int type)
 {
@@ -902,14 +906,14 @@ void odt_conversion_context::end_change (int id, int type)
 			add_to_root();
 		text_context()->end_element();	
 	}
-	text_changes_state_.current_types.pop_back();
+	text_changes_state_.current_types.pop_back();//todooo map?? удаление без проверки чего удаляешь
 }
-bool odt_conversion_context::is_delete_changes()
-{
-	if (text_changes_state_.current_types.empty()) return false;
-
-	return (text_changes_state_.current_types.back() == 2);
-}
+//bool odt_conversion_context::is_delete_changes()
+//{
+//	if (text_changes_state_.current_types.empty()) return false;
+//
+//	return (text_changes_state_.current_types.back() == 2);
+//}
 //--------------------------------------------------------------------------------------------------------
 void odt_conversion_context::start_image(const std::wstring & image_file_name)
 {

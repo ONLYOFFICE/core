@@ -123,9 +123,9 @@ public:
 		void end_note_content	();
 	void end_note				();
 
-	void start_change			(int id, int type, std::wstring &author, std::wstring &userId, std::wstring &date, std::wstring style_name = L"");
+	bool start_change			(int id, int type, std::wstring &author, std::wstring &userId, std::wstring &date, std::wstring style_name = L"");
 	void end_change				(int id, int type);
-	bool is_delete_changes		();
+	//bool is_delete_changes		();
 
 	void start_table				(bool styled = false);
 		void start_table_columns	();

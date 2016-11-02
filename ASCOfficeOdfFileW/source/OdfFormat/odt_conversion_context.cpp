@@ -90,7 +90,6 @@ odt_conversion_context::odt_conversion_context(package::odf_document * outputDoc
 	is_paragraph_in_current_section_		= false;
 
 	text_changes_state_.main_text_context	= NULL; //header, footer, drawing, main, ..
-	text_changes_state_.level				= 0;
 	
 	drop_cap_state_.clear();
 }
@@ -288,9 +287,6 @@ void odt_conversion_context::start_paragraph(bool styled)
 }
 void odt_conversion_context::add_paragraph_break(int type)
 {
-	//office_element_ptr elm;
-	//create_element(L"text", L"soft-page-break", elm, this);	
-	
 	if (current_root_elements_.size() > 0)			
 	{ 	
 		//text_p* para	= NULL;
@@ -798,14 +794,19 @@ void odt_conversion_context::end_note()
 	text_context()->current_level_.pop_back();
 }
 //--------------------------------------------------------------------------------------------------------
-void odt_conversion_context::start_change (int id, int type, std::wstring &author, std::wstring &userId, std::wstring &date)
+bool odt_conversion_context::start_change (int id, int type, std::wstring &author, std::wstring &userId, std::wstring &date, std::wstring style_name)
 {
-	if (!text_changes_state_.main_text_context)
-	{
-		text_changes_state_.main_text_context = text_context();
-	}
-	text_changes_state_.level++;
-	if (!text_changes_state_.main_text_context) return;
+	if (id < 0) return false;
+
+	if (!text_changes_state_.current_types.empty() && text_changes_state_.current_types.back() == 2) return false;
+
+	//if (!text_changes_state_.main_text_context)
+	//{
+	//	text_changes_state_.main_text_context = text_context();
+	//}
+	//if (!text_changes_state_.main_text_context) return;
+	
+	text_changes_state_.current_types.push_back(type);
 
 	std::wstring strId = L"ct" + std::to_wstring(id);
 //---------------------------------------------------------------------------------
@@ -818,8 +819,12 @@ void odt_conversion_context::start_change (int id, int type, std::wstring &autho
 	text_add_change* change = dynamic_cast<text_add_change*>(start_elm.get());
 	if (change) change->text_change_id_ = strId;
 
-	text_changes_state_.main_text_context->start_element(start_elm);
-	text_changes_state_.main_text_context->end_element();	
+	text_context()->start_element(start_elm);
+		add_to_root();//добавление/удаление параграфов и т д
+	text_context()->end_element();	
+
+	//text_changes_state_.main_text_context->start_element(start_elm);
+	//text_changes_state_.main_text_context->end_element();	
 //---------------------------------------------------------------------------------
 	office_element_ptr region_elm;
 	create_element(L"text", L"changed-region", region_elm, this);
@@ -843,18 +848,16 @@ void odt_conversion_context::start_change (int id, int type, std::wstring &autho
 		info_elm->add_child_element(creator_elm);
 		
 		dc_creator* creator = dynamic_cast<dc_creator*>(creator_elm.get());
-		if (!creator)return;
-
-		creator->content_ = author;
+		if (creator)
+			creator->content_ = author;
 
 		office_element_ptr date_elm;
 		create_element(L"dc", L"date", date_elm, this);
 		info_elm->add_child_element(date_elm);
 		
 		dc_date* date_ = dynamic_cast<dc_date*>(date_elm.get());
-		if (!date_) return;
-
-		date_->content_ = date;
+		if (date_)
+			date_->content_ = date;
 	}
 
 	if (is_header_ || is_footer_)	page_layout_context()->root_header_footer_->add_child_element(region_elm);
@@ -862,20 +865,32 @@ void odt_conversion_context::start_change (int id, int type, std::wstring &autho
 
 	region_elm->add_child_element(child_elm);
 
+	if (type == 3 && !style_name.empty())
+	{
+		//не по спецификации !!!
+		text_format_change * format_change = dynamic_cast<text_format_change*> (child_elm.get());
+		if (format_change)
+			format_change->text_style_name_ = style_name;
+
+	}
+
 	if (type == 2)//delete
 	{
 		start_text_context();
 		text_context()->start_element(child_elm);
+		text_context()->start_paragraph();//ваще то не по стандарту .. может мы уже в параграфе (ради Libra! ... гы)
 	}
+	return true;
 }
 void odt_conversion_context::end_change (int id, int type)
 {
-	if (!text_changes_state_.main_text_context) return;
+	//if (!text_changes_state_.main_text_context) return;
 	
 	std::wstring strId = L"ct" + std::to_wstring(id);
 
 	if (type == 2)//delete
 	{
+		text_context()->end_paragraph();
 		text_context()->end_element();
 		end_text_context();
 	}
@@ -887,14 +902,18 @@ void odt_conversion_context::end_change (int id, int type)
 		text_add_change* change = dynamic_cast<text_add_change*>(end_elm.get());
 		if (change) change->text_change_id_ = strId;
 
-		text_changes_state_.main_text_context->start_element(end_elm);
-		text_changes_state_.main_text_context->end_element();	
+		text_context()->start_element(end_elm);
+			add_to_root();
+		text_context()->end_element();	
 	}
-	text_changes_state_.level--;
-
-	if (text_changes_state_.level < 1)
-		text_changes_state_.main_text_context = NULL;	
+	text_changes_state_.current_types.pop_back();//todooo map?? удаление без проверки чего удаляешь
 }
+//bool odt_conversion_context::is_delete_changes()
+//{
+//	if (text_changes_state_.current_types.empty()) return false;
+//
+//	return (text_changes_state_.current_types.back() == 2);
+//}
 //--------------------------------------------------------------------------------------------------------
 void odt_conversion_context::start_image(const std::wstring & image_file_name)
 {

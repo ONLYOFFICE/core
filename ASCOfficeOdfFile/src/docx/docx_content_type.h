@@ -51,7 +51,7 @@ public:
     default_content_type(const std::wstring & Extension, const std::wstring & contentType) : extension_(Extension),
         content_type_(contentType)
     {}
-    ::std::wostream & xml_to_stream(::std::wostream & _Wostream) const;
+    std::wostream & xml_to_stream(std::wostream & _Wostream) const;
 
     const std::wstring & extension() const { return extension_; }
     const std::wstring & content_type() const { return content_type_; }
@@ -74,7 +74,7 @@ public:
     override_content_type(const std::wstring & PartName, const std::wstring & contentType) : part_name_(PartName),
         content_type_(contentType)
     {}
-    ::std::wostream & xml_to_stream(::std::wostream & _Wostream) const;
+    std::wostream & xml_to_stream(std::wostream & _Wostream) const;
 
     const std::wstring & part_name() const { return part_name_; }
     const std::wstring & content_type() const { return content_type_; }
@@ -94,7 +94,7 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
 
-    ::std::wostream & xml_to_stream(::std::wostream & _Wostream) const;
+    std::wostream & xml_to_stream(std::wostream & _Wostream) const;
 
     void add_default(default_content_type const & _Ct)
     {

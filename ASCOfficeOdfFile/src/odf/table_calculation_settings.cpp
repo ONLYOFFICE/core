@@ -58,7 +58,7 @@ void table_calculation_settings::add_attributes( const xml::attributes_wc_ptr & 
     CP_APPLY_ATTR(L"table:null-year", table_null_year_);
 }
 
-void table_calculation_settings::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void table_calculation_settings::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if CP_CHECK_NAME(L"table", L"null-date")
     {
@@ -85,7 +85,7 @@ void table_null_date::add_attributes( const xml::attributes_wc_ptr & Attributes 
     CP_APPLY_ATTR(L"table:date-value-type", table_date_value_type_);
 }
 
-void table_null_date::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void table_null_date::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }
@@ -106,7 +106,7 @@ void table_iteration::add_attributes( const xml::attributes_wc_ptr & Attributes 
     CP_APPLY_ATTR(L"table:maximum-difference", table_maximum_difference_);
 }
 
-void table_iteration::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void table_iteration::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }

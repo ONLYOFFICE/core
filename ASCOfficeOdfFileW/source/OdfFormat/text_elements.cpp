@@ -484,6 +484,8 @@ void text_format_change::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         { 
+			CP_XML_ATTR_OPT(L"text:style-name", text_style_name_);
+			
 			if (office_change_info_)
 				office_change_info_->serialize(CP_XML_STREAM());
 

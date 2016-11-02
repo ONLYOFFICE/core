@@ -45,7 +45,7 @@ namespace odf_reader {
 class office_document_base  : public office_element
 {
 public:
-    virtual std::wostream & text_to_stream(::std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
     CPDOCCORE_DEFINE_VISITABLE();
 
 
@@ -58,7 +58,7 @@ public:
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
     virtual void add_text(const std::wstring & Text);
 
 public:
@@ -192,7 +192,7 @@ class manifest_entry  : public office_element
 {
 public:
 	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-	virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_text(const std::wstring & Text){}
 
 	static const wchar_t * ns;
@@ -218,7 +218,7 @@ class manifest_encryption_data  : public office_element
 {
 public:
 	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-	virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name){}
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_text(const std::wstring & Text){}
 
 	static const wchar_t * ns;

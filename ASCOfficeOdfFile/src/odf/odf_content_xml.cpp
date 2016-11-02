@@ -62,7 +62,7 @@ void content_xml_t::pptx_convert(oox::pptx_conversion_context & Context)
 void content_xml_t::add_attributes( const xml::attributes_wc_ptr & Attributes ) 
 {}
 
-void content_xml_t::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void content_xml_t::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if CP_CHECK_NAME(L"office", L"document-content")
     {

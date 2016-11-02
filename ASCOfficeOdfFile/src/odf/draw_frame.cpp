@@ -85,7 +85,7 @@ void draw_chart_attlist::add_attributes( const xml::attributes_wc_ptr & Attribut
 const wchar_t * draw_image::ns = L"draw";
 const wchar_t * draw_image::name = L"image";
 
-::std::wostream & draw_image::text_to_stream(::std::wostream & _Wostream) const
+std::wostream & draw_image::text_to_stream(std::wostream & _Wostream) const
 {
     return _Wostream;
 }
@@ -96,7 +96,7 @@ void draw_image::add_attributes( const xml::attributes_wc_ptr & Attributes )
     common_xlink_attlist_.add_attributes(Attributes);
 }
 
-void draw_image::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void draw_image::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if CP_CHECK_NAME(L"office", L"binary-data")
     {
@@ -114,7 +114,7 @@ void draw_image::add_child_element( xml::sax * Reader, const ::std::wstring & Ns
 const wchar_t * draw_chart::ns = L"draw";
 const wchar_t * draw_chart::name = L"chart";
 
-::std::wostream & draw_chart::text_to_stream(::std::wostream & _Wostream) const
+std::wostream & draw_chart::text_to_stream(std::wostream & _Wostream) const
 {
     return _Wostream;
 }
@@ -125,7 +125,7 @@ void draw_chart::add_attributes( const xml::attributes_wc_ptr & Attributes )
     common_xlink_attlist_.add_attributes(Attributes);
 }
 
-void draw_chart::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void draw_chart::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     //if CP_CHECK_NAME(L"office", L"title")
     //{
@@ -150,7 +150,7 @@ void draw_g::add_attributes( const xml::attributes_wc_ptr & Attributes )
     
 	draw_g_attlist_.add_attributes(Attributes);
 }
-void draw_g::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void draw_g::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }
@@ -159,7 +159,7 @@ void draw_g::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, co
 const wchar_t * draw_frame::ns = L"draw";
 const wchar_t * draw_frame::name = L"frame";
 
-::std::wostream & draw_frame::text_to_stream(::std::wostream & _Wostream) const
+std::wostream & draw_frame::text_to_stream(std::wostream & _Wostream) const
 {
     CP_SERIALIZE_TEXT(content_);
     return _Wostream;
@@ -180,7 +180,7 @@ void draw_frame::add_attributes( const xml::attributes_wc_ptr & Attributes )
 	draw_frame_attlist_.add_attributes(Attributes);
 }
 
-void draw_frame::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void draw_frame::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if (CP_CHECK_NAME(L"draw", L"text-box") ||
         CP_CHECK_NAME(L"draw", L"image") ||//копия объекта в виде картинки ну.. или просто картинка
@@ -235,7 +235,7 @@ void draw_text_box_attlist::add_attributes( const xml::attributes_wc_ptr & Attri
 const wchar_t * draw_text_box::ns = L"draw";
 const wchar_t * draw_text_box::name = L"text-box";
 
-::std::wostream & draw_text_box::text_to_stream(::std::wostream & _Wostream) const
+std::wostream & draw_text_box::text_to_stream(std::wostream & _Wostream) const
 {
     CP_SERIALIZE_TEXT(content_);
     return _Wostream;
@@ -246,7 +246,7 @@ void draw_text_box::add_attributes( const xml::attributes_wc_ptr & Attributes )
     draw_text_box_attlist_.add_attributes(Attributes);
 }
 
-void draw_text_box::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void draw_text_box::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_CREATE_ELEMENT(content_); 
 }
@@ -266,7 +266,7 @@ void draw_object::add_attributes( const xml::attributes_wc_ptr & Attributes )
     common_xlink_attlist_.add_attributes(Attributes);
 }
 
-void draw_object::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void draw_object::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM(); // TODO
 }
@@ -283,7 +283,7 @@ void draw_object_ole::add_attributes( const xml::attributes_wc_ptr & Attributes 
     common_xlink_attlist_.add_attributes(Attributes);
 }
 
-void draw_object_ole::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void draw_object_ole::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM(); 
 }

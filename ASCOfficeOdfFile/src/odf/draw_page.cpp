@@ -74,7 +74,7 @@ void draw_page_attr::add_attributes( const xml::attributes_wc_ptr & Attributes )
 const wchar_t * draw_page::ns = L"draw";
 const wchar_t * draw_page::name = L"page";
 
-void draw_page::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void draw_page::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	if	CP_CHECK_NAME(L"anim", L"par") 
 		CP_CREATE_ELEMENT(animation_);

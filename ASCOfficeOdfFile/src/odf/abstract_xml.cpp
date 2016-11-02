@@ -44,7 +44,7 @@ namespace odf_reader {
 const wchar_t * abstract_xml::ns = L"";
 const wchar_t * abstract_xml::name = L"abstract-xml";
 
-::std::wostream & abstract_xml::text_to_stream(::std::wostream & _Wostream) const
+std::wostream & abstract_xml::text_to_stream(std::wostream & _Wostream) const
 {
     BOOST_FOREACH(const office_element_ptr & element, xml_content_)
     {
@@ -53,7 +53,7 @@ const wchar_t * abstract_xml::name = L"abstract-xml";
     return _Wostream;
 }
 
-::std::wostream & abstract_xml::xml_to_stream(::std::wostream & _Wostream) const
+std::wostream & abstract_xml::xml_to_stream(std::wostream & _Wostream) const
 {
     BOOST_FOREACH(const office_element_ptr & element, xml_content_)
     {
@@ -66,7 +66,7 @@ void abstract_xml::add_attributes( const xml::attributes_wc_ptr & )
 {
 }
 
-void abstract_xml::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void abstract_xml::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_CREATE_ELEMENT(xml_content_);
 }

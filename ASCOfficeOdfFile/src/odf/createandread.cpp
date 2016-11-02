@@ -42,8 +42,8 @@ namespace odf_reader {
 class document_context;
 
 bool create_element_and_read(xml::sax * Reader,
-                             const ::std::wstring & Ns,
-                             const ::std::wstring & Name,
+                             const std::wstring & Ns,
+                             const std::wstring & Name,
                              office_element_ptr & _Element,
                              document_context * Context,
                              bool isRoot)
@@ -71,8 +71,8 @@ bool create_element_and_read(xml::sax * Reader,
 }
 
 bool create_element_and_read(xml::sax * Reader,
-                             const ::std::wstring & Ns,
-                             const ::std::wstring & Name,
+                             const std::wstring & Ns,
+                             const std::wstring & Name,
                              office_element_ptr_array & _Elements,
                              document_context * Context,
                              bool isRoot)

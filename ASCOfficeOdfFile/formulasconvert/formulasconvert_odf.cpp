@@ -435,7 +435,7 @@ namespace formulasconvert {
 
 			BOOST_FOREACH(std::wstring &c,range)
 			{
-				const ::std::string::size_type colon = c.find('.');
+				const std::string::size_type colon = c.find('.');
 				cells.push_back(c.substr(colon+1));
 				if (sheet.size()<1)
 					sheet=c.substr(0, colon);

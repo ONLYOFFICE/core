@@ -72,72 +72,72 @@ namespace package
 class xlsx_conversion_context : boost::noncopyable
 {
 public:
-    xlsx_conversion_context(cpdoccore::odf_reader::odf_document * odfDocument);
+    xlsx_conversion_context	(cpdoccore::odf_reader::odf_document * odfDocument);
     ~xlsx_conversion_context();
 
 	void set_output_document(package::xlsx_document * document);
     void set_font_directory	(std::wstring pathFonts);
 
-    void start_document();
-    void end_document();
+    void start_document	();
+    void end_document	();
 
     void start_chart(std::wstring name);
-    void end_chart();
+    void end_chart	();
 
-	void start_body();
-    void end_body();
+	void start_body	();
+    void end_body	();
 
-    void start_office_spreadsheet(const odf_reader::office_element * elm);
-    void end_office_spreadsheet();
+    void start_office_spreadsheet	(const odf_reader::office_element * elm);
+    void end_office_spreadsheet		();
 
     const odf_reader::office_element * get_spreadsheet();
 
     void start_paragraph(const std::wstring & styleName);
-    void end_paragraph();
+    void end_paragraph	();
 
-    void start_span(const std::wstring & styleName);
-    void end_span();
+    void start_span		(const std::wstring & styleName);
+    void end_span		();
 
-    bool start_table(std::wstring tableName,std::wstring tableStyleName);
-    void end_table();
+    bool start_table	(std::wstring tableName, std::wstring tableStyleName);
+    void end_table		();
 
-    void	start_table_column(unsigned int repeated, const std::wstring & defaultCellStyleName, int & cMin, int & cMax);
-    void	table_column_last_width(double w);
-    double	table_column_last_width();
-    void	end_table_column();
+    void	start_table_column		(unsigned int repeated, const std::wstring & defaultCellStyleName, int & cMin, int & cMax);
+    void	table_column_last_width	(double w);
+    double	table_column_last_width	();
+    void	end_table_column		();
 
-	void set_table_row_group(int count, bool collapsed, int level);
-    void start_table_row(const std::wstring & styleName, const std::wstring & defaultCellStyleName);
-    void non_empty_row();
-    void end_table_row();
-    bool is_empty_row();
-    void set_current_row_height(size_t height_pt);    
+	void set_table_row_group	(int count, bool collapsed, int level);
+    void start_table_row		(const std::wstring & styleName, const std::wstring & defaultCellStyleName);
+    void non_empty_row			();
+    void end_table_row			();
+    bool is_empty_row			();
+    void set_current_row_height	(size_t height_pt);    
 
-	bool in_table_cell();
+	bool in_table_cell			();
 
-    void start_table_cell(const std::wstring & formula, size_t columnsSpanned, size_t rowsSpanned);
-    void end_table_cell();
+    void start_table_cell			(const std::wstring & formula, size_t columnsSpanned, size_t rowsSpanned);
+    void end_table_cell				();
     
-    void set_current_cell_style_id(unsigned int xfId);
-    int get_current_cell_style_id();
+    void set_current_cell_style_id	(unsigned int xfId);
+    int	 get_current_cell_style_id	();
 
-    void start_table_covered_cell();
-    void end_table_covered_cell();
+    void start_table_covered_cell	();
+    void end_table_covered_cell		();
 
-    int current_table_column();
-    int current_table_row();
-
-    void start_hyperlink(const std::wstring & styleName);
-    void end_hyperlink(std::wstring const & href);
+    int current_table_column		();
+    int current_table_row			();
 
     std::wstring current_cell_address();
+
+    void start_hyperlink	(const std::wstring & styleName);
+    void end_hyperlink		(std::wstring const & href);
 
 //------------------------------------------------------------------------------------
 	void start_conditional_format			(std::wstring ref);
 	void end_conditional_format				(){}
 
 	void start_conditional_format_rule		(int type);
-	void end_conditional_format_rule		(){}
+	void end_conditional_format_rule		()	{}
 
 	void set_conditional_format_formula		(std::wstring f);
 	void set_conditional_format_dxf			(int dxfId);

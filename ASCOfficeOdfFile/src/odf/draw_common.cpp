@@ -511,7 +511,7 @@ const wchar_t * draw_a::ns = L"draw";
 const wchar_t * draw_a::name = L"a";
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// draw-a-attlist
-void draw_a::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void draw_a::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }

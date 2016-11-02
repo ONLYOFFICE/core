@@ -49,7 +49,7 @@ class sax
 {
 public:
 
-    struct error : virtual public ::std::exception
+    struct error : virtual public std::exception
     {
     public:
         enum Code {

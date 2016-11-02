@@ -94,7 +94,7 @@ void office_annotation_attr::add_attributes( const xml::attributes_wc_ptr & Attr
 const wchar_t * office_annotation::ns = L"office";
 const wchar_t * office_annotation::name = L"annotation";
 
-void office_annotation::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void office_annotation::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	if (Ns==L"dc" && Name == L"date")
 	{
@@ -130,7 +130,7 @@ void office_annotation::docx_convert(oox::docx_conversion_context & Context)
 	////////////////////////////////////////
 	Context.start_comment();
 
- 	oox::docx_conversion_context::StreamsManPtr prev = Context.get_stream_man();
+ 	oox::StreamsManPtr prev = Context.get_stream_man();
 	
 	std::wstringstream temp_stream(Context.get_drawing_context().get_text_stream_frame());
 	Context.set_stream_man( boost::shared_ptr<oox::streams_man>( new oox::streams_man(temp_stream) ));
@@ -225,7 +225,7 @@ void office_annotation::xlsx_convert(oox::xlsx_conversion_context & Context)
 const wchar_t * officeooo_annotation::ns = L"officeooo";
 const wchar_t * officeooo_annotation::name = L"annotation";
 
-void officeooo_annotation::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void officeooo_annotation::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	if (Ns==L"dc" && Name == L"date")
 	{

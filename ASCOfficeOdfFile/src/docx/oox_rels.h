@@ -72,7 +72,7 @@ public:
         const std::wstring & TargetMode = L"") : id_(Id), type_(Type), target_(Target), target_mode_(TargetMode) 
     {}
 
-    virtual ::std::wostream & xml_to_stream(::std::wostream & _Wostream) const;
+    virtual std::wostream & xml_to_stream(std::wostream & _Wostream) const;
 
     const std::wstring & id() const { return id_; }
     const std::wstring & type() const { return type_; }
@@ -98,7 +98,7 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
 
 public:
-    virtual ::std::wostream & xml_to_stream(::std::wostream & _Wostream) const;
+    virtual std::wostream & xml_to_stream(std::wostream & _Wostream) const;
     std::vector<relationship> & relationships() { return relationship_; }
     void add(relationship const & r);
     bool empty() { return relationship_.empty(); } 

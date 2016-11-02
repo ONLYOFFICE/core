@@ -344,28 +344,26 @@ void text_format_properties_content::pptx_convert(oox::pptx_conversion_context &
 				}
 			}			
 	// underline
-			line_width under = style_text_underline_width_.get_value_or(line_width::Auto);
-			bool underlineBold = under.get_type() == line_width::Bold || 
-				under.get_type() == line_width::Thick;
+			line_width under	=	style_text_underline_width_.get_value_or(line_width::Auto);
+			bool underlineBold	=	under.get_type() == line_width::Bold	|| 
+									under.get_type() == line_width::Thick;
+			
 			std::wstring underline = L"";
 
-            if ( style_text_underline_type_ && style_text_underline_type_->get_type() == line_type::Non ||
-				style_text_underline_style_ && style_text_underline_style_->get_type() == line_style::None        
-				)
+            if ((style_text_underline_type_ && style_text_underline_type_->get_type() == line_type::None) ||
+				(style_text_underline_style_ && style_text_underline_style_->get_type() == line_style::None))
 			{
 				underline = L"none";
 			}
 			else if (style_text_underline_type_ && 
 				(!style_text_underline_style_ || style_text_underline_style_ && style_text_underline_style_->get_type() == line_style::Solid) )
 			{
-				if (underlineBold)		underline = L"thick"; 
+				if (underlineBold) underline = L"thick"; 
 
 				switch (style_text_underline_type_->get_type())
 				{
-				case line_type::Single:	underline = L"sng";
-					break;
-				case line_type::Double:	underline = L"double";
-					break;
+				case line_type::Single:	underline = L"sng";			break;
+				case line_type::Double:	underline = L"double";		break;
 				}
 			}
 			else if (style_text_underline_style_)
@@ -511,7 +509,7 @@ void text_format_properties_content::docx_convert(oox::docx_conversion_context &
    
 	std::wostream & _rPr = Context.get_styles_context().text_style();
     
-	if (Context.rtl())
+	if (Context.get_rtl())
     {
         _rPr << L"<w:rtl/>";/* w:val=\"true\" */
     }
@@ -520,8 +518,6 @@ void text_format_properties_content::docx_convert(oox::docx_conversion_context &
     {
         _rPr << L"<w:rStyle w:val=\"" << *r_style_ << L"\" />";
     }
-
-    // 17.3.2.1
     {
         const int W = process_font_weight(fo_font_weight_);
         if (W)
@@ -543,14 +539,10 @@ void text_format_properties_content::docx_convert(oox::docx_conversion_context &
                 _rPr << L"<w:bCs w:val=\"false\" />";
         }
     }
-
-    // 17.3.2.5
     if (fo_text_transform_)
     {
         _rPr << (fo_text_transform_->get_type() ==  text_transform::Uppercase ? L"<w:caps w:val=\"true\" />" : L"<w:caps w:val=\"false\" />");
     }
-
-    // 17.3.2.16
     {
         const int fontStyle = process_font_style(fo_font_style_);
         if (fontStyle)
@@ -572,15 +564,10 @@ void text_format_properties_content::docx_convert(oox::docx_conversion_context &
                 _rPr << L"<w:iCs w:val=\"false\" />";
         }
     }
-    
-    // 17.3.2.33
     if (fo_font_variant_)
     {
         _rPr << (fo_font_variant_->get_type() == font_variant::SmallCaps ? L"<w:smallCaps w:val=\"true\" />" : L"<w:smallCaps w:val=\"true\" />" );
     }
-
-    // 17.3.2.13
-    // 17.3.2.18
     if (style_font_relief_)
     {
         if (style_font_relief_->get_type() == font_relief::Embossed)
@@ -593,27 +580,20 @@ void text_format_properties_content::docx_convert(oox::docx_conversion_context &
             _rPr << L"<w:imprint w:val=\"false\" />";
         }
     }
-
-    // 17.3.2.23
     if (style_text_outline_)
     {
        _rPr << ((*style_text_outline_ == true) ? L"<w:outline w:val=\"true\" />" : L"<w:outline w:val=\"false\" />" );
     }
-
-    // 17.3.2.31
     if (fo_text_shadow_)
     {
         _rPr << ((fo_text_shadow_->get_type() == shadow_type::Enable) ? L"<w:shadow w:val=\"true\" />" : L"<w:shadow w:val=\"false\" />" );        
     }
 
-    // 17.3.2.41
     if (text_display_)
     {
         if (text_display_->get_type() == text_display::None)
             _rPr << L"<w:vanish />";        
     }    
-
-    // 17.3.2.40
     // underline
     {
         line_width under = style_text_underline_width_.get_value_or(line_width::Auto);
@@ -621,9 +601,8 @@ void text_format_properties_content::docx_convert(oox::docx_conversion_context &
             under.get_type() == line_width::Thick;
         std::wstring underline = L"";
 
-        if ( style_text_underline_type_ && style_text_underline_type_->get_type() == line_type::Non ||
-            style_text_underline_style_ && style_text_underline_style_->get_type() == line_style::None        
-            )
+        if (( style_text_underline_type_ && style_text_underline_type_->get_type() == line_type::None) ||
+            (style_text_underline_style_ && style_text_underline_style_->get_type() == line_style::None))      
         {
             // подчеркивание выключено 
             underline = L"none";
@@ -709,13 +688,9 @@ void text_format_properties_content::docx_convert(oox::docx_conversion_context &
             _rPr << L"/>";
         }
     }
-    
-    // 17.3.2.9
-    // 17.3.2.37
     {
-        if (style_text_line_through_type_ && style_text_line_through_type_->get_type() == line_type::Non ||
-            style_text_line_through_style_ && style_text_line_through_style_->get_type() == line_style::None
-            )
+        if ((style_text_line_through_type_ && style_text_line_through_type_->get_type() == line_type::None) ||
+            (style_text_line_through_style_ && style_text_line_through_style_->get_type() == line_style::None))
         {
             _rPr << L"<w:dstrike w:val=\"false\" />";
             _rPr << L"<w:strike w:val=\"false\" />";
@@ -1116,9 +1091,8 @@ void text_format_properties_content::oox_convert (std::wostream & _rPr, bool gra
 				under.get_type() == line_width::Thick;
 			std::wstring underline = L"";
 
-			if ( style_text_underline_type_ && style_text_underline_type_->get_type() == line_type::Non ||
-				style_text_underline_style_ && style_text_underline_style_->get_type() == line_style::None        
-				)
+			if ((style_text_underline_type_ && style_text_underline_type_->get_type() == line_type::None) ||
+				(style_text_underline_style_ && style_text_underline_style_->get_type() == line_style::None))
 			{
 				// подчеркивание выключено 
 				underline = L"none";
@@ -1204,9 +1178,8 @@ void text_format_properties_content::oox_convert (std::wostream & _rPr, bool gra
 				_rPr << L"/>";
 			}
 		}
-		if (style_text_line_through_type_ && style_text_line_through_type_->get_type() == line_type::Non ||
-			style_text_line_through_style_ && style_text_line_through_style_->get_type() == line_style::None
-			)
+		if ((style_text_line_through_type_	&& style_text_line_through_type_->get_type()	== line_type::None) ||
+			(style_text_line_through_style_	&& style_text_line_through_style_->get_type()	== line_style::None))
 		{
 			_rPr << L"<w:dstrike w:val=\"false\" />";
 			_rPr << L"<w:strike w:val=\"false\" />";
@@ -1563,7 +1536,7 @@ void style_text_properties::add_attributes( const xml::attributes_wc_ptr & Attri
 	text_format_properties_content_.add_attributes(Attributes);
 }
 
-void style_text_properties::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_text_properties::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }

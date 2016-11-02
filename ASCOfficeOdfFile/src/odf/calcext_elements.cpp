@@ -86,7 +86,7 @@ const wchar_t * calcext_conditional_formats::name = L"conditional-formats";
 void calcext_conditional_formats::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
 }
-void calcext_conditional_formats::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void calcext_conditional_formats::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }
@@ -107,7 +107,7 @@ void calcext_conditional_format::add_attributes( const xml::attributes_wc_ptr & 
 {
 	CP_APPLY_ATTR(L"calcext:target-range-address",	calcext_target_range_address_);
 }
-void calcext_conditional_format::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void calcext_conditional_format::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }
@@ -135,7 +135,7 @@ void calcext_data_bar::add_attributes( const xml::attributes_wc_ptr & Attributes
 	calcext_data_bar_attr_.add_attributes(Attributes);
 
 }
-void calcext_data_bar::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void calcext_data_bar::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }
@@ -164,7 +164,7 @@ const wchar_t * calcext_color_scale::name = L"color-scale";
 void calcext_color_scale::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
 }
-void calcext_color_scale::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void calcext_color_scale::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }
@@ -187,7 +187,7 @@ void calcext_icon_set::add_attributes( const xml::attributes_wc_ptr & Attributes
 	CP_APPLY_ATTR(L"calcext:show-value", calcext_show_value_);
 	calcext_icon_set_attr_.add_attributes(Attributes);
 }
-void calcext_icon_set::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void calcext_icon_set::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }
@@ -214,7 +214,7 @@ void calcext_formatting_entry::add_attributes( const xml::attributes_wc_ptr & At
 	CP_APPLY_ATTR(L"calcext:value",				calcext_value_);
 	CP_APPLY_ATTR(L"calcext:type",				calcext_type_);
 }
-void calcext_formatting_entry::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void calcext_formatting_entry::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_NOT_APPLICABLE_ELM();
 }
@@ -232,7 +232,7 @@ const wchar_t * calcext_color_scale_entry::name = L"color_scale_entry";
 void calcext_color_scale_entry::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
 }
-void calcext_color_scale_entry::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void calcext_color_scale_entry::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_NOT_APPLICABLE_ELM();
 }
@@ -255,7 +255,7 @@ void calcext_condition::add_attributes( const xml::attributes_wc_ptr & Attribute
 {
 	calcext_condition_attr_.add_attributes(Attributes);
 }
-void calcext_condition::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void calcext_condition::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_NOT_APPLICABLE_ELM();
 }
@@ -293,7 +293,7 @@ void calcext_date_is::add_attributes( const xml::attributes_wc_ptr & Attributes 
 {
 	calcext_date_is_attr_.add_attributes(Attributes);
 }
-void calcext_date_is::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void calcext_date_is::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_NOT_APPLICABLE_ELM();
 }

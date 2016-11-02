@@ -99,6 +99,9 @@ public:
 private:
     std::wostream & stream_;
 };
+typedef boost::shared_ptr<streams_man> StreamsManPtr;
+//------------------------------------------------------------------------------------------------------
+
 class styles_map
 {
 public:
@@ -118,10 +121,7 @@ private:
     //boost::unordered_map<std::wstring, std::wstring> map_;
 
 	std::multimap<std::wstring, std::wstring> map_;
-
 };
-
-
 
 class drawing_context : boost::noncopyable
 {
@@ -361,6 +361,7 @@ public:
 
     void set_header(const _CP_OPT(odf_types::length) & Val) { header_ = Val; }
     void set_footer(const _CP_OPT(odf_types::length) & Val) { footer_ = Val; }
+
     const _CP_OPT(odf_types::length) & header() const { return header_; }
     const _CP_OPT(odf_types::length) & footer() const { return footer_; }
 
@@ -404,7 +405,7 @@ public:
     notes_context() : note_citation_(0){}
 
     std::wstring next_id();
-    std::wstring add(const std::wstring & Content, const std::wstring & Id);
+    std::wstring add	(const std::wstring & Content, const std::wstring & Id);
 
     void set_current_note(odf_types::noteclass::type type, const odf_reader::text::note_citation * noteCitation)
     {
@@ -482,11 +483,68 @@ private:
 	rels internal_rels_;//это для гиперлинков или медиа в комментариях
 };
 
+
+
+class text_tracked_context
+{
+public:
+	struct _state
+	{
+		std::wstring	id;
+		std::wstring	author;
+		std::wstring	date;
+		int				type;
+		std::wstring	content;	//delete elements
+		std::wstring	style_name;
+		
+		void clear()
+		{
+			type = 0;
+			id.clear();
+			author.clear();
+			date.clear();
+			content.clear();
+		}
+	};
+	std::wstring dumpPPr_;
+	std::wstring dumpRPr_;
+	std::wstring dumpRPrInsDel_;
+
+	text_tracked_context(docx_conversion_context & context);
+
+	void start_changes_content		();
+	void end_changes_content		();
+
+	void start_change				(std::wstring id);
+	void end_change					();
+
+	void set_user_info				(std::wstring &author, std::wstring &date);
+	void set_type					(int type);
+	void set_style_name				(std::wstring style_name);
+
+	_state & get_tracked_change		(std::wstring id);
+
+private:
+
+	docx_conversion_context		&	docx_context_;
+	
+	bool							bParaStateDocx_;
+	bool							bRunStateDocx_;
+
+	_state							current_state_;
+
+	StreamsManPtr					docx_stream_;
+	std::wstringstream				changes_stream_;
+	
+	std::map<std::wstring, _state>	mapChanges_;
+};
+//---------------------------------------------------------------------------------------------------------
 class docx_conversion_context : boost::noncopyable
 {
 public:
-    docx_conversion_context(odf_reader::odf_document * OdfDocument);
-
+	enum NoteType { noNote, footNote, footNoteRefSet, endNote, endNoteRefSet };
+	
+	docx_conversion_context(odf_reader::odf_document * OdfDocument);
 	~docx_conversion_context();
 
 	void set_output_document	(package::docx_document * document);
@@ -500,23 +558,27 @@ public:
             return temp_stream_;
     }
 
-    void add_element_to_run	(std::wstring parenStyleId = _T(""));
-    void finish_run			();
-	void add_new_run		(std::wstring parentStyleId = _T(""));
-    bool get_run_state		() { return current_run_; }
-    void set_run_state		(bool Val) { current_run_ = Val; }
+    void add_element_to_run		(std::wstring parenStyleId = _T(""));
+    void finish_run				();
+	void add_new_run			(std::wstring parentStyleId = _T(""));
+    bool get_run_state			()			{ return in_run_; }
+    void set_run_state			(bool Val)	{ in_run_			= Val; }
   
-    void start_paragraph	(bool is_header = false);
-    void finish_paragraph	();
+    void start_paragraph		(bool is_header = false);
+    void finish_paragraph		();
 
-	bool is_paragraph_header()					{ return in_header_; }
-	bool get_paragraph_state()					{ return in_paragraph_; }
-    void set_paragraph_state(bool val)			{in_paragraph_ = val; }
+	bool is_paragraph_header	()					{ return in_header_;		}
+	bool get_paragraph_state	()					{ return in_paragraph_;		}
+    void set_paragraph_state	(bool val)			{ in_paragraph_	= val;		}
+	bool get_paragraph_keep		()					{ return is_paragraph_keep_;}
+	void set_paragraph_keep		(bool val)			{ is_paragraph_keep_ = val;	}
+	bool get_delete_text_state	()					{ return is_delete_text_;	}
+	void set_delete_text_state	(bool Val)			{ is_delete_text_ = Val;	}
 
-	bool get_drawing_state_content()			{ return in_drawing_content_; }
-	void set_drawing_state_content(bool val)	{in_drawing_content_ = val; }
+	bool get_drawing_state_content()			{ return in_drawing_content_;	}
+	void set_drawing_state_content(bool val)	{ in_drawing_content_ = val;	}
 
-	 std::wstring		add_hyperlink	(const std::wstring & href, bool drawing);
+	std::wstring		add_hyperlink	(const std::wstring & href, bool drawing);
     hyperlinks::_ref	last_hyperlink	();
     void				dump_hyperlinks	(rels & Rels, hyperlinks::_type_place type);
 
@@ -525,6 +587,8 @@ public:
 	void dump_mediaitems		(rels & Rels);
     void dump_headers_footers	(rels & Rels) const;
     void dump_notes				(rels & Rels) const;
+	
+	std::wstring  dump_settings_document();
 
  	bool next_dump_page_properties_;
 	bool next_dump_section_;
@@ -534,42 +598,36 @@ public:
         return odf_document_;
     }
 
-    void start_document();
-    void end_document();
+    void start_document	();
+    void end_document	();
 
-	std::wstring  dump_settings_document();
-
-    void start_body	();
-    void end_body	();
+    void start_body		();
+    void end_body		();
     
-	void start_office_text	();
-    void end_office_text	();
+	void start_office_text		();
+    void end_office_text		();
 
     void process_styles			();
     void process_fonts			();
     
     void process_list_styles	();
-    bool process_page_properties(std::wostream & strm);
     void process_headers_footers();
     void process_comments		();
+    bool process_page_properties(std::wostream & strm);
 	void process_section		(std::wostream & strm, odf_reader::style_columns * columns = NULL);
 
-
-    void set_settings_property(const odf_reader::_property & prop);
-	std::vector<odf_reader::_property> & get_settings_properties();
+	std::vector<odf_reader::_property> & get_settings_properties ();
+    void set_settings_property		(const odf_reader::_property & prop);
 
     void start_process_style_content();
-    void end_process_style_content(bool in_styles = false);
+    void end_process_style_content	(bool in_styles = false);
 
-    void start_automatic_style(const std::wstring & ParentId);
-    void end_automatic_style();
-    bool in_automatic_style();
+    void start_automatic_style	(const std::wstring & ParentId);
+    void end_automatic_style	();
+    bool in_automatic_style		();
 
-    styles_context	& get_styles_context()	{ return styles_context_; }
-    styles_map		* get_style_map()		{ return &styles_map_; }
-
-    void push_text_properties(const odf_reader::style_text_properties * TextProperties);
-    void pop_text_properties();
+    void push_text_properties	(const odf_reader::style_text_properties * TextProperties);
+    void pop_text_properties	();
    
 	odf_reader::style_text_properties_ptr current_text_properties();
 
@@ -586,88 +644,103 @@ public:
     std::wstring	get_page_properties		();
 	void			remove_page_properties	();
     
-	void next_dump_page_properties(bool val);
-    bool is_next_dump_page_properties();
+	void next_dump_page_properties			(bool val);
+    bool is_next_dump_page_properties		();
 
     void set_master_page_name(const std::wstring & MasterPageName);
     const std::wstring & get_master_page_name() const;
 
-    void start_text_list_style(const std::wstring & StyleName);
-    void end_text_list_style();
-    const std::wstring & get_text_list_style_name();
-    void start_list(const std::wstring & StyleName, bool Continue = false);
-    void end_list();
-    const std::wstring current_list_style() const;
-    void start_list_item(bool restart = false);
-    void end_list_item();
+    void start_text_list_style	(const std::wstring & StyleName);
+    void end_text_list_style	();
+    
+	const std::wstring &	get_text_list_style_name();
+	const std::wstring		current_list_style		() const;
+ 
+	void start_list				(const std::wstring & StyleName, bool Continue = false);
+    void end_list				();
+    void start_list_item		(bool restart = false);
+    void end_list_item	();
     
 	void docx_serialize_list_properties(std::wostream & strm);
 	void docx_serialize_paragraph_style(std::wostream & strm, const std::wstring & ParentId, bool in_styles = false);
    
 	std::wstring find_list_rename(const std::wstring & ListStyleName) const;
 
+    styles_map			* get_style_map()			{ return &styles_map_; }
+
+    styles_context		& get_styles_context()		{ return styles_context_; }
     drawing_context		& get_drawing_context()		{ return drawing_context_; } 	
 	comments_context	& get_comments_context()	{ return comments_context_; }
 	math_context		& get_math_context()		{ return math_context_; }
+	section_context		& get_section_context()		{ return section_context_; }
+	notes_context		& get_notes_context()		{ return notes_context_; }
+	text_tracked_context& get_text_tracked_context(){ return text_tracked_context_; }
 
-    void docx_convert_delayed();
-    void add_delayed_element(odf_reader::office_element * Elm);
-	bool delayed_converting_;
-	bool convert_delayed_enabled_;
+    void docx_convert_delayed	();
+    void add_delayed_element	(odf_reader::office_element * Elm);
 
     docx_table_context & get_table_context() { return table_context_; }
 
-	section_context				& get_section_context() { return section_context_; }
     odf_reader::office_element	* get_section_properties_in_table();
-	void section_properties_in_table(odf_reader::office_element * Elm);
+	void section_properties_in_table (odf_reader::office_element * Elm);
 
-    typedef boost::shared_ptr<streams_man> StreamsManPtr;
-    void set_stream_man(StreamsManPtr Sm) { streams_man_ = Sm; }
-    StreamsManPtr get_stream_man() const { return streams_man_; }
+    StreamsManPtr	get_stream_man() const				{ return streams_man_; }
+    void			set_stream_man(StreamsManPtr Sm)	{ streams_man_ = Sm; }
 
-    void set_rtl(bool Val) { rtl_ = Val; }
-    bool rtl() const {return rtl_;}
-
-	notes_context & get_notes_context() { return notes_context_; }
+    void set_rtl(bool Val)	{ is_rtl_ = Val; }
+    bool get_rtl() const	{return is_rtl_;}
    
-	enum NoteType { noNote, footNote, footNoteRefSet, endNote, endNoteRefSet };
-
-	void set_process_note(NoteType Val) { process_note_ = Val; }
-	NoteType get_process_note() const { return process_note_; }
-	void add_note_reference();
+	void set_process_note		(NoteType Val) { process_note_ = Val; }
+	NoteType get_process_note	() const		{ return process_note_; }
+	void add_note_reference		();
 
 	oox_chart_context & current_chart();
     void start_chart(std::wstring name);
-    void end_chart();
+    void end_chart	();
 
-	void start_comment()	{process_comment_ = true;}
-	void end_comment()		{process_comment_ = false;}
+	void start_comment	()	{process_comment_ = true;}
+	void end_comment	()	{process_comment_ = false;}
 	bool process_comment_;
    
-	void start_math_formula();
-	void end_math_formula();
+	void start_math_formula	();
+	void end_math_formula	();
+
+	void start_text_changes	(std::wstring id);
+	void end_text_changes	(std::wstring id);
 	
-	void set_process_headers_footers(bool Val) { process_headers_footers_ = Val; }
-    headers_footers			& get_headers_footers() { return headers_footers_; }
-	header_footer_context	& get_header_footer_context() { return header_footer_context_; }
-	bool process_headers_footers_;
+	void set_process_headers_footers(bool Val)				{ process_headers_footers_ = Val; }
+    headers_footers			& get_headers_footers()			{ return headers_footers_; }
+	header_footer_context	& get_header_footer_context()	{ return header_footer_context_; }
 
 	drop_cap_context & get_drop_cap_context(){return drop_cap_context_;}
 	
-	styles_map styles_map_;
+	styles_map				styles_map_;
+	bool					process_headers_footers_;
+	bool					delayed_converting_;
+	bool					convert_delayed_enabled_;
 
 private:
-    std::wstringstream document_xml_;
-    std::wstringstream styles_xml_;
-    std::wstringstream fontTable_xml_;
-    std::wstringstream numbering_xml_;
-    std::wstringstream temp_stream_;
+	std::wstringstream		document_xml_;
+    std::wstringstream		styles_xml_;
+    std::wstringstream		fontTable_xml_;
+    std::wstringstream		numbering_xml_;
+    std::wstringstream		temp_stream_;
     
-    std::wstringstream footer_xml_;
-    std::wstringstream header_xml_;
-    std::wstringstream settings_xml_;
+    std::wstringstream		footer_xml_;
+    std::wstringstream		header_xml_;
+    std::wstringstream		settings_xml_;
 
-        
+	styles_context			styles_context_;
+	math_context			math_context_;
+    drawing_context			drawing_context_;
+	comments_context		comments_context_;
+    section_context			section_context_;
+	drop_cap_context		drop_cap_context_;
+    docx_table_context		table_context_;
+    header_footer_context	header_footer_context_;
+    notes_context			notes_context_;
+	text_tracked_context	text_tracked_context_;
+       
     boost::shared_ptr<streams_man> streams_man_;
 
     package::docx_document		* output_document_;
@@ -676,64 +749,51 @@ private:
 
 	std::vector<odf_reader::_property> settings_properties_;
 
-	bool current_run_;
-  
-	hyperlinks hyperlinks_;
-    mediaitems mediaitems_;
-     
-    styles_context	styles_context_;
-	math_context	math_context_;
+	hyperlinks		hyperlinks_;
+    mediaitems		mediaitems_;     
 
-    std::wstring automatic_parent_style_; 
+    std::wstring	automatic_parent_style_; 
 
     std::list< const odf_reader::style_text_properties * > text_properties_stack_;
     
 	bool page_break_after_;
     bool page_break_before_;
 	bool page_break_;
-   
-	bool in_automatic_style_; 
-   
-	std::wstring text_list_style_name_;
+      
+	std::wstring			text_list_style_name_;
     std::list<std::wstring> list_style_stack_;
-
-    drawing_context drawing_context_;
-
-	comments_context comments_context_;
-
-    bool first_element_list_item_;
+    bool					first_element_list_item_;
+	
+	bool in_automatic_style_; 
 	bool in_drawing_content_;
     bool in_paragraph_;
+	bool in_run_;
 	bool in_header_;
+	bool is_delete_text_;
+    bool is_rtl_; // right-to-left
+    bool is_paragraph_keep_; 
+
+	NoteType process_note_;
 
     std::list<odf_reader::office_element *> delayed_elements_;
 
 	std::vector<oox_chart_context_ptr> charts_;
 
-    section_context section_context_;
-
-	drop_cap_context drop_cap_context_;
-
-    docx_table_context table_context_;
-    
     odf_reader::office_element * section_properties_in_table_;
 
-    headers_footers headers_footers_;
-    std::wstring current_master_page_name_;
+    headers_footers		headers_footers_;
+    std::wstring		current_master_page_name_;
 
     // счетчик для нумерации имен созданных в процессе конвертации стилей
-    size_t new_list_style_number_;
+    int new_list_style_number_;
+
+	std::map<std::wstring, text_tracked_context::_state> map_current_changes_;
 
     // цепочки переименований нумераций
     boost::unordered_map<std::wstring, std::wstring> list_style_renames_;
 
-    bool rtl_; // right-to-left
-
-    header_footer_context header_footer_context_;
-
-    notes_context notes_context_;
-    NoteType process_note_;
-
+	void start_changes();
+	void end_changes();
 
 };
 

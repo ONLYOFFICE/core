@@ -52,7 +52,7 @@ void office_scripts::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
 }
 
-void office_scripts::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void office_scripts::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if CP_CHECK_NAME(L"office", L"script")
         CP_CREATE_ELEMENT(office_script_);
@@ -74,7 +74,7 @@ void office_script::add_attributes( const xml::attributes_wc_ptr & Attributes )
     CP_APPLY_ATTR(L"script:language", script_language_, std::wstring(L""));
 }
 
-void office_script::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void office_script::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_CREATE_ELEMENT(content_);
 }

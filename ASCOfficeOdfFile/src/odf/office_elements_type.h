@@ -102,7 +102,20 @@ enum ElementType
     typeTextUserIndex,
     typeTextAlphabeticalIndex,
     typeTextBibliography,
-    typeShape,
+    
+	typeTextTrackedChanges,
+	typeTextChangedRegion,
+	typeTextChangeStart,
+	typeTextChangeEnd,
+	typeTextChange,
+	typeOfficeChangeInfo,
+	
+	typeTextUnknownChange,
+	typeTextDeletion,
+	typeTextFormatChange,
+	typeTextInsertion,
+
+	typeShape,
     typeChangeMarks,
 
     typeOfficeAutomaticStyles,

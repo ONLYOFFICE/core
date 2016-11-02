@@ -60,7 +60,7 @@ void presentation_placeholder::add_attributes( const xml::attributes_wc_ptr & At
 
 }
 
-void presentation_placeholder::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void presentation_placeholder::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }
@@ -97,7 +97,7 @@ void style_drawing_page_properties::add_attributes( const xml::attributes_wc_ptr
 {
 	drawing_page_properties_.add_attributes(Attributes);
 }
-void style_drawing_page_properties::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_drawing_page_properties::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }

@@ -31,12 +31,13 @@
  */
 
 #include "office_text.h"
+#include "office_annotation.h"
 
 #include <boost/foreach.hpp>
 
 #include <cpdoccore/xml/xmlchar.h>
 #include <cpdoccore/xml/attributes.h>
-#include <cpdoccore/xml/attributes.h>
+#include <cpdoccore/xml/utils.h>
 
 #include "serialize_elements.h"
 
@@ -47,14 +48,9 @@ namespace odf_reader {
 
 // office:text
 //////////////////////////////////////////////////////////////////////////////////////////////////
-const wchar_t * office_text::ns = L"office";
-const wchar_t * office_text::name = L"text";
+const wchar_t * office_text::ns		= L"office";
+const wchar_t * office_text::name	= L"text";
 
-::std::wostream & office_text::text_to_stream(::std::wostream & _Wostream) const
-{
-    CP_SERIALIZE_TEXT(text_content_);
-    return _Wostream;
-}
 
 office_text::office_text()
 {}
@@ -63,8 +59,7 @@ void office_text::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
     CP_APPLY_ATTR(L"text:global", text_global_, false);
 }
-
-namespace { 
+ 
 bool is_text_content(const std::wstring & ns, const std::wstring & name)
 {
     if (ns == L"text")
@@ -83,7 +78,6 @@ bool is_text_content(const std::wstring & ns, const std::wstring & name)
             name == L"alphabetical-index" ||
             name == L"bibliography" ||
 
-            // change-marks
             name == L"change" ||
             name == L"change-start" ||
             name == L"change-end"
@@ -102,47 +96,86 @@ bool is_text_content(const std::wstring & ns, const std::wstring & name)
 
     return false;
 }
-}
 
-void office_text::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void office_text::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
-    if (is_text_content(Ns, Name))
+	if CP_CHECK_NAME(L"text", L"tracked-changes") 
+	{
+		CP_CREATE_ELEMENT(tracked_changes_);
+	}
+	else if (is_text_content(Ns, Name))
     {
-        CP_CREATE_ELEMENT(text_content_);
+        CP_CREATE_ELEMENT(content_);
     }
     else
         CP_NOT_APPLICABLE_ELM();
 }
 
-void office_text::add_text(const std::wstring & Text)
-{
-    // TODO : error
-}
-
 void office_text::docx_convert(oox::docx_conversion_context & Context)
 {
+	if (tracked_changes_)
+		tracked_changes_->docx_convert(Context);
+
     Context.start_office_text();
-    BOOST_FOREACH(const office_element_ptr & elm, text_content_)
+    BOOST_FOREACH(const office_element_ptr & elm, content_)
     {
         elm->docx_convert(Context);
     }
     Context.end_office_text();
 }
+
 void office_text::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
     //Context.start_office_text();
-    BOOST_FOREACH(const office_element_ptr & elm, text_content_)
+    BOOST_FOREACH(const office_element_ptr & elm, content_)
     {
         elm->xlsx_convert(Context);
     }
     //Context.end_office_text();
 }
+
 void office_text::pptx_convert(oox::pptx_conversion_context & Context)
 {
-    BOOST_FOREACH(const office_element_ptr & elm, text_content_)
+    BOOST_FOREACH(const office_element_ptr & elm, content_)
     {
         elm->pptx_convert(Context);
     }
 }
+
+// office:change-info
+//-------------------------------------------------------------------------------------------------------------------
+const wchar_t * office_change_info::ns		= L"office";
+const wchar_t * office_change_info::name	= L"change-info";
+
+void office_change_info::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+{
+	if CP_CHECK_NAME(L"dc", L"date")
+	{
+		CP_CREATE_ELEMENT(dc_date_);
+	}
+	else if CP_CHECK_NAME(L"dc", L"creator")
+	{
+		CP_CREATE_ELEMENT(dc_creator_);
+	}
+	else
+		CP_NOT_APPLICABLE_ELM();
+}
+
+void office_change_info::docx_convert(oox::docx_conversion_context & Context)
+{
+	std::wstring date;
+ 	std::wstring author;
+	if (dc_date_)
+	{
+		date = xml::utils::replace_text_to_xml(dynamic_cast<dc_date * >(dc_date_.get())->content_);
+	}
+	if (dc_creator_)
+	{
+		author = xml::utils::replace_text_to_xml(dynamic_cast<dc_creator * >(dc_creator_.get())->content_);
+	}
+	
+	Context.get_text_tracked_context().set_user_info(author, date);
+}
+
 }
 }

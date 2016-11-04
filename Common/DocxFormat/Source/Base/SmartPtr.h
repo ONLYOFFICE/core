@@ -30,7 +30,6 @@
  *
  */
 #pragma once
-#include "Base.h"
 #include "../../../../DesktopEditor/common/Types.h"
 
 namespace NSCommon
@@ -64,7 +63,7 @@ namespace NSCommon
 			Release();
 		}
 
-		AVSINLINE void Release()
+		inline void Release()
 		{
 			if (!IsInit() || (NULL == m_pCountRef))
 				return;
@@ -78,7 +77,7 @@ namespace NSCommon
 			m_pData		= NULL;
 			m_pCountRef	= NULL;
 		}
-		AVSINLINE void AddRef()
+		inline void AddRef()
 		{
 			if (!IsInit() || (NULL == m_pCountRef))
 				return;
@@ -118,42 +117,42 @@ namespace NSCommon
 
 	public:
 
-		AVSINLINE bool IsInit() const
+		inline bool IsInit() const
 		{ 
 			return (NULL != m_pData); 
 		}
-		AVSINLINE bool is_init() const
+		inline bool is_init() const
 		{
 			return IsInit();
 		}
 
-		template<class T> AVSINLINE const bool is()const
+		template<class T> inline const bool is()const
 		{
 			if (!IsInit())
 				return false;
 			T* pResult = dynamic_cast<T*>(const_cast<Type*>(m_pData));
 			return (NULL != pResult);
 		}
-		template<class T> AVSINLINE const T& as()const
+		template<class T> inline const T& as()const
 		{
 			T* pResult = dynamic_cast<T*>(const_cast<Type*>(m_pData));
 			return *pResult;
 		}
-		template<class T> AVSINLINE T& as()
+		template<class T> inline T& as()
 		{
 			T* pResult = dynamic_cast<T*>(const_cast<Type*>(m_pData));
 			return *pResult;
 		}
 
 		template <typename T>
-		AVSINLINE void Attach(T* pCast, const LONG* pCountRef)
+		inline void Attach(T* pCast, const LONG* pCountRef)
 		{
 			m_pData		= pCast;
 			m_pCountRef	= const_cast<LONG*>(pCountRef);
 		}
 
 		template<typename T> 
-		AVSINLINE smart_ptr<T> smart_dynamic_cast()const
+		inline smart_ptr<T> smart_dynamic_cast()const
 		{
 			smart_ptr<T> new_type;
 			
@@ -172,22 +171,22 @@ namespace NSCommon
 			return new_type;
 		}
 
-		AVSINLINE Type& operator*()  { return *m_pData; }
-		AVSINLINE Type* operator->() { return  m_pData; }
+		inline Type& operator*()  { return *m_pData; }
+		inline Type* operator->() { return  m_pData; }
 
-		AVSINLINE const Type& operator*()  const { return *m_pData; }
-		AVSINLINE const Type* operator->() const { return  m_pData; }
+		inline const Type& operator*()  const { return *m_pData; }
+		inline const Type* operator->() const { return  m_pData; }
 
-		AVSINLINE const Type& get() { return  *m_pData; } const
+		inline const Type& get() { return  *m_pData; } const
 		
-		AVSINLINE void reset(Type* pPointer = NULL)
+		inline void reset(Type* pPointer = NULL)
 		{
 			*this = pPointer;
 		}
 	};
 
 	template <typename T>
-	static AVSINLINE void normalize_value(T& value, const T& min, const T& max)
+	static inline void normalize_value(T& value, const T& min, const T& max)
 	{
 		if (value < min)
 			value = min;

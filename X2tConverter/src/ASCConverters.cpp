@@ -2319,7 +2319,7 @@ namespace NExtractTools
                RELEASEOBJECT(pReader);
            }
        }
-       else if(AVS_OFFICESTUDIO_FILE_CANVAS_WORD == nFormatTo)
+       else if(0 != (AVS_OFFICESTUDIO_FILE_CANVAS & nFormatTo))
        {
            std::wstring sToDir = NSSystemPath::GetDirectoryName(sTo);
            if(!params.getDontSaveAdditional())

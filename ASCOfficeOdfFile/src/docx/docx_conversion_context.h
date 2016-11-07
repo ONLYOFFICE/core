@@ -509,6 +509,8 @@ public:
 	std::wstring dumpPPr_;
 	std::wstring dumpRPr_;
 	std::wstring dumpRPrInsDel_;
+	std::wstring dumpTblPr_;
+	std::wstring dumpTcPr_;
 
 	text_tracked_context(docx_conversion_context & context);
 
@@ -719,6 +721,9 @@ public:
 	bool					delayed_converting_;
 	bool					convert_delayed_enabled_;
 
+	void					start_changes();
+	void					end_changes();
+
 private:
 	std::wstringstream		document_xml_;
     std::wstringstream		styles_xml_;
@@ -791,10 +796,6 @@ private:
 
     // цепочки переименований нумераций
     boost::unordered_map<std::wstring, std::wstring> list_style_renames_;
-
-	void start_changes();
-	void end_changes();
-
 };
 
 }

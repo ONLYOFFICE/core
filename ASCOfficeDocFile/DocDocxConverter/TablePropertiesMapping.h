@@ -44,10 +44,10 @@ namespace DocFileFormat
 {
 	static const wchar_t WidthType[4][5] =
 	{
-		_T( "nil" ),
-		_T( "auto" ),
-		_T( "pct" ),
-		_T( "dxa" )
+        L"nil",
+        L"auto",
+        L"pct",
+        L"dxa"
 	};
 
 	struct FtsWWidth_Indent

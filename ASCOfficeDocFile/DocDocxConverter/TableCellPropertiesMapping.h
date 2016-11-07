@@ -48,9 +48,9 @@ namespace DocFileFormat
 
 	static const wchar_t VerticalCellAlignmentMap[3][7] =
 	{
-		_T( "top" ),
-		_T( "center" ),
-		_T( "bottom" )
+        L"top",
+        L"center",
+        L"bottom"
 	};
 
 	class TableCellPropertiesMapping : public PropertiesMapping, public IMapping

@@ -124,7 +124,7 @@ void styles_context::docx_serialize_text_style(std::wostream & strm, std::wstrin
 	}
 }
 
-void styles_context::docx_serialize_table_style(std::wostream & strm)
+void styles_context::docx_serialize_table_style(std::wostream & strm, std::wstring & strChange)
 {
     if (!table_style_.str().empty())
     {
@@ -133,6 +133,11 @@ void styles_context::docx_serialize_table_style(std::wostream & strm)
 			CP_XML_NODE(L"w:tblPr")
 			{
 				CP_XML_STREAM() << table_style_.str();
+				if (!strChange.empty())//tblPrChange
+				{
+					CP_XML_STREAM() << strChange;
+					strChange.clear();
+				}
 			}
 		}
     }

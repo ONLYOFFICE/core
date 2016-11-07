@@ -56,6 +56,7 @@ namespace OOX
 		class CTrPrChange;
 		class CTcPrChange;
 		class CTblPrChange;
+		class CTblGridChange;
 		class CParagraph;
 		class CParagraphProperty;
 		class CPTab;
@@ -208,6 +209,7 @@ namespace Oox2Odf
 		int  convert(OOX::Logic::CTrPrChange			*oox_tr_prop_change);
 		int  convert(OOX::Logic::CTcPrChange			*oox_tc_prop_change);
 		int  convert(OOX::Logic::CTblPrChange			*oox_table_prop_change);		
+		int  convert(OOX::Logic::CTblGridChange			*oox_table_grid_prop_change);		
 		
 		void convert(OOX::Logic::CAlternateContent		*oox_alt_content);
 		void convert(OOX::Logic::CDrawing				*oox_drawing);
@@ -261,7 +263,7 @@ namespace Oox2Odf
 		
 		bool convert(OOX::Logic::CTableCellProperties	*oox_table_cell_pr, int col = -1);
 		bool convert(OOX::Logic::CTableCellProperties	*oox_table_cell_pr,	odf_writer::style_table_cell_properties	*table_cell_properties/*,odf_writer::style_table_cell_properties	* table_cell_properties = NULL*/);
-		bool convert(OOX::Logic::CTableProperty			*oox_table_pr, bool base_styled);
+		bool convert(OOX::Logic::CTableProperty			*oox_table_pr,		bool base_styled);
 		bool convert(OOX::Logic::CTableProperty			*oox_table_pr,		odf_writer::style_table_properties		*table_properties);
 		void convert(OOX::Logic::CTableProperty			*oox_table_pr,		odf_writer::style_table_cell_properties	*table_cell_properties);
 		void convert(OOX::Logic::CTableRowProperties	*oox_table_row_pr);

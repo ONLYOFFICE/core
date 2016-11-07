@@ -47,7 +47,7 @@ FT_Error FT_Load_Glyph_Wrapper( FT_Face   face,
                  FT_UInt   glyph_index,
                  FT_Int32& load_flags, INT& bHintsSupport )
 {
-	int nErr = FT_Load_Glyph(face, glyph_index, load_flags);
+    int nErr = FT_Load_Glyph(face, glyph_index, load_flags);
 
     /*
     FT_Err_Invalid_Glyph_Index            = 0x10;
@@ -70,7 +70,7 @@ FT_Error FT_Load_Glyph_Wrapper( FT_Face   face,
     FT_Err_Invalid_Stream_Handle          = 0x28;
     */
 
-    if ((bHintsSupport == TRUE) && (nErr < 0x10 || nErr > 0x28))
+	if ((bHintsSupport == TRUE) && (nErr > 0x10 && nErr < 0x28))
 	{
         int nErr2 = FT_Load_Glyph(face, glyph_index, 40970);
 

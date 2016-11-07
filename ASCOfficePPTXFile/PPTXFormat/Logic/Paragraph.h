@@ -83,6 +83,25 @@ namespace PPTX
 							endParaRPr = oNode;
 						else if ((_T("r") == strName) || (_T("fld") == strName) || (_T("br") == strName) || (_T("m") == strName))
 							RunElems.push_back(RunElem(oNode));
+						else if (_T("AlternateContent") == strName)
+						{
+							//code as in SpTreeElem.cpp
+							XmlUtils::CXmlNode oNodeChoice;
+							if (oNode.GetNode(_T("mc:Choice"), oNodeChoice))
+							{
+								XmlUtils::CXmlNode oNodeFall;
+								CString sRequires;
+								//todo better check (a14 can be math, slicer)
+								if(oNodeChoice.GetAttributeIfExist(L"Requires", sRequires) && L"a14" == sRequires)
+								{
+									fromXML(oNodeChoice);
+								}
+								else if (oNode.GetNode(_T("mc:Fallback"), oNodeFall))
+								{
+									fromXML(oNodeFall);
+								}
+							}
+						}
 					}
 				}
 				

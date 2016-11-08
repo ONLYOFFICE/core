@@ -314,38 +314,7 @@ public:
 	{
 		return m_sChars;
 	}
-    CString RenderToOOX(RenderParameter oRenderParameter)
-    {
-        CString sResult;
-        if(RENDER_TO_OOX_PARAM_RUN == oRenderParameter.nType)
-        {
-			if (m_oProperty.m_nDeleted != PROP_DEF)sResult += L"<w:del>";
-			if (m_oProperty.m_nRevised != PROP_DEF)sResult += L"<w:ins>";
-
-            sResult += L"<w:r>";
-				sResult += L"<w:rPr>";
-					sResult += m_oProperty.RenderToOOX(oRenderParameter);
-				sResult += L"</w:rPr>";
-				sResult += renderTextToXML(L"Text" );
-            sResult += L"</w:r>";
-			
-			if (m_oProperty.m_nDeleted != PROP_DEF)sResult += L"</w:del>";
-			if (m_oProperty.m_nRevised != PROP_DEF)sResult += L"</w:ins>";
-		}
-        else if(RENDER_TO_OOX_PARAM_TEXT == oRenderParameter.nType)
-            sResult = renderTextToXML( L"Text" );
-        else if( RENDER_TO_OOX_PARAM_MATH == oRenderParameter.nType)
-		{
-			sResult += L"<m:r>";
-				sResult += m_oProperty.RenderToOOX(oRenderParameter);//w:rPr внутри
-				sResult += renderTextToXML( L"Math" );
-			sResult += L"</m:r>";	
-		}
-        else if( RENDER_TO_OOX_PARAM_PLAIN == oRenderParameter.nType)
-            sResult = m_sChars;
-        return sResult;
-    }
-
+    CString RenderToOOX(RenderParameter oRenderParameter);
     static CString renderRtfText( CString& sText, void* poDocument, RtfCharProperty* oCharProperty = NULL );
 
     CString RenderToRtf(RenderParameter oRenderParameter)
@@ -384,32 +353,7 @@ public:
         return result;
     }
 private: 
-	CString renderTextToXML( CString sParam )
-	{
-		CString sResult;
-		if( L"Text" == sParam )
-        {
-			if (m_oProperty.m_nDeleted == PROP_DEF)
-			{
-				sResult += L"<w:t xml:space= \"preserve\">";
-					sResult += Utils::PrepareToXML( m_sChars );
-				sResult += L"</w:t>";
-			}
-			else
-			{
-				sResult += L"<w:delText>";
-					sResult += Utils::PrepareToXML( m_sChars );
-				sResult += L"</w:delText>";
-			}
-        }
-		else if( L"Math" == sParam && !m_sChars.IsEmpty())
-        {
-			sResult += L"<m:t>";
-				sResult += Utils::PrepareToXML( m_sChars );
-			sResult += L"</m:t>";
-        }
-		return sResult;
-	}
+	CString renderTextToXML( CString sParam, bool bDelete = false );
 };
 class RtfCharNative : public RtfChar
 {            

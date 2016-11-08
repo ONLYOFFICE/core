@@ -32,6 +32,79 @@
 #include "RtfChar.h"
 #include "RtfDocument.h"
 
+CString RtfChar::RenderToOOX(RenderParameter oRenderParameter)
+{
+    CString sResult;
+    if(RENDER_TO_OOX_PARAM_RUN == oRenderParameter.nType)
+    {
+		bool bInsert = false;
+		bool bDelete = false;
+
+		if (m_oProperty.m_nDeleted != PROP_DEF)
+		{
+			bDelete = true;
+			sResult += L"<w:del>";
+			m_oProperty.m_nDeleted = PROP_DEF;
+		}
+		if (m_oProperty.m_nRevised != PROP_DEF)
+		{
+			bInsert = true;
+			sResult += L"<w:ins>";
+			m_oProperty.m_nRevised = PROP_DEF;
+		}
+
+        sResult += L"<w:r>";
+			sResult += L"<w:rPr>";
+				sResult += m_oProperty.RenderToOOX(oRenderParameter);
+			sResult += L"</w:rPr>";
+			sResult += renderTextToXML(L"Text", bDelete );
+        sResult += L"</w:r>";
+		
+		if (bDelete)sResult += L"</w:del>";
+		if (bInsert)sResult += L"</w:ins>";
+	}
+    else if(RENDER_TO_OOX_PARAM_TEXT == oRenderParameter.nType)
+	{
+        sResult = renderTextToXML( L"Text" );
+	}
+    else if( RENDER_TO_OOX_PARAM_MATH == oRenderParameter.nType)
+	{
+		sResult += L"<m:r>";
+			sResult += m_oProperty.RenderToOOX(oRenderParameter);//w:rPr внутри
+			sResult += renderTextToXML( L"Math" );
+		sResult += L"</m:r>";	
+	}
+    else if( RENDER_TO_OOX_PARAM_PLAIN == oRenderParameter.nType)
+        sResult = m_sChars;
+    return sResult;
+}
+
+CString renderTextToXML( CString sParam, bool bDelete )
+{
+	CString sResult;
+	if( L"Text" == sParam )
+    {
+		if (bDelete)
+		{
+			sResult += L"<w:t xml:space= \"preserve\">";
+				sResult += Utils::PrepareToXML( m_sChars );
+			sResult += L"</w:t>";
+		}
+		else
+		{
+			sResult += L"<w:delText>";
+				sResult += Utils::PrepareToXML( m_sChars );
+			sResult += L"</w:delText>";
+		}
+    }
+	else if( L"Math" == sParam && !m_sChars.IsEmpty())
+    {
+		sResult += L"<m:t>";
+			sResult += Utils::PrepareToXML( m_sChars );
+		sResult += L"</m:t>";
+    }
+	return sResult;
+}
 CString RtfChar::renderRtfText( CString& sText, void* poDocument, RtfCharProperty* oCharProperty  )
 {
     RtfDocument* oDocument = static_cast<RtfDocument*>(poDocument);

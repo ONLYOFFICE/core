@@ -79,7 +79,7 @@ CString RtfChar::RenderToOOX(RenderParameter oRenderParameter)
     return sResult;
 }
 
-CString renderTextToXML( CString sParam, bool bDelete )
+CString RtfChar::renderTextToXML( CString sParam, bool bDelete )
 {
 	CString sResult;
 	if( L"Text" == sParam )

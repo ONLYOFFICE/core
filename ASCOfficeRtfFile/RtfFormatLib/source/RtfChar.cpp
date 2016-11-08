@@ -84,7 +84,7 @@ CString RtfChar::renderTextToXML( CString sParam, bool bDelete )
 	CString sResult;
 	if( L"Text" == sParam )
     {
-		if (bDelete)
+		if (bDelete == false)
 		{
 			sResult += L"<w:t xml:space= \"preserve\">";
 				sResult += Utils::PrepareToXML( m_sChars );

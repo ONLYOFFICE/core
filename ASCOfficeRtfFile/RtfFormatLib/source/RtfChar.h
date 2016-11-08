@@ -76,25 +76,25 @@ public:
 		CString sResult;
 		switch( m_eLeader )
 		{
-			case l_ptablnone:	sResult += _T("\\ptablnone");	break;
-			case l_ptabldot:	sResult += _T("\\ptabldot");	break;
-			case l_ptablminus:	sResult += _T("\\ptablminus");	break;
-			case l_ptabluscore: sResult += _T("\\ptabluscore");	break;
-			case l_ptablmdot:	sResult += _T("\\ptablmdo");	break;
+			case l_ptablnone:	sResult += L"\\ptablnone";	break;
+			case l_ptabldot:	sResult += L"\\ptabldot";	break;
+			case l_ptablminus:	sResult += L"\\ptablminus";	break;
+			case l_ptabluscore: sResult += L"\\ptabluscore";	break;
+			case l_ptablmdot:	sResult += L"\\ptablmdo";	break;
 		}
 		switch( m_eRelative )
 		{
-			case r_margin: sResult += _T("\\pmartabq");	break;
-			case r_indent: sResult += _T("\\pindtabq");	break;
+			case r_margin: sResult += L"\\pmartabq";	break;
+			case r_indent: sResult += L"\\pindtabq";	break;
 		}
 		switch( m_eAlignment )
 		{
-			case a_left:	sResult += _T("l");	break;
-			case a_center:	sResult += _T("c");	break;
-			case a_right:	sResult += _T("r");	break;
+			case a_left:	sResult += L"l";	break;
+			case a_center:	sResult += L"c";	break;
+			case a_right:	sResult += L"r";	break;
 		}
 		if( false == sResult.IsEmpty() )
-			sResult = _T("{") + sResult + _T("}");
+			sResult = L"{" + sResult + L"}";
 		return sResult;
 	}
 	CString RenderToOOX(RenderParameter oRenderParameter)
@@ -102,25 +102,25 @@ public:
 		CString sResult;
 		switch( m_eLeader )
 		{
-			case l_ptablnone:	sResult += _T(" w:leader=\"none\"");		break;
-			case l_ptabldot:	sResult += _T(" w:leader=\"dot\"");			break;
-			case l_ptablminus:	sResult += _T(" w:leader=\"hyphen\"");		break;
-			case l_ptabluscore: sResult += _T(" w:leader=\"underscore\"");	break;
-			case l_ptablmdot:	sResult += _T(" w:leader=\"middleDot\"");	break;
+			case l_ptablnone:	sResult += L" w:leader=\"none\"";		break;
+			case l_ptabldot:	sResult += L" w:leader=\"dot\"";			break;
+			case l_ptablminus:	sResult += L" w:leader=\"hyphen\"";		break;
+			case l_ptabluscore: sResult += L" w:leader=\"underscore\"";	break;
+			case l_ptablmdot:	sResult += L" w:leader=\"middleDot\"";	break;
 		}
 		switch( m_eRelative )
 		{
-			case r_margin: sResult += _T(" w:relativeTo=\"margin\"");	break;
-			case r_indent: sResult += _T(" w:relativeTo=\"indent\"");	break;
+			case r_margin: sResult += L" w:relativeTo=\"margin\"";	break;
+			case r_indent: sResult += L" w:relativeTo=\"indent\"";	break;
 		}
 		switch( m_eAlignment )
 		{
-			case a_left:	sResult += _T(" w:alignment=\"left\"");		break;
-			case a_center:	sResult += _T(" w:alignment=\"center\"");	break;
-			case a_right:	sResult += _T(" w:alignment=\"right\"");	break;
+			case a_left:	sResult += L" w:alignment=\"left\"";		break;
+			case a_center:	sResult += L" w:alignment=\"center\"";	break;
+			case a_right:	sResult += L" w:alignment=\"right\"";	break;
 		}
 		if( !sResult.IsEmpty() )
-			sResult = _T("<w:ptab") + sResult + _T("/>");
+			sResult = L"<w:ptab" + sResult + L"/>";
 		return sResult;
 	}
 };
@@ -175,51 +175,51 @@ public:
 	CString RenderToRtf(RenderParameter oRenderParameter)
 	{
 		CString sResult;
-		sResult += _T("{");
+		sResult += L"{";
 		sResult += m_oProperty.RenderToRtf( oRenderParameter );
 		switch( m_eType )
 		{
-			case rsc_chdate:		sResult += _T("\\chdate");		break;
-			case rsc_chdpl:			sResult += _T("\\chdpl");		break;
-			case rsc_chdpa:			sResult += _T("\\chdpa");		break;
-			case rsc_chtime:		sResult += _T("\\chtime");		break;
-			case rsc_chpgn:			sResult += _T("\\chpgn");		break;
-			case rsc_sectnum:		sResult += _T("\\sectnum");		break;
-			case rsc_chftn:			sResult += _T("\\chftn");		break;
-			case rsc_chftnEnd:		sResult += _T("\\chftn");		break;
-			case rsc_chatn:			sResult += _T("\\chatn");		break;
-			case rsc_chftnsep:		sResult += _T("\\chftnsep");	break;
-			case rsc_chftnsepc:		sResult += _T("\\chftnsepc");	break;
-			case rsc_page:			sResult += _T("\\page");		break;
-			case rsc_column:		sResult += _T("\\column");		break;
-			case rsc_line:			sResult += _T("\\line");		break;
-			case rsc_softpage:		sResult += _T("\\softpage");	break;
-			case rsc_softcol:		sResult += _T("\\softcol");		break;
-			case rsc_softline:		sResult += _T("\\softline");	break;
-			case rsc_tab:			sResult += _T("\\tab");			break;
-			case rsc_Formula:		sResult += _T("\\|");			break;
-			case rsc_OptHyphen:		sResult += _T("\\-");			break;
-			case rsc_NonBrHyphen:	sResult += _T("\\_");			break;
-			case rsc_NonBrSpace:	sResult += _T("\\~");			break;
-			case rsc_zwbo:			sResult += _T("\\zwbo");		break;
-			case rsc_zwnbo:			sResult += _T("\\zwnbo");		break;
-			case rsc_zwj:			sResult += _T("\\zwj");			break;
-			case rsc_zwnj:			sResult += _T("\\zwnj");		break;
+			case rsc_chdate:		sResult += L"\\chdate";		break;
+			case rsc_chdpl:			sResult += L"\\chdpl";		break;
+			case rsc_chdpa:			sResult += L"\\chdpa";		break;
+			case rsc_chtime:		sResult += L"\\chtime";		break;
+			case rsc_chpgn:			sResult += L"\\chpgn";		break;
+			case rsc_sectnum:		sResult += L"\\sectnum";		break;
+			case rsc_chftn:			sResult += L"\\chftn";		break;
+			case rsc_chftnEnd:		sResult += L"\\chftn";		break;
+			case rsc_chatn:			sResult += L"\\chatn";		break;
+			case rsc_chftnsep:		sResult += L"\\chftnsep";	break;
+			case rsc_chftnsepc:		sResult += L"\\chftnsepc";	break;
+			case rsc_page:			sResult += L"\\page";		break;
+			case rsc_column:		sResult += L"\\column";		break;
+			case rsc_line:			sResult += L"\\line";		break;
+			case rsc_softpage:		sResult += L"\\softpage";	break;
+			case rsc_softcol:		sResult += L"\\softcol";		break;
+			case rsc_softline:		sResult += L"\\softline";	break;
+			case rsc_tab:			sResult += L"\\tab";			break;
+			case rsc_Formula:		sResult += L"\\|";			break;
+			case rsc_OptHyphen:		sResult += L"\\-";			break;
+			case rsc_NonBrHyphen:	sResult += L"\\_";			break;
+			case rsc_NonBrSpace:	sResult += L"\\~";			break;
+			case rsc_zwbo:			sResult += L"\\zwbo";		break;
+			case rsc_zwnbo:			sResult += L"\\zwnbo";		break;
+			case rsc_zwj:			sResult += L"\\zwj";			break;
+			case rsc_zwnj:			sResult += L"\\zwnj";		break;
 		}
 		if( PROP_DEF != m_nTextWrapBreak )
-			sResult += _T("\\par");
+			sResult += L"\\par";
 		//switch ( m_nTextWrapBreak ) //не воспринимается word
 		//{
-		//	case 0: sResult += _T("\\lbr0");break;
-		//	case 1: sResult += _T("\\lbr1");break;
-		//	case 2: sResult += _T("\\lbr2");break;
-		//	case 3: sResult += _T("\\lbr3");break;
+		//	case 0: sResult += L"\\lbr0";break;
+		//	case 1: sResult += L"\\lbr1";break;
+		//	case 2: sResult += L"\\lbr2";break;
+		//	case 3: sResult += L"\\lbr3";break;
 		//}
 		if( PROP_DEF != m_nSoftHeight )
 		{
-			sResult.AppendFormat( _T("\\softlheight%d"), m_nSoftHeight );
+			sResult.AppendFormat( L"\\softlheight%d", m_nSoftHeight );
 		}
-		sResult += _T("}");
+		sResult += L"}";
 		return sResult;
 	}
 	CString _RenderToOOX(RenderParameter oRenderParameter)
@@ -227,41 +227,41 @@ public:
 		CString sResult;
 		switch( m_eType )
 		{
-		case rsc_chdate:			sResult += _T("");							break;
-			case rsc_chdpl:			sResult += _T("");							break;
-			case rsc_chdpa:			sResult += _T("");							break;
-			case rsc_chtime:		sResult += _T("");							break;
-			case rsc_chpgn:			sResult += _T("<w:pgNum />");				break;
-			case rsc_sectnum:		sResult += _T("");							break;
-			case rsc_chftn:			sResult += _T("<w:footnoteRef/>");			break;
-			case rsc_chftnEnd:		sResult += _T("<w:endnoteRef/>");			break;
-			case rsc_chatn:			sResult += _T("<w:annotationRef />");		break;
-			case rsc_chftnsep:		sResult += _T("<w:separator />");			break;
-			case rsc_chftnsepc:		sResult += _T("<w:continuationSeparator/>");break;
-			case rsc_page:			sResult += _T("<w:br w:type=\"page\"/>");	break;
-			case rsc_column:		sResult += _T("<w:br w:type=\"column\"/>");	break;
-			case rsc_line:			sResult += _T("<w:br w:type=\"textWrapping\" w:clear=\"none\"/>");break;
-			case rsc_softpage:		sResult += _T("");									break;
-			case rsc_softcol:		sResult += _T("");									break;
-			case rsc_softline:		sResult += _T("");									break;
-			case rsc_tab:			sResult += _T("<w:tab/>");							break;
-			case rsc_emspace:		sResult += _T("");									break;
-			case rsc_qmspace:		sResult += _T("");									break;
-			case rsc_Formula:		sResult += _T("");									break;
-			case rsc_OptHyphen:		sResult += _T("<w:t xml:space=\"preserve\">-</w:t>");break;//<w:softHyphen/>
-			case rsc_NonBrHyphen:	sResult += _T("<w:t xml:space=\"preserve\">-</w:t>");break;//<w:nonBreakHyphen/>
-			case rsc_NonBrSpace:	sResult += _T("<w:t xml:space=\"preserve\"> </w:t>");break;
-			case rsc_zwbo:			sResult += _T("");									break;
-			case rsc_zwnbo:			sResult += _T("");									break;
-			case rsc_zwj:			sResult += _T("");									break;
-			case rsc_zwnj:			sResult += _T("");									break;
+			case rsc_chdate:		sResult += L"";										break;
+			case rsc_chdpl:			sResult += L"";										break;
+			case rsc_chdpa:			sResult += L"";										break;
+			case rsc_chtime:		sResult += L"";										break;
+			case rsc_chpgn:			sResult += L"<w:pgNum />";							break;
+			case rsc_sectnum:		sResult += L"";										break;
+			case rsc_chftn:			sResult += L"<w:footnoteRef/>";						break;
+			case rsc_chftnEnd:		sResult += L"<w:endnoteRef/>";						break;
+			case rsc_chatn:			sResult += L"<w:annotationRef />";					break;
+			case rsc_chftnsep:		sResult += L"<w:separator />";						break;
+			case rsc_chftnsepc:		sResult += L"<w:continuationSeparator/>";			break;
+			case rsc_page:			sResult += L"<w:br w:type=\"page\"/>";				break;
+			case rsc_column:		sResult += L"<w:br w:type=\"column\"/>";			break;
+			case rsc_line:			sResult += L"<w:br w:type=\"textWrapping\" w:clear=\"none\"/>";break;
+			case rsc_softpage:		sResult += L"";										break;
+			case rsc_softcol:		sResult += L"";										break;
+			case rsc_softline:		sResult += L"";										break;
+			case rsc_tab:			sResult += L"<w:tab/>";								break;
+			case rsc_emspace:		sResult += L"";										break;
+			case rsc_qmspace:		sResult += L"";										break;
+			case rsc_Formula:		sResult += L"";										break;
+			case rsc_zwbo:			sResult += L"";										break;
+			case rsc_zwnbo:			sResult += L"";										break;
+			case rsc_zwj:			sResult += L"";										break;
+			case rsc_zwnj:			sResult += L"";										break;
+			case rsc_OptHyphen:		sResult += L"<w:t xml:space=\"preserve\">-</w:t>";	break;//<w:softHyphen/>
+			case rsc_NonBrHyphen:	sResult += L"<w:t xml:space=\"preserve\">-</w:t>";	break;//<w:nonBreakHyphen/>
+			case rsc_NonBrSpace:	sResult += L"<w:t xml:space=\"preserve\"> </w:t>";	break;
 		}
 		switch ( m_nTextWrapBreak )
 		{
-			case 0: sResult += _T("<w:br w:type=\"textWrapping\" w:clear=\"none\"/>");	break;
-			case 1: sResult += _T("<w:br w:type=\"textWrapping\" w:clear=\"left\"/>");	break;
-			case 2: sResult += _T("<w:br w:type=\"textWrapping\" w:clear=\"right\"/>");	break;
-			case 3: sResult += _T("<w:br w:type=\"textWrapping\" w:clear=\"all\"/>");	break;
+			case 0: sResult += L"<w:br w:type=\"textWrapping\" w:clear=\"none\"/>";		break;
+			case 1: sResult += L"<w:br w:type=\"textWrapping\" w:clear=\"left\"/>";		break;
+			case 2: sResult += L"<w:br w:type=\"textWrapping\" w:clear=\"right\"/>";	break;
+			case 3: sResult += L"<w:br w:type=\"textWrapping\" w:clear=\"all\"/>";		break;
 		}
 		return sResult;
 	}
@@ -270,16 +270,16 @@ public:
 		CString sResult;
 		if(RENDER_TO_OOX_PARAM_RUN == oRenderParameter.nType)
 		{
-			sResult += _T("<w:r>");
-			sResult += _T("<w:rPr>");
-			sResult += m_oProperty.RenderToOOX(oRenderParameter);
-			sResult += _T("</w:rPr>");
-			sResult += _RenderToOOX(oRenderParameter);
-			sResult += _T("</w:r>");
+			sResult += L"<w:r>";
+				sResult += L"<w:rPr>";
+					sResult += m_oProperty.RenderToOOX(oRenderParameter);
+				sResult += L"</w:rPr>";
+				sResult += _RenderToOOX(oRenderParameter);
+			sResult += L"</w:r>";
 		}
-		else if(RENDER_TO_OOX_PARAM_TEXT == oRenderParameter.nType || 
-				RENDER_TO_OOX_PARAM_MATH == oRenderParameter.nType ||
-				RENDER_TO_OOX_PARAM_PLAIN == oRenderParameter.nType)
+		else if(RENDER_TO_OOX_PARAM_TEXT	== oRenderParameter.nType || 
+				RENDER_TO_OOX_PARAM_MATH	== oRenderParameter.nType ||
+				RENDER_TO_OOX_PARAM_PLAIN	== oRenderParameter.nType)
 			sResult += _RenderToOOX(oRenderParameter);
 		return sResult;
 	}
@@ -319,21 +319,27 @@ public:
         CString sResult;
         if(RENDER_TO_OOX_PARAM_RUN == oRenderParameter.nType)
         {
-            sResult += _T("<w:r>");
-				sResult += _T("<w:rPr>");
+			if (m_oProperty.m_nDeleted != PROP_DEF)sResult += L"<w:del>";
+			if (m_oProperty.m_nRevised != PROP_DEF)sResult += L"<w:ins>";
+
+            sResult += L"<w:r>";
+				sResult += L"<w:rPr>";
 					sResult += m_oProperty.RenderToOOX(oRenderParameter);
-				sResult += _T("</w:rPr>");
-				sResult += renderTextToXML(_T("Text") );
-            sResult += _T("</w:r>");
-        }
+				sResult += L"</w:rPr>";
+				sResult += renderTextToXML(L"Text" );
+            sResult += L"</w:r>";
+			
+			if (m_oProperty.m_nDeleted != PROP_DEF)sResult += L"</w:del>";
+			if (m_oProperty.m_nRevised != PROP_DEF)sResult += L"</w:ins>";
+		}
         else if(RENDER_TO_OOX_PARAM_TEXT == oRenderParameter.nType)
-            sResult = renderTextToXML( _T("Text") );
+            sResult = renderTextToXML( L"Text" );
         else if( RENDER_TO_OOX_PARAM_MATH == oRenderParameter.nType)
 		{
-			sResult += _T("<m:r>");
+			sResult += L"<m:r>";
 				sResult += m_oProperty.RenderToOOX(oRenderParameter);//w:rPr внутри
-				sResult += renderTextToXML( _T("Math") );
-			sResult += _T("</m:r>");	
+				sResult += renderTextToXML( L"Math" );
+			sResult += L"</m:r>";	
 		}
         else if( RENDER_TO_OOX_PARAM_PLAIN == oRenderParameter.nType)
             sResult = m_sChars;
@@ -365,14 +371,14 @@ public:
 			if( !sText.IsEmpty() || !sTextProp.IsEmpty())
             {
                 if (oRenderParameter.nType != RENDER_TO_RTF_PARAM_NESTED)
-					result += _T("{");
+					result += L"{";
 					
 					result += sTextProp;
-					result += _T(" ");
+					result += L" ";
 					result += sText;
 
 				if (oRenderParameter.nType != RENDER_TO_RTF_PARAM_NESTED)
-					result += _T("}");
+					result += L"}";
             }
         }
         return result;
@@ -381,17 +387,26 @@ private:
 	CString renderTextToXML( CString sParam )
 	{
 		CString sResult;
-		if( _T("Text") == sParam )
+		if( L"Text" == sParam )
         {
-            sResult += _T("<w:t xml:space= \"preserve\">");
-				sResult += Utils::PrepareToXML( m_sChars );
-			sResult += _T("</w:t>");
+			if (m_oProperty.m_nDeleted == PROP_DEF)
+			{
+				sResult += L"<w:t xml:space= \"preserve\">";
+					sResult += Utils::PrepareToXML( m_sChars );
+				sResult += L"</w:t>";
+			}
+			else
+			{
+				sResult += L"<w:delText>";
+					sResult += Utils::PrepareToXML( m_sChars );
+				sResult += L"</w:delText>";
+			}
         }
-		else if( _T("Math") == sParam && !m_sChars.IsEmpty())
+		else if( L"Math" == sParam && !m_sChars.IsEmpty())
         {
-			sResult += _T("<m:t>");
+			sResult += L"<m:t>";
 				sResult += Utils::PrepareToXML( m_sChars );
-			sResult += _T("</m:t>");
+			sResult += L"</m:t>";
         }
 		return sResult;
 	}
@@ -409,12 +424,12 @@ public:
 		else
 		{
 			CString sText = m_sChars;
-			if( _T("") != sText )
+			if( L"" != sText )
 			{
-				result += _T("{");
+				result += L"{";
 				result += m_oProperty.RenderToRtf( oRenderParameter );
-				result += _T(" ") + sText;
-				result += _T("}");
+				result += L" " + sText;
+				result += L"}";
 			}
 		}
 		return result;

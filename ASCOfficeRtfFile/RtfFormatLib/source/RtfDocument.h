@@ -54,6 +54,7 @@ public:
 	RtfFontTable			m_oFontTable;
 	RtfColorTable			m_oColorTable;
 	RtfStyleTable			m_oStyleTable;
+	RtfRevisionTable		m_oRevisionTable;
 	RtfInformation			m_oInformation;
 
 	RtfListTable			m_oListTabel;

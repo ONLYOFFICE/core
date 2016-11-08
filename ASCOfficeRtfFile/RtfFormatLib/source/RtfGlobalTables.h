@@ -431,3 +431,58 @@ public:
 		}
 		CString RenderToOOX(RenderParameter oRenderParameter);
 };
+
+class RtfRevisionTable : public IDocumentElement, public ItemContainer<CString>
+{
+public:
+	ItemContainer<CString> m_aAuthorsList;
+
+	CString RenderToRtf(RenderParameter oRenderParameter)
+	{
+		CString sResult;
+		if( m_aArray.size() > 0 )
+		{
+			sResult += _T("{\\*\\revtbl ");
+
+			for( int i = 0; i < (int)m_aArray.size(); i++)
+            {
+				sResult += _T("{");
+				sResult += m_aAuthorsList[i];
+ 				sResult += _T("}");
+           }
+			sResult += _T("}");
+		}
+		return sResult;
+	}
+	CString RenderToOOX(RenderParameter oRenderParameter)
+	{
+		return L"";
+	}
+};
+
+//class RtfRSIDTable : public IDocumentElement, public ItemContainer<rsidString>
+//{
+//public:
+//	ItemContainer<CString> m_aAuthorsList;
+//
+//	CString RenderToRtf(RenderParameter oRenderParameter)
+//	{
+//		CString sResult;
+//		if( m_aArray.size() > 0 )
+//		{
+//			sResult += _T("{\\*\\rsidtbl ");
+//
+//			for( int i = 0; i < (int)m_aArray.size(); i++)
+//            {
+//				sResult += _T("{");
+//				sResult += m_aAuthorsList[i];
+// 				sResult += _T("}");
+//           }
+//			sResult += _T("}");
+//		}
+//		return sResult;
+//	}
+//	CString RenderToOOX(RenderParameter oRenderParameter)
+//	{
+//	}
+//};

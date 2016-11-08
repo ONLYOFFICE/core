@@ -149,16 +149,14 @@ public:
 	}
 	bool operator==( const RtfFont& oFont)
 	{
-		return m_eFontTheme == oFont.m_eFontTheme && m_eFontFamily == oFont.m_eFontFamily && 
-				m_sPanose == oFont.m_sPanose && m_nID == oFont.m_nID && 
-				m_sName == oFont.m_sName && m_sAltName == oFont.m_sAltName && 
-				m_nCharset == oFont.m_nCharset && m_nCodePage == oFont.m_nCodePage && 
-				m_nPitch == oFont.m_nPitch;
+		return m_eFontTheme == oFont.m_eFontTheme	&& m_eFontFamily	== oFont.m_eFontFamily	&& 
+				m_sPanose	== oFont.m_sPanose		&& m_nID			== oFont.m_nID			&& 
+				m_sName		== oFont.m_sName		&& m_sAltName		== oFont.m_sAltName		&& 
+				m_nCharset	== oFont.m_nCharset		&& m_nCodePage		== oFont.m_nCodePage	&& 
+				m_nPitch	== oFont.m_nPitch;
 	}
 	bool IsValid()
 	{
-		//return PROP_DEF != m_nID && _T("") != m_sName && ff_fnil == m_eFontFamily;
-		//return PROP_DEF != m_nID && _T("") != m_sName; //wordpad не всегда пишет m_sName
 		return PROP_DEF != m_nID;
 	}
 	void SetDefaultRtf()
@@ -175,11 +173,11 @@ public:
 		DEFAULT_PROPERTY_DEF( m_eFontTheme, ft_none )
 		DEFAULT_PROPERTY_DEF( m_eFontFamily, ff_fnil )
 		DEFAULT_PROPERTY_DEF( m_sPanose, _T("") )
-		DEFAULT_PROPERTY( m_nID )
+		DEFAULT_PROPERTY	( m_nID )
 		DEFAULT_PROPERTY_DEF( m_sName, _T("") )
 		DEFAULT_PROPERTY_DEF( m_sAltName, _T("") )
-		DEFAULT_PROPERTY( m_nCharset )
-		DEFAULT_PROPERTY( m_nCodePage )
+		DEFAULT_PROPERTY	( m_nCharset )
+		DEFAULT_PROPERTY	( m_nCodePage )
 		DEFAULT_PROPERTY_DEF( m_nPitch, 2 )
 	}
 	CString RenderToRtf(RenderParameter oRenderParameter);
@@ -1054,6 +1052,10 @@ public:
 		return sResult;
 	}
 };
+//----------------------------------------------------------------------------------------------------------
+class RtfCharProperty;
+typedef boost::shared_ptr<RtfCharProperty> RtfCharPropertyPtr;
+
 class RtfCharProperty: public IRenderableProperty
 {
 public: 
@@ -1061,44 +1063,55 @@ public:
 
 	int m_nAnimated;		//animtextN	Animated text properties (note: Word 2007 ignores this control word):
 
-	int m_bBold;		//b*	Bold.
-	int m_bCaps;		//caps*	All capitals.
-	int m_nScalex;		//charscalexN 	Character scaling value. The N argument is a value representing a percentage (default is 100).
+	int m_bBold;			//b*	Bold.
+	int m_bCaps;			//caps*	All capitals.
+	int m_nScalex;			//charscalexN 	Character scaling value. The N argument is a value representing a percentage (default is 100).
 	int m_nCharStyle;		//csN	Designates character style. If a character style is specified, style properties must be specified with the character run. N refers to an entry in the style table.
-	int m_nDown;		//dnN	Move down N half-points (default is 6).
-	int m_bEmbo;		//embo*	Emboss.
-	int m_nCharacterSpacing;		//expndtwN	Expansion or compression of the space between characters in twips; a negative value compresses. For backward compatibility, both \expndtwN and \expndN should be emitted.		
-	int m_nFitText;		//fittextN	Fit the text in the current group in N twips. When N is set to -1 (\fittext-1), it indicates a continuation of the previous \fittextN run. In other words, {\fittext1000 Fit this} {\fittext-1 text} fits the string “Fit this text” in 1000 twips.
-	int m_nFont;		//fN	Font number. N refers to an entry in the font table.
-	int m_nFont2; //
-	int m_nFont3; //
+	int m_nDown;			//dnN	Move down N half-points (default is 6).
+	int m_bEmbo;			//embo*	Emboss.
+	int m_nCharacterSpacing;//expndtwN	Expansion or compression of the space between characters in twips; a negative value compresses. For backward compatibility, both \expndtwN and \expndN should be emitted.		
+	int m_nFitText;			//fittextN	Fit the text in the current group in N twips. When N is set to -1 (\fittext-1), it indicates a continuation of the previous \fittextN run. In other words, {\fittext1000 Fit this} {\fittext-1 text} fits the string “Fit this text” in 1000 twips.
+	int m_nFont;			//fN	Font number. N refers to an entry in the font table.
+	int m_nFont2; 
+	int m_nFont3; 
 	int m_nFontSize;		//fsN	Font size in half-points (default is 24).
-	int m_bItalic;		//i*	Italic.
-	int m_bImprint;		//impr*	Engrave (imprint).
-	int m_nKerning;		//kerningN	Point size (in half-points) above which to kern character pairs. \kerning0 turns off kerning.
+	int m_bItalic;			//i*	Italic.
+	int m_bImprint;			//impr*	Engrave (imprint).
+	int m_nKerning;			//kerningN	Point size (in half-points) above which to kern character pairs. \kerning0 turns off kerning.
 	int m_bRightToLeft;		//rtlch	Character data following this control word is treated as a right-to-left run.
 	int m_nLanguage;
 	int m_nComplexScript;
-	int m_bOutline;		//outl*	Outline.
-	int m_bScaps;		//scaps*	Small capitals.
-	int m_bShadow;		//shad*	Shadow.
-	int m_bStrike;		//strike*	Strikethrough.
-	int m_nStriked;		//striked1	Double strikethrough. \striked0 turns it off.
-	int m_bSub;		//sub	Subscripts text and shrinks point size according to font information.
-	int m_bSuper;		//super	Superscripts text and shrinks point size according to font information.
-	int m_bHidden;		//v*	Hidden text.
-	int m_nHightlited; //
+	int m_bOutline;			//outl*	Outline.
+	int m_bScaps;			//scaps*	Small capitals.
+	int m_bShadow;			//shad*	Shadow.
+	int m_bStrike;			//strike*	Strikethrough.
+	int m_nStriked;			//striked1	Double strikethrough. \striked0 turns it off.
+	int m_bSub;				//sub	Subscripts text and shrinks point size according to font information.
+	int m_bSuper;			//super	Superscripts text and shrinks point size according to font information.
+	int m_bHidden;			//v*	Hidden text.
+	int m_nHightlited; 
 
-	int m_nForeColor; //
+	int				m_nForeColor; 
 
-//		int m_bUnderline;		//ul*	Continuous underline. \ul0 turns off all underlining.
-	UnderlineStyle m_eUnderStyle; //
-	int m_nUnderlineColor; //
-	int m_nUp;		//upN	Move up N half-points (default is 6).
+	int				m_nDeleted;
+	int				m_nRevised;
+	int				m_nCrAuth;
+	int				m_nCrDate;
+	int				m_nRevauth;
+	int				m_nRevdttm;
+	int				m_nRevauthDel;
+	int				m_nRevdttmDel;
+	int				m_nInsrsid;
 
+//	int				m_bUnderline;					//ul*	Continuous underline. \ul0 turns off all underlining.
+	UnderlineStyle	m_eUnderStyle;		//
+	int				m_nUnderlineColor;	//
+	int				m_nUp;				//upN	Move up N half-points (default is 6).
 
-	RtfBorder m_poBorder;
-	RtfShadingChar m_poShading;
+	RtfCharPropertyPtr	m_pOldCharProp;
+	RtfBorder			m_poBorder;
+	RtfShadingChar		m_poShading;
+	
 	bool operator==( const RtfCharProperty& oChar )
 	{
 		return m_nAnimated == oChar.m_nAnimated && m_bBold == oChar.m_bBold && m_bCaps == oChar.m_bCaps && m_nScalex == oChar.m_nScalex && 
@@ -1109,7 +1122,9 @@ public:
 				m_bShadow == oChar.m_bShadow && m_bStrike == oChar.m_bStrike && m_bSub == oChar.m_bSub && m_bSuper == oChar.m_bSuper && 
 				m_bHidden == oChar.m_bHidden && m_nHightlited == oChar.m_nHightlited && m_nForeColor == oChar.m_nForeColor && 
 				m_eUnderStyle == oChar.m_eUnderStyle && m_nUnderlineColor == oChar.m_nUnderlineColor && m_nUp == oChar.m_nUp &&
-				m_poBorder == oChar.m_poBorder && m_poShading == oChar.m_poShading;
+				m_poBorder == oChar.m_poBorder && m_poShading == oChar.m_poShading && m_nDeleted == oChar.m_nDeleted &&
+				m_nRevised == oChar.m_nRevised && m_nCrAuth == oChar.m_nCrAuth && m_nRevauthDel == oChar.m_nRevauthDel &&
+				m_nRevdttm == oChar.m_nRevdttm && m_nRevdttmDel == oChar.m_nRevdttmDel && m_nCrDate == oChar.m_nCrDate;
 	}
 
 	RtfCharProperty()
@@ -1123,15 +1138,19 @@ public:
 	void SetDefaultRtf()
 	{
 		SetDefault();
-		m_nFontSize = 24;
+		
 		m_poShading.SetDefaultRtf();
 		m_poBorder.SetDefaultRtf();
+		
+		m_nFontSize = 24;
 	}
 	void SetDefaultOOX()
 	{
 		SetDefault();
+		
 		m_poShading.SetDefaultOOX();
 		m_poBorder.SetDefaultOOX();
+		
 		m_nFontSize = 20;
 	}
 	void SetDefault()
@@ -1166,50 +1185,73 @@ public:
 		DEFAULT_PROPERTY_DEF( m_eUnderStyle, uls_none )
 		DEFAULT_PROPERTY( m_nUnderlineColor )
 		DEFAULT_PROPERTY( m_nUp )
-		m_poShading.SetDefault();
-		m_poBorder.SetDefault();
 		DEFAULT_PROPERTY( m_nComplexScript )
 		DEFAULT_PROPERTY( m_nLanguage )
+		
+		DEFAULT_PROPERTY( m_nDeleted)
+		DEFAULT_PROPERTY( m_nRevised)
+		DEFAULT_PROPERTY( m_nCrAuth)
+		DEFAULT_PROPERTY( m_nCrDate)
+		DEFAULT_PROPERTY( m_nRevauth)
+		DEFAULT_PROPERTY( m_nRevdttm)
+		DEFAULT_PROPERTY( m_nRevauthDel)
+		DEFAULT_PROPERTY( m_nRevdttmDel)
+		DEFAULT_PROPERTY( m_nInsrsid)
+
+		m_poShading.SetDefault();
+		m_poBorder.SetDefault();
+
 	}
 	void Merge( RtfCharProperty& oCharPr )
 	{
-		MERGE_PROPERTY( m_nAnimated, oCharPr )
-		MERGE_PROPERTY( m_bBold, oCharPr )
-		MERGE_PROPERTY( m_bCaps, oCharPr )
-		MERGE_PROPERTY( m_nScalex, oCharPr )
-		MERGE_PROPERTY( m_nCharStyle, oCharPr )
-		MERGE_PROPERTY( m_nDown, oCharPr )
-		MERGE_PROPERTY( m_bEmbo, oCharPr )
+		MERGE_PROPERTY( m_nAnimated,	oCharPr )
+		MERGE_PROPERTY( m_bBold,		oCharPr )
+		MERGE_PROPERTY( m_bCaps,		oCharPr )
+		MERGE_PROPERTY( m_nScalex,		oCharPr )
+		MERGE_PROPERTY( m_nCharStyle,	oCharPr )
+		MERGE_PROPERTY( m_nDown,		oCharPr )
+		MERGE_PROPERTY( m_bEmbo,		oCharPr )
 		MERGE_PROPERTY( m_nCharacterSpacing, oCharPr )
-		MERGE_PROPERTY( m_nFitText, oCharPr )
-		MERGE_PROPERTY( m_nFont, oCharPr )
-		MERGE_PROPERTY( m_nFont2, oCharPr )
-		MERGE_PROPERTY( m_nFont3, oCharPr )
-		MERGE_PROPERTY( m_nFontSize, oCharPr )
-		MERGE_PROPERTY( m_bItalic, oCharPr )
-		MERGE_PROPERTY( m_bImprint, oCharPr )
-		MERGE_PROPERTY( m_nKerning, oCharPr )
+		MERGE_PROPERTY( m_nFitText,		oCharPr )
+		MERGE_PROPERTY( m_nFont,		oCharPr )
+		MERGE_PROPERTY( m_nFont2,		oCharPr )
+		MERGE_PROPERTY( m_nFont3,		oCharPr )
+		MERGE_PROPERTY( m_nFontSize,	oCharPr )
+		MERGE_PROPERTY( m_bItalic,		oCharPr )
+		MERGE_PROPERTY( m_bImprint,		oCharPr )
+		MERGE_PROPERTY( m_nKerning,		oCharPr )
 		MERGE_PROPERTY( m_bRightToLeft, oCharPr )
-		MERGE_PROPERTY( m_nLanguage, oCharPr )
-		MERGE_PROPERTY( m_bOutline, oCharPr )
-		MERGE_PROPERTY( m_bScaps, oCharPr )
-		MERGE_PROPERTY( m_bShadow, oCharPr )
-		MERGE_PROPERTY( m_bStrike, oCharPr )
-		MERGE_PROPERTY( m_nStriked, oCharPr )
-		MERGE_PROPERTY( m_bSub, oCharPr )
-		MERGE_PROPERTY( m_bSuper, oCharPr )
-		MERGE_PROPERTY( m_bHidden, oCharPr )
-		MERGE_PROPERTY( m_nHightlited, oCharPr )
-		MERGE_PROPERTY( m_nForeColor, oCharPr )
+		MERGE_PROPERTY( m_nLanguage,	oCharPr )
+		MERGE_PROPERTY( m_bOutline,		oCharPr )
+		MERGE_PROPERTY( m_bScaps,		oCharPr )
+		MERGE_PROPERTY( m_bShadow,		oCharPr )
+		MERGE_PROPERTY( m_bStrike,		oCharPr )
+		MERGE_PROPERTY( m_nStriked,		oCharPr )
+		MERGE_PROPERTY( m_bSub,			oCharPr )
+		MERGE_PROPERTY( m_bSuper,		oCharPr )
+		MERGE_PROPERTY( m_bHidden,		oCharPr )
+		MERGE_PROPERTY( m_nHightlited,	oCharPr )
+		MERGE_PROPERTY( m_nForeColor,	oCharPr )
+		MERGE_PROPERTY( m_nDeleted,		oCharPr )
+		MERGE_PROPERTY( m_nRevised,		oCharPr )
+		MERGE_PROPERTY( m_nCrAuth,		oCharPr )
+		MERGE_PROPERTY( m_nCrDate,		oCharPr )
+		MERGE_PROPERTY( m_nRevauth,		oCharPr )
+		MERGE_PROPERTY( m_nRevdttm,		oCharPr )
+		MERGE_PROPERTY( m_nRevauthDel,	oCharPr )
+		MERGE_PROPERTY( m_nRevdttmDel,	oCharPr )
+		MERGE_PROPERTY( m_nInsrsid,		oCharPr )
+
 		//свойство должно быть как единое целое, поэтому если oBorPr задано, то переписыватся целиком
 		if( uls_none != oCharPr.m_eUnderStyle || PROP_DEF != oCharPr.m_nUnderlineColor )
 		{
 			m_eUnderStyle = oCharPr.m_eUnderStyle;
 			m_nUnderlineColor = oCharPr.m_nUnderlineColor;
 		}
-		MERGE_PROPERTY_DEF( m_bSub, oCharPr, uls_none )
-		MERGE_PROPERTY( m_nUp, oCharPr )
-		MERGE_PROPERTY( m_nComplexScript, oCharPr )
+		MERGE_PROPERTY_DEF	( m_bSub, oCharPr, uls_none )
+		MERGE_PROPERTY		( m_nUp, oCharPr )
+		MERGE_PROPERTY		( m_nComplexScript, oCharPr )
+		
 		m_poBorder.Merge( oCharPr.m_poBorder );
 		m_poShading.Merge( oCharPr.m_poShading );
 	}
@@ -1219,19 +1261,19 @@ public:
 class RtfListLevelProperty : IRenderableProperty
 {
 public: 
-	int m_nLevel; //OOX
+	int m_nLevel;			///OOX
 	int m_nNumberType;		//levelnfcN \levelnfcnN Specifies the number type for the level
 	int m_bTentative;		//lvltentative 	Specifies that a given numbering level was been saved by a producer but was not used in the parent document. This means that this numbering level may be redefined by a future consumer without changing the actual content of the document.
 	int m_nJustification;		//leveljcN \leveljcnN	0	Left justified 1	Center justified 2	Right justified
-	int m_nFollow;		//levelfollowN
-	int m_nStart;		//levelstartatN	N specifies the start-at value for the level.
-	CString m_sText; //как в rtf текст, но сдвинут от нуля на 1 // \'03\'00.\'01 -> ("%d%d%d",4,1,2)
+	int m_nFollow;			//levelfollowN
+	int m_nStart;			//levelstartatN	N specifies the start-at value for the level.
+	CString m_sText;		//как в rtf текст, но сдвинут от нуля на 1 // \'03\'00.\'01 -> ("%d%d%d",4,1,2)
 	CString m_sNumber;
 	int m_nNoRestart;		//levelnorestartN	1 if this level does not restart its count each time a super ordinate level is incremented; 0 if this level does restart its count each time a super ordinate level is incremented.
-	int m_nLegal;		//levellegalN	1 if any list numbers from previous levels should be converted to Arabic numbers; 0 if they should be left with the format specified by their own level’s definition.
-	int m_nPictureIndex;		//levelpictureN	Determines which picture bullet from the \listpicture destination should be applied.
+	int m_nLegal;			//levellegalN	1 if any list numbers from previous levels should be converted to Arabic numbers; 0 if they should be left with the format specified by their own level’s definition.
+	int m_nPictureIndex;	//levelpictureN	Determines which picture bullet from the \listpicture destination should be applied.
 
-	RtfTabs m_oTabs; //ParagraphProp
+	RtfTabs m_oTabs;		//ParagraphProp
 	int m_nFirstIndent;
 	int m_nIndent;
 	int m_nIndentStart;
@@ -2218,6 +2260,9 @@ public:
 		}
 };
 
+class RtfCellProperty;
+typedef boost::shared_ptr<RtfCellProperty>	RtfCellPropertyPtr;
+
 class RtfCellProperty: public IRenderableProperty
 {	
 public:
@@ -2457,40 +2502,46 @@ public:
 	}
 
 };
+
+class RtfRowProperty;
+typedef boost::shared_ptr<RtfRowProperty>	RtfRowPropertyPtr;
+
 class RtfRowProperty: public RtfTableProperty, public ItemContainer< RtfCellProperty >
 {
 public: 
 	int m_nIndex;		//irowN	N is the row index of this row.
-	int m_nBandIndex;		//irowbandN	N is the row index of the row, adjusted to account for header rows. A header row has a value of –1.
+	int m_nBandIndex;	//irowbandN	N is the row index of the row, adjusted to account for header rows. A header row has a value of –1.
 
 	int m_bLastRow;		//lastrow	Output if this is the last row in the table.
 
-	int m_bIsHeader;		//trhdr	Table row header. This row should appear at the top of every page on which the current table appears.
+	int m_bIsHeader;	//trhdr	Table row header. This row should appear at the top of every page on which the current table appears.
 	int m_bKeep;		//trkeep	Keep table row together. This row cannot be split by a page break. This property is assumed to be off unless the control word is present.
 
 	int m_nHeight;		//trrhN	Height of a table row in twips. When 0, the height is sufficient for all the text in the line; when positive, the height is guaranteed to be at least the specified height; when negative, the absolute value of the height is used, regardless of the height of the text in the line.
 
-	int m_nWidthStartInvCell;		//trwWidthBN	Width of invisible cell at the beginning of the row. Used only in cases where rows have different widths.
+	int m_nWidthStartInvCell;			//trwWidthBN	Width of invisible cell at the beginning of the row. Used only in cases where rows have different widths.
 	MetricUnits m_eMUStartInvCell;		//trftsWidthBN	Units for \trwWidthBN:
 
-	int m_nWidthEndInvCell;		//trwWidthAN	Width of invisible cell at the end of the row. Used only when rows have different widths.
+	int m_nWidthEndInvCell;				//trwWidthAN	Width of invisible cell at the end of the row. Used only when rows have different widths.
 	MetricUnits m_eMUEndInvCell;		//trftsWidthAN	Units for \trwWidthAN:
 
-	int m_nGridBefore; //для oox
-	int m_nGridAfter; //для oox
+	int m_nGridBefore;	//для oox
+	int m_nGridAfter;	//для oox
 
 	int m_bStyleFirstRow;		//\tscfirstrow	This cell is in the first row.
 	int m_bStyleLastRow;		//\tsclastrow	This cell is in the last row.
 	int m_bStyleFirstCol;		//\tscfirstcol	This cell is in the first column.
 	int m_bStyleLastCol;		//\tsclastcol	This cell is in the last column.
 	int m_bStyleOddRowBand;		//\tscbandhorzodd	This cell is in the odd row band.
-	int m_bStyleEvenRowBand;		//\tscbandhorzeven	This cell is in the even row band.
+	int m_bStyleEvenRowBand;	//\tscbandhorzeven	This cell is in the even row band.
 	int m_bStyleOddColBand;		//\tscbandvertodd	This cell is in the odd column band.
-	int m_bStyleEvenColBand;		//\tscbandverteven	This cell is in the even column band.
-	int m_bStyleNWCell;		//\tscnwcell	This is the NW (north west) cell in the table (upper left).
-	int m_bStyleNECell;		//\tscnecell	NE cell
-	int m_bStyleSWCell;		//\tscswcell	SW cell.
-	int m_bStyleSECell;		//\tscsecell	SE cell.
+	int m_bStyleEvenColBand;	//\tscbandverteven	This cell is in the even column band.
+	int m_bStyleNWCell;			//\tscnwcell	This is the NW (north west) cell in the table (upper left).
+	int m_bStyleNECell;			//\tscnecell	NE cell
+	int m_bStyleSWCell;			//\tscswcell	SW cell.
+	int m_bStyleSECell;			//\tscsecell	SE cell.
+
+	RtfRowPropertyPtr	m_pOldRowProperty;
 
 	RtfRowProperty()
 	{
@@ -2589,13 +2640,16 @@ public:
 	CString RenderToOOX(RenderParameter oRenderParameter);
 };
 
+//----------------------------------------------------------------------------------------------------------
+class RtfParagraphProperty;
+typedef boost::shared_ptr<RtfParagraphProperty>		RtfParagraphPropertyPtr;
 
 class RtfParagraphProperty: public IRenderableProperty
 {
 public: 
-	bool	m_bOldList;
-//-------------------------------------------------------------------
-
+	bool					m_bOldList;
+	RtfParagraphPropertyPtr m_pOldParagraphProp;
+//-------------
 	int		m_bAutoHyphenation;	//hyphpar	Switches automatic hyphenation for the paragraph. Append 1 or nothing to toggle property on; append 0 to turn it off.
 	int		m_bInTable;			//intbl	Paragraph is part of a table.
 	int		m_nItap;			//itapN	Paragraph nesting level, where 0 is the main document, 1 is a table cell, 2 is a nested table cell, 3 is a doubly nested table cell, and so forth (default is 1).
@@ -2655,17 +2709,17 @@ public:
 	int m_bNoWordWrap;			//nowwrap
 	int m_bSnapToGrid;			//nosnaplinegrid	Disable snap line to grid.
 
-	typedef enum {tbw_none,
-					tbw_txbxtwno,			//txbxtwno
-					tbw_txbxtwalways,		//txbxtwalways
-					tbw_txbxtwfirstlast,	//txbxtwfirstlast
-					tbw_txbxtwfirst,		//txbxtwfirst
-					tbw_txbxtwlast,			//txbxtwlast
-
-						} TextBoxWrap;
-	TextBoxWrap m_eTextBoxWrap;		//1
-	int m_nListId;					//lsN	Should exactly match the \lsN for one of the list overrides in the List Override table.
-	int m_nListLevel;				//ilvlN	The 0-based level of the list to which the paragraph belongs. For all simple lists, N should always be 0. For multilevel lists, it can be 0 through 8. The value 9 is never used. The values 10 through 12 have the special meanings for documents generated by Word 6: 10 = ilvlBullet (a bulleted paragraph in Word 6), 11 = ilvlList (a numbered paragraph in Word 6), 12 = ilvlContinue (a paragraph that was not itself numbered, but took its indenting scheme from its numbering properties and did not “break” numbering (that in Word 6 required otherwise contiguous paragraphs).
+	enum _TextBoxWrap
+	{
+		tbw_none,
+		tbw_txbxtwno,			//txbxtwno
+		tbw_txbxtwalways,		//txbxtwalways
+		tbw_txbxtwfirstlast,	//txbxtwfirstlast
+		tbw_txbxtwfirst,		//txbxtwfirst
+		tbw_txbxtwlast,			//txbxtwlast
+	}			m_eTextBoxWrap;
+	int			m_nListId;					//lsN	Should exactly match the \lsN for one of the list overrides in the List Override table.
+	int			m_nListLevel;				//ilvlN	The 0-based level of the list to which the paragraph belongs. For all simple lists, N should always be 0. For multilevel lists, it can be 0 through 8. The value 9 is never used. The values 10 through 12 have the special meanings for documents generated by Word 6: 10 = ilvlBullet (a bulleted paragraph in Word 6), 11 = ilvlList (a numbered paragraph in Word 6), 12 = ilvlContinue (a paragraph that was not itself numbered, but took its indenting scheme from its numbering properties and did not “break” numbering (that in Word 6 required otherwise contiguous paragraphs).
 
 	RtfShadingPar m_oShading;
 
@@ -2676,8 +2730,8 @@ public:
 	RtfBorder m_oBorderBox;
 	RtfBorder m_oBorderBar;
 
-	RtfFrame m_oFrame;
-	int m_bOverlap;				//1\absnoovrlpN	Allow overlap with other frames or objects with similar wrapping:
+	RtfFrame	m_oFrame;
+	int			m_bOverlap;				//1\absnoovrlpN	Allow overlap with other frames or objects with similar wrapping:
 	typedef enum
 	{
 		tf_none,
@@ -2705,6 +2759,8 @@ public:
 	int m_bStyleSWCell;			//\tscswcell	SW cell.
 	int m_bStyleSECell;			//\tscsecell	SE cell.
 	
+	int m_nPrAuth;
+	int m_nPrDate;
 	RtfCharProperty		m_oCharProperty;
 //--------------------------------------------------------------------------------------------------------------
 	RtfParagraphProperty()
@@ -2746,7 +2802,6 @@ public:
 		DEFAULT_PROPERTY( m_nIndEnd )
 		DEFAULT_PROPERTY( m_bIndRightAuto )
 		DEFAULT_PROPERTY( m_bIndMirror )
-
 
 		DEFAULT_PROPERTY( m_nSpaceBefore )
 		
@@ -2796,6 +2851,8 @@ public:
 		DEFAULT_PROPERTY( m_bStyleSWCell )
 		DEFAULT_PROPERTY( m_bStyleSECell )
 
+		DEFAULT_PROPERTY( m_nPrAuth)
+		DEFAULT_PROPERTY( m_nPrDate)
 		m_oCharProperty.SetDefault();
 
 		m_bOldList = false;
@@ -3052,9 +3109,10 @@ public:
 	CString RenderToRtf(RenderParameter oRenderParameter);
 	CString RenderToOOX(RenderParameter oRenderParameter);
 };
-
+//---------------------------------------------------------------------------------------
 class RtfTableStyle;
 typedef boost::shared_ptr<RtfTableStyle> RtfTableStylePtr;
+
 class RtfTableStyle: public RtfParagraphStyle
 {
 public: 
@@ -3112,18 +3170,15 @@ typedef boost::shared_ptr<RtfCharStyle>				RtfCharStylePtr;
 typedef boost::shared_ptr<RtfParagraphStyle>		RtfParagraphStylePtr;
 typedef boost::shared_ptr<RtfInformation>			RtfInformationPtr;
 typedef boost::shared_ptr<RtfTime>					RtfTimePtr;
-typedef boost::shared_ptr<RtfParagraphProperty>		RtfParagraphPropertyPtr;
 typedef boost::shared_ptr<RtfRowProperty>			RtfRowPropertyPtr;
 typedef boost::shared_ptr<RtfCellProperty>			RtfCellPropertyPtr;
 typedef boost::shared_ptr<RtfFrame>					RtfFramePtr;
 typedef boost::shared_ptr<RtfTableProperty>			RtfTablePropertyPtr;
 typedef boost::shared_ptr<RtfTab>					RtfTabPtr;
-//typedef boost::shared_ptr<RtfStyleException>		RtfStyleExceptionPtr;
 
 typedef boost::shared_ptr<RtfListOverrideProperty>	RtfListOverridePropertyPtr;
 typedef boost::shared_ptr<RtfListProperty>			RtfListPropertyPtr;
 typedef boost::shared_ptr<RtfListLevelProperty>		RtfListLevelPropertyPtr;
-typedef boost::shared_ptr<RtfCharProperty>			RtfCharPropertyPtr;
 typedef boost::shared_ptr<RtfBorder>				RtfBorderPtr;
 typedef boost::shared_ptr<RtfShadingTableStyle>		RtfShadingTableStylePtr;
 typedef boost::shared_ptr<RtfShadingRow>			RtfShadingRowPtr;
@@ -3133,4 +3188,3 @@ typedef boost::shared_ptr<RtfShadingPar>			RtfShadingParPtr;
 typedef boost::shared_ptr<RtfShading>				RtfShadingPtr;
 typedef boost::shared_ptr<RtfColor>					RtfColorPtr;
 typedef boost::shared_ptr<RtfFont>					RtfFontPtr;
-//typedef boost::shared_ptr<RtfColorSchemeMapping> RtfColorSchemeMappingPtr;

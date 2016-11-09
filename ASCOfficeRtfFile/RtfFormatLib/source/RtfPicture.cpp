@@ -36,24 +36,24 @@
 CString RtfPicture::GenerateWMF(RenderParameter oRenderParameter)
 {
 	CString sResult;
-	sResult += _T("{\\pict");
+	sResult += L"{\\pict";
 
-	RENDER_RTF_INT( 100, sResult, _T("picscalex") )
-	RENDER_RTF_INT( 100, sResult, _T("picscaley") )
+	RENDER_RTF_INT( 100,			sResult, L"picscalex" )
+	RENDER_RTF_INT( 100,			sResult, L"picscaley" )
 
-	RENDER_RTF_INT( m_nCropL, sResult, _T("piccropl") )
-	RENDER_RTF_INT( m_nCropT, sResult, _T("piccropt") )
-	RENDER_RTF_INT( m_nCropR, sResult, _T("piccropr") )
-	RENDER_RTF_INT( m_nCropB, sResult, _T("piccropb") )
+	RENDER_RTF_INT( m_nCropL,		sResult, L"piccropl" )
+	RENDER_RTF_INT( m_nCropT,		sResult, L"piccropt" )
+	RENDER_RTF_INT( m_nCropR,		sResult, L"piccropr" )
+	RENDER_RTF_INT( m_nCropB,		sResult, L"piccropb" )
 
-	RENDER_RTF_INT( m_nWidth, sResult, _T("picw") )
-	RENDER_RTF_INT( m_nHeight, sResult, _T("pich") )
-	RENDER_RTF_INT( m_nWidthGoal, sResult, _T("picwgoal") )
-	RENDER_RTF_INT( m_nHeightGoal, sResult, _T("pichgoal") )
+	RENDER_RTF_INT( m_nWidth,		sResult, L"picw" )
+	RENDER_RTF_INT( m_nHeight,		sResult, L"pich" )
+	RENDER_RTF_INT( m_nWidthGoal,	sResult, L"picwgoal" )
+	RENDER_RTF_INT( m_nHeightGoal,	sResult, L"pichgoal" )
 
-	sResult += _T("\\wmetafile8");
+	sResult += L"\\wmetafile8";
 
-	sResult += _T(" ");
+	sResult += L" ";
 
 	//сохраняем в темповую директорию и загружаем файл как текст
 	RtfWriter * poWriter = static_cast<RtfWriter*>( oRenderParameter.poWriter );
@@ -71,53 +71,52 @@ CString RtfPicture::GenerateWMF(RenderParameter oRenderParameter)
 	//}
     //RELEASEINTERFACE( piTempPict );
 
-	sResult += _T("}");
+	sResult += L"}";
 	return sResult;
 }
 CString RtfPicture::RenderToRtf(RenderParameter oRenderParameter)		
 {
-	if( !IsValid() )return _T("");
+	if( !IsValid() )return L"";
 
-	CString sResult = _T("{\\pict");
+	CString sResult = L"{\\pict";
 
 	//if(-1 != m_nShapeId)
 	//{
-	//	sResult.AppendFormat(_T("{\\*\\picprop\\shplid%d"), m_nShapeId);
-	//	sResult += m_oShapeProp.RenderToRtf( oRenderParameter ) + _T("}");
+	//	sResult.AppendFormat(L"{\\*\\picprop\\shplid%d", m_nShapeId);
+	//	sResult += m_oShapeProp.RenderToRtf( oRenderParameter ) + L"}";
 	//}
 	//else
-	//	sResult.AppendFormat(_T("{\\*\\picprop") + m_oShapeProp.RenderToRtf( oRenderParameter ) + _T("}");
-	RENDER_RTF_INT( (int)m_dScaleX, sResult, _T("picscalex") )
-	RENDER_RTF_INT( (int)m_dScaleY, sResult, _T("picscaley") )
-	RENDER_RTF_INT( m_nCropL, sResult, _T("piccropl") )
-	RENDER_RTF_INT( m_nCropT, sResult, _T("piccropt") )
-	RENDER_RTF_INT( m_nCropR, sResult, _T("piccropr") )
-	RENDER_RTF_INT( m_nCropB, sResult, _T("piccropb") )
+	//	sResult.AppendFormat(L"{\\*\\picprop" + m_oShapeProp.RenderToRtf( oRenderParameter ) + L"}";
+	RENDER_RTF_INT( (int)m_dScaleX, sResult, L"picscalex" )
+	RENDER_RTF_INT( (int)m_dScaleY, sResult, L"picscaley" )
+	RENDER_RTF_INT( m_nCropL,		sResult, L"piccropl" )
+	RENDER_RTF_INT( m_nCropT,		sResult, L"piccropt" )
+	RENDER_RTF_INT( m_nCropR,		sResult, L"piccropr" )
+	RENDER_RTF_INT( m_nCropB,		sResult, L"piccropb" )
 
-	RENDER_RTF_INT( m_nWidth, sResult, _T("picw") )
-	RENDER_RTF_INT( m_nHeight, sResult, _T("pich") )
-	RENDER_RTF_INT( m_nWidthGoal, sResult, _T("picwgoal") )
-	RENDER_RTF_INT( m_nHeightGoal, sResult, _T("pichgoal") )
+	RENDER_RTF_INT( m_nWidth,		sResult, L"picw" )
+	RENDER_RTF_INT( m_nHeight,		sResult, L"pich" )
+	RENDER_RTF_INT( m_nWidthGoal,	sResult, L"picwgoal" )
+	RENDER_RTF_INT( m_nHeightGoal,	sResult, L"pichgoal" )
 
 	switch( eDataType )
 	{
-		case dt_emf: sResult += _T("\\emfblip");	break;
-		case dt_wmf: sResult += _T("\\wmetafile8");	break;
-		case dt_png: sResult += _T("\\pngblip");	break;
-		case dt_jpg: sResult += _T("\\jpegblip");	break;
-		//case dt_bmp: sResult += _T("wbitmap8");	break;
+		case dt_emf: sResult += L"\\emfblip";		break;
+		case dt_wmf: sResult += L"\\wmetafile8";	break;
+		case dt_png: sResult += L"\\pngblip";		break;
+		case dt_jpg: sResult += L"\\jpegblip";		break;
+		//case dt_bmp: sResult += L"wbitmap8";		break;
 	}
-	sResult += _T(" ");
+	sResult += L" ";
 
     sResult += RtfUtility::RtfInternalEncoder::Encode( m_sPicFilename );
 
-	sResult += _T("}");
+	sResult += L"}";
 	return sResult;
 }
 CString RtfPicture::RenderToOOX(RenderParameter oRenderParameter)
 {
-	if( false == IsValid() )
-		return _T("");
+	if( false == IsValid() )	return L"";
 	
 	OOXWriter		* poOOXWriter	= static_cast<OOXWriter*>		(oRenderParameter.poWriter);
 	OOXRelsWriter	* poRelsWriter	= static_cast<OOXRelsWriter*>	(oRenderParameter.poRels);
@@ -127,23 +126,23 @@ CString RtfPicture::RenderToOOX(RenderParameter oRenderParameter)
 	CString sMime;
 	switch( eDataType )
 	{
-		case dt_png:	sExtension = _T("png"); sMime = _T("image/png");	break;
-		case dt_jpg:	sExtension = _T("jpg"); sMime = _T("image/jpg");	break;
-		case dt_wmf:	sExtension = _T("wmf"); sMime = _T("image/x-wmf");	break;
-		case dt_emf:	sExtension = _T("emf"); sMime = _T("image/x-emf");	break;
-		case dt_macpict:sExtension = _T("pct"); sMime = _T("image/x-pict");	break;
+		case dt_png:	sExtension = L"png"; sMime = L"image/png";		break;
+		case dt_jpg:	sExtension = L"jpg"; sMime = L"image/jpg";		break;
+		case dt_wmf:	sExtension = L"wmf"; sMime = L"image/x-wmf";	break;
+		case dt_emf:	sExtension = L"emf"; sMime = L"image/x-emf";	break;
+		case dt_macpict:sExtension = L"pct"; sMime = L"image/x-pict";	break;
 	}
 
 	CString sFilenameRels;
-    sFilenameRels.AppendFormat( _T("Image%d."), poRtfDocument->m_oIdGenerator.Generate_ImageIndex());
+    sFilenameRels.AppendFormat( L"Image%d.", poRtfDocument->m_oIdGenerator.Generate_ImageIndex());
 	sFilenameRels += sExtension;
 	
-	CString sFilenameFull = poOOXWriter->m_sTargetFolder + FILE_SEPARATOR_STR + _T("word") + FILE_SEPARATOR_STR +_T("media");
+	CString sFilenameFull = poOOXWriter->m_sTargetFolder + FILE_SEPARATOR_STR + L"word" + FILE_SEPARATOR_STR +L"media";
 	
 	FileSystem::Directory::CreateDirectory( sFilenameFull );
 	
 	sFilenameFull += FILE_SEPARATOR_STR + sFilenameRels;
-	sFilenameRels = _T("media/") + sFilenameRels;
+	sFilenameRels = L"media/" + sFilenameRels;
 
 	if( m_sPicFilename != sFilenameFull )
 		Utils::CopyDirOrFile( m_sPicFilename, sFilenameFull );
@@ -152,7 +151,7 @@ CString RtfPicture::RenderToOOX(RenderParameter oRenderParameter)
 
 	poOOXWriter->m_oContentTypes.AddExtension( sMime, sExtension);
 
-	CString srId = poRelsWriter->AddRelationship( _T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/image"), sFilenameRels);
+	CString srId = poRelsWriter->AddRelationship( L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image", sFilenameRels);
 
 	return srId;
 }

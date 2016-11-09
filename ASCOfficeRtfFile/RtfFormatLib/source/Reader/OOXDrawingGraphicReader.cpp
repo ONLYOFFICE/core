@@ -72,7 +72,7 @@ bool OOXPictureGraphicReader::Parse( ReaderParameter oParam , RtfShape& oOutput)
 							OOX::Image* pImage = (OOX::Image*)oFile.operator->();
 
 							CString sImagePath = pImage->filename().GetPath();
-							bTryPicture = WriteDataToPicture( sImagePath, *oOutput.m_oPicture, _T("") );
+							bTryPicture = WriteDataToPicture( sImagePath, *oOutput.m_oPicture, L"" );
 						}
 					}
 				}

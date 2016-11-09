@@ -413,7 +413,7 @@ bool OOXMathReader::ParseElement(ReaderParameter oParam , OOX::WritingElement * 
 				{
 					rtfMath->m_bIsVal = true;
 					RtfCharPtr oChar = RtfCharPtr(new RtfChar);
-					CString s; s.AppendFormat( _T("%d"), oFont.m_nID );
+					CString s; s.AppendFormat( L"%d", oFont.m_nID );
 					oChar->setText( s );
 					rtfMath->m_oVal.AddItem( oChar );
 				}

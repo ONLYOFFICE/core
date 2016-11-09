@@ -317,41 +317,7 @@ public:
     CString RenderToOOX(RenderParameter oRenderParameter);
     static CString renderRtfText( CString& sText, void* poDocument, RtfCharProperty* oCharProperty = NULL );
 
-    CString RenderToRtf(RenderParameter oRenderParameter)
-    {
-        CString result;
-        if( RENDER_TO_RTF_PARAM_CHAR ==  oRenderParameter.nType )
-        {
-            if( true == m_bRtfEncode )
-                result += renderRtfText( m_sChars, oRenderParameter.poDocument, &m_oProperty );
-            else
-                result += m_sChars;
-        }
-        else
-        {
-            CString sText;
-            if( true == m_bRtfEncode )
-                sText = renderRtfText( m_sChars, oRenderParameter.poDocument, &m_oProperty );
-            else
-                sText = m_sChars;
-
-			CString sTextProp =  m_oProperty.RenderToRtf( oRenderParameter ) ;
-			
-			if( !sText.IsEmpty() || !sTextProp.IsEmpty())
-            {
-                if (oRenderParameter.nType != RENDER_TO_RTF_PARAM_NESTED)
-					result += L"{";
-					
-					result += sTextProp;
-					result += L" ";
-					result += sText;
-
-				if (oRenderParameter.nType != RENDER_TO_RTF_PARAM_NESTED)
-					result += L"}";
-            }
-        }
-        return result;
-    }
+    CString RenderToRtf(RenderParameter oRenderParameter);
 private: 
 	CString renderTextToXML( CString sParam, bool bDelete = false );
 };

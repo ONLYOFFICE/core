@@ -47,12 +47,13 @@
 #include "../../../../ASCOfficeDocxFile2/BinReader/DefaultThemeWriter.h"
 
 OOXWriter::OOXWriter( RtfDocument& oDocument, std::wstring sPath ) : 
-		m_oDocument(oDocument),
-		m_sTargetFolder(sPath.c_str()),
-		m_oRels( _T(""), oDocument ),
-		m_oDocRels( _T("document.xml"), oDocument )
+		m_oDocument			( oDocument ),
+		m_sTargetFolder		( sPath.c_str() ),
+		m_oRels				( L"", oDocument ),
+		m_nCurTrackChangesId( 0),
+		m_oDocRels			( L"document.xml", oDocument )
 {
-	nCurFitWidth		= PROP_DEF;
+	m_nCurFitWidth		= PROP_DEF;
 	m_poFootnoteWriter	= NULL;
 	m_poEndnoteWriter	= NULL;
 
@@ -85,15 +86,15 @@ OOXWriter::OOXWriter( RtfDocument& oDocument, std::wstring sPath ) :
 }
 OOXWriter::~OOXWriter()
 {
-	delete ((OOXDocumentWriter*)m_poDocumentWriter);
-	delete ((OOXFootnoteWriter*)m_poFootnoteWriter);
-	delete ((OOXEndnoteWriter*)m_poEndnoteWriter);
-	delete ((OOXFontTableWriter*)m_poFontTableWriter);
-	delete ((OOXNumberingWriter*)m_poNumberingWriter);
-	delete ((OOXSettingsWriter*)m_poSettingsWriter);
-	delete ((OOXStylesWriter*)m_poStylesWriter);
-	delete ((OOX::CApp*)m_poDocPropsApp);
-	delete ((OOX::CCore*)m_poDocPropsCore);
+	delete ((OOXDocumentWriter*)	m_poDocumentWriter);
+	delete ((OOXFootnoteWriter*)	m_poFootnoteWriter);
+	delete ((OOXEndnoteWriter*)		m_poEndnoteWriter);
+	delete ((OOXFontTableWriter*)	m_poFontTableWriter);
+	delete ((OOXNumberingWriter*)	m_poNumberingWriter);
+	delete ((OOXSettingsWriter*)	m_poSettingsWriter);
+	delete ((OOXStylesWriter*)		m_poStylesWriter);
+	delete ((OOX::CApp*)			m_poDocPropsApp);
+	delete ((OOX::CCore*)			m_poDocPropsCore);
 }
 bool OOXWriter::Save()
 {
@@ -117,47 +118,47 @@ bool OOXWriter::SaveByItemEnd()
 {
 	OOX::CContentTypes oContentTypes;
 
-	OOX::CPath pathWord = m_sTargetFolder + FILE_SEPARATOR_STR + _T("word");
+	OOX::CPath pathWord = m_sTargetFolder + FILE_SEPARATOR_STR + L"word";
     FileSystem::Directory::CreateDirectory(pathWord.GetPath());
 	
-	OOX::CPath pathTheme = pathWord + FILE_SEPARATOR_STR + _T("theme");
+	OOX::CPath pathTheme = pathWord + FILE_SEPARATOR_STR + L"theme";
     FileSystem::Directory::CreateDirectory(pathTheme.GetPath()) ;
 	Writers::DefaultThemeWriter themeWriter;
 
-	themeWriter.Write(pathTheme.GetPath() + FILE_SEPARATOR_STR + _T("theme1.xml"));
-	m_oDocRels.AddRelationship( _T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme"), _T("theme/theme1.xml") );
-	m_oContentTypes.AddContent( _T("application/vnd.openxmlformats-officedocument.theme+xml"), _T("/word/theme/theme1.xml") );
+	themeWriter.Write(pathTheme.GetPath() + FILE_SEPARATOR_STR + L"theme1.xml");
+	m_oDocRels.AddRelationship( L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme", L"theme/theme1.xml" );
+	m_oContentTypes.AddContent( L"application/vnd.openxmlformats-officedocument.theme+xml", L"/word/theme/theme1.xml" );
 //-----------------------------------------------------------------------------------------------------
 	((OOXDocumentWriter*)	m_poDocumentWriter)->SaveByItemEnd();
 
-	((OOXFootnoteWriter*)	m_poFootnoteWriter)->Save(pathWord.GetPath());
-	((OOXEndnoteWriter*)	m_poEndnoteWriter)->Save(pathWord.GetPath());
-	((OOXNumberingWriter*)	m_poNumberingWriter)->Save(m_sTargetFolder);
-	((OOXStylesWriter*)		m_poStylesWriter)->Save(m_sTargetFolder);
-	((OOXFontTableWriter*)	m_poFontTableWriter)->Save(m_sTargetFolder);
+	((OOXFootnoteWriter*)	m_poFootnoteWriter)->Save	(pathWord.GetPath());
+	((OOXEndnoteWriter*)	m_poEndnoteWriter)->Save	(pathWord.GetPath());
+	((OOXNumberingWriter*)	m_poNumberingWriter)->Save	(m_sTargetFolder);
+	((OOXStylesWriter*)		m_poStylesWriter)->Save		(m_sTargetFolder);
+	((OOXFontTableWriter*)	m_poFontTableWriter)->Save	(m_sTargetFolder);
 	
-	((OOXSettingsWriter*)m_poSettingsWriter)->Save(m_sTargetFolder); //setting в последнюю очередь
+	((OOXSettingsWriter*)	m_poSettingsWriter)->Save	(m_sTargetFolder); //setting в последнюю очередь
 
 //-------------------------------------------------------------------------------------
-	OOX::CPath pathDocProps = m_sTargetFolder + FILE_SEPARATOR_STR + _T("docProps");
+	OOX::CPath pathDocProps = m_sTargetFolder + FILE_SEPARATOR_STR + L"docProps";
     FileSystem::Directory::CreateDirectory(pathDocProps.GetPath());
 	
 	if (m_poDocPropsApp)
 	{
-		((OOX::CApp*)m_poDocPropsApp)->SetApplication(_T("OnlyOffice"));
-		((OOX::CApp*)m_poDocPropsApp)->SetAppVersion(_T("3.0000"));
+		((OOX::CApp*)m_poDocPropsApp)->SetApplication	( L"OnlyOffice" );
+		((OOX::CApp*)m_poDocPropsApp)->SetAppVersion	( L"3.0000" );
 		
-		((OOX::CApp*)m_poDocPropsApp)->write(pathDocProps + FILE_SEPARATOR_STR + _T("app.xml"), pathDocProps.GetDirectory(), oContentTypes);
+		((OOX::CApp*)m_poDocPropsApp)->write(pathDocProps + FILE_SEPARATOR_STR + L"app.xml", pathDocProps.GetDirectory(), oContentTypes);
 		
-		m_oRels.AddRelationship( _T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties"), _T("docProps/app.xml") );
-		m_oContentTypes.AddContent( _T("application/vnd.openxmlformats-officedocument.extended-properties+xml"), _T("/docProps/app.xml") );
+		m_oRels.AddRelationship( L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties", L"docProps/app.xml" );
+		m_oContentTypes.AddContent( L"application/vnd.openxmlformats-officedocument.extended-properties+xml", L"/docProps/app.xml" );
 	}				
 	if (m_poDocPropsCore)
 	{
 		((OOX::CCore*)m_poDocPropsCore)->write(pathDocProps + FILE_SEPARATOR_STR + _T("core.xml"), pathDocProps.GetDirectory(), oContentTypes);
 		
-		m_oRels.AddRelationship( _T("http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties"), _T("docProps/core.xml") );
-		m_oContentTypes.AddContent( _T("application/vnd.openxmlformats-package.core-properties+xml"), _T("/docProps/core.xml") );
+		m_oRels.AddRelationship( L"http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties", L"docProps/core.xml" );
+		m_oContentTypes.AddContent( L"application/vnd.openxmlformats-package.core-properties+xml", L"/docProps/core.xml" );
 	} 
 //-----------------------------------------------------------------------------------------------------
 

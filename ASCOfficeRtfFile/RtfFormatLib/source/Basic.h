@@ -39,7 +39,7 @@
 
 #include <boost/shared_ptr.hpp>
  
-typedef enum{ mu_none, mu_Auto, mu_Percent, mu_Twips } MetricUnits;
+enum _MetricUnits{ mu_none, mu_Auto, mu_Percent, mu_Twips };
 
 
 class RenderParameter
@@ -49,19 +49,19 @@ class RenderParameter
 		void* poDocument;
 		void* poRels;
 		
-		int nType;
-		int nValue;
-		CString sValue;
-		int RtfType;
+		int			nType;
+		int			nValue;
+		CString		sValue;
+		int			RtfType;
 		
 		RenderParameter()
 		{
-			poWriter = NULL;
-			poDocument = NULL;
-			poRels = NULL;
-			nType = RENDER_TO_OOX_PARAM_UNKNOWN;
-			nValue = PROP_DEF;
-			RtfType = RTF_MAX;
+			poWriter	= NULL;
+			poDocument	= NULL;
+			poRels		= NULL;
+			nType		= RENDER_TO_OOX_PARAM_UNKNOWN;
+			nValue		= PROP_DEF;
+			RtfType		= RTF_MAX;
 		}
 };
 
@@ -252,7 +252,7 @@ public:
 
 			if( TYPE_RTF_PARAGRAPH == m_aArray[i]->GetType() && i != (int)m_aArray.size() - 1)
 			{
-				sResult += _T("\\par") ;
+				sResult += L"\\par";
 			}
 		}
 		return sResult;

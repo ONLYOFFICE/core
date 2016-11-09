@@ -129,9 +129,9 @@ void RtfShape::SetDefault()
 	DEFAULT_PROPERTY( m_nRelZOrder )
 
 //Rehydration
-	m_sMetroBlob = _T("");
-	m_sMetroBlobRels = _T("");
-	m_sMetroBlobData = _T("");
+	m_sMetroBlob = L"";
+	m_sMetroBlobRels = L"";
+	m_sMetroBlobData = L"";
 //Connectors
 	DEFAULT_PROPERTY( m_nConnectionType )
 	DEFAULT_PROPERTY( m_nConnectorStyle )
@@ -169,6 +169,8 @@ void RtfShape::SetDefault()
 	
 	m_bIsOle		= false;
 	m_bInGroup		= false;
+	
+	m_oCharProperty.SetDefault();
 }
 
 CString RtfShape::RenderToRtf(RenderParameter oRenderParameter)
@@ -217,37 +219,37 @@ CString RtfShape::RenderToRtf(RenderParameter oRenderParameter)
 			}
 			else
 			{
-				sResult += _T("{\\*\\shppict");
+				sResult += L"{\\*\\shppict";
 				sResult +=  m_oPicture->RenderToRtf( oRenderParameter );
-				sResult += _T("}");
-				sResult += _T("{\\nonshppict");
+				sResult += L"}";
+				sResult += L"{\\nonshppict";
 				sResult +=  m_oPicture->GenerateWMF( oRenderParameter );
 
-				sResult += _T("}");
+				sResult += L"}";
 			}
 		}
 		else
 		{
-			sResult += _T("{\\shp");
-			sResult += _T("{\\*\\shpinst");
-			RENDER_RTF_INT( m_nID			, sResult, _T("shplid") );
+			sResult += L"{\\shp";
+			sResult += L"{\\*\\shpinst";
+			RENDER_RTF_INT( m_nID			, sResult, L"shplid" );
 			
 			if (!m_bInGroup)
 			{
-				RENDER_RTF_INT( m_nLeft			, sResult, _T("shpleft") );
-				RENDER_RTF_INT( m_nTop			, sResult, _T("shptop") );
-				RENDER_RTF_INT( m_nBottom		, sResult, _T("shpbottom") );
-				RENDER_RTF_INT( m_nRight		, sResult, _T("shpright") );
-				RENDER_RTF_INT( m_nHeader		, sResult, _T("shpfhdr") );
-				RENDER_RTF_INT( m_nWrapType		, sResult, _T("shpwr") );
-				RENDER_RTF_INT( m_nWrapSideType	, sResult, _T("shpwrk") );
-				RENDER_RTF_BOOL( m_bLockAnchor	, sResult, _T("shplockanchor") );
+				RENDER_RTF_INT( m_nLeft			, sResult, L"shpleft" );
+				RENDER_RTF_INT( m_nTop			, sResult, L"shptop" );
+				RENDER_RTF_INT( m_nBottom		, sResult, L"shpbottom" );
+				RENDER_RTF_INT( m_nRight		, sResult, L"shpright" );
+				RENDER_RTF_INT( m_nHeader		, sResult, L"shpfhdr" );
+				RENDER_RTF_INT( m_nWrapType		, sResult, L"shpwr" );
+				RENDER_RTF_INT( m_nWrapSideType	, sResult, L"shpwrk" );
+				RENDER_RTF_BOOL( m_bLockAnchor	, sResult, L"shplockanchor" );
 				
-				sResult += _T("\\shpbxignore");
-				sResult += _T("\\shpbyignore");
+				sResult += L"\\shpbxignore";
+				sResult += L"\\shpbyignore";
 				
-				sResult.AppendFormat( _T("{\\sp{\\sn fUseShapeAnchor}{\\sv %d}}"), false);
-				sResult.AppendFormat( _T("{\\sp{\\sn fPseudoInline}{\\sv %d}}"), true);
+				sResult.AppendFormat( L"{\\sp{\\sn fUseShapeAnchor}{\\sv %d}}", false);
+				sResult.AppendFormat( L"{\\sp{\\sn fPseudoInline}{\\sv %d}}", true);
 			}
 			
 			sResult +=  RenderToRtfShapeProperty( oRenderParameter );
@@ -255,61 +257,61 @@ CString RtfShape::RenderToRtf(RenderParameter oRenderParameter)
 			//picture
 			if( 0 != m_oPicture && m_nFillType == 1 || m_nFillType == 2 || m_nFillType == 9)
 			{
-				sResult += _T("{\\sp{\\sn fillBlip}{\\sv ");
+				sResult += L"{\\sp{\\sn fillBlip}{\\sv ";
 				sResult +=  m_oPicture->RenderToRtf( oRenderParameter );
-				sResult += _T("}}");
+				sResult += L"}}";
 			}
 			//textbox
 			if( 0 != m_aTextItems )
 			{
-				sResult += _T("{\\shptxt ");
+				sResult += L"{\\shptxt ";
 				sResult +=  m_aTextItems->RenderToRtf( oRenderParameter );
-				sResult += _T("}");
+				sResult += L"}";
 			}
-			sResult += _T("}");
+			sResult += L"}";
 			//if( 0 != m_oPicture )
 			//{
-			//	sResult += _T("{\\shprslt\\par\\plain"));
+			//	sResult += L"{\\shprslt\\par\\plain";
 			//	sResult +=  m_oPicture->GenerateWMF( oRenderParameter ) );
-			//	sResult += _T("\\par}"));
+			//	sResult += L"\\par}";
 			//}
-			sResult += _T("}");
+			sResult += L"}";
 		}
 	}
 	else
 	{
-		sResult += _T("{\\shp");
-		sResult += _T("{\\*\\shpinst");
+		sResult += L"{\\shp";
+		sResult += L"{\\*\\shpinst";
 		
-		RENDER_RTF_INT( m_nID			, sResult, _T("shplid") );
+		RENDER_RTF_INT( m_nID			, sResult, L"shplid" );
 
 		if (!m_bInGroup)
 		{		
-			RENDER_RTF_INT( m_nLeft			, sResult, _T("shpleft") );
-			RENDER_RTF_INT( m_nTop			, sResult, _T("shptop") );
-			RENDER_RTF_INT( m_nBottom		, sResult, _T("shpbottom") );
-			RENDER_RTF_INT( m_nRight		, sResult, _T("shpright") );
-			RENDER_RTF_INT( m_nZOrder		, sResult, _T("shpz") );
-			RENDER_RTF_INT( m_nHeader		, sResult, _T("shpfhdr") );
-			RENDER_RTF_INT( m_nWrapType		, sResult, _T("shpwr") );
-			RENDER_RTF_INT( m_nWrapSideType	, sResult, _T("shpwrk") );
-			RENDER_RTF_BOOL( m_bLockAnchor	, sResult, _T("shplockanchor") );
+			RENDER_RTF_INT( m_nLeft			, sResult, L"shpleft" );
+			RENDER_RTF_INT( m_nTop			, sResult, L"shptop" );
+			RENDER_RTF_INT( m_nBottom		, sResult, L"shpbottom" );
+			RENDER_RTF_INT( m_nRight		, sResult, L"shpright" );
+			RENDER_RTF_INT( m_nZOrder		, sResult, L"shpz" );
+			RENDER_RTF_INT( m_nHeader		, sResult, L"shpfhdr" );
+			RENDER_RTF_INT( m_nWrapType		, sResult, L"shpwr" );
+			RENDER_RTF_INT( m_nWrapSideType	, sResult, L"shpwrk" );
+			RENDER_RTF_BOOL( m_bLockAnchor	, sResult, L"shplockanchor" );
 
 			switch(m_eXAnchor)
 			{
-				case ax_page:	sResult += _T("\\shpbxpage");	break;
-				case ax_margin: sResult += _T("\\shpbxmargin");	break;
-				case ax_column: sResult += _T("\\shpbxcolumn");	break;
+				case ax_page:	sResult += L"\\shpbxpage";	break;
+				case ax_margin: sResult += L"\\shpbxmargin";	break;
+				case ax_column: sResult += L"\\shpbxcolumn";	break;
 			}
-			sResult += _T("\\shpbxignore");
+			sResult += L"\\shpbxignore";
 			switch(m_eYAnchor)
 			{
-				case ay_page:	sResult += _T("\\shpbypage");	break;
-				case ay_margin: sResult += _T("\\shpbymargin");	break;
-				case ay_Para:	sResult += _T("\\shpbypara");	break;
+				case ay_page:	sResult += L"\\shpbypage";	break;
+				case ay_margin: sResult += L"\\shpbymargin";	break;
+				case ay_Para:	sResult += L"\\shpbypara";	break;
 			}
-			sResult += _T("\\shpbyignore");
-			RENDER_RTF_INT( m_nZOrderRelative, sResult, _T("shpfblwtxt"));
+			sResult += L"\\shpbyignore";
+			RENDER_RTF_INT( m_nZOrderRelative, sResult, L"shpfblwtxt");
 		}
 
 		sResult += RenderToRtfShapeProperty( oRenderParameter );
@@ -319,33 +321,33 @@ CString RtfShape::RenderToRtf(RenderParameter oRenderParameter)
 		{
 			if (m_nShapeType == NSOfficeDrawing::sptPictureFrame)
 			{
-				sResult += _T("{\\sp{\\sn pib}{\\sv ");
+				sResult += L"{\\sp{\\sn pib}{\\sv ";
 				sResult +=  m_oPicture->RenderToRtf( oRenderParameter );
-				sResult += _T("}}");
+				sResult += L"}}";
 			}
 			else if (m_nFillType == 1 || m_nFillType == 2 || m_nFillType == 9)
 			{
-				sResult += _T("{\\sp{\\sn fillType}{\\sv 2}}");
-				sResult += _T("{\\sp{\\sn fillBlip}{\\sv ");
+				sResult += L"{\\sp{\\sn fillType}{\\sv 2}}";
+				sResult += L"{\\sp{\\sn fillBlip}{\\sv ";
 				sResult +=  m_oPicture->RenderToRtf( oRenderParameter );
-				sResult += _T("}}");
+				sResult += L"}}";
 			}
 		}
 		//textbox
 		if( m_aTextItems )
 		{
-			sResult += _T("{\\shptxt ");
+			sResult += L"{\\shptxt ";
 			sResult += m_aTextItems->RenderToRtf( oRenderParameter );
-			sResult += _T("}");
+			sResult += L"}";
 		}
-		sResult += _T("}");
+		sResult += L"}";
 		if( m_oPicture && m_nShapeType == NSOfficeDrawing::sptPictureFrame )
 		{
-			sResult += _T("{\\shprslt\\par\\plain");
+			sResult += L"{\\shprslt\\par\\plain";
 			sResult +=  m_oPicture->GenerateWMF( oRenderParameter );
-			sResult += _T("\\par}");
+			sResult += L"\\par}";
 		}
-		sResult += _T("}");
+		sResult += L"}";
 	}
 	//восстанавливаем координаты и если нужно поворачиваем
 	m_nLeft			= nLeft;
@@ -368,238 +370,238 @@ CString RtfShape::RenderToRtfShapeProperty(RenderParameter oRenderParameter)
 
 //Position absolute
 	if( PROP_DEF != m_nPositionH )
-		sResult.AppendFormat( _T("{\\sp{\\sn posh}{\\sv %d}}"),			m_nPositionH);
+		sResult.AppendFormat( L"{\\sp{\\sn posh}{\\sv %d}}",			m_nPositionH);
 	if( PROP_DEF != m_nPositionHRelative )
-		sResult.AppendFormat( _T("{\\sp{\\sn posrelh}{\\sv %d}}"),		m_nPositionHRelative);
+		sResult.AppendFormat( L"{\\sp{\\sn posrelh}{\\sv %d}}",		m_nPositionHRelative);
 	if( PROP_DEF != m_nPositionV )
-		sResult.AppendFormat( _T("{\\sp{\\sn posv}{\\sv %d}}"),			m_nPositionV);
+		sResult.AppendFormat( L"{\\sp{\\sn posv}{\\sv %d}}",			m_nPositionV);
 	
 	if( PROP_DEF != m_nPositionVRelative )
-		sResult.AppendFormat( _T("{\\sp{\\sn posrelv}{\\sv %d}}"),		m_nPositionVRelative);
+		sResult.AppendFormat( L"{\\sp{\\sn posrelv}{\\sv %d}}",		m_nPositionVRelative);
 	if(  PROP_DEF != m_bLayoutInCell )
-		sResult.AppendFormat( _T("{\\sp{\\sn fLayoutInCell}{\\sv %d}}"), m_bLayoutInCell);
+		sResult.AppendFormat( L"{\\sp{\\sn fLayoutInCell}{\\sv %d}}", m_bLayoutInCell);
 	if(  PROP_DEF != m_bAllowOverlap )
-		sResult.AppendFormat( _T("{\\sp{\\sn fAllowOverlap}{\\sv %d}}"),m_bAllowOverlap);
+		sResult.AppendFormat( L"{\\sp{\\sn fAllowOverlap}{\\sv %d}}",m_bAllowOverlap);
 
 //Position relative
 	if(  PROP_DEF != m_nPositionHPct )
-		sResult.AppendFormat( _T("{\\sp{\\sn pctHorizPos}{\\sv %d}}"),	m_nPositionHPct);
+		sResult.AppendFormat( L"{\\sp{\\sn pctHorizPos}{\\sv %d}}",	m_nPositionHPct);
 	if(  PROP_DEF != m_nPositionVPct )
-		sResult.AppendFormat( _T("{\\sp{\\sn pctVertPos}{\\sv %d}}"),	m_nPositionVPct);
+		sResult.AppendFormat( L"{\\sp{\\sn pctVertPos}{\\sv %d}}",	m_nPositionVPct);
 	if(  PROP_DEF != m_nPctWidth )
-		sResult.AppendFormat( _T("{\\sp{\\sn pctHoriz}{\\sv %d}}"),		m_nPctWidth);
+		sResult.AppendFormat( L"{\\sp{\\sn pctHoriz}{\\sv %d}}",		m_nPctWidth);
 	if(  PROP_DEF != m_nPctHeight )
-		sResult.AppendFormat( _T("{\\sp{\\sn pctVert}{\\sv %d}}"),		m_nPctHeight);
+		sResult.AppendFormat( L"{\\sp{\\sn pctVert}{\\sv %d}}",		m_nPctHeight);
 	if(  PROP_DEF != m_nPctWidthRelative )
-		sResult.AppendFormat( _T("{\\sp{\\sn sizerelh}{\\sv %d}}"),		m_nPctWidthRelative);
+		sResult.AppendFormat( L"{\\sp{\\sn sizerelh}{\\sv %d}}",		m_nPctWidthRelative);
 	if(  PROP_DEF != m_nPctHeightRelative )
-		sResult.AppendFormat( _T("{\\sp{\\sn sizerelv}{\\sv %d}}"),		m_nPctHeightRelative);
+		sResult.AppendFormat( L"{\\sp{\\sn sizerelv}{\\sv %d}}",		m_nPctHeightRelative);
 	if(  PROP_DEF != m_nColStart )
-		sResult.AppendFormat( _T("{\\sp{\\sn colStart}{\\sv %d}}"),		m_nColStart);
+		sResult.AppendFormat( L"{\\sp{\\sn colStart}{\\sv %d}}",		m_nColStart);
 	if(  PROP_DEF != m_nColSpan )
-		sResult.AppendFormat( _T("{\\sp{\\sn colSpan}{\\sv %d}}"),		m_nColSpan);
+		sResult.AppendFormat( L"{\\sp{\\sn colSpan}{\\sv %d}}",		m_nColSpan);
 //Rehydration
-	if(  _T("") != m_sMetroBlob )
-        sResult.AppendFormat( _T("{\\sp{\\sn metroBlob}{\\sv %d}}"),	m_sMetroBlob.GetBuffer());
+	if(  L"" != m_sMetroBlob )
+        sResult.AppendFormat( L"{\\sp{\\sn metroBlob}{\\sv %d}}",	m_sMetroBlob.GetBuffer());
 
 //Object Type
 	if(  PROP_DEF != m_bIsBullet )
-		sResult.AppendFormat( _T("{\\sp{\\sn fIsBullet}{\\sv %d}}"),	m_bIsBullet);
+		sResult.AppendFormat( L"{\\sp{\\sn fIsBullet}{\\sv %d}}",	m_bIsBullet);
 	if(  PROP_DEF != m_nRotation )
-		sResult.AppendFormat( _T("{\\sp{\\sn rotation}{\\sv %d}}"),		m_nRotation);
+		sResult.AppendFormat( L"{\\sp{\\sn rotation}{\\sv %d}}",		m_nRotation);
 	if(  PROP_DEF != m_bFlipV )
-		sResult.AppendFormat( _T("{\\sp{\\sn fFlipV}{\\sv %d}}"),		m_bFlipV);
+		sResult.AppendFormat( L"{\\sp{\\sn fFlipV}{\\sv %d}}",		m_bFlipV);
 	if(  PROP_DEF != m_bFlipH )
-		sResult.AppendFormat( _T("{\\sp{\\sn fFlipH}{\\sv %d}}"),		m_bFlipH);
+		sResult.AppendFormat( L"{\\sp{\\sn fFlipH}{\\sv %d}}",		m_bFlipH);
 	if(  PROP_DEF != m_nShapeType )
-		sResult.AppendFormat( _T("{\\sp{\\sn shapeType}{\\sv %d}}"),	m_nShapeType);
+		sResult.AppendFormat( L"{\\sp{\\sn shapeType}{\\sv %d}}",	m_nShapeType);
 	if(  PROP_DEF != m_nZOrderRelative )
-		sResult.AppendFormat( _T("{\\sp{\\sn fBehindDocument}{\\sv %d}}"),	m_nZOrderRelative);
+		sResult.AppendFormat( L"{\\sp{\\sn fBehindDocument}{\\sv %d}}",	m_nZOrderRelative);
 	if(  PROP_DEF != m_bHidden )
-		sResult.AppendFormat( _T("{\\sp{\\sn fHidden}{\\sv %d}}"),		m_bHidden);
+		sResult.AppendFormat( L"{\\sp{\\sn fHidden}{\\sv %d}}",		m_bHidden);
 //Text
-	//sResult += _T("{\\sp{\\sn fLockText}{\\sv 0}}");
+	//sResult += L"{\\sp{\\sn fLockText}{\\sv 0}}";
 
 	if(  PROP_DEF != m_nTexpLeft)
-		sResult.AppendFormat( _T("{\\sp{\\sn dxTextLeft}{\\sv %d}}"),	m_nTexpLeft);
+		sResult.AppendFormat( L"{\\sp{\\sn dxTextLeft}{\\sv %d}}",	m_nTexpLeft);
 	if(  PROP_DEF != m_nTexpTop)
-		sResult.AppendFormat( _T("{\\sp{\\sn dyTextTop}{\\sv %d}}"),	m_nTexpTop);
+		sResult.AppendFormat( L"{\\sp{\\sn dyTextTop}{\\sv %d}}",	m_nTexpTop);
 	if(  PROP_DEF != m_nTexpRight)
-		sResult.AppendFormat( _T("{\\sp{\\sn dxTextRight}{\\sv %d}}"),	m_nTexpRight);
+		sResult.AppendFormat( L"{\\sp{\\sn dxTextRight}{\\sv %d}}",	m_nTexpRight);
 	if(  PROP_DEF != m_nTexpBottom)
-		sResult.AppendFormat( _T("{\\sp{\\sn dyTextBottom}{\\sv %d}}"),	m_nTexpBottom);
+		sResult.AppendFormat( L"{\\sp{\\sn dyTextBottom}{\\sv %d}}",	m_nTexpBottom);
 
 	if(  PROP_DEF != m_nAnchorText )
-		sResult.AppendFormat( _T("{\\sp{\\sn anchorText}{\\sv %d}}"),	m_nAnchorText);
+		sResult.AppendFormat( L"{\\sp{\\sn anchorText}{\\sv %d}}",	m_nAnchorText);
 	//else
 	{
 		if(  PROP_DEF != m_nWrapDistLeft )
-			sResult.AppendFormat( _T("{\\sp{\\sn dxWrapDistLeft}{\\sv %d}}"), RtfUtility::Twips2Emu( m_nWrapDistLeft ));
+			sResult.AppendFormat( L"{\\sp{\\sn dxWrapDistLeft}{\\sv %d}}", RtfUtility::Twips2Emu( m_nWrapDistLeft ));
 		if(  PROP_DEF != m_nWrapDistTop )
-			sResult.AppendFormat( _T("{\\sp{\\sn dyWrapDistTop}{\\sv %d}}"), RtfUtility::Twips2Emu( m_nWrapDistTop ));
+			sResult.AppendFormat( L"{\\sp{\\sn dyWrapDistTop}{\\sv %d}}", RtfUtility::Twips2Emu( m_nWrapDistTop ));
 		if(  PROP_DEF != m_nWrapDistRight ) 
-			sResult.AppendFormat( _T("{\\sp{\\sn dxWrapDistRight}{\\sv %d}}"), RtfUtility::Twips2Emu( m_nWrapDistRight ));
+			sResult.AppendFormat( L"{\\sp{\\sn dxWrapDistRight}{\\sv %d}}", RtfUtility::Twips2Emu( m_nWrapDistRight ));
 		if(  PROP_DEF != m_nWrapDistBottom )
-			sResult.AppendFormat( _T("{\\sp{\\sn dyWrapDistBottom}{\\sv %d}}"),RtfUtility::Twips2Emu(  m_nWrapDistBottom ));
+			sResult.AppendFormat( L"{\\sp{\\sn dyWrapDistBottom}{\\sv %d}}",RtfUtility::Twips2Emu(  m_nWrapDistBottom ));
 	}
 	if(  PROP_DEF != m_bFitShapeToText )
-		sResult.AppendFormat( _T("{\\sp{\\sn fFitShapeToText}{\\sv %d}}"),	m_bFitShapeToText);
+		sResult.AppendFormat( L"{\\sp{\\sn fFitShapeToText}{\\sv %d}}",	m_bFitShapeToText);
 	if(  PROP_DEF != m_bFitTextToShape )
-		sResult.AppendFormat( _T("{\\sp{\\sn fFitTextToShape}{\\sv %d}}"),	m_bFitTextToShape);
+		sResult.AppendFormat( L"{\\sp{\\sn fFitTextToShape}{\\sv %d}}",	m_bFitTextToShape);
 	if(  PROP_DEF != m_nCcol )
-		sResult.AppendFormat( _T("{\\sp{\\sn ccol}{\\sv %d}}"),				m_nCcol);
+		sResult.AppendFormat( L"{\\sp{\\sn ccol}{\\sv %d}}",				m_nCcol);
 	if(  PROP_DEF != m_nTxdir )
-		sResult.AppendFormat( _T("{\\sp{\\sn txdir}{\\sv %d}}"),			m_nTxdir);
+		sResult.AppendFormat( L"{\\sp{\\sn txdir}{\\sv %d}}",			m_nTxdir);
 	if(  PROP_DEF != m_nWrapText )
-		sResult.AppendFormat( _T("{\\sp{\\sn WrapText}{\\sv %d}}"),			m_nWrapText);
+		sResult.AppendFormat( L"{\\sp{\\sn WrapText}{\\sv %d}}",			m_nWrapText);
 //Geometry
 	if( PROP_DEF != m_nAdjustValue[0] )
-		sResult.AppendFormat( _T("{\\sp{\\sn adjustValue}{\\sv %d}}"),	m_nAdjustValue[0] );
+		sResult.AppendFormat( L"{\\sp{\\sn adjustValue}{\\sv %d}}",	m_nAdjustValue[0] );
 	if( PROP_DEF != m_nAdjustValue[1] )
-		sResult.AppendFormat( _T("{\\sp{\\sn adjust2Value}{\\sv %d}}"),	m_nAdjustValue[1] );
+		sResult.AppendFormat( L"{\\sp{\\sn adjust2Value}{\\sv %d}}",	m_nAdjustValue[1] );
 	if( PROP_DEF != m_nAdjustValue[2] )
-		sResult.AppendFormat( _T("{\\sp{\\sn adjust3Value}{\\sv %d}}"),	m_nAdjustValue[2] );
+		sResult.AppendFormat( L"{\\sp{\\sn adjust3Value}{\\sv %d}}",	m_nAdjustValue[2] );
 	if( PROP_DEF != m_nAdjustValue[3] )
-		sResult.AppendFormat( _T("{\\sp{\\sn adjust4Value}{\\sv %d}}"),	m_nAdjustValue[3] );
+		sResult.AppendFormat( L"{\\sp{\\sn adjust4Value}{\\sv %d}}",	m_nAdjustValue[3] );
 	if( PROP_DEF != m_nAdjustValue[4] )
-		sResult.AppendFormat( _T("{\\sp{\\sn adjust5Value}{\\sv %d}}"),	m_nAdjustValue[4] );
+		sResult.AppendFormat( L"{\\sp{\\sn adjust5Value}{\\sv %d}}",	m_nAdjustValue[4] );
 	if( PROP_DEF != m_nAdjustValue[5] )
-		sResult.AppendFormat( _T("{\\sp{\\sn adjust6Value}{\\sv %d}}"),	m_nAdjustValue[5] );
+		sResult.AppendFormat( L"{\\sp{\\sn adjust6Value}{\\sv %d}}",	m_nAdjustValue[5] );
 	if( PROP_DEF != m_nAdjustValue[6] )
-		sResult.AppendFormat( _T("{\\sp{\\sn adjust7Value}{\\sv %d}}"),	m_nAdjustValue[6] );
+		sResult.AppendFormat( L"{\\sp{\\sn adjust7Value}{\\sv %d}}",	m_nAdjustValue[6] );
 	if( PROP_DEF != m_nAdjustValue[7] )
-		sResult.AppendFormat( _T("{\\sp{\\sn adjust8Value}{\\sv %d}}"),	m_nAdjustValue[7] );
+		sResult.AppendFormat( L"{\\sp{\\sn adjust8Value}{\\sv %d}}",	m_nAdjustValue[7] );
 	if( PROP_DEF != m_nAdjustValue[8] )
-		sResult.AppendFormat( _T("{\\sp{\\sn adjust9Value}{\\sv %d}}"),	m_nAdjustValue[8] );
+		sResult.AppendFormat( L"{\\sp{\\sn adjust9Value}{\\sv %d}}",	m_nAdjustValue[8] );
 	if( PROP_DEF != m_nAdjustValue[9] )
-		sResult.AppendFormat( _T("{\\sp{\\sn adjust10Value}{\\sv %d}}"), m_nAdjustValue[9] );
+		sResult.AppendFormat( L"{\\sp{\\sn adjust10Value}{\\sv %d}}", m_nAdjustValue[9] );
 //custom
 	if( PROP_DEF != m_nGeoLeft)	
-		sResult.AppendFormat( _T("{\\sp{\\sn geoLeft}{\\sv %d}}"),		m_nGeoLeft );
+		sResult.AppendFormat( L"{\\sp{\\sn geoLeft}{\\sv %d}}",		m_nGeoLeft );
 	if( PROP_DEF != m_nGeoTop)	
-		sResult.AppendFormat( _T("{\\sp{\\sn geoTop}{\\sv %d}}"),		m_nGeoTop);
+		sResult.AppendFormat( L"{\\sp{\\sn geoTop}{\\sv %d}}",		m_nGeoTop);
 	if( PROP_DEF != m_nGeoRight)
-		sResult.AppendFormat( _T("{\\sp{\\sn geoRight}{\\sv %d}}"),		m_nGeoRight );
+		sResult.AppendFormat( L"{\\sp{\\sn geoRight}{\\sv %d}}",		m_nGeoRight );
 	if( PROP_DEF != m_nGeoBottom)
-		sResult.AppendFormat( _T("{\\sp{\\sn geoBottom}{\\sv %d}}"),	m_nGeoBottom );
+		sResult.AppendFormat( L"{\\sp{\\sn geoBottom}{\\sv %d}}",	m_nGeoBottom );
 	if( PROP_DEF != m_nShapePath)
-		sResult.AppendFormat( _T("{\\sp{\\sn shapePath}{\\sv %d}}"),	m_nShapePath );
+		sResult.AppendFormat( L"{\\sp{\\sn shapePath}{\\sv %d}}",	m_nShapePath );
 	if( !m_aPVerticles.empty())
 	{
-		sResult.AppendFormat( _T("{\\sp{\\sn pVerticies}{\\sv 8;%d"),	m_aPVerticles.size() );
+		sResult.AppendFormat( L"{\\sp{\\sn pVerticies}{\\sv 8;%d",	m_aPVerticles.size() );
 		for( int i = 0; i < m_aPVerticles.size(); i ++ )
-			sResult.AppendFormat( _T(";(%d,%d)"), m_aPVerticles[i].first, m_aPVerticles[i].second );
-		sResult += _T("}}");
+			sResult.AppendFormat( L";(%d,%d)", m_aPVerticles[i].first, m_aPVerticles[i].second );
+		sResult += L"}}";
 	}
 	if( !m_aPSegmentInfo.empty())
 	{
-		sResult += _T("{\\sp{\\sn pSegmentInfo}{\\sv ");
-		sResult.AppendFormat( _T("{\\sp{\\sn pSegmentInfo}{\\sv 2;%d"), m_aPSegmentInfo.size() );
+		sResult += L"{\\sp{\\sn pSegmentInfo}{\\sv ";
+		sResult.AppendFormat( L"{\\sp{\\sn pSegmentInfo}{\\sv 2;%d", m_aPSegmentInfo.size() );
 		for( int i = 0; i < m_aPSegmentInfo.size(); i ++ )
-			sResult.AppendFormat( _T(";%d"), m_aPSegmentInfo[i] );
-		sResult += _T("}}");
+			sResult.AppendFormat( L";%d", m_aPSegmentInfo[i] );
+		sResult += L"}}";
 	}
 //Connectors
 	if( PROP_DEF != m_nConnectionType )
-		sResult.AppendFormat( _T("{\\sp{\\sn cxk}{\\sv %d}}"),				m_nConnectionType );
+		sResult.AppendFormat( L"{\\sp{\\sn cxk}{\\sv %d}}",				m_nConnectionType );
 	if( PROP_DEF != m_nConnectorStyle )
-		sResult.AppendFormat( _T("{\\sp{\\sn cxstyle}{\\sv %d}}"),			m_nConnectorStyle );
+		sResult.AppendFormat( L"{\\sp{\\sn cxstyle}{\\sv %d}}",			m_nConnectorStyle );
 //Picture Effects
 	if( PROP_DEF != m_nCropFromTop )
-		sResult.AppendFormat( _T("{\\sp{\\sn cropFromTop}{\\sv %d}}"),		m_nCropFromTop );
+		sResult.AppendFormat( L"{\\sp{\\sn cropFromTop}{\\sv %d}}",		m_nCropFromTop );
 	if( PROP_DEF != m_nCropFromBottom )
-		sResult.AppendFormat( _T("{\\sp{\\sn cropFromBottom}{\\sv %d}}"),	m_nCropFromBottom );
+		sResult.AppendFormat( L"{\\sp{\\sn cropFromBottom}{\\sv %d}}",	m_nCropFromBottom );
 	if( PROP_DEF != m_nCropFromLeft )
-		sResult.AppendFormat( _T("{\\sp{\\sn cropFromLeft}{\\sv %d}}"),		m_nCropFromLeft );
+		sResult.AppendFormat( L"{\\sp{\\sn cropFromLeft}{\\sv %d}}",		m_nCropFromLeft );
 	if( PROP_DEF != m_nCropFromRight )
-		sResult.AppendFormat( _T("{\\sp{\\sn cropFromRight}{\\sv %d}}"),	m_nCropFromRight );
+		sResult.AppendFormat( L"{\\sp{\\sn cropFromRight}{\\sv %d}}",	m_nCropFromRight );
 //Grouped Shapes
 	if( PROP_DEF != m_nGroupBottom )
-		sResult.AppendFormat( _T("{\\sp{\\sn groupBottom}{\\sv %d}}"),		m_nGroupBottom );
+		sResult.AppendFormat( L"{\\sp{\\sn groupBottom}{\\sv %d}}",		m_nGroupBottom );
 	if( PROP_DEF != m_nGroupLeft )
-		sResult.AppendFormat( _T("{\\sp{\\sn groupLeft}{\\sv %d}}"),		m_nGroupLeft );
+		sResult.AppendFormat( L"{\\sp{\\sn groupLeft}{\\sv %d}}",		m_nGroupLeft );
 	if( PROP_DEF != m_nGroupRight )
-		sResult.AppendFormat( _T("{\\sp{\\sn groupRight}{\\sv %d}}"),		m_nGroupRight );
+		sResult.AppendFormat( L"{\\sp{\\sn groupRight}{\\sv %d}}",		m_nGroupRight );
 	if( PROP_DEF != m_nGroupTop )
-		sResult.AppendFormat( _T("{\\sp{\\sn groupTop}{\\sv %d}}"),			m_nGroupTop );
+		sResult.AppendFormat( L"{\\sp{\\sn groupTop}{\\sv %d}}",			m_nGroupTop );
 	if( PROP_DEF != m_nRelBottom )
-		sResult.AppendFormat( _T("{\\sp{\\sn relBottom}{\\sv %d}}"),		m_nRelBottom );
+		sResult.AppendFormat( L"{\\sp{\\sn relBottom}{\\sv %d}}",		m_nRelBottom );
 	if( PROP_DEF != m_nRelLeft )
-		sResult.AppendFormat( _T("{\\sp{\\sn relLeft}{\\sv %d}}"),			m_nRelLeft );
+		sResult.AppendFormat( L"{\\sp{\\sn relLeft}{\\sv %d}}",			m_nRelLeft );
 	if( PROP_DEF != m_nRelRight )
-		sResult.AppendFormat( _T("{\\sp{\\sn relRight}{\\sv %d}}"),			m_nRelRight );
+		sResult.AppendFormat( L"{\\sp{\\sn relRight}{\\sv %d}}",			m_nRelRight );
 	if( PROP_DEF != m_nRelTop )
-		sResult.AppendFormat( _T("{\\sp{\\sn relTop}{\\sv %d}}"),			m_nRelTop );
+		sResult.AppendFormat( L"{\\sp{\\sn relTop}{\\sv %d}}",			m_nRelTop );
 	if( PROP_DEF != m_nRelRotation)
-		sResult.AppendFormat( _T("{\\sp{\\sn relRotation}{\\sv %d}}"),		m_nRelRotation );
+		sResult.AppendFormat( L"{\\sp{\\sn relRotation}{\\sv %d}}",		m_nRelRotation );
 	if( PROP_DEF != m_nRelZOrder )
-		sResult.AppendFormat( _T("{\\sp{\\sn dhgt}{\\sv %d}}"),				m_nRelZOrder );
+		sResult.AppendFormat( L"{\\sp{\\sn dhgt}{\\sv %d}}",				m_nRelZOrder );
 //Fill
 	if( 0 == m_bFilled )
-		sResult += _T("{\\sp{\\sn fFilled}{\\sv 0}}");
+		sResult += L"{\\sp{\\sn fFilled}{\\sv 0}}";
 	if( PROP_DEF != m_nFillType )
-		sResult.AppendFormat( _T("{\\sp{\\sn fillType}{\\sv %d}}"),			m_nFillType );
+		sResult.AppendFormat( L"{\\sp{\\sn fillType}{\\sv %d}}",			m_nFillType );
 	if( PROP_DEF != m_nFillColor )
-		sResult.AppendFormat( _T("{\\sp{\\sn fillColor}{\\sv %d}}"),		m_nFillColor );
+		sResult.AppendFormat( L"{\\sp{\\sn fillColor}{\\sv %d}}",		m_nFillColor );
 	if( PROP_DEF != m_nFillColor2 )
-		sResult.AppendFormat( _T("{\\sp{\\sn fillBackColor}{\\sv %d}}"),	m_nFillColor2 );
+		sResult.AppendFormat( L"{\\sp{\\sn fillBackColor}{\\sv %d}}",	m_nFillColor2 );
 	if( PROP_DEF != m_nFillOpacity )
-		sResult.AppendFormat( _T("{\\sp{\\sn fillOpacity}{\\sv %d}}"), ( m_nFillOpacity * 65536 /100 ) );
+		sResult.AppendFormat( L"{\\sp{\\sn fillOpacity}{\\sv %d}}", ( m_nFillOpacity * 65536 /100 ) );
 	if( PROP_DEF != m_nFillFocus )
-		sResult.AppendFormat( _T("{\\sp{\\sn fillFocus}{\\sv %d}}"),		 m_nFillFocus );
+		sResult.AppendFormat( L"{\\sp{\\sn fillFocus}{\\sv %d}}",		 m_nFillFocus );
 	if( PROP_DEF != m_nFillAngle )
-		sResult.AppendFormat( _T("{\\sp{\\sn fillAngle}{\\sv %d}}"),		m_nFillAngle * 65536 );
+		sResult.AppendFormat( L"{\\sp{\\sn fillAngle}{\\sv %d}}",		m_nFillAngle * 65536 );
 //Line
 	if( 0 == m_bLine )
-		sResult += _T("{\\sp{\\sn fLine}{\\sv 0}}");
+		sResult += L"{\\sp{\\sn fLine}{\\sv 0}}";
 	if( PROP_DEF != m_nLineColor )
-		sResult.AppendFormat( _T("{\\sp{\\sn lineColor}{\\sv %d}}"),			m_nLineColor );
+		sResult.AppendFormat( L"{\\sp{\\sn lineColor}{\\sv %d}}",			m_nLineColor );
 	if( PROP_DEF != m_nLineStartArrow )
-		sResult.AppendFormat( _T("{\\sp{\\sn lineStartArrowhead}{\\sv %d}}"),	m_nLineStartArrow );
+		sResult.AppendFormat( L"{\\sp{\\sn lineStartArrowhead}{\\sv %d}}",	m_nLineStartArrow );
 	if( PROP_DEF != m_nLineEndArrow )
-		sResult.AppendFormat( _T("{\\sp{\\sn lineEndArrowhead}{\\sv %d}}"),		m_nLineEndArrow );
+		sResult.AppendFormat( L"{\\sp{\\sn lineEndArrowhead}{\\sv %d}}",		m_nLineEndArrow );
 	if( PROP_DEF != m_nLineStartArrowWidth )
-		sResult.AppendFormat( _T("{\\sp{\\sn lineStartArrowWidth}{\\sv %d}}"),	m_nLineStartArrowWidth );
+		sResult.AppendFormat( L"{\\sp{\\sn lineStartArrowWidth}{\\sv %d}}",	m_nLineStartArrowWidth );
 	if( PROP_DEF != m_nLineStartArrowLength )
-		sResult.AppendFormat( _T("{\\sp{\\sn lineStartArrowLength}{\\sv %d}}"),	m_nLineStartArrowLength );
+		sResult.AppendFormat( L"{\\sp{\\sn lineStartArrowLength}{\\sv %d}}",	m_nLineStartArrowLength );
 	if( PROP_DEF != m_nLineEndArrowWidth )
-		sResult.AppendFormat( _T("{\\sp{\\sn lineEndArrowWidth}{\\sv %d}}"),	m_nLineEndArrowWidth );
+		sResult.AppendFormat( L"{\\sp{\\sn lineEndArrowWidth}{\\sv %d}}",	m_nLineEndArrowWidth );
 	if( PROP_DEF != m_nLineEndArrowLength )
-		sResult.AppendFormat( _T("{\\sp{\\sn lineEndArrowLength}{\\sv %d}}"),	m_nLineEndArrowLength );
+		sResult.AppendFormat( L"{\\sp{\\sn lineEndArrowLength}{\\sv %d}}",	m_nLineEndArrowLength );
 	if( PROP_DEF != m_nLineWidth )
-		sResult.AppendFormat( _T("{\\sp{\\sn lineWidth}{\\sv %d}}"),			m_nLineWidth );
+		sResult.AppendFormat( L"{\\sp{\\sn lineWidth}{\\sv %d}}",			m_nLineWidth );
 	if( PROP_DEF != m_nLineDashing )
-		sResult.AppendFormat( _T("{\\sp{\\sn lineDashing}{\\sv %d}}"),			m_nLineDashing );
+		sResult.AppendFormat( L"{\\sp{\\sn lineDashing}{\\sv %d}}",			m_nLineDashing );
 
 //pWrapPolygonVertices	Points of the text wrap polygon.
 	if( !m_aWrapPoints.empty())
 	{
-		sResult.AppendFormat( _T("{\\sp{\\sn pWrapPolygonVertices}{\\sv 8;%d"), m_aWrapPoints.size() );
+		sResult.AppendFormat( L"{\\sp{\\sn pWrapPolygonVertices}{\\sv 8;%d", m_aWrapPoints.size() );
 		for( int i = 0; i < m_aWrapPoints.size(); i ++ )
-			sResult.AppendFormat( _T(";(%d,%d)"), m_aWrapPoints[i].first, m_aWrapPoints[i].second );
-		sResult += _T("}}");
+			sResult.AppendFormat( L";(%d,%d)", m_aWrapPoints[i].first, m_aWrapPoints[i].second );
+		sResult += L"}}";
 	}
 //WordArt
 	if( PROP_DEF != m_bGtext )
 	{
-		sResult.AppendFormat( _T("{\\sp{\\sn fGtext}{\\sv %d}}"),	m_bGtext );
+		sResult.AppendFormat( L"{\\sp{\\sn fGtext}{\\sv %d}}",	m_bGtext );
 		
 		if( !m_sGtextUNICODE.IsEmpty() )
 		{
-			sResult += _T("{\\sp{\\sn gtextUNICODE}{\\sv ");
-			sResult += m_sGtextUNICODE + _T("}}");
+			sResult += L"{\\sp{\\sn gtextUNICODE}{\\sv ";
+			sResult += m_sGtextUNICODE + L"}}";
 		}
 		if( !m_sGtextFont.IsEmpty() )
 		{
-			sResult += _T("{\\sp{\\sn gtextFont}{\\sv ");
-			sResult += m_sGtextFont + _T("}}");
+			sResult += L"{\\sp{\\sn gtextFont}{\\sv ";
+			sResult += m_sGtextFont + L"}}";
 		}
-		if( PROP_DEF != m_nGtextSize )			sResult.AppendFormat( _T("{\\sp{\\sn gtextSize}{\\sv %d}}"),		m_nGtextSize );
-		if( PROP_DEF != m_bGtextFVertical )		sResult.AppendFormat( _T("{\\sp{\\sn gtextFVertical}{\\sv %d}}"),	m_bGtextFVertical);
-		if( PROP_DEF != m_bGtextFKern )			sResult.AppendFormat( _T("{\\sp{\\sn gtextFKern}{\\sv %d}}"),		m_bGtextFKern);
-		if( PROP_DEF != m_bGtextFStretch )		sResult.AppendFormat( _T("{\\sp{\\sn gtextFStretch}{\\sv %d}}"),	m_bGtextFStretch);
-		if( PROP_DEF != m_bGtextFShrinkFit )	sResult.AppendFormat( _T("{\\sp{\\sn gtextFShrinkFit}{\\sv %d}}"),	m_bGtextFShrinkFit);
-		if( PROP_DEF != m_bGtextFBestFit )		sResult.AppendFormat( _T("{\\sp{\\sn gtextFBestFit}{\\sv %d}}"),	m_bGtextFBestFit);
+		if( PROP_DEF != m_nGtextSize )			sResult.AppendFormat( L"{\\sp{\\sn gtextSize}{\\sv %d}}",		m_nGtextSize );
+		if( PROP_DEF != m_bGtextFVertical )		sResult.AppendFormat( L"{\\sp{\\sn gtextFVertical}{\\sv %d}}",	m_bGtextFVertical);
+		if( PROP_DEF != m_bGtextFKern )			sResult.AppendFormat( L"{\\sp{\\sn gtextFKern}{\\sv %d}}",		m_bGtextFKern);
+		if( PROP_DEF != m_bGtextFStretch )		sResult.AppendFormat( L"{\\sp{\\sn gtextFStretch}{\\sv %d}}",	m_bGtextFStretch);
+		if( PROP_DEF != m_bGtextFShrinkFit )	sResult.AppendFormat( L"{\\sp{\\sn gtextFShrinkFit}{\\sv %d}}",	m_bGtextFShrinkFit);
+		if( PROP_DEF != m_bGtextFBestFit )		sResult.AppendFormat( L"{\\sp{\\sn gtextFBestFit}{\\sv %d}}",	m_bGtextFBestFit);
 	}
 
 	return sResult;
@@ -670,8 +672,11 @@ CString RtfShape::RenderToOOX(RenderParameter oRenderParameter)
 		//возвращаем text box на место
 		m_aTextItems = aTempTextItems;
 	}
+	
 	if( !sOle.IsEmpty() && !sResult.IsEmpty())
-		sResult.Replace( _T("</w:pict>"), sOle + _T("</w:pict>") );//todooo переписать
+	{
+		sResult.Replace( L"</w:pict>", sOle + L"</w:pict>" );//todooo переписать
+	}
 	
 	return sResult;
 }
@@ -679,78 +684,116 @@ CString RtfShape::GetShapeNodeName(int type)
 {
 	switch(type)
 	{
-	case NSOfficeDrawing::sptRectangle:			return _T("v:rect");
-	case NSOfficeDrawing::sptEllipse:			return _T("v:oval");
-	case NSOfficeDrawing::sptRoundRectangle:	return _T("v:roundrect");
-	case NSOfficeDrawing::sptLine:				return _T("v:line");
-	case NSOfficeDrawing::sptArc:				return _T("v:arc");
-	default:									return _T("v:shape");
+		case NSOfficeDrawing::sptRectangle:			return L"v:rect";
+		case NSOfficeDrawing::sptEllipse:			return L"v:oval";
+		case NSOfficeDrawing::sptRoundRectangle:	return L"v:roundrect";
+		case NSOfficeDrawing::sptLine:				return L"v:line";
+		case NSOfficeDrawing::sptArc:				return L"v:arc";
+		default:									return L"v:shape";
 	}
 }
 CString RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 {
-	if( !IsValid() ) return _T("");
+	if( !IsValid() ) return L"";
 
 	CString			sResult;
+	
+	RtfDocument*	poRtfDocument	= static_cast<RtfDocument*>	(oRenderParameter.poDocument);
+	OOXWriter*		poOOXWriter		= static_cast<OOXWriter*>	(oRenderParameter.poWriter);
+
+	m_bInsert = false;
+	m_bDelete = false;
 	
 	if( RENDER_TO_OOX_PARAM_SHAPE_WSHAPE2 == oRenderParameter.nType )
 		;//child shape
 	else if( RENDER_TO_OOX_PARAM_SHAPE_WSHAPE == oRenderParameter.nType )
-		sResult += _T("<w:pict>");
+	{//pic bullets
+		sResult += L"<w:pict>";
+	}
 	else
-		sResult += _T("<w:r><w:pict>");//работает по умолчанию
+	{//работает по умолчанию
+		if (m_oCharProperty.m_nDeleted != PROP_DEF)
+		{
+			m_bDelete = true;
+			
+			CString sAuthor = m_oCharProperty.m_nRevauthDel != PROP_DEF ? poRtfDocument->m_oRevisionTable[ m_oCharProperty.m_nRevauthDel ] : L"";
+			CString sDate(RtfUtility::convertDateTime(m_oCharProperty.m_nRevdttmDel).c_str());
+			
+			sResult += L"<w:del w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
+			m_oCharProperty.m_nDeleted = PROP_DEF;
+		}
+		else if (m_oCharProperty.m_nRevised != PROP_DEF)
+		{
+			m_bInsert = true;
+			
+			CString sAuthor = m_oCharProperty.m_nRevauth != PROP_DEF ? poRtfDocument->m_oRevisionTable[ m_oCharProperty.m_nRevauth] : L"";
+			CString sDate(RtfUtility::convertDateTime(m_oCharProperty.m_nRevdttm).c_str());
+			
+			sResult += L"<w:ins w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
+			m_oCharProperty.m_nRevised = PROP_DEF;
+		}
+		CString sCharProp = m_oCharProperty.RenderToOOX(oRenderParameter);
+		sResult += L"<w:r>";
+		if (!sCharProp .IsEmpty())
+		{
+			sResult += _T("<w:rPr>");
+				sResult += sCharProp;
+			sResult += _T("</w:rPr>");
+		}
+		sResult += L"<w:pict>";
+	}
 	
 	if (oRenderParameter.sValue.IsEmpty()) 
 		oRenderParameter.sValue = GetShapeNodeName(m_nShapeType);
 
-	sResult += _T("<") + oRenderParameter.sValue;
+	sResult += L"<" + oRenderParameter.sValue;
 
 	if (m_sName.IsEmpty())
 	{
 		RtfDocument* poDocument = static_cast<RtfDocument*>( oRenderParameter.poDocument );
 		m_sName.AppendFormat(L"_x0000_s%d", poDocument->GetShapeId( m_nID ));
 	}
-	sResult += _T(" id=\"") + m_sName + _T("\"");
+	sResult += L" id=\"" + m_sName + L"\"";
 
 	if( PROP_DEF != m_nShapeType && 0 != m_nShapeType)
 	{
-		sResult.AppendFormat( _T(" type=\"#_x0000_t%d\""),	m_nShapeType );
-		sResult.AppendFormat( _T(" o:spt=\"%d\"")		 ,	m_nShapeType );
+		sResult.AppendFormat( L" type=\"#_x0000_t%d\"",	m_nShapeType );
+		sResult.AppendFormat( L" o:spt=\"%d\""		 ,	m_nShapeType );
 	}
 
-	if( 0 == m_bFilled) sResult += _T(" filled=\"f\"");
-	else				sResult += _T(" filled=\"t\"");
+	if( 0 == m_bFilled) sResult += L" filled=\"f\"";
+	else				sResult += L" filled=\"t\"";
 
-	if( 0 == m_bLine)	sResult += _T(" stroked=\"f\"");
-	else				sResult += _T(" stroked=\"t\"");
+	if( 0 == m_bLine)	sResult += L" stroked=\"f\"";
+	else				sResult += L" stroked=\"t\"";
 
 	if( PROP_DEF != m_nFillColor)
 	{
 		RtfColor color(m_nFillColor);
-		sResult.AppendFormat( _T(" fillcolor=\"#") + color.ToHexColor(true) + _T("\""));
+		sResult.AppendFormat( L" fillcolor=\"#" + color.ToHexColor(true) + L"\"");
 	}
 	if( PROP_DEF != m_nLineColor)
 	{
 		RtfColor color(m_nLineColor);
-		sResult.AppendFormat( _T(" strokecolor=\"#") + color.ToHexColor(true) + _T("\""));
+		sResult.AppendFormat( L" strokecolor=\"#" + color.ToHexColor(true) + L"\"");
 	}
 	if(PROP_DEF != m_nLineWidth)
-		sResult.AppendFormat( _T(" strokeweight=\"%.2fpt\""), RtfUtility::Emu2Pt(m_nLineWidth) );
+		sResult.AppendFormat( L" strokeweight=\"%.2fpt\"", RtfUtility::Emu2Pt(m_nLineWidth) );
 //path
 	switch( m_nConnectionType )
 	{
-		case 0: sResult += _T(" o:connecttype=\"custom\"");		break;
-		case 1: sResult += _T(" o:connecttype=\"none\"");		break;
-		case 2: sResult += _T(" o:connecttype=\"rect\"");		break;
-		case 3: sResult += _T(" o:connecttype=\"segments\"");	break;
+		case 0: sResult += L" o:connecttype=\"custom\"";		break;
+		case 1: sResult += L" o:connecttype=\"none\"";		break;
+		case 2: sResult += L" o:connecttype=\"rect\"";		break;
+		case 3: sResult += L" o:connecttype=\"segments\"";	break;
 	}
 //Connectors
 	switch( m_nConnectorStyle )
 	{
-		case 0: sResult += _T(" o:connectortype=\"straight\"");	break;
-		case 1: sResult += _T(" o:connectortype=\"elbow\"");	break;
-		case 2: sResult += _T(" o:connectortype=\"curved\"");	break;
-		case 3: sResult += _T(" o:connectortype=\"none\"");		break;
+		case 0: sResult += L" o:connectortype=\"straight\"";	break;
+		case 1: sResult += L" o:connectortype=\"elbow\"";	break;
+		case 2: sResult += L" o:connectortype=\"curved\"";	break;
+		case 3: sResult += L" o:connectortype=\"none\"";		break;
 	}
 
 //-----------------------------------------------------------------------------------------------------------------
@@ -760,34 +803,34 @@ CString RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 		//не пишем если inline
 		if( 3 != m_nPositionHRelative || 3 != m_nPositionVRelative )
 		{
-			sStyle .Append		( _T("position:absolute;") );
+			sStyle .Append		( L"position:absolute;" );
 			if (oRenderParameter.nType !=  RENDER_TO_OOX_PARAM_SHAPE_WSHAPE2)
 			{
-				sStyle.AppendFormat	( _T("margin-left:%.2fpt;")	, RtfUtility::Twip2pt(m_nLeft) );
-				sStyle.AppendFormat	( _T("margin-top:%.2fpt;")	, RtfUtility::Twip2pt(m_nTop) );
-				sStyle.AppendFormat	( _T("margin-bottom:%.2fpt;")	, RtfUtility::Twip2pt(m_nBottom) );
-				sStyle.AppendFormat	( _T("margin-right:%.2fpt;")	, RtfUtility::Twip2pt(m_nRight) );
+				sStyle.AppendFormat	( L"margin-left:%.2fpt;"	, RtfUtility::Twip2pt(m_nLeft) );
+				sStyle.AppendFormat	( L"margin-top:%.2fpt;"	, RtfUtility::Twip2pt(m_nTop) );
+				sStyle.AppendFormat	( L"margin-bottom:%.2fpt;"	, RtfUtility::Twip2pt(m_nBottom) );
+				sStyle.AppendFormat	( L"margin-right:%.2fpt;"	, RtfUtility::Twip2pt(m_nRight) );
 			}
 		}
 		int nWidth = m_nRight - m_nLeft;
 		int nHeight = m_nBottom - m_nTop;
 		
 		if (oRenderParameter.nType ==  RENDER_TO_OOX_PARAM_SHAPE_WSHAPE2)
-			sStyle.AppendFormat(_T("width:%.2f;height:%.2f;"), RtfUtility::Twip2pt(nWidth), RtfUtility::Twip2pt(nHeight));
+			sStyle.AppendFormat(L"width:%.2f;height:%.2f;", RtfUtility::Twip2pt(nWidth), RtfUtility::Twip2pt(nHeight));
 		else
-			sStyle.AppendFormat(_T("width:%.2fpt;height:%.2fpt;"), RtfUtility::Twip2pt(nWidth), RtfUtility::Twip2pt(nHeight));
+			sStyle.AppendFormat(L"width:%.2fpt;height:%.2fpt;", RtfUtility::Twip2pt(nWidth), RtfUtility::Twip2pt(nHeight));
 	}
 	else if( PROP_DEF != m_nRelLeft &&  PROP_DEF != m_nRelRight && PROP_DEF != m_nRelTop && PROP_DEF != m_nRelBottom  )
 	{
 		int nWidth	= m_nRelRight - m_nRelLeft;
 		int nHeight = m_nRelBottom - m_nRelTop;
 		
-		sStyle.Append		( _T("position:absolute;") );
-		sStyle.AppendFormat	( _T("left:%d;")			, m_nRelLeft );
-		sStyle.AppendFormat	( _T("top:%d;")				, m_nRelTop);
-		//sStyle.AppendFormat	( _T("bottom:%d;")			, m_nRelBottom );
-		//sStyle.AppendFormat	( _T("right:%d;")			, m_nRelRight);
-		sStyle.AppendFormat	( _T("width:%d;height:%d;")	, nWidth, nHeight);
+		sStyle.Append		( L"position:absolute;" );
+		sStyle.AppendFormat	( L"left:%d;"			, m_nRelLeft );
+		sStyle.AppendFormat	( L"top:%d;"				, m_nRelTop);
+		//sStyle.AppendFormat	( L"bottom:%d;"			, m_nRelBottom );
+		//sStyle.AppendFormat	( L"right:%d;"			, m_nRelRight);
+		sStyle.AppendFormat	( L"width:%d;height:%d;"	, nWidth, nHeight);
 	}
 	else if( 0 != m_oPicture && PROP_DEF != m_oPicture->m_nWidthGoal && PROP_DEF != m_oPicture->m_nHeightGoal && PROP_DEF != (int)m_oPicture->m_dScaleX && PROP_DEF != (int)m_oPicture->m_dScaleY )
 	{
@@ -804,23 +847,23 @@ CString RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 			nHeight -= m_oPicture->m_nCropB;
 
 		if (oRenderParameter.nType ==  RENDER_TO_OOX_PARAM_SHAPE_WSHAPE2)
-			sStyle.AppendFormat(_T("width:%.2f;height:%.2f;"), RtfUtility::Twip2pt(nWidth), RtfUtility::Twip2pt(nHeight));
+			sStyle.AppendFormat(L"width:%.2f;height:%.2f;", RtfUtility::Twip2pt(nWidth), RtfUtility::Twip2pt(nHeight));
 		else
-			sStyle.AppendFormat(_T("width:%.2fpt;height:%.2fpt;"), RtfUtility::Twip2pt(nWidth), RtfUtility::Twip2pt(nHeight));
+			sStyle.AppendFormat(L"width:%.2fpt;height:%.2fpt;", RtfUtility::Twip2pt(nWidth), RtfUtility::Twip2pt(nHeight));
 	}
 
 	switch( m_nPositionH )
 	{
-		case 0: sStyle += _T("mso-position-horizontal:absolute;");	break;
-		case 1: sStyle += _T("mso-position-horizontal:left;");		break;
-		case 2: sStyle += _T("mso-position-horizontal:center;");	break;
-		case 3: sStyle += _T("mso-position-horizontal:right;");		break;
-		case 4: sStyle += _T("mso-position-horizontal:inside;");	break;
-		case 5: sStyle += _T("mso-position-horizontal:outside;");	break;
+		case 0: sStyle += L"mso-position-horizontal:absolute;";	break;
+		case 1: sStyle += L"mso-position-horizontal:left;";		break;
+		case 2: sStyle += L"mso-position-horizontal:center;";	break;
+		case 3: sStyle += L"mso-position-horizontal:right;";		break;
+		case 4: sStyle += L"mso-position-horizontal:inside;";	break;
+		case 5: sStyle += L"mso-position-horizontal:outside;";	break;
 	}
 	if( PROP_DEF != m_nPositionHPct )//todo
 	{
-		sStyle.AppendFormat(_T("mso-left-percent:%d;"), m_nPositionHPct);
+		sStyle.AppendFormat(L"mso-left-percent:%d;", m_nPositionHPct);
 	}
 	if( PROP_DEF != m_nPositionH && PROP_DEF == m_nPositionHRelative )
 		m_nPositionHRelative = 2;
@@ -828,37 +871,37 @@ CString RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 	{
 		switch( m_nPositionHRelative )
 		{
-			case 0: sStyle += _T("mso-position-horizontal-relative:margin;");				break;
-			case 1: sStyle += _T("mso-position-horizontal-relative:page;");					break;
-			case 2: sStyle += _T("mso-position-horizontal-relative:text;");					break;
-			case 3: sStyle += _T("mso-position-horizontal-relative:char;");					break;
-			case 4: sStyle += _T("mso-position-horizontal-relative:left-margin-area;");		break;
-			case 5: sStyle += _T("mso-position-horizontal-relative:right-margin-area;");	break;
-			case 6: sStyle += _T("mso-position-horizontal-relative:inner-margin-area;");	break;
-			case 7: sStyle += _T("mso-position-horizontal-relative:outer-margin-area;");	break;
+			case 0: sStyle += L"mso-position-horizontal-relative:margin;";				break;
+			case 1: sStyle += L"mso-position-horizontal-relative:page;";					break;
+			case 2: sStyle += L"mso-position-horizontal-relative:text;";					break;
+			case 3: sStyle += L"mso-position-horizontal-relative:char;";					break;
+			case 4: sStyle += L"mso-position-horizontal-relative:left-margin-area;";		break;
+			case 5: sStyle += L"mso-position-horizontal-relative:right-margin-area;";	break;
+			case 6: sStyle += L"mso-position-horizontal-relative:inner-margin-area;";	break;
+			case 7: sStyle += L"mso-position-horizontal-relative:outer-margin-area;";	break;
 		}
 	}
 	else
 	{
 		switch( m_eXAnchor )
 		{
-			case ax_page:	sStyle += _T("mso-position-horizontal-relative:page;");		break;
-			case ax_margin: sStyle += _T("mso-position-horizontal-relative:margin;");	break;
-			//case ax_column: sStyle += _T("mso-position-horizontal-relative:text;"));break;
+			case ax_page:	sStyle += L"mso-position-horizontal-relative:page;";		break;
+			case ax_margin: sStyle += L"mso-position-horizontal-relative:margin;";	break;
+			//case ax_column: sStyle += L"mso-position-horizontal-relative:text;");break;
 		}
 	}
 
 	switch( m_nPositionV )
 	{
-		case 0: sStyle += _T("mso-position-vertical:absolute;");	break;
-		case 1: sStyle += _T("mso-position-vertical:top;");			break;
-		case 2: sStyle += _T("mso-position-vertical:center;");		break;
-		case 3: sStyle += _T("mso-position-vertical:bottom;");		break;
-		case 4: sStyle += _T("mso-position-vertical:inside;");		break;
-		case 5: sStyle += _T("mso-position-vertical:outside;");		break;
+		case 0: sStyle += L"mso-position-vertical:absolute;";	break;
+		case 1: sStyle += L"mso-position-vertical:top;";			break;
+		case 2: sStyle += L"mso-position-vertical:center;";		break;
+		case 3: sStyle += L"mso-position-vertical:bottom;";		break;
+		case 4: sStyle += L"mso-position-vertical:inside;";		break;
+		case 5: sStyle += L"mso-position-vertical:outside;";		break;
 	}
 	if( PROP_DEF != m_nPositionVPct )
-		sStyle.AppendFormat(_T("mso-top-percent:%d;"),	m_nPositionVPct);
+		sStyle.AppendFormat(L"mso-top-percent:%d;",	m_nPositionVPct);
 
 	if( PROP_DEF != m_nPositionV && PROP_DEF == m_nPositionVRelative )
 		m_nPositionVRelative =2;
@@ -866,54 +909,54 @@ CString RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 	{
 		switch( m_nPositionVRelative )
 		{
-			case 0: sStyle += _T("mso-position-vertical-relative:margin;");				break;
-			case 1: sStyle += _T("mso-position-vertical-relative:page;");				break;
-			case 2: sStyle += _T("mso-position-vertical-relative:text;");				break;
-			case 3: sStyle += _T("mso-position-vertical-relative:line;");				break;
-			case 4: sStyle += _T("mso-position-vertical-relative:top-margin-area;");	break;
-			case 5: sStyle += _T("mso-position-vertical-relative:bottom-margin-area;");	break;
-			case 6: sStyle += _T("mso-position-vertical-relative:inner-margin-area;");	break;
-			case 7: sStyle += _T("mso-position-vertical-relative:outer-margin-area;");	break;
+			case 0: sStyle += L"mso-position-vertical-relative:margin;";				break;
+			case 1: sStyle += L"mso-position-vertical-relative:page;";				break;
+			case 2: sStyle += L"mso-position-vertical-relative:text;";				break;
+			case 3: sStyle += L"mso-position-vertical-relative:line;";				break;
+			case 4: sStyle += L"mso-position-vertical-relative:top-margin-area;";	break;
+			case 5: sStyle += L"mso-position-vertical-relative:bottom-margin-area;";	break;
+			case 6: sStyle += L"mso-position-vertical-relative:inner-margin-area;";	break;
+			case 7: sStyle += L"mso-position-vertical-relative:outer-margin-area;";	break;
 		}
 	}
 	else
 	{
 		switch( m_eYAnchor )
 		{
-			case ay_page: sStyle += _T("mso-position-vertical-relative:page;");			break;
-			case ay_margin: sStyle += _T("mso-position-vertical-relative:margin;");		break;
-			//case ay_Para: sStyle += _T("mso-position-vertical-relative:text;");		break;
+			case ay_page: sStyle += L"mso-position-vertical-relative:page;";			break;
+			case ay_margin: sStyle += L"mso-position-vertical-relative:margin;";		break;
+			//case ay_Para: sStyle += L"mso-position-vertical-relative:text;";		break;
 		}
 	}
 	if( PROP_DEF != m_nPctWidth )
-		sStyle.AppendFormat(_T("mso-width-percent:%d;"),	m_nPctWidth);
+		sStyle.AppendFormat(L"mso-width-percent:%d;",	m_nPctWidth);
 	switch( m_nPctWidthRelative )
 	{
-		case 0:	sStyle += _T("mso-width-relative:margin;");				break;
-		case 1:	sStyle += _T("mso-width-relative:page;");				break;
-		case 2:	sStyle += _T("mso-width-relative:left-margin-area;");	break;
-		case 3:	sStyle += _T("mso-width-relative:right-margin-area;");	break;
-		case 4:	sStyle += _T("mso-width-relative:inner-margin-area;");	break;
-		case 5:	sStyle += _T("mso-width-relative:outer-margin-area;");	break;
+		case 0:	sStyle += L"mso-width-relative:margin;";				break;
+		case 1:	sStyle += L"mso-width-relative:page;";				break;
+		case 2:	sStyle += L"mso-width-relative:left-margin-area;";	break;
+		case 3:	sStyle += L"mso-width-relative:right-margin-area;";	break;
+		case 4:	sStyle += L"mso-width-relative:inner-margin-area;";	break;
+		case 5:	sStyle += L"mso-width-relative:outer-margin-area;";	break;
 	}
 	
 	if( PROP_DEF != m_nPctHeight )
-		sStyle.AppendFormat(_T("mso-height-percent:%d;"),	m_nPctHeight);
+		sStyle.AppendFormat(L"mso-height-percent:%d;",	m_nPctHeight);
 	
 	switch( m_nPctHeightRelative )
 	{
-		case 0:	sStyle += _T("mso-height-relative:margin;");				break;
-		case 1:	sStyle += _T("mso-height-relative:page;");					break;
-		case 2:	sStyle += _T("mso-height-relative:top-margin-area;");		break;
-		case 3:	sStyle += _T("mso-height-relative:bottom-margin-area;");	break;
-		case 4:	sStyle += _T("mso-height-relative:inner-margin-area;");		break;
-		case 5:	sStyle += _T("mso-height-relative:outer-margin-area;");		break;
+		case 0:	sStyle += L"mso-height-relative:margin;";				break;
+		case 1:	sStyle += L"mso-height-relative:page;";					break;
+		case 2:	sStyle += L"mso-height-relative:top-margin-area;";		break;
+		case 3:	sStyle += L"mso-height-relative:bottom-margin-area;";	break;
+		case 4:	sStyle += L"mso-height-relative:inner-margin-area;";		break;
+		case 5:	sStyle += L"mso-height-relative:outer-margin-area;";		break;
 	}
 
 	if( PROP_DEF != m_nRotation )
-		sStyle.AppendFormat(_T("rotation:%d;"),	m_nRotation / 65536 );
+		sStyle.AppendFormat(L"rotation:%d;",	m_nRotation / 65536 );
 	else if( PROP_DEF != m_nRelRotation )
-		sStyle.AppendFormat(_T("rotation:%d;"),	m_nRelRotation / 65536 );
+		sStyle.AppendFormat(L"rotation:%d;",	m_nRelRotation / 65536 );
 
 	int nZIndex = PROP_DEF;
 	if( PROP_DEF != m_nRelZOrder )
@@ -930,78 +973,78 @@ CString RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 		else							nZIndex -= 10000;
 	}
 	if (PROP_DEF != nZIndex)
-		sStyle.AppendFormat( _T("z-index:%d;"), nZIndex );
+		sStyle.AppendFormat( L"z-index:%d;", nZIndex );
 
 	if(  PROP_DEF != m_nWrapDistLeft )
-		sStyle.AppendFormat( _T("mso-wrap-distance-left:%.2fpt;"), RtfUtility::Twip2pt( m_nWrapDistLeft ));
+		sStyle.AppendFormat( L"mso-wrap-distance-left:%.2fpt;", RtfUtility::Twip2pt( m_nWrapDistLeft ));
 	if(  PROP_DEF != m_nWrapDistTop )
-		sStyle.AppendFormat( _T("mso-wrap-distance-top:%.2fpt;"), RtfUtility::Twip2pt( m_nWrapDistTop ));
+		sStyle.AppendFormat( L"mso-wrap-distance-top:%.2fpt;", RtfUtility::Twip2pt( m_nWrapDistTop ));
 	if(  PROP_DEF != m_nWrapDistRight ) 
-		sStyle.AppendFormat( _T("mso-wrap-distance-right:%.2fpt;"), RtfUtility::Twip2pt( m_nWrapDistRight ));
+		sStyle.AppendFormat( L"mso-wrap-distance-right:%.2fpt;", RtfUtility::Twip2pt( m_nWrapDistRight ));
 	if(  PROP_DEF != m_nWrapDistBottom )
-		sStyle.AppendFormat( _T("mso-wrap-distance-bottom:%.2fpt;"), RtfUtility::Twip2pt( m_nWrapDistBottom ));
+		sStyle.AppendFormat( L"mso-wrap-distance-bottom:%.2fpt;", RtfUtility::Twip2pt( m_nWrapDistBottom ));
 
 	switch( m_nAnchorText)
 	{
-		case 0:	sStyle += _T("v-text-anchor:top;");						break;
-		case 1:	sStyle += _T("v-text-anchor:middle;");					break;
-		case 2:	sStyle += _T("v-text-anchor:bottom;");					break;
-		case 3:	sStyle += _T("v-text-anchor:topcenter;");				break;
-		case 4:	sStyle += _T("v-text-anchor:middle-center;");			break;
-		case 5:	sStyle += _T("v-text-anchor:bottom-center;");			break;
-		case 6:	sStyle += _T("v-text-anchor:top-baseline;");			break;
-		case 7:	sStyle += _T("v-text-anchor:bottom-baseline;");			break;
-		case 8:	sStyle += _T("v-text-anchor:top-center-baseline;");		break;
-		case 9:	sStyle += _T("v-text-anchor:bottom-center-baseline;");	break;
+		case 0:	sStyle += L"v-text-anchor:top;";						break;
+		case 1:	sStyle += L"v-text-anchor:middle;";					break;
+		case 2:	sStyle += L"v-text-anchor:bottom;";					break;
+		case 3:	sStyle += L"v-text-anchor:topcenter;";				break;
+		case 4:	sStyle += L"v-text-anchor:middle-center;";			break;
+		case 5:	sStyle += L"v-text-anchor:bottom-center;";			break;
+		case 6:	sStyle += L"v-text-anchor:top-baseline;";			break;
+		case 7:	sStyle += L"v-text-anchor:bottom-baseline;";			break;
+		case 8:	sStyle += L"v-text-anchor:top-center-baseline;";		break;
+		case 9:	sStyle += L"v-text-anchor:bottom-center-baseline;";	break;
 	}
 
 //---------------------------------------------------------------------------------------------------------------------------
 	if( false == sStyle.IsEmpty() )
 	{
 		sStyle.Delete( sStyle.GetLength() - 1 );
-        sResult += _T(" style=\"") + sStyle + _T("\"");
+        sResult += L" style=\"" + sStyle + L"\"";
 	}
 //----------------------------------------------------------------------------------------------------------------------------
-	if( true == m_bIsOle )		sResult += _T(" o:ole=\"\"");
+	if( true == m_bIsOle )		sResult += L" o:ole=\"\"";
 	
 	if( PROP_DEF != m_nGroupLeft && PROP_DEF != m_nGroupTop )
-		sResult.AppendFormat( _T(" coordorigin=\"%d,%d\""), m_nGroupLeft, m_nGroupTop);
+		sResult.AppendFormat( L" coordorigin=\"%d,%d\"", m_nGroupLeft, m_nGroupTop);
 	
 	if( PROP_DEF != m_nGroupLeft && PROP_DEF != m_nGroupTop && PROP_DEF != m_nGroupRight && PROP_DEF != m_nGroupBottom)
-		sResult.AppendFormat( _T(" coordsize=\"%d,%d\""), m_nGroupRight - m_nGroupLeft, m_nGroupBottom - m_nGroupTop );
+		sResult.AppendFormat( L" coordsize=\"%d,%d\"", m_nGroupRight - m_nGroupLeft, m_nGroupBottom - m_nGroupTop );
 	else if ( PROP_DEF != m_nGeoLeft && PROP_DEF != m_nGeoTop && PROP_DEF != m_nGeoRight && PROP_DEF != m_nGeoBottom)
-		sResult.AppendFormat( _T(" coordsize=\"%d,%d\""), m_nGeoRight - m_nGeoLeft, m_nGeoBottom - m_nGeoTop );
+		sResult.AppendFormat( L" coordsize=\"%d,%d\"", m_nGeoRight - m_nGeoLeft, m_nGeoBottom - m_nGeoTop );
 
 	if (oRenderParameter.nType !=  RENDER_TO_OOX_PARAM_SHAPE_WSHAPE2)
 	{
 		if( PROP_DEF != m_bLayoutInCell )
 		{
 			if( 0 == m_bLayoutInCell )
-				sResult += _T(" o:allowincell=\"false\"");
+				sResult += L" o:allowincell=\"false\"";
 			else
-				sResult += _T(" o:allowincell=\"true\"");
+				sResult += L" o:allowincell=\"true\"";
 		}
 		if( PROP_DEF != m_bAllowOverlap )
 		{
 			if( 0 == m_bAllowOverlap )
-				sResult += _T(" o:allowoverlap=\"false\"");
+				sResult += L" o:allowoverlap=\"false\"";
 			else
-				sResult += _T(" o:allowoverlap=\"true\"");
+				sResult += L" o:allowoverlap=\"true\"";
 		}
 	}
 //Geometry
 	if( PROP_DEF != m_nAdjustValue[0] )
 	{
 		CString sAdjust;
-		sAdjust.AppendFormat( _T("%d"),	m_nAdjustValue[0]);
+		sAdjust.AppendFormat( L"%d",	m_nAdjustValue[0]);
 		for (int i = 1 ; i < 10; i++)
 		{
 			if (PROP_DEF != m_nAdjustValue[i])
-				sAdjust.AppendFormat( _T(",%d"), m_nAdjustValue[i]);
+				sAdjust.AppendFormat( L",%d", m_nAdjustValue[i]);
 			else
-				sAdjust += _T(",");
+				sAdjust += L",";
 		}
-		sResult +=_T(" adj=\"") + sAdjust + _T("\"");
+		sResult +=L" adj=\"" + sAdjust + L"\"";
 	}
 //Custom
 	if (!m_aPVerticles.empty() || !m_aPSegmentInfo.empty())
@@ -1027,45 +1070,45 @@ CString RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 
 			custom_shape->m_oCustomVML.ToCustomShape(custom_shape, custom_shape->m_oManager);
 			
-			sResult +=_T(" path=\"") + custom_shape->m_strPath + _T("\"");
+			sResult +=L" path=\"" + custom_shape->m_strPath + L"\"";
 		}
 	}
 //Wrap Geometry
 	if( !m_aWrapPoints.empty())
 	{
-		sResult += _T(" wrapcoords=\"");
-		sResult.AppendFormat( _T("%d,%d"), m_aWrapPoints[0].first, m_aWrapPoints[0].second);
+		sResult += L" wrapcoords=\"";
+		sResult.AppendFormat( L"%d,%d", m_aWrapPoints[0].first, m_aWrapPoints[0].second);
 		
 		for( int i = 0; i < (int)m_aWrapPoints.size(); i++ )
 		{
-			sResult.AppendFormat( _T(",%d,%d"), m_aWrapPoints[i].first, m_aWrapPoints[i].second);
+			sResult.AppendFormat( L",%d,%d", m_aWrapPoints[i].first, m_aWrapPoints[i].second);
 		}
 		
-		sResult += _T("\"");
+		sResult += L"\"";
 	}
 	
-	sResult += _T(">");
+	sResult += L">";
 //-------------------------------------------------------------------------------------------------------------- nodes	
 	if( PROP_DEF != m_nWrapType && 3 != m_nWrapType)
 	{
-		sResult += _T("<w10:wrap");
+		sResult += L"<w10:wrap";
 
 		switch( m_nWrapType )
 		{
-			case 1:sResult += _T(" type=\"topAndBottom\"");	break;
-			case 2:sResult += _T(" type=\"square\"");		break;
-			case 3:sResult += _T(" type=\"none\"");			break;
-			case 4:sResult += _T(" type=\"tight\"");		break;
-			case 5:sResult += _T(" type=\"through\"");		break;
+			case 1:sResult += L" type=\"topAndBottom\"";	break;
+			case 2:sResult += L" type=\"square\"";		break;
+			case 3:sResult += L" type=\"none\"";			break;
+			case 4:sResult += L" type=\"tight\"";		break;
+			case 5:sResult += L" type=\"through\"";		break;
 		}
 		switch( m_nWrapSideType )
 		{
-			case 0:sResult += _T(" side=\"both\"");			break;
-			case 1:sResult += _T(" side=\"left\"");			break;
-			case 2:sResult += _T(" side=\"right\"");		break;
-			case 3:sResult += _T(" side=\"largest\"");		break;
+			case 0:sResult += L" side=\"both\"";			break;
+			case 1:sResult += L" side=\"left\"";			break;
+			case 2:sResult += L" side=\"right\"";		break;
+			case 3:sResult += L" side=\"largest\"";		break;
 		}
-		sResult += _T("/>");
+		sResult += L"/>";
 	}
 	
 //Line
@@ -1074,67 +1117,67 @@ CString RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 		CString sStroke;
 		switch( m_nLineDashing )
 		{
-			case 1: sStroke += _T(" dashstyle=\"shortdash\"");		break;
-			case 2: sStroke += _T(" dashstyle=\"shortdot\"");		break;
-			case 3: sStroke += _T(" dashstyle=\"shortdashdot\"");	break;
-			case 4: sStroke += _T(" dashstyle=\"shortdashdotdot\"");break;
-			case 5: sStroke += _T(" dashstyle=\"dot\"");			break;
-			case 6: sStroke += _T(" dashstyle=\"dash\"");			break;
-			case 7: sStroke += _T(" dashstyle=\"longdash\"");		break;
-			case 8: sStroke += _T(" dashstyle=\"dashdot\"");		break;
-			case 9: sStroke += _T(" dashstyle=\"longdashdot\"");	break;
-			case 10: sStroke += _T(" dashstyle=\"longdashdotdot\"");break;
+			case 1: sStroke += L" dashstyle=\"shortdash\"";		break;
+			case 2: sStroke += L" dashstyle=\"shortdot\"";		break;
+			case 3: sStroke += L" dashstyle=\"shortdashdot\"";	break;
+			case 4: sStroke += L" dashstyle=\"shortdashdotdot\"";break;
+			case 5: sStroke += L" dashstyle=\"dot\"";			break;
+			case 6: sStroke += L" dashstyle=\"dash\"";			break;
+			case 7: sStroke += L" dashstyle=\"longdash\"";		break;
+			case 8: sStroke += L" dashstyle=\"dashdot\"";		break;
+			case 9: sStroke += L" dashstyle=\"longdashdot\"";	break;
+			case 10: sStroke += L" dashstyle=\"longdashdotdot\"";break;
 		}
 		switch( m_nLineStartArrow )
 		{
-			case 0: sStroke += _T(" startarrow=\"none\"");		break;
-			case 1: sStroke += _T(" startarrow=\"block\"");		break;
-			case 2: sStroke += _T(" startarrow=\"classic\"");	break;
-			case 3: sStroke += _T(" startarrow=\"diamond\"");	break;
-			case 4: sStroke += _T(" startarrow=\"oval\"");		break;
-			case 5: sStroke += _T(" startarrow=\"open\"");		break;
-			case 6: sStroke += _T(" startarrow=\"block\"");		break;
-			case 7: sStroke += _T(" startarrow=\"block\"");		break;
+			case 0: sStroke += L" startarrow=\"none\"";		break;
+			case 1: sStroke += L" startarrow=\"block\"";		break;
+			case 2: sStroke += L" startarrow=\"classic\"";	break;
+			case 3: sStroke += L" startarrow=\"diamond\"";	break;
+			case 4: sStroke += L" startarrow=\"oval\"";		break;
+			case 5: sStroke += L" startarrow=\"open\"";		break;
+			case 6: sStroke += L" startarrow=\"block\"";		break;
+			case 7: sStroke += L" startarrow=\"block\"";		break;
 		}
 		switch( m_nLineStartArrowLength )
 		{
-			case 0: sStroke += _T(" startarrowlength=\"short\"");	break;
-			case 1: sStroke += _T(" startarrowlength=\"medium\"");	break;
-			case 2: sStroke += _T(" startarrowlength=\"long\"");	break;
+			case 0: sStroke += L" startarrowlength=\"short\"";	break;
+			case 1: sStroke += L" startarrowlength=\"medium\"";	break;
+			case 2: sStroke += L" startarrowlength=\"long\"";	break;
 		}
 		switch( m_nLineStartArrowWidth )
 		{
-			case 0: sStroke += _T(" startarrowwidth=\"narrow\"");	break;
-			case 1: sStroke += _T(" startarrowwidth=\"medium\"");	break;
-			case 2: sStroke += _T(" startarrowwidth=\"wide\"");		break;
+			case 0: sStroke += L" startarrowwidth=\"narrow\"";	break;
+			case 1: sStroke += L" startarrowwidth=\"medium\"";	break;
+			case 2: sStroke += L" startarrowwidth=\"wide\"";		break;
 		}
 		switch( m_nLineEndArrow )
 		{
-			case 0: sStroke += _T(" endarrow=\"none\"");	break;
-			case 1: sStroke += _T(" endarrow=\"block\"");	break;
-			case 2: sStroke += _T(" endarrow=\"classic\"");	break;
-			case 3: sStroke += _T(" endarrow=\"diamond\"");	break;
-			case 4: sStroke += _T(" endarrow=\"oval\"");	break;
-			case 5: sStroke += _T(" endarrow=\"open\"");	break;
-			case 6: sStroke += _T(" endarrow=\"block\"");	break;
-			case 7: sStroke += _T(" endarrow=\"block\"");	break;
+			case 0: sStroke += L" endarrow=\"none\"";	break;
+			case 1: sStroke += L" endarrow=\"block\"";	break;
+			case 2: sStroke += L" endarrow=\"classic\"";	break;
+			case 3: sStroke += L" endarrow=\"diamond\"";	break;
+			case 4: sStroke += L" endarrow=\"oval\"";	break;
+			case 5: sStroke += L" endarrow=\"open\"";	break;
+			case 6: sStroke += L" endarrow=\"block\"";	break;
+			case 7: sStroke += L" endarrow=\"block\"";	break;
 		}
 		switch( m_nLineEndArrowLength )
 		{
-			case 0: sStroke += _T(" endarrowlength=\"short\"");		break;
-			case 1: sStroke += _T(" endarrowlength=\"medium\"");	break;
-			case 2: sStroke += _T(" endarrowlength=\"long\"");		break;
+			case 0: sStroke += L" endarrowlength=\"short\"";		break;
+			case 1: sStroke += L" endarrowlength=\"medium\"";	break;
+			case 2: sStroke += L" endarrowlength=\"long\"";		break;
 		}
 		switch( m_nLineEndArrowWidth )
 		{
-			case 0: sStroke += _T(" endarrowwidth=\"narrow\"");	break;
-			case 1: sStroke += _T(" endarrowwidth=\"medium\"");	break;
-			case 2: sStroke += _T(" endarrowwidth=\"wide\"");	break;
+			case 0: sStroke += L" endarrowwidth=\"narrow\"";	break;
+			case 1: sStroke += L" endarrowwidth=\"medium\"";	break;
+			case 2: sStroke += L" endarrowwidth=\"wide\"";	break;
 		}
 
 		if( false == sStroke.IsEmpty())
 		{
-			sResult += _T("<v:stroke ") + sStroke + _T("/>");
+			sResult += L"<v:stroke " + sStroke + L"/>";
 		}
 	}
 
@@ -1143,19 +1186,19 @@ CString RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 		RenderParameter oNewParam = oRenderParameter;
 		oNewParam.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
 
-		sResult += _T("<v:textbox");
+		sResult += L"<v:textbox";
 		if (m_nTexpLeft != PROP_DEF && m_nTexpTop != PROP_DEF && m_nTexpRight != PROP_DEF && m_nTexpBottom != PROP_DEF)
 		{
-			sResult.AppendFormat( _T(" inset=\"%dpt, %dpt, %dpt, %dpt\">"), 
+			sResult.AppendFormat( L" inset=\"%dpt, %dpt, %dpt, %dpt\">", 
 			(int)RtfUtility::Emu2Pt(m_nTexpLeft), (int)RtfUtility::Emu2Pt(m_nTexpTop), (int)RtfUtility::Emu2Pt(m_nTexpRight), (int)RtfUtility::Emu2Pt(m_nTexpBottom) );
 		}
 		else  
-			sResult += _T(">");
+			sResult += L">";
 		
-		sResult += _T("<w:txbxContent>");
+		sResult += L"<w:txbxContent>";
 		sResult +=  m_aTextItems->RenderToOOX(oNewParam);
-		sResult += _T("</w:txbxContent>");
-		sResult += _T("</v:textbox>");
+		sResult += L"</w:txbxContent>";
+		sResult += L"</v:textbox>";
 	}
 	
 	CString sPicture;	
@@ -1166,7 +1209,7 @@ CString RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 		if (m_nShapeType == PROP_DEF || m_nShapeType == 75)
 		{
 			if( sPicture.IsEmpty() )//если не сохранилась картинка, то весь shape-picture будет бесполезным
-				return _T("");
+				return L"";
 
  			int nCropLeft	= PROP_DEF;
 			int nCropTop	= PROP_DEF;
@@ -1190,86 +1233,86 @@ CString RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 			else if( PROP_DEF != m_oPicture->m_nHeightGoal && PROP_DEF != m_oPicture->m_nCropB )
 				nCropBottom = (int)( 65536 * ( 1.0 * m_oPicture->m_nCropB / m_oPicture->m_nHeightGoal) );
 
-			sResult += _T("<v:imagedata r:id=\"") + sPicture + _T("\"");
+			sResult += L"<v:imagedata r:id=\"" + sPicture + L"\"";
 
 			if( PROP_DEF != nCropLeft )
-				sResult.AppendFormat( _T(" cropleft=\"%df\""), nCropLeft );
+				sResult.AppendFormat( L" cropleft=\"%df\"", nCropLeft );
 			if( PROP_DEF != nCropTop )
-				sResult.AppendFormat( _T(" croptop=\"%df\""), nCropTop );
+				sResult.AppendFormat( L" croptop=\"%df\"", nCropTop );
 			if( PROP_DEF != nCropRight )
-				sResult.AppendFormat( _T(" cropright=\"%df\""), nCropRight );
+				sResult.AppendFormat( L" cropright=\"%df\"", nCropRight );
 			if( PROP_DEF != nCropBottom )
-				sResult.AppendFormat( _T(" cropbottom=\"%df\""), nCropBottom );
+				sResult.AppendFormat( L" cropbottom=\"%df\"", nCropBottom );
 
-			sResult += _T(" o:title=\"\"/>");
+			sResult += L" o:title=\"\"/>";
 		}
 	}
 //-----------------------------------------------------------------------------------------------
 	if( 0 != m_bFilled)
 	{
-		sResult += _T("<v:fill");
+		sResult += L"<v:fill";
 
 		if (!sPicture.IsEmpty() && m_nShapeType != 75)
 		{
- 			sResult += _T(" r:id=\"") + sPicture + _T("\"");
+ 			sResult += L" r:id=\"" + sPicture + L"\"";
 			
 			if( PROP_DEF == m_nFillType) m_nFillType = 2;
 		}
 		switch(m_nFillType)
 		{
-		case 1:	sResult += _T(" type=\"pattern\"");		break;
-		case 2:	sResult += _T(" type=\"tile\"");		break;
-		case 3:	sResult += _T(" type=\"frame\"");		break;
-		case 4:	sResult += _T(" type=\"gradient\"");	break;
-		case 5:	sResult += _T(" type=\"gradient\"");	break;
-		case 6:	sResult += _T(" type=\"gradient\"");	break;
-		case 7:	sResult += _T(" type=\"gradient\"");	break;
-		case 8:	sResult += _T(" type=\"gradient\"");	break;
-		case 9:	sResult += _T(" type=\"gradient\"");	break;
+		case 1:	sResult += L" type=\"pattern\"";		break;
+		case 2:	sResult += L" type=\"tile\"";		break;
+		case 3:	sResult += L" type=\"frame\"";		break;
+		case 4:	sResult += L" type=\"gradient\"";	break;
+		case 5:	sResult += L" type=\"gradient\"";	break;
+		case 6:	sResult += L" type=\"gradient\"";	break;
+		case 7:	sResult += L" type=\"gradient\"";	break;
+		case 8:	sResult += L" type=\"gradient\"";	break;
+		case 9:	sResult += L" type=\"gradient\"";	break;
 		}//todooo center radial ...
 
 		if ( PROP_DEF != m_nFillOpacity)
 		{
 			CString sOpacity; sOpacity.Format(L"%d", /*100 - */m_nFillOpacity);
-			sResult += _T(" opacity=\"") + sOpacity +_T("%\"");
-			//sResult.AppendFormat( _T(" opacity=\"%df\""), m_nFillOpacity );
+			sResult += L" opacity=\"" + sOpacity +L"%\"";
+			//sResult.AppendFormat( L" opacity=\"%df\"", m_nFillOpacity );
 		}
 		if ( PROP_DEF != m_nFillColor2)
 		{
 			RtfColor color(m_nFillColor2);
-			sResult += _T(" color2=\"#") + color.ToHexColor(true) + _T("\"");
+			sResult += L" color2=\"#" + color.ToHexColor(true) + L"\"";
 		}
 		if ( PROP_DEF != m_nFillFocus)
 		{
 			CString sFocus; sFocus.Format(L"%d", m_nFillFocus );
-			sResult += _T(" focus=\"")+ sFocus +_T("%\"");
+			sResult += L" focus=\""+ sFocus +L"%\"";
 		}
 		
 		if ( PROP_DEF != m_nFillAngle)
-			sResult.AppendFormat( _T(" angle=\"%d\""), m_nFillAngle );
+			sResult.AppendFormat( L" angle=\"%d\"", m_nFillAngle );
 
-		sResult += _T("/>");
+		sResult += L"/>";
 	}
 //---------------------------------------------------------------------------------------------------------------------------
 	if( false == m_sGtextUNICODE.IsEmpty())
 	{
-		sResult += _T("<v:textpath"); 
+		sResult += L"<v:textpath"; 
 
 		CString sTextStyle;
 
         if ( !m_sGtextFont.IsEmpty() )
 		{
-			sTextStyle += _T("font-family:") + XmlUtils::EncodeXmlString(m_sGtextFont) + _T(";");//todooo значения как в кавычках так и без - проверить как без
+			sTextStyle += L"font-family:" + XmlUtils::EncodeXmlString(m_sGtextFont) + L";";//todooo значения как в кавычках так и без - проверить как без
 		}
 
 		if (!sTextStyle.IsEmpty())
-			sResult += _T(" style=\"") + sTextStyle + _T("\"");
+			sResult += L" style=\"" + sTextStyle + L"\"";
 
 		if ( PROP_DEF != m_nGtextSize )
-			sTextStyle.AppendFormat( _T("font-size:%dpt;"), m_nGtextSize );
+			sTextStyle.AppendFormat( L"font-size:%dpt;", m_nGtextSize );
 
-		sResult += _T(" string=\"") + XmlUtils::EncodeXmlString(m_sGtextUNICODE) + _T("\"");
-		sResult += _T("/>");
+		sResult += L" string=\"" + XmlUtils::EncodeXmlString(m_sGtextUNICODE) + L"\"";
+		sResult += L"/>";
 	}
 	return sResult;
 }
@@ -1280,14 +1323,19 @@ CString RtfShape::RenderToOOXEnd(RenderParameter oRenderParameter)
 	if (oRenderParameter.sValue.IsEmpty())
 		oRenderParameter.sValue = GetShapeNodeName(m_nShapeType);
 
-	sResult += _T("</") + oRenderParameter.sValue + _T(">");
+	sResult += L"</" + oRenderParameter.sValue + L">";
 
 	if( RENDER_TO_OOX_PARAM_SHAPE_WSHAPE2 == oRenderParameter.nType )
 		;
 	else if( RENDER_TO_OOX_PARAM_SHAPE_WSHAPE == oRenderParameter.nType )
-		sResult += _T("</w:pict>");
+		sResult += L"</w:pict>";
 	else
-		sResult += _T("</w:pict></w:r>");//работает по умолчанию
+	{
+		sResult += L"</w:pict></w:r>";//работает по умолчанию
+		
+		if (m_bInsert)	sResult += L"</w:ins>";
+		if (m_bDelete)	sResult += L"</w:del>";
+	}
 	return sResult;
 }
 CString RtfShapeGroup::RenderToRtf(RenderParameter oRenderParameter)
@@ -1316,27 +1364,27 @@ CString RtfShapeGroup::RenderToRtf(RenderParameter oRenderParameter)
 
 	if( st_inline == m_eAnchorTypeShape )
 	{
-		sResult += _T("{\\shpgrp");
-		sResult += _T("{\\*\\shpinst");
+		sResult += L"{\\shpgrp";
+		sResult += L"{\\*\\shpinst";
 		
-		RENDER_RTF_INT( m_nID			, sResult, _T("shplid") );
+		RENDER_RTF_INT( m_nID			, sResult, L"shplid" );
 		
 		if (!m_bInGroup)
 		{	
-			RENDER_RTF_INT( m_nLeft			, sResult, _T("shpleft") );
-			RENDER_RTF_INT( m_nTop			, sResult, _T("shptop") );
-			RENDER_RTF_INT( m_nBottom		, sResult, _T("shpbottom") );
-			RENDER_RTF_INT( m_nRight		, sResult, _T("shpright") );
-			RENDER_RTF_INT( m_nHeader		, sResult, _T("shpfhdr") );
-			RENDER_RTF_INT( m_nWrapType		, sResult, _T("shpwr") );
-			RENDER_RTF_INT( m_nWrapSideType	, sResult, _T("shpwrk") );
-			RENDER_RTF_BOOL( m_bLockAnchor	, sResult, _T("shplockanchor") );
+			RENDER_RTF_INT( m_nLeft			, sResult, L"shpleft" );
+			RENDER_RTF_INT( m_nTop			, sResult, L"shptop" );
+			RENDER_RTF_INT( m_nBottom		, sResult, L"shpbottom" );
+			RENDER_RTF_INT( m_nRight		, sResult, L"shpright" );
+			RENDER_RTF_INT( m_nHeader		, sResult, L"shpfhdr" );
+			RENDER_RTF_INT( m_nWrapType		, sResult, L"shpwr" );
+			RENDER_RTF_INT( m_nWrapSideType	, sResult, L"shpwrk" );
+			RENDER_RTF_BOOL( m_bLockAnchor	, sResult, L"shplockanchor" );
 			
-			sResult += _T("\\shpbxignore");
-			sResult += _T("\\shpbyignore");
+			sResult += L"\\shpbxignore";
+			sResult += L"\\shpbyignore";
 			
-			sResult.AppendFormat( _T("{\\sp{\\sn fUseShapeAnchor}{\\sv %d}}"), false);
-			sResult.AppendFormat( _T("{\\sp{\\sn fPseudoInline}{\\sv %d}}"), true);
+			sResult.AppendFormat( L"{\\sp{\\sn fUseShapeAnchor}{\\sv %d}}", false);
+			sResult.AppendFormat( L"{\\sp{\\sn fPseudoInline}{\\sv %d}}", true);
 		}
 
 		
@@ -1346,45 +1394,45 @@ CString RtfShapeGroup::RenderToRtf(RenderParameter oRenderParameter)
 		{
 			sResult +=  m_aArray[i]->RenderToRtf( oRenderParameter );
 		}
-		sResult += _T("}");
-		sResult += _T("}");
+		sResult += L"}";
+		sResult += L"}";
 	}
 	else
 	{
-		sResult += _T("{\\shpgrp");
-		sResult += _T("{\\*\\shpinst");
+		sResult += L"{\\shpgrp";
+		sResult += L"{\\*\\shpinst";
 		
-		RENDER_RTF_INT( m_nID			, sResult, _T("shplid") );
+		RENDER_RTF_INT( m_nID			, sResult, L"shplid" );
 
 		if (!m_bInGroup)
 		{	
-			RENDER_RTF_INT( m_nLeft			, sResult, _T("shpleft") );
-			RENDER_RTF_INT( m_nTop			, sResult, _T("shptop") );
-			RENDER_RTF_INT( m_nBottom		, sResult, _T("shpbottom") );
-			RENDER_RTF_INT( m_nRight		, sResult, _T("shpright") );
-			RENDER_RTF_INT( m_nZOrder		, sResult, _T("shpz") );
-			RENDER_RTF_INT( m_nHeader		, sResult, _T("shpfhdr") );
-			RENDER_RTF_INT( m_nWrapType		, sResult, _T("shpwr") );
-			RENDER_RTF_INT( m_nWrapSideType	, sResult, _T("shpwrk") );
-			RENDER_RTF_BOOL( m_bLockAnchor	, sResult, _T("shplockanchor") );
+			RENDER_RTF_INT( m_nLeft			, sResult, L"shpleft" );
+			RENDER_RTF_INT( m_nTop			, sResult, L"shptop" );
+			RENDER_RTF_INT( m_nBottom		, sResult, L"shpbottom" );
+			RENDER_RTF_INT( m_nRight		, sResult, L"shpright" );
+			RENDER_RTF_INT( m_nZOrder		, sResult, L"shpz" );
+			RENDER_RTF_INT( m_nHeader		, sResult, L"shpfhdr" );
+			RENDER_RTF_INT( m_nWrapType		, sResult, L"shpwr" );
+			RENDER_RTF_INT( m_nWrapSideType	, sResult, L"shpwrk" );
+			RENDER_RTF_BOOL( m_bLockAnchor	, sResult, L"shplockanchor" );
 
 			switch(m_eXAnchor)
 			{
-				case ax_page:	sResult += _T("\\shpbxpage");	break;
-				case ax_margin: sResult += _T("\\shpbxmargin");	break;
-				case ax_column: sResult += _T("\\shpbxcolumn");	break;
+				case ax_page:	sResult += L"\\shpbxpage";	break;
+				case ax_margin: sResult += L"\\shpbxmargin";	break;
+				case ax_column: sResult += L"\\shpbxcolumn";	break;
 			}
-			sResult += _T("\\shpbxignore");
+			sResult += L"\\shpbxignore";
 			switch(m_eYAnchor)
 			{
-				case ay_page:	sResult += _T("\\shpbypage");	break;
-				case ay_margin: sResult += _T("\\shpbymargin");	break;
-				case ay_Para:	sResult += _T("\\shpbypara");	break;
+				case ay_page:	sResult += L"\\shpbypage";	break;
+				case ay_margin: sResult += L"\\shpbymargin";	break;
+				case ay_Para:	sResult += L"\\shpbypara";	break;
 			}
-			sResult += _T("\\shpbyignore");
-			RENDER_RTF_INT( m_nZOrderRelative, sResult, _T("shpfblwtxt"));
+			sResult += L"\\shpbyignore";
+			RENDER_RTF_INT( m_nZOrderRelative, sResult, L"shpfblwtxt");
 		}
-        sResult += _T("{\\sp{\\sn lidRegroup}{\\sv 0}}");
+        sResult += L"{\\sp{\\sn lidRegroup}{\\sv 0}}";
 
 		sResult += RenderToRtfShapeProperty( oRenderParameter );
 
@@ -1393,8 +1441,8 @@ CString RtfShapeGroup::RenderToRtf(RenderParameter oRenderParameter)
 			sResult +=  m_aArray[i]->RenderToRtf( oRenderParameter );
 		}
 
-		sResult += _T("}");
-		sResult += _T("}");
+		sResult += L"}";
+		sResult += L"}";
 	}
 	//восстанавливаем координаты и если нужно поворачиваем
 	m_nLeft			= nLeft;
@@ -1415,7 +1463,7 @@ CString RtfShapeGroup::RenderToOOX(RenderParameter oRenderParameter)
 {
 	CString sResult;
 	RenderParameter oNewParamGroup	= oRenderParameter;
-	oNewParamGroup.sValue			= _T("v:group");
+	oNewParamGroup.sValue			= L"v:group";
 	
 	sResult = RenderToOOXBegin( oNewParamGroup );
 

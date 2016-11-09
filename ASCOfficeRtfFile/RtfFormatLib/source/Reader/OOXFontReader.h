@@ -119,25 +119,26 @@ public:
 
 		CString sFont;	
 		CString sTempFont;
-		if( _T("") != sAscii )
+		
+		if( !sAscii.IsEmpty() )
 			sFont = sAscii;
-		else if( _T("") != sAsciiTheme && _T("") != GetThemeFont(sAsciiTheme, *oParam.oReader) )
+		else if( !sAsciiTheme.IsEmpty() && !GetThemeFont(sAsciiTheme, *oParam.oReader).IsEmpty() )
 			sFont = GetThemeFont(sAsciiTheme, *oParam.oReader);
-		else if( _T("") != sHAnsi )
+		else if( !sHAnsi.IsEmpty() )
 			sFont = sHAnsi;
-		else if( _T("") != sHAnsiTheme && _T("") != GetThemeFont(sHAnsiTheme, *oParam.oReader) )
+		else if( !sHAnsiTheme.IsEmpty() && !GetThemeFont(sHAnsiTheme, *oParam.oReader).IsEmpty() )
 			sFont = GetThemeFont(sHAnsiTheme, *oParam.oReader);
-		else if( _T("") != sCs )
+		else if( !sCs.IsEmpty()  )
 			sFont = sCs;
-		else if( _T("") != sCsTheme && _T("") != GetThemeFont(sCsTheme, *oParam.oReader) )
+		else if( !sCsTheme.IsEmpty()  && !GetThemeFont(sCsTheme, *oParam.oReader).IsEmpty() )
 			sFont = GetThemeFont(sCsTheme, *oParam.oReader);
-		else if( _T("") != sEastAsia )
+		else if( !sEastAsia.IsEmpty() )
 			sFont = sEastAsia;
-		else if( _T("") != sEastAsiaTheme && _T("") != GetThemeFont(sEastAsiaTheme, *oParam.oReader) )
+		else if( !sEastAsiaTheme.IsEmpty() && !GetThemeFont(sEastAsiaTheme, *oParam.oReader).IsEmpty() )
 			sFont = GetThemeFont(sEastAsiaTheme, *oParam.oReader);
 
 
-		if( _T("") != sFont )
+		if( !sFont.IsEmpty() )
 		{
 			RtfFont oCurFont;
 			if( true == oParam.oRtf->m_oFontTable.GetFont( sFont, oCurFont ) )
@@ -156,22 +157,15 @@ private:
 	CString GetThemeFont( CString sTheme, OOXReader & oReader )
 	 {
 		CString sFont;
-		if( _T("majorAscii") == sTheme )
-			sFont = oReader.m_smajorAscii;
-		else if( _T("majorBidi") == sTheme )
-			sFont = oReader.m_smajorBidi;
-		else if( _T("majorEastAsia") == sTheme )
-			sFont = oReader.m_smajorEastAsia;
-		else if( _T("majorHAnsi") == sTheme )
-			sFont = oReader.m_smajorHAnsi;
-		else if( _T("minorAscii") == sTheme )
-			sFont = oReader.m_sminorAscii;
-		else if( _T("minorBidi") == sTheme )
-			sFont = oReader.m_sminorBidi;
-		else if( _T("minorEastAsia") == sTheme )
-			sFont = oReader.m_sminorEastAsia;
-		else if( _T("minorHAnsi") == sTheme )
-			sFont = oReader.m_sminorHAnsi;
+		if		( L"majorAscii"		== sTheme )	sFont = oReader.m_smajorAscii;
+		else if ( L"majorBidi"		== sTheme )	sFont = oReader.m_smajorBidi;
+		else if ( L"majorEastAsia"	== sTheme )	sFont = oReader.m_smajorEastAsia;
+		else if ( L"majorHAnsi"		== sTheme )	sFont = oReader.m_smajorHAnsi;
+		else if ( L"minorAscii"		== sTheme )	sFont = oReader.m_sminorAscii;
+		else if ( L"minorBidi"		== sTheme )	sFont = oReader.m_sminorBidi;
+		else if ( L"minorEastAsia"	== sTheme )	sFont = oReader.m_sminorEastAsia;
+		else if ( L"minorHAnsi"		== sTheme )	sFont = oReader.m_sminorHAnsi;
+		
 		return sFont;
 	 }
 };

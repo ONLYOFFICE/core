@@ -38,34 +38,6 @@
 #include "../../../Common/DocxFormat/Source/DocxFormat/App.h"
 #include "../../../Common/DocxFormat/Source/DocxFormat/Core.h"
 
-//--------------------------------------------------------------------------------------------
-#define GETBITS(from, numL, numH) ((from & (((1 << (numH - numL + 1)) - 1) << numL)) >> numL)
-
-std::wstring convertDateTime (int dt)
-{
-	short	Min		= GETBITS(dt, 0	, 5);
-	short	Hour	= GETBITS(dt, 6	, 10);
-	short	Day		= GETBITS(dt, 11, 15);
-	short	Month	= GETBITS(dt, 16, 19);
-	int		Year	= GETBITS(dt, 20, 28) + 1900;
-
-	//to 1899-12-31T05:37:46.66569
-	std::wstring date_str = std::to_wstring(Year) 
-							+ L"-" 
-							+ (Month < 10 ? L"0": L"") + std::to_wstring(Month) 
-							+ L"-" 
-							+ (Day < 10 ? L"0": L"") + std::to_wstring(Day)
-							+ L"T"
-							+ (Hour < 10 ? L"0": L"") + std::to_wstring(Hour)
-							+ L":" 
-							+ (Min < 10 ? L"0": L"") + std::to_wstring(Min)
-							+ L":00Z";
-
-	return date_str;
-}
-//------------------------------------------------------------------------------------------------------
-int current_id_changes = 1;
-
 CString RtfFont::RenderToRtf(RenderParameter oRenderParameter)
 {
 	if ( IsValid() == false) return L"";
@@ -744,21 +716,17 @@ CString RtfCharProperty::RenderToOOX(RenderParameter oRenderParameter)
 
 	if ( PROP_DEF != m_nDeleted )
 	{
-		std::wstring sDate_ = m_nRevdttmDel != PROP_DEF ? convertDateTime(m_nRevdttmDel) : L"";
+		CString sAuthor = m_nRevauthDel != PROP_DEF ? poRtfDocument->m_oRevisionTable[ m_nRevauthDel] : L"";
+		CString sDate(RtfUtility::convertDateTime(m_nRevdttmDel).c_str());
 
-		CString sAuthorDel = m_nRevauthDel != PROP_DEF ? poRtfDocument->m_oRevisionTable[ m_nRevauthDel] : L"";
-		CString sDateDel(sDate_.c_str());
-
-		sResult += L"<w:del w:date=\""	+ sDateDel +  L"\" w:author=\"" + sAuthorDel + L"\" w:id=\"" + std::to_wstring(current_id_changes++).c_str() + L"\"/>";
+		sResult += L"<w:del w:date=\""	+ sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\"/>";
 	}
 	if ( PROP_DEF != m_nRevised )
 	{
-		std::wstring sDate_ = m_nRevdttm != PROP_DEF ? convertDateTime(m_nRevdttm) : L"";
-
-		CString sAuthorRev = m_nRevauth != PROP_DEF ? poRtfDocument->m_oRevisionTable[ m_nRevauth] : L"";
-		CString sDateRev(sDate_.c_str());
+		CString sAuthor = m_nRevauth != PROP_DEF ? poRtfDocument->m_oRevisionTable[ m_nRevauth] : L"";
+		CString sDate(RtfUtility::convertDateTime(m_nRevdttm).c_str());
 		
-		sResult += L"<w:ins w:date=\""	+ sDateRev +  L"\" w:author=\""	+ sAuthorRev + L"\" w:id=\"" + std::to_wstring(current_id_changes++).c_str() + L"\"/>";
+		sResult += L"<w:ins w:date=\""	+ sDate +  L"\" w:author=\""	+ sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\"/>";
 	}
 	
 	switch( m_nAnimated )
@@ -797,13 +765,13 @@ CString RtfCharProperty::RenderToOOX(RenderParameter oRenderParameter)
 	{
 		if( -1 == m_nFitText )
 		{
-            sResult.AppendFormat(L"<w:fitText w:id=\"%d\" w:val=\"%d\" />",poOOXWriter->nCurFitId.GetBuffer(), poOOXWriter->nCurFitWidth);
+            sResult.AppendFormat(L"<w:fitText w:id=\"%d\" w:val=\"%d\" />", poOOXWriter->m_nCurFitId.GetBuffer(), poOOXWriter->m_nCurFitWidth);
 		}
 		else 
 		{
-			poOOXWriter->nCurFitId = poRtfDocument->m_oIdGenerator.Generate_FitTextId();
-			poOOXWriter->nCurFitWidth = m_nFitText;
-            sResult.AppendFormat(L"<w:fitText w:id=\"%d\" w:val=\"%d\" />",poOOXWriter->nCurFitId.GetBuffer(), poOOXWriter->nCurFitWidth);
+			poOOXWriter->m_nCurFitId = poRtfDocument->m_oIdGenerator.Generate_FitTextId();
+			poOOXWriter->m_nCurFitWidth = m_nFitText;
+            sResult.AppendFormat(L"<w:fitText w:id=\"%d\" w:val=\"%d\" />", poOOXWriter->m_nCurFitId.GetBuffer(), poOOXWriter->m_nCurFitWidth);
 		}
 	}
 	if( PROP_DEF == m_nFont)
@@ -939,16 +907,16 @@ CString RtfCharProperty::RenderToOOX(RenderParameter oRenderParameter)
 
 	if (m_pOldCharProp)
 	{
-		std::wstring sDate_ = m_nCrDate != PROP_DEF ? convertDateTime(m_nCrDate) : L"";
-
 		CString sAuthor = m_nCrAuth != PROP_DEF ? poRtfDocument->m_oRevisionTable[ m_nCrAuth] : L"";
-		CString sDate(sDate_.c_str());
+		CString sDate(RtfUtility::convertDateTime(m_nCrDate).c_str());
 		
 		RenderParameter oRenderParameterNew = oRenderParameter;
-
 		oRenderParameterNew.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
-		sResult += L"<w:rPrChange w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(current_id_changes++).c_str() + L"\">";
-			sResult += m_pOldCharProp->RenderToOOX(oRenderParameterNew);
+
+		sResult += L"<w:rPrChange w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
+			sResult += L"<w:rPr>";
+				sResult += m_pOldCharProp->RenderToOOX(oRenderParameterNew);
+			sResult += L"</w:rPr>";
 		sResult += L"</w:rPrChange>";
 	}
 	
@@ -1002,10 +970,10 @@ CString RtfListLevelProperty::RenderToOOX2(RenderParameter oRenderParameter, int
 {
 	CString sResult;
 	int nLevel = PROP_DEF;
-	if(PROP_DEF != nLvl)
-		nLevel = nLvl;
-	else if(PROP_DEF != m_nLevel)
-		nLevel = m_nLevel;
+	
+	if		(PROP_DEF != nLvl)		nLevel = nLvl;
+	else if (PROP_DEF != m_nLevel)	nLevel = m_nLevel;
+	
 	if(PROP_DEF != nLevel)
 	{
 		sResult.AppendFormat( L"<w:lvl w:ilvl=\"%d\"", nLevel ); 
@@ -1051,8 +1019,8 @@ CString RtfListLevelProperty::RenderToOOX2(RenderParameter oRenderParameter, int
 			else
 				sIndent.AppendFormat( L" w:hanging=\"%d\"", -m_nFirstIndent );
 		}
-		RENDER_OOX_INT_ATTRIBUTE( m_nIndent, sIndent, L"w:left" )
-		RENDER_OOX_INT_ATTRIBUTE( m_nIndentStart, sIndent, L"w:start" )
+		RENDER_OOX_INT_ATTRIBUTE( m_nIndent,		sIndent, L"w:left" )
+		RENDER_OOX_INT_ATTRIBUTE( m_nIndentStart,	sIndent, L"w:start" )
 		
 		if( !sIndent.IsEmpty() )
             spPr += L"<w:ind " + sIndent + L"/>";
@@ -1121,7 +1089,7 @@ CString RtfListProperty::RenderToOOX(RenderParameter oRenderParameter)
 	//		sResult += L"<w:styleLink w:val=\"" + Utils::PrepareToXML( m_sName ) + L"\"/>";
 	//}
 	//else
-	//	sResult += L"<w:numStyleLink w:val=\"" + Utils::PrepareToXML( m_sName) + _T(\"/>";
+	//	sResult += L"<w:numStyleLink w:val=\"" + Utils::PrepareToXML( m_sName) + L"\"/>";
 
 	if( PROP_DEF != m_nTemplateId )
 		sResult.AppendFormat(L"<w:tmpl w:val=\"%x\"/>" ,m_nTemplateId);
@@ -2062,7 +2030,7 @@ CString RtfParagraphProperty::RenderToOOX(RenderParameter oRenderParameter)
 		CString sBorderContent = m_oBorderBox.RenderToOOX(oNewParam);
         sBorder += L"<w:left ";		sBorder += sBorderContent;	sBorder += L" />";
         sBorder += L"<w:top ";		sBorder += sBorderContent;	sBorder += L" />";
-        sBorder += L"<w:right ";		sBorder += sBorderContent;	sBorder += L" />";
+        sBorder += L"<w:right ";	sBorder += sBorderContent;	sBorder += L" />";
         sBorder += L"<w:bottom ";	sBorder += sBorderContent;	sBorder += L" />";
 	}
 	else
@@ -2120,21 +2088,21 @@ CString RtfParagraphProperty::RenderToOOX(RenderParameter oRenderParameter)
 	if( !sCharProp.IsEmpty() )
 	{
         sResult += L"<w:rPr>";
-		sResult += sCharProp;
+			sResult += sCharProp;
 		sResult += L"</w:rPr>";
 	}
 	if (m_pOldParagraphProp)
 	{
-		std::wstring sDate_ = m_nPrDate != PROP_DEF ? convertDateTime(m_nPrDate) : L"";
-
 		CString sAuthor = m_nPrAuth != PROP_DEF ? poRtfDocument->m_oRevisionTable[ m_nPrAuth] : L"";
-		CString sDate(sDate_.c_str());
+		CString sDate(RtfUtility::convertDateTime(m_nPrDate).c_str());
 
 		RenderParameter oRenderParameterNew = oRenderParameter;
-
 		oRenderParameterNew.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
-		sResult += L"<w:pPrChange w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(current_id_changes++).c_str() + L"\">";
-			sResult += m_pOldParagraphProp->RenderToOOX(oRenderParameterNew);
+		
+		sResult += L"<w:pPrChange w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
+			sResult += L"<w:pPr>";
+				sResult += m_pOldParagraphProp->RenderToOOX(oRenderParameterNew);
+			sResult += L"</w:pPr>";
 		sResult += L"</w:pPrChange>";
 	}
 	return sResult;
@@ -2142,34 +2110,34 @@ CString RtfParagraphProperty::RenderToOOX(RenderParameter oRenderParameter)
 CString RtfCellProperty::RenderToRtf(RenderParameter oRenderParameter)
 {
 	CString sResult;
-	RENDER_RTF_BOOL( m_bMergeFirst, sResult, L"clmgf" )
-	RENDER_RTF_BOOL( m_bMerge, sResult, L"clmrg" )
+	RENDER_RTF_BOOL( m_bMergeFirst,			sResult, L"clmgf" )
+	RENDER_RTF_BOOL( m_bMerge,				sResult, L"clmrg" )
 	RENDER_RTF_BOOL( m_bMergeFirstVertical, sResult, L"clvmgf" )
-	RENDER_RTF_BOOL( m_bMergeVertical, sResult, L"clvmrg" )
+	RENDER_RTF_BOOL( m_bMergeVertical,		sResult, L"clvmrg" )
 
-	RENDER_RTF_BOOL( m_bFitText, sResult, L"clFitText" )
-	RENDER_RTF_BOOL( m_bNoWrap, sResult, L"clNoWrap" )
+	RENDER_RTF_BOOL( m_bFitText,			sResult, L"clFitText" )
+	RENDER_RTF_BOOL( m_bNoWrap,				sResult, L"clNoWrap" )
 
-	RENDER_RTF_INT( m_nIsPaddingLeft, sResult, L"clpadfl" )
-	RENDER_RTF_INT( m_nPaddingLeft, sResult, L"clpadl" )
-	RENDER_RTF_INT( m_nIsPaddingRight, sResult, L"clpadfr" )
-	RENDER_RTF_INT( m_nPaddingRight, sResult, L"clpadr" )
-	RENDER_RTF_INT( m_nIsPaddingTop, sResult, L"clpadft" )
-	RENDER_RTF_INT( m_nPaddingTop, sResult, L"clpadt" )
-	RENDER_RTF_INT( m_nIsPaddingBottom, sResult, L"clpadfb" )
-	RENDER_RTF_INT( m_nPaddingBottom, sResult, L"clpadb" )
+	RENDER_RTF_INT( m_nIsPaddingLeft,		sResult, L"clpadfl" )
+	RENDER_RTF_INT( m_nPaddingLeft,			sResult, L"clpadl" )
+	RENDER_RTF_INT( m_nIsPaddingRight,		sResult, L"clpadfr" )
+	RENDER_RTF_INT( m_nPaddingRight,		sResult, L"clpadr" )
+	RENDER_RTF_INT( m_nIsPaddingTop,		sResult, L"clpadft" )
+	RENDER_RTF_INT( m_nPaddingTop,			sResult, L"clpadt" )
+	RENDER_RTF_INT( m_nIsPaddingBottom,		sResult, L"clpadfb" )
+	RENDER_RTF_INT( m_nPaddingBottom,		sResult, L"clpadb" )
 
-	RENDER_RTF_INT( m_nIsSpacingLeft, sResult, L"clspfl" )
-	RENDER_RTF_INT( m_nSpacingLeft, sResult, L"clspl" )
-	RENDER_RTF_INT( m_nIsSpacingRight, sResult, L"clspl" )
-	RENDER_RTF_INT( m_nSpacingRight, sResult, L"clspr" )
+	RENDER_RTF_INT( m_nIsSpacingLeft,		sResult, L"clspfl" )
+	RENDER_RTF_INT( m_nSpacingLeft,			sResult, L"clspl" )
+	RENDER_RTF_INT( m_nIsSpacingRight,		sResult, L"clspl" )
+	RENDER_RTF_INT( m_nSpacingRight,		sResult, L"clspr" )
 
-	RENDER_RTF_INT( m_nIsSpacingTop, sResult, L"clspft" )
-	RENDER_RTF_INT( m_nSpacingTop, sResult, L"clspt" )
-	RENDER_RTF_INT( m_nIsSpacingBottom, sResult, L"clspfb" )
-	RENDER_RTF_INT( m_nSpacingBottom, sResult, L"clspb" )
+	RENDER_RTF_INT( m_nIsSpacingTop,		sResult, L"clspft" )
+	RENDER_RTF_INT( m_nSpacingTop,			sResult, L"clspt" )
+	RENDER_RTF_INT( m_nIsSpacingBottom,		sResult, L"clspfb" )
+	RENDER_RTF_INT( m_nSpacingBottom,		sResult, L"clspb" )
 	
-	RENDER_RTF_BOOL( m_bHideMark, sResult, L"clhidemark" )
+	RENDER_RTF_BOOL( m_bHideMark,			sResult, L"clhidemark" )
 
 	if( true == m_oBorderDiagonalLR.IsValid() )
 	{
@@ -2745,12 +2713,16 @@ CString RtfRowProperty::RenderToRtf(RenderParameter oRenderParameter)
 CString RtfRowProperty::RenderToOOX(RenderParameter oRenderParameter)
 {
 	CString sResult;
+	
+	RtfDocument	* poRtfDocument = static_cast<RtfDocument*>	(oRenderParameter.poDocument);
+	OOXWriter	* poOOXWriter	= static_cast<OOXWriter*>	(oRenderParameter.poWriter);
+	
 	RENDER_OOX_BOOL( m_bIsHeader, sResult, L"w:tblHeader" )
 	RENDER_OOX_BOOL( m_bKeep, sResult, L"w:cantSplit" )
 
 	switch( m_eJust )
 	{
-		case rj_trql : sResult += L"<w:jc w:val=\"left\"/>";		break;
+		case rj_trql : sResult += L"<w:jc w:val=\"left\"/>";	break;
 		case rj_trqr : sResult += L"<w:jc w:val=\"right\"/>";	break;
 		case rj_trqc : sResult += L"<w:jc w:val=\"center\"/>";	break;
 	}
@@ -2766,20 +2738,20 @@ CString RtfRowProperty::RenderToOOX(RenderParameter oRenderParameter)
 	{
 		switch( m_eMUStartInvCell )
 		{
-			case mu_Percent:	sResult.AppendFormat(L"<w:wBefore w:type=\"pct\" w:w=\"%d%%\"/>", m_nWidthStartInvCell);break;
-			case mu_Twips:		sResult.AppendFormat(L"<w:wBefore w:type=\"dxa\" w:w=\"%d\"/>", m_nWidthStartInvCell);break;
+			case mu_Percent:	sResult.AppendFormat(L"<w:wBefore w:type=\"pct\" w:w=\"%d%%\"/>", m_nWidthStartInvCell);	break;
+			case mu_Twips:		sResult.AppendFormat(L"<w:wBefore w:type=\"dxa\" w:w=\"%d\"/>", m_nWidthStartInvCell);		break;
 		}
 	}
 	if( PROP_DEF != m_nWidthEndInvCell )
 	{
 		switch( m_eMUEndInvCell )
 		{
-			case mu_Percent:	sResult.AppendFormat(L"<w:wAfter w:type=\"pct\" w:w=\"%d%%\"/>", m_nWidthEndInvCell);break;
-			case mu_Twips:		sResult.AppendFormat(L"<w:wAfter w:type=\"dxa\" w:w=\"%d\"/>", m_nWidthEndInvCell);break;
+			case mu_Percent:	sResult.AppendFormat(L"<w:wAfter w:type=\"pct\" w:w=\"%d%%\"/>", m_nWidthEndInvCell);		break;
+			case mu_Twips:		sResult.AppendFormat(L"<w:wAfter w:type=\"dxa\" w:w=\"%d\"/>", m_nWidthEndInvCell);			break;
 		}
 	}
-	RENDER_OOX_INT( m_nGridBefore, sResult, L"w:gridBefore" )
-	RENDER_OOX_INT( m_nGridAfter, sResult, L"w:gridAfter" )
+	RENDER_OOX_INT( m_nGridBefore,	sResult, L"w:gridBefore" )
+	RENDER_OOX_INT( m_nGridAfter,	sResult, L"w:gridAfter" )
 
 	//CString scnfStyle;
 	//RENDER_OOX_BOOL_ATTRIBUTE( m_bStyleFirstRow, scnfStyle, L"w:firstRow" )
@@ -2798,6 +2770,44 @@ CString RtfRowProperty::RenderToOOX(RenderParameter oRenderParameter)
 	//	sResult += L"<w:cnfStyle " + scnfStyle + L"/>" );
 
 //	_bstr_t hk;
+
+	if (m_pOldRowProperty)
+	{
+		m_pOldRowProperty;
+		//if ( PROP_DEF != oReader.m_oState->m_oCharProp.m_nDeleted )
+		//{
+		//	CString sAuthor = oReader.m_oState->m_oCharProp.m_nRevauthDel != PROP_DEF ? poRtfDocument->m_oRevisionTable[ oReader.m_oState->m_oCharProp.m_nRevauthDel] : L"";
+		//	CString sDate(RtfUtility::convertDateTime(oReader.m_oState->m_oCharProp.m_nRevdttmDel).c_str());
+
+		//	sResult += L"<w:del w:date=\""	+ sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\"/>";
+		//}
+		//if ( PROP_DEF != oReader.m_oState->m_oCharProp.m_nRevised )
+		//{
+		//	CString sAuthor = m_nRevauth != PROP_DEF ? poRtfDocument->m_oRevisionTable[ oReader.m_oState->m_oCharProp.m_nRevauth] : L"";
+		//	CString sDate(RtfUtility::convertDateTime(oReader.m_oState->m_oCharProp.m_nRevdttm).c_str());
+		//	
+		//	sResult += L"<w:ins w:date=\""	+ sDate +  L"\" w:author=\""	+ sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\"/>";
+		//}
+		CString sAuthor = m_nTrAuth != PROP_DEF ? poRtfDocument->m_oRevisionTable[ m_nTrAuth] : L"";
+		CString sDate(RtfUtility::convertDateTime(m_nTrDate).c_str());
+		
+		RenderParameter oRenderParameterNew = oRenderParameter;
+		oRenderParameterNew.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
+		CString rowChangeProps = m_pOldRowProperty->RenderToOOX(oRenderParameterNew);
+
+		if (rowChangeProps.IsEmpty())
+		{
+			sResult += L"<w:ins w:date=\""	+ sDate +  L"\" w:author=\""	+ sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\"/>";
+		}
+		else
+		{
+			sResult += L"<w:trPrChange w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
+				sResult += L"<w:trPr>";
+					sResult += rowChangeProps;
+				sResult += L"</w:trPr>";
+			sResult += L"</w:trPrChange>";
+		}
+	}
 	return sResult;
 }
 
@@ -2805,39 +2815,39 @@ CString RtfInformation::RenderToRtf(RenderParameter oRenderParameter)
 {
 	CString sResult;
 
-	if( L"" != m_sTitle )
+	if( !m_sTitle.IsEmpty() )
 	{
-        sResult += L"{\\title ";		sResult += RtfChar::renderRtfText( m_sTitle, oRenderParameter.poDocument );	sResult += L"}";
+        sResult += L"{\\title ";	sResult += RtfChar::renderRtfText( m_sTitle, oRenderParameter.poDocument );	sResult += L"}";
 	}
-	if( L"" != m_sSubject )
+	if( !m_sSubject.IsEmpty() )
 	{
         sResult += L"{\\subject ";	sResult += RtfChar::renderRtfText( m_sSubject, oRenderParameter.poDocument );	sResult += L"}";
 	}
-	if( L"" != m_sAuthor )
+	if( !m_sAuthor.IsEmpty() )
 	{
         sResult += L"{\\author ";	sResult += RtfChar::renderRtfText( m_sAuthor, oRenderParameter.poDocument );	sResult += L"}";
 	}
-	if( L"" != m_sManager )
+	if( !m_sManager.IsEmpty() )
 	{
         sResult += L"{\\manager ";	sResult += RtfChar::renderRtfText( m_sManager, oRenderParameter.poDocument );	sResult += L"}";
 	}
-	if( L"" != m_sCompany )
+	if( !m_sCompany.IsEmpty() )
 	{
         sResult += L"{\\company ";	sResult += RtfChar::renderRtfText( m_sCompany, oRenderParameter.poDocument );	sResult += L"}";
 	}
-	if( L"" != m_sOperator )
+	if( !m_sOperator.IsEmpty() )
 	{
         sResult += L"{\\operator ";	sResult += RtfChar::renderRtfText( m_sOperator, oRenderParameter.poDocument );	sResult += L"}";
 	}
-	if( L"" != m_sCategory )
+	if( !m_sCategory.IsEmpty() )
 	{
         sResult += L"{\\category ";	sResult += RtfChar::renderRtfText( m_sCategory, oRenderParameter.poDocument );	sResult += L"}";
 	}
-	if( L"" != m_sKeywords )
+	if( !m_sKeywords.IsEmpty() )
 	{
         sResult += L"{\\keywords ";	sResult += RtfChar::renderRtfText( m_sKeywords, oRenderParameter.poDocument );	sResult += L"}";
 	}
-	if( L"" != m_sComment )
+	if( !m_sComment.IsEmpty() )
 	{
         sResult += L"{\\comment ";	sResult += RtfChar::renderRtfText( m_sComment, oRenderParameter.poDocument );	sResult += L"}";
 	}
@@ -2845,7 +2855,7 @@ CString RtfInformation::RenderToRtf(RenderParameter oRenderParameter)
 	if( PROP_DEF != m_nVersion )
 		sResult.AppendFormat( L"{\\version%d}",m_nVersion );
 
-	if( L"" != m_sDocCom )
+	if( !m_sDocCom.IsEmpty() )
 	{
         sResult += L"{\\doccomm ";	sResult += RtfChar::renderRtfText( m_sDocCom, oRenderParameter.poDocument );	sResult += L"}";
 	}
@@ -2853,31 +2863,30 @@ CString RtfInformation::RenderToRtf(RenderParameter oRenderParameter)
 	{
 		sResult.AppendFormat( L"{\\vern%d}",m_nInternalVersion );
 	}
-	if( L"" != m_sLinkBase )
+	if( !m_sLinkBase.IsEmpty() )
 	{
         sResult += L"{\\hlinkbase ";	sResult += RtfChar::renderRtfText( m_sLinkBase, oRenderParameter.poDocument );	sResult += L"}";
 	}
 
-
 	CString sCreateTime = m_oCreateTime.RenderToRtf( oRenderParameter );
-	if( L"" != sCreateTime )
+	if( !sCreateTime.IsEmpty() )
 	{
         sResult += L"{\\creatim";	sResult += sCreateTime;	sResult += L"}";
 	}
 	CString sRevTime = m_oRevTime.RenderToRtf( oRenderParameter );
-	if( L"" != sRevTime )
+	if( !sRevTime.IsEmpty() )
 	{
-		sResult += L"{\\revtim";		sResult += sRevTime;	sResult += L"}";
+		sResult += L"{\\revtim";	sResult += sRevTime;	sResult += L"}";
 	}
 	CString sPrintTime = m_oPrintTime.RenderToRtf( oRenderParameter );
-	if( L"" != sPrintTime )
+	if( !sPrintTime.IsEmpty() )
 	{
         sResult += L"{\\printim";	sResult += sPrintTime;	sResult += L"}";
 	}
 	CString sBackupTime = m_oBackupTime.RenderToRtf( oRenderParameter );
-	if( L"" != sBackupTime )
+	if( !sBackupTime.IsEmpty() )
 	{
-        sResult += L"{\\buptim";		sResult += sBackupTime;	sResult += L"}";
+        sResult += L"{\\buptim";	sResult += sBackupTime;	sResult += L"}";
 	}
 	if( PROP_DEF != m_nEndingTime )
 	{
@@ -2903,7 +2912,7 @@ CString RtfInformation::RenderToRtf(RenderParameter oRenderParameter)
 	if( PROP_DEF != m_nInternalId )
 		sResult.AppendFormat( L"{\\id%d}",m_nInternalId );
 
-	if( false == sResult.IsEmpty() )
+	if( !sResult.IsEmpty() )
 		sResult = L"{\\info" + sResult + L"}";
 	return sResult;
 }
@@ -2913,11 +2922,11 @@ CString RtfInformation::RenderToOOX(RenderParameter oRenderParameter)
 	{
 		OOX::CCore *pCore = static_cast<OOX::CCore*>( oRenderParameter.poWriter );
 		
-		if( m_sTitle.GetLength() > 0 )		pCore->m_sTitle			= Utils::PrepareToXML(m_sTitle);
-		if( m_sSubject.GetLength() > 0 )	pCore->m_sSubject		= Utils::PrepareToXML(m_sSubject);
-		if( m_sAuthor.GetLength() > 0 )		pCore->m_sCreator		= m_sAuthor;
-		if( m_sKeywords.GetLength() > 0 )	pCore->m_sKeywords		= m_sKeywords;
-		if(  m_sComment.GetLength() > 0 )	pCore->m_sDescription	= Utils::PrepareToXML(m_sComment);
+		if( !m_sTitle.IsEmpty() )		pCore->m_sTitle			= Utils::PrepareToXML(m_sTitle);
+		if( !m_sSubject.IsEmpty() )		pCore->m_sSubject		= Utils::PrepareToXML(m_sSubject);
+		if( !m_sAuthor.IsEmpty() )		pCore->m_sCreator		= m_sAuthor;
+		if( !m_sKeywords.IsEmpty() )	pCore->m_sKeywords		= m_sKeywords;
+		if( !m_sComment.IsEmpty() )		pCore->m_sDescription	= Utils::PrepareToXML(m_sComment);
 
 		//CString sCreateTime = m_oCreateTime.RenderToOOX( oRenderParameter );
 		//if( false == sCreateTime.IsEmpty() ) pCore->m_sCreated		= sCreateTime;
@@ -2949,18 +2958,12 @@ CString RtfInformation::RenderToOOX(RenderParameter oRenderParameter)
 CString RtfTime::RenderToRtf(RenderParameter oRenderParameter)
 {
 	CString sResult;
-	if( PROP_DEF != m_nYear )
-		sResult.AppendFormat(L"\\yr%d",m_nYear);
-	if( PROP_DEF != m_nMonth )
-		sResult.AppendFormat(L"\\mo%d",m_nMonth);
-	if( PROP_DEF != m_nDay )
-		sResult.AppendFormat(L"\\dy%d",m_nDay);
-	if( PROP_DEF != m_nHour )
-		sResult.AppendFormat(L"\\hr%d",m_nHour);
-	if( PROP_DEF != m_nMin )
-		sResult.AppendFormat(L"\\min%d",m_nMin);
-	if( PROP_DEF != m_nSecond )
-		sResult.AppendFormat(L"\\sec%d",m_nSecond);
+	if( PROP_DEF != m_nYear )		sResult.AppendFormat(L"\\yr%d",m_nYear);
+	if( PROP_DEF != m_nMonth )		sResult.AppendFormat(L"\\mo%d",m_nMonth);
+	if( PROP_DEF != m_nDay )		sResult.AppendFormat(L"\\dy%d",m_nDay);
+	if( PROP_DEF != m_nHour )		sResult.AppendFormat(L"\\hr%d",m_nHour);
+	if( PROP_DEF != m_nMin )		sResult.AppendFormat(L"\\min%d",m_nMin);
+	if( PROP_DEF != m_nSecond )		sResult.AppendFormat(L"\\sec%d",m_nSecond);
 	return sResult;
 }
 CString RtfTime::RenderToOOX(RenderParameter oRenderParameter)
@@ -2969,27 +2972,23 @@ CString RtfTime::RenderToOOX(RenderParameter oRenderParameter)
 	if( PROP_DEF != m_nYear || PROP_DEF != m_nMonth || PROP_DEF != m_nDay )
 	{
 		int nYear = 0;
-		if( PROP_DEF != m_nYear )
-			nYear = m_nYear;
+		if( PROP_DEF != m_nYear )			nYear = m_nYear;
 		int nMonth = 0;
-		if( PROP_DEF != m_nMonth )
-			nMonth = m_nMonth;
+		if( PROP_DEF != m_nMonth )			nMonth = m_nMonth;
 		int nDay = 0;
-		if( PROP_DEF != m_nDay )
-			nDay = m_nDay;
+		if( PROP_DEF != m_nDay )			nDay = m_nDay;
+
 		sResult.AppendFormat( L"%d-%d-%dT", nYear, nMonth, nDay );
 	}
 	if( PROP_DEF != m_nHour || PROP_DEF != m_nMin || PROP_DEF != m_nSecond )
 	{
 		int nHour = 0;
-		if( PROP_DEF != m_nHour )
-			nHour = m_nHour;
+		if( PROP_DEF != m_nHour )			nHour = m_nHour;
 		int nMin = 0;
-		if( PROP_DEF != m_nMin )
-			nMin = m_nMin;
+		if( PROP_DEF != m_nMin )			nMin = m_nMin;
 		int nSecond = 0;
-		if( PROP_DEF != m_nSecond )
-			nSecond = m_nSecond;
+		if( PROP_DEF != m_nSecond )			nSecond = m_nSecond;
+		
 		sResult.AppendFormat( L"%d:%d:%dZ", nHour, nMin, nSecond );
 	}
 	return sResult;
@@ -3057,11 +3056,12 @@ void RtfTableStyle::Merge( RtfStylePtr oStyle )
 	{
 		RtfTableStylePtr oTableStyle = boost::static_pointer_cast<RtfTableStyle, RtfStyle>( oStyle );
 		
-		m_oTableProp.Merge( oTableStyle->m_oTableProp );
-		m_oRowProp.Merge( oTableStyle->m_oRowProp );
-		m_oCellProp.Merge( oTableStyle->m_oCellProp );
-		m_oParProp.Merge( oTableStyle->m_oParProp );
-		m_oCharProp.Merge( oTableStyle->m_oCharProp );
+		m_oTableProp.Merge	( oTableStyle->m_oTableProp );
+		m_oRowProp.Merge	( oTableStyle->m_oRowProp );
+		m_oCellProp.Merge	( oTableStyle->m_oCellProp );
+		m_oParProp.Merge	( oTableStyle->m_oParProp );
+		m_oCharProp.Merge	( oTableStyle->m_oCharProp );
+		
 		if( NULL != oTableStyle->m_oFirstRow )
 		{
 			m_oFirstRow = RtfTableStylePtr( new RtfTableStyle() );

@@ -60,7 +60,7 @@ namespace OOX
 			int nParentDepth = oSubReader.GetDepth();
 			while( oSubReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CWCharWrapper sName = oSubReader.GetName();
+				std::wstring sName = oSubReader.GetName();
 				if ( _T("mc:Choice") == sName )
 				{
 					CRun altRun(oSubReader);

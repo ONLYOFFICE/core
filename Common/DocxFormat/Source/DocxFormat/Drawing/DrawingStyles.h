@@ -77,7 +77,7 @@ namespace OOX
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				m_eType = et_Unknown;
-                CString sName = oReader.GetName();
+                std::wstring sName = oReader.GetName();
 				wchar_t wChar2 = sName[2];
 
 				switch ( wChar2 )
@@ -232,7 +232,7 @@ namespace OOX
 				int nParentDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nParentDepth ) )
 				{
-                    CString sName = oReader.GetName();
+                    std::wstring sName = oReader.GetName();
 					WritingElement *pItem = NULL;
 
 					if ( _T("a:blipFill") == sName )
@@ -366,7 +366,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-                    CString sName = oReader.GetName();
+                    std::wstring sName = oReader.GetName();
 					if ( _T("a:effectDag") == sName )
 					{
 						m_oEffectDag  = oReader;
@@ -465,7 +465,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-                    CString sName = oReader.GetName();
+                    std::wstring sName = oReader.GetName();
 					if ( _T("a:effectStyle") == sName )
 					{
 						OOX::Drawing::CEffectStyleItem *oEffectStyle = new OOX::Drawing::CEffectStyleItem(oReader);
@@ -547,7 +547,7 @@ namespace OOX
 				int nParentDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nParentDepth ) )
 				{
-                    CString sName = oReader.GetName();
+                    std::wstring sName = oReader.GetName();
 					WritingElement *pItem = NULL;
 
 					if ( _T("a:blipFill") == sName )
@@ -640,8 +640,8 @@ namespace OOX
 				if ( !oReader.MoveToFirstAttribute() )
 					return;
 				
-                CString wsName = oReader.GetName();
-                while( !wsName.IsEmpty() )
+				std::wstring wsName = oReader.GetName();
+                while( !wsName.empty() )
 				{
 					wchar_t wsChar0 = wsName[0]; 
 
@@ -697,7 +697,7 @@ namespace OOX
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				m_eType = et_Unknown;
-                CString sName = oReader.GetName();
+                std::wstring sName = oReader.GetName();
 				if ( _T("a:lnDef") == sName )
 					m_eType = et_a_lnDef;
 				else if ( _T("a:spDef") == sName )
@@ -713,7 +713,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-                    CString sName = oReader.GetName();
+                    std::wstring sName = oReader.GetName();
 					if ( _T("a:bodyPr") == sName )
 						m_oBodyPr = oReader;
 					else if ( _T("a:extLst") == sName )
@@ -810,7 +810,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-                    CString sName = oReader.GetName();
+                    std::wstring sName = oReader.GetName();
 					if ( _T("a:ln") == sName )
 					{
 						OOX::Drawing::CLineProperties *oLP = new OOX::Drawing::CLineProperties(oReader);
@@ -877,7 +877,7 @@ namespace OOX
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				m_eType = et_Unknown;
-                CString sName = oReader.GetName();
+                std::wstring sName = oReader.GetName();
 				if ( _T("a:majorFont") == sName )
 					m_eType = et_a_majorFont;
 				else if ( _T("a:minorFont") == sName )
@@ -891,7 +891,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-                    CString sName = oReader.GetName();
+                    std::wstring sName = oReader.GetName();
 					if ( _T("a:cs") == sName )
 						m_oCs = oReader;
 					else if ( _T("a:ea") == sName )
@@ -987,7 +987,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-                    CString sName = oReader.GetName();
+                    std::wstring sName = oReader.GetName();
 					if ( _T("a:bgFillStyleLst") == sName )
 						m_oBgFillStyleLst = oReader;
 					else if ( _T("a:effectStyleLst") == sName )
@@ -1027,8 +1027,8 @@ namespace OOX
 				if ( !oReader.MoveToFirstAttribute() )
 					return;
 				
-                CString wsName = oReader.GetName();
-                while( !wsName.IsEmpty() )
+				std::wstring wsName = oReader.GetName();
+                while( !wsName.empty() )
 				{
 					if ( _T("name") == wsName ) 
 						m_sName = oReader.GetText();
@@ -1084,7 +1084,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-                    CString sName = oReader.GetName();
+                    std::wstring sName = oReader.GetName();
 					if ( _T("a:extLst") == sName )
 						m_oExtLst = oReader;
 					else if ( _T("a:majorFont") == sName )
@@ -1123,8 +1123,8 @@ namespace OOX
 				if ( !oReader.MoveToFirstAttribute() )
 					return;
 				
-                CString wsName = oReader.GetName();
-                while( !wsName.IsEmpty() )
+				std::wstring wsName = oReader.GetName();
+                while( !wsName.empty() )
 				{
 					if ( _T("name") == wsName ) 
 						m_sName = oReader.GetText();

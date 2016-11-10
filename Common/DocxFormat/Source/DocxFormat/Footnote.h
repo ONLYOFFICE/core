@@ -87,7 +87,7 @@ namespace OOX
 			if ( !oReader.ReadNextNode() )
 				return;
 
-			CWCharWrapper sName = oReader.GetName();
+			std::wstring sName = oReader.GetName();
 			if ( _T("w:footnotes") == sName && !oReader.IsEmptyNode() )
 			{
 				int nNumberingDepth = oReader.GetDepth();

@@ -233,7 +233,7 @@ namespace OOX
 			if ( pPair != m_mContainer.end() )
 			{
 				CString sType = pPair->second->type().RelationType();
-				CString sName = pPair->second->type().DefaultFileName().m_strFilename;
+				std::wstring sName = pPair->second->type().DefaultFileName().m_strFilename;
 
 				return (( ( sType == OOX::FileTypes::ExternalAudio ) || ( sType == OOX::FileTypes::ExternalImage ) || ( sType == OOX::FileTypes::ExternalVideo ) ) && ( sName == _T("") ) );
 			}

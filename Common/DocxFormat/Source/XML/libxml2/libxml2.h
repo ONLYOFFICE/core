@@ -514,7 +514,20 @@ namespace XmlUtils
 
             return true;
 		}
-		inline const wchar_t* GetName()
+		//inline const wchar_t* GetName()
+		//{
+		//	if ( !IsValid() )
+		//		return L"";
+
+		//	xmlChar* pName = xmlTextReaderName(reader);
+		//	if (NULL == pName)
+		//		return L"";
+
+		//	m_sTemp = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)pName, (LONG)strlen((const char*)pName));
+		//	free(pName);
+		//	return m_sTemp.c_str();
+		//}
+		inline const std::wstring GetName()
 		{
 			if ( !IsValid() )
 				return L"";
@@ -525,7 +538,7 @@ namespace XmlUtils
 
 			m_sTemp = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)pName, (LONG)strlen((const char*)pName));
 			free(pName);
-			return m_sTemp.c_str();
+			return m_sTemp;
 		}
 		inline const char* GetNameA()
 		{
@@ -700,7 +713,7 @@ namespace XmlUtils
 						if(false == bInner || nCurDepth != nDepth)
 						{
 							oResult.AddChar2Safe(TCHAR('<'), TCHAR('/'));
-							oResult.WriteEncodeXmlString(GetName());
+							oResult.WriteEncodeXmlString(GetName().c_str());
 							oResult.AddCharSafe(TCHAR('>'));
 						}
 					}
@@ -719,7 +732,7 @@ namespace XmlUtils
 		void WriteElement(CStringWriter& oResult)
 		{
 			oResult.AddCharSafe((TCHAR)'<');
-			oResult.WriteEncodeXmlString(GetName());
+			oResult.WriteEncodeXmlString(GetName().c_str());
 			if(GetAttributesCount() > 0)
 			{
 				MoveToFirstAttribute();
@@ -727,7 +740,7 @@ namespace XmlUtils
 				while( !sName.empty() )
 				{
 					oResult.AddCharSafe(TCHAR(' '));
-					oResult.WriteEncodeXmlString(GetName());
+					oResult.WriteEncodeXmlString(GetName().c_str());
 					oResult.AddChar2Safe(TCHAR('='), TCHAR('\"'));
 					oResult.WriteEncodeXmlString(GetText());
 					oResult.AddCharSafe(TCHAR('\"'));
@@ -974,7 +987,8 @@ namespace XmlUtils
 	private:
 		void SetBase(CXmlNodeBase* pBase);
 		CString GetNamespace(const CString& strNodeName);
-		CString GetNameNoNS(const CString& strNodeName);
+		//CString GetNameNoNS(const CString& strNodeName);
+		std::wstring GetNameNoNS(const std::wstring& strNodeName);
 	public:
 		CString private_GetXml();
 		CString private_GetXml(const CString& strDefaultValue = _T(""));

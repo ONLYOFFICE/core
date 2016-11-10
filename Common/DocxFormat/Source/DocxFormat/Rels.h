@@ -202,7 +202,7 @@ namespace OOX
 				if ( !oReader.ReadNextNode() )
 					return;
 
-				CWCharWrapper sName = oReader.GetName();
+				std::wstring sName = oReader.GetName();
 				if ( _T("Relationships") == sName )
 				{
 					if ( !oReader.IsEmptyNode() )

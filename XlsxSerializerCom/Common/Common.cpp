@@ -123,7 +123,7 @@ namespace SerializeCommon
 		int nCurDepth = oReader.GetDepth();
 		while(oReader.ReadNextSiblingNode(nCurDepth))
 		{
-			CWCharWrapper sName = oReader.GetName();
+			std::wstring sName = oReader.GetName();
 			if (_T("fileOptions") == sName)
 			{
 				// Читаем атрибуты

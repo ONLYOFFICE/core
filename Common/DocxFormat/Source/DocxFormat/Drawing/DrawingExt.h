@@ -176,7 +176,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-                    CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+                    std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
                     if ( _T("ext") == sName )
 					{
 						OOX::Drawing::COfficeArtExtension *oExt = new OOX::Drawing::COfficeArtExtension(oReader);

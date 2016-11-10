@@ -84,7 +84,7 @@ namespace OOX
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CWCharWrapper sName = oReader.GetName();
+				std::wstring sName = oReader.GetName();
 				if ( _T("w:sectPr") == sName )
 					m_pSecPr->fromXML( oReader );
 			}

@@ -88,7 +88,7 @@ namespace Diagram
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					std::wstring sName = oReader.GetName();
 
 					if ( _T("dsp:spPr") == sName )
 						m_oSpPr = oReader;
@@ -149,7 +149,7 @@ namespace Diagram
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CString sName = oReader.GetName();
+				std::wstring sName = oReader.GetName();
 				WritingElement *pItem = NULL;
 
 				if ( _T("dsp:sp") == sName )
@@ -224,7 +224,7 @@ namespace Diagram
 			if ( !oReader.ReadNextNode() )
 				return;
 
-			CWCharWrapper sName = oReader.GetName();
+			std::wstring sName = oReader.GetName();
 			if ( _T("dsp:drawing") == sName && !oReader.IsEmptyNode() )
 			{
 				int nNumberingDepth = oReader.GetDepth();

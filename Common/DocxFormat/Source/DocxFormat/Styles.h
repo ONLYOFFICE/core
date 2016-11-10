@@ -183,7 +183,7 @@ namespace OOX
 				int nParentDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nParentDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					std::wstring sName = oReader.GetName();
 					if      ( _T("w:pPr")   == sName ) m_oParPr = oReader;
 					else if ( _T("w:rPr")   == sName ) m_oRunPr = oReader;
 					else if ( _T("w:tblPr") == sName ) m_oTblPr = oReader;
@@ -330,7 +330,7 @@ namespace OOX
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CWCharWrapper sName = oReader.GetName();
+				std::wstring sName = oReader.GetName();
 				if ( _T("w:pPrDefault") == sName && !oReader.IsEmptyNode() )
 				{
 					int nParentDepth2 = oReader.GetDepth();
@@ -461,7 +461,7 @@ namespace OOX
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CWCharWrapper sName = oReader.GetName();
+				std::wstring sName = oReader.GetName();
 				if ( _T("w:lsdException") == sName )
 				{
 					ComplexTypes::Word::CLsdException *oLsdException = new ComplexTypes::Word::CLsdException (oReader);
@@ -633,7 +633,7 @@ namespace OOX
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CWCharWrapper sName = oReader.GetName();
+				std::wstring sName = oReader.GetName();
 
 				if      ( _T("w:aliases")        == sName ) m_oAliases = oReader;
 				else if ( _T("w:autoRedefine")   == sName ) m_oAutoRedefine = oReader;
@@ -804,7 +804,7 @@ namespace OOX
 			if ( !oReader.ReadNextNode() )
 				return;
 
-			CWCharWrapper sName = oReader.GetName();
+			std::wstring sName = oReader.GetName();
 			if ( _T("w:styles") == sName && !oReader.IsEmptyNode() )
 			{
 				int nStylesDepth = oReader.GetDepth();

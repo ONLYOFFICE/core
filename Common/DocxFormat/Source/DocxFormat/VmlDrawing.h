@@ -90,7 +90,7 @@ namespace OOX
 			if ( !oReader.ReadNextNode() )
 				return;
 
-			CString sName1 = XmlUtils::GetNameNoNS(oReader.GetName());
+			std::wstring sName1 = XmlUtils::GetNameNoNS(oReader.GetName());
 			if ( _T("xml") == sName1 )
 			{
 				ReadAttributes( oReader );
@@ -120,7 +120,7 @@ namespace OOX
 						int nStylesDepth1 = oSubReader.GetDepth();
 						while ( oSubReader.ReadNextSiblingNode( nStylesDepth1 ) )//
 						{
-							CWCharWrapper sName = oSubReader.GetName();
+							std::wstring sName = oSubReader.GetName();
 							switch (sName[0])// вынесены только объекты .. 
 							{
 							case 'v':

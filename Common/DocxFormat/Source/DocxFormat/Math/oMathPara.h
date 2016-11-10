@@ -65,7 +65,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();				
+					std::wstring sName = oReader.GetName();				
 					WritingElement *pItem = NULL;
 
 					if ( _T("m:oMath") == sName )

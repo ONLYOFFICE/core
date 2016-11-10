@@ -91,7 +91,7 @@ namespace OOX
 				int nGraphicDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nGraphicDepth ) )
 				{
-                    CString sName = oReader.GetName();
+                    std::wstring sName = oReader.GetName();
 					if ( _T("a:graphicData") == sName )
 					{
 						// 20.1.2.2.17 graphicData (Graphic Object Data)

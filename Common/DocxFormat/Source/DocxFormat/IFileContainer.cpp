@@ -275,7 +275,7 @@ namespace OOX
 		if (it != m_mContainer.end())
 		{
 			CString sType = it->second->type().RelationType();
-			CString sName = it->second->type().DefaultFileName().m_strFilename;
+			std::wstring sName = it->second->type().DefaultFileName().m_strFilename;
 			
 			return (( ( sType == OOX::FileTypes::ExternalAudio ) || ( sType == OOX::FileTypes::ExternalImage ) || ( sType == OOX::FileTypes::ExternalVideo ) ) && ( sName == _T("") ) );
 		}

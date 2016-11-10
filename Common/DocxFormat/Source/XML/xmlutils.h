@@ -38,96 +38,14 @@
 
 #include <vector>
 
-class CWCharWrapper
+AVSINLINE const bool operator==(const wchar_t* cwsStr1, const std::wstring& cwsStr2)
 {
-public:
-
-	CWCharWrapper():m_cwsString(NULL) 
-	{
-	}
-
-	CWCharWrapper(const wchar_t* cwsString):m_cwsString(cwsString)
-	{
-	}
-
-	CWCharWrapper(const std::wstring& cwsString):m_cwsString(cwsString.c_str())
-	{
-	}
-
-    AVSINLINE const CWCharWrapper operator=(const wchar_t* cwsOther)
-	{
-		m_cwsString = cwsOther;
-		return *this;
-	}
-
-    AVSINLINE const bool operator==(const wchar_t* cwsOther)
-	{
-		if ( 0 == WStrCmp( m_cwsString, cwsOther ) )
-			return true;
-
-		return false;
-	}
-
-    AVSINLINE const bool operator!=(const wchar_t* cwsOther)
-	{
-		if ( 0 != WStrCmp( m_cwsString, cwsOther ) )
-			return true;
-
-		return false;
-	}
-
-    AVSINLINE const wchar_t operator[](const int nIndex) const
-	{
-		int nLen = GetLength();
-
-		if ( nIndex >= nLen )
-			return '\0';
-
-		return m_cwsString[nIndex];
-	}
-    AVSINLINE const bool IsNull() const
-	{
-		return (m_cwsString == NULL);
-	}
-
-
-    AVSINLINE const int  GetLength() const
-	{
-		if ( NULL == m_cwsString )
-			return 0;
-
-		return (const int)wcslen( m_cwsString );
-	}
-public:
-    static AVSINLINE int WStrCmp(const wchar_t* cwsStr1, const wchar_t* cwsStr2)
-	{
-		if ( NULL == cwsStr1 && NULL == cwsStr2 )
-			return 0;
-		else if ( NULL == cwsStr1 || NULL == cwsStr2 )
-			return -1;
-
-		return wcscmp( cwsStr1, cwsStr2 );
-	}
-
-public:
-
-	const wchar_t* m_cwsString;
-};
-
-AVSINLINE const bool operator==(const wchar_t* cwsStr1, const CWCharWrapper& cwsStr2)
-{
-	if ( 0 == CWCharWrapper::WStrCmp( cwsStr2.m_cwsString, cwsStr1 ) )
-		return true;
-
-	return false;
+	return std::wstring( cwsStr1) == cwsStr2;
 }
 
-AVSINLINE const bool operator!=(const wchar_t* cwsStr1, const CWCharWrapper& cwsStr2)
+AVSINLINE const bool operator!=(const wchar_t* cwsStr1, const std::wstring& cwsStr2)
 {
-	if ( 0 != CWCharWrapper::WStrCmp( cwsStr2.m_cwsString, cwsStr1 ) )
-		return true;
-
-	return false;
+	return std::wstring( cwsStr1) != cwsStr2;
 }
 
 namespace XmlUtils
@@ -3223,7 +3141,7 @@ namespace XmlUtils
 			if(GetAttributesCount() > 0)
 			{
 				MoveToFirstAttribute();
-				CString sName = GetName();
+				std::wstring sName = GetName();
 				while( !sName.IsEmpty() )
 				{
 					oResult.WriteString(CString(_T(" ")));
@@ -3249,7 +3167,7 @@ namespace XmlUtils
 			if(GetAttributesCount() > 0)
 			{
 				MoveToFirstAttribute();
-				CString sName = GetName();
+				std::wstring sName = GetName();
 				while( !sName.IsEmpty() )
 				{
 					oResult.AddCharSafe(TCHAR(' '));
@@ -3489,7 +3407,7 @@ namespace XmlUtils
 		{
 			for ( int nIndex = 0; nIndex < m_arrAttributes.GetSize(); nIndex++ )
 			{
-				if ( 0 == CWCharWrapper::WStrCmp( wsAttributeName, m_arrAttributes[nIndex].wsName ) )
+				if ( 0 == std::wstring::WStrCmp( wsAttributeName, m_arrAttributes[nIndex].wsName ) )
 				{
 					return m_arrAttributes[nIndex].wsValue;
 				}

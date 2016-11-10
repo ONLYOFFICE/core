@@ -131,7 +131,7 @@ namespace OOX
 				if ( !oReader.ReadNextNode() )
 					return;
 
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if ( _T("calcChain") == sName )
 				{
 					ReadAttributes( oReader );

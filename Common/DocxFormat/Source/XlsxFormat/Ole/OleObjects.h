@@ -192,7 +192,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 					if ( _T("oleObject") == sName )
 					{
@@ -211,13 +211,13 @@ namespace OOX
 						int nSubDepth = oReader.GetDepth();
 						while( oReader.ReadNextSiblingNode( nSubDepth ) )
 						{
-							CString sSubName = XmlUtils::GetNameNoNS(oReader.GetName());
+							std::wstring sSubName = XmlUtils::GetNameNoNS(oReader.GetName());
 							if ( _T("Fallback") == sSubName || _T("Choice") == sSubName )
 							{
 								int nSubSubDepth = oReader.GetDepth();
 								while( oReader.ReadNextSiblingNode( nSubSubDepth ) )
 								{
-									CString sSubSubName = XmlUtils::GetNameNoNS(oReader.GetName());
+									std::wstring sSubSubName = XmlUtils::GetNameNoNS(oReader.GetName());
 									if ( _T("oleObject") == sSubSubName )
 									{
 										COleObject* pOleObject = new COleObject(oReader);

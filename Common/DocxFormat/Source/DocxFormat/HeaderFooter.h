@@ -104,7 +104,7 @@ namespace OOX
 			if ( !oReader.ReadNextNode() )
 				return;
 
-			CWCharWrapper sName = oReader.GetName();
+			std::wstring sName = oReader.GetName();
 
 			if ( _T("w:ftr") == sName )
 				m_eType = et_w_ftr;
@@ -118,7 +118,7 @@ namespace OOX
 				int nDocumentDepth = oReader.GetDepth();
 				while ( oReader.ReadNextSiblingNode( nDocumentDepth ) )
 				{
-					CString sName = oReader.GetName();
+					std::wstring sName = oReader.GetName();
 					WritingElement *pItem = NULL;
 
 					/*if ( _T("w:altChunk") == sName )
@@ -205,7 +205,7 @@ namespace OOX
 				{
 					if ( oChilds.GetAt( nIndex, oItem ) )
 					{
-						CString sName = oItem.GetName();
+						std::wstring sName = oItem.GetName();
 						WritingElement *pItem = NULL;
 
 						/*if ( _T("w:altChunk") == sName )

@@ -114,7 +114,7 @@ namespace XmlUtils
 				m_pCurrentNode = pNewBase;
 			}
 
-			m_pCurrentNode->m_sName = GetName();
+			m_pCurrentNode->m_sName = GetName().c_str();
 			m_list.push_back(m_pCurrentNode);
 			
 			if (GetAttributesCount() > 0)
@@ -558,7 +558,8 @@ namespace XmlUtils
 			int nCount = (int)m_pBase->m_nodes.size();
 			for (int i = 0; i < nCount; ++i)
 			{
-				if (strNodeName == GetNameNoNS(m_pBase->m_nodes[i]->m_sName))
+				std::wstring str = GetNameNoNS(m_pBase->m_nodes[i]->m_sName.GetBuffer());
+				if (strNodeName == CString(str.c_str()))
 				{
 					CXmlNodeBase* pBase = m_pBase->m_nodes[i];
 					node.SetBase(pBase);
@@ -655,14 +656,20 @@ namespace XmlUtils
 			return CString(_T(""));
 		return strNodeName.Mid(0, nFind);
 	}
-	CString CXmlNode::GetNameNoNS(const CString& strNodeName)
+	//CString CXmlNode::GetNameNoNS(const CString& strNodeName)
+	//{
+	//	int nFind= strNodeName.Find(TCHAR(':'));
+	//	if (-1 == nFind)
+	//		return strNodeName;
+	//	return strNodeName.Mid(nFind + 1);
+	//}
+	std::wstring CXmlNode::GetNameNoNS(const std::wstring& strNodeName)
 	{
-		int nFind= strNodeName.Find(TCHAR(':'));
+		int nFind= strNodeName.find(TCHAR(':'));
 		if (-1 == nFind)
 			return strNodeName;
-		return strNodeName.Mid(nFind + 1);
+		return strNodeName.substr(nFind + 1);
 	}
-
     // CXmlNodes
     CXmlNodes::CXmlNodes() : m_nodes()
     {

@@ -41,7 +41,7 @@ namespace OOX
 	{
 		void    CMathArgNodes::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
-			sNodeName = oReader.GetName();				
+			sNodeName = CString(oReader.GetName().c_str());				
 			if(sNodeName == _T("m:deg"))
 					eType = et_m_deg;
 				else if (sNodeName == _T("m:den"))
@@ -69,7 +69,7 @@ namespace OOX
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CWCharWrapper sName = oReader.GetName();
+				std::wstring sName = oReader.GetName();
 				WritingElement *pItem = NULL;
 
 				if ( _T("m:acc") == sName )

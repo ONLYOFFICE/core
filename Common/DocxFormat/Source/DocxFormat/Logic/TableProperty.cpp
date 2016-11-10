@@ -96,7 +96,7 @@ namespace OOX
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CWCharWrapper sName = oReader.GetName();
+				std::wstring sName = oReader.GetName();
 				if ( m_pTblPr.IsInit() && _T("w:tblPr") == sName )
 					m_pTblPr->fromXML( oReader );
 			}
@@ -223,7 +223,7 @@ namespace OOX
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CWCharWrapper sName = oReader.GetName();
+				std::wstring sName = oReader.GetName();
 				if ( m_pTrPr.IsInit() && _T("w:trPr") == sName )
 					m_pTrPr->fromXML( oReader );
 			}
@@ -352,7 +352,7 @@ namespace OOX
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CWCharWrapper sName = oReader.GetName();
+				std::wstring sName = oReader.GetName();
 				if ( m_pTcPr.IsInit() && _T("w:tcPr") == sName )
 					m_pTcPr->fromXML( oReader );
 			}

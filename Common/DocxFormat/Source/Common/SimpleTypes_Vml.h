@@ -4717,7 +4717,7 @@ namespace SimpleTypes
 				m_wcDelimiter = 0x20;
 				FromString( cwsValue );
 			}
-			CVml_Polygon2D_Units(const CWCharWrapper& wsStr)
+			CVml_Polygon2D_Units(const std::wstring& wsStr)
 			{
 				m_wcDelimiter = 0x20;
 				FromString( wsStr );
@@ -4737,7 +4737,7 @@ namespace SimpleTypes
 				FromString( cwsString );
 				return *this;
 			}
-			const CVml_Polygon2D_Units &operator =(const CWCharWrapper& wsStr)
+			const CVml_Polygon2D_Units &operator =(const std::wstring& wsStr)
 			{
 				FromString( wsStr );
 				return *this;
@@ -4948,7 +4948,7 @@ namespace SimpleTypes
 				ResetMatrix();
 				FromString( cwsValue );
 			}
-			CVml_Matrix(const CWCharWrapper& wsStr)
+			CVml_Matrix(const std::wstring& wsStr)
 			{
 				ResetMatrix();
 				FromString( wsStr );
@@ -4968,7 +4968,7 @@ namespace SimpleTypes
 				FromString( cwsString );
 				return *this;
 			}
-			const CVml_Matrix &operator =(const CWCharWrapper& wsStr)
+			const CVml_Matrix &operator =(const std::wstring& wsStr)
 			{
 				FromString( wsStr );
 				return *this;

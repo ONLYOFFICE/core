@@ -117,7 +117,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 					if ( _T("from") == sName )
 						m_oFrom = oReader;
@@ -168,7 +168,7 @@ namespace OOX
 							result = oShapeReader.ReadNextNode();//root
 							result = oShapeReader.ReadNextNode();
 
-							CString sName = XmlUtils::GetNameNoNS(oShapeReader.GetName());
+							std::wstring sName = XmlUtils::GetNameNoNS(oShapeReader.GetName());
 							
 							if (_T("pic") == sName)
 								m_oPicture = oShapeReader;
@@ -206,7 +206,7 @@ namespace OOX
 							nCurDepth++;
 							while( oReader.ReadNextSiblingNode( nCurDepth ) )
 							{
-								CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+								std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 								if ( _T("Fallback") == sName || _T("Choice") == sName )
 								{
 									CString sRequires;

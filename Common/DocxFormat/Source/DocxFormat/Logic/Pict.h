@@ -102,8 +102,8 @@ namespace OOX
 				if ( !oReader.MoveToFirstAttribute() )
 					return;
 
-				CWCharWrapper wsName = oReader.GetName();
-				while( !wsName.IsNull() )
+				std::wstring wsName = oReader.GetName();
+				while( !wsName.empty() )
 				{
 					if ( _T("r:id") == wsName )
 						m_rId = oReader.GetText();
@@ -172,7 +172,7 @@ namespace OOX
 				int nCurDepth = oSubReader.GetDepth();
 				while ( oSubReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oSubReader.GetName();
+					std::wstring sName = oSubReader.GetName();
 
 					WritingElement* pItem = NULL;
 
@@ -469,7 +469,7 @@ namespace OOX
 				int nCurDepth = oSubReader.GetDepth();
 				while ( oSubReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oSubReader.GetName();
+					std::wstring sName = oSubReader.GetName();
 
 					WritingElement* pItem = NULL;
 

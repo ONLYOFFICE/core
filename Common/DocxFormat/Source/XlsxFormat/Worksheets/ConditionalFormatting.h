@@ -140,7 +140,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while (oReader.ReadNextSiblingNode(nCurDepth))
 				{
-					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 					if (_T("cfvo") == sName)
 						m_arrItems.push_back(new CConditionalFormatValueObject(oReader));
 					else if (_T("color") == sName)
@@ -205,7 +205,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while (oReader.ReadNextSiblingNode(nCurDepth))
 				{
-					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 					if (_T("cfvo") == sName)
 						m_arrItems.push_back(new CConditionalFormatValueObject(oReader));
 					else if (_T("color") == sName)
@@ -333,7 +333,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while (oReader.ReadNextSiblingNode(nCurDepth))
 				{
-					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 					if (_T("cfvo") == sName)
 						m_arrItems.push_back(new CConditionalFormatValueObject(oReader));
 				}
@@ -426,7 +426,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while (oReader.ReadNextSiblingNode(nCurDepth))
 				{
-					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 					if (_T("colorScale") == sName)
 						m_arrItems.push_back(new CColorScale(oReader));
 					else if (_T("dataBar") == sName)
@@ -532,7 +532,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while (oReader.ReadNextSiblingNode(nCurDepth))
 				{
-					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 					if (_T("cfRule") == sName)
 						m_arrItems.push_back(new CConditionalFormattingRule(oReader));

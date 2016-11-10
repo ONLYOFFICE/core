@@ -737,9 +737,9 @@ namespace OOX
 				if(m_oVertAlign.IsInit() && m_oVertAlign->m_oVerticalAlign.IsInit())
 				{
 					CString sVerticalAlign = m_oVertAlign->m_oVerticalAlign->ToString();
-					writer.WriteString(L" vertAlign=\"");
+					writer.WriteString(L"<vertAlign val=\"");
 					writer.WriteString(sVerticalAlign.GetBuffer());
-					writer.WriteString(L"\"");
+					writer.WriteString(L"\"/>");
 					sVerticalAlign.ReleaseBuffer();
 				}
 				writer.WriteString(_T("</rPr>"));

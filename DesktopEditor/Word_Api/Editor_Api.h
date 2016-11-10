@@ -140,6 +140,16 @@ namespace NSEditorApi
 	{															\
 		m_s##memberName = newVal;								\
 	}
+    
+#define LINK_PROPERTY_OBJECT(objectType, memberName)			\
+    inline objectType& get_##memberName()						\
+    {                                                           \
+        return m_o##memberName;                                 \
+    }                                                           \
+    inline void put_##memberName(const objectType& newVal)      \
+    {                                                           \
+        m_o##memberName = newVal;                               \
+    }
 
 // JS
 #define LINK_PROPERTY_INT_JS(memberName)								\

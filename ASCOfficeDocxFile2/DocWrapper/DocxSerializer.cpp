@@ -401,7 +401,7 @@ bool BinDocxRW::CDocxSerializer::getBinaryContent(const CString& bsTxContent, NS
 	{
         oReader.ReadNextNode();//root
         oReader.ReadNextNode();//v:textbox
-		CString sRootName = XmlUtils::GetNameNoNS(oReader.GetName());
+		std::wstring sRootName = XmlUtils::GetNameNoNS(oReader.GetName());
 		if(_T("textbox") == sRootName)
 			oReader.ReadNextNode();//w:txbxContent
 		oSdtContent.fromXML(oReader);

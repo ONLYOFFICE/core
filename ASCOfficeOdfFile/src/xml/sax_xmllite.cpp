@@ -141,7 +141,7 @@ std::wstring saxXmlLiteReader::nodeLocalName()
 {
 	if (xml_.IsInit() == false) return _T("");
 
-	return XmlUtils::GetNameNoNS(xml_->GetName()).GetBuffer();
+    return XmlUtils::GetNameNoNS(xml_->GetName());
 }
 
 // <p:abc />, returns "p:abc".

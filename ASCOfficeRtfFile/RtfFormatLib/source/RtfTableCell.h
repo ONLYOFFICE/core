@@ -58,7 +58,7 @@ public:
 				result += m_aArray[i]->RenderToRtf( oRenderParameter );
 				
 				if( i != m_aArray.size() - 1 )
-					result += _T("\\par");
+					result += L"\\par";
 			}
 			else
 			{
@@ -71,28 +71,28 @@ public:
 
 		}
 		if( RENDER_TO_RTF_PARAM_NESTED != oRenderParameter.nType )
-			result += _T("\\cell");
+			result += L"\\cell";
 		else
-			result += _T("\\nestcell{\\nonesttables  }"); //todo как бы вернуть
+			result += L"\\nestcell{\\nonesttables  }"; //todo как бы вернуть
 		return result;
 	}
 	CString RenderToOOX(RenderParameter oRenderParameter)
 	{
-		CString sResult = _T("<w:tc>");
+		CString sResult = L"<w:tc>";
 
 		CString sProp = m_oProperty.RenderToOOX( oRenderParameter );
 		if( !sProp.IsEmpty() )
 		{
-			sResult += _T("<w:tcPr>");
-			sResult += sProp;
-			sResult += _T("</w:tcPr>");
+			sResult += L"<w:tcPr>";
+				sResult += sProp;
+			sResult += L"</w:tcPr>";
 		}
 
 		for( int i = 0; i < (int)m_aArray.size(); i++ )
 		{
 			sResult += m_aArray[i]->RenderToOOX( oRenderParameter);
 		}
-		sResult += _T("</w:tc>");
+		sResult += L"</w:tc>";
 		return sResult;
 	}
 };

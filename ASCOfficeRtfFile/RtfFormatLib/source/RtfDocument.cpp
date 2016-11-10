@@ -57,9 +57,9 @@ int RtfDocument::GetType()
 
 CString RtfDocument::RenderToRtf(RenderParameter oRenderParameter)
 {
-	return _T("");
+	return L"";
 }
 CString RtfDocument::RenderToOOX(RenderParameter oRenderParameter)
 {
-	return _T("");
+	return L"";
 }

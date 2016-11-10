@@ -108,9 +108,9 @@ public:
 		{
 			// todooo - реализовать в DocxFormat
 
-			//if( _T("w:doNotUseHTMLParagraphAutoSpacing") == sNodeName )
+			//if( L"w:doNotUseHTMLParagraphAutoSpacing" == sNodeName )
 			//	oParam.oRtf->m_oProperty.m_bHtmlAutoSpace = 0;
-			//else if( _T("w:forgetLastTabAlignment") == sNodeName )
+			//else if( L"w:forgetLastTabAlignment" == sNodeName )
 			//	oParam.oRtf->m_oProperty.m_bUseTabAlignment = 0;
 		}
 		if (m_ooxSettings->m_oFootnotePr.IsInit())

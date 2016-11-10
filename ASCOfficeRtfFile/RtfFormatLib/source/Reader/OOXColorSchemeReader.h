@@ -98,15 +98,15 @@ public:
 			oNewColor.m_eTheme = RtfColor::cfollowedhyperlink;
 			oParam.oRtf->m_oColorTable.AddItem( oNewColor );
 
-		//else if( _T("a:bg1") == sNodeName )
+		//else if( L"a:bg1" == sNodeName )
 		//	oNewColor.m_eTheme = RtfColor::cbackgroundone;
-		//else if( _T("a:bg2") == sNodeName )
+		//else if( L"a:bg2" == sNodeName )
 		//	oNewColor.m_eTheme = RtfColor::cbackgroundtwo;
-		//else if( _T("a:phClr") == sNodeName )
+		//else if( L"a:phClr" == sNodeName )
 		//	oNewColor.m_eTheme = RtfColor::cmainlighttwo;
-		//else if( _T("a:tx1") == sNodeName )
+		//else if( L"a:tx1" == sNodeName )
 		//	oNewColor.m_eTheme = RtfColor::ctextone;
-		//else if( _T("a:tx2") == sNodeName )
+		//else if( L"a:tx2" == sNodeName )
 		//	oNewColor.m_eTheme = RtfColor::ctexttwo;
 
 

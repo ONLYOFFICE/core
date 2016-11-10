@@ -60,7 +60,7 @@ public:
 	void Clear()
 	{
 		RELEASEARRAYOBJECTS( m_aBuffer );
-		//m_sBuffer = _T("");
+
 		m_nSizeAbs = 0;
 		m_nPosAbs = -1;			
 	} 

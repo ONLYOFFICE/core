@@ -1098,7 +1098,7 @@ class AllPictReader : public RtfAbstractReader
 private: 
 	RtfShape& m_oShape;
 public: 
-	AllPictReader( RtfShape& oShape ):m_oShape(oShape)
+	AllPictReader( RtfShape& oShape ) : m_oShape(oShape)
 	{
 	}
 	bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CString sCommand, bool hasParameter, int parameter)
@@ -1128,7 +1128,12 @@ public:
 			StartSubReader( oPictureReader, oDocument, oReader );
 		}
 		else
+		{
+			bool res = RtfCharPropsCommand::ExecuteCommand( oDocument, oReader, sCommand, hasParameter, parameter, &m_oShape.m_oCharProperty );
+			if (res) return true;
+
 			return false;
+		}
 		return true;
 	}
 };
@@ -1613,29 +1618,29 @@ public:
 //public:
 //	bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CString sCommand, bool hasParameter, int parameter)
 //	{
-//		if( _T("lsdlockedexcept") == sCommand )
+//		if( L"lsdlockedexcept" == sCommand )
 //			return true;
-//		else if( _T("lsdpriority") == sCommand )
+//		else if( L"lsdpriority" == sCommand )
 //		{
 //			if( true == hasParameter )
 //				m_oCurException.m_nPriority = parameter;
 //		}
-//		else if( _T("lsdunhideused") == sCommand )
+//		else if( L"lsdunhideused" == sCommand )
 //		{
 //			if( true == hasParameter )
 //				m_oCurException.m_nHiddenWhenUse = parameter;
 //		}
-//		else if( _T("lsdqformat") == sCommand )
+//		else if( L"lsdqformat" == sCommand )
 //		{
 //			if( true == hasParameter )
 //				m_oCurException.m_nQFormat = parameter;
 //		}
-//		else if( _T("lsdlocked") == sCommand )
+//		else if( L"lsdlocked" == sCommand )
 //		{
 //			if( true == hasParameter )
 //				m_oCurException.m_nLocked = parameter;
 //		}
-//		else if( _T("lsdsemihidden") == sCommand )
+//		else if( L"lsdsemihidden" == sCommand )
 //		{
 //			if( true == hasParameter )
 //				m_oCurException.m_nSemiHidden = parameter;
@@ -1666,39 +1671,39 @@ public:
 //{
 //public: bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CString sCommand, bool hasParameter, int parameter)
 //		{
-//			if( _T("latentstyles") == sCommand )
+//			if( L"latentstyles" == sCommand )
 //				return true;
-//			else if( _T("lsdstimax") == sCommand )
+//			else if( L"lsdstimax" == sCommand )
 //			{
 //				if( true == hasParameter )
 //					oDocument.m_oLatentStyleTable.m_nCount = parameter;
 //			}
-//			else if( _T("lsdlockeddef") == sCommand )
+//			else if( L"lsdlockeddef" == sCommand )
 //			{
 //				if( true == hasParameter )
 //					oDocument.m_oLatentStyleTable.m_nLocked = parameter;
 //			}
-//			else if( _T("lsdsemihiddendef") == sCommand )
+//			else if( L"lsdsemihiddendef" == sCommand )
 //			{
 //				if( true == hasParameter )
 //					oDocument.m_oLatentStyleTable.m_nSemiHidden = parameter;
 //			}
-//			else if( _T("lsdunhideuseddef") == sCommand )
+//			else if( L"lsdunhideuseddef" == sCommand )
 //			{
 //				if( true == hasParameter )
 //					oDocument.m_oLatentStyleTable.m_nUnHiddenWhenUse = parameter;
 //			}
-//			else if( _T("lsdqformatdef") == sCommand )
+//			else if( L"lsdqformatdef" == sCommand )
 //			{
 //				if( true == hasParameter )
 //					oDocument.m_oLatentStyleTable.m_nQFormat = parameter;
 //			}
-//			else if( _T("lsdprioritydef") == sCommand )
+//			else if( L"lsdprioritydef" == sCommand )
 //			{
 //				if( true == hasParameter )
 //					oDocument.m_oLatentStyleTable.m_nPriority = parameter;
 //			}
-//			else if( _T("lsdlockedexcept") == sCommand )
+//			else if( L"lsdlockedexcept" == sCommand )
 //			{
 //				LockedExeceptReader oExceptionReader;
 //				StartSubReader( oExceptionReader, oDocument, oReader );
@@ -2188,11 +2193,11 @@ private:
 			}
 			bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CString sCommand, bool hasParameter, int parameter)
 			{
-			  if( _T("lfolevel") == sCommand)
+			  if( L"lfolevel" == sCommand)
 				  return true;
-			  COMMAND_RTF_INT( _T("listoverrideformat"), m_oOverrideLevel.m_nLevelIndex, sCommand, hasParameter, parameter )
-			  COMMAND_RTF_INT( _T("listoverridestartat"), m_oOverrideLevel.m_nStart, sCommand, hasParameter, parameter )
-			  else if( _T("listlevel") == sCommand )
+			  COMMAND_RTF_INT( L"listoverrideformat", m_oOverrideLevel.m_nLevelIndex, sCommand, hasParameter, parameter )
+			  COMMAND_RTF_INT( L"listoverridestartat", m_oOverrideLevel.m_nStart, sCommand, hasParameter, parameter )
+			  else if( L"listlevel" == sCommand )
 			  {
 				  m_oOverrideLevel.m_oLevel.m_nLevel = m_oOverrideLevel.m_nLevelIndex;
 				  ListTableReader::ListReader::ListLevelReader oListLevelReader( m_oOverrideLevel.m_oLevel );
@@ -2211,19 +2216,19 @@ private:
 			}
 			bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CString sCommand, bool hasParameter, int parameter)
 			{
-				if( _T("listoverride") == sCommand)
+				if( L"listoverride" == sCommand)
 					return true;
-				else if( _T("listid") == sCommand )
+				else if( L"listid" == sCommand )
 				{
 					if( true == hasParameter )
 						m_oProperty.m_nListID = parameter;
 				}
-				else if( _T("ls") == sCommand )
+				else if( L"ls" == sCommand )
 				{
 					if( true == hasParameter )
 						m_oProperty.m_nIndex = parameter;
 				}
-				else if( _T("lfolevel") == sCommand )
+				else if( L"lfolevel" == sCommand )
 				{
 					RtfListOverrideProperty::ListOverrideLevels::ListOverrideLevel oOverrideLevel;
 					lfolevelReader olfolevelReader( oOverrideLevel );
@@ -2241,9 +2246,9 @@ public:
 	}
 	bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CString sCommand, bool hasParameter, int parameter)
 	{
-		if( _T("listoverridetable") == sCommand )
+		if( L"listoverridetable" == sCommand )
 			return true;
-		else if( _T("listoverride") == sCommand)
+		else if( L"listoverride" == sCommand)
 		{
 			RtfListOverrideProperty oProperty;
 			ListOverrideReader oListOverrideReader( oProperty );

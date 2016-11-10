@@ -41,28 +41,34 @@ typedef boost::shared_ptr<RtfParagraph> RtfParagraphPtr;
 class RtfOldList : IRenderableProperty
 {
 public: 
-	typedef enum{ lt_none, lt_blt, lt_level, lt_body, lt_cont }LevelType;
-	typedef enum{ lj_none, lj_left, lj_center, lj_right }LevelJust;
+	enum _LevelType { lt_none, lt_blt, lt_level, lt_body, lt_cont };
+	enum _LevelJust { lj_none, lj_left, lj_center, lj_right };
 
-	LevelType m_eLevelType;
-	int m_nLevelType;
-	LevelJust m_eLevelJust;
-	RtfParagraphPtr m_oLevelText;//фомат текста списка
+	_LevelType		m_eLevelType;
+	int				m_nLevelType;
+	_LevelJust		m_eLevelJust;
+
+	RtfParagraphPtr m_oLevelText;	//фомат текста списка
 
 	int m_nLs;
 	int m_nIlvl;
 
-	RtfParagraphPtr m_oText;//замещающий текст
+	RtfParagraphPtr m_oText;		//замещающий текст
+	
 	RtfOldList()
 	{
 		SetDefault();
 	}
 	bool CanConvertToNumbering();
+	
 	void SetDefault();
+	
 	CString RenderToRtf(RenderParameter oRenderParameter);
 	CString RenderToOOX(RenderParameter oRenderParameter);
+	
 	bool operator==( const RtfOldList& oOldList );
 };
+
 typedef boost::shared_ptr<RtfOldList> RtfOldListPtr;
 
 class RtfParagraph : public ITextItem, public ItemContainer< IDocumentElementPtr >

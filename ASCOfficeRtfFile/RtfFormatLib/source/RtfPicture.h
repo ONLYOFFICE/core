@@ -79,7 +79,7 @@ public:
 	}
 	bool IsValid()
 	{
-		return _T("") != m_sPicFilename && dt_none != eDataType;
+		return !m_sPicFilename.IsEmpty() && dt_none != eDataType;
 	}
 	void SetDefaultRtf()
 	{
@@ -105,9 +105,12 @@ public:
 			DEFAULT_PROPERTY( m_nCropT )
 			DEFAULT_PROPERTY( m_nCropR )
 			DEFAULT_PROPERTY( m_nCropB )
-			if( true == m_bIsCopy && _T("") != m_sPicFilename )
+			
+			if( true == m_bIsCopy && !m_sPicFilename.IsEmpty() )
+			{
 				Utils::RemoveDirOrFile( m_sPicFilename );
-		m_sPicFilename = _T("");
+			}
+		m_sPicFilename = L"";
 	}
 	CString RenderToRtf(RenderParameter oRenderParameter);
 	CString RenderToOOX(RenderParameter oRenderParameter);

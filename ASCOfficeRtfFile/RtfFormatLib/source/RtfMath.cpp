@@ -90,9 +90,9 @@ CString RtfMath::RenderToRtf(RenderParameter oRenderParameter)
 
 	CString sResult;
 	if( RENDER_TO_RTF_PARAM_NESTED != oRenderParameter.nType )
-		sResult += _T("{\\mmath");
+		sResult += L"{\\mmath";
 
-    sResult += _T("{\\") + m_sRtfName;
+    sResult += L"{\\" + m_sRtfName;
 	RenderParameter oNewParameter = oRenderParameter;
 
 	CString sVal;
@@ -107,7 +107,7 @@ CString RtfMath::RenderToRtf(RenderParameter oRenderParameter)
 		oNewParameter.nType = RENDER_TO_RTF_PARAM_UNKNOWN;
 		for( int i = 0; i < m_oVal.GetCount(); i++ )
 		{
-			sVal += _T(" ") + m_oVal[i]->RenderToRtf( oNewParameter );
+			sVal += L" " + m_oVal[i]->RenderToRtf( oNewParameter );
 		}
 	}
 	if (!sVal.IsEmpty())
@@ -120,10 +120,10 @@ CString RtfMath::RenderToRtf(RenderParameter oRenderParameter)
 		for( int i = 0; i < (int)m_aArray.size(); i++ )
 			sResult += m_aArray[i]->RenderToRtf( oNewParameter );
 	}
-	sResult += _T("}");
+	sResult += L"}";
 
 	if( RENDER_TO_RTF_PARAM_NESTED != oRenderParameter.nType )
-        sResult += _T("}");// m_sRtfName
+        sResult += L"}";// m_sRtfName
 	return sResult;
 }
 CString RtfMath::RenderToOOX(RenderParameter oRenderParameter)
@@ -160,7 +160,7 @@ CString RtfMath::RenderToOOX(RenderParameter oRenderParameter)
 		}
 	}
 
-	sResult += _T("<");
+	sResult += L"<";
 	sResult += m_sOOXName;
 
 	if( false == sVal.IsEmpty() )
@@ -170,19 +170,19 @@ CString RtfMath::RenderToOOX(RenderParameter oRenderParameter)
 			if (sVal == L"on")	sVal = L"1";
 			else				sVal = L"0";
 		}
-		sResult += _T(" m:val=\"");
+		sResult += L" m:val=\"";
 		sResult += sVal;
-		sResult += _T("\"");
+		sResult += L"\"";
 	}
-	sResult += _T(">");
+	sResult += L">";
 
 	sResult += sProp;
 
 	sResult += sContent;
 
-	sResult += _T("</");
+	sResult += L"</";
 		sResult += m_sOOXName;
-	sResult += _T(">");
+	sResult += L">";
 
 //альтернативная картинка
 //	if( NULL != m_oPicture )

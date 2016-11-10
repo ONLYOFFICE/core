@@ -32,9 +32,14 @@
 #include "RtfChar.h"
 #include "RtfDocument.h"
 
+#include "Writer/OOXWriter.h"
+
 CString RtfChar::RenderToOOX(RenderParameter oRenderParameter)
 {
-    CString sResult;
+	RtfDocument*	poRtfDocument	= static_cast<RtfDocument*>	(oRenderParameter.poDocument);
+	OOXWriter*		poOOXWriter		= static_cast<OOXWriter*>	(oRenderParameter.poWriter);
+    
+	CString sResult;
     if(RENDER_TO_OOX_PARAM_RUN == oRenderParameter.nType)
     {
 		bool bInsert = false;
@@ -43,13 +48,21 @@ CString RtfChar::RenderToOOX(RenderParameter oRenderParameter)
 		if (m_oProperty.m_nDeleted != PROP_DEF)
 		{
 			bDelete = true;
-			sResult += L"<w:del>";
+			
+			CString sAuthor = m_oProperty.m_nRevauthDel != PROP_DEF ? poRtfDocument->m_oRevisionTable[ m_oProperty.m_nRevauthDel ] : L"";
+			CString sDate(RtfUtility::convertDateTime(m_oProperty.m_nRevdttmDel).c_str());
+			
+			sResult += L"<w:del w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
 			m_oProperty.m_nDeleted = PROP_DEF;
 		}
-		if (m_oProperty.m_nRevised != PROP_DEF)
+		else if (m_oProperty.m_nRevised != PROP_DEF)
 		{
 			bInsert = true;
-			sResult += L"<w:ins>";
+			
+			CString sAuthor = m_oProperty.m_nRevauth != PROP_DEF ? poRtfDocument->m_oRevisionTable[ m_oProperty.m_nRevauth] : L"";
+			CString sDate(RtfUtility::convertDateTime(m_oProperty.m_nRevdttm).c_str());
+			
+			sResult += L"<w:ins w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
 			m_oProperty.m_nRevised = PROP_DEF;
 		}
 
@@ -60,8 +73,8 @@ CString RtfChar::RenderToOOX(RenderParameter oRenderParameter)
 			sResult += renderTextToXML(L"Text", bDelete );
         sResult += L"</w:r>";
 		
-		if (bDelete)sResult += L"</w:del>";
 		if (bInsert)sResult += L"</w:ins>";
+		if (bDelete)sResult += L"</w:del>";
 	}
     else if(RENDER_TO_OOX_PARAM_TEXT == oRenderParameter.nType)
 	{
@@ -105,6 +118,7 @@ CString RtfChar::renderTextToXML( CString sParam, bool bDelete )
     }
 	return sResult;
 }
+
 CString RtfChar::renderRtfText( CString& sText, void* poDocument, RtfCharProperty* oCharProperty  )
 {
     RtfDocument* oDocument = static_cast<RtfDocument*>(poDocument);
@@ -179,18 +193,18 @@ CString RtfChar::renderRtfText( CString& sText, void* poDocument, RtfCharPropert
 
                 if (nCharCode == 0x5c || nCharCode == 0x7b || nCharCode == 0x7d)
                 {
-                    sResult.AppendFormat( _T("\\'%x"), nCharCode );
+                    sResult.AppendFormat( L"\\'%x", nCharCode );
                 } else if (0x00 <= nCharCode && nCharCode - 1 < 0x10)
                 {
-                    sResult.AppendFormat(_T("\\'0%x"), nCharCode - 1 );
+                    sResult.AppendFormat( L"\\'0%x", nCharCode - 1 );
                 } else if (0x10 <= nCharCode - 1 && nCharCode  < 0x20)
                 {
-                    sResult.AppendFormat(_T("\\'%x"), nCharCode - 1 );
+                    sResult.AppendFormat( L"\\'%x", nCharCode - 1 );
                 } else if ( 0x20 <= nCharCode && nCharCode < 0x80 )
                 {
                     sResult.AppendChar( nCharCode );
                 } else { // 0x80 <= nUnicode <= 0xff
-                    sResult.AppendFormat( _T("\\'%x"), nCharCode );
+                    sResult.AppendFormat( L"\\'%x", nCharCode );
                 }
             }
         }
@@ -200,14 +214,50 @@ CString RtfChar::renderRtfText( CString& sText, void* poDocument, RtfCharPropert
 
             if (0 < nUnicode && nUnicode <= 0x8000)
             {
-                sResult.AppendFormat(_T("\\u%d*"),nUnicode);
+                sResult.AppendFormat( L"\\u%d*",nUnicode);
             } else if (0x8000 < nUnicode && nUnicode <= 0xffff) {
-                sResult.AppendFormat(_T("\\u%d*"), nUnicode - 0x10000); //??? font alt name china ALL FONTS NEW.docx (Mekanik LET)
+                sResult.AppendFormat( L"\\u%d*", nUnicode - 0x10000); //??? font alt name china ALL FONTS NEW.docx (Mekanik LET)
             } else {
-                sResult += _T("\\u9633*");
+                sResult += L"\\u9633*";
             }
         }
 
     }
     return sResult;
+}
+CString RtfChar::RenderToRtf(RenderParameter oRenderParameter)
+{
+    CString result;
+
+    if( RENDER_TO_RTF_PARAM_CHAR ==  oRenderParameter.nType )
+    {
+        if( true == m_bRtfEncode )
+            result += renderRtfText( m_sChars, oRenderParameter.poDocument, &m_oProperty );
+        else
+            result += m_sChars;
+    }
+    else
+    {
+        CString sText;
+        if( true == m_bRtfEncode )
+            sText = renderRtfText( m_sChars, oRenderParameter.poDocument, &m_oProperty );
+        else
+            sText = m_sChars;
+
+		CString sTextProp =  m_oProperty.RenderToRtf( oRenderParameter ) ;
+		
+		if( !sText.IsEmpty() || !sTextProp.IsEmpty())
+        {
+            if (oRenderParameter.nType != RENDER_TO_RTF_PARAM_NESTED)
+				result += L"{";
+				
+				result += sTextProp;
+				result += L" ";
+				result += sText;
+
+			if (oRenderParameter.nType != RENDER_TO_RTF_PARAM_NESTED)
+				result += L"}";
+        }
+    }
+    return result;
 }

@@ -1300,13 +1300,13 @@ namespace OOX
 						m_oPageBreakBefore = oReader;
 					else if ( _T("w:pBdr") == sName )
 						m_oPBdr = oReader;
-					if ( !m_bPPrChange && _T("w:pPrChange") == sName )
+					else if ( !m_bPPrChange && _T("w:pPrChange") == sName )
 						m_oPPrChange = oReader;
 					else if ( _T("w:pStyle") == sName )
 						m_oPStyle = oReader;
-					if ( !m_bPPrChange && _T("w:rPr") == sName )
+					else if ( !m_bPPrChange && _T("w:rPr") == sName )
 						m_oRPr = oReader;
-					if ( !m_bPPrChange && _T("w:sectPr") == sName )
+					else if ( !m_bPPrChange && _T("w:sectPr") == sName )
 						m_oSectPr = oReader;
 					else if ( _T("w:shd") == sName )
 						m_oShd = oReader;

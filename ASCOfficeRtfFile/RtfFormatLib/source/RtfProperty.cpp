@@ -711,22 +711,47 @@ CString RtfCharProperty::RenderToOOX(RenderParameter oRenderParameter)
 	RtfDocument	* poRtfDocument = static_cast<RtfDocument*>	(oRenderParameter.poDocument);
 	OOXWriter	* poOOXWriter	= static_cast<OOXWriter*>	(oRenderParameter.poWriter);
 	
+	bool bInsert = false;
+	bool bDelete = false;
+	
 	if( RENDER_TO_OOX_PARAM_MATH == oRenderParameter.nType)
+	{//w:rPr в m:ctrlPr 
+		if (m_nRevised != PROP_DEF)
+		{
+			bInsert = true;
+			
+			CString sAuthor = m_nRevauth != PROP_DEF ? poRtfDocument->m_oRevisionTable[ m_nRevauth] : L"";
+			CString sDate(RtfUtility::convertDateTime( m_nRevdttm ).c_str());
+			
+			sResult += L"<w:ins w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
+			m_nRevised = PROP_DEF;
+		}
+		if (m_nDeleted != PROP_DEF)
+		{
+			bDelete = true;
+			
+			CString sAuthor = m_nRevauthDel != PROP_DEF ? poRtfDocument->m_oRevisionTable[ m_nRevauthDel ] : L"";
+			CString sDate(RtfUtility::convertDateTime( m_nRevdttmDel ).c_str());
+			
+			sResult += L"<w:del w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
+			m_nDeleted = PROP_DEF;
+		}
 		sResult += L"<w:rPr>";
+	}
 
-	if ( PROP_DEF != m_nDeleted )
+	if ( PROP_DEF != m_nDeleted )//для rPr в pPr
 	{
 		CString sAuthor = m_nRevauthDel != PROP_DEF ? poRtfDocument->m_oRevisionTable[ m_nRevauthDel] : L"";
 		CString sDate(RtfUtility::convertDateTime(m_nRevdttmDel).c_str());
 
-		sResult += L"<w:del w:date=\""	+ sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\"/>";
+		sResult += L"<w:del w:date=\"" + sDate + L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\"/>";
 	}
 	if ( PROP_DEF != m_nRevised )
 	{
 		CString sAuthor = m_nRevauth != PROP_DEF ? poRtfDocument->m_oRevisionTable[ m_nRevauth] : L"";
 		CString sDate(RtfUtility::convertDateTime(m_nRevdttm).c_str());
 		
-		sResult += L"<w:ins w:date=\""	+ sDate +  L"\" w:author=\""	+ sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\"/>";
+		sResult += L"<w:ins w:date=\"" + sDate + L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\"/>";
 	}
 	
 	switch( m_nAnimated )
@@ -739,9 +764,9 @@ CString RtfCharProperty::RenderToOOX(RenderParameter oRenderParameter)
 		case 5:	sResult += L"<w:effect w:val=\"antsRed\"/>";		break;
 		case 6:	sResult += L"<w:effect w:val=\"shimmer\"/>";		break;
 	}
-	RENDER_OOX_BOOL( m_bBold, sResult, L"w:b" )
-	RENDER_OOX_BOOL( m_bCaps, sResult, L"w:caps" )
-	RENDER_OOX_INT( (int)m_nScalex, sResult, L"w:w" )
+	RENDER_OOX_BOOL	( m_bBold, sResult, L"w:b" )
+	RENDER_OOX_BOOL	( m_bCaps, sResult, L"w:caps" )
+	RENDER_OOX_INT	( (int)m_nScalex, sResult, L"w:w" )
 	
 	if( PROP_DEF != m_nCharStyle )
 	{
@@ -816,7 +841,10 @@ CString RtfCharProperty::RenderToOOX(RenderParameter oRenderParameter)
 		RtfColor oCurColor;
 		if( true == poRtfDocument->m_oColorTable.GetColor( m_nHightlited, oCurColor ) )
 		{
-            sResult += L"<w:highlight w:val=\"" + oCurColor.GetHighLight() + L"\"/>";
+			if (!oCurColor.m_bAuto)
+			{
+				sResult += L"<w:highlight w:val=\"" + oCurColor.GetHighLight() + L"\"/>";
+			}
 		}
 	}
 		
@@ -921,7 +949,12 @@ CString RtfCharProperty::RenderToOOX(RenderParameter oRenderParameter)
 	}
 	
 	if( RENDER_TO_OOX_PARAM_MATH == oRenderParameter.nType)
+	{
 		sResult += L"</w:rPr>";
+		
+		if (bDelete)sResult += L"</w:del>";
+		if (bInsert)sResult += L"</w:ins>";
+	}
 	return sResult;
 }
 

@@ -59,8 +59,10 @@ bool RtfMath::IsRtfControlProperty( CString sControlW )
 	
 	//можно бинарный поиск вставить
 	for( int i = 0; i < mc_nRtfControlWordsSize; i++ )
+	{
 		if( mc_aRtfControlWords[ i ] == sControlW )
 			return true;
+	}
 	return false;
 }
 
@@ -78,8 +80,10 @@ bool RtfMath::IsRtfControlWord( CString sControlW )
 	
 	//можно бинарный поиск вставить
 	for( int i = 0; i < mc_nRtfControlWordsSize; i++ )
+	{
 		if( mc_aRtfControlWords[ i ] == sControlW )
 			return true;
+	}
 	return false;
 }
 
@@ -126,6 +130,7 @@ CString RtfMath::RenderToRtf(RenderParameter oRenderParameter)
         sResult += L"}";// m_sRtfName
 	return sResult;
 }
+
 CString RtfMath::RenderToOOX(RenderParameter oRenderParameter)
 {
 	if (m_sOOXName.IsEmpty()) return L"";
@@ -154,7 +159,7 @@ CString RtfMath::RenderToOOX(RenderParameter oRenderParameter)
 	else
 	{
 		oNewParam.nType = RENDER_TO_OOX_PARAM_MATH;
-		for( int i = 0; i < (int)m_aArray.size(); i++ )
+		for( int i = 0; i < m_aArray.size(); i++ )
 		{
 			sContent += m_aArray[i]->RenderToOOX(oNewParam);
 		}
@@ -176,7 +181,7 @@ CString RtfMath::RenderToOOX(RenderParameter oRenderParameter)
 	}
 	sResult += L">";
 
-	sResult += sProp;
+	sResult += sProp; //??
 
 	sResult += sContent;
 

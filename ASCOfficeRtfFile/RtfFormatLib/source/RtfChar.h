@@ -40,11 +40,11 @@ class RtfAbsPosTab : public IDocumentElement
 public: 
 	enum Leader
 	{	l_none,
-		l_ptablnone, //\ptablnone 	Absolute position tab with a blank leading (default).
-		l_ptabldot, //\ptabldot 	Absolute position tab with a leading that uses period symbols (.....).
-		l_ptablminus, //\ptablminus 	Absolute position tab with a leading that uses minus symbols (-----).
-		l_ptabluscore, //\ptabluscore 	Absolute position tab with a leading that uses underscore symbols (_____).
-		l_ptablmdot, //\ptablmdot 	Absolute position tab with a leading that uses middle dot symbols (•••••).
+		l_ptablnone, // ptablnone 	Absolute position tab with a blank leading (default).
+		l_ptabldot, // ptabldot 	Absolute position tab with a leading that uses period symbols (.....).
+		l_ptablminus, // ptablminus 	Absolute position tab with a leading that uses minus symbols (-----).
+		l_ptabluscore, // ptabluscore 	Absolute position tab with a leading that uses underscore symbols (_____).
+		l_ptablmdot, // ptablmdot 	Absolute position tab with a leading that uses middle dot symbols (•••••).
 	} ;
 	enum Alignment
 	{	a_none,
@@ -127,43 +127,44 @@ public:
 class RtfCharSpecial : public IDocumentElement
 {
 public: 
-	typedef enum {
-			rsc_none,
-			rsc_chdate,//\chdate	Current date (as in headers).
-			rsc_chdpl,//\chdpl	Current date in long format (for example, Wednesday, February 20, 2008).
-			rsc_chdpa,//\chdpa	Current date in abbreviated format (for example, Wed, Feb 20, 2008).
-			rsc_chtime,//\chtime	Current time (as in headers).
-			rsc_chpgn,//\chpgn	Current page number (as in headers).
-			rsc_sectnum,//\sectnum	Current section number (as in headers).
-			rsc_chftn,//\chftn	Automatic footnote reference (footnotes follow in a group).
-			rsc_chftnEnd,//Endnote
-			rsc_chatn,//\chatn	Annotation reference (annotation text follows in a group).
-			rsc_chftnsep,//\chftnsep	Anchoring character for footnote separator.
-			rsc_chftnsepc,//\chftnsepc	Anchoring character for footnote continuation.
-			rsc_page,//\page	Required page break.
-			rsc_column,//\column	Required column break.
-			rsc_line,//\line	Required line break (no paragraph break).
-			rsc_softpage,//\softpage	Nonrequired page break. Emitted as it appears in galley view.
-			rsc_softcol,//\softcol	Nonrequired column break. Emitted as it appears in galley view.
-			rsc_softline,//\softline	Nonrequired line break. Emitted as it appears in galley view.
-			rsc_tab,//\tab	Tab character. 
-			rsc_emspace,//\emspace	Non-breaking space equal to width of character “m” in current font. Some old RTF writers use the construct '{' \emspace '  }' (with two spaces before the closing brace) to trick readers unaware of \emspace into parsing a regular space. A reader should interpret this as an \emspace and a regular space.
-			rsc_enspace,//\enspace	Nonbreaking space equal to width of character “n” in current font. Some old RTF writers use the construct '{' \enspace '  }' (with two spaces before the closing brace) to trick readers unaware of \enspace into parsing a regular space. A reader should interpret this as an \enspace and a regular space.
-			rsc_qmspace,//\qmspace	One-quarter em space.
-			rsc_Formula,//\|	Formula character. (Used by Word 5.1 for the Macintosh as the beginning delimiter for a string of formula typesetting commands.)
-			rsc_OptHyphen,//\-	Optional hyphen.
-			rsc_NonBrHyphen,//\_	Non-breaking hyphen.
-			rsc_NonBrSpace,//\~	Non-breaking space.
-			rsc_SubEntry,//\:	Specifies a subentry in an index entry.
-			rsc_zwbo,//\zwbo	Zero-width break opportunity. Used to insert break opportunity between two characters.
-			rsc_zwnbo,//\zwnbo	Zero-width non-break opportunity. Used to remove break opportunity between two characters.
-			rsc_zwj,//\zwj	Zero-width joiner. This is used for ligating (joining) characters.
-			rsc_zwnj,//\zwnj	Zero-width nonjoiner. This is used for unligating a character. 
-	} RtfSpecChar;   
+	enum _RtfSpecChar
+	{
+		rsc_none,
+		rsc_chdate,		// chdate	Current date (as in headers).
+		rsc_chdpl,		// chdpl	Current date in long format (for example, Wednesday, February 20, 2008).
+		rsc_chdpa,		// chdpa	Current date in abbreviated format (for example, Wed, Feb 20, 2008).
+		rsc_chtime,		// chtime	Current time (as in headers).
+		rsc_chpgn,		// chpgn	Current page number (as in headers).
+		rsc_sectnum,	// sectnum	Current section number (as in headers).
+		rsc_chftn,		// chftn	Automatic footnote reference (footnotes follow in a group).
+		rsc_chftnEnd,	//Endnote
+		rsc_chatn,		// chatn	Annotation reference (annotation text follows in a group).
+		rsc_chftnsep,	// chftnsep	Anchoring character for footnote separator.
+		rsc_chftnsepc,	// chftnsepc	Anchoring character for footnote continuation.
+		rsc_page,		// page	Required page break.
+		rsc_column,		// column	Required column break.
+		rsc_line,		// line	Required line break (no paragraph break).
+		rsc_softpage,	// softpage	Nonrequired page break. Emitted as it appears in galley view.
+		rsc_softcol,	// softcol	Nonrequired column break. Emitted as it appears in galley view.
+		rsc_softline,	// softline	Nonrequired line break. Emitted as it appears in galley view.
+		rsc_tab,		// tab	Tab character. 
+		rsc_emspace,	// emspace	Non-breaking space equal to width of character “m” in current font. Some old RTF writers use the construct '{' \emspace '  }' (with two spaces before the closing brace) to trick readers unaware of \emspace into parsing a regular space. A reader should interpret this as an \emspace and a regular space.
+		rsc_enspace,	// enspace	Nonbreaking space equal to width of character “n” in current font. Some old RTF writers use the construct '{' \enspace '  }' (with two spaces before the closing brace) to trick readers unaware of \enspace into parsing a regular space. A reader should interpret this as an \enspace and a regular space.
+		rsc_qmspace,	// qmspace	One-quarter em space.
+		rsc_Formula,	// |	Formula character. (Used by Word 5.1 for the Macintosh as the beginning delimiter for a string of formula typesetting commands.)
+		rsc_OptHyphen,	// -	Optional hyphen.
+		rsc_NonBrHyphen,// _	Non-breaking hyphen.
+		rsc_NonBrSpace,	// ~	Non-breaking space.
+		rsc_SubEntry,	// :	Specifies a subentry in an index entry.
+		rsc_zwbo,		// zwbo	Zero-width break opportunity. Used to insert break opportunity between two characters.
+		rsc_zwnbo,		// zwnbo	Zero-width non-break opportunity. Used to remove break opportunity between two characters.
+		rsc_zwj,		// zwj	Zero-width joiner. This is used for ligating (joining) characters.
+		rsc_zwnj,		// zwnj	Zero-width nonjoiner. This is used for unligating a character. 
+	};   
 
-	int					m_nTextWrapBreak;//\lbrN Text wrapping break of type
-	int					m_nSoftHeight;//\softlheightN	Nonrequired line height. This is emitted as a prefix to each line.
-	RtfSpecChar			m_eType;
+	int					m_nTextWrapBreak;	// lbrN Text wrapping break of type
+	int					m_nSoftHeight;		// softlheightN	Nonrequired line height. This is emitted as a prefix to each line.
+	_RtfSpecChar		m_eType;
 	RtfCharProperty		m_oProperty;
 	
 	RtfCharSpecial()
@@ -172,123 +173,16 @@ public:
 		m_nTextWrapBreak	= PROP_DEF;
 		m_nSoftHeight		= PROP_DEF;
 	}
-	CString RenderToRtf(RenderParameter oRenderParameter)
-	{
-		CString sResult;
-		sResult += L"{";
-		sResult += m_oProperty.RenderToRtf( oRenderParameter );
-		switch( m_eType )
-		{
-			case rsc_chdate:		sResult += L"\\chdate";		break;
-			case rsc_chdpl:			sResult += L"\\chdpl";		break;
-			case rsc_chdpa:			sResult += L"\\chdpa";		break;
-			case rsc_chtime:		sResult += L"\\chtime";		break;
-			case rsc_chpgn:			sResult += L"\\chpgn";		break;
-			case rsc_sectnum:		sResult += L"\\sectnum";		break;
-			case rsc_chftn:			sResult += L"\\chftn";		break;
-			case rsc_chftnEnd:		sResult += L"\\chftn";		break;
-			case rsc_chatn:			sResult += L"\\chatn";		break;
-			case rsc_chftnsep:		sResult += L"\\chftnsep";	break;
-			case rsc_chftnsepc:		sResult += L"\\chftnsepc";	break;
-			case rsc_page:			sResult += L"\\page";		break;
-			case rsc_column:		sResult += L"\\column";		break;
-			case rsc_line:			sResult += L"\\line";		break;
-			case rsc_softpage:		sResult += L"\\softpage";	break;
-			case rsc_softcol:		sResult += L"\\softcol";		break;
-			case rsc_softline:		sResult += L"\\softline";	break;
-			case rsc_tab:			sResult += L"\\tab";			break;
-			case rsc_Formula:		sResult += L"\\|";			break;
-			case rsc_OptHyphen:		sResult += L"\\-";			break;
-			case rsc_NonBrHyphen:	sResult += L"\\_";			break;
-			case rsc_NonBrSpace:	sResult += L"\\~";			break;
-			case rsc_zwbo:			sResult += L"\\zwbo";		break;
-			case rsc_zwnbo:			sResult += L"\\zwnbo";		break;
-			case rsc_zwj:			sResult += L"\\zwj";			break;
-			case rsc_zwnj:			sResult += L"\\zwnj";		break;
-		}
-		if( PROP_DEF != m_nTextWrapBreak )
-			sResult += L"\\par";
-		//switch ( m_nTextWrapBreak ) //не воспринимается word
-		//{
-		//	case 0: sResult += L"\\lbr0";break;
-		//	case 1: sResult += L"\\lbr1";break;
-		//	case 2: sResult += L"\\lbr2";break;
-		//	case 3: sResult += L"\\lbr3";break;
-		//}
-		if( PROP_DEF != m_nSoftHeight )
-		{
-			sResult.AppendFormat( L"\\softlheight%d", m_nSoftHeight );
-		}
-		sResult += L"}";
-		return sResult;
-	}
-	CString _RenderToOOX(RenderParameter oRenderParameter)
-	{
-		CString sResult;
-		switch( m_eType )
-		{
-			case rsc_chdate:		sResult += L"";										break;
-			case rsc_chdpl:			sResult += L"";										break;
-			case rsc_chdpa:			sResult += L"";										break;
-			case rsc_chtime:		sResult += L"";										break;
-			case rsc_chpgn:			sResult += L"<w:pgNum />";							break;
-			case rsc_sectnum:		sResult += L"";										break;
-			case rsc_chftn:			sResult += L"<w:footnoteRef/>";						break;
-			case rsc_chftnEnd:		sResult += L"<w:endnoteRef/>";						break;
-			case rsc_chatn:			sResult += L"<w:annotationRef />";					break;
-			case rsc_chftnsep:		sResult += L"<w:separator />";						break;
-			case rsc_chftnsepc:		sResult += L"<w:continuationSeparator/>";			break;
-			case rsc_page:			sResult += L"<w:br w:type=\"page\"/>";				break;
-			case rsc_column:		sResult += L"<w:br w:type=\"column\"/>";			break;
-			case rsc_line:			sResult += L"<w:br w:type=\"textWrapping\" w:clear=\"none\"/>";break;
-			case rsc_softpage:		sResult += L"";										break;
-			case rsc_softcol:		sResult += L"";										break;
-			case rsc_softline:		sResult += L"";										break;
-			case rsc_tab:			sResult += L"<w:tab/>";								break;
-			case rsc_emspace:		sResult += L"";										break;
-			case rsc_qmspace:		sResult += L"";										break;
-			case rsc_Formula:		sResult += L"";										break;
-			case rsc_zwbo:			sResult += L"";										break;
-			case rsc_zwnbo:			sResult += L"";										break;
-			case rsc_zwj:			sResult += L"";										break;
-			case rsc_zwnj:			sResult += L"";										break;
-			case rsc_OptHyphen:		sResult += L"<w:t xml:space=\"preserve\">-</w:t>";	break;//<w:softHyphen/>
-			case rsc_NonBrHyphen:	sResult += L"<w:t xml:space=\"preserve\">-</w:t>";	break;//<w:nonBreakHyphen/>
-			case rsc_NonBrSpace:	sResult += L"<w:t xml:space=\"preserve\"> </w:t>";	break;
-		}
-		switch ( m_nTextWrapBreak )
-		{
-			case 0: sResult += L"<w:br w:type=\"textWrapping\" w:clear=\"none\"/>";		break;
-			case 1: sResult += L"<w:br w:type=\"textWrapping\" w:clear=\"left\"/>";		break;
-			case 2: sResult += L"<w:br w:type=\"textWrapping\" w:clear=\"right\"/>";	break;
-			case 3: sResult += L"<w:br w:type=\"textWrapping\" w:clear=\"all\"/>";		break;
-		}
-		return sResult;
-	}
-	CString RenderToOOX(RenderParameter oRenderParameter)
-	{
-		CString sResult;
-		if(RENDER_TO_OOX_PARAM_RUN == oRenderParameter.nType)
-		{
-			sResult += L"<w:r>";
-				sResult += L"<w:rPr>";
-					sResult += m_oProperty.RenderToOOX(oRenderParameter);
-				sResult += L"</w:rPr>";
-				sResult += _RenderToOOX(oRenderParameter);
-			sResult += L"</w:r>";
-		}
-		else if(RENDER_TO_OOX_PARAM_TEXT	== oRenderParameter.nType || 
-				RENDER_TO_OOX_PARAM_MATH	== oRenderParameter.nType ||
-				RENDER_TO_OOX_PARAM_PLAIN	== oRenderParameter.nType)
-			sResult += _RenderToOOX(oRenderParameter);
-		return sResult;
-	}
+	CString RenderToRtf(RenderParameter oRenderParameter);
+	CString _RenderToOOX(RenderParameter oRenderParameter);
+	CString RenderToOOX(RenderParameter oRenderParameter);
 };
 typedef boost::shared_ptr<RtfCharSpecial> RtfCharSpecialPtr;
 
 class RtfChar : public IDocumentElement
 {            
-protected: CString m_sChars;
+protected: 
+	CString m_sChars;
 public: 
 	RtfChar()
 	{

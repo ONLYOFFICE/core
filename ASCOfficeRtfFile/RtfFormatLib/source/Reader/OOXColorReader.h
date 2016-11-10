@@ -58,7 +58,7 @@ public:
 		}
 		else if(ooxColor.getType() == OOX::Drawing::colorSheme)
 		{
-			RtfColor::ThemeColor oTheme;
+			RtfColor::_ThemeColor oTheme;
 			if( true == RtfColor::GetThemeByOOX( ooxColor.m_oShemeClr.m_oVal.GetValue(), oTheme ))
 				return oParam.oRtf->m_oColorTable.GetColor( oTheme, oOutputColor );
 			return false;

@@ -45,6 +45,16 @@ CString RtfChar::RenderToOOX(RenderParameter oRenderParameter)
 		bool bInsert = false;
 		bool bDelete = false;
 
+		if (m_oProperty.m_nRevised != PROP_DEF)
+		{
+			bInsert = true;
+			
+			CString sAuthor = m_oProperty.m_nRevauth != PROP_DEF ? poRtfDocument->m_oRevisionTable[ m_oProperty.m_nRevauth] : L"";
+			CString sDate(RtfUtility::convertDateTime(m_oProperty.m_nRevdttm).c_str());
+			
+			sResult += L"<w:ins w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
+			m_oProperty.m_nRevised = PROP_DEF;
+		}
 		if (m_oProperty.m_nDeleted != PROP_DEF)
 		{
 			bDelete = true;
@@ -55,17 +65,6 @@ CString RtfChar::RenderToOOX(RenderParameter oRenderParameter)
 			sResult += L"<w:del w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
 			m_oProperty.m_nDeleted = PROP_DEF;
 		}
-		else if (m_oProperty.m_nRevised != PROP_DEF)
-		{
-			bInsert = true;
-			
-			CString sAuthor = m_oProperty.m_nRevauth != PROP_DEF ? poRtfDocument->m_oRevisionTable[ m_oProperty.m_nRevauth] : L"";
-			CString sDate(RtfUtility::convertDateTime(m_oProperty.m_nRevdttm).c_str());
-			
-			sResult += L"<w:ins w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
-			m_oProperty.m_nRevised = PROP_DEF;
-		}
-
         sResult += L"<w:r>";
 			sResult += L"<w:rPr>";
 				sResult += m_oProperty.RenderToOOX(oRenderParameter);
@@ -73,8 +72,8 @@ CString RtfChar::RenderToOOX(RenderParameter oRenderParameter)
 			sResult += renderTextToXML(L"Text", bDelete );
         sResult += L"</w:r>";
 		
-		if (bInsert)sResult += L"</w:ins>";
 		if (bDelete)sResult += L"</w:del>";
+		if (bInsert)sResult += L"</w:ins>";
 	}
     else if(RENDER_TO_OOX_PARAM_TEXT == oRenderParameter.nType)
 	{
@@ -83,8 +82,34 @@ CString RtfChar::RenderToOOX(RenderParameter oRenderParameter)
     else if( RENDER_TO_OOX_PARAM_MATH == oRenderParameter.nType)
 	{
 		sResult += L"<m:r>";
+			bool bInsert = false;
+			bool bDelete = false;
+
+			if (m_oProperty.m_nRevised != PROP_DEF)
+			{
+				bInsert = true;
+				
+				CString sAuthor = m_oProperty.m_nRevauth != PROP_DEF ? poRtfDocument->m_oRevisionTable[ m_oProperty.m_nRevauth] : L"";
+				CString sDate(RtfUtility::convertDateTime(m_oProperty.m_nRevdttm).c_str());
+				
+				sResult += L"<w:ins w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
+				m_oProperty.m_nRevised = PROP_DEF;
+			}
+			if (m_oProperty.m_nDeleted != PROP_DEF)
+			{
+				bDelete = true;
+				
+				CString sAuthor = m_oProperty.m_nRevauthDel != PROP_DEF ? poRtfDocument->m_oRevisionTable[ m_oProperty.m_nRevauthDel ] : L"";
+				CString sDate(RtfUtility::convertDateTime(m_oProperty.m_nRevdttmDel).c_str());
+				
+				sResult += L"<w:del w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
+				m_oProperty.m_nDeleted = PROP_DEF;
+			}
 			sResult += m_oProperty.RenderToOOX(oRenderParameter);//w:rPr внутри
 			sResult += renderTextToXML( L"Math" );
+			
+			if (bDelete)sResult += L"</w:del>";
+			if (bInsert)sResult += L"</w:ins>";
 		sResult += L"</m:r>";	
 	}
     else if( RENDER_TO_OOX_PARAM_PLAIN == oRenderParameter.nType)
@@ -261,3 +286,147 @@ CString RtfChar::RenderToRtf(RenderParameter oRenderParameter)
     }
     return result;
 }
+
+CString RtfCharSpecial::_RenderToOOX(RenderParameter oRenderParameter)
+{
+	CString sResult;
+	switch( m_eType )
+	{
+		case rsc_chdate:		sResult += L"";										break;
+		case rsc_chdpl:			sResult += L"";										break;
+		case rsc_chdpa:			sResult += L"";										break;
+		case rsc_chtime:		sResult += L"";										break;
+		case rsc_chpgn:			sResult += L"<w:pgNum />";							break;
+		case rsc_sectnum:		sResult += L"";										break;
+		case rsc_chftn:			sResult += L"<w:footnoteRef/>";						break;
+		case rsc_chftnEnd:		sResult += L"<w:endnoteRef/>";						break;
+		case rsc_chatn:			sResult += L"<w:annotationRef />";					break;
+		case rsc_chftnsep:		sResult += L"<w:separator />";						break;
+		case rsc_chftnsepc:		sResult += L"<w:continuationSeparator/>";			break;
+		case rsc_page:			sResult += L"<w:br w:type=\"page\"/>";				break;
+		case rsc_column:		sResult += L"<w:br w:type=\"column\"/>";			break;
+		case rsc_line:			sResult += L"<w:br w:type=\"textWrapping\" w:clear=\"none\"/>";break;
+		case rsc_softpage:		sResult += L"";										break;
+		case rsc_softcol:		sResult += L"";										break;
+		case rsc_softline:		sResult += L"";										break;
+		case rsc_tab:			sResult += L"<w:tab/>";								break;
+		case rsc_emspace:		sResult += L"";										break;
+		case rsc_qmspace:		sResult += L"";										break;
+		case rsc_Formula:		sResult += L"";										break;
+		case rsc_zwbo:			sResult += L"";										break;
+		case rsc_zwnbo:			sResult += L"";										break;
+		case rsc_zwj:			sResult += L"";										break;
+		case rsc_zwnj:			sResult += L"";										break;
+		case rsc_OptHyphen:		sResult += L"<w:t xml:space=\"preserve\">-</w:t>";	break;//<w:softHyphen/>
+		case rsc_NonBrHyphen:	sResult += L"<w:t xml:space=\"preserve\">-</w:t>";	break;//<w:nonBreakHyphen/>
+		case rsc_NonBrSpace:	sResult += L"<w:t xml:space=\"preserve\"> </w:t>";	break;
+	}
+	switch ( m_nTextWrapBreak )
+	{
+		case 0: sResult += L"<w:br w:type=\"textWrapping\" w:clear=\"none\"/>";		break;
+		case 1: sResult += L"<w:br w:type=\"textWrapping\" w:clear=\"left\"/>";		break;
+		case 2: sResult += L"<w:br w:type=\"textWrapping\" w:clear=\"right\"/>";	break;
+		case 3: sResult += L"<w:br w:type=\"textWrapping\" w:clear=\"all\"/>";		break;
+	}
+	return sResult;
+}
+CString RtfCharSpecial::RenderToOOX(RenderParameter oRenderParameter)
+{
+	RtfDocument*	poRtfDocument	= static_cast<RtfDocument*>	(oRenderParameter.poDocument);
+	OOXWriter*		poOOXWriter		= static_cast<OOXWriter*>	(oRenderParameter.poWriter);
+
+	CString sResult;
+	if(RENDER_TO_OOX_PARAM_RUN == oRenderParameter.nType)
+	{
+		bool bInsert = false;
+		bool bDelete = false;
+
+		if (m_oProperty.m_nRevised != PROP_DEF)
+		{
+			bInsert = true;
+			
+			CString sAuthor = m_oProperty.m_nRevauth != PROP_DEF ? poRtfDocument->m_oRevisionTable[ m_oProperty.m_nRevauth] : L"";
+			CString sDate(RtfUtility::convertDateTime(m_oProperty.m_nRevdttm).c_str());
+			
+			sResult += L"<w:ins w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
+			m_oProperty.m_nRevised = PROP_DEF;
+		}
+		if (m_oProperty.m_nDeleted != PROP_DEF)
+		{
+			bDelete = true;
+			
+			CString sAuthor = m_oProperty.m_nRevauthDel != PROP_DEF ? poRtfDocument->m_oRevisionTable[ m_oProperty.m_nRevauthDel ] : L"";
+			CString sDate(RtfUtility::convertDateTime(m_oProperty.m_nRevdttmDel).c_str());
+			
+			sResult += L"<w:del w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
+			m_oProperty.m_nDeleted = PROP_DEF;
+		}
+		sResult += L"<w:r>";
+			sResult += L"<w:rPr>";
+				sResult += m_oProperty.RenderToOOX(oRenderParameter);
+			sResult += L"</w:rPr>";
+			sResult += _RenderToOOX(oRenderParameter);
+		sResult += L"</w:r>";
+		
+		if (bDelete)sResult += L"</w:del>";
+		if (bInsert)sResult += L"</w:ins>";
+	}
+	else if(RENDER_TO_OOX_PARAM_TEXT	== oRenderParameter.nType || 
+			RENDER_TO_OOX_PARAM_MATH	== oRenderParameter.nType ||
+			RENDER_TO_OOX_PARAM_PLAIN	== oRenderParameter.nType)
+	{
+		sResult += _RenderToOOX(oRenderParameter);
+	}
+	return sResult;
+}
+	
+CString RtfCharSpecial::RenderToRtf(RenderParameter oRenderParameter)
+{
+	CString sResult;
+	sResult += L"{";
+	sResult += m_oProperty.RenderToRtf( oRenderParameter );
+	switch( m_eType )
+	{
+		case rsc_chdate:		sResult += L"\\chdate";		break;
+		case rsc_chdpl:			sResult += L"\\chdpl";		break;
+		case rsc_chdpa:			sResult += L"\\chdpa";		break;
+		case rsc_chtime:		sResult += L"\\chtime";		break;
+		case rsc_chpgn:			sResult += L"\\chpgn";		break;
+		case rsc_sectnum:		sResult += L"\\sectnum";		break;
+		case rsc_chftn:			sResult += L"\\chftn";		break;
+		case rsc_chftnEnd:		sResult += L"\\chftn";		break;
+		case rsc_chatn:			sResult += L"\\chatn";		break;
+		case rsc_chftnsep:		sResult += L"\\chftnsep";	break;
+		case rsc_chftnsepc:		sResult += L"\\chftnsepc";	break;
+		case rsc_page:			sResult += L"\\page";		break;
+		case rsc_column:		sResult += L"\\column";		break;
+		case rsc_line:			sResult += L"\\line";		break;
+		case rsc_softpage:		sResult += L"\\softpage";	break;
+		case rsc_softcol:		sResult += L"\\softcol";		break;
+		case rsc_softline:		sResult += L"\\softline";	break;
+		case rsc_tab:			sResult += L"\\tab";			break;
+		case rsc_Formula:		sResult += L"\\|";			break;
+		case rsc_OptHyphen:		sResult += L"\\-";			break;
+		case rsc_NonBrHyphen:	sResult += L"\\_";			break;
+		case rsc_NonBrSpace:	sResult += L"\\~";			break;
+		case rsc_zwbo:			sResult += L"\\zwbo";		break;
+		case rsc_zwnbo:			sResult += L"\\zwnbo";		break;
+		case rsc_zwj:			sResult += L"\\zwj";			break;
+		case rsc_zwnj:			sResult += L"\\zwnj";		break;
+	}
+	if( PROP_DEF != m_nTextWrapBreak )
+		sResult += L"\\par";
+	//switch ( m_nTextWrapBreak ) //не воспринимается word
+	//{
+	//	case 0: sResult += L"\\lbr0";break;
+	//	case 1: sResult += L"\\lbr1";break;
+	//	case 2: sResult += L"\\lbr2";break;
+	//	case 3: sResult += L"\\lbr3";break;
+	//}
+	if( PROP_DEF != m_nSoftHeight )
+	{
+		sResult.AppendFormat( L"\\softlheight%d", m_nSoftHeight );
+	}
+	sResult += L"}";
+	return sResult;
+	}

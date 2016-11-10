@@ -834,6 +834,8 @@ public:
 					PictureReader oPictureReader( oReader, m_oShape );
 					StartSubReader( oPictureReader, oDocument, oReader );
 				}
+				else
+					return false;
 				return true;
 			}
 			void PopState( RtfDocument& oDocument, RtfReader& oReader );

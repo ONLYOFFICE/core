@@ -56,6 +56,16 @@ CString RtfOle::RenderToOOX(RenderParameter oRenderParameter)
 		bool bInsert = false;
 		bool bDelete = false;
 
+		if (pCharProps->m_nRevised != PROP_DEF)
+		{
+			bInsert = true;
+			
+			CString sAuthor = pCharProps->m_nRevauth != PROP_DEF ? poRtfDocument->m_oRevisionTable[ pCharProps->m_nRevauth] : L"";
+			CString sDate(RtfUtility::convertDateTime(pCharProps->m_nRevdttm).c_str());
+			
+			sResult += L"<w:ins w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
+			pCharProps->m_nRevised = PROP_DEF;
+		}
 		if (pCharProps->m_nDeleted != PROP_DEF)
 		{
 			bDelete = true;
@@ -65,16 +75,6 @@ CString RtfOle::RenderToOOX(RenderParameter oRenderParameter)
 			
 			sResult += L"<w:del w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
 			pCharProps->m_nDeleted = PROP_DEF;
-		}
-		else if (pCharProps->m_nRevised != PROP_DEF)
-		{
-			bInsert = true;
-			
-			CString sAuthor = pCharProps->m_nRevauth != PROP_DEF ? poRtfDocument->m_oRevisionTable[ pCharProps->m_nRevauth] : L"";
-			CString sDate(RtfUtility::convertDateTime(pCharProps->m_nRevdttm).c_str());
-			
-			sResult += L"<w:ins w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
-			pCharProps->m_nRevised = PROP_DEF;
 		}
 //----------
 		sResult += _T("<w:r>");
@@ -101,8 +101,8 @@ CString RtfOle::RenderToOOX(RenderParameter oRenderParameter)
 		sResult += _T("</w:object>");
 		sResult += _T("</w:r>");
 		
-		if (bInsert)sResult += L"</w:ins>";
 		if (bDelete)sResult += L"</w:del>";
+		if (bInsert)sResult += L"</w:ins>";
 	}
 	return sResult;
 }

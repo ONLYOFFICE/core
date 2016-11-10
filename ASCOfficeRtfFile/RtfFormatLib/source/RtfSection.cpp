@@ -64,15 +64,15 @@ CString RtfDocumentProperty::RenderToRtf(RenderParameter oRenderParameter)
 
 //Page Information
 //эти свойства пишутся в первой секции
-//public: int m_nPaperWidth; //\paperwN	Paper width in twips (default is 12,240).
-//public: int m_nPaperHeight; //\paperhN	Paper height in twips (default is 15,840).
-//public: int m_nMarginLeft; //\marglN	Left margin in twips (default is 1800).
-//public: int m_nMarginRight; //\margrN	Right margin in twips (default is 1800).
-//public: int m_nMarginTop; //\margtN	Top margin in twips (default is 1440).
-//public: int m_nMarginBottom; //\margbN	Bottom margin in twips (default is 1440).
+//public: int m_nPaperWidth; // paperwN	Paper width in twips (default is 12,240).
+//public: int m_nPaperHeight; // paperhN	Paper height in twips (default is 15,840).
+//public: int m_nMarginLeft; // marglN	Left margin in twips (default is 1800).
+//public: int m_nMarginRight; // margrN	Right margin in twips (default is 1800).
+//public: int m_nMarginTop; // margtN	Top margin in twips (default is 1440).
+//public: int m_nMarginBottom; // margbN	Bottom margin in twips (default is 1440).
 //public: int m_bFacingPage; //(mirrorMargins)\facingp	Facing pages (activates odd/even headers and gutters).
-//public: int m_nGutterWidth; //\gutterN	Gutter width in twips (default is 0).
-//public: int m_nGutterWidthOutside; //\ogutterN	Outside gutter width (default is 0; not used by Word, but in 1987 RTF Spec)
+//public: int m_nGutterWidth; // gutterN	Gutter width in twips (default is 0).
+//public: int m_nGutterWidthOutside; // ogutterN	Outside gutter width (default is 0; not used by Word, but in 1987 RTF Spec)
 //	RENDER_RTF_BOOL( m_bLandScape, sResult, L"landscape" )
 
 	RENDER_RTF_BOOL( m_bGutterAtTop,	sResult, L"gutterprl" )
@@ -515,10 +515,15 @@ CString RtfSectionProperty::RenderToRtf(RenderParameter oRenderParameter)
 }
 CString RtfSectionProperty::RenderToOOX(RenderParameter oRenderParameter)
 {
+	RtfDocument*	poRtfDocument	= static_cast<RtfDocument*>	(oRenderParameter.poDocument);
+	OOXWriter*		poOOXWriter		= static_cast<OOXWriter*>	(oRenderParameter.poWriter);
+
 	CString sResult;
 	sResult += L"<w:sectPr>";
+	
 	if( 1 == m_bBidi )
 		sResult += L"<w:bidi/>";
+	
 	CString sPaperSource;
 	if( PROP_DEF != m_nPaperSourceFirst )
 		sPaperSource.AppendFormat( L" w:first=\"%d\"", m_nPaperSourceFirst );
@@ -806,7 +811,19 @@ CString RtfSectionProperty::RenderToOOX(RenderParameter oRenderParameter)
 		CString sId = SaveFile(m_oFooterRight,oRenderParameter, false);
         sResult += L"<w:footerReference w:type=\"default\" r:id=\"" + sId + L"\"/>";
 	}
-	sResult.Append(L"</w:sectPr>");
+	if (m_pOldSectionProp)
+	{
+		CString sAuthor = m_nSrAuth != PROP_DEF ? poRtfDocument->m_oRevisionTable[ m_nSrAuth] : L"";
+		CString sDate(RtfUtility::convertDateTime(m_nSrDate).c_str());
+
+		RenderParameter oRenderParameterNew = oRenderParameter;
+		oRenderParameterNew.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
+		
+		sResult += L"<w:sectPrChange w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
+			sResult += m_pOldSectionProp->RenderToOOX(oRenderParameterNew);
+		sResult += L"</w:sectPrChange>";
+	}
+	sResult += L"</w:sectPr>";
 	return sResult;
 }
 CString RtfSectionProperty::SaveFile( TextItemContainerPtr oTarget, RenderParameter oRenderParameter, bool bHeader)

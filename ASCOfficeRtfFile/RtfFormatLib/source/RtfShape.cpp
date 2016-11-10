@@ -712,6 +712,16 @@ CString RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 	}
 	else
 	{//работает по умолчанию
+		if (m_oCharProperty.m_nRevised != PROP_DEF)
+		{
+			m_bInsert = true;
+			
+			CString sAuthor = m_oCharProperty.m_nRevauth != PROP_DEF ? poRtfDocument->m_oRevisionTable[ m_oCharProperty.m_nRevauth] : L"";
+			CString sDate(RtfUtility::convertDateTime(m_oCharProperty.m_nRevdttm).c_str());
+			
+			sResult += L"<w:ins w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
+			m_oCharProperty.m_nRevised = PROP_DEF;
+		}
 		if (m_oCharProperty.m_nDeleted != PROP_DEF)
 		{
 			m_bDelete = true;
@@ -721,16 +731,6 @@ CString RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 			
 			sResult += L"<w:del w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
 			m_oCharProperty.m_nDeleted = PROP_DEF;
-		}
-		else if (m_oCharProperty.m_nRevised != PROP_DEF)
-		{
-			m_bInsert = true;
-			
-			CString sAuthor = m_oCharProperty.m_nRevauth != PROP_DEF ? poRtfDocument->m_oRevisionTable[ m_oCharProperty.m_nRevauth] : L"";
-			CString sDate(RtfUtility::convertDateTime(m_oCharProperty.m_nRevdttm).c_str());
-			
-			sResult += L"<w:ins w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
-			m_oCharProperty.m_nRevised = PROP_DEF;
 		}
 		CString sCharProp = m_oCharProperty.RenderToOOX(oRenderParameter);
 		sResult += L"<w:r>";
@@ -1333,8 +1333,8 @@ CString RtfShape::RenderToOOXEnd(RenderParameter oRenderParameter)
 	{
 		sResult += L"</w:pict></w:r>";//работает по умолчанию
 		
-		if (m_bInsert)	sResult += L"</w:ins>";
 		if (m_bDelete)	sResult += L"</w:del>";
+		if (m_bInsert)	sResult += L"</w:ins>";
 	}
 	return sResult;
 }

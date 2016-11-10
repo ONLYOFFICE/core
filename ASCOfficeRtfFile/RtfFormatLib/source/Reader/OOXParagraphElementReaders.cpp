@@ -397,7 +397,7 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 							oNewField->m_bLock = ooxFldChar->m_oFldLock->ToBool();
 						if (ooxFldChar->m_oDirty.IsInit())
 							oNewField->m_bDirty = ooxFldChar->m_oDirty->ToBool();
-						oNewField->m_oCharProp = oNewProperty;
+						oNewField->m_oCharProperty = oNewProperty;
 						oOutputParagraph.AddItem( oNewField );
 					}break;
 				case SimpleTypes::fldchartypeEnd: 

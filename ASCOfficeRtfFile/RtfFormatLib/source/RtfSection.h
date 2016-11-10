@@ -282,6 +282,9 @@ private:
 	}
 };
 
+class RtfSectionProperty;
+typedef boost::shared_ptr<RtfSectionProperty>	RtfSectionPropertyPtr;
+
 class RtfSectionProperty: public IRenderableProperty
 {
 //Bidirectional Controls
@@ -290,7 +293,6 @@ public:
 	int m_nPaperSourceFirst; // binfsxnN	N is the printer bin used for the first page of the section. If this control is not defined, then the first page uses the same printer bin as defined by the \binsxnN control.
 	int m_nPaperSourceOther; // binsxnN	N is the printer bin used for the pages of the section.
 	int m_bRtlGutter; // rtlgutter	Gutter is positioned on the right.
-
 
 	int m_bEndnotes; // \endnhere	Endnotes included in the section.
 	int m_nStyle; // \dsN	Designates section style. If a section style is specified, style properties must be specified with the section.
@@ -504,6 +506,11 @@ public:
 	CString m_sIDFooterFirst;
 	CString m_sIDFooterRight;
 
+	int m_nSrAuth;
+	int m_nSrDate;
+
+	RtfSectionPropertyPtr m_pOldSectionProp;
+
 	RtfSectionProperty()
 	{
 		SetDefault();
@@ -625,6 +632,11 @@ public:
 		//m_oFooterLeft = TextItemContainerPtr();
 		//m_oFooterFirst = TextItemContainerPtr();
 		//m_oFooterRight = TextItemContainerPtr();
+
+		DEFAULT_PROPERTY( m_nSrAuth)
+		DEFAULT_PROPERTY( m_nSrDate)
+
+		m_pOldSectionProp = RtfSectionPropertyPtr(NULL);
 	}
 	CString RenderToRtf(RenderParameter oRenderParameter);
 	CString RenderToOOX(RenderParameter oRenderParameter);
@@ -632,7 +644,6 @@ private:
 	CString SaveFile( TextItemContainerPtr oTarget, RenderParameter oRenderParameter, bool bHeader);
 };
 
-typedef boost::shared_ptr<RtfSectionProperty>	RtfSectionPropertyPtr;
 typedef boost::shared_ptr<RtfDocumentProperty>	RtfDocumentPropertyPtr;
 
 class RtfSection : public TextItemContainer

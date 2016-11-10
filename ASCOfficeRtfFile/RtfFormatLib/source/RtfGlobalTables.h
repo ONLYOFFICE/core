@@ -99,7 +99,7 @@ public:
 		}
 		return false;
 	}
-	bool GetColor( RtfColor::ThemeColor oTheme, RtfColor& oColor)
+	bool GetColor( RtfColor::_ThemeColor oTheme, RtfColor& oColor)
 	{
 		for( int i = 0; i < (int)m_aArray.size(); i++ )
 		if( oTheme == m_aArray[i].m_eTheme )
@@ -111,7 +111,7 @@ public:
 	}
 	bool GetColor( CString sTheme, RtfColor& oColor)
 	{
-		 RtfColor::ThemeColor oTheme = RtfColor::TC_NONE;
+		 RtfColor::_ThemeColor oTheme = RtfColor::TC_NONE;
 		
 		 if( true == RtfColor::GetThemeByString(sTheme,oTheme  ) )
 		 {

@@ -187,10 +187,10 @@ public:
 class RtfColor : public IRenderableProperty
 {
 public: 
-	typedef enum {TC_NONE,cmaindarkone ,cmainlightone ,cmaindarktwo ,cmainlighttwo ,caccentone ,caccenttwo ,caccentthree ,caccentfour ,caccentfive ,caccentsix ,chyperlink ,cfollowedhyperlink ,cbackgroundone ,ctextone ,cbackgroundtwo ,ctexttwo} ThemeColor;
+	enum _ThemeColor {TC_NONE,cmaindarkone ,cmainlightone ,cmaindarktwo ,cmainlighttwo ,caccentone ,caccenttwo ,caccentthree ,caccentfour ,caccentfive ,caccentsix ,chyperlink ,cfollowedhyperlink ,cbackgroundone ,ctextone ,cbackgroundtwo ,ctexttwo};
 	
 	bool		m_bAuto;
-	ThemeColor	m_eTheme;
+	_ThemeColor	m_eTheme;
 
     BYTE		m_byteRed;
     BYTE		m_byteGreen;
@@ -228,6 +228,7 @@ public:
 	void SetDefault()
 	{
 		m_bAuto		= false;
+
 		m_byteRed	= 0;
 		m_byteGreen = 0;
 		m_byteBlue	= 0;
@@ -237,20 +238,20 @@ public:
 	}
     BYTE GetR()
 	{
-        BYTE byteRed = SetShade( m_byteRed );
-		byteRed = SetTint( byteRed );
+        BYTE	byteRed = SetShade( m_byteRed );
+				byteRed = SetTint( byteRed );
 		return byteRed;
 	}
     BYTE GetG()
 	{
-        BYTE byteGreen = SetShade( m_byteGreen );
-		byteGreen = SetTint( byteGreen );
+        BYTE	byteGreen = SetShade( m_byteGreen );
+				byteGreen = SetTint( byteGreen );
 		return byteGreen;
 	}
     BYTE GetB()
 	{
-        BYTE byteBlue = SetShade( m_byteBlue );
-		byteBlue = SetTint( byteBlue );
+        BYTE	byteBlue = SetShade( m_byteBlue );
+				byteBlue = SetTint( byteBlue );
 		return byteBlue;
 	}
 	
@@ -262,6 +263,7 @@ public:
 	void SetHEX(int color)
 	{
 		SetDefault();
+		
 		m_byteRed	= (color&0xFF0000) >> 16;
 		m_byteGreen = (color&0xFF00) >> 8;
 		m_byteBlue	= (color&0xFF);
@@ -269,15 +271,13 @@ public:
 	void SetRGB(BYTE red, BYTE green, BYTE blue)
 	{
 		SetDefault();
-		m_byteRed = red;
+
+		m_byteRed	= red;
 		m_byteGreen = green;
-		m_byteBlue = blue;
+		m_byteBlue	= blue;
 	}
 	void SetHSL(double nHue, double nSat, double nLum)
-	{
-  //// Given H,S,L in range of 0-1
-  //// Returns a Color (RGB struct) in range of 0-255
-  //public static ColorRGB HSL2RGB(double nHue, double nSat, double nLum)
+	{													// Given H,S,L in range of 0-1
         double v;
         double r,g,b;
         r = nLum;   // default to gray
@@ -354,14 +354,16 @@ public:
 			SetDefault();
 			int color	= Strings::ToColor(hex);
 			m_byteRed	= (color&0xFF);
-			m_byteGreen = (color&0xFF00) >>8;
-			m_byteBlue	=  (color&0xFF0000) >>16;
+			m_byteGreen = (color&0xFF00)	>> 8;
+			m_byteBlue	= (color&0xFF0000)	>> 16;
 		}
 		else
 			SetDefault();
 	}
 	CString ToHexColor(bool bBGR = false)
 	{
+		if (m_bAuto) return L"auto";
+
         BYTE byteRed = SetShade( m_byteRed );
 		byteRed = SetTint( byteRed );
 		CString sRed;
@@ -393,9 +395,11 @@ public:
 		CString sResult;
         BYTE byteRed = SetShade( m_byteRed );
 		byteRed = SetTint( byteRed );
-        BYTE byteGreen = SetShade( m_byteGreen );
+        
+		BYTE byteGreen = SetShade( m_byteGreen );
 		byteGreen = SetTint( byteGreen );
-        BYTE byteBlue = SetShade( m_byteBlue );
+       
+		BYTE byteBlue = SetShade( m_byteBlue );
 		byteBlue = SetTint( byteBlue );
 
 		int nColor = (byteRed << 16) | (byteGreen << 8) | byteBlue;
@@ -452,74 +456,57 @@ public:
 		else if ( oStr == L"gold" )			return RtfColor(255,215,0);
 		else if ( oStr == L"green" )		return RtfColor(0,128,0);
 		else if ( oStr == L"grey" )			return RtfColor(128,128,128);
-		else if ( oStr == L"red" )		return RtfColor(255,0,0);
-		else if ( oStr == L"yellow" )	return RtfColor(255,255,0);
+		else if ( oStr == L"red" )			return RtfColor(255,0,0);
+		else if ( oStr == L"yellow" )		return RtfColor(255,255,0);
 
 		return RtfColor(0,0,0);
 	}
 	static CString GetPresetByColor( RtfColor oCol ) //стр. 3320
 	{
 		if		( oCol == RtfColor(240,248,255))	return L"aliceBlue";
-		else if ( oCol ==  RtfColor(250,235,215))	return L"aniqueWhite";
-		else if ( oCol ==  RtfColor(0,255,255))		return L"aqua";
-		else if ( oCol ==  RtfColor(127,255,212))	return L"aquamarine";
-		else if ( oCol ==  RtfColor(240,255,255))	return L"azure";
-		else if ( oCol ==  RtfColor(245,245,220))	return L"beige";
-		else if ( oCol ==  RtfColor(255,228,196))	return L"bisque";
-		else if ( oCol ==  RtfColor(0,0,0))			return L"black";
-		else if ( oCol ==  RtfColor(255,235,205))	return L"blanchedAlmond";
-		else if ( oCol ==  RtfColor(138,43,226))	return L"blueViolet";
-		else if ( oCol ==  RtfColor(165,42,42))		return L"brown";
-		else if ( oCol ==  RtfColor(222,184,135))	return L"burlyWood";
+		else if ( oCol == RtfColor(250,235,215))	return L"aniqueWhite";
+		else if ( oCol == RtfColor(0,255,255))		return L"aqua";
+		else if ( oCol == RtfColor(127,255,212))	return L"aquamarine";
+		else if ( oCol == RtfColor(240,255,255))	return L"azure";
+		else if ( oCol == RtfColor(245,245,220))	return L"beige";
+		else if ( oCol == RtfColor(255,228,196))	return L"bisque";
+		else if ( oCol == RtfColor(0,0,0))			return L"black";
+		else if ( oCol == RtfColor(255,235,205))	return L"blanchedAlmond";
+		else if ( oCol == RtfColor(138,43,226))		return L"blueViolet";
+		else if ( oCol == RtfColor(165,42,42))		return L"brown";
+		else if ( oCol == RtfColor(222,184,135))	return L"burlyWood";
 
-		else if ( oCol ==  RtfColor(0,255,255))		return L"cyan";
-		else if ( oCol ==  RtfColor(255,215,0))		return L"gold";
-		else if ( oCol ==  RtfColor(0,128,0))		return L"green";
-		else if ( oCol ==  RtfColor(128,128,128))	return L"grey";
-		else if ( oCol ==  RtfColor(255,0,0))		return L"red";
-		else if ( oCol ==  RtfColor(255,255,0))		return L"yellow";
+		else if ( oCol == RtfColor(0,255,255))		return L"cyan";
+		else if ( oCol == RtfColor(255,215,0))		return L"gold";
+		else if ( oCol == RtfColor(0,128,0))		return L"green";
+		else if ( oCol == RtfColor(128,128,128))	return L"grey";
+		else if ( oCol == RtfColor(255,0,0))		return L"red";
+		else if ( oCol == RtfColor(255,255,0))		return L"yellow";
 
 		return L"black";
 	}
-	static bool GetThemeByString( CString sTheme ,ThemeColor & oOutTheme )
+	static bool GetThemeByString( CString sTheme, _ThemeColor & oOutTheme )
 	{
-		if ( sTheme == L"accent1" )
-		{oOutTheme = caccentone; return true;}
-		else if ( sTheme ==  L"accent2" )
-			{oOutTheme = caccenttwo;  return true;}
-		else if ( sTheme == L"accent3" )
-			{oOutTheme = caccentthree;  return true;}
-		else if ( sTheme == L"accent4" )
-			{oOutTheme = caccentfour;  return true;}
-		else if ( sTheme == L"accent5" )
-			{oOutTheme = caccentfive;  return true;}
-		else if ( sTheme == L"accent6" )
-			{oOutTheme = caccentsix;  return true;}
-		else if ( sTheme == L"bg1" )
-			{oOutTheme = cbackgroundone;  return true;}
-		else if ( sTheme == L"bg2" )
-			{oOutTheme = cbackgroundtwo;  return true;}
-		else if ( sTheme == L"dk1" )
-			{oOutTheme = cmaindarkone;  return true;}
-		else if ( sTheme == L"dk2" )
-			{oOutTheme = cmaindarktwo;  return true;}
-		else if ( sTheme == L"folHlink" )
-			{oOutTheme = cfollowedhyperlink;  return true;}
-		else if ( sTheme == L"hlink" )
-			{oOutTheme = chyperlink;  return true;}
-		else if ( sTheme == L"lt1" )
-			{oOutTheme = cmainlightone;  return true;}
-		else if ( sTheme == L"lt2" )
-			{oOutTheme = cmainlighttwo;  return true;}
-		else if ( sTheme == L"phClr" )
-			{oOutTheme = cmainlighttwo;  return true;}
-		else if ( sTheme ==  L"tx1" )
-			{oOutTheme = ctextone;  return true;}
-		else if ( sTheme =  L"tx2" )
-			{oOutTheme = ctexttwo;  return true;}
+		if		( sTheme == L"accent1" )	{oOutTheme = caccentone;		return true;}
+		else if ( sTheme == L"accent2" )	{oOutTheme = caccenttwo;		return true;}
+		else if ( sTheme == L"accent3" )	{oOutTheme = caccentthree;		return true;}
+		else if ( sTheme == L"accent4" )	{oOutTheme = caccentfour;		return true;}
+		else if ( sTheme == L"accent5" )	{oOutTheme = caccentfive;		return true;}
+		else if ( sTheme == L"accent6" )	{oOutTheme = caccentsix;		return true;}
+		else if ( sTheme == L"bg1" )		{oOutTheme = cbackgroundone;	return true;}
+		else if ( sTheme == L"bg2" )		{oOutTheme = cbackgroundtwo;	return true;}
+		else if ( sTheme == L"dk1" )		{oOutTheme = cmaindarkone;		return true;}
+		else if ( sTheme == L"dk2" )		{oOutTheme = cmaindarktwo;		return true;}
+		else if ( sTheme == L"folHlink" )	{oOutTheme = cfollowedhyperlink;return true;}
+		else if ( sTheme == L"hlink" )		{oOutTheme = chyperlink;		return true;}
+		else if ( sTheme == L"lt1" )		{oOutTheme = cmainlightone;		return true;}
+		else if ( sTheme == L"lt2" )		{oOutTheme = cmainlighttwo;		return true;}
+		else if ( sTheme == L"phClr" )		{oOutTheme = cmainlighttwo;		return true;}
+		else if ( sTheme ==  L"tx1" )		{oOutTheme = ctextone;			return true;}
+		else if ( sTheme =  L"tx2" )		{oOutTheme = ctexttwo;			return true;}
 		return false;
 	}
-	static bool GetThemeByOOX( SimpleTypes::EShemeColorVal val ,ThemeColor & oOutTheme )
+	static bool GetThemeByOOX( SimpleTypes::EShemeColorVal val, _ThemeColor & oOutTheme )
 	{
         switch(val)
 		{
@@ -545,46 +532,32 @@ public:
 		
 		return false;
 	}
-	static bool GetStringByTheme( CString sTheme , ThemeColor& oOutTheme )
+	static bool GetStringByTheme( CString sTheme , _ThemeColor& oOutTheme )
 	{
-		if ( L"accent1" == sTheme )
-		{oOutTheme = caccentone; return true;}
-		else if ( L"accent2" == sTheme )
-			{oOutTheme =  caccenttwo; return true;}
-		else if ( L"accent3" == sTheme )
-			{oOutTheme =  caccentthree; return true;}
-		else if ( L"accent4" == sTheme )
-			{oOutTheme =  caccentfour; return true;}
-		else if ( L"accent5" == sTheme )
-			{oOutTheme =  caccentfive; return true;}
-		else if ( L"accent6" == sTheme )
-			{oOutTheme =  caccentsix; return true;}
-		else if ( L"bg1" == sTheme )
-			{oOutTheme =  cbackgroundone; return true;}
-		else if ( L"bg2" == sTheme )
-			{oOutTheme =  cbackgroundtwo; return true;}
-		else if ( L"dk1" == sTheme )
-			{oOutTheme =  cmaindarkone; return true;}
-		else if ( L"dk2" == sTheme )
-			{oOutTheme =  cmaindarktwo; return true;}
-		else if ( L"folHlink" == sTheme )
-			{oOutTheme =  cfollowedhyperlink; return true;}
-		else if ( L"hlink" == sTheme )
-			{oOutTheme =  chyperlink; return true;}
-		else if ( L"lt1" == sTheme )
-			{oOutTheme =  cmainlightone; return true;}
-		else if ( L"lt2" == sTheme )
-			{oOutTheme =  cmainlighttwo; return true;}
-		else if ( L"phClr" == sTheme )
-			{oOutTheme =  cmainlighttwo; return true;}
-		else if ( L"tx1" == sTheme )
-			{oOutTheme =  ctextone; return true;}
-		else if ( L"tx2" == sTheme )
-			{oOutTheme =  ctexttwo; return true;}
+		if		( L"accent1"	== sTheme )	{oOutTheme = caccentone;		return true;}
+		else if ( L"accent2"	== sTheme )	{oOutTheme = caccenttwo;		return true;}
+		else if ( L"accent3"	== sTheme )	{oOutTheme = caccentthree;		return true;}
+		else if ( L"accent4"	== sTheme )	{oOutTheme = caccentfour;		return true;}
+		else if ( L"accent5"	== sTheme )	{oOutTheme = caccentfive;		return true;}
+		else if ( L"accent6"	== sTheme )	{oOutTheme = caccentsix;		return true;}
+		else if ( L"bg1"		== sTheme )	{oOutTheme = cbackgroundone;	return true;}
+		else if ( L"bg2"		== sTheme )	{oOutTheme = cbackgroundtwo;	return true;}
+		else if ( L"dk1"		== sTheme )	{oOutTheme = cmaindarkone;		return true;}
+		else if ( L"dk2"		== sTheme )	{oOutTheme = cmaindarktwo;		return true;}
+		else if ( L"folHlink"	== sTheme )	{oOutTheme = cfollowedhyperlink;return true;}
+		else if ( L"hlink"		== sTheme )	{oOutTheme = chyperlink;		return true;}
+		else if ( L"lt1"		== sTheme )	{oOutTheme = cmainlightone;		return true;}
+		else if ( L"lt2"		== sTheme )	{oOutTheme = cmainlighttwo;		return true;}
+		else if ( L"phClr"		== sTheme )	{oOutTheme = cmainlighttwo;		return true;}
+		else if ( L"tx1"		== sTheme )	{oOutTheme = ctextone;			return true;}
+		else if ( L"tx2"		== sTheme )	{oOutTheme = ctexttwo;			return true;}
 		return false;
 	}
+
 	CString GetHighLight()
 	{
+		if (m_bAuto) return L"auto";
+
 		std::vector< RtfColor > sColors;
 
 		sColors.push_back( RtfColor( 0x000000 ) );
@@ -1761,7 +1734,7 @@ public:
 	enum _HRef
 	{
 		hr_none,
-		hr_phmrg,	//\tphmrg	Use margin as horizontal reference frame.
+		hr_phmrg,	// tphmrg	Use margin as horizontal reference frame.
 		hr_phpg,	//tphpg	Use page as horizontal reference frame.
 		hr_phcol	//tphcol	Use column as horizontal reference frame. This is the default if no horizontal table positioning information is given.
 	} ;
@@ -1797,7 +1770,7 @@ public:
 	int m_nGraph;			//trgaphN	Half the space between the cells of a table row in twips.
 
 	int nTableIndent;		//tblindN 
-	int nTableIndentUnits;	//\tblindtypeN  
+	int nTableIndentUnits;	// tblindtypeN  
 
 	enum _RowJust
 	{
@@ -2088,9 +2061,9 @@ public:
 	_TextWrap	m_eWrap;
 	int			m_DropcapType;
 	int			m_DropcapLines;
-	int			m_nHorSpace;		//\dxfrtextN	Distance in twips of a positioned paragraph from text in the main text flow in all directions.
-	int			m_nVerSpace;		//\dfrmtxtxN	N is the horizontal distance in twips from text on both sides of the frame.
-	int			m_nAllSpace;		//\dfrmtxtyN	N is the vertical distance in twips from text on both sides of the frame.
+	int			m_nHorSpace;		// dxfrtextN	Distance in twips of a positioned paragraph from text in the main text flow in all directions.
+	int			m_nVerSpace;		// dfrmtxtxN	N is the horizontal distance in twips from text on both sides of the frame.
+	int			m_nAllSpace;		// dfrmtxtyN	N is the vertical distance in twips from text on both sides of the frame.
 
 	RtfFrame()
 	{
@@ -2244,18 +2217,18 @@ public:
 	int m_nSpan;
 
 //Table Style Specific
-	int m_bStyleFirstRow;		//\tscfirstrow	This cell is in the first row.
-	int m_bStyleLastRow;		//\tsclastrow	This cell is in the last row.
-	int m_bStyleFirstCol;		//\tscfirstcol	This cell is in the first column.
-	int m_bStyleLastCol;		//\tsclastcol	This cell is in the last column.
-	int m_bStyleOddRowBand;		//\tscbandhorzodd	This cell is in the odd row band.
-	int m_bStyleEvenRowBand;		//\tscbandhorzeven	This cell is in the even row band.
-	int m_bStyleOddColBand;		//\tscbandvertodd	This cell is in the odd column band.
-	int m_bStyleEvenColBand;		//\tscbandverteven	This cell is in the even column band.
-	int m_bStyleNWCell;		//\tscnwcell	This is the NW (north west) cell in the table (upper left).
-	int m_bStyleNECell;		//\tscnecell	NE cell
-	int m_bStyleSWCell;		//\tscswcell	SW cell.
-	int m_bStyleSECell;		//\tscsecell	SE cell.
+	int m_bStyleFirstRow;		// tscfirstrow	This cell is in the first row.
+	int m_bStyleLastRow;		// tsclastrow	This cell is in the last row.
+	int m_bStyleFirstCol;		// tscfirstcol	This cell is in the first column.
+	int m_bStyleLastCol;		// tsclastcol	This cell is in the last column.
+	int m_bStyleOddRowBand;		// tscbandhorzodd	This cell is in the odd row band.
+	int m_bStyleEvenRowBand;		// tscbandhorzeven	This cell is in the even row band.
+	int m_bStyleOddColBand;		// tscbandvertodd	This cell is in the odd column band.
+	int m_bStyleEvenColBand;		// tscbandverteven	This cell is in the even column band.
+	int m_bStyleNWCell;		// tscnwcell	This is the NW (north west) cell in the table (upper left).
+	int m_bStyleNECell;		// tscnecell	NE cell
+	int m_bStyleSWCell;		// tscswcell	SW cell.
+	int m_bStyleSECell;		// tscsecell	SE cell.
 
 	RtfCellProperty()
 	{
@@ -2444,18 +2417,18 @@ public:
 	int m_nGridBefore;	//для oox
 	int m_nGridAfter;	//для oox
 
-	int m_bStyleFirstRow;		//\tscfirstrow	This cell is in the first row.
-	int m_bStyleLastRow;		//\tsclastrow	This cell is in the last row.
-	int m_bStyleFirstCol;		//\tscfirstcol	This cell is in the first column.
-	int m_bStyleLastCol;		//\tsclastcol	This cell is in the last column.
-	int m_bStyleOddRowBand;		//\tscbandhorzodd	This cell is in the odd row band.
-	int m_bStyleEvenRowBand;	//\tscbandhorzeven	This cell is in the even row band.
-	int m_bStyleOddColBand;		//\tscbandvertodd	This cell is in the odd column band.
-	int m_bStyleEvenColBand;	//\tscbandverteven	This cell is in the even column band.
-	int m_bStyleNWCell;			//\tscnwcell	This is the NW (north west) cell in the table (upper left).
-	int m_bStyleNECell;			//\tscnecell	NE cell
-	int m_bStyleSWCell;			//\tscswcell	SW cell.
-	int m_bStyleSECell;			//\tscsecell	SE cell.
+	int m_bStyleFirstRow;		// tscfirstrow	This cell is in the first row.
+	int m_bStyleLastRow;		// tsclastrow	This cell is in the last row.
+	int m_bStyleFirstCol;		// tscfirstcol	This cell is in the first column.
+	int m_bStyleLastCol;		// tsclastcol	This cell is in the last column.
+	int m_bStyleOddRowBand;		// tscbandhorzodd	This cell is in the odd row band.
+	int m_bStyleEvenRowBand;	// tscbandhorzeven	This cell is in the even row band.
+	int m_bStyleOddColBand;		// tscbandvertodd	This cell is in the odd column band.
+	int m_bStyleEvenColBand;	// tscbandverteven	This cell is in the even column band.
+	int m_bStyleNWCell;			// tscnwcell	This is the NW (north west) cell in the table (upper left).
+	int m_bStyleNECell;			// tscnecell	NE cell
+	int m_bStyleSWCell;			// tscswcell	SW cell.
+	int m_bStyleSECell;			// tscsecell	SE cell.
 
 	int m_nTrAuth;
 	int m_nTrDate;
@@ -2583,7 +2556,7 @@ public:
 	int		m_bKeep;			//keep	Keep paragraph intact (completely on one page if possible).
 	int		m_bKeepNext;		//keepn	Keep paragraph with the next paragraph.
 	int		m_bPageBB;			//pagebb	Break page before the paragraph.
-	int		m_nOutlinelevel;	//\outlinelevelN	Outline level of paragraph. The N argument is a value from 0 to 8 representing the outline level of the paragraph. In the default case, no outline level is specified (same as body text).
+	int		m_nOutlinelevel;	// outlinelevelN	Outline level of paragraph. The N argument is a value from 0 to 8 representing the outline level of the paragraph. In the default case, no outline level is specified (same as body text).
 	int		m_nStyle;			//sN	Designates paragraph style. If a paragraph style is specified, style properties must be specified with the paragraph. N references an entry in the style sheet.
 
 	typedef enum 
@@ -2671,19 +2644,19 @@ public:
 	RtfTabs		m_oTabs;
 
 //Table Style Specific
-	int m_nTableStyle;			//\ytsN	Designates the table style handle that was applied to the row/cell.
-	int m_bStyleFirstRow;		//\tscfirstrow	This cell is in the first row.
-	int m_bStyleLastRow;		//\tsclastrow	This cell is in the last row.
-	int m_bStyleFirstCollumn;	//\tscfirstcol	This cell is in the first column.
-	int m_bStyleLastCollumn;	//\tsclastcol	This cell is in the last column.
-	int m_bStyleOddRowBand;		//\tscbandhorzodd	This cell is in the odd row band.
-	int m_bStyleEvenRowBand;	//\tscbandhorzeven	This cell is in the even row band.
-	int m_bStyleOddColBand;		//\tscbandvertodd	This cell is in the odd column band.
-	int m_bStyleEvenColBand;	//\tscbandverteven	This cell is in the even column band.
-	int m_bStyleNWCell;			//\tscnwcell	This is the NW (north west) cell in the table (upper left).
-	int m_bStyleNECell;			//\tscnecell	NE cell.
-	int m_bStyleSWCell;			//\tscswcell	SW cell.
-	int m_bStyleSECell;			//\tscsecell	SE cell.
+	int m_nTableStyle;			// ytsN	Designates the table style handle that was applied to the row/cell.
+	int m_bStyleFirstRow;		// tscfirstrow	This cell is in the first row.
+	int m_bStyleLastRow;		// tsclastrow	This cell is in the last row.
+	int m_bStyleFirstCollumn;	// tscfirstcol	This cell is in the first column.
+	int m_bStyleLastCollumn;	// tsclastcol	This cell is in the last column.
+	int m_bStyleOddRowBand;		// tscbandhorzodd	This cell is in the odd row band.
+	int m_bStyleEvenRowBand;	// tscbandhorzeven	This cell is in the even row band.
+	int m_bStyleOddColBand;		// tscbandvertodd	This cell is in the odd column band.
+	int m_bStyleEvenColBand;	// tscbandverteven	This cell is in the even column band.
+	int m_bStyleNWCell;			// tscnwcell	This is the NW (north west) cell in the table (upper left).
+	int m_bStyleNECell;			// tscnecell	NE cell.
+	int m_bStyleSWCell;			// tscswcell	SW cell.
+	int m_bStyleSECell;			// tscsecell	SE cell.
 	
 	int m_nPrAuth;
 	int m_nPrDate;

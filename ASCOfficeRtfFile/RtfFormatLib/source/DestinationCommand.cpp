@@ -591,7 +591,6 @@ bool RtfSectionCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReade
 	//{
 	//	static int nCount = 0;
 	//	nCount++;
-	//	ATLTRACE( "count %d\n", nCount );
 	//}
 	COMMAND_RTF_INT	( L"headery",	oReader.m_oCurSectionProp.m_nHeaderTop,			sCommand, hasParameter, parameter)
 	COMMAND_RTF_INT	( L"footery",	oReader.m_oCurSectionProp.m_nFooterBottom,		sCommand, hasParameter, parameter)
@@ -621,6 +620,9 @@ bool RtfSectionCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReade
 	COMMAND_RTF_INT	( L"pgbrdropt",	oReader.m_oCurSectionProp.m_nBorderMeasure, sCommand, hasParameter, parameter)
 	COMMAND_RTF_BOOL( L"pgbrdrsna",	oReader.m_oCurSectionProp.m_nBorderAlign,	sCommand, hasParameter, parameter)
    
+	COMMAND_RTF_INT	( L"srauth",	oReader.m_oCurSectionProp.m_nSrAuth, sCommand, hasParameter, parameter)
+	COMMAND_RTF_INT	( L"srdate",	oReader.m_oCurSectionProp.m_nSrDate, sCommand, hasParameter, parameter)
+
 	else if ( L"header" == sCommand ||	L"footer" == sCommand ||	L"headerl" == sCommand ||
              L"headerr" == sCommand ||  L"headerf" == sCommand ||	L"footerl" == sCommand ||
              L"footerr" == sCommand ||  L"footerf" == sCommand )
@@ -628,7 +630,7 @@ bool RtfSectionCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReade
 		ParagraphReader oParagraphReader(sCommand, oReader);
 		oAbstrReader.StartSubReader( oParagraphReader, oDocument, oReader );
 		
-		oParagraphReader.m_oParPropDest.Finalize(oReader/*, RtfSectionPtr()*/);
+		oParagraphReader.m_oParPropDest.Finalize( oReader );
 		
 		TextItemContainerPtr oNewFooterHeader = oParagraphReader.m_oParPropDest.m_oTextItems; 
 
@@ -676,7 +678,7 @@ bool RtfShadingCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReade
 	else if ( L"bgdkbdiag"	== sCommand )	oOutput.m_eType = RtfShading::st_chbgdkbdiag;
 	else if ( L"bgdkcross"	== sCommand )	oOutput.m_eType = RtfShading::st_chbgdkcross;
 	else if ( L"bgdkdcross"	== sCommand )	oOutput.m_eType = RtfShading::st_chbgdkdcross;
-	else if ( L"cfpat" == sCommand )
+	else if ( L"cfpat"		== sCommand )
 	{
 		if ( hasParameter )
 			oOutput.m_nForeColor = parameter;
@@ -722,15 +724,16 @@ bool RtfShadingCellCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader& oR
 		oOutput.m_eType = RtfShading::st_chbgdkcross;
 	else if ( L"rawclbgdkdcross" == sCommand || L"clbgdkdcross" == sCommand || L"tsbgdkdcross" == sCommand )
 		oOutput.m_eType = RtfShading::st_chbgdkdcross;
+	
 	COMMAND_RTF_INT ( L"clcfpat",		oOutput.m_nForeColor, sCommand, hasParameter, parameter )
 	COMMAND_RTF_INT ( L"clcbpat",		oOutput.m_nBackColor, sCommand, hasParameter, parameter )
-	COMMAND_RTF_INT ( L"clcfpatraw",		oOutput.m_nForeColor, sCommand, hasParameter, parameter )
-	COMMAND_RTF_INT ( L"clcbpatraw",		oOutput.m_nBackColor, sCommand, hasParameter, parameter )
+	COMMAND_RTF_INT ( L"clcfpatraw",	oOutput.m_nForeColor, sCommand, hasParameter, parameter )
+	COMMAND_RTF_INT ( L"clcbpatraw",	oOutput.m_nBackColor, sCommand, hasParameter, parameter )
 	COMMAND_RTF_INT ( L"tscellcfpat",	oOutput.m_nForeColor, sCommand, hasParameter, parameter )
 	COMMAND_RTF_INT ( L"tscellcbpat",	oOutput.m_nBackColor, sCommand, hasParameter, parameter )
 
 	COMMAND_RTF_INT ( L"clshdng",		oOutput.m_nValue, sCommand, hasParameter, parameter )
-	COMMAND_RTF_INT ( L"clshdngraw",		oOutput.m_nValue, sCommand, hasParameter, parameter )
+	COMMAND_RTF_INT ( L"clshdngraw",	oOutput.m_nValue, sCommand, hasParameter, parameter )
 	COMMAND_RTF_INT ( L"tscellpct",		oOutput.m_nValue, sCommand, hasParameter, parameter )
 	else
 		return false;
@@ -754,7 +757,8 @@ bool RtfShadingCharCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader& oR
 	else if ( L"chbgdkbdiag"	== sCommand )		oOutput.m_eType = RtfShading::st_chbgdkbdiag;
 	else if (  L"chbgdkcross"	== sCommand )		oOutput.m_eType = RtfShading::st_chbgdkcross;
 	else if ( L"chbgdkdcross"	== sCommand )		oOutput.m_eType = RtfShading::st_chbgdkdcross;
-	else if ( L"chcfpat"		== sCommand )	{
+	else if ( L"chcfpat"		== sCommand )	
+	{
 		if ( hasParameter )
 			oOutput.m_nForeColor = parameter;
 	}
@@ -1602,7 +1606,9 @@ bool FieldReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CStr
 		//{\field{\*\fldinst...}{\*\fldrslt...}}{ ??? }
 	}
 	else
+	{
 		return false;
+	}
 	return true;
 }
 bool OleReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CString sCommand, bool hasParameter, int parameter)
@@ -2490,8 +2496,11 @@ bool ParagraphPropDestination::ExecuteCommand(RtfDocument& oDocument, RtfReader&
 	else if ( L"field" == sCommand )
 	{
 		RtfFieldPtr oNewField = RtfFieldPtr(new RtfField());
+		oNewField->m_oCharProperty = oReader.m_oState->m_oCharProp;
+
 		FieldReader oFieldReader( *oNewField );
 		oAbstrReader.StartSubReader( oFieldReader, oDocument, oReader );
+		
 		if ( oNewField->IsValid() )
 			m_oCurParagraph->AddItem( oNewField );
 	}
@@ -2603,24 +2612,24 @@ bool ParagraphPropDestination::ExecuteCommand(RtfDocument& oDocument, RtfReader&
 	COMMAND_RTF_SPECIAL_CHAR( L"tab", m_oCurParagraph, sCommand, hasParameter, RtfCharSpecial::rsc_tab )
 	
 	else if ( L"emdash" == sCommand )
-		ExecuteNumberChar( oDocument, oReader, oAbstrReader, 151, 0xD0 ); //\bullet Word for Windows - 151	; Apple Macintosh - 0xD0
+		ExecuteNumberChar( oDocument, oReader, oAbstrReader, 151, 0xD0 ); // bullet Word for Windows - 151	; Apple Macintosh - 0xD0
 	else if ( L"endash" == sCommand )
-		ExecuteNumberChar( oDocument, oReader, oAbstrReader, 150, 0xD1 ); //\bullet Word for Windows - 150	; Apple Macintosh - 0xD1
+		ExecuteNumberChar( oDocument, oReader, oAbstrReader, 150, 0xD1 ); // bullet Word for Windows - 150	; Apple Macintosh - 0xD1
 	
 	COMMAND_RTF_SPECIAL_CHAR( L"emspace", m_oCurParagraph, sCommand, hasParameter, RtfCharSpecial::rsc_emspace )
 	COMMAND_RTF_SPECIAL_CHAR( L"enspace", m_oCurParagraph, sCommand, hasParameter, RtfCharSpecial::rsc_enspace )
 	COMMAND_RTF_SPECIAL_CHAR( L"qmspace", m_oCurParagraph, sCommand, hasParameter, RtfCharSpecial::rsc_qmspace )
 	
 	else if ( L"bullet" == sCommand )
-		ExecuteNumberChar( oDocument, oReader, oAbstrReader, 149, 0xA5 ); //\bullet Word for Windows - 149	; Apple Macintosh - 0xA5
+		ExecuteNumberChar( oDocument, oReader, oAbstrReader, 149, 0xA5 ); // bullet Word for Windows - 149	; Apple Macintosh - 0xA5
 	else if ( L"lquote" == sCommand )
-		ExecuteNumberChar( oDocument, oReader, oAbstrReader, 145, 0xD4 ); //\bullet Word for Windows - 145	; Apple Macintosh - 0xD4
+		ExecuteNumberChar( oDocument, oReader, oAbstrReader, 145, 0xD4 ); // bullet Word for Windows - 145	; Apple Macintosh - 0xD4
 	else if ( L"rquote" == sCommand )
-		ExecuteNumberChar( oDocument, oReader, oAbstrReader, 146, 0xD5 ); //\bullet Word for Windows - 146	; Apple Macintosh - 0xD5
+		ExecuteNumberChar( oDocument, oReader, oAbstrReader, 146, 0xD5 ); // bullet Word for Windows - 146	; Apple Macintosh - 0xD5
 	else if ( L"ldblquote" == sCommand )
-		ExecuteNumberChar( oDocument, oReader, oAbstrReader, 147, 0xD2 ); //\bullet Word for Windows - 147	; Apple Macintosh - 0xD2
+		ExecuteNumberChar( oDocument, oReader, oAbstrReader, 147, 0xD2 ); // bullet Word for Windows - 147	; Apple Macintosh - 0xD2
 	else if ( L"rdblquote" == sCommand )
-		ExecuteNumberChar( oDocument, oReader, oAbstrReader, 148, 0xD3 ); //\bullet Word for Windows - 148	; Apple Macintosh - 0xD3
+		ExecuteNumberChar( oDocument, oReader, oAbstrReader, 148, 0xD3 ); // bullet Word for Windows - 148	; Apple Macintosh - 0xD3
 	
 	COMMAND_RTF_SPECIAL_CHAR( L"|",		m_oCurParagraph, sCommand, hasParameter, RtfCharSpecial::rsc_Formula )
 	COMMAND_RTF_SPECIAL_CHAR( L"~",		m_oCurParagraph, sCommand, hasParameter, RtfCharSpecial::rsc_NonBrSpace )
@@ -2659,6 +2668,7 @@ bool ParagraphPropDestination::ExecuteCommand(RtfDocument& oDocument, RtfReader&
 		
 		if (oAbstrReader.StartSubReader( oOldPropReader, oDocument, oReader ))
 		{
+			oReader.m_oCurSectionProp.m_pOldSectionProp = props;
 		}
 	}
 	else if ( L"oldtprops"  == sCommand )

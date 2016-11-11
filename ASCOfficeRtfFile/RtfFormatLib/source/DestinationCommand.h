@@ -637,7 +637,7 @@ public:
 		else if( is_hlinkbase	== m_eInternalState )	oDocument.m_oInformation.m_sLinkBase	+= sText.c_str();
 	}
 };
-class PictureReader:  public RtfAbstractReader
+class RtfPictureReader :  public RtfAbstractReader
 {
 	class PLACEABLEMETAHEADER //заголовок для wmf из rtf ( в rtf wmf не содержит размеров картинки )
 	{
@@ -722,20 +722,20 @@ class PictureReader:  public RtfAbstractReader
 	};
 
 private: 
-	RtfShape& m_oShape;
-	CString m_sFile;
-	CString m_sData;
-	bool  m_bBin;
-    BYTE* m_pbBin;
-	int m_nBinLength;
+	RtfShape&	m_oShape;
+	CString		m_sFile;
+	CString		m_sData;
+	bool		m_bBin;
+    BYTE*		m_pbBin;
+	int			m_nBinLength;
 
 public: 
-	PictureReader( RtfReader& oReader, RtfShape& oShape ):m_oShape(oShape)
+	RtfPictureReader( RtfReader& oReader, RtfShape& oShape ) : m_oShape(oShape)
 	{
 		m_bBin = false;
 		m_pbBin = NULL;
 	}
-	~PictureReader()
+	~RtfPictureReader()
 	{
 		RELEASEARRAYOBJECTS(m_pbBin);
 	}
@@ -773,18 +773,18 @@ public:
 	}
 };
 
-class OleReader:  public RtfAbstractReader
+class RtfOleReader:  public RtfAbstractReader
 {
 private: 
 	RtfOle& m_oOle;
 public: 
-	OleReader(RtfOle& oOle) : m_oOle(oOle)
+	RtfOleReader(RtfOle& oOle) : m_oOle(oOle)
 	{
 	}
 	bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CString sCommand, bool hasParameter, int parameter);
 };
 
-class TrackerChangesReader:  public RtfAbstractReader
+class RtfTrackerChangesReader:  public RtfAbstractReader
 {
 private: 
 	enum _InternalState{ is_normal,is_charBorder, is_borderTop, is_borderLeft, is_borderBottom, is_borderRight, is_borderBox, is_borderBar,
@@ -801,15 +801,15 @@ private:
 	RtfSectionPropertyPtr		m_pSectionProps;
 
 public: 
-	TrackerChangesReader(RtfCharPropertyPtr			& prop) : m_pCharProps		(prop), m_eInternalState(is_normal) {}
-	TrackerChangesReader(RtfParagraphPropertyPtr	& prop) : m_pParagraphProps	(prop), m_eInternalState(is_normal) {}
-	TrackerChangesReader(RtfRowPropertyPtr			& prop) : m_pTableRowProps	(prop), m_eInternalState(is_normal) {}
-	//TrackerChangesReader(RtfCellPropertyPtr		& prop) : m_pTableCellProps	(prop), m_eInternalState(is_normal) {}
-	TrackerChangesReader(RtfSectionPropertyPtr		& prop) : m_pSectionProps	(prop), m_eInternalState(is_normal) {}
+	RtfTrackerChangesReader(RtfCharPropertyPtr			& prop) : m_pCharProps		(prop), m_eInternalState(is_normal) {}
+	RtfTrackerChangesReader(RtfParagraphPropertyPtr		& prop) : m_pParagraphProps	(prop), m_eInternalState(is_normal) {}
+	RtfTrackerChangesReader(RtfRowPropertyPtr			& prop) : m_pTableRowProps	(prop), m_eInternalState(is_normal) {}
+	//RtfTrackerChangesReader(RtfCellPropertyPtr		& prop) : m_pTableCellProps	(prop), m_eInternalState(is_normal) {}
+	RtfTrackerChangesReader(RtfSectionPropertyPtr		& prop) : m_pSectionProps	(prop), m_eInternalState(is_normal) {}
 
 	bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, CString sCommand, bool hasParameter, int parameter);
 };
-class ShapeReader : public RtfAbstractReader
+class RtfShapeReader : public RtfAbstractReader
 {
 public:
 	class ShapePropertyReader : public RtfAbstractReader
@@ -831,7 +831,7 @@ public:
 				else if( L"pict" == sCommand && ( L"pib" == m_sPropName  || L"fillBlip" == m_sPropName))
 				{
 					m_oShape.m_oPicture = RtfPicturePtr( new RtfPicture() );
-					PictureReader oPictureReader( oReader, m_oShape );
+					RtfPictureReader oPictureReader( oReader, m_oShape );
 					StartSubReader( oPictureReader, oDocument, oReader );
 				}
 				else
@@ -873,7 +873,7 @@ public:
 private: 
 	RtfShape& m_oShape;
 public: 
-	ShapeReader( RtfShape& oShape ):m_oShape(oShape)
+	RtfShapeReader( RtfShape& oShape ):m_oShape(oShape)
 	{
 	}
 	bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CString sCommand, bool hasParameter, int parameter);
@@ -947,13 +947,13 @@ public:
 	}
 };
 
-class ShapeGroupReader : public ShapeReader
+class RtfShapeGroupReader : public RtfShapeReader
 {
 public: 
 	RtfShapeGroup&	m_oShapeGroup;
 	bool			m_bHeader; //чтобы отличать заголовок от вложенных групп
 
-	ShapeGroupReader( RtfShapeGroup& oShape ):ShapeReader(oShape),m_oShapeGroup(oShape)
+	RtfShapeGroupReader( RtfShapeGroup& oShape ) : RtfShapeReader(oShape), m_oShapeGroup(oShape)
 	{
 		m_bHeader = true;
 	}
@@ -966,7 +966,7 @@ public:
 			else
 			{
 				RtfShapeGroupPtr oNewShape = RtfShapeGroupPtr( new RtfShapeGroup() );
-				ShapeGroupReader oShapeGroupReader( *oNewShape );
+				RtfShapeGroupReader oShapeGroupReader( *oNewShape );
 				StartSubReader( oShapeGroupReader, oDocument, oReader );
 				m_oShapeGroup.AddItem( oNewShape );
 			}
@@ -974,22 +974,22 @@ public:
 		else if( L"shp" == sCommand )
 		{
 			RtfShapePtr oNewShape = RtfShapePtr( new RtfShape() );
-			ShapeReader oShapeReader( *oNewShape );
+			RtfShapeReader oShapeReader( *oNewShape );
 			StartSubReader( oShapeReader, oDocument, oReader );
 			m_oShapeGroup.AddItem( oNewShape );
 		}
 		else
-			return ShapeReader::ExecuteCommand( oDocument,  oReader, sCommand, hasParameter, parameter);
+			return RtfShapeReader::ExecuteCommand( oDocument,  oReader, sCommand, hasParameter, parameter);
 		return true;
 	}
 };
 
-class OldShapeReader : public RtfAbstractReader
+class RtfOldShapeReader : public RtfAbstractReader
 {
 private: 
 	RtfShape& m_oShape;
 public: 
-	OldShapeReader( RtfShape& oShape ):m_oShape(oShape)
+	RtfOldShapeReader( RtfShape& oShape ):m_oShape(oShape)
 	{
 	}
 	bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, CString sCommand, bool hasParameter, int parameter);
@@ -1063,12 +1063,12 @@ public:
 	}
 };
 
-class ShppictReader : public RtfAbstractReader
+class RtfShppictReader : public RtfAbstractReader
 {
 private: 
 	RtfShape& m_oShape;
 public: 
-	ShppictReader( RtfShape& oShape ):m_oShape(oShape)
+	RtfShppictReader( RtfShape& oShape ):m_oShape(oShape)
 	{
 	}
 	bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CString sCommand, bool hasParameter, int parameter)
@@ -1086,7 +1086,7 @@ public:
 			m_oShape.m_nPositionV			= 0;//absolute
 
 			m_oShape.m_oPicture = RtfPicturePtr( new RtfPicture() );
-			PictureReader oPictureReader( oReader, m_oShape);
+			RtfPictureReader oPictureReader( oReader, m_oShape);
 			StartSubReader( oPictureReader, oDocument, oReader );
 		}
 		else
@@ -1095,24 +1095,24 @@ public:
 	}
 };
 
-class AllPictReader : public RtfAbstractReader
+class RtfAllPictReader : public RtfAbstractReader
 {
 private: 
 	RtfShape& m_oShape;
 public: 
-	AllPictReader( RtfShape& oShape ) : m_oShape(oShape)
+	RtfAllPictReader( RtfShape& oShape ) : m_oShape(oShape)
 	{
 	}
 	bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CString sCommand, bool hasParameter, int parameter)
 	{
 		if( L"shp" == sCommand )
 		{
-			ShapeReader oShapeReader(m_oShape);
+			RtfShapeReader oShapeReader(m_oShape);
 			StartSubReader( oShapeReader, oDocument, oReader );
 		}
 		if( L"shppict" == sCommand )
 		{
-			ShppictReader oShppictReader(m_oShape);
+			RtfShppictReader oShppictReader(m_oShape);
 			StartSubReader( oShppictReader, oDocument, oReader );
 		}
 		else if( L"pict" == sCommand )
@@ -1126,7 +1126,7 @@ public:
 			m_oShape.m_nPositionV			= 0;	//absolute
 			m_oShape.m_oPicture				= RtfPicturePtr( new RtfPicture() );
 
-			PictureReader oPictureReader( oReader, m_oShape);
+			RtfPictureReader oPictureReader( oReader, m_oShape);
 			StartSubReader( oPictureReader, oDocument, oReader );
 		}
 		else
@@ -1161,7 +1161,7 @@ public:
 		else if( L"shppict" == sCommand )
 		{
 			m_oMath.m_oPicture = RtfShapePtr( new RtfShape() );
-			ShppictReader oShppictReader( *m_oMath.m_oPicture );
+			RtfShppictReader oShppictReader( *m_oMath.m_oPicture );
 			StartSubReader( oShppictReader, oDocument, oReader );
 		}
 		else if( L"nonshppict" == sCommand )
@@ -1295,7 +1295,7 @@ public:
 			oReader.m_oState->m_oParagraphProp.m_eAlign = m_eParAlign;
 	}
 };
-class FieldReader: public RtfAbstractReader
+class RtfFieldReader: public RtfAbstractReader
 {
 private: 
 	enum _InternalState{ is_normal, is_insert, is_datafield, is_formfield, is_result } InternalState;
@@ -1304,7 +1304,7 @@ private:
 	RtfField&		m_oField;
 
 public: 
-	FieldReader( RtfField& oField ):m_oField(oField)
+	RtfFieldReader( RtfField& oField ):m_oField(oField)
 	{
 		m_eInternalState = is_normal;
 	}
@@ -1317,17 +1317,18 @@ public:
 	}
 	bool IsEmptyText( RtfDocument& oDocument )
 	{
-		if( NULL != m_oField.m_oResult )
+		if( NULL != m_oField.m_pResult )
 		{
 			OOXWriter oTempWriter( oDocument, L"" );
 			OOXRelsWriter oTempRelsWriter( L"", oDocument );
+			
 			RenderParameter oRenderParameter;
-			oRenderParameter.poDocument = &oDocument;
-			oRenderParameter.poRels = &oTempRelsWriter;
-			oRenderParameter.poWriter = &oTempWriter;
-			oRenderParameter.nType = RENDER_TO_OOX_PARAM_PLAIN;
+			oRenderParameter.poDocument	= &oDocument;
+			oRenderParameter.poRels		= &oTempRelsWriter;
+			oRenderParameter.poWriter	= &oTempWriter;
+			oRenderParameter.nType		= RENDER_TO_OOX_PARAM_PLAIN;
 
-			CString sResult = m_oField.m_oResult->RenderToOOX( oRenderParameter );
+			CString sResult = m_oField.m_pResult->RenderToOOX( oRenderParameter );
 			if( L"" != sResult )
 				return false;
 		}
@@ -1341,14 +1342,14 @@ private:
 
 		RenderParameter oNewParametr;
 		oNewParametr.poDocument = &oDocument;
-		oNewParametr.poRels = &oTempRelsWriter;
-		oNewParametr.poWriter = &oTempWriter;
-		oNewParametr.nType = RENDER_TO_OOX_PARAM_PLAIN;
+		oNewParametr.poRels		= &oTempRelsWriter;
+		oNewParametr.poWriter	= &oTempWriter;
+		oNewParametr.nType		= RENDER_TO_OOX_PARAM_PLAIN;
 
 		CString sCharCode;
 		CString sCharFont;
 
-		CString sField = m_oField.m_oInsert->RenderToOOX(oNewParametr);
+		CString sField = m_oField.m_pInsert->m_pTextItems->RenderToOOX(oNewParametr);
 		int nStartTokenize = 0;
 		CString sResTokenize = sField.Tokenize( L" ", nStartTokenize );
 		if( L"SYMBOL" != sResTokenize )
@@ -1412,26 +1413,29 @@ private:
 		int nSkipChar = 0;
 		
 		RtfAbstractReader reader;
+		
 		CString sResultSymbol	= reader.ExecuteTextInternal( oDocument, oReader, sCharA, false, 0, nSkipChar );
-		m_oField.m_oResult		= TextItemContainerPtr( new TextItemContainer() );
-		RtfParagraphPtr oNewPar	= RtfParagraphPtr( new RtfParagraph() );
-		RtfCharPtr oNewChar		= RtfCharPtr( new RtfChar() );
+		
+		m_oField.m_pResult			= RtfFieldInstPtr	( new RtfFieldInst() );
+		
+		RtfParagraphPtr oNewPar		= RtfParagraphPtr	( new RtfParagraph() );
+		RtfCharPtr		oNewChar	= RtfCharPtr		( new RtfChar() );
 		
 		oNewChar->setText( sResultSymbol );
 		oNewChar->m_oProperty = oReader.m_oState->m_oCharProp;
 
 		oNewPar->AddItem( oNewChar );
-		m_oField.m_oResult->AddItem( oNewPar );
+		m_oField.m_pResult->m_pTextItems->AddItem( oNewPar );
 		m_oField.m_bTextOnly = true;
 	 }
 };
 
-class BookmarkStartReader: public RtfAbstractReader
+class RtfBookmarkStartReader: public RtfAbstractReader
 {
 public: 
 	RtfBookmarkStart& m_oBookmarkStart;
 
-	BookmarkStartReader( RtfBookmarkStart& oBookmark ):m_oBookmarkStart(oBookmark)
+	RtfBookmarkStartReader( RtfBookmarkStart& oBookmark ):m_oBookmarkStart(oBookmark)
 	{
 	}
 	bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CString sCommand, bool hasParameter, int parameter)
@@ -1458,12 +1462,12 @@ public:
 	}
 };
 
-class BookmarkEndReader: public RtfAbstractReader
+class RtfBookmarkEndReader: public RtfAbstractReader
 {
 public: 
 	RtfBookmarkEnd& m_oBookmarkEnd;
 
-	BookmarkEndReader( RtfBookmarkEnd& oBookmark ):m_oBookmarkEnd(oBookmark)
+	RtfBookmarkEndReader( RtfBookmarkEnd& oBookmark ):m_oBookmarkEnd(oBookmark)
 	{
 	}
 	void ExecuteText(RtfDocument& oDocument, RtfReader& oReader, CString sText)
@@ -1474,7 +1478,7 @@ public:
 
 class FootnoteReader;
 //Destination имеет состояния
-class ParagraphPropDestination // todo - последний параграф не обрабатывается
+class RtfParagraphPropDestination // todo - последний параграф не обрабатывается
 {
 public:
 	enum _InternalState{ is_normal,is_charBorder, is_borderTop, is_borderLeft, is_borderBottom, is_borderRight, is_borderBox, is_borderBar,
@@ -1488,7 +1492,7 @@ private:
 
 //реальные параграфы и таблицы
 	std::vector< ITextItemPtr >		aCellRenderables;
-	std::vector< int >				aItaps; //вложенность параграфов
+	std::vector< int >				aItaps;		//вложенность параграфов
 	std::vector< RtfTableCellPtr >	aCells;
 	std::vector< int >				aCellItaps; //вложенность cell
 	std::vector< RtfTableRowPtr >	aRows;
@@ -1496,19 +1500,19 @@ private:
 	RtfRowProperty oCurRowProperty;
 
 	RtfReader* m_oReader;
-	bool m_bPar;// если последняя команда была par, то не надо добавлять параграф
+	bool m_bPar;								// если последняя команда была par, то не надо добавлять параграф
 public: 
 	TextItemContainerPtr	m_oTextItems;		//для разбивки на TextItem
 	RtfTab					m_oCurTab;
 	int						nTargetItap;		//уровень который считается не таблицей ( для того чтобы читать параграфы в таблицах )
 	int						nCurItap;
 
-	ParagraphPropDestination( )
+	RtfParagraphPropDestination( )
 	{
 		nTargetItap			= PROP_DEF;
 		m_bPar				= false;
 		m_oTextItems		= TextItemContainerPtr( new TextItemContainer() );
-		nCurItap			= 0;//main document
+		nCurItap			= 0;				//main document
 		m_eInternalState	= is_normal;
 		m_oCurParagraph		= RtfParagraphPtr(new RtfParagraph());
 	}
@@ -1523,7 +1527,7 @@ public:
 	}
 	void AddItem( RtfParagraphPtr oItem, RtfReader& oReader, bool bEndCell, bool bEndRow );
 	
-	void Finalize( RtfReader& oReader/*, RtfSectionPtr pSection*/);
+	void Finalize( RtfReader& oReader);
 
 	void ExecuteNumberChar( RtfDocument& oDocument, RtfReader& oReader, RtfAbstractReader& oAbstrReader, int nWinChar, int nMacChar )
 	 {
@@ -1554,14 +1558,14 @@ public:
 		 }
 	 }
 };
-class FootnoteReader: public RtfAbstractReader
+class RtfFootnoteReader: public RtfAbstractReader
 {
 private: 
-	ParagraphPropDestination m_oParPropDest;
+	RtfParagraphPropDestination m_oParPropDest;
 public: 
 	RtfFootnote&	m_oRtfFootnote;
 
-	FootnoteReader( RtfFootnote& oRtfFootnote ):m_oRtfFootnote(oRtfFootnote)
+	RtfFootnoteReader( RtfFootnote& oRtfFootnote ):m_oRtfFootnote(oRtfFootnote)
 	{
 	}
 	bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CString sCommand, bool hasParameter, int parameter)
@@ -1594,7 +1598,7 @@ public:
 class RtfDefParPropReader: public RtfAbstractReader
 {
 private: 
-	ParagraphPropDestination m_oParPropDest;
+	RtfParagraphPropDestination m_oParPropDest;
 public: 
 	RtfDefParPropReader( )
 	{
@@ -1720,7 +1724,7 @@ public:
 //};
 //
 
-class StyleTableReader: public RtfAbstractReader
+class RtfStyleTableReader: public RtfAbstractReader
 {
 	class RtfStyleReader: public RtfAbstractReader
 	{
@@ -1729,7 +1733,7 @@ class StyleTableReader: public RtfAbstractReader
 		enum _InternalState{ is_normal, is_tsbrdrt, is_tsbrdrb, is_tsbrdrl, is_tsbrdrr, is_tsbrdrh, is_tsbrdrv } InternalState;
 		
 		_InternalState				m_eInternalState;
-		ParagraphPropDestination	m_oParDest;
+		RtfParagraphPropDestination	m_oParDest;
 		RtfStylePtr					m_oCurStyle;
 
 //		RtfTableStyleProperty		m_oTableStyleProperty;
@@ -2022,7 +2026,7 @@ class StyleTableReader: public RtfAbstractReader
 	}
 };
 
-class ListTableReader: public RtfAbstractReader
+class RtfListTableReader: public RtfAbstractReader
 {
 public: 
 	class ListReader: public RtfAbstractReader
@@ -2138,8 +2142,10 @@ public:
 			else if( L"shppict" == sCommand )
 			{
 				RtfShapePtr oNewPicture = RtfShapePtr( new RtfShape() );
-				ShppictReader oShppictReader( *oNewPicture );
+				
+				RtfShppictReader oShppictReader( *oNewPicture );
 				StartSubReader( oShppictReader, oDocument, oReader );
+				
 				oDocument.m_oListTabel.m_aPictureList.AddItem( oNewPicture );
 			}
 			else
@@ -2147,7 +2153,7 @@ public:
 			return true;
 		}
 	};
-	ListTableReader()
+	RtfListTableReader()
 	{
 
 	}
@@ -2179,7 +2185,7 @@ public:
 
 	}
 };
-class ListOverrideTableReader: public RtfAbstractReader
+class RtfListOverrideTableReader: public RtfAbstractReader
 {
 private: 
 	class ListOverrideReader : public RtfAbstractReader
@@ -2202,7 +2208,7 @@ private:
 			  else if( L"listlevel" == sCommand )
 			  {
 				  m_oOverrideLevel.m_oLevel.m_nLevel = m_oOverrideLevel.m_nLevelIndex;
-				  ListTableReader::ListReader::ListLevelReader oListLevelReader( m_oOverrideLevel.m_oLevel );
+				  RtfListTableReader::ListReader::ListLevelReader oListLevelReader( m_oOverrideLevel.m_oLevel );
 				  StartSubReader( oListLevelReader, oDocument, oReader );
 			  }
 			  else
@@ -2243,7 +2249,7 @@ private:
 			}
 		 };
 public: 
-	ListOverrideTableReader()
+	RtfListOverrideTableReader()
 	{
 	}
 	bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CString sCommand, bool hasParameter, int parameter)
@@ -2272,14 +2278,14 @@ public:
 	}
 };
 
-class ParagraphReader : public RtfAbstractReader
+class RtfParagraphReader : public RtfAbstractReader
 {
 private: 
 	CString m_sHeader;
 public: 
-	ParagraphPropDestination m_oParPropDest;
+	RtfParagraphPropDestination m_oParPropDest;
 
-	ParagraphReader( CString sHeader, RtfReader& oReader ):m_sHeader(sHeader)
+	RtfParagraphReader( CString sHeader, RtfReader& oReader ):m_sHeader(sHeader)
 	{
 		if( PROP_DEF != oReader.m_oState->m_oParagraphProp.m_nItap )
 			m_oParPropDest.nTargetItap = oReader.m_oState->m_oParagraphProp.m_nItap;
@@ -2324,7 +2330,7 @@ public:
 class RtfNormalReader : public RtfAbstractReader
 {
 public: 
-	ParagraphPropDestination	oParagraphReaderDestination;
+	RtfParagraphPropDestination	oParagraphReaderDestination;
 	RtfSectionCommand			oRtfSectionCommand;
 
 	RtfNormalReader( RtfDocument& oDocument, RtfReader& oReader )
@@ -2415,4 +2421,27 @@ private:
 		oReader.m_oCurSectionProp.m_bSwitchMargin		= oDocument.m_oProperty.m_bFacingPage;
 		oReader.m_oCurSectionProp.m_bLandscapeFormat	= oDocument.m_oProperty.m_bLandScape;
 	 }
+};
+
+
+class RtfFieldInstReader : public RtfAbstractReader, public RtfParagraphPropDestination
+{
+
+public: 
+	RtfFieldInst& m_oFieldInst;
+
+	RtfFieldInstReader( RtfFieldInst& oFieldInst ) :  m_oFieldInst(oFieldInst) {}
+	bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader ,CString sCommand, bool hasParameter, int parameter);
+
+	void ExecuteText( RtfDocument& oDocument, RtfReader& oReader, CString sText )
+	{
+		RtfParagraphPropDestination::ExecuteText( oDocument, oReader, sText );
+	}
+	void ExitReader( RtfDocument& oDocument, RtfReader& oReader )
+	{
+		RtfParagraphPropDestination::Finalize( oReader );
+
+		m_oFieldInst.m_pTextItems	= m_oTextItems;
+	}
+
 };

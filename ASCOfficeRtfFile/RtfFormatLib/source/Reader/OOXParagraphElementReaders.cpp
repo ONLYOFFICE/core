@@ -125,9 +125,10 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 				OOX::Logic::CFldSimple * pFldSimple = dynamic_cast<OOX::Logic::CFldSimple*>(m_ooxElement->m_arrItems[i]);
 			
 				RtfFieldPtr oCurField( new RtfField() );
-				oCurField->m_oInsert = TextItemContainerPtr( new TextItemContainer() );
-				oCurField->m_oResult = TextItemContainerPtr( new TextItemContainer() );
-				//добавляем insert
+				
+				oCurField->m_pInsert = RtfFieldInstPtr		( new RtfFieldInst() );
+				oCurField->m_pResult = RtfFieldInstPtr		( new RtfFieldInst() );
+			//добавляем insert
 				RtfCharPtr oNewChar( new RtfChar() );
 				oNewChar->m_bRtfEncode = false;
 				if (pFldSimple->m_sInstr.IsInit())
@@ -136,7 +137,7 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 				}
 				RtfParagraphPtr oNewInsertParagraph( new RtfParagraph() );
 				oNewInsertParagraph->AddItem( oNewChar );
-				oCurField->m_oInsert->AddItem( oNewInsertParagraph );
+				oCurField->m_pInsert->m_pTextItems->AddItem( oNewInsertParagraph );
 				
 				//добаляем свойства
 				if( TRUE == pFldSimple->m_oFldLock.ToBool() )
@@ -156,7 +157,7 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 				{
 					OOXParagraphReader oSubParReader(pFldSimple);
 					oSubParReader.Parse2( oParam, *oNewResultParagraph, CcnfStyle(), poExternalStyle);
-					oCurField->m_oResult->AddItem( oNewResultParagraph 	);			
+					oCurField->m_pResult->m_pTextItems->AddItem( oNewResultParagraph 	);			
 				}
 				oOutputParagraph.AddItem( oCurField );
 			}break;
@@ -193,17 +194,19 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 							}
 						}
 						RtfFieldPtr oCurField( new RtfField() );
-						oCurField->m_oInsert = TextItemContainerPtr( new TextItemContainer() );
-						oCurField->m_oResult = TextItemContainerPtr( new TextItemContainer() );
-						//добавляем insert
+						
+						oCurField->m_pInsert = RtfFieldInstPtr		( new RtfFieldInst() );
+						oCurField->m_pResult = RtfFieldInstPtr		( new RtfFieldInst() );
+					//добавляем insert
 						RtfCharPtr oNewChar( new RtfChar() );
 						oNewChar->m_bRtfEncode = true;// false;
 						CString sFieldText;
                         sFieldText += L"HYPERLINK \"" + sTarget + L"\"";
 						oNewChar->setText( sFieldText );
+						
 						RtfParagraphPtr oNewInsertParagraph( new RtfParagraph() );
 						oNewInsertParagraph->AddItem( oNewChar );
-						oCurField->m_oInsert->AddItem( oNewInsertParagraph );
+						oCurField->m_pInsert->m_pTextItems->AddItem( oNewInsertParagraph );
 						//добавляем свойства
 
 						//pHyperlink->m_arrItems todoooo 
@@ -225,7 +228,7 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 						{
 							OOXParagraphReader oSubParReader(pHyperlink);
 							oSubParReader.Parse2( oParam, *oNewResultParagraph, CcnfStyle(), poExternalStyle);
-							oCurField->m_oResult->AddItem( oNewResultParagraph );
+							oCurField->m_pResult->m_pTextItems->AddItem( oNewResultParagraph );
 						}
 						oOutputParagraph.AddItem( oCurField );
 					}
@@ -233,8 +236,9 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 				if( pHyperlink->m_sAnchor.IsInit() )
 				{
 					RtfFieldPtr oCurField( new RtfField() );
-					oCurField->m_oInsert = TextItemContainerPtr( new TextItemContainer() );
-					oCurField->m_oResult = TextItemContainerPtr( new TextItemContainer() );
+					
+					oCurField->m_pInsert = RtfFieldInstPtr		( new RtfFieldInst() );
+					oCurField->m_pResult = RtfFieldInstPtr		( new RtfFieldInst() );
 					//добавляем insert
 					RtfCharPtr oNewCharHYPER( new RtfChar() );
 					oNewCharHYPER->m_bRtfEncode = false;
@@ -243,7 +247,7 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 					RtfParagraphPtr oNewInsertParagraph( new RtfParagraph() );
 					oNewInsertParagraph->AddItem( oNewCharHYPER );
 
-					oCurField->m_oInsert->AddItem( oNewInsertParagraph );
+					oCurField->m_pInsert->m_pTextItems->AddItem( oNewInsertParagraph );
 					////добаляем свойства
 					//BOOL bLock = Strings::ToBoolean(oXmlReader.ReadNodeAttribute(i, L"w:fldLock" ,L"false"));
 					//if( TRUE == bLock )
@@ -263,7 +267,7 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 					{
 						OOXParagraphReader oSubParReader(pHyperlink);					
 						oSubParReader.Parse2( oParam, *oNewResultParagraph, CcnfStyle(), poExternalStyle);
-						oCurField->m_oResult->AddItem( oNewResultParagraph );
+						oCurField->m_pResult->m_pTextItems->AddItem( oNewResultParagraph );
 					}
 					oOutputParagraph.AddItem( oCurField );
 				}
@@ -761,9 +765,11 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 					oCurFont.m_sName = sFont;
 					oParam.oRtf->m_oFontTable.DirectAddItem( oCurFont );
 				}
-				RtfFieldPtr oNewField = RtfFieldPtr( new RtfField() );
-				oNewField->m_oInsert = TextItemContainerPtr( new TextItemContainer() );
-				oNewField->m_oResult = TextItemContainerPtr( new TextItemContainer() );
+				RtfFieldPtr oNewField	= RtfFieldPtr	 ( new RtfField() );
+				
+				oNewField->m_pInsert	= RtfFieldInstPtr( new RtfFieldInst() );
+				oNewField->m_pResult	= RtfFieldInstPtr( new RtfFieldInst() );
+				
 				RtfCharPtr oNewChar( new RtfChar() );
 				oNewChar->m_bRtfEncode = false;
 				CString sFieldText;
@@ -777,9 +783,10 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 				sFieldText.AppendFormat(L"%d", nFontSize );
 				
 				oNewChar->setText( sFieldText );
+				
 				RtfParagraphPtr oNewInsertParagraph( new RtfParagraph() );
 				oNewInsertParagraph->AddItem( oNewChar );
-				oNewField->m_oInsert->AddItem( oNewInsertParagraph );
+				oNewField->m_pInsert->m_pTextItems->AddItem( oNewInsertParagraph );
 
 				oOutputParagraph.AddItem( oNewField );	
 			}
